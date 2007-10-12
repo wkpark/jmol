@@ -62,14 +62,14 @@ class RepaintManager {
     if (modelIndex != 0 && isTrajectory)
       viewer.setTrajectory(-1);
     if (modelSet != null && currentModelIndex != modelIndex) {
-      boolean fromDataFrame = viewer.isDataFrame(currentModelIndex);
-      boolean toDataFrame = viewer.isDataFrame(modelIndex);
-      int n = (fromDataFrame ? currentModelIndex : 0);
-      viewer.saveOrientation("frame" + n);
+      boolean fromDataFrame = viewer.isJmolDataFrame(currentModelIndex);
+      boolean toDataFrame = viewer.isJmolDataFrame(modelIndex);
+      viewer.saveOrientation(fromDataFrame ? viewer.getJmolDataFrameType(currentModelIndex)
+          : "modelSet");
       // leaving or entering data frame? Then restore new frame's index 
       if (fromDataFrame || toDataFrame) {
-        n = (toDataFrame ? modelIndex : 0);
-        viewer.restoreOrientation("frame" + n, 0);
+        viewer.restoreOrientation(toDataFrame ? viewer.getJmolDataFrameType(modelIndex)
+            : "modelSet", 0);
       }
     }
     if (modelSet == null || modelIndex < 0
@@ -81,7 +81,7 @@ class RepaintManager {
       setBackgroundModelIndex(-1);
     if (modelSet != null && currentModelIndex >= 0) {
       // entering data frame
-      if (viewer.getModelAuxiliaryInfo(currentModelIndex, "jmolData") != null) {
+      if (viewer.isJmolDataFrame(currentModelIndex)) {
         viewer.restoreOrientation("frameIndex" + currentModelIndex, 0);
       }
     }
@@ -206,7 +206,10 @@ class RepaintManager {
   void initializePointers(int frameStep) {
     firstModelIndex = 0;
     isTrajectory = ((lastModelIndex = viewer.getTrajectoryCount()) > 1);
-    lastModelIndex = (frameStep == 0 ? 0 : isTrajectory ? lastModelIndex : viewer.getModelCount()) - 1;
+    int modelCount = viewer.getModelCount();
+    lastModelIndex = (frameStep == 0 ? 0 
+        : isTrajectory ? lastModelIndex 
+        : modelCount) - 1;
     this.frameStep = frameStep;
   }
 

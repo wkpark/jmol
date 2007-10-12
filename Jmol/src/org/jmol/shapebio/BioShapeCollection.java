@@ -30,7 +30,6 @@ import java.util.Hashtable;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
-import org.jmol.modelset.Mmset;
 import org.jmol.modelset.Model;
 import org.jmol.modelsetbio.BioPolymer;
 import org.jmol.shape.Closest;
@@ -52,7 +51,6 @@ import org.jmol.viewer.JmolConstants;
  ****************************************************************/
 public abstract class BioShapeCollection extends Shape {
 
-  Mmset mmset;
   Atom[] atoms;
   
   short madOn = -2;
@@ -64,7 +62,6 @@ public abstract class BioShapeCollection extends Shape {
   BioShape[] bioShapes;
   
   public final void initModelSet() {
-    mmset = modelSet.getMmset();
     atoms = modelSet.atoms;
     initialize();
   }
@@ -115,9 +112,9 @@ public abstract class BioShapeCollection extends Shape {
   }
 
   void initialize() {
-    int modelCount = mmset == null ? 0 : mmset.getModelCount();
-    Model[] models = mmset.getModels();
-    int nPolymers = mmset.getBioPolymerCount();
+    int modelCount = modelSet.getModelCount();
+    Model[] models = modelSet.getModels();
+    int nPolymers = modelSet.getBioPolymerCount();
     BioShape[] m = new BioShape[nPolymers];
     int n = nPolymers;
     for (int i = modelCount; --i >= 0;)
@@ -133,7 +130,7 @@ public abstract class BioShapeCollection extends Shape {
   }
 
   int getMpsmodelCount() {
-    return (bioShapes == null ? 0 : mmset.getModelCount());
+    return (bioShapes == null ? 0 : modelSet.getModelCount());
   }
 
   public void findNearestAtomIndex(int xMouse, int yMouse, Closest closest) {

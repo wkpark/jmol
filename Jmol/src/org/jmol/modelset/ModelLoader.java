@@ -55,7 +55,7 @@ public final class ModelLoader extends ModelSet {
   private ModelLoader mergeModelSet;
   private boolean merging;
   private boolean isMultiFile;
-  private String jmolData;
+  private String jmolData; // from a PDB remark "Jmol PDB-encoded data"
   private boolean isTrajectory = false;
 
   private final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
@@ -64,13 +64,16 @@ public final class ModelLoader extends ModelSet {
   private Group[] groups;
   private int groupCount;
   
-  ModelLoader(Viewer viewer, String name) {
+  public ModelLoader(Viewer viewer, String name) {
     this.viewer = viewer;
     initializeInfo(name, 1, null, null);
     initializeModelSet(null, null);
+    modelSetName = "zapped";
   }
 
-  ModelLoader(Viewer viewer, JmolAdapter adapter, Object clientFile, ModelLoader mergeModelSet) {
+  public ModelLoader(Viewer viewer, JmolAdapter adapter, Object clientFile, 
+      ModelLoader mergeModelSet, String modelSetName) {
+    this.modelSetName = modelSetName;
     this.mergeModelSet = mergeModelSet;
     merging = (mergeModelSet != null && mergeModelSet.atomCount > 0);
     this.viewer = viewer;
@@ -110,28 +113,22 @@ public final class ModelLoader extends ModelSet {
     modelSetTypeName = name;
     isXYZ = (modelSetTypeName == "xyz");
     setZeroBased();
-    mmset = new Mmset(this);
-    mmset.setModelSetProperties(properties);
-    mmset.setModelSetAuxiliaryInfo(info);
-    isMultiFile = mmset.getModelSetAuxiliaryInfoBoolean("isMultiFile");
-    isPDB = mmset.getModelSetAuxiliaryInfoBoolean("isPDB");
+    setModelSetProperties(properties);
+    setModelSetAuxiliaryInfo(info);
+    isMultiFile = getModelSetAuxiliaryInfoBoolean("isMultiFile");
+    isPDB = getModelSetAuxiliaryInfoBoolean("isPDB");
     jmolData = (String) getModelSetAuxiliaryInfo("jmolData");
-    trajectories = (Vector) mmset.getModelSetAuxiliaryInfo("trajectories");
+    trajectories = (Vector) getModelSetAuxiliaryInfo("trajectories");
     isTrajectory = (trajectories != null);
-    someModelsHaveSymmetry = mmset
-    .getModelSetAuxiliaryInfoBoolean("someModelsHaveSymmetry");
-    someModelsHaveUnitcells = mmset
-        .getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
-    someModelsHaveFractionalCoordinates = mmset
-        .getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
+    someModelsHaveSymmetry = getModelSetAuxiliaryInfoBoolean("someModelsHaveSymmetry");
+    someModelsHaveUnitcells = getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
+    someModelsHaveFractionalCoordinates = getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
     if (merging) {
-      someModelsHaveSymmetry |= mergeModelSet.mmset
-          .getModelSetAuxiliaryInfoBoolean("someModelsHaveSymmetry");
-      someModelsHaveUnitcells |= mergeModelSet.mmset
-          .getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
-      someModelsHaveFractionalCoordinates |= mergeModelSet.mmset
-          .getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
+      someModelsHaveSymmetry |= mergeModelSet.getModelSetAuxiliaryInfoBoolean("someModelsHaveSymmetry");
+      someModelsHaveUnitcells |= mergeModelSet.getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
+      someModelsHaveFractionalCoordinates |= mergeModelSet.getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
       someModelsHaveAromaticBonds |= mergeModelSet.someModelsHaveAromaticBonds;
+      htJmolData = mergeModelSet.htJmolData;
     }
     initializeBuild(nAtoms);
   }
@@ -193,21 +190,22 @@ public final class ModelLoader extends ModelSet {
   private int baseBondIndex = 0;
   private int baseGroupIndex = 0;
   private boolean appendNew = true;
-
+  private int adapterModelCount = 0;
+  
   private void initializeModelSet(JmolAdapter adapter, Object clientFile) {
-    int adapterModelCount = modelCount = (adapter == null ? 1 : adapter
+    adapterModelCount = (adapter == null ? 1 : adapter
         .getAtomSetCount(clientFile));
     initializeAtomBondModelCounts();
     if (adapter == null) {
-      mmset.setModelNameNumberProperties(0, "", 1, null, null, false, null);
+      setModelNameNumberProperties(0, "", 1, null, null, false, null);
     } else {
-      appendNew = (modelCount > 1 || viewer.getAppendNew());
-      if (modelCount > 0) {
+      appendNew = (adapterModelCount > 1 || viewer.getAppendNew());
+      if (adapterModelCount > 0) {
         Logger.info("ModelSet: haveSymmetry:" + someModelsHaveSymmetry
             + " haveUnitcells:" + someModelsHaveUnitcells
             + " haveFractionalCoord:" + someModelsHaveFractionalCoordinates);
         Logger
-            .info(modelCount
+            .info(adapterModelCount
                 + " model"
                 + (modelCount == 1 ? "" : "s")
                 + (isTrajectory ? ", " + trajectories.size() + " trajectories"
@@ -216,12 +214,12 @@ public final class ModelLoader extends ModelSet {
                 + " getProperty \"auxiliaryInfo\" to inspect them.");
       }
 
-      iterateOverAllNewModels(adapter, clientFile, adapterModelCount);
+      iterateOverAllNewModels(adapter, clientFile);
       iterateOverAllNewAtoms(adapter, clientFile);
       iterateOverAllNewBonds(adapter, clientFile);
       iterateOverAllNewStructures(adapter, clientFile);
 
-      initializeUnitCellAndSymmetry(adapterModelCount);
+      initializeUnitCellAndSymmetry();
       initializeBonding();
     }
 
@@ -242,7 +240,7 @@ public final class ModelLoader extends ModelSet {
       baseModelCount = mergeModelSet.modelCount;
       if (appendNew) {
         baseModelIndex = baseModelCount;
-        modelCount += baseModelCount;
+        modelCount = baseModelCount + adapterModelCount;
       } else {
         baseModelIndex = viewer.getCurrentModelIndex();
         if (baseModelIndex < 0)
@@ -252,14 +250,16 @@ public final class ModelLoader extends ModelSet {
       atomCount = baseAtomIndex = mergeModelSet.atomCount;
       bondCount = baseBondIndex = mergeModelSet.bondCount;
       groupCount = baseGroupIndex = mergeModelSet.groupCount;
+    } else {
+      modelCount = adapterModelCount;
     }
-    mmset.setModelCount(modelCount);
+    setModelCount();
   }
 
   private BitSet structuresDefinedInFile = new BitSet();
   
   private void initializeMerge() {
-    mmset.merge(mergeModelSet.mmset);
+    merge(mergeModelSet);
     bsSymmetry = mergeModelSet.bsSymmetry;
     if (mergeModelSet.group3Lists != null) {
       for (int i = 0; i < baseModelCount; i++) {
@@ -285,11 +285,10 @@ public final class ModelLoader extends ModelSet {
     surfaceDistance100s = null;
   }
 
-  private void iterateOverAllNewModels(JmolAdapter adapter, Object clientFile,
-                                       int adapterModelCount) {
+  private void iterateOverAllNewModels(JmolAdapter adapter, Object clientFile) {
 
     if (modelCount > 0) {
-      nullChain = new Chain(this, mmset.getModel(baseModelIndex), ' ');
+      nullChain = new Chain(this, getModel(baseModelIndex), ' ');
       nullGroup = new Group(nullChain, "", 0, -1, -1);
     }
 
@@ -313,7 +312,7 @@ public final class ModelLoader extends ModelSet {
       Properties modelProperties = adapter.getAtomSetProperties(clientFile, i);
       Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
           clientFile, i);
-      boolean isPDBModel = mmset.setModelNameNumberProperties(ipt, modelName,
+      boolean isPDBModel = setModelNameNumberProperties(ipt, modelName,
           modelNumber, modelProperties, modelAuxiliaryInfo, isPDB, jmolData);
       if (isPDBModel) {
         group3Lists[ipt] = JmolConstants.group3List;
@@ -323,10 +322,10 @@ public final class ModelLoader extends ModelSet {
           group3Counts[modelCount] = new int[JmolConstants.group3Count + 10];
         }
       }
-      if (mmset.getModelAuxiliaryInfo(ipt, "periodicOriginXyz") != null)
+      if (getModelAuxiliaryInfo(ipt, "periodicOriginXyz") != null)
         someModelsHaveSymmetry = true;
     }
-    mmset.finalizeModelNumbers(baseModelCount);
+    finalizeModelNumbers(baseModelCount);
   }
     
   private void iterateOverAllNewAtoms(JmolAdapter adapter, Object clientFile) {
@@ -355,7 +354,7 @@ public final class ModelLoader extends ModelSet {
     int iLast = -1;
     for (int i = 0; i < atomCount; i++)
       if (atoms[i].modelIndex != iLast)
-        mmset.setFirstAtomIndex(iLast = atoms[i].modelIndex, i);
+        setFirstAtomIndex(iLast = atoms[i].modelIndex, i);
   }
 
   private void addAtom(int modelIndex, BitSet atomSymmetry, int atomSite,
@@ -386,7 +385,7 @@ public final class ModelLoader extends ModelSet {
                              char groupInsertionCode) {
     String group3i = (group3 == null ? null : group3.intern());
     if (modelIndex != currentModelIndex) {
-      currentModel = mmset.getModel(modelIndex);
+      currentModel = getModel(modelIndex);
       currentModelIndex = modelIndex;
       currentChainID = '\uFFFF';
     }
@@ -526,19 +525,19 @@ public final class ModelLoader extends ModelSet {
       }
   }
   
-  private void defineStructure(int modelIndex, String structureType, char startChainID,
+  protected void defineStructure(int modelIndex, String structureType, char startChainID,
                        int startSequenceNumber, char startInsertionCode,
                        char endChainID, int endSequenceNumber,
                        char endInsertionCode) {
     structuresDefinedInFile.set(modelIndex);
-    mmset.defineStructure(modelIndex, structureType, startChainID,
+    super.defineStructure(modelIndex, structureType, startChainID,
         startSequenceNumber, startInsertionCode, endChainID, endSequenceNumber,
         endInsertionCode);
   }
 
   ////// symmetry ///////
   
-  private void initializeUnitCellAndSymmetry(int adapterModelCount) {
+  private void initializeUnitCellAndSymmetry() {
     /*
      * really THREE issues here:
      * 1) does a model have an associated unit cell that could be displayed?
@@ -554,9 +553,9 @@ public final class ModelLoader extends ModelSet {
       cellInfos = new CellInfo[modelCount];
       for (int i = 0; i < baseModelCount; i++)
         cellInfos[i] = (mergeModelSet.cellInfos != null ? mergeModelSet.cellInfos[i]
-            : new CellInfo(i, false, mmset.getModelAuxiliaryInfo(i)));
+            : new CellInfo(i, false, getModelAuxiliaryInfo(i)));
       for (int i = baseModelCount; i < modelCount; i++)
-        cellInfos[i] = new CellInfo(i, doPdbScale, mmset.getModelAuxiliaryInfo(i));
+        cellInfos[i] = new CellInfo(i, doPdbScale, getModelAuxiliaryInfo(i));
     }
     if (someModelsHaveSymmetry) {
       getSymmetrySet();
@@ -564,8 +563,8 @@ public final class ModelLoader extends ModelSet {
         if (atoms[iAtom].modelIndex != iModel) {
           iModel = atoms[iAtom].modelIndex;
           i0 = baseAtomIndex
-              + mmset.getModelAuxiliaryInfoInt(iModel, "presymmetryAtomIndex")
-              + mmset.getModelAuxiliaryInfoInt(iModel, "presymmetryAtomCount");
+              + getModelAuxiliaryInfoInt(iModel, "presymmetryAtomIndex")
+              + getModelAuxiliaryInfoInt(iModel, "presymmetryAtomCount");
         }
         if (iAtom >= i0)
           bsSymmetry.set(iAtom);
@@ -826,39 +825,6 @@ public final class ModelLoader extends ModelSet {
     if (isPDB)
       calculateStructuresAllExcept(structuresDefinedInFile);
 
-    /*
-     * old code; attempting to redefine biopolymers; please save
-     * I don't think this is necessary now; Bob Hanson 5/2007
-   
-       if (rebuild) {
-        for (int i = JmolConstants.SHAPE_MAX; --i >= 0;)
-          if (JmolConstants.isShapeSecondary(i))
-            shapes[i] = null;
-        if (jbr != null && groupCount > 0)
-          jbr.clearBioPolymers(groups, groupCount, alreadyDefined);
-        if (alreadyDefined == null) {
-          alreadyDefined = new BitSet();
-          groupCount = 0;
-        }
-        mmset.clearStructures(alreadyDefined);
-        initializeGroupBuild();
-        for (int i = 0; i < atomCount; i++) {
-          Atom atom = atoms[i];
-          if (!alreadyDefined.get(atom.modelIndex)) {
-            if (atom.group == null)
-              checkNewGroup(i, atom.modelIndex, '\0', null, 0, '\0');
-            else
-              checkNewGroup(i, atom.modelIndex, atom.getChainID(), atom
-                  .getGroup3(), atom.getSeqNumber(), atom.getInsertionCode());
-          }
-        }
-        finalizeGroupBuild();
-        moleculeCount = 0;
-      }
-
-     */
-
-    modelCount = mmset.getModelCount();
     molecules = null;
     moleculeCount = 0;
     currentModel = null;

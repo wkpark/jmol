@@ -50,16 +50,14 @@ public class AminoPolymer extends AlphaPolymer {
 
   //boolean hbondsAlreadyCalculated;
 
-  boolean debugHbonds;
+  //boolean debugHbonds;
 
   public void calcHydrogenBonds(BitSet bsA, BitSet bsB) {
-    debugHbonds = Logger.isActiveLevel(Logger.LEVEL_DEBUG);
+    //debugHbonds = Logger.isActiveLevel(Logger.LEVEL_DEBUG);
     initializeHbondDataStructures();
-    //Frame frame = model.mmset.frame;
-    //hbondMax2 = frame.hbondMax * frame.hbondMax;
     calcProteinMainchainHydrogenBonds(bsA, bsB);
     
-    if (false && debugHbonds) {
+/*    if (debugHbonds) {
       Logger.debug("calcHydrogenBonds");
       for (int i = 0; i < monomerCount; ++i) {
         Logger.debug("  min1Indexes=" + min1Indexes[i] +
@@ -68,6 +66,7 @@ public class AminoPolymer extends AlphaPolymer {
                            "\nmin2Energies=" + min2Energies[i]);
       }
     }
+*/
   }
 
   void initializeHbondDataStructures() {
@@ -166,7 +165,7 @@ public class AminoPolymer extends AlphaPolymer {
     }
   }
 
-  private int hPtr = 0;
+  //private int hPtr = 0;
   private int calcHbondEnergy(Atom nitrogen, Point3f nitrogenPoint,
                       Point3f hydrogenPoint, AminoMonomer target) {
     Point3f targetOxygenPoint = target.getCarbonylOxygenAtomPoint();
@@ -205,13 +204,13 @@ public class AminoPolymer extends AlphaPolymer {
         / distON));
 
     boolean isHbond = (distCN2 > distCH2 && distOH <= 3.0f && energy <= -500);
-    if (debugHbonds)
+/*    if (debugHbonds)
       Logger.debug("draw calcHydrogen"+(++hPtr)+ " ("+nitrogen.getInfo()+") {" + hydrogenPoint.x + " "
           + hydrogenPoint.y + " " + hydrogenPoint.z + "} #" + isHbond + " "
           + nitrogen.getInfo() + " " + target.getLeadAtom().getInfo()
           + " distOH=" + distOH + " distCH=" + distCH + " distCN=" + distCN
           + " distON=" + distON + " energy=" + energy);
-
+*/
     return (!isHbond ? 0 : energy < -9900 ? -9900 : energy);
   }
 
@@ -219,13 +218,14 @@ public class AminoPolymer extends AlphaPolymer {
                                  BitSet bsA, BitSet bsB) {
     short order;
     int aminoBackboneHbondOffset = indexAminoGroup - indexCarbonylGroup;
-    if (false && debugHbonds)
+/*    if (debugHbonds)
       Logger.debug("aminoBackboneHbondOffset=" +
                          aminoBackboneHbondOffset +
                          " amino:" +
                          monomers[indexAminoGroup].getSeqcodeString() +
                          " carbonyl:" +
                          monomers[indexCarbonylGroup].getSeqcodeString());
+*/
     switch (aminoBackboneHbondOffset) {
     case 2:
       order = JmolConstants.BOND_H_PLUS_2;

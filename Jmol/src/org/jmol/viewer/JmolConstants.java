@@ -35,6 +35,11 @@ import java.util.Properties;
 
 final public class JmolConstants {
 
+  public final static int JMOL_DATA_RAMACHANDRAN = 0;
+  public final static int JMOL_DATA_QUATERNION = 1;
+  public final static int JMOL_DATA_OTHER = 2;
+  
+
   //note: Eval.write() processing requires drivers to be first-letter-capitalized.
   //do not capitalize any other letter in the word. Separate by semicolon.
   public static final String EXPORT_DRIVER_LIST = "Maya;Vrml;Povray";

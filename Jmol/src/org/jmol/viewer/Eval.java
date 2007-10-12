@@ -27,6 +27,7 @@ import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Font3D;
 import org.jmol.shape.Text;
+import org.jmol.symmetry.SpaceGroup;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.ColorEncoder;
@@ -51,7 +52,6 @@ import org.jmol.i18n.*;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
-import org.jmol.modelset.Mmset;
 import org.jmol.modelset.ModelSet;
 
 class Eval { //implements Runnable {
@@ -954,10 +954,10 @@ class Eval { //implements Runnable {
         move();
         break;
       case Token.display:
-        display();
+        display(true);
         break;
       case Token.hide:
-        hide();
+        display(false);
         break;
       case Token.restrict:
         restrict();
@@ -1124,10 +1124,10 @@ class Eval { //implements Runnable {
         restore();
         break;
       case Token.ramachandran:
-        ramachandran();
+        dataFrame(JmolConstants.JMOL_DATA_RAMACHANDRAN);
         break;
       case Token.quaternion:
-        quaternion();
+        dataFrame(JmolConstants.JMOL_DATA_QUATERNION);
         break;
       case Token.write:
         write(1, null);
@@ -1528,7 +1528,7 @@ class Eval { //implements Runnable {
           if (val instanceof Integer)
             comparisonFloat = comparisonValue = ((Integer) val).intValue();
           else if (val instanceof Float && isModel)
-            comparisonValue = Mmset.modelFileNumberFromFloat(((Float) val)
+            comparisonValue = ModelSet.modelFileNumberFromFloat(((Float) val)
                 .floatValue());
         }
         if (val instanceof Integer || tokValue == Token.integer) {
@@ -4009,7 +4009,7 @@ class Eval { //implements Runnable {
             if (spacegroup.indexOf(",") >= 0) //Jones Faithful
               if ((unitCells.x < 9 && unitCells.y < 9 && unitCells.z == 0))
                 spacegroup += "#doNormalize=0";
-            iGroup = viewer.getSpaceGroupIndexFromName(spacegroup);
+            iGroup = SpaceGroup.determineSpaceGroupIndex(spacegroup);
             if (iGroup == -1)
               evalError(GT._("space group {0} was not found.", spacegroup));
           }
@@ -4110,46 +4110,68 @@ class Eval { //implements Runnable {
     return s;
   }
 
-  private void ramachandran() throws ScriptException {
-    //11.3.3
+  private void dataFrame(int datatype) throws ScriptException {
+    String type = "";
+    switch (datatype) {
+    case JmolConstants.JMOL_DATA_RAMACHANDRAN:
+      type = "ramachandran";
+      break;
+    case JmolConstants.JMOL_DATA_QUATERNION:
+      type = (statementLength == 1 ? "w" : optParameterAsString(1));
+      boolean isDerivative = (optParameterAsString(statementLength - 1)
+          .indexOf("deriv") == 0);
+      if (isDerivative && statementLength == 2)
+        type = "w";
+      type = "quaternion " + type + (isDerivative ? " derivative" : "");
+      if (!Parser.isOneOf(type, "w;x;y;z"))
+        evalError("QUATERNION [w,x,y,z] [derivative]");
+      break;
+    }
     if (isSyntaxCheck) //just in case we later add parameter options to this
       return;
-    loadPdbDataWithScript(
-        "ramachandran",
-        "frame 0.0; frame last; reset; center {0 0 0};zoomTo 0 (visible) 0;"
-            + "select visible; color structure; select *;"
-            + "draw ramaAxisX%N% {-10 0 0} {10 0 0};draw ramaAxisY%N% {0 -10 0} {0 10 0};");
-  }
-
-  private void quaternion() throws ScriptException {
-    // org.jmol.modelsetbio/AminoMonomer::quaternion()
-
-    //11.3.3
-    String type = (statementLength == 1 ? "w" : optParameterAsString(1));
-    boolean isDerivative = (optParameterAsString(statementLength - 1).indexOf(
-        "deriv") == 0);
-    if (isDerivative && statementLength == 2)
-      type = "w";
-    if (!Parser.isOneOf(type, "w;x;y;z"))
-      evalError("QUATERNION [w,x,y,z] [derivative]");
-    if (isSyntaxCheck)
+    BitSet bs = viewer.getSelectedAtoms();
+    int firstAtom = BitSetUtil.firstSetBit(bs);
+    if (firstAtom < 0)
       return;
-    loadPdbDataWithScript(
-        "quaternion " + type + (isDerivative ? " derivative" : ""),
-        "frame 0.0; frame last; reset; center {0 0 0};zoomTo 0 (visible) 0;"
-            + "select visible; trace 0.1; color trace structure; select *;"
-            + "isosurface quatSphere%N% resolution 1.0 sphere 10.0 mesh nofill translucent 0.8;");
+    //for now, just one frame visible
+    int modelIndex = viewer.getAtomModelIndex(firstAtom);
+    int ptDataFrame = viewer.getPtJmolDataFrame(type + ":" + modelIndex);
+    if (ptDataFrame > 0) {
+      viewer.setCurrentModelIndex(-1);
+      BitSet bs2 = viewer.getModelAtomBitSet(ptDataFrame);
+      bs2.and(bs);
+      //need to be able to set data directly as well.
+      viewer.display(BitSetUtil.setAll(viewer.getAtomCount()), bs2, tQuiet);
+      return;
+    }
+    switch (datatype) {
+    case JmolConstants.JMOL_DATA_RAMACHANDRAN:
+      loadPdbDataWithScript(modelIndex,
+          type,
+          "frame 0.0; frame last; reset; center {0 0 0};zoomTo 0 (visible) 0;"
+              + "select visible; color structure; select *;"
+              + "draw ramaAxisX%N% {-10 0 0} {10 0 0};draw ramaAxisY%N% {0 -10 0} {0 10 0};");
+      break;
+    case JmolConstants.JMOL_DATA_QUATERNION:
+      loadPdbDataWithScript(modelIndex,
+          type,
+          "frame 0.0; frame last; reset; center {0 0 0};zoomTo 0 (visible) 0;"
+              + "select visible; trace 0.1; color trace structure; select *;"
+              + "isosurface quatSphere%N% resolution 1.0 sphere 10.0 mesh nofill translucent 0.8;");
+      break;
+    }
   }
 
-  private void loadPdbDataWithScript(String type, String script)
+  private void loadPdbDataWithScript(int modelIndex, String type, String script)
       throws ScriptException {
-    String[] fileInfo = viewer.getFileInfo();
+    String[] savedFileInfo = viewer.getFileInfo();
     boolean isOK = viewer.loadInline(viewer.getPdbData(type), '\n', true);
-    viewer.setFileInfo(fileInfo);
+    viewer.setFileInfo(savedFileInfo);
     if (!isOK)
       return;
     int modelCount = viewer.getModelCount();
     runScript(TextFormat.simpleReplace(script, "%N%", "" + modelCount));
+    viewer.setPtJmolDataFrame(type, modelIndex);
     showString("frame " + viewer.getModelName(-modelCount) + " created: "
         + type);
   }
@@ -4802,25 +4824,14 @@ class Eval { //implements Runnable {
     }
   }
 
-  private void hide() throws ScriptException {
-    if (statementLength == 1) {
-      viewer.hide(null, tQuiet);
+  private void display(boolean isDisplay) throws ScriptException {
+    BitSet bs = (statementLength == 1 ? null : expression(1));
+    if (isSyntaxCheck)
       return;
-    }
-    BitSet bs = expression(1);
-    if (!isSyntaxCheck)
+    if (isDisplay)
+      viewer.display(BitSetUtil.setAll(viewer.getAtomCount()), bs, tQuiet);
+    else
       viewer.hide(bs, tQuiet);
-  }
-
-  private void display() throws ScriptException {
-    int atomCount = viewer.getAtomCount();
-    if (statementLength == 1) {
-      viewer.display(BitSetUtil.setAll(atomCount), null, tQuiet);
-      return;
-    }
-    BitSet bs = expression(1);
-    if (!isSyntaxCheck)
-      viewer.display(BitSetUtil.setAll(atomCount), bs, tQuiet);
   }
 
   private void select() throws ScriptException {

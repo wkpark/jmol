@@ -28,7 +28,6 @@ import org.jmol.symmetry.UnitCell;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomIterator;
-import org.jmol.modelset.ModelManager;
 import org.jmol.modelset.ModelSet;
 
 import org.jmol.api.*;
@@ -118,6 +117,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private DataManager dataManager;
   private FileManager fileManager;
   private ModelManager modelManager;
+  private ModelSet modelSet;
   public MouseManager mouseManager;
   private PickingManager pickingManager;
   private PropertyManager propertyManager;
@@ -345,7 +345,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //Eval.reset()
     //initializeModel
     transformManager.homePosition();
-    if (modelManager.useXtalDefaults())
+    if (modelSet.haveSymmetry())
       stateManager.setCrystallographicDefaults();//modelSet.someModelsHavePeriodicOrigin);
     refresh(1, "Viewer:homePosition()");
   }
@@ -1218,13 +1218,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void select(BitSet bs, boolean isQuiet) {
     //Eval
     selectionManager.select(bs, isQuiet);
-    modelManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE,
+    modelSet.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE,
         null);
   }
 
   void selectBonds(BitSet bs) {
-    modelManager
-        .setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE, bs);
+    modelSet.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE, bs);
   }
 
   BitSet getSelectedAtoms() {
@@ -1254,13 +1253,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void reportSelection(String msg) {
-    if (modelManager.getSelectionHaloEnabled())
+    if (modelSet.getSelectionHaloEnabled())
       setTainted(true);
     scriptStatus(msg);
   }
 
   public Point3f getAtomSetCenter(BitSet bs) {
-    return modelManager.getAtomSetCenter(bs);
+    return modelSet.getAtomSetCenter(bs);
   }
 
   public void selectAll() {
@@ -1304,7 +1303,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void setFormalCharges(int formalCharge) {
-    modelManager.setFormalCharges(selectionManager.bsSelection, formalCharge);
+    modelSet.setFormalCharges(selectionManager.bsSelection, formalCharge);
   }
 
   public void addSelectionListener(JmolSelectionListener listener) {
@@ -1535,7 +1534,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void loadData(String type, String coordinateData) {
-    modelManager.loadData(type, coordinateData);
+    modelSet.loadData(type, coordinateData);
   }
 
   public void openDOM(Object DOMNode) {
@@ -1596,7 +1595,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return errorMsg;
     }
     if (isMerge) {
-      modelManager.merge(modelAdapter, clientFile);
+      modelSet = modelManager.merge(modelAdapter, clientFile);
       if (eval != null)
         eval.clearDefinitionsAndLoadPredefined();
       selectAll();
@@ -1612,15 +1611,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // maybe there needs to be a call to clear()
     // or something like that here
     // for when CdkEditBus calls this directly
-    setStatusFileLoaded(2, fullPathName, fileName, modelManager
-        .getModelSetName(), clientFile, null);
+    setStatusFileLoaded(2, fullPathName, fileName, 
+        modelSet.getModelSetName(), clientFile, null);
     pushHoldRepaint();
-    modelManager
+    modelSet = modelManager
         .setClientFile(fullPathName, fileName, modelAdapter, clientFile);
     initializeModel();
     popHoldRepaint();
-    setStatusFileLoaded(3, fullPathName, fileName, modelManager
-        .getModelSetName(), clientFile, null);
+    setStatusFileLoaded(3, fullPathName, fileName, 
+        modelSet.getModelSetName(), clientFile, null);
   }
 
   public String getCurrentFileAsString() {
@@ -1671,11 +1670,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                     float envelopeRadius) {
     if (bsSelected == null)
       bsSelected = getSelectionSet();
-    return modelManager.calculateSurface(bsSelected, bsIgnore, envelopeRadius);
+    return modelSet.calculateSurface(bsSelected, bsIgnore, envelopeRadius);
   }
 
   public AtomIterator getWithinModelIterator(Atom atom, float distance) {
-    return modelManager.getWithinModelIterator(atom, distance);
+    return modelSet.getWithinModelIterator(atom, distance);
   }
 
   public AtomIndexIterator getWithinAtomSetIterator(int atomIndex,
@@ -1683,32 +1682,32 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                                     BitSet bsSelected,
                                                     boolean isGreaterOnly,
                                                     boolean modelZeroBased) {
-    return modelManager.getWithinAtomSetIterator(atomIndex, distance,
+    return modelSet.getWithinAtomSetIterator(atomIndex, distance,
         bsSelected, isGreaterOnly, modelZeroBased);
   }
 
   public void fillAtomData(AtomData atomData, int mode) {
     atomData.fileName = getFileName();
-    modelManager.fillAtomData(atomData, mode);
+    modelSet.fillAtomData(atomData, mode);
   }
 
   void addStateScript(String script) {
-    modelManager.addStateScript(script);
+    modelSet.addStateScript(script);
   }
 
   public boolean getEchoStateActive() {
-    return modelManager.getEchoStateActive();
+    return modelSet.getEchoStateActive();
   }
 
   void setEchoStateActive(boolean TF) {
-    modelManager.setEchoStateActive(TF);
+    modelSet.setEchoStateActive(TF);
   }
 
   void zap(boolean notify) {
     //Eval
     //setAppletContext
     clear();
-    modelManager.zap();
+    modelSet = modelManager.zap();
     initializeModel();
     Runtime runtime = Runtime.getRuntime();
     runtime.gc();
@@ -1740,7 +1739,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void clear() {
-    if (modelManager.getModelSet() == null)
+    if (modelSet == null)
       return;
     fileManager.clear();
     repaintManager.clear();
@@ -1748,7 +1747,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     pickingManager.clear();
     selectionManager.clear();
     clearAllMeasurements();
-    modelManager.clear();
+    modelSet = modelManager.clear();
     mouseManager.clear();
     statusManager.clear();
     StateManager.clear(global);
@@ -1776,7 +1775,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getModelSetName() {
-    return modelManager.getModelSetName();
+    return modelSet.getModelSetName();
   }
 
   public String getModelSetFileName() {
@@ -1784,27 +1783,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getUnitCellInfoText() {
-    return modelManager.getUnitCellInfoText();
+    return modelSet.getUnitCellInfoText();
   }
 
   public String getSpaceGroupInfoText(String spaceGroup) {
-    return modelManager.getSpaceGroupInfoText(spaceGroup);
-  }
-
-  public int getSpaceGroupIndexFromName(String spaceGroup) {
-    return modelManager.getSpaceGroupIndexFromName(spaceGroup);
+    return modelSet.getSpaceGroupInfoText(spaceGroup);
   }
 
   void getPolymerPointsAndVectors(BitSet bs, Vector vList) {
-    modelManager.getPolymerPointsAndVectors(bs, vList);
+    modelSet.getPolymerPointsAndVectors(bs, vList);
   }
 
   public String getModelSetProperty(String strProp) {
-    return modelManager.getModelSetProperty(strProp);
+    return modelSet.getModelSetProperty(strProp);
   }
 
   public Object getModelSetAuxiliaryInfo(String strKey) {
-    return modelManager.getModelSetAuxiliaryInfo(strKey);
+    return modelSet.getModelSetAuxiliaryInfo(strKey);
   }
 
   public String getModelSetPathName() {
@@ -1812,7 +1807,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getModelSetTypeName() {
-    return modelManager.getModelSetTypeName();
+    return modelSet.getModelSetTypeName();
   }
 
   public boolean haveFrame() {
@@ -1820,33 +1815,33 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   boolean haveModelSet() {
-    return modelManager.getModelSet() != null;
+    return modelSet != null;
   }
 
   public void calculateStructures() {
     //Eval
-    modelManager.calculateStructures(repaintManager.currentModelIndex);
+    modelSet.calculateStructures(repaintManager.currentModelIndex);
     addStateScript("calculate structure");
   }
 
   void clearBfactorRange() {
     //Eval
-    modelManager.clearBfactorRange();
+    modelSet.clearBfactorRange();
   }
 
   public String getHybridizationAndAxes(int atomIndex, Vector3f z, Vector3f x,
                                         String lcaoType,
                                         boolean hybridizationCompatible) {
-    return modelManager.getHybridizationAndAxes(atomIndex, z, x, lcaoType,
+    return modelSet.getHybridizationAndAxes(atomIndex, z, x, lcaoType,
         hybridizationCompatible);
   }
 
   public BitSet getModelAtomBitSet(int modelIndex) {
-    return modelManager.getModelAtomBitSet(modelIndex);
+    return modelSet.getModelAtomBitSet(modelIndex);
   }
 
   public BitSet getModelBitSet(BitSet atomList) {
-    return modelManager.getModelBitSet(atomList);
+    return modelSet.getModelBitSet(atomList);
   }
 
   Object getClientFile() {
@@ -1894,38 +1889,38 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   JmolAdapter getExportJmolAdapter() {
     /*  
      * 
-     return new FrameExportJmolAdapter(this, getModelSet());
+     return new FrameExportJmolAdapter(this, modelSet);
 
      */
     return null;
   }
 
   public ModelSet getModelSet() {
-    return modelManager.getModelSet();
+    return modelSet;
   }
 
   public Point3f getBoundBoxCenter() {
-    return modelManager.getBoundBoxCenter();
+    return modelSet.getBoundBoxCenter();
   }
 
   Point3f getAverageAtomPoint() {
-    return modelManager.getAverageAtomPoint();
+    return modelSet.getAverageAtomPoint();
   }
 
   float calcRotationRadius(Point3f center) {
-    return modelManager.calcRotationRadius(center);
+    return modelSet.calcRotationRadius(center);
   }
 
   float calcRotationRadius(BitSet bs) {
-    return modelManager.calcRotationRadius(bs);
+    return modelSet.calcRotationRadius(bs);
   }
 
   public Vector3f getBoundBoxCornerVector() {
-    return modelManager.getBoundBoxCornerVector();
+    return modelSet.getBoundBoxCornerVector();
   }
 
   Hashtable getBoundBoxInfo() {
-    return modelManager.getBoundBoxInfo();
+    return modelSet.getBoundBoxInfo();
   }
 
   public int getBoundBoxCenterX() {
@@ -1938,35 +1933,35 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int getModelCount() {
-    return modelManager.getModelCount();
+    return modelSet.getModelCount();
   }
 
   String getModelInfoAsString() {
-    return modelManager.getModelInfoAsString();
+    return modelSet.getModelInfoAsString();
   }
 
   String getSymmetryInfoAsString() {
-    return modelManager.getSymmetryInfoAsString();
+    return modelSet.getSymmetryInfoAsString();
   }
 
   public Properties getModelSetProperties() {
-    return modelManager.getModelSetProperties();
+    return modelSet.getModelSetProperties();
   }
 
   public Hashtable getModelSetAuxiliaryInfo() {
-    return modelManager.getModelSetAuxiliaryInfo();
+    return modelSet.getModelSetAuxiliaryInfo();
   }
 
   public int getModelNumber(int modelIndex) {
     if (modelIndex < 0)
       return modelIndex;
-    return modelManager.getModelNumber(modelIndex);
+    return modelSet.getModelNumber(modelIndex);
   }
 
   public int getModelFileNumber(int modelIndex) {
     if (modelIndex < 0)
       return 0;
-    return modelManager.getModelFileNumber(modelIndex);
+    return modelSet.getModelFileNumber(modelIndex);
   }
 
   public String getModelNumberDotted(int modelIndex) {
@@ -1976,72 +1971,72 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getModelName(int modelIndex) {
-    return modelManager.getModelName(modelIndex);
+    return modelSet == null ? null : modelSet.getModelName(modelIndex);
   }
 
   public Properties getModelProperties(int modelIndex) {
-    return modelManager.getModelProperties(modelIndex);
+    return modelSet.getModelProperties(modelIndex);
   }
 
   public String getModelProperty(int modelIndex, String propertyName) {
-    return modelManager.getModelProperty(modelIndex, propertyName);
+    return modelSet.getModelProperty(modelIndex, propertyName);
   }
 
   public String getModelFileInfo() {
-    return modelManager.getModelFileInfo(getVisibleFramesBitSet());
+    return modelSet.getModelFileInfo(getVisibleFramesBitSet());
   }
 
   public Hashtable getModelAuxiliaryInfo(int modelIndex) {
-    return modelManager.getModelAuxiliaryInfo(modelIndex);
+    return modelSet.getModelAuxiliaryInfo(modelIndex);
   }
 
   public Object getModelAuxiliaryInfo(int modelIndex, String keyName) {
-    return modelManager.getModelAuxiliaryInfo(modelIndex, keyName);
+    return modelSet.getModelAuxiliaryInfo(modelIndex, keyName);
   }
 
   int getModelNumberIndex(int modelNumber, boolean useModelNumber) {
-    return modelManager.getModelNumberIndex(modelNumber, useModelNumber);
+    return modelSet.getModelNumberIndex(modelNumber, useModelNumber);
   }
 
   boolean modelSetHasVibrationVectors() {
-    return modelManager.modelSetHasVibrationVectors();
+    return modelSet.modelSetHasVibrationVectors();
   }
 
   public boolean modelHasVibrationVectors(int modelIndex) {
     return modelSetHasVibrationVectors()
-        && modelManager.modelHasVibrationVectors(modelIndex);
+        && modelSet.modelHasVibrationVectors(modelIndex);
   }
 
   public int getChainCount() {
-    return modelManager.getChainCount();
+    return modelSet.getChainCount();
   }
 
   public int getChainCountInModel(int modelIndex) {
-    return modelManager.getChainCountInModel(modelIndex);
+    return modelSet.getChainCountInModel(modelIndex);
   }
 
   public int getGroupCount() {
-    return modelManager.getGroupCount();
+    return modelSet.getGroupCount();
   }
 
   public int getGroupCountInModel(int modelIndex) {
-    return modelManager.getGroupCountInModel(modelIndex);
+    return modelSet.getGroupCountInModel(modelIndex);
   }
 
   public int getPolymerCount() {
-    return modelManager.getBioPolymerCount();
+    return modelSet.getBioPolymerCount();
   }
 
   public int getPolymerCountInModel(int modelIndex) {
-    return modelManager.getBioPolymerCountInModel(modelIndex);
+    return modelSet.getBioPolymerCountInModel(modelIndex);
   }
 
   public int getAtomCount() {
-    return modelManager.getAtomCount();
+    return modelSet.getAtomCount();
   }
 
   public int getAtomCountInModel(int modelIndex) {
-    return modelManager.getAtomCountInModel(modelIndex);
+    return modelSet.getAtomCountInModel(modelIndex);
   }
 
   /**
@@ -2049,7 +2044,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @return used size of the bonds array;
    */
   public int getBondCount() {
-    return modelManager.getBondCount();
+    return modelSet.getBondCount();
   }
 
   /**
@@ -2059,47 +2054,49 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @return the actual number of connections
    */
   public int getBondCountInModel(int modelIndex) {
-    return modelManager.getBondCountInModel(modelIndex);
+    return modelSet.getBondCountInModel(modelIndex);
   }
 
   BitSet getBondsForSelectedAtoms(BitSet bsAtoms) {
     //eval
-    return modelManager.getBondsForSelectedAtoms(bsAtoms);
+    return modelSet.getBondsForSelectedAtoms(bsAtoms);
   }
 
   boolean frankClicked(int x, int y) {
-    return modelManager.frankClicked(x, y);
+    return frankOn && modelSet.frankClicked(x, y);
   }
 
   int findNearestAtomIndex(int x, int y) {
     //System.out.println("hover x y o :" + x + " " + y 
     //  + "  " + (x + y * getScreenWidth()));
-    return modelManager.findNearestAtomIndex(x, y);
+    if (modelSet == null)
+      return -1;
+    return modelSet.findNearestAtomIndex(x, y);
   }
 
   BitSet findAtomsInRectangle(Rectangle rectRubberBand) {
-    return modelManager.findAtomsInRectangle(rectRubberBand);
+    return modelSet.findAtomsInRectangle(rectRubberBand);
   }
 
   void toCartesian(Point3f pt) {
     int modelIndex = repaintManager.currentModelIndex;
     if (modelIndex < 0)
       return;
-    modelManager.toCartesian(modelIndex, pt);
+    modelSet.toCartesian(modelIndex, pt);
   }
 
   void toUnitCell(Point3f pt, Point3f offset) {
     int modelIndex = repaintManager.currentModelIndex;
     if (modelIndex < 0)
       return;
-    modelManager.toUnitCell(modelIndex, pt, offset);
+    modelSet.toUnitCell(modelIndex, pt, offset);
   }
 
   void toFractional(Point3f pt) {
     int modelIndex = repaintManager.currentModelIndex;
     if (modelIndex < 0)
       return;
-    modelManager.toFractional(modelIndex, pt);
+    modelSet.toFractional(modelIndex, pt);
   }
 
   public void setCenterSelected() {
@@ -2109,7 +2106,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void rebond() {
     //Eval, PreferencesDialog
-    modelManager.rebond();
+    modelSet.rebond();
     refresh(0, "Viewer:rebond()");
   }
 
@@ -2133,119 +2130,119 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   BitSet getAtomBits(int tokType) {
-    return modelManager.getAtomBits(tokType);
+    return modelSet.getAtomBits(tokType);
   }
 
   BitSet getAtomBits(int tokType, String specInfo) {
-    return modelManager.getAtomBits(tokType, specInfo);
+    return modelSet.getAtomBits(tokType, specInfo);
   }
 
   public BitSet getAtomBits(int tokType, int specInfo) {
-    return modelManager.getAtomBits(tokType, specInfo);
+    return modelSet.getAtomBits(tokType, specInfo);
   }
 
   BitSet getAtomBits(int tokType, int[] specInfo) {
-    return modelManager.getAtomBits(tokType, specInfo);
+    return modelSet.getAtomBits(tokType, specInfo);
   }
 
   BitSet getAtomsWithin(int tokType, BitSet bs) {
-    return modelManager.getAtomsWithin(tokType, bs);
+    return modelSet.getAtomsWithin(tokType, bs);
   }
 
   BitSet getAtomsWithin(float distance, Point3f coord) {
-    return modelManager.getAtomsWithin(distance, coord);
+    return modelSet.getAtomsWithin(distance, coord);
   }
 
   BitSet getAtomsWithin(float distance, Point4f plane) {
-    return modelManager.getAtomsWithin(distance, plane);
+    return modelSet.getAtomsWithin(distance, plane);
   }
 
   BitSet getAtomsWithin(int tokType, String specInfo, BitSet bs) {
-    return modelManager.getAtomsWithin(tokType, specInfo, bs);
+    return modelSet.getAtomsWithin(tokType, specInfo, bs);
   }
 
   BitSet getAtomsWithin(float distance, BitSet bs, boolean isWithinModelSet) {
-    return modelManager.getAtomsWithin(distance, bs, isWithinModelSet);
+    return modelSet.getAtomsWithin(distance, bs, isWithinModelSet);
   }
 
   BitSet getAtomsConnected(float min, float max, int intType, BitSet bs) {
-    return modelManager.getAtomsConnected(min, max, intType, bs);
+    return modelSet.getAtomsConnected(min, max, intType, bs);
   }
 
   int getAtomIndexFromAtomNumber(int atomNumber) {
-    return modelManager.getAtomIndexFromAtomNumber(atomNumber);
+    return modelSet.getAtomIndexFromAtomNumber(atomNumber);
   }
 
   public BitSet getElementsPresentBitSet(int modelIndex) {
-    return modelManager.getElementsPresentBitSet(modelIndex);
+    return modelSet.getElementsPresentBitSet(modelIndex);
   }
 
   public Hashtable getHeteroList(int modelIndex) {
-    return modelManager.getHeteroList(modelIndex);
+    return modelSet.getHeteroList(modelIndex);
   }
 
   BitSet getVisibleSet() {
-    return modelManager.getVisibleSet();
+    return modelSet.getVisibleSet();
   }
 
   BitSet getClickableSet() {
-    return modelManager.getClickableSet();
+    return modelSet.getClickableSet();
   }
 
   void calcSelectedGroupsCount() {
-    modelManager.calcSelectedGroupsCount(selectionManager.bsSelection);
+    modelSet.calcSelectedGroupsCount(selectionManager.bsSelection);
   }
 
   void calcSelectedMonomersCount() {
-    modelManager.calcSelectedMonomersCount(selectionManager.bsSelection);
+    modelSet.calcSelectedMonomersCount(selectionManager.bsSelection);
   }
 
   void calcSelectedMoleculesCount() {
-    modelManager.calcSelectedMoleculesCount(selectionManager.bsSelection);
+    modelSet.calcSelectedMoleculesCount(selectionManager.bsSelection);
   }
 
   String getFileHeader() {
-    return modelManager.getFileHeader();
+    return modelSet.getFileHeader();
   }
 
   String getPDBHeader() {
-    return modelManager.getPDBHeader();
+    return modelSet.getPDBHeader();
   }
 
   public Hashtable getModelInfo() {
-    return modelManager.getModelInfo();
+    return modelSet.getModelInfo();
   }
 
   public Hashtable getAuxiliaryInfo() {
-    return modelManager.getAuxiliaryInfo();
+    return modelSet.getAuxiliaryInfo();
   }
 
   public Hashtable getShapeInfo() {
-    return modelManager.getShapeInfo();
+    return modelSet.getShapeInfo();
   }
 
   int getShapeIdFromObjectName(String objectName) {
-    return modelManager.getShapeIdFromObjectName(objectName);
+    return modelSet.getShapeIdFromObjectName(objectName);
   }
 
   Vector getAllAtomInfo(Object atomExpression) {
-    return modelManager.getAllAtomInfo(getAtomBitSet(atomExpression));
+    return modelSet.getAllAtomInfo(getAtomBitSet(atomExpression));
   }
 
   Vector getAllBondInfo(Object atomExpression) {
-    return modelManager.getAllBondInfo(getAtomBitSet(atomExpression));
+    return modelSet.getAllBondInfo(getAtomBitSet(atomExpression));
   }
 
   Vector getMoleculeInfo(Object atomExpression) {
-    return modelManager.getMoleculeInfo(getAtomBitSet(atomExpression));
+    return modelSet.getMoleculeInfo(getAtomBitSet(atomExpression));
   }
 
   public Hashtable getAllChainInfo(Object atomExpression) {
-    return modelManager.getAllChainInfo(getAtomBitSet(atomExpression));
+    return modelSet.getAllChainInfo(getAtomBitSet(atomExpression));
   }
 
   public Hashtable getAllPolymerInfo(Object atomExpression) {
-    return modelManager.getAllPolymerInfo(getAtomBitSet(atomExpression));
+    return modelSet.getAllPolymerInfo(getAtomBitSet(atomExpression));
   }
 
   public String getStateInfo() {
@@ -2270,7 +2267,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     dataManager.getDataState(s,sfunc);
     
     //  definitions, connections, atoms, bonds, labels, echos, shapes
-    s.append(modelManager.getState(sfunc));
+    s.append(modelSet.getState(sfunc));
     //  color scheme
     s.append(ColorManager.getState(sfunc));
     //  frame information
@@ -2285,7 +2282,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getStructureState() {
-    return modelManager.getStructureState();
+    return modelSet.getState(null);
   }
 
   void setCurrentColorRange(String label) {
@@ -2325,19 +2322,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getAltLocListInModel(int modelIndex) {
-    return modelManager.getAltLocListInModel(modelIndex);
+    return modelSet.getAltLocListInModel(modelIndex);
   }
 
   public BitSet setConformation() {
     // user has selected some atoms, now this sets that as a conformation
     // with the effect of rewriting the cartoons to match
 
-    return modelManager.setConformation(-1, getSelectionSet());
+    return modelSet.setConformation(-1, getSelectionSet());
   }
 
   // AKA "configuration"
   public BitSet setConformation(int conformationIndex) {
-    return modelManager.setConformation(repaintManager.currentModelIndex,
+    return modelSet.setConformation(repaintManager.currentModelIndex,
         conformationIndex);
   }
 
@@ -2350,35 +2347,35 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   int autoHbond(BitSet bsFrom, BitSet bsTo, BitSet bsBonds) {
     //Eval
-    return modelManager.autoHbond(bsFrom, bsTo, bsBonds);
+    return modelSet.autoHbond(bsFrom, bsTo, bsBonds);
   }
 
   boolean hbondsAreVisible() {
-    return modelManager.hbondsAreVisible(repaintManager.currentModelIndex);
+    return modelSet.hbondsAreVisible(repaintManager.currentModelIndex);
   }
 
   public boolean havePartialCharges() {
-    return modelManager.havePartialCharges();
+    return modelSet.getPartialCharges() != null;
   }
 
   public UnitCell getCurrentUnitCell() {
-    return modelManager.getUnitCell(getDisplayModelIndex());
+    return modelSet.getUnitCell(getDisplayModelIndex());
   }
 
   Point3f getCurrentUnitCellOffset() {
-    return modelManager.getUnitCellOffset(getDisplayModelIndex());
+    return modelSet.getUnitCellOffset(getDisplayModelIndex());
   }
 
   void setCurrentUnitCellOffset(int offset) {
     int modelIndex = repaintManager.currentModelIndex;
-    if (modelManager.setUnitCellOffset(modelIndex, offset))
+    if (modelSet.setUnitCellOffset(modelIndex, offset))
       global.setParameterValue("_frame " + getModelNumber(modelIndex)
           + "; unitcell = ", offset);
   }
 
   void setCurrentUnitCellOffset(Point3f pt) {
     int modelIndex = repaintManager.currentModelIndex;
-    if (modelManager.setUnitCellOffset(modelIndex, pt))
+    if (modelSet.setUnitCellOffset(modelIndex, pt))
       global.setParameterValue("_frame " + getModelNumber(modelIndex)
           + "; unitcell = ", Escape.escape(pt));
   }
@@ -2593,12 +2590,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void setTrajectory(int iTraj) {
-    modelManager.setTrajectory(iTraj);
+    modelSet.setTrajectory(iTraj);
     repaintManager.setTrajectory(iTraj);
   }
 
   int getTrajectoryCount() {
-    return modelManager.getTrajectoryCount();
+    return modelSet.getTrajectoryCount();
   }
 
   void setAnimationRange(int modelIndex1, int modelIndex2, boolean isTrajectory) {
@@ -2635,10 +2632,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //Eval
     repaintManager.rewindAnimation();
     refresh(0, "Viewer:rewindAnimation()");
-  }
-
-  boolean isDataFrame(int modelIndex) {
-    return (modelIndex >= 0 && getModelAuxiliaryInfo(modelIndex, "jmolData") != null);
   }
 
   void setCurrentModelIndex(int modelIndex) {
@@ -2844,7 +2837,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   String generateOutput(String type) {
     setModelVisibility();
-    return repaintManager.generateOutput(type, g3d, modelManager.getModelSet()); //, rectClip
+    return repaintManager.generateOutput(type, g3d, modelSet); //, rectClip
   }
 
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
@@ -2877,9 +2870,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean twoPass = !getTestFlag1();
     g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
         matrixRotate, antialias, twoPass);
-    repaintManager.render(g3d, modelManager.getModelSet()); //, rectClip
+    repaintManager.render(g3d, modelSet); //, rectClip
     if (twoPass && g3d.setPass2())
-      repaintManager.render(g3d, modelManager.getModelSet()); //, rectClip
+      repaintManager.render(g3d, modelSet); //, rectClip
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
     // Sun is throwing a NullPointerExceptions inside graphics routines
     // while the window is resized.
@@ -2891,7 +2884,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean twoPass = !getTestFlag1();
     g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
         transformManager.getStereoRotationMatrix(true), antialias, twoPass);
-    ModelSet modelSet = modelManager.getModelSet();
     repaintManager.render(g3d, modelSet);//, rectClip
     if (twoPass && g3d.setPass2())
       repaintManager.render(g3d, modelSet);//, rectClip      
@@ -3326,7 +3318,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //eval set toggleLabel (atomset)
     loadShape(JmolConstants.SHAPE_LABELS);
     setShapeSize(JmolConstants.SHAPE_LABELS, 0, null);
-    modelManager.setShapeProperty(JmolConstants.SHAPE_LABELS, "toggleLabel",
+    modelSet.setShapeProperty(JmolConstants.SHAPE_LABELS, "toggleLabel",
         null, bs);
     refresh(0, "Viewer:");
   }
@@ -3336,7 +3328,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void loadShape(int shapeID) {
-    modelManager.loadShape(shapeID);
+    modelSet.loadShape(shapeID);
   }
 
   void setShapeSize(int shapeID, int size) {
@@ -3349,12 +3341,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setShapeSize(int shapeID, int size, BitSet bsAtoms) {
     //above,
     //Eval.configuration
-    modelManager.setShapeSize(shapeID, size, bsAtoms);
+    modelSet.setShapeSize(shapeID, size, bsAtoms);
     refresh(0, "Viewer:setShapeSize(" + shapeID + "," + size + ")");
-  }
-
-  int getShapeSize(int shapeID) {
-    return modelManager.getShapeSize(shapeID);
   }
 
   public void setShapeProperty(int shapeID, String propertyName, Object value) {
@@ -3368,7 +3356,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      */
     if (shapeID < 0)
       return; //not applicable
-    modelManager.setShapeProperty(shapeID, propertyName, value,
+    modelSet.setShapeProperty(shapeID, propertyName, value,
         selectionManager.bsSelection);
     refresh(0, "Viewer:setShapeProperty()");
   }
@@ -3378,7 +3366,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //Eval color
     if (shapeID < 0)
       return; //not applicable
-    modelManager.setShapeProperty(shapeID, propertyName, value, bs);
+    modelSet.setShapeProperty(shapeID, propertyName, value, bs);
     refresh(0, "Viewer:setShapeProperty()");
   }
 
@@ -3389,12 +3377,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   Object getShapeProperty(int shapeType, String propertyName) {
-    return modelManager.getShapeProperty(shapeType, propertyName,
+    return modelSet.getShapeProperty(shapeType, propertyName,
         Integer.MIN_VALUE);
   }
 
   Object getShapeProperty(int shapeType, String propertyName, int index) {
-    return modelManager.getShapeProperty(shapeType, propertyName, index);
+    return modelSet.getShapeProperty(shapeType, propertyName, index);
   }
 
   int getShapePropertyAsInt(int shapeID, String propertyName) {
@@ -3506,11 +3494,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getAtomInfo(int atomIndex) {
-    return modelManager.getAtomInfo(atomIndex);
+    return modelSet.getAtomInfo(atomIndex);
   }
 
   public String getAtomInfoXYZ(int atomIndex) {
-    return modelManager.getAtomInfoXYZ(atomIndex, getTestFlag1());
+    return modelSet.getAtomInfoXYZ(atomIndex, getTestFlag1());
   }
 
   // //////////////status manager dispatch//////////////
@@ -3621,10 +3609,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setParameterValue("_modelNumber", s);
     global.setParameterValue("_modelName", (modelIndex < 0 ? ""
         : getModelName(modelIndex)));
-    global.setParameterValue("_modelTitle", (modelIndex < 0 ? "" : modelManager
-        .getModelTitle(modelIndex)));
-    global.setParameterValue("_modelFile", (modelIndex < 0 ? "" : modelManager
-        .getModelFile(modelIndex)));
+    global.setParameterValue("_modelTitle", (modelIndex < 0 ? "" 
+        : getModelTitle(modelIndex)));
+    global.setParameterValue("_modelFile", (modelIndex < 0 ? "" : getModelFile(modelIndex)));
 
     s = statusManager.getCallbackScript("animframecallback");
     if (s != null)
@@ -3635,6 +3622,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           (repaintManager.currentDirection < 0 ? -lastNo : lastNo));
   }
 
+  private String getModelTitle(int modelIndex) {
+    //necessary for status manager frame change?
+    return modelSet == null ? null : modelSet.getModelTitle(modelIndex);
+  }
+
+  private String getModelFile(int modelIndex) {
+    //necessary for status manager frame change?
+    return modelSet == null ? null : modelSet.getModelFile(modelIndex);
+  }
+  
   private void setStatusFileLoaded(int ptLoad, String fullPathName,
                                    String fileName, String modelName,
                                    Object clientFile, String strError) {
@@ -4794,16 +4791,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setSelectionHalos(boolean TF) {
     // display panel can hit this without a frame, apparently
-    if (TF == getSelectionHaloEnabled() || getModelSet() == null)
+    if (modelSet == null || TF == getSelectionHaloEnabled())
       return;
     global.setParameterValue("selectionHalos", TF);
     loadShape(JmolConstants.SHAPE_HALOS);
     //a frame property, so it is automatically reset
-    modelManager.setSelectionHaloEnabled(TF);
+    modelSet.setSelectionHaloEnabled(TF);
   }
 
   public boolean getSelectionHaloEnabled() {
-    return modelManager.getSelectionHaloEnabled();
+    return modelSet.getSelectionHaloEnabled();
   }
 
   private void setBondSelectionModeOr(boolean bondSelectionModeOr) {
@@ -4951,7 +4948,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                       BitSet bsBonds, boolean isBonds) {
     //eval
     clearAllMeasurements(); // necessary for serialization
-    return modelManager.makeConnections(minDistance, maxDistance, order,
+    return modelSet.makeConnections(minDistance, maxDistance, order,
         connectOperation, bsA, bsB, bsBonds, isBonds);
   }
 
@@ -5083,7 +5080,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return getObjectMad(StateManager.OBJ_AXIS1) != 0;
   }
 
+  boolean frankOn = true;
   public void setFrankOn(boolean TF) {
+    frankOn = TF;
     setObjectMad(JmolConstants.SHAPE_FRANK, "frank", (short) (TF ? 1 : 0));
   }
 
@@ -5166,7 +5165,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //stateManager
     //setBooleanProperty
     global.zeroBasedXyzRasmol = zeroBasedXyzRasmol;
-    modelManager.setZeroBased();
+    modelSet.setZeroBased();
   }
 
   public boolean getZeroBasedXyzRasmol() {
@@ -5259,79 +5258,71 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // //////////////////////////////////////////////////////////////
 
   String getElementSymbol(int i) {
-    return modelManager.getElementSymbol(i);
+    return modelSet.getElementSymbol(i);
   }
 
   int getElementNumber(int i) {
-    return modelManager.getElementNumber(i);
+    return modelSet.getElementNumber(i);
   }
 
   public String getAtomName(int i) {
-    return modelManager.getAtomName(i);
+    return modelSet.getAtomName(i);
   }
 
   public int getAtomNumber(int i) {
-    return modelManager.getAtomNumber(i);
+    return modelSet.getAtomNumber(i);
   }
 
   float getAtomX(int i) {
-    return modelManager.getAtomX(i);
+    return modelSet.getAtomX(i);
   }
 
   float getAtomY(int i) {
-    return modelManager.getAtomY(i);
+    return modelSet.getAtomY(i);
   }
 
   float getAtomZ(int i) {
-    return modelManager.getAtomZ(i);
+    return modelSet.getAtomZ(i);
   }
 
   public Point3f getAtomPoint3f(int i) {
-    return modelManager.getAtomPoint3f(i);
+    return modelSet.getAtomAt(i);
   }
 
   public float getAtomRadius(int i) {
-    return modelManager.getAtomRadius(i);
+    return modelSet.getAtomRadius(i);
   }
 
   public float getAtomVdwRadius(int i) {
-    return modelManager.getAtomVdwRadius(i);
+    return modelSet.getAtomVdwRadius(i);
   }
 
   public int getAtomArgb(int i) {
-    return g3d.getColixArgb(modelManager.getAtomColix(i));
+    return g3d.getColixArgb(modelSet.getAtomColix(i));
   }
 
   String getAtomChain(int i) {
-    return modelManager.getAtomChain(i);
+    return modelSet.getAtomChain(i);
   }
 
   public int getAtomModelIndex(int i) {
-    return modelManager.getAtomModelIndex(i);
+    return modelSet.getAtomModelIndex(i);
   }
 
   String getAtomSequenceCode(int i) {
-    return modelManager.getAtomSequenceCode(i);
-  }
-
-  public Point3f getBondPoint3f1(int i) {
-    return modelManager.getBondPoint3f1(i);
-  }
-
-  public Point3f getBondPoint3f2(int i) {
-    return modelManager.getBondPoint3f2(i);
+    return modelSet.getAtomSequenceCode(i);
   }
 
   public float getBondRadius(int i) {
-    return modelManager.getBondRadius(i);
+    return modelSet.getBondRadius(i);
   }
 
   public short getBondOrder(int i) {
-    return modelManager.getBondOrder(i);
+    return modelSet.getBondOrder(i);
   }
   
   void assignAromaticBonds() {
-    modelManager.assignAromaticBonds();
+    modelSet.assignAromaticBonds();
   }
   
   public boolean getSmartAromatic() {
@@ -5343,23 +5334,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void resetAromatic() {
-    modelManager.resetAromatic();
+    modelSet.resetAromatic();
   }
   
   public int getBondArgb1(int i) {
-    return g3d.getColixArgb(modelManager.getBondColix1(i));
+    return g3d.getColixArgb(modelSet.getBondColix1(i));
   }
 
   public int getBondModelIndex(int i) {
-    return modelManager.getBondModelIndex(i);
+    return modelSet.getBondModelIndex(i);
   }
 
   public int getBondArgb2(int i) {
-    return g3d.getColixArgb(modelManager.getBondColix2(i));
+    return g3d.getColixArgb(modelSet.getBondColix2(i));
   }
 
   public Point3f[] getPolymerLeadMidPoints(int modelIndex, int polymerIndex) {
-    return modelManager.getPolymerLeadMidPoints(modelIndex, polymerIndex);
+    return modelSet.getPolymerLeadMidPoints(modelIndex, polymerIndex);
   }
 
   // //////////////////////////////////////////////////////////////
@@ -5437,7 +5428,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   String getModelExtract(Object atomExpression) {
     return fileManager.getFullPathName() + "\nJmol version " + getJmolVersion()
         + "\nEXTRACT: " + atomExpression + "\n"
-        + modelManager.getModelExtract(getAtomBitSet(atomExpression));
+        + modelSet.getModelExtract(getAtomBitSet(atomExpression));
   }
 
   public String getHexColorFromIndex(short colix) {
@@ -5448,7 +5439,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void setModelVisibility() {
     //Eval -- ok - handled specially
-    modelManager.setModelVisibility();
+    if (modelSet == null) //necessary for file chooser
+      return;    
+    modelSet.setModelVisibility();
   }
 
   boolean isTainted = true;
@@ -5459,16 +5452,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   boolean checkObjectClicked(int x, int y, int modifiers) {
-    return modelManager.checkObjectClicked(x, y, modifiers);
+    return modelSet.checkObjectClicked(x, y, modifiers);
   }
 
   boolean checkObjectHovered(int x, int y) {
-    return modelManager.checkObjectHovered(x, y);
+    if (modelSet == null)
+      return false;
+    return modelSet.checkObjectHovered(x, y);
   }
 
   void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,
                           int modifiers) {
-    modelManager.checkObjectDragged(prevX, prevY, deltaX, deltaY, modifiers);
+    modelSet.checkObjectDragged(prevX, prevY, deltaX, deltaY, modifiers);
   }
 
   void rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis,
@@ -5502,8 +5497,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void startSpinningAxis(int atomIndex1, int atomIndex2,
                                 boolean isClockwise) {
     // PickingManager.setAtomPicked  "set picking SPIN"
-    Point3f pt1 = modelManager.getAtomPoint3f(atomIndex1);
-    Point3f pt2 = modelManager.getAtomPoint3f(atomIndex2);
+    Point3f pt1 = modelSet.getAtomAt(atomIndex1);
+    Point3f pt2 = modelSet.getAtomAt(atomIndex2);
     startSpinningAxis(pt1, pt2, isClockwise);
   }
 
@@ -5519,15 +5514,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Vector3f getModelDipole() {
-    return modelManager.getModelDipole(getDisplayModelIndex());
+    return modelSet.getModelDipole(getDisplayModelIndex());
   }
 
   public Vector3f calculateMolecularDipole() {
-    return modelManager.calculateMolecularDipole(getDisplayModelIndex());
+    return modelSet.calculateMolecularDipole(getDisplayModelIndex());
   }
 
   public void getBondDipoles() {
-    modelManager.getBondDipoles();
+    modelSet.getBondDipoles();
     return;
   }
 
@@ -5539,7 +5534,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void getAtomIdentityInfo(int atomIndex, Hashtable info) {
-    modelManager.getAtomIdentityInfo(atomIndex, info);
+    modelSet.getAtomIdentityInfo(atomIndex, info);
   }
 
   void setDefaultLattice(Point3f ptLattice) {
@@ -5552,11 +5547,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   BitSet getTaintedAtoms(byte type) {
-    return modelManager.getTaintedAtoms(type);
+    return modelSet.getTaintedAtoms(type);
   }
 
   void setTaintedAtoms(BitSet bs, byte type) {
-    modelManager.setTaintedAtoms(bs, type);
+    modelSet.setTaintedAtoms(bs, type);
   }
 
   public String getData(String atomExpression, String type) {
@@ -5579,29 +5574,45 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   String getPdbData(String type) {
-    return modelManager.getPdbData(type, selectionManager.bsSelection);
+    return modelSet.getPdbData(type, selectionManager.bsSelection);
+  }
+
+  boolean isJmolDataFrame(int modelIndex) {
+    return modelSet.isJmolDataFrame(modelIndex);
+  }
+  
+  int getPtJmolDataFrame(String type) {
+    return modelSet.getPtJmolDataFrame(type);
+  }
+
+  void setPtJmolDataFrame(String type, int modelIndex) {
+    modelSet.setPtJmolDataFrame(type, modelIndex);  
+  }
+  
+  String getJmolDataFrameType(int modelIndex) {
+    return modelSet.getJmolDataFrameType(modelIndex);
   }
 
   public void setAtomCoord(int atomIndex, float x, float y, float z) {
     //Frame equivalent used in DATA "coord set"
-    modelManager.setAtomCoord(atomIndex, x, y, z);
+    modelSet.setAtomCoord(atomIndex, x, y, z);
   }
 
   void setAtomProperty(BitSet bs, int tok, int iValue, float fValue) {
-    modelManager.setAtomProperty(bs, tok, iValue, fValue);
+    modelSet.setAtomProperty(bs, tok, iValue, fValue);
   }
  
   void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
-    modelManager.setAtomCoord(bs, tokType, xyzValues);
+    modelSet.setAtomCoord(bs, tokType, xyzValues);
   }
 
   public void setAtomCoordRelative(int atomIndex, float x, float y, float z) {
-    modelManager.setAtomCoordRelative(atomIndex, x, y, z);
+    modelSet.setAtomCoordRelative(atomIndex, x, y, z);
   }
 
   void setAtomCoordRelative(Point3f offset) {
     //Eval
-    modelManager.setAtomCoordRelative(offset, selectionManager.bsSelection);
+    modelSet.setAtomCoordRelative(offset, selectionManager.bsSelection);
   }
 
   void setRotateSelected(boolean TF) {
@@ -5630,17 +5641,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void invertSelected(Point3f pt, BitSet bs) {
     //Eval
-    modelManager.invertSelected(pt, null, bs);
+    modelSet.invertSelected(pt, null, bs);
   }
 
   void invertSelected(Point3f pt, Point4f plane) {
     //Eval
-    modelManager.invertSelected(pt, plane, selectionManager.bsSelection);
+    modelSet.invertSelected(pt, plane, selectionManager.bsSelection);
   }
 
   void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate,
                       boolean fullMolecule, boolean isInternal) {
-    modelManager.rotateSelected(mNew, matrixRotate,
+    modelSet.rotateSelected(mNew, matrixRotate,
         selectionManager.bsSelection, fullMolecule, isInternal);
   }
 
@@ -5840,11 +5851,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public float[] getPartialCharges() {
-    return modelManager.getPartialCharges();
+    return modelSet.getPartialCharges();
   }
 
   void setProteinType(byte iType, BitSet bs) {
-    modelManager.setProteinType(bs == null ? selectionManager.bsSelection : bs,
+    modelSet.setProteinType(bs == null ? selectionManager.bsSelection : bs,
         iType);
   }
 
@@ -5882,4 +5893,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   Object getListVariable(String name, Object value) {
     return global.getListVariable(name, value);
   }
+  
+  
+  public Point3f getBondPoint3f1(int i) {
+    //old Povray only
+    return (Point3f) modelSet.getBondAtom1(i);
+  }
+
+  public Point3f getBondPoint3f2(int i) {
+    //old Povray only
+    return (Point3f) modelSet.getBondAtom2(i);
+  }
+
+
 }

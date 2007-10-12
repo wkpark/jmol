@@ -66,7 +66,7 @@ public final class Model {
    *  
    */
   
-  Mmset mmset;
+  ModelSet modelSet;
   int modelIndex;   // our 0-based reference
   int modelNumber;  // from adapter -- possibly PDB MODEL record; possibly modelFileNumber
   int fileIndex;   // 0-based file reference
@@ -82,22 +82,37 @@ public final class Model {
   int nAltLocs;
   int nInsertions;
   boolean isPDB = false;
-  String jmolData; // from a PDB remark "Jmol PDB-encoded data" 
+  
+  String jmolData; // from a PDB remark "Jmol PDB-encoded data"
+  String jmolDataType;
+
+  boolean isJmolDataFrame() {
+    return (jmolData != null);
+  }
+
+  String getJmolDataFrameType() {
+    return jmolDataType;  
+  }
+  
   private int chainCount = 0;
   private Chain[] chains = new Chain[8];
   private int bioPolymerCount = 0;
   private Polymer[] bioPolymers = new Polymer[8];
 
 
-  Model(Mmset mmset, int modelIndex, int modelNumber,
+  Model(ModelSet modelSet, int modelIndex, int modelNumber,
       String modelTag, String modelTitle, String modelFile, String jmolData) {
-    this.mmset = mmset;
+    this.modelSet = modelSet;
     this.modelIndex = modelIndex;
     this.modelNumber = modelNumber;
     this.modelTag = modelTag;
     this.modelTitle = modelTitle;
     this.modelFile = modelFile;
     this.jmolData = jmolData;
+    jmolDataType = (jmolData == null ? "model"
+        : jmolData.indexOf("Rama") >= 0 ? "ramachandran"
+        : jmolData.indexOf("Quat") >= 0 ? "quaternion" 
+        : "Data");
   }
 
   void setNAltLocs(int nAltLocs) {
@@ -109,7 +124,6 @@ public final class Model {
   }
   
   void freeze() {
-    //Logger.debug("Mmset.freeze() chainCount=" + chainCount);
     chains = (Chain[])ArrayUtil.setLength(chains, chainCount);
     for (int i = 0; i < chainCount; ++i)
       chains[i].freeze();
@@ -193,7 +207,7 @@ public final class Model {
       return chain;
     if (chainCount == chains.length)
       chains = (Chain[])ArrayUtil.doubleLength(chains);
-    return chains[chainCount++] = new Chain(mmset.modelSet, this, chainID);
+    return chains[chainCount++] = new Chain(modelSet, this, chainID);
   }
 
   public void addBioPolymer(Polymer polymer) {
@@ -214,11 +228,11 @@ public final class Model {
   }
   
   public boolean isAtomHidden(int index) {
-    return mmset.modelSet.isAtomHidden(index);
+    return modelSet.isAtomHidden(index);
   }
   
   public void addHydrogenBond(Atom atom1, Atom atom2, short order, BitSet bsA, BitSet bsB) {
-    mmset.modelSet.addHydrogenBond(atom1, atom2, order, bsA, bsB);
+    modelSet.addHydrogenBond(atom1, atom2, order, bsA, bsB);
   }
 
   public int getModelIndex() {

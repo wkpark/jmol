@@ -108,7 +108,8 @@ public abstract class BioShapeCollection extends Shape {
       if (bioShape.monomerCount > 0)
         bioShape.setShapeState(temp, temp2);
     }
-    return "\n" + getShapeCommands(temp, temp2, modelSet.getAtomCount());
+    return "\n" + getShapeCommands(temp, temp2, modelSet.getAtomCount()
+        , shapeID == JmolConstants.SHAPE_BACKBONE ? "Backbone" : "select");
   }
 
   void initialize() {

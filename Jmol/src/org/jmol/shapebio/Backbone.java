@@ -31,6 +31,8 @@ import org.jmol.modelset.Atom;
 
 public class Backbone extends BioShapeCollection {
 
+  BitSet bsSelected;
+  
   public void initShape() {
     super.initShape();
     madOn = 1;
@@ -39,10 +41,21 @@ public class Backbone extends BioShapeCollection {
     madDnaRna = 2000;
     isActive = true;
   }
-
+  
+  public void setProperty(String propertyName, Object value, BitSet bsSelected) {
+    if ("bitset" == propertyName) {
+      this.bsSelected = (BitSet) value;
+      return;
+    }
+    super.setProperty(propertyName, value, bsSelected);
+  }
+  
   public void setSize(int size, BitSet bsSelected) {
     short mad = (short) size;
     initialize();
+    boolean useThisBsSelected = (this.bsSelected != null);
+    if (useThisBsSelected)
+      bsSelected = this.bsSelected;
     for (int iShape = bioShapes.length; --iShape >= 0;) {
       BioShape bioShape = bioShapes[iShape];
       if (bioShape.monomerCount ==0)
@@ -55,12 +68,15 @@ public class Backbone extends BioShapeCollection {
       boolean isVisible = (mad != 0);
       if (bioShape.bsSizeSet == null)
         bioShape.bsSizeSet = new BitSet();
+      bioShape.isActive = true;
       for (int i = bioShape.monomerCount - 1; --i >= 0;) {
         int index1 = atomIndices[i];
         int index2 = atomIndices[i + 1];
         boolean isAtom1 = bsSelected.get(index1);
         boolean isAtom2 = bsSelected.get(index2);
-        if (isAtom1 && isAtom2 || bondSelectionModeOr && (isAtom1 || isAtom2)) {
+        if (isAtom1 && isAtom2 
+            || useThisBsSelected && isAtom1 
+            || bondSelectionModeOr && (isAtom1 || isAtom2)) {
           bioShape.monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
           Atom atomA = modelSet.getAtomAt(index1);
           Atom atomB = modelSet.getAtomAt(index2);
@@ -71,9 +87,12 @@ public class Backbone extends BioShapeCollection {
           }
           bioShape.mads[i] = mad;
           bioShape.bsSizeSet.set(i, isVisible);
+          bioShape.bsSizeDefault.set(i, mad == -1);
         }
       }
     }
+    if (useThisBsSelected) //one shot deal
+      this.bsSelected = null;
   }
   
   public void setModelClickability() {
@@ -88,6 +107,5 @@ public class Backbone extends BioShapeCollection {
           atom.setClickable(myVisibilityFlag);
       }
     }
-  }
-
+  }  
 }

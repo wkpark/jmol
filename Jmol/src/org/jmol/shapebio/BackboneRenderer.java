@@ -36,9 +36,9 @@ public class BackboneRenderer extends BioShapeRenderer {
         continue;
       Atom atomA = modelSet.getAtomAt(leadAtomIndices[i]);
       Atom atomB = modelSet.getAtomAt(leadAtomIndices[i + 1]);
-      if (atomA.getNBackbonesDisplayed() == 0 || atomB.getNBackbonesDisplayed() == 0
-          || modelSet.isAtomHidden(atomB.getAtomIndex()))
-        continue;
+      //if (atomA.getNBackbonesDisplayed() == 0 || atomB.getNBackbonesDisplayed() == 0
+        //  || modelSet.isAtomHidden(atomB.getAtomIndex()))
+        //continue;
       int xA = atomA.screenX, yA = atomA.screenY, zA = atomA
           .screenZ;
       int xB = atomB.screenX, yB = atomB.screenY, zB = atomB

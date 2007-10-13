@@ -5797,6 +5797,11 @@ class Eval { //implements Runnable {
         numberOutOfRange(0f, 4f);
       mad = (short) (angstroms * 1000 * 2);
       break;
+    case Token.bitset:
+      if (!isSyntaxCheck)
+        viewer.loadShape(shapeType);
+      setShapeProperty(shapeType, "bitset", theToken.value);
+      return;
     default:
       booleanOrNumberExpected();
     }

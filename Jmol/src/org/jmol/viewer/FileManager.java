@@ -92,12 +92,16 @@ class FileManager {
   }
 
   String getState(StringBuffer sfunc) {
-    sfunc.append("  _setFileState;\n");
-    StringBuffer commands = new StringBuffer("function _setFileState();\n\n");
+    StringBuffer commands = new StringBuffer();
+    if (sfunc != null) {
+      sfunc.append("  _setFileState;\n");
+      commands.append("function _setFileState();\n\n");
+    }
     commands.append(loadScript);
     if (viewer.getModelSetFileName().equals("zapped"))
       commands.append("  zap;\n");
-    commands.append("\nend function;\n\n");
+    if (sfunc != null)
+      commands.append("\nend function;\n\n");
     return commands.toString();
   }
 

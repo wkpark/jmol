@@ -256,7 +256,7 @@ import org.jmol.util.ArrayUtil;
   }
   
   public final static String getState(StringBuffer sfunc) {
-    StringBuffer s = new StringBuffer("");
+    StringBuffer s = new StringBuffer();
     Enumeration e = schemes.keys();
     int n = 0;
     while (e.hasMoreElements()) {
@@ -267,11 +267,10 @@ import org.jmol.util.ArrayUtil;
     //String colors = getColorSchemeList(getColorSchemeArray(USER));
     //if (colors.length() > 0)
       //s.append("userColorScheme = " + colors + ";\n");
-    if (n > 0) {
+    if (n > 0 && sfunc != null)
       sfunc.append("\n  _setColorState\n");
-    }
-    return (n > 0 ? "function _setColorState();\n" 
-        + s.append("end function;\n\n").toString() : "");
+    return (n > 0 && sfunc != null ? "function _setColorState();\n" 
+        + s.append("end function;\n\n").toString() : s.toString());
   }
   
   public static String getColorSchemeList(int[] scheme) {

@@ -142,7 +142,7 @@ class DataManager {
     while (e.hasMoreElements()) {
       String name = (String) e.nextElement();
       if (name.indexOf("property_") == 0) {
-        if (n == 0)
+        if (n == 0 && sfunc != null)
           s.append("function _setDataState();\n");
         n++;
         Object data = ((Object[]) dataValues.get(name))[1];
@@ -163,7 +163,7 @@ class DataManager {
         s.append("  end \"").append(name).append("\";\n");
       }
     }
-    if (n == 0)
+    if (n == 0 || sfunc == null)
       return;
     sfunc.append("  _setDataState\n");
     s.append("end function;\n\n");

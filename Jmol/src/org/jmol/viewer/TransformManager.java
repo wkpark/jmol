@@ -140,8 +140,11 @@ abstract class TransformManager {
   }
 
   String getState(StringBuffer sfunc) {
-    sfunc.append("  _setPerspectiveState;\n");
-    StringBuffer commands = new StringBuffer("function _setPerspectiveState();\n");
+    StringBuffer commands = new StringBuffer("");
+    if (sfunc != null) {
+      sfunc.append("  _setPerspectiveState;\n");
+      commands.append("function _setPerspectiveState();\n");
+    }
     StateManager.appendCmd(commands, "perspectiveModel = "+ perspectiveModel);
     if (!isWindowCentered())
       StateManager.appendCmd(commands, "windowCentered = false");
@@ -178,7 +181,8 @@ abstract class TransformManager {
     }
     if (isNavigationMode)
       commands.append(getNavigationState());
-    commands.append("end function;\n\n");
+    if (sfunc != null) 
+      commands.append("end function;\n\n");
     return commands.toString();
   }
 

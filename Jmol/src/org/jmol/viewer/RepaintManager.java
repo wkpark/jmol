@@ -251,9 +251,12 @@ class RepaintManager {
     int modelCount = viewer.getModelCount();
     if (modelCount < 2)
       return "";
-    sfunc.append("  _setFrameState;\n");
-    StringBuffer commands = new StringBuffer("function _setFrameState();\n" +
-        "# frame state;\n# modelCount ")
+    StringBuffer commands = new StringBuffer();
+    if (sfunc != null) {
+      sfunc.append("  _setFrameState;\n");
+      commands.append("function _setFrameState();\n");
+    }
+    commands.append("# frame state;\n# modelCount ")
         .append(modelCount).append(";\n# first ").append(
             viewer.getModelNumberDotted(0)).append(";\n# last ").append(
             viewer.getModelNumberDotted(modelCount - 1)).append(";\n");
@@ -279,7 +282,8 @@ class RepaintManager {
                 : "PLAYREV")).append(";\n");
     if (animationOn && animationPaused)
       commands.append("animation PAUSE;\n");
-    commands.append("end function;\n\n");
+    if (sfunc != null)
+      commands.append("end function;\n\n");
     return commands.toString();
   }
   

@@ -2855,10 +2855,9 @@ abstract public class ModelSet {
     stateScripts.addElement(script);
   }
 
-  public String getState(StringBuffer sfunc) {
+  public String getState(StringBuffer sfunc, boolean isAll) {
     StringBuffer commands = new StringBuffer();
-    boolean isAll = (sfunc != null);
-    if (isAll) {
+    if (isAll && sfunc != null) {
       sfunc.append("  _setModelState;\n");
       commands.append("function _setModelState();\n");
     }
@@ -2898,7 +2897,7 @@ abstract public class ModelSet {
           && (cmd = shape.getShapeState()) != null && cmd.length() > 1)
         commands.append(cmd);
     }
-    if (isAll)
+    if (sfunc != null)
       commands.append("\nend function;\n\n");
     return commands.toString();
   }

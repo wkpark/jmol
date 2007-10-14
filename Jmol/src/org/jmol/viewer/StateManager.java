@@ -574,8 +574,12 @@ public class StateManager {
     float navigationSpeed      = 5;
 
     String getWindowState(StringBuffer sfunc) {
-      sfunc.append("  initialize;\n  refreshing = false;\n  _setWindowState;\n");
-      StringBuffer str = new StringBuffer("\nfunction _setWindowState();\n# height "
+      StringBuffer str = new StringBuffer();
+      if (sfunc != null) {
+        sfunc.append("  initialize;\n  refreshing = false;\n  _setWindowState;\n");
+        str.append("\nfunction _setWindowState();\n");
+      }
+      str.append("# height "
           + viewer.getScreenHeight() + ";\n# width " + viewer.getScreenWidth()
           + ";\n");
       appendCmd(str, "stateVersion = " + getParameter("_version"));
@@ -586,7 +590,8 @@ public class StateManager {
       str.append(getSpecularState());
       if (stereoState != null)
         appendCmd(str, "stereo" + stereoState);
-      str.append("end function;\n\n");
+      if (sfunc != null)
+        str.append("end function;\n\n");
       return str.toString();
     }
 
@@ -840,11 +845,14 @@ public class StateManager {
     }
     
     String getState(StringBuffer sfunc) {
-      sfunc.append("  _setVariableState;\n");
       int n = 0;
       String[] list = new String[htPropertyFlags.size()
           + htParameterValues.size()];
-      StringBuffer commands = new StringBuffer("function _setVariableState();\n\n");
+      StringBuffer commands = new StringBuffer();
+      if (sfunc != null) {
+        sfunc.append("  _setVariableState;\n");
+        commands.append("function _setVariableState();\n\n");
+      }
       Enumeration e;
       String key;
       //booleans
@@ -917,7 +925,8 @@ public class StateManager {
       viewer.loadShape(JmolConstants.SHAPE_LABELS);
       commands.append(viewer.getShapeProperty(JmolConstants.SHAPE_LABELS, "defaultState"));
 
-      commands.append("\nend function;\n\n");
+      if (sfunc != null)
+        commands.append("\nend function;\n\n");
       return commands.toString();
     }
     

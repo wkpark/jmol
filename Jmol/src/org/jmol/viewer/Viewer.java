@@ -2244,12 +2244,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public Hashtable getAllPolymerInfo(Object atomExpression) {
     return modelSet.getAllPolymerInfo(getAtomBitSet(atomExpression));
   }
-
+  
   public String getStateInfo() {
-    StringBuffer sfunc = new StringBuffer("function _setState();\n");
-    StringBuffer s = new StringBuffer("# Jmol state version "
-        + getJmolVersion() + ";\n");
-    if (isApplet) {
+    return getStateInfo(null);
+  }
+
+  public String getStateInfo(String type) {
+    boolean isAll = (type == null || type.equalsIgnoreCase("all"));
+    StringBuffer s = new StringBuffer("");
+    StringBuffer sfunc = (isAll ? new StringBuffer("function _setState();\n") : null);
+    if (isAll)
+      StateManager.appendCmd(s, "# Jmol state version " + getJmolVersion());
+    if (isApplet && isAll) {
       StateManager.appendCmd(s, "# fullName = " + Escape.escape(fullName));
       StateManager.appendCmd(s, "# documentBase = "
           + Escape.escape(appletDocumentBase));
@@ -2258,31 +2264,41 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       s.append("\n");
     }
     //  window state
-    s.append(global.getWindowState(sfunc));
+    if (isAll || type.equalsIgnoreCase("windowState"))
+      s.append(global.getWindowState(sfunc));
     //  file state
-    s.append(fileManager.getState(sfunc));
+    if (isAll || type.equalsIgnoreCase("fileState"))
+      s.append(fileManager.getState(sfunc));
     //  numerical values
-    s.append(global.getState(sfunc));
-    
-    dataManager.getDataState(s,sfunc);
-    
+    if (isAll || type.equalsIgnoreCase("variableState"))
+      s.append(global.getState(sfunc));
+    if (isAll || type.equalsIgnoreCase("dataState"))
+      dataManager.getDataState(s, sfunc);
+
     //  definitions, connections, atoms, bonds, labels, echos, shapes
-    s.append(modelSet.getState(sfunc));
+    if (isAll || type.equalsIgnoreCase("modelState"))
+      s.append(modelSet.getState(sfunc, true));
     //  color scheme
-    s.append(ColorManager.getState(sfunc));
+    if (isAll || type.equalsIgnoreCase("colorState"))
+      s.append(ColorManager.getState(sfunc));
     //  frame information
-    s.append(repaintManager.getState(sfunc));
+    if (isAll || type.equalsIgnoreCase("frameState"))
+      s.append(repaintManager.getState(sfunc));
     //  orientation and slabbing
-    s.append(transformManager.getState(sfunc));
+    if (isAll || type.equalsIgnoreCase("perspectiveState"))
+      s.append(transformManager.getState(sfunc));
     //  display and selections
-    s.append(selectionManager.getState(sfunc));
-    sfunc.append("  refreshing = true;\nend function;\n\n_setState;\n");
-    s.append(sfunc);
+    if (isAll || type.equalsIgnoreCase("selectionState"))
+      s.append(selectionManager.getState(sfunc));
+    if (sfunc != null)
+      sfunc.append("  refreshing = true;\nend function;\n\n_setState;\n");
+    if (isAll)
+      s.append(sfunc);
     return s.toString();
   }
 
   public String getStructureState() {
-    return modelSet.getState(null);
+    return modelSet.getState(null, false);
   }
 
   void setCurrentColorRange(String label) {

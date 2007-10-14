@@ -73,7 +73,7 @@ class PropertyManager {
     "chainInfo"       , "<atom selection>", "(visible)",
     "polymerInfo"     , "<atom selection>", "(visible)",
     "moleculeInfo"    , "<atom selection>", "(visible)",
-    "stateInfo"       , "", "",
+    "stateInfo"       , "<state type>", "all",
     
     "extractModel"    , "<atom selection>", "(visible)",
     "jmolStatus"      , "statusNameList", "",
@@ -241,7 +241,7 @@ class PropertyManager {
     case PROP_SHAPE_INFO:
       return viewer.getShapeInfo();
     case PROP_STATE_INFO:
-      return viewer.getStateInfo();
+      return viewer.getStateInfo(myParam.toString());
     case PROP_TRANSFORM_INFO:
       return viewer.getMatrixRotate();
     case PROP_DATA_INFO:

@@ -5022,9 +5022,9 @@ class Eval { //implements Runnable {
 
   private float getZoomFactor(int i, int ptCenter, float radius, float factor0)
       throws ScriptException {
+    BitSet bs = null;
     float factor = (isFloatParameter(i) ? floatParameter(i) : Float.NaN);
     if (factor == 0) {
-      BitSet bs = null;
       switch (statement[ptCenter].tok) {
       case Token.bitset:
       case Token.expressionBegin:
@@ -5057,7 +5057,8 @@ class Eval { //implements Runnable {
           invalidArgument();
         }
       } else {
-        factor = -factor;
+        if (bs == null)
+          factor = -factor;
         --i;
       }
     }

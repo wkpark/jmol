@@ -307,25 +307,6 @@ class BioShape {
     }
   }  
 
-  void setShapeState2(Hashtable temp, Hashtable temp2) {
-    if (!isActive)
-      return;
-    String type = JmolConstants.shapeClassBases[shape.shapeID];
-    for (int i = 0; i < monomerCount; i++) {
-      int atomIndex1 = monomers[i].getFirstAtomIndex();
-      int atomIndex2 = monomers[i].getLastAtomIndex();
-      if (bsSizeSet != null && bsSizeSet.get(i)) {//shapes MUST have been set with a size
-        if (bsSizeDefault.get(i))
-          Shape.setStateInfo(temp, i, i, " on");
-        else
-          Shape.setStateInfo(temp, i, i, " " + (mads[i] / 2000f));
-      }
-      if (bsColixSet != null && bsColixSet.get(i))
-        Shape.setStateInfo(temp2, atomIndex1, atomIndex2, shape
-            .getColorCommand(type, paletteIDs[i], colixes[i]));
-    }
-  }  
-
  void setModelClickability() {
     if (!isActive || wingVectors == null)
       return;

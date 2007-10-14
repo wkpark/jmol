@@ -1062,7 +1062,7 @@ public class StateManager {
     StringBuffer s = new StringBuffer();
     String setPrev = getCommands(htDefine, s, null, nAll, selectCmd);
     if (htMore != null)
-      getCommands(htMore, s, setPrev, nAll, selectCmd);
+      getCommands(htMore, s, setPrev, nAll, "select");
     return s.toString();
   }
 
@@ -1077,8 +1077,9 @@ public class StateManager {
       String set = Escape.escape((BitSet) ht.get(key));
       if (set.length() < 5) // nothing selected
         continue;
+      set = selectCmd + " " + (set.equals(strAll) && false? "*" : set);
       if (!set.equals(setPrev))
-        appendCmd(s, selectCmd + " " + (set.equals(strAll) && false? "*" : set));
+        appendCmd(s, set);
       setPrev = set;
       if (key.indexOf("-") != 0) // - for key means none required
         appendCmd(s, key);

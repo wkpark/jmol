@@ -120,7 +120,7 @@ final public class Atom extends Point3fi implements Tuple {
     setFormalCharge(formalCharge);
     setOccupancy(modelSet, occupancy);
     setPartialCharge(modelSet, bfactor);
-    if (Float.isNaN(vibrationX))
+    if (!Float.isNaN(vibrationX))
       setVibrationVector(modelSet, vibrationX, vibrationY, vibrationZ);
 
     this.colixAtom = modelSet.viewer.getColixAtomPalette(this, JmolConstants.PALETTE_CPK);

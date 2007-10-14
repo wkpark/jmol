@@ -416,15 +416,15 @@ final public class Atom extends Point3fi implements Tuple {
     return (formalChargeAndFlags >> 2) & 7;
   }
 
-  void setOccupancy(ModelSet modelSet, int occupancy) {
+  void setOccupancy(AtomCollection atomCollection, int occupancy) {
     if (occupancy < 0)
       occupancy = 0;
     else if (occupancy > 100)
       occupancy = 100;
     if (occupancy != 100) {
-      if (modelSet.occupancies == null)
-        modelSet.occupancies = new byte[modelSet.atoms.length];
-      modelSet.occupancies[atomIndex] = (byte)occupancy;
+      if (atomCollection.occupancies == null)
+        atomCollection.occupancies = new byte[atomCollection.atoms.length];
+      atomCollection.occupancies[atomIndex] = (byte)occupancy;
     }
   }
   
@@ -434,20 +434,20 @@ final public class Atom extends Point3fi implements Tuple {
     return occupancies == null ? 100 : occupancies[atomIndex];
   }
 
-  void setPartialCharge(ModelSet modelSet, float partialCharge) {
+  void setPartialCharge(AtomCollection atomCollection, float partialCharge) {
     if (Float.isNaN(partialCharge))
       return;
-    if (modelSet.partialCharges == null)
-      modelSet.partialCharges = new float[modelSet.atoms.length];
-    modelSet.partialCharges[atomIndex] = partialCharge;
+    if (atomCollection.partialCharges == null)
+      atomCollection.partialCharges = new float[atomCollection.atoms.length];
+    atomCollection.partialCharges[atomIndex] = partialCharge;
   }
 
-  void setBFactor(ModelSet modelSet, float bfactor) {
+  void setBFactor(AtomCollection atomCollection, float bfactor) {
   if (Float.isNaN(bfactor) || bfactor == 0)
     return;
-    if (modelSet.bfactor100s == null)
-      modelSet.bfactor100s = new short[modelSet.atoms.length];
-    modelSet.bfactor100s[atomIndex] = (short)(bfactor * 100);
+    if (atomCollection.bfactor100s == null)
+      atomCollection.bfactor100s = new short[atomCollection.atoms.length];
+    atomCollection.bfactor100s[atomIndex] = (short)(bfactor * 100);
   }
 
   // This is called bfactor100 because it is stored as an integer
@@ -459,16 +459,16 @@ final public class Atom extends Point3fi implements Tuple {
     return bfactor100s[atomIndex];
   }
 
-  void setVibrationVector(ModelSet modelSet, float x, float y, float z) {
+  void setVibrationVector(AtomCollection atomCollection, float x, float y, float z) {
     if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
       return;
-    if (modelSet.vibrationVectors == null)
-      modelSet.vibrationVectors = new Vector3f[modelSet.atoms.length];
-    modelSet.vibrationVectors[atomIndex] = new Vector3f(x, y, z);
+    if (atomCollection.vibrationVectors == null)
+      atomCollection.vibrationVectors = new Vector3f[atomCollection.atoms.length];
+    atomCollection.vibrationVectors[atomIndex] = new Vector3f(x, y, z);
     formalChargeAndFlags |= VIBRATION_VECTOR_FLAG;
   }
 
-  void setVibrationVector(ModelSet modelSet, int tok, float fValue) {
+  void setVibrationVector(AtomCollection atomCollection, int tok, float fValue) {
     Vector3f v = getVibrationVector();
     if (v == null)
       v = new Vector3f();
@@ -483,7 +483,7 @@ final public class Atom extends Point3fi implements Tuple {
       v.z = fValue;
       break;
     }
-    setVibrationVector(modelSet, v.x, v.y, v.z);
+    setVibrationVector(atomCollection, v.x, v.y, v.z);
   }
   
   public Vector3f getVibrationVector() {

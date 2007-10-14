@@ -136,7 +136,7 @@ abstract class TransformManager {
     navigating = false;
     slabPlane = null;
     depthPlane = null;
-    resetNavigationPoint();
+    resetNavigationPoint(true);
   }
 
   String getState(StringBuffer sfunc) {
@@ -1066,7 +1066,7 @@ abstract class TransformManager {
    * @param percent
    */
   void setCameraDepthPercent(float percent) {
-    resetNavigationPoint();
+    resetNavigationPoint(true);
     float screenMultiples = (percent < 0 ? -percent / 100 : percent);
     if (screenMultiples == 0)
       return;
@@ -1155,7 +1155,7 @@ abstract class TransformManager {
     fixedTranslation.set(width * (andCenter ? 0.5f : xTranslationFraction), height
         * (andCenter ? 0.5f : yTranslationFraction), 0);
     setTranslationFractions();
-    resetNavigationPoint();
+    resetNavigationPoint(true);
     // 2005 02 22
     // switch to finding larger screen dimension
     // find smaller screen dimension
@@ -1213,7 +1213,7 @@ abstract class TransformManager {
 
   void setNavigationMode(boolean TF) {
     isNavigationMode = (TF && canNavigate());
-    resetNavigationPoint();
+    resetNavigationPoint(true);
   }
 
   boolean getNavigating() {
@@ -2075,7 +2075,7 @@ abstract class TransformManager {
 
   void setWindowCentered(boolean TF) {
     windowCentered = TF;
-    resetNavigationPoint();
+    resetNavigationPoint(true);
   }
 
   void setDefaultRotation() {
@@ -2101,7 +2101,7 @@ abstract class TransformManager {
   
   private void setRotationCenterAndRadiusXYZ(Point3f newCenterOfRotation,
                                              boolean andRadius) {
-    resetNavigationPoint();
+    resetNavigationPoint(false);
     if (newCenterOfRotation == null) {
       setFixedRotationCenter(rotationCenterDefault);
       modelRadius = rotationRadiusDefault;
@@ -2244,8 +2244,9 @@ abstract class TransformManager {
 
   /**
    * something has arisen that requires resetting of the navigation point. 
+   * @param doResetSlab 
    */
-  protected void resetNavigationPoint() {
+  protected void resetNavigationPoint(boolean doResetSlab) {
   }
   
   /**

@@ -50,8 +50,10 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Point4f;
 import org.jmol.i18n.*;
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
+import org.jmol.modelset.ModelCollection;
 import org.jmol.modelset.ModelSet;
 
 class Eval { //implements Runnable {
@@ -1528,7 +1530,7 @@ class Eval { //implements Runnable {
           if (val instanceof Integer)
             comparisonFloat = comparisonValue = ((Integer) val).intValue();
           else if (val instanceof Float && isModel)
-            comparisonValue = ModelSet.modelFileNumberFromFloat(((Float) val)
+            comparisonValue = ModelCollection.modelFileNumberFromFloat(((Float) val)
                 .floatValue());
         }
         if (val instanceof Integer || tokValue == Token.integer) {
@@ -7919,10 +7921,10 @@ class Eval { //implements Runnable {
       data = "" + getParameter(parameterAsString(2), false);
     } else if (data == "SPT") {
       if (isCoord) {
-        BitSet tainted = viewer.getTaintedAtoms(ModelSet.TAINT_COORD);
+        BitSet tainted = viewer.getTaintedAtoms(AtomCollection.TAINT_COORD);
         viewer.setAtomCoordRelative(new Point3f(0, 0, 0));
         data = (String) viewer.getProperty("string", "stateInfo", null);
-        viewer.setTaintedAtoms(tainted, ModelSet.TAINT_COORD);
+        viewer.setTaintedAtoms(tainted, AtomCollection.TAINT_COORD);
       } else {
         data = (String) viewer.getProperty("string", "stateInfo", null);
       }

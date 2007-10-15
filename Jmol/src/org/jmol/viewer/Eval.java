@@ -4659,7 +4659,6 @@ class Eval { //implements Runnable {
   }
 
   private void script(boolean isJavaScript) throws ScriptException {
-    // token allows for only 1 or 2 parameters
     if (isJavaScript) {
       if (!isSyntaxCheck)
         viewer.eval(parameterAsString(1));
@@ -4673,8 +4672,11 @@ class Eval { //implements Runnable {
     int pcEnd = 0;
     int i = 2;
     String filename = parameterAsString(1);
-    String theScript = (filename.equalsIgnoreCase("inline") ? parameterAsString(i++)
-        : null);
+    String theScript = null;
+    if (filename.equalsIgnoreCase("inline")) {
+      theScript = parameterExpression(2, 0, "_script", false).toString();
+      i = iToken + 1;
+    }
     boolean loadCheck = true;
     boolean isCheck = false;
     String option = optParameterAsString(i);

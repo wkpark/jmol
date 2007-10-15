@@ -2109,8 +2109,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "O",   // 40 - carbonyl oxygen
     "O1",  // 41 - carbonyl oxygen in some protein residues (4THN)
     null,  // 42
-    null,  // 43
-    null,  // 44
+
+    "OP1", // 43 - first equivalent oxygen on phosphorus of phosphate -- new designation
+    "OP2", // 44 - second equivalent oxygen on phosphorus of phosphate -- new designation
 
     // Terminal nuclic acid
     "H5T", // 45 - 5' terminus hydrogen which replaces P + O1P + O2P

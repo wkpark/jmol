@@ -410,6 +410,7 @@ public abstract class AtomSetCollectionReader {
   protected void addSites(Hashtable htSites) {
     atomSetCollection.setAtomSetAuxiliaryInfo("pdbSites", htSites);
     Enumeration e = htSites.keys();
+    String sites = "";
     while (e.hasMoreElements()) {
       String name = (String) e.nextElement();
       Hashtable htSite = (Hashtable) htSites.get(name);
@@ -418,7 +419,9 @@ public abstract class AtomSetCollectionReader {
       addJmolScript("@site_" + name + " " + groups);
       addJmolScript("@" + seqNum + " " + groups);
       addJmolScript("site_" + name + " = \"" + groups + "\".split(\",\")");
+      sites += (sites == "" ? "" : ",") + "site_" + name;
     }
+    addJmolScript("site_list = \"" + sites + "\".split(\",\")");
   }
 
   public void applySymmetry() throws Exception {

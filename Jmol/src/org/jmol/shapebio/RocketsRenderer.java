@@ -146,7 +146,7 @@ public class RocketsRenderer extends BioShapeRenderer {
     viewer.transformPoint(pointStart, screenA);
     viewer.transformPoint(pointEnd, screenB);
     int zMid = (int) Math.floor((screenA.z + screenB.z) / 2f);
-    int diameter = (isGenerator ? mad : viewer.scaleToScreen(zMid, mad));
+    int diameter = viewer.scaleToScreen(zMid, mad);
     if (tEnd) {
       viewer.transformPoint(pointBeforeEnd, screenC);
       if (g3d.setColix(colix)) {

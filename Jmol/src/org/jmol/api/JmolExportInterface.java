@@ -47,14 +47,10 @@ public interface JmolExportInterface {
   abstract void fillCylinder(short colix, byte endcaps, int diameter, 
                              Point3f screenA, Point3f screenB);
 
-  abstract void drawDottedLine(short colix, Point3f pointA, Point3f pointB); //axes
-  
   abstract void fillScreenedCircleCentered(short colix, int diameter, int x,
                                                     int y, int z);  //halos 
 
   abstract void drawPixel(short colix, int x, int y, int z); //measures
-  abstract void drawDashedLine(short colix, int run, int rise, 
-                               Point3f ptA, Point3f ptB); //measures
  
   //rockets and dipoles
   abstract void fillCone(short colix, byte endcap, int diameter, 

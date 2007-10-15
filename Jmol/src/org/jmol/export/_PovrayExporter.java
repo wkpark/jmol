@@ -305,23 +305,19 @@ public class _PovrayExporter extends _Exporter {
         radius2 + "," + color + "," + translucencyFractionalFromColix(colix) + ")\n");
   }
 
-  public void drawDottedLine(short colix, Point3f pointA, Point3f pointB) {
-    //axes
-  }
-
   public void fillScreenedCircleCentered(short colix, int diameter, int x,
                                          int y, int z) {
-   //halos 
+    //halos
+    String color = rgbFractionalFromColix(colix, ',');
+    float r = diameter / 2.0f;
+    output.append("bond(" + x + "," + y + "," + z + "," + 
+        r + "," + x + "," + y + "," + (z + 1) + "," + 
+        r + "," + color + ",0.8)\n");
   }
 
   public void drawPixel(short colix, int x, int y, int z) {    
     //measures, meshRibbon
     fillSphereCentered(1.5f, x, y, z, colix);
-  }
-
-  public void drawDashedLine(short colix, int run, int rise, Point3f ptA, Point3f ptB) {
-    //measures
-    //System.out.println("pov drawDashedLine == measures "+this);
   }
 
   public void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC) {

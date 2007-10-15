@@ -73,18 +73,18 @@ final public class Export3D implements JmolRendererInterface {
    * draws a screened circle ... every other dot is turned on
    *
    * @param colixFill the color index
-   * @param mad the pixel diameter
+   * @param diameter the pixel diameter
    * @param x center x
    * @param y center y
    * @param z center z
    */
   
-  public void fillScreenedCircleCentered(short colixFill, int mad, int x,
+  public void fillScreenedCircleCentered(short colixFill, int diameter, int x,
                                            int y, int z) {
     //halos, draw
     if (isClippedZ(z))
       return;
-    exporter.fillScreenedCircleCentered(colixFill, mad, x, y, z);
+    exporter.fillScreenedCircleCentered(colixFill, diameter, x, y, z);
   }
 
   private Point3f ptA = new Point3f();
@@ -287,16 +287,20 @@ final public class Export3D implements JmolRendererInterface {
    * ***************************************************************/
 
   public void drawDashedLine(int run, int rise, Point3i pointA, Point3i pointB) {
-    ptA.set(pointA.x, pointA.y, pointA.z);
-    ptB.set(pointB.x, pointB.y, pointB.z);
-    exporter.drawDashedLine(colix, run, rise, ptA, ptB);
+    //TODO
+    drawLine(pointA, pointB); //Temporary only
+    //ptA.set(pointA.x, pointA.y, pointA.z);
+    //ptB.set(pointB.x, pointB.y, pointB.z);
+    //exporter.drawDashedLine(colix, run, rise, ptA, ptB);
   }
 
   public void drawDottedLine(Point3i pointA, Point3i pointB) {
+    //TODO
      //axes, bbcage only
-    ptA.set(pointA.x, pointA.y, pointA.z);
-    ptB.set(pointB.x, pointB.y, pointB.z);
-    exporter.drawDashedLine(colix, 2, 1, ptA, ptB);
+    drawLine(pointA, pointB); //Temporary only
+    //ptA.set(pointA.x, pointA.y, pointA.z);
+    //ptB.set(pointB.x, pointB.y, pointB.z);
+    //exporter.drawDashedLine(colix, 2, 1, ptA, ptB);
   }
 
   public void drawLine(int x1, int y1, int z1, int x2, int y2, int z2) {
@@ -312,7 +316,7 @@ final public class Export3D implements JmolRendererInterface {
   }
 
   public void drawLine(Point3i pointA, Point3i pointB) {
-    // draw quadrilateral and hermite
+    // draw quadrilateral and hermite, stars
     ptA.set(pointA.x, pointA.y, pointA.z);
     ptB.set(pointB.x, pointB.y, pointB.z);
     exporter.fillCylinder(colix, Graphics3D.ENDCAPS_FLAT, 1, ptA, ptB);
@@ -343,9 +347,9 @@ final public class Export3D implements JmolRendererInterface {
     exporter.fillCylinder(colix, endcaps, diameter, ptA, ptB);
   }
 
-  public void fillCylinderBits(byte endcaps, int mad, Point3f pointA,
+  public void fillCylinderBits(byte endcaps, int diameter, Point3f pointA,
                                   Point3f pointB) {
-    exporter.renderBond(pointA, pointB, colix, colix, endcaps, mad, 1);
+    exporter.fillCylinder(colix, endcaps, diameter, pointA, pointB);
   }
 
 

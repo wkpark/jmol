@@ -74,26 +74,18 @@ public class HalosRenderer extends ShapeRenderer {
     int z = atom.screenZ;
     int diameter = mad;
     int halowidth = 0;
-    if (isGenerator) {
-      if (diameter < 0 && (diameter = atom.getMadAtom()) == 0)
-        diameter = 500;
-      halowidth = diameter / 4;
-      if (halowidth > 125)
-        halowidth = 125; // may need tweaking
+    if (diameter < 0) { //unsized selection
+      diameter = atom.screenDiameter;
+      if (diameter == 0)
+        diameter = viewer.scaleToScreen(z, 500);
     } else {
-      if (diameter < 0) { //unsized selection
-        diameter = atom.screenDiameter;
-        if (diameter == 0)
-          diameter = viewer.scaleToScreen(z, 500);
-      } else {
-        diameter = viewer.scaleToScreen(z, mad);
-      }
-      halowidth = (diameter / 4);
-      if (halowidth < 4)
-        halowidth = 4;
-      if (halowidth > 10)
-        halowidth = 10;
+      diameter = viewer.scaleToScreen(z, mad);
     }
+    halowidth = (diameter / 4);
+    if (halowidth < 4)
+      halowidth = 4;
+    if (halowidth > 10)
+      halowidth = 10;
     int haloDiameter = diameter + 2 * halowidth;
     if (haloDiameter <= 0)
       return;

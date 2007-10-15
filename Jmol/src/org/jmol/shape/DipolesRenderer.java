@@ -122,7 +122,7 @@ public class DipolesRenderer extends ShapeRenderer {
     viewer.transformPoint(points[cross], cross0);
     viewer.transformPoint(points[crossEnd], cross1);
     mad = dipole.mad;
-    diameter = (isGenerator ? mad : viewer.scaleToScreen(screens[center].z, mad));
+    diameter = viewer.scaleToScreen(screens[center].z, mad);
     headWidthPixels = (int) (diameter * arrowHeadWidthFactor);
     if (headWidthPixels < diameter + 10)
       headWidthPixels = diameter + 10;

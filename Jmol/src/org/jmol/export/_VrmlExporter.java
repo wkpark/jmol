@@ -161,24 +161,12 @@ public class _VrmlExporter extends _Exporter {
                            Point3f screenB) {
   }
 
-  public void drawDottedLine(short colix, Point3f pointA, Point3f pointB) {
-    //axes
-  }
-
-  public void drawLine(short colix, Point3f pointA, Point3f pointB) {
-    //stars
-  }
-  
   public void fillScreenedCircleCentered(short colix, int diameter, int x,
                                          int y, int z) {
    //halos 
   }
 
   public void drawPixel(short colix, int x, int y, int z) {
-    //measures
-  }
-
-  public void drawDashedLine(short colix, int run, int rise, Point3f ptA, Point3f ptB) {
     //measures
   }
 

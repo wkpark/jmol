@@ -164,6 +164,8 @@ public class CifReader extends AtomSetCollectionReader {
         atomSetCollection.removeAtomSet();
       else
         applySymmetry();
+      if (htSites != null)
+        addSites(htSites);
       atomSetCollection.setCollectionName("<collection of "
           + atomSetCollection.getAtomSetCount() + " models>");
     } catch (Exception e) {
@@ -371,6 +373,10 @@ public class CifReader extends AtomSetCollectionReader {
       } else {
         processSymmetryOperationsLoopBlock();
       }
+      return;
+    }
+    if (str.startsWith("_struct_site")) {
+      processStructSiteBlock();
       return;
     }
     skipLoop();
@@ -913,13 +919,13 @@ public class CifReader extends AtomSetCollectionReader {
   ////////////////////////////////////////////////////////////////
 
   final static String[] structSheetRangeFields = {
-      "_struct_sheet_range.sheet_id",  //unused placeholder
-      "_struct_sheet_range.beg_auth_asym_id",
-      "_struct_sheet_range.beg_auth_seq_id",
-      "_struct_sheet_range.pdbx_beg_PDB_ins_code",
-      "_struct_sheet_range.end_auth_asym_id",
-      "_struct_sheet_range.end_auth_seq_id",
-      "_struct_sheet_range.pdbx_end_PDB_ins_code", 
+    "_struct_sheet_range.sheet_id",  //unused placeholder
+    "_struct_sheet_range.beg_auth_asym_id",
+    "_struct_sheet_range.beg_auth_seq_id",
+    "_struct_sheet_range.pdbx_beg_PDB_ins_code",
+    "_struct_sheet_range.end_auth_asym_id",
+    "_struct_sheet_range.end_auth_seq_id",
+    "_struct_sheet_range.pdbx_end_PDB_ins_code", 
   };
 
   /**
@@ -968,6 +974,127 @@ public class CifReader extends AtomSetCollectionReader {
         }
       }
       atomSetCollection.addStructure(structure);
+    }
+  }
+
+  final static byte SITE_ID = 0;
+  final static byte SITE_COMP_ID = 1;
+  final static byte SITE_ASYM_ID = 2;
+  final static byte SITE_SEQ_ID = 3;
+  final static byte SITE_INS_CODE = 4; //???
+
+  final static String[] structSiteRangeFields = {
+    "_struct_site_gen.site_id",  
+    "_struct_site_gen.auth_comp_id", 
+    "_struct_site_gen.auth_asym_id", 
+    "_struct_site_gen.auth_seq_id",  
+    "_struct_site_gen.label_alt_id",  //should be an insertion code, not an alt ID? 
+  };
+
+  
+  /*
+
+loop_
+_struct_site_gen.id 
+_struct_site_gen.site_id 
+_struct_site_gen.pdbx_num_res 
+_struct_site_gen.label_comp_id 
+_struct_site_gen.label_asym_id 
+_struct_site_gen.label_seq_id 
+_struct_site_gen.auth_comp_id 
+_struct_site_gen.auth_asym_id 
+_struct_site_gen.auth_seq_id 
+_struct_site_gen.label_atom_id 
+_struct_site_gen.label_alt_id 
+_struct_site_gen.symmetry 
+_struct_site_gen.details 
+1 CAT 5 GLN A 92  GLN A 92  . . ? ? 
+2 CAT 5 GLU A 58  GLU A 58  . . ? ? 
+3 CAT 5 HIS A 40  HIS A 40  . . ? ? 
+4 CAT 5 TYR A 38  TYR A 38  . . ? ? 
+5 CAT 5 PHE A 100 PHE A 100 . . ? ? 
+# 
+
+*/
+  
+  int siteNum = 0;
+  Hashtable htSites;
+  
+  /**
+   * 
+   * identifies structure sites
+   * 
+   * @throws Exception
+   */
+  void processStructSiteBlock() throws Exception {
+    parseLoopParameters(structSiteRangeFields);
+    for (int i = propertyCount; --i >= 0;)
+      if (!propertyReferenced[i]) {
+        Logger.warn("?que? missing _struct_site property:" + i);
+        skipLoop();
+        return;
+      }
+    String siteID = "";
+    String seqNum = "";
+    String insCode = "";
+    String chainID = "";
+    String resID = "";
+    String group = "";
+    Hashtable htSite = null;
+    htSites = new Hashtable();
+    while (tokenizer.getData()) {
+      for (int i = 0; i < fieldCount; ++i) {
+        String field = loopData[i];
+        if (field.length() == 0)
+          continue;
+        char firstChar = field.charAt(0);
+        if (firstChar == '\0')
+          continue;
+        switch (fieldTypes[i]) {
+        case SITE_ID:
+          if (group != "") {
+            String groups = (String) htSite.get("groups");
+            groups += (groups.length() == 0 ? "" : ",") + group;
+            group = "";
+            htSite.put("groups", groups);
+          }
+          siteID = field;
+          htSite = (Hashtable)htSites.get(siteID);
+          if (htSite == null) {
+            htSite = new Hashtable();
+            htSite.put("seqNum", "site_" + (++siteNum));
+            htSite.put("groups", "");
+            htSites.put(siteID, htSite);
+          }
+          seqNum = "";
+          insCode = "";
+          chainID = "";
+          resID = "";
+          break;
+        case SITE_COMP_ID:
+          resID = field;
+          break;
+        case SITE_INS_CODE:
+          insCode = field;
+          break;
+        case SITE_ASYM_ID:
+          chainID = field;
+          break;
+        case SITE_SEQ_ID:
+          seqNum = field;
+          break;
+        }
+        if (seqNum != "" && resID != "")
+          group = "[" + resID + "]" + seqNum
+            + (insCode.length() > 0 ?  "^" + insCode : "")
+            + (chainID.length() > 0 ? ":" + chainID : "");
+      }      
+    }
+    if (group != "") {
+      String groups = (String) htSite.get("groups");
+      groups += (groups.length() == 0 ? "" : ",") + group;
+      group = "";
+      htSite.put("groups", groups);
     }
   }
 

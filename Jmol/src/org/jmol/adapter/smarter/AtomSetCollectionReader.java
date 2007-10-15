@@ -32,6 +32,7 @@ import org.jmol.viewer.JmolConstants;
 
 import java.io.BufferedReader;
 
+import java.util.Enumeration;
 import java.util.Hashtable;
 
 /*
@@ -406,6 +407,20 @@ public abstract class AtomSetCollectionReader {
     needToApplySymmetry = true;
   }
 
+  protected void addSites(Hashtable htSites) {
+    atomSetCollection.setAtomSetAuxiliaryInfo("pdbSites", htSites);
+    Enumeration e = htSites.keys();
+    while (e.hasMoreElements()) {
+      String name = (String) e.nextElement();
+      Hashtable htSite = (Hashtable) htSites.get(name);
+      String seqNum = (String) htSite.get("seqNum");
+      String groups = (String) htSite.get("groups");
+      addJmolScript("@site_" + name + " " + groups);
+      addJmolScript("@" + seqNum + " " + groups);
+      addJmolScript("site_" + name + " = \"" + groups + "\".split(\",\")");
+    }
+  }
+
   public void applySymmetry() throws Exception {
     if (isTrajectory)
       atomSetCollection.setTrajectory();
@@ -491,17 +506,21 @@ public abstract class AtomSetCollectionReader {
       if (script.indexOf("#") >= 0) {
         script = script.substring(0, script.indexOf("#"));
       }
-      String previousScript = atomSetCollection
-          .getAtomSetCollectionProperty("jmolscript");
-      if (previousScript == null)
-        previousScript = "";
-      else
-        previousScript += ";";
-      Logger.info("#jmolScript: " + script);
-      atomSetCollection.setAtomSetCollectionProperty("jmolscript",
-          previousScript + script);
+      addJmolScript(script);
       line = line.substring(0, pt).trim();
     }
+  }
+
+  protected void addJmolScript(String script) {
+    String previousScript = atomSetCollection
+        .getAtomSetCollectionProperty("jmolscript");
+    if (previousScript == null)
+      previousScript = "";
+    else
+      previousScript += ";";
+    Logger.info("#jmolScript: " + script);
+    atomSetCollection.setAtomSetCollectionProperty("jmolscript", previousScript
+        + script);
   }
 
   public String readLine() throws Exception {
@@ -526,6 +545,5 @@ public abstract class AtomSetCollectionReader {
       fields[i] = sinfo.substring(pt, width);
     return fields;
   }
-  
-  
+    
 }

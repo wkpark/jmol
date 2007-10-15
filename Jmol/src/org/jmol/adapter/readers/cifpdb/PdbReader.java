@@ -64,6 +64,7 @@ public class PdbReader extends AtomSetCollectionReader {
   boolean isNMRdata;
   final Hashtable htFormul = new Hashtable();
   Hashtable htHetero = null;
+  Hashtable htSites = null;
   protected String fileType = "pdb";
   
   String currentGroup3;
@@ -106,6 +107,10 @@ public class PdbReader extends AtomSetCollectionReader {
         }
         if (line.startsWith("HETNAM")) {
           hetnam();
+          continue;
+        }
+        if (line.startsWith("SITE  ")) {
+          site();
           continue;
         }
         if (line.startsWith("CRYST1")) {
@@ -162,7 +167,9 @@ public class PdbReader extends AtomSetCollectionReader {
       }
       serialMap = null;
       //if (!isNMRdata)
-        applySymmetry();
+      applySymmetry();
+      if (htSites != null)
+        addSites(htSites);
     } catch (Exception e) {
       return setError(e);
     }
@@ -519,6 +526,67 @@ public class PdbReader extends AtomSetCollectionReader {
     //Logger.debug("hetero: "+groupName+" "+hetName);
   }
   
+  /*
+   * http://www.wwpdb.org/documentation/format23/sect7.html
+   * 
+ Record Format
+
+COLUMNS       DATA TYPE         FIELD            DEFINITION
+------------------------------------------------------------------------
+ 1 -  6       Record name       "SITE    "
+ 8 - 10       Integer           seqNum      Sequence number.
+12 - 14       LString(3)        siteID      Site name.
+16 - 17       Integer           numRes      Number of residues comprising 
+                                            site.
+
+19 - 21       Residue name      resName1    Residue name for first residue
+                                            comprising site.
+23            Character         chainID1    Chain identifier for first residue
+                                            comprising site.
+24 - 27       Integer           seq1        Residue sequence number for first
+                                            residue comprising site.
+28            AChar             iCode1      Insertion code for first residue
+                                            comprising site.
+30 - 32       Residue name      resName2    Residue name for second residue
+...
+41 - 43       Residue name      resName3    Residue name for third residue
+...
+52 - 54       Residue name      resName4    Residue name for fourth residue
+ 
+   */
+  
+  private void site() {
+    if (htSites == null)
+      htSites = new Hashtable();
+    int seqNum = parseInt(line, 7, 10);
+    int nResidues = parseInt(line, 15, 17);
+    String siteID = parseTrimmed(line, 11, 14);
+    Hashtable htSite = (Hashtable) htSites.get(siteID);
+    if (htSite == null) {
+      htSite = new Hashtable();
+      htSite.put("seqNum", "site_" + seqNum);
+      htSite.put("nResidues", new Integer(nResidues));
+      htSite.put("groups", "");
+      htSites.put(siteID, htSite);
+    }
+    String groups = (String)htSite.get("groups");
+    for (int i = 0; i < 4; i++) {
+      int pt = 18 + i * 11;
+      String resName = parseTrimmed(line, pt, pt + 3);
+      if (resName.length() == 0)
+        break;
+      String chainID = parseTrimmed(line, pt + 4, pt + 5);
+      String seq = parseTrimmed(line, pt + 5, pt + 9);
+      String iCode = parseTrimmed(line, pt + 9, pt + 10);
+      groups += (groups.length() == 0 ? "" : ",") + "[" + resName + "]" + seq;
+      if (iCode.length() > 0)
+        groups += "^" + iCode;
+      if (chainID.length() > 0)
+        groups += ":" + chainID;
+      htSite.put("groups", groups);
+    }
+  }
+
   public void applySymmetry() throws Exception {
     if (needToApplySymmetry && !isNMRdata) {
       // problem with PDB is that they don't give origins, 

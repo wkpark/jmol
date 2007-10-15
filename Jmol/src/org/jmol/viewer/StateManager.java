@@ -651,6 +651,7 @@ public class StateManager {
       //surrounded by ";" that should be reset upon file load
       //frame properties and such:
         ";selectionhalos;";
+      //also, any variable starting with site_ will be cleared
     
     final static String unnecessaryProperties = 
       //these are handled individually
@@ -687,7 +688,8 @@ public class StateManager {
       e = htUserVariables.keys();
       while (e.hasMoreElements()) {
         String key = (String) e.nextElement();
-        if (volatileProperties.indexOf(";" + key + ";") >= 0 || key.charAt(0) == '@') 
+        if (volatileProperties.indexOf(";" + key + ";") >= 0 || key.charAt(0) == '@'
+          || key.startsWith("site_")) 
           htUserVariables.remove(key);
       }
 

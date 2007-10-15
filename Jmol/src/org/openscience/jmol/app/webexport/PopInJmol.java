@@ -39,6 +39,7 @@ class PopInJmol extends WebPanel {
     infoFile = "pop_in_instructions.html";
     templateName = "pop_in_template.html";
     appletTemplateName = "pop_in_template2.html";
+    templateImage = "pop_in.png";
   }
 
   JPanel appletParamPanel() {

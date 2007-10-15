@@ -25,23 +25,40 @@
 package org.openscience.jmol.app.webexport;
 
 import java.awt.*;
+
 import javax.swing.*;
 
 class LogPanel {
 
   private static JTextArea logArea;
+  private static JTextArea miniLogArea;
   private static boolean resetFlag;
 
   static void log(String message) {
-    if (resetFlag)
+    if (resetFlag){
       logArea.setText("");
+      miniLogArea.setText("");
+    }
     resetFlag = (message.length() == 0);
     logArea.append(message + "\n");
+    miniLogArea.append(message + "\n");
     logArea.setCaretPosition(logArea.getDocument().getLength());
+    miniLogArea.setCaretPosition(miniLogArea.getDocument().getLength());
   }
 
   static String getText() {
     return logArea.getText();
+  }
+  
+  JPanel miniLog() {
+    JPanel miniPanel = new JPanel();
+    miniPanel.setLayout(new BorderLayout());
+    miniPanel.setBorder(BorderFactory.createTitledBorder("Messages (see Log tab for full history):"));
+    miniLogArea = new JTextArea(2,20);
+    miniLogArea.setEditable(false);
+    JScrollPane miniScrollPane = new JScrollPane(miniLogArea);
+    miniPanel.add(miniScrollPane);
+    return (miniPanel);
   }
 
   JComponent getPanel() {
@@ -49,22 +66,16 @@ class LogPanel {
 
     //Create the log first, because the action listeners
     //need to refer to it.
-    logArea = new JTextArea(20, 20);
+    logArea = new JTextArea(30,20);
     logArea.setMargin(new Insets(5, 5, 5, 5));
     logArea.setEditable(false);
     JScrollPane logScrollPane = new JScrollPane(logArea);
 
-    //Create a label for the log
-    JLabel logLabel = new JLabel("Log and Error Messages:");
-    //put in its own panel so that it will be centered
-    JPanel logLabelPanel = new JPanel();
-    logLabelPanel.add(logLabel);
-
     //Create a panel of the log and its label
     JPanel logPanel = new JPanel();
     logPanel.setLayout(new BorderLayout());
-    logPanel.add(logLabelPanel, BorderLayout.PAGE_START);
-    logPanel.add(logScrollPane, BorderLayout.PAGE_END);
+    logPanel.setBorder(BorderFactory.createTitledBorder("Log and Error Messages:"));
+    logPanel.add(logScrollPane);
 
     return (logPanel);
   }

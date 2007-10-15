@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.app.webexport;
 
-import java.awt.GridLayout;
+import java.awt.BorderLayout;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -52,7 +52,7 @@ public class WebExport extends JPanel {
 
   
   private WebExport(JmolViewer viewer, HistoryFile hFile) {
-    super(new GridLayout(1, 1));
+    super(new BorderLayout());
 
     historyFile = hFile;
     appletPath = historyFile.getProperty("webMakerAppletPath", "..");
@@ -69,6 +69,9 @@ public class WebExport extends JPanel {
 
     if (runStatus != STAND_ALONE) {
       //Add tabs to the tabbed pane
+      
+      JPanel introPanel = new IntroPanel().getPanel();
+      mainTabs.add("Introduction",introPanel);
 
       webPanels[0] = new PopInJmol(viewer, fc, webPanels, 0);
       webPanels[1] = new ScriptButtons(viewer, fc, webPanels, 1);
@@ -100,6 +103,11 @@ public class WebExport extends JPanel {
 
     //Add the tabbed pane to this panel
     add(mainTabs);
+    
+    //Create the small log
+    JPanel miniLog = new LogPanel().miniLog();
+    add(miniLog, BorderLayout.SOUTH);
+
 
     //Uncomment the following line to use scrolling tabs.
     //tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -165,8 +173,8 @@ public class WebExport extends JPanel {
 
   public static void saveHistory() {
     historyFile.addWindowInfo(windowName, webFrame, null);
-    prop.setProperty("webMakerInfoWidth", "" + webPanels[0].getInfoWidth());
-    prop.setProperty("webMakerInfoHeight", "" + webPanels[0].getInfoHeight());
+//    prop.setProperty("webMakerInfoWidth", "" + webPanels[0].getInfoWidth());
+//    prop.setProperty("webMakerInfoHeight", "" + webPanels[0].getInfoHeight());
     prop.setProperty("webMakerAppletPath", appletPath);
     prop.setProperty("webMakerPageAuthorName", pageAuthorName);
    historyFile.addProperties(prop);
@@ -200,5 +208,9 @@ public class WebExport extends JPanel {
     pageAuthorName = pageAuthor;
     prop.setProperty("webMakerPageAuthorName", pageAuthorName);
     historyFile.addProperties(prop);
+  }
+  
+  static JFrame getFrame(){
+    return webFrame;
   }
 }

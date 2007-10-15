@@ -39,6 +39,7 @@ import javax.swing.*;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.util.TextFormat;
+import org.openscience.jmol.app.HelpDialog;
 
 abstract class WebPanel extends JPanel implements ActionListener {
 
@@ -55,6 +56,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
   protected String appletInfoDivs;
   protected String htmlAppletTemplate;
   protected String appletTemplateName;
+  protected String templateImage;
   protected boolean useAppletJS;
 
   protected JSpinner appletSizeSpinnerW;
@@ -62,7 +64,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
   protected JSpinner appletSizeSpinnerP;
 
   private JScrollPane editorScrollPane;
-  private JButton saveButton, addInstanceButton;
+  private JButton saveButton, helpButton, addInstanceButton;
   private JButton deleteInstanceButton, showInstanceButton;
   private JTextField appletPath, pageAuthorName, webPageTitle;
   private JFileChooser fc;
@@ -94,15 +96,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
   JPanel getPanel(int infoWidth, int infoHeight) {
 
     //For layout purposes, put things in separate panels
-
-    //Create the save button. 
-    saveButton = new JButton("Save HTML as...");
-    saveButton.addActionListener(this);
-
-    //save file selection panel
-    JPanel savePanel = new JPanel();
-    savePanel.add(saveButton);
-
+   
     //Create the list and list view to handle the list of 
     //Jmol Instances.
     instanceList = new JList(new DefaultListModel());
@@ -169,6 +163,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     JPanel leftPanel = getLeftPanel(infoWidth, infoHeight);
     leftPanel.setMaximumSize(new Dimension(350, 1000));
 
+  
     //Add everything to this panel.
     panel.add(leftPanel, BorderLayout.CENTER);
     panel.add(rightPanel, BorderLayout.EAST);
@@ -227,7 +222,22 @@ abstract class WebPanel extends JPanel implements ActionListener {
   
   private JPanel getLeftPanel(int w, int h) {
 
-    editorScrollPane = getInstructionPane(w, h);
+    helpButton = new JButton("Help/Instructions");
+    helpButton.addActionListener(this);
+    
+    URL pageCartoon = getResource(templateImage);
+    ImageIcon pageImage = null;
+    if (pageCartoon != null){
+      pageImage = new ImageIcon(pageCartoon, "Cartoon of Page");
+    } else {
+      System.err.println("Error Loading Page Cartoon Image "+templateImage);
+    }
+    JLabel pageCartoonLabel = new JLabel(pageImage);
+    JPanel pageCartoonPanel =  new JPanel();
+    pageCartoonPanel.setLayout(new BorderLayout());
+    pageCartoonPanel.setBorder(BorderFactory.createTitledBorder("Cartoon of Page:"));
+    pageCartoonPanel.add(pageCartoonLabel);
+ //   editorScrollPane = getInstructionPane(w, h);
 
     //Create the save button. 
     saveButton = new JButton("Save HTML as...");
@@ -266,7 +276,9 @@ abstract class WebPanel extends JPanel implements ActionListener {
     //Combine previous three panels into one
     JPanel leftpanel = new JPanel();
     leftpanel.setLayout(new BorderLayout());
-    leftpanel.add(editorScrollPane, BorderLayout.CENTER);
+ //   leftpanel.add(editorScrollPane, BorderLayout.CENTER);
+    leftpanel.add(helpButton, BorderLayout.NORTH);
+    leftpanel.add(pageCartoonPanel, BorderLayout.CENTER);
     leftpanel.add(settingsPanel, BorderLayout.SOUTH);
     return leftpanel;
   }
@@ -327,16 +339,16 @@ abstract class WebPanel extends JPanel implements ActionListener {
         height = ((SpinnerNumberModel) (appletSizeSpinnerH.getModel()))
             .getNumber().intValue();
       }
-      String StructureFile = viewer.getModelSetPathName();
-      if (StructureFile == null) {
+      String structureFile = viewer.getModelSetPathName();
+      if (structureFile == null) {
         LogPanel
-            .log("Error trying to get name and path to file containing structure in pop_in_Jmol.");
+            .log("Error trying to get name and path to file containing structure:" + structureFile);
       }
-      JmolInstance instance = new JmolInstance(viewer, name, StructureFile,
+      JmolInstance instance = new JmolInstance(viewer, name, structureFile,
           script, width, height);
       if (instance == null) {
         LogPanel
-            .log("Error creating new instance containing script and image in pop_in_Jmol.");
+            .log("Error creating new instance containing script(s) and image.");
       }
 
       int i;
@@ -397,6 +409,11 @@ abstract class WebPanel extends JPanel implements ActionListener {
       if (!retVal) {
         LogPanel.log("Call to FileWriter unsuccessful.");
       }
+    }
+    if (e.getSource() == helpButton){
+      HelpDialog webExportHelp = new HelpDialog(WebExport.getFrame(), getResource(infoFile));
+      webExportHelp.setVisible(true);
+      webExportHelp.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
   }
 

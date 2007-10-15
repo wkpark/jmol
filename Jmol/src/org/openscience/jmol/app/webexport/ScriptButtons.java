@@ -39,6 +39,7 @@ class ScriptButtons extends WebPanel {
     infoFile = "script_button_instructions.html";
     templateName = "script_button_template.html";
     appletTemplateName = "script_button_template2.html";
+    templateImage = "script_button.png";
   }
 
   JPanel appletParamPanel() {

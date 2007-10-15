@@ -28,6 +28,7 @@ import org.jmol.symmetry.SpaceGroup;
 import org.jmol.symmetry.UnitCell;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 
 import java.io.BufferedReader;
@@ -414,6 +415,9 @@ public abstract class AtomSetCollectionReader {
     while (e.hasMoreElements()) {
       String name = (String) e.nextElement();
       Hashtable htSite = (Hashtable) htSites.get(name);
+      for (int i = name.length(); --i >= 0; )
+        if (!Character.isLetterOrDigit(name.charAt(i)))
+          name = name.substring(0, i) + "_" + name.substring(i + 1);
       String seqNum = (String) htSite.get("seqNum");
       String groups = (String) htSite.get("groups");
       addJmolScript("@site_" + name + " " + groups);

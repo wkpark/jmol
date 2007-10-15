@@ -114,15 +114,10 @@ public class DrawRenderer extends MeshRenderer {
       if (pt2i.z == 1 || pt1i.z == 1) //slabbed
         break;
       int headDiameter = 0;
-      if (isGenerator) {
-        diameter = (short)(fScale * 100);
-        headDiameter = diameter * 5; 
-      } else {
-        headDiameter = (int) (tip.length() * .5);
-        diameter = headDiameter / 5;
-        if (diameter < 1)
-          diameter = 1;
-      }
+      headDiameter = (int) (tip.length() * .5);
+      diameter = headDiameter / 5;
+      if (diameter < 1)
+        diameter = 1;
       if (headDiameter > 2)
         g3d.fillCone(Graphics3D.ENDCAPS_FLAT, headDiameter, pt1i, pt2i);
       break;

@@ -186,13 +186,16 @@ public class _PovrayExporter extends _Exporter {
 
   public void renderCylinder(Point3f pt1, Point3f pt2, short colix,
                              byte endcaps, int madBond) {
-    if (pt1.distance(pt2) == 0)
+    float d = viewer.scaleToScreen((int) pt1.z, madBond);
+    if (pt1.distance(pt2) == 0) {
+      fillSphereCentered(d, pt1.x, pt1.y, pt1.z, colix);
       return;
+    }
     String color = rgbFractionalFromColix(colix, ',');
     //transformPoint is not needed when bonds are rendered via super.fillCylinders
     //viewer.transformPoint(pt1, povpt1);
     //viewer.transformPoint(pt2, povpt2);
-    float radius1 = viewer.scaleToScreen((int) pt1.z, madBond / 2);
+    float radius1 = d / 2f;
     float radius2 = viewer.scaleToScreen((int) pt2.z, madBond / 2);
 
     // (float)viewer.getBondRadius(i);
@@ -290,6 +293,10 @@ public class _PovrayExporter extends _Exporter {
 
   public void fillCylinder(short colix, byte endcaps, int diameter, 
                            Point3f screenA, Point3f screenB) {
+    if (screenA.distance(screenB) == 0) {
+      fillSphereCentered(diameter, screenA.x, screenA.y, screenA.z, colix);
+      return;
+    }
     String color = rgbFractionalFromColix(colix, ',');
     float radius1 = diameter / 2f;
     float radius2 = radius1;

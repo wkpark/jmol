@@ -23,6 +23,8 @@
  */
 package org.jmol.export;
 
+import java.util.BitSet;
+
 import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -453,7 +455,15 @@ final public class Export3D implements JmolRendererInterface {
   public void fillTriangle(Point3i pointA, short colixA, short normixA,
                            Point3i pointB, short colixB, short normixB,
                            Point3i pointC, short colixC, short normixC) {
-    // mesh, isosurface -- not used
+    // mesh, isosurface
+    if (colixA != colixB || colixB != colixC) {
+      //shouldn't be here, because that uses renderIsosurface
+      return;
+    }
+    ptA.set(pointA.x, pointA.y, pointA.z);
+    ptB.set(pointB.x, pointB.y, pointB.z);
+    ptC.set(pointC.x, pointC.y, pointC.z);
+    exporter.fillTriangle(colixA, ptA, ptB, ptC);
   }
 
   public void fillTriangle(short normix,
@@ -504,9 +514,10 @@ final public class Export3D implements JmolRendererInterface {
   }
 
   public void fillQuadrilateral(Point3f pointA, Point3f pointB,
-                                Point3f pointC, Point3f screenD) {
+                                Point3f pointC, Point3f pointD) {
     // hermite, rockets, cartoons
-    exporter.fillQuadrilateral(colix, pointA, pointB, pointC, screenD);
+    exporter.fillTriangle(colix, pointA, pointB, pointC);
+    exporter.fillTriangle(colix, pointA, pointC, pointD);
   }
 
   public void fillQuadrilateral(Point3i pointA, short colixA, short normixA,
@@ -521,6 +532,15 @@ final public class Export3D implements JmolRendererInterface {
                  pointC, colixC, normixC,
                  screenD, colixD, normixD);
   }
+
+  public void renderIsosurface(Point3f[] vertices, short colix,
+                                        short[] colixes, short[] normals,
+                                        int[][] indices, BitSet bsFaces, int nVertices,
+                                        int nPoints) {
+    exporter.renderIsosurface(vertices, colix, colixes, normals,
+                              indices, bsFaces, nVertices, nPoints);
+  }
+
 
   /* ***************************************************************
    * g3d-relayed info specifically needed for the renderers

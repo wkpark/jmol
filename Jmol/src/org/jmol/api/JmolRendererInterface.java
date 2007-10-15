@@ -1,5 +1,7 @@
 package org.jmol.api;
 
+import java.util.BitSet;
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
@@ -251,6 +253,11 @@ public interface JmolRendererInterface {
                                          Point3i screenC, short colixC,
                                          short normixC, Point3i screenD,
                                          short colixD, short normixD);
+
+  public abstract void renderIsosurface(Point3f[] vertices, short colix,
+                                        short[] colixes, short[] normals,
+                                        int[][] indices, BitSet bsFaces, int nVertices,
+                                        int nPoints);
 
   public abstract boolean isInDisplayRange(int x, int y);
 

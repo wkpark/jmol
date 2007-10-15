@@ -101,7 +101,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
     colix = imesh.colix;
     short[] vertexColixes = imesh.vertexColixes;
     g3d.setColix(imesh.colix);
-    if (isGenerator)
+    boolean generateSet = (isGenerator && fill && vertexColixes != null);
+    if (generateSet)
       bsFaces.clear();
     //System.out.println("Isosurface renderTriangle polygoncount = "
     //  + mesh.polygonCount + " screens: " + screens.length + " normixes: "
@@ -131,7 +132,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         colixA = colixB = colixC = colix;
       }
       if (fill) {
-        if (isGenerator) {
+        if (generateSet) {
           bsFaces.set(i);
           continue;
         }
@@ -161,7 +162,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
               screens[iC], colixC, check);
       }
     }
-    if (isGenerator && fill)
+    if (generateSet)
      renderExport();
   }
 

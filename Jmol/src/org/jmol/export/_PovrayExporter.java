@@ -233,6 +233,7 @@ public class _PovrayExporter extends _Exporter {
     //writeMacrosTripleWire();
     writeMacrosBond();
     writeMacrosJoint();
+    writeMacrosTriangle();
     //    writeMacrosSingleBond();
     //    writeMacrosDoubleBond();
     //    writeMacrosTripleBond();
@@ -270,6 +271,14 @@ public class _PovrayExporter extends _Exporter {
         + "  no_shadow}\n" + "#end\n\n");
   }
   
+  private void writeMacrosTriangle() {
+    output.append(
+        "#macro jtriangle(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,R,G,B,T)\n"
+        + " triangle{<X1,Y1,Z1>,<X2,Y2,Z2>,<X3,Y3,Z3>\n" 
+        + "  pigment{rgbt<R,G,B,T>}\n"
+        + "  no_shadow}\n" + "#end\n\n");
+  }
+
   public void fillSphereCentered(int mad, Point3f pt, short colix) {
     //not a mad -- a number of pixels?
     //TODO
@@ -320,13 +329,13 @@ public class _PovrayExporter extends _Exporter {
   }
 
   public void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC) {
-    //cartoons
-    System.out.println("pov fillTriangle - cartoons "+this);
-  }
-
-  public void fillQuadrilateral(short colix, Point3f ptA, Point3f ptB, Point3f ptC, Point3f ptD) {
-    //rockets
-    //System.out.println("pov fillQuadrilateral -- rockets "+this);
+    //cartoons, mesh, isosurface
+    //System.out.println("pov fillTriangle - cartoons "+this);
+    String color = rgbFractionalFromColix(colix, ',');
+    output.append("jtriangle(" + ptA.x + "," + ptA.y + "," + ptA.z + "," 
+    + ptB.x + "," + ptB.y + "," + ptB.z + "," 
+    + ptC.x + "," + ptC.y + "," + ptC.z + ","
+    + color + "," + translucencyFractionalFromColix(colix) + ")\n");
   }
 
   public void fillCone(short colix, byte endcap, int diameter,

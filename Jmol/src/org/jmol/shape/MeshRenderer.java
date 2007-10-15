@@ -112,7 +112,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
     colix = mesh.colix;
     //vertexColixes are only isosurface properties of IsosurfaceMesh, not Mesh
     g3d.setColix(colix);
-    if (isGenerator)
+    boolean generateSet = (false && isGenerator && fill);
+    if (generateSet)
       bsFaces.clear();
     for (int i = mesh.polygonCount; --i >= 0;) {
       if (!isPolygonDisplayable(i))
@@ -134,7 +135,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
             && transformedVectors[normixes[iC]].z < 0)
           continue;
         if (fill) {
-          if (isGenerator) {
+          if (generateSet) {
             bsFaces.set(i);
             continue;
           }
@@ -157,7 +158,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
             && transformedVectors[normixes[iD]].z < 0)
           continue;
         if (fill) {
-          if (isGenerator) {
+          if (generateSet) {
             bsFaces.set(i);
             continue;
           }
@@ -170,11 +171,15 @@ public abstract class MeshRenderer extends ShapeRenderer {
             screens[iD]);
       }
     }
-    if (isGenerator && fill)
+    if (generateSet)
       renderExport();
    }
 
-   protected void renderExport() {  
+   protected void renderExport() {
+     //not implemented for this yet.
+       g3d.renderIsosurface(mesh.vertices, mesh.colix, null,
+           mesh.normixes, mesh.polygonIndexes, bsFaces, mesh.vertexCount,
+           mesh.polygonCount);
    }
    
 }

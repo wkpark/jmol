@@ -25,6 +25,7 @@ package org.jmol.g3d;
 
 import java.awt.Component;
 import java.awt.Image;
+import java.util.BitSet;
 import java.util.Hashtable;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
@@ -1197,6 +1198,13 @@ final public class Graphics3D implements JmolRendererInterface {
                  screenD, colixD, normixD);
   }
 
+  public void renderIsosurface(Point3f[] vertices, short colix,
+                               short[] colixes, short[] normals,
+                               int[][] indices, BitSet bsFaces, int nVertices,
+                               int nPoints) {
+    // generator only
+  }
+  
   /* ***************************************************************
    * lower-level plotting routines
    * ***************************************************************/

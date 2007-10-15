@@ -7904,6 +7904,7 @@ class Eval { //implements Runnable {
       return "";
     data = type.intern();
     if (isExport) {
+      //should be streaming here, not sending this to a StringBuffer.
       data = "" + viewer.generateOutput(data);
       if (type.equals("Povray")) {
         String[] parts = TextFormat.split(data, "\\-PART II-\\");

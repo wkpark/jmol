@@ -146,11 +146,6 @@ public class _MayaExporter extends _Exporter {
         + ".iog\" \":initialShadingGroup.dsm\" -na;\n");
   }
 
-  public void fillSphereCentered(int mad  , Point3f pt, short colix) {
-   //not a mad -- a number of pixels?
-   //TODO
-  }
-  
   public void renderIsosurface(Point3f[] vertices, short colix,
                                short[] colixes, short[] normals,
                                int[][] indices, BitSet bsFaces,
@@ -170,10 +165,6 @@ public class _MayaExporter extends _Exporter {
 
   public void drawDottedLine(short colix, Point3f pointA, Point3f pointB) {
     //axes
-  }
-
-  public void drawPoints(short colix, int count, int[] coordinates) {
-    //dots
   }
 
   public void drawLine(short colix, Point3f pointA, Point3f pointB) {
@@ -202,6 +193,17 @@ public class _MayaExporter extends _Exporter {
     //rockets
   }
   
+  public void fillSphereCentered(short colix, int diameter, Point3f pt) {
+    //rockets:    
+  }
+
+  public void plotText(int x, int y, int z, short colix, short bgcolix, String text, Font3D font3d) {
+    // TODO
+    
+  }
+
+  // not implemented: 
+  
   public void fillHermite(short colix, int tension, int diameterBeg,
                           int diameterMid, int diameterEnd,
                           Point3f s0, Point3f s1, Point3f s2, Point3f s3){
@@ -221,13 +223,5 @@ public class _MayaExporter extends _Exporter {
   }
            
           
-  public void fillSphereCentered(short colix, int diameter, Point3f pt) {
-    //rockets:    
-  }
-
-  public void plotText(int x, int y, int z, short colix, short bgcolix, String text, Font3D font3d) {
-    // TODO
-    
-  }
 
 }

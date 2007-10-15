@@ -12,11 +12,11 @@ import org.jmol.shape.ShapeRenderer;
 
 public interface JmolRendererInterface {
 
-  public void setg3dExporter(Graphics3D g3d, JmolExportInterface exporter);
+  public abstract void setg3dExporter(Graphics3D g3d, JmolExportInterface exporter);
   
-  public JmolExportInterface getExporter();
+  public abstract JmolExportInterface getExporter();
 
-  public void setRenderer(ShapeRenderer shapeRenderer);
+  public abstract void setRenderer(ShapeRenderer shapeRenderer);
   
   public abstract boolean checkTranslucent(boolean isAlphaTranslucent);
 
@@ -97,6 +97,14 @@ public interface JmolRendererInterface {
   public abstract void fillSphereCentered(int diameter, Point3i center);
 
   /**
+   * fills a solid sphere
+   *
+   * @param diameter pixel count
+   * @param center a javax.vecmath.Point3f ... floats are casted to ints
+   */
+  public abstract void fillSphereCentered(int diameter, Point3f center);
+
+  /**
    * draws a rectangle
    *
    * @param x upper left x
@@ -160,6 +168,8 @@ public interface JmolRendererInterface {
 
   public abstract void drawPixel(int x, int y, int z);
 
+  public abstract void plotPixelClipped(Point3i a);
+
   public abstract void drawPoints(int count, int[] coordinates);
 
   public abstract void drawDashedLine(int run, int rise, Point3i pointA,
@@ -168,6 +178,8 @@ public interface JmolRendererInterface {
   public abstract void drawDottedLine(Point3i pointA, Point3i pointB);
 
   public abstract void drawLine(int x1, int y1, int z1, int x2, int y2, int z2);
+
+  public abstract void drawLine(Point3i pointA, Point3i pointB);
 
   public abstract void drawLine(short colixA, short colixB, int x1, int y1,
                                 int z1, int x2, int y2, int z2);

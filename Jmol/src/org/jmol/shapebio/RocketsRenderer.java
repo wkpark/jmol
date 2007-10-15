@@ -91,6 +91,7 @@ public class RocketsRenderer extends BioShapeRenderer {
         if (isHelix(i) || isSheet(i)) {
           renderSpecialSegment(monomer, getLeadColix(i), mads[i]);
         } else {
+          renderPending();
           renderHermiteConic(i, true);
         }
       }
@@ -167,7 +168,7 @@ public class RocketsRenderer extends BioShapeRenderer {
 
   private void renderPendingSheet(Point3f pointStart, Point3f pointBeforeEnd,
                           Point3f pointEnd, boolean tEnd) {
-    if (!isGenerator && !g3d.setColix(colix))
+    if (!g3d.setColix(colix))
       return;
     if (tEnd) {
       drawArrowHeadBox(pointBeforeEnd, pointEnd);

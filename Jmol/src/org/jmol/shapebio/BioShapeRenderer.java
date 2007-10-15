@@ -299,7 +299,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     if ((aspectRatio <= 0 || (!checkDiameter(diameterBeg)
         && !checkDiameter(diameterMid) && !checkDiameter(diameterEnd))))
       return false;
-    if (isGenerator) {
+    if (false && isGenerator) {
       diameterBeg = madBeg;
       diameterMid = madMid;
       diameterEnd = madEnd;
@@ -418,8 +418,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   void renderCone(int i, Point3f pointBegin, Point3f pointEnd,
                   Point3f screenPtBegin, Point3f screenPtEnd) {
     int coneDiameter = mad + (mad >> 2);
-    if (!isGenerator)
-      coneDiameter = viewer.scaleToScreen((int) Math.floor(screenPtBegin.z), 
+    coneDiameter = viewer.scaleToScreen((int) Math.floor(screenPtBegin.z), 
           coneDiameter);
 /*    
     if (false && aspectRatio > 0 && checkDiameter(coneDiameter)) {

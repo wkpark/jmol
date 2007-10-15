@@ -541,7 +541,7 @@ final public class Graphics3D implements JmolRendererInterface {
    * @param diameter pixel count
    * @param center a javax.vecmath.Point3f ... floats are casted to ints
    */
-  void fillSphereCentered(int diameter, Point3f center) {
+  public void fillSphereCentered(int diameter, Point3f center) {
     fillSphereCentered(diameter, (int)center.x, (int)center.y, (int)center.z);
   }
 
@@ -924,7 +924,7 @@ final public class Graphics3D implements JmolRendererInterface {
                     x1, y1, z1, x2, y2, z2, false);
   }
   
-  void drawLine(Point3i pointA, Point3i pointB) {
+  public void drawLine(Point3i pointA, Point3i pointB) {
     // draw quadrilateral and hermite
     line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
                     pointA.x, pointA.y, pointA.z,
@@ -1240,7 +1240,7 @@ final public class Graphics3D implements JmolRendererInterface {
       addPixel(offset, z, argbCurrent);
   }
 
-  void plotPixelClipped(Point3i screen) {
+  public void plotPixelClipped(Point3i screen) {
     // hermite only
     plotPixelClipped(screen.x, screen.y, screen.z);
   }

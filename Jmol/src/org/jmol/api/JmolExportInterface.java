@@ -34,8 +34,6 @@ public interface JmolExportInterface {
   // The following methods are used by a variety of shape generators and 
   // replace methods in org.jmol.g3d. More will be added as needed. 
 
-  abstract void fillSphereCentered(int radius, Point3f pt, short colix);
-
   abstract void renderIsosurface(Point3f[] vertices, short colix,
                                  short[] colixes, short[] normals,
                                  int[][] indices, BitSet bsFaces,
@@ -51,10 +49,6 @@ public interface JmolExportInterface {
 
   abstract void drawDottedLine(short colix, Point3f pointA, Point3f pointB); //axes
   
-  abstract void drawPoints(short colix, int count, int[] coordinates); //dots
-
-  abstract void drawLine(short colix, Point3f pointA, Point3f pointB); //stars
-  
   abstract void fillScreenedCircleCentered(short colix, int diameter, int x,
                                                     int y, int z);  //halos 
 
@@ -62,18 +56,26 @@ public interface JmolExportInterface {
   abstract void drawDashedLine(short colix, int run, int rise, 
                                Point3f ptA, Point3f ptB); //measures
  
-  //cartoons, meshRibbons:
-  abstract void drawHermite(short colix, boolean fill, boolean border, int tension,
-                   Point3f s0, Point3f s1, Point3f s2, Point3f s3,
-                   Point3f s4, Point3f s5, Point3f s6, Point3f s7,
-                   int aspectRatio);
-  
   //rockets and dipoles
   abstract void fillCone(short colix, byte endcap, int diameter, 
                          Point3f screenBase, Point3f screenTip);
   
   //cartoons, rockets:
   abstract void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC);
+  
+  //rockets:
+  abstract void fillSphereCentered(short colix, int diameter, Point3f pt);
+  
+  abstract void plotText(int x, int y, int z, short colix, short bgcolix,
+                   String text, Font3D font3d);
+
+  // NOT IMPLEMENTED, but could be if needed:
+  
+  //cartoons, meshRibbons:
+  abstract void drawHermite(short colix, boolean fill, boolean border, int tension,
+                   Point3f s0, Point3f s1, Point3f s2, Point3f s3,
+                   Point3f s4, Point3f s5, Point3f s6, Point3f s7,
+                   int aspectRatio);
   
   //cartoons, rockets, trace:
   abstract void fillHermite(short colix, int tension, int diameterBeg,
@@ -84,10 +86,5 @@ public interface JmolExportInterface {
   abstract void drawHermite(short colix, int tension,
                              Point3f s0, Point3f s1, Point3f s2, Point3f s3);
 
-  //rockets:
-  abstract void fillSphereCentered(short colix, int diameter, Point3f pt);
-  
-  abstract void plotText(int x, int y, int z, short colix, short bgcolix,
-                   String text, Font3D font3d);
 
 }

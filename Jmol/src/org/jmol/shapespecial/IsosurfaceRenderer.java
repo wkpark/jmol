@@ -70,7 +70,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
   protected void renderPoints() {
     int incr = imesh.vertexIncrement;
-    int diam = (isGenerator ? 20 : 4);
+    int diam = 4;
     for (int i = (!imesh.hasGridPoints || imesh.firstRealVertex < 0 ? 0 : imesh.firstRealVertex); i < vertexCount; i += incr) {
       if (vertexValues != null && Float.isNaN(vertexValues[i]) || frontOnly
           && transformedVectors[normixes[i]].z < 0)
@@ -101,7 +101,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
     colix = imesh.colix;
     short[] vertexColixes = imesh.vertexColixes;
     g3d.setColix(imesh.colix);
-    boolean generateSet = (isGenerator && fill && vertexColixes != null);
+    boolean generateSet = (isGenerator && !isBicolorMap 
+        && fill && vertexColixes != null);
     if (generateSet)
       bsFaces.clear();
     //System.out.println("Isosurface renderTriangle polygoncount = "

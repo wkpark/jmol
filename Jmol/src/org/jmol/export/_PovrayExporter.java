@@ -160,14 +160,8 @@ public class _PovrayExporter extends _Exporter {
   
 
   public void renderAtom(Atom atom, short colix) {
-    String color = rgbFractionalFromColix(colix, ',');
-    float r = atom.getScreenRadius();
-    //    float r = viewer.scaleToPerspective(atom.screenZ, atom.getMadAtom());
-    viewer.transformPoint(atom, povpt1);
-    output.append("atom(" + povpt1.x + "," + povpt1.y + "," + povpt1.z + ","
-        + r + "," + color + "," + translucencyFractionalFromColix(colix)
-        + ")\n");
-    nBalls++;
+    fillSphereCentered(atom.screenDiameter, 
+        atom.screenX, atom.screenY, atom.screenZ, colix);
   }
 
   public void renderBond(Point3f atom1, Point3f atom2, short colix1,
@@ -192,7 +186,8 @@ public class _PovrayExporter extends _Exporter {
 
   public void renderCylinder(Point3f pt1, Point3f pt2, short colix,
                              byte endcaps, int madBond) {
-    nCyl++;
+    if (pt1.distance(pt2) == 0)
+      return;
     String color = rgbFractionalFromColix(colix, ',');
     //transformPoint is not needed when bonds are rendered via super.fillCylinders
     //viewer.transformPoint(pt1, povpt1);
@@ -279,11 +274,7 @@ public class _PovrayExporter extends _Exporter {
         + "  no_shadow}\n" + "#end\n\n");
   }
 
-  public void fillSphereCentered(int mad, Point3f pt, short colix) {
-    //not a mad -- a number of pixels?
-    //TODO
-  }
-
+  
   public void renderIsosurface(Point3f[] vertices, short colix,
                                short[] colixes, short[] normals,
                                int[][] indices, BitSet bsFaces, int nVertices,
@@ -299,28 +290,26 @@ public class _PovrayExporter extends _Exporter {
 
   public void fillCylinder(short colix, byte endcaps, int diameter, 
                            Point3f screenA, Point3f screenB) {
+    String color = rgbFractionalFromColix(colix, ',');
+    float radius1 = diameter / 2f;
+    float radius2 = radius1;
+    output.append("bond(" + screenA.x + "," + screenA.y + "," + screenA.z + "," + 
+        radius1 + "," + screenB.x + "," + screenB.y + "," + screenB.z + "," + 
+        radius2 + "," + color + "," + translucencyFractionalFromColix(colix) + ")\n");
   }
 
   public void drawDottedLine(short colix, Point3f pointA, Point3f pointB) {
     //axes
   }
 
-  public void drawPoints(short colix, int count, int[] coordinates) {
-    //dots
-  }
-
-  public void drawLine(short colix, Point3f pointA, Point3f pointB) {
-    //stars
-  }
-  
   public void fillScreenedCircleCentered(short colix, int diameter, int x,
                                          int y, int z) {
    //halos 
   }
 
-  public void drawPixel(short colix, int x, int y, int z) {
-    //measures
-   // System.out.println("pov drawPixel "+this);
+  public void drawPixel(short colix, int x, int y, int z) {    
+    //measures, meshRibbon
+    fillSphereCentered(1.5f, x, y, z, colix);
   }
 
   public void drawDashedLine(short colix, int run, int rise, Point3f ptA, Point3f ptB) {
@@ -340,8 +329,12 @@ public class _PovrayExporter extends _Exporter {
 
   public void fillCone(short colix, byte endcap, int diameter,
                        Point3f screenBase, Point3f screenTip) {
-    //rockets
-    //System.out.println("pov fillCone rockets "+this);
+    String color = rgbFractionalFromColix(colix, ',');
+    float radius1 = diameter / 2f;
+    float radius2 = 0;
+    output.append("bond(" + screenBase.x + "," + screenBase.y + "," + screenBase.z + "," + 
+        radius1 + "," + screenTip.x + "," + screenTip.y + "," + screenTip.z + "," + 
+        radius2 + "," + color + "," + translucencyFractionalFromColix(colix) + ")\n");
   }
   
   public void fillHermite(short colix, int tension, int diameterBeg,
@@ -367,8 +360,20 @@ public class _PovrayExporter extends _Exporter {
            
           
   public void fillSphereCentered(short colix, int diameter, Point3f pt) {
-    //rockets:    
+    //cartoons, rockets, trace:    
+    fillSphereCentered(diameter, pt.x, pt.y, pt.z, colix);
   }
+
+  private void fillSphereCentered(float diameter, 
+                                  float x, float y, float z, short colix) {
+    String color = rgbFractionalFromColix(colix, ',');
+    float r = diameter / 2.0f;
+    //    float r = viewer.scaleToPerspective(atom.screenZ, atom.getMadAtom());
+    output.append("atom(" + x + "," + y + "," + z + ","
+        + r + "," + color + "," + translucencyFractionalFromColix(colix)
+        + ")\n");
+  }
+
 
   public void plotText(int x, int y, int z, short colix, short bgcolix, String text, Font3D font3d) {
     // TODO

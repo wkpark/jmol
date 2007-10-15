@@ -33,6 +33,7 @@ import org.jmol.api.JmolExportInterface;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
+import org.jmol.g3d.Hermite3D;
 import org.jmol.shape.ShapeRenderer;
 
 /**
@@ -47,13 +48,16 @@ final public class Export3D implements JmolRendererInterface {
   
   private Graphics3D g3d;
   private short colix;
+  private Hermite3D hermite3d;
+  
 //  private ShapeRenderer shapeRenderer;
   private JmolExportInterface exporter;
   public JmolExportInterface getExporter() {
     return exporter;
   }
 
-  public Export3D() {    
+  public Export3D() {
+    this.hermite3d = new Hermite3D(this);
   }
   
   public void setg3dExporter(Graphics3D g3d, JmolExportInterface exporter) {
@@ -86,12 +90,13 @@ final public class Export3D implements JmolRendererInterface {
   private Point3f ptA = new Point3f();
   private Point3f ptB = new Point3f();
   private Point3f ptC = new Point3f();
+  /*
   private Point3f ptD = new Point3f();
   private Point3f ptE = new Point3f();
   private Point3f ptF = new Point3f();
   private Point3f ptG = new Point3f();
   private Point3f ptH = new Point3f();
-
+*/
   private Point3i ptAi = new Point3i();
   private Point3i ptBi = new Point3i();
   
@@ -104,8 +109,8 @@ final public class Export3D implements JmolRendererInterface {
    * @param z center z
    */
   public void fillSphereCentered(int diameter, int x, int y, int z) {
-    ptAi.set(x, y, z);
-    fillSphereCentered(diameter, ptAi);
+    ptA.set(x, y, z);
+    fillSphereCentered(diameter, ptA);
   }
 
   /**
@@ -126,7 +131,7 @@ final public class Export3D implements JmolRendererInterface {
    * @param diameter pixel count
    * @param center a javax.vecmath.Point3f ... floats are casted to ints
    */
-  void fillSphereCentered(int diameter, Point3f center) {
+  public void fillSphereCentered(int diameter, Point3f center) {
     exporter.fillSphereCentered(colix, diameter, center);
   }
 
@@ -259,8 +264,22 @@ final public class Export3D implements JmolRendererInterface {
     exporter.drawPixel(colix, x, y, z);
   }
 
+  public void plotPixelClipped(Point3i screen) {
+    if (g3d.isClipped(screen.x, screen.y, screen.z))
+      return;
+    //circle3D, drawPixel, plotPixelClipped(point3)
+    exporter.drawPixel(colix, screen.x, screen.y, screen.z);
+  }
+  
   public void drawPoints(int count, int[] coordinates) {
-    exporter.drawPoints(colix, count, coordinates);
+    for (int i = count * 3; i > 0; ) {
+      int z = coordinates[--i];
+      int y = coordinates[--i];
+      int x = coordinates[--i];
+      if (g3d.isClipped(x, y, z))
+        continue;
+      exporter.drawPixel(colix, x, y, z);
+    }
   }
 
   /* ***************************************************************
@@ -288,15 +307,15 @@ final public class Export3D implements JmolRendererInterface {
   }
 
   public void drawLine(short colixA, short colixB, int xA, int yA, int zA, int xB, int yB, int zB) {
-    //mads[i] < 0
-    fillCylinder(colixA, colixB, Graphics3D.ENDCAPS_FLAT, 1, xA, yA, zA, xB, yB, zB);
+    //mads[i] < 0 // mesh
+    fillCylinder(colixA, colixB, Graphics3D.ENDCAPS_FLAT, 2, xA, yA, zA, xB, yB, zB);
   }
 
-  void drawLine(Point3i pointA, Point3i pointB) {
+  public void drawLine(Point3i pointA, Point3i pointB) {
     // draw quadrilateral and hermite
     ptA.set(pointA.x, pointA.y, pointA.z);
     ptB.set(pointB.x, pointB.y, pointB.z);
-    exporter.drawLine(colix, ptA, ptB);
+    exporter.fillCylinder(colix, Graphics3D.ENDCAPS_FLAT, 1, ptA, ptB);
   }
   
   public void fillCylinder(short colixA, short colixB, byte endcaps,
@@ -317,11 +336,11 @@ final public class Export3D implements JmolRendererInterface {
     fillCylinder(colix, colix, endcaps, mad, xA, yA, zA, xB, yB, zB);
   }
 
-  public void fillCylinder(byte endcaps, int mad, Point3i pointA,
+  public void fillCylinder(byte endcaps, int diameter, Point3i pointA,
                               Point3i pointB) {
     ptA.set(pointA.x, pointA.y, pointA.z);
     ptB.set(pointB.x, pointB.y, pointB.z);
-    exporter.fillCylinder(colix, endcaps, mad, ptA, ptB);
+    exporter.fillCylinder(colix, endcaps, diameter, ptA, ptB);
   }
 
   public void fillCylinderBits(byte endcaps, int mad, Point3f pointA,
@@ -330,30 +349,34 @@ final public class Export3D implements JmolRendererInterface {
   }
 
 
-  public void fillCone(byte endcap, int mad,
+  public void fillCone(byte endcap, int diameter,
                           Point3i pointBase, Point3i screenTip) {
     ptA.set(pointBase.x, pointBase.y, pointBase.z);
     ptB.set(screenTip.x, screenTip.y, screenTip.z);
-    fillCone(endcap, mad, ptA, ptB);
+    fillCone(endcap, diameter, ptA, ptB);
   }
 
-  public void fillCone(byte endcap, int mad,
+  public void fillCone(byte endcap, int diameter,
                        Point3f pointBase, Point3f screenTip) {
     // cartoons, rockets
-    exporter.fillCone(colix, endcap, mad, pointBase, screenTip);
+    exporter.fillCone(colix, endcap, diameter, pointBase, screenTip);
   }
 
   public void drawHermite(int tension,
                           Point3i s0, Point3i s1, Point3i s2, Point3i s3) {
     //strands
-    int mad = 20; //could be off
-    fillHermite(tension, mad, mad, mad, s0, s1, s2, s3);
+    hermite3d.render(false, tension, 0, 0, 0, s0, s1, s2, s3);
+    //int mad = 20; //could be off
+    //fillHermite(tension, mad, mad, mad, s0, s1, s2, s3);
   }
 
   public void drawHermite(boolean fill, boolean border,
                           int tension, Point3i s0, Point3i s1, Point3i s2,
                           Point3i s3, Point3i s4, Point3i s5, Point3i s6,
                           Point3i s7, int aspectRatio) {
+    hermite3d.render2(fill, border, tension, s0, s1, s2, s3, s4, s5, s6,
+        s7, aspectRatio);
+/*
     ptA.set(s0.x, s0.y, s0.z);
     ptB.set(s1.x, s1.y, s1.z);
     ptC.set(s2.x, s2.y, s2.z);
@@ -364,17 +387,23 @@ final public class Export3D implements JmolRendererInterface {
     ptH.set(s7.x, s7.y, s7.z);
     exporter.drawHermite(colix, fill, border, tension, ptA, ptB, ptC,
         ptD, ptE, ptF, ptG, ptH, aspectRatio);
+        */
   }
 
-  public void fillHermite(int tension, int madBeg,
-                          int madMid, int madEnd,
+  public void fillHermite(int tension, int diameterBeg,
+                          int diameterMid, int diameterEnd,
                           Point3i s0, Point3i s1, Point3i s2, Point3i s3) {
+    /*
     ptA.set(s0.x, s0.y, s0.z);
     ptB.set(s1.x, s1.y, s1.z);
     ptC.set(s2.x, s2.y, s2.z);
     ptD.set(s3.x, s3.y, s3.z);
     exporter.fillHermite(colix, tension, madBeg, madMid, madEnd,
         ptA, ptB, ptC, ptD);
+        */
+    hermite3d.render(true, tension,
+        diameterBeg, diameterMid, diameterEnd,
+        s0, s1, s2, s3);
   }
   
   /* ***************************************************************
@@ -484,6 +513,7 @@ final public class Export3D implements JmolRendererInterface {
 
   public void fillTriangle(Point3i pointA, Point3i pointB, Point3i pointC) {
     // cartoon, hermite
+
     ptA.set(pointA.x, pointA.y, pointA.z);
     ptB.set(pointB.x, pointB.y, pointB.z);
     ptC.set(pointC.x, pointC.y, pointC.z);

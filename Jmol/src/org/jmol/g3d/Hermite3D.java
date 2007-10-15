@@ -30,6 +30,9 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.util.Vector;
 
+import org.jmol.api.JmolRendererInterface;
+
+
 /**
  *<p>
  * Implementation of hermite curves for drawing smoothed curves
@@ -50,26 +53,28 @@ import java.util.Vector;
  *
  * @author Miguel, miguel@jmol.org
  */
-class Hermite3D {
+public class Hermite3D {
 
-  Graphics3D g3d;
+  /* really a private class to g3d and export3d */
+  
+  private JmolRendererInterface g3d;
 
-  Hermite3D(Graphics3D g3d) {
+  public Hermite3D(JmolRendererInterface g3d) {
     this.g3d = g3d;
   }
 
-  final Point3i[] pLeft = new Point3i[16];
-  final Point3i[] pRight = new Point3i[16];
+  private final Point3i[] pLeft = new Point3i[16];
+  private final Point3i[] pRight = new Point3i[16];
 
-  final float[] sLeft = new float[16];
-  final float[] sRight = new float[16];
+  private final float[] sLeft = new float[16];
+  private final float[] sRight = new float[16];
   int sp;
 
-  final Point3f[] pTopLeft = new Point3f[16];
-  final Point3f[] pTopRight = new Point3f[16];
-  final Point3f[] pBotLeft = new Point3f[16];
-  final Point3f[] pBotRight = new Point3f[16];
-  final boolean[] needToFill = new boolean[16];
+  private final Point3f[] pTopLeft = new Point3f[16];
+  private final Point3f[] pTopRight = new Point3f[16];
+  private final Point3f[] pBotLeft = new Point3f[16];
+  private final Point3f[] pBotRight = new Point3f[16];
+  private final boolean[] needToFill = new boolean[16];
   {
     for (int i = 16; --i >= 0; ) {
       pLeft[i] = new Point3i();
@@ -82,7 +87,7 @@ class Hermite3D {
     }
   }
 
-  void render(boolean tFill, int tension,
+  public void render(boolean tFill, int tension,
                      int diameterBeg, int diameterMid, int diameterEnd,
                      Point3i p0, Point3i p1, Point3i p2, Point3i p3) {
     if (p0.z == 1 ||p1.z == 1 ||p2.z == 1 ||p3.z == 1)
@@ -294,22 +299,22 @@ class Hermite3D {
 
   }
 
-  static void set(Point3f p3f, Point3i p3i) {
+  private static void set(Point3f p3f, Point3i p3i) {
     p3f.x = p3i.x;
     p3f.y = p3i.y;
     p3f.z = p3i.z;
   }
 
   
-  Point3f a1 = new Point3f();
-  Point3f a2 = new Point3f();
-  Point3f b1 = new Point3f();
-  Point3f b2 = new Point3f();
-  Point3f c1 = new Point3f();
-  Point3f c2 = new Point3f();
-  Point3f d1 = new Point3f();
-  Point3f d2 = new Point3f();
-  Vector3f depth1 = new Vector3f();
+  private final Point3f a1 = new Point3f();
+  private final Point3f a2 = new Point3f();
+  private final Point3f b1 = new Point3f();
+  private final Point3f b2 = new Point3f();
+  private final Point3f c1 = new Point3f();
+  private final Point3f c2 = new Point3f();
+  private final Point3f d1 = new Point3f();
+  private final Point3f d2 = new Point3f();
+  private final Vector3f depth1 = new Vector3f();
   
   public void render2(boolean fill, boolean border, int tension,
                       //top strand segment
@@ -444,8 +449,8 @@ class Hermite3D {
     }
   }
  
-  Vector3f T1 = new Vector3f();
-  Vector3f T2 = new Vector3f();
+  private final Vector3f T1 = new Vector3f();
+  private final Vector3f T2 = new Vector3f();
   private void setDepth(Vector3f depth, Point3f c, Point3f a, Point3f b, float ratio) {
     T1.sub(a, c);
     T1.scale(ratio);

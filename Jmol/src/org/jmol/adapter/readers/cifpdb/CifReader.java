@@ -1028,7 +1028,7 @@ _struct_site_gen.details
    */
   void processStructSiteBlock() throws Exception {
     parseLoopParameters(structSiteRangeFields);
-    for (int i = propertyCount; --i >= 0;)
+    for (int i = 3; --i >= 0;)
       if (!propertyReferenced[i]) {
         Logger.warn("?que? missing _struct_site property:" + i);
         skipLoop();
@@ -1074,14 +1074,14 @@ _struct_site_gen.details
         case SITE_COMP_ID:
           resID = field;
           break;
-        case SITE_INS_CODE:
-          insCode = field;
-          break;
         case SITE_ASYM_ID:
           chainID = field;
           break;
         case SITE_SEQ_ID:
           seqNum = field;
+          break;
+        case SITE_INS_CODE: //optional
+          insCode = field;
           break;
         }
         if (seqNum != "" && resID != "")

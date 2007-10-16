@@ -1307,6 +1307,7 @@ class Compiler {
     case '%':
     case '[':
     case ']':
+    break;
     case '&':
     case '|':
       if (ichT < cchScript && script.charAt(ichT) == ch)

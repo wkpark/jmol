@@ -53,12 +53,13 @@ public class GeoSurfaceRenderer extends DotsRenderer {
   }
   
  protected void renderConvex(short colix, int[] visibilityMap, int nPoints) {
+    this.colix = colix;
     if (iShowSolid) {
       if (g3d.setColix(colix))       
         renderSurface(visibilityMap);
       return;
     }
-    renderDots(colix, nPoints);
+    renderDots(nPoints);
   }
   
   private Point3i facePt1 = new Point3i();
@@ -90,7 +91,7 @@ public class GeoSurfaceRenderer extends DotsRenderer {
       facePt3.set(coords[faceMap[p3]], coords[faceMap[p3] + 1], coords[faceMap[p3] + 2]);
       if (!isGenerator)
         g3d.calcSurfaceShade(facePt1, facePt2, facePt3);
-      g3d.fillTriangle(facePt1, facePt2, facePt3);
+      g3d.fillTriangle(facePt1, colix, p1, facePt2, colix, p2, facePt3, colix, p3);
     }
   }  
 }

@@ -181,32 +181,32 @@ final class Shade3D {
                                               (float)(z/magnitude))
                  * shadeLast * (1 << 8));
   }
-/*
-  static float calcFloatIntensity(float x, float y, float z) {
-    //not utilized
-    double magnitude = Math.sqrt(x*x + y*y + z*z);
-    return calcFloatIntensityNormalized((float)(x/magnitude),
-                                        (float)(y/magnitude),
-                                        (float)(z/magnitude));
-  }
-*/
-  
+
+  /*
+   static float calcFloatIntensity(float x, float y, float z) {
+   //not utilized
+   double magnitude = Math.sqrt(x*x + y*y + z*z);
+   return calcFloatIntensityNormalized((float)(x/magnitude),
+   (float)(y/magnitude),
+   (float)(z/magnitude));
+   }
+   */
+
   private static float calcFloatIntensityNormalized(float x, float y, float z) {
-    float cosTheta = x*xLight + y*yLight + z*zLight;
-    float intensity = 0; // ambient component
-    if (cosTheta > 0) {
-      intensity += cosTheta * lighting[INTENSITY_DIFFUSE]; // diffuse component
-      
-      if (lighting[SPECULAR_ON] != 0) {
-        // this is the dot product of the reflection and the viewer
-        // but the viewer only has a z component
-        float dotProduct = z * 2 * cosTheta - zLight;
-        if (dotProduct > 0) {
-          for (int n = (int)lighting[SPECULAR_EXPONENT]; --n >= 0 && dotProduct > .0001f; )
-            dotProduct *= dotProduct;
-          // specular component
-          intensity += dotProduct * lighting[INTENSITY_SPECULAR];
-        }
+    float cosTheta = x * xLight + y * yLight + z * zLight;
+    if (cosTheta <= 0)
+      return 0;// ambient component
+    float intensity = cosTheta * lighting[INTENSITY_DIFFUSE]; // diffuse component
+    if (lighting[SPECULAR_ON] != 0) {
+      // this is the dot product of the reflection and the viewer
+      // but the viewer only has a z component
+      float dotProduct = z * 2 * cosTheta - zLight;
+      if (dotProduct > 0) {
+        for (int n = (int) lighting[SPECULAR_EXPONENT]; --n >= 0
+            && dotProduct > .0001f;)
+          dotProduct *= dotProduct;
+        // specular component
+        intensity += dotProduct * lighting[INTENSITY_SPECULAR];
       }
     }
     if (intensity > 1)

@@ -124,16 +124,16 @@ public class DotsRenderer extends ShapeRenderer {
    * @param nPoints
    */
   protected void renderConvex(short colix, int[] map, int nPoints) {
-    renderDots(Graphics3D.getColixTranslucent(colix, false, 0), nPoints);
+    this.colix = Graphics3D.getColixTranslucent(colix, false, 0);
+    renderDots(nPoints);
   }
 
   /**
    * also called by GeoSurface when in motion
    * 
-   * @param colix
    * @param nPoints
    */
-  protected void renderDots(short colix, int nPoints) {
+  protected void renderDots(int nPoints) {
     g3d.setColix(colix);
     g3d.drawPoints(nPoints, screenCoordinates);
   }

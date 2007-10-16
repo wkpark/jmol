@@ -513,8 +513,8 @@ class Compiler {
         }
         if (lookingAtSeqcode()) {
           ch = script.charAt(ichToken);
-          int seqNum = (ch == '*' || ch == '^' ? 0 : Integer.parseInt(script
-              .substring(ichToken, ichToken + cchToken - 2)));
+          int seqNum = (ch == '*' || ch == '^' ? Integer.MAX_VALUE 
+              : Integer.parseInt(script.substring(ichToken, ichToken + cchToken - 2)));
           char insertionCode = script.charAt(ichToken + cchToken - 1);
           if (insertionCode == '^')
             insertionCode = ' ';

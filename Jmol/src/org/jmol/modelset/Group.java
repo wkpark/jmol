@@ -40,7 +40,7 @@ public class Group {
   protected int firstAtomIndex = -1;
   protected int lastAtomIndex;
   private final static int SEQUENCE_NUMBER_FLAG = 0x80;
-  private final static int INSERTION_CODE_MASK = 0x3F; //7-bit character codes, please!
+  private final static int INSERTION_CODE_MASK = 0x7F; //7-bit character codes, please!
   private final static int SEQUENCE_NUMBER_SHIFT = 8;
   
   public int getFirstAtomIndex(){
@@ -284,7 +284,8 @@ public class Group {
         Logger.warn("unrecognized insertionCode:" + insertionCode);
       insertionCode = '\0';
     }
-    return ((sequenceNumber << SEQUENCE_NUMBER_SHIFT) | SEQUENCE_NUMBER_FLAG)
+    return ((sequenceNumber == Integer.MAX_VALUE ? 0 
+        : (sequenceNumber << SEQUENCE_NUMBER_SHIFT) | SEQUENCE_NUMBER_FLAG))
         + insertionCode;
   }
 

@@ -1307,7 +1307,6 @@ class Compiler {
     case '%':
     case '[':
     case ']':
-      break;
     case '&':
     case '|':
       if (ichT < cchScript && script.charAt(ichT) == ch)
@@ -1331,10 +1330,11 @@ class Compiler {
     //fall through
     case '~':
     case '_':
+    case '\'':
     case '?': // include question marks in identifier for atom expressions
       while (ichT < cchScript
-          && (Character.isLetterOrDigit(ch = script.charAt(ichT)) || ch == '_'
-              || ch == '?' || ch == '~')
+          && (Character.isLetterOrDigit(ch = script.charAt(ichT)) 
+              || ch == '_' || ch == '?' || ch == '~' || ch == '\'')
           ||
           // hack for insertion codes embedded in an atom expression :-(
           // select c3^a

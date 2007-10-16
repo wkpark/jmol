@@ -332,6 +332,7 @@ class Compiler {
     iCommand = 0;
     int lnLength = 8;
     int braceCount = 0;
+    int bracketCount = 0;
     lineNumbers = new short[lnLength];
     lineIndices = new int[lnLength];
     isNewSet = isSetBrace = false;
@@ -395,6 +396,7 @@ class Compiler {
         ptNewSetModifier = 1;
         nSemiSkip = 0;
         braceCount = 0;
+        bracketCount = 0;
       } else {
         if (nTokens == ptNewSetModifier) {
           ch = script.charAt(ichToken);
@@ -655,6 +657,7 @@ class Compiler {
           isSetBrace = (tok == Token.leftbrace);
           isNewSet = !isSetBrace;
           braceCount = (isSetBrace ? 1 : 0);
+          bracketCount = 0;
           ptNewSetModifier = (isNewSet ? 1 : Integer.MAX_VALUE);
           break;
         case Token.function:
@@ -822,7 +825,13 @@ class Compiler {
         case Token.select:
         case Token.display:
         case Token.hide:
-          if (tok != Token.identifier && !tokAttr(tok, Token.expression))
+          if (tok == Token.leftsquare)
+            bracketCount++;
+          if (tok == Token.rightsquare)
+            bracketCount--;
+          //ensure anything goes for inside brackets 
+          if (tok != Token.identifier && !tokAttr(tok, Token.expression)
+              && bracketCount == 0)
             return invalidExpressionToken(ident);
           break;
         }

@@ -54,7 +54,7 @@ class ModelManager {
   }
   
   String getModelSetFileName() {
-    return fileName;
+    return fileName == null ? "zapped" : fileName;
   }
 
   String getModelSetPathName() {

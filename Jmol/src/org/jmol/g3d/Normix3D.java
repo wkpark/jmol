@@ -43,7 +43,7 @@ import org.jmol.util.Logger;
  */
 class Normix3D {
 
-  final static int NORMIX_GEODESIC_LEVEL = 3;
+  final static int NORMIX_GEODESIC_LEVEL = Geodesic.standardLevel;
 
   private final static int normixCount = Geodesic.getVertexCount(NORMIX_GEODESIC_LEVEL);
   private final static Vector3f[] vertexVectors = Geodesic.getVertexVectors(); 

@@ -171,6 +171,7 @@ public class Geodesic {
    * 5 levels, 0 through 4
    */
   
+  public final static int standardLevel = 3;
   private final static int maxLevel = 4;
   private static short[] vertexCounts;
   private static Vector3f[] vertexVectors;

@@ -145,7 +145,7 @@ public final class EnvelopeCalculation {
    
   public final static float SURFACE_DISTANCE_FOR_CALCULATION = 3f;
 
-  public final static int MAX_LEVEL = 3;
+  public final static int MAX_LEVEL = Geodesic.standardLevel;
   
   private float maxRadius = 0;
   private float scale = 1f;

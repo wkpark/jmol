@@ -3145,14 +3145,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } else {
       scriptStatus(strErrorMessage);
     }
-    if (checkScriptOnly)
-      Logger.info((strErrorMessage == null ? "--script check ok"
-          : "--script check error\n" + strErrorMessage)
-          + "\n(use 'exit' to stop checking)\n");
+    if (checkScriptOnly) {
+      if (strErrorMessage == null)
+        Logger.info("--script check ok");
+      else
+        Logger.error("--script check error\n" + strErrorMessage);
+    }
     if (isScriptFile && autoExit) {
       System.out.flush();
       System.exit(0);
-    }
+    } else if (checkScriptOnly)
+      Logger.info("(use 'exit' to stop checking)");
     if (returnType.equalsIgnoreCase("String"))
       return eval.getErrorMessage();
     // get  Vector of Vectors of Vectors info

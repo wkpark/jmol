@@ -14,7 +14,9 @@ public interface JmolExportInterface {
   // This method is implemented in org.jmol.export._Exporter 
   // when selecting a specific driver:
 
-  abstract void initialize(Viewer viewer, Graphics3D g3d, StringBuffer output);
+  abstract boolean initializeOutput(Viewer viewer, Graphics3D g3d, Object output);
+  
+  abstract String finalizeOutput();
 
   // The following two methods are provided as a general necessity of many drivers.
 

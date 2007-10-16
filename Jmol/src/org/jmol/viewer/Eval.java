@@ -7906,14 +7906,15 @@ class Eval { //implements Runnable {
       return "";
     data = type.intern();
     if (isExport) {
-      //should be streaming here, not sending this to a StringBuffer.
-      data = "" + viewer.generateOutput(data);
-      if (type.equals("Povray")) {
-        String[] parts = TextFormat.split(data, "\\-PART II-\\");
-        data = parts[1];
-        parts[0] = TextFormat.simpleReplace(parts[0], "%INPUTFILENAME%", fileName);
-        parts[0] = TextFormat.simpleReplace(parts[0], "%OUTPUTFILENAME%", fileName + ".tga");
-        viewer.createImage(fileName + ".ini", parts[0], Integer.MIN_VALUE, 0, 0);
+      //POV-Ray uses a BufferedWriter instead of a StringBuffer.
+      boolean isPovRay = type.equals("Povray");
+      data = viewer.generateOutput(data, isPovRay ? fileName : null);
+      if (isPovRay) {
+        data = TextFormat.simpleReplace(data, "%FILETYPE%", "N");
+        data = TextFormat.simpleReplace(data, "%OUTPUTFILENAME%", fileName + ".png");
+        viewer.createImage(fileName + ".ini", data, Integer.MIN_VALUE, 0, 0);
+        scriptStatus("Created " + fileName + ".ini:\n\n" + data);
+        return data;
       }
     } else if (data == "PDB" || data == "XYZ" || data == "MOL") {
       data = viewer.getData("selected", data);

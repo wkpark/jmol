@@ -96,11 +96,15 @@ public class FrameRenderer {
     return null;
   }
 
-  String generateOutput(String type, Graphics3D g3d, ModelSet modelSet) {
+  String generateOutput(String type, Graphics3D g3d, ModelSet modelSet, String fileName) {
     JmolExportInterface exporter = null;
     JmolRendererInterface g3dExport = null;
-    StringBuffer output = new StringBuffer();
+    Object output = null;
     try {
+      if (fileName == null)
+        output = new StringBuffer();
+      else
+        output = fileName;
       Class exporterClass = Class.forName("org.jmol.export._"+type+"Exporter");
       exporter = (JmolExportInterface) exporterClass.newInstance();
       exporterClass = Class.forName("org.jmol.export.Export3D");
@@ -109,7 +113,8 @@ public class FrameRenderer {
       Logger.error("Cannot export " + type);
       return "";
     }
-    exporter.initialize(viewer, g3d, output);
+    if (!exporter.initializeOutput(viewer, g3d, output))
+      return null;
     exporter.getHeader();
 
     g3dExport.setg3dExporter(g3d, exporter);
@@ -124,10 +129,9 @@ public class FrameRenderer {
       g3dExport.setRenderer(generator);
       generator.render(g3dExport, modelSet, shape);
     }
-
     exporter.getFooter();
-    
-    return output.toString();
+       
+    return exporter.finalizeOutput();
   }
 
   ShapeRenderer getGenerator(int shapeID, Graphics3D g3d) {

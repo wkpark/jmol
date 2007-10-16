@@ -25,6 +25,11 @@
 
 package org.jmol.export;
 
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -125,6 +130,9 @@ public abstract class _Exporter implements JmolExportInterface {
   
   Viewer viewer;
   StringBuffer output;
+  BufferedWriter bw;
+  String fileName;
+  boolean isToFile;
   Graphics3D g3d;
   
   int nBalls = 0;
@@ -144,13 +152,36 @@ public abstract class _Exporter implements JmolExportInterface {
   public _Exporter() {  
   }
   
-  public void initialize(Viewer viewer, Graphics3D g3d, StringBuffer output) {
+  public boolean initializeOutput(Viewer viewer, Graphics3D g3d, Object output) {
     this.viewer = viewer;
     this.g3d = g3d;
-    this.output = output;
     center.set(viewer.getRotationCenter());
+    isToFile = (output instanceof String);
+    if (isToFile) {
+      fileName = (String) output;
+      try {
+        this.bw = new BufferedWriter(
+            new OutputStreamWriter(new FileOutputStream(fileName)), 8192);
+      } catch (FileNotFoundException e) {
+        return false;
+      }
+    } else {
+      this.output = (StringBuffer) output;
+    }
+    return true;
   }
  
+  public String finalizeOutput() {
+    if (!isToFile)
+      return output.toString();
+    try {
+      bw.close();
+    } catch (IOException e) {
+      //ignore
+    }
+    return null;
+  }
+  
   protected String getExportDate() {
     return new SimpleDateFormat("EEE, MMMM dd, yyyy 'at' h:mm aaa")
         .format(new Date());  

@@ -2851,9 +2851,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    }
    */
 
-  String generateOutput(String type) {
+  String generateOutput(String type, String fileName) {
     setModelVisibility();
-    return repaintManager.generateOutput(type, g3d, modelSet); //, rectClip
+    return repaintManager.generateOutput(type, g3d, modelSet, fileName); //, rectClip
   }
 
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {

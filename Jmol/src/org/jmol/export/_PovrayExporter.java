@@ -25,6 +25,7 @@
 
 package org.jmol.export;
 
+import java.io.IOException;
 import java.util.BitSet;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -58,6 +59,19 @@ public class _PovrayExporter extends _Exporter {
     use2dBondOrderCalculation = true;
   }
 
+  private void output(String data) {
+    try {
+      bw.write(data);
+    } catch (IOException e) {
+      // ignore for now
+    }
+  }
+  
+  public String finalizeOutput() {
+    super.finalizeOutput();
+    return getAuxiliaryFileData();    
+  }
+
   public void getHeader() {
 
     // frame size formatting should be general part of _Exporter class
@@ -73,66 +87,63 @@ public class _PovrayExporter extends _Exporter {
     int minScreenDimension = screenWidth < screenHeight ? screenWidth
         : screenHeight;
 
-    output.append(getAuxiliaryFileData());
-    output.append("\\-PART II-\\");
-    output.append("//******************************************************\n");
-    output.append("// Jmol generated povray script.\n");
-    output.append("//\n");
-    output.append("// This script was generated on :\n");
-    output.append("// " + getExportDate() + "\n");
-    output.append("//******************************************************\n");
-    output.append("\n");
-    output.append("\n");
-    output.append("//******************************************************\n");
-    output.append("// Declare the resolution, camera, and light sources.\n");
-    output.append("//******************************************************\n");
-    output.append("\n");
+    output("//******************************************************\n");
+    output("// Jmol generated povray script.\n");
+    output("//\n");
+    output("// This script was generated on :\n");
+    output("// " + getExportDate() + "\n");
+    output("//******************************************************\n");
+    output("\n");
+    output("\n");
+    output("//******************************************************\n");
+    output("// Declare the resolution, camera, and light sources.\n");
+    output("//******************************************************\n");
+    output("\n");
+    output("// NOTE: if you plan to render at a different resolution,\n");
+    output("// be sure to update the following two lines to maintain\n");
+    output("// the correct aspect ratio.\n" + "\n");
+    output("#declare Width = " + screenWidth + ";\n");
+    output("#declare Height = " + screenHeight + ";\n");
     output
-        .append("// NOTE: if you plan to render at a different resolution,\n");
-    output.append("// be sure to update the following two lines to maintain\n");
-    output.append("// the correct aspect ratio.\n" + "\n");
-    output.append("#declare Width = " + screenWidth + ";\n");
-    output.append("#declare Height = " + screenHeight + ";\n");
-    output
-        .append("#declare minScreenDimension = " + minScreenDimension + ";\n");
-    //    output.append("#declare wireRadius = 1 / minScreenDimension * zoom;\n");
-    output.append("#declare showAtoms = true;\n");
-    output.append("#declare showBonds = true;\n");
-    output.append("camera{\n");
-    output.append("  orthographic\n");
-    output.append("  location < " + screenWidth / 2f + ", " + screenHeight / 2f
+        ("#declare minScreenDimension = " + minScreenDimension + ";\n");
+    //    output("#declare wireRadius = 1 / minScreenDimension * zoom;\n");
+    output("#declare showAtoms = true;\n");
+    output("#declare showBonds = true;\n");
+    output("camera{\n");
+    output("  orthographic\n");
+    output("  location < " + screenWidth / 2f + ", " + screenHeight / 2f
         + ", 0>\n" + "\n");
-    output.append("  // Negative right for a right hand coordinate system.\n");
-    output.append("\n");
-    output.append("  sky < 0, -1, 0 >\n");
-    output.append("  right < -" + screenWidth + ", 0, 0>\n");
-    output.append("  up < 0, " + screenHeight + ", 0 >\n");
-    output.append("  look_at < " + screenWidth / 2f + ", " + screenHeight / 2f
+    output("  // Negative right for a right hand coordinate system.\n");
+    output("\n");
+    output("  sky < 0, -1, 0 >\n");
+    output("  right < -" + screenWidth + ", 0, 0>\n");
+    output("  up < 0, " + screenHeight + ", 0 >\n");
+    output("  look_at < " + screenWidth / 2f + ", " + screenHeight / 2f
         + ", 1000 >\n");
-    output.append("}\n");
-    output.append("\n");
+    output("}\n");
+    output("\n");
 
-    output.append("background { color rgb <"
+    output("background { color rgb <"
         + rgbFractionalFromColix(viewer.getObjectColix(0), ',') + "> }\n");
-    output.append("// " + viewer.getBackgroundArgb() + " \n");
-    output.append("// " + rgbFractionalBackground(',') + " \n");
-    output.append("\n");
+    output("// " + viewer.getBackgroundArgb() + " \n");
+    output("// " + rgbFractionalBackground(',') + " \n");
+    output("\n");
 
     // light source
     
     povpt1.set(Graphics3D.getLightSource());
     viewer.transformPoint(povpt1,povpti);
 
-    output.append("light_source { <" + povpt1.x*screenWidth + "," 
+    output("light_source { <" + povpt1.x*screenWidth + "," 
         + povpt1.y*screenHeight + ", "
         + povpt1.z + "> " + " rgb <0.6,0.6,0.6> }\n");
-    output.append("\n");
-    output.append("\n");
+    output("\n");
+    output("\n");
 
-    output.append("//***********************************************\n");
-    output.append("// macros for common shapes\n");
-    output.append("//***********************************************\n");
-    output.append("\n");
+    output("//***********************************************\n");
+    output("// macros for common shapes\n");
+    output("//***********************************************\n");
+    output("\n");
 
     writeMacros();
   }
@@ -143,9 +154,9 @@ public class _PovrayExporter extends _Exporter {
 
   private String getAuxiliaryFileData() {
     return 
-        "Input_File_Name=%INPUTFILENAME%"
+        "Input_File_Name=" + fileName
       + "\nOutput_to_File=true"
-      + "\nOutput_File_Type=T"
+      + "\nOutput_File_Type=%FILETYPE%"
       + "\nOutput_File_Name=%OUTPUTFILENAME%"
       + "\nHeight=" + screenHeight 
       + "\nWidth=" + screenWidth
@@ -200,7 +211,7 @@ public class _PovrayExporter extends _Exporter {
 
     // (float)viewer.getBondRadius(i);
 
-    output.append("bond(" + pt1.x + "," + pt1.y + "," + pt1.z + "," + radius1
+    output("bond(" + pt1.x + "," + pt1.y + "," + pt1.z + "," + radius1
         + "," + pt2.x + "," + pt2.y + "," + pt2.z + "," + radius2 + "," + color
         + "," + translucencyFractionalFromColix(colix) + ")\n");
   }
@@ -211,13 +222,13 @@ public class _PovrayExporter extends _Exporter {
     if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
       String color = rgbFractionalFromColix(colix, ',');
       float radius = viewer.scaleToScreen((int) pt.z, madBond / 2);
-      output.append("joint(" + pt.x + "," + pt.y + "," + pt.z + "," + radius
+      output("joint(" + pt.x + "," + pt.y + "," + pt.z + "," + radius
           + "," + color + "," + translucencyFractionalFromColix(colix) + ")\n");
     }
   }
 
   private void writeMacros() {
-    output.append("#default { finish {\n" + "  ambient "
+    output("#default { finish {\n" + "  ambient "
         + (float) Graphics3D.getAmbientPercent() / 100f + "\n" + "  diffuse "
         + (float) Graphics3D.getDiffusePercent() / 100f + "\n" + "  specular "
         + (float) Graphics3D.getSpecularPercent() / 100f + "\n"
@@ -240,15 +251,14 @@ public class _PovrayExporter extends _Exporter {
   }
 
   private void writeMacrosAtom() {
-    output.append("#macro atom(X,Y,Z,RADIUS,R,G,B,T)\n"
+    output("#macro atom(X,Y,Z,RADIUS,R,G,B,T)\n"
         + " sphere{<X,Y,Z>,RADIUS\n" + "  pigment{rgbt<R,G,B,T>}\n"
         + "  no_shadow}\n" + "#end\n\n");
   }
 
   private void writeMacrosRing() {
     // This type of ring does not take into account perspective effects!
-    output
-        .append("#macro ring(X,Y,Z,RADIUS,R,G,B,T)\n"
+    output("#macro ring(X,Y,Z,RADIUS,R,G,B,T)\n"
             + " torus{RADIUS,wireRadius pigment{rgbt<R,G,B,T>}\n"
             + " translate<X,Z,-Y> rotate<90,0,0>\n" + "  no_shadow}\n"
             + "#end\n\n");
@@ -258,20 +268,19 @@ public class _PovrayExporter extends _Exporter {
     // We always use cones here, in orthographic mode this will give us
     //  cones with two equal radii, in perspective mode Jmol will calculate
     //  the cone radii for us.
-    output.append("#macro bond(X1,Y1,Z1,RADIUS1,X2,Y2,Z2,RADIUS2,R,G,B,T)\n"
+    output("#macro bond(X1,Y1,Z1,RADIUS1,X2,Y2,Z2,RADIUS2,R,G,B,T)\n"
         + " cone{<X1,Y1,Z1>,RADIUS1,<X2,Y2,Z2>,RADIUS2\n"
         + "  pigment{rgbt<R,G,B,T>}\n" + "  no_shadow}\n" + "#end\n\n");
   }
 
   private void writeMacrosJoint() {
-    output.append("#macro joint(X,Y,Z,RADIUS,R,G,B,T)\n"
+    output("#macro joint(X,Y,Z,RADIUS,R,G,B,T)\n"
         + " sphere{<X,Y,Z>,RADIUS\n" + "  pigment{rgbt<R,G,B,T>}\n"
         + "  no_shadow}\n" + "#end\n\n");
   }
   
   private void writeMacrosTriangle() {
-    output.append(
-        "#macro jtriangle(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,R,G,B,T)\n"
+    output("#macro jtriangle(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,R,G,B,T)\n"
         + " triangle{<X1,Y1,Z1>,<X2,Y2,Z2>,<X3,Y3,Z3>\n" 
         + "  pigment{rgbt<R,G,B,T>}\n"
         + "  no_shadow}\n" + "#end\n\n");
@@ -300,7 +309,7 @@ public class _PovrayExporter extends _Exporter {
     String color = rgbFractionalFromColix(colix, ',');
     float radius1 = diameter / 2f;
     float radius2 = radius1;
-    output.append("bond(" + screenA.x + "," + screenA.y + "," + screenA.z + "," + 
+    output("bond(" + screenA.x + "," + screenA.y + "," + screenA.z + "," + 
         radius1 + "," + screenB.x + "," + screenB.y + "," + screenB.z + "," + 
         radius2 + "," + color + "," + translucencyFractionalFromColix(colix) + ")\n");
   }
@@ -310,7 +319,7 @@ public class _PovrayExporter extends _Exporter {
     //halos
     String color = rgbFractionalFromColix(colix, ',');
     float r = diameter / 2.0f;
-    output.append("bond(" + x + "," + y + "," + z + "," + 
+    output("bond(" + x + "," + y + "," + z + "," + 
         r + "," + x + "," + y + "," + (z + 1) + "," + 
         r + "," + color + ",0.8)\n");
   }
@@ -324,7 +333,7 @@ public class _PovrayExporter extends _Exporter {
     //cartoons, mesh, isosurface
     //System.out.println("pov fillTriangle - cartoons "+this);
     String color = rgbFractionalFromColix(colix, ',');
-    output.append("jtriangle(" + ptA.x + "," + ptA.y + "," + ptA.z + "," 
+    output("jtriangle(" + ptA.x + "," + ptA.y + "," + ptA.z + "," 
     + ptB.x + "," + ptB.y + "," + ptB.z + "," 
     + ptC.x + "," + ptC.y + "," + ptC.z + ","
     + color + "," + translucencyFractionalFromColix(colix) + ")\n");
@@ -335,7 +344,7 @@ public class _PovrayExporter extends _Exporter {
     String color = rgbFractionalFromColix(colix, ',');
     float radius1 = diameter / 2f;
     float radius2 = 0;
-    output.append("bond(" + screenBase.x + "," + screenBase.y + "," + screenBase.z + "," + 
+    output("bond(" + screenBase.x + "," + screenBase.y + "," + screenBase.z + "," + 
         radius1 + "," + screenTip.x + "," + screenTip.y + "," + screenTip.z + "," + 
         radius2 + "," + color + "," + translucencyFractionalFromColix(colix) + ")\n");
   }
@@ -372,7 +381,7 @@ public class _PovrayExporter extends _Exporter {
     String color = rgbFractionalFromColix(colix, ',');
     float r = diameter / 2.0f;
     //    float r = viewer.scaleToPerspective(atom.screenZ, atom.getMadAtom());
-    output.append("atom(" + x + "," + y + "," + z + ","
+    output("atom(" + x + "," + y + "," + z + ","
         + r + "," + color + "," + translucencyFractionalFromColix(colix)
         + ")\n");
   }

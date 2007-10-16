@@ -414,8 +414,9 @@ public abstract class AtomSetCollectionReader {
     while (e.hasMoreElements()) {
       String name = (String) e.nextElement();
       Hashtable htSite = (Hashtable) htSites.get(name);
+      char ch;
       for (int i = name.length(); --i >= 0; )
-        if (!Character.isLetterOrDigit(name.charAt(i)))
+        if (!Character.isLetterOrDigit(ch = name.charAt(i)) && ch != '\'')
           name = name.substring(0, i) + "_" + name.substring(i + 1);
       String seqNum = (String) htSite.get("seqNum");
       String groups = (String) htSite.get("groups");

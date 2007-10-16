@@ -78,7 +78,7 @@ public class _MayaExporter extends _Exporter {
     addConnect();
   }
 
-  public void renderBond(Point3f atom1, Point3f atom2, short colix1, short colix2,
+  public void fillCylinder(Point3f atom1, Point3f atom2, short colix1, short colix2,
                       byte endcaps, int madBond, int bondOrder) {
     //ignoring bond order for Maya
     if (colix1 == colix2) {

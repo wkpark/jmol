@@ -112,7 +112,7 @@ public class SticksRenderer extends ShapeRenderer {
       return;
     dx = xB - xA;
     dy = yB - yA;
-    width = (isGenerator ? mad : viewer.scaleToScreen((zA + zB) / 2, mad));
+    width = viewer.scaleToScreen((zA + zB) / 2, mad);
     bondOrder = getRenderBondOrder(order);
     switch (bondOrder) {
     case 1:

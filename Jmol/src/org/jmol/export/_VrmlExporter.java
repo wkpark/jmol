@@ -71,7 +71,7 @@ public class _VrmlExporter extends _Exporter {
     nBalls++;
   }
 
-  public void renderBond(Point3f atom1, Point3f atom2, short colix1,
+  public void fillCylinder(Point3f atom1, Point3f atom2, short colix1,
                          short colix2, byte endcaps, int madBond, int bondOrder) {
     //ignoring bond order for vrml -- but this needs fixing
     if (colix1 == colix2) {

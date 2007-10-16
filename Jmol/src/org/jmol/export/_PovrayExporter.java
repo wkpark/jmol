@@ -132,11 +132,11 @@ public class _PovrayExporter extends _Exporter {
     // light source
     
     povpt1.set(Graphics3D.getLightSource());
-    viewer.transformPoint(povpt1,povpti);
-
-    output("light_source { <" + povpt1.x*screenWidth + "," 
-        + povpt1.y*screenHeight + ", "
-        + povpt1.z + "> " + " rgb <0.6,0.6,0.6> }\n");
+    output("// " + povpt1 + " \n");
+    float distance = Math.max(screenWidth, screenHeight);
+    output("light_source { <" + povpt1.x*distance + "," 
+        + povpt1.y*distance + ", "
+        + (-1 * povpt1.z*distance) + "> " + " rgb <0.6,0.6,0.6> }\n");
     output("\n");
     output("\n");
 
@@ -175,7 +175,7 @@ public class _PovrayExporter extends _Exporter {
         atom.screenX, atom.screenY, atom.screenZ, colix);
   }
 
-  public void renderBond(Point3f atom1, Point3f atom2, short colix1,
+  public void fillCylinder(Point3f atom1, Point3f atom2, short colix1,
                          short colix2, byte endcaps, int madBond, int bondOrder) {
 
     if (colix1 == colix2) {
@@ -211,7 +211,7 @@ public class _PovrayExporter extends _Exporter {
 
     // (float)viewer.getBondRadius(i);
 
-    output("bond(" + pt1.x + "," + pt1.y + "," + pt1.z + "," + radius1
+    output("b(" + pt1.x + "," + pt1.y + "," + pt1.z + "," + radius1
         + "," + pt2.x + "," + pt2.y + "," + pt2.z + "," + radius2 + "," + color
         + "," + translucencyFractionalFromColix(colix) + ")\n");
   }
@@ -222,7 +222,7 @@ public class _PovrayExporter extends _Exporter {
     if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
       String color = rgbFractionalFromColix(colix, ',');
       float radius = viewer.scaleToScreen((int) pt.z, madBond / 2);
-      output("joint(" + pt.x + "," + pt.y + "," + pt.z + "," + radius
+      output("s(" + pt.x + "," + pt.y + "," + pt.z + "," + radius
           + "," + color + "," + translucencyFractionalFromColix(colix) + ")\n");
     }
   }
@@ -236,51 +236,43 @@ public class _PovrayExporter extends _Exporter {
         + "\n\n");
 
     writeMacrosAtom();
-    writeMacrosRing();
-    //writeMacrosWire();
-    //writeMacrosDoubleWire();
-    //writeMacrosTripleWire();
+//    writeMacrosRing();
     writeMacrosBond();
     writeMacrosJoint();
     writeMacrosTriangle();
-    //    writeMacrosSingleBond();
-    //    writeMacrosDoubleBond();
-    //    writeMacrosTripleBond();
-    //    writeMacrosHydrogenBond();
-    //    writeMacrosAromaticBond();
   }
 
   private void writeMacrosAtom() {
-    output("#macro atom(X,Y,Z,RADIUS,R,G,B,T)\n"
+    output("#macro a(X,Y,Z,RADIUS,R,G,B,T)\n"
         + " sphere{<X,Y,Z>,RADIUS\n" + "  pigment{rgbt<R,G,B,T>}\n"
         + "  no_shadow}\n" + "#end\n\n");
   }
-
+/*
   private void writeMacrosRing() {
     // This type of ring does not take into account perspective effects!
-    output("#macro ring(X,Y,Z,RADIUS,R,G,B,T)\n"
+    output("#macro o(X,Y,Z,RADIUS,R,G,B,T)\n"
             + " torus{RADIUS,wireRadius pigment{rgbt<R,G,B,T>}\n"
             + " translate<X,Z,-Y> rotate<90,0,0>\n" + "  no_shadow}\n"
             + "#end\n\n");
   }
-
+*/
   private void writeMacrosBond() {
     // We always use cones here, in orthographic mode this will give us
     //  cones with two equal radii, in perspective mode Jmol will calculate
     //  the cone radii for us.
-    output("#macro bond(X1,Y1,Z1,RADIUS1,X2,Y2,Z2,RADIUS2,R,G,B,T)\n"
+    output("#macro b(X1,Y1,Z1,RADIUS1,X2,Y2,Z2,RADIUS2,R,G,B,T)\n"
         + " cone{<X1,Y1,Z1>,RADIUS1,<X2,Y2,Z2>,RADIUS2\n"
         + "  pigment{rgbt<R,G,B,T>}\n" + "  no_shadow}\n" + "#end\n\n");
   }
 
   private void writeMacrosJoint() {
-    output("#macro joint(X,Y,Z,RADIUS,R,G,B,T)\n"
+    output("#macro s(X,Y,Z,RADIUS,R,G,B,T)\n"
         + " sphere{<X,Y,Z>,RADIUS\n" + "  pigment{rgbt<R,G,B,T>}\n"
         + "  no_shadow}\n" + "#end\n\n");
   }
   
   private void writeMacrosTriangle() {
-    output("#macro jtriangle(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,R,G,B,T)\n"
+    output("#macro r(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,R,G,B,T)\n"
         + " triangle{<X1,Y1,Z1>,<X2,Y2,Z2>,<X3,Y3,Z3>\n" 
         + "  pigment{rgbt<R,G,B,T>}\n"
         + "  no_shadow}\n" + "#end\n\n");
@@ -309,7 +301,7 @@ public class _PovrayExporter extends _Exporter {
     String color = rgbFractionalFromColix(colix, ',');
     float radius1 = diameter / 2f;
     float radius2 = radius1;
-    output("bond(" + screenA.x + "," + screenA.y + "," + screenA.z + "," + 
+    output("b(" + screenA.x + "," + screenA.y + "," + screenA.z + "," + 
         radius1 + "," + screenB.x + "," + screenB.y + "," + screenB.z + "," + 
         radius2 + "," + color + "," + translucencyFractionalFromColix(colix) + ")\n");
   }
@@ -319,7 +311,7 @@ public class _PovrayExporter extends _Exporter {
     //halos
     String color = rgbFractionalFromColix(colix, ',');
     float r = diameter / 2.0f;
-    output("bond(" + x + "," + y + "," + z + "," + 
+    output("b(" + x + "," + y + "," + z + "," + 
         r + "," + x + "," + y + "," + (z + 1) + "," + 
         r + "," + color + ",0.8)\n");
   }
@@ -333,7 +325,7 @@ public class _PovrayExporter extends _Exporter {
     //cartoons, mesh, isosurface
     //System.out.println("pov fillTriangle - cartoons "+this);
     String color = rgbFractionalFromColix(colix, ',');
-    output("jtriangle(" + ptA.x + "," + ptA.y + "," + ptA.z + "," 
+    output("r(" + ptA.x + "," + ptA.y + "," + ptA.z + "," 
     + ptB.x + "," + ptB.y + "," + ptB.z + "," 
     + ptC.x + "," + ptC.y + "," + ptC.z + ","
     + color + "," + translucencyFractionalFromColix(colix) + ")\n");
@@ -344,7 +336,7 @@ public class _PovrayExporter extends _Exporter {
     String color = rgbFractionalFromColix(colix, ',');
     float radius1 = diameter / 2f;
     float radius2 = 0;
-    output("bond(" + screenBase.x + "," + screenBase.y + "," + screenBase.z + "," + 
+    output("b(" + screenBase.x + "," + screenBase.y + "," + screenBase.z + "," + 
         radius1 + "," + screenTip.x + "," + screenTip.y + "," + screenTip.z + "," + 
         radius2 + "," + color + "," + translucencyFractionalFromColix(colix) + ")\n");
   }
@@ -381,7 +373,7 @@ public class _PovrayExporter extends _Exporter {
     String color = rgbFractionalFromColix(colix, ',');
     float r = diameter / 2.0f;
     //    float r = viewer.scaleToPerspective(atom.screenZ, atom.getMadAtom());
-    output("atom(" + x + "," + y + "," + z + ","
+    output("a(" + x + "," + y + "," + z + ","
         + r + "," + color + "," + translucencyFractionalFromColix(colix)
         + ")\n");
   }

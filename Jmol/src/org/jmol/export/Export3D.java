@@ -330,7 +330,7 @@ final public class Export3D implements JmolRendererInterface {
      */
     ptA.set(xA, yA, zA);
     ptB.set(xB, yB, zB);
-    exporter.renderBond(ptA, ptB, colixA, colixB, endcaps, mad, 1);
+    exporter.fillCylinder(ptA, ptB, colixA, colixB, endcaps, mad, 1);
   }
 
   public void fillCylinder(byte endcaps,

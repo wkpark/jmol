@@ -36,7 +36,7 @@ public interface JmolExportInterface {
   abstract void renderIsosurface(Point3f[] vertices, short colix,
                                  short[] colixes, short[] normals,
                                  int[][] indices, BitSet bsFaces,
-                                 int nVertices, int nPoints);
+                                 int nVertices, int nFaces);
   
   abstract void renderText(Text t);
   

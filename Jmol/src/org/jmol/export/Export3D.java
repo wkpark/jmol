@@ -570,9 +570,9 @@ final public class Export3D implements JmolRendererInterface {
   public void renderIsosurface(Point3f[] vertices, short colix,
                                         short[] colixes, short[] normals,
                                         int[][] indices, BitSet bsFaces, int nVertices,
-                                        int nPoints) {
+                                        int nFaces) {
     exporter.renderIsosurface(vertices, colix, colixes, normals,
-                              indices, bsFaces, nVertices, nPoints);
+                              indices, bsFaces, nVertices, nFaces);
   }
 
 

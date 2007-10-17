@@ -1201,7 +1201,7 @@ final public class Graphics3D implements JmolRendererInterface {
   public void renderIsosurface(Point3f[] vertices, short colix,
                                short[] colixes, short[] normals,
                                int[][] indices, BitSet bsFaces, int nVertices,
-                               int nPoints) {
+                               int nFaces) {
     // generator only
   }
   

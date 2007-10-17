@@ -41,33 +41,37 @@ public class _VrmlExporter extends _Exporter {
     use2dBondOrderCalculation = false;
   }
 
+  private void output(String data) {
+    output.append(data);
+  }
+  
   public void getHeader() {
-    output.append("#VRML V2.0 utf8\n");
-    output.append("Transform {\n");
-    output.append("translation " + -center.x + " " + -center.y + " "
+    output("#VRML V2.0 utf8\n");
+    output("Transform {\n");
+    output("translation " + -center.x + " " + -center.y + " "
         + -center.z + "\n");
-    output.append("children [\n");
+    output("children [\n");
   }
 
   public void getFooter() {
-    output.append("]\n");
-    output.append("}\n");
+    output("]\n");
+    output("}\n");
   }
 
   public void renderAtom(Atom atom, short colix) {
     String color = rgbFractionalFromColix(colix, ' ');
     float r = atom.getMadAtom() / 2000f;
-    output.append("Transform {\n");
-    output.append("translation " + atom.x + " " + atom.y + " " + atom.z + "\n");
-    output.append("children [\n");
-    output.append("Shape {\n");
-    output.append("geometry Sphere { radius " + r + " }\n");
-    output.append("appearance Appearance {\n");
-    output.append("material Material { diffuseColor " + color + " }\n");
-    output.append("}\n");
-    output.append("}\n");
-    output.append("]\n");
-    output.append("}\n");
+    output("Transform {\n");
+    output("translation " + atom.x + " " + atom.y + " " + atom.z + "\n");
+    output("children [\n");
+    output("Shape {\n");
+    output("geometry Sphere { radius " + r + " }\n");
+    output("appearance Appearance {\n");
+    output("material Material { diffuseColor " + color + " }\n");
+    output("}\n");
+    output("}\n");
+    output("]\n");
+    output("}\n");
     nBalls++;
   }
 
@@ -95,59 +99,59 @@ public class _VrmlExporter extends _Exporter {
     tempV.set(pt2);
     tempV.add(pt1);
     tempV.scale(0.5f);
-    output.append("Transform {\n");
-    output.append("translation " + tempV.x + " " + tempV.y + " " + tempV.z
+    output("Transform {\n");
+    output("translation " + tempV.x + " " + tempV.y + " " + tempV.z
         + "\n");
     tempV.sub(pt1);
     getAxisAngle(tempV);
-    output.append("rotation " + tempA.x + " " + tempA.y + " " + tempA.z + " "
+    output("rotation " + tempA.x + " " + tempA.y + " " + tempA.z + " "
         + tempA.angle + "\n");
-    output.append("children[\n");
-    output.append("Shape {\n");
-    output.append("geometry Cylinder { height " + length + " radius " + r
+    output("children[\n");
+    output("Shape {\n");
+    output("geometry Cylinder { height " + length + " radius " + r
         + " }\n");
-    output.append("appearance Appearance {\n");
-    output.append("material Material { diffuseColor " + color + " }\n");
-    output.append("}\n");
-    output.append("}\n");
-    output.append("]\n");
-    output.append("}\n");
+    output("appearance Appearance {\n");
+    output("material Material { diffuseColor " + color + " }\n");
+    output("}\n");
+    output("}\n");
+    output("]\n");
+    output("}\n");
   }
 
   public void renderIsosurface(Point3f[] vertices, short colix,
                                short[] colixes, short[] normals,
                                int[][] indices, BitSet bsFaces, int nVertices,
-                               int nPoints) {
+                               int nFaces) {
 
     String color = rgbFractionalFromColix(colix, ' ');
-    output.append("Shape {\n");
-    output.append("appearance Appearance {\n");
-    output.append("material Material { diffuseColor " + color + " }\n");
-    output.append("}\n");
-    output.append("geometry IndexedFaceSet {\n");
-    output.append("coord Coordinate {\n");
-    output.append("point [\n");
+    output("Shape {\n");
+    output("appearance Appearance {\n");
+    output("material Material { diffuseColor " + color + " }\n");
+    output("}\n");
+    output("geometry IndexedFaceSet {\n");
+    output("coord Coordinate {\n");
+    output("point [\n");
     for (int i = 0; i < nVertices; i++) {
       String sep = " ";
-      output.append(sep + vertices[i].x + " " + vertices[i].y + " "
+      output(sep + vertices[i].x + " " + vertices[i].y + " "
           + vertices[i].z + "\n");
       if (i == 0)
         sep = ",";
     }
-    output.append("]\n");
-    output.append("}\n");
-    output.append("coordIndex [\n");
+    output("]\n");
+    output("}\n");
+    output("coordIndex [\n");
     String sep = " ";
-    for (int i = 0; i < nPoints; i++)
+    for (int i = 0; i < nFaces; i++)
       if (bsFaces.get(i)) {
-        output.append(sep + indices[i][0] + " " + indices[i][1] + " "
+        output(sep + indices[i][0] + " " + indices[i][1] + " "
             + indices[i][2] + " -1\n");
         if (i == 0)
           sep = ",";
       }
-    output.append("]\n");
-    output.append("}\n");
-    output.append("}\n");
+    output("]\n");
+    output("}\n");
+    output("}\n");
   }
 
   public void renderText(Text t) {

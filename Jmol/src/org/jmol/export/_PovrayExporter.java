@@ -27,14 +27,20 @@ package org.jmol.export;
 
 import java.io.IOException;
 import java.util.BitSet;
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Tuple3f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Text;
+import org.jmol.util.BitSetUtil;
 
 /*
  * Contributed by pim schravendijk <pimlists@googlemail.com>
@@ -197,9 +203,9 @@ public class _PovrayExporter extends _Exporter {
 
   public void renderCylinder(Point3f pt1, Point3f pt2, short colix,
                              byte endcaps, int madBond) {
-    float d = viewer.scaleToScreen((int) pt1.z, madBond);
+    short d = viewer.scaleToScreen((int) pt1.z, madBond);
     if (pt1.distance(pt2) == 0) {
-      fillSphereCentered(d, pt1.x, pt1.y, pt1.z, colix);
+      fillSphereCentered(colix, d, pt1);
       return;
     }
     String color = rgbFractionalFromColix(colix, ',');
@@ -278,13 +284,116 @@ public class _PovrayExporter extends _Exporter {
         + "  no_shadow}\n" + "#end\n\n");
   }
 
+  private String triad(Tuple3f pt) {
+    return pt.x + "," + pt.y + "," + pt.z;
+  }
+  
+  private String color4(short colix) {
+    return  rgbFractionalFromColix(colix, ',') 
+    + "," + translucencyFractionalFromColix(colix);
+  }
   
   public void renderIsosurface(Point3f[] vertices, short colix,
                                short[] colixes, short[] normals,
                                int[][] indices, BitSet bsFaces, int nVertices,
-                               int nPoints) {
-  }
+                               int nFaces) {
+    if (nFaces == 0 || nVertices == 0)
+      return;
+    Hashtable htColixes = new Hashtable();
+    String color;
+    
+    output("mesh2 {\n");
+    
+    output("vertex_vectors { " + nVertices);
+    for (int i = 0; i < nVertices; i++) {
+      if (i % 10 == 0)
+        output("\n");
+      output(", <" + triad(vertices[i]) + ">");
+    }
+    output("\n}\n");
+    
+    output("normal_vectors { " + nVertices);
+    Vector3f[] nv = g3d.getTransformedVertexVectors();
+    for (int i = 0; i < nVertices; i++) {
+      if (i % 10 == 0)
+        output("\n");
+      output(", <" + triad(nv[normals[i]]) + ">");
+    }
+    output("\n}\n");
+    
+    if (colixes != null) {
+      int nColix = 0;
+      for (int i = 0; i < nVertices; i++) {
+        color = color4(colixes[i]);
+        if (!htColixes.containsKey(color))
+          htColixes.put(color, new Integer(nColix++));
+      }
+      String[] list = new String[nColix];
+      Enumeration e = htColixes.keys();
+      while (e.hasMoreElements()) {
+        color = (String) e.nextElement();
+        list[((Integer)htColixes.get(color)).intValue()] = color;
+      }
+      
+      output("texture_list { " + nColix);
+      for (int i = 0; i < nColix; i++)
+        output("\n, texture{pigment{rgb <" + list[i] + ">}}");
+      output("\n}\n");
+    }
+    
+    output("face_indices { " + nFaces);
+    int p = 0;
+    for (int i = BitSetUtil.length(bsFaces); --i >= 0; ) 
+      if (bsFaces.get(i)){
+      if ((p++) % 10 == 0)
+        output("\n");
+      output(", <" + indices[i][0] + "," + indices[i][1] + "," + indices[i][2] + ">");
+      if (colixes != null)
+        for (int j = 0; j < 3; j++) {
+          color = rgbFractionalFromColix(colixes[indices[i][j]], ',');
+          output(", " +  ((Integer)htColixes.get(color)).intValue());
+        }
+    }
+    output("\n}\n");
+    
+    if (colixes == null) {
+      output("pigment{rgbt<" + color4(colix) + ">}\n");
+    }
+      
+    output("}\n");
 
+/*
+    mesh2 {
+      vertex_vectors {
+         9, 
+         <0,0,0>, <0.5,0,0>, <0.5,0.5,0>,
+         <1,0,0>, <1,0.5,0>, <1,1,0>   
+         <0.5,1,0>, <0,1,0>, <0,0.5,0> 
+      }
+      normal_vectors {
+         9,
+         <-1,-1,0>, <0,-1,0>, <0,0,1>,
+         <1,-1,0>, <1,0,0>, <1,1,0>,
+         <0,1,0>, <-1,1,0>, <-1,0,0>
+      }
+      texture_list {
+         3,
+         texture{pigment{rgb <0,0,1>}}
+         texture{pigment{rgb 1}}
+         texture{pigment{rgb <1,0,0>}}
+      }
+      face_indices {
+         8, 
+         <0,1,2>,0,1,2,  <1,3,2>,1,0,2,
+         <3,4,2>,0,1,2,  <4,5,2>,1,0,2,
+         <5,6,2>,0,1,2,  <6,7,2>,1,0,2,
+         <7,8,2>,0,1,2,  <8,0,2>,1,0,2
+      }
+   }
+*/
+
+  }
+  
   public void renderText(Text t) {
   }  
   
@@ -298,12 +407,11 @@ public class _PovrayExporter extends _Exporter {
       fillSphereCentered(diameter, screenA.x, screenA.y, screenA.z, colix);
       return;
     }
-    String color = rgbFractionalFromColix(colix, ',');
     float radius1 = diameter / 2f;
     float radius2 = radius1;
-    output("b(" + screenA.x + "," + screenA.y + "," + screenA.z + "," + 
-        radius1 + "," + screenB.x + "," + screenB.y + "," + screenB.z + "," + 
-        radius2 + "," + color + "," + translucencyFractionalFromColix(colix) + ")\n");
+    output("b(" + triad(screenA) + "," + radius1 
+        + "," + triad(screenB) + "," + radius2 
+        + "," + color4(colix) + ")\n");
   }
 
   public void fillScreenedCircleCentered(short colix, int diameter, int x,
@@ -323,23 +431,36 @@ public class _PovrayExporter extends _Exporter {
 
   public void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC) {
     //cartoons, mesh, isosurface
-    //System.out.println("pov fillTriangle - cartoons "+this);
-    String color = rgbFractionalFromColix(colix, ',');
-    output("r(" + ptA.x + "," + ptA.y + "," + ptA.z + "," 
-    + ptB.x + "," + ptB.y + "," + ptB.z + "," 
-    + ptC.x + "," + ptC.y + "," + ptC.z + ","
-    + color + "," + translucencyFractionalFromColix(colix) + ")\n");
+    output("r(" + triad(ptA) + "," + triad(ptB) + "," + triad(ptC) + "," 
+        + color4(colix) + ")\n");
   }
 
   public void fillCone(short colix, byte endcap, int diameter,
                        Point3f screenBase, Point3f screenTip) {
-    String color = rgbFractionalFromColix(colix, ',');
-    float radius1 = diameter / 2f;
-    float radius2 = 0;
-    output("b(" + screenBase.x + "," + screenBase.y + "," + screenBase.z + "," + 
-        radius1 + "," + screenTip.x + "," + screenTip.y + "," + screenTip.z + "," + 
-        radius2 + "," + color + "," + translucencyFractionalFromColix(colix) + ")\n");
+    output("b(" + triad(screenBase) + "," + (diameter/2f) 
+        + "," + triad(screenTip) + ",0" 
+        + "," + color4(colix) + ")\n");
   }
+  
+  public void fillSphereCentered(short colix, int diameter, Point3f pt) {
+    //cartoons, rockets, trace:    
+    output("a(" + triad(pt) + "," + (diameter / 2.0f)
+        + "," + color4(colix) + ")\n");
+  }
+
+  private void fillSphereCentered(float diameter, 
+                                  float x, float y, float z, short colix) {
+    output("a(" + x + "," + y + "," + z + "," + (diameter / 2.0f)
+        + "," + color4(colix) + ")\n");
+  }
+
+
+  public void plotText(int x, int y, int z, short colix, short bgcolix, String text, Font3D font3d) {
+    // TODO
+    
+  }
+
+  // not implemented: 
   
   public void fillHermite(short colix, int tension, int diameterBeg,
                           int diameterMid, int diameterEnd,
@@ -363,26 +484,5 @@ public class _PovrayExporter extends _Exporter {
   }
            
           
-  public void fillSphereCentered(short colix, int diameter, Point3f pt) {
-    //cartoons, rockets, trace:    
-    fillSphereCentered(diameter, pt.x, pt.y, pt.z, colix);
-  }
-
-  private void fillSphereCentered(float diameter, 
-                                  float x, float y, float z, short colix) {
-    String color = rgbFractionalFromColix(colix, ',');
-    float r = diameter / 2.0f;
-    //    float r = viewer.scaleToPerspective(atom.screenZ, atom.getMadAtom());
-    output("a(" + x + "," + y + "," + z + ","
-        + r + "," + color + "," + translucencyFractionalFromColix(colix)
-        + ")\n");
-  }
-
-
-  public void plotText(int x, int y, int z, short colix, short bgcolix, String text, Font3D font3d) {
-    // TODO
-    
-  }
-
 
 }

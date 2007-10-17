@@ -34,9 +34,10 @@ import org.jmol.api.JmolBioResolver;
 
 public final class Resolver implements JmolBioResolver {
 
-  public Group distinguishAndPropagateGroup(Chain chain, String group3, int seqcode,
-                                            int firstAtomIndex, int maxAtomIndex, 
-                                            int modelIndex, int modelCount,
+  public Group distinguishAndPropagateGroup(Chain chain, String group3,
+                                            int seqcode, int firstAtomIndex,
+                                            int maxAtomIndex, int modelIndex,
+                                            int modelCount,
                                             int[] specialAtomIndexes,
                                             byte[] specialAtomIDs, Atom[] atoms) {
     /*
@@ -68,25 +69,26 @@ public final class Resolver implements JmolBioResolver {
       // go last to first so that FIRST confirmation is default
       for (int i = maxAtomIndex; --i >= firstAtomIndex;) {
         int specialAtomID = specialAtomIDs[i];
-        if (specialAtomID > 0) {
-          if (specialAtomID < JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX) {
-            int bit = 1 << specialAtomID;
-            /*
-             * save for future option -- turns out the 1jsa bug was in relation to an author using the same group number for two different groups
-             * 
-             if ((distinguishingBits & bit) != 0) {
-             
-             //bh 9/21/2006:
-             // "if the group has two of the same, that cannot be right."
-             // Thus, for example, two C's doth not make a protein "carbonyl C"
-             distinguishingBits = 0;
-             break;
-             }
-             */
-            distinguishingBits |= bit;
-          }
-          specialAtomIndexes[specialAtomID] = i;
+        if (specialAtomID <= 0)
+          continue;
+        if (specialAtomID < JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX) {
+          /*
+           * save for future option -- turns out the 1jsa bug was in 
+           * relation to an author using the same group number for two 
+           * different groups
+           * 
+           if ((distinguishingBits & (1 << specialAtomID) != 0) {
+           
+           //bh 9/21/2006:
+           // "if the group has two of the same, that cannot be right."
+           // Thus, for example, two C's doth not make a protein "carbonyl C"
+           distinguishingBits = 0;
+           break;
+           }
+           */
+          distinguishingBits |= (1 << specialAtomID);
         }
+        specialAtomIndexes[specialAtomID] = i;
       }
     }
 

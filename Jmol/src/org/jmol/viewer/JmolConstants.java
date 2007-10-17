@@ -2037,31 +2037,34 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFFFF80B0,*/
   };
 
-    public final static String[] specialAtomNames = {
+  public final static String[] specialAtomNames = {
     
-      ////////////////////////////////////////////////////////////////
-      // The ordering of these entries can be changed ... BUT ...
-      // the offsets must be kept consistent with the ATOMID definitions
-      // below.
-      //
-      // null is entry 0
-      // The first 32 entries are reserved for null + 31 'distinguishing atoms'
-      // see definitions below. 32 is magical because bits are used in an
-      // int to distinguish groups. If we need more then we can go to 64
-      // bits by using a long ... but code must change.
-      //
-      // All entries less than 64 are backbone entries
-      // But the number 64 is not magical and could be easily changed
-      ////////////////////////////////////////////////////////////////
-      null, // 0
-      
-      // protein backbone
-      //
-      "N",   //  1 - amino nitrogen
-      "CA",  //  2 - alpha carbon
-      "C",   //  3 - carbonyl carbon
-      null, // used to be carbonyl oxygen, now can be O or O1
-  
+    ////////////////////////////////////////////////////////////////
+    // The ordering of these entries can be changed ... BUT ...
+    // the offsets must be kept consistent with the ATOMID definitions
+    // below.
+    //
+    // Used in Atom to look up special atoms. Any "*" in a PDB entry is
+    // changed to ' for comparison here
+    // 
+    // null is entry 0
+    // The first 32 entries are reserved for null + 31 'distinguishing atoms'
+    // see definitions below. 32 is magical because bits are used in an
+    // int to distinguish groups. If we need more then we can go to 64
+    // bits by using a long ... but code must change. See Resolver.java
+    //
+    // All entries less than 64 are backbone entries
+    // But the number 64 is not magical and could be easily changed
+    ////////////////////////////////////////////////////////////////
+    null, // 0
+    
+    // protein backbone
+    //
+    "N",   //  1 - amino nitrogen
+    "CA",  //  2 - alpha carbon
+    "C",   //  3 - carbonyl carbon
+    null, // used to be carbonyl oxygen, now can be O or O1
+
     // nucleic acid backbone sugar
     //
     "O5'", //  5 - sugar 5' oxygen
@@ -2140,7 +2143,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     null,   // 63
    
     // everything before this (1 - 63, but not 0) is backbone
-
+    // do not change range 1 - 63 without also checking predefined sets
+    
     // nucleic acid bases
     //
     "N1",   // 64
@@ -2163,7 +2167,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "N9",   // 73
 
     // nucleic acid base ring functional groups
-    //
+    // DO NOT CHANGE THESE NUMBERS WITHOUT ALSO CHANGING
+    // NUMBERS IN THE PREDEFINED SETS _a=...
+    
     "N4",  // 74 - base ring N4, unique to C
     "N2",  // 75 - base amino N2, unique to G
     "N6",  // 76 - base amino N6, unique to A
@@ -2178,26 +2184,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   };
 
   public final static int ATOMID_MAX = specialAtomNames.length;
-
-  // this form is used for counting groups in Frame
-  private final static String allCarbohydrates = 
-    ",[AFL],[AGC],[AHR],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA]" +
-    ",[FCA],[FCB],[FRU],[FUC],[FUL],[GAL],[GLA],[GLB],[GLC]" +
-    ",[GUP],[LXC],[MAN],[RAA],[RAM],[RIB],[RIP],[XYP],[XYS]" +
-    ",[CBI],[CT3],[CTR],[CTT],[LAT],[MAB],[MAL],[MLR],[MTT]" +
-    ",[SUC],[TRE],[ASF],[GCU],[MTL],[NAG],[NAM],[RHA],[SOR]" +
-    ",[XYL]";// from Eric Martz
-
-  /**
-   * @param group3 a potential group3 name
-   * @return whether this is a carbohydrate from the list
-   */
-  public final static boolean checkCarbohydrate(String group3) {
-    if (group3 == null)
-      return false;
-    String str = "[" + group3.toUpperCase() + "]";
-    return (allCarbohydrates.indexOf(str) >= 0);
-  }
 
   ////////////////////////////////////////////////////////////////
   // currently, ATOMIDs must be >= 0 && <= 127
@@ -2214,12 +2200,32 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // atomID 0 => nothing special, just an ordinary atom
   public final static byte ATOMID_AMINO_NITROGEN  = 1;
   public final static byte ATOMID_ALPHA_CARBON    = 2;
+
+  // this is for groups that only contain an alpha carbon
+  public final static int ATOMID_ALPHA_ONLY_MASK = 1 << ATOMID_ALPHA_CARBON;
+
   public final static byte ATOMID_CARBONYL_CARBON = 3;
+  
+  //this is entries 1 through 3 ... 3 bits ... N, CA, C
+  public final static int ATOMID_PROTEIN_MASK = 0x07 << ATOMID_AMINO_NITROGEN;
+  
   public final static byte ATOMID_O5_PRIME        = 5;
   public final static byte ATOMID_C5_PRIME        = 6;
   public final static byte ATOMID_C3_PRIME        = 8;
   public final static byte ATOMID_O3_PRIME        = 9;
+  
+  // this is entries 5 through through 11 ... 7 bits
+  public final static int ATOMID_NUCLEIC_MASK = 0x7F << ATOMID_O5_PRIME;
+
   public final static byte ATOMID_NUCLEIC_PHOSPHORUS = 12;
+  
+  // this is for nucleic groups that only contain a phosphorus
+  public final static int ATOMID_PHOSPHORUS_ONLY_MASK =
+    1 << ATOMID_NUCLEIC_PHOSPHORUS;
+
+  // this can be increased as far as 32, but not higher.
+  public final static int ATOMID_DISTINGUISHING_ATOM_MAX = 13;
+  
   public final static byte ATOMID_TERMINATING_OXT = 32;
   public final static byte ATOMID_CARBONYL_OXYGEN = 40;
   public final static byte ATOMID_O1              = 41;
@@ -2229,12 +2235,18 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static byte ATOMID_O2P             = 48;
   public final static byte ATOMID_RNA_O2PRIME     = 50;
   public final static byte ATOMID_H3T_TERMINUS    = 59;
+  
+  public final static int ATOMID_BACKBONE_MAX = 64;
+
   public final static byte ATOMID_N1 = 64;
   public final static byte ATOMID_C2 = 65;
   public final static byte ATOMID_N3 = 66;
   public final static byte ATOMID_C4 = 67;
   public final static byte ATOMID_C5 = 68;
   public final static byte ATOMID_C6 = 69;
+
+  public final static byte ATOMID_NUCLEIC_WING = 69;
+
   public final static byte ATOMID_O2 = 70;
   public final static byte ATOMID_N7 = 71;
   public final static byte ATOMID_C8 = 72;
@@ -2248,52 +2260,11 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static byte ATOMID_S4 = 80;
   public final static byte ATOMID_C7 = 81;
 
-  // this is currently defined as C6
-  public final static byte ATOMID_NUCLEIC_WING = 69;
-
-  // this is entries 1 through 3 ... 3 bits ... N, CA, C
-  public final static int ATOMID_PROTEIN_MASK = 0x07 << 1;
-  // this is for groups that only contain an alpha carbon
-  public final static int ATOMID_ALPHA_ONLY_MASK = 1 << ATOMID_ALPHA_CARBON;
-  // this is entries 5 through through 11 ... 7 bits
-  public final static int ATOMID_NUCLEIC_MASK = 0x7F << 5;
-  // this is for nucleic groups that only contain a phosphorus
-  public final static int ATOMID_PHOSPHORUS_ONLY_MASK =
-    1 << ATOMID_NUCLEIC_PHOSPHORUS;
-
-  // this is the MAX of the backbone ... everything < MAX is backbone
-  public final static int ATOMID_DISTINGUISHING_ATOM_MAX = 32;
-  public final static int ATOMID_BACKBONE_MAX = 64;
 
   ////////////////////////////////////////////////////////////////
   // GROUP_ID related stuff for special groupIDs
   ////////////////////////////////////////////////////////////////
   
-  /****************************************************************
-   * PDB file format spec says that the 'residue name' must be
-   * right-justified. However, Eric Martz says that some files
-   * are not. Therefore, we will be 'flexible' in reading the
-   * group name ... we will trim() when read in the field.
-   * So a 'group3' can now be less than 3 characters long.
-   ****************************************************************/
-
-  public final static int GROUPID_PROLINE = 15;
-  public final static int GROUPID_PURINE_MIN = 24;
-  public final static int GROUPID_PURINE_LAST = 29;
-  public final static int GROUPID_PYRIMIDINE_MIN = 30;
-  public final static int GROUPID_PYRIMIDINE_LAST = 35;
-  public final static int GROUPID_GUANINE = 26;
-  public final static int GROUPID_PLUS_GUANINE = 27;
-  public final static int GROUPID_GUANINE_1_MIN = 40;
-  public final static int GROUPID_GUANINE_1_LAST = 46;
-  public final static int GROUPID_GUANINE_2_MIN = 55;
-  public final static int GROUPID_GUANINE_2_LAST = 57;
-  
-
-  public final static short GROUPID_AMINO_MAX = 23;
-
-  public final static short GROUPID_SHAPELY_MAX = 36;
-
   public final static String[] predefinedGroup3Names = {
     // taken from PDB spec
     "", //  0 this is the null group
@@ -2323,7 +2294,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "UNK", // 23 unknown -- 23
 
     // if you change these numbers you *must* update
-    // the predefined sets in script.Token.java
+    // the predefined sets below
 
     "A", // 24 the purines
     "+A",
@@ -2336,8 +2307,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "T", // 32
     "+T",
     "U", // 34
-    "+U",
-
+    "+U",          // last for SHAPELY coloring
+           
     "1MA", // 36
     "AMO",
     "5MC",
@@ -2388,8 +2359,33 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "SO4", // 74 sulphate ions
 
   };
+  
+  public final static int GROUPID_PROLINE          = 15;
+  public final static int GROUPID_AMINO_MAX        = 23;
 
-  static String getGroup3List() {
+  private final static int GROUPID_PURINE_MIN      = 24;
+  private final static int GROUPID_PYRIMIDINE_LAST = 35;
+  private final static int GROUPID_SHAPELY_MAX     = 36;
+
+  // this form is used for counting groups in ModelSet
+  private final static String allCarbohydrates = 
+    ",[AFL],[AGC],[AHR],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA]" +
+    ",[FCA],[FCB],[FRU],[FUC],[FUL],[GAL],[GLA],[GLB],[GLC]" +
+    ",[GUP],[LXC],[MAN],[RAA],[RAM],[RIB],[RIP],[XYP],[XYS]" +
+    ",[CBI],[CT3],[CTR],[CTT],[LAT],[MAB],[MAL],[MLR],[MTT]" +
+    ",[SUC],[TRE],[ASF],[GCU],[MTL],[NAG],[NAM],[RHA],[SOR]" +
+    ",[XYL]";// from Eric Martz
+
+  /**
+   * @param group3 a potential group3 name
+   * @return whether this is a carbohydrate from the list
+   */
+  public final static boolean checkCarbohydrate(String group3) {
+    return (group3 != null 
+        && allCarbohydrates.indexOf("[" + group3.toUpperCase() + "]") >= 0);
+  }
+
+  private final static String getGroup3List() {
     StringBuffer s = new StringBuffer();
     //for menu presentation order
     for (int i = 1; i < GROUPID_PURINE_MIN; i++)

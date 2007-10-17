@@ -46,7 +46,6 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
-import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
@@ -790,9 +789,7 @@ abstract public class AtomCollection {
     for (int i = 0; i < atomCount; i++)
       if (t.get(i)) {
         s.append(i + 1).append(" ").append(atoms[i].getElementSymbol())
-        .append(" ").append(
-            TextFormat.simpleReplace(atoms[i].getIdentity(), " ", "_"))
-            .append(" ");
+        .append(" ").append(atoms[i].getIdentity().replace(' ', '_')).append(" ");
         switch (type) {
         case TAINT_COORD:
           dataLabel = "coord set";

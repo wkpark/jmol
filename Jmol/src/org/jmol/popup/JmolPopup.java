@@ -747,7 +747,7 @@ abstract public class JmolPopup {
       id = id.substring(pt + 1);
       if ((pt = id.indexOf("]")) >= 0)
         id = id.substring(0, pt);
-      id = TextFormat.simpleReplace(id, "_", " ");
+      id = id.replace('_', ' ');
       if (script.indexOf("[]") < 0)
         script = "[] " + script;
       return TextFormat.simpleReplace(script, "[]", id);

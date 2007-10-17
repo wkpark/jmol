@@ -77,8 +77,7 @@ public class TextFormat {
       formatter = formatters[decimalDigits] = new DecimalFormat(
           formattingStrings[decimalDigits]);
     String s = formatter.format(value);
-    return (Boolean.TRUE.equals(useNumberLocalization[0]) ? s : simpleReplace(s,
-        ",", "."));
+    return (Boolean.TRUE.equals(useNumberLocalization[0]) ? s : s.replace(',','.'));
   }
 
   public static String format(float value, int width, int precision,
@@ -260,6 +259,23 @@ public class TextFormat {
       String chFrom = strFrom.substring(i, i + 1);
       str = simpleReplace(str, chFrom, strTo);
     }
+    return str;
+  }
+  
+  /**
+   * Does a clean replace of any of the characters in str with chrTo
+   * If strTo contains strFrom, then only a single pass is done.
+   * Otherwise, multiple passes are made until no more replacements can be made.
+   * 
+   * @param str
+   * @param strFrom
+   * @param chTo
+   * @return  replaced string
+   */
+  public static String replaceAllCharacters(String str, String strFrom,
+                                            char chTo) {
+    for (int i = strFrom.length(); --i >= 0;)
+      str = str.replace(strFrom.charAt(i), chTo);
     return str;
   }
   

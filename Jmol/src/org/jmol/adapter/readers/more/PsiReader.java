@@ -31,7 +31,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import org.jmol.util.Logger;
-import org.jmol.util.TextFormat;
 
 /**
  * Reader for Psi3 output files. -- http://www.psicode.org/
@@ -201,9 +200,7 @@ public class PsiReader extends AtomSetCollectionReader {
       slatersByUniqueAtom = new Vector();
       int nGaussians = 0;
       while (readLine() != null && !line.startsWith("       )")) {
-        line = TextFormat.simpleReplace(line, "(", " ");
-        line = TextFormat.simpleReplace(line, ")", " ");
-        //System.out.println(line);
+        line = line.replace('(', ' ').replace(')',' ');
         tokens = getTokens();
         int ipt = 0;
         switch (tokens.length) {

@@ -50,7 +50,7 @@ class JmolInstance {
     this.viewer = viewer;
     this.name = name;
     this.javaname = TextFormat.replaceAllCharacters(name,
-        "[]/\\#*&^%$?.,%<>' \"", "_"); //makes things computer OK
+        "[]/\\#*&^%$?.,%<>' \"", '_'); //escape filename characters
     this.file = file;
     this.script = script;
     this.width = width;

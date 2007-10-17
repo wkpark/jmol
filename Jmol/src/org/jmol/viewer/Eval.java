@@ -7901,7 +7901,7 @@ class Eval { //implements Runnable {
           "COORDS|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|MO|QUATERNION [w,x,y,z] [derivative]"
               + "|RAMACHANDRAN|STATE|VAR x  CLIPBOARD",
           "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB|"
-              + TextFormat.simpleReplace(driverList.toUpperCase(), ";", "|") }));
+              + driverList.toUpperCase().replace(';', '|') }));
     if (isSyntaxCheck)
       return "";
     data = type.intern();
@@ -8399,13 +8399,11 @@ class Eval { //implements Runnable {
             String data = (String) statement[++i].value;
             if (data.indexOf("|") < 0 && data.indexOf("\n") < 0) {
               // space separates -- so set isOnePerLine
-              data = TextFormat.simpleReplace(data, " ", "\n");
+              data = data.replace(' ', '\n');
               propertyName = "bufferedReaderOnePerLine";
             }
-            data = TextFormat.simpleReplace(data, "{", " ");
-            data = TextFormat.simpleReplace(data, ",", " ");
-            data = TextFormat.simpleReplace(data, "}", " ");
-            data = TextFormat.simpleReplace(data, "|", "\n");
+            data = data.replace('{', ' ').replace(',', ' ').replace('}', ' ')
+                .replace('|', '\n');
             data = TextFormat.simpleReplace(data, "\n\n", "\n");
             if (logMessages)
               Logger.debug("pmesh inline data:\n" + data);
@@ -11161,8 +11159,7 @@ class Eval { //implements Runnable {
           if (x2.tok != Token.string)
             return false;
           String s = (String) x2.value;
-          s = TextFormat.simpleReplace(s, "\n\r", "\n");
-          s = TextFormat.simpleReplace(s, "\r", "\n");
+          s = TextFormat.simpleReplace(s, "\n\r", "\n").replace('\r','\n');
           return addX(TextFormat.split(s, '\n'));
         }
         if (iv == Token.color) {

@@ -1355,7 +1355,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setDefaultDirectory(String dir) {
     global.defaultDirectory = (dir == null || dir.length() == 0 ? null
-        : TextFormat.simpleReplace(dir, "\\", "/"));
+        : dir.replace('\\', '/'));
   }
 
   String getDefaultDirectory() {
@@ -1380,7 +1380,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     checkHalt("exit");
     // assumes a Jmol script file if no other file type
     evalString((type == null ? "script " : "load ")
-        + Escape.escape(TextFormat.simpleReplace(name, "\\", "/")));
+        + Escape.escape(name.replace('\\', '/')));
   }
 
   void openFile(String name, Hashtable htParams, String loadScript,

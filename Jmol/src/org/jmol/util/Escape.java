@@ -73,7 +73,7 @@ public class Escape {
     int pt = -2;
     while ((pt = str.indexOf("\"", pt + 2)) >= 0)
       str = str.substring(0, pt) + '\\' + str.substring(pt);
-    str = TextFormat.simpleReplace(str, "\n", "\1");
+    str = str.replace('\n','\1');
     str = TextFormat.simpleReplace(str, "\1", "\\n");
     for (int i = str.length(); --i >= 0;)
       if (str.charAt(i) > 0x7F)

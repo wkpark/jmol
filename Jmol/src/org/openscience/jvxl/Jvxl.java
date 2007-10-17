@@ -354,7 +354,7 @@ public class Jvxl {
       return new Point4f(0, 0, 1, -Parser.parseFloat(str.substring(2)));
     }
     if (str.indexOf("{") == 0) {
-      str = TextFormat.simpleReplace(str, ",", " ");
+      str = str.replace(',', ' ');
       int[] next = new int[1];
       return new Point4f(Parser.parseFloat(str, next), Parser.parseFloat(str,
           next), Parser.parseFloat(str, next), Parser.parseFloat(str, next));

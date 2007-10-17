@@ -285,6 +285,8 @@ public class _PovrayExporter extends _Exporter {
   }
 
   private String triad(Tuple3f pt) {
+    if (Float.isNaN(pt.x))
+      return "0,0,0";
     return pt.x + "," + pt.y + "," + pt.z;
   }
   
@@ -301,9 +303,9 @@ public class _PovrayExporter extends _Exporter {
       return;
     Hashtable htColixes = new Hashtable();
     String color;
-    
+
     output("mesh2 {\n");
-    
+
     output("vertex_vectors { " + nVertices);
     for (int i = 0; i < nVertices; i++) {
       if (i % 10 == 0)
@@ -311,16 +313,19 @@ public class _PovrayExporter extends _Exporter {
       output(", <" + triad(vertices[i]) + ">");
     }
     output("\n}\n");
-    
-    output("normal_vectors { " + nVertices);
-    Vector3f[] nv = g3d.getTransformedVertexVectors();
-    for (int i = 0; i < nVertices; i++) {
-      if (i % 10 == 0)
-        output("\n");
-      output(", <" + triad(nv[normals[i]]) + ">");
+
+    if (normals != null) {
+      output("normal_vectors { " + nVertices);
+      Vector3f[] nv = g3d.getTransformedVertexVectors();
+      for (int i = 0; i < nVertices; i++) {
+        short normal = normals[i];
+        if (i % 10 == 0)
+          output("\n");
+        output(", <" + triad(nv[normal < 0 ? ~normal : normal]) + ">");
+      }
+      output("\n}\n");
     }
-    output("\n}\n");
-    
+
     if (colixes != null) {
       int nColix = 0;
       for (int i = 0; i < nVertices; i++) {
@@ -332,65 +337,66 @@ public class _PovrayExporter extends _Exporter {
       Enumeration e = htColixes.keys();
       while (e.hasMoreElements()) {
         color = (String) e.nextElement();
-        list[((Integer)htColixes.get(color)).intValue()] = color;
+        list[((Integer) htColixes.get(color)).intValue()] = color;
       }
-      
+
       output("texture_list { " + nColix);
       for (int i = 0; i < nColix; i++)
         output("\n, texture{pigment{rgb <" + list[i] + ">}}");
       output("\n}\n");
     }
-    
+
     output("face_indices { " + nFaces);
     int p = 0;
-    for (int i = BitSetUtil.length(bsFaces); --i >= 0; ) 
-      if (bsFaces.get(i)){
-      if ((p++) % 10 == 0)
-        output("\n");
-      output(", <" + indices[i][0] + "," + indices[i][1] + "," + indices[i][2] + ">");
-      if (colixes != null)
-        for (int j = 0; j < 3; j++) {
-          color = rgbFractionalFromColix(colixes[indices[i][j]], ',');
-          output(", " +  ((Integer)htColixes.get(color)).intValue());
-        }
-    }
+    for (int i = BitSetUtil.length(bsFaces); --i >= 0;)
+      if (bsFaces.get(i)) {
+        if ((p++) % 10 == 0)
+          output("\n");
+        output(", <" + indices[i][0] + "," + indices[i][1] + ","
+            + indices[i][2] + ">");
+        if (colixes != null)
+          for (int j = 0; j < 3; j++) {
+            color = color4(colixes[indices[i][j]]);
+            output("," + ((Integer) htColixes.get(color)).intValue());
+          }
+      }
     output("\n}\n");
-    
+
     if (colixes == null) {
       output("pigment{rgbt<" + color4(colix) + ">}\n");
     }
-      
+
     output("}\n");
 
-/*
-    mesh2 {
-      vertex_vectors {
-         9, 
-         <0,0,0>, <0.5,0,0>, <0.5,0.5,0>,
-         <1,0,0>, <1,0.5,0>, <1,1,0>   
-         <0.5,1,0>, <0,1,0>, <0,0.5,0> 
-      }
-      normal_vectors {
-         9,
-         <-1,-1,0>, <0,-1,0>, <0,0,1>,
-         <1,-1,0>, <1,0,0>, <1,1,0>,
-         <0,1,0>, <-1,1,0>, <-1,0,0>
-      }
-      texture_list {
-         3,
-         texture{pigment{rgb <0,0,1>}}
-         texture{pigment{rgb 1}}
-         texture{pigment{rgb <1,0,0>}}
-      }
-      face_indices {
-         8, 
-         <0,1,2>,0,1,2,  <1,3,2>,1,0,2,
-         <3,4,2>,0,1,2,  <4,5,2>,1,0,2,
-         <5,6,2>,0,1,2,  <6,7,2>,1,0,2,
-         <7,8,2>,0,1,2,  <8,0,2>,1,0,2
-      }
-   }
-*/
+    /*
+     mesh2 {
+     vertex_vectors {
+     9, 
+     <0,0,0>, <0.5,0,0>, <0.5,0.5,0>,
+     <1,0,0>, <1,0.5,0>, <1,1,0>   
+     <0.5,1,0>, <0,1,0>, <0,0.5,0> 
+     }
+     normal_vectors {
+     9,
+     <-1,-1,0>, <0,-1,0>, <0,0,1>,
+     <1,-1,0>, <1,0,0>, <1,1,0>,
+     <0,1,0>, <-1,1,0>, <-1,0,0>
+     }
+     texture_list {
+     3,
+     texture{pigment{rgb <0,0,1>}}
+     texture{pigment{rgb 1}}
+     texture{pigment{rgb <1,0,0>}}
+     }
+     face_indices {
+     8, 
+     <0,1,2>,0,1,2,  <1,3,2>,1,0,2,
+     <3,4,2>,0,1,2,  <4,5,2>,1,0,2,
+     <5,6,2>,0,1,2,  <6,7,2>,1,0,2,
+     <7,8,2>,0,1,2,  <8,0,2>,1,0,2
+     }
+     }
+     */
 
   }
   

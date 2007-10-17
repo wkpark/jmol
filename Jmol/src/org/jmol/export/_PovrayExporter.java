@@ -310,7 +310,8 @@ public class _PovrayExporter extends _Exporter {
     for (int i = 0; i < nVertices; i++) {
       if (i % 10 == 0)
         output("\n");
-      output(", <" + triad(vertices[i]) + ">");
+      viewer.transformPoint(vertices[i], povpt1);
+      output(", <" + triad(povpt1) + ">");
     }
     output("\n}\n");
 

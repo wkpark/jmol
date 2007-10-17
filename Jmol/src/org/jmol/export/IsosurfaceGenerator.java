@@ -31,7 +31,7 @@ public class IsosurfaceGenerator extends IsosurfaceRenderer {
 
   protected void renderExport() {
     g3d.getExporter().renderIsosurface(imesh.vertices, imesh.colix, imesh.vertexColixes,
-        imesh.normixes, imesh.polygonIndexes, bsFaces, imesh.vertexCount,
+        imesh.getVertexNormals(), imesh.polygonIndexes, bsFaces, imesh.vertexCount,
         imesh.polygonCount);
   }
 }

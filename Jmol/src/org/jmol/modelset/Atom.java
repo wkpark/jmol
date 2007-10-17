@@ -119,7 +119,7 @@ final public class Atom extends Point3fi implements Tuple {
     setBFactor(modelSet, bfactor);
     setFormalCharge(formalCharge);
     setOccupancy(modelSet, occupancy);
-    setPartialCharge(modelSet, bfactor);
+    setPartialCharge(modelSet, partialCharge);
     if (!Float.isNaN(vibrationX))
       setVibrationVector(modelSet, vibrationX, vibrationY, vibrationZ);
 

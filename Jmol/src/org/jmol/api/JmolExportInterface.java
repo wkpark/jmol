@@ -1,6 +1,7 @@
 package org.jmol.api;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
@@ -34,7 +35,7 @@ public interface JmolExportInterface {
   // replace methods in org.jmol.g3d. More will be added as needed. 
 
   abstract void renderIsosurface(Point3f[] vertices, short colix,
-                                 short[] colixes, short[] normals,
+                                 short[] colixes, Vector3f[] normals,
                                  int[][] indices, BitSet bsFaces,
                                  int nVertices, int nFaces);
   

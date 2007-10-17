@@ -296,7 +296,7 @@ public class _PovrayExporter extends _Exporter {
   }
   
   public void renderIsosurface(Point3f[] vertices, short colix,
-                               short[] colixes, short[] normals,
+                               short[] colixes, Vector3f[] normals,
                                int[][] indices, BitSet bsFaces, int nVertices,
                                int nFaces) {
     if (nFaces == 0 || nVertices == 0)
@@ -308,22 +308,24 @@ public class _PovrayExporter extends _Exporter {
 
     output("vertex_vectors { " + nVertices);
     for (int i = 0; i < nVertices; i++) {
-      if (i % 10 == 0)
+//      if (i % 10 == 0)
         output("\n");
       viewer.transformPoint(vertices[i], povpt1);
       output(", <" + triad(povpt1) + ">");
+      output(" //"+i+"\n");
+
     }
     output("\n}\n");
 
-    boolean haveNormals = (normals != null && normals[0] >= 0);
+    boolean haveNormals = (normals != null);
     if (haveNormals) {
       output("normal_vectors { " + nVertices);
       Vector3f[] nv = g3d.getTransformedVertexVectors();
       for (int i = 0; i < nVertices; i++) {
-        short normal = normals[i];
-        if (i % 10 == 0)
+//        if (i % 10 == 0)
           output("\n");
-        output(", <" + triad(nv[normal < 0 ? ~normal : normal]) + ">");
+        output(", <" + triad(getNormal(vertices[i], normals[i])) + ">");
+        output(" //"+i+"\n");
       }
       output("\n}\n");
     }
@@ -344,7 +346,7 @@ public class _PovrayExporter extends _Exporter {
 
       output("texture_list { " + nColix);
       for (int i = 0; i < nColix; i++)
-        output("\n, texture{pigment{rgb <" + list[i] + ">}}");
+        output("\n, texture{pigment{rgbt<" + list[i] + ">}}");
       output("\n}\n");
     }
     nFaces = BitSetUtil.cardinalityOf(bsFaces);
@@ -352,7 +354,7 @@ public class _PovrayExporter extends _Exporter {
     int p = 0;
     for (int i = BitSetUtil.length(bsFaces); --i >= 0;)
       if (bsFaces.get(i)) {
-        if ((p++) % 10 == 0)
+        //if ((p++) % 10 == 0)
           output("\n");
         output(", <" + indices[i][0] + "," + indices[i][1] + ","
             + indices[i][2] + ">");
@@ -361,6 +363,7 @@ public class _PovrayExporter extends _Exporter {
             color = color4(colixes[indices[i][j]]);
             output("," + ((Integer) htColixes.get(color)).intValue());
           }
+        output(" //\n");
       }
     output("\n}\n");
 
@@ -400,6 +403,15 @@ public class _PovrayExporter extends _Exporter {
      }
      */
 
+  }
+  
+  private Point3f getNormal(Point3f pt, Vector3f normal) {
+    povpt1.set(pt);
+    povpt1.add(normal);
+    viewer.transformPoint(pt, povpt2);
+    viewer.transformPoint(povpt1, povpt3);
+    povpt3.sub(povpt2);
+    return povpt3;
   }
   
   public void renderText(Text t) {

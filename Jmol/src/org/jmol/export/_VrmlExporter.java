@@ -28,6 +28,7 @@ package org.jmol.export;
 import java.util.BitSet;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.modelset.Atom;
@@ -119,7 +120,7 @@ public class _VrmlExporter extends _Exporter {
   }
 
   public void renderIsosurface(Point3f[] vertices, short colix,
-                               short[] colixes, short[] normals,
+                               short[] colixes, Vector3f[] normals,
                                int[][] indices, BitSet bsFaces, int nVertices,
                                int nFaces) {
 

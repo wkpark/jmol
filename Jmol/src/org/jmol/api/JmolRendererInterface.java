@@ -267,7 +267,7 @@ public interface JmolRendererInterface {
                                          short colixD, short normixD);
 
   public abstract void renderIsosurface(Point3f[] vertices, short colix,
-                                        short[] colixes, short[] normals,
+                                        short[] colixes, Vector3f[] normals,
                                         int[][] indices, BitSet bsFaces, int nVertices,
                                         int nFaces);
 

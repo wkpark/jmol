@@ -102,14 +102,19 @@ public class Mesh {
   public int lighting = JmolConstants.FRONTLIT;
   
   public void initialize(int lighting) {//used by mps
-    Vector3f[] vectorSums = new Vector3f[vertexCount];
-    for (int i = vertexCount; --i >= 0;)
-      vectorSums[i] = new Vector3f();
-    sumVertexNormals(vectorSums, false);
+    Vector3f[] vectorSums = getVertexNormals();
     normixes = new short[vertexCount];
     initializeNormixes(lighting, vectorSums);
   }
 
+  public Vector3f[] getVertexNormals() {
+    Vector3f[] vectorSums = new Vector3f[vertexCount];
+    for (int i = vertexCount; --i >= 0;)
+      vectorSums[i] = new Vector3f();
+    sumVertexNormals(vectorSums, false);
+    return vectorSums;
+  }
+  
   public void initializeNormixes(int lighting, Vector3f[] vectorSums) {
     isTwoSided = (lighting == JmolConstants.FULLYLIT);
     normixes = new short[vertexCount];

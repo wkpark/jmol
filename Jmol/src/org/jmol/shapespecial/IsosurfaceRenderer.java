@@ -132,8 +132,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
         colixA = colixB = colixC = colix;
       }
       if (fill) {
-        if (i < 100)
-          continue;
         if (generateSet) {
           bsFaces.set(i);
           continue;
@@ -174,7 +172,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       return;
     for (int i = vertexCount; --i >= 0;) {
       if (vertexValues != null && !Float.isNaN(vertexValues[i]))
-        if ((i % 3) == 0) { //investigate vertex normixes
+        if (true || (i % 3) == 0) { //investigate vertex normixes
           ptTemp.set(mesh.vertices[i]);
           short n = mesh.normixes[i];
           // -n is an intensity2sided and does not correspond to a true normal index

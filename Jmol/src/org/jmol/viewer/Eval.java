@@ -7823,6 +7823,7 @@ class Eval { //implements Runnable {
         pt++;
         type = type.substring(0, 1).toUpperCase() + type.substring(1);
         isExport = true;
+        fileName = "Jmol." + type;
       } else {
         type = "image";
       }

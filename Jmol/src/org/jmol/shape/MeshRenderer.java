@@ -60,6 +60,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
   
   private boolean setVariables() {
+    slabbing = viewer.getSlabEnabled();
     vertices = mesh.vertices; //because DRAW might have a text associated with it
     colix = mesh.colix;
     if (mesh == null || mesh.visibilityFlags == 0 || !g3d.setColix(colix)
@@ -71,7 +72,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     //this can happen when user switches windows 
     // during a surface calculation
     lighting = mesh.lighting;
-    frontOnly = mesh.frontOnly && !mesh.isTwoSided;
+    frontOnly = !slabbing && mesh.frontOnly && !mesh.isTwoSided;
     screens = viewer.allocTempScreens(vertexCount);
     transformedVectors = g3d.getTransformedVertexVectors();
     return true;

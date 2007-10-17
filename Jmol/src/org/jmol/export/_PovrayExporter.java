@@ -315,7 +315,8 @@ public class _PovrayExporter extends _Exporter {
     }
     output("\n}\n");
 
-    if (normals != null) {
+    boolean haveNormals = (normals != null && normals[0] >= 0);
+    if (haveNormals) {
       output("normal_vectors { " + nVertices);
       Vector3f[] nv = g3d.getTransformedVertexVectors();
       for (int i = 0; i < nVertices; i++) {
@@ -346,7 +347,7 @@ public class _PovrayExporter extends _Exporter {
         output("\n, texture{pigment{rgb <" + list[i] + ">}}");
       output("\n}\n");
     }
-
+    nFaces = BitSetUtil.cardinalityOf(bsFaces);
     output("face_indices { " + nFaces);
     int p = 0;
     for (int i = BitSetUtil.length(bsFaces); --i >= 0;)

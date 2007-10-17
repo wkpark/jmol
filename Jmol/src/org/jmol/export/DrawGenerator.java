@@ -28,5 +28,8 @@ package org.jmol.export;
 import org.jmol.shapespecial.*;
 
 public class DrawGenerator extends DrawRenderer {
+  public void setGenerator(boolean isGenerator) {
+    this.isGenerator = false; // not for draw!
+  }
 
 }

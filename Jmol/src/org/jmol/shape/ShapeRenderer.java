@@ -48,6 +48,7 @@ public abstract class ShapeRenderer {
   protected short madMid;
   protected short madEnd;
   protected boolean isGenerator;
+  protected boolean slabbing;
 
   public void setGenerator(boolean isGenerator) {
     this.isGenerator = isGenerator;

@@ -780,6 +780,11 @@ public class Draw extends MeshCollection {
           break;
         klast = k;
       }
+    if (mesh.ptCenters == null)
+      mesh.setCenter(-1);
+    else
+      for (int i = mesh.ptCenters.length; --i >= 0; )
+        mesh.setCenter(i);
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
       Logger.debug(getDrawCommand(mesh));
     viewer.refresh(0, "draw");

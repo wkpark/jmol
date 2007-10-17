@@ -41,7 +41,7 @@ public class BallsRenderer extends ShapeRenderer {
     //maxX = minX + rectClip.width;
     //minY = rectClip.y;
     //maxY = minY + rectClip.height;
-    boolean slabbing = viewer.getSlabEnabled();
+    slabbing = viewer.getSlabEnabled();
     //isNav = viewer.getNavigationMode();
     if (slabbing) {
       minZ = g3d.getSlab();

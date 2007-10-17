@@ -132,6 +132,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
         colixA = colixB = colixC = colix;
       }
       if (fill) {
+        if (i < 100)
+          continue;
         if (generateSet) {
           bsFaces.set(i);
           continue;
@@ -171,12 +173,12 @@ public class IsosurfaceRenderer extends MeshRenderer {
     if (!g3d.setColix(Graphics3D.WHITE))
       return;
     for (int i = vertexCount; --i >= 0;) {
-      if (true || vertexValues != null && !Float.isNaN(vertexValues[i]))
+      if (vertexValues != null && !Float.isNaN(vertexValues[i]))
         if ((i % 3) == 0) { //investigate vertex normixes
           ptTemp.set(mesh.vertices[i]);
           short n = mesh.normixes[i];
           // -n is an intensity2sided and does not correspond to a true normal index
-          if (n > 0) {
+          if (n >= 0) {
             ptTemp.add(g3d.getNormixVector(n));
             viewer.transformPoint(ptTemp, ptTempi);
             g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 1,

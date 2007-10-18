@@ -1260,7 +1260,6 @@ abstract class TransformManager {
   }
 
   synchronized protected void calcTransformMatrix() {
-
     matrixTransform.setIdentity();
 
     // first, translate the coordinates back to the center

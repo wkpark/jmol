@@ -7824,6 +7824,10 @@ class Eval { //implements Runnable {
         type = type.substring(0, 1).toUpperCase() + type.substring(1);
         isExport = true;
         fileName = "Jmol." + type;
+        if (tokAt(pt) == Token.integer) {
+          width = intParameter(pt++);
+          height = intParameter(pt++);
+        }
       } else {
         type = "image";
       }
@@ -7909,7 +7913,8 @@ class Eval { //implements Runnable {
     if (isExport) {
       //POV-Ray uses a BufferedWriter instead of a StringBuffer.
       boolean isPovRay = type.equals("Povray");
-      data = viewer.generateOutput(data, isPovRay ? fileName : null);
+      data = viewer.generateOutput(data, 
+          isPovRay ? fileName : null, width, height);
       if (isPovRay) {
         data = TextFormat.simpleReplace(data, "%FILETYPE%", "N");
         data = TextFormat.simpleReplace(data, "%OUTPUTFILENAME%", fileName + ".png");

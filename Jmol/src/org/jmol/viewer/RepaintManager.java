@@ -191,7 +191,8 @@ class RepaintManager {
       g3d.drawRect(band.x, band.y, 0, 0, band.width, band.height);
   }
 
-  String generateOutput(String type, Graphics3D g3d, ModelSet modelSet, String fileName) {
+  String generateOutput(String type, Graphics3D g3d, ModelSet modelSet, 
+                        String fileName) {
     return frameRenderer.generateOutput(type, g3d, modelSet, fileName);
   }
 

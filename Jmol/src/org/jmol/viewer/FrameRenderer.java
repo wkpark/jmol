@@ -97,6 +97,9 @@ public class FrameRenderer {
   }
 
   String generateOutput(String type, Graphics3D g3d, ModelSet modelSet, String fileName) {
+    
+    viewer.finalizeTransformParameters();
+
     JmolExportInterface exporter = null;
     JmolRendererInterface g3dExport = null;
     Object output = null;

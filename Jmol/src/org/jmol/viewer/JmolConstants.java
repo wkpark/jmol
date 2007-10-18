@@ -2605,11 +2605,11 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   
   public final static int SHAPE_MIN_MESH_COLLECTION = 20; //////////
   
-  public final static int SHAPE_MO         = 20;
-  public final static int SHAPE_ISOSURFACE = 21;
+  public final static int SHAPE_DRAW        = 20;
+  public final static int SHAPE_ISOSURFACE  = 21;
   public final static int SHAPE_LCAOCARTOON = 22;
-  public final static int SHAPE_DRAW       = 23;
-  public final static int SHAPE_PMESH      = 24;
+  public final static int SHAPE_MO          = 23;
+  public final static int SHAPE_PMESH       = 24;
 
   public final static int SHAPE_MAX_MESH_COLLECTION = 25; //////////
   public final static int SHAPE_MAX_SPECIAL = 25; //////////
@@ -2666,9 +2666,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "Labels", "Measures", "Dots", "Dipoles",  
     "Backbone", "Trace", "Cartoon", "Strands", "MeshRibbon", "Ribbons", "Rockets", 
     "Stars", "Halos",
-    "Vectors", "GeoSurface",
-    "Polyhedra", "MolecularOrbital", "Isosurface", 
-    "LcaoCartoon", "Draw", "Pmesh", 
+    "Vectors", "GeoSurface", "Polyhedra", 
+    "Draw", "Isosurface", "LcaoCartoon", "MolecularOrbital", "Pmesh", 
     "Axes", "Bbcage", "Uccage", "Echo", "Hover", 
     "Frank"
      };
@@ -2703,9 +2702,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     Token.backbone, Token.trace, Token.cartoon, Token.strands,
     Token.meshRibbon, Token.ribbon, Token.rocket, 
     Token.star, Token.halo, 
-    Token.vector, Token.geosurface, 
-    Token.polyhedra, Token.mo, Token.isosurface, 
-    Token.lcaocartoon, Token.draw, Token.pmesh,
+    Token.vector, Token.geosurface, Token.polyhedra, 
+    Token.draw, Token.isosurface, Token.lcaocartoon, Token.mo, Token.pmesh,
     Token.axes, Token.boundbox, Token.unitcell,
     Token.echo, Token.hover,
     Token.frank

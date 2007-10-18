@@ -1687,58 +1687,13 @@ final public class JmolConstants {
 
     0xFFFF69B4, // pick a new color ASP/ASN ambiguous
     0xFFFF69B4, // pick a new color GLU/GLN ambiguous
+    0xFFBEA06E, // default tan UNK
   };
 
   // hmmm ... what is shapely backbone? seems interesting
   public final static int argbShapelyBackbone = 0xFFB8B8B8;
   public final static int argbShapelySpecial =  0xFF5E005E;
   public final static int argbShapelyDefault =  0xFFFF00FF;
-  public final static int[] argbsShapely = {
-    0xFFFF00FF, // default
-    // these are rasmol values, not xwindows colors
-    0xFF8CFF8C, // ALA
-    0xFF00007C, // ARG
-    0xFFFF7C70, // ASN
-    0xFFA00042, // ASP
-    0xFFFFFF70, // CYS
-    0xFFFF4C4C, // GLN
-    0xFF660000, // GLU
-    0xFFFFFFFF, // GLY
-    0xFF7070FF, // HIS
-    0xFF004C00, // ILE
-    0xFF455E45, // LEU
-    0xFF4747B8, // LYS
-    0xFFB8A042, // MET
-    0xFF534C52, // PHE
-    0xFF525252, // PRO
-    0xFFFF7042, // SER
-    0xFFB84C00, // THR
-    0xFF4F4600, // TRP
-    0xFF8C704C, // TYR
-    0xFFFF8CFF, // VAL
-
-    0xFFFF00FF, // ASX ASP/ASN ambiguous
-    0xFFFF00FF, // GLX GLU/GLN ambiguous
-    0xFFFF00FF, // UNK unknown -- 23
-
-    0xFFA0A0FF, // A
-    0xFFA0A0FF, // +A
-
-    0xFFFF7070, // G
-    0xFFFF7070, // +G
-
-    0xFF80FFFF, // I miguel made up this color
-    0xFF80FFFF, // +I
-    
-    0xFFFF8C4B, // C
-    0xFFFF8C4B, // +C
-
-    0xFFA0FFA0, // T
-    0xFFA0FFA0, // +T
-
-    0xFFFF8080, // U miguel made up this color
-    0xFFFF8080, // +U
-  };
 
   /**
    * colors used for chains
@@ -2053,8 +2008,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // int to distinguish groups. If we need more then we can go to 64
     // bits by using a long ... but code must change. See Resolver.java
     //
-    // All entries less than 64 are backbone entries
-    // But the number 64 is not magical and could be easily changed
+    // All entries from 64 on are backbone entries
     ////////////////////////////////////////////////////////////////
     null, // 0
     
@@ -2063,20 +2017,21 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "N",   //  1 - amino nitrogen
     "CA",  //  2 - alpha carbon
     "C",   //  3 - carbonyl carbon
-    null, // used to be carbonyl oxygen, now can be O or O1
+    "O",   //  4 - carbonyl oxygen
+    "O1",  //  5 - carbonyl oxygen in some protein residues (4THN)
 
     // nucleic acid backbone sugar
     //
-    "O5'", //  5 - sugar 5' oxygen
-    "C5'", //  6 - sugar 5' carbon
-    "C4'", //  7 - sugar ring 4' carbon
-    "C3'", //  8 - sugar ring 3' carbon
-    "O3'", //  9 - sugar 3' oxygen
-    "C2'", // 10 - sugar ring 2' carbon
-    "C1'", // 11 - sugar ring 1' carbon
+    "O5'", //  6 - sugar 5' oxygen
+    "C5'", //  7 - sugar 5' carbon
+    "C4'", //  8 - sugar ring 4' carbon
+    "C3'", //  9 - sugar ring 3' carbon
+    "O3'", // 10 - sugar 3' oxygen
+    "C2'", // 11 - sugar ring 2' carbon
+    "C1'", // 12 - sugar ring 1' carbon
     // Phosphorus is not required for a nucleic group because
     // at the terminus it could have H5T or O5T ...
-    "P",   // 12 - phosphate phosphorus
+    "P",   // 13 - phosphate phosphorus
 
     // ... But we need to distinguish phosphorus separately because
     // it could be found in phosphorus-only nucleic polymers
@@ -2084,107 +2039,112 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // reserved for future expansion ... lipids & carbohydrates
     // 9/2006 -- carbohydrates are just handled as group3 codes
     // see below
-    null, null, null,       // 13 - 15
+    null, null,             // 14 - 15
     null, null, null, null, // 16 - 19
     null, null, null, null, // 20 - 23
     null, null, null, null, // 24 - 27
     null, null, null, null, // 28 - 31
 
-    
-    // anything that could be considered part of the 'backbone'
-    // goes in this next group
-    
-    // protein backbone
-    //
-    "OXT", // 32 - second carbonyl oxygen, C-terminus only
-
-    // protein backbone hydrogens
-    //
-    "H",   // 33 - amino hydrogen
-    // these appear on the N-terminus end of 1ALE & 1LCD
-    "1H",  // 34 - N-terminus hydrogen
-    "2H",  // 35 - second N-terminus Hydrogen
-    "3H",  // 36 - third N-terminus Hydrogen
-    "HA",  // 37 - H on alpha carbon
-    "1HA", // 38 - H on alpha carbon in Gly only
-    "2HA", // 39 - 1ALE calls the two GLY hdrogens 1HA & 2HA
-
-    "O",   // 40 - carbonyl oxygen
-    "O1",  // 41 - carbonyl oxygen in some protein residues (4THN)
-    null,  // 42
-
-    "OP1", // 43 - first equivalent oxygen on phosphorus of phosphate -- new designation
-    "OP2", // 44 - second equivalent oxygen on phosphorus of phosphate -- new designation
-
-    // Terminal nuclic acid
-    "H5T", // 45 - 5' terminus hydrogen which replaces P + O1P + O2P
-    "O5T", // 46 - 5' terminus oxygen which replaces P + O1P + O2P
-    "O1P", // 47 - first equivalent oxygen on phosphorus of phosphate
-    "O2P", // 48 - second equivalent oxygen on phosphorus of phosphate
-    "O4'", // 49 - sugar ring 4' oxygen ... not present in +T ... maybe others
-    "O2'", // 50 - sugar 2' oxygen, unique to RNA
-
-    // nucleic acid backbone hydrogens
-    //
-    "1H5'", // 51 - first  equivalent H on sugar 5' carbon
-    "2H5'", // 52 - second  equivalent H on sugar 5' carbon 
-    "H4'",  // 53 - H on sugar ring 4' carbon
-    "H3'",  // 54 - H on sugar ring 3' carbon
-    "1H2'", // 55 - first equivalent H on sugar ring 2' carbon
-    "2H2'", // 56 - second equivalent H on sugar ring 2' carbon
-    "2HO'", // 57 - H on sugar 2' oxygen, unique to RNA 
-    "H1'",  // 58 - H on sugar ring 1' carbon 
-    //
-    "H3T",  // 59 - 3' terminus hydrogen
-    //
-    null,   // 60
-    null,   // 61
-    null,   // 62
-    null,   // 63
-   
-    // everything before this (1 - 63, but not 0) is backbone
-    // do not change range 1 - 63 without also checking predefined sets
-    
     // nucleic acid bases
     //
-    "N1",   // 64
-    "C2",   // 65
-    "N3",   // 66
-    "C4",   // 67
-    "C5",   // 68
-    "C6",   // 69 -- currently defined as the nucleotide wing
+    "N1",   // 32
+    "C2",   // 33
+    "N3",   // 34
+    "C4",   // 35
+    "C5",   // 36
+    "C6",   // 37 -- currently defined as the nucleotide wing
             // this determines the vector for the sheet
             // could be changed if necessary
 
     // pyrimidine O2
     //
-    "O2",   // 70
+    "O2",   // 38
 
     // purine stuff
     //
-    "N7",   // 71
-    "C8",   // 72
-    "N9",   // 73
-
+    "N7",   // 39
+    "C8",   // 40
+    "N9",   // 41
+    
     // nucleic acid base ring functional groups
     // DO NOT CHANGE THESE NUMBERS WITHOUT ALSO CHANGING
     // NUMBERS IN THE PREDEFINED SETS _a=...
     
-    "N4",  // 74 - base ring N4, unique to C
-    "N2",  // 75 - base amino N2, unique to G
-    "N6",  // 76 - base amino N6, unique to A
-    "C5M", // 77 - base methyl carbon, unique to T
+    "N4",  // 42 - base ring N4, unique to C
+    "N2",  // 43 - base amino N2, unique to G
+    "N6",  // 44 - base amino N6, unique to A
+    "C5M", // 45 - base methyl carbon, unique to T
 
-    "O6",  // 78 - base carbonyl O6, only in G and I
-    "O4",  // 79 - base carbonyl O4, only in T and U
-    "S4",  // 80 - base thiol sulfur, unique to thio-U
+    "O6",  // 46 - base carbonyl O6, only in G and I
+    "O4",  // 47 - base carbonyl O4, only in T and U
+    "S4",  // 48 - base thiol sulfur, unique to thio-U
 
-    "C7", // 81 - base methyl carbon, unique to DT
+    "C7", // 49 - base methyl carbon, unique to DT
 
-  };
+    null, null, null, null, null, //50
+    null, null, null, null, null, //55
+    null, null, null, null,       //60 - 63
+    
+    // everything from here on is backbone
+
+    // protein backbone
+    //
+    "OXT", // 64 - second carbonyl oxygen, C-terminus only
+
+    // protein backbone hydrogens
+    //
+    "H",   // 65 - amino hydrogen
+    // these appear on the N-terminus end of 1ALE & 1LCD
+    "1H",  // 66 - N-terminus hydrogen
+    "2H",  // 67 - second N-terminus Hydrogen
+    "3H",  // 68 - third N-terminus Hydrogen
+    "HA",  // 69 - H on alpha carbon
+    "1HA", // 70 - H on alpha carbon in Gly only
+    "2HA", // 71 - 1ALE calls the two GLY hdrogens 1HA & 2HA
+
+    // Terminal nuclic acid
+
+    "H5T", // 72 - 5' terminus hydrogen which replaces P + O1P + O2P
+    "O5T", // 73 - 5' terminus oxygen which replaces P + O1P + O2P
+    "O1P", // 74 - first equivalent oxygen on phosphorus of phosphate
+    "OP1", // 75 - first equivalent oxygen on phosphorus of phosphate -- new designation
+    "O2P", // 76 - second equivalent oxygen on phosphorus of phosphate    
+    "OP2", // 77 - second equivalent oxygen on phosphorus of phosphate -- new designation
+
+    "O4'", // 78 - sugar ring 4' oxygen ... not present in +T ... maybe others
+    "O2'", // 79 - sugar 2' oxygen, unique to RNA
+
+    // nucleic acid backbone hydrogens
+    //
+    "1H5'", // 80 - first  equivalent H on sugar 5' carbon
+    "2H5'", // 81 - second  equivalent H on sugar 5' carbon 
+    "H4'",  // 82 - H on sugar ring 4' carbon
+    "H3'",  // 83 - H on sugar ring 3' carbon
+    "1H2'", // 84 - first equivalent H on sugar ring 2' carbon
+    "2H2'", // 85 - second equivalent H on sugar ring 2' carbon
+    "2HO'", // 86 - H on sugar 2' oxygen, unique to RNA 
+    "H1'",  // 87 - H on sugar ring 1' carbon 
+    "H3T",  // 88 - 3' terminus hydrogen    
+        
+    // add as many as necessary
+
+    "HO3'", // 89 - 3' terminus hydrogen (new)
+    "HO5'", // 90 - 5' terminus hydrogen (new)
+    "HA2",
+    "HA3",
+    "HA2", 
+    "H1", 
+    "H2", 
+    "H3", 
+    "H5'", 
+    "H5''",
+    "H2'",
+    "H2''",
+    "HO2'",
+    
+};
 
   public final static int ATOMID_MAX = specialAtomNames.length;
-
   ////////////////////////////////////////////////////////////////
   // currently, ATOMIDs must be >= 0 && <= 127
   // if we need more then we can go to 255 by:
@@ -2200,70 +2160,75 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // atomID 0 => nothing special, just an ordinary atom
   public final static byte ATOMID_AMINO_NITROGEN  = 1;
   public final static byte ATOMID_ALPHA_CARBON    = 2;
-
+  public final static byte ATOMID_CARBONYL_CARBON = 3;
+  public final static byte ATOMID_CARBONYL_OXYGEN = 4;
+  public final static byte ATOMID_O1              = 5;
+  
   // this is for groups that only contain an alpha carbon
   public final static int ATOMID_ALPHA_ONLY_MASK = 1 << ATOMID_ALPHA_CARBON;
 
-  public final static byte ATOMID_CARBONYL_CARBON = 3;
-  
   //this is entries 1 through 3 ... 3 bits ... N, CA, C
-  public final static int ATOMID_PROTEIN_MASK = 0x07 << ATOMID_AMINO_NITROGEN;
+  public final static int ATOMID_PROTEIN_MASK =  0x7 << ATOMID_AMINO_NITROGEN;
+
+  public final static byte ATOMID_O5_PRIME        = 6;
+  public final static byte ATOMID_C3_PRIME        = 9;
+  public final static byte ATOMID_O3_PRIME        = 10;
   
-  public final static byte ATOMID_O5_PRIME        = 5;
-  public final static byte ATOMID_C5_PRIME        = 6;
-  public final static byte ATOMID_C3_PRIME        = 8;
-  public final static byte ATOMID_O3_PRIME        = 9;
-  
-  // this is entries 5 through through 11 ... 7 bits
+  // this is entries 6 through through 12 ... 7 bits
   public final static int ATOMID_NUCLEIC_MASK = 0x7F << ATOMID_O5_PRIME;
 
-  public final static byte ATOMID_NUCLEIC_PHOSPHORUS = 12;
+  public final static byte ATOMID_NUCLEIC_PHOSPHORUS = 13;
   
   // this is for nucleic groups that only contain a phosphorus
   public final static int ATOMID_PHOSPHORUS_ONLY_MASK =
     1 << ATOMID_NUCLEIC_PHOSPHORUS;
 
   // this can be increased as far as 32, but not higher.
-  public final static int ATOMID_DISTINGUISHING_ATOM_MAX = 13;
+  public final static int ATOMID_DISTINGUISHING_ATOM_MAX = 14;
   
-  public final static byte ATOMID_TERMINATING_OXT = 32;
-  public final static byte ATOMID_CARBONYL_OXYGEN = 40;
-  public final static byte ATOMID_O1              = 41;
-  public final static byte ATOMID_H5T_TERMINUS    = 45;
-  public final static byte ATOMID_O5T_TERMINUS    = 46;
-  public final static byte ATOMID_O1P             = 47;
-  public final static byte ATOMID_O2P             = 48;
-  public final static byte ATOMID_RNA_O2PRIME     = 50;
-  public final static byte ATOMID_H3T_TERMINUS    = 59;
+  public final static byte ATOMID_N1 = 32;
+  public final static byte ATOMID_C2 = 33;
+  public final static byte ATOMID_N3 = 34;
+  public final static byte ATOMID_C4 = 35;
+  public final static byte ATOMID_C5 = 36;
+  public final static byte ATOMID_C6 = 37; // wing
+  public final static byte ATOMID_O2 = 38;
+  public final static byte ATOMID_N7 = 39;
+  public final static byte ATOMID_C8 = 40;
+  public final static byte ATOMID_N9 = 41;
+  public final static byte ATOMID_N4 = 42;
+  public final static byte ATOMID_N2 = 43;
+  public final static byte ATOMID_N6 = 44;
+  public final static byte ATOMID_C5M= 45;
+  public final static byte ATOMID_O6 = 46;
+  public final static byte ATOMID_O4 = 47;
+  public final static byte ATOMID_S4 = 48;
+  public final static byte ATOMID_C7 = 49;
   
-  public final static int ATOMID_BACKBONE_MAX = 64;
+  private final static int ATOMID_BACKBONE_MIN = 64;
 
-  public final static byte ATOMID_N1 = 64;
-  public final static byte ATOMID_C2 = 65;
-  public final static byte ATOMID_N3 = 66;
-  public final static byte ATOMID_C4 = 67;
-  public final static byte ATOMID_C5 = 68;
-  public final static byte ATOMID_C6 = 69;
-
-  public final static byte ATOMID_NUCLEIC_WING = 69;
-
-  public final static byte ATOMID_O2 = 70;
-  public final static byte ATOMID_N7 = 71;
-  public final static byte ATOMID_C8 = 72;
-  public final static byte ATOMID_N9 = 73;
-  public final static byte ATOMID_N4 = 74;
-  public final static byte ATOMID_N2 = 75;
-  public final static byte ATOMID_N6 = 76;
-  public final static byte ATOMID_C5M= 77;
-  public final static byte ATOMID_O6 = 78;
-  public final static byte ATOMID_O4 = 79;
-  public final static byte ATOMID_S4 = 80;
-  public final static byte ATOMID_C7 = 81;
+  public final static byte ATOMID_TERMINATING_OXT = 64;
+  public final static byte ATOMID_H5T_TERMINUS    = 72;
+  public final static byte ATOMID_O5T_TERMINUS    = 73;
+  public final static byte ATOMID_O1P             = 74;
+  public final static byte ATOMID_OP1             = 75;
+  public final static byte ATOMID_O2P             = 76;
+  public final static byte ATOMID_OP2             = 77;
+  public final static byte ATOMID_RNA_O2PRIME     = 79;
+  public final static byte ATOMID_H3T_TERMINUS    = 88;
+  public final static byte ATOMID_HO3_PRIME       = 89;
+  public final static byte ATOMID_HO5_PRIME       = 90;
 
 
   ////////////////////////////////////////////////////////////////
   // GROUP_ID related stuff for special groupIDs
   ////////////////////////////////////////////////////////////////
+  
+  public final static int GROUPID_PROLINE          = 15;
+  public final static int GROUPID_AMINO_MAX        = 24;
+  
+  private final static int GROUPID_WATER           = 42;
+  private final static int GROUPID_SULPHATE        = 46;
   
   public final static String[] predefinedGroup3Names = {
     // taken from PDB spec
@@ -2296,76 +2261,93 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // if you change these numbers you *must* update
     // the predefined sets below
 
-    "A", // 24 the purines
-    "+A",
-    "G", // 26
-    "+G",
-    "I", // 28
-    "+I",
-    "C", // 30 the pyrimidines
+    // with the deprecation of +X, we will need a new
+    // way to handle these. 
+    
+    "G", // 24 starts nucleics 
+    "C", 
+    "A",
+    "T", 
+    "U", 
+    "I", 
+    
+    "DG", // 30 
+    "DC",
+    "DA",
+    "DT",
+    "DU",
+    "DI",
+    
+    "+G", // 36
     "+C",
-    "T", // 32
+    "+A",
     "+T",
-    "U", // 34
-    "+U",          // last for SHAPELY coloring
-           
-    "1MA", // 36
-    "AMO",
-    "5MC",
-    "OMC",
-    "1MG", // 40
-    "2MG",
-    "M2G",
-    "7MG",
-    "G7M",
-    "OMG", // 45
-    "YG",
-    "QUO",
-    "H2U",
-    "5MU",
-    "4SU", // 50
-    "PSU",
+    "+U",
+    "+I",
     
-    "AMP",
-    "ADP",
-    "ATP",
+    "HOH", // 42 water
+    "DOD", // 43
+    "WAT", // 44
     
-    "GMP", // 55
-    "GDP",
-    "GTP",
-    
-    "IMP",
-    "IDP",
-    "ITP", // 60
-    
-    "CMP",
-    "CDP",
-    "CTP",
-    
-    "TMP",
-    "TDP", // 65
-    "TTP",
-    
-    "UMP",
-    "UDP",
-    "UTP", // 69
-
-    // water && solvent
-    "HOH", // 70
-    "DOD", // 71
-    "WAT", // 72
-    // ions && solvent
-    "PO4", // 73 phosphate ions
-    "SO4", // 74 sulphate ions
+    "PO4", // 45 phosphate ions
+    "SO4", // 46 sulphate ions
 
   };
   
-  public final static int GROUPID_PROLINE          = 15;
-  public final static int GROUPID_AMINO_MAX        = 23;
+  public final static int[] argbsShapely = {
+    0xFFFF00FF, // default
+    // these are rasmol values, not xwindows colors
+    0xFF8CFF8C, // ALA
+    0xFF00007C, // ARG
+    0xFFFF7C70, // ASN
+    0xFFA00042, // ASP
+    0xFFFFFF70, // CYS
+    0xFFFF4C4C, // GLN
+    0xFF660000, // GLU
+    0xFFFFFFFF, // GLY
+    0xFF7070FF, // HIS
+    0xFF004C00, // ILE
+    0xFF455E45, // LEU
+    0xFF4747B8, // LYS
+    0xFFB8A042, // MET
+    0xFF534C52, // PHE
+    0xFF525252, // PRO
+    0xFFFF7042, // SER
+    0xFFB84C00, // THR
+    0xFF4F4600, // TRP
+    0xFF8C704C, // TYR
+    0xFFFF8CFF, // VAL
 
-  private final static int GROUPID_PURINE_MIN      = 24;
-  private final static int GROUPID_PYRIMIDINE_LAST = 35;
-  private final static int GROUPID_SHAPELY_MAX     = 36;
+    0xFFFF00FF, // ASX ASP/ASN ambiguous
+    0xFFFF00FF, // GLX GLU/GLN ambiguous
+    0xFFFF00FF, // UNK unknown -- 23
+
+    0xFFFF7070, // G  
+    0xFFFF8C4B, // C
+    0xFFA0A0FF, // A
+    0xFFA0FFA0, // T
+    0xFFFF8080, // U miguel made up this color
+    0xFF80FFFF, // I miguel made up this color
+
+    0xFFFF7070, // DG
+    0xFFFF8C4B, // DC
+    0xFFA0A0FF, // DA
+    0xFFA0FFA0, // DT
+    0xFFFF8080, // DU
+    0xFF80FFFF, // DI
+    
+    0xFFFF7070, // +G
+    0xFFFF8C4B, // +C
+    0xFFA0A0FF, // +A
+    0xFFA0FFA0, // +T
+    0xFFFF8080, // +U
+    0xFF80FFFF, // +I
+
+    // what to do about remediated +X names?
+    // we will need a map
+    
+  };
+
 
   // this form is used for counting groups in ModelSet
   private final static String allCarbohydrates = 
@@ -2388,16 +2370,15 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   private final static String getGroup3List() {
     StringBuffer s = new StringBuffer();
     //for menu presentation order
-    for (int i = 1; i < GROUPID_PURINE_MIN; i++)
+    for (int i = 1; i < GROUPID_WATER; i++)
       s.append(",[").append((predefinedGroup3Names[i]+"   ").substring(0,3)+"]");
-    s.append(",[G  ],[C  ],[A  ],[T  ],[I  ],[U  ],[+G ],[+C ],[+A ],[+T ],[+I ],[+U ]");
     s.append(allCarbohydrates);
     return s.toString();
   }
   
   public final static boolean isHetero(String group3) {
     int pt = group3List.indexOf("[" + (group3 + "   ").substring(0, 3) + "]");
-    return (pt < 0 || pt / 6 > GROUPID_PYRIMIDINE_LAST);
+    return (pt < 0 || pt / 6 >= GROUPID_WATER);
   }
 
   public final static String group3List = getGroup3List();
@@ -2442,18 +2423,27 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     'A', // 21 ASP/ASN ambiguous
     'G', // 22 GLU/GLN ambiguous
     '?', // 23 unknown -- 23
-    'A', // 24 the purines
-    'A',
-    'G', // 26
-    'G',
-    'I', // 28
-    'I',
-    'C', // 30 the pyrimidines
+
+    'G', // X nucleics
     'C',
-    'T', // 32
+    'A',
     'T',
-    'U', // 34
     'U',
+    'I',
+    
+    'G', // DX nucleics
+    'C',
+    'A',
+    'T',
+    'U',
+    'I',
+    
+    'G', // +X nucleics
+    'C',
+    'A',
+    'T',
+    'U',
+    'I',
     };
 
   ////////////////////////////////////////////////////////////////
@@ -2463,7 +2453,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // these must be removed after various script commands so that they stay current
   
   public static String[] predefinedVariable = {
-    "@water _g>=70 & _g<=72, oxygen & connected(2, hydrogen or deuterium or tritium), (hydrogen or deuterium or tritium) & connected(oxygen & connected(2, hydrogen or deuterium or tritium))",
+    "@water _g>="+GROUPID_WATER+" & _g<"+(GROUPID_WATER+3)
+    +", oxygen & connected(2, hydrogen or deuterium or tritium), (hydrogen or deuterium or tritium) & connected(oxygen & connected(2, hydrogen or deuterium or tritium))",
     "@turn structure=1",
     "@sheet structure=2",
     "@helix structure=3",
@@ -2517,28 +2508,27 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
     // nucleic, dna, rna, purine, pyrimidine are hard-wired
     //
-    "@c nucleic & within(group,_a=74)", // ATOMID_N4
-    "@g nucleic & within(group,_a=75)", // ATOMID_N2
+    "@c nucleic & within(group,_a="+ATOMID_N4+")",
+    "@g nucleic & within(group,_a="+ATOMID_N2+")",
     "@cg c,g",
-    "@a nucleic & within(group,_a=76)", // ATOMID_N6
-    "@t nucleic & within(group,_a=77 | _a=81)", // ATOMID_C5M or ATOMID_C7
+    "@a nucleic & within(group,_a="+ATOMID_N6+")",
+    "@t nucleic & within(group,_a="+ATOMID_C5M+" | _a="+ATOMID_C7+")",
     "@at a,t",
-    "@i nucleic & within(group,_a=78) & !g", // ATOMID_O6
-    "@u nucleic & within(group,_a=79) & !t", // ATOMID_O4
-    "@tu nucleic & within(group,_a=80)", // ATOMID_S4
+    "@i nucleic & within(group,_a="+ATOMID_O6+") & !g",
+    "@u nucleic & within(group,_a="+ATOMID_O4+") & !t",
+    "@tu nucleic & within(group,_a="+ATOMID_S4+")",
 
     //
     // solvent
     //
-    "@solvent _g>=70 & _g<=74", // water or ions
+    "@solvent _g>="+GROUPID_WATER+" & _g<="+GROUPID_SULPHATE, // water or ions
     "@hoh water",
-    "@ions _g=73,_g=74",
-
+    "@ions _g>="+(GROUPID_WATER+3)+",_g<="+GROUPID_SULPHATE,
     //
     // structure related
     //
     "@alpha _a=2", // rasmol doc says "approximately *.CA" - whatever?
-    "@backbone (protein,nucleic) & _a>0 & _a<=63",
+    "@backbone (protein,nucleic) & _a>0 & (_a<32 || _a>="+ATOMID_BACKBONE_MIN+")",
     "@sidechain (protein,nucleic) & !backbone",
     "@base nucleic & !backbone",
 
@@ -2749,7 +2739,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       Logger.error("argbsAmino wrong length");
       throw new NullPointerException();
     }
-    if (argbsShapely.length != GROUPID_SHAPELY_MAX) {
+    if (argbsShapely.length != GROUPID_WATER) {
       Logger.error("argbsShapely wrong length");
       throw new NullPointerException();
     }

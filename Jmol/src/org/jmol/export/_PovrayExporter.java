@@ -31,8 +31,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-import javax.vecmath.Matrix4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
@@ -41,6 +39,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Text;
 import org.jmol.util.BitSetUtil;
+import org.jmol.viewer.Viewer;
 
 /*
  * Contributed by pim schravendijk <pimlists@googlemail.com>
@@ -51,21 +50,14 @@ import org.jmol.util.BitSetUtil;
 
 public class _PovrayExporter extends _Exporter {
 
-  int screenWidth;
-  int screenHeight;
-
-  Matrix4f transformMatrix;
-
-  Point3f povpt1 = new Point3f();
-  Point3f povpt2 = new Point3f();
-  Point3f povpt3 = new Point3f();
-  Point3i povpti = new Point3i();
-
+  private int nBytes;
+  
   public _PovrayExporter() {
     use2dBondOrderCalculation = true;
   }
 
   private void output(String data) {
+    nBytes += data.length();
     try {
       bw.write(data);
     } catch (IOException e) {
@@ -79,22 +71,14 @@ public class _PovrayExporter extends _Exporter {
   }
 
   public void getHeader() {
-
-    // frame size formatting should be general part of _Exporter class
+    nBytes = 0;
     float zoom = viewer.getRotationRadius() * 2;
     zoom *= 1.1f; // for some reason I need a little more margin
     zoom /= viewer.getZoomPercentFloat() / 100f;
-
-    transformMatrix = viewer.getUnscaledTransformMatrix();
-    if ((screenWidth <= 0) || (screenHeight <= 0)) {
-      screenWidth = viewer.getScreenWidth();
-      screenHeight = viewer.getScreenHeight();
-    }
-    int minScreenDimension = screenWidth < screenHeight ? screenWidth
-        : screenHeight;
+    int minScreenDimension = Math.min(screenWidth, screenHeight);
 
     output("//******************************************************\n");
-    output("// Jmol generated povray script.\n");
+    output("// Created by Jmol " + Viewer.getJmolVersion() + "\n");
     output("//\n");
     output("// This script was generated on :\n");
     output("// " + getExportDate() + "\n");
@@ -110,9 +94,7 @@ public class _PovrayExporter extends _Exporter {
     output("// the correct aspect ratio.\n" + "\n");
     output("#declare Width = " + screenWidth + ";\n");
     output("#declare Height = " + screenHeight + ";\n");
-    output
-        ("#declare minScreenDimension = " + minScreenDimension + ";\n");
-    //    output("#declare wireRadius = 1 / minScreenDimension * zoom;\n");
+    output("#declare minScreenDimension = " + minScreenDimension + ";\n");
     output("#declare showAtoms = true;\n");
     output("#declare showBonds = true;\n");
     output("camera{\n");
@@ -137,12 +119,12 @@ public class _PovrayExporter extends _Exporter {
 
     // light source
     
-    povpt1.set(Graphics3D.getLightSource());
-    output("// " + povpt1 + " \n");
+    tempP1.set(Graphics3D.getLightSource());
+    output("// " + tempP1 + " \n");
     float distance = Math.max(screenWidth, screenHeight);
-    output("light_source { <" + povpt1.x*distance + "," 
-        + povpt1.y*distance + ", "
-        + (-1 * povpt1.z*distance) + "> " + " rgb <0.6,0.6,0.6> }\n");
+    output("light_source { <" + tempP1.x*distance + "," 
+        + tempP1.y*distance + ", "
+        + (-1 * tempP1.z*distance) + "> " + " rgb <0.6,0.6,0.6> }\n");
     output("\n");
     output("\n");
 
@@ -159,8 +141,12 @@ public class _PovrayExporter extends _Exporter {
   }
 
   private String getAuxiliaryFileData() {
-    return 
-        "Input_File_Name=" + fileName
+    return
+      "# Created by: Jmol " + Viewer.getJmolVersion() 
+      + "\n# Creation date: " + getExportDate()
+      + "\n# File created: " + fileName + " (" + nBytes + " bytes)"
+      + "\n# Jmol state: " + fileName + ".spt"
+      + "\nInput_File_Name=" + fileName
       + "\nOutput_to_File=true"
       + "\nOutput_File_Type=%FILETYPE%"
       + "\nOutput_File_Name=%OUTPUTFILENAME%"
@@ -191,13 +177,13 @@ public class _PovrayExporter extends _Exporter {
       return;
     }
 
-    temp2.set(atom2);
-    temp2.add(atom1);
-    temp2.scale(0.5f);
-    tempP.set(temp2);
+    tempV2.set(atom2);
+    tempV2.add(atom1);
+    tempV2.scale(0.5f);
+    tempP1.set(tempV2);
     renderJoint(atom1, colix1, endcaps, madBond);
-    renderCylinder(atom1, tempP, colix1, endcaps, madBond);
-    renderCylinder(tempP, atom2, colix2, endcaps, madBond);
+    renderCylinder(atom1, tempP1, colix1, endcaps, madBond);
+    renderCylinder(tempP1, atom2, colix2, endcaps, madBond);
     renderJoint(atom2, colix2, endcaps, madBond);
   }
 
@@ -210,8 +196,8 @@ public class _PovrayExporter extends _Exporter {
     }
     String color = rgbFractionalFromColix(colix, ',');
     //transformPoint is not needed when bonds are rendered via super.fillCylinders
-    //viewer.transformPoint(pt1, povpt1);
-    //viewer.transformPoint(pt2, povpt2);
+    //viewer.transformPoint(pt1, tempP1);
+    //viewer.transformPoint(pt2, tempP2);
     float radius1 = d / 2f;
     float radius2 = viewer.scaleToScreen((int) pt2.z, madBond / 2);
 
@@ -308,11 +294,11 @@ public class _PovrayExporter extends _Exporter {
 
     output("vertex_vectors { " + nVertices);
     for (int i = 0; i < nVertices; i++) {
-//      if (i % 10 == 0)
-        output("\n");
-      viewer.transformPoint(vertices[i], povpt1);
-      output(", <" + triad(povpt1) + ">");
-      output(" //"+i+"\n");
+      //if (i % 10 == 0)
+        //output("\n");
+      viewer.transformPoint(vertices[i], tempP1);
+      output(", <" + triad(tempP1) + ">");
+      output(" //" + i + "\n");
 
     }
     output("\n}\n");
@@ -320,12 +306,11 @@ public class _PovrayExporter extends _Exporter {
     boolean haveNormals = (normals != null);
     if (haveNormals) {
       output("normal_vectors { " + nVertices);
-      Vector3f[] nv = g3d.getTransformedVertexVectors();
       for (int i = 0; i < nVertices; i++) {
 //        if (i % 10 == 0)
-          output("\n");
+//          output("\n");
         output(", <" + triad(getNormal(vertices[i], normals[i])) + ">");
-        output(" //"+i+"\n");
+        output(" //" + i + "\n");
       }
       output("\n}\n");
     }
@@ -349,21 +334,40 @@ public class _PovrayExporter extends _Exporter {
         output("\n, texture{pigment{rgbt<" + list[i] + ">}}");
       output("\n}\n");
     }
-    nFaces = BitSetUtil.cardinalityOf(bsFaces);
+    nFaces = 0;
+    for (int i = BitSetUtil.length(bsFaces); --i >= 0;)
+      if (bsFaces.get(i))
+        nFaces += (indices[i].length == 4 ? 2 : 1);
     output("face_indices { " + nFaces);
-    int p = 0;
+    //int p = 0;
     for (int i = BitSetUtil.length(bsFaces); --i >= 0;)
       if (bsFaces.get(i)) {
         //if ((p++) % 10 == 0)
-          output("\n");
+        //  output("\n");
         output(", <" + indices[i][0] + "," + indices[i][1] + ","
             + indices[i][2] + ">");
-        if (colixes != null)
-          for (int j = 0; j < 3; j++) {
-            color = color4(colixes[indices[i][j]]);
+        if (colixes != null) {
+          color = color4(colixes[indices[i][0]]);
+          output("," + ((Integer) htColixes.get(color)).intValue());
+          color = color4(colixes[indices[i][1]]);
+          output("," + ((Integer) htColixes.get(color)).intValue());
+          color = color4(colixes[indices[i][2]]);
+          output("," + ((Integer) htColixes.get(color)).intValue());
+        }
+        output(" //\n");
+        if (indices[i].length == 4) {
+          output(", <" + indices[i][0] + "," + indices[i][2] + ","
+              + indices[i][3] + ">");
+          if (colixes != null) {
+            color = color4(colixes[indices[i][0]]);
+            output("," + ((Integer) htColixes.get(color)).intValue());
+            color = color4(colixes[indices[i][2]]);
+            output("," + ((Integer) htColixes.get(color)).intValue());
+            color = color4(colixes[indices[i][3]]);
             output("," + ((Integer) htColixes.get(color)).intValue());
           }
-        output(" //\n");
+          output(" //\n");
+        }
       }
     output("\n}\n");
 
@@ -389,8 +393,8 @@ public class _PovrayExporter extends _Exporter {
      }
      texture_list {
      3,
-     texture{pigment{rgb <0,0,1>}}
-     texture{pigment{rgb 1}}
+     texture{pigment{rgb <0,0,1>}},
+     texture{pigment{rgb 1}},
      texture{pigment{rgb <1,0,0>}}
      }
      face_indices {
@@ -406,12 +410,12 @@ public class _PovrayExporter extends _Exporter {
   }
   
   private Point3f getNormal(Point3f pt, Vector3f normal) {
-    povpt1.set(pt);
-    povpt1.add(normal);
-    viewer.transformPoint(pt, povpt2);
-    viewer.transformPoint(povpt1, povpt3);
-    povpt3.sub(povpt2);
-    return povpt3;
+    tempP1.set(pt);
+    tempP1.add(normal);
+    viewer.transformPoint(pt, tempP2);
+    viewer.transformPoint(tempP1, tempP3);
+    tempP3.sub(tempP2);
+    return tempP3;
   }
   
   public void renderText(Text t) {

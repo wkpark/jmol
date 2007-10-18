@@ -605,11 +605,19 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     setJvxlInfo();
     String schemeName = colorEncoder.getColorSchemeName();
     viewer.setPropertyColorScheme(schemeName, false);
+    viewer.setCurrentColorRange(jvxlData.valueMappedToRed, jvxlData.valueMappedToBlue);
+    thisMesh.isColorSolid = false;
+    thisMesh.colorCommand = "color $" + thisMesh.thisID + " " + getUserColorScheme(schemeName) + " range " 
+    + (jvxlData.isColorReversed ? jvxlData.valueMappedToBlue + " " + jvxlData.valueMappedToRed : 
+      jvxlData.valueMappedToRed + " " + jvxlData.valueMappedToBlue);
+/*
     viewer.setCurrentColorRange(jvxlData.mappedDataMin, jvxlData.mappedDataMax);
     thisMesh.isColorSolid = false;
     thisMesh.colorCommand = "color $" + thisMesh.thisID + " " + getUserColorScheme(schemeName) + " range " 
     + (jvxlData.isColorReversed ? jvxlData.mappedDataMax + " " + jvxlData.mappedDataMin : 
       jvxlData.mappedDataMin + " " + jvxlData.mappedDataMax);
+
+ */
   }
 
   public Point3f[] calculateGeodesicSurface(BitSet bsSelected, BitSet bsIgnored,

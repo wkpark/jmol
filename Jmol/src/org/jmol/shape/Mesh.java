@@ -111,7 +111,9 @@ public class Mesh {
     Vector3f[] vectorSums = new Vector3f[vertexCount];
     for (int i = vertexCount; --i >= 0;)
       vectorSums[i] = new Vector3f();
-    sumVertexNormals(vectorSums, false);
+    sumVertexNormals(vectorSums);
+    for (int i = vertexCount; --i >= 0;)
+      vectorSums[i].normalize();
     return vectorSums;
   }
   
@@ -154,7 +156,9 @@ public class Mesh {
   public final Vector3f vAB = new Vector3f();
   public final Vector3f vAC = new Vector3f();
 
-  public void sumVertexNormals(Vector3f[] vectorSums, boolean haveCheckByte) {
+  protected boolean haveCheckByte;
+  
+  public void sumVertexNormals(Vector3f[] vectorSums) {
     final Vector3f vNormalizedNormal = new Vector3f();
     int adjustment = (haveCheckByte ? 1 : 0);
 
@@ -168,11 +172,11 @@ public class Mesh {
           // occurrances of intersection AT a corner, leading to
           // two points of triangle being identical
           float l = vNormalizedNormal.length();
-          if( l > 0.9 && l < 1.1) //test for not infinity or -infinity or isNaN
-          for (int j = pi.length - adjustment; --j >= 0;) {
-            int k = pi[j];
-            vectorSums[k].add(vNormalizedNormal);
-          }
+          if (l > 0.9 && l < 1.1) //test for not infinity or -infinity or isNaN
+            for (int j = pi.length - adjustment; --j >= 0;) {
+              int k = pi[j];
+              vectorSums[k].add(vNormalizedNormal);
+            }
         }
       } catch (Exception e) {
       }

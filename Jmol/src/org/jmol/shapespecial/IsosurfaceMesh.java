@@ -52,6 +52,7 @@ public class IsosurfaceMesh extends Mesh {
   
   IsosurfaceMesh(String thisID, Graphics3D g3d, short colix) {
     super(thisID, g3d, colix);
+    haveCheckByte = true;
   }
 
   void clear(String meshType, boolean iAddGridPoints, boolean showTriangles) {
@@ -179,15 +180,8 @@ public class IsosurfaceMesh extends Mesh {
   public int[] vertexSets;
   public int nSets = 0;
   
-/*  // see MeshData
-  void invalidateSurfaceSet(int i) {
-    for (int j = surfaceSet[i].size(); --j >= 0;)
-      if (surfaceSet[i].get(j))
-        vertexValues[j] = Float.NaN;
-    surfaceSet[i] = null;
-  }
-*/
-  public void initialize(int lighting) {
+  public void sumVertexNormals(Vector3f[] vectorSums) {
+    super.sumVertexNormals(vectorSums);
     /* 
      * OK, so if there is an associated grid point (because the 
      * point is so close to one), we now declare that associated
@@ -199,11 +193,6 @@ public class IsosurfaceMesh extends Mesh {
      *  having 2-sided normixes is INCOMPATIBLE with this when not a plane 
      *  
      */
-
-    Vector3f[] vectorSums = new Vector3f[vertexCount];
-    for (int i = vertexCount; --i >= 0;)
-      vectorSums[i] = new Vector3f();
-    sumVertexNormals(vectorSums, true);
     if (assocGridPointMap != null) {
       Enumeration e = assocGridPointMap.keys();
       while (e.hasMoreElements()) {
@@ -218,6 +207,5 @@ public class IsosurfaceMesh extends Mesh {
             .get(assocGridPointMap.get(I)));
       }
     }
-    initializeNormixes(lighting, vectorSums);
   }
 }

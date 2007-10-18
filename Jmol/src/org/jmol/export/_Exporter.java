@@ -128,26 +128,26 @@ public abstract class _Exporter implements JmolExportInterface {
   // The following fields and methods are required for instantiation or provide
   // generally useful functionality:
   
-  Viewer viewer;
-  StringBuffer output;
-  BufferedWriter bw;
-  String fileName;
-  boolean isToFile;
-  Graphics3D g3d;
+  protected Viewer viewer;
+  protected StringBuffer output;
+  protected BufferedWriter bw;
+  protected String fileName;
+  protected boolean isToFile;
+  protected Graphics3D g3d;
   
-  int nBalls = 0;
-  int nCyl = 0;
-  String name;
-  String id;
+  protected int screenWidth;
+  protected int screenHeight;
   
   boolean use2dBondOrderCalculation = false;
 
-  Point3f center = new Point3f();
-  Vector3f tempV = new Vector3f();
-  Vector3f tempR = new Vector3f();
-  Point3f tempP = new Point3f();
-  Vector3f temp2 = new Vector3f();
-  AxisAngle4f tempA = new AxisAngle4f();
+  protected Point3f center = new Point3f();
+  protected Point3f tempP1 = new Point3f();
+  protected Point3f tempP2 = new Point3f();
+  protected Point3f tempP3 = new Point3f();
+  protected Vector3f tempV1 = new Vector3f();
+  protected Vector3f tempV2 = new Vector3f();
+  protected Vector3f tempV3 = new Vector3f();
+  protected AxisAngle4f tempA = new AxisAngle4f();
   
   public _Exporter() {  
   }
@@ -156,9 +156,15 @@ public abstract class _Exporter implements JmolExportInterface {
     this.viewer = viewer;
     this.g3d = g3d;
     center.set(viewer.getRotationCenter());
+    if ((screenWidth <= 0) || (screenHeight <= 0)) {
+      screenWidth = viewer.getScreenWidth();
+      screenHeight = viewer.getScreenHeight();
+    }
+
     isToFile = (output instanceof String);
     if (isToFile) {
       fileName = (String) output;
+      viewer.createImage(fileName + ".spt", viewer.getStateInfo(), Integer.MIN_VALUE, 0, 0);
       try {
         this.bw = new BufferedWriter(
             new OutputStreamWriter(new FileOutputStream(fileName)), 8192);
@@ -188,24 +194,25 @@ public abstract class _Exporter implements JmolExportInterface {
   }
   
   final protected static float degreesPerRadian = (float) (360 / (2 * Math.PI));
+  
   protected Vector3f getRotation(Vector3f v) {
-    tempR.set(v);
-    tempR.normalize();  
+    tempV3.set(v);
+    tempV3.normalize();  
     float r = (float) Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
     float rX = (float) Math.acos(v.y / r) * degreesPerRadian;
     if (v.x < 0)
       rX += 180;
     float rY = (float) Math.atan2(v.x, v.z) * degreesPerRadian;
-    tempR.set(rX, rY, 0);
-    return tempR;
+    tempV3.set(rX, rY, 0);
+    return tempV3;
   }
  
   protected AxisAngle4f getAxisAngle(Vector3f v) {
-    tempR.set(0, 1, 0);
-    temp2.set(v);
-    temp2.normalize();
-    tempR.add(temp2);
-    tempA.set(tempR.x, tempR.y, tempR.z, 3.14159f);
+    tempV3.set(0, 1, 0);
+    tempV2.set(v);
+    tempV2.normalize();
+    tempV3.add(tempV2);
+    tempA.set(tempV3.x, tempV3.y, tempV3.z, 3.14159f);
     return tempA;
   }
  

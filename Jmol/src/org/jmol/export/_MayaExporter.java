@@ -29,12 +29,18 @@ import java.util.BitSet;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Text;
 
 public class _MayaExporter extends _Exporter {
+
+  private int nBalls = 0;
+  private int nCyl = 0;
+  private String name;
+  private String id;
 
   public _MayaExporter() {
     use2dBondOrderCalculation = false;
@@ -85,12 +91,12 @@ public class _MayaExporter extends _Exporter {
       renderCylinder(atom1, atom2, colix1, endcaps, madBond);
       return;
     }
-    temp2.set(atom2);
-    temp2.add(atom1);
-    temp2.scale(0.5f);
-    tempP.set(temp2);
-    renderCylinder(atom1, tempP, colix1, endcaps, madBond);
-    renderCylinder(tempP, atom2, colix2, endcaps, madBond);
+    tempV2.set(atom2);
+    tempV2.add(atom1);
+    tempV2.scale(0.5f);
+    tempP1.set(tempV2);
+    renderCylinder(atom1, tempP1, colix1, endcaps, madBond);
+    renderCylinder(tempP1, atom2, colix2, endcaps, madBond);
   }
 
   public void renderCylinder(Point3f pt1, Point3f pt2, short colix, byte endcaps,
@@ -100,12 +106,12 @@ public class _MayaExporter extends _Exporter {
     id = "nurbsCylinderShape" + nCyl;
     output.append(" createNode transform -n \"" + name + "\";\n");
     float length = pt1.distance(pt2);
-    tempV.set(pt2);
-    tempV.add(pt1);
-    tempV.scale(0.5f);
-    setAttr("t", tempV);
-    tempV.sub(pt1);
-    setAttr("r", getRotation(tempV));
+    tempV1.set(pt2);
+    tempV1.add(pt1);
+    tempV1.scale(0.5f);
+    setAttr("t", tempV1);
+    tempV1.sub(pt1);
+    setAttr("r", getRotation(tempV1));
     output.append(" createNode nurbsSurface -n \"" + id + "\" -p \"" + name
         + "\";\n");
     addAttr();

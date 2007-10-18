@@ -51,7 +51,7 @@ import org.jmol.viewer.Viewer;
 public class _PovrayExporter extends _Exporter {
 
   private int nBytes;
-  
+
   public _PovrayExporter() {
     use2dBondOrderCalculation = true;
   }
@@ -64,10 +64,10 @@ public class _PovrayExporter extends _Exporter {
       // ignore for now
     }
   }
-  
+
   public String finalizeOutput() {
     super.finalizeOutput();
-    return getAuxiliaryFileData();    
+    return getAuxiliaryFileData();
   }
 
   public void getHeader() {
@@ -118,13 +118,12 @@ public class _PovrayExporter extends _Exporter {
     output("\n");
 
     // light source
-    
+
     tempP1.set(Graphics3D.getLightSource());
     output("// " + tempP1 + " \n");
     float distance = Math.max(screenWidth, screenHeight);
-    output("light_source { <" + tempP1.x*distance + "," 
-        + tempP1.y*distance + ", "
-        + (-1 * tempP1.z*distance) + "> " + " rgb <0.6,0.6,0.6> }\n");
+    output("light_source { <" + tempP1.x * distance + "," + tempP1.y * distance
+        + ", " + (-1 * tempP1.z * distance) + "> " + " rgb <0.6,0.6,0.6> }\n");
     output("\n");
     output("\n");
 
@@ -141,34 +140,26 @@ public class _PovrayExporter extends _Exporter {
   }
 
   private String getAuxiliaryFileData() {
-    return
-      "# Created by: Jmol " + Viewer.getJmolVersion() 
-      + "\n# Creation date: " + getExportDate()
-      + "\n# File created: " + fileName + " (" + nBytes + " bytes)"
-      + "\n# Jmol state: " + fileName + ".spt"
-      + "\nInput_File_Name=" + fileName
-      + "\nOutput_to_File=true"
-      + "\nOutput_File_Type=%FILETYPE%"
-      + "\nOutput_File_Name=%OUTPUTFILENAME%"
-      + "\nHeight=" + screenHeight 
-      + "\nWidth=" + screenWidth
-      + "\nAntialias=true"
-      + "\nAntialias_Threshold=0.1"
-      + "\nDisplay=true"
-      + "\nPause_When_Done=true"
-      + "\nVerbose=false"
-      + "\n";
-    
+    return "# Created by: Jmol " + Viewer.getJmolVersion()
+        + "\n# Creation date: " + getExportDate() + "\n# File created: "
+        + fileName + " (" + nBytes + " bytes)" + "\n# Jmol state: " + fileName
+        + ".spt" + "\nInput_File_Name=" + fileName + "\nOutput_to_File=true"
+        + "\nOutput_File_Type=%FILETYPE%"
+        + "\nOutput_File_Name=%OUTPUTFILENAME%" + "\nHeight=" + screenHeight
+        + "\nWidth=" + screenWidth + "\nAntialias=true"
+        + "\nAntialias_Threshold=0.1" + "\nDisplay=true"
+        + "\nPause_When_Done=true" + "\nVerbose=false" + "\n";
+
   }
-  
 
   public void renderAtom(Atom atom, short colix) {
-    fillSphereCentered(atom.screenDiameter, 
-        atom.screenX, atom.screenY, atom.screenZ, colix);
+    fillSphereCentered(atom.screenDiameter, atom.screenX, atom.screenY,
+        atom.screenZ, colix);
   }
 
   public void fillCylinder(Point3f atom1, Point3f atom2, short colix1,
-                         short colix2, byte endcaps, int madBond, int bondOrder) {
+                           short colix2, byte endcaps, int madBond,
+                           int bondOrder) {
 
     if (colix1 == colix2) {
       renderJoint(atom1, colix1, endcaps, madBond);
@@ -203,9 +194,9 @@ public class _PovrayExporter extends _Exporter {
 
     // (float)viewer.getBondRadius(i);
 
-    output("b(" + pt1.x + "," + pt1.y + "," + pt1.z + "," + radius1
-        + "," + pt2.x + "," + pt2.y + "," + pt2.z + "," + radius2 + "," + color
-        + "," + translucencyFractionalFromColix(colix) + ")\n");
+    output("b(" + pt1.x + "," + pt1.y + "," + pt1.z + "," + radius1 + ","
+        + pt2.x + "," + pt2.y + "," + pt2.z + "," + radius2 + "," + color + ","
+        + translucencyFractionalFromColix(colix) + ")\n");
   }
 
   private void renderJoint(Point3f pt, short colix, byte endcaps, int madBond) {
@@ -214,8 +205,8 @@ public class _PovrayExporter extends _Exporter {
     if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
       String color = rgbFractionalFromColix(colix, ',');
       float radius = viewer.scaleToScreen((int) pt.z, madBond / 2);
-      output("s(" + pt.x + "," + pt.y + "," + pt.z + "," + radius
-          + "," + color + "," + translucencyFractionalFromColix(colix) + ")\n");
+      output("s(" + pt.x + "," + pt.y + "," + pt.z + "," + radius + "," + color
+          + "," + translucencyFractionalFromColix(colix) + ")\n");
     }
   }
 
@@ -228,26 +219,26 @@ public class _PovrayExporter extends _Exporter {
         + "\n\n");
 
     writeMacrosAtom();
-//    writeMacrosRing();
+    //    writeMacrosRing();
     writeMacrosBond();
     writeMacrosJoint();
     writeMacrosTriangle();
   }
 
   private void writeMacrosAtom() {
-    output("#macro a(X,Y,Z,RADIUS,R,G,B,T)\n"
-        + " sphere{<X,Y,Z>,RADIUS\n" + "  pigment{rgbt<R,G,B,T>}\n"
-        + "  no_shadow}\n" + "#end\n\n");
+    output("#macro a(X,Y,Z,RADIUS,R,G,B,T)\n" + " sphere{<X,Y,Z>,RADIUS\n"
+        + "  pigment{rgbt<R,G,B,T>}\n" + "  no_shadow}\n" + "#end\n\n");
   }
-/*
-  private void writeMacrosRing() {
-    // This type of ring does not take into account perspective effects!
-    output("#macro o(X,Y,Z,RADIUS,R,G,B,T)\n"
-            + " torus{RADIUS,wireRadius pigment{rgbt<R,G,B,T>}\n"
-            + " translate<X,Z,-Y> rotate<90,0,0>\n" + "  no_shadow}\n"
-            + "#end\n\n");
-  }
-*/
+
+  /*
+   private void writeMacrosRing() {
+   // This type of ring does not take into account perspective effects!
+   output("#macro o(X,Y,Z,RADIUS,R,G,B,T)\n"
+   + " torus{RADIUS,wireRadius pigment{rgbt<R,G,B,T>}\n"
+   + " translate<X,Z,-Y> rotate<90,0,0>\n" + "  no_shadow}\n"
+   + "#end\n\n");
+   }
+   */
   private void writeMacrosBond() {
     // We always use cones here, in orthographic mode this will give us
     //  cones with two equal radii, in perspective mode Jmol will calculate
@@ -258,16 +249,14 @@ public class _PovrayExporter extends _Exporter {
   }
 
   private void writeMacrosJoint() {
-    output("#macro s(X,Y,Z,RADIUS,R,G,B,T)\n"
-        + " sphere{<X,Y,Z>,RADIUS\n" + "  pigment{rgbt<R,G,B,T>}\n"
-        + "  no_shadow}\n" + "#end\n\n");
+    output("#macro s(X,Y,Z,RADIUS,R,G,B,T)\n" + " sphere{<X,Y,Z>,RADIUS\n"
+        + "  pigment{rgbt<R,G,B,T>}\n" + "  no_shadow}\n" + "#end\n\n");
   }
-  
+
   private void writeMacrosTriangle() {
     output("#macro r(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,R,G,B,T)\n"
-        + " triangle{<X1,Y1,Z1>,<X2,Y2,Z2>,<X3,Y3,Z3>\n" 
-        + "  pigment{rgbt<R,G,B,T>}\n"
-        + "  no_shadow}\n" + "#end\n\n");
+        + " triangle{<X1,Y1,Z1>,<X2,Y2,Z2>,<X3,Y3,Z3>\n"
+        + "  pigment{rgbt<R,G,B,T>}\n" + "  no_shadow}\n" + "#end\n\n");
   }
 
   private String triad(Tuple3f pt) {
@@ -275,12 +264,12 @@ public class _PovrayExporter extends _Exporter {
       return "0,0,0";
     return pt.x + "," + pt.y + "," + pt.z;
   }
-  
+
   private String color4(short colix) {
-    return  rgbFractionalFromColix(colix, ',') 
-    + "," + translucencyFractionalFromColix(colix);
+    return rgbFractionalFromColix(colix, ',') + ","
+        + translucencyFractionalFromColix(colix);
   }
-  
+
   public void renderIsosurface(Point3f[] vertices, short colix,
                                short[] colixes, Vector3f[] normals,
                                int[][] indices, BitSet bsFaces, int nVertices,
@@ -301,7 +290,7 @@ public class _PovrayExporter extends _Exporter {
     output("vertex_vectors { " + nVertices);
     for (int i = 0; i < nVertices; i++) {
       //if (i % 10 == 0)
-        //output("\n");
+      //output("\n");
       viewer.transformPoint(vertices[i], tempP1);
       output(", <" + triad(tempP1) + ">");
       output(" //" + i + "\n");
@@ -313,8 +302,8 @@ public class _PovrayExporter extends _Exporter {
     if (haveNormals) {
       output("normal_vectors { " + nVertices);
       for (int i = 0; i < nVertices; i++) {
-//        if (i % 10 == 0)
-//          output("\n");
+        //        if (i % 10 == 0)
+        //          output("\n");
         output(", <" + triad(getNormal(vertices[i], normals[i])) + ">");
         output(" //" + i + "\n");
       }
@@ -341,36 +330,37 @@ public class _PovrayExporter extends _Exporter {
       output("\n}\n");
     }
     output("face_indices { " + nFaces);
-    //int p = 0;
-    for (int i = BitSetUtil.length(bsFaces); --i >= 0;)
-      if (bsFaces.get(i)) {
-        //if ((p++) % 10 == 0)
-        //  output("\n");
-        output(", <" + indices[i][0] + "," + indices[i][1] + ","
-            + indices[i][2] + ">");
+    //int p = 0; 
+    for (int i = BitSetUtil.length(bsFaces); --i >= 0;) {
+      if (!bsFaces.get(i))
+        continue;
+      //if ((p++) % 10 == 0)
+      //  output("\n");
+      output(", <" + indices[i][0] + "," + indices[i][1] + "," + indices[i][2]
+          + ">");
+      if (colixes != null) {
+        color = color4(colixes[indices[i][0]]);
+        output("," + ((Integer) htColixes.get(color)).intValue());
+        color = color4(colixes[indices[i][1]]);
+        output("," + ((Integer) htColixes.get(color)).intValue());
+        color = color4(colixes[indices[i][2]]);
+        output("," + ((Integer) htColixes.get(color)).intValue());
+      }
+      output(" //\n");
+      if (faceVertexMax == 4 && indices[i].length == 4) {
+        output(", <" + indices[i][0] + "," + indices[i][2] + ","
+            + indices[i][3] + ">");
         if (colixes != null) {
           color = color4(colixes[indices[i][0]]);
           output("," + ((Integer) htColixes.get(color)).intValue());
-          color = color4(colixes[indices[i][1]]);
-          output("," + ((Integer) htColixes.get(color)).intValue());
           color = color4(colixes[indices[i][2]]);
+          output("," + ((Integer) htColixes.get(color)).intValue());
+          color = color4(colixes[indices[i][3]]);
           output("," + ((Integer) htColixes.get(color)).intValue());
         }
         output(" //\n");
-        if (faceVertexMax == 4 && indices[i].length == 4) {
-          output(", <" + indices[i][0] + "," + indices[i][2] + ","
-              + indices[i][3] + ">");
-          if (colixes != null) {
-            color = color4(colixes[indices[i][0]]);
-            output("," + ((Integer) htColixes.get(color)).intValue());
-            color = color4(colixes[indices[i][2]]);
-            output("," + ((Integer) htColixes.get(color)).intValue());
-            color = color4(colixes[indices[i][3]]);
-            output("," + ((Integer) htColixes.get(color)).intValue());
-          }
-          output(" //\n");
-        }
       }
+    }
     output("\n}\n");
 
     if (colixes == null) {
@@ -410,7 +400,7 @@ public class _PovrayExporter extends _Exporter {
      */
 
   }
-  
+
   private Point3f getNormal(Point3f pt, Vector3f normal) {
     tempP1.set(pt);
     tempP1.add(normal);
@@ -419,15 +409,15 @@ public class _PovrayExporter extends _Exporter {
     tempP3.sub(tempP2);
     return tempP3;
   }
-  
+
   public void renderText(Text t) {
-  }  
-  
-  public void drawString(short colix, String str, Font3D font3d, 
-                         int xBaseline, int yBaseline, int z, int zSlab) {
   }
 
-  public void fillCylinder(short colix, byte endcaps, int diameter, 
+  public void drawString(short colix, String str, Font3D font3d, int xBaseline,
+                         int yBaseline, int z, int zSlab) {
+  }
+
+  public void fillCylinder(short colix, byte endcaps, int diameter,
                            Point3f screenA, Point3f screenB) {
     if (screenA.distance(screenB) == 0) {
       fillSphereCentered(diameter, screenA.x, screenA.y, screenA.z, colix);
@@ -435,9 +425,8 @@ public class _PovrayExporter extends _Exporter {
     }
     float radius1 = diameter / 2f;
     float radius2 = radius1;
-    output("b(" + triad(screenA) + "," + radius1 
-        + "," + triad(screenB) + "," + radius2 
-        + "," + color4(colix) + ")\n");
+    output("b(" + triad(screenA) + "," + radius1 + "," + triad(screenB) + ","
+        + radius2 + "," + color4(colix) + ")\n");
   }
 
   public void fillScreenedCircleCentered(short colix, int diameter, int x,
@@ -445,70 +434,66 @@ public class _PovrayExporter extends _Exporter {
     //halos
     String color = rgbFractionalFromColix(colix, ',');
     float r = diameter / 2.0f;
-    output("b(" + x + "," + y + "," + z + "," + 
-        r + "," + x + "," + y + "," + (z + 1) + "," + 
-        r + "," + color + ",0.8)\n");
+    output("b(" + x + "," + y + "," + z + "," + r + "," + x + "," + y + ","
+        + (z + 1) + "," + r + "," + color + ",0.8)\n");
   }
 
-  public void drawPixel(short colix, int x, int y, int z) {    
+  public void drawPixel(short colix, int x, int y, int z) {
     //measures, meshRibbon
     fillSphereCentered(1.5f, x, y, z, colix);
   }
 
   public void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC) {
     //cartoons, mesh, isosurface
-    output("r(" + triad(ptA) + "," + triad(ptB) + "," + triad(ptC) + "," 
+    output("r(" + triad(ptA) + "," + triad(ptB) + "," + triad(ptC) + ","
         + color4(colix) + ")\n");
   }
 
   public void fillCone(short colix, byte endcap, int diameter,
                        Point3f screenBase, Point3f screenTip) {
-    output("b(" + triad(screenBase) + "," + (diameter/2f) 
-        + "," + triad(screenTip) + ",0" 
-        + "," + color4(colix) + ")\n");
+    output("b(" + triad(screenBase) + "," + (diameter / 2f) + ","
+        + triad(screenTip) + ",0" + "," + color4(colix) + ")\n");
   }
-  
+
   public void fillSphereCentered(short colix, int diameter, Point3f pt) {
     //cartoons, rockets, trace:    
-    output("a(" + triad(pt) + "," + (diameter / 2.0f)
-        + "," + color4(colix) + ")\n");
+    output("a(" + triad(pt) + "," + (diameter / 2.0f) + "," + color4(colix)
+        + ")\n");
   }
 
-  private void fillSphereCentered(float diameter, 
-                                  float x, float y, float z, short colix) {
-    output("a(" + x + "," + y + "," + z + "," + (diameter / 2.0f)
-        + "," + color4(colix) + ")\n");
+  private void fillSphereCentered(float diameter, float x, float y, float z,
+                                  short colix) {
+    output("a(" + x + "," + y + "," + z + "," + (diameter / 2.0f) + ","
+        + color4(colix) + ")\n");
   }
 
-
-  public void plotText(int x, int y, int z, short colix, short bgcolix, String text, Font3D font3d) {
+  public void plotText(int x, int y, int z, short colix, short bgcolix,
+                       String text, Font3D font3d) {
     // TODO
-    
+
   }
 
   // not implemented: 
-  
+
   public void fillHermite(short colix, int tension, int diameterBeg,
-                          int diameterMid, int diameterEnd,
-                          Point3f s0, Point3f s1, Point3f s2, Point3f s3){
+                          int diameterMid, int diameterEnd, Point3f s0,
+                          Point3f s1, Point3f s2, Point3f s3) {
     //cartoons, rockets, trace:
     //System.out.println("pov fileHermite cartoons rockets trace "+this);
   }
-  
-  public void drawHermite(short colix, int tension,
-                             Point3f s0, Point3f s1, Point3f s2, Point3f s3){
+
+  public void drawHermite(short colix, int tension, Point3f s0, Point3f s1,
+                          Point3f s2, Point3f s3) {
     //strands, meshribbon:
     //System.out.println("pov drawhermite "+this);
   }
 
-  public void drawHermite(short colix, boolean fill, boolean border, int tension,
-                            Point3f s0, Point3f s1, Point3f s2, Point3f s3,
-                            Point3f s4, Point3f s5, Point3f s6, Point3f s7,
-                            int aspectRatio) {
+  public void drawHermite(short colix, boolean fill, boolean border,
+                          int tension, Point3f s0, Point3f s1, Point3f s2,
+                          Point3f s3, Point3f s4, Point3f s5, Point3f s6,
+                          Point3f s7, int aspectRatio) {
     //cartoons, meshRibbons:
     //System.out.println("pov draw hermite -- cartoons, meshribbons "+this);
   }
-           
-          
 
 }

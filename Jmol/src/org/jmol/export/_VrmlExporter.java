@@ -33,6 +33,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.g3d.Font3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Text;
+import org.jmol.util.BitSetUtil;
 
 public class _VrmlExporter extends _Exporter {
 
@@ -122,6 +123,15 @@ public class _VrmlExporter extends _Exporter {
                                int[][] indices, BitSet bsFaces, int nVertices,
                                int faceVertexMax) {
 
+    if (nVertices == 0)
+      return;
+    int nFaces = 0;
+    for (int i = BitSetUtil.length(bsFaces); --i >= 0;)
+      if (bsFaces.get(i))
+        nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
+    if (nFaces == 0)
+      return;
+
     String color = rgbFractionalFromColix(colix, ' ');
     output("Shape {\n");
     output("appearance Appearance {\n");
@@ -132,8 +142,8 @@ public class _VrmlExporter extends _Exporter {
     output("point [\n");
     for (int i = 0; i < nVertices; i++) {
       String sep = " ";
-      output(sep + vertices[i].x + " " + vertices[i].y + " "
-          + vertices[i].z + "\n");
+      output(sep + vertices[i].x + " " + vertices[i].y + " " + vertices[i].z
+          + "\n");
       if (i == 0)
         sep = ",";
     }
@@ -141,13 +151,17 @@ public class _VrmlExporter extends _Exporter {
     output("}\n");
     output("coordIndex [\n");
     String sep = " ";
-    for (int i = 0; i < nFaces; i++)
-      if (bsFaces.get(i)) {
-        output(sep + indices[i][0] + " " + indices[i][1] + " "
-            + indices[i][2] + " -1\n");
-        if (i == 0)
-          sep = ",";
-      }
+    for (int i = BitSetUtil.length(bsFaces); --i >= 0;) {
+      if (!bsFaces.get(i))
+        continue;
+      output(sep + indices[i][0] + " " + indices[i][1] + " " + indices[i][2]
+          + " -1\n");
+      if (i == 0)
+        sep = ",";
+      if (faceVertexMax == 4 && indices[i].length == 4)
+        output(sep + indices[i][0] + " " + indices[i][2] + " " + indices[i][3]
+            + " -1\n");
+    }
     output("]\n");
     output("}\n");
     output("}\n");

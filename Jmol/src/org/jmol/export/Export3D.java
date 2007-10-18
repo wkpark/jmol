@@ -572,7 +572,7 @@ final public class Export3D implements JmolRendererInterface {
                                         int[][] indices, BitSet bsFaces, int nVertices,
                                         int faceVertexMax) {
     exporter.renderIsosurface(vertices, colix, colixes, normals,
-                              indices, bsFaces, nVertices, nFaces);
+                              indices, bsFaces, nVertices, faceVertexMax);
   }
 
 

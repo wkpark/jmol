@@ -571,7 +571,7 @@ public abstract class VoxelReader implements VertexDataServer {
     colorData();
     
     JvxlReader.jvxlCreateColorData(jvxlData, 
-        (saveColorData ? null : meshData.vertexValues));
+        (saveColorData ? meshData.vertexValues : null));
 
     if (meshDataServer != null && params.colorBySets)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS);

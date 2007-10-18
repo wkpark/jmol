@@ -555,7 +555,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   String getMoveToText(float timespan) {
-    return transformManager.getMoveToText(timespan);
+    return transformManager.getMoveToText(timespan, true);
   }
 
   void navigate(float timeSeconds, Point3f[] path, float[] theta,
@@ -2254,7 +2254,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     StringBuffer s = new StringBuffer("");
     StringBuffer sfunc = (isAll ? new StringBuffer("function _setState();\n") : null);
     if (isAll)
-      StateManager.appendCmd(s, "# Jmol state version " + getJmolVersion());
+      s.append("# Jmol state version " + getJmolVersion() + ";\n");
     if (isApplet && isAll) {
       StateManager.appendCmd(s, "# fullName = " + Escape.escape(fullName));
       StateManager.appendCmd(s, "# documentBase = "

@@ -152,7 +152,7 @@ abstract class TransformManager {
     if (isNavigationMode)
       StateManager.appendCmd(commands, "navigationMode = true");
     StateManager.appendCmd(commands, "center " + Escape.escape(fixedRotationCenter));
-    StateManager.appendCmd(commands, getMoveToText(0));
+    StateManager.appendCmd(commands, getMoveToText(0, false));
     if (!isNavigationMode && !zoomEnabled)
       StateManager.appendCmd(commands, "zoom off");
     commands.append("  slab ").append(slabPercentSetting).
@@ -545,12 +545,12 @@ abstract class TransformManager {
   }
 
   String getOrientationText() {
-    return getMoveToText() + "\nOR\n" + getRotateZyzText(true);
+    return getMoveToText(1, true) + "\nOR\n" + getRotateZyzText(true);
   }
 
   Hashtable getOrientationInfo() {
     Hashtable info = new Hashtable();
-    info.put("moveTo", getMoveToText());
+    info.put("moveTo", getMoveToText(1, false));
     info.put("center", "center " + getCenterText());
     info.put("rotateZYZ", getRotateZyzText(false));
     info.put("rotateXYZ", getRotateXyzText());
@@ -1621,11 +1621,14 @@ abstract class TransformManager {
     viewer.setInMotion(false);
   }
 
-  String getMoveToText(float timespan) {
+  String getMoveToText(float timespan, boolean addComments) {
     axisangleT.set(matrixRotate);
     float degrees = axisangleT.angle * degreesPerRadian;
     StringBuffer sb = new StringBuffer();
-    sb.append("moveto /* time, axisAngle */ ").append(timespan);
+    sb.append("moveto ");
+    if (addComments)
+      sb.append("/* time, axisAngle */ "); 
+    sb.append(timespan);
     if (degrees < 0.01f) {
       sb.append(" {0 0 1 0}");
     } else {
@@ -1639,25 +1642,23 @@ abstract class TransformManager {
       truncate2(sb, degrees);
       sb.append("}");
     }
-    sb.append(" /* zoom, translation */ ");
+    if (addComments)
+      sb.append(" /* zoom, translation */ ");
     truncate2(sb, zoomPercent);
     truncate2(sb, getTranslationXPercent());
     truncate2(sb, getTranslationYPercent());
     sb.append(" ");
-    sb.append(" /* center, rotationRadius */ ");
+    if (addComments)
+      sb.append(" /* center, rotationRadius */ ");
     sb.append(getCenterText());
     sb.append(" ").append(modelRadius);
-    sb.append(getNavigationText());
+    sb.append(getNavigationText(addComments));
     sb.append(";");
     return sb.toString();
   }
 
   private String getCenterText() {
     return Escape.escape(fixedRotationCenter);
-  }
-
-  private String getMoveToText() {
-    return getMoveToText(1);
   }
 
   private String getRotateXyzText() {
@@ -2286,7 +2287,7 @@ abstract class TransformManager {
   void setNavigationSlabOffsetPercent(float offset) {
   }
   
-  String getNavigationText() {
+  String getNavigationText(boolean addComments) {
     return "";
   }
   

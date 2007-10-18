@@ -77,17 +77,18 @@ public class _PovrayExporter extends _Exporter {
     zoom /= viewer.getZoomPercentFloat() / 100f;
     int minScreenDimension = Math.min(screenWidth, screenHeight);
 
-    output("//******************************************************\n");
+    output("// ******************************************************\n");
     output("// Created by Jmol " + Viewer.getJmolVersion() + "\n");
     output("//\n");
-    output("// This script was generated on :\n");
-    output("// " + getExportDate() + "\n");
-    output("//******************************************************\n");
+    output("// This script was generated on " + getExportDate() + "\n");
+    output("// ******************************************************\n");
+    output("\n/*  **** Jmol Embedded Script **** \n");
+    output(viewer.getStateInfo());
+    output("\n*/\n");
     output("\n");
-    output("\n");
-    output("//******************************************************\n");
+    output("// ******************************************************\n");
     output("// Declare the resolution, camera, and light sources.\n");
-    output("//******************************************************\n");
+    output("// ******************************************************\n");
     output("\n");
     output("// NOTE: if you plan to render at a different resolution,\n");
     output("// be sure to update the following two lines to maintain\n");
@@ -127,9 +128,9 @@ public class _PovrayExporter extends _Exporter {
     output("\n");
     output("\n");
 
-    output("//***********************************************\n");
+    output("// ***********************************************\n");
     output("// macros for common shapes\n");
-    output("//***********************************************\n");
+    output("// ***********************************************\n");
     output("\n");
 
     writeMacros();

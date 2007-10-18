@@ -727,9 +727,9 @@ class TransformManager11 extends TransformManager {
         : (navigationOffset.y - height / 2f) * 100f / height);
   }
 
-  protected String getNavigationText() {
+  protected String getNavigationText(boolean addComments) {
     transformPoint(navigationCenter, navigationOffset);
-    return " /* navigation center, translation, depth */ "
+    return (addComments ? " /* navigation center, translation, depth */ " : " ")
         + Escape.escape(navigationCenter) + " "
         + getNavigationOffsetPercent('X') + " "
         + getNavigationOffsetPercent('Y') + " " + getNavigationDepthPercent();

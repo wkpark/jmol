@@ -283,7 +283,7 @@ class Compiler {
    * @return cleaned script
    */
   private static String cleanScriptComments(String script) {
-    int pt, pt1;
+    int pt, pt1, pt2;
     while ((pt = script.indexOf("/**")) >= 0) {
       pt1 = script.indexOf("**/", pt + 3);
       if (pt1 < 0)
@@ -294,6 +294,9 @@ class Compiler {
       pt1 = script.indexOf("*/", pt + 2);
       if (pt1 < 0)
         break;
+      String scrap = script.substring(pt + 2, pt1);
+      if ((pt2 = scrap.indexOf("**** Jmol Embedded Script ****")) >= 0)
+        return scrap.substring(pt2 + 30);
       script = script.substring(0, pt) + script.substring(pt1 + 2);
     }
     return script;

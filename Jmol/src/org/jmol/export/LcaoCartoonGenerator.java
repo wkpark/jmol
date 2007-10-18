@@ -31,7 +31,6 @@ public class LcaoCartoonGenerator extends LcaoCartoonRenderer {
 
   protected void renderExport() {
     g3d.getExporter().renderIsosurface(imesh.vertices, imesh.colix, imesh.vertexColixes,
-        imesh.getVertexNormals(), imesh.polygonIndexes, bsFaces, imesh.vertexCount,
-        imesh.polygonCount);
+        imesh.getVertexNormals(), imesh.polygonIndexes, bsFaces, imesh.vertexCount, 3);
   }
 }

@@ -179,8 +179,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected void renderExport() {
     //not implemented for this yet.
       g3d.renderIsosurface(mesh.vertices, mesh.colix, null,
-          mesh.getVertexNormals(), mesh.polygonIndexes, bsFaces, mesh.vertexCount,
-          mesh.polygonCount);
+          mesh.getVertexNormals(), mesh.polygonIndexes, bsFaces, mesh.vertexCount, 4);
   }
    
 }

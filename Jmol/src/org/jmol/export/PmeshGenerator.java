@@ -32,6 +32,6 @@ public class PmeshGenerator extends PmeshRenderer {
   protected void renderExport() {
     g3d.getExporter().renderIsosurface(mesh.vertices, mesh.colix, null,
         mesh.getVertexNormals(), mesh.polygonIndexes, bsFaces, mesh.vertexCount,
-        mesh.polygonCount);
+        4);
   }
 }

@@ -73,7 +73,6 @@ public class _VrmlExporter extends _Exporter {
     output("}\n");
     output("]\n");
     output("}\n");
-    nBalls++;
   }
 
   public void fillCylinder(Point3f atom1, Point3f atom2, short colix1,
@@ -93,7 +92,6 @@ public class _VrmlExporter extends _Exporter {
 
   public void renderCylinder(Point3f pt1, Point3f pt2, short colix,
                              byte endcaps, int madBond) {
-    nCyl++;
     String color = rgbFractionalFromColix(colix, ' ');
     float length = pt1.distance(pt2);
     float r = madBond / 2000f;
@@ -122,7 +120,7 @@ public class _VrmlExporter extends _Exporter {
   public void renderIsosurface(Point3f[] vertices, short colix,
                                short[] colixes, Vector3f[] normals,
                                int[][] indices, BitSet bsFaces, int nVertices,
-                               int nFaces) {
+                               int faceVertexMax) {
 
     String color = rgbFractionalFromColix(colix, ' ');
     output("Shape {\n");

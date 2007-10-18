@@ -284,8 +284,14 @@ public class _PovrayExporter extends _Exporter {
   public void renderIsosurface(Point3f[] vertices, short colix,
                                short[] colixes, Vector3f[] normals,
                                int[][] indices, BitSet bsFaces, int nVertices,
-                               int nFaces) {
-    if (nFaces == 0 || nVertices == 0)
+                               int faceVertexMax) {
+    if (nVertices == 0)
+      return;
+    int nFaces = 0;
+    for (int i = BitSetUtil.length(bsFaces); --i >= 0;)
+      if (bsFaces.get(i))
+        nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
+    if (nFaces == 0)
       return;
     Hashtable htColixes = new Hashtable();
     String color;
@@ -334,10 +340,6 @@ public class _PovrayExporter extends _Exporter {
         output("\n, texture{pigment{rgbt<" + list[i] + ">}}");
       output("\n}\n");
     }
-    nFaces = 0;
-    for (int i = BitSetUtil.length(bsFaces); --i >= 0;)
-      if (bsFaces.get(i))
-        nFaces += (indices[i].length == 4 ? 2 : 1);
     output("face_indices { " + nFaces);
     //int p = 0;
     for (int i = BitSetUtil.length(bsFaces); --i >= 0;)
@@ -355,7 +357,7 @@ public class _PovrayExporter extends _Exporter {
           output("," + ((Integer) htColixes.get(color)).intValue());
         }
         output(" //\n");
-        if (indices[i].length == 4) {
+        if (faceVertexMax == 4 && indices[i].length == 4) {
           output(", <" + indices[i][0] + "," + indices[i][2] + ","
               + indices[i][3] + ">");
           if (colixes != null) {

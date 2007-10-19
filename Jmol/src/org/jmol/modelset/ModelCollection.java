@@ -1622,7 +1622,7 @@ abstract public class ModelCollection extends BondCollection {
     }
     info.put("bondCount", new Integer(atom.getCovalentBondCount()));
     info.put("radius", new Float((atom.getRasMolRadius() / 120.0)));
-    info.put("model", new Integer(atom.getModelNumberDotted()));
+    info.put("model", atom.getModelNumberDotted());
     info.put("visible", Boolean.valueOf(atoms[i].isVisible()));
     info.put("clickabilityFlags", new Integer(atom.clickabilityFlags));
     info.put("visibilityFlags", new Integer(atom.shapeVisibilityFlags));

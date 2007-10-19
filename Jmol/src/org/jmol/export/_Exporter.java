@@ -124,20 +124,22 @@ import org.jmol.viewer.Viewer;
  */
 
 public abstract class _Exporter implements JmolExportInterface {
- 
+
   // The following fields and methods are required for instantiation or provide
   // generally useful functionality:
-  
+
   protected Viewer viewer;
   protected StringBuffer output;
   protected BufferedWriter bw;
   protected String fileName;
   protected boolean isToFile;
   protected Graphics3D g3d;
-  
+
   protected int screenWidth;
   protected int screenHeight;
-  
+  protected int slabZ;
+  protected int depthZ;
+
   boolean use2dBondOrderCalculation = false;
 
   protected Point3f center = new Point3f();
@@ -148,10 +150,10 @@ public abstract class _Exporter implements JmolExportInterface {
   protected Vector3f tempV2 = new Vector3f();
   protected Vector3f tempV3 = new Vector3f();
   protected AxisAngle4f tempA = new AxisAngle4f();
-  
-  public _Exporter() {  
+
+  public _Exporter() {
   }
-  
+
   public boolean initializeOutput(Viewer viewer, Graphics3D g3d, Object output) {
     this.viewer = viewer;
     this.g3d = g3d;
@@ -160,14 +162,16 @@ public abstract class _Exporter implements JmolExportInterface {
       screenWidth = viewer.getScreenWidth();
       screenHeight = viewer.getScreenHeight();
     }
-
+    slabZ = g3d.getSlab();
+    depthZ = g3d.getDepth();
     isToFile = (output instanceof String);
     if (isToFile) {
       fileName = (String) output;
-      viewer.createImage(fileName + ".spt", viewer.getStateInfo(), Integer.MIN_VALUE, 0, 0);
+      viewer.createImage(fileName + ".spt", viewer.getStateInfo(),
+          Integer.MIN_VALUE, 0, 0);
       try {
-        this.bw = new BufferedWriter(
-            new OutputStreamWriter(new FileOutputStream(fileName)), 8192);
+        this.bw = new BufferedWriter(new OutputStreamWriter(
+            new FileOutputStream(fileName)), 8192);
       } catch (FileNotFoundException e) {
         return false;
       }
@@ -176,7 +180,7 @@ public abstract class _Exporter implements JmolExportInterface {
     }
     return true;
   }
- 
+
   public String finalizeOutput() {
     if (!isToFile)
       return output.toString();
@@ -187,17 +191,17 @@ public abstract class _Exporter implements JmolExportInterface {
     }
     return null;
   }
-  
+
   protected String getExportDate() {
     return new SimpleDateFormat("EEE, MMMM dd, yyyy 'at' h:mm aaa")
-        .format(new Date());  
+        .format(new Date());
   }
-  
+
   final protected static float degreesPerRadian = (float) (360 / (2 * Math.PI));
-  
+
   protected Vector3f getRotation(Vector3f v) {
     tempV3.set(v);
-    tempV3.normalize();  
+    tempV3.normalize();
     float r = (float) Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
     float rX = (float) Math.acos(v.y / r) * degreesPerRadian;
     if (v.x < 0)
@@ -206,7 +210,7 @@ public abstract class _Exporter implements JmolExportInterface {
     tempV3.set(rX, rY, 0);
     return tempV3;
   }
- 
+
   protected AxisAngle4f getAxisAngle(Vector3f v) {
     tempV3.set(0, 1, 0);
     tempV2.set(v);
@@ -215,21 +219,18 @@ public abstract class _Exporter implements JmolExportInterface {
     tempA.set(tempV3.x, tempV3.y, tempV3.z, 3.14159f);
     return tempA;
   }
- 
+
   protected String rgbFromColix(short colix, char sep) {
     int argb = g3d.getColixArgb(colix);
-    return new StringBuffer()
-    .append((argb >> 16) & 0xFF).append(sep)
-    .append((argb >> 8) & 0xFF).append(sep)
-    .append((argb) & 0xFF).toString();
+    return new StringBuffer().append((argb >> 16) & 0xFF).append(sep).append(
+        (argb >> 8) & 0xFF).append(sep).append((argb) & 0xFF).toString();
   }
-  
+
   protected String rgbFractionalFromColix(short colix, char sep) {
     int argb = g3d.getColixArgb(colix);
-    return new StringBuffer()
-    .append(((argb >> 16) & 0xFF)/255f).append(sep)
-    .append(((argb >> 8) & 0xFF)/255f).append(sep)
-    .append(((argb  ) & 0xFF)/255f).toString();    
+    return new StringBuffer().append(((argb >> 16) & 0xFF) / 255f).append(sep)
+        .append(((argb >> 8) & 0xFF) / 255f).append(sep).append(
+            ((argb) & 0xFF) / 255f).toString();
   }
 
   protected String translucencyFractionalFromColix(short colix) {
@@ -237,13 +238,12 @@ public abstract class _Exporter implements JmolExportInterface {
     if (Graphics3D.isColixTranslucent(colix))
       return new StringBuffer().append(translevel / 255f).toString();
     return new StringBuffer().append(0f).toString();
-  }  
-    
+  }
+
   protected String rgbFractionalBackground(char sep) {
     int argb = viewer.getBackgroundArgb();
-    return new StringBuffer()
-    .append(((argb >> 16) & 0xFF) / 255f).append(sep)
-    .append(((argb >> 8) & 0xFF) / 255f).append(sep)
-    .append(((argb) & 0xFF) / 255f).toString();
+    return new StringBuffer().append(((argb >> 16) & 0xFF) / 255f).append(sep)
+        .append(((argb >> 8) & 0xFF) / 255f).append(sep).append(
+            ((argb) & 0xFF) / 255f).toString();
   }
 }

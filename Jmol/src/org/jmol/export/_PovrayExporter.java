@@ -136,6 +136,79 @@ public class _PovrayExporter extends _Exporter {
     writeMacros();
   }
 
+  private void writeMacros() {
+    output("#default { finish {\n" + "  ambient "
+        + (float) Graphics3D.getAmbientPercent() / 100f + "\n" + "  diffuse "
+        + (float) Graphics3D.getDiffusePercent() / 100f + "\n" + "  specular "
+        + (float) Graphics3D.getSpecularPercent() / 100f + "\n"
+        + "  roughness .00001\n  metallic\n  phong 0.9\n  phong_size 120\n}}"
+        + "\n\n");
+    
+    output("#macro clip()\n"
+        + "  clipped_by { box {<0,0," + slabZ + ">,<Width,Height," + depthZ + ">}}\n"
+        + "#end\n\n");
+
+    writeMacrosAtom();
+    writeMacrosBond();
+    writeMacrosJoint();
+    writeMacrosTriangle();
+    //    writeMacrosRing();
+  }
+
+  private void writeMacrosAtom() {
+    output("#macro a(X,Y,Z,RADIUS,R,G,B,T)\n" + " sphere{<X,Y,Z>,RADIUS\n"
+        + "  pigment{rgbt<R,G,B,T>}\n"
+        + "  clip()\n"
+        + "  no_shadow}\n" + "#end\n\n");
+  }
+
+  private void writeMacrosBond() {
+    // We always use cones here, in orthographic mode this will give us
+    //  cones with two equal radii, in perspective mode Jmol will calculate
+    //  the cone radii for us.
+    output("#macro b(X1,Y1,Z1,RADIUS1,X2,Y2,Z2,RADIUS2,R,G,B,T)\n"
+        + " cone{<X1,Y1,Z1>,RADIUS1,<X2,Y2,Z2>,RADIUS2\n"
+        + "  pigment{rgbt<R,G,B,T>}\n"
+        + "  clip()\n"
+        + "  no_shadow}\n" + "#end\n\n");
+  }
+
+  private void writeMacrosJoint() {
+    output("#macro s(X,Y,Z,RADIUS,R,G,B,T)\n" + " sphere{<X,Y,Z>,RADIUS\n"
+        + "  pigment{rgbt<R,G,B,T>}\n" 
+        + "  clip()\n"
+        + "  no_shadow}\n" + "#end\n\n");
+  }
+
+  private void writeMacrosTriangle() {
+    output("#macro r(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,R,G,B,T)\n"
+        + " triangle{<X1,Y1,Z1>,<X2,Y2,Z2>,<X3,Y3,Z3>\n"
+        + "  pigment{rgbt<R,G,B,T>}\n"
+        + "  clip()\n"
+        + "  no_shadow}\n" + "#end\n\n");
+  }
+
+  /*
+  private void writeMacrosRing() {
+  // This type of ring does not take into account perspective effects!
+  output("#macro o(X,Y,Z,RADIUS,R,G,B,T)\n"
+  + " torus{RADIUS,wireRadius pigment{rgbt<R,G,B,T>}\n"
+  + " translate<X,Z,-Y> rotate<90,0,0>\n" + "  no_shadow}\n"
+  + "#end\n\n");
+  }
+  */
+
+  private String triad(Tuple3f pt) {
+    if (Float.isNaN(pt.x))
+      return "0,0,0";
+    return pt.x + "," + pt.y + "," + pt.z;
+  }
+
+  private String color4(short colix) {
+    return rgbFractionalFromColix(colix, ',') + ","
+        + translucencyFractionalFromColix(colix);
+  }
+
   public void getFooter() {
     // no footer
   }
@@ -215,66 +288,6 @@ public class _PovrayExporter extends _Exporter {
       output("s(" + pt.x + "," + pt.y + "," + pt.z + "," + radius + "," + color
           + "," + translucencyFractionalFromColix(colix) + ")\n");
     }
-  }
-
-  private void writeMacros() {
-    output("#default { finish {\n" + "  ambient "
-        + (float) Graphics3D.getAmbientPercent() / 100f + "\n" + "  diffuse "
-        + (float) Graphics3D.getDiffusePercent() / 100f + "\n" + "  specular "
-        + (float) Graphics3D.getSpecularPercent() / 100f + "\n"
-        + "  roughness .00001\n  metallic\n  phong 0.9\n  phong_size 120\n}}"
-        + "\n\n");
-
-    writeMacrosAtom();
-    //    writeMacrosRing();
-    writeMacrosBond();
-    writeMacrosJoint();
-    writeMacrosTriangle();
-  }
-
-  private void writeMacrosAtom() {
-    output("#macro a(X,Y,Z,RADIUS,R,G,B,T)\n" + " sphere{<X,Y,Z>,RADIUS\n"
-        + "  pigment{rgbt<R,G,B,T>}\n" + "  no_shadow}\n" + "#end\n\n");
-  }
-
-  /*
-   private void writeMacrosRing() {
-   // This type of ring does not take into account perspective effects!
-   output("#macro o(X,Y,Z,RADIUS,R,G,B,T)\n"
-   + " torus{RADIUS,wireRadius pigment{rgbt<R,G,B,T>}\n"
-   + " translate<X,Z,-Y> rotate<90,0,0>\n" + "  no_shadow}\n"
-   + "#end\n\n");
-   }
-   */
-  private void writeMacrosBond() {
-    // We always use cones here, in orthographic mode this will give us
-    //  cones with two equal radii, in perspective mode Jmol will calculate
-    //  the cone radii for us.
-    output("#macro b(X1,Y1,Z1,RADIUS1,X2,Y2,Z2,RADIUS2,R,G,B,T)\n"
-        + " cone{<X1,Y1,Z1>,RADIUS1,<X2,Y2,Z2>,RADIUS2\n"
-        + "  pigment{rgbt<R,G,B,T>}\n" + "  no_shadow}\n" + "#end\n\n");
-  }
-
-  private void writeMacrosJoint() {
-    output("#macro s(X,Y,Z,RADIUS,R,G,B,T)\n" + " sphere{<X,Y,Z>,RADIUS\n"
-        + "  pigment{rgbt<R,G,B,T>}\n" + "  no_shadow}\n" + "#end\n\n");
-  }
-
-  private void writeMacrosTriangle() {
-    output("#macro r(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,R,G,B,T)\n"
-        + " triangle{<X1,Y1,Z1>,<X2,Y2,Z2>,<X3,Y3,Z3>\n"
-        + "  pigment{rgbt<R,G,B,T>}\n" + "  no_shadow}\n" + "#end\n\n");
-  }
-
-  private String triad(Tuple3f pt) {
-    if (Float.isNaN(pt.x))
-      return "0,0,0";
-    return pt.x + "," + pt.y + "," + pt.z;
-  }
-
-  private String color4(short colix) {
-    return rgbFractionalFromColix(colix, ',') + ","
-        + translucencyFractionalFromColix(colix);
   }
 
   public void renderIsosurface(Point3f[] vertices, short colix,
@@ -373,7 +386,7 @@ public class _PovrayExporter extends _Exporter {
     if (colixes == null) {
       output("pigment{rgbt<" + color4(colix) + ">}\n");
     }
-
+    output("  clip()\n");
     output("}\n");
 
     /*

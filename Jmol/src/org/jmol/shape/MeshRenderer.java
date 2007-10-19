@@ -114,8 +114,10 @@ public abstract class MeshRenderer extends ShapeRenderer {
     //vertexColixes are only isosurface properties of IsosurfaceMesh, not Mesh
     g3d.setColix(colix);
     boolean generateSet = (isGenerator && fill);
-    if (generateSet)
+    if (generateSet) {
+      frontOnly = false;
       bsFaces.clear();
+    }
     for (int i = mesh.polygonCount; --i >= 0;) {
       if (!isPolygonDisplayable(i))
         continue;

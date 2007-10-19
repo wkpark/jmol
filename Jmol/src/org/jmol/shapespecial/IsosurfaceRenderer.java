@@ -101,7 +101,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     colix = imesh.colix;
     short[] vertexColixes = imesh.vertexColixes;
     g3d.setColix(imesh.colix);
-    boolean generateSet = (isGenerator && !isBicolorMap && fill);
+    boolean generateSet = (isGenerator && fill);
     if (generateSet)
       bsFaces.clear();
     //System.out.println("Isosurface renderTriangle polygoncount = "

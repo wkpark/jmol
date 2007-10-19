@@ -35,44 +35,83 @@ import org.jmol.viewer.JmolConstants;
 
 public class NucleicMonomer extends PhosphorusMonomer {
 
+  private final static byte C6 = 1;
+  private final static byte RNAO2P = 2;
+  private final static byte C5 = 3;
+  private final static byte N1 = 4;
+  private final static byte C2 = 5;
+  private final static byte N3 = 6;
+  private final static byte C4 = 7;
+  private final static byte O2 = 8;
+  private final static byte N7 = 9;
+  private final static byte C8 = 10;
+  private final static byte N9 = 11;  
+  private final static byte O4 = 12;
+  private final static byte O6 = 13;
+  private final static byte N4 = 14;
+  private final static byte NP = 15;
+  private final static byte N6 = 16;
+  private final static byte N2 = 17;
+  //private final static byte S4 = 18;
+  private final static byte H5T = 19;
+  private final static byte O5T = 20;
+  private final static byte O5P = 21;
+  private final static byte H3T = 22;
+  private final static byte O3P = 23;
+  private final static byte C3P = 24;
+  private final static byte O1P = 25;
+  private final static byte O2P = 26;
+  //private final static byte OP1 = 27;
+  //private final static byte OP2 = 28;
+  //private final static byte HO3P = 29;
+  //private final static byte HO5P = 30;
+   
   // negative values are optional
   final static byte[] interestingNucleicAtomIDs = {
-    ~JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS,    // 0 P  the lead, phosphorus
-    JmolConstants.ATOMID_NUCLEIC_WING,           // 1 the wing man, c6
+    ~JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS,    //  the lead, POSSIBLY P, maybe H5T or O5T 
+    JmolConstants.ATOMID_C6,   // 1 the wing man, c6
 
     ~JmolConstants.ATOMID_RNA_O2PRIME, // 2  O2' for RNA
 
     JmolConstants.ATOMID_C5,   //  3 C5
-    JmolConstants.ATOMID_C6,   //  4 C6
-    JmolConstants.ATOMID_N1,   //  5 N1
-    JmolConstants.ATOMID_C2,   //  6 C2
-    JmolConstants.ATOMID_N3,   //  7 N3
-    JmolConstants.ATOMID_C4,   //  8 C4
+    JmolConstants.ATOMID_N1,   //  4 N1
+    JmolConstants.ATOMID_C2,   //  5 C2
+    JmolConstants.ATOMID_N3,   //  6 N3
+    JmolConstants.ATOMID_C4,   //  7 C4
 
-    ~JmolConstants.ATOMID_O2,  //  9 O2
+    ~JmolConstants.ATOMID_O2,  //  8 O2
 
-    ~JmolConstants.ATOMID_N7,  // 10 N7
-    ~JmolConstants.ATOMID_C8,  // 11 C8
-    ~JmolConstants.ATOMID_N9,  // 12 C9
+    ~JmolConstants.ATOMID_N7,  // 9 N7
+    ~JmolConstants.ATOMID_C8,  // 10 C8
+    ~JmolConstants.ATOMID_N9,  // 11 C9
 
-    ~JmolConstants.ATOMID_O4,  // 13 O4   U (& ! C5M)
-    ~JmolConstants.ATOMID_O6,  // 14 O6   I (& ! N2)
-    ~JmolConstants.ATOMID_N4,  // 15 N4   C
-    ~JmolConstants.ATOMID_C5M, // 16 C5M  T
-    ~JmolConstants.ATOMID_N6,  // 17 N6   A
-    ~JmolConstants.ATOMID_N2,  // 18 N2   G
-    ~JmolConstants.ATOMID_S4,  // 19 S4   tU
+    ~JmolConstants.ATOMID_O4,  // 12 O4   U (& ! C5M)
+    ~JmolConstants.ATOMID_O6,  // 13 O6   I (& ! N2)
+    ~JmolConstants.ATOMID_N4,  // 14 N4   C
+    ~JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS, // 15 
+    ~JmolConstants.ATOMID_N6,  // 16 N6   A
+    ~JmolConstants.ATOMID_N2,  // 17 N2   G
+    ~JmolConstants.ATOMID_S4,  // 18 S4   tU
 
-    ~JmolConstants.ATOMID_H5T_TERMINUS, // 20 H5T terminus
-    ~JmolConstants.ATOMID_O5T_TERMINUS, // 21 O5T terminus
-    JmolConstants.ATOMID_O5_PRIME,      // 22 O5' terminus
+    ~JmolConstants.ATOMID_H5T_TERMINUS, // 19 H5T terminus
+    ~JmolConstants.ATOMID_O5T_TERMINUS, // 20 O5T terminus
+    JmolConstants.ATOMID_O5_PRIME,      // 21 O5' terminus
 
-    ~JmolConstants.ATOMID_H3T_TERMINUS, // 23 H3T terminus
-    JmolConstants.ATOMID_O3_PRIME,      // 24 O3' terminus
-    ~JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS,    // 25 P phosphorus
-    JmolConstants.ATOMID_C3_PRIME,              // 26 C3'
-    ~JmolConstants.ATOMID_O1P,  // 27 Phosphorus O1
-    ~JmolConstants.ATOMID_O2P,  // 28 Phosphorus O2
+    ~JmolConstants.ATOMID_H3T_TERMINUS, // 22 H3T terminus
+    JmolConstants.ATOMID_O3_PRIME,      // 23 O3' terminus
+    JmolConstants.ATOMID_C3_PRIME,      // 24 C3'
+    
+    ~JmolConstants.ATOMID_O1P,  // 25 Phosphorus O1
+    ~JmolConstants.ATOMID_O2P,  // 26 Phosphorus O2
+    
+    // alternative designations:
+    
+    ~JmolConstants.ATOMID_OP1,  // 27 Phosphorus O1 (new)
+    ~JmolConstants.ATOMID_OP2,  // 28 Phosphorus O2 (new)
+
+    ~JmolConstants.ATOMID_HO3_PRIME, // 29 HO3' terminus (new)
+    ~JmolConstants.ATOMID_HO5_PRIME, // 29 HO3' terminus (new)
+    
   };
 
   public static Monomer
@@ -86,6 +125,17 @@ public class NucleicMonomer extends PhosphorusMonomer {
 
     if (offsets == null)
       return null;
+    checkOptional(offsets, H3T, firstAtomIndex, 
+        specialAtomIndexes[JmolConstants.ATOMID_HO3_PRIME]);
+    checkOptional(offsets, H5T, firstAtomIndex, 
+        specialAtomIndexes[JmolConstants.ATOMID_HO5_PRIME]);
+    checkOptional(offsets, O1P, firstAtomIndex, 
+        specialAtomIndexes[JmolConstants.ATOMID_OP1]);
+    checkOptional(offsets, O2P, firstAtomIndex, 
+        specialAtomIndexes[JmolConstants.ATOMID_OP2]);
+    checkOptional(offsets, O5T, firstAtomIndex, 
+        specialAtomIndexes[JmolConstants.ATOMID_O5_PRIME]);
+
     NucleicMonomer nucleicMonomer =
       new NucleicMonomer(chain, group3, seqcode,
                          firstAtomIndex, lastAtomIndex, offsets);
@@ -94,30 +144,28 @@ public class NucleicMonomer extends PhosphorusMonomer {
 
   ////////////////////////////////////////////////////////////////
 
+  private boolean hasRnaO2Prime;
+
   NucleicMonomer(Chain chain, String group3, int seqcode,
                  int firstAtomIndex, int lastAtomIndex,
                  byte[] offsets) {
     super(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, offsets);
     if (offsets[0] == -1) {
-      byte leadOffset = offsets[20];
+      byte leadOffset = offsets[H5T];
       if (leadOffset == -1)
-        leadOffset = offsets[21];
-      if (leadOffset == -1)
-        leadOffset = offsets[22];
+        leadOffset = offsets[O5T];
       offsets[0] = leadOffset;
     }
-    this.hasRnaO2Prime = offsets[2] != -1;
-    this.isPyrimidine = offsets[9] != -1;
+    this.hasRnaO2Prime = offsets[RNAO2P] != -1;
+    this.isPyrimidine = offsets[O2] != -1;
     this.isPurine =
-      offsets[10] != -1 && offsets[11] != -1 && offsets[12] != -1;
+      offsets[N7] != -1 && offsets[C8] != -1 && offsets[N9] != -1;
   }
-
-  boolean hasRnaO2Prime;
 
   public boolean isNucleicMonomer() { return true; }
 
-  public boolean isDna() { return ! hasRnaO2Prime; }
+  public boolean isDna() { return !hasRnaO2Prime; }
 
   public boolean isRna() { return hasRnaO2Prime; }
 
@@ -125,7 +173,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
 
   public boolean isPyrimidine() { return isPyrimidine; }
 
-  public boolean isGuanine() { return offsets[18] != -1; }
+  public boolean isGuanine() { return offsets[N2] != -1; }
 
   public byte getProteinStructureType() {
     return (hasRnaO2Prime
@@ -135,95 +183,53 @@ public class NucleicMonomer extends PhosphorusMonomer {
 
   ////////////////////////////////////////////////////////////////
 
-  Atom getC6() {
-    return getAtomFromOffsetIndex(4);
-  }
 
   Atom getN1() {
-    return getAtomFromOffsetIndex(5);
-  }
-
-  Atom getC2() {
-    return getAtomFromOffsetIndex(6);
+    return getAtomFromOffsetIndex(N1);
   }
 
   Atom getN3() {
-    return getAtomFromOffsetIndex(7);
+    return getAtomFromOffsetIndex(N3);
   }
 
   Atom getN2() {
-    return getAtomFromOffsetIndex(18);
+    return getAtomFromOffsetIndex(N2);
   }
 
   Atom getO2() {
-    return getAtomFromOffsetIndex(9);
+    return getAtomFromOffsetIndex(O2);
   }
 
   Atom getO6() {
-    return getAtomFromOffsetIndex(14);
+    return getAtomFromOffsetIndex(O6);
   }
 
   Atom getN4() {
-    return getAtomFromOffsetIndex(15);
+    return getAtomFromOffsetIndex(N4);
   }
 
   Atom getN6() {
-    return getAtomFromOffsetIndex(17);
+    return getAtomFromOffsetIndex(N6);
   }
 
   Atom getO4() {
-    return getAtomFromOffsetIndex(13);
+    return getAtomFromOffsetIndex(O4);
   }
 
-  Atom getP() {
-    return getAtomFromOffsetIndex(25);
-  }
-
-  Atom getO1P() {
-    return getAtomFromOffsetIndex(27);
-  }
-
-  Atom getO2P() {
-    return getAtomFromOffsetIndex(28);
-  }
-
-  /*
-  public Atom getAtom(byte specialAtomID) {
-    return getSpecialAtom(interestingNucleicAtomIDs, specialAtomID);
-  }
-
-  public Point3f getAtomPoint(byte specialAtomID) {
-    return getSpecialAtomPoint(interestingNucleicAtomIDs, specialAtomID);
-  }
-*/
   Atom getTerminatorAtom() {
-    return getAtomFromOffsetIndex(offsets[23] != -1 ? 23 : 24);
+    return getAtomFromOffsetIndex(offsets[H3T] != -1 ? H3T : O3P);
   }
 
-  Atom getO3PrimeAtom() {
-    return getAtomFromOffsetIndex(24);
-  }
-
-  Atom getPhosphorusAtom() {
-    return getAtomFromOffsetIndex(25);
-  }
-
-  Atom getO5PrimeAtom() {
-    return getAtomFromOffsetIndex(22);
-  }
-
-  Atom getC3PrimeAtom() {
-    return getAtomFromOffsetIndex(26);
-  }
+  private final static byte[] ring6OffsetIndexes = {C5, C6, N1, C2, N3, C4};
 
   public void getBaseRing6Points(Point3f[] ring6Points) {
     for (int i = 6; --i >= 0; ) {
-      Atom atom = getAtomFromOffsetIndex(i + 3);
+      Atom atom = getAtomFromOffsetIndex(ring6OffsetIndexes[i]);
       ring6Points[i] = atom;
     }
   }
-
-  final static byte[] ring5OffsetIndexes = {3, 10, 11, 12, 8};
+  
+  private final static byte[] ring5OffsetIndexes = {C5, N7, C8, N9, C4};
 
   public boolean maybeGetBaseRing5Points(Point3f[] ring5Points) {
     if (isPurine)
@@ -239,13 +245,13 @@ public class NucleicMonomer extends PhosphorusMonomer {
   boolean isConnectedAfter(Monomer possiblyPreviousMonomer) {
     if (possiblyPreviousMonomer == null)
       return true;
-    Atom myPhosphorusAtom = getPhosphorusAtom();
+    Atom myPhosphorusAtom = getAtomFromOffsetIndex(NP);
     if (myPhosphorusAtom == null)
       return false;
     if (! (possiblyPreviousMonomer instanceof NucleicMonomer))
       return false;
     NucleicMonomer other = (NucleicMonomer)possiblyPreviousMonomer;
-    return other.getO3PrimeAtom().isBonded(myPhosphorusAtom);
+    return other.getAtomFromOffsetIndex(O3P).isBonded(myPhosphorusAtom);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -254,8 +260,8 @@ public class NucleicMonomer extends PhosphorusMonomer {
                             short madBegin, short madEnd) {
     Atom competitor = closest.atom;
     Atom lead = getLeadAtom();
-    Atom o5prime = getO5PrimeAtom();
-    Atom c3prime = getC3PrimeAtom();
+    Atom o5prime = getAtomFromOffsetIndex(O5P);
+    Atom c3prime = getAtomFromOffsetIndex(C3P);
     short mar = (short)(madBegin / 2);
     if (mar < 1900)
       mar = 1900;
@@ -307,8 +313,8 @@ public class NucleicMonomer extends PhosphorusMonomer {
    */
    
    Point3f ptN1 = getN1(); 
-   Point3f ptC2 = getC2();
-   Point3f ptC6 = getC6();
+   Point3f ptC2 = getAtomFromOffsetIndex(C2);
+   Point3f ptC6 = getAtomFromOffsetIndex(C6);
    
    if(ptN1 == null || ptC2 == null || ptC6 == null)
      return null;

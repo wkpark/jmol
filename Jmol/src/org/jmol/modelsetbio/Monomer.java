@@ -307,6 +307,17 @@ public abstract class Monomer extends Group {
       if (bsInclude.get(j))
         bsResult.set(j);
   }
+  
+  protected final static boolean checkOptional(byte[]offsets, byte atom, 
+                                               int firstAtomIndex, 
+                                               int index) {
+    if (offsets[atom] >= 0)
+      return true;
+    if (index < 0)
+      return false;
+    offsets[atom] = (byte)(index - firstAtomIndex);
+    return true;
+  }
 }
   
 

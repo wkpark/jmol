@@ -30,12 +30,18 @@ import javax.vecmath.Vector3f;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
 import org.jmol.shape.Closest;
-import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 
 public class AminoMonomer extends AlphaMonomer {
 
+  private final static byte CA = 0;
+  private final static byte O = 1;
+  private final static byte N = 2;
+  private final static byte C = 3;
+  private final static byte OT = 4;
+  //private final static byte O1 = 5;
+  
   // negative values are optional
   final static byte[] interestingAminoAtomIDs = {
     JmolConstants.ATOMID_ALPHA_CARBON,      // 0 CA alpha carbon
@@ -54,13 +60,8 @@ public class AminoMonomer extends AlphaMonomer {
                                     interestingAminoAtomIDs);
     if (offsets == null)
       return null;
-    if (specialAtomIndexes[JmolConstants.ATOMID_CARBONYL_OXYGEN] < 0) {
-      int carbonylOxygenIndex = specialAtomIndexes[JmolConstants.ATOMID_O1];
-      Logger.debug("I see someone who does not have a carbonyl oxygen");
-      if (carbonylOxygenIndex < 0)
-        return null;
-      offsets[1] = (byte)(carbonylOxygenIndex - firstAtomIndex);
-    }
+    if (!checkOptional(offsets, O, firstAtomIndex, specialAtomIndexes[JmolConstants.ATOMID_O1]))
+      return null;
     if (atoms[firstAtomIndex].isHetero() && !isBondedCorrectly(firstAtomIndex, offsets, atoms)) 
       return null;
     AminoMonomer aminoMonomer =
@@ -81,9 +82,9 @@ public class AminoMonomer extends AlphaMonomer {
 
   private static boolean isBondedCorrectly(int firstAtomIndex, byte[] offsets,
                                  Atom[] atoms) {
-    return (isBondedCorrectly(2, 0, firstAtomIndex, offsets, atoms) &&
-            isBondedCorrectly(0, 3, firstAtomIndex, offsets, atoms) &&
-            isBondedCorrectly(3, 1, firstAtomIndex, offsets, atoms));
+    return (isBondedCorrectly(N, CA, firstAtomIndex, offsets, atoms) &&
+            isBondedCorrectly(CA, C, firstAtomIndex, offsets, atoms) &&
+            isBondedCorrectly(C, O, firstAtomIndex, offsets, atoms));
   }
   
   ////////////////////////////////////////////////////////////////
@@ -98,19 +99,19 @@ public class AminoMonomer extends AlphaMonomer {
   boolean isAminoMonomer() { return true; }
 
   Atom getNitrogenAtom() {
-    return getAtomFromOffsetIndex(2);
+    return getAtomFromOffsetIndex(N);
   }
 
   Point3f getNitrogenAtomPoint() {
-    return getAtomPointFromOffsetIndex(2);
+    return getAtomPointFromOffsetIndex(N);
   }
 
   Atom getCarbonylCarbonAtom() {
-    return getAtomFromOffsetIndex(3);
+    return getAtomFromOffsetIndex(C);
   }
 
   Point3f getCarbonylCarbonAtomPoint() {
-    return getAtomPointFromOffsetIndex(3);
+    return getAtomPointFromOffsetIndex(C);
   }
 
   Atom getCarbonylOxygenAtom() {
@@ -126,18 +127,8 @@ public class AminoMonomer extends AlphaMonomer {
   }
 
   Atom getTerminatorAtom() {
-    return getAtomFromOffsetIndex(offsets[4] != -1 ? 4 : 3);
+    return getAtomFromOffsetIndex(offsets[OT] != -1 ? OT : C);
   }
-
-  ////////////////////////////////////////////////////////////////
-/*
-  public Atom getAtom(byte specialAtomID) {
-    return getSpecialAtom(interestingAminoAtomIDs, specialAtomID);
-  }
-  public Point3f getAtomPoint(byte specialAtomID) {
-    return getSpecialAtomPoint(interestingAminoAtomIDs, specialAtomID);
-  }
-*/
 
   ////////////////////////////////////////////////////////////////
 

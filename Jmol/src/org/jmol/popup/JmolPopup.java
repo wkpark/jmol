@@ -318,7 +318,7 @@ abstract public class JmolPopup {
       return;
     //next is correct as "<=" because it includes "UNK"
     int nItems = 0;
-    for (int i = 1; i <= JmolConstants.GROUPID_AMINO_MAX; ++i)
+    for (int i = 1; i < JmolConstants.GROUPID_AMINO_MAX; ++i)
       nItems += updateGroup3List(menu, JmolConstants.predefinedGroup3Names[i]);
     nItems += augmentGroup3List(menu, "p>", true);
     enableMenu(menu, (nItems > 0));
@@ -350,7 +350,7 @@ abstract public class JmolPopup {
   }
 
   int augmentGroup3List(Object menu, String type, boolean addSeparator) {
-    int pt = JmolConstants.GROUPID_AMINO_MAX * 6;
+    int pt = JmolConstants.GROUPID_AMINO_MAX * 6 - 6;
     // ...... p>AFN]o>ODH]n>+T ]
     int nItems = 0;
     while (true) {

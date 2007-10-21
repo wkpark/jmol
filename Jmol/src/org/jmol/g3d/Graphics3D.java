@@ -75,14 +75,6 @@ final public class Graphics3D implements JmolRendererInterface {
   int windowWidth, windowHeight;
   int width, height;
   
-  public int getWidth() {
-    return width;
-  }
-  
-  public int getHeight() {
-    return height;
-  }
-  
   int displayMinX, displayMaxX, displayMinY, displayMaxY;
   int slab, depth;
   boolean zShade;

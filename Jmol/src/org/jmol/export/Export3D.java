@@ -51,6 +51,7 @@ final public class Export3D implements JmolRendererInterface {
   private Hermite3D hermite3d;
   private int width;
   private int height;
+  private int slab;
   
 //  private ShapeRenderer shapeRenderer;
   private JmolExportInterface exporter;
@@ -64,8 +65,9 @@ final public class Export3D implements JmolRendererInterface {
   
   public void setg3dExporter(Graphics3D g3d, JmolExportInterface exporter) {
     this.g3d = g3d;
-    width = g3d.getWidth();
-    height = g3d.getHeight();
+    width = g3d.getRenderWidth();
+    height = g3d.getRenderHeight();
+    slab = g3d.getSlab();
 
     this.exporter = exporter;
     exporter.setRenderer(this);
@@ -255,6 +257,7 @@ final public class Export3D implements JmolRendererInterface {
     // echo, frank, hover, molecularOrbital, uccage
     if (str == null || str.length() == 0)
       return;
+    z = Math.max(slab, z);
     exporter.plotText(xBaseline, yBaseline - font3d.fontMetrics.getAscent(),
                 z, getColixArgb(colix), getColixArgb(bgcolix), str, font3d);
   }
@@ -280,6 +283,7 @@ final public class Export3D implements JmolRendererInterface {
 
   public void plotPixelClippedNoSlab(int argb, int x, int y, int z) {
     //from Text3D
+    z = Math.max(slab, z);
     exporter.drawTextPixel(argb, x, y, z);
   }
 

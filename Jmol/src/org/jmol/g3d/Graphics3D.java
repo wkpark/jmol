@@ -74,6 +74,15 @@ final public class Graphics3D implements JmolRendererInterface {
   
   int windowWidth, windowHeight;
   int width, height;
+  
+  public int getWidth() {
+    return width;
+  }
+  
+  public int getHeight() {
+    return height;
+  }
+  
   int displayMinX, displayMaxX, displayMinY, displayMaxY;
   int slab, depth;
   boolean zShade;
@@ -184,7 +193,7 @@ final public class Graphics3D implements JmolRendererInterface {
     displayMinY = -(windowHeight >> 1);
     displayMaxY = windowHeight - displayMinY;
     isFullSceneAntialiasingEnabled = enableFullSceneAntialiasing;
-    width = -1; height = -1;
+    setWidthHeight(enableFullSceneAntialiasing);
     pbuf = null;
     zbuf = null;
     pbufT = null;
@@ -192,6 +201,17 @@ final public class Graphics3D implements JmolRendererInterface {
     platform.releaseBuffers();
   }
 
+  private void setWidthHeight(boolean isAntialiased) {
+    width = windowWidth;
+    height = windowHeight;
+    if (isAntialiased) {
+      width *= 2;
+      height *= 2;
+    }
+    xLast = width - 1;
+    yLast = height - 1;
+  }
+  
   public boolean checkTranslucent(boolean isAlphaTranslucent) {
     if (isAlphaTranslucent)
       haveAlphaTranslucent = true;
@@ -713,8 +733,13 @@ final public class Graphics3D implements JmolRendererInterface {
       return;
     if(font3d != null)
       font3dCurrent = font3d;
-    Text3D.plot(xBaseline, yBaseline - font3dCurrent.fontMetrics.getAscent(),
-                z, argbCurrent, getColixArgb(bgcolix), str, font3dCurrent, this);
+    plotText(xBaseline, yBaseline - font3dCurrent.fontMetrics.getAscent(), 
+        z, argbCurrent, getColixArgb(bgcolix), str, font3dCurrent, null);
+  }
+  
+  public void plotText(int x, int y, int z, int argb, int argbBackground,
+                String text, Font3D font3d, JmolRendererInterface jmolRenderer) {
+    Text3D.plot(x, y, z, argb, argbBackground, text, font3d, this, jmolRenderer);    
   }
   
   public void setFont(byte fid) {
@@ -772,20 +797,9 @@ final public class Graphics3D implements JmolRendererInterface {
                                isFullSceneAntialiasingEnabled);
       pbuf = platform.pBuffer;
       zbuf = platform.zBuffer;
-      width = windowWidth;
-      xLast = width - 1;
-      height = windowHeight;
-      yLast = height - 1;
       bufferSize = pbuf.length;
     }
-    width = windowWidth;
-    height = windowHeight;
-    if (antialiasThisFrame) {
-      width *= 2;
-      height *= 2;
-    }
-    xLast = width - 1;
-    yLast = height - 1;
+    setWidthHeight(antialiasThisFrame);
     //setRectClip(clipX, clipY, clipWidth, clipHeight);
     platform.obtainScreenBuffer();
   }
@@ -1254,7 +1268,7 @@ final public class Graphics3D implements JmolRendererInterface {
       addPixel(offset, z, argb);
   }
 
-  void plotPixelClippedNoSlab(int argb, int x, int y, int z) {
+  public void plotPixelClippedNoSlab(int argb, int x, int y, int z) {
     // drawString via text3d.plotClipped
     if (isClipped(x, y))
       return;

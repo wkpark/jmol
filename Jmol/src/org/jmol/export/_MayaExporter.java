@@ -178,6 +178,10 @@ public class _MayaExporter extends _Exporter {
     //measures
   }
 
+  public void drawTextPixel(int argb, int x, int y, int z) {
+    //text only
+  }
+
   public void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC) {
     //cartoons, rockets
   }
@@ -191,9 +195,8 @@ public class _MayaExporter extends _Exporter {
     //rockets:    
   }
 
-  public void plotText(int x, int y, int z, short colix, short bgcolix, String text, Font3D font3d) {
-    // TODO
-    
+  public void plotText(int x, int y, int z, int argb, int backgroundArgb, 
+                       String text, Font3D font3d) {    
   }
 
   // not implemented: 

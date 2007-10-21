@@ -25,11 +25,12 @@
 package org.jmol.g3d;
 
 import java.awt.Color;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.FontMetrics;
 import java.awt.image.PixelGrabber;
 import java.util.Hashtable;
-import org.jmol.util.Logger;
+
+import org.jmol.api.JmolRendererInterface;
 
 /**
  * implementation for text rendering
@@ -42,7 +43,7 @@ import org.jmol.util.Logger;
  *
  * @author Miguel, miguel@jmol.org
  */ 
-class Text3D {
+public class Text3D {
   /*
     we have a few problems here
     a message is probably going to vary in size with z depth
@@ -59,22 +60,23 @@ class Text3D {
       array of bits - uncompressed - i like this
       some type of run-length, using bytes
   */
-  int height; // this height is just ascent + descent ... no reason for leading
-  int ascent;
-  int width;
-  int size;
-  int[] bitmap;
+  private int height; // this height is just ascent + descent ... no reason for leading
+  private int ascent;
+  private int width;
+  private int size;
+  private int[] bitmap;
   
   public int getWidth() {
     return width;
   }
   
-  static int plot(int x, int y, int z, int argb, int argbBackground,
-                   String text, Font3D font3d, Graphics3D g3d) {
+  public static int plot(int x, int y, int z, int argb, int argbBackground,
+                   String text, Font3D font3d, Graphics3D g3d, 
+                   JmolRendererInterface jmolRenderer) {
     if (text.length() == 0)
       return 0;
     if (text.indexOf("<su") >= 0)
-      return plotByCharacter(x, y, z, argb, argbBackground, text, font3d, g3d);
+      return plotByCharacter(x, y, z, argb, argbBackground, text, font3d, g3d, jmolRenderer);
       
     //setColix has presumably been carried out for argb, and the two 
     //are assumed to be both the same -- translucent or not. 
@@ -90,15 +92,16 @@ class Text3D {
     if (x < 0 || x + textWidth > g3d.width ||
         y < 0 || y + textHeight > g3d.height)
       plotClipped(x, y, z, argb, argbBackground,
-                  g3d, textWidth, textHeight, bitmap);
+                  g3d, jmolRenderer, textWidth, textHeight, bitmap);
     else
       plotUnclipped(x, y, z, argb, argbBackground,
-                    g3d, textWidth, textHeight, bitmap);
+                    g3d, jmolRenderer, textWidth, textHeight, bitmap);
     return textWidth;
   }
 
   private static int plotByCharacter(int x, int y, int z, int argb, int argbBackground,
-                                      String text, Font3D font3d, Graphics3D g3d) {
+                                      String text, Font3D font3d, 
+                                      Graphics3D g3d, JmolRendererInterface jmolRenderer) {
     //int subscale = 1; //could be something less than that
     int w = 0;
     int len = text.length();
@@ -127,20 +130,23 @@ class Text3D {
           continue;
         }
       }
-      w += plot(x + w, y, z, argb, argbBackground, text.substring(i, i + 1), font3d, g3d);
+      w += plot(x + w, y, z, argb, argbBackground, text.substring(i, i + 1), font3d, 
+          g3d, jmolRenderer);
     }
     return w;
   }
   
-  private static void plotUnclipped(int x, int y, int z, int argb, int argbBackground,
-                            Graphics3D g3d, int textWidth, int textHeight,
-                            int[] bitmap) {
+  private static void plotUnclipped(int x, int y, int z, int argb,
+                                    int argbBackground, Graphics3D g3d,
+                                    JmolRendererInterface jmolRenderer,
+                                    int textWidth, int textHeight, int[] bitmap) {
     int offset = 0;
     int shiftregister = 0;
     int i = 0, j = 0;
     int[] zbuf = g3d.zbuf;
     int screenWidth = g3d.width;
     int pbufOffset = y * screenWidth + x;
+    boolean isGenerator = (jmolRenderer != null);
     boolean addBackground = (argbBackground != 0);
     while (i < textHeight) {
       while (j < textWidth) {
@@ -152,11 +158,19 @@ class Text3D {
           offset += skip;
           pbufOffset += skip;
         } else {
-          if (z < zbuf[pbufOffset]) {
-            if (shiftregister < 0) 
-              g3d.addPixel(pbufOffset, z, argb);
+          if (isGenerator) {
+            if (shiftregister < 0)
+              jmolRenderer.plotPixelClippedNoSlab(argb, x + j, y + i, z);
             else if (addBackground)
-              g3d.addPixel(pbufOffset, z, argbBackground);
+              jmolRenderer.plotPixelClippedNoSlab(argbBackground, x + j, y + i,
+                  z);
+          } else {
+            if (z < zbuf[pbufOffset]) {
+              if (shiftregister < 0)
+                g3d.addPixel(pbufOffset, z, argb);
+              else if (addBackground)
+                g3d.addPixel(pbufOffset, z, argbBackground);
+            }
           }
           shiftregister <<= 1;
           ++offset;
@@ -173,8 +187,10 @@ class Text3D {
   }
   
   private static void plotClipped(int x, int y, int z, int argb, int argbBackground,
-                          Graphics3D g3d,
+                          Graphics3D g3d, JmolRendererInterface jmolRenderer,
                           int textWidth, int textHeight, int[] bitmap) {
+    if (jmolRenderer == null)
+      jmolRenderer = g3d;
     int offset = 0;
     int shiftregister = 0;
     int i = 0, j = 0;
@@ -188,7 +204,7 @@ class Text3D {
           offset += skip;
         } else {
           if (shiftregister < 0 || argbBackground != 0)
-            g3d.plotPixelClippedNoSlab(shiftregister < 0
+            jmolRenderer.plotPixelClippedNoSlab(shiftregister < 0
                                        ? argb : argbBackground,
                                        x + j, y + i, z);
           shiftregister <<= 1;
@@ -235,7 +251,8 @@ class Text3D {
     try {
       pixelGrabber.grabPixels();
     } catch (InterruptedException e) {
-      Logger.debug("Que? 7748");
+      // impossible?
+      return;
     }
     int pixels[] = (int[])pixelGrabber.getPixels();
 
@@ -253,9 +270,7 @@ class Text3D {
       shifter <<= 31 - (offset & 31);
       bitmap[offset >> 5] = shifter;
     }
-
-    if (false) {
-      // error checking
+    /*      // error checking
       // shifter error checking
       boolean[] bits = new boolean[size];
       for (int i = 0; i < size; ++i)
@@ -277,7 +292,7 @@ class Text3D {
         }
       }
       // error checking
-    }
+    */
   }
 
   private final static Hashtable htFont3d = new Hashtable();

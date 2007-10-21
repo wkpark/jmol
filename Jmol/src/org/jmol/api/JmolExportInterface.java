@@ -12,6 +12,8 @@ import java.util.BitSet;
 
 public interface JmolExportInterface {
 
+  abstract void setRenderer(JmolRendererInterface jmolRenderer);
+  
   // This method is implemented in org.jmol.export._Exporter 
   // when selecting a specific driver:
 
@@ -55,6 +57,8 @@ public interface JmolExportInterface {
 
   abstract void drawPixel(short colix, int x, int y, int z); //measures
  
+  abstract void drawTextPixel(int argb, int x, int y, int z);
+
   //rockets and dipoles
   abstract void fillCone(short colix, byte endcap, int diameter, 
                          Point3f screenBase, Point3f screenTip);
@@ -65,8 +69,8 @@ public interface JmolExportInterface {
   //rockets:
   abstract void fillSphereCentered(short colix, int diameter, Point3f pt);
   
-  abstract void plotText(int x, int y, int z, short colix, short bgcolix,
-                   String text, Font3D font3d);
+  abstract void plotText(int x, int y, int z, int argb, int backgroundArgb, 
+                         String text, Font3D font3d);
 
   // NOT IMPLEMENTED, but could be if needed:
   

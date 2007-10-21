@@ -38,6 +38,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolExportInterface;
+import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.viewer.Viewer;
 
@@ -129,6 +130,7 @@ public abstract class _Exporter implements JmolExportInterface {
   // generally useful functionality:
 
   protected Viewer viewer;
+  protected JmolRendererInterface jmolRenderer;
   protected StringBuffer output;
   protected BufferedWriter bw;
   protected String fileName;
@@ -154,6 +156,10 @@ public abstract class _Exporter implements JmolExportInterface {
   public _Exporter() {
   }
 
+  public void setRenderer(JmolRendererInterface jmolRenderer) {
+    this.jmolRenderer = jmolRenderer;
+  }
+  
   public boolean initializeOutput(Viewer viewer, Graphics3D g3d, Object output) {
     this.viewer = viewer;
     this.g3d = g3d;
@@ -227,10 +233,13 @@ public abstract class _Exporter implements JmolExportInterface {
   }
 
   protected String rgbFractionalFromColix(short colix, char sep) {
-    int argb = g3d.getColixArgb(colix);
-    return new StringBuffer().append(((argb >> 16) & 0xFF) / 255f).append(sep)
-        .append(((argb >> 8) & 0xFF) / 255f).append(sep).append(
-            ((argb) & 0xFF) / 255f).toString();
+    return rgbFractionalFromArgb(g3d.getColixArgb(colix), sep);
+  }
+
+  protected String rgbFractionalFromArgb(int argb, char sep) {
+    return "" + (((argb >> 16) & 0xFF) / 255f) + sep 
+        + (((argb >> 8) & 0xFF) / 255f) + sep
+        + (((argb) & 0xFF) / 255f);
   }
 
   protected String translucencyFractionalFromColix(short colix) {
@@ -238,12 +247,5 @@ public abstract class _Exporter implements JmolExportInterface {
     if (Graphics3D.isColixTranslucent(colix))
       return new StringBuffer().append(translevel / 255f).toString();
     return new StringBuffer().append(0f).toString();
-  }
-
-  protected String rgbFractionalBackground(char sep) {
-    int argb = viewer.getBackgroundArgb();
-    return new StringBuffer().append(((argb >> 16) & 0xFF) / 255f).append(sep)
-        .append(((argb >> 8) & 0xFF) / 255f).append(sep).append(
-            ((argb) & 0xFF) / 255f).toString();
   }
 }

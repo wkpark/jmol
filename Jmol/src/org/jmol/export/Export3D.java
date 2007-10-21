@@ -49,6 +49,8 @@ final public class Export3D implements JmolRendererInterface {
   private Graphics3D g3d;
   private short colix;
   private Hermite3D hermite3d;
+  private int width;
+  private int height;
   
 //  private ShapeRenderer shapeRenderer;
   private JmolExportInterface exporter;
@@ -62,7 +64,11 @@ final public class Export3D implements JmolRendererInterface {
   
   public void setg3dExporter(Graphics3D g3d, JmolExportInterface exporter) {
     this.g3d = g3d;
+    width = g3d.getWidth();
+    height = g3d.getHeight();
+
     this.exporter = exporter;
+    exporter.setRenderer(this);
   }
   
   public void setRenderer(ShapeRenderer shapeRenderer) {
@@ -90,8 +96,8 @@ final public class Export3D implements JmolRendererInterface {
   private Point3f ptA = new Point3f();
   private Point3f ptB = new Point3f();
   private Point3f ptC = new Point3f();
-  /*
   private Point3f ptD = new Point3f();
+  /*
   private Point3f ptE = new Point3f();
   private Point3f ptF = new Point3f();
   private Point3f ptG = new Point3f();
@@ -146,7 +152,7 @@ final public class Export3D implements JmolRendererInterface {
    * @param rHeight pixel count
    */
   public void drawRect(int x, int y, int z, int zSlab, int rWidth, int rHeight) {
-/*    // labels (and rubberband, not implemented) and navigation cursor
+    // labels (and rubberband, not implemented) and navigation cursor
     if (zSlab != 0 && isClippedZ(zSlab))
       return;
     int w = rWidth - 1;
@@ -161,7 +167,31 @@ final public class Export3D implements JmolRendererInterface {
       drawVLine(x, y, z, h);
     if (xRight >= 0 && xRight < width)
       drawVLine(xRight, y, z, h);
-*/  }
+  }
+
+  private void drawHLine(int x, int y, int z, int w) {
+    // hover, labels only
+    int argbCurrent = g3d.getColixArgb(colix);
+    if (w < 0) {
+      x += w;
+      w = -w;
+    }
+    for (int i = 0; i <= w; i++) {
+      exporter.drawTextPixel(argbCurrent, x + i, y, z);
+    }
+  }
+
+  private void drawVLine(int x, int y, int z, int h) {
+    // hover, labels only
+    int argbCurrent = g3d.getColixArgb(colix);
+    if (h < 0) {
+      y += h;
+      h = -h;
+    }
+    for (int i = 0; i <= h; i++) {
+      exporter.drawTextPixel(argbCurrent, x, y + i, z);
+    }
+  }
 
   /**
    * fills background rectangle for label
@@ -175,31 +205,15 @@ final public class Export3D implements JmolRendererInterface {
    * @param heightFill pixel count
    */
   public void fillRect(int x, int y, int z, int zSlab, int widthFill, int heightFill) {
-/*    // hover and labels only -- slab at atom or front -- simple Z/window clip
+    // hover and labels only -- slab at atom or front -- simple Z/window clip
     if (isClippedZ(zSlab))
       return;
-    if (x < 0) {
-      widthFill += x;
-      if (widthFill <= 0)
-        return;
-      x = 0;
-    }
-    if (x + widthFill > width) {
-      widthFill = width - x;
-      if (widthFill <= 0)
-        return;
-    }
-    if (y < 0) {
-      heightFill += y;
-      if (heightFill <= 0)
-        return;
-      y = 0;
-    }
-    if (y + heightFill > height)
-      heightFill = height - y;
-    while (--heightFill >= 0)
-      plotPixelsUnclipped(widthFill, x, y++, z);
-*/  }
+    ptA.set(x, y, z);
+    ptB.set(x + widthFill, y, z);
+    ptC.set(x + widthFill, y + heightFill, z);
+    ptD.set(x, y + heightFill, z);
+    fillQuadrilateral(ptA, ptB, ptC, ptD);
+  }
   
   /**
    * draws the specified string in the current font.
@@ -242,7 +256,7 @@ final public class Export3D implements JmolRendererInterface {
     if (str == null || str.length() == 0)
       return;
     exporter.plotText(xBaseline, yBaseline - font3d.fontMetrics.getAscent(),
-                z, colix, bgcolix, str, font3d);
+                z, getColixArgb(colix), getColixArgb(bgcolix), str, font3d);
   }
   
   //mostly public drawing methods -- add "public" if you need to
@@ -262,6 +276,11 @@ final public class Export3D implements JmolRendererInterface {
     if (g3d.isClipped(x, y, z))
       return;
     exporter.drawPixel(colix, x, y, z);
+  }
+
+  public void plotPixelClippedNoSlab(int argb, int x, int y, int z) {
+    //from Text3D
+    exporter.drawTextPixel(argb, x, y, z);
   }
 
   public void plotPixelClipped(Point3i screen) {

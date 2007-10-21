@@ -112,10 +112,9 @@ public class _PovrayExporter extends _Exporter {
     output("}\n");
     output("\n");
 
-    output("background { color rgb <"
-        + rgbFractionalFromColix(viewer.getObjectColix(0), ',') + "> }\n");
-    output("// " + viewer.getBackgroundArgb() + " \n");
-    output("// " + rgbFractionalBackground(',') + " \n");
+    output("background { color rgb <" + 
+        rgbFractionalFromColix(viewer.getObjectColix(0), ',')
+        + "> }\n");
     output("\n");
 
     // light source
@@ -152,6 +151,7 @@ public class _PovrayExporter extends _Exporter {
     writeMacrosBond();
     writeMacrosJoint();
     writeMacrosTriangle();
+    writeMacrosTextPixel();
     //    writeMacrosRing();
   }
 
@@ -159,7 +159,8 @@ public class _PovrayExporter extends _Exporter {
     output("#macro a(X,Y,Z,RADIUS,R,G,B,T)\n" + " sphere{<X,Y,Z>,RADIUS\n"
         + "  pigment{rgbt<R,G,B,T>}\n"
         + "  clip()\n"
-        + "  no_shadow}\n" + "#end\n\n");
+        + "  no_shadow}\n" 
+        + "#end\n\n");
   }
 
   private void writeMacrosBond() {
@@ -170,14 +171,17 @@ public class _PovrayExporter extends _Exporter {
         + " cone{<X1,Y1,Z1>,RADIUS1,<X2,Y2,Z2>,RADIUS2\n"
         + "  pigment{rgbt<R,G,B,T>}\n"
         + "  clip()\n"
-        + "  no_shadow}\n" + "#end\n\n");
+        + "  no_shadow}\n" 
+        + "#end\n\n");
   }
 
   private void writeMacrosJoint() {
-    output("#macro s(X,Y,Z,RADIUS,R,G,B,T)\n" + " sphere{<X,Y,Z>,RADIUS\n"
+    output("#macro s(X,Y,Z,RADIUS,R,G,B,T)\n" 
+        + " sphere{<X,Y,Z>,RADIUS\n"
         + "  pigment{rgbt<R,G,B,T>}\n" 
         + "  clip()\n"
-        + "  no_shadow}\n" + "#end\n\n");
+        + "  no_shadow}\n" 
+        + "#end\n\n");
   }
 
   private void writeMacrosTriangle() {
@@ -185,7 +189,17 @@ public class _PovrayExporter extends _Exporter {
         + " triangle{<X1,Y1,Z1>,<X2,Y2,Z2>,<X3,Y3,Z3>\n"
         + "  pigment{rgbt<R,G,B,T>}\n"
         + "  clip()\n"
-        + "  no_shadow}\n" + "#end\n\n");
+        + "  no_shadow}\n" 
+        + "#end\n\n");
+  }
+
+  private void writeMacrosTextPixel() {
+    output("#macro p(X,Y,Z,R,G,B)\n" 
+        + " box{<X,Y,Z>,<X+1,Y+1,Z+1>\n"
+        + "  pigment{rgb<R,G,B>}\n"
+        + "  clip()\n"
+        + "  no_shadow}\n" 
+        + "#end\n\n");
   }
 
   /*
@@ -463,6 +477,12 @@ public class _PovrayExporter extends _Exporter {
     fillSphereCentered(1.5f, x, y, z, colix);
   }
 
+  public void drawTextPixel(int argb, int x, int y, int z) {
+    //text only
+    output("p(" + x + "," + y + "," + z + "," + 
+        rgbFractionalFromArgb(argb, ',') + ")\n");
+  }
+  
   public void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC) {
     //cartoons, mesh, isosurface
     output("r(" + triad(ptA) + "," + triad(ptB) + "," + triad(ptC) + ","
@@ -487,14 +507,19 @@ public class _PovrayExporter extends _Exporter {
         + color4(colix) + ")\n");
   }
 
-  public void plotText(int x, int y, int z, short colix, short bgcolix,
+  int nText;
+  public void plotText(int x, int y, int z, int argb, int backgroundArgb,
                        String text, Font3D font3d) {
-    // TODO
-
+    // trick here is that we use Jmol's standard g3d package to construct
+    // the bitmap, but then output to jmolRenderer, which returns control
+    // here via drawPixel.
+    output("// start text " + (++nText) + ": " + text + "\n");
+    g3d.plotText(x, y, z, argb, backgroundArgb, text, font3d, jmolRenderer);
+    output("// end text " + nText + ": " + text + "\n");
   }
 
-  // not implemented: 
-
+  // not implemented
+  
   public void fillHermite(short colix, int tension, int diameterBeg,
                           int diameterMid, int diameterEnd, Point3f s0,
                           Point3f s1, Point3f s2, Point3f s3) {

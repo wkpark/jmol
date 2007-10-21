@@ -146,6 +146,8 @@ public interface JmolRendererInterface {
   public abstract void drawString(String str, Font3D font3d, int xBaseline,
                                   int yBaseline, int z, int zSlab);
 
+  public abstract void plotPixelClippedNoSlab(int argb, int x, int y, int z);
+    
   /**
    * draws the specified string in the current font.
    * no line wrapping -- echo, frank, hover, molecularOrbital, uccage

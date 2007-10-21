@@ -32,6 +32,7 @@ import java.util.Hashtable;
 
 import org.jmol.api.JmolRendererInterface;
 
+
 /**
  * implementation for text rendering
  *<p>
@@ -72,15 +73,21 @@ public class Text3D {
   
   public static int plot(int x, int y, int z, int argb, int argbBackground,
                    String text, Font3D font3d, Graphics3D g3d, 
-                   JmolRendererInterface jmolRenderer) {
+                   JmolRendererInterface jmolRenderer, 
+                   boolean antialias) {
     if (text.length() == 0)
       return 0;
     if (text.indexOf("<su") >= 0)
-      return plotByCharacter(x, y, z, argb, argbBackground, text, font3d, g3d, jmolRenderer);
+      return plotByCharacter(x, y, z, argb, argbBackground, text, font3d, 
+          g3d, jmolRenderer, antialias);
+    int offset = font3d.fontMetrics.getAscent();
+    if (antialias)
+      offset += offset;
+    y -= offset;
       
     //setColix has presumably been carried out for argb, and the two 
     //are assumed to be both the same -- translucent or not. 
-    Text3D text3d = getText3D(text, font3d, g3d.platform);
+    Text3D text3d = getText3D(text, font3d, g3d.platform, antialias);
     if (text3d.width == 0)
       return 0;
     int[] bitmap = text3d.bitmap;
@@ -101,7 +108,8 @@ public class Text3D {
 
   private static int plotByCharacter(int x, int y, int z, int argb, int argbBackground,
                                       String text, Font3D font3d, 
-                                      Graphics3D g3d, JmolRendererInterface jmolRenderer) {
+                                      Graphics3D g3d, JmolRendererInterface jmolRenderer,
+                                      boolean antialias) {
     //int subscale = 1; //could be something less than that
     int w = 0;
     int len = text.length();
@@ -131,7 +139,7 @@ public class Text3D {
         }
       }
       w += plot(x + w, y, z, argb, argbBackground, text.substring(i, i + 1), font3d, 
-          g3d, jmolRenderer);
+          g3d, jmolRenderer, antialias);
     }
     return w;
   }
@@ -219,29 +227,44 @@ public class Text3D {
     }
   }
 
-  private Text3D(String text, Font3D font3d, Platform3D platform) {
-    if (!calcMetrics(text, font3d))
+  private Text3D(String text, Font3D font3d, Platform3D platform,
+                 boolean antialias) {
+    if (!calcMetrics(text, font3d, antialias))
       return;
     platform.checkOffscreenSize(width, height);
-    renderOffscreen(text, font3d, platform);
+    renderOffscreen(text, font3d, platform, antialias);
     rasterize(platform);
   }
 
-  private boolean calcMetrics(String text, Font3D font3d) {
+  private boolean calcMetrics(String text, Font3D font3d, boolean antialias) {
     FontMetrics fontMetrics = font3d.fontMetrics;
     ascent = fontMetrics.getAscent();
     height = ascent + fontMetrics.getDescent();
     width = fontMetrics.stringWidth(text);
+    if (width == 0)
+      return false;
+    if (antialias) {
+      ascent <<= 1;
+      height <<= 1;
+      width = width * 2 + 4;
+    }
     size = width * height;
-    return (width > 0);
+    return true;
   }
 
-  private void renderOffscreen(String text, Font3D font3d, Platform3D platform) {
+  private void renderOffscreen(String text, Font3D font3d, Platform3D platform,
+                               boolean antialias) {
     Graphics g = platform.gOffscreen;
     g.setColor(Color.black);
     g.fillRect(0, 0, width, height);
     g.setColor(Color.white);
-    g.setFont(font3d.font);
+    if (antialias) {
+      if (font3d.antialiasFont == null)
+        font3d.setAntialiasFont();
+      g.setFont(font3d.antialiasFont);
+    } else {
+      g.setFont(font3d.font);
+    }
     g.drawString(text, 0, ascent);
   }
 
@@ -296,24 +319,25 @@ public class Text3D {
   }
 
   private final static Hashtable htFont3d = new Hashtable();
+  private final static Hashtable htFont3dAntialias = new Hashtable();
   
   // FIXME mth
   // we have a synchronization issue/race condition  here with multiple
   // so only one Text3D can be generated at a time
 
   private synchronized static Text3D getText3D(String text, Font3D font3d,
-                                         Platform3D platform) {
-
-    Hashtable htForThisFont = (Hashtable)htFont3d.get(font3d);
+                                         Platform3D platform, boolean antialias) {
+    Hashtable ht = (antialias ? htFont3dAntialias : htFont3d);
+    Hashtable htForThisFont = (Hashtable)ht.get(font3d);
     if (htForThisFont != null) {
       Text3D text3d = (Text3D)htForThisFont.get(text);
       if (text3d != null)
         return text3d;
     } else {
       htForThisFont = new Hashtable();
-      htFont3d.put(font3d, htForThisFont);
+      ht.put(font3d, htForThisFont);
     }
-    Text3D text3d = new Text3D(text, font3d, platform);
+    Text3D text3d = new Text3D(text, font3d, platform, antialias);
     if (text3d != null)
       htForThisFont.put(text, text3d);
     return text3d;

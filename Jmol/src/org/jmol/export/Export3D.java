@@ -603,6 +603,15 @@ final public class Export3D implements JmolRendererInterface {
    * g3d-relayed info specifically needed for the renderers
    * ***************************************************************/
 
+  /**
+   * is full scene / oversampling antialiasing in effect
+   *
+   * @return the answer
+   */
+  public boolean isAntialiased() {
+    return g3d.isAntialiased();
+  }
+  
   public boolean checkTranslucent(boolean isAlphaTranslucent) {
     return true;
   }
@@ -611,15 +620,6 @@ final public class Export3D implements JmolRendererInterface {
     return true;
   }
   
-  /**
-   * is full scene / oversampling antialiasing in effect
-   *
-   * @return the answer
-   */
-  public boolean fullSceneAntialiasRendering() {
-    return g3d.fullSceneAntialiasRendering();
-  }
-
   /**
    * gets g3d width
    *

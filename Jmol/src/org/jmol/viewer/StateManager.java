@@ -504,7 +504,8 @@ public class StateManager {
 
     //rendering
 
-    boolean enableFullSceneAntialiasing = false;
+    boolean antialiasDisplay            = false;
+    boolean antialiasImages             = true;
     boolean greyscaleRendering          = false;
     boolean zoomLarge                   = true; //false would be like Chime
     boolean dotsSelectedOnly            = false;
@@ -950,6 +951,8 @@ public class StateManager {
       setParameterValue("allowEmbeddedScripts",allowEmbeddedScripts);
       setParameterValue("allowRotateSelected",allowRotateSelected);
       setParameterValue("ambientPercent",ambientPercent);
+      setParameterValue("antialiasImages",antialiasImages);
+      setParameterValue("antialiasDisplay",antialiasDisplay);
       setParameterValue("appendNew",appendNew);
       setParameterValue("applySymmetryToBonds",applySymmetryToBonds);
       setParameterValue("autoBond",autoBond);
@@ -1043,7 +1046,6 @@ public class StateManager {
       setParameterValue("zShade",zShade);
       setParameterValue("zeroBasedXyzRasmol",zeroBasedXyzRasmol);
 //      setParameterValue("argbBackground",argbBackground);
-//nah      setParameterValue("enableFullSceneAntialiasing",enableFullSceneAntialiasing);
     }
   }
 

@@ -30,6 +30,7 @@ public class HoverRenderer extends ShapeRenderer {
     if (viewer.getNavigating())
       return;
     Hover hover = (Hover) shape;
+    boolean antialias = g3d.isAntialiased();
     if (hover.atomIndex >= 0) {
       Atom atom = modelSet.getAtomAt(hover.atomIndex);
       String label = (hover.atomFormats != null
@@ -42,12 +43,12 @@ public class HoverRenderer extends ShapeRenderer {
       Text text = hover.hoverText;
       text.setText(label);
       text.setXY(atom.screenX, atom.screenY);
-      text.render(g3d);
+      text.render(g3d, antialias);
     } else if (hover.text != null) {
       Text text = hover.hoverText;
       text.setText(hover.text);
       text.setXY(hover.xy.x, hover.xy.y);
-      text.render(g3d);
+      text.render(g3d, antialias);
     }
   }
 }

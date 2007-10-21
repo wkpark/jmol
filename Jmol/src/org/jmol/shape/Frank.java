@@ -54,9 +54,9 @@ public class Frank extends FontLineShape {
   public boolean wasClicked(int x, int y) {
     int width = g3d.getRenderWidth();
     int height = g3d.getRenderHeight();
-    if (g3d.fullSceneAntialiasRendering()) {
-      x *= 2;
-      y *= 2;
+    if (g3d.isAntialiased()) {
+      width >>= 1;
+      height >>= 1;
     }
     return (width > 0 && height > 0 && x > width - frankWidth - frankMargin && y > height
         - frankAscent - frankMargin);

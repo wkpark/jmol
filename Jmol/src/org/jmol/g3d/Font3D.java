@@ -43,8 +43,10 @@ final public class Font3D {
   public final byte fid;
   public final String fontFace;
   public final String fontStyle;
+  private final int idFontStyle;
   public final short fontSize;
   public final Font font;
+  public Font antialiasFont;
   public final FontMetrics fontMetrics;
 
   private Font3D(byte fid,
@@ -53,8 +55,10 @@ final public class Font3D {
     this.fid = fid;
     this.fontFace = fontFaces[idFontFace];
     this.fontStyle = fontStyles[idFontStyle];
+    this.idFontStyle = idFontStyle;
     this.fontSize = (short)fontSize;
     this.font = font;
+    this.antialiasFont = null;
     this.fontMetrics = fontMetrics;
   }
 
@@ -128,6 +132,10 @@ final public class Font3D {
     return font3d;
   }
 
+  public void setAntialiasFont() {
+    antialiasFont = new Font(fontFace, idFontStyle, fontSize * 2);
+  }
+  
   public final static int FONT_FACE_SANS  = 0;
   public final static int FONT_FACE_SERIF = 1;
   public final static int FONT_FACE_MONO  = 2;

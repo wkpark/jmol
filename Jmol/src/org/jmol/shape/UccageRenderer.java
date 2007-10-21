@@ -92,36 +92,42 @@ public class UccageRenderer extends FontLineShapeRenderer {
       nf.setMinimumFractionDigits(3);
     }
     g3d.setFont(fid);
-    int line = 15;
     int lineheight = 15;
+    int x = 5;
+    if (antialias) {
+      lineheight <<= 1;
+      x <<= 1;
+    }
+    int y = lineheight;
+    
     String spaceGroup = cellInfo.getSpaceGroup(); 
     if (spaceGroup != null) {
-      line += lineheight;
-      g3d.drawStringNoSlab(spaceGroup, null, (short) 0, 5, line, 0);
+      y += lineheight;
+      g3d.drawStringNoSlab(spaceGroup, null, (short) 0, x, y, 0);
     }
-    line += lineheight;
+    y += lineheight;
     g3d.drawStringNoSlab("a=" + nfformat(unitCell.getInfo(UnitCell.INFO_A))
-        + "\u00C5", null, (short) 0, 5, line, 0);
-    line += lineheight;
+        + "\u00C5", null, (short) 0, x, y, 0);
+    y += lineheight;
     g3d.drawStringNoSlab("b=" + nfformat(unitCell.getInfo(UnitCell.INFO_B))
-        + "\u00C5", null, (short) 0, 5, line, 0);
-    line += lineheight;
+        + "\u00C5", null, (short) 0, x, y, 0);
+    y += lineheight;
     g3d.drawStringNoSlab("c=" + nfformat(unitCell.getInfo(UnitCell.INFO_C))
-        + "\u00C5", null, (short) 0, 5, line, 0);
+        + "\u00C5", null, (short) 0, x, y, 0);
     if (nf != null)
       nf.setMaximumFractionDigits(1);
-    line += lineheight;
+    y += lineheight;
     g3d.drawStringNoSlab("\u03B1="
         + nfformat(unitCell.getInfo(UnitCell.INFO_ALPHA)) + "\u00B0", null,
-        (short) 0, 5, line, 0);
-    line += lineheight;
+        (short) 0, x, y, 0);
+    y += lineheight;
     g3d.drawStringNoSlab("\u03B2="
         + nfformat(unitCell.getInfo(UnitCell.INFO_BETA)) + "\u00B0", null,
-        (short) 0, 5, line, 0);
-    line += lineheight;
+        (short) 0, x, y, 0);
+    y += lineheight;
     g3d.drawStringNoSlab("\u03B3="
         + nfformat(unitCell.getInfo(UnitCell.INFO_GAMMA)) + "\u00B0", null,
-        (short) 0, 5, line, 0);
+        (short) 0, x, y, 0);
   }
 }
 

@@ -63,6 +63,15 @@ final public class Graphics3D implements JmolRendererInterface {
   Normix3D normix3d;
   boolean isFullSceneAntialiasingEnabled;
   boolean antialiasThisFrame;
+  
+  /**
+   * is full scene / oversampling antialiasing in effect
+   *
+   * @return the answer
+   */
+  public boolean isAntialiased() {
+    return antialiasThisFrame;
+  }
 
   boolean inGreyscaleMode;
   byte[] anaglyphChannelBytes;
@@ -174,16 +183,11 @@ final public class Graphics3D implements JmolRendererInterface {
    */
   public void setWindowSize(int windowWidth, int windowHeight,
                             boolean enableFullSceneAntialiasing) {
-    if (this.windowWidth == windowWidth &&
-        this.windowHeight == windowHeight &&
-        enableFullSceneAntialiasing == isFullSceneAntialiasingEnabled)
+    if (this.windowWidth == windowWidth && this.windowHeight == windowHeight 
+        && enableFullSceneAntialiasing == isFullSceneAntialiasingEnabled)
       return;
     this.windowWidth = windowWidth;
     this.windowHeight = windowHeight;
-    displayMinX = -(windowWidth >> 1);
-    displayMaxX = windowWidth - displayMinX;
-    displayMinY = -(windowHeight >> 1);
-    displayMaxY = windowHeight - displayMinY;
     isFullSceneAntialiasingEnabled = enableFullSceneAntialiasing;
     setWidthHeight(enableFullSceneAntialiasing);
     pbuf = null;
@@ -202,6 +206,11 @@ final public class Graphics3D implements JmolRendererInterface {
     }
     xLast = width - 1;
     yLast = height - 1;
+    displayMinX = -(width >> 1);
+    displayMaxX = width - displayMinX;
+    displayMinY = -(height >> 1);
+    displayMaxY = height - displayMinY;
+
   }
   
   public boolean checkTranslucent(boolean isAlphaTranslucent) {
@@ -214,15 +223,6 @@ final public class Graphics3D implements JmolRendererInterface {
     return haveAlphaTranslucent;
   }
   
-  /**
-   * is full scene / oversampling antialiasing in effect
-   *
-   * @return the answer
-   */
-  public boolean fullSceneAntialiasRendering() {
-    return false;
-  }
-
   /**
    * gets g3d width
    *
@@ -725,13 +725,14 @@ final public class Graphics3D implements JmolRendererInterface {
       return;
     if(font3d != null)
       font3dCurrent = font3d;
-    plotText(xBaseline, yBaseline - font3dCurrent.fontMetrics.getAscent(), 
+    plotText(xBaseline, yBaseline, 
         z, argbCurrent, getColixArgb(bgcolix), str, font3dCurrent, null);
   }
   
   public void plotText(int x, int y, int z, int argb, int argbBackground,
                 String text, Font3D font3d, JmolRendererInterface jmolRenderer) {
-    Text3D.plot(x, y, z, argb, argbBackground, text, font3d, this, jmolRenderer);    
+    Text3D.plot(x, y, z, argb, argbBackground, text, font3d, this, jmolRenderer, 
+        antialiasThisFrame);    
   }
   
   public void setFont(byte fid) {

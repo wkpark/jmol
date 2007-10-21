@@ -92,7 +92,7 @@ abstract class TransformManager {
 
   private void setViewer(Viewer viewer, int width, int height) {
     this.viewer = viewer;
-    setScreenDimension(width, height, true);
+    setScreenDimension(width, height, true, false);
   }
 
   boolean checkedForNavigation = false;
@@ -1094,40 +1094,18 @@ abstract class TransformManager {
   /* ***************************************************************
    * SCREEN SCALING
    ****************************************************************/
-  //boolean tOversample;
   int width, height;
-  //int width1, height1;//, width4, height4;
   int screenPixelCount;
   float scalePixelsPerAngstrom;
   float scaleDefaultPixelsPerAngstrom;
 
-  void setScreenDimension(int width, int height, boolean useZoomLarge) {
-    this.width = width; //this.width1 = 
-   // this.width4 = width + width;
-    this.height = height; //this.height1 = 
-  //  this.height4 = height + height;
+  void setScreenDimension(int width, int height, boolean useZoomLarge, 
+                          boolean antialias) {
+    this.width = (antialias ? width * 2 : width);
+    this.height = (antialias ? height * 2 : height);
     scaleFitToScreen(false, useZoomLarge);
   }
 
-
-  /* see also repaintManager - not implemented
-   * 
-  void setOversample(boolean tOversample) {
-    // not implemented
-    if (this.tOversample == tOversample)
-      return;
-    this.tOversample = tOversample;
-    if (tOversample) {
-      width = width4;
-      height = height4;
-    } else {
-      width = width1;
-      height = height1;
-    }
-    scaleFitToScreen();
-  }
-  */
-  
   private float defaultScaleToScreen(float radius) {
     /* 
      * 

@@ -44,7 +44,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   protected void render() {
     if (!viewer.getShowMeasurements() || !g3d.checkTranslucent(false))
       return;
-
+    antialias = g3d.isAntialiased();
     Measures measures = (Measures) shape;
     doJustify = viewer.getJustifyMeasurements();
     measurementMad = measures.mad;
@@ -160,7 +160,8 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     // should probably be some percentage of the smaller distance
     AxisAngle4f aa = measurement.getAxisAngle();
     if (aa == null) { // 180 degrees
-      paintMeasurementString(atomB.screenX + 5, atomB.screenY - 5,
+      int offset = (antialias ? 10 : 5);
+      paintMeasurementString(atomB.screenX + offset, atomB.screenY - offset,
                              zB, radius, false, 0);
       return;
     }
@@ -227,13 +228,18 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     String strMeasurement = measurement.getString();
     if (strMeasurement == null)
       return;
+    int width = font3d.fontMetrics.stringWidth(strMeasurement);
+    int height = font3d.fontMetrics.getAscent();
+    if (antialias) {
+      width <<= 1;
+      height <<= 1;
+    }
     int xT = x;
     if (rightJustify)
-      xT -= radius / 2 + 2 + font3d.fontMetrics.stringWidth(strMeasurement);
+      xT -= radius / 2 + 2 + width;
     else
       xT += radius / 2 + 2;
-    int yT = y
-        + (yRef == 0 || yRef < y ? font3d.fontMetrics.getAscent() : -radius / 2);
+    int yT = y + (yRef == 0 || yRef < y ? height : -radius / 2);
     int zT = z - radius - 2;
     if (zT < 1)
       zT = 1;

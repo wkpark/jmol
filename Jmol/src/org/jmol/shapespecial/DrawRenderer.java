@@ -44,6 +44,7 @@ public class DrawRenderer extends MeshRenderer {
      * polygon.
      * 
      */
+    antialias = g3d.isAntialiased();
     Draw draw = (Draw) shape;
     for (int i = draw.meshCount; --i >= 0;) {
       render1(dmesh = (DrawMesh) draw.meshes[i]);
@@ -181,7 +182,9 @@ public class DrawRenderer extends MeshRenderer {
     g3d.setFont(fid);
     if (dmesh.title[0].length() > 0) {
       viewer.transformPoint(vertices[0], pt1i);
-      g3d.drawString(dmesh.title[0], null, pt1i.x + 5, pt1i.y - 5, pt1i.z, pt1i.z);
+      int offset = (antialias ? 10 : 5);
+      g3d.drawString(dmesh.title[0], null, pt1i.x + offset, 
+          pt1i.y - offset, pt1i.z, pt1i.z);
     }
   }
   

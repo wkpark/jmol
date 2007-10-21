@@ -38,9 +38,13 @@ public class FrankRenderer extends FontLineShapeRenderer {
             g3d.haveTranslucentObjects(), 0.5f)))
       return;
     frank.calcMetrics();
-    g3d.drawStringNoSlab(Frank.frankString, frank.font3d, (short) 0, g3d
-        .getRenderWidth()
-        - frank.frankWidth - Frank.frankMargin, g3d.getRenderHeight()
-        - frank.frankDescent, 0);
+    int dx = frank.frankWidth + Frank.frankMargin;
+    int dy = frank.frankDescent;
+    if (g3d.isAntialiased()) {
+      dx <<= 1;
+      dy <<= 1;
+    }
+    g3d.drawStringNoSlab(Frank.frankString, frank.font3d, (short) 0, 
+        g3d.getRenderWidth() - dx, g3d.getRenderHeight() - dy, 0);
   }
 }

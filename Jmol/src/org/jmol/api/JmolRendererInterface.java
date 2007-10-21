@@ -17,17 +17,12 @@ public interface JmolRendererInterface {
   public abstract JmolExportInterface getExporter();
 
   public abstract void setRenderer(ShapeRenderer shapeRenderer);
+
+  public abstract boolean isAntialiased();
   
   public abstract boolean checkTranslucent(boolean isAlphaTranslucent);
 
   public abstract boolean haveTranslucentObjects();
-
-  /**
-   * is full scene / oversampling antialiasing in effect
-   *
-   * @return the answer
-   */
-  public abstract boolean fullSceneAntialiasRendering();
 
   /**
    * gets g3d width

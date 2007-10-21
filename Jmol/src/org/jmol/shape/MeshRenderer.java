@@ -39,10 +39,11 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected int vertexCount;
   protected int lighting;
   protected boolean frontOnly;
-  
+  protected boolean antialias;
   protected Mesh mesh;
 
   protected void render() {
+    antialias = g3d.isAntialiased();
     MeshCollection mc = (MeshCollection) shape;
     for (int i = mc.meshCount; --i >= 0;)
       render1(mc.meshes[i]);

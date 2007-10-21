@@ -225,48 +225,6 @@ public class Text {
     return script;
   }
   
-  void setPositions() {
-    int xLeft, xCenter, xRight;
-    if (valign == XY || valign == XYZ) {
-      int x = (movableXPercent == Integer.MAX_VALUE ?  movableX 
-          : movableXPercent * windowWidth / 100);
-      xLeft = xRight = xCenter = x + offsetX;
-    } else {
-      xLeft = 5;
-      xCenter = windowWidth / 2;
-      xRight = windowWidth - 5;
-    }
-    
-    // set box X from alignments
-    
-      boxX = xLeft;
-      switch (align) {
-      case CENTER:
-        boxX = xCenter - boxWidth / 2; 
-        break;
-      case RIGHT:
-        boxX = xRight - boxWidth;        
-      }
-    
-    // set box Y from alignments
-    
-    boxY = 0;
-    switch (valign) {
-    case TOP:
-      break;
-    case MIDDLE:
-      boxY = windowHeight / 2;
-      break;
-    case BOTTOM:
-      boxY = windowHeight;
-      break;
-    default:
-      int y = (movableYPercent == Integer.MAX_VALUE ?  movableY 
-          : movableYPercent * windowHeight / 100);
-      boxY = (atomBased|| xyz != null ? y : (windowHeight - y)) + offsetY;
-    }
-  }
-  
   void setOffset(int offset) {
     //Labels only
     offsetX = getXOffset(offset);
@@ -376,7 +334,7 @@ public class Text {
     recalc();
   }
   
-  void render(JmolRendererInterface g3d) {
+  void render(JmolRendererInterface g3d, boolean antialias) {
     if (text == null)
       return;
     windowWidth = g3d.getRenderWidth();
@@ -384,51 +342,63 @@ public class Text {
 
     if (doFormatText)
       formatText();
-    setPositions();
+    setPositions(antialias);
 
     // adjust positions if necessary
 
-    setBoxOffsetsInWindow();
+    setBoxOffsetsInWindow(antialias);
 
 
     // draw the box if necessary
 
-    if (bgcolix != 0 && g3d.setColix(bgcolix))
-      g3d.fillRect(boxX, boxY, z + 2, zSlab, boxWidth, boxHeight);
-
-
+    if (bgcolix != 0)
+      showBox(g3d, colix, bgcolix, boxX, boxY, z + 2, zSlab, 
+        boxWidth + (antialias ? boxWidth : 0), 
+        boxHeight + (antialias ? boxHeight : 0), antialias, 
+        atomBased);
     if (g3d.setColix(colix)) {
-
-      if (bgcolix != 0 && !Graphics3D.isColixTranslucent(bgcolix))
-        g3d.drawRect(boxX + 1, boxY + 1, z + 1, zSlab, boxWidth - 2, boxHeight - 2);
 
       // now set x and y positions for text from (new?) box position
 
-      int x0 = boxX + 4;
+      int offset = (antialias ? boxWidth << 1 : boxWidth);
+      int adj = (antialias ? 8 : 4);
+      int x0 = boxX;
       switch (align) {
       case CENTER:
-        x0 = boxX + boxWidth / 2;
+        x0 += offset / 2;
         break;
       case RIGHT:
-        x0 = boxX + boxWidth - 4;
+        x0 += offset - adj;
+        break;
+      default:
+        x0 += adj;
       }
 
       // now write properly aligned text
 
       int x = x0;
       int y = boxY + ascent + 4;
+      offset = lineHeight;
+      int nShift = 1;
+      if (antialias) {
+        y += ascent + 4;
+        offset <<= 2;
+        nShift = 2;
+      }
       for (int i = 0; i < lines.length; i++) {
         switch (align) {
         case CENTER:
-          x = x0 - widths[i] / 2;
+          x = x0 - (widths[i] * nShift / 2);
           break;
         case RIGHT:
-          x = x0 - widths[i];
+          x = x0 - (widths[i] * nShift);
         }
         g3d.drawString(lines[i], font, x, y, z, zSlab);
-        y += lineHeight;
+        y += offset;
       }
     }
+
+    
     // now draw the pointer, if requested
 
     if ((pointer & POINTER_ON) != 0) {
@@ -444,43 +414,126 @@ public class Text {
     }
   }
 
-  void setBoxOffsetsInWindow() {
+  private void setPositions(boolean antialias) {
+    int xLeft, xCenter, xRight;
+    if (valign == XY || valign == XYZ) {
+      int x = (movableXPercent == Integer.MAX_VALUE ?  movableX 
+          : movableXPercent * windowWidth / 100);
+      int offsetX = this.offsetX;
+      if (antialias)
+        offsetX <<= 1;
+      xLeft = xRight = xCenter = x + offsetX;
+    } else {
+      xLeft = (antialias ? 10 : 5);
+      xCenter = windowWidth / 2;
+      xRight = windowWidth - xLeft;
+    }
+    
+    // set box X from alignments
+    
+      boxX = xLeft;
+      switch (align) {
+      case CENTER:
+        boxX = xCenter - (antialias ? boxWidth : boxWidth / 2); 
+        break;
+      case RIGHT:
+        boxX = xRight - (antialias ? boxWidth * 2 : boxWidth);        
+      }
+    
+    // set box Y from alignments
+    
+    boxY = 0;
+    switch (valign) {
+    case TOP:
+      break;
+    case MIDDLE:
+      boxY = windowHeight / 2;
+      break;
+    case BOTTOM:
+      boxY = windowHeight;
+      break;
+    default:
+      int y = (movableYPercent == Integer.MAX_VALUE ?  movableY 
+          : movableYPercent * windowHeight / 100);
+      boxY = (atomBased|| xyz != null ? y : (windowHeight - y)) + offsetY;
+      if (antialias)
+        boxY += offsetY;
+    }
+  }
+  
+  void setBoxOffsetsInWindow(boolean antialias) {
+    int xAdj = 0;
+    int yAdj = 0;
     if (!adjustForWindow)
-      boxY -= lineHeight;
+      yAdj -= (antialias ? lineHeight * 2 : lineHeight);
     if (atomBased && align == XY) {
-      boxX += JmolConstants.LABEL_DEFAULT_X_OFFSET;
-      boxY -= JmolConstants.LABEL_DEFAULT_Y_OFFSET + 4;
+      xAdj += JmolConstants.LABEL_DEFAULT_X_OFFSET;
+      yAdj -= JmolConstants.LABEL_DEFAULT_Y_OFFSET + 4;
     }
     if (valign == XYZ) {
-      boxY += ascent/2; 
+      yAdj += ascent / 2;
     }
-    if (!adjustForWindow)
-      return;  // labels
-    
-    // these coordinates are (0,0) in top left
-    // (user coordinates are (0,0) in bottom left)
-    boxY -= textHeight;
-    int x = boxX;
-    if (x + boxWidth + 5 > windowWidth)
-      x = windowWidth - boxWidth - 5;
-    if (x < 5)
-      x = 5;
-    int y = boxY;
-    if (y + boxHeight > windowHeight)
-      y = windowHeight - boxHeight;
-    int y0 = (atomBased ? 16 + lineHeight : 0);
-    if (y < y0)
-      y = y0;
-    // (echo is not atomBased -- positioned right on)
-    boxX = x;
-    boxY = y;
+    if (antialias) {
+      xAdj <<= 1;
+      yAdj <<= 1;
+    }
+    boxX += xAdj;
+    boxY += yAdj;
+    if (adjustForWindow) {
+      // not labels
+
+      // these coordinates are (0,0) in top left
+      // (user coordinates are (0,0) in bottom left)
+      int xMargin = (antialias ? 10 : 5);
+      int bw = (antialias ? boxWidth << 1: boxWidth) + xMargin;
+      int x = boxX;
+      if (x + bw > windowWidth)
+        x = windowWidth - bw;
+      if (x < xMargin)
+        x = xMargin;
+      boxX = x;
+      
+      int y = boxY;
+      y -= (antialias ? textHeight << 1 : textHeight);
+      int bh = (antialias ? boxHeight << 1 : boxHeight);
+      if (y + bh > windowHeight)
+        y = windowHeight - bh;
+      int y0 = (atomBased ? (16 + lineHeight) * (antialias ? 2 : 1) : 0);
+      if (antialias)
+        y0 <<= 1;
+      if (y < y0)
+        y = y0;
+      boxY = y;
+    }
+  }
+
+  private static void showBox(JmolRendererInterface g3d,
+                              short colix, short bgcolix, 
+                       int x, int y, int z, int zSlab, 
+                       int boxWidth, int boxHeight, 
+                       boolean antialias, boolean atomBased) {
+    g3d.setColix(bgcolix);
+    g3d.fillRect(x, y, z, zSlab, boxWidth, boxHeight);
+    g3d.setColix(colix);
+    if (!atomBased)
+      return;
+    if (antialias) {
+      g3d.drawRect(x + 3, y + 3, z - 1, zSlab, 
+          boxWidth - 6, boxHeight - 6);
+      g3d.drawRect(x + 4, y + 4, z - 1, zSlab, 
+          boxWidth - 8, boxHeight - 8);
+    } else {
+      g3d.drawRect(x + 1, y + 1, z - 1, zSlab, 
+        boxWidth - 2, boxHeight - 2); 
+    }
   }
 
   final static void renderSimple(JmolRendererInterface g3d, Font3D font,
                                  String strLabel, short colix, short bgcolix,
                                  int x, int y, int z, int zSlab, int xOffset,
                                  int yOffset, int ascent, int descent,
-                                 boolean doPointer, short pointerColix) {
+                                 boolean doPointer, short pointerColix,
+                                 boolean antialias) {
 
     // old static style -- quick, simple, no line breaks, odd alignment?
     // LabelsRenderer only
@@ -514,16 +567,25 @@ public class Text {
     x += xBoxOffset;
     y += yBoxOffset;
 
-    if (bgcolix != 0) {
-      g3d.setColix(bgcolix);
-      g3d.fillRect(x, y, z, zSlab, boxWidth, boxHeight);
-      g3d.setColix(colix);
-      g3d.drawRect(x + 1, y + 1, z - 1, zSlab, boxWidth - 2,
-          boxHeight - 2);
+    int thinSpace = 1;
+    if (antialias) {
+      x += xBoxOffset;
+      y += yBoxOffset;
+      boxWidth += boxWidth;
+      boxHeight += boxHeight;
+      thinSpace = 2;
     }
     
-    g3d.drawString(strLabel, font, x + 4, y + 4 + ascent, z - 1,
-        zSlab);
+    if (bgcolix != 0)
+      showBox(g3d, colix, bgcolix, x, y, z, zSlab, 
+          boxWidth, boxHeight, antialias, true);
+    
+    thinSpace <<= 2;
+    if (antialias)
+      ascent <<= 1;
+    
+    g3d.drawString(strLabel, font, x + thinSpace, 
+        y + thinSpace + ascent, z - 1, zSlab);
 
     if (doPointer) {
       g3d.setColix(pointerColix);

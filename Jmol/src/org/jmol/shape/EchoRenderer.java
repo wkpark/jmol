@@ -33,13 +33,14 @@ public class EchoRenderer extends ShapeRenderer {
     
     Point3i pt = new Point3i();
     Enumeration e = echo.texts.elements();
+    boolean antialias = g3d.isAntialiased();
     while (e.hasMoreElements()) {
       Text t = (Text)e.nextElement();
       if (t.valign == Text.XYZ) {
         viewer.transformPoint(t.xyz, pt);
         t.setXYZs(pt.x, pt.y, pt.z, pt.z);
       }
-      t.render(g3d);
+      t.render(g3d, antialias);
     }
   }
 }

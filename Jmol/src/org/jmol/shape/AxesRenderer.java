@@ -47,6 +47,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
   short[] colixes = new short[3];
 
   protected void render() {
+    antialias = g3d.isAntialiased();
     Axes axes = (Axes) shape;
     short mad = viewer.getObjectMad(StateManager.OBJ_AXIS1);
     if (mad == 0 || !g3d.checkTranslucent(false))
@@ -93,19 +94,28 @@ public class AxesRenderer extends FontLineShapeRenderer {
     }
   }
   
-  void renderLabel(String str, Font3D font3d, int x, int y, int z) {
+  private void renderLabel(String str, Font3D font3d, int x, int y, int z) {
     FontMetrics fontMetrics = font3d.fontMetrics;
     int strAscent = fontMetrics.getAscent();
     int strWidth = fontMetrics.stringWidth(str);
     int xCenter = viewer.getBoundBoxCenterX();
     int yCenter = viewer.getBoundBoxCenterY();
+    if (antialias) {
+      strWidth <<= 1;
+      strAscent <<= 1;
+      xCenter <<= 1;
+      yCenter <<= 1;
+    }
     int dx = x - xCenter;
     int dy = y - yCenter;
-    if (dx != 0 || dy != 0) {
+    if ((dx != 0 || dy != 0)) {
       float dist = (float) Math.sqrt(dx * dx + dy * dy);
-      x += (int)((2f + (strWidth + 1) / 2) / dist * dx);
-      y += (int)((3f + (strAscent + 1) / 2) / dist * dy);
+      dx = (int) (strWidth * 0.75f * dx / dist);
+      dy = (int) (strAscent * 0.75f * dy / dist);
+      x += dx;
+      y += dy;
     }
+
     int xStrBaseline = x - strWidth / 2;
     int yStrBaseline = y + strAscent / 2;
     g3d.drawString(str, font3d, xStrBaseline, yStrBaseline, z, z);

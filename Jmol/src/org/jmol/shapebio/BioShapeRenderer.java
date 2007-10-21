@@ -299,11 +299,6 @@ abstract class BioShapeRenderer extends MeshRenderer {
     if ((aspectRatio <= 0 || (!checkDiameter(diameterBeg)
         && !checkDiameter(diameterMid) && !checkDiameter(diameterEnd))))
       return false;
-    if (false && isGenerator) {
-      diameterBeg = madBeg;
-      diameterMid = madMid;
-      diameterEnd = madEnd;
-    }
     return true;
   }
 

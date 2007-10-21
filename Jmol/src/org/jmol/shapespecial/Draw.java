@@ -795,6 +795,10 @@ public class Draw extends MeshCollection {
     pickedModel = 0;
     pickedVertex = 0;
     pickedMesh = null;
+    if (g3d.isAntialiased()) {
+      x *= 2;
+      y *= 2;
+    }
     for (int i = 0; i < meshCount; i++) {
       DrawMesh m = dmeshes[i];
       if ((true || isPicking || m.drawType == JmolConstants.DRAW_LINE || m.drawType == JmolConstants.DRAW_MULTIPLE)

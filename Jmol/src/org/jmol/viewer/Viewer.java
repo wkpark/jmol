@@ -1337,11 +1337,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int getCursorX() {
-    return mouseManager.xCurrent;
+    return mouseManager.xCurrent * (g3d.isAntialiased() ? 2 : 1);
   }
 
   public int getCursorY() {
-    return mouseManager.yCurrent;
+    return mouseManager.yCurrent * (g3d.isAntialiased() ? 2 : 1);
   }
 
   // ///////////////////////////////////////////////////////////////
@@ -1924,7 +1924,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int getBoundBoxCenterX() {
-    // used by the labelRenderer for rendering labels away from the center
+    // used by axes renderer
     return dimScreen.width / 2;
   }
 
@@ -2071,6 +2071,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //  + "  " + (x + y * getScreenWidth()));
     if (modelSet == null)
       return -1;
+    if (g3d.isAntialiased()) {
+      x *= 2;
+      y *= 2;
+    }
     return modelSet.findNearestAtomIndex(x, y);
   }
 
@@ -2707,11 +2711,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //MouseManager, TransformManager
     // Logger.debug("viewer.setInMotion("+inMotion+")");
     if (wasInMotion ^ inMotion) {
-      if (inMotion)
-        ++motionEventNumber;
       repaintManager.setInMotion(inMotion);
-      if (!inMotion)
+      resizeImage(dimScreen.width, dimScreen.height, false, false, true);
+      if (inMotion) {
+        ++motionEventNumber;
+      } else {
         repaintManager.refresh();
+      }
       wasInMotion = inMotion;
     }
   }
@@ -2805,10 +2811,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       width = (width + 1) / 2;
     if (dimScreen.width == width && dimScreen.height == height)
       return;
-    resizeImage(width, height, false);
+    resizeImage(width, height, false, false, true);
   }
 
-  private void resizeImage(int width, int height, boolean isImageWrite) {
+  private void resizeImage(int width, int height, 
+                           boolean isImageWrite, 
+                           boolean isGenerator,
+                           boolean isReset) {
+    boolean antialias = isImageWrite && !isGenerator;
+    if (antialias && isImageWrite)
+      antialias = global.antialiasImages;
+    else if (isReset)
+      antialias = global.antialiasDisplay;//&& !getInMotion();
+
     dimScreen.width = width;
     dimScreen.height = height;
     if (!isImageWrite) {
@@ -2818,8 +2833,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
 
     transformManager.setScreenDimension(width, height,
-        isImageWrite ? global.zoomLarge : false);
-    g3d.setWindowSize(width, height, global.enableFullSceneAntialiasing);
+        isImageWrite || isReset? global.zoomLarge : false, antialias);
+    g3d.setWindowSize(width, height, antialias); 
   }
 
   public int getScreenWidth() {
@@ -2855,14 +2870,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
     if (width > 0 && height > 0)
-      resizeImage(width, height, true);
+      resizeImage(width, height, true, true, false);
     setModelVisibility();
     String data = repaintManager.generateOutput(type, g3d, modelSet, fileName);
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
     // Sun is throwing a NullPointerExceptions inside graphics routines
     // while the window is resized.
     if (width > 0 && height > 0)
-      resizeImage(saveWidth, saveHeight, true);
+      resizeImage(saveWidth, saveHeight, true, true, true);
     return data;
   }
 
@@ -2879,7 +2894,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case JmolConstants.STEREO_DOUBLE:
       render1(g, getImage(true, false), dimScreen.width, 0);
     case JmolConstants.STEREO_NONE:
-      render1(g, getImage(false, false), 0, 0);
+      render1(g, getImage(false, global.antialiasDisplay
+          //&& !getInMotion()
+          ), 0, 0);
       break;
     case JmolConstants.STEREO_REDCYAN:
     case JmolConstants.STEREO_REDBLUE:
@@ -4238,6 +4255,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean doRepaint = true;
     while (true) {
 
+      //11.3.36
+      
+      if (key.equalsIgnoreCase("antialiasDisplay")) {
+        setAntialias(true, value);
+        break;
+      }
+
+      if (key.equalsIgnoreCase("antialiasImages")) {
+        setAntialias(false, value);
+        break;
+      }
+
       //11.3.29
       
       if (key.equalsIgnoreCase("smartAromatic")) {
@@ -5201,6 +5230,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.zeroBasedXyzRasmol;
   }
 
+  private void setAntialias(boolean isDisplay, boolean TF) {
+    if (isDisplay) {
+      global.setParameterValue("antialiasDisplay", TF);
+      global.antialiasDisplay = TF;
+      resizeImage(dimScreen.width, dimScreen.height, false, false, true);
+      refresh(0, "setAntialias()");
+      return;
+    } 
+    global.setParameterValue("antialiasImages", TF);
+    global.antialiasImages = TF;
+  }
+
   // //////////////////////////////////////////////////////////////
   // temp manager
   // //////////////////////////////////////////////////////////////
@@ -5481,6 +5522,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   boolean checkObjectClicked(int x, int y, int modifiers) {
+    if (g3d.isAntialiased()) {
+      x *= 2;
+      y *= 2;
+    }
     return modelSet.checkObjectClicked(x, y, modifiers);
   }
 
@@ -5826,7 +5871,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
     if (width > 0 && height > 0)
-      resizeImage(width, height, true);
+      resizeImage(width, height, true, false, false);
     setModelVisibility();
     try {
       statusManager.createImage(file, type_text, quality);
@@ -5834,7 +5879,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       Logger.error("Error creating image: " + e.getMessage());
     }
     if (width > 0 && height > 0)
-      resizeImage(saveWidth, saveHeight, true);
+      resizeImage(saveWidth, saveHeight, true, false, true);
   }
 
   public void syncScript(String script, String applet) {

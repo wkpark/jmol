@@ -376,6 +376,7 @@ public final class EnvelopeCalculation {
         addIncompleteFaces(geodesicMap);
         addIncompleteFaces(geodesicMap);
       }
+      count = getMapStorageCount(geodesicMap);
       map = new int[count];
       System.arraycopy(geodesicMap, 0, map, 0, count);
     }
@@ -404,6 +405,7 @@ public final class EnvelopeCalculation {
       boolean ok3 = getBit(points, p3);
       if (! (ok1 || ok2 || ok3) || ok1 && ok2 && ok3)
         continue;
+      
       // trick: DO show faces if ANY ONE vertex is missing
       if (!ok1) {
         setBit(mapT, p1);

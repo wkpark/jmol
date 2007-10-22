@@ -82,7 +82,8 @@ public class BallsRenderer extends ShapeRenderer {
         if (z < group.getMinZ())
           group.setMinZ(Math.max(1, z));
       }
-      if ((atom.getShapeVisibilityFlags() & myVisibilityFlag) != 0
+      if (atom.screenDiameter > 0 
+          && (atom.getShapeVisibilityFlags() & myVisibilityFlag) != 0
           && g3d.setColix(atom.getColix()))
         renderBall(atom);
     }

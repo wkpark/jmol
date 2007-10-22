@@ -140,6 +140,8 @@ final public class Export3D implements JmolRendererInterface {
    * @param center a javax.vecmath.Point3f ... floats are casted to ints
    */
   public void fillSphereCentered(int diameter, Point3f center) {
+    if (diameter == 0)
+      return;
     exporter.fillSphereCentered(colix, diameter, center);
   }
 
@@ -364,6 +366,8 @@ final public class Export3D implements JmolRendererInterface {
 
   public void fillCylinder(byte endcaps, int diameter, Point3i pointA,
                               Point3i pointB) {
+    if (diameter <= 0)
+      return;
     ptA.set(pointA.x, pointA.y, pointA.z);
     ptB.set(pointB.x, pointB.y, pointB.z);
     exporter.fillCylinder(colix, endcaps, diameter, ptA, ptB);
@@ -371,6 +375,8 @@ final public class Export3D implements JmolRendererInterface {
 
   public void fillCylinderBits(byte endcaps, int diameter, Point3f pointA,
                                   Point3f pointB) {
+    if (diameter <= 0)
+      return;
     exporter.fillCylinder(colix, endcaps, diameter, pointA, pointB);
   }
 

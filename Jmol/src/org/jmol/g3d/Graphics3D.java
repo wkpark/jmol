@@ -424,6 +424,8 @@ final public class Graphics3D implements JmolRendererInterface {
    * @return true or false if this is the right pass
    */
   public boolean setColix(short colix) {
+    if (colix == colixCurrent)
+      return true;
     int mask = colix & TRANSLUCENT_MASK;
     if (mask == TRANSPARENT)
       return false;
@@ -529,11 +531,13 @@ final public class Graphics3D implements JmolRendererInterface {
    * @param z center z
    */
   public void fillSphereCentered(int diameter, int x, int y, int z) {
-    if (diameter <= 1) {
+    switch(diameter) {
+    case 1:
       plotPixelClipped(argbCurrent, x, y, z);
-    } else {
-      sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z);
+    case 0:
+      return;
     }
+    sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z);
   }
 
   /**
@@ -781,6 +785,7 @@ final public class Graphics3D implements JmolRendererInterface {
     currentlyRendering = true;
     this.twoPass = twoPass;
     isPass2 = false;
+    colixCurrent = 0;
     haveAlphaTranslucent = false;
     addAllPixels = true;
     if (pbuf == null) {
@@ -801,6 +806,7 @@ final public class Graphics3D implements JmolRendererInterface {
       return false;
     //System.out.println("isPass2");
     isPass2 = true;
+    colixCurrent = 0;
     addAllPixels = true;
     if (pbufT == null) {
       platform.allocateTBuffers();

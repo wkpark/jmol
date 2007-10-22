@@ -702,7 +702,7 @@ final public class Graphics3D implements JmolRendererInterface {
       return;
     if (isClippedZ(zSlab))
       return;
-    drawStringNoSlab(str, font3d, (short) 0, xBaseline, yBaseline, z); 
+    drawStringNoSlab(str, font3d, xBaseline, yBaseline, z); 
   }
 
   /**
@@ -711,27 +711,25 @@ final public class Graphics3D implements JmolRendererInterface {
    *
    * @param str the String
    * @param font3d the Font3D
-   * @param bgcolix the background color index
    * @param xBaseline baseline x
    * @param yBaseline baseline y
    * @param z baseline z
    */
   
   public void drawStringNoSlab(String str, Font3D font3d, 
-                               short bgcolix, int xBaseline, int yBaseline,
+                               int xBaseline, int yBaseline,
                                int z) {
     // echo, frank, hover, molecularOrbital, uccage
     if (str == null)
       return;
     if(font3d != null)
       font3dCurrent = font3d;
-    plotText(xBaseline, yBaseline, 
-        z, argbCurrent, getColixArgb(bgcolix), str, font3dCurrent, null);
+    plotText(xBaseline, yBaseline, z, argbCurrent, str, font3dCurrent, null);
   }
   
-  public void plotText(int x, int y, int z, int argb, int argbBackground,
+  public void plotText(int x, int y, int z, int argb,
                 String text, Font3D font3d, JmolRendererInterface jmolRenderer) {
-    Text3D.plot(x, y, z, argb, argbBackground, text, font3d, this, jmolRenderer, 
+    Text3D.plot(x, y, z, argb, text, font3d, this, jmolRenderer, 
         antialiasThisFrame);    
   }
   

@@ -195,7 +195,7 @@ public class _MayaExporter extends _Exporter {
     //rockets:    
   }
 
-  public void plotText(int x, int y, int z, int argb, int backgroundArgb, 
+  public void plotText(int x, int y, int z, int argb, 
                        String text, Font3D font3d) {    
   }
 

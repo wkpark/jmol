@@ -64,6 +64,7 @@ public class Text3D {
   private int height; // this height is just ascent + descent ... no reason for leading
   private int ascent;
   private int width;
+  private int mapWidth;
   private int size;
   private int[] bitmap;
   
@@ -71,20 +72,19 @@ public class Text3D {
     return width;
   }
   
-  public static int plot(int x, int y, int z, int argb, int argbBackground,
-                   String text, Font3D font3d, Graphics3D g3d, 
-                   JmolRendererInterface jmolRenderer, 
-                   boolean antialias) {
+  public static int plot(int x, int y, int z, int argb, String text,
+                         Font3D font3d, Graphics3D g3d,
+                         JmolRendererInterface jmolRenderer, boolean antialias) {
     if (text.length() == 0)
       return 0;
     if (text.indexOf("<su") >= 0)
-      return plotByCharacter(x, y, z, argb, argbBackground, text, font3d, 
-          g3d, jmolRenderer, antialias);
+      return plotByCharacter(x, y, z, argb, text, font3d, g3d, jmolRenderer,
+          antialias);
     int offset = font3d.fontMetrics.getAscent();
     if (antialias)
       offset += offset;
     y -= offset;
-      
+
     //setColix has presumably been carried out for argb, and the two 
     //are assumed to be both the same -- translucent or not. 
     Text3D text3d = getText3D(text, font3d, g3d.platform, antialias);
@@ -93,20 +93,21 @@ public class Text3D {
     int[] bitmap = text3d.bitmap;
     int textWidth = text3d.width;
     int textHeight = text3d.height;
-    if (x + textWidth < 0 || x > g3d.width ||
-        y + textHeight < 0 || y > g3d.height)
+    int mapWidth = text3d.mapWidth;
+    if (x + textWidth < 0 || x > g3d.width || y + textHeight < 0
+        || y > g3d.height)
       return textWidth;
-    if (x < 0 || x + textWidth > g3d.width ||
-        y < 0 || y + textHeight > g3d.height)
-      plotClipped(x, y, z, argb, argbBackground,
-                  g3d, jmolRenderer, textWidth, textHeight, bitmap);
+    if (jmolRenderer != null || 
+        (x < 0 || x + textWidth > g3d.width || y < 0
+        || y + textHeight > g3d.height))
+      plotClipped(x, y, z, argb, g3d, jmolRenderer, mapWidth, textHeight,
+          bitmap);
     else
-      plotUnclipped(x, y, z, argb, argbBackground,
-                    g3d, jmolRenderer, textWidth, textHeight, bitmap);
+      plotUnclipped(x, y, z, argb, g3d, mapWidth, textHeight, bitmap);
     return textWidth;
   }
 
-  private static int plotByCharacter(int x, int y, int z, int argb, int argbBackground,
+  private static int plotByCharacter(int x, int y, int z, int argb, 
                                       String text, Font3D font3d, 
                                       Graphics3D g3d, JmolRendererInterface jmolRenderer,
                                       boolean antialias) {
@@ -115,6 +116,10 @@ public class Text3D {
     int len = text.length();
     int suboffset = (int)(font3d.fontMetrics.getHeight() * 0.25);
     int supoffset = -(int)(font3d.fontMetrics.getHeight() * 0.3);
+    if (antialias) {
+      suboffset <<= 1;
+      supoffset <<= 1;
+    }
     for (int i = 0; i < len; i++) {
       if (text.charAt(i) == '<') {
         if (i + 4 < len && text.substring(i, i + 5).equals("<sub>")) {
@@ -138,65 +143,51 @@ public class Text3D {
           continue;
         }
       }
-      w += plot(x + w, y, z, argb, argbBackground, text.substring(i, i + 1), font3d, 
+      w += plot(x + w, y, z, argb, text.substring(i, i + 1), font3d, 
           g3d, jmolRenderer, antialias);
     }
     return w;
   }
   
   private static void plotUnclipped(int x, int y, int z, int argb,
-                                    int argbBackground, Graphics3D g3d,
-                                    JmolRendererInterface jmolRenderer,
-                                    int textWidth, int textHeight, int[] bitmap) {
+                                    Graphics3D g3d, int textWidth,
+                                    int textHeight, int[] bitmap) {
     int offset = 0;
     int shiftregister = 0;
     int i = 0, j = 0;
     int[] zbuf = g3d.zbuf;
-    int screenWidth = g3d.width;
-    int pbufOffset = y * screenWidth + x;
-    boolean isGenerator = (jmolRenderer != null);
-    boolean addBackground = (argbBackground != 0);
+    int renderWidth = g3d.width;
+    int pbufOffset = y * renderWidth + x;
     while (i < textHeight) {
       while (j < textWidth) {
         if ((offset & 31) == 0)
           shiftregister = bitmap[offset >> 5];
-        if (shiftregister == 0 && !addBackground) {
+        if (shiftregister == 0) {
           int skip = 32 - (offset & 31);
           j += skip;
           offset += skip;
           pbufOffset += skip;
-        } else {
-          if (isGenerator) {
-            if (shiftregister < 0)
-              jmolRenderer.plotPixelClippedNoSlab(argb, x + j, y + i, z);
-            else if (addBackground)
-              jmolRenderer.plotPixelClippedNoSlab(argbBackground, x + j, y + i,
-                  z);
-          } else {
-            if (z < zbuf[pbufOffset]) {
-              if (shiftregister < 0)
-                g3d.addPixel(pbufOffset, z, argb);
-              else if (addBackground)
-                g3d.addPixel(pbufOffset, z, argbBackground);
-            }
-          }
-          shiftregister <<= 1;
-          ++offset;
-          ++j;
-          ++pbufOffset;
+          continue;
         }
+        if (shiftregister < 0 && z < zbuf[pbufOffset])
+          g3d.addPixel(pbufOffset, z, argb);
+        shiftregister <<= 1;
+        ++offset;
+        ++j;
+        ++pbufOffset;
       }
       while (j >= textWidth) {
         ++i;
         j -= textWidth;
-        pbufOffset += (screenWidth - textWidth);
+        pbufOffset += (renderWidth - textWidth);
       }
     }
   }
   
-  private static void plotClipped(int x, int y, int z, int argb, int argbBackground,
-                          Graphics3D g3d, JmolRendererInterface jmolRenderer,
-                          int textWidth, int textHeight, int[] bitmap) {
+  private static void plotClipped(int x, int y, int z, int argb,
+                                  Graphics3D g3d,
+                                  JmolRendererInterface jmolRenderer,
+                                  int textWidth, int textHeight, int[] bitmap) {
     if (jmolRenderer == null)
       jmolRenderer = g3d;
     int offset = 0;
@@ -206,19 +197,17 @@ public class Text3D {
       while (j < textWidth) {
         if ((offset & 31) == 0)
           shiftregister = bitmap[offset >> 5];
-        if (shiftregister == 0 && argbBackground == 0) {
+        if (shiftregister == 0) {
           int skip = 32 - (offset & 31);
           j += skip;
           offset += skip;
-        } else {
-          if (shiftregister < 0 || argbBackground != 0)
-            jmolRenderer.plotPixelClippedNoSlab(shiftregister < 0
-                                       ? argb : argbBackground,
-                                       x + j, y + i, z);
-          shiftregister <<= 1;
-          ++offset;
-          ++j;
+          continue;
         }
+        if (shiftregister < 0)
+          jmolRenderer.plotPixelClippedNoSlab(argb, x + j, y + i, z);
+        shiftregister <<= 1;
+        ++offset;
+        ++j;
       }
       while (j >= textWidth) {
         ++i;
@@ -231,9 +220,9 @@ public class Text3D {
                  boolean antialias) {
     if (!calcMetrics(text, font3d, antialias))
       return;
-    platform.checkOffscreenSize(width, height);
+    platform.checkOffscreenSize(mapWidth, height);
     renderOffscreen(text, font3d, platform, antialias);
-    rasterize(platform);
+    rasterize(platform, antialias);
   }
 
   private boolean calcMetrics(String text, Font3D font3d, boolean antialias) {
@@ -246,9 +235,12 @@ public class Text3D {
     if (antialias) {
       ascent <<= 1;
       height <<= 1;
-      width = width * 2 + 4;
+      width <<= 1;
+      mapWidth = width + 4; //an estimate only
+    } else {
+      mapWidth = width;
     }
-    size = width * height;
+    size = mapWidth * height;
     return true;
   }
 
@@ -256,7 +248,7 @@ public class Text3D {
                                boolean antialias) {
     Graphics g = platform.gOffscreen;
     g.setColor(Color.black);
-    g.fillRect(0, 0, width, height);
+    g.fillRect(0, 0, mapWidth, height);
     g.setColor(Color.white);
     if (antialias) {
       if (font3d.antialiasFont == null)
@@ -268,9 +260,10 @@ public class Text3D {
     g.drawString(text, 0, ascent);
   }
 
-  private void rasterize(Platform3D platform) {
-    PixelGrabber pixelGrabber = new PixelGrabber(platform.imageOffscreen,
-                                                 0, 0, width, height, true);
+  private void rasterize(Platform3D platform, boolean antialias) {
+    
+    PixelGrabber pixelGrabber = new PixelGrabber(platform.imageOffscreen, 0, 0, 
+                                                 mapWidth, height, true);
     try {
       pixelGrabber.grabPixels();
     } catch (InterruptedException e) {

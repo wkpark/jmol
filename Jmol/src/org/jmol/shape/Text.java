@@ -382,7 +382,7 @@ public class Text {
       int nShift = 1;
       if (antialias) {
         y += ascent + 4;
-        offset <<= 2;
+        offset <<= 1;
         nShift = 2;
       }
       for (int i = 0; i < lines.length; i++) {

@@ -149,15 +149,13 @@ public interface JmolRendererInterface {
    *
    * @param str the String
    * @param font3d the Font3D
-   * @param bgcolix the background color index
    * @param xBaseline baseline x
    * @param yBaseline baseline y
    * @param z baseline z
    */
 
   public abstract void drawStringNoSlab(String str, Font3D font3d,
-                                        short bgcolix, int xBaseline,
-                                        int yBaseline, int z);
+                                        int xBaseline, int yBaseline, int z);
 
   public abstract void setFont(byte fid);
 

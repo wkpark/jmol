@@ -103,31 +103,31 @@ public class UccageRenderer extends FontLineShapeRenderer {
     String spaceGroup = cellInfo.getSpaceGroup(); 
     if (spaceGroup != null) {
       y += lineheight;
-      g3d.drawStringNoSlab(spaceGroup, null, (short) 0, x, y, 0);
+      g3d.drawStringNoSlab(spaceGroup, null, x, y, 0);
     }
     y += lineheight;
     g3d.drawStringNoSlab("a=" + nfformat(unitCell.getInfo(UnitCell.INFO_A))
-        + "\u00C5", null, (short) 0, x, y, 0);
+        + "\u00C5", null, x, y, 0);
     y += lineheight;
     g3d.drawStringNoSlab("b=" + nfformat(unitCell.getInfo(UnitCell.INFO_B))
-        + "\u00C5", null, (short) 0, x, y, 0);
+        + "\u00C5", null, x, y, 0);
     y += lineheight;
     g3d.drawStringNoSlab("c=" + nfformat(unitCell.getInfo(UnitCell.INFO_C))
-        + "\u00C5", null, (short) 0, x, y, 0);
+        + "\u00C5", null, x, y, 0);
     if (nf != null)
       nf.setMaximumFractionDigits(1);
     y += lineheight;
     g3d.drawStringNoSlab("\u03B1="
         + nfformat(unitCell.getInfo(UnitCell.INFO_ALPHA)) + "\u00B0", null,
-        (short) 0, x, y, 0);
+        x, y, 0);
     y += lineheight;
     g3d.drawStringNoSlab("\u03B2="
         + nfformat(unitCell.getInfo(UnitCell.INFO_BETA)) + "\u00B0", null,
-        (short) 0, x, y, 0);
+        x, y, 0);
     y += lineheight;
     g3d.drawStringNoSlab("\u03B3="
         + nfformat(unitCell.getInfo(UnitCell.INFO_GAMMA)) + "\u00B0", null,
-        (short) 0, x, y, 0);
+        x, y, 0);
   }
 }
 

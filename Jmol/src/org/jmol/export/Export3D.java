@@ -236,7 +236,7 @@ final public class Export3D implements JmolRendererInterface {
       return;
     if (isClippedZ(zSlab))
       return;
-    drawStringNoSlab(str, font3d, (short) 0, xBaseline, yBaseline, z); 
+    drawStringNoSlab(str, font3d, xBaseline, yBaseline, z); 
   }
 
   /**
@@ -245,21 +245,20 @@ final public class Export3D implements JmolRendererInterface {
    *
    * @param str the String
    * @param font3d the Font3D
-   * @param bgcolix the background color index
    * @param xBaseline baseline x
    * @param yBaseline baseline y
    * @param z baseline z
    */
   
   public void drawStringNoSlab(String str, Font3D font3d, 
-                               short bgcolix, int xBaseline, int yBaseline,
+                               int xBaseline, int yBaseline,
                                int z) {
     // echo, frank, hover, molecularOrbital, uccage
     if (str == null || str.length() == 0)
       return;
     z = Math.max(slab, z);
     exporter.plotText(xBaseline, yBaseline - font3d.fontMetrics.getAscent(),
-                z, getColixArgb(colix), getColixArgb(bgcolix), str, font3d);
+                z, getColixArgb(colix), str, font3d);
   }
   
   //mostly public drawing methods -- add "public" if you need to

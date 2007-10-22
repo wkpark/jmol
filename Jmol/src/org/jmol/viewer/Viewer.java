@@ -1504,6 +1504,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         strModels[i] = strModel.substring(pt0, pt);
         pt0 = pt + datasep.length();
       }
+      openStringsInline(strModels, A, isMerge);
+      return true;
     }
     return openStringInline(strModel, A, isMerge);
   }
@@ -1612,14 +1614,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // or something like that here
     // for when CdkEditBus calls this directly
     setStatusFileLoaded(2, fullPathName, fileName, 
-        modelSet.getModelSetName(), clientFile, null);
+      null, clientFile, null);
     pushHoldRepaint();
     modelSet = modelManager
         .setClientFile(fullPathName, fileName, modelAdapter, clientFile);
     initializeModel();
     popHoldRepaint();
     setStatusFileLoaded(3, fullPathName, fileName, 
-        modelSet.getModelSetName(), clientFile, null);
+        getModelSetName(), clientFile, null);
   }
 
   public String getCurrentFileAsString() {

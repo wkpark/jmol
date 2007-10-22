@@ -346,8 +346,9 @@ abstract public class ModelSet extends ModelCollection {
         stateScript += Escape.escape(bsA, false) + " ";
       else
         stateScript += Escape.escape(bsA) + " " + Escape.escape(bsB) + " ";
-      stateScript += JmolConstants.getBondOrderNameFromOrder(order) + " "
-          + JmolConstants.connectOperationName(connectOperation);
+      if (connectOperation != JmolConstants.CONNECT_DELETE_BONDS)
+        stateScript += JmolConstants.getBondOrderNameFromOrder(order) + " ";
+      stateScript += JmolConstants.connectOperationName(connectOperation);
       stateScript += ";";
       stateScripts.addElement(stateScript);
     }

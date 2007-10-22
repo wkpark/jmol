@@ -3232,8 +3232,16 @@ class Eval { //implements Runnable {
         if (bo != JmolConstants.BOND_ORDER_NULL) {
           if (haveType)
             incompatibleArguments();
-          if (bo == JmolConstants.BOND_PARTIAL01 && tokAt(i + 1) == Token.decimal)
-            bo = JmolConstants.getPartialBondOrderFromInteger(statement[++i].intValue);
+          if (bo == JmolConstants.BOND_PARTIAL01) {
+            switch (tokAt(i + 1)) {
+            case Token.decimal:
+              bo = JmolConstants.getPartialBondOrderFromInteger(statement[++i].intValue);
+              break;
+            case Token.integer:
+              bo = (short) intParameter(++i);
+              break;
+            }
+          }
           bondOrder = bo;
           haveType = true;
           break;

@@ -371,7 +371,6 @@ public final class EnvelopeCalculation {
     int count = getMapStorageCount(geodesicMap);
     if (count > 0) {
       bsSurface.set(indexI);
-      count = getMapStorageCount(geodesicMap);
       if (isSurface) {
         addIncompleteFaces(geodesicMap);
         addIncompleteFaces(geodesicMap);

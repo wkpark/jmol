@@ -66,7 +66,7 @@ public class DisplayPanel extends JPanel
   private boolean showPaintTime = true;
 
   // current dimensions of the display screen
-  private final Dimension dimSize = new Dimension();
+  final Dimension dimSize = new Dimension();
   private final Rectangle rectClip = new Rectangle();
 
   public void start() {
@@ -107,15 +107,18 @@ public class DisplayPanel extends JPanel
     viewer.renderScreenImage(g, dimSize, rectClip);
     if (Jmol.border == null)
       Jmol.border = new Point();
-    if (!Jmol.haveBorder.booleanValue()) {
-      Jmol.border.x = startupDimension.width - dimSize.width;
-      Jmol.border.y = startupDimension.height - dimSize.height;
-    }
-    Jmol.haveBorder = Boolean.TRUE;
+    if (!Jmol.haveBorder.booleanValue())
+      setBorder();
     if (showPaintTime)
       stopPaintClock();
   }
-    
+     
+  void setBorder() {
+    Jmol.border.x = startupDimension.width - dimSize.width;
+    Jmol.border.y = startupDimension.height - dimSize.height;
+    Jmol.haveBorder = Boolean.TRUE;    
+  }
+  
   public int print(Graphics g, PageFormat pf, int pageIndex) {
     Graphics2D g2 = (Graphics2D)g;
     if (pageIndex > 0)

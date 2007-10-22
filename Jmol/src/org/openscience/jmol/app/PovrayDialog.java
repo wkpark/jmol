@@ -66,7 +66,7 @@ public class PovrayDialog extends JDialog {
   private transient JmolViewer viewer;
   
   protected JButton    povrayPathButton;
-  protected JTextField commandLineField;
+  //protected JTextField commandLineField;
   protected JButton    goButton;
   protected JTextField saveField;
   protected JTextField savePathLabel;
@@ -80,7 +80,7 @@ public class PovrayDialog extends JDialog {
   protected JCheckBox antiAliasCheck;
   protected JCheckBox displayWhileRenderingCheck;
   
-  private JCheckBox           imageSizeCheck;
+  //private JCheckBox           imageSizeCheck;
   private JLabel              imageSizeWidth;
   private JFormattedTextField imageSizeTextWidth;
   private JLabel              imageSizeHeight;
@@ -247,17 +247,17 @@ public class PovrayDialog extends JDialog {
 
     // Image size option
     Box imageBox = Box.createHorizontalBox();
-    text = GT._("Image size");
-    imageSizeCheck = new JCheckBox(text, true);
-    text = GT._("Image size");
-    imageSizeCheck.setToolTipText(text);
-    imageSizeCheck.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
-        imageSizeChanged();
-        updateCommandLine();
-      }
-    });
-    imageBox.add(imageSizeCheck);
+    //text = GT._("Image size");
+    //imageSizeCheck = new JCheckBox(text, true);
+    //text = GT._("Image size");
+    //imageSizeCheck.setToolTipText(text);
+    //imageSizeCheck.addItemListener(new ItemListener() {
+    //  public void itemStateChanged(ItemEvent e) {
+    //    imageSizeChanged();
+    //    updateCommandLine();
+    //  }
+    //});
+    //imageBox.add(imageSizeCheck);
     imageBox.add(Box.createHorizontalStrut(10));
     Box imageSizeDetailBox = Box.createVerticalBox();
     Box imageSizeXYBox = Box.createHorizontalBox();
@@ -336,6 +336,7 @@ public class PovrayDialog extends JDialog {
     
     // Output format option
     Box outputBox = Box.createHorizontalBox();
+/*    
     text = GT._("Output format : ");
     outputFormatCheck = new JCheckBox(text, true);
     text = GT._("Select the file format of the output file");
@@ -347,6 +348,8 @@ public class PovrayDialog extends JDialog {
       }
     });
     outputBox.add(outputFormatCheck);
+*/    
+    outputBox.add(Box.createHorizontalStrut(10));
     outputFormatCombo = new JComboBox();
     //case 0
     text = GT._("N - PNG");
@@ -462,6 +465,8 @@ public class PovrayDialog extends JDialog {
     povOptionsBox.add(povrayPathBox);
 
     //GUI for command selection
+    
+    /*
     Box commandLineBox = Box.createVerticalBox();
     text = GT._("Command Line to Execute");
     commandLineBox.setBorder(new TitledBorder(text));
@@ -473,6 +478,7 @@ public class PovrayDialog extends JDialog {
     commandLineField.addActionListener(updateActionListener);
     commandLineBox.add(commandLineField);
     povOptionsBox.add(commandLineBox);
+*/
     mainBox.add(povOptionsBox);
 
     //GUI for panel with go, cancel and stop (etc) buttons
@@ -542,12 +548,12 @@ public class PovrayDialog extends JDialog {
          allFrames = allFramesCheck.isSelected();   
         }
         */
-        int width = outputWidth;
-        int height = outputHeight;
-        if ((imageSizeCheck != null) && (imageSizeCheck.isSelected())) {
-            height = Integer.parseInt(imageSizeTextHeight.getText());
-            width = Integer.parseInt(imageSizeTextWidth.getText());
-        }
+        //int width = outputWidth;
+        //int height = outputHeight;
+        //if ((imageSizeCheck != null) && (imageSizeCheck.isSelected())) {
+          int height = Integer.parseInt(imageSizeTextHeight.getText());
+          int width = Integer.parseInt(imageSizeTextWidth.getText());
+        //}
         
         String data = viewer.generateOutput("Povray", 
             filename + ":::" + getCommandLine(), 
@@ -678,11 +684,11 @@ public class PovrayDialog extends JDialog {
    * Called when the ImageSize check box is modified 
    */
   void imageSizeChanged() {
-  	if (imageSizeCheck != null) {
-  	  boolean selected = imageSizeCheck.isSelected();
+  	//if (imageSizeCheck != null) {
+  	  boolean selected = true;//imageSizeCheck.isSelected();
   	  boolean enabled = true;//runPovCheck.isSelected() || useIniCheck.isSelected();
   	  boolean ratioSelected = false;
-  	  imageSizeCheck.setEnabled(enabled);
+  	  //imageSizeCheck.setEnabled(enabled);
   	  if (imageSizeRatioBox != null) {
   	    ratioSelected = imageSizeRatioBox.isSelected();
   	    imageSizeRatioBox.setEnabled(selected && enabled);
@@ -723,7 +729,7 @@ public class PovrayDialog extends JDialog {
   	      }
   	    }
   	  }
-  	}
+  	//}
   }
   
   /**
@@ -806,9 +812,9 @@ public class PovrayDialog extends JDialog {
       antiAliasCheck.setEnabled(callPovray || useIni);
     }
 */    
-    if (commandLineField != null) {
-      commandLineField.setEnabled(callPovray && !useIni);
-    }
+    //if (commandLineField != null) {
+    //  commandLineField.setEnabled(callPovray && !useIni);
+    //}
     
     // Various update
     imageSizeChanged();
@@ -820,8 +826,8 @@ public class PovrayDialog extends JDialog {
   }
   
   protected void updateCommandLine() {
-    if (commandLineField != null)
-      commandLineField.setText(getCommandLine());
+    //if (commandLineField != null)
+     // commandLineField.setText(getCommandLine());
   }
   
   /**
@@ -847,9 +853,9 @@ public class PovrayDialog extends JDialog {
     if ((savePath == null) ||
         (povrayPath == null) ||
 	    (basename == null)) {
-      if (commandLineField != null) {
-        commandLineField.setText(GT._("null component string"));
-      }
+      //if (commandLineField != null) {
+      //  commandLineField.setText(GT._("null component string"));
+      //}
       return "";
     }
 
@@ -896,17 +902,17 @@ public class PovrayDialog extends JDialog {
     }
 */    
     // Image size options
-    if ((imageSizeCheck != null) && (imageSizeCheck.isSelected())) {
+    //if ((imageSizeCheck != null) && (imageSizeCheck.isSelected())) {
       commandLine +=
         " +H" + imageSizeTextHeight.getValue() +
 		" +W" + imageSizeTextWidth.getValue();
-    } else {
-      if ((outputWidth > 0) && (outputHeight > 0)) {
-        commandLine +=
-	  	  " +H" + outputHeight +
-		  " +W" + outputWidth;
-      }
-    }
+    //} else {
+    //  if ((outputWidth > 0) && (outputHeight > 0)) {
+    //    commandLine +=
+	  // 	  " +H" + outputHeight +
+		//  " +W" + outputWidth;
+    //  }
+    //}
 
     // Anti Alias
     if ((antiAliasCheck != null) && (antiAliasCheck.isSelected())) {

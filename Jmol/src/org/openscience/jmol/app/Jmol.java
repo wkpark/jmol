@@ -802,7 +802,11 @@ public class Jmol extends JPanel {
   void doClose() {
     // Save window positions and status in the history
     if (historyFile != null) {
-      historyFile.addWindowInfo(JMOL_WINDOW_NAME, this.frame, border);
+      if (display != null) {
+        Jmol.border.x = this.getFrame().getWidth() - display.dimSize.width;
+        Jmol.border.y = this.getFrame().getHeight() - display.dimSize.height;
+        historyFile.addWindowInfo(JMOL_WINDOW_NAME, this.frame, border);
+      }
       //System.out.println("doClose border: " + border);
       //historyFile.addWindowInfo(CONSOLE_WINDOW_NAME, consoleframe);
     }

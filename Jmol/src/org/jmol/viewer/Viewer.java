@@ -2821,10 +2821,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                            boolean isGenerator,
                            boolean isReset) {
     boolean antialias = isImageWrite && !isGenerator;
-    if (antialias && isImageWrite)
-      antialias = global.antialiasImages;
-    else if (isReset)
+    if (isReset)
       antialias = global.antialiasDisplay;//&& !getInMotion();
+    else if (antialias && isImageWrite)
+      antialias = global.antialiasImages;
 
     dimScreen.width = width;
     dimScreen.height = height;

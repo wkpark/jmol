@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-09-11 08:05+0200\n"
+"POT-Creation-Date: 2007-10-22 08:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -62,10 +62,10 @@ msgstr ""
 
 #: org/openscience/jmol/app/AtomSetChooser.java:238
 #: org/openscience/jmol/app/GuiMap.java:70
-#: org/openscience/jmol/app/PovrayDialog.java:176
-#: org/openscience/jmol/app/PovrayDialog.java:449
-#: org/openscience/jmol/app/PovrayDialog.java:618
-#: org/openscience/jmol/app/PovrayDialog.java:639
+#: org/openscience/jmol/app/PovrayDialog.java:174
+#: org/openscience/jmol/app/PovrayDialog.java:453
+#: org/openscience/jmol/app/PovrayDialog.java:647
+#: org/openscience/jmol/app/PovrayDialog.java:668
 msgid "Select"
 msgstr ""
 
@@ -718,7 +718,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:412
 #: org/openscience/jmol/app/Jmol.java:450
-#: org/openscience/jmol/app/PovrayDialog.java:488
+#: org/openscience/jmol/app/PovrayDialog.java:492
 #: org/openscience/jmol/app/PreferencesDialog.java:165
 #: org/openscience/jmol/app/RecentFilesDialog.java:69
 msgid "Cancel"
@@ -817,7 +817,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:440
 #: org/openscience/jmol/app/Jmol.java:442
-#: org/openscience/jmol/app/PovrayDialog.java:751
+#: org/openscience/jmol/app/PovrayDialog.java:781
 msgid "Save"
 msgstr ""
 
@@ -958,74 +958,41 @@ msgstr ""
 msgid "Value"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:114
+#: org/openscience/jmol/app/PovrayDialog.java:112
 msgid "Render in POV-Ray"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:152
+#: org/openscience/jmol/app/PovrayDialog.java:150
 msgid "Jmol-to-POV-Ray Conversion"
 msgstr ""
 
+#: org/openscience/jmol/app/PovrayDialog.java:154
+msgid "Filename"
+msgstr ""
+
 #: org/openscience/jmol/app/PovrayDialog.java:156
-msgid "Filename Stem"
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:158
 msgid ""
-"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
+"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:168
+#: org/openscience/jmol/app/PovrayDialog.java:166
 msgid "Working Directory"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:170
+#: org/openscience/jmol/app/PovrayDialog.java:168
 msgid "Where the .pov files will be saved"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:190
+#: org/openscience/jmol/app/PovrayDialog.java:188
 msgid "POV-Ray Runtime Options"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:195
+#: org/openscience/jmol/app/PovrayDialog.java:193
 msgid "Run POV-Ray directly"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:197
-msgid "Launch povray from within Jmol"
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:206
-msgid "Use .ini file"
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:208
-msgid "Save options in a .ini file"
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:217
-msgid "Render all frames"
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:219
-msgid "Render each model (not only the currently displayed one)"
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:228
-msgid "Turn on POV-Ray anti-aliasing"
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:230
-msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:239
-msgid "Display While Rendering"
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:241
-msgid "Should povray attempt to display while rendering?"
+#: org/openscience/jmol/app/PovrayDialog.java:195
+msgid "Launch POV-Ray from within Jmol"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:250
@@ -1073,11 +1040,7 @@ msgstr ""
 msgid "Select the file format of the output file"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:351
-msgid "C - Compressed Targa-24"
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:353
+#: org/openscience/jmol/app/PovrayDialog.java:352
 msgid "N - PNG"
 msgstr ""
 
@@ -1085,73 +1048,45 @@ msgstr ""
 msgid "P - PPM"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:357
+#: org/openscience/jmol/app/PovrayDialog.java:358
+msgid "C - Compressed Targa-24"
+msgstr ""
+
+#: org/openscience/jmol/app/PovrayDialog.java:361
 msgid "T - Uncompressed Targa-24"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:373
-msgid "Alpha transparency"
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:375
-msgid "Output Alpha transparency data"
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:388
-msgid "Mosaic preview"
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:390
-msgid "Render the image in several passes"
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:400
-msgid "Start size : "
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:402
-msgid "Inital size of the tiles"
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:418
-msgid "End size : "
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:420
-msgid "Final size of the tiles"
-msgstr ""
-
-#: org/openscience/jmol/app/PovrayDialog.java:441
+#: org/openscience/jmol/app/PovrayDialog.java:445
 msgid "POV-Ray Executable Location"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:443
+#: org/openscience/jmol/app/PovrayDialog.java:447
 msgid "Location of the povray Executable"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:462
+#: org/openscience/jmol/app/PovrayDialog.java:466
 msgid "Command Line to Execute"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:464
-#: org/openscience/jmol/app/PovrayDialog.java:467
+#: org/openscience/jmol/app/PovrayDialog.java:468
+#: org/openscience/jmol/app/PovrayDialog.java:471
 msgid "The actual command which will be executed"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:477
-#: org/openscience/jmol/app/PovrayDialog.java:749
+#: org/openscience/jmol/app/PovrayDialog.java:481
+#: org/openscience/jmol/app/PovrayDialog.java:779
 msgid "Go!"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:479
+#: org/openscience/jmol/app/PovrayDialog.java:483
 msgid "Save file and possibly launch povray"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:490
+#: org/openscience/jmol/app/PovrayDialog.java:494
 msgid "Cancel this dialog without saving"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:812
+#: org/openscience/jmol/app/PovrayDialog.java:851
 msgid "null component string"
 msgstr ""
 

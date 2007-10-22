@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-09-11 08:05+0200\n"
+"POT-Creation-Date: 2007-10-22 08:46+0200\n"
 "PO-Revision-Date: 2007-09-27 22:24-0300\n"
 "Last-Translator: Sérgio Ceroni da Silva <ceroni@cbiot.ufrgs.br>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
@@ -63,10 +63,10 @@ msgstr "Informação"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:238
 #: org/openscience/jmol/app/GuiMap.java:70
-#: org/openscience/jmol/app/PovrayDialog.java:176
-#: org/openscience/jmol/app/PovrayDialog.java:449
-#: org/openscience/jmol/app/PovrayDialog.java:618
-#: org/openscience/jmol/app/PovrayDialog.java:639
+#: org/openscience/jmol/app/PovrayDialog.java:174
+#: org/openscience/jmol/app/PovrayDialog.java:453
+#: org/openscience/jmol/app/PovrayDialog.java:647
+#: org/openscience/jmol/app/PovrayDialog.java:668
 msgid "Select"
 msgstr "Selecionar"
 
@@ -719,7 +719,7 @@ msgstr "Todos os arquivos"
 
 #: org/openscience/jmol/app/Jmol.java:412
 #: org/openscience/jmol/app/Jmol.java:450
-#: org/openscience/jmol/app/PovrayDialog.java:488
+#: org/openscience/jmol/app/PovrayDialog.java:492
 #: org/openscience/jmol/app/PreferencesDialog.java:165
 #: org/openscience/jmol/app/RecentFilesDialog.java:69
 msgid "Cancel"
@@ -818,7 +818,7 @@ msgstr "Abrir arquivo selecionado"
 
 #: org/openscience/jmol/app/Jmol.java:440
 #: org/openscience/jmol/app/Jmol.java:442
-#: org/openscience/jmol/app/PovrayDialog.java:751
+#: org/openscience/jmol/app/PovrayDialog.java:781
 msgid "Save"
 msgstr "Gravar"
 
@@ -892,8 +892,12 @@ msgid "window width x height, e.g. {0}"
 msgstr "largura x altura da janela, por exemplo {0}"
 
 #: org/openscience/jmol/app/Jmol.java:513
-msgid "JPG image quality (1-100; default 75) or PNG image compression (0-9; default 2, maximum compression 9"
-msgstr "qualidade da imagem JPG (1-100, padrão=75) ou compressão da imagem PNG (0-9, padrão=2, compressão máxima=9)"
+msgid ""
+"JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
+"2, maximum compression 9"
+msgstr ""
+"qualidade da imagem JPG (1-100, padrão=75) ou compressão da imagem PNG (0-9, "
+"padrão=2, compressão máxima=9)"
 
 #: org/openscience/jmol/app/Jmol.java:519
 #, java-format
@@ -957,73 +961,47 @@ msgstr "Cancelar"
 msgid "Value"
 msgstr "Valor"
 
-#: org/openscience/jmol/app/PovrayDialog.java:114
+#: org/openscience/jmol/app/PovrayDialog.java:112
 msgid "Render in POV-Ray"
 msgstr "Renderizar no POV-Ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:152
+#: org/openscience/jmol/app/PovrayDialog.java:150
 msgid "Jmol-to-POV-Ray Conversion"
 msgstr "Conversão do Jmol para POV-Ray"
 
+#: org/openscience/jmol/app/PovrayDialog.java:154
+#, fuzzy
+msgid "Filename"
+msgstr "Nome do arquivo:"
+
 #: org/openscience/jmol/app/PovrayDialog.java:156
-msgid "Filename Stem"
-msgstr "Nome-base para o arquivo"
+#, fuzzy
+msgid ""
+"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
+msgstr ""
+"Quadro único: por exemplo, 'caffine' -> 'caffine.pov';  Quadro múltiplo: por "
+"exemplo, 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
 
-#: org/openscience/jmol/app/PovrayDialog.java:158
-msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
-msgstr "Quadro único: por exemplo, 'caffine' -> 'caffine.pov';  Quadro múltiplo: por exemplo, 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
-
-#: org/openscience/jmol/app/PovrayDialog.java:168
+#: org/openscience/jmol/app/PovrayDialog.java:166
 msgid "Working Directory"
 msgstr "Diretório de trabalho"
 
-#: org/openscience/jmol/app/PovrayDialog.java:170
+#: org/openscience/jmol/app/PovrayDialog.java:168
 msgid "Where the .pov files will be saved"
 msgstr "Onde os arquivos .pov serão gravados"
 
-#: org/openscience/jmol/app/PovrayDialog.java:190
+#: org/openscience/jmol/app/PovrayDialog.java:188
 msgid "POV-Ray Runtime Options"
 msgstr "Opções de excecução do POV-Ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:195
+#: org/openscience/jmol/app/PovrayDialog.java:193
 msgid "Run POV-Ray directly"
 msgstr "Executar o POV-Ray diretamente"
 
-#: org/openscience/jmol/app/PovrayDialog.java:197
-msgid "Launch povray from within Jmol"
+#: org/openscience/jmol/app/PovrayDialog.java:195
+#, fuzzy
+msgid "Launch POV-Ray from within Jmol"
 msgstr "Executar o POV-Ray a partir do Jmol"
-
-#: org/openscience/jmol/app/PovrayDialog.java:206
-msgid "Use .ini file"
-msgstr "Usar arquivo .ini"
-
-#: org/openscience/jmol/app/PovrayDialog.java:208
-msgid "Save options in a .ini file"
-msgstr "Gravar as opções em um arquivo .ini"
-
-#: org/openscience/jmol/app/PovrayDialog.java:217
-msgid "Render all frames"
-msgstr "Renderizar todos os quadros"
-
-#: org/openscience/jmol/app/PovrayDialog.java:219
-msgid "Render each model (not only the currently displayed one)"
-msgstr "Renderizar cada modelo (não somente o que está sendo visualizado)"
-
-#: org/openscience/jmol/app/PovrayDialog.java:228
-msgid "Turn on POV-Ray anti-aliasing"
-msgstr "Ligar filtro anti-serrilhado do POV-Ray"
-
-#: org/openscience/jmol/app/PovrayDialog.java:230
-msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr "Usar o modo anti-serrilhado (mais lento, melhor qualidade) do POV-Ray"
-
-#: org/openscience/jmol/app/PovrayDialog.java:239
-msgid "Display While Rendering"
-msgstr "Visualizar enquanto renderiza"
-
-#: org/openscience/jmol/app/PovrayDialog.java:241
-msgid "Should povray attempt to display while rendering?"
-msgstr "O POV-Ray deve tentar exibir enquanto renderiza?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:250
 #: org/openscience/jmol/app/PovrayDialog.java:252
@@ -1070,11 +1048,7 @@ msgstr "Formato de saida : "
 msgid "Select the file format of the output file"
 msgstr "Selecionar o formato do arquivo de saída"
 
-#: org/openscience/jmol/app/PovrayDialog.java:351
-msgid "C - Compressed Targa-24"
-msgstr "C - Compressed Targa-24"
-
-#: org/openscience/jmol/app/PovrayDialog.java:353
+#: org/openscience/jmol/app/PovrayDialog.java:352
 msgid "N - PNG"
 msgstr "N - PNG"
 
@@ -1082,73 +1056,45 @@ msgstr "N - PNG"
 msgid "P - PPM"
 msgstr "P - PPM"
 
-#: org/openscience/jmol/app/PovrayDialog.java:357
+#: org/openscience/jmol/app/PovrayDialog.java:358
+msgid "C - Compressed Targa-24"
+msgstr "C - Compressed Targa-24"
+
+#: org/openscience/jmol/app/PovrayDialog.java:361
 msgid "T - Uncompressed Targa-24"
 msgstr "T - Uncompressed Targa-24"
 
-#: org/openscience/jmol/app/PovrayDialog.java:373
-msgid "Alpha transparency"
-msgstr "\"Alpha transparency\""
-
-#: org/openscience/jmol/app/PovrayDialog.java:375
-msgid "Output Alpha transparency data"
-msgstr "Emitir dados de \"Alpha transparency\""
-
-#: org/openscience/jmol/app/PovrayDialog.java:388
-msgid "Mosaic preview"
-msgstr "Pré-visualização em mosaico"
-
-#: org/openscience/jmol/app/PovrayDialog.java:390
-msgid "Render the image in several passes"
-msgstr "Renderizar a imagem em várias passagens"
-
-#: org/openscience/jmol/app/PovrayDialog.java:400
-msgid "Start size : "
-msgstr "Tamanho inicial : "
-
-#: org/openscience/jmol/app/PovrayDialog.java:402
-msgid "Inital size of the tiles"
-msgstr "Tamanho inicial dos mosaicos"
-
-#: org/openscience/jmol/app/PovrayDialog.java:418
-msgid "End size : "
-msgstr "Tamanho final : "
-
-#: org/openscience/jmol/app/PovrayDialog.java:420
-msgid "Final size of the tiles"
-msgstr "Tamanho final dos mosaicos"
-
-#: org/openscience/jmol/app/PovrayDialog.java:441
+#: org/openscience/jmol/app/PovrayDialog.java:445
 msgid "POV-Ray Executable Location"
 msgstr "Localização do executável POV-Ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:443
+#: org/openscience/jmol/app/PovrayDialog.java:447
 msgid "Location of the povray Executable"
 msgstr "Localização do executável POV-Ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:462
+#: org/openscience/jmol/app/PovrayDialog.java:466
 msgid "Command Line to Execute"
 msgstr "Linha de comando a ser executada"
 
-#: org/openscience/jmol/app/PovrayDialog.java:464
-#: org/openscience/jmol/app/PovrayDialog.java:467
+#: org/openscience/jmol/app/PovrayDialog.java:468
+#: org/openscience/jmol/app/PovrayDialog.java:471
 msgid "The actual command which will be executed"
 msgstr "O comando a ser executado"
 
-#: org/openscience/jmol/app/PovrayDialog.java:477
-#: org/openscience/jmol/app/PovrayDialog.java:749
+#: org/openscience/jmol/app/PovrayDialog.java:481
+#: org/openscience/jmol/app/PovrayDialog.java:779
 msgid "Go!"
 msgstr "Executar"
 
-#: org/openscience/jmol/app/PovrayDialog.java:479
+#: org/openscience/jmol/app/PovrayDialog.java:483
 msgid "Save file and possibly launch povray"
 msgstr "Gravar arquivo e possivelmente executar POV-Ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:490
+#: org/openscience/jmol/app/PovrayDialog.java:494
 msgid "Cancel this dialog without saving"
 msgstr "Cancelar sem gravar"
 
-#: org/openscience/jmol/app/PovrayDialog.java:812
+#: org/openscience/jmol/app/PovrayDialog.java:851
 msgid "null component string"
 msgstr "\"null component string\""
 
@@ -1216,7 +1162,8 @@ msgstr "(Angstroms)"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:417
 msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr "Tolerância de Ligação - somatório de dois raios covalentes + este valor"
+msgstr ""
+"Tolerância de Ligação - somatório de dois raios covalentes + este valor"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:468
 msgid "Minimum Bonding Distance"
@@ -1262,8 +1209,61 @@ msgstr "Carregando..."
 msgid "What's New in Jmol"
 msgstr "Novidades no Jmol"
 
+#~ msgid "Filename Stem"
+#~ msgstr "Nome-base para o arquivo"
+
+#~ msgid "Use .ini file"
+#~ msgstr "Usar arquivo .ini"
+
+#~ msgid "Save options in a .ini file"
+#~ msgstr "Gravar as opções em um arquivo .ini"
+
+#~ msgid "Render all frames"
+#~ msgstr "Renderizar todos os quadros"
+
+#~ msgid "Render each model (not only the currently displayed one)"
+#~ msgstr "Renderizar cada modelo (não somente o que está sendo visualizado)"
+
+#~ msgid "Turn on POV-Ray anti-aliasing"
+#~ msgstr "Ligar filtro anti-serrilhado do POV-Ray"
+
+#~ msgid "Use povray's slower but higher quality anti-aliasing mode"
+#~ msgstr ""
+#~ "Usar o modo anti-serrilhado (mais lento, melhor qualidade) do POV-Ray"
+
+#~ msgid "Display While Rendering"
+#~ msgstr "Visualizar enquanto renderiza"
+
+#~ msgid "Should povray attempt to display while rendering?"
+#~ msgstr "O POV-Ray deve tentar exibir enquanto renderiza?"
+
+#~ msgid "Alpha transparency"
+#~ msgstr "\"Alpha transparency\""
+
+#~ msgid "Output Alpha transparency data"
+#~ msgstr "Emitir dados de \"Alpha transparency\""
+
+#~ msgid "Mosaic preview"
+#~ msgstr "Pré-visualização em mosaico"
+
+#~ msgid "Render the image in several passes"
+#~ msgstr "Renderizar a imagem em várias passagens"
+
+#~ msgid "Start size : "
+#~ msgstr "Tamanho inicial : "
+
+#~ msgid "Inital size of the tiles"
+#~ msgstr "Tamanho inicial dos mosaicos"
+
+#~ msgid "End size : "
+#~ msgstr "Tamanho final : "
+
+#~ msgid "Final size of the tiles"
+#~ msgstr "Tamanho final dos mosaicos"
+
 #~ msgid "Render in pov-ray..."
 #~ msgstr "Renderizar no POV-Ray..."
+
 #~ msgid "File not loaded"
 #~ msgstr "Ficheiro não carregado"
 
@@ -1274,76 +1274,111 @@ msgstr "Novidades no Jmol"
 #, fuzzy
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Executando um script..."
+
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "Rotação de FrameLi&gado"
+
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotação de frame"
+
 #~ msgid "Colors"
 #~ msgstr "Cores"
+
 #~ msgid "Background"
 #~ msgstr "Fundo"
+
 #~ msgid "Set the Background Color"
 #~ msgstr "Definir cor de fundo"
+
 #~ msgid "Background Color"
 #~ msgstr "Cores do fundo"
+
 #~ msgid "Picked Atoms"
 #~ msgstr "Átomos escolhidos"
+
 #~ msgid "Set the Color for Picked Atoms"
 #~ msgstr "Definir cor de átomos escolhidos"
+
 #~ msgid "Picked Atom Color"
 #~ msgstr "Cor do átomo escolhido"
+
 #~ msgid "Text"
 #~ msgstr "Texto"
+
 #~ msgid "Set the Color for Text"
 #~ msgstr "Definir cor do texto"
+
 #~ msgid "Text Color"
 #~ msgstr "Cor do texto"
+
 #~ msgid "Set the Color for Bonds"
 #~ msgstr "Definir cor para as ligações"
+
 #~ msgid "Bond Color"
 #~ msgstr "Cor da ligação"
+
 #~ msgid "Vectors"
 #~ msgstr "Vectores"
+
 #~ msgid "Set the Vector Color"
 #~ msgstr "Definir cor do Vector"
+
 #~ msgid "Vector Color"
 #~ msgstr "Cor do vector"
+
 #~ msgid "Color for distance, angle, & torsion measurements"
 #~ msgstr "Cor para a distância, ângulo, e medições de torção"
+
 #~ msgid "Measurements Color"
 #~ msgstr "Cor das meidções"
+
 #~ msgid "Loading plugins..."
 #~ msgstr "Carregamento de plugins..."
+
 #~ msgid "15% vanderWaals"
 #~ msgstr "15% vanderWaals"
+
 #~ msgid "25% vanderWaals"
 #~ msgstr "20% vanderWaals"
+
 #~ msgid "100% vanderWaals"
 #~ msgstr "20% vanderWaals"
+
 #~ msgid "0.10 Å"
 #~ msgstr "0.10 Å"
+
 #~ msgid "0.15 Å"
 #~ msgstr "0.15 Å"
+
 #~ msgid "0.20 Å"
 #~ msgstr "0.15 Å"
+
 #~ msgid "0.05 Å"
 #~ msgstr "0.05 Å"
+
 #~ msgid "Scale 0.5"
 #~ msgstr "Escala 0.5"
+
 #~ msgid "Scale 1"
 #~ msgstr "Escala 1"
+
 #~ msgid "Scale 2"
 #~ msgstr "Escala 2"
+
 #~ msgid "Scale 5"
 #~ msgstr "Escala 5"
+
 #~ msgid "100%"
 #~ msgstr "100%"
+
 #~ msgid "150%"
 #~ msgstr "150%"
+
 #~ msgid "200%"
 #~ msgstr "200%"
+
 #~ msgid "400%"
 #~ msgstr "400%"
+
 #~ msgid "800%"
 #~ msgstr "800%"
-

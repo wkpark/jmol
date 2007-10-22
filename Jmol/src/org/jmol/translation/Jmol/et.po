@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-09-11 08:05+0200\n"
+"POT-Creation-Date: 2007-10-22 08:46+0200\n"
 "PO-Revision-Date: 2006-03-17 20:19+0100\n"
 "Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -63,10 +63,10 @@ msgstr "Info"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:238
 #: org/openscience/jmol/app/GuiMap.java:70
-#: org/openscience/jmol/app/PovrayDialog.java:176
-#: org/openscience/jmol/app/PovrayDialog.java:449
-#: org/openscience/jmol/app/PovrayDialog.java:618
-#: org/openscience/jmol/app/PovrayDialog.java:639
+#: org/openscience/jmol/app/PovrayDialog.java:174
+#: org/openscience/jmol/app/PovrayDialog.java:453
+#: org/openscience/jmol/app/PovrayDialog.java:647
+#: org/openscience/jmol/app/PovrayDialog.java:668
 msgid "Select"
 msgstr "Vali"
 
@@ -727,7 +727,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:412
 #: org/openscience/jmol/app/Jmol.java:450
-#: org/openscience/jmol/app/PovrayDialog.java:488
+#: org/openscience/jmol/app/PovrayDialog.java:492
 #: org/openscience/jmol/app/PreferencesDialog.java:165
 #: org/openscience/jmol/app/RecentFilesDialog.java:69
 msgid "Cancel"
@@ -830,7 +830,7 @@ msgstr "atom set"
 
 #: org/openscience/jmol/app/Jmol.java:440
 #: org/openscience/jmol/app/Jmol.java:442
-#: org/openscience/jmol/app/PovrayDialog.java:751
+#: org/openscience/jmol/app/PovrayDialog.java:781
 msgid "Save"
 msgstr "Salvesta"
 
@@ -975,76 +975,44 @@ msgstr "Tühista"
 msgid "Value"
 msgstr "Väärtus"
 
-#: org/openscience/jmol/app/PovrayDialog.java:114
+#: org/openscience/jmol/app/PovrayDialog.java:112
 msgid "Render in POV-Ray"
 msgstr "Renderda POV-Ray's"
 
-#: org/openscience/jmol/app/PovrayDialog.java:152
+#: org/openscience/jmol/app/PovrayDialog.java:150
 msgid "Jmol-to-POV-Ray Conversion"
 msgstr "Jmol'ist POV-Ray muundamine"
 
-#: org/openscience/jmol/app/PovrayDialog.java:156
-msgid "Filename Stem"
+#: org/openscience/jmol/app/PovrayDialog.java:154
+#, fuzzy
+msgid "Filename"
 msgstr "Failinime tüvi"
 
-#: org/openscience/jmol/app/PovrayDialog.java:158
+#: org/openscience/jmol/app/PovrayDialog.java:156
 msgid ""
-"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
+"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:168
+#: org/openscience/jmol/app/PovrayDialog.java:166
 msgid "Working Directory"
 msgstr "Jooksev kataloog"
 
-#: org/openscience/jmol/app/PovrayDialog.java:170
+#: org/openscience/jmol/app/PovrayDialog.java:168
 msgid "Where the .pov files will be saved"
 msgstr "Kuhu .pov failid salvestakse"
 
-#: org/openscience/jmol/app/PovrayDialog.java:190
+#: org/openscience/jmol/app/PovrayDialog.java:188
 msgid "POV-Ray Runtime Options"
 msgstr "POV-Ray Runtime valikud"
 
-#: org/openscience/jmol/app/PovrayDialog.java:195
+#: org/openscience/jmol/app/PovrayDialog.java:193
 msgid "Run POV-Ray directly"
 msgstr "Käivita POV-Ray otse"
 
-#: org/openscience/jmol/app/PovrayDialog.java:197
-msgid "Launch povray from within Jmol"
+#: org/openscience/jmol/app/PovrayDialog.java:195
+#, fuzzy
+msgid "Launch POV-Ray from within Jmol"
 msgstr "Käivita povray otse Jmol'ist"
-
-#: org/openscience/jmol/app/PovrayDialog.java:206
-msgid "Use .ini file"
-msgstr "Kasuta .ini faili"
-
-#: org/openscience/jmol/app/PovrayDialog.java:208
-msgid "Save options in a .ini file"
-msgstr "Salvesta valikud .ini faili"
-
-#: org/openscience/jmol/app/PovrayDialog.java:217
-msgid "Render all frames"
-msgstr "Renderda kõik kaadrid"
-
-#: org/openscience/jmol/app/PovrayDialog.java:219
-msgid "Render each model (not only the currently displayed one)"
-msgstr "Renderda kõik mudelid (lisaks kuvatule)"
-
-#: org/openscience/jmol/app/PovrayDialog.java:228
-msgid "Turn on POV-Ray anti-aliasing"
-msgstr "Rakenda POV-Ray anti-aliasing'ut"
-
-#: org/openscience/jmol/app/PovrayDialog.java:230
-msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr ""
-"Kasuta povray aeglasemat, aga parema kvaliteediga anti-aliasing reziimis"
-
-#: org/openscience/jmol/app/PovrayDialog.java:239
-msgid "Display While Rendering"
-msgstr "Kuva renderdamise ajal"
-
-#: org/openscience/jmol/app/PovrayDialog.java:241
-msgid "Should povray attempt to display while rendering?"
-msgstr "Kas renderdamise ajal peaks povray kuvama?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:250
 #: org/openscience/jmol/app/PovrayDialog.java:252
@@ -1091,11 +1059,7 @@ msgstr "Väljundformaat : "
 msgid "Select the file format of the output file"
 msgstr "Vali väljundfaili formaat"
 
-#: org/openscience/jmol/app/PovrayDialog.java:351
-msgid "C - Compressed Targa-24"
-msgstr "C - Pakitud Targa-24"
-
-#: org/openscience/jmol/app/PovrayDialog.java:353
+#: org/openscience/jmol/app/PovrayDialog.java:352
 msgid "N - PNG"
 msgstr "N - PNG"
 
@@ -1103,73 +1067,45 @@ msgstr "N - PNG"
 msgid "P - PPM"
 msgstr "P - PPM"
 
-#: org/openscience/jmol/app/PovrayDialog.java:357
+#: org/openscience/jmol/app/PovrayDialog.java:358
+msgid "C - Compressed Targa-24"
+msgstr "C - Pakitud Targa-24"
+
+#: org/openscience/jmol/app/PovrayDialog.java:361
 msgid "T - Uncompressed Targa-24"
 msgstr "T - Pakkimata Targa-24"
 
-#: org/openscience/jmol/app/PovrayDialog.java:373
-msgid "Alpha transparency"
-msgstr "Alfa transparentsus"
-
-#: org/openscience/jmol/app/PovrayDialog.java:375
-msgid "Output Alpha transparency data"
-msgstr "Väljasta Alfa transparentsuse andmed"
-
-#: org/openscience/jmol/app/PovrayDialog.java:388
-msgid "Mosaic preview"
-msgstr "Mosaiik eelvaade"
-
-#: org/openscience/jmol/app/PovrayDialog.java:390
-msgid "Render the image in several passes"
-msgstr "Pildi renderdamine mitmes järgus"
-
-#: org/openscience/jmol/app/PovrayDialog.java:400
-msgid "Start size : "
-msgstr "Alguse suurus : "
-
-#: org/openscience/jmol/app/PovrayDialog.java:402
-msgid "Inital size of the tiles"
-msgstr "Tükkide algsuurus"
-
-#: org/openscience/jmol/app/PovrayDialog.java:418
-msgid "End size : "
-msgstr "Lõppsuurus : "
-
-#: org/openscience/jmol/app/PovrayDialog.java:420
-msgid "Final size of the tiles"
-msgstr "Tükkide lõplik suurus"
-
-#: org/openscience/jmol/app/PovrayDialog.java:441
+#: org/openscience/jmol/app/PovrayDialog.java:445
 msgid "POV-Ray Executable Location"
 msgstr "POV-Ray programmi asukoht"
 
-#: org/openscience/jmol/app/PovrayDialog.java:443
+#: org/openscience/jmol/app/PovrayDialog.java:447
 msgid "Location of the povray Executable"
 msgstr "povray programmi asukoht"
 
-#: org/openscience/jmol/app/PovrayDialog.java:462
+#: org/openscience/jmol/app/PovrayDialog.java:466
 msgid "Command Line to Execute"
 msgstr "Käivitatav käsurida"
 
-#: org/openscience/jmol/app/PovrayDialog.java:464
-#: org/openscience/jmol/app/PovrayDialog.java:467
+#: org/openscience/jmol/app/PovrayDialog.java:468
+#: org/openscience/jmol/app/PovrayDialog.java:471
 msgid "The actual command which will be executed"
 msgstr "Tegelik käsk, mis käivitatakse"
 
-#: org/openscience/jmol/app/PovrayDialog.java:477
-#: org/openscience/jmol/app/PovrayDialog.java:749
+#: org/openscience/jmol/app/PovrayDialog.java:481
+#: org/openscience/jmol/app/PovrayDialog.java:779
 msgid "Go!"
 msgstr "Mine!"
 
-#: org/openscience/jmol/app/PovrayDialog.java:479
+#: org/openscience/jmol/app/PovrayDialog.java:483
 msgid "Save file and possibly launch povray"
 msgstr "Salvesta see fail ning võimalusel käivita povray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:490
+#: org/openscience/jmol/app/PovrayDialog.java:494
 msgid "Cancel this dialog without saving"
 msgstr "Katkesta see dialoog ilma salvestamata"
 
-#: org/openscience/jmol/app/PovrayDialog.java:812
+#: org/openscience/jmol/app/PovrayDialog.java:851
 msgid "null component string"
 msgstr "tühi komponent string"
 
@@ -1284,6 +1220,58 @@ msgstr "Laen..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Mida on uut Jmol'is"
+
+#~ msgid "Filename Stem"
+#~ msgstr "Failinime tüvi"
+
+#~ msgid "Use .ini file"
+#~ msgstr "Kasuta .ini faili"
+
+#~ msgid "Save options in a .ini file"
+#~ msgstr "Salvesta valikud .ini faili"
+
+#~ msgid "Render all frames"
+#~ msgstr "Renderda kõik kaadrid"
+
+#~ msgid "Render each model (not only the currently displayed one)"
+#~ msgstr "Renderda kõik mudelid (lisaks kuvatule)"
+
+#~ msgid "Turn on POV-Ray anti-aliasing"
+#~ msgstr "Rakenda POV-Ray anti-aliasing'ut"
+
+#~ msgid "Use povray's slower but higher quality anti-aliasing mode"
+#~ msgstr ""
+#~ "Kasuta povray aeglasemat, aga parema kvaliteediga anti-aliasing reziimis"
+
+#~ msgid "Display While Rendering"
+#~ msgstr "Kuva renderdamise ajal"
+
+#~ msgid "Should povray attempt to display while rendering?"
+#~ msgstr "Kas renderdamise ajal peaks povray kuvama?"
+
+#~ msgid "Alpha transparency"
+#~ msgstr "Alfa transparentsus"
+
+#~ msgid "Output Alpha transparency data"
+#~ msgstr "Väljasta Alfa transparentsuse andmed"
+
+#~ msgid "Mosaic preview"
+#~ msgstr "Mosaiik eelvaade"
+
+#~ msgid "Render the image in several passes"
+#~ msgstr "Pildi renderdamine mitmes järgus"
+
+#~ msgid "Start size : "
+#~ msgstr "Alguse suurus : "
+
+#~ msgid "Inital size of the tiles"
+#~ msgstr "Tükkide algsuurus"
+
+#~ msgid "End size : "
+#~ msgstr "Lõppsuurus : "
+
+#~ msgid "Final size of the tiles"
+#~ msgstr "Tükkide lõplik suurus"
 
 #~ msgid "Render in pov-ray..."
 #~ msgstr "Renderda pov-ray's..."

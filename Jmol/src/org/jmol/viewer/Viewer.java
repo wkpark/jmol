@@ -2714,7 +2714,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Logger.debug("viewer.setInMotion("+inMotion+")");
     if (wasInMotion ^ inMotion) {
       repaintManager.setInMotion(inMotion);
-      resizeImage(dimScreen.width, dimScreen.height, false, false, true);
+      //resizeImage(dimScreen.width, dimScreen.height, false, false, true);
       if (inMotion) {
         ++motionEventNumber;
       } else {
@@ -2835,7 +2835,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
 
     transformManager.setScreenDimension(width, height,
-        isImageWrite || isReset? global.zoomLarge : false, antialias);
+        isImageWrite || isReset? global.zoomLarge : false,
+            antialias, false);
     g3d.setWindowSize(width, height, antialias); 
   }
 
@@ -4950,7 +4951,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setZoomLarge(boolean TF) {
     global.zoomLarge = TF;
-    transformManager.scaleFitToScreen(false, global.zoomLarge);
+    transformManager.scaleFitToScreen(false, global.zoomLarge, false);
   }
 
   boolean getZoomLarge() {

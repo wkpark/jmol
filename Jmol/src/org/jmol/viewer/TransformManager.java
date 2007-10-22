@@ -92,7 +92,7 @@ abstract class TransformManager {
 
   private void setViewer(Viewer viewer, int width, int height) {
     this.viewer = viewer;
-    setScreenDimension(width, height, true, false);
+    setScreenDimension(width, height, true, false, true);
   }
 
   boolean checkedForNavigation = false;
@@ -1100,10 +1100,10 @@ abstract class TransformManager {
   float scaleDefaultPixelsPerAngstrom;
 
   void setScreenDimension(int width, int height, boolean useZoomLarge, 
-                          boolean antialias) {
+                          boolean antialias, boolean resetSlab) {
     this.width = (antialias ? width * 2 : width);
     this.height = (antialias ? height * 2 : height);
-    scaleFitToScreen(false, useZoomLarge);
+    scaleFitToScreen(false, useZoomLarge, resetSlab);
   }
 
   private float defaultScaleToScreen(float radius) {
@@ -1123,17 +1123,18 @@ abstract class TransformManager {
   }
 
   void scaleFitToScreen(boolean andCenter) {
-    scaleFitToScreen(andCenter, viewer.getZoomLarge());
+    scaleFitToScreen(andCenter, viewer.getZoomLarge(), true);
   }
   
-  void scaleFitToScreen(boolean andCenter, boolean zoomLarge) {
+  void scaleFitToScreen(boolean andCenter, boolean zoomLarge,
+                        boolean resetSlab) {
     if (width == 0 || height == 0)
       return;
     // translate to the middle of the screen
     fixedTranslation.set(width * (andCenter ? 0.5f : xTranslationFraction), height
         * (andCenter ? 0.5f : yTranslationFraction), 0);
     setTranslationFractions();
-    resetNavigationPoint(true);
+    resetNavigationPoint(resetSlab);
     // 2005 02 22
     // switch to finding larger screen dimension
     // find smaller screen dimension

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-10-22 08:46+0200\n"
+"POT-Creation-Date: 2007-10-22 16:50+0200\n"
 "PO-Revision-Date: 2007-02-20 21:38+0100\n"
 "Last-Translator: Martin Slavík <martin.slavik@tul.cz>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
@@ -65,9 +65,9 @@ msgstr "Informace"
 #: org/openscience/jmol/app/AtomSetChooser.java:238
 #: org/openscience/jmol/app/GuiMap.java:70
 #: org/openscience/jmol/app/PovrayDialog.java:174
-#: org/openscience/jmol/app/PovrayDialog.java:453
-#: org/openscience/jmol/app/PovrayDialog.java:647
-#: org/openscience/jmol/app/PovrayDialog.java:668
+#: org/openscience/jmol/app/PovrayDialog.java:456
+#: org/openscience/jmol/app/PovrayDialog.java:653
+#: org/openscience/jmol/app/PovrayDialog.java:674
 msgid "Select"
 msgstr "Vybrat"
 
@@ -146,11 +146,11 @@ msgstr "Přejít na poslední  {0} ve sbírce"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Chyba při čtení vyrovnávací paměti: {0}"
 
-#: org/openscience/jmol/app/DisplayPanel.java:153
+#: org/openscience/jmol/app/DisplayPanel.java:156
 msgid "Delete Atoms"
 msgstr "Vymazat atomy"
 
-#: org/openscience/jmol/app/DisplayPanel.java:154
+#: org/openscience/jmol/app/DisplayPanel.java:157
 msgid "Select Atoms"
 msgstr "Vybrat atomy"
 
@@ -726,7 +726,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:412
 #: org/openscience/jmol/app/Jmol.java:450
-#: org/openscience/jmol/app/PovrayDialog.java:492
+#: org/openscience/jmol/app/PovrayDialog.java:498
 #: org/openscience/jmol/app/PreferencesDialog.java:165
 #: org/openscience/jmol/app/RecentFilesDialog.java:69
 msgid "Cancel"
@@ -829,7 +829,7 @@ msgstr "Nevybrat nic"
 
 #: org/openscience/jmol/app/Jmol.java:440
 #: org/openscience/jmol/app/Jmol.java:442
-#: org/openscience/jmol/app/PovrayDialog.java:781
+#: org/openscience/jmol/app/PovrayDialog.java:787
 msgid "Save"
 msgstr "Uložit"
 
@@ -941,19 +941,19 @@ msgstr "Vyčistit"
 msgid "Could not create ConsoleTextArea: "
 msgstr "Nelze vytvořit textové pole pro konzoli:"
 
-#: org/openscience/jmol/app/Jmol.java:819
+#: org/openscience/jmol/app/Jmol.java:823
 msgid "Closing Jmol..."
 msgstr "Ukončuji Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:1071
+#: org/openscience/jmol/app/Jmol.java:1075
 msgid "Macros"
 msgstr "Makra"
 
-#: org/openscience/jmol/app/Jmol.java:1440
+#: org/openscience/jmol/app/Jmol.java:1444
 msgid "Open URL"
 msgstr "Otevřít URL"
 
-#: org/openscience/jmol/app/Jmol.java:1441
+#: org/openscience/jmol/app/Jmol.java:1445
 msgid "Enter URL of molecular model"
 msgstr "Zadat URL molekulárního modelu"
 
@@ -1016,11 +1016,6 @@ msgstr "Spustit POV-Ray přímo"
 msgid "Launch POV-Ray from within Jmol"
 msgstr "Spustit POV-ray z Jmolu"
 
-#: org/openscience/jmol/app/PovrayDialog.java:250
-#: org/openscience/jmol/app/PovrayDialog.java:252
-msgid "Image size"
-msgstr "Velikost obrázku"
-
 #: org/openscience/jmol/app/PovrayDialog.java:264
 msgid "Width : "
 msgstr "Šířka:"
@@ -1053,63 +1048,42 @@ msgstr "Uživatelem definováno"
 msgid "Keep ratio of Jmol window"
 msgstr "Zachovat poměr Jmol okna"
 
-#: org/openscience/jmol/app/PovrayDialog.java:339
-msgid "Output format : "
-msgstr "Formát výstupu:"
-
-#: org/openscience/jmol/app/PovrayDialog.java:341
-msgid "Select the file format of the output file"
-msgstr "Zvolit typ výstupního souboru"
-
-#: org/openscience/jmol/app/PovrayDialog.java:352
+#: org/openscience/jmol/app/PovrayDialog.java:355
 msgid "N - PNG"
 msgstr "N - PNG"
 
-#: org/openscience/jmol/app/PovrayDialog.java:355
+#: org/openscience/jmol/app/PovrayDialog.java:358
 msgid "P - PPM"
 msgstr "P - PPM"
 
-#: org/openscience/jmol/app/PovrayDialog.java:358
+#: org/openscience/jmol/app/PovrayDialog.java:361
 msgid "C - Compressed Targa-24"
 msgstr "C - komprese Targa-24"
 
-#: org/openscience/jmol/app/PovrayDialog.java:361
+#: org/openscience/jmol/app/PovrayDialog.java:364
 msgid "T - Uncompressed Targa-24"
 msgstr "T - dekomprese Targa-24"
 
-#: org/openscience/jmol/app/PovrayDialog.java:445
+#: org/openscience/jmol/app/PovrayDialog.java:448
 msgid "POV-Ray Executable Location"
 msgstr "Umístění  exe souboru  POV-ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:447
+#: org/openscience/jmol/app/PovrayDialog.java:450
 msgid "Location of the povray Executable"
 msgstr "Umístění exe souborů POV-ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:466
-msgid "Command Line to Execute"
-msgstr "Příkazový řádek pro spuštění"
-
-#: org/openscience/jmol/app/PovrayDialog.java:468
-#: org/openscience/jmol/app/PovrayDialog.java:471
-msgid "The actual command which will be executed"
-msgstr "Aktuální příkaz, který bude vykonán:"
-
-#: org/openscience/jmol/app/PovrayDialog.java:481
-#: org/openscience/jmol/app/PovrayDialog.java:779
+#: org/openscience/jmol/app/PovrayDialog.java:487
+#: org/openscience/jmol/app/PovrayDialog.java:785
 msgid "Go!"
 msgstr "Jdi!"
 
-#: org/openscience/jmol/app/PovrayDialog.java:483
+#: org/openscience/jmol/app/PovrayDialog.java:489
 msgid "Save file and possibly launch povray"
 msgstr "Uložit soubor a eventuálně nahrát POV-ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:494
+#: org/openscience/jmol/app/PovrayDialog.java:500
 msgid "Cancel this dialog without saving"
 msgstr "Zrušit dialog bez uložení"
-
-#: org/openscience/jmol/app/PovrayDialog.java:851
-msgid "null component string"
-msgstr "prázdný řetězec komponenty"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:133
 msgid "Preferences"
@@ -1220,6 +1194,24 @@ msgstr "Nahrávám..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Novinky v programu Jmol"
+
+#~ msgid "Image size"
+#~ msgstr "Velikost obrázku"
+
+#~ msgid "Output format : "
+#~ msgstr "Formát výstupu:"
+
+#~ msgid "Select the file format of the output file"
+#~ msgstr "Zvolit typ výstupního souboru"
+
+#~ msgid "Command Line to Execute"
+#~ msgstr "Příkazový řádek pro spuštění"
+
+#~ msgid "The actual command which will be executed"
+#~ msgstr "Aktuální příkaz, který bude vykonán:"
+
+#~ msgid "null component string"
+#~ msgstr "prázdný řetězec komponenty"
 
 #~ msgid "Filename Stem"
 #~ msgstr "základ jména souboru"

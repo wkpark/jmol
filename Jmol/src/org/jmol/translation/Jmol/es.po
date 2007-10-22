@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-10-22 08:46+0200\n"
+"POT-Creation-Date: 2007-10-22 16:50+0200\n"
 "PO-Revision-Date: 2007-09-22 19:34+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -66,9 +66,9 @@ msgstr "Información"
 #: org/openscience/jmol/app/AtomSetChooser.java:238
 #: org/openscience/jmol/app/GuiMap.java:70
 #: org/openscience/jmol/app/PovrayDialog.java:174
-#: org/openscience/jmol/app/PovrayDialog.java:453
-#: org/openscience/jmol/app/PovrayDialog.java:647
-#: org/openscience/jmol/app/PovrayDialog.java:668
+#: org/openscience/jmol/app/PovrayDialog.java:456
+#: org/openscience/jmol/app/PovrayDialog.java:653
+#: org/openscience/jmol/app/PovrayDialog.java:674
 msgid "Select"
 msgstr "Seleccionar"
 
@@ -147,11 +147,11 @@ msgstr "Ir al último {0} de la colección"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Error al leer de BufferedReader: {0}"
 
-#: org/openscience/jmol/app/DisplayPanel.java:153
+#: org/openscience/jmol/app/DisplayPanel.java:156
 msgid "Delete Atoms"
 msgstr "Borrar átomos"
 
-#: org/openscience/jmol/app/DisplayPanel.java:154
+#: org/openscience/jmol/app/DisplayPanel.java:157
 msgid "Select Atoms"
 msgstr "Seleccionar átomos"
 
@@ -721,7 +721,7 @@ msgstr "Todos los archivos"
 
 #: org/openscience/jmol/app/Jmol.java:412
 #: org/openscience/jmol/app/Jmol.java:450
-#: org/openscience/jmol/app/PovrayDialog.java:492
+#: org/openscience/jmol/app/PovrayDialog.java:498
 #: org/openscience/jmol/app/PreferencesDialog.java:165
 #: org/openscience/jmol/app/RecentFilesDialog.java:69
 msgid "Cancel"
@@ -820,7 +820,7 @@ msgstr "Abrir archivo seleccionado"
 
 #: org/openscience/jmol/app/Jmol.java:440
 #: org/openscience/jmol/app/Jmol.java:442
-#: org/openscience/jmol/app/PovrayDialog.java:781
+#: org/openscience/jmol/app/PovrayDialog.java:787
 msgid "Save"
 msgstr "Guardar"
 
@@ -931,19 +931,19 @@ msgstr "Limpiar"
 msgid "Could not create ConsoleTextArea: "
 msgstr "No se pudo crear el área de texto de la consola"
 
-#: org/openscience/jmol/app/Jmol.java:819
+#: org/openscience/jmol/app/Jmol.java:823
 msgid "Closing Jmol..."
 msgstr "Cerrando Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:1071
+#: org/openscience/jmol/app/Jmol.java:1075
 msgid "Macros"
 msgstr "Macros"
 
-#: org/openscience/jmol/app/Jmol.java:1440
+#: org/openscience/jmol/app/Jmol.java:1444
 msgid "Open URL"
 msgstr "Abrir URL"
 
-#: org/openscience/jmol/app/Jmol.java:1441
+#: org/openscience/jmol/app/Jmol.java:1445
 msgid "Enter URL of molecular model"
 msgstr "Escribe la URL del modelo molecular"
 
@@ -1005,11 +1005,6 @@ msgstr "Ejecutar POV-Ray directamente"
 msgid "Launch POV-Ray from within Jmol"
 msgstr "Iniciar POV-Ray dentro de Jmol"
 
-#: org/openscience/jmol/app/PovrayDialog.java:250
-#: org/openscience/jmol/app/PovrayDialog.java:252
-msgid "Image size"
-msgstr "Tamaño de imagen"
-
 #: org/openscience/jmol/app/PovrayDialog.java:264
 msgid "Width : "
 msgstr "Ancho:"
@@ -1042,63 +1037,42 @@ msgstr "Definido por el usuario"
 msgid "Keep ratio of Jmol window"
 msgstr "Mantener la proporción de la ventana de Jmol"
 
-#: org/openscience/jmol/app/PovrayDialog.java:339
-msgid "Output format : "
-msgstr "Formato de salida:"
-
-#: org/openscience/jmol/app/PovrayDialog.java:341
-msgid "Select the file format of the output file"
-msgstr "Elige el formato del archivo a generar"
-
-#: org/openscience/jmol/app/PovrayDialog.java:352
+#: org/openscience/jmol/app/PovrayDialog.java:355
 msgid "N - PNG"
 msgstr "N - PNG"
 
-#: org/openscience/jmol/app/PovrayDialog.java:355
+#: org/openscience/jmol/app/PovrayDialog.java:358
 msgid "P - PPM"
 msgstr "P - PPM"
 
-#: org/openscience/jmol/app/PovrayDialog.java:358
+#: org/openscience/jmol/app/PovrayDialog.java:361
 msgid "C - Compressed Targa-24"
 msgstr "C - Targa-24 comprimido"
 
-#: org/openscience/jmol/app/PovrayDialog.java:361
+#: org/openscience/jmol/app/PovrayDialog.java:364
 msgid "T - Uncompressed Targa-24"
 msgstr "T - Targa-24 no comprimido"
 
-#: org/openscience/jmol/app/PovrayDialog.java:445
+#: org/openscience/jmol/app/PovrayDialog.java:448
 msgid "POV-Ray Executable Location"
 msgstr "Ubicación del programa POV-Ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:447
+#: org/openscience/jmol/app/PovrayDialog.java:450
 msgid "Location of the povray Executable"
 msgstr "Ubicación del archivo ejecutable del programa POV-Ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:466
-msgid "Command Line to Execute"
-msgstr "Línea de instrucciones a ejecutar"
-
-#: org/openscience/jmol/app/PovrayDialog.java:468
-#: org/openscience/jmol/app/PovrayDialog.java:471
-msgid "The actual command which will be executed"
-msgstr "La instrucción que debe ejecutarse"
-
-#: org/openscience/jmol/app/PovrayDialog.java:481
-#: org/openscience/jmol/app/PovrayDialog.java:779
+#: org/openscience/jmol/app/PovrayDialog.java:487
+#: org/openscience/jmol/app/PovrayDialog.java:785
 msgid "Go!"
 msgstr "Aceptar"
 
-#: org/openscience/jmol/app/PovrayDialog.java:483
+#: org/openscience/jmol/app/PovrayDialog.java:489
 msgid "Save file and possibly launch povray"
 msgstr "Guardar archivo y posiblemente iniciar POV-Ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:494
+#: org/openscience/jmol/app/PovrayDialog.java:500
 msgid "Cancel this dialog without saving"
 msgstr "Cancelar este diálogo sin guardar"
-
-#: org/openscience/jmol/app/PovrayDialog.java:851
-msgid "null component string"
-msgstr "cadena de componente nulo"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:133
 msgid "Preferences"
@@ -1209,6 +1183,24 @@ msgstr "Cargando..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Novedades en Jmol"
+
+#~ msgid "Image size"
+#~ msgstr "Tamaño de imagen"
+
+#~ msgid "Output format : "
+#~ msgstr "Formato de salida:"
+
+#~ msgid "Select the file format of the output file"
+#~ msgstr "Elige el formato del archivo a generar"
+
+#~ msgid "Command Line to Execute"
+#~ msgstr "Línea de instrucciones a ejecutar"
+
+#~ msgid "The actual command which will be executed"
+#~ msgstr "La instrucción que debe ejecutarse"
+
+#~ msgid "null component string"
+#~ msgstr "cadena de componente nulo"
 
 #~ msgid "Filename Stem"
 #~ msgstr "Raíz del nombre de archivo"

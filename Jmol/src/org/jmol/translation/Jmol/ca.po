@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-10-22 08:46+0200\n"
+"POT-Creation-Date: 2007-10-22 16:50+0200\n"
 "PO-Revision-Date: 2007-05-13 18:40+0200\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -64,9 +64,9 @@ msgstr "Informació"
 #: org/openscience/jmol/app/AtomSetChooser.java:238
 #: org/openscience/jmol/app/GuiMap.java:70
 #: org/openscience/jmol/app/PovrayDialog.java:174
-#: org/openscience/jmol/app/PovrayDialog.java:453
-#: org/openscience/jmol/app/PovrayDialog.java:647
-#: org/openscience/jmol/app/PovrayDialog.java:668
+#: org/openscience/jmol/app/PovrayDialog.java:456
+#: org/openscience/jmol/app/PovrayDialog.java:653
+#: org/openscience/jmol/app/PovrayDialog.java:674
 msgid "Select"
 msgstr "Selecció"
 
@@ -145,11 +145,11 @@ msgstr "Salta al darrer {0} de la col·lecció"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "S'ha produït un error en llegir del «BufferedReader»: {0}"
 
-#: org/openscience/jmol/app/DisplayPanel.java:153
+#: org/openscience/jmol/app/DisplayPanel.java:156
 msgid "Delete Atoms"
 msgstr "Suprimeix els àtoms"
 
-#: org/openscience/jmol/app/DisplayPanel.java:154
+#: org/openscience/jmol/app/DisplayPanel.java:157
 msgid "Select Atoms"
 msgstr "Selecciona els àtoms"
 
@@ -725,7 +725,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:412
 #: org/openscience/jmol/app/Jmol.java:450
-#: org/openscience/jmol/app/PovrayDialog.java:492
+#: org/openscience/jmol/app/PovrayDialog.java:498
 #: org/openscience/jmol/app/PreferencesDialog.java:165
 #: org/openscience/jmol/app/RecentFilesDialog.java:69
 msgid "Cancel"
@@ -828,7 +828,7 @@ msgstr "àtoms seleccionats"
 
 #: org/openscience/jmol/app/Jmol.java:440
 #: org/openscience/jmol/app/Jmol.java:442
-#: org/openscience/jmol/app/PovrayDialog.java:781
+#: org/openscience/jmol/app/PovrayDialog.java:787
 msgid "Save"
 msgstr "Desa"
 
@@ -942,19 +942,19 @@ msgstr "Neteja"
 msgid "Could not create ConsoleTextArea: "
 msgstr "No s'ha pogut crear l'àrea de text de la consola:"
 
-#: org/openscience/jmol/app/Jmol.java:819
+#: org/openscience/jmol/app/Jmol.java:823
 msgid "Closing Jmol..."
 msgstr "S'està tancant el Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:1071
+#: org/openscience/jmol/app/Jmol.java:1075
 msgid "Macros"
 msgstr "Macroinstruccions"
 
-#: org/openscience/jmol/app/Jmol.java:1440
+#: org/openscience/jmol/app/Jmol.java:1444
 msgid "Open URL"
 msgstr "Obre un URL"
 
-#: org/openscience/jmol/app/Jmol.java:1441
+#: org/openscience/jmol/app/Jmol.java:1445
 msgid "Enter URL of molecular model"
 msgstr "Introduïu l'URL d'un model molecular"
 
@@ -1016,11 +1016,6 @@ msgstr "Executa el POV-Ray directament"
 msgid "Launch POV-Ray from within Jmol"
 msgstr "Executa el POV-Ray des del Jmol"
 
-#: org/openscience/jmol/app/PovrayDialog.java:250
-#: org/openscience/jmol/app/PovrayDialog.java:252
-msgid "Image size"
-msgstr "Mida de la imatge"
-
 #: org/openscience/jmol/app/PovrayDialog.java:264
 msgid "Width : "
 msgstr "Amplada:"
@@ -1053,63 +1048,42 @@ msgstr "Definit per l'usuari"
 msgid "Keep ratio of Jmol window"
 msgstr "Conserva la raó de la finestra del Jmol"
 
-#: org/openscience/jmol/app/PovrayDialog.java:339
-msgid "Output format : "
-msgstr "Format de sortida:"
-
-#: org/openscience/jmol/app/PovrayDialog.java:341
-msgid "Select the file format of the output file"
-msgstr "Selecciona el format de fitxer del fitxer de sortida"
-
-#: org/openscience/jmol/app/PovrayDialog.java:352
+#: org/openscience/jmol/app/PovrayDialog.java:355
 msgid "N - PNG"
 msgstr "N - PNG"
 
-#: org/openscience/jmol/app/PovrayDialog.java:355
+#: org/openscience/jmol/app/PovrayDialog.java:358
 msgid "P - PPM"
 msgstr "P - PPM"
 
-#: org/openscience/jmol/app/PovrayDialog.java:358
+#: org/openscience/jmol/app/PovrayDialog.java:361
 msgid "C - Compressed Targa-24"
 msgstr "C - Targa-24 comprimit"
 
-#: org/openscience/jmol/app/PovrayDialog.java:361
+#: org/openscience/jmol/app/PovrayDialog.java:364
 msgid "T - Uncompressed Targa-24"
 msgstr "T - Targa-24 sense comprimir"
 
-#: org/openscience/jmol/app/PovrayDialog.java:445
+#: org/openscience/jmol/app/PovrayDialog.java:448
 msgid "POV-Ray Executable Location"
 msgstr "Ubicació de l'executable POV-Ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:447
+#: org/openscience/jmol/app/PovrayDialog.java:450
 msgid "Location of the povray Executable"
 msgstr "Ubicació de l'executable del POV-Ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:466
-msgid "Command Line to Execute"
-msgstr "La línia d'ordre que s'executarà"
-
-#: org/openscience/jmol/app/PovrayDialog.java:468
-#: org/openscience/jmol/app/PovrayDialog.java:471
-msgid "The actual command which will be executed"
-msgstr "L'ordre en concret que s'executarà"
-
-#: org/openscience/jmol/app/PovrayDialog.java:481
-#: org/openscience/jmol/app/PovrayDialog.java:779
+#: org/openscience/jmol/app/PovrayDialog.java:487
+#: org/openscience/jmol/app/PovrayDialog.java:785
 msgid "Go!"
 msgstr "Vés-hi!"
 
-#: org/openscience/jmol/app/PovrayDialog.java:483
+#: org/openscience/jmol/app/PovrayDialog.java:489
 msgid "Save file and possibly launch povray"
 msgstr "Desa el fitxer i possiblement executa el POV-Ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:494
+#: org/openscience/jmol/app/PovrayDialog.java:500
 msgid "Cancel this dialog without saving"
 msgstr "Cancel·la aquest diàleg sense desar"
-
-#: org/openscience/jmol/app/PovrayDialog.java:851
-msgid "null component string"
-msgstr "cadena de component nul"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:133
 msgid "Preferences"
@@ -1220,6 +1194,24 @@ msgstr "S'està carregant..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Novetats del Jmol"
+
+#~ msgid "Image size"
+#~ msgstr "Mida de la imatge"
+
+#~ msgid "Output format : "
+#~ msgstr "Format de sortida:"
+
+#~ msgid "Select the file format of the output file"
+#~ msgstr "Selecciona el format de fitxer del fitxer de sortida"
+
+#~ msgid "Command Line to Execute"
+#~ msgstr "La línia d'ordre que s'executarà"
+
+#~ msgid "The actual command which will be executed"
+#~ msgstr "L'ordre en concret que s'executarà"
+
+#~ msgid "null component string"
+#~ msgstr "cadena de component nul"
 
 #~ msgid "Filename Stem"
 #~ msgstr "Arrel del nom de fitxer"

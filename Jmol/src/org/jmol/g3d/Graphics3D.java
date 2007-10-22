@@ -1,5 +1,5 @@
 /* $RCSfile$
- * $Author$
+ *  * $Author$
  * $Date$
  * $Revision$
  *
@@ -1572,16 +1572,29 @@ final public class Graphics3D implements JmolRendererInterface {
     }
   }
 
-  void plotPoints(int count, int[] coordinates) {
+  private void plotPoints(int count, int[] coordinates) {
     for (int i = count * 3; i > 0; ) {
       int z = coordinates[--i];
       int y = coordinates[--i];
       int x = coordinates[--i];
       if (isClipped(x, y, z))
         continue;
-      int offset = y * width + x;
+      int offset;        
+      offset = y * width + x++;
       if (z < zbuf[offset])
         addPixel(offset, z, argbCurrent);
+      if (antialiasThisFrame) {
+        offset = y * width + x;
+        if (!isClipped(x, y, z) && z < zbuf[offset])
+          addPixel(offset, z, argbCurrent);
+        offset = (++y)* width + x;
+        if (!isClipped(x, y, z) && z < zbuf[offset])
+          addPixel(offset, z, argbCurrent);
+        offset = y * width + (--x);
+        if (!isClipped(x, y, z) && z < zbuf[offset])
+          addPixel(offset, z, argbCurrent);
+      }
+
     }
   }
 

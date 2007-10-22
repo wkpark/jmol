@@ -532,6 +532,7 @@ public class StateManager {
     boolean rasmolHydrogenSetting = true;
     boolean rasmolHeteroSetting   = true;
     boolean cartoonRockets        = false;
+    boolean rocketBarrels         = false;
     boolean ribbonBorder          = false;
     boolean chainCaseSensitive    = false;
     boolean rangeSelected         = false;
@@ -1011,6 +1012,7 @@ public class StateManager {
       setParameterValue("refreshing",true);
       setParameterValue("ribbonAspectRatio",ribbonAspectRatio);
       setParameterValue("ribbonBorder",ribbonBorder);
+      setParameterValue("rocketBarrels",rocketBarrels);
       setParameterValue("scriptDelay",scriptDelay);
       setParameterValue("selectHetero",rasmolHeteroSetting);
       setParameterValue("selectHydrogen",rasmolHydrogenSetting);

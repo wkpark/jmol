@@ -33,8 +33,8 @@ import javax.vecmath.Point3i;
 
 public class CartoonRenderer extends RocketsRenderer {
 
-  boolean newRockets = true;
-  boolean renderAsRockets;
+  private boolean newRockets = true;
+  private boolean renderAsRockets;
   
   protected void renderBioShape(BioShape bioShape) {
     if (bioShape.wingVectors == null || isCarbohydrate)
@@ -50,9 +50,19 @@ public class CartoonRenderer extends RocketsRenderer {
         bioShape.falsifyMesh(i, false);
       renderAsRockets = val;
     }
+    val = viewer.getRocketBarrelFlag();
+    if (renderAsBarrels != val) {
+      for (int i = 0; i < monomerCount; i++)
+        bioShape.falsifyMesh(i, false);
+      renderAsBarrels = val;
+    }
     ribbonTopScreens = calcScreens(0.5f);
     ribbonBottomScreens = calcScreens(-0.5f);
     calcRopeMidPoints(newRockets);
+    if (renderAsBarrels) {
+      calcScreenControlPoints(cordMidPoints);
+      controlPoints = cordMidPoints;
+    }
     render1();
     viewer.freeTempPoints(cordMidPoints);
     viewer.freeTempScreens(ribbonTopScreens);
@@ -101,7 +111,7 @@ public class CartoonRenderer extends RocketsRenderer {
       previousStructure = thisStructure;
       boolean isHelix = isHelix(i);
       boolean isSheet = isSheet(i);
-      boolean isHelixRocket = (renderAsRockets ? isHelix : false);
+      boolean isHelixRocket = (renderAsRockets || renderAsBarrels ? isHelix : false);
       if (bsVisible.get(i)) {
         if (isHelixRocket) {
           //next pass
@@ -119,7 +129,7 @@ public class CartoonRenderer extends RocketsRenderer {
       lastWasHelix = isHelix;
     }
 
-    if (renderAsRockets)
+    if (renderAsRockets || renderAsBarrels)
       renderRockets();
   }
 
@@ -134,8 +144,7 @@ public class CartoonRenderer extends RocketsRenderer {
     tPending = false;
     for (int i = 0; i < monomerCount; ++i)
       if (bsVisible.get(i) && isHelix(i)) {
-        colix = getLeadColix(i);
-        renderSpecialSegment(monomers[i],colix, mads[i]);
+        renderSpecialSegment(monomers[i], getLeadColix(i), mads[i]);
       }
     renderPending();
   }

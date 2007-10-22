@@ -4521,6 +4521,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         setCartoonRocketFlag(value);
         break;
       }
+      if (key.equalsIgnoreCase("rocketBarrels")) {
+        setRocketBarrelFlag(value);
+        break;
+      }
       if (key.equalsIgnoreCase("greyscaleRendering")) {
         setGreyscaleRendering(value);
         break;
@@ -4895,8 +4899,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.cartoonRockets;
   }
 
+  public boolean getRocketBarrelFlag() {
+    return global.rocketBarrels;
+  }
+
   private void setCartoonRocketFlag(boolean TF) {
     global.cartoonRockets = TF;
+  }
+
+  private void setRocketBarrelFlag(boolean TF) {
+    global.rocketBarrels = TF;
   }
 
   boolean getHideNameInPopup() {

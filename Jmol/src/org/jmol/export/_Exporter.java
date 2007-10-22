@@ -134,6 +134,8 @@ public abstract class _Exporter implements JmolExportInterface {
   protected StringBuffer output;
   protected BufferedWriter bw;
   protected String fileName;
+  protected String commandLineOptions;
+  
   protected boolean isToFile;
   protected Graphics3D g3d;
 
@@ -173,6 +175,11 @@ public abstract class _Exporter implements JmolExportInterface {
     isToFile = (output instanceof String);
     if (isToFile) {
       fileName = (String) output;
+      int pt = fileName.indexOf(":::"); 
+      if (pt > 0) {
+        commandLineOptions = fileName.substring(pt);
+        fileName = fileName.substring(0, pt);
+      }
       viewer.createImage(fileName + ".spt", viewer.getStateInfo(),
           Integer.MIN_VALUE, 0, 0);
       try {

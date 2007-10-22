@@ -61,6 +61,10 @@ abstract public class JmolViewer extends JmolSimpleViewer {
         || testFlag instanceof Integer && ((Integer) testFlag).intValue() != 0);
   }
 
+  // for POV-Ray -- returns the INI file
+  
+  abstract public String generateOutput(String type, String fileName, int width, int height); 
+
   abstract public void setJmolStatusListener(JmolStatusListener jmolStatusListener);
 
   abstract public void setAppletContext(String htmlName, URL documentBase, URL codeBase,
@@ -297,6 +301,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void rotateToX(float radians);
   abstract public void rotateToY(float radians);
   abstract public void rotateToZ(float radians);
-  
+
 }
 

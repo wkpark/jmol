@@ -26,6 +26,7 @@ package org.openscience.jmol.app;
 import org.jmol.api.*;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -50,11 +51,7 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.JComponent;
 import javax.swing.InputVerifier;
-import java.io.FileNotFoundException;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Vector;
 
 /**
  * A dialog for controling the creation of a povray input file from a
@@ -78,7 +75,7 @@ public class PovrayDialog extends JDialog {
   protected JTextField povrayPathLabel;
   
   protected JCheckBox runPovCheck;
-  protected JCheckBox useIniCheck;
+  //protected JCheckBox useIniCheck;
   protected JCheckBox allFramesCheck;
   protected JCheckBox antiAliasCheck;
   protected JCheckBox displayWhileRenderingCheck;
@@ -93,15 +90,16 @@ public class PovrayDialog extends JDialog {
   
   private JCheckBox outputFormatCheck;
   private JComboBox outputFormatCombo;
-  
+/*  
   private JCheckBox outputAlphaCheck;
+
   
   private JCheckBox mosaicPreviewCheck;
   private JLabel    mosaicPreviewStart;
   private JComboBox mosaicPreviewComboStart;
   private JLabel    mosaicPreviewEnd;
   private JComboBox mosaicPreviewComboEnd;
-  
+*/  
 
   /**
    * Creates a dialog for getting info related to output frames in
@@ -153,11 +151,11 @@ public class PovrayDialog extends JDialog {
     justSavingBox.setBorder(new TitledBorder(text));
     
     Box saveBox = Box.createHorizontalBox();
-    text = GT._("Filename Stem");
+    text = GT._("Filename");
     saveBox.setBorder(new TitledBorder(text));
-    text = GT._("Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'");
+    text = GT._("'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'");
     saveBox.setToolTipText(text);
-    saveField = new JTextField("jmol", 20);
+    saveField = new JTextField("Jmol.pov", 20);
     saveField.addActionListener(updateActionListener);
     saveField.setInputVerifier(updateInputVerifier);
     saveBox.add(saveField);
@@ -194,13 +192,15 @@ public class PovrayDialog extends JDialog {
     Box runPovBox = Box.createHorizontalBox();
     text = GT._("Run POV-Ray directly");
     runPovCheck = new JCheckBox(text, true);
-    text = GT._("Launch povray from within Jmol");
+    text = GT._("Launch POV-Ray from within Jmol");
     runPovCheck.setToolTipText(text);
     runPovCheck.addItemListener(updateItemListener);
     runPovBox.add(runPovCheck);
     runPovBox.add(Box.createGlue());
     povOptionsBox.add(runPovBox);
 
+    
+ /*
     // Use Ini option
     Box useIniBox = Box.createHorizontalBox();
     text = GT._("Use .ini file");
@@ -211,7 +211,7 @@ public class PovrayDialog extends JDialog {
     useIniBox.add(useIniCheck);
     useIniBox.add(Box.createGlue());
     povOptionsBox.add(useIniBox);
-    
+
     // Render all frames options
     Box allFramesBox = Box.createHorizontalBox();
     text = GT._("Render all frames");
@@ -233,7 +233,6 @@ public class PovrayDialog extends JDialog {
     antiAliasBox.add(antiAliasCheck);
     antiAliasBox.add(Box.createGlue());
     povOptionsBox.add(antiAliasBox);
-
     // Display when rendering option
     Box displayBox = Box.createHorizontalBox();
     text = GT._("Display While Rendering");
@@ -244,11 +243,12 @@ public class PovrayDialog extends JDialog {
     displayBox.add(displayWhileRenderingCheck);
     displayBox.add(Box.createGlue());
     povOptionsBox.add(displayBox);
+*/
 
     // Image size option
     Box imageBox = Box.createHorizontalBox();
     text = GT._("Image size");
-    imageSizeCheck = new JCheckBox(text, false);
+    imageSizeCheck = new JCheckBox(text, true);
     text = GT._("Image size");
     imageSizeCheck.setToolTipText(text);
     imageSizeCheck.addItemListener(new ItemListener() {
@@ -337,7 +337,7 @@ public class PovrayDialog extends JDialog {
     // Output format option
     Box outputBox = Box.createHorizontalBox();
     text = GT._("Output format : ");
-    outputFormatCheck = new JCheckBox(text, false);
+    outputFormatCheck = new JCheckBox(text, true);
     text = GT._("Select the file format of the output file");
     outputFormatCheck.setToolTipText(text);
     outputFormatCheck.addItemListener(new ItemListener() {
@@ -348,15 +348,19 @@ public class PovrayDialog extends JDialog {
     });
     outputBox.add(outputFormatCheck);
     outputFormatCombo = new JComboBox();
-    text = GT._("C - Compressed Targa-24");
-    outputFormatCombo.addItem(text);
+    //case 0
     text = GT._("N - PNG");
     outputFormatCombo.addItem(text);
+    //case 1
     text = GT._("P - PPM");
     outputFormatCombo.addItem(text);
+    //case 2
+    text = GT._("C - Compressed Targa-24");
+    outputFormatCombo.addItem(text);
+    //case 3
     text = GT._("T - Uncompressed Targa-24");
     outputFormatCombo.addItem(text);
-    outputFormatCombo.setSelectedIndex(3);
+    outputFormatCombo.setSelectedIndex(0);
     outputFormatCombo.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         outputFormatChanged();
@@ -367,7 +371,7 @@ public class PovrayDialog extends JDialog {
     outputBox.add(Box.createGlue());
     povOptionsBox.add(outputBox);
     outputFormatChanged();
-
+/*
     // Alpha option
     Box alphaBox = Box.createHorizontalBox();
     text = GT._("Alpha transparency");
@@ -435,7 +439,7 @@ public class PovrayDialog extends JDialog {
     mosaicBox.add(Box.createGlue());
     povOptionsBox.add(mosaicBox);
     mosaicPreviewChanged();
-    
+*/    
     //GUI for povray path selection
     Box povrayPathBox = Box.createHorizontalBox();
     text = GT._("POV-Ray Executable Location");
@@ -527,32 +531,60 @@ public class PovrayDialog extends JDialog {
 
     // File theFile = new.getSelectedFile();
   	String basename = saveField.getText();
-    String filename = basename + ".pov";
+    String filename = basename;
     String savePath = savePathLabel.getText();
     File theFile = new File(savePath, filename);
     if (theFile != null) {
-      try {
-        java.io.FileOutputStream os = new java.io.FileOutputStream(theFile);
-      
+      basename = filename = theFile.getAbsolutePath();
+        /*
         boolean allFrames = false;
         if (allFramesCheck != null) {
          allFrames = allFramesCheck.isSelected();   
         }
+        */
         int width = outputWidth;
         int height = outputHeight;
         if ((imageSizeCheck != null) && (imageSizeCheck.isSelected())) {
             height = Integer.parseInt(imageSizeTextHeight.getText());
             width = Integer.parseInt(imageSizeTextWidth.getText());
         }
-        PovraySaver povs = new PovraySaver(
+        
+        String data = viewer.generateOutput("Povray", 
+            filename + ":::" + getCommandLine(), 
+            width, height);
+        
+        String fileExt = "png";
+        String fileType = "N";
+        if ((outputFormatCheck != null) && (outputFormatCheck.isSelected())) {
+          switch (outputFormatCombo.getSelectedIndex()) {
+          case 0: // PNG
+            fileExt = "png";
+            fileType = "N";
+            break;
+          case 1: // PPM
+            fileExt = "ppm";
+            fileType = "P";
+            break;
+          case 2: // Compressed TARGA
+            fileExt = "tga";
+            fileType = "C";
+            break;
+          default: // Uncompressed TARGA
+            fileExt = "tga";
+            fileType = "T";
+            break;
+          }
+        }
+        data = TextFormat.simpleReplace(data, "%FILETYPE%", fileType);
+        data = TextFormat.simpleReplace(data, "%OUTPUTFILENAME%", filename + "." + fileExt);
+        viewer.createImage(filename + ".ini", data, Integer.MIN_VALUE, 0, 0);
+        
+/*        PovraySaver povs = new PovraySaver(
                 viewer, os, allFrames, width, height);
         povs.writeFile();
-      } catch (FileNotFoundException fnf) {
-        Logger.error("Povray Dialog FileNotFoundException: " + theFile, fnf);
-        return;
-      }
+*/
     }
-    
+/*    
     // Create INI file if needed
     boolean useIniFile = useIniCheck.isSelected();
     if (useIniFile) {
@@ -570,21 +602,18 @@ public class PovrayDialog extends JDialog {
         return;
       }
     }
-    
+*/    
     // Run Povray if needed
     boolean callPovray = runPovCheck.isSelected();
     if (callPovray) {
       String[] commandLineArgs = null;
-      if (useIniFile) {
-        if (!savePath.endsWith(java.io.File.separator)) {
-          savePath += java.io.File.separator;
-        }
+//      if (useIniFile) {
       	commandLineArgs = new String[] {
-      	  povrayPathLabel.getText(), savePath + filename
+      	  povrayPathLabel.getText(), filename + ".ini"
       	};
-      } else {
-        commandLineArgs = getCommandLineArgs();
-      }
+//      } else {
+//        commandLineArgs = getCommandLineArgs();
+//      }
       try {
         Runtime.getRuntime().exec(commandLineArgs);
       } catch (java.io.IOException e) {
@@ -598,7 +627,7 @@ public class PovrayDialog extends JDialog {
     setVisible(false);
     saveHistory();
     dispose();
-  }
+  }       
 
   /**
    * Responds to cancel being press- or equivalent eg window closed.
@@ -651,7 +680,7 @@ public class PovrayDialog extends JDialog {
   void imageSizeChanged() {
   	if (imageSizeCheck != null) {
   	  boolean selected = imageSizeCheck.isSelected();
-  	  boolean enabled = runPovCheck.isSelected() || useIniCheck.isSelected();
+  	  boolean enabled = true;//runPovCheck.isSelected() || useIniCheck.isSelected();
   	  boolean ratioSelected = false;
   	  imageSizeCheck.setEnabled(enabled);
   	  if (imageSizeRatioBox != null) {
@@ -703,7 +732,7 @@ public class PovrayDialog extends JDialog {
   void outputFormatChanged() {
   	if (outputFormatCheck != null) {
   	  boolean selected = outputFormatCheck.isSelected();
-  	  boolean enabled = runPovCheck.isSelected() || useIniCheck.isSelected();
+  	  boolean enabled = true;//runPovCheck.isSelected() || useIniCheck.isSelected();
   	  outputFormatCheck.setEnabled(enabled);
   	  if (outputFormatCombo != null) {
   	    outputFormatCombo.setEnabled(selected && enabled);
@@ -714,6 +743,7 @@ public class PovrayDialog extends JDialog {
   /**
    * Called when the MosaicPreview check box is modified 
    */
+/*
   void mosaicPreviewChanged() {
   	if (mosaicPreviewCheck != null) {
   	  boolean selected = mosaicPreviewCheck.isSelected();
@@ -733,7 +763,7 @@ public class PovrayDialog extends JDialog {
   	  }
   	}
   }
-  
+  */
   /**
    * Update screen informations
    */
@@ -755,11 +785,12 @@ public class PovrayDialog extends JDialog {
     }
     
     // Use INI ?
-    boolean useIni = false;
+    boolean useIni = true;
+/*    
     if (useIniCheck != null) {
       useIni = useIniCheck.isSelected();
     }
-    
+*/    
     // Update state
     if (antiAliasCheck != null) {
       antiAliasCheck.setEnabled(callPovray || useIni);
@@ -767,12 +798,14 @@ public class PovrayDialog extends JDialog {
     if (povrayPathButton != null) {
       povrayPathButton.setEnabled(callPovray || useIni);
     }
+/*    
     if (displayWhileRenderingCheck != null) {
       displayWhileRenderingCheck.setEnabled(callPovray || useIni);
     }
     if (antiAliasCheck != null) {
       antiAliasCheck.setEnabled(callPovray || useIni);
     }
+*/    
     if (commandLineField != null) {
       commandLineField.setEnabled(callPovray && !useIni);
     }
@@ -780,17 +813,23 @@ public class PovrayDialog extends JDialog {
     // Various update
     imageSizeChanged();
     outputFormatChanged();
-    mosaicPreviewChanged();
+//    mosaicPreviewChanged();
     
   	// Update command line
-  	updateCommandLine();
+    updateCommandLine();
+  }
+  
+  protected void updateCommandLine() {
+    if (commandLineField != null)
+      commandLineField.setText(getCommandLine());
   }
   
   /**
    * Generates a commandline from the options set for povray path
    * etc and sets in the textField.
+   * @return command line
    */
-  protected void updateCommandLine() {
+  protected String getCommandLine() {
 
   	// Check fields
   	String basename = null;
@@ -811,7 +850,7 @@ public class PovrayDialog extends JDialog {
       if (commandLineField != null) {
         commandLineField.setText(GT._("null component string"));
       }
-      return;
+      return "";
     }
 
     //Append a file separator to the savePath is necessary
@@ -828,18 +867,20 @@ public class PovrayDialog extends JDialog {
     String outputFileType = " +FT";
     if ((outputFormatCheck != null) && (outputFormatCheck.isSelected())) {
       switch (outputFormatCombo.getSelectedIndex()) {
-      case 0: // Compressed TARGA
-        outputFileType = " +FC";
-        break;
-      case 1: // PNG
+      case 0: // PNG
         outputExtension = ".png";
         outputFileType = " +FN";
         break;
-      case 2: // PPM
+      case 1: // PPM
         outputExtension = ".ppm";
         outputFileType = " +FP";
         break;
+      case 2: // Compressed TARGA
+        outputFileType = " +FC";
+        break;
       default: // Uncompressed TARGA
+        outputExtension = ".tga";
+        outputFileType = " +FT";
         break;
       }
     }
@@ -847,13 +888,13 @@ public class PovrayDialog extends JDialog {
       " +O" +
       simpleQuoteIfContainsSpace(savePath + basename + outputExtension) +
       outputFileType;
-    
+/*    
     // Output alpha options
     if ((outputAlphaCheck != null) && (outputAlphaCheck.isSelected())) {
       commandLine +=
         " +UA";
     }
-    
+*/    
     // Image size options
     if ((imageSizeCheck != null) && (imageSizeCheck.isSelected())) {
       commandLine +=
@@ -885,27 +926,28 @@ public class PovrayDialog extends JDialog {
       commandLine += " +KI1";
       commandLine += " +KF" + viewer.getModelCount();
     }
-    
+/*    
     // Mosaic preview options
     if ((mosaicPreviewCheck != null) && (mosaicPreviewCheck.isSelected())) {
       commandLine +=
         " +SP" + mosaicPreviewComboStart.getSelectedItem() +
 		" +EP" + mosaicPreviewComboEnd.getSelectedItem();
     }
-    
+*/    
     commandLine += " -V"; // turn off verbose messages ... although it is still rather verbose
 
-    if (commandLineField != null) {
-      commandLineField.setText(commandLine);
-    }
+    return commandLine;
   }
 
+  
   /**
    * Save INI file
    * 
    * @param os Output stream
    * @throws IOException
    */
+  
+/*  
   private void saveIni(FileWriter os) throws IOException {
     if (os == null) {
       return;
@@ -990,10 +1032,11 @@ public class PovrayDialog extends JDialog {
     
     os.write("Verbose=false\n");
   }
-  
+*/  
   /**
    * @return Command line split into arguments
    */
+/*
   private String[] getCommandLineArgs() {
   	
     //Parsing command line
@@ -1039,7 +1082,7 @@ public class PovrayDialog extends JDialog {
     }
     return args;
   }
-  
+*/  
   /**
    * Centers the dialog on the screen.
    */

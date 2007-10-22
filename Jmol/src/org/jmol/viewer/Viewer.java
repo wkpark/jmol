@@ -2866,7 +2866,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    }
    */
 
-  String generateOutput(String type, String fileName, int width, int height) {
+  public String generateOutput(String type, String fileName, int width, int height) {
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
     if (width > 0 && height > 0)

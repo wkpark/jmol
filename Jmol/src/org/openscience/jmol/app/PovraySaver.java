@@ -22,7 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.jmol.app;
-
+/*
 import org.jmol.api.*;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
@@ -38,9 +38,12 @@ import java.io.OutputStream;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4f;
-
+*/
 public class PovraySaver {
 
+  // superceded by org.jmol.export._PovrayExporter
+  
+  /*
   BufferedWriter bw;
   JmolViewer viewer;
   boolean allModels;
@@ -225,14 +228,14 @@ public class PovraySaver {
     }
   }
 
-  /**
+  *//**
    * Takes a java colour and returns a String representing the
    * colour in povray eg 'rgb<1.0,0.0,0.0>'
    *
    * @param argb The color to convert
    *
    * @return A string representaion of the color in povray rgb format.
-   */
+   *//*
   protected String povrayColor(int argb) {
     return "rgb<" +
       getRed(argb) + "," +
@@ -632,12 +635,12 @@ public class PovraySaver {
     }
   }
   
-  /**
+  *//**
    * Computes the control points of a b-spline that goes through a set of points
    * 
    * @param path Set of n points to go through
    * @return Set of n+2 control points
-   */
+   *//*
   Point3f[] computeControlPoints(Point3f[] path) {
   	// NOTE :
   	// I digged this code out from a program I wrote more than ten years ago
@@ -815,4 +818,7 @@ public class PovraySaver {
   float getBlu(int argb) {
     return (argb & 0xFF) / 255f;
   }
+  
+*/
+
 }

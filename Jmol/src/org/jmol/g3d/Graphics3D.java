@@ -1579,8 +1579,7 @@ final public class Graphics3D implements JmolRendererInterface {
       int x = coordinates[--i];
       if (isClipped(x, y, z))
         continue;
-      int offset;        
-      offset = y * width + x++;
+      int offset = y * width + x++;
       if (z < zbuf[offset])
         addPixel(offset, z, argbCurrent);
       if (antialiasThisFrame) {

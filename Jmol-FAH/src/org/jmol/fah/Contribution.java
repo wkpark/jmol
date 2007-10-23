@@ -91,7 +91,7 @@ public class Contribution implements Serializable {
   private void addInformation(String userName, int teamNum, int range) {
     //Load new information
     StringBuffer urlName = new StringBuffer();
-    urlName.append("http://vspx27.stanford.edu/"); //$NON-NLS-1$
+    urlName.append("http://fah-web.stanford.edu/"); //$NON-NLS-1$
     urlName.append("cgi-bin/main.py?qtype=userpagedet"); //$NON-NLS-1$
     urlName.append("&username="); //$NON-NLS-1$
     urlName.append(userName);
@@ -243,7 +243,7 @@ public class Contribution implements Serializable {
        *      int)
        */
       public void handleText(char[] data, int pos) {
-        if ((this._table > 0) && (this._row > 1) && (this._tableNum == 8)) {
+        if ((this._table > 0) && (this._row > 1) && (this._tableNum == 6)) {
           switch (this._column) {
           case 1: // Project
             this._project = new String(data);

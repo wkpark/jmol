@@ -1111,7 +1111,8 @@ class Compiler {
     int ichT = ichToken;
     while (ichT < cchScript && !eol(script.charAt(ichT)))
       ++ichT;
-    if (ichT > ichToken && script.charAt(ichToken) == '@')
+    if (ichT > ichToken && script.charAt(ichToken) == '@'
+        && (ichT <= ichToken + 1 || script.charAt(ichToken + 1) != '{'))
       return false;
     cchToken = ichT - ichToken;
     log("lookingAtSpecialString cchToken=" + cchToken);
@@ -1466,6 +1467,11 @@ class Compiler {
         if (!moreTokens())
           break;
       }
+      if (lastToken.tok == Token.define) {
+        if (!clauseDefine())
+          return false;
+        continue;
+      }
       if (!isImplicitExpression)
         addTokenToPostfix(Token.tokenExpressionBegin);
       if (!clauseOr(isCommaAsOrAllowed || !isImplicitExpression
@@ -1686,8 +1692,12 @@ class Compiler {
       return addNextToken();
     case Token.define:
       addNextToken();
-      if (tokPeek()!=Token.nada)
-        return addTokenToPostfix(Token.identifier, tokenNext().value);
+      switch (tokPeek()) {
+      case Token.nada:
+        break;
+      default:
+        return clauseDefine();
+      }
       //fall through
       case Token.nada:
         return endOfCommandUnexpected();
@@ -1698,7 +1708,7 @@ class Compiler {
         addNextToken();
       else if (tokPeek(Token.define)) {
         addNextToken();
-        addNextToken();
+        return clauseDefine();
       }
       return true;
     case Token.cell:
@@ -2022,7 +2032,7 @@ class Compiler {
     }
     addTokenToPostfix(theToken);
     if (theToken.tok == Token.define)
-      addTokenToPostfix(getToken());
+      return clauseDefine();
     return true;
   }
 
@@ -2056,6 +2066,24 @@ class Compiler {
       return coordinateExpected(); // k
     cell.z = floatValue();
     return addTokenToPostfix(Token.cell, cell);
+  }
+
+  private boolean clauseDefine() {
+    if (!addSubstituteTokenIf(Token.leftbrace, Token.tokenExpressionBegin)) {
+      addNextToken();
+      return true;
+    }
+    while (moreTokens() && !tokPeek(Token.rightbrace)) {
+      if (addSubstituteTokenIf(Token.leftbrace, Token.tokenExpressionBegin)) {
+        if (!clauseOr(false))
+          return false;
+        if (!addSubstituteTokenIf(Token.rightbrace, Token.tokenExpressionEnd))
+          return false;
+      } else {
+        addNextToken();
+      }
+    }
+    return addSubstituteTokenIf(Token.rightbrace, Token.tokenExpressionEnd);
   }
 
   private boolean residueSpecCodeGenerated;

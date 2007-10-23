@@ -260,7 +260,8 @@ public class Text {
       return;
     this.text = text;
     textUnformatted = text;
-    doFormatText = (viewer != null && text != null && text.indexOf("%{") >= 0);
+    doFormatText = (viewer != null && text != null 
+        && (text.indexOf("%{") >= 0 || text.indexOf("@{") >= 0));
     if (!doFormatText)
       recalc();
   }
@@ -328,7 +329,7 @@ public class Text {
     boxHeight = textHeight + 8;
   }
 
-  void formatText() {
+  private void formatText() {
     text = (viewer == null ? textUnformatted : 
       viewer.formatText(textUnformatted));
     recalc();

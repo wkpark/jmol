@@ -5310,24 +5310,35 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return g3d.getFont3D(fontFace, fontStyle, fontSize);
   }
 
-  public String formatText(String text) {
-    int i0 = -1;
+  public String formatText(String text0) {
     int i;
+    if ((i = text0.indexOf("@{")) < 0 && (i = text0.indexOf("%{")) < 0)
+      return text0;
+    
+    // old style %{ now @{
+    
+    String text = TextFormat.simpleReplace(text0, "%{", "@{");
     String name;
-    while ((i = text.indexOf("%{")) >= 0) {
-      i0 = i + 2;
-      i = text.indexOf("}", i0);
-      if (i < 0)
+    while ((i = text.indexOf("@{")) >= 0) {
+      i++;
+      int i0 = i + 1;
+      if (text.indexOf("}", i0) < 0)
         return text;
-      name = text.substring(i0, i);
-      if (name.indexOf("{") >= 0) {
-        while (name.lastIndexOf("{") > name.lastIndexOf("}")) {
-          i = text.indexOf("}", i + 1);
-          if (i < 0)
-            return text;
-          name = text.substring(i0, i);
+      int nBrace = 1;
+      int len = text.length();
+      while (nBrace > 0 && ++i < len) {
+        switch(text.charAt(i)) {
+        case '{':
+          nBrace++;
+          break;
+        case '}':
+          nBrace--;
+          break;
         }
       }
+      if (nBrace != 0)
+        return text;
+      name = text.substring(i0, i);
       if (name.length() == 0)
         return text;
       Object v = Eval.evaluateExpression(this, name);

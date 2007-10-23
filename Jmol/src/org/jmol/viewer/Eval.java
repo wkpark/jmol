@@ -136,6 +136,17 @@ class Eval { //implements Runnable {
         : asToken ? token : Token.oValue(token));
   }
   
+  private Object getNumericParameter(String var) {
+    Token token = getContextVariableAsToken(var);
+    if (token == null) {
+      Object val = viewer.getParameter(var);
+      if (!(val instanceof String))
+        return val;
+      token = new Token(Token.string, val);
+    }
+    return Token.nValue(token);
+  }
+  
   private Token getContextVariableAsToken(String var) {
     if (contextVariables != null && contextVariables.containsKey(var))
       return (Token) contextVariables.get(var);
@@ -166,8 +177,7 @@ class Eval { //implements Runnable {
     Eval e = new Eval(viewer);
     try {
       if (e.loadScript(null, EXPRESSION_KEY + " = " + expr, false)) {
-        e.statement = e.aatoken[0];
-        e.statementLength = e.statement.length;
+        e.setStatement(0);
         return e.parameterExpression(2, 0, "", false);
       }
     } catch (Exception ex) {
@@ -688,7 +698,9 @@ class Eval { //implements Runnable {
 
   private int commandHistoryLevelMax = 0;
 
-  private void fixVariables() throws ScriptException {
+  private void setStatement(int pc) throws ScriptException {
+    statement = aatoken[pc];
+    statementLength = statement.length; 
     Token[] fixed;
     int i;
     int tok;
@@ -704,15 +716,24 @@ class Eval { //implements Runnable {
     for (i = 1; i < statementLength; i++) {
       switch (tok = statement[i].tok) {
       case Token.define:
+        Object v;
         String var = parameterAsString(++i);
-        Object v = getParameter(var, false);
+        boolean isClauseDefine = (tokAt(i) == Token.expressionBegin); 
+        if (isClauseDefine) {
+          Vector val = (Vector) parameterExpression(++i, 0, "_var", true);
+          i = iToken;
+          v = Token.oValue((Token) val.elementAt(0));
+        } else  {
+          v = getParameter(var, false);
+        }
         Object var_set;
         if (v instanceof Boolean) {
           fixed[j] = (((Boolean) v).booleanValue() ? Token.tokenOn
               : Token.tokenOff);
         } else if (v instanceof Integer) {
-          if (isExpression && (var_set = getParameter(var + "_set", false)) != null)
-            fixed[j] = new Token(Token.select, "" + var_set);
+          if (isExpression && !isClauseDefine 
+              && (var_set = getParameter(var + "_set", false)) != null)
+            fixed[j] = new Token(Token.define, "" + var_set);
           else
             fixed[j] = new Token(Token.integer, ((Integer) v).intValue(), v);
 
@@ -726,11 +747,15 @@ class Eval { //implements Runnable {
             // identifiers cannot have periods; file names can, though
             // in addition, we need this for 
             String s = (String) v;
-            tok = (isExpression ? Token.select : s.indexOf(".") >= 0
-                || s.indexOf("=") >= 0 || s.indexOf("[") >= 0 ? Token.string
+            tok = (isClauseDefine ? Token.string 
+                : isExpression ? Token.define 
+                : s.indexOf(".") >= 0 || s.indexOf("=") >= 0 
+                    || s.indexOf("[") >= 0 ? Token.string
                 : Token.identifier);
             fixed[j] = new Token(tok, s);
           }
+        } else if (v instanceof BitSet){
+          fixed[j] = new Token(Token.bitset, v);
         } else {
           Point3f center = getDrawObjectCenter(var);
           if (center == null)
@@ -801,9 +826,7 @@ class Eval { //implements Runnable {
       if (!checkContinue())
         break;
       Token token = aatoken[pc][0];
-      statement = aatoken[pc];
-      statementLength = statement.length;
-      fixVariables();
+      setStatement(pc);
       if (lineNumbers[pc] > lineEnd)
         break;
       thisCommand = getCommand();
@@ -1331,7 +1354,7 @@ class Eval { //implements Runnable {
     expression_loop: for (int pc = pcStart; pc < pcStop; ++pc) {
       iToken = pc;
       Token instruction = code[pc];
-      Object value = code[pc].value;
+      Object value = instruction.value;
       //if (logMessages)
       //viewer.scriptStatus("instruction=" + instruction);
       switch (instruction.tok) {
@@ -1369,7 +1392,7 @@ class Eval { //implements Runnable {
           val = lookupIdentifierValue((String) value);
         rpn.addX(val);
         break;
-      case Token.select:
+      case Token.define:
         rpn.addX(getAtomBitSet(this, viewer, (String) value));
         break;
       case Token.plane:
@@ -1523,10 +1546,12 @@ class Eval { //implements Runnable {
         boolean isRadius = (tokWhat == Token.radius);
         int tokValue = code[pc].tok;
         comparisonValue = code[pc].intValue;
-        boolean isIdentifier = (tokValue == Token.identifier);
         float comparisonFloat = Float.NaN;
-        if (isIdentifier) {
-          val = getParameter((String) val, false);
+        if (val instanceof String) {
+          if (tokValue == Token.identifier)
+            val = getNumericParameter((String) val);
+          if (val instanceof String)
+            val = Token.nValue(code[pc]);
           if (val instanceof Integer)
             comparisonFloat = comparisonValue = ((Integer) val).intValue();
           else if (val instanceof Float && isModel)
@@ -1551,8 +1576,10 @@ class Eval { //implements Runnable {
             comparisonFloat = ((Float) val).floatValue();
             comparisonValue = (int) (comparisonFloat * (isRadius ? 250f : 100f));
           }
-        } else
+        } else {
+          iToken++;
           invalidArgument();
+        }
         if (isModel && comparisonValue >= 1000000
             && comparisonValue % 1000000 == 0) {
           comparisonValue /= 1000000;
@@ -2392,11 +2419,10 @@ class Eval { //implements Runnable {
 
   private boolean isColorParam(int i) {
     int tok = tokAt(i);
-    String s;
     return (tok == Token.colorRGB || tok == Token.leftsquare
-        || tok == Token.point3f || isPoint3f(i) || tok == Token.string
-        && ((s = (String) statement[i].value).startsWith("[x") || s
-            .startsWith("[0x")) && s.indexOf("[") == s.lastIndexOf("["));
+        || tok == Token.point3f || isPoint3f(i) 
+        || (tok == Token.string || tok == Token.identifier)
+        && Graphics3D.getArgbFromString((String) statement[i].value)!= 0);
   }
 
   private int getArgbParam(int index) throws ScriptException {
@@ -6557,6 +6583,9 @@ class Eval { //implements Runnable {
         v = expression(statement, i, 0, true, true, false);
         i = iToken;
         break;
+      case Token.expressionEnd:
+        i++;
+        break out;
       case Token.rightbrace:
         invalidArgument();
       case Token.comma: //ignore commas
@@ -10018,6 +10047,7 @@ class Eval { //implements Runnable {
     boolean addParens = (Compiler.tokAttr(tok, Token.embeddedExpression));
     boolean useBraces = (Compiler.tokAttr(tok, Token.implicitExpression));
     boolean inBrace = false;
+    boolean inClauseDefine = false;
     for (int i = 0; i < statementLength; ++i) {
       if (iToken == i - 1)
         sb.append(" <<");
@@ -10034,6 +10064,8 @@ class Eval { //implements Runnable {
           sb.append("(");
         continue;
       case Token.expressionEnd:
+        if (inClauseDefine && i == statementLength - 1)
+          useBraces = false;
         if (useBraces)
           sb.append("}");
         else if (addParens)
@@ -10047,8 +10079,15 @@ class Eval { //implements Runnable {
         inBrace = (token.tok == Token.leftbrace);
         break;
       case Token.define:
-        if (i > 0)
+        if (i > 0 && ((String) token.value).equals("define")) {
           sb.append("@");
+          if (tokAt(i + 1) == Token.expressionBegin) {
+            if (!useBraces)
+              inClauseDefine = true;
+            useBraces = true;
+          }
+          continue;
+        }
         break;
       case Token.on:
         sb.append("true");
@@ -10988,16 +11027,19 @@ class Eval { //implements Runnable {
       if (args.length < 1)
         return false;
       Object withinSpec = args[0].value;
+      int tok = args[0].tok;
       String withinStr = "" + withinSpec;
       BitSet bs = new BitSet();
       float distance = 0;
       boolean isSequence = false;
       int i = args.length;
       boolean isWithinModelSet = false;
+      boolean isDistance = (tok == Token.decimal 
+          || tok == Token.integer);
       if (withinSpec instanceof String) {
         isSequence = !Parser.isOneOf(withinStr,
             "element;site;group;chain;molecule;model");
-      } else if (withinSpec instanceof Float || args[0].tok == Token.integer) {
+      } else if (isDistance) {
         distance = Token.fValue(args[0]);
         if (i < 2)
           return false;
@@ -11031,7 +11073,7 @@ class Eval { //implements Runnable {
       if (pt != null)
         return addX(viewer.getAtomsWithin(distance, pt));
       bs = Token.bsSelect(args[i]);
-      if (withinSpec instanceof Float)
+      if (isDistance)
         return addX(viewer.getAtomsWithin(distance, bs, isWithinModelSet));
       if (isSequence)
         return addX(viewer.getAtomsWithin(Token.sequence, withinStr, bs));
@@ -11183,6 +11225,7 @@ class Eval { //implements Runnable {
         if (iv == Token.color) {
           switch (x2.tok) {
           case Token.string:
+          case Token.list:
             Point3f pt = new Point3f();
             return addX(Graphics3D.colorPointFromString(Token.sValue(x2), pt));
           case Token.integer:

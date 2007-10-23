@@ -485,6 +485,22 @@ public class Token {
     }        
   }
   
+  static Object nValue(Token token) {
+    int iValue = 0;
+    switch (token.tok) {
+    case Token.integer:
+      iValue = token.intValue;
+      break;
+    case Token.decimal:
+      return token.value;
+    case Token.string:
+      if (((String)token.value).indexOf(".") >= 0)
+        return new Float(fValue(token));
+      iValue = iValue(token);
+    }
+    return new Integer(iValue);
+  }
+  
   static boolean bValue(Token x) {
     switch (x.tok) {
     case Token.on:

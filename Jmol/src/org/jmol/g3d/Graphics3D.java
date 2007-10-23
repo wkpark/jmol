@@ -790,7 +790,7 @@ final public class Graphics3D implements JmolRendererInterface {
     addAllPixels = true;
     if (pbuf == null) {
       platform.allocateBuffers(windowWidth, windowHeight,
-                               isFullSceneAntialiasingEnabled);
+                              antialiasThisFrame);
       pbuf = platform.pBuffer;
       zbuf = platform.zBuffer;
       bufferSize = pbuf.length;
@@ -820,10 +820,10 @@ final public class Graphics3D implements JmolRendererInterface {
   public void endRendering() {
     if (!currentlyRendering)
       return;
-    if (antialiasThisFrame)
-      downSampleFullSceneAntialiasing();
     if (isPass2)
       mergeOpaqueAndTranslucentBuffers();
+    if (antialiasThisFrame)
+      downSampleFullSceneAntialiasing();
     platform.notifyEndOfRendering();
     currentlyRendering = false;
   }

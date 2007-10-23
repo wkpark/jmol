@@ -88,29 +88,31 @@ abstract class Platform3D {
     pBufferT = new int[bufferSizeT];    
   }
   
-  void allocateBuffers(int width, int height, boolean tFsaa4) {
+  void allocateBuffers(int width, int height, boolean antialias) {
     windowWidth = width;
     windowHeight = height;
     windowSize = width * height;
-    if (tFsaa4) {
+    if (antialias) {
       bufferWidth = width * 2;
       bufferHeight = height * 2;
     } else {
       bufferWidth = width;
       bufferHeight = height;
     }
+    
     bufferSize = bufferWidth * bufferHeight;
     zBuffer = new int[bufferSize];
     pBuffer = new int[bufferSize];
     //no need for any antialiazing on a translucent buffer
-    bufferSizeT = windowWidth * windowHeight;
+    //NOT TRUE...
+    bufferSizeT = bufferSize;
     imagePixelBuffer = allocateImage();
     /*
     Logger.debug("  width:" + width + " bufferWidth=" + bufferWidth +
                        "\nheight:" + height + " bufferHeight=" + bufferHeight);
     */
   }
-
+  
   void releaseBuffers() {
     windowWidth = windowHeight = bufferWidth = bufferHeight = bufferSize = -1;
     if (imagePixelBuffer != null) {

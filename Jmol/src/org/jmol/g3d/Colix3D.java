@@ -25,7 +25,6 @@
 package org.jmol.g3d;
 
 import org.jmol.util.Int2IntHash;
-import org.jmol.util.Logger;
 
 /**
  *<p>
@@ -73,10 +72,10 @@ class Colix3D {
       return 0;
     int translucentFlag = 0;
     if ((argb & 0xFF000000) != 0xFF000000) {
-      if ((argb & 0xFF000000) == 0) {
-        Logger.error("zero alpha channel + non-zero rgb not supported");
-        throw new IndexOutOfBoundsException();
-      }
+      //if ((argb & 0xFF000000) == 0) {
+      //  Logger.error("zero alpha channel + non-zero rgb not supported");
+      //  throw new IndexOutOfBoundsException();
+      //}
       argb |= 0xFF000000;
       translucentFlag = Graphics3D.TRANSLUCENT_50;
     }

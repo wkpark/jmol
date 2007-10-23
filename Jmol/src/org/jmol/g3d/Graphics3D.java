@@ -1703,7 +1703,7 @@ final public class Graphics3D implements JmolRendererInterface {
   public static short getColix(String colorName) {
     int argb = getArgbFromString(colorName);
     if (argb != 0)
-      return getColix(argb);
+      return Colix3D.getColix(argb);
     if ("none".equalsIgnoreCase(colorName))
       return INHERIT_ALL;
     if ("opaque".equalsIgnoreCase(colorName))
@@ -1759,7 +1759,7 @@ final public class Graphics3D implements JmolRendererInterface {
       return (((Byte) obj).byteValue() == 0 ? INHERIT_ALL
           : USE_PALETTE);
     if (obj instanceof Integer)
-      return getColix(((Integer) obj).intValue());
+      return Colix3D.getColix(((Integer) obj).intValue());
     if (obj instanceof String)
       return getColix((String) obj);
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {

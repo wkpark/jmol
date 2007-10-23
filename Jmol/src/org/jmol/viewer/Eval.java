@@ -7160,7 +7160,11 @@ class Eval { //implements Runnable {
       viewer.setAtomCoord(bs, tok, tokenValue.value);
       break;
     case Token.color:
-      viewer.setShapeProperty(JmolConstants.SHAPE_BALLS, "color", new Integer(iValue), bs);
+      if (tokenValue.tok == Token.point3f)
+        iValue = colorPtToInt((Point3f)tokenValue.value);
+      viewer.setShapeProperty(JmolConstants.SHAPE_BALLS, "color", 
+          tokenValue.tok == Token.string ? tokenValue.value 
+              : new Integer(iValue), bs);
       break;
     default:
       viewer.setAtomProperty(bs, tok, iValue, fValue);

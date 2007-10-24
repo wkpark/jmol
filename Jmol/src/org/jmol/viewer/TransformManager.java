@@ -1098,14 +1098,32 @@ abstract class TransformManager {
   int screenPixelCount;
   float scalePixelsPerAngstrom;
   float scaleDefaultPixelsPerAngstrom;
+  private boolean antialias;
+  private boolean useZoomLarge;
 
   void setScreenDimension(int width, int height, boolean useZoomLarge, 
                           boolean antialias, boolean resetSlab) {
+    this.antialias = antialias;
     this.width = (antialias ? width * 2 : width);
     this.height = (antialias ? height * 2 : height);
+    this.useZoomLarge = useZoomLarge;
     scaleFitToScreen(false, useZoomLarge, resetSlab);
   }
 
+  void setAntialias(boolean TF) {
+    if (this.antialias == TF)
+      return;
+    this.antialias = TF;
+    if (TF) {
+      width *= 2;
+      height *= 2;
+    } else {
+      width /= 2;
+      height /= 2;
+    }
+    scaleFitToScreen(false, useZoomLarge, false);
+  }
+  
   private float defaultScaleToScreen(float radius) {
     /* 
      * 
@@ -1139,6 +1157,8 @@ abstract class TransformManager {
     // switch to finding larger screen dimension
     // find smaller screen dimension
     screenPixelCount = (zoomLarge == (height > width) ? height : width);
+    //System.out.println("tman: screenPixelCount:" + screenPixelCount);
+    
     // ensure that rotations don't leave some atoms off the screen
     // note that this radius is to the furthest outside edge of an atom
     // given the current VDW radius setting. it is currently *not*
@@ -1255,6 +1275,8 @@ abstract class TransformManager {
     // cale to screen coordinates
     matrixTemp.setZero();
     matrixTemp.set(scalePixelsPerAngstrom);
+    //System.out.println("tman: antialias " + antialias + " screenPixelCount:" + screenPixelCount +  " sppa " + scalePixelsPerAngstrom);
+
     if (!axesOrientationRasmol) {
       // negate y (for screen) and z (for zbuf)
       matrixTemp.m11 = matrixTemp.m22 = -scalePixelsPerAngstrom;

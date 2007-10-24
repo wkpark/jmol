@@ -2917,8 +2917,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
         matrixRotate, antialias, twoPass);
     repaintManager.render(g3d, modelSet); //, rectClip
-    if (twoPass && g3d.setPass2())
+    if (twoPass && g3d.setPass2()) {
+      transformManager.setAntialias(false);
       repaintManager.render(g3d, modelSet); //, rectClip
+      transformManager.setAntialias(antialias);      
+    }
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
     // Sun is throwing a NullPointerExceptions inside graphics routines
     // while the window is resized.

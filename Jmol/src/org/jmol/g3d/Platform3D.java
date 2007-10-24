@@ -104,8 +104,7 @@ abstract class Platform3D {
     zBuffer = new int[bufferSize];
     pBuffer = new int[bufferSize];
     //no need for any antialiazing on a translucent buffer
-    //NOT TRUE...
-    bufferSizeT = bufferSize;
+    bufferSizeT = windowSize;
     imagePixelBuffer = allocateImage();
     /*
     Logger.debug("  width:" + width + " bufferWidth=" + bufferWidth +

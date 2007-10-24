@@ -189,7 +189,7 @@ final public class Graphics3D implements JmolRendererInterface {
     this.windowWidth = windowWidth;
     this.windowHeight = windowHeight;
     isFullSceneAntialiasingEnabled = enableFullSceneAntialiasing;
-    setWidthHeight(enableFullSceneAntialiasing);
+    //setWidthHeight(enableFullSceneAntialiasing);
     pbuf = null;
     zbuf = null;
     pbufT = null;
@@ -210,7 +210,8 @@ final public class Graphics3D implements JmolRendererInterface {
     displayMaxX = width - displayMinX;
     displayMinY = -(height >> 1);
     displayMaxY = height - displayMinY;
-
+    bufferSize = width * height;
+    //System.out.println("set width/height " + isAntialiased + " w="+width + " h=" + height);
   }
   
   public boolean checkTranslucent(boolean isAlphaTranslucent) {
@@ -219,6 +220,114 @@ final public class Graphics3D implements JmolRendererInterface {
     return (!twoPass || twoPass && (isPass2 == isAlphaTranslucent));
   }
   
+  public void beginRendering(//int clipX, int clipY,
+                             //int clipWidth, int clipHeight,
+                             Matrix3f rotationMatrix,
+                             boolean antialiasThisFrame, 
+                             boolean twoPass) {
+    if (currentlyRendering)
+      endRendering();
+    normix3d.setRotationMatrix(rotationMatrix);
+    antialiasThisFrame &= isFullSceneAntialiasingEnabled;
+    this.antialiasThisFrame = antialiasThisFrame;
+    currentlyRendering = true;
+    this.twoPass = twoPass;
+    isPass2 = false;
+    colixCurrent = 0;
+    haveAlphaTranslucent = false;
+    addAllPixels = true;
+    if (pbuf == null) {
+      platform.allocateBuffers(windowWidth, windowHeight,
+                              antialiasThisFrame);
+      pbuf = platform.pBuffer;
+      zbuf = platform.zBuffer;
+    }
+    setWidthHeight(antialiasThisFrame);
+    //setRectClip(clipX, clipY, clipWidth, clipHeight);
+    platform.obtainScreenBuffer();
+  }
+
+  public boolean setPass2() {
+    //System.out.println("g3d setPass2: haveAlphaTranslucent,currentlyRendering: " + haveAlphaTranslucent + " " + currentlyRendering);
+    if (!haveAlphaTranslucent || !currentlyRendering)
+      return false;
+    //System.out.println("isPass2");
+    isPass2 = true;
+    colixCurrent = 0;
+    addAllPixels = true;
+    if (antialiasThisFrame)
+      downSampleFullSceneAntialiasing();
+    if (pbufT == null) {
+      platform.allocateTBuffers();
+      pbufT = platform.pBufferT;
+      zbufT = platform.zBufferT;
+    }    
+    platform.clearTBuffer();
+    return true;
+  }
+  
+  public void endRendering() {
+    if (!currentlyRendering)
+      return;
+    if (antialiasThisFrame)
+      downSampleFullSceneAntialiasing();
+    if (isPass2)
+      mergeOpaqueAndTranslucentBuffers();
+    platform.notifyEndOfRendering();
+    currentlyRendering = false;
+  }
+
+  public void snapshotAnaglyphChannelBytes() {
+    if (currentlyRendering)
+      throw new NullPointerException();
+    if (anaglyphChannelBytes == null ||
+  anaglyphChannelBytes.length != pbuf.length)
+      anaglyphChannelBytes = new byte[pbuf.length];
+    for (int i = pbuf.length; --i >= 0; )
+      anaglyphChannelBytes[i] = (byte)pbuf[i];
+  }
+
+  public void applyCustomAnaglyph(int[] stereoColors) {
+    //best if complementary, but they do not have to be0 
+    int color1 = stereoColors[0];
+    int color2 = stereoColors[1] & 0x00FFFFFF;
+    for (int i = pbuf.length; --i >= 0;) {
+      int a = anaglyphChannelBytes[i] & 0x000000FF;
+      a = (a | ((a | (a << 8)) << 8)) & color2;
+      pbuf[i] = (pbuf[i] & color1) | a;
+    }
+  }
+
+  public void applyGreenAnaglyph() {
+    for (int i = pbuf.length; --i >= 0; ) {
+      int green = (anaglyphChannelBytes[i] & 0x000000FF) << 8;
+      pbuf[i] = (pbuf[i] & 0xFFFF0000) | green;
+    }
+  }
+
+  public void applyBlueAnaglyph() {
+    for (int i = pbuf.length; --i >= 0; ) {
+      int blue = anaglyphChannelBytes[i] & 0x000000FF;
+      pbuf[i] = (pbuf[i] & 0xFFFF0000) | blue;
+    }
+  }
+
+  public void applyCyanAnaglyph() {
+    for (int i = pbuf.length; --i >= 0; ) {
+      int blue = anaglyphChannelBytes[i] & 0x000000FF;
+      int cyan = (blue << 8) | blue;
+      pbuf[i] = pbuf[i] & 0xFFFF0000 | cyan;
+    }
+  }
+  
+  public Image getScreenImage() {
+    return platform.imagePixelBuffer;
+  }
+
+  public void releaseScreenImage() {
+    platform.clearScreenBufferThreaded();
+  }
+
   public boolean haveTranslucentObjects() {
     return haveAlphaTranslucent;
   }
@@ -317,27 +426,30 @@ final public class Graphics3D implements JmolRendererInterface {
    * used internally when oversampling is enabled
    */
   private void downSampleFullSceneAntialiasing() {
-    int[] pbuf1 = pbuf;
-    int[] pbuf4 = pbuf;
     int width4 = width;
     int offset1 = 0;
     int offset4 = 0;
     for (int i = windowHeight; --i >= 0; ) {
       for (int j = windowWidth; --j >= 0; ) {
         int argb;
-        argb  = (pbuf4[offset4         ] >> 2) & 0x3F3F3F3F;
-        argb += (pbuf4[offset4 + width4] >> 2) & 0x3F3F3F3F;
+        argb  = (pbuf[offset4         ] >> 2) & 0x3F3F3F3F;
+        argb += (pbuf[offset4 + width4] >> 2) & 0x3F3F3F3F;
+        int z = zbuf[offset4];
+        z = Math.min(z, zbuf[offset4 + width4]);
         ++offset4;
-        argb += (pbuf4[offset4         ] >> 2) & 0x3F3F3F3F;
-        argb += (pbuf4[offset4 + width4] >> 2) & 0x3F3F3F3F;
+        argb += (pbuf[offset4         ] >> 2) & 0x3F3F3F3F;
+        argb += (pbuf[offset4 + width4] >> 2) & 0x3F3F3F3F;
         argb += (argb & 0xC0C0C0C0) >> 6;
         argb |= 0xFF000000;
-        pbuf1[offset1] = argb;
+        pbuf[offset1] = argb;
+        z = Math.min(z, zbuf[offset4]);
+        zbuf[offset1] = Math.min(z, zbuf[offset4 + width4]);
         ++offset1;
         ++offset4;
       }
       offset4 += width4;
     }
+    setWidthHeight(antialiasThisFrame = false);
   }
 
   void mergeOpaqueAndTranslucentBuffers() {
@@ -465,17 +577,14 @@ final public class Graphics3D implements JmolRendererInterface {
   
   final static void addPixelT(int offset, int z, int p, int[] zbuf, int[] pbuf, int[] zbufT, int[] pbufT, int translucencyMask, boolean isPass2, int zMargin) {
     if (!isPass2) {
-      //System.out.println("pass1A " + offset + " " + Integer.toHexString(z)+ " " + Integer.toHexString(p));
       zbuf[offset] = z;
       pbuf[offset] = p;
       return;
     }
-      //System.out.println("addPixelT " + offset + " " + Integer.toHexString(p)+ " " + Integer.toHexString(pbuf[offset])+ " " + Integer.toHexString(pbufT[offset])+ " zT " + zbufT[offset]+ " z " + z + " tmask=" + Integer.toHexString(translucencyMask));
     int zT = zbufT[offset]; 
     if (z < zT) {
       //new in front -- merge old translucent with opaque
       //if (zT != Integer.MAX_VALUE)
-      //System.out.println("plcA: z "+z + " zT " + zT + " " + offsetPbuf + " " + Integer.toHexString(p));
       if (zT - z > zMargin)
         mergeBufferPixel(pbuf, pbufT[offset], offset);
       zbufT[offset] = z;
@@ -487,10 +596,6 @@ final public class Graphics3D implements JmolRendererInterface {
         mergeBufferPixel(pbuf, p & translucencyMask, offset);
     }
   }
-
-
-  //int[] imageBuf = new int[0];
-
 
   /**
    * draws a screened circle ... every other dot is turned on
@@ -770,114 +875,6 @@ final public class Graphics3D implements JmolRendererInterface {
     }
   }
   */
-
-  // 3D specific routines
-  public void beginRendering(//int clipX, int clipY,
-                             //int clipWidth, int clipHeight,
-                             Matrix3f rotationMatrix,
-                             boolean antialiasThisFrame, 
-                             boolean twoPass) {
-    if (currentlyRendering)
-      endRendering();
-    normix3d.setRotationMatrix(rotationMatrix);
-    antialiasThisFrame &= isFullSceneAntialiasingEnabled;
-    this.antialiasThisFrame = antialiasThisFrame;
-    currentlyRendering = true;
-    this.twoPass = twoPass;
-    isPass2 = false;
-    colixCurrent = 0;
-    haveAlphaTranslucent = false;
-    addAllPixels = true;
-    if (pbuf == null) {
-      platform.allocateBuffers(windowWidth, windowHeight,
-                              antialiasThisFrame);
-      pbuf = platform.pBuffer;
-      zbuf = platform.zBuffer;
-      bufferSize = pbuf.length;
-    }
-    setWidthHeight(antialiasThisFrame);
-    //setRectClip(clipX, clipY, clipWidth, clipHeight);
-    platform.obtainScreenBuffer();
-  }
-
-  public boolean setPass2() {
-    //System.out.println("g3d setPass2: haveAlphaTranslucent,currentlyRendering: " + haveAlphaTranslucent + " " + currentlyRendering);
-    if (!haveAlphaTranslucent || !currentlyRendering)
-      return false;
-    //System.out.println("isPass2");
-    isPass2 = true;
-    colixCurrent = 0;
-    addAllPixels = true;
-    if (pbufT == null) {
-      platform.allocateTBuffers();
-      pbufT = platform.pBufferT;
-      zbufT = platform.zBufferT;
-    }    
-    platform.clearTBuffer();
-    return true;
-  }
-  
-  public void endRendering() {
-    if (!currentlyRendering)
-      return;
-    if (isPass2)
-      mergeOpaqueAndTranslucentBuffers();
-    if (antialiasThisFrame)
-      downSampleFullSceneAntialiasing();
-    platform.notifyEndOfRendering();
-    currentlyRendering = false;
-  }
-
-  public void snapshotAnaglyphChannelBytes() {
-    if (currentlyRendering)
-      throw new NullPointerException();
-    if (anaglyphChannelBytes == null ||
-	anaglyphChannelBytes.length != pbuf.length)
-      anaglyphChannelBytes = new byte[pbuf.length];
-    for (int i = pbuf.length; --i >= 0; )
-      anaglyphChannelBytes[i] = (byte)pbuf[i];
-  }
-
-  public void applyCustomAnaglyph(int[] stereoColors) {
-    //best if complementary, but they do not have to be0 
-    int color1 = stereoColors[0];
-    int color2 = stereoColors[1] & 0x00FFFFFF;
-    for (int i = pbuf.length; --i >= 0;) {
-      int a = anaglyphChannelBytes[i] & 0x000000FF;
-      a = (a | ((a | (a << 8)) << 8)) & color2;
-      pbuf[i] = (pbuf[i] & color1) | a;
-    }
-  }
-
-  public void applyGreenAnaglyph() {
-    for (int i = pbuf.length; --i >= 0; ) {
-      int green = (anaglyphChannelBytes[i] & 0x000000FF) << 8;
-      pbuf[i] = (pbuf[i] & 0xFFFF0000) | green;
-    }
-  }
-
-  public void applyBlueAnaglyph() {
-    for (int i = pbuf.length; --i >= 0; ) {
-      int blue = anaglyphChannelBytes[i] & 0x000000FF;
-      pbuf[i] = (pbuf[i] & 0xFFFF0000) | blue;
-    }
-  }
-
-  public void applyCyanAnaglyph() {
-    for (int i = pbuf.length; --i >= 0; ) {
-      int blue = anaglyphChannelBytes[i] & 0x000000FF;
-      int cyan = (blue << 8) | blue;
-      pbuf[i] = pbuf[i] & 0xFFFF0000 | cyan;
-    }
-  }
-  
-  public Image getScreenImage() {
-    return platform.imagePixelBuffer;
-  }
-
-  public void releaseScreenImage() {
-    platform.clearScreenBufferThreaded();
-  }
 
   //mostly public drawing methods -- add "public" if you need to
 

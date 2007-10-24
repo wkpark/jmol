@@ -189,7 +189,7 @@ final public class Graphics3D implements JmolRendererInterface {
     this.windowWidth = windowWidth;
     this.windowHeight = windowHeight;
     isFullSceneAntialiasingEnabled = enableFullSceneAntialiasing;
-    //setWidthHeight(enableFullSceneAntialiasing);
+    setWidthHeight(enableFullSceneAntialiasing);
     pbuf = null;
     zbuf = null;
     pbufT = null;

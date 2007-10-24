@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-10-22 16:50+0200\n"
+"POT-Creation-Date: 2007-10-24 06:47+0200\n"
 "PO-Revision-Date: 2007-05-13 18:40+0200\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -63,10 +63,10 @@ msgstr "Informació"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:238
 #: org/openscience/jmol/app/GuiMap.java:70
-#: org/openscience/jmol/app/PovrayDialog.java:174
-#: org/openscience/jmol/app/PovrayDialog.java:456
-#: org/openscience/jmol/app/PovrayDialog.java:653
-#: org/openscience/jmol/app/PovrayDialog.java:674
+#: org/openscience/jmol/app/PovrayDialog.java:175
+#: org/openscience/jmol/app/PovrayDialog.java:458
+#: org/openscience/jmol/app/PovrayDialog.java:605
+#: org/openscience/jmol/app/PovrayDialog.java:626
 msgid "Select"
 msgstr "Selecció"
 
@@ -725,7 +725,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:412
 #: org/openscience/jmol/app/Jmol.java:450
-#: org/openscience/jmol/app/PovrayDialog.java:498
+#: org/openscience/jmol/app/PovrayDialog.java:500
 #: org/openscience/jmol/app/PreferencesDialog.java:165
 #: org/openscience/jmol/app/RecentFilesDialog.java:69
 msgid "Cancel"
@@ -828,7 +828,7 @@ msgstr "àtoms seleccionats"
 
 #: org/openscience/jmol/app/Jmol.java:440
 #: org/openscience/jmol/app/Jmol.java:442
-#: org/openscience/jmol/app/PovrayDialog.java:787
+#: org/openscience/jmol/app/PovrayDialog.java:757
 msgid "Save"
 msgstr "Desa"
 
@@ -974,20 +974,20 @@ msgstr "Rebutja"
 msgid "Value"
 msgstr "Valor"
 
-#: org/openscience/jmol/app/PovrayDialog.java:112
+#: org/openscience/jmol/app/PovrayDialog.java:113
 msgid "Render in POV-Ray"
 msgstr "Renderitza en el POV-Ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:150
+#: org/openscience/jmol/app/PovrayDialog.java:151
 msgid "Jmol-to-POV-Ray Conversion"
 msgstr "Conversió de Jmol a POV-Ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:154
+#: org/openscience/jmol/app/PovrayDialog.java:155
 #, fuzzy
 msgid "Filename"
 msgstr "Arrel del nom de fitxer"
 
-#: org/openscience/jmol/app/PovrayDialog.java:156
+#: org/openscience/jmol/app/PovrayDialog.java:157
 #, fuzzy
 msgid ""
 "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
@@ -995,93 +995,133 @@ msgstr ""
 "Un únic fotograma: p.ex. «caffine» -> «caffine.pov»; Múltiples fotogrames: p."
 "ex. «caffine» -> «caffine_1.pov», «caffine_2.pov»"
 
-#: org/openscience/jmol/app/PovrayDialog.java:166
+#: org/openscience/jmol/app/PovrayDialog.java:167
 msgid "Working Directory"
 msgstr "Directori de treball"
 
-#: org/openscience/jmol/app/PovrayDialog.java:168
+#: org/openscience/jmol/app/PovrayDialog.java:169
 msgid "Where the .pov files will be saved"
 msgstr "On es desaran els fitxers .pov"
 
-#: org/openscience/jmol/app/PovrayDialog.java:188
+#: org/openscience/jmol/app/PovrayDialog.java:189
 msgid "POV-Ray Runtime Options"
 msgstr "Opcions d'execució del POV-Ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:193
+#: org/openscience/jmol/app/PovrayDialog.java:194
 msgid "Run POV-Ray directly"
 msgstr "Executa el POV-Ray directament"
 
-#: org/openscience/jmol/app/PovrayDialog.java:195
+#: org/openscience/jmol/app/PovrayDialog.java:196
 #, fuzzy
 msgid "Launch POV-Ray from within Jmol"
 msgstr "Executa el POV-Ray des del Jmol"
 
-#: org/openscience/jmol/app/PovrayDialog.java:264
+#: org/openscience/jmol/app/PovrayDialog.java:241
+msgid "Display While Rendering"
+msgstr "Visualitza mentre es renderitza"
+
+#: org/openscience/jmol/app/PovrayDialog.java:243
+msgid "Should povray attempt to display while rendering?"
+msgstr "El POV-Ray ha d'intentar visualitzar mentre es renderitza?"
+
+#: org/openscience/jmol/app/PovrayDialog.java:266
 msgid "Width : "
 msgstr "Amplada:"
 
-#: org/openscience/jmol/app/PovrayDialog.java:266
+#: org/openscience/jmol/app/PovrayDialog.java:268
 msgid "Image width"
 msgstr "Amplada de la imatge:"
 
-#: org/openscience/jmol/app/PovrayDialog.java:281
+#: org/openscience/jmol/app/PovrayDialog.java:283
 msgid "Height : "
 msgstr "Alçada:"
 
-#: org/openscience/jmol/app/PovrayDialog.java:283
+#: org/openscience/jmol/app/PovrayDialog.java:285
 msgid "Image height"
 msgstr "Alçada de la imatge:"
 
-#: org/openscience/jmol/app/PovrayDialog.java:300
+#: org/openscience/jmol/app/PovrayDialog.java:302
 msgid "Fixed ratio : "
 msgstr "Raó fixa:"
 
-#: org/openscience/jmol/app/PovrayDialog.java:302
+#: org/openscience/jmol/app/PovrayDialog.java:304
 msgid "Use a fixed ratio for width:height"
 msgstr "Utilitza una raó fixa per a a amplada:alçada"
 
-#: org/openscience/jmol/app/PovrayDialog.java:313
+#: org/openscience/jmol/app/PovrayDialog.java:315
 msgid "User defined"
 msgstr "Definit per l'usuari"
 
-#: org/openscience/jmol/app/PovrayDialog.java:315
+#: org/openscience/jmol/app/PovrayDialog.java:317
 msgid "Keep ratio of Jmol window"
 msgstr "Conserva la raó de la finestra del Jmol"
 
-#: org/openscience/jmol/app/PovrayDialog.java:355
+#: org/openscience/jmol/app/PovrayDialog.java:357
 msgid "N - PNG"
 msgstr "N - PNG"
 
-#: org/openscience/jmol/app/PovrayDialog.java:358
+#: org/openscience/jmol/app/PovrayDialog.java:360
 msgid "P - PPM"
 msgstr "P - PPM"
 
-#: org/openscience/jmol/app/PovrayDialog.java:361
+#: org/openscience/jmol/app/PovrayDialog.java:363
 msgid "C - Compressed Targa-24"
 msgstr "C - Targa-24 comprimit"
 
-#: org/openscience/jmol/app/PovrayDialog.java:364
+#: org/openscience/jmol/app/PovrayDialog.java:366
 msgid "T - Uncompressed Targa-24"
 msgstr "T - Targa-24 sense comprimir"
 
-#: org/openscience/jmol/app/PovrayDialog.java:448
+#: org/openscience/jmol/app/PovrayDialog.java:382
+msgid "Alpha transparency"
+msgstr "Transparència alfa"
+
+#: org/openscience/jmol/app/PovrayDialog.java:384
+msgid "Output Alpha transparency data"
+msgstr "Dades de sortida de transparència alfa"
+
+#: org/openscience/jmol/app/PovrayDialog.java:397
+msgid "Mosaic preview"
+msgstr "Visualització prèvia en mosaic"
+
+#: org/openscience/jmol/app/PovrayDialog.java:399
+msgid "Render the image in several passes"
+msgstr "Renderitza la imatge en diferents passades"
+
+#: org/openscience/jmol/app/PovrayDialog.java:409
+msgid "Start size : "
+msgstr "Mida inicial:"
+
+#: org/openscience/jmol/app/PovrayDialog.java:411
+msgid "Inital size of the tiles"
+msgstr "Mida inicial dels mosaics"
+
+#: org/openscience/jmol/app/PovrayDialog.java:427
+msgid "End size : "
+msgstr "Mida final:"
+
+#: org/openscience/jmol/app/PovrayDialog.java:429
+msgid "Final size of the tiles"
+msgstr "Mida final dels mosaics"
+
+#: org/openscience/jmol/app/PovrayDialog.java:450
 msgid "POV-Ray Executable Location"
 msgstr "Ubicació de l'executable POV-Ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:450
+#: org/openscience/jmol/app/PovrayDialog.java:452
 msgid "Location of the povray Executable"
 msgstr "Ubicació de l'executable del POV-Ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:487
-#: org/openscience/jmol/app/PovrayDialog.java:785
+#: org/openscience/jmol/app/PovrayDialog.java:489
+#: org/openscience/jmol/app/PovrayDialog.java:755
 msgid "Go!"
 msgstr "Vés-hi!"
 
-#: org/openscience/jmol/app/PovrayDialog.java:489
+#: org/openscience/jmol/app/PovrayDialog.java:491
 msgid "Save file and possibly launch povray"
 msgstr "Desa el fitxer i possiblement executa el POV-Ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:500
+#: org/openscience/jmol/app/PovrayDialog.java:502
 msgid "Cancel this dialog without saving"
 msgstr "Cancel·la aquest diàleg sense desar"
 
@@ -1233,36 +1273,6 @@ msgstr "Novetats del Jmol"
 
 #~ msgid "Use povray's slower but higher quality anti-aliasing mode"
 #~ msgstr "Utilitza l'antialiasing del POV-Ray, més lent però millor"
-
-#~ msgid "Display While Rendering"
-#~ msgstr "Visualitza mentre es renderitza"
-
-#~ msgid "Should povray attempt to display while rendering?"
-#~ msgstr "El POV-Ray ha d'intentar visualitzar mentre es renderitza?"
-
-#~ msgid "Alpha transparency"
-#~ msgstr "Transparència alfa"
-
-#~ msgid "Output Alpha transparency data"
-#~ msgstr "Dades de sortida de transparència alfa"
-
-#~ msgid "Mosaic preview"
-#~ msgstr "Visualització prèvia en mosaic"
-
-#~ msgid "Render the image in several passes"
-#~ msgstr "Renderitza la imatge en diferents passades"
-
-#~ msgid "Start size : "
-#~ msgstr "Mida inicial:"
-
-#~ msgid "Inital size of the tiles"
-#~ msgstr "Mida inicial dels mosaics"
-
-#~ msgid "End size : "
-#~ msgstr "Mida final:"
-
-#~ msgid "Final size of the tiles"
-#~ msgstr "Mida final dels mosaics"
 
 #~ msgid "Render in pov-ray..."
 #~ msgstr "Renderitza en el POV-Ray..."

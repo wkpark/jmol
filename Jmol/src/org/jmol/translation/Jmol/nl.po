@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-10-22 16:50+0200\n"
+"POT-Creation-Date: 2007-10-24 06:47+0200\n"
 "PO-Revision-Date: 2007-06-03 21:26+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -63,10 +63,10 @@ msgstr "Info"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:238
 #: org/openscience/jmol/app/GuiMap.java:70
-#: org/openscience/jmol/app/PovrayDialog.java:174
-#: org/openscience/jmol/app/PovrayDialog.java:456
-#: org/openscience/jmol/app/PovrayDialog.java:653
-#: org/openscience/jmol/app/PovrayDialog.java:674
+#: org/openscience/jmol/app/PovrayDialog.java:175
+#: org/openscience/jmol/app/PovrayDialog.java:458
+#: org/openscience/jmol/app/PovrayDialog.java:605
+#: org/openscience/jmol/app/PovrayDialog.java:626
 msgid "Select"
 msgstr "Selecteren"
 
@@ -723,7 +723,7 @@ msgstr "Alle bestanden"
 
 #: org/openscience/jmol/app/Jmol.java:412
 #: org/openscience/jmol/app/Jmol.java:450
-#: org/openscience/jmol/app/PovrayDialog.java:498
+#: org/openscience/jmol/app/PovrayDialog.java:500
 #: org/openscience/jmol/app/PreferencesDialog.java:165
 #: org/openscience/jmol/app/RecentFilesDialog.java:69
 msgid "Cancel"
@@ -822,7 +822,7 @@ msgstr "Geselecteerd bestand openen"
 
 #: org/openscience/jmol/app/Jmol.java:440
 #: org/openscience/jmol/app/Jmol.java:442
-#: org/openscience/jmol/app/PovrayDialog.java:787
+#: org/openscience/jmol/app/PovrayDialog.java:757
 msgid "Save"
 msgstr "Opslaan"
 
@@ -963,20 +963,20 @@ msgstr "Afsluiten"
 msgid "Value"
 msgstr "Waarde"
 
-#: org/openscience/jmol/app/PovrayDialog.java:112
+#: org/openscience/jmol/app/PovrayDialog.java:113
 msgid "Render in POV-Ray"
 msgstr "Render in POV-Ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:150
+#: org/openscience/jmol/app/PovrayDialog.java:151
 msgid "Jmol-to-POV-Ray Conversion"
 msgstr "Jmol-naar-POV-Ray conversie"
 
-#: org/openscience/jmol/app/PovrayDialog.java:154
+#: org/openscience/jmol/app/PovrayDialog.java:155
 #, fuzzy
 msgid "Filename"
 msgstr "Bestandsnaam:"
 
-#: org/openscience/jmol/app/PovrayDialog.java:156
+#: org/openscience/jmol/app/PovrayDialog.java:157
 #, fuzzy
 msgid ""
 "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
@@ -984,93 +984,133 @@ msgstr ""
 "Enkel frame: bv. 'caffeine' => 'caffeine.pov'; meerdere frames: bv. "
 "'caffeine' => 'caffeine_1.pov', 'caffeine_2.pov'"
 
-#: org/openscience/jmol/app/PovrayDialog.java:166
+#: org/openscience/jmol/app/PovrayDialog.java:167
 msgid "Working Directory"
 msgstr "Werkfolder"
 
-#: org/openscience/jmol/app/PovrayDialog.java:168
+#: org/openscience/jmol/app/PovrayDialog.java:169
 msgid "Where the .pov files will be saved"
 msgstr "Waar de .pov-bestanden moeten worden opgeslagen"
 
-#: org/openscience/jmol/app/PovrayDialog.java:188
+#: org/openscience/jmol/app/PovrayDialog.java:189
 msgid "POV-Ray Runtime Options"
 msgstr "POV-Ray Runtime Opties"
 
-#: org/openscience/jmol/app/PovrayDialog.java:193
+#: org/openscience/jmol/app/PovrayDialog.java:194
 msgid "Run POV-Ray directly"
 msgstr "Start POV-Ray direct"
 
-#: org/openscience/jmol/app/PovrayDialog.java:195
+#: org/openscience/jmol/app/PovrayDialog.java:196
 #, fuzzy
 msgid "Launch POV-Ray from within Jmol"
 msgstr "Start POR-Ray vanuit Jmol"
 
-#: org/openscience/jmol/app/PovrayDialog.java:264
+#: org/openscience/jmol/app/PovrayDialog.java:241
+msgid "Display While Rendering"
+msgstr "Weergeven tijdens renderen"
+
+#: org/openscience/jmol/app/PovrayDialog.java:243
+msgid "Should povray attempt to display while rendering?"
+msgstr "Moet povray proberen "
+
+#: org/openscience/jmol/app/PovrayDialog.java:266
 msgid "Width : "
 msgstr "Breedte :"
 
-#: org/openscience/jmol/app/PovrayDialog.java:266
+#: org/openscience/jmol/app/PovrayDialog.java:268
 msgid "Image width"
 msgstr "Figuurbreedte"
 
-#: org/openscience/jmol/app/PovrayDialog.java:281
+#: org/openscience/jmol/app/PovrayDialog.java:283
 msgid "Height : "
 msgstr "Hoogte :"
 
-#: org/openscience/jmol/app/PovrayDialog.java:283
+#: org/openscience/jmol/app/PovrayDialog.java:285
 msgid "Image height"
 msgstr "Figuurhoogte"
 
-#: org/openscience/jmol/app/PovrayDialog.java:300
+#: org/openscience/jmol/app/PovrayDialog.java:302
 msgid "Fixed ratio : "
 msgstr "Vaste verhoudingen :"
 
-#: org/openscience/jmol/app/PovrayDialog.java:302
+#: org/openscience/jmol/app/PovrayDialog.java:304
 msgid "Use a fixed ratio for width:height"
 msgstr "Gebruik een vaste verhouding tussen breedte en hoogte"
 
-#: org/openscience/jmol/app/PovrayDialog.java:313
+#: org/openscience/jmol/app/PovrayDialog.java:315
 msgid "User defined"
 msgstr "Gebruikersdefinitie"
 
-#: org/openscience/jmol/app/PovrayDialog.java:315
+#: org/openscience/jmol/app/PovrayDialog.java:317
 msgid "Keep ratio of Jmol window"
 msgstr "Behoud verhoudingen Jmol-scherm"
 
-#: org/openscience/jmol/app/PovrayDialog.java:355
+#: org/openscience/jmol/app/PovrayDialog.java:357
 msgid "N - PNG"
 msgstr "N - PNG"
 
-#: org/openscience/jmol/app/PovrayDialog.java:358
+#: org/openscience/jmol/app/PovrayDialog.java:360
 msgid "P - PPM"
 msgstr "P - PPM"
 
-#: org/openscience/jmol/app/PovrayDialog.java:361
+#: org/openscience/jmol/app/PovrayDialog.java:363
 msgid "C - Compressed Targa-24"
 msgstr "C - geComprimeerde Targa-24"
 
-#: org/openscience/jmol/app/PovrayDialog.java:364
+#: org/openscience/jmol/app/PovrayDialog.java:366
 msgid "T - Uncompressed Targa-24"
 msgstr "T - Ongecomprimeerder Targa-24"
 
-#: org/openscience/jmol/app/PovrayDialog.java:448
+#: org/openscience/jmol/app/PovrayDialog.java:382
+msgid "Alpha transparency"
+msgstr "Alpha-transparantie"
+
+#: org/openscience/jmol/app/PovrayDialog.java:384
+msgid "Output Alpha transparency data"
+msgstr "Voer alpa-transparantie data uit"
+
+#: org/openscience/jmol/app/PovrayDialog.java:397
+msgid "Mosaic preview"
+msgstr "Mozaiek-weergave"
+
+#: org/openscience/jmol/app/PovrayDialog.java:399
+msgid "Render the image in several passes"
+msgstr "Verwerk het plaatje in verschillende stappen"
+
+#: org/openscience/jmol/app/PovrayDialog.java:409
+msgid "Start size : "
+msgstr "Begin grootte :"
+
+#: org/openscience/jmol/app/PovrayDialog.java:411
+msgid "Inital size of the tiles"
+msgstr "Eerste grootte van de blokken"
+
+#: org/openscience/jmol/app/PovrayDialog.java:427
+msgid "End size : "
+msgstr "Eind grootte:"
+
+#: org/openscience/jmol/app/PovrayDialog.java:429
+msgid "Final size of the tiles"
+msgstr "Definitieve grootte van de blokken"
+
+#: org/openscience/jmol/app/PovrayDialog.java:450
 msgid "POV-Ray Executable Location"
 msgstr "Locatie POV-Ray executable"
 
-#: org/openscience/jmol/app/PovrayDialog.java:450
+#: org/openscience/jmol/app/PovrayDialog.java:452
 msgid "Location of the povray Executable"
 msgstr "Plaats waar het POV-Ray-programma is te vinden"
 
-#: org/openscience/jmol/app/PovrayDialog.java:487
-#: org/openscience/jmol/app/PovrayDialog.java:785
+#: org/openscience/jmol/app/PovrayDialog.java:489
+#: org/openscience/jmol/app/PovrayDialog.java:755
 msgid "Go!"
 msgstr "Gaan!"
 
-#: org/openscience/jmol/app/PovrayDialog.java:489
+#: org/openscience/jmol/app/PovrayDialog.java:491
 msgid "Save file and possibly launch povray"
 msgstr "Bewaar bestand en start povray indien nodig"
 
-#: org/openscience/jmol/app/PovrayDialog.java:500
+#: org/openscience/jmol/app/PovrayDialog.java:502
 msgid "Cancel this dialog without saving"
 msgstr "Afbreken zonder opslaan"
 
@@ -1222,36 +1262,6 @@ msgstr "Wat is nieuw in Jmol"
 
 #~ msgid "Use povray's slower but higher quality anti-aliasing mode"
 #~ msgstr "Gebruik povray's langzamere antialiasing aan voor hogere kwaliteit"
-
-#~ msgid "Display While Rendering"
-#~ msgstr "Weergeven tijdens renderen"
-
-#~ msgid "Should povray attempt to display while rendering?"
-#~ msgstr "Moet povray proberen "
-
-#~ msgid "Alpha transparency"
-#~ msgstr "Alpha-transparantie"
-
-#~ msgid "Output Alpha transparency data"
-#~ msgstr "Voer alpa-transparantie data uit"
-
-#~ msgid "Mosaic preview"
-#~ msgstr "Mozaiek-weergave"
-
-#~ msgid "Render the image in several passes"
-#~ msgstr "Verwerk het plaatje in verschillende stappen"
-
-#~ msgid "Start size : "
-#~ msgstr "Begin grootte :"
-
-#~ msgid "Inital size of the tiles"
-#~ msgstr "Eerste grootte van de blokken"
-
-#~ msgid "End size : "
-#~ msgstr "Eind grootte:"
-
-#~ msgid "Final size of the tiles"
-#~ msgstr "Definitieve grootte van de blokken"
 
 #~ msgid "Render in pov-ray..."
 #~ msgstr "Renderen in pov-ray..."

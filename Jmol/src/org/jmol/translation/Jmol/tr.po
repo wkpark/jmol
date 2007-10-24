@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-10-22 16:50+0200\n"
+"POT-Creation-Date: 2007-10-24 06:47+0200\n"
 "PO-Revision-Date: 2007-05-10 16:31+0200\n"
 "Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -62,10 +62,10 @@ msgstr "Bilgi"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:238
 #: org/openscience/jmol/app/GuiMap.java:70
-#: org/openscience/jmol/app/PovrayDialog.java:174
-#: org/openscience/jmol/app/PovrayDialog.java:456
-#: org/openscience/jmol/app/PovrayDialog.java:653
-#: org/openscience/jmol/app/PovrayDialog.java:674
+#: org/openscience/jmol/app/PovrayDialog.java:175
+#: org/openscience/jmol/app/PovrayDialog.java:458
+#: org/openscience/jmol/app/PovrayDialog.java:605
+#: org/openscience/jmol/app/PovrayDialog.java:626
 msgid "Select"
 msgstr "Seç"
 
@@ -722,7 +722,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:412
 #: org/openscience/jmol/app/Jmol.java:450
-#: org/openscience/jmol/app/PovrayDialog.java:498
+#: org/openscience/jmol/app/PovrayDialog.java:500
 #: org/openscience/jmol/app/PreferencesDialog.java:165
 #: org/openscience/jmol/app/RecentFilesDialog.java:69
 msgid "Cancel"
@@ -825,7 +825,7 @@ msgstr "Tüm Seçimleri Kaldır"
 
 #: org/openscience/jmol/app/Jmol.java:440
 #: org/openscience/jmol/app/Jmol.java:442
-#: org/openscience/jmol/app/PovrayDialog.java:787
+#: org/openscience/jmol/app/PovrayDialog.java:757
 msgid "Save"
 msgstr "Kaydet"
 
@@ -971,20 +971,20 @@ msgstr "Çıkart"
 msgid "Value"
 msgstr "Değer"
 
-#: org/openscience/jmol/app/PovrayDialog.java:112
+#: org/openscience/jmol/app/PovrayDialog.java:113
 msgid "Render in POV-Ray"
 msgstr "POV-Ray'de kapla"
 
-#: org/openscience/jmol/app/PovrayDialog.java:150
+#: org/openscience/jmol/app/PovrayDialog.java:151
 msgid "Jmol-to-POV-Ray Conversion"
 msgstr "Jmolden POV-Ray'e Dönüştürme"
 
-#: org/openscience/jmol/app/PovrayDialog.java:154
+#: org/openscience/jmol/app/PovrayDialog.java:155
 #, fuzzy
 msgid "Filename"
 msgstr "Dosyaadı kökü"
 
-#: org/openscience/jmol/app/PovrayDialog.java:156
+#: org/openscience/jmol/app/PovrayDialog.java:157
 #, fuzzy
 msgid ""
 "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
@@ -992,93 +992,133 @@ msgstr ""
 "Tek çerçeve: örneğin 'caffine' -> 'caffine.pov'; Çoklu çerçeve: örneğin "
 "'caffine' ->'caffine_1.pov', 'caffine_2.pov'"
 
-#: org/openscience/jmol/app/PovrayDialog.java:166
+#: org/openscience/jmol/app/PovrayDialog.java:167
 msgid "Working Directory"
 msgstr "Çalışma Dizini"
 
-#: org/openscience/jmol/app/PovrayDialog.java:168
+#: org/openscience/jmol/app/PovrayDialog.java:169
 msgid "Where the .pov files will be saved"
 msgstr ".pov dosyalarının kaydedileceği yer"
 
-#: org/openscience/jmol/app/PovrayDialog.java:188
+#: org/openscience/jmol/app/PovrayDialog.java:189
 msgid "POV-Ray Runtime Options"
 msgstr "POV-Ray Çalışma Zamanı Seçenekleri"
 
-#: org/openscience/jmol/app/PovrayDialog.java:193
+#: org/openscience/jmol/app/PovrayDialog.java:194
 msgid "Run POV-Ray directly"
 msgstr "POV-Ray'i doğrudan başlat"
 
-#: org/openscience/jmol/app/PovrayDialog.java:195
+#: org/openscience/jmol/app/PovrayDialog.java:196
 #, fuzzy
 msgid "Launch POV-Ray from within Jmol"
 msgstr "povray'e Jmol içinden ulaş"
 
-#: org/openscience/jmol/app/PovrayDialog.java:264
+#: org/openscience/jmol/app/PovrayDialog.java:241
+msgid "Display While Rendering"
+msgstr "İşleme Sırasında Görüntüle"
+
+#: org/openscience/jmol/app/PovrayDialog.java:243
+msgid "Should povray attempt to display while rendering?"
+msgstr "Poray işleme sırasında görüntülemeyi denesin mi?"
+
+#: org/openscience/jmol/app/PovrayDialog.java:266
 msgid "Width : "
 msgstr "Genişlik :"
 
-#: org/openscience/jmol/app/PovrayDialog.java:266
+#: org/openscience/jmol/app/PovrayDialog.java:268
 msgid "Image width"
 msgstr "Resim genişliği"
 
-#: org/openscience/jmol/app/PovrayDialog.java:281
+#: org/openscience/jmol/app/PovrayDialog.java:283
 msgid "Height : "
 msgstr "Yükseklik :"
 
-#: org/openscience/jmol/app/PovrayDialog.java:283
+#: org/openscience/jmol/app/PovrayDialog.java:285
 msgid "Image height"
 msgstr "Resim yüksekliği"
 
-#: org/openscience/jmol/app/PovrayDialog.java:300
+#: org/openscience/jmol/app/PovrayDialog.java:302
 msgid "Fixed ratio : "
 msgstr "Sabit oran :"
 
-#: org/openscience/jmol/app/PovrayDialog.java:302
+#: org/openscience/jmol/app/PovrayDialog.java:304
 msgid "Use a fixed ratio for width:height"
 msgstr "Yükseklik:genişlik için sabit oran kullan"
 
-#: org/openscience/jmol/app/PovrayDialog.java:313
+#: org/openscience/jmol/app/PovrayDialog.java:315
 msgid "User defined"
 msgstr "Kullanıcı tanımlı"
 
-#: org/openscience/jmol/app/PovrayDialog.java:315
+#: org/openscience/jmol/app/PovrayDialog.java:317
 msgid "Keep ratio of Jmol window"
 msgstr "Jmol penceresinin oranını koru"
 
-#: org/openscience/jmol/app/PovrayDialog.java:355
+#: org/openscience/jmol/app/PovrayDialog.java:357
 msgid "N - PNG"
 msgstr "N - PNG"
 
-#: org/openscience/jmol/app/PovrayDialog.java:358
+#: org/openscience/jmol/app/PovrayDialog.java:360
 msgid "P - PPM"
 msgstr "P - PPM"
 
-#: org/openscience/jmol/app/PovrayDialog.java:361
+#: org/openscience/jmol/app/PovrayDialog.java:363
 msgid "C - Compressed Targa-24"
 msgstr "C - Sıkıştırılmış Targa-24"
 
-#: org/openscience/jmol/app/PovrayDialog.java:364
+#: org/openscience/jmol/app/PovrayDialog.java:366
 msgid "T - Uncompressed Targa-24"
 msgstr "T - Sıkıştırılmamış Targa-24"
 
-#: org/openscience/jmol/app/PovrayDialog.java:448
+#: org/openscience/jmol/app/PovrayDialog.java:382
+msgid "Alpha transparency"
+msgstr "Alfa saydamlığı"
+
+#: org/openscience/jmol/app/PovrayDialog.java:384
+msgid "Output Alpha transparency data"
+msgstr "Alfa saydamlık verisi çıktısı"
+
+#: org/openscience/jmol/app/PovrayDialog.java:397
+msgid "Mosaic preview"
+msgstr "Mozaik önizleme"
+
+#: org/openscience/jmol/app/PovrayDialog.java:399
+msgid "Render the image in several passes"
+msgstr "Resmi bir kaç geçişle üret"
+
+#: org/openscience/jmol/app/PovrayDialog.java:409
+msgid "Start size : "
+msgstr "Başlangıç boyutu :"
+
+#: org/openscience/jmol/app/PovrayDialog.java:411
+msgid "Inital size of the tiles"
+msgstr "Ekran bölümlerinin başlangıç boyutları"
+
+#: org/openscience/jmol/app/PovrayDialog.java:427
+msgid "End size : "
+msgstr "Bitiş boyutu :"
+
+#: org/openscience/jmol/app/PovrayDialog.java:429
+msgid "Final size of the tiles"
+msgstr "Ekran bölümlerinin son boyutu"
+
+#: org/openscience/jmol/app/PovrayDialog.java:450
 msgid "POV-Ray Executable Location"
 msgstr "POV-Ray Yürütülebilir Konumu"
 
-#: org/openscience/jmol/app/PovrayDialog.java:450
+#: org/openscience/jmol/app/PovrayDialog.java:452
 msgid "Location of the povray Executable"
 msgstr "Yürütülebilir povray konumu"
 
-#: org/openscience/jmol/app/PovrayDialog.java:487
-#: org/openscience/jmol/app/PovrayDialog.java:785
+#: org/openscience/jmol/app/PovrayDialog.java:489
+#: org/openscience/jmol/app/PovrayDialog.java:755
 msgid "Go!"
 msgstr "Git!"
 
-#: org/openscience/jmol/app/PovrayDialog.java:489
+#: org/openscience/jmol/app/PovrayDialog.java:491
 msgid "Save file and possibly launch povray"
 msgstr "Dosyayı kaydet ve mümkünse povray'i başlat"
 
-#: org/openscience/jmol/app/PovrayDialog.java:500
+#: org/openscience/jmol/app/PovrayDialog.java:502
 msgid "Cancel this dialog without saving"
 msgstr "Bu diyaloğu kaydetmeden iptal et"
 
@@ -1230,36 +1270,6 @@ msgstr "Jmol'da Neler Yeni"
 
 #~ msgid "Use povray's slower but higher quality anti-aliasing mode"
 #~ msgstr "povrayin daha yavaş ama daha kaliteli köşe yumuşatma modunu kullan"
-
-#~ msgid "Display While Rendering"
-#~ msgstr "İşleme Sırasında Görüntüle"
-
-#~ msgid "Should povray attempt to display while rendering?"
-#~ msgstr "Poray işleme sırasında görüntülemeyi denesin mi?"
-
-#~ msgid "Alpha transparency"
-#~ msgstr "Alfa saydamlığı"
-
-#~ msgid "Output Alpha transparency data"
-#~ msgstr "Alfa saydamlık verisi çıktısı"
-
-#~ msgid "Mosaic preview"
-#~ msgstr "Mozaik önizleme"
-
-#~ msgid "Render the image in several passes"
-#~ msgstr "Resmi bir kaç geçişle üret"
-
-#~ msgid "Start size : "
-#~ msgstr "Başlangıç boyutu :"
-
-#~ msgid "Inital size of the tiles"
-#~ msgstr "Ekran bölümlerinin başlangıç boyutları"
-
-#~ msgid "End size : "
-#~ msgstr "Bitiş boyutu :"
-
-#~ msgid "Final size of the tiles"
-#~ msgstr "Ekran bölümlerinin son boyutu"
 
 #~ msgid "Render in pov-ray..."
 #~ msgstr "POV-Ray'de Kapla"

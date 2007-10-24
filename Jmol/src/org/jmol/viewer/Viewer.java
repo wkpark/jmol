@@ -2832,7 +2832,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.setParameterValue("_height", height);
       setStatusResized(width, height);
     }
-
     transformManager.setScreenDimension(width, height,
         isImageWrite || isReset? global.zoomLarge : false,
             antialias, false);
@@ -2878,8 +2877,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
     // Sun is throwing a NullPointerExceptions inside graphics routines
     // while the window is resized.
-    if (width > 0 && height > 0)
-      resizeImage(saveWidth, saveHeight, true, true, true);
+    resizeImage(saveWidth, saveHeight, true, true, true);
     return data;
   }
 
@@ -5906,8 +5904,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } catch (Exception e) {
       Logger.error("Error creating image: " + e.getMessage());
     }
-    if (width > 0 && height > 0)
-      resizeImage(saveWidth, saveHeight, true, false, true);
+    resizeImage(saveWidth, saveHeight, true, false, true);
   }
 
   public void syncScript(String script, String applet) {

@@ -52,7 +52,7 @@ final public class Export3D implements JmolRendererInterface {
   private int width;
   private int height;
   private int slab;
-  
+
 //  private ShapeRenderer shapeRenderer;
   private JmolExportInterface exporter;
   public JmolExportInterface getExporter() {
@@ -256,10 +256,14 @@ final public class Export3D implements JmolRendererInterface {
                                int xBaseline, int yBaseline,
                                int z) {
     // echo, frank, hover, molecularOrbital, uccage
-    if (str == null || str.length() == 0)
+    if (str == null)
       return;
     z = Math.max(slab, z);
-    exporter.plotText(xBaseline, yBaseline - font3d.fontMetrics.getAscent(),
+    if(font3d == null)
+      font3d = g3d.getFont3DCurrent();
+    else
+      g3d.setFont(font3d);
+    exporter.plotText(xBaseline, yBaseline,
                 z, getColixArgb(colix), str, font3d);
   }
   

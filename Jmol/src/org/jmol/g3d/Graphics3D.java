@@ -846,6 +846,10 @@ final public class Graphics3D implements JmolRendererInterface {
     font3dCurrent = Font3D.getFont3D(fid);
   }
   
+  public void setFont(Font3D font3d) {
+    font3dCurrent = font3d;
+  }
+  
   public Font3D getFont3DCurrent() {
     return font3dCurrent;
   }

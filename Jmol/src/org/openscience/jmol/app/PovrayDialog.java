@@ -26,7 +26,6 @@ package org.openscience.jmol.app;
 import org.jmol.api.*;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
-import org.jmol.util.TextFormat;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -90,16 +89,18 @@ public class PovrayDialog extends JDialog {
   
   private JCheckBox outputFormatCheck;
   private JComboBox outputFormatCombo;
-/*  
-  private JCheckBox outputAlphaCheck;
 
+  private JCheckBox outputAlphaCheck;
   
   private JCheckBox mosaicPreviewCheck;
   private JLabel    mosaicPreviewStart;
   private JComboBox mosaicPreviewComboStart;
   private JLabel    mosaicPreviewEnd;
   private JComboBox mosaicPreviewComboEnd;
-*/  
+
+  private String outputExtension = ".png";
+  private String outputFileType = "N";
+
 
   /**
    * Creates a dialog for getting info related to output frames in
@@ -233,6 +234,8 @@ public class PovrayDialog extends JDialog {
     antiAliasBox.add(antiAliasCheck);
     antiAliasBox.add(Box.createGlue());
     povOptionsBox.add(antiAliasBox);
+    
+*/
     // Display when rendering option
     Box displayBox = Box.createHorizontalBox();
     text = GT._("Display While Rendering");
@@ -243,7 +246,6 @@ public class PovrayDialog extends JDialog {
     displayBox.add(displayWhileRenderingCheck);
     displayBox.add(Box.createGlue());
     povOptionsBox.add(displayBox);
-*/
 
     // Image size option
     Box imageBox = Box.createHorizontalBox();
@@ -374,7 +376,7 @@ public class PovrayDialog extends JDialog {
     outputBox.add(Box.createGlue());
     povOptionsBox.add(outputBox);
     outputFormatChanged();
-/*
+
     // Alpha option
     Box alphaBox = Box.createHorizontalBox();
     text = GT._("Alpha transparency");
@@ -442,7 +444,7 @@ public class PovrayDialog extends JDialog {
     mosaicBox.add(Box.createGlue());
     povOptionsBox.add(mosaicBox);
     mosaicPreviewChanged();
-*/    
+  
     //GUI for povray path selection
     Box povrayPathBox = Box.createHorizontalBox();
     text = GT._("POV-Ray Executable Location");
@@ -555,60 +557,10 @@ public class PovrayDialog extends JDialog {
           int width = Integer.parseInt(imageSizeTextWidth.getText());
         //}
         
-        String data = viewer.generateOutput("Povray", 
-            filename + ":::" + getCommandLine(), 
-            width, height);
-        
-        String fileExt = "png";
-        String fileType = "N";
-        if ((outputFormatCheck != null) && (outputFormatCheck.isSelected())) {
-          switch (outputFormatCombo.getSelectedIndex()) {
-          case 0: // PNG
-            fileExt = "png";
-            fileType = "N";
-            break;
-          case 1: // PPM
-            fileExt = "ppm";
-            fileType = "P";
-            break;
-          case 2: // Compressed TARGA
-            fileExt = "tga";
-            fileType = "C";
-            break;
-          default: // Uncompressed TARGA
-            fileExt = "tga";
-            fileType = "T";
-            break;
-          }
-        }
-        data = TextFormat.simpleReplace(data, "%FILETYPE%", fileType);
-        data = TextFormat.simpleReplace(data, "%OUTPUTFILENAME%", filename + "." + fileExt);
-        viewer.createImage(filename + ".ini", data, Integer.MIN_VALUE, 0, 0);
-        
-/*        PovraySaver povs = new PovraySaver(
-                viewer, os, allFrames, width, height);
-        povs.writeFile();
-*/
+        String data = viewer.generateOutput("Povray", filename + ":::" + getINI(), width, height);          
+        viewer.createImage(filename + ".ini", data, Integer.MIN_VALUE, 0, 0);        
     }
-/*    
-    // Create INI file if needed
-    boolean useIniFile = useIniCheck.isSelected();
-    if (useIniFile) {
-      filename = basename + ".ini";
-      theFile = new File(savePath, filename);
-      try {
-        FileWriter os = new FileWriter(theFile);
-        saveIni(os);
-        os.close();
-      } catch (FileNotFoundException fnf) {
-        Logger.error("Povray Dialog FileNotFoundException: " + theFile, fnf);
-        return;
-      } catch (IOException ioe) {
-        Logger.error("Povray Dialog IOException: " + theFile, ioe);
-        return;
-      }
-    }
-*/    
+    
     // Run Povray if needed
     boolean callPovray = runPovCheck.isSelected();
     if (callPovray) {
@@ -742,6 +694,24 @@ public class PovrayDialog extends JDialog {
   	  outputFormatCheck.setEnabled(enabled);
   	  if (outputFormatCombo != null) {
   	    outputFormatCombo.setEnabled(selected && enabled);
+        switch (outputFormatCombo.getSelectedIndex()) {
+        case 0: // PNG
+          outputExtension = ".png";
+          outputFileType = "N";
+          break;
+        case 1: // PPM
+          outputExtension = ".ppm";
+          outputFileType = "P";
+          break;
+        case 2: // Compressed TARGA
+          outputExtension = ".tga";
+          outputFileType = "C";
+          break;
+        case 3: // uncompressed TARGA
+          outputExtension = ".tga";
+          outputFileType = "T";
+          break;
+        }        
   	  }
   	}
   }
@@ -749,11 +719,11 @@ public class PovrayDialog extends JDialog {
   /**
    * Called when the MosaicPreview check box is modified 
    */
-/*
+
   void mosaicPreviewChanged() {
   	if (mosaicPreviewCheck != null) {
   	  boolean selected = mosaicPreviewCheck.isSelected();
-  	  boolean enabled = runPovCheck.isSelected() || useIniCheck.isSelected();
+  	  boolean enabled = runPovCheck.isSelected();// || useIniCheck.isSelected();
   	  mosaicPreviewCheck.setEnabled(enabled);
   	  if (mosaicPreviewStart != null) {
   	    mosaicPreviewStart.setEnabled(selected && enabled);
@@ -769,7 +739,7 @@ public class PovrayDialog extends JDialog {
   	  }
   	}
   }
-  */
+
   /**
    * Update screen informations
    */
@@ -868,39 +838,17 @@ public class PovrayDialog extends JDialog {
       doubleQuoteIfContainsSpace(povrayPath) +
       " +I" + simpleQuoteIfContainsSpace(savePath + basename + ".pov");
 
-    // Output format options
-    String outputExtension = ".tga";
-    String outputFileType = " +FT";
-    if ((outputFormatCheck != null) && (outputFormatCheck.isSelected())) {
-      switch (outputFormatCombo.getSelectedIndex()) {
-      case 0: // PNG
-        outputExtension = ".png";
-        outputFileType = " +FN";
-        break;
-      case 1: // PPM
-        outputExtension = ".ppm";
-        outputFileType = " +FP";
-        break;
-      case 2: // Compressed TARGA
-        outputFileType = " +FC";
-        break;
-      default: // Uncompressed TARGA
-        outputExtension = ".tga";
-        outputFileType = " +FT";
-        break;
-      }
-    }
     commandLine +=
       " +O" +
       simpleQuoteIfContainsSpace(savePath + basename + outputExtension) +
-      outputFileType;
-/*    
+      " +F" + outputFileType;
+    
     // Output alpha options
     if ((outputAlphaCheck != null) && (outputAlphaCheck.isSelected())) {
       commandLine +=
         " +UA";
     }
-*/    
+    
     // Image size options
     //if ((imageSizeCheck != null) && (imageSizeCheck.isSelected())) {
       commandLine +=
@@ -915,9 +863,9 @@ public class PovrayDialog extends JDialog {
     //}
 
     // Anti Alias
-    if ((antiAliasCheck != null) && (antiAliasCheck.isSelected())) {
+//    if ((antiAliasCheck != null) && (antiAliasCheck.isSelected())) {
       commandLine += " +A0.1";
-    }
+    //}
 
     // Display while rendering
     if ((displayWhileRenderingCheck != null) &&
@@ -932,14 +880,14 @@ public class PovrayDialog extends JDialog {
       commandLine += " +KI1";
       commandLine += " +KF" + viewer.getModelCount();
     }
-/*    
+
     // Mosaic preview options
     if ((mosaicPreviewCheck != null) && (mosaicPreviewCheck.isSelected())) {
       commandLine +=
         " +SP" + mosaicPreviewComboStart.getSelectedItem() +
 		" +EP" + mosaicPreviewComboEnd.getSelectedItem();
     }
-*/    
+  
     commandLine += " -V"; // turn off verbose messages ... although it is still rather verbose
 
     return commandLine;
@@ -949,16 +897,13 @@ public class PovrayDialog extends JDialog {
   /**
    * Save INI file
    * 
-   * @param os Output stream
-   * @throws IOException
+   * @return INI data
    */
   
-/*  
-  private void saveIni(FileWriter os) throws IOException {
-    if (os == null) {
-      return;
-    }
-    
+
+  private String getINI() {
+
+    StringBuffer data = new StringBuffer();
     // Save path
   	String savePath = savePathLabel.getText();
     if (!savePath.endsWith(java.io.File.separator)) {
@@ -967,78 +912,51 @@ public class PovrayDialog extends JDialog {
     String basename = saveField.getText();
   	
     // Input file
-    os.write("Input_File_Name=" + savePath + basename + ".pov\n");
+    data.append("Input_File_Name=" + savePath + basename + "\n");
 
     // Output format options
-    String outputExtension = ".tga";
-    String outputFileType = "T";
-    if ((outputFormatCheck != null) && (outputFormatCheck.isSelected())) {
-      switch (outputFormatCombo.getSelectedIndex()) {
-      case 0: // Compressed TARGA
-        outputFileType = "C";
-        break;
-      case 1: // PNG
-        outputExtension = ".png";
-        outputFileType = "N";
-        break;
-      case 2: // PPM
-        outputExtension = ".ppm";
-        outputFileType = "P";
-        break;
-      default: // Uncompressed TARGA
-        break;
-      }
+    data.append("Output_to_File=true\n");
+    data.append("Output_File_Type=" + outputFileType + "\n");
+    data.append("Output_File_Name=" + savePath + basename + outputExtension + "\n");
+    
+    // Image size options
+    data.append("Height=" + imageSizeTextHeight.getValue() + "\n");
+    data.append("Width=" + imageSizeTextWidth.getValue() + "\n");
+
+    // Animation options
+    if ((allFramesCheck != null) && (allFramesCheck.isSelected())) {
+      data.append("Initial_Frame=1\n");
+      data.append("Final_Frame=" + viewer.getModelCount() + "\n");
+      data.append("Initial_Clock=1\n");
+      data.append("Final_Clock=" + viewer.getModelCount() + "\n");
     }
-    os.write("Output_to_File=true\n");
-    os.write("Output_File_Type=" + outputFileType + "\n");
-    os.write("Output_File_Name=" + savePath + basename + outputExtension + "\n");
     
     // Output alpha options
     if ((outputAlphaCheck != null) && (outputAlphaCheck.isSelected())) {
-      os.write("Output_Alpha=true\n");
+      data.append("Output_Alpha=true\n");
     }
     
-    // Image size options
-    if ((imageSizeCheck != null) && (imageSizeCheck.isSelected())) {
-      os.write("Height=" + imageSizeTextHeight.getValue() + "\n");
-      os.write("Width=" + imageSizeTextWidth.getValue() + "\n");
-    } else {
-      if ((outputWidth > 0) && (outputHeight > 0)) {
-        os.write("Height=" + outputHeight + "\n");
-        os.write("Width=" + outputWidth + "\n");
-      }
-    }
-
     // Anti Alias
-    if ((antiAliasCheck != null) && (antiAliasCheck.isSelected())) {
-      os.write("Antialias=true\n");
-      os.write("Antialias_Threshold=0.1\n");
-    }
+      data.append("Antialias=true\n");
+      data.append("Antialias_Threshold=0.1\n");
 
     // Display while rendering
     if ((displayWhileRenderingCheck != null) &&
         (displayWhileRenderingCheck.isSelected())) {
-      os.write("Display=true\n");
-      os.write("Pause_When_Done=true\n");
+      data.append("Display=true\n");
+      data.append("Pause_When_Done=true\n");
     }
 
-    // Animation options
-    if ((allFramesCheck != null) && (allFramesCheck.isSelected())) {
-      os.write("Initial_Frame=1\n");
-      os.write("Final_Frame=" + viewer.getModelCount() + "\n");
-      os.write("Initial_Clock=1\n");
-      os.write("Final_Clock=" + viewer.getModelCount() + "\n");
-    }
-    
     // Mosaic preview options
     if ((mosaicPreviewCheck != null) && (mosaicPreviewCheck.isSelected())) {
-      os.write("Preview_Start_Size=" + mosaicPreviewComboStart.getSelectedItem() + "\n");
-      os.write("Preview_End_Size=" + mosaicPreviewComboEnd.getSelectedItem() + "\n");
+      data.append("Preview_Start_Size=" + mosaicPreviewComboStart.getSelectedItem() + "\n");
+      data.append("Preview_End_Size=" + mosaicPreviewComboEnd.getSelectedItem() + "\n");
     }
     
-    os.write("Verbose=false\n");
+    data.append("Verbose=false\n");
+    return data.toString();
   }
-*/  
+
   /**
    * @return Command line split into arguments
    */

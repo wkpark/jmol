@@ -133,6 +133,7 @@ public abstract class _Exporter implements JmolExportInterface {
   protected JmolRendererInterface jmolRenderer;
   protected StringBuffer output;
   protected BufferedWriter bw;
+  private OutputStreamWriter osw;
   protected String fileName;
   protected String commandLineOptions;
   
@@ -177,14 +178,15 @@ public abstract class _Exporter implements JmolExportInterface {
       fileName = (String) output;
       int pt = fileName.indexOf(":::"); 
       if (pt > 0) {
-        commandLineOptions = fileName.substring(pt);
+        commandLineOptions = fileName.substring(pt + 3);
         fileName = fileName.substring(0, pt);
       }
       viewer.createImage(fileName + ".spt", viewer.getStateInfo(),
           Integer.MIN_VALUE, 0, 0);
       try {
-        this.bw = new BufferedWriter(new OutputStreamWriter(
-            new FileOutputStream(fileName)), 8192);
+        osw = new OutputStreamWriter(
+            new FileOutputStream(fileName));
+        bw = new BufferedWriter(osw, 8192);
       } catch (FileNotFoundException e) {
         return false;
       }
@@ -198,7 +200,8 @@ public abstract class _Exporter implements JmolExportInterface {
     if (!isToFile)
       return output.toString();
     try {
-      bw.close();
+      bw.flush();
+      osw.close();
     } catch (IOException e) {
       //ignore
     }

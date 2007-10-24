@@ -228,10 +228,11 @@ public class _PovrayExporter extends _Exporter {
   }
 
   private String getAuxiliaryFileData() {
-    return "# Created by: Jmol " + Viewer.getJmolVersion()
-        + "\n# Creation date: " + getExportDate() 
-        + "\n# File created: "  + fileName + " (" + nBytes + " bytes)" 
-        + "\n# Jmol state: " + fileName + ".spt" 
+    return "; Created by: Jmol " + Viewer.getJmolVersion()
+        + "\n; Creation date: " + getExportDate() 
+        + "\n; File created: "  + fileName + " (" + nBytes + " bytes)\n\n" 
+        + (commandLineOptions != null ? commandLineOptions :
+          "\n; Jmol state: " + fileName + ".spt" 
         + "\nInput_File_Name=" + fileName 
         + "\nOutput_to_File=true"
         + "\nOutput_File_Type=%FILETYPE%"
@@ -242,7 +243,7 @@ public class _PovrayExporter extends _Exporter {
         + "\nAntialias_Threshold=0.1" 
         + "\nDisplay=true"
         + "\nPause_When_Done=true" 
-        + "\nVerbose=false" + "\n";
+        + "\nVerbose=false" + "\n");
 
   }
 

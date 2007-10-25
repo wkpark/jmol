@@ -83,7 +83,7 @@ public class _PovrayExporter extends _Exporter {
     output("// This script was generated on " + getExportDate() + "\n");
     output("// ******************************************************\n");
     output("\n/*  **** Jmol Embedded Script **** \n");
-    output(viewer.getStateInfo());
+    output(viewer.getSavedState("_Export"));
     output("\n*/\n");
     output("\n");
     output("// ******************************************************\n");
@@ -445,13 +445,6 @@ public class _PovrayExporter extends _Exporter {
     return tempP3;
   }
 
-  public void renderText(Text t) {
-  }
-
-  public void drawString(short colix, String str, Font3D font3d, int xBaseline,
-                         int yBaseline, int z, int zSlab) {
-  }
-
   public void fillCylinder(short colix, byte endcaps, int diameter,
                            Point3f screenA, Point3f screenB) {
     if (screenA.distance(screenB) == 0) {
@@ -504,7 +497,7 @@ public class _PovrayExporter extends _Exporter {
 
   private void fillSphereCentered(float diameter, float x, float y, float z,
                                   short colix) {
-    output("a(" + x + "," + y + "," + z + "," + (diameter / 2.0f) + ","
+   output("a(" + x + "," + y + "," + z + "," + (diameter / 2.0f) + ","
         + color4(colix) + ")\n");
   }
 
@@ -519,19 +512,17 @@ public class _PovrayExporter extends _Exporter {
     output("// end text " + nText + ": " + text + "\n");
   }
 
-  // not implemented
+  // not needed:
   
   public void fillHermite(short colix, int tension, int diameterBeg,
                           int diameterMid, int diameterEnd, Point3f s0,
                           Point3f s1, Point3f s2, Point3f s3) {
     //cartoons, rockets, trace:
-    //System.out.println("pov fileHermite cartoons rockets trace "+this);
   }
 
   public void drawHermite(short colix, int tension, Point3f s0, Point3f s1,
                           Point3f s2, Point3f s3) {
     //strands, meshribbon:
-    //System.out.println("pov drawhermite "+this);
   }
 
   public void drawHermite(short colix, boolean fill, boolean border,
@@ -539,7 +530,14 @@ public class _PovrayExporter extends _Exporter {
                           Point3f s3, Point3f s4, Point3f s5, Point3f s6,
                           Point3f s7, int aspectRatio) {
     //cartoons, meshRibbons:
-    //System.out.println("pov draw hermite -- cartoons, meshribbons "+this);
   }
+
+  public void renderText(Text t) {
+  }
+
+  public void drawString(short colix, String str, Font3D font3d, int xBaseline,
+                         int yBaseline, int z, int zSlab) {
+  }
+
 
 }

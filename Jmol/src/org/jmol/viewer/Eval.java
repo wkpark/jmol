@@ -7870,7 +7870,7 @@ class Eval { //implements Runnable {
           height = intParameter(pt++);
         }
       } else {
-        type = "image";
+        type = "(image)";
       }
       break;
     }
@@ -7892,6 +7892,12 @@ class Eval { //implements Runnable {
     //write script "filename"
     //write isosurface t.jvxl 
 
+    if (type.equals("(image)") && Parser.isOneOf(val.toUpperCase(), 
+        "JPG;JPG64;JPEG;JPEG64;PNG;PPM")) {
+      type = val.toUpperCase();
+      pt++;
+    }
+    
     if (pt + 2 == statementLength) {
       data = parameterAsString(++pt);
       if (data.charAt(0) != '.')

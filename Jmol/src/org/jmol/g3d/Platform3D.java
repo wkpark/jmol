@@ -83,7 +83,8 @@ abstract class Platform3D {
 
   abstract Image allocateImage();
 
-  void allocateTBuffers() {
+  void allocateTBuffers(boolean antialiasTranslucent) {
+    bufferSizeT = (antialiasTranslucent ? bufferSize : windowSize);
     zBufferT = new int[bufferSizeT];
     pBufferT = new int[bufferSizeT];    
   }
@@ -103,8 +104,10 @@ abstract class Platform3D {
     bufferSize = bufferWidth * bufferHeight;
     zBuffer = new int[bufferSize];
     pBuffer = new int[bufferSize];
-    //no need for any antialiazing on a translucent buffer
-    bufferSizeT = windowSize;
+    // original thought was that there is
+    // no need for any antialiazing on a translucent buffer
+    // but that's simply not true.
+    // bufferSizeT = windowSize;
     imagePixelBuffer = allocateImage();
     /*
     Logger.debug("  width:" + width + " bufferWidth=" + bufferWidth +

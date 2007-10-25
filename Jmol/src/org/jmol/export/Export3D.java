@@ -618,7 +618,7 @@ final public class Export3D implements JmolRendererInterface {
    * @return the answer
    */
   public boolean isAntialiased() {
-    return g3d.isAntialiased();
+    return false;
   }
   
   public boolean checkTranslucent(boolean isAlphaTranslucent) {

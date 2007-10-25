@@ -62,8 +62,10 @@ final public class Graphics3D implements JmolRendererInterface {
   Hermite3D hermite3d;
   Normix3D normix3d;
   boolean isFullSceneAntialiasingEnabled;
-  boolean antialiasThisFrame;
-  
+  private boolean antialiasThisFrame;
+  private boolean antialiasTranslucent; 
+  private boolean antialiasEnabled;
+    
   /**
    * is full scene / oversampling antialiasing in effect
    *
@@ -174,22 +176,20 @@ final public class Graphics3D implements JmolRendererInterface {
   }
   
   /**
-   * Sets the window size. This will be smaller than the
+   * Sets the window size and clears the buffers. 
+   * This will be smaller than the
    * rendering size if FullSceneAntialiasing is enabled
    *
    * @param windowWidth Window width
    * @param windowHeight Window height
    * @param enableFullSceneAntialiasing currently not in production
    */
-  public void setWindowSize(int windowWidth, int windowHeight,
+  public void setWindowBuffers(int windowWidth, int windowHeight,
                             boolean enableFullSceneAntialiasing) {
     if (this.windowWidth == windowWidth && this.windowHeight == windowHeight 
         && enableFullSceneAntialiasing == isFullSceneAntialiasingEnabled)
       return;
-    this.windowWidth = windowWidth;
-    this.windowHeight = windowHeight;
-    isFullSceneAntialiasingEnabled = enableFullSceneAntialiasing;
-    setWidthHeight(enableFullSceneAntialiasing);
+    setWindowParameters(windowWidth, windowHeight, enableFullSceneAntialiasing);
     pbuf = null;
     zbuf = null;
     pbufT = null;
@@ -197,6 +197,13 @@ final public class Graphics3D implements JmolRendererInterface {
     platform.releaseBuffers();
   }
 
+  public void setWindowParameters(int width, int height, boolean antialias) {
+    windowWidth = width;
+    windowHeight = height;
+    antialiasThisFrame = isFullSceneAntialiasingEnabled = antialias;
+    setWidthHeight(antialiasThisFrame);    
+  }
+  
   private void setWidthHeight(boolean isAntialiased) {
     width = windowWidth;
     height = windowHeight;
@@ -211,7 +218,6 @@ final public class Graphics3D implements JmolRendererInterface {
     displayMinY = -(height >> 1);
     displayMaxY = height - displayMinY;
     bufferSize = width * height;
-    //System.out.println("set width/height " + isAntialiased + " w="+width + " h=" + height);
   }
   
   public boolean checkTranslucent(boolean isAlphaTranslucent) {
@@ -229,7 +235,7 @@ final public class Graphics3D implements JmolRendererInterface {
       endRendering();
     normix3d.setRotationMatrix(rotationMatrix);
     antialiasThisFrame &= isFullSceneAntialiasingEnabled;
-    this.antialiasThisFrame = antialiasThisFrame;
+    antialiasEnabled = this.antialiasThisFrame = antialiasThisFrame;
     currentlyRendering = true;
     this.twoPass = twoPass;
     isPass2 = false;
@@ -247,33 +253,39 @@ final public class Graphics3D implements JmolRendererInterface {
     platform.obtainScreenBuffer();
   }
 
-  public boolean setPass2() {
-    //System.out.println("g3d setPass2: haveAlphaTranslucent,currentlyRendering: " + haveAlphaTranslucent + " " + currentlyRendering);
+  public boolean setPass2(boolean antialiasTranslucent) {
     if (!haveAlphaTranslucent || !currentlyRendering)
       return false;
-    //System.out.println("isPass2");
     isPass2 = true;
     colixCurrent = 0;
     addAllPixels = true;
-    if (antialiasThisFrame)
-      downSampleFullSceneAntialiasing();
-    if (pbufT == null) {
-      platform.allocateTBuffers();
+    antialiasTranslucent = antialiasTranslucent && antialiasThisFrame;
+    if (antialiasThisFrame && !antialiasTranslucent)
+      downSampleFullSceneAntialiasing(true);
+    if (pbufT == null || this.antialiasTranslucent != antialiasTranslucent) {
+      platform.allocateTBuffers(antialiasTranslucent);
       pbufT = platform.pBufferT;
       zbufT = platform.zBufferT;
     }    
+    this.antialiasTranslucent = antialiasTranslucent;
     platform.clearTBuffer();
     return true;
   }
   
+  
   public void endRendering() {
     if (!currentlyRendering)
       return;
-    if (antialiasThisFrame)
-      downSampleFullSceneAntialiasing();
-    if (isPass2)
-      mergeOpaqueAndTranslucentBuffers();
+    if (pbuf != null) {
+      if (isPass2 && antialiasTranslucent)
+        mergeOpaqueAndTranslucentBuffers();
+      if (antialiasThisFrame)
+        downSampleFullSceneAntialiasing(isPass2 && !antialiasTranslucent);
+      if (isPass2 && !antialiasTranslucent)
+        mergeOpaqueAndTranslucentBuffers();
+    }
     platform.notifyEndOfRendering();
+    setWidthHeight(antialiasEnabled);
     currentlyRendering = false;
   }
 
@@ -368,13 +380,16 @@ final public class Graphics3D implements JmolRendererInterface {
     return depth;
   }
 
+  int backgroundArgb;
+  
   /**
    * sets background color to the specified argb value
    *
    * @param argb an argb value with alpha channel
    */
   public void setBackgroundArgb(int argb) {
-    platform.setBackground(argb);
+    backgroundArgb = argb & 0x00FFFFFF; //clear alpha channel
+    platform.setBackground(backgroundArgb);
   }
 
   /**
@@ -422,34 +437,49 @@ final public class Graphics3D implements JmolRendererInterface {
     return (zShade ? (z - slab) * 5 / (depth - slab): 0);
   }
   
-  /**
-   * used internally when oversampling is enabled
-   */
-  private void downSampleFullSceneAntialiasing() {
+  private void downSampleFullSceneAntialiasing(boolean downSampleZBuffer) {
     int width4 = width;
     int offset1 = 0;
     int offset4 = 0;
-    for (int i = windowHeight; --i >= 0; ) {
-      for (int j = windowWidth; --j >= 0; ) {
-        int argb;
-        argb  = (pbuf[offset4         ] >> 2) & 0x3F3F3F3F;
-        argb += (pbuf[offset4 + width4] >> 2) & 0x3F3F3F3F;
-        int z = zbuf[offset4];
-        z = Math.min(z, zbuf[offset4 + width4]);
-        ++offset4;
-        argb += (pbuf[offset4         ] >> 2) & 0x3F3F3F3F;
-        argb += (pbuf[offset4 + width4] >> 2) & 0x3F3F3F3F;
+    for (int i = windowHeight; --i >= 0; offset4 += width4)
+      for (int j = windowWidth; --j >= 0; ++offset1) {
+/*
+        int a = pbuf[offset4];
+        int b = pbuf[offset4++ + width4];
+        int c = pbuf[offset4];
+        int d = pbuf[offset4++ + width4];
+        int argb = ((((a & 0x0f0f0f) + (b & 0x0f0f0f)
+           + (c & 0x0f0f0f) + (d & 0x0f0f0f)) >> 2) & 0x0f0f0f)
+           + ( ((a & 0xF0F0F0) + (b & 0xF0F0F0) 
+           +   (c & 0xF0F0F0) + (d & 0xF0F0F0)
+                ) >> 2);
+*/      
+        
+        int argb = (pbuf[offset4] >> 2) & 0x3F3F3F3F;
+        argb += (pbuf[offset4++ + width4] >> 2) & 0x3F3F3F3F;
+        argb += (pbuf[offset4] >> 2) & 0x3F3F3F3F;
+        argb += (pbuf[offset4++ + width4] >> 2) & 0x3F3F3F3F;
         argb += (argb & 0xC0C0C0C0) >> 6;
-        argb |= 0xFF000000;
-        pbuf[offset1] = argb;
-        z = Math.min(z, zbuf[offset4]);
-        zbuf[offset1] = Math.min(z, zbuf[offset4 + width4]);
-        ++offset1;
-        ++offset4;
+
+        pbuf[offset1] = argb & 0x00FFFFFF;
       }
-      offset4 += width4;
+    if (downSampleZBuffer) {
+      //we will add the alpha mask later
+      offset1 = offset4 = 0;
+      for (int i = windowHeight; --i >= 0; offset4 += width4)
+        for (int j = windowWidth; --j >= 0; ++offset1, ++offset4) {
+          int z = Math.min(zbuf[offset4], zbuf[offset4 + width4]);
+          ++offset4;
+          z = Math.min(z, zbuf[offset4]);
+          z = Math.min(z, zbuf[offset4 + width4]);
+          if (z != Integer.MAX_VALUE)
+            z >>= 1;
+          zbuf[offset1] = (pbuf[offset1] == backgroundArgb ? Integer.MAX_VALUE
+              : z);
+        }
+      setWidthHeight(antialiasThisFrame = false);
     }
-    setWidthHeight(antialiasThisFrame = false);
+    
   }
 
   void mergeOpaqueAndTranslucentBuffers() {
@@ -475,8 +505,6 @@ final public class Graphics3D implements JmolRendererInterface {
     if (argbA == argbB)
       return;
 
-    //System.out.println("merge " + pt + " " + Integer.toHexString(argbB)+ " " + Integer.toHexString(pbuf[pt]));
-
     int rbA = (argbA & 0x00FF00FF);
     int gA = (argbA & 0x0000FF00);
     int rbB = (argbB & 0x00FF00FF);
@@ -485,7 +513,6 @@ final public class Graphics3D implements JmolRendererInterface {
     //just for now:
     //0 or 1=100% opacity, 2=87.5%, 3=75%, 4=50%, 5=50%, 6 = 25%, 7 = 12.5% opacity.
     //4 is reserved because it is the default-Jmol 10.2
-    //System.out.print(Integer.toHexString(argbB));
     switch (logAlpha) {
     // 0.0 to 1.0 ==> MORE translucent   
     //                1/8  1/4 3/8 1/2 5/8 3/4 7/8
@@ -521,9 +548,7 @@ final public class Graphics3D implements JmolRendererInterface {
       gA = (((gA << 2) + (gA << 1) + gA + gB) >> 3) & 0x0000FF00;
       break;
     }
-    pbuf[pt] = 0xFF000000 | rbA | gA;
-    
-      //System.out.println("mergefinal " + pt + " " + Integer.toHexString(pbuf[pt]) + " " + Integer.toHexString(rb) + " " + Integer.toHexString(g));
+    pbuf[pt] = 0xFF000000 | rbA | gA;    
   }
   
   public boolean hasContent() {
@@ -552,7 +577,6 @@ final public class Graphics3D implements JmolRendererInterface {
     shadesCurrent = getShades(colix);
     
     argbCurrent = argbNoisyUp = argbNoisyDn = getColixArgb(colix);
-    //System.out.println("setColix:" + Integer.toHexString(colix) + " argb="+Integer.toHexString(argbCurrent)+ " " +isTranslucent + " tMask " + Integer.toHexString(translucencyMask) + " pass2:"+isPass2);
     return true;
   }
 
@@ -560,7 +584,6 @@ final public class Graphics3D implements JmolRendererInterface {
     //if (isPass2)
       //return;
     argbCurrent = shadesCurrent[intensity];
-    //System.out.println("setColixNoisy:" + " argb="+Integer.toHexString(argbCurrent));    
     argbNoisyUp = shadesCurrent[intensity < shadeLast ? intensity + 1 : shadeLast];
     argbNoisyDn = shadesCurrent[intensity > 0 ? intensity - 1 : 0];
   }
@@ -585,8 +608,9 @@ final public class Graphics3D implements JmolRendererInterface {
     if (z < zT) {
       //new in front -- merge old translucent with opaque
       //if (zT != Integer.MAX_VALUE)
-      if (zT - z > zMargin)
-        mergeBufferPixel(pbuf, pbufT[offset], offset);
+      int argb = pbufT[offset];
+      if (argb != 0 && zT - z > zMargin)
+        mergeBufferPixel(pbuf, argb, offset);
       zbufT[offset] = z;
       pbufT[offset] = p & translucencyMask;
     } else if (z == zT) {
@@ -1098,8 +1122,6 @@ final public class Graphics3D implements JmolRendererInterface {
                            Point3i screenB, short colixB, short normixB,
                            Point3i screenC, short colixC, short normixC) {
     // mesh, isosurface
-    //if ( screenA.x < 0 || screenA.y < 0 || screenA.x > 10 || screenA.y > 10)return;
-    //System.out.println("fillTriangle: "+screenA + screenB + screenC);
     boolean useGouraud;
     if (normixA == normixB && normixA == normixC &&
         colixA == colixB && colixA == colixC) {
@@ -1884,7 +1906,6 @@ final public class Graphics3D implements JmolRendererInterface {
     }
     if (changeableColixMap[id] == 0)
       changeableColixMap[id] = Colix3D.getColix(argb);
-    //System.out.println("changeable colix "+Integer.toHexString(id | CHANGEABLE_MASK) + " = "+Integer.toHexString(argb));
     return (short)(id | CHANGEABLE_MASK);
   }
 

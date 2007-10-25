@@ -181,7 +181,7 @@ public abstract class _Exporter implements JmolExportInterface {
         commandLineOptions = fileName.substring(pt + 3);
         fileName = fileName.substring(0, pt);
       }
-      viewer.createImage(fileName + ".spt", viewer.getStateInfo(),
+      viewer.createImage(fileName + ".spt", viewer.getSavedState("_Export"),
           Integer.MIN_VALUE, 0, 0);
       try {
         os = new FileOutputStream(fileName);

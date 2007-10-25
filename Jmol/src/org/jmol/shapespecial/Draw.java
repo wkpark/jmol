@@ -654,7 +654,7 @@ public class Draw extends MeshCollection {
     for (int i = m.polygonCount; --i >= 0;) {
       int[] p = m.polygonIndexes[i];
       m.axes[i] = new Vector3f();
-      if (p.length == 0) {
+      if (p == null || p.length == 0) {
       } else if (m.drawVertexCount == 2 || m.drawVertexCount < 0
           && m.drawVertexCounts[i] == 2) {
         m.axes[i].sub(m.vertices[p[0]],

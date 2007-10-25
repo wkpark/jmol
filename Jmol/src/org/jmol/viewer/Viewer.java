@@ -434,7 +434,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     stateManager.saveState(saveName);
   }
 
-  String getSavedState(String saveName) {
+  public String getSavedState(String saveName) {
     return stateManager.getSavedState(saveName);
   }
 
@@ -1724,7 +1724,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         + " " + bTotal + " " + bFree + " " + bMax);
     if (notify)
       setStatusFileLoaded(0, null, null, null, null, null);
-    // System.out.println(Token.getSetParameters());
   }
 
   private void zap(String msg) {
@@ -2069,8 +2068,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   int findNearestAtomIndex(int x, int y) {
-    //System.out.println("hover x y o :" + x + " " + y 
-    //  + "  " + (x + y * getScreenWidth()));
     if (modelSet == null)
       return -1;
     if (g3d.isAntialiased()) {
@@ -2714,7 +2711,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Logger.debug("viewer.setInMotion("+inMotion+")");
     if (wasInMotion ^ inMotion) {
       repaintManager.setInMotion(inMotion);
-      //resizeImage(dimScreen.width, dimScreen.height, false, false, true);
+      //resizeImage(0, 0, false, false, true);
       if (inMotion) {
         ++motionEventNumber;
       } else {
@@ -2820,22 +2817,32 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                            boolean isImageWrite, 
                            boolean isGenerator,
                            boolean isReset) {
+    if (width > 0) {
+      dimScreen.width = width;
+      dimScreen.height = height;
+    }
+    
     boolean antialias = false;
     if (isReset)
       antialias = global.antialiasDisplay;//&& !getInMotion();
     else if (isImageWrite && !isGenerator)
       antialias = global.antialiasImages;
-    dimScreen.width = width;
-    dimScreen.height = height;
-    if (!isImageWrite) {
+    if (width > 0 && !isImageWrite) {
       global.setParameterValue("_width", width);
       global.setParameterValue("_height", height);
       setStatusResized(width, height);
     }
-    transformManager.setScreenDimension(width, height,
+    if (width <= 0) {
+      width = dimScreen.width;
+      height = dimScreen.height;
+    }
+    transformManager.setScreenParameters(width, height,
         isImageWrite || isReset? global.zoomLarge : false,
-            antialias, false);
-    g3d.setWindowSize(width, height, antialias); 
+            antialias, false, false);
+    if (isGenerator)
+      g3d.setWindowParameters(width, height, antialias); 
+    else
+      g3d.setWindowBuffers(width, height, antialias); 
   }
 
   public int getScreenWidth() {
@@ -2868,10 +2875,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
 
   public String generateOutput(String type, String fileName, int width, int height) {
+    saveState("_Export");
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
-    if (width > 0 && height > 0)
-      resizeImage(width, height, true, true, false);
+    resizeImage(width, height, true, true, false);
     setModelVisibility();
     String data = repaintManager.generateOutput(type, g3d, modelSet, fileName);
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
@@ -2882,7 +2889,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
-    //System.out.println("renderScreen");
     if (isTainted || getSlabEnabled())
       setModelVisibility();
     isTainted = false;
@@ -2914,10 +2920,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
         matrixRotate, antialias, twoPass);
     repaintManager.render(g3d, modelSet); //, rectClip
-    if (twoPass && g3d.setPass2()) {
-      transformManager.setAntialias(false);
+    if (twoPass && g3d.setPass2(global.antialiasTranslucent)) {
+      if (!global.antialiasTranslucent)
+        transformManager.setAntialias(false);
       repaintManager.render(g3d, modelSet); //, rectClip
-      transformManager.setAntialias(antialias);      
+      if (!global.antialiasTranslucent)
+        transformManager.setAntialias(antialias);      
     }
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
     // Sun is throwing a NullPointerExceptions inside graphics routines
@@ -2931,13 +2939,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
         transformManager.getStereoRotationMatrix(true), antialias, twoPass);
     repaintManager.render(g3d, modelSet);//, rectClip
-    if (twoPass && g3d.setPass2())
-      repaintManager.render(g3d, modelSet);//, rectClip      
+    if (twoPass && g3d.setPass2(global.antialiasTranslucent)) {
+      if (antialias && !global.antialiasTranslucent)
+        transformManager.setAntialias(false);
+      repaintManager.render(g3d, modelSet); //, rectClip
+      if (antialias && !global.antialiasTranslucent)
+        transformManager.setAntialias(true);      
+    }
     g3d.endRendering();
     g3d.snapshotAnaglyphChannelBytes();
     g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
         transformManager.getStereoRotationMatrix(false), antialias, twoPass);
-    repaintManager.render(g3d, modelSet);//, rectClip
+    if (twoPass && g3d.setPass2(global.antialiasTranslucent)) {
+      if (antialias && !global.antialiasTranslucent)
+        transformManager.setAntialias(false);
+      repaintManager.render(g3d, modelSet); //, rectClip
+      if (antialias && !global.antialiasTranslucent)
+        transformManager.setAntialias(true);      
+    }
     g3d.endRendering();
     switch (stereoMode) {
     case JmolConstants.STEREO_REDCYAN:
@@ -3049,7 +3068,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private String evalStringQuiet(String strScript, boolean isQuiet) {
-    //System.out.println(htmlName + " evalString " + strScript);
     interruptScript = "";
     boolean isInterrupt = (strScript.length() > 0 && strScript.charAt(0) == '!');
     if (isInterrupt)
@@ -3062,7 +3080,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       interruptScript = strScript;
       return "!" + strScript;
     }
-    //System.out.println(htmlName + " addScript " + strScript);
     return scriptManager.addScript(strScript, false, isQuiet);
   }
 
@@ -4261,12 +4278,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       //11.3.36
       
       if (key.equalsIgnoreCase("antialiasDisplay")) {
-        setAntialias(true, value);
+        setAntialias(0, value);
+        break;
+      }
+
+      if (key.equalsIgnoreCase("antialiasTranslucent")) {
+        setAntialias(1, value);
         break;
       }
 
       if (key.equalsIgnoreCase("antialiasImages")) {
-        setAntialias(false, value);
+        setAntialias(2, value);
         break;
       }
 
@@ -4963,7 +4985,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setZoomLarge(boolean TF) {
     global.zoomLarge = TF;
-    transformManager.scaleFitToScreen(false, global.zoomLarge, false);
+    transformManager.scaleFitToScreen(false, global.zoomLarge, false, true);
   }
 
   boolean getZoomLarge() {
@@ -5245,16 +5267,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.zeroBasedXyzRasmol;
   }
 
-  private void setAntialias(boolean isDisplay, boolean TF) {
-    if (isDisplay) {
+  private void setAntialias(int mode, boolean TF) {
+    switch (mode) {
+    case 0: //display
       global.setParameterValue("antialiasDisplay", TF);
       global.antialiasDisplay = TF;
-      resizeImage(dimScreen.width, dimScreen.height, false, false, true);
-      refresh(0, "setAntialias()");
+      break;
+    case 1: // translucent
+      global.setParameterValue("antialiasTranslucent", TF);
+      global.antialiasTranslucent = TF;
+      break;
+    case 2: // images
+      global.setParameterValue("antialiasImages", TF);
+      global.antialiasImages = TF;
       return;
     } 
-    global.setParameterValue("antialiasImages", TF);
-    global.antialiasImages = TF;
+    resizeImage(0, 0, false, false, true);
+    refresh(0, "setAntialias()");
   }
 
   // //////////////////////////////////////////////////////////////
@@ -5771,7 +5800,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @return    nX by nY array of floating values
    */
   public float[][] functionXY(String functionName, int nX, int nY) {
-    System.out.println("functionXY:::  " + functionName);
     if (functionName.indexOf("file:") < 0)
       return statusManager.functionXY(functionName, nX, nY);
     String data = getFileAsString(functionName.substring(5));
@@ -5896,15 +5924,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                           int width, int height) {
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
-    if (width > 0 && height > 0)
+    if (quality != Integer.MIN_VALUE) {
       resizeImage(width, height, true, false, false);
-    setModelVisibility();
+      setModelVisibility();
+    }
     try {
       statusManager.createImage(file, type_text, quality);
     } catch (Exception e) {
       Logger.error("Error creating image: " + e.getMessage());
     }
-    resizeImage(saveWidth, saveHeight, true, false, true);
+    if (quality != Integer.MIN_VALUE)
+      resizeImage(saveWidth, saveHeight, true, false, true);
   }
 
   public void syncScript(String script, String applet) {
@@ -5931,7 +5961,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       statusManager.setSyncDriver(StatusManager.SYNC_SLAVE);
       return;
     }
-    //System.out.println("syncmode=" + statusManager.getSyncMode());
     int syncMode = statusManager.getSyncMode();
     if (syncMode == StatusManager.SYNC_OFF)
       return;

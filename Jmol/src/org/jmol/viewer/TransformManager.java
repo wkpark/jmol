@@ -92,7 +92,7 @@ abstract class TransformManager {
 
   private void setViewer(Viewer viewer, int width, int height) {
     this.viewer = viewer;
-    setScreenDimension(width, height, true, false, true);
+    setScreenParameters(width, height, true, false, true, true);
   }
 
   boolean checkedForNavigation = false;
@@ -1101,13 +1101,14 @@ abstract class TransformManager {
   private boolean antialias;
   private boolean useZoomLarge;
 
-  void setScreenDimension(int width, int height, boolean useZoomLarge, 
-                          boolean antialias, boolean resetSlab) {
+  void setScreenParameters(int width, int height, boolean useZoomLarge, 
+                          boolean antialias, 
+                          boolean resetSlab, boolean resetZoom) {
     this.antialias = antialias;
     this.width = (antialias ? width * 2 : width);
     this.height = (antialias ? height * 2 : height);
     this.useZoomLarge = useZoomLarge;
-    scaleFitToScreen(false, useZoomLarge, resetSlab);
+    scaleFitToScreen(false, useZoomLarge, resetSlab, resetZoom);
   }
 
   void setAntialias(boolean TF) {
@@ -1121,7 +1122,7 @@ abstract class TransformManager {
       width /= 2;
       height /= 2;
     }
-    scaleFitToScreen(false, useZoomLarge, false);
+    scaleFitToScreen(false, useZoomLarge, false, false);
   }
   
   private float defaultScaleToScreen(float radius) {
@@ -1141,23 +1142,23 @@ abstract class TransformManager {
   }
 
   void scaleFitToScreen(boolean andCenter) {
-    scaleFitToScreen(andCenter, viewer.getZoomLarge(), true);
+    scaleFitToScreen(andCenter, viewer.getZoomLarge(), true, true);
   }
   
   void scaleFitToScreen(boolean andCenter, boolean zoomLarge,
-                        boolean resetSlab) {
+                        boolean resetSlab, boolean resetZoom) {
     if (width == 0 || height == 0)
       return;
     // translate to the middle of the screen
     fixedTranslation.set(width * (andCenter ? 0.5f : xTranslationFraction), height
         * (andCenter ? 0.5f : yTranslationFraction), 0);
     setTranslationFractions();
-    resetNavigationPoint(resetSlab);
+    if (resetZoom)
+      resetNavigationPoint(resetSlab);
     // 2005 02 22
     // switch to finding larger screen dimension
     // find smaller screen dimension
     screenPixelCount = (zoomLarge == (height > width) ? height : width);
-    //System.out.println("tman: screenPixelCount:" + screenPixelCount);
     
     // ensure that rotations don't leave some atoms off the screen
     // note that this radius is to the furthest outside edge of an atom
@@ -1237,7 +1238,6 @@ abstract class TransformManager {
     if (zoomPercentSetting > MAXIMUM_ZOOM_PERCENTAGE)
       zoomPercentSetting = MAXIMUM_ZOOM_PERCENTAGE;
     zoomPercent = (zoomEnabled || isNavigationMode ? zoomPercentSetting : 100);
-    //System.out.println("calczoom" + zoomPercent);
   }
 
   /**
@@ -1275,8 +1275,6 @@ abstract class TransformManager {
     // cale to screen coordinates
     matrixTemp.setZero();
     matrixTemp.set(scalePixelsPerAngstrom);
-    //System.out.println("tman: antialias " + antialias + " screenPixelCount:" + screenPixelCount +  " sppa " + scalePixelsPerAngstrom);
-
     if (!axesOrientationRasmol) {
       // negate y (for screen) and z (for zbuf)
       matrixTemp.m11 = matrixTemp.m22 = -scalePixelsPerAngstrom;
@@ -1284,8 +1282,6 @@ abstract class TransformManager {
     matrixTransform.mul(matrixTemp, matrixTransform);
     //z-translate to set rotation center at midplane (Nav) or front plane (V10)
     matrixTransform.m23 += modelCenterOffset;
-
-    //System.out.println("zoom:" + zoomPercent + "\n" + matrixTransform);
 
     // note that the image is still centered at 0, 0 in the xy plane
 
@@ -1910,7 +1906,6 @@ abstract class TransformManager {
               setSpinOn(false);
           }
           try {
-            //System.out.println("sleeping "+sleepTime);
             Thread.sleep(sleepTime);
           } catch (InterruptedException e) {
             break;

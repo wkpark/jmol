@@ -506,6 +506,7 @@ public class StateManager {
 
     boolean antialiasDisplay            = false;
     boolean antialiasImages             = true;
+    boolean antialiasTranslucent        = false;
     boolean greyscaleRendering          = false;
     boolean zoomLarge                   = true; //false would be like Chime
     boolean dotsSelectedOnly            = false;
@@ -954,6 +955,7 @@ public class StateManager {
       setParameterValue("ambientPercent",ambientPercent);
       setParameterValue("antialiasImages",antialiasImages);
       setParameterValue("antialiasDisplay",antialiasDisplay);
+      setParameterValue("antialiasTranslucent",antialiasTranslucent);
       setParameterValue("appendNew",appendNew);
       setParameterValue("applySymmetryToBonds",applySymmetryToBonds);
       setParameterValue("autoBond",autoBond);

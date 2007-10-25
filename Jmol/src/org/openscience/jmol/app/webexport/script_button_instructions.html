@@ -1,72 +1,135 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=iso-8859-1" http-equiv="content-type">
+  <meta content="text/html; charset=iso-8859-1"
+ http-equiv="content-type">
   <title>ScriptButton Instructions</title>
   <meta content="J. Gutow" name="author">
   <meta
-  content="Instructions for the script button tab in Jmol_Web_Page_Maker"
-  name="description">
+ content="Instructions for the script button tab in Jmol_Web_Page_Maker"
+ name="description">
+  <style type="text/css">
+.floattopdiv { padding:0.3em 0.5ex; font-size:0.9em; float:top;}
+.textPanels { position:absolute; overflow:auto; }
+#menuPanel { left:0px; width:100%; top:0px; height:10%; }
+#bodyPanel { left:0px; width:100%; top:10%; height:90%; }
+  </style>
 </head>
-
 <body>
-This tab is designed to produce a web page template (no explanatory text)
-that displays a single resizable Jmol applet alongside a scrolling pane
-containing text and Jmol script buttons. The buttons can change what is
-displayed in the Jmol applet. What they do can be defined by setting up Jmol
-with the view you want the user to see. This panel can be opened once and
+<table style="text-align: left; width: 100%; height: 100%;" border="1"
+ cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">
+      <table style="text-align: left; width: 100%;" border="0"
+ cellpadding="2" cellspacing="2">
+        <tbody>
+          <tr>
+            <td style="vertical-align: top;"><small>Page Templates</small></td>
+            <td style="vertical-align: top;"><small>Set Up</small></td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top; width: 33%;"><small>&gt; <a
+ href="pop_in_instructions.html">Pop-In</a><br>
+            <br>
+&gt; Scriptbutton<br>
+&gt;&gt;<a href="#Description">Description</a><br>
+&gt;&gt;<a href="#Page_Cartoon">Page Cartoon</a><br>
+&gt;&gt;<a href="#Instructions">Step-by-step</a><br>
+            </small></td>
+            <td style="vertical-align: top; width: 33%;"><small>&gt; <a
+ href="Path_to_Applet.html">Path to Jmol</a><br>
+&gt; <a href="Installing_Applet.html">Jmol on your server</a><br>
+&gt; <a href="Testing_Pages_Locally.html">Testing locally (no server)</a><br>
+            </small></td>
+          </tr>
+        </tbody>
+      </table>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">
+      <div style="text-align: center;"><span style="font-weight: bold;">The
+ScriptButton Template</span><br>
+      </div>
+      <a name="Description"></a>This tab is
+designed to produce
+a web page that displays a single resizable Jmol applet alongside a
+scrolling pane
+containing Jmol script buttons. The buttons change what is
+displayed in the Jmol applet. What the buttons do is defined by setting
+up
+Jmol
+with the view you want the user to see. You can add explanatory text
+using a standard web editor.&nbsp; This panel can be opened once
+and
 returned to anytime. An example picture of such a page is shown below:<br>
-<img style="border: 1px solid ; width: 250px; height: 199px;"
-alt="picture of a Resizable web page" src="script_button.png"><br>
-<br>
-<b><i>Instructions</i></b> <br>
-<br>
-1) Set the relative path to the Jmol applet on you web site from where you
+      <img style="border: 1px solid ; width: 250px; height: 199px;"
+ alt="picture of a Resizable web page" src="script_button.png"><a
+ name="Page_Cartoon"></a><br>
+      <br>
+      <a name="Instructions"></a><b><i>Instructions</i></b> <br>
+      <br>
+1) Set the relative path to the Jmol applet on your web site from where
+you
 will put the folder (directory) containing the files created by this
-program.  Each "../" means step up one directory level.  Do not forget to
-account for the fact that the page produced by this program is inside a
-folder (directory) that you will be adding to your web site.  Example: Jmol
-applet is in directory /www/applets/java/jmol and your web site is in the
-directory /www/yourname.  You will be adding one more level for this page
-(e.g. /www/yourname/thispage).  The correct path to the Jmol applet is
-../../applets/java/jmol. <br>
-
-
-<p>2) Put your name(s) in the Author space. This will add you as the author
+program. (<a href="Path_to_Applet.html">more...</a>) <br>
+      <p>2) Put your name(s) in the Author space. This will add you as
+the
+author
 in the page meta data that is used for searching.</p>
-
-<p>3) Add the title you want to appear in the browser window title bar. This
+      <p>3) Add the title you want to appear in the browser window
+title bar.
+This
 does not have to be the same as the title you will use for the page.</p>
-
-<p>4) Set the percentage of the window width that you want Jmol to occupy.
-<br>
-<br>
-5) If not already done, open the first file you want to appear in your page
+      <p>4) Set the percentage of the window width that you want Jmol
+to
+occupy. <br>
+      <br>
+5) If not already done, open the first file you want to appear in your
+page
 using the File..Open.. menu in the Jmol viewer. <br>
-<br>
+      <br>
 6) Set the state of the model (zoom, rotate, select, change colors, add
-orbitals, set the molecule spinning, etc.)exactly the way you want it to
+orbitals, set the molecule spinning, etc.)exactly the way you want it
+to
 appear on the web page. <br>
-<br>
+      <br>
 7) Click on the "Add Present Jmol State as Instance" button. <br>
-<br>
-8) Repeat for as many different displays as you wish. A button will be added
-to the web page that will create each display when the user clicks on them.
-You do not need to load a new file each time if you are just modifying the
+      <br>
+8) Repeat for as many different displays as you wish. A button will be
+added
+to the web page that will create each display when the user clicks the
+button.
+You do not need to load a new file each time if you are just modifying
+the
 way the previous one is displayed. <br>
-<br>
-9) When you are done, click on "Save HTML as..." Provide either the name of a
-new directory for this page or the name of the HTML file (.htm or .html) you
-want to create or replace. All necessary files will be created in the same
+      <br>
+9) When you are done, click on "Save HTML as..." Provide either the
+name of a
+new directory for this page or the name of the HTML file (.htm or
+.html) you
+want to create or replace. All necessary files will be created in the
+same
 directory. These include the HTML page itself, the JavaScript file
-JmolPopin.js, and three files for each model: a data file, a Jmol script, and
-a PNG image. If a new directory is indicated, the HTML file will be created
+JmolPopin.js, and three files for each model: a data file, a Jmol
+script, and
+a PNG image. If a new directory is indicated, the HTML file will be
+created
 in that directory and have the same name, with ".html" appended. <br>
-<br>
-10) Open the HTML file in your favorite web editor and add you explanatory
-text and anything else you wish. As long as you do not alter the inside of
-the tables where Jmol will be displayed, you should be able to change the
-page without disrupting the JavaScript that controls the behavior of Jmol.
-</p>
+      <br>
+10) Open the HTML file in your favorite web editor and add your
+explanatory
+text and anything else you wish. As long as you do not alter the inside
+of
+the tables where Jmol and its buttons will be displayed, you should be
+able to change
+the
+page without disrupting the JavaScript that controls the behavior of
+Jmol. </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
 </body>
 </html>

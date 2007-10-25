@@ -77,3 +77,12 @@ function addAppletButton(i, name, label, info) {
   var s = '</td></tr></table>\n' + info + "\n</br>";
   document.write(s)
 }
+
+function isLocalFile(){
+  var protocol = window.location.protocol;
+  if (protocol = "file:") {
+    return true;
+  } else {
+    return false;
+  }
+}

@@ -41,6 +41,14 @@ html, body { height:100%; overflow:hidden; margin:0; padding:0; }
  	var dataDir = ".";                // where the model AND .spt files are to be found.
   </script>
   <script src="JmolPopIn.js" type="text/javascript"></script>
+  <script> 
+   	var local = isLocalFile();
+   	if (local=="true") { //set paths to look up two levels for applet (must put this page's folder in a "test" folder
+ 						// within the Jmol folder that contains the applet.)
+ 	  jmoljarpath = "../..";
+ 	  jmoljspath = "../..";
+ 	}
+  </script>
 
 <script type="text/javascript">
     addJavaScript(jmoljspath, "Jmol.js");

@@ -46,10 +46,9 @@ public class DrawRenderer extends MeshRenderer {
      */
     antialias = g3d.isAntialiased();
     Draw draw = (Draw) shape;
-    for (int i = draw.meshCount; --i >= 0;) {
-      render1(dmesh = (DrawMesh) draw.meshes[i]);
-      renderInfo();
-    }
+    for (int i = draw.meshCount; --i >= 0;)
+      if (render1(dmesh = (DrawMesh) draw.meshes[i]))
+        renderInfo();
   }
   
   protected boolean isPolygonDisplayable(int i) {

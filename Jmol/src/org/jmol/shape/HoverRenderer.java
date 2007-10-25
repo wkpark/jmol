@@ -47,7 +47,8 @@ public class HoverRenderer extends ShapeRenderer {
     } else if (hover.text != null) {
       Text text = hover.hoverText;
       text.setText(hover.text);
-      text.setXY(hover.xy.x, hover.xy.y);
+      text.setXY(hover.xy.x * (antialias ? 2 : 1), 
+          hover.xy.y * (antialias ? 2 : 1));
       text.render(g3d, antialias);
     }
   }

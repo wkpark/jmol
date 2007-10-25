@@ -239,6 +239,7 @@ final public class Graphics3D implements JmolRendererInterface {
     currentlyRendering = true;
     this.twoPass = twoPass;
     isPass2 = false;
+    //System.out.println("pass1");
     colixCurrent = 0;
     haveAlphaTranslucent = false;
     addAllPixels = true;
@@ -257,6 +258,7 @@ final public class Graphics3D implements JmolRendererInterface {
     if (!haveAlphaTranslucent || !currentlyRendering)
       return false;
     isPass2 = true;
+    //System.out.println("pass2");
     colixCurrent = 0;
     addAllPixels = true;
     antialiasTranslucent = antialiasTranslucent && antialiasThisFrame;
@@ -380,7 +382,7 @@ final public class Graphics3D implements JmolRendererInterface {
     return depth;
   }
 
-  int backgroundArgb;
+  private int backgroundArgb;
   
   /**
    * sets background color to the specified argb value
@@ -388,7 +390,8 @@ final public class Graphics3D implements JmolRendererInterface {
    * @param argb an argb value with alpha channel
    */
   public void setBackgroundArgb(int argb) {
-    backgroundArgb = argb & 0x00FFFFFF; //clear alpha channel
+    // clear alpha channel and make distinct
+    backgroundArgb = (argb == -1 ? -2 : argb + 1); 
     platform.setBackground(backgroundArgb);
   }
 
@@ -469,8 +472,7 @@ final public class Graphics3D implements JmolRendererInterface {
       for (int i = windowHeight; --i >= 0; offset4 += width4)
         for (int j = windowWidth; --j >= 0; ++offset1, ++offset4) {
           int z = Math.min(zbuf[offset4], zbuf[offset4 + width4]);
-          ++offset4;
-          z = Math.min(z, zbuf[offset4]);
+          z = Math.min(z, zbuf[++offset4]);
           z = Math.min(z, zbuf[offset4 + width4]);
           if (z != Integer.MAX_VALUE)
             z >>= 1;

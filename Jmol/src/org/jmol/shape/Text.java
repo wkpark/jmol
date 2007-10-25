@@ -352,7 +352,7 @@ public class Text {
 
     // draw the box if necessary
 
-    if (bgcolix != 0)
+    if (bgcolix != 0 && g3d.setColix(bgcolix))
       showBox(g3d, colix, bgcolix, boxX, boxY, z + 2, zSlab, 
         boxWidth + (antialias ? boxWidth : 0), 
         boxHeight + (antialias ? boxHeight : 0), antialias, 
@@ -500,8 +500,6 @@ public class Text {
       if (y + bh > windowHeight)
         y = windowHeight - bh;
       int y0 = (atomBased ? (16 + lineHeight) * (antialias ? 2 : 1) : 0);
-      if (antialias)
-        y0 <<= 1;
       if (y < y0)
         y = y0;
       boxY = y;
@@ -513,7 +511,7 @@ public class Text {
                        int x, int y, int z, int zSlab, 
                        int boxWidth, int boxHeight, 
                        boolean antialias, boolean atomBased) {
-    g3d.setColix(bgcolix);
+    //System.out.println("showBox bgcolix x y z " + bgcolix + " " + x + " " + y + " " + z);
     g3d.fillRect(x, y, z, zSlab, boxWidth, boxHeight);
     g3d.setColix(colix);
     if (!atomBased)
@@ -577,7 +575,7 @@ public class Text {
       thinSpace = 2;
     }
     
-    if (bgcolix != 0)
+    if (bgcolix != 0 && g3d.setColix(bgcolix))
       showBox(g3d, colix, bgcolix, x, y, z, zSlab, 
           boxWidth, boxHeight, antialias, true);
     

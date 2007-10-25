@@ -3344,6 +3344,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void hoverOn(int x, int y, String text) {
+    // from draw for drawhover on
     if (eval != null && isScriptExecuting())
       return;
     loadShape(JmolConstants.SHAPE_HOVER);

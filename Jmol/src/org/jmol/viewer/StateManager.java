@@ -670,6 +670,7 @@ public class StateManager {
       + ";cameradepth;navigationmode;rotationradius;"
       + ";zerobasedxyzrasmol;axesorientationrasmol;"
       + ";exportdrivers;stateversion;"
+      + ";antialiasdisplay;antialiastranslucent;antialiasimages;"
       + ";language;_spinning;_animating;_modelnumber;_modelname;_currentmodelnumberinfile;"
       + ";_currentfilenumber;_modelfile;_modeltitle;_version;_memory;"
       + ";_width;_height;_atompicked;_atomhovered;";

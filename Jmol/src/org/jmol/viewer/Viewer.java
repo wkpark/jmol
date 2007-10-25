@@ -2255,7 +2255,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public String getStateInfo(String type) {
     boolean isAll = (type == null || type.equalsIgnoreCase("all"));
     StringBuffer s = new StringBuffer("");
-    StringBuffer sfunc = (isAll ? new StringBuffer("function _setState();\n") : null);
+    StringBuffer sfunc = (isAll ? new StringBuffer("function _setState();\n")
+        : null);
     if (isAll)
       s.append("# Jmol state version " + getJmolVersion() + ";\n");
     if (isApplet && isAll) {
@@ -2293,8 +2294,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //  display and selections
     if (isAll || type.equalsIgnoreCase("selectionState"))
       s.append(selectionManager.getState(sfunc));
-    if (sfunc != null)
-      sfunc.append("  refreshing = true;\nend function;\n\n_setState;\n");
+    if (sfunc != null) {
+      StateManager.appendCmd(sfunc, "refreshing = true");
+      StateManager.appendCmd(sfunc, "antialiasDisplay = "
+          + global.antialiasDisplay);
+      StateManager.appendCmd(sfunc, "antialiasTranslucent = "
+          + global.antialiasTranslucent);
+      StateManager.appendCmd(sfunc, "antialiasImages = "
+          + global.antialiasImages);
+      sfunc.append("end function;\n\n_setState;\n");
+    }
     if (isAll)
       s.append(sfunc);
     return s.toString();
@@ -2532,7 +2541,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void repaint() {
     //from RepaintManager
-    if (display == null)
+    if (display == null)  
       return;
     display.repaint();
   }
@@ -5284,7 +5293,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     } 
     resizeImage(0, 0, false, false, true);
-    refresh(0, "setAntialias()");
+    //if (!refreshing)
+    //  return;
+    //refresh(0, "setAntialias()");
   }
 
   // //////////////////////////////////////////////////////////////

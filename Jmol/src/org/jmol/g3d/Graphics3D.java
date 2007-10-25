@@ -200,6 +200,7 @@ final public class Graphics3D implements JmolRendererInterface {
   public void setWindowParameters(int width, int height, boolean antialias) {
     windowWidth = width;
     windowHeight = height;
+    //System.out.println("Graphics3D setWindowParameters width=" + width + " height=" + height + " antialias=" + antialias);
     antialiasThisFrame = isFullSceneAntialiasingEnabled = antialias;
     setWidthHeight(antialiasThisFrame);    
   }
@@ -249,6 +250,7 @@ final public class Graphics3D implements JmolRendererInterface {
       pbuf = platform.pBuffer;
       zbuf = platform.zBuffer;
     }
+    //System.out.println("Graphics3D beginRendering width=" + width + " height=" + height + " antialiasThisFrame=" + antialiasThisFrame);
     setWidthHeight(antialiasThisFrame);
     //setRectClip(clipX, clipY, clipWidth, clipHeight);
     platform.obtainScreenBuffer();
@@ -270,6 +272,7 @@ final public class Graphics3D implements JmolRendererInterface {
       zbufT = platform.zBufferT;
     }    
     this.antialiasTranslucent = antialiasTranslucent;
+    //System.out.println("Graphics3D setPass2 width=" + width + " height=" + height + " antialiasTranslucent=" + antialiasTranslucent);
     platform.clearTBuffer();
     return true;
   }

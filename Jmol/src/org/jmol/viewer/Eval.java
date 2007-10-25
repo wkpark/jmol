@@ -7852,6 +7852,10 @@ class Eval { //implements Runnable {
       pt += 2;
       type = "VAR";      
       break;
+    case Token.file:
+      type = "FILE";
+      pt++;
+      break;
     case Token.identifier:
       type = parameterAsString(1).toLowerCase();
       if (type.equals("image")) {
@@ -7948,9 +7952,9 @@ class Eval { //implements Runnable {
     if (!isImage
         && !isExport
         && !Parser.isOneOf(type,
-            "SPT;HIS;MO;ISO;VAR;XYZ;MOL;PDB;QUAT;RAMA;FUNCS;"))
+            "SPT;HIS;MO;ISO;VAR;FILE;XYZ;MOL;PDB;QUAT;RAMA;FUNCS;"))
       evalError(GT._("write what? {0} or {1} \"filename\"", new Object[] {
-          "COORDS|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|MO|QUATERNION [w,x,y,z] [derivative]"
+          "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|MO|QUATERNION [w,x,y,z] [derivative]"
               + "|RAMACHANDRAN|STATE|VAR x  CLIPBOARD",
           "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB|"
               + driverList.toUpperCase().replace(';', '|') }));
@@ -7975,6 +7979,8 @@ class Eval { //implements Runnable {
       data = viewer.getPdbData(type2);
     } else if (data == "FUNCS") {
       data = getFunctionCalls("");
+    } else if (data == "FILE") {
+      data = viewer.getCurrentFileAsString();
     } else if (data == "VAR") {
       data = "" + getParameter(parameterAsString(2), false);
     } else if (data == "SPT") {

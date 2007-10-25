@@ -1108,6 +1108,7 @@ abstract class TransformManager {
     this.width = (antialias ? width * 2 : width);
     this.height = (antialias ? height * 2 : height);
     this.useZoomLarge = useZoomLarge;
+    //System.out.println("TransformManager setScreenParameters width=" + width + " height=" + height + " antialias=" + antialias + " resetZoom=" + resetZoom);
     scaleFitToScreen(false, useZoomLarge, resetSlab, resetZoom);
   }
 

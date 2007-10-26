@@ -1101,29 +1101,28 @@ abstract class TransformManager {
   private boolean antialias;
   private boolean useZoomLarge;
 
-  void setScreenParameters(int width, int height, boolean useZoomLarge, 
-                          boolean antialias, 
-                          boolean resetSlab, boolean resetZoom) {
-    this.antialias = antialias;
-    this.width = (antialias ? width * 2 : width);
-    this.height = (antialias ? height * 2 : height);
+  
+  int screenWidth, screenHeight;
+
+  void setScreenParameters(int screenWidth, int screenHeight,
+                           boolean useZoomLarge, boolean antialias,
+                           boolean resetSlab, boolean resetZoom) {
+    this.screenWidth = screenWidth;
+    this.screenHeight = screenHeight;
     this.useZoomLarge = useZoomLarge;
-    //System.out.println("TransformManager setScreenParameters width=" + width + " height=" + height + " antialias=" + antialias + " resetZoom=" + resetZoom);
+    this.antialias = antialias;
+    width = (antialias ? screenWidth * 2 : screenWidth);
+    height = (antialias ? screenHeight * 2 : screenHeight);
     scaleFitToScreen(false, useZoomLarge, resetSlab, resetZoom);
   }
 
   void setAntialias(boolean TF) {
-    if (this.antialias == TF)
-      return;
-    this.antialias = TF;
-    if (TF) {
-      width *= 2;
-      height *= 2;
-    } else {
-      width /= 2;
-      height /= 2;
-    }
-    scaleFitToScreen(false, useZoomLarge, false, false);
+    boolean isNew = (antialias != TF);
+    antialias = TF;
+    width = (antialias ? screenWidth * 2 : screenWidth);
+    height = (antialias ? screenHeight * 2 : screenHeight);
+    if (isNew)
+      scaleFitToScreen(false, useZoomLarge, false, false);
   }
   
   private float defaultScaleToScreen(float radius) {

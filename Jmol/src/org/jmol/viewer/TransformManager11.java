@@ -331,6 +331,7 @@ class TransformManager11 extends TransformManager {
 
   protected void resetNavigationPoint(boolean doResetSlab) {
 
+    //System.out.println("resetNavigationPoint");
     //no release from navigation mode if too far zoomed in!
 
     if (zoomPercent < 5 && !isNavigationMode) {
@@ -346,6 +347,9 @@ class TransformManager11 extends TransformManager {
     }
     if (doResetSlab)
       slabEnabled = isNavigationMode;
+    
+    //System.out.println("resetNaviationPoint" + " " + doResetSlab);
+
     zoomFactor = Float.MAX_VALUE;
     zoomPercentSetting = zoomPercent;
   }

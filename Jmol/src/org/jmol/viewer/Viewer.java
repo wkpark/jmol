@@ -2907,65 +2907,49 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int stereoMode = getStereoMode();
     switch (stereoMode) {
     case JmolConstants.STEREO_DOUBLE:
-      render1(g, getImage(true, false), dimScreen.width, 0);
+      render1(g, getImage(true), dimScreen.width, 0);
     case JmolConstants.STEREO_NONE:
-      render1(g, getImage(false, global.antialiasDisplay
-          //&& !getInMotion()
-          ), 0, 0);
+      render1(g, getImage(false), 0, 0);
       break;
     case JmolConstants.STEREO_REDCYAN:
     case JmolConstants.STEREO_REDBLUE:
     case JmolConstants.STEREO_REDGREEN:
     case JmolConstants.STEREO_CUSTOM:
-      render1(g, getStereoImage(stereoMode, false), 0, 0);
+      render1(g, getStereoImage(stereoMode), 0, 0);
       break;
     }
     repaintView();
   }
 
-  private Image getImage(boolean isDouble, boolean antialias) {
-    Matrix3f matrixRotate = transformManager.getStereoRotationMatrix(isDouble);
-    boolean twoPass = !getTestFlag1();
-    g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
-        matrixRotate, antialias, twoPass);
-    repaintManager.render(g3d, modelSet); //, rectClip
-    if (twoPass && g3d.setPass2(global.antialiasTranslucent)) {
-      if (!global.antialiasTranslucent)
-        transformManager.setAntialias(false);
-      repaintManager.render(g3d, modelSet); //, rectClip
-      if (!global.antialiasTranslucent)
-        transformManager.setAntialias(antialias);      
-    }
-    // mth 2003-01-09 Linux Sun JVM 1.4.2_02
-    // Sun is throwing a NullPointerExceptions inside graphics routines
-    // while the window is resized.
+  private Image getImage(boolean isDouble) {
+    g3d.beginRendering(transformManager.getStereoRotationMatrix(isDouble), 
+        global.antialiasDisplay);
+    render();
     g3d.endRendering();
     return g3d.getScreenImage();
   }
 
-  private Image getStereoImage(int stereoMode, boolean antialias) {
-    boolean twoPass = !getTestFlag1();
-    g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
-        transformManager.getStereoRotationMatrix(true), antialias, twoPass);
-    repaintManager.render(g3d, modelSet);//, rectClip
-    if (twoPass && g3d.setPass2(global.antialiasTranslucent)) {
-      if (antialias && !global.antialiasTranslucent)
-        transformManager.setAntialias(false);
+  private void render() {
+    boolean antialiasON = global.antialiasDisplay;
+    boolean antialias2 = antialiasON && global.antialiasTranslucent;
+    transformManager.setAntialias(antialiasON);
+    repaintManager.render(g3d, modelSet); //, rectClip
+    if (g3d.setPass2(antialias2)) {
+      transformManager.setAntialias(antialias2);
       repaintManager.render(g3d, modelSet); //, rectClip
-      if (antialias && !global.antialiasTranslucent)
-        transformManager.setAntialias(true);      
-    }
+      transformManager.setAntialias(antialiasON);
+    }  
+  }
+  
+  private Image getStereoImage(int stereoMode) {
+    g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
+        transformManager.getStereoRotationMatrix(true), global.antialiasDisplay);
+    render();
     g3d.endRendering();
     g3d.snapshotAnaglyphChannelBytes();
     g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
-        transformManager.getStereoRotationMatrix(false), antialias, twoPass);
-    if (twoPass && g3d.setPass2(global.antialiasTranslucent)) {
-      if (antialias && !global.antialiasTranslucent)
-        transformManager.setAntialias(false);
-      repaintManager.render(g3d, modelSet); //, rectClip
-      if (antialias && !global.antialiasTranslucent)
-        transformManager.setAntialias(true);      
-    }
+        transformManager.getStereoRotationMatrix(false), global.antialiasDisplay);
+    render();
     g3d.endRendering();
     switch (stereoMode) {
     case JmolConstants.STEREO_REDCYAN:
@@ -2995,7 +2979,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Image getScreenImage() {
-    boolean antialias = true;
     boolean isStereo = false;
     //setRectClip(null);
     int stereoMode = getStereoMode();
@@ -3009,9 +2992,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case JmolConstants.STEREO_REDBLUE:
     case JmolConstants.STEREO_REDGREEN:
     case JmolConstants.STEREO_CUSTOM:
-      return getStereoImage(stereoMode, false);
+      return getStereoImage(stereoMode);
     }
-    return getImage(isStereo, antialias);
+    return getImage(isStereo);
   }
 
   /**

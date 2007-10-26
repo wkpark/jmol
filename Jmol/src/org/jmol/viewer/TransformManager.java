@@ -1113,16 +1113,25 @@ abstract class TransformManager {
     this.antialias = antialias;
     width = (antialias ? screenWidth * 2 : screenWidth);
     height = (antialias ? screenHeight * 2 : screenHeight);
+    System.out.println("transformManager setScreenParameters screenWidth,Height, useZoomLarge, antialias, resetSlab, resetZoom " 
+        + useZoomLarge + ","+antialias + "," + resetSlab + "," + resetZoom);
+
     scaleFitToScreen(false, useZoomLarge, resetSlab, resetZoom);
   }
 
   void setAntialias(boolean TF) {
+    System.out.println("setAntialias antialias=" + antialias + " TF=" + TF
+        + " width=" + width + " height=" + height + " screenWidth/height" +
+        screenWidth + "," + screenHeight);
+
     boolean isNew = (antialias != TF);
     antialias = TF;
     width = (antialias ? screenWidth * 2 : screenWidth);
     height = (antialias ? screenHeight * 2 : screenHeight);
     if (isNew)
       scaleFitToScreen(false, useZoomLarge, false, false);
+    System.out.println("setAntialias2 " + TF + "width=" + width + " height=" + height 
+        + " screenWidth/height" + screenWidth + "," + screenHeight);
   }
   
   private float defaultScaleToScreen(float radius) {
@@ -1142,13 +1151,20 @@ abstract class TransformManager {
   }
 
   void scaleFitToScreen(boolean andCenter) {
+    System.out.println("transformManager scaleFitToSreen " + andCenter);
     scaleFitToScreen(andCenter, viewer.getZoomLarge(), true, true);
   }
   
   void scaleFitToScreen(boolean andCenter, boolean zoomLarge,
                         boolean resetSlab, boolean resetZoom) {
+    System.out.println("transformManager scaleFitToScreen andcenter " + andCenter 
+        + " screenWidth,Height, " + screenWidth + "," + screenHeight +
+        " zoomLarge, antialias, resetSlab, resetZoom width/height "
+        + zoomLarge + ","+antialias + "," + resetSlab + "," + resetZoom
+        + "  " + width + "/" + height);
     if (width == 0 || height == 0)
       return;
+
     // translate to the middle of the screen
     fixedTranslation.set(width * (andCenter ? 0.5f : xTranslationFraction), height
         * (andCenter ? 0.5f : yTranslationFraction), 0);
@@ -1275,6 +1291,8 @@ abstract class TransformManager {
     // cale to screen coordinates
     matrixTemp.setZero();
     matrixTemp.set(scalePixelsPerAngstrom);
+    
+    System.out.println("calcTransMatrix scalepixelsperangstrom=" + scalePixelsPerAngstrom);
     if (!axesOrientationRasmol) {
       // negate y (for screen) and z (for zbuf)
       matrixTemp.m11 = matrixTemp.m22 = -scalePixelsPerAngstrom;

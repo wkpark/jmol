@@ -49,7 +49,7 @@ public class Contribution implements Serializable {
   // Contributions
   private Vector _infos = null;
 
-  private final static int PAGES_COUNT = 4;
+  private final static int PAGES_COUNT = 6;
   private final static int PROJECTS_BY_PAGE = 1000;
 
   /**

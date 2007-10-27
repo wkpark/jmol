@@ -78,11 +78,14 @@ function addAppletButton(i, name, label, info) {
   document.write(s)
 }
 
-function isLocalFile(){
-  var protocol = window.location.protocol;
-  if (protocol = "file:") {
-    return true;
+function changePathIfLocal(){
+ var protocol = window.location.protocol;
+  if (protocol = "file:") { 
+  	var s = '<script type = \"text/javascript\"> jmoljarpath = \"../..\";\n';
+    document.write(s);
+    var s = 'jmoljspath = \"../..\";\n</script>\n';
+    document.write(s);   
   } else {
-    return false;
+    document.write("//protocol is:" + protocol +"\n");
   }
 }

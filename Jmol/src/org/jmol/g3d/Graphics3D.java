@@ -273,7 +273,7 @@ final public class Graphics3D implements JmolRendererInterface {
     }    
     antialias2 = antialiasTranslucent;
     if (antialiasThisFrame && !antialias2)
-      downSampleFullSceneAntialiasing(true);
+      downsampleFullSceneAntialiasing(true);
     //System.out.println("Graphics3D setPass2 width=" + width + " height=" + height + " antialiasTranslucent=" + antialiasTranslucent);
     platform.clearTBuffer();
     return true;
@@ -287,7 +287,7 @@ final public class Graphics3D implements JmolRendererInterface {
       if (isPass2)
         mergeOpaqueAndTranslucentBuffers();
       if (antialiasThisFrame)
-        downSampleFullSceneAntialiasing(false);
+        downsampleFullSceneAntialiasing(false);
     }
     platform.notifyEndOfRendering();
     setWidthHeight(antialiasEnabled);
@@ -445,11 +445,11 @@ final public class Graphics3D implements JmolRendererInterface {
     return (zShade ? (z - slab) * 5 / (depth - slab): 0);
   }
   
-  private void downSampleFullSceneAntialiasing(boolean downSampleZBuffer) {
+  private void downsampleFullSceneAntialiasing(boolean downsampleZBuffer) {
     int width4 = width;
     int offset1 = 0;
     int offset4 = 0;
-    System.out.println("downsample " + downSampleZBuffer);
+    System.out.println("downsample " + downsampleZBuffer);
     for (int i = windowHeight; --i >= 0; offset4 += width4)
       for (int j = windowWidth; --j >= 0; ++offset1) {
 /*
@@ -472,7 +472,7 @@ final public class Graphics3D implements JmolRendererInterface {
 
         pbuf[offset1] = argb & 0x00FFFFFF;
       }
-    if (downSampleZBuffer) {
+    if (downsampleZBuffer) {
       //we will add the alpha mask later
       offset1 = offset4 = 0;
       for (int i = windowHeight; --i >= 0; offset4 += width4)

@@ -40,9 +40,8 @@ public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
   }
 
   private void renderInfo() {
-    if (mesh == null || isGenerator
-        || !g3d.setColix(viewer.getColixBackgroundContrast()))
-        return;
+    if (mesh.title == null || isGenerator || !g3d.setColix(viewer.getColixBackgroundContrast()))
+      return;
     if (nf == null) {
       nf = NumberFormat.getInstance();
       fid = g3d.getFontFid("Monospaced", 14);
@@ -59,13 +58,12 @@ public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
       x <<= 1;
     }
     int y = lineheight;
-    
-    if (mesh.title != null)
-      for (int i = 0; i < mesh.title.length; i++)
-        if (mesh.title[i].length() > 0) {
-          g3d.drawStringNoSlab(mesh.title[i], null, x, y, 0);
-          y += lineheight;
-        }
+
+    for (int i = 0; i < mesh.title.length; i++)
+      if (mesh.title[i].length() > 0) {
+        g3d.drawStringNoSlab(mesh.title[i], null, x, y, 0);
+        y += lineheight;
+      }
   }
 
   /*

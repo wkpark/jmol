@@ -6376,13 +6376,10 @@ class Eval { //implements Runnable {
     boolean showing = (!isSyntaxCheck && !tQuiet 
         && scriptLevel <= scriptReportingLevel
         && !((String)statement[0].value).equals("var"));
-    if (getContextVariableAsToken(key) == null && setParameter(key, val)) {
-      if (isSyntaxCheck)
-        return;
-    } else {
+    if (getContextVariableAsToken(key) != null || !setParameter(key, val)) {
       int tok2 = (tokAt(1) == Token.expressionBegin ? 0 : tokAt(2));
       setVariable((tok2 == Token.opEQ ? 3 : 2), 0, key, showing);
-      showing = false;
+      return;
     }
     if (showing)
       viewer.showParameter(key, true, 80);
@@ -6521,9 +6518,16 @@ class Eval { //implements Runnable {
       setFloatProperty("dipoleScale", scale);
       return true;
     } 
+    
+    //considering enabling this
+   if (false && parameterAsString(0).equals("set") 
+       && !viewer.isJmolVariable(key)) {
+     iToken = 1;
+     unrecognizedParameter("SET", key);
+   }
+    
     if (statementLength == 2) {
-      if (!isSyntaxCheck)
-        setBooleanProperty(key, true);
+      setBooleanProperty(key, true);
       return true;
     }
     if (statementLength == 3) {
@@ -6536,7 +6540,6 @@ class Eval { //implements Runnable {
         if (!isSyntaxCheck)
           viewer.unsetProperty(key);
       } else if (theTok == Token.on || theTok == Token.off) {
-        if (!isSyntaxCheck)
           setBooleanProperty(key, theTok == Token.on);
       } else {
         return false;

@@ -262,27 +262,24 @@ class RepaintManager {
             viewer.getModelNumberDotted(0)).append(";\n# last ").append(
             viewer.getModelNumberDotted(modelCount - 1)).append(";\n");
     if (backgroundModelIndex >= 0)
-      commands.append("set backgroundModel ").append(
-          viewer.getModelNumberDotted(backgroundModelIndex)).append(";\n");
-    commands.append(
+      StateManager.appendCmd(commands, "set backgroundModel " + 
+          viewer.getModelNumberDotted(backgroundModelIndex));
+    StateManager.appendCmd(commands, 
         "frame RANGE " + viewer.getModelNumberDotted(firstModelIndex) + " "
-            + viewer.getModelNumberDotted(lastModelIndex)).append(";\n");
-    commands.append(
-        "animation DIRECTION " + (animationDirection == 1 ? "+1" : "-1"))
-        .append(";\n");
-    commands.append("animation MODE " + getAnimationModeName()).append(" ")
-        .append(firstFrameDelay).append(" ").append(lastFrameDelay).append(
-            ";\n");
-    commands.append("frame " + viewer.getModelNumberDotted(currentModelIndex)
-        + ";\n");
+            + viewer.getModelNumberDotted(lastModelIndex));
+    StateManager.appendCmd(commands, 
+        "animation DIRECTION " + (animationDirection == 1 ? "+1" : "-1"));
+    StateManager.appendCmd(commands, "animation FPS " + animationFps);
+    StateManager.appendCmd(commands, "animation MODE " + getAnimationModeName()
+        + " " + firstFrameDelay + " " + lastFrameDelay);
+    StateManager.appendCmd(commands, "frame " + viewer.getModelNumberDotted(currentModelIndex));
     if (currentTrajectory > -1)
-      commands.append("trajectory " + currentTrajectory + ";\n");
-    commands.append(
-        "animation "
+      StateManager.appendCmd(commands, "trajectory " + currentTrajectory);
+    StateManager.appendCmd(commands, "animation "
             + (!animationOn ? "OFF" : currentDirection == 1 ? "PLAY"
-                : "PLAYREV")).append(";\n");
+                : "PLAYREV"));
     if (animationOn && animationPaused)
-      commands.append("animation PAUSE;\n");
+      StateManager.appendCmd(commands, "animation PAUSE");
     if (sfunc != null)
       commands.append("end function;\n\n");
     return commands.toString();
@@ -296,12 +293,10 @@ class RepaintManager {
       //currentDirection = 1;
   }
 
-  int animationFps = 10;
+  int animationFps;  // set in stateManager
+  
   void setAnimationFps(int animationFps) {
-    if (animationFps >= 1 && animationFps <= 50)
-      this.animationFps = animationFps;
-    else
-      Logger.error("invalid animationFps:" + animationFps);
+    this.animationFps = animationFps;
   }
 
   // 0 = once

@@ -415,6 +415,7 @@ public class StateManager {
     String defaultLoadScript   = "";
     String defaultDirectory    = null;
     String loadFormat          = "http://www.rcsb.org/pdb/files/%FILE.pdb";
+    String appletProxy         = "";
 
     /**
      *  these settings are determined when the file is loaded and are
@@ -434,6 +435,7 @@ public class StateManager {
         setParameterValue("allowEmbeddedScripts", true);
       appendCmd(str, "autoBond = " + autoBond);
       appendCmd(str, "appendNew = " + appendNew);
+      appendCmd(str, "appletProxy = " + Escape.escape(appletProxy));
       appendCmd(str, "applySymmetryToBonds = " + applySymmetryToBonds);
       if (viewer.getAxesOrientationRasmol())
         appendCmd(str, "axesOrientationRasmol = true");
@@ -489,6 +491,9 @@ public class StateManager {
     //centering and perspective
 
     boolean allowRotateSelected = false;
+    boolean perspectiveDepth    = true;
+    float visualRange           = 5f;
+    int stereoDegrees           = 5;
 
     //solvent
 
@@ -506,7 +511,7 @@ public class StateManager {
 
     boolean antialiasDisplay            = false;
     boolean antialiasImages             = true;
-    boolean antialiasTranslucent        = false;
+    boolean antialiasTranslucent        = true;
     boolean greyscaleRendering          = false;
     boolean zoomLarge                   = true; //false would be like Chime
     boolean dotsSelectedOnly            = false;
@@ -546,6 +551,7 @@ public class StateManager {
 
     //misc
 
+    int animationFps             = 10;
     boolean hideNameInPopup      = false;
     boolean disablePopupMenu     = false;
     float defaultDrawArrowScale  = 0.5f;
@@ -562,7 +568,8 @@ public class StateManager {
     boolean useNumberLocalization = true;
     float defaultTranslucent      = 0.5f;
     boolean autoFps               = false;
-    
+    String dataSeparator          = "~~~";
+    boolean statusReporting       = true;
     
     
     // window
@@ -593,6 +600,7 @@ public class StateManager {
       str.append(getSpecularState());
       if (stereoState != null)
         appendCmd(str, "stereo" + stereoState);
+      appendCmd(str, "statusReporting  = " + statusReporting);
       if (sfunc != null)
         str.append("end function;\n\n");
       return str.toString();
@@ -657,23 +665,37 @@ public class StateManager {
       //also, any variable starting with site_ will be cleared
     
     final static String unnecessaryProperties = 
-      //these are handled individually
+      //these are handled individually in terms of reporting for the state
       //NOT EXCLUDING the load state settings, because although we
       //handle these specially for the CURRENT FILE, their current
       //settings won't be reflected in the load state, which is determined
       //earlier, when the file loads. 
-        ";refreshing;defaults;backgroundmodel;stereo;perspectivemodel;"
-      + ";appendnew;bondsymmetryatoms;backgroundcolor;axescolor;axis1color;axis2color;axis3color;boundboxcolor;unitcellcolor;"
-      + ";ambientpercent;diffusepercent;specular;specularexponent;specularpower;specularpercent;"
-      + ";debugscript;showfrank;showaxes;showaxis1;showaxis2;showaxis3;showunitcell;showboundbox;"
-      + ";slabEnabled;zoomEnabled;axeswindow;axesunitcell;axesmolecular;windowcentered;"
-      + ";cameradepth;navigationmode;rotationradius;"
-      + ";zerobasedxyzrasmol;axesorientationrasmol;"
-      + ";exportdrivers;stateversion;"
-      + ";antialiasdisplay;antialiastranslucent;antialiasimages;"
-      + ";language;_spinning;_animating;_modelnumber;_modelname;_currentmodelnumberinfile;"
-      + ";_currentfilenumber;_modelfile;_modeltitle;_version;_memory;"
-      + ";_width;_height;_atompicked;_atomhovered;";
+      ";_animating;_atomhovered;_atompicked;_currentfilenumber;_currentmodelnumberinfile" +
+      ";_height;_memory;_modelfile;_modelname;_modelnumber;_modeltitle;_spinning;_version;_width" +
+      ";ambientpercent;animationfps" +
+      ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor" +
+      ";axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color" +
+      ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth" +
+      ";debugscript;defaults;diffusepercent;exportdrivers;language;navigationmode" +
+      ";perspectivedepth;visualrange;perspectivemodel;refreshing;rotationradius" +
+      ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell" +
+      ";slabenabled;specular;specularexponent;specularpercent;specularpower;stateversion" +
+      ";statusreporting;stereo;stereostate" +
+      ";unitcellcolor;windowcentered;zerobasedxyzrasmol;zoomEnabled;" +
+      //    saved in the hash table but not considered part of the state:
+      ";scriptqueue;scriptreportinglevel" +
+      //    more settable Jmol variables    
+      ";ambient;bonds;colorrasmol;diffuse;dipoleScale;drawhover;frank;hetero;hidenotselected" +
+      ";highresolution;hoverlabel;hydrogen;languagetranslation;navigationdepth;navigationslab" +
+      ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred" +
+      ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount" +
+      ";";
+    
+    boolean isJmolVariable(String key) {
+      return htParameterValues.containsKey(key = key.toLowerCase()) 
+      || htPropertyFlags.containsKey(key)
+      || unnecessaryProperties.indexOf(";" + key + ";") >= 0;
+    }
 
     void clearVolatileProperties() {
       Enumeration e;
@@ -954,10 +976,12 @@ public class StateManager {
       setParameterValue("allowEmbeddedScripts",allowEmbeddedScripts);
       setParameterValue("allowRotateSelected",allowRotateSelected);
       setParameterValue("ambientPercent",ambientPercent);
+      setParameterValue("animationFps",animationFps);
       setParameterValue("antialiasImages",antialiasImages);
       setParameterValue("antialiasDisplay",antialiasDisplay);
       setParameterValue("antialiasTranslucent",antialiasTranslucent);
       setParameterValue("appendNew",appendNew);
+      setParameterValue("appletProxy",appletProxy);
       setParameterValue("applySymmetryToBonds",applySymmetryToBonds);
       setParameterValue("autoBond",autoBond);
       setParameterValue("autoFps",autoFps);
@@ -971,6 +995,7 @@ public class StateManager {
       setParameterValue("cameraDepth",cameraDepth);
       setParameterValue("cartoonRockets",cartoonRockets);
       setParameterValue("chainCaseSensitive",chainCaseSensitive);
+      setParameterValue("dataSeparator",dataSeparator);
       setParameterValue("debugScript",debugScript);
       setParameterValue("defaultAngleLabel",defaultAngleLabel);
       setParameterValue("defaultColorScheme","Jmol");
@@ -1037,7 +1062,8 @@ public class StateManager {
       setParameterValue("specularPercent",specularPercent);
       setParameterValue("specularPower",specularPower);
       setParameterValue("ssbondsBackbone",ssbondsBackbone);
-      setParameterValue("stereoState",stereoState);
+      setParameterValue("stereoDegrees",stereoDegrees);
+      setParameterValue("statusReporting",statusReporting);
       setParameterValue("testFlag1",testFlag1);
       setParameterValue("testFlag2",testFlag2);
       setParameterValue("testFlag3",testFlag3);
@@ -1047,6 +1073,7 @@ public class StateManager {
       setParameterValue("vectorScale",vectorScale);
       setParameterValue("vibrationPeriod",vibrationPeriod);
       setParameterValue("vibrationScale",vibrationScale);
+      setParameterValue("visualRange",visualRange);
       setParameterValue("zoomLarge",zoomLarge);
       setParameterValue("zShade",zShade);
       setParameterValue("zeroBasedXyzRasmol",zeroBasedXyzRasmol);

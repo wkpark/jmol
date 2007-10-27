@@ -54,6 +54,10 @@ public abstract class MeshRenderer extends ShapeRenderer {
     this.mesh = mesh;
     if (!setVariables())
       return false;
+    
+    if (!g3d.setColix(colix))
+      return mesh.title != null;
+
     transform();
     render2();
     viewer.freeTempScreens(screens);
@@ -64,14 +68,14 @@ public abstract class MeshRenderer extends ShapeRenderer {
     slabbing = viewer.getSlabEnabled();
     vertices = mesh.vertices; //because DRAW might have a text associated with it
     colix = mesh.colix;
-    if (mesh == null || mesh.visibilityFlags == 0 || !g3d.setColix(colix)
-        || (vertexCount = mesh.vertexCount) == 0)
+    if (mesh == null || mesh.visibilityFlags == 0  || (vertexCount = mesh.vertexCount) == 0)
       return false;
     normixes = mesh.normixes;
     if (normixes == null || vertices == null)
-      return false; 
+      return false;
     //this can happen when user switches windows 
     // during a surface calculation
+    
     lighting = mesh.lighting;
     frontOnly = !slabbing && mesh.frontOnly && !mesh.isTwoSided;
     screens = viewer.allocTempScreens(vertexCount);

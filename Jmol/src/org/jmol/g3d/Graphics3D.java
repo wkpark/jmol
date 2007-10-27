@@ -286,7 +286,7 @@ final public class Graphics3D implements JmolRendererInterface {
   public void setWindowParameters(int width, int height, boolean antialias) {
     windowWidth = width;
     windowHeight = height;
-    System.out.println("Graphics3D setWindowParameters width=" + width + " height=" + height + " antialias=" + antialias);
+    //System.out.println("Graphics3D setWindowParameters width=" + width + " height=" + height + " antialias=" + antialias);
     antialiasThisFrame = isFullSceneAntialiasingEnabled = antialias;
     setWidthHeight(antialiasThisFrame);    
   }
@@ -298,9 +298,10 @@ final public class Graphics3D implements JmolRendererInterface {
       width *= 2;
       height *= 2;
     }
-    System.out.println("Graphics3D setWidthHeight width=" + width + " height=" + height 
-        + " isAntialiased=" + isAntialiased
-        + " window width,height: " + windowWidth + "," + windowHeight);
+    //System.out.println("Graphics3D setWidthHeight width=" + width + " height=" + height 
+    //    + " isAntialiased=" + isAntialiased
+    //    + " window width,height: " + windowWidth + "," + windowHeight);
+
     xLast = width - 1;
     yLast = height - 1;
     displayMinX = -(width >> 1);
@@ -328,9 +329,9 @@ final public class Graphics3D implements JmolRendererInterface {
     currentlyRendering = true;
     twoPass = true; //only for testing -- set false to disallow second pass
     isPass2 = false;
-    System.out.println("Graphics3D beginRendering width=" + width + " height=" + height 
-        + " window width,height: " + windowWidth + "," + windowHeight);
-    System.out.println("pass1 antialiasEnabled=" + antialiasEnabled);
+    //System.out.println("Graphics3D beginRendering width=" + width + " height=" + height 
+    //    + " window width,height: " + windowWidth + "," + windowHeight);
+    //System.out.println("pass1 antialiasEnabled=" + antialiasEnabled);
     colixCurrent = 0;
     haveTranslucentObjects = false;
     addAllPixels = true;
@@ -535,7 +536,7 @@ final public class Graphics3D implements JmolRendererInterface {
     int width4 = width;
     int offset1 = 0;
     int offset4 = 0;
-    System.out.println("downsample " + downsampleZBuffer);
+    //System.out.println("downsample " + downsampleZBuffer);
     for (int i = windowHeight; --i >= 0; offset4 += width4)
       for (int j = windowWidth; --j >= 0; ++offset1) {
         

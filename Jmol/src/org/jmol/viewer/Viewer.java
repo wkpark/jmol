@@ -161,7 +161,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     stateManager = new StateManager(this);
     g3d = new Graphics3D(display);
     colorManager = new ColorManager(this, g3d);
-    initialize();
+    //initialize();
     statusManager = new StatusManager(this);
     scriptManager = new ScriptManager(this);
     transformManager = new TransformManager11(this);
@@ -177,9 +177,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelManager = new ModelManager(this);
     propertyManager = new PropertyManager(this);
     tempManager = new TempArray();
-    fileManager = new FileManager(this, modelAdapter);
     dataManager = new DataManager();
     repaintManager = new RepaintManager(this);
+    initialize();
+    fileManager = new FileManager(this, modelAdapter);
     compiler = new Compiler(this);
     eval = new Eval(this);
   }
@@ -396,13 +397,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setObjectColor("axis1", "red");
     setObjectColor("axis2", "green");
     setObjectColor("axis3", "blue");
+    
+    //transfer default global settings to managers and g3d
+    
+    setZShade(global.zShade);
     setAmbientPercent(global.ambientPercent);
     setDiffusePercent(global.diffusePercent);
     setSpecular(global.specular);
     setSpecularPercent(global.specularPercent);
     setSpecularExponent(global.specularExponent);
     setSpecularPower(global.specularPower);
-    setZShade(false);
+    
+    repaintManager.setAnimationFps(global.animationFps);
+
+    statusManager.setAllowStatusReporting(global.statusReporting);
+
+    setTransformManagerDefaults();
+    
   }
 
   String listSavedStates() {
@@ -2565,6 +2576,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setAnimationFps(int fps) {
+    if (fps < 1)
+      fps = 1;
+    if (fps > 50)
+      fps = 50;
     global.setParameterValue("animationFps", fps);
     //Eval
     //app AtomSetChooser
@@ -3929,7 +3944,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
       if (key.equalsIgnoreCase("hoverLabel")) {
         setAtomHoverLabel(value);
-        break;
+        return;
       }
       ///11.0///
       if (key.equalsIgnoreCase("defaultDistanceLabel")) {
@@ -4004,6 +4019,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.setUserParameterValue(key, new Token(Token.string, value));
   }
 
+  boolean isJmolVariable(String key) {
+    return global.isJmolVariable(key);
+  }
+  
   public void setFloatProperty(String key, float value) {
     setFloatProperty(key, value, false);
   }
@@ -4069,7 +4088,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       if (key.equalsIgnoreCase("stereoDegrees")) {
         setStereoDegrees(value);
-        break;
+        return true;
       }
       if (key.equalsIgnoreCase("vectorScale")) {
         //public -- no need to set
@@ -4440,10 +4459,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         setDefaultColors(value ? "rasmol" : "jmol");
         break;
       }
-      if (key.equalsIgnoreCase("perspectiveDepth")) {
-        setPerspectiveDepth(value);
-        break;
-      }
       if (key.equalsIgnoreCase("scriptQueue")) {
         scriptManager.setQueue(value);
         break;
@@ -4455,6 +4470,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (key.equalsIgnoreCase("dotsSelectedOnly")) {
         setDotsSelectedOnly(value);
         break;
+      }
+      if (key.equalsIgnoreCase("perspectiveDepth")) {
+        setPerspectiveDepth(value);
+        //public; no need to set here
+        return true;
       }
       if (key.equalsIgnoreCase("showAxes")) {
         setShowAxes(value);
@@ -4747,6 +4767,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void setAllowStatusReporting(boolean TF) {
+    //not part of the state
     statusManager.setAllowStatusReporting(TF);
   }
 
@@ -4972,8 +4993,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     default:
       transformManager = transformManager.getNavigationManager(this,
           dimScreen.width, dimScreen.height);
-    }
+    }    
+    setTransformManagerDefaults();
     reset();
+  }
+
+  private void setTransformManagerDefaults() {
+    transformManager.setCameraDepthPercent(global.cameraDepth);
+    transformManager.setPerspectiveDepth(global.perspectiveDepth);
+    transformManager.setStereoDegrees(global.stereoDegrees);
+    transformManager.setVisualRange(global.visualRange);
   }
 
   private void setZoomLarge(boolean TF) {

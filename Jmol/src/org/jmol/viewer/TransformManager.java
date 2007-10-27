@@ -146,6 +146,8 @@ abstract class TransformManager {
       commands.append("function _setPerspectiveState();\n");
     }
     StateManager.appendCmd(commands, "perspectiveModel = "+ perspectiveModel);
+    StateManager.appendCmd(commands, "perspectiveDepth = "+ perspectiveDepth);
+    StateManager.appendCmd(commands, "visualRange = "+ visualRange);
     if (!isWindowCentered())
       StateManager.appendCmd(commands, "windowCentered = false");
     StateManager.appendCmd(commands, "cameraDepth = " + cameraDepth);
@@ -1045,7 +1047,7 @@ abstract class TransformManager {
   protected boolean perspectiveDepth = true;
   protected float cameraDepth = Float.NaN;
   protected float cameraDepthSetting = 3f;
-  protected float visualRange = 5f;
+  protected float visualRange; // set in stateManager to 5f;
   protected float cameraDistance = 1000f; // prevent divide by zero on startup
 
   void setPerspectiveDepth(boolean perspectiveDepth) {
@@ -1113,16 +1115,16 @@ abstract class TransformManager {
     this.antialias = antialias;
     width = (antialias ? screenWidth * 2 : screenWidth);
     height = (antialias ? screenHeight * 2 : screenHeight);
-    System.out.println("transformManager setScreenParameters screenWidth,Height, useZoomLarge, antialias, resetSlab, resetZoom " 
-        + useZoomLarge + ","+antialias + "," + resetSlab + "," + resetZoom);
+    //System.out.println("transformManager setScreenParameters screenWidth,Height, useZoomLarge, antialias, resetSlab, resetZoom " 
+    //    + useZoomLarge + ","+antialias + "," + resetSlab + "," + resetZoom);
 
     scaleFitToScreen(false, useZoomLarge, resetSlab, resetZoom);
   }
 
   void setAntialias(boolean TF) {
-    System.out.println("setAntialias antialias=" + antialias + " TF=" + TF
-        + " width=" + width + " height=" + height + " screenWidth/height" +
-        screenWidth + "," + screenHeight);
+    //System.out.println("setAntialias antialias=" + antialias + " TF=" + TF
+    //    + " width=" + width + " height=" + height + " screenWidth/height" +
+    //    screenWidth + "," + screenHeight);
 
     boolean isNew = (antialias != TF);
     antialias = TF;
@@ -1130,8 +1132,8 @@ abstract class TransformManager {
     height = (antialias ? screenHeight * 2 : screenHeight);
     if (isNew)
       scaleFitToScreen(false, useZoomLarge, false, false);
-    System.out.println("setAntialias2 " + TF + "width=" + width + " height=" + height 
-        + " screenWidth/height" + screenWidth + "," + screenHeight);
+    //System.out.println("setAntialias2 " + TF + "width=" + width + " height=" + height 
+    //    + " screenWidth/height" + screenWidth + "," + screenHeight);
   }
   
   private float defaultScaleToScreen(float radius) {
@@ -1151,17 +1153,17 @@ abstract class TransformManager {
   }
 
   void scaleFitToScreen(boolean andCenter) {
-    System.out.println("transformManager scaleFitToSreen " + andCenter);
+    //System.out.println("transformManager scaleFitToSreen " + andCenter);
     scaleFitToScreen(andCenter, viewer.getZoomLarge(), true, true);
   }
   
   void scaleFitToScreen(boolean andCenter, boolean zoomLarge,
                         boolean resetSlab, boolean resetZoom) {
-    System.out.println("transformManager scaleFitToScreen andcenter " + andCenter 
-        + " screenWidth,Height, " + screenWidth + "," + screenHeight +
-        " zoomLarge, antialias, resetSlab, resetZoom width/height "
-        + zoomLarge + ","+antialias + "," + resetSlab + "," + resetZoom
-        + "  " + width + "/" + height);
+    //System.out.println("transformManager scaleFitToScreen andcenter " + andCenter 
+    //    + " screenWidth,Height, " + screenWidth + "," + screenHeight +
+    //    " zoomLarge, antialias, resetSlab, resetZoom width/height "
+    //    + zoomLarge + ","+antialias + "," + resetSlab + "," + resetZoom
+    //    + "  " + width + "/" + height);
     if (width == 0 || height == 0)
       return;
 
@@ -1292,7 +1294,7 @@ abstract class TransformManager {
     matrixTemp.setZero();
     matrixTemp.set(scalePixelsPerAngstrom);
     
-    System.out.println("calcTransMatrix scalepixelsperangstrom=" + scalePixelsPerAngstrom);
+    //System.out.println("calcTransMatrix scalepixelsperangstrom=" + scalePixelsPerAngstrom);
     if (!axesOrientationRasmol) {
       // negate y (for screen) and z (for zbuf)
       matrixTemp.m11 = matrixTemp.m22 = -scalePixelsPerAngstrom;
@@ -2054,7 +2056,7 @@ abstract class TransformManager {
     this.stereoMode = stereoMode;
   }
 
-  float stereoDegrees = 5;
+  float stereoDegrees; // set in state manager
   float stereoRadians = 5 * radiansPerDegree;
 
   void setStereoDegrees(float stereoDegrees) {

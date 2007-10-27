@@ -48,6 +48,92 @@ import org.jmol.util.Logger;
  * is <i>pretty fast</i>.
  *
  * @author Miguel, miguel@jmol.org
+ * 
+ * with additions by Bob Hanson hansonr@stolaf.edu
+ * 
+ * The above is an understatement to say the least.
+ * 
+ * This is a two-pass rendering system. In the first pass, all opaque
+ * objects are rendered. In the second pass, all translucent objects
+ * are rendered. 
+ * 
+ * If there are no translucent objects, then that is found in the 
+ * first pass as follows: 
+ * 
+ * The renderers first try to set the color index of the object to be 
+ * rendered using setColix(short colix), and that method returns false 
+ * if we are in the wrong pass for that type of object. 
+ * 
+ * In addition, setColix records in the boolean haveTranslucentObjects 
+ * whether a translucent object was seen in the first pass. 
+ * 
+ * The second pass is skipped if this flag is not set. This saves immensely 
+ * on rendering time when there are no translucent objects.  
+ * 
+ * THUS, IT IS CRITICAL THAT ALL RENDERING OPTIONS CHECK THE COLIX USING
+ * g3d.setColix(short colix) PRIOR TO RENDERING.
+ * 
+ * Translucency is rendered only approximately. We can't maintain a full
+ * buffer of all translucent objects. Instead, we "cheat" by maintaining
+ * one translucent z buffer. When a translucent pixel is to be written, its
+ * z position is checked and...
+ * 
+ * ...if it is behind or at the z position of any pixel, it is ignored
+ * ...if it is in front of a translucent pixel, it is added to the translucent buffer
+ * ...if it is between an opaque and translucent pixel, the translucent pixel is
+ *       turned opaque, and the new pixel is added to the translucent buffer
+ * 
+ * This guarantees accurate translucency when there are no more than two translucent
+ * pixels between the user and an opaque pixel. It's a fudge, for sure. But it is 
+ * pretty good, and certainly fine for "draft" work. 
+ * 
+ * Users needing more accurate translucencty are encouraged to use the POV-Ray export
+ * facility for production-level work.
+ * 
+ * Antialiasing is accomplished as full scene antialiasing. This means that 
+ * the width and height are doubled (both here and in TransformManager), the
+ * scene is rendered, and then each set of four pixels is averaged (roughly)
+ * as the final pixel in the width*height buffer. 
+ * 
+ * Antialiasing options allow for antialiasing of all objects:
+ * 
+ *    antialiasDisplay = true
+ *    antialiasTranslucent = true
+ * 
+ * or just the opaque ones:
+ * 
+ *    antialiasDisplay = true
+ *    antialiasTranslucent = false
+ *    
+ * or not at all:
+ * 
+ *    antialiasDisplay = false
+ *
+ * The difference will be speed and memory. Adding translucent objects
+ * doubles the buffer requirement, and adding antialiasing quadruples
+ * the buffer requirement. 
+ * 
+ * So we have:
+ * 
+ * Memory requirements are significant, in multiples of (width) * (height) 32-bit integers:
+ *
+ *                 antialias OFF       ON/opaque only   ON/all objects
+ *
+ *   no translucent     1p + 1z = 2      4p + 4z = 8      4p + 4z = 8
+ *      objects
+ *
+ *   with translucent   2p + 2z = 4      5p + 5z = 10     8p + 8z = 16
+ *      objects
+ *
+ * Note that no antialising at all is required for POV-Ray output. 
+ * POV-Ray will do antialiasing on its own.
+ * 
+ * In principle we could save a bit in the case of antialiasing of 
+ * just opaque objects and reuse the p and z buffers for the 
+ * translucent buffer, but this hasn't been implemented because the 
+ * savings isn't that great, and if you are going to the trouble of
+ * having antialiasing, you probably what it all.
+ * 
  */
 
 final public class Graphics3D implements JmolRendererInterface {
@@ -81,7 +167,7 @@ final public class Graphics3D implements JmolRendererInterface {
   boolean twoPass = false;
   boolean isPass2;
   boolean addAllPixels;
-  boolean haveAlphaTranslucent;
+  boolean haveTranslucentObjects;
   
   int windowWidth, windowHeight;
   int width, height;
@@ -226,7 +312,7 @@ final public class Graphics3D implements JmolRendererInterface {
   
   public boolean checkTranslucent(boolean isAlphaTranslucent) {
     if (isAlphaTranslucent)
-      haveAlphaTranslucent = true;
+      haveTranslucentObjects = true;
     return (!twoPass || twoPass && (isPass2 == isAlphaTranslucent));
   }
   
@@ -246,7 +332,7 @@ final public class Graphics3D implements JmolRendererInterface {
         + " window width,height: " + windowWidth + "," + windowHeight);
     System.out.println("pass1 antialiasEnabled=" + antialiasEnabled);
     colixCurrent = 0;
-    haveAlphaTranslucent = false;
+    haveTranslucentObjects = false;
     addAllPixels = true;
     if (pbuf == null) {
       platform.allocateBuffers(windowWidth, windowHeight,
@@ -260,7 +346,7 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   public boolean setPass2(boolean antialiasTranslucent) {
-    if (!haveAlphaTranslucent || !currentlyRendering)
+    if (!haveTranslucentObjects || !currentlyRendering)
       return false;
     isPass2 = true;
     //System.out.println("pass2");
@@ -348,7 +434,7 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   public boolean haveTranslucentObjects() {
-    return haveAlphaTranslucent;
+    return haveTranslucentObjects;
   }
   
   /**
@@ -452,7 +538,9 @@ final public class Graphics3D implements JmolRendererInterface {
     System.out.println("downsample " + downsampleZBuffer);
     for (int i = windowHeight; --i >= 0; offset4 += width4)
       for (int j = windowWidth; --j >= 0; ++offset1) {
-/*
+        
+        /* more precise, but of no benefit:
+
         int a = pbuf[offset4];
         int b = pbuf[offset4++ + width4];
         int c = pbuf[offset4];
@@ -462,14 +550,13 @@ final public class Graphics3D implements JmolRendererInterface {
            + ( ((a & 0xF0F0F0) + (b & 0xF0F0F0) 
            +   (c & 0xF0F0F0) + (d & 0xF0F0F0)
                 ) >> 2);
-*/      
+        */
         
         int argb = (pbuf[offset4] >> 2) & 0x3F3F3F3F;
         argb += (pbuf[offset4++ + width4] >> 2) & 0x3F3F3F3F;
         argb += (pbuf[offset4] >> 2) & 0x3F3F3F3F;
         argb += (pbuf[offset4++ + width4] >> 2) & 0x3F3F3F3F;
         argb += (argb & 0xC0C0C0C0) >> 6;
-
         pbuf[offset1] = argb & 0x00FFFFFF;
       }
     if (downsampleZBuffer) {

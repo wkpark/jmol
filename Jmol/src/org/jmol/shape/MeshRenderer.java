@@ -68,7 +68,9 @@ public abstract class MeshRenderer extends ShapeRenderer {
     slabbing = viewer.getSlabEnabled();
     vertices = mesh.vertices; //because DRAW might have a text associated with it
     colix = mesh.colix;
-    if (mesh == null || mesh.visibilityFlags == 0  || (vertexCount = mesh.vertexCount) == 0)
+    if (mesh == null || mesh.visibilityFlags == 0  
+        || (vertexCount = mesh.vertexCount) == 0
+        || mesh.polygonCount == 0)
       return false;
     normixes = mesh.normixes;
     if (normixes == null || vertices == null)

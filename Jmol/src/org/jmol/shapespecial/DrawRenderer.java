@@ -170,16 +170,21 @@ public class DrawRenderer extends MeshRenderer {
   }
   
   private void renderInfo() {
-    if (mesh.title == null || mesh.title[0].length() == 0 || viewer.getDrawHover() 
+    if (mesh.title == null || viewer.getDrawHover()
         || !g3d.setColix(viewer.getColixBackgroundContrast()))
       return;
-    //just the first line of the title -- nothing fancy here.
-    byte fid = g3d.getFontFid("SansSerif", 14);
-    g3d.setFont(fid);
-    viewer.transformPoint(vertices[0], pt1i);
-    int offset = (antialias ? 10 : 5);
-    g3d.drawString(mesh.title[0], null, pt1i.x + offset, pt1i.y - offset,
-        pt1i.z, pt1i.z);
+    for (int i = dmesh.polygonCount; --i >= 0;)
+      if (isPolygonDisplayable(i)) {
+        //just the first line of the title -- nothing fancy here.
+        byte fid = g3d.getFontFid("SansSerif", 14);
+        g3d.setFont(fid);
+        viewer.transformPoint(vertices[dmesh.polygonIndexes[i][0]], pt1i);
+        int offset = (antialias ? 10 : 5);
+        g3d.drawString(mesh.title[i < mesh.title.length ? i
+            : mesh.title.length - 1], null, pt1i.x + offset, pt1i.y - offset,
+            pt1i.z, pt1i.z);
+        break;
+      }
   }
   
 }

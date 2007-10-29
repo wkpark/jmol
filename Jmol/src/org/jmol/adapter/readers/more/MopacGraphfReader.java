@@ -201,7 +201,7 @@ public class MopacGraphfReader extends MopacDataReader {
       Hashtable mo = new Hashtable();
       getTokensFloat(readLine(), values, 2);
       mo.put("energy", new Float(values[0]));
-      mo.put("occupancy", new Integer((int) values[1]));
+      mo.put("occupancy", new Float(values[1]));
       mo.put("coefficients", list2[iMo]);
       if (isBeta)
         mo.put("type", "beta");

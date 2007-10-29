@@ -248,7 +248,7 @@ public class MoldenReader extends MopacDataReader {
         coefs[i] = parseFloat((String) data.get(i));
       }
       mo.put("energy", new Float(energy));
-      mo.put("occupancy", new Integer((int)occupancy));
+      mo.put("occupancy", new Float(occupancy));
       mo.put("coefficients", coefs);
       orbitals.addElement(mo);
       if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {

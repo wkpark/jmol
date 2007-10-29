@@ -494,7 +494,7 @@ public class CsfReader extends MopacDataReader {
     nOrbitals = (nSlaters + nGaussians);
     Logger.info("Reading CSF data for " + nOrbitals + " molecular orbitals");
     float[] energy = new float[nOrbitals];
-    int[] occupancy = new int[nOrbitals];
+    float[] occupancy = new float[nOrbitals];
     float[][] list = new float[nOrbitals][nOrbitals];
     float[][] listCompressed = null;
     int[][] coefIndices = null;
@@ -513,7 +513,7 @@ public class CsfReader extends MopacDataReader {
             energy[ipt] = parseFloat(tokens[i]);
             break;
           case mo_occ:
-            occupancy[ipt] = parseInt(tokens[i]);
+            occupancy[ipt] = parseFloat(tokens[i]);
             break;
           case eig_vec:
             fillCsfArray("eig_vec", tokens, i, list[ipt]);
@@ -547,7 +547,7 @@ public class CsfReader extends MopacDataReader {
           list[iMo][i] = 0;
       Hashtable mo = new Hashtable();
       mo.put("energy", new Float(energy[iMo]));
-      mo.put("occupancy", new Integer(occupancy[iMo]));
+      mo.put("occupancy", new Float(occupancy[iMo]));
       mo.put("coefficients", list[iMo]);
       /*      
        System.out.print("MO " + iMo + " : ");

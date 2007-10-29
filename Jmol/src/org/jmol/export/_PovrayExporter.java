@@ -98,6 +98,12 @@ public class _PovrayExporter extends _Exporter {
     output("#declare minScreenDimension = " + minScreenDimension + ";\n");
     output("#declare showAtoms = true;\n");
     output("#declare showBonds = true;\n");
+    output("#declare finishMatte = finish {\n" + "  ambient "
+        + (float) Graphics3D.getAmbientPercent() / 100f + "\n" + "  diffuse "
+        + (float) Graphics3D.getDiffusePercent() / 100f + "\n" + "  specular "
+        + (float) Graphics3D.getSpecularPercent() / 100f + "\n"
+        + "  roughness .00001\n  metallic 0\n  phong 0.0\n  phong_size 0\n}"
+        + "\n\n");
     output("camera{\n");
     output("  orthographic\n");
     output("  location < " + screenWidth / 2f + ", " + screenHeight / 2f
@@ -401,6 +407,7 @@ public class _PovrayExporter extends _Exporter {
     if (colixes == null) {
       output("pigment{rgbt<" + color4(colix) + ">}\n");
     }
+    output("  finish {finishMatte}\n");
     output("  clip()\n");
     output("}\n");
 

@@ -273,7 +273,7 @@ public class WebMOReader extends MopacDataReader {
     Hashtable mo = new Hashtable();
     Vector data = new Vector();
     float energy = parseFloat(readLine());
-    int occupancy = parseInt(readLine());
+    float occupancy = parseFloat(readLine());
     while (readLine() != null
         && (line.length() == 0 || line.charAt(0) != '[')) {
       if (line.length() == 0)
@@ -285,7 +285,7 @@ public class WebMOReader extends MopacDataReader {
     for (int i = data.size(); --i >= 0;)
       coefs[i] = parseFloat((String) data.get(i));
     mo.put("energy", new Float(energy));
-    mo.put("occupancy", new Integer(occupancy));
+    mo.put("occupancy", new Float(occupancy));
     mo.put("coefficients", coefs);
     orbitals.addElement(mo);
     setMOs("eV");

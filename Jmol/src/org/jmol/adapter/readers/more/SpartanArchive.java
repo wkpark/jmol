@@ -275,7 +275,7 @@ public class SpartanArchive {
     for (int i = 0; i < moCount; i++) {
       Hashtable mo = new Hashtable();
       mo.put("energy", new Float(energies[i]));
-      //mo.put("occupancy", new Integer(-1));
+      //mo.put("occupancy", new Float(-1));
       mo.put("coefficients", coefficients[i]);
       orbitals.addElement(mo);
     }

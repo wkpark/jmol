@@ -9218,7 +9218,7 @@ class Eval { //implements Runnable {
             Hashtable mo = (Hashtable) mos.get(i);
             if (!mo.containsKey("occupancy"))
               evalError(GT._("no MO occupancy data available"));
-            if (((Integer) mo.get("occupancy")).intValue() == 0) {
+            if (((Float) mo.get("occupancy")).floatValue() == 0) {
               lastMoNumber = moNumber = i + offset;
               break;
             }

@@ -236,7 +236,7 @@ public class Text3D {
       ascent <<= 1;
       height <<= 1;
       width <<= 1;
-      mapWidth = width + 4; //an estimate only
+      mapWidth = width * 2; //an estimate only
     } else {
       mapWidth = width;
     }

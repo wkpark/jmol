@@ -31,6 +31,7 @@ import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.jmol.quantum.MOCalculation;
 import org.jmol.util.Logger;
 
 /**
@@ -214,7 +215,7 @@ public class WebMOReader extends MopacDataReader {
       tokens = getTokens(readLine());
       int nGaussians = parseInt(tokens[1]);
       slater[0] = atomIndex;
-      slater[1] = AtomSetCollection.getQuantumShellTagID(tokens[0]);
+      slater[1] = MOCalculation.getQuantumShellTagID(tokens[0]);
       slater[2] = gaussianPtr;
       slater[3] = nGaussians;
       for (int i = 0; i < nGaussians; i++) {

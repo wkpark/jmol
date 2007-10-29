@@ -30,6 +30,7 @@ import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.jmol.quantum.MOCalculation;
 import org.jmol.util.Logger;
 
 /**
@@ -209,7 +210,7 @@ public class PsiReader extends AtomSetCollectionReader {
             slatersByUniqueAtom.addElement(slater);
           ipt = 1;
           slater = new int[3];
-          slater[0] = AtomSetCollection.getQuantumShellTagID(tokens[0]);
+          slater[0] = MOCalculation.getQuantumShellTagID(tokens[0]);
           slater[1] = gaussianCount;
           shellCount++;
           break;

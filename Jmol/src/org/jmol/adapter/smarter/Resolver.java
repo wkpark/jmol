@@ -239,11 +239,12 @@ class Resolver {
   private static boolean checkOdyssey(String[] lines) {
     int i;
     for (i = 0; i < lines.length; i++)
-      if (!lines[i].startsWith("C "))
+      if (!lines[i].startsWith("C ") && lines[i].length() != 0)
         break;
-    if (lines[i].charAt(0) != ' ' 
-      || (i = i + 2) >= lines.length
-      || !TextFormat.replaceAllCharacters(lines[i], "\r\n", "").equals("0 1"))
+    if (i >= lines.length 
+        || lines[i].charAt(0) != ' ' 
+        || (i = i + 2) >= lines.length
+        || !TextFormat.replaceAllCharacters(lines[i], "\r\n", "").equals("0 1"))
         return false;
     return true;
   }
@@ -390,9 +391,12 @@ class Resolver {
 
   final static String[] webmoRecords =
   {"WebMO", "[HEADER]"};
+  
+  final static String[] moldenRecords =
+  {"Molden", "[Molden"};
 
   final static String[][] fileStartsWithRecords =
-  { cubeRecords, mol2Records, webmoRecords};
+  { cubeRecords, mol2Records, webmoRecords, moldenRecords};
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings

@@ -34,6 +34,7 @@ import java.util.Vector;
 
 import javax.vecmath.Vector3f;
 
+import org.jmol.quantum.MOCalculation;
 import org.jmol.util.Logger;
 
 /**
@@ -316,6 +317,14 @@ public class GaussianReader extends AtomSetCollectionReader {
     shellCount = 0;
     String lastAtom = "";
     String[] tokens;
+    
+    final String calculationType = (String) moData.get("calculationType");
+    boolean doSpherical = false;
+    
+    if ( calculationType != null && (calculationType.indexOf("5D") > 0)
+                                    || calculationType.indexOf("7F") > 0 )
+      doSpherical = true;
+    
     while (readLine() != null && line.startsWith(" Atom")) {
       shellCount++;
       tokens = getTokens();
@@ -324,7 +333,11 @@ public class GaussianReader extends AtomSetCollectionReader {
         atomCount++;
       lastAtom = tokens[1];
       slater[0] = atomCount;
-      slater[1] = AtomSetCollection.getQuantumShellTagID(tokens[4]);
+      if (doSpherical)
+        slater[1] = MOCalculation.getQuantumShellTagIDSpherical(tokens[4]);
+      else
+        slater[1] = MOCalculation.getQuantumShellTagID(tokens[4]);
+      
       int nGaussians = parseInt(tokens[5]);
       slater[2] = gaussianCount; // or parseInt(tokens[7]) - 1
       slater[3] = nGaussians;
@@ -388,7 +401,9 @@ but:
         for (int i = 0; i < nThisLine; i++)
           mos[i].put("energy", new Float(tokens[i]));
         continue;
-      } else if (line.length() < 21 || line.charAt(11) != ' ') {
+      } else if (line.length() < 21 || (line.charAt(11) != ' ' 
+                                        && ! Character.isDigit(line.charAt(11)) 
+                                        ) ) {
         continue;
       }
       try {

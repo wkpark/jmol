@@ -545,11 +545,10 @@ public abstract class AtomSetCollectionReader {
     return line = line.trim();
   }
   
-  protected String[] getStrings(String sinfo, int nFields, int width) {
+  final static protected String[] getStrings(String sinfo, int nFields, int width) {
     String[] fields = new String[nFields];
-    int pt = 0;
-    for (int i = 0; i < nFields; i++)
-      fields[i] = sinfo.substring(pt, width);
+    for (int i = 0, pt = 0; i < nFields; i++, pt += width)
+      fields[i] = sinfo.substring(pt, pt + width);
     return fields;
   }
     

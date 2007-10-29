@@ -57,15 +57,6 @@ public class AtomSetCollection {
    "cif:_cell_length_alpha", "cif:_cell_length_beta",
    "cif:_cell_length_gamma"};
 
-  final private static String[] quantumShellTags = {"S", "P", "SP", "L", "D"};
-  
-  final public static int getQuantumShellTagID(String tag) {
-    for (int i = 0; i < quantumShellTags.length; i++)
-      if (tag.equals(quantumShellTags[i]))
-        return (i >= 3 ? --i : i); //because "SP" and "L" are the same
-    return -1;
-  }
-  
   int atomCount;
   public int getAtomCount() {
     return atomCount;

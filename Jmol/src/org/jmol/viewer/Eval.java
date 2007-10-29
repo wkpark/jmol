@@ -1337,7 +1337,7 @@ class Eval { //implements Runnable {
       tempStatement = statement;
       statement = code;
     }
-    Rpn rpn = new Rpn(10, false, false);
+    Rpn rpn = new Rpn(64, false, false);
     Object val;
     int comparisonValue = Integer.MAX_VALUE;
     boolean refreshed = false;
@@ -6553,7 +6553,7 @@ class Eval { //implements Runnable {
       throws ScriptException {
     Object v;
     boolean isSetCmd = (key != null && key.length() > 0);
-    Rpn rpn = new Rpn(16, isSetCmd && tokAt(pt) == Token.leftsquare, asVector);
+    Rpn rpn = new Rpn(64, isSetCmd && tokAt(pt) == Token.leftsquare, asVector);
     if (ptMax < pt)
       ptMax = statementLength;
     out: for (int i = pt; i < ptMax; i++) {

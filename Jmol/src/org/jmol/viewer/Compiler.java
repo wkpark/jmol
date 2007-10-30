@@ -1732,66 +1732,70 @@ class Compiler {
         return rightParenthesisExpected();
       return checkForMath();
     case Token.leftbrace:
-      /*
-       * A bit tricky here: we have three contexts for braces -- 
-       * 
-       * 1) expressionCommands SELECT, RESTRICT, DEFINE, 
-       *    DISPLAY, HIDE, CENTER, and SUBSET
-       * 
-       * 2) embeddedExpression commands such as DRAW and ISOSURFACE
-       * 
-       * 3) IF and SET
-       * 
-       * Then, within these, we have the possibility that we are 
-       * looking at a coordinate {0 0 0} (with or without commas, and
-       * possibly fractional, {1/2 1/2 1}, and possibly a plane Point4f
-       * definition, {a b c d}) or an expression. 
-       * 
-       * We assume an expression initially and then adjust accordingly
-       * if it turns out this is a coordinate. 
-       * 
-       * Note that due to tha nuances of how expressions such as (1-4) are
-       * reported as special codes, Eval must still intepret these
-       * carefully. This could be corrected for here, I think.
-       * 
-       */
-      boolean isCoordinate = false;
-      int pt = ltokenPostfix.size();
-      if (isImplicitExpression) {
-        addTokenToPostfix(Token.tokenExpressionBegin);
-        tokenNext();
-      }else if (isEmbeddedExpression) {
-        tokenNext();
-        pt--;
-      } else {
-        addNextToken();
-      }
-      if (!clauseOr(false))
-        return false;
-      int n = 1;
-      while (!tokPeek(Token.rightbrace)) {
-          boolean haveComma = addNextTokenIf(Token.comma);
-          if (!clauseOr(false))
-            return (haveComma || n < 3? false : rightBraceExpected());
-          n++;
-      }
-      isCoordinate = (n >= 2); // could be {1 -2 3}
-      if (isCoordinate && (isImplicitExpression || isEmbeddedExpression)) {
-        ltokenPostfix.set(pt, Token.tokenCoordinateBegin);
-        addTokenToPostfix(Token.tokenCoordinateEnd);
-        tokenNext();
-      } else if (isImplicitExpression) {
-        addTokenToPostfix(Token.tokenExpressionEnd);
-        tokenNext();
-      } else if (isEmbeddedExpression)
-        tokenNext();
-      else
-        addNextToken();
-      return checkForMath();
+      return checkForCoordinate(isImplicitExpression);
     }
     return unrecognizedExpressionToken();
   }
 
+  private boolean checkForCoordinate(boolean isImplicitExpression) {
+    /*
+     * A bit tricky here: we have three contexts for braces -- 
+     * 
+     * 1) expressionCommands SELECT, RESTRICT, DEFINE, 
+     *    DISPLAY, HIDE, CENTER, and SUBSET
+     * 
+     * 2) embeddedExpression commands such as DRAW and ISOSURFACE
+     * 
+     * 3) IF and SET
+     * 
+     * Then, within these, we have the possibility that we are 
+     * looking at a coordinate {0 0 0} (with or without commas, and
+     * possibly fractional, {1/2 1/2 1}, and possibly a plane Point4f
+     * definition, {a b c d}) or an expression. 
+     * 
+     * We assume an expression initially and then adjust accordingly
+     * if it turns out this is a coordinate. 
+     * 
+     * Note that due to tha nuances of how expressions such as (1-4) are
+     * reported as special codes, Eval must still intepret these
+     * carefully. This could be corrected for here, I think.
+     * 
+     */
+    boolean isCoordinate = false;
+    int pt = ltokenPostfix.size();
+    if (isImplicitExpression) {
+      addTokenToPostfix(Token.tokenExpressionBegin);
+      tokenNext();
+    }else if (isEmbeddedExpression) {
+      tokenNext();
+      pt--;
+    } else {
+      addNextToken();
+    }
+    if (!clauseOr(false))
+      return false;
+    int n = 1;
+    while (!tokPeek(Token.rightbrace)) {
+        boolean haveComma = addNextTokenIf(Token.comma);
+        if (!clauseOr(false))
+          return (haveComma || n < 3? false : rightBraceExpected());
+        n++;
+    }
+    isCoordinate = (n >= 2); // could be {1 -2 3}
+    if (isCoordinate && (isImplicitExpression || isEmbeddedExpression)) {
+      ltokenPostfix.set(pt, Token.tokenCoordinateBegin);
+      addTokenToPostfix(Token.tokenCoordinateEnd);
+      tokenNext();
+    } else if (isImplicitExpression) {
+      addTokenToPostfix(Token.tokenExpressionEnd);
+      tokenNext();
+    } else if (isEmbeddedExpression)
+      tokenNext();
+    else
+      addNextToken();
+    return checkForMath();
+  }
+  
   private boolean checkForMath() {
     for (int i = 0; i < 2; i++) {
       if (!addNextTokenIf(Token.leftsquare))
@@ -2074,14 +2078,20 @@ class Compiler {
       return true;
     }
     while (moreTokens() && !tokPeek(Token.rightbrace)) {
+      if (tokPeek(Token.leftbrace)) {
+         if (!checkForCoordinate(true))
+        return false;
+/*
       if (addSubstituteTokenIf(Token.leftbrace, Token.tokenExpressionBegin)) {
         if (!clauseOr(false))
           return false;
-        if (!addSubstituteTokenIf(Token.rightbrace, Token.tokenExpressionEnd))
+        if (lastToken != Token.tokenCoordinateEnd
+            && !addSubstituteTokenIf(Token.rightbrace, Token.tokenExpressionEnd))
           return false;
-      } else {
+*/      } else {
         addNextToken();
       }
+
     }
     return addSubstituteTokenIf(Token.rightbrace, Token.tokenExpressionEnd);
   }

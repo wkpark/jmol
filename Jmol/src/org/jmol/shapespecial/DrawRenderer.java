@@ -145,6 +145,7 @@ public class DrawRenderer extends MeshRenderer {
   }
   
   private void renderHandles() {
+    int diameter = (antialias ? 20 : 10);
     switch (drawType) {
     case JmolConstants.DRAW_POINT:
     case JmolConstants.DRAW_ARROW:
@@ -161,7 +162,7 @@ public class DrawRenderer extends MeshRenderer {
           continue;
         for (int j = vertexIndexes.length; --j >= 0;) {
           int k = vertexIndexes[j];
-          g3d.fillScreenedCircleCentered(Graphics3D.GOLD, 10, screens[k].x,
+          g3d.fillScreenedCircleCentered(Graphics3D.GOLD, diameter, screens[k].x,
               screens[k].y, screens[k].z);
         }
         break;

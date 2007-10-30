@@ -1368,24 +1368,26 @@ abstract class TransformManager {
 
   void unTransformPoint(Point3f screenPt, Point3f coordPt) {
     //draw move2D
-    Point3f pt = new Point3f(screenPt.x, screenPt.y, screenPt.z);
+    pointT.set(screenPt.x, screenPt.y, screenPt.z);
+    //System.out.println("unTransformPt screenpt " + pointT + " " + fixedRotationOffset);
     if (isNavigationMode) {
-      pt.x -= navigationOffset.x;
-      pt.y -= navigationOffset.y;
+      pointT.x -= navigationOffset.x;
+      pointT.y -= navigationOffset.y;
     } else {
-      pt.x -= fixedRotationOffset.x;
-      pt.y -= fixedRotationOffset.y;
+      pointT.x -= fixedRotationOffset.x;
+      pointT.y -= fixedRotationOffset.y;
     }
     if (perspectiveDepth) {
-      float factor = getPerspectiveFactor(pt.z);
-      pt.x /= factor;
-      pt.y /= factor;
+      float factor = getPerspectiveFactor(pointT.z);
+      pointT.x /= factor;
+      pointT.y /= factor;
     }
     if (isNavigationMode) {
-      pt.x += navigationShiftXY.x;
-      pt.y += navigationShiftXY.y;
+      pointT.x += navigationShiftXY.x;
+      pointT.y += navigationShiftXY.y;
     }
-    matrixUnTransform(pt, coordPt);
+    matrixUnTransform(pointT, coordPt);
+    //System.out.println("unTransformPt pointT " + pointT);
   }
 
   protected void matrixUnTransform(Point3f screen, Point3f angstroms) {
@@ -2129,7 +2131,7 @@ abstract class TransformManager {
   }
 
   private void setRotationCenterAndRadiusXYZ(String relativeTo, Point3f pt) {
-    Point3f pointT = new Point3f(pt);
+    pointT.set(pt);
     if (relativeTo == "average")
       pointT.add(viewer.getAverageAtomPoint());
     else if (relativeTo == "boundbox")

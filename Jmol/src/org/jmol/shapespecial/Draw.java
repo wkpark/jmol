@@ -743,6 +743,7 @@ public class Draw extends MeshCollection {
       moveAll = true;
       //fall through
     case MouseManager.ALT_LEFT:
+      //System.out.println(prevX + " " + deltaX + " y: " + prevY + " " + deltaY);
       move2D(pickedMesh, pickedMesh.polygonIndexes[pickedModel], pickedVertex,
           prevX + deltaX, prevY + deltaY, moveAll);
       thisMesh = pickedMesh;
@@ -754,15 +755,19 @@ public class Draw extends MeshCollection {
     return true;
   }
   
-  private void move2D(DrawMesh mesh, int[] vertexes, int iVertex, int x, int y,
-              boolean moveAll) {
+  private void move2D(DrawMesh mesh, int[] vertexes, 
+                      int iVertex, int x, int y,
+                      boolean moveAll) {
     if (vertexes == null || vertexes.length == 0)
       return;
+    if (g3d.isAntialiased()) {
+      x <<= 1;
+      y <<= 1;
+    }
     Point3f pt = new Point3f();
-    Point3f coord = new Point3f();
+    Point3f coord = new Point3f(mesh.vertices[vertexes[iVertex]]);
     Point3f newcoord = new Point3f();
     Vector3f move = new Vector3f();
-    coord.set(mesh.vertices[vertexes[iVertex]]);
     viewer.transformPoint(coord, pt);
     pt.x = x;
     pt.y = y;
@@ -791,21 +796,22 @@ public class Draw extends MeshCollection {
   }
   
   private boolean findPickedObject(int x, int y, boolean isPicking) {
+    if (g3d.isAntialiased()) {
+      x <<= 1;
+      y <<= 1;
+    }
     int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
     pickedModel = 0;
     pickedVertex = 0;
     pickedMesh = null;
-    if (g3d.isAntialiased()) {
-      x *= 2;
-      y *= 2;
-    }
     for (int i = 0; i < meshCount; i++) {
       DrawMesh m = dmeshes[i];
       if ((true || isPicking || m.drawType == JmolConstants.DRAW_LINE || m.drawType == JmolConstants.DRAW_MULTIPLE)
           && m.visibilityFlags != 0) {
         int mCount = (m.modelFlags == null ? 1 : modelCount);
         for (int iModel = mCount; --iModel >= 0;) {
-          if (m.modelFlags != null && m.modelFlags[iModel] == 0 || m.polygonIndexes == null)
+          if (m.modelFlags != null && m.modelFlags[iModel] == 0 || m.polygonIndexes == null
+              || m.polygonIndexes[iModel] == null)
             continue;
           for (int iVertex = m.polygonIndexes[iModel].length; --iVertex >= 0;) {
             Point3f v = new Point3f();

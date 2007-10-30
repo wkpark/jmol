@@ -32,6 +32,8 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.modelset.Bond.BondSet;
+import org.jmol.viewer.Token;
 
 /**
  * For defining the state, mostly
@@ -123,6 +125,28 @@ public class Escape {
   private static String unicode(char c) {
     String s = "0000" + Integer.toHexString(c);
     return "\\u" + s.substring(s.length() - 4);
+  }
+  
+  public static Object unescapePointOrBitsetAsToken(String s) {
+    if (s == null || s.length() == 0)
+      return s;
+    Object v = s;
+    if (s.charAt(0) == '{')
+      v = Escape.unescapePoint(s);
+    else if (s.indexOf("({") == 0)
+      v = Escape.unescapeBitset(s);
+    if (s.indexOf("[{") == 0)
+      v = new BondSet(Escape.unescapeBitset(s));
+    if (v instanceof Point3f)
+      return new Token(Token.point3f, v);
+    if (v instanceof Point4f)
+      return new Token(Token.point4f, v);
+    if (v instanceof BitSet)
+      return new Token(Token.bitset, v);
+    return s;
+    
+    
+
   }
   
   public static Object unescapePoint(String strPoint) {

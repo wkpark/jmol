@@ -721,6 +721,8 @@ class Eval { //implements Runnable {
         boolean isClauseDefine = (tokAt(i) == Token.expressionBegin); 
         if (isClauseDefine) {
           Vector val = (Vector) parameterExpression(++i, 0, "_var", true);
+          if (val.size() == 0)
+            invalidArgument();
           i = iToken;
           v = Token.oValue((Token) val.elementAt(0));
         } else  {
@@ -756,6 +758,10 @@ class Eval { //implements Runnable {
           }
         } else if (v instanceof BitSet){
           fixed[j] = new Token(Token.bitset, v);
+        } else if (v instanceof Point3f){
+          fixed[j] = new Token(Token.point3f, v);
+        } else if (v instanceof Point4f){
+          fixed[j] = new Token(Token.point4f, v);
         } else {
           Point3f center = getDrawObjectCenter(var);
           if (center == null)
@@ -783,21 +789,9 @@ class Eval { //implements Runnable {
   }
 
   private Object getStringObjectAsToken(String s, String key) {
-    Object v = s;
     if (s == null || s.length() == 0)
       return s;
-    if (s.charAt(0) == '{')
-      v = Escape.unescapePoint(s);
-    else if (s.indexOf("({") == 0)
-      v = Escape.unescapeBitset(s);
-    else if (s.indexOf("[{") == 0)
-      return new Token(Token.bitset, new BondSet(Escape.unescapeBitset(s)));
-    if (v instanceof Point3f)
-      return new Token(Token.point3f, v);
-    if (v instanceof Point4f)
-      return new Token(Token.point4f, v);
-    if (v instanceof BitSet)
-      return new Token(Token.bitset, v);
+    Object v = Escape.unescapePointOrBitsetAsToken(s);
     if (v instanceof String && key != null)
       return viewer.getListVariable(key, v);
     return v;

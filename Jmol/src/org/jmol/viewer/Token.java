@@ -61,7 +61,7 @@ public class Token {
     this.tok = tok;
   }
 
-  Token(int tok, Object value) {
+  public Token(int tok, Object value) {
     this.tok = tok;
     this.value = value;
   }
@@ -73,8 +73,8 @@ public class Token {
   final static int string            =  4;
   final static int seqcode           =  5;
   final static int list              =  6;
-  final static int point3f           =  7;
-  final static int point4f           =  8; 
+  final public static int point3f           =  7;
+  final public static int point4f           =  8; 
   final static int keyword           =  9;
   final static int truefalse         = 10;
 
@@ -741,8 +741,12 @@ public class Token {
     case Token.list:
       if (i1 < 1 || i1 > len || i2 > len)
         return new Token(Token.string, "");     
-      if (i2 == i1)
-        return new Token(Token.string, st[i1 - 1]);
+      if (i2 == i1) {
+        Object v = Escape.unescapePointOrBitsetAsToken(st[i1 - 1]);
+        if (v instanceof String)
+          return new Token(Token.string, v);
+        return (Token) v;
+      }
       String[]list = new String[i2 - i1 + 1];
       for (int i = 0; i < list.length; i++)
         list[i] = st[i + i1 - 1];
@@ -818,7 +822,7 @@ public class Token {
   final static int back         = misc | 68;
   final static int top          = misc | 69;
   final static int bottom       = misc | 70;
-  final static int bitset       = misc | 71;
+  final public static int bitset       = misc | 71;
   final static int bondset      = misc | 72;
   final static int last         = misc | 73;
   final static int rotation     = misc | 74;

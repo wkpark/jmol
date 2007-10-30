@@ -724,12 +724,15 @@ class Eval { //implements Runnable {
           if (val.size() == 0)
             invalidArgument();
           i = iToken;
-          v = Token.oValue((Token) val.elementAt(0));
+          Token t = (Token) val.elementAt(0); 
+          v = (t.tok == Token.list ? t : Token.oValue(t));
         } else  {
           v = getParameter(var, false);
         }
         Object var_set;
-        if (v instanceof Boolean) {
+        if (v instanceof Token)
+          fixed[j] = (Token) v;
+        else if (v instanceof Boolean) {
           fixed[j] = (((Boolean) v).booleanValue() ? Token.tokenOn
               : Token.tokenOff);
         } else if (v instanceof Integer) {
@@ -752,8 +755,8 @@ class Eval { //implements Runnable {
             tok = (isClauseDefine ? Token.string 
                 : isExpression ? Token.define 
                 : s.indexOf(".") >= 0 || s.indexOf("=") >= 0 
-                    || s.indexOf("[") >= 0 ? Token.string
-                : Token.identifier);
+                    || s.indexOf("[") >= 0 || s.indexOf("{") >= 0 
+                    ? Token.string : Token.identifier);
             fixed[j] = new Token(tok, s);
           }
         } else if (v instanceof BitSet){
@@ -8672,6 +8675,11 @@ class Eval { //implements Runnable {
         i = iToken;
         havePoints = true;
         break;
+      case Token.list:
+        propertyName = "modelBasedPoints";
+        propertyValue = theToken.value;
+        havePoints = true;
+        break;
       default:
         if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, i, theTok))
           invalidArgument();
@@ -9256,6 +9264,8 @@ class Eval { //implements Runnable {
   }
 
   private boolean listIsosurface(int iShape) throws ScriptException {
+    if (getToken(1).value instanceof String[]) // not just the word "list"
+      return false;
     checkLength2();
     if (!isSyntaxCheck)
       showString((String) viewer.getShapeProperty(iShape, "list"));
@@ -10057,11 +10067,16 @@ class Eval { //implements Runnable {
     boolean useBraces = (Compiler.tokAttr(tok, Token.implicitExpression));
     boolean inBrace = false;
     boolean inClauseDefine = false;
+    boolean setEquals = (tok == Token.set && ((String)statement[0].value) == "");
     for (int i = 0; i < statementLength; ++i) {
       if (iToken == i - 1)
         sb.append(" <<");
       if (i != 0)
         sb.append(' ');
+      if (i == 2 && setEquals) {
+        setEquals = false;
+        sb.append("= ");
+      }
       Token token = statement[i];
       if (iToken == i && token.tok != Token.expressionEnd)
         sb.append(">> ");
@@ -10854,14 +10869,27 @@ class Eval { //implements Runnable {
       if (args.length > 1)
         return false;
       Token x = getX();
-      String s = (tok == Token.trim && x.tok == Token.list ? null : Token
-          .sValue(x));
       if (isSyntaxCheck)
-        return addX(s);
+        return addX(Token.sValue(x));
+      String s = (tok == Token.split && x.tok == Token.bitset 
+          || tok == Token.trim && x.tok == Token.list ? null 
+              : Token.sValue(x));
       String sArg = (args.length == 1 ? Token.sValue(args[0])
           : tok == Token.trim ? "" : "\n");
       switch (tok) {
       case Token.split:
+        if (x.tok == Token.bitset) {
+          BitSet bsSelected = Token.bsSelect(x);
+          sArg = "\n";
+          int modelCount = viewer.getModelCount();
+          s = "";
+          for (int i = 0; i < modelCount; i++) {
+            s += (i == 0 ? "" : "\n");
+            BitSet bs = viewer.getModelAtomBitSet(i);
+            bs.and(bsSelected);
+            s += Escape.escape(bs);
+          }
+        }
         return addX(TextFormat.split(s, sArg));
       case Token.join:
         if (s.length() > 0 && s.charAt(s.length() - 1) == '\n')
@@ -10891,28 +10919,65 @@ class Eval { //implements Runnable {
       boolean isScalar = (x2.tok != Token.list && Token.sValue(x2)
           .indexOf("\n") < 0);
 
-      float factor = (isScalar ? Token.fValue(x2) : 0);
-
       String sValue = (isScalar ? Token.sValue(x2) : "");
+
+      float factor = (sValue.indexOf("{") >= 0 ? Float.NaN 
+          : isScalar ? Token.fValue(x2) : 0);
+
 
       String[] sList1 = (x1.value instanceof String ? TextFormat.split(
           (String) x1.value, "\n") : (String[]) x1.value);
-      float[] list1 = new float[sList1.length];
-      Parser.parseFloatArray(sList1, list1);
-
+      
       String[] sList2 = (isScalar ? null
           : x2.value instanceof String ? TextFormat.split((String) x2.value,
               "\n") : (String[]) x2.value);
+
+      int len = (isScalar ? sList1.length : Math.min(sList1.length, sList2.length));
+
+      String[] sList3 = new String[len];
+
+      float[] list1 = new float[sList1.length];
+      Parser.parseFloatArray(sList1, list1);
+
       float[] list2 = new float[(isScalar ? sList1.length : sList2.length)];
-      int len = Math.min(list1.length, list2.length);
       if (isScalar)
         for (int i = len; --i >= 0;)
           list2[i] = factor;
       else
         Parser.parseFloatArray(sList2, list2);
 
-      String[] sList3 = new String[len];
-
+      Token token = null;
+      switch (tok) {
+      case Token.add:
+        token = Token.tokenPlus;
+        break;
+      case Token.sub:
+        token = Token.tokenMinus;
+        break;
+      case Token.mul:
+        token = Token.tokenTimes;
+        break;
+      case Token.div:
+        token = Token.tokenDivide;
+        break;
+      }
+      
+      for (int i = 0; i < len; i++) {
+        if (Float.isNaN(list1[i]))
+          addX(Escape.unescapePointOrBitsetAsToken(sList1[i]));
+        else
+          addX(list1[i]);
+        if (!Float.isNaN(list2[i]))
+          addX(list2[i]);
+        else if (isScalar)
+          addX(Escape.unescapePointOrBitsetAsToken(sValue));
+        else
+          addX(Escape.unescapePointOrBitsetAsToken(sList2[i]));
+        if (!addOp(token) || !operate())
+          return false;
+        sList3[i] = Token.sValue(xStack[xPt--]);
+      }
+/*
       switch (tok) {
       case Token.add:
         if (Float.isNaN(factor)) {
@@ -10946,6 +11011,7 @@ class Eval { //implements Runnable {
       }
       for (int i = len; --i >= 0;)
         sList3[i] = "" + list1[i];
+*/      
       return addX(sList3);
     }
 
@@ -11246,33 +11312,13 @@ class Eval { //implements Runnable {
           //handle bitset later
           }
         }
-        if (x2.tok == Token.point3f) {
-          switch (op.intValue) {
-          case Token.atomX:
-            return addX(((Point3f) x2.value).x);
-          case Token.atomY:
-            return addX(((Point3f) x2.value).y);
-          case Token.atomZ:
-            return addX(((Point3f) x2.value).z);
-          case Token.fracX:
-          case Token.fracY:
-          case Token.fracZ:
-            Point3f ptf = new Point3f((Point3f) x2.value);
-            viewer.toFractional(ptf);
-            return addX(op.intValue == Token.fracX ? ptf.x
-                : op.intValue == Token.fracY ? ptf.y : ptf.z);
-          }
+        if (x2.tok == Token.string) {
+          Object v = Escape.unescapePointOrBitsetAsToken(Token.sValue(x2));
+          if (!(v instanceof Token))
+            return false;
+          x2 = (Token) v;
         }
-        if (x2.tok != Token.bitset)
-          return false;
-        if (op.intValue == Token.bonds && x2.value instanceof BondSet)
-          return addX(x2);
-        Object val = getBitsetProperty(Token.bsSelect(x2), op.intValue, null,
-            null, x2.value, op.value, false);
-        if (op.intValue == Token.bonds)
-          return addX(new Token(Token.bitset, new BondSet((BitSet) val,
-              getAtomIndices(Token.bsSelect(x2)))));
-        return addX(val);
+        return evaluatePointOrBitsetOperation(op, x2);
       }
 
       //binary:
@@ -11480,6 +11526,49 @@ class Eval { //implements Runnable {
       }
       return true;
     }
+    
+    private boolean evaluatePointOrBitsetOperation(Token op, Token x2)
+        throws ScriptException {
+      switch (x2.tok) {
+      case Token.list:
+        String[] list = (String[])x2.value;
+        String[] list2 = new String[list.length];
+        for (int i = 0; i < list.length; i++) {
+          Object v = Escape.unescapePointOrBitsetAsToken(list[i]);
+          if (!(v instanceof Token) || !evaluatePointOrBitsetOperation(op, (Token) v))
+            return false;
+          list2[i] = Token.sValue(xStack[xPt--]);
+        }
+        return addX(list2);
+      case Token.point3f:
+        switch (op.intValue) {
+        case Token.atomX:
+          return addX(((Point3f) x2.value).x);
+        case Token.atomY:
+          return addX(((Point3f) x2.value).y);
+        case Token.atomZ:
+          return addX(((Point3f) x2.value).z);
+        case Token.fracX:
+        case Token.fracY:
+        case Token.fracZ:
+          Point3f ptf = new Point3f((Point3f) x2.value);
+          viewer.toFractional(ptf);
+          return addX(op.intValue == Token.fracX ? ptf.x
+              : op.intValue == Token.fracY ? ptf.y : ptf.z);
+        }
+        break;
+      case Token.bitset:
+        if (op.intValue == Token.bonds && x2.value instanceof BondSet)
+          return addX(x2);
+        Object val = getBitsetProperty(Token.bsSelect(x2), op.intValue, null,
+            null, x2.value, op.value, false);
+        if (op.intValue == Token.bonds)
+          return addX(new Token(Token.bitset, new BondSet((BitSet) val,
+              getAtomIndices(Token.bsSelect(x2)))));
+        return addX(val);
+      }
+      return false;
+    }
 
     Point3f ptValue(Token x) throws ScriptException {
       if (isSyntaxCheck)
@@ -11491,7 +11580,8 @@ class Eval { //implements Runnable {
         return (Point3f) getBitsetProperty(Token.bsSelect(x), Token.xyz, null,
             null, x.value, null, false);
       case Token.string:
-        Object pt = Escape.unescapePoint((String) x.value);
+      case Token.list:
+        Object pt = Escape.unescapePoint(Token.sValue(x));
         if (pt instanceof Point3f)
           return (Point3f) pt;
         break;
@@ -11506,8 +11596,9 @@ class Eval { //implements Runnable {
       switch (x.tok) {
       case Token.point4f:
         return (Point4f) x.value;
+      case Token.list:
       case Token.string:
-        Object pt = Escape.unescapePoint((String) x.value);
+        Object pt = Escape.unescapePoint(Token.sValue(x));
         return (pt instanceof Point4f ? (Point4f) pt : null);
       case Token.bitset:
         //ooooh, wouldn't THIS be nice!

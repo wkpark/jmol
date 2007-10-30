@@ -133,9 +133,10 @@ public class Escape {
     Object v = s;
     if (s.charAt(0) == '{')
       v = Escape.unescapePoint(s);
-    else if (s.indexOf("({") == 0)
+    else if (s.indexOf("({") == 0 
+        && s.indexOf("({") == s.lastIndexOf("({"))
       v = Escape.unescapeBitset(s);
-    if (s.indexOf("[{") == 0)
+    else if (s.indexOf("[{") == 0)
       v = new BondSet(Escape.unescapeBitset(s));
     if (v instanceof Point3f)
       return new Token(Token.point3f, v);

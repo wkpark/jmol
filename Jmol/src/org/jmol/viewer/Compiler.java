@@ -492,8 +492,8 @@ class Compiler {
             cchToken = pt;
           }
         }
-        if (!(tokCommand == Token.script && iHaveQuotedString)
-            && tokAttr(tokCommand, Token.specialstring)
+        if (tokAttr(tokCommand, Token.specialstring)
+            && !(tokCommand == Token.script && iHaveQuotedString)
             && lookingAtSpecialString()) {
           String str = script.substring(ichToken, ichToken + cchToken);
           addTokenToPrefix(new Token(Token.string, str));

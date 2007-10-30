@@ -42,8 +42,8 @@ import org.jmol.modelset.Bond.BondSet;
 
 public class Token {
 
-  int tok;
-  Object value;
+  public int tok;
+  public Object value;
   int intValue = Integer.MAX_VALUE;
 
   Token(int tok, int intValue, Object value) {
@@ -851,7 +851,11 @@ public class Token {
   final static Token tokenAnd = new Token(opAnd, "and");
   final static Token tokenOr  = new Token(opOr, "or");
   final static Token tokenComma = new Token(comma, ",");
+  final static Token tokenPlus = new Token(plus, "+");
   final static Token tokenMinus = new Token(minus, "-");
+  final static Token tokenTimes = new Token(times, "*");
+  final static Token tokenDivide = new Token(divide, "/");
+
   final static Token tokenLeftParen = new Token(leftparen, "(");
   final static Token tokenArraySelector = new Token(leftsquare, "[");
  
@@ -1086,7 +1090,6 @@ public class Token {
     // atom expressions
     "(",            tokenLeftParen,
     ")",            new Token(rightparen),
-    "-",            tokenMinus,
     "and",          tokenAnd,
     "&",            null,
     "&&",           null,
@@ -1111,7 +1114,6 @@ public class Token {
     "<>",           null,
     "/=",           null,
     "within",       new Token(within),
-    "+",            new Token(plus),
     ".",            new Token(dot),
     "[",            new Token(leftsquare),
     "]",            new Token(rightsquare),
@@ -1119,10 +1121,12 @@ public class Token {
     "}",            new Token(rightbrace),
     "$",            new Token(dollarsign),
     "%",            new Token(percent),
-    "*",            new Token(times),
     ":",            new Token(colon),
     ";",            new Token(semicolon),
-    "/",            new Token(divide),
+    "+",            tokenPlus,
+    "-",            tokenMinus,
+    "*",            tokenTimes,
+    "/",            tokenDivide,
     
     "molecule",          new Token(molecule),
     "molecules",         null, 

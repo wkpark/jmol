@@ -195,12 +195,77 @@ public class Check implements ActionListener {
     if ((file == null) || (!file.isFile())) {
       return;
     }
+    System.out.print("    File " + file.getName() + " : ");
+    String project = extractProjectNumber(file);
+    if (project == null) {
+      System.out.print("Unable to find project number");
+    } else {
+      System.out.print("Project n°" + project + " -> ");
+      processProjectNumber(file, project);
+    }
+    System.out.println();
+  }
+
+  /**
+   * Analyze the <code>file</code> to find the project number.
+   * 
+   * @param file File.
+   * @return Project number.
+   */
+  private String extractProjectNumber(File file) {
+    String project;
+    project = extractProjectNumberFromContent(file);
+    if (project != null) {
+      return project;
+    }
+    project = extractProjectNumberFromName(file);
+    if (project != null) {
+      return project;
+    }
+    return null;
+  }
+
+  /**
+   * Analyze the <code>file</code> name to find the project number.
+   * 
+   * @param file File.
+   * @return Project number.
+   */
+  private String extractProjectNumberFromName(File file) {
+    String fileName = file.getName();
+
+    // Removing 'p'
+    if ((fileName.length() > 0) && (fileName.substring(0, 1).equalsIgnoreCase("p"))) {
+      fileName = fileName.substring(1);
+    }
+
+    // Extracting the project number
+    int index = 0;
+    while ((index < fileName.length()) && (Character.isDigit(fileName.charAt(index)))) {
+      index++;
+    }
+    if ((index == 0) || (index >= fileName.length())) {
+      return null;
+    }
+    if ((fileName.charAt(index) != '_') && (fileName.charAt(index) != '.')) {
+      return null;
+    }
+    return fileName.substring(0, index);
+  }
+
+  /**
+   * Analyze the <code>file</code> content to find the project number.
+   * 
+   * @param file File.
+   * @return Project number.
+   */
+  private String extractProjectNumberFromContent(File file) {
     BufferedReader reader = null;
     try {
       reader = new BufferedReader(new FileReader(file));
       String line = reader.readLine();
       if (line == null) {
-        return;
+        return null;
       }
       line = line.trim();
 
@@ -210,7 +275,7 @@ public class Check implements ActionListener {
         index++;
       }
       if ((index == 0) || (index >= line.length())) {
-        return;
+        return null;
       }
       line = line.substring(index);
       
@@ -220,13 +285,13 @@ public class Check implements ActionListener {
         index++;
       }
       if ((index == 0) || (index >= line.length())) {
-        return;
+        return null;
       }
       line = line.substring(index);
       
       // Removing the "p"
       if ((line.length() == 0) || (!line.substring(0, 1).equalsIgnoreCase("p"))) {
-        return;
+        return null;
       }
       line = line.substring(1);
 
@@ -236,14 +301,12 @@ public class Check implements ActionListener {
         index++;
       }
       if ((index == 0) || (index >= line.length())) {
-        return;
+        return null;
       }
       if (line.charAt(index) != '_') {
-        return;
+        return null;
       }
-      line = line.substring(0, index);
-
-      processProjectNumber(file, line);
+      return line.substring(0, index);
     } catch (FileNotFoundException e) {
       //
     } catch (IOException e) {
@@ -257,6 +320,7 @@ public class Check implements ActionListener {
         }
       }
     }
+    return null;
   }
 
   /**
@@ -267,6 +331,7 @@ public class Check implements ActionListener {
    */
   private void processProjectNumber(File file, String project) {
     if (configuration.hasBeenSent(project)) {
+      System.out.print("Already sent by you");
       return;
     }
     if (!availableProjects.exists()) {
@@ -274,17 +339,19 @@ public class Check implements ActionListener {
     }
     updateExistingProjects();
     if (existingProjects.contains(project)) {
+      System.out.print("Project available on Jmol website");
       return;
     }
     if (!availableFilesDownloaded) {
       downloadAvailableFiles();
       updateExistingProjects();
       if (existingProjects.contains(project)) {
+        System.out.print("Project available on Jmol website");
         return;
       }
     }
     try {
-      System.out.println(" Found one file for project " + project);
+      System.out.print("Found new project :)");
       MailSender sender = new MailSender(configuration, project, file, false);
       sender.sendMail();
       configuration.addSentFile(project);

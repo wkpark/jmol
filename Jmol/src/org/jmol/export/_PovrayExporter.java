@@ -170,7 +170,7 @@ public class _PovrayExporter extends _Exporter {
         + " #if (cutRadius2 > 0)\n"
         + "  #local cutRadius = sqrt(cutRadius2);\n"
         + "  cylinder{<X,Y,boundBoxdepthZ>,"
-        + "<X,Y,(boundBoxdepthZ+(boundBoxslabZ/Z))>,cutRadius\n"
+        + "<X,Y,(boundBoxdepthZ+(boundBoxdepthZ/Z))>,cutRadius\n"
         + "   pigment{rgbt<R,G,B,T>}\n"
         + "   translucentFinish(T)\n"
         + "   no_shadow}\n"

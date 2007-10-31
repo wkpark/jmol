@@ -553,8 +553,8 @@ public class PovrayDialog extends JDialog {
         //int width = outputWidth;
         //int height = outputHeight;
         //if ((imageSizeCheck != null) && (imageSizeCheck.isSelected())) {
-          int height = Integer.parseInt(imageSizeTextHeight.getText());
-          int width = Integer.parseInt(imageSizeTextWidth.getText());
+          int height = Integer.parseInt(imageSizeTextHeight.getValue().toString());
+          int width = Integer.parseInt(imageSizeTextWidth.getValue().toString());
         //}
         
         String data = viewer.generateOutput("Povray", filename + ":::" + getINI(), width, height);          
@@ -660,8 +660,7 @@ public class PovrayDialog extends JDialog {
   	  if (imageSizeRatioCombo != null) {
   	  	imageSizeRatioCombo.setEnabled(selected && ratioSelected && enabled);
   	    if ((imageSizeTextWidth != null) && (imageSizeTextHeight != null)) {
-  	      int width = Integer.parseInt(
-  	        imageSizeTextWidth.getValue().toString());
+          int width = Integer.parseInt(imageSizeTextWidth.getValue().toString());
   	      int height;
   	      switch (imageSizeRatioCombo.getSelectedIndex()) {
   	      case 0: // Free

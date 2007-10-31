@@ -98,12 +98,6 @@ public class _PovrayExporter extends _Exporter {
     output("#declare minScreenDimension = " + minScreenDimension + ";\n");
     output("#declare showAtoms = true;\n");
     output("#declare showBonds = true;\n");
-    output("#declare finishMatte = finish {\n" + "  ambient "
-        + (float) Graphics3D.getAmbientPercent() / 100f + "\n" + "  diffuse "
-        + (float) Graphics3D.getDiffusePercent() / 100f + "\n" + "  specular "
-        + (float) Graphics3D.getSpecularPercent() / 100f + "\n"
-        + "  roughness .00001\n  metallic 0\n  phong 0.0\n  phong_size 0\n}"
-        + "\n\n");
     output("camera{\n");
     output("  orthographic\n");
     output("  location < " + screenWidth / 2f + ", " + screenHeight / 2f
@@ -148,11 +142,42 @@ public class _PovrayExporter extends _Exporter {
         + (float) Graphics3D.getSpecularPercent() / 100f + "\n"
         + "  roughness .00001\n  metallic\n  phong 0.9\n  phong_size 120\n}}"
         + "\n\n");
+
+    output("#declare boundBox = "
+        + "  box {<0,0," + slabZ + ">,<Width,Height," + depthZ + ">}\n"
+        + "#declare boundBoxslabZ = " + slabZ + ";\n"
+        + "#declare boundBoxdepthZ = " + depthZ + ";\n\n");
     
     output("#macro clip()\n"
         + "  clipped_by { box {<0,0," + slabZ + ">,<Width,Height," + depthZ + ">}}\n"
         + "#end\n\n");
 
+    output("#macro circleCap(Z,RADIUS,R,G,B,T)\n"
+        + "// cap for lower clip\n"
+        + " #local cutDiff = Z - boundBoxslabZ;\n"
+        + " #local cutRadius2 = (RADIUS*RADIUS) - (cutDiff*cutDiff);\n"
+        + " #if (cutRadius2 > 0)\n"
+        + "  #local cutRadius = sqrt(cutRadius2);\n"
+        + "  cylinder{<X,Y,boundBoxslabZ>,"
+        + "<X,Y,(boundBoxslabZ-(boundBoxslabZ/Z))>,cutRadius\n"
+        + "   pigment{rgbt<R,G,B,T>}\n"
+        + "   translucentFinish(T)\n"
+        + "   no_shadow}\n"
+        + " #end\n"
+        + "// cap for upper clip\n"
+        + " #declare cutDiff = Z - boundBoxdepthZ;\n"
+        + " #declare cutRadius2 = (RADIUS*RADIUS) - (cutDiff*cutDiff);\n"
+        + " #if (cutRadius2 > 0)\n"
+        + "  #local cutRadius = sqrt(cutRadius2);\n"
+        + "  cylinder{<X,Y,boundBoxdepthZ>,"
+        + "<X,Y,(boundBoxdepthZ+(boundBoxslabZ/Z))>,cutRadius\n"
+        + "   pigment{rgbt<R,G,B,T>}\n"
+        + "   translucentFinish(T)\n"
+        + "   no_shadow}\n"
+        + " #end\n"
+        + "#end\n\n");
+
+    writeMacrosFinish();
     writeMacrosAtom();
     writeMacrosBond();
     writeMacrosJoint();
@@ -161,11 +186,35 @@ public class _PovrayExporter extends _Exporter {
     //    writeMacrosRing();
   }
 
+  private void writeMacrosFinish() {
+    output("#macro translucentFinish(T)\n"
+        + " #local shineFactor = T;\n"
+        + " #if (T <= 0.25)\n"
+        + "  #declare shineFactor = (1.0-4*T);\n"
+        + " #end\n"
+        + " #if (T > 0.25)\n"
+        + "  #declare shineFactor = 0;\n"
+        + " #end\n"
+        + " finish {\n" + "  ambient "
+        + (float) Graphics3D.getAmbientPercent() / 100f + "\n" + "  diffuse "
+        + (float) Graphics3D.getDiffusePercent() / 100f + "\n" + "  specular "
+        + (float) Graphics3D.getSpecularPercent() / 100f + "\n"
+        + "  roughness .00001\n"  
+        + "  metallic shineFactor\n"  
+        + "  phong 0.9*shineFactor\n"  
+        + "  phong_size 120*shineFactor\n}"
+        + "#end\n\n");
+  }
+
+
   private void writeMacrosAtom() {
-    output("#macro a(X,Y,Z,RADIUS,R,G,B,T)\n" + " sphere{<X,Y,Z>,RADIUS\n"
+    output("#macro a(X,Y,Z,RADIUS,R,G,B,T)\n" 
+        + " sphere{<X,Y,Z>,RADIUS\n"
         + "  pigment{rgbt<R,G,B,T>}\n"
+        + "  translucentFinish(T)\n"
         + "  clip()\n"
-        + "  no_shadow}\n" 
+        + "  no_shadow}\n"
+        + " circleCap(Z,RADIUS,R,G,B,T)\n"
         + "#end\n\n");
   }
 
@@ -176,6 +225,7 @@ public class _PovrayExporter extends _Exporter {
     output("#macro b(X1,Y1,Z1,RADIUS1,X2,Y2,Z2,RADIUS2,R,G,B,T)\n"
         + " cone{<X1,Y1,Z1>,RADIUS1,<X2,Y2,Z2>,RADIUS2\n"
         + "  pigment{rgbt<R,G,B,T>}\n"
+        + "  translucentFinish(T)\n"
         + "  clip()\n"
         + "  no_shadow}\n" 
         + "#end\n\n");
@@ -185,8 +235,10 @@ public class _PovrayExporter extends _Exporter {
     output("#macro s(X,Y,Z,RADIUS,R,G,B,T)\n" 
         + " sphere{<X,Y,Z>,RADIUS\n"
         + "  pigment{rgbt<R,G,B,T>}\n" 
+        + "  translucentFinish(T)\n"
         + "  clip()\n"
         + "  no_shadow}\n" 
+        + " circleCap(Z,RADIUS,R,G,B,T)\n"
         + "#end\n\n");
   }
 
@@ -194,6 +246,7 @@ public class _PovrayExporter extends _Exporter {
     output("#macro r(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,R,G,B,T)\n"
         + " triangle{<X1,Y1,Z1>,<X2,Y2,Z2>,<X3,Y3,Z3>\n"
         + "  pigment{rgbt<R,G,B,T>}\n"
+        + "  translucentFinish(T)\n"
         + "  clip()\n"
         + "  no_shadow}\n" 
         + "#end\n\n");
@@ -248,7 +301,8 @@ public class _PovrayExporter extends _Exporter {
         + "\nAntialias=true"
         + "\nAntialias_Threshold=0.1" 
         + "\nDisplay=true"
-        + "\nPause_When_Done=true" 
+        + "\nPause_When_Done=true"
+        + "\nWarning_Level=5"
         + "\nVerbose=false" + "\n");
 
   }
@@ -355,7 +409,7 @@ public class _PovrayExporter extends _Exporter {
       int nColix = 0;
       for (int i = 0; i < nVertices; i++) {
         color = color4(colixes[i]);
-        if (!htColixes.containsKey(color))
+        if (!htColixes.containsKey(color)) 
           htColixes.put(color, new Integer(nColix++));
       }
       String[] list = new String[nColix];
@@ -366,8 +420,11 @@ public class _PovrayExporter extends _Exporter {
       }
 
       output("texture_list { " + nColix);
-      for (int i = 0; i < nColix; i++)
-        output("\n, texture{pigment{rgbt<" + list[i] + ">}}");
+      for (int i = 0; i < nColix; i++) 
+        output("\n, texture{pigment{rgbt<" + list[i] + ">}" 
+          + " translucentFinish(" 
+          + translucencyFractionalFromColix(colixes[0]) + ")}");
+          // just using the transparency of the first colix there... 
       output("\n}\n");
     }
     output("face_indices { " + nFaces);
@@ -406,8 +463,10 @@ public class _PovrayExporter extends _Exporter {
 
     if (colixes == null) {
       output("pigment{rgbt<" + color4(colix) + ">}\n");
+      output("  translucentFinish("  
+        + translucencyFractionalFromColix(colix) +")\n");
     }
-    output("  finish {finishMatte}\n");
+    output("  no_shadow\n");
     output("  clip()\n");
     output("}\n");
 

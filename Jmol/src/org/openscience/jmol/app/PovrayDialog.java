@@ -952,6 +952,7 @@ public class PovrayDialog extends JDialog {
       data.append("Preview_End_Size=" + mosaicPreviewComboEnd.getSelectedItem() + "\n");
     }
     
+    data.append("Warning_Level=5\n");
     data.append("Verbose=false\n");
     return data.toString();
   }

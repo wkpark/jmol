@@ -51,6 +51,7 @@ import org.jmol.viewer.Viewer;
 public class _PovrayExporter extends _Exporter {
 
   private int nBytes;
+  private boolean isSlabEnabled;
 
   public _PovrayExporter() {
     use2dBondOrderCalculation = true;
@@ -72,11 +73,11 @@ public class _PovrayExporter extends _Exporter {
 
   public void getHeader() {
     nBytes = 0;
+    isSlabEnabled = viewer.getSlabEnabled();
     float zoom = viewer.getRotationRadius() * 2;
     zoom *= 1.1f; // for some reason I need a little more margin
     zoom /= viewer.getZoomPercentFloat() / 100f;
     int minScreenDimension = Math.min(screenWidth, screenHeight);
-
     output("// ******************************************************\n");
     output("// Created by Jmol " + Viewer.getJmolVersion() + "\n");
     output("//\n");
@@ -143,34 +144,32 @@ public class _PovrayExporter extends _Exporter {
         + "  roughness .00001\n  metallic\n  phong 0.9\n  phong_size 120\n}}"
         + "\n\n");
 
-    output("#declare boundBox = "
-        + "  box {<0,0," + slabZ + ">,<Width,Height," + depthZ + ">}\n"
-        + "#declare boundBoxslabZ = " + slabZ + ";\n"
-        + "#declare boundBoxdepthZ = " + depthZ + ";\n\n");
+    output("#declare slabZ = " + slabZ + ";\n"
+        + "#declare depthZ = " + depthZ + ";\n\n");
     
     output("#macro clip()\n"
-        + "  clipped_by { box {<0,0," + slabZ + ">,<Width,Height," + depthZ + ">}}\n"
+        + "  clipped_by { box {<0,0,slabZ>,<Width,Height,depthZ>} }\n"
         + "#end\n\n");
 
     output("#macro circleCap(Z,RADIUS,R,G,B,T)\n"
         + "// cap for lower clip\n"
-        + " #local cutDiff = Z - boundBoxslabZ;\n"
+        + " #local cutDiff = Z - slabZ;\n"
         + " #local cutRadius2 = (RADIUS*RADIUS) - (cutDiff*cutDiff);\n"
         + " #if (cutRadius2 > 0)\n"
         + "  #local cutRadius = sqrt(cutRadius2);\n"
-        + "  cylinder{<X,Y,boundBoxslabZ>,"
-        + "<X,Y,(boundBoxslabZ-(boundBoxslabZ/Z))>,cutRadius\n"
+        + "  cylinder{<X,Y,slabZ>,"
+        + "<X,Y,(slabZ-(slabZ/Z))>,cutRadius\n"
         + "   pigment{rgbt<R,G,B,T>}\n"
         + "   translucentFinish(T)\n"
         + "   no_shadow}\n"
         + " #end\n"
         + "// cap for upper clip\n"
-        + " #declare cutDiff = Z - boundBoxdepthZ;\n"
+        + " #declare cutDiff = Z - depthZ;\n"
         + " #declare cutRadius2 = (RADIUS*RADIUS) - (cutDiff*cutDiff);\n"
         + " #if (cutRadius2 > 0)\n"
         + "  #local cutRadius = sqrt(cutRadius2);\n"
-        + "  cylinder{<X,Y,boundBoxdepthZ>,"
-        + "<X,Y,(boundBoxdepthZ+(boundBoxdepthZ/Z))>,cutRadius\n"
+        + "  cylinder{<X,Y,depthZ>,"
+        + "<X,Y,(depthZ+(depthZ/Z))>,cutRadius\n"
         + "   pigment{rgbt<R,G,B,T>}\n"
         + "   translucentFinish(T)\n"
         + "   no_shadow}\n"
@@ -214,7 +213,7 @@ public class _PovrayExporter extends _Exporter {
         + "  translucentFinish(T)\n"
         + "  clip()\n"
         + "  no_shadow}\n"
-        + " circleCap(Z,RADIUS,R,G,B,T)\n"
+        + (isSlabEnabled? " circleCap(Z,RADIUS,R,G,B,T)\n" : "")
         + "#end\n\n");
   }
 
@@ -238,7 +237,7 @@ public class _PovrayExporter extends _Exporter {
         + "  translucentFinish(T)\n"
         + "  clip()\n"
         + "  no_shadow}\n" 
-        + " circleCap(Z,RADIUS,R,G,B,T)\n"
+        + (isSlabEnabled? " circleCap(Z,RADIUS,R,G,B,T)\n" : "")
         + "#end\n\n");
   }
 

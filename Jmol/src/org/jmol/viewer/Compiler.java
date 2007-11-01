@@ -808,7 +808,7 @@ class Compiler {
           } else if (nTokens == 2 && tok == Token.opEQ) {
             // we are looking at @x =.... just insert a SET command
             // and ignore the =. It's the same as set @x ... 
-            ltoken.insertElementAt(Token.getTokenFromName("set"), 0);
+            ltoken.insertElementAt(Token.tokenSet, 0);
             continue;
           } else {
             // we are looking at the expression

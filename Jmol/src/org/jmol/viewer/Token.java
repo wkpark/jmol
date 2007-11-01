@@ -44,7 +44,7 @@ public class Token {
 
   public int tok;
   public Object value;
-  int intValue = Integer.MAX_VALUE;
+  public int intValue = Integer.MAX_VALUE;
 
   Token(int tok, int intValue, Object value) {
     this.tok = tok;
@@ -52,13 +52,20 @@ public class Token {
     this.value = value;
   }
 
-  Token(int tok, int intValue) {
-    this.tok = tok;
-    this.intValue = intValue;
+  final public static Token intToken(int intValue) {
+    return new Token(integer, intValue);
   }
 
-  Token(int tok) {
+  //next two are private so that ALL tokens are either
+  //integer tokens or have a value that is (more likely to be) non-null
+  //null token values can cause problems in Eval.statementAsString()
+  private Token(int tok) {
     this.tok = tok;
+  }
+
+  private Token(int tok, int intValue) {
+    this.tok = tok;
+    this.intValue = intValue;
   }
 
   public Token(int tok, Object value) {
@@ -690,8 +697,7 @@ public class Token {
     }
     int len = 0;
     int n = 0;
-    Token tokenOut = new Token(tokenIn.tok);
-    tokenOut.intValue = Integer.MAX_VALUE;
+    Token tokenOut = new Token(tokenIn.tok, Integer.MAX_VALUE);
     switch (tokenIn.tok) {
     case Token.bitset:
       bs = BitSetUtil.copy((BitSet) tokenIn.value);
@@ -857,6 +863,7 @@ public class Token {
   final static Token tokenDivide = new Token(divide, "/");
 
   final static Token tokenLeftParen = new Token(leftparen, "(");
+  final static Token tokenRightParen = new Token(rightparen, ")");
   final static Token tokenArraySelector = new Token(leftsquare, "[");
  
   final static Token tokenExpressionBegin = new Token(expressionBegin, "expressionBegin");
@@ -1089,7 +1096,7 @@ public class Token {
 
     // atom expressions
     "(",            tokenLeftParen,
-    ")",            new Token(rightparen),
+    ")",            tokenRightParen,
     "and",          tokenAnd,
     "&",            null,
     "&&",           null,
@@ -1179,8 +1186,8 @@ public class Token {
     "normal",       new Token(normal),
     "rasmol",       new Token(rasmol),
     "torsion",      new Token(torsion),
-    "coords",       new Token(coord),
-    "coord",        null,
+    "coord",        new Token(coord),
+    "coords",       null,
     "shapely",      new Token(shapely),
 
     "amino",        new Token(amino),
@@ -1279,7 +1286,12 @@ public class Token {
     
   };
 
-  static Hashtable map = new Hashtable();
+  private static Hashtable map = new Hashtable();
+  
+  public static void addToken(String ident, Token token) {
+    map.put(ident, token);
+  }
+  
   static {
     Token tokenLast = null;
     String stringThis;

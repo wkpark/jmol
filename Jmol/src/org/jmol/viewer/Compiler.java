@@ -443,7 +443,7 @@ class Compiler {
                 || strFormat.equals("menu"))
               addTokenToPrefix(new Token(Token.identifier, strFormat));
             else if (strFormat.equals("trajectory"))
-              addTokenToPrefix(new Token(Token.trajectory));
+              addTokenToPrefix(Token.getTokenFromName(strFormat));
             else if (strFormat.indexOf("=") == 0) {
               addTokenToPrefix(new Token(Token.string, strFormat));
             }
@@ -565,14 +565,12 @@ class Compiler {
         // if an identifier is a single character long, then
         // allocate a new Token with the original character preserved
         if (ident.length() == 1) {
-          if ((token = (Token) Token.map.get(ident)) == null) {
-            String lowerCaseIdent = ident.toLowerCase();
-            if ((token = (Token) Token.map.get(lowerCaseIdent)) != null)
-              token = new Token(token.tok, token.intValue, ident);
-          }
+          if ((token = Token.getTokenFromName(ident)) == null
+              && (token = Token.getTokenFromName(ident.toLowerCase())) != null)
+            token = new Token(token.tok, token.intValue, ident);
         } else {
           ident = ident.toLowerCase();
-          token = (Token) Token.map.get(ident);
+          token = Token.getTokenFromName(ident);
         }
         if (token == null) {
           if (ident.indexOf("property_") == 0)
@@ -804,7 +802,7 @@ class Compiler {
                         + token
                         + "not all commands may continue to be functional for the life of the applet!");
                 tok = token.tok = Token.identifier;
-                Token.map.put(ident, token);
+                Token.addToken(ident, token);
               }
             }
           } else if (nTokens == 2 && tok == Token.opEQ) {
@@ -1579,10 +1577,6 @@ class Compiler {
     return 0;
   }
 
-  private boolean addTokenToPostfix(int tok) {
-    return addTokenToPostfix(new Token(tok));
-  }
-
   private boolean addTokenToPostfix(int tok, Object value) {
     return addTokenToPostfix(new Token(tok, value));
   }
@@ -1866,8 +1860,7 @@ class Compiler {
       if (!addNextTokenIf(Token.comma))
         break;
       int tok = tokPeek();
-      if (distance != Float.MAX_VALUE && 
-          (tok == Token.on || tok == Token.off)) {
+      if (distance != Float.MAX_VALUE && (tok == Token.on || tok == Token.off)) {
         addTokenToPostfix(getToken());
         if (!addNextTokenIf(Token.comma))
           break;
@@ -1882,12 +1875,6 @@ class Compiler {
           if (key.equals("hkl")) {
             isCoordOrPlane = true;
             addTokenToPostfix(Token.string, key);
-          } else if (key.equals("coord")) {
-            isCoordOrPlane = true;
-            addTokenToPostfix(Token.coord);
-          } else if (key.equals("plane")) {
-            isCoordOrPlane = true;
-            addTokenToPostfix(Token.plane);
           } else {
             returnToken();
           }
@@ -1897,7 +1884,8 @@ class Compiler {
         } else if (tok == Token.leftbrace) {
           returnToken();
           isCoordOrPlane = true;
-          addTokenToPostfix(Token.coord);
+          addTokenToPostfix(Token
+              .getTokenFromName(distance == Float.MAX_VALUE ? "plane" : "coord"));
         }
       }
       addNextTokenIf(Token.comma);
@@ -1932,8 +1920,8 @@ class Compiler {
   private boolean clauseConnected() {
     // connected (1,3, single, .....)
     if (!addNextTokenIf(Token.leftparen)) {
-      addTokenToPostfix(Token.leftparen);
-      addTokenToPostfix(Token.rightparen);
+      addTokenToPostfix(Token.tokenLeftParen);
+      addTokenToPostfix(Token.tokenRightParen);
       return true;
     }
     while (true) {

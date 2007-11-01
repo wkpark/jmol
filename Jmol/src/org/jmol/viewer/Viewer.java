@@ -4270,7 +4270,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isJmol) {
       global.setParameterValue(key, value);      
     } else {
-      global.setUserParameterValue(key, new Token(Token.integer, value));
+      global.setUserParameterValue(key, Token.intToken(value));
     }
   }
 

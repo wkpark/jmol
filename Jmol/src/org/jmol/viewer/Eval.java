@@ -6516,8 +6516,7 @@ class Eval { //implements Runnable {
       return true;
     } 
     
-    //considering enabling this
-   if (false && parameterAsString(0).equals("set") 
+   if (parameterAsString(0).equals("set") 
        && !viewer.isJmolVariable(key)) {
      iToken = 1;
      unrecognizedParameter("SET", key);
@@ -6569,7 +6568,7 @@ class Eval { //implements Runnable {
         break;
       case Token.spec_seqcode:
       case Token.integer:
-        rpn.addX(new Token(Token.integer, theToken.intValue));
+        rpn.addX(Token.intToken(theToken.intValue));
         break;
       case Token.dollarsign:
         rpn.addX(new Token(Token.point3f, centerParameter(i)));
@@ -6642,7 +6641,7 @@ class Eval { //implements Runnable {
           rpn.addX(((Boolean) v).booleanValue() ? Token.tokenOn
               : Token.tokenOff);
         } else if (v instanceof Integer) {
-          rpn.addX(new Token(Token.integer, ((Integer) v).intValue()));
+          rpn.addX(Token.intToken(((Integer) v).intValue()));
         } else if (v instanceof Float) {
           rpn.addX(new Token(Token.decimal, v));
         } else if (v instanceof String) {
@@ -10212,7 +10211,9 @@ class Eval { //implements Runnable {
         sb.append(token.toString());
         continue;
       }
-      sb.append(token.value.toString());
+      if (token.value != null) 
+        // value SHOULD NEVER BE NULL, BUT JUST IN CASE...
+        sb.append(token.value.toString());
     }
     if (iToken >= statementLength - 1)
       sb.append(" <<");
@@ -10330,7 +10331,7 @@ class Eval { //implements Runnable {
         stackOverflow();
       if (wasX && x.tok == Token.integer && x.intValue < 0) {
         addOp(Token.tokenMinus);
-        xStack[++xPt] = new Token(Token.integer, -x.intValue);
+        xStack[++xPt] = Token.intToken(-x.intValue);
       } else if (wasX && x.tok == Token.decimal
           && ((Float) x.value).floatValue() < 0) {
         addOp(Token.tokenMinus);
@@ -10371,7 +10372,7 @@ class Eval { //implements Runnable {
     boolean addX(int x) throws ScriptException {
       if (++xPt == maxLevel)
         stackOverflow();
-      xStack[xPt] = new Token(Token.integer, x, new Integer(x));
+      xStack[xPt] = Token.intToken(x);
       return wasX = true;
     }
 
@@ -11130,8 +11131,6 @@ class Eval { //implements Runnable {
         if (!Parser.isOneOf(withinStr, "on;off;plane;hkl;coord"))
           return false;
       }
-      if (isSyntaxCheck)
-        return addX(bs);
       Point3f pt = null;
       Point4f plane = null;
       i = args.length - 1;

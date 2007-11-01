@@ -1904,6 +1904,11 @@ class Compiler {
               return commaOrCloseExpected();
             addTokenToPostfix(Token.tokenExpressionEnd);
             break;
+          case Token.define:
+            addTokenToPostfix(getToken());
+            if (!clauseDefine())
+              return false;
+            break;
           default:
             addTokenToPostfix(getToken());
           }

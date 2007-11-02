@@ -145,7 +145,10 @@ public class _PovrayExporter extends _Exporter {
         + "\n\n");
 
     output("#declare slabZ = " + slabZ + ";\n"
-        + "#declare depthZ = " + depthZ + ";\n\n");
+        + "#declare depthZ = " + depthZ + ";\n"
+        + "#declare dzSlab = 10;\n"
+        + "#declare dzDepth = dzSlab;\n"
+        + "#declare dzStep = 0.001;\n\n");
     
     output("#macro clip()\n"
         + "  clipped_by { box {<0,0,slabZ>,<Width,Height,depthZ>} }\n"
@@ -157,8 +160,11 @@ public class _PovrayExporter extends _Exporter {
         + " #local cutRadius2 = (RADIUS*RADIUS) - (cutDiff*cutDiff);\n"
         + " #if (cutRadius2 > 0)\n"
         + "  #local cutRadius = sqrt(cutRadius2);\n"
-        + "  cylinder{<X,Y,slabZ>,"
-        + "<X,Y,(slabZ-(slabZ/Z))>,cutRadius\n"
+        + "  #if (dzSlab > 0)\n" 
+        + "   #declare dzSlab = dzSlab - dzStep;\n"
+        + "  #end\n"
+        + "  cylinder{<X,Y,slabZ-dzSlab>,"
+        + "<X,Y,(slabZ+1)>,cutRadius\n"
         + "   pigment{rgbt<R,G,B,T>}\n"
         + "   translucentFinish(T)\n"
         + "   no_shadow}\n"
@@ -168,8 +174,11 @@ public class _PovrayExporter extends _Exporter {
         + " #declare cutRadius2 = (RADIUS*RADIUS) - (cutDiff*cutDiff);\n"
         + " #if (cutRadius2 > 0)\n"
         + "  #local cutRadius = sqrt(cutRadius2);\n"
-        + "  cylinder{<X,Y,depthZ>,"
-        + "<X,Y,(depthZ+(depthZ/Z))>,cutRadius\n"
+        + "  #if (dzDepth > 0)\n"
+        + "   #declare dzDepth = dzDepth + dzStep;\n"
+        + "  #end\n"
+        + "  cylinder{<X,Y,depthZ+dzDepth>,"
+        + "<X,Y,(depthZ-1)>,cutRadius\n"
         + "   pigment{rgbt<R,G,B,T>}\n"
         + "   translucentFinish(T)\n"
         + "   no_shadow}\n"

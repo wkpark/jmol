@@ -493,33 +493,33 @@ abstract public class AtomCollection {
   }
 
   public void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
-    Point3f xyz = (xyzValues instanceof Point3f ? (Point3f) xyzValues : null);
-    String[] values = (xyzValues instanceof String[] ? (String[]) xyzValues : null);
-    int nValues = (values == null ? Integer.MAX_VALUE : values.length);
-    if (xyz == null && values == null || nValues == 0)
+    Point3f xyz = null;
+    Point3f[] values = null;
+    if (xyzValues instanceof Point3f)
+      xyz = (Point3f) xyzValues;
+    else
+      values = (Point3f[]) xyzValues;
+    if (xyz == null && (values == null || values.length == 0))
       return;
     int n = 0;
     int atomCount = getAtomCount();
-    for (int i = 0; i < atomCount; i++)
-      if (bs.get(i) && n < nValues) {
-        if (values != null) {
-          Object o = Escape.unescapePoint(values[n++]);
-          if (!(o instanceof Point3f))
-            break;
-          xyz = (Point3f) o;
-        }
-        switch (tokType) {
-        case Token.xyz:
-          setAtomCoord(i, xyz.x, xyz.y, xyz.z);
-          break;
-        case Token.fracXyz:
-          setAtomCoordFractional(i, xyz);
-          break;
-        case Token.vibXyz:
-          setAtomVibrationVector(i, xyz.x, xyz.y, xyz.z);
-          break;
-        }
+    for (int i = 0; i < atomCount; i++) {
+      if (!bs.get(i))
+        continue;
+      if (values != null && n < values.length)
+        xyz = values[n++];
+      switch (tokType) {
+      case Token.xyz:
+        setAtomCoord(i, xyz.x, xyz.y, xyz.z);
+        break;
+      case Token.fracXyz:
+        setAtomCoordFractional(i, xyz);
+        break;
+      case Token.vibXyz:
+        setAtomVibrationVector(i, xyz.x, xyz.y, xyz.z);
+        break;
       }
+    }
   }
 
   public void setAtomVibrationVector(int atomIndex, float x, float y, float z) {
@@ -563,10 +563,17 @@ abstract public class AtomCollection {
         setAtomCoordRelative(i, x, y, z);
   }
 
-  public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue) {
-    for (int i = atomCount; --i >= 0;) {
+  public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue, String[] values) {
+    int n = -1;
+    if (values != null && values.length == 0)
+      return;
+    for (int i = 0; i < atomCount; i++) {
       if (!bs.get(i))
         continue;
+      if (values != null && ++n < values.length) {
+        iValue = Parser.parseInt(values[n]);
+        fValue = Parser.parseFloat(values[n]);
+      }
       Atom atom = atoms[i];
       switch (tok) {
       case Token.atomX:

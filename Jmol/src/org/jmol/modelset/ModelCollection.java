@@ -138,8 +138,8 @@ abstract public class ModelCollection extends BondCollection {
 
   ////////////////////////////////////////////
 
-  public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue) {
-    super.setAtomProperty(bs, tok, iValue, fValue);
+  public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue, String[] values) {
+    super.setAtomProperty(bs, tok, iValue, fValue, values);
     if ((tok == Token.valence || tok == Token.formalCharge)
         && viewer.getSmartAromatic())
       assignAromaticBonds();

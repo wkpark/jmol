@@ -5755,8 +5755,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.setAtomCoord(atomIndex, x, y, z);
   }
 
-  void setAtomProperty(BitSet bs, int tok, int iValue, float fValue) {
-    modelSet.setAtomProperty(bs, tok, iValue, fValue);
+  void setAtomProperty(BitSet bs, int tok, int iValue, float fValue, String[] values) {
+    modelSet.setAtomProperty(bs, tok, iValue, fValue, values);
   }
  
   void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {

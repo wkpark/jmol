@@ -148,6 +148,8 @@ class Eval { //implements Runnable {
   }
   
   private Token getContextVariableAsToken(String var) {
+    if (var.equals("expressionBegin"))
+      return null;
     if (contextVariables != null && contextVariables.containsKey(var))
       return (Token) contextVariables.get(var);
     for (int i = scriptLevel; --i >= 0; )
@@ -7183,24 +7185,57 @@ class Eval { //implements Runnable {
   }
 
   private void setBitsetProperty(BitSet bs, int tok, int iValue,
-                                    float fValue, Token tokenValue) {
+                                    float fValue, Token tokenValue) throws ScriptException {
     if (isSyntaxCheck || BitSetUtil.cardinalityOf(bs) == 0)
       return;
+    String[] list;
     switch (tok) {
     case Token.xyz:
     case Token.fracXyz:
     case Token.vibXyz:
-      viewer.setAtomCoord(bs, tok, tokenValue.value);
+      if (tokenValue.tok == Token.point3f) {
+        viewer.setAtomCoord(bs, tok, tokenValue.value);
+      } else if (tokenValue.tok == Token.list) {
+        list = (String[]) tokenValue.value;
+        int nValues = list.length;
+        if (nValues == 0)
+          return;
+        Point3f[] values = new Point3f[nValues];
+        for (int i = nValues; --i >= 0;) {
+          Object o = Escape.unescapePoint(list[i]);
+          if (!(o instanceof Point3f))
+            unrecognizedParameter("ARRAY", list[i]);
+          values[i] = (Point3f) o;
+        }
+        viewer.setAtomCoord(bs, tok, values);
+      }
       break;
     case Token.color:
       if (tokenValue.tok == Token.point3f)
         iValue = colorPtToInt((Point3f)tokenValue.value);
+      else if (tokenValue.tok == Token.list) {
+        list = (String[]) tokenValue.value;
+        int[]values = new int[list.length];
+        for (int i = list.length; --i >= 0; ) {
+          Object pt = Escape.unescapePoint(list[i]);
+          if (pt instanceof Point3f)
+            values[i] = colorPtToInt((Point3f) pt);
+          else 
+            values[i] = Graphics3D.getArgbFromString(list[i]);  
+          if (values[i] == 0 
+              && (values[i] = Parser.parseInt(list[i])) == Integer.MIN_VALUE)
+            unrecognizedParameter("ARRAY", list[i]);
+        }
+        viewer.setShapeProperty(JmolConstants.SHAPE_BALLS, "colorValues", 
+            values, bs);
+        break;
+      }
       viewer.setShapeProperty(JmolConstants.SHAPE_BALLS, "color", 
           tokenValue.tok == Token.string ? tokenValue.value 
               : new Integer(iValue), bs);
       break;
     default:
-      viewer.setAtomProperty(bs, tok, iValue, fValue);
+      viewer.setAtomProperty(bs, tok, iValue, fValue, tokenValue.tok == Token.list ? (String[]) tokenValue.value : null);
     }
   }
 

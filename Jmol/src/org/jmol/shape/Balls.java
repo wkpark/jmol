@@ -35,7 +35,7 @@ import java.util.Hashtable;
 
 public class Balls extends AtomShape {
   
- public void setSize(int size, BitSet bsSelected) {
+  public void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
     isActive = true;
     if (bsSizeSet == null)
@@ -50,7 +50,7 @@ public class Balls extends AtomShape {
     }
   }
 
- public void setProperty(String propertyName, Object value, BitSet bs) {
+  public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("color" == propertyName) {
       short colix = Graphics3D.getColix(value);
       if (colix == Graphics3D.INHERIT_ALL)
@@ -60,6 +60,30 @@ public class Balls extends AtomShape {
       byte pid = JmolConstants.pidOf(value);
       for (int i = atomCount; --i >= 0;)
         if (bs.get(i)) {
+          Atom atom = atoms[i];
+          atom.setColixAtom(setColix(colix, pid, atom));
+          bsColixSet.set(i, colix != Graphics3D.USE_PALETTE
+              || pid != JmolConstants.PALETTE_NONE);
+          atom.setPaletteID(pid);
+        }
+      return;
+    }
+    if ("colorValues" == propertyName) {
+      int[] values = (int[]) value;
+      if (values.length == 0)
+        return;
+      if (bsColixSet == null)
+        bsColixSet = new BitSet();
+      int n = 0;
+      Integer color = null;
+      for (int i = 0; i < atomCount; i++)
+        if (bs.get(i)) {
+          if (n < values.length)
+            color = new Integer(values[n++]);
+          short colix = Graphics3D.getColix(color);
+          if (colix == Graphics3D.INHERIT_ALL)
+            colix = Graphics3D.USE_PALETTE;
+          byte pid = JmolConstants.pidOf(color);
           Atom atom = atoms[i];
           atom.setColixAtom(setColix(colix, pid, atom));
           bsColixSet.set(i, colix != Graphics3D.USE_PALETTE
@@ -81,7 +105,7 @@ public class Balls extends AtomShape {
       return;
     }
     super.setProperty(propertyName, value, bs);
-  }
+ }
 
  public void setModelClickability() {
     for (int i = atomCount; --i >= 0;) {

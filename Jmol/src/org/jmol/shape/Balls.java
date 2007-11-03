@@ -78,8 +78,9 @@ public class Balls extends AtomShape {
       Integer color = null;
       for (int i = 0; i < atomCount; i++)
         if (bs.get(i)) {
-          if (n < values.length)
-            color = new Integer(values[n++]);
+          if (n >= values.length)
+            return;
+          color = new Integer(values[n++]);
           short colix = Graphics3D.getColix(color);
           if (colix == Graphics3D.INHERIT_ALL)
             colix = Graphics3D.USE_PALETTE;

@@ -2066,27 +2066,20 @@ class Compiler {
   }
 
   private boolean clauseDefine() {
-    if (!addSubstituteTokenIf(Token.leftbrace, Token.tokenExpressionBegin)) {
-      addNextToken();
-      return true;
-    }
+    // we allow @x[1], which compiles as {@x}[1], not @{x[1]}
+    // otherwise [1] gets read as a general atom name selector
+    if (!addSubstituteTokenIf(Token.leftbrace, Token.tokenExpressionBegin))
+      return addNextToken() && checkForMath();
     while (moreTokens() && !tokPeek(Token.rightbrace)) {
       if (tokPeek(Token.leftbrace)) {
-         if (!checkForCoordinate(true))
-        return false;
-/*
-      if (addSubstituteTokenIf(Token.leftbrace, Token.tokenExpressionBegin)) {
-        if (!clauseOr(false))
+        if (!checkForCoordinate(true))
           return false;
-        if (lastToken != Token.tokenCoordinateEnd
-            && !addSubstituteTokenIf(Token.rightbrace, Token.tokenExpressionEnd))
-          return false;
-*/      } else {
+      } else {
         addNextToken();
       }
-
     }
-    return addSubstituteTokenIf(Token.rightbrace, Token.tokenExpressionEnd);
+    return addSubstituteTokenIf(Token.rightbrace, Token.tokenExpressionEnd)
+        && checkForMath();
   }
 
   private boolean residueSpecCodeGenerated;

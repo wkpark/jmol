@@ -506,8 +506,11 @@ abstract public class AtomCollection {
     for (int i = 0; i < atomCount; i++) {
       if (!bs.get(i))
         continue;
-      if (values != null && n < values.length)
+      if (values != null) { 
+        if (n >= values.length)
+          return;
         xyz = values[n++];
+      }
       switch (tokType) {
       case Token.xyz:
         setAtomCoord(i, xyz.x, xyz.y, xyz.z);
@@ -563,16 +566,18 @@ abstract public class AtomCollection {
         setAtomCoordRelative(i, x, y, z);
   }
 
-  public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue, String[] values) {
-    int n = -1;
+  public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue, float[] values) {
+    int n = 0;
     if (values != null && values.length == 0)
       return;
     for (int i = 0; i < atomCount; i++) {
       if (!bs.get(i))
         continue;
-      if (values != null && ++n < values.length) {
-        iValue = Parser.parseInt(values[n]);
-        fValue = Parser.parseFloat(values[n]);
+      if (values != null) {
+        if (n >= values.length)
+          return;
+        fValue = values[n++];
+        iValue = (int) fValue;
       }
       Atom atom = atoms[i];
       switch (tok) {

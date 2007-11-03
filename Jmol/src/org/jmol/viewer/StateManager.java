@@ -723,15 +723,6 @@ public class StateManager {
       setParameterValue("_atomhovered", -1);
     }
 
-    void removeParameter(String key) {
-      if (htPropertyFlags.containsKey(key)) {
-        htPropertyFlags.remove(key);
-        return;
-      }
-      if (htParameterValues.containsKey(key))
-          htParameterValues.remove(key);
-    }
-
     void setParameterValue(String name, boolean value) {
       name = name.toLowerCase();
       if (htParameterValues.containsKey(name))
@@ -765,8 +756,17 @@ public class StateManager {
       htParameterValues.put(name, value);
     }
     
+    void removeJmolParameter(String key) {
+      if (htPropertyFlags.containsKey(key)) {
+        htPropertyFlags.remove(key);
+        return;
+      }
+      if (htParameterValues.containsKey(key))
+          htParameterValues.remove(key);
+    }
+
     Hashtable htUserVariables = new Hashtable();
-    void setUserParameterValue(String key, Token value) {
+    void setUserVariable(String key, Token value) {
       key = key.toLowerCase();
       if (value == null) {
         if (key.equals("all")) {
@@ -779,6 +779,10 @@ public class StateManager {
         return;
       }
       htUserVariables.put(key, value);
+    }
+    
+    void removeUserVariable(String key) {
+      htUserVariables.remove(key);  
     }
     
     Object getUserParameterValue(String key) {

@@ -3782,7 +3782,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void unsetProperty(String name) {
-    global.setUserParameterValue(name, null);
+    global.setUserVariable(name, null);
   }
 
   public boolean getBooleanProperty(String key) {
@@ -4016,9 +4016,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isJmol)
       global.setParameterValue(key, value);
     else
-      global.setUserParameterValue(key, new Token(Token.string, value));
+      global.setUserVariable(key, new Token(Token.string, value));
   }
 
+  void removeUserVariable(String key) {
+    global.removeUserVariable(key);
+  }
+  
   boolean isJmolVariable(String key) {
     return global.isJmolVariable(key);
   }
@@ -4144,7 +4148,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isJmol)
       global.setParameterValue(key, value);
     else
-      global.setUserParameterValue(key, new Token(Token.decimal, new Float(value)));
+      global.setUserVariable(key, new Token(Token.decimal, new Float(value)));
     return true;
   }
 
@@ -4270,7 +4274,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isJmol) {
       global.setParameterValue(key, value);      
     } else {
-      global.setUserParameterValue(key, Token.intToken(value));
+      global.setUserVariable(key, Token.intToken(value));
     }
   }
 
@@ -4646,7 +4650,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isJmol)
       global.setParameterValue(key, value);
     else
-      global.setUserParameterValue(key, value ? Token.tokenOn : Token.tokenOff);
+      global.setUserVariable(key, value ? Token.tokenOn : Token.tokenOff);
     if (notFound)
       return false;
     if (doRepaint) {
@@ -4860,8 +4864,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.axesMode = (TF ? JmolConstants.AXES_MODE_MOLECULAR
         : JmolConstants.AXES_MODE_BOUNDBOX);
     axesAreTainted = true;
-    global.removeParameter("axesunitcell");
-    global.removeParameter(TF ? "axeswindow" : "axesmolecular");
+    global.removeJmolParameter("axesunitcell");
+    global.removeJmolParameter(TF ? "axeswindow" : "axesmolecular");
   }
 
   void setAxesModeUnitCell(boolean TF) {
@@ -4870,8 +4874,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.axesMode = (TF ? JmolConstants.AXES_MODE_UNITCELL
         : JmolConstants.AXES_MODE_BOUNDBOX);
     axesAreTainted = true;
-    global.removeParameter("axesmolecular");
-    global.removeParameter(TF ? "axeswindow" : "axesunitcell");
+    global.removeJmolParameter("axesmolecular");
+    global.removeJmolParameter(TF ? "axeswindow" : "axesunitcell");
   }
 
   public int getAxesMode() {
@@ -5755,7 +5759,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.setAtomCoord(atomIndex, x, y, z);
   }
 
-  void setAtomProperty(BitSet bs, int tok, int iValue, float fValue, String[] values) {
+  void setAtomProperty(BitSet bs, int tok, int iValue, float fValue, float[] values) {
     modelSet.setAtomProperty(bs, tok, iValue, fValue, values);
   }
  

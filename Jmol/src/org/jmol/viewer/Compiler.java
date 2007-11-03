@@ -1724,7 +1724,7 @@ class Compiler {
         return false;
       if (!addNextTokenIf(Token.rightparen))
         return rightParenthesisExpected();
-      return checkForMath();
+      return checkForItemSelector();
     case Token.leftbrace:
       return checkForCoordinate(isImplicitExpression);
     }
@@ -1787,23 +1787,16 @@ class Compiler {
       tokenNext();
     else
       addNextToken();
-    return checkForMath();
+    return checkForItemSelector();
   }
   
-  private boolean checkForMath() {
+  private boolean checkForItemSelector() {
+    // {x[1]}  @{x}[1][3]  (atomno=3)[2][5]
     for (int i = 0; i < 2; i++) {
       if (!addNextTokenIf(Token.leftsquare))
         break;
       if (!clauseItemSelector())
         return false;
-      if (addNextTokenIf(Token.comma)) {
-        if (!clauseItemSelector())
-          return false;
-        if (!addNextTokenIf(Token.comma))
-          return false;
-        if (!clauseItemSelector())
-          return false;        
-      }
       if (!addNextTokenIf(Token.rightsquare))
         return rightBracketExpected();
     }
@@ -2069,7 +2062,7 @@ class Compiler {
     // we allow @x[1], which compiles as {@x}[1], not @{x[1]}
     // otherwise [1] gets read as a general atom name selector
     if (!addSubstituteTokenIf(Token.leftbrace, Token.tokenExpressionBegin))
-      return addNextToken() && checkForMath();
+      return addNextToken() && checkForItemSelector();
     while (moreTokens() && !tokPeek(Token.rightbrace)) {
       if (tokPeek(Token.leftbrace)) {
         if (!checkForCoordinate(true))
@@ -2079,7 +2072,7 @@ class Compiler {
       }
     }
     return addSubstituteTokenIf(Token.rightbrace, Token.tokenExpressionEnd)
-        && checkForMath();
+        && checkForItemSelector();
   }
 
   private boolean residueSpecCodeGenerated;

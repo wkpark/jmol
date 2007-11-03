@@ -256,8 +256,7 @@ class Eval { //implements Runnable {
     this.historyDisabled = historyDisabled;
     try {
       instructionDispatchLoop(false);
-    } catch (ScriptException e) {
-      error = true;
+    } catch (ScriptException e) {      error = true;
       setErrorMessage(e.toString());
       scriptStatus(errorMessage);
     }
@@ -10537,10 +10536,8 @@ class Eval { //implements Runnable {
           return false;
         oStack[oPt].intValue |= op.tok;
         return true;
-      case Token.leftsquare: // two contexts: [x x].distance or {....}[n]
-        isLeftOp = true;//!wasX;
-        //if (isLeftOp)
-        //op = newOp = new Token(Token.leftsquare, 0, "[");
+      case Token.leftsquare: // {....}[n][m]
+        isLeftOp = true;
         break;
       case Token.minus:
         if (wasX)

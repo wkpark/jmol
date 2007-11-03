@@ -3871,7 +3871,7 @@ class Eval { //implements Runnable {
       for (int i = statementLength; --i >= 0;)
         code[i] = statement[i];
       variables.put("!" + variable.substring(8), code);
-      viewer.addStateScript(thisCommand);
+      viewer.addStateScript(thisCommand, false);
     } else {
       assignBitsetVariable(variable, bs);
     }
@@ -4162,49 +4162,45 @@ class Eval { //implements Runnable {
     }
     if (isSyntaxCheck) //just in case we later add parameter options to this
       return;
-    BitSet bs = viewer.getSelectedAtoms();
-    int firstAtom = BitSetUtil.firstSetBit(bs);
-    if (firstAtom < 0)
-      return;
     //for now, just one frame visible
-    int modelIndex = viewer.getAtomModelIndex(firstAtom);
-    int ptDataFrame = viewer.getPtJmolDataFrame(type + ":" + modelIndex);
+    int modelIndex = viewer.getCurrentModelIndex();
+    if (modelIndex < 0)
+      multipleModelsNotOK(type);
+    int ptDataFrame = viewer.getJmolDataFrameIndex(modelIndex, type);
     if (ptDataFrame > 0) {
-      viewer.setCurrentModelIndex(-1);
-      BitSet bs2 = viewer.getModelAtomBitSet(ptDataFrame);
-      bs2.and(bs);
+      // data frame can't be 0.
+      viewer.setCurrentModelIndex(ptDataFrame, true);
+//      BitSet bs2 = viewer.getModelAtomBitSet(ptDataFrame);
+  //    bs2.and(bs);
       //need to be able to set data directly as well.
-      viewer.display(BitSetUtil.setAll(viewer.getAtomCount()), bs2, tQuiet);
+    //  viewer.display(BitSetUtil.setAll(viewer.getAtomCount()), bs2, tQuiet);
       return;
     }
+    String script;
     switch (datatype) {
     case JmolConstants.JMOL_DATA_RAMACHANDRAN:
-      loadPdbDataWithScript(modelIndex,
-          type,
-          "frame 0.0; frame last; reset; center {0 0 0};zoomTo 0 (visible) 0;"
-              + "select visible; color structure; select *;"
-              + "draw ramaAxisX%N% {-10 0 0} {10 0 0};draw ramaAxisY%N% {0 -10 0} {0 10 0};");
+    default:
+      script = "frame 0.0; frame last; reset; center {0 0 0};"
+          + "select visible; color structure; select *;"
+          + "draw ramaAxisX%N% {20 0 0} {-20 0 0} \"phi\";"
+          + "draw ramaAxisY%N% {0 20 0} {0 -20 0} \"psi\";";
       break;
-    case JmolConstants.JMOL_DATA_QUATERNION:
-      loadPdbDataWithScript(modelIndex,
-          type,
-          "frame 0.0; frame last; reset; center {0 0 0};zoomTo 0 (visible) 0;"
-              + "select visible; trace 0.1; color trace structure; select *;"
-              + "isosurface quatSphere%N% resolution 1.0 sphere 10.0 mesh nofill translucent 0.8;");
+    case JmolConstants.JMOL_DATA_QUATERNION:  
+      script = "frame 0.0; frame last; reset; center {0 0 0};"
+          + "select visible; trace 0.1; color trace structure; select *;"
+          + "isosurface quatSphere%N% resolution 1.0 sphere 10.0 mesh nofill translucent 0.8;";
       break;
     }
-  }
-
-  private void loadPdbDataWithScript(int modelIndex, String type, String script)
-      throws ScriptException {
     String[] savedFileInfo = viewer.getFileInfo();
-    boolean isOK = viewer.loadInline(viewer.getPdbData(type), '\n', true);
+    boolean isOK = viewer.loadInline(viewer.getPdbData(modelIndex, type), '\n', true);
     viewer.setFileInfo(savedFileInfo);
     if (!isOK)
       return;
     int modelCount = viewer.getModelCount();
     runScript(TextFormat.simpleReplace(script, "%N%", "" + modelCount));
-    viewer.setPtJmolDataFrame(type, modelIndex);
+    viewer.setJmolDataFrame(type, modelIndex, modelCount - 1);
+    viewer.addStateScript("frame " + viewer.getModelNumberDotted(modelIndex) 
+        + "; " + type + ";", false);
     showString("frame " + viewer.getModelName(-modelCount) + " created: "
         + type);
   }
@@ -5443,15 +5439,16 @@ class Eval { //implements Runnable {
     if (statementLength == 1) {
       bsConfigurations = viewer.setConformation();
       viewer
-          .addStateScript("select " + Escape.escape(viewer.getSelectionSet()));
-      viewer.addStateScript("configuration;");
+          .addStateScript("select " 
+              + Escape.escape(viewer.getSelectionSet()) 
+              + "; configuration;", true);
     } else {
       checkLength2();
       if (isSyntaxCheck)
         return;
       int n = intParameter(1);
       bsConfigurations = viewer.setConformation(n - 1);
-      viewer.addStateScript("configuration " + n + ";");
+      viewer.addStateScript("configuration " + n + ";", true);
     }
     if (isSyntaxCheck)
       return;
@@ -5718,7 +5715,7 @@ class Eval { //implements Runnable {
       case Token.surface:
         viewer.calculateSurface(null, null, -1);
         if (!isSyntaxCheck)
-          viewer.addStateScript(thisCommand);
+          viewer.addStateScript(thisCommand, true);
         return;
       case Token.identifier:
         if (parameterAsString(1).equalsIgnoreCase("AROMATIC")) {
@@ -5900,6 +5897,13 @@ class Eval { //implements Runnable {
     boolean useModelNumber = true;
     // for now -- as before -- remove to implement
     // frame/model difference
+    if (statementLength == 1 && !isTrajectory && offset == 1) {
+      int modelIndex = viewer.getCurrentModelIndex();
+      if (!isSyntaxCheck && modelIndex >= 0 
+          && (modelIndex = viewer.getJmolDataSourceFrame(modelIndex)) >= 0)
+        viewer.setCurrentModelIndex(modelIndex, true);
+      return;
+    }
     if (getToken(offset).tok == Token.minus) {
       ++offset;
       checkStatementLength(offset + 1);
@@ -5915,6 +5919,7 @@ class Eval { //implements Runnable {
     boolean isHyphen = false;
     int[] frameList = new int[] { -1, -1 };
     int nFrames = 0;
+    
     for (int i = offset; i < statementLength; i++) {
       switch (getToken(i).tok) {
       case Token.all:
@@ -6814,7 +6819,7 @@ class Eval { //implements Runnable {
         String str = label;
         if (isAtoms) {
           if (str == null) {
-            str = modelSet.getAtomAt(j).getIdentity();
+            str = modelSet.getAtomAt(j).getInfo();
           } else {
             str = modelSet.getAtomAt(j).formatLabel(str, '\0', indices);
             for (int k = 0; k < nProp; k++)
@@ -7975,7 +7980,10 @@ class Eval { //implements Runnable {
     } else if (data == "PDB" || data == "XYZ" || data == "MOL") {
       data = viewer.getData("selected", data);
     } else if (data == "QUAT" || data == "RAMA") {
-      data = viewer.getPdbData(type2);
+      int modelIndex = viewer.getCurrentModelIndex();
+      if (modelIndex < 0)
+        multipleModelsNotOK("write " + type2);
+      data = viewer.getPdbData(modelIndex, type2);
     } else if (data == "FUNCS") {
       data = getFunctionCalls("");
     } else if (data == "FILE") {
@@ -8092,12 +8100,14 @@ class Eval { //implements Runnable {
       str = "scaleAngstromsPerInch";
       break;
     case Token.quaternion:
+    case Token.ramachandran:
       if (isSyntaxCheck)
         return;
-      msg = viewer.getPdbData("quaternion w");
-      break;
-    case Token.ramachandran:
-      msg = viewer.getPdbData("ramachandran");
+      int modelIndex = viewer.getCurrentModelIndex();
+      if (modelIndex < 0)
+        multipleModelsNotOK("show " + theToken.value);
+      msg = viewer.getPdbData(modelIndex, 
+          theTok == Token.quaternion ? "quaternion w" : "ramachandran");
       break;
     case Token.identifier:
       if (str.equalsIgnoreCase("historyLevel")) {
@@ -8389,7 +8399,7 @@ class Eval { //implements Runnable {
     viewer.loadShape(JmolConstants.SHAPE_MO);
     int modelIndex = viewer.getDisplayModelIndex();
     if (modelIndex < 0)
-      multipleModelsNotOK();
+      multipleModelsNotOK("MO isosurfaces");
     Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
         "moData");
     if (moData == null)
@@ -9038,7 +9048,7 @@ class Eval { //implements Runnable {
     int modelIndex = viewer.getDisplayModelIndex();
     int offset = Integer.MAX_VALUE;
     if (!isSyntaxCheck && modelIndex < 0)
-      multipleModelsNotOK();
+      multipleModelsNotOK("MO isosurfaces");
     viewer.loadShape(JmolConstants.SHAPE_MO);
     if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_MO))
       return true;
@@ -9193,7 +9203,7 @@ class Eval { //implements Runnable {
     if (modelIndex == 0)
       modelIndex = viewer.getDisplayModelIndex();
     if (modelIndex < 0)
-      multipleModelsNotOK();
+      multipleModelsNotOK("MO isosurfaces");
     Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
         "jmolSurfaceInfo");
     if (moData != null && ((String) moData.get("surfaceDataType")).equals("mo")) {
@@ -9908,8 +9918,8 @@ class Eval { //implements Runnable {
   //    new ScriptException(message);
   //  }
 
-  private void multipleModelsNotOK() throws ScriptException {
-    evalError(GT._("MO isosurfaces require that only one model be displayed"));
+  private void multipleModelsNotOK(String what) throws ScriptException {
+    evalError(GT._("{0} require that only one model be displayed", what));
   }
 
   private void unrecognizedCommand() throws ScriptException {
@@ -11085,15 +11095,12 @@ class Eval { //implements Runnable {
 
     private boolean evaluateLabel(Token[] args) throws ScriptException {
       Token x1 = getX();
-      if (args.length != 1)
+      String format = (args.length == 0 ? "%U" : Token.sValue(args[0]));
+      if (args.length > 1 || x1.tok != Token.bitset)
         return false;
       if (isSyntaxCheck)
         return addX("");
-      Token x2 = args[0];
-      if (x1.tok != Token.bitset || x2.tok != Token.string)
-        return false;
-      return addX(getBitsetIdent(Token.bsSelect(x1), Token.sValue(x2),
-          x1.value, true));
+      return addX(getBitsetIdent(Token.bsSelect(x1), format, x1.value, true));
     }
 
     private boolean evaluateWithin(Token[] args) throws ScriptException {

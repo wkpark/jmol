@@ -560,7 +560,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void moveTo(float floatSecondsTotal, Matrix3f rotationMatrix, Point3f center,
               float zoom, float xTrans, float yTrans, float rotationRadius,
               Point3f navCenter, float xNav, float yNav, float navDepth) {
-    //from StateManager
+    //from StateManager -- -1 for time --> no repaint
     transformManager.moveTo(floatSecondsTotal, rotationMatrix, center, zoom,
         xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
   }
@@ -1704,8 +1704,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.fillAtomData(atomData, mode);
   }
 
-  void addStateScript(String script) {
-    modelSet.addStateScript(script);
+  void addStateScript(String script, boolean addFrameNumber) {
+    modelSet.addStateScript(script, addFrameNumber);
   }
 
   public boolean getEchoStateActive() {
@@ -1833,7 +1833,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void calculateStructures() {
     //Eval
     modelSet.calculateStructures(repaintManager.currentModelIndex);
-    addStateScript("calculate structure");
+    addStateScript("calculate structure", true);
   }
 
   void clearBfactorRange() {
@@ -2380,7 +2380,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   int autoHbond(BitSet bsBonds) {
     //Eval
     BitSet bs = getSelectionSet();
-    addStateScript("calculate hbonds");
+    addStateScript("calculate hbonds", false);
     return autoHbond(bs, bs, bsBonds);
   }
 
@@ -5726,26 +5726,30 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (String) Eval.evaluateExpression(this, exp);
   }
 
-  String getPdbData(String type) {
-    return modelSet.getPdbData(type, selectionManager.bsSelection);
+  String getPdbData(int modelIndex, String type) {
+    return modelSet.getPdbData(modelIndex, type);
   }
 
-  boolean isJmolDataFrame(int modelIndex) {
+  public boolean isJmolDataFrame(int modelIndex) {
     return modelSet.isJmolDataFrame(modelIndex);
   }
   
-  int getPtJmolDataFrame(String type) {
-    return modelSet.getPtJmolDataFrame(type);
+  int getJmolDataFrameIndex(int modelIndex, String type) {
+    return modelSet.getJmolDataFrameIndex(modelIndex, type);
   }
 
-  void setPtJmolDataFrame(String type, int modelIndex) {
-    modelSet.setPtJmolDataFrame(type, modelIndex);  
+  void setJmolDataFrame(String type, int modelIndex, int dataIndex) {
+    modelSet.setJmolDataFrame(type, modelIndex, dataIndex);  
   }
   
   String getJmolDataFrameType(int modelIndex) {
     return modelSet.getJmolDataFrameType(modelIndex);
   }
 
+  public int getJmolDataSourceFrame(int modelIndex) {
+    return modelSet.getJmolDataSourceFrame(modelIndex);
+  }
+  
   public void setAtomCoord(int atomIndex, float x, float y, float z) {
     //Frame equivalent used in DATA "coord set"
     modelSet.setAtomCoord(atomIndex, x, y, z);

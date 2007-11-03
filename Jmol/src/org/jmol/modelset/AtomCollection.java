@@ -434,7 +434,7 @@ abstract public class AtomCollection {
           float d = points[j].distance(atom) - envelopeRadius;
           if (d < 0 && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
             Logger.debug("draw d" + j + " " + Escape.escape(points[j])
-                + " \"" + d + " ? " + atom.getIdentity() + "\"");
+                + " \"" + d + " ? " + atom.getInfo() + "\"");
           dMin = Math.min(d, dMin);
         }
         int d = surfaceDistance100s[i] = (int) (dMin * 100);
@@ -789,7 +789,7 @@ abstract public class AtomCollection {
     for (int i = 0; i < atomCount; i++)
       if (t.get(i)) {
         s.append(i + 1).append(" ").append(atoms[i].getElementSymbol())
-        .append(" ").append(atoms[i].getIdentity().replace(' ', '_')).append(" ");
+        .append(" ").append(atoms[i].getInfo().replace(' ', '_')).append(" ");
         switch (type) {
         case TAINT_COORD:
           dataLabel = "coord set";
@@ -1170,7 +1170,7 @@ abstract public class AtomCollection {
     z.normalize();
 
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-      Logger.debug(atom.getIdentity() + " nBonds=" + nBonds + " " + hybridization);
+      Logger.debug(atom.getInfo() + " nBonds=" + nBonds + " " + hybridization);
     }
     if (hybridizationCompatible) {
       if (hybridization == "")

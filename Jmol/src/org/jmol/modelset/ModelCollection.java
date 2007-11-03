@@ -45,6 +45,7 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
 
@@ -651,22 +652,21 @@ abstract public class ModelCollection extends BondCollection {
   /* ONLY from one model 
    * 
    */
-  private String getPdbData(String type, char ctype, BitSet bsAtoms,
+  private String getPdbData(String type, char ctype, int modelIndex,
                             boolean isDerivative) {
-    StringBuffer pdbATOM = new StringBuffer();
     StringBuffer pdbCONECT = new StringBuffer();
-    int firstAtom = BitSetUtil.firstSetBit(bsAtoms);
-    if (firstAtom < 0)
-      return null;
-    int modelIndex = atoms[firstAtom].modelIndex;
     if (isJmolDataFrame(modelIndex))
-      return null;
+      modelIndex = viewer.getJmolDataSourceFrame(modelIndex);
+    if (modelIndex < 0)
+      return "";
     int nPoly = models[modelIndex].getBioPolymerCount();
+    StringBuffer pdbATOM = new StringBuffer();
+    BitSet bsAtoms = getModelAtomBitSet(modelIndex);
     for (int p = 0; p < nPoly; p++)
       models[modelIndex].getPdbData(ctype, isDerivative, bsAtoms, pdbATOM,
           pdbCONECT);
     pdbATOM.append(pdbCONECT);
-    return pdbATOM.toString();
+    return getProteinStructureState(bsAtoms) + pdbATOM.toString();
   }
 
   /* **********************
@@ -675,13 +675,13 @@ abstract public class ModelCollection extends BondCollection {
    * 
    *****************************/
 
-  public String getPdbData(String type, BitSet bsAtoms) {
+  public String getPdbData(int modelIndex, String type) {
     char ctype = (type.length() > 11 && type.indexOf("quaternion ") >= 0 ? type
         .charAt(11) : 'r');
-    String s = getPdbData(type, ctype, bsAtoms, (type.indexOf(" deriv") >= 0));
-    if (s == null)
-      return null;
-    String remark = "REMARK 999 Jmol PDB-encoded data: " + type
+    String s = getPdbData(type, ctype, modelIndex, (type.indexOf(" deriv") >= 0));
+    if (s.length() == 0)
+      return "";
+    String remark = "REMARK   6 Jmol PDB-encoded data: " + type
         + " data(x,y,z,charge)=";
     switch (ctype) {
     case 'w':
@@ -721,28 +721,31 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public boolean isJmolDataFrame(int modelIndex) {
-    return (modelIndex >= 0 && modelIndex < modelCount && models[modelIndex]
-        .isJmolDataFrame());
+    return (modelIndex >= 0 && modelIndex < modelCount && models[modelIndex].jmolData != null);
   }
 
-  protected Hashtable htJmolData = new Hashtable();
-
-  public void setPtJmolDataFrame(String type, int modelIndex) {
-    htJmolData.put(type, new Integer(modelIndex));
+  public void setJmolDataFrame(String type, int modelIndex, int modelDataIndex) {
+    if (type.equals("ramachandan"))
+      models[modelIndex].ramachandranFrame = modelDataIndex; 
+    else
+      models[modelIndex].quaternionFrame = modelDataIndex;
+    models[modelDataIndex].dataSourceFrame = modelIndex;
   }
 
-  public int getPtJmolDataFrame(String type) {
-    Integer iModel = (Integer) htJmolData.get(type);
-    if (iModel == null)
-      return -1;
-    return iModel.intValue();
+  public int getJmolDataFrameIndex(int modelIndex, String type) {
+    return (type.equals("ramachandan") ? models[modelIndex].ramachandranFrame 
+        : models[modelIndex].quaternionFrame);
   }
 
+  
   public String getJmolDataFrameType(int modelIndex) {
-    return (modelIndex >= 0 && modelIndex < modelCount ? models[modelIndex]
-        .getJmolDataFrameType() : "modelSet");
+    return (modelIndex >= 0 && modelIndex < modelCount ? models[modelIndex].jmolDataType : "modelSet");
   }
 
+  public int getJmolDataSourceFrame(int modelIndex) {
+    return (modelIndex >= 0 && modelIndex < modelCount ? models[modelIndex].dataSourceFrame : -1);
+  }
+  
   private String pdbHeader;
   /*
    final static String[] pdbRecords = { "ATOM  ", "HELIX ", "SHEET ", "TURN  ",
@@ -1397,47 +1400,109 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   //////////// state definition ///////////
-  
-  
-  protected String getProteinStructureState() {
+
+  protected String getProteinStructureState(BitSet bsAtoms) {
     BitSet bs = null;
     StringBuffer cmd = new StringBuffer();
+    StringBuffer sbTurn = new StringBuffer();
+    StringBuffer sbHelix = new StringBuffer();
+    StringBuffer sbSheet = new StringBuffer();
     int itype = 0;
     int id = 0;
     int iLastAtom = 0;
     int lastId = -1;
     int res1 = 0;
     int res2 = 0;
+    String group1 = "";
+    String group2 = "";
     int n = 0;
-    for (int i = 0; i <= atomCount; i++) {
-      id = Integer.MIN_VALUE;
-      if (i == atomCount
-          || (id = atoms[i].getProteinStructureID()) != lastId) {
-        if (bs != null) {
-          n++;
-          cmd.append("  structure ")
-              .append(JmolConstants.getProteinStructureName(itype))
-              .append(" ").append(Escape.escape(bs))
-              .append("    \t# model=").append(getModelName(-1 - atoms[iLastAtom].modelIndex))
-              .append(" & (").append(res1).append(" - ").append(res2).append(");\n");
-          bs = null;
+    int nHelix = 0;
+    int nTurn = 0;
+    int nSheet = 0;
+    for (int i = 0; i <= atomCount; i++)
+      if (bsAtoms == null || bsAtoms.get(i)) {
+        id = Integer.MIN_VALUE;
+        if (i == atomCount || (id = atoms[i].getProteinStructureID()) != lastId) {
+          if (bs != null) {
+            if (itype != JmolConstants.PROTEIN_STRUCTURE_HELIX
+                && itype != JmolConstants.PROTEIN_STRUCTURE_TURN
+                && itype != JmolConstants.PROTEIN_STRUCTURE_SHEET) {
+              bs = null;
+              continue;
+            }
+            n++;
+            if (bsAtoms == null) {
+              cmd.append("  structure ").append(
+                  JmolConstants.getProteinStructureName(itype)).append(" ")
+                  .append(Escape.escape(bs)).append("    \t# model=").append(
+                      getModelName(-1 - atoms[iLastAtom].modelIndex)).append(
+                      " & (").append(res1).append(" - ").append(res2).append(
+                      ");\n");
+            } else {
+              String str;
+              int nx;
+              String sid;
+              StringBuffer sb;
+              switch (itype) {
+              case JmolConstants.PROTEIN_STRUCTURE_HELIX:
+                nx = ++nHelix;
+                sid = "H" + nx;
+                str = "HELIX  %3N %3ID %3GROUPA   %4RESA  %3GROUPB   %4RESB\n";
+                sb = sbHelix;
+                break;
+              case JmolConstants.PROTEIN_STRUCTURE_SHEET:
+                nx = ++nSheet;
+                sid = "S" + nx;
+                str = "SHEET  %3N %3ID 2 %3GROUPA  %4RESA  %3GROUPB  %4RESB\n";
+                sb = sbSheet;
+                break;
+              case JmolConstants.PROTEIN_STRUCTURE_TURN:
+              default:
+                nx = ++nTurn;
+                sid = "T" + nx;
+                str = "TURN   %3N %3ID %3GROUPA  %4RESA  %3GROUPB  %4RESB\n";
+                sb = sbTurn;
+                break;
+              }
+              str = TextFormat.formatString(str, "N", nx);
+              str = TextFormat.formatString(str, "ID", sid);
+              str = TextFormat.formatString(str, "GROUPA", group1);
+              str = TextFormat.formatString(str, "RESA", res1);
+              str = TextFormat.formatString(str, "GROUPB", group2);
+              str = TextFormat.formatString(str, "RESB", res2);
+              sb.append(str);
+
+              /*
+               HELIX    1  H1 ILE      7  PRO     19  1 3/10 CONFORMATION RES 17,19    1CRN  55
+               HELIX    2  H2 GLU     23  THR     30  1 DISTORTED 3/10 AT RES 30       1CRN  56
+               SHEET    1  S1 2 THR     1  CYS     4  0                                1CRNA  4
+               SHEET    2  S1 2 CYS    32  ILE    35 -1                                1CRN  58
+               TURN     1  T1 PRO    41  TYR    44                                     1CRN  59
+               */
+            }
+            bs = null;
+          }
+          if (id == Integer.MIN_VALUE || 
+              bsAtoms != null 
+              && (Float.isNaN(atoms[i].getGroupPhi()) || Float.isNaN(atoms[i].getGroupPsi())))
+            continue;
+          res1 = atoms[i].getResno();
+          group1 = atoms[i].getGroup3();
         }
-        if (id == Integer.MIN_VALUE)
-          continue;
-        res1 = atoms[i].getResno();
+        if (bs == null) {
+          bs = new BitSet();
+        }
+        itype = atoms[i].getProteinStructureType();
+        bs.set(i);
+        lastId = id;
+        res2 = atoms[i].getResno();
+        group2 = atoms[i].getGroup3();
+        iLastAtom = i;
       }
-      if (bs == null) {
-        bs = new BitSet();
-      }
-      itype = atoms[i].getProteinStructureType();
-      bs.set(i);
-      lastId = id;
-      res2 = atoms[i].getResno();
-      iLastAtom = i;
-    }
     if (n > 0)
       cmd.append("\n");
-    return cmd.toString();
+    return (bsAtoms == null ? cmd.toString() : sbHelix.append(sbSheet).append(
+        sbTurn).append(cmd).toString());
   }
   
   public String getModelInfoAsString() {

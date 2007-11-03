@@ -378,12 +378,13 @@ abstract public class ModelSet extends ModelCollection {
   private Vector stateScripts = new Vector();
   private int thisStateModel = 0;
 
-  public void addStateScript(String script) {
+  public void addStateScript(String script, boolean addFrameNumber) {
     int iModel = viewer.getCurrentModelIndex();
     if (thisStateModel != iModel) {
       thisStateModel = iModel;
-      script = "frame " + (iModel < 0 ? "" + iModel : getModelName(-1 - iModel))
-          + ";\n" + script;
+      if (addFrameNumber)
+        script = "  frame " + (iModel < 0 ? "" + iModel : getModelName(-1 - iModel))
+            + ";\n" + script;
     }
     stateScripts.addElement(script);
   }
@@ -422,7 +423,7 @@ abstract public class ModelSet extends ModelCollection {
 
     setModelVisibility();
 
-    commands.append(getProteinStructureState());
+    commands.append(getProteinStructureState(null));
     
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = shapes[i];

@@ -81,19 +81,15 @@ public final class Model {
   int moleculeCount;
   int nAltLocs;
   int nInsertions;
+  int ramachandranFrame;
+  int quaternionFrame = -1;
+  int dataSourceFrame = -1;
+  
   boolean isPDB = false;
   
   String jmolData; // from a PDB remark "Jmol PDB-encoded data"
   String jmolDataType;
 
-  boolean isJmolDataFrame() {
-    return (jmolData != null);
-  }
-
-  String getJmolDataFrameType() {
-    return jmolDataType;  
-  }
-  
   private int chainCount = 0;
   private Chain[] chains = new Chain[8];
   private int bioPolymerCount = 0;

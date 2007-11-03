@@ -826,15 +826,19 @@ final public class Atom extends Point3fi implements Tuple {
    */
    
   public String getInfo() {
-    return getIdentity();
-  }
+    return getIdentity(true);
+  } 
 
   String getInfoXYZ(boolean withScreens) {
-    return getIdentity() + " " + x + " " + y + " " + z
+    return getIdentity(true) + " " + x + " " + y + " " + z
         + (withScreens ? " ### " + screenX + " " + screenY + " " + screenZ : "");
   }
 
-  public String getIdentity() {
+  private String getIdentityXYZ() {
+    return getIdentity(false) + " " + x + " " + y + " " + z;
+  }
+  
+  private String getIdentity(boolean allInfo) {
     StringBuffer info = new StringBuffer();
     String group3 = getGroup3();
     String seqcodeString = getSeqcodeString();
@@ -850,6 +854,8 @@ final public class Atom extends Point3fi implements Tuple {
       info.append(":");
       info.append(chainID);
     }
+    if (!allInfo)
+      return info.toString();
     String atomName = getAtomNameOrNull();
     if (atomName != null) {
       if (info.length() > 0)
@@ -1124,6 +1130,7 @@ final public class Atom extends Point3fi implements Tuple {
          case 'D': atom inDex (was "X")
          case 'e': element symbol
          case 'E': insErtion code
+         case 'f': phi
          case 'g': selected group index (for testing)
          case 'i': atom number
          case 'I': Ionic radius
@@ -1134,6 +1141,7 @@ final public class Atom extends Point3fi implements Tuple {
          case 'n': group3
          case 'N': molecule Number
          case 'o': symmetry operator set
+         case 'p': psi
          case 'P': Partial charge
          case 'q': occupancy 0-100%
          case 'Q': occupancy 0.00 - 1.00
@@ -1148,6 +1156,7 @@ final public class Atom extends Point3fi implements Tuple {
          case 'V': van der Waals
          case 'x': x coord
          case 'X': fractional X coord
+         case 'W': identity - with X,Y,Z
          case 'y': y coord
          case 'Y': fractional Y coord
          case 'z': z coord
@@ -1221,6 +1230,12 @@ final public class Atom extends Point3fi implements Tuple {
         case 'P':
           floatT = getPartialCharge();
           break;
+        case 'f':
+          floatT = getGroupPhi();
+          break;
+        case 'p':
+          floatT = getGroupPsi();
+          break;
         case 'v':
           ch = (ich < strFormat.length() ? strFormat.charAt(ich++) : '\0');
           switch (ch) {
@@ -1285,7 +1300,10 @@ final public class Atom extends Point3fi implements Tuple {
           strT = "" + getResno();
           break;
         case 'U':
-          strT = getIdentity();
+          strT = getIdentity(true);
+          break;
+        case 'W':
+          strT = getIdentityXYZ();
           break;
         case 'u':
           floatT = getSurfaceDistance100() / 100f;

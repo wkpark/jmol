@@ -1636,7 +1636,8 @@ abstract class TransformManager {
       if (!Float.isNaN(navDepth))
         setNavigationDepthPercent(0, navDepth);
     }
-    viewer.requestRepaintAndWait();
+    if (floatSecondsTotal >= 0)
+      viewer.requestRepaintAndWait();
     viewer.setInMotion(false);
   }
 

@@ -69,7 +69,7 @@ class RepaintManager {
       // leaving or entering data frame? Then restore new frame's index 
       if (fromDataFrame || toDataFrame) {
         viewer.restoreOrientation(toDataFrame ? viewer.getJmolDataFrameType(modelIndex)
-            : "modelSet", 0);
+            : "modelSet", -1);
       }
     }
     if (modelSet == null || modelIndex < 0

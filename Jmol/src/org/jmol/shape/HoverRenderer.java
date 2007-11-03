@@ -36,7 +36,7 @@ public class HoverRenderer extends ShapeRenderer {
       String label = (hover.atomFormats != null
           && hover.atomFormats[hover.atomIndex] != null ? 
               atom.formatLabel(hover.atomFormats[hover.atomIndex])
-          : hover.labelFormat != null ? atom.formatLabel(hover.labelFormat)
+          : hover.labelFormat != null ? atom.formatLabel(fixLabel(atom, hover.labelFormat))
               : null);
       if (label == null)
         return;
@@ -51,5 +51,12 @@ public class HoverRenderer extends ShapeRenderer {
           hover.xy.y * (antialias ? 2 : 1));
       text.render(g3d, antialias);
     }
+  }
+  
+  String fixLabel(Atom atom, String label) {
+    if (label == null)
+      return null;
+    return (viewer.isJmolDataFrame(atom.getModelIndex()) 
+        && label.equals("%U") ?"%W" : label);
   }
 }

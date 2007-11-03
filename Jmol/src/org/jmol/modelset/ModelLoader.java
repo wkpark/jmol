@@ -128,7 +128,6 @@ public final class ModelLoader extends ModelSet {
       someModelsHaveUnitcells |= mergeModelSet.getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
       someModelsHaveFractionalCoordinates |= mergeModelSet.getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
       someModelsHaveAromaticBonds |= mergeModelSet.someModelsHaveAromaticBonds;
-      htJmolData = mergeModelSet.htJmolData;
     }
     initializeBuild(nAtoms);
   }

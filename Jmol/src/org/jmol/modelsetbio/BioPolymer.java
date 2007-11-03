@@ -548,7 +548,17 @@ public abstract class BioPolymer extends Polymer {
       Monomer monomer = p.monomers[m];
       if (bsAtoms.get(monomer.getLeadAtomIndex())) {
         Atom a = monomer.getLeadAtom();
-        if (ctype != 'r') {
+        if (isRamachandran) {
+          x = monomer.getPhi();
+          y = monomer.getPsi();
+          z = monomer.getOmega();
+          if (z < -90)
+            z += 360;
+          z -= 180;
+          if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
+            continue;
+          w = a.getPartialCharge();
+        } else {
           Quaternion q = a.getQuaternion();
           if (q == null) {
             qlast = null;
@@ -594,16 +604,6 @@ public abstract class BioPolymer extends Polymer {
             w = q.q1;
             break;
           }
-        } else {
-          x = monomer.getPhi();
-          y = monomer.getPsi();
-          z = monomer.getOmega();
-          if (z < -90)
-            z += 360;
-          z -= 180;
-          if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
-            continue;
-          w = a.getPartialCharge();
         }
         pdbATOM.append(a.formatLabel("ATOM  %5i  %-3a%1A%3n %1c%4R%1E   "));
         pdbATOM.append(TextFormat.formatString("%8.3x", "x", x * factor));

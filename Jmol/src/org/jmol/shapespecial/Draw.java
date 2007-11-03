@@ -915,7 +915,7 @@ public class Draw extends MeshCollection {
     if (mesh.diameter > 0)
       str.append(" diameter ").append(mesh.diameter);
     int nVertices = mesh.drawVertexCount > 0 ? mesh.drawVertexCount 
-      : mesh.drawVertexCounts[0];
+      : mesh.drawVertexCounts[iModel >= 0 ? iModel : 0];
     switch (mesh.drawTypes == null ? mesh.drawType : mesh.drawTypes[iModel]) {
     case JmolConstants.DRAW_ARROW:
       str.append(" ARROW");
@@ -936,6 +936,8 @@ public class Draw extends MeshCollection {
     if (mesh.modelIndex < 0 && !mesh.isFixed) {
       for (int i = 0; i < modelCount; i++)
         if (isPolygonDisplayable(mesh, i)) {
+          if (nVertices == 0)
+            nVertices = mesh.drawVertexCounts[i];
           str.append(" [ " + i);
           str.append(getVertexList(mesh, i, nVertices));
           str.append(" ] ");
@@ -952,7 +954,9 @@ public class Draw extends MeshCollection {
   }
 
   static boolean isPolygonDisplayable(Mesh mesh, int i) {
-    return (mesh.polygonIndexes[i] != null && mesh.polygonIndexes[i].length > 0);
+    return (i < mesh.polygonIndexes.length 
+        && mesh.polygonIndexes[i] != null 
+        && mesh.polygonIndexes[i].length > 0);
   }
   
   private static String getVertexList(Mesh mesh, int iModel, int nVertices) {

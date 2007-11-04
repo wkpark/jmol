@@ -11355,8 +11355,11 @@ class Eval { //implements Runnable {
         x2 = Token.selectItem(x2);
 
       if (op.tok == Token.opNot)
-        return (x2.tok == Token.bitset ? addX(BitSetUtil.copyInvert(Token
-            .bsSelect(x2), viewer.getAtomCount())) : addX(!Token.bValue(x2)));
+        return (x2.tok == Token.bitset ? 
+            addX(BitSetUtil.copyInvert(Token.bsSelect(x2), 
+               (x2.value instanceof BondSet ? 
+                viewer.getBondCountInModel(-1) : viewer.getAtomCount()))) 
+                : addX(!Token.bValue(x2)));
       int iv = op.intValue & ~Token.minmaxmask;
       if (op.tok == Token.propselector) {
         if (iv == Token.size) {
@@ -11445,15 +11448,10 @@ class Eval { //implements Runnable {
           return addX(!(Token.sValue(x1).equalsIgnoreCase(Token.sValue(x2))));
         return addX(Token.fValue(x1) != Token.fValue(x2));
       case Token.plus:
-        if (x1.tok == Token.list) {
-          if (x2.tok == Token.list || x2.tok == Token.string)
-            return addX(Token.concatList(x1, x2, true, x2.tok == Token.list));
-        }
-        if (x1.tok == Token.string || x1.tok == Token.list) {
-          if (x2.tok == Token.list)
-            return addX(Token.concatList(x1, x2, false, true));
+        if (x1.tok == Token.list || x2.tok == Token.list)
+            return addX(Token.concatList(x1, x2));
+        if (x1.tok == Token.string)
           return addX(Token.sValue(x1) + Token.sValue(x2));
-        }
         if (x1.tok == Token.string && x2.tok == Token.integer) {
           if ((s = (Token.sValue(x1)).trim()).indexOf(".") < 0
               && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
@@ -11528,8 +11526,8 @@ class Eval { //implements Runnable {
         // more than just modulus
 
         //  float % n     round to n digits; n = 0 does "nice" rounding
-        //  String % n    trim to width n; left justify
-        //  String % -n   trim to width n; right justify
+        //  String % -n    trim to width n; left justify
+        //  String % n   trim to width n; right justify
         //  Point3f % n   ah... sets to multiple of unit cell!
         //  bitset % n  
         //  Point3f * Point3f  does dot product
@@ -11557,8 +11555,8 @@ class Eval { //implements Runnable {
           if (n == 0)
             return addX(TextFormat.trim(s, "\n\t "));
           else if (n > 0)
-            return addX(TextFormat.format(s, n, n, true, false));
-          return addX(TextFormat.format(s, -n, n, false, false));
+            return addX(TextFormat.format(s, n, n, false, false));
+          return addX(TextFormat.format(s, -n, n, true, false));
         case Token.list:
           String[] list = (String[]) x1.value;
           String[] listout = new String[list.length];

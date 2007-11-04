@@ -643,7 +643,7 @@ public class Token {
     case Token.string:
       return ((String)x.value).length();
     case Token.list:
-      return sizeOf(selectItem(x));
+      return x.intValue == Integer.MAX_VALUE ? ((String[])x.value).length : sizeOf(selectItem(x));
     case Token.bitset:
       return BitSetUtil.cardinalityOf(bsSelect(x));
     default:
@@ -675,12 +675,11 @@ public class Token {
     }
   }
 
-  static String[] concatList(Token x1, Token x2, boolean x1IsList,
-                             boolean x2IsList) {
-    String[] list1 = (x1IsList ? (String[]) x1.value : TextFormat.split(
-        (String) x1.value, "\n"));
-    String[] list2 = (x2IsList ? (String[]) x2.value : TextFormat.split(
-        (String) x2.value, "\n"));
+  static String[] concatList(Token x1, Token x2) {
+    String[] list1 = (x1.tok == Token.list ? (String[]) x1.value : TextFormat.split(
+        Token.sValue(x1), "\n"));
+    String[] list2 = (x2.tok == Token.list ? (String[]) x2.value : TextFormat.split(
+        Token.sValue(x2), "\n"));
     String[] list = new String[list1.length + list2.length];
     int pt = 0;
     for (int i = 0; i < list1.length; i++)

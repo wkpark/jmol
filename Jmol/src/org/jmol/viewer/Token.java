@@ -374,10 +374,11 @@ public class Token {
   final static int length    = 5 | mathproperty;
   final static int lines     = 6 | mathproperty;
   final static int size      = 7 | mathproperty;
-  final public static int xyz       = 8 | mathproperty | settable;
-  final public static int fracXyz   = 9 | mathproperty | settable;
-  final public static int vibXyz    =10 | mathproperty | settable;
-  final static int property  =11 | mathproperty | setparam | settable;
+  final static int type      = 8 | mathproperty;
+  final public static int xyz       = 9 | mathproperty | settable;
+  final public static int fracXyz   =10 | mathproperty | settable;
+  final public static int vibXyz    =11 | mathproperty | settable;
+  final static int property  =12 | mathproperty | setparam | settable;
 
   final static int atompropertyfloat = atomproperty | 1 << 5;
   
@@ -642,11 +643,35 @@ public class Token {
     case Token.string:
       return ((String)x.value).length();
     case Token.list:
-      return ((String[]) x.value).length;
+      return sizeOf(selectItem(x));
     case Token.bitset:
       return BitSetUtil.cardinalityOf(bsSelect(x));
     default:
       return 0;
+    }
+  }
+
+  static String typeOf(Token x) {
+    switch (x.tok) {
+    case Token.on:
+    case Token.off:
+      return "boolean";
+    case Token.integer:
+      return "integer";
+    case Token.decimal:
+      return "decimal";
+    case Token.point3f:
+      return "point";
+    case Token.point4f:
+      return "plane";
+    case Token.string:
+      return "string";
+    case Token.list:
+      return "array";
+    case Token.bitset:
+      return "bitset";
+    default:
+      return "?";
     }
   }
 
@@ -671,10 +696,14 @@ public class Token {
   }
 
   static BitSet bsSelect(Token token, int n) {
-    token = selectItem(token, Integer.MIN_VALUE);
+    token = selectItem(token);
     token = selectItem(token, 1);
     token = selectItem(token, n);
     return (BitSet)token.value;
+  }
+
+  static Token selectItem(Token tokenIn) {
+    return selectItem(tokenIn, Integer.MIN_VALUE); 
   }
 
   static Token selectItem(Token tokenIn, int i2) {
@@ -700,6 +729,12 @@ public class Token {
     Token tokenOut = new Token(tokenIn.tok, Integer.MAX_VALUE);
     switch (tokenIn.tok) {
     case Token.bitset:
+      if (tokenIn.value instanceof BondSet) {
+        tokenOut.value = new BondSet((BitSet) tokenIn.value, ((BondSet)tokenIn.value).getAssociatedAtoms());
+        bs = (BitSet) tokenOut.value;
+        len = BitSetUtil.length(bs);
+        break;
+      }
       bs = BitSetUtil.copy((BitSet) tokenIn.value);
       len = BitSetUtil.length(bs);
       tokenOut.value = bs;
@@ -749,9 +784,18 @@ public class Token {
         return new Token(Token.string, "");     
       if (i2 == i1) {
         Object v = Escape.unescapePointOrBitsetAsToken(st[i1 - 1]);
-        if (v instanceof String)
-          return new Token(Token.string, v);
-        return (Token) v;
+        if (!(v instanceof String))
+          return (Token) v;
+        s = (String) v;
+        if (s.toLowerCase() == "true")
+          return Token.tokenOn;
+        if (s.toLowerCase() == "false")
+          return Token.tokenOff;
+        float f;
+        if (!Float.isNaN(f = Parser.parseFloat(s)))
+          return (f == (int) f && s.indexOf(".") < 0 ? intToken((int)f) 
+              : new Token(Token.decimal, new Float(f)));
+        return new Token(Token.string, v);
       }
       String[]list = new String[i2 - i1 + 1];
       for (int i = 0; i < list.length; i++)
@@ -797,7 +841,6 @@ public class Token {
   final static int mode         = misc | 31;
   final static int direction    = misc | 32;
   final static int displacement = misc | 34;
-  final static int type         = misc | 35;
     
   final static int rubberband   = misc | 37;
   final static int monomer      = misc | 38;

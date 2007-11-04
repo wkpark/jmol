@@ -413,7 +413,7 @@ public class StateManager {
     float bondTolerance   = JmolConstants.DEFAULT_BOND_TOLERANCE;
     float minBondDistance = JmolConstants.DEFAULT_MIN_BOND_DISTANCE;
     String defaultLoadScript   = "";
-    String defaultDirectory    = null;
+    String defaultDirectory    = "";
     String loadFormat          = "http://www.rcsb.org/pdb/files/%FILE.pdb";
     String appletProxy         = "";
 
@@ -441,8 +441,7 @@ public class StateManager {
         appendCmd(str, "axesOrientationRasmol = true");
       appendCmd(str, "bondRadiusMilliAngstroms = " + bondRadiusMilliAngstroms);
       appendCmd(str, "bondTolerance = " + bondTolerance);
-      if (defaultDirectory != null)
-        appendCmd(str, "defaultDirectory = " + Escape.escape(defaultDirectory));
+      appendCmd(str, "defaultDirectory = " + Escape.escape(defaultDirectory));
       appendCmd(str, "defaultLattice = " + Escape.escape(ptDefaultLattice));
       appendCmd(str, "defaultLoadScript = \"\"");
       if (defaultLoadScript.length() > 0)

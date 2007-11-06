@@ -84,6 +84,7 @@ abstract public class JmolPopup {
   int modelIndex, modelCount, atomCount;
 
   final static int MAX_ITEMS = 25;
+  final static int TITLE_MAX_WIDTH = 20;
 
   static String menuStructure;
   
@@ -474,8 +475,12 @@ abstract public class JmolPopup {
       return;
     if (isMultiFrame) {
       modelSetName = GT._(getMenuText("modelSetCollectionText"), modelCount);
+      if (modelSetName.length() > TITLE_MAX_WIDTH)
+        modelSetName = modelSetName.substring(0, TITLE_MAX_WIDTH) + "...";
     } else if (viewer.getBooleanProperty("hideNameInPopup")) {
       modelSetName = getMenuText("hiddenModelSetText");
+    } else if (modelSetName.length() > TITLE_MAX_WIDTH) {
+        modelSetName = modelSetName.substring(0, TITLE_MAX_WIDTH) + "...";
     }
     renameMenu(menu, modelSetName);
     enableMenu(menu, true);

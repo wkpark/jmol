@@ -175,7 +175,7 @@ public class _PovrayExporter extends _Exporter {
         + " #if (cutRadius2 > 0)\n"
         + "  #local cutRadius = sqrt(cutRadius2);\n"
         + "  #if (dzDepth > 0)\n"
-        + "   #declare dzDepth = dzDepth + dzStep;\n"
+        + "   #declare dzDepth = dzDepth - dzStep;\n"
         + "  #end\n"
         + "  cylinder{<X,Y,depthZ+dzDepth>,"
         + "<X,Y,(depthZ-1)>,cutRadius\n"

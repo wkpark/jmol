@@ -1424,7 +1424,7 @@ class Eval { //implements Runnable {
         rpn.addOp(instruction);
         break;
       case Token.all:
-        rpn.addX(BitSetUtil.setAll(atomCount));
+        rpn.addX(viewer.getModelAtomBitSet(-1));
         break;
       case Token.none:
         rpn.addX(new BitSet());
@@ -1437,8 +1437,8 @@ class Eval { //implements Runnable {
         rpn.addX(BitSetUtil.copy(viewer.getSelectionSet()));
         break;
       case Token.subset:
-        rpn.addX(BitSetUtil.copy(bsSubset == null ? BitSetUtil
-            .setAll(atomCount) : bsSubset));
+        rpn.addX(BitSetUtil.copy(bsSubset == null ? 
+            viewer.getModelAtomBitSet(-1) : bsSubset));
         break;
       case Token.hidden:
         rpn.addX(BitSetUtil.copy(viewer.getHiddenSet()));
@@ -1731,19 +1731,20 @@ class Eval { //implements Runnable {
     int bitsetComparator = tokOperator;
     int bitsetBaseValue = comparisonValue;
     int atomCount = viewer.getAtomCount();
+    ModelSet modelSet = viewer.getModelSet();
+    Atom[] atoms = modelSet.atoms;
     int imax = 0;
     int imin = 0;
     int iModel = -1;
     int[] cellRange = null;
     int nOps = 0;
     float propertyFloat = 0;
-    ModelSet modelSet = viewer.getModelSet();
     for (int i = 0; i < atomCount; ++i) {
       boolean match = false;
-      Atom atom = modelSet.getAtomAt(i);
+      Atom atom = atoms[i];
       switch (tokWhat) {
       default:
-        propertyValue = (int) atomProperty(modelSet, atom, tokWhat, true);
+        propertyValue = (int) atomProperty(atom, tokWhat, true);
         if (propertyValue == Integer.MAX_VALUE)
           continue;
         break;
@@ -1875,7 +1876,7 @@ class Eval { //implements Runnable {
     return bs;
   }
 
-  private float atomProperty(ModelSet modelSet, Atom atom, int tokWhat,
+  private float atomProperty(Atom atom, int tokWhat,
                              boolean asInt) throws ScriptException {
     float propertyValue = 0;
     switch (tokWhat) {
@@ -1901,7 +1902,7 @@ class Eval { //implements Runnable {
       return (propertyValue < 0 ? Integer.MAX_VALUE : asInt ? propertyValue
           : propertyValue / 100f);
     case Token.surfacedistance:
-      modelSet.getSurfaceDistanceMax();
+      viewer.getSurfaceDistanceMax();
       propertyValue = atom.getSurfaceDistance100();
       return (asInt ? propertyValue : propertyValue / 100f);
     case Token.occupancy:
@@ -3725,7 +3726,7 @@ class Eval { //implements Runnable {
       //color values. 
       switch (tok) {
       case Token.surfacedistance:
-        viewer.getModelSet().getSurfaceDistanceMax();
+        viewer.getSurfaceDistanceMax();
         break;
       case Token.temperature:
         if (viewer.isRangeSelected())
@@ -4168,9 +4169,9 @@ class Eval { //implements Runnable {
           .indexOf("deriv") == 0);
       if (isDerivative && statementLength == 2)
         type = "w";
-      type = "quaternion " + type + (isDerivative ? " derivative" : "");
       if (!Parser.isOneOf(type, "w;x;y;z"))
         evalError("QUATERNION [w,x,y,z] [derivative]");
+      type = "quaternion " + type + (isDerivative ? " derivative" : "");
       break;
     }
     if (isSyntaxCheck) //just in case we later add parameter options to this
@@ -4179,6 +4180,7 @@ class Eval { //implements Runnable {
     int modelIndex = viewer.getCurrentModelIndex();
     if (modelIndex < 0)
       multipleModelsNotOK(type);
+    modelIndex = viewer.getJmolDataSourceFrame(modelIndex);
     int ptDataFrame = viewer.getJmolDataFrameIndex(modelIndex, type);
     if (ptDataFrame > 0) {
       // data frame can't be 0.
@@ -4189,29 +4191,32 @@ class Eval { //implements Runnable {
     //  viewer.display(BitSetUtil.setAll(viewer.getAtomCount()), bs2, tQuiet);
       return;
     }
-    String script;
-    switch (datatype) {
-    case JmolConstants.JMOL_DATA_RAMACHANDRAN:
-    default:
-      script = "frame 0.0; frame last; reset; center {0 0 0};"
-          + "select visible; color structure; select *;"
-          + "draw ramaAxisX%N% {20 0 0} {-20 0 0} \"phi\";"
-          + "draw ramaAxisY%N% {0 20 0} {0 -20 0} \"psi\";";
-      break;
-    case JmolConstants.JMOL_DATA_QUATERNION:  
-      script = "frame 0.0; frame last; reset; center {0 0 0};"
-          + "select visible; trace 0.1; color trace structure; select *;"
-          + "isosurface quatSphere%N% resolution 1.0 sphere 10.0 mesh nofill translucent 0.8;";
-      break;
-    }
     String[] savedFileInfo = viewer.getFileInfo();
-    boolean isOK = viewer.loadInline(viewer.getPdbData(modelIndex, type), '\n', true);
+    boolean oldAppendNew = viewer.getAppendNew();
+    viewer.setAppendNew(true);
+    String data = viewer.getPdbData(modelIndex, type);
+    boolean isOK = (data != null && viewer.loadInline(data, '\n', true));
+    viewer.setAppendNew(oldAppendNew);
     viewer.setFileInfo(savedFileInfo);
     if (!isOK)
       return;
     int modelCount = viewer.getModelCount();
-    runScript(TextFormat.simpleReplace(script, "%N%", "" + modelCount));
     viewer.setJmolDataFrame(type, modelIndex, modelCount - 1);
+    switch (datatype) {
+    case JmolConstants.JMOL_DATA_RAMACHANDRAN:
+    default:
+      runScript("frame 0.0; frame last; reset; center {0 0 0};"
+          + "select visible; color structure; select *; set rotationRadius 25;"
+          + "draw ramaAxisX" + modelCount + " {20 0 0} {-20 0 0} \"phi\";"
+          + "draw ramaAxisY" + modelCount + " {0 20 0} {0 -20 0} \"psi\";");
+      break;
+    case JmolConstants.JMOL_DATA_QUATERNION:  
+      runScript("frame 0.0; frame last; reset; center {0 0 0};"
+          + "select visible; trace 0.1; color trace structure; select *;"
+          + "isosurface quatSphere" + modelCount 
+          + " resolution 1.0 sphere 10.0 mesh nofill translucent 0.8;set rotationRadius 12");
+      break;
+    }
     viewer.addStateScript("frame " + viewer.getModelNumberDotted(modelIndex) 
         + "; " + type + ";", false);
     showString("frame " + viewer.getModelName(-modelCount) + " created: "
@@ -4875,7 +4880,7 @@ class Eval { //implements Runnable {
     if (isSyntaxCheck)
       return;
     if (isDisplay)
-      viewer.display(BitSetUtil.setAll(viewer.getAtomCount()), bs, tQuiet);
+      viewer.display(viewer.getModelAtomBitSet(-1), bs, tQuiet);
     else
       viewer.hide(bs, tQuiet);
   }
@@ -6771,30 +6776,6 @@ class Eval { //implements Runnable {
     setStringProperty("@" + variable, Escape.escape(bs));
   }
 
-  int[] getAtomIndices(BitSet bs) {
-    int len = bs.size();
-    int n = 0;
-    int atomCount = viewer.getModelSet().getAtomCount();
-    int[] indices = new int[atomCount];
-    for (int j = 0; j < len; j++)
-      if (bs.get(j))
-        indices[j] = ++n;
-    return indices;
-  }
-
-  BitSet getAtomBitsetFromBonds(BitSet bsBonds) {
-    BitSet bsAtoms = new BitSet();
-    int bondCount = viewer.getBondCount();
-    Bond[] bonds = viewer.getModelSet().getBonds();
-    for (int i = bondCount; --i >= 0;) {
-      if (!bsBonds.get(i))
-        continue;
-      bsAtoms.set(bonds[i].getAtomIndex1());
-      bsAtoms.set(bonds[i].getAtomIndex2());
-    }
-    return bsAtoms;
-  }
-
   String getBitsetIdent(BitSet bs, String label, Object tokenValue,
                         boolean useAtomMap) {
     boolean isAtoms = !(tokenValue instanceof BondSet);
@@ -6810,7 +6791,7 @@ class Eval { //implements Runnable {
     int[] indices = (isAtoms || !useAtomMap ? null : ((BondSet) tokenValue)
         .getAssociatedAtoms());
     if (indices == null && label != null && label.indexOf("%D") > 0)
-      indices = getAtomIndices(bs);
+      indices = viewer.getAtomIndices(bs);
     int nProp = 0;
     String[] props = null;
     float[][] propArray = null;
@@ -6913,7 +6894,7 @@ class Eval { //implements Runnable {
     BitSet bsNew = null;
 
     if (tok == Token.atoms)
-      bsNew = (!isAtoms && !isSyntaxCheck ? getAtomBitsetFromBonds(bs) : bs);
+      bsNew = (!isAtoms && !isSyntaxCheck ? viewer.getAtomsWithin(Token.bonds, bs) : bs);
     if (tok == Token.bonds)
       bsNew = (isAtoms && !isSyntaxCheck ? viewer.getBondsForSelectedAtoms(bs)
           : bs);
@@ -7110,7 +7091,7 @@ class Eval { //implements Runnable {
             fv = atom.getGroupPsi();
             break;
           case Token.surfacedistance:
-            modelSet.getSurfaceDistanceMax();
+            viewer.getSurfaceDistanceMax();
             fv = atom.getSurfaceDistance100() / 100f;
             break;
           case Token.temperature: // 0 - 9999
@@ -9405,12 +9386,11 @@ class Eval { //implements Runnable {
         if (isCavity)//not implemented: && tokProperty != Token.surfacedistance)
           invalidArgument();
         if (!isSyntaxCheck && !isCavity) {
-          ModelSet modelSet = viewer.getModelSet();
-          Atom[] atoms = modelSet.atoms;
+          Atom[] atoms = viewer.getModelSet().atoms;
           if (tokProperty == Token.surfacedistance)
-            viewer.getModelSet().getSurfaceDistanceMax();
+            viewer.getSurfaceDistanceMax();
           for (int iAtom = atomCount; --iAtom >= 0;) {
-            data[iAtom] = atomProperty(modelSet, atoms[iAtom], tokProperty,
+            data[iAtom] = atomProperty(atoms[iAtom], tokProperty,
                 false);
           }
         }
@@ -9976,6 +9956,7 @@ class Eval { //implements Runnable {
       String s = viewer.removeCommand();
       viewer.addCommand(s + CommandHistory.ERROR_FLAG);
       viewer.setCursor(Viewer.CURSOR_DEFAULT);
+      viewer.setRefreshing(true);
     }
     throw new ScriptException(message);
   }
@@ -11298,7 +11279,7 @@ class Eval { //implements Runnable {
         fmin = JmolConstants.DEFAULT_MIN_CONNECT_DISTANCE;
       }
       if (atoms1 == null)
-        atoms1 = BitSetUtil.setAll(viewer.getAtomCount());
+        atoms1 = viewer.getModelAtomBitSet(-1);
       if (haveDecimal && atoms2 == null)
         atoms2 = atoms1;
       if (atoms2 != null) {
@@ -11309,7 +11290,7 @@ class Eval { //implements Runnable {
             JmolConstants.CONNECT_IDENTIFY_ONLY, atoms1, atoms2, bsBonds,
             isBonds);
         return addX(new Token(Token.bitset, new BondSet(bsBonds,
-            getAtomIndices(getAtomBitsetFromBonds(bsBonds)))));
+            viewer.getAtomIndices(viewer.getAtomsWithin(Token.bonds, bsBonds)))));
       }
       if (isSyntaxCheck)
         return addX(atoms1);
@@ -11634,7 +11615,7 @@ class Eval { //implements Runnable {
             null, x2.value, op.value, false);
         if (op.intValue == Token.bonds)
           return addX(new Token(Token.bitset, new BondSet((BitSet) val,
-              getAtomIndices(Token.bsSelect(x2)))));
+              viewer.getAtomIndices(Token.bsSelect(x2)))));
         return addX(val);
       }
       return false;

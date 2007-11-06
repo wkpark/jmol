@@ -223,7 +223,7 @@ abstract class TransformManager {
   protected final Point3f fixedRotationOffset = new Point3f();
   protected final Point3f fixedRotationCenter = new Point3f(0, 0, 0);
   
-  private Point3f rotationCenterDefault;
+  private final Point3f rotationCenterDefault = new Point3f();
   private float rotationRadiusDefault;
 
   protected final AxisAngle4f fixedRotationAxis = new AxisAngle4f();
@@ -1734,7 +1734,7 @@ abstract class TransformManager {
       sb.append(";");
     }
     if (modelRadius != rotationRadiusDefault) {
-      sb.append(" rotationRadius =");
+      sb.append(" set rotationRadius");
       truncate2(sb, modelRadius);
       sb.append(";");
     }      
@@ -2098,7 +2098,7 @@ abstract class TransformManager {
   }
 
   void setDefaultRotation() {
-    rotationCenterDefault = viewer.getBoundBoxCenter();
+    rotationCenterDefault.set(viewer.getBoundBoxCenter());
     setFixedRotationCenter(rotationCenterDefault);
     rotationRadiusDefault = setRotationRadius(viewer
         .calcRotationRadius(rotationCenterDefault));

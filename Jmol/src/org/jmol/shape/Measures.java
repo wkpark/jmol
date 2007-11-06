@@ -59,6 +59,9 @@ public class Measures extends Shape {
 
   protected void initModelSet() {
     pendingMeasurement = new MeasurementPending(modelSet);
+    for (int i = 0; i < measurements.length; i++)
+      if (measurements[i] != null)
+        measurements[i].modelSet = modelSet; 
   }
   
   public void initShape() {

@@ -86,8 +86,9 @@ public class Axes extends FontLineShape {
     return null;
   }
 
+  Vector3f corner = new Vector3f();
   void setScale(float scale) {
-    Vector3f corner = viewer.getBoundBoxCornerVector();
+    corner.set(viewer.getBoundBoxCornerVector());
     for (int i = 6; --i >= 0;) {
       Point3f axisPoint = axisPoints[i];
       axisPoint.set(unitAxisPoints[i]);

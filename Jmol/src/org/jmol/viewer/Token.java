@@ -368,7 +368,7 @@ public class Token {
   // ___.xxx math properties and all atom properties 
   
   final static int atoms     = 1 | mathproperty;
-  final static int bonds     = 2 | mathproperty | setparam;
+  final public static int bonds     = 2 | mathproperty | setparam;
   final static int color     = 3 | mathproperty | command | colorparam | setparam | numberOrExpression | settable;
   final static int ident     = 4 | mathproperty;
   final static int length    = 5 | mathproperty;

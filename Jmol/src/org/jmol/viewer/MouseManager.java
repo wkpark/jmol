@@ -130,7 +130,7 @@ public abstract class MouseManager implements KeyListener {
   }
     
   protected void processKeyEvent(KeyEvent ke) {
-    System.out.println("processKeyEvent"+ke);
+    //System.out.println("processKeyEvent"+ke);
   }
 
   Rectangle getRubberBand() {

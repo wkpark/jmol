@@ -140,7 +140,7 @@ class ColorManager {
       return ColorEncoder.getColorIndexFromPalette(atom.getBfactor100(), 
           lo, hi, ColorEncoder.BWR);
     case JmolConstants.PALETTE_SURFACE:
-      hi = viewer.getModelSet().getSurfaceDistanceMax();
+      hi = viewer.getSurfaceDistanceMax();
       return ColorEncoder.getColorIndexFromPalette(atom.getSurfaceDistance100(), 
           0, hi, ColorEncoder.BWR);
     case JmolConstants.PALETTE_AMINO:

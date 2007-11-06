@@ -38,7 +38,7 @@ import java.util.Vector;
 
 public class Measurement {
 
-  ModelSet modelSet;
+  public ModelSet modelSet;
   Viewer viewer;
   
   protected int count;

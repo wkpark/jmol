@@ -30,6 +30,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.atomdata.AtomData;
+import org.jmol.shape.Closest;
 import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Shape;
 import org.jmol.shape.Dipoles;
@@ -64,6 +65,14 @@ import java.util.Vector;
 abstract public class ModelSet extends ModelCollection {
 
   ////////////////////////////////////////////////////////////////
+
+  protected void releaseModelSet() {
+    for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
+      shapes[i] = null;
+    models = null;
+    closest.atom = null;
+    super.releaseModelSet();
+  }
 
   //variables that will be reset when a new frame is instantiated
 
@@ -136,6 +145,8 @@ abstract public class ModelSet extends ModelCollection {
     return shapes[i];
   }
   
+  protected final Closest closest = new Closest();
+
   public int findNearestAtomIndex(int x, int y) {
     if (atomCount == 0)
       return -1;
@@ -365,7 +376,11 @@ abstract public class ModelSet extends ModelCollection {
 
   public void deleteAllBonds() {
     //StateManager
-    stateScripts.clear();
+    for (int i = 0; i < stateScripts.size();) 
+      if (((String) stateScripts.get(i)).indexOf("connect") == 0)
+        stateScripts.removeElementAt(i);
+      else
+        i++;
     super.deleteAllBonds();
   }
 
@@ -375,20 +390,6 @@ abstract public class ModelSet extends ModelCollection {
    * 
    ********************************************************/
  
-  private Vector stateScripts = new Vector();
-  private int thisStateModel = 0;
-
-  public void addStateScript(String script, boolean addFrameNumber) {
-    int iModel = viewer.getCurrentModelIndex();
-    if (thisStateModel != iModel) {
-      thisStateModel = iModel;
-      if (addFrameNumber)
-        script = "  frame " + (iModel < 0 ? "" + iModel : getModelName(-1 - iModel))
-            + ";\n" + script;
-    }
-    stateScripts.addElement(script);
-  }
-
   public String getState(StringBuffer sfunc, boolean isAll) {
     StringBuffer commands = new StringBuffer();
     if (isAll && sfunc != null) {

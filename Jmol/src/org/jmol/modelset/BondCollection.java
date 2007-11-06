@@ -36,6 +36,12 @@ import org.jmol.viewer.Token;
 
 abstract public class BondCollection extends AtomCollection {
 
+  protected void releaseModelSet() {
+    bonds = null;
+    freeBonds = null;
+    super.releaseModelSet();
+  }
+
   Bond[] bonds;
   int bondCount;
   
@@ -93,15 +99,7 @@ abstract public class BondCollection extends AtomCollection {
   }
   
   public int getBondModelIndex(int i) {
-    Atom atom = bonds[i].getAtom1();
-    if (atom != null) {
-      return atom.getModelIndex();
-    }
-    atom = bonds[i].getAtom2();
-    if (atom != null) {
-      return atom.getModelIndex();
-    }
-    return 0;
+    return bonds[i].atom1.atomIndex;
   }
 
   /**
@@ -921,13 +919,30 @@ abstract public class BondCollection extends AtomCollection {
     BitSet bs = new BitSet();
     for (int i = bondCount; --i >= 0;)
       if (bonds[i].isAromatic()) {
-        bs.set(bonds[i].getAtomIndex1());
-        bs.set(bonds[i].getAtomIndex2());
+        bs.set(bonds[i].atom1.atomIndex);
+        bs.set(bonds[i].atom2.atomIndex);
       }
     return bs;
   }
 
-
+  public BitSet getAtomsWithin(int tokType, BitSet bs) {
+    switch (tokType) {
+    case Token.bonds:
+      return getAtomBitsetFromBonds(bs);
+    }
+    return super.getAtomsWithin(tokType, bs);
+  }
+  
+  BitSet getAtomBitsetFromBonds(BitSet bsBonds) {
+    BitSet bsAtoms = new BitSet();
+    for (int i = bondCount; --i >= 0;) {
+      if (!bsBonds.get(i))
+        continue;
+      bsAtoms.set(bonds[i].atom1.atomIndex);
+      bsAtoms.set(bonds[i].atom2.atomIndex);
+    }
+    return bsAtoms;
+  }
 
 }
 

@@ -180,7 +180,6 @@ public final class ModelLoader extends ModelSet {
     currentModel = null;
   }
 
-  private Chain nullChain;
   Group nullGroup; // used in Atom
 
   private int baseModelIndex = 0;
@@ -188,17 +187,17 @@ public final class ModelLoader extends ModelSet {
   private int baseAtomIndex = 0;
   private int baseBondIndex = 0;
   private int baseGroupIndex = 0;
-  private boolean appendNew = true;
+  private boolean appendNew;
   private int adapterModelCount = 0;
   
   private void initializeModelSet(JmolAdapter adapter, Object clientFile) {
     adapterModelCount = (adapter == null ? 1 : adapter
         .getAtomSetCount(clientFile));
+    appendNew = (!merging || adapter == null || adapterModelCount > 1 || viewer.getAppendNew());
     initializeAtomBondModelCounts();
     if (adapter == null) {
       setModelNameNumberProperties(0, "", 1, null, null, false, null);
     } else {
-      appendNew = (adapterModelCount > 1 || viewer.getAppendNew());
       if (adapterModelCount > 0) {
         Logger.info("ModelSet: haveSymmetry:" + someModelsHaveSymmetry
             + " haveUnitcells:" + someModelsHaveUnitcells
@@ -230,8 +229,18 @@ public final class ModelLoader extends ModelSet {
     calcBoundBoxDimensions();
 
     finalizeShapes();
+    if (mergeModelSet != null)
+      mergeModelSet.releaseModelSet();    
+    mergeModelSet = null;
   }
 
+  protected void releaseModelSet() {
+    group3Lists = null;
+    group3Counts = null;
+    groups = null;
+    super.releaseModelSet();
+  }
+  
   private void initializeAtomBondModelCounts() {
     atomCount = 0;
     bondCount = 0;
@@ -274,21 +283,14 @@ public final class ModelLoader extends ModelSet {
     //model to be undefined. Not guarantee to work.
     if (!appendNew && isPDB) 
       structuresDefinedInFile.clear(baseModelIndex);
-    atomNames = mergeModelSet.atomNames;
-    clientAtomReferences = mergeModelSet.clientAtomReferences;
-    vibrationVectors = mergeModelSet.vibrationVectors;
-    occupancies = mergeModelSet.occupancies;
-    bfactor100s = mergeModelSet.bfactor100s;
-    partialCharges = mergeModelSet.partialCharges;
-    specialAtomIDs = mergeModelSet.specialAtomIDs;
+    copyAtomData(mergeModelSet);
     surfaceDistance100s = null;
   }
 
   private void iterateOverAllNewModels(JmolAdapter adapter, Object clientFile) {
 
     if (modelCount > 0) {
-      nullChain = new Chain(this, getModel(baseModelIndex), ' ');
-      nullGroup = new Group(nullChain, "", 0, -1, -1);
+      nullGroup = new Group(new Chain(this, getModel(baseModelIndex), ' '), "", 0, -1, -1);
     }
 
     group3Lists = new String[modelCount + 1];
@@ -324,9 +326,106 @@ public final class ModelLoader extends ModelSet {
       if (getModelAuxiliaryInfo(ipt, "periodicOriginXyz") != null)
         someModelsHaveSymmetry = true;
     }
-    finalizeModelNumbers(baseModelCount);
+    finalizeModels(baseModelCount);
   }
     
+  /**
+   * Model numbers are considerably more complicated in Jmol 11.
+   * 
+   * int modelNumber
+   *  
+   *   The adapter gives us a modelNumber, but that is not necessarily
+   *   what the user accesses. If a single files is loaded this is:
+   *   
+   *   a) single file context:
+   *   
+   *     1) the sequential number of the model in the file , or
+   *     2) if a PDB file and "MODEL" record is present, that model number
+   *     
+   *   b) multifile context:
+   *   
+   *     always 1000000 * (fileIndex + 1) + (modelIndexInFile + 1)
+   *   
+   *   
+   * int fileIndex
+   * 
+   *   The 0-based reference to the file containing this model. Used
+   *   when doing   "select model=3.2" in a multifile context
+   *   
+   * int modelFileNumber
+   * 
+   *   An integer coding both the file and the model:
+   *   
+   *     file * 1000000 + modelInFile (1-based)
+   *     
+   *   Used all over the place. Note that if there is only one file,
+   *   then modelFileNumber < 1000000.
+   * 
+   * String modelNumberDotted
+   *   
+   *   A number the user can use "1.3"
+   *   
+   * @param baseModelCount
+   *    
+   */
+  private void finalizeModels(int baseModelCount) {
+    if (modelCount == baseModelCount)
+      return;
+    String sNum;
+    int modelnumber = 0;
+
+    int lastfilenumber = -1;
+    if (baseModelCount > 0) {
+      if (models[0].modelNumber < 1000000) {
+        for (int i = 0; i < baseModelCount; i++) {
+          models[i].modelNumber = 1000000 + i + 1;
+          models[i].modelNumberDotted = "1." + (i + 1);
+          if (models[i].modelTag.length() == 0)
+            models[i].modelTag = "" + models[i].modelNumber;
+        }
+      }
+      modelnumber = models[baseModelCount - 1].modelNumber;
+      modelnumber -= modelnumber % 1000000;
+      if (models[baseModelCount].modelNumber < 1000000)
+        modelnumber += 1000000;
+      for (int i = baseModelCount; i < modelCount; i++) {
+        models[i].modelNumber += modelnumber;
+        models[i].modelNumberDotted = (modelnumber / 1000000) + "."
+            + (modelnumber % 1000000);
+        if (models[i].modelTag.length() == 0)
+          models[i].modelTag = "" + models[i].modelNumber;
+      }
+    }
+    for (int i = baseModelCount; i < modelCount; ++i) {
+      int filenumber = models[i].modelNumber / 1000000;
+      if (filenumber != lastfilenumber) {
+        modelnumber = 0;
+        lastfilenumber = filenumber;
+      }
+      modelnumber++;
+      if (filenumber == 0) {
+        // only one file -- take the PDB number or sequential number as given by adapter
+        sNum = "" + getModelNumber(i);
+        filenumber = 1;
+      } else {
+        //        //if only one file, just return the integer file number
+        //      if (modelnumber == 1
+        //        && (i + 1 == modelCount || models[i + 1].modelNumber / 1000000 != filenumber))
+        //    sNum = filenumber + "";
+        // else
+        sNum = filenumber + "." + modelnumber;
+      }
+      models[i].modelNumberDotted = sNum;
+      models[i].fileIndex = filenumber - 1;
+      models[i].modelInFileIndex = modelnumber - 1;
+      models[i].modelFileNumber = filenumber * 1000000 + modelnumber;
+    }
+    
+    if (merging)
+      for (int i = 0; i < baseModelCount; i++)
+        models[i].modelSet = this;
+  }
+
   private void iterateOverAllNewAtoms(JmolAdapter adapter, Object clientFile) {
     // atom is created, but not all methods are safe, because it
     // has no group -- this is only an issue for debugging
@@ -904,5 +1003,4 @@ public final class ModelLoader extends ModelSet {
     loadShape(JmolConstants.SHAPE_BBCAGE);
     loadShape(JmolConstants.SHAPE_UCCAGE);
   }
-
 }

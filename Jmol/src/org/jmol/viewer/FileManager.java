@@ -406,7 +406,7 @@ class FileManager {
     if (appletDocumentBase != null) {
       // This code is only for the applet
       try {
-        if (defaultDirectory != "" && name.indexOf(":") < 0)
+        if (defaultDirectory.length() != 0 && name.indexOf(":") < 0)
           name = defaultDirectory + "/" + name;
         URL url = new URL(appletDocumentBase, name);
         fullPathName = url.toString();
@@ -432,7 +432,7 @@ class FileManager {
         return;
       }
     }
-    if (name.indexOf(":") < 0 && defaultDirectory != "")
+    if (name.indexOf(":") < 0 && defaultDirectory.length() > 0)
       name = defaultDirectory + "/" + name;
     file = new File(name);
     fullPathName = file.getAbsolutePath();
@@ -454,7 +454,7 @@ class FileManager {
       if (isApplet || isURL) {
         if (isApplet && isURL && appletProxy != null)
           name = appletProxy + "?url=" + URLEncoder.encode(name, "utf-8");
-        else if (!isURL && defaultDirectory != "")
+        else if (!isURL && defaultDirectory.length() != 0)
           name = defaultDirectory + "/" + name;
         URL url = (isApplet ? new URL(appletDocumentBase, name) : new URL(name));
         Logger.info("FileManager opening " + url.toString());
@@ -462,7 +462,7 @@ class FileManager {
         length = conn.getContentLength();
         in = conn.getInputStream();
       } else {
-        if (!isURL && name.indexOf(":") < 0 && defaultDirectory != "")
+        if (!isURL && name.indexOf(":") < 0 && defaultDirectory.length() != 0)
           name = defaultDirectory + "/" + name;
         Logger.info("FileManager opening " + name);
         File file = new File(name);

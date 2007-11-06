@@ -52,6 +52,40 @@ import org.jmol.viewer.Viewer;
 
 abstract public class AtomCollection {
 
+  protected void releaseModelSet() {
+    atoms = null;
+    viewer = null;
+    g3d = null;
+    bspf = null;
+    withinModelIterator = null;
+    withinAtomSetIterator = null;
+    surfaceDistance100s = null;
+    bsSurface = null;
+    tainted = null;
+
+    atomNames = null;
+    atomSerials = null;
+    clientAtomReferences = null;
+    vibrationVectors = null;
+    occupancies = null;
+    bfactor100s = null;
+    partialCharges = null;
+    specialAtomIDs = null;
+
+  }
+
+  protected void copyAtomData(AtomCollection mergeModelSet) {
+    tainted = mergeModelSet.tainted;
+    atomNames = mergeModelSet.atomNames;
+    atomSerials = mergeModelSet.atomSerials;
+    clientAtomReferences = mergeModelSet.clientAtomReferences;
+    vibrationVectors = mergeModelSet.vibrationVectors;
+    occupancies = mergeModelSet.occupancies;
+    bfactor100s = mergeModelSet.bfactor100s;
+    partialCharges = mergeModelSet.partialCharges;
+    specialAtomIDs = mergeModelSet.specialAtomIDs;
+  }
+  
   Viewer viewer;
   Graphics3D g3d;
 
@@ -140,20 +174,24 @@ abstract public class AtomCollection {
 
   //////////// iterators //////////
   
-  private final AtomIteratorWithinModel withinModelIterator = new AtomIteratorWithinModel();
+  private AtomIteratorWithinModel withinModelIterator;
 
   public AtomIterator getWithinModelIterator(Atom atomCenter, float radius) {
     //Polyhedra, within()
     initializeBspf();
+    if (withinModelIterator == null)
+      withinModelIterator = new AtomIteratorWithinModel();
     withinModelIterator.initialize(bspf, atomCenter.modelIndex, atomCenter, radius);
     return withinModelIterator;
   }
 
-  private final AtomIteratorWithinSet withinAtomSetIterator = new AtomIteratorWithinSet();
+  private AtomIteratorWithinSet withinAtomSetIterator;
 
   public AtomIndexIterator getWithinAtomSetIterator(int atomIndex, float distance, BitSet bsSelected, boolean isGreaterOnly, boolean modelZeroBased) {
     //EnvelopeCalculation, IsoSolventReader, within 
     initializeBspf();
+    if (withinAtomSetIterator == null)
+      withinAtomSetIterator = new AtomIteratorWithinSet();
     withinAtomSetIterator.initialize((ModelSet) this, bspf, atoms[atomIndex].modelIndex, atomIndex, distance, bsSelected, isGreaterOnly, modelZeroBased);
     return withinAtomSetIterator;
   }
@@ -161,6 +199,8 @@ abstract public class AtomCollection {
   AtomIndexIterator getWithinAtomSetIterator(int modelIndex, int atomIndex, float distance) {
     //EnvelopeCalculation, IsoSolventReader, within 
     initializeBspf();
+    if (withinAtomSetIterator == null)
+      withinAtomSetIterator = new AtomIteratorWithinSet();
     withinAtomSetIterator.initialize((ModelSet) this, bspf, modelIndex, atomIndex, distance, null, false, false);
     return withinAtomSetIterator;
   }
@@ -502,7 +542,6 @@ abstract public class AtomCollection {
     if (xyz == null && (values == null || values.length == 0))
       return;
     int n = 0;
-    int atomCount = getAtomCount();
     for (int i = 0; i < atomCount; i++) {
       if (!bs.get(i))
         continue;
@@ -764,7 +803,7 @@ abstract public class AtomCollection {
   final private static byte TAINT_VIBRATION = 6;
   final protected static byte TAINT_MAX = 7;
     
-  private BitSet[] tainted;  // not final -- can be set to null
+  protected BitSet[] tainted;  // not final -- can be set to null
 
   public BitSet getTaintedAtoms(byte type) {
     return tainted == null ? null : tainted[type];
@@ -843,8 +882,6 @@ abstract public class AtomCollection {
 
 ///////////////////////////////////////////
   
-  protected final Closest closest = new Closest();
-
   private final static int minimumPixelSelectionRadius = 6;
 
   /*
@@ -1550,17 +1587,19 @@ abstract public class AtomCollection {
     return bs;
   }
 
-  public BitSet getModelAtomBitSet(int modelIndex) {
-    BitSet bs = new BitSet();
-    for (int i = 0; i < atomCount; i++)
-      if (modelIndex < 0 || atoms[i].modelIndex == modelIndex)
-        bs.set(i);
-    return bs;
+  public int[] getAtomIndices(BitSet bs) {
+    int len = bs.size();
+    int n = 0;
+    int[] indices = new int[atomCount];
+    for (int j = 0; j < len; j++)
+      if (bs.get(j))
+        indices[j] = ++n;
+    return indices;
   }
 
   public BitSet getAtomsWithin(float distance, Point4f plane) {
     BitSet bsResult = new BitSet();
-    for (int i = getAtomCount(); --i >= 0;) {
+    for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
       float d = Graphics3D.distanceToPlane(plane, atom);
       if (distance > 0 && d >= -0.1 && d <= distance || distance < 0
@@ -1613,7 +1652,7 @@ abstract public class AtomCollection {
     //Logger.debug("withinGroup");
     Group groupLast = null;
     BitSet bsResult = new BitSet();
-    for (int i = getAtomCount(); --i >= 0;) {
+    for (int i = atomCount; --i >= 0;) {
       if (!bs.get(i))
         continue;
       Atom atom = atoms[i];
@@ -1647,10 +1686,10 @@ abstract public class AtomCollection {
   private BitSet withinModel(BitSet bs) {
     BitSet bsResult = new BitSet();
     BitSet bsThis = new BitSet();
-    for (int i = getAtomCount(); --i >= 0;)
+    for (int i = atomCount; --i >= 0;)
       if (bs.get(i))
         bsThis.set(atoms[i].modelIndex);
-    for (int i = getAtomCount(); --i >= 0;)
+    for (int i = atomCount; --i >= 0;)
       if (bsThis.get(atoms[i].modelIndex))
         bsResult.set(i);
     return bsResult;
@@ -1660,10 +1699,10 @@ abstract public class AtomCollection {
     //Logger.debug("withinGroup");
     BitSet bsResult = new BitSet();
     BitSet bsThis = new BitSet();
-    for (int i = getAtomCount(); --i >= 0;)
+    for (int i = atomCount; --i >= 0;)
       if (bs.get(i))
         bsThis.set(atoms[i].atomSite);
-    for (int i = getAtomCount(); --i >= 0;)
+    for (int i = atomCount; --i >= 0;)
       if (bsThis.get(atoms[i].atomSite))
         bsResult.set(i);
     return bsResult;
@@ -1673,10 +1712,10 @@ abstract public class AtomCollection {
     //Logger.debug("withinGroup");
     BitSet bsResult = new BitSet();
     BitSet bsThis = new BitSet();
-    for (int i = getAtomCount(); --i >= 0;)
+    for (int i = atomCount; --i >= 0;)
       if (bs.get(i))
         bsThis.set(getElementNumber(i));
-    for (int i = getAtomCount(); --i >= 0;)
+    for (int i = atomCount; --i >= 0;)
       if (bsThis.get(getElementNumber(i)))
         bsResult.set(i);
     return bsResult;

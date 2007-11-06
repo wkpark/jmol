@@ -49,7 +49,9 @@ class ModelManager {
   ModelSet zap() {
     clear();
     fullPathName = fileName;
+    //System.out.println(modelLoader + " zapping a");
     modelLoader = new ModelLoader(viewer, "empty");
+    //System.out.println(modelLoader + " zapping b");
     return (ModelSet) modelLoader;
   }
   
@@ -62,10 +64,12 @@ class ModelManager {
   }
 
   ModelSet merge(JmolAdapter adapter, Object clientFile ) {
+    //System.out.println(modelLoader + " merging a");
     modelLoader = new ModelLoader(viewer, adapter, clientFile,
         modelLoader, "merge");
     if (modelLoader.getAtomCount() == 0)
       zap();
+    //System.out.println(modelLoader + " merging b");
     return (ModelSet) modelLoader;
   }
   
@@ -84,8 +88,10 @@ class ModelManager {
     }
     if (modelSetName == null)
       modelSetName = reduceFilename(fileName);
+    //System.out.println(modelLoader + " setclient a");
     modelLoader = new ModelLoader(viewer, adapter, clientFile, null, modelSetName);
     //haveFile = true;
+    //System.out.println(modelLoader + " setclient b");
     if (modelLoader.getAtomCount() == 0)
       zap();
     return (ModelSet) modelLoader;

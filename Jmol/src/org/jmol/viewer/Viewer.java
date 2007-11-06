@@ -103,6 +103,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // these are all private now so we are certain they are not 
   // being accesed by any other classes
 
+  
   private Component display;
   private Graphics3D g3d;
   private JmolAdapter modelAdapter;
@@ -1329,7 +1330,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // typically a string such as "(atomno < 3)"
     return Eval.getAtomBitSet(eval, this, atomExpression);
   }
-
+  
   Vector getAtomBitSetVector(Object atomExpression) {
     return Eval.getAtomBitSetVector(eval, this, atomExpression);
   }
@@ -1365,8 +1366,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void setDefaultDirectory(String dir) {
-    global.defaultDirectory = (dir == null || dir.length() == 0 ? null
-        : dir.replace('\\', '/'));
+    global.defaultDirectory = (dir == null ? "" : dir.replace('\\', '/'));
   }
 
   String getDefaultDirectory() {
@@ -1830,6 +1830,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet != null;
   }
 
+  int getSurfaceDistanceMax() {
+    return modelSet.getSurfaceDistanceMax();
+  }
+  
   public void calculateStructures() {
     //Eval
     modelSet.calculateStructures(repaintManager.currentModelIndex);
@@ -2141,6 +2145,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public float getMinBondDistance() {
     return global.minBondDistance;
+  }
+
+  int[] getAtomIndices(BitSet bs) {
+    return modelSet.getAtomIndices(bs);
   }
 
   BitSet getAtomBits(int tokType) {
@@ -2760,7 +2768,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private boolean refreshing = true;
 
-  private void setRefreshing(boolean TF) {
+  void setRefreshing(boolean TF) {
+    //also set by Eval error to TRUE
     refreshing = TF;
   }
 
@@ -5250,7 +5259,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.useNumberLocalization;
   }
 
-  private void setAppendNew(boolean TF) {
+  void setAppendNew(boolean TF) {
+    //Eval dataFrame
     global.appendNew = TF;
   }
 
@@ -5495,6 +5505,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int getBondModelIndex(int i) {
+    //legacy
     return modelSet.getBondModelIndex(i);
   }
 
@@ -6056,12 +6067,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   
   
   public Point3f getBondPoint3f1(int i) {
-    //old Povray only
+    //legacy -- no calls
     return (Point3f) modelSet.getBondAtom1(i);
   }
 
   public Point3f getBondPoint3f2(int i) {
-    //old Povray only
+    //legacy -- no calls
     return (Point3f) modelSet.getBondAtom2(i);
   }
 

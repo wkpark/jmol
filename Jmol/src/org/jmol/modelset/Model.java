@@ -23,6 +23,7 @@
  */
 package org.jmol.modelset;
 import java.util.BitSet;
+import java.util.Hashtable;
 
 import org.jmol.util.ArrayUtil;
 
@@ -81,12 +82,12 @@ public final class Model {
   int moleculeCount;
   int nAltLocs;
   int nInsertions;
-  int ramachandranFrame;
-  int quaternionFrame = -1;
+  BitSet bsAtoms;
+  
+  boolean isPDB;
+  
+  Hashtable dataFrames;
   int dataSourceFrame = -1;
-  
-  boolean isPDB = false;
-  
   String jmolData; // from a PDB remark "Jmol PDB-encoded data"
   String jmolDataType;
 
@@ -99,7 +100,7 @@ public final class Model {
   Model(ModelSet modelSet, int modelIndex, int modelNumber,
       String modelTag, String modelTitle, String modelFile, String jmolData) {
     this.modelSet = modelSet;
-    this.modelIndex = modelIndex;
+    dataSourceFrame = this.modelIndex = modelIndex;
     this.modelNumber = modelNumber;
     this.modelTag = modelTag;
     this.modelTitle = modelTitle;

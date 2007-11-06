@@ -693,7 +693,8 @@ public class StateManager {
     boolean isJmolVariable(String key) {
       return htParameterValues.containsKey(key = key.toLowerCase()) 
       || htPropertyFlags.containsKey(key)
-      || unnecessaryProperties.indexOf(";" + key + ";") >= 0;
+      || unnecessaryProperties.indexOf(";" + key + ";") >= 0
+      || key.indexOf("callback") >= 0;
     }
 
     void clearVolatileProperties() {

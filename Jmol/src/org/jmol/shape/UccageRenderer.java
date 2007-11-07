@@ -50,8 +50,8 @@ public class UccageRenderer extends FontLineShapeRenderer {
   protected void render() {
     short mad = viewer.getObjectMad(StateManager.OBJ_UNITCELL);
     colix = viewer.getObjectColix(StateManager.OBJ_UNITCELL);
-    if (mad == 0 || !g3d.setColix(colix))
-        return;
+    if (mad == 0 || !g3d.setColix(colix) || viewer.isJmolDataFrame())
+      return;
     doLocalize = viewer.getUseNumberLocalization();
     render1(mad);
   }

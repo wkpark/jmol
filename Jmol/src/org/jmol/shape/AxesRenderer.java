@@ -65,9 +65,10 @@ public class AxesRenderer extends FontLineShapeRenderer {
       nPoints = 3;
       labelPtr = 6;
     }
-    viewer.transformPoint(axes.originPoint, originScreen);
+    boolean isDataFrame = viewer.isJmolDataFrame();
+    viewer.transformPoint(axes.getOriginPoint(isDataFrame), originScreen);
     for (int i = nPoints; --i >= 0;)
-      viewer.transformPoint(axes.axisPoints[i], axisScreens[i]);
+      viewer.transformPoint(axes.getAxisPoint(i, isDataFrame), axisScreens[i]);
     int widthPixels = mad;
     if (mad >= 20)
       widthPixels = viewer.scaleToScreen(originScreen.z, mad);

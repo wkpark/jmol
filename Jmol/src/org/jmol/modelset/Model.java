@@ -83,6 +83,7 @@ public final class Model {
   int nAltLocs;
   int nInsertions;
   BitSet bsAtoms;
+  String frameTitle;
   
   boolean isPDB;
   

@@ -28,12 +28,13 @@ import javax.vecmath.Point3i;
 
 public class EchoRenderer extends ShapeRenderer {
 
+  boolean antialias;
   protected void render() {
     Echo echo = (Echo)shape;
     
     Point3i pt = new Point3i();
     Enumeration e = echo.texts.elements();
-    boolean antialias = g3d.isAntialiased();
+    antialias = g3d.isAntialiased();
     while (e.hasMoreElements()) {
       Text t = (Text)e.nextElement();
       if (t.valign == Text.XYZ) {
@@ -42,5 +43,24 @@ public class EchoRenderer extends ShapeRenderer {
       }
       t.render(g3d, antialias);
     }
+    String frameTitle = viewer.getFrameTitle();
+    if (frameTitle != null && frameTitle.length() > 0)
+      renderFrameTitle(frameTitle);
   }
+  
+  private void renderFrameTitle(String frameTitle) {
+    if (isGenerator || !g3d.setColix(viewer.getColixBackgroundContrast()))
+      return;
+    byte fid = g3d.getFontFid("Monospaced", 14);
+    g3d.setFont(fid);
+    int y = viewer.getScreenHeight() - 20;
+    int x = 5;
+    if (antialias) {
+      y <<= 1;
+      x <<= 1;
+    }
+    g3d.drawStringNoSlab(frameTitle, null, x, y, 0);
+  }
+
+  
 }

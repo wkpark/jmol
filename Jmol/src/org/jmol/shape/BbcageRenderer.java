@@ -36,7 +36,8 @@ public class BbcageRenderer extends FontLineShapeRenderer {
 
   protected void render() {
     short mad = viewer.getObjectMad(StateManager.OBJ_BOUNDBOX);
-    if (mad == 0 || !isGenerator && !g3d.checkTranslucent(false))
+    if (mad == 0 || !isGenerator && !g3d.checkTranslucent(false)
+        || viewer.isJmolDataFrame())
       return;
     colix = viewer.getObjectColix(StateManager.OBJ_BOUNDBOX);
     render(mad, modelSet.getBboxVertices(), screens, null, 0);

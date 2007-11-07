@@ -47,6 +47,8 @@ public abstract class MeshCollection extends Shape {
   public short colix;
   public String myType;
   public boolean explicitID;
+  protected String previousMeshID;
+  
   public String[] title;
   protected boolean allowMesh = true;
   
@@ -60,17 +62,17 @@ public abstract class MeshCollection extends Shape {
       currentMesh = meshes[meshIndex];
     } else {
       allocMesh(thisID);
-    }
-    
-    //System.out.println("setMesh: " + currentMesh.thisID + " " + currentMesh);
+    }    
     if (currentMesh.thisID == null)
       currentMesh.thisID = myType + (++nUnnamed);
+    previousMeshID = currentMesh.thisID;
     return currentMesh;
   }
 
   public void allocMesh(String thisID) {
     meshes = (Mesh[])ArrayUtil.ensureLength(meshes, meshCount + 1);
     currentMesh = meshes[meshCount++] = new Mesh(thisID, g3d, colix);
+    previousMeshID = null;
   }
 
   public void initShape() {
@@ -107,6 +109,8 @@ public abstract class MeshCollection extends Shape {
       String id = (String) value;
       setMesh(id);
       explicitID = id != null && !id.equals(JmolConstants.PREVIOUS_MESH_ID);
+      if (explicitID)
+        previousMeshID = id;
       return;
     }
 
@@ -321,9 +325,14 @@ public abstract class MeshCollection extends Shape {
     meshes[--meshCount] = null;
   }
   
+  protected int getPrevMeshIndex() {
+    return (previousMeshID == null 
+        ? meshCount - 1 : getIndexFromName(previousMeshID));
+  }
+  
   public int getIndexFromName(String thisID) {
-    if (thisID.equals(JmolConstants.PREVIOUS_MESH_ID))
-      return meshCount - 1;
+    if (JmolConstants.PREVIOUS_MESH_ID.equals(thisID))
+      return getPrevMeshIndex();
     for (int i = meshCount; --i >= 0; ) {
       if (meshes[i] != null && thisID.equals(meshes[i].thisID))
         return i;
@@ -347,7 +356,6 @@ public abstract class MeshCollection extends Shape {
     else
       currentMesh.modelIndex = viewer.getCurrentModelIndex();
     currentMesh.scriptCommand = script;
-    //System.out.println("setModelIndex " + atomIndex + " " + modelIndex + " " + currentMesh.modelIndex + " " + currentMesh);
   }
 
  public String getShapeState() {
@@ -358,7 +366,7 @@ public abstract class MeshCollection extends Shape {
         continue;
       Mesh mesh = meshes[i];
       if (mesh.modelIndex > 0 && modelCount > 1)
-        appendCmd(s, "frame " + viewer.getModelNumber(mesh.modelIndex));
+        appendCmd(s, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));
       appendCmd(s, cmd);
       if (cmd.charAt(0) != '#') {
         if (allowMesh)

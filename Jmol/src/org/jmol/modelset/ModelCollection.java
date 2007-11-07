@@ -584,7 +584,7 @@ abstract public class ModelCollection extends BondCollection {
       models[modelIndex].getPdbData(ctype, isDerivative, bsAtoms, pdbATOM,
           pdbCONECT);
     pdbATOM.append(pdbCONECT);
-    return getProteinStructureState(bsAtoms) + pdbATOM.toString();
+    return getProteinStructureState(bsAtoms, ctype == 'r') + pdbATOM.toString();
   }
 
   /* **********************
@@ -623,6 +623,16 @@ abstract public class ModelCollection extends BondCollection {
     return remark + s;
   }
 
+  public void setFrameTitle(int modelIndex, String title) {
+    if (modelIndex >= 0 && modelIndex < modelCount)
+      models[modelIndex].frameTitle = title;
+  }
+  
+  public String getFrameTitle(int modelIndex) {
+    return (modelIndex >= 0 && modelIndex < modelCount ?
+        models[modelIndex].frameTitle : "");
+  }
+  
   public boolean isJmolDataFrame(int modelIndex) {
     return (modelIndex >= 0 && modelIndex < modelCount && models[modelIndex].jmolData != null);
   }
@@ -1316,7 +1326,7 @@ abstract public class ModelCollection extends BondCollection {
 
   //////////// state definition ///////////
 
-  protected String getProteinStructureState(BitSet bsAtoms) {
+  protected String getProteinStructureState(BitSet bsAtoms, boolean needPhiPsi) {
     BitSet bs = null;
     StringBuffer cmd = new StringBuffer();
     StringBuffer sbTurn = new StringBuffer();
@@ -1339,73 +1349,73 @@ abstract public class ModelCollection extends BondCollection {
         id = Integer.MIN_VALUE;
         if (i == atomCount || (id = atoms[i].getProteinStructureID()) != lastId) {
           if (bs != null) {
-            if (itype != JmolConstants.PROTEIN_STRUCTURE_HELIX
-                && itype != JmolConstants.PROTEIN_STRUCTURE_TURN
-                && itype != JmolConstants.PROTEIN_STRUCTURE_SHEET) {
-              bs = null;
-              continue;
-            }
-            n++;
-            if (bsAtoms == null) {
-              cmd.append("  structure ").append(
-                  JmolConstants.getProteinStructureName(itype)).append(" ")
-                  .append(Escape.escape(bs)).append("    \t# model=").append(
-                      getModelName(-1 - atoms[iLastAtom].modelIndex)).append(
-                      " & (").append(res1).append(" - ").append(res2).append(
-                      ");\n");
-            } else {
-              String str;
-              int nx;
-              String sid;
-              StringBuffer sb;
-              switch (itype) {
-              case JmolConstants.PROTEIN_STRUCTURE_HELIX:
-                nx = ++nHelix;
-                sid = "H" + nx;
-                str = "HELIX  %3N %3ID %3GROUPA   %4RESA  %3GROUPB   %4RESB\n";
-                sb = sbHelix;
-                break;
-              case JmolConstants.PROTEIN_STRUCTURE_SHEET:
-                nx = ++nSheet;
-                sid = "S" + nx;
-                str = "SHEET  %3N %3ID 2 %3GROUPA  %4RESA  %3GROUPB  %4RESB\n";
-                sb = sbSheet;
-                break;
-              case JmolConstants.PROTEIN_STRUCTURE_TURN:
-              default:
-                nx = ++nTurn;
-                sid = "T" + nx;
-                str = "TURN   %3N %3ID %3GROUPA  %4RESA  %3GROUPB  %4RESB\n";
-                sb = sbTurn;
-                break;
-              }
-              str = TextFormat.formatString(str, "N", nx);
-              str = TextFormat.formatString(str, "ID", sid);
-              str = TextFormat.formatString(str, "GROUPA", group1);
-              str = TextFormat.formatString(str, "RESA", res1);
-              str = TextFormat.formatString(str, "GROUPB", group2);
-              str = TextFormat.formatString(str, "RESB", res2);
-              sb.append(str);
+            if (itype == JmolConstants.PROTEIN_STRUCTURE_HELIX
+                || itype == JmolConstants.PROTEIN_STRUCTURE_TURN
+                || itype == JmolConstants.PROTEIN_STRUCTURE_SHEET) {
+              n++;
+              if (bsAtoms == null) {
+                cmd.append("  structure ").append(
+                    JmolConstants.getProteinStructureName(itype)).append(" ")
+                    .append(Escape.escape(bs)).append("    \t# model=").append(
+                        getModelName(-1 - atoms[iLastAtom].modelIndex)).append(
+                        " & (").append(res1).append(" - ").append(res2).append(
+                        ");\n");
+              } else {
+                String str;
+                int nx;
+                String sid;
+                StringBuffer sb;
+                switch (itype) {
+                case JmolConstants.PROTEIN_STRUCTURE_HELIX:
+                  nx = ++nHelix;
+                  sid = "H" + nx;
+                  str = "HELIX  %3N %3ID %3GROUPA   %4RESA  %3GROUPB   %4RESB\n";
+                  sb = sbHelix;
+                  break;
+                case JmolConstants.PROTEIN_STRUCTURE_SHEET:
+                  nx = ++nSheet;
+                  sid = "S" + nx;
+                  str = "SHEET  %3N %3ID 2 %3GROUPA  %4RESA  %3GROUPB  %4RESB\n";
+                  sb = sbSheet;
+                  break;
+                case JmolConstants.PROTEIN_STRUCTURE_TURN:
+                default:
+                  nx = ++nTurn;
+                  sid = "T" + nx;
+                  str = "TURN   %3N %3ID %3GROUPA  %4RESA  %3GROUPB  %4RESB\n";
+                  sb = sbTurn;
+                  break;
+                }
+                str = TextFormat.formatString(str, "N", nx);
+                str = TextFormat.formatString(str, "ID", sid);
+                str = TextFormat.formatString(str, "GROUPA", group1);
+                str = TextFormat.formatString(str, "RESA", res1);
+                str = TextFormat.formatString(str, "GROUPB", group2);
+                str = TextFormat.formatString(str, "RESB", res2);
+                sb.append(str);
 
-              /*
-               HELIX    1  H1 ILE      7  PRO     19  1 3/10 CONFORMATION RES 17,19    1CRN  55
-               HELIX    2  H2 GLU     23  THR     30  1 DISTORTED 3/10 AT RES 30       1CRN  56
-               SHEET    1  S1 2 THR     1  CYS     4  0                                1CRNA  4
-               SHEET    2  S1 2 CYS    32  ILE    35 -1                                1CRN  58
-               TURN     1  T1 PRO    41  TYR    44                                     1CRN  59
-               */
+                /*
+                 HELIX    1  H1 ILE      7  PRO     19  1 3/10 CONFORMATION RES 17,19    1CRN  55
+                 HELIX    2  H2 GLU     23  THR     30  1 DISTORTED 3/10 AT RES 30       1CRN  56
+                 SHEET    1  S1 2 THR     1  CYS     4  0                                1CRNA  4
+                 SHEET    2  S1 2 CYS    32  ILE    35 -1                                1CRN  58
+                 TURN     1  T1 PRO    41  TYR    44                                     1CRN  59
+                 */
+              }
             }
             bs = null;
           }
-          if (id == Integer.MIN_VALUE || 
-              bsAtoms != null 
-              && (Float.isNaN(atoms[i].getGroupPhi()) || Float.isNaN(atoms[i].getGroupPsi())))
+          if (id == Integer.MIN_VALUE
+              || bsAtoms != null
+              && needPhiPsi
+              && (Float.isNaN(atoms[i].getGroupPhi()) || Float.isNaN(atoms[i]
+                  .getGroupPsi())))
             continue;
-          res1 = atoms[i].getResno();
-          group1 = atoms[i].getGroup3();
         }
         if (bs == null) {
           bs = new BitSet();
+          res1 = atoms[i].getResno();
+          group1 = atoms[i].getGroup3();
         }
         itype = atoms[i].getProteinStructureType();
         bs.set(i);
@@ -1539,7 +1549,7 @@ abstract public class ModelCollection extends BondCollection {
   public String getModelFileInfo(BitSet frames) {
     String str = "";
     for (int i = 0; i < modelCount; ++i) {
-      if (!frames.get(i))
+      if (frames != null && !frames.get(i))
         continue;
       String file_model = getModelName(-1 - i);
       str += "\n\nfile[\"" + file_model + "\"] = " 

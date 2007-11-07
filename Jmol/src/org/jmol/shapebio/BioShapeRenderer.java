@@ -110,7 +110,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       invalidate = true;
     isHighRes = TF;
 
-    TF = viewer.getTraceAlpha();
+    TF = (viewer.isJmolDataFrame(bioShape.modelIndex) || viewer.getTraceAlpha()); 
     if (TF != isTraceAlpha)
       invalidate = true;
     isTraceAlpha = TF;
@@ -129,12 +129,12 @@ abstract class BioShapeRenderer extends MeshRenderer {
     if (hermiteLevel == 0)
       aspectRatio = 0;
 
-    float fval = viewer.getSheetSmoothing();
+    float fval = (viewer.isJmolDataFrame(bioShape.modelIndex) ? 0 
+        : viewer.getSheetSmoothing());
     if (fval != sheetSmoothing && isTraceAlpha) {
       sheetSmoothing = fval;
       invalidate = true;
     }
-
     controlPoints = bioShape.bioPolymer.getControlPoints(isTraceAlpha, sheetSmoothing);
     monomerCount = bioShape.monomerCount;
     monomers = bioShape.monomers;

@@ -4205,18 +4205,21 @@ class Eval { //implements Runnable {
     switch (datatype) {
     case JmolConstants.JMOL_DATA_RAMACHANDRAN:
     default:
-      runScript("frame 0.0; frame last; reset; center {0 0 0};"
-          + "select visible; color structure; select *; set rotationRadius 25;"
-          + "draw ramaAxisX" + modelCount + " {20 0 0} {-20 0 0} \"phi\";"
-          + "draw ramaAxisY" + modelCount + " {0 20 0} {0 -20 0} \"psi\";");
+      viewer.setFrameTitle(modelCount - 1, "ramachandran plot for model " + viewer.getModelNumberDotted(modelIndex));
+      runScript("frame 0.0; frame last; reset;"
+          + "select visible; color structure; spacefill 3.0; set rotationRadius 250;"
+          + "draw ramaAxisX" + modelCount + " {200 0 0} {-200 0 0} \"phi\";"
+          + "draw ramaAxisY" + modelCount + " {0 200 0} {0 -200 0} \"psi\";");
       break;
     case JmolConstants.JMOL_DATA_QUATERNION:  
-      runScript("frame 0.0; frame last; reset; center {0 0 0};"
-          + "select visible; trace 0.1; color trace structure; select *;"
+      viewer.setFrameTitle(modelCount - 1, type + " for model " + viewer.getModelNumberDotted(modelIndex));
+      runScript("frame 0.0; frame last; reset; set rotationRadius 12;"
+          + "select visible; trace 0.1; color trace structure;"
           + "isosurface quatSphere" + modelCount 
           + " resolution 1.0 sphere 10.0 mesh nofill translucent 0.8;set rotationRadius 12");
       break;
     }
+    viewer.loadShape(JmolConstants.SHAPE_ECHO);
     viewer.addStateScript("frame " + viewer.getModelNumberDotted(modelIndex) 
         + "; " + type + ";", false);
     showString("frame " + viewer.getModelName(-modelCount) + " created: "
@@ -5924,6 +5927,12 @@ class Eval { //implements Runnable {
         viewer.setCurrentModelIndex(modelIndex, true);
       return;
     }
+    if (statementLength == 3 && parameterAsString(1).equalsIgnoreCase("Title")) {
+       if (!isSyntaxCheck)
+         viewer.setFrameTitle(parameterAsString(2));
+       return;
+    }
+    
     if (getToken(offset).tok == Token.minus) {
       ++offset;
       checkStatementLength(offset + 1);
@@ -8153,7 +8162,7 @@ class Eval { //implements Runnable {
       int modelIndex = viewer.getCurrentModelIndex();
       if (modelIndex < 0)
         multipleModelsNotOK("show " + theToken.value);
-      msg = viewer.getPdbData(modelIndex, 
+      msg = viewer.getPdbData(modelIndex,
           theTok == Token.quaternion ? "quaternion w" : "ramachandran");
       break;
     case Token.identifier:
@@ -8313,7 +8322,10 @@ class Eval { //implements Runnable {
         msg = viewer.getFileAsString(value);
       break;
     case Token.frame:
-      msg = viewer.getModelFileInfo();
+      if (tokAt(2) == Token.all && (len = 3) > 0)
+        msg = viewer.getModelFileInfoAll();
+      else
+        msg = viewer.getModelFileInfo();
       break;
     case Token.history:
       int n = ((len = statementLength) == 2 ? Integer.MAX_VALUE

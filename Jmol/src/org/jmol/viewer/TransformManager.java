@@ -125,6 +125,11 @@ abstract class TransformManager {
     zoomPercent = zoomPercentSetting;
     slabReset();
     scaleFitToScreen(true);
+    if (viewer.isJmolDataFrame()) {
+      fixedRotationCenter.set(0, 0, 0);
+      rotationRadiusDefault = (viewer.getJmolDataFrameType(
+          viewer.getCurrentModelIndex()).equals("ramachandran") ? 250 : 12);
+    }
     if (isNavigationMode)
       setNavigationMode(true);
   }

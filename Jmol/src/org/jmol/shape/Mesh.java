@@ -242,7 +242,7 @@ public class Mesh {
    */
 
   public String getState(String type) {
-    StringBuffer s = new StringBuffer(type);
+    StringBuffer s = new StringBuffer(type).append(" ").append(thisID);
     s.append(fillTriangles ? " fill" : " noFill");
     s.append(drawTriangles ? " mesh" : " noMesh");
     s.append(showPoints ? " dots" : " noDots");

@@ -424,7 +424,7 @@ abstract public class ModelSet extends ModelCollection {
 
     setModelVisibility();
 
-    commands.append(getProteinStructureState(null));
+    commands.append(getProteinStructureState(null, false));
     
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = shapes[i];
@@ -432,6 +432,14 @@ abstract public class ModelSet extends ModelCollection {
           && (cmd = shape.getShapeState()) != null && cmd.length() > 1)
         commands.append(cmd);
     }
+    
+    for (int i = 0; i < modelCount; i++) {
+      String t = models[i].frameTitle; 
+      if (t != null && t.length() > 0)
+        commands.append("  frame " + getModelNumberDotted(i)
+            + ";set frameTitle " + Escape.escape(t) + "\n;");
+    }
+    
     if (sfunc != null)
       commands.append("\nend function;\n\n");
     return commands.toString();

@@ -373,6 +373,18 @@ public class PdbReader extends AtomSetCollectionReader {
     return Integer.MIN_VALUE;
   }
 
+  /*
+          1         2         3
+0123456789012345678901234567890123456
+HELIX    1  H1 ILE      7  LEU     18
+HELIX    2  H2 PRO     19  PRO     19
+HELIX    3  H3 GLU     23  TYR     29
+HELIX    4  H4 THR     30  THR     30
+SHEET    1  S1 2 THR     2  CYS     4
+SHEET    2  S2 2 CYS    32  ILE    35
+SHEET    3  S3 2 THR    39  PRO    41
+TURN     1  T1 GLY    42  TYR    44
+   */
   void structure() {
     String structureType = "none";
     int startChainIDIndex;

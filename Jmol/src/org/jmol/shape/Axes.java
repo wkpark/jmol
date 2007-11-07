@@ -43,11 +43,27 @@ public class Axes extends FontLineShape {
 
   final Point3f originPoint = new Point3f();
   final Point3f[] axisPoints = new Point3f[6];
+  final static Point3f pt0 = new Point3f();
+  
   {
     for (int i = 6; --i >= 0; )
       axisPoints[i] = new Point3f();
   }
 
+  Point3f getOriginPoint(boolean isDataFrame) {
+    return (isDataFrame ? pt0 : originPoint);
+  }
+  
+  final Point3f ptTemp = new Point3f();
+  Point3f getAxisPoint(int i, boolean isDataFrame) {
+    if (!isDataFrame)
+      return axisPoints[i];
+    ptTemp.set(axisPoints[i]);
+    ptTemp.sub(originPoint);
+    ptTemp.scale(0.5f);
+    return ptTemp; 
+  }
+  
   private final static float MIN_AXIS_LEN = 1.5f;
   
   public void initShape() {
@@ -62,7 +78,7 @@ public class Axes extends FontLineShape {
       Point3f[] vectors = unitcell.getVertices();
       Point3f offset = unitcell.getCartesianOffset();
       originPoint.set(offset);
-      float scale = viewer.getAxesScale() / 2;
+      float scale = viewer.getAxesScale() / 2f;
       // We must divide by 2 because that is the default for ALL axis types.
       // Not great, but it will have to do. 
       axisPoints[0].scaleAdd(scale, vectors[4], offset);
@@ -77,7 +93,7 @@ public class Axes extends FontLineShape {
     } else {
       originPoint.set(viewer.getBoundBoxCenter());
     }
-    setScale(viewer.getAxesScale());
+    setScale(viewer.getAxesScale() / 2f);
   }
   
   public Object getProperty(String property, int index) {

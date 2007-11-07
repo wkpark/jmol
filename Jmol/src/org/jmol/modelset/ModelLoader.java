@@ -71,6 +71,7 @@ public final class ModelLoader extends ModelSet {
     modelSetName = "zapped";
   }
 
+
   public ModelLoader(Viewer viewer, JmolAdapter adapter, Object clientFile, 
       ModelLoader mergeModelSet, String modelSetName) {
     this.modelSetName = modelSetName;
@@ -269,14 +270,17 @@ public final class ModelLoader extends ModelSet {
   private void initializeMerge() {
     merge(mergeModelSet);
     bsSymmetry = mergeModelSet.bsSymmetry;
-    if (mergeModelSet.group3Lists != null) {
+    Hashtable info = mergeModelSet.getAuxiliaryInfo();
+    String[] mergeGroup3Lists = (String[]) info.get("group3Lists");
+    int[][] mergeGroup3Counts = (int[][]) info.get("group3Counts");
+    if (mergeGroup3Lists != null) {
       for (int i = 0; i < baseModelCount; i++) {
-        group3Lists[i] = mergeModelSet.group3Lists[i];
-        group3Counts[i] = mergeModelSet.group3Counts[i];
+        group3Lists[i] = mergeGroup3Lists[i];
+        group3Counts[i] = mergeGroup3Counts[i];
         structuresDefinedInFile.set(i);
       }
-      group3Lists[modelCount] = mergeModelSet.group3Lists[baseModelCount];
-      group3Counts[modelCount] = mergeModelSet.group3Counts[baseModelCount];
+      group3Lists[modelCount] = mergeGroup3Lists[baseModelCount];
+      group3Counts[modelCount] = mergeGroup3Counts[baseModelCount];
     }
     //if merging PDB data into an already-present model, and the 
     //structure is defined, consider the current structures in that 
@@ -712,6 +716,19 @@ public final class ModelLoader extends ModelSet {
       new Point3f(-1, 1, 1), new Point3f(-1, 1, -1), new Point3f(-1, -1, 1),
       new Point3f(-1, -1, -1), };
 
+  private void calcAverageAtomPoint() {
+    averageAtomPoint.set(0, 0, 0);
+    if (atomCount == 0)
+      return;
+    int n = 0;
+    for (int i = atomCount; --i >= 0;)
+      if (!isJmolDataFrame(atoms[i].modelIndex)) {
+        averageAtomPoint.add(atoms[i]);
+        n++;
+      }
+    averageAtomPoint.scale(1f / n);
+  }
+
   private void calcBoundBoxDimensions() {
     calcAtomsMinMax();
     if (cellInfos != null)
@@ -739,7 +756,8 @@ public final class ModelLoader extends ModelSet {
     pointMax.set(atoms[0]);
     for (int i = atomCount; --i > 0;) {
       // note that the 0 element was set above
-      checkMinMax(atoms[i]);
+      if (!isJmolDataFrame(atoms[i].modelIndex))
+        checkMinMax(atoms[i]);
     }
   }
 
@@ -973,16 +991,6 @@ public final class ModelLoader extends ModelSet {
       elementsPresent[atoms[i].modelIndex].set(n);
     }
   }
-
-  private void calcAverageAtomPoint() {
-    averageAtomPoint.set(0, 0, 0);
-    if (atomCount == 0)
-      return;
-    for (int i = atomCount; --i >= 0;)
-      averageAtomPoint.add(atoms[i]);
-    averageAtomPoint.scale(1f / atomCount);
-  }
-
 
   ///////////////  shapes  ///////////////
   

@@ -2002,6 +2002,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getModelFileInfo(getVisibleFramesBitSet());
   }
 
+  String getModelFileInfoAll() {
+    return modelSet.getModelFileInfo(null);    
+  }
+  
   public Hashtable getModelAuxiliaryInfo(int modelIndex) {
     return modelSet.getModelAuxiliaryInfo(modelIndex);
   }
@@ -5608,6 +5612,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.setModelVisibility();
   }
 
+  void setFrameTitle(int modelIndex, String title) {
+    modelSet.setFrameTitle(modelIndex, title);
+  }
+  
+  String getFrameTitle(int modelIndex) {
+    return modelSet.getFrameTitle(modelIndex);
+  }
+  
   boolean isTainted = true;
 
   void setTainted(boolean TF) {
@@ -5749,12 +5761,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.isJmolDataFrame(modelIndex);
   }
   
+  public boolean isJmolDataFrame() {
+    return modelSet.isJmolDataFrame(repaintManager.currentModelIndex);
+  }
+  
   int getJmolDataFrameIndex(int modelIndex, String type) {
     return modelSet.getJmolDataFrameIndex(modelIndex, type);
   }
 
   void setJmolDataFrame(String type, int modelIndex, int dataIndex) {
     modelSet.setJmolDataFrame(type, modelIndex, dataIndex);  
+  }
+  
+  void setFrameTitle(String title) {
+    modelSet.setFrameTitle(repaintManager.currentModelIndex, title);  
+  }
+  
+  public String getFrameTitle() {
+    return modelSet.getFrameTitle(repaintManager.currentModelIndex);
   }
   
   String getJmolDataFrameType(int modelIndex) {

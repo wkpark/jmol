@@ -200,6 +200,7 @@ public abstract class BioPolymer extends Polymer {
 
   
   void removeProteinStructure(int monomerIndex, int count) {
+    //System.out.println("biopolymer removeProteinStructure mIndex " + monomerIndex + " count " + count);
     for (int i = 0, pt = monomerIndex; i < count && pt < monomerCount; i++, pt++)
       monomers[pt].setStructure(null);
   }
@@ -538,7 +539,7 @@ public abstract class BioPolymer extends Polymer {
     int atomno = Integer.MIN_VALUE;
     Quaternion qlast = null;
     Quaternion qprev = null;
-    float factor = (ctype == 'r' ? 0.1f : 10f);
+    float factor = (ctype == 'r' ? 1f : 10f);
     float x = 0, y = 0, z = 0, w = 0;
     //boolean isQuaternion = ("wxyz".indexOf(ctype) >= 0);
     boolean isRamachandran = (ctype == 'r');

@@ -800,7 +800,6 @@ public class Draw extends MeshCollection {
       moveAll = true;
       //fall through
     case MouseManager.ALT_LEFT:
-      //System.out.println(prevX + " " + deltaX + " y: " + prevY + " " + deltaY);
       move2D(pickedMesh, pickedMesh.polygonIndexes[pickedModel], pickedVertex,
           prevX + deltaX, prevY + deltaY, moveAll);
       thisMesh = pickedMesh;
@@ -964,9 +963,9 @@ public class Draw extends MeshCollection {
     for (int i = 0; i < nVertices; i++) {
       Point3f v = new Point3f();
       try{
-      v.set(mesh.vertices[mesh.polygonIndexes[iModel][i]]);
+        v.set(mesh.vertices[mesh.polygonIndexes[iModel][i]]);
       }catch(Exception e) {
-        System.out.println("OHOH");
+        System.out.println("Unexpected error in Draw.getVertexList");
       }
       str += " " + Escape.escape(v);
     }

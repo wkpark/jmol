@@ -206,6 +206,14 @@ class TestScriptsImpl extends TestCase {
         while ((line = reader.readLine()) != null) {
           lineNum++;
           long begin = Profiling.getTime();
+          if (line.indexOf("TESTBLOCKSTART") >= 0) {
+            String s = "";
+            while ((line = reader.readLine()) != null && line.indexOf("TESTBLOCKEND") < 0) {
+              s += line + "\n";
+              lineNum++;
+            }
+            line = s;
+          }
           Vector info = (Vector) viewer.scriptWaitStatus(line, "scriptTerminated");
           long end = Profiling.getTime();
           if ((info != null) && (info.size() > 0)) {

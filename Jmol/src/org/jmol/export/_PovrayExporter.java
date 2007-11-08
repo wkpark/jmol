@@ -99,6 +99,7 @@ public class _PovrayExporter extends _Exporter {
     output("#declare minScreenDimension = " + minScreenDimension + ";\n");
     output("#declare showAtoms = true;\n");
     output("#declare showBonds = true;\n");
+    output("#declare noShadows = true;\n");
     output("camera{\n");
     output("  orthographic\n");
     output("  location < " + screenWidth / 2f + ", " + screenHeight / 2f
@@ -144,6 +145,12 @@ public class _PovrayExporter extends _Exporter {
         + "  roughness .00001\n  metallic\n  phong 0.9\n  phong_size 120\n}}"
         + "\n\n");
 
+    output("#macro check_shadow()\n"
+        + " #if (noShadows)\n"
+        + "  no_shadow \n"
+        + " #end\n"
+        + "#end\n\n");
+
     output("#declare slabZ = " + slabZ + ";\n"
         + "#declare depthZ = " + depthZ + ";\n"
         + "#declare dzSlab = 10;\n"
@@ -167,7 +174,7 @@ public class _PovrayExporter extends _Exporter {
         + "<X,Y,(slabZ+1)>,cutRadius\n"
         + "   pigment{rgbt<R,G,B,T>}\n"
         + "   translucentFinish(T)\n"
-        + "   no_shadow}\n"
+        + "   check_shadow()}\n"
         + " #end\n"
         + "// cap for upper clip\n"
         + " #declare cutDiff = Z - depthZ;\n"
@@ -181,7 +188,7 @@ public class _PovrayExporter extends _Exporter {
         + "<X,Y,(depthZ-1)>,cutRadius\n"
         + "   pigment{rgbt<R,G,B,T>}\n"
         + "   translucentFinish(T)\n"
-        + "   no_shadow}\n"
+        + "   check_shadow()}\n"
         + " #end\n"
         + "#end\n\n");
 
@@ -221,7 +228,7 @@ public class _PovrayExporter extends _Exporter {
         + "  pigment{rgbt<R,G,B,T>}\n"
         + "  translucentFinish(T)\n"
         + "  clip()\n"
-        + "  no_shadow}\n"
+        + "  check_shadow()}\n"
         + (isSlabEnabled? " circleCap(Z,RADIUS,R,G,B,T)\n" : "")
         + "#end\n\n");
   }
@@ -235,7 +242,7 @@ public class _PovrayExporter extends _Exporter {
         + "  pigment{rgbt<R,G,B,T>}\n"
         + "  translucentFinish(T)\n"
         + "  clip()\n"
-        + "  no_shadow}\n" 
+        + "  check_shadow()}\n" 
         + "#end\n\n");
   }
 
@@ -245,7 +252,7 @@ public class _PovrayExporter extends _Exporter {
         + "  pigment{rgbt<R,G,B,T>}\n" 
         + "  translucentFinish(T)\n"
         + "  clip()\n"
-        + "  no_shadow}\n" 
+        + "  check_shadow()}\n" 
         + (isSlabEnabled? " circleCap(Z,RADIUS,R,G,B,T)\n" : "")
         + "#end\n\n");
   }
@@ -256,7 +263,7 @@ public class _PovrayExporter extends _Exporter {
         + "  pigment{rgbt<R,G,B,T>}\n"
         + "  translucentFinish(T)\n"
         + "  clip()\n"
-        + "  no_shadow}\n" 
+        + "  check_shadow()}\n" 
         + "#end\n\n");
   }
 
@@ -265,7 +272,7 @@ public class _PovrayExporter extends _Exporter {
         + " box{<X,Y,Z>,<X+1,Y+1,Z+1>\n"
         + "  pigment{rgb<R,G,B>}\n"
         + "  clip()\n"
-        + "  no_shadow}\n" 
+        + "  check_shadow()}\n" 
         + "#end\n\n");
   }
 
@@ -274,7 +281,7 @@ public class _PovrayExporter extends _Exporter {
   // This type of ring does not take into account perspective effects!
   output("#macro o(X,Y,Z,RADIUS,R,G,B,T)\n"
   + " torus{RADIUS,wireRadius pigment{rgbt<R,G,B,T>}\n"
-  + " translate<X,Z,-Y> rotate<90,0,0>\n" + "  no_shadow}\n"
+  + " translate<X,Z,-Y> rotate<90,0,0>\n" + "  check_shadow()}\n"
   + "#end\n\n");
   }
   */
@@ -474,7 +481,7 @@ public class _PovrayExporter extends _Exporter {
       output("  translucentFinish("  
         + translucencyFractionalFromColix(colix) +")\n");
     }
-    output("  no_shadow\n");
+    output("  check_shadow()\n");
     output("  clip()\n");
     output("}\n");
 

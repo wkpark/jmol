@@ -469,12 +469,13 @@ public class Draw extends MeshCollection {
     // (atom set) references must be filtered for relevant model
     // note that if a model doesn't have a relevant point, one may
     // get a line instead of a plane, a point instead of a line, etc.
-    BitSet bsModel = (iModel < 0 ? null : viewer.getModelAtomBitSet(iModel));
+    BitSet bsModel = (iModel < 0 ? null : viewer.getModelAtomBitSet(iModel,
+        false));
     if (bsAllModels == null)
       bsAllModels = new BitSet();
     if (nbitsets > 0) {
       for (int i = 0; i < nbitsets; i++) {
-        BitSet bs = (BitSet) ptBitSets[i].clone();
+        BitSet bs = BitSetUtil.copy(ptBitSets[i]);
         if (bsModel != null)
           bs.and(bsModel);
         if (BitSetUtil.cardinalityOf(bs) > 0) {

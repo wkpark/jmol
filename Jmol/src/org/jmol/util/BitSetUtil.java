@@ -83,10 +83,13 @@ final public class BitSetUtil {
         a.clear(i);
   }
 
-  public static BitSet copy(BitSet a) {
+  public static BitSet copy(BitSet bs) {
+    return (BitSet) bs.clone();
+    /*
     BitSet b = new BitSet();
     b.or(a);
     return b;
+    */
   }
 
   public static void copy(BitSet a, BitSet b) {

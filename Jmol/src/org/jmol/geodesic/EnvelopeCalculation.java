@@ -179,7 +179,7 @@ public final class EnvelopeCalculation {
   private BitSet bsSurface;
   
   public BitSet getBsSurfaceClone() {
-    return (bsSurface == null ? null : (BitSet) bsSurface.clone());
+    return (bsSurface == null ? null : BitSetUtil.copy(bsSurface));
   }
   
   private boolean disregardNeighbors = false;

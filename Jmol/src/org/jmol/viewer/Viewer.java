@@ -1238,10 +1238,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE, bs);
   }
 
-  BitSet getSelectedAtoms() {
-    return selectionManager.getSelectedAtoms();
-  }
-
   void hide(BitSet bs, boolean isQuiet) {
     //Eval
     selectionManager.hide(bs, isQuiet);
@@ -1276,13 +1272,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void selectAll() {
     //initializeModel
-    selectionManager.selectAll();
+    selectionManager.selectAll(false);
     refresh(0, "Viewer:selectAll()");
   }
 
   public void clearSelection() {
     //not used in this project; in jmolViewer interface, though
-    selectionManager.clearSelection();
+    selectionManager.clearSelection(false);
     refresh(0, "Viewer:clearSelection()");
   }
 
@@ -1681,9 +1677,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Point3f[] calculateSurface(BitSet bsSelected, BitSet bsIgnore,
                                     float envelopeRadius) {
-    if (bsSelected == null)
-      bsSelected = getSelectionSet();
-    return modelSet.calculateSurface(bsSelected, bsIgnore, envelopeRadius);
+    return modelSet.calculateSurface(bsSelected == null ? 
+        selectionManager.bsSelection : bsSelected, 
+        bsIgnore, envelopeRadius);
   }
 
   public AtomIterator getWithinModelIterator(Atom atom, float distance) {
@@ -1852,8 +1848,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         hybridizationCompatible);
   }
 
-  public BitSet getModelAtomBitSet(int modelIndex) {
-    return modelSet.getModelAtomBitSet(modelIndex);
+  public BitSet getModelAtomBitSet(int modelIndex, boolean asCopy) {
+    return modelSet.getModelAtomBitSet(modelIndex, asCopy);
   }
 
   public BitSet getModelBitSet(BitSet atomList) {
@@ -2380,7 +2376,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // user has selected some atoms, now this sets that as a conformation
     // with the effect of rewriting the cartoons to match
 
-    return modelSet.setConformation(-1, getSelectionSet());
+    return modelSet.setConformation(-1, selectionManager.bsSelection);
   }
 
   // AKA "configuration"
@@ -2391,9 +2387,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   int autoHbond(BitSet bsBonds) {
     //Eval
-    BitSet bs = getSelectionSet();
     addStateScript("calculate hbonds", false);
-    return autoHbond(bs, bs, bsBonds);
+    return autoHbond(selectionManager.bsSelection, 
+        selectionManager.bsSelection, bsBonds);
   }
 
   int autoHbond(BitSet bsFrom, BitSet bsTo, BitSet bsBonds) {

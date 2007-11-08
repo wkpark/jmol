@@ -50,9 +50,19 @@ import org.jmol.viewer.Token;
 
 abstract public class ModelCollection extends BondCollection {
 
+  /**
+   * initial transfer of model data from old to new model set.
+   * Note that all new models are added later, AFTER the old ones. This is 
+   * very important, because all of the old atom numbers must map onto the
+   * same numbers in the new model set, or the state script will not run
+   * properly, among other problems.
+   *  
+   * @param modelSet
+   */
   void merge(ModelSet modelSet) {
     for (int i = 0; i < modelSet.modelCount; i++) {
       models[i] = modelSet.models[i];
+      models[i].bsAtoms = null;
       modelProperties[i] = modelSet.getModelProperties(i);
       modelAuxiliaryInfo[i] = modelSet.getModelAuxiliaryInfo(i);
       stateScripts = modelSet.stateScripts;
@@ -61,6 +71,20 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   protected void releaseModelSet() {
+    /*
+     * Probably unnecessary, but here for general accounting.
+     * 
+     * I added this when I was trying to track down a memory bug.
+     * I know that you don't have to do this, but I was concerned
+     * that somewhere in this mess was a reference to modelSet. 
+     * As it turns out, it was in models[i] (which was not actually
+     * nulled but, rather, transferred to the new model set anyway).
+     * Quite amazing that that worked at all, really. Some models were
+     * referencing the old modelset, some the new. Yeiks!
+     * 
+     * Bob Hanson 11/7/07
+     * 
+     */
     models = null;
     modelProperties = null;
     modelAuxiliaryInfo = null;
@@ -215,12 +239,12 @@ abstract public class ModelCollection extends BondCollection {
     BitSet bs = new BitSet();
     String altLocs = getAltLocListInModel(modelIndex);
     if (altLocs.length() > 0) {
-      BitSet bsConformation = getModelAtomBitSet(modelIndex);
+      BitSet bsConformation = getModelAtomBitSet(modelIndex, true);
       if (conformationIndex >= 0)
         for (int c = models[modelIndex].nAltLocs; --c >= 0;)
           if (c != conformationIndex)
-            BitSetUtil.andNot(bsConformation,
-                getSpecAlternate(altLocs.substring(c, c + 1)));
+            BitSetUtil.andNot(bsConformation, getSpecAlternate(altLocs
+                .substring(c, c + 1)));
       if (BitSetUtil.length(bsConformation) > 0) {
         setConformation(modelIndex, bsConformation);
         bs.or(bsConformation);
@@ -579,7 +603,7 @@ abstract public class ModelCollection extends BondCollection {
       return "";
     int nPoly = models[modelIndex].getBioPolymerCount();
     StringBuffer pdbATOM = new StringBuffer();
-    BitSet bsAtoms = getModelAtomBitSet(modelIndex);
+    BitSet bsAtoms = getModelAtomBitSet(modelIndex, false);
     for (int p = 0; p < nPoly; p++)
       models[modelIndex].getPdbData(ctype, isDerivative, bsAtoms, pdbATOM,
           pdbCONECT);
@@ -948,8 +972,8 @@ abstract public class ModelCollection extends BondCollection {
     // returns cumulative sum of all atoms in molecules containing these atoms
     if (moleculeCount == 0)
       getMolecules();
-    BitSet bsResult = (BitSet) bs.clone();
-    BitSet bsInitial = (BitSet) bs.clone();
+    BitSet bsResult = BitSetUtil.copy(bs);
+    BitSet bsInitial = BitSetUtil.copy(bs);
     int iLastBit;
     while ((iLastBit = BitSetUtil.length(bsInitial)) > 0) {
       bsTemp = getMoleculeBitSet(iLastBit - 1);
@@ -1116,7 +1140,7 @@ abstract public class ModelCollection extends BondCollection {
 
   private BitSet getConnectedBitSet(int atomIndex) {
     BitSet bs = new BitSet(atomCount);
-    BitSet bsToTest = getModelAtomBitSet(atoms[atomIndex].modelIndex);
+    BitSet bsToTest = getModelAtomBitSet(atoms[atomIndex].modelIndex, true);
     getCovalentlyConnectedBitSet(atoms[atomIndex], bs, bsToTest);
     return bs;
   }
@@ -1144,16 +1168,26 @@ abstract public class ModelCollection extends BondCollection {
 
   private BitSet bsAll;
   
-  public BitSet getModelAtomBitSet(int modelIndex) {
-    if (modelIndex < 0)
-      return (bsAll == null ? bsAll = BitSetUtil.setAll(atomCount) : bsAll);
-    if (models[modelIndex].bsAtoms != null)
-      return models[modelIndex].bsAtoms;
-    BitSet bs = new BitSet();
-    for (int i = 0; i < atomCount; i++)
-      if (atoms[i].modelIndex == modelIndex)
-        bs.set(i);
-    return (models[modelIndex].bsAtoms = bs);
+  /**
+   * 
+   * @param modelIndex
+   * @param asCopy     MUST BE TRUE IF THE BITSET IS GOING TO BE MODIFIED!
+   * @return either the actual bitset or a copy
+   */
+  public BitSet getModelAtomBitSet(int modelIndex, boolean asCopy) {
+    BitSet bs = (modelIndex < 0 ? bsAll : models[modelIndex].bsAtoms);
+    if (bs == null) {
+      if (modelIndex < 0) {
+        bs = bsAll = BitSetUtil.setAll(atomCount);
+      } else {
+        bs = new BitSet();
+        for (int i = 0; i < atomCount; i++)
+          if (atoms[i].modelIndex == modelIndex)
+            bs.set(i);
+        models[modelIndex].bsAtoms = bs;
+      }
+    }
+    return (asCopy ? BitSetUtil.copy(bs) : bs);
   }
 
   /**
@@ -1261,7 +1295,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   private BitSet getSpecModel(int modelNumber) {
-    return getModelAtomBitSet(getModelNumberIndex(modelNumber, true));
+    return getModelAtomBitSet(getModelNumberIndex(modelNumber, true), true);
   }
 
   public BitSet getAtomsWithin(float distance, BitSet bs,

@@ -33,6 +33,7 @@ import java.util.Enumeration;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
@@ -164,8 +165,7 @@ public class StateManager {
 
   void saveSelection(String saveName, BitSet bsSelected) {
     saveName = lastSelected = "Selected_" + saveName;
-    BitSet bs = (BitSet) bsSelected.clone();
-    saved.put(saveName, bs);
+    saved.put(saveName, BitSetUtil.copy(bsSelected));
   }
 
   boolean restoreSelection(String saveName) {

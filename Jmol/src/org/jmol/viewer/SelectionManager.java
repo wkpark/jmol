@@ -35,27 +35,28 @@ import java.util.Hashtable;
 
 class SelectionManager {
 
-  Viewer viewer;
+  private Viewer viewer;
 
-  JmolSelectionListener[] listeners = new JmolSelectionListener[4];
+  private JmolSelectionListener[] listeners = new JmolSelectionListener[4];
 
   SelectionManager(Viewer viewer) {
     this.viewer = viewer;
   }
 
   final BitSet bsSelection = new BitSet();
-  BitSet bsSubset; // only a copy of the Eval subset
+  
+  private BitSet bsSubset; // only a copy of the Eval subset
   // this is a tri-state. the value -1 means unknown
-  final static int TRUE = 1;
-  final static int FALSE = 0;
-  final static int UNKNOWN = -1;
-  int empty = TRUE;
+  private final static int TRUE = 1;
+  private final static int FALSE = 0;
+  private final static int UNKNOWN = -1;
+  private int empty = TRUE;
 
-  boolean hideNotSelected;
-  final BitSet bsHidden = new BitSet();
+  private boolean hideNotSelected;
+  private final BitSet bsHidden = new BitSet();
  
   void clear() {
-    clearSelection();
+    clearSelection(true);
     hide(null, true);
     setSelectionSubset(null);
   }
@@ -100,77 +101,21 @@ class SelectionManager {
   void setHideNotSelected(boolean TF) {
     hideNotSelected = TF;
     if (TF)
-      selectionChanged();
+      selectionChanged(false);
   }
   
-  void hideNotSelected() {
-    BitSet bs = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0;)
-      if (!bsSelection.get(i))
-        bs.set(i);
-    hide(bs, false);
-  }
-
-  void removeSelection(int atomIndex) {
-    bsSelection.clear(atomIndex);
-    if (empty != TRUE)
-        empty = UNKNOWN;
-    selectionChanged();
-  }
-
-  void removeSelection(BitSet set) {
-    BitSetUtil.andNot(bsSelection, set);
-    if (empty != TRUE)
-      empty = UNKNOWN;
-    selectionChanged();
-  }
-  
-  void addSelection(int atomIndex) {
-    if (! bsSelection.get(atomIndex)) {
-      bsSelection.set(atomIndex);
-      empty = FALSE;
-      selectionChanged();
-    }
-  }
-
-  void addSelection(BitSet set) {
-    bsSelection.or(set);
-    if (empty == TRUE)
-      empty = UNKNOWN;
-    selectionChanged();
-  }
-
-  void toggleSelection(int atomIndex) {
-    if (bsSelection.get(atomIndex))
-      bsSelection.clear(atomIndex);
-    else
-      bsSelection.set(atomIndex);
-    empty = (empty == TRUE) ? FALSE : UNKNOWN;
-    selectionChanged();
-  }
-
   boolean isSelected(int atomIndex) {
     return bsSelection.get(atomIndex);
   }
 
-  boolean isEmpty() {
-    if (empty != UNKNOWN)
-      return empty == TRUE;
-    for (int i = viewer.getAtomCount(); --i >= 0; )
-      if (bsSelection.get(i)) {
-        empty = FALSE;
-        return false;
-      }
-    empty = TRUE;
-    return true;
-  }
-
   void select(BitSet bs, boolean isQuiet) {
     if (bs == null) {
+      selectAll(true);
       if (!viewer.getRasmolHydrogenSetting())
         excludeSelectionSet(viewer.getAtomBits(Token.hydrogen));
       if (!viewer.getRasmolHeteroSetting())
         excludeSelectionSet(viewer.getAtomBits(Token.hetero));
+      selectionChanged(false);
     } else {
       setSelectionSet(bs);
     }
@@ -179,30 +124,19 @@ class SelectionManager {
           "" + getSelectionCount()));
   }
 
-  BitSet getSelectedAtoms() {
-    return bsSelection;
-  }
-  
-  void selectAll() {
+  void selectAll(boolean isQuiet) {
     int count = viewer.getAtomCount();
     empty = (count == 0) ? TRUE : FALSE;
     for (int i = count; --i >= 0; )
       bsSelection.set(i);
-    selectionChanged();
+    selectionChanged(isQuiet);
   }
 
-  void clearSelection() {
+  void clearSelection(boolean isQuiet) {
     hideNotSelected = false;
     BitSetUtil.clear(bsSelection);
     empty = TRUE;
-    selectionChanged();
-  }
-
-  void setSelection(int atomIndex) {
-    BitSetUtil.clear(bsSelection);
-    bsSelection.set(atomIndex);
-    empty = FALSE;
-    selectionChanged();
+    selectionChanged(isQuiet);
   }
 
   void setSelectionSet(BitSet set) {
@@ -210,7 +144,7 @@ class SelectionManager {
     if (set != null)
       bsSelection.or(set);
     empty = UNKNOWN;
-    selectionChanged();
+    selectionChanged(false);
   }
 
   void setSelectionSubset(BitSet bs) {
@@ -227,34 +161,6 @@ class SelectionManager {
     return (atomIndex < 0 || bsSubset == null || bsSubset.get(atomIndex));
   }
   
-  void toggleSelectionSet(BitSet bs) {
-    /*
-      toggle each one independently
-    for (int i = viewer.getAtomCount(); --i >= 0; )
-      if (bs.get(i))
-        toggleSelection(i);
-    */
-    int atomCount = viewer.getAtomCount();
-    int i = atomCount;
-    while (--i >= 0)
-      if (bs.get(i) && !bsSelection.get(i))
-        break;
-    if (i < 0) { // all were selected
-      for (i = atomCount; --i >= 0; )
-        if (bs.get(i))
-          bsSelection.clear(i);
-      empty = UNKNOWN;
-    } else { // at least one was not selected
-      do {
-        if (bs.get(i)) {
-          bsSelection.set(i);
-          empty = FALSE;
-        }
-      } while (--i >= 0);
-    }
-    selectionChanged();
-  }
-
   void invertSelection() {
     empty = TRUE;
     for (int i = viewer.getAtomCount(); --i >= 0; )
@@ -264,17 +170,16 @@ class SelectionManager {
         bsSelection.set(i);
         empty = FALSE;
       }
-    selectionChanged();
+    selectionChanged(false);
   }
 
-  void excludeSelectionSet(BitSet setExclude) {
+  private void excludeSelectionSet(BitSet setExclude) {
     if (setExclude == null || empty == TRUE)
       return;
     for (int i = viewer.getAtomCount(); --i >= 0; )
       if (setExclude.get(i))
         bsSelection.clear(i);
     empty = UNKNOWN;
-    selectionChanged();
   }
 
   int getSelectionCount() {
@@ -295,30 +200,27 @@ class SelectionManager {
   }
 
   void addListener(JmolSelectionListener listener) {
-    removeListener(listener);
+    for (int i = listeners.length; --i >= 0; )
+      if (listeners[i] == listener) {
+        listeners[i] = null;
+        break;
+      }
     int len = listeners.length;
-    for (int i = len; --i >= 0; ) {
+    for (int i = len; --i >= 0; )
       if (listeners[i] == null) {
         listeners[i] = listener;
         return;
       }
-    }
     listeners = (JmolSelectionListener[])ArrayUtil.doubleLength(listeners);
     listeners[len] = listener;
   }
 
-  void removeListener(JmolSelectionListener listener) {
-    for (int i = listeners.length; --i >= 0; )
-      if (listeners[i] == listener) {
-        listeners[i] = null;
-        return;
-      }
-  }
-
-  private void selectionChanged() {
+  private void selectionChanged(boolean isQuiet) {
     if (hideNotSelected)
-      hideNotSelected();
-    for (int i = listeners.length; --i >= 0; ) {
+      hide(BitSetUtil.copyInvert(bsSelection, viewer.getAtomCount()), false);
+    if (isQuiet)
+      return;
+    for (int i = listeners.length; --i >= 0;) {
       JmolSelectionListener listener = listeners[i];
       if (listener != null)
         listeners[i].selectionChanged(bsSelection);
@@ -352,5 +254,100 @@ class SelectionManager {
       commands.append("end function\n\n");
     return commands.toString();
   }
+
+  /*
+  void removeSelection(int atomIndex) {
+    bsSelection.clear(atomIndex);
+    if (empty != TRUE)
+        empty = UNKNOWN;
+    selectionChanged();
+  }
+
+  void addSelection(int atomIndex) {
+    if (! bsSelection.get(atomIndex)) {
+      bsSelection.set(atomIndex);
+      empty = FALSE;
+      selectionChanged();
+    }
+  }
+
+  void addSelection(BitSet set) {
+    bsSelection.or(set);
+    if (empty == TRUE)
+      empty = UNKNOWN;
+    selectionChanged();
+  }
+
+  void toggleSelection(int atomIndex) {
+    if (bsSelection.get(atomIndex))
+      bsSelection.clear(atomIndex);
+    else
+      bsSelection.set(atomIndex);
+    empty = (empty == TRUE) ? FALSE : UNKNOWN;
+    selectionChanged();
+  }
+
+  boolean isEmpty() {
+    if (empty != UNKNOWN)
+      return empty == TRUE;
+    for (int i = viewer.getAtomCount(); --i >= 0; )
+      if (bsSelection.get(i)) {
+        empty = FALSE;
+        return false;
+      }
+    empty = TRUE;
+    return true;
+  }
+
+  void setSelection(int atomIndex) {
+    BitSetUtil.clear(bsSelection);
+    bsSelection.set(atomIndex);
+    empty = FALSE;
+    selectionChanged();
+  }
+
+  void toggleSelectionSet(BitSet bs) {
+    //
+    //  //toggle each one independently
+    //for (int i = viewer.getAtomCount(); --i >= 0; )
+    //  if (bs.get(i))
+    //    toggleSelection(i);
+    
+    int atomCount = viewer.getAtomCount();
+    int i = atomCount;
+    while (--i >= 0)
+      if (bs.get(i) && !bsSelection.get(i))
+        break;
+    if (i < 0) { // all were selected
+      for (i = atomCount; --i >= 0; )
+        if (bs.get(i))
+          bsSelection.clear(i);
+      empty = UNKNOWN;
+    } else { // at least one was not selected
+      do {
+        if (bs.get(i)) {
+          bsSelection.set(i);
+          empty = FALSE;
+        }
+      } while (--i >= 0);
+    }
+    selectionChanged();
+  }
+
+  void invertSelection(int atomCount) {
+    empty = TRUE;
+    for (int i = atomCount; --i >= 0; )
+      if (bsSelection.get(i)) {
+        bsSelection.clear(i);
+      } else {
+        bsSelection.set(i);
+        empty = FALSE;
+      }
+    selectionChanged();
+  }
+
+
+*/
+  
 
 }

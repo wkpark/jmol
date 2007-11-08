@@ -1424,7 +1424,7 @@ class Eval { //implements Runnable {
         rpn.addOp(instruction);
         break;
       case Token.all:
-        rpn.addX(viewer.getModelAtomBitSet(-1));
+        rpn.addX(viewer.getModelAtomBitSet(-1, true));
         break;
       case Token.none:
         rpn.addX(new BitSet());
@@ -1437,8 +1437,8 @@ class Eval { //implements Runnable {
         rpn.addX(BitSetUtil.copy(viewer.getSelectionSet()));
         break;
       case Token.subset:
-        rpn.addX(BitSetUtil.copy(bsSubset == null ? 
-            viewer.getModelAtomBitSet(-1) : bsSubset));
+        rpn.addX(bsSubset == null ? viewer.getModelAtomBitSet(-1, true)
+            : BitSetUtil.copy(bsSubset));
         break;
       case Token.hidden:
         rpn.addX(BitSetUtil.copy(viewer.getHiddenSet()));
@@ -1522,7 +1522,7 @@ class Eval { //implements Runnable {
             (int) (pt.y * 1000), (int) (pt.z * 1000) }));
         break;
       case Token.thismodel:
-        rpn.addX(viewer.getModelAtomBitSet(viewer.getCurrentModelIndex()));
+        rpn.addX(viewer.getModelAtomBitSet(viewer.getCurrentModelIndex(), true));
         break;
       case Token.amino:
       case Token.backbone:
@@ -3815,7 +3815,7 @@ class Eval { //implements Runnable {
     if (!isSyntaxCheck || isScriptCheck && (isModel || isAppend)
         && fileOpenCheck) {
       if (dataType.toLowerCase().indexOf("property_") == 0) {
-        BitSet bs = viewer.getSelectedAtoms();
+        BitSet bs = viewer.getSelectionSet();
         int dataField = isOneValue ? Integer.MIN_VALUE : ((Integer) viewer
             .getParameter("propertyDataField")).intValue();
         int matchField = isOneValue ? 0 : ((Integer) viewer
@@ -4436,7 +4436,7 @@ class Eval { //implements Runnable {
     BitSet bsSelected = BitSetUtil.copy(viewer.getSelectionSet());
     viewer.invertSelection();
     if (bsSubset != null) {
-      BitSet bs = BitSetUtil.copy(viewer.getSelectionSet());
+      BitSet bs = BitSetUtil.copy(bsSelected);
       bs.and(bsSubset);
       viewer.setSelectionSet(bs);
     }
@@ -4883,7 +4883,7 @@ class Eval { //implements Runnable {
     if (isSyntaxCheck)
       return;
     if (isDisplay)
-      viewer.display(viewer.getModelAtomBitSet(-1), bs, tQuiet);
+      viewer.display(viewer.getModelAtomBitSet(-1, false), bs, tQuiet);
     else
       viewer.hide(bs, tQuiet);
   }
@@ -4942,7 +4942,7 @@ class Eval { //implements Runnable {
     if (statementLength == 1) {
       if (isSyntaxCheck)
         return;
-      BitSet bs = viewer.getSelectedAtoms();
+      BitSet bs = viewer.getSelectionSet();
       pt = viewer.getAtomSetCenter(bs);
       viewer.invertSelected(pt, bs);
       return;
@@ -5428,7 +5428,7 @@ class Eval { //implements Runnable {
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_COVALENT_MASK));
     viewer.setShapeSize(JmolConstants.SHAPE_STICKS, mad, viewer
-        .getSelectedAtoms());
+        .getSelectionSet());
   }
 
   private void ssbond() throws ScriptException {
@@ -5472,6 +5472,7 @@ class Eval { //implements Runnable {
       int n = intParameter(1);
       bsConfigurations = viewer.setConformation(n - 1);
       viewer.addStateScript("configuration " + n + ";", true);
+      //System.out.println(n + " " + bsConfigurations);
     }
     if (isSyntaxCheck)
       return;
@@ -6083,9 +6084,9 @@ class Eval { //implements Runnable {
         if (model2 < 0)
           model2 = modelCount;
         for (int j = model1; j < model2; j++)
-          bs.or(viewer.getModelAtomBitSet(j));
+          bs.or(viewer.getModelAtomBitSet(j, false));
       } else {
-        bs.or(viewer.getModelAtomBitSet(viewer.getModelNumberIndex(m, false)));
+        bs.or(viewer.getModelAtomBitSet(viewer.getModelNumberIndex(m, false), false));
       }
     }
     return bs;
@@ -6474,7 +6475,7 @@ class Eval { //implements Runnable {
     if (key.startsWith("property_")) {
       int n = viewer.getAtomCount();
       viewer.setData(key,
-          new Object[] { key, "" + v, viewer.getSelectedAtoms() }, n, 0,
+          new Object[] { key, "" + v, viewer.getSelectionSet() }, n, 0,
           Integer.MIN_VALUE);
       return;
     }
@@ -10953,7 +10954,7 @@ class Eval { //implements Runnable {
           s = "";
           for (int i = 0; i < modelCount; i++) {
             s += (i == 0 ? "" : "\n");
-            BitSet bs = viewer.getModelAtomBitSet(i);
+            BitSet bs = viewer.getModelAtomBitSet(i, true);
             bs.and(bsSelected);
             s += Escape.escape(bs);
           }
@@ -11291,7 +11292,7 @@ class Eval { //implements Runnable {
         fmin = JmolConstants.DEFAULT_MIN_CONNECT_DISTANCE;
       }
       if (atoms1 == null)
-        atoms1 = viewer.getModelAtomBitSet(-1);
+        atoms1 = viewer.getModelAtomBitSet(-1, true);
       if (haveDecimal && atoms2 == null)
         atoms2 = atoms1;
       if (atoms2 != null) {

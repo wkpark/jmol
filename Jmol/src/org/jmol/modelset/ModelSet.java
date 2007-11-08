@@ -437,7 +437,7 @@ abstract public class ModelSet extends ModelCollection {
       String t = models[i].frameTitle; 
       if (t != null && t.length() > 0)
         commands.append("  frame " + getModelNumberDotted(i)
-            + ";set frameTitle " + Escape.escape(t) + "\n;");
+            + "; frame title " + Escape.escape(t) + "\n;");
     }
     
     if (sfunc != null)

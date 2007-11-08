@@ -313,8 +313,8 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   }
 
   private void setPropertySuper(String propertyName, Object value, BitSet bs) {
-    System.out.println(propertyName + " " + value);
-    System.out.println(thisMesh + (thisMesh!= null ? thisMesh.thisID : ""));
+    //System.out.println(propertyName + " " + value);
+    //System.out.println(thisMesh + (thisMesh!= null ? thisMesh.thisID : ""));
     currentMesh = thisMesh;
     super.setProperty(propertyName, value, bs);
     thisMesh = (IsosurfaceMesh)currentMesh;

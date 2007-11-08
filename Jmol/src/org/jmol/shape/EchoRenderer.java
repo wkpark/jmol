@@ -36,7 +36,6 @@ public class EchoRenderer extends ShapeRenderer {
     Enumeration e = echo.texts.elements();
     while (e.hasMoreElements()) {
       Text t = (Text)e.nextElement();
-      System.out.println(t.modelIndex+ " " + t.visible);
       if (!t.visible)
         continue;
       if (t.valign == Text.XYZ) {

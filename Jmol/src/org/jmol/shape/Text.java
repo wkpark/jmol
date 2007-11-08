@@ -82,6 +82,9 @@ public class Text {
   boolean adjustForWindow;
   int boxX, boxY, boxWidth, boxHeight;
   
+  int modelIndex = -1;
+  boolean visible = true;
+  
   Font3D font;
   FontMetrics fm;
   byte fid;
@@ -141,6 +144,14 @@ public class Text {
     recalc();
   }
 
+  void setModel(int modelIndex) {
+    this.modelIndex = modelIndex;
+  }
+ 
+  void setVisibility(boolean TF) {
+    visible = TF;
+  }
+ 
   void setXYZ(Point3f xyz) {
     valign = XYZ;
     this.xyz = xyz;
@@ -626,6 +637,8 @@ public class Text {
       s.append("; echo ").append(Escape.escape(textUnformatted)).append(";\n");
       if (script != null)
         s.append("  set echo ").append(target).append(" script ").append(Escape.escape(script)).append(";\n");
+      if (modelIndex >= 0)
+        s.append("  set echo ").append(target).append(" model ").append(viewer.getModelNumberDotted(modelIndex));
     }
     //isDefine and target==top: do all
     //isDefine and target!=top: just start

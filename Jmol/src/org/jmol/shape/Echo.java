@@ -47,7 +47,7 @@ public class Echo extends TextShape {
   private final static String FONTFACE = "Serif";
   private final static int FONTSIZE = 20;
   private final static short COLOR = Graphics3D.RED;
-
+    
   public void initShape() {
     super.initShape();
     setProperty("target", "top", null);
@@ -64,6 +64,7 @@ public class Echo extends TextShape {
         currentText.setScript((String) value);
       return;
     }
+
     if ("target" == propertyName) {
       String target = ((String) value).intern().toLowerCase();
       if (target != "none" && target != "all") {
@@ -94,6 +95,7 @@ public class Echo extends TextShape {
             text.setTranslucent(currentTranslucentLevel, false);
           if (currentBgTranslucentLevel != 0)
             text.setTranslucent(currentBgTranslucentLevel, true);
+          
         }
         currentText = text;
         //process super
@@ -101,6 +103,15 @@ public class Echo extends TextShape {
     }
     super.setProperty(propertyName, value, null);
   }
+
+  public void setVisibilityFlags(BitSet bs) {
+    Enumeration e = texts.elements();
+    while (e.hasMoreElements()) {
+      Text t = (Text)e.nextElement();
+      t.setVisibility(t.modelIndex < 0 || bs.get(t.modelIndex));
+    }
+  }
+
 
   public String getShapeState() {
     StringBuffer s = new StringBuffer("\n  set echo off;\n");

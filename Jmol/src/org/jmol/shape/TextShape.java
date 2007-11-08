@@ -38,8 +38,6 @@ public abstract class TextShape extends Shape {
 
   // echo, hover
   
-  final static int ECHO = 1;
-  final static int HOVER = 2;
   Hashtable texts = new Hashtable();
   Text currentText;
   Font3D currentFont;
@@ -48,8 +46,15 @@ public abstract class TextShape extends Shape {
   float currentTranslucentLevel;
   float currentBgTranslucentLevel;
   boolean isAll;
-  
- public void setProperty(String propertyName, Object value, BitSet bsSelected) {
+  protected int modelIndex = -1;
+
+  protected void initModelSet() {
+    modelIndex = -1;
+    currentText = null;
+    isAll = false;
+  }
+
+  public void setProperty(String propertyName, Object value, BitSet bsSelected) {
 
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug("TextShape.setProperty(" + propertyName + "," + value + ")");
@@ -76,6 +81,20 @@ public abstract class TextShape extends Shape {
       return;
     }
 
+    if ("model" == propertyName) {
+      modelIndex = ((Integer) value).intValue();
+      if (currentText == null) {
+        if (isAll) {
+          Enumeration e = texts.elements();
+          while (e.hasMoreElements())
+            ((Text) e.nextElement()).setModel(modelIndex);
+        }
+        return;
+      }
+      currentText.setModel(modelIndex);
+      return;
+    }
+    
     if ("align" == propertyName) {
       String align = (String) value;
       if (currentText == null) {

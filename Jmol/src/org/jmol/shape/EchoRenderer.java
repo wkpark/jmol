@@ -31,12 +31,14 @@ public class EchoRenderer extends ShapeRenderer {
   boolean antialias;
   protected void render() {
     Echo echo = (Echo)shape;
-    
     Point3i pt = new Point3i();
-    Enumeration e = echo.texts.elements();
     antialias = g3d.isAntialiased();
+    Enumeration e = echo.texts.elements();
     while (e.hasMoreElements()) {
       Text t = (Text)e.nextElement();
+      System.out.println(t.modelIndex+ " " + t.visible);
+      if (!t.visible)
+        continue;
       if (t.valign == Text.XYZ) {
         viewer.transformPoint(t.xyz, pt);
         t.setXYZs(pt.x, pt.y, pt.z, pt.z);

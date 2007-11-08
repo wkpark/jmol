@@ -7401,6 +7401,15 @@ class Eval { //implements Runnable {
     case Token.identifier:
       propertyValue = parameterAsString(2);
       break;
+    case Token.model:
+      int modelIndex = modelNumberParameter(3);
+      if (isSyntaxCheck)
+        return;
+      if (modelIndex >= viewer.getModelCount())
+        invalidArgument();
+      propertyName = "model";
+      propertyValue = new Integer(modelIndex);
+      break;
     case Token.string:
       echo(2);
       return;
@@ -7425,6 +7434,15 @@ class Eval { //implements Runnable {
       case Token.off:
         propertyName = "off";
         break;
+      case Token.model:
+        int modelIndex = modelNumberParameter(4);
+        if (isSyntaxCheck)
+          return;
+        if (modelIndex >= viewer.getModelCount())
+          invalidArgument();
+        propertyName = "model";
+        propertyValue = new Integer(modelIndex);
+        break;
       case Token.left:
       case Token.right:
       case Token.top:
@@ -7440,11 +7458,23 @@ class Eval { //implements Runnable {
       return;
     }
     //set echo name script "some script"
-    if (statementLength == 5 && getToken(3).tok == Token.script) {
-      propertyName = "script";
-      propertyValue = parameterAsString(4);
-      setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
-      return;
+    //set echo name model x.y
+    if (statementLength == 5) {
+      switch (tokAt(3)) {
+      case Token.script:
+        propertyName = "script";
+        propertyValue = parameterAsString(4);
+        setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
+        return;
+      case Token.model:
+        int modelIndex = modelNumberParameter(4);
+        if (!isSyntaxCheck && modelIndex >= viewer.getModelCount())
+          invalidArgument();
+        propertyName = "model";
+        propertyValue = new Integer(modelIndex);
+        setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
+        return;
+      }
     }
     //set echo name x-pos y-pos
     getToken(4);

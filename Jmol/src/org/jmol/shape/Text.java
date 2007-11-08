@@ -638,7 +638,7 @@ public class Text {
       if (script != null)
         s.append("  set echo ").append(target).append(" script ").append(Escape.escape(script)).append(";\n");
       if (modelIndex >= 0)
-        s.append("  set echo ").append(target).append(" model ").append(viewer.getModelNumberDotted(modelIndex));
+        s.append("  set echo ").append(target).append(" model ").append(viewer.getModelNumberDotted(modelIndex)).append(";\n");
     }
     //isDefine and target==top: do all
     //isDefine and target!=top: just start

@@ -238,11 +238,11 @@ final public class JmolConstants {
    */
 
   // | reserved
-  //  ||| | Hydrogen bond 0x3800
-  //       |Stereo 0x400
-  //        |Aromatic 0x200
-  //         |Sulfur-Sulfur 0x100
-  //           ||| Partial n 7 << 5
+  //  ||| | Hydrogen bond 0x3800   F << 11
+  //       |Stereo 0x400           1 << 10
+  //        |Aromatic 0x200        1 << 9
+  //         |Sulfur-Sulfur 0x100  1 << 8
+  //           ||| Partial n       7 << 5
   //              | |||| Partial m 0x1F
   //       ||| |||| |||| Covalent 0x3FF
   // 1111 1111 1111 1111
@@ -261,27 +261,27 @@ final public class JmolConstants {
   public final static short BOND_H_MINUS_4     = 7 << 11;
   public final static short BOND_H_NUCLEOTIDE  = 8 << 11;
   
-  public final static short BOND_STEREO_MASK   = 0x400;
+  public final static short BOND_STEREO_MASK   = 0x400; // 1 << 10
   public final static short BOND_STEREO_NEAR   = 0x401;
   public final static short BOND_STEREO_FAR    = 0x402;
 
-  public final static short BOND_AROMATIC_MASK = 0x200;
+  public final static short BOND_AROMATIC_MASK   = 0x200; // 1 << 9
   public final static short BOND_AROMATIC_SINGLE = 0x201; // same as single
   public final static short BOND_AROMATIC_DOUBLE = 0x202; // same as double
-  public final static short BOND_AROMATIC      = 0x203; // same as partial 2.1
+  public final static short BOND_AROMATIC        = 0x203; // same as partial 2.1
 
-  public final static short BOND_SULFUR_MASK   = 0x100; // will be incremented
+  public final static short BOND_SULFUR_MASK   = 0x100; // 1 << 8; will be incremented
 
-  public final static short BOND_PARTIAL_MASK  = 0xE0;
+  public final static short BOND_PARTIAL_MASK  = 0xE0;  // 7 << 5;
   public final static short BOND_PARTIAL01     = 0x21;
   public final static short BOND_PARTIAL12     = 0x42;
   public final static short BOND_PARTIAL23     = 0x61;
   public final static short BOND_PARTIAL32     = 0x64;
   
-  public final static short BOND_COVALENT_MASK = 0x3FF;
-  public final static short BOND_COVALENT_SINGLE = 1;   //actually, this MUST be 1
-  public final static short BOND_COVALENT_DOUBLE = 2;   //actually, this MUST be 2
-  public final static short BOND_COVALENT_TRIPLE = 3;   //actually, this MUST be 3
+  public final static short BOND_COVALENT_MASK = 0x3FF; // MUST be numerically correct
+  public final static short BOND_COVALENT_SINGLE = 1;   
+  public final static short BOND_COVALENT_DOUBLE = 2;   
+  public final static short BOND_COVALENT_TRIPLE = 3;   
   public final static short BOND_COVALENT_QUADRUPLE = 4;
   public final static short BOND_ORDER_UNSPECIFIED = 7;
   
@@ -353,32 +353,38 @@ final public class JmolConstants {
   }
   
   public final static String getBondOrderNameFromOrder(short order) {
-    
+
     switch (order) {
+    case BOND_ORDER_ANY:
     case BOND_ORDER_NULL:
+      return "";
     case BOND_COVALENT_SINGLE:
       return "single";
     case BOND_COVALENT_DOUBLE:
       return "double";
     }
     if ((order & BOND_PARTIAL_MASK) != 0)
-      return "partial " + getBondOrderNumberFromOrder(order); 
-    if (order == BOND_ORDER_NULL || order == BOND_ORDER_ANY)
-      return "";
+      return "partial " + getBondOrderNumberFromOrder(order);
     if ((order & BOND_HYDROGEN_MASK) != 0)
       return "hbond";
     if ((order & BOND_SULFUR_MASK) != 0)
       return "single";
-    for (int i = bondOrderValues.length; --i >= 0; ) {
+    for (int i = bondOrderValues.length; --i >= 0;) {
       if (bondOrderValues[i] == order)
         return bondOrderNames[i];
     }
     return "?";
   }
 
+  /**
+   * used for formatting labels and in the connect PARTIAL command
+   *  
+   * @param order
+   * @return a string representation to preserve float n.m
+   */
   public final static String getBondOrderNumberFromOrder(short order) {
     if (order == BOND_ORDER_NULL || order == BOND_ORDER_ANY)
-      return "0";
+      return "0"; // I don't think this is possible
     if ((order & BOND_HYDROGEN_MASK) != 0)
       return "1";
     if ((order & BOND_SULFUR_MASK) != 0)

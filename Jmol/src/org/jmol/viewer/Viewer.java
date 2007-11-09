@@ -5073,7 +5073,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.autoBond;
   }
 
-  int makeConnections(float minDistance, float maxDistance, short order,
+  int[] makeConnections(float minDistance, float maxDistance, short order,
                       int connectOperation, BitSet bsA, BitSet bsB,
                       BitSet bsBonds, boolean isBonds) {
     //eval

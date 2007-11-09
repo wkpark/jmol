@@ -334,7 +334,7 @@ abstract public class ModelSet extends ModelCollection {
   }
   
   protected void assignAromaticBonds(boolean isUserCalculation) {
-    super.assignAromaticBonds(isUserCalculation);
+    super.assignAromaticBonds(isUserCalculation, null);
     // send a message to STICKS indicating that these bonds
     // should be part of the state of the model. They will 
     // appear in the state as bondOrder commands.
@@ -344,7 +344,7 @@ abstract public class ModelSet extends ModelCollection {
 
   }
 
-  public int makeConnections(float minDistance, float maxDistance, short order,
+  public int[] makeConnections(float minDistance, float maxDistance, short order,
                              int connectOperation, BitSet bsA, BitSet bsB,
                              BitSet bsBonds, boolean isBonds) {
     if (connectOperation != JmolConstants.CONNECT_IDENTIFY_ONLY) {

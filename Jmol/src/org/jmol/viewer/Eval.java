@@ -3252,11 +3252,12 @@ class Eval { //implements Runnable {
         atomSets[atomSetCount++] = expression(i);
         if (atomSetCount == 2) {
           int pt = iToken;
-          for (int j = i; j < pt; j++) 
-            if (tokAt(j) == Token.identifier && parameterAsString(j).equals("_1")) {
+          for (int j = i; j < pt; j++)
+            if (tokAt(j) == Token.identifier
+                && parameterAsString(j).equals("_1")) {
               expression2 = i;
               break;
-          }
+            }
           iToken = pt;
         }
         isBonds = isBondSet;
@@ -3265,29 +3266,35 @@ class Eval { //implements Runnable {
       case Token.identifier:
       case Token.hbond:
         String cmd = parameterAsString(i);
-        bo = JmolConstants.getBondOrderFromString(cmd);
-        if (bo != JmolConstants.BOND_ORDER_NULL) {
-          if (haveType)
-            incompatibleArguments();
-          if (bo == JmolConstants.BOND_PARTIAL01) {
-            switch (tokAt(i + 1)) {
-            case Token.decimal:
-              bo = JmolConstants.getPartialBondOrderFromInteger(statement[++i].intValue);
-              break;
-            case Token.integer:
-              bo = (short) intParameter(++i);
-              break;
-            }
-          }
-          bondOrder = bo;
-          haveType = true;
+        if ((bo = JmolConstants.getBondOrderFromString(cmd)) == JmolConstants.BOND_ORDER_NULL) {
+          // must be an operation and must be last argument
+          haveOperation = true;
+          if (++i != statementLength)
+            invalidParameterOrder();
+          if ((operation = JmolConstants.connectOperationFromString(cmd)) < 0)
+            invalidArgument();
+          if (operation == JmolConstants.CONNECT_AUTO_BOND
+              && !(bondOrder == JmolConstants.BOND_ORDER_NULL
+                  || bondOrder == JmolConstants.BOND_H_REGULAR || bondOrder == JmolConstants.BOND_AROMATIC))
+            invalidArgument();
           break;
         }
-        if (++i != statementLength)
-          invalidParameterOrder();
-        if ((operation = JmolConstants.connectOperationFromString(cmd)) < 0)
-          invalidArgument();
-        haveOperation = true;
+        // must be bond type
+        if (haveType)
+          incompatibleArguments();
+        haveType = true;
+        if (bo == JmolConstants.BOND_PARTIAL01) {
+          switch (tokAt(i + 1)) {
+          case Token.decimal:
+            bo = JmolConstants
+                .getPartialBondOrderFromInteger(statement[++i].intValue);
+            break;
+          case Token.integer:
+            bo = (short) intParameter(++i);
+            break;
+          }
+        }
+        bondOrder = bo;
         break;
       case Token.translucent:
       case Token.opaque:
@@ -3330,24 +3337,31 @@ class Eval { //implements Runnable {
       if (!haveOperation)
         operation = JmolConstants.CONNECT_MODIFY_ONLY;
     }
-    int n = 0;
+    int nNew = 0;
+    int nModified = 0;
+    int[] result;
     if (expression2 > 0) {
       BitSet bs = new BitSet();
       variables.put("_1", bs);
       for (int atom1 = atomSets[0].size(); atom1 >= 0; atom1--)
         if (atomSets[0].get(atom1)) {
           bs.set(atom1);
-          n += viewer.makeConnections(distances[0], distances[1], bondOrder,
-              operation, bs, expression(expression2), bsBonds, isBonds);
-          bs.clear(atom1);       
+          result = viewer.makeConnections(distances[0], distances[1],
+              bondOrder, operation, bs, expression(expression2), bsBonds,
+              isBonds);
+          nNew += result[0];
+          nModified += result[1];
+          bs.clear(atom1);
         }
     } else {
-      n = viewer.makeConnections(distances[0], distances[1], bondOrder,
-         operation, atomSets[0], atomSets[1], bsBonds, isBonds);
+      result = viewer.makeConnections(distances[0], distances[1], bondOrder,
+          operation, atomSets[0], atomSets[1], bsBonds, isBonds);
+      nNew += result[0];
+      nModified += result[1];
     }
     if (isDelete) {
       if (!(tQuiet || scriptLevel > scriptReportingLevel))
-        scriptStatus(GT._("{0} connections deleted", n));
+        scriptStatus(GT._("{0} connections deleted", nModified));
       return;
     }
     if (isColorOrRadius) {
@@ -3368,7 +3382,8 @@ class Eval { //implements Runnable {
       }
     }
     if (!(tQuiet || scriptLevel > scriptReportingLevel))
-      scriptStatus(GT._("{0} connections modified or created", n));
+      scriptStatus(GT._("{0} new bonds; {1} modified", new Object[] {
+          new Integer(nNew), new Integer(nModified) }));
   }
 
   private void getProperty() throws ScriptException {

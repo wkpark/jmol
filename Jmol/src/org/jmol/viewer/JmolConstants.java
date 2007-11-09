@@ -353,7 +353,9 @@ final public class JmolConstants {
   }
   
   public final static String getBondOrderNameFromOrder(short order) {
+    
     switch (order) {
+    case BOND_ORDER_NULL:
     case BOND_COVALENT_SINGLE:
       return "single";
     case BOND_COVALENT_DOUBLE:

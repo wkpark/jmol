@@ -759,10 +759,18 @@ public class Draw extends MeshCollection {
   private final Point3i ptXY = new Point3i();
   
   public boolean checkObjectClicked(int x, int y, int modifiers) {
-    if (viewer.getPickingMode() == JmolConstants.PICKING_DRAW)
+    boolean isPickingMode = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
+    boolean isDrawPicking = viewer.getDrawPicking();
+    if (!isPickingMode && !isDrawPicking)
       return false;
     if (!findPickedObject(x, y, false))
       return false;
+    if (isDrawPicking && !isPickingMode) {
+      Point3f v = pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][pickedVertex]];
+      viewer.setStatusAtomPicked(-2, "[\"draw\",\"" + pickedMesh.thisID + "\"," +
+          + pickedModel + "," + pickedVertex + "," + v.x + "," + v.y + "," + v.z+"]");
+      return true; 
+    }
     if (pickedMesh.polygonIndexes[pickedModel][0] == pickedMesh.polygonIndexes[pickedModel][1])
       return false; // single point
     if (pickedVertex == 0) {

@@ -143,7 +143,7 @@ class StatusManager {
   }
   
   synchronized void setStatusAtomPicked(int atomIndex, String strInfo){
-    if (atomIndex < 0) return;
+    if (atomIndex == -1) return;
     Logger.info("setStatusAtomPicked(" + atomIndex + "," + strInfo + ")");
     setStatusChanged("atomPicked", atomIndex, strInfo, false);
     if (jmolStatusListener != null)

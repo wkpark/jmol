@@ -55,7 +55,7 @@ class PickingManager {
   void atomPicked(int atomIndex, int modifiers) {
     boolean shiftKey = ((modifiers & MouseManager.SHIFT) != 0);
     boolean alternateKey = ((modifiers & MouseManager.ALT) != 0);
-    if (atomIndex == -1) {
+    if (atomIndex < 0) {
       if (pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_PFAAT 
           && !shiftKey && !alternateKey) {
         viewer.script("select none");

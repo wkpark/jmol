@@ -619,6 +619,7 @@ public class StateManager {
     int axesMode               = JmolConstants.AXES_MODE_BOUNDBOX;
     float axesScale            = 2;        
     int pickingSpinRate        = 10;
+    boolean drawPicking        = false;
     
     String helpPath = JmolConstants.DEFAULT_HELP_PATH;
 
@@ -1014,6 +1015,7 @@ public class StateManager {
       setParameterValue("displayCellParameters",displayCellParameters);
       setParameterValue("dotsSelectedOnly",dotsSelectedOnly);
       setParameterValue("dotSurface",dotSurface);
+      setParameterValue("drawPicking",drawPicking);
       setParameterValue("dynamicMeasurements",dynamicMeasurements);
       setParameterValue("exportDrivers", JmolConstants.EXPORT_DRIVER_LIST);
       setParameterValue("forceAutoBond",forceAutoBond);

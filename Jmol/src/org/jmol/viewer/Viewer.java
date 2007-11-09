@@ -3561,6 +3561,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return pickingManager.getPickingMode();
   }
 
+  private void setDrawPicking(boolean TF) {
+    global.drawPicking = TF;
+  }
+  
+  public boolean getDrawPicking() {
+    return global.drawPicking;
+  }
+  
   private void setPickingStyle(String style) {
     int pickingStyle = JmolConstants.getPickingStyle(style);
     if (pickingStyle < 0)
@@ -3608,6 +3616,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setStatusAtomPicked(int atomIndex, String info) {
     String s = statusManager.getCallbackScript("pickcallback");
     global.setParameterValue("_atompicked", atomIndex);
+    global.setParameterValue("_pickinfo", info);
     if (s != null)
       evalStringQuiet(s, true);
     else
@@ -3874,21 +3883,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //Eval
     boolean notFound = false;
     while (true) {
-      ///11.1.31//
-      /*  didn't work      
-       if (key.equalsIgnoreCase("rgbRed")) {
-       setRgbs(0, value);
-       break;
-       }
-       if (key.equalsIgnoreCase("rgbGreen")) {
-       setRgbs(1, value);
-       break;
-       }
-       if (key.equalsIgnoreCase("rgbBlue")) {
-       setRgbs(2, value);
-       break;
-       }
-       */
       ///11.1.30//
       if (key.equalsIgnoreCase("language")) {
         setLanguage(value); //fr cs en none, etc.
@@ -4299,6 +4293,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean notFound = false;
     boolean doRepaint = true;
     while (true) {
+
+      //11.3.43
+      
+      if (key.equalsIgnoreCase("drawPicking")) {
+        setDrawPicking(value);
+        break;
+      }
 
       //11.3.36
       

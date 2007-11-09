@@ -413,7 +413,7 @@ final public class Atom extends Point3fi implements Tuple {
   }
   
   public int getFormalCharge() {
-    return (formalChargeAndFlags >> 2) & 7;
+    return formalChargeAndFlags >> 2;
   }
 
   void setOccupancy(AtomCollection atomCollection, int occupancy) {

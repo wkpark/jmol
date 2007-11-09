@@ -7994,6 +7994,10 @@ class Eval { //implements Runnable {
     } else if (Parser.isOneOf(val.toLowerCase(), "png;jpg;jpeg;jpg64")
         && tokAt(pt + 1) == Token.integer) {
       quality = intParameter(++pt);
+    } else if (Parser.isOneOf(val.toLowerCase(), "xyz;mol;pdb")) {
+      type = val.toUpperCase();
+      if (pt + 1 == statementLength)
+        pt++;
     }
 
     //write [image|history|state] clipboard

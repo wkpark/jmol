@@ -2955,8 +2955,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (g3d.setPass2(antialias2)) {
       transformManager.setAntialias(antialias2);
       repaintManager.render(g3d, modelSet); //, rectClip
-      //transformManager.setAntialias(antialiasON);
-      //transformManager.finalizeTransformParameters();
     }  
   }
   

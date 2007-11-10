@@ -338,6 +338,7 @@ public class Text {
     textHeight = lines.length * lineHeight;
     boxWidth = textWidth + 8;
     boxHeight = textHeight + 8;
+    System.out.println("set boxHeight " + boxHeight + " " + text);
   }
 
   private void formatText() {
@@ -428,9 +429,12 @@ public class Text {
 
   private void setPositions(boolean antialias) {
     int xLeft, xCenter, xRight;
+    boolean is3dEcho = (atomBased || xyz != null);
     if (valign == XY || valign == XYZ) {
-      int x = (movableXPercent == Integer.MAX_VALUE ?  movableX 
-          : movableXPercent * windowWidth / 100);
+      int x = (movableXPercent != Integer.MAX_VALUE ?
+          movableXPercent * windowWidth / 100
+          : antialias && !is3dEcho ? movableX << 1 : movableX);
+      
       int offsetX = this.offsetX;
       if (antialias)
         offsetX <<= 1;
@@ -465,9 +469,12 @@ public class Text {
       boxY = windowHeight;
       break;
     default:
-      int y = (movableYPercent == Integer.MAX_VALUE ?  movableY 
-          : movableYPercent * windowHeight / 100);
-      boxY = (atomBased|| xyz != null ? y : (windowHeight - y)) + offsetY;
+      int y = (movableXPercent != Integer.MAX_VALUE ?
+        movableYPercent * windowHeight / 100
+        : antialias ? movableY << 1 : movableY);
+
+      boxY = (is3dEcho ? (antialias ? y >> 1 : y )
+          : (windowHeight - y)) + offsetY;
       if (antialias)
         boxY += offsetY;
     }
@@ -476,12 +483,17 @@ public class Text {
   void setBoxOffsetsInWindow(boolean antialias) {
     int xAdj = 0;
     int yAdj = 0;
+    boolean is3dEcho = (atomBased || xyz != null);
     if (!adjustForWindow)
-      yAdj -= (antialias ? lineHeight * 2 : lineHeight);
+      yAdj -= (antialias && !is3dEcho ?  lineHeight * 2 : lineHeight);
     if (atomBased && align == XY) {
       xAdj += JmolConstants.LABEL_DEFAULT_X_OFFSET;
       yAdj -= JmolConstants.LABEL_DEFAULT_Y_OFFSET + 4;
     }
+    if (antialias && atomBased) {
+      yAdj -= lineHeight / 2;   
+    }
+    
     if (valign == XYZ) {
       yAdj += ascent / 2;
     }
@@ -491,6 +503,7 @@ public class Text {
     }
     boxX += xAdj;
     boxY += yAdj;
+    
     if (adjustForWindow) {
       // not labels
 
@@ -574,6 +587,8 @@ public class Text {
         yBoxOffset = -boxHeight + yOffset;
     }
 
+    //if (antialias)
+      //yBoxOffset -= boxHeight;
     x += xBoxOffset;
     y += yBoxOffset;
 

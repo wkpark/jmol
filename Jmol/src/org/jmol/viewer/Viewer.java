@@ -1345,11 +1345,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int getCursorX() {
-    return mouseManager.xCurrent * (g3d.isAntialiased() ? 2 : 1);
+    return mouseManager.xCurrent;
   }
 
   public int getCursorY() {
-    return mouseManager.yCurrent * (g3d.isAntialiased() ? 2 : 1);
+    return mouseManager.yCurrent;
   }
 
   // ///////////////////////////////////////////////////////////////
@@ -2083,13 +2083,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   int findNearestAtomIndex(int x, int y) {
-    if (modelSet == null)
-      return -1;
-    if (g3d.isAntialiased()) {
-      x *= 2;
-      y *= 2;
-    }
-    return modelSet.findNearestAtomIndex(x, y);
+    return (modelSet == null ? -1 : modelSet.findNearestAtomIndex(x, y));
   }
 
   BitSet findAtomsInRectangle(Rectangle rectRubberBand) {
@@ -2961,7 +2955,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (g3d.setPass2(antialias2)) {
       transformManager.setAntialias(antialias2);
       repaintManager.render(g3d, modelSet); //, rectClip
-      transformManager.setAntialias(antialiasON);
+      //transformManager.setAntialias(antialiasON);
+      //transformManager.finalizeTransformParameters();
     }  
   }
   
@@ -5625,10 +5620,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   boolean checkObjectClicked(int x, int y, int modifiers) {
-    if (g3d.isAntialiased()) {
-      x *= 2;
-      y *= 2;
-    }
     return modelSet.checkObjectClicked(x, y, modifiers);
   }
 

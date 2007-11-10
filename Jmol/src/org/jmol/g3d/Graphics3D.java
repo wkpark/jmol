@@ -153,6 +153,15 @@ final public class Graphics3D implements JmolRendererInterface {
   private boolean antialiasEnabled;
     
   /**
+   * is full scene / oversampling antialiasing GENERALLY in effect
+   *
+   * @return the answer
+   */
+  public boolean isDisplayAntialiased() {
+    return antialiasEnabled;
+  }
+
+  /**
    * is full scene / oversampling antialiasing in effect
    *
    * @return the answer
@@ -295,13 +304,14 @@ final public class Graphics3D implements JmolRendererInterface {
     width = windowWidth;
     height = windowHeight;
     if (isAntialiased) {
-      width *= 2;
-      height *= 2;
+      width <<= 1;
+      height <<= 1;
     }
-    //System.out.println("Graphics3D setWidthHeight width=" + width + " height=" + height 
-    //    + " isAntialiased=" + isAntialiased
-    //    + " window width,height: " + windowWidth + "," + windowHeight);
-
+/*    
+    System.out.println("Graphics3D setWidthHeight width=" + width + " height=" + height 
+    + " isAntialiased=" + isAntialiased
+    + " window width,height: " + windowWidth + "," + windowHeight);
+*/
     xLast = width - 1;
     yLast = height - 1;
     displayMinX = -(width >> 1);
@@ -377,7 +387,7 @@ final public class Graphics3D implements JmolRendererInterface {
         downsampleFullSceneAntialiasing(false);
     }
     platform.notifyEndOfRendering();
-    setWidthHeight(antialiasEnabled);
+    //setWidthHeight(antialiasEnabled);
     currentlyRendering = false;
   }
 

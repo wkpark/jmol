@@ -151,6 +151,10 @@ abstract public class ModelSet extends ModelCollection {
     if (atomCount == 0)
       return -1;
     closest.atom = null;
+    if (g3d.isAntialiased()) {
+      x <<= 1;
+      y <<= 1;
+    }
     findNearestAtomIndex(x, y, closest);
 
     for (int i = 0; i < shapes.length && closest.atom == null; ++i)
@@ -281,11 +285,13 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   public boolean checkObjectClicked(int x, int y, int modifiers) {
-    Shape shape = shapes[JmolConstants.SHAPE_ECHO];
-    if (shape != null && shape.checkObjectClicked(x, y, modifiers))
-      return true;
-    return ((shape = shapes[JmolConstants.SHAPE_DRAW]) != null
-        && shape.checkObjectClicked(x, y, modifiers));
+    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
+      Shape shape = shapes[i];
+      if (shape != null
+          && shape.checkObjectClicked(x, y, modifiers))
+        return true;
+    }
+    return false;
   }
  
   public void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,

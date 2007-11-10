@@ -788,10 +788,13 @@ public class Draw extends MeshCollection {
   }
 
   public boolean checkObjectHovered(int x, int y) {
-    //if (viewer.getPickingMode() == JmolConstants.PICKING_DRAW)
-      //return false;
     if (!findPickedObject(x, y, false))
       return false;
+    if (g3d.isDisplayAntialiased()) {
+      //because hover rendering is done in FIRST pass only
+      x <<= 1;
+      y <<= 1;
+    }      
     viewer.hoverOn(x, y, (pickedMesh.title == null ? pickedMesh.thisID
         : pickedMesh.title[0]));
     return true;
@@ -861,18 +864,18 @@ public class Draw extends MeshCollection {
   }
   
   private boolean findPickedObject(int x, int y, boolean isPicking) {
+    int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
     if (g3d.isAntialiased()) {
       x <<= 1;
       y <<= 1;
+      dmin2 <<= 1;
     }
-    int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
     pickedModel = 0;
     pickedVertex = 0;
     pickedMesh = null;
     for (int i = 0; i < meshCount; i++) {
       DrawMesh m = dmeshes[i];
-      if ((true || isPicking || m.drawType == JmolConstants.DRAW_LINE || m.drawType == JmolConstants.DRAW_MULTIPLE)
-          && m.visibilityFlags != 0) {
+      if (m.visibilityFlags != 0) {
         int mCount = (m.modelFlags == null ? 1 : modelCount);
         for (int iModel = mCount; --iModel >= 0;) {
           if (m.modelFlags != null && m.modelFlags[iModel] == 0 || m.polygonIndexes == null
@@ -974,7 +977,7 @@ public class Draw extends MeshCollection {
       try{
         v.set(mesh.vertices[mesh.polygonIndexes[iModel][i]]);
       }catch(Exception e) {
-        System.out.println("Unexpected error in Draw.getVertexList");
+        Logger.error("Unexpected error in Draw.getVertexList");
       }
       str += " " + Escape.escape(v);
     }

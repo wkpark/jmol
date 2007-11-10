@@ -90,10 +90,11 @@ public class LabelsRenderer extends ShapeRenderer {
 
       boolean isSimple = (textAlign == 0 && label.indexOf("|") < 0 && label
           .indexOf("<su") < 0);
+      int yOffset = (antialias ? 0 : 8);
 
       Text text = (isSimple ? null : labels.getLabel(i));
       if (text != null) {
-        text.setXYZs(atom.screenX, atom.screenY - 8, zBox, zSlab);
+        text.setXYZs(atom.screenX, atom.screenY - yOffset, zBox, zSlab);
         text.setColix(colix);
         text.setBgColix(bgcolix);
       } else {
@@ -120,7 +121,7 @@ public class LabelsRenderer extends ShapeRenderer {
           continue;
         }
         text = new Text(g3d, font3d, label, colix, bgcolix, atom.screenX,
-            atom.screenY - 8, zBox, zSlab, textAlign);
+            atom.screenY - yOffset, zBox, zSlab, textAlign);
         labels.putLabel(i, text);
         text.setOffset(offset);
       }

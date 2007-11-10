@@ -670,7 +670,8 @@ public class StateManager {
       //handle these specially for the CURRENT FILE, their current
       //settings won't be reflected in the load state, which is determined
       //earlier, when the file loads. 
-      ";_animating;_atomhovered;_atompicked;_currentfilenumber;_currentmodelnumberinfile" +
+      ";_animating;_atomhovered;_atompicked;_pickinfo" +
+      ";_currentfilenumber;_currentmodelnumberinfile" +
       ";_height;_memory;_modelfile;_modelname;_modelnumber;_modeltitle;_spinning;_version;_width" +
       ";ambientpercent;animationfps" +
       ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor" +
@@ -722,6 +723,7 @@ public class StateManager {
 
       setParameterValue("_atompicked", -1);
       setParameterValue("_atomhovered", -1);
+      removeJmolParameter("_pickinfo");
     }
 
     void setParameterValue(String name, boolean value) {

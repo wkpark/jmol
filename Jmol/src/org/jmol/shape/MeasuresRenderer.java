@@ -267,8 +267,13 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       renderMeasurement(count - 1, pendingMeasurement, false);
     Atom atomLast = modelSet.getAtomAt(pendingMeasurement.getPreviousIndex());
     int lastZ = atomLast.screenZ - atomLast.screenDiameter - 10;
-    drawSegment(atomLast.screenX, atomLast.screenY, lastZ,
-                viewer.getCursorX(), viewer.getCursorY(), 0);
+    int x = viewer.getCursorX();
+    int y = viewer.getCursorY();
+    if (g3d.isAntialiased()) {
+      x <<= 1;
+      y <<= 1;
+    }
+    drawSegment(atomLast.screenX, atomLast.screenY, lastZ, x, y, 0);
   }
   
   protected void drawPixel(int x, int y, int z) {

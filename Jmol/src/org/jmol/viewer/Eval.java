@@ -6460,8 +6460,8 @@ class Eval { //implements Runnable {
     if (tokProperty != Token.nada) {
       if (bs == null) {
         if (t == null) {
-          //if (!((v = viewer.getParameter(key + "_set")) instanceof String))
-            //invalidArgument();
+          if (!((v = viewer.getParameter(key)) instanceof String))
+            invalidArgument();
           v = getStringObjectAsToken((String) v, null);
           if (!(v instanceof Token))
             invalidArgument();

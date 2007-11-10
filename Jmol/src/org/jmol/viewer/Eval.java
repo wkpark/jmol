@@ -1326,9 +1326,9 @@ class Eval { //implements Runnable {
     return expression(statement, index, 0, true, false, true);
   }
 
-  private BitSet expression(Token[] code, int pcStart, int pcStop, boolean allowRefresh,
-                            boolean allowUnderflow, boolean bsRequired)
-      throws ScriptException {
+  private BitSet expression(Token[] code, int pcStart, int pcStop,
+                            boolean allowRefresh, boolean allowUnderflow,
+                            boolean bsRequired) throws ScriptException {
     //note that this is general -- NOT just statement[]
     //errors reported would improperly access statement/line context
     //there should be no errors anyway, because this is for 
@@ -1522,7 +1522,9 @@ class Eval { //implements Runnable {
             (int) (pt.y * 1000), (int) (pt.z * 1000) }));
         break;
       case Token.thismodel:
-        rpn.addX(viewer.getModelAtomBitSet(viewer.getCurrentModelIndex(), true));
+        rpn
+            .addX(viewer
+                .getModelAtomBitSet(viewer.getCurrentModelIndex(), true));
         break;
       case Token.amino:
       case Token.backbone:
@@ -1560,8 +1562,8 @@ class Eval { //implements Runnable {
           if (val instanceof Integer)
             comparisonFloat = comparisonValue = ((Integer) val).intValue();
           else if (val instanceof Float && isModel)
-            comparisonValue = ModelCollection.modelFileNumberFromFloat(((Float) val)
-                .floatValue());
+            comparisonValue = ModelCollection
+                .modelFileNumberFromFloat(((Float) val).floatValue());
         }
         if (val instanceof Integer || tokValue == Token.integer) {
           comparisonValue *= (Compiler
@@ -1590,8 +1592,11 @@ class Eval { //implements Runnable {
           comparisonValue /= 1000000;
           tokWhat = Token.file;
         }
-        if (((String) value).indexOf("-") >= 0)
+        if (((String) value).indexOf("-") >= 0) {
+          if (!Float.isNaN(comparisonFloat))
+            comparisonFloat = -comparisonFloat;
           comparisonValue = -comparisonValue;
+        }
         float[] data = (tokWhat == Token.property ? viewer
             .getDataFloat(property) : null);
         rpn.addX(comparatorInstruction(instruction, tokWhat, data, tokOperator,

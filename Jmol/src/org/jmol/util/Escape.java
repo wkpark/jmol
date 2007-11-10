@@ -81,9 +81,24 @@ public class Escape {
       if (str.charAt(i) > 0x7F)
         str = str.substring(0, i) + unicode(str.charAt(i))
             + str.substring(i + 1);
-    return "\"" + str + "\"";
+    return chop("\"" + str + "\"");
   }
 
+  private static String chop(String s) {
+    int len = s.length();
+    if (len < 512)
+      return s;
+    StringBuffer sb = new StringBuffer();
+    String sep = "\"\\\n    + \"";
+    int pt = 0;
+    for (int i = 72; i < len; pt = i, i += 72) {
+      while (s.charAt(i - 1) == '\\')
+        i++;
+      sb.append((pt == 0 ? "" : sep)).append(s.substring(pt, i));
+    }
+    sb.append(sep).append(s.substring(pt, len));
+    return sb.toString();
+  }
   
   static String ESCAPE_SET = " ,./;:_+-~=><?'!@#$%^&*";
   static int nEscape = ESCAPE_SET.length();

@@ -83,11 +83,12 @@ class DataManager {
         bs = (BitSet) data[2];
         Parser.parseFloatArrayFromMatchAndField(stringData, bs, 0, null, field, f);
       } else {
-        bs = new BitSet();
         int[] iData = (int[]) data[2]; 
+        bs = new BitSet();
         Parser.parseFloatArrayFromMatchAndField(stringData, null, matchField, iData, field, f);
         for (int i = iData.length; --i >= 0; )
-          bs.set(iData[i]);
+          if (iData[i] >= 0)
+            bs.set(iData[i]);
       }
       if (oldData != null && oldData[2] instanceof BitSet && !createNew)
         bs.or((BitSet)(oldData[2]));

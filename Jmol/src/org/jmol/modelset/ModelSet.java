@@ -285,13 +285,11 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   public boolean checkObjectClicked(int x, int y, int modifiers) {
-    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
-      Shape shape = shapes[i];
-      if (shape != null
-          && shape.checkObjectClicked(x, y, modifiers))
-        return true;
-    }
-    return false;
+    Shape shape = shapes[JmolConstants.SHAPE_ECHO];
+    if (shape != null && shape.checkObjectClicked(x, y, modifiers))
+      return true;
+    return ((shape = shapes[JmolConstants.SHAPE_DRAW]) != null
+        && shape.checkObjectClicked(x, y, modifiers));
   }
  
   public void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,

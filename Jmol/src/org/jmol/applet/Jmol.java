@@ -441,7 +441,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     try {
         if (messageCallback.equals("alert"))
           jsoWindow.call(messageCallback, new Object[] { strMsg });
-        else
+        else if (messageCallback.length() > 0)
           jsoWindow.call(messageCallback, new Object[] { htmlName, strMsg });
     } catch (Exception e) {
       if (!haveNotifiedError)
@@ -867,7 +867,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       try {
         if (loadStructCallback.equals("alert"))
           jsoWindow.call(loadStructCallback, new Object[] { fullPathName });
-        else
+        else if (loadStructCallback.length() > 0)
           jsoWindow.call(loadStructCallback, new Object[] { htmlName,
               fullPathName });
       } catch (Exception e) {
@@ -887,7 +887,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
         if (messageCallback.equals("alert"))
           jsoWindow.call(messageCallback, new Object[] { statusMessage + " ; "
               + additionalInfo });
-        else
+        else if (messageCallback.length() > 0)
           jsoWindow.call(messageCallback, new Object[] { htmlName,
               statusMessage, additionalInfo });
       } catch (Exception e) {
@@ -961,6 +961,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       if (!mayScript || resizeCallback == null)
         return;
       try {
+        if (resizeCallback.length() > 0)
           jsoWindow.call(resizeCallback, new Object[] { htmlName,
               new Integer(newWidth), new Integer(newHeight)});
       } catch (Exception e) {
@@ -993,7 +994,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
        */
       if (mayScript && animFrameCallback != null) {
         try {
-          jsoWindow.call(animFrameCallback, new Object[] { htmlName,
+          if (animFrameCallback.length() > 0)
+            jsoWindow.call(animFrameCallback, new Object[] { htmlName,
               new Integer(Math.max(frameNo, -2 - frameNo)),
               new Integer(fileNo), new Integer(modelNo), new Integer(Math.abs(firstNo)),
               new Integer(Math.abs(lastNo)), new Integer(isAnimationRunning ? 1: 0), new Integer(animationDirection), new Integer(currentDirection) });
@@ -1015,12 +1017,14 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       showStatusAndConsole(strInfo);
       if (!mayScript || pickCallback == null)
         return;
+      //System.out.println("notify atom picked " + atomIndex+ " " + strInfo);
       try {
         if (pickCallback.equals("alert"))
           jsoWindow.call(pickCallback, new Object[] { strInfo });
-        else
+        else if (pickCallback.length() > 0)
           jsoWindow.call(pickCallback, new Object[] { htmlName, strInfo,
               new Integer(atomIndex) });
+        //System.out.println("pickcallback done to " + pickCallback);
       } catch (Exception e) {
         if (!haveNotifiedError)
           if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
@@ -1037,7 +1041,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       try {
         if (hoverCallback.equals("alert"))
           jsoWindow.call(hoverCallback, new Object[] { strInfo });
-        else
+        else if (hoverCallback.length() > 0)
           jsoWindow.call(hoverCallback, new Object[] { htmlName, strInfo,
               new Integer(atomIndex) });
       } catch (Exception e) {

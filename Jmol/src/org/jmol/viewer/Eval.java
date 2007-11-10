@@ -6533,7 +6533,7 @@ class Eval { //implements Runnable {
   }
   
   private boolean setParameter(String key, int intVal) throws ScriptException {
-    
+
     if (key.equalsIgnoreCase("scriptReportingLevel")) { //11.1.13
       checkLength3();
       int iLevel = intParameter(2);
@@ -6542,7 +6542,7 @@ class Eval { //implements Runnable {
         setIntProperty(key, iLevel);
       }
       return true;
-    } 
+    }
     if (key.equalsIgnoreCase("defaults")) {
       checkLength3();
       String val = parameterAsString(2).toLowerCase();
@@ -6550,7 +6550,7 @@ class Eval { //implements Runnable {
         invalidArgument();
       setStringProperty("defaults", val);
       return true;
-    } 
+    }
     if (key.equalsIgnoreCase("historyLevel")) {
       checkLength3();
       int iLevel = intParameter(2);
@@ -6559,7 +6559,7 @@ class Eval { //implements Runnable {
         setIntProperty(key, iLevel);
       }
       return true;
-    } 
+    }
     if (key.equalsIgnoreCase("dipoleScale")) {
       checkLength3();
       float scale = floatParameter(2);
@@ -6567,35 +6567,38 @@ class Eval { //implements Runnable {
         numberOutOfRange(-10f, 10f);
       setFloatProperty("dipoleScale", scale);
       return true;
-    } 
-    
-   if (parameterAsString(0).equals("set") 
-       && !viewer.isJmolVariable(key)) {
-     iToken = 1;
-     unrecognizedParameter("SET", key);
-   }
-    
-    if (statementLength == 2) {
+    }
+
+    boolean isJmolSet = (parameterAsString(0).equals("set"));
+    boolean isJmolParameter = viewer.isJmolVariable(key);
+    if (isJmolSet && !isJmolParameter) {
+      iToken = 1;
+      unrecognizedParameter("SET", key);
+    }
+    switch (statementLength) {
+    case 2:
       setBooleanProperty(key, true);
       return true;
-    }
-    if (statementLength == 3) {
+    case 3:
       if (intVal != Integer.MAX_VALUE) {
         setIntProperty(key, intVal);
         return true;
       }
       getToken(2);
       if (theTok == Token.none) {
-        if (!isSyntaxCheck) {
+        if (!isSyntaxCheck)
           viewer.removeUserVariable(key);
-          //viewer.removeUserVariable(key + "_set");
-        }
       } else if (theTok == Token.on || theTok == Token.off) {
-          setBooleanProperty(key, theTok == Token.on);
+        setBooleanProperty(key, theTok == Token.on);
+      } else if (isJmolSet && theTok == Token.identifier) {
+        setStringProperty(key, (String) theToken.value);
       } else {
         return false;
       }
       return true;
+    default:
+      if (isJmolSet)
+        invalidArgument();
     }
     return false;
   }

@@ -888,19 +888,25 @@ class Compiler {
   }
   
   private boolean lookingAtLeadingWhitespace() {
-    //log("lookingAtLeadingWhitespace");
     int ichT = ichToken;
+    char ch;
     while (ichT < cchScript && isSpaceOrTab(script.charAt(ichT)))
       ++ichT;
+    if (ichT < cchScript - 1 
+        && script.charAt(ichT) == '\\'
+       && ((ch = script.charAt(ichT + 1)) == '\r' 
+         || ch == '\n')) {
+      while (++ichT < cchScript 
+          && ((ch = script.charAt(ichT)) == '\r' || ch == '\n')) {
+      }
+    }
     cchToken = ichT - ichToken;
-    //log("leadingWhitespace cchScript=" + cchScript + " cchToken=" + cchToken);
     return cchToken > 0;
   }
 
   private boolean isShowCommand;
   
   private boolean lookingAtComment() {
-    //log ("lookingAtComment ichToken=" + ichToken + " cchToken=" + cchToken);
     // first, find the end of the statement and scan for # (sharp) signs
     char ch = 'X';
     int ichEnd = ichToken;

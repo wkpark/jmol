@@ -895,7 +895,7 @@ public class StateManager {
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
         if (doRegister(key))
-          list[n++] = key + " = " + htPropertyFlags.get(key);
+          list[n++] = "set " + key + " " + htPropertyFlags.get(key);
       }
       //save as _xxxx if you don't want "set" to be there first
       e = htParameterValues.keys();
@@ -905,25 +905,25 @@ public class StateManager {
         if (key.charAt(0) != '@' && doRegister(key)) {
           Object value = htParameterValues.get(key);
           if (key.charAt(0) == '_') {
-            key = key.substring(1) + " ";
+            key = key.substring(1);
           } else {
             if (key.indexOf("default") == 0)
               key = " " + key;
-            key += " = ";
+            key = "set " + key;
             value = escapeVariable(name, value);
           }
-          list[n++] = key + value;
+          list[n++] = key + " " + value;
         }
       }
       switch (axesMode) {
       case JmolConstants.AXES_MODE_UNITCELL:
-        list[n++] = "axes = unitcell";
+        list[n++] = "set axes unitcell";
         break;
       case JmolConstants.AXES_MODE_BOUNDBOX:
-        list[n++] = "axes = window";
+        list[n++] = "set axes window";
         break;
       default:
-        list[n++] = "axes = molecular";
+        list[n++] = "set axes molecular";
       }
 
       //nonboolean variables:

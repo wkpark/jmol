@@ -338,7 +338,6 @@ public class Text {
     textHeight = lines.length * lineHeight;
     boxWidth = textWidth + 8;
     boxHeight = textHeight + 8;
-    System.out.println("set boxHeight " + boxHeight + " " + text);
   }
 
   private void formatText() {
@@ -535,7 +534,6 @@ public class Text {
                        int x, int y, int z, int zSlab, 
                        int boxWidth, int boxHeight, 
                        boolean antialias, boolean atomBased) {
-    //System.out.println("showBox bgcolix x y z " + bgcolix + " " + x + " " + y + " " + z);
     g3d.fillRect(x, y, z, zSlab, boxWidth, boxHeight);
     g3d.setColix(colix);
     if (!atomBased)

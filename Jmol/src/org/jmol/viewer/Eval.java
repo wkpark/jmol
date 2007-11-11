@@ -9562,6 +9562,12 @@ class Eval { //implements Runnable {
           propertyValue= Boolean.TRUE;
           break;
         }
+        if (str.equalsIgnoreCase("CLIP")) {
+          propertyName = "clippingPlane";
+          propertyValue = planeParameter(++i);
+          i = iToken;
+          break;
+        }
         if (str.equalsIgnoreCase("IGNORE")) {
           propertyName = "ignore";
           propertyValue = expression(++i);
@@ -10961,6 +10967,7 @@ class Eval { //implements Runnable {
           Vector3f norm = new Vector3f();
           float nd = Graphics3D.getDirectedNormalThroughPoints(pt1, pt2, pt3,
               (args.length == 4 ? ptValue(args[3]) : null), norm, vAB, vAC);
+          //System.out.println("evaluatePlane: " + new Point4f(norm.x, norm.y, norm.z, nd));
           return addX(new Point4f(norm.x, norm.y, norm.z, nd));
         default:
           float x = Token.fValue(args[0]);

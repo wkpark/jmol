@@ -22,7 +22,6 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 /*
  
  * The JVXL file format
@@ -120,10 +119,10 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 
 public class VolumeData {
- 
+
   public final Point3f volumetricOrigin = new Point3f();
   public final float[] origin = new float[3];
-  
+
   public final Vector3f[] volumetricVectors = new Vector3f[3];
   public final int[] voxelCounts = new int[3];
   public float[][][] voxelData;
@@ -131,7 +130,7 @@ public class VolumeData {
   public final float[] volumetricVectorLengths = new float[3];
   public final Vector3f[] unitVolumetricVectors = new Vector3f[3];
 
-  public VolumeData() {   
+  public VolumeData() {
     volumetricVectors[0] = new Vector3f();
     volumetricVectors[1] = new Vector3f();
     volumetricVectors[2] = new Vector3f();
@@ -139,7 +138,7 @@ public class VolumeData {
     unitVolumetricVectors[1] = new Vector3f();
     unitVolumetricVectors[2] = new Vector3f();
   }
-  
+
   public void setVoxelData(float[][][] voxelData) {
     this.voxelData = voxelData;
   }
@@ -149,26 +148,24 @@ public class VolumeData {
     volumetricVectors[i].y = y;
     volumetricVectors[i].z = z;
   }
-  
+
   private final Matrix3f volumetricMatrix = new Matrix3f();
-  
+
   public void setMatrix() {
     for (int i = 0; i < 3; i++)
-      volumetricMatrix.setColumn(i, volumetricVectors[i]);    
+      volumetricMatrix.setColumn(i, volumetricVectors[i]);
   }
-  
+
   public void transform(Vector3f v1, Vector3f v2) {
     volumetricMatrix.transform(v1, v2);
   }
 
   Point4f thePlane;
-  final Vector3f thePlaneNormal = new Vector3f();
-  float thePlaneNormalMag;
-  
+  private float thePlaneNormalMag;
+
   public void setPlaneParameters(Point4f plane) {
     thePlane = plane;
-    thePlaneNormal.set(plane.x, plane.y, plane.z);
-    thePlaneNormalMag = thePlaneNormal.length();
+    thePlaneNormalMag = (new Vector3f(plane.x, plane.y, plane.z)).length();
   }
 
   private final Point3f ptXyzTemp = new Point3f();
@@ -176,7 +173,8 @@ public class VolumeData {
   public float calcVoxelPlaneDistance(int x, int y, int z) {
     voxelPtToXYZ(x, y, z, ptXyzTemp);
     return (thePlane.x * ptXyzTemp.x + thePlane.y * ptXyzTemp.y + thePlane.z
-        * ptXyzTemp.z + thePlane.w) / thePlaneNormalMag;
+        * ptXyzTemp.z + thePlane.w)
+        / thePlaneNormalMag;
   }
 
   public float distancePointToPlane(Point3f pt) {
@@ -200,6 +198,7 @@ public class VolumeData {
     origin[1] = volumetricOrigin.y;
     origin[2] = volumetricOrigin.z;
   }
+
   private final Vector3f pointVector = new Vector3f();
 
   private float scaleByVoxelVector(Vector3f vector, int voxelVectorIndex) {
@@ -239,8 +238,7 @@ public class VolumeData {
     int yDown = indexDown(pt.y, iMax = voxelCounts[1] - 1);
     int yUp = yDown + (pt.y < 0 || yDown == iMax ? 0 : 1);
     int zDown = indexDown(pt.z, iMax = voxelCounts[2] - 1);
-    int zUp = zDown
-        + (pt.z < 0 || zDown == iMax ? 0 : 1);
+    int zUp = zDown + (pt.z < 0 || zDown == iMax ? 0 : 1);
     float v1 = getFractional2DValue(pt.x - xDown, pt.y - yDown,
         voxelData[xDown][yDown][zDown], voxelData[xUp][yDown][zDown],
         voxelData[xDown][yUp][zDown], voxelData[xUp][yUp][zDown]);
@@ -250,8 +248,8 @@ public class VolumeData {
     return v1 + (pt.z - zDown) * (v2 - v1);
   }
 
-  public static float getFractional2DValue(float fx, float fy, float x11, float x12,
-                                    float x21, float x22) {
+  public static float getFractional2DValue(float fx, float fy, float x11,
+                                           float x12, float x21, float x22) {
     float v1 = x11 + fx * (x12 - x11);
     float v2 = x21 + fx * (x22 - x21);
     return v1 + fy * (v2 - v1);
@@ -293,6 +291,23 @@ public class VolumeData {
         for (int z = 0; z < nz; z++)
           voxelData[x][y][z] = voxelData[x][y][z] * voxelData[x][y][z];
   }
-  
-}
 
+  public void clipVolumeData(Point4f plane, float cutoff) {
+    int nx = voxelCounts[0];
+    int ny = voxelCounts[1];
+    int nz = voxelCounts[2];
+    Vector3f normal = new Vector3f(plane.x, plane.y, plane.z);
+    normal.normalize();
+    float f = 1f;
+    for (int x = 0; x < nx; x++)
+      for (int y = 0; y < ny; y++)
+        for (int z = 0; z < nz; z++) {
+          float value = voxelData[x][y][z] - cutoff;
+          voxelPtToXYZ(x, y, z, ptXyzTemp);
+          float d = (ptXyzTemp.x * normal.x + ptXyzTemp.y * normal.y + ptXyzTemp.z * normal.z - cutoff) / f;
+          if (d >= 0 || d > value)
+            voxelData[x][y][z] = d;
+        }
+  }
+
+}

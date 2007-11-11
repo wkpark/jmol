@@ -177,6 +177,7 @@ public class Parameters {
     bsSolvent = null;
     calculationType = "";
     center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+    clippingPlane= null;
     colorBySign = colorByPhase = colorBySets = false;
     colorNeg = defaultColorNegative;
     colorNegLCAO = defaultColorNegativeLCAO;
@@ -233,6 +234,7 @@ public class Parameters {
   boolean isCavity;
   Boolean pocket; //three states: TRUE, FALSE, and NULL
   int minSet;
+  Point4f clippingPlane;
 
   float[] theProperty;
   ///// solvent-accessible, solvent-excluded surface //////

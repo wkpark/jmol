@@ -364,6 +364,11 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("clippingPlane" == propertyName) {
+      params.clippingPlane = (Point4f) value;
+      return true;
+    }
+
     if ("select" == propertyName) {
       params.bsSelected = (BitSet) value;
       return true;

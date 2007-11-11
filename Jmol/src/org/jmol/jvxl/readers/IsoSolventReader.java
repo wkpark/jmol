@@ -182,9 +182,16 @@ class IsoSolventReader extends AtomDataReader {
       return;
     }
     generateSolventCube(true);
-    if (!isCavity || dataType == Parameters.SURFACE_NOMAP
-        || dataType == Parameters.SURFACE_PROPERTY)
-      return;
+    if (isCavity && dataType != Parameters.SURFACE_NOMAP
+        && dataType != Parameters.SURFACE_PROPERTY) {
+      generateSolventCavity();
+      generateSolventCube(false);
+    }
+    if (params.clippingPlane != null)
+      volumeData.clipVolumeData(params.clippingPlane, params.cutoff);
+  }
+
+ private void generateSolventCavity() {
     //we have a ring of dots around the model.
     //1) identify which voxelData points are > 0 and within this volume
     //2) turn these voxel points into atoms with given radii
@@ -195,54 +202,47 @@ class IsoSolventReader extends AtomDataReader {
     int n = 0;
     //surface_data = new float[1000];
 
-   // for (int j = 0; j < nDots; j++) {
-   //   System.out.println("draw pt"+j+" {"+meshData.dots[j].x + " " +meshData.dots[j].y + " " +meshData.dots[j].z + "} " );
-   // }
+    // for (int j = 0; j < nDots; j++) {
+    //   System.out.println("draw pt"+j+" {"+meshData.dots[j].x + " " +meshData.dots[j].y + " " +meshData.dots[j].z + "} " );
+    // }
     /*
-    Point3f pt = new Point3f(15.3375f, 1.0224999f, 5.1125f);
-    for (int x = 0; x < nPointsX; ++x)
-      for (int y = 0; y < nPointsY; ++y) {
-        out: for (int z = 0; z < nPointsZ; ++z, ++i) {
-          float d = voxelData[x][y][z]; 
-          volumeData.voxelPtToXYZ(x, y, z, ptXyzTemp);
-          if (d < Float.MAX_VALUE && d >= cavityRadius)
-          if (ptXyzTemp.distance(pt) < 3f)
-            System.out.println("draw pt"+(n++)+" {"+ptXyzTemp.x + " " +ptXyzTemp.y + " " +ptXyzTemp.z + "} # " +x + " " + y + " " + z + " " + voxelData[x][y][z]);
-          if (false && d < Float.MAX_VALUE &&
-               d >= cavityRadius) {
-            volumeData.voxelPtToXYZ(x, y, z, ptXyzTemp);
-            if (ptXyzTemp.x > 0 && ptXyzTemp.y > 0 && ptXyzTemp.z > 0)
-            System.out.println("draw pt"+(n++)+" {"+ptXyzTemp.x + " " +ptXyzTemp.y + " " +ptXyzTemp.z + "} " );
-          }
-        }
-      }
-    n = 0;
-    i = 0;
-*/
+     Point3f pt = new Point3f(15.3375f, 1.0224999f, 5.1125f);
+     for (int x = 0; x < nPointsX; ++x)
+     for (int y = 0; y < nPointsY; ++y) {
+     out: for (int z = 0; z < nPointsZ; ++z, ++i) {
+     float d = voxelData[x][y][z]; 
+     volumeData.voxelPtToXYZ(x, y, z, ptXyzTemp);
+     if (d < Float.MAX_VALUE && d >= cavityRadius)
+     if (ptXyzTemp.distance(pt) < 3f)
+     System.out.println("draw pt"+(n++)+" {"+ptXyzTemp.x + " " +ptXyzTemp.y + " " +ptXyzTemp.z + "} # " +x + " " + y + " " + z + " " + voxelData[x][y][z]);
+     if (false && d < Float.MAX_VALUE &&
+     d >= cavityRadius) {
+     volumeData.voxelPtToXYZ(x, y, z, ptXyzTemp);
+     if (ptXyzTemp.x > 0 && ptXyzTemp.y > 0 && ptXyzTemp.z > 0)
+     System.out.println("draw pt"+(n++)+" {"+ptXyzTemp.x + " " +ptXyzTemp.y + " " +ptXyzTemp.z + "} " );
+     }
+     }
+     }
+     n = 0;
+     i = 0;
+     */
     float d;
-    float r2 =  envelopeRadius;// - cavityRadius;
-    
+    float r2 = envelopeRadius;// - cavityRadius;
+
     for (int x = 0; x < nPointsX; ++x)
       for (int y = 0; y < nPointsY; ++y) {
         out: for (int z = 0; z < nPointsZ; ++z, ++i)
-          if ((d = voxelData[x][y][z]) < Float.MAX_VALUE &&
-               d >= cavityRadius) {
+          if ((d = voxelData[x][y][z]) < Float.MAX_VALUE && d >= cavityRadius) {
             volumeData.voxelPtToXYZ(x, y, z, ptXyzTemp);
-            //float dMin = Float.MAX_VALUE;
-            //float d;
             for (int j = 0; j < nDots; j++) {
               if (meshData.dots[j].distance(ptXyzTemp) < r2)
                 continue out;
             }
             bs.set(i);
-            //if (n < 1069)
-              //System.out.println("draw pt"+n+" {"+ptXyzTemp.x + " " +ptXyzTemp.y + " " +ptXyzTemp.z + "} " );
             n++;
           }
       }
     Logger.info("cavities include " + n + " voxel points");
-    //if (n == 0)
-    //  return;
     atomRadius = new float[n];
     atomXyz = new Point3f[n];
     for (int x = 0, ipt = 0, apt = 0; x < nPointsX; ++x)
@@ -253,10 +253,9 @@ class IsoSolventReader extends AtomDataReader {
             atomRadius[apt++] = voxelData[x][y][z];
           }
     myAtomCount = firstNearbyAtom = n;
-    generateSolventCube(false);
   }
 
-   final Point3f ptXyzTemp = new Point3f();
+ final Point3f ptXyzTemp = new Point3f();
 
   void generateSolventCube(boolean isFirstPass) {
     long time = System.currentTimeMillis();

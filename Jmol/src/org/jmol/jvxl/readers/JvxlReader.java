@@ -677,7 +677,7 @@ public class JvxlReader extends VolumeFileReader {
     //   when          |                   |       == -1 ==> not color mapped
     //   when          |                   |        < -1 ==> jvxlDataIsPrecisionColor    
     //   when        == -1     &&   == -1 ==> noncontoured plane
-    //   when        == -1     &&   == -2 ==> contourable plane
+    //   when        == -1     &kg&   == -2 ==> contourable plane
     //   when        < -1*     &&    >  0 ==> contourable functionXY
     //   when        > 0       &&    <  0 ==> jvxlDataisBicolorMap
 
@@ -688,11 +688,11 @@ public class JvxlReader extends VolumeFileReader {
     int nSurfaceInts = jvxlData.nSurfaceInts;//jvxlData.jvxlSurfaceData.length();
     int bytesUncompressedEdgeData = (jvxlData.jvxlEdgeData.length() - 1);
     int nColorData = (jvxlData.jvxlColorData.length() - 1);
-    String info = "# cutoff = " + jvxlData.cutoff + "; nSurfaceInts = "
-        + nSurfaceInts
-        + "; nBytesData = "
-        + (jvxlData.jvxlSurfaceData.length() + bytesUncompressedEdgeData + (jvxlData.jvxlColorData
-            .length()));
+    String info = "# cutoff = " + jvxlData.cutoff 
+        + "; pointsPerAngstrom = " + jvxlData.pointsPerAngstrom
+        + "; nSurfaceInts = " + nSurfaceInts
+        + "; nBytesData = " + (jvxlData.jvxlSurfaceData.length() 
+            + bytesUncompressedEdgeData + (jvxlData.jvxlColorData.length()));
     if (jvxlData.jvxlPlane == null) {
       if (jvxlData.isContoured) {
         definitionLine += (-1 - nSurfaceInts) + " " + bytesUncompressedEdgeData;

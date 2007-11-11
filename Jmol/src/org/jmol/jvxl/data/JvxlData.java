@@ -155,7 +155,7 @@ public class JvxlData {
   public float valueMappedToRed;
   public float valueMappedToBlue;
   public float cutoff;
-  
+  public float pointsPerAngstrom; 
   public int nPointsX, nPointsY, nPointsZ;
   public int nBytes;
   public int nContours;

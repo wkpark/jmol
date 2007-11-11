@@ -423,7 +423,9 @@ public abstract class MouseManager implements KeyListener {
         viewer.rotateZBy(-deltaX);
       break;
     case SHIFT_RIGHT: // the one-button Mac folks won't get this gesture
-      viewer.rotateZBy(-deltaX);
+      viewer.rotateZBy((Math.abs(deltaY) > 5 * Math.abs(deltaX) 
+          ? (xCurrent < viewer.getScreenWidth() / 2 ? deltaY : -deltaY) : 0)
+          + (yCurrent > viewer.getScreenHeight() / 2 ? deltaX : -deltaX));
       break;
     case CTRL_ALT_LEFT:
     /*

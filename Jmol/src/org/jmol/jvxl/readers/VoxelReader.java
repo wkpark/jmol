@@ -266,6 +266,7 @@ public abstract class VoxelReader implements VertexDataServer {
     generateSurfaceData();
     jvxlData.jvxlFileHeader = jvxlFileHeaderBuffer.toString();
     jvxlData.cutoff = (isJvxl ? jvxlCutoff : params.cutoff);
+    jvxlData.pointsPerAngstrom = 1f/volumeData.volumetricVectorLengths[0];
     jvxlData.jvxlColorData = "";
     jvxlData.jvxlPlane = params.thePlane;
     jvxlData.jvxlEdgeData = fractionData.toString();

@@ -9216,7 +9216,8 @@ class Eval { //implements Runnable {
         }
         break;
       }
-      if (str.equalsIgnoreCase("RESOLUTION")) {
+      if (str.equalsIgnoreCase("RESOLUTION")
+          || str.equalsIgnoreCase("POINTSPERANGSTROM")) {
         propertyName = "resolution";
         propertyValue = new Float(floatParameter(2));
         break;
@@ -9625,7 +9626,8 @@ class Eval { //implements Runnable {
           propertyName = "angstroms";
           break;
         }
-        if (str.equalsIgnoreCase("RESOLUTION")) {
+        if (str.equalsIgnoreCase("RESOLUTION")
+            || str.equalsIgnoreCase("POINTSPERANGSTROM")) {
           propertyName = "resolution";
           propertyValue = new Float(floatParameter(++i));
           break;

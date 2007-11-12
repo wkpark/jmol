@@ -9563,8 +9563,8 @@ class Eval { //implements Runnable {
           propertyValue= Boolean.TRUE;
           break;
         }
-        if (str.equalsIgnoreCase("CLIP")) {
-          propertyName = "clippingPlane";
+        if (str.equalsIgnoreCase("CAP")) {
+          propertyName = "cappingPlane";
           propertyValue = planeParameter(++i);
           i = iToken;
           break;

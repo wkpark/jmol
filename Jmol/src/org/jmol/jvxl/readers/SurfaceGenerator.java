@@ -364,8 +364,8 @@ public class SurfaceGenerator {
       return true;
     }
 
-    if ("clippingPlane" == propertyName) {
-      params.clippingPlane = (Point4f) value;
+    if ("cappingPlane" == propertyName) {
+      params.cappingPlane = (Point4f) value;
       return true;
     }
 

@@ -292,7 +292,7 @@ public class VolumeData {
           voxelData[x][y][z] = voxelData[x][y][z] * voxelData[x][y][z];
   }
 
-  public void clipVolumeData(Point4f plane, float cutoff) {
+  public void capData(Point4f plane, float cutoff) {
     int nx = voxelCounts[0];
     int ny = voxelCounts[1];
     int nz = voxelCounts[2];

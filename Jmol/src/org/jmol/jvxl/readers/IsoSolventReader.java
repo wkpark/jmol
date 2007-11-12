@@ -187,8 +187,10 @@ class IsoSolventReader extends AtomDataReader {
       generateSolventCavity();
       generateSolventCube(false);
     }
-    if (params.cappingPlane != null)
+    if (params.cappingPlane != null) {
+      Logger.info("capping isosurface using " + params.cappingPlane);
       volumeData.capData(params.cappingPlane, params.cutoff);
+    }
   }
 
  private void generateSolventCavity() {

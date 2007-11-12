@@ -731,11 +731,11 @@ public class Token {
       if (tokenIn.value instanceof BondSet) {
         tokenOut.value = new BondSet((BitSet) tokenIn.value, ((BondSet)tokenIn.value).getAssociatedAtoms());
         bs = (BitSet) tokenOut.value;
-        len = BitSetUtil.length(bs);
+        len = BitSetUtil.cardinalityOf(bs);
         break;
       }
       bs = BitSetUtil.copy((BitSet) tokenIn.value);
-      len = BitSetUtil.length(bs);
+      len = BitSetUtil.cardinalityOf(bs);
       tokenOut.value = bs;
       break;
     case Token.list:
@@ -768,6 +768,7 @@ public class Token {
 
     switch (tokenIn.tok) {
     case Token.bitset:
+      len = BitSetUtil.length(bs);
       for (int j = 0; j < len; j++)
         if (bs.get(j) && (++n < i1 || n > i2))
           bs.clear(j);

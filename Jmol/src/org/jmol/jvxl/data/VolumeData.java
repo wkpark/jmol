@@ -304,7 +304,7 @@ public class VolumeData {
         for (int z = 0; z < nz; z++) {
           float value = voxelData[x][y][z] - cutoff;
           voxelPtToXYZ(x, y, z, ptXyzTemp);
-          float d = (ptXyzTemp.x * normal.x + ptXyzTemp.y * normal.y + ptXyzTemp.z * normal.z - cutoff) / f;
+          float d = (ptXyzTemp.x * normal.x + ptXyzTemp.y * normal.y + ptXyzTemp.z * normal.z + plane.w - cutoff) / f;
           if (d >= 0 || d > value)
             voxelData[x][y][z] = d;
         }

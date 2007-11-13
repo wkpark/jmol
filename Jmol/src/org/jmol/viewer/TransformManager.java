@@ -158,6 +158,7 @@ abstract class TransformManager {
     StateManager.appendCmd(commands, "cameraDepth = " + cameraDepth);
     if (isNavigationMode)
       StateManager.appendCmd(commands, "navigationMode = true");
+    StateManager.appendCmd(commands, viewer.getBoundBoxCommand());
     StateManager.appendCmd(commands, "center " + Escape.escape(fixedRotationCenter));
     StateManager.appendCmd(commands, getMoveToText(0, false));
     if (!isNavigationMode && !zoomEnabled)

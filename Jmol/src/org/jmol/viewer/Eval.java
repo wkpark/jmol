@@ -1134,7 +1134,7 @@ class Eval { //implements Runnable {
         setAxes(1);
         break;
       case Token.boundbox:
-        setBoundbox(1);
+        boundbox(1);
         break;
       case Token.unitcell:
         setUnitcell(1);
@@ -2405,32 +2405,29 @@ class Eval { //implements Runnable {
   }
 
   private short getSetAxesTypeMad(int index) throws ScriptException {
+    if (index == statementLength)
+      return 1;
     checkStatementLength(index + 1);
-    short mad = 0;
     switch (getToken(index).tok) {
     case Token.on:
-      mad = 1;
+      return 1;
     case Token.off:
-      break;
+      return 0;
+    case Token.dotted:
+      return -1;
     case Token.integer:
       int diameterPixels = intParameter(index);
       if (diameterPixels < -1 || diameterPixels >= 20)
         numberOutOfRange(-1, 19);
-      mad = (short) diameterPixels;
-      break;
+      return (short) diameterPixels;
     case Token.decimal:
       float angstroms = floatParameter(index);
       if (angstroms < 0 || angstroms >= 2)
         numberOutOfRange(0.01f, 1.99f);
-      mad = (short) (angstroms * 1000 * 2);
-      break;
-    case Token.dotted:
-      mad = -1;
-      break;
-    default:
-      booleanOrNumberExpected("DOTTED");
+      return (short) (angstroms * 1000 * 2);
     }
-    return mad;
+    booleanOrNumberExpected("DOTTED");
+    return 0;
   }
 
   private boolean isColorParam(int i) {
@@ -3851,7 +3848,7 @@ class Eval { //implements Runnable {
             if (!bs.get(j))
               continue;
             int atomNo = viewer.getAtomNumber(j);
-            if (bsAtoms.get(atomNo) || atomNo > atomCount + 1 || atomNo < 0)
+            if (atomNo > atomCount + 1 || atomNo < 0 || bsAtoms.get(atomNo))
               continue;
             bsAtoms.set(atomNo);
             atomMap[atomNo] = j;
@@ -6220,7 +6217,7 @@ class Eval { //implements Runnable {
       label(2);
       return;
     case Token.boundbox:
-      setBoundbox(2);
+      boundbox(2);
       return;
     case Token.color:
     case Token.defaultColors:
@@ -7305,7 +7302,24 @@ class Eval { //implements Runnable {
       viewer.setObjectMad(JmolConstants.SHAPE_AXES, "axes", mad);
   }
 
-  private void setBoundbox(int index) throws ScriptException {
+  private void boundbox(int index) throws ScriptException {
+    if (isCenterParameter(index)) {
+      expressionResult = null;
+      Point3f pt1 = centerParameter(index);
+      if (isCenterParameter(index = iToken + 1)) {
+        Point3f pt2 = centerParameter(iToken + 1);
+        if (!isSyntaxCheck)
+          viewer.setBoundBox(pt1, pt2);        
+      } else if (expressionResult != null 
+          && expressionResult instanceof BitSet) {
+        if (!isSyntaxCheck)
+          viewer.calcBoundBoxDimensions((BitSet) expressionResult);
+      } else {
+        invalidArgument();
+      }
+      if ((index = iToken + 1) == statementLength)
+          return;
+    }
     short mad = getSetAxesTypeMad(index);
     if (!isSyntaxCheck)
       viewer.setObjectMad(JmolConstants.SHAPE_BBCAGE, "boundbox", mad);
@@ -8354,9 +8368,9 @@ class Eval { //implements Runnable {
       }
       break;
     case Token.boundbox:
-      if (!isSyntaxCheck)
-        msg = "boundbox " + viewer.getBoundBoxCenter() + " "
-            + viewer.getBoundBoxCornerVector();
+      if (!isSyntaxCheck) {
+        msg = viewer.getBoundBoxCommand();
+      }
       break;
     case Token.center:
       if (!isSyntaxCheck)

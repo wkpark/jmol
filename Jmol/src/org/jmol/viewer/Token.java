@@ -225,7 +225,7 @@ public class Token {
   final static int display       = command | 107 | setparam | expressionCommand;
   final static int subset        = command | 108 | expressionCommand | predefinedset;
   final static int axes          = command | 109 | setparam;
-  final static int boundbox      = command | 110 | setparam;
+  final static int boundbox      = command | 110 | numberOrExpression | setparam;
   final public static int unitcell      = command | 111 | setparam | expression | predefinedset;
   final static int frank         = command | 112 | setparam;
   final static int navigate      = command | 113 | numberOrExpression;
@@ -1050,7 +1050,7 @@ public class Token {
     "calculate",         new Token(calculate,       varArgCount),
     "history",           new Token(history,             maxArg2),
     "subset",            new Token(subset,          varArgCount),
-    "boundbox",          new Token(boundbox,         onDefault1),
+    "boundbox",          new Token(boundbox,        varArgCount),
     "frank",             new Token(frank,            onDefault1),
     "unitcell",          new Token(unitcell,        varArgCount),
     "selectionHalos",    new Token(selectionHalo,    onDefault1),

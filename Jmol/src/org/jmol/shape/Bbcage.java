@@ -23,7 +23,6 @@
  */
 package org.jmol.shape;
 
-
 public class Bbcage extends FontLineShape {
 
   // by XORing each of the three bits of my index
@@ -37,4 +36,5 @@ public class Bbcage extends FontLineShape {
     super.initShape();
     myType = "boundBox";
   }
+  
 }

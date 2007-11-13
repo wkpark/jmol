@@ -54,7 +54,7 @@ class DataManager {
     /*
      * data[0] -- label
      * data[1] -- string or float[]
-     * data[2] -- selection bitset or int[] atomMap when field < 0
+     * data[2] -- selection bitset or int[] atomMap when field > 0
      * 
      * matchField = data must match atomNo in this column, >= 1
      * field = column containing the data, >= 1:

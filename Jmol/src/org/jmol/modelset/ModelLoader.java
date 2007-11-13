@@ -708,14 +708,6 @@ public final class ModelLoader extends ModelSet {
 
   //// average point, bounding box ////
   
-  private final Point3f pointMin = new Point3f();
-  private final Point3f pointMax = new Point3f();
-
-  private final static Point3f[] unitBboxPoints = { new Point3f(1, 1, 1),
-      new Point3f(1, 1, -1), new Point3f(1, -1, 1), new Point3f(1, -1, -1),
-      new Point3f(-1, 1, 1), new Point3f(-1, 1, -1), new Point3f(-1, -1, 1),
-      new Point3f(-1, -1, -1), };
-
   private void calcAverageAtomPoint() {
     averageAtomPoint.set(0, 0, 0);
     if (atomCount == 0)
@@ -730,37 +722,11 @@ public final class ModelLoader extends ModelSet {
   }
 
   private void calcBoundBoxDimensions() {
-    calcAtomsMinMax();
     if (cellInfos != null)
       calcUnitCellMinMax();
-    centerBoundBox.add(pointMin, pointMax);
-    centerBoundBox.scale(0.5f);
-    boundBoxCornerVector.sub(pointMax, centerBoundBox);
-
-    for (int i = 8; --i >= 0;) {
-      Point3f bbcagePoint = bboxVertices[i] = new Point3f(unitBboxPoints[i]);
-      bbcagePoint.x *= boundBoxCornerVector.x;
-      bbcagePoint.y *= boundBoxCornerVector.y;
-      bbcagePoint.z *= boundBoxCornerVector.z;
-      bbcagePoint.add(centerBoundBox);
-    }
+    calcBoundBoxDimensions(null);
   }
-
-  private void calcAtomsMinMax() {
-    if (atomCount < 2) {
-      pointMin.set(-10, -10, -10);
-      pointMax.set(10, 10, 10);
-      return;
-    }
-    pointMin.set(atoms[0]);
-    pointMax.set(atoms[0]);
-    for (int i = atomCount; --i > 0;) {
-      // note that the 0 element was set above
-      if (!isJmolDataFrame(atoms[i].modelIndex))
-        checkMinMax(atoms[i]);
-    }
-  }
-
+  
   private void calcUnitCellMinMax() {
     for (int i = 0; i < modelCount; i++) {
       if (!cellInfos[i].coordinatesAreFractional)
@@ -769,24 +735,6 @@ public final class ModelLoader extends ModelSet {
       for (int j = 0; j < 8; j++)
         checkMinMax(vertices[j]);
     }
-  }
-
-  private void checkMinMax(Point3f pt) {
-    float t = pt.x;
-    if (t < pointMin.x)
-      pointMin.x = t;
-    else if (t > pointMax.x)
-      pointMax.x = t;
-    t = pt.y;
-    if (t < pointMin.y)
-      pointMin.y = t;
-    else if (t > pointMax.y)
-      pointMax.y = t;
-    t = pt.z;
-    if (t < pointMin.z)
-      pointMin.z = t;
-    else if (t > pointMax.z)
-      pointMax.z = t;
   }
 
   private void finalizeGroupBuild() {

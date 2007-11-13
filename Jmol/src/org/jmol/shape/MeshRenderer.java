@@ -90,8 +90,12 @@ public abstract class MeshRenderer extends ShapeRenderer {
   // same method in a subclass.
   
   protected void transform() {
-    for (int i = vertexCount; --i >= 0;)
+    //Point3f ptf = new Point3f();
+    for (int i = vertexCount; --i >= 0;) {
       viewer.transformPoint(vertices[i], screens[i]);
+      //viewer.transformPoint(vertices[i], ptf);
+      //System.out.println("meshrend " + i + " " + vertices[i] + " " + screens[i] + " " + ptf);
+    }
   }
   
   protected boolean isPolygonDisplayable(int i) {

@@ -169,6 +169,78 @@ abstract public class ModelCollection extends BondCollection {
 
   ////////////////////////////////////////////
 
+  private final Point3f pointMin = new Point3f();
+  private final Point3f pointMax = new Point3f();
+  private boolean isBbcageDefault;
+  private final static Point3f[] unitBboxPoints = { new Point3f(1, 1, 1),
+      new Point3f(1, 1, -1), new Point3f(1, -1, 1), new Point3f(1, -1, -1),
+      new Point3f(-1, 1, 1), new Point3f(-1, 1, -1), new Point3f(-1, -1, 1),
+      new Point3f(-1, -1, -1), };
+
+  public void setBoundBox(Point3f pt1, Point3f pt2) {
+    if (pt1.distance(pt2) == 0)
+      return;
+    pointMin.set(Math.min(pt1.x, pt2.x), Math.min(pt1.y, pt2.y), Math.min(pt1.z, pt2.z));
+    pointMax.set(Math.max(pt1.x, pt2.x), Math.max(pt1.y, pt2.y), Math.max(pt1.z, pt2.z));
+    isBbcageDefault = false;
+    setBbcage();
+  }
+
+  public void calcBoundBoxDimensions(BitSet bs) {
+    calcAtomsMinMax(bs);
+    setBbcage();
+  }
+
+  private void setBbcage() {
+    centerBoundBox.add(pointMin, pointMax);
+    centerBoundBox.scale(0.5f);
+    boundBoxCornerVector.sub(pointMax, centerBoundBox);
+    for (int i = 8; --i >= 0;) {
+      Point3f bbcagePoint = bboxVertices[i] = new Point3f(unitBboxPoints[i]);
+      bbcagePoint.x *= boundBoxCornerVector.x;
+      bbcagePoint.y *= boundBoxCornerVector.y;
+      bbcagePoint.z *= boundBoxCornerVector.z;
+      bbcagePoint.add(centerBoundBox);
+    }
+  }
+  
+  private void calcAtomsMinMax(BitSet bs) {
+    if (bs == null && isBbcageDefault)
+      return;
+    isBbcageDefault = (bs == null);
+    if (atomCount < 2) {
+      pointMin.set(-10, -10, -10);
+      pointMax.set(10, 10, 10);
+      return;
+    }
+    if (BitSetUtil.firstSetBit(bs) < 0)
+      bs = null;
+    pointMin.set(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+    pointMax.set(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
+    for (int i = atomCount; --i >= 0;)
+      if (bs == null || bs.get(i))
+        if (!isJmolDataFrame(atoms[i].modelIndex))
+          checkMinMax(atoms[i]);
+  }
+
+  protected void checkMinMax(Point3f pt) {
+    float t = pt.x;
+    if (t < pointMin.x)
+      pointMin.x = t;
+    else if (t > pointMax.x)
+      pointMax.x = t;
+    t = pt.y;
+    if (t < pointMin.y)
+      pointMin.y = t;
+    else if (t > pointMax.y)
+      pointMax.y = t;
+    t = pt.z;
+    if (t < pointMin.z)
+      pointMin.z = t;
+    else if (t > pointMax.z)
+      pointMax.z = t;
+  }
+
   public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue, float[] values) {
     super.setAtomProperty(bs, tok, iValue, fValue, values);
     if ((tok == Token.valence || tok == Token.formalCharge)

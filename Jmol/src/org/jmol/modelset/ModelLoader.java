@@ -226,8 +226,7 @@ public final class ModelLoader extends ModelSet {
     //only now can we access all of the atom's properties
 
     freeze();
-    calcAverageAtomPoint();
-    calcBoundBoxDimensions();
+    calcBoundBoxDimensions(null);
 
     finalizeShapes();
     if (mergeModelSet != null)
@@ -702,38 +701,6 @@ public final class ModelLoader extends ModelSet {
       autoBond(bs, bs, null);
     } else {
       Logger.info("ModelSet: not autobonding; use forceAutobond=true to force automatic bond creation");        
-    }
-  }
-
-
-  //// average point, bounding box ////
-  
-  private void calcAverageAtomPoint() {
-    averageAtomPoint.set(0, 0, 0);
-    if (atomCount == 0)
-      return;
-    int n = 0;
-    for (int i = atomCount; --i >= 0;)
-      if (!isJmolDataFrame(atoms[i].modelIndex)) {
-        averageAtomPoint.add(atoms[i]);
-        n++;
-      }
-    averageAtomPoint.scale(1f / n);
-  }
-
-  private void calcBoundBoxDimensions() {
-    if (cellInfos != null)
-      calcUnitCellMinMax();
-    calcBoundBoxDimensions(null);
-  }
-  
-  private void calcUnitCellMinMax() {
-    for (int i = 0; i < modelCount; i++) {
-      if (!cellInfos[i].coordinatesAreFractional)
-        continue;
-      Point3f[] vertices = cellInfos[i].getUnitCell().getVertices();
-      for (int j = 0; j < 8; j++)
-        checkMinMax(vertices[j]);
     }
   }
 

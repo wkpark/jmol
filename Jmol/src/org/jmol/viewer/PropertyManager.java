@@ -23,15 +23,8 @@
  */
 package org.jmol.viewer;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Vector;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
-
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.TextFormat;
 
 /**
  * 
@@ -43,14 +36,14 @@ import org.jmol.util.TextFormat;
 
 class PropertyManager {
 
-  Viewer viewer;
+  private Viewer viewer;
 
   PropertyManager(Viewer viewer) {
     this.viewer = viewer;
   }
 
 
-  final static String[] propertyTypes = {
+  private final static String[] propertyTypes = {
     "appletInfo"      , "", "",
     "fileName"        , "", "",
     "fileHeader"      , "", "",
@@ -88,42 +81,42 @@ class PropertyManager {
     "menu"            , "", "",
   };
 
-  final static int PROP_APPLET_INFO = 0;
-  final static int PROP_FILENAME = 1;
-  final static int PROP_FILEHEADER = 2;
-  final static int PROP_FILECONTENTS = 3;
-  final static int PROP_FILECONTENTS_PATH = 4;
+  private final static int PROP_APPLET_INFO = 0;
+  private final static int PROP_FILENAME = 1;
+  private final static int PROP_FILEHEADER = 2;
+  private final static int PROP_FILECONTENTS = 3;
+  private final static int PROP_FILECONTENTS_PATH = 4;
   
-  final static int PROP_ANIMATION_INFO = 5;
-  final static int PROP_MODEL_INFO = 6;
-  final static int PROP_VIBRATION_INFO = 7; //not implemented -- see auxiliaryInfo
-  final static int PROP_SHAPE_INFO = 8;
-  final static int PROP_MEASUREMENT_INFO = 9;
+  private final static int PROP_ANIMATION_INFO = 5;
+  private final static int PROP_MODEL_INFO = 6;
+  //private final static int PROP_VIBRATION_INFO = 7; //not implemented -- see auxiliaryInfo
+  private final static int PROP_SHAPE_INFO = 8;
+  private final static int PROP_MEASUREMENT_INFO = 9;
   
-  final static int PROP_CENTER_INFO = 10;
-  final static int PROP_ORIENTATION_INFO = 11;
-  final static int PROP_TRANSFORM_INFO = 12;
-  final static int PROP_ATOM_LIST = 13;
-  final static int PROP_ATOM_INFO = 14;
+  private final static int PROP_CENTER_INFO = 10;
+  private final static int PROP_ORIENTATION_INFO = 11;
+  private final static int PROP_TRANSFORM_INFO = 12;
+  private final static int PROP_ATOM_LIST = 13;
+  private final static int PROP_ATOM_INFO = 14;
   
-  final static int PROP_BOND_INFO = 15;
-  final static int PROP_CHAIN_INFO = 16;
-  final static int PROP_POLYMER_INFO = 17;
-  final static int PROP_MOLECULE_INFO = 18;
-  final static int PROP_STATE_INFO = 19;
+  private final static int PROP_BOND_INFO = 15;
+  private final static int PROP_CHAIN_INFO = 16;
+  private final static int PROP_POLYMER_INFO = 17;
+  private final static int PROP_MOLECULE_INFO = 18;
+  private final static int PROP_STATE_INFO = 19;
   
-  final static int PROP_EXTRACT_MODEL = 20;
-  final static int PROP_JMOL_STATUS = 21;
-  final static int PROP_JMOL_VIEWER = 22;
-  final static int PROP_MESSAGE_QUEUE = 23;
-  final static int PROP_AUXILIARY_INFO = 24;
+  private final static int PROP_EXTRACT_MODEL = 20;
+  private final static int PROP_JMOL_STATUS = 21;
+  private final static int PROP_JMOL_VIEWER = 22;
+  private final static int PROP_MESSAGE_QUEUE = 23;
+  private final static int PROP_AUXILIARY_INFO = 24;
   
-  final static int PROP_BOUNDBOX_INFO = 25;
-  final static int PROP_DATA_INFO = 26;
-  final static int PROP_IMAGE = 27;
-  final static int PROP_EVALUATE = 28;
-  final static int PROP_MENU = 29;
-  final static int PROP_COUNT = 30;
+  private final static int PROP_BOUNDBOX_INFO = 25;
+  private final static int PROP_DATA_INFO = 26;
+  private final static int PROP_IMAGE = 27;
+  private final static int PROP_EVALUATE = 28;
+  private final static int PROP_MENU = 29;
+  private final static int PROP_COUNT = 30;
 
   static int getPropertyNumber(String infoType) {
     if (infoType == null)
@@ -134,13 +127,13 @@ class PropertyManager {
     return -1;
   }
   
-  static String getPropertyName(int propID) {
+  private static String getPropertyName(int propID) {
     if (propID < 0)
       return "";
     return propertyTypes[propID * 3];
   }
   
-  static String getParamType(int propID) {
+  private static String getParamType(int propID) {
     if (propID < 0)
       return "";
     return propertyTypes[propID * 3 + 1];
@@ -152,17 +145,17 @@ class PropertyManager {
     return propertyTypes[propID * 3 + 2];
   }
   
-  final static String[] readableTypes = {
+  private final static String[] readableTypes = {
     "", "stateinfo", "extractmodel", "filecontents", "fileheader", "image", "menu"};
   
-  boolean isReadableAsString(String infoType) {
+  private boolean isReadableAsString(String infoType) {
     for (int i = readableTypes.length; --i >= 0; )
       if (infoType.equalsIgnoreCase(readableTypes[i]))
           return true;
     return false;
   }
 
-  boolean requestedReadable = false;
+  private boolean requestedReadable = false;
   
   synchronized Object getProperty(String returnType, String infoType, Object paramInfo) {
     if (propertyTypes.length != PROP_COUNT * 3)
@@ -176,9 +169,9 @@ class PropertyManager {
       returnType = (isReadableAsString(infoType) ? "String" : "JSON");
     if (returnType.equalsIgnoreCase("String")) return info.toString();
     if (requestedReadable)
-      return toReadable(infoType, info);
+      return Escape.toReadable(infoType, info);
     else if (returnType.equalsIgnoreCase("JSON"))
-      return "{" + toJSON(infoType, info) + "}";
+      return "{" + Escape.toJSON(infoType, info) + "}";
     return info;
   }
   
@@ -263,235 +256,5 @@ class PropertyManager {
                 + (paramDefault != "" ? " #default: " + paramDefault : "") : "");
     }
     return info;
-  }
-   
-  String packageJSON (String infoType, String info) {
-    if (infoType == null) return info;
-    return "\"" + infoType + "\": " + info;
-  }
-  
-  String packageReadable (String infoType, String info) {
-    if (infoType == null) return info;
-    return "\n" + infoType + "\t" + info;
-  }
- 
-  String fixString(String s) {
-    if (s == null || s.indexOf("{\"") == 0) //don't doubly fix JSON strings when retrieving status
-      return s;
-    s = TextFormat.simpleReplace(s,"\"","''");
-    s = TextFormat.simpleReplace(s,"\n"," | ");
-   return "\"" + s + "\"";  
-  }
-  
-  String toJSON(String infoType, Object info) {
-
-    //Logger.debug(infoType+" -- "+info);
-
-    String str = "";
-    String sep = "";
-    if (info == null)
-      return packageJSON(infoType, null);
-    if (info instanceof String)
-      return packageJSON(infoType, fixString((String) info));
-    if (info instanceof String[]) {
-      str = "[";
-      int imax = ((String[]) info).length;  
-      for (int i = 0; i < imax; i++) {
-        str += sep + fixString(((String[]) info)[i]);
-        sep = ",";
-      }
-      str += "]";
-      return packageJSON(infoType, str);
-    }
-    if (info instanceof int[]) {
-      str = "[";
-      int imax = ((int[]) info).length;
-      for (int i = 0; i < imax; i++) {
-        str += sep + ((int[]) info)[i];
-        sep = ",";
-      }
-      str += "]";
-      return packageJSON(infoType, str);
-    }
-    if (info instanceof float[]) {
-      str = "[";
-      int imax = ((float[]) info).length;
-      for (int i = 0; i < imax; i++) {
-        str += sep + ((float[]) info)[i];
-        sep = ",";
-      }
-      str += "]";
-      return packageJSON(infoType, str);
-    }
-    if (info instanceof int[][]) {
-      str = "[";
-      int imax = ((int[][]) info).length;
-      for (int i = 0; i < imax; i++) {
-        str += sep + toJSON(null, ((int[][]) info)[i]);
-        sep = ",";
-      }
-      str += "]";
-      return packageJSON(infoType, str);
-    }
-    if (info instanceof float[][]) {
-      str = "[";
-      int imax = ((float[][]) info).length;
-      for (int i = 0; i < imax; i++) {
-        str += sep + toJSON(null, ((float[][]) info)[i]);
-        sep = ",";
-      }
-      str += "]";
-      return packageJSON(infoType, str);
-    }
-    if (info instanceof Vector) {
-      str = "[";
-      int imax = ((Vector) info).size();
-      for (int i = 0; i < imax; i++) {
-        str += sep + toJSON(null, ((Vector) info).get(i));
-        sep = ",";
-      }
-      str += "]";
-      return packageJSON(infoType, str);
-    }
-    if (info instanceof Matrix3f) {
-      str = "[";
-      str += "[" + ((Matrix3f) info).m00 + "," + ((Matrix3f) info).m01
-          + "," + ((Matrix3f) info).m02 + "]";
-      str += ",[" + ((Matrix3f) info).m10 + "," + ((Matrix3f) info).m11
-          + "," + ((Matrix3f) info).m12 + "]";
-      str += ",[" + ((Matrix3f) info).m20 + "," + ((Matrix3f) info).m21
-          + "," + ((Matrix3f) info).m22 + "]";
-      str += "]";
-      return packageJSON(infoType, str);
-    }
-    if (info instanceof Point3f) {
-      str += "[" + ((Point3f) info).x + "," + ((Point3f) info).y + ","
-          + ((Point3f) info).z + "]";
-      return packageJSON(infoType, str);
-    }
-    if (info instanceof Vector3f) {
-      str += "[" + ((Vector3f) info).x + "," + ((Vector3f) info).y + ","
-          + ((Vector3f) info).z + "]";
-      return packageJSON(infoType, str);
-    }
-    if (info instanceof Hashtable) {
-      str = "{";
-      Enumeration e = ((Hashtable) info).keys();
-      while (e.hasMoreElements()) {
-        String key = (String) e.nextElement();
-        str += sep
-            + packageJSON(key, toJSON(null, ((Hashtable) info).get(key)));
-        sep = ",";
-      }
-      str += "}";
-      return packageJSON(infoType, str);
-    }
-    return packageJSON(infoType, info.toString());
-  }
-
-  String toReadable(String infoType, Object info) {
-
-    //Logger.debug(infoType+" -- "+info);
-
-    String str = "";
-    String sep = "";
-    if (info == null)
-      return "null";
-    if (info instanceof String)
-      return packageReadable(infoType, fixString((String) info));
-    if (info instanceof String[]) {
-      str = "[";
-      int imax = ((String[]) info).length;  
-      for (int i = 0; i < imax; i++) {
-        str += sep + fixString(((String[]) info)[i]);
-        sep = ",";
-      }
-      str += "]";
-      return packageReadable(infoType, str);
-    }
-    if (info instanceof int[]) {
-      str = "[";
-      int imax = ((int[]) info).length;
-      for (int i = 0; i < imax; i++) {
-        str += sep + ((int[]) info)[i];
-        sep = ",";
-      }
-      str += "]";
-      return packageReadable(infoType, str);
-    }
-    if (info instanceof float[]) {
-      str = "";
-      int imax = ((float[]) info).length;
-      for (int i = 0; i < imax; i++) {
-        str += sep + ((float[]) info)[i];
-        sep = ",";
-      }
-      str += "";
-      return packageReadable(infoType, str);
-    }
-    if (info instanceof int[][]) {
-      str = "[";
-      int imax = ((int[][]) info).length;
-      for (int i = 0; i < imax; i++) {
-        str += sep + toReadable(null, ((int[][]) info)[i]);
-        sep = ",";
-      }
-      str += "]";
-      return packageReadable(infoType, str);
-    }
-    if (info instanceof float[][]) {
-      str = "[";
-      int imax = ((float[][]) info).length;
-      for (int i = 0; i < imax; i++) {
-        str += sep + toReadable(null, ((float[][]) info)[i]);
-        sep = ",";
-      }
-      str += "]";
-      return packageReadable(infoType, str);
-    }
-    if (info instanceof Vector) {
-      str = "";
-      int imax = ((Vector) info).size();
-      for (int i = 0; i < imax; i++) {
-        str += sep + toReadable(null, ((Vector) info).get(i));
-        sep = ",";
-      }
-//      str += "\n";
-      return packageReadable(infoType, str);
-    }
-    if (info instanceof Matrix3f) {
-      str = "[";
-      str += "[" + ((Matrix3f) info).m00 + "," + ((Matrix3f) info).m01
-          + "," + ((Matrix3f) info).m02 + "]";
-      str += ",[" + ((Matrix3f) info).m10 + "," + ((Matrix3f) info).m11
-          + "," + ((Matrix3f) info).m12 + "]";
-      str += ",[" + ((Matrix3f) info).m20 + "," + ((Matrix3f) info).m21
-          + "," + ((Matrix3f) info).m22 + "]";
-      str += "]";
-      return packageReadable(infoType, str);
-    }
-    if (info instanceof Point3f) {
-      str += "[" + ((Point3f) info).x + "," + ((Point3f) info).y + ","
-          + ((Point3f) info).z + "]";
-      return packageReadable(infoType, str);
-    }
-    if (info instanceof Vector3f) {
-      str += "[" + ((Vector3f) info).x + "," + ((Vector3f) info).y + ","
-          + ((Vector3f) info).z + "]";
-      return packageReadable(infoType, str);
-    }
-    if (info instanceof Hashtable) {
-      str = "";
-      Enumeration e = ((Hashtable) info).keys();
-      while (e.hasMoreElements()) {
-        String key = (String) e.nextElement();
-        str += sep
-            + packageReadable(key, toReadable(null, ((Hashtable) info).get(key)));
-        sep = "";
-      }
-      str += "\n";
-      return packageReadable(infoType, str);
-    }
-    return packageReadable(infoType, info.toString());
-  }
+  }   
 }

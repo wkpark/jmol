@@ -64,12 +64,11 @@ class RepaintManager {
     if (modelSet != null && currentModelIndex != modelIndex) {
       boolean fromDataFrame = viewer.isJmolDataFrame(currentModelIndex);
       boolean toDataFrame = viewer.isJmolDataFrame(modelIndex);
-      viewer.saveOrientation(fromDataFrame ? viewer.getJmolDataFrameType(currentModelIndex)
-          : "modelSet");
-      // leaving or entering data frame? Then restore new frame's index 
+      viewer.saveOrientation(viewer.getJmolFrameType(currentModelIndex));
+      //System.out.println("saving orientation for " + currentModelIndex + " " + viewer.getJmolDataFrameType(currentModelIndex));
       if (fromDataFrame || toDataFrame) {
-        viewer.restoreOrientation(toDataFrame ? viewer.getJmolDataFrameType(modelIndex)
-            : "modelSet", -1);
+        viewer.restoreOrientation(viewer.getJmolFrameType(modelIndex), -1);
+        //System.out.println("restoring orientation for " + modelIndex + " " + viewer.getJmolDataFrameType(modelIndex));
       }
     }
     if (modelSet == null || modelIndex < 0
@@ -123,9 +122,9 @@ class RepaintManager {
     if (frameStep == 0 || isTrajectory)
       return;
     for (int i = firstModelIndex; i != lastModelIndex; i += frameStep)
-      bsVisibleFrames.set(i);
-    bsVisibleFrames.set(lastModelIndex);
-    return;
+      if (!viewer.isJmolDataFrame(i))
+        bsVisibleFrames.set(i);
+    bsVisibleFrames.set(lastModelIndex);    
   }
 
   AnimationThread animationThread;

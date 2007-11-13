@@ -27,7 +27,6 @@ package org.jmol.modelset;
 
 import java.awt.Rectangle;
 import java.util.BitSet;
-import java.util.Hashtable;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
@@ -110,30 +109,6 @@ abstract public class AtomCollection {
   
   public String[] getAtomNames() {
     return atomNames;
-  }
-
-  protected final Point3f averageAtomPoint = new Point3f();
-
-  public Point3f getAverageAtomPoint() {
-    return averageAtomPoint;
-  }
-
-  protected final Point3f centerBoundBox = new Point3f();
-
-  public Point3f getBoundBoxCenter() {
-    return centerBoundBox;
-  }
-
-  protected final Vector3f boundBoxCornerVector = new Vector3f();
-
-  public Vector3f getBoundBoxCornerVector() {
-    return boundBoxCornerVector;
-  }
-
-  protected final Point3f[] bboxVertices = new Point3f[8];
-
-  public Point3f[] getBboxVertices() {
-    return bboxVertices;
   }
 
   ////////////////////////////////////////////////////////////////
@@ -328,34 +303,6 @@ abstract public class AtomCollection {
         maxRadius = outerVdw;
     }
     return (maxRadius == 0 ? 10 : maxRadius);
-  }
-
-  public float calcRotationRadius(BitSet bs) {
-    Point3f center = getAtomSetCenter(bs);
-    float maxRadius = 0;
-    for (int i = atomCount; --i >= 0;)
-      if (bs.get(i)) {
-        Atom atom = atoms[i];
-        float distAtom = center.distance(atom);
-        float radiusVdw = atom.getVanderwaalsRadiusFloat();
-        float outerVdw = distAtom + radiusVdw;
-        if (outerVdw > maxRadius)
-          maxRadius = outerVdw;
-      }
-    return (maxRadius == 0 ? 10 : maxRadius);
-  }
-
-  public Point3f getAtomSetCenter(BitSet bs) {
-    Point3f ptCenter = new Point3f(0, 0, 0);
-    int nPoints = BitSetUtil.cardinalityOf(bs);
-    if (nPoints == 0)
-      return ptCenter;
-    for (int i = atomCount; --i >= 0;) {
-      if (bs.get(i))
-        ptCenter.add(atoms[i]);
-    }
-    ptCenter.scale(1.0f / nPoints);
-    return ptCenter;
   }
 
   // the maximum BondingRadius seen in this set of atoms
@@ -1623,13 +1570,6 @@ abstract public class AtomCollection {
       if (atoms[i].isClickable())
         bs.set(i);
     return bs;
-  }
-
-  public Hashtable getBoundBoxInfo() {
-    Hashtable info = new Hashtable();
-    info.put("center", getBoundBoxCenter());
-    info.put("edge", getBoundBoxCornerVector());
-    return info;
   }
 
   public BitSet getAtomsWithin(int tokType, BitSet bs) {

@@ -127,7 +127,7 @@ abstract class TransformManager {
     scaleFitToScreen(true);
     if (viewer.isJmolDataFrame()) {
       fixedRotationCenter.set(0, 0, 0);
-      rotationRadiusDefault = (viewer.getJmolDataFrameType(
+      rotationRadiusDefault = (viewer.getJmolFrameType(
           viewer.getCurrentModelIndex()).equals("ramachandran") ? 250 : 12);
     }
     if (isNavigationMode)
@@ -158,7 +158,7 @@ abstract class TransformManager {
     StateManager.appendCmd(commands, "cameraDepth = " + cameraDepth);
     if (isNavigationMode)
       StateManager.appendCmd(commands, "navigationMode = true");
-    StateManager.appendCmd(commands, viewer.getBoundBoxCommand());
+    StateManager.appendCmd(commands, viewer.getBoundBoxCommand(false));
     StateManager.appendCmd(commands, "center " + Escape.escape(fixedRotationCenter));
     StateManager.appendCmd(commands, getMoveToText(0, false));
     if (!isNavigationMode && !zoomEnabled)

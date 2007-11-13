@@ -90,7 +90,7 @@ public final class Model {
   Hashtable dataFrames;
   int dataSourceFrame = -1;
   String jmolData; // from a PDB remark "Jmol PDB-encoded data"
-  String jmolDataType;
+  String jmolFrameType;
 
   private int chainCount = 0;
   private Chain[] chains = new Chain[8];
@@ -107,10 +107,10 @@ public final class Model {
     this.modelTitle = modelTitle;
     this.modelFile = modelFile;
     this.jmolData = jmolData;
-    jmolDataType = (jmolData == null ? "model"
-        : jmolData.indexOf("Rama") >= 0 ? "ramachandran"
-        : jmolData.indexOf("Quat") >= 0 ? "quaternion" 
-        : "Data");
+    jmolFrameType = (jmolData == null ? "modelSet"
+        : jmolData.indexOf("ramachandran") >= 0 ? "ramachandran"
+        : jmolData.indexOf("quaternion") >= 0 ? "quaternion" 
+        : "data");
   }
 
   void setNAltLocs(int nAltLocs) {

@@ -144,11 +144,9 @@ public abstract class BioShapeCollection extends Shape {
   public void setVisibilityFlags(BitSet bs) {
     if (bioShapes == null)
       return;
-    int modelIndex = viewer.getCurrentModelIndex();
-    for (int i = bioShapes.length; --i >= 0; ) {
+    for (int i = bioShapes.length; --i >= 0;) {
       BioShape b = bioShapes[i];
-      b.modelVisibilityFlags = (modelIndex >= 0
-          && modelIndex != b.modelIndex ? 0 : myVisibilityFlag);
+      b.modelVisibilityFlags = (bs.get(b.modelIndex) ? myVisibilityFlag : 0);
     }
   }
 

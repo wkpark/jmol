@@ -346,10 +346,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void reset() {
     //Eval.reset()
     //initializeModel
-    calcBoundBoxDimensions(null);
+    modelSet.calcBoundBoxDimensions(null);
+    axesAreTainted = true;
     transformManager.homePosition();
     if (modelSet.haveSymmetry())
       stateManager.setCrystallographicDefaults();//modelSet.someModelsHavePeriodicOrigin);
+    else
+      setAxesModeMolecular(false);
+
     refresh(1, "Viewer:homePosition()");
   }
 
@@ -1912,18 +1916,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet;
   }
 
-  public String getBoundBoxCommand() {
-    Point3f v0 = new Point3f(getBoundBoxCenter());
-    Vector3f v1 = getBoundBoxCornerVector();
-    v0.sub(v1);
-    String s = "boundbox " + Escape.escape(v0) + " "; 
-    v0.scaleAdd(2, v1, v0);    
-    float v = Math.abs(8 * (v1.x * v1.y * v1.z));
-    return s + Escape.escape(v0) + " # volume = " + v;
+  public String getBoundBoxCommand(boolean withOptions) {
+    return modelSet.getBoundBoxCommand(withOptions);
   }
   
-  void setBoundBox(Point3f pt1, Point3f pt2) {
-    modelSet.setBoundBox(pt1, pt2);  
+  void setBoundBox(Point3f pt1, Point3f pt2, boolean byCorner) {
+    modelSet.setBoundBox(pt1, pt2, byCorner);  
   }
   
   public Point3f getBoundBoxCenter() {
@@ -5788,8 +5786,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getFrameTitle(repaintManager.currentModelIndex);
   }
   
-  String getJmolDataFrameType(int modelIndex) {
-    return modelSet.getJmolDataFrameType(modelIndex);
+  String getJmolFrameType(int modelIndex) {
+    return modelSet.getJmolFrameType(modelIndex);
   }
 
   public int getJmolDataSourceFrame(int modelIndex) {

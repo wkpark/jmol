@@ -211,7 +211,6 @@ public class Token {
   final static int centerAt     = command | 93;
   final static int isosurface   = command | 94 | colorparam | numberOrExpression;
   final static int draw         = command | 95 | numberOrExpression | colorparam;
-  final static int getproperty  = command | 96 | embeddedExpression;
   final static int dipole       = command | 97 | numberOrExpression;
   final static int configuration = command | 98;
   final static int mo           = command | 99 | colorparam | negnums;
@@ -462,7 +461,7 @@ public class Token {
 
   // xxx(a,b,c)
   
-  final static int point        = 2  | 3 << 3 | mathfunc;
+  final static int point        = 1  | 3 << 3 | mathfunc;
 
   // xxx(a,b,c,d)
   
@@ -473,8 +472,7 @@ public class Token {
   
   final static int within       = 1  | 5 << 3 | mathfunc;
   final static int connected    = 2  | 5 << 3 | mathfunc;
-
-
+  final static int getproperty  = 3  | 5 << 3 | mathfunc | command | embeddedExpression;
   
  // math-related Token static methods
   

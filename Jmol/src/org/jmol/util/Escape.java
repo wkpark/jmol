@@ -26,10 +26,15 @@
 package org.jmol.util;
 
 import java.util.BitSet;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
 
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Bond.BondSet;
@@ -45,6 +50,14 @@ public class Escape {
     if (x instanceof String)
       return Escape.escape("" + x);
     return x.toString();
+  }
+
+  public static String escape(Vector x) {
+    return toReadable(null, x);
+  }
+
+  public static String escape(Hashtable x) {
+    return toReadable(null, x);
   }
 
   public static String escapeColor(int argb) {
@@ -262,4 +275,235 @@ public class Escape {
   public static String escape(BitSet bs) {
     return escape(bs, true);
   }
+  
+  private static String packageJSON (String infoType, String info) {
+    if (infoType == null) return info;
+    return "\"" + infoType + "\": " + info;
+  }
+  
+  private static String packageReadable (String infoType, String info) {
+    if (infoType == null) return info;
+    return "\n" + infoType + "\t" + info;
+  }
+ 
+  private static String fixString(String s) {
+    if (s == null || s.indexOf("{\"") == 0) //don't doubly fix JSON strings when retrieving status
+      return s;
+    s = TextFormat.simpleReplace(s,"\"","''");
+    s = TextFormat.simpleReplace(s,"\n"," | ");
+   return "\"" + s + "\"";  
+  }
+  
+  public static String toJSON(String infoType, Object info) {
+
+    //Logger.debug(infoType+" -- "+info);
+
+    String str = "";
+    String sep = "";
+    if (info == null)
+      return packageJSON(infoType, null);
+    if (info instanceof String)
+      return packageJSON(infoType, fixString((String) info));
+    if (info instanceof String[]) {
+      str = "[";
+      int imax = ((String[]) info).length;  
+      for (int i = 0; i < imax; i++) {
+        str += sep + fixString(((String[]) info)[i]);
+        sep = ",";
+      }
+      str += "]";
+      return packageJSON(infoType, str);
+    }
+    if (info instanceof int[]) {
+      str = "[";
+      int imax = ((int[]) info).length;
+      for (int i = 0; i < imax; i++) {
+        str += sep + ((int[]) info)[i];
+        sep = ",";
+      }
+      str += "]";
+      return packageJSON(infoType, str);
+    }
+    if (info instanceof float[]) {
+      str = "[";
+      int imax = ((float[]) info).length;
+      for (int i = 0; i < imax; i++) {
+        str += sep + ((float[]) info)[i];
+        sep = ",";
+      }
+      str += "]";
+      return packageJSON(infoType, str);
+    }
+    if (info instanceof int[][]) {
+      str = "[";
+      int imax = ((int[][]) info).length;
+      for (int i = 0; i < imax; i++) {
+        str += sep + toJSON(null, ((int[][]) info)[i]);
+        sep = ",";
+      }
+      str += "]";
+      return packageJSON(infoType, str);
+    }
+    if (info instanceof float[][]) {
+      str = "[";
+      int imax = ((float[][]) info).length;
+      for (int i = 0; i < imax; i++) {
+        str += sep + toJSON(null, ((float[][]) info)[i]);
+        sep = ",";
+      }
+      str += "]";
+      return packageJSON(infoType, str);
+    }
+    if (info instanceof Vector) {
+      str = "[ ";
+      int imax = ((Vector) info).size();
+      for (int i = 0; i < imax; i++) {
+        str += sep + toJSON(null, ((Vector) info).get(i));
+        sep = ",";
+      }
+      str += " ]";
+      return packageJSON(infoType, str);
+    }
+    if (info instanceof Matrix3f) {
+      str = "[";
+      str += "[" + ((Matrix3f) info).m00 + "," + ((Matrix3f) info).m01
+          + "," + ((Matrix3f) info).m02 + "]";
+      str += ",[" + ((Matrix3f) info).m10 + "," + ((Matrix3f) info).m11
+          + "," + ((Matrix3f) info).m12 + "]";
+      str += ",[" + ((Matrix3f) info).m20 + "," + ((Matrix3f) info).m21
+          + "," + ((Matrix3f) info).m22 + "]";
+      str += "]";
+      return packageJSON(infoType, str);
+    }
+    if (info instanceof Point3f) {
+      str += "[" + ((Point3f) info).x + "," + ((Point3f) info).y + ","
+          + ((Point3f) info).z + "]";
+      return packageJSON(infoType, str);
+    }
+    if (info instanceof Vector3f) {
+      str += "[" + ((Vector3f) info).x + "," + ((Vector3f) info).y + ","
+          + ((Vector3f) info).z + "]";
+      return packageJSON(infoType, str);
+    }
+    if (info instanceof Hashtable) {
+      str = "{ ";
+      Enumeration e = ((Hashtable) info).keys();
+      while (e.hasMoreElements()) {
+        String key = (String) e.nextElement();
+        str += sep
+            + packageJSON(key, toJSON(null, ((Hashtable) info).get(key)));
+        sep = ",";
+      }
+      str += " }";
+      return packageJSON(infoType, str);
+    }
+    return packageJSON(infoType, info.toString());
+  }
+
+  public static String toReadable(String infoType, Object info) {
+
+    //Logger.debug(infoType+" -- "+info);
+
+    String str = "";
+    String sep = "";
+    if (info == null)
+      return "null";
+    if (info instanceof String)
+      return packageReadable(infoType, fixString((String) info));
+    if (info instanceof String[]) {
+      str = "[";
+      int imax = ((String[]) info).length;  
+      for (int i = 0; i < imax; i++) {
+        str += sep + fixString(((String[]) info)[i]);
+        sep = ",";
+      }
+      str += "]";
+      return packageReadable(infoType, str);
+    }
+    if (info instanceof int[]) {
+      str = "[";
+      int imax = ((int[]) info).length;
+      for (int i = 0; i < imax; i++) {
+        str += sep + ((int[]) info)[i];
+        sep = ",";
+      }
+      str += "]";
+      return packageReadable(infoType, str);
+    }
+    if (info instanceof float[]) {
+      str = "";
+      int imax = ((float[]) info).length;
+      for (int i = 0; i < imax; i++) {
+        str += sep + ((float[]) info)[i];
+        sep = ",";
+      }
+      str += "";
+      return packageReadable(infoType, str);
+    }
+    if (info instanceof int[][]) {
+      str = "[";
+      int imax = ((int[][]) info).length;
+      for (int i = 0; i < imax; i++) {
+        str += sep + toReadable(null, ((int[][]) info)[i]);
+        sep = ",";
+      }
+      str += "]";
+      return packageReadable(infoType, str);
+    }
+    if (info instanceof float[][]) {
+      str = "[";
+      int imax = ((float[][]) info).length;
+      for (int i = 0; i < imax; i++) {
+        str += sep + toReadable(null, ((float[][]) info)[i]);
+        sep = ",";
+      }
+      str += "]";
+      return packageReadable(infoType, str);
+    }
+    if (info instanceof Vector) {
+      str = "";
+      int imax = ((Vector) info).size();
+      for (int i = 0; i < imax; i++) {
+        str += sep + toReadable(null, ((Vector) info).get(i));
+        sep = ",";
+      }
+//      str += "\n";
+      return packageReadable(infoType, str);
+    }
+    if (info instanceof Matrix3f) {
+      str = "[";
+      str += "[" + ((Matrix3f) info).m00 + "," + ((Matrix3f) info).m01
+          + "," + ((Matrix3f) info).m02 + "]";
+      str += ",[" + ((Matrix3f) info).m10 + "," + ((Matrix3f) info).m11
+          + "," + ((Matrix3f) info).m12 + "]";
+      str += ",[" + ((Matrix3f) info).m20 + "," + ((Matrix3f) info).m21
+          + "," + ((Matrix3f) info).m22 + "]";
+      str += "]";
+      return packageReadable(infoType, str);
+    }
+    if (info instanceof Point3f) {
+      str += "[" + ((Point3f) info).x + "," + ((Point3f) info).y + ","
+          + ((Point3f) info).z + "]";
+      return packageReadable(infoType, str);
+    }
+    if (info instanceof Vector3f) {
+      str += "[" + ((Vector3f) info).x + "," + ((Vector3f) info).y + ","
+          + ((Vector3f) info).z + "]";
+      return packageReadable(infoType, str);
+    }
+    if (info instanceof Hashtable) {
+      str = "";
+      Enumeration e = ((Hashtable) info).keys();
+      while (e.hasMoreElements()) {
+        String key = (String) e.nextElement();
+        str += sep
+            + packageReadable(key, toReadable(null, ((Hashtable) info).get(key)));
+        sep = "";
+      }
+      str += "\n";
+      return packageReadable(infoType, str);
+    }
+    return packageReadable(infoType, info.toString());
+  }
+
 }

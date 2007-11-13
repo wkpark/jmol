@@ -169,76 +169,178 @@ abstract public class ModelCollection extends BondCollection {
 
   ////////////////////////////////////////////
 
-  private final Point3f pointMin = new Point3f();
-  private final Point3f pointMax = new Point3f();
+  private final Point3f averageAtomPoint = new Point3f();
+  private final Point3f bbCorner0 = new Point3f();
+  private final Point3f bbCorner1 = new Point3f();
+  private final Point3f bbCenter = new Point3f();
+  private final Vector3f bbVector = new Vector3f();
+  private final Point3f[] bbVertices = new Point3f[8];
+  {
+    for (int i = 8; --i >= 0;)
+       bbVertices[i] = new Point3f();
+  }
   private boolean isBbcageDefault;
   private final static Point3f[] unitBboxPoints = { new Point3f(1, 1, 1),
       new Point3f(1, 1, -1), new Point3f(1, -1, 1), new Point3f(1, -1, -1),
       new Point3f(-1, 1, 1), new Point3f(-1, 1, -1), new Point3f(-1, -1, 1),
       new Point3f(-1, -1, -1), };
 
-  public void setBoundBox(Point3f pt1, Point3f pt2) {
+  public Point3f getAverageAtomPoint() {
+    return averageAtomPoint;
+  }
+
+  public Point3f getBoundBoxCenter() {
+    return bbCenter;
+  }
+
+  public Vector3f getBoundBoxCornerVector() {
+    return bbVector;
+  }
+
+  public Point3f[] getBboxVertices() {
+    return bbVertices;
+  }
+
+  public Hashtable getBoundBoxInfo() {
+    Hashtable info = new Hashtable();
+    info.put("center", new Point3f(bbCenter));
+    info.put("vector", new Vector3f(bbVector));
+    info.put("corner0", new Point3f(bbCorner0));
+    info.put("corner1", new Point3f(bbCorner1));
+    return info;
+  }
+
+  public float calcRotationRadius(BitSet bs) {
+    //Eval getZoomFactor
+    Point3f center = getAtomSetCenter(bs);
+    float maxRadius = 0;
+    for (int i = atomCount; --i >= 0;)
+      if (bs.get(i)) {
+        Atom atom = atoms[i];
+        float distAtom = center.distance(atom);
+        float radiusVdw = atom.getVanderwaalsRadiusFloat();
+        float outerVdw = distAtom + radiusVdw;
+        if (outerVdw > maxRadius)
+          maxRadius = outerVdw;
+      }
+    return (maxRadius == 0 ? 10 : maxRadius);
+  }
+
+  public Point3f getAtomSetCenter(BitSet bs) {
+    Point3f ptCenter = new Point3f(0, 0, 0);
+    if (bs == null || BitSetUtil.firstSetBit(bs) < 0)
+      return ptCenter;
+    int nPoints = 0;
+    for (int i = atomCount; --i >= 0;) {
+      if (bs == null || bs.get(i))
+        if (!isJmolDataFrame(atoms[i])) {
+          nPoints++;
+          ptCenter.add(atoms[i]);
+        }
+    }
+    ptCenter.scale(1.0f / nPoints);
+    return ptCenter;
+  }
+
+  public void setBoundBox(Point3f pt1, Point3f pt2, boolean byCorner) {
     if (pt1.distance(pt2) == 0)
       return;
-    pointMin.set(Math.min(pt1.x, pt2.x), Math.min(pt1.y, pt2.y), Math.min(pt1.z, pt2.z));
-    pointMax.set(Math.max(pt1.x, pt2.x), Math.max(pt1.y, pt2.y), Math.max(pt1.z, pt2.z));
+    if (byCorner) {
+    bbCorner0.set(Math.min(pt1.x, pt2.x), Math.min(pt1.y, pt2.y), Math.min(pt1.z, pt2.z));
+    bbCorner1.set(Math.max(pt1.x, pt2.x), Math.max(pt1.y, pt2.y), Math.max(pt1.z, pt2.z));
+    } else { //center and vector
+      bbCorner0.set(pt1.x - pt2.x, pt1.y - pt2.y, pt1.z - pt2.z);
+      bbCorner1.set(pt1.x + pt2.x, pt1.y + pt2.y, pt1.z + pt2.z);
+    }
     isBbcageDefault = false;
     setBbcage();
   }
 
   public void calcBoundBoxDimensions(BitSet bs) {
     calcAtomsMinMax(bs);
+    if (bs == null) { // from modelLoader or reset
+      averageAtomPoint.set(getAtomSetCenter(null));
+      if (cellInfos != null)
+        calcUnitCellMinMax();
+    }
     setBbcage();
   }
 
   private void setBbcage() {
-    centerBoundBox.add(pointMin, pointMax);
-    centerBoundBox.scale(0.5f);
-    boundBoxCornerVector.sub(pointMax, centerBoundBox);
+    bbCenter.add(bbCorner0, bbCorner1);
+    bbCenter.scale(0.5f);
+    bbVector.sub(bbCorner1, bbCenter);
     for (int i = 8; --i >= 0;) {
-      Point3f bbcagePoint = bboxVertices[i] = new Point3f(unitBboxPoints[i]);
-      bbcagePoint.x *= boundBoxCornerVector.x;
-      bbcagePoint.y *= boundBoxCornerVector.y;
-      bbcagePoint.z *= boundBoxCornerVector.z;
-      bbcagePoint.add(centerBoundBox);
+      Point3f pt = bbVertices[i];
+      pt.set(unitBboxPoints[i]);
+      pt.x *= bbVector.x;
+      pt.y *= bbVector.y;
+      pt.z *= bbVector.z;
+      pt.add(bbCenter);
     }
   }
   
+  public String getBoundBoxCommand(boolean withOptions) {
+    ptTemp.set(bbCenter);
+    String s = (withOptions ? "boundbox " + Escape.escape(ptTemp) + " "
+        + Escape.escape(bbVector) + "\n#or\n" : "");
+    ptTemp.sub(bbVector);
+    s += "boundbox corners " + Escape.escape(ptTemp) + " ";
+    ptTemp.scaleAdd(2, bbVector, ptTemp);
+    float v = Math.abs(8 * bbVector.x * bbVector.y * bbVector.z);
+    s += Escape.escape(ptTemp) + " # volume = " + v;
+    return s;
+  }
+  
   private void calcAtomsMinMax(BitSet bs) {
-    if (bs == null && isBbcageDefault)
-      return;
-    isBbcageDefault = (bs == null);
-    if (atomCount < 2) {
-      pointMin.set(-10, -10, -10);
-      pointMax.set(10, 10, 10);
-      return;
-    }
     if (BitSetUtil.firstSetBit(bs) < 0)
       bs = null;
-    pointMin.set(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-    pointMax.set(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
+    if (bs == null && isBbcageDefault)
+      return;
+    if (atomCount < 2) {
+      bbCorner0.set(-10, -10, -10);
+      bbCorner1.set(10, 10, 10);
+      return;
+    }
+    bbCorner0.set(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+    bbCorner1.set(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
+    int nAtoms = 0;
     for (int i = atomCount; --i >= 0;)
-      if (bs == null || bs.get(i))
-        if (!isJmolDataFrame(atoms[i].modelIndex))
-          checkMinMax(atoms[i]);
+      if (bs == null || bs.get(i)) {
+        nAtoms++;
+        if (!isJmolDataFrame(atoms[i]))
+          addBoundBoxPoint(atoms[i]);
+      }
+    if (nAtoms == atomCount)
+      isBbcageDefault = true;
   }
 
-  protected void checkMinMax(Point3f pt) {
+  private void calcUnitCellMinMax() {
+    for (int i = 0; i < modelCount; i++) {
+      if (!cellInfos[i].coordinatesAreFractional)
+        continue;
+      Point3f[] vertices = cellInfos[i].getUnitCell().getVertices();
+      for (int j = 0; j < 8; j++)
+        addBoundBoxPoint(vertices[j]);
+    }
+  }
+
+  protected void addBoundBoxPoint(Point3f pt) {
     float t = pt.x;
-    if (t < pointMin.x)
-      pointMin.x = t;
-    else if (t > pointMax.x)
-      pointMax.x = t;
+    if (t < bbCorner0.x)
+      bbCorner0.x = t;
+    else if (t > bbCorner1.x)
+      bbCorner1.x = t;
     t = pt.y;
-    if (t < pointMin.y)
-      pointMin.y = t;
-    else if (t > pointMax.y)
-      pointMax.y = t;
+    if (t < bbCorner0.y)
+      bbCorner0.y = t;
+    else if (t > bbCorner1.y)
+      bbCorner1.y = t;
     t = pt.z;
-    if (t < pointMin.z)
-      pointMin.z = t;
-    else if (t > pointMax.z)
-      pointMax.z = t;
+    if (t < bbCorner0.z)
+      bbCorner0.z = t;
+    else if (t > bbCorner1.z)
+      bbCorner1.z = t;
   }
 
   public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue, float[] values) {
@@ -732,6 +834,10 @@ abstract public class ModelCollection extends BondCollection {
   public boolean isJmolDataFrame(int modelIndex) {
     return (modelIndex >= 0 && modelIndex < modelCount && models[modelIndex].jmolData != null);
   }
+  
+  private boolean isJmolDataFrame(Atom atom) {
+    return (models[atom.modelIndex].jmolData != null);
+  }
 
   public void setJmolDataFrame(String type, int modelIndex, int modelDataIndex) {
     Model model = models[modelIndex];
@@ -739,6 +845,7 @@ abstract public class ModelCollection extends BondCollection {
       model.dataFrames = new Hashtable();
     model.dataFrames.put(type, new Integer(modelDataIndex));
     models[modelDataIndex].dataSourceFrame = modelIndex;
+    models[modelDataIndex].jmolFrameType = type;
   }
 
   public int getJmolDataFrameIndex(int modelIndex, String type) {
@@ -748,9 +855,9 @@ abstract public class ModelCollection extends BondCollection {
     return (index == null ? -1 : index.intValue());
   }
 
-  public String getJmolDataFrameType(int modelIndex) {
+  public String getJmolFrameType(int modelIndex) {
     return (modelIndex >= 0 && modelIndex < modelCount ? 
-        models[modelIndex].jmolDataType : "modelSet");
+        models[modelIndex].jmolFrameType : "modelSet");
   }
 
   public int getJmolDataSourceFrame(int modelIndex) {
@@ -1692,6 +1799,7 @@ abstract public class ModelCollection extends BondCollection {
 
   public void getAtomIdentityInfo(int i, Hashtable info) {
     info.put("_ipt", new Integer(i));
+    info.put("atomIndex", new Integer(i));
     info.put("atomno", new Integer(getAtomNumber(i)));
     info.put("info", getAtomInfo(i));
     info.put("sym", getElementSymbol(i));

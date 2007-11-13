@@ -140,8 +140,7 @@ public class Text {
   void setFid(byte fid) {
     if (this.fid == fid)
       return;
-    this.fid = fid;
-    recalc();
+    setFont(Font3D.getFont3D(fid));
   }
 
   void setModel(int modelIndex) {
@@ -279,6 +278,7 @@ public class Text {
 
   void setFont(Font3D f3d) {
     font = f3d;
+    fid = font.fid;
     getFontMetrics();
     recalc();
   }
@@ -405,6 +405,7 @@ public class Text {
         case RIGHT:
           x = x0 - (widths[i] * nShift);
         }
+        //System.out.println(lines[i] + " text render font " + font.fid + " " + font.fontSize);
         g3d.drawString(lines[i], font, x, y, z, zSlab);
         y += offset;
       }

@@ -10965,33 +10965,28 @@ class Eval { //implements Runnable {
       }
     }
 
-private boolean evaluateGetProperty(Token[] args) throws ScriptException {
+    private boolean evaluateGetProperty(Token[] args) throws ScriptException {
       if (args.length < 1)
         return false;
       if (isSyntaxCheck)
         return addX("");
 
       String propertyName = Token.sValue(args[0]);
-      Object propertyValue;
-      if (args.length > 1) {
-        if (args[1].tok == Token.bitset)
-          propertyValue = Token.bsSelect(args[1]);
-        else
-          propertyValue = Token.sValue(args[1]);
-      } else {
-        propertyValue = "";
-      }
-      int pt = 2;
-      int itemSelector = (args.length > pt && args[2].tok == Token.integer ? Token.iValue(args[pt++]) : 0);
+      int pt = 1;
+      Object propertyValue = (args.length > pt && args[1].tok == Token.bitset ? 
+          (Object) Token.bsSelect(args[pt++]) : (Object) "");
+      int itemSelector = (args.length > pt && args[pt].tok == Token.integer ? 
+          Token.iValue(args[pt++]) : 0);
       String subsetName = (args.length > pt ? Token.sValue(args[pt++]) : "");
-      String subsetName2 = (args.length > pt ? Token.sValue(args[pt]) : "");
-      
+      String subsetName2 = (args.length > pt ? Token.sValue(args[pt++]) : "");
+
       Object property = viewer.getProperty(null, propertyName, propertyValue);
       if (property != null && property instanceof Vector) {
         if (itemSelector < ((Vector) property).size())
           property = ((Vector) property).elementAt(itemSelector);
       }
-      if (property != null && property instanceof Hashtable && subsetName.length() > 0) {
+      if (property != null && property instanceof Hashtable
+          && subsetName.length() > 0) {
         property = ((Hashtable) property).get(subsetName);
         subsetName = subsetName2;
       }
@@ -10999,7 +10994,8 @@ private boolean evaluateGetProperty(Token[] args) throws ScriptException {
         if (itemSelector < ((Vector) property).size())
           property = ((Vector) property).elementAt(itemSelector);
       }
-      if (property != null && property instanceof Hashtable && subsetName.length() > 0) {
+      if (property != null && property instanceof Hashtable
+          && subsetName.length() > 0) {
         property = ((Hashtable) property).get(subsetName);
       }
       if (property == null)
@@ -11018,25 +11014,28 @@ private boolean evaluateGetProperty(Token[] args) throws ScriptException {
           String key = (String) e.nextElement();
           array[i++] = key;
           Object value = t.get(key);
-          if (value instanceof Hashtable && subsetName.length() > 0 
+          if (value instanceof Hashtable && subsetName.length() > 0
               && ((Hashtable) value).containsKey(subsetName))
-                value = ((Hashtable) value).get(subsetName);
+            value = ((Hashtable) value).get(subsetName);
           if (value instanceof String)
             array[i++] = (String) value;
           else if (value instanceof Tuple3f)
-            array[i++] = Escape.escape((Tuple3f) value);          
+            array[i++] = Escape.escape((Tuple3f) value);
           else if (value instanceof Vector)
-            array[i++] = Escape.escape((Vector) value);          
+            array[i++] = Escape.escape((Vector) value);
           else if (value instanceof Hashtable)
-            array[i++] = Escape.escape((Hashtable) value);          
+            array[i++] = Escape.escape((Hashtable) value);
           else
-            array[i++] = Escape.escape(value); 
+            array[i++] = Escape.escape(value);
         }
         return addX(array);
+      } else if (property instanceof Vector3f) {
+        return addX(new Point3f((Vector3f) property));  
       }
-      addX(property);
-      return true;
-    }    private boolean evaluatePoint(Token[] args) throws ScriptException {
+      return addX(property);
+    }
+    
+    private boolean evaluatePoint(Token[] args) throws ScriptException {
       if (args.length != 1 && args.length != 3)
         return false;
       if (isSyntaxCheck)

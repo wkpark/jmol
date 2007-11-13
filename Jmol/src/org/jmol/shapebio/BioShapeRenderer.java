@@ -314,12 +314,11 @@ abstract class BioShapeRenderer extends MeshRenderer {
       return;
     if (setMads(i, thisTypeOnly)) {
       try {
-        if (meshes[i] == null || !meshReady[i])
-          createMeshCylinder(i, madBeg, madMid, madEnd, 1);
-        if (meshes[i] != null) {
-          meshes[i].setColix(colix);
-          render1(meshes[i]);
-        }
+        if ((meshes[i] == null || !meshReady[i])
+            && !createMeshCylinder(i, madBeg, madMid, madEnd, 1))
+          return;
+        meshes[i].setColix(colix);
+        render1(meshes[i]);
         return;
       } catch (Exception e) {
         System.out.println("render mesh error hermiteConic: " + e.toString());
@@ -342,8 +341,9 @@ abstract class BioShapeRenderer extends MeshRenderer {
     if (doFill && aspectRatio != 0) {
       if (setMads(i, thisTypeOnly)) {
         try {
-          if (meshes[i] == null || !meshReady[i])
-            createMeshCylinder(i, madBeg, madMid, madEnd, aspectRatio);
+          if ((meshes[i] == null || !meshReady[i])
+              && !createMeshCylinder(i, madBeg, madMid, madEnd, aspectRatio))
+            return;
           meshes[i].setColix(colix);
           render1(meshes[i]);
           return;
@@ -377,9 +377,10 @@ abstract class BioShapeRenderer extends MeshRenderer {
       try {
         doCap0 = true;
         doCap1 = false;
-        if (meshes[i] == null || !meshReady[i])
-          createMeshCylinder(i, (int) (madBeg * 1.2), (int) (madBeg * 0.6), 0,
-              aspectRatio >> 1);
+        if ((meshes[i] == null || !meshReady[i])
+            && !createMeshCylinder(i, (int) (madBeg * 1.2), (int) (madBeg * 0.6), 0,
+              aspectRatio >> 1))
+          return;
         meshes[i].setColix(colix);
         render1(meshes[i]);
         return;
@@ -460,11 +461,11 @@ abstract class BioShapeRenderer extends MeshRenderer {
   final Point3f ptNext = new Point3f();
   final Matrix3f mat = new Matrix3f();
 
-  private void createMeshCylinder(int i, int madBeg, int madMid, int madEnd,
+  private boolean createMeshCylinder(int i, int madBeg, int madMid, int madEnd,
                                   int aspectRatio) {
     setNeighbors(i);
     if (controlPoints[i].distance(controlPoints[iNext]) == 0)
-      return;
+      return false;
     if (isHelix(i)) {
       ProteinStructure p = ((AlphaMonomer) monomers[i]).getProteinStructure();
       p.calcAxis();
@@ -578,8 +579,8 @@ abstract class BioShapeRenderer extends MeshRenderer {
             nPoints - nPer + k + 1, nPoints - nPer + k + 2);
     mesh.initialize(JmolConstants.FRONTLIT);
     //System.out.sprintln("mesh "+ mesh.thisID + " " + mesh.vertexCount+" "+mesh.vertices.length + " " + mesh.polygonCount + " " + mesh.polygonIndexes.length);
-    meshReady[i] = true;
     mesh.setVisibilityFlags(1);
+    return (meshReady[i] = true);
   }
 
   void createMeshCone(int i, Point3f pointBegin, Point3f pointEnd, int mad) {

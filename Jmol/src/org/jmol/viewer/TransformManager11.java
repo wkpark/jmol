@@ -113,6 +113,7 @@ class TransformManager11 extends TransformManager {
   }
 
   protected float getPerspectiveFactor(float z) {
+    //System.out.println (z + " getPerspectiveFactor " + referencePlaneOffset + " " + (z <= 0 ? referencePlaneOffset : referencePlaneOffset / z));
     return (z <= 0 ? referencePlaneOffset : referencePlaneOffset / z);
   }
 

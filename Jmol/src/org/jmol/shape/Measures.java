@@ -464,7 +464,7 @@ public class Measures extends Shape {
       appendCmd(commands, getState(i));
     if (!showMeasurementNumbers)
       appendCmd(commands, "set measures off; # numbers off");
-    appendCmd(commands, "measures = " + viewer.getMeasureDistanceUnits());
+    appendCmd(commands, "set measures " + viewer.getMeasureDistanceUnits());
     appendCmd(commands, getFontCommand("measures", font3d));
     int n = 0;
     Hashtable temp = new Hashtable();

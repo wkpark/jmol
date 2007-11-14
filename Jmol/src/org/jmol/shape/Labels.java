@@ -407,12 +407,12 @@ public class Labels extends AtomShape {
     appendCmd(s, "select none");
     appendCmd(s, getColorCommand("label", defaultPaletteID, defaultColix));
     appendCmd(s, "background label " + encodeColor(defaultBgcolix));
-    appendCmd(s, "labelOffset = " + Text.getXOffset(defaultOffset) + " "
+    appendCmd(s, "set labelOffset " + Text.getXOffset(defaultOffset) + " "
         + (-Text.getYOffset(defaultOffset)));
     String align = Text.getAlignment(defaultAlignment);
-    appendCmd(s, "labelAlignment = " + (align.length() < 5 ? "left" : align));
+    appendCmd(s, "set labelAlignment " + (align.length() < 5 ? "left" : align));
     String pointer = Text.getPointer(defaultPointer);
-    appendCmd(s, "labelPointer = " + (pointer.length() == 0 ? "off" : pointer));
+    appendCmd(s, "set labelPointer " + (pointer.length() == 0 ? "off" : pointer));
     if ((defaultOffset & FRONT_FLAG) != 0)
       appendCmd(s, "set labelFront");
     if ((defaultOffset & GROUP_FLAG) != 0)
@@ -438,19 +438,19 @@ public class Labels extends AtomShape {
         setStateInfo(temp2, i, "background label " + encodeColor(bgcolixes[i]));
       if (offsets != null && offsets.length > i) {
         int offset = offsets[i];
-        setStateInfo(temp2, i, "labelOffset = " + Text.getXOffset(offset >> 6)
+        setStateInfo(temp2, i, "set labelOffset " + Text.getXOffset(offset >> 6)
             + " " + (-Text.getYOffset(offset >> 6)));
         String align = Text.getAlignment(offset >> 2);
         String pointer = Text.getPointer(offset);
         if (pointer.length() > 0)
-          setStateInfo(temp2, i, "labelPointer = " + pointer);
+          setStateInfo(temp2, i, "set labelPointer " + pointer);
         if ((offset & FRONT_FLAG) != 0)
           setStateInfo(temp2, i, "set labelFront");
         if ((offset & GROUP_FLAG) != 0)
           setStateInfo(temp2, i, "set labelGroup");
         //labelAlignment must come last, so we put it in a separate hash table
         if (align.length() > 0)
-          setStateInfo(temp3, i, "labelAlignment = " + align);
+          setStateInfo(temp3, i, "set labelAlignment " + align);
       }
       if (bsFontSet != null && bsFontSet.get(i))
         setStateInfo(temp2, i, getFontCommand("label", Font3D

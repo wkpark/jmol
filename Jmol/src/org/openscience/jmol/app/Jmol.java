@@ -1682,11 +1682,11 @@ public class Jmol extends JPanel {
 
     public MoleculeDependentAction(String name) {
       super(name);
-      setEnabled(false);
+      //setEnabled(false);
     }
 
     public void propertyChange(PropertyChangeEvent event) {
-
+/*
       if (event.getPropertyName().equals(chemFileProperty)) {
         if (event.getNewValue() != null) {
           setEnabled(true);
@@ -1694,6 +1694,7 @@ public class Jmol extends JPanel {
           setEnabled(false);
         }
       }
+*/    
     }
   }
 

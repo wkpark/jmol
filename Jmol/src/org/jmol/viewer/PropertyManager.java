@@ -23,6 +23,13 @@
  */
 package org.jmol.viewer;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Tuple3f;
+
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
@@ -256,5 +263,103 @@ class PropertyManager {
                 + (paramDefault != "" ? " #default: " + paramDefault : "") : "");
     }
     return info;
-  }   
+  }
+
+  public static Object extractProperty(Object property, Token[] args, int ptr) {
+    if (ptr >= args.length)
+      return property;
+    int pt;
+    Token arg = args[ptr++];
+    switch (arg.tok) {
+    case Token.integer:
+      pt = Token.iValue(arg) - 1;  //one-based, as for array selectors
+      if (property instanceof Vector) {
+        Vector v = (Vector) property;
+        if (pt < 0)
+          pt += v.size();
+        if (pt >= 0 && pt < v.size())
+          return extractProperty(v.elementAt(pt), args, ptr);
+        return "";
+      }
+      if (property instanceof String[]) {
+        String[] slist = (String[]) property;
+        if (pt < 0)
+          pt += slist.length;
+        if (pt >= 0 && pt < slist.length)
+          return slist[pt];
+        return "";
+      }
+      if (property instanceof Matrix3f) {
+        Matrix3f m = (Matrix3f) property;
+        float[][] f = new float[][] {
+            new float[] {m.m00, m.m01, m.m02}, 
+            new float[] {m.m10, m.m11, m.m12}, 
+            new float[] {m.m20, m.m21, m.m22}}; 
+        if (pt < 0)
+          pt += 3;
+        if (pt >= 0 && pt < 3)
+          return extractProperty(f, args, --ptr);
+        return "";
+      }
+      if (property instanceof float[]) {
+        float[] flist = (float[]) property;
+        if (pt < 0)
+          pt += flist.length;
+        if (pt >= 0 && pt < flist.length)
+          return new Float(flist[pt]);
+        return "";
+      }
+      if (property instanceof int[]) {
+        int[] ilist = (int[]) property;
+        if (pt < 0)
+          pt += ilist.length;
+        if (pt >= 0 && pt < ilist.length)
+          return new Integer(ilist[pt]);
+        return "";
+      }
+      if (property instanceof float[][]) {
+        float[][] fflist = (float[][]) property;
+        if (pt < 0)
+          pt += fflist.length;
+        if (pt >= 0 && pt < fflist.length)
+          return extractProperty(fflist[pt], args, ptr);
+        return "";
+      }
+      if (property instanceof int[][]) {
+        int[][] iilist = (int[][]) property;
+        if (pt < 0)
+          pt += iilist.length;
+        if (pt >= 0 && pt < iilist.length)
+          return extractProperty(iilist[pt], args, ptr);
+        return "";
+      }
+      break;
+    case Token.string:
+      String key = Token.sValue(arg);
+      if (property instanceof Hashtable) {
+        Hashtable h = (Hashtable) property;
+        if (key.equalsIgnoreCase("keys")) {
+          Vector keys = new Vector();
+          Enumeration e = h.keys();
+          while (e.hasMoreElements())
+            keys.addElement(e.nextElement()); 
+          return extractProperty(keys, args, ptr);
+        }
+        if (!h.containsKey(key)) {
+          Enumeration e = h.keys();
+          String newKey = "";
+          while (e.hasMoreElements())
+            if ((newKey = ((String) e.nextElement())).equalsIgnoreCase(key)) {
+              key = newKey;
+              break;
+            }
+        }
+        if (h.containsKey(key))
+          return extractProperty(h.get(key), args, ptr);
+        return "";
+      }
+      break;
+    }
+    return property;
+  }
 }

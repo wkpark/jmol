@@ -928,7 +928,9 @@ abstract public class ModelCollection extends BondCollection {
       String s = getModelTitle(i);
       if (s != null)
         model.put("title", s);
-      model.put("file", getModelFile(i));
+      s = getModelFile(i);
+      if (s != null)
+        model.put("file", s);
       model.put("vibrationVectors", Boolean
           .valueOf(modelHasVibrationVectors(i)));
       model.put("atomCount", new Integer(getAtomCountInModel(i)));
@@ -1814,6 +1816,7 @@ abstract public class ModelCollection extends BondCollection {
     info.put("x", new Float(getAtomX(i)));
     info.put("y", new Float(getAtomY(i)));
     info.put("z", new Float(getAtomZ(i)));
+    info.put("coord", new Point3f(atom));
     if (vibrationVectors != null && vibrationVectors[i] != null) {
       info.put("vibVector", new Vector3f(vibrationVectors[i]));
     }

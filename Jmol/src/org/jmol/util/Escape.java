@@ -52,14 +52,6 @@ public class Escape {
     return x.toString();
   }
 
-  public static String escape(Vector x) {
-    return toReadable(null, x);
-  }
-
-  public static String escape(Hashtable x) {
-    return toReadable(null, x);
-  }
-
   public static String escapeColor(int argb) {
     return "[x" + Graphics3D.getHexColorFromRGB(argb) + "]";
   }
@@ -69,17 +61,17 @@ public class Escape {
   }
 
   public static String escape(Tuple3f xyz) {
-    return "{" + xyz.x + " " + xyz.y + " " + xyz.z +"}";
+    return "{" + xyz.x + " " + xyz.y + " " + xyz.z + "}";
   }
 
   public static String escape(float[] f) {
-   StringBuffer sb = new StringBuffer();
-   for (int i = 0; i < f.length; i++) {
-     if (i > 0)
-       sb.append('\n');
-     sb.append(""+f[i]);
-   }
-   return sb.toString();
+    StringBuffer sb = new StringBuffer();
+    for (int i = 0; i < f.length; i++) {
+      if (i > 0)
+        sb.append('\n');
+      sb.append("" + f[i]);
+    }
+    return sb.toString();
   }
 
   public static String escape(String str) {
@@ -88,7 +80,7 @@ public class Escape {
     int pt = -2;
     while ((pt = str.indexOf("\"", pt + 2)) >= 0)
       str = str.substring(0, pt) + '\\' + str.substring(pt);
-    str = str.replace('\n','\1');
+    str = str.replace('\n', '\1');
     str = TextFormat.simpleReplace(str, "\1", "\\n");
     for (int i = str.length(); --i >= 0;)
       if (str.charAt(i) > 0x7F)
@@ -112,7 +104,7 @@ public class Escape {
     sb.append(sep).append(s.substring(pt, len));
     return sb.toString();
   }
-  
+
   static String ESCAPE_SET = " ,./;:_+-~=><?'!@#$%^&*";
   static int nEscape = ESCAPE_SET.length();
 
@@ -138,7 +130,7 @@ public class Escape {
           break;
         ch = ESCAPE_SET.charAt(pt);
         i = -1;
-      }  
+      }
     }
     String sch = "" + ch;
     if (pt == nEscape)
@@ -147,22 +139,21 @@ public class Escape {
     StringBuffer s = new StringBuffer();
     for (int i = 0; i < list.length; i++)
       s.append(sch).append(list[i]);
-    return escape(s.toString().substring(nch))+".split(\"" + sch + "\")";
+    return escape(s.toString().substring(nch)) + ".split(\"" + sch + "\")";
   }
 
   private static String unicode(char c) {
     String s = "0000" + Integer.toHexString(c);
     return "\\u" + s.substring(s.length() - 4);
   }
-  
+
   public static Object unescapePointOrBitsetAsToken(String s) {
     if (s == null || s.length() == 0)
       return s;
     Object v = s;
     if (s.charAt(0) == '{')
       v = Escape.unescapePoint(s);
-    else if (s.indexOf("({") == 0 
-        && s.indexOf("({") == s.lastIndexOf("({"))
+    else if (s.indexOf("({") == 0 && s.indexOf("({") == s.lastIndexOf("({"))
       v = Escape.unescapeBitset(s);
     else if (s.indexOf("[{") == 0)
       v = new BondSet(Escape.unescapeBitset(s));
@@ -173,20 +164,18 @@ public class Escape {
     if (v instanceof BitSet)
       return new Token(Token.bitset, v);
     return s;
-    
-    
 
   }
-  
+
   public static Object unescapePoint(String strPoint) {
-    if (strPoint == null || strPoint.length() == 0 
-        || strPoint.charAt(0) != '{' || strPoint.charAt(strPoint.length() - 1) != '}')
+    if (strPoint == null || strPoint.length() == 0 || strPoint.charAt(0) != '{'
+        || strPoint.charAt(strPoint.length() - 1) != '}')
       return strPoint;
     float[] points = new float[5];
     int nPoints = 0;
     String str = strPoint.substring(1, strPoint.length() - 1);
     int[] next = new int[1];
-    for (; nPoints < 5;nPoints++) {
+    for (; nPoints < 5; nPoints++) {
       points[nPoints] = Parser.parseFloat(str, next);
       if (Float.isNaN(points[nPoints])) {
         if (next[0] >= str.length() || str.charAt(next[0]) != ',')
@@ -199,7 +188,7 @@ public class Escape {
       return new Point3f(points[0], points[1], points[2]);
     if (nPoints == 4)
       return new Point4f(points[0], points[1], points[2], points[3]);
-    return strPoint;    
+    return strPoint;
   }
 
   public static BitSet unescapeBitset(String strBitset) {
@@ -219,9 +208,9 @@ public class Escape {
       case ' ':
         if (iThis < 0)
           break;
-        if (iPrev < 0) 
+        if (iPrev < 0)
           iPrev = iThis;
-        for (int j = iPrev; j<= iThis; j++)
+        for (int j = iPrev; j <= iThis; j++)
           bs.set(j);
         iPrev = -1;
         iThis = -2;
@@ -242,8 +231,8 @@ public class Escape {
   }
 
   public static String escape(BitSet bs, boolean isAtoms) {
-    char chOpen = (isAtoms ? '(' : '[');   
-    char chClose = (isAtoms ? ')' : ']');   
+    char chOpen = (isAtoms ? '(' : '[');
+    char chClose = (isAtoms ? ')' : ']');
     if (bs == null)
       return chOpen + "{}" + chClose;
     StringBuffer s = new StringBuffer(chOpen + "{");
@@ -275,25 +264,29 @@ public class Escape {
   public static String escape(BitSet bs) {
     return escape(bs, true);
   }
-  
-  private static String packageJSON (String infoType, String info) {
-    if (infoType == null) return info;
+
+  private static String packageJSON(String infoType, String info) {
+    if (infoType == null)
+      return info;
     return "\"" + infoType + "\": " + info;
   }
-  
-  private static String packageReadable (String infoType, String info) {
-    if (infoType == null) return info;
-    return "\n" + infoType + "\t" + info;
+
+  private static String packageReadable(String infoName, String infoType,
+                                        String info) {
+    String s = (infoType == null ? "" : infoType + "\t");
+    if (infoName == null)
+      return s + info;
+    return "\n" + infoName + "\t" + info;
   }
- 
+
   private static String fixString(String s) {
     if (s == null || s.indexOf("{\"") == 0) //don't doubly fix JSON strings when retrieving status
       return s;
-    s = TextFormat.simpleReplace(s,"\"","''");
-    s = TextFormat.simpleReplace(s,"\n"," | ");
-   return "\"" + s + "\"";  
+    s = TextFormat.simpleReplace(s, "\"", "''");
+    s = TextFormat.simpleReplace(s, "\n", " | ");
+    return "\"" + s + "\"";
   }
-  
+
   public static String toJSON(String infoType, Object info) {
 
     //Logger.debug(infoType+" -- "+info);
@@ -306,7 +299,7 @@ public class Escape {
       return packageJSON(infoType, fixString((String) info));
     if (info instanceof String[]) {
       str = "[";
-      int imax = ((String[]) info).length;  
+      int imax = ((String[]) info).length;
       for (int i = 0; i < imax; i++) {
         str += sep + fixString(((String[]) info)[i]);
         sep = ",";
@@ -366,12 +359,12 @@ public class Escape {
     }
     if (info instanceof Matrix3f) {
       str = "[";
-      str += "[" + ((Matrix3f) info).m00 + "," + ((Matrix3f) info).m01
-          + "," + ((Matrix3f) info).m02 + "]";
-      str += ",[" + ((Matrix3f) info).m10 + "," + ((Matrix3f) info).m11
-          + "," + ((Matrix3f) info).m12 + "]";
-      str += ",[" + ((Matrix3f) info).m20 + "," + ((Matrix3f) info).m21
-          + "," + ((Matrix3f) info).m22 + "]";
+      str += "[" + ((Matrix3f) info).m00 + "," + ((Matrix3f) info).m01 + ","
+          + ((Matrix3f) info).m02 + "]";
+      str += ",[" + ((Matrix3f) info).m10 + "," + ((Matrix3f) info).m11 + ","
+          + ((Matrix3f) info).m12 + "]";
+      str += ",[" + ((Matrix3f) info).m20 + "," + ((Matrix3f) info).m21 + ","
+          + ((Matrix3f) info).m22 + "]";
       str += "]";
       return packageJSON(infoType, str);
     }
@@ -400,6 +393,10 @@ public class Escape {
     return packageJSON(infoType, info.toString());
   }
 
+  public static String toReadable(Object info) {
+    return toReadable(null, info);
+  }
+  
   public static String toReadable(String infoType, Object info) {
 
     //Logger.debug(infoType+" -- "+info);
@@ -409,36 +406,36 @@ public class Escape {
     if (info == null)
       return "null";
     if (info instanceof String)
-      return packageReadable(infoType, fixString((String) info));
+      return packageReadable(infoType, null, escape((String) info));
     if (info instanceof String[]) {
-      str = "[";
-      int imax = ((String[]) info).length;  
+      str = "array(";
+      int imax = ((String[]) info).length;
       for (int i = 0; i < imax; i++) {
-        str += sep + fixString(((String[]) info)[i]);
+        str += sep + escape(((String[]) info)[i]);
         sep = ",";
       }
-      str += "]";
-      return packageReadable(infoType, str);
+      str += ")";
+      return packageReadable(infoType, "String[" + imax + "]", str);
     }
     if (info instanceof int[]) {
-      str = "[";
+      str = "array(";
       int imax = ((int[]) info).length;
       for (int i = 0; i < imax; i++) {
         str += sep + ((int[]) info)[i];
         sep = ",";
       }
-      str += "]";
-      return packageReadable(infoType, str);
+      str += ")";
+      return packageReadable(infoType, "int[" + imax + "]", str);
     }
     if (info instanceof float[]) {
-      str = "";
+      str = "array(";
       int imax = ((float[]) info).length;
       for (int i = 0; i < imax; i++) {
         str += sep + ((float[]) info)[i];
         sep = ",";
       }
-      str += "";
-      return packageReadable(infoType, str);
+      str += ")";
+      return packageReadable(infoType, "float[" + imax + "]", str);
     }
     if (info instanceof int[][]) {
       str = "[";
@@ -448,7 +445,7 @@ public class Escape {
         sep = ",";
       }
       str += "]";
-      return packageReadable(infoType, str);
+      return packageReadable(infoType, "int[" + imax + "][]", str);
     }
     if (info instanceof float[][]) {
       str = "[";
@@ -458,7 +455,7 @@ public class Escape {
         sep = ",";
       }
       str += "]";
-      return packageReadable(infoType, str);
+      return packageReadable(infoType, "float[][]", str);
     }
     if (info instanceof Vector) {
       str = "";
@@ -467,29 +464,29 @@ public class Escape {
         str += sep + toReadable(null, ((Vector) info).get(i));
         sep = ",";
       }
-//      str += "\n";
-      return packageReadable(infoType, str);
+      //      str += "\n";
+      return packageReadable(infoType, "Vector[" + imax + "]", str);
     }
     if (info instanceof Matrix3f) {
       str = "[";
-      str += "[" + ((Matrix3f) info).m00 + "," + ((Matrix3f) info).m01
-          + "," + ((Matrix3f) info).m02 + "]";
-      str += ",[" + ((Matrix3f) info).m10 + "," + ((Matrix3f) info).m11
-          + "," + ((Matrix3f) info).m12 + "]";
-      str += ",[" + ((Matrix3f) info).m20 + "," + ((Matrix3f) info).m21
-          + "," + ((Matrix3f) info).m22 + "]";
+      str += "[" + ((Matrix3f) info).m00 + "," + ((Matrix3f) info).m01 + ","
+          + ((Matrix3f) info).m02 + "]";
+      str += ",[" + ((Matrix3f) info).m10 + "," + ((Matrix3f) info).m11 + ","
+          + ((Matrix3f) info).m12 + "]";
+      str += ",[" + ((Matrix3f) info).m20 + "," + ((Matrix3f) info).m21 + ","
+          + ((Matrix3f) info).m22 + "]";
       str += "]";
-      return packageReadable(infoType, str);
+      return packageReadable(infoType, null, str);
     }
     if (info instanceof Point3f) {
-      str += "[" + ((Point3f) info).x + "," + ((Point3f) info).y + ","
-          + ((Point3f) info).z + "]";
-      return packageReadable(infoType, str);
+      str += "{" + ((Point3f) info).x + "," + ((Point3f) info).y + ","
+          + ((Point3f) info).z + "}";
+      return packageReadable(infoType, null, str);
     }
     if (info instanceof Vector3f) {
-      str += "[" + ((Vector3f) info).x + "," + ((Vector3f) info).y + ","
-          + ((Vector3f) info).z + "]";
-      return packageReadable(infoType, str);
+      str += "{" + ((Vector3f) info).x + "," + ((Vector3f) info).y + ","
+          + ((Vector3f) info).z + "}";
+      return packageReadable(infoType, null, str);
     }
     if (info instanceof Hashtable) {
       str = "";
@@ -497,13 +494,14 @@ public class Escape {
       while (e.hasMoreElements()) {
         String key = (String) e.nextElement();
         str += sep
-            + packageReadable(key, toReadable(null, ((Hashtable) info).get(key)));
+            + packageReadable(key, null, toReadable(null, ((Hashtable) info)
+                .get(key)));
         sep = "";
       }
       str += "\n";
-      return packageReadable(infoType, str);
+      return packageReadable(infoType, null, str);
     }
-    return packageReadable(infoType, info.toString());
+    return packageReadable(infoType, null, info.toString());
   }
 
 }

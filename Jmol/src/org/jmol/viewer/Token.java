@@ -429,6 +429,7 @@ public class Token {
   // xxx(a)
  
   final static int array        = 1  | 0 << 3 | mathfunc;
+  final static int getproperty  = 1  | 0 << 3 | mathfunc | command | embeddedExpression;
 
   final static int load         = 1  | 1 << 3 | mathfunc | command | negnums;
   final static int substructure = 2  | 1 << 3 | mathfunc;
@@ -472,7 +473,6 @@ public class Token {
   
   final static int within       = 1  | 5 << 3 | mathfunc;
   final static int connected    = 2  | 5 << 3 | mathfunc;
-  final static int getproperty  = 3  | 5 << 3 | mathfunc | command | embeddedExpression;
   
  // math-related Token static methods
   
@@ -780,21 +780,8 @@ public class Token {
     case Token.list:
       if (i1 < 1 || i1 > len || i2 > len)
         return new Token(Token.string, "");     
-      if (i2 == i1) {
-        Object v = Escape.unescapePointOrBitsetAsToken(st[i1 - 1]);
-        if (!(v instanceof String))
-          return (Token) v;
-        s = (String) v;
-        if (s.toLowerCase() == "true")
-          return Token.tokenOn;
-        if (s.toLowerCase() == "false")
-          return Token.tokenOff;
-        float f;
-        if (!Float.isNaN(f = Parser.parseFloat(s)))
-          return (f == (int) f && s.indexOf(".") < 0 ? intToken((int)f) 
-              : new Token(Token.decimal, new Float(f)));
-        return new Token(Token.string, v);
-      }
+      if (i2 == i1)
+        return tValue(st[i1 - 1]);
       String[]list = new String[i2 - i1 + 1];
       for (int i = 0; i < list.length; i++)
         list[i] = st[i + i1 - 1];
@@ -802,6 +789,22 @@ public class Token {
       break;
     }
     return tokenOut;
+  }
+
+  static Token tValue(String str) {
+    Object v = Escape.unescapePointOrBitsetAsToken(str);
+    if (!(v instanceof String))
+      return (Token) v;
+    String s = (String) v;
+    if (s.toLowerCase() == "true")
+      return Token.tokenOn;
+    if (s.toLowerCase() == "false")
+      return Token.tokenOff;
+    float f;
+    if (!Float.isNaN(f = Parser.parseFloat(s)))
+      return (f == (int) f && s.indexOf(".") < 0 ? intToken((int)f) 
+          : new Token(Token.decimal, new Float(f)));
+    return new Token(Token.string, v);  
   }
   
   // parameters

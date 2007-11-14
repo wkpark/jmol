@@ -45,8 +45,8 @@ import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Vector;
 import java.util.Hashtable;
+
 import javax.vecmath.Point3f;
-import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point4f;
 import org.jmol.i18n.*;
@@ -10966,73 +10966,40 @@ class Eval { //implements Runnable {
     }
 
     private boolean evaluateGetProperty(Token[] args) throws ScriptException {
-      if (args.length < 1)
-        return false;
       if (isSyntaxCheck)
         return addX("");
-
-      String propertyName = Token.sValue(args[0]);
-      int pt = 1;
-      Object propertyValue = (args.length > pt && args[1].tok == Token.bitset ? 
-          (Object) Token.bsSelect(args[pt++]) : (Object) "");
-      int itemSelector = (args.length > pt && args[pt].tok == Token.integer ? 
-          Token.iValue(args[pt++]) : 0);
-      String subsetName = (args.length > pt ? Token.sValue(args[pt++]) : "");
-      String subsetName2 = (args.length > pt ? Token.sValue(args[pt++]) : "");
-
+      int pt = 0;
+      String propertyName = (args.length > pt ? Token.sValue(args[pt++]).toLowerCase() : "");
+      Object propertyValue = (args.length > pt && args[pt].tok == Token.bitset ? 
+          (Object) Token.bsSelect(args[pt++]) 
+          : args.length > pt && propertyName.equals("stateinfo") && args[pt].tok == Token.string ?
+              args[pt++].value : (Object) "");
       Object property = viewer.getProperty(null, propertyName, propertyValue);
-      if (property != null && property instanceof Vector) {
-        if (itemSelector < ((Vector) property).size())
-          property = ((Vector) property).elementAt(itemSelector);
-      }
-      if (property != null && property instanceof Hashtable
-          && subsetName.length() > 0) {
-        property = ((Hashtable) property).get(subsetName);
-        subsetName = subsetName2;
-      }
-      if (property != null && property instanceof Vector) {
-        if (itemSelector < ((Vector) property).size())
-          property = ((Vector) property).elementAt(itemSelector);
-      }
-      if (property != null && property instanceof Hashtable
-          && subsetName.length() > 0) {
-        property = ((Hashtable) property).get(subsetName);
-      }
-      if (property == null)
-        return false;
-      if (property instanceof Hashtable) {
-        Hashtable t = ((Hashtable) property);
-        int len = 0;
-        Enumeration e = t.keys();
-        while (e.hasMoreElements()) {
-          len += 2;
-          e.nextElement();
-        }
-        String[] array = new String[len];
-        e = t.keys();
-        for (int i = 0; i < len;) {
-          String key = (String) e.nextElement();
-          array[i++] = key;
-          Object value = t.get(key);
-          if (value instanceof Hashtable && subsetName.length() > 0
-              && ((Hashtable) value).containsKey(subsetName))
-            value = ((Hashtable) value).get(subsetName);
-          if (value instanceof String)
-            array[i++] = (String) value;
-          else if (value instanceof Tuple3f)
-            array[i++] = Escape.escape((Tuple3f) value);
-          else if (value instanceof Vector)
-            array[i++] = Escape.escape((Vector) value);
-          else if (value instanceof Hashtable)
-            array[i++] = Escape.escape((Hashtable) value);
+      property = PropertyManager.extractProperty(property, args, pt);
+      if (property instanceof String)
+        return addX(property);
+      if (property instanceof Integer)
+        return addX(property);
+      if (property instanceof Float)
+        return addX(property);
+      if (property instanceof Point3f)
+        return addX(property);
+      if (property instanceof Vector3f)
+        return addX(new Point3f((Vector3f)property));
+      if (property instanceof Vector) {
+        Vector v = (Vector) property;
+        int len = v.size();
+        String[] list = new String[len];
+        for (int i = 0; i < len; i++) {
+          Object o = v.elementAt(i);
+          if (o instanceof String)
+            list[i] = (String) o;
           else
-            array[i++] = Escape.escape(value);
+            list[i] = Escape.toReadable(o);
         }
-        return addX(array);
-      } else if (property instanceof Vector3f) {
-        return addX(new Point3f((Vector3f) property));  
+        return addX(list);
       }
-      return addX(property);
+      return addX(Escape.toReadable(property));
     }
     
     private boolean evaluatePoint(Token[] args) throws ScriptException {

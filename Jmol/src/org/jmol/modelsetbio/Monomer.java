@@ -254,8 +254,8 @@ public abstract class Monomer extends Group {
 
   public Hashtable getMyInfo() {
     Hashtable info = new Hashtable();
-    info.put("chain", ""+chain.getChainID());
-
+    char chainID = chain.getChainID();
+    info.put("chain", (chainID == '\0' ? "" : "" + chainID));
     int seqNum = getSeqNumber();
     char insCode = getInsertionCode();
     if (seqNum > 0)      
@@ -266,6 +266,8 @@ public abstract class Monomer extends Group {
     info.put("atomInfo2", chain.getAtom(lastAtomIndex).getInfo());
     info.put("_apt1", new Integer(firstAtomIndex));
     info.put("_apt2", new Integer(lastAtomIndex));
+    info.put("atomIndex1", new Integer(firstAtomIndex));
+    info.put("atomIndex2", new Integer(lastAtomIndex));
     if (!Float.isNaN(phi))
       info.put("phi", new Float(phi));
     if (!Float.isNaN(psi))

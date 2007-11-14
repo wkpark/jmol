@@ -54,7 +54,7 @@ public class Strands extends BioShapeCollection {
   }
   
   public String getShapeState() {
-    return (isMesh ? "" : "strandCount = " + strandCount + ";\n")
+    return (isMesh ? "" : "set strandCount " + strandCount + ";\n")
       + super.getShapeState();
   }
 }

@@ -556,7 +556,7 @@ public class Dipoles extends Shape {
         appendCmd(s, getColorCommand("dipole", dipole.colix));
       }
     }
-    appendCmd(s, "dipoleScale = " + dipoleVectorScale);
+    appendCmd(s, "set dipoleScale " + dipoleVectorScale);
     return s.toString();
   }
 }

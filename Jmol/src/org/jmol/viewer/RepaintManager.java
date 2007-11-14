@@ -236,7 +236,7 @@ class RepaintManager {
     info.put("currentDirection", new Integer(currentDirection));
     info.put("currentTrajectory", new Integer(currentTrajectory));
     info.put("displayModelIndex", new Integer(currentModelIndex));
-    info.put("displayModelNumber", new Integer(currentModelIndex >=0 ? viewer.getModelNumberDotted(currentModelIndex) : "0"));
+    info.put("displayModelNumber", viewer.getModelNumberDotted(currentModelIndex));
     info.put("displayModelName", (currentModelIndex >=0 ? viewer.getModelName(currentModelIndex) : ""));
     info.put("animationFps", new Integer(animationFps));
     info.put("animationReplayMode", getAnimationModeName());

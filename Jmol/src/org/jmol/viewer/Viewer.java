@@ -28,6 +28,7 @@ import org.jmol.symmetry.UnitCell;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomIterator;
+import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.ModelSet;
 
 import org.jmol.api.*;
@@ -1936,6 +1937,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.calcBoundBoxDimensions(bs);
     axesAreTainted = true;
     refresh(0, "set calcBoundBoxDimensions");
+  }
+  
+  BoxInfo getBoxInfo(BitSet bs) {
+    return modelSet.getBoxInfo(bs);
   }
   
   float calcRotationRadius(Point3f center) {

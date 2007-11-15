@@ -53,6 +53,7 @@ import org.jmol.i18n.*;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
+import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.ModelCollection;
 import org.jmol.modelset.ModelSet;
@@ -11499,20 +11500,18 @@ class Eval { //implements Runnable {
             .bValue(x2)));
       int iv = op.intValue & ~Token.minmaxmask;
       if (op.tok == Token.propselector) {
-        if (iv == Token.size) {
+        switch(iv) {
+        case Token.size:
           return addX(Token.sizeOf(x2));
-        }
-        if (iv == Token.type) {
+        case Token.type:
           return addX(Token.typeOf(x2));
-        }
-        if (iv == Token.lines) {
+        case Token.lines:
           if (x2.tok != Token.string)
             return false;
           String s = (String) x2.value;
           s = TextFormat.simpleReplace(s, "\n\r", "\n").replace('\r', '\n');
           return addX(TextFormat.split(s, '\n'));
-        }
-        if (iv == Token.color) {
+        case Token.color:
           switch (x2.tok) {
           case Token.string:
           case Token.list:
@@ -11526,6 +11525,8 @@ class Eval { //implements Runnable {
           default:
           //handle bitset later
           }
+        case Token.boundbox:
+          return evaluateBoundBox(x2);
         }
         if (x2.tok == Token.string) {
           Object v = Escape.unescapePointOrBitsetAsToken(Token.sValue(x2));
@@ -11734,6 +11735,17 @@ class Eval { //implements Runnable {
       return true;
     }
 
+    private boolean evaluateBoundBox(Token x2) throws ScriptException {
+      if (x2.tok != Token.bitset)
+        return false;
+      if (isSyntaxCheck)
+        return addX("");
+      BoxInfo b = viewer.getBoxInfo(Token.bsSelect(x2));
+      Point3f[] pts = b.getBoundBoxPoints();
+      return addX(new String[] {Escape.escape(pts[0]), Escape.escape(pts[1]),
+          Escape.escape(pts[2]), Escape.escape(pts[3])});
+    }
+    
     private boolean evaluatePointOrBitsetOperation(Token op, Token x2)
         throws ScriptException {
       switch (x2.tok) {

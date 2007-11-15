@@ -171,7 +171,7 @@ abstract public class ModelCollection extends BondCollection {
 
   private final Point3f averageAtomPoint = new Point3f();
   private boolean isBbcageDefault;
-  private BoxInfo boxInfo = new BoxInfo();
+  private final BoxInfo boxInfo = new BoxInfo();
   {
     boxInfo.setBbcage();
   }

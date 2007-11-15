@@ -81,7 +81,7 @@ public class UccageRenderer extends FontLineShapeRenderer {
   }
 
   private void renderInfo(CellInfo cellInfo, UnitCell unitCell) {
-    if (isGenerator)
+    if (isGenerator || !g3d.setColix(viewer.getColixBackgroundContrast()))
       return;
     if (nf == null) {
       nf = NumberFormat.getInstance();
@@ -92,6 +92,7 @@ public class UccageRenderer extends FontLineShapeRenderer {
       nf.setMinimumFractionDigits(3);
     }
     g3d.setFont(fid);
+    
     int lineheight = 15;
     int x = 5;
     if (antialias) {

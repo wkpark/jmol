@@ -2434,15 +2434,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void setCurrentUnitCellOffset(int offset) {
     int modelIndex = repaintManager.currentModelIndex;
     if (modelSet.setUnitCellOffset(modelIndex, offset))
-      global.setParameterValue("_frame " + getModelNumber(modelIndex)
-          + "; unitcell = ", offset);
+      global.setParameterValue("_frame " + getModelNumberDotted(modelIndex)
+          + "; set unitcell ", offset);
   }
 
   void setCurrentUnitCellOffset(Point3f pt) {
     int modelIndex = repaintManager.currentModelIndex;
     if (modelSet.setUnitCellOffset(modelIndex, pt))
-      global.setParameterValue("_frame " + getModelNumber(modelIndex)
-          + "; unitcell = ", Escape.escape(pt));
+      global.setParameterValue("_frame " + getModelNumberDotted(modelIndex)
+          + "; set unitcell ", Escape.escape(pt));
   }
 
   /* ****************************************************************************

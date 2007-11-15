@@ -542,7 +542,7 @@ public class Polyhedra extends AtomShape {
       BitSet bs = new BitSet();
       for (int i = 0; i < ptCenter; i++)
         bs.set(vertices[i].getAtomIndex());
-      String s = "select ({"
+      String s = "  select ({"
           + centralAtom.getAtomIndex()
           + "});polyhedra "
           + ptCenter

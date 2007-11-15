@@ -904,12 +904,13 @@ public class StateManager {
         String name = key;
         if (key.charAt(0) != '@' && doRegister(key)) {
           Object value = htParameterValues.get(key);
-          if (key.charAt(0) == '_') {
+          if (key.charAt(0) == '_') { //unitcell offset, for one _frame xx; set unitcell ...
             key = key.substring(1);
           } else {
             if (key.indexOf("default") == 0)
-              key = " " + key;
-            key = "set " + key;
+              key = " set " + key;
+            else
+              key = "set " + key;
             value = escapeVariable(name, value);
           }
           list[n++] = key + " " + value;
@@ -946,7 +947,9 @@ public class StateManager {
       list = new String[htUserVariables.size()];
       while (e.hasMoreElements())
         list[n++] = (key = (String) e.nextElement())
-            + (key.charAt(0) == '@' ? " " : " = ") + escapeUserVariable(key);
+            + (key.charAt(0) == '@' 
+                ? " " + Token.sValue((Token) htUserVariables.get(key))
+                : " = " + escapeUserVariable(key));
 
       Arrays.sort(list, 0, n);
       for (int i = 0; i < n; i++)

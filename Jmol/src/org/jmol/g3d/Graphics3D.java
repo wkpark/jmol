@@ -661,13 +661,24 @@ final public class Graphics3D implements JmolRendererInterface {
     return platform.hasContent();
   }
 
+  private int currentIntensity;
+  
+  private void setColixAndIntensity(short colix, int intensity) {
+    if (colix == colixCurrent && currentIntensity == intensity)
+      return;
+    currentIntensity = -1;
+    setColix(colix);
+    setColorNoisy(intensity);
+  }
+
+  
   /**
    * sets current color from colix color index
    * @param colix the color index
    * @return true or false if this is the right pass
    */
   public boolean setColix(short colix) {
-    if (colix == colixCurrent)
+    if (colix == colixCurrent && currentIntensity == -1)
       return true;
     int mask = colix & TRANSLUCENT_MASK;
     if (mask == TRANSPARENT)
@@ -681,7 +692,7 @@ final public class Graphics3D implements JmolRendererInterface {
       translucencyMask = (mask << ALPHA_SHIFT) | 0xFFFFFF;
     colixCurrent = colix;
     shadesCurrent = getShades(colix);
-    
+    currentIntensity = -1; 
     argbCurrent = argbNoisyUp = argbNoisyDn = getColixArgb(colix);
     return true;
   }
@@ -689,6 +700,7 @@ final public class Graphics3D implements JmolRendererInterface {
   void setColorNoisy(int intensity) {
     //if (isPass2)
       //return;
+    currentIntensity = intensity;
     argbCurrent = shadesCurrent[intensity];
     argbNoisyUp = shadesCurrent[intensity < shadeLast ? intensity + 1 : shadeLast];
     argbNoisyDn = shadesCurrent[intensity > 0 ? intensity - 1 : 0];
@@ -1231,8 +1243,7 @@ final public class Graphics3D implements JmolRendererInterface {
     boolean useGouraud;
     if (normixA == normixB && normixA == normixC &&
         colixA == colixB && colixA == colixC) {
-      setColix(colixA);
-      setColorNoisy(normix3d.getIntensity(normixA));
+      setColixAndIntensity(colixA, normix3d.getIntensity(normixA));
       useGouraud = false;
     } else {
       triangle3d.setGouraud(getShades(colixA)[normix3d.getIntensity(normixA)],
@@ -1282,8 +1293,7 @@ final public class Graphics3D implements JmolRendererInterface {
     boolean useGouraud;
     if (normixA == normixB && normixA == normixC && colixA == colixB
         && colixA == colixC) {
-      setColix(colixA);
-      setColorNoisy(normix3d.getIntensity(normixA));
+      setColixAndIntensity(colixA, normix3d.getIntensity(normixA));
       useGouraud = false;
     } else {
       triangle3d.setGouraud(getShades(colixA)[normix3d.getIntensity(normixA)],

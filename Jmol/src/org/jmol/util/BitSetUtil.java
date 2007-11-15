@@ -169,4 +169,14 @@ final public class BitSetUtil {
     }
     return a;
   }
+  
+  public static void deleteBits(BitSet bs, BitSet bsDelete) {
+    if (bs == null)
+      return;
+    int ipt = firstSetBit(bsDelete);
+    int len = bs.size();
+    for (int i = ipt; i < len; i++)
+      if (!bsDelete.get(i))
+        bs.set(ipt++, bs.get(i));
+  }
 }

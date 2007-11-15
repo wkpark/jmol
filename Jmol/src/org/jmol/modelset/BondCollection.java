@@ -552,6 +552,7 @@ abstract public class BondCollection extends AtomCollection {
     for (int i = bondCount; --i >= iDst;)
       bonds[i] = null;
     bondCount = iDst;
+    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "delete", bs);
   }
 
   private float hbondMax = 3.25f;

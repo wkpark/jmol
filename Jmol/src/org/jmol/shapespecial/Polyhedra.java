@@ -112,15 +112,18 @@ public class Polyhedra extends AtomShape {
     if ("centers" == propertyName) {
       centers = (BitSet) value;
       iHaveCenterBitSet = true;
+      return;
     }
 
     if ("to" == propertyName) {
       bsVertices = (BitSet) value;
+      return;
     }
 
     if ("toBitSet" == propertyName) {
       bsVertices = (BitSet) value;
       haveBitSetVertices = true;
+      return;
     }
 
     if ("faceCenterOffset" == propertyName) {

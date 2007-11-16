@@ -95,17 +95,17 @@ public class BoxInfo {
     float t = pt.x;
     if (t < bbCorner0.x)
       bbCorner0.x = t;
-    else if (t > bbCorner1.x)
+    if (t > bbCorner1.x)
       bbCorner1.x = t;
     t = pt.y;
     if (t < bbCorner0.y)
       bbCorner0.y = t;
-    else if (t > bbCorner1.y)
+    if (t > bbCorner1.y)
       bbCorner1.y = t;
     t = pt.z;
     if (t < bbCorner0.z)
       bbCorner0.z = t;
-    else if (t > bbCorner1.z)
+    if (t > bbCorner1.z)
       bbCorner1.z = t;
   }
 

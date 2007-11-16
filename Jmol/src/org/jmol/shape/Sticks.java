@@ -188,7 +188,6 @@ public class Sticks extends Shape {
   public String getShapeState() {
     Hashtable temp = new Hashtable();
     Bond[] bonds = modelSet.getBonds();
-    System.out.println("sticks getshapestae bsSizeset" + bsSizeSet);
     for (int i = modelSet.getBondCount(); --i >= 0;) {
       Bond bond = bonds[i];
       short r;

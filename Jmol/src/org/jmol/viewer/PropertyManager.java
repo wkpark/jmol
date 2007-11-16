@@ -28,8 +28,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.vecmath.Matrix3f;
-import javax.vecmath.Tuple3f;
-
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 

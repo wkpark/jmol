@@ -34,7 +34,6 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Bond.BondSet;
@@ -265,12 +264,21 @@ public class Escape {
     return escape(bs, true);
   }
 
+  private static String packageJSON(String infoType, StringBuffer sb) {
+    return packageJSON(infoType, sb.toString());
+  }
+
   private static String packageJSON(String infoType, String info) {
     if (infoType == null)
       return info;
     return "\"" + infoType + "\": " + info;
   }
 
+  private static String packageReadable(String infoName, String infoType,
+                                        StringBuffer sb) {
+    return packageReadable(infoName, infoType, sb.toString());
+  }
+  
   private static String packageReadable(String infoName, String infoType,
                                         String info) {
     String s = (infoType == null ? "" : infoType + "\t");
@@ -291,104 +299,101 @@ public class Escape {
 
     //Logger.debug(infoType+" -- "+info);
 
-    String str = "";
+    StringBuffer sb = new StringBuffer();
     String sep = "";
     if (info == null)
-      return packageJSON(infoType, null);
+      return packageJSON(infoType, (String) null);
     if (info instanceof String)
       return packageJSON(infoType, fixString((String) info));
     if (info instanceof String[]) {
-      str = "[";
+      sb.append("[");
       int imax = ((String[]) info).length;
       for (int i = 0; i < imax; i++) {
-        str += sep + fixString(((String[]) info)[i]);
+        sb.append(sep).append(fixString(((String[]) info)[i]));
         sep = ",";
       }
-      str += "]";
-      return packageJSON(infoType, str);
+      sb.append("]");
+      return packageJSON(infoType, sb);
     }
     if (info instanceof int[]) {
-      str = "[";
+      sb.append("[");
       int imax = ((int[]) info).length;
       for (int i = 0; i < imax; i++) {
-        str += sep + ((int[]) info)[i];
+        sb.append(sep).append(((int[]) info)[i]);
         sep = ",";
       }
-      str += "]";
-      return packageJSON(infoType, str);
+      sb.append("]");
+      return packageJSON(infoType, sb);
     }
     if (info instanceof float[]) {
-      str = "[";
+      sb.append("[");
       int imax = ((float[]) info).length;
       for (int i = 0; i < imax; i++) {
-        str += sep + ((float[]) info)[i];
+        sb.append(sep).append(((float[]) info)[i]);
         sep = ",";
       }
-      str += "]";
-      return packageJSON(infoType, str);
+      sb.append("]");
+      return packageJSON(infoType, sb);
     }
     if (info instanceof int[][]) {
-      str = "[";
+      sb.append("[");
       int imax = ((int[][]) info).length;
       for (int i = 0; i < imax; i++) {
-        str += sep + toJSON(null, ((int[][]) info)[i]);
+        sb.append(sep).append(toJSON(null, ((int[][]) info)[i]));
         sep = ",";
       }
-      str += "]";
-      return packageJSON(infoType, str);
+      sb.append("]");
+      return packageJSON(infoType, sb);
     }
     if (info instanceof float[][]) {
-      str = "[";
+      sb.append("[");
       int imax = ((float[][]) info).length;
       for (int i = 0; i < imax; i++) {
-        str += sep + toJSON(null, ((float[][]) info)[i]);
+        sb.append(sep).append(toJSON(null, ((float[][]) info)[i]));
         sep = ",";
       }
-      str += "]";
-      return packageJSON(infoType, str);
+      sb.append("]");
+      return packageJSON(infoType, sb);
     }
     if (info instanceof Vector) {
-      str = "[ ";
+      sb.append("[ ");
       int imax = ((Vector) info).size();
       for (int i = 0; i < imax; i++) {
-        str += sep + toJSON(null, ((Vector) info).get(i));
+        sb.append(sep).append(toJSON(null, ((Vector) info).get(i)));
         sep = ",";
       }
-      str += " ]";
-      return packageJSON(infoType, str);
+      sb.append(" ]");
+      return packageJSON(infoType, sb);
     }
     if (info instanceof Matrix3f) {
-      str = "[";
-      str += "[" + ((Matrix3f) info).m00 + "," + ((Matrix3f) info).m01 + ","
-          + ((Matrix3f) info).m02 + "]";
-      str += ",[" + ((Matrix3f) info).m10 + "," + ((Matrix3f) info).m11 + ","
-          + ((Matrix3f) info).m12 + "]";
-      str += ",[" + ((Matrix3f) info).m20 + "," + ((Matrix3f) info).m21 + ","
-          + ((Matrix3f) info).m22 + "]";
-      str += "]";
-      return packageJSON(infoType, str);
+      sb.append("[[").append(((Matrix3f) info).m00).append(",")
+        .append(((Matrix3f) info).m01).append(",")
+        .append(((Matrix3f) info).m02).append("]")
+        .append(",[").append(((Matrix3f) info).m10).append(",")
+        .append(((Matrix3f) info).m11).append(",")
+        .append(((Matrix3f) info).m12).append("]")
+        .append(",[").append(((Matrix3f) info).m20).append(",")
+        .append(((Matrix3f) info).m21).append(",")
+        .append(((Matrix3f) info).m22).append("]]");
+      return packageJSON(infoType, sb);
     }
-    if (info instanceof Point3f) {
-      str += "[" + ((Point3f) info).x + "," + ((Point3f) info).y + ","
-          + ((Point3f) info).z + "]";
-      return packageJSON(infoType, str);
-    }
-    if (info instanceof Vector3f) {
-      str += "[" + ((Vector3f) info).x + "," + ((Vector3f) info).y + ","
-          + ((Vector3f) info).z + "]";
-      return packageJSON(infoType, str);
+    if (info instanceof Tuple3f) {
+      sb.append("[").append(((Tuple3f) info).x).append(",")
+        .append(((Tuple3f) info).y).append(",")
+        .append(((Tuple3f) info).z).append("]");
+      return packageJSON(infoType, sb);
     }
     if (info instanceof Hashtable) {
-      str = "{ ";
+      sb.append("{ ");
       Enumeration e = ((Hashtable) info).keys();
       while (e.hasMoreElements()) {
         String key = (String) e.nextElement();
-        str += sep
-            + packageJSON(key, toJSON(null, ((Hashtable) info).get(key)));
+        sb.append(sep)
+            .append(packageJSON(key, toJSON(null, ((Hashtable) info).get(key))));
         sep = ",";
       }
-      str += " }";
-      return packageJSON(infoType, str);
+      sb.append(" }");
+      return packageJSON(infoType, sb);
     }
     return packageJSON(infoType, info.toString());
   }
@@ -398,108 +403,97 @@ public class Escape {
   }
   
   public static String toReadable(String infoType, Object info) {
-
-    //Logger.debug(infoType+" -- "+info);
-
-    String str = "";
+    StringBuffer sb =new StringBuffer();
     String sep = "";
     if (info == null)
       return "null";
     if (info instanceof String)
       return packageReadable(infoType, null, escape((String) info));
     if (info instanceof String[]) {
-      str = "array(";
+      sb.append("array(");
       int imax = ((String[]) info).length;
       for (int i = 0; i < imax; i++) {
-        str += sep + escape(((String[]) info)[i]);
+        sb.append(sep).append(escape(((String[]) info)[i]));
         sep = ",";
       }
-      str += ")";
-      return packageReadable(infoType, "String[" + imax + "]", str);
+      sb.append(")");
+      return packageReadable(infoType, "String[" + imax + "]", sb);
     }
     if (info instanceof int[]) {
-      str = "array(";
+      sb.append("array(");
       int imax = ((int[]) info).length;
       for (int i = 0; i < imax; i++) {
-        str += sep + ((int[]) info)[i];
+        sb.append(sep).append(((int[]) info)[i]);
         sep = ",";
       }
-      str += ")";
-      return packageReadable(infoType, "int[" + imax + "]", str);
+      sb.append(")");
+      return packageReadable(infoType, "int[" + imax + "]", sb);
     }
     if (info instanceof float[]) {
-      str = "array(";
+      sb.append("array(");
       int imax = ((float[]) info).length;
       for (int i = 0; i < imax; i++) {
-        str += sep + ((float[]) info)[i];
+        sb.append(sep).append(((float[]) info)[i]);
         sep = ",";
       }
-      str += ")";
-      return packageReadable(infoType, "float[" + imax + "]", str);
+      sb.append(")");
+      return packageReadable(infoType, "float[" + imax + "]", sb);
     }
     if (info instanceof int[][]) {
-      str = "[";
+      sb.append("[");
       int imax = ((int[][]) info).length;
       for (int i = 0; i < imax; i++) {
-        str += sep + toReadable(null, ((int[][]) info)[i]);
+        sb.append(sep).append(toReadable(null, ((int[][]) info)[i]));
         sep = ",";
       }
-      str += "]";
-      return packageReadable(infoType, "int[" + imax + "][]", str);
+      sb.append("]");
+      return packageReadable(infoType, "int[" + imax + "][]", sb);
     }
     if (info instanceof float[][]) {
-      str = "[";
+      sb.append("[");
       int imax = ((float[][]) info).length;
       for (int i = 0; i < imax; i++) {
-        str += sep + toReadable(null, ((float[][]) info)[i]);
+        sb.append(sep).append(toReadable(null, ((float[][]) info)[i]));
         sep = ",";
       }
-      str += "]";
-      return packageReadable(infoType, "float[][]", str);
+      sb.append("]");
+      return packageReadable(infoType, "float[][]", sb);
     }
     if (info instanceof Vector) {
-      str = "";
+      sb.append("");
       int imax = ((Vector) info).size();
       for (int i = 0; i < imax; i++) {
-        str += sep + toReadable(null, ((Vector) info).get(i));
+        sb.append(sep).append(toReadable(null, ((Vector) info).get(i)));
         sep = ",";
       }
-      //      str += "\n";
-      return packageReadable(infoType, "Vector[" + imax + "]", str);
+      return packageReadable(infoType, "Vector[" + imax + "]", sb);
     }
     if (info instanceof Matrix3f) {
-      str = "[";
-      str += "[" + ((Matrix3f) info).m00 + "," + ((Matrix3f) info).m01 + ","
-          + ((Matrix3f) info).m02 + "]";
-      str += ",[" + ((Matrix3f) info).m10 + "," + ((Matrix3f) info).m11 + ","
-          + ((Matrix3f) info).m12 + "]";
-      str += ",[" + ((Matrix3f) info).m20 + "," + ((Matrix3f) info).m21 + ","
-          + ((Matrix3f) info).m22 + "]";
-      str += "]";
-      return packageReadable(infoType, null, str);
+      sb.append("[[").append(((Matrix3f) info).m00).append(",")
+      .append(((Matrix3f) info).m01).append(",")
+      .append(((Matrix3f) info).m02).append("]")
+      .append(",[").append(((Matrix3f) info).m10).append(",")
+      .append(((Matrix3f) info).m11).append(",")
+      .append(((Matrix3f) info).m12).append("]")
+      .append(",[").append(((Matrix3f) info).m20).append(",")
+      .append(((Matrix3f) info).m21).append(",")
+      .append(((Matrix3f) info).m22).append("]]");
+      return packageReadable(infoType, null, sb);
     }
-    if (info instanceof Point3f) {
-      str += "{" + ((Point3f) info).x + "," + ((Point3f) info).y + ","
-          + ((Point3f) info).z + "}";
-      return packageReadable(infoType, null, str);
-    }
-    if (info instanceof Vector3f) {
-      str += "{" + ((Vector3f) info).x + "," + ((Vector3f) info).y + ","
-          + ((Vector3f) info).z + "}";
-      return packageReadable(infoType, null, str);
+    if (info instanceof Tuple3f) {
+      sb.append(escape((Tuple3f) info));
+      return packageReadable(infoType, null, sb);
     }
     if (info instanceof Hashtable) {
-      str = "";
       Enumeration e = ((Hashtable) info).keys();
       while (e.hasMoreElements()) {
         String key = (String) e.nextElement();
-        str += sep
-            + packageReadable(key, null, toReadable(null, ((Hashtable) info)
-                .get(key)));
+        sb.append(sep).append(packageReadable(key, null, toReadable(null, ((Hashtable) info)
+                .get(key))));
         sep = "";
       }
-      str += "\n";
-      return packageReadable(infoType, null, str);
+      sb.append("\n");
+      return packageReadable(infoType, null, sb);
     }
     return packageReadable(infoType, null, info.toString());
   }

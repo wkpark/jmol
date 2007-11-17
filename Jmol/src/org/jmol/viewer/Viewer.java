@@ -1959,6 +1959,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getBoundBoxInfo();
   }
 
+  public BitSet getBoundBoxModels() {
+    return modelSet.getBoundBoxModels();
+  }
+
   public int getBoundBoxCenterX() {
     // used by axes renderer
     return dimScreen.width / 2;

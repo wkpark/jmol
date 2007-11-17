@@ -84,7 +84,7 @@ final public class BitSetUtil {
   }
 
   public static BitSet copy(BitSet bs) {
-    return (BitSet) bs.clone();
+    return bs == null ? null : (BitSet) bs.clone();
     /*
     BitSet b = new BitSet();
     b.or(a);

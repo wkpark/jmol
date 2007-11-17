@@ -171,6 +171,8 @@ abstract public class ModelCollection extends BondCollection {
 
   private final Point3f averageAtomPoint = new Point3f();
   private boolean isBbcageDefault;
+  private BitSet bboxModels;
+  private BitSet bboxAtoms;
   private final BoxInfo boxInfo = new BoxInfo();
   {
     boxInfo.setBbcage();
@@ -196,14 +198,22 @@ abstract public class ModelCollection extends BondCollection {
     return boxInfo.getBoundBoxInfo();
   }
 
+  public BitSet getBoundBoxModels() {
+    return bboxModels;
+  }
+  
   public void setBoundBox(Point3f pt1, Point3f pt2, boolean byCorner) {
     if (pt1.distance(pt2) == 0)
       return;
     isBbcageDefault = false;
+    bboxModels = null;
+    bboxAtoms = null;
     boxInfo.setBoundBox(pt1, pt2, byCorner);
   }
 
   public String getBoundBoxCommand(boolean withOptions) {
+    if (!withOptions && bboxAtoms != null)
+      return "boundbox " + Escape.escape(bboxAtoms);
     ptTemp.set(boxInfo.getBoundBoxCenter());
     Vector3f bbVector = boxInfo.getBoundBoxCornerVector();
     String s = (withOptions ? "boundbox " + Escape.escape(ptTemp) + " "
@@ -221,6 +231,7 @@ abstract public class ModelCollection extends BondCollection {
       bs = null;
     if (bs == null && isBbcageDefault || atomCount < 2)
       return;
+    bboxModels = getModelBitSet(bboxAtoms = BitSetUtil.copy(bs));
     if (calcAtomsMinMax(bs, boxInfo) == atomCount)
       isBbcageDefault = true;
     if (bs == null) { // from modelLoader or reset

@@ -35,12 +35,13 @@ public class BbcageRenderer extends FontLineShapeRenderer {
   }
 
   protected void render() {
-    short mad = viewer.getObjectMad(StateManager.OBJ_BOUNDBOX);
-    if (mad == 0 || !isGenerator && !g3d.checkTranslucent(false)
+    Bbcage bbox = (Bbcage) shape;
+    if (!bbox.isVisible 
+        || !isGenerator && !g3d.checkTranslucent(false)
         || viewer.isJmolDataFrame())
       return;
     colix = viewer.getObjectColix(StateManager.OBJ_BOUNDBOX);
-    render(mad, modelSet.getBboxVertices(), screens, null, 0);
+    render(bbox.mad, modelSet.getBboxVertices(), screens, null, 0);
   }
   
 }

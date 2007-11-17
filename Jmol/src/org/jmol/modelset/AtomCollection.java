@@ -1221,7 +1221,7 @@ abstract public class AtomCollection {
   public BitSet getModelBitSet(BitSet atomList) {
     BitSet bs = new BitSet();
     for (int i = 0; i < atomCount; i++)
-      if (atomList.get(i))
+      if (atomList == null || atomList.get(i))
         bs.set(atoms[i].modelIndex);
     return bs;
   }

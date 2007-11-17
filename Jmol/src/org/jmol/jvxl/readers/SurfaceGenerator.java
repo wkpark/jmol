@@ -366,6 +366,7 @@ public class SurfaceGenerator {
 
     if ("cappingPlane" == propertyName) {
       params.cappingPlane = (Point4f) value;
+      params.doCapIsosurface = (params.cappingPlane != null);
       return true;
     }
 
@@ -796,6 +797,7 @@ public class SurfaceGenerator {
     if (++state != STATE_DATA_COLORED)
       return;
     setReader();    
+    params.doCapIsosurface = false;
     if (params.thePlane != null) {
       params.cutoff = 0;
       voxelReader.createIsosurface(true);//but don't read volume data yet

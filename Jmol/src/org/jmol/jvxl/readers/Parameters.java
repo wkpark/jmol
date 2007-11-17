@@ -185,6 +185,7 @@ public class Parameters {
     colorPosLCAO = defaultColorPositiveLCAO;
     cutoff = Float.MAX_VALUE;
     distance = Float.MAX_VALUE;
+    doCapIsosurface = false;
     envelopeRadius = 10f;
     fileIndex = 1;
     fileName = "";
@@ -235,6 +236,7 @@ public class Parameters {
   Boolean pocket; //three states: TRUE, FALSE, and NULL
   int minSet;
   Point4f cappingPlane;
+  boolean doCapIsosurface;
 
   float[] theProperty;
   ///// solvent-accessible, solvent-excluded surface //////

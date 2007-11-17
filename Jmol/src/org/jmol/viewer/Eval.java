@@ -10683,17 +10683,13 @@ class Eval { //implements Runnable {
               + "/" + Token.prec(op.tok));
         }
         // ) and ] must wait until matching ( or [ is found
-        if (op.tok == Token.rightparen && oStack[oPt].tok == Token.leftparen)
+        if (op.tok == Token.rightparen && oStack[oPt].tok == Token.leftparen) { 
+          // (x[2]) finalizes the selection
+          xStack[xPt] = Token.selectItem(xStack[xPt]);
           break;
+        }
 
         if (op.tok == Token.rightsquare && oStack[oPt].tok == Token.leftsquare) {
-          //if (oStack[oPt].intValue == 0) {
-          //special left square as concat list business
-          //if (xPt >= 0 && xStack[xPt].tok == Token.string) {
-          //  if (!concatList())
-          //  return false;
-          //}
-          //} else 
           if (xPt == 0 && isAssignment) {
             addX(Token.tokenArraySelector);
             break;
@@ -10764,22 +10760,6 @@ class Eval { //implements Runnable {
       oStack[oPt] = op;
       return true;
     }
-
-    /* abandoned -- unnecessary
-     private boolean concatList() throws ScriptException {
-     int nPoints = 0;
-     int pt = xPt;
-     while (xStack[pt--].tok != Token.leftsquare)
-     nPoints++;
-     String[] list = new String[nPoints];
-     for (int i = 0; i < nPoints; i++)
-     list[i] = Token.sValue(xStack[pt + i + 2]);
-     xPt = pt;
-     addX(list);
-     return true;
-
-     }
-     */
 
     private boolean doBitsetSelect() {
       if (xPt < 0 || xPt == 0 && !isAssignment) {

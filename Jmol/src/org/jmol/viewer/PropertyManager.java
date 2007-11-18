@@ -28,6 +28,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.vecmath.Matrix3f;
+
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
@@ -52,9 +53,8 @@ class PropertyManager {
     "appletInfo"      , "", "",
     "fileName"        , "", "",
     "fileHeader"      , "", "",
-    "fileContents"    , "", "",
     "fileContents"    , "<pathname>", "",
-  
+    "fileContents"    , "", "",  
     "animationInfo"   , "", "",
     "modelInfo"       , "", "",
     "X -vibrationInfo", "", "",  //not implemented -- see modelInfo
@@ -89,8 +89,8 @@ class PropertyManager {
   private final static int PROP_APPLET_INFO = 0;
   private final static int PROP_FILENAME = 1;
   private final static int PROP_FILEHEADER = 2;
-  private final static int PROP_FILECONTENTS = 3;
-  private final static int PROP_FILECONTENTS_PATH = 4;
+  private final static int PROP_FILECONTENTS_PATH = 3;
+  private final static int PROP_FILECONTENTS = 4;
   
   private final static int PROP_ANIMATION_INFO = 5;
   private final static int PROP_MODEL_INFO = 6;
@@ -150,10 +150,14 @@ class PropertyManager {
     return propertyTypes[propID * 3 + 2];
   }
   
+  static boolean acceptsParameter(String name) {
+    return (getParamType(getPropertyNumber(name)).length() > 0);
+  }
+  
   private final static String[] readableTypes = {
     "", "stateinfo", "extractmodel", "filecontents", "fileheader", "image", "menu"};
   
-  private boolean isReadableAsString(String infoType) {
+  private static boolean isReadableAsString(String infoType) {
     for (int i = readableTypes.length; --i >= 0; )
       if (infoType.equalsIgnoreCase(readableTypes[i]))
           return true;

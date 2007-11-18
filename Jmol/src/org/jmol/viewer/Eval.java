@@ -10953,7 +10953,8 @@ class Eval { //implements Runnable {
       String propertyName = (args.length > pt ? Token.sValue(args[pt++]).toLowerCase() : "");
       Object propertyValue = (args.length > pt && args[pt].tok == Token.bitset ? 
           (Object) Token.bsSelect(args[pt++]) 
-          : args.length > pt && propertyName.equals("stateinfo") && args[pt].tok == Token.string ?
+          : args.length > pt && args[pt].tok == Token.string &&
+            PropertyManager.acceptsParameter(propertyName) ?
               args[pt++].value : (Object) "");
       Object property = viewer.getProperty(null, propertyName, propertyValue);
       property = PropertyManager.extractProperty(property, args, pt);

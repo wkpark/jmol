@@ -42,13 +42,6 @@ import org.jmol.util.Logger;
 
 class PropertyManager {
 
-  private Viewer viewer;
-
-  PropertyManager(Viewer viewer) {
-    this.viewer = viewer;
-  }
-
-
   private final static String[] propertyTypes = {
     "appletInfo"      , "", "",
     "fileName"        , "", "",
@@ -132,6 +125,16 @@ class PropertyManager {
     return -1;
   }
   
+  static String getDefaultParam(int propID) {
+    if (propID < 0)
+      return "";
+    return propertyTypes[propID * 3 + 2];
+  }
+  
+  static boolean acceptsParameter(String name) {
+    return (getParamType(getPropertyNumber(name)).length() > 0);
+  }
+  
   private static String getPropertyName(int propID) {
     if (propID < 0)
       return "";
@@ -144,16 +147,6 @@ class PropertyManager {
     return propertyTypes[propID * 3 + 1];
   }
   
-  static String getDefaultParam(int propID) {
-    if (propID < 0)
-      return "";
-    return propertyTypes[propID * 3 + 2];
-  }
-  
-  static boolean acceptsParameter(String name) {
-    return (getParamType(getPropertyNumber(name)).length() > 0);
-  }
-  
   private final static String[] readableTypes = {
     "", "stateinfo", "extractmodel", "filecontents", "fileheader", "image", "menu"};
   
@@ -164,16 +157,15 @@ class PropertyManager {
     return false;
   }
 
-  private boolean requestedReadable = false;
   
-  synchronized Object getProperty(String returnType, String infoType, Object paramInfo) {
+  
+  static Object getProperty(Viewer viewer, String returnType, String infoType, Object paramInfo) {
     if (propertyTypes.length != PROP_COUNT * 3)
       Logger.warn("propertyTypes is not the right length: " + propertyTypes.length + " != " + PROP_COUNT * 3);
-    
-    Object info = getPropertyAsObject(infoType, paramInfo);
+    Object info = getPropertyAsObject(viewer, infoType, paramInfo);
     if (returnType == null)
       return info;
-    requestedReadable = returnType.equalsIgnoreCase("readable");
+    boolean requestedReadable = returnType.equalsIgnoreCase("readable");
     if (requestedReadable)
       returnType = (isReadableAsString(infoType) ? "String" : "JSON");
     if (returnType.equalsIgnoreCase("String")) return info.toString();
@@ -184,8 +176,7 @@ class PropertyManager {
     return info;
   }
   
-  synchronized private Object getPropertyAsObject(String infoType,
-                                                  Object paramInfo) {
+  private static Object getPropertyAsObject(Viewer viewer, String infoType, Object paramInfo) {
     //Logger.debug("getPropertyAsObject(\"" + infoType+"\", \"" + paramInfo + "\")");
     int id = getPropertyNumber(infoType);
     boolean iHaveParameter = (paramInfo != null && paramInfo.toString()
@@ -225,7 +216,7 @@ class PropertyManager {
     case PROP_JMOL_STATUS:
       return viewer.getStatusChanged(myParam.toString());
     case PROP_JMOL_VIEWER:
-      return viewer.getViewer();
+      return viewer;
     case PROP_MEASUREMENT_INFO:
       return viewer.getMeasurementInfo();
     case PROP_MENU:

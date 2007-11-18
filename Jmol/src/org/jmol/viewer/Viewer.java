@@ -122,7 +122,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private ModelSet modelSet;
   public MouseManager mouseManager;
   private PickingManager pickingManager;
-  private PropertyManager propertyManager;
   private RepaintManager repaintManager;
   private ScriptManager scriptManager;
   private SelectionManager selectionManager;
@@ -177,7 +176,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     else
       mouseManager = new MouseManager10(display, this);
     modelManager = new ModelManager(this);
-    propertyManager = new PropertyManager(this);
     tempManager = new TempArray();
     dataManager = new DataManager();
     repaintManager = new RepaintManager(this);
@@ -3619,10 +3617,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return statusManager.messageQueue;
   }
 
-  Viewer getViewer() {
-    return this;
-  }
-
   private void setCallbackFunction(String callbackType, String callbackFunction) {
     //Eval
     if (callbackFunction.equalsIgnoreCase("none"))
@@ -5608,7 +5602,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public Object getProperty(String returnType, String infoType, Object paramInfo) {
     // accepts a BitSet paramInfo
     // return types include "JSON", "string", "readable", and anything else returns the Java object.
-    return propertyManager.getProperty(returnType, infoType, paramInfo);
+    return PropertyManager.getProperty(this, returnType, infoType, paramInfo);
   }
 
   String getModelExtract(Object atomExpression) {

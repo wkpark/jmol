@@ -31,7 +31,7 @@ public class PhosphorusMonomer extends Monomer {
 
   private final static byte[] phosphorusOffsets = { 0 };
 
-  private static float MAX_ADJACENT_PHOSPHORUS_DISTANCE = 7.5f;
+  private static float MAX_ADJACENT_PHOSPHORUS_DISTANCE = 8.0f;
  
   protected boolean isPurine;
   protected boolean isPyrimidine;
@@ -45,6 +45,7 @@ public class PhosphorusMonomer extends Monomer {
         specialAtomIndexes[JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS]
         != firstIndex)
       return null;
+    System.out.println("phosphorus monomer "+ firstIndex + " "+ lastIndex);
     return new PhosphorusMonomer(chain, group3, seqcode,
                             firstIndex, lastIndex, phosphorusOffsets);
   }

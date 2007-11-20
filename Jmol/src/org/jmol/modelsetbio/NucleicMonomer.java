@@ -247,7 +247,9 @@ public class NucleicMonomer extends PhosphorusMonomer {
     if (! (possiblyPreviousMonomer instanceof NucleicMonomer))
       return false;
     NucleicMonomer other = (NucleicMonomer)possiblyPreviousMonomer;
-    return other.getAtomFromOffsetIndex(O3Pr).isBonded(myPhosphorusAtom);
+    if (other.getAtomFromOffsetIndex(O3Pr).isBonded(myPhosphorusAtom))
+      return true;
+    return super.isConnectedAfter(possiblyPreviousMonomer);
   }
 
   ////////////////////////////////////////////////////////////////

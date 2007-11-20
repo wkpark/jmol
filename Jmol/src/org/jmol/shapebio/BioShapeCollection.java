@@ -58,10 +58,11 @@ public abstract class BioShapeCollection extends Shape {
   short madTurnRandom = 800;
   short madDnaRna = 5000;
   boolean isActive = false;
-
+  
   BioShape[] bioShapes;
   
   public final void initModelSet() {
+    isBioShape = true;
     atoms = modelSet.atoms;
     initialize();
   }
@@ -116,22 +117,18 @@ public abstract class BioShapeCollection extends Shape {
     int modelCount = modelSet.getModelCount();
     Model[] models = modelSet.getModels();
     int nPolymers = modelSet.getBioPolymerCount();
-    BioShape[] m = new BioShape[nPolymers];
+    BioShape[] shapes = new BioShape[nPolymers];
     int n = nPolymers;
     for (int i = modelCount; --i >= 0;)
       for (int j = models[i].getBioPolymerCount(); --j >= 0;) {
         n--;
         if (bioShapes == null || bioShapes.length <= n || bioShapes[n] == null) {
-          m[n] = new BioShape(this, i, (BioPolymer) models[i].getBioPolymer(j));
+          shapes[n] = new BioShape(this, i, (BioPolymer) models[i].getBioPolymer(j));
         } else {
-          m[n] = bioShapes[n];
+          shapes[n] = bioShapes[n];
         }
       }
-    bioShapes = m;
-  }
-
-  int getMpsmodelCount() {
-    return (bioShapes == null ? 0 : modelSet.getModelCount());
+    bioShapes = shapes;
   }
 
   public void findNearestAtomIndex(int xMouse, int yMouse, Closest closest) {

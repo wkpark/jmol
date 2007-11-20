@@ -85,7 +85,8 @@ public abstract class Shape {
   public int myVisibilityFlag;
   protected float translucentLevel;
   protected boolean translucentAllowed = true;
-
+  public boolean isBioShape;
+  
   public Viewer getViewer() {
     return viewer;
   }

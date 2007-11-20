@@ -61,8 +61,6 @@ public final class ModelLoader extends ModelSet {
   private final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
   private String[] group3Lists;
   private int[][] group3Counts;
-  private Group[] groups;
-  private int groupCount;
   
   public ModelLoader(Viewer viewer, String name) {
     this.viewer = viewer;
@@ -187,7 +185,6 @@ public final class ModelLoader extends ModelSet {
   private int baseModelCount = 0;
   private int baseAtomIndex = 0;
   private int baseBondIndex = 0;
-  private int baseGroupIndex = 0;
   private boolean appendNew;
   private int adapterModelCount = 0;
   
@@ -223,6 +220,7 @@ public final class ModelLoader extends ModelSet {
     }
 
     finalizeGroupBuild(); // set group offsets and build monomers
+    calculatePolymers(null);
     //only now can we access all of the atom's properties
 
     freeze();
@@ -264,8 +262,6 @@ public final class ModelLoader extends ModelSet {
     setModelCount();
   }
 
-  private BitSet structuresDefinedInFile = new BitSet();
-  
   private void initializeMerge() {
     merge(mergeModelSet);
     bsSymmetry = mergeModelSet.bsSymmetry;
@@ -735,16 +731,7 @@ public final class ModelLoader extends ModelSet {
     group3Counts = null;
     group3Lists = null;
 
-    for (int i = baseGroupIndex; i < groupCount; ++i) {
-      Group group = groups[i];
-      if (jbr != null)
-        jbr.buildBioPolymer(group, groups, i);
-    }
-
   }
-
-  private boolean haveBioClasses = true;
-  private JmolBioResolver jbr = null;
 
   private void distinguishAndPropagateGroup(int groupIndex, Chain chain, String group3,
                                     int seqcode, int firstAtomIndex,

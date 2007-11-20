@@ -5784,9 +5784,14 @@ class Eval { //implements Runnable {
         if (!isSyntaxCheck)
           viewer.calculateStructures();
         return;
+      case Token.polymer:
+        checkLength2();
+        if (!isSyntaxCheck)
+          viewer.calculatePolymers();
+        return;
       }
     }
-    evalError(GT._("Calculate what?") + "aromatic? hbonds? surface? structure?");
+    evalError(GT._("Calculate what?") + "aromatic? hbonds? polymers? structure? surface?");
   }
 
   private void dots(int ipt, int iShape) throws ScriptException {

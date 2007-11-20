@@ -45,7 +45,6 @@ public class PhosphorusMonomer extends Monomer {
         specialAtomIndexes[JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS]
         != firstIndex)
       return null;
-    System.out.println("phosphorus monomer "+ firstIndex + " "+ lastIndex);
     return new PhosphorusMonomer(chain, group3, seqcode,
                             firstIndex, lastIndex, phosphorusOffsets);
   }

@@ -36,6 +36,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.api.JmolBioResolver;
 import org.jmol.atomdata.AtomIndexIterator;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.symmetry.SpaceGroup;
@@ -135,8 +136,25 @@ abstract public class ModelCollection extends BondCollection {
   private Properties[] modelProperties = new Properties[1];
   private Hashtable[] modelAuxiliaryInfo = new Hashtable[1];
 
+  protected Group[] groups;
+  protected int groupCount;
+  protected int baseGroupIndex = 0;
   private int structureCount = 0;
   private Structure[] structures = new Structure[10];
+  protected boolean haveBioClasses = true;
+  protected JmolBioResolver jbr = null;
+  protected BitSet structuresDefinedInFile = new BitSet();
+  
+  protected void calculatePolymers(BitSet alreadyDefined) {
+    if (jbr == null)
+      return;
+    if (alreadyDefined != null) {
+      jbr.clearBioPolymers(groups, groupCount, alreadyDefined);
+    }
+    for (int i = baseGroupIndex; i < groupCount; ++i)
+      jbr.buildBioPolymer(groups[i], groups, i);
+  }
+
 
   /**
    * deprecated due to multimodel issues, 
@@ -1043,6 +1061,17 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = 0; i < modelCount; i++)
       if (modelIndex >= 0 && i != modelIndex)
         bsDefined.set(i);
+    calculateStructuresAllExcept(bsDefined);
+  }
+  
+  public void calculatePolymers(int modelIndex) {
+    BitSet bsDefined = new BitSet(modelCount);
+    for (int i = 0; i < modelCount; i++)
+      if (modelIndex >= 0 && i != modelIndex)
+        bsDefined.set(i);
+      else
+        models[i].addBioPolymer(null);
+    calculatePolymers(bsDefined);
     calculateStructuresAllExcept(bsDefined);
   }
   

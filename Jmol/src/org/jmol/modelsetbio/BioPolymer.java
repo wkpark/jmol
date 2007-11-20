@@ -53,7 +53,7 @@ public abstract class BioPolymer extends Polymer {
   
   BioPolymer(Monomer[] monomers) {
     this.monomers = monomers;
-    this.monomerCount = monomers.length;
+    monomerCount = monomers.length;
     for (int i = monomerCount; --i >= 0; )
       monomers[i].setBioPolymer(this, i);
     model = monomers[0].getModel();

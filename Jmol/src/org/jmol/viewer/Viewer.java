@@ -1834,7 +1834,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getSurfaceDistanceMax();
   }
   
-  public void calculateStructures() {
+  void calculatePolymers() {
+    modelSet.calculatePolymers(repaintManager.currentModelIndex);
+    addStateScript("calculate polymers", true);
+  }
+
+  void calculateStructures() {
     //Eval
     modelSet.calculateStructures(repaintManager.currentModelIndex);
     addStateScript("calculate structure", true);
@@ -6108,6 +6113,5 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //legacy -- no calls
     return (Point3f) modelSet.getBondAtom2(i);
   }
-
 
 }

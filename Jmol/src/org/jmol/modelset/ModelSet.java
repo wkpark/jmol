@@ -325,6 +325,15 @@ abstract public class ModelSet extends ModelCollection {
 
   ///// super-overloaded methods ///////
   
+  
+  public void calculatePolymers(int modelIndex) {
+    super.calculatePolymers(modelIndex);
+    for (int i = 0; i < shapes.length; ++i)
+      if (shapes[i] != null && shapes[i].isBioShape)
+        shapes[i] = null;
+    viewer.getFrameRenderer().clear();
+  }
+
   private final static boolean useRasMolHbondsCalculation = true;
 
   public int autoHbond(BitSet bsA, BitSet bsB, BitSet bsBonds) {

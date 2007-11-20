@@ -209,8 +209,12 @@ public final class Model {
   }
 
   public void addBioPolymer(Polymer polymer) {
-    if (bioPolymers.length == 0)
+    if (bioPolymers.length == 0 || polymer == null)
       bioPolymers = new Polymer[8];
+    if (polymer == null) {
+      bioPolymerCount = 0;
+      return;
+    }
     if (bioPolymerCount == bioPolymers.length)
       bioPolymers = (Polymer[])ArrayUtil.doubleLength(bioPolymers);
     bioPolymers[bioPolymerCount++] = polymer;

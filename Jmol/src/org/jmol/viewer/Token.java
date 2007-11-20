@@ -891,6 +891,7 @@ public class Token {
   final static int backlit      = misc | 87;
   final static int fullylit     = misc | 88;
   final static int shape        = misc | 89;
+  final static int polymer      = misc | 90;
 
 
   // predefined Tokens: 
@@ -1134,6 +1135,8 @@ public class Token {
     "axisangle",         new Token(axisangle),
     "transform",         new Token(transform),
     "orientation",       new Token(orientation),
+    "polymer",           new Token(polymer),
+    "polymers",          null,
     "state",             new Token(state),
     "shape",             new Token(shape),
     "url",               new Token(url),

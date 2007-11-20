@@ -125,7 +125,7 @@ public final class Resolver implements JmolBioResolver {
       if (group instanceof Monomer) {
         Monomer monomer = (Monomer) group;
         if (monomer.getBioPolymer() != null
-            && alreadyDefined == null || !alreadyDefined.get(monomer.getModelIndex()))
+            && (alreadyDefined == null || !alreadyDefined.get(monomer.getModelIndex())))
           monomer.setBioPolymer(null, -1);
       }
     }

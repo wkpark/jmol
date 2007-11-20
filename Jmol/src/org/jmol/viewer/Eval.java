@@ -10954,7 +10954,7 @@ class Eval { //implements Runnable {
       Object propertyValue = (args.length > pt && args[pt].tok == Token.bitset ? 
           (Object) Token.bsSelect(args[pt++]) 
           : args.length > pt && args[pt].tok == Token.string &&
-            PropertyManager.acceptsParameter(propertyName) ?
+            PropertyManager.acceptsStringParameter(propertyName) ?
               args[pt++].value : (Object) "");
       Object property = viewer.getProperty(null, propertyName, propertyValue);
       property = PropertyManager.extractProperty(property, args, pt);

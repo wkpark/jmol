@@ -42,6 +42,8 @@ import org.jmol.util.Logger;
 
 class PropertyManager {
 
+  private final static String atomExpression = "<atom selection>";
+  
   private final static String[] propertyTypes = {
     "appletInfo"      , "", "",
     "fileName"        , "", "",
@@ -57,16 +59,16 @@ class PropertyManager {
     "centerInfo"      , "", "",
     "orientationInfo" , "", "",
     "transformInfo"   , "", "",
-    "atomList"        , "<atom selection>", "(visible)",
-    "atomInfo"        , "<atom selection>", "(visible)",
+    "atomList"        , atomExpression, "(visible)",
+    "atomInfo"        , atomExpression, "(visible)",
     
-    "bondInfo"        , "<atom selection>", "(visible)",
-    "chainInfo"       , "<atom selection>", "(visible)",
-    "polymerInfo"     , "<atom selection>", "(visible)",
-    "moleculeInfo"    , "<atom selection>", "(visible)",
+    "bondInfo"        , atomExpression, "(visible)",
+    "chainInfo"       , atomExpression, "(visible)",
+    "polymerInfo"     , atomExpression, "(visible)",
+    "moleculeInfo"    , atomExpression, "(visible)",
     "stateInfo"       , "<state type>", "all",
     
-    "extractModel"    , "<atom selection>", "(visible)",
+    "extractModel"    , atomExpression, "(visible)",
     "jmolStatus"      , "statusNameList", "",
     "jmolViewer"      , "", "",
     "messageQueue"    , "", "",
@@ -116,6 +118,8 @@ class PropertyManager {
   private final static int PROP_MENU = 29;
   private final static int PROP_COUNT = 30;
 
+  //// static methods used by Eval and Viewer ////
+  
   static int getPropertyNumber(String infoType) {
     if (infoType == null)
       return -1;
@@ -131,33 +135,11 @@ class PropertyManager {
     return propertyTypes[propID * 3 + 2];
   }
   
-  static boolean acceptsParameter(String name) {
-    return (getParamType(getPropertyNumber(name)).length() > 0);
+  static boolean acceptsStringParameter(String name) {
+    int propID = getPropertyNumber(name);
+    String type = getParamType(propID);
+    return (type.length() > 0 && type != atomExpression);
   }
-  
-  private static String getPropertyName(int propID) {
-    if (propID < 0)
-      return "";
-    return propertyTypes[propID * 3];
-  }
-  
-  private static String getParamType(int propID) {
-    if (propID < 0)
-      return "";
-    return propertyTypes[propID * 3 + 1];
-  }
-  
-  private final static String[] readableTypes = {
-    "", "stateinfo", "extractmodel", "filecontents", "fileheader", "image", "menu"};
-  
-  private static boolean isReadableAsString(String infoType) {
-    for (int i = readableTypes.length; --i >= 0; )
-      if (infoType.equalsIgnoreCase(readableTypes[i]))
-          return true;
-    return false;
-  }
-
-  
   
   static Object getProperty(Viewer viewer, String returnType, String infoType, Object paramInfo) {
     if (propertyTypes.length != PROP_COUNT * 3)
@@ -176,89 +158,7 @@ class PropertyManager {
     return info;
   }
   
-  private static Object getPropertyAsObject(Viewer viewer, String infoType, Object paramInfo) {
-    //Logger.debug("getPropertyAsObject(\"" + infoType+"\", \"" + paramInfo + "\")");
-    int id = getPropertyNumber(infoType);
-    boolean iHaveParameter = (paramInfo != null && paramInfo.toString()
-        .length() > 0);
-    Object myParam = (iHaveParameter ? paramInfo : getDefaultParam(id));
-    //myParam may now be a bitset
-    switch (id) {
-    case PROP_APPLET_INFO:
-      return viewer.getAppletInfo();
-    case PROP_ANIMATION_INFO:
-      return viewer.getAnimationInfo();
-    case PROP_ATOM_LIST:
-      return viewer.getAtomBitSetVector(myParam);
-    case PROP_ATOM_INFO:
-      return viewer.getAllAtomInfo(myParam);
-    case PROP_AUXILIARY_INFO:
-      return viewer.getAuxiliaryInfo();
-    case PROP_BOND_INFO:
-      return viewer.getAllBondInfo(myParam);
-    case PROP_BOUNDBOX_INFO:
-      return viewer.getBoundBoxInfo();
-    case PROP_CENTER_INFO:
-      return viewer.getRotationCenter();
-    case PROP_CHAIN_INFO:
-      return viewer.getAllChainInfo(myParam);
-    case PROP_EXTRACT_MODEL:
-      return viewer.getModelExtract(myParam);
-    case PROP_FILENAME:
-      return viewer.getFullPathName();
-    case PROP_FILEHEADER:
-      return viewer.getFileHeader();
-    case PROP_FILECONTENTS:
-    case PROP_FILECONTENTS_PATH:
-      if (iHaveParameter)
-        return viewer.getFileAsString(myParam.toString());
-      return viewer.getCurrentFileAsString();
-    case PROP_JMOL_STATUS:
-      return viewer.getStatusChanged(myParam.toString());
-    case PROP_JMOL_VIEWER:
-      return viewer;
-    case PROP_MEASUREMENT_INFO:
-      return viewer.getMeasurementInfo();
-    case PROP_MENU:
-      return viewer.getMenu();
-    case PROP_MESSAGE_QUEUE:
-      return viewer.getMessageQueue();
-    case PROP_MODEL_INFO:
-      return viewer.getModelInfo();
-    case PROP_MOLECULE_INFO:
-      return viewer.getMoleculeInfo(myParam);
-    case PROP_ORIENTATION_INFO:
-      return viewer.getOrientationInfo();
-    case PROP_POLYMER_INFO:
-      return viewer.getAllPolymerInfo(myParam);
-    case PROP_SHAPE_INFO:
-      return viewer.getShapeInfo();
-    case PROP_STATE_INFO:
-      return viewer.getStateInfo(myParam.toString());
-    case PROP_TRANSFORM_INFO:
-      return viewer.getMatrixRotate();
-    case PROP_DATA_INFO:
-      return viewer.getData(myParam.toString());
-    case PROP_EVALUATE:
-      return Eval.evaluateExpression(viewer, myParam.toString());
-    case PROP_IMAGE:
-      return viewer.getJpegBase64(100);
-    }
-    String info = "getProperty ERROR\n" + infoType + "?\nOptions include:\n";
-    for (int i = 0; i < PROP_COUNT; i++) {
-      String paramType = getParamType(i);
-      String paramDefault = getDefaultParam(i);
-      String name = getPropertyName(i);
-      if (name.charAt(0) != 'X')
-        info += "\n getProperty "
-            + name
-            + (paramType != "" ? " " + paramType
-                + (paramDefault != "" ? " #default: " + paramDefault : "") : "");
-    }
-    return info;
-  }
-
-  public static Object extractProperty(Object property, Token[] args, int ptr) {
+  static Object extractProperty(Object property, Token[] args, int ptr) {
     if (ptr >= args.length)
       return property;
     int pt;
@@ -354,5 +254,111 @@ class PropertyManager {
       break;
     }
     return property;
+  }
+
+  //// private static methods ////
+  
+  private static String getPropertyName(int propID) {
+    if (propID < 0)
+      return "";
+    return propertyTypes[propID * 3];
+  }
+  
+  private static String getParamType(int propID) {
+    if (propID < 0)
+      return "";
+    return propertyTypes[propID * 3 + 1];
+  }
+  
+  private final static String[] readableTypes = {
+    "", "stateinfo", "extractmodel", "filecontents", "fileheader", "image", "menu"};
+  
+  private static boolean isReadableAsString(String infoType) {
+    for (int i = readableTypes.length; --i >= 0; )
+      if (infoType.equalsIgnoreCase(readableTypes[i]))
+          return true;
+    return false;
+  }
+  
+  private static Object getPropertyAsObject(Viewer viewer, String infoType, Object paramInfo) {
+    //Logger.debug("getPropertyAsObject(\"" + infoType+"\", \"" + paramInfo + "\")");
+    int id = getPropertyNumber(infoType);
+    boolean iHaveParameter = (paramInfo != null && paramInfo.toString()
+        .length() > 0);
+    Object myParam = (iHaveParameter ? paramInfo : getDefaultParam(id));
+    //myParam may now be a bitset
+    switch (id) {
+    case PROP_APPLET_INFO:
+      return viewer.getAppletInfo();
+    case PROP_ANIMATION_INFO:
+      return viewer.getAnimationInfo();
+    case PROP_ATOM_LIST:
+      return viewer.getAtomBitSetVector(myParam);
+    case PROP_ATOM_INFO:
+      return viewer.getAllAtomInfo(myParam);
+    case PROP_AUXILIARY_INFO:
+      return viewer.getAuxiliaryInfo();
+    case PROP_BOND_INFO:
+      return viewer.getAllBondInfo(myParam);
+    case PROP_BOUNDBOX_INFO:
+      return viewer.getBoundBoxInfo();
+    case PROP_CENTER_INFO:
+      return viewer.getRotationCenter();
+    case PROP_CHAIN_INFO:
+      return viewer.getAllChainInfo(myParam);
+    case PROP_EXTRACT_MODEL:
+      return viewer.getModelExtract(myParam);
+    case PROP_FILENAME:
+      return viewer.getFullPathName();
+    case PROP_FILEHEADER:
+      return viewer.getFileHeader();
+    case PROP_FILECONTENTS:
+    case PROP_FILECONTENTS_PATH:
+      if (iHaveParameter)
+        return viewer.getFileAsString(myParam.toString());
+      return viewer.getCurrentFileAsString();
+    case PROP_JMOL_STATUS:
+      return viewer.getStatusChanged(myParam.toString());
+    case PROP_JMOL_VIEWER:
+      return viewer;
+    case PROP_MEASUREMENT_INFO:
+      return viewer.getMeasurementInfo();
+    case PROP_MENU:
+      return viewer.getMenu();
+    case PROP_MESSAGE_QUEUE:
+      return viewer.getMessageQueue();
+    case PROP_MODEL_INFO:
+      return viewer.getModelInfo();
+    case PROP_MOLECULE_INFO:
+      return viewer.getMoleculeInfo(myParam);
+    case PROP_ORIENTATION_INFO:
+      return viewer.getOrientationInfo();
+    case PROP_POLYMER_INFO:
+      return viewer.getAllPolymerInfo(myParam);
+    case PROP_SHAPE_INFO:
+      return viewer.getShapeInfo();
+    case PROP_STATE_INFO:
+      return viewer.getStateInfo(myParam.toString());
+    case PROP_TRANSFORM_INFO:
+      return viewer.getMatrixRotate();
+    case PROP_DATA_INFO:
+      return viewer.getData(myParam.toString());
+    case PROP_EVALUATE:
+      return Eval.evaluateExpression(viewer, myParam.toString());
+    case PROP_IMAGE:
+      return viewer.getJpegBase64(100);
+    }
+    String info = "getProperty ERROR\n" + infoType + "?\nOptions include:\n";
+    for (int i = 0; i < PROP_COUNT; i++) {
+      String paramType = getParamType(i);
+      String paramDefault = getDefaultParam(i);
+      String name = getPropertyName(i);
+      if (name.charAt(0) != 'X')
+        info += "\n getProperty "
+            + name
+            + (paramType != "" ? " " + paramType
+                + (paramDefault != "" ? " #default: " + paramDefault : "") : "");
+    }
+    return info;
   }
 }

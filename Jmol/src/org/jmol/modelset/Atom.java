@@ -123,7 +123,7 @@ final public class Atom extends Point3fi implements Tuple {
     if (!Float.isNaN(vibrationX))
       setVibrationVector(modelSet, vibrationX, vibrationY, vibrationZ);
 
-    this.colixAtom = modelSet.viewer.getColixAtomPalette(this, JmolConstants.PALETTE_CPK);
+    colixAtom = modelSet.viewer.getColixAtomPalette(this, JmolConstants.PALETTE_CPK);
     this.alternateLocationID = (byte)alternateLocationID;
     this.radius = radius;
     setMadAtom(mad);

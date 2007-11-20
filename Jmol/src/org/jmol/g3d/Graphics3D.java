@@ -1798,9 +1798,9 @@ final public class Graphics3D implements JmolRendererInterface {
   private final static int   ALPHA_SHIFT              = 24 - TRANSLUCENT_SHIFT;
   private final static int   TRANSLUCENT_MASK         = 0xF << TRANSLUCENT_SHIFT; //0x7800
   private final static int   TRANSLUCENT_SCREENED     = TRANSLUCENT_MASK;
-  private final static int   TRANSPARENT              =  8 << TRANSLUCENT_SHIFT;  //0x4800
-  final static int           TRANSLUCENT_50           =  4 << TRANSLUCENT_SHIFT;
-  final static short         OPAQUE_MASK              = ~TRANSLUCENT_MASK;
+  private final static int   TRANSPARENT              =  8 << TRANSLUCENT_SHIFT;  //0x4000
+  final static int           TRANSLUCENT_50           =  4 << TRANSLUCENT_SHIFT;  //0x2000
+  public final static short  OPAQUE_MASK              = ~TRANSLUCENT_MASK;
 
 
   private final static short INHERIT_COLOR       = 1;

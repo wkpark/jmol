@@ -81,9 +81,18 @@ public class SticksRenderer extends ShapeRenderer {
         || modelSet.isAtomHidden(atomB.getAtomIndex()))
       return;
 
-    short colix = bond.getColix();
-    colixA = Graphics3D.getColixInherited(colix, atomA.getColix());
-    colixB = Graphics3D.getColixInherited(colix, atomB.getColix());
+    colixA = atomA.getColix();
+    colixB = atomB.getColix();
+    if (((colix = bond.getColix()) & Graphics3D.OPAQUE_MASK) == Graphics3D.USE_PALETTE) {
+      colix = (short) (colix & ~Graphics3D.OPAQUE_MASK);
+      colixA = Graphics3D.getColixInherited((short) (colix | viewer
+          .getColixAtomPalette(atomA, JmolConstants.PALETTE_CPK)), colixA);
+      colixB = Graphics3D.getColixInherited((short) (colix | viewer
+          .getColixAtomPalette(atomB, JmolConstants.PALETTE_CPK)), colixB);
+    } else {
+      colixA = Graphics3D.getColixInherited(colix, colixA);
+      colixB = Graphics3D.getColixInherited(colix, colixB);
+    }
     if (bondsBackbone) {
       if (ssbondsBackbone && (order & JmolConstants.BOND_SULFUR_MASK) != 0) {
         // for ssbonds, always render the sidechain,
@@ -129,7 +138,8 @@ public class SticksRenderer extends ShapeRenderer {
     case JmolConstants.BOND_AROMATIC:
     case JmolConstants.BOND_AROMATIC_DOUBLE:
       bondOrder = 2;
-      renderBond(order == JmolConstants.BOND_AROMATIC ? getAromaticDottedBondMask() : 0);
+      renderBond(order == JmolConstants.BOND_AROMATIC ? getAromaticDottedBondMask()
+          : 0);
       break;
     case JmolConstants.BOND_STEREO_NEAR:
     case JmolConstants.BOND_STEREO_FAR:

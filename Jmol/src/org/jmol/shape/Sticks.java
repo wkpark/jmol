@@ -132,7 +132,7 @@ public class Sticks extends Shape {
         }
         return;
       }
-      if (colix == Graphics3D.USE_PALETTE)
+      if (colix == Graphics3D.USE_PALETTE && pid != JmolConstants.PALETTE_CPK)
         return; //palettes not implemented for bonds
       BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
           : modelSet.getBondIterator(myMask, bsSelected));
@@ -197,8 +197,18 @@ public class Sticks extends Shape {
       if (reportAll || bsOrderSet != null && bsOrderSet.get(i))
         setStateInfo(temp, i, "bondOrder "
             + JmolConstants.getBondOrderNameFromOrder(bond.getOrder()));
-      if (bsColixSet != null && bsColixSet.get(i))
-        setStateInfo(temp, i, getColorCommand("bonds", bond.getColix()));
+      if (bsColixSet != null && bsColixSet.get(i)) {
+        short colix = bond.getColix();
+        if ((colix & Graphics3D.OPAQUE_MASK) == Graphics3D.USE_PALETTE)
+          setStateInfo(temp, i, getColorCommand("bonds", JmolConstants.PALETTE_CPK, colix));
+        else
+          setStateInfo(temp, i, getColorCommand("bonds", colix));
+        
+        
+        
+        
+        
+      }
     }
     return getShapeCommands(temp, null, -1, "select BONDS") + "\n";
   }

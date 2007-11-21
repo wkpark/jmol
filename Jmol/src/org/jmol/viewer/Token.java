@@ -217,7 +217,7 @@ public class Token {
   final static int lcaocartoon  = command | 100| colorparam | numberOrExpression;
   final static int message      = command | 101 | specialstring;
   final static int translateSelected = command | 102 | negnums;
-  final static int calculate    = command | 103;
+  final static int calculate    = command | 103 | embeddedExpression;
   final static int restore      = command | 104;
   final static int selectionHalo = command | 105 | setparam;
   final static int history       = command | 106 | setparam;

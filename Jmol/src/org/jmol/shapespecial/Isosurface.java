@@ -622,9 +622,8 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
  */
   }
 
-  public Point3f[] calculateGeodesicSurface(BitSet bsSelected, BitSet bsIgnored,
-                                    float envelopeRadius) {
-    return viewer.calculateSurface(bsSelected, bsIgnored, envelopeRadius);
+  public Point3f[] calculateGeodesicSurface(BitSet bsSelected, float envelopeRadius) {
+    return viewer.calculateSurface(bsSelected, envelopeRadius);
   }
 
   

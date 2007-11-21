@@ -5761,11 +5761,12 @@ class Eval { //implements Runnable {
       clearPredefined(JmolConstants.predefinedVariable);
       switch (getToken(1).tok) {
       case Token.surface:
-        checkLength2();
+        BitSet bsSelected = (statementLength > 2 ? expression(2) : null);
         if (isSyntaxCheck)
           return;
-        viewer.calculateSurface(null, null, -1);
-        viewer.addStateScript(thisCommand, true);
+        viewer.calculateSurface(bsSelected, Float.MAX_VALUE);
+        viewer.addStateScript("select " + Escape.escape(viewer.getSelectionSet()), true);
+        viewer.addStateScript(thisCommand, false);
         return;
       case Token.identifier:
         if (parameterAsString(1).equalsIgnoreCase("AROMATIC")) {

@@ -1679,13 +1679,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // delegated to ModelManager
   // ///////////////////////////////////////////////////////////////
 
-  public Point3f[] calculateSurface(BitSet bsSelected, BitSet bsIgnore,
-                                    float envelopeRadius) {
-    if (bsSelected == null) {
+  public Point3f[] calculateSurface(BitSet bsSelected, float envelopeRadius) {
+    if (bsSelected == null)
       bsSelected = selectionManager.bsSelection;
-      envelopeRadius = Float.MAX_VALUE;
-    }
-    bsIgnore = BitSetUtil.copyInvert(bsSelected, modelSet.getAtomCount());
+    BitSet bsIgnore = BitSetUtil.copyInvert(bsSelected, modelSet.getAtomCount());
     return modelSet.calculateSurface(bsSelected, bsIgnore, envelopeRadius);
   }
 

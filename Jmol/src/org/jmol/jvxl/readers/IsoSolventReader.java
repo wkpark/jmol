@@ -77,19 +77,19 @@ class IsoSolventReader extends AtomDataReader {
     isCavity = (params.isCavity && meshDataServer != null); // Jvxl cannot do this calculation on its own.
     isPocket = (params.pocket != null && meshDataServer != null);
 
-    doCalculateTroughs = (atomDataServer != null && !isCavity  // Jvxl needs an atom iterator to do this.
-        && solventRadius > 0 
-        && (dataType == Parameters.SURFACE_SOLVENT || dataType == Parameters.SURFACE_MOLECULAR));  
+    doCalculateTroughs = (atomDataServer != null && !isCavity // Jvxl needs an atom iterator to do this.
+        && solventRadius > 0 && (dataType == Parameters.SURFACE_SOLVENT || dataType == Parameters.SURFACE_MOLECULAR));
     doUseIterator = doCalculateTroughs;
     modelIndex = params.modelIndex;
     getAtoms(Float.NaN, false, true);
     if (isCavity || isPocket)
-      meshData.dots = meshDataServer.calculateGeodesicSurface(
-          bsMySelected, bsMyIgnored, envelopeRadius);
-    
+      meshData.dots = meshDataServer.calculateGeodesicSurface(bsMySelected,
+          envelopeRadius);
+
     setHeader("solvent/molecular surface", params.calculationType);
     setRangesAndAddAtoms(params.solvent_ptsPerAngstrom, params.solvent_gridMax,
-        params.thePlane != null ? Integer.MAX_VALUE : Math.min(firstNearbyAtom, 100));
+        params.thePlane != null ? Integer.MAX_VALUE : Math.min(firstNearbyAtom,
+            100));
   }
 
   //////////// meshData extensions ////////////

@@ -15,7 +15,7 @@ public interface MeshDataServer extends VertexDataServer {
    * as well as the SurfaceGenerator/VoxelReader classes
    * during and after surface generation
    * 
-   * VoxelReader and Isosurface are examples.
+   * Isosurface is an example.
    * 
    * VoxelReader accepts vertexes from MarchingCubes/MarchingSquares
    * and then either consumes them or passes them on to Isosurface.
@@ -105,5 +105,5 @@ public interface MeshDataServer extends VertexDataServer {
   public abstract void fillMeshData(MeshData meshData, int mode);
   public abstract void notifySurfaceGenerationCompleted();
   public abstract void notifySurfaceMappingCompleted();
-  public abstract Point3f[] calculateGeodesicSurface(BitSet bsSelected, BitSet bsIgnored, float envelopeRadius);  
+  public abstract Point3f[] calculateGeodesicSurface(BitSet bsSelected, float envelopeRadius);  
 }

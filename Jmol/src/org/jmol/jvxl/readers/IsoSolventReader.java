@@ -273,20 +273,45 @@ class IsoSolventReader extends AtomDataReader {
           voxelData[x][y][z] = maxValue;
     if (dataType == Parameters.SURFACE_NOMAP)
       return;
+    int atomCount = myAtomCount;
     float property[][][] = null;
     boolean isProperty = false;
+    boolean isPropertyNotSmoothed = false;
     if (dataType == Parameters.SURFACE_PROPERTY) {
       isProperty = true;
+      isPropertyNotSmoothed = !params.propertySmoothing;
+      atomCount = firstNearbyAtom;
       property = new float[nPointsX][nPointsY][nPointsZ];
-      for (int x = 0; x < nPointsX; ++x)
-        for (int y = 0; y < nPointsY; ++y)
-          for (int z = 0; z < nPointsZ; ++z)
-            property[x][y][z] = Float.NaN;
+      if (isPropertyNotSmoothed)
+        for (int x = 0; x < nPointsX; ++x)
+          for (int y = 0; y < nPointsY; ++y)
+            for (int z = 0; z < nPointsZ; ++z)
+              property[x][y][z] = Float.NaN;
+      else
+        for (int x = 0; x < nPointsX; ++x)
+          for (int y = 0; y < nPointsY; ++y)
+            for (int z = 0; z < nPointsZ; ++z) {
+              float d = 0;
+              float sum = 0;
+              volumeData.voxelPtToXYZ(x, y, z, ptXyzTemp);
+              // we take value/(distance to atom)^4
+              // so as to smooth out the values with only
+              // a relatively local effect
+              for (int iAtom = atomCount; --iAtom >= 0;) {
+                float dA = 1 / ptXyzTemp.distance(atomXyz[iAtom]);
+                dA *= dA;
+                dA *= dA;
+                d += atomProp[iAtom] * dA;
+                sum += dA;
+              }
+              property[x][y][z] = d / sum;
+            }
+
     }
     float maxRadius = 0;
     float r0 = (isFirstPass && isCavity ? cavityRadius : 0);
     boolean isWithin = (isFirstPass && distance != Float.MAX_VALUE);
-    for (int iAtom = 0; iAtom < myAtomCount; iAtom++) {
+    for (int iAtom = 0; iAtom < atomCount; iAtom++) {
       ptA = atomXyz[iAtom];
       rA = atomRadius[iAtom];
       if (rA > maxRadius)
@@ -305,7 +330,7 @@ class IsoSolventReader extends AtomDataReader {
             if (v < voxelData[i][j][k]) {
               voxelData[i][j][k] = (isNearby || isWithin
                   && ptXyzTemp.distance(point) > distance ? Float.NaN : v);
-              if (isProperty)
+              if (isPropertyNotSmoothed)
                 property[i][j][k] = atomProp[iAtom];
             }
             ptXyzTemp.add(volumetricVectors[2]);
@@ -332,11 +357,11 @@ class IsoSolventReader extends AtomDataReader {
           if (isWithin && ptA.distance(point) > distance + rA + 0.5)
             continue;
           setGridLimitsForAtom(ptA, rA - solventRadius, ptA0, ptA1);
-          AtomIndexIterator iter = atomDataServer.getWithinAtomSetIterator(iatomA, rA
-              + solventRadius + maxRadius, bsMySelected, true, true); //true ==> only atom index > this atom accepted
+          AtomIndexIterator iter = atomDataServer.getWithinAtomSetIterator(
+              iatomA, rA + solventRadius + maxRadius, bsMySelected, true, true); //true ==> only atom index > this atom accepted
           while (iter.hasNext()) {
             int iatomB = iter.next();
-            Point3f ptB = atomXyz[myIndex[iatomB]]; 
+            Point3f ptB = atomXyz[myIndex[iatomB]];
             rB = atomData.atomRadius[iatomB] + solventRadius;
             if (isWithin && ptB.distance(point) > distance + rB + 0.5)
               continue;
@@ -369,7 +394,7 @@ class IsoSolventReader extends AtomDataReader {
                       voxelData[i][j][k] = (isWithin
                           && ptXyzTemp.distance(point) > distance ? Float.NaN
                           : v);
-                      if (isProperty)
+                      if (isPropertyNotSmoothed)
                         property[i][j][k] = atomProp[iAtom];
                     }
                   }

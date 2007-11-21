@@ -5761,9 +5761,11 @@ class Eval { //implements Runnable {
       clearPredefined(JmolConstants.predefinedVariable);
       switch (getToken(1).tok) {
       case Token.surface:
+        checkLength2();
+        if (isSyntaxCheck)
+          return;
         viewer.calculateSurface(null, null, -1);
-        if (!isSyntaxCheck)
-          viewer.addStateScript(thisCommand, true);
+        viewer.addStateScript(thisCommand, true);
         return;
       case Token.identifier:
         if (parameterAsString(1).equalsIgnoreCase("AROMATIC")) {
@@ -5791,7 +5793,8 @@ class Eval { //implements Runnable {
         return;
       }
     }
-    evalError(GT._("Calculate what?") + "aromatic? hbonds? polymers? structure? surface?");
+    evalError(GT._("Calculate what?")
+        + "aromatic? hbonds? polymers? structure? surface?");
   }
 
   private void dots(int ipt, int iShape) throws ScriptException {
@@ -7305,7 +7308,7 @@ class Eval { //implements Runnable {
     String type = optParameterAsString(index).toLowerCase();
     if (statementLength == index + 1
         && Parser.isOneOf(type, "window;unitcell;molecular")) {
-      viewer.setAxesMode("axes" + type, true);
+      viewer.setBooleanProperty("axes" + type, true);
       return;
     }
     // axes = scale x.xxx
@@ -9485,6 +9488,8 @@ class Eval { //implements Runnable {
         setShapeProperty(iShape, "withinDistance", new Float(distance));
         break;
       case Token.property:
+        setShapeProperty(iShape, "propertySmoothing", viewer
+            .getIsosurfacePropertySmoothing() ? Boolean.TRUE : Boolean.FALSE);
         propertyName = "property";
         str = parameterAsString(i);
         if (!isCavity && str.toLowerCase().indexOf("property_") == 0) {

@@ -520,6 +520,7 @@ public class StateManager {
     boolean showMeasurements            = true;
     boolean zShade                      = false;
     boolean dynamicMeasurements         = false;
+    boolean isosurfacePropertySmoothing = true;
     
     //atoms and bonds
 
@@ -1033,6 +1034,7 @@ public class StateManager {
       setParameterValue("hideNavigationPoint",hideNavigationPoint);
       setParameterValue("highResolutionFlag",highResolutionFlag);
       setParameterValue("hoverDelay",hoverDelayMs/1000f);
+      setParameterValue("isosurfacePropertySmoothing", isosurfacePropertySmoothing);
       setParameterValue("justifyMeasurements",justifyMeasurements);
       setParameterValue("loadFormat",loadFormat);
       setParameterValue("measureAllModels",measureAllModels);

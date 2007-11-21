@@ -393,7 +393,7 @@ abstract public class AtomCollection {
   }
 
   private void calcSurfaceDistances() {
-    calculateSurface(null, null, -1);
+    calculateSurface(null, null, Float.MAX_VALUE);
   }
   
   public Point3f[] calculateSurface(BitSet bsSelected, BitSet bsIgnore,
@@ -402,7 +402,7 @@ abstract public class AtomCollection {
       envelopeRadius = EnvelopeCalculation.SURFACE_DISTANCE_FOR_CALCULATION;
     EnvelopeCalculation ec = new EnvelopeCalculation(viewer, atomCount, null);
     ec.calculate(Float.MAX_VALUE, envelopeRadius, 1, Float.MAX_VALUE, 
-        bsSelected, bsIgnore, false, false, false, false, true);
+        bsSelected, bsIgnore, true, false, false, false, true);
     Point3f[] points = ec.getPoints();
     surfaceDistanceMax = 0;
     bsSurface = ec.getBsSurfaceClone();
@@ -410,6 +410,10 @@ abstract public class AtomCollection {
     nSurfaceAtoms = BitSetUtil.cardinalityOf(bsSurface);
     if (nSurfaceAtoms == 0 || points == null || points.length == 0)
       return points;
+    //for (int i = 0; i < points.length; i++) {
+    //  System.out.println("draw pt"+i+" " + Escape.escape(points[i]));
+    //}
+    float radiusAdjust = (envelopeRadius == Float.MAX_VALUE ? 0 : envelopeRadius);
     for (int i = 0; i < atomCount; i++) {
       //surfaceDistance100s[i] = Integer.MIN_VALUE;
       if (bsSurface.get(i)) {
@@ -418,7 +422,7 @@ abstract public class AtomCollection {
         float dMin = Float.MAX_VALUE;
         Atom atom = atoms[i];
         for (int j = points.length; --j >= 0;) {
-          float d = points[j].distance(atom) - envelopeRadius;
+          float d = Math.abs(points[j].distance(atom) - radiusAdjust);
           if (d < 0 && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
             Logger.debug("draw d" + j + " " + Escape.escape(points[j])
                 + " \"" + d + " ? " + atom.getInfo() + "\"");

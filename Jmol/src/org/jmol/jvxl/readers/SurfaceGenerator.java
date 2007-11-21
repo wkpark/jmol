@@ -339,6 +339,11 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("propertySmoothing" == propertyName) {
+      params.propertySmoothing = ((Boolean) value).booleanValue();
+      return true;
+    }
+
     if ("title" == propertyName) {
       if (value == null) {
         params.title = null;

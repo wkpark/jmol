@@ -287,7 +287,7 @@ public final class EnvelopeCalculation {
         while (--iDot >= 0)
           if (getBit(dotsConvexMaps[i], iDot)) {
             Point3f pt = new Point3f();
-            pt.scaleAdd(setRadius, Geodesic.getVertexVector(iDot), atomData.atomXyz[i]);
+            pt.scaleAdd(atomData.atomRadius[i], Geodesic.getVertexVector(iDot), atomData.atomXyz[i]);
             points[nPoints++] = pt;
           }
       }

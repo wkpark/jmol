@@ -1681,9 +1681,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Point3f[] calculateSurface(BitSet bsSelected, BitSet bsIgnore,
                                     float envelopeRadius) {
-    return modelSet.calculateSurface(bsSelected == null ? 
-        selectionManager.bsSelection : bsSelected, 
-        bsIgnore, envelopeRadius);
+    if (bsSelected == null) {
+      bsSelected = selectionManager.bsSelection;
+      envelopeRadius = Float.MAX_VALUE;
+    }
+    bsIgnore = BitSetUtil.copyInvert(bsSelected, modelSet.getAtomCount());
+    return modelSet.calculateSurface(bsSelected, bsIgnore, envelopeRadius);
   }
 
   public AtomIterator getWithinModelIterator(Atom atom, float distance) {
@@ -3834,59 +3837,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    *         should be interned strings so that we can just do == comparisions
    *         between strings
    ****************************************************************************/
+  
   public boolean getBooleanProperty(String key, boolean doICare) {
     //JmolPopup
-    if (key.equalsIgnoreCase("hideNotSelected"))
-      return selectionManager.getHideNotSelected();
-    if (key.equalsIgnoreCase("colorRasmol"))
-      return colorManager.getDefaultColorRasmol();
-    if (key.equalsIgnoreCase("perspectiveDepth"))
-      return getPerspectiveDepth();
-    if (key.equalsIgnoreCase("showAxes"))
-      return getShowAxes();
-    if (key.equalsIgnoreCase("showBoundBox"))
-      return getShowBbcage();
-    if (key.equalsIgnoreCase("showUnitcell"))
-      return getShowUnitCell();
-    if (key.equalsIgnoreCase("debugScript"))
-      return getDebugScript();
-    if (key.equalsIgnoreCase("showHydrogens"))
-      return getShowHydrogens();
-    if (key.equalsIgnoreCase("frank"))
-      return getShowFrank();
-    if (key.equalsIgnoreCase("showMultipleBonds"))
-      return getShowMultipleBonds();
-    if (key.equalsIgnoreCase("showMeasurements"))
-      return getShowMeasurements();
-    if (key.equalsIgnoreCase("showSelections"))
-      return getSelectionHaloEnabled();
-    if (key.equalsIgnoreCase("axesOrientationRasmol"))
-      return getAxesOrientationRasmol();
-    if (key.equalsIgnoreCase("zeroBasedXyzRasmol"))
-      return getZeroBasedXyzRasmol();
-    if (key.equalsIgnoreCase("testFlag1"))
-      return getTestFlag1();
-    if (key.equalsIgnoreCase("testFlag2"))
-      return getTestFlag2();
-    if (key.equalsIgnoreCase("testFlag3"))
-      return getTestFlag3();
-    if (key.equalsIgnoreCase("testFlag4"))
-      return getTestFlag4();
-    if (key.equalsIgnoreCase("chainCaseSensitive"))
-      return getChainCaseSensitive();
-    if (key.equalsIgnoreCase("hideNameInPopup"))
-      return getHideNameInPopup();
-    if (key.equalsIgnoreCase("autobond"))
-      return getAutoBond();
-    if (key.equalsIgnoreCase("greyscaleRendering"))
-      return getGreyscaleRendering();
-    if (key.equalsIgnoreCase("disablePopupMenu"))
-      return getDisablePopupMenu();
-
     key = key.toLowerCase();
     if (global.htPropertyFlags.containsKey(key)) {
       return ((Boolean) global.htPropertyFlags.get(key)).booleanValue();
     }
+    // special cases
+    if (key.equalsIgnoreCase("colorRasmol"))
+      return colorManager.getDefaultColorRasmol();
+    if (key.equalsIgnoreCase("frank"))
+      return getShowFrank();
+    if (key.equalsIgnoreCase("showSelections"))
+      return getSelectionHaloEnabled();
     if (global.htUserVariables.containsKey(key)) {
       Token t = (Token) global.getUserParameterValue(key);
       if (t.tok == Token.on)
@@ -3913,7 +3877,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
       if (key.equalsIgnoreCase("loadFormat")) {
         setLoadFormat(value);
-        return;
+        break;
       }
 
       ///11.1///
@@ -4314,6 +4278,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean doRepaint = true;
     while (true) {
 
+      //11.3.46
+      
+      if (key.equalsIgnoreCase("isosurfacePropertySmoothing")) {
+        setIsosurfacePropertySmoothing(value);
+        break;
+      }
+
       //11.3.43
       
       if (key.equalsIgnoreCase("drawPicking")) {
@@ -4505,33 +4476,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         setDotsSelectedOnly(value);
         break;
       }
-      if (key.equalsIgnoreCase("perspectiveDepth")) {
-        setPerspectiveDepth(value);
-        //public; no need to set here
-        return true;
-      }
-      if (key.equalsIgnoreCase("showAxes")) {
-        setShowAxes(value);
-        return true;
-      }
-      if (key.equalsIgnoreCase("showBoundBox")) {
-        setShowBbcage(value);
-        return true;
-      }
-      if (key.equalsIgnoreCase("showUnitcell")) {
-        setShowUnitCell(value);
-        return true;
-      }
       if (key.equalsIgnoreCase("selectionHalos")) {
         setSelectionHalos(value); //volatile
-        break;
-      }
-      if (key.equalsIgnoreCase("debugScript")) {
-        setDebugScript(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("showHydrogens")) {
-        setShowHydrogens(value);
         break;
       }
       if (key.equalsIgnoreCase("selectHydrogen")) {
@@ -4548,14 +4494,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       if (key.equalsIgnoreCase("showHiddenSelectionHalos")) {
         setShowHiddenSelectionHalos(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("showMeasurements")) {
-        setShowMeasurements(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("axesOrientationRasmol")) {
-        setAxesOrientationRasmol(value);
         break;
       }
       if (key.equalsIgnoreCase("windowCentered")) {
@@ -4598,9 +4536,51 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         setGreyscaleRendering(value);
         break;
       }
-      if (setAxesMode(key, value))
+      if (key.equalsIgnoreCase("axesWindow")) {
+        setAxesModeMolecular(!value);
         break;
-
+      }
+      if (key.equalsIgnoreCase("axesMolecular")) {
+        setAxesModeMolecular(value);
+        break;
+      }
+      if (key.equalsIgnoreCase("axesUnitCell")) {
+        setAxesModeUnitCell(value);
+        break;
+      }
+      //public; no need to set here
+      if (key.equalsIgnoreCase("axesOrientationRasmol")) {
+        setAxesOrientationRasmol(value);
+        return true;
+      }
+      if (key.equalsIgnoreCase("debugScript")) {
+        setDebugScript(value);
+        return true;
+      }
+      if (key.equalsIgnoreCase("perspectiveDepth")) {
+        setPerspectiveDepth(value);
+        return true;
+      }
+      if (key.equalsIgnoreCase("showAxes")) {
+        setShowAxes(value);
+        return true;
+      }
+      if (key.equalsIgnoreCase("showBoundBox")) {
+        setShowBbcage(value);
+        return true;
+      }
+      if (key.equalsIgnoreCase("showHydrogens")) {
+        setShowHydrogens(value);
+        return true;
+      }
+      if (key.equalsIgnoreCase("showMeasurements")) {
+        setShowMeasurements(value);
+        return true;
+      }
+      if (key.equalsIgnoreCase("showUnitcell")) {
+        setShowUnitCell(value);
+        return true;
+      }
       //these next are deprecated because they don't 
       //give much indication what they really do:
       if (key.equalsIgnoreCase("frank"))
@@ -4646,10 +4626,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           setHideNameInPopup(value);
           break;
         }
-        if (key.equalsIgnoreCase("autobond")) {
-          setAutoBond(value);
-          break;
-        }
         if (key.equalsIgnoreCase("disablePopupMenu")) {
           setDisablePopupMenu(value);
           break;
@@ -4657,6 +4633,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         if (key.equalsIgnoreCase("forceAutoBond")) {
           setForceAutoBond(value);
           break;
+        }
+        //public - no need to set
+        if (key.equalsIgnoreCase("autobond")) {
+          setAutoBond(value);
+          return true;
         }
         notFound = true;
         break;
@@ -4731,6 +4712,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.rangeSelected = TF;
   }
 
+  private void setIsosurfacePropertySmoothing(boolean TF) {
+    global.isosurfacePropertySmoothing = TF; 
+  }
+  
+  boolean getIsosurfacePropertySmoothing() {
+    //Eval
+    return global.isosurfacePropertySmoothing;
+  }
+  
   boolean isWindowCentered() {
     return transformManager.isWindowCentered();
   }
@@ -4846,11 +4836,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     refresh(0, "Viewer:setPerspectiveDepth()");
   }
 
-  public void setAxesOrientationRasmol(boolean axesOrientationRasmol) {
+  public void setAxesOrientationRasmol(boolean TF) {
     //app PreferencesDialog
     //stateManager
     //setBooleanproperty
-    transformManager.setAxesOrientationRasmol(axesOrientationRasmol);
+    global.setParameterValue("axesOrientationRasmol", TF);
+    transformManager.setAxesOrientationRasmol(TF);
     refresh(0, "Viewer:setAxesOrientationRasmol()");
   }
 
@@ -4872,22 +4863,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public float getAxesScale() {
     return global.axesScale;
-  }
-
-  boolean setAxesMode(String key, boolean value) {
-    if (key.equalsIgnoreCase("axesWindow")) {
-      setAxesModeMolecular(!value);
-      return true;
-    }
-    if (key.equalsIgnoreCase("axesMolecular")) {
-      setAxesModeMolecular(value);
-      return true;
-    }
-    if (key.equalsIgnoreCase("axesUnitCell")) {
-      setAxesModeUnitCell(value);
-      return true;
-    }
-    return false;
   }
 
   private void setAxesModeMolecular(boolean TF) {
@@ -5208,6 +5183,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setShowBbcage(boolean value) {
     setObjectMad(JmolConstants.SHAPE_BBCAGE, "boundbox", (short) (value ? -4
         : 0));
+    global.setParameterValue("showBoundBox", value);
   }
 
   public boolean getShowBbcage() {
@@ -5217,6 +5193,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setShowUnitCell(boolean value) {
     setObjectMad(JmolConstants.SHAPE_UCCAGE, "unitcell", (short) (value ? -4
         : 0));
+    global.setParameterValue("showUnitCell", value);
   }
 
   public boolean getShowUnitCell() {
@@ -5225,6 +5202,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setShowAxes(boolean value) {
     setObjectMad(JmolConstants.SHAPE_AXES, "axes", (short) (value ? -2 : 0));
+    global.setParameterValue("showAxes", value);
   }
 
   public boolean getShowAxes() {
@@ -5327,22 +5305,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setAntialias(int mode, boolean TF) {
     switch (mode) {
     case 0: //display
-      global.setParameterValue("antialiasDisplay", TF);
       global.antialiasDisplay = TF;
       break;
     case 1: // translucent
-      global.setParameterValue("antialiasTranslucent", TF);
       global.antialiasTranslucent = TF;
       break;
     case 2: // images
-      global.setParameterValue("antialiasImages", TF);
       global.antialiasImages = TF;
       return;
     } 
     resizeImage(0, 0, false, false, true);
-    //if (!refreshing)
-    //  return;
-    //refresh(0, "setAntialias()");
   }
 
   // //////////////////////////////////////////////////////////////

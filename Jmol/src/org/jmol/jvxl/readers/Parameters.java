@@ -198,7 +198,6 @@ public class Parameters {
     isContoured = false;
     isEccentric = isAnisotropic = false;
     isSilent = false;
-    isosurfacePropertySmoothing = true;
     iUseBitSets = false;
     logCube = logCompression = false;
     logMessages = Logger.isActiveLevel(Logger.LEVEL_DEBUG);
@@ -239,7 +238,6 @@ public class Parameters {
   int minSet;
   Point4f cappingPlane;
   boolean doCapIsosurface;
-  boolean isosurfacePropertySmoothing;
 
   float[] theProperty;
   ///// solvent-accessible, solvent-excluded surface //////

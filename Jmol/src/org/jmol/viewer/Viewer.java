@@ -1680,10 +1680,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // ///////////////////////////////////////////////////////////////
 
   public Point3f[] calculateSurface(BitSet bsSelected, float envelopeRadius) {
-    if (bsSelected == null)
-      bsSelected = selectionManager.bsSelection;
-    BitSet bsIgnore = BitSetUtil.copyInvert(bsSelected, modelSet.getAtomCount());
-    return modelSet.calculateSurface(bsSelected, bsIgnore, envelopeRadius);
+    return modelSet.calculateSurface(
+        (bsSelected == null ? selectionManager.bsSelection
+            : bsSelected), envelopeRadius);
   }
 
   public AtomIterator getWithinModelIterator(Atom atom, float distance) {

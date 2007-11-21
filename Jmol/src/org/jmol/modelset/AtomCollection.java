@@ -393,16 +393,16 @@ abstract public class AtomCollection {
   }
 
   private void calcSurfaceDistances() {
-    calculateSurface(null, null, Float.MAX_VALUE);
+    calculateSurface(null, -1);
   }
   
-  public Point3f[] calculateSurface(BitSet bsSelected, BitSet bsIgnore,
-                             float envelopeRadius) {
+  public Point3f[] calculateSurface(BitSet bsSelected, float envelopeRadius) {
     if (envelopeRadius < 0)
       envelopeRadius = EnvelopeCalculation.SURFACE_DISTANCE_FOR_CALCULATION;
     EnvelopeCalculation ec = new EnvelopeCalculation(viewer, atomCount, null);
     ec.calculate(Float.MAX_VALUE, envelopeRadius, 1, Float.MAX_VALUE, 
-        bsSelected, bsIgnore, true, false, false, false, true);
+        bsSelected, BitSetUtil.copyInvert(bsSelected, atomCount), 
+        true, false, false, false, true);
     Point3f[] points = ec.getPoints();
     surfaceDistanceMax = 0;
     bsSurface = ec.getBsSurfaceClone();

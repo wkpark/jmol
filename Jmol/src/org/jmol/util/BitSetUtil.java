@@ -108,6 +108,8 @@ final public class BitSetUtil {
   }
 
   public static BitSet copyInvert(BitSet bs, int n) {
+    if (bs == null)
+      return null;
     BitSet allButN = setAll(n);
     andNot(allButN, bs);
     return allButN;

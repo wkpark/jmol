@@ -27,7 +27,7 @@ package org.jmol.modelset;
 
 import java.util.BitSet;
 
-import org.jmol.bspt.SphereIterator;
+import org.jmol.bspt.CubeIterator;
 import org.jmol.shape.Dipoles;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
@@ -300,7 +300,7 @@ abstract public class BondCollection extends AtomCollection {
       if (myBondingRadius == 0)
         continue;
       float searchRadius = myBondingRadius + maxBondingRadius + bondTolerance;
-      SphereIterator iter = bspf.getSphereIterator(atom.modelIndex);
+      CubeIterator iter = bspf.getCubeIterator(atom.modelIndex);
       iter.initializeHemisphere(atom, searchRadius);
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom) iter.nextElement();
@@ -575,18 +575,15 @@ abstract public class BondCollection extends AtomCollection {
       if (elementNumber != 7 && elementNumber != 8)
         continue;
       //float searchRadius = hbondMax;
-      SphereIterator iter = bspf.getSphereIterator(atom.modelIndex);
+      CubeIterator iter = bspf.getCubeIterator(atom.modelIndex);
       iter.initializeHemisphere(atom, hbondMax);
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom) iter.nextElement();
         int elementNumberNear = atomNear.getElementNumber();
-        if (elementNumberNear != 7 && elementNumberNear != 8)
-          continue;
-        if (atomNear == atom)
-          continue;
-        if (iter.foundDistance2() < hbondMin2)
-          continue;
-        if (atom.isBonded(atomNear))
+        if (elementNumberNear != 7 && elementNumberNear != 8
+            || atomNear == atom
+            || iter.foundDistance2() < hbondMin2
+            || atom.isBonded(atomNear))
           continue;
         getOrAddBond(atom, atomNear, JmolConstants.BOND_H_REGULAR, (short) 1,
             bsPseudoHBonds);

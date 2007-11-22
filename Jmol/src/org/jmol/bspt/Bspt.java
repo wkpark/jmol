@@ -245,8 +245,13 @@ public final class Bspt {
     }
   */
 
-  public SphereIterator allocateSphereIterator() {
+/*  public SphereIterator allocateSphereIterator() {
     return new SphereIterator(this);
   }
+*/
+  public CubeIterator allocateCubeIterator() {
+    return new CubeIterator(this);
+  }
+
 }
 

@@ -4,6 +4,8 @@ import java.util.BitSet;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.modelset.AtomIndexIterator;
+
 
 public interface AtomDataServer {
   public AtomIndexIterator getWithinAtomSetIterator(int atomIndex,

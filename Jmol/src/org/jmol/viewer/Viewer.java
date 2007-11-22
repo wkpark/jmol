@@ -27,14 +27,13 @@ import org.jmol.shape.Shape;
 import org.jmol.symmetry.UnitCell;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
-import org.jmol.modelset.AtomIterator;
+import org.jmol.modelset.AtomIndexIterator;
 import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.ModelSet;
 
 import org.jmol.api.*;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
-import org.jmol.atomdata.AtomIndexIterator;
 import org.jmol.g3d.*;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.CommandHistory;
@@ -1687,7 +1686,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.calculateSurface(bsSelected, envelopeRadius);
   }
 
-  public AtomIterator getWithinModelIterator(Atom atom, float distance) {
+  public AtomIndexIterator getWithinModelIterator(Atom atom, float distance) {
     return modelSet.getWithinModelIterator(atom, distance);
   }
 

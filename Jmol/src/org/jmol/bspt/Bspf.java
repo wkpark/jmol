@@ -37,12 +37,13 @@ public final class Bspf {
 
   int dimMax;
   Bspt bspts[];
-  SphereIterator[] sphereIterators;
+  //SphereIterator[] sphereIterators;
+  CubeIterator[] cubeIterators;
   
   public Bspf(int dimMax) {
     this.dimMax = dimMax;
     bspts = new Bspt[0];
-    sphereIterators = new SphereIterator[0];
+    cubeIterators = new CubeIterator[0];
   }
 
   public int getBsptCount() {
@@ -76,7 +77,7 @@ public final class Bspf {
     Logger.debug("<<<<");
   }
   */
-
+/*
   public SphereIterator getSphereIterator(int bsptIndex) {
     if (bsptIndex >= sphereIterators.length) {
       SphereIterator[] t = new SphereIterator[bsptIndex + 1];
@@ -88,4 +89,17 @@ public final class Bspf {
       sphereIterators[bsptIndex] = bspts[bsptIndex].allocateSphereIterator();
     return sphereIterators[bsptIndex];
   }
+*/  
+  public CubeIterator getCubeIterator(int bsptIndex) {
+    if (bsptIndex >= cubeIterators.length) {
+      CubeIterator[] t = new CubeIterator[bsptIndex + 1];
+      System.arraycopy(cubeIterators, 0, t, 0, cubeIterators.length);
+      cubeIterators = t;
+    }
+    if (cubeIterators[bsptIndex] == null &&
+        bspts[bsptIndex] != null)
+      cubeIterators[bsptIndex] = bspts[bsptIndex].allocateCubeIterator();
+    return cubeIterators[bsptIndex];
+  }
+
 }

@@ -37,7 +37,6 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolBioResolver;
-import org.jmol.atomdata.AtomIndexIterator;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.symmetry.SpaceGroup;
 import org.jmol.symmetry.UnitCell;
@@ -1471,23 +1470,29 @@ abstract public class ModelCollection extends BondCollection {
   public BitSet getAtomsWithin(float distance, BitSet bs,
                                boolean withinAllModels) {
     BitSet bsResult = new BitSet();
+    float d2 = distance * distance;
+    int iAtom = 0;
     if (withinAllModels) {
       bsResult.or(bs);
       for (int i = atomCount; --i >= 0;)
         if (bs.get(i))
           for (int model = modelCount; --model >= 0;) {
-            AtomIndexIterator iterWithin = getWithinAtomSetIterator(
-                model, i, distance);
+            AtomIndexIterator iterWithin = getWithinAtomSetIterator(model, i,
+                distance);
             while (iterWithin.hasNext())
-              bsResult.set(iterWithin.next());
+              if ((iAtom = iterWithin.next()) >= 0
+                  && iterWithin.foundDistance2() <= d2)
+                bsResult.set(iAtom);
           }
     } else {
       for (int i = atomCount; --i >= 0;)
         if (bs.get(i)) {
           Atom atom = atoms[i];
-          AtomIterator iterWithin = getWithinModelIterator(atom, distance);
+          AtomIndexIterator iterWithin = getWithinModelIterator(atom, distance);
           while (iterWithin.hasNext())
-            bsResult.set(iterWithin.next().getAtomIndex());
+            if ((iAtom = iterWithin.next()) >= 0
+                && iterWithin.foundDistance2() <= d2)
+              bsResult.set(iAtom);
         }
     }
     return bsResult;

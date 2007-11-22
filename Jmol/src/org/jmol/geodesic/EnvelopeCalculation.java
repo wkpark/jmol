@@ -24,11 +24,11 @@
 
 package org.jmol.geodesic;
 
+import org.jmol.modelset.AtomIndexIterator;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
-import org.jmol.atomdata.AtomIndexIterator;
 
 import java.util.BitSet;
 import javax.vecmath.Point3f;

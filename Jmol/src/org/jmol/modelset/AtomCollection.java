@@ -35,7 +35,6 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.atomdata.AtomData;
-import org.jmol.atomdata.AtomIndexIterator;
 import org.jmol.bspt.Bspf;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.geodesic.EnvelopeCalculation;
@@ -151,7 +150,7 @@ abstract public class AtomCollection {
   
   private AtomIteratorWithinModel withinModelIterator;
 
-  public AtomIterator getWithinModelIterator(Atom atomCenter, float radius) {
+  public AtomIndexIterator getWithinModelIterator(Atom atomCenter, float radius) {
     //Polyhedra, within()
     initializeBspf();
     if (withinModelIterator == null)

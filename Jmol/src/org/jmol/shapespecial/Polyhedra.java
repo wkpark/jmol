@@ -25,7 +25,7 @@
 package org.jmol.shapespecial;
 
 import org.jmol.modelset.Atom;
-import org.jmol.modelset.AtomIterator;
+import org.jmol.modelset.AtomIndexIterator;
 import org.jmol.modelset.Bond;
 import org.jmol.shape.AtomShape;
 import org.jmol.util.Escape;
@@ -270,11 +270,12 @@ public class Polyhedra extends AtomShape {
   private Polyhedron constructRadiusPolyhedron(int atomIndex) {
     Atom atom = atoms[atomIndex];
     int otherAtomCount = 0;
-    AtomIterator withinIterator = viewer.getWithinModelIterator(atom, radius);
+    AtomIndexIterator withinIterator = viewer.getWithinModelIterator(atom, radius);
     while (withinIterator.hasNext()) {
-      Atom other = withinIterator.next();
-      if (other == atom || bsVertices != null
-          && !bsVertices.get(other.getAtomIndex()))
+      Atom other = atoms[withinIterator.next()];
+      if (other == atom 
+          || bsVertices != null && !bsVertices.get(other.getAtomIndex())
+          || atom.distance(other) > radius)
         continue;
       if (other.getAlternateLocationID() != atom.getAlternateLocationID()
           && other.getAlternateLocationID() != 0

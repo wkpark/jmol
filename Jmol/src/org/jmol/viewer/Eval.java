@@ -5757,26 +5757,38 @@ class Eval { //implements Runnable {
   }
 
   private void calculate() throws ScriptException {
+    boolean isSurface = false;
     if ((iToken = statementLength) >= 2) {
       clearPredefined(JmolConstants.predefinedVariable);
       switch (getToken(1).tok) {
       case Token.surface:
-        // subtle difference here is that without the subset atom expression,
-        // an envelope that surrounds the entire structure is created
-        // using the +3 Angstrom method to exclude minor interior crevices
-        // but if the expression is given, then we use a van der Waals surface
-        // so as to pick up a better approximation of the distance when 
-        // atoms that are OUTSIDE the selection set are checked.
-        
-        boolean isSubset = (statementLength > 2);
-        BitSet bsSelected = (isSubset ? expression(2) : null);
-        checkStatementLength(iToken + 1);
+        isSurface = true;
+        //deprecated
+        //fall through
+      case Token.surfacedistance:
+        /* preferred:
+         * 
+         * calculate surfaceDistance FROM {...}
+         * calculate surfaceDistance WITHIN {...}
+         * 
+         */
+        String type = optParameterAsString(2);
+        boolean isFrom = false;
+        if (type.equalsIgnoreCase("within")) {
+        } else if (type.equalsIgnoreCase("from")) {
+          isFrom = true;
+        } else if (type.length() > 0) {
+          isFrom = true;
+          iToken--;
+        } else if (!isSurface) {
+          isFrom = true;          
+        }
+        BitSet bsSelected = (iToken + 1 < statementLength ? expression(++iToken)
+            : viewer.getSelectionSet());
+        checkStatementLength(++iToken);
         if (isSyntaxCheck)
           return;
-        viewer.calculateSurface(bsSelected, (isSubset ? Float.MAX_VALUE : -1));
-        if (!isSubset)
-          viewer.addStateScript("select " + Escape.escape(viewer.getSelectionSet()), true);
-        viewer.addStateScript(thisCommand, false);
+        viewer.calculateSurface(bsSelected, (isFrom ? Float.MAX_VALUE : -1));
         return;
       case Token.identifier:
         if (parameterAsString(1).equalsIgnoreCase("AROMATIC")) {
@@ -5805,7 +5817,7 @@ class Eval { //implements Runnable {
       }
     }
     evalError(GT._("Calculate what?")
-        + "aromatic? hbonds? polymers? structure? surface?");
+        + "aromatic? hbonds? polymers? structure? surfaceDistance FROM? surfaceDistance WITHIN?");
   }
 
   private void dots(int ipt, int iShape) throws ScriptException {

@@ -22,6 +22,8 @@
  */
 package org.jmol.bspt;
 
+import javax.vecmath.Point3f;
+
 /**
  * Iterator used for finding all points within a sphere or a hemisphere
  *<p>
@@ -41,7 +43,7 @@ public class SphereIterator {
   int leafIndex;
   Leaf leaf;
 
-  //Tuple center;
+  //Point3f center;
   float radius;
 
   float[] centerValues;
@@ -65,13 +67,14 @@ public class SphereIterator {
    * @param center
    * @param radius
    */
-  public void initialize(Tuple center, float radius) {
+  public void initialize(Point3f center, float radius) {
     //this.center = center;
     this.radius = radius;
     this.radius2 = radius*radius;
     this.tHemisphere = false;
-    for (int dim = bspt.dimMax; --dim >= 0; )
-      centerValues[dim] = center.getDimensionValue(dim);
+    centerValues[0] = center.x;
+    centerValues[1] = center.y;
+    centerValues[2] = center.z;
     leaf = null;
     stack[0] = bspt.eleRoot;
     sp = 1;
@@ -92,7 +95,7 @@ public class SphereIterator {
    * @param center
    * @param radius
    */
-  public void initializeHemisphere(Tuple center, float radius) {
+  public void initializeHemisphere(Point3f center, float radius) {
     initialize(center, radius);
     tHemisphere = true;
   }
@@ -125,7 +128,7 @@ public class SphereIterator {
    *
    * @return Tuple
    */
-  public Tuple nextElement() {
+  public Point3f nextElement() {
     return leaf.tuples[leafIndex++];
   }
 
@@ -172,26 +175,30 @@ public class SphereIterator {
   }
 
   /**
-   * checks one tuple for distance
+   * checks one Point3f for distance
    * @param t
    * @return boolean
    */
-  private boolean isWithinRadius(Tuple t) {
+  private boolean isWithinRadius(Point3f t) {
     float dist2;
     float distT;
-    distT = t.getDimensionValue(0) - centerValues[0];
+    distT = t.x - centerValues[0];
     if  (tHemisphere && distT < 0)
       return false;
     dist2 = distT * distT;
     if (dist2 > radius2)
       return false;
-    int dim = bspt.dimMax - 1;
-    do {
-      distT = t.getDimensionValue(dim) - centerValues[dim];
-      dist2 += distT*distT;
-      if (dist2 > radius2)
-        return false;
-    } while (--dim > 0);
+
+    distT = t.y - centerValues[1];
+    dist2 += distT*distT;
+    if (dist2 > radius2)
+      return false;
+
+    distT = t.z - centerValues[2];
+    dist2 += distT*distT;
+    if (dist2 > radius2)
+      return false;
+    
     this.foundDistance2 = dist2;
     return true;
   }

@@ -22,6 +22,8 @@
  */
 package org.jmol.bspt;
 
+import javax.vecmath.Point3f;
+
 /**
  * A Binary Space Partitioning Forest
  *<p>
@@ -47,7 +49,7 @@ public final class Bspf {
     return bspts.length;
   }
   
-  public void addTuple(int bsptIndex, Tuple tuple) {
+  public void addTuple(int bsptIndex, Point3f tuple) {
     if (bsptIndex >= bspts.length) {
       Bspt[] t = new Bspt[bsptIndex + 1];
       System.arraycopy(bspts, 0, t, 0, bspts.length);

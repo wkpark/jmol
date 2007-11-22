@@ -30,7 +30,6 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
 import org.jmol.g3d.Graphics3D;
-import org.jmol.bspt.Tuple;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 
@@ -41,7 +40,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 
-final public class Atom extends Point3fi implements Tuple {
+final public class Atom extends Point3fi {
 
   final static byte VIBRATION_VECTOR_FLAG = 0x01;
   final static byte IS_HETERO_FLAG = 0x02;

@@ -1700,6 +1700,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         bsSelected, isGreaterOnly, modelZeroBased);
   }
 
+  public AtomIndexIterator getWithinAtomSetIterator(int modelIndex,
+                                                    Point3f center,
+                                                    float distance,
+                                                    BitSet bsSelected) {
+    return modelSet.getWithinAtomSetIterator(modelIndex, center, distance,
+        bsSelected);
+  }
+
   public void fillAtomData(AtomData atomData, int mode) {
     atomData.fileName = getFileName();
     modelSet.fillAtomData(atomData, mode);

@@ -22,6 +22,8 @@
  */
 package org.jmol.bspt;
 
+import javax.vecmath.Point3f;
+
 /**
  * the internal tree is made up of elements ... either Node or Leaf
  *
@@ -30,7 +32,7 @@ package org.jmol.bspt;
 abstract class Element {
   Bspt bspt;
   int count;
-  abstract Element addTuple(int level, Tuple tuple);
+  abstract Element addTuple(int level, Point3f tuple);
   /*
     abstract void dump(int level);
   */

@@ -22,6 +22,8 @@
  */
 package org.jmol.bspt;
 
+import javax.vecmath.Point3f;
+
 import org.jmol.util.Logger;
 
 /**
@@ -60,18 +62,18 @@ class Node extends Element {
     dim = level % bspt.dimMax;
     leafLeft.sort(dim);
     Leaf leafRight = new Leaf(bspt, leafLeft, Bspt.leafCountMax / 2);
-    minLeft = leafLeft.tuples[0].getDimensionValue(dim);
-    maxLeft = leafLeft.tuples[leafLeft.count - 1].getDimensionValue(dim);
-    minRight = leafRight.tuples[0].getDimensionValue(dim);
-    maxRight = leafRight.tuples[leafRight.count - 1].getDimensionValue(dim);
+    minLeft = getDimensionValue(leafLeft.tuples[0], dim);
+    maxLeft = getDimensionValue(leafLeft.tuples[leafLeft.count - 1], dim);
+    minRight = getDimensionValue(leafRight.tuples[0], dim);
+    maxRight = getDimensionValue(leafRight.tuples[leafRight.count - 1], dim);
     
     eleLeft = leafLeft;
     eleRight = leafRight;
     count = Bspt.leafCountMax;
   }
   
-  Element addTuple(int level, Tuple tuple) {
-    float dimValue = tuple.getDimensionValue(dim);
+  Element addTuple(int level, Point3f tuple) {
+    float dimValue = getDimensionValue(tuple, dim);
     ++count;
     boolean addLeft;
     if (dimValue < maxLeft) {
@@ -126,4 +128,8 @@ class Node extends Element {
     splitValue + "\n" + eleGE.toString();
     }
   */
+  
+  static float getDimensionValue(Point3f pt, int dim) {
+    return (dim == 0 ? pt.x : dim == 1 ? pt.y : pt.z);
+  }
 }

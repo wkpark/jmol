@@ -167,7 +167,21 @@ abstract public class AtomCollection {
     initializeBspf();
     if (withinAtomSetIterator == null)
       withinAtomSetIterator = new AtomIteratorWithinSet();
-    withinAtomSetIterator.initialize((ModelSet) this, bspf, atoms[atomIndex].modelIndex, atomIndex, distance, bsSelected, isGreaterOnly, modelZeroBased);
+    withinAtomSetIterator.initialize((ModelSet) this, bspf, atoms[atomIndex].modelIndex, 
+        atomIndex, atoms[atomIndex], distance, bsSelected, isGreaterOnly, modelZeroBased);
+    return withinAtomSetIterator;
+  }
+  
+  public AtomIndexIterator getWithinAtomSetIterator(int modelIndex,
+                                                    Point3f center,
+                                                    float distance,
+                                                    BitSet bsSelected) {
+    //EnvelopeCalculation, IsoSolventReader, within 
+    initializeBspf();
+    if (withinAtomSetIterator == null)
+      withinAtomSetIterator = new AtomIteratorWithinSet();
+    withinAtomSetIterator.initialize((ModelSet) this, bspf, modelIndex, -1,
+        center, distance, bsSelected, false, false);
     return withinAtomSetIterator;
   }
   
@@ -176,7 +190,8 @@ abstract public class AtomCollection {
     initializeBspf();
     if (withinAtomSetIterator == null)
       withinAtomSetIterator = new AtomIteratorWithinSet();
-    withinAtomSetIterator.initialize((ModelSet) this, bspf, modelIndex, atomIndex, distance, null, false, false);
+    withinAtomSetIterator.initialize((ModelSet) this, bspf, modelIndex, atomIndex, 
+        atoms[atomIndex], distance, null, false, false);
     return withinAtomSetIterator;
   }
   

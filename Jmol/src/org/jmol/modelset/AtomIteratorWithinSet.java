@@ -28,7 +28,10 @@ package org.jmol.modelset;
 import org.jmol.atomdata.AtomIndexIterator;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.SphereIterator;
+
 import java.util.BitSet;
+
+import javax.vecmath.Point3f;
 
 class AtomIteratorWithinSet implements AtomIndexIterator {
   
@@ -41,13 +44,16 @@ class AtomIteratorWithinSet implements AtomIndexIterator {
   int atomIndex;
   int zerobase;
 
-  void initialize(ModelSet modelSet, Bspf bspf, int bsptIndex, int atomIndex, float distance, BitSet bsSelected, boolean isGreaterOnly, boolean modelZeroBased) {
+  void initialize(ModelSet modelSet, Bspf bspf, int bsptIndex, int atomIndex,
+                  Point3f center, float distance, BitSet bsSelected,
+                  boolean isGreaterOnly, boolean modelZeroBased) {
     bsptIter = bspf.getSphereIterator(bsptIndex);
-    bsptIter.initialize(modelSet.atoms[atomIndex], distance);
+    bsptIter.initialize(center, distance);
     this.atomIndex = atomIndex;
     this.bsSelected = bsSelected;
     this.isGreaterOnly = isGreaterOnly;
-    zerobase = (modelZeroBased ? modelSet.getFirstAtomIndexInModel(bsptIndex) : 0);
+    zerobase = (modelZeroBased ? modelSet.getFirstAtomIndexInModel(bsptIndex)
+        : 0);
   }
 
   int iNext;

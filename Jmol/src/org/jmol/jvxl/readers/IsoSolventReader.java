@@ -41,6 +41,8 @@ class IsoSolventReader extends AtomDataReader {
 
   ///// solvent-accessible, solvent-excluded surface //////
 
+  //// also creates a map for properties ////
+  
   /*
    * The surface fragment idea:
    * 
@@ -66,6 +68,8 @@ class IsoSolventReader extends AtomDataReader {
   private boolean doCalculateTroughs;
   private boolean isCavity, isPocket;
   private float solventRadius;
+  private boolean isProperty;
+  private boolean doSmoothProperty;
   
   protected void setup() {
     super.setup();
@@ -76,6 +80,9 @@ class IsoSolventReader extends AtomDataReader {
 
     isCavity = (params.isCavity && meshDataServer != null); // Jvxl cannot do this calculation on its own.
     isPocket = (params.pocket != null && meshDataServer != null);
+
+    isProperty = (dataType == Parameters.SURFACE_PROPERTY);
+    doSmoothProperty = isProperty && params.propertySmoothing;
 
     doCalculateTroughs = (atomDataServer != null && !isCavity // Jvxl needs an atom iterator to do this.
         && solventRadius > 0 && (dataType == Parameters.SURFACE_SOLVENT || dataType == Parameters.SURFACE_MOLECULAR));
@@ -257,7 +264,7 @@ class IsoSolventReader extends AtomDataReader {
     myAtomCount = firstNearbyAtom = n;
   }
 
- final Point3f ptXyzTemp = new Point3f();
+  final Point3f ptXyzTemp = new Point3f();
 
   void generateSolventCube(boolean isFirstPass) {
     long time = System.currentTimeMillis();
@@ -266,47 +273,23 @@ class IsoSolventReader extends AtomDataReader {
     Point3f ptA;
     Point3f ptY0 = new Point3f(), ptZ0 = new Point3f();
     Point3i pt0 = new Point3i(), pt1 = new Point3i();
-    float maxValue = Float.MAX_VALUE;
+    float value = (doSmoothProperty ? Float.NaN : Float.MAX_VALUE);
     for (int x = 0; x < nPointsX; ++x)
       for (int y = 0; y < nPointsY; ++y)
         for (int z = 0; z < nPointsZ; ++z)
-          voxelData[x][y][z] = maxValue;
+          voxelData[x][y][z] = value;
     if (dataType == Parameters.SURFACE_NOMAP)
       return;
     int atomCount = myAtomCount;
     float property[][][] = null;
-    boolean isProperty = false;
-    boolean isPropertyNotSmoothed = false;
-    if (dataType == Parameters.SURFACE_PROPERTY) {
-      isProperty = true;
-      isPropertyNotSmoothed = !params.propertySmoothing;
+    if (isProperty) {
       atomCount = firstNearbyAtom;
       property = new float[nPointsX][nPointsY][nPointsZ];
-      if (isPropertyNotSmoothed)
-        for (int x = 0; x < nPointsX; ++x)
-          for (int y = 0; y < nPointsY; ++y)
-            for (int z = 0; z < nPointsZ; ++z)
-              property[x][y][z] = Float.NaN;
-      else
-        for (int x = 0; x < nPointsX; ++x)
-          for (int y = 0; y < nPointsY; ++y)
-            for (int z = 0; z < nPointsZ; ++z) {
-              float d = 0;
-              float sum = 0;
-              volumeData.voxelPtToXYZ(x, y, z, ptXyzTemp);
-              // we take value/(distance to atom)^4
-              // so as to smooth out the values with only
-              // a relatively local effect
-              for (int iAtom = atomCount; --iAtom >= 0;) {
-                float dA = 1 / ptXyzTemp.distance(atomXyz[iAtom]);
-                dA *= dA;
-                dA *= dA;
-                d += atomProp[iAtom] * dA;
-                sum += dA;
-              }
-              property[x][y][z] = d / sum;
-            }
-
+      value = (doSmoothProperty ? 0 : Float.NaN);
+      for (int x = 0; x < nPointsX; ++x)
+        for (int y = 0; y < nPointsY; ++y)
+          for (int z = 0; z < nPointsZ; ++z)
+            property[x][y][z] = value;
     }
     float maxRadius = 0;
     float r0 = (isFirstPass && isCavity ? cavityRadius : 0);
@@ -327,10 +310,18 @@ class IsoSolventReader extends AtomDataReader {
           ptZ0.set(ptXyzTemp);
           for (int k = pt0.z; k < pt1.z; k++) {
             float v = ptXyzTemp.distance(ptA) - rA;
-            if (v < voxelData[i][j][k]) {
+            if (doSmoothProperty) {
+              v = 1 / (v + rA);
+              v *= v;
+              v *= v;
+              if (Float.isNaN(voxelData[i][j][k]))
+                voxelData[i][j][k] = 0;
+              property[i][j][k] += atomProp[iAtom] * v;
+              voxelData[i][j][k] += v;
+            } else if (v < voxelData[i][j][k]) {
               voxelData[i][j][k] = (isNearby || isWithin
                   && ptXyzTemp.distance(point) > distance ? Float.NaN : v);
-              if (isPropertyNotSmoothed)
+              if (isProperty)
                 property[i][j][k] = atomProp[iAtom];
             }
             ptXyzTemp.add(volumetricVectors[2]);
@@ -394,8 +385,6 @@ class IsoSolventReader extends AtomDataReader {
                       voxelData[i][j][k] = (isWithin
                           && ptXyzTemp.distance(point) > distance ? Float.NaN
                           : v);
-                      if (isPropertyNotSmoothed)
-                        property[i][j][k] = atomProp[iAtom];
                     }
                   }
                   ptXyzTemp.add(volumetricVectors[2]);
@@ -409,8 +398,14 @@ class IsoSolventReader extends AtomDataReader {
           }
         }
     }
-
-    if (isProperty) {
+    if (doSmoothProperty) {
+      for (int x = 0; x < nPointsX; ++x)
+        for (int y = 0; y < nPointsY; ++y)
+          for (int z = 0; z < nPointsZ; ++z)
+            if (!Float.isNaN(voxelData[x][y][z]))
+                voxelData[x][y][z] = property[x][y][z] / voxelData[x][y][z];
+      return;
+    } else if (isProperty) {
       volumeData.voxelData = property;
       setVolumeData(volumeData);
       initializeVolumetricData();
@@ -422,14 +417,14 @@ class IsoSolventReader extends AtomDataReader {
             if (voxelData[x][y][z] == Float.MAX_VALUE)
               voxelData[x][y][z] = Float.NaN;
     } else { //solvent planes just focus on negative values
-      maxValue = 0.001f;
+      value = 0.001f;
       for (int x = 0; x < nPointsX; ++x)
         for (int y = 0; y < nPointsY; ++y)
           for (int z = 0; z < nPointsZ; ++z)
-            if (voxelData[x][y][z] < maxValue) {
+            if (voxelData[x][y][z] < value) {
               // Float.NaN will also match ">=" this way
             } else {
-              voxelData[x][y][z] = maxValue;
+              voxelData[x][y][z] = value;
             }
     }
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {

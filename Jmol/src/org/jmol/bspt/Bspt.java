@@ -22,6 +22,8 @@
  */
 package org.jmol.bspt;
 
+import javax.vecmath.Point3f;
+
 //import org.jmol.util.Logger;
 
 /**
@@ -77,11 +79,11 @@ public final class Bspt {
   Element eleRoot;
 
   /*
-    static float distance(int dim, Tuple t1, Tuple t2) {
+    static float distance(int dim, Point3f t1, Point3f t2) {
     return Math.sqrt(distance2(dim, t1, t2));
     }
 
-    static float distance2(int dim, Tuple t1, Tuple t2) {
+    static float distance2(int dim, Point3f t1, Point3f t2) {
     float distance2 = 0.0;
     while (--dim >= 0) {
     float distT = t1.getDimensionValue(dim) - t2.getDimensionValue(dim);
@@ -106,7 +108,7 @@ public final class Bspt {
    * Iterate through all of your data points, calling addTuple
    * @param tuple
    */
-  public void addTuple(Tuple tuple) {
+  public void addTuple(Point3f tuple) {
     eleRoot = eleRoot.addTuple(0, tuple);
   }
 
@@ -177,7 +179,7 @@ public final class Bspt {
     }
     }
 
-    Enumeration enumNear(Tuple center, float distance) {
+    Enumeration enumNear(Point3f center, float distance) {
     return new EnumerateNear(center, distance);
     }
 
@@ -187,9 +189,9 @@ public final class Bspt {
     int i;
     Leaf leaf;
     float distance;
-    Tuple center;
+    Point3f center;
 
-    EnumerateNear(Tuple center, float distance) {
+    EnumerateNear(Point3f center, float distance) {
     this.distance = distance;
     this.center = center;
 

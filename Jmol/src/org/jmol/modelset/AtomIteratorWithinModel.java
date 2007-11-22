@@ -25,15 +25,16 @@
 
 package org.jmol.modelset;
 
+import javax.vecmath.Point3f;
+
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.SphereIterator;
-import org.jmol.bspt.Tuple;
 
 public class AtomIteratorWithinModel implements AtomIterator {
 
   SphereIterator bsptIter;
 
-  void initialize(Bspf bspf, int bsptIndex, Tuple center, float radius) {
+  void initialize(Bspf bspf, int bsptIndex, Point3f center, float radius) {
     bsptIter = bspf.getSphereIterator(bsptIndex);
     bsptIter.initialize(center, radius);
   }
@@ -59,11 +60,11 @@ public class AtomIteratorWithinModel implements AtomIterator {
 class WithinAnyModelIterator implements AtomIterator {
 
   int bsptIndex;
-  Tuple center;
+  Point3f center;
   float radius;
   SphereIterator bsptIter;
 
-  void initialize(Tuple center, float radius) {
+  void initialize(Point3f center, float radius) {
     initializeBspf();
     bsptIndex = bspf.getBsptCount();
     bsptIter = null;

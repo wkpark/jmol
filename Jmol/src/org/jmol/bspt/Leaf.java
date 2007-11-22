@@ -22,18 +22,20 @@
  */
 package org.jmol.bspt;
 
+import javax.vecmath.Point3f;
+
 /**
- * A leaf of Tuple objects in the bsp tree
+ * A leaf of Point3f objects in the bsp tree
  *
  * @author Miguel, miguel@jmol.org
  */
 class Leaf extends Element {
-  Tuple[] tuples;
+  Point3f[] tuples;
     
   Leaf(Bspt bspt) {
     this.bspt = bspt;
     count = 0;
-    tuples = new Tuple[Bspt.leafCountMax];
+    tuples = new Point3f[Bspt.leafCountMax];
   }
     
   Leaf(Bspt bspt, Leaf leaf, int countToKeep) {
@@ -47,11 +49,11 @@ class Leaf extends Element {
 
   void sort(int dim) {
     for (int i = count; --i > 0; ) { // this is > not >=
-      Tuple champion = tuples[i];
-      float championValue = champion.getDimensionValue(dim);
+      Point3f champion = tuples[i];
+      float championValue = Node.getDimensionValue(champion, dim);
       for (int j = i; --j >= 0; ) {
-        Tuple challenger = tuples[j];
-        float challengerValue = challenger.getDimensionValue(dim);
+        Point3f challenger = tuples[j];
+        float challengerValue = Node.getDimensionValue(challenger, dim);
         if (challengerValue > championValue) {
           tuples[i] = challenger;
           tuples[j] = champion;
@@ -62,7 +64,7 @@ class Leaf extends Element {
     }
   }
 
-  Element addTuple(int level, Tuple tuple) {
+  Element addTuple(int level, Point3f tuple) {
     if (count < Bspt.leafCountMax) {
       tuples[count++] = tuple;
       return this;
@@ -74,7 +76,7 @@ class Leaf extends Element {
   /*
     void dump(int level) {
     for (int i = 0; i < count; ++i) {
-    Tuple t = tuples[i];
+    Point3f t = tuples[i];
     for (int j = 0; j < level; ++j)
     Logger.debug(".");
     for (int dim = 0; dim < dimMax-1; ++dim)

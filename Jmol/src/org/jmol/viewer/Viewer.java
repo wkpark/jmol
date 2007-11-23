@@ -2905,10 +2905,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.setScreenParameters(width, height,
         isImageWrite || isReset? global.zoomLarge : false,
             antialias, false, false);
-    if (isGenerator)
-      g3d.setWindowParameters(width, height, antialias); 
-    else
-      g3d.setWindowBuffers(width, height, antialias); 
+    g3d.setWindowParameters(width, height, antialias); 
   }
 
   public int getScreenWidth() {

@@ -270,34 +270,19 @@ final public class Graphics3D implements JmolRendererInterface {
   public void setRenderer(ShapeRenderer shapeRenderer) {
   }
   
-  /**
-   * Sets the window size and clears the buffers. 
-   * This will be smaller than the
-   * rendering size if FullSceneAntialiasing is enabled
-   *
-   * @param windowWidth Window width
-   * @param windowHeight Window height
-   * @param enableFullSceneAntialiasing currently not in production
-   */
-  public void setWindowBuffers(int windowWidth, int windowHeight,
-                            boolean enableFullSceneAntialiasing) {
-    if (this.windowWidth == windowWidth && this.windowHeight == windowHeight 
-        && enableFullSceneAntialiasing == isFullSceneAntialiasingEnabled)
-      return;
-    setWindowParameters(windowWidth, windowHeight, enableFullSceneAntialiasing);
-    pbuf = null;
-    zbuf = null;
-    pbufT = null;
-    zbufT = null;
-    platform.releaseBuffers();
-  }
+  int newWindowWidth, newWindowHeight;
+  boolean newAntialiasing;
 
+  public boolean currentlyRendering() {
+    return currentlyRendering;
+  }
+  
   public void setWindowParameters(int width, int height, boolean antialias) {
-    windowWidth = width;
-    windowHeight = height;
-    //System.out.println("Graphics3D setWindowParameters width=" + width + " height=" + height + " antialias=" + antialias);
-    antialiasThisFrame = isFullSceneAntialiasingEnabled = antialias;
-    setWidthHeight(antialiasThisFrame);    
+    newWindowWidth = width;
+    newWindowHeight = height;
+    newAntialiasing = antialias;
+    if (currentlyRendering)
+      endRendering();
   }
   
   private void setWidthHeight(boolean isAntialiased) {
@@ -333,6 +318,17 @@ final public class Graphics3D implements JmolRendererInterface {
                              boolean antialiasThisFrame) {
     if (currentlyRendering)
       endRendering();
+    if (windowWidth != newWindowWidth || windowHeight != newWindowHeight
+        || newAntialiasing != isFullSceneAntialiasingEnabled) {
+      windowWidth = newWindowWidth;
+      windowHeight = newWindowHeight;
+      isFullSceneAntialiasingEnabled = newAntialiasing;
+      pbuf = null;
+      zbuf = null;
+      pbufT = null;
+      zbufT = null;
+      platform.releaseBuffers();
+    }
     normix3d.setRotationMatrix(rotationMatrix);
     antialiasThisFrame &= isFullSceneAntialiasingEnabled;
     antialiasEnabled = this.antialiasThisFrame = antialiasThisFrame;

@@ -59,13 +59,13 @@ public class FrameRenderer {
     if (logTime)
       timeBegin = System.currentTimeMillis();
 
-    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
+    for (int i = 0; i < JmolConstants.SHAPE_MAX && g3d.currentlyRendering(); ++i) {
       Shape shape = modelSet.getShape(i);
 
       if (shape == null)
         continue;
       //System.out.println("FrameRenderer: " + JmolConstants.getShapeClassName(i));
-      getRenderer(i, g3d).render(g3d, modelSet, shape); //, rectClip
+        getRenderer(i, g3d).render(g3d, modelSet, shape); //, rectClip
     }
     if (logTime)
       Logger.info("render time: " + (System.currentTimeMillis() - timeBegin)

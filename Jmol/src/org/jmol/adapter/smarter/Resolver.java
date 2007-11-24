@@ -465,7 +465,7 @@ class Resolver {
   { "Gamess", "GAMESS" };
 
   final static String[] spartanBinaryRecords =
-  { "SpartanSmol" , "|PropertyArchive" };
+  { "SpartanSmol" , "|PropertyArchive", "_spartan" };
 
   final static String[] spartanRecords =
   { "Spartan", "Spartan" };

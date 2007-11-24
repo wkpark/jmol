@@ -44,7 +44,10 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.Reader;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.Hashtable;
+import java.util.Vector;
 
 /* ***************************************************************
  * will not work with applet
@@ -57,31 +60,39 @@ import org.openscience.jmol.io.ReaderFactory;
 
 class FileManager {
 
-  Viewer viewer;
-  JmolAdapter modelAdapter;
+  private Viewer viewer;
   private String openErrorMessage;
+ 
+  JmolAdapter modelAdapter;
 
   // for applet proxy
-  URL appletDocumentBase = null;
-  URL appletCodeBase = null; //unused currently
-  String appletProxy;
+  private URL appletDocumentBase = null;
+  private URL appletCodeBase = null; //unused currently
+  private String appletProxy;
 
   // for expanding names into full path names
   //private boolean isURL;
   private String nameAsGiven = "zapped";
   private String fullPathName;
-  String fileName;
-  String fileType;
-  String inlineData;
-  String[] inlineDataArray;
-  //boolean isInline;
-  //boolean isDOM;
+  private String fileName;
+  private String fileType;
+
+  private String inlineData;
+  private String[] inlineDataArray;
   
+  String getInlineData(int iData) {
+    return (iData < 0 ? inlineData : iData < inlineDataArray.length ? inlineDataArray[iData] : "");  
+  }
+     
+  String[] getInlineDataArray() {
+    return inlineDataArray;  
+  }
+
   private String loadScript;  
   private File file;
 
-  private FileOpenThread fileOpenThread;
-  private FilesOpenThread filesOpenThread;
+  FileOpenThread fileOpenThread;
+  FilesOpenThread filesOpenThread;
   private DOMOpenThread aDOMOpenThread;
 
 
@@ -109,10 +120,14 @@ class FileManager {
     int pt = fileName.indexOf("::");
     if (pt >= 0)
       return fileName.substring(0, pt);
-    Object br = getUnzippedBufferedReaderOrErrorMessageFromName(fileName);
-    if (! (br instanceof BufferedReader))
-      return null;
-    return modelAdapter.getFileTypeName((BufferedReader) br);
+    Object br = getUnzippedBufferedReaderOrErrorMessageFromName(fileName, true);
+    if (br instanceof BufferedReader)
+      return modelAdapter.getFileTypeName((BufferedReader) br);
+    if (br instanceof ZipInputStream) {
+      String zipDirectory = getZipDirectoryAsString(fileName);
+      return modelAdapter.getFileTypeName(new BufferedReader(new StringReader(zipDirectory)));
+    }
+    return null;
   }
   
   void clear() {
@@ -123,7 +138,7 @@ class FileManager {
     return loadScript;
   }
   
-  void setLoadScript(String script, boolean isMerge) {
+  private void setLoadScript(String script, boolean isMerge) {
     if (loadScript == null || !isMerge)
       loadScript = "";
     loadScript += viewer.getLoadState() + "  " + script + "\n";
@@ -167,8 +182,6 @@ class FileManager {
     
     fullPathName = fileName = nameAsGiven = modelName;
     inlineData = "";
-    //isInline = false;
-    //isDOM = false;
     filesOpenThread = new FilesOpenThread(fullPathNames, namesAsGiven, fileTypes, null);
     filesOpenThread.run();
   }
@@ -186,8 +199,6 @@ class FileManager {
     fullPathName = fileName = "string";
     if (!isMerge)
       inlineData = strModel;
-    //isInline = true;
-    //isDOM = false;
     fileOpenThread = new FileOpenThread(fullPathName, fullPathName, null, new BufferedReader(new StringReader(
         strModel)), htParams);
     fileOpenThread.run();
@@ -210,9 +221,7 @@ class FileManager {
     Logger.info("FileManager.openStringInline(string[]" + sp + ")");
     openErrorMessage = null;
     fullPathName = fileName = "string[]";
-    inlineDataArray = arrayModels;
-    //isInline = true;
-    //isDOM = false;
+    //inlineDataArray = arrayModels;
     String[] fullPathNames = new String[arrayModels.length];
     StringReader[] readers = new StringReader[arrayModels.length];
     for (int i = 0; i < arrayModels.length; i++) {
@@ -227,8 +236,6 @@ class FileManager {
     openErrorMessage = null;
     fullPathName = fileName = "JSNode";
     inlineData = "";
-    //isInline = false;
-    //isDOM = true;
     aDOMOpenThread = new DOMOpenThread(DOMNode);
     aDOMOpenThread.run();
   }
@@ -244,7 +251,7 @@ class FileManager {
     openBufferedReader(fullPathName, name, new BufferedReader(reader));
   }
 
-  void openBufferedReader(String fullPathName, String name, BufferedReader reader) {
+  private void openBufferedReader(String fullPathName, String name, BufferedReader reader) {
     openErrorMessage = null;
     this.fullPathName = fullPathName;
     fileName = name;
@@ -253,12 +260,21 @@ class FileManager {
     fileOpenThread.run();
   }
 
-  boolean isGzip(InputStream is) throws Exception {
+  static boolean isGzip(InputStream is) throws Exception {
     byte[] abMagic = new byte[4];
     is.mark(5);
     int countRead = is.read(abMagic, 0, 4);
     is.reset();
     return (countRead == 4 && abMagic[0] == (byte) 0x1F && abMagic[1] == (byte) 0x8B);
+  }
+
+  static boolean isZipDirectory(InputStream is) throws Exception {
+    byte[] abMagic = new byte[4];
+    is.mark(5);
+    int countRead = is.read(abMagic, 0, 4);
+    is.reset();
+    return (countRead == 4 && abMagic[0] == (byte) 0x50 && abMagic[1] == (byte) 0x4B
+        && abMagic[2] == (byte) 0x03 && abMagic[3] == (byte) 0x04);
   }
 
   boolean isCompoundDocument(InputStream is) throws Exception {
@@ -275,7 +291,7 @@ class FileManager {
   
   String getFileAsString(String name) {
     //System.out.println("FileManager.getFileAsString(" + name + ")");
-    Object t = getInputStreamOrErrorMessageFromName(name);
+    Object t = getInputStreamOrErrorMessageFromName(name, false);
     if (t instanceof String)
       return "Error:" + t;
     try {
@@ -286,6 +302,8 @@ class FileManager {
         return "" + doc.getAllData();
       } else if (isGzip(is)) {
         is = new GZIPInputStream(bis);
+      } else if (isZipDirectory(is)) {
+        return "Error: Cannot read ZIP format as string";
       }
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
       StringBuffer sb = new StringBuffer(8192);
@@ -349,6 +367,7 @@ class FileManager {
   }
 
   String[] getFileInfo() {
+    // not compatible with inlineDataArray, by the way....
     return new String[]{fullPathName, fileName, inlineData, loadScript};
   }
   
@@ -365,17 +384,17 @@ class FileManager {
   void setAppletContext(URL documentBase, URL codeBase,
                                String jmolAppletProxy) {
     appletDocumentBase = documentBase;
-    Logger.info("appletDocumentBase=" + documentBase);
-    //    dumpDocumentBase("" + documentBase);
     appletCodeBase = codeBase;
+    Logger.info("appletDocumentBase=" + appletDocumentBase + "\nappletCodeBase=" + appletCodeBase);
+    //    dumpDocumentBase("" + documentBase);
     appletProxy = jmolAppletProxy;
   }
 
   void setAppletProxy(String appletProxy) {
     this.appletProxy = (appletProxy ==  null || appletProxy.length() == 0 ? null : appletProxy);
   }
-  
-  void dumpDocumentBase(String documentBase) {
+/*  
+  private void dumpDocumentBase(String documentBase) {
     Logger.info("dumpDocumentBase:" + documentBase);
     Object inputStreamOrError =
       getInputStreamOrErrorMessageFromName(documentBase);
@@ -395,9 +414,9 @@ class FileManager {
       }
     }
   }
-
+*/
   // mth jan 2003 -- there must be a better way for me to do this!?
-  final String[] urlPrefixes = {"http:", "https:", "ftp:", "file:"};
+  private final static String[] urlPrefixes = {"http:", "https:", "ftp:", "file:"};
 
   private void classifyName(String name) {
     if (name == null)
@@ -439,7 +458,7 @@ class FileManager {
     fileName = file.getName();
   }
   
-  Object getInputStreamOrErrorMessageFromName(String name) {
+  Object getInputStreamOrErrorMessageFromName(String name, boolean showMsg) {
     String errorMessage = null;
     int iurlPrefix;
     for (iurlPrefix = urlPrefixes.length; --iurlPrefix >= 0;)
@@ -457,14 +476,17 @@ class FileManager {
         else if (!isURL && defaultDirectory.length() != 0)
           name = defaultDirectory + "/" + name;
         URL url = (isApplet ? new URL(appletDocumentBase, name) : new URL(name));
-        Logger.info("FileManager opening " + url.toString());
+        name = url.toString();
+        if (showMsg)
+          Logger.info("FileManager opening " + url.toString());
         URLConnection conn = url.openConnection();
         length = conn.getContentLength();
         in = conn.getInputStream();
       } else {
         if (!isURL && name.indexOf(":") < 0 && defaultDirectory.length() != 0)
           name = defaultDirectory + "/" + name;
-        Logger.info("FileManager opening " + name);
+        if (showMsg)
+          Logger.info("FileManager opening " + name);
         File file = new File(name);
         length = (int) file.length();
         in = new FileInputStream(file);
@@ -480,8 +502,8 @@ class FileManager {
     return new BufferedReader(new StringReader(string));
   }
 
-  Object getUnzippedBufferedReaderOrErrorMessageFromName(String name) {
-    Object t = getInputStreamOrErrorMessageFromName(name);
+  Object getUnzippedBufferedReaderOrErrorMessageFromName(String name, boolean allowZipStream) {
+    Object t = getInputStreamOrErrorMessageFromName(name, true);
     if (t instanceof String)
       return t;
     try {
@@ -492,6 +514,22 @@ class FileManager {
         return getBufferedReaderForString("" + doc.getAllData());
       } else if (isGzip(is)) {
         is = new GZIPInputStream(bis);
+      } else if (isZipDirectory(is)) {
+          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+            is = dumpZipDirectory(is, name);
+          ZipInputStream zis = new ZipInputStream(is);
+          ZipEntry ze = zis.getNextEntry();
+          if (ze == null)
+            return "Error: No Zip Entry found";
+          if (allowZipStream)
+            return new ZipInputStream(is);
+          //otherwise just get first file
+          while (ze != null && ze.isDirectory())
+            ze = zis.getNextEntry();
+          String s = getZipEntryAsString(zis);
+          zis.closeEntry();
+          zis.close();
+          return new BufferedReader(new StringReader(s));
       }
       return new BufferedReader(new InputStreamReader(is));
     } catch (Exception ioe) {
@@ -499,6 +537,52 @@ class FileManager {
     }
   }
 
+  private InputStream dumpZipDirectory(InputStream is, String fileName) throws IOException {
+    ZipInputStream zis = new  ZipInputStream(is);
+    ZipEntry ze;
+    while ((ze = zis.getNextEntry()) != null) {
+      Logger.debug(ze.getCompressedSize() + " " + ze.getName());
+    }
+    is.close();
+    return new BufferedInputStream((InputStream)getInputStreamOrErrorMessageFromName(fileName, false), 8192);
+  }
+  
+  static String[] getZipDirectoryAndClose(InputStream is) throws IOException {
+    Vector v = new Vector();
+    ZipInputStream zis = new ZipInputStream(is);
+    ZipEntry ze;
+    while ((ze = zis.getNextEntry()) != null)
+      v.addElement(ze.getName());
+    is.close();
+    int len = v.size();
+    String[] dirList = new String[len];
+    for (int i = 0; i < len; i++)
+      dirList[i] = (String) v.elementAt(i);
+    return dirList;
+  }
+  
+  String getZipDirectoryAsString(String fileName) {
+    StringBuffer sb = new StringBuffer();
+    InputStream is = new BufferedInputStream((InputStream)getInputStreamOrErrorMessageFromName(fileName, false), 8192);
+    String[] s = new String[0];
+    try {
+      s = getZipDirectoryAndClose(is);
+    } catch (Exception e) {      
+    }
+    for (int i = 0; i < s.length; i++)
+      sb.append(s[i]).append('\n');
+    return sb.toString();
+  }
+  
+  static String getZipEntryAsString(ZipInputStream zis) throws IOException {
+    StringBuffer sb = new StringBuffer();
+    byte[] buf = new byte[1024];
+    int len;
+    while (zis.available() == 1 && (len = zis.read(buf)) > 0)
+      sb.append(new String(buf, 0, len));
+    return sb.toString();
+  }
+  
   class DOMOpenThread implements Runnable {
     //boolean terminated;
     String errorMessage;
@@ -539,19 +623,86 @@ class FileManager {
       if (reader != null) {
         openBufferedReader(reader);
       } else {
-        Object t = getUnzippedBufferedReaderOrErrorMessageFromName(nameAsGivenInThread);
-        if (t instanceof BufferedReader)
+        Object t = getUnzippedBufferedReaderOrErrorMessageFromName(nameAsGivenInThread, true);
+        if (t instanceof BufferedReader) {
           openBufferedReader((BufferedReader) t);
-        else
+        } else if (t instanceof ZipInputStream) {
+          openZipStream();
+        } else {
           errorMessage = (t == null
                           ? "error opening:" + nameAsGivenInThread
                           : (String)t);
+        }
       }
       if (errorMessage != null)
         Logger.error("file ERROR: " + fullPathNameInThread + "\n" + errorMessage);
       //terminated = true;
     }
 
+    private void openZipStream() {
+      String fileName = nameAsGivenInThread;
+      String zipDirectory = getZipDirectoryAsString(fileName);
+      String fileType = modelAdapter.getFileTypeName(new BufferedReader(new StringReader(zipDirectory)));
+      boolean isSpartan = "SpartanSmol".equals(fileType);
+      InputStream is = new BufferedInputStream(
+          (InputStream) getInputStreamOrErrorMessageFromName(fileName, false), 8192);
+      String[] files = new String[0];
+      try {
+        files = getZipDirectoryAndClose(is);
+      } catch (Exception e) {
+      }
+      int nFiles;
+      StringBuffer data = new StringBuffer();
+      if (isSpartan) {
+        nFiles = 1;
+        data = new StringBuffer();
+        data.append("Zip File Directory: ").append("\n").append(zipDirectory).append("\n");
+      } else {
+        nFiles = 0;
+      for (int i = 0; i < files.length; i++)
+        if (files[i].lastIndexOf("/") != files[i].length() - 1)
+          nFiles++;
+      }
+      String[] fullPathNames = new String[nFiles];
+      StringReader[] readers = new StringReader[nFiles];
+      
+      ZipInputStream zis = new ZipInputStream(new BufferedInputStream(
+          (InputStream) getInputStreamOrErrorMessageFromName(fileName, false), 8192));
+      ZipEntry ze;
+      int i = 0;
+      try {
+        while ((ze = zis.getNextEntry()) != null) {
+          if (ze.isDirectory())
+            continue;
+          String s = getZipEntryAsString(zis);
+          if (isSpartan) {
+            String thisEntry = ze.getName();
+            data.append("\nBEGIN Zip File Entry: ").append(thisEntry).append("\n");            
+            data.append(s);
+            data.append("\nEND Zip File Entry: ").append(thisEntry).append("\n");            
+            data.append(ze.getName()).append("/n");
+          } else {
+            fullPathNames[i] = "zip://" + ze.getName();
+            readers[i] = new StringReader(s);
+            i++;
+          }
+        }
+
+      } catch (Exception e) {
+
+      }
+
+      if (isSpartan) {
+        fullPathNames[0] = fileName;
+        readers[0] = new StringReader(data.toString());
+      }
+      fileOpenThread = null;
+      filesOpenThread = new FilesOpenThread(fullPathNames, fullPathNames, null,
+          readers);
+      filesOpenThread.run();
+    }
+    
+    
     private void openBufferedReader(BufferedReader reader) {
       Object clientFile = modelAdapter.openBufferedReader(fullPathNameInThread, fileTypeInThread,
           reader, htParams);
@@ -565,12 +716,11 @@ class FileManager {
   class FilesOpenThread implements Runnable {
     //boolean terminated;
     String errorMessage;
-    String[] fullPathNamesInThread;
-    String[] namesAsGivenInThread;
-    String[] fileTypesInThread;
+    private String[] fullPathNamesInThread;
+    private String[] namesAsGivenInThread;
+    private String[] fileTypesInThread;
     Object clientFile;
-    Reader[] reader;
-    
+    private Reader[] reader;
 
     FilesOpenThread(String[] name, String[] nameAsGiven, String[] types, Reader[] reader) {
       fullPathNamesInThread = name;
@@ -581,11 +731,12 @@ class FileManager {
 
     public void run() {
       if (reader != null) {
-        openReader(reader);
+        openReaders();
+        reader = null;
       } else {
         InputStream[] istream = new InputStream[namesAsGivenInThread.length];
         for (int i = 0; i < namesAsGivenInThread.length; i++) {
-          Object t = getInputStreamOrErrorMessageFromName(namesAsGivenInThread[i]);
+          Object t = getInputStreamOrErrorMessageFromName(namesAsGivenInThread[i], true);
           if (! (t instanceof InputStream)) {
             errorMessage = (t == null
                             ? "error opening:" + namesAsGivenInThread[i]
@@ -603,28 +754,28 @@ class FileManager {
     }
 
     private void openInputStream(InputStream[] istream) {
-      Reader[] zistream = new Reader[istream.length];
+      reader = new Reader[istream.length];
       for (int i = 0; i < istream.length; i++) {
         BufferedInputStream bis = new BufferedInputStream(istream[i], 8192);
         InputStream is = bis;
         try {
           if (isCompoundDocument(is)) {
             CompoundDocument doc = new CompoundDocument(bis);
-            zistream[i] = new StringReader("" + doc.getAllData());
+            reader[i] = new StringReader("" + doc.getAllData());
           } else if (isGzip(is)) {
-            zistream[i] = new InputStreamReader(new GZIPInputStream(bis));
+            reader[i] = new InputStreamReader(new GZIPInputStream(bis));
           } else {
-            zistream[i] = new InputStreamReader(is);            
+            reader[i] = new InputStreamReader(is);            
           }
         } catch (Exception ioe) {
           errorMessage = ioe.getMessage();
           return;
         }
       }
-      openReader(zistream);
+      openReaders();
     }
 
-    private void openReader(Reader[] reader) {
+    private void openReaders() {
       BufferedReader[] buffered = new BufferedReader[reader.length];
       for (int i = 0; i < reader.length; i++) {
         buffered[i] = new BufferedReader(reader[i]);

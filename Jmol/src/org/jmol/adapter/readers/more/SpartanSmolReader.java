@@ -33,18 +33,19 @@ import java.util.Hashtable;
 import org.jmol.util.Logger;
 
 /*
- * Spartan SMOL and .spartan compound document reader
+ * Spartan SMOL and .spartan compound document reader and .spartan06 zip files
  * 
  */
 
 public class SpartanSmolReader extends AtomSetCollectionReader {
 
-  boolean isCompoundDocument;
+  private boolean isCompoundDocument;
+  private boolean isZipFile;
+  
+  private String modelName = "Spartan file";
+  private int atomCount;
 
-  String modelName = "Spartan file";
-  int atomCount;
-
-  Hashtable moData = new Hashtable();
+  private Hashtable moData = new Hashtable();
 
  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
@@ -53,11 +54,12 @@ public class SpartanSmolReader extends AtomSetCollectionReader {
     try {
       readLine();
       isCompoundDocument = (line.indexOf("Compound Document") >= 0);
+      isZipFile = (line.indexOf("Zip File") >= 0);
       atomSetCollection = new AtomSetCollection("spartan "
-          + (isCompoundDocument ? "compound document file" : "smol"));
+          + (isCompoundDocument ? "compound document file" 
+              : isZipFile ? "zip file" : "smol"));
       while (line != null) {
-        //if (atomCount == 0)
-          //Logger.debug(line);
+         //System.out.println(line);
         if (line.equals("HESSIAN") && bondData != null) {
           //cache for later if necessary -- this is from the INPUT section
           while (readLine() != null
@@ -66,7 +68,9 @@ public class SpartanSmolReader extends AtomSetCollectionReader {
           //Logger.debug("bonddata:" + bondData);
         }
         if (line.equals("BEGINARCHIVE")
-            || line.equals("BEGIN Compound Document Entry: Archive")) {
+            || isCompoundDocument && line.equals("BEGIN Compound Document Entry: Archive")
+            || isZipFile && line.indexOf("BEGIN") == 0 && line.indexOf("/archive") > 0
+            ) {
           spartanArchive = new SpartanArchive(this, atomSetCollection,
               moData, bondData);
           bondData = null;
@@ -76,7 +80,9 @@ public class SpartanSmolReader extends AtomSetCollectionReader {
             atomSetCollection.setAtomSetName(modelName);
           }
         } else if (atomCount > 0 && line.indexOf("BEGINPROPARC") == 0
-            || line.equals("BEGIN Compound Document Entry: PropertyArchive")) {
+            || isCompoundDocument && line.equals("BEGIN Compound Document Entry: PropertyArchive")
+            || isZipFile && line.indexOf("BEGIN") == 0 && line.indexOf("/proparc") > 0
+            ) {
           spartanArchive.readProperties();
           if (!atomSetCollection
               .setAtomSetCollectionPartialCharges("MULCHARGES"))

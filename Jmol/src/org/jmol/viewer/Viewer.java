@@ -1373,11 +1373,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   Object getInputStreamOrErrorMessageFromName(String name) {
-    return fileManager.getInputStreamOrErrorMessageFromName(name);
+    return fileManager.getInputStreamOrErrorMessageFromName(name, true);
   }
 
   Object getUnzippedBufferedReaderOrErrorMessageFromName(String name) {
-    return fileManager.getUnzippedBufferedReaderOrErrorMessageFromName(name);
+    return fileManager.getUnzippedBufferedReaderOrErrorMessageFromName(name, false);
   }
 
   Object getBufferedReaderForString(String string) {
@@ -1399,11 +1399,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (name == null)
       return;
     if (name.equalsIgnoreCase("string")) {
-      openStringInline(fileManager.inlineData, htParams, isMerge);
+      openStringInline(fileManager.getInlineData(-1), htParams, isMerge);
       return;
     }
     if (name.equalsIgnoreCase("string[]")) {
-      openStringsInline(fileManager.inlineDataArray, htParams, isMerge);
+      openStringsInline(fileManager.getInlineDataArray(), htParams, isMerge);
       return;
     }
     if (!isMerge)
@@ -1636,13 +1636,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String getCurrentFileAsString() {
     if (getFullPathName() == "string") {
-      return fileManager.inlineData;
+      return fileManager.getInlineData(-1);
     }
     if (getFullPathName() == "string[]") {
       int modelIndex = getDisplayModelIndex();
       if (modelIndex < 0)
         return "";
-      return fileManager.inlineDataArray[modelIndex];
+      return fileManager.getInlineData(modelIndex);
     }
     if (getFullPathName() == "JSNode") {
       return "<DOM NODE>";

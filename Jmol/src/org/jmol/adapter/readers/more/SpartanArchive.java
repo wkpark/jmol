@@ -90,7 +90,9 @@ public class SpartanArchive {
         readMolecularOrbital();
         atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
       } else if (line.equals("ENDARCHIVE")
-          || line.equals("END Compound Document Entry: Archive")) {
+          || line.equals("END Compound Document Entry: Archive")
+          || line.indexOf("END Zip File") == 0
+      ) {
         break;
       }
       readLine();

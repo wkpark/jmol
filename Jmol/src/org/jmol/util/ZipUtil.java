@@ -105,13 +105,10 @@ public class ZipUtil {
       totalLen += len;
       if (totalLen >= bytes.length)
         bytes = ArrayUtil.ensureLength(bytes, totalLen * 2);
-      int pt = 0;
-      for (int i = totalLen - len; i < totalLen; i++, pt++)
-        bytes[i] = buf[pt];
+      System.arraycopy(buf, 0, bytes, totalLen - len, len);
     }
     buf = new byte[totalLen];
-    for (int i = 0; i < totalLen; i++)
-      buf[i] = bytes[i];
+    System.arraycopy(bytes, 0, buf, 0, totalLen);
     return buf;
   }
 

@@ -409,11 +409,13 @@ public class AtomSetCollection {
   public void addBond(Bond bond) {
     if (bond.atomIndex1 < 0 ||
         bond.atomIndex2 < 0 ||
-        bond.order < 0) {
+        bond.order < 0 ||
+        //do not allow bonds between models
+        atoms[bond.atomIndex1].atomSetIndex != atoms[bond.atomIndex2].atomSetIndex) {
       if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
         Logger.debug(
             ">>>>>>BAD BOND:" + bond.atomIndex1 + "-" +
-            bond.atomIndex2 + ":" + bond.order);
+            bond.atomIndex2 + " order=" + bond.order);
       }
       return;
     }

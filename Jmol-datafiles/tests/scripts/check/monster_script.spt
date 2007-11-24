@@ -311,7 +311,7 @@ select surfacedistance=0;color white ;refresh;# surface atoms
 select within(group,surfacedistance=0);color white ;refresh;# surface residues
 select not within(group, surfacedistance=0);color red   ;refresh;# interior groups
 load 1crn.pdb
-calculate surface +2.0;select surfacedistance=0;color yellow ;refresh;# custom solvent-accessible surface.
+calculate surfacedistance WITHIN {*};select surfacedistance=0;color yellow ;refresh;# custom solvent-accessible surface.
 load caffeine.xyz
 select nitrogen
 color halos red

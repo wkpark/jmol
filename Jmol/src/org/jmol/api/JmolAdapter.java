@@ -25,9 +25,11 @@
 package org.jmol.api;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.Hashtable;
 import java.util.BitSet;
+import java.util.zip.ZipInputStream;
 
 import org.jmol.viewer.JmolConstants;
 
@@ -133,6 +135,10 @@ public Object openBufferedReader(String name, String type,
    */
   public Object openBufferedReaders(String[] names, String[] types,
                                     BufferedReader[] bufferedReader) {
+    return null;
+  }
+
+  public Object openZipFiles(ZipInputStream zis) {
     return null;
   }
 
@@ -448,5 +454,11 @@ public Object openBufferedReader(String name, String type,
   public final static char canonizeAlternateLocationID(char altLoc) {
     // pdb altLoc
     return canonizeAlphaDigit(altLoc);
+  }
+
+  public Object openZipFiles(InputStream is, String fullPathNameInThread,
+                             String fileName, String zipDirectory,
+                             Hashtable htParams, boolean doCombine) {
+    return null;
   }
 }

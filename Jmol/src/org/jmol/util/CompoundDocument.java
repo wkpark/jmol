@@ -26,6 +26,7 @@ package org.jmol.util;
 
 import java.io.DataInputStream;
 import java.io.BufferedInputStream;
+import java.io.InputStream;
 //import java.io.RandomAccessFile;
 import java.util.Vector;
 
@@ -77,6 +78,19 @@ public class CompoundDocument extends BinaryDocument {
     getShortSectorAllocationTable();
     getDirectoryTable();
   }
+
+  public static boolean isCompoundDocument(InputStream is) throws Exception {
+    byte[] abMagic = new byte[8];
+    is.mark(9);
+    int countRead = is.read(abMagic, 0, 8);
+    is.reset();
+    return (countRead == 8 && abMagic[0] == (byte) 0xD0
+        && abMagic[1] == (byte) 0xCF && abMagic[2] == (byte) 0x11
+        && abMagic[3] == (byte) 0xE0 && abMagic[4] == (byte) 0xA1
+        && abMagic[5] == (byte) 0xB1 && abMagic[6] == (byte) 0x1A 
+        && abMagic[7] == (byte) 0xE1);
+  }
+  
 
   public Vector getDirectory() {
     return directory;

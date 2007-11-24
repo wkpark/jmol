@@ -25,11 +25,19 @@
 package org.jmol.adapter.smarter;
 
 import org.jmol.api.JmolAdapter;
+import org.jmol.util.ZipUtil;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.StringReader;
 import java.util.Properties;
 import java.util.Hashtable;
 import java.util.BitSet;
+import java.util.Vector;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class SmarterJmolAdapter extends JmolAdapter {
 
@@ -101,6 +109,100 @@ public class SmarterJmolAdapter extends JmolAdapter {
       return result.errorMessage;
     }
     return result; 
+  }
+
+  public Object openZipFiles(InputStream is, String fullPathNameInThread,
+                             String fileName, String zipDirectory,
+                             Hashtable htParams, boolean doCombine) {
+    String fileType = getFileTypeName(new BufferedReader(new StringReader(
+        zipDirectory)));
+    boolean isSpartan = "SpartanSmol".equals(fileType);
+    int nFiles = 0;
+    StringBuffer data = new StringBuffer();
+    if (isSpartan) {
+      data = new StringBuffer();
+      data.append("Zip File Directory: ").append("\n").append(zipDirectory)
+          .append("\n");
+    }
+    Vector v = new Vector();
+    ZipInputStream zis = new ZipInputStream(new BufferedInputStream(is));
+    ZipEntry ze;
+    byte[] bytes = null;
+    try {
+      while ((ze = zis.getNextEntry()) != null) {
+        if (ze.isDirectory())
+          continue;
+        Object stringOrBytes = ZipUtil.getZipEntryAsStringAndBytes(zis,
+            (byte) 'P');
+        if (isSpartan) {
+          if (stringOrBytes instanceof byte[])
+            continue;
+          String thisEntry = ze.getName();
+          data.append("\nBEGIN Zip File Entry: ").append(thisEntry)
+              .append("\n");
+          data.append((String) stringOrBytes);
+          data.append("\nEND Zip File Entry: ").append(thisEntry).append("\n");
+          data.append(ze.getName()).append("/n");
+        } else if (stringOrBytes instanceof byte[]
+            && ZipUtil.isZipFile((bytes = (byte[]) stringOrBytes))) {
+          ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+          String zipDir2 = ZipUtil.getZipDirectoryAsStringAndClose(bis);
+          bis = new ByteArrayInputStream(bytes);
+          Object clientFiles = openZipFiles(bis, fullPathNameInThread,
+              fileName, zipDir2, htParams, false);
+          if (clientFiles instanceof String)
+            return clientFiles;
+          if (clientFiles instanceof AtomSetCollection) {
+            v.addElement(clientFiles);
+          } else if (clientFiles instanceof Vector) {
+            Vector v2 = (Vector) clientFiles;
+            int n = v2.size();
+            for (int i = 0; i < n; i++)
+              v.addElement(v2.elementAt(i));
+          } else {
+            return "unknown zip reader error";
+          }
+        } else {
+          Object clientFile = Resolver.resolve("zip://" + ze.getName(), null,
+              new BufferedReader(new StringReader(
+                  (stringOrBytes instanceof byte[] ? new String(bytes)
+                      : (String) stringOrBytes))));
+          if (clientFile instanceof AtomSetCollection) {
+            v.addElement(clientFile);
+            AtomSetCollection a = (AtomSetCollection) clientFile;
+            if (a.errorMessage != null)
+              return a.errorMessage;
+          } else {
+            return "unknown reader error";
+          }
+        }
+      }
+      if (!isSpartan) {
+        if (!doCombine)
+          return v;
+        AtomSetCollection result = new AtomSetCollection(v);
+        if (result.errorMessage != null)
+          return result.errorMessage;
+        if (nFiles == 1)
+          return v.elementAt(0);
+        return result;
+      }
+      Object clientFile = Resolver.resolve(fileName, null, new BufferedReader(
+          new StringReader(data.toString())));
+      if (clientFile instanceof String)
+        return clientFile;
+      if (clientFile instanceof AtomSetCollection) {
+        AtomSetCollection atomSetCollection = (AtomSetCollection) clientFile;
+        if (atomSetCollection.errorMessage != null)
+          return atomSetCollection.errorMessage;
+        return atomSetCollection;
+      }
+      return "unknown reader error";
+
+    } catch (Exception e) {
+      org.jmol.util.Logger.error(null, e);
+      return "" + e;
+    }
   }
 
   public Object openDOMReader(Object DOMNode) {

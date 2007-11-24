@@ -144,6 +144,21 @@ public class AtomSetCollection {
   }
 
   /**
+   * Creates an AtomSetCollection based on an array of AtomSetCollection
+   * 
+   * @param list Vector of AtomSetCollection
+   */
+  
+  public AtomSetCollection(Vector list) {
+    this("Array");
+    setAtomSetCollectionAuxiliaryInfo("isMultiFile", Boolean.TRUE);
+    int n = list.size();
+    for (int i = 0; i < n; i++) {
+      appendAtomSetCollection(i, (AtomSetCollection) list.elementAt(i));
+    }
+  }
+
+  /**
    * Just sets the overall file type after the fact.
    * @param type
    */

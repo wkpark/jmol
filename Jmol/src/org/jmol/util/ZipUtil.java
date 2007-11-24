@@ -87,20 +87,14 @@ public class ZipUtil {
     return sb.toString();
   }
   
-  public static Object getZipEntryAsStringAndBytes(ZipInputStream zis, byte b0) throws IOException {
+  public static byte[] getZipEntryAsBytes(ZipInputStream zis) throws IOException {
     
     //What is the efficient way to read an input stream into a byte array?
     
-    byte[] buf = new byte[1];
+    byte[] buf = new byte[1024];
     byte[] bytes = new byte[1025];
-    int len = (zis.available() == 1 ? zis.read(buf) : 0);
-    if (len == 0)
-      return "";
-    if (buf[0] != b0)
-      return new String(buf) + getZipEntryAsString(zis);
-    buf = new byte[1024];
-    bytes[0] = b0;
-    int totalLen = 1;
+    int len = 0;
+    int totalLen = 0;
     while (zis.available() == 1 && (len = zis.read(buf)) > 0) {
       totalLen += len;
       if (totalLen >= bytes.length)

@@ -127,24 +127,19 @@ public class SmarterJmolAdapter extends JmolAdapter {
     Vector v = new Vector();
     ZipInputStream zis = new ZipInputStream(new BufferedInputStream(is));
     ZipEntry ze;
-    byte[] bytes = null;
     try {
       while ((ze = zis.getNextEntry()) != null) {
         if (ze.isDirectory())
           continue;
-        Object stringOrBytes = ZipUtil.getZipEntryAsStringAndBytes(zis,
-            (byte) 'P');
+        byte[] bytes = ZipUtil.getZipEntryAsBytes(zis);
         if (isSpartan) {
-          if (stringOrBytes instanceof byte[])
-            continue;
           String thisEntry = ze.getName();
           data.append("\nBEGIN Zip File Entry: ").append(thisEntry)
               .append("\n");
-          data.append((String) stringOrBytes);
+          data.append(new String(bytes));
           data.append("\nEND Zip File Entry: ").append(thisEntry).append("\n");
           data.append(ze.getName()).append("/n");
-        } else if (stringOrBytes instanceof byte[]
-            && ZipUtil.isZipFile((bytes = (byte[]) stringOrBytes))) {
+        } else if (ZipUtil.isZipFile(bytes)) {
           ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
           String zipDir2 = ZipUtil.getZipDirectoryAsStringAndClose(bis);
           bis = new ByteArrayInputStream(bytes);
@@ -164,9 +159,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
           }
         } else {
           Object clientFile = Resolver.resolve("zip://" + ze.getName(), null,
-              new BufferedReader(new StringReader(
-                  (stringOrBytes instanceof byte[] ? new String(bytes)
-                      : (String) stringOrBytes))));
+              new BufferedReader(new StringReader(new String(bytes))));
           if (clientFile instanceof AtomSetCollection) {
             v.addElement(clientFile);
             AtomSetCollection a = (AtomSetCollection) clientFile;

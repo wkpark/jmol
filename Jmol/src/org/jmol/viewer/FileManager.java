@@ -584,7 +584,6 @@ class FileManager {
         }
       }
       if (errorMessage != null) {
-        viewer.createImage("test2.zip",errorMessage,Integer.MIN_VALUE,0,0);
         Logger.error("file ERROR: " + fullPathNameInThread + "\n" + errorMessage);
       }
       //terminated = true;

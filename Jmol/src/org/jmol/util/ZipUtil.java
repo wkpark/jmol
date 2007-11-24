@@ -92,7 +92,7 @@ public class ZipUtil {
     //What is the efficient way to read an input stream into a byte array?
     
     byte[] buf = new byte[1024];
-    byte[] bytes = new byte[1025];
+    byte[] bytes = new byte[4096];
     int len = 0;
     int totalLen = 0;
     while (zis.available() == 1 && (len = zis.read(buf)) > 0) {

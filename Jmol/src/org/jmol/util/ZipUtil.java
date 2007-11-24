@@ -51,13 +51,12 @@ public class ZipUtil {
   }
 
   static public String getZipDirectoryAsStringAndClose(InputStream is) {
-    //is = new BufferedInputStream(is);
     StringBuffer sb = new StringBuffer();
     String[] s = new String[0];
     try {
       s = getZipDirectoryAndClose(is);
     } catch (Exception e) { 
-      System.out.println(e.getMessage());
+      Logger.error(e.getMessage());
     }
     for (int i = 0; i < s.length; i++)
       sb.append(s[i]).append('\n');

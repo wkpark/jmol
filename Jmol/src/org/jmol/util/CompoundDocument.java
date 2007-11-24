@@ -91,6 +91,14 @@ public class CompoundDocument extends BinaryDocument {
         && abMagic[7] == (byte) 0xE1);
   }
   
+  public static boolean isCompoundDocument(byte[] bytes) {
+    return (bytes.length >= 8 && bytes[0] == (byte) 0xD0
+        && bytes[1] == (byte) 0xCF && bytes[2] == (byte) 0x11
+        && bytes[3] == (byte) 0xE0 && bytes[4] == (byte) 0xA1
+        && bytes[5] == (byte) 0xB1 && bytes[6] == (byte) 0x1A 
+        && bytes[7] == (byte) 0xE1);
+  }
+  
 
   public Vector getDirectory() {
     return directory;

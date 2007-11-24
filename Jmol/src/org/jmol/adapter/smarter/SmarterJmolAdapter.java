@@ -25,6 +25,7 @@
 package org.jmol.adapter.smarter;
 
 import org.jmol.api.JmolAdapter;
+import org.jmol.util.CompoundDocument;
 import org.jmol.util.ZipUtil;
 
 import java.io.BufferedInputStream;
@@ -114,6 +115,11 @@ public class SmarterJmolAdapter extends JmolAdapter {
   public Object openZipFiles(InputStream is, String fullPathNameInThread,
                              String fileName, String zipDirectory,
                              Hashtable htParams, boolean doCombine) {
+    
+    int[] params = null;
+    int selectedFile = (htParams == null ? 0 : (params = ((int[]) htParams.get("params")))[0]);
+    if (selectedFile > 0 && doCombine && params != null)
+      params[0] = 0;
     String fileType = getFileTypeName(new BufferedReader(new StringReader(
         zipDirectory)));
     boolean isSpartan = "SpartanSmol".equals(fileType);
@@ -128,7 +134,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
     ZipInputStream zis = new ZipInputStream(new BufferedInputStream(is));
     ZipEntry ze;
     try {
-      while ((ze = zis.getNextEntry()) != null) {
+      while ((ze = zis.getNextEntry()) != null 
+          && (selectedFile <= 0 || v.size() < selectedFile)) {
         if (ze.isDirectory())
           continue;
         byte[] bytes = ZipUtil.getZipEntryAsBytes(zis);
@@ -140,9 +147,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
           data.append("\nEND Zip File Entry: ").append(thisEntry).append("\n");
           data.append(ze.getName()).append("/n");
         } else if (ZipUtil.isZipFile(bytes)) {
-          ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+          BufferedInputStream bis = new BufferedInputStream(
+              new ByteArrayInputStream(bytes));
           String zipDir2 = ZipUtil.getZipDirectoryAsStringAndClose(bis);
-          bis = new ByteArrayInputStream(bytes);
+          bis = new BufferedInputStream(new ByteArrayInputStream(bytes));
           Object clientFiles = openZipFiles(bis, fullPathNameInThread,
               fileName, zipDir2, htParams, false);
           if (clientFiles instanceof String)
@@ -158,8 +166,12 @@ public class SmarterJmolAdapter extends JmolAdapter {
             return "unknown zip reader error";
           }
         } else {
+          String sData = (CompoundDocument.isCompoundDocument(bytes) ? 
+              (new CompoundDocument(new BufferedInputStream(new ByteArrayInputStream(bytes))))
+                .getAllData().toString()
+              : new String(bytes));
           Object clientFile = Resolver.resolve("zip://" + ze.getName(), null,
-              new BufferedReader(new StringReader(new String(bytes))));
+              new BufferedReader(new StringReader(sData)));
           if (clientFile instanceof AtomSetCollection) {
             v.addElement(clientFile);
             AtomSetCollection a = (AtomSetCollection) clientFile;
@@ -177,7 +189,9 @@ public class SmarterJmolAdapter extends JmolAdapter {
         if (result.errorMessage != null)
           return result.errorMessage;
         if (nFiles == 1)
-          return v.elementAt(0);
+          selectedFile = 1;
+        if (selectedFile > 0 && selectedFile <= v.size())
+          return v.elementAt(selectedFile - 1);
         return result;
       }
       Object clientFile = Resolver.resolve(fileName, null, new BufferedReader(

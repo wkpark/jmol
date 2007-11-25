@@ -4040,7 +4040,7 @@ class Eval { //implements Runnable {
       loadScript.append(" ").append(Escape.escape(filename)).append(";");
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
         viewer.openFile(filename, htParams, loadScript.toString(), isAppend);
-    } else if (getToken(i + 1).tok == Token.leftbrace
+    } else if (getToken(i + 1).tok == Token.leftbrace || theTok == Token.point3f
         || theTok == Token.integer || theTok == Token.identifier) {
       if ((filename = parameterAsString(i++)).length() == 0)
         filename = viewer.getFullPathName();
@@ -4050,7 +4050,9 @@ class Eval { //implements Runnable {
       int tok;
       if ((tok = tokAt(i)) == Token.identifier
           && parameterAsString(i).equalsIgnoreCase("manifest")) {
-        htParams.put("manifest", stringParameter(++i));
+        String manifest = stringParameter(++i);
+        htParams.put("manifest", manifest);
+        loadScript.append(" MANIFEST ").append(Escape.escape(manifest));
         tok = tokAt(++i);
       }
       if (tok == Token.integer) {

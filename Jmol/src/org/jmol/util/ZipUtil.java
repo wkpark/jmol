@@ -54,7 +54,8 @@ public class ZipUtil {
     StringBuffer sb = new StringBuffer();
     String[] s = new String[0];
     try {
-      s = getZipDirectoryAndClose(is);
+      s = getZipDirectoryOrErrorAndClose(is, false);
+      is.close();
     } catch (Exception e) { 
       Logger.error(e.getMessage());
     }
@@ -63,13 +64,32 @@ public class ZipUtil {
     return sb.toString();
   }
   
-  public static String[] getZipDirectoryAndClose(InputStream is) throws IOException {
+  static public String[] getZipDirectoryAndClose(InputStream is, boolean addManifest) {
+    String[] s = new String[0];
+    try {
+      s = getZipDirectoryOrErrorAndClose(is, addManifest);
+      is.close();
+    } catch (Exception e) { 
+      Logger.error(e.getMessage());
+    }
+    return s;
+  }
+  
+  private static String[] getZipDirectoryOrErrorAndClose(InputStream is, boolean addManifest) throws IOException {
     Vector v = new Vector();
     ZipInputStream zis = new ZipInputStream(is);
     ZipEntry ze;
-    while ((ze = zis.getNextEntry()) != null)
-      v.addElement(ze.getName());
-    is.close();
+    String manifest = null;
+    while ((ze = zis.getNextEntry()) != null) {
+      String fileName = ze.getName();
+      if (addManifest && fileName.equals("JmolManifest"))
+        manifest = getZipEntryAsString(zis); 
+      else
+        v.addElement(fileName);
+    }
+    zis.close();
+    if (addManifest)
+      v.add(0, manifest == null ? "" : manifest);
     int len = v.size();
     String[] dirList = new String[len];
     for (int i = 0; i < len; i++)

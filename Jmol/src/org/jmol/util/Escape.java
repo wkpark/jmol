@@ -498,4 +498,7 @@ public class Escape {
     return packageReadable(infoType, null, info.toString());
   }
 
+  public static String escapeModelFileNumber(int iv) {
+    return "" + (iv / 1000000) + "." + (iv % 1000000);
+  }
 }

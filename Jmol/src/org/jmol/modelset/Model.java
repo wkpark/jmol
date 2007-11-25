@@ -73,7 +73,7 @@ public final class Model {
   int fileIndex;   // 0-based file reference
   int modelInFileIndex;   // 0-based index of model in its file
   int modelFileNumber;  // file * 1000000 + modelInFile (1-based)
-  String modelNumberDotted = "1.1";
+  String modelNumberForAtomLabel = "1.1";
   String modelTag;
   String modelTitle;
   String modelFile;

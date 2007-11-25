@@ -261,7 +261,7 @@ abstract public class ModelSet extends ModelCollection {
     else
       atomData.firstAtomIndex = getFirstAtomIndexInModel(atomData.modelIndex);
     atomData.lastModelIndex = atomData.firstModelIndex = (atomCount == 0 ? 0 : atoms[atomData.firstAtomIndex].modelIndex);
-    atomData.modelName = getModelName(-1 - atomData.modelIndex);
+    atomData.modelName = getModelNumberDotted(atomData.modelIndex);
     super.fillAtomData(atomData, mode);
   }
 

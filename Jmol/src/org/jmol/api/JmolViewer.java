@@ -136,13 +136,14 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public String getFileAsString(String filename);
   abstract public Properties getModelSetProperties();
   abstract public Hashtable getModelSetAuxiliaryInfo();
-  abstract public int getModelNumber(int atomSetIndex);
-  abstract public String getModelName(int atomSetIndex);
-  abstract public Properties getModelProperties(int atomSetIndex);
-  abstract public String getModelProperty(int atomSetIndex, String propertyName);
-  abstract public Hashtable getModelAuxiliaryInfo(int atomSetIndex);
-  abstract public Object getModelAuxiliaryInfo(int atomSetIndex, String keyName);
-  abstract public boolean modelHasVibrationVectors(int atomSetIndex);
+  abstract public int getModelNumber(int modelIndex);
+  abstract public String getModelName(int modelIndex);
+  abstract public String getModelNumberDotted(int modelIndex);
+  abstract public Properties getModelProperties(int modelIndex);
+  abstract public String getModelProperty(int modelIndex, String propertyName);
+  abstract public Hashtable getModelAuxiliaryInfo(int modelIndex);
+  abstract public Object getModelAuxiliaryInfo(int modelIndex, String keyName);
+  abstract public boolean modelHasVibrationVectors(int modelIndex);
 
   abstract public int getModelCount();
   abstract public int getDisplayModelIndex(); // can return -2 - modelIndex if a background model is displayed

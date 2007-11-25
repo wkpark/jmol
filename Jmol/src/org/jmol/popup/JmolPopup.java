@@ -427,7 +427,7 @@ abstract public class JmolPopup {
         htMenus.put(id, subMenu);
         pt = 1;
       }
-      String script = "" + viewer.getModelName(-1 - i);
+      String script = "" + viewer.getModelNumberDotted(i);
       String entryName = viewer.getModelName(i);
       if (!entryName.equals(script))
         entryName = script + ": " + entryName;

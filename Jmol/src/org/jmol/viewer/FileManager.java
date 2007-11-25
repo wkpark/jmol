@@ -527,6 +527,10 @@ class FileManager {
     return new BufferedInputStream((InputStream)getInputStreamOrErrorMessageFromName(fileName, false), 8192);
   }
   
+  String[] getZipDirectory(String fileName, boolean addManifest) {
+    return ZipUtil.getZipDirectoryAndClose((InputStream)getInputStreamOrErrorMessageFromName(fileName, false), addManifest);
+  }
+  
   String getZipDirectoryAsString(String fileName) {
     return ZipUtil.getZipDirectoryAsStringAndClose((InputStream)getInputStreamOrErrorMessageFromName(fileName, false));
   }
@@ -591,7 +595,7 @@ class FileManager {
 
     private void openZipStream() {
       String fileName = nameAsGivenInThread;
-      String zipDirectory = getZipDirectoryAsString(fileName);
+      String[] zipDirectory = getZipDirectory(fileName, true);
       InputStream is = new BufferedInputStream(
           (InputStream) getInputStreamOrErrorMessageFromName(fileName, false),
           8192);

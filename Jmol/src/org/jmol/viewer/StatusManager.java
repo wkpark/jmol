@@ -178,7 +178,7 @@ class StatusManager {
     if (isAnimationRunning)
       f = -2 - f;
     setStatusChanged("frameChanged", frameNo, (f >= 0 ? viewer
-        .getModelName(f) : ""), false);
+        .getModelNumberDotted(f) : ""), false);
     if (jmolStatusListener != null)
       jmolStatusListener.notifyFrameChanged(frameNo, fileNo, modelNo, firstNo, lastNo);
   }

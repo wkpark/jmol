@@ -2016,9 +2016,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getModelNumberDotted(int modelIndex) {
-    if (modelIndex < 0)
-      return "0";
-    return getModelName(-1 - modelIndex);
+    return modelIndex < 0 ? "0" : modelSet == null ? null 
+        : modelSet.getModelNumberDotted(modelIndex);
   }
 
   public String getModelName(int modelIndex) {

@@ -132,8 +132,8 @@ abstract public class ModelCollection extends BondCollection {
   Properties modelSetProperties;
   Hashtable modelSetAuxiliaryInfo;
 
-  private Properties[] modelProperties = new Properties[1];
-  private Hashtable[] modelAuxiliaryInfo = new Hashtable[1];
+  protected Properties[] modelProperties = new Properties[1];
+  protected Hashtable[] modelAuxiliaryInfo = new Hashtable[1];
 
   protected Group[] groups;
   protected int groupCount;
@@ -335,7 +335,7 @@ abstract public class ModelCollection extends BondCollection {
       int iModel = viewer.getCurrentModelIndex();
       if (thisStateModel != iModel)
         script = "  frame "
-            + (iModel < 0 ? "" + iModel : getModelName(-1 - iModel)) + ";\n"
+            + (iModel < 0 ? "" + iModel : getModelNumberDotted(iModel)) + ";\n"
             + script;
       thisStateModel = iModel;
     } else {
@@ -488,15 +488,13 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public String getModelName(int modelIndex) {
-    if (modelIndex < 0)
-      return getModelNumberDotted(-1 - modelIndex);
-    return models[modelIndex].modelTag;
+    return modelCount < 1 ? "" 
+        : modelIndex < 0 ? models[-1 - modelIndex].modelNumberForAtomLabel 
+        : models[modelIndex].modelTag;
   }
 
-  String getModelNumberDotted(int modelIndex) {
-    if (modelCount < 1)
-      return "";
-    return models[modelIndex].modelNumberDotted;
+  public String getModelNumberDotted(int modelIndex) {
+    return (modelCount < 1 ? "" : Escape.escapeModelFileNumber(models[modelIndex].modelFileNumber));
   }
 
   public int getModelNumberIndex(int modelNumber, boolean useModelNumber) {
@@ -565,33 +563,6 @@ abstract public class ModelCollection extends BondCollection {
 
   public int getInsertionCountInModel(int modelIndex) {
     return models[modelIndex].nInsertions;
-  }
-
-  boolean setModelNameNumberProperties(int modelIndex, String modelName,
-                                       int modelNumber,
-                                       Properties modelProperties,
-                                       Hashtable modelAuxiliaryInfo,
-                                       boolean isPDB, String jmolData) {
-
-    this.modelProperties[modelIndex] = modelProperties;
-    if (modelAuxiliaryInfo == null)
-      modelAuxiliaryInfo = new Hashtable();
-    this.modelAuxiliaryInfo[modelIndex] = modelAuxiliaryInfo;
-    String modelTitle = (String) getModelAuxiliaryInfo(modelIndex, "title");
-    if (jmolData != null) {
-      modelAuxiliaryInfo.put("jmolData", jmolData);
-      modelTitle = jmolData;
-    }
-    String modelFile = (String) getModelAuxiliaryInfo(modelIndex, "fileName");
-    if (modelNumber != Integer.MAX_VALUE)
-      models[modelIndex] = new Model((ModelSet) this, modelIndex, modelNumber,
-          modelName, modelTitle, modelFile, jmolData);
-    String codes = (String) getModelAuxiliaryInfo(modelIndex, "altLocs");
-    models[modelIndex].setNAltLocs(codes == null ? 0 : codes.length());
-    codes = (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");
-    models[modelIndex].setNInsertions(codes == null ? 0 : codes.length());
-    return models[modelIndex].isPDB = getModelAuxiliaryInfoBoolean(modelIndex,
-        "isPDB");
   }
 
   public static int modelFileNumberFromFloat(float fDotM) {
@@ -900,7 +871,7 @@ abstract public class ModelCollection extends BondCollection {
       Hashtable model = new Hashtable();
       model.put("_ipt", new Integer(i));
       model.put("num", new Integer(getModelNumber(i)));
-      model.put("file_model", getModelName(-1 - i));
+      model.put("file_model", getModelNumberDotted(i));
       model.put("name", getModelName(i));
       String s = getModelTitle(i);
       if (s != null)
@@ -1563,12 +1534,14 @@ abstract public class ModelCollection extends BondCollection {
                 || itype == JmolConstants.PROTEIN_STRUCTURE_SHEET) {
               n++;
               if (bsAtoms == null) {
+                int iModel = atoms[iLastAtom].modelIndex;
                 cmd.append("  structure ").append(
                     JmolConstants.getProteinStructureName(itype)).append(" ")
-                    .append(Escape.escape(bs)).append("    \t# model=").append(
-                        getModelName(-1 - atoms[iLastAtom].modelIndex)).append(
-                        " & (").append(res1).append(" - ").append(res2).append(
-                        ");\n");
+                    .append(Escape.escape(bs))
+                    .append("    \t# model=")
+                    .append(getModelNumberDotted(iModel))
+                    .append(" & (").append(res1).append(" - ").append(res2)
+                    .append(");\n");
               } else {
                 String str;
                 int nx;
@@ -1640,27 +1613,37 @@ abstract public class ModelCollection extends BondCollection {
   }
   
   public String getModelInfoAsString() {
-    String str =  "model count = " + modelCount +
-                 "\nmodelSetHasVibrationVectors:" +
-                 modelSetHasVibrationVectors();
-    str = str.concat(listProperties(modelSetProperties));
-    for (int i = 0; i < modelCount; ++i) {
-      str = str.concat("\n" + i + ":" + getModelName(-1 -i) +
-                 ":" + getModelTitle(i) +
-                 "\nmodelHasVibrationVectors:" +
-                 modelHasVibrationVectors(i));
-      //str = str.concat(listProperties(getModelProperties(i)));
+    StringBuffer sb = new StringBuffer("model count = ");
+    sb.append(modelCount).append("\nmodelSetHasVibrationVectors:")
+        .append(modelSetHasVibrationVectors());
+    if (modelSetProperties == null) {
+      sb.append("\nProperties: null");
+    } else {
+      Enumeration e = modelSetProperties.propertyNames();
+      sb.append("\nProperties:");
+      while (e.hasMoreElements()) {
+        String propertyName = (String)e.nextElement();
+        sb.append("\n ").append(propertyName).append("=")
+            .append(modelSetProperties.getProperty(propertyName));
+      }
     }
-    return str;
+    for (int i = 0; i < modelCount; ++i)
+      sb.append("\n").append(i)
+          .append(":").append(getModelNumberDotted(i))
+          .append(":").append(getModelName(i))
+          .append(":").append(getModelTitle(i))
+          .append("\nmodelHasVibrationVectors:")
+          .append(modelHasVibrationVectors(i));
+    return sb.toString();
   }
   
   public String getSymmetryInfoAsString() {
-    String str = "Symmetry Information:";
-    for (int i = 0; i < modelCount; ++i) {
-      str += "\nmodel #" + getModelName(-1 - i) + "; name=" + getModelName(i) + "\n"
-          + getSymmetryInfoAsString(i);
-    }
-    return str;
+    StringBuffer sb = new StringBuffer("Symmetry Information:");
+    for (int i = 0; i < modelCount; ++i)
+      sb.append("\nmodel #").append(getModelNumberDotted(i))
+          .append("; name=").append(getModelName(i)).append("\n")
+          .append(getSymmetryInfoAsString(i));
+    return sb.toString();
   }
 
   public BitSet getAtomsConnected(float min, float max, int intType, BitSet bs) {
@@ -1756,19 +1739,19 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public String getModelFileInfo(BitSet frames) {
-    String str = "";
+    StringBuffer sb = new StringBuffer();
     for (int i = 0; i < modelCount; ++i) {
       if (frames != null && !frames.get(i))
         continue;
-      String file_model = getModelName(-1 - i);
-      str += "\n\nfile[\"" + file_model + "\"] = " 
-          + Escape.escape(getModelFile(i)) 
-          + "\ntitle[\"" + file_model + "\"] = " 
-          + Escape.escape(getModelTitle(i))
-          + "\nname[\"" + file_model + "\"] = "
-          + Escape.escape(getModelName(i));
+      String file_model = getModelNumberDotted(i);
+      sb.append("\n\nfile[\"").append(file_model)
+          .append("\"] = ").append(Escape.escape(getModelFile(i)))
+          .append("\ntitle[\"").append(file_model)
+          .append("\"] = ").append(Escape.escape(getModelTitle(i)))
+          .append("\nname[\"").append(file_model)
+          .append("\"] = ").append(Escape.escape(getModelName(i)));
     }
-    return str;
+    return sb.toString();
   }
   
   public Hashtable getAuxiliaryInfo() {
@@ -1816,7 +1799,7 @@ abstract public class ModelCollection extends BondCollection {
     }
     info.put("bondCount", new Integer(atom.getCovalentBondCount()));
     info.put("radius", new Float((atom.getRasMolRadius() / 120.0)));
-    info.put("model", atom.getModelNumberDotted());
+    info.put("model", atom.getModelNumberForLabel());
     info.put("visible", Boolean.valueOf(atoms[i].isVisible()));
     info.put("clickabilityFlags", new Integer(atom.clickabilityFlags));
     info.put("visibilityFlags", new Integer(atom.shapeVisibilityFlags));
@@ -1892,22 +1875,6 @@ abstract public class ModelCollection extends BondCollection {
    return info;
   }  
   
-  private String listProperties(Properties props) {
-    String str = "";
-    if (props == null) {
-      str = str.concat("\nProperties: null");
-    } else {
-      Enumeration e = props.propertyNames();
-      str = str.concat("\nProperties:");
-      while (e.hasMoreElements()) {
-        String propertyName = (String)e.nextElement();
-        str = str.concat("\n " + propertyName + "=" +
-                   props.getProperty(propertyName));
-      }
-    }
-    return str;
-  }
-
   public Hashtable getAllChainInfo(BitSet bs) {
     Hashtable finalInfo = new Hashtable();
     Vector modelVector = new Vector();

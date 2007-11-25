@@ -551,7 +551,7 @@ public class Dipoles extends Shape {
       if (dipole.isValid) {
         if (modelCount > 1 && dipole.modelIndex != thisModel)
           appendCmd(s, "frame "
-              + viewer.getModelName(thisModel = dipole.modelIndex));
+              + viewer.getModelNumberDotted(thisModel = dipole.modelIndex));
         s.append(dipole.getShapeState());
         appendCmd(s, getColorCommand("dipole", dipole.colix));
       }

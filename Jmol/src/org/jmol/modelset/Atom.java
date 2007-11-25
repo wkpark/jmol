@@ -872,7 +872,7 @@ final public class Atom extends Point3fi {
     }
     if (group.chain.modelSet.getModelCount() > 1) {
       info.append("/");
-      info.append(getModelNumberDotted());
+      info.append(getModelNumberForLabel());
     }
     info.append(" #");
     info.append(getAtomNumber());
@@ -1025,12 +1025,12 @@ final public class Atom extends Point3fi {
     return group.chain.model;
   }
 
-  String getModelNumberDotted() {
-    return group.chain.model.modelNumberDotted;
+  String getModelNumberForLabel() {
+    return group.chain.model.modelNumberForAtomLabel;
   }
   
   public int getModelNumber() {
-    return group.chain.model.modelNumber;
+    return group.chain.model.modelNumber % 1000000;
   }
   
   public int getModelFileIndex() {
@@ -1282,7 +1282,7 @@ final public class Atom extends Point3fi {
           strT = "" + getPolymerLength();
           break;
         case 'M':
-          strT = getModelNumberDotted();
+          strT = getModelNumberForLabel();
           break;
         case 'm':
           strT = getGroup1();

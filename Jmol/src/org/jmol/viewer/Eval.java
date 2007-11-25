@@ -1946,7 +1946,7 @@ class Eval { //implements Runnable {
     case Token.model:
       //integer model number -- could be PDB/sequential adapter number
       //or it could be a sequential model in file number when multiple files
-      return atom.getModelNumber() % 1000000;
+      return atom.getModelNumber();
     case -Token.model:
       //float is handled differently
       return atom.getModelFileNumber();
@@ -4041,17 +4041,23 @@ class Eval { //implements Runnable {
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
         viewer.openFile(filename, htParams, loadScript.toString(), isAppend);
     } else if (getToken(i + 1).tok == Token.leftbrace
-        || theTok == Token.integer) {
+        || theTok == Token.integer || theTok == Token.identifier) {
       if ((filename = parameterAsString(i++)).length() == 0)
         filename = viewer.getFullPathName();
       if (filename.length() > 0 && filename.charAt(0) == '=')
         filename = fixFileName(filename);
       loadScript.append(" ").append(Escape.escape(filename));
-      if (getToken(i).tok == Token.integer) {
-        params[0] = intParameter(i++);
-        loadScript.append(" ").append(params[0]);
+      int tok;
+      if ((tok = tokAt(i)) == Token.identifier
+          && parameterAsString(i).equalsIgnoreCase("manifest")) {
+        htParams.put("manifest", stringParameter(++i));
+        tok = tokAt(++i);
       }
-      int tok = tokAt(i);
+      if (tok == Token.integer) {
+        params[0] = intParameter(i);
+        loadScript.append(" ").append(params[0]);
+        tok = tokAt(++i);
+      }
       if (tok == Token.leftbrace || tok == Token.point3f) {
         unitCells = getPoint3f(i, false);
         i = iToken + 1;
@@ -4248,7 +4254,7 @@ class Eval { //implements Runnable {
     viewer.loadShape(JmolConstants.SHAPE_ECHO);
     viewer.addStateScript("frame " + viewer.getModelNumberDotted(modelIndex)
         + "; " + type + ";", false);
-    showString("frame " + viewer.getModelName(-modelCount) + " created: "
+    showString("frame " + viewer.getModelNumberDotted(modelIndex) + " created: "
         + type);
   }
 
@@ -6052,6 +6058,7 @@ class Eval { //implements Runnable {
     boolean haveFileSet = viewer.haveFileSet();
     if (isRange && nFrames == 0)
       isAll = true;
+
     if ((haveFileSet || !useModelNumber || isAll) && isTrajectory)
       evalError(GT._("trajectory not applicable in this context"));
     if (isSyntaxCheck)
@@ -7087,7 +7094,7 @@ class Eval { //implements Runnable {
               iv = atom.getModelFileIndex() + 1;
               break;
             case Token.model:
-              iv = atom.getModelNumber() % 1000000;
+              iv = atom.getModelNumber();
               break;
             default:
               isInt = false;
@@ -10367,10 +10374,7 @@ class Eval { //implements Runnable {
       case Token.spec_model2:
       case Token.decimal:
         if (token.intValue < Integer.MAX_VALUE) {
-          int iv = token.intValue;
-          sb.append("" + (iv / 1000000));
-          sb.append(".");
-          sb.append("" + (iv % 1000000));
+          sb.append(Escape.escapeModelFileNumber(token.intValue));
         } else {
           sb.append("" + token.value);
         }

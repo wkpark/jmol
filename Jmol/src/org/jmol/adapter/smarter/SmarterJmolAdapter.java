@@ -26,7 +26,10 @@ package org.jmol.adapter.smarter;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.CompoundDocument;
+import org.jmol.util.Escape;
+import org.jmol.util.TextFormat;
 import org.jmol.util.ZipUtil;
+import org.jmol.util.Logger;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -75,7 +78,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       }
       return "unknown reader error";
     } catch (Exception e) {
-      org.jmol.util.Logger.error(null, e);
+      Logger.error(null, e);
       bufferedReader = null;
       return "" + e;
     }
@@ -101,7 +104,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
           return "unknown reader error";
         }
       } catch (Exception e) {
-        org.jmol.util.Logger.error(null, e);
+        Logger.error(null, e);
         return "" + e;
       }
     }
@@ -113,34 +116,65 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
 
   public Object openZipFiles(InputStream is, String fullPathNameInThread,
-                             String fileName, String zipDirectory,
+                             String fileName, String[] zipDirectory,
                              Hashtable htParams, boolean doCombine) {
-    
+
     int[] params = null;
-    int selectedFile = (htParams == null ? 0 : (params = ((int[]) htParams.get("params")))[0]);
+    int selectedFile = (htParams == null ? 0 : (params = ((int[]) htParams
+        .get("params")))[0]);
     if (selectedFile > 0 && doCombine && params != null)
       params[0] = 0;
-    String fileType = getFileTypeName(new BufferedReader(new StringReader(
-        zipDirectory)));
-    boolean isSpartan = "SpartanSmol".equals(fileType);
+    // zipDirectory[0] is the manifest if present
+    String manifest = (htParams == null ? null : (String) htParams.get("manifest")); 
+    if (manifest == null) 
+      manifest = (zipDirectory.length > 0 ? zipDirectory[0] : "");
+    boolean haveManifest = (manifest.length() > 0);
+    if (haveManifest) {
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+        Logger.info("manifest for  " + fileName + ":\n" + manifest);
+      manifest = '|'+manifest.replace('\r','|').replace('\n','|')+'|';
+    }
+    boolean ignoreErrors = (manifest.indexOf("IGNORE_ERRORS") >= 0);
+    boolean selectAll = (manifest.indexOf("IGNORE_MANIFEST") >= 0);
+    if (selectAll)
+      haveManifest = false;
+    Vector vCollections = new Vector();
+    Hashtable htCollections = (haveManifest ? new Hashtable() : null);
+    if (haveManifest && manifest.indexOf("LIST_FILES") >= 0) {
+      for (int i = 1; i < zipDirectory.length; i++)
+        Logger.info(zipDirectory[i]);
+      return new AtomSetCollection(vCollections);
+    }
+      
+    
+    boolean isSpartan = false;
+    //0 entry is manifest
+    for (int i = 1; i < zipDirectory.length; i++) {
+      if (zipDirectory[i].indexOf("_spartandir") >= 0) {
+        isSpartan = true;
+        break;
+      }
+    }
     int nFiles = 0;
     StringBuffer data = new StringBuffer();
     if (isSpartan) {
       data = new StringBuffer();
-      data.append("Zip File Directory: ").append("\n").append(zipDirectory)
-          .append("\n");
+      data.append("Zip File Directory: ").append("\n").append(
+          Escape.escape(zipDirectory)).append("\n");
     }
-    Vector v = new Vector();
     ZipInputStream zis = new ZipInputStream(new BufferedInputStream(is));
     ZipEntry ze;
     try {
-      while ((ze = zis.getNextEntry()) != null 
-          && (selectedFile <= 0 || v.size() < selectedFile)) {
+      while ((ze = zis.getNextEntry()) != null
+          && (selectedFile <= 0 || vCollections.size() < selectedFile)) {
         if (ze.isDirectory())
           continue;
         byte[] bytes = ZipUtil.getZipEntryAsBytes(zis);
+        String thisEntry = ze.getName();
+        if (thisEntry.equals("JmolManifest") 
+            || haveManifest && manifest.indexOf("|" + thisEntry + "|") < 0)
+          continue;
         if (isSpartan) {
-          String thisEntry = ze.getName();
           data.append("\nBEGIN Zip File Entry: ").append(thisEntry)
               .append("\n");
           data.append(new String(bytes));
@@ -149,65 +183,108 @@ public class SmarterJmolAdapter extends JmolAdapter {
         } else if (ZipUtil.isZipFile(bytes)) {
           BufferedInputStream bis = new BufferedInputStream(
               new ByteArrayInputStream(bytes));
-          String zipDir2 = ZipUtil.getZipDirectoryAsStringAndClose(bis);
+          String[] zipDir2 = ZipUtil.getZipDirectoryAndClose(bis, true);
           bis = new BufferedInputStream(new ByteArrayInputStream(bytes));
-          Object clientFiles = openZipFiles(bis, fullPathNameInThread,
-              fileName, zipDir2, htParams, false);
-          if (clientFiles instanceof String)
+          Object clientFiles = openZipFiles(bis, fullPathNameInThread, fileName 
+              + "=>/" + thisEntry, zipDir2, htParams, false);
+          if (clientFiles instanceof String) {
+            if (ignoreErrors)
+              continue;
             return clientFiles;
-          if (clientFiles instanceof AtomSetCollection) {
-            v.addElement(clientFiles);
-          } else if (clientFiles instanceof Vector) {
-            Vector v2 = (Vector) clientFiles;
-            int n = v2.size();
-            for (int i = 0; i < n; i++)
-              v.addElement(v2.elementAt(i));
+          } else if (clientFiles instanceof AtomSetCollection
+              || clientFiles instanceof Vector) {
+            if (haveManifest)
+              htCollections.put(thisEntry, clientFiles);
+            else
+              vCollections.addElement(clientFiles);
           } else {
+            if (ignoreErrors)
+              continue;
+            zis.close();
             return "unknown zip reader error";
           }
         } else {
-          String sData = (CompoundDocument.isCompoundDocument(bytes) ? 
-              (new CompoundDocument(new BufferedInputStream(new ByteArrayInputStream(bytes))))
-                .getAllData().toString()
+          String sData = (CompoundDocument.isCompoundDocument(bytes) ? (new CompoundDocument(
+              new BufferedInputStream(new ByteArrayInputStream(bytes))))
+              .getAllData().toString()
               : new String(bytes));
-          Object clientFile = Resolver.resolve("zip://" + ze.getName(), null,
-              new BufferedReader(new StringReader(sData)));
+          Object clientFile = Resolver.resolve(fileName 
+              + "=>/" + ze.getName(), null,
+              new BufferedReader(new StringReader(sData)), htParams);
           if (clientFile instanceof AtomSetCollection) {
-            v.addElement(clientFile);
+            if (haveManifest)
+              htCollections.put(thisEntry, clientFile);
+            else
+              vCollections.addElement(clientFile);
             AtomSetCollection a = (AtomSetCollection) clientFile;
-            if (a.errorMessage != null)
+            if (a.errorMessage != null) {
+              if (ignoreErrors)
+                continue;
+              zis.close();
               return a.errorMessage;
+            }
           } else {
+            if (ignoreErrors)
+              continue;
+            zis.close();
             return "unknown reader error";
           }
         }
       }
-      if (!isSpartan) {
-        if (!doCombine)
-          return v;
-        AtomSetCollection result = new AtomSetCollection(v);
-        if (result.errorMessage != null)
-          return result.errorMessage;
-        if (nFiles == 1)
-          selectedFile = 1;
-        if (selectedFile > 0 && selectedFile <= v.size())
-          return v.elementAt(selectedFile - 1);
-        return result;
+      if (doCombine)
+        zis.close();
+      if (isSpartan) {
+        Object clientFile = Resolver.resolve(fileName, null,
+            new BufferedReader(new StringReader(data.toString())));
+        if (clientFile instanceof String)
+          return clientFile;
+        if (clientFile instanceof AtomSetCollection) {
+          AtomSetCollection atomSetCollection = (AtomSetCollection) clientFile;
+          if (atomSetCollection.errorMessage != null) {
+            if (ignoreErrors)
+              return null;
+            return atomSetCollection.errorMessage;
+          }
+          return atomSetCollection;
+        }
+        if (ignoreErrors)
+          return null;
+        return "unknown reader error";
       }
-      Object clientFile = Resolver.resolve(fileName, null, new BufferedReader(
-          new StringReader(data.toString())));
-      if (clientFile instanceof String)
-        return clientFile;
-      if (clientFile instanceof AtomSetCollection) {
-        AtomSetCollection atomSetCollection = (AtomSetCollection) clientFile;
-        if (atomSetCollection.errorMessage != null)
-          return atomSetCollection.errorMessage;
-        return atomSetCollection;
+      
+      // if a manifest exists, it sets the files and file order
+      
+      if (haveManifest) {
+        String[] list = TextFormat.split(manifest, '|');
+        for (int i = 0; i < list.length; i++) {
+          String file = list[i];
+          if (file.length() == 0 || file.indexOf("#") == 0)
+            continue;
+          if (htCollections.containsKey(file))
+            vCollections.add(htCollections.get(file));
+          else if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+            Logger.info("manifested file " + file + " was not found in " + fileName);
+        }
       }
-      return "unknown reader error";
+      
+      if (!doCombine)
+        return vCollections;
+      AtomSetCollection result = new AtomSetCollection(vCollections);
+      if (result.errorMessage != null) {
+        if (ignoreErrors)
+          return null;
+        return result.errorMessage;
+      }
+      if (nFiles == 1)
+        selectedFile = 1;
+      if (selectedFile > 0 && selectedFile <= vCollections.size())
+        return vCollections.elementAt(selectedFile - 1);
+      return result;
 
     } catch (Exception e) {
-      org.jmol.util.Logger.error(null, e);
+      if (ignoreErrors)
+        return null;
+      Logger.error(null, e);
       return "" + e;
     }
   }
@@ -227,7 +304,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       }
       return "unknown DOM reader error";
     } catch (Exception e) {
-      org.jmol.util.Logger.error(null, e);
+      Logger.error(null, e);
       return "" + e;
     }
   }

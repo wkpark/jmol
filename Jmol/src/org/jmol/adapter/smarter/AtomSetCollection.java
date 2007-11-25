@@ -144,7 +144,8 @@ public class AtomSetCollection {
   }
 
   /**
-   * Creates an AtomSetCollection based on an array of AtomSetCollection
+   * Creates an AtomSetCollection based on a Vector of 
+   *   AtomSetCollection or Vector (from zipped zip files)
    * 
    * @param list Vector of AtomSetCollection
    */
@@ -152,12 +153,20 @@ public class AtomSetCollection {
   public AtomSetCollection(Vector list) {
     this("Array");
     setAtomSetCollectionAuxiliaryInfo("isMultiFile", Boolean.TRUE);
-    int n = list.size();
-    for (int i = 0; i < n; i++) {
-      appendAtomSetCollection(i, (AtomSetCollection) list.elementAt(i));
-    }
+    appendAtomSetCollection(list);
   }
 
+  private void appendAtomSetCollection(Vector list) {
+    int n = list.size();
+    for (int i = 0; i < n; i++) {
+      Object o = list.elementAt(i);
+      if (o instanceof Vector)
+        appendAtomSetCollection((Vector) o);
+      else
+        appendAtomSetCollection(i, (AtomSetCollection) o);
+    }  
+  }
+  
   /**
    * Just sets the overall file type after the fact.
    * @param type
@@ -208,11 +217,6 @@ public class AtomSetCollection {
         clonedAtoms++;
       }
 
-      int modelFileNumber = ((Integer)atomSetAuxiliaryInfo[currentAtomSetIndex].get("modelFileNumber")).intValue();
-      modelFileNumber += (collectionIndex + 1) * 1000000;
-      atomSetAuxiliaryInfo[currentAtomSetIndex].put("modelFileNumber", new Integer(modelFileNumber));
-
-      
       //Structures: We must incorporate any global structures (modelIndex == -1) into this model
       //explicitly. Whew! This is because some cif _data structures have multiple PDB models (1skt)
       for (int i = 0; i < collection.structureCount; i++)
@@ -222,8 +226,15 @@ public class AtomSetCollection {
 
       // names and numbers
       atomSetNames[currentAtomSetIndex] = collection.atomSetNames[atomSetNum];
+      
       atomSetNumbers[currentAtomSetIndex] = ((collectionIndex + 1) * 1000000)
           + collection.atomSetNumbers[atomSetNum];
+
+      // Note -- this number is used for Model.modelNumber. It is a combination of
+      // file number * 1000000 + PDB MODEL NUMBER, which could be anything.
+      // Adding the file number here indicates that we have multiple files.
+      // But this will all be adjusted in ModelLoader.finalizeModels(). BH 11/2007
+      
     }
     // Clone bonds
     for (int bondNum = 0; bondNum < collection.bondCount; bondNum++) {
@@ -359,7 +370,6 @@ public class AtomSetCollection {
       atomSetCount = 1;
       currentAtomSetIndex = 0;
       atomSetNumbers[0] = 1;
-      setAtomSetAuxiliaryInfo("modelFileNumber", new Integer(1));
     }
      */
     atom.atomSetIndex = currentAtomSetIndex;
@@ -824,8 +834,6 @@ public class AtomSetCollection {
     // seems that it should have been here all along, but apparently
     // noone else needed it
     atomSymbolicMap.clear();
-    setAtomSetAuxiliaryInfo("modelFileNumber", new Integer(
-        currentAtomSetIndex + 1));
     setAtomSetAuxiliaryInfo("title", collectionName);    
   }
 

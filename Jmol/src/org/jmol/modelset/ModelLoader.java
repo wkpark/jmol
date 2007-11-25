@@ -308,7 +308,7 @@ public final class ModelLoader extends ModelSet {
       if (modelName == null)
         modelName = (jmolData != null ? jmolData.substring(jmolData
             .indexOf(":") + 2, jmolData.indexOf("data("))
-            : modelNumber == Integer.MAX_VALUE ? "" : "" + modelNumber);
+            : modelNumber == Integer.MAX_VALUE ? "" : "" + (modelNumber % 1000000));
       Properties modelProperties = adapter.getAtomSetProperties(clientFile, i);
       Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
           clientFile, i);
@@ -328,6 +328,33 @@ public final class ModelLoader extends ModelSet {
     finalizeModels(baseModelCount);
   }
     
+  boolean setModelNameNumberProperties(int modelIndex, String modelName,
+                                       int modelNumber,
+                                       Properties modelProperties,
+                                       Hashtable modelAuxiliaryInfo,
+                                       boolean isPDB, String jmolData) {
+
+    this.modelProperties[modelIndex] = modelProperties;
+    if (modelAuxiliaryInfo == null)
+      modelAuxiliaryInfo = new Hashtable();
+    this.modelAuxiliaryInfo[modelIndex] = modelAuxiliaryInfo;
+    String modelTitle = (String) getModelAuxiliaryInfo(modelIndex, "title");
+    if (jmolData != null) {
+      modelAuxiliaryInfo.put("jmolData", jmolData);
+      modelTitle = jmolData;
+    }
+    String modelFile = (String) getModelAuxiliaryInfo(modelIndex, "fileName");
+    if (modelNumber != Integer.MAX_VALUE)
+      models[modelIndex] = new Model((ModelSet) this, modelIndex, modelNumber,
+          modelName, modelTitle, modelFile, jmolData);
+    String codes = (String) getModelAuxiliaryInfo(modelIndex, "altLocs");
+    models[modelIndex].setNAltLocs(codes == null ? 0 : codes.length());
+    codes = (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");
+    models[modelIndex].setNInsertions(codes == null ? 0 : codes.length());
+    return models[modelIndex].isPDB = getModelAuxiliaryInfoBoolean(modelIndex,
+        "isPDB");
+  }
+
   /**
    * Model numbers are considerably more complicated in Jmol 11.
    * 
@@ -364,6 +391,10 @@ public final class ModelLoader extends ModelSet {
    *   
    *   A number the user can use "1.3"
    *   
+   * String modelNumberForAtomLabel
+   * 
+   *   Either the dotted number or the PDB MODEL number, if there is only one file
+   *   
    * @param baseModelCount
    *    
    */
@@ -375,25 +406,24 @@ public final class ModelLoader extends ModelSet {
 
     int lastfilenumber = -1;
     if (baseModelCount > 0) {
+      // load append
       if (models[0].modelNumber < 1000000) {
+        // initially we had just one file
         for (int i = 0; i < baseModelCount; i++) {
-          models[i].modelNumber = 1000000 + i + 1;
-          models[i].modelNumberDotted = "1." + (i + 1);
+          // create 1000000 model numbers for the original file models
           if (models[i].modelTag.length() == 0)
             models[i].modelTag = "" + models[i].modelNumber;
+          models[i].modelNumber += 1000000;
+          models[i].modelNumberForAtomLabel = "1." + (i + 1);
         }
       }
-      modelnumber = models[baseModelCount - 1].modelNumber;
-      modelnumber -= modelnumber % 1000000;
+      // update file number
+      int filenumber = models[baseModelCount - 1].modelNumber;
+      filenumber -= filenumber % 1000000;
       if (models[baseModelCount].modelNumber < 1000000)
-        modelnumber += 1000000;
-      for (int i = baseModelCount; i < modelCount; i++) {
-        models[i].modelNumber += modelnumber;
-        models[i].modelNumberDotted = (modelnumber / 1000000) + "."
-            + (modelnumber % 1000000);
-        if (models[i].modelTag.length() == 0)
-          models[i].modelTag = "" + models[i].modelNumber;
-      }
+        filenumber += 1000000;
+      for (int i = baseModelCount; i < modelCount; i++)
+        models[i].modelNumber += filenumber;
     }
     for (int i = baseModelCount; i < modelCount; ++i) {
       int filenumber = models[i].modelNumber / 1000000;
@@ -414,15 +444,25 @@ public final class ModelLoader extends ModelSet {
         // else
         sNum = filenumber + "." + modelnumber;
       }
-      models[i].modelNumberDotted = sNum;
+      models[i].modelNumberForAtomLabel = sNum;
       models[i].fileIndex = filenumber - 1;
       models[i].modelInFileIndex = modelnumber - 1;
       models[i].modelFileNumber = filenumber * 1000000 + modelnumber;
-    }
+      if (models[i].modelTag.length() == 0)
+        models[i].modelTag = sNum;
+   }
     
     if (merging)
       for (int i = 0; i < baseModelCount; i++)
         models[i].modelSet = this;
+    
+    for (int i = 0; i < modelCount; i++) {
+      setModelAuxiliaryInfo(i, "modelName", models[i].modelTag);
+      setModelAuxiliaryInfo(i, "modelNumber", new Integer(models[i].modelNumber % 1000000));
+      setModelAuxiliaryInfo(i, "modelFileNumber", new Integer(models[i].modelFileNumber));
+      setModelAuxiliaryInfo(i, "modelNumberDotted", getModelNumberDotted(i));
+    }
+
   }
 
   private void iterateOverAllNewAtoms(JmolAdapter adapter, Object clientFile) {

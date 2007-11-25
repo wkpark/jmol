@@ -48,6 +48,7 @@ package org.jmol.symmetry;
  * lattice types S and T are not supported here
  * 
  */
+
 import javax.vecmath.Point3i;
 import javax.vecmath.Matrix4f;
 import org.jmol.util.Logger;
@@ -91,14 +92,28 @@ public class HallInfo {
   }
   
   public String dumpInfo() {
-    String str = "\nHall symbol: " + hallSymbol + "\nprimitive Hall symbol: "
-        + primitiveHallSymbol + "\nlattice type: " + getLatticeDesignation();
+    StringBuffer sb =  new StringBuffer("\nHall symbol: ").append(hallSymbol)
+        .append("\nprimitive Hall symbol: ").append(primitiveHallSymbol)
+        .append("\nlattice type: ").append(getLatticeDesignation());
     for (int i = 0; i < nRotations; i++) {
-      str += "\n\nrotation term " + (i + 1) + rotationTerms[i].dumpInfo();
+      sb.append("\n\nrotation term ").append(i + 1).append(rotationTerms[i].dumpInfo());
     }
-    return str;
+    return sb.toString();
   }
-  
+
+/*  
+   public String getCanonicalSeitzList() {
+    String[] list = new String[nRotations];
+    for (int i = 0; i < nRotations; i++)
+      list[i] = SymmetryOperation.dumpSeitz(rotationTerms[i].seitzMatrix12ths);
+    Arrays.sort(list, 0, nRotations);
+    String s = "";
+    for (int i = 0; i < nRotations; i++)
+      s += list[i];
+    s = s.replace('\t',' ').replace('\n',';');
+    return s;
+  }
+*/
   public String getLatticeDesignation() {    
     return Translation.getLatticeDesignation(latticeCode, isCentrosymmetric);
   }  
@@ -184,22 +199,22 @@ public class HallInfo {
     boolean allPositive = true; //for now
     
     String dumpInfo() {
-      String str = "\ninput code: " + inputCode + "; primitive code: "
-          + primitiveCode;
-      str += "\norder: " + order + (isImproper ? " (improper axis)" : "");
+      StringBuffer sb= new StringBuffer("\ninput code: ")
+           .append(inputCode).append("; primitive code: ").append(primitiveCode)
+           .append("\norder: ").append(order).append(isImproper ? " (improper axis)" : "");
       if (axisType != '_') {
-        str += "; axisType: " + axisType;
+        sb.append("; axisType: ").append(axisType);
         if (diagonalReferenceAxis != '\0')
-          str += diagonalReferenceAxis;
+          sb.append(diagonalReferenceAxis);
       }
       if (translationString.length() > 0)
-        str += "; translation: " + translationString;
+        sb.append("; translation: ").append(translationString);
       if (vectorCode.length() > 0)
-        str += "; vector offset:" + vectorCode;
+        sb.append("; vector offset:").append(vectorCode);
       if (rotation != null)
-        str += "\noperator: " + getXYZ(allPositive)
-            + "\nSeitz matrix:\n" + SymmetryOperation.dumpSeitz(seitzMatrix12ths);
-      return str;
+        sb.append("\noperator: ").append(getXYZ(allPositive)).append("\nSeitz matrix:\n")
+            .append(SymmetryOperation.dumpSeitz(seitzMatrix12ths));
+      return sb.toString();
     }
     
    String getXYZ(boolean allPositive) {

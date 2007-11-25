@@ -24,6 +24,8 @@
 
 package org.jmol.symmetry;
 
+import java.util.Arrays;
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4f;
 
@@ -47,6 +49,7 @@ import org.jmol.util.Logger;
 
 public class SpaceGroup {
 
+  int index;
   String hallSymbol;
   //String schoenfliesSymbol; //parsed but not read
   String hmSymbol; 
@@ -85,6 +88,7 @@ public class SpaceGroup {
   }
   
   private void buildSpaceGroup(String cifLine) {
+    index = ++sgIndex;
     line = cifLine;
     intlTableNumberFull = term = extractLine(); //International Table Number : options
     intlTableNumber = extractTerm(':');
@@ -145,24 +149,69 @@ public class SpaceGroup {
     if (hallInfo == null)
       hallInfo = new HallInfo(hallSymbol);
     generateAllOperators(null);
-    String str = "\nHermann-Mauguin symbol: " + hmSymbol
-        + (hmSymbolExt.length() > 0 ? ":" + hmSymbolExt : "")
-        + "\ninternational table number: " + intlTableNumber
-        + (intlTableNumberExt.length() > 0 ? ":" + intlTableNumberExt : "")
-        + (hallInfo == null ? "invalid Hall symbol" : hallInfo.dumpInfo())
-        + "\n\nOperators from Hall symbol (" + operationCount + "):";
+    StringBuffer sb = new StringBuffer("\nHermann-Mauguin symbol: ");
+    sb.append(hmSymbol).append(hmSymbolExt.length() > 0 ? ":" + hmSymbolExt : "")
+        .append("\ninternational table number: ").append(intlTableNumber)
+        .append(intlTableNumberExt.length() > 0 ? ":" + intlTableNumberExt : "")
+        .append(hallInfo == null ? "invalid Hall symbol" : hallInfo.dumpInfo())
+        .append("\n\n").append(operationCount).append(" operators")
+        .append(!hallInfo.hallSymbol.equals("--") ? " from Hall symbol "  + hallInfo.hallSymbol: "")
+        .append(": ");
     for (int i = 0; i < operationCount; i++)
-      str += "\n" + operations[i].xyz;
-    return str;
+      sb.append("\n").append(operations[i].xyz);
+    sb.append("\n\ncanonical Seitz: ").append(dumpCanonicalSeitzList()) 
+        .append(sb).append("\n----------------------------------------------------\n");
+    return sb.toString();
   }
 
-  public final static String dumpAll() {
-   String str = "";
-   for (int i = 0; i < spaceGroupDefinitions.length; i++)
-     str += "\n----------------------\n" + spaceGroupDefinitions[i].dumpInfo();
-   return str;
+  private static String[] canonicalSeitzList;
+  public String dumpCanonicalSeitzList() {
+    if (hallInfo == null)
+      hallInfo = new HallInfo(hallSymbol);
+    generateAllOperators(null);
+    String[] list = new String[operationCount];
+    for (int i = 0; i < operationCount; i++)
+      list[i] = SymmetryOperation.dumpCanonicalSeitz(operations[i]);
+    Arrays.sort(list, 0, operationCount);
+    StringBuffer sb = new StringBuffer("\n[");
+    for (int i = 0; i < operationCount; i++)
+      sb.append(list[i].replace('\t',' ').replace('\n',' ')).append("; ");
+    sb.append("]");
+    if (index >= spaceGroupDefinitions.length) {
+      if (canonicalSeitzList == null) {
+      canonicalSeitzList = new String[spaceGroupDefinitions.length];
+      for (int i = 0; i < spaceGroupDefinitions.length; i++)
+        canonicalSeitzList[i] = spaceGroupDefinitions[i].dumpCanonicalSeitzList();
+      }
+      String s = sb.toString();
+      for (int i = 0; i < spaceGroupDefinitions.length; i++)
+        if (canonicalSeitzList[i].indexOf(s) >= 0){
+          sb = new StringBuffer("identified as intl table# ") 
+              .append(spaceGroupDefinitions[i].intlTableNumber) 
+              .append(" / H-M = ").append(spaceGroupDefinitions[i].hmSymbol) 
+              .append(" / Hall = ").append(spaceGroupDefinitions[i].hallSymbol);
+          break;
+        }
+    }
+    return (index >= 0  && index < spaceGroupDefinitions.length 
+        ? hallSymbol + " " : "") + sb.toString();
   }
   
+
+  public final static String dumpAll() {
+   StringBuffer sb = new StringBuffer();
+   for (int i = 0; i < spaceGroupDefinitions.length; i++)
+     sb.append("\n----------------------\n" + spaceGroupDefinitions[i].dumpInfo());
+   return sb.toString();
+  }
+  
+  public final static String dumpAllSeitz() {
+    StringBuffer sb = new StringBuffer();
+    for (int i = 0; i < spaceGroupDefinitions.length; i++)
+      sb.append("\n").append(spaceGroupDefinitions[i].dumpCanonicalSeitzList());
+    return sb.toString();
+  }
+   
   public String getName() {
     return hallSymbol + " ["+hmSymbolFull+"]";  
   }
@@ -242,16 +291,20 @@ public class SpaceGroup {
   }
 
   public final static SpaceGroup determineSpaceGroup(String name) {
-    return determineSpaceGroup(name, 0f, 0f, 0f, 0f, 0f, 0f);
+    return determineSpaceGroup(name, 0f, 0f, 0f, 0f, 0f, 0f, -1);
+  }
+
+  public final static SpaceGroup determineSpaceGroup(String name, SpaceGroup sg) {
+    return determineSpaceGroup(name, 0f, 0f, 0f, 0f, 0f, 0f, sg.index);
   }
 
   public final static SpaceGroup determineSpaceGroup(String name,
                                                      float[] notionalUnitcell) {
     if (notionalUnitcell == null)
-      return determineSpaceGroup(name, 0f, 0f, 0f, 0f, 0f, 0f);
+      return determineSpaceGroup(name, 0f, 0f, 0f, 0f, 0f, 0f, -1);
     return determineSpaceGroup(name, notionalUnitcell[0], notionalUnitcell[1],
         notionalUnitcell[2], notionalUnitcell[3], notionalUnitcell[4],
-        notionalUnitcell[5]);
+        notionalUnitcell[5], -1);
   }
 
   static Object[] query = new Object[2];
@@ -262,7 +315,7 @@ public class SpaceGroup {
   final static int SPACE_GROUP_QUERY = 9999;
   
   public final static int determineSpaceGroupIndex(String name) {
-    int i = determineSpaceGroupIndex(name, 0f, 0f, 0f, 0f, 0f, 0f);
+    int i = determineSpaceGroupIndex(name, 0f, 0f, 0f, 0f, 0f, 0f, -1);
     if (i < 0) {
       query[0] = name;
       i = SPACE_GROUP_QUERY;
@@ -273,16 +326,16 @@ public class SpaceGroup {
   public final static SpaceGroup determineSpaceGroup(String name, float a,
                                                      float b, float c,
                                                      float alpha, float beta,
-                                                     float gamma) {
+                                                     float gamma, int lastIndex) {
     
-    int i = determineSpaceGroupIndex(name, a, b, c, alpha, beta,  gamma);
+    int i = determineSpaceGroupIndex(name, a, b, c, alpha, beta,  gamma, lastIndex);
     return (i >=0 ? spaceGroupDefinitions[i] : null);
   }
 
   public final static int determineSpaceGroupIndex(String name, float a,
                                                    float b, float c,
                                                    float alpha, float beta,
-                                                   float gamma) {
+                                                   float gamma, int lastIndex) {
 
     name = name.trim();
     String nameExt = name;
@@ -321,8 +374,10 @@ public class SpaceGroup {
 
     // Hall symbol
 
+    if (lastIndex < 0)
+      lastIndex = spaceGroupDefinitions.length;
     if (ext.length() == 0) // no extensions for Hall symbols
-      for (i = spaceGroupDefinitions.length; --i >= 0;) {
+      for (i = lastIndex; --i >= 0;) {
         s = spaceGroupDefinitions[i];
         if (s.hallSymbol.equals(name))
           return i;
@@ -330,7 +385,7 @@ public class SpaceGroup {
 
     // Full intl table entry, including :xx
 
-    for (i = spaceGroupDefinitions.length; --i >= 0;) {
+    for (i = lastIndex; --i >= 0;) {
       s = spaceGroupDefinitions[i];
       if (s.intlTableNumberFull.equals(nameExt))
         return i;
@@ -341,14 +396,14 @@ public class SpaceGroup {
     // BUT some on the list presume defaults. The way to finesse this is
     // to add ":?" to a space group name to force axis ambiguity check
 
-    for (i = spaceGroupDefinitions.length; --i >= 0;) {
+    for (i = lastIndex; --i >= 0;) {
       s = spaceGroupDefinitions[i];
       if (s.hmSymbolFull.equals(nameExt))
         return i;
     }
 
     // alternative, but unique H-M symbol, specifically for F m 3 m/F m -3 m type
-    for (i = spaceGroupDefinitions.length; --i >= 0;) {
+    for (i = lastIndex; --i >= 0;) {
       s = spaceGroupDefinitions[i];
       if (s.hmSymbolAlternative != null
           && s.hmSymbolAlternative.equals(nameExt))
@@ -358,7 +413,7 @@ public class SpaceGroup {
     // Abbreviated H-M with intl table :xx
 
     if (ext.length() > 0) // P2/m:a      
-      for (i = spaceGroupDefinitions.length; --i >= 0;) {
+      for (i = lastIndex; --i >= 0;) {
         s = spaceGroupDefinitions[i];
         if (s.hmSymbolAbbr.equals(abbr) && s.intlTableNumberExt.equals(ext))
           return i;
@@ -366,7 +421,7 @@ public class SpaceGroup {
 
     // shortened -- not including " 1 " terms
     if (ext.length() > 0) // P2/m:a      
-      for (i = spaceGroupDefinitions.length; --i >= 0;) {
+      for (i = lastIndex; --i >= 0;) {
         s = spaceGroupDefinitions[i];
         if (s.hmSymbolAbbrShort.equals(abbr)
             && s.intlTableNumberExt.equals(ext))
@@ -379,7 +434,7 @@ public class SpaceGroup {
 
     if (ext.length() == 0 || ext.charAt(0) == '?')
       // no extension or unknown extension, so we look for unique axis      
-      for (i = spaceGroupDefinitions.length; --i >= 0;) {
+      for (i = lastIndex; --i >= 0;) {
         s = spaceGroupDefinitions[i];
         if (s.hmSymbolAbbr.equals(abbr) || s.hmSymbolAbbrShort.equals(abbr)) {
           switch (s.ambiguityType) {
@@ -410,9 +465,9 @@ public class SpaceGroup {
     // inexact just the number; no extension indicated
 
     if (ext.length() == 0)
-      for (i = spaceGroupDefinitions.length; --i >= 0;) {
+      for (i = lastIndex; --i >= 0;) {
         s = spaceGroupDefinitions[i];
-        if (s.intlTableNumber.equals(name))
+        if (s.intlTableNumber.equals(nameExt))
           return i;
       }
     return -1;
@@ -576,6 +631,8 @@ public class SpaceGroup {
   }
 
   ///  data  ///
+
+  static int sgIndex = -1;
   
   final static SpaceGroup[] spaceGroupDefinitions = {
       new SpaceGroup("1 c1^1 p_1 p_1")

@@ -2008,13 +2008,25 @@ abstract public class ModelCollection extends BondCollection {
           + getModelSymmetryList(modelIndex);
     } else if (spaceGroup.equalsIgnoreCase("ALL")) {
       return SpaceGroup.dumpAll();
+    } else if (spaceGroup.equalsIgnoreCase("ALLSEITZ")) {
+      return SpaceGroup.dumpAllSeitz();
     } else {
       sg = SpaceGroup.determineSpaceGroup(spaceGroup);
-      if (sg == null)
+      if (sg == null) {
         sg = SpaceGroup.createSpaceGroup(spaceGroup, false);
+      } else {
+        StringBuffer sb = new StringBuffer();
+        while (sg != null) {
+          sb.append(sg.dumpInfo());
+          sg = SpaceGroup.determineSpaceGroup(spaceGroup, sg);
+        }
+        return sb.toString();
+      }
     }
     if (sg == null)
-      return "could not identify space group from name: " + spaceGroup;
+      return "could not identify space group from name: " + spaceGroup 
+      + "\nformat: show spacegroup \"2\" or \"P 2c\" " +
+          "or \"C m m m\" or \"x, y, z;-x ,-y, -z\"";
     return sg.dumpInfo() + strOperations;
   }
 

@@ -93,11 +93,22 @@ public class SymmetryOperation extends Matrix4f {
   }
 
   final static String dumpSeitz(Matrix4f s) {
-    return "{\t" + (int) s.m00 + "\t" + (int) s.m01 + "\t" + (int) s.m02 + "\t"
-        + twelfthsOf(s.m03) + "\t}\n" + "{\t" + (int) s.m10 + "\t"
-        + (int) s.m11 + "\t" + (int) s.m12 + "\t" + twelfthsOf(s.m13) + "\t}\n"
-        + "{\t" + (int) s.m20 + "\t" + (int) s.m21 + "\t" + (int) s.m22 + "\t"
-        + twelfthsOf(s.m23) + "\t}\n" + "{\t0\t0\t0\t1\t}\n";
+    return (new StringBuffer("{\t")).append((int) s.m00).append("\t").append((int) s.m01)
+        .append("\t").append((int) s.m02).append("\t").append(twelfthsOf(s.m03)).append("\t}\n")
+        .append("{\t").append((int) s.m10).append("\t").append((int) s.m11).append("\t").append((int) s.m12)
+        .append("\t").append(twelfthsOf(s.m13)).append("\t}\n")
+        .append("{\t").append((int) s.m20).append("\t").append((int) s.m21).append("\t").append((int) s.m22)
+        .append("\t").append(twelfthsOf(s.m23)).append("\t}\n").append("{\t0\t0\t0\t1\t}\n").toString();
+  }
+  
+  final static String dumpCanonicalSeitz(Matrix4f s) {
+    return (new StringBuffer()).append("{\t").append((int) s.m00).append("\t").append((int) s.m01)
+        .append("\t").append((int) s.m02).append("\t").append(twelfthsOf(s.m03+12)).append("\t}\n")
+        .append("{\t").append((int) s.m10).append("\t").append((int) s.m11).append("\t").append((int) s.m12)
+        .append("\t").append(twelfthsOf(s.m13+12)).append("\t}\n").append("{\t").append((int) s.m20)
+        .append("\t").append((int) s.m21).append("\t")
+        .append((int) s.m22).append("\t").append(twelfthsOf(s.m23+12)).append("\t}\n")
+        .append("{\t0\t0\t0\t1\t}\n").toString();
   }
   
   boolean setMatrixFromXYZ(String xyz) {

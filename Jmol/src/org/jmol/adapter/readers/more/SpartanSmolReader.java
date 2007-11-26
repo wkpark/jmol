@@ -41,6 +41,7 @@ public class SpartanSmolReader extends AtomSetCollectionReader {
 
   private boolean isCompoundDocument;
   private boolean isZipFile;
+  private boolean isDirectory;
   
   private String modelName = "Spartan file";
   private int atomCount;
@@ -55,9 +56,13 @@ public class SpartanSmolReader extends AtomSetCollectionReader {
       readLine();
       isCompoundDocument = (line.indexOf("Compound Document") >= 0);
       isZipFile = (line.indexOf("Zip File") >= 0);
+      isDirectory = (line.indexOf("Directory") >= 0);
       atomSetCollection = new AtomSetCollection("spartan "
           + (isCompoundDocument ? "compound document file" 
+              : isDirectory ? "directory"
               : isZipFile ? "zip file" : "smol"));
+      if (isZipFile)
+        isDirectory = true;
       while (line != null) {
          //System.out.println(line);
         if (line.equals("HESSIAN") && bondData != null) {
@@ -69,7 +74,7 @@ public class SpartanSmolReader extends AtomSetCollectionReader {
         }
         if (line.equals("BEGINARCHIVE")
             || isCompoundDocument && line.equals("BEGIN Compound Document Entry: Archive")
-            || isZipFile && line.indexOf("BEGIN") == 0 && line.indexOf("/archive") > 0
+            || isDirectory && line.indexOf("BEGIN") == 0 && line.indexOf("/archive") > 0
             ) {
           spartanArchive = new SpartanArchive(this, atomSetCollection,
               moData, bondData);
@@ -81,7 +86,7 @@ public class SpartanSmolReader extends AtomSetCollectionReader {
           }
         } else if (atomCount > 0 && line.indexOf("BEGINPROPARC") == 0
             || isCompoundDocument && line.equals("BEGIN Compound Document Entry: PropertyArchive")
-            || isZipFile && line.indexOf("BEGIN") == 0 && line.indexOf("/proparc") > 0
+            || isDirectory && line.indexOf("BEGIN") == 0 && line.indexOf("/proparc") > 0
             ) {
           spartanArchive.readProperties();
           if (!atomSetCollection

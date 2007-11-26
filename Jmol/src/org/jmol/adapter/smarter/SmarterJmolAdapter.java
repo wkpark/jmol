@@ -61,6 +61,11 @@ public class SmarterJmolAdapter extends JmolAdapter {
     ((AtomSetCollection)clientFile).finish();
   }
 
+  public String[] specialLoad(String name, String type) {
+    return Resolver.specialLoad(name, type);  
+  }
+  
+
   public Object openBufferedReader(String name, String type,
                                    BufferedReader bufferedReader, Hashtable htParams) {
     //FileOpenThread, TesetSmarterJmolAdapter
@@ -548,4 +553,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
       return structure.endInsertionCode;
     }
   }
+  
+  
 }

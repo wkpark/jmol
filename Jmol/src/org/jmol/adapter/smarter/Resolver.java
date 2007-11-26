@@ -60,6 +60,21 @@ class Resolver {
     }
   }
   
+  public static String[] specialLoad(String name, String type) {
+    int pt;
+    if ((pt = name.lastIndexOf(".spardir")) >= 0) {
+      name = name.replace('\\','/');
+      name = name.substring(0, pt + (name.indexOf("/M") == pt + 8 ? 14 : 8));
+      if (name.indexOf("/M") < 0)
+        name += "/M0001";
+      return new String[] { "SpartanSmol", "Directory Entry ",
+          name + "/input",
+          name + "/archive", 
+          name + "/proparc"};
+    }
+    return null;
+  }
+
   static Object resolve(String name, String type, BufferedReader bufferedReader) throws Exception {
     return resolve(name, type, bufferedReader, null);
   }
@@ -466,7 +481,7 @@ class Resolver {
   { "Gamess", "GAMESS" };
 
   final static String[] spartanBinaryRecords =
-  { "SpartanSmol" , "|PropertyArchive", "_spartan" };
+  { "SpartanSmol" , "|PropertyArchive", "_spartan", "spardir" };
 
   final static String[] spartanRecords =
   { "Spartan", "Spartan" };

@@ -120,12 +120,15 @@ class FileManager {
     int pt = fileName.indexOf("::");
     if (pt >= 0)
       return fileName.substring(0, pt);
-    Object br = getUnzippedBufferedReaderOrErrorMessageFromName(fileName, true);
+    Object br = getUnzippedBufferedReaderOrErrorMessageFromName(fileName, true, true);
     if (br instanceof BufferedReader)
       return modelAdapter.getFileTypeName((BufferedReader) br);
     if (br instanceof ZipInputStream) {
       String zipDirectory = getZipDirectoryAsString(fileName);
-      return modelAdapter.getFileTypeName(getBufferedReaderForString(zipDirectory));
+      return modelAdapter.getFileTypeName(getBufferedReaderForString(zipDirectory));      
+    }
+    if (br instanceof String[]) {
+      return ((String[])br)[0];
     }
     return null;
   }
@@ -490,10 +493,35 @@ class FileManager {
     return new BufferedReader(new StringReader(string));
   }
 
-  Object getUnzippedBufferedReaderOrErrorMessageFromName(String name, boolean allowZipStream) {
+  
+  /**
+   * load a set of files as a string
+   * fileSet[0] is the reader class type (SpartanSmol)
+   * 
+   * @param fileSet
+   * @return a BufferedReader for the file
+   */
+  Object loadFileSetAsOneFile(String[] fileSet) {
+    StringBuffer sb = new StringBuffer();
+    String header = fileSet[1];
+    for (int i = 2; i < fileSet.length; i++) {
+      String name = fileSet[i];
+      sb.append("BEGIN " + header + " " + name + "\n");
+      sb.append(getFileAsString(name));
+      sb.append("\nEND " + header + " " + name + "\n");
+    }
+    return getBufferedReaderForString(sb.toString());
+  }
+
+  Object getUnzippedBufferedReaderOrErrorMessageFromName(String name
+                                                         , boolean allowZipStream
+                                                         , boolean isTypeCheckOnly) {
     String[] subFileList = null;
     if (name.indexOf("|") >= 0) 
       name = (subFileList = TextFormat.split(name, "|"))[0];
+    String[] fileSet = modelAdapter.specialLoad(name, null);
+    if (fileSet != null)
+      return (isTypeCheckOnly ? fileSet : loadFileSetAsOneFile(fileSet));
     Object t = getInputStreamOrErrorMessageFromName(name, true);
     if (t instanceof String)
       return t;
@@ -570,7 +598,7 @@ class FileManager {
         String[] subFileList = null;
         if (name.indexOf("|") >= 0) 
           name = (subFileList = TextFormat.split(name, "|"))[0];
-        Object t = getUnzippedBufferedReaderOrErrorMessageFromName(name, true);
+        Object t = getUnzippedBufferedReaderOrErrorMessageFromName(name, true, false);
         if (t instanceof BufferedReader) {
           reader = (BufferedReader) t;
           openBufferedReader();

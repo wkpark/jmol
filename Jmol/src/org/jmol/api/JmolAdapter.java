@@ -457,4 +457,8 @@ public Object openBufferedReader(String name, String type,
     return canonizeAlphaDigit(altLoc);
   }
 
+  public String[] specialLoad(String name, String type) {
+    return null;
+  }
+
 }

@@ -1373,7 +1373,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   Object getUnzippedBufferedReaderOrErrorMessageFromName(String name) {
-    return fileManager.getUnzippedBufferedReaderOrErrorMessageFromName(name, false);
+    return fileManager.getUnzippedBufferedReaderOrErrorMessageFromName(name, false, false);
   }
 
   Object getBufferedReaderForString(String string) {
@@ -1382,11 +1382,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void openFile(String name) {
     //Jmol app file dropper, main, OpenUrlAction, RecentFilesAction
+    name = name.replace('\\', '/');
     String type = fileManager.getFileTypeName(name);
     checkHalt("exit");
     // assumes a Jmol script file if no other file type
-    evalString((type == null ? "script " : "load ")
-        + Escape.escape(name.replace('\\', '/')));
+    evalString((type == null ? "script " : "load ") + Escape.escape(name));
   }
 
   void openFile(String name, Hashtable htParams, String loadScript,

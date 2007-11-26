@@ -24,6 +24,7 @@
 package org.jmol.viewer;
 
 import org.jmol.util.CompoundDocument;
+import org.jmol.util.TextFormat;
 import org.jmol.util.ZipUtil;
 
 import org.jmol.util.Logger;
@@ -268,7 +269,15 @@ class FileManager {
     return (countRead == 4 && abMagic[0] == (byte) 0x1F && abMagic[1] == (byte) 0x8B);
   }
 
+  /**
+   * 
+   * @param name
+   * @return file contents; directory listing for a ZIP/JAR file
+   */
   String getFileAsString(String name) {
+    String[] subFileList = null;
+    if (name.indexOf("|") >= 0) 
+      name = (subFileList = TextFormat.split(name, "|"))[0];
     //System.out.println("FileManager.getFileAsString(" + name + ")");
     Object t = getInputStreamOrErrorMessageFromName(name, false);
     if (t instanceof String)
@@ -282,7 +291,7 @@ class FileManager {
       } else if (isGzip(is)) {
         is = new GZIPInputStream(bis);
       } else if (ZipUtil.isZipFile(is)) {
-        return "Error: Cannot read ZIP format as string";
+        return ZipUtil.getZipFileContents(is, subFileList, 1);
       }
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
       StringBuffer sb = new StringBuffer(8192);
@@ -575,12 +584,18 @@ class FileManager {
       if (reader != null) {
         openBufferedReader();
       } else {
-        Object t = getUnzippedBufferedReaderOrErrorMessageFromName(nameAsGivenInThread, true);
+        String name = nameAsGivenInThread;
+        String[] subFileList = null;
+        if (name.indexOf("|") >= 0) 
+          name = (subFileList = TextFormat.split(name, "|"))[0];
+        Object t = getUnzippedBufferedReaderOrErrorMessageFromName(name, true);
         if (t instanceof BufferedReader) {
           reader = (BufferedReader) t;
           openBufferedReader();
         } else if (t instanceof ZipInputStream) {
-          openZipStream();
+          if (subFileList != null)
+            htParams.put("subFileList", subFileList);
+          openZipStream(name);
         } else {
           errorMessage = (t == null
                           ? "error opening:" + nameAsGivenInThread
@@ -593,14 +608,13 @@ class FileManager {
       //terminated = true;
     }
 
-    private void openZipStream() {
-      String fileName = nameAsGivenInThread;
+    private void openZipStream(String fileName) {
       String[] zipDirectory = getZipDirectory(fileName, true);
       InputStream is = new BufferedInputStream(
           (InputStream) getInputStreamOrErrorMessageFromName(fileName, false),
           8192);
       Object clientFile = modelAdapter.openZipFiles(is, fullPathNameInThread,
-          fileName, zipDirectory, htParams, true);
+          fileName, zipDirectory, htParams, true, 1);
       if (clientFile instanceof String)
         errorMessage = (String) clientFile;
       else

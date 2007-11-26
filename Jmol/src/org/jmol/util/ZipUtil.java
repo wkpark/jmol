@@ -25,6 +25,8 @@
 
 package org.jmol.util;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Vector;
@@ -50,6 +52,47 @@ public class ZipUtil {
         && bytes[3] == 0x04);
   }
 
+  /**
+   *  iteratively drills into zip files of zip files to extract file content
+   *  or zip file directory. Also works with JAR files.
+   * 
+   * @param is
+   * @param list
+   * @param listPtr
+   * @return  directory listing or subfile contents
+   */
+  static public String getZipFileContents(InputStream is, String[] list,
+                                          int listPtr) {
+    String ret = "";
+    if (list == null || listPtr >= list.length)
+      return getZipDirectoryAsStringAndClose(is);
+    String fileName = list[listPtr];
+    ZipInputStream zis = new ZipInputStream(is);
+    ZipEntry ze;
+    try {
+      if (fileName.lastIndexOf("/") == fileName.length() - 1) {
+        while ((ze = zis.getNextEntry()) != null) {
+          String name = ze.getName();
+          if (!name.startsWith(fileName))
+            continue;
+          ret += name + "\n";
+        }
+        return ret;
+      }
+      while ((ze = zis.getNextEntry()) != null) {
+        if (!fileName.equals(ze.getName()))
+          continue;
+        byte[] bytes = getZipEntryAsBytes(zis);
+        if (isZipFile(bytes))
+          return getZipFileContents(new BufferedInputStream(
+              new ByteArrayInputStream(bytes)), list, ++listPtr);
+        return new String(bytes);
+      }
+    } catch (Exception e) {
+    }
+    return "";
+  }
+  
   static public String getZipDirectoryAsStringAndClose(InputStream is) {
     StringBuffer sb = new StringBuffer();
     String[] s = new String[0];
@@ -89,7 +132,7 @@ public class ZipUtil {
     }
     zis.close();
     if (addManifest)
-      v.add(0, manifest == null ? "" : manifest);
+      v.add(0, manifest == null ? "" : manifest + "\n############\n");
     int len = v.size();
     String[] dirList = new String[len];
     for (int i = 0; i < len; i++)

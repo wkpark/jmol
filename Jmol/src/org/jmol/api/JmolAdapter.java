@@ -139,7 +139,7 @@ public Object openBufferedReader(String name, String type,
 
   public Object openZipFiles(InputStream is, String fullPathNameInThread,
                              String fileName, String[] zipDirectory,
-                             Hashtable htParams, boolean doCombine) {
+                             Hashtable htParams, boolean doCombine, int subFilePtr) {
     return null;
   }
   

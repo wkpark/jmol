@@ -122,7 +122,6 @@ class Resolver {
   }
 
   static Object finalize(AtomSetCollection atomSetCollection, String filename) {
-    System.out.println("finalizeResolver" + filename );
     
     for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;) {
       atomSetCollection.setAtomSetAuxiliaryInfo("fileName", filename, i);

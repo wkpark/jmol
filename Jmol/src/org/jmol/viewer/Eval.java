@@ -10995,6 +10995,13 @@ class Eval { //implements Runnable {
           : args.length > pt && args[pt].tok == Token.string &&
             PropertyManager.acceptsStringParameter(propertyName) ?
               args[pt++].value : (Object) "");
+      if (propertyName.equalsIgnoreCase("fileContents") && args.length > 2) {
+        String s = Token.sValue(args[1]);
+        for (int i = 2; i < args.length; i++)
+          s += "|" + Token.sValue(args[i]);
+        propertyValue = s;
+        pt = args.length;
+      }
       Object property = viewer.getProperty(null, propertyName, propertyValue);
       property = PropertyManager.extractProperty(property, args, pt);
       if (property instanceof String)

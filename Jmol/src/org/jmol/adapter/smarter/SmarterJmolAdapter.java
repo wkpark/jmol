@@ -117,36 +117,36 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
   public Object openZipFiles(InputStream is, String fullPathNameInThread,
                              String fileName, String[] zipDirectory,
-                             Hashtable htParams, boolean doCombine) {
+                             Hashtable htParams, boolean doCombine,
+                             int subFilePtr) {
 
     int[] params = null;
+    String[] subFileList = (htParams == null ? null : (String[]) htParams
+        .get("subFileList"));
+    String subFileName = (subFileList == null
+        || subFilePtr >= subFileList.length ? null : subFileList[subFilePtr]);
     int selectedFile = (htParams == null ? 0 : (params = ((int[]) htParams
         .get("params")))[0]);
     if (selectedFile > 0 && doCombine && params != null)
       params[0] = 0;
     // zipDirectory[0] is the manifest if present
-    String manifest = (htParams == null ? null : (String) htParams.get("manifest")); 
-    if (manifest == null) 
+    String manifest = (htParams == null ? null : (String) htParams
+        .get("manifest"));
+    if (manifest == null)
       manifest = (zipDirectory.length > 0 ? zipDirectory[0] : "");
     boolean haveManifest = (manifest.length() > 0);
     if (haveManifest) {
       if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
         Logger.info("manifest for  " + fileName + ":\n" + manifest);
-      manifest = '|'+manifest.replace('\r','|').replace('\n','|')+'|';
+      manifest = '|' + manifest.replace('\r', '|').replace('\n', '|') + '|';
     }
     boolean ignoreErrors = (manifest.indexOf("IGNORE_ERRORS") >= 0);
     boolean selectAll = (manifest.indexOf("IGNORE_MANIFEST") >= 0);
-    if (selectAll)
+    boolean exceptFiles = (manifest.indexOf("EXCEPT_FILES") >= 0);
+    if (selectAll || subFileName != null)
       haveManifest = false;
     Vector vCollections = new Vector();
     Hashtable htCollections = (haveManifest ? new Hashtable() : null);
-    if (haveManifest && manifest.indexOf("LIST_FILES") >= 0) {
-      for (int i = 1; i < zipDirectory.length; i++)
-        Logger.info(zipDirectory[i]);
-      return new AtomSetCollection(vCollections);
-    }
-      
-    
     boolean isSpartan = false;
     //0 entry is manifest
     for (int i = 1; i < zipDirectory.length; i++) {
@@ -171,8 +171,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
           continue;
         byte[] bytes = ZipUtil.getZipEntryAsBytes(zis);
         String thisEntry = ze.getName();
-        if (thisEntry.equals("JmolManifest") 
-            || haveManifest && manifest.indexOf("|" + thisEntry + "|") < 0)
+        if (subFileName != null && !thisEntry.equals(subFileName))
+          continue;
+        if (thisEntry.equals("JmolManifest") || haveManifest
+            && exceptFiles == manifest.indexOf("|" + thisEntry + "|") >= 0)
           continue;
         if (isSpartan) {
           data.append("\nBEGIN Zip File Entry: ").append(thisEntry)
@@ -185,15 +187,15 @@ public class SmarterJmolAdapter extends JmolAdapter {
               new ByteArrayInputStream(bytes));
           String[] zipDir2 = ZipUtil.getZipDirectoryAndClose(bis, true);
           bis = new BufferedInputStream(new ByteArrayInputStream(bytes));
-          Object clientFiles = openZipFiles(bis, fullPathNameInThread, fileName 
-              + "=>/" + thisEntry, zipDir2, htParams, false);
+          Object clientFiles = openZipFiles(bis, fullPathNameInThread, fileName
+              + "|" + thisEntry, zipDir2, htParams, false, ++subFilePtr);
           if (clientFiles instanceof String) {
             if (ignoreErrors)
               continue;
             return clientFiles;
           } else if (clientFiles instanceof AtomSetCollection
               || clientFiles instanceof Vector) {
-            if (haveManifest)
+            if (haveManifest && !exceptFiles)
               htCollections.put(thisEntry, clientFiles);
             else
               vCollections.addElement(clientFiles);
@@ -208,11 +210,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
               new BufferedInputStream(new ByteArrayInputStream(bytes))))
               .getAllData().toString()
               : new String(bytes));
-          Object clientFile = Resolver.resolve(fileName 
-              + "=>/" + ze.getName(), null,
-              new BufferedReader(new StringReader(sData)), htParams);
+          Object clientFile = Resolver.resolve(fileName + "|" + ze.getName(),
+              null, new BufferedReader(new StringReader(sData)), htParams);
           if (clientFile instanceof AtomSetCollection) {
-            if (haveManifest)
+            if (haveManifest && !exceptFiles)
               htCollections.put(thisEntry, clientFile);
             else
               vCollections.addElement(clientFile);
@@ -251,10 +252,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
           return null;
         return "unknown reader error";
       }
-      
+
       // if a manifest exists, it sets the files and file order
-      
-      if (haveManifest) {
+
+      if (haveManifest && !exceptFiles) {
         String[] list = TextFormat.split(manifest, '|');
         for (int i = 0; i < list.length; i++) {
           String file = list[i];
@@ -263,10 +264,11 @@ public class SmarterJmolAdapter extends JmolAdapter {
           if (htCollections.containsKey(file))
             vCollections.add(htCollections.get(file));
           else if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
-            Logger.info("manifested file " + file + " was not found in " + fileName);
+            Logger.info("manifested file " + file + " was not found in "
+                + fileName);
         }
       }
-      
+
       if (!doCombine)
         return vCollections;
       AtomSetCollection result = new AtomSetCollection(vCollections);

@@ -46,7 +46,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.Reader;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.Hashtable;
 
@@ -126,7 +125,7 @@ class FileManager {
       return modelAdapter.getFileTypeName((BufferedReader) br);
     if (br instanceof ZipInputStream) {
       String zipDirectory = getZipDirectoryAsString(fileName);
-      return modelAdapter.getFileTypeName(new BufferedReader(new StringReader(zipDirectory)));
+      return modelAdapter.getFileTypeName(getBufferedReaderForString(zipDirectory));
     }
     return null;
   }
@@ -200,8 +199,8 @@ class FileManager {
     fullPathName = fileName = "string";
     if (!isMerge)
       inlineData = strModel;
-    fileOpenThread = new FileOpenThread(fullPathName, fullPathName, null, new BufferedReader(new StringReader(
-        strModel)), htParams);
+    fileOpenThread = new FileOpenThread(fullPathName, fullPathName, null, getBufferedReaderForString(
+        strModel), htParams);
     fileOpenThread.run();
   }
 
@@ -487,11 +486,14 @@ class FileManager {
     return errorMessage;
   }
 
-  Object getBufferedReaderForString(String string) {
+  BufferedReader getBufferedReaderForString(String string) {
     return new BufferedReader(new StringReader(string));
   }
 
   Object getUnzippedBufferedReaderOrErrorMessageFromName(String name, boolean allowZipStream) {
+    String[] subFileList = null;
+    if (name.indexOf("|") >= 0) 
+      name = (subFileList = TextFormat.split(name, "|"))[0];
     Object t = getInputStreamOrErrorMessageFromName(name, true);
     if (t instanceof String)
       return t;
@@ -504,21 +506,11 @@ class FileManager {
       } else if (isGzip(is)) {
         is = new GZIPInputStream(bis);
       } else if (ZipUtil.isZipFile(is)) {
-          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
-            is = dumpZipDirectory(is, name);
-          ZipInputStream zis = new ZipInputStream(is);
-          ZipEntry ze = zis.getNextEntry();
-          if (ze == null)
-            return "Error: No Zip Entry found";
-          if (allowZipStream)
-            return new ZipInputStream(is);
-          //otherwise just get first file
-          while (ze != null && ze.isDirectory())
-            ze = zis.getNextEntry();
-          String s = ZipUtil.getZipEntryAsString(zis);
-          zis.closeEntry();
-          zis.close();
-          return new BufferedReader(new StringReader(s));
+        if (allowZipStream)
+          return new ZipInputStream(is);
+        //danger -- converting bytes to String here. 
+        //we lose 128-156 or so. 
+        return getBufferedReaderForString(ZipUtil.getZipFileContents(is, subFileList, 1));
       }
       return new BufferedReader(new InputStreamReader(is));
     } catch (Exception ioe) {
@@ -526,16 +518,6 @@ class FileManager {
     }
   }
 
-  private InputStream dumpZipDirectory(InputStream is, String fileName) throws IOException {
-    ZipInputStream zis = new  ZipInputStream(is);
-    ZipEntry ze;
-    while ((ze = zis.getNextEntry()) != null) {
-      Logger.debug(ze.getCompressedSize() + " " + ze.getName());
-    }
-    is.close();
-    return new BufferedInputStream((InputStream)getInputStreamOrErrorMessageFromName(fileName, false), 8192);
-  }
-  
   String[] getZipDirectory(String fileName, boolean addManifest) {
     return ZipUtil.getZipDirectoryAndClose((InputStream)getInputStreamOrErrorMessageFromName(fileName, false), addManifest);
   }

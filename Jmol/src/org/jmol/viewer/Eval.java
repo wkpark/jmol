@@ -460,11 +460,10 @@ class Eval { //implements Runnable {
     if (filename.toLowerCase().indexOf("javascript:") == 0)
       return loadScript(filename, viewer.eval(filename.substring(11)),
           debugScript);
-    Object t = viewer.getInputStreamOrErrorMessageFromName(filename);
-    if (!(t instanceof InputStream))
+    Object t = viewer.getUnzippedBufferedReaderOrErrorMessageFromName(filename);
+    if (!(t instanceof BufferedReader))
       return loadError((String) t);
-    BufferedReader reader = new BufferedReader(new InputStreamReader(
-        (InputStream) t));
+    BufferedReader reader = (BufferedReader) t;
     StringBuffer script = new StringBuffer();
     try {
       while (true) {

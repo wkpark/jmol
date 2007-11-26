@@ -1372,10 +1372,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.defaultDirectory;
   }
 
-  Object getInputStreamOrErrorMessageFromName(String name) {
-    return fileManager.getInputStreamOrErrorMessageFromName(name, true);
-  }
-
   Object getUnzippedBufferedReaderOrErrorMessageFromName(String name) {
     return fileManager.getUnzippedBufferedReaderOrErrorMessageFromName(name, false);
   }

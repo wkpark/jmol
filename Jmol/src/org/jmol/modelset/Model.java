@@ -68,6 +68,17 @@ public final class Model {
    */
   
   ModelSet modelSet;
+ 
+  /**
+   * BE CAREFUL: FAILURE TO NULL REFERENCES TO modelSet WILL PREVENT FINALIZATION
+   * AND CREATE A MEMORY LEAK.
+   * 
+   * @return associated ModelSet
+   */
+  public ModelSet getModelSet() {
+    return modelSet;
+  }
+ 
   int modelIndex;   // our 0-based reference
   int modelNumber;  // from adapter -- possibly PDB MODEL record; possibly modelFileNumber
   int fileIndex;   // 0-based file reference

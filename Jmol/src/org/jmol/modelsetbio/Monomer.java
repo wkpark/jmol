@@ -62,7 +62,7 @@ public abstract class Monomer extends Group {
     return (monomerIndex >= 0 && bioPolymer.isMonomerSelected(monomerIndex) ? monomerIndex : -1);
   }
   
-  BioPolymer getBioPolymer() {
+  public BioPolymer getBioPolymer() {
     return bioPolymer;
   }
   

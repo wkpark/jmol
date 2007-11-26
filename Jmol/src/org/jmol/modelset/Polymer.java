@@ -42,7 +42,17 @@ public class Polymer {
    * 
    */
   protected Model model;
-
+  
+  /**
+   * BE CAREFUL: FAILURE TO NULL REFERENCES TO model WILL PREVENT FINALIZATION
+   * AND CREATE A MEMORY LEAK.
+   * 
+   * @return associated Model
+   */
+  public Model getModel() {
+    return model;
+  }
+  
   // these arrays will be one longer than the polymerCount
   // we probably should have better names for these things
   // holds center points between alpha carbons or sugar phosphoruses

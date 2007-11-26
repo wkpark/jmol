@@ -343,6 +343,12 @@ public class Group {
     return chain.modelSet.isAtomHidden(atomIndex);
   }
 
+  /**
+   * BE CAREFUL: FAILURE TO NULL REFERENCES TO model WILL PREVENT FINALIZATION
+   * AND CREATE A MEMORY LEAK.
+   * 
+   * @return associated Model
+   */
   public Model getModel() {
     return chain.model;
   }

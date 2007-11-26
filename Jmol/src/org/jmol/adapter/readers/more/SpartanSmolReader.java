@@ -42,6 +42,7 @@ public class SpartanSmolReader extends AtomSetCollectionReader {
   private boolean isCompoundDocument;
   private boolean isZipFile;
   private boolean isDirectory;
+  private String endCheck;
   
   private String modelName = "Spartan file";
   private int atomCount;
@@ -61,10 +62,15 @@ public class SpartanSmolReader extends AtomSetCollectionReader {
           + (isCompoundDocument ? "compound document file" 
               : isDirectory ? "directory"
               : isZipFile ? "zip file" : "smol"));
+      endCheck = (isCompoundDocument ? "END Compound Document Entry"
+              : isZipFile ? "END Zip File" 
+              : isDirectory ? "END Directory Entry " 
+              : null); 
       if (isZipFile)
         isDirectory = true;
+      
       while (line != null) {
-         //System.out.println(line);
+        //System.out.println(line);
         if (line.equals("HESSIAN") && bondData != null) {
           //cache for later if necessary -- this is from the INPUT section
           while (readLine() != null
@@ -77,7 +83,7 @@ public class SpartanSmolReader extends AtomSetCollectionReader {
             || isDirectory && line.indexOf("BEGIN") == 0 && line.indexOf("/archive") > 0
             ) {
           spartanArchive = new SpartanArchive(this, atomSetCollection,
-              moData, bondData);
+              moData, bondData, endCheck);
           bondData = null;
           readArchiveHeader();
           atomCount = spartanArchive.readArchive(line, false);

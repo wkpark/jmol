@@ -42,6 +42,7 @@ public class SpartanArchive {
   int moCount = 0;
   int shellCount = 0;
   int gaussianCount = 0;
+  String endCheck;
   String calculationType = "";
   BufferedReader reader;
   String line;
@@ -61,8 +62,9 @@ public class SpartanArchive {
   }
 
   SpartanArchive(AtomSetCollectionReader r,
-      AtomSetCollection atomSetCollection, Hashtable moData, String bondData) {
+      AtomSetCollection atomSetCollection, Hashtable moData, String bondData, String endCheck) {
     initialize(r, atomSetCollection, moData, bondData);
+    this.endCheck = endCheck;
   }
 
   private void initialize(AtomSetCollectionReader r,
@@ -76,6 +78,9 @@ public class SpartanArchive {
     this.bondData = bondData;
   }
 
+  void setEndCheck(String endChec){
+    
+  }
   int readArchive(String infoLine, boolean haveGeometryLine) throws Exception {
     atomCount = setInfo(infoLine);
     line = (haveGeometryLine ? "GEOMETRY" : "");
@@ -90,9 +95,7 @@ public class SpartanArchive {
         readMolecularOrbital();
         atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
       } else if (line.equals("ENDARCHIVE")
-          || line.equals("END Compound Document Entry: Archive")
-          || line.indexOf("END Zip File") == 0
-      ) {
+          || endCheck != null && line.indexOf(endCheck) == 0) {
         break;
       }
       readLine();

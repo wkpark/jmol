@@ -59,9 +59,26 @@ class Resolver {
       return null;
     }
   }
-  
+
+  /**
+   * In the case of spt files, no need to load them; here we are just checking for type
+   * In the case of .spardir directories, we need to provide a list of 
+   * the critical files that need loading and concatenation for the SpartanSmolReader
+   * 
+   * we return an array for which:
+   * 
+   * [0] file type (class prefix) or null for SPT file
+   * [1] header to add for each BEGIN/END block
+   * [2...] files to load and concatenate
+   * 
+   * @param name
+   * @param type
+   * @return array detailing action for this set of files
+   */
   public static String[] specialLoad(String name, String type) {
     int pt;
+    if (name.indexOf(".spt") == name.length() - 4)
+      return new String[] { null, null, null}; //DO NOT actually load any file here
     if ((pt = name.lastIndexOf(".spardir")) >= 0) {
       name = name.replace('\\','/');
       name = name.substring(0, pt + (name.indexOf("/M") == pt + 8 ? 14 : 8));

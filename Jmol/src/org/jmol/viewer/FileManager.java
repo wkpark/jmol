@@ -277,6 +277,8 @@ class FileManager {
    * @return file contents; directory listing for a ZIP/JAR file
    */
   String getFileAsString(String name) {
+    if (name == null)
+      return "";
     String[] subFileList = null;
     if (name.indexOf("|") >= 0) 
       name = (subFileList = TextFormat.split(name, "|"))[0];
@@ -506,9 +508,11 @@ class FileManager {
     String header = fileSet[1];
     for (int i = 2; i < fileSet.length; i++) {
       String name = fileSet[i];
-      sb.append("BEGIN " + header + " " + name + "\n");
+      if (header != null)
+        sb.append("BEGIN " + header + " " + name + "\n");
       sb.append(getFileAsString(name));
-      sb.append("\nEND " + header + " " + name + "\n");
+      if (header != null)
+        sb.append("\nEND " + header + " " + name + "\n");
     }
     return getBufferedReaderForString(sb.toString());
   }
@@ -520,8 +524,16 @@ class FileManager {
     if (name.indexOf("|") >= 0) 
       name = (subFileList = TextFormat.split(name, "|"))[0];
     String[] fileSet = modelAdapter.specialLoad(name, null);
-    if (fileSet != null)
-      return (isTypeCheckOnly ? fileSet : loadFileSetAsOneFile(fileSet));
+    if (fileSet != null) {
+      if (isTypeCheckOnly)
+        return fileSet;
+      if (fileSet[2] != null)
+        return loadFileSetAsOneFile(fileSet);
+      //continuing...
+      //here, for example, for an SPT file load that is not just a type check
+      //(type check is only for application file opening and drag-drop to determine if 
+      //script or load command should be used)
+    }
     Object t = getInputStreamOrErrorMessageFromName(name, true);
     if (t instanceof String)
       return t;

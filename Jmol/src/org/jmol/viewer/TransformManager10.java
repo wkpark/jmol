@@ -75,6 +75,9 @@ class TransformManager10 extends TransformManager {
     // -- note -- in this model, plane 0 is "standard" plane
     // so that all normal adjustments scale DOWN
     referencePlaneOffset = cameraDistance; //(s)
+    
+    //System.out.println("transformman10: scalppa modelrad visual range " + scalePixelsPerAngstrom + " " + modelRadiusPixels + " " + visualRange);
+
   }
   
   protected float getPerspectiveFactor(float z) {

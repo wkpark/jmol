@@ -71,7 +71,10 @@ class TransformManager11 extends TransformManager {
 
     // conversion factor Angstroms --> pixels
     // so that "full window" is visualRange
-    scalePixelsPerAngstrom = screenPixelCount / visualRange; // (s/m)
+    scalePixelsPerAngstrom = (perspectiveDepth || isNavigationMode ? 
+        screenPixelCount / visualRange // (s/m)
+        : scaleDefaultPixelsPerAngstrom);
+    
 
     // model radius in pixels
     modelRadiusPixels = modelRadius * scalePixelsPerAngstrom; //(s)
@@ -87,7 +90,14 @@ class TransformManager11 extends TransformManager {
       modelCenterOffset = referencePlaneOffset;
       //now factor the scale by distance from camera and zoom
       scalePixelsPerAngstrom *= (modelCenterOffset / offset100) * zoomPercent / 100; //(s/m)
+      
+      // so that's sppa = (spc / vR) * rPO * (vR / 2)  / mR * rPO = spc/2/mR
+      
+      
+      
+      
       modelRadiusPixels = modelRadius * scalePixelsPerAngstrom; //(s)
+      //System.out.println("transformman scalppa modelrad " + scalePixelsPerAngstrom + " " + modelRadiusPixels + " " + visualRange);
       return;
     }
     

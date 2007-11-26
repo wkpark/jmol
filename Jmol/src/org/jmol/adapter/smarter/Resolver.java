@@ -80,6 +80,8 @@ class Resolver {
     if (name.indexOf(".spt") == name.length() - 4)
       return new String[] { null, null, null}; //DO NOT actually load any file here
     if ((pt = name.lastIndexOf(".spardir")) >= 0) {
+      if (name.indexOf(".spardir.") >= 0)
+        return null; // could easily be .spardir.zip -- these MUST be .spardir or .spardir/...
       name = name.replace('\\','/');
       name = name.substring(0, pt + (name.indexOf("/M") == pt + 8 ? 14 : 8));
       if (name.indexOf("/M") < 0)

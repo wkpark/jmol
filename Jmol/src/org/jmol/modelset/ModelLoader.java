@@ -149,8 +149,8 @@ public final class ModelLoader extends ModelSet {
   }
 
   private final static int defaultGroupCount = 32;
-  private Chain[] chains;
-  private String[] group3s;
+  private Chain[] chainOf;
+  private String[] group3Of;
   private int[] seqcodes;
   private int[] firstAtomIndexes;
 
@@ -167,8 +167,8 @@ public final class ModelLoader extends ModelSet {
    * 
    */
   private void initializeGroupBuild() {
-    chains = new Chain[defaultGroupCount];
-    group3s = new String[defaultGroupCount];
+    chainOf = new Chain[defaultGroupCount];
+    group3Of = new String[defaultGroupCount];
     seqcodes = new int[defaultGroupCount];
     firstAtomIndexes = new int[defaultGroupCount];
     currentChainID = '\uFFFF';
@@ -539,15 +539,15 @@ public final class ModelLoader extends ModelSet {
       currentGroupSequenceNumber = groupSequenceNumber;
       currentGroupInsertionCode = groupInsertionCode;
       currentGroup3 = group3i;
-      while (groupCount >= group3s.length) {
-        chains = (Chain[]) ArrayUtil.doubleLength(chains);
-        group3s = ArrayUtil.doubleLength(group3s);
+      while (groupCount >= group3Of.length) {
+        chainOf = (Chain[]) ArrayUtil.doubleLength(chainOf);
+        group3Of = ArrayUtil.doubleLength(group3Of);
         seqcodes = ArrayUtil.doubleLength(seqcodes);
         firstAtomIndexes = ArrayUtil.doubleLength(firstAtomIndexes);
       }
       firstAtomIndexes[groupCount] = atomIndex;
-      chains[groupCount] = currentChain;
-      group3s[groupCount] = group3;
+      chainOf[groupCount] = currentChain;
+      group3Of[groupCount] = group3;
       seqcodes[groupCount] = Group.getSeqcode(groupSequenceNumber,
           groupInsertionCode);
       ++groupCount;
@@ -751,14 +751,14 @@ public final class ModelLoader extends ModelSet {
       }
     }
     for (int i = baseGroupIndex; i < groupCount; ++i) {
-      distinguishAndPropagateGroup(i, chains[i], group3s[i], seqcodes[i],
+      distinguishAndPropagateGroup(i, chainOf[i], group3Of[i], seqcodes[i],
           firstAtomIndexes[i], (i == groupCount - 1 ? atomCount
               : firstAtomIndexes[i + 1]));
-      chains[i] = null;
-      group3s[i] = null;
+      chainOf[i] = null;
+      group3Of[i] = null;
     }
-    chains = null;
-    group3s = null;
+    chainOf = null;
+    group3Of = null;
 
     if (group3Lists != null) {
       Hashtable info = getModelSetAuxiliaryInfo();

@@ -73,10 +73,10 @@ class TransformManager11 extends TransformManager {
     // so that "full window" is visualRange
     scalePixelsPerAngstrom = (scale3D && !perspectiveDepth && !isNavigationMode ? 
         72 / scale3DAngstromsPerInch : screenPixelCount / visualRange);  //(s/m)
-    System.out.println("sppA " + scalePixelsPerAngstrom + " pD " + perspectiveDepth 
+/*    System.out.println("sppA " + scalePixelsPerAngstrom + " pD " + perspectiveDepth 
         + " spC " + screenPixelCount + " vR " + visualRange 
         + " sDPPA " + scaleDefaultPixelsPerAngstrom);
-
+*/
     // model radius in pixels
     modelRadiusPixels = modelRadius * scalePixelsPerAngstrom; //(s)
 

@@ -146,26 +146,27 @@ public class SpaceGroup {
   }
 
   public String dumpInfo() {
-    if (hallInfo == null)
-      hallInfo = new HallInfo(hallSymbol);
-    generateAllOperators(null);
+    Object info  = dumpCanonicalSeitzList();
+    if (info instanceof SpaceGroup)
+      return ((SpaceGroup)info).dumpInfo();
     StringBuffer sb = new StringBuffer("\nHermann-Mauguin symbol: ");
     sb.append(hmSymbol).append(hmSymbolExt.length() > 0 ? ":" + hmSymbolExt : "")
         .append("\ninternational table number: ").append(intlTableNumber)
         .append(intlTableNumberExt.length() > 0 ? ":" + intlTableNumberExt : "")
-        .append(hallInfo == null ? "invalid Hall symbol" : hallInfo.dumpInfo())
         .append("\n\n").append(operationCount).append(" operators")
         .append(!hallInfo.hallSymbol.equals("--") ? " from Hall symbol "  + hallInfo.hallSymbol: "")
         .append(": ");
     for (int i = 0; i < operationCount; i++)
       sb.append("\n").append(operations[i].xyz);
-    sb.append("\n\ncanonical Seitz: ").append(dumpCanonicalSeitzList()) 
+    sb.append("\n\n").append(hallInfo == null ? "invalid Hall symbol" : hallInfo.dumpInfo());
+
+    sb.append("\n\ncanonical Seitz: ").append((String) info) 
         .append("\n----------------------------------------------------\n");
     return sb.toString();
   }
 
   private static String[] canonicalSeitzList;
-  public String dumpCanonicalSeitzList() {
+  public Object dumpCanonicalSeitzList() {
     if (hallInfo == null)
       hallInfo = new HallInfo(hallSymbol);
     generateAllOperators(null);
@@ -181,20 +182,15 @@ public class SpaceGroup {
       if (canonicalSeitzList == null) {
       canonicalSeitzList = new String[spaceGroupDefinitions.length];
       for (int i = 0; i < spaceGroupDefinitions.length; i++)
-        canonicalSeitzList[i] = spaceGroupDefinitions[i].dumpCanonicalSeitzList();
+        canonicalSeitzList[i] = (String) spaceGroupDefinitions[i].dumpCanonicalSeitzList();
       }
       String s = sb.toString();
       for (int i = 0; i < spaceGroupDefinitions.length; i++)
-        if (canonicalSeitzList[i].indexOf(s) >= 0){
-          sb = new StringBuffer("identified as intl table# ") 
-              .append(spaceGroupDefinitions[i].intlTableNumber) 
-              .append(" / H-M = ").append(spaceGroupDefinitions[i].hmSymbol) 
-              .append(" / Hall = ").append(spaceGroupDefinitions[i].hallSymbol);
-          break;
-        }
+        if (canonicalSeitzList[i].indexOf(s) >= 0)
+          return spaceGroupDefinitions[i];
     }
-    return (index >= 0  && index < spaceGroupDefinitions.length 
-        ? hallSymbol + " " : "") + sb.toString();
+    return (index >= 0 && index < spaceGroupDefinitions.length 
+        ? hallSymbol + " = " : "") + sb.toString();
   }
   
 

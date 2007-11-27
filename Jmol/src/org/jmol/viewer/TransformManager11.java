@@ -71,10 +71,11 @@ class TransformManager11 extends TransformManager {
 
     // conversion factor Angstroms --> pixels
     // so that "full window" is visualRange
-    scalePixelsPerAngstrom = (perspectiveDepth || isNavigationMode ? 
-        screenPixelCount / visualRange // (s/m)
-        : scaleDefaultPixelsPerAngstrom);
-    
+    scalePixelsPerAngstrom = (scale3D && !perspectiveDepth && !isNavigationMode ? 
+        72 / scale3DAngstromsPerInch : screenPixelCount / visualRange);  //(s/m)
+    System.out.println("sppA " + scalePixelsPerAngstrom + " pD " + perspectiveDepth 
+        + " spC " + screenPixelCount + " vR " + visualRange 
+        + " sDPPA " + scaleDefaultPixelsPerAngstrom);
 
     // model radius in pixels
     modelRadiusPixels = modelRadius * scalePixelsPerAngstrom; //(s)
@@ -89,7 +90,8 @@ class TransformManager11 extends TransformManager {
       // we place the model at the referencePlaneOffset offset and then change the scale
       modelCenterOffset = referencePlaneOffset;
       //now factor the scale by distance from camera and zoom
-      scalePixelsPerAngstrom *= (modelCenterOffset / offset100) * zoomPercent / 100; //(s/m)
+      if (!scale3D || perspectiveDepth)
+        scalePixelsPerAngstrom *= (modelCenterOffset / offset100) * zoomPercent / 100; //(s/m)
       
       // so that's sppa = (spc / vR) * rPO * (vR / 2)  / mR * rPO = spc/2/mR
       

@@ -211,7 +211,7 @@ class RepaintManager {
         : isTrajectory ? lastModelIndex 
         : modelCount) - 1;
     this.frameStep = frameStep;
-    setFrameVariables();
+    viewer.setFrameVariables(firstModelIndex, lastModelIndex);
   }
 
   void clear() {
@@ -410,13 +410,9 @@ class RepaintManager {
     else 
       setCurrentModelIndex(i);
     currentDirection = 1;
-    setFrameVariables();
+    viewer.setFrameVariables(firstModelIndex, lastModelIndex);
   }
   
-  private void setFrameVariables() {
-    viewer.setStringProperty("_firstFrame", viewer.getModelNumberDotted(firstModelIndex));
-    viewer.setStringProperty("_lastFrame", viewer.getModelNumberDotted(lastModelIndex));
-  }
   boolean setAnimationPrevious() {
     return setAnimationRelative(-animationDirection);
   }

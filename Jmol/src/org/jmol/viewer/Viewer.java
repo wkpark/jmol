@@ -2759,6 +2759,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return repaintManager.frameRenderer;
   }
 
+  void setFrameVariables(int firstModelIndex, int lastModelIndex) {
+    global.setParameterValue("_firstFrame", getModelNumberDotted(firstModelIndex));
+    global.setParameterValue("_lastFrame", getModelNumberDotted(lastModelIndex));
+  }
+
   boolean wasInMotion = false;
   int motionEventNumber;
 

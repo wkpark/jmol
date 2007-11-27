@@ -3605,14 +3605,8 @@ class Eval { //implements Runnable {
     if (index < 0) {
       bs = expression(-index);
       index = iToken + 1;
-      if (!isSyntaxCheck) {
-        if (isBondSet) {
-          viewer.selectBonds(bs);
-          shapeType = JmolConstants.SHAPE_STICKS;
-        } else {
-          viewer.select(bs, true);
-        }
-      }
+      if (isBondSet)
+        shapeType = JmolConstants.SHAPE_STICKS;
     }
     if (isBackground)
       getToken(index);
@@ -3767,8 +3761,13 @@ class Eval { //implements Runnable {
                   : 0);
       if (typeMask == 0) {
         viewer.loadShape(shapeType);
-        setShapeProperty(shapeType, prefix + "color", colorvalue);
+        if (bs != null)
+          viewer.setShapeProperty(shapeType, prefix + "color", colorvalue, bs);
+        else
+          viewer.setShapeProperty(shapeType, prefix + "color", colorvalue);
       } else {
+        if (bs != null)
+          viewer.selectBonds(bs);
         setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
             typeMask));
         setShapeProperty(JmolConstants.SHAPE_STICKS, prefix + "color",

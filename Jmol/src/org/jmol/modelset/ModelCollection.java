@@ -494,7 +494,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public String getModelNumberDotted(int modelIndex) {
-    return (modelCount < 1 ? "" : Escape.escapeModelFileNumber(models[modelIndex].modelFileNumber));
+    return (modelCount < 1 || modelIndex < 0 ? "" : Escape.escapeModelFileNumber(models[modelIndex].modelFileNumber));
   }
 
   public int getModelNumberIndex(int modelNumber, boolean useModelNumber) {

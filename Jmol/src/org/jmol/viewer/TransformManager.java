@@ -150,14 +150,15 @@ abstract class TransformManager {
       sfunc.append("  _setPerspectiveState;\n");
       commands.append("function _setPerspectiveState();\n");
     }
-    StateManager.appendCmd(commands, "perspectiveModel = "+ perspectiveModel);
-    StateManager.appendCmd(commands, "perspectiveDepth = "+ perspectiveDepth);
-    StateManager.appendCmd(commands, "visualRange = "+ visualRange);
+    StateManager.appendCmd(commands, "set perspectiveModel " + perspectiveModel);
+    StateManager.appendCmd(commands, "set scaleAngstromsPerInch " + scale3DAngstromsPerInch);
+    StateManager.appendCmd(commands, "set perspectiveDepth " + perspectiveDepth);
+    StateManager.appendCmd(commands, "set visualRange " + visualRange);
     if (!isWindowCentered())
-      StateManager.appendCmd(commands, "windowCentered = false");
-    StateManager.appendCmd(commands, "cameraDepth = " + cameraDepth);
+      StateManager.appendCmd(commands, "set windowCentered false");
+    StateManager.appendCmd(commands, "set cameraDepth " + cameraDepth);
     if (isNavigationMode)
-      StateManager.appendCmd(commands, "navigationMode = true");
+      StateManager.appendCmd(commands, "set navigationMode true");
     StateManager.appendCmd(commands, viewer.getBoundBoxCommand(false));
     StateManager.appendCmd(commands, "center " + Escape.escape(fixedRotationCenter));
     StateManager.appendCmd(commands, getMoveToText(0, false));
@@ -653,7 +654,10 @@ abstract class TransformManager {
 
   void setScaleAngstromsPerInch(float angstromsPerInch) {
     // not compatible with perspectiveDepth
-    scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom = 72 / angstromsPerInch;
+    scale3D = (angstromsPerInch > 0);
+    if (scale3D)
+      scale3DAngstromsPerInch = angstromsPerInch;
+    perspectiveDepth = !scale3D;      
   }
 
   /* ***************************************************************
@@ -1051,6 +1055,7 @@ abstract class TransformManager {
    */
 
   protected boolean perspectiveDepth = true;
+  protected boolean scale3D = false;
   protected float cameraDepth = Float.NaN;
   protected float cameraDepthSetting = 3f;
   protected float visualRange; // set in stateManager to 5f;
@@ -1106,6 +1111,7 @@ abstract class TransformManager {
   int screenPixelCount;
   float scalePixelsPerAngstrom;
   float scaleDefaultPixelsPerAngstrom;
+  float scale3DAngstromsPerInch;
   private boolean antialias;
   private boolean useZoomLarge;
 
@@ -1192,6 +1198,7 @@ abstract class TransformManager {
     if (screenPixelCount > 2)
       screenPixelCount -= 2;
     scaleDefaultPixelsPerAngstrom = defaultScaleToScreen(modelRadius);
+    System.out.println("scaleDEfPPA = " + scaleDefaultPixelsPerAngstrom);
   }
 
   short scaleToScreen(int z, int milliAngstroms) {

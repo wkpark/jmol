@@ -160,7 +160,7 @@ public class SpaceGroup {
     for (int i = 0; i < operationCount; i++)
       sb.append("\n").append(operations[i].xyz);
     sb.append("\n\ncanonical Seitz: ").append(dumpCanonicalSeitzList()) 
-        .append(sb).append("\n----------------------------------------------------\n");
+        .append("\n----------------------------------------------------\n");
     return sb.toString();
   }
 

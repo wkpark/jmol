@@ -4982,7 +4982,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setVibrationOff();
       transformManager = transformManager.getNavigationManager(this,
           dimScreen.width, dimScreen.height);
-      reset();
+      transformManager.homePosition();
     }
     transformManager.setNavigationMode(TF);
     //refresh(1,"set navigationMode");
@@ -5008,7 +5008,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           dimScreen.width, dimScreen.height);
     }    
     setTransformManagerDefaults();
-    reset();
+    transformManager.homePosition();
   }
 
   private void setTransformManagerDefaults() {

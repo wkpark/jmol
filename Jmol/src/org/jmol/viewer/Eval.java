@@ -8238,13 +8238,16 @@ class Eval { //implements Runnable {
   }
 
   private void returnCmd() throws ScriptException {
-    if (statementLength == 1)
-      badArgumentCount();
     Token t = getContextVariableAsToken("_retval");
-    Object v = parameterExpression(1, 0, null, true);
-    if (isSyntaxCheck || v == null || t == null)
+    if (t == null) {
+      if (!isSyntaxCheck)
+        interruptExecution = Boolean.TRUE;
       return;
-    Token tv = (Token) ((Vector) v).get(0);
+    }
+    Object v = (statementLength == 1 ? null : parameterExpression(1, 0, null, true));
+    if (isSyntaxCheck)
+      return;
+    Token tv = (v == null ? Token.intToken(0) : (Token) ((Vector) v).get(0));
     t.value = tv.value;
     t.intValue = tv.intValue;
     t.tok = tv.tok;

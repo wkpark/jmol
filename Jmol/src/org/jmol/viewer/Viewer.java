@@ -1282,6 +1282,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void clearSelection() {
     //not used in this project; in jmolViewer interface, though
     selectionManager.clearSelection(false);
+    global.setParameterValue("hideNotSelected", false);
     refresh(0, "Viewer:clearSelection()");
   }
 
@@ -1762,6 +1763,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.clear();
     pickingManager.clear();
     selectionManager.clear();
+    global.setParameterValue("hideNotSelected", false);
     clearAllMeasurements();
     modelSet = modelManager.clear();
     mouseManager.clear();

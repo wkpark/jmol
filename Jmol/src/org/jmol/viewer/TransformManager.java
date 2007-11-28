@@ -1198,7 +1198,6 @@ abstract class TransformManager {
     if (screenPixelCount > 2)
       screenPixelCount -= 2;
     scaleDefaultPixelsPerAngstrom = defaultScaleToScreen(modelRadius);
-    System.out.println("scaleDEfPPA = " + scaleDefaultPixelsPerAngstrom);
   }
 
   short scaleToScreen(int z, int milliAngstroms) {

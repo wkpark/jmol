@@ -249,6 +249,7 @@ class SelectionManager {
       StateManager.appendCmd(commands, "select none");
     else
       commands.append(cmd);
+    StateManager.appendCmd(commands, "set hideNotSelected " + viewer.getBooleanProperty("hideNotSelected"));
     commands.append(viewer.getShapeProperty(JmolConstants.SHAPE_STICKS, "selectionState"));
     if (sfunc != null) 
       commands.append("end function\n\n");

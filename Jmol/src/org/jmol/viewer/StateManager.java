@@ -1033,6 +1033,7 @@ public class StateManager {
       setParameterValue("hermiteLevel",hermiteLevel);
       setParameterValue("hideNameInPopup",hideNameInPopup);
       setParameterValue("hideNavigationPoint",hideNavigationPoint);
+      setParameterValue("hideNotSelected",false); // saved in selectionManager
       setParameterValue("highResolutionFlag",highResolutionFlag);
       setParameterValue("hoverDelay",hoverDelayMs/1000f);
       setParameterValue("isosurfacePropertySmoothing", isosurfacePropertySmoothing);

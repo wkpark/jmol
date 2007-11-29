@@ -39,6 +39,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Text;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
@@ -84,8 +85,8 @@ public class _PovrayExporter extends _Exporter {
     output("//\n");
     output("// This script was generated on " + getExportDate() + "\n");
     output("// ******************************************************\n");
-    output("\n/** " + JmolConstants.EMBEDDED_SCRIPT_TAG + " \n");
-    output(viewer.getSavedState("_Export"));
+    output("\n/* " + JmolConstants.EMBEDDED_SCRIPT_TAG + " \n");
+    output(TextFormat.simpleReplace(viewer.getSavedState("_Export"),"/*file*/", ""));
     output("\n**/\n");
     output("\n");
     output("// ******************************************************\n");

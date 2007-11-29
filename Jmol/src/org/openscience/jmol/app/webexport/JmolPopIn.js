@@ -80,7 +80,7 @@ function addAppletButton(i, name, label, info) {
 
 function changePathIfLocal(){
  var protocol = window.location.protocol.toLowerCase();
-  if (protocol = "file:") { 
+  if (protocol == "file:") { 
     jmoljarpath = jmollocaljarpath;
     jmoljspath = jmollocaljspath;
   }

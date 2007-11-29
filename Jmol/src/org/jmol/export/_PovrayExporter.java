@@ -87,7 +87,7 @@ public class _PovrayExporter extends _Exporter {
     output("// ******************************************************\n");
     output("\n/* " + JmolConstants.EMBEDDED_SCRIPT_TAG + " \n");
     output(TextFormat.simpleReplace(viewer.getSavedState("_Export"),"/*file*/", ""));
-    output("\n**/\n");
+    output("\n*/\n");
     output("\n");
     output("// ******************************************************\n");
     output("// Declare the resolution, camera, and light sources.\n");

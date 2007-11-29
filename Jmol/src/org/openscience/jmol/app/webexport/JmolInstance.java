@@ -37,7 +37,6 @@ import org.jmol.util.TextFormat;
 class JmolInstance {
   String name;
   String javaname;
-  String file;
   String script;
   int width;
   int height;
@@ -45,13 +44,12 @@ class JmolInstance {
   boolean pictIsScratchFile;
   JmolViewer viewer;
 
-  JmolInstance(JmolViewer viewer, String name, String file, String script,
+  JmolInstance(JmolViewer viewer, String name, String script,
       int width, int height) {
     this.viewer = viewer;
     this.name = name;
     this.javaname = TextFormat.replaceAllCharacters(name,
         "[]/\\#*&^%$?.,%<>' \"", '_'); //escape filename characters
-    this.file = file;
     this.script = script;
     this.width = width;
     this.height = height;
@@ -99,6 +97,13 @@ class JmolInstance {
     } catch (IOException exc) {
       throw exc;
     }
+/* 
+ * But if the file is deleted, then the next time this is
+ * called, we could end up with a 0-length file.
+ * Particularly when we save to a second directory with
+ * a different name
+ *  
+ *     
     if (this.pictIsScratchFile) { //only delete the file if not using file already saved for user.
       File scratchtoerase = new File(scratchname);
       boolean deleteOK = scratchtoerase.delete();
@@ -110,6 +115,7 @@ class JmolInstance {
     }
     this.pictFile = imagename;
     this.pictIsScratchFile = false;
+*/
     return true;
   }
 }

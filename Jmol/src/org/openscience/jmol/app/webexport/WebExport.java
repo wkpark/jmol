@@ -55,7 +55,8 @@ public class WebExport extends JPanel {
     super(new BorderLayout());
 
     historyFile = hFile;
-    appletPath = historyFile.getProperty("webMakerAppletPath", "..");
+    remoteAppletPath = historyFile.getProperty("webMakerAppletPath", "..");
+    localAppletPath = historyFile.getProperty("webMakerAppletPath", "..");
     pageAuthorName = historyFile.getProperty("webMakerPageAuthorName", "Jmol Web Export");
 
 
@@ -175,25 +176,32 @@ public class WebExport extends JPanel {
     historyFile.addWindowInfo(windowName, webFrame, null);
 //    prop.setProperty("webMakerInfoWidth", "" + webPanels[0].getInfoWidth());
 //    prop.setProperty("webMakerInfoHeight", "" + webPanels[0].getInfoHeight());
-    prop.setProperty("webMakerAppletPath", appletPath);
+    prop.setProperty("webMakerAppletPath", remoteAppletPath);
+    prop.setProperty("webMakerLocalAppletPath", localAppletPath);
     prop.setProperty("webMakerPageAuthorName", pageAuthorName);
    historyFile.addProperties(prop);
   }
 
-  static String appletPath;
+  static String remoteAppletPath, localAppletPath;
 
-  static String getAppletPath() {
-    return appletPath;
+  static String getAppletPath(boolean isRemote) {
+    return (isRemote ? remoteAppletPath : localAppletPath);
   }
 
   static Properties prop = new Properties();
 
-  static void setAppletPath(String path) {
+  static void setAppletPath(String path, boolean isRemote) {
     if (path == null)
       path = "..";
-    appletPath = path;
-    prop.setProperty("webMakerAppletPath", appletPath);
-    historyFile.addProperties(prop);
+    if (isRemote) {
+      remoteAppletPath = path;
+      prop.setProperty("webMakerAppletPath", remoteAppletPath);
+      historyFile.addProperties(prop);
+    } else {
+      localAppletPath = path;
+      prop.setProperty("webMakerLocalAppletPath", localAppletPath);
+      historyFile.addProperties(prop);      
+    }
   }
   
   static String pageAuthorName;

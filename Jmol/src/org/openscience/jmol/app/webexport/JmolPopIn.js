@@ -79,13 +79,9 @@ function addAppletButton(i, name, label, info) {
 }
 
 function changePathIfLocal(){
- var protocol = window.location.protocol;
+ var protocol = window.location.protocol.toLowerCase();
   if (protocol = "file:") { 
-  	var s = '<script type = \"text/javascript\"> jmoljarpath = \"../..\";\n';
-    document.write(s);
-    var s = 'jmoljspath = \"../..\";\n</script>\n';
-    document.write(s);   
-  } else {
-    document.write("//protocol is:" + protocol +"\n");
+    jmoljarpath = jmollocaljarpath;
+    jmoljspath = jmollocaljspath;
   }
 }

@@ -62,12 +62,13 @@ public class Orbitals extends JPanel implements ActionListener {
       //Create the brief discription text
       JLabel Description = new JLabel(
           "Create a web page with one Jmol Applet to display orbitals on one molecule or atom.");
-
+/*
       //Create the text field for the path to the JMol applet
+      //not considering remote/local business here
       appletPath = new JTextField(20);
       appletPath.addActionListener(this);
-      appletPath.setText(WebExport.getAppletPath());
-
+      appletPath.setText(WebExport.getAppletPath(true));
+*/
       //Path to applet panel
       JPanel pathPanel = new JPanel();
       pathPanel.setLayout(new BorderLayout());
@@ -149,12 +150,12 @@ public class Orbitals extends JPanel implements ActionListener {
 
       //Create the list and list view to handle the list of 
       //orbital files.
-      ArrayListTransferHandler arrayListHandler = new ArrayListTransferHandler(
-          null);
+//      ArrayListTransferHandler arrayListHandler = new ArrayListTransferHandler(
+  //        null);
       DefaultListModel orbfilelist = new DefaultListModel();
       OrbList = new JList(orbfilelist);
       OrbList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-      OrbList.setTransferHandler(arrayListHandler);
+    //  OrbList.setTransferHandler(arrayListHandler);
       OrbList.setDragEnabled(true);
       JScrollPane OrbListView = new JScrollPane(OrbList);
       OrbListView.setPreferredSize(new Dimension(300, 200));

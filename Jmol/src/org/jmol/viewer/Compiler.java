@@ -289,7 +289,7 @@ class Compiler {
       if (pt1 < 0)
         break;
       String scrap = script.substring(pt, pt1);
-      if ((pt2 = scrap.indexOf("**** Jmol Embedded Script ****")) >= 0)
+      if ((pt2 = scrap.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG)) >= 0)
         return scrap.substring(pt2 + 30);
       script = script.substring(0, pt) + script.substring(pt1 + 3);
     }
@@ -298,7 +298,7 @@ class Compiler {
       if (pt1 < 0)
         break;
       String scrap = script.substring(pt + 2, pt1);
-      if ((pt2 = scrap.indexOf("**** Jmol Embedded Script ****")) >= 0)
+      if ((pt2 = scrap.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG)) >= 0)
         return scrap.substring(pt2 + 30);
       script = script.substring(0, pt) + script.substring(pt1 + 2);
     }

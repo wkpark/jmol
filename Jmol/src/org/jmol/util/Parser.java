@@ -378,10 +378,17 @@ public class Parser {
     return str;
   }
   
-  public static String getString(String line, String strQuote) {
-    int i = line.indexOf(strQuote);
-    int j = line.lastIndexOf(strQuote);
-    return (j == i ? "" : line.substring(i + 1, j));
+  public static String getNextQuotedString(String line, int ipt0) {
+    String value = line;
+    int i = value.indexOf("\"", ipt0);
+    if (i < 0)
+      return "";
+    value = value.substring(i + 1);
+    i = -1;
+    while (++i < value.length() && value.charAt(i) != '"')
+      if (value.charAt(i) == '\\')
+        i++;
+    return value.substring(0, i);
   }
   
   private static boolean isWhiteSpace(String str, int ich) {

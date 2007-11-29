@@ -104,6 +104,13 @@ public abstract class MeshCollection extends Shape {
       title = null;
       return;
     }
+    
+    if ("commandOption" == propertyName) {
+      String s = " # " + (String) value;
+      if (script.indexOf(s) < 0)
+        script += s;
+      return;
+    }
 
     if ("thisID" == propertyName) {
       String id = (String) value;
@@ -284,11 +291,10 @@ public abstract class MeshCollection extends Shape {
         if (meshes[i] == null || meshes[i].vertexCount == 0)
           continue;
         Mesh m = meshes[i];
-        sb.append((++k)).append(" id:"+m.thisID)
-        .append("; model:" + viewer.getModelNumberDotted(m.modelIndex))
-        .append("; vertices:" + m.vertexCount)
-        .append("; polygons:" + m.polygonCount)
-        .append("; visible:" + m.visible); 
+        sb.append((++k)).append(" id:" + m.thisID).append(
+            "; model:" + viewer.getModelNumberDotted(m.modelIndex)).append(
+            "; vertices:" + m.vertexCount).append(
+            "; polygons:" + m.polygonCount).append("; visible:" + m.visible);
         if (m.title != null) {
           String s = "";
           for (int j = 0; j < m.title.length; j++)

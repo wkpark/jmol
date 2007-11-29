@@ -23,19 +23,20 @@
 .floatRightDiv { padding:0.3em 0.5ex; font-size:0.9em; float:right;}
 .floatLeftDiv { padding:0.3em 0.5ex; font-size:0.9em; float:left;}
   </style>
-  <script>
-	var jmoljarpath = "@APPLETPATH@"; // where Jmol.jar is to be found 
-    var jmoljspath = "@APPLETPATH@";  // where Jmol.js is to be found
+  <script src="JmolPopIn.js" type="text/javascript"></script>
+  <script type="text/javascript">
+	var jmoljarpath = "@REMOTEAPPLETPATH@"; // where Jmol.jar is to be found on a server
+    var jmoljspath = "@REMOTEAPPLETPATH@";  // where Jmol.js is to be found on a server
+	var jmollocaljarpath = "@LOCALAPPLETPATH@"; // where Jmol.jar is to be found locally
+    var jmollocaljspath = "@LOCALAPPLETPATH@";  // where Jmol.js is to be found locally
     var jmoljarfile = "JmolApplet0.jar";  // first of a set of many files; "JmolApplet.jar" is everything in one file; 
  	var dataDir = ".";                // where the model AND .spt files are to be found.
-  </script>
-  <script src="JmolPopIn.js" type="text/javascript"></script>
- <script type="text/javascript"> 
  	changePathIfLocal();
   </script>
-<script type="text/javascript">
+  
+  <script type="text/javascript">
     addJavaScript(jmoljspath, "Jmol.js");
-</script>
+  </script>
 
 <script type="text/javascript">
 	jmolInitialize(jmoljarpath, jmoljarfile);

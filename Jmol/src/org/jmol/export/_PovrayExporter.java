@@ -39,6 +39,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Text;
 import org.jmol.util.BitSetUtil;
+import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 /*
@@ -83,9 +84,9 @@ public class _PovrayExporter extends _Exporter {
     output("//\n");
     output("// This script was generated on " + getExportDate() + "\n");
     output("// ******************************************************\n");
-    output("\n/*  **** Jmol Embedded Script **** \n");
+    output("\n/** " + JmolConstants.EMBEDDED_SCRIPT_TAG + " \n");
     output(viewer.getSavedState("_Export"));
-    output("\n*/\n");
+    output("\n**/\n");
     output("\n");
     output("// ******************************************************\n");
     output("// Declare the resolution, camera, and light sources.\n");

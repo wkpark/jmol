@@ -29,9 +29,11 @@ import org.jmol.util.Parser;
 
 public abstract class MeshFileCollection extends MeshCollection {
 
+  
   protected String line;
   protected int[] next = new int[1];
   
+
   protected String[] getTokens() {
     return Parser.getTokens(line);
   }

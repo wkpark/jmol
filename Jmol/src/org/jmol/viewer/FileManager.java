@@ -88,8 +88,7 @@ class FileManager {
     return inlineDataArray;  
   }
 
-  private String loadScript;  
-  private File file;
+  private String loadScript; 
 
   FileOpenThread fileOpenThread;
   FilesOpenThread filesOpenThread;
@@ -144,9 +143,16 @@ class FileManager {
   private void setLoadScript(String script, boolean isMerge) {
     if (loadScript == null || !isMerge)
       loadScript = "";
-    loadScript += viewer.getLoadState() + "  " + script + "\n";
+    loadScript += viewer.getLoadState();
+    addLoadScript(script);
   }
 
+  void addLoadScript(String script) {
+    if (script == null)
+      return;
+    loadScript += "  " + script + ";\n";  
+  }
+  
   void openFile(String name, Hashtable htParams, String loadScript, boolean isMerge) {
     setLoadScript(loadScript, isMerge);
     int pt = name.indexOf("::");
@@ -154,7 +160,9 @@ class FileManager {
     fileType = (pt >= 0 ? name.substring(0, pt) : null);
     Logger.info("\nFileManager.openFile(" + nameAsGiven + ") //" + name);
     openErrorMessage = fullPathName = fileName = null;
-    classifyName(nameAsGiven);
+    setNames(classifyName(nameAsGiven));
+    htParams.put("fullPathName", (fileType == null ? "" : fileType + "::")
+        + fullPathName.replace('\\', '/'));
     if (openErrorMessage != null) {
       Logger.error("file ERROR: " + openErrorMessage);
       return;
@@ -173,12 +181,13 @@ class FileManager {
       nameAsGiven = (pt >= 0 ? names[i].substring(pt + 2) : names[i]);
       fileType = (pt >= 0 ? names[i].substring(0, pt) : null);
       openErrorMessage = fullPathName = fileName = null;
-      classifyName(nameAsGiven);
+      setNames(classifyName(nameAsGiven));
       if (openErrorMessage != null) {
         Logger.error("file ERROR: " + openErrorMessage);
         return;
       }
       fullPathNames[i] = fullPathName;
+      names[i] = fullPathName.replace('\\','/');
       fileTypes[i] = fileType;
       namesAsGiven[i] = nameAsGiven;
     }
@@ -411,9 +420,17 @@ class FileManager {
   // mth jan 2003 -- there must be a better way for me to do this!?
   private final static String[] urlPrefixes = {"http:", "https:", "ftp:", "file:"};
 
-  private void classifyName(String name) {
+  private void setNames(String[] names) {
+    fullPathName = names[0];
+    fileName = names[1];
+  }
+  
+  private String[] classifyName(String name) {
     if (name == null)
-      return;
+      return null;
+    String[] names = new String[2];
+    if (name.indexOf("=") == 0)
+      name = TextFormat.formatString(viewer.getLoadFormat(), "FILE", name.substring(1));
     String defaultDirectory = viewer.getDefaultDirectory();
     if (appletDocumentBase != null) {
       // This code is only for the applet
@@ -421,34 +438,35 @@ class FileManager {
         if (defaultDirectory.length() != 0 && name.indexOf(":") < 0)
           name = defaultDirectory + "/" + name;
         URL url = new URL(appletDocumentBase, name);
-        fullPathName = url.toString();
+        names[0] = url.toString();
         // we add one to lastIndexOf(), so don't worry about -1 return value
-        fileName = fullPathName.substring(fullPathName.lastIndexOf('/') + 1,
-                fullPathName.length());
+        names[1] = names[0].substring(names[0].lastIndexOf('/') + 1,
+                names[0].length());
       } catch (MalformedURLException e) {
         openErrorMessage = e.getMessage();
       }
-      return;
+      return names;
     }
     // This code is for the app
     for (int i = 0; i < urlPrefixes.length; ++i) {
       if (name.startsWith(urlPrefixes[i])) {
         try {
           URL url = new URL(name);
-          fullPathName = url.toString();
-          fileName = fullPathName.substring(fullPathName.lastIndexOf('/') + 1,
-              fullPathName.length());
+          names[0] = url.toString();
+          names[1] = names[0].substring(names[0].lastIndexOf('/') + 1,
+              names[0].length());
         } catch (MalformedURLException e) {
           openErrorMessage = e.getMessage();
         }
-        return;
+        return names;
       }
     }
     if (name.indexOf(":") < 0 && defaultDirectory.length() > 0)
       name = defaultDirectory + "/" + name;
-    file = new File(name);
-    fullPathName = file.getAbsolutePath();
-    fileName = file.getName();
+    File file = new File(name);
+    names[0] = file.getAbsolutePath();
+    names[1] = file.getName();
+    return names;
   }
   
   Object getInputStreamOrErrorMessageFromName(String name, boolean showMsg) {
@@ -515,6 +533,15 @@ class FileManager {
         sb.append("\nEND " + header + " " + name + "\n");
     }
     return getBufferedReaderForString(sb.toString());
+  }
+
+  Object getBufferedReaderOrErrorMessageFromName(String name, String[] fullPathNameReturn) {
+    String[] names = classifyName(name);
+    if (names == null)
+      return "cannot read file name: " + name;
+    if (fullPathNameReturn != null)
+      fullPathNameReturn[0] = names[0].replace('\\', '/');
+    return getUnzippedBufferedReaderOrErrorMessageFromName(names[0], false, false);
   }
 
   Object getUnzippedBufferedReaderOrErrorMessageFromName(String name

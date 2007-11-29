@@ -33,11 +33,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.zip.*;
-
 import javax.swing.*;
 
 import org.jmol.api.JmolViewer;
+import org.jmol.util.ArrayUtil;
+import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.openscience.jmol.app.HelpDialog;
 
@@ -66,7 +66,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
   private JScrollPane editorScrollPane;
   private JButton saveButton, helpButton, addInstanceButton;
   private JButton deleteInstanceButton, showInstanceButton;
-  private JTextField appletPath, pageAuthorName, webPageTitle;
+  private JTextField remoteAppletPath, localAppletPath, pageAuthorName, webPageTitle;
   private JFileChooser fc;
   private JList instanceList;
   private JmolViewer viewer;
@@ -80,9 +80,12 @@ abstract class WebPanel extends JPanel implements ActionListener {
     this.webPanels = webPanels;
     this.panelIndex = panelIndex;
     //Create the text fields for the path to the Jmol applet, page author(s) name(s) and  web page title.
-    appletPath = new JTextField(20);
-    appletPath.addActionListener(this);
-    appletPath.setText(WebExport.getAppletPath());
+    remoteAppletPath = new JTextField(20);
+    remoteAppletPath.addActionListener(this);
+    remoteAppletPath.setText(WebExport.getAppletPath(true));
+    localAppletPath = new JTextField(20);
+    localAppletPath.addActionListener(this);
+    localAppletPath.setText(WebExport.getAppletPath(false));
     pageAuthorName= new JTextField(20);
     pageAuthorName.addActionListener(this);
     pageAuthorName.setText(WebExport.getPageAuthorName());
@@ -250,8 +253,14 @@ abstract class WebPanel extends JPanel implements ActionListener {
     JPanel pathPanel = new JPanel();
     pathPanel.setLayout(new BorderLayout());
     pathPanel.setBorder(BorderFactory
-        .createTitledBorder("Relative Path to Jmol Applet:"));
-    pathPanel.add(appletPath, BorderLayout.NORTH);
+        .createTitledBorder("Relative server path to jar files:"));
+    pathPanel.add(remoteAppletPath, BorderLayout.NORTH);
+   
+    JPanel pathPanel2 = new JPanel();
+    pathPanel2.setLayout(new BorderLayout());
+    pathPanel2.setBorder(BorderFactory
+        .createTitledBorder("Relative local path to jar files:"));
+    pathPanel2.add(localAppletPath, BorderLayout.NORTH);
    
     //Page Author Panel
     JPanel authorPanel = new JPanel();
@@ -266,10 +275,14 @@ abstract class WebPanel extends JPanel implements ActionListener {
         .createTitledBorder("Browser window title for this web page:"));
     titlePanel.add(webPageTitle, BorderLayout.NORTH);
     titlePanel.add(savePanel, BorderLayout.SOUTH);
-    
+
+    JPanel pathPanels = new JPanel();
+    pathPanels.setLayout(new BorderLayout());
+    pathPanels.add(pathPanel, BorderLayout.NORTH);
+    pathPanels.add(pathPanel2, BorderLayout.SOUTH);
     JPanel settingsPanel = new JPanel();
     settingsPanel.setLayout(new BorderLayout());
-    settingsPanel.add(pathPanel, BorderLayout.NORTH);
+    settingsPanel.add(pathPanels, BorderLayout.NORTH);
     settingsPanel.add(authorPanel, BorderLayout.CENTER);
     settingsPanel.add(titlePanel, BorderLayout.SOUTH);
 
@@ -283,6 +296,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     return leftpanel;
   }
 
+/*
   private JScrollPane getInstructionPane(int w, int h) {
 
     //Create the instructions sub window (scrolling to read html file)
@@ -305,12 +319,18 @@ abstract class WebPanel extends JPanel implements ActionListener {
     editorScrollPane.setMinimumSize(new Dimension(250, 10));
     return editorScrollPane;
   }
-
+*/
   public void actionPerformed(ActionEvent e) {
 
-    if (e.getSource() == appletPath) {
-      String path = appletPath.getText();
-      WebExport.setAppletPath(path);
+    if (e.getSource() == remoteAppletPath) {
+      String path = remoteAppletPath.getText();
+      WebExport.setAppletPath(path, true);
+      return;
+    }
+
+    if (e.getSource() == localAppletPath) {
+      String path = localAppletPath.getText();
+      WebExport.setAppletPath(path, false);
       return;
     }
 
@@ -339,13 +359,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
         height = ((SpinnerNumberModel) (appletSizeSpinnerH.getModel()))
             .getNumber().intValue();
       }
-      String structureFile = viewer.getModelSetPathName();
-      if (structureFile == null) {
-        LogPanel
-            .log("Error trying to get name and path to file containing structure:" + structureFile);
-      }
-      JmolInstance instance = new JmolInstance(viewer, name, structureFile,
-          script, width, height);
+      JmolInstance instance = new JmolInstance(viewer, name, script, width, height);
       if (instance == null) {
         LogPanel
             .log("Error creating new instance containing script(s) and image.");
@@ -398,8 +412,10 @@ abstract class WebPanel extends JPanel implements ActionListener {
       File file = fc.getSelectedFile();
       boolean retVal = true;
       try {
-        String path = appletPath.getText();
-        WebExport.setAppletPath(path);
+        String path = remoteAppletPath.getText();
+        WebExport.setAppletPath(path, true);
+        path = localAppletPath.getText();
+        WebExport.setAppletPath(path, false);
         String authorName = pageAuthorName.getText();
         WebExport.setWebPageAuthor(authorName);
         retVal = fileWriter(file, instanceList);
@@ -440,6 +456,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     } else {
       fileName = datadirName + ".html";
     }
+    datadirPath = datadirPath.replace('\\', '/');
     boolean made_datadir = (file.exists() && file.isDirectory() || file.mkdir());
     DefaultListModel listModel = (DefaultListModel) InstanceList.getModel();
     LogPanel.log("");
@@ -448,9 +465,6 @@ abstract class WebPanel extends JPanel implements ActionListener {
       LogPanel.log("  adding JmolPopIn.js");
       
       writeFile(datadirPath + "/JmolPopIn.js", getResourceString("JmolPopIn.js"));
-      String lastFile = "";
-      String lastName = "";
-      String outfilename = "";
       for (int i = 0; i < listModel.getSize(); i++) {
         JmolInstance thisInstance = (JmolInstance) (listModel.getElementAt(i));
         String javaname = thisInstance.javaname;
@@ -462,51 +476,12 @@ abstract class WebPanel extends JPanel implements ActionListener {
         } catch (IOException IOe) {
           throw IOe;
         }
-        //Get the path to the file from the Jmol
 
-        String structureFile = thisInstance.file;
-        long structureFileSize = (new File(structureFile).length());
-        String extension = structureFile.substring(structureFile
-            .lastIndexOf(".") + 1, structureFile.length());
-        String newName = lastName;
-        if (!structureFile.equals(lastFile)) {
-          newName = javaname + "." + extension; //assuming things are relative to calling page.
-          outfilename = datadirPath
-              + (datadirPath.indexOf("\\") >= 0 ? "\\" : "/") + newName;
-          LogPanel
-              .log("      ...copying " + newName + " from " + structureFile);
-          String data = viewer.getFileAsString(structureFile);
-          if (structureFileSize > 32000){ //gzip it!
-            outfilename  = outfilename+".gz";
-            newName = newName+".gz";
-            GZIPOutputStream gzFile = new GZIPOutputStream(new FileOutputStream(outfilename));
-            gzFile.write(data.getBytes());
-            gzFile.close();
-            LogPanel
-              .log("          ...compressing large file "+structureFile);
-          } else {
-            writeFile(outfilename, data);
-          }
-          lastFile = structureFile;
-          lastName = newName;
-        } else {
-          LogPanel.log("      ..." + javaname + " uses " + outfilename);
-        }
-        //First modify to use the newly copied structure file
-        String structureFileName = (new File(structureFile)).getName();
-        int pt = script.indexOf("/" + structureFileName + "\"");
-        if (pt < 0)
-          pt = script.indexOf("\\" + structureFileName + "\"");
-        if (pt >= 0) {
-          int pt0 = pt;
-          while (pt0 >= 0 && script.charAt(pt0) != '"')
-            pt0--;
-          pt0++;
-          structureFileName = script.substring(pt0, pt + 1) + structureFileName;
-        }
-        script = TextFormat.simpleReplace(script,
-            '"' + structureFileName + '"', '"' + newName + '"');
-        //script = fixScript(script);
+        String[] filesToCopy = getFileReferences(script);
+        String filesCopied = "";
+        for (int iFile = 0; iFile < filesToCopy.length; iFile++)
+          filesCopied = copyBinaryFile(filesToCopy[iFile], datadirPath, filesCopied);
+        script = localizeFileReferences(script, filesToCopy);
         LogPanel.log("      ...adding " + javaname + ".spt");
         writeFile(datadirPath + "/" + javaname + ".spt", script);
       }
@@ -521,7 +496,8 @@ abstract class WebPanel extends JPanel implements ActionListener {
             .getElementAt(i));
       html = TextFormat.simpleReplace(html, "@AUTHOR@", pageAuthorName.getText());
       html = TextFormat.simpleReplace(html, "@TITLE@", webPageTitle.getText());
-      html = TextFormat.simpleReplace(html, "@APPLETPATH@", appletPath.getText());
+      html = TextFormat.simpleReplace(html, "@REMOTEAPPLETPATH@", remoteAppletPath.getText());
+      html = TextFormat.simpleReplace(html, "@LOCALAPPLETPATH@", localAppletPath.getText());
       html = TextFormat.simpleReplace(html, "@DATADIRNAME@", datadirName);
       if (appletInfoDivs.length() > 0)
         appletInfoDivs = "\n<div style='display:none'>\n" + appletInfoDivs
@@ -548,6 +524,82 @@ abstract class WebPanel extends JPanel implements ActionListener {
     return true;
   }
 
+  private String[] getFileReferences(String script) {
+    String fileList = "";
+    fileList += addFileList(script, "/*file*/");
+    fileList += addFileList(script, "FILE0=");
+    fileList += addFileList(script, "FILE1=");
+    return TextFormat.split(fileList,'\n');
+  }
+
+  private String addFileList(String script, String tag) {
+    String fileList = "";
+    int i = -1;
+    while ((i = script.indexOf(tag, i + 1)) >= 0) {
+      fileList += Parser.getNextQuotedString(script, i) + "\n";
+    }
+    return fileList;
+  }
+  
+  private String copyBinaryFile(String fullPathName, String dataPath, String filesCopied) {
+    String name = fullPathName.substring(fullPathName.lastIndexOf('/') + 1);
+    int i;
+    String s;
+    if ((i = name.indexOf("|")) >= 0)
+      name = name.substring(0, i);
+    if (filesCopied.indexOf((s = ";" + name + ";")) >= 0)
+      return filesCopied;
+    filesCopied += s;
+    name = dataPath + "/" + name;
+    try {
+      LogPanel.log("      ...copying " + fullPathName + " to " + name);
+      byte[] data = getFileAsBytes(fullPathName);
+      writeFileBytes(name, data);  
+    } catch (Exception e) {
+      LogPanel.log(e.getMessage());
+    }
+    return filesCopied;
+  }
+  
+  private byte[] getFileAsBytes(String path) throws IOException {
+    byte[] buf = new byte[1024];
+    byte[] bytes = new byte[4096];
+    int len = 0;
+    int totalLen = 0;
+    BufferedInputStream bis = new BufferedInputStream(new FileInputStream(path));
+    while ((len = bis.read(buf)) > 0) {
+      totalLen += len;
+      if (totalLen >= bytes.length)
+        bytes = ArrayUtil.ensureLength(bytes, totalLen * 2);
+      System.arraycopy(buf, 0, bytes, totalLen - len, len);
+    }
+    buf = new byte[totalLen];
+    System.arraycopy(bytes, 0, buf, 0, totalLen);
+    return buf;
+  }
+  
+  private void writeFileBytes(String path, byte[] data) {
+    try {
+      FileOutputStream os = new FileOutputStream(path);
+      os.write(data);
+      os.flush();
+      os.close();
+    } catch (IOException e) {
+      LogPanel.log(e.getMessage());
+    }
+  }
+  
+  private String localizeFileReferences(String script, String[] fileList) {
+    for (int i = 0; i < fileList.length; i++) {
+      String fullPathName = fileList[i];
+      String name = fullPathName.substring(fullPathName.lastIndexOf('/') + 1);
+      if (!name.equals(fullPathName))
+        script = TextFormat.simpleReplace(script, "\"" + fullPathName + "\"", "\"" + name + "\"");
+    }
+    return script;
+  }
+  
+  
   void syncLists() {
     JList list = webPanels[1 - panelIndex].instanceList;
     DefaultListModel model1 = (DefaultListModel) instanceList.getModel();

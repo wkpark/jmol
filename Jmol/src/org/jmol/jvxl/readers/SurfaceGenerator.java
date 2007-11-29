@@ -316,6 +316,13 @@ public class SurfaceGenerator {
       return false; //more to do
     }
 
+    if ("commandOption" == propertyName) {
+      String s = " # " + (String) value;
+      if (params.script.indexOf(s) < 0)
+        params.script += s;
+      return true;
+    }
+
     if ("clear" == propertyName) {
       if (voxelReader != null)
         voxelReader.discardTempData(true);

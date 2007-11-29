@@ -35,6 +35,8 @@ import java.util.Properties;
 
 final public class JmolConstants {
 
+  public final static String EMBEDDED_SCRIPT_TAG = "**** Jmol Embedded Script ****";
+  
   public final static int JMOL_DATA_RAMACHANDRAN = 0;
   public final static int JMOL_DATA_QUATERNION = 1;
   public final static int JMOL_DATA_OTHER = 2;

@@ -47,11 +47,11 @@ class PopInJmol extends WebPanel {
     //the applet should be.
     SpinnerNumberModel appletSizeModelW = new SpinnerNumberModel(300, //initial value
         50, //min
-        500, //max
+        1000, //max
         25); //step size
     SpinnerNumberModel appletSizeModelH = new SpinnerNumberModel(300, //initial value
         50, //min
-        500, //max
+        1000, //max
         25); //step size
     appletSizeSpinnerW = new JSpinner(appletSizeModelW);
     appletSizeSpinnerH = new JSpinner(appletSizeModelH);

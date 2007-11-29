@@ -460,7 +460,7 @@ class Eval { //implements Runnable {
     if (filename.toLowerCase().indexOf("javascript:") == 0)
       return loadScript(filename, viewer.eval(filename.substring(11)),
           debugScript);
-    Object t = viewer.getUnzippedBufferedReaderOrErrorMessageFromName(filename);
+    Object t = viewer.getBufferedReaderOrErrorMessageFromName(filename, null);
     if (!(t instanceof BufferedReader))
       return loadError((String) t);
     BufferedReader reader = (BufferedReader) t;
@@ -3996,7 +3996,8 @@ class Eval { //implements Runnable {
     params[3] = (int) unitCells.z;
     int i = 1;
     // ignore optional file format
-    String filename = "fileset";
+    //    String filename = "";
+    String modelName = "fileset";
     if (statementLength == 1) {
       i = 0;
     } else {
@@ -4005,26 +4006,23 @@ class Eval { //implements Runnable {
         i = 2;
       } else if (theTok == Token.identifier
           || parameterAsString(1).equals("fileset")) {
-        filename = parameterAsString(1);
-        loadScript.append(" " + filename);
-        if (filename.equals("menu")) {
+        modelName = parameterAsString(1);
+        loadScript.append(" " + modelName);
+        if (modelName.equals("menu")) {
           checkLength3();
           if (!isSyntaxCheck)
             viewer.setMenu(parameterAsString(2), true);
           return;
         }
-        if (filename.equals("fileset"))
-          filename = parameterAsString(2);
-        isAppend = (filename.equalsIgnoreCase("append"));
+        if (modelName.equals("fileset"))
+          modelName = parameterAsString(2);
+        isAppend = (modelName.equalsIgnoreCase("append"));
         i = 2;
       }
-      switch (getToken(i).tok) {
-      case Token.string:
-        break;
-      default:
+      if (getToken(i).tok != Token.string)
         filenameExpected();
-      }
     }
+    String filename;
     // long timeBegin = System.currentTimeMillis();
     if (statementLength == i + 1) {
       if (i == 0 || (filename = parameterAsString(i)).length() == 0)
@@ -4033,29 +4031,28 @@ class Eval { //implements Runnable {
         zap();
         return;
       }
-      if (filename.length() > 0 && filename.charAt(0) == '=')
-        filename = fixFileName(filename);
-      loadScript.append(" ").append(Escape.escape(filename)).append(";");
-      if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
-        viewer.openFile(filename, htParams, loadScript.toString(), isAppend);
-    } else if (getToken(i + 1).tok == Token.leftbrace || theTok == Token.point3f
-        || theTok == Token.integer || theTok == Token.identifier) {
+      if (!isSyntaxCheck || isScriptCheck && fileOpenCheck) {
+        viewer.openFile(filename, htParams, null, isAppend);
+        loadScript.append(" /*file*/").append(
+            Escape.escape(modelName = (String) htParams.get("fullPathName")));
+      }
+    } else if (getToken(i + 1).tok == Token.leftbrace
+        || theTok == Token.point3f || theTok == Token.integer
+        || theTok == Token.identifier) {
       if ((filename = parameterAsString(i++)).length() == 0)
         filename = viewer.getFullPathName();
-      if (filename.length() > 0 && filename.charAt(0) == '=')
-        filename = fixFileName(filename);
-      loadScript.append(" ").append(Escape.escape(filename));
       int tok;
+      String sOptions = "";
       if ((tok = tokAt(i)) == Token.identifier
           && parameterAsString(i).equalsIgnoreCase("manifest")) {
         String manifest = stringParameter(++i);
         htParams.put("manifest", manifest);
-        loadScript.append(" MANIFEST ").append(Escape.escape(manifest));
+        sOptions += " MANIFEST " + Escape.escape(manifest);
         tok = tokAt(++i);
       }
       if (tok == Token.integer) {
         params[0] = intParameter(i);
-        loadScript.append(" ").append(params[0]);
+        sOptions += " " + params[0];
         tok = tokAt(++i);
       }
       if (tok == Token.leftbrace || tok == Token.point3f) {
@@ -4064,21 +4061,21 @@ class Eval { //implements Runnable {
         params[1] = (int) unitCells.x;
         params[2] = (int) unitCells.y;
         params[3] = (int) unitCells.z;
-        loadScript.append(" ").append(Escape.escape(unitCells));
+        sOptions += " " + Escape.escape(unitCells);
         int iGroup = -1;
         int[] p;
         float distance = 0;
         if (tokAt(i) == Token.range) {
           i++;
           distance = floatParameter(i++);
-          loadScript.append(" range ").append(distance);
+          sOptions += " range " + distance;
         }
         htParams.put("symmetryRange", new Float(distance));
         if (tokAt(i) == Token.spacegroup) {
           ++i;
           String spacegroup = TextFormat.simpleReplace(parameterAsString(i++),
               "''", "\"");
-          loadScript.append(" spacegroup ").append(Escape.escape(spacegroup));
+          sOptions += " spacegroup " + Escape.escape(spacegroup);
           if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
             iGroup = -999;
           } else {
@@ -4104,43 +4101,44 @@ class Eval { //implements Runnable {
           p[4] = iGroup;
           float[] fparams = new float[6];
           i = floatParameterSet(i, fparams);
-          loadScript.append(" unitcell {");
+          sOptions += " unitcell {";
           for (int j = 0; j < 6; j++) {
             p[5 + j] = (int) (fparams[j] * 10000f);
-            loadScript.append((j == 0 ? "" : " ")).append(p[5 + j]);
+            sOptions += (j == 0 ? "" : " ") + p[5 + j];
           }
-          loadScript.append("}");
+          sOptions += "}";
           params = p;
           htParams.put("params", params);
         }
       }
-      loadScript.append(";");
-      if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
-        viewer.openFile(filename, htParams, loadScript.toString(), isAppend);
+      if (!isSyntaxCheck || isScriptCheck && fileOpenCheck) {
+        viewer.openFile(filename, htParams, null, isAppend);
+        loadScript.append(" /*file*/").append(
+            Escape.escape(modelName = (String) htParams.get("fullPathName")));
+        loadScript.append(sOptions);
+      }
     } else {
-      String modelName;
-      if (i == 2) {
-        modelName = filename;
-      } else {
+      if (i != 2) {
         modelName = parameterAsString(i++);
         loadScript.append(" ").append(Escape.escape(modelName));
       }
       String[] filenames = new String[statementLength - i];
+      int ipt = 0;
       while (i < statementLength) {
-        modelName = parameterAsString(i);
-        if (modelName.length() > 0 && modelName.charAt(0) == '=')
-          modelName = fixFileName(modelName);
-        filenames[filenames.length - statementLength + i] = modelName;
-        loadScript.append(" ").append(Escape.escape(modelName));
+        filename = parameterAsString(i);
+        filenames[ipt++] = filename;
         i++;
       }
       nFiles = filenames.length;
-      loadScript.append(";");
-      if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
-        viewer.openFiles(modelName, filenames, loadScript.toString(), isAppend);
+      if (!isSyntaxCheck || isScriptCheck && fileOpenCheck) {
+        viewer.openFiles(modelName, filenames, null, isAppend);
+        for (i = 0; i < nFiles; i++)
+          loadScript.append(" /*file*/").append(Escape.escape(filenames[i]));
+      }
     }
     if (isSyntaxCheck && !(isScriptCheck && fileOpenCheck))
       return;
+    viewer.addLoadScript(loadScript.toString());
     String errMsg = viewer.getOpenFileError(isAppend);
     // int millis = (int)(System.currentTimeMillis() - timeBegin);
     // Logger.debug("!!!!!!!!! took " + millis + " ms");
@@ -4152,7 +4150,7 @@ class Eval { //implements Runnable {
       viewer.setCurrentModelIndex(modelCount);
     }
     if (logMessages)
-      scriptStatus("Successfully loaded:" + filename);
+      scriptStatus("Successfully loaded:" + modelName);
     String defaultScript = viewer.getDefaultLoadScript();
     String msg = "";
     if (defaultScript.length() > 0)
@@ -4177,13 +4175,6 @@ class Eval { //implements Runnable {
     if (filename == null)
       invalidArgument();
     return filename;
-  }
-
-  String fixFileName(String filename) {
-    String s = TextFormat.formatString(viewer.getLoadFormat(), "FILE", filename
-        .substring(1));
-    showString("Loading " + s);
-    return s;
   }
 
   private void dataFrame(int datatype) throws ScriptException {
@@ -8681,9 +8672,15 @@ class Eval { //implements Runnable {
         } else {
           if (isSyntaxCheck)
             return;
-          t = viewer.getUnzippedBufferedReaderOrErrorMessageFromName(filename);
+          if (thisCommand.indexOf("# FILE0=") >= 0)
+            filename = extractCommandOption("FILE0"); 
+          String[] fullPathNameReturn = new String[1];
+          t = viewer.getBufferedReaderOrErrorMessageFromName(filename, fullPathNameReturn);
           if (t instanceof String)
             fileNotFoundException(filename + ":" + t);
+          setShapeProperty(JmolConstants.SHAPE_PMESH, "commandOption",
+              "FILE0=" + Escape.escape(fullPathNameReturn[0]));
+          Logger.info("reading pmesh data from " + fullPathNameReturn[0]);
         }
         propertyValue = t;
         break;
@@ -8704,6 +8701,11 @@ class Eval { //implements Runnable {
     }
     if (translucency != null)
       setShapeProperty(JmolConstants.SHAPE_PMESH, "translucency", translucency);
+  }
+  
+  private String extractCommandOption(String name) {
+    int i = thisCommand.indexOf(name + "=");
+    return (i < 0 ? name : Parser.getNextQuotedString(thisCommand, i));
   }
 
   private void draw() throws ScriptException {
@@ -9493,6 +9495,7 @@ class Eval { //implements Runnable {
     boolean isCavity = false;
     float[] nlmZ = new float[5];
     float[] data = null;
+    int nFiles = 0;
     String str;
     int modelIndex = (isSyntaxCheck ? 0 : viewer.getDisplayModelIndex());
     if (!isSyntaxCheck)
@@ -9980,12 +9983,17 @@ class Eval { //implements Runnable {
         surfaceObjectSeen = true;
         if (tokAt(i + 1) == Token.integer)
           setShapeProperty(iShape, "fileIndex", new Integer(intParameter(++i)));
+        if (thisCommand.indexOf("# FILE" + nFiles + "=") >= 0)
+          filename = extractCommandOption("FILE" + nFiles);        
+        String[] fullPathNameReturn = new String[1];
         Object t = (isSyntaxCheck ? null : viewer
-            .getUnzippedBufferedReaderOrErrorMessageFromName(filename));
+            .getBufferedReaderOrErrorMessageFromName(filename, fullPathNameReturn));
         if (t instanceof String)
           fileNotFoundException(filename + ":" + t);
         if (!isSyntaxCheck)
-          Logger.info("reading isosurface data from " + filename);
+          Logger.info("reading isosurface data from " + fullPathNameReturn[0]);
+        setShapeProperty(iShape, "commandOption",
+            "FILE" + (nFiles++) + "=" + Escape.escape(fullPathNameReturn[0]));
         propertyValue = t;
         break;
       default:

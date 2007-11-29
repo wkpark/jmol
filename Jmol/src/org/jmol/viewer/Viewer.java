@@ -1373,12 +1373,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.defaultDirectory;
   }
 
-  Object getUnzippedBufferedReaderOrErrorMessageFromName(String name) {
-    return fileManager.getUnzippedBufferedReaderOrErrorMessageFromName(name, false, false);
+  Object getBufferedReaderOrErrorMessageFromName(String name, String[] fullPathNameReturn) {
+    return fileManager.getBufferedReaderOrErrorMessageFromName(name, fullPathNameReturn);
   }
 
   Object getBufferedReaderForString(String string) {
     return fileManager.getBufferedReaderForString(string);
+  }
+
+  void addLoadScript(String script) {
+    fileManager.addLoadScript(script);  
   }
 
   public void openFile(String name) {
@@ -1422,7 +1426,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void openFiles(String modelName, String[] names, String loadScript,
                  boolean isMerge) {
-    //Eval
+    //Eval -- names will be loaded with full path names
     if (!isMerge)
       zap(false);
     // keep old screen image while new file is being loaded

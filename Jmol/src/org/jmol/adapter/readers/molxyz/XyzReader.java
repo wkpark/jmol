@@ -91,7 +91,9 @@ public class XyzReader extends AtomSetCollectionReader {
   void readAtomSetName() throws Exception {
     readLineTrimmed();
     checkLineForScript();
-    newAtomSet(line);
+//    newAtomSet(line); // makes that the titles of multi-xyz file gets messed up
+    atomSetCollection.newAtomSet();
+    atomSetCollection.setAtomSetName(line);
   }
 
   final float[] chargeAndOrVector = new float[4];

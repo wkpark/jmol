@@ -196,7 +196,7 @@ public class MolReader extends AtomSetCollectionReader {
         if (code >= 1 && code <= 7)
           charge = 4 - code;
         code = parseInt(line, 34, 36);
-        if (code >= -3 && code <= 4 && (code = isotopeMap0.indexOf(elementSymbol + code)) >= 0)
+        if (code != 0 && code >= -3 && code <= 4 && (code = isotopeMap0.indexOf(elementSymbol + code)) >= 0)
             elementSymbol = isotopeMap1.substring(code, code + 3).trim();
       }
       Atom atom = atomSetCollection.addNewAtom();

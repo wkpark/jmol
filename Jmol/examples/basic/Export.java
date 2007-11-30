@@ -202,4 +202,9 @@ class MyStatusListener implements JmolStatusListener {
   public void notifyFrameChanged(int frameNo, int fileNo, int modelNo, int firstNo, int LastNo) {
     //
   }
+
+  public void createImage(String file, Object type_or_text_or_bytes, int quality) {
+    // TODO
+    
+  }
 }

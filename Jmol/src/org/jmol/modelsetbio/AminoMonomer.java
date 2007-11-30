@@ -60,8 +60,7 @@ public class AminoMonomer extends AlphaMonomer {
                                     interestingAminoAtomIDs);
     if (offsets == null)
       return null;
-    if (!checkOptional(offsets, O, firstAtomIndex, specialAtomIndexes[JmolConstants.ATOMID_O1]))
-      return null;
+    checkOptional(offsets, O, firstAtomIndex, specialAtomIndexes[JmolConstants.ATOMID_O1]);
     if (atoms[firstAtomIndex].isHetero() && !isBondedCorrectly(firstAtomIndex, offsets, atoms)) 
       return null;
     AminoMonomer aminoMonomer =
@@ -82,9 +81,11 @@ public class AminoMonomer extends AlphaMonomer {
 
   private static boolean isBondedCorrectly(int firstAtomIndex, byte[] offsets,
                                  Atom[] atoms) {
-    return (isBondedCorrectly(N, CA, firstAtomIndex, offsets, atoms) &&
-            isBondedCorrectly(CA, C, firstAtomIndex, offsets, atoms) &&
-            isBondedCorrectly(C, O, firstAtomIndex, offsets, atoms));
+    return (isBondedCorrectly(N, CA, firstAtomIndex, offsets, atoms)
+            && isBondedCorrectly(CA, C, firstAtomIndex, offsets, atoms)
+            && (offsets[O] != -1 
+                || isBondedCorrectly(C, O, firstAtomIndex, offsets, atoms))
+            );
   }
   
   ////////////////////////////////////////////////////////////////
@@ -130,6 +131,10 @@ public class AminoMonomer extends AlphaMonomer {
     return getAtomFromOffsetIndex(offsets[OT] != -1 ? OT : C);
   }
 
+  boolean hasOAtom() {
+    return offsets[O] != -1;
+  }
+  
   ////////////////////////////////////////////////////////////////
 
   boolean isConnectedAfter(Monomer possiblyPreviousMonomer) {

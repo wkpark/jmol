@@ -633,7 +633,7 @@ class FileManager {
       if (reader != null) {
         openBufferedReader();
       } else {
-        String name = nameAsGivenInThread;
+        String name = fullPathNameInThread;
         String[] subFileList = null;
         if (name.indexOf("|") >= 0) 
           name = (subFileList = TextFormat.split(name, "|"))[0];

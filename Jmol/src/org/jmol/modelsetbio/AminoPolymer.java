@@ -46,7 +46,8 @@ public class AminoPolymer extends AlphaPolymer {
     super(monomers);
   }
 
-  boolean hasWingPoints() { return true; }
+  boolean hasOAtoms;
+  boolean hasWingPoints() { return hasOAtoms; }
 
   //boolean hbondsAlreadyCalculated;
 
@@ -277,6 +278,7 @@ public class AminoPolymer extends AlphaPolymer {
     //System.out.println("calculateStructures for model " + this.model.getModelIndex());
     char[] structureTags = new char[monomerCount];
     calcPhiPsiAngles();
+    hasOAtoms = checkWingAtoms();
     for (int i = 0; i < monomerCount - 1; ++i) {
       AminoMonomer leadingResidue = (AminoMonomer) monomers[i];
       AminoMonomer trailingResidue = (AminoMonomer) monomers[i + 1];
@@ -360,7 +362,14 @@ public class AminoPolymer extends AlphaPolymer {
       }
     }
   }
- 
+
+  private boolean checkWingAtoms() {
+    for (int i = 0; i < monomerCount; ++i)
+      if (!((AminoMonomer) monomers[i]).hasOAtom())
+        return false;
+    return true;
+  }
+  
   protected boolean calcPhiPsiAngles() {
     for (int i = 0; i < monomerCount - 1; ++i)
       calcPhiPsiAngles((AminoMonomer) monomers[i], (AminoMonomer) monomers[i + 1]);

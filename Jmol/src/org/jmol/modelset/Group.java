@@ -35,7 +35,8 @@ public class Group {
 
   protected Chain chain;
   int seqcode;
-  short groupID;
+  protected short groupID;
+  protected boolean isAmino;
   int selectedIndex;
   protected int firstAtomIndex = -1;
   protected int lastAtomIndex;
@@ -98,7 +99,9 @@ public class Group {
     
     if (group3 == null)
       group3 = "";
-    this.groupID = getGroupID(group3);
+    groupID = getGroupID(group3);
+    isAmino = (groupID >= 1 && groupID < JmolConstants.GROUPID_AMINO_MAX); 
+
     this.firstAtomIndex = firstAtomIndex;
     this.lastAtomIndex = lastAtomIndex;
   }

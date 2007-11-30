@@ -25,10 +25,9 @@
 package org.jmol.adapter.readers.more;
 
 import org.jmol.adapter.smarter.*;
-
+import org.jmol.api.JmolAdapter;
 
 import java.io.BufferedReader;
-import org.jmol.viewer.JmolConstants;
 
 /**
  * A reader for Q-Chem 2.1
@@ -94,7 +93,7 @@ public class QchemReader extends AtomSetCollectionReader {
       if (tokens.length < 5)
         continue;
       String symbol = tokens[1];
-      if (JmolConstants.elementNumberFromSymbol(symbol) < 1)
+      if (JmolAdapter.getElementNumber(symbol) < 1)
         continue;
       //q-chem specific offsets
       float x = parseFloat(tokens[2]);

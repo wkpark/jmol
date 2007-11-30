@@ -24,13 +24,13 @@
 package org.jmol.adapter.readers.cifpdb;
 
 import org.jmol.adapter.smarter.*;
+import org.jmol.api.JmolAdapter;
 
 
 import java.io.BufferedReader;
 import java.util.Hashtable;
 
 import org.jmol.util.Logger;
-import org.jmol.viewer.JmolConstants;
 
 /**
  * A true line-free CIF file reader for CIF and mmCIF files.
@@ -825,7 +825,7 @@ public class CifReader extends AtomSetCollectionReader {
   }
 
   void addHetero(String groupName, String hetName) {
-    if (!JmolConstants.isHetero(groupName))
+    if (!JmolAdapter.isHetero(groupName))
       return;
     if (htHetero == null)
       htHetero = new Hashtable();

@@ -25,9 +25,9 @@
 package org.jmol.adapter.readers.more;
 
 import org.jmol.adapter.smarter.*;
+import org.jmol.api.JmolAdapter;
 
 import java.io.BufferedReader;
-import org.jmol.viewer.JmolConstants;
 
 /**
  * A reader for ADF output.
@@ -116,7 +116,7 @@ public class AdfReader extends AtomSetCollectionReader {
       if (tokens.length < 5)
         continue;
       String symbol = tokens[1];
-      if (JmolConstants.elementNumberFromSymbol(symbol) < 1)
+      if (JmolAdapter.getElementNumber(symbol) < 1)
         continue;
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = symbol;
@@ -177,7 +177,7 @@ public class AdfReader extends AtomSetCollectionReader {
       while (readLine() != null && line.indexOf(".") >= 0) {
         tokens = getTokens();
         String symbol = tokens[0].substring(tokens[0].indexOf(".") + 1);
-        if (JmolConstants.elementNumberFromSymbol(symbol) < 1)
+        if (JmolAdapter.getElementNumber(symbol) < 1)
           continue;
         float x, y, z;
         int offset = 1;

@@ -24,11 +24,11 @@
 
 package org.jmol.adapter.smarter;
 
+import org.jmol.api.JmolAdapter;
 import org.jmol.symmetry.SpaceGroup;
 import org.jmol.symmetry.UnitCell;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.viewer.JmolConstants;
 
 import java.io.BufferedReader;
 
@@ -458,7 +458,7 @@ public abstract class AtomSetCollectionReader {
   }
 
   public static String getElementSymbol(int elementNumber) {
-    return JmolConstants.elementSymbolFromNumber(elementNumber);
+    return JmolAdapter.getElementSymbol(elementNumber);
   }
   
   protected void fillDataBlock(String[][] data) throws Exception {

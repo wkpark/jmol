@@ -67,6 +67,19 @@ public abstract class JmolAdapter {
   public final static short ORDER_PARTIAL32       = JmolConstants.BOND_PARTIAL32;
   public final static short ORDER_UNSPECIFIED     = JmolConstants.BOND_ORDER_UNSPECIFIED;
   
+  public static String getElementSymbol(int elementNumber) {
+    return JmolConstants.elementSymbolFromNumber(elementNumber);
+  }
+  
+  public static int getElementNumber(String elementSymbol) {
+    return JmolConstants.elementNumberFromSymbol(elementSymbol);
+  }
+  
+  public static boolean isHetero(String group3) {
+    return JmolConstants.isHetero(group3);
+  }
+  
+  
   //////////////////////////////////////////////////////////////////
   // file related
   //////////////////////////////////////////////////////////////////

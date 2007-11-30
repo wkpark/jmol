@@ -25,12 +25,12 @@
 package org.jmol.adapter.readers.molxyz;
 
 import org.jmol.adapter.smarter.*;
+import org.jmol.api.JmolAdapter;
 
 
 import java.io.BufferedReader;
 
 import org.jmol.util.Logger;
-import org.jmol.viewer.JmolConstants;
 
 /**
  * Minnesota SuperComputer Center XYZ file format
@@ -108,7 +108,7 @@ public class XyzReader extends AtomSetCollectionReader {
         atom.elementSymbol = str;
       } else {
         str = str.substring((""+isotope).length());
-        atom.elementNumber = (short)((isotope << 7) + JmolConstants.elementNumberFromSymbol(str));
+        atom.elementNumber = (short)((isotope << 7) + JmolAdapter.getElementNumber(str));
         atomSetCollection.setFileTypeName("xyzi");
       }
       atom.x = parseFloat();

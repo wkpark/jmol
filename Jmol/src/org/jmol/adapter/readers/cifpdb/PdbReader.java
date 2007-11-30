@@ -86,6 +86,7 @@ public class PdbReader extends AtomSetCollectionReader {
             continue;
           }
           iHaveModel = true;
+          atomSetCollection.connectAll();
           applySymmetry();
           //supposedly MODEL is only for NMR
           model();

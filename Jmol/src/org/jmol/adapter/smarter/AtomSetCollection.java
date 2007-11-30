@@ -419,6 +419,8 @@ public class AtomSetCollection {
 
 
   Vector vConnect;
+  int connectNextAtomIndex = 0;
+  int connectNextAtomSet = 0;
   
   public void addConnection(int[] is) {
     if (vConnect == null)
@@ -434,10 +436,10 @@ public class AtomSetCollection {
       if (max < atoms[i].atomSerial)
         max = atoms[i].atomSerial;
     int[] serialMap;
-    int firstAtom = 0;
+    int firstAtom = connectNextAtomIndex;
     int iSerial;
     int nConnect = vConnect.size();
-    for (int i = 0; i < atomSetCount; firstAtom += atomSetAtomCounts[i], i++) {
+    for (int i = connectNextAtomSet; i < atomSetCount; i++) {
       Bond bond = null;
       serialMap = new int[max + 1];
       for (int iAtom = firstAtom + atomSetAtomCounts[i]; --iAtom >= firstAtom;)
@@ -462,8 +464,11 @@ public class AtomSetCollection {
         }
         addBond(bond = new Bond(sourceIndex, targetIndex, iType));
       }
+      firstAtom += atomSetAtomCounts[i];
     }
     vConnect = null;
+    connectNextAtomSet = currentAtomSetIndex + 1;
+    connectNextAtomIndex = firstAtom;
   }
 
   public void addBond(Bond bond) {

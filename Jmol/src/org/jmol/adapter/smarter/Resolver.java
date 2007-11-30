@@ -29,7 +29,6 @@ import java.util.StringTokenizer;
 
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
-//import org.jmol.viewer.JmolConstants;
 
 import java.util.Hashtable;
 

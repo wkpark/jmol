@@ -491,8 +491,7 @@ public class Draw extends MeshCollection {
       for (int i = 0; i < nModelBased; i++)
         for (int j = 0; j < modelBasedPoints[i].length; j++)
           if (iModel < 0 || j == iModel) {
-            Object points = Escape
-                .unescapePointOrBitsetAsToken(modelBasedPoints[i][j]);
+            Object points = Token.unescapePointOrBitsetAsToken(modelBasedPoints[i][j]);
             if (!(points instanceof Token))
               continue;
             switch (((Token) points).tok) {

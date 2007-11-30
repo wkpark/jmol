@@ -792,7 +792,7 @@ public class Token {
   }
 
   static Token tValue(String str) {
-    Object v = Escape.unescapePointOrBitsetAsToken(str);
+    Object v = unescapePointOrBitsetAsToken(str);
     if (!(v instanceof String))
       return (Token) v;
     String s = (String) v;
@@ -807,6 +807,26 @@ public class Token {
     return new Token(Token.string, v);  
   }
   
+  public static Object unescapePointOrBitsetAsToken(String s) {
+    if (s == null || s.length() == 0)
+      return s;
+    Object v = s;
+    if (s.charAt(0) == '{')
+      v = Escape.unescapePoint(s);
+    else if (s.indexOf("({") == 0 && s.indexOf("({") == s.lastIndexOf("({"))
+      v = Escape.unescapeBitset(s);
+    else if (s.indexOf("[{") == 0)
+      v = new BondSet(Escape.unescapeBitset(s));
+    if (v instanceof Point3f)
+      return new Token(point3f, v);
+    if (v instanceof Point4f)
+      return new Token(point4f, v);
+    if (v instanceof BitSet)
+      return new Token(bitset, v);
+    return s;
+  }
+
+
   // parameters
   final static int ambient       = setparam |  0;
   final static int bondmode      = setparam |  1;

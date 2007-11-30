@@ -803,7 +803,7 @@ class Eval { //implements Runnable {
   private Object getStringObjectAsToken(String s, String key) {
     if (s == null || s.length() == 0)
       return s;
-    Object v = Escape.unescapePointOrBitsetAsToken(s);
+    Object v = Token.unescapePointOrBitsetAsToken(s);
     if (v instanceof String && key != null)
       return viewer.getListVariable(key, v);
     return v;
@@ -11214,15 +11214,15 @@ class Eval { //implements Runnable {
 
       for (int i = 0; i < len; i++) {
         if (Float.isNaN(list1[i]))
-          addX(Escape.unescapePointOrBitsetAsToken(sList1[i]));
+          addX(Token.unescapePointOrBitsetAsToken(sList1[i]));
         else
           addX(list1[i]);
         if (!Float.isNaN(list2[i]))
           addX(list2[i]);
         else if (isScalar)
-          addX(Escape.unescapePointOrBitsetAsToken(sValue));
+          addX(Token.unescapePointOrBitsetAsToken(sValue));
         else
-          addX(Escape.unescapePointOrBitsetAsToken(sList2[i]));
+          addX(Token.unescapePointOrBitsetAsToken(sList2[i]));
         if (!addOp(token) || !operate())
           return false;
         sList3[i] = Token.sValue(xStack[xPt--]);
@@ -11565,7 +11565,7 @@ class Eval { //implements Runnable {
           return evaluateBoundBox(x2);
         }
         if (x2.tok == Token.string) {
-          Object v = Escape.unescapePointOrBitsetAsToken(Token.sValue(x2));
+          Object v = Token.unescapePointOrBitsetAsToken(Token.sValue(x2));
           if (!(v instanceof Token))
             return false;
           x2 = (Token) v;
@@ -11789,7 +11789,7 @@ class Eval { //implements Runnable {
         String[] list = (String[]) x2.value;
         String[] list2 = new String[list.length];
         for (int i = 0; i < list.length; i++) {
-          Object v = Escape.unescapePointOrBitsetAsToken(list[i]);
+          Object v = Token.unescapePointOrBitsetAsToken(list[i]);
           if (!(v instanceof Token)
               || !evaluatePointOrBitsetOperation(op, (Token) v))
             return false;

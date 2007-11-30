@@ -417,6 +417,55 @@ public class AtomSetCollection {
                       order);
   }
 
+
+  Vector vConnect;
+  
+  public void addConnection(int[] is) {
+    if (vConnect == null)
+      vConnect = new Vector();
+    vConnect.addElement(is);
+  }
+
+  public void connectAll() {
+    if (vConnect == null)
+      return;
+    int max = 0;
+    for (int i = 0; i < atomCount; i++)
+      if (max < atoms[i].atomSerial)
+        max = atoms[i].atomSerial;
+    int[] serialMap;
+    int firstAtom = 0;
+    int iSerial;
+    int nConnect = vConnect.size();
+    for (int i = 0; i < atomSetCount; firstAtom += atomSetAtomCounts[i], i++) {
+      Bond bond = null;
+      serialMap = new int[max + 1];
+      for (int iAtom = firstAtom + atomSetAtomCounts[i]; --iAtom >= firstAtom;)
+        if ((iSerial = atoms[iAtom].atomSerial) > 0)
+          serialMap[iSerial] = iAtom + 1;
+      for (int iConnect = 0; iConnect < nConnect; iConnect++) {
+        int[] pair = (int[]) vConnect.get(iConnect);
+        int sourceSerial = pair[0];
+        int targetSerial = pair[1];
+        int iType = pair[2];
+        if (sourceSerial < 0 || targetSerial < 0 || sourceSerial > max
+            || targetSerial > max)
+          continue;
+        int sourceIndex = serialMap[sourceSerial] - 1;
+        int targetIndex = serialMap[targetSerial] - 1;
+        if (sourceIndex < 0 || targetIndex < 0)
+          continue;
+        if (bond != null && iType == 1 && bond.atomIndex1 == sourceIndex
+            && bond.atomIndex2 == targetIndex) {
+          ++bond.order;
+          continue;
+        }
+        addBond(bond = new Bond(sourceIndex, targetIndex, iType));
+      }
+    }
+    vConnect = null;
+  }
+
   public void addBond(Bond bond) {
     if (bond.atomIndex1 < 0 ||
         bond.atomIndex2 < 0 ||
@@ -1078,6 +1127,8 @@ public class AtomSetCollection {
   }
 
   public Object getVolumeData() {
-    return vd;
-  }  
+    VolumeData v = vd;
+    vd = null; //delete adapter reference
+    return v;
+  }
 }

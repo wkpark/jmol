@@ -28,9 +28,6 @@ import org.jmol.adapter.smarter.*;
 
 
 import org.jmol.api.JmolAdapter;
-//import org.jmol.util.Logger;
-import org.jmol.util.ArrayUtil;
-
 import java.io.BufferedReader;
 import java.util.Hashtable;
 
@@ -60,13 +57,11 @@ public class PdbReader extends AtomSetCollectionReader {
   int lineLength;
   // index into atoms array + 1
   // so that 0 can be used for the null value
-  int[] serialMap = new int[512];
   boolean isNMRdata;
   final Hashtable htFormul = new Hashtable();
   Hashtable htHetero = null;
   Hashtable htSites = null;
-  protected String fileType = "pdb";
-  
+  protected String fileType = "pdb";  
   String currentGroup3;
   Hashtable htElementsInCurrentGroup;
 
@@ -165,8 +160,8 @@ public class PdbReader extends AtomSetCollectionReader {
           continue;
         }
       }
-      serialMap = null;
       //if (!isNMRdata)
+      atomSetCollection.connectAll();
       applySymmetry();
       if (htSites != null)
         addSites(htSites);
@@ -240,8 +235,6 @@ public class PdbReader extends AtomSetCollectionReader {
     float y = parseFloat(line, 38, 46);
     float z = parseFloat(line, 46, 54);
     /****************************************************************/
-    if (serial >= serialMap.length)
-      serialMap = ArrayUtil.setLength(serialMap, serial + 500);
     Atom atom = new Atom();
     atom.elementSymbol = elementSymbol;
     atom.atomName = atomName;
@@ -264,8 +257,6 @@ public class PdbReader extends AtomSetCollectionReader {
     if (atomCount++ == 0)
       atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     // note that values are +1 in this serial map
-    serialMap[serial] = atomSetCollection.getAtomCount();
-
     if (isHetero) {
       if (htHetero != null) {
         atomSetCollection.setAtomSetAuxiliaryInfo("hetNames", htHetero);
@@ -330,47 +321,23 @@ public class PdbReader extends AtomSetCollectionReader {
 
   void conect() {
     int sourceSerial = -1;
-    int sourceIndex = -1;
     try {
       sourceSerial = parseInt(line, 6, 11);
-      sourceIndex = serialMap[sourceSerial] - 1;
-      if (sourceIndex < 0)
+      if (sourceSerial < 0)
         return;
-      // use this for HBONDS
       for (int i = 0; i < 9; i += (i == 5 ? 2 : 1)) {
-      //      for (int i = 0; i < 4; i += (i == 5 ? 2 : 1)) {
-        int targetSerial = getTargetSerial(i);
+        int offset = i * 5 + 11;
+        int offsetEnd = offset + 5;
+        int targetSerial = (offsetEnd <= lineLength ? parseInt(line, offset,
+            offsetEnd) : -1);
         if (targetSerial < 0)
           continue;
-        int targetIndex = serialMap[targetSerial] - 1;
-        if (targetIndex < 0)
-          continue;
-        if (atomSetCollection.getBondCount() > 0) {
-          Bond bond = atomSetCollection.getBond(atomSetCollection.getBondCount() - 1);
-          if (i < 4 &&
-              bond.atomIndex1 == sourceIndex &&
-              bond.atomIndex2 == targetIndex) {
-            ++bond.order;
-            continue;
-          }
-        }
-        //        if (i >= 4)
-        //          logger.log("hbond:" + sourceIndex + "->" + targetIndex);
-        atomSetCollection.addBond(new Bond(sourceIndex, targetIndex,
-                               i < 4
-                               ? 1 : JmolAdapter.ORDER_HBOND));
+        atomSetCollection.addConnection(new int[] { sourceSerial, targetSerial,
+            i < 4 ? 1 : JmolAdapter.ORDER_HBOND });
       }
     } catch (Exception e) {
       //ignore connection errors
     }
-  }
-
-  int getTargetSerial(int i) {
-    int offset = i * 5 + 11;
-    int offsetEnd = offset + 5;
-    if (offsetEnd <= lineLength)
-      return parseInt(line, offset, offsetEnd);
-    return Integer.MIN_VALUE;
   }
 
   /*

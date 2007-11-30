@@ -184,6 +184,7 @@ public class GaussianReader extends AtomSetCollectionReader {
           atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
         } else if (line.startsWith(" Normal termination of Gaussian")) {
           ++calculationNumber;
+          equivalentAtomSets=0; // avoid next calculation to set the last title string
         }
         lineNum++;
       }
@@ -259,7 +260,12 @@ public class GaussianReader extends AtomSetCollectionReader {
   
   private void readAtoms() throws Exception {
     atomSetCollection.newAtomSet();
-    atomSetCollection.setAtomSetName(""); // start with an empty name
+    // default title : the energy of the previous structure as title
+    // this is needed for the last structure in an optimization
+    // if energy information is found for this structure the reader
+    // will overwrite this setting later.
+    atomSetCollection.setAtomSetName(energyKey + " = " + energyString);
+//  atomSetCollection.setAtomSetName("Last read atomset.");
     String path = getTokens()[0]; // path = type of orientation
     discardLines(4);
     String tokens[];
@@ -280,10 +286,6 @@ public class GaussianReader extends AtomSetCollectionReader {
         "Calculation "+calculationNumber+
         (scanPoint>=0?(SmarterJmolAdapter.PATH_SEPARATOR+"Scan Point "+scanPoint):"")+
         SmarterJmolAdapter.PATH_SEPARATOR+path);
-    // always make sure that I have a name for the atomset
-    // mostly needed if no "SCF Done" line follows the structure (e.g., last one
-    // in a scan...)
-    atomSetCollection.setAtomSetName("Last read atomset.");
   }
   /* SAMPLE BASIS OUTPUT */
   /*

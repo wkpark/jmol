@@ -396,10 +396,10 @@ class StatusManager {
     return (jmolStatusListener == null ? "" : jmolStatusListener.eval(strEval));
   }
 
-  void createImage(String file, String type, int quality) {
+  void createImage(String file, Object type_or_text_or_bytes, int quality) {
     if (jmolStatusListener == null)
       return;
-    jmolStatusListener.createImage(file, type, quality);
+    jmolStatusListener.createImage(file, type_or_text_or_bytes, quality);
   }
 
 }

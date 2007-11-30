@@ -1161,7 +1161,7 @@ class Eval { //implements Runnable {
         dataFrame(JmolConstants.JMOL_DATA_QUATERNION);
         break;
       case Token.write:
-        write(1, null);
+        write();
         break;
       case Token.print:
         print();
@@ -7962,8 +7962,8 @@ class Eval { //implements Runnable {
         + " bonds? orientation? selection? state? structure?");
   }
 
-  private String write(int pt, StringBuffer loadScript) throws ScriptException {
-    boolean isLoad = (loadScript != null);
+  private void write() throws ScriptException {
+    int pt = 1;
     boolean isApplet = viewer.isApplet();
     String driverList = viewer.getExportDriverList();
     int tok = (statementLength == 1 ? Token.clipboard : statement[pt].tok);
@@ -8059,7 +8059,7 @@ class Eval { //implements Runnable {
     String val = optParameterAsString(pt);
     if (val.equalsIgnoreCase("clipboard")) {
       if (isSyntaxCheck)
-        return "";
+        return;
       //      if (isApplet)
       //      evalError(GT._("The {0} command is not available for the applet.",
       //        "WRITE CLIPBOARD"));
@@ -8144,8 +8144,9 @@ class Eval { //implements Runnable {
                   "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB|"
                       + driverList.toUpperCase().replace(';', '|') }));
     if (isSyntaxCheck)
-      return "";
+      return;
     data = type.intern();
+    Object bytes = null;
     if (isExport) {
       //POV-Ray uses a BufferedWriter instead of a StringBuffer.
       boolean isPovRay = type.equals("Povray");
@@ -8157,7 +8158,7 @@ class Eval { //implements Runnable {
             + ".png");
         viewer.createImage(fileName + ".ini", data, Integer.MIN_VALUE, 0, 0);
         scriptStatus("Created " + fileName + ".ini:\n\n" + data);
-        return data;
+        return;
       }
     } else if (data == "PDB" || data == "XYZ" || data == "MOL") {
       data = viewer.getData("selected", data);
@@ -8169,7 +8170,11 @@ class Eval { //implements Runnable {
     } else if (data == "FUNCS") {
       data = getFunctionCalls("");
     } else if (data == "FILE") {
-      data = viewer.getCurrentFileAsString();
+      if (isShow)
+        data = viewer.getCurrentFileAsString();
+      else
+        bytes = viewer.getCurrentFileAsBytes();
+      quality = Integer.MIN_VALUE;
     } else if (data == "VAR") {
       data = "" + getParameter(parameterAsString(2), false);
     } else if (data == "SPT") {
@@ -8198,8 +8203,11 @@ class Eval { //implements Runnable {
       } else if (quality <= 0)
         quality = 75; //JPG
     }
+    if (data == null)
+      data = "";
     if (len == 0)
-      len = data.length();
+      len = (bytes == null ? data.length() : bytes instanceof String 
+          ? ((String)bytes).length() : ((byte[]) bytes).length);
     if (isImage) {
       refresh();
       if (width < 0)
@@ -8209,15 +8217,18 @@ class Eval { //implements Runnable {
     }
     if (isShow) {
       showString(data);
-    } else if (!isLoad) {
-      viewer.createImage(fileName, data, quality, width, height);
+    } else if (bytes != null && bytes instanceof String) {
+      scriptStatus((String) bytes);
+    } else {
+      if (bytes == null)
+        bytes = data;
+      viewer.createImage(fileName, bytes, quality, width, height);
       scriptStatus("type=" + type + "; file="
           + (fileName == null ? "CLIPBOARD" : fileName)
           + (len >= 0 ? "; length=" + len : "")
           + (isImage ? "; width=" + width + "; height=" + height : "")
           + (quality >= 0 ? "; quality=" + quality : ""));
     }
-    return data;
   }
 
   private void print() throws ScriptException {

@@ -93,6 +93,29 @@ public class ZipUtil {
     return "";
   }
   
+  static public byte[] getZipFileContentsAsBytes(InputStream is, String[] list,
+                                          int listPtr) {
+    byte[] ret = new byte[0];
+    String fileName = list[listPtr];
+    if (fileName.lastIndexOf("/") == fileName.length() - 1)
+      return ret;
+    ZipInputStream zis = new ZipInputStream(is);
+    ZipEntry ze;
+    try {
+      while ((ze = zis.getNextEntry()) != null) {
+        if (!fileName.equals(ze.getName()))
+          continue;
+        byte[] bytes = getZipEntryAsBytes(zis);
+        if (isZipFile(bytes) && list != null && ++listPtr < list.length)
+          return getZipFileContentsAsBytes(new BufferedInputStream(
+              new ByteArrayInputStream(bytes)), list, listPtr);
+        return bytes;
+      }
+    } catch (Exception e) {
+    }
+    return ret;
+  }
+  
   static public String getZipDirectoryAsStringAndClose(InputStream is) {
     StringBuffer sb = new StringBuffer();
     String[] s = new String[0];
@@ -168,4 +191,19 @@ public class ZipUtil {
     return buf;
   }
 
+  public static byte[] getStreamAsBytes(BufferedInputStream bis) throws IOException {
+    byte[] buf = new byte[1024];
+    byte[] bytes = new byte[4096];
+    int len = 0;
+    int totalLen = 0;
+    while ((len = bis.read(buf)) > 0) {
+      totalLen += len;
+      if (totalLen >= bytes.length)
+        bytes = ArrayUtil.ensureLength(bytes, totalLen * 2);
+      System.arraycopy(buf, 0, bytes, totalLen - len, len);
+    }
+    buf = new byte[totalLen];
+    System.arraycopy(bytes, 0, buf, 0, totalLen);
+    return buf;
+  }
 }

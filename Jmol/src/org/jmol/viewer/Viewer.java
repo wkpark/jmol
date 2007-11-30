@@ -1635,17 +1635,29 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         getModelSetName(), clientFile, null);
   }
 
+
+  public Object getCurrentFileAsBytes() {
+    String filename = getFullPathName(); 
+    if (filename == "string" || filename == "string[]" || filename == "JSNode")
+      return getCurrentFileAsString();
+    String pathName = modelManager.getModelSetPathName();
+    if (pathName == null)
+      return "";
+    return fileManager.getFileAsBytes(pathName);
+  }
+
   public String getCurrentFileAsString() {
-    if (getFullPathName() == "string") {
+    String filename = getFullPathName(); 
+    if (filename == "string") {
       return fileManager.getInlineData(-1);
     }
-    if (getFullPathName() == "string[]") {
+    if (filename == "string[]") {
       int modelIndex = getDisplayModelIndex();
       if (modelIndex < 0)
         return "";
       return fileManager.getInlineData(modelIndex);
     }
-    if (getFullPathName() == "JSNode") {
+    if (filename == "JSNode") {
       return "<DOM NODE>";
     }
     String pathName = modelManager.getModelSetPathName();
@@ -5981,7 +5993,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
   }
 
-  public void createImage(String file, String type_text, int quality,
+  public void createImage(String file, Object type_or_text_or_bytes, int quality,
                           int width, int height) {
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
@@ -5990,7 +6002,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setModelVisibility();
     }
     try {
-      statusManager.createImage(file, type_text, quality);
+      statusManager.createImage(file, type_or_text_or_bytes, quality);
     } catch (Exception e) {
       Logger.error("Error creating image: " + e.getMessage());
     }

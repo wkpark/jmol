@@ -1707,9 +1707,9 @@ public class Jmol extends JPanel {
       return "# 'eval' is implemented only for the applet.";
     }
     
-    public void createImage(String file, String type, int quality) {
+    public void createImage(String file, Object type_or_text_or_bytes, int quality) {
       ImageCreator c = new ImageCreator(viewer, status);
-      c.createImage(file, type, quality);
+      c.createImage(file, type_or_text_or_bytes, quality);
     }
     
     public void setCallbackFunction(String callbackType, String callbackFunction) {

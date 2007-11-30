@@ -95,7 +95,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public Image getScreenImage();
   abstract public void releaseScreenImage();
   
-  abstract public void createImage(String file, String type_text, int quality,
+  abstract public void createImage(String file, Object type_or_text_or_bytes, int quality,
                                    int width, int height);
 
   abstract public boolean handleOldJvm10Event(Event e);

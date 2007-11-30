@@ -73,6 +73,6 @@ public interface JmolStatusListener {
   
   public void setCallbackFunction(String callbackType, String callbackFunction);
   
-  public void createImage(String file, String type, int quality);
+  public void createImage(String file, Object type_or_text_or_bytes, int quality);
   
 }

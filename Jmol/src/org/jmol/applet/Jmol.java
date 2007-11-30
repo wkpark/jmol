@@ -849,7 +849,10 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       return "";
     }
     
-    public void createImage(String file, String type_or_text, int quality) {
+    public void createImage(String file, Object type_or_text_or_bytes, int quality) {
+      String type_or_text = (type_or_text_or_bytes instanceof String 
+          ? (String) type_or_text_or_bytes 
+          : new String((byte[])type_or_text_or_bytes));
       if (quality == Integer.MAX_VALUE)
         consoleMessage(type_or_text);
       // application-only if not text 

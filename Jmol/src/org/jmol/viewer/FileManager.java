@@ -280,6 +280,27 @@ class FileManager {
     return (countRead == 4 && abMagic[0] == (byte) 0x1F && abMagic[1] == (byte) 0x8B);
   }
 
+  public Object getFileAsBytes(String name) {
+    if (name == null)
+      return null;
+    String[] subFileList = null;
+    if (name.indexOf("|") >= 0) 
+      name = (subFileList = TextFormat.split(name, "|"))[0];
+    //System.out.println("FileManager.getFileAsString(" + name + ")");
+    Object t = getInputStreamOrErrorMessageFromName(name, false);
+    if (t instanceof String)
+      return "Error:" + t;
+    try {
+      BufferedInputStream bis = new BufferedInputStream((InputStream) t, 8192);
+      InputStream is = bis;
+      if (ZipUtil.isZipFile(is) && subFileList != null && 1 < subFileList.length)
+        return ZipUtil.getZipFileContentsAsBytes(is, subFileList, 1);
+      return ZipUtil.getStreamAsBytes(bis);
+    } catch (Exception ioe) {
+      return ioe.getMessage();
+    }
+  }
+
   /**
    * 
    * @param name

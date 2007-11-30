@@ -59,7 +59,9 @@ public class ImageCreator {
     ImageSelection.setClipboard(text);
   }
   
-  public void createImage(String fileName, String type_or_text, int quality) {
+  public void createImage(String fileName, Object type_or_text_bytes, int quality) {
+    boolean isBytes = (type_or_text_bytes instanceof byte[]);
+    String type_or_text = (isBytes ? null : (String) type_or_text_bytes);
     boolean isText = (quality == Integer.MIN_VALUE);
     if (fileName == null) {
       clipImage(type_or_text);
@@ -67,7 +69,11 @@ public class ImageCreator {
     }
     try {
       FileOutputStream os = new FileOutputStream(fileName);
-      if (isText) {
+      if (isBytes) {
+        os.write((byte[]) type_or_text_bytes);
+        os.flush();
+        os.close();
+      } else if (isText) {
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os), 8192);
         bw.write(type_or_text);
         bw.close();

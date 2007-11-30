@@ -40,6 +40,8 @@ import java.io.BufferedReader;
  * </a>
  *<p>
  *
+ * also: http://www.mdl.com/downloads/public/ctfile/ctfile.pdf
+ *
  * simple symmetry extension via load command:
  * 9/2006 hansonr@stolaf.edu
  * 
@@ -173,6 +175,8 @@ public class MolReader extends AtomSetCollectionReader {
     }
   }
 
+  private final String isotopeMap0 = "H1 H2 C-1 C1  N1  ";
+  private final String isotopeMap1 = "D  T  11C 13C 15N ";
   void readAtoms(int atomCount) throws Exception {
     for (int i = 0; i < atomCount; ++i) {
       readLine();
@@ -188,9 +192,12 @@ public class MolReader extends AtomSetCollectionReader {
       float z = parseFloat(line, 20, 30);
       int charge = 0;
       if (line.length() >= 39) {
-        int chargeCode = parseInt(line, 36, 39);
-        if (chargeCode >= 1 && chargeCode <= 7)
-          charge = 4 - chargeCode;
+        int code = parseInt(line, 36, 39);
+        if (code >= 1 && code <= 7)
+          charge = 4 - code;
+        code = parseInt(line, 34, 36);
+        if (code >= -3 && code <= 4 && (code = isotopeMap0.indexOf(elementSymbol + code)) >= 0)
+            elementSymbol = isotopeMap1.substring(code, code + 3).trim();
       }
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = elementSymbol;

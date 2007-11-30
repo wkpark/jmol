@@ -804,6 +804,7 @@ final public class JmolConstants {
     55,
     (2 << 7) + 1, // D = 2*128 + 1 <-- firstIsotope
     (3 << 7) + 1, // T = 3*128 + 1
+    (11 << 7) + 6, // 11C
     (13 << 7) + 6, // 13C
     (14 << 7) + 6, // 14C
     (15 << 7) + 7, // 15N
@@ -817,6 +818,7 @@ final public class JmolConstants {
     "Cs",
     "D",
     "T",
+    "11C",
     "13C",
     "14C",
     "15N",
@@ -832,6 +834,7 @@ final public class JmolConstants {
     "",
     "",
     "",
+    "",
   };
   
   public final static int[] altArgbsCpk = {
@@ -841,6 +844,7 @@ final public class JmolConstants {
     0xFF57178F, // Cs 55
     0xFFFFFFC0, // D 2H
     0xFFFFFFA0, // T 3H
+    0xFFD8D8D8, // 11C  6 - lighter
     0xFF505050, // 13C  6 - darker
     0xFF404040, // 14C  6 - darker still
     0xFF105050, // 15N  7 - darker

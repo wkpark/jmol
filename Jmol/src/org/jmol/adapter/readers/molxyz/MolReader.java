@@ -175,8 +175,8 @@ public class MolReader extends AtomSetCollectionReader {
     }
   }
 
-  private final String isotopeMap0 = "H1 H2 C-1 C1  N1  ";
-  private final String isotopeMap1 = "D  T  11C 13C 15N ";
+  private final String isotopeMap0 = "H1 H2 ";
+  private final String isotopeMap1 = "D  T  ";
   void readAtoms(int atomCount) throws Exception {
     for (int i = 0; i < atomCount; ++i) {
       readLine();
@@ -196,8 +196,15 @@ public class MolReader extends AtomSetCollectionReader {
         if (code >= 1 && code <= 7)
           charge = 4 - code;
         code = parseInt(line, 34, 36);
-        if (code != 0 && code >= -3 && code <= 4 && (code = isotopeMap0.indexOf(elementSymbol + code)) >= 0)
-            elementSymbol = isotopeMap1.substring(code, code + 3).trim();
+        if (code != 0 && code >= -3 && code <= 4) {
+          int ptr = isotopeMap0.indexOf(elementSymbol + code);
+          if (ptr >= 0)
+            elementSymbol = isotopeMap1.substring(ptr, ptr + 3).trim();
+          else if (elementSymbol=="C")
+            elementSymbol = (12 + code) + "C";
+          else if (elementSymbol=="N")
+            elementSymbol = (14 + code) + "N";
+        }
       }
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = elementSymbol;

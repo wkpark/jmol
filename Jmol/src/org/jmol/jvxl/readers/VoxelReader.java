@@ -715,7 +715,6 @@ public abstract class VoxelReader implements VertexDataServer {
     meshData.getSurfaceSet();
     BitSet bs;
     for (int i = meshData.nSets; --i >= 0;)
-      //System.out.println(" set " + i + " " + Viewer.cardinalityOf(surfaceSet[i]));
       if ((bs = meshData.surfaceSet[i]) != null) {
         int n = 0;
         for (int j = bs.size(); --j >= 0;)

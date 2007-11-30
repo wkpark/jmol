@@ -696,9 +696,7 @@ public class MarchingSquares {
       return;
     }
     ContourVertex c = contourVertexes[i];
-    pt.set(c.vertexXYZ);
-    //System.out.println("draw pt" + ix + "_" + iy+ " " + org.jmol.viewer.StateManager.escape(pt) + " \"" + pt + " " + ix + " " + iy + "\";");
-    
+    pt.set(c.vertexXYZ);    
   }
 
   private int findContourVertex(int ix, int iy) {

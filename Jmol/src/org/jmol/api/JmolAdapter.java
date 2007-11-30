@@ -30,6 +30,7 @@ import java.util.Properties;
 import java.util.Hashtable;
 import java.util.BitSet;
 
+import org.jmol.quantum.MOCalculation;
 import org.jmol.viewer.JmolConstants;
 
 /****************************************************************
@@ -67,6 +68,11 @@ public abstract class JmolAdapter {
   public final static short ORDER_PARTIAL32       = JmolConstants.BOND_PARTIAL32;
   public final static short ORDER_UNSPECIFIED     = JmolConstants.BOND_ORDER_UNSPECIFIED;
   
+  public final static int SHELL_D_CARTESIAN = MOCalculation.SHELL_D_CARTESIAN;
+  public final static int SHELL_D_SPHERICAL = MOCalculation.SHELL_D_SPHERICAL;
+  public final static int SHELL_F_CARTESIAN = MOCalculation.SHELL_F_CARTESIAN;
+  public final static int SHELL_F_SPHERICAL = MOCalculation.SHELL_F_SPHERICAL;
+  
   public static String getElementSymbol(int elementNumber) {
     return JmolConstants.elementSymbolFromNumber(elementNumber);
   }
@@ -79,6 +85,14 @@ public abstract class JmolAdapter {
     return JmolConstants.isHetero(group3);
   }
   
+  public static int getQuantumShellTagID(String tag) {
+    return MOCalculation.getQuantumShellTagID(tag);
+  }
+                                           
+  public static int getQuantumShellTagIDSpherical(String tag) {
+    return MOCalculation.getQuantumShellTagIDSpherical(tag);
+  }
+                                           
   
   //////////////////////////////////////////////////////////////////
   // file related

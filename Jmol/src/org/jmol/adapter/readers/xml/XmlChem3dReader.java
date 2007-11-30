@@ -33,7 +33,7 @@ import netscape.javascript.JSObject;
 
 import org.jmol.util.Logger;
 import org.xml.sax.*;
-import org.jmol.jvxl.data.VolumeData;
+
 /**
  * An chem3d c3xml reader
  */
@@ -116,26 +116,23 @@ public class XmlChem3dReader extends XmlReader {
     }
 
     if ("gridData".equals(localName)) {
-      VolumeData vd = new VolumeData();
+      atomSetCollection.newVolumeData();
       int nPointsX = parseInt((String) atts.get("gridDatXDim"));
       int nPointsY = parseInt((String) atts.get("gridDatYDim"));
       int nPointsZ = parseInt((String) atts.get("gridDatZDim"));
-      vd.voxelCounts[0] = nPointsX;
-      vd.voxelCounts[1] = nPointsY;
-      vd.voxelCounts[2] = nPointsZ;
-
+      atomSetCollection.setVoxelCounts(nPointsX, nPointsY, nPointsZ);
       float xStep = parseFloat((String) atts.get("gridDatXSize"))
           / (nPointsX);
       float yStep = parseFloat((String) atts.get("gridDatYSize"))
           / (nPointsY);
       float zStep = parseFloat((String) atts.get("gridDatZSize"))
           / (nPointsZ);
-      vd.setVolumetricVector(0, xStep, 0, 0);
-      vd.setVolumetricVector(1, 0, yStep, 0);
-      vd.setVolumetricVector(2, 0, 0, zStep);
+      atomSetCollection.setVolumetricVector(0, xStep, 0, 0);
+      atomSetCollection.setVolumetricVector(1, 0, yStep, 0);
+      atomSetCollection.setVolumetricVector(2, 0, 0, zStep);
 
       tokens = getTokens((String) atts.get("gridDatOrigin"));
-      vd.volumetricOrigin.set(parseFloat(tokens[0]), parseFloat(tokens[1]), parseFloat(tokens[2]));
+      atomSetCollection.setVolumetricOrigin(parseFloat(tokens[0]), parseFloat(tokens[1]), parseFloat(tokens[2]));
       
       tokens = getTokens((String) atts.get("gridDatData"));
       int nData = parseInt(tokens[0]);
@@ -162,12 +159,12 @@ In Chem3D, all grid data in following format:
         for (int y = 0; y < nPointsY; y++)
           for (int x = 0; x < nPointsX; x++)
             voxelData[x][y][z] = parseFloat(tokens[pt++]);
-      vd.setVoxelData(voxelData);
+      atomSetCollection.setVoxelData(voxelData);
       Hashtable surfaceInfo = new Hashtable();
       surfaceInfo.put("surfaceDataType", "mo");
       surfaceInfo.put("defaultCutoff", new Float(0.01));
       surfaceInfo.put("nCubeData", new Integer(nData));
-      surfaceInfo.put("volumeData", vd);
+      surfaceInfo.put("volumeData", atomSetCollection.getVolumeData());
       atomSetCollection.setAtomSetAuxiliaryInfo("jmolSurfaceInfo", surfaceInfo);
       Logger.debug("Chem3D molecular orbital data displayable using:  isosurface sign \"\" ");
       return;

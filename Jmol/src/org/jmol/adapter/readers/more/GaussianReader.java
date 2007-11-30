@@ -34,7 +34,7 @@ import java.util.Vector;
 
 import javax.vecmath.Vector3f;
 
-import org.jmol.quantum.MOCalculation;
+import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
 /**
@@ -334,9 +334,9 @@ public class GaussianReader extends AtomSetCollectionReader {
       lastAtom = tokens[1];
       slater[0] = atomCount;
       if (doSpherical)
-        slater[1] = MOCalculation.getQuantumShellTagIDSpherical(tokens[4]);
+        slater[1] = JmolAdapter.getQuantumShellTagIDSpherical(tokens[4]);
       else
-        slater[1] = MOCalculation.getQuantumShellTagID(tokens[4]);
+        slater[1] = JmolAdapter.getQuantumShellTagID(tokens[4]);
       
       int nGaussians = parseInt(tokens[5]);
       slater[2] = gaussianCount; // or parseInt(tokens[7]) - 1

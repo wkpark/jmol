@@ -8,7 +8,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.NoSuchElementException;
 
-import org.jmol.quantum.MOCalculation;
+import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
 /**
@@ -137,7 +137,7 @@ public class MoldenReader extends MopacDataReader {
         int[] slater = new int[4];
         
         slater[0] = atomIndex;
-        slater[1] = MOCalculation.getQuantumShellTagID(shellLabel);
+        slater[1] = JmolAdapter.getQuantumShellTagID(shellLabel);
         slater[2] = gaussianPtr;
         slater[3] = nPrimitives;
         
@@ -198,11 +198,11 @@ public class MoldenReader extends MopacDataReader {
       for (int i = sdata.size(); --i >=0 ;) {
         int[] slater = (int[]) sdata.get(i);
         switch (slater[1]) {
-        case MOCalculation.SHELL_D_CARTESIAN:
-          slater[1] = MOCalculation.SHELL_D_SPHERICAL;
+        case JmolAdapter.SHELL_D_CARTESIAN:
+          slater[1] = JmolAdapter.SHELL_D_SPHERICAL;
           break;
-        case MOCalculation.SHELL_F_CARTESIAN:
-          slater[1] = MOCalculation.SHELL_F_SPHERICAL;
+        case JmolAdapter.SHELL_F_CARTESIAN:
+          slater[1] = JmolAdapter.SHELL_F_SPHERICAL;
           break;
         default:
           // Nothing needs to happen

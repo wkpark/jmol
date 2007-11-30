@@ -30,6 +30,7 @@ import java.util.Properties;
 import java.util.BitSet;
 import javax.vecmath.Point3f;
 
+import org.jmol.jvxl.data.VolumeData;
 import org.jmol.symmetry.SpaceGroup;
 import org.jmol.symmetry.SymmetryOperation;
 import org.jmol.symmetry.UnitCell;
@@ -1050,4 +1051,33 @@ public class AtomSetCollection {
         setAtomSetAuxiliaryInfo("insertionCodes", lists[i], i);
   }
 
+  //// for XmlChem3dReader, but could be for CUBE
+  
+  VolumeData vd;
+  
+  public void newVolumeData() {
+    vd = new VolumeData();
+  }
+
+  public void setVoxelCounts(int nPointsX, int nPointsY, int nPointsZ) {
+    vd.voxelCounts[0] = nPointsX;
+    vd.voxelCounts[1] = nPointsY;
+    vd.voxelCounts[2] = nPointsZ;
+  }
+
+  public void setVolumetricVector(int i, float x, float y, float z) {
+    vd.setVolumetricVector(i, x, y, z);
+  }
+
+  public void setVolumetricOrigin(float x, float y, float z) {
+    vd.volumetricOrigin.set(x, y, z);
+  }
+
+  public void setVoxelData(float[][][] voxelData) {
+    vd.setVoxelData(voxelData);    
+  }
+
+  public Object getVolumeData() {
+    return vd;
+  }  
 }

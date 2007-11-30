@@ -30,7 +30,7 @@ import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.jmol.quantum.MOCalculation;
+import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
 public class GamessReader extends AtomSetCollectionReader {
@@ -224,7 +224,7 @@ public class GamessReader extends AtomSetCollectionReader {
           thisShell = tokens[0];
           shellCount++;
           slater = new int[] {
-              MOCalculation.getQuantumShellTagID(tokens[1]), gaussianCount,
+              JmolAdapter.getQuantumShellTagID(tokens[1]), gaussianCount,
               0 };
           nGaussians = 0;
         }

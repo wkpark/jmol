@@ -24,13 +24,13 @@
 package org.jmol.adapter.readers.more; 
 
 import org.jmol.adapter.smarter.*;
+import org.jmol.api.JmolAdapter;
 
 
 import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.jmol.quantum.MOCalculation;
 import org.jmol.util.Logger;
 
 /**
@@ -626,7 +626,7 @@ public class CsfReader extends MopacDataReader {
               .getAtomNameIndex(((String[]) (connectors.get(sto_gto
                   + "_basis_fxn" + (ipt + 1))))[0]);
           slater[0] = iAtom;
-          slater[1] = MOCalculation.getQuantumShellTagID(types[ipt]
+          slater[1] = JmolAdapter.getQuantumShellTagID(types[ipt]
               .substring(0, 1));
           int nZ = 0;
           while (++nZ < nZetas && zetas[ipt][nZ] != 0) {

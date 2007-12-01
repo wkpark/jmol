@@ -258,7 +258,8 @@ abstract public class BondCollection extends AtomCollection {
     return false;
   }
 
-  protected int autoBond(BitSet bsA, BitSet bsB, BitSet bsBonds) {
+  public int autoBond(BitSet bsA, BitSet bsB, BitSet bsExclude,
+                         BitSet bsBonds) {
     if (atomCount == 0)
       return 0;
     // null values for bitsets means "all"
@@ -268,9 +269,6 @@ abstract public class BondCollection extends AtomCollection {
     float minBondDistance = viewer.getMinBondDistance();
     float minBondDistance2 = minBondDistance * minBondDistance;
     short mad = viewer.getMadBond();
-    //char chainLast = '?';
-    //int indexLastCA = -1;
-    //Atom atomLastCA = null;
     int nNew = 0;
     initializeBspf();
 
@@ -289,12 +287,26 @@ abstract public class BondCollection extends AtomCollection {
      * so, for now I will do it the ugly way.
      * maybe enhance/improve in the future.
      */
+    int lastModelIndex = -1;
     for (int i = atomCount; --i >= 0;) {
       boolean isAtomInSetA = (bsA == null || bsA.get(i));
       boolean isAtomInSetB = (bsB == null || bsB.get(i));
-      if (!isAtomInSetA && !isAtomInSetB)
+      if (!isAtomInSetA && !isAtomInSetB || bsExclude != null
+          && bsExclude.get(i))
         continue;
       Atom atom = atoms[i];
+      int modelIndex = atom.modelIndex;
+      //no connections allowed in a data frame
+      if (modelIndex != lastModelIndex) {
+        lastModelIndex = modelIndex;
+        if (viewer.isJmolDataFrame(modelIndex)) {
+          for (; --i >= 0;)
+            if (atoms[i].modelIndex != modelIndex)
+              break;
+          i++;
+          continue;
+        }
+      }
       // Covalent bonds
       float myBondingRadius = atom.getBondingRadiusFloat();
       if (myBondingRadius == 0)
@@ -309,7 +321,8 @@ abstract public class BondCollection extends AtomCollection {
         int atomIndexNear = atomNear.atomIndex;
         boolean isNearInSetA = (bsA == null || bsA.get(atomIndexNear));
         boolean isNearInSetB = (bsB == null || bsB.get(atomIndexNear));
-        if (!isNearInSetA && !isNearInSetB)
+        if (!isNearInSetA && !isNearInSetB || bsExclude != null
+            && bsExclude.get(atomIndexNear))
           continue;
         if (!(isAtomInSetA && isNearInSetB || isAtomInSetB && isNearInSetA))
           continue;
@@ -502,7 +515,7 @@ abstract public class BondCollection extends AtomCollection {
         }
     }
     return new int[] {(matchHbond ? autoHbond(bsA, bsB, bsBonds) 
-        : autoBond(bsA, bsB, bsBonds)), 0};
+        : autoBond(bsA, bsB, null, bsBonds)), 0};
   }
 
   private int[] deleteConnections(float minDistance, float maxDistance, short order,

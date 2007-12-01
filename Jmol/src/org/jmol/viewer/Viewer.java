@@ -2167,13 +2167,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //depricated
     setCenterBitSet(selectionManager.bsSelection, true);
   }
-
-  public void rebond() {
-    //Eval, PreferencesDialog
-    modelSet.rebond();
-    refresh(0, "Viewer:rebond()");
-  }
-
+  
   public void setBondTolerance(float bondTolerance) {
     global.setParameterValue("bondTolerance", bondTolerance);
     global.bondTolerance = bondTolerance;
@@ -2433,7 +2427,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   int autoHbond(BitSet bsBonds) {
     //Eval
-    addStateScript("calculate hbonds", false);
+    addStateScript("calculate hbonds;", false);
     return autoHbond(selectionManager.bsSelection, 
         selectionManager.bsSelection, bsBonds);
   }
@@ -5098,6 +5092,28 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         connectOperation, bsA, bsB, bsBonds, isBonds);
   }
 
+  public void rebond() {
+    //Eval, PreferencesDialog
+    modelSet.deleteAllBonds();
+    modelSet.autoBond(null, null, null, null);
+    modelSet.addStateScript("connect;", false);
+    refresh(0, "Viewer:rebond()");
+  }
+
+  void setPdbConectBonding(int baseAtomIndex, int baseModelIndex, boolean isAuto) {
+    // from eval
+    modelSet.deleteAllBonds();
+    BitSet bsExclude = new BitSet();
+    modelSet.setPdbConectBonding(baseAtomIndex, baseModelIndex, bsExclude);
+    if (isAuto) {
+      modelSet.autoBond(null, null, bsExclude, null);
+      modelSet.addStateScript("connect PDB AUTO;", false);
+      return;
+    }
+    addStateScript("connect PDB;", false);
+    refresh(0, "Viewer:setPdbConnectBonding()");
+  }
+    
   // //////////////////////////////////////////////////////////////
   // Graphics3D
   // //////////////////////////////////////////////////////////////

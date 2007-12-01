@@ -721,9 +721,12 @@ public final class ModelLoader extends ModelSet {
 
   private void initializeBonding() {
     // perform bonding if necessary
+    boolean haveCONECT = (getModelSetAuxiliaryInfo("someModelsHaveCONECT") != null);
+    BitSet bsExclude = null;
+    if (haveCONECT)
+      setPdbConectBonding(baseAtomIndex, baseModelIndex, bsExclude = new BitSet());
     boolean doBond = (bondCount == baseBondIndex
-        || isMultiFile 
-        || isPDB && (jmolData == null) && (bondCount - baseBondIndex) < (atomCount - baseAtomIndex) / 2 
+        || isMultiFile || isPDB && (jmolData == null) 
         || someModelsHaveSymmetry && !viewer.getApplySymmetryToBonds());
     if (viewer.getForceAutoBond() || doBond && viewer.getAutoBond()
         && getModelSetProperty("noautobond") == null) {
@@ -734,7 +737,7 @@ public final class ModelLoader extends ModelSet {
           bs.set(i);
       }
       Logger.info("ModelSet: autobonding; use  autobond=false  to not generate bonds automatically");
-      autoBond(bs, bs, null);
+      autoBond(bs, bs, bsExclude, null);
     } else {
       Logger.info("ModelSet: not autobonding; use forceAutobond=true to force automatic bond creation");        
     }

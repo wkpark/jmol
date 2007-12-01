@@ -30,6 +30,7 @@ import java.util.Properties;
 import java.util.BitSet;
 import javax.vecmath.Point3f;
 
+import org.jmol.api.JmolAdapter;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.symmetry.SpaceGroup;
 import org.jmol.symmetry.SymmetryOperation;
@@ -421,49 +422,33 @@ public class AtomSetCollection {
   Vector vConnect;
   int connectNextAtomIndex = 0;
   int connectNextAtomSet = 0;
+  int[] connectLast;
+  
   
   public void addConnection(int[] is) {
-    if (vConnect == null)
+    if (vConnect == null) {
+      connectLast = null;
       vConnect = new Vector();
-    vConnect.addElement(is);
+    }
+    if (connectLast != null) {
+      if (is[0] == connectLast[0] 
+          && is[1] == connectLast[1] 
+          && is[2] != JmolAdapter.ORDER_HBOND) {
+        connectLast[2]++;
+        return;
+      }
+    }
+    vConnect.addElement(connectLast = is);
   }
 
-  public void connectAll() {
+  public void connectAll(int maxSerial) {
     if (vConnect == null)
       return;
-    int max = 0;
-    for (int i = 0; i < atomCount; i++)
-      if (max < atoms[i].atomSerial)
-        max = atoms[i].atomSerial;
-    int[] serialMap;
     int firstAtom = connectNextAtomIndex;
-    int iSerial;
-    int nConnect = vConnect.size();
     for (int i = connectNextAtomSet; i < atomSetCount; i++) {
-      Bond bond = null;
-      serialMap = new int[max + 1];
-      for (int iAtom = firstAtom + atomSetAtomCounts[i]; --iAtom >= firstAtom;)
-        if ((iSerial = atoms[iAtom].atomSerial) > 0)
-          serialMap[iSerial] = iAtom + 1;
-      for (int iConnect = 0; iConnect < nConnect; iConnect++) {
-        int[] pair = (int[]) vConnect.get(iConnect);
-        int sourceSerial = pair[0];
-        int targetSerial = pair[1];
-        int iType = pair[2];
-        if (sourceSerial < 0 || targetSerial < 0 || sourceSerial > max
-            || targetSerial > max)
-          continue;
-        int sourceIndex = serialMap[sourceSerial] - 1;
-        int targetIndex = serialMap[targetSerial] - 1;
-        if (sourceIndex < 0 || targetIndex < 0)
-          continue;
-        if (bond != null && iType == 1 && bond.atomIndex1 == sourceIndex
-            && bond.atomIndex2 == targetIndex) {
-          ++bond.order;
-          continue;
-        }
-        addBond(bond = new Bond(sourceIndex, targetIndex, iType));
-      }
+      setAtomSetCollectionAuxiliaryInfo("someModelsHaveCONECT", Boolean.TRUE);
+      setAtomSetAuxiliaryInfo("PDB_CONECT_firstAtom_count_max", new int[] {firstAtom, atomSetAtomCounts[i], maxSerial}, i);
+      setAtomSetAuxiliaryInfo("PDB_CONECT_bonds", vConnect, i);
       firstAtom += atomSetAtomCounts[i];
     }
     vConnect = null;

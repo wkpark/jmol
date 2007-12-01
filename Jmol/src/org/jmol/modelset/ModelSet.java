@@ -380,13 +380,46 @@ abstract public class ModelSet extends ModelCollection {
         connectOperation, bsA, bsB, bsBonds, isBonds);
   }
   
-  public void rebond() {
-    // from eval "connect" or from app preferences panel
-    stateScripts.addElement("connect;");
-    deleteAllBonds();
-    autoBond(null, null, null);
+  public void setPdbConectBonding(int baseAtomIndex, int baseModelIndex, BitSet bsExclude) {
+    short mad = viewer.getMadBond();
+    for (int i = baseModelIndex; i < modelCount; i++) {
+      Vector vConnect = (Vector) getModelAuxiliaryInfo(i, "PDB_CONECT_bonds");
+      if (vConnect == null)
+        continue;
+      int nConnect = vConnect.size();
+      int[] atomInfo = (int[]) getModelAuxiliaryInfo(i, "PDB_CONECT_firstAtom_count_max");
+      int firstAtom = atomInfo[0] + baseAtomIndex;
+      int atomMax = firstAtom + atomInfo[1];
+      int max = atomInfo[2];
+      int[] serialMap = new int[max + 1];
+      int iSerial;
+      for (int iAtom = firstAtom; iAtom < atomMax; iAtom++)
+        if ((iSerial = atomSerials[iAtom]) > 0)
+          serialMap[iSerial] = iAtom + 1;
+      for (int iConnect = 0; iConnect < nConnect; iConnect++) {
+        int[] pair = (int[]) vConnect.get(iConnect);
+        int sourceSerial = pair[0];
+        int targetSerial = pair[1];
+        short order = (short) pair[2];
+        if (sourceSerial < 0 || targetSerial < 0 || sourceSerial > max
+            || targetSerial > max)
+          continue;
+        int sourceIndex = serialMap[sourceSerial] - 1;
+        int targetIndex = serialMap[targetSerial] - 1;
+        if (sourceIndex < 0 || targetIndex < 0)
+          continue;
+        if (bsExclude != null) {
+        if (atoms[sourceIndex].isHetero())
+          bsExclude.set(sourceIndex);
+        if (atoms[targetIndex].isHetero())
+          bsExclude.set(targetIndex);
+        }
+        checkValencesAndBond(atoms[sourceIndex], atoms[targetIndex], order, 
+            (order == JmolConstants.BOND_H_REGULAR ? 1 : mad), null);
+      }
+    }
   }
-
+  
   public void deleteAllBonds() {
     //StateManager
     for (int i = 0; i < stateScripts.size();) 

@@ -1520,6 +1520,8 @@ abstract public class ModelCollection extends BondCollection {
     int res2 = 0;
     String group1 = "";
     String group2 = "";
+    String chain1 = "";
+    String chain2 = "";
     int n = 0;
     int nHelix = 0;
     int nTurn = 0;
@@ -1547,32 +1549,40 @@ abstract public class ModelCollection extends BondCollection {
                 int nx;
                 String sid;
                 StringBuffer sb;
+                //       NNN III GGG C RRRR  GGG C RRRR
+                //HELIX   99  99 LYS F  281  LEU F  293  1 
+                //       NNN III 2 GGG CRRRR  GGG CRRRR
+                //SHEET    1   A 8 ILE A  43  ASP A  45  0 
+                //       NNN III GGG CRRRR  GGG CRRRR                                    
+                //TURN     1  T1 PRO A  41  TYR A  44
                 switch (itype) {
                 case JmolConstants.PROTEIN_STRUCTURE_HELIX:
                   nx = ++nHelix;
                   sid = "H" + nx;
-                  str = "HELIX  %3N %3ID %3GROUPA   %4RESA  %3GROUPB   %4RESB\n";
+                  str = "HELIX  %3N %3ID %3GROUPA %1CA %4RESA  %3GROUPB %1CB %4RESB\n";
                   sb = sbHelix;
                   break;
                 case JmolConstants.PROTEIN_STRUCTURE_SHEET:
                   nx = ++nSheet;
                   sid = "S" + nx;
-                  str = "SHEET  %3N %3ID 2 %3GROUPA  %4RESA  %3GROUPB  %4RESB\n";
+                  str = "SHEET  %3N %3ID 2 %3GROUPA %1CA%4RESA  %3GROUPB %1CB%4RESB\n";
                   sb = sbSheet;
                   break;
                 case JmolConstants.PROTEIN_STRUCTURE_TURN:
                 default:
                   nx = ++nTurn;
                   sid = "T" + nx;
-                  str = "TURN   %3N %3ID %3GROUPA  %4RESA  %3GROUPB  %4RESB\n";
+                  str = "TURN   %3N %3ID %3GROUPA %1CA%4RESA  %3GROUPB %1CB%4RESB\n";
                   sb = sbTurn;
                   break;
                 }
                 str = TextFormat.formatString(str, "N", nx);
                 str = TextFormat.formatString(str, "ID", sid);
                 str = TextFormat.formatString(str, "GROUPA", group1);
+                str = TextFormat.formatString(str, "CA", chain1);
                 str = TextFormat.formatString(str, "RESA", res1);
                 str = TextFormat.formatString(str, "GROUPB", group2);
+                str = TextFormat.formatString(str, "CB", chain2);
                 str = TextFormat.formatString(str, "RESB", res2);
                 sb.append(str);
 
@@ -1598,12 +1608,14 @@ abstract public class ModelCollection extends BondCollection {
           bs = new BitSet();
           res1 = atoms[i].getResno();
           group1 = atoms[i].getGroup3();
+          chain1 = "" + atoms[i].getChainID();
         }
         itype = atoms[i].getProteinStructureType();
         bs.set(i);
         lastId = id;
         res2 = atoms[i].getResno();
         group2 = atoms[i].getGroup3();
+        chain2 = "" + atoms[i].getChainID();
         iLastAtom = i;
       }
     if (n > 0)

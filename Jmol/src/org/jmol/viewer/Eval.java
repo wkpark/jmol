@@ -3269,6 +3269,17 @@ class Eval { //implements Runnable {
       case Token.identifier:
       case Token.hbond:
         String cmd = parameterAsString(i);
+        if (cmd.equalsIgnoreCase("pdb")) {
+          boolean isAuto = (optParameterAsString(2).equalsIgnoreCase("auto"));
+          if (isAuto)
+            checkLength3();
+          else
+            checkLength2();
+          if (isSyntaxCheck)
+            return;
+          viewer.setPdbConectBonding(0, 0, isAuto);
+          return;
+        }
         if ((bo = JmolConstants.getBondOrderFromString(cmd)) == JmolConstants.BOND_ORDER_NULL) {
           // must be an operation and must be last argument
           haveOperation = true;
@@ -4228,7 +4239,7 @@ class Eval { //implements Runnable {
       viewer.setFrameTitle(modelCount - 1, "ramachandran plot for model "
           + viewer.getModelNumberDotted(modelIndex));
       runScript("frame 0.0; frame last; reset;"
-          + "select visible; color structure; spacefill 3.0; set rotationRadius 250;"
+          + "select visible; color structure; spacefill 3.0; wireframe 0; set rotationRadius 250;"
           + "draw ramaAxisX" + modelCount + " {200 0 0} {-200 0 0} \"phi\";"
           + "draw ramaAxisY" + modelCount + " {0 200 0} {0 -200 0} \"psi\";");
       break;
@@ -4236,9 +4247,8 @@ class Eval { //implements Runnable {
       viewer.setFrameTitle(modelCount - 1, type + " for model "
           + viewer.getModelNumberDotted(modelIndex));
       runScript("frame 0.0; frame last; reset; set rotationRadius 12;"
-          + "select visible; trace 0.1; color trace structure;"
-          + "isosurface quatSphere"
-          + modelCount
+          + "select visible; trace 0.1; wireframe 0; color trace structure;"
+          + "isosurface quatSphere" + modelCount
           + " resolution 1.0 sphere 10.0 mesh nofill translucent 0.8;set rotationRadius 12");
       break;
     }

@@ -64,6 +64,7 @@ public class PdbReader extends AtomSetCollectionReader {
   protected String fileType = "pdb";  
   String currentGroup3;
   Hashtable htElementsInCurrentGroup;
+  int maxSerial = 0;
 
  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
@@ -86,7 +87,7 @@ public class PdbReader extends AtomSetCollectionReader {
             continue;
           }
           iHaveModel = true;
-          atomSetCollection.connectAll();
+          atomSetCollection.connectAll(maxSerial);
           applySymmetry();
           //supposedly MODEL is only for NMR
           model();
@@ -162,7 +163,7 @@ public class PdbReader extends AtomSetCollectionReader {
         }
       }
       //if (!isNMRdata)
-      atomSetCollection.connectAll();
+      atomSetCollection.connectAll(maxSerial);
       applySymmetry();
       if (htSites != null)
         addSites(htSites);
@@ -179,6 +180,8 @@ public class PdbReader extends AtomSetCollectionReader {
 
     // get the group so that we can check the formul
     int serial = parseInt(line, 6, 11);
+    if (serial > maxSerial)
+      maxSerial = serial;
     char chainID = line.charAt(21);
     int sequenceNumber = parseInt(line, 22, 26);
     char insertionCode = line.charAt(26);
@@ -322,22 +325,18 @@ public class PdbReader extends AtomSetCollectionReader {
 
   void conect() {
     int sourceSerial = -1;
-    try {
-      sourceSerial = parseInt(line, 6, 11);
-      if (sourceSerial < 0)
-        return;
-      for (int i = 0; i < 9; i += (i == 5 ? 2 : 1)) {
-        int offset = i * 5 + 11;
-        int offsetEnd = offset + 5;
-        int targetSerial = (offsetEnd <= lineLength ? parseInt(line, offset,
-            offsetEnd) : -1);
-        if (targetSerial < 0)
-          continue;
-        atomSetCollection.addConnection(new int[] { sourceSerial, targetSerial,
-            i < 4 ? 1 : JmolAdapter.ORDER_HBOND });
-      }
-    } catch (Exception e) {
-      //ignore connection errors
+    sourceSerial = parseInt(line, 6, 11);
+    if (sourceSerial < 0)
+      return;
+    for (int i = 0; i < 9; i += (i == 5 ? 2 : 1)) {
+      int offset = i * 5 + 11;
+      int offsetEnd = offset + 5;
+      int targetSerial = (offsetEnd <= lineLength ? parseInt(line, offset,
+          offsetEnd) : -1);
+      if (targetSerial < sourceSerial)
+        continue;
+      atomSetCollection.addConnection(new int[] { sourceSerial, targetSerial,
+          i < 4 ? 1 : JmolAdapter.ORDER_HBOND });
     }
   }
 

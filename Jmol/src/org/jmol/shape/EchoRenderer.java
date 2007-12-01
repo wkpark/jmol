@@ -54,7 +54,7 @@ public class EchoRenderer extends ShapeRenderer {
       return;
     byte fid = g3d.getFontFid("Monospaced", 14);
     g3d.setFont(fid);
-    int y = viewer.getScreenHeight() - 20;
+    int y = viewer.getScreenHeight() - 10;
     int x = 5;
     if (antialias) {
       y <<= 1;

@@ -1,5 +1,5 @@
 
-/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 1:34 AM 3/19/2007
+/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 5:35 PM 8/7/2007 hansonr
 
  checkbox heirarchy -- see http://www.stolaf.edu/academics/jmol/docs/examples-11/check.htm
 
@@ -56,6 +56,7 @@ try{if(typeof(_jmol)!="undefined")exit()
 // bh         -- jmolCommandInput()
 // bh         -- jmolSetTranslation(TF) -- forces translation even if there might be message callback issues
 // bh         -- minor fixes suggested by Angel
+// bh         -- adds jmolSetSyncId() and jmolGetSyncId()
 	  	
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
@@ -487,6 +488,7 @@ var _jmol = {
   targetText: "",
   scripts: [""],
   params: {
+	syncId: ("" + Math.random()).substring(3),
 	progressbar: "true",
 	progresscolor: "blue",
 	boxbgcolor: "black",
@@ -528,7 +530,6 @@ var _jmol = {
 }
 
 with (_jmol) {
-
   function _jmolTestUA(candidate) {
     var ua = _jmol.ua;
     var index = ua.indexOf(candidate);
@@ -609,6 +610,14 @@ with (_jmol) {
 
 function jmolSetCallback(callbackName,funcName) {
   _jmol.params[callbackName] = funcName
+}
+
+function jmolSetSyncId(n) {
+  return _jmol.params["syncId"] = n
+}
+
+function jmolGetSyncId() {
+  return _jmol.params["syncId"]
 }
 
 function jmolSetLogLevel(n) {

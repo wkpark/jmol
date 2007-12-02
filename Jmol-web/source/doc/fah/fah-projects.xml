@@ -1832,6 +1832,27 @@
   <fah_proj number="776" name="p776_vln3.8nopbc" public="y" file="y"
     server="171.64.122.138" atoms="17185" preferred="8"
     credit="36" frames="100" code="G" contact="dlucent" contrib="uncle_fungus"/>
+  <fah_proj number="780" name="p780_Minichap_0kT" public="n"
+    server="171.64.122.138" atoms="43460" preferred="20" deadline="154"
+    credit="565" frames="100" code="A0" contact="dlucent"/>
+  <fah_proj number="781" name="p781_Minichap_1kT" public="n"
+    server="171.64.122.138" atoms="43460" preferred="20" deadline="154"
+    credit="565" frames="100" code="A0" contact="dlucent"/>
+  <fah_proj number="782" name="p782_Minichap_2.0kT" public="n"
+    server="171.64.122.138" atoms="43460" preferred="20" deadline="154"
+    credit="565" frames="100" code="A0" contact="dlucent"/>
+  <fah_proj number="783" name="p783_Minichap_0.3kT" public="n"
+    server="171.64.122.138" atoms="43460" preferred="20" deadline="154"
+    credit="565" frames="100" code="A0" contact="dlucent"/>
+  <fah_proj number="784" name="p784_Minichap_0.6kT" public="n"
+    server="171.64.122.138" atoms="43460" preferred="20" deadline="154"
+    credit="565" frames="100" code="A0" contact="dlucent"/>
+  <fah_proj number="785" name="p785_Minichap_1.3kT" public="n"
+    server="171.64.122.138" atoms="43460" preferred="20" deadline="154"
+    credit="565" frames="100" code="A0" contact="dlucent"/>
+  <fah_proj number="786" name="p786_Minichap_1.6kT" public="n"
+    server="171.64.122.138" atoms="43460" preferred="20" deadline="154"
+    credit="565" frames="100" code="A0" contact="dlucent"/>
   <!-- This is Genome@Home
   <fah_proj number="799" public="y"/>
   -->
@@ -5957,6 +5978,9 @@
   <fah_proj number="4114" name="p4114_villinwt_folded_Amber03_Native" public="y" file="y"
     server="171.64.65.111" atoms="15838" preferred="20" deadline="30"
     credit="107" frames="100" code="GST" contrib="Ivoshiee"/>
+  <fah_proj number="4115" name="p4115_villinwt_folded_Amber03_Native" public="n"
+    server="171.64.65.111" atoms="15838" preferred="32" deadline="48"
+    credit="176" frames="100" code="GST" contact="gbowman"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9994" name="p9994_A21_agbnp_amber99" public="n"

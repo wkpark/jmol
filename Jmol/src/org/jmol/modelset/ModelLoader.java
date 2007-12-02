@@ -726,7 +726,15 @@ public final class ModelLoader extends ModelSet {
     if (haveCONECT)
       setPdbConectBonding(baseAtomIndex, baseModelIndex, bsExclude = new BitSet());
     boolean doBond = (bondCount == baseBondIndex
-        || isMultiFile || isPDB && (jmolData == null) 
+        || isMultiFile 
+        //check for PDB file with fewer than one bond per every two atoms
+        //this is in case the PDB format is being usurped for non-RCSB uses
+        //In other words, say someone uses the PDB format to indicate atoms and
+        //connectivity. We do NOT want to mess up that connectivity here. 
+        //It would be OK if people used HETATM for every atom, but I think people
+        //use ATOM, so that's a problem. Those atoms would not be excluded from the
+        //automatic bonding, and additional bonds might be made.
+        || isPDB && jmolData == null  && (bondCount - baseBondIndex) < (atomCount - baseAtomIndex) / 2  
         || someModelsHaveSymmetry && !viewer.getApplySymmetryToBonds());
     if (viewer.getForceAutoBond() || doBond && viewer.getAutoBond()
         && getModelSetProperty("noautobond") == null) {

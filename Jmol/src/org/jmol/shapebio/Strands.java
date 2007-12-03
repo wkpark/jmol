@@ -24,8 +24,6 @@
 
 package org.jmol.shapebio;
 
-import java.util.BitSet;
-
 public class Strands extends BioShapeCollection {
 
   /*==============================================================*
@@ -34,27 +32,6 @@ public class Strands extends BioShapeCollection {
    * http://sgce.cbse.uab.edu/carson/papers/ribbons86/ribbons86.html
    *==============================================================*/
 
-  int strandCount = 5;
-  boolean isMesh = false;
+  boolean isMesh;
   
-  public void setProperty(String propertyName, Object value, BitSet bs) {
-    initialize();
-    if ("strandCount" == propertyName) {
-      strandCount = Math.min(20, Math.max(0, ((Integer)value).intValue()));    
-      return;
-    }
-    super.setProperty(propertyName, value, bs);
-  }
-
-  public Object getProperty(String propertyName, int ignored) {
-    if ("strandCount" == propertyName) {
-      return new Integer(strandCount);
-    }
-    return "";
-  }
-  
-  public String getShapeState() {
-    return (isMesh ? "" : "set strandCount " + strandCount + ";\n")
-      + super.getShapeState();
-  }
 }

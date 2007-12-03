@@ -41,7 +41,7 @@ public class StrandsRenderer extends BioShapeRenderer {
   protected boolean setStrandCount() {
     if (wingVectors == null)
       return false;
-    strandCount =((Strands) shape).strandCount;
+    strandCount = viewer.getStrandCount(((Strands) shape).shapeID);
     strandSeparation = (strandCount <= 1) ? 0 : 1f / (strandCount - 1);
     baseOffset = ((strandCount & 1) == 0 ? strandSeparation / 2
         : strandSeparation);

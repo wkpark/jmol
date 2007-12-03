@@ -570,6 +570,8 @@ public class StateManager {
     boolean autoFps               = false;
     String dataSeparator          = "~~~";
     boolean statusReporting       = true;
+    int strandCountForStrands     = 5;
+    int strandCountForMeshRibbon  = 7;
     
     
     // window
@@ -679,7 +681,7 @@ public class StateManager {
       ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor" +
       ";axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color" +
       ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth" +
-      ";debugscript;defaults;diffusepercent;exportdrivers;language;navigationmode" +
+      ";debugscript;defaults;diffusepercent;exportdrivers;language;loglevel;navigationmode" +
       ";perspectivedepth;visualrange;perspectivemodel;refreshing;rotationradius" +
       ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell" +
       ";slabenabled;specular;specularexponent;specularpercent;specularpower;stateversion" +
@@ -692,6 +694,7 @@ public class StateManager {
       ";highresolution;hoverlabel;hydrogen;languagetranslation;navigationdepth;navigationslab" +
       ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred" +
       ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount" +
+      ";spinx;spiny;spinz;spinfps" +
       ";";
     
     boolean isJmolVariable(String key) {
@@ -1076,9 +1079,16 @@ public class StateManager {
       setParameterValue("specularExponent",specularExponent);
       setParameterValue("specularPercent",specularPercent);
       setParameterValue("specularPower",specularPower);
+      setParameterValue("spinX", 0);
+      setParameterValue("spinY", 30);
+      setParameterValue("spinZ", 0);
+      setParameterValue("spinFps", 30);
       setParameterValue("ssbondsBackbone",ssbondsBackbone);
       setParameterValue("stereoDegrees",stereoDegrees);
       setParameterValue("statusReporting",statusReporting);
+      setParameterValue("strandCount",strandCountForStrands);
+      setParameterValue("strandCountForStrands",strandCountForStrands);
+      setParameterValue("strandCountForMeshRibbon",strandCountForMeshRibbon);
       setParameterValue("testFlag1",testFlag1);
       setParameterValue("testFlag2",testFlag2);
       setParameterValue("testFlag3",testFlag3);

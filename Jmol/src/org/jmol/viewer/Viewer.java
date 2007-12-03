@@ -869,9 +869,26 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.setScaleAngstromsPerInch(angstromsPerInch);
   }
 
-  void setSpinX(int value) {
+  void setSpin(String key, int value) {
     //Eval
-    transformManager.setSpinX(value);
+    if (!Parser.isOneOf(key, "x;y;z;fps"))
+      return;
+    switch ("x;y;z;fps".indexOf(key)) {
+    case 0:
+      transformManager.setSpinX(value);
+      break;
+    case 2:
+      transformManager.setSpinY(value);
+      break;
+    case 4:
+      transformManager.setSpinZ(value);
+      break;
+    case 6:
+    default:
+      transformManager.setSpinFps(value);
+      break;
+    }
+    global.setParameterValue("spin" + key, value);
   }
 
   String getSpinState() {
@@ -882,27 +899,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.spinX;
   }
 
-  void setSpinY(int value) {
-    //Eval
-    transformManager.setSpinY(value);
-  }
-
   float getSpinY() {
     return transformManager.spinY;
   }
 
-  void setSpinZ(int value) {
-    //Eval
-    transformManager.setSpinZ(value);
-  }
-
   float getSpinZ() {
     return transformManager.spinZ;
-  }
-
-  void setSpinFps(int value) {
-    //Eval
-    transformManager.setSpinFps(value);
   }
 
   float getSpinFps() {
@@ -3978,7 +3980,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       if (key.equalsIgnoreCase("defaults")) {
         setDefaults(value);
-        return;
+        break;
       }
       if (key.equalsIgnoreCase("defaultColorScheme")) {
         setDefaultColors(value);
@@ -4037,6 +4039,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean notFound = false;
     while (true) {
 
+      ///11.3.52//
+      if (key.equalsIgnoreCase("spinX")) {
+        setSpin("x", (int)value);
+        break;
+      }
+      if (key.equalsIgnoreCase("spinY")) {
+        setSpin("y", (int)value);
+        break;
+      }
+      if (key.equalsIgnoreCase("spinZ")) {
+        setSpin("z", (int)value);
+        break;
+      }
+      if (key.equalsIgnoreCase("spinFPS")) {
+        setSpin("fps", (int)value);
+        break;
+      }
+      
       ///11.3.17//
       
       if (key.equalsIgnoreCase("defaultDrawArrowScale")) {
@@ -4167,6 +4187,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean notFound = false;    
     while (true) {
 
+      ///11.3.52//
+      
+      if (key.equalsIgnoreCase("logLevel")) {
+        Logger.setLogLevel(value);
+        Logger.info("logging level set to " + value);
+        global.setParameterValue("logLevel", value);
+        return;
+      }
+      
+      if (key.equalsIgnoreCase("axesMode")) {
+        setAxesMode(value);
+        return;
+      }
       ///11.1.31//
 
       if (key.equalsIgnoreCase("propertyDataField")) {
@@ -4176,13 +4209,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       ///11.1///
 
       if (key.equalsIgnoreCase("strandCount")) {
-        loadShape(JmolConstants.SHAPE_STRANDS);
-        setShapeProperty(JmolConstants.SHAPE_STRANDS, "strandCount",
-            new Integer(value));
-        loadShape(JmolConstants.SHAPE_MESHRIBBON);
-        setShapeProperty(JmolConstants.SHAPE_MESHRIBBON, "strandCount",
-            new Integer(value));
-        refresh(0, "set strandCount");
+        setStrandCount(0, value);
+        return;
+      }
+      if (key.equalsIgnoreCase("strandCountForStrands")) {
+        setStrandCount(JmolConstants.SHAPE_STRANDS, value);
+        return;
+      }
+      if (key.equalsIgnoreCase("strandCountForMeshRibbon")) {
+        setStrandCount(JmolConstants.SHAPE_MESHRIBBON, value);
         return;
       }
       if (key.equalsIgnoreCase("perspectiveModel")) {
@@ -4879,12 +4914,26 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.axesScale;
   }
 
+  private void setAxesMode(int mode) {
+    switch (mode) {
+    case JmolConstants.AXES_MODE_MOLECULAR:
+      setAxesModeMolecular(true);
+      return;
+    case JmolConstants.AXES_MODE_BOUNDBOX:
+      setAxesModeMolecular(false);
+      return;
+    case JmolConstants.AXES_MODE_UNITCELL:
+      setAxesModeUnitCell(true);
+      return;
+    }
+  }
   private void setAxesModeMolecular(boolean TF) {
     global.axesMode = (TF ? JmolConstants.AXES_MODE_MOLECULAR
         : JmolConstants.AXES_MODE_BOUNDBOX);
     axesAreTainted = true;
     global.removeJmolParameter("axesunitcell");
     global.removeJmolParameter(TF ? "axeswindow" : "axesmolecular");
+    global.setParameterValue("axesMode",global.axesMode);
   }
 
   void setAxesModeUnitCell(boolean TF) {
@@ -4895,6 +4944,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     axesAreTainted = true;
     global.removeJmolParameter("axesmolecular");
     global.removeJmolParameter(TF ? "axeswindow" : "axesunitcell");
+    global.setParameterValue("axesMode",global.axesMode);
   }
 
   public int getAxesMode() {
@@ -4970,6 +5020,29 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.rocketBarrels = TF;
   }
 
+  private void setStrandCount(int type, int value) {
+    switch(type) {
+    case JmolConstants.SHAPE_STRANDS:
+      global.strandCountForStrands = value;
+      break;
+    case JmolConstants.SHAPE_MESHRIBBON:
+      global.strandCountForMeshRibbon = value;
+      break;
+    default:
+      global.strandCountForStrands = value;
+      global.strandCountForMeshRibbon = value;
+      break;
+    }
+    global.setParameterValue("strandCount",value);
+    global.setParameterValue("strandCountForStrands",global.strandCountForStrands);
+    global.setParameterValue("strandCountForMeshRibbon",global.strandCountForMeshRibbon);
+  }
+  
+  public int getStrandCount(int type) {
+    return (type == JmolConstants.SHAPE_STRANDS ? 
+        global.strandCountForStrands : global.strandCountForMeshRibbon);
+  }
+  
   boolean getHideNameInPopup() {
     return global.hideNameInPopup;
   }

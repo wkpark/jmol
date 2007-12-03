@@ -6247,10 +6247,15 @@ class Eval { //implements Runnable {
       showString(viewer.getAllSettings(60));
       return;
     }
+    boolean isJmolSet = (parameterAsString(0).equals("set"));
+    boolean showing = (!isSyntaxCheck && !tQuiet
+        && scriptLevel <= scriptReportingLevel && !((String) statement[0].value)
+        .equals("var"));
     int val = Integer.MAX_VALUE;
     int n = 0;
     String key = null;
     switch (getToken(1).tok) {
+    // THESE FIRST DO NOT ALLOW CALCULATIONS xxx = a + b...
     case Token.axes:
       setAxes(2);
       return;
@@ -6259,9 +6264,6 @@ class Eval { //implements Runnable {
       return;
     case Token.bondmode:
       setBondmode();
-      return;
-    case Token.label:
-      label(2);
       return;
     case Token.boundbox:
       boundbox(2);
@@ -6280,11 +6282,17 @@ class Eval { //implements Runnable {
     case Token.fontsize:
       setFontsize();
       return;
+    case Token.frank:
+      setFrank(2);
+      return;
     case Token.hbond:
       setHbond();
       return;
     case Token.history:
       history(2);
+      return;
+    case Token.label:
+      label(2);
       return;
     case Token.monitor:
       setMonitor(2);
@@ -6304,9 +6312,6 @@ class Eval { //implements Runnable {
       checkLength4();
       setSpin(parameterAsString(2), (int) floatParameter(3));
       return;
-    case Token.frank:
-      setFrank(2);
-      return;
     case Token.ssbond:
       setSsbond();
       return;
@@ -6319,8 +6324,11 @@ class Eval { //implements Runnable {
     case Token.pickingStyle:
       setPickingStyle();
       return;
+      
+   // THESE NEXT DO ALLOW CALCULATIONS xxx = a + b...
+      
     case Token.formalCharge:
-      n = intParameter(2);
+      n = intSetting(2);
       if (!isSyntaxCheck)
         viewer.setFormalCharges(n);
       return;
@@ -6338,12 +6346,12 @@ class Eval { //implements Runnable {
     case Token.diffuse:
       if (key == null)
         key = "diffusePercent";
-      val = intParameter(2);
+      val = intSetting(2);
       if (val > 100 || val < 0)
         numberOutOfRange(0, 100);
       break;
     case Token.specpower:
-      val = intParameter(2);
+      val = intSetting(2);
       if (val > 100)
         numberOutOfRange(0, 100);
       if (val >= 0) {
@@ -6356,7 +6364,7 @@ class Eval { //implements Runnable {
       key = "specularExponent";
       break;
     case Token.specexponent:
-      val = intParameter(2);
+      val = intSetting(2);
       if (val > 10 || val < 1)
         numberOutOfRange(1, 10);
       key = "specularExponent";
@@ -6365,11 +6373,7 @@ class Eval { //implements Runnable {
       key = "showMultipleBonds";
       break;
     case Token.strands:
-      checkLength3();
-      int strandCount = intParameter(2);
-      if (strandCount < 0 || strandCount > 20)
-        numberOutOfRange(0, 20);
-      key = "strandCount";
+      key = "strandCount";  
       break;
     case Token.hetero:
       key = "selectHetero";
@@ -6388,7 +6392,7 @@ class Eval { //implements Runnable {
       if (key.charAt(0) == '_') //these cannot be set by user
         invalidArgument();
 
-      //these next are not reported
+      //these next are not reported and do not allow calculation xxxx = a + b
 
       if (key.toLowerCase().indexOf("label") == 0) {
         if (setLabel(key.substring(5)))
@@ -6419,8 +6423,9 @@ class Eval { //implements Runnable {
           viewer.setDefaultLattice(pt);
         return;
       }
+      
       if (key.equalsIgnoreCase("defaultDrawArrowScale")) {
-        setFloatProperty(key, floatParameter(2));
+        setFloatProperty(key, floatSetting(2));
         return;
       }
       if (key.equalsIgnoreCase("toggleLabel")) { //from PickingManager
@@ -6436,31 +6441,23 @@ class Eval { //implements Runnable {
         // n = 1 add level 4, error
         // n = 2 add level 3, warn
         // etc.
-        checkLength3();
-        int ilevel = intParameter(2);
+        int ilevel = intSetting(2);
         if (isSyntaxCheck)
           return;
-        Logger.setLogLevel(ilevel);
-        Logger.info("logging level set to " + ilevel);
+        setIntProperty("logLevel", ilevel);
         return;
       }
       if (key.equalsIgnoreCase("backgroundModel")) {
-        checkLength3();
+        int model = intSetting(2);
         if (!isSyntaxCheck)
-          viewer.setBackgroundModel(statement[2].intValue);
+          viewer.setBackgroundModel(model);
         return;
       }
       if (key.equalsIgnoreCase("language")) {
-        checkLength3();
-        setStringProperty(key, parameterAsString(2));
+        String lang = stringSetting(2, isJmolSet);
+        setStringProperty(key, lang);
         return;
       }
-      if (Parser.isOneOf(key.toLowerCase(), "spinx;spiny;spinz;spinfps")) {
-        checkLength3();
-        setSpin(key.substring(4), (int) floatParameter(2));
-        return;
-      }
-
       // deprecated:
 
       if (key.equalsIgnoreCase("showSelections")) {
@@ -6469,16 +6466,37 @@ class Eval { //implements Runnable {
 
     }
 
-    boolean showing = (!isSyntaxCheck && !tQuiet
-        && scriptLevel <= scriptReportingLevel && !((String) statement[0].value)
-        .equals("var"));
-    if (getContextVariableAsToken(key) != null || !setParameter(key, val)) {
+    if (getContextVariableAsToken(key) != null || !setParameter(key, val, showing)) {
       int tok2 = (tokAt(1) == Token.expressionBegin ? 0 : tokAt(2));
       setVariable((tok2 == Token.opEQ ? 3 : 2), 0, key, showing);
-      return;
+      if (!isJmolSet)
+        return;
     }
     if (showing)
       viewer.showParameter(key, true, 80);
+  }
+
+  private int intSetting(int pt) throws ScriptException {
+    Vector v = (Vector) parameterExpression(pt, 0, "XXX", true);
+    if (v == null || v.size() == 0)
+      invalidArgument();
+    return Token.iValue((Token) v.elementAt(0));
+  }
+
+  private float floatSetting(int pt) throws ScriptException {
+    Vector v = (Vector) parameterExpression(pt, 0, "XXX", true);
+    if (v == null || v.size() == 0)
+      invalidArgument();
+    return Token.fValue((Token) v.elementAt(0));
+  }
+
+  private String stringSetting(int pt, boolean isJmolSet) throws ScriptException {
+    if (isJmolSet && statementLength == pt + 1)
+        return parameterAsString(pt);
+    Vector v = (Vector) parameterExpression(pt, 0, "XXX", true);
+    if (v == null || v.size() == 0)
+      invalidArgument();
+    return Token.sValue((Token) v.elementAt(0));
   }
 
   private void setVariable(int pt, int ptMax, String key, boolean showing)
@@ -6580,40 +6598,50 @@ class Eval { //implements Runnable {
     }
   }
 
-  private boolean setParameter(String key, int intVal) throws ScriptException {
+  private boolean setParameter(String key, int intVal, boolean showing)
+      throws ScriptException {
 
     if (key.equalsIgnoreCase("scriptReportingLevel")) { //11.1.13
-      checkLength3();
-      int iLevel = intParameter(2);
+      intVal = intSetting(2);
       if (!isSyntaxCheck) {
-        scriptReportingLevel = iLevel;
-        setIntProperty(key, iLevel);
+        scriptReportingLevel = intVal;
+        setIntProperty(key, intVal);
       }
       return true;
     }
     if (key.equalsIgnoreCase("defaults")) {
-      checkLength3();
-      String val = parameterAsString(2).toLowerCase();
+      String val;
+      if ((theTok = tokAt(2)) == Token.jmol || theTok == Token.rasmol) {
+        val = parameterAsString(2).toLowerCase();
+        checkLength3();
+      } else {
+        val = stringSetting(2, false).toLowerCase();
+      }
       if (!val.equals("jmol") && !val.equals("rasmol"))
         invalidArgument();
-      setStringProperty("defaults", val);
+      setStringProperty(key, val);
       return true;
     }
     if (key.equalsIgnoreCase("historyLevel")) {
-      checkLength3();
-      int iLevel = intParameter(2);
+      intVal = intSetting(2);
       if (!isSyntaxCheck) {
-        commandHistoryLevelMax = iLevel;
-        setIntProperty(key, iLevel);
+        commandHistoryLevelMax = intVal;
+        setIntProperty(key, intVal);
       }
       return true;
     }
     if (key.equalsIgnoreCase("dipoleScale")) {
-      checkLength3();
-      float scale = floatParameter(2);
+      float scale = floatSetting(2);
       if (scale < -10 || scale > 10)
         numberOutOfRange(-10f, 10f);
       setFloatProperty("dipoleScale", scale);
+      return true;
+    }
+    if (Parser.isOneOf("strandcount;strandcountformeshribbon;strandcountforstrands", key.toLowerCase())) {
+      intVal = intSetting(2);
+      if (intVal < 0 || intVal > 20)
+        numberOutOfRange(0, 20);
+      setIntProperty(key, intVal);
       return true;
     }
 
@@ -7339,7 +7367,7 @@ class Eval { //implements Runnable {
     String type = optParameterAsString(index).toLowerCase();
     if (statementLength == index + 1
         && Parser.isOneOf(type, "window;unitcell;molecular")) {
-      viewer.setBooleanProperty("axes" + type, true);
+      setBooleanProperty("axes" + type, true);
       return;
     }
     // axes = scale x.xxx
@@ -7742,31 +7770,18 @@ class Eval { //implements Runnable {
   private void setSpin(String key, int value) throws ScriptException {
     key = key.toLowerCase();
     if (Parser.isOneOf(key, "x;y;z;fps")) {
-      if (isSyntaxCheck)
-        return;
-      switch ("x;y;z".indexOf(key)) {
-      case 0:
-        viewer.setSpinX(value);
-        return;
-      case 2:
-        viewer.setSpinY(value);
-        return;
-      case 4:
-        viewer.setSpinZ(value);
-        return;
-      default:
-        viewer.setSpinFps(value);
-        return;
-      }
+      if (!isSyntaxCheck)
+        viewer.setSpin(key, value);
+      return;
     }
-    unrecognizedParameter("SPIN =", parameterAsString(2));
+    unrecognizedParameter("set SPIN ", parameterAsString(2));
   }
 
   private void setSsbond() throws ScriptException {
     checkLength3();
     boolean ssbondsBackbone = false;
     //viewer.loadShape(JmolConstants.SHAPE_SSSTICKS);
-    switch (statement[2].tok) {
+    switch (tokAt(2)) {
     case Token.backbone:
       ssbondsBackbone = true;
       break;
@@ -7781,7 +7796,7 @@ class Eval { //implements Runnable {
   private void setHbond() throws ScriptException {
     checkLength3();
     boolean bool = false;
-    switch (statement[2].tok) {
+    switch (tokAt(2)) {
     case Token.backbone:
       bool = true;
     // fall into
@@ -7801,7 +7816,7 @@ class Eval { //implements Runnable {
 
   private void setScale3d() throws ScriptException {
     checkLength3();
-    switch (statement[2].tok) {
+    switch (tokAt(2)) {
     case Token.decimal:
     case Token.integer:
       break;
@@ -7896,7 +7911,7 @@ class Eval { //implements Runnable {
   private void save() throws ScriptException {
     if (statementLength > 1) {
       String saveName = optParameterAsString(2);
-      switch (statement[1].tok) {
+      switch (tokAt(1)) {
       case Token.orientation:
         if (!isSyntaxCheck)
           viewer.saveOrientation(saveName);
@@ -7976,7 +7991,7 @@ class Eval { //implements Runnable {
     int pt = 1;
     boolean isApplet = viewer.isApplet();
     String driverList = viewer.getExportDriverList();
-    int tok = (statementLength == 1 ? Token.clipboard : statement[pt].tok);
+    int tok = (statementLength == 1 ? Token.clipboard : tokAt(pt));
     int len = 0;
     int width = -1;
     int height = -1;
@@ -8336,6 +8351,9 @@ class Eval { //implements Runnable {
       } else if (str.equalsIgnoreCase("menu")) {
         if (!isSyntaxCheck)
           value = viewer.getMenu();
+      } else if (str.equalsIgnoreCase("strandCount")) {
+        msg = "set strandCountForStrands " + viewer.getStrandCount(JmolConstants.SHAPE_STRANDS) 
+          + "; set strandCountForMeshRibbon " + viewer.getStrandCount(JmolConstants.SHAPE_MESHRIBBON);
       }
       break;
     case Token.axes:
@@ -8354,9 +8372,8 @@ class Eval { //implements Runnable {
       msg = "set bondMode " + (viewer.getBondSelectionModeOr() ? "OR" : "AND");
       break;
     case Token.strands:
-      viewer.loadShape(JmolConstants.SHAPE_STRANDS);
-      msg = "set strands "
-          + viewer.getShapeProperty(JmolConstants.SHAPE_STRANDS, "strandCount");
+      msg = "set strandCountForStrands " + viewer.getStrandCount(JmolConstants.SHAPE_STRANDS) 
+        + "; set strandCountForMeshRibbon " + viewer.getStrandCount(JmolConstants.SHAPE_MESHRIBBON);
       break;
     case Token.hbond:
       msg = "hbondsBackbone = " + viewer.getHbondsBackbone()
@@ -8527,6 +8544,12 @@ class Eval { //implements Runnable {
           + (viewer.getZoomEnabled() ? ("" + viewer.getZoomPercentFloat())
               : "off");
       break;
+    case Token.frank:
+      msg = (viewer.getShowFrank() ? "frank ON" : "frank OFF");
+      break;
+    case Token.radius:
+      str = "solventProbeRadius";
+      break;
     // not implemented
     case Token.translation:
     case Token.rotation:
@@ -8544,9 +8567,7 @@ class Eval { //implements Runnable {
     case Token.fontsize:
     case Token.property: // huh? why?
     case Token.bonds:
-    case Token.frank:
     case Token.help:
-    case Token.radius:
     case Token.solvent:
       value = "?";
       break;
@@ -8673,8 +8694,8 @@ class Eval { //implements Runnable {
         String filename = stringParameter(i);
         propertyName = "bufferedReader";
         if (filename.equalsIgnoreCase("inline")) {
-          if (i + 1 < statementLength && statement[i + 1].tok == Token.string) {
-            String data = (String) statement[++i].value;
+          if (i + 1 < statementLength && tokAt(i + 1) == Token.string) {
+            String data = parameterAsString(++i);
             if (data.indexOf("|") < 0 && data.indexOf("\n") < 0) {
               // space separates -- so set isOnePerLine
               data = data.replace(' ', '\n');
@@ -9338,7 +9359,7 @@ class Eval { //implements Runnable {
         break;
       }
       if (str.equalsIgnoreCase("TITLEFORMAT")) {
-        if (2 < statementLength && statement[2].tok == Token.string) {
+        if (2 < statementLength && tokAt(2) == Token.string) {
           propertyName = "titleFormat";
           propertyValue = parameterAsString(2);
         }

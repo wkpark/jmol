@@ -28,7 +28,6 @@ public class MeshRibbon extends Strands {
   
   public void initShape() {
     super.initShape();
-    strandCount = 7;
     isMesh = true;
   }
   

@@ -196,8 +196,8 @@ abstract class TransformManager {
   }
 
   String getSpinState(boolean isAll) {
-    String s = "  spinX = " + (int) spinX + ";spinY = " + (int) spinY
-        + ";spinZ = " + (int) spinZ + ";spinFps = " + (int) spinFps + ";";
+    String s = "  set spinX " + (int) spinX + "; set spinY " + (int) spinY
+        + "; set spinZ " + (int) spinZ + "; set spinFps " + (int) spinFps + ";";
     if (spinOn) {
       if (isAll)
         s += "\n  refreshing = true;refresh;";

@@ -86,7 +86,7 @@ class Eval { //implements Runnable {
 
   private Compiler compiler;
   private int scriptLevel;
-  private int scriptReportingLevel;
+  private int scriptReportingLevel = 0;
   private Context[] stack = new Context[scriptLevelMax];
   private String filename;
   private String functionName;
@@ -6268,14 +6268,6 @@ class Eval { //implements Runnable {
     case Token.boundbox:
       boundbox(2);
       return;
-    case Token.color:
-    case Token.defaultColors:
-      setDefaultColors();
-      return;
-    case Token.display://deprecated
-    case Token.selectionHalo:
-      setSelectionHalo(2);
-      return;
     case Token.echo:
       setEcho();
       return;
@@ -6306,14 +6298,14 @@ class Eval { //implements Runnable {
       }
       break;
     case Token.scale3d:
-      setScale3d();
+      setFloatProperty("scaleAngstromsPerInch", floatSetting(2));
+      return;
+    case Token.ssbond:
+      setSsbond();
       return;
     case Token.spin:
       checkLength4();
       setSpin(parameterAsString(2), (int) floatParameter(3));
-      return;
-    case Token.ssbond:
-      setSsbond();
       return;
     case Token.unitcell:
       setUnitcell(2);
@@ -6327,6 +6319,10 @@ class Eval { //implements Runnable {
       
    // THESE NEXT DO ALLOW CALCULATIONS xxx = a + b...
       
+    case Token.display://deprecated
+    case Token.selectionHalo:
+      setSelectionHalo(2);
+      return;
     case Token.formalCharge:
       n = intSetting(2);
       if (!isSyntaxCheck)
@@ -6340,20 +6336,15 @@ class Eval { //implements Runnable {
     //fall through
     case Token.specpercent:
       key = "specularPercent";
+      break;
     case Token.ambient:
-      if (key == null)
-        key = "ambientPercent";
+      key = "ambientPercent";
+      break;
     case Token.diffuse:
-      if (key == null)
-        key = "diffusePercent";
-      val = intSetting(2);
-      if (val > 100 || val < 0)
-        numberOutOfRange(0, 100);
+      key = "diffusePercent";
       break;
     case Token.specpower:
       val = intSetting(2);
-      if (val > 100)
-        numberOutOfRange(0, 100);
       if (val >= 0) {
         key = "specularPower";
         break;
@@ -6364,9 +6355,6 @@ class Eval { //implements Runnable {
       key = "specularExponent";
       break;
     case Token.specexponent:
-      val = intSetting(2);
-      if (val > 10 || val < 1)
-        numberOutOfRange(1, 10);
       key = "specularExponent";
       break;
     case Token.bonds:
@@ -6387,6 +6375,10 @@ class Eval { //implements Runnable {
     case Token.solvent:
       key = "solventProbe";
       break;
+    case Token.color:
+    case Token.defaultColors:
+      key = "defaultColorScheme";
+      break;
     default:
       key = parameterAsString(1);
       if (key.charAt(0) == '_') //these cannot be set by user
@@ -6397,10 +6389,6 @@ class Eval { //implements Runnable {
       if (key.toLowerCase().indexOf("label") == 0) {
         if (setLabel(key.substring(5)))
           return;
-      }
-      if (key.equalsIgnoreCase("defaultColorScheme")) {
-        setDefaultColors();
-        return;
       }
       if (key.equalsIgnoreCase("userColorScheme")) {
         setUserColors();
@@ -6448,12 +6436,24 @@ class Eval { //implements Runnable {
         return;
       }
       if (key.equalsIgnoreCase("backgroundModel")) {
-        int model = intSetting(2);
-        if (!isSyntaxCheck)
-          viewer.setBackgroundModel(model);
+        String modelDotted = stringSetting(2, false);
+        int modelNumber;
+        boolean useModelNumber = false;
+        if (modelDotted.indexOf(".") < 0) {
+          modelNumber = Parser.parseInt(modelDotted);
+          useModelNumber = true;
+        } else {
+          modelNumber = Compiler.modelValue(modelDotted);
+        }
+        if (isSyntaxCheck)
+          return;
+        int modelIndex = viewer.getModelNumberIndex(modelNumber, useModelNumber);
+        viewer.setBackgroundModelIndex(modelIndex);
         return;
       }
       if (key.equalsIgnoreCase("language")) {
+        //language can be used without quotes in a SET context
+        //set language en
         String lang = stringSetting(2, isJmolSet);
         setStringProperty(key, lang);
         return;
@@ -6600,26 +6600,13 @@ class Eval { //implements Runnable {
 
   private boolean setParameter(String key, int intVal, boolean showing)
       throws ScriptException {
-
+    String lcKey = key.toLowerCase();
     if (key.equalsIgnoreCase("scriptReportingLevel")) { //11.1.13
       intVal = intSetting(2);
       if (!isSyntaxCheck) {
         scriptReportingLevel = intVal;
         setIntProperty(key, intVal);
       }
-      return true;
-    }
-    if (key.equalsIgnoreCase("defaults")) {
-      String val;
-      if ((theTok = tokAt(2)) == Token.jmol || theTok == Token.rasmol) {
-        val = parameterAsString(2).toLowerCase();
-        checkLength3();
-      } else {
-        val = stringSetting(2, false).toLowerCase();
-      }
-      if (!val.equals("jmol") && !val.equals("rasmol"))
-        invalidArgument();
-      setStringProperty(key, val);
       return true;
     }
     if (key.equalsIgnoreCase("historyLevel")) {
@@ -6637,14 +6624,47 @@ class Eval { //implements Runnable {
       setFloatProperty("dipoleScale", scale);
       return true;
     }
-    if (Parser.isOneOf("strandcount;strandcountformeshribbon;strandcountforstrands", key.toLowerCase())) {
+    if (key.equalsIgnoreCase("axesScale")) {
+      float scale = floatSetting(2);
+      setFloatProperty("axesScale", scale);
+      return true;
+    }
+    if (Parser.isOneOf(lcKey, "defaults;defaultcolorscheme")) {
+      String val;
+      if ((theTok = tokAt(2)) == Token.jmol || theTok == Token.rasmol) {
+        val = parameterAsString(2).toLowerCase();
+        checkLength3();
+      } else {
+        val = stringSetting(2, false).toLowerCase();
+      }
+      if (!val.equals("jmol") && !val.equals("rasmol"))
+        invalidArgument();
+      setStringProperty((key.equalsIgnoreCase("defaults") ? key : "defaultColorScheme"), val);
+      return true;
+    }
+    if (Parser.isOneOf(lcKey, "strandcount;strandcountformeshribbon;strandcountforstrands")) {
       intVal = intSetting(2);
       if (intVal < 0 || intVal > 20)
         numberOutOfRange(0, 20);
       setIntProperty(key, intVal);
       return true;
     }
-
+    if (Parser.isOneOf(lcKey, "specularpercent;ambientpercent;diffusepercent;specularPower")) {
+      if (intVal == Integer.MAX_VALUE)
+        intVal = intSetting(2);
+      if (intVal < 0 || intVal > 100)
+        numberOutOfRange(0, 100);
+      setIntProperty(key, intVal);
+      return true;
+    }
+    if (key.equalsIgnoreCase("specularExponent")) {
+      if (intVal == Integer.MAX_VALUE)
+        intVal = intSetting(2);
+      if (intVal > 10 || intVal < 1)
+        numberOutOfRange(1, 10);
+      setIntProperty(key, intVal);
+      return true;
+    }
     boolean isJmolSet = (parameterAsString(0).equals("set"));
     boolean isJmolParameter = viewer.isJmolVariable(key);
     if (isJmolSet && !isJmolParameter) {
@@ -6673,8 +6693,8 @@ class Eval { //implements Runnable {
       }
       return true;
     default:
-      if (isJmolSet)
-        invalidArgument();
+      //if (isJmolSet)
+        //invalidArgument();
     }
     return false;
   }
@@ -7440,14 +7460,6 @@ class Eval { //implements Runnable {
     setBooleanProperty("frank", booleanParameter(index));
   }
 
-  private void setDefaultColors() throws ScriptException {
-    checkLength3();
-    String type = parameterAsString(2);
-    if (!type.equalsIgnoreCase("rasmol") && !type.equalsIgnoreCase("jmol"))
-      invalidArgument();
-    setStringProperty("defaultColorScheme", type);
-  }
-
   private void setUserColors() throws ScriptException {
     Vector v = new Vector();
     for (int i = 2; i < statementLength; i++) {
@@ -7812,18 +7824,6 @@ class Eval { //implements Runnable {
     default:
       invalidArgument();
     }
-  }
-
-  private void setScale3d() throws ScriptException {
-    checkLength3();
-    switch (tokAt(2)) {
-    case Token.decimal:
-    case Token.integer:
-      break;
-    default:
-      numberExpected();
-    }
-    setFloatProperty("scaleAngstromsPerInch", floatParameter(2));
   }
 
   private void setPicking() throws ScriptException {
@@ -8314,6 +8314,7 @@ class Eval { //implements Runnable {
       if (!isSyntaxCheck)
         viewer.showUrl(fileName);
       return;
+    case Token.color:
     case Token.defaultColors:
       str = "defaultColorScheme";
       break;
@@ -8390,10 +8391,10 @@ class Eval { //implements Runnable {
       msg = "selectionHalos = " + viewer.getSelectionHaloEnabled();
       break;
     case Token.hetero:
-      msg = "defaultSelectHetero = " + viewer.getRasmolHeteroSetting();
+      msg = "selectHetero = " + viewer.getRasmolHeteroSetting();
       break;
     case Token.hydrogen:
-      msg = "defaultSelectHydrogens = " + viewer.getRasmolHydrogenSetting();
+      msg = "selectHydrogens = " + viewer.getRasmolHydrogenSetting();
       break;
     case Token.ambient:
     case Token.diffuse:

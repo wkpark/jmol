@@ -951,6 +951,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setDefaultColors(String colorScheme) {
     colorManager.setDefaultColors(colorScheme);
+    global.setParameterValue("colorRasmol", (colorScheme.equals("rasmol")));
   }
 
   private void setDefaultTranslucent(float value) {
@@ -2754,15 +2755,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (getModelCount() > 1 && getModelNumber(0) > 1000000);
   }
 
-  void setBackgroundModel(int modelNumber) {
-    //Eval
-    int modelIndex = getModelNumberIndex(modelNumber, !haveFileSet());
-    setBackgroundModelIndex(modelIndex);
-  }
-
-  private void setBackgroundModelIndex(int modelIndex) {
+  void setBackgroundModelIndex(int modelIndex) {
     //initializeModel
     repaintManager.setBackgroundModelIndex(modelIndex);
+    global.setParameterValue("backgroundModel", modelSet.getModelNumberDotted(modelIndex));
   }
 
   public int getBackgroundModelIndex() {

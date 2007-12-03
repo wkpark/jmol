@@ -1003,13 +1003,14 @@ public class StateManager {
       setParameterValue("axesMode",axesMode);
       setParameterValue("axesScale",axesScale);
       setParameterValue("axesOrientationRasmol", false);
-
+      setParameterValue("backgroundModel", 0);
       setParameterValue("bondModeOr",bondModeOr);
       setParameterValue("bondRadiusMilliAngstroms",bondRadiusMilliAngstroms);
       setParameterValue("bondTolerance",bondTolerance);
       setParameterValue("cameraDepth",cameraDepth);
       setParameterValue("cartoonRockets",cartoonRockets);
       setParameterValue("chainCaseSensitive",chainCaseSensitive);
+      setParameterValue("colorRasmol",false);
       setParameterValue("dataSeparator",dataSeparator);
       setParameterValue("debugScript",debugScript);
       setParameterValue("defaultAngleLabel",defaultAngleLabel);
@@ -1018,6 +1019,7 @@ public class StateManager {
       setParameterValue("defaultDirectory",defaultDirectory);
       setParameterValue("defaultDistanceLabel",defaultDistanceLabel);
       setParameterValue("defaultLoadScript",defaultLoadScript);
+      setParameterValue("defaults", "Jmol");
       setParameterValue("defaultTorsionLabel",defaultTorsionLabel);
       setParameterValue("defaultTranslucent",defaultTranslucent);
       setParameterValue("diffusePercent",diffusePercent);
@@ -1038,6 +1040,7 @@ public class StateManager {
       setParameterValue("hideNavigationPoint",hideNavigationPoint);
       setParameterValue("hideNotSelected",false); // saved in selectionManager
       setParameterValue("highResolutionFlag",highResolutionFlag);
+      setParameterValue("historyLevel", 0);
       setParameterValue("hoverDelay",hoverDelayMs/1000f);
       setParameterValue("isosurfacePropertySmoothing", isosurfacePropertySmoothing);
       setParameterValue("justifyMeasurements",justifyMeasurements);
@@ -1060,6 +1063,7 @@ public class StateManager {
       setParameterValue("ribbonBorder",ribbonBorder);
       setParameterValue("rocketBarrels",rocketBarrels);
       setParameterValue("scriptDelay",scriptDelay);
+      setParameterValue("scriptReportingLevel",0);
       setParameterValue("selectHetero",rasmolHeteroSetting);
       setParameterValue("selectHydrogen",rasmolHydrogenSetting);
       setParameterValue("sheetSmoothing",sheetSmoothing);

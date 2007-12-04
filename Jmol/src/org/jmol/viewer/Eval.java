@@ -28,6 +28,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Font3D;
 import org.jmol.shape.Text;
 import org.jmol.symmetry.SpaceGroup;
+import org.jmol.symmetry.UnitCell;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.ColorEncoder;
@@ -37,6 +38,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Parser;
+
 import org.jmol.modelset.Bond.BondSet;
 
 import java.io.*;
@@ -997,7 +999,7 @@ class Eval { //implements Runnable {
         subset();
         break;
       case Token.selectionHalo:
-        setSelectionHalo(1);
+        selectionHalo(1);
         break;
       case Token.set:
         set();
@@ -1083,7 +1085,7 @@ class Eval { //implements Runnable {
         frame(1, true);
         break;
       case Token.font:
-        font();
+        font(-1, 0);
         break;
       case Token.moveto:
         moveto();
@@ -1134,16 +1136,16 @@ class Eval { //implements Runnable {
         configuration();
         break;
       case Token.axes:
-        setAxes(1);
+        axes(1);
         break;
       case Token.boundbox:
         boundbox(1);
         break;
       case Token.unitcell:
-        setUnitcell(1);
+        unitcell(1);
         break;
       case Token.frank:
-        setFrank(1);
+        frank(1);
         break;
       case Token.help:
         help();
@@ -3967,11 +3969,12 @@ class Eval { //implements Runnable {
   private void label(int index) throws ScriptException {
     if (isSyntaxCheck)
       return;
-    String strLabel = parameterAsString(index);
+    String strLabel = parameterAsString(index++);
     if (strLabel.equalsIgnoreCase("on")) {
       strLabel = viewer.getStandardLabelFormat();
-    } else if (strLabel.equalsIgnoreCase("off"))
+    } else if (strLabel.equalsIgnoreCase("off")) {
       strLabel = null;
+    } 
     viewer.loadShape(JmolConstants.SHAPE_LABELS);
     viewer.setLabel(strLabel);
   }
@@ -6206,11 +6209,10 @@ class Eval { //implements Runnable {
     return iShape;
   }
 
-  private void font() throws ScriptException {
-    int shapeType = 0;
-    int fontsize = 0;
+  private void font(int shapeType, int fontsize) throws ScriptException {
     String fontface = "SansSerif";
     String fontstyle = "Plain";
+    int sizeAdjust = 0;
     switch (iToken = statementLength) {
     case 5:
       if (getToken(4).tok != Token.identifier)
@@ -6221,15 +6223,35 @@ class Eval { //implements Runnable {
       if (getToken(3).tok != Token.identifier)
         invalidArgument();
       fontface = parameterAsString(3);
-    //fall through
-    case 3:
       if (getToken(2).tok != Token.integer)
         integerExpected();
       fontsize = intParameter(2);
       shapeType = getShapeType(getToken(1).tok);
       break;
+    case 3:
+      if (getToken(2).tok != Token.integer)
+        integerExpected();
+      if (shapeType == -1) {
+        shapeType = getShapeType(getToken(1).tok);
+        fontsize = intParameter(2);
+      } else {//labels --- old set fontsize N
+        fontsize += (sizeAdjust = 5);
+      }
+      break;
+    case 2:
     default:
+      if (shapeType == JmolConstants.SHAPE_LABELS) {
+        //set fontsize
+        fontsize = JmolConstants.LABEL_DEFAULT_FONTSIZE;
+        break;
+      }
       badArgumentCount();
+    }
+    if (shapeType == JmolConstants.SHAPE_LABELS) {        
+      if (fontsize < JmolConstants.LABEL_MINIMUM_FONTSIZE
+          || fontsize > JmolConstants.LABEL_MAXIMUM_FONTSIZE)
+        numberOutOfRange(JmolConstants.LABEL_MINIMUM_FONTSIZE - sizeAdjust,
+            JmolConstants.LABEL_MINIMUM_FONTSIZE - sizeAdjust);
     }
     Font3D font3d = viewer.getFont3D(fontface, fontstyle, fontsize);
     viewer.loadShape(shapeType);
@@ -6255,30 +6277,20 @@ class Eval { //implements Runnable {
     int n = 0;
     String key = null;
     switch (getToken(1).tok) {
-    // THESE FIRST DO NOT ALLOW CALCULATIONS xxx = a + b...
+    
+    // THESE ARE DEPRECATED AND HAVE THEIR OWN COMMAND
+    
     case Token.axes:
-      setAxes(2);
+      axes(2);
       return;
     case Token.background:
       background(2);
       return;
-    case Token.bondmode:
-      setBondmode();
-      return;
     case Token.boundbox:
       boundbox(2);
       return;
-    case Token.echo:
-      setEcho();
-      return;
-    case Token.fontsize:
-      setFontsize();
-      return;
     case Token.frank:
-      setFrank(2);
-      return;
-    case Token.hbond:
-      setHbond();
+      frank(2);
       return;
     case Token.history:
       history(2);
@@ -6286,10 +6298,34 @@ class Eval { //implements Runnable {
     case Token.label:
       label(2);
       return;
-    case Token.monitor:
-      setMonitor(2);
+    case Token.unitcell:
+      unitcell(2);
       return;
-    case Token.property: // huh? why?
+    case Token.display://deprecated
+    case Token.selectionHalo:
+      selectionHalo(2);
+      return;
+
+      // THESE HAVE MULTIPLE CONTEXTS AND 
+      // SO DO NOT ALLOW CALCULATIONS xxx = a + b...
+      
+    case Token.bondmode:
+      setBondmode();
+      return;
+    case Token.echo:
+      setEcho();
+      return;
+    case Token.fontsize:
+      checkLength23();
+      font(JmolConstants.SHAPE_LABELS, statementLength == 2 ? 0 : intParameter(2));
+      return;
+    case Token.hbond:
+      setHbond();
+      return;
+    case Token.monitor:
+      setMonitor();
+      return;
+    case Token.property: // considered reserved
       key = parameterAsString(1).toLowerCase();
       if (key.startsWith("property_")) {
       } else {
@@ -6297,31 +6333,26 @@ class Eval { //implements Runnable {
         return;
       }
       break;
-    case Token.scale3d:
-      setFloatProperty("scaleAngstromsPerInch", floatSetting(2));
-      return;
-    case Token.ssbond:
-      setSsbond();
-      return;
-    case Token.spin:
-      checkLength4();
-      setSpin(parameterAsString(2), (int) floatParameter(3));
-      return;
-    case Token.unitcell:
-      setUnitcell(2);
-      return;
     case Token.picking:
       setPicking();
       return;
     case Token.pickingStyle:
       setPickingStyle();
+      return;      
+      
+    // deprecated to other parameters   
+    case Token.spin:
+      checkLength4();
+      setSpin(parameterAsString(2), (int) floatParameter(3));
       return;
+    case Token.ssbond: //ssBondsBackbone
+      setSsbond();
+      return;
+
+      // THESE NEXT DO ALLOW CALCULATIONS xxx = a + b...
       
-   // THESE NEXT DO ALLOW CALCULATIONS xxx = a + b...
-      
-    case Token.display://deprecated
-    case Token.selectionHalo:
-      setSelectionHalo(2);
+    case Token.scale3d:
+      setFloatProperty("scaleAngstromsPerInch", floatSetting(2));
       return;
     case Token.formalCharge:
       n = intSetting(2);
@@ -6386,7 +6417,12 @@ class Eval { //implements Runnable {
 
       //these next are not reported and do not allow calculation xxxx = a + b
 
-      if (key.toLowerCase().indexOf("label") == 0) {
+      if (key.equalsIgnoreCase("toggleLabel")) {
+        if (setLabel("toggle"))
+          return;
+      }
+      if (key.toLowerCase().indexOf("label") == 0
+          && Parser.isOneOf(key.toLowerCase(),"labelfront;labelgroup;labelatom;labeloffset;labelpointer;labelalignment;labeltoggle")) {
         if (setLabel(key.substring(5)))
           return;
       }
@@ -6396,30 +6432,33 @@ class Eval { //implements Runnable {
       }
       if (key.equalsIgnoreCase("measurementNumbers")
           || key.equalsIgnoreCase("measurementLabels")) {
-        setMonitor(2);
+        setMonitor();
         return;
       }
       if (key.equalsIgnoreCase("defaultLattice")) {
         Point3f pt;
-        if (getToken(2).tok == Token.integer) {
-          int i = intParameter(2);
-          pt = new Point3f(i, i, i);
-        } else {
-          pt = (Point3f) getPointOrPlane(2, false, false, false, false, 3, 3);
+        Vector v = (Vector) parameterExpression(2, 0, "XXX", true);
+        if (v == null || v.size() == 0)
+          invalidArgument();
+        Token token = (Token) v.elementAt(0);
+        if (token.tok == Token.point3f)
+          pt = (Point3f) token.value;
+        else {
+          int ijk = Token.iValue(token);
+          if (ijk < 555)
+            pt = new Point3f();
+          else
+            pt = UnitCell.ijkToPoint3f(ijk + 111);
         }
         if (!isSyntaxCheck)
           viewer.setDefaultLattice(pt);
         return;
       }
       
+      // THESE CAN BE PART OF CALCULATIONS
+      
       if (key.equalsIgnoreCase("defaultDrawArrowScale")) {
         setFloatProperty(key, floatSetting(2));
-        return;
-      }
-      if (key.equalsIgnoreCase("toggleLabel")) { //from PickingManager
-        BitSet bs = expression(2);
-        if (!isSyntaxCheck)
-          viewer.togglePickingLabel(bs);
         return;
       }
       if (key.equalsIgnoreCase("logLevel")) {
@@ -7379,7 +7418,7 @@ class Eval { //implements Runnable {
     }
   }
 
-  private void setAxes(int index) throws ScriptException {
+  private void axes(int index) throws ScriptException {
     if (statementLength == 1) {
       setShapeSize(JmolConstants.SHAPE_AXES, 1);
       return;
@@ -7433,7 +7472,7 @@ class Eval { //implements Runnable {
       viewer.setObjectMad(JmolConstants.SHAPE_BBCAGE, "boundbox", mad);
   }
 
-  private void setUnitcell(int index) throws ScriptException {
+  private void unitcell(int index) throws ScriptException {
     if (statementLength == 1) {
       if (!isSyntaxCheck)
         viewer.setObjectMad(JmolConstants.SHAPE_UCCAGE, "unitcell", (short) 1);
@@ -7456,7 +7495,7 @@ class Eval { //implements Runnable {
       viewer.setCurrentUnitCellOffset(pt);
   }
 
-  private void setFrank(int index) throws ScriptException {
+  private void frank(int index) throws ScriptException {
     setBooleanProperty("frank", booleanParameter(index));
   }
 
@@ -7491,7 +7530,7 @@ class Eval { //implements Runnable {
     setBooleanProperty("bondModeOr", bondmodeOr);
   }
 
-  private void setSelectionHalo(int pt) throws ScriptException {
+  private void selectionHalo(int pt) throws ScriptException {
     if (pt == statementLength) {
       setBooleanProperty("selectionHalos", true);
       return;
@@ -7642,96 +7681,90 @@ class Eval { //implements Runnable {
     setShapeProperty(JmolConstants.SHAPE_ECHO, type, propertyValue);
   }
 
-  private void setFontsize() throws ScriptException {
-    int rasmolSize = 8;
-    if (statementLength == 3) {
-      rasmolSize = intParameter(2);
-      // this is a kludge/hack to be somewhat compatible with RasMol
-      rasmolSize += 5;
-
-      if (rasmolSize < JmolConstants.LABEL_MINIMUM_FONTSIZE
-          || rasmolSize > JmolConstants.LABEL_MAXIMUM_FONTSIZE)
-        numberOutOfRange(JmolConstants.LABEL_MINIMUM_FONTSIZE,
-            JmolConstants.LABEL_MINIMUM_FONTSIZE);
-    }
-    viewer.loadShape(JmolConstants.SHAPE_LABELS);
-    setShapeProperty(JmolConstants.SHAPE_LABELS, "fontsize", new Integer(
-        rasmolSize));
-  }
-
   private boolean setLabel(String str) throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_LABELS);
-    if (str.equals("offset")) {
-      checkLength4();
-      int xOffset = intParameter(2);
-      int yOffset = intParameter(3);
-      if (xOffset > 100 || yOffset > 100 || xOffset < -100 || yOffset < -100)
-        numberOutOfRange(-100, 100);
-      int offset = ((xOffset & 0xFF) << 8) | (yOffset & 0xFF);
-      setShapeProperty(JmolConstants.SHAPE_LABELS, "offset",
-          new Integer(offset));
-      return true;
-    }
-    if (str.equals("alignment")) {
-      checkLength3();
-      switch (statement[2].tok) {
-      case Token.left:
-      case Token.right:
-      case Token.center:
-        setShapeProperty(JmolConstants.SHAPE_LABELS, "align",
-            statement[2].value);
+    Object propertyValue = null;
+    while (true) {
+      if (str.equals("offset")) {
+        int xOffset = intParameter(2);
+        int yOffset = intParameter(3);
+        if (xOffset > 100 || yOffset > 100 || xOffset < -100 || yOffset < -100)
+          numberOutOfRange(-100, 100);
+        propertyValue = new Integer(((xOffset & 0xFF) << 8) | (yOffset & 0xFF));
+        break;
+      }
+      if (str.equals("alignment")) {
+        switch (getToken(2).tok) {
+        case Token.left:
+        case Token.right:
+        case Token.center:
+          str = "align";
+          propertyValue = theToken.value;
+          break;
+        default:
+          invalidArgument();
+        }
+        break;
+      }
+      if (str.equals("pointer")) {
+        int flags = Text.POINTER_NONE;
+        switch (getToken(2).tok) {
+        case Token.off:
+        case Token.none:
+          break;
+        case Token.background:
+          flags |= Text.POINTER_BACKGROUND;
+        case Token.on:
+          flags |= Text.POINTER_ON;
+          break;
+        default:
+          invalidArgument();
+        }
+        propertyValue = new Integer(flags);
+        break;
+      }
+      if (str.equals("toggle")) {
+        iToken = 1;
+        BitSet bs = (statementLength == 2 ? null : expression(2));
+        checkStatementLength(iToken + 1);
+        if (!isSyntaxCheck)
+          viewer.togglePickingLabel(bs);
         return true;
       }
-      invalidArgument();
-    }
-    if (str.equals("pointer")) {
-      checkLength3();
-      int flags = Text.POINTER_NONE;
-      switch (statement[2].tok) {
-      case Token.off:
-      case Token.none:
+      iToken = 1;
+      boolean TF = (statementLength == 2 || getToken(2).tok == Token.on);
+      if (str.equals("front") || str.equals("group")) {
+        if (!TF && tokAt(2) != Token.off)
+          invalidArgument();
+        if (!TF)
+          str = "front";
+        propertyValue = (TF ? Boolean.TRUE : Boolean.FALSE);
         break;
-      case Token.background:
-        flags |= Text.POINTER_BACKGROUND;
-      case Token.on:
-        flags |= Text.POINTER_ON;
+      }
+      if (str.equals("atom")) {
+        if (!TF && tokAt(2) != Token.off)
+          invalidArgument();
+        str = "front";
+        propertyValue = (TF ? Boolean.FALSE : Boolean.TRUE);
         break;
-      default:
-        invalidArgument();
       }
-      setShapeProperty(JmolConstants.SHAPE_LABELS, "pointer",
-          new Integer(flags));
+      return false;
+    }
+    BitSet bs = (iToken + 1 < statementLength ? expression(++iToken) : null);
+    checkStatementLength(iToken + 1);
+    if (isSyntaxCheck)
       return true;
-    }
-    checkLength23();
-    boolean TF = (statementLength == 2 || tokAt(2) == Token.on);
-    if (str.equals("front") || str.equals("group")) {
-      if (!TF && tokAt(2) != Token.off)
-        invalidArgument();
-      if (!TF) {
-        str = "atom";
-        TF = true;
-      } else {
-        setShapeProperty(JmolConstants.SHAPE_LABELS, str, Boolean.TRUE);
-        return true;
-      }
-    }
-    if (str.equals("atom")) {
-      if (!TF && tokAt(2) != Token.off)
-        invalidArgument();
-      setShapeProperty(JmolConstants.SHAPE_LABELS, "front", (TF ? Boolean.FALSE
-          : Boolean.TRUE));
-      return true;
-    }
-    return false;
+    if (bs != null)
+      viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, str, propertyValue, bs);
+    else      setShapeProperty(JmolConstants.SHAPE_LABELS, str, propertyValue);
+    return true;
   }
 
-  private void setMonitor(int index) throws ScriptException {
+  private void setMonitor() throws ScriptException {
     //on off here incompatible with "monitor on/off" so this is just a SET option.
-    //index will be 2 here.
     boolean showMeasurementNumbers = false;
     checkLength3();
-    switch (tokAt(index)) {
+    switch (tokAt(2)) {
     case Token.on:
       showMeasurementNumbers = true;
     case Token.off:
@@ -7739,14 +7772,14 @@ class Eval { //implements Runnable {
           showMeasurementNumbers ? Boolean.TRUE : Boolean.FALSE);
       return;
     case Token.identifier:
-      String units = parameterAsString(index);
+      String units = parameterAsString(2);
       if (!StateManager.isMeasurementUnit(units))
         unrecognizedParameter("MEASURE ", units);
       if (!isSyntaxCheck)
         viewer.setMeasureDistanceUnits(units);
       return;
     }
-    setShapeSize(JmolConstants.SHAPE_MEASURES, getSetAxesTypeMad(index));
+    setShapeSize(JmolConstants.SHAPE_MEASURES, getSetAxesTypeMad(2));
   }
 
   private void setProperty() throws ScriptException {
@@ -8377,24 +8410,24 @@ class Eval { //implements Runnable {
         + "; set strandCountForMeshRibbon " + viewer.getStrandCount(JmolConstants.SHAPE_MESHRIBBON);
       break;
     case Token.hbond:
-      msg = "hbondsBackbone = " + viewer.getHbondsBackbone()
-          + ";hbondsSolid = " + viewer.getHbondsSolid();
+      msg = "set hbondsBackbone " + viewer.getHbondsBackbone()
+          + ";set hbondsSolid " + viewer.getHbondsSolid();
       break;
     case Token.spin:
       msg = viewer.getSpinState();
       break;
     case Token.ssbond:
-      msg = "ssbondsBackbone = " + viewer.getSsbondsBackbone();
+      msg = "set ssbondsBackbone " + viewer.getSsbondsBackbone();
       break;
     case Token.display://deprecated
     case Token.selectionHalo:
-      msg = "selectionHalos = " + viewer.getSelectionHaloEnabled();
+      msg = "selectionHalos " + viewer.getSelectionHaloEnabled();
       break;
     case Token.hetero:
-      msg = "selectHetero = " + viewer.getRasmolHeteroSetting();
+      msg = "set selectHetero " + viewer.getRasmolHeteroSetting();
       break;
     case Token.hydrogen:
-      msg = "selectHydrogens = " + viewer.getRasmolHydrogenSetting();
+      msg = "set selectHydrogens " + viewer.getRasmolHydrogenSetting();
       break;
     case Token.ambient:
     case Token.diffuse:

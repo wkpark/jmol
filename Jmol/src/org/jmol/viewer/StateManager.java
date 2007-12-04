@@ -433,27 +433,27 @@ public class StateManager {
       appendCmd(str, "allowEmbeddedScripts = false");
       if (allowEmbeddedScripts)
         setParameterValue("allowEmbeddedScripts", true);
-      appendCmd(str, "autoBond = " + autoBond);
-      appendCmd(str, "appendNew = " + appendNew);
-      appendCmd(str, "appletProxy = " + Escape.escape(appletProxy));
-      appendCmd(str, "applySymmetryToBonds = " + applySymmetryToBonds);
+      appendCmd(str, "set autoBond " + autoBond);
+      appendCmd(str, "set appendNew " + appendNew);
+      appendCmd(str, "set appletProxy " + Escape.escape(appletProxy));
+      appendCmd(str, "set applySymmetryToBonds " + applySymmetryToBonds);
       if (viewer.getAxesOrientationRasmol())
-        appendCmd(str, "axesOrientationRasmol = true");
-      appendCmd(str, "bondRadiusMilliAngstroms = " + bondRadiusMilliAngstroms);
-      appendCmd(str, "bondTolerance = " + bondTolerance);
-      appendCmd(str, "defaultDirectory = " + Escape.escape(defaultDirectory));
-      appendCmd(str, "defaultLattice = " + Escape.escape(ptDefaultLattice));
-      appendCmd(str, "defaultLoadScript = \"\"");
+        appendCmd(str, "set axesOrientationRasmol true");
+      appendCmd(str, "set bondRadiusMilliAngstroms " + bondRadiusMilliAngstroms);
+      appendCmd(str, "set bondTolerance " + bondTolerance);
+      appendCmd(str, "set defaultDirectory " + Escape.escape(defaultDirectory));
+      appendCmd(str, "set defaultLattice " + Escape.escape(ptDefaultLattice));
+      appendCmd(str, "set defaultLoadScript \"\"");
       if (defaultLoadScript.length() > 0)
         setParameterValue("defaultLoadScript", defaultLoadScript);
-      appendCmd(str, "loadFormat = " + Escape.escape(loadFormat));
+      appendCmd(str, "set loadFormat " + Escape.escape(loadFormat));
 
-      appendCmd(str, "forceAutoBond = " + forceAutoBond);
-      appendCmd(str, "minBondDistance = " + minBondDistance);
-      appendCmd(str, "percentVdwAtom = " + percentVdwAtom);
-      appendCmd(str, "smartAromatic = " + smartAromatic);
+      appendCmd(str, "set forceAutoBond " + forceAutoBond);
+      appendCmd(str, "set minBondDistance " + minBondDistance);
+      appendCmd(str, "set percentVdwAtom " + percentVdwAtom);
+      appendCmd(str, "set smartAromatic " + smartAromatic);
       if (zeroBasedXyzRasmol)
-        appendCmd(str, "zeroBasedXyzRasmol = true");
+        appendCmd(str, "set zeroBasedXyzRasmol true");
       return str.toString();
     }
 
@@ -681,7 +681,7 @@ public class StateManager {
       ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor" +
       ";axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color" +
       ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth" +
-      ";debugscript;defaults;diffusepercent;exportdrivers;language;loglevel;navigationmode" +
+      ";debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers;language;loglevel;navigationmode" +
       ";perspectivedepth;visualrange;perspectivemodel;refreshing;rotationradius" +
       ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell" +
       ";slabenabled;specular;specularexponent;specularpercent;specularpower;stateversion" +
@@ -691,7 +691,7 @@ public class StateManager {
       ";scriptqueue;scriptreportinglevel" +
       //    more settable Jmol variables    
       ";ambient;bonds;colorrasmol;diffuse;dipoleScale;drawhover;frank;hetero;hidenotselected" +
-      ";highresolution;hoverlabel;hydrogen;languagetranslation;navigationdepth;navigationslab" +
+      ";hoverlabel;hydrogen;languagetranslation;navigationdepth;navigationslab" +
       ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred" +
       ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount" +
       ";spinx;spiny;spinz;spinfps" +
@@ -1013,6 +1013,7 @@ public class StateManager {
       setParameterValue("colorRasmol",false);
       setParameterValue("dataSeparator",dataSeparator);
       setParameterValue("debugScript",debugScript);
+      setParameterValue("defaultLattice","{0 0 0}");
       setParameterValue("defaultAngleLabel",defaultAngleLabel);
       setParameterValue("defaultColorScheme","Jmol");
       setParameterValue("defaultDrawArrowScale",defaultDrawArrowScale);
@@ -1039,7 +1040,7 @@ public class StateManager {
       setParameterValue("hideNameInPopup",hideNameInPopup);
       setParameterValue("hideNavigationPoint",hideNavigationPoint);
       setParameterValue("hideNotSelected",false); // saved in selectionManager
-      setParameterValue("highResolutionFlag",highResolutionFlag);
+      setParameterValue("highResolution",highResolutionFlag);
       setParameterValue("historyLevel", 0);
       setParameterValue("hoverDelay",hoverDelayMs/1000f);
       setParameterValue("isosurfacePropertySmoothing", isosurfacePropertySmoothing);

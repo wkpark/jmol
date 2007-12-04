@@ -3372,7 +3372,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setMarBond(short marBond) {
     global.bondRadiusMilliAngstroms = marBond;
     global.setParameterValue("bondRadiusMilliAngstroms", marBond);
-    setShapeSize(JmolConstants.SHAPE_STICKS, marBond * 2);
+    setShapeSize(JmolConstants.SHAPE_STICKS, marBond * 2, BitSetUtil.setAll(getAtomCount()));
   }
 
   int hoverAtomIndex = -1;
@@ -3437,7 +3437,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   int n;
 
   void togglePickingLabel(BitSet bs) {
-    //eval set toggleLabel (atomset)
+    //eval label toggle (atomset) and pickingManager
+    if (bs == null)
+      bs = selectionManager.bsSelection;
     loadShape(JmolConstants.SHAPE_LABELS);
     setShapeSize(JmolConstants.SHAPE_LABELS, 0, null);
     modelSet.setShapeProperty(JmolConstants.SHAPE_LABELS, "toggleLabel",
@@ -4442,7 +4444,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       if (key.equalsIgnoreCase("hideNavigationPoint")) {
         setHideNavigationPoint(value);
-        break;
+        break;  
       }
       if (key.equalsIgnoreCase("showNavigationPointAlways")) {
         setShowNavigationPointAlways(value);
@@ -4930,6 +4932,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.removeJmolParameter("axesunitcell");
     global.removeJmolParameter(TF ? "axeswindow" : "axesmolecular");
     global.setParameterValue("axesMode",global.axesMode);
+    global.setParameterValue(TF ? "axesMolecular" : "axesWindow" ,true);
+    
   }
 
   void setAxesModeUnitCell(boolean TF) {
@@ -4940,6 +4944,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     axesAreTainted = true;
     global.removeJmolParameter("axesmolecular");
     global.removeJmolParameter(TF ? "axeswindow" : "axesunitcell");
+    global.setParameterValue(TF ? "axesUnitcell" : "axesWindow" ,true);
     global.setParameterValue("axesMode",global.axesMode);
   }
 
@@ -5810,6 +5815,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void setDefaultLattice(Point3f ptLattice) {
     //Eval -- handled separately
     global.setDefaultLattice(ptLattice);
+    global.setParameterValue("defaultLattice", Escape.escape(ptLattice));
   }
 
   Point3f getDefaultLattice() {

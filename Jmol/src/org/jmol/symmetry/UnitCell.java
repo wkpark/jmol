@@ -101,13 +101,17 @@ public class UnitCell {
 
   public void setOffset(int nnn) {
     // from "unitcell ijk" via uccage
+    setOffset(ijkToPoint3f(nnn));
+  }
+
+  public static Point3f ijkToPoint3f(int nnn) {
     Point3f cell = new Point3f();
     cell.x = nnn / 100 - 5;
     cell.y = (nnn % 100) / 10 - 5;
     cell.z = (nnn % 10) - 5;
-    setOffset(cell);
+    return cell;
   }
-
+  
   public final String dumpInfo(boolean isFull) {
     return "a=" + a + ", b=" + b + ", c=" + c + ", alpha=" + alpha + ", beta=" + beta + ", gamma=" + gamma
        + (isFull ? "\nfractional to cartesian: " + matrixFractionalToCartesian 

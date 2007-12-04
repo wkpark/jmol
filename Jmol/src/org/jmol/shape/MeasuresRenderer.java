@@ -102,9 +102,9 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   private Point3i ptB = new Point3i();
 
   private int drawSegment(int x1, int y1, int z1, int x2, int y2, int z2) {
+    ptA.set(x1, y1, z1);
+    ptB.set(x2, y2, z2);
     if (measurementMad < 0) {
-      ptA.set(x1, y1, z1);
-      ptB.set(x2, y2, z2);
       g3d.drawDashedLine(4, 2, ptA, ptB);
       return 1;
     }

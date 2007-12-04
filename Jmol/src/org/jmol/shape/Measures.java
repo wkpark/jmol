@@ -40,23 +40,22 @@ import java.util.Hashtable;
 
 public class Measures extends Shape {
 
-  BitSet bsColixSet;
-  BitSet bsSelected;
+  private final static int measurementGrowthIncrement = 16;
 
-  final static int measurementGrowthIncrement = 16;
+  private BitSet bsColixSet;
+  private BitSet bsSelected;
+  private String strFormat;
+  private boolean isAllConnected = false;
+  private float[] rangeMinMax = {Float.MAX_VALUE, Float.MAX_VALUE};
+
   int measurementCount = 0;
   Measurement[] measurements = new Measurement[measurementGrowthIncrement];
   MeasurementPending pendingMeasurement;
   short mad = (short)-1;
   short colix; // default to none in order to contrast with background
-  String strFormat;
-  boolean showMeasurementNumbers = true;
-  boolean isAllConnected = false;
   
   Font3D font3d;
-  float[] rangeMinMax = {Float.MAX_VALUE, Float.MAX_VALUE};
   
-
   protected void initModelSet() {
     pendingMeasurement = new MeasurementPending(modelSet);
     for (int i = 0; i < measurements.length; i++)
@@ -144,8 +143,6 @@ public class Measures extends Shape {
       font3d = (Font3D) value;
     } else if ("clear".equals(propertyName)) {
       clear();
-    } else if ("showMeasurementNumbers".equals(propertyName)) {
-      showMeasurementNumbers = ((Boolean) value).booleanValue();
     } else if ("reformatDistances".equals(propertyName)) {
       reformatDistances();
     }
@@ -462,8 +459,6 @@ public class Measures extends Shape {
     appendCmd(commands, "measures delete");
     for (int i = 0; i < measurementCount; i++)
       appendCmd(commands, getState(i));
-    if (!showMeasurementNumbers)
-      appendCmd(commands, "set measures off; # numbers off");
     appendCmd(commands, "set measures " + viewer.getMeasureDistanceUnits());
     appendCmd(commands, getFontCommand("measures", font3d));
     int n = 0;

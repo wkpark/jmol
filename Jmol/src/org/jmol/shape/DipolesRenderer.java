@@ -36,7 +36,7 @@ public class DipolesRenderer extends ShapeRenderer {
 
   protected void render() {
     Dipoles dipoles = (Dipoles) shape;
-    dipoleVectorScale = dipoles.dipoleVectorScale;
+    dipoleVectorScale = viewer.getDipoleScale();
     for (int i = dipoles.dipoleCount; --i >= 0;) {
       Dipole dipole = dipoles.dipoles[i];
       if (dipole.visibilityFlags != 0 && transform(dipole))

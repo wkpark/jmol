@@ -126,6 +126,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private SelectionManager selectionManager;
   private StateManager stateManager;
   private StateManager.GlobalSettings global;
+  StateManager.GlobalSettings getGlobalSettings() {
+    return global;
+  }
+  
   private StatusManager statusManager;
   private TempArray tempManager;
   private TransformManager transformManager;
@@ -390,10 +394,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // ///////////////////////////////////////////////////////////////
 
   void initialize() {
-    resetAllParameters();
-  }
-
-  void resetAllParameters() {
     global = stateManager.getGlobalSettings();
     setIntProperty("_version", getJmolVersionInt(), true);
     colorManager.resetElementColors();
@@ -731,7 +731,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void setZoomEnabled(boolean zoomEnabled) {
-    global.setParameterValue("zoomEnabled", zoomEnabled);
     transformManager.setZoomEnabled(zoomEnabled);
     refresh(1, "Viewer:setZoomEnabled()");
   }
@@ -1109,16 +1108,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public short getObjectMad(int objId) {
     return (global.objStateOn[objId] ? global.objMad[objId] : 0);
   }
-
-  /*
-   private void setRgbs(int rgorb, String color) {
-   colorManager.setRgb(rgorb, Graphics3D.getArgbFromString(color));
-   }
-   
-   int getRgb(int rgorb) {
-   return colorManager.getRgb(rgorb);
-   }  
-   */
 
   public void setPropertyColorScheme(String scheme, boolean isOverloaded) {
     global.propertyColorScheme = scheme;
@@ -1782,12 +1771,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.clear();
     pickingManager.clear();
     selectionManager.clear();
-    global.setParameterValue("hideNotSelected", false);
     clearAllMeasurements();
     modelSet = modelManager.clear();
     mouseManager.clear();
     statusManager.clear();
-    StateManager.clear(global);
+    stateManager.clear();
+    global.clear();
     tempManager.clear();
     //setRefreshing(true);
     refresh(0, "Viewer:clear()");
@@ -3138,6 +3127,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return scriptManager.addScript(strScript, false, isQuiet);
   }
 
+  private void setScriptQueue(boolean value) {
+    scriptManager.setQueue(value);
+  }
+
   boolean usingScriptQueue() {
     return scriptManager.useQueue;
   }
@@ -3421,7 +3414,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
   }
 
-  void setAtomHoverLabel(String text) {
+  private void setAtomHoverLabel(String text) {
     setShapeProperty(JmolConstants.SHAPE_HOVER, "atomLabel", text);
   }
 
@@ -3596,6 +3589,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (pickingMode < 0)
       pickingMode = JmolConstants.PICKING_IDENT;
     pickingManager.setPickingMode(pickingMode);
+    global.setParameterValue("picking", 
+        JmolConstants.getPickingModeName(pickingManager.getPickingMode()));
   }
 
   public int getPickingMode() {
@@ -3615,6 +3610,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (pickingStyle < 0)
       pickingStyle = JmolConstants.PICKINGSTYLE_SELECT_JMOL;
     pickingManager.setPickingStyle(pickingStyle);
+    global.setParameterValue("pickingStyle", 
+        JmolConstants.getPickingStyleName(pickingManager.getPickingStyleMode()));
   }
 
   void setDrawHover(boolean TF) {
@@ -3790,7 +3787,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void setScriptDelay(int nSec) {
-    global.scriptDelay = nSec;
+    global.scriptDelay = nSec;    
   }
 
   int getScriptDelay() {
@@ -3945,7 +3942,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
       if (key.equalsIgnoreCase("hoverLabel")) {
         setAtomHoverLabel(value);
-        return;
+        break;
       }
       ///11.0///
       if (key.equalsIgnoreCase("defaultDistanceLabel")) {
@@ -3986,11 +3983,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       if (key.equalsIgnoreCase("picking")) {
         setPickingMode(value);
-        break;
+        return;
       }
       if (key.equalsIgnoreCase("pickingStyle")) {
         setPickingStyle(value);
-        break;
+        return;
       }
       if (key.equalsIgnoreCase("dataSeparator")) {
         //just saving this
@@ -4007,8 +4004,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean isJmol = global.htParameterValues.containsKey(key);
     if (!isJmol && notFound && key.charAt(0) != '@') {
       //not found -- @ is a silent mode indicator
-        if (global.htPropertyFlags.containsKey(key)) {
-          scriptError(GT._("ERROR: cannot set boolean flag to string value"));
+        if (global.htPropertyFlags.containsKey(key) || global.htPropertyFlagsRemoved.containsKey(key)) {
+          scriptError(GT._("ERROR: cannot set boolean flag to string value: {0}", key));
           return;
         }
         //Logger.warn(key + " -- string variable defined (" + value.length()
@@ -4158,7 +4155,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean isJmol = global.htParameterValues.containsKey(key);
     if (!isJmol && notFound) {
         if (global.htPropertyFlags.containsKey(key)) {
-          scriptError(GT._("ERROR: cannot set boolean flag to numeric value"));
+          scriptError(GT._("ERROR: cannot set boolean flag to numeric value: {0}", key));
           return true;
         }
         //Logger.warn("viewer.setFloatProperty(" + key + "," + value
@@ -4297,7 +4294,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean isJmol = global.htParameterValues.containsKey(key);
     if (!isJmol && notFound) {
       if (global.htPropertyFlags.containsKey(key)) {
-        scriptError("ERROR: cannot set boolean flag to numeric value");
+        scriptError(GT._("ERROR: cannot set boolean flag to numeric value: {0}", key));
         return;
       }
       //Logger.info("viewer.setIntProperty(" + key + "," + value
@@ -4512,7 +4509,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       }
       if (key.equalsIgnoreCase("scriptQueue")) {
-        scriptManager.setQueue(value);
+        setScriptQueue(value);
         break;
       }
       if (key.equalsIgnoreCase("dotSurface")) {
@@ -4583,17 +4580,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         setGreyscaleRendering(value);
         break;
       }
+      if (key.equalsIgnoreCase("measurementLabels")) {
+        setShowMeasurementLabels(value);
+        break;
+      }
+      
+      // these next three remove parameters, so don't set htParameter key here
+      
       if (key.equalsIgnoreCase("axesWindow")) {
         setAxesModeMolecular(!value);
-        break;
+        return true;
       }
       if (key.equalsIgnoreCase("axesMolecular")) {
         setAxesModeMolecular(value);
-        break;
+        return true;
       }
       if (key.equalsIgnoreCase("axesUnitCell")) {
         setAxesModeUnitCell(value);
-        break;
+        return true;
       }
       //public; no need to set here
       if (key.equalsIgnoreCase("axesOrientationRasmol")) {
@@ -4701,7 +4705,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!isJmol && notFound) {
       if (global.htParameterValues.containsKey(key)) {
         scriptError(
-            GT._("ERROR: Cannot set value of this variable to a boolean."));
+            GT._("ERROR: Cannot set value of this variable to a boolean: {0}", key));
         return true;
       }
     }
@@ -5340,6 +5344,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.showMeasurements;
   }
 
+  private void setShowMeasurementLabels(boolean TF) {
+    global.measurementLabels = TF;
+  }
+  
+  public boolean getShowMeasurementLabels() {
+    return global.measurementLabels;
+  }
+
   private void setMeasureAllModels(boolean TF) {
     global.measureAllModels = TF;
   }
@@ -5803,11 +5815,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setDipoleScale(float scale) {
     //Eval
-    loadShape(JmolConstants.SHAPE_DIPOLES);
-    setShapeProperty(JmolConstants.SHAPE_DIPOLES, "dipoleVectorScale",
-        new Float(scale));
+    global.dipoleScale = scale;
   }
 
+  public float getDipoleScale() {
+    return global.dipoleScale;
+  }
+  
   public void getAtomIdentityInfo(int atomIndex, Hashtable info) {
     modelSet.getAtomIdentityInfo(atomIndex, info);
   }

@@ -1697,8 +1697,9 @@ class Eval { //implements Runnable {
 
   private BitSet lookupValue(String variable, boolean plurals)
       throws ScriptException {
-    if (isSyntaxCheck)
+    if (isSyntaxCheck) {
       return new BitSet();
+    }
     //if (logMessages)
     //viewer.scriptStatus("lookupValue(" + variable + ")");
     Object value = variables.get(variable);
@@ -6430,11 +6431,6 @@ class Eval { //implements Runnable {
         setUserColors();
         return;
       }
-      if (key.equalsIgnoreCase("measurementNumbers")
-          || key.equalsIgnoreCase("measurementLabels")) {
-        setMonitor();
-        return;
-      }
       if (key.equalsIgnoreCase("defaultLattice")) {
         Point3f pt;
         Vector v = (Vector) parameterExpression(2, 0, "XXX", true);
@@ -6456,6 +6452,7 @@ class Eval { //implements Runnable {
       }
       
       // THESE CAN BE PART OF CALCULATIONS
+      
       
       if (key.equalsIgnoreCase("defaultDrawArrowScale")) {
         setFloatProperty(key, floatSetting(2));
@@ -6501,11 +6498,15 @@ class Eval { //implements Runnable {
 
       if (key.equalsIgnoreCase("showSelections")) {
         key = "selectionHalos";
+        break;
       }
-
+      if (key.equalsIgnoreCase("measurementNumbers")) {
+        key = "measurementLabels";
+        break;
+      }
     }
 
-    if (getContextVariableAsToken(key) != null || !setParameter(key, val, showing)) {
+    if (getContextVariableAsToken(key) != null || !setParameter(key, val, isJmolSet, showing)) {
       int tok2 = (tokAt(1) == Token.expressionBegin ? 0 : tokAt(2));
       setVariable((tok2 == Token.opEQ ? 3 : 2), 0, key, showing);
       if (!isJmolSet)
@@ -6637,7 +6638,7 @@ class Eval { //implements Runnable {
     }
   }
 
-  private boolean setParameter(String key, int intVal, boolean showing)
+  private boolean setParameter(String key, int intVal, boolean isJmolSet, boolean showing)
       throws ScriptException {
     String lcKey = key.toLowerCase();
     if (key.equalsIgnoreCase("scriptReportingLevel")) { //11.1.13
@@ -6666,6 +6667,10 @@ class Eval { //implements Runnable {
     if (key.equalsIgnoreCase("axesScale")) {
       float scale = floatSetting(2);
       setFloatProperty("axesScale", scale);
+      return true;
+    }
+    if (key.equalsIgnoreCase("measurementUnits")) {
+      setMeasurementUnits(stringSetting(2, isJmolSet));
       return true;
     }
     if (Parser.isOneOf(lcKey, "defaults;defaultcolorscheme")) {
@@ -6704,7 +6709,6 @@ class Eval { //implements Runnable {
       setIntProperty(key, intVal);
       return true;
     }
-    boolean isJmolSet = (parameterAsString(0).equals("set"));
     boolean isJmolParameter = viewer.isJmolVariable(key);
     if (isJmolSet && !isJmolParameter) {
       iToken = 1;
@@ -6723,10 +6727,8 @@ class Eval { //implements Runnable {
       if (theTok == Token.none) {
         if (!isSyntaxCheck)
           viewer.removeUserVariable(key);
-      } else if (theTok == Token.on || theTok == Token.off) {
-        setBooleanProperty(key, theTok == Token.on);
       } else if (isJmolSet && theTok == Token.identifier) {
-        setStringProperty(key, (String) theToken.value);
+//        setStringProperty(key, (String) theToken.value);
       } else {
         return false;
       }
@@ -7772,16 +7774,19 @@ class Eval { //implements Runnable {
           showMeasurementNumbers ? Boolean.TRUE : Boolean.FALSE);
       return;
     case Token.identifier:
-      String units = parameterAsString(2);
-      if (!StateManager.isMeasurementUnit(units))
-        unrecognizedParameter("MEASURE ", units);
-      if (!isSyntaxCheck)
-        viewer.setMeasureDistanceUnits(units);
+      setMeasurementUnits(parameterAsString(2));
       return;
     }
     setShapeSize(JmolConstants.SHAPE_MEASURES, getSetAxesTypeMad(2));
   }
 
+  private void setMeasurementUnits(String units) throws ScriptException {
+    if (!StateManager.isMeasurementUnit(units))
+      unrecognizedParameter("set measurementUnits ", units);
+    if (!isSyntaxCheck)
+      viewer.setMeasureDistanceUnits(units);
+  }
+  
   private void setProperty() throws ScriptException {
     //what possible good is this? 
     //set property foo bar  is identical to
@@ -7864,6 +7869,10 @@ class Eval { //implements Runnable {
       setStringProperty("picking", "ident");
       return;
     }
+    if (statementLength > 4 || tokAt(2) == Token.string) {
+        setStringProperty("picking", stringSetting(2, false));
+        return;
+    }
     int i = 2;
     String type = "SELECT";
     switch (getToken(2).tok) {
@@ -7904,6 +7913,10 @@ class Eval { //implements Runnable {
   }
 
   private void setPickingStyle() throws ScriptException {
+    if (statementLength > 4 || tokAt(2) == Token.string) {
+      setStringProperty("pickingStyle", stringSetting(2, false));
+      return;
+    }
     int i = 2;
     boolean isMeasure = false;
     String type = "SELECT";
@@ -7911,6 +7924,7 @@ class Eval { //implements Runnable {
     case Token.monitor:
       isMeasure = true;
       type = "MEASURE";
+      //fall through
     case Token.select:
       checkLength34();
       if (statementLength == 4)
@@ -8421,7 +8435,7 @@ class Eval { //implements Runnable {
       break;
     case Token.display://deprecated
     case Token.selectionHalo:
-      msg = "selectionHalos " + viewer.getSelectionHaloEnabled();
+      msg = "selectionHalos " + (viewer.getSelectionHaloEnabled() ? "ON" : "OFF");
       break;
     case Token.hetero:
       msg = "set selectHetero " + viewer.getRasmolHeteroSetting();

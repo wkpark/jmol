@@ -277,6 +277,10 @@ class TransformManager11 extends TransformManager {
       return;
     slabValue = (int) (referencePlaneOffset - navigationSlabOffset);
     depthValue = (int) ((1 - depthPercentSetting / 50f) * modelRadiusPixels + modelCenterOffset);
+    
+    viewer.getGlobalSettings().setParameterValue("navigationDepth",getNavigationDepthPercent());
+    viewer.getGlobalSettings().setParameterValue("navigationSlab",getNavigationSlabOffsetPercent());
+
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
       Logger.debug("\n" + "\nperspectiveScale: " + referencePlaneOffset
           + " screenPixelCount: " + screenPixelCount 
@@ -709,6 +713,7 @@ class TransformManager11 extends TransformManager {
   }
   
   void setNavigationSlabOffsetPercent(float percent) {
+    viewer.getGlobalSettings().setParameterValue("navigationSlab", percent);
     calcCameraFactors(); //current
     navigationSlabOffset = percent / 50 * modelRadiusPixels;
   }
@@ -727,6 +732,7 @@ class TransformManager11 extends TransformManager {
     // navigation depth 0 # place user at rear plane of the model
     // navigation depth 100 # place user at front plane of the model
 
+    viewer.getGlobalSettings().setParameterValue("navigationDepth", percent);
     calcCameraFactors(); //current
     modelCenterOffset = referencePlaneOffset - (1 - percent / 50) * modelRadiusPixels;
     calcCameraFactors(); //updated

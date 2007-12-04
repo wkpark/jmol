@@ -217,7 +217,10 @@ class PickingManager {
     queuedAtomCount = 0;
   }
 
+  int pickingStyle;
+  
   void setPickingStyle(int pickingStyle) {
+    this.pickingStyle = pickingStyle;
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug(
           " setPickingStyle " + pickingStyle+": " +
@@ -231,6 +234,10 @@ class PickingManager {
     }
   }
   
+  int getPickingStyleMode() {
+    return pickingStyle;
+  }
+
   void setDrawHover(boolean TF) {
     drawHover = TF;
   }

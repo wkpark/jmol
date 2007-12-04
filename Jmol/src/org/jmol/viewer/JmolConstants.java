@@ -224,7 +224,7 @@ final public class JmolConstants {
 
   public final static String getPickingStyleName(int pickingStyle) {
     return (pickingStyle < 0 || pickingStyle >= pickingStyleNames.length ? "toggle"
-        : pickingModeNames[pickingStyle]);
+        : pickingStyleNames[pickingStyle]);
   }
   
   public final static int getPickingStyle(String str) {

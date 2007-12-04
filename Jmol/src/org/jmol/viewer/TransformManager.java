@@ -688,6 +688,7 @@ abstract class TransformManager {
 
   void setSlabEnabled(boolean slabEnabled) {
     this.slabEnabled = slabEnabled;
+    viewer.getGlobalSettings().setParameterValue("slabEnabled", slabEnabled);
   }
 
   void slabReset() {
@@ -2126,8 +2127,10 @@ abstract class TransformManager {
   }
 
   float setRotationRadius(float angstroms) {
-    return (modelRadius = (angstroms <= 0 ? viewer
+    float r = (modelRadius = (angstroms <= 0 ? viewer
         .calcRotationRadius(fixedRotationCenter) : angstroms));
+    viewer.getGlobalSettings().setParameterValue("rotationRadius", r);
+    return r;
   }
   
   private void setRotationCenterAndRadiusXYZ(Point3f newCenterOfRotation,
@@ -2297,6 +2300,7 @@ abstract class TransformManager {
    * @param percent
    */
   void setNavigationDepthPercent(float timeSec, float percent) {
+    viewer.getGlobalSettings().setParameterValue("navigationDepth", percent);
   }
 
   Point3f getNavigationCenter() {
@@ -2316,6 +2320,7 @@ abstract class TransformManager {
   }
   
   void setNavigationSlabOffsetPercent(float offset) {
+    viewer.getGlobalSettings().setParameterValue("navigationSlab", offset);
   }
   
   String getNavigationText(boolean addComments) {

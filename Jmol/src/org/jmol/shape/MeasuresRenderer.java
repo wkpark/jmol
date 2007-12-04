@@ -36,11 +36,11 @@ import javax.vecmath.AxisAngle4f;
 
 public class MeasuresRenderer extends FontLineShapeRenderer {
 
-  boolean showMeasurementNumbers;
-  short measurementMad;
-  Font3D font3d;
-  Measurement measurement;
-  boolean doJustify;
+  private boolean showMeasurementLabels;
+  private short measurementMad;
+  private Font3D font3d;
+  private Measurement measurement;
+  private boolean doJustify;
   protected void render() {
     if (!viewer.getShowMeasurements() || !g3d.checkTranslucent(false))
       return;
@@ -49,7 +49,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     doJustify = viewer.getJustifyMeasurements();
     measurementMad = measures.mad;
     font3d = measures.font3d;
-    showMeasurementNumbers = measures.showMeasurementNumbers;
+    showMeasurementLabels = viewer.getShowMeasurementLabels();
     measures.setVisibilityInfo();
     boolean dynamicMeasurements = viewer.getDynamicMeasurements();
     for (int i = measures.measurementCount; --i >= 0;) {
@@ -69,35 +69,43 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     renderPendingMeasurement(measures.pendingMeasurement);
   }
 
-  void renderMeasurement(Measurement measurement) {
+  private void renderMeasurement(Measurement measurement) {
     renderMeasurement(measurement.getCount(), measurement, true); 
   }
 
-  void renderMeasurement(int count, Measurement measurement, boolean renderArcs) {
+  private void renderMeasurement(int count, Measurement measurement, boolean renderArcs) {
     this.measurement = measurement;
     switch(count) {
     case 2:
-      renderDistance();
+      renderDistance(modelSet.getAtomAt(measurement.getIndex(1)),
+          modelSet.getAtomAt(measurement.getIndex(2)));
       break;
     case 3:
-      renderAngle(renderArcs);
+      renderAngle(modelSet.getAtomAt(measurement.getIndex(1)),
+          modelSet.getAtomAt(measurement.getIndex(2)),
+          modelSet.getAtomAt(measurement.getIndex(3)),
+          renderArcs);
       break;
     case 4:
-      renderTorsion(renderArcs);
+      renderTorsion(modelSet.getAtomAt(measurement.getIndex(1)),
+          modelSet.getAtomAt(measurement.getIndex(2)),
+          modelSet.getAtomAt(measurement.getIndex(3)),
+          modelSet.getAtomAt(measurement.getIndex(4)),
+          renderArcs);
       break;
     default:
       throw new NullPointerException();
     }
   }
 
-  Point3i ptA = new Point3i();
-  Point3i ptB = new Point3i();
+  private Point3i ptA = new Point3i();
+  private Point3i ptB = new Point3i();
 
-  int drawSegment(int x1, int y1, int z1, int x2, int y2, int z2) {
+  private int drawSegment(int x1, int y1, int z1, int x2, int y2, int z2) {
     if (measurementMad < 0) {
       ptA.set(x1, y1, z1);
       ptB.set(x2, y2, z2);
-      drawDashedLine(4, 2, ptA, ptB);
+      g3d.drawDashedLine(4, 2, ptA, ptB);
       return 1;
     }
     int widthPixels = measurementMad;
@@ -106,12 +114,6 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, widthPixels, ptA, ptB);
 
     return (widthPixels + 1) / 2;
-  }
-
-  void renderDistance() {
-    
-    renderDistance(modelSet.getAtomAt(measurement.getIndex(1)),
-                   modelSet.getAtomAt(measurement.getIndex(2)));
   }
 
   void renderDistance(Atom atomA, Atom atomB) {
@@ -128,18 +130,11 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   }
                            
 
-  AxisAngle4f aaT = new AxisAngle4f();
-  Matrix3f matrixT = new Matrix3f();
-  Point3f pointT = new Point3f();
+  private AxisAngle4f aaT = new AxisAngle4f();
+  private Matrix3f matrixT = new Matrix3f();
+  private Point3f pointT = new Point3f();
 
-  void renderAngle(boolean renderArcs) {
-    renderAngle(modelSet.getAtomAt(measurement.getIndex(1)),
-                modelSet.getAtomAt(measurement.getIndex(2)),
-                modelSet.getAtomAt(measurement.getIndex(3)),
-                renderArcs);
-  }
-
-  void renderAngle(Atom atomA, Atom atomB, Atom atomC,
+  private void renderAngle(Atom atomA, Atom atomB, Atom atomC,
                    boolean renderArcs) {
     int zA = atomA.screenZ - atomA.screenDiameter - 10;
     int zB = atomB.screenZ - atomB.screenDiameter - 10;
@@ -180,7 +175,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       Point3i screenArc = viewer.transformPoint(pointT);
       int zArc = screenArc.z - zOffset;
       if (zArc < 0) zArc = 0;
-      drawPixel(screenArc.x, screenArc.y, zArc);
+      g3d.drawPixel(screenArc.x, screenArc.y, zArc);
       if (i == iMid) {
         pointT.set(ptArc);
         pointT.scale(1.1f);
@@ -194,15 +189,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     }
   }
 
-  void renderTorsion(boolean renderArcs) {
-    renderTorsion(modelSet.getAtomAt(measurement.getIndex(1)),
-                  modelSet.getAtomAt(measurement.getIndex(2)),
-                  modelSet.getAtomAt(measurement.getIndex(3)),
-                  modelSet.getAtomAt(measurement.getIndex(4)),
-                  renderArcs);
-  }
-
-  void renderTorsion(Atom atomA, Atom atomB, Atom atomC, Atom atomD,
+  private void renderTorsion(Atom atomA, Atom atomB, Atom atomC, Atom atomD,
                      boolean renderArcs) {
     int zA = atomA.screenZ - atomA.screenDiameter - 10;
     int zB = atomB.screenZ - atomB.screenDiameter - 10;
@@ -217,9 +204,9 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
                            (zA + zB + zC + zD) / 4, radius, false, 0);
   }
 
-  void paintMeasurementString(int x, int y, int z, int radius,
+  private void paintMeasurementString(int x, int y, int z, int radius,
                               boolean rightJustify, int yRef) {
-    if (!showMeasurementNumbers)
+    if (!showMeasurementLabels)
       return;
     if (!doJustify) {
       rightJustify = false;
@@ -246,7 +233,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     g3d.drawString(strMeasurement, font3d, xT, yT, zT, zT);
   }
 
-  void renderPendingMeasurement(MeasurementPending pendingMeasurement) {
+  private void renderPendingMeasurement(MeasurementPending pendingMeasurement) {
     if (isGenerator)
       return;
     int count = pendingMeasurement.getCount();
@@ -259,7 +246,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       renderMeasurement(pendingMeasurement);
   }
   
-  public void renderPendingWithCursor(MeasurementPending pendingMeasurement) {
+  private void renderPendingWithCursor(MeasurementPending pendingMeasurement) {
     int count = pendingMeasurement.getCount();
     if (count < 2)
       return;
@@ -274,14 +261,5 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       y <<= 1;
     }
     drawSegment(atomLast.screenX, atomLast.screenY, lastZ, x, y, 0);
-  }
-  
-  protected void drawPixel(int x, int y, int z) {
-    g3d.drawPixel(x, y, z);
-  }
-
-  protected void drawDashedLine(int run, int rise, Point3i ptA, Point3i ptB) {
-    g3d.drawDashedLine(run, rise, ptA, ptB);
-  }
-
+  }  
 }

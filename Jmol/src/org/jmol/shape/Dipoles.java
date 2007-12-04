@@ -46,7 +46,6 @@ public class Dipoles extends Shape {
   final static short DEFAULT_MAD = 5;
   final static float DEFAULT_OFFSETSIDE = 0.40f;
 
-  float dipoleVectorScale = 1.0f;
   int dipoleCount = 0;
   Dipole[] dipoles = new Dipole[4];
 
@@ -120,11 +119,6 @@ public class Dipoles extends Shape {
         tempDipole.thisID = "molecular";
         setDipole();
       }
-      return;
-    }
-
-    if ("dipoleVectorScale" == propertyName) {
-      dipoleVectorScale = ((Float) value).floatValue();
       return;
     }
 
@@ -556,7 +550,6 @@ public class Dipoles extends Shape {
         appendCmd(s, getColorCommand("dipole", dipole.colix));
       }
     }
-    appendCmd(s, "set dipoleScale " + dipoleVectorScale);
     return s.toString();
   }
 }

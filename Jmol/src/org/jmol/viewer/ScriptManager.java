@@ -32,7 +32,7 @@ class ScriptManager {
   Viewer viewer;
   Thread queueThread;
   Vector scriptQueue = new Vector();
-  boolean useQueue = true; // new default
+  boolean useQueue = true;
   
   ScriptManager(Viewer viewer) {
     this.viewer = viewer;

@@ -1,7 +1,5 @@
 /*load cyclohexane_movie.xyz;pts = {C5}.split();print pts;draw @{pts.xyz.sub({1 0 0})} "X"*/
 
-quit
-
 defaultdirectory="c:/jmol-dev/workspace/jmol-documentation/script_documentation/examples-11/data"
 message 2
 #set showscript  # for slow operation

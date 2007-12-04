@@ -166,7 +166,12 @@ public final class Model {
       bioPolymers[i].setConformation(bsConformation, nAltLocs);
   }
 
-  int getChainCount() {
+  public Chain[] getChains() {
+    // you will also need getChainCount();
+    return chains;
+  }
+
+  public int getChainCount() {
     return chainCount;
   }
 

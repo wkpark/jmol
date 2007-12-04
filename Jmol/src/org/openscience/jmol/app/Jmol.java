@@ -510,7 +510,7 @@ public class Jmol extends JPanel {
 
     OptionBuilder.withLongOpt("quality");
     // OptionBuilder.withDescription(GT._("overall window width x height, e.g. {0}", "-g512x616"));
-    OptionBuilder.withDescription(GT._("JPG image quality (1-100; default 75) or PNG image compression (0-9; default 2, maximum compression 9"));
+    OptionBuilder.withDescription(GT._("JPG image quality (1-100; default 75) or PNG image compression (0-9; default 2, maximum compression 9)"));
     OptionBuilder.withValueSeparator();
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("q"));

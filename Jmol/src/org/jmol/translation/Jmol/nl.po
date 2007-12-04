@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-10-24 06:47+0200\n"
-"PO-Revision-Date: 2007-06-03 21:26+0100\n"
+"PO-Revision-Date: 2007-12-04 06:44+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -194,24 +194,20 @@ msgid "&Export"
 msgstr "&Exporteren"
 
 #: org/openscience/jmol/app/GuiMap.java:53
-#, fuzzy
 msgid "Export &Image or Script..."
-msgstr "Exporteer Figuur of Script..."
+msgstr "Exporteer F&iguur of Script..."
 
 #: org/openscience/jmol/app/GuiMap.java:54
-#, fuzzy
 msgid "Export to &Web Page..."
-msgstr "PDF exporteren..."
+msgstr "Exporteren naar &webpagina..."
 
 #: org/openscience/jmol/app/GuiMap.java:55
-#, fuzzy
 msgid "Render in POV-&Ray..."
-msgstr "Render in POV-Ray"
+msgstr "Weergeven in POV-&Ray"
 
 #: org/openscience/jmol/app/GuiMap.java:56
-#, fuzzy
 msgid "Export &PDF..."
-msgstr "PDF exporteren..."
+msgstr "&PDF exporteren..."
 
 #: org/openscience/jmol/app/GuiMap.java:57
 msgid "&Print..."
@@ -610,7 +606,7 @@ msgstr "Exporteer de weergave of een script naar bestand."
 
 #: org/openscience/jmol/app/GuiMap.java:174
 msgid "Export one or more views to a web page."
-msgstr ""
+msgstr "Exporteer een of meer scènes naar een webpagina."
 
 #: org/openscience/jmol/app/GuiMap.java:175
 msgid "Render in pov-ray."
@@ -896,10 +892,8 @@ msgid "window width x height, e.g. {0}"
 msgstr "windowhoogte, bv. {0}"
 
 #: org/openscience/jmol/app/Jmol.java:513
-msgid ""
-"JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
-"2, maximum compression 9"
-msgstr ""
+msgid "JPG image quality (1-100; default 75) or PNG image compression (0-9; default 2, maximum compression 9"
+msgstr "JPEG-kwaliteit (1-100; normaal 75) of PNG-compressie (0-9; normaal 2; maximale compressie 9)"
 
 #: org/openscience/jmol/app/Jmol.java:519
 #, java-format
@@ -972,17 +966,12 @@ msgid "Jmol-to-POV-Ray Conversion"
 msgstr "Jmol-naar-POV-Ray conversie"
 
 #: org/openscience/jmol/app/PovrayDialog.java:155
-#, fuzzy
 msgid "Filename"
-msgstr "Bestandsnaam:"
+msgstr "Bestandsnaam"
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
-#, fuzzy
-msgid ""
-"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
-msgstr ""
-"Enkel frame: bv. 'caffeine' => 'caffeine.pov'; meerdere frames: bv. "
-"'caffeine' => 'caffeine_1.pov', 'caffeine_2.pov'"
+msgid "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
+msgstr "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:167
 msgid "Working Directory"
@@ -1001,7 +990,6 @@ msgid "Run POV-Ray directly"
 msgstr "Start POV-Ray direct"
 
 #: org/openscience/jmol/app/PovrayDialog.java:196
-#, fuzzy
 msgid "Launch POV-Ray from within Jmol"
 msgstr "Start POR-Ray vanuit Jmol"
 
@@ -1226,45 +1214,32 @@ msgstr "Wat is nieuw in Jmol"
 
 #~ msgid "Image size"
 #~ msgstr "Figuurgrootte"
-
 #~ msgid "Output format : "
 #~ msgstr "Uitvoerformaat:"
-
 #~ msgid "Select the file format of the output file"
 #~ msgstr "Selecteer het bestandsformaat van het uitvoerbestand"
-
 #~ msgid "Command Line to Execute"
 #~ msgstr "Commando om uit te voeren"
-
 #~ msgid "The actual command which will be executed"
 #~ msgstr "Het echte commando dat uitgevoerd wordt"
-
 #~ msgid "null component string"
 #~ msgstr "lege-component-tekst"
-
 #~ msgid "Filename Stem"
 #~ msgstr "Begin Bestandsnaam"
-
 #~ msgid "Use .ini file"
 #~ msgstr "Gebruik .ini-bestand"
-
 #~ msgid "Save options in a .ini file"
 #~ msgstr "Bewaar de opties in een .ini-bestand"
-
 #~ msgid "Render all frames"
 #~ msgstr "Render alle frames"
-
 #~ msgid "Render each model (not only the currently displayed one)"
 #~ msgstr "Render elk model (en niet alleen het huidige model)"
-
 #~ msgid "Turn on POV-Ray anti-aliasing"
 #~ msgstr "Zet POV-Ray antialiasing aan"
-
 #~ msgid "Use povray's slower but higher quality anti-aliasing mode"
 #~ msgstr "Gebruik povray's langzamere antialiasing aan voor hogere kwaliteit"
-
 #~ msgid "Render in pov-ray..."
 #~ msgstr "Renderen in pov-ray..."
-
 #~ msgid "File not loaded"
 #~ msgstr "Bestand niet geladen"
+

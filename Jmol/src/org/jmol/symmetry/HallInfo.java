@@ -80,8 +80,8 @@ public class HallInfo {
       while (str.length() > 0 && nRotations < 16) {
         str = extractRotationInfo(str, prevOrder, prevAxisType);
         RotationTerm r = rotationTerms[nRotations - 1];
-        //prevOrder = r.order;
-        //prevAxisType = r.axisType;
+        prevOrder = r.order;
+        prevAxisType = r.axisType;
         primitiveHallSymbol += " " + r.primitiveCode;
       }
       primitiveHallSymbol += vectorCode;
@@ -188,9 +188,6 @@ public class HallInfo {
     int order;
     char axisType;
     char diagonalReferenceAxis;
-    //int prevOrder;
-    //char prevAxisType;
-
     
     RotationTerm(String code, int prevOrder, char prevAxisType) {
       getRotationInfo(code, prevOrder, prevAxisType);
@@ -223,8 +220,6 @@ public class HallInfo {
    
     private void getRotationInfo(String code, int prevOrder, char prevAxisType) {
       this.inputCode = code;
-      //this.prevOrder = prevOrder;
-      //this.prevAxisType = prevAxisType;
       code += "   ";
       if (code.charAt(0) == '-') {
         isImproper = true;

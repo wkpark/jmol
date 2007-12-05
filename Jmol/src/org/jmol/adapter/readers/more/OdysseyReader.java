@@ -80,14 +80,9 @@ public class OdysseyReader extends AtomSetCollectionReader {
       String[] tokens = getTokens();
       int elementNumber = parseInt(tokens[0]);      
       String elementSymbol = getElementSymbol(elementNumber);
-      float x = parseFloat(tokens[1]);
-      float y = parseFloat(tokens[2]);
-      float z = parseFloat(tokens[3]);
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = elementSymbol;
-      atom.x = x;
-      atom.y = y;
-      atom.z = z;
+      atom.set(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
       atomCount++;
     }
   }

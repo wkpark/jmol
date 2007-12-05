@@ -91,15 +91,10 @@ public class SpartanReader extends AtomSetCollectionReader {
         && (/*atomNum = */parseInt(line, 0, 3)) > 0) {
       String elementSymbol = parseToken(line, 4, 6);
       String atomName = parseToken(line, 7, 13);
-      float x = parseFloat(line, 17, 30);
-      float y = parseFloat(line, 31, 44);
-      float z = parseFloat(line, 45, 58);
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;
-      atom.x = x;
-      atom.y = y;
-      atom.z = z;
+      atom.set(parseFloat(line, 17, 30), parseFloat(line, 31, 44), parseFloat(line, 45, 58));
     }
   }
 

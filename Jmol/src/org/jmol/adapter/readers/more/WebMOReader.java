@@ -132,9 +132,8 @@ public class WebMOReader extends MopacDataReader {
         } else {
           atom.elementSymbol = tokens[0];
         }
-        atom.x = parseFloat(tokens[1]) * ANGSTROMS_PER_BOHR;
-        atom.y = parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR;
-        atom.z = parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR;
+        atom.set(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
+        atom.scale(ANGSTROMS_PER_BOHR);
       }
       readLine();
     }

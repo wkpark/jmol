@@ -390,9 +390,7 @@ public abstract class AtomSetCollectionReader {
   }
 
   public void setAtomCoord(Atom atom, float x, float y, float z) {
-    atom.x = x;
-    atom.y = y;
-    atom.z = z;
+    atom.set(x, y, z);
     setAtomCoord(atom);
   }
 

@@ -90,7 +90,7 @@ public class JmeReader extends AtomSetCollectionReader {
       float z = 0;
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = elementSymbol;
-      atom.x = x; atom.y = y; atom.z = z;
+      atom.set(x, y, z);
     }
   }
 

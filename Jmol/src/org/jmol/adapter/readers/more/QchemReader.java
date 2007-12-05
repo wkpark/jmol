@@ -103,9 +103,7 @@ public class QchemReader extends AtomSetCollectionReader {
         continue;
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = symbol;
-      atom.x = x;
-      atom.y = y;
-      atom.z = z;
+      atom.set(x, y, z);
       ++atomCount;
     }
   }

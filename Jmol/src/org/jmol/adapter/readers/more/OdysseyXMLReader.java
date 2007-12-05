@@ -92,9 +92,7 @@ public class OdysseyXMLReader extends AtomSetCollectionReader {
       atom.atomName = (String) xml.get("id");
       atom.elementSymbol = (String) xml.get("element");
       String[] tokens = getTokens((String) xml.get("xyz"));
-      atom.x = parseFloat(tokens[0]);
-      atom.y = parseFloat(tokens[1]);
-      atom.z = parseFloat(tokens[2]);
+      atom.set(parseFloat(tokens[0]), parseFloat(tokens[1]), parseFloat(tokens[2]));
       atomSetCollection.addAtomWithMappedName(atom);
       atom.atomName = (String) xml.get("label");
       atomCount++;

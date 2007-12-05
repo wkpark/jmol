@@ -47,12 +47,6 @@ import java.io.BufferedReader;
 public class NWChemReader extends AtomSetCollectionReader {
 
   /**
-   * Conversion factor from atomic units to Angstrom based on the NWChem
-   * reported conversion value.
-   */
-  private final static float AU2ANGSTROM = (float) (1.0/1.889725989);  
-    
-  /**
    * The number of the task begin interpreted.
    * <p>Used for the construction of the 'path' for the atom set.
    */
@@ -232,9 +226,7 @@ public class NWChemReader extends AtomSetCollectionReader {
       if (tokens.length < 6) break; // if don't have enough of them: done
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[1]);
-      atom.x = parseFloat(tokens[3]);
-      atom.y = parseFloat(tokens[4]);
-      atom.z = parseFloat(tokens[5]);
+      atom.set(parseFloat(tokens[3]), parseFloat(tokens[4]), parseFloat(tokens[5]));
     }
     // only if was converged, use the last energy for the name and properties
     if (converged) {
@@ -282,9 +274,8 @@ public class NWChemReader extends AtomSetCollectionReader {
       if (tokens.length < 8) break; // make sure I have enough tokens
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[1]);
-      atom.x = parseFloat(tokens[2])*AU2ANGSTROM;
-      atom.y = parseFloat(tokens[3])*AU2ANGSTROM;
-      atom.z = parseFloat(tokens[4])*AU2ANGSTROM;
+      atom.set(parseFloat(tokens[2]), parseFloat(tokens[3]), parseFloat(tokens[4]));
+      atom.scale(ANGSTROMS_PER_BOHR);
       // Keep gradients in a.u. (larger value that way)
       // need to multiply with -1 so the direction is in the direction the
       // atom needs to move to lower the energy
@@ -402,9 +393,8 @@ public class NWChemReader extends AtomSetCollectionReader {
       tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[0]);
-      atom.x = parseFloat(tokens[2]) * AU2ANGSTROM;
-      atom.y = parseFloat(tokens[3]) * AU2ANGSTROM;
-      atom.z = parseFloat(tokens[4]) * AU2ANGSTROM;
+      atom.set(parseFloat(tokens[2]), parseFloat(tokens[3]), parseFloat(tokens[4]));
+      atom.scale(ANGSTROMS_PER_BOHR);
     }
 
     // the first atomsetindex for the frequencies needed to add properties later

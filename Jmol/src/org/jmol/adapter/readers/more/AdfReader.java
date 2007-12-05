@@ -120,9 +120,8 @@ public class AdfReader extends AtomSetCollectionReader {
         continue;
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = symbol;
-      atom.x = parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR;
-      atom.y = parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR;
-      atom.z = parseFloat(tokens[4]) * ANGSTROMS_PER_BOHR;
+      atom.set(parseFloat(tokens[2]), parseFloat(tokens[3]), parseFloat(tokens[4]));
+      atom.scale(ANGSTROMS_PER_BOHR);
     }
   }
 

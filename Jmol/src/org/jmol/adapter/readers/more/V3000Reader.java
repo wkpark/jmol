@@ -95,9 +95,7 @@ public class V3000Reader extends AtomSetCollectionReader {
       String[] tokens = getTokens();
       atom.atomSerial = parseInt(tokens[2]);
       atom.elementSymbol = tokens[3];
-      atom.x = parseFloat(tokens[4]);
-      atom.y = parseFloat(tokens[5]);
-      atom.z = parseFloat(tokens[6]);
+      atom.set(parseFloat(tokens[4]), parseFloat(tokens[5]), parseFloat(tokens[6]));
       parseInt(); // discard aamap
       while (true) {
         String option = parseToken();

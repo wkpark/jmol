@@ -559,6 +559,29 @@ public class AtomSetCollection {
       applyAllSymmetry(maxX, maxY, maxZ);
    }
 
+   private float rminx, rminy, rminz, rmaxx, rmaxy, rmaxz;
+   
+   private void setSymmetryMinMax(Point3f c) {
+     if (rminx > c.x)
+       rminx = c.x;
+     if (rminy > c.y)
+       rminy = c.y;
+     if (rminz > c.z)
+       rminz = c.z;
+     
+     if (rmaxx < c.x)
+       rmaxx = c.x;
+     if (rmaxy < c.y)
+       rmaxy = c.y;
+     if (rmaxz < c.z)
+       rmaxz = c.z;
+   }
+   
+   private boolean isInSymmetryRange(Point3f c) {
+     return (c.x >= rminx && c.y >= rminy && c.z >= rminz 
+         && c.x <= rmaxx && c.y <= rmaxy && c.z <= rmaxz);
+   }
+
    private void applyAllSymmetry(int maxX, int maxY, int maxZ) throws Exception {
      
     int count = getLastAtomSetAtomCount();
@@ -584,13 +607,28 @@ public class AtomSetCollection {
       maxY = (maxY % 100) / 10 - 4;
     }
     int nCells = (maxX - minX) * (maxY - minY) * (maxZ - minZ);
-    cartesians = new Point3f[count * operationCount * nCells];
+    int cartesianCount = (checkSpecial ? count * operationCount * nCells 
+        : symmetryRange > 0 ? count * operationCount // checking against {1 1 1} 
+        : symmetryRange < 0 ? 1 // checking against symop=1555 set; just a box
+        : 1 // not checking
+        );
+    cartesians = new Point3f[cartesianCount];
     for (int i = 0; i < count; i++)
       atoms[i + atomIndex].bsSymmetry = new BitSet(operationCount * (nCells + 1));
     int pt = 0;
     int[] unitCells = new int[nCells];
     int iCell = 0;
     int baseCount = 0;
+    boolean checkSymmetryRange = (symmetryRange != 0);
+    if (checkSymmetryRange) {
+      rminx = Float.MAX_VALUE;
+      rminy = Float.MAX_VALUE;
+      rminz = Float.MAX_VALUE;
+      rmaxx = -Float.MAX_VALUE;
+      rmaxy = -Float.MAX_VALUE;
+      rmaxz = -Float.MAX_VALUE;
+    }
+    //always do the 555 cell first
     for (int tx = minX; tx < maxX; tx++)
       for (int ty = minY; ty < maxY; ty++)
         for (int tz = minZ; tz < maxZ; tz++) {
@@ -598,15 +636,28 @@ public class AtomSetCollection {
           if (tx == 0 && ty == 0 && tz == 0 && cartesians.length > 0) {
               for (pt = 0; pt < count; pt++) {
                 Atom atom = atoms[atomIndex + pt];
-                cartesians[pt] = new Point3f(atom);
-                finalOperations[0].transform(cartesians[pt]);
-                unitCell.toCartesian(cartesians[pt]);
+                Point3f c = new Point3f(atom);
+                finalOperations[0].transform(c);
+                unitCell.toCartesian(c);
                 atom.bsSymmetry.set(iCell * operationCount);
                 atom.bsSymmetry.set(0);
+                if (checkSymmetryRange)
+                  setSymmetryMinMax(c);
+                if (pt < cartesianCount)
+                  cartesians[pt] = c;
               }
               baseCount = pt = symmetryAddAtoms(finalOperations, atomIndex, count, 0, 0, 0, 0, pt, iCell * operationCount);
             }            
         }
+    if (checkSymmetryRange) {
+      float f = Math.abs(symmetryRange);
+      rminx -= f;
+      rminy -= f;
+      rminz -= f;
+      rmaxx += f;
+      rmaxy += f;
+      rmaxz += f;
+    }
     iCell = 0;
     for (int tx = minX; tx < maxX; tx++)
       for (int ty = minY; ty < maxY; ty++)
@@ -657,15 +708,39 @@ public class AtomSetCollection {
     boolean isBaseCell = (baseCount == 0);
     int nOperations = finalOperations.length;
     int[] atomMap = new int[count];
+
+    //symmetryRange < 0 : just check symop=1 set
+    //symmetryRange > 0 : check against {1 1 1}
+
+    // if we are not checking special atoms, then this is a PDB file
+    // and we return all atoms within a cubical volume around the 
+    // target set. The user can later use select within() to narrow that down
+    // This saves immensely on time.
+
+    float range = Math.abs(symmetryRange);
     boolean checkSymmetryRange = (symmetryRange < 0 || !isBaseCell
         && symmetryRange > 0);
-    boolean checkDistances = (checkSymmetryRange || checkSpecial);
+    boolean checkDistances = (checkSpecial || checkSymmetryRange); 
+    boolean checkSymmetryMinMax = (isBaseCell && symmetryRange > 0);
+    boolean addCartesian = (checkSpecial || checkSymmetryMinMax);
     if (symmetryRange < 0)
       baseCount = count;
+    float minDist0 = (checkSpecial || symmetryRange > 0 ? Float.MAX_VALUE : 0);
     for (int iSym = 0; iSym < nOperations; iSym++) {
       if (isBaseCell && finalOperations[iSym].getXyz().equals("x,y,z"))
         continue;
-      int pt0 = pt;
+
+      /* pt0 sets the range of points cross-checked. 
+       * If we are checking special positions, then we have to check
+       *   all previous atoms. 
+       * If we are doing a symmetry range check relative to {1 1 1}, then
+       *   we have to check only the base set.
+       * If we are doing a symmetry range check on symop=1555 (symmetryRange < 0), 
+       *   then we don't check any atoms and just use the box.
+       *    
+       */
+
+      int pt0 = (checkSpecial ? pt : symmetryRange > 0 ? baseCount : 0);
       int i1 = atomIndex;
       int i2 = i1 + count;
       for (int i = i1; i < i2; i++) {
@@ -674,13 +749,16 @@ public class AtomSetCollection {
         Atom special = null;
         Point3f cartesian = new Point3f(atom);
         unitCell.toCartesian(cartesian);
+        if (checkSymmetryMinMax)
+          setSymmetryMinMax(cartesian);
         if (checkDistances) {
-          //System.out.println((Point3f) atoms[i] + " " + (Point3f) atom + " "
-          //    + transX + " " + transY + " " + transZ + " " + cartesian
-          //    + finalOperations[iSym].getXyz());
 
-          float minDist = Float.MAX_VALUE;
-          float range = Math.abs(symmetryRange);
+          /* checkSpecial indicates that we are looking for atoms with (nearly) the
+           * same cartesian position.  
+           */
+          float minDist = minDist0;
+          if (!checkSpecial && !isInSymmetryRange(cartesian))
+            continue;
           for (int j = pt0; --j >= 0;) {
             //            System.out.println(j + ": " + cartesians[j] + " ?cart? " + cartesian + " d=" + cartesian.distance(cartesians[j]));
             float d = cartesian.distance(cartesians[j]);
@@ -706,15 +784,12 @@ public class AtomSetCollection {
         } else {
           atomMap[atoms[i].atomSite] = atomCount;
           Atom atom1 = newCloneAtom(atoms[i]);
-          atom1.x = atom.x;
-          atom1.y = atom.y;
-          atom1.z = atom.z;
-          //          System.out.println(cartesian + " " + (Point3f)atom + "X" + finalOperations[iSym].getXyz() + " " + transX+" "+transY+" "+transZ);
-          atom1.atomSite = atoms[i].atomSite;
+          atom1.set(atom);
           atom1.bsSymmetry = new BitSet();
           atom1.bsSymmetry.set(iCellOpPt + iSym);
           atom1.bsSymmetry.set(iSym);
-          cartesians[pt++] = cartesian;
+          if (addCartesian)
+            cartesians[pt++] = cartesian;
         }
       }
       if (bondCount0 > bondIndex0 && applySymmetryToBonds) {

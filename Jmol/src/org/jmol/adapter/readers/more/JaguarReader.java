@@ -112,9 +112,7 @@ public class JaguarReader extends AtomSetCollectionReader {
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;
-      atom.x = x;
-      atom.y = y;
-      atom.z = z;
+      atom.set(x, y, z);
       atomCount++;
     }
   }

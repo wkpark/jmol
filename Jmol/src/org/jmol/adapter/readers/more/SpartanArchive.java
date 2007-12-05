@@ -146,9 +146,8 @@ public class SpartanArchive {
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = AtomSetCollectionReader
           .getElementSymbol(parseInt(tokens[0]));
-      atom.x = x * AtomSetCollectionReader.ANGSTROMS_PER_BOHR;
-      atom.y = y * AtomSetCollectionReader.ANGSTROMS_PER_BOHR;
-      atom.z = z * AtomSetCollectionReader.ANGSTROMS_PER_BOHR;
+      atom.set(x, y, z);
+      atom.scale(AtomSetCollectionReader.ANGSTROMS_PER_BOHR);
     }
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug(atomCount + " atoms read");

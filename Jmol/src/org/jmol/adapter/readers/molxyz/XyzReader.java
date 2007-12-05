@@ -118,9 +118,7 @@ public class XyzReader extends AtomSetCollectionReader {
       atom.z = parseFloat();
       if (Float.isNaN(atom.x) || Float.isNaN(atom.y) || Float.isNaN(atom.z)) {
         Logger.warn("line cannot be read for XYZ atom data: " + line);
-        atom.x = 0;
-        atom.y = 0;
-        atom.z = 0;
+        atom.set(0, 0, 0);
       }
       setAtomCoord(atom);
       for (int j = 0; j < 4; ++j)

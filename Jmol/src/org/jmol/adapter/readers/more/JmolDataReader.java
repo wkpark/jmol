@@ -66,14 +66,10 @@ public class JmolDataReader extends AtomSetCollectionReader {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens();
       atom.elementSymbol = tokens[1];
-      atom.x = parseFloat(tokens[3]);
-      atom.y = parseFloat(tokens[4]);
-      atom.z = parseFloat(tokens[5]);
+      atom.set(parseFloat(tokens[3]), parseFloat(tokens[4]), parseFloat(tokens[5]));
       if (Float.isNaN(atom.x) || Float.isNaN(atom.y) || Float.isNaN(atom.z)) {
         Logger.warn("line cannot be read for JmolData: " + line);
-        atom.x = 0;
-        atom.y = 0;
-        atom.z = 0;
+        atom.set(0, 0, 0);
       }
       setAtomCoord(atom);
     }

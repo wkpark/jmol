@@ -127,15 +127,16 @@ public class CubeReader extends AtomSetCollectionReader {
   }
 
   void readAtoms() throws Exception {
-    float f = (isAngstroms ? 1 : ANGSTROMS_PER_BOHR);
     for (int i = 0; i < atomCount; ++i) {
       readLine();
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementNumber = (short)parseInt(line); //allowing atomicAndIsotope for JVXL format
       atom.partialCharge = parseFloat();
-      atom.x = parseFloat() * f;
-      atom.y = parseFloat() * f;
-      atom.z = parseFloat() * f;
+      atom.x = parseFloat();
+      atom.y = parseFloat();
+      atom.z = parseFloat();
+      if (!isAngstroms)
+        atom.scale(ANGSTROMS_PER_BOHR);
     }
   }
 

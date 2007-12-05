@@ -91,9 +91,7 @@ public class XmlChem3dReader extends XmlReader {
       if (atts.containsKey("cartCoords")) {
         String xyz = (String) atts.get("cartCoords");
         tokens = getTokens(xyz);
-        atom.x = parseFloat(tokens[0]);
-        atom.y = parseFloat(tokens[1]);
-        atom.z = parseFloat(tokens[2]);
+        atom.set(parseFloat(tokens[0]), parseFloat(tokens[1]), parseFloat(tokens[2]));
       }
       return;
     }

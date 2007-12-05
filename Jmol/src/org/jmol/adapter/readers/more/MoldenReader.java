@@ -82,20 +82,13 @@ public class MoldenReader extends MopacDataReader {
         throw new Exception("out of order atom in [Atoms]");
       } 
       nPrevAtom = nCurAtom;
-      atom.x = parseFloat(tokens[3]);
-      atom.y = parseFloat(tokens[4]);
-      atom.z = parseFloat(tokens[5]);
+      atom.set(parseFloat(tokens[3]), parseFloat(tokens[4]), parseFloat(tokens[5]));
       readLine();
     }
     
-    if (coordUnit.equals("AU")) {
-      for (int i = atomSetCollection.getAtomCount(); --i >= 0;) {
-        Atom atom = atomSetCollection.getAtom(i);
-        atom.x *= ANGSTROMS_PER_BOHR;
-        atom.y *= ANGSTROMS_PER_BOHR;
-        atom.z *= ANGSTROMS_PER_BOHR;
-      }      
-    }
+    if (coordUnit.equals("AU"))
+      for (int i = atomSetCollection.getAtomCount(); --i >= 0;)
+        atomSetCollection.getAtom(i).scale(ANGSTROMS_PER_BOHR);
   }
   
   void readGaussianBasis() throws Exception {
@@ -278,9 +271,8 @@ public class MoldenReader extends MopacDataReader {
       tokens = getTokens(readLine());
       Atom atom = atoms[nAtom + atomSetCollection.getLastAtomSetAtomIndex()];
       atom.atomName = tokens[0];
-      atom.x = parseFloat(tokens[1]) * ANGSTROMS_PER_BOHR;
-      atom.y = parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR;
-      atom.z = parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR;      
+      atom.set(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
+      atom.scale(ANGSTROMS_PER_BOHR);      
     }
       
     readLine();

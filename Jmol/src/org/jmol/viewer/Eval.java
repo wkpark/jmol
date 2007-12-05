@@ -1788,14 +1788,16 @@ class Eval { //implements Runnable {
         continue;
       case Token.symop:
         propertyBitSet = atom.getAtomSymmetry();
-        if (bitsetBaseValue >= 1000) {
+        if (bitsetBaseValue >= 200) {
           /*
            * symop>=1000 indicates symop*1000 + lattice_translation(555)
            * for this the comparision is only with the
            * translational component; the symop itself must match
            * thus: 
            * select symop!=1655 selects all symop=1 and translation !=655
-           * select symo >=2555 selects all symop=2 and translation >555
+           * select symop>=2555 selects all symop=2 and translation >555
+           * symop >=200 indicates any symop in the specified translation
+           *  (a few space groups have > 100 operations)  
            * 
            * Note that when normalization is not done, symop=1555 may not be in the 
            * base unit cell. Everything is relative to wherever the base atoms ended up,
@@ -1813,10 +1815,16 @@ class Eval { //implements Runnable {
             nOps = modelSet.getModelSymmetryCount(iModel);
           }
           int symop = bitsetBaseValue / 1000 - 1;
-          if (nOps == 0 || symop < 0 || !(match = propertyBitSet.get(symop)))
+          if (symop < 0) {
+            match = true;
+          } else if (nOps == 0 || symop >= 0 && !(match = propertyBitSet.get(symop))) {
             continue;
+          }
           bitsetComparator = Token.none;
-          propertyValue = atom.getSymmetryTranslation(symop, cellRange, nOps);
+          if (symop < 0) 
+            propertyValue = atom.getCellTranslation(comparisonValue, cellRange, nOps);
+          else
+            propertyValue = atom.getSymmetryTranslation(symop, cellRange, nOps);
         }
         break;
       }
@@ -4080,6 +4088,22 @@ class Eval { //implements Runnable {
         int iGroup = -1;
         int[] p;
         float distance = 0;
+       /*
+        * # Jmol 11.3.9 introduces the capability of visualizing the close contacts 
+        * around a crystalline protein (or any other cyrstal structure) that are to 
+        * atoms that are in proteins in adjacent unit cells or adjacent to the 
+        * protein itself. The option RANGE x, where x is a distance in angstroms, 
+        * placed right after the braces containing the set of unit cells to load 
+        * does this. The distance, if a positive number, is the maximum distance 
+        * away from the closest atom in the {1 1 1} set. If the distance x is a 
+        * negative number, then -x is the maximum distance from the {not symmetry} set. 
+        * The difference is that in the first case the primary unit cell (555) is 
+        * first filled as usual, using symmetry operators, and close contacts to 
+        * this set are found. In the second case, only the file-based atoms (
+        * Jones-Faithful operator x,y,z) are initially included, then close 
+        * contacts to that set are found. Depending upon the application, one or the 
+        * other of these options may be desirable.
+        */
         if (tokAt(i) == Token.range) {
           i++;
           distance = floatParameter(i++);

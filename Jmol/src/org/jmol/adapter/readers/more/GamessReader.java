@@ -35,8 +35,6 @@ import org.jmol.util.Logger;
 
 public class GamessReader extends AtomSetCollectionReader {
 
-  final static float angstromsPerBohr = 0.529177f;
-
   int atomCount = 0;
   //int moCount = 0;
   int shellCount = 0;
@@ -110,9 +108,8 @@ public class GamessReader extends AtomSetCollectionReader {
         break;
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = atomName + (++n);
-      atom.x = x * angstromsPerBohr;
-      atom.y = y * angstromsPerBohr;
-      atom.z = z * angstromsPerBohr;
+      atom.set(x, y, z);
+      atom.scale(ANGSTROMS_PER_BOHR);
       atomNames.addElement(atomName);
     }
   }
@@ -143,9 +140,7 @@ public class GamessReader extends AtomSetCollectionReader {
         break;
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = atomName + (++n);
-      atom.x = x;
-      atom.y = y;
-      atom.z = z;
+      atom.set(x, y, z);
       atomNames.addElement(atomName);
     }
   }

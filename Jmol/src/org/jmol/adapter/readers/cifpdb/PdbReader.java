@@ -573,6 +573,8 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
       if(spaceGroup.indexOf(":") < 0)
         spaceGroup += ":?";
     }
+    //speeds up calculation, because no crosschecking
+    atomSetCollection.setCheckSpecial(false);
     super.applySymmetry();
   }
 }

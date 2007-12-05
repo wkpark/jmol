@@ -640,6 +640,11 @@ public class AtomSetCollection {
   int bondCount0;
   int bondIndex0;
   boolean applySymmetryToBonds = false;
+  boolean checkSpecial = true;
+  
+  public void setCheckSpecial(boolean TF) {
+    checkSpecial = TF;
+  }
   
   void setApplySymmetryToBonds(boolean TF) {
     applySymmetryToBonds = TF;
@@ -647,12 +652,14 @@ public class AtomSetCollection {
   
   private int symmetryAddAtoms(SymmetryOperation[] finalOperations,
                                int atomIndex, int count, int transX,
-                               int transY, int transZ, int baseCount,
-                               int pt, int iCellOpPt) throws Exception {
+                               int transY, int transZ, int baseCount, int pt,
+                               int iCellOpPt) throws Exception {
     boolean isBaseCell = (baseCount == 0);
     int nOperations = finalOperations.length;
     int[] atomMap = new int[count];
-    boolean checkSymmetryRange = (symmetryRange < 0 || !isBaseCell && symmetryRange > 0);
+    boolean checkSymmetryRange = (symmetryRange < 0 || !isBaseCell
+        && symmetryRange > 0);
+    boolean checkDistances = (checkSymmetryRange || checkSpecial);
     if (symmetryRange < 0)
       baseCount = count;
     for (int iSym = 0; iSym < nOperations; iSym++) {
@@ -664,34 +671,34 @@ public class AtomSetCollection {
       for (int i = i1; i < i2; i++) {
         Atom atom = new Atom();
         finalOperations[iSym].newPoint(atoms[i], atom, transX, transY, transZ);
+        Atom special = null;
         Point3f cartesian = new Point3f(atom);
         unitCell.toCartesian(cartesian);
+        if (checkDistances) {
+          //System.out.println((Point3f) atoms[i] + " " + (Point3f) atom + " "
+          //    + transX + " " + transY + " " + transZ + " " + cartesian
+          //    + finalOperations[iSym].getXyz());
 
-        //System.out.println((Point3f) atoms[i] + " " + (Point3f) atom + " "
-        //    + transX + " " + transY + " " + transZ + " " + cartesian
-        //    + finalOperations[iSym].getXyz());
-
-        Atom special = null;
-        float minDist = Float.MAX_VALUE;
-        float range = Math.abs(symmetryRange);
-        for (int j = pt0; --j >= 0;) {
-          //            System.out.println(j + ": " + cartesians[j] + " ?cart? " + cartesian + " d=" + cartesian.distance(cartesians[j]));
-          float d = cartesian.distance(cartesians[j]);
-          if (d < 0.01) {
-            special = atoms[atomIndex + j];
-            break;
+          float minDist = Float.MAX_VALUE;
+          float range = Math.abs(symmetryRange);
+          for (int j = pt0; --j >= 0;) {
+            //            System.out.println(j + ": " + cartesians[j] + " ?cart? " + cartesian + " d=" + cartesian.distance(cartesians[j]));
+            float d = cartesian.distance(cartesians[j]);
+            if (d < 0.01) {
+              special = atoms[atomIndex + j];
+              break;
+            }
+            if (checkSymmetryRange && j < baseCount && d < minDist)
+              minDist = d;
           }
-          if (checkSymmetryRange && j < baseCount && d < minDist)
-            minDist = d;
+          //System.out.println(transX + " " + transY + " " + transZ + " " + isBaseCell + " " + atomIndex + " " + count + " " + minDist + " " + symmetryRange);
+          if (checkSymmetryRange && minDist > range)
+            continue;
         }
-        //System.out.println(transX + " " + transY + " " + transZ + " " + isBaseCell + " " + atomIndex + " " + count + " " + minDist + " " + symmetryRange);
-        if (checkSymmetryRange && minDist > range)
-          continue;
         if (special != null) {
           atomMap[atoms[i].atomSite] = special.atomIndex;
           special.bsSymmetry.set(iCellOpPt + iSym);
           special.bsSymmetry.set(iSym);
-
           // System.out.println(iSym + " " + finalOperations[iSym].getXyz()
           // + " special set: " + i + " " + " " + special.bsSymmetry);
 
@@ -717,7 +724,7 @@ public class AtomSetCollection {
           int iAtom1 = atomMap[atoms[bond.atomIndex1].atomSite];
           int iAtom2 = atomMap[atoms[bond.atomIndex2].atomSite];
           if (iAtom1 >= i2 || iAtom2 >= i2)
-          addNewBond(iAtom1, iAtom2, bond.order);
+            addNewBond(iAtom1, iAtom2, bond.order);
         }
       }
     }

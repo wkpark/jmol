@@ -105,7 +105,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   private boolean initializePolymer(BioShape bioShape) {
 
     boolean invalidate = false;
-    boolean TF = viewer.getHighResolution();
+    boolean TF = isGenerator || viewer.getHighResolution();
     if (TF != isHighRes)
       invalidate = true;
     isHighRes = TF;

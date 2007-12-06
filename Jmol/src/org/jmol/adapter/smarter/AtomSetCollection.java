@@ -620,7 +620,10 @@ public class AtomSetCollection {
     int[] unitCells = new int[nCells];
     int iCell = 0;
     int cell555Count = 0;
+    float absRange = Math.abs(symmetryRange);
     boolean checkSymmetryRange = (symmetryRange != 0);
+    boolean checkRangeNoSymmetry = (symmetryRange < 0);
+    boolean checkRange111 = (symmetryRange > 0);
     if (checkSymmetryRange) {
       rminx = Float.MAX_VALUE;
       rminy = Float.MAX_VALUE;
@@ -647,18 +650,25 @@ public class AtomSetCollection {
               if (pt < cartesianCount)
                 cartesians[pt] = c;
             }
+            if (checkRangeNoSymmetry) {
+              rminx -= absRange;
+              rminy -= absRange;
+              rminz -= absRange;
+              rmaxx += absRange;
+              rmaxy += absRange;
+              rmaxz += absRange;
+            }
             cell555Count = pt = symmetryAddAtoms(finalOperations, atomIndex,
                 noSymmetryCount, 0, 0, 0, 0, pt, iCell * operationCount);
           }
         }
-    if (checkSymmetryRange) {
-      float f = Math.abs(symmetryRange);
-      rminx -= f;
-      rminy -= f;
-      rminz -= f;
-      rmaxx += f;
-      rmaxy += f;
-      rmaxz += f;
+    if (checkRange111) {
+      rminx -= absRange;
+      rminy -= absRange;
+      rminz -= absRange;
+      rmaxx += absRange;
+      rmaxy += absRange;
+      rmaxz += absRange;
     }
     iCell = 0;
     for (int tx = minX; tx < maxX; tx++)
@@ -709,7 +719,8 @@ public class AtomSetCollection {
                                int transY, int transZ, int baseCount, int pt,
                                int iCellOpPt) throws Exception {
     boolean isBaseCell = (baseCount == 0);
-    int[] atomMap = new int[noSymmetryCount];
+    boolean addBonds = (bondCount0 > bondIndex0 && applySymmetryToBonds);
+    int[] atomMap = (addBonds ? new int[noSymmetryCount] : null);
 
     //symmetryRange < 0 : just check symop=1 set
     //symmetryRange > 0 : check against {1 1 1}
@@ -725,11 +736,13 @@ public class AtomSetCollection {
     boolean checkSymmetryMinMax = (isBaseCell && checkRange111);
     checkRange111 &= !isBaseCell;
     boolean checkSymmetryRange = (checkRangeNoSymmetry || checkRange111);
-    boolean checkDistances = (checkSpecial || checkSymmetryRange); 
+    boolean checkDistances = (checkSpecial || checkSymmetryRange);
     boolean addCartesian = (checkSpecial || checkSymmetryMinMax);
     if (checkRangeNoSymmetry)
       baseCount = noSymmetryCount;
     int nOperations = finalOperations.length;
+    int atomMax = atomIndex + noSymmetryCount;
+    Point3f ptAtom = new Point3f();
     for (int iSym = 0; iSym < nOperations; iSym++) {
       if (isBaseCell && finalOperations[iSym].getXyz().equals("x,y,z"))
         continue;
@@ -745,13 +758,11 @@ public class AtomSetCollection {
        */
 
       int pt0 = (checkSpecial ? pt : checkRange111 ? baseCount : 0);
-      int i1 = atomIndex;
-      int i2 = i1 + noSymmetryCount;
-      for (int i = i1; i < i2; i++) {
-        Atom atom = new Atom();
-        finalOperations[iSym].newPoint(atoms[i], atom, transX, transY, transZ);
+      for (int i = atomIndex; i < atomMax; i++) {
+        finalOperations[iSym]
+            .newPoint(atoms[i], ptAtom, transX, transY, transZ);
         Atom special = null;
-        Point3f cartesian = new Point3f(atom);
+        Point3f cartesian = new Point3f(ptAtom);
         unitCell.toCartesian(cartesian);
         if (checkSymmetryMinMax)
           setSymmetryMinMax(cartesian);
@@ -776,17 +787,15 @@ public class AtomSetCollection {
             continue;
         }
         if (special != null) {
-          atomMap[atoms[i].atomSite] = special.atomIndex;
+          if (addBonds)
+            atomMap[atoms[i].atomSite] = special.atomIndex;
           special.bsSymmetry.set(iCellOpPt + iSym);
           special.bsSymmetry.set(iSym);
-          // System.out.println(iSym + " " + finalOperations[iSym].getXyz()
-          // + " special set: " + i + " " + " " + special.bsSymmetry);
-
-          //        System.out.println(cartesian+"Y" + "X" + finalOperations[iSym].getXyz() + " " + transX+" "+transY+" "+transZ);
         } else {
-          atomMap[atoms[i].atomSite] = atomCount;
+          if (addBonds)
+            atomMap[atoms[i].atomSite] = atomCount;
           Atom atom1 = newCloneAtom(atoms[i]);
-          atom1.set(atom);
+          atom1.set(ptAtom);
           atom1.bsSymmetry = new BitSet();
           atom1.bsSymmetry.set(iCellOpPt + iSym);
           atom1.bsSymmetry.set(iSym);
@@ -794,13 +803,13 @@ public class AtomSetCollection {
             cartesians[pt++] = cartesian;
         }
       }
-      if (bondCount0 > bondIndex0 && applySymmetryToBonds) {
+      if (addBonds) {
         // Clone bonds
         for (int bondNum = bondIndex0; bondNum < bondCount0; bondNum++) {
           Bond bond = bonds[bondNum];
           int iAtom1 = atomMap[atoms[bond.atomIndex1].atomSite];
           int iAtom2 = atomMap[atoms[bond.atomIndex2].atomSite];
-          if (iAtom1 >= i2 || iAtom2 >= i2)
+          if (iAtom1 >= atomMax || iAtom2 >= atomMax)
             addNewBond(iAtom1, iAtom2, bond.order);
         }
       }

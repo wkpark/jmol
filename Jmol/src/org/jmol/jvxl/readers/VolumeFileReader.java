@@ -60,7 +60,7 @@ class VolumeFileReader extends VoxelReader {
       return "Jvxl";
     if (line.indexOf("&plot") == 0)
       return "Jaguar";
-    if (line.indexOf("!NTITLE") >= 0)
+    if (line.indexOf("!NTITLE") >= 0 || line.indexOf("REMARKS ") >= 0)
       return "Xplor";
     line = br.readNonCommentLine();
     if (line.indexOf("object 1 class gridpositions counts") == 0)

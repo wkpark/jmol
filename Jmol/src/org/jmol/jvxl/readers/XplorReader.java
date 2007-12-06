@@ -96,7 +96,7 @@ That is:
     jvxlFileHeaderBuffer = new StringBuffer();
     int nLines = parseInt(getLine());
     for (int i = nLines; --i >= 0; )
-      jvxlFileHeaderBuffer.append(getLine()).append('\n');
+      jvxlFileHeaderBuffer.append(br.readLine()).append('\n');
   }
 
   int nBlock;
@@ -104,20 +104,20 @@ That is:
     
     //not yet treating min/max
     int nA = parseInt(getLine());
-    /*int minA = */parseInt();
-    /*int maxA = */parseInt();
+    int minA = parseInt();
+    int maxA = parseInt();
     int nB = parseInt();
-    /*int minB = */parseInt();
-    /*int maxB = */parseInt();
+    int minB = parseInt();
+    int maxB = parseInt();
     int nC = parseInt();
-    /*int minC = */parseInt();
-    /*int maxC = */parseInt();
+    int minC = parseInt();
+    int maxC = parseInt();
     
-    voxelCounts[0] = nA;
-    voxelCounts[1] = nB;
-    voxelCounts[2] = nC;
+    voxelCounts[0] = maxC - minC + 1;
+    voxelCounts[1] = maxB - minB + 1;
+    voxelCounts[2] = maxA - minA + 1;
 
-    nBlock = nA * nB;
+    nBlock = voxelCounts[2] * voxelCounts[1];
     
     float a = parseFloat(getLine());
     float b = parseFloat();
@@ -129,18 +129,18 @@ That is:
     UnitCell cell = new UnitCell(new float[] {a, b, c, alpha, beta, gamma});
     Point3f pt;
     //these vectors need not be perpendicular
-    pt = new Point3f(1, 0, 0);
+    pt = new Point3f(0, 0, 1);
     cell.toCartesian(pt);
     volumetricVectors[0].set(pt);
-    volumetricVectors[0].scale(nA);
+    volumetricVectors[0].scale(nC);
     pt = new Point3f(0, 1, 0);
     cell.toCartesian(pt);
     volumetricVectors[1].set(pt);
     volumetricVectors[1].scale(nB);
-    pt = new Point3f(0, 0, 1);
+    pt = new Point3f(1, 0, 0);
     cell.toCartesian(pt);
     volumetricVectors[2].set(pt);
-    volumetricVectors[2].scale(nC);
+    volumetricVectors[2].scale(nA);
  
     //ZYX
     
@@ -156,7 +156,7 @@ That is:
   
   private String getLine() throws IOException {
     line = br.readLine();
-    while (line != null && line.indexOf("REMARKS") >= 0 || line.indexOf("XPLOR:") >= 0)
+    while (line != null && (line.length() == 0 || line.indexOf("REMARKS") >= 0 || line.indexOf("XPLOR:") >= 0))
       line = br.readLine();
     return line;
   }
@@ -165,10 +165,11 @@ That is:
   int linePt = Integer.MAX_VALUE;
   int nRead;
   protected float nextVoxel() throws Exception {
-    if (linePt > line.length()) {
+    if (linePt >= line.length()) {
       line = br.readLine();
+      //System.out.println(nRead + " " + line);
       linePt = 0;
-      if ((nRead++ % nBlock) == 0) {
+      if ((nRead % nBlock) == 0) {
         System.out.println("block " + line);
         line = br.readLine();
       }
@@ -177,6 +178,7 @@ That is:
       return 0;
     float val = parseFloat(line.substring(linePt, linePt+12));
     linePt += 12;
+    nRead++;
     return val;
   }
 

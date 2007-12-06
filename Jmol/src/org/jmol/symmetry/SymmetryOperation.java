@@ -78,13 +78,12 @@ public class SymmetryOperation extends Matrix4f {
     return xyzOriginal;
   }
 
+  private Point4f temp = new Point4f();
   public void newPoint(Point3f atom1, Point3f atom2,
                        int transX, int transY, int transZ) {
-    Point4f temp = new Point4f(atom1.x, atom1.y, atom1.z, 1);
+    temp.set(atom1.x, atom1.y, atom1.z, 1);
     transform(temp, temp);
-    atom2.x = temp.x + transX;
-    atom2.y = temp.y + transY;
-    atom2.z = temp.z + transZ;
+    atom2.set(temp.x + transX, temp.y + transY, temp.z + transZ);
   }
 
   String dumpInfo() {

@@ -870,6 +870,8 @@ public class SurfaceGenerator {
       return new CubeReader(this, br);
     if (fileType.equals("Jaguar"))
       return new JaguarReader(this, br);
+    if (fileType.equals("Xplor"))
+      return new XplorReader(this, br);
     return null;
   }
 

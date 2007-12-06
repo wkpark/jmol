@@ -1,0 +1,186 @@
+/* $RCSfile$
+ * $Author: hansonr $
+ * $Date: 2007-03-30 11:40:16 -0500 (Fri, 30 Mar 2007) $
+ * $Revision: 7273 $
+ *
+ * Copyright (C) 2007 Miguel, Bob, Jmol Development
+ *
+ * Contact: hansonr@stolaf.edu
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+package org.jmol.jvxl.readers;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+
+import javax.vecmath.Point3f;
+
+import org.jmol.symmetry.UnitCell;
+import org.jmol.util.Logger;
+
+class XplorReader extends VolumeFileReader {
+
+  /*
+   * 
+   * VERY preliminary Xplor electron density map reader
+   * something like this -- untested
+   * 
+   * http://cci.lbl.gov/~rwgk/shortcuts/htdocs/current/python/iotbx.xplor.map.html
+   * 
+   * Example format for Xplor Maps:
+ 
+       2 !NTITLE
+ REMARKS FILENAME=""
+ REMARKS scitbx.flex.double to Xplor map format
+      24       0      24     120       0     120      54       0      54
+ 3.20420E+01 1.75362E+02 7.96630E+01 9.00000E+01 9.00000E+01 9.00000E+01
+ZYX
+       0
+-2.84546E-01-1.67775E-01-5.66095E-01-1.18305E+00-1.49559E+00-1.31942E+00
+-1.01611E+00-1.00873E+00-1.18992E+00-1.02460E+00-2.72099E-01 5.94242E-01
+<deleted>
+   -9999
+  0.0000E+00  1.0000E+00
+That is:
+...a blank line
+...an integer giving the number of title lines, with mandatory !NTITLE
+...title lines in %-264s format
+...X, Y, and Z sections giving:
+       sections per unit cell, in the given direction
+       ordinal of first section in file
+       ordinal of last section in file
+...unit cell dimensions
+...slow, medium, fast section order, always ZYX
+...for each slow section, the section number
+...sectional data in special fortran format shown
+...-9999
+...map average and standard deviation
+   */
+  XplorReader(SurfaceGenerator sg, BufferedReader br) {
+    super(sg, br);
+    isAngstroms = false;
+    jvxlData.wasCubic = true;
+  }
+
+  protected int readVolumetricHeader() {
+    try {
+        readTitleLines();
+        Logger.info(jvxlFileHeaderBuffer.toString());
+        readAtomCountAndOrigin();
+        Logger.info("voxel grid origin:" + volumetricOrigin);
+        readVoxelVectors();
+        for (int i = 0; i < 3; ++i)
+          Logger.info("voxel grid vector:" + volumetricVectors[i]);
+      return readExtraLine();
+    } catch (Exception e) {
+      Logger.error(e.toString());
+      throw new NullPointerException();
+    }
+  }
+  
+ 
+  protected void readTitleLines() throws Exception {
+    jvxlFileHeaderBuffer = new StringBuffer();
+    int nLines = parseInt(getLine());
+    for (int i = nLines; --i >= 0; )
+      jvxlFileHeaderBuffer.append(getLine()).append('\n');
+  }
+
+  int nBlock;
+  protected void readVoxelVectors() throws Exception {
+    
+    //not yet treating min/max
+    int nA = parseInt(getLine());
+    /*int minA = */parseInt();
+    /*int maxA = */parseInt();
+    int nB = parseInt();
+    /*int minB = */parseInt();
+    /*int maxB = */parseInt();
+    int nC = parseInt();
+    /*int minC = */parseInt();
+    /*int maxC = */parseInt();
+    
+    voxelCounts[0] = nA;
+    voxelCounts[1] = nB;
+    voxelCounts[2] = nC;
+
+    nBlock = nA * nB;
+    
+    float a = parseFloat(getLine());
+    float b = parseFloat();
+    float c = parseFloat();
+    float alpha = parseFloat();
+    float beta = parseFloat();
+    float gamma = parseFloat();
+
+    UnitCell cell = new UnitCell(new float[] {a, b, c, alpha, beta, gamma});
+    Point3f pt;
+    //these vectors need not be perpendicular
+    pt = new Point3f(1, 0, 0);
+    cell.toCartesian(pt);
+    volumetricVectors[0].set(pt);
+    volumetricVectors[0].scale(nA);
+    pt = new Point3f(0, 1, 0);
+    cell.toCartesian(pt);
+    volumetricVectors[1].set(pt);
+    volumetricVectors[1].scale(nB);
+    pt = new Point3f(0, 0, 1);
+    cell.toCartesian(pt);
+    volumetricVectors[2].set(pt);
+    volumetricVectors[2].scale(nC);
+ 
+    //ZYX
+    
+    getLine();
+    
+  }
+
+  protected void readAtomCountAndOrigin() throws Exception {
+    atomCount = 0;
+    negativeAtomCount = false;    
+    volumetricOrigin.set(0, 0, 0);
+  }
+  
+  private String getLine() throws IOException {
+    line = br.readLine();
+    while (line != null && line.indexOf("REMARKS") >= 0 || line.indexOf("XPLOR:") >= 0)
+      line = br.readLine();
+    return line;
+  }
+  
+
+  int linePt = Integer.MAX_VALUE;
+  int nRead;
+  protected float nextVoxel() throws Exception {
+    if (linePt > line.length()) {
+      line = br.readLine();
+      linePt = 0;
+      if ((nRead++ % nBlock) == 0) {
+        System.out.println("block " + line);
+        line = br.readLine();
+      }
+    }
+    if (line == null)
+      return 0;
+    float val = parseFloat(line.substring(linePt, linePt+12));
+    linePt += 12;
+    return val;
+  }
+
+
+}
+
+

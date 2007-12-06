@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-11-11 17:21+0100\n"
+"POT-Creation-Date: 2007-12-06 20:56+0100\n"
 "PO-Revision-Date: 2007-05-19 16:37+0200\n"
 "Last-Translator: Sebastian Lisken <sebastianlisken at users.sourceforge."
 "net>\n"
@@ -67,7 +67,7 @@ msgstr ""
 "\n"
 "Mehr Informationen unter http://www.jmol.org."
 
-#: org/jmol/applet/Jmol.java:862
+#: org/jmol/applet/Jmol.java:865
 msgid "File Error:"
 msgstr "Datei-Fehler:"
 
@@ -1147,7 +1147,7 @@ msgstr ""
 msgid "invalid context for {0}"
 msgstr "Unzulässiges Kontrollschlüsselwort {0}."
 
-#: org/jmol/viewer/Compiler.java:2399 org/jmol/viewer/Eval.java:4826
+#: org/jmol/viewer/Compiler.java:2399 org/jmol/viewer/Eval.java:4867
 msgid "command expected"
 msgstr ""
 
@@ -1161,11 +1161,11 @@ msgstr ""
 msgid "unrecognized token: {0}"
 msgstr ""
 
-#: org/jmol/viewer/Compiler.java:2411 org/jmol/viewer/Eval.java:10122
+#: org/jmol/viewer/Compiler.java:2411 org/jmol/viewer/Eval.java:10335
 msgid "unexpected end of script command"
 msgstr ""
 
-#: org/jmol/viewer/Compiler.java:2415 org/jmol/viewer/Eval.java:10126
+#: org/jmol/viewer/Compiler.java:2415 org/jmol/viewer/Eval.java:10339
 msgid "bad argument count"
 msgstr ""
 
@@ -1206,7 +1206,7 @@ msgstr ""
 msgid "equal sign expected"
 msgstr ""
 
-#: org/jmol/viewer/Compiler.java:2455 org/jmol/viewer/Eval.java:10088
+#: org/jmol/viewer/Compiler.java:2455 org/jmol/viewer/Eval.java:10301
 msgid "number expected"
 msgstr ""
 
@@ -1214,7 +1214,7 @@ msgstr ""
 msgid "number or variable name expected"
 msgstr ""
 
-#: org/jmol/viewer/Compiler.java:2463 org/jmol/viewer/Eval.java:10134
+#: org/jmol/viewer/Compiler.java:2463 org/jmol/viewer/Eval.java:10347
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr ""
@@ -1239,7 +1239,7 @@ msgstr ""
 msgid "invalid atom specification"
 msgstr ""
 
-#: org/jmol/viewer/Compiler.java:2492 org/jmol/viewer/Eval.java:10093
+#: org/jmol/viewer/Compiler.java:2492 org/jmol/viewer/Eval.java:10306
 msgid "quoted string expected"
 msgstr ""
 
@@ -1247,258 +1247,258 @@ msgstr ""
 msgid "comma or right parenthesis expected"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:281 org/jmol/viewer/Eval.java:4807
+#: org/jmol/viewer/Eval.java:287 org/jmol/viewer/Eval.java:4848
 msgid "script ERROR: "
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:309
+#: org/jmol/viewer/Eval.java:315
 msgid "too many script levels"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:2320
+#: org/jmol/viewer/Eval.java:2334
 #, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
 "{2}"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:2333
+#: org/jmol/viewer/Eval.java:2347
 msgid "No unit cell"
 msgstr "Keine Elementarzelle"
 
-#: org/jmol/viewer/Eval.java:2343
+#: org/jmol/viewer/Eval.java:2357
 msgid "Miller indices cannot all be zero."
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:2500
+#: org/jmol/viewer/Eval.java:2510
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:3369
+#: org/jmol/viewer/Eval.java:3389
 #, java-format
 msgid "{0} connections deleted"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:3390
+#: org/jmol/viewer/Eval.java:3410
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4081
+#: org/jmol/viewer/Eval.java:4126
 #, java-format
 msgid "space group {0} was not found."
 msgstr "Raumgruppe {0} nicht gefunden"
 
-#: org/jmol/viewer/Eval.java:4375
+#: org/jmol/viewer/Eval.java:4416
 msgid "bad atom number"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4676
+#: org/jmol/viewer/Eval.java:4717
 msgid "too many rotation points were specified"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4712
+#: org/jmol/viewer/Eval.java:4753
 msgid "rotation points cannot be identical"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:5467
+#: org/jmol/viewer/Eval.java:5508
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:5479
+#: org/jmol/viewer/Eval.java:5520
 #, java-format
 msgid "{0} not allowed with background model displayed"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:5785
+#: org/jmol/viewer/Eval.java:5854
 msgid "Calculate what?"
 msgstr "Was soll berechnet werden?"
 
-#: org/jmol/viewer/Eval.java:6021
+#: org/jmol/viewer/Eval.java:6092
 msgid "trajectory not applicable in this context"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:6155
+#: org/jmol/viewer/Eval.java:6227
 #, java-format
 msgid "invalid {0} control keyword"
 msgstr "Unzulässiges Kontrollschlüsselwort {0}."
 
-#: org/jmol/viewer/Eval.java:7850
+#: org/jmol/viewer/Eval.java:8010
 msgid "save what?"
 msgstr "Was soll gespeichert werden?"
 
-#: org/jmol/viewer/Eval.java:7897
+#: org/jmol/viewer/Eval.java:8057
 msgid "restore what?"
 msgstr "Was soll wiederhergestellt werden?"
 
-#: org/jmol/viewer/Eval.java:8074
+#: org/jmol/viewer/Eval.java:8236
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:8122
+#: org/jmol/viewer/Eval.java:8291
 msgid "No data available"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:8523 org/jmol/viewer/Eval.java:9332
+#: org/jmol/viewer/Eval.java:8709 org/jmol/viewer/Eval.java:9531
 msgid "no MO basis/coefficient data available for this frame"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:9336
+#: org/jmol/viewer/Eval.java:9535
 msgid "no MO coefficient data available"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:9338
+#: org/jmol/viewer/Eval.java:9537
 msgid "Only one molecular orbital is available in this file"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:9348
+#: org/jmol/viewer/Eval.java:9547
 msgid "no MO occupancy data available"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:9358
+#: org/jmol/viewer/Eval.java:9557
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:9848
+#: org/jmol/viewer/Eval.java:10056
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10039
+#: org/jmol/viewer/Eval.java:10252
 #, java-format
 msgid "{0} require that only one model be displayed"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10043
+#: org/jmol/viewer/Eval.java:10256
 msgid "unrecognized command"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10047
+#: org/jmol/viewer/Eval.java:10260
 msgid "unrecognized atom property"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10051
+#: org/jmol/viewer/Eval.java:10264
 msgid "unrecognized bond property"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10055
+#: org/jmol/viewer/Eval.java:10268
 msgid "filename expected"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10059
+#: org/jmol/viewer/Eval.java:10272
 msgid "boolean expected"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10063
+#: org/jmol/viewer/Eval.java:10276
 msgid "boolean or number expected"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10067
+#: org/jmol/viewer/Eval.java:10280
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10071
+#: org/jmol/viewer/Eval.java:10284
 msgid "(atom expression) or integer expected"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10075
+#: org/jmol/viewer/Eval.java:10288
 msgid "valid (atom expression) expected"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10079
+#: org/jmol/viewer/Eval.java:10292
 msgid "bad [R,G,B] color"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10083
+#: org/jmol/viewer/Eval.java:10296
 msgid "integer expected"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10098
+#: org/jmol/viewer/Eval.java:10311
 msgid "quoted string or identifier expected"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10102
+#: org/jmol/viewer/Eval.java:10315
 msgid "property name expected"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10106
+#: org/jmol/viewer/Eval.java:10319
 msgid "x y z axis expected"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10110
+#: org/jmol/viewer/Eval.java:10323
 msgid "color expected"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10114
+#: org/jmol/viewer/Eval.java:10327
 msgid "unrecognized object"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10118
+#: org/jmol/viewer/Eval.java:10331
 msgid "runtime unrecognized expression"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10130
+#: org/jmol/viewer/Eval.java:10343
 msgid "invalid argument"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10138
+#: org/jmol/viewer/Eval.java:10351
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10142
+#: org/jmol/viewer/Eval.java:10355
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10147
+#: org/jmol/viewer/Eval.java:10360
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10152
+#: org/jmol/viewer/Eval.java:10365
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10157
+#: org/jmol/viewer/Eval.java:10370
 msgid "file not found"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10161
+#: org/jmol/viewer/Eval.java:10374
 msgid "draw object not defined"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10165
+#: org/jmol/viewer/Eval.java:10378
 msgid "object name expected after '$'"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10170
+#: org/jmol/viewer/Eval.java:10383
 msgid " {x y z} or $name or (atom expression) required"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10174
+#: org/jmol/viewer/Eval.java:10387
 msgid "keyword expected"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10178
+#: org/jmol/viewer/Eval.java:10391
 msgid "invalid parameter order"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10182
+#: org/jmol/viewer/Eval.java:10395
 msgid "incompatible arguments"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10186
+#: org/jmol/viewer/Eval.java:10399
 msgid "insufficient arguments"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:11732
+#: org/jmol/viewer/Eval.java:11981
 msgid "too many parentheses"
 msgstr ""
 
@@ -1521,16 +1521,19 @@ msgstr "Name versteckt"
 msgid "{0} atoms selected"
 msgstr "Keine Atome geladen."
 
-#: org/jmol/viewer/Viewer.java:4006
-msgid "ERROR: cannot set boolean flag to string value"
+#: org/jmol/viewer/Viewer.java:4008
+#, java-format
+msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4138
-msgid "ERROR: cannot set boolean flag to numeric value"
+#: org/jmol/viewer/Viewer.java:4158 org/jmol/viewer/Viewer.java:4297
+#, java-format
+msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4649
-msgid "ERROR: Cannot set value of this variable to a boolean."
+#: org/jmol/viewer/Viewer.java:4708
+#, java-format
+msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
 
 #~ msgid "Select"

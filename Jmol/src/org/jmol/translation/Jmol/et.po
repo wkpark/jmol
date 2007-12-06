@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-10-24 06:47+0200\n"
+"POT-Creation-Date: 2007-12-06 20:56+0100\n"
 "PO-Revision-Date: 2006-03-17 20:19+0100\n"
 "Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -644,7 +644,7 @@ msgstr "Taasta molekuli lähtepositsioon."
 msgid "Jmol Help"
 msgstr "Jmol abi"
 
-#: org/openscience/jmol/app/ImageCreator.java:104
+#: org/openscience/jmol/app/ImageCreator.java:110
 msgid "IO Exception:"
 msgstr "IO eriolukord:"
 
@@ -830,7 +830,7 @@ msgstr "atom set"
 
 #: org/openscience/jmol/app/Jmol.java:440
 #: org/openscience/jmol/app/Jmol.java:442
-#: org/openscience/jmol/app/PovrayDialog.java:757
+#: org/openscience/jmol/app/PovrayDialog.java:756
 msgid "Save"
 msgstr "Salvesta"
 
@@ -909,7 +909,7 @@ msgstr "akna suurus 500x500"
 #: org/openscience/jmol/app/Jmol.java:513
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
-"2, maximum compression 9"
+"2, maximum compression 9)"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:519
@@ -1111,7 +1111,7 @@ msgid "Location of the povray Executable"
 msgstr "povray programmi asukoht"
 
 #: org/openscience/jmol/app/PovrayDialog.java:489
-#: org/openscience/jmol/app/PovrayDialog.java:755
+#: org/openscience/jmol/app/PovrayDialog.java:754
 msgid "Go!"
 msgstr "Mine!"
 

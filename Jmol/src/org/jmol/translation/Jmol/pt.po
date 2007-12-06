@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-10-24 06:47+0200\n"
+"POT-Creation-Date: 2007-12-06 20:56+0100\n"
 "PO-Revision-Date: 2005-12-20 07:33-0000\n"
 "Last-Translator: Metro <portugalfolding@gmail.com>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
@@ -644,7 +644,7 @@ msgstr "Recolocar a molécula na posição inicial"
 msgid "Jmol Help"
 msgstr "Ajuda Jmol"
 
-#: org/openscience/jmol/app/ImageCreator.java:104
+#: org/openscience/jmol/app/ImageCreator.java:110
 msgid "IO Exception:"
 msgstr "Excepção IO:"
 
@@ -830,7 +830,7 @@ msgstr "Grupo de átomos"
 
 #: org/openscience/jmol/app/Jmol.java:440
 #: org/openscience/jmol/app/Jmol.java:442
-#: org/openscience/jmol/app/PovrayDialog.java:757
+#: org/openscience/jmol/app/PovrayDialog.java:756
 msgid "Save"
 msgstr "Gravar"
 
@@ -909,7 +909,7 @@ msgstr "tamanho da janela 500x500"
 #: org/openscience/jmol/app/Jmol.java:513
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
-"2, maximum compression 9"
+"2, maximum compression 9)"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:519
@@ -1114,7 +1114,7 @@ msgid "Location of the povray Executable"
 msgstr "Localização do executável povray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:489
-#: org/openscience/jmol/app/PovrayDialog.java:755
+#: org/openscience/jmol/app/PovrayDialog.java:754
 msgid "Go!"
 msgstr "Avançar"
 

@@ -329,4 +329,16 @@ public class TextFormat {
   public static String[] split(String text, char ch) {
     return split(text, "" + ch);
   }
+  
+  public static void rFill(StringBuffer s, String s1, String s2) {
+    s.append(s1.substring(0, s1.length() - s2.length()));
+    s.append(s2);
+  }
+  
+  public static String safeTruncate(float f, int n) {
+    if (f > -0.001 && f < 0.001)
+      f = 0;
+    return (f + "         ").substring(0,n);
+  }
+
 }

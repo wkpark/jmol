@@ -869,14 +869,20 @@ class Compiler {
       ichToken++;
     if (script.length() > ichToken && script.charAt(ichToken) == '\n')
       ichToken++;
+    int nChar = 6;
     int i = script.indexOf("end \"" + key + "\"", ichToken);
+    if (i < 0) {
+      i = script.indexOf("end " + key, ichToken);
+      if (i >= 0)
+        nChar = 4;
+    }
     if (i < 0)
       i = script.length();
     String str = script.substring(ichToken, i);
     addTokenToPrefix(new Token(Token.data, str));
     addTokenToPrefix(new Token(Token.identifier, "end"));
     addTokenToPrefix(new Token(Token.string, key));
-    cchToken = i - ichToken + 6 + key.length();
+    cchToken = i - ichToken + nChar + key.length();
   }
 
   private static boolean isSpaceOrTab(char ch) {

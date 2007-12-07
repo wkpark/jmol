@@ -3885,6 +3885,8 @@ class Eval { //implements Runnable {
         viewer.setData(dataType, data, 0, 0, 0);
       }
     }
+    if ((isModel || isAppend) && dataString == null)
+      invalidArgument();
     if ((isModel || isAppend)
         && (!isSyntaxCheck || isScriptCheck && fileOpenCheck)) {
       // only if first character is "|" do we consider "|" to be new line

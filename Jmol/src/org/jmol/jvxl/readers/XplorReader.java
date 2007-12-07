@@ -84,6 +84,7 @@ That is:
         readVoxelVectors();
         for (int i = 0; i < 3; ++i)
           Logger.info("voxel grid vector:" + volumetricVectors[i]);
+        JvxlReader.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
       return readExtraLine();
     } catch (Exception e) {
       Logger.error(e.toString());
@@ -95,8 +96,14 @@ That is:
   protected void readTitleLines() throws Exception {
     jvxlFileHeaderBuffer = new StringBuffer();
     int nLines = parseInt(getLine());
-    for (int i = nLines; --i >= 0; )
-      jvxlFileHeaderBuffer.append(br.readLine()).append('\n');
+    int nOut = 0;
+    for (int i = nLines; --i >= 0; ) {
+      line = br.readLine();
+      if (nOut++ < 2)
+        jvxlFileHeaderBuffer.append(line).append('\n');
+    }
+    for (; nOut < 2; nOut++)
+      jvxlFileHeaderBuffer.append("Xplor data\n");
   }
 
   int nBlock;
@@ -129,18 +136,15 @@ That is:
     UnitCell cell = new UnitCell(new float[] {a, b, c, alpha, beta, gamma});
     Point3f pt;
     //these vectors need not be perpendicular
-    pt = new Point3f(0, 0, 1);
+    pt = new Point3f(0, 0, 1f/nC);
     cell.toCartesian(pt);
     volumetricVectors[0].set(pt);
-    volumetricVectors[0].scale(nC);
-    pt = new Point3f(0, 1, 0);
+    pt = new Point3f(0, 1f/nB, 0);
     cell.toCartesian(pt);
     volumetricVectors[1].set(pt);
-    volumetricVectors[1].scale(nB);
-    pt = new Point3f(1, 0, 0);
+    pt = new Point3f(1f/nA, 0, 0);
     cell.toCartesian(pt);
     volumetricVectors[2].set(pt);
-    volumetricVectors[2].scale(nA);
  
     //ZYX
     
@@ -179,9 +183,12 @@ That is:
     float val = parseFloat(line.substring(linePt, linePt+12));
     linePt += 12;
     nRead++;
+    //System.out.println("val " + val);
     return val;
   }
 
+//  for(int i = 1; i < 1000; i=i+1)
+  //  System.out.println( (int)(((9999.0 + (i/100000000.)+(i/1000.)+0.000000001)-9999.0) * 100000000.));
 
 }
 

@@ -68,13 +68,14 @@ class IsoShapeReader extends VolumeDataReader {
     precalculateVoxelData = false;
     if (center.x == Float.MAX_VALUE)
       center.set(0, 0, 0);
+    String type = "sphere";
     switch (dataType) {
     case Parameters.SURFACE_ATOMICORBITAL:
       calcFactors(psi_n, psi_l, psi_m);
       radius = autoScaleOrbital();
       ppa = 5f;
       maxGrid = 40;
-      setHeader("hydrogen-like orbital\n");
+      type = "hydrogen-like orbital";
       break;
     case Parameters.SURFACE_LOBE:
       allowNegative = false;
@@ -84,15 +85,16 @@ class IsoShapeReader extends VolumeDataReader {
         radius /= eccentricityScale;
       ppa = 10f;
       maxGrid = 21;
-      setHeader("lobe\n");
+      type = "lobe";
       break;
-    //case Parameters.SURFACE_SPHERE:
-    //case Parameters.SURFACE_ELLIPSOID:
+    case Parameters.SURFACE_ELLIPSOID:
+      type = "ellipsoid";
+      // fall through
+    case Parameters.SURFACE_SPHERE:
     default:
       radius = 1.2f * sphere_radiusAngstroms * eccentricityScale;
       ppa = 10f;
       maxGrid = 22;
-      setHeader("sphere\n");
       break;
     }
     setVoxelRange(0, -radius, radius, ppa, maxGrid);
@@ -101,6 +103,7 @@ class IsoShapeReader extends VolumeDataReader {
       setVoxelRange(2, -radius, radius, ppa, maxGrid);
     else
       setVoxelRange(2, 0, radius / eccentricityRatio, ppa, maxGrid);
+    setHeader(type + "\n");
   }
 
   protected float getValue(int x, int y, int z) {

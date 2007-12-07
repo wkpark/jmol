@@ -799,7 +799,7 @@ public class SurfaceGenerator {
     voxelReader.jvxlUpdateInfo();
     setMarchingSquares(voxelReader.marchingSquares);
     voxelReader.discardTempData(false);
-    voxelReader = null;
+    //voxelReader = null;
     params.mappedDataMin = Float.MAX_VALUE;
   }
 
@@ -828,7 +828,7 @@ public class SurfaceGenerator {
     voxelReader.discardTempData(true);
     if (meshDataServer != null)
       meshDataServer.notifySurfaceMappingCompleted();
-    }
+  }
 
   public Object getProperty(String property, int index) {
     //StringBuffer bs = new StringBuffer();

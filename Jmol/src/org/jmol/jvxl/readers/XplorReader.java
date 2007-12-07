@@ -30,6 +30,7 @@ import javax.vecmath.Point3f;
 
 import org.jmol.symmetry.UnitCell;
 import org.jmol.util.Logger;
+import org.jmol.viewer.Viewer;
 
 class XplorReader extends VolumeFileReader {
 
@@ -96,14 +97,11 @@ That is:
   protected void readTitleLines() throws Exception {
     jvxlFileHeaderBuffer = new StringBuffer();
     int nLines = parseInt(getLine());
-    int nOut = 0;
     for (int i = nLines; --i >= 0; ) {
-      line = br.readLine();
-      if (nOut++ < 2)
-        jvxlFileHeaderBuffer.append(line).append('\n');
+      line = br.readLine().trim();
+      jvxlFileHeaderBuffer.append("# ").append(line).append('\n');
     }
-    for (; nOut < 2; nOut++)
-      jvxlFileHeaderBuffer.append("Xplor data\n");
+    jvxlFileHeaderBuffer.append("Xplor data\nJmol " + Viewer.getJmolVersion() + '\n');
   }
 
   int nBlock;

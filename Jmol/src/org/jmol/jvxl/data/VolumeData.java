@@ -282,14 +282,21 @@ public class VolumeData {
           voxelData[x][y][z] = calcVoxelPlaneDistance(x, y, z);
   }
 
-  public void squareData() {
+  public void filterData(boolean isSquared, float invertCutoff) {
+    boolean doInvert = (!Float.isNaN(invertCutoff));
     int nx = voxelCounts[0];
     int ny = voxelCounts[1];
     int nz = voxelCounts[2];
-    for (int x = 0; x < nx; x++)
-      for (int y = 0; y < ny; y++)
-        for (int z = 0; z < nz; z++)
-          voxelData[x][y][z] = voxelData[x][y][z] * voxelData[x][y][z];
+    if (isSquared) 
+      for (int x = 0; x < nx; x++)
+        for (int y = 0; y < ny; y++)
+          for (int z = 0; z < nz; z++)
+            voxelData[x][y][z] = voxelData[x][y][z] * voxelData[x][y][z];
+    if (doInvert) 
+      for (int x = 0; x < nx; x++)
+        for (int y = 0; y < ny; y++)
+          for (int z = 0; z < nz; z++)
+            voxelData[x][y][z] = invertCutoff - voxelData[x][y][z];
   }
 
   public void capData(Point4f plane, float cutoff) {

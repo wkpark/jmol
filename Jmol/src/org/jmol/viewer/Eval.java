@@ -9905,6 +9905,10 @@ class Eval { //implements Runnable {
               : "_orb");
           break;
         }
+        if (str.equalsIgnoreCase("INSIDEOUT")) {
+          propertyName = "insideOut";
+          break;
+        }
         // surface objects
         if (str.equalsIgnoreCase("MAP")) { // "use current"
           surfaceObjectSeen = !isCavity;

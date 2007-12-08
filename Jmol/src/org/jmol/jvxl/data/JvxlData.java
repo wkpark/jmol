@@ -146,6 +146,7 @@ public class JvxlData {
   public int colorFractionBase;
   public int colorFractionRange;
 
+  public boolean insideOut;
   public boolean isXLowToHigh;
   public boolean isContoured;
   public boolean isBicolorMap;

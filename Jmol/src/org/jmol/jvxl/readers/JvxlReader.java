@@ -235,7 +235,7 @@ public class JvxlReader extends VolumeFileReader {
     skipComments(false);
     if (showMsg)
       Logger.info("reading jvxl data set: " + line);
-
+    
     jvxlCutoff = parseFloat(line);
     Logger.info("JVXL read: cutoff " + jvxlCutoff);
 
@@ -252,8 +252,8 @@ public class JvxlReader extends VolumeFileReader {
 
     // * nInts saved as -1 - nInts
     
-    // early on I wasn't contouring planes, so it's possible that a plane would
-    // not be contoured (-1 -1), but that is NOT a possibility anymore with Jmol.
+    // it's possible that a plane will not be contoured (-1 -1) when it is a solid color.
+    // why you would want to save this as JVXL is another question.
     // instead, we just set "contour 1" to indicate just one contour to demo that.
     // In addition, now we consider contouring functionXY, so in that case we would
     // have surface data, edge data, and color data
@@ -276,6 +276,9 @@ public class JvxlReader extends VolumeFileReader {
       }
       Logger.info("JVXL read: {" + params.thePlane.x + " " + params.thePlane.y
           + " " + params.thePlane.z + " " + params.thePlane.w + "}");
+      if (param2 == -1 && param3 < 0)
+        param3 = -param3;
+      //error in some versions of Jmol. (fixed in 11.3.54)
     } else {
       params.thePlane = null;
     }
@@ -293,7 +296,8 @@ public class JvxlReader extends VolumeFileReader {
       params.isContoured = false;
     }
 
-    jvxlDataIsPrecisionColor = (param1 == -1 && param2 == -2 || param3 < 0);
+    jvxlDataIsPrecisionColor = (param1 == -1 && param2 == -2 
+        || param3 < 0);
     params.isBicolorMap = (param1 > 0 && param2 < 0);
     jvxlDataIsColorMapped = (param3 != 0);
     jvxlDataIs2dContour = (jvxlDataIsColorMapped && params.isContoured);
@@ -346,6 +350,10 @@ public class JvxlReader extends VolumeFileReader {
       Logger.info("JVXL read: color red/blue: " + params.valueMappedToRed + "/"
           + params.valueMappedToBlue);
     }
+    jvxlData.insideOut = (line.indexOf("insideOut") >= 0);
+    if (params.insideOut)
+      jvxlData.insideOut = !jvxlData.insideOut;
+    params.insideOut = jvxlData.insideOut;
     jvxlData.valueMappedToRed = params.valueMappedToRed;
     jvxlData.valueMappedToBlue = params.valueMappedToBlue;
     jvxlData.mappedDataMin = params.mappedDataMin;
@@ -415,10 +423,10 @@ public class JvxlReader extends VolumeFileReader {
           endOfData = true;
           nThisValue = 10000;
           //throw new NullPointerException();
-        } else if (sb != null){
+        } else if (sb != null) {
           sb.append(line).append('\n');
         }
-      }
+      } 
       thisInside = !thisInside;
       ++jvxlNSurfaceInts;
     }
@@ -428,6 +436,8 @@ public class JvxlReader extends VolumeFileReader {
 
   protected static void setSurfaceInfo(JvxlData jvxlData, Point4f thePlane, int nSurfaceInts, StringBuffer surfaceData) {
     jvxlData.jvxlSurfaceData = surfaceData.toString();
+    if (jvxlData.jvxlSurfaceData.indexOf("--") == 0)
+      jvxlData.jvxlSurfaceData = jvxlData.jvxlSurfaceData.substring(2);
     jvxlData.jvxlPlane = thePlane;
     jvxlData.nSurfaceInts = nSurfaceInts;
   }
@@ -714,7 +724,8 @@ public class JvxlReader extends VolumeFileReader {
 
       String s = " " + jvxlData.jvxlPlane.x + " " + jvxlData.jvxlPlane.y + " "
           + jvxlData.jvxlPlane.z + " " + jvxlData.jvxlPlane.w;
-      definitionLine += (jvxlData.isContoured ? "-1 -2 " : "-1 -1 ") + (-nColorData) + s;
+      definitionLine += (jvxlData.isContoured ? "-1 -2 " + (-nColorData): "-1 -1 " + nColorData) 
+      + s;
       info += "; " + (nColorData > 0 ? "color mapped " : "") + "plane: {" + s
           + " }";
     }
@@ -740,6 +751,11 @@ public class JvxlReader extends VolumeFileReader {
     if (jvxlData.isXLowToHigh)
       info += "\n# progressive JVXL+ -- X values read from low(0) to high(" + (jvxlData.nPointsX - 1) + ")";
     info += "\n# created using Jvxl.java";
+    if (jvxlData.insideOut) {
+      info += "\n# insideOut";
+      definitionLine += " insideOut";
+    }
+    info += "precision: " + jvxlData.isJvxlPrecisionColor + " nColorData " + nColorData; 
     return (isInfo ? info : definitionLine);
   }
 

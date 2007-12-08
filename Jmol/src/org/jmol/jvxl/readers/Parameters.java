@@ -190,6 +190,7 @@ public class Parameters {
     fileIndex = 1;
     fileName = "";
     iAddGridPoints = false;
+    insideOut = false;
     isAngstroms = false;
     isBicolorMap = isCutoffAbsolute = isPositiveOnly = false;
     isCavity = false;

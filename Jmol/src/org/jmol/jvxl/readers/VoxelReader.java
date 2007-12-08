@@ -255,6 +255,7 @@ public abstract class VoxelReader implements VertexDataServer {
   boolean createIsosurface(boolean justForPlane) {
     resetIsosurface();
     readVolumeParameters();
+    jvxlData.insideOut = params.insideOut;
     if (justForPlane) {
       volumeData.setDataDistanceToPlane(params.thePlane);
       if (meshDataServer != null)
@@ -367,8 +368,8 @@ public abstract class VoxelReader implements VertexDataServer {
     contourVertexCount = 0;
     int contourType = -1;
     marchingSquares = null;
-    if (params.isSquared)
-      volumeData.squareData();
+    if (params.isSquared || params.insideOut)
+      volumeData.filterData(params.isSquared, (params.insideOut && !isJvxl? params.cutoff * 2: Float.NaN));
     if (params.thePlane != null || params.isContoured) {
       marchingSquares = new MarchingSquares(this, volumeData, params.thePlane,
           params.nContours, params.thisContour, params.contourFromZero);
@@ -485,7 +486,7 @@ public abstract class VoxelReader implements VertexDataServer {
 
   void colorIsosurface() {
     if (params.isSquared)
-      volumeData.squareData();
+      volumeData.filterData(true, Float.NaN);
     if (params.isContoured && marchingSquares == null) {
       //    if (params.isContoured && !(jvxlDataIs2dContour || params.thePlane != null)) {
       Logger.error("Isosurface error: Cannot contour this type of data.");

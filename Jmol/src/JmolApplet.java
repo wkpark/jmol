@@ -131,16 +131,14 @@ public class JmolApplet
     String s = "" + strModels[0];
     if (s.indexOf('\n') >= 0 || s.indexOf('\r') >= 0) {
       String[] converted = new String[strModels.length];
-      for (int i = strModels.length; --i >= 0;)
+      for (int i = 0; i < strModels.length; ++i)
         converted[i] = "" + strModels[i];
       ((JmolAppletInterface) wrappedApplet).loadInline(converted, "" + script);
       return;
     }
     StringBuffer sb = new StringBuffer();
-    for (int i = strModels.length; --i >= 0;) {
-      sb.append(strModels[i]);
-      sb.append('\n');
-    }
+    for (int i = 0; i < strModels.length; ++i)
+      sb.append(strModels[i]).append('\n');
     ((JmolAppletInterface) wrappedApplet).loadInline(sb.toString(), "" + script);
   }
 

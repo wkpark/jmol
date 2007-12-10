@@ -112,20 +112,41 @@ public class JmolApplet
   }
  
   public void loadInline(String strModel) {
+    //System.out.println("applet.loadInline(strModel)");
+    //System.out.println("strModel: " + strModel);
     if (wrappedApplet != null)
       ((JmolAppletInterface)wrappedApplet).loadInline(""+strModel);
   }
 
+  public void loadInlineStringScript(String strModel, String script) {
+    //System.out.println("applet.loadInlineScript(strModel, String script)");
+    loadInline(strModel, script);
+  }
+
   public void loadInline(String strModel, String script) {
+    //System.out.println("applet.loadInline(strModel, String script)");
+    //System.out.println("strModel: " + strModel);
+    //System.out.println("script:" + script);
     if (wrappedApplet != null)
       ((JmolAppletInterface)wrappedApplet).loadInline(""+strModel, ""+script);
   }
 
   public void loadInline(String[] strModels) {
+    //System.out.println("applet.loadInline(String[] strModels)");
     loadInline(strModels, "");
   }
 
-  public void loadInline(String[] strModels, String script) {
+  // bizarre Mac OS X / Java bug:
+  // Mac cannot differentiate between signatures String and String[]
+  
+    public void loadInlineArrayScript(String[] strModels, String script) {
+      loadInline(strModels, script);
+    }
+
+    public void loadInline(String[] strModels, String script) {
+    //System.out.println("applet.loadInline(String[] strModels, String script)");
+    //System.out.println("strModels: " + strModels);
+    //System.out.println("script:" + script);
     if (strModels.length == 0 || wrappedApplet == null)
       return;
     String s = "" + strModels[0];

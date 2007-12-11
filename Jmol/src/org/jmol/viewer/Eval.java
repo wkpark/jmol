@@ -5312,6 +5312,10 @@ class Eval { //implements Runnable {
           plane = (getToken(2).tok == Token.none ? null : hklParameter(2));
           break;
         }
+        if (str.equalsIgnoreCase("reference")) {
+          //only in 11.2; deprecated
+          return;
+        }
       default:
         invalidArgument();
       }

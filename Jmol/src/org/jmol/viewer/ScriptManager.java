@@ -52,6 +52,17 @@ class ScriptManager {
     return (String) addScript("String", strScript, "", isScriptFile, isQuiet);
   }
 
+  public synchronized void flushQueue(String command) {
+    for (int i = scriptQueue.size(); --i >= 0;) {
+      String strScript = (String)(((Vector)scriptQueue.elementAt(i)).elementAt(0));
+      if (strScript.indexOf(command) == 0) {
+        scriptQueue.removeElementAt(i);
+        if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+          Logger.debug(scriptQueue.size() + " scripts; removed: " + strScript);
+      }
+    }
+  }
+
   public Object addScript(String returnType, String strScript,
                           String statusList, boolean isScriptFile,
                           boolean isQuiet) {
@@ -100,16 +111,16 @@ class ScriptManager {
   Object runNextScript() {
     if (scriptQueue.size() == 0)
       return null;
-    Vector scriptItem = (Vector) scriptQueue.get(0);
-    String script = (String) scriptItem.get(0);
-    String statusList = (String) scriptItem.get(1);
-    String returnType = (String) scriptItem.get(2);
-    boolean isScriptFile = ((Boolean) scriptItem.get(3)).booleanValue();
-    boolean isQuiet = ((Boolean) scriptItem.get(4)).booleanValue();
+    Vector scriptItem = (Vector) scriptQueue.elementAt(0);
+    String script = (String) scriptItem.elementAt(0);
+    String statusList = (String) scriptItem.elementAt(1);
+    String returnType = (String) scriptItem.elementAt(2);
+    boolean isScriptFile = ((Boolean) scriptItem.elementAt(3)).booleanValue();
+    boolean isQuiet = ((Boolean) scriptItem.elementAt(4)).booleanValue();
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug(scriptQueue.size() + " scripts; running: " + script);
     }
-    scriptQueue.removeElementAt(0);
+    scriptQueue.removeElement(scriptItem);
     Object returnInfo = runScript(returnType, script, statusList, isScriptFile,
         isQuiet);
     if (scriptQueue.size() == 0) // might have been cleared with an exit

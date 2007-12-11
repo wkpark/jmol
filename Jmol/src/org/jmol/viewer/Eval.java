@@ -261,6 +261,9 @@ class Eval { //implements Runnable {
     this.historyDisabled = historyDisabled;
     try {
       instructionDispatchLoop(false);
+      String script = viewer.getInterruptScript();
+      if (script != "")
+        runScript(script, null);
     } catch (ScriptException e) {
       error = true;
       setErrorMessage(e.toString());
@@ -293,18 +296,15 @@ class Eval { //implements Runnable {
   }
 
   private void runScript(String script) throws ScriptException {
-    //load, restore
-    pushContext(null);
-    if (loadScript(null, script, false))
-      instructionDispatchLoop(false);
-    popContext();
+    runScript(script, null);
   }
 
   void runScript(String script, StringBuffer outputBuffer)
       throws ScriptException {
     //a = script("xxxx")
     pushContext(null);
-    this.outputBuffer = outputBuffer;
+    if (outputBuffer != null)
+      this.outputBuffer = outputBuffer;
     if (loadScript(null, script, false))
       instructionDispatchLoop(false);
     popContext();
@@ -670,7 +670,7 @@ class Eval { //implements Runnable {
     if (!interruptExecution.booleanValue()) {
       if (!executionPaused.booleanValue())
         return true;
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      if (Logger.debugging) {
         Logger.debug("script execution paused at this command: " + thisCommand);
       }
       try {
@@ -817,7 +817,7 @@ class Eval { //implements Runnable {
     long timeBegin = 0;
     isForCheck = false;
     debugScript = (!isSyntaxCheck && viewer.getDebugScript());
-    logMessages = (debugScript && Logger.isActiveLevel(Logger.LEVEL_DEBUG));
+    logMessages = (debugScript && Logger.debugging);
     if (logMessages) {
       timeBegin = System.currentTimeMillis();
       viewer.scriptStatus("Eval.instructionDispatchLoop():" + timeBegin);
@@ -1180,9 +1180,6 @@ class Eval { //implements Runnable {
       if (!isSyntaxCheck)
         viewer.setCursor(Viewer.CURSOR_DEFAULT);
     }
-    String script = viewer.getInterruptScript();
-    if (script != "")
-      runScript(script);
   }
 
   private void flowControl(int tok) throws ScriptException {
@@ -2324,7 +2321,7 @@ class Eval { //implements Runnable {
         float w = Graphics3D.getNormalThroughPoints(pt1, pt2, pt3, plane, vAB,
             vAC);
         Point4f p = new Point4f(plane.x, plane.y, plane.z, w);
-        if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        if (!isSyntaxCheck && Logger.debugging) {
           Logger.debug("points: " + pt1 + pt2 + pt3 + " defined plane: " + p);
         }
         return p;
@@ -2380,7 +2377,8 @@ class Eval { //implements Runnable {
     Vector3f plane = new Vector3f();
     float w = Graphics3D.getNormalThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
     Point4f p = new Point4f(plane.x, plane.y, plane.z, w);
-    Logger.info("defined plane: " + p);
+    if (!isSyntaxCheck && Logger.debugging)
+      Logger.info("defined plane: " + p);
     return p;
   }
 
@@ -4056,9 +4054,14 @@ class Eval { //implements Runnable {
         zap();
         return;
       }
+      if (filename.equals("string[]"))
+        return;
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck) {
         viewer.openFile(filename, htParams, null, isAppend);
-        loadScript.append(" /*file*/").append(
+        loadScript.append(" ");
+        if (!filename.equals("string") && !filename.equals("string[]"))
+          loadScript.append("/*file*/");
+        loadScript.append(
             Escape.escape(modelName = (String) htParams.get("fullPathName")));
       }
     } else if (getToken(i + 1).tok == Token.leftbrace
@@ -4066,6 +4069,12 @@ class Eval { //implements Runnable {
         || theTok == Token.identifier) {
       if ((filename = parameterAsString(i++)).length() == 0)
         filename = viewer.getFullPathName();
+      if (filename == null) {
+        zap();
+        return;
+      }
+      if (filename.equals("string[]"))
+        return;
       int tok;
       String sOptions = "";
       if ((tok = tokAt(i)) == Token.identifier
@@ -4090,22 +4099,22 @@ class Eval { //implements Runnable {
         int iGroup = -1;
         int[] p;
         float distance = 0;
-       /*
-        * # Jmol 11.3.9 introduces the capability of visualizing the close contacts 
-        * around a crystalline protein (or any other cyrstal structure) that are to 
-        * atoms that are in proteins in adjacent unit cells or adjacent to the 
-        * protein itself. The option RANGE x, where x is a distance in angstroms, 
-        * placed right after the braces containing the set of unit cells to load 
-        * does this. The distance, if a positive number, is the maximum distance 
-        * away from the closest atom in the {1 1 1} set. If the distance x is a 
-        * negative number, then -x is the maximum distance from the {not symmetry} set. 
-        * The difference is that in the first case the primary unit cell (555) is 
-        * first filled as usual, using symmetry operators, and close contacts to 
-        * this set are found. In the second case, only the file-based atoms (
-        * Jones-Faithful operator x,y,z) are initially included, then close 
-        * contacts to that set are found. Depending upon the application, one or the 
-        * other of these options may be desirable.
-        */
+        /*
+         * # Jmol 11.3.9 introduces the capability of visualizing the close contacts 
+         * around a crystalline protein (or any other cyrstal structure) that are to 
+         * atoms that are in proteins in adjacent unit cells or adjacent to the 
+         * protein itself. The option RANGE x, where x is a distance in angstroms, 
+         * placed right after the braces containing the set of unit cells to load 
+         * does this. The distance, if a positive number, is the maximum distance 
+         * away from the closest atom in the {1 1 1} set. If the distance x is a 
+         * negative number, then -x is the maximum distance from the {not symmetry} set. 
+         * The difference is that in the first case the primary unit cell (555) is 
+         * first filled as usual, using symmetry operators, and close contacts to 
+         * this set are found. In the second case, only the file-based atoms (
+         * Jones-Faithful operator x,y,z) are initially included, then close 
+         * contacts to that set are found. Depending upon the application, one or the 
+         * other of these options may be desirable.
+         */
         if (tokAt(i) == Token.range) {
           i++;
           distance = floatParameter(i++);
@@ -4154,7 +4163,10 @@ class Eval { //implements Runnable {
       }
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck) {
         viewer.openFile(filename, htParams, null, isAppend);
-        loadScript.append(" /*file*/").append(
+        loadScript.append(" ");
+        if (!filename.equals("string") && !filename.equals("string[]"))
+          loadScript.append("/*file*/");
+        loadScript.append(
             Escape.escape(modelName = (String) htParams.get("fullPathName")));
         loadScript.append(sOptions);
       }
@@ -5274,9 +5286,13 @@ class Eval { //implements Runnable {
       return;
     case Token.leftbrace:
       plane = planeParameter(1);
-      if (!isSyntaxCheck)
-        viewer.slabInternal(plane, isDepth);
-      return;
+      break;
+    case Token.minus:
+      if (parameterAsString(2).equalsIgnoreCase("hkl")) {
+        plane = (getToken(3).tok == Token.none ? null : hklParameter(3));
+        break;
+      }
+      invalidArgument();
     case Token.plane:
       switch (getToken(2).tok) {
       case Token.none:
@@ -5284,26 +5300,21 @@ class Eval { //implements Runnable {
       default:
         plane = planeParameter(2);
       }
-      if (!isSyntaxCheck)
-        viewer.slabInternal(plane, isDepth);
-      return;
+      break;
     case Token.identifier:
       String str = parameterAsString(1);
       if (str.equalsIgnoreCase("hkl")) {
         plane = (getToken(2).tok == Token.none ? null : hklParameter(2));
-        if (!isSyntaxCheck)
-          viewer.slabInternal(plane, isDepth);
-        return;
-      }
-      if (str.equalsIgnoreCase("reference")) {
-        Point3f pt = centerParameter(2);
-        if (!isSyntaxCheck)
-          viewer.slabInternalReference(pt);
-        return;
+        if (plane != null) {
+          plane.scale(-1);
+        }
+        break;
       }
     default:
       invalidArgument();
     }
+    if (!isSyntaxCheck)
+      viewer.slabInternal(plane, isDepth);
   }
 
   private int getDiameterTok() throws ScriptException {

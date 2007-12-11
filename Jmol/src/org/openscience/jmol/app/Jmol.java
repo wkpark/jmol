@@ -1347,7 +1347,7 @@ public class Jmol extends JPanel {
     public void actionPerformed(ActionEvent e) {
       String str = ImageSelection.getClipboardText();
       if (str != null && str.length() > 0)
-        viewer.loadInline(str);
+        viewer.loadInline(str, false);
     }
   }
  

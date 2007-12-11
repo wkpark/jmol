@@ -31,7 +31,6 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
@@ -178,7 +177,7 @@ abstract class TransformManager {
                append(" ").append(depthPlane.z).
                append(" ").append(depthPlane.w).append(" };\n");
     if (depthPlane != null || slabPlane != null)
-      commands.append("  slab reference ").append(Escape.escape(slabRef)).
+      commands./*append("  slab reference ").append(Escape.escape(slabRef)).*/
                append(slabEnabled || isNavigationMode? ";slab on" : "").append(";\n");
     commands.append(getSpinState(true)).append("\n");
     if (viewer.modelSetHasVibrationVectors()) {
@@ -679,6 +678,7 @@ abstract class TransformManager {
    */
 
   boolean slabEnabled = false;
+  boolean internalSlab = false;
 
   int slabPercentSetting;
   int depthPercentSetting;
@@ -694,8 +694,8 @@ abstract class TransformManager {
   void slabReset() {
     slabToPercent(100);
     depthToPercent(0);
-    slabInternal(null, false);
-    slabInternal(null, true);
+    depthPlane = null;
+    slabPlane = null;
     setSlabEnabled(false);
   }
   
@@ -706,36 +706,18 @@ abstract class TransformManager {
   void slabByPercentagePoints(int percentage) {
     slabPlane = null;
     slabPercentSetting += percentage;
-    /*
-    if (slabPercentSetting < 0)
-      slabPercentSetting = 0;
-    else if (slabPercentSetting > 100)
-      slabPercentSetting = 100;
-*/    if (depthPercentSetting >= slabPercentSetting)
+    if (depthPercentSetting >= slabPercentSetting)
       depthPercentSetting = slabPercentSetting - 1;
   }
 
   void depthByPercentagePoints(int percentage) {
     depthPlane = null;
     depthPercentSetting += percentage;
-/*    
-    if (depthPercentSetting < 0)
-      depthPercentSetting = 0;
-    else if (depthPercentSetting > 99)
-      depthPercentSetting = 99;
-*/    if (slabPercentSetting <= depthPercentSetting)
+    if (slabPercentSetting <= depthPercentSetting)
       slabPercentSetting = depthPercentSetting + 1;
   }
 
   void slabDepthByPercentagePoints(int percentage) {
-/*    if (percentage > 0) {
-      if (slabPercentSetting + percentage > 100)
-        percentage = 100 - slabPercentSetting;
-    } else {
-      if (depthPercentSetting + percentage < 0)
-        percentage = 0 - depthPercentSetting;
-    }
-*/  
     slabPlane = null;
     depthPlane = null;
     slabPercentSetting += percentage;
@@ -745,159 +727,55 @@ abstract class TransformManager {
   void slabToPercent(int percentSlab) {
     slabPercentSetting = percentSlab;
     slabPlane = null;
-/*    < 0 ? 0 : percentSlab > 100 ? 100
-        : percentSlab;
-*/    if (depthPercentSetting >= slabPercentSetting)
+    if (depthPercentSetting >= slabPercentSetting)
       depthPercentSetting = slabPercentSetting - 1;
   }
 
   Point4f slabPlane = null;
   Point4f depthPlane = null;
-  Point3f slabRef = new Point3f(0, 0, 0);
-  float slabRefDistance;//, depthRefDistance;
   
   void depthToPercent(int percentDepth) {
     depthPercentSetting = percentDepth;
-    /*< 0 ? 0 : percentDepth > 99 ? 99
-        : percentDepth;*/
     if (slabPercentSetting <= depthPercentSetting)
       slabPercentSetting = depthPercentSetting + 1;
   }
 
-  Point4f getDepthPlane(boolean isInternal) {
-    // eval "slab set"
-    if (isInternal)
-      return depthPlane;
-    if (!slabEnabled)
-      return null;
-    pointT.set(0, 0, 0);
-    transformPoint(pointT, pointT2);
-    pointT2.z = depthValue;
-    unTransformPoint(pointT2, pointT);
-    return new Point4f(pointT.x ,pointT.y ,pointT.z
-        ,-(pointT.x * pointT.x + pointT.y * pointT.y + pointT.z * pointT.z));
-    
-  }
-  
-  Point4f getSlabPlane(boolean isInternal) {
-    // eval "slab set"
-    if (isInternal)
-      return slabPlane;
-    if (!slabEnabled)
-      return null;
-    pointT.set(0, 0, 0);
-    transformPoint(pointT, pointT2);
-    pointT2.z = slabValue;
-    unTransformPoint(pointT2, pointT);
-    return new Point4f(pointT.x ,pointT.y ,pointT.z
-        ,-(pointT.x * pointT.x + pointT.y * pointT.y + pointT.z * pointT.z));
-  }
-  
-  void slabInternal(Point4f plane, boolean isDepth) {
-    if (isDepth) {
-      depthPlane = plane;
-    } else {
-      slabPlane = plane;
-    }
-    slabRef = new Point3f(0, 0, 0);
-    slabRefDistance = Float.NaN;
-  }
-  
   /**
    * set internal slab or depth from screen-based slab or depth
    * @param isDepth
    */
   void setSlabDepthInternal(boolean isDepth) {
-    Point4f plane = getSlabPlane(false);
-    Point4f plane2;
-    int slab = slabPercentSetting;
-    int depth = depthPercentSetting;
+    finalizeTransformParameters();
     if (isDepth) {
-      plane = getDepthPlane(false);
-      plane2 = getSlabPlane(true);
-      slabReset();
-      slabToPercent(slab);
-      slabInternal(plane, true);
-      slabInternal(plane2, false);
+      depthPlane = null;
+      depthPlane = getSlabDepthPlane(true);
     } else {
-      plane = getSlabPlane(false);
-      plane2 = getDepthPlane(true);
-      slabReset();
-      depthToPercent(depth);
-      slabInternal(plane, false);
-      slabInternal(plane2, true);
+      slabPlane = null;
+      slabPlane = getSlabDepthPlane(false);
     }
-    slabInternalReference(null);
   }
   
-
-  void slabInternalReference(Point3f ptRef) {
-    slabRef = ptRef;
-    if (ptRef == null) {
-      //set based on screen Z
-      slabRef = new Point3f(fixedRotationCenter);
-      Point3f pt1 = pointOnPlane(slabPlane);
-      Point3f pt2 = pointOnPlane(depthPlane);
-      float d1 = Graphics3D.distanceToPlane(slabPlane, slabRef);
-      float d2 = Graphics3D.distanceToPlane(depthPlane, slabRef);
-      if (slabPlane != null && depthPlane != null && (d1 <= 0 || d2 >= 0)) {
-        pt2.sub(pt1);
-        pt2.scale(2);
-        pt2.add(pt1);
-        slabRef.set(pt2);
-      } else if (slabPlane != null && d1 <= 0) {
-        pt1.sub(slabRef);
-        slabRef.set(-slabRef.x + 2 * pt1.x, -slabRef.y + 2 * pt1.y, -slabRef.z
-            + 2 * pt1.z);
-      } else if (depthPlane != null && d2 >= 0) {
-        pt2.sub(slabRef);
-        slabRef.set(-slabRef.x + 2 * pt2.x, -slabRef.y + 2 * pt2.y, -slabRef.z
-            + 2 * pt2.z);
-      } else {
-        // nothing to do if neither is defined
-      }
+  Point4f getSlabDepthPlane(boolean isDepth) {
+    // the third row of the matrix defines the Z coordinate, which is all we need
+    // and, in fact, it defines the plane. How convenient!
+    // eval "slab set"
+    if (isDepth) {
+      if (depthPlane != null)
+        return depthPlane;
+    } else {
+      if (slabPlane != null)
+        return slabPlane;
     }
-    slabRefDistance = Float.NaN;
+    Matrix4f m = matrixTransform;
+    return new Point4f(m.m20, m.m21, m.m22, m.m23 - (isDepth ? depthValue : slabValue)); 
   }
   
   boolean checkInternalSlab(Point3f pt) {
-     return (slabPlane != null && isSlabbedInternal(pt, false)
-       || depthPlane != null && !isSlabbedInternal(pt, true));
-  }
-  
-  boolean isSlabbedInternal(Point3f pt, boolean isDepth) {
-    //could be easily expanded to any number of planes
-    if (Float.isNaN(slabRefDistance)) {
-      Point4f plane = (slabPlane == null ? depthPlane : slabPlane);
-      if ((slabRefDistance = Graphics3D.distanceToPlane(plane, slabRef)) == 0) {
-        slabRef.x -= 0.12334;
-        if ((slabRefDistance = Graphics3D.distanceToPlane(plane, slabRef)) == 0) {
-          slabRef.y -= 0.12334;
-        }
-        if ((slabRefDistance = Graphics3D.distanceToPlane(plane, slabRef)) == 0) {
-          slabRef.z -= 0.12334;
-          slabRefDistance = Graphics3D.distanceToPlane(plane, slabRef);
-        }
-        //depthRefDistance = Graphics3D.distanceToPlane(depthPlane, slabRef);
-      }      
-    }
-    float d = Graphics3D.distanceToPlane(isDepth ? depthPlane : slabPlane, pt);
-    return (slabRefDistance < 0 && d > 0 || slabRefDistance > 0 && d < 0);
-  }
-
-  static Point3f pointOnPlane(Point4f plane) {
-    if (plane == null)
-      return null;
-    Point3f pt = new Point3f();
-    if (plane.w == 0)
-      return pt;
-    if (plane.x != 0)
-      pt.x = 1/plane.x;
-    else if (plane.y != 0)
-      pt.y = 1/plane.y;
-    else
-      pt.z = 1/plane.z;
-    return pt;
+    return (slabPlane != null 
+         && pt.x * slabPlane.x + pt.y * slabPlane.y + pt.z * slabPlane.z + slabPlane.w < 0
+         || depthPlane != null 
+         && pt.x * depthPlane.x + pt.y * depthPlane.y + pt.z * depthPlane.z + depthPlane.w > 0
+         );
   }
   
   /* ***************************************************************
@@ -1254,6 +1132,7 @@ abstract class TransformManager {
   synchronized void finalizeTransformParameters() {
     haveNotifiedNaN = false;
     fixedRotationOffset.set(fixedTranslation);
+    internalSlab = slabEnabled && (slabPlane != null || depthPlane != null);
     calcZoom();
     calcCameraFactors();
     calcTransformMatrix();
@@ -1278,15 +1157,16 @@ abstract class TransformManager {
    * superceded in navigation mode
    *
    */
+  
   protected void calcSlabAndDepthValues() {
-    slabValue = 0;
-    depthValue = Integer.MAX_VALUE;
-    if (!slabEnabled)
-      return;
-    // a slab percentage of 100 should map to zero
-    // a slab percentage of 0 should map to -diameter
     slabValue = (int) ((1 - slabPercentSetting / 50f) * modelRadiusPixels + modelCenterOffset);
     depthValue = (int) ((1 - depthPercentSetting / 50f) * modelRadiusPixels + modelCenterOffset);
+    viewer.getGlobalSettings().setParameterValue("_slabPlane", Escape.escape(getSlabDepthPlane(false)));
+    viewer.getGlobalSettings().setParameterValue("_depthPlane", Escape.escape(getSlabDepthPlane(true)));
+    if (slabEnabled)
+      return;
+    slabValue = 0;
+    depthValue = Integer.MAX_VALUE;
   }
 
   synchronized protected void calcTransformMatrix() {
@@ -1341,7 +1221,7 @@ abstract class TransformManager {
   synchronized Point3i transformPoint(Point3f pointAngstroms) {
     matrixTransform(pointAngstroms, point3fScreenTemp);
     adjustTemporaryScreenPoint();
-    if (slabEnabled && checkInternalSlab(pointAngstroms))
+    if (internalSlab && checkInternalSlab(pointAngstroms))
       point3iScreenTemp.z = 1;
     return point3iScreenTemp;
   }
@@ -1358,7 +1238,7 @@ abstract class TransformManager {
           pointAngstroms);
     matrixTransform(point3fVibrationTemp, point3fScreenTemp);
     adjustTemporaryScreenPoint();
-    if (slabEnabled && checkInternalSlab(pointAngstroms))
+    if (internalSlab && checkInternalSlab(pointAngstroms))
       point3iScreenTemp.z = 1;
     return point3iScreenTemp;
   }
@@ -1369,7 +1249,7 @@ abstract class TransformManager {
 
     matrixTransform(pointAngstroms, point3fScreenTemp);
     adjustTemporaryScreenPoint();
-    if (slabEnabled && checkInternalSlab(pointAngstroms))
+    if (internalSlab && checkInternalSlab(pointAngstroms))
       point3fScreenTemp.z = 1;
     screen.set(point3fScreenTemp);
   }
@@ -1677,7 +1557,7 @@ abstract class TransformManager {
     }
     if (addComments)
       sb.append(" /* zoom, translation */ ");
-    truncate2(sb, zoomPercent);
+    truncate2(sb, zoomPercentSetting);
     truncate2(sb, getTranslationXPercent());
     truncate2(sb, getTranslationYPercent());
     sb.append(" ");

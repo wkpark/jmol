@@ -113,7 +113,7 @@ import netscape.javascript.JSObject;
  * 
  */
 
-public class Jmol implements WrappedApplet, JmolAppletInterface {
+public class Jmol implements WrappedApplet {
 
   JmolViewer viewer;
 
@@ -742,29 +742,54 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     return viewer.getProperty("JSON", infoType, paramInfo).toString();
   }
 
-  public void loadInline(String strModel) {
-    if (strModel == null)
-      return;
-    viewer.loadInline(strModel, (char) 0);
-  }
-  
-  public void loadInline(String[] strModels) {
-    loadInline(strModels, "");
-  }
-  
-  public void loadInline(String strModel, String script) {
-    loadInline(strModel);
+  public void loadInlineString(String strModel, String script, boolean isAppend) {
+    viewer.loadInline(strModel, isAppend);
     script(script);
   }
 
-  public void loadInline(String[] strModels, String script) {
+  public void loadInlineArray(String[] strModels, String script, boolean isAppend) {
     if (strModels == null || strModels.length == 0)
       return;
-    viewer.loadInline(strModels);
+    viewer.loadInline(strModels, isAppend);
     script(script);
   }
+
+  /**
+   * @deprecated
+   * @param strModel
+   */
+  public void loadInline(String strModel) {
+    loadInlineString(strModel, "", false);
+  }
   
+  /**
+   * @deprecated
+   * @param strModel
+   * @param script
+   */
+  public void loadInline(String strModel, String script) {
+    loadInlineString(strModel, script, false);
+  }
+  
+  /**
+   * @deprecated
+   * @param strModels
+   */
+  public void loadInline(String[] strModels) {
+    loadInlineArray(strModels, "", false);
+  }  
+  
+  /**
+   * @deprecated
+   * @param strModels
+   * @param script
+   */
+  public void loadInline(String[] strModels, String script) {
+    loadInlineArray(strModels, script, false);
+  }
+
   private void loadInlineSeparated(String strModel, String script) {
+    // from an applet PARAM only -- because it converts | into \n
     if (strModel == null)
       return;
     viewer.loadInline(strModel);

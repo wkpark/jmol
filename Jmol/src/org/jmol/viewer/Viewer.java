@@ -772,23 +772,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void slabInternal(Point4f plane, boolean isDepth) {
-    transformManager.slabInternal(plane, isDepth);
-  }
-
-  Point4f getDepthPlane(boolean isInternal) {
-    return transformManager.getDepthPlane(isInternal);
-  }
-
-  Point4f getSlabPlane(boolean isInternal) {
-    return transformManager.getSlabPlane(isInternal);
-  }
-
-  void slabInternalReference(Point3f ptRef) {
-    transformManager.slabInternalReference(ptRef);
-  }
-
-  Point3f getSlabInternalReference() {
-    return transformManager.slabRef;
+    if (isDepth)
+      transformManager.depthPlane = plane;
+    else
+      transformManager.slabPlane = plane;
   }
 
   void depthToPercent(int percentDepth) {
@@ -1387,22 +1374,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void openFile(String name, Hashtable htParams, String loadScript,
-                boolean isMerge) {
+                boolean isAppend) {
     //Eval
     if (name == null)
       return;
     if (name.equalsIgnoreCase("string")) {
-      openStringInline(fileManager.getInlineData(-1), htParams, isMerge);
+      openStringInline(fileManager.getInlineData(-1), htParams, isAppend);
       return;
     }
     if (name.equalsIgnoreCase("string[]")) {
-      openStringsInline(fileManager.getInlineDataArray(), htParams, isMerge);
+      // no reloading of string[] data -- just too complicated
+      // openStringsInline(fileManager.getInlineDataArray(), htParams, false);
       return;
     }
-    if (!isMerge)
+    if (!isAppend)
       zap(false);
     long timeBegin = System.currentTimeMillis();
-    fileManager.openFile(name, htParams, loadScript, isMerge);
+    fileManager.openFile(name, htParams, loadScript, isAppend);
     long ms = System.currentTimeMillis() - timeBegin;
     setStatusFileLoaded(1, name, "", getModelSetName(), null, null);
     String sp = "";
@@ -1417,14 +1405,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void openFiles(String modelName, String[] names, String loadScript,
-                 boolean isMerge) {
+                 boolean isAppend) {
     //Eval -- names will be loaded with full path names
-    if (!isMerge)
+    if (!isAppend)
       zap(false);
     // keep old screen image while new file is being loaded
     // forceRefresh();
     long timeBegin = System.currentTimeMillis();
-    fileManager.openFiles(modelName, names, loadScript, isMerge);
+    fileManager.openFiles(modelName, names, loadScript, isAppend);
     long ms = System.currentTimeMillis() - timeBegin;
     for (int i = 0; i < names.length; i++) {
       setStatusFileLoaded(1, names[i], "", getModelSetName(), null, null);
@@ -1438,24 +1426,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private boolean openStringInline(String strModel, Hashtable htParams,
-                                   boolean isMerge) {
+                                   boolean isAppend) {
     //loadInline, openFile, openStringInline
-    if (!isMerge)
+    if (!isAppend)
       clear();
-    fileManager.openStringInline(strModel, htParams, isMerge);
-    String errorMsg = getOpenFileError(isMerge);
+    fileManager.openStringInline(strModel, htParams, isAppend);
+    String errorMsg = getOpenFileError(isAppend);
     if (errorMsg == null)
       setStatusFileLoaded(1, "string", "", getModelSetName(), null, null);
     return (errorMsg == null);
   }
 
   private void openStringsInline(String[] arrayModels, Hashtable htParams,
-                                 boolean isMerge) {
+                                 boolean isAppend) {
     //loadInline, openFile, openStringInline
-    if (!isMerge)
+    if (!isAppend)
       clear();
-    fileManager.openStringsInline(arrayModels, htParams, isMerge);
-    String errorMsg = getOpenFileError(isMerge);
+    fileManager.openStringsInline(arrayModels, htParams, isAppend);
+    String errorMsg = getOpenFileError(isAppend);
     if (errorMsg == null)
       setStatusFileLoaded(1, "string[]", "", getModelSetName(), null, null);
   }
@@ -1465,15 +1453,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void loadInline(String strModel) {
-    //applet Console, loadInline, app PasteClipboard
+    //loadInline PARAMETER for APPLET ONLY
     loadInline(strModel, global.inlineNewlineChar);
+  }
+
+  public void loadInline(String strModel, boolean isAppend) {
+    //applet Console, loadInline functions, app PasteClipboard
+    loadInline(strModel, (char) 0, isAppend);
   }
 
   public void loadInline(String strModel, char newLine) {
     loadInline(strModel, newLine, false);
   }
 
-  boolean loadInline(String strModel, char newLine, boolean isMerge) {
+  boolean loadInline(String strModel, char newLine, boolean isAppend) {
     if (strModel == null)
       return false;
     int i;
@@ -1492,7 +1485,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         strModel = strModel.substring(i + 1);
       strModel = TextFormat.simpleReplace(strModel, "" + newLine, "\n");
     }
-    String datasep = (String) global.getParameter("dataseparator");
+    String datasep = getDataSeparator();
     if (datasep != null && datasep != ""
         && (i = strModel.indexOf(datasep)) >= 0) {
       int n = 2;
@@ -1507,17 +1500,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         strModels[i] = strModel.substring(pt0, pt);
         pt0 = pt + datasep.length();
       }
-      openStringsInline(strModels, A, isMerge);
+      openStringsInline(strModels, A, isAppend);
       return true;
     }
-    return openStringInline(strModel, A, isMerge);
+    return openStringInline(strModel, A, isAppend);
   }
 
+  String getDataSeparator() {
+    return (String) global.getParameter("dataseparator");  
+  }
+  
   public void loadInline(String[] arrayModels) {
     loadInline(arrayModels, false);
   }
 
-  void loadInline(String[] arrayModels, boolean isMerge) {
+  public void loadInline(String[] arrayModels, boolean isAppend) {
     //Eval data
     //loadInline
     if (arrayModels == null || arrayModels.length == 0)
@@ -1527,7 +1524,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     A.put("params", params);
     if (global.applySymmetryToBonds)
       A.put("applySymmetryToBonds", Boolean.TRUE);
-    openStringsInline(arrayModels, A, isMerge);
+    openStringsInline(arrayModels, A, isAppend);
   }
 
   public boolean getApplySymmetryToBonds() {
@@ -1585,21 +1582,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   /**
    * the opener for Jmol
    * 
-   * @param isMerge
+   * @param isAppend
    * @return errorMsg
    */
-  String getOpenFileError(boolean isMerge) {
+  String getOpenFileError(boolean isAppend) {
     String fullPathName = getFullPathName();
     String fileName = getFileName();
     Object clientFile = fileManager.waitForClientFileOrErrorMessage();
     if (clientFile instanceof String || clientFile == null) {
       String errorMsg = (String) clientFile;
       setStatusFileNotLoaded(fullPathName, errorMsg);
-      if (errorMsg != null && !isMerge)
+      if (errorMsg != null && !isAppend)
         zap(errorMsg);
       return errorMsg;
     }
-    if (isMerge) {
+    if (isAppend) {
       modelSet = modelManager.merge(modelAdapter, clientFile);
       if (eval != null)
         eval.clearDefinitionsAndLoadPredefined();
@@ -3098,7 +3095,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   String getInterruptScript() {
     String s = interruptScript;
     interruptScript = "";
-    if ((s != "") && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if (Logger.debugging && s != "")
       Logger.debug("interrupt: " + s);
     return s;
   }
@@ -3112,7 +3109,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private String evalStringQuiet(String strScript, boolean isQuiet) {
-    interruptScript = "";
     boolean isInterrupt = (strScript.length() > 0 && strScript.charAt(0) == '!');
     if (isInterrupt)
       strScript = strScript.substring(1);
@@ -3121,9 +3117,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (checkHalt(strScript))
       return "script execution halted";
     if (isScriptExecuting() && (isInterrupt || eval.isExecutionPaused())) {
+      //System.out.println ("setting interrupt script: " + strScript);
       interruptScript = strScript;
+      if (strScript.indexOf("moveto ") == 0)
+        scriptManager.flushQueue("moveto ");
       return "!" + strScript;
     }
+    interruptScript = "";
+    //System.out.println("adding script isInterrupt=" + isInterrupt + ": " + strScript);
     return scriptManager.addScript(strScript, false, isQuiet);
   }
 
@@ -6203,12 +6204,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   
   public Point3f getBondPoint3f1(int i) {
     //legacy -- no calls
-    return (Point3f) modelSet.getBondAtom1(i);
+    return modelSet.getBondAtom1(i);
   }
 
   public Point3f getBondPoint3f2(int i) {
     //legacy -- no calls
-    return (Point3f) modelSet.getBondAtom2(i);
+    return modelSet.getBondAtom2(i);
   }
-
 }

@@ -41,6 +41,7 @@ public final class Logger {
 
   private final static boolean[] _activeLevels = new boolean[NB_LEVELS];
   private       static boolean   _logLevel = false;
+  public static boolean debugging;
   static {
     _activeLevels[LEVEL_DEBUG] = getProperty("debug",    false);
     _activeLevels[LEVEL_INFO]  = getProperty("info",     true);
@@ -48,6 +49,7 @@ public final class Logger {
     _activeLevels[LEVEL_ERROR] = getProperty("error",    true);
     _activeLevels[LEVEL_FATAL] = getProperty("fatal",    true);
     _logLevel                  = getProperty("logLevel", false);
+    debugging = (_logger != null && _activeLevels[LEVEL_DEBUG]);
   }
 
   private static boolean getProperty(String level, boolean defaultValue) {
@@ -69,6 +71,7 @@ public final class Logger {
    */
   public static void setLogger(LoggerInterface logger) {
     _logger = logger;
+    debugging = isActiveLevel(LEVEL_DEBUG);
   }
 
   /**
@@ -96,6 +99,8 @@ public final class Logger {
   public static void setActiveLevel(int level, boolean active) {
     if ((level >= 0) && (level < _activeLevels.length)) {
       _activeLevels[level] = active;
+      if (level == LEVEL_DEBUG)
+        debugging = (_logger != null && active);
     }
   }
 
@@ -155,10 +160,10 @@ public final class Logger {
    * @param txt String to write.
    */
   public static void debug(String txt) {
+    if (!debugging)
+      return;
     try {
-      if (isActiveLevel(LEVEL_DEBUG)) {
-        _logger.debug(txt);
-      }
+      _logger.debug(txt);
     } catch (Throwable t) {
       //
     }

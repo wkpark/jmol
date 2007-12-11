@@ -78,16 +78,16 @@ class FileManager {
   private String fileType;
 
   private String inlineData;
-  private String[] inlineDataArray;
+  //private String[] inlineDataArray; //abandoned
   
   String getInlineData(int iData) {
-    return (iData < 0 ? inlineData : iData < inlineDataArray.length ? inlineDataArray[iData] : "");  
+    return (iData < 0 ? inlineData : "");//iData < inlineDataArray.length ? inlineDataArray[iData] : "");  
   }
-     
+/*     
   String[] getInlineDataArray() {
     return inlineDataArray;  
   }
-
+*/
   private String loadScript; 
 
   FileOpenThread fileOpenThread;
@@ -140,8 +140,8 @@ class FileManager {
     return loadScript;
   }
   
-  private void setLoadScript(String script, boolean isMerge) {
-    if (loadScript == null || !isMerge)
+  private void setLoadScript(String script, boolean isAppend) {
+    if (loadScript == null || !isAppend)
       loadScript = "";
     loadScript += viewer.getLoadState();
     addLoadScript(script);
@@ -153,8 +153,8 @@ class FileManager {
     loadScript += "  " + script + ";\n";  
   }
   
-  void openFile(String name, Hashtable htParams, String loadScript, boolean isMerge) {
-    setLoadScript(loadScript, isMerge);
+  void openFile(String name, Hashtable htParams, String loadScript, boolean isAppend) {
+    setLoadScript(loadScript, isAppend);
     int pt = name.indexOf("::");
     nameAsGiven = (pt >= 0 ? name.substring(pt + 2) : name);
     fileType = (pt >= 0 ? name.substring(0, pt) : null);
@@ -171,8 +171,8 @@ class FileManager {
     fileOpenThread.run();
   }
 
-  void openFiles(String modelName, String[] names, String loadScript, boolean isMerge) {
-    setLoadScript(loadScript, isMerge);
+  void openFiles(String modelName, String[] names, String loadScript, boolean isAppend) {
+    setLoadScript(loadScript, isAppend);
     String[] fullPathNames = new String[names.length];
     String[] namesAsGiven = new String[names.length];
     String[] fileTypes = new String[names.length];
@@ -194,46 +194,41 @@ class FileManager {
     
     fullPathName = fileName = nameAsGiven = modelName;
     inlineData = "";
+    //inlineDataArray = null;
     filesOpenThread = new FilesOpenThread(fullPathNames, namesAsGiven, fileTypes, null);
     filesOpenThread.run();
   }
 
-  void openStringInline(String strModel, Hashtable htParams, boolean isMerge) {
-    String tag = (isMerge ? "append" : "model");
+  void openStringInline(String strModel, Hashtable htParams, boolean isAppend) {
+    String tag = (isAppend ? "append" : "model");
     String script = "data \""+tag+" inline\"" + strModel + "end \""+tag+" inline\";";
-    setLoadScript(script, isMerge);
-    String sp = "";
-//    if (htParams != null)
-  //    for (int i = 0; i < params.length; i++)
-    //    sp += "," + params[i];
-    Logger.info("FileManager.openStringInline(" + sp + ")");
+    setLoadScript(script, isAppend);
+    Logger.info("FileManager.openStringInline()");
     openErrorMessage = null;
     fullPathName = fileName = "string";
-    if (!isMerge)
-      inlineData = strModel;
-    fileOpenThread = new FileOpenThread(fullPathName, fullPathName, null, getBufferedReaderForString(
-        strModel), htParams);
+    inlineData = strModel;
+    //inlineDataArray = null;
+    fileOpenThread = new FileOpenThread("string", "string", null, 
+        getBufferedReaderForString(strModel), htParams);
     fileOpenThread.run();
   }
 
-  void openStringsInline(String[] arrayModels, Hashtable htParams, boolean isMerge) {
-    loadScript = "dataSeparator = \"~~~next file~~~\";\ndata \"model inline\"";
+  void openStringsInline(String[] arrayModels, Hashtable htParams, boolean isAppend) {
+    String oldSep = "\"" + viewer.getDataSeparator() + "\"";
+    String tag = "\"" + (isAppend ? "append" : "model") + " inline\"";
+    String script = "set dataSeparator \"~~~next file~~~\";\ndata " + tag;
     for (int i = 0; i < arrayModels.length; i++) {
       if (i > 0)
-        loadScript += "~~~next file~~~";
-      loadScript += arrayModels[i];
+        script += "~~~next file~~~";
+      script += arrayModels[i];
     }
-    loadScript += "end \"model inline\";";
-    setLoadScript(loadScript, isMerge);
-
-    String sp = "";
-    //if (params != null)
-      //for (int i = 0; i < params.length; i++)
-        //sp += "," + params[i];
-    Logger.info("FileManager.openStringInline(string[]" + sp + ")");
+    script += "end " + tag + ";set dataSeparator " + oldSep;
+    setLoadScript(script, isAppend);
+    Logger.info("FileManager.openStringInline(string[])");
     openErrorMessage = null;
     fullPathName = fileName = "string[]";
-    //inlineDataArray = arrayModels;
+    inlineData = "";
+    //just too complicated and space-absorbing inlineDataArray = arrayModels;
     String[] fullPathNames = new String[arrayModels.length];
     StringReader[] readers = new StringReader[arrayModels.length];
     for (int i = 0; i < arrayModels.length; i++) {
@@ -248,6 +243,7 @@ class FileManager {
     openErrorMessage = null;
     fullPathName = fileName = "JSNode";
     inlineData = "";
+    //inlineDataArray = null;
     aDOMOpenThread = new DOMOpenThread(DOMNode);
     aDOMOpenThread.run();
   }
@@ -390,7 +386,6 @@ class FileManager {
   }
 
   String[] getFileInfo() {
-    // not compatible with inlineDataArray, by the way....
     return new String[]{fullPathName, fileName, inlineData, loadScript};
   }
   

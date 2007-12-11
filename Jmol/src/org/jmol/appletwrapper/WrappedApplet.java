@@ -25,32 +25,14 @@
 package org.jmol.appletwrapper;
 
 import java.awt.*;
-import netscape.javascript.JSObject;
 
-public interface WrappedApplet {
+import org.jmol.api.JmolAppletInterface;
+
+public interface WrappedApplet extends JmolAppletInterface {
+  public String getAppletInfo();
   public void setAppletWrapper(AppletWrapper appletWrapper);
   public void init();
-  public String getAppletInfo();
   public void update(Graphics g);
   public void paint(Graphics g);
   public boolean handleEvent(Event e);
-
-  public void scriptButton(JSObject buttonWindow, String buttonName,
-                           String script, String buttonCallback);
-  public void script(String script);
-  public String scriptCheck(String script);
-  public String scriptWait(String script);
-  public void loadInline(String strModel);
-  public void loadInline(String[] strModels);
-  public void loadInline(String strModel, String script);
-  public void loadInline(String[] strModels, String script);
-  public void loadNodeId(String nodeId);
-  public void loadDOMNode(JSObject DOMNode);
-  public Object getProperty(String infoType);
-  public Object getProperty(String infoType, String paramInfo);
-  public String getPropertyAsString(String infoType);
-  public String getPropertyAsString(String infoType, String paramInfo);
-  public String getPropertyAsJSON(String infoType);
-  public String getPropertyAsJSON(String infoType, String paramInfo);
-
 }

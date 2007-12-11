@@ -124,8 +124,10 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public String scriptWait(String script);
   abstract public Object scriptWaitStatus(String script, String statusList);
   abstract public void loadInline(String strModel);
-  abstract public void loadInline(String[] arrayModels);
+  abstract public void loadInline(String strModel, boolean isMerge);
   abstract public void loadInline(String strModel, char newLine);
+  abstract public void loadInline(String[] arrayModels);
+  abstract public void loadInline(String[] arrayModels, boolean isMerge);
 
   abstract public String evalStringQuiet(String script);
   abstract public boolean isScriptExecuting();

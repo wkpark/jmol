@@ -35,17 +35,14 @@ import netscape.javascript.JSObject;
 
 public interface JmolAppletInterface {
 
-  public String getAppletInfo();
   public String getPropertyAsString(String infoType);
   public String getPropertyAsString(String infoType, String paramInfo);
   public String getPropertyAsJSON(String infoType);
   public String getPropertyAsJSON(String infoType, String paramInfo);
   public Object getProperty(String infoType);
   public Object getProperty(String infoType, String paramInfo);
-  public void loadInline(String strModel);
-  public void loadInline(String[] strModels);
-  public void loadInline(String strModel, String script);
-  public void loadInline(String[] strModels, String script);
+  public void loadInlineString(String strModel, String script, boolean isAppend);
+  public void loadInlineArray(String[] strModels, String script, boolean isAppend);
   public void loadNodeId(String nodeId);
   public void loadDOMNode(JSObject DOMNode);
   public void script(String script);
@@ -53,8 +50,34 @@ public interface JmolAppletInterface {
   public String scriptCheck(String script);
   public String scriptWait(String script);
   public String scriptWait(String script, String statusParams);
-  public void syncScript(String script);
-  
+  public void syncScript(String script);  
+
+  /**
+   * @deprecated
+   * @param strModel
+   */
+  public void loadInline(String strModel);
+
+  /**
+   * @deprecated
+   * @param strModels
+   */ 
+  public void loadInline(String[] strModels);
+
+  /**
+   * @deprecated
+   * @param strModel
+   * @param script
+   */
+  public void loadInline(String strModel, String script);
+
+  /**
+   * @deprecated
+   * @param strModels
+   * @param script
+   */
+  public void loadInline(String[] strModels, String script);
+
   /**
    * @deprecated
    * @param buttonWindow

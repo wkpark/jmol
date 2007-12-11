@@ -167,7 +167,7 @@ class Console implements ActionListener, WindowListener {
       output.setText(viewer.getStateInfo());
     }
     if (source == loadButton) {
-      viewer.loadInline(input.getText());
+      viewer.loadInline(input.getText(), false);
     }
   }
 

@@ -34,151 +34,172 @@
 import org.jmol.api.JmolAppletInterface;
 import netscape.javascript.JSObject;
 
-public class JmolApplet
-  extends org.jmol.appletwrapper.AppletWrapper
-  implements JmolAppletInterface {
- 
+public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper implements
+    JmolAppletInterface {
+
   public JmolApplet() {
-    super("org.jmol.applet.Jmol",
-          "jmol75x29x8.gif",
-          3, preloadClasses);
+    super("org.jmol.applet.Jmol", "jmol75x29x8.gif", 3, preloadClasses);
     //BH focus test: this.setFocusable(false);
   }
 
-  private final static String[] preloadClasses = {
-    "javax.vecmath.Point3f+", ".Vector3f+", ".Matrix3f+", ".Point3i+",
-    "org.jmol.g3d.Graphics3D", ".Sphere3D", ".Line3D", ".Cylinder3D", ".Colix3D", ".Shade3D",
-    "org.jmol.adapter.smarter.SmarterJmolAdapter",
-    "org.jmol.adapter.smarter.Atom", ".Bond", ".AtomSetCollection", ".AtomSetCollectionReader", ".Resolver", 
-    "org.jmol.popup.JmolPopup",
-  };
+  private final static String[] preloadClasses = { "javax.vecmath.Point3f+",
+      ".Vector3f+", ".Matrix3f+", ".Point3i+", "org.jmol.g3d.Graphics3D",
+      ".Sphere3D", ".Line3D", ".Cylinder3D", ".Colix3D", ".Shade3D",
+      "org.jmol.adapter.smarter.SmarterJmolAdapter",
+      "org.jmol.adapter.smarter.Atom", ".Bond", ".AtomSetCollection",
+      ".AtomSetCollectionReader", ".Resolver", "org.jmol.popup.JmolPopup", };
 
   public String getPropertyAsString(String infoType) {
-    return (wrappedApplet == null ? null : ""+((JmolAppletInterface)wrappedApplet).getPropertyAsString(""+infoType));
+    return (wrappedApplet == null ? null : ""
+        + wrappedApplet.getPropertyAsString("" + infoType));
   }
 
   public String getPropertyAsString(String infoType, String paramInfo) {
-    return (wrappedApplet == null ? null : ""+((JmolAppletInterface)wrappedApplet).getPropertyAsString(""+infoType, ""+paramInfo));
+    return (wrappedApplet == null ? null : ""
+        + wrappedApplet.getPropertyAsString("" + infoType, "" + paramInfo));
   }
 
   public String getPropertyAsJSON(String infoType) {
-    return (wrappedApplet == null ? null : ""+((JmolAppletInterface)wrappedApplet).getPropertyAsJSON(""+infoType));
+    return (wrappedApplet == null ? null : ""
+        + wrappedApplet.getPropertyAsJSON("" + infoType));
   }
 
   public String getPropertyAsJSON(String infoType, String paramInfo) {
-    return (wrappedApplet == null ? null : ""+((JmolAppletInterface)wrappedApplet).getPropertyAsJSON(""+infoType, ""+paramInfo));
+    return (wrappedApplet == null ? null : ""
+        + wrappedApplet.getPropertyAsJSON("" + infoType, "" + paramInfo));
   }
 
   public Object getProperty(String infoType) {
-    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getProperty(""+infoType));
+    return (wrappedApplet == null ? null : wrappedApplet.getProperty(""
+        + infoType));
   }
 
   public Object getProperty(String infoType, String paramInfo) {
-    return (wrappedApplet == null ? null : ((JmolAppletInterface)wrappedApplet).getProperty(""+infoType, ""+paramInfo));
+    return (wrappedApplet == null ? null : wrappedApplet.getProperty(""
+        + infoType, "" + paramInfo));
   }
 
-  public void script(String script) {
-    if (wrappedApplet != null)
-      ((JmolAppletInterface)wrappedApplet).script(""+script);
-  }
-  
-  public void syncScript(String script) {
-    if (wrappedApplet != null)
-      ((JmolAppletInterface)wrappedApplet).syncScript(""+script);
-  }
-  
-  public String scriptNoWait(String script) {
-    if (wrappedApplet != null)
-      return ""+(((JmolAppletInterface)wrappedApplet).scriptNoWait(""+script));
-    return null;
-  }
-    
-  public String scriptCheck(String script) {
-    if (wrappedApplet != null)
-      return ""+(((JmolAppletInterface)wrappedApplet).scriptCheck(""+script));
-    return null;
-  }
-  
-  public String scriptWait(String script) {
-    if (wrappedApplet != null)
-      return ""+(((JmolAppletInterface)wrappedApplet).scriptWait(""+script));
-    return null;
-  }
- 
-  public String scriptWait(String script, String statusParams) {
-    if (wrappedApplet != null)
-      return ""+(((JmolAppletInterface)wrappedApplet).scriptWait(""+script, ""+statusParams));
-    return null;
-  }
- 
-  public void loadInline(String strModel) {
-    //System.out.println("applet.loadInline(strModel)");
-    //System.out.println("strModel: " + strModel);
-    if (wrappedApplet != null)
-      ((JmolAppletInterface)wrappedApplet).loadInline(""+strModel);
+  public void loadInlineArray(String[] strModels, String script, boolean isAppend) {
+    if (wrappedApplet == null || strModels == null || strModels.length == 0)
+        return;
+      String s = "" + strModels[0];
+      if (s.indexOf('\n') >= 0 || s.indexOf('\r') >= 0) {
+        String[] converted = new String[strModels.length];
+        for (int i = 0; i < strModels.length; ++i)
+          converted[i] = "" + strModels[i];
+        wrappedApplet.loadInlineArray(converted, "" + script, isAppend);
+        return;
+      }
+      StringBuffer sb = new StringBuffer();
+      for (int i = 0; i < strModels.length; ++i)
+        sb.append(strModels[i]).append('\n');
+      wrappedApplet.loadInlineString(sb.toString(), "" + script, isAppend);
   }
 
-  public void loadInlineStringScript(String strModel, String script) {
-    //System.out.println("applet.loadInlineScript(strModel, String script)");
-    loadInline(strModel, script);
-  }
-
-  public void loadInline(String strModel, String script) {
-    //System.out.println("applet.loadInline(strModel, String script)");
-    //System.out.println("strModel: " + strModel);
-    //System.out.println("script:" + script);
+  public void loadInlineString(String strModel, String script, boolean isAppend) {
     if (wrappedApplet != null)
-      ((JmolAppletInterface)wrappedApplet).loadInline(""+strModel, ""+script);
-  }
-
-  public void loadInline(String[] strModels) {
-    //System.out.println("applet.loadInline(String[] strModels)");
-    loadInline(strModels, "");
+      wrappedApplet.loadInlineString("" + strModel, "" + script, isAppend);
   }
 
   // bizarre Mac OS X / Java bug:
   // Mac cannot differentiate between signatures String and String[]
-  
-    public void loadInlineArrayScript(String[] strModels, String script) {
-      loadInline(strModels, script);
-    }
+  // so, instead, we deprecate these and go for the above two methods only.
 
-    public void loadInline(String[] strModels, String script) {
-    //System.out.println("applet.loadInline(String[] strModels, String script)");
-    //System.out.println("strModels: " + strModels);
-    //System.out.println("script:" + script);
-    if (strModels.length == 0 || wrappedApplet == null)
-      return;
-    String s = "" + strModels[0];
-    if (s.indexOf('\n') >= 0 || s.indexOf('\r') >= 0) {
-      String[] converted = new String[strModels.length];
-      for (int i = 0; i < strModels.length; ++i)
-        converted[i] = "" + strModels[i];
-      ((JmolAppletInterface) wrappedApplet).loadInline(converted, "" + script);
-      return;
-    }
-    StringBuffer sb = new StringBuffer();
-    for (int i = 0; i < strModels.length; ++i)
-      sb.append(strModels[i]).append('\n');
-    ((JmolAppletInterface) wrappedApplet).loadInline(sb.toString(), "" + script);
+  /**
+   * @deprecated
+   * @param strModel
+   */
+  public void loadInline(String strModel) {
+    if (wrappedApplet != null)
+      wrappedApplet.loadInline("" + strModel);
+  }
+
+  /**
+   * @deprecated
+   * @param strModel
+   * @param script
+   */
+  public void loadInline(String strModel, String script) {
+    if (wrappedApplet != null)
+      wrappedApplet.loadInline("" + strModel, "" + script);
+  }
+
+  /**
+   * @deprecated
+   * @param strModels
+   */
+  public void loadInline(String[] strModels) {
+    if (wrappedApplet != null)
+      wrappedApplet.loadInline(strModels);
+  }
+
+  /**
+   * @deprecated
+   * @param strModels
+   * @param script
+   */
+  public void loadInline(String[] strModels, String script) {
+    if (wrappedApplet != null)
+      wrappedApplet.loadInline(strModels, script);
   }
 
   public void loadNodeId(String nodeId) {
     if (wrappedApplet != null)
-      ((JmolAppletInterface)wrappedApplet).loadNodeId(""+nodeId);
+      wrappedApplet.loadNodeId("" + nodeId);
   }
 
   public void loadDOMNode(JSObject DOMNode) {
     if (wrappedApplet != null)
-      ((JmolAppletInterface)wrappedApplet).loadDOMNode(DOMNode);
+      wrappedApplet.loadDOMNode(DOMNode);
   }
 
+  public void script(String script) {
+    if (wrappedApplet != null)
+      wrappedApplet.script("" + script);
+  }
+
+  public void syncScript(String script) {
+    if (wrappedApplet != null)
+      wrappedApplet.syncScript("" + script);
+  }
+
+  public String scriptNoWait(String script) {
+    if (wrappedApplet != null)
+      return "" + (wrappedApplet.scriptNoWait("" + script));
+    return null;
+  }
+
+  public String scriptCheck(String script) {
+    if (wrappedApplet != null)
+      return "" + (wrappedApplet.scriptCheck("" + script));
+    return null;
+  }
+
+  public String scriptWait(String script) {
+    if (wrappedApplet != null)
+      return "" + (wrappedApplet.scriptWait("" + script));
+    return null;
+  }
+
+  public String scriptWait(String script, String statusParams) {
+    if (statusParams == null)
+      statusParams = "";
+    if (wrappedApplet != null)
+      return "" + (wrappedApplet.scriptWait("" + script, "" + statusParams));
+    return null;
+  }
+
+  /**
+   * @deprecated
+   * @param buttonWindow
+   * @param buttonName
+   * @param script
+   * @param buttonCallback
+   */
   public void scriptButton(JSObject buttonWindow, String buttonName,
                            String script, String buttonCallback) {
     if (wrappedApplet != null)
-      ((JmolAppletInterface)wrappedApplet).scriptButton(buttonWindow,
-                                                        buttonName,
-                                                        script,
-                                                        buttonCallback);
+      wrappedApplet.scriptButton(buttonWindow, buttonName, script,
+          buttonCallback);
   }
 }

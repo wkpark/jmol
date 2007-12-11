@@ -156,7 +156,7 @@ public class MoldenReader extends MopacDataReader {
       garray[i] = (float[]) gdata.get(i);
     moData.put("shells", sdata);
     moData.put("gaussians", garray);
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(sdata.size() + " slater shells read");
       Logger.debug(garray.length + " gaussian primitives read");
     }
@@ -244,7 +244,7 @@ public class MoldenReader extends MopacDataReader {
       mo.put("occupancy", new Float(occupancy));
       mo.put("coefficients", coefs);
       orbitals.addElement(mo);
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      if (Logger.debugging) {
         Logger.debug(coefs.length + " coefficients in MO " + orbitals.size() );
       }
     }

@@ -120,7 +120,7 @@ public class SpartanArchive {
     //    0   1  2   3    4   5   6   7  8        9
 
     String[] tokens = getTokens(info);
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug("reading Spartan archive info :" + info);
     }
     atomCount = parseInt(tokens[0]);
@@ -149,7 +149,7 @@ public class SpartanArchive {
       atom.set(x, y, z);
       atom.scale(AtomSetCollectionReader.ANGSTROMS_PER_BOHR);
     }
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(atomCount + " atoms read");
     }
   }
@@ -183,7 +183,7 @@ public class SpartanArchive {
         bondCount++;
       }
     }
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(bondCount + " bonds read");
     }
   }
@@ -249,7 +249,7 @@ public class SpartanArchive {
     }
     moData.put("shells", sdata);
     moData.put("gaussians", garray);
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(sdata.size() + " slater shells read");
       Logger.debug(garray.length + " gaussian primitives read");
     }
@@ -283,7 +283,7 @@ public class SpartanArchive {
       mo.put("coefficients", coefficients[i]);
       orbitals.addElement(mo);
     }
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(orbitals.size() + " molecular orbitals read");
     }
     moData.put("mos", orbitals);
@@ -357,7 +357,7 @@ public class SpartanArchive {
       }
       value = null;
     } else {
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      if (Logger.debugging) {
         Logger.debug(" Skipping property line " + line);
       }
     }
@@ -376,7 +376,7 @@ public class SpartanArchive {
     int frequencyCount = parseInt(line);
     Vector vibrations = new Vector();
     Vector freqs = new Vector();
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(
           "reading VIBFREQ vibration records: frequencyCount = " + frequencyCount);
     }

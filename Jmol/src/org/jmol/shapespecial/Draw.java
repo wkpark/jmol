@@ -99,7 +99,7 @@ public class Draw extends MeshCollection {
   private Point3f[][] modelVertices;
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug("draw " + propertyName + " " + value);
     }
 
@@ -857,7 +857,7 @@ public class Draw extends MeshCollection {
     else
       for (int i = mesh.ptCenters.length; --i >= 0; )
         mesh.setCenter(i);
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if (Logger.debugging)
       Logger.debug(getDrawCommand(mesh));
     viewer.refresh(0, "draw");
   }

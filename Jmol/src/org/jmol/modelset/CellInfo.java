@@ -110,7 +110,7 @@ public class CellInfo {
   }
 
   void showInfo() {
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if (Logger.debugging)
       Logger
           .debug("cellInfos[" + modelIndex + "]:\n" + unitCell.dumpInfo(true));
   }

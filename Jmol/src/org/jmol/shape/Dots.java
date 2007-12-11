@@ -68,7 +68,7 @@ public class Dots extends AtomShape {
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug("Dots.setProperty: " + propertyName + " " + value);
     }
 
@@ -151,7 +151,7 @@ public class Dots extends AtomShape {
     // 1002 - 11002    (mad - 1002)/1000 set radius 0.0 to 10.0 angstroms
     // 11003- 13002    (mad - 11002)/1000 set radius to vdw + additional radius 
 
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug("Dots.setSize " + size);
     }
     boolean isVisible = true;
@@ -234,7 +234,7 @@ public class Dots extends AtomShape {
               isSurface, true);
     }
     timeEndExecution = System.currentTimeMillis();
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug("dots generation time = " + getExecutionWalltime());
     }
   }

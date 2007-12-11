@@ -178,7 +178,7 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
     initialize(MAX_GRID);
     setVolume(volumeData, bsSelected);
     atomIndex = firstAtomOffset -1;
-    doDebug = (Logger.isActiveLevel(Logger.LEVEL_DEBUG));
+    doDebug = (Logger.debugging);
     if (slaterInfo != null)
       createSlaterCube();
     else
@@ -847,12 +847,12 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
     for (int ig = 0; ig < nGaussians; ig++) {
       float alpha = gaussians[gaussianPtr + ig][0];
       float c1 = gaussians[gaussianPtr + ig][1];
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      if (Logger.debugging) {
         Logger.debug("Gaussian " + (ig + 1) + " alpha=" + alpha + " c=" + c1);
       }
     }
     int n = info.length() / 2;
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       for (int i = 0; i < n; i++)
         Logger.debug(
             "MO coeff " + info.substring(2 * i, 2 * i + 2) + " " +
@@ -865,11 +865,11 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
     for (int ig = 0; ig < nGaussians; ig++) {
       float alpha = gaussians[gaussianPtr + ig][0];
       float c1 = gaussians[gaussianPtr + ig][1];
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      if (Logger.debugging) {
         Logger.debug("Gaussian " + (ig + 1) + " alpha=" + alpha + " c=" + c1);
       }
     }
-    if (shell >= 0 && Logger.isActiveLevel(Logger.LEVEL_DEBUG)){
+    if (shell >= 0 && Logger.debugging){
       for (int i = 0; i < shellOrder[shell].length; i++) {
         Logger.debug(
             "MO coeff " + shellOrder[shell][i] + " " +

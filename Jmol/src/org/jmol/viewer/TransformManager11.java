@@ -281,7 +281,7 @@ class TransformManager11 extends TransformManager {
     viewer.getGlobalSettings().setParameterValue("navigationDepth",getNavigationDepthPercent());
     viewer.getGlobalSettings().setParameterValue("navigationSlab",getNavigationSlabOffsetPercent());
 
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if (Logger.debugging)
       Logger.debug("\n" + "\nperspectiveScale: " + referencePlaneOffset
           + " screenPixelCount: " + screenPixelCount 
           + "\nmodelTrailingEdge: "

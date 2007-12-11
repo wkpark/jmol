@@ -148,7 +148,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean jvm14orGreater = false;
 
   public Viewer(Component display, JmolAdapter modelAdapter) {
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug("Viewer constructor " + this);
     }
     this.display = display;
@@ -3538,7 +3538,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setDebugScript(boolean debugScript) {
     global.debugScript = debugScript;
     global.setParameterValue("debugScript", debugScript);
-    //Logger.setActiveLevel(Logger.LEVEL_DEBUG, debugScript);
   }
 
   void atomPicked(int atomIndex, int modifiers) {
@@ -6145,7 +6144,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     if (syncMode != StatusManager.SYNC_DRIVER)
       disableSend = false;
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if (Logger.debugging)
       Logger.debug(htmlName + " syncing with script: " + script);
     //driver is being positioned by another driver -- don't pass on the change
     if (disableSend)

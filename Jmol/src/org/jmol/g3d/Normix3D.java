@@ -75,7 +75,7 @@ class Normix3D {
       for (int i = 0; i < normixCount; ++i) {
         short normix = getNormix(vertexVectors[i]);
         if (normix != i)
-          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          if (Logger.debugging) {
             Logger.debug("" + i + " -> " + normix);
           }
       }
@@ -104,7 +104,7 @@ class Normix3D {
         vSum.normalize();
       }
       runTime = System.currentTimeMillis() - timeBegin;
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      if (Logger.debugging) {
         Logger.debug(
             "base runtime for " + runCount + " -> " + runTime + " ms");
       }
@@ -125,7 +125,7 @@ class Normix3D {
         vSum.add(vFoo, vBar);
         short sum = getNormix(vSum);
         if (sum != foo && sum != bar) {
-          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          if (Logger.debugging) {
             Logger.debug(
                 "foo:" + foo + " -> " +
                 vertexVectors[foo] + "\n" +
@@ -221,7 +221,7 @@ class Normix3D {
         if (champSeqD2 + .01 < championDist2) {
           Logger.debug("?que? getNormix is messed up?");
           boolean considered = bsConsidered.get(champSeq);
-          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          if (Logger.debugging) {
             Logger.debug("Was the sequential winner considered? " + considered);
             Logger.debug(
                 "champion " + champion + " @ " + championDist2 +
@@ -340,7 +340,7 @@ class Normix3D {
         if (d2At < d2Nt ||
             d2Bt < d2Nt ||
             d2Ct < d2Nt) {
-          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          if (Logger.debugging) {
             Logger.debug(
                 " d2At =" + d2At +
                 " d2Bt =" + d2Bt +

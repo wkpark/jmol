@@ -141,7 +141,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       manifest = (zipDirectory.length > 0 ? zipDirectory[0] : "");
     boolean haveManifest = (manifest.length() > 0);
     if (haveManifest) {
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+      if (Logger.debugging)
         Logger.info("manifest for  " + fileName + ":\n" + manifest);
       manifest = '|' + manifest.replace('\r', '|').replace('\n', '|') + '|';
     }
@@ -268,7 +268,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
             continue;
           if (htCollections.containsKey(file))
             vCollections.add(htCollections.get(file));
-          else if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+          else if (Logger.debugging)
             Logger.info("manifested file " + file + " was not found in "
                 + fileName);
         }

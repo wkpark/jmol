@@ -54,7 +54,7 @@ public class AminoPolymer extends AlphaPolymer {
   //boolean debugHbonds;
 
   public void calcHydrogenBonds(BitSet bsA, BitSet bsB) {
-    //debugHbonds = Logger.isActiveLevel(Logger.LEVEL_DEBUG);
+    //debugHbonds = Logger.debugging;
     initializeHbondDataStructures();
     calcProteinMainchainHydrogenBonds(bsA, bsB);
     
@@ -298,7 +298,7 @@ public class AminoPolymer extends AlphaPolymer {
         structureTags[i] = 'n';
       }
 
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+      if (Logger.debugging)
         Logger.debug((0+this.monomers[0].getChainID()) + " aminopolymer:" + i
             + " " + trailingResidue.getPhi() + "," + leadingResidue.getPsi() + " " + structureTags[i]);
     }

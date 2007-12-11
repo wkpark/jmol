@@ -110,7 +110,7 @@ class StatusManager {
       this.statusList = "";
     }
     this.statusList += statusList;
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(oldList + "\nmessageQueue = " + this.statusList);
     }
     return true;
@@ -306,7 +306,7 @@ class StatusManager {
       drivingSync = false;
       isSynced = false;
     }
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(
           viewer.getHtmlName() + " sync mode=" + syncMode +
           "; synced? " + isSynced + "; driving? " + drivingSync + "; disabled? " + syncDisabled);

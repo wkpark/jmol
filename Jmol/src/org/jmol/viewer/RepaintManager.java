@@ -495,7 +495,7 @@ class RepaintManager {
       //int holdTime = 0;
       Logger.debug("animation thread " + intThread + " running");
       
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      if (Logger.debugging) {
         Logger.debug("animation thread " + intThread + " running");
       }
       requestRepaintAndWait();

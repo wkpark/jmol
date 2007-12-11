@@ -171,7 +171,7 @@ public class AppletWrapper extends Applet {
     needToCompleteInitialization = false;
     if (preloadImageName != null) {
       try {
-        if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        if (Logger.debugging) {
           Logger.debug("loadImage:" + preloadImageName);
         }
         URL urlImage =
@@ -180,7 +180,7 @@ public class AppletWrapper extends Applet {
         if (urlImage != null) {
           preloadImage =
             Toolkit.getDefaultToolkit().getImage(urlImage);
-          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          if (Logger.debugging) {
             Logger.debug("successfully loaded " + preloadImageName);
             Logger.debug("preloadImage=" + preloadImage);
           }

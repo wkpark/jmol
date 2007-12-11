@@ -124,7 +124,7 @@ public class FileDropper implements DropTargetListener {
       if ((df != null) && (df.length > 0)) {
         for (int i = 0; i < df.length; ++ i) {
           DataFlavor flavor = df[i];
-          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          if (Logger.debugging) {
             Logger.debug("df " + i + " flavor " + flavor);
             Logger.debug("  class: " + flavor.getRepresentationClass().getName());
             Logger.debug("  mime : " + flavor.getMimeType());
@@ -157,7 +157,7 @@ public class FileDropper implements DropTargetListener {
             }
 
             if ((o != null) && (o instanceof String)) {
-              if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+              if (Logger.debugging) {
                 Logger.debug("  String: " + o.toString());
               }
 
@@ -197,7 +197,7 @@ public class FileDropper implements DropTargetListener {
 
             if ((o != null) && (o instanceof String)) {
               String content = (String)o;
-              if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+              if (Logger.debugging) {
                 Logger.debug("  String: " + content);
               }
               if (content.startsWith("file:/")) {

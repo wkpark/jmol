@@ -1897,7 +1897,7 @@ final public class Graphics3D implements JmolRendererInterface {
       return Colix3D.getColix(((Integer) obj).intValue());
     if (obj instanceof String)
       return getColix((String) obj);
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug("?? getColix(" + obj + ")");
     }
     return HOTPINK;

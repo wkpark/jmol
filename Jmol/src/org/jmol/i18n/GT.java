@@ -233,7 +233,7 @@ public class GT {
     if (la_co == la_co_va)
       la_co = null;
 
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if (Logger.debugging)
       Logger.debug("Instantiating gettext wrapper for " + language
           + " using files for language:" + la + " country:" + la_co
           + " variant:" + la_co_va);
@@ -362,7 +362,7 @@ public class GT {
       }
     }
     if (translationResourcesCount > 0) {
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      if (Logger.debugging) {
         Logger.debug("No trans, using default: " + string);
       }
     }
@@ -384,7 +384,7 @@ public class GT {
     }
     trans = MessageFormat.format(string, objects);
     if (translationResourcesCount > 0) {
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      if (Logger.debugging) {
         Logger.debug("No trans, using default: " + trans);
       }
     }

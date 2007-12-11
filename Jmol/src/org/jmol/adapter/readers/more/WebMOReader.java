@@ -85,7 +85,7 @@ public class WebMOReader extends MopacDataReader {
     } catch (Exception e) {
       return setError(e);
     }
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(orbitals.size() + " molecular orbitals read");
     }
     return atomSetCollection;
@@ -233,7 +233,7 @@ public class WebMOReader extends MopacDataReader {
       garray[i]=(float[])gdata.get(i);
     moData.put("shells", sdata);
     moData.put("gaussians", garray);
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(sdata.size() + " slater shells read");
       Logger.debug(garray.length + " gaussian primitives read");
     }

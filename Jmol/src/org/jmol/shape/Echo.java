@@ -55,7 +55,7 @@ public class Echo extends TextShape {
 
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
 
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug("Echo.setProperty(" + propertyName + "," + value + ")");
     }
 

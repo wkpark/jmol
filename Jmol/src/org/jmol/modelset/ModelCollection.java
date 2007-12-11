@@ -1682,7 +1682,7 @@ abstract public class ModelCollection extends BondCollection {
       }
       iter.release();
     }
-    if (showRebondTimes && Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (showRebondTimes && Logger.debugging) {
       long timeEnd = System.currentTimeMillis();
       Logger.debug("Time to autoBond=" + (timeEnd - timeBegin));
     }

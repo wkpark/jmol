@@ -88,7 +88,7 @@ public class PsiReader extends AtomSetCollectionReader {
         } else if (iHaveAtoms
             && line.indexOf("Molecular Orbital Coefficients") >= 0) {
           readMolecularOrbitals();
-          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          if (Logger.debugging) {
             Logger.debug(orbitals.size() + " molecular orbitals read");
           }
           moData.put("mos", orbitals);
@@ -234,7 +234,7 @@ public class PsiReader extends AtomSetCollectionReader {
         garray[i][j] = parseFloat(tokens[j]);
     }
     moData.put("gaussians", garray);
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(shellCount + " slater shells read");
       Logger.debug(gaussianCount + " gaussian primitives read");
     }

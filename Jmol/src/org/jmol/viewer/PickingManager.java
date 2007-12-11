@@ -221,7 +221,7 @@ class PickingManager {
   
   void setPickingStyle(int pickingStyle) {
     this.pickingStyle = pickingStyle;
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(
           " setPickingStyle " + pickingStyle+": " +
           JmolConstants.getPickingStyleName(pickingStyle));

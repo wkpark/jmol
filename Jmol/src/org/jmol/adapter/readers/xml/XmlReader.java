@@ -171,7 +171,7 @@ public class XmlReader extends AtomSetCollectionReader {
   private void processXml(XMLReader xmlReader) throws Exception {
     String xmlType = getXmlType(reader);
     atomSetCollection = new AtomSetCollection(xmlType);
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug("XmlReader thinks " + xmlType);
     }
     if (xmlType.indexOf("cml(xml)") >= 0) {
@@ -253,7 +253,7 @@ public class XmlReader extends AtomSetCollectionReader {
     if (DOMNode == null)
       throw new RuntimeException("Not a node");
     String xmlType = getXmlType(DOMNode);
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug("XmlReader thinks " + xmlType);
     }
     atomSetCollection = new AtomSetCollection(xmlType);
@@ -327,7 +327,7 @@ public class XmlReader extends AtomSetCollectionReader {
   public class DummyResolver implements EntityResolver {
     public InputSource resolveEntity(String publicID, String systemID)
         throws SAXException {
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      if (Logger.debugging) {
         Logger.debug(
             "Jmol SAX EntityResolver not resolving:" +
             "\n  publicID: " + publicID +
@@ -376,7 +376,7 @@ public class XmlReader extends AtomSetCollectionReader {
     public void startElement(String namespaceURI, String localName,
                              String qName, Attributes attributes) {
       getAttributes(attributes);
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      if (Logger.debugging) {
         Logger.debug("start " + localName);
       }
       startElement(namespaceURI, localName, qName);
@@ -387,7 +387,7 @@ public class XmlReader extends AtomSetCollectionReader {
     }
 
     public void endElement(String uri, String localName, String qName) {
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      if (Logger.debugging) {
         Logger.debug("end " + localName);
       }
       processEndElement(uri, localName, qName);
@@ -409,7 +409,7 @@ public class XmlReader extends AtomSetCollectionReader {
 
     public InputSource resolveEntity(String name, String publicId,
                                      String baseURI, String systemId) {
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      if (Logger.debugging) {
         Logger.debug(
             "Not resolving this:" +
             "\n      name: " + name +
@@ -422,7 +422,7 @@ public class XmlReader extends AtomSetCollectionReader {
     }
 
     public InputSource resolveEntity(String publicId, String systemId) {
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      if (Logger.debugging) {
         Logger.debug(
             "Not resolving this:" +
             "\n  publicID: " + publicId +

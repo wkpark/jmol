@@ -303,7 +303,6 @@ public class SurfaceGenerator {
 
     if ("debug" == propertyName) {
       boolean TF = ((Boolean) value).booleanValue();
-      //Logger.setActiveLevel(Logger.LEVEL_DEBUG, TF);
       params.logMessages = TF;
       //logCompression = TF;
       params.logCube = TF;

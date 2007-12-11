@@ -72,7 +72,7 @@ public class Polyhedra extends AtomShape {
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug("polyhedra: " + propertyName + " " + value);
     }
 
@@ -342,7 +342,7 @@ public class Polyhedra extends AtomShape {
         if (bs.get(i)) {
           isOK = false;
           factor *= 1.05f;
-          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          if (Logger.debugging) {
             Logger.debug("Polyhedra distanceFactor for " + ptCenter
                 + " atoms increased to " + factor + " in order to include "
                 + otherAtoms[i].getInfo());

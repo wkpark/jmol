@@ -57,7 +57,7 @@ class ScriptManager {
       String strScript = (String)(((Vector)scriptQueue.elementAt(i)).elementAt(0));
       if (strScript.indexOf(command) == 0) {
         scriptQueue.removeElementAt(i);
-        if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+        if (Logger.debugging)
           Logger.debug(scriptQueue.size() + " scripts; removed: " + strScript);
       }
     }
@@ -78,7 +78,7 @@ class ScriptManager {
       viewer.haltScriptExecution();
     }
     scriptQueue.addElement(scriptItem);
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(scriptQueue.size() + " scripts; added: " + strScript);
     }
     startScriptQueue();
@@ -99,7 +99,7 @@ class ScriptManager {
       try {
         Thread.sleep(100);
         if (((n++) % 10) == 0)
-          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          if (Logger.debugging) {
             Logger.debug(
                 "...scriptManager waiting for queue: " + scriptQueue.size());
           }
@@ -117,7 +117,7 @@ class ScriptManager {
     String returnType = (String) scriptItem.elementAt(2);
     boolean isScriptFile = ((Boolean) scriptItem.elementAt(3)).booleanValue();
     boolean isQuiet = ((Boolean) scriptItem.elementAt(4)).booleanValue();
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(scriptQueue.size() + " scripts; running: " + script);
     }
     scriptQueue.removeElement(scriptItem);

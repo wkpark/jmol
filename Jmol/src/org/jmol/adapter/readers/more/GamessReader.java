@@ -274,7 +274,7 @@ public class GamessReader extends AtomSetCollectionReader {
     }
     moData.put("shells", sdata);
     moData.put("gaussians", garray);
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(shellCount + " slater shells read");
       Logger.debug(gaussianCount + " gaussian primitives read");
     }
@@ -302,7 +302,7 @@ public class GamessReader extends AtomSetCollectionReader {
     while (readLine() != null
         && line.indexOf("--") < 0 && line.indexOf(".....") < 0) {
       String[] tokens = getTokens();
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      if (Logger.debugging) {
         Logger.debug(tokens.length + " --- " + line);
       }
       if (line.length() == 0) {
@@ -360,7 +360,7 @@ public class GamessReader extends AtomSetCollectionReader {
           continue; // may be "I" for imaginary
         frequencies[lineFreqCount] = frequency;
         lineFreqCount++;
-        if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        if (Logger.debugging) {
           Logger.debug(totalFrequencyCount + " frequency=" + frequency);
         }
         if (lineFreqCount == 5)

@@ -409,7 +409,7 @@ class Triangle3D {
         Rgb16 north = rgb16sGouraud[iN];
         Rgb16 generated = gouraud[iRaster];
         if (north.getArgb() != generated.getArgb()) {
-          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          if (Logger.debugging) {
             Logger.debug("north=" + north + "\ngenerated=" + generated);
           }
           throw new NullPointerException();

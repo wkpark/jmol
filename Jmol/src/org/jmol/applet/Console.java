@@ -124,7 +124,7 @@ class Console implements ActionListener, WindowListener {
   }
 
   void setVisible(boolean visible) {
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug("Console.setVisible(" + visible + ")");
     }
     jf.setVisible(visible);

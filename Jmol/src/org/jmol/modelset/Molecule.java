@@ -55,7 +55,7 @@ class Molecule {
     getElementAndAtomCount(atomList);
     mf = getMolecularFormula();
 
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if (Logger.debugging)
       Logger.debug("new Molecule (" + mf + ") " + (indexInModel + 1) + "/"
           + (modelIndex + 1));
   }

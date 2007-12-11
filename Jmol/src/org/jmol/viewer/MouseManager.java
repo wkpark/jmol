@@ -206,7 +206,7 @@ public abstract class MouseManager implements KeyListener {
     previousPressedModifiers = modifiers;
     previousPressedTime = timeCurrent = time;
 
-    if (logMouseEvents && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if (logMouseEvents && Logger.debugging)
       Logger.debug("mousePressed("+x+","+y+","+modifiers+
                          " isPopupTrigger=" + isPopupTrigger+")");
 
@@ -232,7 +232,7 @@ public abstract class MouseManager implements KeyListener {
   }
 
   void mouseEntered(long time, int x, int y) {
-    if (logMouseEvents && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if (logMouseEvents && Logger.debugging)
       Logger.debug("mouseEntered("+x+","+y+")");
     hoverOff();
     timeCurrent = time;
@@ -240,7 +240,7 @@ public abstract class MouseManager implements KeyListener {
   }
 
   void mouseExited(long time, int x, int y) {
-    if (logMouseEvents && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if (logMouseEvents && Logger.debugging)
       Logger.debug("mouseExited("+x+","+y+")");
     hoverOff();
     timeCurrent = time;
@@ -252,7 +252,7 @@ public abstract class MouseManager implements KeyListener {
     hoverOff();
     timeCurrent = time;
     xCurrent = x; yCurrent = y;
-    if (logMouseEvents && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if (logMouseEvents && Logger.debugging)
       Logger.debug("mouseReleased("+x+","+y+","+modifiers+")");
     viewer.setInMotion(false);
     viewer.setCursor(Viewer.CURSOR_DEFAULT);
@@ -306,7 +306,7 @@ public abstract class MouseManager implements KeyListener {
     previousClickCount = clickCount;
     timeCurrent = previousClickTime = time;
 
-    if (logMouseEvents && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if (logMouseEvents && Logger.debugging)
       Logger.debug("mouseClicked("+x+","+y+","+modifiers+
                          ",clickCount="+clickCount+
                          ",time=" + (time - previousClickTime) +
@@ -326,7 +326,7 @@ public abstract class MouseManager implements KeyListener {
   void mouseSingleClick(int x, int y, int modifiers, int nearestAtomIndex) {
     //viewer.setStatusUserAction("mouseSingleClick: " + modifiers);
     setMouseMode();
-    if (logMouseEvents && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if (logMouseEvents && Logger.debugging)
       Logger.debug("mouseSingleClick(" + x + "," + y + "," + modifiers
           + " nearestAtom=" + nearestAtomIndex);
     switch (modifiers & BUTTON_MODIFIER_MASK) {
@@ -380,7 +380,7 @@ public abstract class MouseManager implements KeyListener {
 
   void mouseDragged(long time, int x, int y, int modifiers) {
     setMouseMode();
-    if (logMouseEvents && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if (logMouseEvents && Logger.debugging)
       Logger.debug("mouseDragged("+x+","+y+","+modifiers + ")");
     int deltaX = x - previousDragX;
     int deltaY = y - previousDragY;

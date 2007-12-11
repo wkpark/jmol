@@ -1198,7 +1198,7 @@ abstract class TransformManager {
 
     // note that the image is still centered at 0, 0 in the xy plane
 
-    if (false && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if (false && Logger.debugging)
       Logger.debug("modelCenterOffset + matrixTransform: " + modelCenterOffset
           + matrixTransform);
 

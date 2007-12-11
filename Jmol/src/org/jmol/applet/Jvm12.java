@@ -57,7 +57,7 @@ class Jvm12 {
       return;
     }
     if (console == null) {
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      if (Logger.debugging) {
         Logger.debug("Jvm12.showConsole(" + showConsole + ")");
       }
       try {

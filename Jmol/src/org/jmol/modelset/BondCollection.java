@@ -405,7 +405,7 @@ abstract public class BondCollection extends AtomCollection {
       }
       iter.release();
     }
-    if (showRebondTimes && Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (showRebondTimes && Logger.debugging) {
       long timeEnd = System.currentTimeMillis();
       Logger.debug("Time to hbond=" + (timeEnd - timeBegin));
     }

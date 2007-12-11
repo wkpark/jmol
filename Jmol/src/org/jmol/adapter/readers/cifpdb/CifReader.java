@@ -211,7 +211,7 @@ public class CifReader extends AtomSetCollectionReader {
       thisStructuralFormula = data = tokenizer.fullTrim(data);
     else if (type.equals("formula"))
       thisFormula = data = tokenizer.fullTrim(data);
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(type + " = " + data);
     }
   }
@@ -554,7 +554,7 @@ public class CifReader extends AtomSetCollectionReader {
             atom.formalCharge = (int) (charge + (charge < 0 ? -0.5 : 0.5));
             //because otherwise -1.6 is rounded UP to -1, and  1.6 is rounded DOWN to 1
             if (Math.abs(atom.formalCharge - charge) > 0.1)
-              if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+              if (Logger.debugging) {
                 Logger.debug(
                     "CIF charge on " + field + " was " + charge +
                     "; rounded to " + atom.formalCharge);
@@ -830,7 +830,7 @@ public class CifReader extends AtomSetCollectionReader {
     if (htHetero == null)
       htHetero = new Hashtable();
     htHetero.put(groupName, hetName);
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug("hetero: " + groupName + " = " + hetName);
     }
   }

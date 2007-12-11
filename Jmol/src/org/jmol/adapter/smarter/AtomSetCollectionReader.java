@@ -352,7 +352,7 @@ public abstract class AtomSetCollectionReader {
     if (i >= 6 && Float.isNaN(notionalUnitCell[6]))
       initializeCartesianToFractional();
     notionalUnitCell[i] = x;
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug("setunitcellitem " + i + " " + x);
     }
     if (i < 6)
@@ -400,7 +400,7 @@ public abstract class AtomSetCollectionReader {
       unitcell.toFractional(atom);
       iHaveFractionalCoordinates = true;
     }
-    //if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    //if (Logger.debugging)
     //Logger.debug(" atom "+atom.atomName + " " + atom.x + " " + atom.y+" "+atom.z);
     needToApplySymmetry = true;
   }
@@ -443,7 +443,7 @@ public abstract class AtomSetCollectionReader {
         SpaceGroup sg = SpaceGroup.createSpaceGroup(desiredSpaceGroupIndex,
             (spaceGroup.indexOf("*")>=0 ? "P1" : spaceGroup), notionalUnitCell, atomSetCollection.doNormalize);
         if (sg != null) {
-          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+          if (Logger.debugging)
             Logger.debug("using generated space group " + sg.dumpInfo());
           atomSetCollection.setAtomSetSpaceGroupName((spaceGroup.indexOf("*")>=0 ? spaceGroup : sg.getName()));
           atomSetCollection.applySymmetry(sg);

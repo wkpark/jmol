@@ -68,7 +68,7 @@ public class MolecularOrbital extends Isosurface {
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger
           .debug("MolecularOrbital.setProperty " + propertyName + " " + value);
     }

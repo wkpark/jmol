@@ -88,7 +88,7 @@ public final class ModelLoader extends ModelSet {
   private void dumpAtomSetNameDiagnostics(JmolAdapter adapter, Object clientFile) {
     int frameModelCount = modelCount;
     int adapterAtomSetCount = adapter.getAtomSetCount(clientFile);
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(
           "----------------\n" + "debugging of AtomSetName stuff\n" +
           "\nframeModelCount=" + frameModelCount +
@@ -713,7 +713,7 @@ public final class ModelLoader extends ModelSet {
         if (!cellInfos[modelIndex].coordinatesAreFractional)
           continue;
         cellInfos[modelIndex].toCartesian(atoms[i]);
-        if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+        if (Logger.debugging)
           Logger.debug("atom " + i + ": " + (Point3f) atoms[i]);
       }
     }

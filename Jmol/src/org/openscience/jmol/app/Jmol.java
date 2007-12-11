@@ -1085,7 +1085,7 @@ public class Jmol extends JPanel {
         // loop over these files and load them
         String macroName = macros[i].getName();
         if (macroName.endsWith(".macro")) {
-          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          if (Logger.debugging) {
             Logger.debug("Possible macro found: " + macroName);
           }
           FileInputStream macro = null;

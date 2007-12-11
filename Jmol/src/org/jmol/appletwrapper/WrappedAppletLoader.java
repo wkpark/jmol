@@ -41,7 +41,7 @@ class WrappedAppletLoader extends Thread {
     
   public void run() {
     long startTime = System.currentTimeMillis();
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug("WrappedAppletLoader.run(" + wrappedAppletClassName + ")");
     }
     TickerThread tickerThread = new TickerThread(appletWrapper);
@@ -59,7 +59,7 @@ class WrappedAppletLoader extends Thread {
     }
     long loadTimeSeconds =
       (System.currentTimeMillis() - startTime + 500) / 1000;
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(
           wrappedAppletClassName + " load time = " + loadTimeSeconds + " seconds");
     }

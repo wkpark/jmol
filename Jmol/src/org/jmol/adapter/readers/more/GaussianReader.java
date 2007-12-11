@@ -139,7 +139,7 @@ public class GaussianReader extends AtomSetCollectionReader {
             continue;
           }
           equivalentAtomSets++;
-          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          if (Logger.debugging) {
             Logger.debug(
                 " model " + modelNumber + " step " + stepNumber +
                 " equivalentAtomSet " + equivalentAtomSets + " calculation " +
@@ -177,7 +177,7 @@ public class GaussianReader extends AtomSetCollectionReader {
         } else if (iHaveAtoms
             && line.indexOf("Molecular Orbital Coefficients") >= 0) {
           readMolecularOrbitals();
-          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          if (Logger.debugging) {
             Logger.debug(orbitals.size() + " molecular orbitals read");
           }
           moData.put("mos", orbitals);
@@ -359,7 +359,7 @@ public class GaussianReader extends AtomSetCollectionReader {
     }
     moData.put("shells", sdata);
     moData.put("gaussians", garray);
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(shellCount + " slater shells read");
       Logger.debug(gaussianCount + " gaussian primitives read");
     }

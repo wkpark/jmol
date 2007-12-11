@@ -150,7 +150,7 @@ public class OdysseyXMLReader extends AtomSetCollectionReader {
           bondOrder < 4 ? bondOrder : 1)); //aromatic would be 5
       bondCount++;
     }
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(bondCount + " bonds read");
     }
   }

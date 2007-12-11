@@ -121,7 +121,7 @@ public class OdysseyReader extends AtomSetCollectionReader {
         nAtoms -= tokens.length;
       }
     }
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(bondCount + " bonds read");
     }
   }

@@ -154,7 +154,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug("Isosurface state=" + sg.getState() + " setProperty: "
           + propertyName + " = " + value);
     }
@@ -539,7 +539,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
 
   private void createLcaoLobe(Vector3f lobeAxis, float factor) {
     initState();
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug("creating isosurface " + thisMesh.thisID);
     }
     thisMesh.colix = defaultColix;

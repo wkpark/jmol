@@ -462,7 +462,7 @@ public class AtomSetCollection {
         bond.order < 0 ||
         //do not allow bonds between models
         atoms[bond.atomIndex1].atomSetIndex != atoms[bond.atomIndex2].atomSetIndex) {
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      if (Logger.debugging) {
         Logger.debug(
             ">>>>>>BAD BOND:" + bond.atomIndex1 + "-" +
             bond.atomIndex2 + " order=" + bond.order);

@@ -71,7 +71,7 @@ public class JaguarReader extends AtomSetCollectionReader {
           lumoEnergy = parseFloat(line.substring(13));
         } else if (line.indexOf("final wvfn") >= 0) {
           readMolecularOrbitals();
-          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          if (Logger.debugging) {
             Logger.debug(orbitals.size() + " molecular orbitals read");
           }
         } else if (line.startsWith("  harmonic frequencies in")) {
@@ -214,7 +214,7 @@ public class JaguarReader extends AtomSetCollectionReader {
       }
     moData.put("shells", sarray);
     moData.put("gaussians", garray);
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(sarray.size() + " slater shells read");
       Logger.debug(gaussianCount + " gaussian primitives read");
     }

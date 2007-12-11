@@ -201,7 +201,7 @@ public class Parameters {
     isSilent = false;
     iUseBitSets = false;
     logCube = logCompression = false;
-    logMessages = Logger.isActiveLevel(Logger.LEVEL_DEBUG);
+    logMessages = Logger.debugging;
     mappedDataMin = Float.MAX_VALUE;
     minSet = 0;
     nContours = 0;

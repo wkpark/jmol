@@ -52,7 +52,7 @@ public abstract class ProteinStructure {
     monomerIndexFirst = monomerIndex;
     addMonomer(monomerIndex + monomerCount - 1);
     
-    if(Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if(Logger.debugging)
       Logger.debug(
           "Creating ProteinStructure " + uniqueID 
           + " " + JmolConstants.getProteinStructureName(type) 

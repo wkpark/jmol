@@ -59,7 +59,7 @@ public class LcaoCartoon extends Isosurface {
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug("\nLcaoCartoon.setProperty " + propertyName + " " + value);
     }
 

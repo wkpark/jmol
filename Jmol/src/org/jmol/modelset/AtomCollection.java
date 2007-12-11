@@ -437,7 +437,7 @@ abstract public class AtomCollection {
         Atom atom = atoms[i];
         for (int j = points.length; --j >= 0;) {
           float d = Math.abs(points[j].distance(atom) - radiusAdjust);
-          if (d < 0 && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+          if (d < 0 && Logger.debugging)
             Logger.debug("draw d" + j + " " + Escape.escape(points[j])
                 + " \"" + d + " ? " + atom.getInfo() + "\"");
           dMin = Math.min(d, dMin);
@@ -1183,7 +1183,7 @@ abstract public class AtomCollection {
     x.normalize();
     z.normalize();
 
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (Logger.debugging) {
       Logger.debug(atom.getInfo() + " nBonds=" + nBonds + " " + hybridization);
     }
     if (hybridizationCompatible) {

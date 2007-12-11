@@ -4321,6 +4321,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean notFound = false;
     boolean doRepaint = true;
     while (true) {
+      // 11.3.55
+      
+      if (key.equalsIgnoreCase("wireframeRotation")) {
+        setWireframeRotation(value);
+        break;
+      }
 
       //11.3.46
       
@@ -4770,6 +4776,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   boolean getIsosurfacePropertySmoothing() {
     //Eval
     return global.isosurfacePropertySmoothing;
+  }
+  
+  private void setWireframeRotation(boolean TF) {
+    global.wireframeRotation = TF; 
+  }
+  
+  public boolean getWireframeRotation() {
+    return global.wireframeRotation;
   }
   
   boolean isWindowCentered() {

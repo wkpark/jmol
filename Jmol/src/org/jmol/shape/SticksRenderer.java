@@ -51,12 +51,14 @@ public class SticksRenderer extends ShapeRenderer {
   protected short colixA, colixB;
   protected int width;
   protected int bondOrder;
+  private boolean renderWireframe;
+
 
   protected void render() {
     endcaps = Graphics3D.ENDCAPS_SPHERICAL;
     showMultipleBonds = viewer.getShowMultipleBonds();
     modeMultipleBond = viewer.getModeMultipleBond();
-
+    renderWireframe = viewer.getInMotion() && viewer.getWireframeRotation();
     ssbondsBackbone = viewer.getSsbondsBackbone();
     hbondsBackbone = viewer.getHbondsBackbone();
     bondsBackbone = hbondsBackbone | ssbondsBackbone;
@@ -122,6 +124,8 @@ public class SticksRenderer extends ShapeRenderer {
     dx = xB - xA;
     dy = yB - yA;
     width = viewer.scaleToScreen((zA + zB) / 2, mad);
+    if (renderWireframe && width > 0)
+      width = 1;
     bondOrder = getRenderBondOrder(order);
     switch (bondOrder) {
     case 1:

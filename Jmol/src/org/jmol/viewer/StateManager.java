@@ -582,6 +582,7 @@ public class StateManager {
     float   vectorScale               = 1f;
     float   vibrationPeriod           = 1f;
     float   vibrationScale            = 1f;
+    boolean wireframeRotation         = false;
     
     // window
     
@@ -1111,6 +1112,7 @@ public class StateManager {
       setParameterValue("vibrationScale",vibrationScale);
       setParameterValue("visualRange",visualRange);
       setParameterValue("windowCentered",true);
+      setParameterValue("wireframeRotation",wireframeRotation);
       setParameterValue("zoomEnabled",true);
       setParameterValue("zoomLarge",zoomLarge);
       setParameterValue("zShade",zShade);

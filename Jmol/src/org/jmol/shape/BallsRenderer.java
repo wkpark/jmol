@@ -41,6 +41,7 @@ public class BallsRenderer extends ShapeRenderer {
     //maxX = minX + rectClip.width;
     //minY = rectClip.y;
     //maxY = minY + rectClip.height;
+    boolean renderBalls = !viewer.getInMotion() || !viewer.getWireframeRotation();
     slabbing = viewer.getSlabEnabled();
     //isNav = viewer.getNavigationMode();
     if (slabbing) {
@@ -82,7 +83,7 @@ public class BallsRenderer extends ShapeRenderer {
         if (z < group.getMinZ())
           group.setMinZ(Math.max(1, z));
       }
-      if (atom.screenDiameter > 0 
+      if (renderBalls && atom.screenDiameter > 0 
           && (atom.getShapeVisibilityFlags() & myVisibilityFlag) != 0
           && g3d.setColix(atom.getColix()))
         renderBall(atom);

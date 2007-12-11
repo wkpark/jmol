@@ -5252,67 +5252,69 @@ class Eval { //implements Runnable {
   private void slab(boolean isDepth) throws ScriptException {
     boolean TF = false;
     Point4f plane = null;
-    switch (getToken(1).tok) {
-    case Token.integer:
-      checkLength2();
-      int percent = intParameter(1);
-      if (!isSyntaxCheck)
-        if (isDepth)
-          viewer.depthToPercent(percent);
-        else
-          viewer.slabToPercent(percent);
-      return;
-    case Token.on:
-      checkLength2();
-      TF = true;
-    // fall through
-    case Token.off:
-      checkLength2();
-      setBooleanProperty("slabEnabled", TF);
-      return;
-    case Token.reset:
-      checkLength2();
-      if (isSyntaxCheck)
-        return;
-      viewer.slabReset();
-      setBooleanProperty("slabEnabled", true);
-      return;
-    case Token.set:
-      checkLength2();
-      if (isSyntaxCheck)
-        return;
-      viewer.setSlabDepthInternal(isDepth);
-      setBooleanProperty("slabEnabled", true);
-      return;
-    case Token.leftbrace:
+    String str;
+    if (isCenterParameter(1) || tokAt(1) == Token.point4f)
       plane = planeParameter(1);
-      break;
-    case Token.minus:
-      if (parameterAsString(2).equalsIgnoreCase("hkl")) {
-        plane = (getToken(3).tok == Token.none ? null : hklParameter(3));
+    else
+      switch (getToken(1).tok) {
+      case Token.integer:
+        checkLength2();
+        int percent = intParameter(1);
+        if (!isSyntaxCheck)
+          if (isDepth)
+            viewer.depthToPercent(percent);
+          else
+            viewer.slabToPercent(percent);
+        return;
+      case Token.on:
+        checkLength2();
+        TF = true;
+      // fall through
+      case Token.off:
+        checkLength2();
+        setBooleanProperty("slabEnabled", TF);
+        return;
+      case Token.reset:
+        checkLength2();
+        if (isSyntaxCheck)
+          return;
+        viewer.slabReset();
+        setBooleanProperty("slabEnabled", true);
+        return;
+      case Token.set:
+        checkLength2();
+        if (isSyntaxCheck)
+          return;
+        viewer.setSlabDepthInternal(isDepth);
+        setBooleanProperty("slabEnabled", true);
+        return;
+      case Token.minus:
+        str = parameterAsString(2);
+        if (str.equalsIgnoreCase("hkl"))
+          plane = hklParameter(3);
+        else if (str.equalsIgnoreCase("plane"))
+          plane = planeParameter(3);
+        if (plane == null)
+          invalidArgument();
+        plane.scale(-1);
         break;
-      }
-      invalidArgument();
-    case Token.plane:
-      switch (getToken(2).tok) {
-      case Token.none:
-        break;
-      default:
-        plane = planeParameter(2);
-      }
-      break;
-    case Token.identifier:
-      String str = parameterAsString(1);
-      if (str.equalsIgnoreCase("hkl")) {
-        plane = (getToken(2).tok == Token.none ? null : hklParameter(2));
-        if (plane != null) {
-          plane.scale(-1);
+      case Token.plane:
+        switch (getToken(2).tok) {
+        case Token.none:
+          break;
+        default:
+          plane = planeParameter(2);
         }
         break;
+      case Token.identifier:
+        str = parameterAsString(1);
+        if (str.equalsIgnoreCase("hkl")) {
+          plane = (getToken(2).tok == Token.none ? null : hklParameter(2));
+          break;
+        }
+      default:
+        invalidArgument();
       }
-    default:
-      invalidArgument();
-    }
     if (!isSyntaxCheck)
       viewer.slabInternal(plane, isDepth);
   }
@@ -11667,7 +11669,7 @@ class Eval { //implements Runnable {
             .bValue(x2)));
       int iv = op.intValue & ~Token.minmaxmask;
       if (op.tok == Token.propselector) {
-        switch(iv) {
+        switch (iv) {
         case Token.size:
           return addX(Token.sizeOf(x2));
         case Token.type:
@@ -11730,7 +11732,9 @@ class Eval { //implements Runnable {
           bs.xor(Token.bsSelect(x2));
           return addX(bs);
         }
-        return addX(Token.bValue(x1) || Token.bValue(x2));
+        boolean a = Token.bValue(x1);
+        boolean b = Token.bValue(x2);
+        return addX(a && !b || b && !a);
       case Token.opToggle:
         if (x1.tok != Token.bitset || x2.tok != Token.bitset)
           return false;
@@ -11796,8 +11800,6 @@ class Eval { //implements Runnable {
               && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
             return addX(Token.iValue(x1) - x2.intValue);
         }
-      //fall through
-      case Token.unaryMinus:
         if (x1.tok == Token.integer && x2.tok == Token.integer)
           return addX(x1.intValue - Token.iValue(x2));
         if (x1.tok == Token.point3f) {
@@ -11812,6 +11814,23 @@ class Eval { //implements Runnable {
           }
         }
         return addX(Token.fValue(x1) - Token.fValue(x2));
+      case Token.unaryMinus:
+        switch (x2.tok) {
+        case Token.integer:
+          return addX(-Token.iValue(x2));
+        case Token.point3f:
+          Point3f pt = new Point3f((Point3f) x2.value);
+          pt.scale(-1f);
+          return addX(pt);
+        case Token.point4f:
+          Point4f plane = new Point4f((Point4f) x2.value);
+          plane.scale(-1f);
+          return addX(plane);
+        case Token.bitset:
+          return addX(BitSetUtil.copyInvert(Token.bsSelect(x2), 
+              (x2.value instanceof BondSet ? viewer.getBondCountInModel(-1) : viewer.getAtomCount())));
+        }
+        return addX(-Token.fValue(x2));
       case Token.times:
         if (x1.tok == Token.integer && x2.tok != Token.decimal)
           return addX(x1.intValue * Token.iValue(x2));

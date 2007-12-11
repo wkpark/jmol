@@ -772,10 +772,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void slabInternal(Point4f plane, boolean isDepth) {
-    if (isDepth)
-      transformManager.depthPlane = plane;
-    else
-      transformManager.slabPlane = plane;
+    transformManager.slabInternal(plane, isDepth);
   }
 
   void depthToPercent(int percentDepth) {

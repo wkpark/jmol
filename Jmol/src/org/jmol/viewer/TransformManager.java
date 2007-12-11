@@ -167,18 +167,9 @@ abstract class TransformManager {
              append(";depth ").append(depthPercentSetting).
              append(slabEnabled && !isNavigationMode ? ";slab on" : "").append(";\n");
     if (slabPlane != null)
-      commands.append("  slab plane {").append(slabPlane.x).
-               append(" ").append(slabPlane.y).
-               append(" ").append(slabPlane.z).
-               append(" ").append(slabPlane.w).append(" };\n");
+      commands.append("  slab plane ").append(Escape.escape(slabPlane)).append(";\n");
     if (depthPlane != null)
-      commands.append("  depth plane {").append(depthPlane.x).
-               append(" ").append(depthPlane.y).
-               append(" ").append(depthPlane.z).
-               append(" ").append(depthPlane.w).append(" };\n");
-    if (depthPlane != null || slabPlane != null)
-      commands./*append("  slab reference ").append(Escape.escape(slabRef)).*/
-               append(slabEnabled || isNavigationMode? ";slab on" : "").append(";\n");
+      commands.append("  depth plane ").append(Escape.escape(depthPlane)).append(";\n");
     commands.append(getSpinState(true)).append("\n");
     if (viewer.modelSetHasVibrationVectors()) {
       StateManager.appendCmd(commands, "vibration scale " + viewer.getVibrationScale());
@@ -187,8 +178,11 @@ abstract class TransformManager {
       else
         StateManager.appendCmd(commands, "vibration period " + vibrationPeriod);
     }
-    if (isNavigationMode)
+    if (isNavigationMode) {
       commands.append(getNavigationState());
+      if (depthPlane != null || slabPlane != null)
+        commands.append("  slab on;\n");
+    }
     if (sfunc != null) 
       commands.append("end function;\n\n");
     return commands.toString();
@@ -740,19 +734,28 @@ abstract class TransformManager {
       slabPercentSetting = depthPercentSetting + 1;
   }
 
+  void slabInternal(Point4f plane, boolean isDepth) {
+    //also from viewer
+    if (isDepth) {
+      depthPlane = plane;
+      depthPercentSetting = 0;
+    } else {
+      slabPlane = plane;
+      slabPercentSetting = 100;
+    }
+  }
+  
   /**
    * set internal slab or depth from screen-based slab or depth
    * @param isDepth
    */
   void setSlabDepthInternal(boolean isDepth) {
     finalizeTransformParameters();
-    if (isDepth) {
+    if (isDepth)
       depthPlane = null;
-      depthPlane = getSlabDepthPlane(true);
-    } else {
+    else
       slabPlane = null;
-      slabPlane = getSlabDepthPlane(false);
-    }
+    slabInternal(getSlabDepthPlane(isDepth), isDepth);
   }
   
   Point4f getSlabDepthPlane(boolean isDepth) {
@@ -767,14 +770,14 @@ abstract class TransformManager {
         return slabPlane;
     }
     Matrix4f m = matrixTransform;
-    return new Point4f(m.m20, m.m21, m.m22, m.m23 - (isDepth ? depthValue : slabValue)); 
+    return new Point4f(-m.m20, -m.m21, -m.m22, -m.m23 + (isDepth ? depthValue : slabValue)); 
   }
   
   boolean checkInternalSlab(Point3f pt) {
     return (slabPlane != null 
-         && pt.x * slabPlane.x + pt.y * slabPlane.y + pt.z * slabPlane.z + slabPlane.w < 0
+         && pt.x * slabPlane.x + pt.y * slabPlane.y + pt.z * slabPlane.z + slabPlane.w > 0
          || depthPlane != null 
-         && pt.x * depthPlane.x + pt.y * depthPlane.y + pt.z * depthPlane.z + depthPlane.w > 0
+         && pt.x * depthPlane.x + pt.y * depthPlane.y + pt.z * depthPlane.z + depthPlane.w < 0
          );
   }
   

@@ -38,7 +38,7 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
     antialias = g3d.isAntialiased();
     int zSum = 0;
     for (int i = 8; --i >= 0;) {
-      viewer.transformPoint(vertices[i], screens[i]);
+      viewer.transformPointNoClip(vertices[i], screens[i]);
       zSum += screens[i].z;
     }
     if (mad > 0 && mad < 2)
@@ -51,7 +51,7 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
     for (int i = firstLine * 2; i < 24; i += 2) {
       int edge0 = Bbcage.edges[i];
       if (axisPoints != null && edge0 == 0)
-        viewer.transformPoint(axisPoints[axisPt--], screens[0]);
+        viewer.transformPointNoClip(axisPoints[axisPt--], screens[0]);
       if (mad < 0)
         g3d.drawDottedLine(screens[edge0], screens[Bbcage.edges[i + 1]]);
       else

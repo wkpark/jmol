@@ -1216,6 +1216,11 @@ abstract class TransformManager {
     pointScreen.set(transformPoint(pointAngstroms));
   }
 
+  void transformPointNoClip(Point3f pointAngstroms, Point3i pointScreen) {
+    pointScreen.set(transformPointNoClip(pointAngstroms));
+  }
+
+
   /** 
    * CAUTION! returns a POINTER TO A TEMPORARY VARIABLE
    * @param pointAngstroms
@@ -1226,6 +1231,17 @@ abstract class TransformManager {
     adjustTemporaryScreenPoint();
     if (internalSlab && checkInternalSlab(pointAngstroms))
       point3iScreenTemp.z = 1;
+    return point3iScreenTemp;
+  }
+
+  /** 
+   * CAUTION! returns a POINTER TO A TEMPORARY VARIABLE
+   * @param pointAngstroms
+   * @return POINTER TO point3iScreenTemp
+   */
+  synchronized Point3i transformPointNoClip(Point3f pointAngstroms) {
+    matrixTransform(pointAngstroms, point3fScreenTemp);
+    adjustTemporaryScreenPoint();
     return point3iScreenTemp;
   }
 

@@ -814,6 +814,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.transformPoint(pointAngstroms, pointScreen);
   }
 
+  public void transformPointNoClip(Point3f pointAngstroms, Point3i point3i) {
+    transformManager.transformPointNoClip(pointAngstroms, point3i);
+  }
+
   public void transformPoint(Point3f pointAngstroms, Point3f pointScreen) {
     transformManager.transformPoint(pointAngstroms, pointScreen);
   }
@@ -6221,4 +6225,5 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //legacy -- no calls
     return modelSet.getBondAtom2(i);
   }
+
 }

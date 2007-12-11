@@ -28,6 +28,7 @@ function jmolWikiPopupWindow(extensionPath, windowTitle, windowSize, windowLeft,
   var s =
     "<html><head>\n" +
     "<script language='Javascript' type='text/javascript' src='" + extensionPath + "/Jmol.js'></script>\n" +
+    "<script language='Javascript' type='text/javascript'>jmolInitialize('" + extensionPath + "', false);</script>\n" +
     "<title>" + windowTitle + "</title>\n" +
     "</head><body>" +
     "<script language='Javascript' type='text/javascript'>\n" + windowCode + "\n</script>\n" +

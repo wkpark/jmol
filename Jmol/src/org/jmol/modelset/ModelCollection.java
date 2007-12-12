@@ -471,30 +471,57 @@ abstract public class ModelCollection extends BondCollection {
         modelCount);
   }
 
+  protected boolean isTrajectory = false;
+  protected Vector trajectories;
+
+  public int getTrajectoryCount() {
+    return (trajectories == null ? 1 : trajectories.size());
+  }
+
+  public void setTrajectory(int iTraj) {
+    if (!isTrajectory || iTraj < 0 || iTraj >= trajectories.size())
+      return;
+    Point3f[] trajectory = (Point3f[]) trajectories.get(iTraj);
+      for (int i = atomCount; --i >= 0;)
+        atoms[i].set(trajectory[i]);
+  }  
+
   public String getModelTitle(int modelIndex) {
+    if (isTrajectory)
+      modelIndex = 0;
     return models[modelIndex].modelTitle;
   }
 
   public String getModelFile(int modelIndex) {
+    if (isTrajectory)
+      modelIndex = 0;
     return models[modelIndex].modelFile;
   }
 
   int getFirstAtomIndexInModel(int modelIndex) {
+    if (isTrajectory)
+      modelIndex = 0;
     return models[modelIndex].firstAtomIndex;
   }
 
   void setFirstAtomIndex(int modelIndex, int atomIndex) {
+    if (isTrajectory)
+      modelIndex = 0;
     models[modelIndex].firstAtomIndex = atomIndex;
     models[modelIndex].bsAtoms = null;
   }
 
   public String getModelName(int modelIndex) {
+    if (isTrajectory)
+      modelIndex = 0;
     return modelCount < 1 ? "" 
         : modelIndex < 0 ? models[-1 - modelIndex].modelNumberForAtomLabel 
         : models[modelIndex].modelTag;
   }
 
   public String getModelNumberDotted(int modelIndex) {
+    if (isTrajectory && modelIndex >= 0)
+      modelIndex = 0;
     return (modelCount < 1 || modelIndex < 0 ? "" : Escape.escapeModelFileNumber(models[modelIndex].modelFileNumber));
   }
 
@@ -513,44 +540,62 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public int getModelNumber(int modelIndex) {
+    if (isTrajectory)
+      modelIndex = 0;
     return models[modelIndex].modelNumber;
   }
 
   public int getModelFileNumber(int modelIndex) {
+    if (isTrajectory)
+      modelIndex = 0;
     return models[modelIndex].modelFileNumber;
   }
 
   public Properties getModelProperties(int modelIndex) {
+    if (isTrajectory)
+      modelIndex = 0;
     return modelProperties[modelIndex];
   }
 
   public String getModelProperty(int modelIndex, String property) {
+    if (isTrajectory)
+      modelIndex = 0;
     Properties props = modelProperties[modelIndex];
     return props == null ? null : props.getProperty(property);
   }
 
   public Hashtable getModelAuxiliaryInfo(int modelIndex) {
+    if (isTrajectory && modelIndex >= 0)
+      modelIndex = 0;
     return (modelIndex < 0 ? null : modelAuxiliaryInfo[modelIndex]);
   }
 
   public void setModelAuxiliaryInfo(int modelIndex, Object key, Object value) {
+    if (isTrajectory)
+      modelIndex = 0;
     modelAuxiliaryInfo[modelIndex].put(key, value);
   }
 
   public Object getModelAuxiliaryInfo(int modelIndex, String key) {
     if (modelIndex < 0)
       return null;
+    if (isTrajectory)
+      modelIndex = 0;
     Hashtable info = modelAuxiliaryInfo[modelIndex];
     return info == null ? null : info.get(key);
   }
 
   protected boolean getModelAuxiliaryInfoBoolean(int modelIndex, String keyName) {
+    if (isTrajectory)
+      modelIndex = 0;
     Hashtable info = modelAuxiliaryInfo[modelIndex];
     return (info != null && info.containsKey(keyName) && ((Boolean) info
         .get(keyName)).booleanValue());
   }
 
   protected int getModelAuxiliaryInfoInt(int modelIndex, String keyName) {
+    if (isTrajectory)
+      modelIndex = 0;
     Hashtable info = modelAuxiliaryInfo[modelIndex];
     if (info != null && info.containsKey(keyName)) {
       return ((Integer) info.get(keyName)).intValue();
@@ -559,10 +604,14 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   Model getModel(int modelIndex) {
+    if (isTrajectory)
+      modelIndex = 0;
     return models[modelIndex];
   }
 
   public int getInsertionCountInModel(int modelIndex) {
+    if (isTrajectory)
+      modelIndex = 0;
     return models[modelIndex].nInsertions;
   }
 
@@ -578,6 +627,8 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public int getAltLocCountInModel(int modelIndex) {
+    if (isTrajectory)
+      modelIndex = 0;
     return models[modelIndex].nAltLocs;
   }
 
@@ -612,6 +663,8 @@ abstract public class ModelCollection extends BondCollection {
   public int getBioPolymerCountInModel(int modelIndex) {
     if (modelIndex < 0)
       return getBioPolymerCount();
+    if (isTrajectory)
+      modelIndex = 0;
     return models[modelIndex].getBioPolymerCount();
   }
 
@@ -634,6 +687,8 @@ abstract public class ModelCollection extends BondCollection {
   public int getChainCountInModel(int modelIndex) {
     if (modelIndex < 0)
       return getChainCount();
+    if (isTrajectory)
+      modelIndex = 0;
     return models[modelIndex].getChainCount();
   }
 
@@ -647,6 +702,8 @@ abstract public class ModelCollection extends BondCollection {
   public int getGroupCountInModel(int modelIndex) {
     if (modelIndex < 0)
       return getGroupCount();
+    if (isTrajectory)
+      modelIndex = 0;
     return models[modelIndex].getGroupCount();
   }
 

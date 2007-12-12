@@ -56,7 +56,6 @@ public final class ModelLoader extends ModelSet {
   private boolean merging;
   private boolean isMultiFile;
   private String jmolData; // from a PDB remark "Jmol PDB-encoded data"
-  private boolean isTrajectory = false;
 
   private final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
   private String[] group3Lists;
@@ -74,7 +73,7 @@ public final class ModelLoader extends ModelSet {
       ModelLoader mergeModelSet, String modelSetName) {
     this.modelSetName = modelSetName;
     this.mergeModelSet = mergeModelSet;
-    merging = (mergeModelSet != null && mergeModelSet.atomCount > 0);
+    merging = (mergeModelSet != null && mergeModelSet.atomCount > 0 && !mergeModelSet.isTrajectory);
     this.viewer = viewer;
     initializeInfo(adapter.getFileTypeName(clientFile).toLowerCase().intern(),
         adapter.getEstimatedAtomCount(clientFile), adapter

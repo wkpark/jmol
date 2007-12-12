@@ -103,20 +103,6 @@ abstract public class ModelSet extends ModelCollection {
     return modelSetTypeName;
   }
 
-  protected Vector trajectories;
-
-  public int getTrajectoryCount() {
-    return (trajectories == null ? 1 : trajectories.size());
-  }
-
-  public void setTrajectory(int iTraj) {
-    if (trajectories == null || iTraj < 0 || iTraj >= trajectories.size())
-      return;
-    Point3f[] trajectory = (Point3f[]) trajectories.get(iTraj);
-      for (int i = atomCount; --i >= 0;)
-        atoms[i].set(trajectory[i]);
-  }  
-
   protected boolean isZeroBased;
 
   public void setZeroBased() {

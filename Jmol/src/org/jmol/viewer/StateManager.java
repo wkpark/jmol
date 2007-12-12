@@ -589,7 +589,6 @@ public class StateManager {
     boolean   hideNavigationPoint       = false;
     boolean   navigationMode            = false;
     boolean   navigationPeriodic        = false;
-    boolean   navigationCentered        = false;
     float     navigationSpeed           = 5;
     boolean   showNavigationPointAlways = false;
     String    stereoState               = null;
@@ -1056,7 +1055,6 @@ public class StateManager {
       setParameterValue("measurementLabels",measurementLabels=true);
       setParameterValue("measurementUnits", measureDistanceUnits);
       setParameterValue("minBondDistance",minBondDistance);
-      setParameterValue("navigationCentered",navigationCentered);
       setParameterValue("navigationMode",navigationMode);
       setParameterValue("navigationPeriodic",navigationPeriodic);
       setParameterValue("navigationDepth",0);

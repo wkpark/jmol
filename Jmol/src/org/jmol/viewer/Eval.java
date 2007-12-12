@@ -10171,6 +10171,7 @@ class Eval { //implements Runnable {
       Integer n = (Integer) viewer.getShapeProperty(iShape, "count");
       if (id != null)
         showString(id + " created; number of isosurfaces = " + n);
+      setShapeProperty(iShape, "finalize", null);
     }
     if (translucency != null)
       setShapeProperty(iShape, "translucency", translucency);

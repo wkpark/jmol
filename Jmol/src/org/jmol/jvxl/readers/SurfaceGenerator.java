@@ -314,6 +314,11 @@ public class SurfaceGenerator {
       params.script = (String) value;
       return false; //more to do
     }
+    
+    if ("finalize" == propertyName) {
+      initializeIsosurface();
+      return true;
+    }
 
     if ("commandOption" == propertyName) {
       String s = " # " + (String) value;
@@ -798,7 +803,7 @@ public class SurfaceGenerator {
     voxelReader.jvxlUpdateInfo();
     setMarchingSquares(voxelReader.marchingSquares);
     voxelReader.discardTempData(false);
-    //voxelReader = null;
+    voxelReader = null; // resets voxel reader for mapping
     params.mappedDataMin = Float.MAX_VALUE;
   }
 
@@ -825,6 +830,7 @@ public class SurfaceGenerator {
     voxelReader.jvxlUpdateInfo();
     voxelReader.updateTriangles();
     voxelReader.discardTempData(true);
+    voxelReader = null;
     if (meshDataServer != null)
       meshDataServer.notifySurfaceMappingCompleted();
   }

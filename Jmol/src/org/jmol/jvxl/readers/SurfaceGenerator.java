@@ -871,6 +871,8 @@ public class SurfaceGenerator {
       return new JaguarReader(this, br);
     if (fileType.equals("Xplor"))
       return new XplorReader(this, br);
+    if (fileType.equals("PltFormatted"))
+      return new PltFormattedReader(this, br);
     return null;
   }
 

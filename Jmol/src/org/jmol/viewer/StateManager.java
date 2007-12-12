@@ -832,27 +832,35 @@ public class StateManager {
       return "";
     }
 
-    String getAllSettings(int nMax) {
+    String getAllSettings(String prefix) {
       StringBuffer commands = new StringBuffer("");
       Enumeration e;
       String key;
-      String[] list = new String[htPropertyFlags.size() + htParameterValues.size()];
+      String[] list = new String[htPropertyFlags.size()
+          + htParameterValues.size()];
       //booleans
       int n = 0;
+      String _prefix = "_" + prefix;
       e = htPropertyFlags.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
-        list[n++] = key + " = " + htPropertyFlags.get(key);
+        if (prefix == null 
+            || key.indexOf(prefix) == 0 || key.indexOf(_prefix) == 0)
+          list[n++] = (key.indexOf("_") == 0 ? key + " = " : "set " + key + " ")
+              + htPropertyFlags.get(key);
       }
       //save as _xxxx if you don't want "set" to be there first
       e = htParameterValues.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
-        if (key.charAt(0) != '@' && key.charAt(0) != '_') {
+        if (key.charAt(0) != '@'
+            && (prefix == null 
+                || key.indexOf(prefix) == 0 || key.indexOf(_prefix) == 0)) {
           Object value = htParameterValues.get(key);
-            if (value instanceof String)
-              value = Escape.escape((String) value);
-            list[n++] = key + " = " + value;
+          if (value instanceof String)
+            value = Escape.escape((String) value);
+          list[n++] = (key.indexOf("_") == 0 ? key + " = " : "set " + key + " ")
+              + value;
         }
       }
       Arrays.sort(list, 0, n);

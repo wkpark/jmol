@@ -4740,8 +4740,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     scriptEcho(str);
   }
 
-  String getAllSettings(int nMax) {
-    return global.getAllSettings(nMax);
+  String getAllSettings(String prefix) {
+    return global.getAllSettings(prefix);
   }
 
   ////////  flags and settings ////////

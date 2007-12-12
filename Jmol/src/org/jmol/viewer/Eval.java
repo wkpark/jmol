@@ -6309,17 +6309,21 @@ class Eval { //implements Runnable {
    */
 
   private void set() throws ScriptException {
+    String key;
     if (statementLength == 1) {
-      showString(viewer.getAllSettings(60));
+      showString(viewer.getAllSettings(null));
       return;
     }
     boolean isJmolSet = (parameterAsString(0).equals("set"));
+    if (isJmolSet && statementLength == 2 && (key = parameterAsString(1)).indexOf("?") >= 0) {
+      showString(viewer.getAllSettings(key.substring(0, key.indexOf("?"))));
+      return;
+    }
     boolean showing = (!isSyntaxCheck && !tQuiet
         && scriptLevel <= scriptReportingLevel && !((String) statement[0].value)
         .equals("var"));
     int val = Integer.MAX_VALUE;
     int n = 0;
-    String key = null;
     switch (getToken(1).tok) {
     
     // THESE ARE DEPRECATED AND HAVE THEIR OWN COMMAND
@@ -8391,7 +8395,7 @@ class Eval { //implements Runnable {
     case Token.set:
       checkLength2();
       if (!isSyntaxCheck)
-        showString(viewer.getAllSettings(60));
+        showString(viewer.getAllSettings(null));
       return;
     case Token.url:
       // in a new window

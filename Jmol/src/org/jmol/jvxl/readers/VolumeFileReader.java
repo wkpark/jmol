@@ -66,9 +66,20 @@ class VolumeFileReader extends VoxelReader {
     if (line.indexOf("object 1 class gridpositions counts") == 0)
       return "Apbs";
 
-    // Jvxl, or Cube
+    // Jvxl, or Cube, maybe formatted Plt
     
-    line = br.readNonCommentLine(); // second line
+    String[] tokens = Parser.getTokens(line); 
+    line = br.readNonCommentLine();// second line
+    if (tokens.length == 2 
+        && Parser.parseInt(tokens[0]) == 3 
+        && Parser.parseInt(tokens[1])!= Integer.MIN_VALUE) {
+      tokens = Parser.getTokens(line);
+      if (tokens.length == 3 
+          && Parser.parseInt(tokens[0])!= Integer.MIN_VALUE 
+          && Parser.parseInt(tokens[1])!= Integer.MIN_VALUE
+          && Parser.parseInt(tokens[2])!= Integer.MIN_VALUE)
+        return "PltFormatted";
+    }
     line = br.readNonCommentLine(); // third line
     //next line should be the atom line
     int nAtoms = Parser.parseInt(line);

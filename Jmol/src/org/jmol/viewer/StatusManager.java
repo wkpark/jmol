@@ -211,14 +211,6 @@ class StatusManager {
     jmolStatusListener.notifyScriptTermination(statusMessage, msWalltime);
   }
 
-  synchronized void setStatusUserAction(String strInfo){
-    Logger.info("userAction(" + strInfo + ")");
-    if(isSynced)
-      syncSend("SLAVE", null);
-    drivingSync = true;
-    setStatusChanged("userAction", 0, strInfo, false);
-  }
-  
   synchronized void setScriptEcho(String strEcho) {
     if (strEcho == null) return; 
     setStatusChanged("scriptEcho", 0, strEcho, false);
@@ -242,23 +234,15 @@ class StatusManager {
   }
   
   int minSyncRepeatMs = 100;
-  //int lastSyncTimeMs = Integer.MAX_VALUE;
-  synchronized void setStatusViewerRefreshed(int isOrientationChange, String strWhy) {
-    //System.out.println( "ViewerRefreshed " + isOrientationChange + " " + strWhy);
-    if(isOrientationChange == 1){
-      //setStatusChanged("newOrientation", 0, strWhy, true);
-      if(isSynced && drivingSync && !syncDisabled) {
-        //int time = (int) System.currentTimeMillis();
-        //System.out.println(" syncing" + time + " " + lastSyncTimeMs + " " + minSyncRepeatMs );
-        //if (time < lastSyncTimeMs || time >= lastSyncTimeMs + minSyncRepeatMs) {
-          //lastSyncTimeMs = time;
-          if (Logger.debugging)
-            Logger.debug("sending sync");
-          syncSend("!" + viewer.getMoveToText(minSyncRepeatMs/1000f), null);
-        //}
-      }
-    } else {
-      //setStatusChanged("viewerRefreshed", 0, strWhy, false);   
+  synchronized void setStatusViewerRefreshed(int isOrientationChange,
+                                             String strWhy) {
+    if (isOrientationChange > 0 && isSynced && drivingSync && !syncDisabled) {
+      if (Logger.debugging)
+        Logger.debug("sending sync");
+      if (!viewer.isSyncingScripts())
+        syncSend("!" + viewer.getMoveToText(minSyncRepeatMs / 1000f), null);
+      else if (isOrientationChange == 2)
+        syncSend(strWhy, null);
     }
   }
 
@@ -289,7 +273,6 @@ class StatusManager {
       if (!syncDisabled)
         return;
       syncDisabled = false;
-      
       break;
     case SYNC_DISABLE:
       syncDisabled = true;

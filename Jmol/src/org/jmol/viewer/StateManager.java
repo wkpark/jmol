@@ -672,6 +672,11 @@ public class StateManager {
       //handle these specially for the CURRENT FILE, their current
       //settings won't be reflected in the load state, which is determined
       //earlier, when the file loads. 
+      //
+      //place any parameter here you do NOT want to have in the state
+      //
+      //this is a final static String. MAKE SURE ALL ENTRIES ARE LOWERCASE!
+      //
       ";_animating;_atomhovered;_atompicked;_pickinfo" +
       ";_currentfilenumber;_currentmodelnumberinfile" +
       ";_height;_memory;_modelfile;_modelname;_modelnumber;_modeltitle;_spinning;_version;_width" +
@@ -685,15 +690,15 @@ public class StateManager {
       ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell" +
       ";slabenabled;specular;specularexponent;specularpercent;specularpower;stateversion" +
       ";statusreporting;stereo;stereostate" +
-      ";unitcellcolor;windowcentered;zerobasedxyzrasmol;zoomEnabled;" +
+      ";unitcellcolor;windowcentered;zerobasedxyzrasmol;zoomenabled;" +
       //    saved in the hash table but not considered part of the state:
-      ";scriptqueue;scriptreportinglevel" +
+      ";scriptqueue;scriptreportinglevel;syncscripttarget" +
       //    more settable Jmol variables    
       ";ambient;bonds;colorrasmol;diffuse;dipolescale;drawhover;frank;hetero;hidenotselected" +
-      ";hoverlabel;hydrogen;languagetranslation;navigationdepth;navigationslab" +
+      ";hoverlabel;hydrogen;languagetranslation;measurementunits;navigationdepth;navigationslab" +
       ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred" +
       ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount" +
-      ";spinx;spiny;spinz;spinfps;measurementunits" +
+      ";spinx;spiny;spinz;spinfps" +
       ";animframecallback;loadstructcallback;messagecallback;hovercallback;resizecallback;pickcallback" +
       ";";
     
@@ -1107,6 +1112,7 @@ public class StateManager {
       setParameterValue("strandCount",strandCountForStrands);
       setParameterValue("strandCountForStrands",strandCountForStrands);
       setParameterValue("strandCountForMeshRibbon",strandCountForMeshRibbon);
+      setParameterValue("syncScriptTarget","");
       setParameterValue("testFlag1",testFlag1);
       setParameterValue("testFlag2",testFlag2);
       setParameterValue("testFlag3",testFlag3);

@@ -1375,11 +1375,11 @@ class Compiler {
   }
 
   private boolean charToken() {
-    if (ichToken == cchScript || script.charAt(ichToken)== '"')
+    char ch;
+    if (ichToken == cchScript || (ch = script.charAt(ichToken)) == '"' || ch == '@')
       return false;
     int ichT = ichToken;
-    char ch;
-    while (ichT < cchScript && !isSpaceOrTab(ch = script.charAt(ichT)) && !eol(ch))
+    while (ichT < cchScript && !isSpaceOrTab(ch = script.charAt(ichT)) && ch != '#' && !eol(ch))
         ++ichT;
     cchToken = ichT - ichToken;
     return true;

@@ -4915,8 +4915,9 @@ class Eval { //implements Runnable {
       text = parameterAsString(2);
       break;
     }
-    if (!isSyntaxCheck)
-      viewer.syncScript(text, applet);
+    if (isSyntaxCheck)
+      return; 
+    viewer.syncScript(text, applet);
   }
 
   private void history(int pt) throws ScriptException {
@@ -8386,6 +8387,10 @@ class Eval { //implements Runnable {
     String str = parameterAsString(1);
     String msg = null;
     int len = 2;
+    if (statementLength == 2 && str.indexOf("?") >= 0) {
+      showString(viewer.getAllSettings(str.substring(0, str.indexOf("?"))));
+      return;
+    }
     switch (getToken(1).tok) {
     case Token.function:
       checkLength23();

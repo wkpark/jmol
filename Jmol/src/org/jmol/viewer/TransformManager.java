@@ -631,6 +631,13 @@ abstract class TransformManager {
     zoomRatio = 0;
   }
 
+  void zoomByFactor(float factor) {
+    if (factor <= 0)
+      return;
+    zoomRatio = factor;
+    zoomPercentSetting *= factor;
+  }
+  
   void zoomByPercent(float percentZoom) {
     float deltaPercent = percentZoom * zoomPercentSetting / 100;
     if (deltaPercent == 0)

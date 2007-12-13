@@ -692,7 +692,7 @@ public class StateManager {
       ";statusreporting;stereo;stereostate" +
       ";unitcellcolor;windowcentered;zerobasedxyzrasmol;zoomenabled;" +
       //    saved in the hash table but not considered part of the state:
-      ";scriptqueue;scriptreportinglevel;syncscripttarget" +
+      ";scriptqueue;scriptreportinglevel;syncscript;syncmouse" +
       //    more settable Jmol variables    
       ";ambient;bonds;colorrasmol;diffuse;dipolescale;drawhover;frank;hetero;hidenotselected" +
       ";hoverlabel;hydrogen;languagetranslation;measurementunits;navigationdepth;navigationslab" +
@@ -1112,7 +1112,8 @@ public class StateManager {
       setParameterValue("strandCount",strandCountForStrands);
       setParameterValue("strandCountForStrands",strandCountForStrands);
       setParameterValue("strandCountForMeshRibbon",strandCountForMeshRibbon);
-      setParameterValue("syncScriptTarget","");
+      setParameterValue("syncMouse",false);
+      setParameterValue("syncScript",false);
       setParameterValue("testFlag1",testFlag1);
       setParameterValue("testFlag2",testFlag2);
       setParameterValue("testFlag3",testFlag3);

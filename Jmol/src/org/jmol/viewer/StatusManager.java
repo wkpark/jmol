@@ -235,15 +235,15 @@ class StatusManager {
   
   int minSyncRepeatMs = 100;
   synchronized void setStatusViewerRefreshed(int isOrientationChange,
-                                             String strWhy) {
-    if (isOrientationChange > 0 && isSynced && drivingSync && !syncDisabled) {
-      if (Logger.debugging)
-        Logger.debug("sending sync");
-      if (!viewer.isSyncingScripts())
-        syncSend("!" + viewer.getMoveToText(minSyncRepeatMs / 1000f), null);
-      else if (isOrientationChange == 2)
-        syncSend(strWhy, null);
-    }
+                                             String command, boolean syncMouse,
+                                             boolean syncOrientation) {
+    if (!isSynced || !drivingSync || syncDisabled)
+      return;
+    if (syncMouse) {
+      if (isOrientationChange == 2) // a mouse movement
+        syncSend(command, null);
+    } else if (syncOrientation) // not syncing scripts or mouse movement
+      syncSend("!" + viewer.getMoveToText(minSyncRepeatMs / 1000f), null);
   }
 
   synchronized void popupMenu(int x, int y) {

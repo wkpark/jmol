@@ -610,25 +610,25 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void zoomBy(int pixels) {
     //MouseManager.mouseSinglePressDrag
     transformManager.zoomBy(pixels);
-    refresh(2, syncingScripts ? "Mouse: zoomBy " + pixels : "");
+    refresh(2, syncingMouse ? "Mouse: zoomBy " + pixels : "");
   }
 
   void zoomByFactor(float factor) {
     //MouseManager.mouseWheel
     transformManager.zoomByFactor(factor);
-    refresh(2, syncingScripts ? "Mouse: zoomByFactor " + factor : "");
+    refresh(2, syncingMouse ? "Mouse: zoomByFactor " + factor : "");
   }
 
   void rotateXYBy(int xDelta, int yDelta) {
     //mouseSinglePressDrag
     transformManager.rotateXYBy(xDelta, yDelta);
-    refresh(2, syncingScripts ? "Mouse: rotateXYBy " + xDelta + " " + yDelta : "");
+    refresh(2, syncingMouse ? "Mouse: rotateXYBy " + xDelta + " " + yDelta : "");
   }
 
   void rotateZBy(int zDelta) {
     //mouseSinglePressDrag
     transformManager.rotateZBy(zDelta);
-    refresh(2, syncingScripts ? "Mouse: rotateZBy " + zDelta : "");
+    refresh(2, syncingMouse ? "Mouse: rotateZBy " + zDelta : "");
   }
 
   void rotateMolecule(int deltaX, int deltaY) {
@@ -637,13 +637,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.rotateXYBy(deltaX, deltaY);
     setRotateMolecule(false);
     setRotateSelected(false);
-    refresh(2, syncingScripts ? "Mouse: rotateMolecule " + deltaX + " " + deltaY : "");
+    refresh(2, syncingMouse ? "Mouse: rotateMolecule " + deltaX + " " + deltaY : "");
   }
 
   void translateXYBy(int xDelta, int yDelta) {
     //mouseDoublePressDrag, mouseSinglePressDrag
     transformManager.translateXYBy(xDelta, yDelta);
-    refresh(2, syncingScripts ? "Mouse: translateXYBy " + xDelta + " " + yDelta : "");
+    refresh(2, syncingMouse ? "Mouse: translateXYBy " + xDelta + " " + yDelta : "");
   }
 
   public void rotateFront() {
@@ -2832,14 +2832,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   public void refresh(int isOrientationChange, String strWhy) {
     repaintManager.refresh();
-    statusManager.setStatusViewerRefreshed(isOrientationChange, strWhy);
+    if (isOrientationChange > 0)
+      statusManager.setStatusViewerRefreshed(isOrientationChange, strWhy, 
+          syncingMouse, !syncingScripts);
   }
 
   void requestRepaintAndWait() {
     if (!haveDisplay)
       return;
     repaintManager.requestRepaintAndWait();
-    statusManager.setStatusViewerRefreshed(1, "move/navigate/refresh");
+    statusManager.setStatusViewerRefreshed(1, "move/navigate/refresh",
+        syncingMouse, !syncingScripts);
 
   }
 
@@ -3115,7 +3118,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // to pass it back to us or any other applet.
     //System.out.println(getHtmlName() + " evalstringquiet " + strScript);
     if (allowSyncScript && syncingScripts && strScript.indexOf("#NOSYNC;") < 0  )
-      syncScript(strScript + " #NOSYNC;", syncScriptTarget);
+      syncScript(strScript + " #NOSYNC;", null);
     boolean isInterrupt = (strScript.length() > 0 && strScript.charAt(0) == '!');
     if (isInterrupt)
       strScript = strScript.substring(1);
@@ -3881,12 +3884,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //Eval
     boolean notFound = false;
     while (true) {
-      //11.3.56      
-      if (key.equalsIgnoreCase("syncScriptTarget")) {
-        setSyncScript(value);
-        break;
-      }
-
       ///11.1.30//
       if (key.equalsIgnoreCase("language")) {
         setLanguage(value); //fr cs en none, etc.
@@ -4330,6 +4327,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean notFound = false;
     boolean doRepaint = true;
     while (true) {
+      //11.3.56      
+      if (key.equalsIgnoreCase("syncMouse")) {
+        setSyncTarget(0, value);
+        break;
+      }
+      if (key.equalsIgnoreCase("syncScript")) {
+        setSyncTarget(1, value);
+        break;
+      }
+
       // 11.3.55
       
       if (key.equalsIgnoreCase("wireframeRotation")) {
@@ -6138,22 +6145,26 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       resizeImage(saveWidth, saveHeight, true, false, true);
   }
 
-  private String  syncScriptTarget = ".";
   private boolean syncingScripts = false;
+  private boolean syncingMouse = false;
   
+  boolean isSyncingMouse() {
+    return syncingMouse;
+  }
+    
   boolean isSyncingScripts() {
     return syncingScripts;
   }
 
-  private void setSyncScript(String targetApplet) {
-    // change "all applets" to "all but me"
-    if (targetApplet.equals("*"))
-      targetApplet = ">";
-    syncScriptTarget = targetApplet;
-    syncingScripts = (targetApplet.length() > 0 
-        && !targetApplet.equals("~")
-        && !targetApplet.equals(".")
-        );
+  private void setSyncTarget(int mode, boolean TF) {
+    switch (mode) {
+    case 0:
+      syncingMouse = TF;
+      return;
+    case 1:
+      syncingScripts = TF;
+      return;
+    }
   }
   
   public void syncScript(String script, String applet) {

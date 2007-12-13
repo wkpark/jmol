@@ -35,7 +35,6 @@ import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Shape;
 import org.jmol.shape.Dipoles;
 
-import javax.vecmath.Point3f;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Vector;

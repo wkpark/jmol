@@ -602,7 +602,7 @@ public class StateManager {
     String getWindowState(StringBuffer sfunc) {
       StringBuffer str = new StringBuffer();
       if (sfunc != null) {
-        sfunc.append("  initialize;\n  refreshing = false;\n  _setWindowState;\n");
+        sfunc.append("  initialize;\n  set refreshing false;\n  _setWindowState;\n");
         str.append("\nfunction _setWindowState();\n");
       }
       str.append("# height "

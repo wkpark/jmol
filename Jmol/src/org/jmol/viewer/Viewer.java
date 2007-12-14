@@ -2341,13 +2341,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isAll || type.equalsIgnoreCase("selectionState"))
       s.append(selectionManager.getState(sfunc));
     if (sfunc != null) {
-      StateManager.appendCmd(sfunc, "refreshing = true");
-      StateManager.appendCmd(sfunc, "antialiasDisplay = "
-          + global.antialiasDisplay);
-      StateManager.appendCmd(sfunc, "antialiasTranslucent = "
-          + global.antialiasTranslucent);
-      StateManager.appendCmd(sfunc, "antialiasImages = "
-          + global.antialiasImages);
+      StateManager.appendCmd(sfunc, "set refreshing true");
+      if (getSpinOn())
+        StateManager.appendCmd(sfunc, "spin on");
+      StateManager.appendCmd(sfunc, "set antialiasDisplay " + global.antialiasDisplay);
+      StateManager.appendCmd(sfunc, "set antialiasTranslucent " + global.antialiasTranslucent);
+      StateManager.appendCmd(sfunc, "set antialiasImages " + global.antialiasImages);
       sfunc.append("end function;\n\n_setState;\n");
     }
     if (isAll)

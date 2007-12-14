@@ -192,8 +192,8 @@ abstract class TransformManager {
     String s = "  set spinX " + (int) spinX + "; set spinY " + (int) spinY
         + "; set spinZ " + (int) spinZ + "; set spinFps " + (int) spinFps + ";";
     if (spinOn) {
-      if (isAll)
-        s += "\n  refreshing = true;refresh;";
+      //if (isAll)
+        //s += "\n  refreshing = true;refresh;";
       if (isSpinSelected)
           s +="\n  select " + Escape.escape(viewer.getSelectionSet()) + ";\nrotateSelected ";
       if (isSpinInternal) {
@@ -1765,7 +1765,7 @@ abstract class TransformManager {
 
   private void setSpinOn(boolean spinOn, float endDegrees, boolean isSelected) {
     this.spinOn = spinOn;
-    viewer.setBooleanProperty("_spinning", spinOn);
+    viewer.getGlobalSettings().setParameterValue("_spinning", spinOn);
     if (spinOn) {
       if (spinThread == null) {
         spinThread = new SpinThread(endDegrees, isSelected);
@@ -1791,7 +1791,7 @@ abstract class TransformManager {
 
     public void run() {
       float myFps = spinFps;
-      viewer.setBooleanProperty("isSpinning", true);
+      viewer.getGlobalSettings().setParameterValue("_spinning", true);
       int i = 0;
       long timeBegin = System.currentTimeMillis();
       while (!isInterrupted()) {
@@ -1854,7 +1854,7 @@ abstract class TransformManager {
           }
         }
       }
-      viewer.setBooleanProperty("isSpinning", false);
+      viewer.getGlobalSettings().setParameterValue("_spinning", false);
       if (isSelected)
         setRotateSelected(false);
     }

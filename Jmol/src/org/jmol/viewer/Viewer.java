@@ -6184,17 +6184,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (Logger.debugging)
       Logger.debug(htmlName + " syncing with script: " + script);
     //driver is being positioned by another driver -- don't pass on the change
-    if (disableSend)
-      statusManager.setSyncDriver(StatusManager.SYNC_DISABLE);
     //driver is being positioned by a mouse movement
     //format is from above refresh(2, xxx) calls
     //Mouse: [CommandName] [value1] [value2]
+    if (disableSend)
+      statusManager.setSyncDriver(StatusManager.SYNC_DISABLE);
     if (script.indexOf("Mouse: ") != 0) {
       evalStringQuiet(script, true, false);
       return;
     }
     String[] tokens = Parser.getTokens(script);
     String key = tokens[1];
+    syncingMouse = false;
     switch (tokens.length) {
     case 3:
       if (key.equals("zoomByFactor"))
@@ -6203,7 +6204,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         zoomBy(Parser.parseInt(tokens[2]));
       else if (key.equals("rotateZBy"))
         rotateZBy(Parser.parseInt(tokens[2]));
-      return;
+      break;
     case 4:
       if (key.equals("rotateXYBy"))
         rotateXYBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]));
@@ -6211,8 +6212,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         translateXYBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]));
       else if (key.equals("rotateMolecule"))
         rotateMolecule(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]));
-      return;
+      break;
     }
+    if (disableSend)
+      setSyncDriver(StatusManager.SYNC_ENABLE);
   }
 
   void setSyncDriver(int mode) {

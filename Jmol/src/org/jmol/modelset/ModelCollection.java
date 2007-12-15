@@ -536,7 +536,8 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public int getTrajectoryIndex(int modelIndex) {
-    return trajectoryBaseIndexes[models[modelIndex].trajectoryIndex];
+    int i = models[modelIndex].trajectoryIndex;
+    return (i < 0 ? modelIndex : trajectoryBaseIndexes[i]);
   }
   
   public boolean isTrajectory(int[] countPlusIndices) {

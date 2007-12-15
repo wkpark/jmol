@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-12-06 20:56+0100\n"
+"POT-Creation-Date: 2007-12-16 00:16+0100\n"
 "PO-Revision-Date: 2007-02-20 20:15+0100\n"
 "Last-Translator: Martin Slavík <martin.slavik@tul.cz>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
@@ -68,7 +68,7 @@ msgstr ""
 "\n"
 "Pro více informací navštivte  http://www.jmol.org"
 
-#: org/jmol/applet/Jmol.java:865
+#: org/jmol/applet/Jmol.java:890
 msgid "File Error:"
 msgstr "Chyba:"
 
@@ -1151,122 +1151,122 @@ msgstr "Nastavit jazyk"
 msgid "missing END for {0}"
 msgstr ""
 
-#: org/jmol/viewer/Compiler.java:2394
+#: org/jmol/viewer/Compiler.java:2400
 #, fuzzy, java-format
 msgid "invalid context for {0}"
 msgstr "očekáváno platné označení atomu"
 
-#: org/jmol/viewer/Compiler.java:2399 org/jmol/viewer/Eval.java:4867
+#: org/jmol/viewer/Compiler.java:2405 org/jmol/viewer/Eval.java:4884
 #, fuzzy
 msgid "command expected"
 msgstr "očekáván dílčí příkaz"
 
-#: org/jmol/viewer/Compiler.java:2403
+#: org/jmol/viewer/Compiler.java:2409
 #, fuzzy, java-format
 msgid "invalid expression token: {0}"
 msgstr "očekáváno platné označení atomu"
 
-#: org/jmol/viewer/Compiler.java:2407
+#: org/jmol/viewer/Compiler.java:2413
 #, fuzzy, java-format
 msgid "unrecognized token: {0}"
 msgstr "neznámý objekt"
 
-#: org/jmol/viewer/Compiler.java:2411 org/jmol/viewer/Eval.java:10335
+#: org/jmol/viewer/Compiler.java:2417 org/jmol/viewer/Eval.java:10356
 msgid "unexpected end of script command"
 msgstr "neočekávaný konec skriptovacího příkazu"
 
-#: org/jmol/viewer/Compiler.java:2415 org/jmol/viewer/Eval.java:10339
+#: org/jmol/viewer/Compiler.java:2421 org/jmol/viewer/Eval.java:10360
 msgid "bad argument count"
 msgstr "špatně spočítaný argument"
 
-#: org/jmol/viewer/Compiler.java:2419
+#: org/jmol/viewer/Compiler.java:2425
 #, fuzzy
 msgid "end of expression expected"
 msgstr "očekáváno platné označení atomu"
 
-#: org/jmol/viewer/Compiler.java:2423
+#: org/jmol/viewer/Compiler.java:2429
 #, fuzzy
 msgid "right parenthesis expected"
 msgstr "očekáváno celé číslo"
 
-#: org/jmol/viewer/Compiler.java:2427
+#: org/jmol/viewer/Compiler.java:2433
 #, fuzzy
 msgid "left parenthesis expected"
 msgstr "očekáván booleovský parametr nebo procentuální údaj"
 
-#: org/jmol/viewer/Compiler.java:2431
+#: org/jmol/viewer/Compiler.java:2437
 #, fuzzy
 msgid "right brace expected"
 msgstr "očekáván název vlastnosti"
 
-#: org/jmol/viewer/Compiler.java:2435
+#: org/jmol/viewer/Compiler.java:2441
 #, fuzzy
 msgid "right bracket expected"
 msgstr "očekáván název vlastnosti"
 
-#: org/jmol/viewer/Compiler.java:2439
+#: org/jmol/viewer/Compiler.java:2445
 msgid "{ number number number } expected"
 msgstr "očekáváno { number number number }"
 
-#: org/jmol/viewer/Compiler.java:2443
+#: org/jmol/viewer/Compiler.java:2449
 #, fuzzy, java-format
 msgid "unrecognized expression token: {0}"
 msgstr "neznámý výraz (označení) v průběhu programu"
 
-#: org/jmol/viewer/Compiler.java:2447
+#: org/jmol/viewer/Compiler.java:2453
 #, fuzzy
 msgid "comparison operator expected"
 msgstr "očekáván booleovský parametr nebo procentuální údaj"
 
-#: org/jmol/viewer/Compiler.java:2451
+#: org/jmol/viewer/Compiler.java:2457
 #, fuzzy
 msgid "equal sign expected"
 msgstr "očekáván citovaný řetězec"
 
-#: org/jmol/viewer/Compiler.java:2455 org/jmol/viewer/Eval.java:10301
+#: org/jmol/viewer/Compiler.java:2461 org/jmol/viewer/Eval.java:10322
 msgid "number expected"
 msgstr "očekáváno číslo"
 
-#: org/jmol/viewer/Compiler.java:2459
+#: org/jmol/viewer/Compiler.java:2465
 #, fuzzy
 msgid "number or variable name expected"
 msgstr "očekáváno { number number number }"
 
-#: org/jmol/viewer/Compiler.java:2463 org/jmol/viewer/Eval.java:10347
+#: org/jmol/viewer/Compiler.java:2469 org/jmol/viewer/Eval.java:10368
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "neznámý parametr: {0}"
 
-#: org/jmol/viewer/Compiler.java:2467
+#: org/jmol/viewer/Compiler.java:2473
 msgid "identifier or residue specification expected"
 msgstr ""
 
-#: org/jmol/viewer/Compiler.java:2471
+#: org/jmol/viewer/Compiler.java:2477
 msgid "residue specification (ALA, AL?, A*) expected"
 msgstr ""
 
-#: org/jmol/viewer/Compiler.java:2475
+#: org/jmol/viewer/Compiler.java:2481
 msgid "invalid chain specification"
 msgstr ""
 
-#: org/jmol/viewer/Compiler.java:2479
+#: org/jmol/viewer/Compiler.java:2485
 msgid "invalid model specification"
 msgstr ""
 
-#: org/jmol/viewer/Compiler.java:2483
+#: org/jmol/viewer/Compiler.java:2489
 msgid "invalid atom specification"
 msgstr ""
 
-#: org/jmol/viewer/Compiler.java:2492 org/jmol/viewer/Eval.java:10306
+#: org/jmol/viewer/Compiler.java:2498 org/jmol/viewer/Eval.java:10327
 msgid "quoted string expected"
 msgstr "očekáván citovaný řetězec"
 
-#: org/jmol/viewer/Compiler.java:2496
+#: org/jmol/viewer/Compiler.java:2502
 #, fuzzy
 msgid "comma or right parenthesis expected"
 msgstr "očekáván booleovský parametr nebo procentuální údaj"
 
-#: org/jmol/viewer/Eval.java:287 org/jmol/viewer/Eval.java:4848
+#: org/jmol/viewer/Eval.java:290 org/jmol/viewer/Eval.java:4865
 msgid "script ERROR: "
 msgstr ""
 
@@ -1274,7 +1274,7 @@ msgstr ""
 msgid "too many script levels"
 msgstr "příliš mnoho úrovní skriptů"
 
-#: org/jmol/viewer/Eval.java:2334
+#: org/jmol/viewer/Eval.java:2328
 #, fuzzy, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
@@ -1282,110 +1282,105 @@ msgid ""
 msgstr ""
 "očekávána rovina -- buď tři body nebo vyjádření atomu nebo {0} nebo {1}"
 
-#: org/jmol/viewer/Eval.java:2347
+#: org/jmol/viewer/Eval.java:2341
 msgid "No unit cell"
 msgstr "Žádná elementární buňka"
 
-#: org/jmol/viewer/Eval.java:2357
+#: org/jmol/viewer/Eval.java:2351
 msgid "Miller indices cannot all be zero."
 msgstr "všechny Millerovy indexy nemohou být rovny nule"
 
-#: org/jmol/viewer/Eval.java:2510
+#: org/jmol/viewer/Eval.java:2505
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "je nutné zadání barvy nebo sady barev (Jmol, Rasmol)"
 
-#: org/jmol/viewer/Eval.java:3389
+#: org/jmol/viewer/Eval.java:3387
 #, java-format
 msgid "{0} connections deleted"
 msgstr "vymazaná spojení: {0}"
 
-#: org/jmol/viewer/Eval.java:3410
+#: org/jmol/viewer/Eval.java:3408
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:4126
+#: org/jmol/viewer/Eval.java:4140
 #, java-format
 msgid "space group {0} was not found."
 msgstr "nenalezená prostorová grupa: {0}"
 
-#: org/jmol/viewer/Eval.java:4416
+#: org/jmol/viewer/Eval.java:4433
 msgid "bad atom number"
 msgstr "špatné protonové číslo"
 
-#: org/jmol/viewer/Eval.java:4717
+#: org/jmol/viewer/Eval.java:4734
 msgid "too many rotation points were specified"
 msgstr "příliš mnoho specifikovaných bodů rotace"
 
-#: org/jmol/viewer/Eval.java:4753
+#: org/jmol/viewer/Eval.java:4770
 msgid "rotation points cannot be identical"
 msgstr "rotační body nemohou být identické"
 
-#: org/jmol/viewer/Eval.java:5508
+#: org/jmol/viewer/Eval.java:5531
 #, fuzzy, java-format
 msgid "{0} hydrogen bonds"
 msgstr "Vodíkové můstky"
 
-#: org/jmol/viewer/Eval.java:5520
+#: org/jmol/viewer/Eval.java:5543
 #, java-format
 msgid "{0} not allowed with background model displayed"
 msgstr "{0} není povoleno se zobrazeným modelem v pozadí"
 
-#: org/jmol/viewer/Eval.java:5854
+#: org/jmol/viewer/Eval.java:5877
 msgid "Calculate what?"
 msgstr "Co vypočítat?"
 
-#: org/jmol/viewer/Eval.java:6092
-#, fuzzy
-msgid "trajectory not applicable in this context"
-msgstr "zlomkové souřadnice nejsou v tomto kontextu povoleny"
-
-#: org/jmol/viewer/Eval.java:6227
+#: org/jmol/viewer/Eval.java:6235
 #, java-format
 msgid "invalid {0} control keyword"
 msgstr "neplatné klíčové slovo: {0}"
 
-#: org/jmol/viewer/Eval.java:8010
+#: org/jmol/viewer/Eval.java:8022
 msgid "save what?"
 msgstr "Co uložit?"
 
-#: org/jmol/viewer/Eval.java:8057
+#: org/jmol/viewer/Eval.java:8069
 msgid "restore what?"
 msgstr "Co obnovit?"
 
-#: org/jmol/viewer/Eval.java:8236
+#: org/jmol/viewer/Eval.java:8248
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr "Co zapsat? {0} nebo {1} \"název souboru\""
 
-#: org/jmol/viewer/Eval.java:8291
+#: org/jmol/viewer/Eval.java:8303
 #, fuzzy
 msgid "No data available"
 msgstr "MO koeficienty nejsou dostupné"
 
-#: org/jmol/viewer/Eval.java:8709 org/jmol/viewer/Eval.java:9531
+#: org/jmol/viewer/Eval.java:8725 org/jmol/viewer/Eval.java:9547
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "žádné MO báze/koeficienty dostupné pro tento rám"
 
-#: org/jmol/viewer/Eval.java:9535
+#: org/jmol/viewer/Eval.java:9551
 msgid "no MO coefficient data available"
 msgstr "MO koeficienty nejsou dostupné"
 
-#: org/jmol/viewer/Eval.java:9537
+#: org/jmol/viewer/Eval.java:9553
 msgid "Only one molecular orbital is available in this file"
 msgstr "Pouze jeden molekulární orbital je dostupný pro tento soubor"
 
-#: org/jmol/viewer/Eval.java:9547
+#: org/jmol/viewer/Eval.java:9563
 #, fuzzy
 msgid "no MO occupancy data available"
 msgstr "MO koeficienty nejsou dostupné"
 
-#: org/jmol/viewer/Eval.java:9557
+#: org/jmol/viewer/Eval.java:9573
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr "MO index je požadován od 1 do {0}"
 
-#: org/jmol/viewer/Eval.java:10056
+#: org/jmol/viewer/Eval.java:10076
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
@@ -1393,138 +1388,138 @@ msgstr ""
 "Nenačteny žádné parciální náboje ze souboru;  Jmol je potřebuje pro "
 "poskytutí MEP dat."
 
-#: org/jmol/viewer/Eval.java:10252
+#: org/jmol/viewer/Eval.java:10273
 #, fuzzy, java-format
 msgid "{0} require that only one model be displayed"
 msgstr "příkaz {0} vyžaduje zobrazení právě jednoho modelu"
 
-#: org/jmol/viewer/Eval.java:10256
+#: org/jmol/viewer/Eval.java:10277
 msgid "unrecognized command"
 msgstr "neznámý příkaz"
 
-#: org/jmol/viewer/Eval.java:10260
+#: org/jmol/viewer/Eval.java:10281
 msgid "unrecognized atom property"
 msgstr "neznámá vlastnost atomu"
 
-#: org/jmol/viewer/Eval.java:10264
+#: org/jmol/viewer/Eval.java:10285
 #, fuzzy
 msgid "unrecognized bond property"
 msgstr "neznámá vlastnost atomu"
 
-#: org/jmol/viewer/Eval.java:10268
+#: org/jmol/viewer/Eval.java:10289
 msgid "filename expected"
 msgstr "očekáván název souboru"
 
-#: org/jmol/viewer/Eval.java:10272
+#: org/jmol/viewer/Eval.java:10293
 msgid "boolean expected"
 msgstr "očekáván booleovský parametr"
 
-#: org/jmol/viewer/Eval.java:10276
+#: org/jmol/viewer/Eval.java:10297
 msgid "boolean or number expected"
 msgstr "očekáván booleovský parametr nebo číslo"
 
-#: org/jmol/viewer/Eval.java:10280
+#: org/jmol/viewer/Eval.java:10301
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr "očekáván booleovský parametr, číslo nebo {0}"
 
-#: org/jmol/viewer/Eval.java:10284
+#: org/jmol/viewer/Eval.java:10305
 msgid "(atom expression) or integer expected"
 msgstr "očekáváno označení atomu nebo celé číslo"
 
-#: org/jmol/viewer/Eval.java:10288
+#: org/jmol/viewer/Eval.java:10309
 msgid "valid (atom expression) expected"
 msgstr "očekáváno platné označení atomu"
 
-#: org/jmol/viewer/Eval.java:10292
+#: org/jmol/viewer/Eval.java:10313
 msgid "bad [R,G,B] color"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:10296
+#: org/jmol/viewer/Eval.java:10317
 msgid "integer expected"
 msgstr "očekáváno celé číslo"
 
-#: org/jmol/viewer/Eval.java:10311
+#: org/jmol/viewer/Eval.java:10332
 msgid "quoted string or identifier expected"
 msgstr "očekáván citovaný řetězec nebo identifikátor"
 
-#: org/jmol/viewer/Eval.java:10315
+#: org/jmol/viewer/Eval.java:10336
 msgid "property name expected"
 msgstr "očekáván název vlastnosti"
 
-#: org/jmol/viewer/Eval.java:10319
+#: org/jmol/viewer/Eval.java:10340
 msgid "x y z axis expected"
 msgstr "očekávány osy x y z"
 
-#: org/jmol/viewer/Eval.java:10323
+#: org/jmol/viewer/Eval.java:10344
 msgid "color expected"
 msgstr "očekávána barva"
 
-#: org/jmol/viewer/Eval.java:10327
+#: org/jmol/viewer/Eval.java:10348
 msgid "unrecognized object"
 msgstr "neznámý objekt"
 
-#: org/jmol/viewer/Eval.java:10331
+#: org/jmol/viewer/Eval.java:10352
 msgid "runtime unrecognized expression"
 msgstr "neznámý výraz (označení) v průběhu programu"
 
-#: org/jmol/viewer/Eval.java:10343
+#: org/jmol/viewer/Eval.java:10364
 msgid "invalid argument"
 msgstr "neplatný argument"
 
-#: org/jmol/viewer/Eval.java:10351
+#: org/jmol/viewer/Eval.java:10372
 #, fuzzy, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "neznámý parametr {0} -- použít {1}"
 
-#: org/jmol/viewer/Eval.java:10355
+#: org/jmol/viewer/Eval.java:10376
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr "celé číslo mimo interval ({0} - {1})"
 
-#: org/jmol/viewer/Eval.java:10360
+#: org/jmol/viewer/Eval.java:10381
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr "desetinné číslo neleží v intervalu  ({0} - {1})"
 
-#: org/jmol/viewer/Eval.java:10365
+#: org/jmol/viewer/Eval.java:10386
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr "číslo musí být ({0} nebo {1})"
 
-#: org/jmol/viewer/Eval.java:10370
+#: org/jmol/viewer/Eval.java:10391
 msgid "file not found"
 msgstr "soubor nenalezen"
 
-#: org/jmol/viewer/Eval.java:10374
+#: org/jmol/viewer/Eval.java:10395
 msgid "draw object not defined"
 msgstr "nakreslený objekt není definován"
 
-#: org/jmol/viewer/Eval.java:10378
+#: org/jmol/viewer/Eval.java:10399
 msgid "object name expected after '$'"
 msgstr "očekáván název objektu po '$'"
 
-#: org/jmol/viewer/Eval.java:10383
+#: org/jmol/viewer/Eval.java:10404
 msgid " {x y z} or $name or (atom expression) required"
 msgstr "požadováno {x y z} nebo $název nebo označení atomu"
 
-#: org/jmol/viewer/Eval.java:10387
+#: org/jmol/viewer/Eval.java:10408
 msgid "keyword expected"
 msgstr "očekáváno klíčové slovo"
 
-#: org/jmol/viewer/Eval.java:10391
+#: org/jmol/viewer/Eval.java:10412
 msgid "invalid parameter order"
 msgstr "neplatný parametrový příkaz"
 
-#: org/jmol/viewer/Eval.java:10395
+#: org/jmol/viewer/Eval.java:10416
 msgid "incompatible arguments"
 msgstr "neslučitelné argumenty"
 
-#: org/jmol/viewer/Eval.java:10399
+#: org/jmol/viewer/Eval.java:10420
 msgid "insufficient arguments"
 msgstr "nedostatečné argumenty"
 
-#: org/jmol/viewer/Eval.java:11981
+#: org/jmol/viewer/Eval.java:12019
 #, fuzzy
 msgid "too many parentheses"
 msgstr "příliš mnoho úrovní skriptů"
@@ -1548,20 +1543,24 @@ msgstr "skryté atomy: {0}"
 msgid "{0} atoms selected"
 msgstr "vybrané atomy"
 
-#: org/jmol/viewer/Viewer.java:4008
+#: org/jmol/viewer/Viewer.java:3999
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4158 org/jmol/viewer/Viewer.java:4297
+#: org/jmol/viewer/Viewer.java:4149 org/jmol/viewer/Viewer.java:4288
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4708
+#: org/jmol/viewer/Viewer.java:4715
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
+
+#, fuzzy
+#~ msgid "trajectory not applicable in this context"
+#~ msgstr "zlomkové souřadnice nejsou v tomto kontextu povoleny"
 
 #~ msgid "{0} connections modified or created"
 #~ msgstr "upravená nebo vytvořená spojení: {0}"

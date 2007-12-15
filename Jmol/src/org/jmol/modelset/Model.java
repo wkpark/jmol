@@ -29,13 +29,14 @@ import java.util.Properties;
 public final class Model {
 
   /*
-   * In Jmol all atoms and bonds are kept as a pair of arrays in 
-   * the overall Frame object. Thus, "Model" is not atoms and bonds. 
+   * In Jmol all atoms and bonds are kept as a set of arrays in 
+   * the AtomCollection and BondCollection objects. 
+   * Thus, "Model" is not atoms and bonds. 
    * It is a description of all the:
    * 
    * chains (as defined in the file)
    *   and their associated file-associated groups,  
-   * molecules (same, I think, but in terms of secondary structure)
+   * polymers (same, I think, but in terms of secondary structure)
    *   and their associated monomers
    * molecules (as defined by connectivity)
    *  
@@ -50,19 +51,26 @@ public final class Model {
    *   
    * The term "conformation" is a bit loose. It means "what you get
    * when you go with one or another set of alternative locations.
+   *
+   * A Model then is just a small set of fields, a few arrays pointing
+   * to other objects, and a couple of hash tables for information storage
    * 
-   * Also held here is the "modelTag" and information
-   * about how many atoms there were before symmetry was applied
+   * Additional information here includes
+   * how many atoms there were before symmetry was applied
    * as well as a bit about insertions and alternative locations.
    * 
    * 
    * one model = one animation "frame", but we don't use the "f" word
-   * here because that would confuse the issue with the overall "Frame"
-   * frame of which there is only one ever in Jmol.
+   * here because that would confuse the issue.
    * 
    * If multiple files are loaded, then they will appear here in 
    * at least as many Model objects. Each vibration will be a complete
-   * set of atoms as well. 
+   * set of atoms as well.
+   * 
+   * Jmol 11.3.58 developed the trajectory idea -- where
+   * multiple models may share the same structures, bonds, etc., but
+   * just differ in atom positions, saved in the Trajectories Vector
+   * in ModelCollection.
    *  
    */
   

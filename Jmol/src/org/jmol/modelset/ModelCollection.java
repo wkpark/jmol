@@ -37,6 +37,7 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolBioResolver;
+import org.jmol.bspt.Bspf;
 import org.jmol.bspt.CubeIterator;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.symmetry.SpaceGroup;
@@ -57,6 +58,8 @@ abstract public class ModelCollection extends BondCollection {
    * very important, because all of the old atom numbers must map onto the
    * same numbers in the new model set, or the state script will not run
    * properly, among other problems.
+   * 
+   * We subclass these just for sanity sake.
    *  
    * @param modelSet
    */
@@ -64,11 +67,10 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = 0; i < modelSet.modelCount; i++) {
       models[i] = modelSet.models[i];
       models[i].bsAtoms = null;
-      modelProperties[i] = modelSet.getModelProperties(i);
-      modelAuxiliaryInfo[i] = modelSet.getModelAuxiliaryInfo(i);
       stateScripts = modelSet.stateScripts;
       thisStateModel = -1;
     }
+    super.merge(modelSet);
   }
 
   protected void releaseModelSet() {
@@ -87,11 +89,11 @@ abstract public class ModelCollection extends BondCollection {
      * 
      */
     models = null;
-    modelProperties = null;
-    modelAuxiliaryInfo = null;
     bsSymmetry = null;
     bsAll = null;
     cellInfos = null;
+    withinModelIterator = null;
+    withinAtomSetIterator = null;
     super.releaseModelSet();
   }
 
@@ -125,6 +127,47 @@ abstract public class ModelCollection extends BondCollection {
     return (cellInfos == null ? null : cellInfos[modelIndex].getUnitCell());
   }
 
+  int[] modelNumbers = new int[1];  // from adapter -- possibly PDB MODEL record; possibly modelFileNumber
+  int[] modelInFileIndexes = new int[1];   // 0-based index of model in its file
+  int[] modelFileNumbers = new int[1];  // file * 1000000 + modelInFile (1-based)
+  String[] modelNumbersForAtomLabel = new String[1];
+  String[] modelNames = new String[1];
+  String[] frameTitles = new String[1];
+
+  public int getModelInFileIndex(int modelIndex) {
+    return modelInFileIndexes[modelIndex];  
+  }
+  
+  public String getModelName(int modelIndex) {
+    return modelCount < 1 ? "" 
+        : modelIndex >= 0 ? modelNames[modelIndex]
+        : modelNumbersForAtomLabel[-1 - modelIndex];
+  }
+
+  public String getModelTitle(int modelIndex) {
+    return (String) getModelAuxiliaryInfo(modelIndex, "title");
+  }
+
+  public String getModelFileName(int modelIndex) {
+    return (String) getModelAuxiliaryInfo(modelIndex, "fileName");
+  }
+
+  public void setFrameTitle(int modelIndex, String title) {
+    if (modelIndex >= 0 && modelIndex < modelCount)
+      frameTitles[modelIndex] = title;
+  }
+  
+  public String getFrameTitle(int modelIndex) {
+    return (modelIndex >= 0 && modelIndex < modelCount ?
+        frameTitles[modelIndex] : "");
+  }
+  
+  public String getModelNumberForAtomLabel(int modelIndex) {
+    return modelNumbersForAtomLabel[modelIndex];
+  }
+
+  
+  
   protected BitSet[] elementsPresent;
 
   protected boolean isXYZ;
@@ -132,9 +175,6 @@ abstract public class ModelCollection extends BondCollection {
 
   Properties modelSetProperties;
   Hashtable modelSetAuxiliaryInfo;
-
-  protected Properties[] modelProperties = new Properties[1];
-  protected Hashtable[] modelAuxiliaryInfo = new Hashtable[1];
 
   protected Group[] groups;
   protected int groupCount;
@@ -151,10 +191,24 @@ abstract public class ModelCollection extends BondCollection {
     if (alreadyDefined != null) {
       jbr.clearBioPolymers(groups, groupCount, alreadyDefined);
     }
-    for (int i = baseGroupIndex; i < groupCount; ++i)
-      jbr.buildBioPolymer(groups[i], groups, i);
+    for (int i = baseGroupIndex; i < groupCount; ++i) {
+      Polymer bp = jbr.buildBioPolymer(groups[i], groups, i);
+      if (bp != null)
+        addBioPolymerToModel(bp, groups[i].getModel());
+    }
   }
 
+  private void addBioPolymerToModel(Polymer polymer, Model model) {
+    if (model.bioPolymers.length == 0 || polymer == null)
+      model.bioPolymers = new Polymer[8];
+    if (polymer == null) {
+      model.bioPolymerCount = 0;
+      return;
+    }
+    if (model.bioPolymerCount == model.bioPolymers.length)
+      model.bioPolymers = (Polymer[])ArrayUtil.doubleLength(model.bioPolymers);
+    model.bioPolymers[model.bioPolymerCount++] = polymer;
+  }
 
   /**
    * deprecated due to multimodel issues, 
@@ -375,11 +429,22 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = modelCount; --i >= 0;)
       if (models[i].isPDB && !alreadyDefined.get(i))
         models[i].calculateStructures();
-    for (int i = modelCount; --i >= 0;)
-      models[i].freeze();
+    freezeModels();
     propogateSecondaryStructure();
   }
 
+  private void freezeModels() {
+    for (int iModel = modelCount; --iModel >= 0;) {
+      Model m = models[iModel];
+      m.chains = (Chain[])ArrayUtil.setLength(m.chains, m.chainCount);
+      m.groupCount = -1;
+      m.getGroupCount();      
+      for (int i = 0; i < m.chainCount; ++i)
+        m.chains[i].groups = (Group[])ArrayUtil.setLength(m.chains[i].groups, groupCount);
+      m.bioPolymers = (Polymer[])ArrayUtil.setLength(m.bioPolymers, m.bioPolymerCount);
+    }
+  }
+  
   public BitSet setConformation(int modelIndex, BitSet bsConformation) {
     for (int i = modelCount; --i >= 0;)
       if (i == modelIndex || modelIndex < 0)
@@ -463,140 +528,120 @@ abstract public class ModelCollection extends BondCollection {
     return Integer.MIN_VALUE;
   }
 
-  void setModelCount() {
-    models = (Model[]) ArrayUtil.setLength(models, modelCount);
-    modelProperties = (Properties[]) ArrayUtil.setLength(modelProperties,
-        modelCount);
-    modelAuxiliaryInfo = (Hashtable[]) ArrayUtil.setLength(modelAuxiliaryInfo,
-        modelCount);
-  }
-
-  protected boolean isTrajectory = false;
   protected Vector trajectories;
+  protected int[] trajectoryBaseIndexes;
 
-  public int getTrajectoryCount() {
-    return (trajectories == null ? 1 : trajectories.size());
+  protected int getTrajectoryCount() {
+    return (trajectories == null ? 0 : trajectories.size());
   }
 
-  public void setTrajectory(int iTraj) {
-    if (!isTrajectory || iTraj < 0 || iTraj >= trajectories.size())
-      return;
-    Point3f[] trajectory = (Point3f[]) trajectories.get(iTraj);
-      for (int i = atomCount; --i >= 0;)
-        atoms[i].set(trajectory[i]);
-  }  
-
-  public String getModelTitle(int modelIndex) {
-    if (isTrajectory)
-      modelIndex = 0;
-    return models[modelIndex].modelTitle;
+  public int getTrajectoryIndex(int modelIndex) {
+    return trajectoryBaseIndexes[models[modelIndex].trajectoryIndex];
+  }
+  
+  public boolean isTrajectory(int[] countPlusIndices) {
+    if (countPlusIndices == null)
+      return false;
+    int count = countPlusIndices[0];
+    for (int i = count; --i >= 0;) {
+      if (countPlusIndices[i + 1] < 0)
+        return false;
+      if (models[atoms[countPlusIndices[i + 1]].modelIndex].isTrajectory)
+        return true;
+      }
+    return false;
   }
 
-  public String getModelFile(int modelIndex) {
-    if (isTrajectory)
-      modelIndex = 0;
-    return models[modelIndex].modelFile;
+  /** 
+   * only some models can be iterated through.
+   * models for which trajectoryBaseIndexes[i] != i are trajectories only
+   * 
+   * @param allowJmolData
+   * @return  bitset of models
+   */
+  public BitSet getIterativeModels(boolean allowJmolData) {
+    BitSet bs = new BitSet();
+    for (int i = 0; i < modelCount; i++) {
+      if (!allowJmolData && isJmolDataFrame(i))
+        continue;
+      if (trajectoryBaseIndexes[i] == i)
+        bs.set(i);      
+    }
+    return bs;
   }
-
-  int getFirstAtomIndexInModel(int modelIndex) {
-    if (isTrajectory)
-      modelIndex = 0;
-    return models[modelIndex].firstAtomIndex;
+  
+  public void selectDisplayedTrajectories(BitSet bs) {
+    //when a trajectory is selected, the atom's modelIndex is
+    //switched to that of the selected trajectory
+    //even though the underlying model itself is not changed.
+    for (int i = 0; i < modelCount; i++) {
+      if (models[i].isTrajectory && atoms[models[i].firstAtomIndex].modelIndex != i)
+        bs.clear(i);
+    }
   }
-
-  void setFirstAtomIndex(int modelIndex, int atomIndex) {
-    if (isTrajectory)
-      modelIndex = 0;
-    models[modelIndex].firstAtomIndex = atomIndex;
-    models[modelIndex].bsAtoms = null;
-  }
-
-  public String getModelName(int modelIndex) {
-    if (isTrajectory)
-      modelIndex = 0;
-    return modelCount < 1 ? "" 
-        : modelIndex < 0 ? models[-1 - modelIndex].modelNumberForAtomLabel 
-        : models[modelIndex].modelTag;
-  }
-
+  
   public String getModelNumberDotted(int modelIndex) {
-    if (isTrajectory && modelIndex >= 0)
+    if (modelIndex >= 0)
       modelIndex = 0;
-    return (modelCount < 1 || modelIndex < 0 ? "" : Escape.escapeModelFileNumber(models[modelIndex].modelFileNumber));
+    return (modelCount < 1 || modelIndex < 0 ? "" : 
+      Escape.escapeModelFileNumber(modelFileNumbers[modelIndex]));
   }
 
   public int getModelNumberIndex(int modelNumber, boolean useModelNumber) {
     if (useModelNumber) {
       for (int i = 0; i < modelCount; i++)
-        if (models[i].modelNumber == modelNumber)
+        if (modelNumbers[i] == modelNumber)
           return i;
       return -1;
     }
     //new decimal format:   frame 1.2 1.3 1.4
     for (int i = 0; i < modelCount; i++)
-      if (models[i].modelFileNumber == modelNumber)
+      if (modelFileNumbers[i] == modelNumber)
         return i;
     return -1;
   }
 
   public int getModelNumber(int modelIndex) {
-    if (isTrajectory)
-      modelIndex = 0;
-    return models[modelIndex].modelNumber;
+    return modelNumbers[modelIndex];
   }
 
   public int getModelFileNumber(int modelIndex) {
-    if (isTrajectory)
-      modelIndex = 0;
-    return models[modelIndex].modelFileNumber;
+    return modelFileNumbers[modelIndex];
   }
 
   public Properties getModelProperties(int modelIndex) {
-    if (isTrajectory)
-      modelIndex = 0;
-    return modelProperties[modelIndex];
+    return models[modelIndex].properties;
   }
 
   public String getModelProperty(int modelIndex, String property) {
-    if (isTrajectory)
-      modelIndex = 0;
-    Properties props = modelProperties[modelIndex];
+    Properties props = models[modelIndex].properties;
     return props == null ? null : props.getProperty(property);
   }
 
   public Hashtable getModelAuxiliaryInfo(int modelIndex) {
-    if (isTrajectory && modelIndex >= 0)
+    if (modelIndex >= 0)
       modelIndex = 0;
-    return (modelIndex < 0 ? null : modelAuxiliaryInfo[modelIndex]);
+    return (modelIndex < 0 ? null : models[modelIndex].auxiliaryInfo);
   }
 
   public void setModelAuxiliaryInfo(int modelIndex, Object key, Object value) {
-    if (isTrajectory)
-      modelIndex = 0;
-    modelAuxiliaryInfo[modelIndex].put(key, value);
+    models[modelIndex].auxiliaryInfo.put(key, value);
   }
 
   public Object getModelAuxiliaryInfo(int modelIndex, String key) {
     if (modelIndex < 0)
       return null;
-    if (isTrajectory)
-      modelIndex = 0;
-    Hashtable info = modelAuxiliaryInfo[modelIndex];
-    return info == null ? null : info.get(key);
+    return models[modelIndex].auxiliaryInfo.get(key);
   }
 
   protected boolean getModelAuxiliaryInfoBoolean(int modelIndex, String keyName) {
-    if (isTrajectory)
-      modelIndex = 0;
-    Hashtable info = modelAuxiliaryInfo[modelIndex];
+    Hashtable info = models[modelIndex].auxiliaryInfo;
     return (info != null && info.containsKey(keyName) && ((Boolean) info
         .get(keyName)).booleanValue());
   }
 
   protected int getModelAuxiliaryInfoInt(int modelIndex, String keyName) {
-    if (isTrajectory)
-      modelIndex = 0;
-    Hashtable info = modelAuxiliaryInfo[modelIndex];
+    Hashtable info = models[modelIndex].auxiliaryInfo;
     if (info != null && info.containsKey(keyName)) {
       return ((Integer) info.get(keyName)).intValue();
     }
@@ -604,14 +649,10 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   Model getModel(int modelIndex) {
-    if (isTrajectory)
-      modelIndex = 0;
     return models[modelIndex];
   }
 
   public int getInsertionCountInModel(int modelIndex) {
-    if (isTrajectory)
-      modelIndex = 0;
     return models[modelIndex].nInsertions;
   }
 
@@ -627,8 +668,6 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public int getAltLocCountInModel(int modelIndex) {
-    if (isTrajectory)
-      modelIndex = 0;
     return models[modelIndex].nAltLocs;
   }
 
@@ -656,15 +695,16 @@ abstract public class ModelCollection extends BondCollection {
   public int getBioPolymerCount() {
     int polymerCount = 0;
     for (int i = modelCount; --i >= 0;)
-      polymerCount += models[i].getBioPolymerCount();
+      if (!models[i].isTrajectory || trajectoryBaseIndexes[models[i].trajectoryIndex] == i)
+        polymerCount += models[i].getBioPolymerCount();
     return polymerCount;
   }
 
   public int getBioPolymerCountInModel(int modelIndex) {
     if (modelIndex < 0)
       return getBioPolymerCount();
-    if (isTrajectory)
-      modelIndex = 0;
+    if (models[modelIndex].isTrajectory && trajectoryBaseIndexes[models[modelIndex].trajectoryIndex] != modelIndex)
+      return 0;
     return models[modelIndex].getBioPolymerCount();
   }
 
@@ -673,11 +713,18 @@ abstract public class ModelCollection extends BondCollection {
     float sheetSmoothing = viewer.getSheetSmoothing();
     int last = Integer.MAX_VALUE - 1;
     for (int i = 0; i < modelCount; ++i) {
-      int polymerCount = getBioPolymerCountInModel(i);
+      int polymerCount = models[i].getBioPolymerCount();
       for (int ip = 0; ip < polymerCount; ip++)
         last = models[i].getBioPolymer(ip)
             .getPolymerPointsAndVectors(last, bs, vList, isTraceAlpha, sheetSmoothing);
     }
+  }
+  
+  public void recalculateLeadMidpointsAndWingVectors(int modelIndex) {
+    int polymerCount = models[modelIndex].getBioPolymerCount();
+    for (int ip = 0; ip < polymerCount; ip++)
+      models[modelIndex].getBioPolymer(ip)
+          .recalculateLeadMidpointsAndWingVectors();
   }
   
   public Point3f[] getPolymerLeadMidPoints(int iModel, int iPolymer) {
@@ -687,8 +734,6 @@ abstract public class ModelCollection extends BondCollection {
   public int getChainCountInModel(int modelIndex) {
     if (modelIndex < 0)
       return getChainCount();
-    if (isTrajectory)
-      modelIndex = 0;
     return models[modelIndex].getChainCount();
   }
 
@@ -702,8 +747,6 @@ abstract public class ModelCollection extends BondCollection {
   public int getGroupCountInModel(int modelIndex) {
     if (modelIndex < 0)
       return getGroupCount();
-    if (isTrajectory)
-      modelIndex = 0;
     return models[modelIndex].getGroupCount();
   }
 
@@ -784,9 +827,12 @@ abstract public class ModelCollection extends BondCollection {
     int nPoly = models[modelIndex].getBioPolymerCount();
     StringBuffer pdbATOM = new StringBuffer();
     BitSet bsAtoms = getModelAtomBitSet(modelIndex, false);
-    for (int p = 0; p < nPoly; p++)
-      models[modelIndex].getPdbData(ctype, isDerivative, bsAtoms, pdbATOM,
-          pdbCONECT);
+    for (int p = 0; p < nPoly; p++) {
+      Model model = models[modelIndex];
+      for (int mp = 0; mp < model.bioPolymerCount; p++)
+        model.bioPolymers[mp].getPdbData(ctype, isDerivative, bsAtoms, pdbATOM,
+            pdbCONECT);
+    }
     pdbATOM.append(pdbCONECT);
     return getProteinStructureState(bsAtoms, ctype == 'r') + pdbATOM.toString();
   }
@@ -827,16 +873,6 @@ abstract public class ModelCollection extends BondCollection {
     return remark + s;
   }
 
-  public void setFrameTitle(int modelIndex, String title) {
-    if (modelIndex >= 0 && modelIndex < modelCount)
-      models[modelIndex].frameTitle = title;
-  }
-  
-  public String getFrameTitle(int modelIndex) {
-    return (modelIndex >= 0 && modelIndex < modelCount ?
-        models[modelIndex].frameTitle : "");
-  }
-  
   public boolean isJmolDataFrame(int modelIndex) {
     return (modelIndex >= 0 && modelIndex < modelCount && models[modelIndex].jmolData != null);
   }
@@ -924,7 +960,7 @@ abstract public class ModelCollection extends BondCollection {
         .valueOf(modelSetHasVibrationVectors()));
     if (modelSetProperties != null)
       info.put("modelSetProperties", modelSetProperties);
-    Vector models = new Vector();
+    Vector vModels = new Vector();
     for (int i = 0; i < modelCount; ++i) {
       Hashtable model = new Hashtable();
       model.put("_ipt", new Integer(i));
@@ -934,7 +970,7 @@ abstract public class ModelCollection extends BondCollection {
       String s = getModelTitle(i);
       if (s != null)
         model.put("title", s);
-      s = getModelFile(i);
+      s = getModelFileName(i);
       if (s != null)
         model.put("file", s);
       model.put("vibrationVectors", Boolean
@@ -942,13 +978,13 @@ abstract public class ModelCollection extends BondCollection {
       model.put("atomCount", new Integer(getAtomCountInModel(i)));
       model.put("bondCount", new Integer(getBondCountInModel(i)));
       model.put("groupCount", new Integer(getGroupCountInModel(i)));
-      model.put("polymerCount", new Integer(getBioPolymerCountInModel(i)));
+      model.put("polymerCount", new Integer(models[i].getBioPolymerCount()));
       model.put("chainCount", new Integer(getChainCountInModel(i)));
-      if (modelProperties[i] != null)
-        model.put("modelProperties", modelProperties[i]);
-      models.addElement(model);
+      if (models[i].properties != null)
+        model.put("modelProperties", models[i].properties);
+      vModels.addElement(model);
     }
-    info.put("models", models);
+    info.put("models", vModels);
     return info;
   }
 
@@ -1098,7 +1134,7 @@ abstract public class ModelCollection extends BondCollection {
       if (modelIndex >= 0 && i != modelIndex)
         bsDefined.set(i);
       else
-        models[i].addBioPolymer(null);
+        addBioPolymerToModel(null, models[i]);
     calculatePolymers(bsDefined);
     calculateStructuresAllExcept(bsDefined);
   }
@@ -1364,6 +1400,118 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
 
+  
+  //////////// iterators //////////
+  
+  //private final static boolean MIX_BSPT_ORDER = false;
+
+  protected void initializeBspf() {
+    if (bspf == null) {
+      long timeBegin = 0;
+      if (showRebondTimes)
+        timeBegin = System.currentTimeMillis();
+      bspf = new Bspf(3);
+      /*      if (MIX_BSPT_ORDER) {
+       Logger.debug("mixing bspt order");
+       int stride = 3;
+       int step = (atomCount + stride - 1) / stride;
+       for (int i = 0; i < step; ++i)
+       for (int j = 0; j < stride; ++j) {
+       int k = i * stride + j;
+       if (k >= atomCount)
+       continue;
+       Atom atom = atoms[k];
+       bspf.addTuple(atom.modelIndex, atom);
+       }
+       } else {
+       */
+      Logger.debug("sequential bspt order");
+      for (int i = atomCount; --i >= 0;) {
+        // important that we go backward here, because we are going to 
+        // use System.arrayCopy to expand the array ONCE only
+        Atom atom = atoms[i];
+        int modelIndex = trajectoryBaseIndexes[atom.modelIndex];
+        bspf.addTuple(modelIndex, atom);
+      }
+      //      }
+      if (showRebondTimes) {
+        long timeEnd = System.currentTimeMillis();
+        Logger.debug("time to build bspf=" + (timeEnd - timeBegin) + " ms");
+        bspf.stats();
+        //        bspf.dump();
+      }
+    }
+  }
+
+  protected void initializeBspt(int modelIndex) {
+    if (bspf.isInitialized(modelIndex))
+      return;
+    bspf.initialize(modelIndex, atoms, getModelAtomBitSet(modelIndex, false));
+  }
+ 
+  private AtomIteratorWithinModel withinModelIterator;
+  private AtomIteratorWithinSet withinAtomSetIterator;
+
+  public AtomIndexIterator getWithinAtomSetIterator(int atomIndex,
+                                                    float distance,
+                                                    BitSet bsSelected,
+                                                    boolean isGreaterOnly,
+                                                    boolean modelZeroBased) {
+    //EnvelopeCalculation, IsoSolventReader
+    // This iterator returns only atoms OTHER than the atom specified
+    // and with the specified restrictions. 
+    // Model zero-based means the index returned is within the model, 
+    // not the full atom set.
+    
+    initializeBspf();
+    int modelIndex = trajectoryBaseIndexes[atoms[atomIndex].modelIndex];
+    initializeBspt(modelIndex);
+    if (withinAtomSetIterator == null)
+      withinAtomSetIterator = new AtomIteratorWithinSet();
+    withinAtomSetIterator.initialize(bspf, modelIndex, atomIndex, 
+        atoms[atomIndex], distance, bsSelected, isGreaterOnly, 
+       (modelZeroBased ? models[modelIndex].firstAtomIndex : 0));
+    return withinAtomSetIterator;
+  }
+  
+  public AtomIndexIterator getWithinModelIterator(Atom atomCenter, float radius) {
+    //Polyhedra, within(distance, atom)
+    return getWithinModelIterator(atomCenter.modelIndex, atomCenter, radius);
+  }
+
+  private AtomIndexIterator getWithinModelIterator(int modelIndex, Point3f center, float radius) {
+    //polyhedra, within(distance, atom), within(distance, point)
+    initializeBspf();
+    modelIndex = trajectoryBaseIndexes[modelIndex];
+    initializeBspt(modelIndex);
+    if (withinModelIterator == null)
+      withinModelIterator = new AtomIteratorWithinModel();
+    withinModelIterator.initialize(bspf, modelIndex, center, radius);
+    return withinModelIterator;
+  }
+
+  ////////// bonds /////////
+
+  public int getBondCountInModel(int modelIndex) {
+    if (modelIndex < 0)
+      return bondCount;
+    int n = models[modelIndex].bondCount;
+    if (n >= 0)
+      return n;
+    return (models[modelIndex].bondCount = super.getBondCountInModel(modelIndex)); 
+  }
+
+  ////////// atoms /////////
+
+  public int getAtomCountInModel(int modelIndex) {
+    if (modelIndex < 0)
+      return atomCount;
+    int n = models[modelIndex].atomCount;
+    if (n >= 0)
+      return n;
+    return (models[modelIndex].atomCount = super.getAtomCountInModel(modelIndex)); 
+  }
+  
   private BitSet bsAll;
   
   /**
@@ -1496,17 +1644,28 @@ abstract public class ModelCollection extends BondCollection {
     return getModelAtomBitSet(getModelNumberIndex(modelNumber, true), true);
   }
 
+  /**
+   * Get atoms within a specific distance of any atom in a specific set of
+   * atoms either within all models or within just the model(s) of those atoms
+   * 
+   * @param distance
+   * @param bs
+   * @param withinAllModels 
+   * @return the set of atoms
+   */
   public BitSet getAtomsWithin(float distance, BitSet bs,
                                boolean withinAllModels) {
     BitSet bsResult = new BitSet();
+    BitSet bsCheck = getIterativeModels(false);
     float d2 = distance * distance;
     int iAtom = 0;
     if (withinAllModels) {
-      bsResult.or(bs);
       for (int i = atomCount; --i >= 0;)
         if (bs.get(i))
-          for (int model = modelCount; --model >= 0;) {
-            AtomIndexIterator iterWithin = getWithinAtomSetIterator(model, i,
+          for (int iModel = modelCount; --iModel >= 0;) {
+            if (!bsCheck.get(iModel))
+              continue;
+            AtomIndexIterator iterWithin = getWithinModelIterator(iModel, atoms[i],
                 distance);
             while (iterWithin.hasNext())
               if ((iAtom = iterWithin.next()) >= 0
@@ -1516,8 +1675,7 @@ abstract public class ModelCollection extends BondCollection {
     } else {
       for (int i = atomCount; --i >= 0;)
         if (bs.get(i)) {
-          Atom atom = atoms[i];
-          AtomIndexIterator iterWithin = getWithinModelIterator(atom, distance);
+          AtomIndexIterator iterWithin = getWithinModelIterator(atoms[i], distance);
           while (iterWithin.hasNext())
             if ((iAtom = iterWithin.next()) >= 0
                 && iterWithin.foundDistance2() <= d2)
@@ -1527,6 +1685,43 @@ abstract public class ModelCollection extends BondCollection {
     return bsResult;
   }
 
+  public BitSet getAtomsWithin(float distance, Point3f coord) {
+
+    BitSet bsResult = new BitSet();
+    
+/*    
+    //this test showed it was highly worth the effort to do this.
+    
+    long timeBegin = 0;
+    timeBegin = System.currentTimeMillis();
+
+    if (viewer.getTestFlag1()) {
+      for (int i = atomCount; --i >= 0;) {
+        Atom atom = atoms[i];
+        if (atom.distance(coord) <= distance)
+          bsResult.set(atom.atomIndex);
+      }
+      //System.out.println("modelCollection simple distance " + (System.currentTimeMillis() - timeBegin));
+      return bsResult;
+    }
+*/
+    BitSet bsCheck = getIterativeModels(false);
+    float d2 = distance * distance;
+    for (int iModel = modelCount; --iModel >= 0;) {
+      if (!bsCheck.get(iModel))
+        continue;
+      AtomIndexIterator iterWithin = getWithinModelIterator(iModel, coord,
+          distance);
+      int iAtom;
+      while (iterWithin.hasNext())
+        if ((iAtom = iterWithin.next()) >= 0
+            && iterWithin.foundDistance2() <= d2)
+          bsResult.set(iAtom);
+    }
+    //System.out.println("modelCollection iter distance " + (System.currentTimeMillis() - timeBegin));
+    return bsResult;
+  }
+ 
   public BitSet getAtomsWithin(int tokType, BitSet bs) {
     switch (tokType) {
     case Token.molecule:
@@ -1715,7 +1910,7 @@ abstract public class ModelCollection extends BondCollection {
       if (myBondingRadius == 0)
         continue;
       float searchRadius = myBondingRadius + maxBondingRadius + bondTolerance;
-      CubeIterator iter = bspf.getCubeIterator(atom.modelIndex);
+      CubeIterator iter = bspf.getCubeIterator(modelIndex);
       iter.initializeHemisphere(atom, searchRadius);
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom) iter.nextElement();
@@ -1759,8 +1954,11 @@ abstract public class ModelCollection extends BondCollection {
             bsB.set(bonds[i].atom2.atomIndex);
           }
       }
-      return new int[] {(matchHbond ? autoHbond(bsA, bsB, bsBonds) 
-          : autoBond(bsA, bsB, null, bsBonds)), 0};
+      if (matchHbond) {
+        initializeBspf();
+        return new int[] {autoHbond(bsA, bsB, bsBonds), 0};
+      }
+      return new int[] {autoBond(bsA, bsB, null, bsBonds), 0};
     }
   
   //////////// state definition ///////////
@@ -2005,7 +2203,7 @@ abstract public class ModelCollection extends BondCollection {
         continue;
       String file_model = getModelNumberDotted(i);
       sb.append("\n\nfile[\"").append(file_model)
-          .append("\"] = ").append(Escape.escape(getModelFile(i)))
+          .append("\"] = ").append(Escape.escape(getModelFileName(i)))
           .append("\ntitle[\"").append(file_model)
           .append("\"] = ").append(Escape.escape(getModelTitle(i)))
           .append("\nname[\"").append(file_model)
@@ -2189,7 +2387,7 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = 0; i < modelCount; ++i) {
       Hashtable modelInfo = new Hashtable();
       Vector info = new Vector();
-      int polymerCount = getBioPolymerCountInModel(i);
+      int polymerCount = models[i].getBioPolymerCount();
       for (int ip = 0; ip < polymerCount; ip++) {
         Hashtable polyInfo = models[i].getBioPolymer(ip).getPolymerInfo(bs); 
         if (! polyInfo.isEmpty())

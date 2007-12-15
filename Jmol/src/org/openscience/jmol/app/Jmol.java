@@ -617,6 +617,7 @@ public class Jmol extends JPanel {
       imageType_name = line.getOptionValue("w");
     }
 
+    Dimension size;
     try {
       String vers = System.getProperty("java.version");
       if (vers.compareTo("1.1.2") < 0) {
@@ -624,7 +625,7 @@ public class Jmol extends JPanel {
             + "1.1.2 or higher version VM!!!");
       }
 
-      Dimension size = historyFile.getWindowSize(JMOL_WINDOW_NAME);
+      size = historyFile.getWindowSize(JMOL_WINDOW_NAME);
       if (size != null && haveDisplay.booleanValue()) {
         startupWidth = size.width;
         startupHeight = size.height;
@@ -710,7 +711,7 @@ public class Jmol extends JPanel {
 
     if (haveConsole.booleanValue()) {
       Point location = jmol.frame.getLocation();
-      Dimension size = jmol.frame.getSize();
+      size = jmol.frame.getSize();
       // Adding console frame to grab System.out & System.err
       consoleframe = new JFrame(GT._("Jmol Java Console"));
       consoleframe.setIconImage(jmol.frame.getIconImage());

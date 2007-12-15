@@ -55,8 +55,6 @@ abstract public class AtomCollection {
     viewer = null;
     g3d = null;
     bspf = null;
-    withinModelIterator = null;
-    withinAtomSetIterator = null;
     surfaceDistance100s = null;
     bsSurface = null;
     tainted = null;
@@ -72,7 +70,7 @@ abstract public class AtomCollection {
 
   }
 
-  protected void copyAtomData(AtomCollection mergeModelSet) {
+  protected void merge(AtomCollection mergeModelSet) {
     tainted = mergeModelSet.tainted;
     atomNames = mergeModelSet.atomNames;
     atomSerials = mergeModelSet.atomSerials;
@@ -145,56 +143,6 @@ abstract public class AtomCollection {
     return bsHidden.get(iAtom);
   }
   
-
-  //////////// iterators //////////
-  
-  private AtomIteratorWithinModel withinModelIterator;
-
-  public AtomIndexIterator getWithinModelIterator(Atom atomCenter, float radius) {
-    //Polyhedra, within()
-    initializeBspf();
-    if (withinModelIterator == null)
-      withinModelIterator = new AtomIteratorWithinModel();
-    withinModelIterator.initialize(bspf, atomCenter.modelIndex, atomCenter, radius);
-    return withinModelIterator;
-  }
-
-  private AtomIteratorWithinSet withinAtomSetIterator;
-
-  public AtomIndexIterator getWithinAtomSetIterator(int atomIndex, float distance, BitSet bsSelected, boolean isGreaterOnly, boolean modelZeroBased) {
-    //EnvelopeCalculation, IsoSolventReader, within 
-    initializeBspf();
-    if (withinAtomSetIterator == null)
-      withinAtomSetIterator = new AtomIteratorWithinSet();
-    withinAtomSetIterator.initialize((ModelSet) this, bspf, atoms[atomIndex].modelIndex, 
-        atomIndex, atoms[atomIndex], distance, bsSelected, isGreaterOnly, modelZeroBased);
-    return withinAtomSetIterator;
-  }
-  
-  public AtomIndexIterator getWithinAtomSetIterator(int modelIndex,
-                                                    Point3f center,
-                                                    float distance,
-                                                    BitSet bsSelected) {
-    //EnvelopeCalculation, IsoSolventReader, within 
-    initializeBspf();
-    if (withinAtomSetIterator == null)
-      withinAtomSetIterator = new AtomIteratorWithinSet();
-    withinAtomSetIterator.initialize((ModelSet) this, bspf, modelIndex, -1,
-        center, distance, bsSelected, false, false);
-    return withinAtomSetIterator;
-  }
-  
-  AtomIndexIterator getWithinAtomSetIterator(int modelIndex, int atomIndex, float distance) {
-    //EnvelopeCalculation, IsoSolventReader, within 
-    initializeBspf();
-    if (withinAtomSetIterator == null)
-      withinAtomSetIterator = new AtomIteratorWithinSet();
-    withinAtomSetIterator.initialize((ModelSet) this, bspf, modelIndex, atomIndex, 
-        atoms[atomIndex], distance, null, false, false);
-    return withinAtomSetIterator;
-  }
-  
- 
   //////////// atoms //////////////
   
   public String getAtomInfo(int i) {
@@ -266,9 +214,7 @@ abstract public class AtomCollection {
     return atoms[i].getModelIndex();
   }
   
-  public int getAtomCountInModel(int modelIndex) {
-    if (modelIndex < 0)
-      return atomCount;
+  protected int getAtomCountInModel(int modelIndex) {
     int n = 0;
     for (int i = atomCount; --i >= 0;)
       if (atoms[i].modelIndex == modelIndex)
@@ -710,50 +656,7 @@ abstract public class AtomCollection {
 
   // Binary Space Partitioning Forest
   
-  private final static boolean MIX_BSPT_ORDER = false;
   protected Bspf bspf;
-
-  protected void initializeBspf() {
-    if (bspf == null) {
-      long timeBegin = 0;
-      if (showRebondTimes)
-        timeBegin = System.currentTimeMillis();
-      bspf = new Bspf(3);
-      if (MIX_BSPT_ORDER) {
-        Logger.debug("mixing bspt order");
-        int stride = 3;
-        int step = (atomCount + stride - 1) / stride;
-        for (int i = 0; i < step; ++i)
-          for (int j = 0; j < stride; ++j) {
-            int k = i * stride + j;
-            if (k >= atomCount)
-              continue;
-            Atom atom = atoms[k];
-            bspf.addTuple(atom.modelIndex, atom);
-          }
-      } else {
-        Logger.debug("sequential bspt order");
-        for (int i = atomCount; --i >= 0;) {
-          Atom atom = atoms[i];
-          bspf.addTuple(atom.modelIndex, atom);
-        }
-      }
-      if (showRebondTimes) {
-        long timeEnd = System.currentTimeMillis();
-        Logger.debug("time to build bspf=" + (timeEnd - timeBegin) + " ms");
-        bspf.stats();
-        //        bspf.dump();
-      }
-    }
-  }
-
-  /*
-  int getBsptCount() {
-    if (bspf == null)
-      initializeBspf();
-    return bspf.getBsptCount();
-  }
-*/
 
   // state tainting
   
@@ -1678,17 +1581,6 @@ abstract public class AtomCollection {
         bsResult.set(i);
     return bsResult;
   }
-
-  public BitSet getAtomsWithin(float distance, Point3f coord) {
-    BitSet bsResult = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      Atom atom = atoms[i];
-      if (atom.distance(coord) <= distance)
-        bsResult.set(atom.atomIndex);
-    }
-    return bsResult;
-  }
- 
 
 }
 

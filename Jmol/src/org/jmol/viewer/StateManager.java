@@ -680,7 +680,7 @@ public class StateManager {
       ";_animating;_atomhovered;_atompicked;_pickinfo" +
       ";_currentfilenumber;_currentmodelnumberinfile" +
       ";_height;_memory;_modelfile;_modelname;_modelnumber;_modeltitle;_spinning;_version;_width" +
-      ";_firstframe;_lastframe;_slabplane;_depthplane" +
+      ";_firstframe;_lastframe;_trajectory;_slabplane;_depthplane" +
       ";ambientpercent;animationfps" +
       ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor" +
       ";axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color" +

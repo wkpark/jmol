@@ -121,6 +121,10 @@ public abstract class Shape {
       return;
     }
 
+    if (propertyName == "refreshTrajectories") {
+      return;
+    }
+
     Logger.warn("unassigned " + JmolConstants.shapeClassBases[shapeID] + " + shape setProperty:" + propertyName + ":" + value);
   }
 

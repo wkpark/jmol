@@ -1039,16 +1039,12 @@ final public class Atom extends Point3fi {
     return group.chain;
   }
 
-  Model getModel() {
-    return group.chain.model;
-  }
-
   String getModelNumberForLabel() {
-    return group.chain.model.modelNumberForAtomLabel;
+    return group.chain.modelSet.getModelNumberForAtomLabel(modelIndex);
   }
   
   public int getModelNumber() {
-    return group.chain.model.modelNumber % 1000000;
+    return group.chain.modelSet.getModelNumber(modelIndex) % 1000000;
   }
   
   public int getModelFileIndex() {
@@ -1056,11 +1052,11 @@ final public class Atom extends Point3fi {
   }
   
   int getModelInFileIndex() {
-    return group.chain.model.modelInFileIndex;
+    return group.chain.modelSet.getModelInFileIndex(modelIndex);
   }
   
   public int getModelFileNumber() {
-    return group.chain.model.modelFileNumber;
+    return group.chain.modelSet.getModelFileNumber(modelIndex);
   }
   
   public byte getProteinStructureType() {

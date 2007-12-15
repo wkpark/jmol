@@ -42,6 +42,11 @@ abstract public class BondCollection extends AtomCollection {
     super.releaseModelSet();
   }
 
+  void merge(ModelSet modelSet) {
+    // nothing to do for bonds
+    super.merge(modelSet);
+  }
+
   Bond[] bonds;
   int bondCount;
   
@@ -53,26 +58,19 @@ abstract public class BondCollection extends AtomCollection {
     return bonds[bondIndex];
   }
 
-  /**
-   * not necessarily the REAL bond count; this is an ARRAY MAXIMUM
-   * 
-   * @return  SIZE OF BOND ARRAY
-   */
   public int getBondCount() {
     return bondCount;
   }
   
   public BondIterator getBondIterator(short bondType, BitSet bsSelected) {
     //Dipoles, Sticks
-    return new BondIteratorSelected((ModelSet) this, bondType, bsSelected,   viewer.getBondSelectionModeOr());
+    return new BondIteratorSelected(bonds, bondCount, bondType, bsSelected,   viewer.getBondSelectionModeOr());
   }
 
   public BondIterator getBondIterator(BitSet bsSelected) {
     //Sticks
-    return new BondIteratorSelected((ModelSet) this, bsSelected);
+    return new BondIteratorSelected(bonds, bondCount, bsSelected);
   }
-  
-  ///////////// bonds ////////////////////////
   
   public Atom getBondAtom1(int i) {
     return bonds[i].atom1;
@@ -108,10 +106,10 @@ abstract public class BondCollection extends AtomCollection {
    * @param modelIndex the model of interest or -1 for all
    * @return the actual number of connections
    */
-  public int getBondCountInModel(int modelIndex) {
+  protected int getBondCountInModel(int modelIndex) {
     int n = 0;
     for (int i = bondCount; --i >= 0;)
-      if (modelIndex < 0 || bonds[i].atom1.modelIndex == modelIndex)
+      if (bonds[i].atom1.modelIndex == modelIndex)
         n++;
     return n;
   }
@@ -374,12 +372,7 @@ abstract public class BondCollection extends AtomCollection {
   private float hbondMin2 = hbondMin * hbondMin;
 
   protected int autoHbond(BitSet bsA, BitSet bsB, BitSet bsBonds) {
-    // this method is not enabled and is probably error-prone.
-    // it does not take into account anything but distance, 
-    // and as such is not really practical. 
-
     int nNew = 0;
-    initializeBspf();
     long timeBegin = 0;
     if (showRebondTimes)
       timeBegin = System.currentTimeMillis();

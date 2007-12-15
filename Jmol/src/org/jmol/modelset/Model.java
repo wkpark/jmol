@@ -24,8 +24,7 @@
 package org.jmol.modelset;
 import java.util.BitSet;
 import java.util.Hashtable;
-
-import org.jmol.util.ArrayUtil;
+import java.util.Properties;
 
 public final class Model {
 
@@ -78,50 +77,63 @@ public final class Model {
   public ModelSet getModelSet() {
     return modelSet;
   }
- 
+
   int modelIndex;   // our 0-based reference
-  int modelNumber;  // from adapter -- possibly PDB MODEL record; possibly modelFileNumber
   int fileIndex;   // 0-based file reference
-  int modelInFileIndex;   // 0-based index of model in its file
-  int modelFileNumber;  // file * 1000000 + modelInFile (1-based)
-  String modelNumberForAtomLabel = "1.1";
-  String modelTag;
-  String modelTitle;
-  String modelFile;
-  int firstMolecule;
-  int firstAtomIndex;
-  int moleculeCount;
-  int nAltLocs;
-  int nInsertions;
-  BitSet bsAtoms;
-  String frameTitle;
-  
+
   boolean isPDB;
-  
+  boolean isTrajectory;
+  int trajectoryIndex = -1;
+
   Hashtable dataFrames;
   int dataSourceFrame = -1;
   String jmolData; // from a PDB remark "Jmol PDB-encoded data"
   String jmolFrameType;
 
-  private int chainCount = 0;
-  private Chain[] chains = new Chain[8];
-  private int bioPolymerCount = 0;
-  private Polymer[] bioPolymers = new Polymer[8];
+  int firstAtomIndex;
+  int atomCount = -1;
+  BitSet bsAtoms;
+  
+  int bondCount = -1;
+
+  int firstMolecule;
+  int moleculeCount;
+  
+  int nAltLocs;
+  int nInsertions;
+  
+  int groupCount = -1;
+
+  int chainCount = 0;
+  Chain[] chains = new Chain[8];
+
+  int bioPolymerCount = 0;
+  Polymer[] bioPolymers = new Polymer[8];
+
+  Hashtable auxiliaryInfo;
+  Properties properties;
 
 
-  Model(ModelSet modelSet, int modelIndex, int modelNumber,
-      String modelTag, String modelTitle, String modelFile, String jmolData) {
+  Model(ModelSet modelSet, int modelIndex, int trajectoryIndex, 
+      String jmolData, Properties properties, Hashtable auxiliaryInfo) {
     this.modelSet = modelSet;
     dataSourceFrame = this.modelIndex = modelIndex;
-    this.modelNumber = modelNumber;
-    this.modelTag = modelTag;
-    this.modelTitle = modelTitle;
-    this.modelFile = modelFile;
     this.jmolData = jmolData;
-    jmolFrameType = (jmolData == null ? "modelSet"
-        : jmolData.indexOf("ramachandran") >= 0 ? "ramachandran"
-        : jmolData.indexOf("quaternion") >= 0 ? "quaternion" 
-        : "data");
+    this.trajectoryIndex = trajectoryIndex;
+    isTrajectory = (trajectoryIndex >= 0);
+    if (auxiliaryInfo == null)
+      auxiliaryInfo = new Hashtable();
+    this.auxiliaryInfo = auxiliaryInfo;
+    this.properties = properties;
+    if (jmolData == null) {
+      jmolFrameType = "modelSet";
+    } else {
+      auxiliaryInfo.put("jmolData", jmolData);
+      auxiliaryInfo.put("title", jmolData);
+      jmolFrameType = (jmolData.indexOf("ramachandran") >= 0 ? "ramachandran"
+          : jmolData.indexOf("quaternion") >= 0 ? "quaternion" 
+          : "data");
+    }
   }
 
   void setNAltLocs(int nAltLocs) {
@@ -132,13 +144,6 @@ public final class Model {
     this.nInsertions = nInsertions;  
   }
   
-  void freeze() {
-    chains = (Chain[])ArrayUtil.setLength(chains, chainCount);
-    for (int i = 0; i < chainCount; ++i)
-      chains[i].freeze();
-    bioPolymers = (Polymer[])ArrayUtil.setLength(bioPolymers, bioPolymerCount);
-  }
-
   void clearStructures() {
     chainCount = 0;
     chains = new Chain[8];
@@ -195,9 +200,11 @@ public final class Model {
   }
 
   int getGroupCount() {
-    int groupCount = 0;
-    for (int i = chainCount; --i >= 0; )
-      groupCount += chains[i].getGroupCount();
+    if (groupCount < 0) {
+      groupCount = 0;
+      for (int i = chainCount; --i >= 0;)
+        groupCount += chains[i].getGroupCount();
+    }
     return groupCount;
   }
 
@@ -212,28 +219,6 @@ public final class Model {
 
   Chain getChain(int i) {
     return (i < chainCount ? chains[i] : null);
-  }
-
-  Chain getOrAllocateChain(char chainID) {
-    //Logger.debug("chainID=" + chainID + " -> " + (chainID + 0));
-    Chain chain = getChain(chainID);
-    if (chain != null)
-      return chain;
-    if (chainCount == chains.length)
-      chains = (Chain[])ArrayUtil.doubleLength(chains);
-    return chains[chainCount++] = new Chain(modelSet, this, chainID);
-  }
-
-  public void addBioPolymer(Polymer polymer) {
-    if (bioPolymers.length == 0 || polymer == null)
-      bioPolymers = new Polymer[8];
-    if (polymer == null) {
-      bioPolymerCount = 0;
-      return;
-    }
-    if (bioPolymerCount == bioPolymers.length)
-      bioPolymers = (Polymer[])ArrayUtil.doubleLength(bioPolymers);
-    bioPolymers[bioPolymerCount++] = polymer;
   }
 
   public Polymer getBioPolymer(int polymerIndex) {
@@ -256,9 +241,4 @@ public final class Model {
   public int getModelIndex() {
     return modelIndex;
   }  
-  
-  public void getPdbData(char ctype, boolean isDerivative, BitSet bsAtoms, StringBuffer pdbATOM, StringBuffer pdbCONECT) {
-    for (int p = 0; p < bioPolymerCount; p++)
-      bioPolymers[p].getPdbData(ctype, isDerivative, bsAtoms, pdbATOM, pdbCONECT);
-  }
 }

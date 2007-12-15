@@ -1078,11 +1078,8 @@ class Eval { //implements Runnable {
         break;
       case Token.frame:
       case Token.model:
-
-        frame(1, false);
-        break;
       case Token.trajectory:
-        frame(1, true);
+        frame(1);
         break;
       case Token.font:
         font(-1, 0);
@@ -2620,6 +2617,9 @@ class Eval { //implements Runnable {
         break;
       case Token.rightbrace:
         break out;
+      case Token.minus:
+        multiplier = -1;
+        break;
       case Token.spec_seqcode_range:
         if (n == 6)
           invalidArgument();
@@ -4025,21 +4025,24 @@ class Eval { //implements Runnable {
       i = 0;
     } else {
       if (getToken(1).tok == Token.trajectory) {
+        loadScript.append(" trajectory");
         params[0] = -1; // 
         i = 2;
       } else if (theTok == Token.identifier
           || parameterAsString(1).equals("fileset")) {
         modelName = parameterAsString(1);
-        loadScript.append(" " + modelName);
         if (modelName.equals("menu")) {
           checkLength3();
           if (!isSyntaxCheck)
             viewer.setMenu(parameterAsString(2), true);
           return;
         }
+        loadScript.append(" " + modelName);
         if (modelName.equals("fileset"))
           modelName = parameterAsString(2);
         isAppend = (modelName.equalsIgnoreCase("append"));
+        if (isAppend)
+          loadScript.append(" " + modelName);
         i = 2;
       }
       if (getToken(i).tok != Token.string)
@@ -4199,7 +4202,7 @@ class Eval { //implements Runnable {
       evalError(errMsg);
 
     if (isAppend && (appendNew || nFiles > 1)) {
-      viewer.setAnimationRange(-1, -1, false);
+      viewer.setAnimationRange(-1, -1);
       viewer.setCurrentModelIndex(modelCount);
     }
     if (logMessages)
@@ -5985,11 +5988,8 @@ class Eval { //implements Runnable {
       if (!isSyntaxCheck)
         viewer.setAnimationOn(animate);
       break;
-    case Token.trajectory:
-      frame(2, true);
-      break;
     case Token.frame:
-      frame(2, false);
+      frame(2);
       break;
     case Token.mode:
       animationMode();
@@ -6023,15 +6023,15 @@ class Eval { //implements Runnable {
     }
     viewer.setAnimationOn(false);
     viewer.setAnimationDirection(1);
-    viewer.setAnimationRange(modelIndex, modelIndex2, false);
+    viewer.setAnimationRange(modelIndex, modelIndex2);
     viewer.setCurrentModelIndex(-1);
   }
 
-  private void frame(int offset, boolean isTrajectory) throws ScriptException {
+  private void frame(int offset) throws ScriptException {
     boolean useModelNumber = true;
     // for now -- as before -- remove to implement
     // frame/model difference
-    if (statementLength == 1 && !isTrajectory && offset == 1) {
+    if (statementLength == 1 && offset == 1) {
       int modelIndex = viewer.getCurrentModelIndex();
       if (!isSyntaxCheck && modelIndex >= 0
           && (modelIndex = viewer.getJmolDataSourceFrame(modelIndex)) >= 0)
@@ -6107,14 +6107,11 @@ class Eval { //implements Runnable {
     boolean haveFileSet = viewer.haveFileSet();
     if (isRange && nFrames == 0)
       isAll = true;
-
-    if ((haveFileSet || !useModelNumber || isAll) && isTrajectory)
-      evalError(GT._("trajectory not applicable in this context"));
     if (isSyntaxCheck)
       return;
     if (isAll) {
       viewer.setAnimationOn(false);
-      viewer.setAnimationRange(-1, -1, false);
+      viewer.setAnimationRange(-1, -1);
       if (!isRange)
         viewer.setCurrentModelIndex(-1);
       return;
@@ -6127,8 +6124,7 @@ class Eval { //implements Runnable {
       for (int i = 0; i < nFrames; i++)
         if (frameList[i] >= 0)
           frameList[i] %= 1000000;
-    int modelIndex = (isTrajectory ? frameList[0] - 1 : viewer
-        .getModelNumberIndex(frameList[0], useModelNumber));
+    int modelIndex = viewer.getModelNumberIndex(frameList[0], useModelNumber);
     int modelIndex2 = -1;
     if (haveFileSet && nFrames == 1 && modelIndex < 0 && frameList[0] != 0) {
       // may have frame 2.0 or frame 2 meaning the range of models in file 2
@@ -6152,24 +6148,16 @@ class Eval { //implements Runnable {
       }
     }
 
-    if (!isPlay && !isRange || modelIndex >= 0) {
-      if (isTrajectory)
-        viewer.setTrajectory(modelIndex);
-      else
-        viewer.setCurrentModelIndex(modelIndex, false);
-    }
+    if (!isPlay && !isRange || modelIndex >= 0)
+      viewer.setCurrentModelIndex(modelIndex, false);
     if (isPlay && nFrames == 2 || isRange || isHyphen) {
       if (modelIndex2 < 0)
-        modelIndex2 = (isTrajectory ? frameList[1] - 1 : viewer
-            .getModelNumberIndex(frameList[1], useModelNumber));
+        modelIndex2 = viewer.getModelNumberIndex(frameList[1], useModelNumber);
       viewer.setAnimationOn(false);
       viewer.setAnimationDirection(1);
-      viewer.setAnimationRange(modelIndex, modelIndex2, isTrajectory);
-      if (isTrajectory)
-        viewer.setTrajectory(modelIndex);
-      else
-        viewer.setCurrentModelIndex(isHyphen && !isRange ? -1
-            : modelIndex >= 0 ? modelIndex : 0, false);
+      viewer.setAnimationRange(modelIndex, modelIndex2);
+      viewer.setCurrentModelIndex(isHyphen && !isRange ? -1
+          : modelIndex >= 0 ? modelIndex : 0, false);
     }
     if (isPlay)
       viewer.resumeAnimation();
@@ -11679,7 +11667,7 @@ class Eval { //implements Runnable {
       if (op.tok == Token.opNot)
         return (x2.tok == Token.bitset ? addX(BitSetUtil.copyInvert(Token
             .bsSelect(x2), (x2.value instanceof BondSet ? viewer
-            .getBondCountInModel(-1) : viewer.getAtomCount()))) : addX(!Token
+            .getBondCount() : viewer.getAtomCount()))) : addX(!Token
             .bValue(x2)));
       int iv = op.intValue & ~Token.minmaxmask;
       if (op.tok == Token.propselector) {
@@ -11842,7 +11830,7 @@ class Eval { //implements Runnable {
           return addX(plane);
         case Token.bitset:
           return addX(BitSetUtil.copyInvert(Token.bsSelect(x2), 
-              (x2.value instanceof BondSet ? viewer.getBondCountInModel(-1) : viewer.getAtomCount())));
+              (x2.value instanceof BondSet ? viewer.getBondCount() : viewer.getAtomCount())));
         }
         return addX(-Token.fValue(x2));
       case Token.times:

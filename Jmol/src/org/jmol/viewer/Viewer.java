@@ -1699,14 +1699,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         bsSelected, isGreaterOnly, modelZeroBased);
   }
 
-  public AtomIndexIterator getWithinAtomSetIterator(int modelIndex,
-                                                    Point3f center,
-                                                    float distance,
-                                                    BitSet bsSelected) {
-    return modelSet.getWithinAtomSetIterator(modelIndex, center, distance,
-        bsSelected);
-  }
-
   public void fillAtomData(AtomData atomData, int mode) {
     atomData.fileName = getFileName();
     modelSet.fillAtomData(atomData, mode);
@@ -2666,21 +2658,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     refresh(0, "Viewer:pauseAnimation()");
   }
 
-  void setTrajectory(int iTraj) {
-    modelSet.setTrajectory(iTraj);
-    repaintManager.setTrajectory(iTraj);
-  }
-
-  int getTrajectoryCount() {
-    return modelSet.getTrajectoryCount();
-  }
-
-  void setAnimationRange(int modelIndex1, int modelIndex2, boolean isTrajectory) {
-    repaintManager.setAnimationRange(modelIndex1, modelIndex2, isTrajectory);
+  void setAnimationRange(int modelIndex1, int modelIndex2) {
+    repaintManager.setAnimationRange(modelIndex1, modelIndex2);
   }
 
   public BitSet getVisibleFramesBitSet() {
-    return repaintManager.getVisibleFramesBitSet();
+    BitSet bs = BitSetUtil.copy(repaintManager.getVisibleFramesBitSet());
+    modelSet.selectDisplayedTrajectories(bs);
+    return bs;
   }
 
   boolean isAnimationOn() {
@@ -2717,6 +2702,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     repaintManager.setCurrentModelIndex(modelIndex);
   }
 
+  void setTrajectory(int modelIndex) {
+    modelSet.setTrajectory(modelIndex);
+  }
+  
   void setCurrentModelIndex(int modelIndex, boolean clearBackground) {
     //Eval
     //initializeModel
@@ -3715,9 +3704,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void setStatusFrameChanged(int frameNo) {
     transformManager.setVibrationPeriod(Float.NaN);
-    boolean isTrajectory = (getTrajectoryCount() > 1);
-    if (isTrajectory)
-      return; //for now
     int modelIndex = repaintManager.currentModelIndex;
     int fileNo = getModelFileNumber(modelIndex);
     int modelNo = fileNo % 1000000;
@@ -3742,7 +3728,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         : getModelName(modelIndex)));
     global.setParameterValue("_modelTitle", (modelIndex < 0 ? "" 
         : getModelTitle(modelIndex)));
-    global.setParameterValue("_modelFile", (modelIndex < 0 ? "" : getModelFile(modelIndex)));
+    global.setParameterValue("_modelFile", (modelIndex < 0 ? "" : getModelFileName(modelIndex)));
 
     s = statusManager.getCallbackScript("animframecallback");
     if (s != null)
@@ -3758,9 +3744,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet == null ? null : modelSet.getModelTitle(modelIndex);
   }
 
-  private String getModelFile(int modelIndex) {
+  private String getModelFileName(int modelIndex) {
     //necessary for status manager frame change?
-    return modelSet == null ? null : modelSet.getModelFile(modelIndex);
+    return modelSet == null ? null : modelSet.getModelFileName(modelIndex);
   }
   
   private void setStatusFileLoaded(int ptLoad, String fullPathName,

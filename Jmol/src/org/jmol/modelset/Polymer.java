@@ -107,8 +107,11 @@ public class Polymer {
     return null;
   }
   
+  public void recalculateLeadMidpointsAndWingVectors() {  
+  }
+  
   public void getPdbData(char ctype, boolean isDerivative, BitSet bsAtoms, StringBuffer pdbATOM, StringBuffer pdbCONECT) {
     return;
   }
-
+  
 }

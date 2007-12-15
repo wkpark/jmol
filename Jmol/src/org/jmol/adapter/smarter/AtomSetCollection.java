@@ -114,7 +114,10 @@ public class AtomSetCollection {
   //float wavelength = Float.NaN;
   boolean coordinatesAreFractional;
   boolean isTrajectory;
-  
+  int nTrajectories = 0;
+  Point3f[] trajectory;
+  Vector trajectories;
+
   float[] notionalUnitCell = new float[6]; 
   // expands to 22 for cartesianToFractional matrix as array (PDB)
   
@@ -177,7 +180,6 @@ public class AtomSetCollection {
     fileTypeName = type;
   }
   
-  Vector trajectories;
   boolean setTrajectory() {
     if (!isTrajectory)
       trajectories = new Vector();
@@ -287,8 +289,8 @@ public class AtomSetCollection {
     atomSymbolicMap.clear();
     atomSetCount = 0;
     currentAtomSetIndex = -1;
-    for (int i = atomSetNumbers.length; --i >= 0; ) {
-      atomSetNumbers[i] = atomSetAtomCounts[i] = 0;
+    for (int i = atomSetNames.length; --i >= 0; ) {
+      atomSetAtomCounts[i] = 0;
       atomSetNames[i] = null;
     }
   }
@@ -916,9 +918,6 @@ public class AtomSetCollection {
   // atomSet stuff
   ////////////////////////////////////////////////////////////////
   
-  int nTrajectories = 0;
-  Point3f[] trajectory;
-
   void addTrajectory() {
     if (trajectory.length == 0) //done with FIRST atom set
       trajectory = new Point3f[atomCount];
@@ -953,7 +952,6 @@ public class AtomSetCollection {
     }
     currentAtomSetIndex = atomSetCount++;
     if (atomSetCount > atomSetNumbers.length) {
-      atomSetNumbers = ArrayUtil.doubleLength(atomSetNumbers);
       atomSetNames = ArrayUtil.doubleLength(atomSetNames);
       atomSetAtomCounts = ArrayUtil.doubleLength(atomSetAtomCounts);
       atomSetProperties = (Properties[]) ArrayUtil
@@ -961,11 +959,14 @@ public class AtomSetCollection {
       atomSetAuxiliaryInfo = (Hashtable[]) ArrayUtil
           .doubleLength(atomSetAuxiliaryInfo);
     }
-    atomSetNumbers[currentAtomSetIndex] = atomSetCount;
-    // miguel 2006 03 22
-    // added this clearing of the atomSymbolicMap to support V3000
-    // seems that it should have been here all along, but apparently
-    // noone else needed it
+    if (atomSetCount + nTrajectories > atomSetNumbers.length) {
+      atomSetNumbers = ArrayUtil.doubleLength(atomSetNumbers);
+    }
+    if (isTrajectory) {
+      atomSetNumbers[currentAtomSetIndex + nTrajectories] = atomSetCount + nTrajectories;
+    }
+    else
+      atomSetNumbers[currentAtomSetIndex] = atomSetCount;
     atomSymbolicMap.clear();
     setAtomSetAuxiliaryInfo("title", collectionName);    
   }
@@ -1005,7 +1006,10 @@ public class AtomSetCollection {
   * @param atomSetNumber The number for the current AtomSet.
   */
   public void setAtomSetNumber(int atomSetNumber) {
-    atomSetNumbers[currentAtomSetIndex] = atomSetNumber;
+    if (isTrajectory)
+      atomSetNumbers[currentAtomSetIndex + nTrajectories] = atomSetNumber;
+    else
+      atomSetNumbers[currentAtomSetIndex] = atomSetNumber;
   }
   
   /**
@@ -1120,14 +1124,20 @@ public class AtomSetCollection {
   }
 
   String getAtomSetName(int atomSetIndex) {
+    if (atomSetIndex >= atomSetCount)
+      atomSetIndex = atomSetCount - 1;
     return atomSetNames[atomSetIndex];
   }
   
   Properties getAtomSetProperties(int atomSetIndex) {
+    if (atomSetIndex >= atomSetCount)
+      atomSetIndex = atomSetCount - 1;
     return atomSetProperties[atomSetIndex];
   }
 
   Hashtable getAtomSetAuxiliaryInfo(int atomSetIndex) {
+    if (atomSetIndex >= atomSetCount)
+      atomSetIndex = atomSetCount - 1;
     return atomSetAuxiliaryInfo[atomSetIndex];
   }
 

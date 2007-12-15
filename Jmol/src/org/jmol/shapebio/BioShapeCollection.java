@@ -34,6 +34,7 @@ import org.jmol.modelset.Model;
 import org.jmol.modelsetbio.BioPolymer;
 import org.jmol.shape.Closest;
 import org.jmol.shape.Shape;
+import org.jmol.util.BitSetUtil;
 import org.jmol.viewer.JmolConstants;
 /****************************************************************
  * Mps stands for Model-Polymer-Shape
@@ -120,7 +121,7 @@ public abstract class BioShapeCollection extends Shape {
     BioShape[] shapes = new BioShape[nPolymers];
     int n = nPolymers;
     for (int i = modelCount; --i >= 0;)
-      for (int j = models[i].getBioPolymerCount(); --j >= 0;) {
+      for (int j = modelSet.getBioPolymerCountInModel(i); --j >= 0;) {
         n--;
         if (bioShapes == null || bioShapes.length <= n || bioShapes[n] == null) {
           shapes[n] = new BioShape(this, i, (BioPolymer) models[i].getBioPolymer(j));
@@ -141,6 +142,9 @@ public abstract class BioShapeCollection extends Shape {
   public void setVisibilityFlags(BitSet bs) {
     if (bioShapes == null)
       return;
+    bs = BitSetUtil.copy(bs);
+    for (int i = modelSet.getModelCount(); --i >= 0; )
+      bs.set(modelSet.getTrajectoryIndex(i));
     for (int i = bioShapes.length; --i >= 0;) {
       BioShape b = bioShapes[i];
       b.modelVisibilityFlags = (bs.get(b.modelIndex) ? myVisibilityFlag : 0);

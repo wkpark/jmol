@@ -43,15 +43,6 @@ class RepaintManager {
   }
 
   int currentModelIndex = 0;
-  int currentTrajectory = -1;
-  
-  boolean isTrajectory;
-
-  void setTrajectory(int iTraj) {
-    isTrajectory = (iTraj >= 0); 
-    currentTrajectory = iTraj;
-  }
-
 
   void setCurrentModelIndex(int modelIndex) {
     setCurrentModelIndex(modelIndex, true);  
@@ -59,8 +50,6 @@ class RepaintManager {
   
   void setCurrentModelIndex(int modelIndex, boolean clearBackgroundModel) {
       ModelSet modelSet = viewer.getModelSet();
-    if (modelIndex != 0 && isTrajectory)
-      viewer.setTrajectory(-1);
     if (modelSet != null && currentModelIndex != modelIndex) {
       boolean fromDataFrame = viewer.isJmolDataFrame(currentModelIndex);
       boolean toDataFrame = viewer.isJmolDataFrame(modelIndex);
@@ -76,6 +65,7 @@ class RepaintManager {
       currentModelIndex = -1;
     else
       currentModelIndex = modelIndex;
+    viewer.setTrajectory(currentModelIndex);
     if (currentModelIndex == -1 && clearBackgroundModel)
       setBackgroundModelIndex(-1);
     if (modelSet != null && currentModelIndex >= 0) {
@@ -92,8 +82,8 @@ class RepaintManager {
 
   
   private void setStatusFrameChanged() {
-    int i = (isTrajectory ? currentTrajectory : currentModelIndex);
-    viewer.setStatusFrameChanged(animationOn ? -2 - i : i);
+    viewer.setStatusFrameChanged(animationOn ? -2 - currentModelIndex
+        : currentModelIndex);
   }
   
   int backgroundModelIndex = -1;
@@ -119,7 +109,7 @@ class RepaintManager {
       bsVisibleFrames.set(currentModelIndex);
       return;
     }
-    if (frameStep == 0 || isTrajectory)
+    if (frameStep == 0)
       return;
     for (int i = firstModelIndex; i != lastModelIndex; i += frameStep)
       if (!viewer.isJmolDataFrame(i))
@@ -205,10 +195,8 @@ class RepaintManager {
 
   void initializePointers(int frameStep) {
     firstModelIndex = 0;
-    isTrajectory = ((lastModelIndex = viewer.getTrajectoryCount()) > 1);
     int modelCount = viewer.getModelCount();
     lastModelIndex = (frameStep == 0 ? 0 
-        : isTrajectory ? lastModelIndex 
         : modelCount) - 1;
     this.frameStep = frameStep;
     viewer.setFrameVariables(firstModelIndex, lastModelIndex);
@@ -222,7 +210,6 @@ class RepaintManager {
   void clearAnimation() {
     setAnimationOn(false);
     setCurrentModelIndex(0);
-    setTrajectory(-1);
     setAnimationDirection(1);
     setAnimationFps(10);
     setAnimationReplayMode(0, 0, 0);
@@ -235,7 +222,6 @@ class RepaintManager {
     info.put("lastModelIndex", new Integer(lastModelIndex));
     info.put("animationDirection", new Integer(animationDirection));
     info.put("currentDirection", new Integer(currentDirection));
-    info.put("currentTrajectory", new Integer(currentTrajectory));
     info.put("displayModelIndex", new Integer(currentModelIndex));
     info.put("displayModelNumber", viewer.getModelNumberDotted(currentModelIndex));
     info.put("displayModelName", (currentModelIndex >=0 ? viewer.getModelName(currentModelIndex) : ""));
@@ -257,10 +243,12 @@ class RepaintManager {
       sfunc.append("  _setFrameState;\n");
       commands.append("function _setFrameState();\n");
     }
-    commands.append("# frame state;\n# modelCount ")
-        .append(modelCount).append(";\n# first ").append(
-            viewer.getModelNumberDotted(0)).append(";\n# last ").append(
-            viewer.getModelNumberDotted(modelCount - 1)).append(";\n");
+    commands.append("# frame state;\n");
+    
+    commands.append("# modelCount ").append(modelCount)
+        .append(";\n# first ").append(
+             viewer.getModelNumberDotted(0)).append(";\n# last ").append(
+             viewer.getModelNumberDotted(modelCount - 1)).append(";\n");
     if (backgroundModelIndex >= 0)
       StateManager.appendCmd(commands, "set backgroundModel " + 
           viewer.getModelNumberDotted(backgroundModelIndex));
@@ -273,8 +261,6 @@ class RepaintManager {
     StateManager.appendCmd(commands, "animation MODE " + getAnimationModeName()
         + " " + firstFrameDelay + " " + lastFrameDelay);
     StateManager.appendCmd(commands, "frame " + viewer.getModelNumberDotted(currentModelIndex));
-    if (currentTrajectory > -1)
-      StateManager.appendCmd(commands, "trajectory " + currentTrajectory);
     StateManager.appendCmd(commands, "animation "
             + (!animationOn ? "OFF" : currentDirection == 1 ? "PLAY"
                 : "PLAYREV"));
@@ -323,8 +309,8 @@ class RepaintManager {
       Logger.error("invalid animationReplayMode:" + animationReplayMode);
   }
 
-  void setAnimationRange(int framePointer, int framePointer2, boolean isTrajectory) {
-    int modelCount = (isTrajectory ? viewer.getTrajectoryCount() : viewer.getModelCount());
+  void setAnimationRange(int framePointer, int framePointer2) {
+    int modelCount = viewer.getModelCount();
     if (framePointer < 0) framePointer = 0;
     if (framePointer2 < 0) framePointer2 = modelCount;
     if (framePointer >= modelCount) framePointer = modelCount - 1;
@@ -348,7 +334,7 @@ class RepaintManager {
       return;
     }
     viewer.refresh(0, "Viewer:setAnimationOn");
-    setAnimationRange(-1, -1, isTrajectory);
+    setAnimationRange(-1, -1);
     resumeAnimation();
   }
 
@@ -376,9 +362,8 @@ class RepaintManager {
   int intAnimThread = 0;
   void resumeAnimation() {
     if(currentModelIndex < 0)
-      setAnimationRange(firstModelIndex, lastModelIndex, isTrajectory);
-    int nModels = (isTrajectory ? viewer.getTrajectoryCount() : viewer.getModelCount());
-    if (nModels <= 1) {
+      setAnimationRange(firstModelIndex, lastModelIndex);
+    if (viewer.getModelCount() <= 1) {
       animationOn(false);
       return;
     }
@@ -396,19 +381,11 @@ class RepaintManager {
   }
 
   void setAnimationLast() {
-    int i = animationDirection > 0 ? lastModelIndex : firstModelIndex;
-    if (isTrajectory)
-      viewer.setTrajectory(i);//will call this.setTrajectory()
-    else 
-      setCurrentModelIndex(i);
+    setCurrentModelIndex(animationDirection > 0 ? lastModelIndex : firstModelIndex);
   }
 
   void rewindAnimation() {
-    int i =  animationDirection > 0 ? firstModelIndex : lastModelIndex;
-    if (isTrajectory)
-      viewer.setTrajectory(i);//will call this.setTrajectory()
-    else 
-      setCurrentModelIndex(i);
+    setCurrentModelIndex(animationDirection > 0 ? firstModelIndex : lastModelIndex);
     currentDirection = 1;
     viewer.setFrameVariables(firstModelIndex, lastModelIndex);
   }
@@ -419,8 +396,7 @@ class RepaintManager {
 
   boolean setAnimationRelative(int direction) {
     int frameStep = this.frameStep * direction * currentDirection;
-    int modelIndexNext = (isTrajectory ? currentTrajectory : currentModelIndex)
-        + frameStep;
+    int modelIndexNext = currentModelIndex + frameStep;
     boolean isDone = (modelIndexNext > firstModelIndex
         && modelIndexNext > lastModelIndex || modelIndexNext < firstModelIndex
         && modelIndexNext < lastModelIndex);
@@ -429,7 +405,6 @@ class RepaintManager {
      System.out.println("setAnimationRelative: " +
      " firstModelIndex=" + firstModelIndex +
      " displayModelIndex=" + currentModelIndex +
-     " trajectory=" + currentTrajectory +
      " lastModelIndex=" + lastModelIndex +
      " currentDirection=" + currentDirection +
      " animationDirection=" + animationDirection +
@@ -454,15 +429,10 @@ class RepaintManager {
       }
     }
     //Logger.debug("next="+modelIndexNext+" dir="+currentDirection+" isDone="+isDone);
-    int nModels = (isTrajectory ? viewer.getTrajectoryCount() : viewer.getModelCount());
+    int nModels = viewer.getModelCount();
     if (modelIndexNext < 0 || modelIndexNext >= nModels)
       return false;
-    if (isTrajectory) {
-      viewer.setTrajectory(modelIndexNext);//will call this.setTrajectory()
-      viewer.setTainted(true);
-
-    }    else
-      setCurrentModelIndex(modelIndexNext);
+    setCurrentModelIndex(modelIndexNext);
     return true;
   }
   
@@ -506,15 +476,14 @@ class RepaintManager {
           Thread.sleep(sleepTime);
         boolean isFirst = true;
         while (!isInterrupted() && animationOn) {
-          int i = (isTrajectory ? currentTrajectory : currentModelIndex);
-          if (i == framePointer) {
+          if (currentModelIndex == framePointer) {
             targetTime += firstFrameDelayMs;
             sleepTime = targetTime
                 - (int) (System.currentTimeMillis() - timeBegin);
             if (sleepTime > 0)
               Thread.sleep(sleepTime);
           }
-          if (i == framePointer2) {
+          if (currentModelIndex == framePointer2) {
             targetTime += lastFrameDelayMs;
             sleepTime = targetTime
                 - (int) (System.currentTimeMillis() - timeBegin);

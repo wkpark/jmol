@@ -86,6 +86,7 @@ public class Measurement {
   private boolean isVisible = true;
   private boolean isHidden = false;
   private boolean isDynamic = false;
+  private boolean isTrajectory = false;
   
   public boolean isVisible() {
     return isVisible;
@@ -95,6 +96,10 @@ public class Measurement {
   }
   public boolean isDynamic() {
     return isDynamic;
+  }
+  
+  public boolean isTrajectory() {
+    return isTrajectory;
   }
   
   public void setVisible(boolean TF) {
@@ -151,6 +156,7 @@ public class Measurement {
 
   public void refresh() {
     value = modelSet.getMeasurement(countPlusIndices);
+    isTrajectory = modelSet.isTrajectory(countPlusIndices);
     formatMeasurement();
   }
   
@@ -173,12 +179,13 @@ public class Measurement {
       count = 0;
     else {
       count = atomCountPlusIndices[0];
-      this.countPlusIndices = new int[count + 1];
+      countPlusIndices = new int[count + 1];
       System.arraycopy(atomCountPlusIndices, 0, countPlusIndices, 0, count+1);
     }
-    if (countPlusIndices != null && Float.isNaN(value)) 
+    isTrajectory = modelSet.isTrajectory(countPlusIndices);    
+    if (countPlusIndices != null && (Float.isNaN(value) || isTrajectory)) {
       value = modelSet.getMeasurement(countPlusIndices);
-    
+    }
     this.value = value;
     this.index = index;
     formatMeasurement();

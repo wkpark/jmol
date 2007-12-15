@@ -25,7 +25,6 @@ package org.jmol.modelset;
 
 import java.util.BitSet;
 
-import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 
 public final class Chain {
@@ -56,22 +55,12 @@ public final class Chain {
     return modelSet;
   }
   
-  public void freeze() {
-    groups = (Group[])ArrayUtil.setLength(groups, groupCount);
-  }
-  
   public boolean isDna() { return isDna; }
   public boolean isRna() { return isRna; }
 
   public void setIsDna(boolean TF) {isDna = TF;}
   public void setIsRna(boolean TF) {isRna = TF;}
 
-  public void addGroup(Group group) {
-    if (groupCount == groups.length)
-      groups = (Group[])ArrayUtil.doubleLength(groups);
-    groups[groupCount++] = group;
-  }
-  
   public Group getGroup(int groupIndex) {
     return groups[groupIndex];
   }

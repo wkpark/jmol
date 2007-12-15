@@ -73,7 +73,7 @@ public final class ModelLoader extends ModelSet {
       ModelLoader mergeModelSet, String modelSetName) {
     this.modelSetName = modelSetName;
     this.mergeModelSet = mergeModelSet;
-    merging = (mergeModelSet != null && mergeModelSet.atomCount > 0 && !mergeModelSet.isTrajectory);
+    merging = (mergeModelSet != null && mergeModelSet.atomCount > 0);
     this.viewer = viewer;
     initializeInfo(adapter.getFileTypeName(clientFile).toLowerCase().intern(),
         adapter.getEstimatedAtomCount(clientFile), adapter
@@ -103,6 +103,7 @@ public final class ModelLoader extends ModelSet {
 
   private boolean someModelsHaveUnitcells;
   private boolean someModelsHaveFractionalCoordinates;
+  private boolean isTrajectory;
 
   private void initializeInfo(String name, int nAtoms, Properties properties,
                        Hashtable info) {
@@ -184,16 +185,21 @@ public final class ModelLoader extends ModelSet {
   private int baseModelCount = 0;
   private int baseAtomIndex = 0;
   private int baseBondIndex = 0;
+  private int baseTrajectoryCount = 0;
   private boolean appendNew;
   private int adapterModelCount = 0;
   
   private void initializeModelSet(JmolAdapter adapter, Object clientFile) {
     adapterModelCount = (adapter == null ? 1 : adapter
         .getAtomSetCount(clientFile));
-    appendNew = (!merging || adapter == null || adapterModelCount > 1 || viewer.getAppendNew());
+    //cannot append a trajectory into a previous model
+    appendNew = (!merging || adapter == null || adapterModelCount > 1 
+        || isTrajectory || viewer.getAppendNew());
+    if (merging)
+      mergeModelArrays();
     initializeAtomBondModelCounts();
     if (adapter == null) {
-      setModelNameNumberProperties(0, "", 1, null, null, false, null);
+      setModelNameNumberProperties(0, -1, "", 1, null, null, false, null);
     } else {
       if (adapterModelCount > 0) {
         Logger.info("ModelSet: haveSymmetry:" + someModelsHaveSymmetry
@@ -203,8 +209,6 @@ public final class ModelLoader extends ModelSet {
             .info(adapterModelCount
                 + " model"
                 + (modelCount == 1 ? "" : "s")
-                + (isTrajectory ? ", " + trajectories.size() + " trajectories"
-                    : "")
                 + " in this collection. Use getProperty \"modelInfo\" or"
                 + " getProperty \"auxiliaryInfo\" to inspect them.");
       }
@@ -237,12 +241,30 @@ public final class ModelLoader extends ModelSet {
     groups = null;
     super.releaseModelSet();
   }
+
+  private void mergeModelArrays() {
+    baseModelCount = mergeModelSet.modelCount;
+    baseTrajectoryCount = mergeModelSet.getTrajectoryCount();
+    trajectoryBaseIndexes = mergeModelSet.trajectoryBaseIndexes;
+    if (baseTrajectoryCount > 0) {
+      if (isTrajectory) {
+        for (int i = 0; i < trajectories.size(); i++)
+          mergeModelSet.trajectories.addElement(trajectories.elementAt(i));
+        trajectories = mergeModelSet.trajectories;
+      }
+    }
+    modelInFileIndexes = mergeModelSet.modelInFileIndexes;   // 0-based index of model in its file
+    modelFileNumbers = mergeModelSet.modelFileNumbers;  // file * 1000000 + modelInFile (1-based)
+    modelNumbersForAtomLabel = mergeModelSet.modelNumbersForAtomLabel;
+    modelNames = mergeModelSet.modelNames;
+    frameTitles = mergeModelSet.frameTitles;
+  }
   
   private void initializeAtomBondModelCounts() {
     atomCount = 0;
     bondCount = 0;
+    int trajectoryCount = getTrajectoryCount();
     if (merging) {
-      baseModelCount = mergeModelSet.modelCount;
       if (appendNew) {
         baseModelIndex = baseModelCount;
         modelCount = baseModelCount + adapterModelCount;
@@ -258,7 +280,17 @@ public final class ModelLoader extends ModelSet {
     } else {
       modelCount = adapterModelCount;
     }
-    setModelCount();
+    if (trajectoryCount > 1)
+      modelCount += trajectoryCount - 1;
+    models = (Model[]) ArrayUtil.setLength(models, modelCount);
+    trajectoryBaseIndexes = (int[]) ArrayUtil.setLength(trajectoryBaseIndexes, modelCount);
+    modelInFileIndexes = (int[]) ArrayUtil.setLength(modelInFileIndexes, modelCount);
+    modelFileNumbers =(int[])ArrayUtil.setLength(modelFileNumbers, modelCount);
+    modelNumbers =(int[])ArrayUtil.setLength(modelNumbers, modelCount);
+    modelNumbersForAtomLabel = (String[])ArrayUtil.setLength(modelNumbersForAtomLabel, modelCount);
+    modelNames = (String[])ArrayUtil.setLength(modelNames, modelCount);
+    frameTitles = (String[])ArrayUtil.setLength(frameTitles, modelCount);
+
   }
 
   private void initializeMerge() {
@@ -281,7 +313,6 @@ public final class ModelLoader extends ModelSet {
     //model to be undefined. Not guarantee to work.
     if (!appendNew && isPDB) 
       structuresDefinedInFile.clear(baseModelIndex);
-    copyAtomData(mergeModelSet);
     surfaceDistance100s = null;
   }
 
@@ -298,20 +329,21 @@ public final class ModelLoader extends ModelSet {
 
     if (merging)
       initializeMerge();
-
+    
+    int iTrajectory = (isTrajectory ? baseTrajectoryCount : -1);
     int ipt = baseModelIndex;
-    for (int i = 0; i < adapterModelCount; ++i, ipt++) {
+    for (int i = 0; i < adapterModelCount; ++i, ++ipt) {     
       int modelNumber = (appendNew ? adapter.getAtomSetNumber(clientFile, i)
           : Integer.MAX_VALUE);
       String modelName = adapter.getAtomSetName(clientFile, i);
+      Properties modelProperties = adapter.getAtomSetProperties(clientFile, i);
+      Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
+          clientFile, i);
       if (modelName == null)
         modelName = (jmolData != null ? jmolData.substring(jmolData
             .indexOf(":") + 2, jmolData.indexOf("data("))
             : modelNumber == Integer.MAX_VALUE ? "" : "" + (modelNumber % 1000000));
-      Properties modelProperties = adapter.getAtomSetProperties(clientFile, i);
-      Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
-          clientFile, i);
-      boolean isPDBModel = setModelNameNumberProperties(ipt, modelName,
+      boolean isPDBModel = setModelNameNumberProperties(ipt, iTrajectory, modelName,
           modelNumber, modelProperties, modelAuxiliaryInfo, isPDB, jmolData);
       if (isPDBModel) {
         group3Lists[ipt] = JmolConstants.group3List;
@@ -321,31 +353,40 @@ public final class ModelLoader extends ModelSet {
           group3Counts[modelCount] = new int[JmolConstants.group3Count + 10];
         }
       }
+      trajectoryBaseIndexes[ipt] = ipt;
       if (getModelAuxiliaryInfo(ipt, "periodicOriginXyz") != null)
         someModelsHaveSymmetry = true;
+    }
+    if (isTrajectory) {
+      // fill in the rest of the data
+      int ia = adapterModelCount;
+      for (int i = ipt; i < modelCount; i++) {
+        models[i] = models[baseModelCount];
+        trajectoryBaseIndexes[i] = baseModelCount;
+        modelNumbers[i] = adapter.getAtomSetNumber(clientFile, ia++);
+      }
+    } else {
+      for (int i = ipt; i < modelCount; i++) {
+        trajectoryBaseIndexes[i] = i;
+      }
     }
     finalizeModels(baseModelCount);
   }
     
-  boolean setModelNameNumberProperties(int modelIndex, String modelName,
-                                       int modelNumber,
+  boolean setModelNameNumberProperties(int modelIndex, int trajectoryIndex,
+                                       String modelName, int modelNumber,
                                        Properties modelProperties,
                                        Hashtable modelAuxiliaryInfo,
                                        boolean isPDB, String jmolData) {
 
-    this.modelProperties[modelIndex] = modelProperties;
-    if (modelAuxiliaryInfo == null)
-      modelAuxiliaryInfo = new Hashtable();
-    this.modelAuxiliaryInfo[modelIndex] = modelAuxiliaryInfo;
-    String modelTitle = (String) getModelAuxiliaryInfo(modelIndex, "title");
-    if (jmolData != null) {
-      modelAuxiliaryInfo.put("jmolData", jmolData);
-      modelTitle = jmolData;
+    if (isTrajectory)
+      trajectoryBaseIndexes[modelIndex] = trajectoryIndex;
+    if (modelNumber != Integer.MAX_VALUE) {
+      models[modelIndex] = new Model((ModelSet) this, modelIndex, trajectoryIndex, jmolData,
+          modelProperties, modelAuxiliaryInfo);
+      modelNumbers[modelIndex] = modelNumber;
+      modelNames[modelIndex] = modelName;
     }
-    String modelFile = (String) getModelAuxiliaryInfo(modelIndex, "fileName");
-    if (modelNumber != Integer.MAX_VALUE)
-      models[modelIndex] = new Model((ModelSet) this, modelIndex, modelNumber,
-          modelName, modelTitle, modelFile, jmolData);
     String codes = (String) getModelAuxiliaryInfo(modelIndex, "altLocs");
     models[modelIndex].setNAltLocs(codes == null ? 0 : codes.length());
     codes = (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");
@@ -402,30 +443,32 @@ public final class ModelLoader extends ModelSet {
       return;
     String sNum;
     int modelnumber = 0;
-
     int lastfilenumber = -1;
+    if (isTrajectory)
+      for (int i = baseModelCount; ++i < modelCount;)
+        modelNumbers[i] = modelNumbers[i - 1] + 1;
     if (baseModelCount > 0) {
       // load append
-      if (models[0].modelNumber < 1000000) {
+      if (modelNumbers[0] < 1000000) {
         // initially we had just one file
         for (int i = 0; i < baseModelCount; i++) {
           // create 1000000 model numbers for the original file models
-          if (models[i].modelTag.length() == 0)
-            models[i].modelTag = "" + models[i].modelNumber;
-          models[i].modelNumber += 1000000;
-          models[i].modelNumberForAtomLabel = "1." + (i + 1);
+          if (modelNames[i].length() == 0)
+            modelNames[i] = "" + modelNumbers[i];
+          modelNumbers[i] += 1000000;
+          modelNumbersForAtomLabel[i] = "1." + (i + 1);
         }
       }
       // update file number
-      int filenumber = models[baseModelCount - 1].modelNumber;
+      int filenumber = modelNumbers[baseModelCount - 1];
       filenumber -= filenumber % 1000000;
-      if (models[baseModelCount].modelNumber < 1000000)
+      if (modelNumbers[baseModelCount] < 1000000)
         filenumber += 1000000;
       for (int i = baseModelCount; i < modelCount; i++)
-        models[i].modelNumber += filenumber;
+        modelNumbers[i] += filenumber;
     }
     for (int i = baseModelCount; i < modelCount; ++i) {
-      int filenumber = models[i].modelNumber / 1000000;
+      int filenumber = modelNumbers[i] / 1000000;
       if (filenumber != lastfilenumber) {
         modelnumber = 0;
         lastfilenumber = filenumber;
@@ -443,22 +486,23 @@ public final class ModelLoader extends ModelSet {
         // else
         sNum = filenumber + "." + modelnumber;
       }
-      models[i].modelNumberForAtomLabel = sNum;
+      modelNumbersForAtomLabel[i] = sNum;
       models[i].fileIndex = filenumber - 1;
-      models[i].modelInFileIndex = modelnumber - 1;
-      models[i].modelFileNumber = filenumber * 1000000 + modelnumber;
-      if (models[i].modelTag.length() == 0)
-        models[i].modelTag = sNum;
+      modelInFileIndexes[i] = modelnumber - 1;
+      modelFileNumbers[i] = filenumber * 1000000 + modelnumber;
+      if (modelNames[i] == null || modelNames[i].length() == 0)
+        modelNames[i] = sNum;
    }
     
     if (merging)
       for (int i = 0; i < baseModelCount; i++)
         models[i].modelSet = this;
     
+    // this won't do in the case of trajectories
     for (int i = 0; i < modelCount; i++) {
-      setModelAuxiliaryInfo(i, "modelName", models[i].modelTag);
-      setModelAuxiliaryInfo(i, "modelNumber", new Integer(models[i].modelNumber % 1000000));
-      setModelAuxiliaryInfo(i, "modelFileNumber", new Integer(models[i].modelFileNumber));
+      setModelAuxiliaryInfo(i, "modelName", modelNames[i]);
+      setModelAuxiliaryInfo(i, "modelNumber", new Integer(modelNumbers[i] % 1000000));
+      setModelAuxiliaryInfo(i, "modelFileNumber", new Integer(modelFileNumbers[i]));
       setModelAuxiliaryInfo(i, "modelNumberDotted", getModelNumberDotted(i));
     }
 
@@ -489,8 +533,11 @@ public final class ModelLoader extends ModelSet {
     
     int iLast = -1;
     for (int i = 0; i < atomCount; i++)
-      if (atoms[i].modelIndex != iLast)
-        setFirstAtomIndex(iLast = atoms[i].modelIndex, i);
+      if (atoms[i].modelIndex != iLast) {
+        iLast = atoms[i].modelIndex;
+        models[iLast].firstAtomIndex = i;
+        models[iLast].bsAtoms = null;
+      }
   }
 
   private void addAtom(int modelIndex, BitSet atomSymmetry, int atomSite,
@@ -527,7 +574,7 @@ public final class ModelLoader extends ModelSet {
     }
     if (chainID != currentChainID) {
       currentChainID = chainID;
-      currentChain = currentModel.getOrAllocateChain(chainID);
+      currentChain = getOrAllocateChain(currentModel, chainID);
       currentGroupInsertionCode = '\uFFFF';
       currentGroupSequenceNumber = -1;
       currentGroup3 = "xxxx";
@@ -551,6 +598,16 @@ public final class ModelLoader extends ModelSet {
           groupInsertionCode);
       ++groupCount;
     }
+  }
+
+  private Chain getOrAllocateChain(Model model, char chainID) {
+    //Logger.debug("chainID=" + chainID + " -> " + (chainID + 0));
+    Chain chain = model.getChain(chainID);
+    if (chain != null)
+      return chain;
+    if (model.chainCount == model.chains.length)
+      model.chains = (Chain[])ArrayUtil.doubleLength(model.chains);
+    return model.chains[model.chainCount++] = new Chain(this, model, chainID);
   }
 
   private void growAtomArrays(int byHowMuch) {
@@ -822,7 +879,7 @@ public final class ModelLoader extends ModelSet {
       }
       if (haveBioClasses) {
         group = jbr.distinguishAndPropagateGroup(chain, group3, seqcode,
-            firstAtomIndex, maxAtomIndex, modelIndex, modelCount,
+            firstAtomIndex, maxAtomIndex, modelIndex,
             specialAtomIndexes, specialAtomIDs, atoms);
       }
     }
@@ -836,12 +893,18 @@ public final class ModelLoader extends ModelSet {
     }
     if (group3 != null)
       countGroup(modelIndex, key, group3);
-    chain.addGroup(group);
+    addGroup(chain, group);
     groups[groupIndex] = group;
 
     for (int i = maxAtomIndex; --i >= firstAtomIndex;)
       atoms[i].setGroup(group);
 
+  }
+
+  private void addGroup(Chain chain, Group group) {
+    if (chain.groupCount == chain.groups.length)
+      chain.groups = (Group[])ArrayUtil.doubleLength(chain.groups);
+    chain.groups[chain.groupCount++] = group;
   }
 
   private void countGroup(int modelIndex, String code, String group3) {

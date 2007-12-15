@@ -34,25 +34,39 @@ import javax.vecmath.Point3f;
 
 class AtomIteratorWithinSet implements AtomIndexIterator {
   
-  //does NOT return i == atomIndex
-
-  ModelSet modelSet;
   CubeIterator bsptIter;
   BitSet bsSelected;
   boolean isGreaterOnly;
   int atomIndex;
   int zerobase;
 
-  void initialize(ModelSet modelSet, Bspf bspf, int bsptIndex, int atomIndex,
+  /**
+   * a more powerful iterator than AtomIteratorWithinModel
+   * allowing excluding a specific atom, finding only those
+   * atoms with an atom index greater than that specified
+   * or atoms within a specific selected subset of atoms.
+   * 
+   * Returns atoms within a cube centered on the point
+   * Does NOT return i == atomIndex
+
+   * @param bspf
+   * @param bsptIndex
+   * @param atomIndex
+   * @param center
+   * @param distance
+   * @param bsSelected
+   * @param isGreaterOnly
+   * @param zerobase
+   */
+  void initialize(Bspf bspf, int bsptIndex, int atomIndex,
                   Point3f center, float distance, BitSet bsSelected,
-                  boolean isGreaterOnly, boolean modelZeroBased) {
+                  boolean isGreaterOnly, int zerobase) {
     bsptIter = bspf.getCubeIterator(bsptIndex);
     bsptIter.initialize(center, distance);
     this.atomIndex = atomIndex;
     this.bsSelected = bsSelected;
     this.isGreaterOnly = isGreaterOnly;
-    zerobase = (modelZeroBased ? modelSet.getFirstAtomIndexInModel(bsptIndex)
-        : 0);
+    this.zerobase = zerobase;
   }
 
   int iNext;

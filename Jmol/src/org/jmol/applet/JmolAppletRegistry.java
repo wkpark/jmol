@@ -61,6 +61,13 @@ public class JmolAppletRegistry {
     Logger.info("AppletRegistry.checkIn(" + name + ")");
     if (name != null)
       htRegistry.put(name, applet);
+    if (Logger.debugging) {
+      Enumeration keys = htRegistry.keys();
+      while (keys.hasMoreElements()) {
+        String theApplet = (String) keys.nextElement();
+        Logger.debug(theApplet + " "+ htRegistry.get(theApplet));
+      }
+    }
   }
 
   synchronized static void cleanRegistry() {
@@ -75,6 +82,8 @@ public class JmolAppletRegistry {
           //System.out.println("Preserving registered applet " + theApplet);
           //System.out.println();
         }
+        if (Logger.debugging)
+          Logger.debug("Preserving registered applet " + theApplet + " window: " + theWindow.hashCode());
       } catch (Exception e) {
         Logger.error("Dereferencing registered applet " + theApplet);
         htRegistry.remove(theApplet);

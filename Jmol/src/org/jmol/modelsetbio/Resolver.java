@@ -29,6 +29,7 @@ import java.util.BitSet;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;
+import org.jmol.modelset.Polymer;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.api.JmolBioResolver;
 
@@ -37,7 +38,6 @@ public final class Resolver implements JmolBioResolver {
   public Group distinguishAndPropagateGroup(Chain chain, String group3,
                                             int seqcode, int firstAtomIndex,
                                             int maxAtomIndex, int modelIndex,
-                                            int modelCount,
                                             int[] specialAtomIndexes,
                                             byte[] specialAtomIDs, Atom[] atoms) {
     /*
@@ -113,9 +113,9 @@ public final class Resolver implements JmolBioResolver {
     return null;
   }   
   
-  public void buildBioPolymer(Group group, Group[] groups, int i) {
-    if (group instanceof Monomer && ((Monomer) group).getBioPolymer() == null)
-      BioPolymer.allocateBioPolymer(groups, i);
+  public Polymer buildBioPolymer(Group group, Group[] groups, int i) {
+    return (group instanceof Monomer && ((Monomer) group).getBioPolymer() == null ?
+      BioPolymer.allocateBioPolymer(groups, i) : null);
   }
   
   public void clearBioPolymers(Group[] groups, int groupCount,

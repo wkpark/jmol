@@ -129,6 +129,13 @@ public class Dots extends AtomShape {
       //all done!
       return;
     }
+
+    if ("refreshTrajectories" == propertyName) {
+      bsSelected = null;
+      setSize(0, bs);
+      return;
+    }
+
     super.setProperty(propertyName, value, bs);
   }
 

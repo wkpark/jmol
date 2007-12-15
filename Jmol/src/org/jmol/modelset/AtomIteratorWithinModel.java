@@ -34,6 +34,19 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
 
   CubeIterator bsptIter;
 
+  /**
+   * just the basic iterator for finding atoms 
+   * within a cube centered on some point in space
+   * 
+   * Used for select within(distance, atom)
+   * 
+   * @param bspf
+   * @param bsptIndex
+   * @param center
+   * @param radius
+   * 
+   */
+
   void initialize(Bspf bspf, int bsptIndex, Point3f center, float radius) {
     bsptIter = bspf.getCubeIterator(bsptIndex);
     bsptIter.initialize(center, radius);

@@ -56,8 +56,6 @@ public abstract class BioPolymer extends Polymer {
     monomerCount = monomers.length;
     for (int i = monomerCount; --i >= 0; )
       monomers[i].setBioPolymer(this, i);
-    model = monomers[0].getModel();
-    model.addBioPolymer((Polymer)this);
   }
   
   static BioPolymer allocateBioPolymer(Group[] groups, int firstGroupIndex) {
@@ -283,10 +281,15 @@ public abstract class BioPolymer extends Polymer {
   public void setConformation(BitSet bsSelected, int nAltLocsInModel) {
     for (int i = monomerCount; --i >= 0; )
       monomers[i].updateOffsetsForAlternativeLocations(bsSelected, nAltLocsInModel);
+    
+    recalculateLeadMidpointsAndWingVectors();
+    //calculateStructures();
+  }
+  
+  public void recalculateLeadMidpointsAndWingVectors() {    
     leadAtomIndices = null;
     getLeadAtomIndices();
     calcLeadMidpointsAndWingVectors(false);
-    //calculateStructures();
   }
   
   public Point3f[] getLeadMidpoints() {

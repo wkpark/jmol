@@ -39,6 +39,8 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.vecmath.Point3f;
+
 /*
  * An abstract class always created using new ModelLoader(...)
  * 
@@ -130,6 +132,37 @@ abstract public class ModelSet extends ModelCollection {
     return shapes[i];
   }
   
+  public void setTrajectory(int modelIndex) {
+    if (modelIndex < 0 || !models[modelIndex].isTrajectory)
+      return;
+    // The user has used the MODEL command to switch to a new set of atom coordinates.
+    // Assign the coordinates and the model index for this set of atoms
+    int baseModel = trajectoryBaseIndexes[modelIndex];
+    int iTraj = models[modelIndex].trajectoryIndex = modelIndex - baseModel;
+    Point3f[] trajectory = (Point3f[]) trajectories.get(iTraj);
+    BitSet bs = new BitSet();
+    int nAtoms = getAtomCountInModel(modelIndex);
+    for (int pt = 0, i = models[modelIndex].firstAtomIndex; i < nAtoms && pt < trajectory.length; i++) {
+      atoms[i].set(trajectory[pt++]);
+      atoms[i].modelIndex = (short) modelIndex;
+      bs.set(i);
+    }
+    // Clear the Binary Search so that select within(),
+    // isosurface, and dots will work properly
+    bspf.clearBspt(baseModel);
+    // Recalculate critical points for cartoons and such
+    // note that models[baseModel] and models[modelIndex]
+    // point to the same model. So there is only one copy of 
+    // the shape business.
+    recalculateLeadMidpointsAndWingVectors(baseModel);
+    // Recalculate all measures that involve trajectories
+    Integer Imodel = new Integer(baseModel);
+    for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
+      if (shapes[i] != null)
+      setShapeProperty(i, "refreshTrajectories", Imodel, bs);
+  }  
+
+
   protected final Closest closest = new Closest();
 
   public int findNearestAtomIndex(int x, int y) {
@@ -201,6 +234,7 @@ abstract public class ModelSet extends ModelCollection {
     // so isTranslucent = isTranslucent || f() would NOT work.
 
     BitSet bs = viewer.getVisibleFramesBitSet();
+    
     //NOT balls (yet)
     for (int i = 1; i < JmolConstants.SHAPE_MAX; i++)
       if (shapes[i] != null)
@@ -244,7 +278,7 @@ abstract public class ModelSet extends ModelCollection {
     if(atomData.modelIndex < 0)
       atomData.firstAtomIndex = Math.max(0, BitSetUtil.firstSetBit(atomData.bsSelected));
     else
-      atomData.firstAtomIndex = getFirstAtomIndexInModel(atomData.modelIndex);
+      atomData.firstAtomIndex = models[atomData.modelIndex].firstAtomIndex;
     atomData.lastModelIndex = atomData.firstModelIndex = (atomCount == 0 ? 0 : atoms[atomData.firstAtomIndex].modelIndex);
     atomData.modelName = getModelNumberDotted(atomData.firstModelIndex);
     super.fillAtomData(atomData, mode);
@@ -328,6 +362,7 @@ abstract public class ModelSet extends ModelCollection {
       bsBonds = bsPseudoHBonds;
       return BitSetUtil.cardinalityOf(bsBonds);
     }
+    initializeBspf();
     return super.autoHbond(bsA, bsB, bsBonds);
   }
   
@@ -465,7 +500,7 @@ abstract public class ModelSet extends ModelCollection {
     }
     
     for (int i = 0; i < modelCount; i++) {
-      String t = models[i].frameTitle; 
+      String t = frameTitles[i]; 
       if (t != null && t.length() > 0)
         commands.append("  frame " + getModelNumberDotted(i)
             + "; frame title " + Escape.escape(t) + "\n;");

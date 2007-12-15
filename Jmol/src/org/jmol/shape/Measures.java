@@ -85,7 +85,9 @@ public class Measures extends Shape {
         bsSelected.or(bs);
       }
       return;
-    } else if ("color".equals(propertyName)) {
+    }
+    
+    if ("color".equals(propertyName)) {
       if (bsColixSet == null)
         bsColixSet = new BitSet();
         short colix = (value == null ? Graphics3D.INHERIT_ALL : Graphics3D.getColix(value));
@@ -99,14 +101,27 @@ public class Measures extends Shape {
           bsColixSet.set(i);
         }
       return;
-    } else if ("delete".equals(propertyName)) {
+    } 
+
+    if ("refreshTrajectories".equals(propertyName)) {
+      for (int i = 0; i < measurements.length; i++)
+        if (measurements[i] != null && measurements[i].isTrajectory())
+          measurements[i].refresh();
+      return;
+    } 
+
+    if ("delete".equals(propertyName)) {
       delete(value);
       setIndices();
       return;
-    } else if ("hideAll".equals(propertyName)) {
+    } 
+    
+    if ("hideAll".equals(propertyName)) {
       showHide(((Boolean) value).booleanValue());
       return;
-    } else if ("setFormats".equals(propertyName)) {
+    }
+    
+    if ("setFormats".equals(propertyName)) {
       setFormats((String) value);
       return;
     }

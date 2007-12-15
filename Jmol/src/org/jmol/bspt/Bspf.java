@@ -22,6 +22,8 @@
  */
 package org.jmol.bspt;
 
+import java.util.BitSet;
+
 import javax.vecmath.Point3f;
 
 /**
@@ -48,6 +50,14 @@ public final class Bspf {
 
   public int getBsptCount() {
     return bspts.length;
+  }
+  
+  public void clearBspt(int bsptIndex) {
+    bspts[bsptIndex] = null;
+  }
+  
+  public boolean isInitialized(int bsptIndex) {
+    return bspts[bsptIndex] != null;
   }
   
   public void addTuple(int bsptIndex, Point3f tuple) {
@@ -100,6 +110,12 @@ public final class Bspf {
         bspts[bsptIndex] != null)
       cubeIterators[bsptIndex] = bspts[bsptIndex].allocateCubeIterator();
     return cubeIterators[bsptIndex];
+  }
+
+  public void initialize(int modelIndex, Point3f[] atoms, BitSet modelAtomBitSet) {
+    for (int i = atoms.length; --i >= 0;)
+      if (modelAtomBitSet.get(i))
+        addTuple(modelIndex, atoms[i]);
   }
 
 }

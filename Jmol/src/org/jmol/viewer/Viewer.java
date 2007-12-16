@@ -6133,14 +6133,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean syncingScripts = false;
   private boolean syncingMouse = false;
   
-  boolean isSyncingMouse() {
-    return syncingMouse;
-  }
-    
-  boolean isSyncingScripts() {
-    return syncingScripts;
-  }
-
   private void setSyncTarget(int mode, boolean TF) {
     switch (mode) {
     case 0:
@@ -6195,7 +6187,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     String[] tokens = Parser.getTokens(script);
     String key = tokens[1];
-    syncingMouse = false;
     switch (tokens.length) {
     case 3:
       if (key.equals("zoomByFactor"))

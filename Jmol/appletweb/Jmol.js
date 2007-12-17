@@ -1,6 +1,6 @@
 /* Jmol 11.4 script library Jmol.js 12:44 PM 12/10/2007 hansonr
 
- checkbox heirarchy -- see http://www.stolaf.edu/academics/jmol/docs/examples-11/check.htm
+ checkbox heirarchy -- see http://chemapps.stolaf.edu/jmol/docs/examples-11/check.htm
 
     based on:
  *

@@ -235,7 +235,7 @@ abstract public class ModelSet extends ModelCollection {
 
     BitSet bs = viewer.getVisibleFramesBitSet();
     
-    System.out.println("modelset setvis" + bs);
+    //System.out.println("modelset setvis" + bs);
     //NOT balls (yet)
     for (int i = 1; i < JmolConstants.SHAPE_MAX; i++)
       if (shapes[i] != null)

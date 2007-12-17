@@ -6106,8 +6106,9 @@ class Eval { //implements Runnable {
     if (isAll) {
       viewer.setAnimationOn(false);
       viewer.setAnimationRange(-1, -1);
-      if (!isRange)
+      if (!isRange) {
         viewer.setCurrentModelIndex(-1);
+      }
       return;
     }
     if (nFrames == 2 && !isRange)

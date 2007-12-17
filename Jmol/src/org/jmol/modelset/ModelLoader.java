@@ -119,6 +119,7 @@ public final class ModelLoader extends ModelSet {
     jmolData = (String) getModelSetAuxiliaryInfo("jmolData");
     trajectories = (Vector) getModelSetAuxiliaryInfo("trajectories");
     isTrajectory = (trajectories != null);
+    adapterTrajectoryCount = (trajectories == null ? 0 : trajectories.size()); 
     someModelsHaveSymmetry = getModelSetAuxiliaryInfoBoolean("someModelsHaveSymmetry");
     someModelsHaveUnitcells = getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
     someModelsHaveFractionalCoordinates = getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
@@ -188,6 +189,7 @@ public final class ModelLoader extends ModelSet {
   private int baseTrajectoryCount = 0;
   private boolean appendNew;
   private int adapterModelCount = 0;
+  private int adapterTrajectoryCount = 0;
   
   private void initializeModelSet(JmolAdapter adapter, Object clientFile) {
     adapterModelCount = (adapter == null ? 1 : adapter
@@ -263,6 +265,7 @@ public final class ModelLoader extends ModelSet {
   private void initializeAtomBondModelCounts() {
     atomCount = 0;
     bondCount = 0;
+    int trajectoryCount = adapterTrajectoryCount;
     if (merging) {
       if (appendNew) {
         baseModelIndex = baseModelCount;
@@ -279,6 +282,8 @@ public final class ModelLoader extends ModelSet {
     } else {
       modelCount = adapterModelCount;
     }
+    if (trajectoryCount > 1)
+      modelCount += trajectoryCount - 1;
     models = (Model[]) ArrayUtil.setLength(models, modelCount);
     trajectoryBaseIndexes = (int[]) ArrayUtil.setLength(trajectoryBaseIndexes, modelCount);
     modelInFileIndexes = (int[]) ArrayUtil.setLength(modelInFileIndexes, modelCount);

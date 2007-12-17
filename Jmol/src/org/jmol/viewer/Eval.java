@@ -4022,7 +4022,7 @@ class Eval { //implements Runnable {
     if (statementLength == 1) {
       i = 0;
     } else {
-      if (theTok == Token.identifier) {
+      if (tokAt(1) == Token.identifier) {
         modelName = parameterAsString(1);
         if (modelName.equals("menu")) {
           checkLength3();

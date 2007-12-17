@@ -92,6 +92,8 @@ class RepaintManager {
     if (modelSet == null || modelIndex < 0 || modelIndex >= modelSet.getModelCount())
       modelIndex = -1;
     backgroundModelIndex = modelIndex;
+    if (modelIndex >= 0)
+      viewer.setTrajectory(modelIndex);
     viewer.setTainted(true);
     setFrameRangeVisible(); 
   }

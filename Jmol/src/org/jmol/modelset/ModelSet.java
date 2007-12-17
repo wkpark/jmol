@@ -133,7 +133,8 @@ abstract public class ModelSet extends ModelCollection {
     return shapes[i];
   }
   
-  public int getModelNumberIndex(int modelNumber, boolean useModelNumber) {
+  public int getModelNumberIndex(int modelNumber, boolean useModelNumber,
+                                 boolean doSetTrajectory) {
     if (useModelNumber) {
       for (int i = 0; i < modelCount; i++)
         if (modelNumbers[i] == modelNumber)
@@ -143,7 +144,7 @@ abstract public class ModelSet extends ModelCollection {
     //new decimal format:   frame 1.2 1.3 1.4
     for (int i = 0; i < modelCount; i++)
       if (modelFileNumbers[i] == modelNumber) {
-        if (isTrajectory(i))
+        if (doSetTrajectory && isTrajectory(i))
           setTrajectory(i);
         return i;
       }
@@ -200,10 +201,8 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   private BitSet getSpecModel(int modelNumber) {
-    int modelIndex = getModelNumberIndex(modelNumber, true);
-    if (models[modelIndex].isTrajectory)
-      setTrajectory(modelIndex);
-    return getModelAtomBitSet(modelIndex, true);
+    return getModelAtomBitSet(getModelNumberIndex(modelNumber, true, true),
+        true);
   }
 
   protected final Closest closest = new Closest();

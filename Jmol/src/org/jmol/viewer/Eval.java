@@ -2035,7 +2035,7 @@ class Eval { //implements Runnable {
     default:
       return -1;
     }
-    return viewer.getModelNumberIndex(iFrame, useModelNumber);
+    return viewer.getModelNumberIndex(iFrame, useModelNumber, true);
   }
 
   private String optParameterAsString(int i) throws ScriptException {
@@ -6015,10 +6015,10 @@ class Eval { //implements Runnable {
     int file = intParameter(1);
     if (isSyntaxCheck)
       return;
-    int modelIndex = viewer.getModelNumberIndex(file * 1000000 + 1, false);
+    int modelIndex = viewer.getModelNumberIndex(file * 1000000 + 1, false, false);
     int modelIndex2 = -1;
     if (modelIndex >= 0) {
-      modelIndex2 = viewer.getModelNumberIndex((file + 1) * 1000000 + 1, false);
+      modelIndex2 = viewer.getModelNumberIndex((file + 1) * 1000000 + 1, false, false);
       if (modelIndex2 < 0)
         modelIndex2 = viewer.getModelCount();
       modelIndex2--;
@@ -6127,7 +6127,7 @@ class Eval { //implements Runnable {
       for (int i = 0; i < nFrames; i++)
         if (frameList[i] >= 0)
           frameList[i] %= 1000000;
-    int modelIndex = viewer.getModelNumberIndex(frameList[0], useModelNumber);
+    int modelIndex = viewer.getModelNumberIndex(frameList[0], useModelNumber, false);
     int modelIndex2 = -1;
     if (haveFileSet && nFrames == 1 && modelIndex < 0 && frameList[0] != 0) {
       // may have frame 2.0 or frame 2 meaning the range of models in file 2
@@ -6135,10 +6135,10 @@ class Eval { //implements Runnable {
         frameList[0] *= 1000000;
       if (frameList[0] % 1000000 == 0) {
         frameList[0]++;
-        modelIndex = viewer.getModelNumberIndex(frameList[0], false);
+        modelIndex = viewer.getModelNumberIndex(frameList[0], false, false);
         if (modelIndex >= 0) {
           modelIndex2 = viewer.getModelNumberIndex(frameList[0] + 1000000,
-              false);
+              false, false);
           if (modelIndex2 < 0)
             modelIndex2 = viewer.getModelCount();
           modelIndex2--;
@@ -6155,7 +6155,7 @@ class Eval { //implements Runnable {
       viewer.setCurrentModelIndex(modelIndex, false);
     if (isPlay && nFrames == 2 || isRange || isHyphen) {
       if (modelIndex2 < 0)
-        modelIndex2 = viewer.getModelNumberIndex(frameList[1], useModelNumber);
+        modelIndex2 = viewer.getModelNumberIndex(frameList[1], useModelNumber, false);
       viewer.setAnimationOn(false);
       viewer.setAnimationDirection(1);
       viewer.setAnimationRange(modelIndex, modelIndex2);
@@ -6177,9 +6177,9 @@ class Eval { //implements Runnable {
       m *= 1000000;
     int pt = m % 1000000;
     if (pt == 0) {
-      int model1 = viewer.getModelNumberIndex(m + 1, false);
+      int model1 = viewer.getModelNumberIndex(m + 1, false, false);
       int model2 = (m == 0 ? modelCount : viewer.getModelNumberIndex(
-          m + 1000001, false));
+          m + 1000001, false, false));
       if (model1 < 0)
         model1 = 0;
       if (model2 < 0)
@@ -6189,10 +6189,9 @@ class Eval { //implements Runnable {
       for (int j = model1; j < model2; j++)
         bs.or(viewer.getModelAtomBitSet(j, false));
     } else {
-      int modelIndex = viewer.getModelNumberIndex(m, false);
+      int modelIndex = viewer.getModelNumberIndex(m, false, true);
       if (modelIndex >= 0)
-        bs.or(viewer.getModelAtomBitSet(modelIndex,
-          false));
+        bs.or(viewer.getModelAtomBitSet(modelIndex, false));
     }
     return bs;
   }
@@ -6524,7 +6523,7 @@ class Eval { //implements Runnable {
         }
         if (isSyntaxCheck)
           return;
-        int modelIndex = viewer.getModelNumberIndex(modelNumber, useModelNumber);
+        int modelIndex = viewer.getModelNumberIndex(modelNumber, useModelNumber, true);
         viewer.setBackgroundModelIndex(modelIndex);
         return;
       }

@@ -2041,8 +2041,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getModelAuxiliaryInfo(modelIndex, keyName);
   }
 
-  int getModelNumberIndex(int modelNumber, boolean useModelNumber) {
-    return modelSet.getModelNumberIndex(modelNumber, useModelNumber);
+  int getModelNumberIndex(int modelNumber, boolean useModelNumber,
+                          boolean doSetTrajectory) {
+    return modelSet.getModelNumberIndex(modelNumber, useModelNumber,
+        doSetTrajectory);
   }
 
   boolean modelSetHasVibrationVectors() {

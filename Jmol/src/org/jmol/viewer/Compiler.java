@@ -443,10 +443,8 @@ class Compiler {
             String strFormat = script.substring(ichToken, ichToken + cchToken);
             strFormat = strFormat.toLowerCase();
             if (strFormat.equals("append") || strFormat.equals("files")
-                || strFormat.equals("menu"))
+                || strFormat.equals("menu") || strFormat.equals("trajectory"))
               addTokenToPrefix(new Token(Token.identifier, strFormat));
-            else if (strFormat.equals("trajectory"))
-              addTokenToPrefix(Token.getTokenFromName(strFormat));
             else if (strFormat.indexOf("=") == 0) {
               addTokenToPrefix(new Token(Token.string, strFormat));
             }

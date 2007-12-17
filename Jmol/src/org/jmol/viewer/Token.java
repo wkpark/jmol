@@ -193,7 +193,6 @@ public class Token {
   final static int animation    = command | 67;
   final static int frame        = command | 68;
   // jmol commands
-  final static int trajectory   = command | 78;
   final static int hide         = command | 79 | expressionCommand;
   final static int font         = command | 80;
   final static int hover        = command | 81 | specialstring;
@@ -1019,9 +1018,6 @@ public class Token {
     "spin",              new Token(spin,            varArgCount),
     "frame",             new Token(frame,           varArgCount),
     "frames",            null, 
-    "trajectory",        new Token(trajectory,      varArgCount),
-    "trajectories",      null, 
-                
     "animation",         new Token(animation),
     "anim",              null, 
                           

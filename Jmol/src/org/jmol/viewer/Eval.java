@@ -1078,7 +1078,6 @@ class Eval { //implements Runnable {
         break;
       case Token.frame:
       case Token.model:
-      case Token.trajectory:
         frame(1);
         break;
       case Token.font:
@@ -4019,17 +4018,11 @@ class Eval { //implements Runnable {
     params[3] = (int) unitCells.z;
     int i = 1;
     // ignore optional file format
-    //    String filename = "";
     String modelName = "fileset";
     if (statementLength == 1) {
       i = 0;
     } else {
-      if (getToken(1).tok == Token.trajectory) {
-        loadScript.append(" trajectory");
-        params[0] = -1; // 
-        i = 2;
-      } else if (theTok == Token.identifier
-          || parameterAsString(1).equals("fileset")) {
+      if (theTok == Token.identifier) {
         modelName = parameterAsString(1);
         if (modelName.equals("menu")) {
           checkLength3();
@@ -4038,11 +4031,9 @@ class Eval { //implements Runnable {
           return;
         }
         loadScript.append(" " + modelName);
-        if (modelName.equals("fileset"))
-          modelName = parameterAsString(2);
         isAppend = (modelName.equalsIgnoreCase("append"));
-        if (isAppend)
-          loadScript.append(" " + modelName);
+        if (modelName.equalsIgnoreCase("trajectory"))
+          params[0] = -1;
         i = 2;
       }
       if (getToken(i).tok != Token.string)

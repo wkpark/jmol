@@ -2706,6 +2706,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.setTrajectory(modelIndex);
   }
   
+  boolean isTrajectory(int modelIndex) {
+    return modelSet.isTrajectory(modelIndex);
+  }
+  
   void setCurrentModelIndex(int modelIndex, boolean clearBackground) {
     //Eval
     //initializeModel

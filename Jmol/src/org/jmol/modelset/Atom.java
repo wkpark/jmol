@@ -1051,10 +1051,6 @@ final public class Atom extends Point3fi {
     return group.chain.model.fileIndex;
   }
   
-  int getModelInFileIndex() {
-    return group.chain.modelSet.getModelInFileIndex(modelIndex);
-  }
-  
   public int getModelFileNumber() {
     return group.chain.modelSet.getModelFileNumber(modelIndex);
   }

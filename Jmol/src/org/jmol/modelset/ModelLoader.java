@@ -255,10 +255,10 @@ public final class ModelLoader extends ModelSet {
       }
       trajectories = mergeModelSet.trajectories;
     }
-    modelInFileIndexes = mergeModelSet.modelInFileIndexes;   // 0-based index of model in its file
     modelFileNumbers = mergeModelSet.modelFileNumbers;  // file * 1000000 + modelInFile (1-based)
     modelNumbersForAtomLabel = mergeModelSet.modelNumbersForAtomLabel;
     modelNames = mergeModelSet.modelNames;
+    modelNumbers = mergeModelSet.modelNumbers;
     frameTitles = mergeModelSet.frameTitles;
   }
   
@@ -286,7 +286,6 @@ public final class ModelLoader extends ModelSet {
       modelCount += trajectoryCount - 1;
     models = (Model[]) ArrayUtil.setLength(models, modelCount);
     trajectoryBaseIndexes = (int[]) ArrayUtil.setLength(trajectoryBaseIndexes, modelCount);
-    modelInFileIndexes = (int[]) ArrayUtil.setLength(modelInFileIndexes, modelCount);
     modelFileNumbers =(int[])ArrayUtil.setLength(modelFileNumbers, modelCount);
     modelNumbers =(int[])ArrayUtil.setLength(modelNumbers, modelCount);
     modelNumbersForAtomLabel = (String[])ArrayUtil.setLength(modelNumbersForAtomLabel, modelCount);
@@ -490,7 +489,6 @@ public final class ModelLoader extends ModelSet {
       }
       modelNumbersForAtomLabel[i] = sNum;
       models[i].fileIndex = filenumber - 1;
-      modelInFileIndexes[i] = modelnumber - 1;
       modelFileNumbers[i] = filenumber * 1000000 + modelnumber;
       if (modelNames[i] == null || modelNames[i].length() == 0)
         modelNames[i] = sNum;

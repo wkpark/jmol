@@ -128,16 +128,11 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   int[] modelNumbers = new int[1];  // from adapter -- possibly PDB MODEL record; possibly modelFileNumber
-  int[] modelInFileIndexes = new int[1];   // 0-based index of model in its file
   int[] modelFileNumbers = new int[1];  // file * 1000000 + modelInFile (1-based)
   String[] modelNumbersForAtomLabel = new String[1];
   String[] modelNames = new String[1];
   String[] frameTitles = new String[1];
 
-  public int getModelInFileIndex(int modelIndex) {
-    return modelInFileIndexes[modelIndex];  
-  }
-  
   public String getModelName(int modelIndex) {
     return modelCount < 1 ? "" 
         : modelIndex >= 0 ? modelNames[modelIndex]
@@ -540,6 +535,10 @@ abstract public class ModelCollection extends BondCollection {
     return (i < 0 ? modelIndex : trajectoryBaseIndexes[i]);
   }
   
+  public boolean isTrajectory(int modelIndex) {
+    return models[modelIndex].isTrajectory;
+  }
+  
   public boolean isTrajectory(int[] countPlusIndices) {
     if (countPlusIndices == null)
       return false;
@@ -584,20 +583,6 @@ abstract public class ModelCollection extends BondCollection {
   public String getModelNumberDotted(int modelIndex) {
     return (modelCount < 1 || modelIndex < 0 ? "" : 
       Escape.escapeModelFileNumber(modelFileNumbers[modelIndex]));
-  }
-
-  public int getModelNumberIndex(int modelNumber, boolean useModelNumber) {
-    if (useModelNumber) {
-      for (int i = 0; i < modelCount; i++)
-        if (modelNumbers[i] == modelNumber)
-          return i;
-      return -1;
-    }
-    //new decimal format:   frame 1.2 1.3 1.4
-    for (int i = 0; i < modelCount; i++)
-      if (modelFileNumbers[i] == modelNumber)
-        return i;
-    return -1;
   }
 
   public int getModelNumber(int modelIndex) {
@@ -1621,24 +1606,6 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = modelCount; --i >= 0;)
       models[i].selectSeqcodeRange(seqcodeA, seqcodeB, bs);
     return bs;
-  }
-
-  /**
-   * general lookup for integer type -- from Eval
-   * @param tokType   
-   * @param specInfo  
-   * @return bitset; null only if we mess up with name
-   */
-  public BitSet getAtomBits(int tokType, int specInfo) {
-    switch (tokType) {
-    case Token.spec_model:
-      return getSpecModel(specInfo);
-    }
-    return super.getAtomBits(tokType, specInfo);
-  }
-
-  private BitSet getSpecModel(int modelNumber) {
-    return getModelAtomBitSet(getModelNumberIndex(modelNumber, true), true);
   }
 
   /**

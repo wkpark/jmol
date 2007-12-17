@@ -29,6 +29,7 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Token;
 import org.jmol.atomdata.AtomData;
 import org.jmol.shape.Closest;
 import org.jmol.shape.MeshCollection;
@@ -132,17 +133,39 @@ abstract public class ModelSet extends ModelCollection {
     return shapes[i];
   }
   
+  public int getModelNumberIndex(int modelNumber, boolean useModelNumber) {
+    if (useModelNumber) {
+      for (int i = 0; i < modelCount; i++)
+        if (modelNumbers.1[i] == modelNumber)
+          return i;
+      return -1;
+    }
+    //new decimal format:   frame 1.2 1.3 1.4
+    for (int i = 0; i < modelCount; i++)
+      if (modelFileNumbers[i] == modelNumber) {
+        if (isTrajectory(i))
+          setTrajectory(i);
+        return i;
+      }
+    return -1;
+  }
+
   public void setTrajectory(int modelIndex) {
     if (modelIndex < 0 || !models[modelIndex].isTrajectory)
       return;
-    // The user has used the MODEL command to switch to a new set of atom coordinates.
+    // The user has used the MODEL command to switch to a new set of atom coordinates
+    // Or has specified a trajectory in a select, display, or hide command.
+
     // Assign the coordinates and the model index for this set of atoms
+    int iFirst = models[modelIndex].firstAtomIndex;
+    if (atoms[iFirst].modelIndex == modelIndex)
+      return;
     int baseModel = trajectoryBaseIndexes[modelIndex];
     int iTraj = models[modelIndex].trajectoryIndex = modelIndex - baseModel;
     Point3f[] trajectory = (Point3f[]) trajectories.get(iTraj);
     BitSet bs = new BitSet();
     int nAtoms = getAtomCountInModel(modelIndex);
-    for (int pt = 0, i = models[modelIndex].firstAtomIndex; i < nAtoms && pt < trajectory.length; i++) {
+    for (int pt = 0, i = iFirst; i < nAtoms && pt < trajectory.length; i++) {
       atoms[i].set(trajectory[pt++]);
       atoms[i].modelIndex = (short) modelIndex;
       bs.set(i);
@@ -162,6 +185,26 @@ abstract public class ModelSet extends ModelCollection {
       setShapeProperty(i, "refreshTrajectories", Imodel, bs);
   }  
 
+  /**
+   * general lookup for integer type -- from Eval
+   * @param tokType   
+   * @param specInfo  
+   * @return bitset; null only if we mess up with name
+   */
+  public BitSet getAtomBits(int tokType, int specInfo) {
+    switch (tokType) {
+    case Token.spec_model:
+      return getSpecModel(specInfo);
+    }
+    return super.getAtomBits(tokType, specInfo);
+  }
+
+  private BitSet getSpecModel(int modelNumber) {
+    int modelIndex = getModelNumberIndex(modelNumber, true);
+    if (models[modelIndex].isTrajectory)
+      setTrajectory(modelIndex);
+    return getModelAtomBitSet(modelIndex, true);
+  }
 
   protected final Closest closest = new Closest();
 

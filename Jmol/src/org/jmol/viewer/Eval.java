@@ -1477,10 +1477,13 @@ class Eval { //implements Runnable {
         rpn.addX(viewer.getAtomBits(instruction.tok, (String) value));
         break;
       case Token.spec_model:
-      //1002 is equivalent to 1.2 when more than one file is present
+        // from select */1002 or */1000002 or */1.2
+        // */1002 is equivalent to 1.2 when more than one file is present
       case Token.spec_model2:
+        // from just using the number 1.2
         int iModel = instruction.intValue;
         if (iModel == Integer.MAX_VALUE) {
+          // from select */n 
           iModel = ((Integer) value).intValue();
           if (!viewer.haveFileSet()) {
             rpn.addX(getAtomBits(Token.spec_model, iModel));
@@ -1491,7 +1494,7 @@ class Eval { //implements Runnable {
           else
             iModel = (iModel / 1000) * 1000000 + iModel % 1000;
         }
-        rpn.addX(bitSetForModelNumberSet(new int[] { iModel }, 1));
+        rpn.addX(bitSetForModelFileNumber(iModel));
         break;
       case Token.spec_resid:
       case Token.spec_chain:
@@ -1589,6 +1592,11 @@ class Eval { //implements Runnable {
             && comparisonValue % 1000000 == 0) {
           comparisonValue /= 1000000;
           tokWhat = Token.file;
+          isModel = false;
+        }
+        if (tokWhat == -Token.model && tokOperator == Token.opEQ) {
+          rpn.addX(bitSetForModelFileNumber(comparisonValue));
+          break;
         }
         if (((String) value).indexOf("-") >= 0) {
           if (!Float.isNaN(comparisonFloat))
@@ -6158,31 +6166,33 @@ class Eval { //implements Runnable {
       viewer.resumeAnimation();
   }
 
-  BitSet bitSetForModelNumberSet(int[] frameList, int nFrames) {
+  BitSet bitSetForModelFileNumber(int m) {
+    // where */1.0 or */1.1 or just 1.1 is processed
     BitSet bs = new BitSet();
     if (isSyntaxCheck)
       return bs;
     int modelCount = viewer.getModelCount();
     boolean haveFileSet = viewer.haveFileSet();
-    for (int i = 0; i < nFrames; i++) {
-      int m = frameList[i];
-      if (m < 1000000 && haveFileSet)
-        m *= 1000000;
-      int pt = m % 1000000;
-      if (pt == 0) {
-        int model1 = viewer.getModelNumberIndex(m + 1, false);
-        int model2 = (m == 0 ? modelCount : viewer.getModelNumberIndex(
-            m + 1000001, false));
-        if (model1 < 0)
-          model1 = 0;
-        if (model2 < 0)
-          model2 = modelCount;
-        for (int j = model1; j < model2; j++)
-          bs.or(viewer.getModelAtomBitSet(j, false));
-      } else {
-        bs.or(viewer.getModelAtomBitSet(viewer.getModelNumberIndex(m, false),
-            false));
-      }
+    if (m < 1000000 && haveFileSet)
+      m *= 1000000;
+    int pt = m % 1000000;
+    if (pt == 0) {
+      int model1 = viewer.getModelNumberIndex(m + 1, false);
+      int model2 = (m == 0 ? modelCount : viewer.getModelNumberIndex(
+          m + 1000001, false));
+      if (model1 < 0)
+        model1 = 0;
+      if (model2 < 0)
+        model2 = modelCount;
+      if (viewer.isTrajectory(model1))
+        model2 = model1 + 1;
+      for (int j = model1; j < model2; j++)
+        bs.or(viewer.getModelAtomBitSet(j, false));
+    } else {
+      int modelIndex = viewer.getModelNumberIndex(m, false);
+      if (modelIndex >= 0)
+        bs.or(viewer.getModelAtomBitSet(modelIndex,
+          false));
     }
     return bs;
   }

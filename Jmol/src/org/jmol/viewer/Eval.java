@@ -4018,11 +4018,14 @@ class Eval { //implements Runnable {
     params[3] = (int) unitCells.z;
     int i = 1;
     // ignore optional file format
+    //    String filename = "";
     String modelName = "fileset";
     if (statementLength == 1) {
       i = 0;
     } else {
-      if (tokAt(1) == Token.identifier) {
+      if (tokAt(1) == Token.identifier
+          || parameterAsString(1).equals("fileset")) {
+        // 
         modelName = parameterAsString(1);
         if (modelName.equals("menu")) {
           checkLength3();
@@ -4030,11 +4033,11 @@ class Eval { //implements Runnable {
             viewer.setMenu(parameterAsString(2), true);
           return;
         }
+        i = 2;
         loadScript.append(" " + modelName);
         isAppend = (modelName.equalsIgnoreCase("append"));
         if (modelName.equalsIgnoreCase("trajectory"))
           params[0] = -1;
-        i = 2;
       }
       if (getToken(i).tok != Token.string)
         filenameExpected();

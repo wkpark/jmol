@@ -250,8 +250,8 @@ public final class ModelLoader extends ModelSet {
       if (isTrajectory) {
         for (int i = 0; i < trajectories.size(); i++)
           mergeModelSet.trajectories.addElement(trajectories.elementAt(i));
-        trajectories = mergeModelSet.trajectories;
       }
+      trajectories = mergeModelSet.trajectories;
     }
     modelInFileIndexes = mergeModelSet.modelInFileIndexes;   // 0-based index of model in its file
     modelFileNumbers = mergeModelSet.modelFileNumbers;  // file * 1000000 + modelInFile (1-based)
@@ -263,7 +263,6 @@ public final class ModelLoader extends ModelSet {
   private void initializeAtomBondModelCounts() {
     atomCount = 0;
     bondCount = 0;
-    int trajectoryCount = getTrajectoryCount();
     if (merging) {
       if (appendNew) {
         baseModelIndex = baseModelCount;
@@ -280,8 +279,6 @@ public final class ModelLoader extends ModelSet {
     } else {
       modelCount = adapterModelCount;
     }
-    if (trajectoryCount > 1)
-      modelCount += trajectoryCount - 1;
     models = (Model[]) ArrayUtil.setLength(models, modelCount);
     trajectoryBaseIndexes = (int[]) ArrayUtil.setLength(trajectoryBaseIndexes, modelCount);
     modelInFileIndexes = (int[]) ArrayUtil.setLength(modelInFileIndexes, modelCount);

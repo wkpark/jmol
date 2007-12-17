@@ -582,8 +582,6 @@ abstract public class ModelCollection extends BondCollection {
   }
   
   public String getModelNumberDotted(int modelIndex) {
-    if (modelIndex >= 0)
-      modelIndex = 0;
     return (modelCount < 1 || modelIndex < 0 ? "" : 
       Escape.escapeModelFileNumber(modelFileNumbers[modelIndex]));
   }
@@ -620,8 +618,6 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public Hashtable getModelAuxiliaryInfo(int modelIndex) {
-    if (modelIndex >= 0)
-      modelIndex = 0;
     return (modelIndex < 0 ? null : models[modelIndex].auxiliaryInfo);
   }
 

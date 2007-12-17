@@ -136,7 +136,7 @@ abstract public class ModelSet extends ModelCollection {
   public int getModelNumberIndex(int modelNumber, boolean useModelNumber) {
     if (useModelNumber) {
       for (int i = 0; i < modelCount; i++)
-        if (modelNumbers.1[i] == modelNumber)
+        if (modelNumbers[i] == modelNumber)
           return i;
       return -1;
     }

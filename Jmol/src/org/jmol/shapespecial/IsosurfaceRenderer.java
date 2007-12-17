@@ -36,7 +36,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
   protected boolean iHideBackground;
   protected boolean isBicolorMap;
   protected short backgroundColix;
-  protected boolean isTranslucent;
   protected int nError = 0;
   protected float[] vertexValues;
 
@@ -60,7 +59,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
   }
   
   protected void render2() {
-    isTranslucent = Graphics3D.isColixTranslucent(imesh.colix);
     isBicolorMap = imesh.jvxlData.isBicolorMap;
     super.render2();
   }

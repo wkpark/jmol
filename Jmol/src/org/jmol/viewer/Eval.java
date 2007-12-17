@@ -8850,6 +8850,7 @@ class Eval { //implements Runnable {
     int colorArgb = Integer.MIN_VALUE;
     int intScale = 0;
     boolean idSeen = false;
+    int iptDisplayProperty = 0;
     initIsosurface(JmolConstants.SHAPE_DRAW);
     for (int i = iToken; i < statementLength; ++i) {
       String propertyName = null;
@@ -8955,6 +8956,11 @@ class Eval { //implements Runnable {
           propertyName = (tokAt(i) == Token.decimal ? "width" : "diameter");
           break;
         }
+        if (str.equalsIgnoreCase("WIDTH")) { //angstroms
+          propertyValue = new Float(floatParameter(++i));
+          propertyName = "width";
+          break;
+        }
         if (idSeen)
           invalidArgument();
         propertyName = "thisID";
@@ -8977,9 +8983,13 @@ class Eval { //implements Runnable {
         havePoints = true;
         break;
       case Token.color:
+        i++;
+        //fall through
+      case Token.translucent:
+      case Token.opaque:
         isTranslucent = false;
         boolean isColor = false;
-        if (tokAt(++i) == Token.translucent) {
+        if (tokAt(i) == Token.translucent) {
           isTranslucent = true;
           if (isFloatParameter(++i))
             translucentLevel = floatParameter(i++);
@@ -9021,9 +9031,11 @@ class Eval { //implements Runnable {
         havePoints = true;
         break;
       default:
-        if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, i, theTok))
+        if (iptDisplayProperty == 0)
+          iptDisplayProperty = i;
+        if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, 0, theTok))
           invalidArgument();
-        i = iToken;
+        continue;
       }
       idSeen = (theTok != Token.delete);
       if (havePoints && !isInitialized) {
@@ -9046,6 +9058,11 @@ class Eval { //implements Runnable {
           translucentLevel);
     if (intScale != 0) {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "scale", new Integer(intScale));
+    }
+    if (iptDisplayProperty > 0) {
+      if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, iptDisplayProperty, 
+          getToken(iptDisplayProperty).tok))
+        invalidArgument();
     }
   }
 

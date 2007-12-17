@@ -43,6 +43,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected Mesh mesh;
   protected int diameter;
   protected float width;
+  protected boolean isTranslucent;
 
   protected final Point3f pt1f = new Point3f();
   protected final Point3f pt2f = new Point3f();
@@ -90,6 +91,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     frontOnly = !slabbing && mesh.frontOnly && !mesh.isTwoSided;
     screens = viewer.allocTempScreens(vertexCount);
     transformedVectors = g3d.getTransformedVertexVectors();
+    isTranslucent = Graphics3D.isColixTranslucent(mesh.colix);
     return true;
   }
 
@@ -158,8 +160,9 @@ public abstract class MeshRenderer extends ShapeRenderer {
             diameter = 1;
         }
         g3d.fillCylinder(
-            iA != iB && !fill ? Graphics3D.ENDCAPS_NONE 
-            : width < 0 ? Graphics3D.ENDCAPS_FLAT 
+            iA != iB && !fill 
+            ? Graphics3D.ENDCAPS_NONE 
+            : width < 0 || isTranslucent ? Graphics3D.ENDCAPS_FLAT 
             : Graphics3D.ENDCAPS_SPHERICAL,
             diameter, screens[iA], screens[iB]);
         continue;

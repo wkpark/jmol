@@ -50,7 +50,11 @@ public class JmolPopupSwing extends JmolPopup {
   void showPopupMenu(int x, int y) {
     if (jmolComponent == null)
       return;
-    swingPopup.show(jmolComponent, x, y);
+    try {
+      swingPopup.show(jmolComponent, x, y);
+    } catch (Exception e) {
+      // probably a permissions problem in Java 7
+    }
   }
 
   Object getParent(Object menu) {
@@ -89,7 +93,11 @@ public class JmolPopupSwing extends JmolPopup {
   void showFrankMenu(int x, int y) {
     if (jmolComponent == null)
       return;
-    ((JPopupMenu)frankPopup).show(jmolComponent, x, y);
+    try {
+      ((JPopupMenu)frankPopup).show(jmolComponent, x, y);
+    } catch (Exception e) {
+      // probably a permissions problem in Java 7
+    }
   }
 
   void resetFrankMenu() {

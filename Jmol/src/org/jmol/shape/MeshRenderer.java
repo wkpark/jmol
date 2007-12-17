@@ -41,6 +41,14 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected boolean frontOnly;
   protected boolean antialias;
   protected Mesh mesh;
+  protected int diameter;
+  protected float width;
+
+  protected final Point3f pt1f = new Point3f();
+  protected final Point3f pt2f = new Point3f();
+
+  protected final Point3i pt1i = new Point3i();
+  protected final Point3i pt2i = new Point3i();
 
   protected void render() {
     antialias = g3d.isAntialiased();
@@ -137,9 +145,23 @@ public abstract class MeshRenderer extends ShapeRenderer {
       int iB = vertexIndexes[1];
       int iC = vertexIndexes[2];
       if (iB == iC) {
-        int diameter = (mesh.diameter > 0 ? mesh.diameter : iA == iB ? 6 : 3);
-        g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, diameter, screens[iA],
-            screens[iB]);
+        //line or point
+        if (diameter == 0)
+          diameter = (mesh.diameter > 0 ? mesh.diameter : iA == iB ? 6 : 3);
+        if (width != 0) {
+          pt1f.set(vertices[iA]);
+          pt1f.add(vertices[iB]);
+          pt1f.scale(1f/2f);
+          viewer.transformPoint(pt1f, pt1i);
+          diameter = viewer.scaleToScreen(pt1i.z, (int) (Math.abs(width) * 1000));
+          if (diameter == 0)
+            diameter = 1;
+        }
+        g3d.fillCylinder(
+            iA != iB && !fill ? Graphics3D.ENDCAPS_NONE 
+            : width < 0 ? Graphics3D.ENDCAPS_FLAT 
+            : Graphics3D.ENDCAPS_SPHERICAL,
+            diameter, screens[iA], screens[iB]);
         continue;
       }
       switch (vertexIndexes.length) {

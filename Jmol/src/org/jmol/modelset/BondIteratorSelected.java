@@ -28,11 +28,6 @@ package org.jmol.modelset;
 import org.jmol.viewer.JmolConstants;
 import java.util.BitSet;
 
-/* 
- * The first half of these methods create the model set;
- * the second half are accessed after model set creation.
- *  
- */
 class BondIteratorSelected implements BondIterator {
 
   private Bond[] bonds;
@@ -43,7 +38,9 @@ class BondIteratorSelected implements BondIterator {
   private boolean bondSelectionModeOr;
   private boolean isBondBitSet;
 
-  BondIteratorSelected(Bond[] bond, int bondCount, short bondType, BitSet bsSelected, boolean bondSelectionModeOr) {
+  BondIteratorSelected(Bond[] bonds, int bondCount, short bondType,
+      BitSet bsSelected, boolean bondSelectionModeOr) {
+    this.bonds = bonds;
     this.bondCount = bondCount;
     this.bondType = bondType;
     this.bsSelected = bsSelected;
@@ -53,6 +50,7 @@ class BondIteratorSelected implements BondIterator {
   }
 
   BondIteratorSelected(Bond[] bonds, int bondCount, BitSet bsSelected) {
+    this.bonds = bonds;
     this.bondCount = bondCount;
     this.bsSelected = bsSelected;
     isBondBitSet = true;

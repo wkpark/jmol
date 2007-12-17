@@ -5639,7 +5639,7 @@ class Eval { //implements Runnable {
         break;
       case Token.integer:
       case Token.decimal:
-        propertyName = "dipoleValue";
+        propertyName = "value";
         propertyValue = new Float(floatParameter(i));
         break;
       case Token.bitset:
@@ -5682,16 +5682,16 @@ class Eval { //implements Runnable {
         if (cmd.equalsIgnoreCase("offset")) {
           float v = floatParameter(++i);
           if (theTok == Token.integer) {
-            propertyName = "dipoleOffsetPercent";
+            propertyName = "offsetPercent";
             propertyValue = new Integer((int) v);
           } else {
-            propertyName = "dipoleOffset";
+            propertyName = "offset";
             propertyValue = new Float(v);
           }
           break;
         }
         if (cmd.equalsIgnoreCase("value")) {
-          propertyName = "dipoleValue";
+          propertyName = "value";
           propertyValue = new Float(floatParameter(++i));
           break;
         }
@@ -5701,7 +5701,7 @@ class Eval { //implements Runnable {
           break;
         }
         if (cmd.equalsIgnoreCase("width")) {
-          propertyName = "dipoleWidth";
+          propertyName = "width";
           propertyValue = new Float(floatParameter(++i));
           break;
         }
@@ -8950,9 +8950,9 @@ class Eval { //implements Runnable {
             numberExpected();
           }
         }
-        if (str.equalsIgnoreCase("DIAMETER")) {
+        if (str.equalsIgnoreCase("DIAMETER")) { //pixels
           propertyValue = new Float(floatParameter(++i));
-          propertyName = "diameter";
+          propertyName = (tokAt(i) == Token.decimal ? "width" : "diameter");
           break;
         }
         if (idSeen)

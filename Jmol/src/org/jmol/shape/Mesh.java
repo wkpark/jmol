@@ -53,6 +53,7 @@ public class Mesh {
   
   public float scale = 1;
   public int diameter;
+  public float width;
   public Point3f ptCenter = new Point3f(0,0,0);
   public String meshType = null;
   

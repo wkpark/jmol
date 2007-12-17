@@ -64,7 +64,8 @@ abstract public class BondCollection extends AtomCollection {
   
   public BondIterator getBondIterator(short bondType, BitSet bsSelected) {
     //Dipoles, Sticks
-    return new BondIteratorSelected(bonds, bondCount, bondType, bsSelected,   viewer.getBondSelectionModeOr());
+    return new BondIteratorSelected(bonds, bondCount, bondType, bsSelected, 
+        viewer.getBondSelectionModeOr());
   }
 
   public BondIterator getBondIterator(BitSet bsSelected) {

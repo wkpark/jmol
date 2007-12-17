@@ -168,7 +168,7 @@ public class Dipoles extends Shape {
       clear(false);
     }
 
-    if ("dipoleWidth" == propertyName) {
+    if ("width" == propertyName) {
       short mad = tempDipole.mad = (short) (((Float) value).floatValue() * 1000);
       if (currentDipole == null)
         for (int i = dipoleCount; --i >= 0;)
@@ -176,7 +176,7 @@ public class Dipoles extends Shape {
       return;
     }
 
-    if ("dipoleOffset" == propertyName) {
+    if ("offset" == propertyName) {
       tempDipole.offsetAngstroms = ((Float) value).floatValue();
       if (currentDipole == null)
         for (int i = dipoleCount; --i >= 0;)
@@ -185,7 +185,7 @@ public class Dipoles extends Shape {
       return;
     }
 
-    if ("dipoleOffsetPercent" == propertyName) {
+    if ("offsetPercent" == propertyName) {
       tempDipole.offsetPercent = ((Integer) value).intValue();
       if (tempDipole.dipoleValue != 0)
         tempDipole.offsetAngstroms = tempDipole.offsetPercent / 100f
@@ -299,7 +299,7 @@ public class Dipoles extends Shape {
       return;
     }
 
-    if ("dipoleValue" == propertyName) {
+    if ("value" == propertyName) {
       dipoleValue = ((Float) value).floatValue();
       isUserValue = true;
       tempDipole.set(dipoleValue);

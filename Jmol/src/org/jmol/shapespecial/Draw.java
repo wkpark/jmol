@@ -81,6 +81,7 @@ public class Draw extends MeshCollection {
   private int ncoord;
   private int nidentifiers;
   private int diameter;
+  private float width;
   private Integer rgb;
   private float newScale;
   private float length;
@@ -113,6 +114,7 @@ public class Draw extends MeshCollection {
       isVisible = isValid = true;
       length = Float.MAX_VALUE;
       diameter = 0;
+      width = 0;
       modelVertices = null;
       modelBasedPoints = null;
       bsAllModels = null;
@@ -216,6 +218,11 @@ public class Draw extends MeshCollection {
 
     if ("diameter" == propertyName) {
       diameter = ((Float) value).intValue();
+      return;
+    }
+
+    if ("width" == propertyName) {
+      width = ((Float) value).floatValue();
       return;
     }
 
@@ -351,6 +358,7 @@ public class Draw extends MeshCollection {
       thisMesh.drawTypes = null;
       thisMesh.drawVertexCounts = null;
       thisMesh.diameter = diameter;
+      thisMesh.width = width;
       if (rgb != null)
         super.setProperty("color", rgb, null);
       addModelPoints(-1);
@@ -922,7 +930,9 @@ public class Draw extends MeshCollection {
       str.append(" fixed");
     if (iModel < 0)
       iModel = 0;
-    if (mesh.diameter > 0)
+    if (mesh.width != 0)
+      str.append(" diameter ").append(mesh.width);
+    else if (mesh.diameter > 0)
       str.append(" diameter ").append(mesh.diameter);
     int nVertices = mesh.drawVertexCount > 0 ? mesh.drawVertexCount 
       : mesh.drawVertexCounts[iModel >= 0 ? iModel : 0];

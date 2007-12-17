@@ -99,7 +99,8 @@ class Cylinder3D {
           notClipped);
       return;
     }
-    drawBackside = (!notClipped || endcaps == Graphics3D.ENDCAPS_FLAT);
+    drawBackside = (!notClipped 
+        || endcaps == Graphics3D.ENDCAPS_FLAT || endcaps == Graphics3D.ENDCAPS_NONE);
     this.diameter = diameter;
     this.xA = xA;
     this.yA = yA;

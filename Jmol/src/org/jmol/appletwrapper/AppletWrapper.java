@@ -71,6 +71,16 @@ public class AppletWrapper extends Applet {
   //private int fontDescent;
   private int fontHeight;
     
+  public void destroy() {
+    //System.out.println("AppletWrapper destroy called");
+    try {
+      wrappedApplet.destroy();
+    } catch (Exception e) {
+      // no matter -- Firefox/Mac destroys wrappedApplet for us
+    }
+    wrappedApplet = null;
+    super.destroy();
+  }
 
   public AppletWrapper(String wrappedAppletClassName,
                        String preloadImageName,

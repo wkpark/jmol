@@ -189,11 +189,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
   
   /**
-   * NOTE: for APPLICATION (not APPLET) call
+   * NOTE: for APPLICATION AND APPLET call
    * 
    *   setModeMouse(JmolConstants.MOUSE_NONE);
    * 
    * before setting viewer=null
+   * 
+   * in order to remove references to display window in listeners and hoverWatcher
    * 
    * @param display       either DisplayPanel or WrappedApplet
    * @param modelAdapter  the model reader
@@ -2825,8 +2827,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * 
    */
   public void refresh(int isOrientationChange, String strWhy) {
-    repaintManager.refresh();
-    if (isOrientationChange > 0)
+    if (isOrientationChange >= 0)
+      repaintManager.refresh();
+    else if (isOrientationChange < 0)
+      isOrientationChange = -isOrientationChange;
+    if (isOrientationChange != 0)
       statusManager.setStatusViewerRefreshed(isOrientationChange, strWhy, 
           syncingMouse, !syncingScripts);
   }
@@ -5780,6 +5785,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Eval: rotate FIXED
     transformManager.rotateAxisAngleAtCenter(rotCenter, rotAxis, degrees,
         endDegrees, isSpin, isSelected);
+    refresh(-1, "rotateAxisAngleAtCenter");
   }
 
   void rotateAboutPointsInternal(Point3f point1, Point3f point2,
@@ -5788,6 +5794,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Eval: rotate INTERNAL
     transformManager.rotateAboutPointsInternal(point1, point2, nDegrees,
         endDegrees, false, isSpin, isSelected);
+    refresh(-1, "rotateAxisAboutPointsInternal");
   }
 
   private void setPickingSpinRate(int rate) {
@@ -6143,11 +6150,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     switch (mode) {
     case 0:
       syncingMouse = TF;
-      return;
+      break;
     case 1:
       syncingScripts = TF;
-      return;
+      break;
     }
+    // if turning both off, sync the orientation now
+    if (!syncingScripts && !syncingMouse)
+      refresh(-1, "set sync");
   }
   
   public void syncScript(String script, String applet) {

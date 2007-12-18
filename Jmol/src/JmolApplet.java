@@ -37,8 +37,13 @@ import netscape.javascript.JSObject;
 public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper implements
     JmolAppletInterface {
 
+  public void finalize() throws Throwable {
+    //System.out.println("JmolApplet finalize " + this);
+    super.finalize();
+  }
   public JmolApplet() {
     super("org.jmol.applet.Jmol", "jmol75x29x8.gif", 3, preloadClasses);
+    //System.out.println("JmolApplet constructor " + this);
     //BH focus test: this.setFocusable(false);
   }
 

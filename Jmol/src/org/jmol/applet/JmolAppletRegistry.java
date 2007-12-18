@@ -70,23 +70,36 @@ public class JmolAppletRegistry {
     }
   }
 
+  synchronized static void checkOut(String name) {
+   htRegistry.remove(name);
+   //System.out.println("\napplet registry checkout: " + name);
+  }
+  
   synchronized static void cleanRegistry() {
     Enumeration keys = htRegistry.keys();
+    AppletWrapper app = null;
+    boolean closed = true;
     while (keys.hasMoreElements()) {
       String theApplet = (String) keys.nextElement();
       try {
-        JmolAppletInterface app = (JmolAppletInterface) (htRegistry
-            .get(theApplet));
-        JSObject theWindow = JSObject.getWindow((AppletWrapper) app);
-        if (theWindow.hashCode() != 0) {
-          //System.out.println("Preserving registered applet " + theApplet);
-          //System.out.println();
+        app = (AppletWrapper) (htRegistry.get(theApplet));
+        JSObject theWindow = JSObject.getWindow(app);
+        //System.out.print("checking " + app + " window : ");
+        closed = ((Boolean)theWindow.getMember("closed")).booleanValue();
+        //System.out.println(closed);
+        if (closed || theWindow.hashCode() == 0) {
+          //error trap
         }
         if (Logger.debugging)
           Logger.debug("Preserving registered applet " + theApplet + " window: " + theWindow.hashCode());
       } catch (Exception e) {
-        Logger.error("Dereferencing registered applet " + theApplet);
+        closed = true;
+      }
+      if (closed){
+        if (Logger.debugging)
+          Logger.debug("Dereferencing closed window applet " + theApplet);
         htRegistry.remove(theApplet);
+        app.destroy();
       }
     }
   }

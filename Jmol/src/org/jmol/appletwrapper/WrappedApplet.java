@@ -35,4 +35,5 @@ public interface WrappedApplet extends JmolAppletInterface {
   public void update(Graphics g);
   public void paint(Graphics g);
   public boolean handleEvent(Event e);
+  public void destroy();
 }

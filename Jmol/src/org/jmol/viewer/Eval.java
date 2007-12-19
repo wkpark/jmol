@@ -3677,7 +3677,7 @@ class Eval { //implements Runnable {
         boolean isByElement = (name.indexOf(ColorEncoder.BYELEMENT_PREFIX) == 0);
         boolean isColorIndex = (isByElement || name
             .indexOf(ColorEncoder.BYRESIDUE_PREFIX) == 0);
- s        byte pid = (isColorIndex || shapeType == JmolConstants.SHAPE_ISOSURFACE ? JmolConstants.PALETTE_PROPERTY
+        byte pid = (isColorIndex || shapeType == JmolConstants.SHAPE_ISOSURFACE ? JmolConstants.PALETTE_PROPERTY
             : tok == Token.spacefill ? JmolConstants.PALETTE_CPK
                 : JmolConstants.getPaletteID(name));
         // color atoms "cpkScheme"

@@ -67,8 +67,8 @@ public class DipolesRenderer extends ShapeRenderer {
   private int headWidthPixels;
   private int crossWidthPixels;
 
-  private final static float arrowHeadOffset = 0.8f;
-  private final static float arrowHeadWidthFactor = 4f;
+  private final static float arrowHeadOffset = 0.9f;
+  private final static float arrowHeadWidthFactor = 2f;
   private final static float crossOffset = 0.1f;
   private final static float crossWidth = 0.04f;
 
@@ -124,8 +124,8 @@ public class DipolesRenderer extends ShapeRenderer {
     mad = dipole.mad;
     diameter = viewer.scaleToScreen(screens[center].z, mad);
     headWidthPixels = (int) (diameter * arrowHeadWidthFactor);
-    if (headWidthPixels < diameter + 10)
-      headWidthPixels = diameter + 10;
+    if (headWidthPixels < diameter + 5)
+      headWidthPixels = diameter + 5;
     crossWidthPixels = headWidthPixels;
     return true;
   }

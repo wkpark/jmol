@@ -21,7 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.util;
+package org.jmol.modelsetbio;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Vector3f;

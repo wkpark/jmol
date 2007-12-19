@@ -29,8 +29,6 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
-import org.jmol.shape.Closest;
-import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 
 public class NucleicMonomer extends PhosphorusMonomer {
@@ -254,9 +252,9 @@ public class NucleicMonomer extends PhosphorusMonomer {
 
   ////////////////////////////////////////////////////////////////
 
-  public void findNearestAtomIndex(int x, int y, Closest closest,
+  public void findNearestAtomIndex(int x, int y, Atom[] closest,
                             short madBegin, short madEnd) {
-    Atom competitor = closest.atom;
+    Atom competitor = closest[0];
     Atom lead = getLeadAtom();
     Atom o5prime = getAtomFromOffsetIndex(O5Pr);
     Atom c3prime = getAtomFromOffsetIndex(C3Pr);
@@ -269,7 +267,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
     if (isCursorOnTopOf(lead, x, y, radius, competitor)
         || isCursorOnTopOf(o5prime, x, y, radius, competitor)
         || isCursorOnTopOf(c3prime, x, y, radius, competitor))
-      closest.atom = lead;
+      closest[0] = lead;
   }
   
  public void setModelClickability() {

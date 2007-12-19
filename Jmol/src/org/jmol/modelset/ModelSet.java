@@ -31,7 +31,6 @@ import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
 import org.jmol.atomdata.AtomData;
-import org.jmol.shape.Closest;
 import org.jmol.shape.Shape;
 
 import java.util.BitSet;
@@ -70,7 +69,7 @@ abstract public class ModelSet extends ModelCollection {
     for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
       shapes[i] = null;
     models = null;
-    closest.atom = null;
+    closest[0] = null;
     super.releaseModelSet();
   }
 
@@ -208,23 +207,23 @@ abstract public class ModelSet extends ModelCollection {
         : getModelAtomBitSet(modelIndex, true));
   }
 
-  protected final Closest closest = new Closest();
+  protected final Atom[] closest = new Atom[1];
 
   public int findNearestAtomIndex(int x, int y) {
     if (atomCount == 0)
       return -1;
-    closest.atom = null;
+    closest[0] = null;
     if (g3d.isAntialiased()) {
       x <<= 1;
       y <<= 1;
     }
     findNearestAtomIndex(x, y, closest);
 
-    for (int i = 0; i < shapes.length && closest.atom == null; ++i)
+    for (int i = 0; i < shapes.length && closest[0] == null; ++i)
       if (shapes[i] != null)
         shapes[i].findNearestAtomIndex(x, y, closest);
-    int closestIndex = (closest.atom == null ? -1 : closest.atom.atomIndex);
-    closest.atom = null;
+    int closestIndex = (closest[0] == null ? -1 : closest[0].atomIndex);
+    closest[0] = null;
     return closestIndex;
   }
 

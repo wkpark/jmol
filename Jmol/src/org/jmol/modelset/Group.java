@@ -25,7 +25,6 @@ package org.jmol.modelset;
 
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 
 import java.util.Hashtable;
@@ -379,10 +378,5 @@ public class Group {
   
   public Atom getLeadAtom() {
     return null; // but see Monomer class
-  }
-  
-  public Quaternion getQuaternion() {
-    return null;
-  }
-  
+  }  
 }

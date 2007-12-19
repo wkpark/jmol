@@ -29,8 +29,6 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
-import org.jmol.shape.Closest;
-import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 
 public class AminoMonomer extends AlphaMonomer {
@@ -148,10 +146,10 @@ public class AminoMonomer extends AlphaMonomer {
 
   ////////////////////////////////////////////////////////////////
 
-  void findNearestAtomIndex(int x, int y, Closest closest,
+  void findNearestAtomIndex(int x, int y, Atom[] closest,
                             short madBegin, short madEnd) {
     
-    Atom competitor = closest.atom;
+    Atom competitor = closest[0];
     Atom nitrogen = getNitrogenAtom();
     short marBegin = (short) (madBegin / 2);
     if (marBegin < 1200)
@@ -173,7 +171,7 @@ public class AminoMonomer extends AlphaMonomer {
         competitor)
         || isCursorOnTopOf(nitrogen, x, y, radiusBegin, competitor)
         || isCursorOnTopOf(ccarbon, x, y, radiusEnd, competitor))
-      closest.atom = alpha;
+      closest[0] = alpha;
   }
   
   public Quaternion getQuaternion() {

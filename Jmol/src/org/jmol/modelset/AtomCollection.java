@@ -38,7 +38,6 @@ import org.jmol.atomdata.AtomData;
 import org.jmol.bspt.Bspf;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.geodesic.EnvelopeCalculation;
-import org.jmol.shape.Closest;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -765,7 +764,7 @@ abstract public class AtomCollection {
    * A more general algorithm of recording which object drew
    * which pixel would be very expensive and not worth the trouble
    */
-  protected void findNearestAtomIndex(int x, int y, Closest closest) {
+  protected void findNearestAtomIndex(int x, int y, Atom[] closest) {
     Atom champion = null;
     //int championIndex = -1;
     for (int i = atomCount; --i >= 0;) {
@@ -775,7 +774,7 @@ abstract public class AtomCollection {
               champion))
         champion = contender;
     }
-    closest.atom = champion;
+    closest[0] = champion;
   }
 
   /**

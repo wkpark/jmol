@@ -30,7 +30,6 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
 import org.jmol.g3d.Graphics3D;
-import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 
 import java.util.Hashtable;
@@ -1363,10 +1362,6 @@ final public class Atom extends Point3fi {
     //give a different hashcode for an atom depending upon
     //its screen location! Bug fix for 11.1.43 Bob Hanson
     return atomIndex;
-  }
-  
-  public Quaternion getQuaternion() {
-    return group.getQuaternion();
   }
   
   public Atom findAromaticNeighbor(BitSet notAtoms) {

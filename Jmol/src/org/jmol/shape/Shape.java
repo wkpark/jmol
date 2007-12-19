@@ -140,7 +140,7 @@ public abstract class Shape {
     return false;
   }
 
-  public void findNearestAtomIndex(int xMouse, int yMouse, Closest closest) {
+  public void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest) {
   }
 
   public void checkBoundsMinMax(Point3f pointMin, Point3f pointMax) {

@@ -26,10 +26,8 @@ package org.jmol.modelsetbio;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Polymer;
-import org.jmol.shape.Closest;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
-import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 
 import javax.vecmath.Point3f;
@@ -441,7 +439,7 @@ public abstract class BioPolymer extends Polymer {
   private final Vector3f unitVectorX = new Vector3f(1, 0, 0);
 
   public void findNearestAtomIndex(int xMouse, int yMouse,
-                            Closest closest, short[] mads, int myVisibilityFlag) {
+                            Atom[] closest, short[] mads, int myVisibilityFlag) {
     for (int i = monomerCount; --i >= 0; ) {
       if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
           || this.model.isAtomHidden(monomers[i].getLeadAtomIndex()))
@@ -563,7 +561,7 @@ public abstract class BioPolymer extends Polymer {
             continue;
           w = a.getPartialCharge();
         } else {
-          Quaternion q = a.getQuaternion();
+          Quaternion q = monomer.getQuaternion();
           if (q == null) {
             qlast = null;
             atomno = Integer.MIN_VALUE;

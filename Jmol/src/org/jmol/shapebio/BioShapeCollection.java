@@ -32,7 +32,6 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Model;
 import org.jmol.modelsetbio.BioPolymer;
-import org.jmol.shape.Closest;
 import org.jmol.shape.Shape;
 import org.jmol.util.BitSetUtil;
 import org.jmol.viewer.JmolConstants;
@@ -132,7 +131,7 @@ public abstract class BioShapeCollection extends Shape {
     bioShapes = shapes;
   }
 
-  public void findNearestAtomIndex(int xMouse, int yMouse, Closest closest) {
+  public void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest) {
     for (int i = bioShapes.length; --i >= 0; ){
       BioShape b = bioShapes[i];
       b.bioPolymer.findNearestAtomIndex(xMouse, yMouse, closest, bioShapes[i].mads, myVisibilityFlag);      

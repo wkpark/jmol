@@ -26,7 +26,6 @@ package org.jmol.modelsetbio;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;
-import org.jmol.shape.Closest;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 
@@ -250,7 +249,7 @@ public abstract class Monomer extends Group {
    * @param madBegin
    * @param madEnd
    */
-  void findNearestAtomIndex(int x, int y, Closest closest,
+  void findNearestAtomIndex(int x, int y, Atom[] closest,
                             short madBegin, short madEnd) {
   }
 
@@ -321,6 +320,10 @@ public abstract class Monomer extends Group {
       return false;
     offsets[atom] = (byte)(index - firstAtomIndex);
     return true;
+  }
+  
+  public Quaternion getQuaternion() {
+    return null;
   }
 }
   

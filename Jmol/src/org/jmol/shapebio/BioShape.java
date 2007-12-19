@@ -36,7 +36,6 @@ import org.jmol.modelsetbio.BioPolymer;
 import org.jmol.modelsetbio.Monomer;
 import org.jmol.modelsetbio.NucleicMonomer;
 import org.jmol.modelsetbio.NucleicPolymer;
-import org.jmol.shape.Closest;
 import org.jmol.shape.Shape;
 import org.jmol.shape.Mesh;
 import org.jmol.util.Logger;
@@ -181,7 +180,7 @@ class BioShape {
     return (short)(Math.sqrt(bFactor100/eightPiSquared100) * 1000);
   }
 
-  void findNearestAtomIndex(int xMouse, int yMouse, Closest closest) {
+  void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest) {
     bioPolymer.findNearestAtomIndex(xMouse, yMouse, closest, mads,
         shape.myVisibilityFlag);
   }

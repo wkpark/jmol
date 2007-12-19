@@ -143,7 +143,9 @@ public abstract class BioShapeCollection extends Shape {
       return;
     bs = BitSetUtil.copy(bs);
     for (int i = modelSet.getModelCount(); --i >= 0; )
-      bs.set(modelSet.getTrajectoryIndex(i));
+      if (bs.get(i) && modelSet.isTrajectory(i))
+        bs.set(modelSet.getTrajectoryIndex(i));
+    
     for (int i = bioShapes.length; --i >= 0;) {
       BioShape b = bioShapes[i];
       b.modelVisibilityFlags = (bs.get(b.modelIndex) ? myVisibilityFlag : 0);

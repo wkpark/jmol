@@ -194,6 +194,10 @@ public abstract class BioPolymer extends Polymer {
     return monomers;
   }
 
+  public void clearStructures() {
+    for (int i = 0; i < monomerCount; i++)
+      monomers[i].setStructure(null);    
+  }
   
   void removeProteinStructure(int monomerIndex, int count) {
     //System.out.println("biopolymer removeProteinStructure mIndex " + monomerIndex + " count " + count);

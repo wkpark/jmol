@@ -81,6 +81,9 @@ public class Polymer {
   public void calculateStructures() {
   }
 
+  public void clearStructures() {
+  }
+
   public String getSequence() {
     return "";
   }

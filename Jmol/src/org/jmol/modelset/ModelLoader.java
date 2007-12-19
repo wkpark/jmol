@@ -365,6 +365,7 @@ public final class ModelLoader extends ModelSet {
         models[i] = models[baseModelCount];
         trajectoryBaseIndexes[i] = baseModelCount;
         modelNumbers[i] = adapter.getAtomSetNumber(clientFile, ia++);
+        structuresDefinedInFile.set(i);
       }
     } else {
       for (int i = ipt; i < modelCount; i++) {
@@ -691,14 +692,15 @@ public final class ModelLoader extends ModelSet {
       while (iterStructure.hasNext()) {
         //System.out.println(iterStructure.getStructureType() + iterStructure
           //  .getStartSequenceNumber()+" "+iterStructure.getEndSequenceNumber());
-        if (!iterStructure.getStructureType().equals("turn"))
-          defineStructure(iterStructure.getModelIndex() + baseModelIndex,
+        if (!iterStructure.getStructureType().equals("turn")) {
+          defineStructure(iterStructure.getModelIndex(),
               iterStructure.getStructureType(),
               iterStructure.getStartChainID(), iterStructure
                   .getStartSequenceNumber(), iterStructure
                   .getStartInsertionCode(), iterStructure.getEndChainID(),
               iterStructure.getEndSequenceNumber(), iterStructure
                   .getEndInsertionCode());
+        }
       }
 
     // define turns LAST. (pulled by the iterator first)
@@ -718,14 +720,26 @@ public final class ModelLoader extends ModelSet {
       }
   }
   
-  protected void defineStructure(int modelIndex, String structureType, char startChainID,
-                       int startSequenceNumber, char startInsertionCode,
-                       char endChainID, int endSequenceNumber,
-                       char endInsertionCode) {
-    structuresDefinedInFile.set(modelIndex);
-    super.defineStructure(modelIndex, structureType, startChainID,
-        startSequenceNumber, startInsertionCode, endChainID, endSequenceNumber,
-        endInsertionCode);
+  protected void defineStructure(int modelIndex, String structureType,
+                                 char startChainID, int startSequenceNumber,
+                                 char startInsertionCode, char endChainID,
+                                 int endSequenceNumber, char endInsertionCode) {
+    if (modelIndex >= 0 || isTrajectory) { //from PDB file
+      if (isTrajectory)
+        modelIndex = 0;
+      modelIndex += baseModelIndex;
+      structuresDefinedInFile.set(modelIndex);
+      super.defineStructure(modelIndex, structureType, startChainID,
+          startSequenceNumber, startInsertionCode, endChainID,
+          endSequenceNumber, endInsertionCode);
+      return;
+    }
+    for (int i = baseModelIndex; i < modelCount; i++) {
+      structuresDefinedInFile.set(i);
+      super.defineStructure(i, structureType, startChainID,
+          startSequenceNumber, startInsertionCode, endChainID,
+          endSequenceNumber, endInsertionCode);
+    }
   }
 
   ////// symmetry ///////
@@ -954,7 +968,7 @@ public final class ModelLoader extends ModelSet {
 
     // finalize all group business
     if (isPDB)
-      calculateStructuresAllExcept(structuresDefinedInFile);
+      calculateStructuresAllExcept(structuresDefinedInFile, true);
 
     molecules = null;
     moleculeCount = 0;

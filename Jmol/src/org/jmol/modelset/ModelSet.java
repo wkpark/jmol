@@ -378,17 +378,37 @@ abstract public class ModelSet extends ModelCollection {
   }
 
 
+  public void calculateStructures(BitSet bsAtoms) {
+    BitSet bsAllAtoms = new BitSet();
+    BitSet bsDefined = BitSetUtil.invertInPlace(modelsOf(bsAtoms, bsAllAtoms), modelCount);
+    for (int i = 0; i < modelCount; i++)
+      if (!bsDefined.get(i))
+        addBioPolymerToModel(null, models[i]);
+    calculatePolymers(bsDefined);
+    calculateStructuresAllExcept(bsDefined, false);
+    for (int i = 0; i < shapes.length; ++i)
+      if (shapes[i] != null && shapes[i].isBioShape)
+        shapes[i].setSize(0, bsAllAtoms);
+  }
+
+
+  private BitSet modelsOf(BitSet bsAtoms, BitSet bsAllAtoms) {
+    BitSet bsModels = new BitSet(modelCount);
+    for (int i = 0; i < atomCount; i++) {
+      int modelIndex = trajectoryBaseIndexes[atoms[i].modelIndex];
+      if (bsAtoms != null && !bsAtoms.get(i) || isJmolDataFrame(modelIndex))
+        continue;
+      bsModels.set(modelIndex);
+      bsAllAtoms.set(i);
+    }
+    return bsModels;
+  }
+
+
+  
   ///// super-overloaded methods ///////
   
   
-  public void calculatePolymers(int modelIndex) {
-    super.calculatePolymers(modelIndex);
-    for (int i = 0; i < shapes.length; ++i)
-      if (shapes[i] != null && shapes[i].isBioShape)
-        shapes[i] = null;
-    viewer.getFrameRenderer().clear();
-  }
-
   private final static boolean useRasMolHbondsCalculation = true;
 
   public int autoHbond(BitSet bsA, BitSet bsB, BitSet bsBonds) {

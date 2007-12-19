@@ -394,8 +394,8 @@ TURN     1  T1 GLY    42  TYR    44
 
     // this should probably call Structure.validateAndAllocate
     // in order to check validity of parameters
-    // 0 here is just a placeholder; actual model number is set in addStructure()
-    Structure structure = new Structure(0, structureType, startChainID,
+    // model number set to -1 here to indicate ALL MODELS
+    Structure structure = new Structure(-1, structureType, startChainID,
                                         startSequenceNumber,
                                         startInsertionCode, endChainID,
                                         endSequenceNumber, endInsertionCode);

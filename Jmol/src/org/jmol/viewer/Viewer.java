@@ -1837,15 +1837,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getSurfaceDistanceMax();
   }
   
-  void calculatePolymers() {
-    modelSet.calculatePolymers(repaintManager.currentModelIndex);
-    addStateScript("calculate polymers", true);
-  }
-
-  void calculateStructures() {
+  void calculateStructures(BitSet bsAtoms) {
     //Eval
-    modelSet.calculateStructures(repaintManager.currentModelIndex);
-    addStateScript("calculate structure", true);
+    modelSet.calculateStructures(bsAtoms);
   }
 
   void clearBfactorRange() {

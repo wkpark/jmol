@@ -152,13 +152,6 @@ public final class Model {
     this.nInsertions = nInsertions;  
   }
   
-  void clearStructures() {
-    chainCount = 0;
-    chains = new Chain[8];
-    bioPolymerCount = 0;
-    bioPolymers = new Polymer[8];
-  }
-  
   void addSecondaryStructure(byte type,
                              char startChainID, int startSeqcode,
                              char endChainID, int endSeqcode) {
@@ -170,8 +163,10 @@ public final class Model {
   }
 
   void calculateStructures() {
-    for (int i = bioPolymerCount; --i >= 0; ) 
+    for (int i = bioPolymerCount; --i >= 0; ) {
+      bioPolymers[i].clearStructures();
       bioPolymers[i].calculateStructures();
+    }
   }
 
   void setConformation(BitSet bsConformation) {

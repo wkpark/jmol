@@ -5865,14 +5865,13 @@ class Eval { //implements Runnable {
         viewer.autoHbond(null);
         return;
       case Token.structure:
-        checkLength2();
-        if (!isSyntaxCheck)
-          viewer.calculateStructures();
-        return;
-      case Token.polymer:
-        checkLength2();
-        if (!isSyntaxCheck)
-          viewer.calculatePolymers();
+        BitSet bs = (statementLength == 2 ? null : expression(2));
+        if (isSyntaxCheck)
+          return;
+        if (bs == null)
+          bs = viewer.getModelAtomBitSet(-1, false);
+          viewer.calculateStructures(bs);
+        viewer.addStateScript("calculate structure " + Escape.escape(bs), false);
         return;
       }
     }

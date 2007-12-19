@@ -193,7 +193,7 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
 
-  private void addBioPolymerToModel(Polymer polymer, Model model) {
+  protected void addBioPolymerToModel(Polymer polymer, Model model) {
     if (model.bioPolymers.length == 0 || polymer == null)
       model.bioPolymers = new Polymer[8];
     if (polymer == null) {
@@ -407,25 +407,21 @@ abstract public class ModelCollection extends BondCollection {
         Group.getSeqcode(endSequenceNumber, endInsertionCode));
   }
 
-  void clearStructures(BitSet alreadyDefined) {
-    for (int i = modelCount; --i >= 0;)
-      if (models[i].isPDB && !alreadyDefined.get(i))
-        models[i].clearStructures();
-  }
-
   /**
    * allows rebuilding of PDB structures;
    * also accessed by ModelManager from Eval
    * 
    * @param alreadyDefined    set to skip calculation
+   * @param addFileData       in the case of loading, we add the PDB data
    *  
    */
-  void calculateStructuresAllExcept(BitSet alreadyDefined) {
+  void calculateStructuresAllExcept(BitSet alreadyDefined, boolean addFileData) {
     for (int i = modelCount; --i >= 0;)
       if (models[i].isPDB && !alreadyDefined.get(i))
         models[i].calculateStructures();
     freezeModels();
-    propogateSecondaryStructure();
+    if (addFileData)
+      propagateSecondaryStructure();
   }
 
   private void freezeModels() {
@@ -653,17 +649,16 @@ abstract public class ModelCollection extends BondCollection {
     return models[modelIndex].nAltLocs;
   }
 
-  private void propogateSecondaryStructure() {
+  private void propagateSecondaryStructure() {
     // issue arises with multiple file loading and multi-_data  mmCIF files
     // that structural information may be model-specific
+    // but for PDB files it is not. So we don't assign -1 for 
+    // structure modelIndex anymore in PDB files.
     for (int i = structureCount; --i >= 0;) {
       Structure structure = structures[i];
-      for (int j = modelCount; --j >= 0;)
-        if (structure.modelIndex == j || structure.modelIndex == -1) {
-          models[j].addSecondaryStructure(structure.type,
-              structure.startChainID, structure.startSeqcode,
-              structure.endChainID, structure.endSeqcode);
-        }
+      models[structure.modelIndex].addSecondaryStructure(structure.type,
+          structure.startChainID, structure.startSeqcode, structure.endChainID,
+          structure.endSeqcode);
     }
   }
 
@@ -1102,26 +1097,6 @@ abstract public class ModelCollection extends BondCollection {
     return true;
   }
   
-  public void calculateStructures(int modelIndex) {
-    BitSet bsDefined = new BitSet(modelCount);
-    for (int i = 0; i < modelCount; i++)
-      if (modelIndex >= 0 && i != modelIndex)
-        bsDefined.set(i);
-    calculateStructuresAllExcept(bsDefined);
-  }
-  
-  public void calculatePolymers(int modelIndex) {
-    BitSet bsDefined = new BitSet(modelCount);
-    for (int i = 0; i < modelCount; i++)
-      if (modelIndex >= 0 && i != modelIndex)
-        bsDefined.set(i);
-      else
-        addBioPolymerToModel(null, models[i]);
-    calculatePolymers(bsDefined);
-    calculateStructuresAllExcept(bsDefined);
-  }
-  
-
   ///////// molecules /////////
 
   private BitSet bsTemp = new BitSet();

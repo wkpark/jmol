@@ -694,7 +694,7 @@ public class StateManager {
       //    saved in the hash table but not considered part of the state:
       ";scriptqueue;scriptreportinglevel;syncscript;syncmouse" +
       //    more settable Jmol variables    
-      ";ambient;bonds;colorrasmol;diffuse;dipolescale;drawhover;frank;hetero;hidenotselected" +
+      ";ambient;bonds;colorrasmol;diffuse;drawhover;frank;hetero;hidenotselected" +
       ";hoverlabel;hydrogen;languagetranslation;measurementunits;navigationdepth;navigationslab" +
       ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred" +
       ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount" +

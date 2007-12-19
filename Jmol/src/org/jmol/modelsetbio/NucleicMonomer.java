@@ -285,7 +285,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
       }
   }
  
- public Quaternion getQuaternion() {
+ Quaternion getQuaternion() {
    /*
     * also AminoMonomer
     *   

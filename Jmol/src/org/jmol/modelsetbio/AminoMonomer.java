@@ -174,7 +174,7 @@ public class AminoMonomer extends AlphaMonomer {
       closest[0] = alpha;
   }
   
-  public Quaternion getQuaternion() {
+  Quaternion getQuaternion() {
     /*
      * also NucleicMonomer
      *  

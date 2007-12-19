@@ -322,7 +322,7 @@ public abstract class Monomer extends Group {
     return true;
   }
   
-  public Quaternion getQuaternion() {
+  Quaternion getQuaternion() {
     return null;
   }
 }

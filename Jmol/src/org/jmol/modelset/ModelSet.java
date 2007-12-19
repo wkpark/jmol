@@ -387,8 +387,10 @@ abstract public class ModelSet extends ModelCollection {
     calculatePolymers(bsDefined);
     calculateStructuresAllExcept(bsDefined, false);
     for (int i = 0; i < shapes.length; ++i)
-      if (shapes[i] != null && shapes[i].isBioShape)
+      if (shapes[i] != null && shapes[i].isBioShape) {
         shapes[i].setSize(0, bsAllAtoms);
+        shapes[i].setProperty("color", new Byte(JmolConstants.PALETTE_CPK), bsAllAtoms);
+      }
   }
 
 

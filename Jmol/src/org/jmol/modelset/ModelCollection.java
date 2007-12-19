@@ -811,7 +811,7 @@ abstract public class ModelCollection extends BondCollection {
     BitSet bsAtoms = getModelAtomBitSet(modelIndex, false);
     for (int p = 0; p < nPoly; p++) {
       Model model = models[modelIndex];
-      for (int mp = 0; mp < model.bioPolymerCount; p++)
+      for (int mp = 0; mp < model.bioPolymerCount; mp++)
         model.bioPolymers[mp].getPdbData(ctype, isDerivative, bsAtoms, pdbATOM,
             pdbCONECT);
     }

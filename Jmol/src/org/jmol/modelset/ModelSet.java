@@ -184,6 +184,10 @@ abstract public class ModelSet extends ModelCollection {
     for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
       if (shapes[i] != null)
       setShapeProperty(i, "refreshTrajectories", Imodel, bs);
+    int m = viewer.getCurrentModelIndex();
+    if (m >= 0 && m != modelIndex 
+        && models[m].fileIndex == models[modelIndex].fileIndex)
+      viewer.setCurrentModelIndex(modelIndex, false);
   }  
 
   /**

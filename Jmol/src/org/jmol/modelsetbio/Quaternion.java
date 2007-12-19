@@ -26,18 +26,18 @@ package org.jmol.modelsetbio;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Vector3f;
 
-public class Quaternion {
-  public float q0, q1, q2, q3;
+class Quaternion {
+  float q0, q1, q2, q3;
 
   // create a new object with the given components
-  public Quaternion(float q0, float q1, float q2, float q3) {
+  Quaternion(float q0, float q1, float q2, float q3) {
     this.q0 = q0;
     this.q1 = q1;
     this.q2 = q2;
     this.q3 = q3;
   }
 
-  public Quaternion(Matrix3f mat) {
+  Quaternion(Matrix3f mat) {
 
     //from http://www.gamedev.net/community/forums/topic.asp?topic_id=448380
     float q0, q1, q2, q3;
@@ -92,11 +92,11 @@ public class Quaternion {
     this.q3 = q3;
   }
   
-  public Quaternion mul(float x) {
+  Quaternion mul(float x) {
     return new Quaternion(q0 * x, q1 * x, q2 * x, q3 * x);
   }
   
-  public Quaternion mul(Quaternion p) {
+  Quaternion mul(Quaternion p) {
     return new Quaternion(
         p.q0 * q0 - p.q1 * q1 - p.q2 * q2 - p.q3 * q3,
         p.q0 * q1 + p.q1 * q0 + p.q2 * q3 - p.q3 * q2,
@@ -105,11 +105,11 @@ public class Quaternion {
         );
   }
   
-  public float dot(Quaternion q) {
+  float dot(Quaternion q) {
     return this.q0*q.q0 + this.q1*q.q1 + this.q2*q.q2 + this.q3*q.q3;
   }
   
-  public Quaternion inv() {
+  Quaternion inv() {
     return new Quaternion(q0, -q1, -q2, -q3);
   }
   
@@ -117,7 +117,7 @@ public class Quaternion {
     return "{" + q0 + " " + q1 + " " + q2 + " " + q3 + "}";
   }
   
-  public static final Quaternion getQuaternionFrame(Vector3f vA, Vector3f vB) {
+  static final Quaternion getQuaternionFrame(Vector3f vA, Vector3f vB) {
     Vector3f vC = new Vector3f();
     vC.cross(vA, vB);
     Vector3f vBprime = new Vector3f();

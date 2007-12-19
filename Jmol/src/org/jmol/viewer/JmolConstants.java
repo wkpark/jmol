@@ -2581,25 +2581,25 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_LABELS     = 4;
   public final static int SHAPE_MEASURES   = 5;
   public final static int SHAPE_DOTS       = 6;
-  public final static int SHAPE_DIPOLES    = 7;
   
-  public final static int SHAPE_MIN_SECONDARY  = 8; //////////
+  public final static int SHAPE_MIN_SECONDARY  = 7; //////////
   
-  public final static int SHAPE_BACKBONE   = 8;
-  public final static int SHAPE_TRACE      = 9;
-  public final static int SHAPE_CARTOON    = 10;
-  public final static int SHAPE_STRANDS    = 11;
-  public final static int SHAPE_MESHRIBBON = 12;
-  public final static int SHAPE_RIBBONS    = 13;
-  public final static int SHAPE_ROCKETS    = 14;
+  public final static int SHAPE_BACKBONE   = 7;
+  public final static int SHAPE_TRACE      = 8;
+  public final static int SHAPE_CARTOON    = 9;
+  public final static int SHAPE_STRANDS    = 10;
+  public final static int SHAPE_MESHRIBBON = 11;
+  public final static int SHAPE_RIBBONS    = 12;
+  public final static int SHAPE_ROCKETS    = 13;
   
-  public final static int SHAPE_MAX_SECONDARY  = 15; //////////
+  public final static int SHAPE_MAX_SECONDARY  = 14; //////////
   
-  public final static int SHAPE_STARS      = 15;
-  public final static int SHAPE_HALOS      = 16;
+  public final static int SHAPE_STARS      = 14;
+  public final static int SHAPE_HALOS      = 15;
 
-  public final static int SHAPE_MIN_SPECIAL= 17; //////////
+  public final static int SHAPE_MIN_SPECIAL= 16; //////////
 
+  public final static int SHAPE_DIPOLES    = 16;
   public final static int SHAPE_VECTORS    = 17;
   public final static int SHAPE_GEOSURFACE = 18;
 
@@ -2667,10 +2667,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   public final static String[] shapeClassBases = {
     "Balls", "Sticks", "Hsticks", "Sssticks",   //Hsticks and Sssticks classes do not exist, but this returns Token for them
-    "Labels", "Measures", "Dots", "Dipoles",  
+    "Labels", "Measures", "Dots",   
     "Backbone", "Trace", "Cartoon", "Strands", "MeshRibbon", "Ribbons", "Rockets", 
     "Stars", "Halos",
-    "Vectors", "GeoSurface", "Polyhedra", 
+    "Dipoles", "Vectors", "GeoSurface", "Polyhedra", 
     "Draw", "Isosurface", "LcaoCartoon", "MolecularOrbital", "Pmesh", 
     "Axes", "Bbcage", "Uccage", "Echo", "Hover", 
     "Frank"
@@ -2702,11 +2702,11 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   
   public final static int[] shapeToks = { 
     Token.atoms, Token.bonds, Token.hbond, Token.ssbond, 
-    Token.label, Token.monitor, Token.dots, Token.dipole, 
+    Token.label, Token.monitor, Token.dots,  
     Token.backbone, Token.trace, Token.cartoon, Token.strands,
     Token.meshRibbon, Token.ribbon, Token.rocket, 
     Token.star, Token.halo, 
-    Token.vector, Token.geosurface, Token.polyhedra, 
+    Token.dipole, Token.vector, Token.geosurface, Token.polyhedra, 
     Token.draw, Token.isosurface, Token.lcaocartoon, Token.mo, Token.pmesh,
     Token.axes, Token.boundbox, Token.unitcell,
     Token.echo, Token.hover,

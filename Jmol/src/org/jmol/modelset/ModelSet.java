@@ -32,9 +32,7 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
 import org.jmol.atomdata.AtomData;
 import org.jmol.shape.Closest;
-import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Shape;
-import org.jmol.shape.Dipoles;
 
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -255,22 +253,13 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   public int getShapeIdFromObjectName(String objectName) {
-    for (int i = JmolConstants.SHAPE_MIN_MESH_COLLECTION; i < JmolConstants.SHAPE_MAX_MESH_COLLECTION; ++i) {
-      MeshCollection shape = (MeshCollection) shapes[i];
-      if (shape != null && shape.getIndexFromName(objectName) >= 0)
+    for (int i = JmolConstants.SHAPE_MIN_MESH_COLLECTION; i < JmolConstants.SHAPE_MAX_MESH_COLLECTION; ++i)
+      if (shapes[i] != null && shapes[i].getIndexFromName(objectName) >= 0)
         return i;
-    }
-    Dipoles dipoles = (Dipoles) shapes[JmolConstants.SHAPE_DIPOLES];
-    if (dipoles != null && dipoles.getIndexFromName(objectName) >= 0)
-      return JmolConstants.SHAPE_DIPOLES;
-    return -1;
+    Shape dipoles = shapes[JmolConstants.SHAPE_DIPOLES];
+    return (dipoles == null || dipoles.getIndexFromName(objectName) < 0 ? -1
+        : JmolConstants.SHAPE_DIPOLES);
   }
-
-  public void getBondDipoles() {
-    if (partialCharges == null)
-      return;
-    getBondDipoles((Dipoles) loadShape(JmolConstants.SHAPE_DIPOLES));
-  } 
 
   public void setModelVisibility() {
     //named objects must be set individually

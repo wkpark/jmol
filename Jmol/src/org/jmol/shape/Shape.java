@@ -132,6 +132,10 @@ public abstract class Shape {
     return null;
   }
 
+  public int getIndexFromName(String thisID) {
+    return -1;
+  }
+
   public boolean wasClicked(int x, int y) {
     return false;
   }

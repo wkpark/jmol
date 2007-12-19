@@ -28,7 +28,6 @@ package org.jmol.modelset;
 import java.util.BitSet;
 
 import org.jmol.bspt.CubeIterator;
-import org.jmol.shape.Dipoles;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
@@ -208,20 +207,6 @@ abstract public class BondCollection extends AtomCollection {
     return newBonds;
   }
 
-  protected void getBondDipoles(Dipoles dipoles) {
-    dipoles.clear(true);
-    for (int i = bondCount; --i >= 0;) {
-      if (!bonds[i].isCovalent())
-        continue;
-      Atom atom1 = bonds[i].atom1;
-      Atom atom2 = bonds[i].atom2;
-      float c1 = partialCharges[atom1.atomIndex];
-      float c2 = partialCharges[atom2.atomIndex];
-      if (c1 != c2) 
-        dipoles.setDipole(atom1, atom2, c1, c2);
-    }
-  }
-  
   ////// bonding methods //////
   
   protected BitSet bsPseudoHBonds;

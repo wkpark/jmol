@@ -5836,11 +5836,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.calculateMolecularDipole(getDisplayModelIndex());
   }
 
-  public void getBondDipoles() {
-    modelSet.getBondDipoles();
-    return;
-  }
-
   private void setDipoleScale(float scale) {
     //Eval
     global.dipoleScale = scale;

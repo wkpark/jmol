@@ -29,7 +29,6 @@ import javax.vecmath.Point3f;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
-import org.jmol.shape.Dipoles;
 import org.jmol.util.Escape;
 
 class Dipole {

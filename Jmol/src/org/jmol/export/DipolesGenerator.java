@@ -25,7 +25,7 @@
 
 package org.jmol.export;
 
-import org.jmol.shape.*;
+import org.jmol.shapespecial.*;
 
 public class DipolesGenerator extends DipolesRenderer {
 }

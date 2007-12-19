@@ -113,7 +113,7 @@ public class Bond {
   }
 
 
-  boolean isCovalent() {
+  public boolean isCovalent() {
     return (order & JmolConstants.BOND_COVALENT_MASK) != 0;
   }
 

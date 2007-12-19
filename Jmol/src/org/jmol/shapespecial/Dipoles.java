@@ -22,7 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.shape;
+package org.jmol.shapespecial;
 
 import org.jmol.shape.Shape;
 import org.jmol.util.BitSetUtil;
@@ -128,8 +128,7 @@ public class Dipoles extends Shape {
       for (int i = dipoleCount; --i >= 0;)
         if (isBondDipole(i))
           return;
-      // only once if any bond dipoles are defined
-      viewer.getBondDipoles();
+      getBondDipoles(); // only once if any bond dipoles are defined
       return;
     }
 
@@ -166,6 +165,10 @@ public class Dipoles extends Shape {
     if ("clear" == propertyName) {
       currentDipole = null;
       clear(false);
+    }
+
+    if ("clearBonds" == propertyName) {
+      clear(true);
     }
 
     if ("width" == propertyName) {
@@ -316,8 +319,26 @@ public class Dipoles extends Shape {
       setModelIndex();
       return;
     }
+
   }
 
+  private void getBondDipoles() {
+    float[] partialCharges = modelSet.getPartialCharges();
+    if (partialCharges == null)
+      return;
+    clear(true);
+    Bond[] bonds = modelSet.getBonds();
+    for (int i = bonds.length; --i >= 0;) {
+      Bond bond = bonds[i];
+      if (!bond.isCovalent())
+        continue;
+      float c1 = partialCharges[bond.getAtomIndex1()];
+      float c2 = partialCharges[bond.getAtomIndex2()];
+      if (c1 != c2)
+        setDipole(bond.getAtom1(), bond.getAtom2(), c1, c2);
+    }
+  }
+  
   private boolean isBondDipole(int i) {
     if (i >= dipoles.length || dipoles[i] == null)
       return false;
@@ -348,7 +369,7 @@ public class Dipoles extends Shape {
 
   final private static float E_ANG_PER_DEBYE = 0.208194f;
 
-  public void setDipole(Atom atom1, Atom atom2, float c1, float c2) {
+  private void setDipole(Atom atom1, Atom atom2, float c1, float c2) {
     Dipole dipole = findDipole(atom1, atom2, true);
     float value = (c1 - c2) / 2f * atom1.distance(atom2) / E_ANG_PER_DEBYE;
     if (value < 0) {
@@ -461,7 +482,7 @@ public class Dipoles extends Shape {
       Logger.info(" temp = " + tempDipole + " " + tempDipole.origin);
   }
 
-  public void clear(boolean clearBondDipolesOnly) {
+  private void clear(boolean clearBondDipolesOnly) {
     if (clearBondDipolesOnly) {
       for (int i = dipoleCount; --i >= 0;)
         if (isBondDipole(i))

@@ -6178,6 +6178,8 @@ class Eval { //implements Runnable {
     int pt = m % 1000000;
     if (pt == 0) {
       int model1 = viewer.getModelNumberIndex(m + 1, false, false);
+      if (model1 < 0)
+        return bs;
       int model2 = (m == 0 ? modelCount : viewer.getModelNumberIndex(
           m + 1000001, false, false));
       if (model1 < 0)
@@ -9005,8 +9007,6 @@ class Eval { //implements Runnable {
         if (isColorParam(i)) {
           colorArgb = getArgbParam(i);
           i = iToken;
-          setShapeProperty(JmolConstants.SHAPE_DRAW, "colorRGB", new Integer(
-              colorArgb));
           isColor = true;
         }
         if (!isColor)
@@ -9054,8 +9054,8 @@ class Eval { //implements Runnable {
     if (havePoints) {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "set", null);
     }
-    if (colorArgb != 0)
-      setShapeProperty(JmolConstants.SHAPE_DRAW, "colorRGB", new Integer(
+    if (colorArgb != Integer.MIN_VALUE)
+      setShapeProperty(JmolConstants.SHAPE_DRAW, "color", new Integer(
           colorArgb));
     if (isTranslucent)
       setShapeTranslucency(JmolConstants.SHAPE_DRAW, "", "translucent",

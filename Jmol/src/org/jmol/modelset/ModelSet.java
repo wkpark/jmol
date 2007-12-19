@@ -201,8 +201,9 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   private BitSet getSpecModel(int modelNumber) {
-    return getModelAtomBitSet(getModelNumberIndex(modelNumber, true, true),
-        true);
+    int modelIndex = getModelNumberIndex(modelNumber, true, true);
+    return (modelIndex < 0 && modelNumber > 0 ? new BitSet()
+        : getModelAtomBitSet(modelIndex, true));
   }
 
   protected final Closest closest = new Closest();

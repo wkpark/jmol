@@ -82,7 +82,6 @@ public class Draw extends MeshCollection {
   private int nidentifiers;
   private int diameter;
   private float width;
-  private Integer rgb;
   private float newScale;
   private float length;
   private boolean isCurve;
@@ -119,19 +118,11 @@ public class Draw extends MeshCollection {
       modelBasedPoints = null;
       bsAllModels = null;
       indicatedModelIndex = -1;
-      rgb = null;
       offset = new Vector3f();
-      if (colix == 0)
-        colix = Graphics3D.GOLD;
       setPropertySuper("thisID", JmolConstants.PREVIOUS_MESH_ID, null);
       //fall through to MeshCollection "init"
     }
 
-    if ("colorRGB" == propertyName) {
-      rgb = (Integer) value;
-      return;
-    }
-    
     if ("length" == propertyName) {
       length = ((Float) value).floatValue();
       return;
@@ -298,6 +289,9 @@ public class Draw extends MeshCollection {
       //let pass through
     }
 
+    if ("translucency" == propertyName) {
+      //let pass through
+    }
     setPropertySuper(propertyName, value, bs);
   }
 
@@ -359,8 +353,8 @@ public class Draw extends MeshCollection {
       thisMesh.drawVertexCounts = null;
       thisMesh.diameter = diameter;
       thisMesh.width = width;
-      if (rgb != null)
-        super.setProperty("color", rgb, null);
+//      if (rgb != null)
+  //      super.setProperty("color", rgb, null);
       addModelPoints(-1);
       nPoly = setPolygons(nPoly);
     } else {

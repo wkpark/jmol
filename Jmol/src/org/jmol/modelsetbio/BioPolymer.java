@@ -49,12 +49,18 @@ public abstract class BioPolymer extends Polymer {
   public int getMonomerCount() {
     return monomerCount;
   }
-  
+
+  protected Model model;
+  public Model getModel() {
+    return model;
+  }
+    
   BioPolymer(Monomer[] monomers) {
     this.monomers = monomers;
     monomerCount = monomers.length;
     for (int i = monomerCount; --i >= 0; )
       monomers[i].setBioPolymer(this, i);
+    model = monomers[0].getModel();
   }
   
   static BioPolymer allocateBioPolymer(Group[] groups, int firstGroupIndex) {
@@ -443,13 +449,8 @@ public abstract class BioPolymer extends Polymer {
 
   private final Vector3f unitVectorX = new Vector3f(1, 0, 0);
 
-  public Model getModel() {
-    return monomers[0].getModel();
-  }
-  
   public void findNearestAtomIndex(int xMouse, int yMouse,
                             Atom[] closest, short[] mads, int myVisibilityFlag) {
-    Model model = getModel();
     for (int i = monomerCount; --i >= 0; ) {
       if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
           || model.isAtomHidden(monomers[i].getLeadAtomIndex()))

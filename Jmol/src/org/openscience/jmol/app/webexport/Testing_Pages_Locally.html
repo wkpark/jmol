@@ -51,7 +51,10 @@ relative paths.)
       <div style="text-align: left;">The javascript built into the
 pages checks to see whether the page is being loaded from a server or
 the local machine.&nbsp; If it is being loaded from your local machine
-the path to Jmol is assumed to be "../../".&nbsp; So, to test pages
+the path to Jmol used is the relative path specified in the local path 
+text box.  The directory containing the page to be tested must be a
+subdirectory of the one containing the Jmol applet on the local machine.
+So, to test pages
 made by Jmol Web Page Maker on your local machine follow the steps
 below.<br>
       <br>
@@ -59,6 +62,8 @@ below.<br>
         <li>Create a directory (folder) named something like "tests"
 inside the directory on your local machine that contains the Jmol
 applet.</li>
+		<li>Specify the local path to Jmol as "../../" when you create the
+		page in Jmol Web Page Maker.</li>
         <li>Copy or move the directory (not just its contents)
 containing the .html, .spt, .png and .js files for the page of interest
 into the directory created in step 1.</li>

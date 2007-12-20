@@ -25,6 +25,7 @@ package org.jmol.modelsetbio;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
+import org.jmol.modelset.Model;
 import org.jmol.modelset.Polymer;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
@@ -442,11 +443,16 @@ public abstract class BioPolymer extends Polymer {
 
   private final Vector3f unitVectorX = new Vector3f(1, 0, 0);
 
+  public Model getModel() {
+    return monomers[0].getModel();
+  }
+  
   public void findNearestAtomIndex(int xMouse, int yMouse,
                             Atom[] closest, short[] mads, int myVisibilityFlag) {
+    Model model = getModel();
     for (int i = monomerCount; --i >= 0; ) {
       if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
-          || this.model.isAtomHidden(monomers[i].getLeadAtomIndex()))
+          || model.isAtomHidden(monomers[i].getLeadAtomIndex()))
         continue;  
       if (mads[i] > 0 || mads[i + 1] > 0)
         monomers[i].findNearestAtomIndex(xMouse, yMouse, closest,

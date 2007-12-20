@@ -520,15 +520,13 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   protected Vector trajectories;
-  protected int[] trajectoryBaseIndexes;
 
   protected int getTrajectoryCount() {
     return (trajectories == null ? 0 : trajectories.size());
   }
 
   public int getTrajectoryIndex(int modelIndex) {
-    int i = models[modelIndex].trajectoryIndex;
-    return (i < 0 ? modelIndex : trajectoryBaseIndexes[i]);
+    return models[modelIndex].trajectoryBaseIndex;
   }
   
   public boolean isTrajectory(int modelIndex) {
@@ -560,7 +558,7 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = 0; i < modelCount; i++) {
       if (!allowJmolData && isJmolDataFrame(i))
         continue;
-      if (trajectoryBaseIndexes[i] == i)
+      if (models[i].trajectoryBaseIndex == i)
         bs.set(i);      
     }
     return bs;
@@ -672,7 +670,7 @@ abstract public class ModelCollection extends BondCollection {
   public int getBioPolymerCount() {
     int polymerCount = 0;
     for (int i = modelCount; --i >= 0;)
-      if (!models[i].isTrajectory || trajectoryBaseIndexes[models[i].trajectoryIndex] == i)
+      if (!models[i].isTrajectory || models[i].trajectoryBaseIndex == i)
         polymerCount += models[i].getBioPolymerCount();
     return polymerCount;
   }
@@ -680,7 +678,7 @@ abstract public class ModelCollection extends BondCollection {
   public int getBioPolymerCountInModel(int modelIndex) {
     if (modelIndex < 0)
       return getBioPolymerCount();
-    if (models[modelIndex].isTrajectory && trajectoryBaseIndexes[models[modelIndex].trajectoryIndex] != modelIndex)
+    if (models[modelIndex].isTrajectory && models[modelIndex].trajectoryBaseIndex != modelIndex)
       return 0;
     return models[modelIndex].getBioPolymerCount();
   }
@@ -1387,8 +1385,7 @@ abstract public class ModelCollection extends BondCollection {
         // important that we go backward here, because we are going to 
         // use System.arrayCopy to expand the array ONCE only
         Atom atom = atoms[i];
-        int modelIndex = trajectoryBaseIndexes[atom.modelIndex];
-        bspf.addTuple(modelIndex, atom);
+        bspf.addTuple(models[atom.modelIndex].trajectoryBaseIndex, atom);
       }
       //      }
       if (showRebondTimes) {
@@ -1421,7 +1418,7 @@ abstract public class ModelCollection extends BondCollection {
     // not the full atom set.
     
     initializeBspf();
-    int modelIndex = trajectoryBaseIndexes[atoms[atomIndex].modelIndex];
+    int modelIndex = models[atoms[atomIndex].modelIndex].trajectoryBaseIndex;
     initializeBspt(modelIndex);
     if (withinAtomSetIterator == null)
       withinAtomSetIterator = new AtomIteratorWithinSet();
@@ -1439,7 +1436,7 @@ abstract public class ModelCollection extends BondCollection {
   private AtomIndexIterator getWithinModelIterator(int modelIndex, Point3f center, float radius) {
     //polyhedra, within(distance, atom), within(distance, point)
     initializeBspf();
-    modelIndex = trajectoryBaseIndexes[modelIndex];
+    modelIndex = models[modelIndex].trajectoryBaseIndex;
     initializeBspt(modelIndex);
     if (withinModelIterator == null)
       withinModelIterator = new AtomIteratorWithinModel();

@@ -6535,6 +6535,10 @@ class Eval { //implements Runnable {
         setStringProperty(key, lang);
         return;
       }
+      if (key.equalsIgnoreCase("trajectory") || key.equalsIgnoreCase("trajectories")) {
+        expression(2); //that's all that is needed
+        return;
+      }
       // deprecated:
 
       if (key.equalsIgnoreCase("showSelections")) {
@@ -8447,6 +8451,8 @@ class Eval { //implements Runnable {
       } else if (str.equalsIgnoreCase("strandCount")) {
         msg = "set strandCountForStrands " + viewer.getStrandCount(JmolConstants.SHAPE_STRANDS) 
           + "; set strandCountForMeshRibbon " + viewer.getStrandCount(JmolConstants.SHAPE_MESHRIBBON);
+      } else if (str.equalsIgnoreCase("trajectory") || str.equalsIgnoreCase("trajectories")) {
+        msg = viewer.getSelectedTrajectories();
       }
       break;
     case Token.axes:

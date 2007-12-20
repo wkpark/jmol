@@ -148,6 +148,18 @@ abstract public class ModelSet extends ModelCollection {
     return -1;
   }
 
+  public String getSelectedTrajectories() {
+    String s = "";
+    for (int i = modelCount; --i >= 0; )
+      if (models[i].selectedTrajectory >= 0) {
+        s = "," + getModelNumberDotted(models[i].selectedTrajectory) + s;
+        i = models[i].trajectoryBaseIndex; //skip other trajectories
+      }
+    if (s.length() > 0)
+      s = "set trajectories {" + s.substring(1) + "}"; 
+    return s;
+  }
+  
   public void setTrajectory(int modelIndex) {
     if (modelIndex < 0 || !models[modelIndex].isTrajectory)
       return;
@@ -158,9 +170,9 @@ abstract public class ModelSet extends ModelCollection {
     int iFirst = models[modelIndex].firstAtomIndex;
     if (atoms[iFirst].modelIndex == modelIndex)
       return;
-    int baseModel = trajectoryBaseIndexes[modelIndex];
-    int iTraj = models[modelIndex].trajectoryIndex = modelIndex - baseModel;
-    Point3f[] trajectory = (Point3f[]) trajectories.get(iTraj);
+    int baseModel = models[modelIndex].trajectoryBaseIndex;
+    models[baseModel].selectedTrajectory = modelIndex;
+    Point3f[] trajectory = (Point3f[]) trajectories.get(modelIndex);
     BitSet bs = new BitSet();
     int nAtoms = getAtomCountInModel(modelIndex);
     for (int pt = 0, i = iFirst; i < nAtoms && pt < trajectory.length; i++) {
@@ -397,7 +409,7 @@ abstract public class ModelSet extends ModelCollection {
   private BitSet modelsOf(BitSet bsAtoms, BitSet bsAllAtoms) {
     BitSet bsModels = new BitSet(modelCount);
     for (int i = 0; i < atomCount; i++) {
-      int modelIndex = trajectoryBaseIndexes[atoms[i].modelIndex];
+      int modelIndex = models[atoms[i].modelIndex].trajectoryBaseIndex;
       if (bsAtoms != null && !bsAtoms.get(i) || isJmolDataFrame(modelIndex))
         continue;
       bsModels.set(modelIndex);

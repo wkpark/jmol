@@ -253,7 +253,7 @@ public class AminoPolymer extends AlphaPolymer {
     Atom nitrogen = donor.getNitrogenAtom();
     AminoMonomer recipient = (AminoMonomer)monomers[indexCarbonylGroup];
     Atom oxygen = recipient.getCarbonylOxygenAtom();
-    model.addHydrogenBond(nitrogen, oxygen, order, bsA, bsB);
+    getModel().addHydrogenBond(nitrogen, oxygen, order, bsA, bsB);
   }
 
   /*

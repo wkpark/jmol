@@ -247,7 +247,6 @@ public final class ModelLoader extends ModelSet {
   private void mergeModelArrays() {
     baseModelCount = mergeModelSet.modelCount;
     baseTrajectoryCount = mergeModelSet.getTrajectoryCount();
-    trajectoryBaseIndexes = mergeModelSet.trajectoryBaseIndexes;
     if (baseTrajectoryCount > 0) {
       if (isTrajectory) {
         for (int i = 0; i < trajectories.size(); i++)
@@ -285,7 +284,6 @@ public final class ModelLoader extends ModelSet {
     if (trajectoryCount > 1)
       modelCount += trajectoryCount - 1;
     models = (Model[]) ArrayUtil.setLength(models, modelCount);
-    trajectoryBaseIndexes = (int[]) ArrayUtil.setLength(trajectoryBaseIndexes, modelCount);
     modelFileNumbers =(int[])ArrayUtil.setLength(modelFileNumbers, modelCount);
     modelNumbers =(int[])ArrayUtil.setLength(modelNumbers, modelCount);
     modelNumbersForAtomLabel = (String[])ArrayUtil.setLength(modelNumbersForAtomLabel, modelCount);
@@ -354,7 +352,6 @@ public final class ModelLoader extends ModelSet {
           group3Counts[modelCount] = new int[JmolConstants.group3Count + 10];
         }
       }
-      trajectoryBaseIndexes[ipt] = ipt;
       if (getModelAuxiliaryInfo(ipt, "periodicOriginXyz") != null)
         someModelsHaveSymmetry = true;
     }
@@ -363,28 +360,20 @@ public final class ModelLoader extends ModelSet {
       int ia = adapterModelCount;
       for (int i = ipt; i < modelCount; i++) {
         models[i] = models[baseModelCount];
-        trajectoryBaseIndexes[i] = baseModelCount;
         modelNumbers[i] = adapter.getAtomSetNumber(clientFile, ia++);
         structuresDefinedInFile.set(i);
-      }
-    } else {
-      for (int i = ipt; i < modelCount; i++) {
-        trajectoryBaseIndexes[i] = i;
       }
     }
     finalizeModels(baseModelCount);
   }
     
-  boolean setModelNameNumberProperties(int modelIndex, int trajectoryIndex,
+  boolean setModelNameNumberProperties(int modelIndex, int trajectoryBaseIndex,
                                        String modelName, int modelNumber,
                                        Properties modelProperties,
                                        Hashtable modelAuxiliaryInfo,
                                        boolean isPDB, String jmolData) {
-
-    if (isTrajectory)
-      trajectoryBaseIndexes[modelIndex] = trajectoryIndex;
     if (modelNumber != Integer.MAX_VALUE) {
-      models[modelIndex] = new Model((ModelSet) this, modelIndex, trajectoryIndex, jmolData,
+      models[modelIndex] = new Model((ModelSet) this, modelIndex, trajectoryBaseIndex, jmolData,
           modelProperties, modelAuxiliaryInfo);
       modelNumbers[modelIndex] = modelNumber;
       modelNames[modelIndex] = modelName;

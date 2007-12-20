@@ -26,6 +26,7 @@ package org.jmol.modelsetbio;
 import java.util.BitSet;
 
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.Model;
 import org.jmol.viewer.JmolConstants;
 
 public class NucleicPolymer extends BioPolymer {
@@ -41,6 +42,7 @@ public class NucleicPolymer extends BioPolymer {
   boolean hasWingPoints() { return true; }
 
   public void calcHydrogenBonds(BitSet bsA, BitSet bsB) {
+    Model model = getModel();
     for (int i = model.getBioPolymerCount(); --i >= 0; ) {
       BioPolymer otherPolymer = (BioPolymer) model.getBioPolymer(i);
       if (otherPolymer == this) // don't look at self
@@ -53,6 +55,7 @@ public class NucleicPolymer extends BioPolymer {
 
   void lookForHbonds(NucleicPolymer other, BitSet bsA, BitSet bsB) {
     //Logger.debug("NucleicPolymer.lookForHbonds()");
+    Model model = getModel();
     for (int i = monomerCount; --i >= 0; ) {
       NucleicMonomer myNucleotide = (NucleicMonomer)monomers[i];
       if (! myNucleotide.isPurine())

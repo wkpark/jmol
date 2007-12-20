@@ -91,8 +91,9 @@ public final class Model {
 
   boolean isPDB;
   boolean isTrajectory;
-  int trajectoryIndex = -1;
-
+  int trajectoryBaseIndex;
+  int selectedTrajectory = -1;
+  
   Hashtable dataFrames;
   int dataSourceFrame = -1;
   String jmolData; // from a PDB remark "Jmol PDB-encoded data"
@@ -122,13 +123,13 @@ public final class Model {
   Properties properties;
 
 
-  Model(ModelSet modelSet, int modelIndex, int trajectoryIndex, 
+  Model(ModelSet modelSet, int modelIndex, int trajectoryBaseIndex, 
       String jmolData, Properties properties, Hashtable auxiliaryInfo) {
     this.modelSet = modelSet;
     dataSourceFrame = this.modelIndex = modelIndex;
     this.jmolData = jmolData;
-    this.trajectoryIndex = trajectoryIndex;
-    isTrajectory = (trajectoryIndex >= 0);
+    isTrajectory = (trajectoryBaseIndex >= 0);
+    this.trajectoryBaseIndex = (isTrajectory ? trajectoryBaseIndex : modelIndex);
     if (auxiliaryInfo == null)
       auxiliaryInfo = new Hashtable();
     this.auxiliaryInfo = auxiliaryInfo;

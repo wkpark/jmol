@@ -4520,9 +4520,11 @@ class Eval { //implements Runnable {
     BitSet bsSelected = BitSetUtil.copy(viewer.getSelectionSet());
     viewer.invertSelection();
     if (bsSubset != null) {
-      BitSet bs = BitSetUtil.copy(bsSelected);
-      bs.and(bsSubset);
-      viewer.setSelectionSet(bs);
+      bsSelected = BitSetUtil.copy(viewer.getSelectionSet());
+      bsSelected.and(bsSubset);
+      viewer.setSelectionSet(bsSelected);
+      BitSetUtil.invertInPlace(bsSelected, viewer.getAtomCount());
+      bsSelected.and(bsSubset);
     }
     boolean bondmode = viewer.getBondSelectionModeOr();
     setBooleanProperty("bondModeOr", true);

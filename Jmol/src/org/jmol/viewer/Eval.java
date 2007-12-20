@@ -2795,14 +2795,17 @@ class Eval { //implements Runnable {
     case Token.right:
       pt.set(0, -1, 0);
       i++;
+      checkStatementLength(i);
       break;
     case Token.top:
       pt.set(1, 0, 0);
       i++;
+      checkStatementLength(i);
       break;
     case Token.bottom:
       pt.set(-1, 0, 0);
       i++;
+      checkStatementLength(i);
       break;
     default:
       //X Y Z deg
@@ -2825,25 +2828,26 @@ class Eval { //implements Runnable {
       if (!isChange && Math.abs(yTrans - viewer.getTranslationYPercent()) >= 1)
         isChange = true;
     }
-    float rotationRadius = 0;
+    float rotationRadius = Float.NaN;
     if (i != statementLength) {
       int ptCenter = i;
       center = centerParameter(i);
       if (!isChange && center.distance(viewer.getRotationCenter()) >= 0.1)
         isChange = true;
       i = iToken + 1;
+      if (isFloatParameter(i))
+        rotationRadius = floatParameter(i++);
       float radius = viewer.getRotationRadius();
-      if (i != statementLength && !isCenterParameter(i)) {
-        //alternative (center) zoomFactor 
-        if (zoom == 0 || Float.isNaN(zoom)) {
-          //alternative (atom expression) zoom 
+      if (!isCenterParameter(i)) {
+        if ((rotationRadius == 0 || Float.isNaN(rotationRadius))
+            && (zoom == 0 || Float.isNaN(zoom))) {
+          //alternative (atom expression) 0 zoomFactor 
           float factor = Math.abs(getZoomFactor(i, ptCenter, radius, zoom0));
           i = iToken + 1;
           if (Float.isNaN(factor))
             invalidArgument();
           zoom = factor;
         } else {
-          rotationRadius = floatParameter(i++);
           if (!isChange
               && Math.abs(rotationRadius - viewer.getRotationRadius()) >= 0.1)
             isChange = true;
@@ -2852,6 +2856,9 @@ class Eval { //implements Runnable {
     }
     if (zoom == 0 || Float.isNaN(zoom))
       zoom = 100;
+    if (Float.isNaN(rotationRadius))
+        rotationRadius = 0;
+
     if (!isChange && Math.abs(zoom - zoom0) >= 1)
       isChange = true;
     // (navCenter) xNav yNav navDepth 

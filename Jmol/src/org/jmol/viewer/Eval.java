@@ -9142,7 +9142,7 @@ class Eval { //implements Runnable {
     setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "init", null);
     String setPropertyName = "centers";
     String decimalPropertyName = "radius_";
-    String translucency = null;
+    boolean isTranslucent = false;
     float translucentLevel = Float.MAX_VALUE;
     int color = Integer.MIN_VALUE;
     for (int i = 1; i < statementLength; ++i) {
@@ -9166,9 +9166,30 @@ class Eval { //implements Runnable {
       case Token.radius:
         decimalPropertyName = "radius";
         continue;
+        
+      case Token.color:
+        i++;
+        //fall through
       case Token.translucent:
       case Token.opaque:
-        translucency = parameterAsString(i);
+        isTranslucent = false;
+        boolean isColor = false;
+        if (tokAt(i) == Token.translucent) {
+          isTranslucent = true;
+          if (isFloatParameter(++i))
+            translucentLevel = floatParameter(i++);
+          isColor = true;
+        } else if (tokAt(i) == Token.opaque) {
+          ++i;
+          isColor = true;
+        }
+        if (isColorParam(i)) {
+          color = getArgbParam(i);
+          i = iToken;
+          isColor = true;
+        }
+        if (!isColor)
+          invalidArgument();
         continue;
       case Token.identifier:
         String str = parameterAsString(i);
@@ -9278,8 +9299,8 @@ class Eval { //implements Runnable {
     if (color != Integer.MIN_VALUE)
       setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "colorThis", new Integer(
           color));
-    if (translucency != null)
-      setShapeTranslucency(JmolConstants.SHAPE_POLYHEDRA, "", translucency,
+    if (isTranslucent)
+      setShapeTranslucency(JmolConstants.SHAPE_POLYHEDRA, "", "translucent",
           translucentLevel);
   }
 

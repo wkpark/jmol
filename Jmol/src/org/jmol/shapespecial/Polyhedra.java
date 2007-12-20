@@ -177,6 +177,7 @@ public class Polyhedra extends AtomShape {
       // but from Color we need to identify the centers.
       if ("colorThis" == propertyName && iHaveCenterBitSet)
         bs = centers;
+      propertyName = "color";
       //allow super
     }
 

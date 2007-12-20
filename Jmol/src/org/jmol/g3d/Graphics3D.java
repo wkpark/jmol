@@ -489,7 +489,7 @@ final public class Graphics3D implements JmolRendererInterface {
    */
   public void setBackgroundArgb(int argb) {
     // clear alpha channel and make distinct
-    backgroundArgb = (argb == -1 ? -2 : argb + 1); 
+    backgroundArgb = argb + ((argb & 0xFF) == 0xFF ? -1 : 1); 
     platform.setBackground(backgroundArgb);
   }
 

@@ -699,7 +699,7 @@ public final class ModelLoader extends ModelSet {
     if (iterStructure != null)
       while (iterStructure.hasNext()) {
         if (iterStructure.getStructureType().equals("turn"))
-          defineStructure(iterStructure.getModelIndex() + baseModelIndex,
+          defineStructure(iterStructure.getModelIndex(),
               iterStructure.getStructureType(),
               iterStructure.getStartChainID(), iterStructure
                   .getStartSequenceNumber(), iterStructure

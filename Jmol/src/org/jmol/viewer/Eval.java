@@ -4237,6 +4237,7 @@ class Eval { //implements Runnable {
 
   private void dataFrame(int datatype) throws ScriptException {
     String type = "";
+    boolean isQuaternion = false;
     switch (datatype) {
     case JmolConstants.JMOL_DATA_RAMACHANDRAN:
       type = "ramachandran";
@@ -4250,6 +4251,7 @@ class Eval { //implements Runnable {
       if (!Parser.isOneOf(type, "w;x;y;z"))
         evalError("QUATERNION [w,x,y,z] [derivative]");
       type = "quaternion " + type + (isDerivative ? " derivative" : "");
+      isQuaternion = true;
       break;
     }
     if (isSyntaxCheck) //just in case we later add parameter options to this
@@ -4260,6 +4262,8 @@ class Eval { //implements Runnable {
       multipleModelsNotOK(type);
     modelIndex = viewer.getJmolDataSourceFrame(modelIndex);
     int ptDataFrame = viewer.getJmolDataFrameIndex(modelIndex, type);
+    if (isQuaternion && ptDataFrame < 0 && statementLength == 1)
+      ptDataFrame = viewer.getJmolDataFrameIndex(modelIndex, "quaternion");
     if (ptDataFrame > 0) {
       // data frame can't be 0.
       viewer.setCurrentModelIndex(ptDataFrame, true);

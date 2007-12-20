@@ -396,7 +396,7 @@ abstract public class ModelCollection extends BondCollection {
     stateScripts.addElement(script);
   }
 
-  void defineStructure(int modelIndex, String structureType, char startChainID,
+  protected void defineStructure(int modelIndex, String structureType, char startChainID,
                        int startSequenceNumber, char startInsertionCode,
                        char endChainID, int endSequenceNumber,
                        char endInsertionCode) {
@@ -867,9 +867,14 @@ abstract public class ModelCollection extends BondCollection {
     Model model = models[modelIndex];
     if (model.dataFrames == null)
       model.dataFrames = new Hashtable();
-    model.dataFrames.put(type, new Integer(modelDataIndex));
     models[modelDataIndex].dataSourceFrame = modelIndex;
     models[modelDataIndex].jmolFrameType = type;
+    model.dataFrames.put(type, new Integer(modelDataIndex));
+    if (type.indexOf(" ") > 0) { //generic quaternion
+      type = type.substring(0, type.indexOf(" "));
+      model.dataFrames.put(type, new Integer(modelDataIndex));
+    }
+    
   }
 
   public int getJmolDataFrameIndex(int modelIndex, String type) {

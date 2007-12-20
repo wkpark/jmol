@@ -959,8 +959,12 @@ public class Draw extends MeshCollection {
     } else {
       str.append(getVertexList(mesh, iModel, nVertices));
     }
-    if (mesh.title != null)
-      str.append(" " + Escape.escape(mesh.title[0]));
+    if (mesh.title != null) {
+      String s = "";
+      for (int i = 0; i < mesh.title.length; i++)
+        s += "|" + mesh.title[i];
+      str.append(Escape.escape(s.substring(1)));
+    }
     str.append(";\n");
     appendCmd(str, mesh.getState("draw"));
     appendCmd(str, getColorCommand("draw", mesh.colix));

@@ -4286,7 +4286,7 @@ class Eval { //implements Runnable {
       viewer.setFrameTitle(modelCount - 1, "ramachandran plot for model "
           + viewer.getModelNumberDotted(modelIndex));
       runScript("frame 0.0; frame last; reset;"
-          + "select visible; color structure; spacefill 3.0; wireframe 0; set rotationRadius 250;"
+          + "select visible; color structure; spacefill 3.0; wireframe 0; set rotationRadius 260;"
           + "draw ramaAxisX" + modelCount + " {200 0 0} {-200 0 0} \"phi\";"
           + "draw ramaAxisY" + modelCount + " {0 200 0} {0 -200 0} \"psi\";");
       break;

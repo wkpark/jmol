@@ -11513,9 +11513,6 @@ class Eval { //implements Runnable {
     }
 
     private boolean evaluateWithin(Token[] args) throws ScriptException {
-      // within ( distance, expression)
-      // within ( group, etc., expression)
-      // within ( plane or hkl or coord  atomcenter atomcenter atomcenter )
       if (args.length < 1)
         return false;
       Object withinSpec = args[0].value;
@@ -11524,12 +11521,13 @@ class Eval { //implements Runnable {
       BitSet bs = new BitSet();
       float distance = 0;
       boolean isSequence = false;
+      boolean isBoundbox = false;
       int i = args.length;
       boolean isWithinModelSet = false;
       boolean isDistance = (tok == Token.decimal || tok == Token.integer);
       if (withinSpec instanceof String) {
         isSequence = !Parser.isOneOf(withinStr,
-            "element;site;group;chain;molecule;model");
+            "element;site;group;chain;molecule;model;boundbox");
       } else if (isDistance) {
         distance = Token.fValue(args[0]);
         if (i < 2)
@@ -11541,10 +11539,22 @@ class Eval { //implements Runnable {
       } else {
         return false;
       }
+
       if (i == 3) {
         withinStr = Token.sValue(args[1]);
         if (!Parser.isOneOf(withinStr, "on;off;plane;hkl;coord"))
           return false;
+        // within (distance, true|false, [point or atom center] 
+        // within (distance, plane|hkl,  [plane definition] )
+        // within (distance, coord,  [point or atom center] )
+
+      } else if (i == 1) {
+
+        // within (boundbox)
+
+        if (!withinStr.equals("boundbox"))
+          return false;
+        isBoundbox = true;
       }
       Point3f pt = null;
       Point4f plane = null;
@@ -11553,7 +11563,8 @@ class Eval { //implements Runnable {
         plane = (Point4f) args[i].value;
       else if (args[i].value instanceof Point3f)
         pt = (Point3f) args[i].value;
-      if (plane == null && pt == null && !(args[i].value instanceof BitSet))
+      
+      if (i > 0 && plane == null && pt == null && !(args[i].value instanceof BitSet))
         return false;
       if (isSyntaxCheck)
         return addX(bs);
@@ -11561,7 +11572,7 @@ class Eval { //implements Runnable {
         return addX(viewer.getAtomsWithin(distance, plane));
       if (pt != null)
         return addX(viewer.getAtomsWithin(distance, pt));
-      bs = Token.bsSelect(args[i]);
+      bs = (isBoundbox ? null : Token.bsSelect(args[i]));
       if (isDistance)
         return addX(viewer.getAtomsWithin(distance, bs, isWithinModelSet));
       if (isSequence)

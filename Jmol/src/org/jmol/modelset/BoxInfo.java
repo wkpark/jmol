@@ -122,5 +122,11 @@ public class BoxInfo {
       pt.add(bbCenter);
     }
   }
+  
+  boolean isWithin(Point3f pt) {
+   return (pt.x >= bbCorner0.x && pt.x <= bbCorner1.x 
+       && pt.y >= bbCorner0.y && pt.y <= bbCorner1.y
+       && pt.z >= bbCorner0.z && pt.z <= bbCorner1.z); 
+  }
 
 }

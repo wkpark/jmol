@@ -310,10 +310,12 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public BoxInfo getBoxInfo(BitSet bs) {
-    BoxInfo boxInfo = new BoxInfo();
-    calcAtomsMinMax(bs, boxInfo);
-    boxInfo.setBbcage();
-    return boxInfo;
+    if (bs == null)
+      return boxInfo;
+    BoxInfo bi = new BoxInfo();
+    calcAtomsMinMax(bs, bi);
+    bi.setBbcage();
+    return bi;
   }
 
   private int calcAtomsMinMax(BitSet bs, BoxInfo boxInfo) {
@@ -1697,11 +1699,21 @@ abstract public class ModelCollection extends BondCollection {
     switch (tokType) {
     case Token.molecule:
       return getMoleculeBitSet(bs);
+    case Token.boundbox:
+      return getAtomsWithinBox(getBoxInfo(bs));
     }
     return super.getAtomsWithin(tokType, bs);
   }
 
-  
+  private BitSet getAtomsWithinBox(BoxInfo boxInfo) {
+    BitSet bs = getAtomsWithin(boxInfo.getBoundBoxCornerVector().length() + 0.0001f,
+        boxInfo.getBoundBoxCenter());
+    for (int i = 0; i < atomCount; i++)
+      if (bs.get(i) && !boxInfo.isWithin(atoms[i]))
+        bs.clear(i);
+    return bs;
+  }
+
   public BitSet getAtomsWithin(int tokType, String specInfo, BitSet bs) {
     if (tokType == Token.sequence)
       return withinSequence(specInfo, bs);

@@ -1475,7 +1475,7 @@ abstract public class AtomCollection {
     }
     return bsResult;
   }
-
+  
   public BitSet getVisibleSet() {
     BitSet bs = new BitSet();
     for (int i = atomCount; --i >= 0;)

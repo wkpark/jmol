@@ -1847,6 +1847,7 @@ class Compiler {
     case Token.model:
     case Token.site:
     case Token.coord:
+    case Token.boundbox:
     case Token.element:
     case Token.string:
       key = (String) theValue;

@@ -3379,6 +3379,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (eval != null && isScriptExecuting() || atomIndex == hoverAtomIndex
         || global.hoverDelayMs == 0)
       return;
+    if (!isInSelectionSubset(atomIndex))
+      return;
     loadShape(JmolConstants.SHAPE_HOVER);
     setShapeProperty(JmolConstants.SHAPE_HOVER, "text", null);
     setShapeProperty(JmolConstants.SHAPE_HOVER, "target",

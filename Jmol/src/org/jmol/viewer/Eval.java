@@ -11742,6 +11742,7 @@ class Eval { //implements Runnable {
           default:
           //handle bitset later
           }
+          break;
         case Token.boundbox:
           return evaluateBoundBox(x2);
         }

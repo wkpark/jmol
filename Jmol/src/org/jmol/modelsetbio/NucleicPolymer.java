@@ -51,6 +51,8 @@ public class NucleicPolymer extends BioPolymer {
     }
   }
 
+  private final static short HBOND_MASK = JmolConstants.BOND_H_NUCLEOTIDE | JmolConstants.BOND_HBOND_CALC;
+  
   void lookForHbonds(NucleicPolymer other, BitSet bsA, BitSet bsB) {
     //Logger.debug("NucleicPolymer.lookForHbonds()");
     for (int i = monomerCount; --i >= 0; ) {
@@ -59,7 +61,7 @@ public class NucleicPolymer extends BioPolymer {
         continue;
       Atom myN1 = myNucleotide.getN1();
       Atom bestN3 = null;
-      float minDist2 = 5*5;
+      float minDist2 = 25;
       NucleicMonomer bestNucleotide = null;
       for (int j = other.monomerCount; --j >= 0; ) {
         NucleicMonomer otherNucleotide = (NucleicMonomer)other.monomers[j];
@@ -74,15 +76,15 @@ public class NucleicPolymer extends BioPolymer {
         }
       }
       if (bestN3 != null) {
-        model.addHydrogenBond(myN1, bestN3, JmolConstants.BOND_H_NUCLEOTIDE, bsA, bsB);
+        model.addHydrogenBond(myN1, bestN3,  HBOND_MASK, bsA, bsB);
         if (myNucleotide.isGuanine()) {
           model.addHydrogenBond(myNucleotide.getN2(),
-                             bestNucleotide.getO2(), JmolConstants.BOND_H_NUCLEOTIDE, bsA, bsB);
+                             bestNucleotide.getO2(), HBOND_MASK, bsA, bsB);
           model.addHydrogenBond(myNucleotide.getO6(),
-                             bestNucleotide.getN4(), JmolConstants.BOND_H_NUCLEOTIDE, bsA, bsB);
+                             bestNucleotide.getN4(), HBOND_MASK, bsA, bsB);
         } else {
           model.addHydrogenBond(myNucleotide.getN6(),
-                             bestNucleotide.getO4(), JmolConstants.BOND_H_NUCLEOTIDE, bsA, bsB);
+                             bestNucleotide.getO4(), HBOND_MASK, bsA, bsB);
         }
       }
     }

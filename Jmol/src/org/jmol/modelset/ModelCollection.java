@@ -736,8 +736,13 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public void calcHydrogenBonds(BitSet bsA, BitSet bsB) {
+    //bsA and bsB are always the same. If that changes, we must
+    //pass on bsB to clearCalculatedHydrogenBonds as well;
     for (int i = modelCount; --i >= 0;)
-      models[i].calcHydrogenBonds(bsA, bsB);
+      if (models[i].trajectoryBaseIndex == i) {
+        clearCalculatedHydrogenBonds(i, bsA);
+        models[i].calcHydrogenBonds(bsA, bsB);
+      }
   }
 
   static class Structure {
@@ -1355,7 +1360,37 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
 
-  
+  public boolean hasCalculatedHBonds(BitSet bsAtoms) {
+    for (int i = atomCount; --i >= 0;) {
+      if (bsAtoms.get(i) && models[atoms[i].modelIndex].hasCalculatedHBonds)
+        return true;
+      i = models[atoms[i].modelIndex].firstAtomIndex;
+    }
+    return false;
+  }
+
+  public void clearCalculatedHydrogenBonds(int baseIndex, BitSet bsAtoms) {
+    BitSet bsDelete = new BitSet();
+    int nDelete = 0;
+    models[baseIndex].hasCalculatedHBonds = false;
+    for (int i = bondCount; --i >= 0;) {
+      Bond bond = bonds[i];
+      if (baseIndex >= 0 
+           && models[bond.atom1.modelIndex].trajectoryBaseIndex != baseIndex
+          || (bond.order & JmolConstants.BOND_HBOND_CALC) == 0)
+        continue;
+      if (bsAtoms != null && !bsAtoms.get(bond.atom1.atomIndex)) {
+        models[baseIndex].hasCalculatedHBonds = true;
+        continue;
+      }
+      bsDelete.set(i);
+      nDelete++;
+    }        
+    if (nDelete > 0)
+      deleteBonds(bsDelete);
+  }
+
+
   //////////// iterators //////////
   
   //private final static boolean MIX_BSPT_ORDER = false;

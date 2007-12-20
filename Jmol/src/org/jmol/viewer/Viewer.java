@@ -1177,10 +1177,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return colorManager.getColixAtomPalette(atom, pid);
   }
 
-  public static short getColixHbondType(short order) {
-    return ColorManager.getColixHbondType(order);
-  }
-
   public int[] getColorSchemeArray(String colorScheme) {
     return colorManager.getColorSchemeArray(colorScheme);
   }
@@ -2413,8 +2409,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.autoHbond(bsFrom, bsTo, bsBonds);
   }
 
-  boolean hbondsAreVisible() {
-    return modelSet.hbondsAreVisible(repaintManager.currentModelIndex);
+  public boolean hasCalculatedHBonds(BitSet bsAtoms) {
+    return modelSet.hasCalculatedHBonds(bsAtoms);
   }
 
   public boolean havePartialCharges() {

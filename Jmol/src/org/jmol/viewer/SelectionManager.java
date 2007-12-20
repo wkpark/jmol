@@ -233,6 +233,7 @@ class SelectionManager {
       sfunc.append("  _setSelectionState;\n");
       commands.append("function _setSelectionState();\n");
     }
+    StateManager.appendCmd(commands, viewer.getSelectedTrajectories());
     String cmd = null;
     Hashtable temp = new Hashtable();
     if (BitSetUtil.firstSetBit(bsHidden) >= 0)

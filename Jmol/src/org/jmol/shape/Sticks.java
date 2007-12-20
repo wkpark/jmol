@@ -29,7 +29,6 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.Viewer;
 
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -128,7 +127,7 @@ public class Sticks extends Shape {
         while (iter.hasNext()) {
           bsColixSet.set(iter.nextIndex());
           Bond bond = iter.next();
-          bond.setColix(Viewer.getColixHbondType(bond.getOrder()));
+          bond.setColix(Graphics3D.getColix(JmolConstants.getArgbHbondType(bond.getOrder())));
         }
         return;
       }

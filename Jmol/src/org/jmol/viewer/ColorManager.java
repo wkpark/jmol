@@ -313,12 +313,6 @@ class ColorManager {
         :ColorEncoder.getColorIndexFromPalette(-val, -colorLo, -colorHi, palette));    
   }
 
-  static short getColixHbondType(short order) {
-    int argbIndex = ((order & JmolConstants.BOND_HYDROGEN_MASK)
-                     >> JmolConstants.BOND_HBOND_SHIFT);
-    return Graphics3D.getColix(JmolConstants.argbsHbondType[argbIndex]);
-  }
-
   /*
   void flushCachedColors() {
   }

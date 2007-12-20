@@ -239,7 +239,7 @@ final public class JmolConstants {
    *
    */
 
-  // | reserved
+  // | calculated                  1 << 15
   //  ||| | Hydrogen bond 0x3800   F << 11
   //       |Stereo 0x400           1 << 10
   //        |Aromatic 0x200        1 << 9
@@ -253,6 +253,7 @@ final public class JmolConstants {
   public final static short BOND_ORDER_NULL    = -1;
 
   public final static short BOND_HBOND_SHIFT = 11;
+  public final static short BOND_HBOND_CALC    = (short) (1 << 15);
   public final static short BOND_HYDROGEN_MASK = 0xF << 11;
   public final static short BOND_H_REGULAR     = 1 << 11;
   public final static short BOND_H_PLUS_2      = 2 << 11;
@@ -263,6 +264,24 @@ final public class JmolConstants {
   public final static short BOND_H_MINUS_4     = 7 << 11;
   public final static short BOND_H_NUCLEOTIDE  = 8 << 11;
   
+  public final static int[] argbsHbondType =
+  {
+    0xFFFF69B4, // unused - pink
+    0xFFFFFF00, // regular yellow
+    0xFFFFFFFF, // +2 white
+    0xFFFF00FF, // +3 magenta
+    0xFFFF0000, // +4 red
+    0xFFFFA500, // +5 orange
+    0xFF00FFFF, // -3 cyan
+    0xFF00FF00, // -4 green
+    0xFFFF8080, // nucleotide
+  };
+
+  public static int getArgbHbondType(short order) {
+    int argbIndex = ((order & BOND_HYDROGEN_MASK) >> BOND_HBOND_SHIFT);
+    return argbsHbondType[argbIndex];
+  }
+
   public final static short BOND_STEREO_MASK   = 0x400; // 1 << 10
   public final static short BOND_STEREO_NEAR   = 0x401;
   public final static short BOND_STEREO_FAR    = 0x402;
@@ -416,22 +435,7 @@ final public class JmolConstants {
    * lighting options for isosurfaces
    * 
    */
-  
-  
-  
-  public final static int[] argbsHbondType =
-  {
-    0xFFFF69B4, // unused - pink
-    0xFFFFFF00, // regular yellow
-    0xFFFFFFFF, // +2 white
-    0xFFFF00FF, // +3 magenta
-    0xFFFF0000, // +4 red
-    0xFFFFA500, // +5 orange
-    0xFF00FFFF, // -3 cyan
-    0xFF00FF00, // -4 green
-    0xFFFF8080, // nucleotide
-  };
-
+    
   /**
    * The default elementSymbols. Presumably the only entry which may cause
    * confusion is element 0, whose symbol we have defined as "Xx". 
@@ -2762,5 +2766,4 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       throw new NullPointerException();
     }
   }
-
 }

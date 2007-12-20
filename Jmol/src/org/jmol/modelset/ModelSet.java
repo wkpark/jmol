@@ -152,11 +152,11 @@ abstract public class ModelSet extends ModelCollection {
     String s = "";
     for (int i = modelCount; --i >= 0; )
       if (models[i].selectedTrajectory >= 0) {
-        s = "," + getModelNumberDotted(models[i].selectedTrajectory) + s;
+        s = " or " + getModelNumberDotted(models[i].selectedTrajectory) + s;
         i = models[i].trajectoryBaseIndex; //skip other trajectories
       }
     if (s.length() > 0)
-      s = "set trajectories {" + s.substring(1) + "}"; 
+      s = "set trajectory {" + s.substring(4) + "}"; 
     return s;
   }
   
@@ -193,6 +193,10 @@ abstract public class ModelSet extends ModelCollection {
     for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
       if (shapes[i] != null)
       setShapeProperty(i, "refreshTrajectories", Imodel, bs);
+    if (models[baseModel].hasCalculatedHBonds) {
+      clearCalculatedHydrogenBonds(baseModel, null);
+      models[baseModel].calcHydrogenBonds(bs, bs);
+    }
     int m = viewer.getCurrentModelIndex();
     if (m >= 0 && m != modelIndex 
         && models[m].fileIndex == models[modelIndex].fileIndex)

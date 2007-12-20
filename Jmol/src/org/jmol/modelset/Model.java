@@ -93,6 +93,7 @@ public final class Model {
   boolean isTrajectory;
   int trajectoryBaseIndex;
   int selectedTrajectory = -1;
+  boolean hasCalculatedHBonds;
   
   Hashtable dataFrames;
   int dataSourceFrame = -1;
@@ -239,7 +240,9 @@ public final class Model {
   }
   
   public void addHydrogenBond(Atom atom1, Atom atom2, short order, BitSet bsA, BitSet bsB) {
+    hasCalculatedHBonds = true;
     modelSet.addHydrogenBond(atom1, atom2, order, bsA, bsB);
+    //System.out.println("addHB " + atom1.getInfo() + " "+ atom2.getInfo() + " " + atom1.distance(atom2));
   }
 
   public int getModelIndex() {

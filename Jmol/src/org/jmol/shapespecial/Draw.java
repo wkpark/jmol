@@ -351,8 +351,6 @@ public class Draw extends MeshCollection {
       thisMesh.modelFlags = null;
       thisMesh.drawTypes = null;
       thisMesh.drawVertexCounts = null;
-      thisMesh.diameter = diameter;
-      thisMesh.width = width;
 //      if (rgb != null)
   //      super.setProperty("color", rgb, null);
       addModelPoints(-1);
@@ -412,6 +410,8 @@ public class Draw extends MeshCollection {
         }
       }
     }
+    thisMesh.diameter = diameter;
+    thisMesh.width = width;
     thisMesh.setCenter(-1);
     if (thisMesh.thisID == null) {
       thisMesh.thisID = thisMesh.getDrawType() + (++nUnnamed);

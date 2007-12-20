@@ -143,7 +143,7 @@ abstract public class BondCollection extends AtomCollection {
       if (bondCount == bonds.length)
         bonds = (Bond[]) ArrayUtil
             .setLength(bonds, bondCount + bondGrowthIncrement);
-      if (order < 0)
+      if (order < 0 && (order & JmolConstants.BOND_HYDROGEN_MASK) == 0)
         order = 1;
       i = setBond(bondCount++, bondMutually(atom, atomOther, order, mad)).index;
     }
@@ -234,14 +234,6 @@ abstract public class BondCollection extends AtomCollection {
       getOrAddBond(atom1, atom2, order, (short) 1, bsPseudoHBonds);
   }
  
-  public boolean hbondsAreVisible(int modelIndex) {
-    for (int i = bondCount; --i >= 0;)
-      if (modelIndex < 0 || modelIndex == bonds[i].atom1.modelIndex)
-        if (bonds[i].isHydrogen() && bonds[i].mad > 0)
-          return true;
-    return false;
-  }
-
   protected short getBondOrder(Atom atomA, float bondingRadiusA, Atom atomB,
                              float bondingRadiusB, float distance2,
                              float minBondDistance2, float bondTolerance) {
@@ -337,7 +329,7 @@ abstract public class BondCollection extends AtomCollection {
     return new int[] {0, nDeleted};
   }
 
-  private void deleteBonds(BitSet bs) {
+  protected void deleteBonds(BitSet bs) {
     bsAromatic = new BitSet();
     int iDst = 0;
     for (int iSrc = 0; iSrc < bondCount; ++iSrc) {

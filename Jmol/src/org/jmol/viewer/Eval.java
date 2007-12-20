@@ -2022,15 +2022,15 @@ class Eval { //implements Runnable {
     checkStatementLength(4);
   }
 
-  private int modelNumberParameter(int i) {
+  private int modelNumberParameter(Token token) {
     int iFrame = 0;
     boolean useModelNumber = false;
-    switch (tokAt(i)) {
+    switch (token.tok) {
     case Token.integer:
       useModelNumber = true;
     //fall through
     case Token.decimal:
-      iFrame = statement[i].intValue; //decimal Token intValue is model/frame number encoded
+      iFrame = token.intValue; //decimal Token intValue is model/frame number encoded
       break;
     default:
       return -1;
@@ -5560,7 +5560,7 @@ class Eval { //implements Runnable {
     }
     if (isSyntaxCheck)
       return;
-    boolean addHbonds = viewer.hbondsAreVisible();
+    boolean addHbonds = viewer.hasCalculatedHBonds(bsConfigurations);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_HYDROGEN_MASK));
     viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 0, bsConfigurations);
@@ -6536,7 +6536,9 @@ class Eval { //implements Runnable {
         return;
       }
       if (key.equalsIgnoreCase("trajectory") || key.equalsIgnoreCase("trajectories")) {
-        expression(2); //that's all that is needed
+        Token token = tokenSetting(2); //if an expression, we are done
+        if (token.tok == Token.decimal) //if a number, we just set its trajectory
+          viewer.getModelNumberIndex(token.intValue, false, true);
         return;
       }
       // deprecated:
@@ -6582,6 +6584,13 @@ class Eval { //implements Runnable {
     if (v == null || v.size() == 0)
       invalidArgument();
     return Token.sValue((Token) v.elementAt(0));
+  }
+
+  private Token tokenSetting(int pt) throws ScriptException {
+    Vector v = (Vector) parameterExpression(pt, 0, "XXX", true);
+    if (v == null || v.size() == 0)
+      invalidArgument();
+    return (Token) v.elementAt(0);
   }
 
   private void setVariable(int pt, int ptMax, String key, boolean showing)
@@ -7625,7 +7634,7 @@ class Eval { //implements Runnable {
       propertyValue = parameterAsString(2);
       break;
     case Token.model:
-      int modelIndex = modelNumberParameter(3);
+      int modelIndex = modelNumberParameter(statement[3]);
       if (isSyntaxCheck)
         return;
       if (modelIndex >= viewer.getModelCount())
@@ -7658,7 +7667,7 @@ class Eval { //implements Runnable {
         propertyName = "off";
         break;
       case Token.model:
-        int modelIndex = modelNumberParameter(4);
+        int modelIndex = modelNumberParameter(statement[4]);
         if (isSyntaxCheck)
           return;
         if (modelIndex >= viewer.getModelCount())
@@ -7690,7 +7699,7 @@ class Eval { //implements Runnable {
         setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
         return;
       case Token.model:
-        int modelIndex = modelNumberParameter(4);
+        int modelIndex = modelNumberParameter(statement[4]);
         if (!isSyntaxCheck && modelIndex >= viewer.getModelCount())
           invalidArgument();
         propertyName = "model";
@@ -8775,7 +8784,7 @@ class Eval { //implements Runnable {
         propertyValue = str;
         break;
       case Token.model:
-        int modelIndex = modelNumberParameter(++i);
+        int modelIndex = modelNumberParameter(statement[++i]);
         if (modelIndex < 0) {
           propertyName = "fixed";
           propertyValue = Boolean.TRUE;
@@ -9712,7 +9721,7 @@ class Eval { //implements Runnable {
       case Token.model:
         if (surfaceObjectSeen)
           invalidArgument();
-        modelIndex = modelNumberParameter(++i);
+        modelIndex = modelNumberParameter(statement[++i]);
         if (modelIndex < 0) {
           propertyName = "fixed";
           propertyValue = Boolean.TRUE;

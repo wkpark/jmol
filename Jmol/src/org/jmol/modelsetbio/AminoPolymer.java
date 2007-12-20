@@ -217,7 +217,7 @@ public class AminoPolymer extends AlphaPolymer {
 
   private void createResidueHydrogenBond(int indexAminoGroup, int indexCarbonylGroup,
                                  BitSet bsA, BitSet bsB) {
-    short order;
+    short order = JmolConstants.BOND_HBOND_CALC;
     int aminoBackboneHbondOffset = indexAminoGroup - indexCarbonylGroup;
 /*    if (debugHbonds)
       Logger.debug("aminoBackboneHbondOffset=" +
@@ -229,25 +229,25 @@ public class AminoPolymer extends AlphaPolymer {
 */
     switch (aminoBackboneHbondOffset) {
     case 2:
-      order = JmolConstants.BOND_H_PLUS_2;
+      order |= JmolConstants.BOND_H_PLUS_2;
       break;
     case 3:
-      order = JmolConstants.BOND_H_PLUS_3;
+      order |= JmolConstants.BOND_H_PLUS_3;
       break;
     case 4:
-      order = JmolConstants.BOND_H_PLUS_4;
+      order |= JmolConstants.BOND_H_PLUS_4;
       break;
     case 5:
-      order = JmolConstants.BOND_H_PLUS_5;
+      order |= JmolConstants.BOND_H_PLUS_5;
       break;
     case -3:
-      order = JmolConstants.BOND_H_MINUS_3;
+      order |= JmolConstants.BOND_H_MINUS_3;
       break;
     case -4:
-      order = JmolConstants.BOND_H_MINUS_4;
+      order |= JmolConstants.BOND_H_MINUS_4;
       break;
     default:
-      order = JmolConstants.BOND_H_REGULAR;
+      order |= JmolConstants.BOND_H_REGULAR;
     }
     AminoMonomer donor = (AminoMonomer)monomers[indexAminoGroup];
     Atom nitrogen = donor.getNitrogenAtom();

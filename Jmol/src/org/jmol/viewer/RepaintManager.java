@@ -53,6 +53,8 @@ class RepaintManager {
     if (modelSet != null && currentModelIndex != modelIndex) {
       boolean fromDataFrame = viewer.isJmolDataFrame(currentModelIndex);
       boolean toDataFrame = viewer.isJmolDataFrame(modelIndex);
+      if (fromDataFrame)
+        viewer.setJmolDataFrame(null, -1, currentModelIndex);
       viewer.saveOrientation(viewer.getJmolFrameType(currentModelIndex));
       //System.out.println("saving orientation for " + currentModelIndex + " " + viewer.getJmolDataFrameType(currentModelIndex));
       if (fromDataFrame || toDataFrame) {

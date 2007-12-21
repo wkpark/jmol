@@ -864,17 +864,23 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public void setJmolDataFrame(String type, int modelIndex, int modelDataIndex) {
-    Model model = models[modelIndex];
-    if (model.dataFrames == null)
-      model.dataFrames = new Hashtable();
-    models[modelDataIndex].dataSourceFrame = modelIndex;
-    models[modelDataIndex].jmolFrameType = type;
-    model.dataFrames.put(type, new Integer(modelDataIndex));
+    Model model = models[type == null ? models[modelDataIndex].dataSourceFrame
+        : modelIndex];
+    if (type == null) {
+      //leaving a data frame -- just set generic to this one if quaternion
+      type = models[modelDataIndex].jmolFrameType;
+    }
+    if (modelIndex >= 0) {
+      if (model.dataFrames == null)
+        model.dataFrames = new Hashtable();
+      models[modelDataIndex].dataSourceFrame = modelIndex;
+      models[modelDataIndex].jmolFrameType = type;
+      model.dataFrames.put(type, new Integer(modelDataIndex));
+    }
     if (type.indexOf(" ") > 0) { //generic quaternion
       type = type.substring(0, type.indexOf(" "));
       model.dataFrames.put(type, new Integer(modelDataIndex));
     }
-    
   }
 
   public int getJmolDataFrameIndex(int modelIndex, String type) {

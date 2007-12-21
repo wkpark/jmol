@@ -3542,7 +3542,10 @@ class Eval { //implements Runnable {
         viewer.setRubberbandArgb(argb);
       return;
     case Token.selectionHalo:
-      argb = getArgbParamLast(2, true);
+      int i = 2;
+      if (tokAt(2) == Token.opaque)
+        i++;
+      argb = getArgbParamLast(i, true);
       if (isSyntaxCheck)
         return;
       viewer.loadShape(JmolConstants.SHAPE_HALOS);
@@ -4313,7 +4316,7 @@ class Eval { //implements Runnable {
     viewer.loadShape(JmolConstants.SHAPE_ECHO);
     viewer.addStateScript("frame " + viewer.getModelNumberDotted(modelIndex)
         + "; " + type + ";", false);
-    showString("frame " + viewer.getModelNumberDotted(modelIndex) + " created: "
+    showString("frame " + viewer.getModelNumberDotted(modelCount - 1) + " created: "
         + type);
   }
 
@@ -6160,6 +6163,9 @@ class Eval { //implements Runnable {
             isHyphen = true;
           isRange = isRange || modelIndex == modelIndex2;//(isRange || !isHyphen && modelIndex2 != modelIndex);
         }
+      } else {
+        //must have been a bad frame number. Just return.
+        return;
       }
     }
 

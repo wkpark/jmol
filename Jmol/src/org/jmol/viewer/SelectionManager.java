@@ -252,6 +252,8 @@ class SelectionManager {
       commands.append(cmd);
     StateManager.appendCmd(commands, "set hideNotSelected " + viewer.getBooleanProperty("hideNotSelected"));
     commands.append(viewer.getShapeProperty(JmolConstants.SHAPE_STICKS, "selectionState"));
+    if (viewer.getSelectionHaloEnabled())
+      StateManager.appendCmd(commands, "SelectionHalos ON");
     if (sfunc != null) 
       commands.append("end function\n\n");
     return commands.toString();

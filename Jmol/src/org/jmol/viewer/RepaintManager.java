@@ -113,10 +113,23 @@ class RepaintManager {
     }
     if (frameStep == 0)
       return;
+    int nDisplayed = 0;
+    int frameDisplayed = 0;
     for (int i = firstModelIndex; i != lastModelIndex; i += frameStep)
-      if (!viewer.isJmolDataFrame(i))
+      if (!viewer.isJmolDataFrame(i)) {
         bsVisibleFrames.set(i);
-    bsVisibleFrames.set(lastModelIndex);    
+        nDisplayed++;
+        frameDisplayed = i;
+      }
+    if (firstModelIndex == lastModelIndex || !viewer.isJmolDataFrame(lastModelIndex)
+        || nDisplayed == 0) {
+      bsVisibleFrames.set(lastModelIndex);
+      if (nDisplayed == 0)
+        firstModelIndex = lastModelIndex;
+      nDisplayed = 0;
+    }
+    if (nDisplayed == 1 && currentModelIndex < 0)
+      setCurrentModelIndex(frameDisplayed);
   }
 
   AnimationThread animationThread;

@@ -57,6 +57,7 @@ public class MarchingSquares {
   private final static int nContourMax = 100;
   private final static int defaultContourCount = 11; //odd is better
   private int nContours;
+  private int nContoursSpecified;
   private int contourType;//0, 1, or 2
   private Point4f thePlane;
   private boolean is3DContour;
@@ -91,7 +92,8 @@ public class MarchingSquares {
     this.thePlane = thePlane;
     this.thisContour = thisContour;
     is3DContour = (thePlane == null);
-    this.contourFromZero = contourFromZero;
+    nContoursSpecified = nContours;
+    this.contourFromZero = contourFromZero; //set false for MEP to complete the plane
     int i = (contourFromZero || is3DContour ? 0 : 1);
     this.nContours = (nContours == 0 ? defaultContourCount + i
         : nContours + i > nContourMax ? nContourMax : nContours + i);
@@ -512,7 +514,7 @@ public class MarchingSquares {
     boolean centerIsLow = true; //molecular surface-like
     int lastInside = -1;
     Logger.info("generateContourData min=" + min + " max=" + max
-        + " nContours=" + nContours);
+        + " nContours=" + nContours + " (" + nContoursSpecified + " specified)");
     for (int i = 0; i < nContours; i++) {
       contourIndex = i;
       float cutoff = 

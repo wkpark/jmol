@@ -35,6 +35,9 @@ import org.jmol.jvxl.data.VolumeData;
 
 public class JvxlReader extends VolumeFileReader {
 
+  private final static String JVXL_VERSION = "1.4";
+  
+  // 1.4 adds -nContours to indicate contourFromZero for MEP data mapped onto planes
   
   JvxlReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
@@ -129,14 +132,12 @@ public class JvxlReader extends VolumeFileReader {
   protected void readTitleLines() throws Exception {
     jvxlFileHeaderBuffer = new StringBuffer();
     skipComments(true);
-    int nLines = 1;
-    while (nLines <= 2) {
-      if (line == null || line.length() == 0)
-        line = "Line " + nLines;
-      jvxlFileHeaderBuffer.append(line).append('\n');
-      if (nLines++ == 1)
-        line = br.readLine();
-    }
+    if (line == null || line.length() == 0)
+      line = "Line 1";
+    jvxlFileHeaderBuffer.append(line).append('\n');
+    if ((line = br.readLine()) == null || line.length() == 0)
+      line = "Line 2";
+    jvxlFileHeaderBuffer.append(line).append('\n');
   }
 
   
@@ -287,10 +288,15 @@ public class JvxlReader extends VolumeFileReader {
       // could be plane or functionXY
       params.isContoured = (param3 != 0);
       int nContoursRead = parseInt();
-      if (params.nContours == 0 && nContoursRead != Integer.MIN_VALUE
-          && nContoursRead != 0) {
-        params.nContours = nContoursRead;
-        Logger.info("JVXL read: contours " + params.nContours);
+      if (nContoursRead != Integer.MIN_VALUE) {
+        if (nContoursRead < 0) {
+          nContoursRead = -1 - nContoursRead;
+          params.contourFromZero = false; //MEP data to complete the plane
+        }
+        if (nContoursRead != 0 && params.nContours == 0) {
+          params.nContours = nContoursRead;
+          Logger.info("JVXL read: contours " + params.nContours);
+        }
       }
     } else {
       params.isContoured = false;
@@ -610,33 +616,32 @@ public class JvxlReader extends VolumeFileReader {
   //// methods for creating the JVXL code  
 
   protected static void jvxlCreateHeaderWithoutTitleOrAtoms(VolumeData v, StringBuffer bs) {
-    jvxlCreateHeader(null, null, v, Integer.MAX_VALUE, null, null, bs);
+    jvxlCreateHeader(v, Integer.MAX_VALUE, null, null, bs);
   }
 
-  protected static void jvxlCreateHeader(String line1, String line2,
-                                         VolumeData v, int nAtoms, 
+  protected static void jvxlCreateHeader(VolumeData v, int nAtoms, 
                                          Point3f[] atomXyz, int[] atomNo,
-                                         StringBuffer bs) {
-    if (line1 != null)
-      bs.append(line1).append('\n');
-    if (line2 != null)
-      bs.append(line2).append('\n');
-    bs.append(nAtoms == Integer.MAX_VALUE ? -2 : -nAtoms).append(' ')
+                                         StringBuffer sb) {
+    // if the StringBuffer comes in non-empty, it should have two lines
+    // that do not start with # already present.
+    if (sb.length() == 0)
+      sb.append("Line 1\nLine 2\n");
+    sb.append(nAtoms == Integer.MAX_VALUE ? -2 : -nAtoms).append(' ')
       .append(v.volumetricOrigin.x).append(' ')
       .append(v.volumetricOrigin.y).append(' ')
       .append(v.volumetricOrigin.z).append(" ANGSTROMS\n");
     for (int i = 0; i < 3; i++)
-      bs.append(v.voxelCounts[i]).append(' ')
+      sb.append(v.voxelCounts[i]).append(' ')
         .append(v.volumetricVectors[i].x).append(' ')
         .append(v.volumetricVectors[i].y).append(' ')
         .append(v.volumetricVectors[i].z).append('\n');
     if (nAtoms == Integer.MAX_VALUE) {
-      jvxlAddDummyAtomList(v, bs);
+      jvxlAddDummyAtomList(v, sb);
       return;
     }
     nAtoms = Math.abs(nAtoms);
       for (int i = 0, n = 0; i < nAtoms; i++)
-        bs.append((n = Math.abs(atomNo[i])) + " " + n + ".0 "
+        sb.append((n = Math.abs(atomNo[i])) + " " + n + ".0 "
             + atomXyz[i].x + " " + atomXyz[i].y + " " + atomXyz[i].z + "\n");
   }
   
@@ -731,7 +736,7 @@ public class JvxlReader extends VolumeFileReader {
     }
     if (jvxlData.isContoured) {
       definitionLine += " " + jvxlData.nContours;
-      info += "; " + jvxlData.nContours + " contours";
+      info += "; " + Math.abs(jvxlData.nContours) + " contours";
     }
     // ...  mappedDataMin  mappedDataMax  valueMappedToRed  valueMappedToBlue ...
     float min = (jvxlData.mappedDataMin == Float.MAX_VALUE ? 0f : jvxlData.mappedDataMin);
@@ -762,7 +767,7 @@ public class JvxlReader extends VolumeFileReader {
   protected static String jvxlExtraLine(JvxlData jvxlData, int n) {
     return (-n) + " " + jvxlData.edgeFractionBase + " "
         + jvxlData.edgeFractionRange + " " + jvxlData.colorFractionBase + " "
-        + jvxlData.colorFractionRange + " Jmol voxel format version 1.1\n";
+        + jvxlData.colorFractionRange + " Jmol voxel format version " +  JVXL_VERSION + "\n";
     //0.9e adds color contours for planes and min/max range, contour settings
   }
 
@@ -775,8 +780,11 @@ public class JvxlReader extends VolumeFileReader {
       String s = jvxlData.jvxlFileHeader
           + (nSurfaces > 0 ? (-nSurfaces) + jvxlData.jvxlExtraLine.substring(2)
               : jvxlData.jvxlExtraLine);
-      if (s.indexOf("#JVXL") != 0)
-        data.append("#JVXL").append(jvxlData.isXLowToHigh ? "+\n" : "\n");
+      if (s.indexOf("#JVXL") != 0) {
+        data.append("#JVXL").append(jvxlData.isXLowToHigh ? "+" : "");
+        data.append(" VERSION ").append(JVXL_VERSION);
+        data.append("\n");
+      }
       data.append(s);
     }
     data.append("# ").append(msg).append('\n');

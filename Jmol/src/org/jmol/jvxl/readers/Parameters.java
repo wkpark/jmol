@@ -219,6 +219,7 @@ public class Parameters {
     contourFromZero = true;
     title = null;
     useIonic = false;
+    rangeAll = false;
   }
   
   String calculationType = "";
@@ -514,11 +515,11 @@ public class Parameters {
         cutoff = cutoff * cutoff;
     }
     isCutoffAbsolute = (cutoff > 0 && !isPositiveOnly);
-    contourFromZero = false;
+    contourFromZero = false; // fills out the plane
     //colorBySign = false;
     //isBicolorMap = false;
     if (isMapping || thePlane != null) {
-      if (!rangeDefined) {
+      if (!rangeDefined && !rangeAll) {
         valueMappedToRed = defaultMepMin;
         valueMappedToBlue = defaultMepMax;
         rangeDefined = true;
@@ -614,6 +615,7 @@ public class Parameters {
   boolean isCutoffAbsolute;
   boolean isPositiveOnly;
   
+  boolean rangeAll;
   boolean rangeDefined;
   float valueMappedToRed, valueMappedToBlue;
   float mappedDataMin;

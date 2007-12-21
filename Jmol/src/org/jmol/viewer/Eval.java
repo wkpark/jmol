@@ -9804,11 +9804,15 @@ class Eval { //implements Runnable {
         case Token.range:
           getToken(++i);
           colorRangeStage = 1;
-          continue;
+          propertyName = "rangeAll";
+          if (tokAt(i + 1) == Token.all)
+            getToken(++i);
+          break;
         default:
           signPt = i + 1;
           continue;
         }
+        break;
       case Token.file:
         continue;
       case Token.plus:
@@ -10235,10 +10239,15 @@ class Eval { //implements Runnable {
     }
 
     if (surfaceObjectSeen && isIsosurface && !isSyntaxCheck) {
-      String id = (String) viewer.getShapeProperty(iShape, "ID");
+      String s = (String) viewer.getShapeProperty(iShape, "ID");
+      float[] dataRange = (float[]) viewer.getShapeProperty(iShape, "dataRange");
       Integer n = (Integer) viewer.getShapeProperty(iShape, "count");
-      if (id != null)
-        showString(id + " created; number of isosurfaces = " + n);
+      if (s != null) {
+        s += " created; number of isosurfaces = " + n;
+        if (dataRange != null && dataRange[0] != dataRange[1])
+          s += "\ncolor range " + dataRange[2] + " " + dataRange[3] + "; mapped data range " + dataRange[0] + " to " + dataRange[1];
+        showString(s);
+      }
       setShapeProperty(iShape, "finalize", null);
     }
     if (translucency != null)

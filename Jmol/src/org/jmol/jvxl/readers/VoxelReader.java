@@ -273,7 +273,8 @@ public abstract class VoxelReader implements VertexDataServer {
     jvxlData.jvxlEdgeData = fractionData.toString();
     jvxlData.isBicolorMap = params.isBicolorMap;
     jvxlData.isContoured = params.isContoured;
-    jvxlData.nContours = params.nContours;
+    jvxlData.nContours = (params.contourFromZero 
+        ? params.nContours : -1 - params.nContours);
     jvxlData.nEdges = edgeCount;
     jvxlData.edgeFractionBase = edgeFractionBase;
     jvxlData.edgeFractionRange = edgeFractionRange;
@@ -506,7 +507,8 @@ public abstract class VoxelReader implements VertexDataServer {
     }
 
     applyColorScale();
-    jvxlData.nContours = params.nContours;
+    jvxlData.nContours = (params.contourFromZero 
+        ? params.nContours : -1 - params.nContours);
     jvxlData.jvxlExtraLine = JvxlReader.jvxlExtraLine(jvxlData, 1);
 
     jvxlData.jvxlFileMessage = "mapped: min = " + params.valueMappedToRed

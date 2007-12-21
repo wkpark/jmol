@@ -1698,6 +1698,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void fillAtomData(AtomData atomData, int mode) {
+    atomData.programInfo = "Jmol Version " + getJmolVersion(); 
     atomData.fileName = getFileName();
     modelSet.fillAtomData(atomData, mode);
   }

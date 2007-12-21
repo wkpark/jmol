@@ -324,7 +324,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   public Object getProperty(String property, int index) {
     if (property == "dataRange")
       return (thisMesh == null ? null : new float[] {
-          thisMesh.jvxlData.mappedDataMin, thisMesh.jvxlData.mappedDataMax });
+          thisMesh.jvxlData.mappedDataMin, thisMesh.jvxlData.mappedDataMax, thisMesh.jvxlData.valueMappedToRed, thisMesh.jvxlData.valueMappedToBlue });
     if (property == "moNumber")
       return new Integer(moNumber);
     if (thisMesh == null)

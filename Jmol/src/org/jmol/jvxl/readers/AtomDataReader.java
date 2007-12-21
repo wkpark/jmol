@@ -24,6 +24,7 @@
 package org.jmol.jvxl.readers;
 
 import java.util.BitSet;
+import java.util.Date;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -269,8 +270,10 @@ class AtomDataReader extends VolumeDataReader {
   protected void setHeader(String calcType, String line2) {
     Logger.info(calcType + " range " + xyzMin + " to " + xyzMax);
     jvxlFileHeaderBuffer = new StringBuffer();
-    jvxlFileHeaderBuffer.append(calcType + " range ").append(xyzMin).append(
-        " to ").append(xyzMax).append("\n").append(line2).append("\n");
+    if (atomData.programInfo != null)
+      jvxlFileHeaderBuffer.append("#created by ").append(atomData.programInfo).append(" on ").append(new Date()).append("\n");
+    jvxlFileHeaderBuffer.append(calcType).append(" range ").append(xyzMin)
+    .append(" to ").append(xyzMax).append("\n").append(line2).append("\n");
   }
 
   protected void setRangesAndAddAtoms(float ptsPerAngstrom, int maxGrid,
@@ -278,7 +281,7 @@ class AtomDataReader extends VolumeDataReader {
     setVoxelRange(0, xyzMin.x, xyzMax.x, ptsPerAngstrom, maxGrid);
     setVoxelRange(1, xyzMin.y, xyzMax.y, ptsPerAngstrom, maxGrid);
     setVoxelRange(2, xyzMin.z, xyzMax.z, ptsPerAngstrom, maxGrid);
-    JvxlReader.jvxlCreateHeader(null, null, volumeData, nWritten, atomXyz,
+    JvxlReader.jvxlCreateHeader(volumeData, nWritten, atomXyz,
         atomNo, jvxlFileHeaderBuffer);
   }
   

@@ -470,6 +470,11 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("rangeAll" == propertyName) {
+      params.rangeAll = true;
+      return true;
+    }
+
     if ("red" == propertyName) {
       params.valueMappedToRed = ((Float) value).floatValue();
       return true;
@@ -478,6 +483,7 @@ public class SurfaceGenerator {
     if ("blue" == propertyName) {
       params.valueMappedToBlue = ((Float) value).floatValue();
       params.rangeDefined = true;
+      params.rangeAll = false;
       return true;
     }
 
@@ -830,7 +836,6 @@ public class SurfaceGenerator {
     voxelReader.jvxlUpdateInfo();
     voxelReader.updateTriangles();
     voxelReader.discardTempData(true);
-    voxelReader = null;
     if (meshDataServer != null)
       meshDataServer.notifySurfaceMappingCompleted();
   }

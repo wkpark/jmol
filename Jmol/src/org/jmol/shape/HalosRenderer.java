@@ -59,13 +59,13 @@ public class HalosRenderer extends ShapeRenderer {
           colix = halos.colixSelection;
         if (colix == Graphics3D.USE_PALETTE)
           colix = Graphics3D.GOLD;
+        else if (colix == Graphics3D.INHERIT_ALL)
+          colix = Graphics3D.getColixInherited(colix, atom.getColix());
       } else if (isHidden) {
         continue;
       } else {
-        colix = Graphics3D.INHERIT_ALL;
-      }
-      if (colix == Graphics3D.INHERIT_ALL)
         colix = Graphics3D.getColixInherited(colix, atom.getColix());
+      }
       if (mad == 0)
         continue;
       render1(atom, mad, colix);

@@ -788,16 +788,18 @@ public class AtomSetCollection {
           if (checkRange111 && minDist2 > range2)
             continue;
         }
+        int atomSite = atoms[i].atomSite;
         if (special != null) {
           if (addBonds)
-            atomMap[atoms[i].atomSite] = special.atomIndex;
+            atomMap[atomSite] = special.atomIndex;
           special.bsSymmetry.set(iCellOpPt + iSym);
           special.bsSymmetry.set(iSym);
         } else {
           if (addBonds)
-            atomMap[atoms[i].atomSite] = atomCount;
+            atomMap[atomSite] = atomCount;
           Atom atom1 = newCloneAtom(atoms[i]);
           atom1.set(ptAtom);
+          atom1.atomSite = atomSite; 
           atom1.bsSymmetry = new BitSet();
           atom1.bsSymmetry.set(iCellOpPt + iSym);
           atom1.bsSymmetry.set(iSym);

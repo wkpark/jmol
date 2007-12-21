@@ -412,7 +412,10 @@ function jmolLoadInlineScript(model, script, targetSuffix) {
   if (!model)return
   if (!script)script ="";
   if (!targetSuffix)targetSuffix = 0;
-  jmolLoadInlineString(model, script, false, targetSuffix);
+  if (typeof(model)=="object")
+    jmolLoadInlineArray(model, script, false, targetSuffix);
+  else
+    jmolLoadInlineString(model, script, false, targetSuffix);
 }
 
 function jmolCheckBrowser(action, urlOrMessage, nowOrLater) {

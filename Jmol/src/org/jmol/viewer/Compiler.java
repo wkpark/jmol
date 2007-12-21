@@ -1850,6 +1850,7 @@ class Compiler {
     case Token.boundbox:
     case Token.element:
     case Token.string:
+    case Token.plane:
       key = (String) theValue;
       break;
     case Token.identifier:
@@ -1874,7 +1875,7 @@ class Compiler {
         tok = tokPeek();
       }
       boolean isCoordOrPlane = false;
-      if (key == null) {
+       if (key == null) {
         if (tok == Token.identifier) {
           //distance was specified, but to what?
           getToken();

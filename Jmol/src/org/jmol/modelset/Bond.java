@@ -96,7 +96,7 @@ public class Bond {
 
   public String getIdentity() {
     return (index + 1) + " "+ order + " " + atom1.getInfo() + " -- "
-        + atom2.getInfo();
+        + atom2.getInfo() + " " + atom1.distance(atom2);
   }
 
   public String formatLabel(String strFormat, int[] indices) {

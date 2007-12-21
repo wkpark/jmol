@@ -7021,7 +7021,7 @@ class Eval { //implements Runnable {
     if (isAtoms && label == null)
       label = viewer.getStandardLabelFormat();
     int pt = (label == null ? -1 : label.indexOf("%"));
-    if (bs == null || isSyntaxCheck || pt < 0)
+    if (bs == null || isSyntaxCheck || isAtoms && pt < 0)
       return (label == null ? "" : label);
     StringBuffer s = new StringBuffer();
     int len = bs.size();
@@ -10254,15 +10254,17 @@ class Eval { //implements Runnable {
     //these properties are all processed in MeshCollection.java
 
     switch (tok) {
+    case Token.nada:
     case Token.on:
-      propertyName = "on";
-      break;
     case Token.off:
-      propertyName = "off";
-      break;
     case Token.delete:
-      propertyName = "delete";
-      break;
+      if (iToken == 1)
+        setShapeProperty(shape, "thisID", (String) null);
+      if (tok == Token.nada)
+        return (iToken == 1);
+      if (!checkOnly)
+        setShapeProperty(shape, parameterAsString(iToken), null);
+      return true;
     case Token.dots:
       propertyValue = Boolean.TRUE;
     //fall through

@@ -174,6 +174,7 @@ public class Parameters {
     atomIndex = -1;
     blockCubeData = false; // Gaussian standard, but we allow for multiple surfaces one per data block
     bsIgnore = null;
+    bsSelected = null;
     bsSolvent = null;
     calculationType = "";
     center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);

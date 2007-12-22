@@ -148,8 +148,10 @@ abstract public class ModelSet extends ModelCollection {
     return -1;
   }
 
-  public String getSelectedTrajectories() {
+  public String getTrajectoryInfo() {
     String s = "";
+    if (trajectories == null)
+      return "";
     for (int i = modelCount; --i >= 0; )
       if (models[i].selectedTrajectory >= 0) {
         s = " or " + getModelNumberDotted(models[i].selectedTrajectory) + s;
@@ -159,7 +161,25 @@ abstract public class ModelSet extends ModelCollection {
       s = "set trajectory {" + s.substring(4) + "}"; 
     return s;
   }
-  
+
+  public BitSet getBitSetTrajectories() {
+    if (trajectories == null)
+      return null;
+    BitSet bsModels = new BitSet();
+    for (int i = modelCount; --i >= 0;)
+      if (models[i].selectedTrajectory >= 0) {
+        bsModels.set(models[i].selectedTrajectory);
+        i = models[i].trajectoryBaseIndex; //skip other trajectories
+      }
+    return bsModels;
+  }
+
+  public void setTrajectory(BitSet bsModels) {
+    for (int i = 0; i < modelCount; i++)
+      if (bsModels.get(i))
+        setTrajectory(i);
+  }
+
   public void setTrajectory(int modelIndex) {
     if (modelIndex < 0 || !models[modelIndex].isTrajectory)
       return;

@@ -8480,7 +8480,7 @@ class Eval { //implements Runnable {
         msg = "set strandCountForStrands " + viewer.getStrandCount(JmolConstants.SHAPE_STRANDS) 
           + "; set strandCountForMeshRibbon " + viewer.getStrandCount(JmolConstants.SHAPE_MESHRIBBON);
       } else if (str.equalsIgnoreCase("trajectory") || str.equalsIgnoreCase("trajectories")) {
-        msg = viewer.getSelectedTrajectories();
+        msg = viewer.getTrajectoryInfo();
       }
       break;
     case Token.axes:

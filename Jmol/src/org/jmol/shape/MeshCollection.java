@@ -371,7 +371,7 @@ public abstract class MeshCollection extends Shape {
       if (cmd == null)
         continue;
       Mesh mesh = meshes[i];
-      if (mesh.modelIndex > 0 && modelCount > 1)
+      if (mesh.modelIndex >= 0 && modelCount > 1)
         appendCmd(s, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));
       appendCmd(s, cmd);
       if (cmd.charAt(0) != '#') {

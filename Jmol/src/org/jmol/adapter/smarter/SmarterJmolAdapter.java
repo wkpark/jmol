@@ -25,6 +25,7 @@
 package org.jmol.adapter.smarter;
 
 import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolFileReaderInterface;
 import org.jmol.util.CompoundDocument;
 import org.jmol.util.Escape;
 import org.jmol.util.TextFormat;
@@ -89,15 +90,19 @@ public class SmarterJmolAdapter extends JmolAdapter {
     }
   }
 
-  public Object openBufferedReaders(String[] names, String[] types,
-                                    BufferedReader[] bufferedReader) {
+  public Object openBufferedReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
+                                    Hashtable[] htParams) {
     //FilesOpenThread
-    int size = Math.min(names.length, bufferedReader.length);
+    int size = names.length;
     AtomSetCollection[] atomSetCollections = new AtomSetCollection[size];
     for (int i = 0; i < size; i++) {
       try {
+        BufferedReader reader = fileReader.getBufferedReader(i);
+        if (reader == null)
+          return null;
         Object atomSetCollectionOrErrorMessage =
-          Resolver.resolve(names[i], (types == null ? null : types[i]), bufferedReader[i]);
+          Resolver.resolve(names[i], (types == null ? null : types[i]), reader, 
+              (htParams == null ? null : htParams[i]));
         if (atomSetCollectionOrErrorMessage instanceof String)
           return atomSetCollectionOrErrorMessage;
         if (atomSetCollectionOrErrorMessage instanceof AtomSetCollection) {
@@ -120,18 +125,22 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return result; 
   }
 
-  public Object openZipFiles(InputStream is, String fullPathNameInThread,
-                             String fileName, String[] zipDirectory,
-                             Hashtable htParams, boolean doCombine,
-                             int subFilePtr) {
+  public Object openZipFiles(InputStream is, String fileName, String[] zipDirectory,
+                             Hashtable htParams, boolean asBufferedReader) {
+    return openZipFiles(is, fileName, zipDirectory, htParams, 1, asBufferedReader);
+  }
 
-    int[] params = null;
+  private Object openZipFiles(InputStream is, String fileName, String[] zipDirectory,
+                             Hashtable htParams, int subFilePtr, boolean asBufferedReader) {
+
+    boolean doCombine = (subFilePtr == 1);
+    int[] params = (htParams == null ? null : (int[]) htParams
+        .get("params"));
     String[] subFileList = (htParams == null ? null : (String[]) htParams
         .get("subFileList"));
     String subFileName = (subFileList == null
         || subFilePtr >= subFileList.length ? null : subFileList[subFilePtr]);
-    int selectedFile = (htParams == null ? 0 : (params = ((int[]) htParams
-        .get("params")))[0]);
+    int selectedFile = (params == null ? 1 : params[0]);
     if (selectedFile > 0 && doCombine && params != null)
       params[0] = 0;
     // zipDirectory[0] is the manifest if present
@@ -192,8 +201,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
               new ByteArrayInputStream(bytes));
           String[] zipDir2 = ZipUtil.getZipDirectoryAndClose(bis, true);
           bis = new BufferedInputStream(new ByteArrayInputStream(bytes));
-          Object clientFiles = openZipFiles(bis, fullPathNameInThread, fileName
-              + "|" + thisEntry, zipDir2, htParams, false, ++subFilePtr);
+          Object clientFiles = openZipFiles(bis, fileName
+              + "|" + thisEntry, zipDir2, htParams, ++subFilePtr, asBufferedReader);
           if (clientFiles instanceof String) {
             if (ignoreErrors)
               continue;
@@ -204,6 +213,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
               htCollections.put(thisEntry, clientFiles);
             else
               vCollections.addElement(clientFiles);
+          } else if (clientFiles instanceof BufferedReader) {
+            if (doCombine)
+              zis.close();
+            return clientFiles; // FileReader has requested a zip file BufferedReader
           } else {
             if (ignoreErrors)
               continue;
@@ -215,8 +228,14 @@ public class SmarterJmolAdapter extends JmolAdapter {
               new BufferedInputStream(new ByteArrayInputStream(bytes))))
               .getAllData().toString()
               : new String(bytes));
+          BufferedReader reader = new BufferedReader(new StringReader(sData)); 
+          if (asBufferedReader) {
+            if (doCombine)
+              zis.close();
+            return reader;
+          }
           Object clientFile = Resolver.resolve(fileName + "|" + ze.getName(),
-              null, new BufferedReader(new StringReader(sData)), htParams);
+              null, reader, htParams);
           if (clientFile instanceof AtomSetCollection) {
             if (haveManifest && !exceptFiles)
               htCollections.put(thisEntry, clientFile);
@@ -240,8 +259,11 @@ public class SmarterJmolAdapter extends JmolAdapter {
       if (doCombine)
         zis.close();
       if (isSpartan) {
-        Object clientFile = Resolver.resolve(fileName, null,
-            new BufferedReader(new StringReader(data.toString())));
+        BufferedReader reader = new BufferedReader(new StringReader(data.toString()));
+        if (asBufferedReader) {
+          return reader;
+        }
+        Object clientFile = Resolver.resolve(fileName, null, reader);
         if (clientFile instanceof String)
           return clientFile;
         if (clientFile instanceof AtomSetCollection) {

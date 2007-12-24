@@ -30,6 +30,7 @@ import org.jmol.util.ZipUtil;
 import org.jmol.util.Logger;
 
 import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolFileReaderInterface;
 
 import java.net.URL;
 import java.net.URLConnection;
@@ -78,16 +79,11 @@ class FileManager {
   private String fileType;
 
   private String inlineData;
-  //private String[] inlineDataArray; //abandoned
   
   String getInlineData(int iData) {
     return (iData < 0 ? inlineData : "");//iData < inlineDataArray.length ? inlineDataArray[iData] : "");  
   }
-/*     
-  String[] getInlineDataArray() {
-    return inlineDataArray;  
-  }
-*/
+
   private String loadScript; 
 
   FileOpenThread fileOpenThread;
@@ -224,7 +220,7 @@ class FileManager {
     }
     script += "end " + tag + ";set dataSeparator " + oldSep;
     setLoadScript(script, isAppend);
-    Logger.info("FileManager.openStringInline(string[])");
+    Logger.info("FileManager.openStringsInline(string[])");
     openErrorMessage = null;
     fullPathName = fileName = "string[]";
     inlineData = "";
@@ -411,29 +407,7 @@ class FileManager {
   void setAppletProxy(String appletProxy) {
     this.appletProxy = (appletProxy ==  null || appletProxy.length() == 0 ? null : appletProxy);
   }
-/*  
-  private void dumpDocumentBase(String documentBase) {
-    Logger.info("dumpDocumentBase:" + documentBase);
-    Object inputStreamOrError =
-      getInputStreamOrErrorMessageFromName(documentBase);
-    if (inputStreamOrError instanceof String) {
-      Logger.error("file ERROR:" + inputStreamOrError);
-    } else {
-      BufferedReader br =
-        new BufferedReader(new
-                           InputStreamReader((InputStream)inputStreamOrError));
-      String line;
-      try {
-        while ((line = br.readLine()) != null)
-          Logger.info(line);
-        br.close();
-      } catch (Exception ex) {
-        Logger.error("exception caught:" + ex);
-      }
-    }
-  }
-*/
-  // mth jan 2003 -- there must be a better way for me to do this!?
+
   private final static String[] urlPrefixes = {"http:", "https:", "ftp:", "file:"};
 
   private void setNames(String[] names) {
@@ -448,11 +422,11 @@ class FileManager {
     if (name.indexOf("=") == 0)
       name = TextFormat.formatString(viewer.getLoadFormat(), "FILE", name.substring(1));
     String defaultDirectory = viewer.getDefaultDirectory();
+    if (defaultDirectory.length() != 0 && name.indexOf(":") < 0)
+      name = defaultDirectory + "/" + name;
     if (appletDocumentBase != null) {
       // This code is only for the applet
       try {
-        if (defaultDirectory.length() != 0 && name.indexOf(":") < 0)
-          name = defaultDirectory + "/" + name;
         URL url = new URL(appletDocumentBase, name);
         names[0] = url.toString();
         // we add one to lastIndexOf(), so don't worry about -1 return value
@@ -477,8 +451,6 @@ class FileManager {
         return names;
       }
     }
-    if (name.indexOf(":") < 0 && defaultDirectory.length() > 0)
-      name = defaultDirectory + "/" + name;
     File file = new File(name);
     names[0] = file.getAbsolutePath();
     names[1] = file.getName();
@@ -678,8 +650,8 @@ class FileManager {
       InputStream is = new BufferedInputStream(
           (InputStream) getInputStreamOrErrorMessageFromName(fileName, false),
           8192);
-      Object clientFile = modelAdapter.openZipFiles(is, fullPathNameInThread,
-          fileName, zipDirectory, htParams, true, 1);
+      Object clientFile = modelAdapter.openZipFiles(is, fileName, zipDirectory,
+          htParams, false);
       if (clientFile instanceof String)
         errorMessage = (String) clientFile;
       else
@@ -697,80 +669,86 @@ class FileManager {
     }
   }
   
-  class FilesOpenThread implements Runnable {
+  class FilesOpenThread implements Runnable, JmolFileReaderInterface {
     //boolean terminated;
     String errorMessage;
     private String[] fullPathNamesInThread;
     private String[] namesAsGivenInThread;
     private String[] fileTypesInThread;
     Object clientFile;
-    private Reader[] readers;
+    private Reader[] stringReaders;
+    private Hashtable[] htParamsSet;
 
-    FilesOpenThread(String[] name, String[] nameAsGiven, String[] types, Reader[] readers) {
+    FilesOpenThread(String[] name, String[] nameAsGiven, String[] types,
+        Reader[] readers) {
       fullPathNamesInThread = name;
       namesAsGivenInThread = nameAsGiven;
       fileTypesInThread = types;
-      this.readers = readers;
+      this.stringReaders = readers;
     }
 
     public void run() {
-      if (readers != null) {
-        openReaders();
-        readers = null;
+      if (stringReaders != null) {
+        openStringReaders();
+        stringReaders = null;
       } else {
-        InputStream[] istream = new InputStream[namesAsGivenInThread.length];
-        for (int i = 0; i < namesAsGivenInThread.length; i++) {
-          Object t = getInputStreamOrErrorMessageFromName(namesAsGivenInThread[i], true);
-          if (! (t instanceof InputStream)) {
-            errorMessage = (t == null
-                            ? "error opening:" + namesAsGivenInThread[i]
-                            : (String)t);
-            //terminated = true;
-            return;
-          }
-          istream[i] = (InputStream) t;
-        }
-        openInputStream(istream);
+        htParamsSet = new Hashtable[fullPathNamesInThread.length];
+        htParamsSet[0] = new Hashtable();
+        Object clientFile = modelAdapter.openBufferedReaders(this,
+            fullPathNamesInThread, fileTypesInThread, htParamsSet);
+        if (clientFile instanceof String)
+          errorMessage = (String) clientFile;
+        else
+          this.clientFile = clientFile;
+        if (errorMessage != null)
+          Logger.error("file ERROR: " + errorMessage);
       }
-      if (errorMessage != null)
-        Logger.error("file ERROR: " + errorMessage);
-      //terminated = true;
     }
-
-    private void openInputStream(InputStream[] istream) {
-      readers = new Reader[istream.length];
-      for (int i = 0; i < istream.length; i++) {
-        BufferedInputStream bis = new BufferedInputStream(istream[i], 8192);
-        InputStream is = bis;
-        try {
-          if (CompoundDocument.isCompoundDocument(is)) {
-            CompoundDocument doc = new CompoundDocument(bis);
-            readers[i] = new StringReader("" + doc.getAllData());
-          } else if (isGzip(is)) {
-            readers[i] = new InputStreamReader(new GZIPInputStream(bis));
-          } else {
-            readers[i] = new InputStreamReader(is);            
-          }
-        } catch (Exception ioe) {
-          errorMessage = ioe.getMessage();
-          return;
-        }
-      }
-      openReaders();
-    }
-
-    private void openReaders() {
-      BufferedReader[] buffered = new BufferedReader[readers.length];
-      for (int i = 0; i < readers.length; i++) {
-        buffered[i] = new BufferedReader(readers[i]);
-      }
-      Object clientFile =
-        modelAdapter.openBufferedReaders(fullPathNamesInThread, fileTypesInThread,
-                                         buffered);
+    
+    private void openStringReaders() {
+      Object clientFile = modelAdapter.openBufferedReaders(this,
+          fullPathNamesInThread, fileTypesInThread, null);
+      if (clientFile == null)
+        return; // errorMessage has been set in getBufferedReader(int i);
       if (clientFile instanceof String)
-        errorMessage = (String)clientFile;
+        errorMessage = (String) clientFile;
       else
         this.clientFile = clientFile;
+    }
+
+    /**
+     * called by SmartJmolAdapter to request another buffered reader,
+     * rather than opening all the readers at once.
+     * 
+     * @param i   the reader index
+     * @return    a BufferedReader or null in the case of an error
+     * 
+     */
+    public BufferedReader getBufferedReader(int i) {
+      if (stringReaders != null)
+        return new BufferedReader(stringReaders[i]);
+      String name = fullPathNamesInThread[i];
+      String[] subFileList = null;
+      Hashtable htParams = htParamsSet[0]; // for now -- just reusing this
+      htParams.remove("subFileList");
+      if (name.indexOf("|") >= 0)
+        name = (subFileList = TextFormat.split(name, "|"))[0];
+      Object t = getUnzippedBufferedReaderOrErrorMessageFromName(name, true,
+          false);
+      if (t instanceof ZipInputStream) {
+        if (subFileList != null)
+          htParams.put("subFileList", subFileList);
+        String[] zipDirectory = getZipDirectory(name, true);
+        InputStream is = new BufferedInputStream(
+            (InputStream) getInputStreamOrErrorMessageFromName(name, false),
+            8192);
+        t = modelAdapter.openZipFiles(is, name, zipDirectory, htParams, true);
+      }
+      if (t instanceof BufferedReader)
+        return (BufferedReader) t;
+      errorMessage = (t == null ? "error opening:" + namesAsGivenInThread[i]
+          : (String) t);
+      return null;
     }
   }
 }

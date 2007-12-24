@@ -154,19 +154,19 @@ public Object openBufferedReader(String name, String type,
    * considered an error condition and the returned String is the error
    * message. 
    *
+   * @param fileReader  the thread requesting a set of files if bufferedReaders is null
    * @param names File names, String or URL acting as the source of each reader
    * @param types File types, if known, or null
-   * @param bufferedReader The array of BufferedReader
+   * @param htParams  The input parameters for each file to load
    * @return The clientFile or String with an error message
    */
-  public Object openBufferedReaders(String[] names, String[] types,
-                                    BufferedReader[] bufferedReader) {
+  public Object openBufferedReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
+                                    Hashtable[] htParams) {
     return null;
   }
 
-  public Object openZipFiles(InputStream is, String fullPathNameInThread,
-                             String fileName, String[] zipDirectory,
-                             Hashtable htParams, boolean doCombine, int subFilePtr) {
+  public Object openZipFiles(InputStream is, String fileName, String[] zipDirectory,
+                             Hashtable htParams, boolean asBufferedReader) {
     return null;
   }
   
@@ -185,14 +185,6 @@ public Object openBufferedReader(String name, String type,
                                    BufferedReader bufferedReader) {
     return openBufferedReader(name, type, bufferedReader, null);
   }
-
-  public Object openBufferedReaders(String[] name,
-                                    BufferedReader[] bufferedReader) {
-    return openBufferedReaders(name, null, bufferedReader);
-  }
-
-
-
 
   public Object openDOMReader(Object DOMNode) {
     return null;

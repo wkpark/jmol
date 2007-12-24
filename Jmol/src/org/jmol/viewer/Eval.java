@@ -113,7 +113,9 @@ class Eval { //implements Runnable {
   private Token[] statement;
   private int statementLength;
   private BitSet bsSubset;
-  private boolean isScriptCheck, historyDisabled;
+  boolean isScriptCheck;
+
+  private boolean historyDisabled;
 
   //Thread myThread;
 
@@ -248,7 +250,6 @@ class Eval { //implements Runnable {
   void runEval(boolean checkScriptOnly, boolean openFiles,
                boolean historyDisabled) {
     // only one reference now -- in Viewer
-    //refresh();
     boolean tempOpen = fileOpenCheck;
     fileOpenCheck = openFiles;
     viewer.pushHoldRepaint();
@@ -704,7 +705,7 @@ class Eval { //implements Runnable {
 
   private int commandHistoryLevelMax = 0;
 
-  private void setStatement(int pc) throws ScriptException {
+  private boolean setStatement(int pc) throws ScriptException {
     statement = aatoken[pc];
     statementLength = statement.length;
     Token[] fixed;
@@ -713,8 +714,8 @@ class Eval { //implements Runnable {
     for (i = 1; i < statementLength; i++)
       if (statement[i].tok == Token.define)
         break;
-    if (i == statementLength)
-      return;
+    if (i == statementLength)// || isScriptCheck)  
+      return i == statementLength;
     fixed = new Token[statementLength];
     fixed[0] = statement[0];
     boolean isExpression = false;
@@ -800,6 +801,7 @@ class Eval { //implements Runnable {
     }
     statement = fixed;
     statementLength = j;
+    return true;
   }
 
   private Object getStringObjectAsToken(String s, String key) {
@@ -834,7 +836,12 @@ class Eval { //implements Runnable {
       if (!checkContinue())
         break;
       Token token = aatoken[pc][0];
-      setStatement(pc);
+      //  when checking scripts, we can't check statments 
+      //  containing @{...}
+      if (!setStatement(pc)) {
+        Logger.info(getCommand() + " -- STATEMENT CONTAINING @{} SKIPPED");
+        continue;
+      }
       if (lineNumbers[pc] > lineEnd)
         break;
       thisCommand = getCommand();
@@ -1635,7 +1642,7 @@ class Eval { //implements Runnable {
     expressionResult = ((Token) expressionResult).value;
     if (bsRequired && expressionResult instanceof String) {
       // allow for select @{x} where x is a string that can evaluate to a bitset
-      expressionResult = getAtomBitSet(this, viewer, (String) expressionResult);
+      expressionResult = (isScriptCheck ? new BitSet() : getAtomBitSet(this, viewer, (String) expressionResult));
     }
     if (!bsRequired && !(expressionResult instanceof BitSet))
       return null; // because result is in expressionResult in that case
@@ -7732,7 +7739,8 @@ class Eval { //implements Runnable {
     int i = 3;
     //set echo name {x y z}
     if (isCenterParameter(i)) {
-      setShapeProperty(JmolConstants.SHAPE_ECHO, "xyz", centerParameter(i));
+      if (!isSyntaxCheck)
+        setShapeProperty(JmolConstants.SHAPE_ECHO, "xyz", centerParameter(i));
       return;
     }
     int pos = intParameter(i++);
@@ -11081,7 +11089,19 @@ class Eval { //implements Runnable {
       for (int i = nParam; --i >= 0;)
         args[i] = getX();
       xPt--;
+      //no script checking of functions because
+      //we cannot know what variables are real
+      //if this is a property selector, as in x.func(), then we 
+      //just exit; otherwise we add a new TRUE to xStack
+      if (isScriptCheck)
+        return (op.tok == Token.propselector ? true : addX(true)); 
       switch (tok) {
+      case Token.distance:
+        if (op.tok == Token.propselector)
+          return evaluateDistance(args);
+      //fall through
+      case Token.angle:
+        return evaluateMeasure(args, op.tok == Token.angle);
       case Token.function:
         return evaluateUserFunction((String) op.value, args);
       case Token.find:
@@ -11116,12 +11136,6 @@ class Eval { //implements Runnable {
         return evaluatePoint(args);
       case Token.plane:
         return evaluatePlane(args);
-      case Token.distance:
-        if (op.tok == Token.propselector)
-          return evaluateDistance(args);
-      //fall through
-      case Token.angle:
-        return evaluateMeasure(args, op.tok == Token.angle);
       case Token.connected:
         return evaluateConnected(args);
       case Token.substructure:
@@ -11761,11 +11775,13 @@ class Eval { //implements Runnable {
       if (x2.tok == Token.list)
         x2 = Token.selectItem(x2);
 
-      if (op.tok == Token.opNot)
-        return (x2.tok == Token.bitset ? addX(BitSetUtil.copyInvert(Token
-            .bsSelect(x2), (x2.value instanceof BondSet ? viewer
-            .getBondCount() : viewer.getAtomCount()))) : addX(!Token
-            .bValue(x2)));
+      if (op.tok == Token.opNot) 
+        return (isScriptCheck ? addX(true) 
+            : x2.tok == Token.bitset ? 
+              addX(BitSetUtil.copyInvert(Token.bsSelect(x2), 
+                (x2.value instanceof BondSet ? viewer.getBondCount() 
+                    : viewer.getAtomCount()))) 
+            : addX(!Token.bValue(x2)));
       int iv = op.intValue & ~Token.minmaxmask;
       if (op.tok == Token.propselector) {
         switch (iv) {
@@ -11775,7 +11791,7 @@ class Eval { //implements Runnable {
           return addX(Token.typeOf(x2));
         case Token.lines:
           if (x2.tok != Token.string)
-            return false;
+            return (isScriptCheck ? addX(1) : false);
           String s = (String) x2.value;
           s = TextFormat.simpleReplace(s, "\n\r", "\n").replace('\r', '\n');
           return addX(TextFormat.split(s, '\n'));
@@ -11795,8 +11811,10 @@ class Eval { //implements Runnable {
           }
           break;
         case Token.boundbox:
-          return evaluateBoundBox(x2);
+          return (isScriptCheck ? addX("x") : evaluateBoundBox(x2));
         }
+        if (isScriptCheck)
+          return addX(Token.sValue(x2));
         if (x2.tok == Token.string) {
           Object v = Token.unescapePointOrBitsetAsToken(Token.sValue(x2));
           if (!(v instanceof Token))
@@ -11809,6 +11827,8 @@ class Eval { //implements Runnable {
       //binary:
       String s;
       Token x1 = getX();
+      if (isScriptCheck)
+        return addX(Token.sValue(x1));
       if (x1.tok == Token.list)
         x1 = Token.selectItem(x1);
       switch (op.tok) {

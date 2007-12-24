@@ -437,6 +437,9 @@ public class Token {
 
   // ___.xxx(a)
   
+  // a.distance(b) is in a different set -- x.distance(b,c) -- because it CAN take
+  // two parameters and it CAN be a dot-function (but not both together)
+  
   final static int split        = 0  | 1 << 3 | mathfunc | mathproperty;
   final static int join         = 1  | 1 << 3 | mathfunc | mathproperty;
   final static int trim         = 2  | 1 << 3 | mathfunc | mathproperty;  
@@ -451,10 +454,15 @@ public class Token {
   // a maximum number of parameters, and the actual number is check in the evaluateXXX call.
   
   // xxx(a,b)
-  
-  final static int data         = 2  | 2 << 3 | mathfunc | command;
 
+  final static int data         = 2  | 2 << 3 | mathfunc | command;
   // ___.xxx(a,b)
+
+  // note that distance is here because it can take two forms:
+  //     a.distance(b)
+  // and
+  //     distance(a,b)
+  //so it can be a math property and it can have up to two parameters
   
   final static int distance     = 1  | 2 << 3 | mathfunc | mathproperty;
   final static int replace      = 3  | 2 << 3 | mathfunc | mathproperty;

@@ -1,4 +1,6 @@
-defaultdirectory="c:/jmol-dev/workspace/jmol-documentation/script_documentation/examples-11/data"
+defaultdirectory="http://chemapps.stolaf.edu/jmol/docs/examples-11/data"
+load cyclohexane_movie.xyz;pts = {C5}.split();print pts;draw @{pts.xyz.sub({1 0 0})} "X"
+#defaultdirectory="c:/jmol-dev/workspace/jmol-documentation/script_documentation/examples-11/data"
 message 2
 #set showscript  # for slow operation
 
@@ -532,8 +534,8 @@ set rangeSelected true;
 select protein and *:A;cartoon;color temperature
 load 5hvp.cif;restrict *%1,*%2;color altloc;label %A  ;refresh;# alternate Location "%A"
 load "quartz.cif" {1 1 1};label %.2X %.2Y %.2Z ;refresh;# fractional coordinates "%X" "%Y" "%Z"
-load "agFUPMOS.cif" {1 1 1};color molecule;label %N ;refresh;# molecule number "%N"
-load "agFUPMOS.cif" {1 1 1};color molecule;select fluorine;label %S ;refresh;# crystallographic site "%S"
+load "AgFUPMOS.cif" {1 1 1};color molecule;label %N ;refresh;# molecule number "%N"
+load "AgFUPMOS.cif" {1 1 1};color molecule;select fluorine;label %S ;refresh;# crystallographic site "%S"
 load 1JGQ.pdb;color insertion;restrict none;select *;cartoon on
 
 
@@ -812,7 +814,7 @@ load planes.jvxl;moveto 1.0 905 -411 -107 51.8 50;set axesMolecular; axes on
 isosurface myiso1 "planes.jvxl" 1
 isosurface myiso2 "planes.jvxl" 2
 isosurface myiso3 "planes.jvxl" 3
-load "fileset" "ch3cl.mol" "ch3cl.mol";moveto 1.0 -507 -831 -230 56.6;
+load files "ch3cl.mol" "ch3cl.mol";moveto 1.0 -507 -831 -230 56.6;
 frame 1001;isosurface orb1 center (atomno=1) phase atomicOrbital 2 1 1
 frame 2001;isosurface orb2 center (atomno=2) phase atomicOrbital 2 1 1
 isosurface orb3 center (atomno=5) FIXED phase atomicOrbital 2 1 1
@@ -950,7 +952,7 @@ isosurface lumo on; isosurface homo on;
 load ethene.spartan;moveto 1.0 -988 -152 -30 71.9;set axesmolecular;axes on
 isosurface homo1 color absolute -0.008 0.008 plane "yz" mo 8
 isosurface homo2 color absolute -0.008 0.008 plane "xz" mo 8
-load "fileset" "ethene.spartan" "ethene.spartan";moveto 1.0 -988 -152 -30 50.9;set axesmolecular;axes on
+load files "ethene.spartan" "ethene.spartan";moveto 1.0 -988 -152 -30 50.9;set axesmolecular;axes on
 frame 1001;isosurface homo1 color absolute -0.008 0.008 plane "yz" mo 8
 frame 2001;isosurface homo2 color absolute -0.008 0.008 plane "xz" mo 8
 frame 1001;

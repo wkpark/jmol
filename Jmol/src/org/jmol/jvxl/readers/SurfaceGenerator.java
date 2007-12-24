@@ -663,13 +663,11 @@ public class SurfaceGenerator {
       return true;
     }
 
-    if ("lcaoCartoon" == propertyName) {
+    if ("lcaoCartoonCenter" == propertyName) {
       if (++state != STATE_DATA_READ)
         return true;
-      Vector3f[] info = (Vector3f[]) value;
-      // z x center
       if (params.center.x == Float.MAX_VALUE)
-        params.center.set(info[2]);
+        params.center.set((Vector3f)value);
       return false;
     }
 

@@ -211,11 +211,12 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
     }
 
     if ("lcaoCartoon" == propertyName) {
-      // z x center rotationAxis (x, y, or z; scaled by radians) 
+      // z x center rotationAxis (only one of x, y, or z is nonzero; in radians) 
       Vector3f[] info = (Vector3f[]) value;
       if (!explicitID)
         setPropertySuper("thisID", null, null);
-      if (sg.setParameter("lcaoCartoon", value))
+      //center (info[2]) is set in SurfaceGenerator
+      if (sg.setParameter("lcaoCartoonCenter", info[2]))
         return;
       drawLcaoCartoon(info[0], info[1], info[3]);
       return;
@@ -461,6 +462,7 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
 
   private void drawLcaoCartoon(Vector3f z, Vector3f x, Vector3f rotAxis) {
     String lcaoCartoon = sg.setLcao();
+    //really rotRadians is just one of these -- x, y, or z -- not all
     float rotRadians = rotAxis.x + rotAxis.y + rotAxis.z;
     defaultColix = Graphics3D.getColix(sg.getColor(1));
     int colorNeg = sg.getColor(-1);

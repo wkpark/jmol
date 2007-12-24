@@ -248,7 +248,7 @@ class Eval { //implements Runnable {
   private Thread currentThread = null;
 
   void runEval(boolean checkScriptOnly, boolean openFiles,
-               boolean historyDisabled) {
+               boolean historyDisabled, boolean listCommands) {
     // only one reference now -- in Viewer
     boolean tempOpen = fileOpenCheck;
     fileOpenCheck = openFiles;
@@ -261,7 +261,7 @@ class Eval { //implements Runnable {
     timeBeginExecution = System.currentTimeMillis();
     this.historyDisabled = historyDisabled;
     try {
-      instructionDispatchLoop(false);
+      instructionDispatchLoop(listCommands);
       String script = viewer.getInterruptScript();
       if (script != "")
         runScript(script, null);

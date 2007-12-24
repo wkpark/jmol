@@ -149,6 +149,10 @@ public class Pmesh extends MeshFileCollection {
       if (!readPolygonIndexes(br))
         return false;
       Logger.debug("polygonIndexes read");
+      if (currentMesh.polygonCount == 0) {
+        currentMesh.setPolygonCount(1);
+        currentMesh.polygonIndexes[0] = new int[] {0, 0, 0};
+      }
     } catch (Exception e) {
       if (pmeshError == null)
         pmeshError = "pmesh ERROR: read exception: " + e;
@@ -196,11 +200,12 @@ public class Pmesh extends MeshFileCollection {
 
   private boolean readPolygonCount(BufferedReader br) throws Exception {
     int n = parseInt(br.readLine());
-    if (n > 0)
+    if (n >= 0) {
       currentMesh.setPolygonCount(n);
+    }
     else
-      pmeshError = "pmesh ERROR: polygon count must be > 0 (" + n + ")";
-    return (n > 0);
+      pmeshError = "pmesh ERROR: polygon count must be >= 0 (" + n + ")";
+    return (n >= 0);
   }
 
   private boolean readPolygonIndexes(BufferedReader br) throws Exception {

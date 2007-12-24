@@ -477,6 +477,7 @@ public class Jmol extends JPanel {
         ._("no display (and also exit when done)"));
     options.addOption("c", "check", false, GT._("check script syntax only"));
     options.addOption("i", "silent", false, GT._("silent startup operation"));
+    options.addOption("l", "list", false, GT._("list commands during script execution"));
     options.addOption("o", "noconsole", false, GT
         ._("no console -- all output to sysout"));
     options.addOption("x", "exit", false, GT
@@ -576,6 +577,11 @@ public class Jmol extends JPanel {
     if (line.hasOption("i")) {
       commandOptions += "-i";
       isSilent = Boolean.TRUE;
+    }
+
+    //list commands during script operation
+    if (line.hasOption("l")) {
+      commandOptions += "-l";
     }
 
     //output to sysout

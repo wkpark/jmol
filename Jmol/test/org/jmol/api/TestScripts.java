@@ -273,7 +273,7 @@ class TestScriptsImpl extends TestCase {
     if (checkOnly) {
       viewer.setAppletContext("", null, null, "-n -C "); // set no display; checkOnly; no file opening
     } else {
-      viewer.setAppletContext("", null, null, "-n "); // set no display
+      viewer.setAppletContext("", null, null, "-n -l "); // set no display; list commmands as they execute
     }
     String s = viewer.evalFile(file.getPath() + " -nowait");
     assertNull("Error in script [" + file.getPath() + ":\n" + s, s);

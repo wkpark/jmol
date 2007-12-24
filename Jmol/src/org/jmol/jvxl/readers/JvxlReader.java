@@ -523,7 +523,9 @@ public class JvxlReader extends VolumeFileReader {
           .getColorIndex(params.isColorReversed ? params.colorPos
               : params.colorNeg);
     }
-    for (int i = 0; i < vertexCount; i++) {
+    int vertexIncrement = meshData.vertexIncrement;
+    
+    for (int i = 0; i < vertexCount; i+= vertexIncrement) {
       float fraction, value;
       if (jvxlDataIsPrecisionColor) {
         // this COULD be an option for mapped surfaces; 

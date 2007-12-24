@@ -132,7 +132,7 @@ public class MeshData {
   public int vertexCount;
   public float[] vertexValues;
   public int[][] polygonIndexes;
-  
+
   public BitSet[] surfaceSet;
   public int[] vertexSets;
   public int nSets = 0;

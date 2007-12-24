@@ -213,6 +213,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   boolean haveDisplay = true;
   boolean mustRender = true;
   boolean checkScriptOnly = false;
+  boolean listCommands = false;
   boolean fileOpenCheck = true;
 
   public boolean isApplet() {
@@ -244,6 +245,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (str.indexOf("-C") >= 0) {
         checkScriptOnly = true;
         fileOpenCheck = false;
+      }
+      if (str.indexOf("-l") >= 0) {
+        listCommands = true;
       }
       if (str.indexOf("-x") >= 0) {
         autoExit = true;
@@ -3247,7 +3251,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isOK) {
       statusManager.setStatusScriptStarted(++scriptIndex, strScript);
       eval.runEval(checkScriptOnly, !checkScriptOnly || fileOpenCheck,
-          historyDisabled);
+          historyDisabled, listCommands);
       int msWalltime = eval.getExecutionWalltime();
       strErrorMessage = eval.getErrorMessage();
       statusManager.setStatusScriptTermination(strErrorMessage, msWalltime);
@@ -3785,6 +3789,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void scriptEcho(String strEcho) {
     statusManager.setScriptEcho(strEcho);
+    if (listCommands && strEcho != null && strEcho.indexOf("$[") == 0)
+      Logger.info(strEcho);
   }
   
   private void scriptError(String msg) {

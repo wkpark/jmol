@@ -10127,7 +10127,7 @@ class Eval { //implements Runnable {
             pt = viewer.getAtomPoint3f(atomIndex);
           }
           setShapeProperty(iShape, "modelIndex", new Integer(modelIndex));
-          Vector3f[] axes = { new Vector3f(), new Vector3f(), new Vector3f(pt) };
+          Vector3f[] axes = { new Vector3f(), new Vector3f(), new Vector3f(pt), new Vector3f() };
           if (!isSyntaxCheck)
             viewer.getHybridizationAndAxes(atomIndex, axes[0], axes[1],
                 lcaoType, false);
@@ -10205,16 +10205,17 @@ class Eval { //implements Runnable {
         if (tokAt(i + 1) == Token.integer)
           setShapeProperty(iShape, "fileIndex", new Integer(intParameter(++i)));
         if (thisCommand.indexOf("# FILE" + nFiles + "=") >= 0)
-          filename = extractCommandOption("FILE" + nFiles);        
+          filename = extractCommandOption("FILE" + nFiles);
         String[] fullPathNameReturn = new String[1];
         Object t = (isSyntaxCheck ? null : viewer
-            .getBufferedReaderOrErrorMessageFromName(filename, fullPathNameReturn));
+            .getBufferedReaderOrErrorMessageFromName(filename,
+                fullPathNameReturn));
         if (t instanceof String)
           fileNotFoundException(filename + ":" + t);
         if (!isSyntaxCheck)
           Logger.info("reading isosurface data from " + fullPathNameReturn[0]);
-        setShapeProperty(iShape, "commandOption",
-            "FILE" + (nFiles++) + "=" + Escape.escape(fullPathNameReturn[0]));
+        setShapeProperty(iShape, "commandOption", "FILE" + (nFiles++) + "="
+            + Escape.escape(fullPathNameReturn[0]));
         propertyValue = t;
         break;
       default:
@@ -10248,12 +10249,14 @@ class Eval { //implements Runnable {
 
     if (surfaceObjectSeen && isIsosurface && !isSyntaxCheck) {
       String s = (String) viewer.getShapeProperty(iShape, "ID");
-      float[] dataRange = (float[]) viewer.getShapeProperty(iShape, "dataRange");
+      float[] dataRange = (float[]) viewer
+          .getShapeProperty(iShape, "dataRange");
       Integer n = (Integer) viewer.getShapeProperty(iShape, "count");
       if (s != null) {
         s += " created; number of isosurfaces = " + n;
         if (dataRange != null && dataRange[0] != dataRange[1])
-          s += "\ncolor range " + dataRange[2] + " " + dataRange[3] + "; mapped data range " + dataRange[0] + " to " + dataRange[1];
+          s += "\ncolor range " + dataRange[2] + " " + dataRange[3]
+              + "; mapped data range " + dataRange[0] + " to " + dataRange[1];
         showString(s);
       }
       setShapeProperty(iShape, "finalize", null);

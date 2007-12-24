@@ -59,11 +59,13 @@ public class TestScripts extends TestSuite {
     if (resultCheck.countTestCases() > 0) {
       result.addTest(resultCheck);
     }
+    /*
     TestScripts resultCheckPerformance = new TestScripts("Test for checking scripts with performance testing");
     resultCheckPerformance.addDirectory(datafileDirectory + "/check_performance", true, true);
     if (resultCheckPerformance.countTestCases() > 0) {
       result.addTest(resultCheckPerformance);
     }
+    */
     TestScripts resultRun = new TestScripts("Test for running scripts");
     resultRun.addDirectory(datafileDirectory + "/run", false, performance);
     if (resultRun.countTestCases() > 0) {

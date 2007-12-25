@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-12-06 20:56+0100\n"
+"POT-Creation-Date: 2007-12-25 22:47+0100\n"
 "PO-Revision-Date: 2007-05-17 23:50+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: none\n"
@@ -880,77 +880,81 @@ msgstr ""
 msgid "silent startup operation"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:481
+#: org/openscience/jmol/app/Jmol.java:480
+msgid "list commands during script execution"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:482
 msgid "no console -- all output to sysout"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:483
+#: org/openscience/jmol/app/Jmol.java:484
 msgid "exit after script (implicit with -n)"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:497
+#: org/openscience/jmol/app/Jmol.java:498
 msgid "property=value"
 msgstr "Eigenschaft=Wert"
 
-#: org/openscience/jmol/app/Jmol.java:500
+#: org/openscience/jmol/app/Jmol.java:501
 msgid "supported options are given below"
 msgstr "unterstützte Optionen sind weiter unten angegeben"
 
-#: org/openscience/jmol/app/Jmol.java:505
+#: org/openscience/jmol/app/Jmol.java:506
 #, fuzzy, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "Fenstergröße 500x500"
 
-#: org/openscience/jmol/app/Jmol.java:513
+#: org/openscience/jmol/app/Jmol.java:514
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:519
+#: org/openscience/jmol/app/Jmol.java:520
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:541
+#: org/openscience/jmol/app/Jmol.java:542
 msgid "For example:"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:547
+#: org/openscience/jmol/app/Jmol.java:548
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr "Folgende -D-Optionen werden unterstützt (Standardwerte in Klammern):"
 
-#: org/openscience/jmol/app/Jmol.java:703
+#: org/openscience/jmol/app/Jmol.java:710
 msgid "Executing script..."
 msgstr "Skript ausführen..."
 
-#: org/openscience/jmol/app/Jmol.java:715
+#: org/openscience/jmol/app/Jmol.java:722
 #, fuzzy
 msgid "Jmol Java Console"
 msgstr "Jmol-Konsole"
 
-#: org/openscience/jmol/app/Jmol.java:723
+#: org/openscience/jmol/app/Jmol.java:730
 #: org/openscience/jmol/app/ScriptWindow.java:94
 msgid "Clear"
 msgstr "Leeren"
 
-#: org/openscience/jmol/app/Jmol.java:737
+#: org/openscience/jmol/app/Jmol.java:744
 msgid "Could not create ConsoleTextArea: "
 msgstr "ConsoleTextArea konnte nicht erstellt werden: "
 
-#: org/openscience/jmol/app/Jmol.java:823
+#: org/openscience/jmol/app/Jmol.java:830
 msgid "Closing Jmol..."
 msgstr "Beende Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:1075
+#: org/openscience/jmol/app/Jmol.java:1082
 msgid "Macros"
 msgstr "Makros"
 
-#: org/openscience/jmol/app/Jmol.java:1444
+#: org/openscience/jmol/app/Jmol.java:1451
 msgid "Open URL"
 msgstr "URL öffnen"
 
-#: org/openscience/jmol/app/Jmol.java:1445
+#: org/openscience/jmol/app/Jmol.java:1452
 msgid "Enter URL of molecular model"
 msgstr "URL eines Molekül-Modells eingeben"
 

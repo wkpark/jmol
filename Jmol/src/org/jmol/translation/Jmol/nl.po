@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-12-25 22:47+0100\n"
-"PO-Revision-Date: 2007-12-04 06:44+0100\n"
-"Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
+"PO-Revision-Date: 2007-12-27 08:57+0100\n"
+"Last-Translator: Egon Willighagen <egon.willighagen@gmail.com>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -872,7 +872,7 @@ msgstr "stille startup"
 
 #: org/openscience/jmol/app/Jmol.java:480
 msgid "list commands during script execution"
-msgstr ""
+msgstr "toon commando's tijdens het uitvoeren van het script"
 
 #: org/openscience/jmol/app/Jmol.java:482
 msgid "no console -- all output to sysout"
@@ -896,13 +896,8 @@ msgid "window width x height, e.g. {0}"
 msgstr "windowhoogte, bv. {0}"
 
 #: org/openscience/jmol/app/Jmol.java:514
-#, fuzzy
-msgid ""
-"JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
-"2, maximum compression 9)"
-msgstr ""
-"JPEG-kwaliteit (1-100; normaal 75) of PNG-compressie (0-9; normaal 2; "
-"maximale compressie 9)"
+msgid "JPG image quality (1-100; default 75) or PNG image compression (0-9; default 2, maximum compression 9)"
+msgstr "JPEG-kwaliteit (1-100; normaal 75) of PNG-compressie (0-9; normaal 2; maximale compressie 9)"
 
 #: org/openscience/jmol/app/Jmol.java:520
 #, java-format
@@ -979,10 +974,8 @@ msgid "Filename"
 msgstr "Bestandsnaam"
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
-msgid ""
-"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
-msgstr ""
-"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
+msgid "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
+msgstr "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:167
 msgid "Working Directory"
@@ -1225,45 +1218,32 @@ msgstr "Wat is nieuw in Jmol"
 
 #~ msgid "Image size"
 #~ msgstr "Figuurgrootte"
-
 #~ msgid "Output format : "
 #~ msgstr "Uitvoerformaat:"
-
 #~ msgid "Select the file format of the output file"
 #~ msgstr "Selecteer het bestandsformaat van het uitvoerbestand"
-
 #~ msgid "Command Line to Execute"
 #~ msgstr "Commando om uit te voeren"
-
 #~ msgid "The actual command which will be executed"
 #~ msgstr "Het echte commando dat uitgevoerd wordt"
-
 #~ msgid "null component string"
 #~ msgstr "lege-component-tekst"
-
 #~ msgid "Filename Stem"
 #~ msgstr "Begin Bestandsnaam"
-
 #~ msgid "Use .ini file"
 #~ msgstr "Gebruik .ini-bestand"
-
 #~ msgid "Save options in a .ini file"
 #~ msgstr "Bewaar de opties in een .ini-bestand"
-
 #~ msgid "Render all frames"
 #~ msgstr "Render alle frames"
-
 #~ msgid "Render each model (not only the currently displayed one)"
 #~ msgstr "Render elk model (en niet alleen het huidige model)"
-
 #~ msgid "Turn on POV-Ray anti-aliasing"
 #~ msgstr "Zet POV-Ray antialiasing aan"
-
 #~ msgid "Use povray's slower but higher quality anti-aliasing mode"
 #~ msgstr "Gebruik povray's langzamere antialiasing aan voor hogere kwaliteit"
-
 #~ msgid "Render in pov-ray..."
 #~ msgstr "Renderen in pov-ray..."
-
 #~ msgid "File not loaded"
 #~ msgstr "Bestand niet geladen"
+

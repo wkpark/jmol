@@ -113,6 +113,7 @@ public class CifReader extends AtomSetCollectionReader {
         if (key.startsWith("loop_")) {
           if (skipping) {
             tokenizer.getTokenPeeked();
+            skipLoop();
           } else {
             processLoopBlock();
           }

@@ -245,10 +245,11 @@ public class Resolver {
         String recordTag = recordTags[j];
         if (header.indexOf(recordTag) != -1) {
           type = recordTags[0];
-          if (type.equals("Xml"))
+          if (type.equals("Xml")) {
             if (header.indexOf("XHTML") >= 0 || header.indexOf("xhtml") >= 0)
               break; //probably an error message from a server -- certainly not XML
             type = getXmlType(header);
+          }
           return type;
         }
       }

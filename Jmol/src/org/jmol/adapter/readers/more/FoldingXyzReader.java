@@ -48,7 +48,7 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
   
  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("Folding@Home");
+    atomSetCollection = new AtomSetCollection("foldingXyz");
 
     try {
       StringTokenizer tokens = new StringTokenizer(readLine(), " \t");

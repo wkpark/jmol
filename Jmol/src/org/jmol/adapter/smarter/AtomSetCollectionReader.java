@@ -178,6 +178,7 @@ public abstract class AtomSetCollectionReader {
   
   // load options:
 
+  protected String readerName;
   protected boolean doApplySymmetry;
   boolean doConvertToFractional;
   boolean fileCoordinatesAreFractional;
@@ -245,6 +246,7 @@ public abstract class AtomSetCollectionReader {
     initialize();
     int[] params = null;
     if (htParams != null) {
+      readerName = (String) htParams.get("readerName");
       params = (int[]) htParams.get("params");
       applySymmetryToBonds = htParams.containsKey("applySymmetryToBonds");
     }

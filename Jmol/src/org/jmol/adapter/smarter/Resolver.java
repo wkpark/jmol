@@ -27,12 +27,14 @@ package org.jmol.adapter.smarter;
 import java.io.BufferedReader;
 import java.util.StringTokenizer;
 
+import netscape.javascript.JSObject;
+
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
 import java.util.Hashtable;
 
-class Resolver {
+public class Resolver {
 
   private final static String classBase = "org.jmol.adapter.readers.";
   private final static String[] readerSets = new String[] {
@@ -114,6 +116,11 @@ class Resolver {
             + atomSetCollectionReaderName;
       Logger.info("The Resolver thinks " + atomSetCollectionReaderName);
     }
+    if (htParams == null)
+      htParams = new Hashtable();
+    htParams.put("readerName", atomSetCollectionReaderName);
+    if (atomSetCollectionReaderName.indexOf("(xml)") >= 0)
+      atomSetCollectionReaderName = "Xml";
     String className = null;
     Class atomSetCollectionReaderClass;
     String err = null;
@@ -139,6 +146,12 @@ class Resolver {
     String className = null;
     Class atomSetCollectionReaderClass;
     AtomSetCollectionReader atomSetCollectionReader; 
+    Hashtable htParams = new Hashtable();
+    String atomSetCollectionReaderName = getXmlType((JSObject) DOMNode);
+    if (Logger.debugging) {
+      Logger.debug("The Resolver thinks " + atomSetCollectionReaderName);
+    }
+    htParams.put("readerName", atomSetCollectionReaderName);
     try {
       className = classBase + "xml.XmlReader";
       atomSetCollectionReaderClass = Class.forName(className);
@@ -154,8 +167,23 @@ class Resolver {
     return finalize(atomSetCollection, "DOM node");
   }
 
+  private static final String CML_NAMESPACE_URI = "http://www.xml-cml.org/schema";
+
+  private static String getXmlType(JSObject DOMNode) {
+    String namespaceURI = (String) DOMNode.getMember("namespaceURI");
+    String localName = (String) DOMNode.getMember("localName");
+    if (namespaceURI.startsWith("http://www.molpro.net/"))
+      return specialTags[SPECIAL_MOLPRO_DOM][0];
+    if ("odyssey_simulation".equals(localName))
+      return specialTags[SPECIAL_ODYSSEY_DOM][0];
+    if ("arguslab".equals(localName))
+      return specialTags[SPECIAL_ARGUS_DOM][0];
+    if (namespaceURI.startsWith(CML_NAMESPACE_URI) || "cml".equals(localName))
+      return specialTags[SPECIAL_CML_DOM][0];
+    return "unidentified " + specialTags[SPECIAL_CML_DOM][0];
+  }
+
   static Object finalize(AtomSetCollection atomSetCollection, String filename) {
-    
     for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;) {
       atomSetCollection.setAtomSetAuxiliaryInfo("fileName", filename, i);
     }
@@ -180,29 +208,15 @@ class Resolver {
         nLines++;
     }
 
-    if (nLines == 1 && lines[0].length() > 0
-        && Character.isDigit(lines[0].charAt(0)))
-      return "Jme"; //only one line, and that line starts with a number 
-    if (checkMopacGraphf(lines))
-      return "MopacGraphf"; //must be prior to checkFoldingXyz and checkMol
-    if (checkV3000(lines))
-      return "V3000";
-    if (checkOdyssey(lines))
-      return "Odyssey";
-    if (checkMol(lines))
-      return "Mol";
-    if (checkXyz(lines))
-      return "Xyz";
-    if (checkFoldingXyz(lines))
-      return "FoldingXyz";
-    if (checkCube(lines))
-      return "Cube";
-
+    String readerName = checkSpecial(nLines, lines);
+    
+    if (readerName != null)
+      return readerName;
 
     // run these loops forward ... easier for people to understand
     //file starts with added 4/26 to ensure no issue with NWChem files
     
-    String leader = llr.getLeader(LEADER_CHAR_MAX);
+    String leader = llr.getHeader(LEADER_CHAR_MAX);
 
     for (int i = 0; i < fileStartsWithRecords.length; ++i) {
       String[] recordTags = fileStartsWithRecords[i];
@@ -223,23 +237,117 @@ class Resolver {
       }
     }
 
-    String header = llr.getHeader();
+    String header = llr.getHeader(0);
+    String type = null;
     for (int i = 0; i < containsRecords.length; ++i) {
       String[] recordTags = containsRecords[i];
       for (int j = 1; j < recordTags.length; ++j) {
         String recordTag = recordTags[j];
-        if (header.indexOf(recordTag) != -1)
-          return recordTags[0];
+        if (header.indexOf(recordTag) != -1) {
+          type = recordTags[0];
+          if (type.equals("Xml"))
+            if (header.indexOf("XHTML") >= 0 || header.indexOf("xhtml") >= 0)
+              break; //probably an error message from a server -- certainly not XML
+            type = getXmlType(header);
+          return type;
+        }
       }
     }
 
     return (returnLines ? "\n" + lines[0] + "\n" + lines[1] + "\n" + lines[2] + "\n" : null);
   }
 
+  private static String getXmlType(String header) throws Exception  {
+    if (header.indexOf("http://www.molpro.net/") >= 0) {
+      return specialTags[SPECIAL_MOLPRO_XML][0];
+    }
+    if (header.indexOf("odyssey") >= 0) {
+      return specialTags[SPECIAL_ODYSSEY_XML][0];
+    }
+    if (header.indexOf("C3XML") >= 0) {
+      return specialTags[SPECIAL_CHEM3D_XML][0];
+    }
+    if (header.indexOf("arguslab") >= 0) {
+      return specialTags[SPECIAL_ARGUS_XML][0];
+    }
+    if (header.indexOf(CML_NAMESPACE_URI) >= 0
+        || header.indexOf("cml:") >= 0) {
+      return specialTags[SPECIAL_CML_XML][0];
+    }
+    return "unidentified " + specialTags[SPECIAL_CML_XML][0];
+  }
+
+  final static int SPECIAL_JME                = 0;
+  final static int SPECIAL_MOPACGRAPHF        = 1;
+  final static int SPECIAL_V3000              = 2;
+  final static int SPECIAL_ODYSSEY            = 3;
+  final static int SPECIAL_MOL                = 4;
+  final static int SPECIAL_XYZ                = 5;
+  final static int SPECIAL_FOLDINGXYZ         = 6;
+  final static int SPECIAL_CUBE               = 7;
+  
+  final public static int SPECIAL_ARGUS_XML   = 8;
+  final public static int SPECIAL_CML_XML     = 9;
+  final public static int SPECIAL_CHEM3D_XML  = 10;
+  final public static int SPECIAL_MOLPRO_XML  = 11;
+  final public static int SPECIAL_ODYSSEY_XML = 12;
+  
+  final public static int SPECIAL_ARGUS_DOM   = 13;
+  final public static int SPECIAL_CML_DOM     = 14;
+  final public static int SPECIAL_CHEM3D_DOM  = 15;
+  final public static int SPECIAL_MOLPRO_DOM  = 16;
+  final public static int SPECIAL_ODYSSEY_DOM = 17;
+  
+  final public static String[][] specialTags = {
+    { "Jme" },
+    { "MopacGraphf" },
+    { "V3000" },
+    { "Odyssey" },    
+    { "Mol" },
+    { "Xyz" },
+    { "FoldingXyz" },
+    { "Cube" },
+    
+    { "argus(xml)" }, 
+    { "cml(xml)" },
+    { "chem3d(xml)" },
+    { "molpro(xml)" },
+    { "odyssey(xml)" },
+
+    { "argus(DOM)" }, 
+    { "cml(DOM)" },
+    { "chem3d(DOM)" },
+    { "molpro(DOM)" },
+    { "odyssey(DOM)" }
+
+  };
+
+  final static String checkSpecial(int nLines, String[] lines) {
+    // the order here is CRITICAL
+    if (nLines == 1 && lines[0].length() > 0
+        && Character.isDigit(lines[0].charAt(0)))
+      return specialTags[SPECIAL_JME][0]; //only one line, and that line starts with a number 
+    if (checkMopacGraphf(lines))
+      return specialTags[SPECIAL_MOPACGRAPHF][0]; //must be prior to checkFoldingXyz and checkMol
+    if (checkV3000(lines))
+      return specialTags[SPECIAL_V3000][0];
+    if (checkOdyssey(lines))
+      return specialTags[SPECIAL_ODYSSEY][0];
+    if (checkMol(lines))
+      return specialTags[SPECIAL_MOL][0];
+    if (checkXyz(lines))
+      return specialTags[SPECIAL_XYZ][0];
+    if (checkFoldingXyz(lines))
+      return specialTags[SPECIAL_FOLDINGXYZ][0];
+    if (checkCube(lines))
+      return specialTags[SPECIAL_CUBE][0];
+    return null;
+  }
+  
   final public static String getReaderFromType(String type) {
     type = type.toLowerCase();
     String base = null;
-    if ((base = checkType(checkSpecialTags, type)) != null)
+    if ((base = checkType(specialTags, type)) != null)
       return base;
     if ((base = checkType(fileStartsWithRecords, type)) != null)
       return base;
@@ -255,17 +363,6 @@ class Resolver {
     return null;
   }
   
-  final static String[][] checkSpecialTags = {
-    { "Jme" },
-    { "V3000" },
-    { "Mol" },
-    { "Xyz" },
-    { "MopacGraphf" },
-    { "FoldingXyz" },
-    { "Cube" },
-    { "Odyssey" },    
-  };
-
   ////////////////////////////////////////////////////////////////
   // file types that need special treatment
   ////////////////////////////////////////////////////////////////
@@ -349,26 +446,6 @@ class Resolver {
     }
     return true;
   }
-
- /**
-  static boolean checkFoldingXyzxx(String[] lines) {
-    try {
-      StringTokenizer tokens = new StringTokenizer(lines[0].trim(), " \t");
-      if ((tokens != null) && (tokens.countTokens() >= 2)) {
-        Integer.parseInt(tokens.nextToken().trim());
-        tokens = new StringTokenizer(lines[1].trim(), " \t");
-        if ((tokens != null) && (tokens.countTokens() == 0))
-          tokens = new StringTokenizer(lines[2].trim(), " \t");
-        if ((tokens != null) && (tokens.countTokens() >= 2)) {
-          Integer.parseInt(tokens.nextToken().trim());
-          return true;
-        }
-      }
-    } catch (NumberFormatException nfe) {
-    }
-    return false;
-  }
- */
   
   /**
    * @param lines First lines of the files.
@@ -513,13 +590,10 @@ class Resolver {
   final static String[] nwchemRecords =
   { "NWChem", " argument  1 = "};
 
-  final static String[] jmolDataRecords =
-  { "JmolData", "Jmol Coordinate Data" };
-
   final static String[][] containsRecords =
   { xmlRecords, gaussianRecords, mopacRecords, qchemRecords, gamessRecords,
     spartanBinaryRecords, spartanRecords, mol2Records, adfRecords, psiRecords,
-    nwchemRecords, jmolDataRecords
+    nwchemRecords, 
   };
 
 }
@@ -538,12 +612,8 @@ class LimitedLineReader {
     bufferedReader.reset();
   }
 
-  String getLeader(int n) {
-    return new String(buf, 0, Math.min(cchBuf, n));  
-  }
-  
-  String getHeader() {
-    return new String(buf);  
+  String getHeader(int n) {
+    return (n == 0 ? new String(buf) : new String(buf, 0, Math.min(cchBuf, n)));
   }
   
   String readLineWithNewline() {

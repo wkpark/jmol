@@ -107,8 +107,6 @@ public class XmlReader extends AtomSetCollectionReader {
 
   String[] implementedAttributes = { "id" };
 
-  static final String CML_NAMESPACE_URI = "http://www.xml-cml.org/schema";
-
   /////////////// file reader option //////////////
 
  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
@@ -168,65 +166,17 @@ public class XmlReader extends AtomSetCollectionReader {
     return xmlr;
   }
 
-  private void processXml(XMLReader xmlReader) throws Exception {
-    String xmlType = getXmlType(reader);
-    atomSetCollection = new AtomSetCollection(xmlType);
-    if (Logger.debugging) {
-      Logger.debug("XmlReader thinks " + xmlType);
-    }
-    if (xmlType.indexOf("cml(xml)") >= 0) {
-      new XmlCmlReader(this, atomSetCollection, reader, xmlReader);
-      return;
-    }
-    if (xmlType == "molpro(xml)") {
-      new XmlMolproReader(this, atomSetCollection, reader, xmlReader);
-      return;
-    }
-    if (xmlType == "chem3d(xml)") {
-      new XmlChem3dReader(this, atomSetCollection, reader, xmlReader);
-      return;
-    }
-    if (xmlType == "odyssey(xml)") {
-      new XmlOdysseyReader(this, atomSetCollection, reader, xmlReader);
-      return;
-    }
-    if (xmlType == "arguslab(xml)") {
-      new XmlArgusReader(this, atomSetCollection, reader, xmlReader);
-      return;
-    }
-    new JmolXmlHandler(xmlReader);
-    parseReaderXML(xmlReader);
-    return;
-  }
-
-  private String getReaderHeader(int nBytes) throws Exception {
-    reader.mark(nBytes);
-    char[] buf = new char[nBytes];
-    int cchBuf = reader.read(buf);
-    reader.reset();
-    StringBuffer str = new StringBuffer();
-    return str.append(buf, 0, cchBuf).toString();
-  }
-
-  private String getXmlType(BufferedReader reader) throws Exception  {
-    String header = getReaderHeader(5000);
-    if (header.indexOf("http://www.molpro.net/") >= 0) {
-      return "molpro(xml)";
-    }
-    if (header.indexOf("odyssey") >= 0) {
-      return "odyssey(xml)";
-    }
-    if (header.indexOf("C3XML") >= 0) {
-      return "chem3d(xml)";
-    }
-    if (header.indexOf("arguslab") >= 0) {
-      return "arguslab(xml)";
-    }
-    if (header.indexOf(CML_NAMESPACE_URI) >= 0
-        || header.indexOf("cml:") >= 0) {
-      return "cml(xml)";
-    }
-    return "unidentified cml(xml)";
+  private Object processXml(XMLReader xmlReader) throws Exception {
+    atomSetCollection = new AtomSetCollection(readerName);
+    if (readerName.equals(Resolver.specialTags[Resolver.SPECIAL_ARGUS_XML][0]))
+      return new XmlArgusReader(this, atomSetCollection, reader, xmlReader);
+    if (readerName.equals(Resolver.specialTags[Resolver.SPECIAL_CHEM3D_XML][0]))
+      return new XmlChem3dReader(this, atomSetCollection, reader, xmlReader);
+    if (readerName.equals(Resolver.specialTags[Resolver.SPECIAL_MOLPRO_XML][0]))
+      return new XmlMolproReader(this, atomSetCollection, reader, xmlReader);
+    if (readerName.equals(Resolver.specialTags[Resolver.SPECIAL_ODYSSEY_XML][0]))
+      return new XmlOdysseyReader(this, atomSetCollection, reader, xmlReader);
+    return new XmlCmlReader(this, atomSetCollection, reader, xmlReader);
   }
 
   protected void parseReaderXML(XMLReader xmlReader) {
@@ -244,58 +194,21 @@ public class XmlReader extends AtomSetCollectionReader {
   /////////////// DOM option //////////////
 
  public AtomSetCollection readAtomSetCollectionFromDOM(Object Node) {
-    JSObject DOMNode = (JSObject) Node;
-    processXml(DOMNode);
+    processXml((JSObject) Node);
     return atomSetCollection;
   }
 
-  private void processXml(JSObject DOMNode) {
-    if (DOMNode == null)
-      throw new RuntimeException("Not a node");
-    String xmlType = getXmlType(DOMNode);
-    if (Logger.debugging) {
-      Logger.debug("XmlReader thinks " + xmlType);
-    }
-    atomSetCollection = new AtomSetCollection(xmlType);
-    if (xmlType.indexOf("cml(DOM)") >= 0) {
-      new XmlCmlReader(this, atomSetCollection, DOMNode);
-      return;
-    }
-    if (xmlType == "molpro(DOM)") {
-      new XmlMolproReader(this, atomSetCollection, DOMNode);
-      return;
-    }
-    if (xmlType == "chem3d(DOM)") {
-      new XmlChem3dReader(this, atomSetCollection, DOMNode);
-      return;
-    }
-    if (xmlType == "odyssey(DOM)") {
-      new XmlOdysseyReader(this, atomSetCollection, DOMNode);
-      return;
-    }
-    if (xmlType == "arguslab(DOM)") {
-      new XmlArgusReader(this, atomSetCollection, DOMNode);
-      return;
-    }
-    //arguslab and odyssey don't have namespaces
-    Logger.error("XmlReader.java could not resolve DOM XML type");
-    ((JmolXmlHandler) (new JmolXmlHandler())).walkDOMTree(DOMNode);
-    return;
-  }
-
-  private String getXmlType(JSObject DOMNode) {
-    String namespaceURI = (String) DOMNode.getMember("namespaceURI");
-    String localName = (String) DOMNode.getMember("localName");
-    if (namespaceURI.startsWith("http://www.molpro.net/"))
-      return "molpro(DOM)";
-    if (((String) DOMNode.getMember("localName")).equals("odyssey_simulation"))
-      return "odyssey(DOM)";
-    if (((String) DOMNode.getMember("localName")).equals("arguslab"))
-      return "arguslab(DOM)";
-    if (namespaceURI.startsWith(CML_NAMESPACE_URI)
-        || "cml" == localName)
-      return "cml(DOM)";
-    return "unidentified cml(DOM)";
+  private Object processXml(JSObject DOMNode) {
+    atomSetCollection = new AtomSetCollection(readerName);
+    if (readerName.equals(Resolver.specialTags[Resolver.SPECIAL_ARGUS_DOM][0]))
+      return new XmlArgusReader(this, atomSetCollection, DOMNode);
+    if (readerName.equals(Resolver.specialTags[Resolver.SPECIAL_CHEM3D_DOM][0]))
+      return new XmlChem3dReader(this, atomSetCollection, DOMNode);
+    if (readerName.equals(Resolver.specialTags[Resolver.SPECIAL_MOLPRO_DOM][0]))
+      return new XmlMolproReader(this, atomSetCollection, DOMNode);
+    if (readerName.equals(Resolver.specialTags[Resolver.SPECIAL_ODYSSEY_DOM][0]))
+      return new XmlOdysseyReader(this, atomSetCollection, DOMNode);
+    return new XmlCmlReader(this, atomSetCollection, DOMNode);
   }
 
   protected void processStartElement(String namespaceURI, String localName, String qName,

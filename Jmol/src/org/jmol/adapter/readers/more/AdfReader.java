@@ -62,7 +62,7 @@ public class AdfReader extends AtomSetCollectionReader {
    * @return a ChemFile with the coordinates, energies, and vibrations.
    */
   public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
-    atomSetCollection = new AtomSetCollection("ADF");
+    atomSetCollection = new AtomSetCollection("adf");
     this.reader = reader;
     boolean iHaveAtoms = false;
     modelNumber = 0;

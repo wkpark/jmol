@@ -704,34 +704,47 @@ abstract public class AtomCollection {
     StringBuffer s = new StringBuffer();
     int n = 0;
     String dataLabel = "";
+    switch (type) {
+    case TAINT_COORD:
+      dataLabel = "coord set";
+      break;
+    case TAINT_FORMALCHARGE:
+      dataLabel = "formalcharge set";
+      break;
+    case TAINT_PARTIALCHARGE:
+      dataLabel = "partialcharge set";
+      break;
+    case TAINT_TEMPERATURE:
+      dataLabel = "temperature set";
+      break;
+    case TAINT_VALENCE:
+      dataLabel = "valence set";
+      break;
+    case TAINT_VIBRATION:
+      dataLabel = "vibrationvector set";
+    }
     for (int i = 0; i < atomCount; i++)
       if (t.get(i)) {
         s.append(i + 1).append(" ").append(atoms[i].getElementSymbol())
         .append(" ").append(atoms[i].getInfo().replace(' ', '_')).append(" ");
         switch (type) {
         case TAINT_COORD:
-          dataLabel = "coord set";
-              s.append(" ").append(atoms[i].x).append(" ").append(atoms[i].y)
+          s.append(" ").append(atoms[i].x).append(" ").append(atoms[i].y)
               .append(" ").append(atoms[i].z);
           break;
         case TAINT_FORMALCHARGE:
-          dataLabel = "formalcharge set";
           s.append(atoms[i].getFormalCharge());
           break;
         case TAINT_PARTIALCHARGE:
-          dataLabel = "partialcharge set";
           s.append(atoms[i].getPartialCharge());
           break;
         case TAINT_TEMPERATURE:
-          dataLabel = "temperature set";
           s.append(atoms[i].getBfactor100() / 100f);
           break;
         case TAINT_VALENCE:
-          dataLabel = "valence set";
           s.append(atoms[i].getValence());
           break;
         case TAINT_VIBRATION:
-          dataLabel = "vibrationvector set";
           Vector3f v = atoms[i].getVibrationVector();
           if (v == null)
             v = new Vector3f();

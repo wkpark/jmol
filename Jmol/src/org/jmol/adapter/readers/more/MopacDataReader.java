@@ -32,12 +32,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 /**
- * CSF file reader based on CIF idea -- fluid property fields.
- *
- * note that, like CIF, the order of fields is totally unpredictable
- * in addition, ID numbers are not sequential, requiring atomNames
- * 
- * first crack at this 2006/04/13
  * 
  * @author hansonr <hansonr@stolaf.edu>
  */

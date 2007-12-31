@@ -7310,13 +7310,13 @@ class Eval { //implements Runnable {
             fv = atom.getFractionalCoord('Z');
             break;
           case Token.vibX:
-            fv = atom.getVibrationCoord('x');
+            fv = viewer.getVibrationCoord(i, 'x');
             break;
           case Token.vibY:
-            fv = atom.getVibrationCoord('y');
+            fv = viewer.getVibrationCoord(i, 'y');
             break;
           case Token.vibZ:
-            fv = atom.getVibrationCoord('z');
+            fv = viewer.getVibrationCoord(i, 'z');
             break;
           case Token.distance:
             if (planeRef != null)
@@ -7353,7 +7353,7 @@ class Eval { //implements Runnable {
             pt.add(atom.getFractionalCoord());
             break;
           case Token.vibXyz:
-            pt.add(new Point3f(atom.getVibrationVector()));
+            pt.add(viewer.getVibrationVector(i));
             break;
           case Token.color:
             pt.add(Graphics3D.colorPointFromInt(viewer.getColixArgb(atom

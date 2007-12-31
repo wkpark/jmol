@@ -418,10 +418,10 @@ abstract public class ModelCollection extends BondCollection {
    *  
    */
   void calculateStructuresAllExcept(BitSet alreadyDefined, boolean addFileData) {
+    freezeModels();
     for (int i = modelCount; --i >= 0;)
       if (models[i].isPDB && !alreadyDefined.get(i))
         models[i].calculateStructures();
-    freezeModels();
     if (addFileData)
       propagateSecondaryStructure();
   }
@@ -435,6 +435,9 @@ abstract public class ModelCollection extends BondCollection {
       for (int i = 0; i < m.chainCount; ++i)
         m.chains[i].groups = (Group[])ArrayUtil.setLength(m.chains[i].groups, groupCount);
       m.bioPolymers = (Polymer[])ArrayUtil.setLength(m.bioPolymers, m.bioPolymerCount);
+      for (int i = m.bioPolymerCount; --i >= 0; ) {
+        m.bioPolymers[i].freeze();
+      }
     }
   }
   

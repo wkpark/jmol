@@ -6293,4 +6293,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getBondAtom2(i);
   }
 
+  float getVibrationCoord(int atomIndex, char c) {
+    return modelSet.getVibrationCoord(atomIndex, c);
+  }
+
+  public Vector3f getVibrationVector(int atomIndex) {
+    return modelSet.getVibrationVector(atomIndex);
+  }
+
 }

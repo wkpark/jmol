@@ -277,8 +277,6 @@ public class AminoPolymer extends AlphaPolymer {
     //deprecated: calcHydrogenBonds();
     //System.out.println("calculateStructures for model " + this.model.getModelIndex());
     char[] structureTags = new char[monomerCount];
-    calcPhiPsiAngles();
-    hasOAtoms = checkWingAtoms();
     for (int i = 0; i < monomerCount - 1; ++i) {
       AminoMonomer leadingResidue = (AminoMonomer) monomers[i];
       AminoMonomer trailingResidue = (AminoMonomer) monomers[i + 1];
@@ -368,6 +366,11 @@ public class AminoPolymer extends AlphaPolymer {
       if (!((AminoMonomer) monomers[i]).hasOAtom())
         return false;
     return true;
+  }
+  
+  public void freeze() {
+    hasOAtoms = checkWingAtoms();
+    calcPhiPsiAngles();
   }
   
   protected boolean calcPhiPsiAngles() {

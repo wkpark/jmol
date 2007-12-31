@@ -67,6 +67,9 @@ abstract public class Polymer {
                                     int endSeqcode) {
   }
 
+  public void freeze() {  
+  }
+  
   public void calculateStructures() {
   }
 

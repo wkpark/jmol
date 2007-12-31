@@ -303,13 +303,13 @@ public abstract class BioPolymer extends Polymer {
   
   public Point3f[] getLeadMidpoints() {
     if (leadMidpoints == null)
-      calcLeadMidpointsAndWingVectors();
+      calcLeadMidpointsAndWingVectors(true);
     return leadMidpoints;
   }
 
   Point3f[] getLeadPoints() {
     if (leadPoints == null)
-      calcLeadMidpointsAndWingVectors();
+      calcLeadMidpointsAndWingVectors(true);
     return leadPoints;
   }
 
@@ -346,12 +346,8 @@ public abstract class BioPolymer extends Polymer {
   
   public final Vector3f[] getWingVectors() {
     if (leadMidpoints == null) // this is correct ... test on leadMidpoints
-      calcLeadMidpointsAndWingVectors();
+      calcLeadMidpointsAndWingVectors(true);
     return wingVectors; // wingVectors might be null ... before autocalc
-  }
-
-  private final void calcLeadMidpointsAndWingVectors() {
-    calcLeadMidpointsAndWingVectors(true);
   }
 
   private final void calcLeadMidpointsAndWingVectors(boolean getNewPoints) {

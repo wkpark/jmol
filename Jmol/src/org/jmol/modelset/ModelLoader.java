@@ -544,13 +544,66 @@ public final class ModelLoader extends ModelSet {
         groupInsertionCode);
     if (atomCount == atoms.length)
       growAtomArrays(ATOM_GROWTH_INCREMENT);
-    Atom atom = new Atom(this, currentModelIndex, atomCount, atomSymmetry,
-        atomSite, atomicAndIsotopeNumber, atomName, mad, formalCharge,
-        partialCharge, occupancy, bfactor, x, y, z, isHetero, atomSerial,
-        chainID, group3, vectorX, vectorY, vectorZ, alternateLocationID,
-        clientAtomReference, radius);
-    atoms[atomCount++] = atom;
+    Atom atom = new Atom(currentModelIndex, atomCount, atomSymmetry,
+        atomSite, atomicAndIsotopeNumber, mad, formalCharge, x, y, z, isHetero,
+        chainID, alternateLocationID, radius);
+    atoms[atomCount] = atom;
+    setBFactor(atomCount, bfactor);
+    setOccupancy(atomCount, occupancy);
+    setPartialCharge(atomCount, partialCharge);
+    atom.group = nullGroup;
+    atom.colixAtom = viewer.getColixAtomPalette(atom, JmolConstants.PALETTE_CPK);
+    if (atomName != null) {
+      if (atomNames == null)
+        atomNames = new String[atoms.length];
+      atomNames[atomCount] = atomName.intern();
+      byte specialAtomID = lookupSpecialAtomID(atomName);
+      if (specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON && group3 != null
+          && group3.equalsIgnoreCase("CA"))
+        specialAtomID = 0;
+      if (specialAtomID != 0) {
+        if (specialAtomIDs == null)
+          specialAtomIDs = new byte[atoms.length];
+        specialAtomIDs[atomCount] = specialAtomID;
+      }
+    }    
+    if (atomSerial != Integer.MIN_VALUE) {
+      if (atomSerials == null)
+        atomSerials = new int[atoms.length];
+      atomSerials[atomCount] = atomSerial;
+    }
+    if (clientAtomReference != null) {
+      if (clientAtomReferences == null)
+        clientAtomReferences = new Object[atoms.length];
+      clientAtomReferences[atomCount] = clientAtomReference;
+    }
+    if (!Float.isNaN(vectorX))
+      setVibrationVector(atomCount, vectorX, vectorY, vectorZ);
     htAtomMap.put(atomUid, atom);
+    atomCount++;
+  }
+
+  private static Hashtable htAtom = new Hashtable();
+  static {
+    for (int i = JmolConstants.specialAtomNames.length; --i >= 0; ) {
+      String specialAtomName = JmolConstants.specialAtomNames[i];
+      if (specialAtomName != null) {
+        Integer boxedI = new Integer(i);
+        htAtom.put(specialAtomName, boxedI);
+        //System.out.println("atom: "+specialAtomName+" "+i);
+      }
+    }
+  }
+
+  private static byte lookupSpecialAtomID(String atomName) {
+    if (atomName != null) {
+      if (atomName.indexOf('*') >= 0)
+        atomName = atomName.replace('*', '\'');
+      Integer boxedAtomID = (Integer)htAtom.get(atomName);
+      if (boxedAtomID != null)
+        return (byte)(boxedAtomID.intValue());
+    }
+    return 0;
   }
 
   private void checkNewGroup(int atomIndex, int modelIndex, char chainID,

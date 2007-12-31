@@ -604,6 +604,5 @@ abstract public class ModelSet extends ModelCollection {
       commands.append("\nend function;\n\n");
     return commands.toString();
   }
-
 }
 

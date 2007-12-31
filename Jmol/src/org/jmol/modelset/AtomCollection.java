@@ -465,7 +465,8 @@ abstract public class AtomCollection {
         setAtomCoord(i, xyz.x, xyz.y, xyz.z);
         break;
       case Token.fracXyz:
-        setAtomCoordFractional(i, xyz);
+        atoms[i].setFractionalCoord(xyz);
+        taint(i, TAINT_COORD);
         break;
       case Token.vibXyz:
         setAtomVibrationVector(i, xyz.x, xyz.y, xyz.z);
@@ -474,14 +475,9 @@ abstract public class AtomCollection {
     }
   }
 
-  public void setAtomVibrationVector(int atomIndex, float x, float y, float z) {
-    atoms[atomIndex].setVibrationVector(this, x, y, z);  
+  private void setAtomVibrationVector(int atomIndex, float x, float y, float z) {
+    setVibrationVector(atomIndex, x, y, z);  
     taint(atomIndex, TAINT_VIBRATION);
-  }
-  
-  public void setAtomCoordFractional(int atomIndex, Point3f pt) {
-    atoms[atomIndex].setFractionalCoord(pt);
-    taint(atomIndex, TAINT_COORD);
   }
   
   public void setAtomCoord(int atomIndex, float x, float y, float z) {
@@ -539,6 +535,11 @@ abstract public class AtomCollection {
       case Token.atomZ:
         setAtomCoord(i, atom.x, atom.y, fValue);
         break;
+      case Token.vibX:
+      case Token.vibY:
+      case Token.vibZ:
+        setVibrationVector(i, tok, fValue);
+        break;
       case Token.fracX:
       case Token.fracY:
       case Token.fracZ:
@@ -550,32 +551,98 @@ abstract public class AtomCollection {
         taint(i, TAINT_FORMALCHARGE);
         break;
       case Token.occupancy:
-        atom.setOccupancy(this, iValue);
+        setOccupancy(i, iValue);
         taint(i, TAINT_OCCUPANCY);
         break;
       case Token.partialCharge:
-        atom.setPartialCharge(this, fValue);
+        setPartialCharge(i, fValue);
         taint(i, TAINT_PARTIALCHARGE);
         break;
       case Token.temperature:
-        atom.setBFactor(this, fValue);
+        setBFactor(i, fValue);
         taint(i, TAINT_TEMPERATURE);
         break;
       case Token.valence:
         atom.setValency(iValue);
         taint(i, TAINT_VALENCE);
         break;
-      case Token.vibX:
-      case Token.vibY:
-      case Token.vibZ:
-        atom.setVibrationVector(this, tok, fValue);
-        taint(i, TAINT_VIBRATION);
-        break;
       }
     }
   }
 
- // loading data
+  public float getVibrationCoord(int atomIndex, char c) {
+    if (vibrationVectors == null || vibrationVectors[atomIndex] == null)
+      return 0;
+    switch (c) {
+    case 'x':
+      return vibrationVectors[atomIndex].x;
+    case 'y':
+      return vibrationVectors[atomIndex].y;
+    default:
+      return vibrationVectors[atomIndex].z;
+    }
+  }
+
+  public Vector3f getVibrationVector(int atomIndex) {
+    return vibrationVectors == null ? null : vibrationVectors[atomIndex];
+  }
+
+  protected void setVibrationVector(int atomIndex, float x, float y, float z) {
+    if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
+      return;
+    if (vibrationVectors == null)
+      vibrationVectors = new Vector3f[atoms.length];
+    vibrationVectors[atomIndex] = new Vector3f(x, y, z);
+    atoms[atomIndex].setVibrationVector();
+  }
+
+  private void setVibrationVector(int atomIndex, int tok, float fValue) {
+    Vector3f v = getVibrationVector(atomIndex);
+    if (v == null)
+      v = new Vector3f();
+    switch(tok) {
+    case Token.vibX:
+      v.x = fValue;
+      break;
+    case Token.vibY:
+      v.y = fValue;
+      break;
+    case Token.vibZ:
+      v.z = fValue;
+      break;
+    }
+    setAtomVibrationVector(atomIndex, v.x, v.y, v.z);
+  }
+
+  protected void setOccupancy(int atomIndex, int occupancy) {
+    if (occupancy < 0)
+      occupancy = 0;
+    else if (occupancy > 100)
+      occupancy = 100;
+    if (occupancy != 100) {
+      if (occupancies == null)
+        occupancies = new byte[atoms.length];
+      occupancies[atomIndex] = (byte)occupancy;
+    }
+  }
+  
+  protected void setPartialCharge(int atomIndex, float partialCharge) {
+    if (Float.isNaN(partialCharge))
+      return;
+    if (partialCharges == null)
+      partialCharges = new float[atoms.length];
+    partialCharges[atomIndex] = partialCharge;
+  }
+
+  protected void setBFactor(int atomIndex, float bfactor) {
+  if (Float.isNaN(bfactor) || bfactor == 0)
+    return;
+    if (bfactor100s == null)
+      bfactor100s = new short[atoms.length];
+    bfactor100s[atomIndex] = (short)(bfactor * 100);
+  }
+
+  // loading data
   
   public void loadData(String dataType, String dataString) {
     if (dataType.equalsIgnoreCase("coord")) {
@@ -604,7 +671,7 @@ abstract public class AtomCollection {
       int nData = Parser.parseInt(dataString.substring(0, lines[0] - 1));
       for (int i = 1; i <= nData; i++) {
         String[] tokens = Parser.getTokens(Parser.parseTrimmed(dataString.substring(
-            lines[i], lines[i + 1])));
+            lines[i], lines[i + 1] - 1)));
         int atomIndex = Parser.parseInt(tokens[0]) - 1;
         float x = Parser.parseFloat(tokens[tokens.length - 1]);
         switch (type) {
@@ -612,10 +679,10 @@ abstract public class AtomCollection {
           atoms[atomIndex].setFormalCharge((int)x);          
           break;
         case TAINT_PARTIALCHARGE:
-          atoms[atomIndex].setPartialCharge(this, x);          
+          setPartialCharge(atomIndex, x);          
           break;
         case TAINT_TEMPERATURE:
-          atoms[atomIndex].setBFactor(this, x);
+          setBFactor(atomIndex, x);
           break;
         case TAINT_VALENCE:
           atoms[atomIndex].setValency((int)x);          
@@ -711,6 +778,9 @@ abstract public class AtomCollection {
     case TAINT_FORMALCHARGE:
       dataLabel = "formalcharge set";
       break;
+    case TAINT_OCCUPANCY:
+      dataLabel = "occupancy set";
+      break;
     case TAINT_PARTIALCHARGE:
       dataLabel = "partialcharge set";
       break;
@@ -735,6 +805,9 @@ abstract public class AtomCollection {
         case TAINT_FORMALCHARGE:
           s.append(atoms[i].getFormalCharge());
           break;
+        case TAINT_OCCUPANCY:
+          s.append(atoms[i].getOccupancy());
+          break;
         case TAINT_PARTIALCHARGE:
           s.append(atoms[i].getPartialCharge());
           break;
@@ -745,7 +818,7 @@ abstract public class AtomCollection {
           s.append(atoms[i].getValence());
           break;
         case TAINT_VIBRATION:
-          Vector3f v = atoms[i].getVibrationVector();
+          Vector3f v = getVibrationVector(i);
           if (v == null)
             v = new Vector3f();
           s.append(" ").append(v.x).append(" ").append(v.y).append(" ").append(v.z);

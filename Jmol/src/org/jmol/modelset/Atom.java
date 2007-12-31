@@ -32,7 +32,6 @@ import org.jmol.viewer.Viewer;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.TextFormat;
 
-import java.util.Hashtable;
 import java.util.BitSet;
 
 import javax.vecmath.Point3f;
@@ -93,113 +92,26 @@ final public class Atom extends Point3fi {
     madAtom = 0;
   }
   
-  Atom(ModelLoader modelSet,
-       int modelIndex,
-       int atomIndex,
-       BitSet atomSymmetry,
-       int atomSite,
+  Atom(int modelIndex, int atomIndex,
+       BitSet atomSymmetry, int atomSite,
        short atomicAndIsotopeNumber,
-       String atomName, short mad,
-       int formalCharge, float partialCharge,
-       int occupancy,
-       float bfactor,
+       short mad, int formalCharge, 
        float x, float y, float z,
-       boolean isHetero, int atomSerial, char chainID, String group3,
-       float vibrationX, float vibrationY, float vibrationZ,
+       boolean isHetero, char chainID,
        char alternateLocationID,
-       Object clientAtomReference, float radius) {
-    this.group = modelSet.nullGroup;
+       float radius) {
     this.modelIndex = (short)modelIndex;
     this.atomSymmetry = atomSymmetry;
     this.atomSite = atomSite;
     this.atomIndex = atomIndex;
     this.atomicAndIsotopeNumber = atomicAndIsotopeNumber;
-    setBFactor(modelSet, bfactor);
+    if (isHetero)
+      formalChargeAndFlags = IS_HETERO_FLAG;
     setFormalCharge(formalCharge);
-    setOccupancy(modelSet, occupancy);
-    setPartialCharge(modelSet, partialCharge);
-    if (!Float.isNaN(vibrationX))
-      setVibrationVector(modelSet, vibrationX, vibrationY, vibrationZ);
-
-    colixAtom = modelSet.viewer.getColixAtomPalette(this, JmolConstants.PALETTE_CPK);
     this.alternateLocationID = (byte)alternateLocationID;
     this.radius = radius;
     setMadAtom(mad);
     set(x, y, z);
-    if (isHetero)
-      formalChargeAndFlags |= IS_HETERO_FLAG;
-
-    if (atomName != null) {
-      if (modelSet.atomNames == null)
-        modelSet.atomNames = new String[modelSet.atoms.length];
-      modelSet.atomNames[atomIndex] = atomName.intern();
-    }
-
-    byte specialAtomID = lookupSpecialAtomID(atomName);
-    if ((specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON) &&
-        (group3 != null) &&
-        (group3.equalsIgnoreCase("CA"))) {
-      specialAtomID = 0;
-    }
-    //Logger.debug("atom - "+atomName+" specialAtomID=" + specialAtomID);
-    if (specialAtomID != 0) {
-      if (modelSet.specialAtomIDs == null)
-        modelSet.specialAtomIDs = new byte[modelSet.atoms.length];
-      modelSet.specialAtomIDs[atomIndex] = specialAtomID;
-    }
-
-    if (atomSerial != Integer.MIN_VALUE) {
-      if (modelSet.atomSerials == null)
-        modelSet.atomSerials = new int[modelSet.atoms.length];
-      modelSet.atomSerials[atomIndex] = atomSerial;
-    }
-
-    if (clientAtomReference != null) {
-      if (modelSet.clientAtomReferences == null)
-        modelSet.clientAtomReferences = new Object[modelSet.atoms.length];
-      modelSet.clientAtomReferences[atomIndex] = clientAtomReference;
-    }
-    //System.out.println(this + " " + getIdentity());
-  }
-
-  private static Hashtable htAtom = new Hashtable();
-  static {
-    for (int i = JmolConstants.specialAtomNames.length; --i >= 0; ) {
-      String specialAtomName = JmolConstants.specialAtomNames[i];
-      if (specialAtomName != null) {
-        Integer boxedI = new Integer(i);
-        htAtom.put(specialAtomName, boxedI);
-        //System.out.println("atom: "+specialAtomName+" "+i);
-      }
-    }
-  }
-
-  /*
-  static String generateStarredAtomName(String primedAtomName) {
-    int primeIndex = primedAtomName.indexOf('\'');
-    if (primeIndex < 0)
-      return null;
-    return primedAtomName.replace('\'', '*');
-  }
-  */
-
-  static String generatePrimeAtomName(String starredAtomName) {
-    int starIndex = starredAtomName.indexOf('*');
-    if (starIndex < 0)
-      return starredAtomName;
-    return starredAtomName.replace('*', '\'');
-  }
-
-  byte lookupSpecialAtomID(String atomName) {
-    if (atomName != null) {
-      atomName = generatePrimeAtomName(atomName);
-      Integer boxedAtomID = (Integer)htAtom.get(atomName);
-      //if (atomName.equals("O2P"))
-        //System.out.println("looking up "+atomName);
-      if (boxedAtomID != null)
-        return (byte)(boxedAtomID.intValue());
-    }
-    return 0;
   }
 
   public final void setShapeVisibilityFlags(int flag) {
@@ -410,42 +322,18 @@ final public class Atom extends Point3fi {
     formalChargeAndFlags = (byte)((formalChargeAndFlags & ~FORMAL_CHARGE_MASK) | (charge << 2));
   }
   
+  void setVibrationVector() {
+    formalChargeAndFlags |= VIBRATION_VECTOR_FLAG;
+  }
+  
   public int getFormalCharge() {
     return formalChargeAndFlags >> 2;
   }
 
-  void setOccupancy(AtomCollection atomCollection, int occupancy) {
-    if (occupancy < 0)
-      occupancy = 0;
-    else if (occupancy > 100)
-      occupancy = 100;
-    if (occupancy != 100) {
-      if (atomCollection.occupancies == null)
-        atomCollection.occupancies = new byte[atomCollection.atoms.length];
-      atomCollection.occupancies[atomIndex] = (byte)occupancy;
-    }
-  }
-  
   // a percentage value in the range 0-100
   public int getOccupancy() {
     byte[] occupancies = group.chain.modelSet.occupancies;
     return occupancies == null ? 100 : occupancies[atomIndex];
-  }
-
-  void setPartialCharge(AtomCollection atomCollection, float partialCharge) {
-    if (Float.isNaN(partialCharge))
-      return;
-    if (atomCollection.partialCharges == null)
-      atomCollection.partialCharges = new float[atomCollection.atoms.length];
-    atomCollection.partialCharges[atomIndex] = partialCharge;
-  }
-
-  void setBFactor(AtomCollection atomCollection, float bfactor) {
-  if (Float.isNaN(bfactor) || bfactor == 0)
-    return;
-    if (atomCollection.bfactor100s == null)
-      atomCollection.bfactor100s = new short[atomCollection.atoms.length];
-    atomCollection.bfactor100s[atomIndex] = (short)(bfactor * 100);
   }
 
   // This is called bfactor100 because it is stored as an integer
@@ -455,44 +343,6 @@ final public class Atom extends Point3fi {
     if (bfactor100s == null)
       return 0;
     return bfactor100s[atomIndex];
-  }
-
-  void setVibrationVector(AtomCollection atomCollection, float x, float y, float z) {
-    if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
-      return;
-    if (atomCollection.vibrationVectors == null)
-      atomCollection.vibrationVectors = new Vector3f[atomCollection.atoms.length];
-    atomCollection.vibrationVectors[atomIndex] = new Vector3f(x, y, z);
-    formalChargeAndFlags |= VIBRATION_VECTOR_FLAG;
-  }
-
-  void setVibrationVector(AtomCollection atomCollection, int tok, float fValue) {
-    Vector3f v = getVibrationVector();
-    if (v == null)
-      v = new Vector3f();
-    switch(tok) {
-    case Token.vibX:
-      v.x = fValue;
-      break;
-    case Token.vibY:
-      v.y = fValue;
-      break;
-    case Token.vibZ:
-      v.z = fValue;
-      break;
-    }
-    setVibrationVector(atomCollection, v.x, v.y, v.z);
-  }
-  
-  public Vector3f getVibrationVector() {
-    Vector3f[] vibrationVectors = group.chain.modelSet.vibrationVectors;
-    return vibrationVectors == null ? null : vibrationVectors[atomIndex];
-  }
-  
-  public float getVibrationCoord(char ch) {
-    Vector3f[] v = group.chain.modelSet.vibrationVectors;
-    return (v == null || v[atomIndex] == null ? 0 
-        : ch == 'x' ? v[atomIndex].x : ch == 'y' ? v[atomIndex].y : v[atomIndex].z);
   }
 
   public void setValency(int nBonds) {
@@ -656,10 +506,6 @@ final public class Atom extends Point3fi {
      return partialCharges == null ? 0 : partialCharges[atomIndex];
    }
 
-   int getArgb() {
-     return group.chain.modelSet.viewer.getColixArgb(colixAtom);
-   }
-
    /**
     * Given a symmetry operation number, the set of cells in the model, and the
     * number of operations, this method returns either 0 or the cell number (555, 666)
@@ -775,31 +621,28 @@ final public class Atom extends Point3fi {
   
   void setFractionalCoord(int tok, float fValue) {
     CellInfo[] c = group.chain.modelSet.cellInfos;
-    Point3f pt = new Point3f(this);
     if (c != null)
-      c[modelIndex].toFractional(pt);
+      c[modelIndex].toFractional(this);
     switch (tok) {
     case Token.fracX:
-      pt.x = fValue;
+      x = fValue;
       break;
     case Token.fracY:
-      pt.y = fValue;
+      y = fValue;
       break;
     case Token.fracZ:
-      pt.z = fValue;
+      z = fValue;
       break;
     }
     if (c != null)
-      c[modelIndex].toCartesian(pt);
-    set(pt);
+      c[modelIndex].toCartesian(this);
   }
   
   void setFractionalCoord(Point3f ptNew) {
+    set(ptNew);
     CellInfo[] c = group.chain.modelSet.cellInfos;
-    Point3f pt = new Point3f(ptNew);
     if (c != null)
-      c[modelIndex].toCartesian(pt);
-    set(pt);
+      c[modelIndex].toCartesian(this);
   }
   
   boolean isCursorOnTopOf(int xCursor, int yCursor,
@@ -1250,12 +1093,12 @@ final public class Atom extends Point3fi {
           case 'x':
           case 'y':
           case 'z':
-            floatT = getVibrationCoord(ch);
+            floatT = group.chain.modelSet.getVibrationCoord(atomIndex, ch);
             break;
           default:
             if (ch != '\0')
               --ich;
-            Vector3f v = getVibrationVector();
+            Vector3f v = group.chain.modelSet.getVibrationVector(atomIndex);
             if (v == null) {
               floatT = 0;
               break;

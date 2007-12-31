@@ -28,6 +28,7 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.Model;
 import org.jmol.modelset.Polymer;
 import org.jmol.util.BitSetUtil;
+//import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
@@ -203,7 +204,7 @@ public abstract class BioPolymer extends Polymer {
 
   public void clearStructures() {
     for (int i = 0; i < monomerCount; i++)
-      monomers[i].setStructure(null);    
+      monomers[i].setStructure(null);
   }
   
   void removeProteinStructure(int monomerIndex, int count) {
@@ -290,13 +291,13 @@ public abstract class BioPolymer extends Polymer {
   public void setConformation(BitSet bsSelected, int nAltLocsInModel) {
     for (int i = monomerCount; --i >= 0; )
       monomers[i].updateOffsetsForAlternativeLocations(bsSelected, nAltLocsInModel);
-    
     recalculateLeadMidpointsAndWingVectors();
     //calculateStructures();
   }
   
   public void recalculateLeadMidpointsAndWingVectors() {    
     leadAtomIndices = null;
+    sheetPoints = null;
     getLeadAtomIndices();
     calcLeadMidpointsAndWingVectors(false);
   }
@@ -318,30 +319,30 @@ public abstract class BioPolymer extends Polymer {
       return leadMidpoints;
     else if (sheetSmoothing == 0)
       return leadPoints;
-    return getTempPoints(sheetSmoothing);
+    return getSheetPoints(sheetSmoothing);
   }
 
   private float sheetSmoothing;
-  private Point3f[] getTempPoints(float sheetSmoothing) {
-    if (tempPoints != null && sheetSmoothing == this.sheetSmoothing)
-      return tempPoints;
-    tempPoints = new Point3f[monomerCount + 1];
+  private Point3f[] getSheetPoints(float sheetSmoothing) {
+    if (sheetPoints != null && sheetSmoothing == this.sheetSmoothing)
+      return sheetPoints;
+    sheetPoints = new Point3f[monomerCount + 1];
     getLeadPoints();
     for (int i = 0; i < monomerCount; i++)
-        tempPoints[i] = new Point3f();
+        sheetPoints[i] = new Point3f();
     Vector3f v = new Vector3f();
     for (int i = 0; i < monomerCount; i++) {
       if (monomers[i].isSheet()) {
         v.sub(leadMidpoints[i], leadPoints[i]);
         v.scale(sheetSmoothing);
-        tempPoints[i].add(leadPoints[i], v);
+        sheetPoints[i].add(leadPoints[i], v);
       } else {
-        tempPoints[i] = leadPoints[i];
+        sheetPoints[i] = leadPoints[i];
       }
     }
-    tempPoints[monomerCount] = tempPoints[monomerCount - 1];
+    sheetPoints[monomerCount] = sheetPoints[monomerCount - 1];
     this.sheetSmoothing = sheetSmoothing;
-    return tempPoints;
+    return sheetPoints;
   }
   
   public final Vector3f[] getWingVectors() {
@@ -353,12 +354,13 @@ public abstract class BioPolymer extends Polymer {
   private final void calcLeadMidpointsAndWingVectors(boolean getNewPoints) {
     int count = monomerCount;
     if (leadMidpoints == null || getNewPoints) {
-      leadMidpoints = new Point3f[count + 1];
+      leadMidpoints = new Point3f[count + 1]; 
       leadPoints = new Point3f[count + 1];
       wingVectors = new Vector3f[count + 1];
       sheetSmoothing = Float.MIN_VALUE;
     }
     boolean hasWingPoints = hasWingPoints();
+    //if (model.getModelSet().viewer.getTestFlag1()) hasWingPoints = false;
     
     Vector3f vectorA = new Vector3f();
     Vector3f vectorB = new Vector3f();
@@ -404,43 +406,40 @@ public abstract class BioPolymer extends Polymer {
         wingVectors[1] = unitVectorX;
       } else {
         // auto-calculate wing vectors based upon lead atom positions only
-        // seems to work like a charm! :-)
-        Point3f next, current, prev;
-        prev = leadMidpoints[0];
-        current = leadMidpoints[1];
         Vector3f previousVectorC = null;
         for (int i = 1; i < count; ++i) {
-          next = leadMidpoints[i + 1];
-          vectorA.sub(prev, current);
-          vectorB.sub(next, current);
+         // perfect for traceAlpha on; reasonably OK for traceAlpha OFF          
+          vectorA.sub(leadMidpoints[i], leadPoints[i]);
+          vectorB.sub(leadPoints[i], leadMidpoints[i + 1]);
           vectorC.cross(vectorA, vectorB);
           vectorC.normalize();
           if (previousVectorC != null &&
               previousVectorC.angle(vectorC) > Math.PI/2)
             vectorC.scale(-1);
           previousVectorC = wingVectors[i] = new Vector3f(vectorC);
-          prev = current;
-          current = next;
         }
       }
     }
     wingVectors[0] = wingVectors[1];
     wingVectors[count] = wingVectors[count - 1];
+      Point3f pt = leadPoints[11];
+      vectorC.set(wingVectors[11]);
+      vectorC.add(pt);
+      /*
+      //order of points is mid11 lead11 mid12 lead12
+      System.out.println("draw pt" + 11 + "b " + Escape.escape(leadMidpoints[11])  + " color yellow");
+      System.out.println("draw pt" + 11 + " " + Escape.escape(leadPoints[11])  + " color red");
+      System.out.println("draw pt" + 12 + "b " + Escape.escape(leadMidpoints[12])  + " color blue");
+      System.out.println("draw pt" + 12 + " " + Escape.escape(leadPoints[12])  + " color green");
+      System.out.println("draw v" + 11 + " arrow " + Escape.escape(pt) + " " + Escape.escape(vectorC));
+      System.out.println("draw plane" + 11 + " " + Escape.escape(leadPoints[11]) + " " + Escape.escape(leadMidpoints[11]) + " "+ Escape.escape(leadMidpoints[12]));
 
-    /*
-    for (int i = 0; i < wingVectors.length; ++i) {
-      if (wingVectors[i] == null) {
-        Logger.debug("que? wingVectors[" + i + "] == null?");
-        Logger.debug("hasWingPoints=" + hasWingPoints +
-                           " wingVectors.length=" + wingVectors.length +
-                           " count=" + count);
-                      
-      }
-      else if (Float.isNaN(wingVectors[i].x)) {
-        Logger.debug("wingVectors[" + i + "]=" + wingVectors[i]);
-      }
-    }
-    */
+      pt = leadMidpoints[11];
+      vectorC.set(wingVectors[11]);
+      vectorC.add(pt);
+      System.out.println("draw v" + 11 + "b arrow " + Escape.escape(pt) + " " + Escape.escape(vectorC));
+*/
+      
   }
 
   private final Vector3f unitVectorX = new Vector3f(1, 0, 0);

@@ -422,7 +422,7 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = modelCount; --i >= 0;)
       if (models[i].isPDB && !alreadyDefined.get(i))
         models[i].calculateStructures();
-    if (addFileData)
+     if (addFileData)
       propagateSecondaryStructure();
   }
 
@@ -701,6 +701,11 @@ abstract public class ModelCollection extends BondCollection {
   }
   
   public void recalculateLeadMidpointsAndWingVectors(int modelIndex) {
+    if (modelIndex < 0) {
+      for (int i = 0; i < modelCount; i++)
+        recalculateLeadMidpointsAndWingVectors(i);
+      return;
+    }
     int polymerCount = models[modelIndex].getBioPolymerCount();
     for (int ip = 0; ip < polymerCount; ip++)
       models[modelIndex].getBioPolymer(ip)
@@ -1170,12 +1175,13 @@ abstract public class ModelCollection extends BondCollection {
         taint(i, TAINT_COORD);
         n++;
       }
-    if (isInternal)
-      return;
-    ptTemp.scale(1f / n);
-    for (int i = atomCount; --i >= 0;)
-      if (bs.get(i))
-        atoms[i].add(ptTemp);
+    if (!isInternal) {
+      ptTemp.scale(1f / n);
+      for (int i = atomCount; --i >= 0;)
+        if (bs.get(i))
+          atoms[i].add(ptTemp);
+    }
+    recalculateLeadMidpointsAndWingVectors(-1);
   }
 
   public BitSet getMoleculeBitSet(BitSet bs) {
@@ -1507,6 +1513,16 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   ////////// atoms /////////
+
+  public void setAtomCoordRelative(Point3f offset, BitSet bs) {
+    setAtomCoordRelative(bs, offset.x, offset.y, offset.z);
+    recalculateLeadMidpointsAndWingVectors(-1);
+  }
+
+  public void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
+    super.setAtomCoord(bs, tokType, xyzValues);
+    recalculateLeadMidpointsAndWingVectors(-1);
+  }
 
   public int getAtomCountInModel(int modelIndex) {
     if (modelIndex < 0)

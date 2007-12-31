@@ -111,8 +111,9 @@ abstract class BioShapeRenderer extends MeshRenderer {
     isHighRes = TF;
 
     TF = (viewer.isJmolDataFrame(bioShape.modelIndex) || viewer.getTraceAlpha()); 
-    if (TF != isTraceAlpha)
+    if (TF != isTraceAlpha) {
       invalidate = true;
+    }
     isTraceAlpha = TF;
 
     int val = viewer.getRibbonAspectRatio();

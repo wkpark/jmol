@@ -47,7 +47,7 @@ abstract public class Polymer {
   // holds center points between alpha carbons or sugar phosphoruses
   protected Point3f[] leadMidpoints;
   protected Point3f[] leadPoints;
-  protected Point3f[] tempPoints;
+  protected Point3f[] sheetPoints;
   // holds the vector that runs across the 'ribbon'
   protected Vector3f[] wingVectors;
 

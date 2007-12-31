@@ -81,7 +81,7 @@ abstract public class AtomCollection {
     specialAtomIDs = mergeModelSet.specialAtomIDs;
   }
   
-  Viewer viewer;
+  public Viewer viewer; //TESTING ONLY
   Graphics3D g3d;
 
   final protected static boolean showRebondTimes = true;
@@ -490,10 +490,6 @@ abstract public class AtomCollection {
     taint(atomIndex, TAINT_COORD);
   }
 
-  public void setAtomCoordRelative(Point3f offset, BitSet bs) {
-    setAtomCoordRelative(bs, offset.x, offset.y, offset.z);
-  }
-
   public void setAtomCoordRelative(int atomIndex, float x, float y, float z) {
     if (atomIndex < 0 || atomIndex >= atomCount)
       return;
@@ -504,7 +500,7 @@ abstract public class AtomCollection {
     taint(atomIndex, TAINT_COORD);
   }
 
-  private void setAtomCoordRelative(BitSet atomSet, float x, float y, float z) {
+  protected void setAtomCoordRelative(BitSet atomSet, float x, float y, float z) {
     bspf = null;
     for (int i = atomCount; --i >= 0;)
       if (atomSet.get(i))

@@ -308,20 +308,29 @@ public class NucleicMonomer extends PhosphorusMonomer {
    
    */
    
-   Point3f ptN1 = getN1(); 
-   Point3f ptC2 = getAtomFromOffsetIndex(C2);
-   Point3f ptC6 = getAtomFromOffsetIndex(C6);
-   
-   if(ptN1 == null || ptC2 == null || ptC6 == null)
+   if (getLeadAtom().getElementSymbol() != "P")
+     return null;
+   Point3f ptA, ptB, ptN;
+   if (isPurine) {
+     ptN = getAtomFromOffsetIndex(N9);
+     ptA = getAtomFromOffsetIndex(C4);
+     ptB = getAtomFromOffsetIndex(C8);
+   } else {
+     ptN = getAtomFromOffsetIndex(N1);
+     ptA = getAtomFromOffsetIndex(C2);
+     ptB = getAtomFromOffsetIndex(C6);
+   }
+   if(ptN == null || ptA == null || ptB == null)
      return null;
 
-   Vector3f vA = new Vector3f(ptC2);
-   vA.sub(ptN1);
+   Vector3f vA = new Vector3f(ptA);
+   vA.sub(ptN);
    
-   Vector3f vB = new Vector3f(ptC6);
-   vB.sub(ptN1);
-
-   return (isPurine ? Quaternion.getQuaternionFrame(vB, vA) : Quaternion.getQuaternionFrame(vA, vB));   
+   Vector3f vB = new Vector3f(ptB);
+   vB.sub(ptN);
+   //vA.set(1f, 0.2f, 0f);
+   //vB.set(-0.2f, 1f, 0f);
+   return Quaternion.getQuaternionFrame(vA, vB);
  }
    
  

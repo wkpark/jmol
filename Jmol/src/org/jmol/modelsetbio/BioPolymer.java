@@ -578,6 +578,8 @@ public abstract class BioPolymer extends Polymer {
               qprev = q;
               continue;
             }
+            if (q.dot(qprev) < 0)
+              q = q.mul(-1);
             Quaternion qthis = q;
             q = qprev.inv().mul(q);
             //System.out.println("" + qprev+q+ qprev.mul(q) + qthis);
@@ -586,6 +588,14 @@ public abstract class BioPolymer extends Polymer {
           if (qlast != null && q.dot(qlast) < 0)
             q = q.mul(-1);
           qlast = q;
+/*
+          System.out.println("Draw c" + a.getAtomNumber() + "x vector " + Escape.escape(a) 
+              + Escape.escape(q.getVector(0))+ " color white");
+          System.out.println("Draw c" + a.getAtomNumber() + "y vector " + Escape.escape(a) 
+              + Escape.escape(q.getVector(1)) + " color yellow");
+          System.out.println("Draw c" + a.getAtomNumber() + "z vector " + Escape.escape(a) 
+              + Escape.escape(q.getVector(2)) +  " color orange");
+*/
           switch (ctype) {
           case 'w':
             x = q.q1;
@@ -613,12 +623,21 @@ public abstract class BioPolymer extends Polymer {
             break;
           }
         }
-        pdbATOM.append(a.formatLabel("ATOM  %5i  %-3a%1A%3n %1c%4R%1E   "));
+/*
+        System.out.println("Draw v" + a.getAtomNumber() + "x vector " + Escape.escape(a) 
+            + "{ "+(10*x)+" 0 0} color red");
+        System.out.println("Draw v" + a.getAtomNumber() + "y vector " + Escape.escape(a) 
+            + "{ 0 "+(10*y)+" 0} color green");
+        System.out.println("Draw v" + a.getAtomNumber() + "z vector " + Escape.escape(a) 
+            + "{ 0 0 "+(10*z)+"} color blue");
+*/
+        
+        pdbATOM.append(a.formatLabel("ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
         pdbATOM.append(TextFormat.formatString("%8.3x", "x", x * factor));
         pdbATOM.append(TextFormat.formatString("%8.3x", "x", y * factor));
         pdbATOM.append(TextFormat.formatString("%8.3x", "x", z * factor));
         pdbATOM.append(TextFormat.formatString("%6.2x", "x", w * factor));
-        pdbATOM.append("                 C    \n");
+        pdbATOM.append(TextFormat.formatString("                %2x    \n", "x", a.getElementSymbol().toUpperCase()));
         if (atomno != Integer.MIN_VALUE) {
           pdbCONECT.append("CONECT");
           pdbCONECT.append(TextFormat.formatString("%5i", "i", atomno));

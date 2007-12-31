@@ -29,8 +29,10 @@ import javax.vecmath.Vector3f;
 class Quaternion {
   float q0, q1, q2, q3;
 
+  Matrix3f mat;
   // create a new object with the given components
-  Quaternion(float q0, float q1, float q2, float q3) {
+  private Quaternion(Matrix3f mat, float q0, float q1, float q2, float q3) {
+    this.mat = mat;
     this.q0 = q0;
     this.q1 = q1;
     this.q2 = q2;
@@ -39,6 +41,7 @@ class Quaternion {
 
   Quaternion(Matrix3f mat) {
 
+    this.mat = mat;
     //from http://www.gamedev.net/community/forums/topic.asp?topic_id=448380
     float q0, q1, q2, q3;
 
@@ -93,11 +96,11 @@ class Quaternion {
   }
   
   Quaternion mul(float x) {
-    return new Quaternion(q0 * x, q1 * x, q2 * x, q3 * x);
+    return new Quaternion(mat, q0 * x, q1 * x, q2 * x, q3 * x);
   }
   
   Quaternion mul(Quaternion p) {
-    return new Quaternion(
+    return new Quaternion(mat, 
         p.q0 * q0 - p.q1 * q1 - p.q2 * q2 - p.q3 * q3,
         p.q0 * q1 + p.q1 * q0 + p.q2 * q3 - p.q3 * q2,
         p.q0 * q2 + p.q2 * q0 + p.q3 * q1 - p.q1 * q3,
@@ -110,13 +113,18 @@ class Quaternion {
   }
   
   Quaternion inv() {
-    return new Quaternion(q0, -q1, -q2, -q3);
+    return new Quaternion(mat, q0, -q1, -q2, -q3);
   }
   
   public String toString() {
     return "{" + q0 + " " + q1 + " " + q2 + " " + q3 + "}";
   }
   
+  public Vector3f getVector(int i) {
+    Vector3f v = new Vector3f();
+    mat.getColumn(i, v);
+    return v;
+  }
   static final Quaternion getQuaternionFrame(Vector3f vA, Vector3f vB) {
     Vector3f vC = new Vector3f();
     vC.cross(vA, vB);

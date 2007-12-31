@@ -17,6 +17,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.jmol.util.JUnitLogger;
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -59,22 +60,22 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "adf", "adf", "Adf");
     result.addDirectory(false, "aminoacids", "mol");
     result.addDirectory(false, "aminoacids", "pdb");
-    result.addDirectory(false, "animations", "cml", "Xml");
+    result.addDirectory(false, "animations", "cml", "cml(xml)");
     result.addDirectory(false, "animations", "pdb");
     result.addDirectory(true,  "animations", "pdb.gz");
     result.addDirectory(false, "animations", "xyz");
     result.addDirectory(false, "cif", "cif");
-    result.addDirectory(false, "c3xml", "c3xml", "Xml");
-    result.addDirectory(false, "cml", "cml", "Xml");
+    result.addDirectory(false, "c3xml", "c3xml", "chem3d(xml)");
+    result.addDirectory(false, "cml", "cml", "cml(xml)");
     result.addDirectory(false, "crystals", "mol");
     result.addDirectory(false, "crystals", "pdb");
     result.addDirectory(false, "csf", "csf", "Csf");
     result.addDirectory(true,  "cube", "cub.gz");
     result.addDirectory(true,  "cube", "cube.gz");
-    result.addDirectory(false, "folding", "xyz");
-    result.addDirectory(true,  "folding", "xyz.gz");
-    result.addDirectory(false, "../Jmol-FAH/projects", "xyz");
-    result.addDirectory(true,  "../Jmol-FAH/projects", "xyz.gz");
+    result.addDirectory(false, "folding", "xyz", "FoldingXyz");
+    result.addDirectory(true,  "folding", "xyz.gz", "FoldingXyz");
+    result.addDirectory(false, "../Jmol-FAH/projects", "xyz", "FoldingXyz");
+    result.addDirectory(true,  "../Jmol-FAH/projects", "xyz.gz", "FoldingXyz");
     result.addDirectory(false, "gamess", "log");
     result.addDirectory(false, "gamess", "out");
     result.addDirectory(false, "gaussian", "log");
@@ -88,13 +89,13 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "mol", "mol");
     result.addDirectory(false, "mol", "sdf");
     result.addDirectory(false, "mol2", "mol2");
-    result.addDirectory(false, "molpro", "xml");
+    result.addDirectory(false, "molpro", "xml", "molpro(xml)");
     result.addDirectory(false, "mopac", "out");
-    result.addDirectory(false, "nwchem", "nwo");
+    result.addDirectory(false, "nwchem", "nwo", "NWChem");
     result.addDirectory(false, "pdb", "pdb");
     result.addDirectory(true,  "pdb", "pdb.gz");
     // result.pmesh files are not molecular data files
-    result.addDirectory(false, "psi3", "out");
+    result.addDirectory(false, "psi3", "out", "Psi");
     result.addDirectory(false, "qchem", "out");
     result.addDirectory(false, "shelx", "res");
     result.addDirectory(false, "spartan", "smol", "SpartanSmol");
@@ -115,7 +116,13 @@ public class TestSmarterJmolAdapter extends TestSuite {
   private void addDirectory(boolean gzipped, String directory, String ext) {
     if (testOne != null && !directory.equals(testOne))
       return;
-    addDirectory(gzipped, directory, ext, null);
+    String type = ext;
+    if (type.indexOf(".") >=0 )
+      type = type.substring(0, type.indexOf("."));
+    if (!Parser.isOneOf(type, "cif;pdb;xyz;mol;"))
+      type = directory;
+    type = type.substring(0,1).toUpperCase() + type.substring(1);
+    addDirectory(gzipped, directory, ext, type);
   }
 
   /**

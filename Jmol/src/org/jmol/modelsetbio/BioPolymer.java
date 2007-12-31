@@ -422,10 +422,10 @@ public abstract class BioPolymer extends Polymer {
     }
     wingVectors[0] = wingVectors[1];
     wingVectors[count] = wingVectors[count - 1];
+      /*
       Point3f pt = leadPoints[11];
       vectorC.set(wingVectors[11]);
       vectorC.add(pt);
-      /*
       //order of points is mid11 lead11 mid12 lead12
       System.out.println("draw pt" + 11 + "b " + Escape.escape(leadMidpoints[11])  + " color yellow");
       System.out.println("draw pt" + 11 + " " + Escape.escape(leadPoints[11])  + " color red");

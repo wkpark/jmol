@@ -814,15 +814,13 @@ abstract public class ModelCollection extends BondCollection {
       modelIndex = getJmolDataSourceFrame(modelIndex);
     if (modelIndex < 0)
       return "";
-    int nPoly = models[modelIndex].getBioPolymerCount();
     StringBuffer pdbATOM = new StringBuffer();
+    Model model = models[modelIndex];
     BitSet bsAtoms = getModelAtomBitSet(modelIndex, false);
-    for (int p = 0; p < nPoly; p++) {
-      Model model = models[modelIndex];
-      for (int mp = 0; mp < model.bioPolymerCount; mp++)
-        model.bioPolymers[mp].getPdbData(ctype, isDerivative, bsAtoms, pdbATOM,
+    int nPoly = model.getBioPolymerCount();
+    for (int p = 0; p < nPoly; p++)
+        model.bioPolymers[p].getPdbData(ctype, isDerivative, bsAtoms, pdbATOM,
             pdbCONECT);
-    }
     pdbATOM.append(pdbCONECT);
     return getProteinStructureState(bsAtoms, ctype == 'r') + pdbATOM.toString();
   }
@@ -2240,7 +2238,6 @@ abstract public class ModelCollection extends BondCollection {
 
   public Vector getAllAtomInfo(BitSet bs) {
     Vector V = new Vector();
-    int atomCount = viewer.getAtomCount();
     for (int i = 0; i < atomCount; i++) 
       if (bs.get(i))
         V.addElement(getAtomInfoLong(i));

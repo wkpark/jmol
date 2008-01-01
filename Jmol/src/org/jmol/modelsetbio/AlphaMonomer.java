@@ -59,6 +59,8 @@ public class AlphaMonomer extends Monomer {
   
   public ProteinStructure getProteinStructure() { return proteinStructure; }
 
+  public Object getStructure() { return getProteinStructure(); }
+
   void setStructure(ProteinStructure proteinStructure) {
     this.proteinStructure = proteinStructure;
   }

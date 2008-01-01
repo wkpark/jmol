@@ -73,6 +73,7 @@ public class PhosphorusMonomer extends Monomer {
   public boolean isPurine() { return isPurine; }
   public boolean isPyrimidine() { return isPyrimidine; }
 
+  public Object getStructure() { return chain; }
 
   public byte getProteinStructureType() {
     return JmolConstants.PROTEIN_STRUCTURE_NONE;

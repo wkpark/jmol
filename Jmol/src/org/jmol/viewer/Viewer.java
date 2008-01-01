@@ -1355,8 +1355,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.defaultDirectory;
   }
 
-  Object getBufferedReaderOrErrorMessageFromName(String name, String[] fullPathNameReturn) {
-    return fileManager.getBufferedReaderOrErrorMessageFromName(name, fullPathNameReturn);
+  Object getBufferedReaderOrErrorMessageFromName(String name,
+                                                 String[] fullPathNameReturn,
+                                                 boolean isBinary) {
+    return fileManager.getBufferedReaderOrErrorMessageFromName(name,
+        fullPathNameReturn, isBinary);
   }
 
   Object getBufferedReaderForString(String string) {

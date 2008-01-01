@@ -397,7 +397,7 @@ public class Token {
   final static int radius        = atomproperty | 17 | setparam;
   final static int resno         = atomproperty | 18;
   final public static int site          = atomproperty | 19;
-  final static int structure     = atomproperty | 20 | command | embeddedExpression;
+  final public static int structure     = atomproperty | 20 | command | embeddedExpression;
   final static int symop         = atomproperty | 21;
   final public static int vanderwaals   = atomproperty | 22 | settable;
   final public static int valence       = atomproperty | 23 | settable;

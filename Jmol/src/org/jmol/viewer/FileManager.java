@@ -115,7 +115,7 @@ class FileManager {
     int pt = fileName.indexOf("::");
     if (pt >= 0)
       return fileName.substring(0, pt);
-    Object br = getUnzippedBufferedReaderOrErrorMessageFromName(fileName, true, true);
+    Object br = getUnzippedBufferedReaderOrErrorMessageFromName(fileName, true, false, true);
     if (br instanceof BufferedReader)
       return modelAdapter.getFileTypeName((BufferedReader) br);
     if (br instanceof ZipInputStream) {
@@ -317,7 +317,7 @@ class FileManager {
       } else if (isGzip(is)) {
         is = new GZIPInputStream(bis);
       } else if (ZipUtil.isZipFile(is)) {
-        return ZipUtil.getZipFileContents(is, subFileList, 1);
+        return (String) ZipUtil.getZipFileContents(is, subFileList, 1, false);
       }
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
       StringBuffer sb = new StringBuffer(8192);
@@ -523,18 +523,22 @@ class FileManager {
     return getBufferedReaderForString(sb.toString());
   }
 
-  Object getBufferedReaderOrErrorMessageFromName(String name, String[] fullPathNameReturn) {
+  Object getBufferedReaderOrErrorMessageFromName(String name,
+                                                 String[] fullPathNameReturn,
+                                                 boolean isBinary) {
     String[] names = classifyName(name);
     if (names == null)
       return "cannot read file name: " + name;
     if (fullPathNameReturn != null)
       fullPathNameReturn[0] = names[0].replace('\\', '/');
-    return getUnzippedBufferedReaderOrErrorMessageFromName(names[0], false, false);
+    return getUnzippedBufferedReaderOrErrorMessageFromName(names[0], false,
+        isBinary, false);
   }
 
-  Object getUnzippedBufferedReaderOrErrorMessageFromName(String name
-                                                         , boolean allowZipStream
-                                                         , boolean isTypeCheckOnly) {
+  Object getUnzippedBufferedReaderOrErrorMessageFromName(String name,
+                                                         boolean allowZipStream,
+                                                         boolean asInputStream,
+                                                         boolean isTypeCheckOnly) {
     String[] subFileList = null;
     if (name.indexOf("|") >= 0) 
       name = (subFileList = TextFormat.split(name, "|"))[0];
@@ -563,10 +567,14 @@ class FileManager {
       } else if (ZipUtil.isZipFile(is)) {
         if (allowZipStream)
           return new ZipInputStream(is);
+        if (asInputStream)
+          return (InputStream) ZipUtil.getZipFileContents(is, subFileList, 1, true);
         //danger -- converting bytes to String here. 
-        //we lose 128-156 or so. 
-        return getBufferedReaderForString(ZipUtil.getZipFileContents(is, subFileList, 1));
+        //we lose 128-156 or so.
+        return getBufferedReaderForString((String) ZipUtil.getZipFileContents(is, subFileList, 1, false));
       }
+      if (asInputStream)
+        return is;
       return new BufferedReader(new InputStreamReader(is));
     } catch (Exception ioe) {
       return ioe.getMessage();
@@ -625,7 +633,7 @@ class FileManager {
         String[] subFileList = null;
         if (name.indexOf("|") >= 0) 
           name = (subFileList = TextFormat.split(name, "|"))[0];
-        Object t = getUnzippedBufferedReaderOrErrorMessageFromName(name, true, false);
+        Object t = getUnzippedBufferedReaderOrErrorMessageFromName(name, true, false, false);
         if (t instanceof BufferedReader) {
           reader = (BufferedReader) t;
           openBufferedReader();
@@ -734,7 +742,7 @@ class FileManager {
       if (name.indexOf("|") >= 0)
         name = (subFileList = TextFormat.split(name, "|"))[0];
       Object t = getUnzippedBufferedReaderOrErrorMessageFromName(name, true,
-          false);
+          false, false);
       if (t instanceof ZipInputStream) {
         if (subFileList != null)
           htParams.put("subFileList", subFileList);

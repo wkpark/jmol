@@ -29,6 +29,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringBufferInputStream;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -59,10 +60,11 @@ public class ZipUtil {
    * @param is
    * @param list
    * @param listPtr
+   * @param asInputStream  for Pmesh
    * @return  directory listing or subfile contents
    */
-  static public String getZipFileContents(InputStream is, String[] list,
-                                          int listPtr) {
+  static public Object getZipFileContents(InputStream is, String[] list,
+                                          int listPtr, boolean asInputStream) {
     String ret = "";
     if (list == null || listPtr >= list.length)
       return getZipDirectoryAsStringAndClose(is);
@@ -77,6 +79,8 @@ public class ZipUtil {
             continue;
           ret += name + "\n";
         }
+        if (asInputStream)
+          return new StringBufferInputStream(ret);
         return ret;
       }
       while ((ze = zis.getNextEntry()) != null) {
@@ -85,7 +89,9 @@ public class ZipUtil {
         byte[] bytes = getZipEntryAsBytes(zis);
         if (isZipFile(bytes))
           return getZipFileContents(new BufferedInputStream(
-              new ByteArrayInputStream(bytes)), list, ++listPtr);
+              new ByteArrayInputStream(bytes)), list, ++listPtr, asInputStream);
+        if (asInputStream)
+          return new ByteArrayInputStream(bytes);
         return new String(bytes);
       }
     } catch (Exception e) {

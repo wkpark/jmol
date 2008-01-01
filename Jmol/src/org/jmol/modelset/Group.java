@@ -178,6 +178,10 @@ public class Group {
     return -1;
   }
 
+  public Object getStructure() {
+    return null;
+  }
+  
   public int getProteinStructureID() {
     return Integer.MIN_VALUE;
   }

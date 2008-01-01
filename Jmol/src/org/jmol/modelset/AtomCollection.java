@@ -1580,6 +1580,8 @@ abstract public class AtomCollection {
       return withinGroup(bs);
     case Token.chain:
       return withinChain(bs);
+    case Token.structure:
+      return withinStructure(bs);
     case Token.model:
       return withinModel(bs);
     case Token.element:
@@ -1588,6 +1590,23 @@ abstract public class AtomCollection {
       return withinSite(bs);
     }
     return null;
+  }
+
+  private BitSet withinStructure(BitSet bs) {
+    Object structureLast = null;
+    BitSet bsResult = new BitSet();
+    for (int i = atomCount; --i >= 0;) {
+      if (!bs.get(i))
+        continue;
+      Object structure = atoms[i].getGroup().getStructure();
+      if (structure != null && structure != structureLast) {
+        for (int j = atomCount; --j >= 0;)
+          if (atoms[j].getGroup().getStructure() == structure)
+            bsResult.set(j);
+        structureLast = structure;
+      }
+    }
+    return bsResult;
   }
 
   private BitSet withinGroup(BitSet bs) {
@@ -1610,7 +1629,6 @@ abstract public class AtomCollection {
   private BitSet withinChain(BitSet bs) {
     Chain chainLast = null;
     BitSet bsResult = new BitSet();
-    int atomCount = getAtomCount();
     for (int i = atomCount; --i >= 0;) {
       if (!bs.get(i))
         continue;

@@ -25,6 +25,8 @@ package org.jmol.util;
 
 
 import java.io.DataInputStream;
+
+import javax.vecmath.Point3f;
 //import java.io.RandomAccessFile;
 
 /* a basic binary file reader (extended by CompountDocument). 
@@ -39,58 +41,78 @@ import java.io.DataInputStream;
  * 
  */
 
-class BinaryDocument {
+public class BinaryDocument {
 
-  BinaryDocument() {  
+  public BinaryDocument() {  
   }
   
 //  RandomAccessFile file;
   
-  DataInputStream stream;
-  boolean isRandom = false;
-  boolean isBigEndian = true;
+  protected DataInputStream stream;
+  protected boolean isRandom = false;
+  protected boolean isBigEndian = true;
 
-  byte readByte() throws Exception {
+  public void setStream(DataInputStream stream) {
+    this.stream = stream;
+  }
+  
+  public void setRandom(boolean TF) {
+    isRandom = TF;
+    //CANNOT be random for web 
+  }
+  
+  public byte readByte() throws Exception {
     return stream.readByte();
   }
 
-  void readByteArray(byte[] b) throws Exception {
+  public void readByteArray(byte[] b) throws Exception {
     stream.read(b);
   }
 
-  void readByteArray(byte[] b, int off, int len) throws Exception {
+  public void readByteArray(byte[] b, int off, int len) throws Exception {
     stream.read(b, off, len);
   }
 
-  short readShort() throws Exception {
-    if (isBigEndian)
-      return stream.readShort();
-    return (short) ((((int) stream.readByte()) & 0xff) | (((int) stream
-        .readByte()) & 0xff) << 8);
+  public short readShort() throws Exception {
+    return (isBigEndian ? stream.readShort()
+        : (short) ((((int) stream.readByte()) & 0xff) 
+                 | (((int) stream.readByte()) & 0xff) << 8));
   }
 
-  int readInt() throws Exception {
-    if (isBigEndian)
-      return stream.readInt();
-    return ((((int) stream.readByte()) & 0xff)
-        | (((int) stream.readByte()) & 0xff) << 8
-        | (((int) stream.readByte()) & 0xff) << 16 | (((int) stream.readByte()) & 0xff) << 24);
+  public int readInt() throws Exception {
+    return (isBigEndian ? stream.readInt() : readLEInt());
   }
-
-  long readLong() throws Exception {
-    if (isBigEndian)
-      return stream.readLong();
-    return ((((long) stream.readByte()) & 0xff)
+  
+  public long readLong() throws Exception {
+    return (isBigEndian ? stream.readLong()
+       : ((((long) stream.readByte()) & 0xff)
         | (((long) stream.readByte()) & 0xff) << 8
         | (((long) stream.readByte()) & 0xff) << 16
         | (((long) stream.readByte()) & 0xff) << 24
         | (((long) stream.readByte()) & 0xff) << 32
         | (((long) stream.readByte()) & 0xff) << 40
-        | (((long) stream.readByte()) & 0xff) << 48 | (((long) stream
-        .readByte()) & 0xff) << 54);
+        | (((long) stream.readByte()) & 0xff) << 48 
+        | (((long) stream.readByte()) & 0xff) << 54));
   }
 
-  void seek(long offset) {
+  public float readFloat() throws Exception {
+    return (isBigEndian ? stream.readFloat() 
+        : Float.intBitsToFloat(readLEInt()));
+  }
+  
+  public void readPoint3fArray(Point3f[] data) throws Exception {
+    for (int i = 0; i < data.length; i++)
+      data[i] = new Point3f(readFloat(), readFloat(), readFloat());
+  }
+
+  private int readLEInt() throws Exception {
+    return ((((int) stream.readByte()) & 0xff)
+          | (((int) stream.readByte()) & 0xff) << 8
+          | (((int) stream.readByte()) & 0xff) << 16 
+          | (((int) stream.readByte()) & 0xff) << 24);
+  }
+
+  public void seek(long offset) {
     // slower, but all that is available using the applet
     try {
       stream.reset();

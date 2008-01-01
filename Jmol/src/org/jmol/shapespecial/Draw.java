@@ -86,6 +86,7 @@ public class Draw extends MeshCollection {
   private float length;
   private boolean isCurve;
   private boolean isArrow;
+  private boolean isVector;
   private boolean isCircle;
   private boolean isVisible;
   private boolean isPerpendicular;
@@ -109,7 +110,7 @@ public class Draw extends MeshCollection {
       newScale = 0;
       ncoord = nbitsets = nidentifiers = 0;
       isFixed = isReversed = isRotated45 = isCrossed = false;
-      isCurve = isArrow = isPlane = isVertices = isPerpendicular = false;
+      isCurve = isArrow = isPlane = isVertices = isPerpendicular = isVector = false;
       isVisible = isValid = true;
       length = Float.MAX_VALUE;
       diameter = 0;
@@ -164,6 +165,12 @@ public class Draw extends MeshCollection {
 
     if ("arrow" == propertyName) {
       isArrow = true;
+      return;
+    }
+
+    if ("vector" == propertyName) {
+      isArrow = true;
+      isVector = true;
       return;
     }
 
@@ -540,6 +547,12 @@ public class Draw extends MeshCollection {
     if ((isCurve || isArrow || isCircle) && nVertices >= 2)
       drawType = (isCurve ? JmolConstants.DRAW_CURVE : isArrow ? JmolConstants.DRAW_ARROW
           : JmolConstants.DRAW_CIRCLE);
+    if (isVector) {
+      if (nVertices > 2)
+        nVertices = 2;
+      if (nVertices == 2)
+        ptList[1].add(ptList[0]);
+    }
     if (drawType == JmolConstants.DRAW_POINT) {
       Point3f pt;
       Point3f center = new Point3f();

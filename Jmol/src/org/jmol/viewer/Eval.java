@@ -463,7 +463,7 @@ class Eval { //implements Runnable {
     if (filename.toLowerCase().indexOf("javascript:") == 0)
       return loadScript(filename, viewer.eval(filename.substring(11)),
           debugScript);
-    Object t = viewer.getBufferedReaderOrErrorMessageFromName(filename, null);
+    Object t = viewer.getBufferedReaderOrErrorMessageFromName(filename, null, false);
     if (!(t instanceof BufferedReader))
       return loadError((String) t);
     BufferedReader reader = (BufferedReader) t;
@@ -8787,6 +8787,7 @@ class Eval { //implements Runnable {
       return;
     Object t;
     boolean idSeen = false;
+    boolean isBinary = false;
     String translucency = null;
     initIsosurface(JmolConstants.SHAPE_PMESH);
     for (int i = iToken; i < statementLength; ++i) {
@@ -8799,6 +8800,10 @@ class Eval { //implements Runnable {
           propertyName = "fixed";
           propertyValue = Boolean.TRUE;
           break;
+        }
+        if (str.equalsIgnoreCase("BINARY")) {
+          isBinary = true;
+          continue;
         }
         if (str.equalsIgnoreCase("MODELBASED")) {
           propertyName = "fixed";
@@ -8827,7 +8832,7 @@ class Eval { //implements Runnable {
         continue;
       case Token.string:
         String filename = stringParameter(i);
-        propertyName = "bufferedReader";
+        propertyName = "fileData";
         if (filename.equalsIgnoreCase("inline")) {
           if (i + 1 < statementLength && tokAt(i + 1) == Token.string) {
             String data = parameterAsString(++i);
@@ -8852,7 +8857,7 @@ class Eval { //implements Runnable {
           if (thisCommand.indexOf("# FILE0=") >= 0)
             filename = extractCommandOption("FILE0"); 
           String[] fullPathNameReturn = new String[1];
-          t = viewer.getBufferedReaderOrErrorMessageFromName(filename, fullPathNameReturn);
+          t = viewer.getBufferedReaderOrErrorMessageFromName(filename, fullPathNameReturn, isBinary);
           if (t instanceof String)
             fileNotFoundException(filename + ":" + t);
           setShapeProperty(JmolConstants.SHAPE_PMESH, "commandOption",
@@ -8906,6 +8911,9 @@ class Eval { //implements Runnable {
       case Token.string:
         propertyValue = stringParameter(i);
         propertyName = "title";
+        break;
+      case Token.vector:
+        propertyName = "vector";
         break;
       case Token.length:
         propertyValue = new Float(floatParameter(++i));
@@ -10209,7 +10217,7 @@ class Eval { //implements Runnable {
         String[] fullPathNameReturn = new String[1];
         Object t = (isSyntaxCheck ? null : viewer
             .getBufferedReaderOrErrorMessageFromName(filename,
-                fullPathNameReturn));
+                fullPathNameReturn, false));
         if (t instanceof String)
           fileNotFoundException(filename + ":" + t);
         if (!isSyntaxCheck)
@@ -11595,7 +11603,7 @@ class Eval { //implements Runnable {
       boolean isDistance = (tok == Token.decimal || tok == Token.integer);
       if (withinSpec instanceof String) {
         isSequence = !Parser.isOneOf(withinStr,
-            "element;site;group;chain;molecule;model;boundbox");
+            "element;site;group;chain;structure;molecule;model;boundbox");
       } else if (isDistance) {
         distance = Token.fValue(args[0]);
         if (i < 2)

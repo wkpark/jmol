@@ -1843,6 +1843,7 @@ class Compiler {
       break;
     case Token.group:
     case Token.chain:
+    case Token.structure:
     case Token.molecule:
     case Token.model:
     case Token.site:

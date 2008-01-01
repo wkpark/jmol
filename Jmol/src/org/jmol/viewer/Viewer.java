@@ -1563,7 +1563,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * to pass a BufferedReader ... ... the FileManager will wrap a buffer around
    * it
    * 
-   * not referenced in this project
+   * DO NOT USE IN JMOL -- THIS METHOD IS ONLY HERE BECAUSE IT IS
+   * PART OF THE LEGACY INTERFACE
+   * IF USED BY ANOTHER APPLICATION, YOU ARE RESPONSIBLE FOR CLOSING THE READER
    * 
    * @param fullPathName
    * @param name

@@ -75,6 +75,7 @@ public class Pmesh extends MeshFileCollection {
   private int modelIndex;
   String pmeshError;
   
+  private final static String PMESH_BINARY_MAGIC_NUMBER = "PM" + '\1' + '\0';
 
   public void initShape() {
     super.initShape();
@@ -126,6 +127,7 @@ public class Pmesh extends MeshFileCollection {
           return;
       }
       currentMesh.isValid = readPmesh();
+      closeReaders();
       if (currentMesh.isValid) {
         currentMesh.initialize(JmolConstants.FULLYLIT);
         currentMesh.visible = true;
@@ -150,12 +152,14 @@ public class Pmesh extends MeshFileCollection {
   public Object getProperty(String property, int index) {
     if (property.equals("pmeshError"))
       return pmeshError;
+    if (property.startsWith("checkMagicNumber:"))
+      return (property.indexOf(PMESH_BINARY_MAGIC_NUMBER) >= 0 ? Boolean.TRUE : Boolean.FALSE);
     return super.getProperty(property, index);
   }
 
   BufferedReader br;
   PmeshBinaryDocument doc;
-  
+
   private boolean readPmesh() {
     try {
       if (!readVertexCount())
@@ -177,15 +181,23 @@ public class Pmesh extends MeshFileCollection {
     } catch (Exception e) {
       if (pmeshError == null)
         pmeshError = "pmesh ERROR: read exception: " + e;
-      if (isBinary)
-        doc.close();
       return false;
     }
-    if (isBinary)
-      doc.close();    
     return true;
   }
 
+  private void closeReaders() {
+    try {
+      if (doc != null)
+        doc.close();
+      if (br != null)
+        br.close();
+    } catch (Exception e) {
+    }
+    doc = null;
+    br = null;
+  }
+  
   private int getInt() throws Exception {
     return (isBinary ? doc.readInt() : parseInt(br.readLine()));
   }
@@ -285,12 +297,9 @@ public class Pmesh extends MeshFileCollection {
     
     boolean readHeader() {
       /*
-       *  4 bytes: P M \1 \0 (littleEndian) or
-       *           P M \0 \1 (bigEndian)
-       *           
-       *           (That is, "PM" followed by (short)1
-       *           
-       *  4 bytes: reserved
+       *  4 bytes: P M \1 \0 
+       *  1 byte: \0 for bigEndian
+       *  3 bytes: reserved
        *  4 bytes: (int) vertexCount
        *  4 bytes: (int) polygonCount
        * 64 bytes: reserved
@@ -306,15 +315,12 @@ public class Pmesh extends MeshFileCollection {
        */
       
       pmeshError = "could not read binary Pmesh file header";
-      byte[] magicNumber = new byte[8];
-     
+      byte[] magicNumber = new byte[8];     
       try {
         readByteArray(magicNumber, 0, 8);
-        if (magicNumber[0] != 'P' || magicNumber[1] != 'M')
+        if (!(new String(magicNumber)).startsWith(PMESH_BINARY_MAGIC_NUMBER))
           return false;
-        isBigEndian = (magicNumber[2] == 0 && magicNumber[3] == 1);
-        if (!isBigEndian && (magicNumber[2] != 1 || magicNumber[3] != 0))
-          return false;
+        isBigEndian = (magicNumber[5] == 0);
         vertexCount = readInt();
         polygonCount = readInt();
         byte[] reserved = new byte[64];

@@ -295,8 +295,12 @@ public class Jvxl {
         return;
       }
       BufferedReader br = (BufferedReader) t;
-
       sg.setParameter("readFile", br);
+      try {
+        br.close();
+      } catch (Exception e) {
+        //
+      }
     }
 
     sg.setParameter("title", line.toString());
@@ -318,6 +322,11 @@ public class Jvxl {
       }
       BufferedReader br2 = (BufferedReader) t;
       sg.setParameter("mapColor", br2);
+      try {
+        br2.close();
+      } catch (Exception e) {
+        //
+      }
     }
 
     writeFile(outputFile, (String) sg.getProperty("jvxlFileData", 0));

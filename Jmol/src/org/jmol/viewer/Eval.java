@@ -8855,13 +8855,32 @@ class Eval { //implements Runnable {
           if (isSyntaxCheck)
             return;
           if (thisCommand.indexOf("# FILE0=") >= 0)
-            filename = extractCommandOption("FILE0"); 
+            filename = extractCommandOption("FILE0");
           String[] fullPathNameReturn = new String[1];
-          t = viewer.getBufferedReaderOrErrorMessageFromName(filename, fullPathNameReturn, isBinary);
+          t = viewer.getBufferedReaderOrErrorMessageFromName(filename,
+              fullPathNameReturn, isBinary);
+          if (t instanceof BufferedReader) {
+            BufferedReader br = (BufferedReader) t;
+            try {
+              br.mark(4);
+              char[] buf = new char[4];
+              br.read(buf);
+              if (((Boolean) viewer.getShapeProperty(JmolConstants.SHAPE_PMESH, 
+                  "checkMagicNumber:" + new String(buf))).booleanValue()) {
+                br.close();
+                t = viewer.getBufferedReaderOrErrorMessageFromName(filename,
+                    fullPathNameReturn, true);
+              } else {
+                br.reset();
+              }
+            } catch (Exception e) {
+              //
+            }
+          }
           if (t instanceof String)
             fileNotFoundException(filename + ":" + t);
-          setShapeProperty(JmolConstants.SHAPE_PMESH, "commandOption",
-              "FILE0=" + Escape.escape(fullPathNameReturn[0]));
+          setShapeProperty(JmolConstants.SHAPE_PMESH, "commandOption", "FILE0="
+              + Escape.escape(fullPathNameReturn[0]));
           Logger.info("reading pmesh data from " + fullPathNameReturn[0]);
         }
         propertyValue = t;

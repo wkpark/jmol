@@ -981,6 +981,10 @@ class PopupResourceBundle {
     } catch (Exception e) {
       //
     }
+    try {
+      br.close();
+    } catch (Exception e) {
+    }
   }
   
   private void addItems(String[][] itemPairs) {   

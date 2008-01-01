@@ -273,6 +273,8 @@ class FileManager {
   }
 
   public Object getFileAsBytes(String name) {
+    //?? used by eval of "WRITE FILE"
+    // will be full path name
     if (name == null)
       return null;
     String[] subFileList = null;
@@ -285,9 +287,11 @@ class FileManager {
     try {
       BufferedInputStream bis = new BufferedInputStream((InputStream) t, 8192);
       InputStream is = bis;
-      if (ZipUtil.isZipFile(is) && subFileList != null && 1 < subFileList.length)
-        return ZipUtil.getZipFileContentsAsBytes(is, subFileList, 1);
-      return ZipUtil.getStreamAsBytes(bis);
+      Object bytes = (ZipUtil.isZipFile(is) && subFileList != null && 1 < subFileList.length
+          ? ZipUtil.getZipFileContentsAsBytes(is, subFileList, 1)
+              : ZipUtil.getStreamAsBytes(bis));
+      is.close();
+      return bytes;
     } catch (Exception ioe) {
       return ioe.getMessage();
     }
@@ -298,7 +302,34 @@ class FileManager {
    * @param name
    * @return file contents; directory listing for a ZIP/JAR file
    */
-  String getFileAsString(String name) {
+  public String getFileAsString(String name) {
+    if (name == null)
+      return "";
+    Object t = getBufferedReaderOrErrorMessageFromName(name, null, false);
+    if (t instanceof String)
+      return (String) t;
+    try {
+      BufferedReader br = (BufferedReader) t;
+      StringBuffer sb = new StringBuffer(8192);
+      String line;
+      while ((line = br.readLine()) != null) {
+        sb.append(line);
+        sb.append('\n');
+      }
+      br.close();
+      return sb.toString();
+    } catch (Exception ioe) {
+      return ioe.getMessage();
+    }
+  }
+
+  
+  /**
+   * 
+   * @param name
+   * @return file contents; directory listing for a ZIP/JAR file
+   */
+  private String getFullFilePathAsString(String name) {
     if (name == null)
       return "";
     String[] subFileList = null;
@@ -423,8 +454,8 @@ class FileManager {
     if (name.indexOf("=") == 0)
       name = TextFormat.formatString(viewer.getLoadFormat(), "FILE", name.substring(1));
     String defaultDirectory = viewer.getDefaultDirectory();
-    if (defaultDirectory.length() != 0 && name.indexOf(":") < 0)
-      name = defaultDirectory + "/" + name;
+    if (name.indexOf(":") < 0)
+      name = addDirectory(defaultDirectory, name);
     if (appletDocumentBase != null) {
       // This code is only for the applet
       try {
@@ -457,8 +488,22 @@ class FileManager {
     names[1] = file.getName();
     return names;
   }
+
+  private String addDirectory(String defaultDirectory, String name) {
+    if (defaultDirectory.length() == 0)
+      return name;
+    char ch = (name.length() > 0 ? name.charAt(0) : ' ');
+    String s = defaultDirectory.toLowerCase();
+    if ((s.endsWith(".zip") || s.endsWith(".tar")) && ch != '|' && ch != '/')
+      defaultDirectory += "|";
+    return defaultDirectory 
+        + (ch == '/' || ch == '/'
+        || (ch = defaultDirectory.charAt(defaultDirectory.length() - 1)) == '|' || ch == '/' ? "" : "/") 
+        + name;
+  }
   
   Object getInputStreamOrErrorMessageFromName(String name, boolean showMsg) {
+    //System.out.println("inputstream for " + name);
     String errorMessage = null;
     int iurlPrefix;
     for (iurlPrefix = urlPrefixes.length; --iurlPrefix >= 0;)
@@ -468,13 +513,10 @@ class FileManager {
     boolean isApplet = (appletDocumentBase != null);
     InputStream in;
     int length;
-    String defaultDirectory = viewer.getDefaultDirectory();
     try {
       if (isApplet || isURL) {
         if (isApplet && isURL && appletProxy != null)
           name = appletProxy + "?url=" + URLEncoder.encode(name, "utf-8");
-        else if (!isURL && defaultDirectory.length() != 0)
-          name = defaultDirectory + "/" + name;
         URL url = (isApplet ? new URL(appletDocumentBase, name) : new URL(name));
         name = url.toString();
         if (showMsg)
@@ -483,8 +525,6 @@ class FileManager {
         length = conn.getContentLength();
         in = conn.getInputStream();
       } else {
-        if (!isURL && name.indexOf(":") < 0 && defaultDirectory.length() != 0)
-          name = defaultDirectory + "/" + name;
         if (showMsg)
           Logger.info("FileManager opening " + name);
         File file = new File(name);
@@ -500,28 +540,6 @@ class FileManager {
 
   BufferedReader getBufferedReaderForString(String string) {
     return new BufferedReader(new StringReader(string));
-  }
-
-  
-  /**
-   * load a set of files as a string
-   * fileSet[0] is the reader class type (SpartanSmol)
-   * 
-   * @param fileSet
-   * @return a BufferedReader for the file
-   */
-  Object loadFileSetAsOneFile(String[] fileSet) {
-    StringBuffer sb = new StringBuffer();
-    String header = fileSet[1];
-    for (int i = 2; i < fileSet.length; i++) {
-      String name = fileSet[i];
-      if (header != null)
-        sb.append("BEGIN " + header + " " + name + "\n");
-      sb.append(getFileAsString(name));
-      if (header != null)
-        sb.append("\nEND " + header + " " + name + "\n");
-    }
-    return getBufferedReaderForString(sb.toString());
   }
 
   Object getBufferedReaderOrErrorMessageFromName(String name,
@@ -547,8 +565,19 @@ class FileManager {
     if (fileSet != null) {
       if (isTypeCheckOnly)
         return fileSet;
-      if (fileSet[2] != null)
-        return loadFileSetAsOneFile(fileSet);
+      if (fileSet[2] != null) {
+        StringBuffer sb = new StringBuffer();
+        String header = fileSet[1];
+        for (int i = 2; i < fileSet.length; i++) {
+          name = fileSet[i];
+          if (header != null)
+            sb.append("BEGIN " + header + " " + name + "\n");
+          sb.append(getFullFilePathAsString(name));
+          if (header != null)
+            sb.append("\nEND " + header + " " + name + "\n");
+        }
+        return getBufferedReaderForString(sb.toString());
+      }
       //continuing...
       //here, for example, for an SPT file load that is not just a type check
       //(type check is only for application file opening and drag-drop to determine if 
@@ -567,12 +596,14 @@ class FileManager {
         is = new GZIPInputStream(bis);
       } else if (ZipUtil.isZipFile(is)) {
         if (allowZipStream)
-          return new ZipInputStream(is);
+          return new ZipInputStream(bis);
         if (asInputStream)
           return (InputStream) ZipUtil.getZipFileContents(is, subFileList, 1, true);
         //danger -- converting bytes to String here. 
         //we lose 128-156 or so.
-        return getBufferedReaderForString((String) ZipUtil.getZipFileContents(is, subFileList, 1, false));
+        String s = (String) ZipUtil.getZipFileContents(is, subFileList, 1, false);
+        is.close();
+        return getBufferedReaderForString(s);
       }
       if (asInputStream)
         return is;
@@ -641,7 +672,7 @@ class FileManager {
         } else if (t instanceof ZipInputStream) {
           if (subFileList != null)
             htParams.put("subFileList", subFileList);
-          openZipStream(name);
+          openZipStream(name, (ZipInputStream) t);
         } else {
           errorMessage = (t == null
                           ? "error opening:" + nameAsGivenInThread
@@ -654,19 +685,20 @@ class FileManager {
       //terminated = true;
     }
 
-    private void openZipStream(String fileName) {
+    private void openZipStream(String fileName, ZipInputStream zis) {
       String[] zipDirectory = getZipDirectory(fileName, true);
-      InputStream is = new BufferedInputStream(
-          (InputStream) getInputStreamOrErrorMessageFromName(fileName, false),
-          8192);
-      Object clientFile = modelAdapter.openZipFiles(is, fileName, zipDirectory,
+      Object clientFile = modelAdapter.openZipFiles(zis, fileName, zipDirectory,
           htParams, false);
       if (clientFile instanceof String)
         errorMessage = (String) clientFile;
       else
         this.clientFile = clientFile;
+      try {
+        zis.close();
+      } catch (Exception e) {
+        //
+      }
     }
-    
     
     private void openBufferedReader() {
       Object clientFile = modelAdapter.openBufferedReader(fullPathNameInThread, fileTypeInThread,

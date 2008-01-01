@@ -3449,6 +3449,9 @@ class Eval { //implements Runnable {
         viewer.setModelVisibility();
         bs = viewer.getVisibleSet();
       }
+    } else if (propertyID == PropertyManager.PROP_FILECONTENTS_PATH) {
+      for (int i = 3; i < statementLength; i++)
+        param += parameterAsString(i);
     }
     retValue = (String) viewer.getProperty("readable", property,
         (bs == null ? (Object) param : (Object) bs));

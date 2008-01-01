@@ -84,7 +84,7 @@ class PropertyManager {
   private final static int PROP_APPLET_INFO = 0;
   private final static int PROP_FILENAME = 1;
   private final static int PROP_FILEHEADER = 2;
-  private final static int PROP_FILECONTENTS_PATH = 3;
+          final static int PROP_FILECONTENTS_PATH = 3;
   private final static int PROP_FILECONTENTS = 4;
   
   private final static int PROP_ANIMATION_INFO = 5;

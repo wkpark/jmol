@@ -65,23 +65,23 @@ public class ZipUtil {
    */
   static public Object getZipFileContents(InputStream is, String[] list,
                                           int listPtr, boolean asInputStream) {
-    String ret = "";
+    StringBuffer ret = new StringBuffer();
     if (list == null || listPtr >= list.length)
       return getZipDirectoryAsStringAndClose(is);
     String fileName = list[listPtr];
     ZipInputStream zis = new ZipInputStream(is);
     ZipEntry ze;
     try {
-      if (fileName.lastIndexOf("/") == fileName.length() - 1) {
+      boolean isAll = (fileName.equals("."));
+      if (isAll || fileName.lastIndexOf("/") == fileName.length() - 1) {
         while ((ze = zis.getNextEntry()) != null) {
           String name = ze.getName();
-          if (!name.startsWith(fileName))
-            continue;
-          ret += name + "\n";
+          if (isAll || name.startsWith(fileName))
+            ret.append(name).append('\n');
         }
         if (asInputStream)
-          return new StringBufferInputStream(ret);
-        return ret;
+          return new StringBufferInputStream(ret.toString());
+        return ret.toString();
       }
       while ((ze = zis.getNextEntry()) != null) {
         if (!fileName.equals(ze.getName()))

@@ -140,6 +140,9 @@ public class SmarterJmolAdapter extends JmolAdapter {
         .get("subFileList"));
     String subFileName = (subFileList == null
         || subFilePtr >= subFileList.length ? null : subFileList[subFilePtr]);
+    if (subFileName != null 
+        && (subFileName.startsWith("/") || subFileName.startsWith("\\")))
+      subFileName = subFileName.substring(1);
     int selectedFile = (params == null ? 1 : params[0]);
     if (selectedFile > 0 && doCombine && params != null)
       params[0] = 0;
@@ -176,7 +179,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
       data.append("Zip File Directory: ").append("\n").append(
           Escape.escape(zipDirectory)).append("\n");
     }
-    ZipInputStream zis = new ZipInputStream(new BufferedInputStream(is));
+    ZipInputStream zis = (is instanceof ZipInputStream ? (ZipInputStream) is 
+        : new ZipInputStream(new BufferedInputStream(is)));
     ZipEntry ze;
     try {
       while ((ze = zis.getNextEntry()) != null

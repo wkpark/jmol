@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-12-25 22:47+0100\n"
-"PO-Revision-Date: 2006-03-17 20:19+0100\n"
-"Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
+"PO-Revision-Date: 2007-12-26 15:51+0200\n"
+"Last-Translator: Ivo Sarak <ivo@vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -159,7 +159,7 @@ msgstr "Eelvaade"
 
 #: org/openscience/jmol/app/FilePreview.java:87
 msgid "Append models"
-msgstr ""
+msgstr "Ühenda mudelid"
 
 #: org/openscience/jmol/app/GuiMap.java:45
 msgid "&File"
@@ -194,24 +194,20 @@ msgid "&Export"
 msgstr "&Ekspordi"
 
 #: org/openscience/jmol/app/GuiMap.java:53
-#, fuzzy
 msgid "Export &Image or Script..."
-msgstr "Ekspordi pilt..."
+msgstr "Ekspordi &pilt või skript..."
 
 #: org/openscience/jmol/app/GuiMap.java:54
-#, fuzzy
 msgid "Export to &Web Page..."
-msgstr "Ekspordi PDF..."
+msgstr "Ekspordi &veebileheks..."
 
 #: org/openscience/jmol/app/GuiMap.java:55
-#, fuzzy
 msgid "Render in POV-&Ray..."
-msgstr "Renderda POV-Ray's"
+msgstr "Renderda POV-&Ray's"
 
 #: org/openscience/jmol/app/GuiMap.java:56
-#, fuzzy
 msgid "Export &PDF..."
-msgstr "Ekspordi PDF..."
+msgstr "Ekspordi &PDF..."
 
 #: org/openscience/jmol/app/GuiMap.java:57
 msgid "&Print..."
@@ -252,9 +248,8 @@ msgid "Copy Image"
 msgstr "Kopeeri pilt"
 
 #: org/openscience/jmol/app/GuiMap.java:66
-#, fuzzy
 msgid "Copy Script"
-msgstr "Rasmol skriptid"
+msgstr "Kopeeri skript"
 
 #: org/openscience/jmol/app/GuiMap.java:67
 msgid "&Preferences..."
@@ -262,7 +257,7 @@ msgstr "&Eelistused..."
 
 #: org/openscience/jmol/app/GuiMap.java:68
 msgid "&Paste"
-msgstr ""
+msgstr "&Kleebi"
 
 #: org/openscience/jmol/app/GuiMap.java:71
 msgid "All"
@@ -338,7 +333,7 @@ msgstr "Side"
 
 #: org/openscience/jmol/app/GuiMap.java:92
 msgid "Wireframe"
-msgstr "Sõrestik"
+msgstr "Tugiraamistik"
 
 #: org/openscience/jmol/app/GuiMap.java:93
 #: org/openscience/jmol/app/GuiMap.java:94
@@ -351,7 +346,7 @@ msgstr "{0} Å"
 
 #: org/openscience/jmol/app/GuiMap.java:96
 msgid "Label"
-msgstr "Silt"
+msgstr "Lipik"
 
 #: org/openscience/jmol/app/GuiMap.java:98
 msgid "Symbol"
@@ -372,7 +367,7 @@ msgstr "Tsentreeritud"
 
 #: org/openscience/jmol/app/GuiMap.java:102
 msgid "Upper right"
-msgstr "Ülemine parem"
+msgstr "Ülemine-parem"
 
 #: org/openscience/jmol/app/GuiMap.java:105
 msgid "On"
@@ -430,7 +425,7 @@ msgstr "&Vektorid"
 
 #: org/openscience/jmol/app/GuiMap.java:125
 msgid "&Measurements"
-msgstr "&Mõõted"
+msgstr "&Mõõtmed"
 
 #: org/openscience/jmol/app/GuiMap.java:126
 msgid "&View"
@@ -471,7 +466,7 @@ msgstr "&Tööriistad"
 #: org/openscience/jmol/app/GuiMap.java:135
 #: org/openscience/jmol/app/MeasurementTable.java:65
 msgid "Measurements..."
-msgstr "Mõõted..."
+msgstr "Mõõtmed..."
 
 #: org/openscience/jmol/app/GuiMap.java:136
 msgid "Distance Units"
@@ -495,7 +490,7 @@ msgstr "Animeeri..."
 
 #: org/openscience/jmol/app/GuiMap.java:141
 msgid "Vibrate..."
-msgstr "Vibreeri..."
+msgstr "Värista..."
 
 #: org/openscience/jmol/app/GuiMap.java:142
 msgid "&Graph..."
@@ -573,9 +568,8 @@ msgid "What's New"
 msgstr "Mida on uut?"
 
 #: org/openscience/jmol/app/GuiMap.java:161
-#, fuzzy
 msgid "Jmol Java &Console"
-msgstr "Jmol konsool"
+msgstr "Jmol Java &konsool"
 
 #: org/openscience/jmol/app/GuiMap.java:162
 msgid "Hydrogens"
@@ -583,7 +577,7 @@ msgstr "Vesinikud"
 
 #: org/openscience/jmol/app/GuiMap.java:163
 msgid "Measurements"
-msgstr "Mõõted"
+msgstr "Mõõtmised"
 
 #: org/openscience/jmol/app/GuiMap.java:167
 msgid "RasMol/Chime compatible axes orientation/rotations"
@@ -594,9 +588,8 @@ msgid "File Preview (needs restarting Jmol)"
 msgstr "Faili eelvaade (vajab Jmol'i taaskäivitust)"
 
 #: org/openscience/jmol/app/GuiMap.java:169
-#, fuzzy
 msgid "Clear console button (needs restarting Jmol)"
-msgstr "Faili eelvaade (vajab Jmol'i taaskäivitust)"
+msgstr "Konsooli puhastuse nupp (vajab Jmol'i taaskäivitust)"
 
 #: org/openscience/jmol/app/GuiMap.java:170
 #: org/openscience/jmol/app/GuiMap.java:171
@@ -608,13 +601,12 @@ msgid "Open a file."
 msgstr "Faili avamine."
 
 #: org/openscience/jmol/app/GuiMap.java:173
-#, fuzzy
 msgid "Export view to an image or script file."
-msgstr "Ekspordi vaade pildi faili."
+msgstr "Ekspordi vaade pildiks või skripti faili."
 
 #: org/openscience/jmol/app/GuiMap.java:174
 msgid "Export one or more views to a web page."
-msgstr ""
+msgstr "Ekspordi üks või rohkem vaateid veebileheks."
 
 #: org/openscience/jmol/app/GuiMap.java:175
 msgid "Render in pov-ray."
@@ -683,7 +675,7 @@ msgstr "Algväärtustan AtomSetChooser akent..."
 
 #: org/openscience/jmol/app/Jmol.java:228
 msgid "Initializing Measurements..."
-msgstr "Algväärtustan mõõted..."
+msgstr "Algväärtustan mõõtmised..."
 
 #: org/openscience/jmol/app/Jmol.java:252
 msgid "Building Command Hooks..."
@@ -723,7 +715,7 @@ msgstr "Algväärtustan Jmol'i..."
 
 #: org/openscience/jmol/app/Jmol.java:411
 msgid "All Files"
-msgstr ""
+msgstr "Kõik failid"
 
 #: org/openscience/jmol/app/Jmol.java:412
 #: org/openscience/jmol/app/Jmol.java:450
@@ -735,17 +727,16 @@ msgstr "Katkesta"
 
 #: org/openscience/jmol/app/Jmol.java:413
 msgid "Abort file chooser dialog"
-msgstr ""
+msgstr "Katkesta faili valiku dialoog"
 
 #: org/openscience/jmol/app/Jmol.java:414
 #: org/openscience/jmol/app/Jmol.java:415
 msgid "Details"
-msgstr ""
+msgstr "Detailid"
 
 #: org/openscience/jmol/app/Jmol.java:416
-#, fuzzy
 msgid "Directory"
-msgstr "Jooksev kataloog"
+msgstr "Kataloog"
 
 #: org/openscience/jmol/app/Jmol.java:417
 #: org/openscience/jmol/app/Jmol.java:437
@@ -755,38 +746,36 @@ msgid "Open"
 msgstr "Ava"
 
 #: org/openscience/jmol/app/Jmol.java:418
-#, fuzzy
 msgid "Open selected directory"
-msgstr "atom set"
+msgstr "Ava valitud kataloog"
 
 #: org/openscience/jmol/app/Jmol.java:419
 msgid "Attributes"
-msgstr ""
+msgstr "Omadused"
 
 #: org/openscience/jmol/app/Jmol.java:420
 msgid "Modified"
-msgstr ""
+msgstr "Muudetud"
 
 #: org/openscience/jmol/app/Jmol.java:421
 msgid "Generic File"
-msgstr ""
+msgstr "Üldine fail"
 
 #: org/openscience/jmol/app/Jmol.java:423
-#, fuzzy
 msgid "File Name:"
-msgstr "Failinime tüvi"
+msgstr "Faili nimi:"
 
 #: org/openscience/jmol/app/Jmol.java:424
 msgid "Size"
-msgstr ""
+msgstr "Suurus"
 
 #: org/openscience/jmol/app/Jmol.java:425
 msgid "Files of Type:"
-msgstr ""
+msgstr "Failid tüübist:"
 
 #: org/openscience/jmol/app/Jmol.java:426
 msgid "Type"
-msgstr ""
+msgstr "Tüüp"
 
 #: org/openscience/jmol/app/Jmol.java:427
 #: org/openscience/jmol/app/ScriptWindow.java:106
@@ -795,38 +784,37 @@ msgstr "Abi"
 
 #: org/openscience/jmol/app/Jmol.java:428
 msgid "FileChooser help"
-msgstr ""
+msgstr "Faili valiku abi"
 
 #: org/openscience/jmol/app/Jmol.java:429
 #: org/openscience/jmol/app/Jmol.java:430
 msgid "Home"
-msgstr ""
+msgstr "Kodu"
 
 #: org/openscience/jmol/app/Jmol.java:431
 #: org/openscience/jmol/app/Jmol.java:432
 msgid "List"
-msgstr ""
+msgstr "Nimistu"
 
 #: org/openscience/jmol/app/Jmol.java:433
 msgid "Look In:"
-msgstr ""
+msgstr "Vaata:"
 
 #: org/openscience/jmol/app/Jmol.java:434
 msgid "Error creating new folder"
-msgstr ""
+msgstr "Viga kausta loomisel"
 
 #: org/openscience/jmol/app/Jmol.java:435
 msgid "New Folder"
-msgstr ""
+msgstr "Uus kataloog"
 
 #: org/openscience/jmol/app/Jmol.java:436
 msgid "Create New Folder"
-msgstr ""
+msgstr "Loo uus kataloog"
 
 #: org/openscience/jmol/app/Jmol.java:438
-#, fuzzy
 msgid "Open selected file"
-msgstr "atom set"
+msgstr "Ava valitud fail"
 
 #: org/openscience/jmol/app/Jmol.java:440
 #: org/openscience/jmol/app/Jmol.java:442
@@ -835,39 +823,36 @@ msgid "Save"
 msgstr "Salvesta"
 
 #: org/openscience/jmol/app/Jmol.java:441
-#, fuzzy
 msgid "Save selected file"
-msgstr "atom set"
+msgstr "Salvesta valitud fail"
 
 #: org/openscience/jmol/app/Jmol.java:443
-#, fuzzy
 msgid "Save In:"
-msgstr "Salvesta"
+msgstr "Salvesta:"
 
 #: org/openscience/jmol/app/Jmol.java:444
 msgid "Update"
-msgstr ""
+msgstr "Värskenda"
 
 #: org/openscience/jmol/app/Jmol.java:445
 msgid "Update directory listing"
-msgstr ""
+msgstr "Uuenda kausta nimekirja"
 
 #: org/openscience/jmol/app/Jmol.java:446
 msgid "Up"
-msgstr ""
+msgstr "Üles"
 
 #: org/openscience/jmol/app/Jmol.java:447
 msgid "Up One Level"
-msgstr ""
+msgstr "Üks tase üles"
 
 #: org/openscience/jmol/app/Jmol.java:451
-#, fuzzy
 msgid "No"
-msgstr "Mitte midagi"
+msgstr "Ei"
 
 #: org/openscience/jmol/app/Jmol.java:453
 msgid "Yes"
-msgstr ""
+msgstr "Jah"
 
 #: org/openscience/jmol/app/Jmol.java:475
 msgid "give this help page"
@@ -875,15 +860,15 @@ msgstr "anna see abileht"
 
 #: org/openscience/jmol/app/Jmol.java:477
 msgid "no display (and also exit when done)"
-msgstr ""
+msgstr "puudub ekraan (ja kui valmis, siis lõpeta)"
 
 #: org/openscience/jmol/app/Jmol.java:478
 msgid "check script syntax only"
-msgstr ""
+msgstr "ainult kontrolli skripti süntaksi"
 
 #: org/openscience/jmol/app/Jmol.java:479
 msgid "silent startup operation"
-msgstr ""
+msgstr "vaikne käivitus"
 
 #: org/openscience/jmol/app/Jmol.java:480
 msgid "list commands during script execution"
@@ -891,11 +876,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:482
 msgid "no console -- all output to sysout"
-msgstr ""
+msgstr "konsool puudub -- kogu väljastus suunatud sysout'i"
 
 #: org/openscience/jmol/app/Jmol.java:484
 msgid "exit after script (implicit with -n)"
-msgstr ""
+msgstr "välju peale skripti (kaudne -n)"
 
 #: org/openscience/jmol/app/Jmol.java:498
 msgid "property=value"
@@ -906,24 +891,26 @@ msgid "supported options are given below"
 msgstr "lubatud valikud on eespool"
 
 #: org/openscience/jmol/app/Jmol.java:506
-#, fuzzy, java-format
+#, java-format
 msgid "window width x height, e.g. {0}"
-msgstr "akna suurus 500x500"
+msgstr "akna laius x kõrgus 500x500 , {0}"
 
 #: org/openscience/jmol/app/Jmol.java:514
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
+"JPG pildi kvaliteet (1-100; vaikeväärtus 75) või PNG pildi pakkimistihedus "
+"(0-9; vaikeväärtus on 2, suurim pakkimistihedus on  9)"
 
 #: org/openscience/jmol/app/Jmol.java:520
 #, java-format
 msgid "{0} or {1}:filename"
-msgstr ""
+msgstr "{0} või {1}:failinimi"
 
 #: org/openscience/jmol/app/Jmol.java:542
 msgid "For example:"
-msgstr ""
+msgstr "Näiteks:"
 
 #: org/openscience/jmol/app/Jmol.java:548
 msgid "The -D options are as follows (defaults in parathesis):"
@@ -934,9 +921,8 @@ msgid "Executing script..."
 msgstr "Käivitan skripti..."
 
 #: org/openscience/jmol/app/Jmol.java:722
-#, fuzzy
 msgid "Jmol Java Console"
-msgstr "Jmol konsool"
+msgstr "Jmol Java konsool"
 
 #: org/openscience/jmol/app/Jmol.java:730
 #: org/openscience/jmol/app/ScriptWindow.java:94
@@ -988,14 +974,14 @@ msgid "Jmol-to-POV-Ray Conversion"
 msgstr "Jmol'ist POV-Ray muundamine"
 
 #: org/openscience/jmol/app/PovrayDialog.java:155
-#, fuzzy
 msgid "Filename"
-msgstr "Failinime tüvi"
+msgstr "Faili nimi"
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
 msgid ""
 "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 msgstr ""
+"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:167
 msgid "Working Directory"
@@ -1014,9 +1000,8 @@ msgid "Run POV-Ray directly"
 msgstr "Käivita POV-Ray otse"
 
 #: org/openscience/jmol/app/PovrayDialog.java:196
-#, fuzzy
 msgid "Launch POV-Ray from within Jmol"
-msgstr "Käivita povray otse Jmol'ist"
+msgstr "Käivita POV-Ray otse Jmol'ist"
 
 #: org/openscience/jmol/app/PovrayDialog.java:241
 msgid "Display While Rendering"
@@ -1202,9 +1187,8 @@ msgid "Recent Files"
 msgstr "Hiljutised failid"
 
 #: org/openscience/jmol/app/ScriptWindow.java:71
-#, fuzzy
 msgid "Jmol Script Console"
-msgstr "Jmol konsool"
+msgstr "Jmol skripti konsool"
 
 #: org/openscience/jmol/app/ScriptWindow.java:85
 msgid "Run"
@@ -1216,28 +1200,27 @@ msgstr "Seiska"
 
 #: org/openscience/jmol/app/ScriptWindow.java:98
 msgid "History"
-msgstr ""
+msgstr "Ajalugu"
 
 #: org/openscience/jmol/app/ScriptWindow.java:102
-#, fuzzy
 msgid "State"
-msgstr "Salvesta"
+msgstr "Olek"
 
 #: org/openscience/jmol/app/ScriptWindow.java:114
 msgid "Undo"
-msgstr ""
+msgstr "Tühista"
 
 #: org/openscience/jmol/app/ScriptWindow.java:118
 msgid "Redo"
-msgstr ""
+msgstr "Tee uuesti"
 
 #: org/openscience/jmol/app/Splash.java:45
 msgid "Loading..."
-msgstr "Laen..."
+msgstr "Laeb..."
 
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
-msgstr "Mida on uut Jmol'is"
+msgstr "Mida uut on Jmol'is"
 
 #~ msgid "Image size"
 #~ msgstr "Pildi suurus"

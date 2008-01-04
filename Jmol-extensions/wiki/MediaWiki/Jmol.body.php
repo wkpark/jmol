@@ -253,7 +253,7 @@ class Jmol {
   // Internal function to make a Jmol applet
   private function renderInternalJmolApplet($prefix, $postfix, $sep) {
     global $wgJmolAuthorizeUrl, $wgJmolAuthorizeUploadedFile;
-    global $wgJmolForceNameSpace;
+    global $wgJmolForceNameSpace, $wgJmolExtensionPath;
     $output = $prefix;
 
     $output .=

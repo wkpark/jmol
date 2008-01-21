@@ -92,6 +92,7 @@
 
 package org.jmol.shapespecial;
 
+import org.jmol.shape.Mesh;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.ColorEncoder;
@@ -213,8 +214,9 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("lcaoCartoon" == propertyName) {
       // z x center rotationAxis (only one of x, y, or z is nonzero; in radians) 
       Vector3f[] info = (Vector3f[]) value;
-      if (!explicitID)
+      if (!explicitID) {
         setPropertySuper("thisID", null, null);
+      }
       //center (info[2]) is set in SurfaceGenerator
       if (sg.setParameter("lcaoCartoonCenter", info[2]))
         return;
@@ -271,6 +273,7 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("finalize" == propertyName) {
       setScriptInfo();
       setJvxlInfo();
+      linkedMesh = null;
     }
       //surface generator only (return TRUE) or shared (return FALSE)
 
@@ -319,7 +322,8 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
     super.setProperty(propertyName, value, bs);
     thisMesh = (IsosurfaceMesh) currentMesh;
     jvxlData = (thisMesh == null ? null : thisMesh.jvxlData);
-  }
+    System.out.println("isosurface setpropertysuper thisMesh=" + thisMesh);
+    }
 
   public Object getProperty(String property, int index) {
     if (property == "dataRange")
@@ -399,6 +403,7 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
     defaultColix = 0;
     isPhaseColored = false;
     center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+    linkedMesh = null;
     initState();
   }
 
@@ -486,6 +491,8 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
       m.transform(y);
       m.transform(z);
     }
+    if (thisMesh == null && nLCAO == 0)
+      nLCAO = meshCount;
     String id = (thisMesh == null ? "lcao" + (++nLCAO) + "_" + lcaoCartoon
         : thisMesh.thisID);
     if (thisMesh == null)
@@ -493,26 +500,32 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if (lcaoCartoon.equals("px")) {
       thisMesh.thisID += "a";
+      Mesh meshA = thisMesh;
       createLcaoLobe(x, sense);
       setProperty("thisID", id + "b", null);
       createLcaoLobe(x, -sense);
       thisMesh.colix = Graphics3D.getColix(colorNeg);
+      linkedMesh = thisMesh.linkedMesh = meshA;
       return;
     }
     if (lcaoCartoon.equals("py")) {
       thisMesh.thisID += "a";
+      Mesh meshA = thisMesh;
       createLcaoLobe(y, sense);
       setProperty("thisID", id + "b", null);
       createLcaoLobe(y, -sense);
       thisMesh.colix = Graphics3D.getColix(colorNeg);
+      linkedMesh = thisMesh.linkedMesh = meshA;
       return;
     }
     if (lcaoCartoon.equals("pz")) {
       thisMesh.thisID += "a";
+      Mesh meshA = thisMesh;
       createLcaoLobe(z, sense);
       setProperty("thisID", id + "b", null);
       createLcaoLobe(z, -sense);
       thisMesh.colix = Graphics3D.getColix(colorNeg);
+      linkedMesh = thisMesh.linkedMesh = meshA;
       return;
     }
     if (lcaoCartoon.equals("pxa")) {
@@ -566,6 +579,7 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
     lcaoDir.z = lobeAxis.z * factor;
     lcaoDir.w = 0.7f;
     setProperty("lobe", lcaoDir, null);
+    setScriptInfo();
   }
 
   /////////////// meshDataServer interface /////////////////

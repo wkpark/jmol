@@ -235,8 +235,9 @@ public class LcaoCartoon extends Isosurface {
     if (isMolecular
         || thisType.equalsIgnoreCase("s")
         || viewer.getHybridizationAndAxes(iAtom, axes[0], axes[1], thisType,
-            true) != null)
+            true) != null) {
       super.setProperty("lcaoCartoon", axes, null);
+    }
     if (isTranslucent)
       for (int i = meshCount; --i >= 0;)
         if (meshes[i].thisID.indexOf(id) == 0)

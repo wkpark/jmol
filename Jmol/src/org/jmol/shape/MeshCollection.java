@@ -48,11 +48,13 @@ public abstract class MeshCollection extends Shape {
   public String myType;
   public boolean explicitID;
   protected String previousMeshID;
+  protected Mesh linkedMesh;
   
   public String[] title;
   protected boolean allowMesh = true;
   
   private Mesh setMesh(String thisID) {
+    linkedMesh = null;
     if (thisID == null) {
       currentMesh = null;
       return null;
@@ -60,6 +62,8 @@ public abstract class MeshCollection extends Shape {
     int meshIndex = getIndexFromName(thisID);
     if (meshIndex >= 0) {
       currentMesh = meshes[meshIndex];
+      if (thisID.equals(JmolConstants.PREVIOUS_MESH_ID))
+        linkedMesh = currentMesh.linkedMesh;
     } else {
       allocMesh(thisID);
     }    
@@ -102,6 +106,12 @@ public abstract class MeshCollection extends Shape {
 
     if ("init" == propertyName) {
       title = null;
+      return;
+    }
+    
+    if ("link" == propertyName) {
+      if (meshCount >= 2 && currentMesh != null)
+        currentMesh.linkedMesh = meshes[meshCount - 2];
       return;
     }
     
@@ -184,6 +194,8 @@ public abstract class MeshCollection extends Shape {
       colix = Graphics3D.getColix(value);
       if (currentMesh != null) {
         currentMesh.colix = colix;
+        if (linkedMesh != null)
+          linkedMesh.colix = colix;         
       } else {
         for (int i = meshCount; --i >= 0;)
           meshes[i].colix = colix;
@@ -193,9 +205,11 @@ public abstract class MeshCollection extends Shape {
 
     if ("translucency" == propertyName) {
       boolean isTranslucent = (((String) value).equals("translucent"));
-      if (currentMesh != null)
+      if (currentMesh != null) {
         currentMesh.setTranslucent(isTranslucent, translucentLevel);
-      else {
+        if (linkedMesh != null)
+          linkedMesh.setTranslucent(isTranslucent, translucentLevel);         
+      } else {
         for (int i = meshCount; --i >= 0;)
           meshes[i].setTranslucent(isTranslucent, translucentLevel);
       }
@@ -204,9 +218,11 @@ public abstract class MeshCollection extends Shape {
     boolean test;
     if ((test = ("nodots" == propertyName)) || "dots" == propertyName) {
       boolean showDots = (!test && value == Boolean.TRUE);
-      if (currentMesh != null)
+      if (currentMesh != null) {
         currentMesh.showPoints = showDots;
-      else {
+        if (linkedMesh != null)
+          linkedMesh.showPoints = showDots;
+      } else {
         for (int i = meshCount; --i >= 0;)
           meshes[i].showPoints = showDots;
       }
@@ -215,9 +231,11 @@ public abstract class MeshCollection extends Shape {
 
     if ((test = ("nomesh" == propertyName)) || "mesh" == propertyName) {
       boolean showMesh = (!test && value == Boolean.TRUE);
-      if (currentMesh != null)
+      if (currentMesh != null) {
         currentMesh.drawTriangles = showMesh;
-      else {
+        if (linkedMesh != null)
+          linkedMesh.drawTriangles = showMesh;
+      } else {
         for (int i = meshCount; --i >= 0;)
           meshes[i].drawTriangles = showMesh;
       }
@@ -226,9 +244,11 @@ public abstract class MeshCollection extends Shape {
 
     if ((test = ("nofill" == propertyName)) || "fill" == propertyName) {
       boolean showFill = (!test && value == Boolean.TRUE);
-      if (currentMesh != null)
+      if (currentMesh != null) {
         currentMesh.fillTriangles = showFill;
-      else {
+        if (linkedMesh != null)
+          linkedMesh.fillTriangles = showFill;
+      } else {
         for (int i = meshCount; --i >= 0;)
           meshes[i].fillTriangles = showFill;
       }
@@ -237,9 +257,11 @@ public abstract class MeshCollection extends Shape {
 
     if ("triangles" == propertyName) {
       boolean showTriangles = (value == Boolean.TRUE);
-      if (currentMesh != null)
+      if (currentMesh != null) {
         currentMesh.showTriangles = showTriangles;
-      else {
+        if (linkedMesh != null)
+          linkedMesh.showTriangles = showTriangles;
+      } else {
         for (int i = meshCount; --i >= 0;)
           meshes[i].showTriangles = showTriangles;
       }
@@ -248,9 +270,11 @@ public abstract class MeshCollection extends Shape {
 
     if ("frontOnly" == propertyName) {
       boolean frontOnly = (value == Boolean.TRUE);
-      if (currentMesh != null)
+      if (currentMesh != null) {
         currentMesh.frontOnly = frontOnly;
-      else {
+        if (linkedMesh != null)
+          linkedMesh.frontOnly = frontOnly;
+      } else {
         for (int i = meshCount; --i >= 0;)
           meshes[i].frontOnly = frontOnly;
       }
@@ -262,9 +286,11 @@ public abstract class MeshCollection extends Shape {
       int lighting = (test ? ((Integer) value).intValue()
           : "frontlit" == propertyName ? JmolConstants.FRONTLIT
               : "backlit" == propertyName ? JmolConstants.BACKLIT : JmolConstants.FULLYLIT);
-      if (currentMesh != null)
+      if (currentMesh != null) {
         currentMesh.setLighting(lighting);
-      else {
+        if (linkedMesh != null)
+          linkedMesh.setLighting(lighting);         
+      } else {
         for (int i = meshCount; --i >= 0;)
           meshes[i].setLighting(lighting);
       }
@@ -331,14 +357,10 @@ public abstract class MeshCollection extends Shape {
     meshes[--meshCount] = null;
   }
   
-  protected int getPrevMeshIndex() {
-    return (previousMeshID == null 
-        ? meshCount - 1 : getIndexFromName(previousMeshID));
-  }
-  
   public int getIndexFromName(String thisID) {
     if (JmolConstants.PREVIOUS_MESH_ID.equals(thisID))
-      return getPrevMeshIndex();
+      return (previousMeshID == null 
+          ? meshCount - 1 : getIndexFromName(previousMeshID));
     for (int i = meshCount; --i >= 0; ) {
       if (meshes[i] != null && thisID.equals(meshes[i].thisID))
         return i;
@@ -371,6 +393,8 @@ public abstract class MeshCollection extends Shape {
       if (cmd == null)
         continue;
       Mesh mesh = meshes[i];
+      if (meshes[i].linkedMesh != null)
+        cmd += " LINK";
       if (mesh.modelIndex >= 0 && modelCount > 1)
         appendCmd(s, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));
       appendCmd(s, cmd);

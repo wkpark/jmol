@@ -255,7 +255,7 @@ class SelectionManager {
     if (viewer.getSelectionHaloEnabled())
       StateManager.appendCmd(commands, "SelectionHalos ON");
     if (sfunc != null) 
-      commands.append("end function\n\n");
+      commands.append("end function;\n\n");
     return commands.toString();
   }
 

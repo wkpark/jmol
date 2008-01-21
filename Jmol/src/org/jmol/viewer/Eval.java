@@ -3647,6 +3647,7 @@ class Eval { //implements Runnable {
     Object colorvalue = null;
     BitSet bs = null;
     String prefix = "";
+    boolean isColor = false;
     int typeMask = 0;
     float translucentLevel = Float.MAX_VALUE;
     if (index < 0) {
@@ -3670,6 +3671,7 @@ class Eval { //implements Runnable {
     }
     if (index < statementLength && tokAt(index) != Token.on
         && tokAt(index) != Token.off) {
+      isColor = true;
       int tok = getToken(index).tok;
       if (isColorParam(index)) {
         int argb = getArgbParam(index, false);
@@ -3802,24 +3804,26 @@ class Eval { //implements Runnable {
         viewer.calcSelectedMoleculesCount();
         break;
       }
-      typeMask = (shapeType == JmolConstants.SHAPE_HSTICKS ? JmolConstants.BOND_HYDROGEN_MASK
-          : shapeType == JmolConstants.SHAPE_SSSTICKS ? JmolConstants.BOND_SULFUR_MASK
-              : shapeType == JmolConstants.SHAPE_STICKS ? JmolConstants.BOND_COVALENT_MASK
-                  : 0);
-      if (typeMask == 0) {
-        viewer.loadShape(shapeType);
-        if (bs != null)
-          viewer.setShapeProperty(shapeType, prefix + "color", colorvalue, bs);
-        else
-          viewer.setShapeProperty(shapeType, prefix + "color", colorvalue);
-      } else {
-        if (bs != null)
-          viewer.selectBonds(bs);
-        setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-            typeMask));
-        setShapeProperty(JmolConstants.SHAPE_STICKS, prefix + "color",
-            colorvalue);
+    }
+    typeMask = (shapeType == JmolConstants.SHAPE_HSTICKS ? JmolConstants.BOND_HYDROGEN_MASK
+        : shapeType == JmolConstants.SHAPE_SSSTICKS ? JmolConstants.BOND_SULFUR_MASK
+            : shapeType == JmolConstants.SHAPE_STICKS ? JmolConstants.BOND_COVALENT_MASK
+                : 0);
+    if (typeMask == 0) {
+      viewer.loadShape(shapeType);
+    } else {
+      if (bs != null) {
+        viewer.selectBonds(bs);
+        bs = null;
       }
+      shapeType = JmolConstants.SHAPE_STICKS;
+      setShapeProperty(shapeType, "type", new Integer(typeMask));
+    }
+    if (isColor) {
+      if (bs != null)
+        viewer.setShapeProperty(shapeType, prefix + "color", colorvalue, bs);
+      else
+        viewer.setShapeProperty(shapeType, prefix + "color", colorvalue);
     }
     if (translucency != null)
       setShapeTranslucency(shapeType, prefix, translucency, translucentLevel);
@@ -8621,7 +8625,7 @@ class Eval { //implements Runnable {
           msg = viewer.getCurrentFileAsString();
         break;
       }
-      checkLength3();
+      len = 3;
       value = parameterAsString(2);
       if (!isSyntaxCheck)
         msg = viewer.getFileAsString(value);
@@ -9588,6 +9592,7 @@ class Eval { //implements Runnable {
       if (!isSyntaxCheck)
         viewer.setCursor(Viewer.CURSOR_WAIT);
       setMoData(JmolConstants.SHAPE_MO, moNumber, offset, modelIndex, title);
+      setShapeProperty(JmolConstants.SHAPE_MO, "finalize", null);
     }
     return true;
   }
@@ -9889,6 +9894,10 @@ class Eval { //implements Runnable {
         str = parameterAsString(i);
         if (str.equalsIgnoreCase("REMAPPABLE")) { // testing only
           propertyName = "remappable";
+          break;
+        }
+        if (str.equalsIgnoreCase("LINK")) { // for state of lcaoCartoon
+          propertyName = "link";
           break;
         }
         if (str.equalsIgnoreCase("SQUARED")) {

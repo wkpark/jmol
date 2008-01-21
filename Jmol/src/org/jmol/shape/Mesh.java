@@ -56,6 +56,7 @@ public class Mesh {
   public float width;
   public Point3f ptCenter = new Point3f(0,0,0);
   public String meshType = null;
+  public Mesh linkedMesh = null; //for lcaoOrbitals
   
   public int atomIndex = -1;
   public int modelIndex = -1;  // for Isosurface and Draw
@@ -243,7 +244,9 @@ public class Mesh {
    */
 
   public String getState(String type) {
-    StringBuffer s = new StringBuffer(type).append(" ").append(thisID);
+    StringBuffer s = new StringBuffer(type);
+    if (!type.equals("mo"))
+      s.append(" ").append(thisID);
     s.append(fillTriangles ? " fill" : " noFill");
     s.append(drawTriangles ? " mesh" : " noMesh");
     s.append(showPoints ? " dots" : " noDots");

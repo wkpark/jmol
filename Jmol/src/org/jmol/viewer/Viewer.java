@@ -1691,8 +1691,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public Point3f[] calculateSurface(BitSet bsSelected, float envelopeRadius) {
     if (bsSelected == null) bsSelected = selectionManager.bsSelection;
     addStateScript("calculate surfaceDistance "
-        + (envelopeRadius == Float.MAX_VALUE ? "FROM" : "WITHIN") + " "
-        + Escape.escape(bsSelected), false);
+        + (envelopeRadius == Float.MAX_VALUE ? "FROM" : "WITHIN") + "("
+        + Escape.escape(bsSelected) + ")", false);
     return modelSet.calculateSurface(bsSelected, envelopeRadius);
   }
 
@@ -2412,7 +2412,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   int autoHbond(BitSet bsBonds) {
     //Eval
-    addStateScript("calculate hbonds;", false);
+    addStateScript("select " + Escape.escape(selectionManager.bsSelection) + "; calculate hbonds;", false);
     return autoHbond(selectionManager.bsSelection, 
         selectionManager.bsSelection, bsBonds);
   }

@@ -66,7 +66,7 @@ public abstract class MeshCollection extends Shape {
         linkedMesh = currentMesh.linkedMesh;
     } else {
       allocMesh(thisID);
-    }    
+    }
     if (currentMesh.thisID == null)
       currentMesh.thisID = myType + (++nUnnamed);
     previousMeshID = currentMesh.thisID;

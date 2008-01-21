@@ -3582,6 +3582,9 @@ class Eval { //implements Runnable {
       if (changeElementColor(str, argb))
         return;
       invalidArgument();
+    case Token.isosurface:
+      setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "thisID", JmolConstants.PREVIOUS_MESH_ID);
+      //fall through
     default:
       colorObject(theTok, 2);
     }

@@ -273,7 +273,6 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("finalize" == propertyName) {
       setScriptInfo();
       setJvxlInfo();
-      linkedMesh = null;
     }
       //surface generator only (return TRUE) or shared (return FALSE)
 
@@ -315,15 +314,16 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
     // processed by meshCollection
 
     setPropertySuper(propertyName, value, bs);
-  }  private void setPropertySuper(String propertyName, Object value, BitSet bs) {
+  }  
+
+  private void setPropertySuper(String propertyName, Object value, BitSet bs) {
     //System.out.println(propertyName + " " + value);
     //System.out.println(thisMesh + (thisMesh!= null ? thisMesh.thisID : ""));
     currentMesh = thisMesh;
     super.setProperty(propertyName, value, bs);
     thisMesh = (IsosurfaceMesh) currentMesh;
     jvxlData = (thisMesh == null ? null : thisMesh.jvxlData);
-    System.out.println("isosurface setpropertysuper thisMesh=" + thisMesh);
-    }
+  }
 
   public Object getProperty(String property, int index) {
     if (property == "dataRange")

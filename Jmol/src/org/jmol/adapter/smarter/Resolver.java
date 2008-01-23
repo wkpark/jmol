@@ -551,7 +551,7 @@ public class Resolver {
   { "Csf", "local_transform"};
   
   final static String[][] lineStartsWithRecords =
-  { pqrRecords, pdbRecords, shelxRecords, cifRecords, 
+  { cifRecords, pqrRecords, pdbRecords, shelxRecords, 
     ghemicalMMRecords, jaguarRecords, hinRecords, 
     mdlRecords, spartanSmolRecords, csfRecords, mol2Records};
 

@@ -81,7 +81,7 @@ public class AminoMonomer extends AlphaMonomer {
                                  Atom[] atoms) {
     return (isBondedCorrectly(N, CA, firstAtomIndex, offsets, atoms)
             && isBondedCorrectly(CA, C, firstAtomIndex, offsets, atoms)
-            && (offsets[O] != -1 
+            && (offsets[O] == -1 
                 || isBondedCorrectly(C, O, firstAtomIndex, offsets, atoms))
             );
   }

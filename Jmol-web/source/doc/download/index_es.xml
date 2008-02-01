@@ -14,7 +14,8 @@
 	dependiendo del formato que puedas descomprimir en tu ordenador.)
       </p>
 			<p>
-      Ocasionalmente están disponibles en el mismo lugar algunas versiones provisionales.
+      Ocasionalmente están disponibles en el mismo lugar algunas versiones preliminares (con número impar como 11.1, 11.3, 11.5).
+	Éstas no se han probado exhaustivamente, por lo que pueden tener fallos aún no resueltos.
       <br/>(Busca bajo el título <tt>Jmol Prerelease Tests</tt> el enlace que termina en <tt>binary.zip</tt> o <tt>binary.tar.gz</tt>, 
 	dependiendo del formato que puedas descomprimir en tu ordenador.)
       </p>

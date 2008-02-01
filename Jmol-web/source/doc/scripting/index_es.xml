@@ -9,35 +9,13 @@
 ]>
 <document>
 	<body>
-		<title>Guiones para Jmol</title>
+		<title>Guiones para la miniaplicación JmolApplet sin usar Jmol.js</title>
 		<header>
 			<p><i>
 	Ten en cuenta que estos métodos no utilizan la biblioteca Jmol.js, que es 
 	el método actualmente recomendado para comenzar a escribir guiones para 
 	la miniaplicaión JmolApplet.  
 			</i></p>
-			<p>
-        Tanto la aplicación como la miniaplicación admiten guiones, 
-        es decir, conjuntos de instrucciones (<i>scripts</i>).
-        Los siguientes ejemplos usan la miniaplicación, pero los
-        guiones se pueden usar también en la aplicación.
-	Recomendamos probar y depurar los guiones largos dentro de la
-	aplicación Jmol, pues allí puedes recibir mensajes de error y de 
-	diagnóstico. 
-      </p>
-			<p>
-        Jmol implementa una buena parte del lenguaje de instrucciones 
-    de RasMol/Chime para la visualización molecular, así como un
-    conjunto considerable de instrucciones nuevas.
-			</p>
-			<p>
-	Se puede consultar una descripción completa del lenguaje de RasMol
-	en su manual, en la sede web de Open RasMol:
-	<a href="http://www.openrasmol.org/">http://www.openrasmol.org</a>.
-	También se puede consultar la ampliación del lenguaje para el conector
-	MDL Chime en
-	<a href="http://www.mdlchime.com/">http://www.mdlchime.com</a>.
-      </p>
 			<p>
         La descripción de la implementación de este lenguaje 
         en Jmol está en la página de documentación de guiones interactiva 

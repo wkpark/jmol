@@ -4,27 +4,19 @@
 		<title>Jmol Documentation</title>
 		<header>
 		</header>
-		<section title="The Jmol Guide">
+		<section title="Jmol Literature">
 			<p>
-        The <a href="JmolUserGuide/">Jmol Guide</a>
-	describes the Jmol application.
-      </p>
+	 A list of literature describing Jmol can be found at 
+			<a href="http://wiki.jmol.org/index.php/Literature/">Jmol Wiki</a>
+			</p>
 		</section>
-		<section title="The Jmol Applet Guide">
+		<section title="Jmol Technical Notes">
 			<p>
-        The <a href="JmolAppletGuide.html">Jmol Applet Guide</a>
-	describes the Jmol applet.
-      </p>
+			This <a href="../technotes/">document</a> gives technical information 
+	about how Jmol is built, particularly with respect to graphics rendering.
+			</p>
 		</section>
 		<section title="Scripting for Jmol">
-			<section title="Introduction to Jmol Scripting without Jmol.js">
-				<p>
-	This <a href="../scripting/">document</a>
-	explains how to write scripts to interact with Jmol applet and application. 
-	<i>Please, note that these methods do not use the Jmol.js library, which is the 
-	currently recommended method to start scripting Jmol.</i>
-				</p>
-			</section>
 			<section title="Scripting Documentation">
 				<p>
 	This <a href="http://www.stolaf.edu/academics/chemapps/jmol/docs">interactive online documentation</a>
@@ -33,19 +25,27 @@
 	excellent demonstrations and examples.
       </p>
 			</section>
-			<section title="Surface Documentation">
-				<p>
-	This <a href="surface/">documentation</a>
-	describes and compares the different options available in Jmol (v.11) scripts
-	for generating surfaces, either based on the molecule or geometric. 
-	It also provides a testing and demonstration page.
-		      </p>
-			</section>
-			<section title="Documentation for JavaScript Library">
+			<section title="Documentation for the JavaScript Library">
 				<p>
 	Jmol.js (included in Jmol standard distribution) is a library written in JavaScript that can be used to simplify development of 
 	web pages that include the JmolApplet. Here is its <a href="../jslibrary/">description and documentation</a>.
 				</p>
+			</section>
+			<section title="Scripting JmolApplet Without Using the JavaScript Library">
+				<p>
+	This <a href="../scripting/">document</a>
+	explains how to write scripts to interact with the applet. 
+	<i>Please, note that these methods do not use the JavaScript library, which is the 
+	currently recommended method to start scripting JmolApplet.</i>
+				</p>
+			</section>
+			<section title="Documentation for Surfaces">
+				<p>
+	This <a href="surface/">documentation</a>
+	describes and compares the different options available in Jmol scripts
+	for generating surfaces, either based on the molecule or geometric. 
+	It also provides a testing and demonstration page.
+		      </p>
 			</section>
 		</section>
 		<section title="Colors Used by Jmol">
@@ -70,17 +70,22 @@
 	describes Jmol development procedures.
 		      </p>
 		</section>
-		<section title="Jmol Technical Notes">
-			<p>
-			This <a href="../technotes/">document</a> gives technical information 
-	about how Jmol is built, particularly with respect to graphics rendering.
-			</p>
-		</section>
-		<section title="Jmol Literature">
-			<p>
-	 An up to date list of literature describing Jmol can be found at 
-			<a href="http://wiki.jmol.org/index.php/Literature/">Jmol's Wiki</a>
-			</p>
+		<section title="Official, but not up-to-date, documentation">
+			<p>These are official guides for Jmol. They cover the basic functionality of both application and applet, 
+	but they have not been updated recently (particularly, for features in version 11 of Jmol). 
+	</p>
+			<section title="The Jmol Guide">
+				<p>
+        The <a href="JmolUserGuide/">Jmol Guide</a>
+	describes the Jmol application.
+      </p>
+			</section>
+			<section title="The Jmol Applet Guide">
+				<p>
+        The <a href="JmolAppletGuide.html">Jmol Applet Guide</a>
+	describes the Jmol applet.
+      </p>
+			</section>
 		</section>
 	</body>
 </document>

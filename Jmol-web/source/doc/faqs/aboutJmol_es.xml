@@ -31,7 +31,10 @@
   <section title="¿Cómo me refiero a Jmol en artículos publcados?">
     <p>
       Tanto en la web como en artículos publicados debes citar
-      a Jmol mediante su sede web: www.jmol.org
+      a Jmol así:<br/>
+      <b>Jmol: un visor Java de código abierto para estructuras químicas en tres dimensiones. http://www.jmol.org/</b>
+      <br/>o bien en inglés:<br/>
+      <b>Jmol: an open-source Java viewer for chemical structures in 3D. http://www.jmol.org/</b>
     </p>
   </section>
 </section>

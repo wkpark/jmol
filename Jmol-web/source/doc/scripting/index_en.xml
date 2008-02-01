@@ -5,33 +5,12 @@
 ]>
 <document>
 	<body>
-		<title>Jmol Scripting</title>
+		<title>Scripting JmolApplet Without Using Jmol.js</title>
 		<header>
 			<p><i>
 	Please, note that these methods do not use the Jmol.js library, which is 
 	the currently recommended method to start scripting JmolApplet.
   			</i></p>
-			<p>
-        Both the application and the applet support scripting.
-        The examples below use the applet, but the scripts can be used
-	in the Jmol application too. We recommend testing and debugging
-	long scripts within the context of the Jmol application because
-	you can receive diagnostic error messages. 
-      </p>
-			<p>
-        Jmol implements a large subset of the RasMol/Chime molecular
-	visualization scripting language, plus a good lot of new 
-	commands.
-			</p>
-			<p>
-		A full description of the
-	RasMol scripting language is available in the RasMol manual
-	on the Open RasMol web site at
-	<a href="http://www.openrasmol.org/">http://www.openrasmol.org</a>.
-	A description of the scripting language extensions for the
-	MDL Chime plug-in are available at
-	<a href="http://www.mdlchime.com/">http://www.mdlchime.com</a>.
-      </p>
 			<p>
         A description of the Jmol implementation of the scripting language
 	is available at 
@@ -39,7 +18,7 @@
 	Interactive Online Scripting Documentation page</a>. 
       </p>
 			<p>
-        For smaller scripts the transition from
+        For small scripts the transition from
 	Chime to Jmol should be straightforward. 
 	With larger, more
 	complicated Chime web applications you may have challenges

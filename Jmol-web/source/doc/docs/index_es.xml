@@ -8,27 +8,20 @@
 		<title>Documentación de Jmol</title>
 		<header>
 		</header>
-		<section title="Guía de Jmol">
+		<section title="Bibliografía de Jmol">
 			<p>
-        Describe la aplicación -o programa autónomo- Jmol; 
-        <a href="JmolUserGuide/">Jmol Guide</a>.
+	 Se puede encontrar una lista de publicaciones que describen Jmol en
+			<a href="http://wiki.jmol.org/index.php/Literature/">la Wiki de Jmol</a>.
 			</p>
 		</section>
-		<section title="Guía de la miniaplicación Jmol">
+		<section title="Notas técnicas de Jmol">
 			<p>
-        Describe la miniaplicación Jmol; 
-        <a href="JmolAppletGuide.html">Jmol Applet Guide</a>.
+			Este <a href="../technotes/">documento</a> proporciona información
+	técnica sobre cómo está construido Jmol, en particular en lo relativo
+	al trazado de gráficos.
 			</p>
 		</section>
 		<section title="Guiones para Jmol">
-			<section title="Introducción a los guiones para Jmol sin Jmol.js">
-				<p>
-	Este <a href="../scripting/">documento</a>
-	explica cómo escribir guiones para interaccionar con la miniaplicación y la aplicación Jmol.
-	<i>Ten en cuenta que estos métodos no utilizan la biblioteca Jmol.js, que es el 
-	método actualmente recomendado para comenzar a escribir guiones para Jmol.</i>
-				</p>
-			</section>
 			<section title="Documentación de guiones">
 				<p>
 	Esta <a href="http://www.stolaf.edu/academics/chemapps/jmol/docs">documentación interactiva en línea</a>
@@ -38,6 +31,21 @@
 	demostraciones y ejemplos.
       </p>
 			</section>
+			<section title="Documentación de la biblioteca javascript">
+				<p>
+	Jmol.js (incluida en la distribución estándar de Jmol) es una biblioteca javascript que 
+	puede usarse para simplificar el desarrollo de páginas web que incluyan la miniaplicación JmolApplet. 
+	Aquí está su <a href="../jslibrary/">descripción y documentación</a>.
+				</p>
+			</section>
+			<section title="Guiones para JmolApplet sin usar la biblioteca javascript">
+				<p>
+	Este <a href="../scripting/">documento</a>
+	explica cómo escribir guiones para interaccionar con la miniaplicación.
+	<i>Ten en cuenta que estos métodos no utilizan la biblioteca javascript, que es el 
+	método actualmente recomendado para comenzar a escribir guiones para Jmol.</i>
+				</p>
+			</section>
 			<section title="Documentación de superficies">
 				<p>
 	Esta <a href="surface/">documentación</a> (en inglés)
@@ -45,13 +53,6 @@
 	disponibles en Jmol (v.11)  para la generación de superficies, 
 	bien basadas en la molécula o bien geométricas. 
 	También proporciona una página de pruebas y demostración.
-				</p>
-			</section>
-			<section title="Documentación de la biblioteca javascript">
-				<p>
-	Jmol.js (incluida en la distribución estándar de Jmol) es una biblioteca javascript que 
-	puede usarse para simplificar el desarrollo de páginas web que incluyan la miniaplicación JmolApplet. 
-	Aquí está su <a href="../jslibrary/">descripción y documentación</a>.
 				</p>
 			</section>
 		</section>
@@ -77,18 +78,22 @@
         <a href="JmolDevelopersGuide.html">Jmol Developers Guide</a>.
 			</p>
 		</section>
-		<section title="Notas técnicas de Jmol">
-			<p>
-			Este <a href="../technotes/">documento</a> proporciona información
-	técnica sobre cómo está construido Jmol, en particular en lo relativo
-	al trazado de gráficos.
+		<section title="Documentación oficial pero no actualizada">
+			<p>Éstas son las guías oficiales de Jmol. Cubren la funcionalidad básica de la aplicación y la miniaplicación, 
+	pero no se han actualizado recientemente (en particular, en las prestaciones de la versión 11 de Jmol). 
+	</p>
+			<section title="Guía de Jmol">
+				<p>
+        Describe la aplicación -o programa autónomo- Jmol; 
+        <a href="JmolUserGuide/">Jmol Guide</a>.
 			</p>
-		</section>
-		<section title="Bibliografía de Jmol">
-			<p>
-	 Se puede encontrar una lista actualizada de publicaciones que describen Jmol en
-			<a href="http://wiki.jmol.org/index.php/Literature/">la Wiki de Jmol</a>.
+			</section>
+			<section title="Guía de la miniaplicación Jmol">
+				<p>
+        Describe la miniaplicación Jmol; 
+        <a href="JmolAppletGuide.html">Jmol Applet Guide</a>.
 			</p>
+			</section>
 		</section>
 	</body>
 </document>

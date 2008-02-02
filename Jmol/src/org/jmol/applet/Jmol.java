@@ -38,6 +38,7 @@ import org.jmol.util.Parser;
 import java.awt.*;
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import netscape.javascript.JSObject;
@@ -187,7 +188,7 @@ public class Jmol implements WrappedApplet {
     System.out.println("Init Jmol");
     htmlName = getParameter("name");
     syncId = getParameter("syncId");
-    fullName = htmlName + "[" + syncId + "]";
+    fullName = htmlName + "__" + syncId + "__";
     language = getParameter("language");
     if (language != null) {
       System.out.print("requested language=" + language + "; ");
@@ -1236,6 +1237,12 @@ public class Jmol implements WrappedApplet {
               + script + ": " + e);
         } 
       }
-    }    
+    }
+    
+    public Hashtable getRegistryInfo() {
+      JmolAppletRegistry.checkIn(null, null); //cleans registry
+      return JmolAppletRegistry.htRegistry;
+    }
+
   }
 }

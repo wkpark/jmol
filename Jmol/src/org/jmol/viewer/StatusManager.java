@@ -386,5 +386,24 @@ class StatusManager {
     jmolStatusListener.createImage(file, type_or_text_or_bytes, quality);
   }
 
+  public Hashtable getRegistryInfo() {
+    /* 
+
+     //note that the following JavaScript retrieves the registry:
+     
+        var registry = jmolGetPropertyAsJavaObject("appletInfo").get("registry")
+      
+     // and the following code then retrieves an array of applets:
+     
+        var AppletNames = registry.keySet().toArray()
+      
+     // and the following sends commands to an applet in the registry:
+      
+        registry.get(AppletNames[0]).script("background white")
+        
+     */
+    return (jmolStatusListener == null ? null : jmolStatusListener.getRegistryInfo());
+  }
+
 }
 

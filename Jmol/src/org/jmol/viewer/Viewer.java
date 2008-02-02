@@ -389,6 +389,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isApplet) {
       info.put("documentBase", appletDocumentBase);
       info.put("codeBase", appletCodeBase);
+      info.put("registry", statusManager.getRegistryInfo());
     }
     info.put("version", JmolConstants.version);
     info.put("date", JmolConstants.date);

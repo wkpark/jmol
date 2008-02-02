@@ -281,6 +281,8 @@ public class Escape {
     String sep = "";
     if (info == null)
       return packageJSON(infoType, (String) null);
+    if (info instanceof Integer || info instanceof Float)
+      return packageJSON(infoType, info.toString());
     if (info instanceof String)
       return packageJSON(infoType, fixString((String) info));
     if (info instanceof String[]) {
@@ -373,7 +375,7 @@ public class Escape {
       sb.append(" }");
       return packageJSON(infoType, sb);
     }
-    return packageJSON(infoType, info.toString());
+    return packageJSON(infoType, fixString(info.toString()));
   }
 
   public static String toReadable(Object info) {

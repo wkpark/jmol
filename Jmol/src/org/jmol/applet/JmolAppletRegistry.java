@@ -58,9 +58,10 @@ public class JmolAppletRegistry {
 
   synchronized static void checkIn(String name, Applet applet) {
     cleanRegistry();
-    Logger.info("AppletRegistry.checkIn(" + name + ")");
-    if (name != null)
+    if (name != null) {
+      Logger.info("AppletRegistry.checkIn(" + name + ")");
       htRegistry.put(name, applet);
+    }
     if (Logger.debugging) {
       Enumeration keys = htRegistry.keys();
       while (keys.hasMoreElements()) {
@@ -152,8 +153,8 @@ public class JmolAppletRegistry {
 
   synchronized public static Vector findApplets(String appletName, String mySyncId,
                             String excludeName) {
-    if (appletName != null && appletName.indexOf("[") < 0)
-      appletName += "[" + mySyncId + "]";
+    if (appletName != null && appletName.indexOf("__") < 0)
+      appletName += "__" + mySyncId + "__";
     Vector apps = new Vector();
     if (appletName != null && htRegistry.containsKey(appletName)) {
       apps.addElement(appletName);
@@ -164,7 +165,7 @@ public class JmolAppletRegistry {
       String theApplet = (String) keys.nextElement();
       if (excludeName != null && theApplet.equals(excludeName))
         continue;
-      if (appletName == null && theApplet.indexOf("[" + mySyncId + "]") > 0
+      if (appletName == null && theApplet.indexOf("__" + mySyncId + "__") > 0
           || theApplet.equals(appletName))
         apps.addElement(theApplet);
     }

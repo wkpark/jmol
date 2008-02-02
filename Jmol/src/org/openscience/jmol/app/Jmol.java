@@ -1878,6 +1878,10 @@ public class Jmol extends JPanel {
       return new float[Math.abs(nX)][Math.abs(nY)];  // for user-defined isosurface functions (testing only -- bob hanson)
     }
 
+    public Hashtable getRegistryInfo() {
+      return null;
+    }
+
   }
 
   class ExecuteScriptAction extends AbstractAction {

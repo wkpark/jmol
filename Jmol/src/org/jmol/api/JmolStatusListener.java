@@ -24,6 +24,8 @@
 
 package org.jmol.api;
 
+import java.util.Hashtable;
+
 public interface JmolStatusListener {
 /*
  * These methods specifically provide notification from 
@@ -74,5 +76,7 @@ public interface JmolStatusListener {
   public void setCallbackFunction(String callbackType, String callbackFunction);
   
   public void createImage(String file, Object type_or_text_or_bytes, int quality);
+
+  public Hashtable getRegistryInfo();
   
 }

@@ -375,10 +375,10 @@ public class Resolver {
         break;
     if (i >= lines.length 
         || lines[i].charAt(0) != ' ' 
-        || (i = i + 2) >= lines.length
-        || !TextFormat.replaceAllCharacters(lines[i], "\r\n", "").equals("0 1"))
-        return false;
-    return true;
+        || (i = i + 2) >= lines.length)
+      return false;
+    String codes = TextFormat.replaceAllCharacters(lines[i], "\r\n", "");
+    return (codes.equals("0 1") || codes.equals("1 2"));
   }
   
   private static boolean checkV3000(String[] lines) {

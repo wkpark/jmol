@@ -30,6 +30,8 @@
  *  ran with: java -classpath `pwd`:/where/ever/jmol-10.2.0/Jmol.jar JmolExportExample
  * */
 
+import java.util.Hashtable;
+
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
@@ -206,5 +208,10 @@ class MyStatusListener implements JmolStatusListener {
   public void createImage(String file, Object type_or_text_or_bytes, int quality) {
     // TODO
     
+  }
+
+  public Hashtable getRegistryInfo() {
+    // TODO
+    return null;
   }
 }

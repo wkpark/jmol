@@ -72,8 +72,6 @@ public class Frank extends FontLineShape {
   }
 
   void getFont(float imageFontScaling) {
-    if (imageFontScaling != 1)
-      System.out.println("Frank getFont");
     font3d = g3d.getFont3DScaled(baseFont3d, imageFontScaling);
     calcMetrics();
   }

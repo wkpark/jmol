@@ -34,11 +34,9 @@ public class LabelsRenderer extends ShapeRenderer {
 
   // offsets are from the font baseline
   byte fidPrevious;
-  FontMetrics fontMetrics;
   protected Font3D font3d;
   protected int ascent;
   protected int descent;
-  //int msgWidth;
 
   protected void render() {
     fidPrevious = 0;
@@ -55,7 +53,10 @@ public class LabelsRenderer extends ShapeRenderer {
     Atom[] atoms = modelSet.atoms;
     short backgroundColixContrast = viewer.getColixBackgroundContrast();
     int backgroundColor = viewer.getBackgroundArgb();
-    boolean antialias = g3d.isAntialiased();
+    float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer.getScalePixelsPerAngstrom() * 10000 : 0);
+    float imageFontScaling = viewer.getImageFontScaling();
+    System.out.println("LabelsRenderer imageFontScaling=" + imageFontScaling + " sppm=" + (viewer.getScalePixelsPerAngstrom()*10000));
+         
     for (int i = labelStrings.length; --i >= 0;) {
       Atom atom = atoms[i];
       if (!atom.isShapeVisible(myVisibilityFlag) || modelSet.isAtomHidden(i))
@@ -77,7 +78,7 @@ public class LabelsRenderer extends ShapeRenderer {
       boolean labelsFront = ((offsetFull & Labels.FRONT_FLAG) != 0);
       boolean labelsGroup = ((offsetFull & Labels.GROUP_FLAG) != 0);
       int offset = offsetFull >> 6;
-      int textAlign = (offsetFull >> 2) & 3;
+      int textAlign = Labels.getAlignment(offsetFull);
       int pointer = offsetFull & 3;
       int zSlab = atom.screenZ - atom.getScreenRadius() - 2;
       if (zSlab < 1)
@@ -88,45 +89,46 @@ public class LabelsRenderer extends ShapeRenderer {
       if (zBox < 1)
         zBox = 1;
 
-      boolean isSimple = (textAlign == 0 && label.indexOf("|") < 0 && label
-          .indexOf("<su") < 0);
-      int yOffset = (antialias ? 0 : 8);
-
-      Text text = (isSimple ? null : labels.getLabel(i));
+      Text text = labels.getLabel(i);
       if (text != null) {
-        text.setXYZs(atom.screenX, atom.screenY - yOffset, zBox, zSlab);
+        if (text.font == null)
+          text.setFid(fid);
+        text.setXYZs(atom.screenX, atom.screenY, zBox, zSlab);
         text.setColix(colix);
         text.setBgColix(bgcolix);
       } else {
+        boolean isLeft = (textAlign == Text.ALIGN_LEFT || textAlign == Text.ALIGN_NONE);
         if (fid != fidPrevious || ascent == 0) {
           g3d.setFont(fid);
           fidPrevious = fid;
           font3d = g3d.getFont3DCurrent();
-          if (textAlign == 0) {
-            fontMetrics = font3d.fontMetrics;
+          if (isLeft) {
+            FontMetrics fontMetrics = font3d.fontMetrics;
             ascent = fontMetrics.getAscent();
             descent = fontMetrics.getDescent();
           }
         }
+        boolean isSimple = isLeft && (imageFontScaling == 1 && scalePixelsPerMicron == 0
+            && label.indexOf("|") < 0 && label.indexOf("<su") < 0);
         if (isSimple) {
           boolean doPointer = ((pointer & Text.POINTER_ON) != 0);
-          //(viewer.getLabelPointerBox() && bgcolix != 0 || bgcolix == 0 && viewer.getLabelPointerNoBox());
-          //short pointercolix = (viewer.getLabelPointerBackground() && bgcolix != 0 ? bgcolix : colix);
-          short pointercolix = ((pointer & Text.POINTER_BACKGROUND) != 0
+          short pointerColix = ((pointer & Text.POINTER_BACKGROUND) != 0
               && bgcolix != 0 ? bgcolix : colix);
-          Text.renderSimple(g3d, font3d, label, colix, bgcolix, atom.screenX,
+          Text.renderSimpleLabel(g3d, font3d, label, colix, bgcolix, atom.screenX,
               atom.screenY, zBox, zSlab, Text.getXOffset(offset), Text
                   .getYOffset(offset), ascent, descent, doPointer,
-              pointercolix, antialias);
+              pointerColix);
           continue;
         }
         text = new Text(g3d, font3d, label, colix, bgcolix, atom.screenX,
-            atom.screenY - yOffset, zBox, zSlab, textAlign);
+            atom.screenY, zBox, zSlab, textAlign, scalePixelsPerMicron);
         labels.putLabel(i, text);
-        text.setOffset(offset);
       }
-      text.setPointer(pointer);
-      text.render(g3d, antialias);
+      text.setOffset(offset);
+      if (textAlign != Text.ALIGN_NONE)
+        text.setAlignment(textAlign);
+      text.setPointer(pointer); 
+      text.render(g3d, scalePixelsPerMicron, imageFontScaling);
     }
   }
 }

@@ -32,7 +32,7 @@ public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
   private byte fid;
 
   protected void render() {
-    antialias = g3d.isAntialiased();
+    imageFontScaling = viewer.getImageFontScaling();
     MolecularOrbital mo = (MolecularOrbital) shape;
     for (int i = mo.meshCount; --i >= 0;)
       if (render1(imesh = (IsosurfaceMesh) mo.meshes[i]))
@@ -44,19 +44,15 @@ public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
       return;
     if (nf == null) {
       nf = NumberFormat.getInstance();
-      fid = g3d.getFontFid("Monospaced", 14);
+      fid = g3d.getFontFid("Monospaced", 14 * imageFontScaling);
     }
     if (nf != null) {
       nf.setMaximumFractionDigits(3);
       nf.setMinimumFractionDigits(3);
     }
     g3d.setFont(fid);
-    int lineheight = 15;
-    int x = 5;
-    if (antialias) {
-      lineheight <<= 1;
-      x <<= 1;
-    }
+    int lineheight = (int) (15 * imageFontScaling);
+    int x = (int) (5 * imageFontScaling);
     int y = lineheight;
 
     for (int i = 0; i < mesh.title.length; i++)

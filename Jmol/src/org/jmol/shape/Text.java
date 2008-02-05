@@ -39,69 +39,83 @@ public class Text {
   public final static int POINTER_NONE = 0;
   public final static int POINTER_ON = 1;
   public final static int POINTER_BACKGROUND = 2;
-  
-  private final static String[] hAlignNames = {"", "left", "center", "right", ""};
 
-  final static int XY = 0;
-  final static int LEFT = 1;
-  final static int CENTER = 2;
-  final static int RIGHT = 3;
-  final static int XYZ = 4;
+  private final static String[] hAlignNames = { "", "left", "center", "right",
+      "" };
 
-  final static String[] vAlignNames = {"xy", "top", "bottom", "middle"};
+  final static int ALIGN_NONE = 0;
+  final static int ALIGN_LEFT = 1;
+  final static int ALIGN_CENTER = 2;
+  final static int ALIGN_RIGHT = 3;
 
-  final static int TOP = 1;
-  final static int BOTTOM = 2;
-  final static int MIDDLE = 3;
+  final static String[] vAlignNames = { "xy", "top", "bottom", "middle" };
 
-  boolean atomBased;
-  Viewer viewer;
-  JmolRendererInterface g3d;
+  final static int VALIGN_XY = 0;
+  final static int VALIGN_TOP = 1;
+  final static int VALIGN_BOTTOM = 2;
+  final static int VALIGN_MIDDLE = 3;
+  final static int VALIGN_XYZ = 4;
+
+  private boolean atomBased;
+  private Viewer viewer;
+  private JmolRendererInterface g3d;
   Point3f xyz;
   String target;
-  String text, textUnformatted;
-  String script;
-  
-  boolean doFormatText;
-  
-  String[] lines;
-  int align;
-  int valign;
-  int pointer;
-  int movableX;
-  int movableY;
-  int movableXPercent = Integer.MAX_VALUE;
-  int movableYPercent = Integer.MAX_VALUE;
-  int offsetX;
-  int offsetY;
-  int z;
-  int zSlab; // z for slabbing purposes -- may be near an atom
+  private String text, textUnformatted;
+  private String script;
 
-  int windowWidth;
-  int windowHeight;
-  boolean adjustForWindow;
-  int boxX, boxY, boxWidth, boxHeight;
-  
+  float scalePixelsPerMicron;
+
+  float getScalePixelsPerMicron() {
+    return scalePixelsPerMicron;
+  }
+
+  private float fontScale;
+
+  private boolean doFormatText;
+
+  private String[] lines;
+  private int align;
+  int valign;
+  private int pointer;
+  private int movableX;
+  private int movableY;
+  private int movableXPercent = Integer.MAX_VALUE;
+  private int movableYPercent = Integer.MAX_VALUE;
+  private int offsetX;
+  private int offsetY;
+  private int z;
+  private int zSlab; // z for slabbing purposes -- may be near an atom
+
+  private int windowWidth;
+  private int windowHeight;
+  private boolean adjustForWindow;
+  private float boxX, boxY, boxWidth, boxHeight;
+
   int modelIndex = -1;
   boolean visible = true;
-  
+
   Font3D font;
-  FontMetrics fm;
-  byte fid;
-  int ascent;
-  int descent;
-  int lineHeight;
+  private FontMetrics fm;
+  private byte fid;
+  float fontSize;
+  private int ascent;
+  private int descent;
+  private int lineHeight;
 
-  short colix;
-  short bgcolix;
+  private short colix;
+  private short bgcolix;
 
-  int[] widths;
-  int textWidth;
-  int textHeight;
+  private int[] widths;
+  private int textWidth;
+  private int textHeight;
 
   // for labels and hover
   Text(JmolRendererInterface g3d, Font3D font, String text, short colix,
-      short bgcolix, int offsetX, int offsetY, int z, int zSlab, int textAlign) {
+      short bgcolix, int offsetX, int offsetY, int z, int zSlab, int textAlign,
+      float scalePixelsPerMicron) {
+    this.scalePixelsPerMicron = scalePixelsPerMicron;
+    System.out.println("Text scalePixelsPerMicron=" + scalePixelsPerMicron);
     this.viewer = null;
     this.g3d = g3d;
     atomBased = true;
@@ -114,30 +128,33 @@ public class Text {
   }
 
   // for echo
-  Text(Viewer viewer, Graphics3D g3d, Font3D font, String target, short colix, int valign, int align) {
+  Text(Viewer viewer, Graphics3D g3d, Font3D font, String target, short colix,
+      int valign, int align, float scalePixelsPerMicron) {
     this.viewer = viewer;
     this.g3d = g3d;
     atomBased = false;
     this.target = target;
     if (target.equals("error"))
-      valign = TOP; 
+      valign = VALIGN_TOP;
     this.align = align;
     this.valign = valign;
     this.font = font;
     this.colix = colix;
+    this.scalePixelsPerMicron = scalePixelsPerMicron;
     this.z = 2;
     this.zSlab = Integer.MIN_VALUE;
+    fontSize = font.fontSize;
     getFontMetrics();
   }
 
-  void getFontMetrics() {
+  private void getFontMetrics() {
     fm = font.fontMetrics;
     descent = fm.getDescent();
     ascent = fm.getAscent();
     lineHeight = ascent + descent;
   }
 
-  void setFid(byte fid) {
+  void setFid(byte fid) { //labels only
     if (this.fid == fid)
       return;
     setFont(Font3D.getFont3D(fid));
@@ -146,21 +163,21 @@ public class Text {
   void setModel(int modelIndex) {
     this.modelIndex = modelIndex;
   }
- 
+
   void setVisibility(boolean TF) {
     visible = TF;
   }
- 
+
   void setXYZ(Point3f xyz) {
-    valign = XYZ;
+    valign = VALIGN_XYZ;
     this.xyz = xyz;
     setAdjustForWindow(false);
   }
-  
+
   void setAdjustForWindow(boolean TF) {
     adjustForWindow = TF;
   }
-  
+
   void setColix(short colix) {
     this.colix = colix;
   }
@@ -172,13 +189,13 @@ public class Text {
   void setTranslucent(float level, boolean isBackground) {
     if (isBackground) {
       if (bgcolix != 0)
-        bgcolix = Graphics3D.getColixTranslucent(bgcolix, !Float.isNaN(level), level);
+        bgcolix = Graphics3D.getColixTranslucent(bgcolix, !Float.isNaN(level),
+            level);
     } else {
       colix = Graphics3D.getColixTranslucent(colix, !Float.isNaN(level), level);
     }
   }
-  
-  
+
   void setBgColix(short colix) {
     this.bgcolix = colix;
   }
@@ -188,29 +205,29 @@ public class Text {
   }
 
   void setMovableX(int x) {
-    valign = (valign == XYZ ? XYZ : XY);
+    valign = (valign == VALIGN_XYZ ? VALIGN_XYZ : VALIGN_XY);
     movableX = x;
     movableXPercent = Integer.MAX_VALUE;
   }
 
   void setMovableY(int y) {
-    valign = (valign == XYZ ? XYZ : XY);
+    valign = (valign == VALIGN_XYZ ? VALIGN_XYZ : VALIGN_XY);
     movableY = y;
     movableYPercent = Integer.MAX_VALUE;
   }
-  
+
   void setMovableXPercent(int x) {
-    valign = (valign == XYZ ? XYZ : XY);
+    valign = (valign == VALIGN_XYZ ? VALIGN_XYZ : VALIGN_XY);
     movableX = Integer.MAX_VALUE;
     movableXPercent = x;
   }
 
   void setMovableYPercent(int y) {
-    valign = (valign == XYZ ? XYZ : XY);
+    valign = (valign == VALIGN_XYZ ? VALIGN_XYZ : VALIGN_XY);
     movableY = Integer.MAX_VALUE;
     movableYPercent = y;
   }
-  
+
   void setXY(int x, int y) {
     setMovableX(x);
     setMovableY(y);
@@ -230,37 +247,37 @@ public class Text {
   void setScript(String script) {
     this.script = (script == null || script.length() == 0 ? null : script);
   }
-  
+
   String getScript() {
     return script;
   }
-  
+
   void setOffset(int offset) {
     //Labels only
     offsetX = getXOffset(offset);
     offsetY = getYOffset(offset);
-    valign = XY;
+    valign = VALIGN_XY;
   }
 
-  final static int getXOffset(int offset) {
+  static int getXOffset(int offset) {
     switch (offset) {
     case 0:
       return JmolConstants.LABEL_DEFAULT_X_OFFSET;
     case Short.MAX_VALUE:
       return 0;
     default:
-      return (byte) (offset >> 8);
+      return (byte) ((offset >> 8) & 0xFF);
     }
   }
 
-  final static int getYOffset(int offset) {
+  static int getYOffset(int offset) {
     switch (offset) {
     case 0:
       return -JmolConstants.LABEL_DEFAULT_Y_OFFSET;
     case Short.MAX_VALUE:
       return 0;
     default:
-      return -(int)((byte) (offset & 0xFF));
+      return -(int) (byte) (offset & 0xFF);
     }
   }
 
@@ -270,48 +287,63 @@ public class Text {
       return;
     this.text = text;
     textUnformatted = text;
-    doFormatText = (viewer != null && text != null 
-        && (text.indexOf("%{") >= 0 || text.indexOf("@{") >= 0));
+    doFormatText = (viewer != null && text != null && (text.indexOf("%{") >= 0 || text
+        .indexOf("@{") >= 0));
     if (!doFormatText)
       recalc();
   }
 
   void setFont(Font3D f3d) {
     font = f3d;
+    if (font == null)
+      return;
     fid = font.fid;
+    fontSize = font.fontSize;
     getFontMetrics();
     recalc();
   }
 
+  private void setFontScale(float scale) {
+    if (fontScale == scale)
+      return;
+    System.out.println(fontSize + " " + scale + " " + (fontSize * scale));
+    float fs = fontSize;
+    fontScale = scale;
+    setFont(g3d.getFont3D(font.idFontFace, font.idFontStyle, fs * scale));
+    fontSize = fs;
+  }
+
   boolean setAlignment(String align) {
     if ("left".equals(align))
-      return setAlignment(LEFT);
+      return setAlignment(ALIGN_LEFT);
     if ("center".equals(align))
-      return setAlignment(CENTER);
+      return setAlignment(ALIGN_CENTER);
     if ("right".equals(align))
-      return setAlignment(RIGHT);
+      return setAlignment(ALIGN_RIGHT);
     return false;
   }
 
   static String getAlignment(int align) {
     return hAlignNames[align & 3];
   }
-  
+
   boolean setAlignment(int align) {
-    this.align = align;
-    recalc();
+    if (this.align != align) {
+      this.align = align;
+      recalc();
+    }
     return true;
   }
 
   void setPointer(int pointer) {
     this.pointer = pointer;
   }
-  
+
   static String getPointer(int pointer) {
     return ((pointer & POINTER_ON) == 0 ? ""
         : (pointer & POINTER_BACKGROUND) > 0 ? "background" : "on");
   }
-  
+
   String fixText(String text) {
     if (text == null || text.length() == 0)
       return null;
@@ -320,7 +352,7 @@ public class Text {
       text = text.substring(0, pt) + "|" + text.substring(pt + 1);
     return text;
   }
-  
+
   void recalc() {
     if (text == null) {
       text = null;
@@ -336,50 +368,54 @@ public class Text {
     for (int i = lines.length; --i >= 0;)
       textWidth = Math.max(textWidth, widths[i] = stringWidth(lines[i]));
     textHeight = lines.length * lineHeight;
-    boxWidth = textWidth + 8;
-    boxHeight = textHeight + 8;
+    boxWidth = textWidth + (fontScale >= 2 ? 16 : 8);
+    boxHeight = textHeight + (fontScale >= 2 ? 16 : 8);
   }
 
   private void formatText() {
-    text = (viewer == null ? textUnformatted : 
-      viewer.formatText(textUnformatted));
+    text = (viewer == null ? textUnformatted : viewer
+        .formatText(textUnformatted));
     recalc();
   }
-  
-  void render(JmolRendererInterface g3d, boolean antialias) {
+
+  void render(JmolRendererInterface g3d, float scalePixelsPerMicron,
+              float imageFontScaling) {
     if (text == null)
       return;
+    System.out.println("render scalePixelsPerMicron=" + scalePixelsPerMicron);
     windowWidth = g3d.getRenderWidth();
     windowHeight = g3d.getRenderHeight();
-
+    if (this.scalePixelsPerMicron < 0 && scalePixelsPerMicron != 0)
+      this.scalePixelsPerMicron = scalePixelsPerMicron;
+    if (scalePixelsPerMicron != 0 && this.scalePixelsPerMicron != 0)
+      setFontScale(scalePixelsPerMicron / this.scalePixelsPerMicron);
+    else if (fontScale != imageFontScaling)
+      setFontScale(imageFontScaling);
     if (doFormatText)
       formatText();
-    setPositions(antialias);
+    setPositions();
 
     // adjust positions if necessary
 
-    setBoxOffsetsInWindow(antialias);
-
+    setBoxOffsetsInWindow();
 
     // draw the box if necessary
 
     if (bgcolix != 0 && g3d.setColix(bgcolix))
-      showBox(g3d, colix, bgcolix, boxX, boxY, z + 2, zSlab, 
-        boxWidth + (antialias ? boxWidth : 0), 
-        boxHeight + (antialias ? boxHeight : 0), antialias, 
-        atomBased);
+      showBox(g3d, colix, bgcolix, (int) boxX, (int) boxY, z + 2, zSlab, 
+          (int) boxWidth, (int) boxHeight, fontScale, atomBased);
     if (g3d.setColix(colix)) {
 
       // now set x and y positions for text from (new?) box position
 
-      int offset = (antialias ? boxWidth << 1 : boxWidth);
-      int adj = (antialias ? 8 : 4);
-      int x0 = boxX;
+      float offset = boxWidth;
+      float adj = (fontScale >= 2 ? 8 : 4);
+      int x0 = (int) boxX;
       switch (align) {
-      case CENTER:
+      case ALIGN_CENTER:
         x0 += offset / 2;
         break;
-      case RIGHT:
+      case ALIGN_RIGHT:
         x0 += offset - adj;
         break;
       default:
@@ -388,184 +424,166 @@ public class Text {
 
       // now write properly aligned text
 
-      int x = x0;
-      int y = boxY + ascent + 4;
+      float x = x0;
+      float y = boxY + ascent + adj;
+      System.out.println("scale=" + fontScale + " boxwidth/height=" + boxWidth
+          + "/" + boxHeight + " ascent=" + ascent + " lineheight=" + lineHeight
+          + " boxY=" + boxY + " adj=" + adj);
       offset = lineHeight;
-      int nShift = 1;
-      if (antialias) {
-        y += ascent + 4;
-        offset <<= 1;
-        nShift = 2;
-      }
       for (int i = 0; i < lines.length; i++) {
         switch (align) {
-        case CENTER:
-          x = x0 - (widths[i] * nShift / 2);
+        case ALIGN_CENTER:
+          x = x0 - widths[i] / 2;
           break;
-        case RIGHT:
-          x = x0 - (widths[i] * nShift);
+        case ALIGN_RIGHT:
+          x = x0 - widths[i];
         }
         //System.out.println(lines[i] + " text render font " + font.fid + " " + font.fontSize);
-        g3d.drawString(lines[i], font, x, y, z, zSlab);
+        g3d.drawString(lines[i], font, (int) x, (int) y, z, zSlab);
         y += offset;
       }
     }
 
-    
     // now draw the pointer, if requested
 
     if ((pointer & POINTER_ON) != 0) {
-      g3d
-          .setColix((pointer & POINTER_BACKGROUND) != 0 && bgcolix != 0 ? bgcolix
+      g3d.setColix((pointer & POINTER_BACKGROUND) != 0 && bgcolix != 0 ? bgcolix
               : colix);
       if (boxX > movableX)
-        g3d.drawLine(movableX, movableY, zSlab, boxX, boxY + boxHeight / 2,
+        g3d.drawLine(movableX, movableY, zSlab, (int) boxX, (int) (boxY + boxHeight / 2),
             zSlab);
       else if (boxX + boxWidth < movableX)
-        g3d.drawLine(movableX, movableY, zSlab, boxX + boxWidth, boxY
-            + boxHeight / 2, zSlab);
+        g3d.drawLine(movableX, movableY, zSlab, (int) (boxX + boxWidth), 
+            (int) (boxY + boxHeight / 2), zSlab);
     }
   }
 
-  private void setPositions(boolean antialias) {
-    int xLeft, xCenter, xRight;
+  private void setPositions() {
+    float xLeft, xCenter, xRight;
     boolean is3dEcho = (atomBased || xyz != null);
-    if (valign == XY || valign == XYZ) {
-      int x = (movableXPercent != Integer.MAX_VALUE ?
-          movableXPercent * windowWidth / 100
-          : antialias && !is3dEcho ? movableX << 1 : movableX);
-      
-      int offsetX = this.offsetX;
-      if (antialias)
-        offsetX <<= 1;
+    if (valign == VALIGN_XY || valign == VALIGN_XYZ) {
+      float x = (movableXPercent != Integer.MAX_VALUE ? movableXPercent
+          * windowWidth / 100 : is3dEcho ? movableX : movableX * fontScale);
+      float offsetX = this.offsetX * fontScale;
       xLeft = xRight = xCenter = x + offsetX;
+      System.out.print("movableX = " + movableX + " offsetX = " + offsetX);
     } else {
-      xLeft = (antialias ? 10 : 5);
+      xLeft = 5 * fontScale;
       xCenter = windowWidth / 2;
       xRight = windowWidth - xLeft;
     }
-    
+
     // set box X from alignments
-    
-      boxX = xLeft;
-      switch (align) {
-      case CENTER:
-        boxX = xCenter - (antialias ? boxWidth : boxWidth / 2); 
-        break;
-      case RIGHT:
-        boxX = xRight - (antialias ? boxWidth * 2 : boxWidth);        
-      }
-    
+
+    boxX = xLeft;
+    switch (align) {
+    case ALIGN_CENTER:
+      boxX = xCenter - boxWidth / 2;
+      break;
+    case ALIGN_RIGHT:
+      boxX = xRight - boxWidth;
+    }
+
     // set box Y from alignments
-    
+
     boxY = 0;
     switch (valign) {
-    case TOP:
+    case VALIGN_TOP:
       break;
-    case MIDDLE:
+    case VALIGN_MIDDLE:
       boxY = windowHeight / 2;
       break;
-    case BOTTOM:
+    case VALIGN_BOTTOM:
       boxY = windowHeight;
       break;
     default:
-      int y = (movableXPercent != Integer.MAX_VALUE ?
-        movableYPercent * windowHeight / 100
-        : antialias ? movableY << 1 : movableY);
-
-      boxY = (is3dEcho ? (antialias ? y >> 1 : y )
-          : (windowHeight - y)) + offsetY;
-      if (antialias)
-        boxY += offsetY;
+      float y = (movableXPercent != Integer.MAX_VALUE ? movableYPercent
+          * windowHeight / 100 : is3dEcho? movableY : movableY * fontScale);
+      float offsetY = this.offsetY * fontScale;
+      boxY = (is3dEcho ? y : (windowHeight - y)) + offsetY;
+      System.out.println(" movableY = " + movableY + " offsetY = " + offsetY + " boxY=" + boxY);
     }
   }
-  
-  void setBoxOffsetsInWindow(boolean antialias) {
-    int xAdj = 0;
-    int yAdj = 0;
-    boolean is3dEcho = (atomBased || xyz != null);
+
+  void setBoxOffsetsInWindow() {
+    float xAdj = 0;
+    float yAdj = 0;
+    System.out.println("lineHeight="+lineHeight);
+    //boolean is3dEcho = (atomBased || xyz != null);
     if (!adjustForWindow)
-      yAdj -= (antialias && !is3dEcho ?  lineHeight * 2 : lineHeight);
-    if (atomBased && align == XY) {
-      xAdj += JmolConstants.LABEL_DEFAULT_X_OFFSET;
-      yAdj -= JmolConstants.LABEL_DEFAULT_Y_OFFSET + 4;
+      yAdj -= lineHeight;
+    if (atomBased && align == ALIGN_NONE) {
+      xAdj += JmolConstants.LABEL_DEFAULT_X_OFFSET * fontScale;
+      yAdj -= JmolConstants.LABEL_DEFAULT_Y_OFFSET * fontScale + (fontScale >= 2 ? 8 : 4);
     }
-    if (antialias && atomBased) {
-      yAdj -= lineHeight / 2;   
+/*    if (antialias && atomBased) {
+      yAdj -= lineHeight / 2;
     }
-    
-    if (valign == XYZ) {
+*/
+    if (valign == VALIGN_XYZ) {
       yAdj += ascent / 2;
     }
-    if (antialias) {
-      xAdj <<= 1;
-      yAdj <<= 1;
-    }
+
     boxX += xAdj;
     boxY += yAdj;
-    
+
     if (adjustForWindow) {
       // not labels
 
       // these coordinates are (0,0) in top left
       // (user coordinates are (0,0) in bottom left)
-      int xMargin = (antialias ? 10 : 5);
-      int bw = (antialias ? boxWidth << 1: boxWidth) + xMargin;
-      int x = boxX;
+      float margin = 5 * fontScale;
+      float bw = boxWidth + margin;
+      float x = boxX;
       if (x + bw > windowWidth)
         x = windowWidth - bw;
-      if (x < xMargin)
-        x = xMargin;
+      if (x < margin)
+        x = margin;
       boxX = x;
-      
-      int y = boxY;
-      y -= (antialias ? textHeight << 1 : textHeight);
-      int bh = (antialias ? boxHeight << 1 : boxHeight);
+
+      margin = (atomBased ? 16 * fontScale + lineHeight : 0);
+      float bh = boxHeight;
+      float y = boxY - textHeight;
       if (y + bh > windowHeight)
         y = windowHeight - bh;
-      int y0 = (atomBased ? (16 + lineHeight) * (antialias ? 2 : 1) : 0);
-      if (y < y0)
-        y = y0;
+      if (y < margin)
+        y = margin;
       boxY = y;
     }
   }
 
-  private static void showBox(JmolRendererInterface g3d,
-                              short colix, short bgcolix, 
-                       int x, int y, int z, int zSlab, 
-                       int boxWidth, int boxHeight, 
-                       boolean antialias, boolean atomBased) {
+  private static void showBox(JmolRendererInterface g3d, short colix,
+                              short bgcolix, int x, int y, int z, int zSlab,
+                              int boxWidth, int boxHeight,
+                              float imageFontScaling, boolean atomBased) {
     g3d.fillRect(x, y, z, zSlab, boxWidth, boxHeight);
     g3d.setColix(colix);
     if (!atomBased)
       return;
-    if (antialias) {
-      g3d.drawRect(x + 3, y + 3, z - 1, zSlab, 
-          boxWidth - 6, boxHeight - 6);
-      g3d.drawRect(x + 4, y + 4, z - 1, zSlab, 
-          boxWidth - 8, boxHeight - 8);
+    if (imageFontScaling >= 2) {
+      g3d.drawRect(x + 3, y + 3, z - 1, zSlab, boxWidth - 6, boxHeight - 6);
+      g3d.drawRect(x + 4, y + 4, z - 1, zSlab, boxWidth - 8, boxHeight - 8);
     } else {
-      g3d.drawRect(x + 1, y + 1, z - 1, zSlab, 
-        boxWidth - 2, boxHeight - 2); 
+      g3d.drawRect(x + 1, y + 1, z - 1, zSlab, boxWidth - 2, boxHeight - 2);
     }
   }
 
-  final static void renderSimple(JmolRendererInterface g3d, Font3D font,
+  final static void renderSimpleLabel(JmolRendererInterface g3d, Font3D font,
                                  String strLabel, short colix, short bgcolix,
-                                 int x, int y, int z, int zSlab, int xOffset,
-                                 int yOffset, int ascent, int descent,
-                                 boolean doPointer, short pointerColix,
-                                 boolean antialias) {
+                                 float x, float y, int z, int zSlab,
+                                 int xOffset, int yOffset, float ascent,
+                                 int descent, boolean doPointer,
+                                 short pointerColix) {
 
     // old static style -- quick, simple, no line breaks, odd alignment?
     // LabelsRenderer only
-    
-    int x0 = x;
-    int y0 = y;
-    int boxWidth = font.fontMetrics.stringWidth(strLabel) + 8;
-    int boxHeight = ascent + descent + 8;
-    int xBoxOffset, yBoxOffset;
-    
+
+    int x0 = (int) x;
+    int y0 = (int) y;
+    float boxWidth = font.fontMetrics.stringWidth(strLabel) + 8;
+    float boxHeight = ascent + descent + 8;
+    float xBoxOffset, yBoxOffset;
+
     // these are based on a standard |_ grid, so y is reversed.
     if (xOffset > 0) {
       xBoxOffset = xOffset;
@@ -587,37 +605,23 @@ public class Text {
     }
 
     //if (antialias)
-      //yBoxOffset -= boxHeight;
+    //yBoxOffset -= boxHeight;
     x += xBoxOffset;
     y += yBoxOffset;
 
-    int thinSpace = 1;
-    if (antialias) {
-      x += xBoxOffset;
-      y += yBoxOffset;
-      boxWidth += boxWidth;
-      boxHeight += boxHeight;
-      thinSpace = 2;
-    }
-    
     if (bgcolix != 0 && g3d.setColix(bgcolix))
-      showBox(g3d, colix, bgcolix, x, y, z, zSlab, 
-          boxWidth, boxHeight, antialias, true);
-    
-    thinSpace <<= 2;
-    if (antialias)
-      ascent <<= 1;
-    
-    g3d.drawString(strLabel, font, x + thinSpace, 
-        y + thinSpace + ascent, z - 1, zSlab);
+      showBox(g3d, colix, bgcolix, (int) x, (int) y, z, zSlab, (int) boxWidth,
+          (int) boxHeight, 1, true);
+    g3d.drawString(strLabel, font, (int) (x + 4),
+        (int) (y + 4 + ascent), z - 1, zSlab);
 
     if (doPointer) {
       g3d.setColix(pointerColix);
       if (xOffset > 0)
-        g3d.drawLine(x0, y0, zSlab, x, y + boxHeight / 2, zSlab);
+        g3d.drawLine(x0, y0, zSlab, (int) x, (int) (y + boxHeight / 2), zSlab);
       else if (xOffset < 0)
-        g3d.drawLine(x0, y0, zSlab, x + boxWidth, y + boxHeight
-            / 2, zSlab);
+        g3d.drawLine(x0, y0, zSlab, (int) (x + boxWidth),
+            (int) (y + boxHeight / 2), zSlab);
     }
   }
 
@@ -632,27 +636,31 @@ public class Text {
     if (isDefine) {
       String strOff = null;
       switch (valign) {
-      case XY:
+      case VALIGN_XY:
         strOff = (movableXPercent == Integer.MAX_VALUE ? movableX + " "
             : movableXPercent + "% ");
         strOff += (movableYPercent == Integer.MAX_VALUE ? movableY + ""
             : movableYPercent + "%");
       //fall through
-      case XYZ:
+      case VALIGN_XYZ:
         if (strOff == null)
           strOff = Escape.escape(xyz);
         s.append("  set echo ").append(target).append(" ").append(strOff);
-        if (align != LEFT)
-          s.append("  set echo ").append(target).append(" ").append(hAlignNames[align]);
+        if (align != ALIGN_LEFT)
+          s.append("  set echo ").append(target).append(" ").append(
+              hAlignNames[align]);
         break;
       default:
-        s.append("  set echo ").append(vAlignNames[valign]).append(" ").append(hAlignNames[align]);
+        s.append("  set echo ").append(vAlignNames[valign]).append(" ").append(
+            hAlignNames[align]);
       }
       s.append("; echo ").append(Escape.escape(textUnformatted)).append(";\n");
       if (script != null)
-        s.append("  set echo ").append(target).append(" script ").append(Escape.escape(script)).append(";\n");
+        s.append("  set echo ").append(target).append(" script ").append(
+            Escape.escape(script)).append(";\n");
       if (modelIndex >= 0)
-        s.append("  set echo ").append(target).append(" model ").append(viewer.getModelNumberDotted(modelIndex)).append(";\n");
+        s.append("  set echo ").append(target).append(" model ").append(
+            viewer.getModelNumberDotted(modelIndex)).append(";\n");
     }
     //isDefine and target==top: do all
     //isDefine and target!=top: just start
@@ -663,7 +671,10 @@ public class Text {
     if (isDefine != target.equals("top"))
       return s.toString();
     // these may not change much:
-    s.append("  " + Shape.getFontCommand("echo", font)).append(";\n");
+    s.append("  " + Shape.getFontCommand("echo", font));
+    if (scalePixelsPerMicron > 0)
+      s.append (" " + (scalePixelsPerMicron / 10000f));
+    s.append(";\n");
     s.append("  color echo");
     if (Graphics3D.isColixTranslucent(colix))
       s.append(" translucent " + Graphics3D.getColixTranslucencyLevel(colix));
@@ -671,18 +682,19 @@ public class Text {
     if (bgcolix != 0) {
       s.append("; color echo background");
       if (Graphics3D.isColixTranslucent(bgcolix))
-        s.append(" translucent " + Graphics3D.getColixTranslucencyLevel(bgcolix));
+        s.append(" translucent "
+            + Graphics3D.getColixTranslucencyLevel(bgcolix));
       s.append(" [x").append(g3d.getHexColorFromIndex(bgcolix)).append("]");
     }
     s.append(";\n");
     return s.toString();
   }
-  
+
   public boolean checkObjectClicked(int x, int y) {
-    return (script != null && 
-        x >= boxX && x <= boxX + boxWidth && y >= boxY && y <= boxY + boxHeight);
+    return (script != null && x >= boxX && x <= boxX + boxWidth && y >= boxY && y <= boxY
+        + boxHeight);
   }
-  
+
   private int stringWidth(String str) {
     int w = 0;
     int f = 1;

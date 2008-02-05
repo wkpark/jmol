@@ -43,7 +43,7 @@ public class DrawRenderer extends MeshRenderer {
      * polygon.
      * 
      */
-    antialias = g3d.isAntialiased();
+    imageFontScaling = viewer.getImageFontScaling();
     Draw draw = (Draw) shape;
     for (int i = draw.meshCount; --i >= 0;)
       if (render1(dmesh = (DrawMesh) draw.meshes[i]))
@@ -156,7 +156,7 @@ public class DrawRenderer extends MeshRenderer {
   }
   
   private void renderHandles() {
-    int diameter = (antialias ? 20 : 10);
+    int diameter = (int) (10 * imageFontScaling);
     switch (drawType) {
     case JmolConstants.DRAW_POINT:
     case JmolConstants.DRAW_ARROW:
@@ -188,10 +188,10 @@ public class DrawRenderer extends MeshRenderer {
     for (int i = dmesh.polygonCount; --i >= 0;)
       if (isPolygonDisplayable(i)) {
         //just the first line of the title -- nothing fancy here.
-        byte fid = g3d.getFontFid("SansSerif", 14);
+        byte fid = g3d.getFontFid(14 * imageFontScaling);
         g3d.setFont(fid);
         viewer.transformPoint(vertices[dmesh.polygonIndexes[i][0]], pt1i);
-        int offset = (antialias ? 10 : 5);
+        int offset = (int) (5 * imageFontScaling);
         g3d.drawString(mesh.title[i < mesh.title.length ? i
             : mesh.title.length - 1], null, pt1i.x + offset, pt1i.y - offset,
             pt1i.z, pt1i.z);

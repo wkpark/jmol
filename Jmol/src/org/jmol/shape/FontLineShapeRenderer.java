@@ -30,12 +30,12 @@ import org.jmol.g3d.Graphics3D;
 
 abstract class FontLineShapeRenderer extends ShapeRenderer {
 
-  boolean antialias;
+  float imageFontScaling;
+  
   protected void render(short mad, Point3f[] vertices, Point3i[] screens,
                         Point3f[] axisPoints, int firstLine) {
     //used by Bbcage and Uccage
     g3d.setColix(colix);
-    antialias = g3d.isAntialiased();
     int zSum = 0;
     for (int i = 8; --i >= 0;) {
       viewer.transformPointNoClip(vertices[i], screens[i]);

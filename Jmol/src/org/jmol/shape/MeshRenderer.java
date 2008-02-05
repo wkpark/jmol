@@ -32,6 +32,8 @@ import org.jmol.g3d.Graphics3D;
 
 public abstract class MeshRenderer extends ShapeRenderer {
 
+  protected float imageFontScaling;
+  protected float scalePixelsPerMicron;
   protected Point3f[] vertices;
   protected short[] normixes;
   protected Point3i[] screens;
@@ -155,6 +157,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
           pt1f.add(vertices[iB]);
           pt1f.scale(1f/2f);
           viewer.transformPoint(pt1f, pt1i);
+          System.out.println("meshrenderer: pt=" + pt1i);
           diameter = viewer.scaleToScreen(pt1i.z, (int) (Math.abs(width) * 1000));
           if (diameter == 0)
             diameter = 1;

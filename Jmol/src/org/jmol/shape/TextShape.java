@@ -200,8 +200,11 @@ public abstract class TextShape extends Shape {
     }
 
     if ("xyz" == propertyName) {
-      if (currentText != null)
+      if (currentText != null) {
         currentText.setXYZ((Point3f) value);
+        if (viewer.getFontScaling())
+          currentText.scalePixelsPerMicron = viewer.getScalePixelsPerAngstrom() * 10000;
+      }
       return;
     }
 

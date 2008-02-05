@@ -564,10 +564,12 @@ public class StateManager {
     boolean debugScript               = false;
     float   defaultDrawArrowScale     = 0.5f;
     float   defaultTranslucent        = 0.5f;
+    int     delayMaximumMs            = 0;
     float   dipoleScale               = 1.0f;
     boolean disablePopupMenu          = false;
     boolean drawPicking               = false;
     String  helpPath                  = JmolConstants.DEFAULT_HELP_PATH;
+    boolean fontScaling               = false;
     boolean hideNameInPopup           = false;
     int     hoverDelayMs              = 500;
     boolean measurementLabels         = true;
@@ -685,7 +687,8 @@ public class StateManager {
       ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor" +
       ";axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color" +
       ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth" +
-      ";debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers;language;loglevel;navigationmode" +
+      ";debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers" +
+      ";fontscaling;language;loglevel;navigationmode" +
       ";perspectivedepth;visualrange;perspectivemodel;refreshing;rotationradius" +
       ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell" +
       ";slabenabled;specular;specularexponent;specularpercent;specularpower;stateversion" +
@@ -821,8 +824,9 @@ public class StateManager {
         Runtime runtime = Runtime.getRuntime();
         float bTotal = runtime.totalMemory() / 1000000f;
         float bFree = runtime.freeMemory() / 1000000f;
-        return TextFormat.formatDecimal(bTotal - bFree, 1) + "/"
+        String value = TextFormat.formatDecimal(bTotal - bFree, 1) + "/"
             + TextFormat.formatDecimal(bTotal, 1);
+        htParameterValues.put("_memory", value);
       }
       if (htParameterValues.containsKey(name))
         return htParameterValues.get(name);
@@ -1031,6 +1035,7 @@ public class StateManager {
       setParameterValue("defaults", "Jmol");
       setParameterValue("defaultTorsionLabel",defaultTorsionLabel);
       setParameterValue("defaultTranslucent",defaultTranslucent);
+      setParameterValue("delayMaximumMs", delayMaximumMs);
       setParameterValue("diffusePercent",diffusePercent);
       setParameterValue("dipoleScale", dipoleScale);
       setParameterValue("disablePopupMenu",disablePopupMenu);
@@ -1041,6 +1046,7 @@ public class StateManager {
       setParameterValue("drawPicking",drawPicking);
       setParameterValue("dynamicMeasurements",dynamicMeasurements);
       setParameterValue("exportDrivers", JmolConstants.EXPORT_DRIVER_LIST);
+      setParameterValue("fontScaling",fontScaling);
       setParameterValue("forceAutoBond",forceAutoBond);
       setParameterValue("greyscaleRendering",greyscaleRendering);
       setParameterValue("hbondsBackbone",hbondsBackbone);

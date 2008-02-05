@@ -654,7 +654,7 @@ class Eval { //implements Runnable {
   void pauseExecution() {
     if (isSyntaxCheck)
       return;
-    delay(100);
+    delay(-100);
     viewer.popHoldRepaint();
     executionPaused = Boolean.TRUE;
   }
@@ -853,7 +853,7 @@ class Eval { //implements Runnable {
         int milliSecDelay = viewer.getScriptDelay();
         if (doList || milliSecDelay > 0 && scriptLevel > 0) {
           if (milliSecDelay > 0)
-            delay((long) milliSecDelay);
+            delay(-(long) milliSecDelay);
           viewer.scriptEcho("$[" + scriptLevel + "." + lineNumbers[pc] + "."
               + (pc + 1) + "] " + thisCommand);
         }
@@ -5272,6 +5272,12 @@ class Eval { //implements Runnable {
   private void delay(long millis) {
     long timeBegin = System.currentTimeMillis();
     refresh();
+    int delayMax;
+    if (millis < 0)
+      millis = -millis;
+    else if ((delayMax = viewer.getDelayMaximum()) > 0 
+        && millis > delayMax)
+      millis = delayMax;
     millis -= System.currentTimeMillis() - timeBegin;
     int seconds = (int) millis / 1000;
     millis -= seconds * 1000;
@@ -6283,11 +6289,15 @@ class Eval { //implements Runnable {
     return iShape;
   }
 
-  private void font(int shapeType, int fontsize) throws ScriptException {
+  private void font(int shapeType, float fontsize) throws ScriptException {
     String fontface = "SansSerif";
     String fontstyle = "Plain";
     int sizeAdjust = 0;
+    float scalePixelsPerMicron = 0;
     switch (iToken = statementLength) {
+    case 6:
+      scalePixelsPerMicron = floatParameter(5);
+    //fall through
     case 5:
       if (getToken(4).tok != Token.identifier)
         invalidArgument();
@@ -6297,19 +6307,20 @@ class Eval { //implements Runnable {
       if (getToken(3).tok != Token.identifier)
         invalidArgument();
       fontface = parameterAsString(3);
-      if (getToken(2).tok != Token.integer)
-        integerExpected();
-      fontsize = intParameter(2);
+      if (!isFloatParameter(2))
+        numberExpected();
+      fontsize = floatParameter(2);
       shapeType = getShapeType(getToken(1).tok);
       break;
     case 3:
-      if (getToken(2).tok != Token.integer)
-        integerExpected();
+      if (!isFloatParameter(2))
+        numberExpected();
       if (shapeType == -1) {
         shapeType = getShapeType(getToken(1).tok);
-        fontsize = intParameter(2);
+        fontsize = floatParameter(2);
       } else {//labels --- old set fontsize N
-        fontsize += (sizeAdjust = 5);
+        if (fontsize >= 1)
+          fontsize += (sizeAdjust = 5);
       }
       break;
     case 2:
@@ -6322,14 +6333,19 @@ class Eval { //implements Runnable {
       badArgumentCount();
     }
     if (shapeType == JmolConstants.SHAPE_LABELS) {        
-      if (fontsize < JmolConstants.LABEL_MINIMUM_FONTSIZE
-          || fontsize > JmolConstants.LABEL_MAXIMUM_FONTSIZE)
+      if (fontsize < 0 || fontsize >= 1 && 
+          (fontsize < JmolConstants.LABEL_MINIMUM_FONTSIZE
+          || fontsize > JmolConstants.LABEL_MAXIMUM_FONTSIZE))
         numberOutOfRange(JmolConstants.LABEL_MINIMUM_FONTSIZE - sizeAdjust,
-            JmolConstants.LABEL_MINIMUM_FONTSIZE - sizeAdjust);
+            JmolConstants.LABEL_MAXIMUM_FONTSIZE - sizeAdjust);
     }
+    if (isSyntaxCheck)
+      return;
     Font3D font3d = viewer.getFont3D(fontface, fontstyle, fontsize);
     viewer.loadShape(shapeType);
     setShapeProperty(shapeType, "font", font3d);
+    if (scalePixelsPerMicron > 0)
+      setShapeProperty(shapeType, "scalereference", new Float(scalePixelsPerMicron));
   }
 
   /* ****************************************************************************
@@ -6395,7 +6411,7 @@ class Eval { //implements Runnable {
       return;
     case Token.fontsize:
       checkLength23();
-      font(JmolConstants.SHAPE_LABELS, statementLength == 2 ? 0 : intParameter(2));
+      font(JmolConstants.SHAPE_LABELS, statementLength == 2 ? 0 : floatParameter(2));
       return;
     case Token.hbond:
       setHbond();
@@ -6500,7 +6516,8 @@ class Eval { //implements Runnable {
           return;
       }
       if (key.toLowerCase().indexOf("label") == 0
-          && Parser.isOneOf(key.toLowerCase(),"labelfront;labelgroup;labelatom;labeloffset;labelpointer;labelalignment;labeltoggle")) {
+          && Parser.isOneOf(key.substring(5).toLowerCase()
+              ,"front;group;atom;offset;pointer;alignment;toggle;scalereference")) {
         if (setLabel(key.substring(5)))
           return;
       }
@@ -7778,6 +7795,10 @@ class Eval { //implements Runnable {
     viewer.loadShape(JmolConstants.SHAPE_LABELS);
     Object propertyValue = null;
     while (true) {
+      if (str.equals("scalereference")) {
+        propertyValue = new Float(floatParameter(2));
+        break;
+      }
       if (str.equals("offset")) {
         int xOffset = intParameter(2);
         int yOffset = intParameter(3);

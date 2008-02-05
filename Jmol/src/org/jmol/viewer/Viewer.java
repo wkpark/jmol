@@ -232,6 +232,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         .substring(i + 1, fullName.length() - 1));
     isApplet = (documentBase != null);
     String str = appletProxyOrCommandOptions;
+    String mem = (String) getParameter("_memory");
     if (!isApplet) {
       // not an applet -- used to pass along command line options
       if (str.indexOf("-i") >= 0) {
@@ -274,7 +275,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       Logger.info(JmolConstants.copyright + "\nJmol Version "
           + getJmolVersion() + "\njava.vendor:" + strJavaVendor
           + "\njava.version:" + strJavaVersion + "\nos.name:" + strOSName
-          + "\nmemory:" + getParameter("_memory") + "\nappletId:" + htmlName);
+          + "\nmemory:" + mem + "\nappletId:" + htmlName);
     }
 
     if (isApplet)
@@ -804,6 +805,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void finalizeTransformParameters() {
     //FrameRenderer
+    //InitializeModel
+    System.out.println("viewer finalizeTP");
+
     transformManager.finalizeTransformParameters();
     g3d.setSlabAndDepthValues(transformManager.slabValue,
         transformManager.depthValue, global.zShade);
@@ -1797,6 +1801,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setFrankOn(getShowFrank());
     mouseManager.startHoverWatcher(true);
     setTainted(true);
+    //finalizeTransformParameters();
   }
 
   public String getModelSetName() {
@@ -2895,16 +2900,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                            boolean isImageWrite, 
                            boolean isGenerator,
                            boolean isReset) {
+    System.out.println("Viewer-resizeImage: isImageWrite/reset " + isImageWrite + " " + isReset);
     if (width > 0) {
+      if (isImageWrite && !isReset)
+        setImageFontScaling(width, height);
       dimScreen.width = width;
       dimScreen.height = height;
     }
     
-    boolean antialias = false;
-    if (isReset)
-      antialias = global.antialiasDisplay;//&& !getInMotion();
-    else if (isImageWrite && !isGenerator)
-      antialias = global.antialiasImages;
+    antialiasDisplay = false;
+    if (isReset) {
+      imageFontScaling = 1;
+      antialiasDisplay = global.antialiasDisplay;//&& !getInMotion();
+    } else if (isImageWrite && !isGenerator) {
+      antialiasDisplay = global.antialiasImages;
+    }
+    if (antialiasDisplay)
+      imageFontScaling *= 2;
+    System.out.println("viewer:setImageFontScaling " + imageFontScaling);
     if (width > 0 && !isImageWrite) {
       global.setParameterValue("_width", width);
       global.setParameterValue("_height", height);
@@ -2916,8 +2929,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     transformManager.setScreenParameters(width, height,
         isImageWrite || isReset? global.zoomLarge : false,
-            antialias, false, false);
-    g3d.setWindowParameters(width, height, antialias); 
+            antialiasDisplay, false, false);
+    g3d.setWindowParameters(width, height, antialiasDisplay); 
   }
 
   public int getScreenWidth() {
@@ -2969,7 +2982,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     isTainted = false;
     if (size != null)
       setScreenDimension(size);
-    //setRectClip(null);
     int stereoMode = getStereoMode();
     switch (stereoMode) {
     case JmolConstants.STEREO_DOUBLE:
@@ -2988,32 +3000,29 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private Image getImage(boolean isDouble) {
-    g3d.beginRendering(transformManager.getStereoRotationMatrix(isDouble), 
-        global.antialiasDisplay);
+    g3d.beginRendering(transformManager.getStereoRotationMatrix(isDouble));
     render();
     g3d.endRendering();
     return g3d.getScreenImage();
   }
 
+  private boolean antialiasDisplay;
+
   private void render() {
-    boolean antialiasON = global.antialiasDisplay;
-    boolean antialias2 = antialiasON && global.antialiasTranslucent;
-    transformManager.setAntialias(antialiasON);
-    repaintManager.render(g3d, modelSet); //, rectClip
+    boolean antialias2 = antialiasDisplay && global.antialiasTranslucent;
+    repaintManager.render(g3d, modelSet);
     if (g3d.setPass2(antialias2)) {
       transformManager.setAntialias(antialias2);
-      repaintManager.render(g3d, modelSet); //, rectClip
+      repaintManager.render(g3d, modelSet);
     }  
   }
   
   private Image getStereoImage(int stereoMode) {
-    g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
-        transformManager.getStereoRotationMatrix(true), global.antialiasDisplay);
+    g3d.beginRendering(transformManager.getStereoRotationMatrix(true));
     render();
     g3d.endRendering();
     g3d.snapshotAnaglyphChannelBytes();
-    g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
-        transformManager.getStereoRotationMatrix(false), global.antialiasDisplay);
+    g3d.beginRendering(transformManager.getStereoRotationMatrix(false));
     render();
     g3d.endRendering();
     switch (stereoMode) {
@@ -4203,7 +4212,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setIntProperty(String key, int value, boolean defineNew) {
     boolean notFound = false;    
     while (true) {
-
+      //11.5.4//
+      if (key.equalsIgnoreCase("delayMaximumMs")) {
+        setDelayMaximum(value);
+        break;
+      }
+      
       ///11.3.52//
       
       if (key.equalsIgnoreCase("logLevel")) {
@@ -4331,6 +4345,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
   }
 
+  private void setDelayMaximum(int ms) {
+    global.delayMaximumMs = ms;
+  }
+  
+  int getDelayMaximum() {
+    return global.delayMaximumMs;
+  }
+
   public void setBooleanProperty(String key, boolean value) {
     if (key.charAt(0) == '_') {
       global.setParameterValue(key, value);
@@ -4343,6 +4365,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean notFound = false;
     boolean doRepaint = true;
     while (true) {
+      //11.5.4
+      if (key.equalsIgnoreCase("fontScaling")) {
+        setFontScaling(value);
+        break;
+      }
       //11.3.56      
       if (key.equalsIgnoreCase("syncMouse")) {
         setSyncTarget(0, value);
@@ -4758,6 +4785,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       refresh(0, "viewer.setBooleanProperty");
     }
     return true;
+  }
+
+  private void setFontScaling(boolean value) {
+    global.fontScaling = value;    
+  }
+  
+  public boolean getFontScaling() {
+    return global.fontScaling;
   }
 
   void showParameter(String key, boolean ifNotSet, int nMax) {
@@ -5529,12 +5564,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // //////////////////////////////////////////////////////////////
   // font stuff
   // //////////////////////////////////////////////////////////////
-  Font3D getFont3D(int fontSize) {
-    return g3d.getFont3D(JmolConstants.DEFAULT_FONTFACE,
-        JmolConstants.DEFAULT_FONTSTYLE, fontSize);
-  }
-
-  Font3D getFont3D(String fontFace, String fontStyle, int fontSize) {
+  Font3D getFont3D(String fontFace, String fontStyle, float fontSize) {
     return g3d.getFont3D(fontFace, fontStyle, fontSize);
   }
 
@@ -6141,6 +6171,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
   }
 
+  private float imageFontScaling = 1;
+  public float getImageFontScaling() {
+    return imageFontScaling;
+  }
+  
   public void createImage(String file, Object type_or_text_or_bytes, int quality,
                           int width, int height) {
     int saveWidth = dimScreen.width;
@@ -6154,10 +6189,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } catch (Exception e) {
       Logger.error("Error creating image: " + e.getMessage());
     }
-    if (quality != Integer.MIN_VALUE)
+    if (quality != Integer.MIN_VALUE) {
       resizeImage(saveWidth, saveHeight, true, false, true);
+    }
   }
 
+  private void setImageFontScaling(int width, int height) {
+    float screenDimNew = (global.zoomLarge == (height > width) ? height : width);
+    float screenDimNow = (global.zoomLarge == (dimScreen.height > dimScreen.width) ? dimScreen.height : dimScreen.width);
+    imageFontScaling = screenDimNew / screenDimNow;
+  }
+  
   private boolean syncingScripts = false;
   private boolean syncingMouse = false;
   

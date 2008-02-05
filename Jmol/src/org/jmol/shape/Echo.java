@@ -65,24 +65,30 @@ public class Echo extends TextShape {
       return;
     }
 
+    if ("scalereference" == propertyName) {
+      if (currentText != null)
+        currentText.scalePixelsPerMicron = 10000f * ((Float)(value)).floatValue();
+      return;
+    }
+    
     if ("target" == propertyName) {
       String target = ((String) value).intern().toLowerCase();
       if (target != "none" && target != "all") {
         Text text = (Text) texts.get(target);
         if (text == null) {
-          int valign = Text.XY;
-          int halign = Text.LEFT;
+          int valign = Text.VALIGN_XY;
+          int halign = Text.ALIGN_LEFT;
           if ("top" == target) {
-            valign = Text.TOP;
-            halign = Text.CENTER;
+            valign = Text.VALIGN_TOP;
+            halign = Text.ALIGN_CENTER;
           } else if ("middle" == target) {
-            valign = Text.MIDDLE;
-            halign = Text.CENTER;
+            valign = Text.VALIGN_MIDDLE;
+            halign = Text.ALIGN_CENTER;
           } else if ("bottom" == target) {
-            valign = Text.BOTTOM;
+            valign = Text.VALIGN_BOTTOM;
           }
           text = new Text(viewer, g3d, g3d.getFont3D(FONTFACE, FONTSIZE),
-              target, COLOR, valign, halign);
+              target, COLOR, valign, halign, 0);
           text.setAdjustForWindow(true); // when a box is around it
           texts.put(target, text);
           if (currentFont != null)

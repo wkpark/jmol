@@ -705,7 +705,7 @@ final public class Export3D implements JmolRendererInterface {
     g3d.calcSurfaceShade(pointA, pointB, pointC);
   }
 
-  public byte getFontFid(String fontFace, int fontSize) {
+  public byte getFontFid(String fontFace, float fontSize) {
     return g3d.getFontFid(fontFace, fontSize);
   }
 
@@ -728,6 +728,18 @@ final public class Export3D implements JmolRendererInterface {
 
   public Vector3f getNormixVector(short normix) {
     return g3d.getNormixVector(normix);
+  }
+
+  public Font3D getFont3D(int idFontFace, int idFontStyle, float fontSize) {    
+    return g3d.getFont3D(idFontFace, idFontStyle, fontSize);
+  }
+
+  public Font3D getFont3DScaled(Font3D font, float scale) {
+    return g3d.getFont3DScaled(font, scale);
+  }
+
+  public byte getFontFid(float fontSize) {
+    return g3d.getFontFid(fontSize);
   }
   
 }

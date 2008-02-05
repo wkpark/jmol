@@ -277,7 +277,7 @@ public interface JmolRendererInterface {
   public abstract void calcSurfaceShade(Point3i screenA, Point3i screenB,
                                         Point3i screenC);
 
-  public abstract byte getFontFid(String fontFace, int fontSize);
+  public abstract byte getFontFid(String fontFace, float fontSize);
 
   public abstract short getNormix(Vector3f vector);
   
@@ -288,5 +288,11 @@ public interface JmolRendererInterface {
   public abstract Vector3f[] getTransformedVertexVectors();
 
   public abstract Vector3f getNormixVector(short normix);
+
+  public abstract Font3D getFont3D(int idFontFace, int idFontStyle, float fontSize);
+
+  public abstract Font3D getFont3DScaled(Font3D font3d, float imageFontScaling);
+
+  public abstract byte getFontFid(float fontSize);
   
 }

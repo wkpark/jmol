@@ -312,10 +312,7 @@ final public class Graphics3D implements JmolRendererInterface {
     return (!twoPass || twoPass && (isPass2 == isAlphaTranslucent));
   }
   
-  public void beginRendering(//int clipX, int clipY,
-                             //int clipWidth, int clipHeight,
-                             Matrix3f rotationMatrix,
-                             boolean antialiasThisFrame) {
+  public void beginRendering(Matrix3f rotationMatrix) {
     if (currentlyRendering)
       endRendering();
     if (windowWidth != newWindowWidth || windowHeight != newWindowHeight
@@ -330,8 +327,7 @@ final public class Graphics3D implements JmolRendererInterface {
       platform.releaseBuffers();
     }
     normix3d.setRotationMatrix(rotationMatrix);
-    antialiasThisFrame &= isFullSceneAntialiasingEnabled;
-    antialiasEnabled = this.antialiasThisFrame = antialiasThisFrame;
+    antialiasEnabled = antialiasThisFrame = newAntialiasing;
     currentlyRendering = true;
     twoPass = true; //only for testing -- set false to disallow second pass
     isPass2 = false;
@@ -949,6 +945,7 @@ final public class Graphics3D implements JmolRendererInterface {
       return;
     if (isClippedZ(zSlab))
       return;
+    //System.out.println("drawString " + str + " "+ xBaseline + " " + yBaseline);
     drawStringNoSlab(str, font3d, xBaseline, yBaseline, z); 
   }
 
@@ -2141,27 +2138,36 @@ final public class Graphics3D implements JmolRendererInterface {
    * a fontID is a byte that contains the size + the face + the style
    * ***************************************************************/
 
-  public Font3D getFont3D(int fontSize) {
+  public Font3D getFont3D(float fontSize) {
     return Font3D.getFont3D(Font3D.FONT_FACE_SANS,
                             Font3D.FONT_STYLE_PLAIN, fontSize, platform);
   }
 
-  public Font3D getFont3D(String fontFace, int fontSize) {
+  public Font3D getFont3D(String fontFace, float fontSize) {
     return Font3D.getFont3D(Font3D.getFontFaceID(fontFace),
                             Font3D.FONT_STYLE_PLAIN, fontSize, platform);
   }
     
   // {"Plain", "Bold", "Italic", "BoldItalic"};
-  public Font3D getFont3D(String fontFace, String fontStyle, int fontSize) {
+  public Font3D getFont3D(String fontFace, String fontStyle, float fontSize) {
     return Font3D.getFont3D(Font3D.getFontFaceID(fontFace),
                             Font3D.getFontStyleID(fontStyle), fontSize, platform);
   }
 
-  public byte getFontFid(int fontSize) {
+  public Font3D getFont3D(int idFontFace, int idFontStyle, float fontSize) {
+    return Font3D.getFont3D(idFontFace, idFontStyle, fontSize, platform);
+  }
+
+  public Font3D getFont3DScaled(Font3D font, float scale) {
+    return (scale == 1 ? font : Font3D.getFont3D(font.idFontFace,
+        font.idFontStyle, font.fontSize * scale, platform));
+  }
+
+  public byte getFontFid(float fontSize) {
     return getFont3D(fontSize).fid;
   }
 
-  public byte getFontFid(String fontFace, int fontSize) {
+  public byte getFontFid(String fontFace, float fontSize) {
     return getFont3D(fontFace, fontSize).fid;
   }
 

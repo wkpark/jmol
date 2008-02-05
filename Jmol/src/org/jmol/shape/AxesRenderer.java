@@ -47,11 +47,11 @@ public class AxesRenderer extends FontLineShapeRenderer {
   short[] colixes = new short[3];
 
   protected void render() {
-    antialias = g3d.isAntialiased();
     Axes axes = (Axes) shape;
     short mad = viewer.getObjectMad(StateManager.OBJ_AXIS1);
     if (mad == 0 || !g3d.checkTranslucent(false))
       return;
+    imageFontScaling = viewer.getImageFontScaling();
     if (viewer.areAxesTainted())
       axes.initShape();
     int nPoints = 6;
@@ -75,12 +75,13 @@ public class AxesRenderer extends FontLineShapeRenderer {
     colixes[0] = viewer.getObjectColix(StateManager.OBJ_AXIS1);
     colixes[1] = viewer.getObjectColix(StateManager.OBJ_AXIS2);
     colixes[2] = viewer.getObjectColix(StateManager.OBJ_AXIS3);
+    Font3D font = g3d.getFont3DScaled(axes.font3d, imageFontScaling);
     for (int i = nPoints; --i >= 0;) {
       colix = colixes[i % 3];
       g3d.setColix(colix);
       String label = axisLabels[i + labelPtr];
       if (label != null)
-        renderLabel(label, axes.font3d, axisScreens[i].x,
+        renderLabel(label, font, axisScreens[i].x,
             axisScreens[i].y, axisScreens[i].z);
       if (mad < 0)
         g3d.drawDottedLine(originScreen, axisScreens[i]);
@@ -91,7 +92,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     if (nPoints == 3) { //a b c
       colix = viewer.getColixBackgroundContrast();
       g3d.setColix(colix);
-      renderLabel("0", axes.font3d, originScreen.x, originScreen.y, originScreen.z);
+      renderLabel("0", font, originScreen.x, originScreen.y, originScreen.z);
     }
   }
   
@@ -99,16 +100,10 @@ public class AxesRenderer extends FontLineShapeRenderer {
     FontMetrics fontMetrics = font3d.fontMetrics;
     int strAscent = fontMetrics.getAscent();
     int strWidth = fontMetrics.stringWidth(str);
-    int xCenter = viewer.getBoundBoxCenterX();
-    int yCenter = viewer.getBoundBoxCenterY();
-    if (antialias) {
-      strWidth <<= 1;
-      strAscent <<= 1;
-      xCenter <<= 1;
-      yCenter <<= 1;
-    }
-    int dx = x - xCenter;
-    int dy = y - yCenter;
+    float xCenter = viewer.getBoundBoxCenterX();
+    float yCenter = viewer.getBoundBoxCenterY();
+    float dx = x - xCenter;
+    float dy = y - yCenter;
     if ((dx != 0 || dy != 0)) {
       float dist = (float) Math.sqrt(dx * dx + dy * dy);
       dx = (int) (strWidth * 0.75f * dx / dist);

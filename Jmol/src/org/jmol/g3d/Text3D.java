@@ -250,13 +250,7 @@ public class Text3D {
     g.setColor(Color.black);
     g.fillRect(0, 0, mapWidth, height);
     g.setColor(Color.white);
-    if (antialias) {
-      if (font3d.antialiasFont == null)
-        font3d.setAntialiasFont();
-      g.setFont(font3d.antialiasFont);
-    } else {
-      g.setFont(font3d.font);
-    }
+    g.setFont(font3d.font);
     g.drawString(text, 0, ascent);
   }
 

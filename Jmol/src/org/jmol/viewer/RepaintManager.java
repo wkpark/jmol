@@ -480,11 +480,8 @@ class RepaintManager {
       int targetTime = 0;
       int sleepTime;
       //int holdTime = 0;
-      Logger.debug("animation thread " + intThread + " running");
-      
-      if (Logger.debugging) {
+      if (Logger.debugging)
         Logger.debug("animation thread " + intThread + " running");
-      }
       requestRepaintAndWait();
       
       try {

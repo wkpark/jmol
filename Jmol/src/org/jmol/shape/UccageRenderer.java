@@ -48,6 +48,7 @@ public class UccageRenderer extends FontLineShapeRenderer {
   }
 
   protected void render() {
+    imageFontScaling = viewer.getImageFontScaling();
     short mad = viewer.getObjectMad(StateManager.OBJ_UNITCELL);
     colix = viewer.getObjectColix(StateManager.OBJ_UNITCELL);
     if (mad == 0 || !g3d.setColix(colix) || viewer.isJmolDataFrame())
@@ -85,20 +86,18 @@ public class UccageRenderer extends FontLineShapeRenderer {
       return;
     if (nf == null) {
       nf = NumberFormat.getInstance();
-      fid = g3d.getFontFid("Monospaced", 14);
     }
+    
+    fid = g3d.getFontFid("Monospaced", 14 * imageFontScaling);
+
     if (nf != null) {
       nf.setMaximumFractionDigits(3);
       nf.setMinimumFractionDigits(3);
     }
     g3d.setFont(fid);
     
-    int lineheight = 15;
-    int x = 5;
-    if (antialias) {
-      lineheight <<= 1;
-      x <<= 1;
-    }
+    int lineheight = (int) (15 * imageFontScaling);
+    int x = (int) (5 * imageFontScaling);
     int y = lineheight;
     
     String spaceGroup = cellInfo.getSpaceGroup(); 

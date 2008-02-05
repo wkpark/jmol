@@ -44,11 +44,11 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   protected void render() {
     if (!viewer.getShowMeasurements() || !g3d.checkTranslucent(false))
       return;
-    antialias = g3d.isAntialiased();
+    imageFontScaling = viewer.getImageFontScaling();
     Measures measures = (Measures) shape;
     doJustify = viewer.getJustifyMeasurements();
     measurementMad = measures.mad;
-    font3d = measures.font3d;
+    font3d = g3d.getFont3DScaled(measures.font3d, imageFontScaling);
     showMeasurementLabels = viewer.getShowMeasurementLabels();
     measures.setVisibilityInfo();
     boolean dynamicMeasurements = viewer.getDynamicMeasurements();
@@ -155,7 +155,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     // should probably be some percentage of the smaller distance
     AxisAngle4f aa = measurement.getAxisAngle();
     if (aa == null) { // 180 degrees
-      int offset = (antialias ? 10 : 5);
+      int offset = (int) (5 * imageFontScaling);
       paintMeasurementString(atomB.screenX + offset, atomB.screenY - offset,
                              zB, radius, false, 0);
       return;
@@ -217,10 +217,6 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       return;
     int width = font3d.fontMetrics.stringWidth(strMeasurement);
     int height = font3d.fontMetrics.getAscent();
-    if (antialias) {
-      width <<= 1;
-      height <<= 1;
-    }
     int xT = x;
     if (rightJustify)
       xT -= radius / 2 + 2 + width;

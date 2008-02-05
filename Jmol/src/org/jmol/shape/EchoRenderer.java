@@ -28,21 +28,23 @@ import javax.vecmath.Point3i;
 
 public class EchoRenderer extends ShapeRenderer {
 
-  boolean antialias;
+  float imageFontScaling;
+
   protected void render() {
     Echo echo = (Echo)shape;
     Point3i pt = new Point3i();
-    antialias = g3d.isAntialiased();
     Enumeration e = echo.texts.elements();
+    float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer.getScalePixelsPerAngstrom() * 10000 : 0);
+    imageFontScaling = viewer.getImageFontScaling();
     while (e.hasMoreElements()) {
       Text t = (Text)e.nextElement();
       if (!t.visible)
         continue;
-      if (t.valign == Text.XYZ) {
+      if (t.valign == Text.VALIGN_XYZ) {
         viewer.transformPoint(t.xyz, pt);
         t.setXYZs(pt.x, pt.y, pt.z, pt.z);
       }
-      t.render(g3d, antialias);
+      t.render(g3d, scalePixelsPerMicron, imageFontScaling);
     }
     String frameTitle = viewer.getFrameTitle();
     if (frameTitle != null && frameTitle.length() > 0)
@@ -52,14 +54,10 @@ public class EchoRenderer extends ShapeRenderer {
   private void renderFrameTitle(String frameTitle) {
     if (isGenerator || !g3d.setColix(viewer.getColixBackgroundContrast()))
       return;
-    byte fid = g3d.getFontFid("Monospaced", 14);
+    byte fid = g3d.getFontFid("Monospaced", 14 * imageFontScaling);
     g3d.setFont(fid);
-    int y = viewer.getScreenHeight() - 10;
-    int x = 5;
-    if (antialias) {
-      y <<= 1;
-      x <<= 1;
-    }
+    int y = (int) (viewer.getScreenHeight() - 10 * imageFontScaling);
+    int x = (int) (5 * imageFontScaling);
     g3d.drawStringNoSlab(frameTitle, null, x, y, 0);
   }
 

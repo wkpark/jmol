@@ -46,6 +46,7 @@ final public class Font3D {
   public final byte fid;
   public final String fontFace;
   public final String fontStyle;
+  public final float fontSizeNominal;
   public final int idFontFace;
   public final int idFontStyle;
   public final float fontSize;
@@ -55,13 +56,14 @@ final public class Font3D {
 
   private Font3D(byte fid,
                  int idFontFace, int idFontStyle, float fontSize,
-                 Font font, FontMetrics fontMetrics) {
+                 float fontSizeNominal, Font font, FontMetrics fontMetrics) {
     this.fid = fid;
     this.fontFace = fontFaces[idFontFace];
     this.fontStyle = fontStyles[idFontStyle];
     this.idFontFace = idFontFace;
     this.idFontStyle = idFontStyle;
     this.fontSize = fontSize;
+    this.fontSizeNominal = fontSizeNominal;
     this.font = font;
     this.fontMetrics = fontMetrics;
   }
@@ -80,7 +82,7 @@ final public class Font3D {
   private static Font3D[] font3ds = new Font3D[FONT_ALLOCATION_UNIT];
 
   static Font3D getFont3D(int fontface, int fontstyle, float fontsize,
-                          Platform3D platform) {
+                          float fontsizeNominal, Platform3D platform) {
     if (graphicsOffscreen == null)
       initialize(platform);
     /*
@@ -96,7 +98,7 @@ final public class Font3D {
     for (int i = fontkeyCount; --i > 0; )
       if (fontkey == fontkeys[i])
         return font3ds[i];
-    return allocFont3D(fontkey, fontface, fontstyle, fontsize);
+    return allocFont3D(fontkey, fontface, fontstyle, fontsize, fontsizeNominal);
   }
   
   /*
@@ -108,7 +110,7 @@ final public class Font3D {
   */
   
   private static synchronized Font3D allocFont3D(short fontkey, int fontface,
-                                                int fontstyle, float fontsize) {
+                                                int fontstyle, float fontsize, float fontsizeNominal) {
     // recheck in case another process just allocated one
     for (int i = fontkeyCount; --i > 0; )
       if (fontkey == fontkeys[i])
@@ -128,7 +130,7 @@ final public class Font3D {
       Logger.error("Font3D.graphicsOffscreen not initialized");
     FontMetrics fontMetrics = graphicsOffscreen.getFontMetrics(font);
     Font3D font3d = new Font3D((byte)fontIndexNext,
-                               fontface, fontstyle, fontsize,
+                               fontface, fontstyle, fontsize, fontsizeNominal,
                                font, fontMetrics);
     // you must set the font3d before setting the fontkey in order
     // to prevent a race condition with getFont3D

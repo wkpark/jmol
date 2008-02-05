@@ -2140,27 +2140,24 @@ final public class Graphics3D implements JmolRendererInterface {
 
   public Font3D getFont3D(float fontSize) {
     return Font3D.getFont3D(Font3D.FONT_FACE_SANS,
-                            Font3D.FONT_STYLE_PLAIN, fontSize, platform);
+                            Font3D.FONT_STYLE_PLAIN, fontSize, fontSize, platform);
   }
 
   public Font3D getFont3D(String fontFace, float fontSize) {
     return Font3D.getFont3D(Font3D.getFontFaceID(fontFace),
-                            Font3D.FONT_STYLE_PLAIN, fontSize, platform);
+                            Font3D.FONT_STYLE_PLAIN, fontSize, fontSize, platform);
   }
     
   // {"Plain", "Bold", "Italic", "BoldItalic"};
   public Font3D getFont3D(String fontFace, String fontStyle, float fontSize) {
     return Font3D.getFont3D(Font3D.getFontFaceID(fontFace),
-                            Font3D.getFontStyleID(fontStyle), fontSize, platform);
-  }
-
-  public Font3D getFont3D(int idFontFace, int idFontStyle, float fontSize) {
-    return Font3D.getFont3D(idFontFace, idFontStyle, fontSize, platform);
+                            Font3D.getFontStyleID(fontStyle), fontSize, fontSize, platform);
   }
 
   public Font3D getFont3DScaled(Font3D font, float scale) {
-    return (scale == 1 ? font : Font3D.getFont3D(font.idFontFace,
-        font.idFontStyle, font.fontSize * scale, platform));
+    float newScale = font.fontSizeNominal * scale;
+    return (newScale == font.fontSize ? font : Font3D.getFont3D(font.idFontFace,
+        font.idFontStyle, newScale, font.fontSizeNominal, platform));
   }
 
   public byte getFontFid(float fontSize) {

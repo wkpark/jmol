@@ -730,10 +730,6 @@ final public class Export3D implements JmolRendererInterface {
     return g3d.getNormixVector(normix);
   }
 
-  public Font3D getFont3D(int idFontFace, int idFontStyle, float fontSize) {    
-    return g3d.getFont3D(idFontFace, idFontStyle, fontSize);
-  }
-
   public Font3D getFont3DScaled(Font3D font, float scale) {
     return g3d.getFont3DScaled(font, scale);
   }

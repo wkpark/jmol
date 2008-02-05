@@ -289,8 +289,6 @@ public interface JmolRendererInterface {
 
   public abstract Vector3f getNormixVector(short normix);
 
-  public abstract Font3D getFont3D(int idFontFace, int idFontStyle, float fontSize);
-
   public abstract Font3D getFont3DScaled(Font3D font3d, float imageFontScaling);
 
   public abstract byte getFontFid(float fontSize);

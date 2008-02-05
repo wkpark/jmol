@@ -309,7 +309,7 @@ public class Text {
     //System.out.println(fontSize + " " + scale + " " + (fontSize * scale));
     float fs = fontSize;
     fontScale = scale;
-    setFont(g3d.getFont3D(font.idFontFace, font.idFontStyle, fs * scale));
+    setFont(g3d.getFont3DScaled(font, scale));
     fontSize = fs;
   }
 

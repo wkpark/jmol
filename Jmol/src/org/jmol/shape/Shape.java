@@ -211,7 +211,7 @@ public abstract class Shape {
   static public String getFontCommand(String type, Font3D font) {
     if (font == null)
       return "";
-    return "font " + type + " " + font.fontSize + " " + font.fontFace + " "
+    return "font " + type + " " + font.fontSizeNominal + " " + font.fontFace + " "
         + font.fontStyle;
   }
 

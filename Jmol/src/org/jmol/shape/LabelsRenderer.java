@@ -120,7 +120,7 @@ public class LabelsRenderer extends ShapeRenderer {
           continue;
         }
         text = new Text(g3d, font3d, label, colix, bgcolix, atom.screenX,
-            atom.screenY, zBox, zSlab, textAlign, scalePixelsPerMicron);
+            atom.screenY, zBox, zSlab, textAlign, 0);
         labels.putLabel(i, text);
       }
       text.setOffset(offset);

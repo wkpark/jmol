@@ -104,8 +104,9 @@ public class Labels extends AtomShape {
             text = new Text(g3d, null, strings[i], 
                 (short) 0, (short)0, 0, 0, 0, 0, 0, scalePixelsPerMicron);
             putLabel(i, text);
+          } else {
+            text.setScalePixelsPerMicron(scalePixelsPerMicron);
           }
-          text.scalePixelsPerMicron = scalePixelsPerMicron;
         }
       return;
     }

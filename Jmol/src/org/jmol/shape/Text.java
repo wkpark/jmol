@@ -64,12 +64,17 @@ public class Text {
   private String text, textUnformatted;
   private String script;
 
-  float scalePixelsPerMicron;
+  private float scalePixelsPerMicron;
 
   float getScalePixelsPerMicron() {
     return scalePixelsPerMicron;
   }
 
+  void setScalePixelsPerMicron(float scalePixelsPerMicron) {
+    
+    fontScale = 0;//fontScale * this.scalePixelsPerMicron / scalePixelsPerMicron;
+    this.scalePixelsPerMicron = scalePixelsPerMicron;
+  }
   private float fontScale;
 
   private boolean doFormatText;
@@ -143,7 +148,7 @@ public class Text {
     this.scalePixelsPerMicron = scalePixelsPerMicron;
     this.z = 2;
     this.zSlab = Integer.MIN_VALUE;
-    fontSize = font.fontSize;
+    fontSize = font.fontSizeNominal;
     getFontMetrics();
   }
 
@@ -298,7 +303,7 @@ public class Text {
     if (font == null)
       return;
     fid = font.fid;
-    fontSize = font.fontSize;
+    fontSize = font.fontSizeNominal;
     getFontMetrics();
     recalc();
   }
@@ -307,10 +312,8 @@ public class Text {
     if (fontScale == scale)
       return;
     //System.out.println(fontSize + " " + scale + " " + (fontSize * scale));
-    float fs = fontSize;
     fontScale = scale;
     setFont(g3d.getFont3DScaled(font, scale));
-    fontSize = fs;
   }
 
   boolean setAlignment(String align) {

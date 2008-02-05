@@ -109,7 +109,6 @@ public class Labels extends AtomShape {
     }
     
     if ("label" == propertyName) {
-      System.out.println("Label: sppa =" + viewer.getScalePixelsPerAngstrom());
       isActive = true;
       if (bsSizeSet == null)
         bsSizeSet = new BitSet();

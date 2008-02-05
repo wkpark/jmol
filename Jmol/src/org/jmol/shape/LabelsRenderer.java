@@ -55,7 +55,6 @@ public class LabelsRenderer extends ShapeRenderer {
     int backgroundColor = viewer.getBackgroundArgb();
     float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer.getScalePixelsPerAngstrom() * 10000 : 0);
     float imageFontScaling = viewer.getImageFontScaling();
-    System.out.println("LabelsRenderer imageFontScaling=" + imageFontScaling + " sppm=" + (viewer.getScalePixelsPerAngstrom()*10000));
          
     for (int i = labelStrings.length; --i >= 0;) {
       Atom atom = atoms[i];

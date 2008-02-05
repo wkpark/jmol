@@ -806,8 +806,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void finalizeTransformParameters() {
     //FrameRenderer
     //InitializeModel
-    System.out.println("viewer finalizeTP");
-
+    
     transformManager.finalizeTransformParameters();
     g3d.setSlabAndDepthValues(transformManager.slabValue,
         transformManager.depthValue, global.zShade);
@@ -2900,7 +2899,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                            boolean isImageWrite, 
                            boolean isGenerator,
                            boolean isReset) {
-    System.out.println("Viewer-resizeImage: isImageWrite/reset " + isImageWrite + " " + isReset);
+    //System.out.println("Viewer-resizeImage: isImageWrite/reset " + isImageWrite + " " + isReset);
     if (width > 0) {
       if (isImageWrite && !isReset)
         setImageFontScaling(width, height);
@@ -2917,7 +2916,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (antialiasDisplay)
       imageFontScaling *= 2;
-    System.out.println("viewer:setImageFontScaling " + imageFontScaling);
+    //System.out.println("viewer:setImageFontScaling " + imageFontScaling);
     if (width > 0 && !isImageWrite) {
       global.setParameterValue("_width", width);
       global.setParameterValue("_height", height);

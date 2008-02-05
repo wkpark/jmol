@@ -1018,9 +1018,9 @@ abstract class TransformManager {
     height = (antialias ? screenHeight * 2 : screenHeight);
     scaleFitToScreen(false, useZoomLarge, resetSlab, resetZoom);
     finalizeTransformParameters();
-    System.out.println("transformManager setScreenParameters sppa="  + scalePixelsPerAngstrom 
-        + " screenWidth,Height, useZoomLarge, antialias, resetSlab, resetZoom " 
-        + useZoomLarge + ","+antialias + "," + resetSlab + "," + resetZoom);
+    //System.out.println("transformManager setScreenParameters sppa="  + scalePixelsPerAngstrom 
+      //  + " screenWidth,Height, useZoomLarge, antialias, resetSlab, resetZoom " 
+        //+ useZoomLarge + ","+antialias + "," + resetSlab + "," + resetZoom);
   }
 
   void setAntialias(boolean TF) {
@@ -1088,7 +1088,7 @@ abstract class TransformManager {
     if (screenPixelCount > 2)
       screenPixelCount -= 2;
     scaleDefaultPixelsPerAngstrom = defaultScaleToScreen(modelRadius);
-    System.out.println("transformman -- setScreenParameters modelRadius " + modelRadius + " "  + screenPixelCount + " " + scaleDefaultPixelsPerAngstrom);
+    //System.out.println("transformman -- setScreenParameters modelRadius " + modelRadius + " "  + screenPixelCount + " " + scaleDefaultPixelsPerAngstrom);
   }
 
   short scaleToScreen(int z, int milliAngstroms) {

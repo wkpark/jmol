@@ -115,7 +115,7 @@ public class Text {
       short bgcolix, int offsetX, int offsetY, int z, int zSlab, int textAlign,
       float scalePixelsPerMicron) {
     this.scalePixelsPerMicron = scalePixelsPerMicron;
-    System.out.println("Text scalePixelsPerMicron=" + scalePixelsPerMicron);
+    //System.out.println("Text scalePixelsPerMicron=" + scalePixelsPerMicron);
     this.viewer = null;
     this.g3d = g3d;
     atomBased = true;
@@ -306,7 +306,7 @@ public class Text {
   private void setFontScale(float scale) {
     if (fontScale == scale)
       return;
-    System.out.println(fontSize + " " + scale + " " + (fontSize * scale));
+    //System.out.println(fontSize + " " + scale + " " + (fontSize * scale));
     float fs = fontSize;
     fontScale = scale;
     setFont(g3d.getFont3D(font.idFontFace, font.idFontStyle, fs * scale));
@@ -382,7 +382,7 @@ public class Text {
               float imageFontScaling) {
     if (text == null)
       return;
-    System.out.println("render scalePixelsPerMicron=" + scalePixelsPerMicron);
+    //System.out.println("render scalePixelsPerMicron=" + scalePixelsPerMicron);
     windowWidth = g3d.getRenderWidth();
     windowHeight = g3d.getRenderHeight();
     if (this.scalePixelsPerMicron < 0 && scalePixelsPerMicron != 0)
@@ -426,9 +426,9 @@ public class Text {
 
       float x = x0;
       float y = boxY + ascent + adj;
-      System.out.println("scale=" + fontScale + " boxwidth/height=" + boxWidth
-          + "/" + boxHeight + " ascent=" + ascent + " lineheight=" + lineHeight
-          + " boxY=" + boxY + " adj=" + adj);
+      //System.out.println("scale=" + fontScale + " boxwidth/height=" + boxWidth
+        //  + "/" + boxHeight + " ascent=" + ascent + " lineheight=" + lineHeight
+          //+ " boxY=" + boxY + " adj=" + adj);
       offset = lineHeight;
       for (int i = 0; i < lines.length; i++) {
         switch (align) {
@@ -466,7 +466,7 @@ public class Text {
           * windowWidth / 100 : is3dEcho ? movableX : movableX * fontScale);
       float offsetX = this.offsetX * fontScale;
       xLeft = xRight = xCenter = x + offsetX;
-      System.out.print("movableX = " + movableX + " offsetX = " + offsetX);
+      //System.out.print("movableX = " + movableX + " offsetX = " + offsetX);
     } else {
       xLeft = 5 * fontScale;
       xCenter = windowWidth / 2;
@@ -501,14 +501,14 @@ public class Text {
           * windowHeight / 100 : is3dEcho? movableY : movableY * fontScale);
       float offsetY = this.offsetY * fontScale;
       boxY = (is3dEcho ? y : (windowHeight - y)) + offsetY;
-      System.out.println(" movableY = " + movableY + " offsetY = " + offsetY + " boxY=" + boxY);
+      //System.out.println(" movableY = " + movableY + " offsetY = " + offsetY + " boxY=" + boxY);
     }
   }
 
   void setBoxOffsetsInWindow() {
     float xAdj = 0;
     float yAdj = 0;
-    System.out.println("lineHeight="+lineHeight);
+    //System.out.println("lineHeight="+lineHeight);
     //boolean is3dEcho = (atomBased || xyz != null);
     if (!adjustForWindow)
       yAdj -= lineHeight;

@@ -30,7 +30,7 @@ import java.util.StringTokenizer;
 import netscape.javascript.JSObject;
 
 import org.jmol.util.Logger;
-import org.jmol.util.TextFormat;
+
 
 import java.util.Hashtable;
 
@@ -375,10 +375,26 @@ public class Resolver {
         break;
     if (i >= lines.length 
         || lines[i].charAt(0) != ' ' 
-        || (i = i + 2) >= lines.length)
+        || (i = i + 2) + 1 >= lines.length)
       return false;
-    String codes = TextFormat.replaceAllCharacters(lines[i], "\r\n", "");
-    return (codes.equals("0 1") || codes.equals("1 2"));
+    try {
+      // distinguishing between Spartan input and MOL file
+      // MOL files have aaabbb.... on the data line
+      // SPIN files have cc s on that line (c = charge; s = spin)
+      // so the typical MOL file, with more parameters, will fail getting the spin
+      int spin = Integer.parseInt(lines[i].substring(2).trim());
+      int charge = Integer.parseInt(lines[i].substring(0, 2).trim());
+      // and if it does not, then we get the next lines of info
+      int atom1 = Integer.parseInt(lines[++i].substring(0, 2).trim());
+      if (spin < 0 || spin > 5 || atom1 <= 0 || charge > 5)
+        return false;
+      // hard to believe we would get here for a MOL file
+      float[] atomline = new float[5];
+      AtomSetCollectionReader.getTokensFloat(lines[i], atomline, 5);
+      return !Float.isNaN(atomline[1]) && !Float.isNaN(atomline[2]) && !Float.isNaN(atomline[3]) && Float.isNaN(atomline[4]);
+    } catch (Exception e) {
+    }
+    return false;
   }
   
   private static boolean checkV3000(String[] lines) {

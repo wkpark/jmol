@@ -49,7 +49,8 @@ public class OdysseyReader extends AtomSetCollectionReader {
       readHeader();
       while (readLine() != null) {
         String[] tokens = getTokens();
-        if (tokens.length == 2 && parseInt(tokens[0]) >= 0  && parseInt(tokens[1]) >= 0)
+        //charge and spin
+        if (tokens.length == 2 && parseInt(tokens[0]) != Integer.MIN_VALUE && parseInt(tokens[1]) >= 0)
           break;
       }
       if (line == null)

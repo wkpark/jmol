@@ -6293,10 +6293,10 @@ class Eval { //implements Runnable {
     String fontface = "SansSerif";
     String fontstyle = "Plain";
     int sizeAdjust = 0;
-    float scalePixelsPerMicron = 0;
+    float scaleAngstromsPerPixel = -1;
     switch (iToken = statementLength) {
     case 6:
-      scalePixelsPerMicron = floatParameter(5);
+      scaleAngstromsPerPixel = floatParameter(5);
     //fall through
     case 5:
       if (getToken(4).tok != Token.identifier)
@@ -6344,8 +6344,8 @@ class Eval { //implements Runnable {
     Font3D font3d = viewer.getFont3D(fontface, fontstyle, fontsize);
     viewer.loadShape(shapeType);
     setShapeProperty(shapeType, "font", font3d);
-    if (scalePixelsPerMicron > 0)
-      setShapeProperty(shapeType, "scalereference", new Float(scalePixelsPerMicron));
+    if (scaleAngstromsPerPixel >= 0)
+      setShapeProperty(shapeType, "scalereference", new Float(scaleAngstromsPerPixel));
   }
 
   /* ****************************************************************************

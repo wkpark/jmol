@@ -66,8 +66,10 @@ public class Echo extends TextShape {
     }
 
     if ("scalereference" == propertyName) {
-      if (currentText != null)
-        currentText.scalePixelsPerMicron = 10000f * ((Float)(value)).floatValue();
+      if (currentText != null) {
+        float val = ((Float) value).floatValue();
+        currentText.scalePixelsPerMicron = (val == 0 ? 0 : 10000f / val);
+      }
       return;
     }
     

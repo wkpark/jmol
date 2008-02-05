@@ -93,7 +93,8 @@ public class Labels extends AtomShape {
     if ("scalereference" == propertyName) {
       if (strings == null)
         return;
-      float scalePixelsPerMicron = 10000f * ((Float) value).floatValue();
+      float val = ((Float) value).floatValue();
+      float scalePixelsPerMicron = (val == 0 ? 0 : 10000f / val);
       for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i)) {
           if (strings.length <= i)
@@ -104,6 +105,7 @@ public class Labels extends AtomShape {
                 (short) 0, (short)0, 0, 0, 0, 0, 0, scalePixelsPerMicron);
             putLabel(i, text);
           }
+          text.scalePixelsPerMicron = scalePixelsPerMicron;
         }
       return;
     }
@@ -476,7 +478,7 @@ public class Labels extends AtomShape {
       Text text = getLabel(i);
       float sppm = (text != null ? text.getScalePixelsPerMicron() : 0);
       if (sppm > 0)
-        setStateInfo(temp2, i, "set labelScaleReference " + (sppm / 10000f));
+        setStateInfo(temp2, i, "set labelScaleReference " + (10000f / sppm));
       if (offsets != null && offsets.length > i) {
         int offsetFull = offsets[i];
         setStateInfo(temp2, i, "set labelOffset " + Text.getXOffset(offsetFull >> 8)

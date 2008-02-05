@@ -673,7 +673,7 @@ public class Text {
     // these may not change much:
     s.append("  " + Shape.getFontCommand("echo", font));
     if (scalePixelsPerMicron > 0)
-      s.append (" " + (scalePixelsPerMicron / 10000f));
+      s.append (" " + (10000f / scalePixelsPerMicron)); // Angstroms per pixel
     s.append(";\n");
     s.append("  color echo");
     if (Graphics3D.isColixTranslucent(colix))

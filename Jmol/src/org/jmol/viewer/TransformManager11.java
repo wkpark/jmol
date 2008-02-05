@@ -73,16 +73,17 @@ class TransformManager11 extends TransformManager {
     // so that "full window" is visualRange
     scalePixelsPerAngstrom = (scale3D && !perspectiveDepth && !isNavigationMode ? 
         72 / scale3DAngstromsPerInch : screenPixelCount / visualRange);  //(s/m)
-/*    System.out.println("sppA " + scalePixelsPerAngstrom + " pD " + perspectiveDepth 
-        + " spC " + screenPixelCount + " vR " + visualRange 
-        + " sDPPA " + scaleDefaultPixelsPerAngstrom);
-*/
+
     // model radius in pixels
     modelRadiusPixels = modelRadius * scalePixelsPerAngstrom; //(s)
 
     // model center offset for zoom 100
     float offset100 = (2 * modelRadius) / visualRange * referencePlaneOffset; //(s)
-
+/*
+    System.out.println("sppA " + scalePixelsPerAngstrom + " pD " + perspectiveDepth 
+        + " spC " + screenPixelCount + " vR " + visualRange 
+        + " sDPPA " + scaleDefaultPixelsPerAngstrom);
+*/
     if (!isNavigationMode) {
       // nonNavigation mode -- to match Jmol 10.2 at midplane (caffeine.xyz)
       //flag that we have left navigation mode
@@ -92,11 +93,9 @@ class TransformManager11 extends TransformManager {
       //now factor the scale by distance from camera and zoom
       if (!scale3D || perspectiveDepth)
         scalePixelsPerAngstrom *= (modelCenterOffset / offset100) * zoomPercent / 100; //(s/m)
-      
+
+      //System.out.println("sppA revised:" + scalePixelsPerAngstrom);
       // so that's sppa = (spc / vR) * rPO * (vR / 2)  / mR * rPO = spc/2/mR
-      
-      
-      
       
       modelRadiusPixels = modelRadius * scalePixelsPerAngstrom; //(s)
       //System.out.println("transformman scalppa modelrad " + scalePixelsPerAngstrom + " " + modelRadiusPixels + " " + visualRange);

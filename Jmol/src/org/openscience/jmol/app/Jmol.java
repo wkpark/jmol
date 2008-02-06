@@ -1736,7 +1736,7 @@ public class Jmol extends JPanel {
     }
 
     public void notifyResized(int width, int height){
-      // applet only?
+      // applet only
     }
 
     public void notifyFileLoaded(String fullPathName, String fileName,

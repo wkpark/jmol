@@ -702,7 +702,8 @@ public class StateManager {
       ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred" +
       ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount" +
       ";spinx;spiny;spinz;spinfps" +
-      ";animframecallback;loadstructcallback;messagecallback;hovercallback;resizecallback;pickcallback" +
+      ";animframecallback;loadstructcallback;messagecallback;hovercallback" +
+      ";resizecallback;pickcallback;synccallback" +
       ";";
     
     boolean isJmolVariable(String key) {

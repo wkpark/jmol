@@ -107,6 +107,7 @@ import netscape.javascript.JSObject;
  * [param name="LoadStructCallback" value="yourJavaScriptMethodName" /]
  * [param name="MessageCallback" value="yourJavaScriptMethodName" /] 
  * [param name="HoverCallback" value="yourJavaScriptMethodName" /] 
+ * [param name="SyncCallback" value="yourJavaScriptMethodName" /]
  * [param name="ResizeCallback" value="yourJavaScriptMethodName" /] 
  * [param name="PickCallback" value="yourJavaScriptMethodName" /]
  * 
@@ -153,6 +154,7 @@ public class Jmol implements WrappedApplet {
   String resizeCallback;
   String loadStructCallback;
   String messageCallback;
+  String syncCallback;
   String pickCallback;
   String hoverCallback;
 
@@ -368,24 +370,31 @@ public class Jmol implements WrappedApplet {
       // pauseCallback = getValue("PauseCallback", null);
       pickCallback = getValue("PickCallback", null);
       resizeCallback = getValue("ResizeCallback", null);
+      syncCallback = getValue("SyncCallback", null);
       hoverCallback = getValue("HoverCallback", null);
 
       statusForm = getValue("StatusForm", null);
       statusText = getValue("StatusText", null); //text
       statusTextarea = getValue("StatusTextarea", null); //textarea
 
+      String callbackInfo = "";
       if (animFrameCallback != null)
-        Logger.info("animFrameCallback=" + animFrameCallback);
+        callbackInfo += "\nanimFrameCallback=" + animFrameCallback;
       if (hoverCallback != null)
-        Logger.info("hoverCallback=" + hoverCallback);
+        callbackInfo += "\nhoverCallback=" + hoverCallback;
       if (loadStructCallback != null)
-        Logger.info("loadStructCallback=" + loadStructCallback);
+        callbackInfo += "\nloadStructCallback=" + loadStructCallback;
       if (messageCallback != null)
-        Logger.info("messageCallback=" + messageCallback);
+        callbackInfo += "\nmessageCallback=" + messageCallback;
       if (pickCallback != null)
-        Logger.info("pickCallback=" + pickCallback);
+        callbackInfo += "\npickCallback=" + pickCallback;
       if (resizeCallback != null)
-        Logger.info("resizeCallback=" + resizeCallback);
+        callbackInfo += "\nresizeCallback=" + resizeCallback;
+      if (syncCallback != null)
+        callbackInfo += "\nsyncCallback=" + syncCallback;
+      if (callbackInfo.length() > 0)
+        Logger.info(callbackInfo = callbackInfo + "\n");
+      
       if (statusForm != null && statusText != null) {
         Logger.info("applet text status will be reported to document."
             + statusForm + "." + statusText);
@@ -396,7 +405,7 @@ public class Jmol implements WrappedApplet {
       }
       if (animFrameCallback != null || loadStructCallback != null
           || messageCallback != null || hoverCallback != null
-          // || pauseCallback != null
+          || syncCallback != null
           || pickCallback != null || statusForm != null || statusText != null) {
         if (!mayScript)
           Logger
@@ -423,7 +432,7 @@ public class Jmol implements WrappedApplet {
         Logger.warn("Note -- language translation disabled");
       }
       String loadParam;
-      String scriptParam = getValue("script", "");
+      String scriptParam = callbackInfo + getValue("script", "");
       if ((loadParam = getValue("loadInline", null)) != null) {
         loadInlineSeparated(loadParam, (scriptParam.length() > 0 ? scriptParam
             : null));
@@ -1051,6 +1060,27 @@ public class Jmol implements WrappedApplet {
       }
     }
 
+    private String notifySync(String info) {
+      // if the notified JavaScript function returns 0, then 
+      // we do NOT continue to notify the other applet
+      if (!mayScript || syncCallback == null)
+        return info;
+      JSObject jsoWindow = JSObject.getWindow(appletWrapper); 
+      try {
+        if (syncCallback.length() > 0)
+          return (String)jsoWindow.call(syncCallback, 
+              new Object[] { htmlName, info});
+      } catch (Exception e) {
+        if (!haveNotifiedError)
+          if (Logger.debugging) {
+            Logger.debug(
+                "syncCallback call error to " + syncCallback + ": " + e);
+          }
+          haveNotifiedError = true;
+      }
+      return info;
+    }
+
     public void notifyFrameChanged(int frameNo, int fileNo, int modelNo,
                                    int firstNo, int lastNo) {
       // Note: twos-complement. To get actual frame number, use 
@@ -1184,6 +1214,8 @@ public class Jmol implements WrappedApplet {
         pickCallback = callbackFunction;
       else if (callbackType.equalsIgnoreCase("ResizeCallback"))
         resizeCallback = callbackFunction;
+      else if (callbackType.equalsIgnoreCase("SyncCallback"))
+        syncCallback = callbackFunction;
       else
         sendConsoleMessage("Available callbacks include: AnimFrameCallback, HoverCallback, LoadStructCallback, MessageCallback, PickCallback, and ResizeCallback");
     }
@@ -1220,10 +1252,15 @@ public class Jmol implements WrappedApplet {
   
     public void sendSyncScript(String script, String appletName) {
       Vector apps = JmolAppletRegistry.findApplets(appletName, syncId, fullName);
+      if (syncCallback != null)
+        script = notifySync(script);
       if (apps == null || apps.size() == 0) {
-        Logger.error(fullName + " couldn't find applet " + appletName);
+        if (syncCallback == null)
+          Logger.error(fullName + " couldn't find applet " + appletName);
         return;
       }
+      if (script == null || script.length() == 0)
+        return;
       for (int i = 0; i < apps.size(); i++) {
         String theApplet = (String)apps.elementAt(i);
         JmolAppletInterface app = (JmolAppletInterface)JmolAppletRegistry.htRegistry.get(theApplet);

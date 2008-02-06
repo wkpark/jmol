@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-12-25 22:47+0100\n"
-"PO-Revision-Date: 2008-01-12 15:48-0300\n"
+"PO-Revision-Date: 2008-02-05 23:25-0300\n"
 "Last-Translator: Sérgio Ceroni da Silva <ceroni@cbiot.ufrgs.br>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -413,7 +413,7 @@ msgstr "Eixos"
 #: org/openscience/jmol/app/GuiMap.java:122
 #: org/openscience/jmol/app/GuiMap.java:166
 msgid "Bounding Box"
-msgstr "Caixa de Ligação"
+msgstr "Caixa limitante"
 
 #: org/openscience/jmol/app/GuiMap.java:123
 msgid "&Hydrogens"

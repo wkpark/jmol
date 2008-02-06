@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-12-16 00:16+0100\n"
-"PO-Revision-Date: 2008-01-12 15:45-0300\n"
+"PO-Revision-Date: 2008-02-05 23:24-0300\n"
 "Last-Translator: Sérgio Ceroni da Silva <ceroni@cbiot.ufrgs.br>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -802,12 +802,12 @@ msgstr "Eixos"
 #: org/jmol/popup/PopupResourceBundle.java:750
 #: org/jmol/popup/PopupResourceBundle.java:864
 msgid "Boundbox"
-msgstr "Caixa de Ligação"
+msgstr "Caixa limitante"
 
 #: org/jmol/popup/PopupResourceBundle.java:751
 #: org/jmol/popup/PopupResourceBundle.java:865
 msgid "Unitcell"
-msgstr "Célula Unitária"
+msgstr "Cela unitária"
 
 #: org/jmol/popup/PopupResourceBundle.java:753
 msgid "Zoom"
@@ -1025,7 +1025,7 @@ msgstr "Estado atual"
 
 #: org/jmol/popup/PopupResourceBundle.java:841
 msgid "Unit cell"
-msgstr "Célula Unitária"
+msgstr "Cela unitária"
 
 #: org/jmol/popup/PopupResourceBundle.java:842
 msgid "Extract MOL data"
@@ -1114,11 +1114,11 @@ msgstr "Profundidade de perspectiva"
 
 #: org/jmol/popup/PopupResourceBundle.java:888
 msgid "Bound Box"
-msgstr "Caixa de Ligação"
+msgstr "Caixa limitante"
 
 #: org/jmol/popup/PopupResourceBundle.java:890
 msgid "Unit Cell"
-msgstr "Célula Unitária"
+msgstr "Cela unitária"
 
 #: org/jmol/popup/PopupResourceBundle.java:891
 msgid "RasMol Colors"
@@ -1268,7 +1268,7 @@ msgstr "esperado um plano -- três pontos ou uma \"atom expression\" ou {0} ou {
 
 #: org/jmol/viewer/Eval.java:2341
 msgid "No unit cell"
-msgstr "Sem Célula Unitária"
+msgstr "Sem cela unitária"
 
 #: org/jmol/viewer/Eval.java:2351
 msgid "Miller indices cannot all be zero."

@@ -1328,6 +1328,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setModeMouse(int modeMouse) {
     //call before setting viewer=null
     mouseManager.setModeMouse(modeMouse);
+    if (modeMouse == JmolConstants.MOUSE_NONE) {
+      //applet is being destroyed
+      clearScriptQueue();
+      haltScriptExecution();
+      g3d.destroy();
+    }
   }
 
   Rectangle getRubberBandSelection() {

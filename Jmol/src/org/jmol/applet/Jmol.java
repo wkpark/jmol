@@ -104,14 +104,14 @@ import netscape.javascript.JSObject;
  * callbacks include:
  * 
  * [param name="AnimFrameCallback" value="yourJavaScriptMethodName" /]
+ * [param name="HoverCallback" value="yourJavaScriptMethodName" /] 
  * [param name="LoadStructCallback" value="yourJavaScriptMethodName" /]
  * [param name="MessageCallback" value="yourJavaScriptMethodName" /] 
- * [param name="HoverCallback" value="yourJavaScriptMethodName" /] 
- * [param name="SyncCallback" value="yourJavaScriptMethodName" /]
- * [param name="ResizeCallback" value="yourJavaScriptMethodName" /] 
  * [param name="PickCallback" value="yourJavaScriptMethodName" /]
+ * [param name="ResizeCallback" value="yourJavaScriptMethodName" /] 
+ * [param name="SyncCallback" value="yourJavaScriptMethodName" /]
  * 
- * The use of jmolButtons is NOT recommended.
+ * The use of jmolButtons is fully deprecated and NOT recommended.
  * 
  */
 
@@ -120,8 +120,6 @@ public class Jmol implements WrappedApplet {
   JmolViewer viewer;
 
   boolean jvm12orGreater;
-
-  String emulate;
 
   Jvm12 jvm12;
 
@@ -187,10 +185,12 @@ public class Jmol implements WrappedApplet {
   String menuStructure;
   
   public void init() {
-    System.out.println("Init Jmol");
     htmlName = getParameter("name");
     syncId = getParameter("syncId");
     fullName = htmlName + "__" + syncId + "__";
+    System.out.println("Jmol applet " + fullName + " initializing");
+    setLogging();
+
     language = getParameter("language");
     if (language != null) {
       System.out.print("requested language=" + language + "; ");
@@ -198,9 +198,14 @@ public class Jmol implements WrappedApplet {
     }
     language = GT.getLanguage();
     System.out.println("language=" + language);
-    doTranslate = getBooleanValue("doTranslate", true);
-    System.out.println("Jmol applet " + fullName);
-    setLogging();
+    doTranslate = getBooleanValue("doTranslate", true);    
+    if ("none".equals(language))
+      doTranslate = false;
+    if (!doTranslate) {
+      GT.setDoTranslate(false);
+      Logger.warn("Note -- language translation disabled");
+    }
+    
     String ms = getParameter("mayscript");
     mayScript = (ms != null) && (!ms.equalsIgnoreCase("false"));
     JmolAppletRegistry.checkIn(fullName, appletWrapper);
@@ -212,6 +217,7 @@ public class Jmol implements WrappedApplet {
     JmolAppletRegistry.checkOut(fullName);
     viewer.setModeMouse(JmolConstants.MOUSE_NONE);
     viewer = null;
+    System.out.println("Jmol applet " + fullName + " destroyed");
   }
   
   String getParameter(String paramName) {
@@ -275,8 +281,8 @@ public class Jmol implements WrappedApplet {
   }
 
   void setLogging() {
-    int iLevel = (getValue("logLevel", "")
-        + (getBooleanValue("debug", false) ? "5" : "4")).charAt(0) - '0';
+    int iLevel = (getValue("logLevel", 
+        (getBooleanValue("debug", false) ? "5" : "4"))).charAt(0) - '0';
     if (iLevel != 4)
       System.out.println("setting logLevel=" + iLevel
           + " -- To change, use script \"set logLevel [0-5]\"");
@@ -350,59 +356,23 @@ public class Jmol implements WrappedApplet {
       //if (needPopupMenu)
         //loadPopupMenuAsBackgroundTask();
 
-      emulate = getValueLowerCase("emulate", "jmol");
-      if (emulate.equals("chime")) {
-        viewer.setStringProperty("defaults", "RasMol");
-      } else {
-        viewer.setStringProperty("defaults", "Jmol");
-      }
-      String bgcolor = getValue("boxbgcolor", "black");
-      bgcolor = getValue("bgcolor", bgcolor);
-      viewer.setStringProperty("backgroundColor", bgcolor);
+      String emulate = getValueLowerCase("emulate", "jmol");
+      setStringProperty("defaults", emulate.equals("chime") ? "RasMol" : "Jmol");
+      setStringProperty("backgroundColor", getValue("bgcolor", getValue("boxbgcolor", "black")));
 
-      // loadInline(getValue("loadInline", null));
       loadNodeId(getValue("loadNodeId", null));
 
       viewer.setBooleanProperty("frank", true);
-      animFrameCallback = getValue("AnimFrameCallback", null);
-      loadStructCallback = getValue("LoadStructCallback", null);
-      messageCallback = getValue("MessageCallback", null);
-      // pauseCallback = getValue("PauseCallback", null);
-      pickCallback = getValue("PickCallback", null);
-      resizeCallback = getValue("ResizeCallback", null);
-      syncCallback = getValue("SyncCallback", null);
-      hoverCallback = getValue("HoverCallback", null);
 
-      statusForm = getValue("StatusForm", null);
-      statusText = getValue("StatusText", null); //text
-      statusTextarea = getValue("StatusTextarea", null); //textarea
-
-      String callbackInfo = "";
-      if (animFrameCallback != null)
-        callbackInfo += "\nanimFrameCallback=" + animFrameCallback;
-      if (hoverCallback != null)
-        callbackInfo += "\nhoverCallback=" + hoverCallback;
-      if (loadStructCallback != null)
-        callbackInfo += "\nloadStructCallback=" + loadStructCallback;
-      if (messageCallback != null)
-        callbackInfo += "\nmessageCallback=" + messageCallback;
-      if (pickCallback != null)
-        callbackInfo += "\npickCallback=" + pickCallback;
-      if (resizeCallback != null)
-        callbackInfo += "\nresizeCallback=" + resizeCallback;
-      if (syncCallback != null)
-        callbackInfo += "\nsyncCallback=" + syncCallback;
-      if (callbackInfo.length() > 0)
-        Logger.info(callbackInfo = callbackInfo + "\n");
+      setValue("animFrameCallback", null);
+      setValue("hoverCallback", null);
+      setValue("loadStructCallback", null);
+      setValue("messageCallback", null);
+      setValue("pickCallback", null);
+      setValue("resizeCallback", null);
+      setValue("syncCallback", null);
       
-      if (statusForm != null && statusText != null) {
-        Logger.info("applet text status will be reported to document."
-            + statusForm + "." + statusText);
-      }
-      if (statusForm != null && statusTextarea != null) {
-        Logger.info("applet textarea status will be reported to document."
-            + statusForm + "." + statusTextarea);
-      }
+      //these are set by viewer.setStringProperty() from setValue
       if (animFrameCallback != null || loadStructCallback != null
           || messageCallback != null || hoverCallback != null
           || syncCallback != null
@@ -425,14 +395,23 @@ public class Jmol implements WrappedApplet {
                   " messages; to disable language translation of callback messages," +
                   " use jmolSetTranslation(false) prior to jmolApplet()");
       }
-      if ("none".equals(language))
-        doTranslate = false;
-      if (!doTranslate) {
-        GT.setDoTranslate(false);
-        Logger.warn("Note -- language translation disabled");
+      
+      statusForm = getValue("StatusForm", null);
+      statusText = getValue("StatusText", null); //text
+      statusTextarea = getValue("StatusTextarea", null); //textarea
+
+      if (statusForm != null && statusText != null) {
+        Logger.info("applet text status will be reported to document."
+            + statusForm + "." + statusText);
       }
+      if (statusForm != null && statusTextarea != null) {
+        Logger.info("applet textarea status will be reported to document."
+            + statusForm + "." + statusTextarea);
+      }
+      
       String loadParam;
-      String scriptParam = callbackInfo + getValue("script", "");
+      String scriptParam = getValue("script", "");
+      System.out.println(scriptParam);
       if ((loadParam = getValue("loadInline", null)) != null) {
         loadInlineSeparated(loadParam, (scriptParam.length() > 0 ? scriptParam
             : null));
@@ -446,6 +425,17 @@ public class Jmol implements WrappedApplet {
     viewer.popHoldRepaint();
   }
 
+  private void setValue(String name, String defaultValue) {
+    setStringProperty(name, getValue(name, defaultValue));
+  }
+  
+  private void setStringProperty(String name, String value) {
+    if (value == null)
+      return;
+    Logger.info(name + " = \"" + value + "\"");
+    viewer.setStringProperty(name, value);
+  }
+  
   void showStatusAndConsole(String message) {
     appletWrapper.showStatus(message);
     sendJsTextStatus(message);
@@ -840,27 +830,33 @@ public class Jmol implements WrappedApplet {
       // Retrieve Node ...
       // First try to find by ID
       Object[] idArgs = { nodeId };
-      JSObject jsoWindow = JSObject.getWindow(appletWrapper); 
-      JSObject jsoDocument = (JSObject) jsoWindow.getMember("document");
-      JSObject tryNode = (JSObject) jsoDocument.call("getElementById", idArgs);
+      JSObject tryNode = null;
+      try {
+        JSObject jsoWindow = JSObject.getWindow(appletWrapper);
+        JSObject jsoDocument = (JSObject) jsoWindow.getMember("document");
+        tryNode = (JSObject) jsoDocument.call("getElementById", idArgs);
 
-      // But that relies on a well-formed CML DTD specifying ID search.
-      // Otherwise, search all cml:cml nodes.
-      if (tryNode == null) {
-        Object[] searchArgs = { "http://www.xml-cml.org/schema/cml2/core",
-            "cml" };
-        JSObject tryNodeList = (JSObject) jsoDocument.call(
-            "getElementsByTagNameNS", searchArgs);
-        if (tryNodeList != null) {
-          for (int i = 0; i < ((Number) tryNodeList.getMember("length"))
-              .intValue(); i++) {
-            tryNode = (JSObject) tryNodeList.getSlot(i);
-            Object[] idArg = { "id" };
-            String idValue = (String) tryNode.call("getAttribute", idArg);
-            if (nodeId.equals(idValue))
-              break;
+        // But that relies on a well-formed CML DTD specifying ID search.
+        // Otherwise, search all cml:cml nodes.
+        if (tryNode == null) {
+          Object[] searchArgs = { "http://www.xml-cml.org/schema/cml2/core",
+              "cml" };
+          JSObject tryNodeList = (JSObject) jsoDocument.call(
+              "getElementsByTagNameNS", searchArgs);
+          if (tryNodeList != null) {
+            for (int i = 0; i < ((Number) tryNodeList.getMember("length"))
+                .intValue(); i++) {
+              tryNode = (JSObject) tryNodeList.getSlot(i);
+              Object[] idArg = { "id" };
+              String idValue = (String) tryNode.call("getAttribute", idArg);
+              if (nodeId.equals(idValue))
+                break;
+              tryNode = null;
+            }
           }
         }
+      } catch (Exception e) {
+        tryNode = null;
       }
       if (tryNode != null)
         loadDOMNode(tryNode);
@@ -1000,8 +996,8 @@ public class Jmol implements WrappedApplet {
       float[][] fxy = new float[Math.abs(nX)][Math.abs(nY)];
       if (!mayScript || nX == 0 || nY == 0)
         return fxy;
-      JSObject jsoWindow = JSObject.getWindow(appletWrapper); 
       try {
+        JSObject jsoWindow = JSObject.getWindow(appletWrapper); 
         if (nX > 0 && nY > 0) {    // fill with individual function calls (slow)
           for (int i = 0; i < nX; i++)
             for (int j = 0; j < nY; j++) {
@@ -1045,8 +1041,8 @@ public class Jmol implements WrappedApplet {
     public void notifyResized(int newWidth, int newHeight) {
       if (!mayScript || resizeCallback == null)
         return;
-      JSObject jsoWindow = JSObject.getWindow(appletWrapper); 
       try {
+        JSObject jsoWindow = JSObject.getWindow(appletWrapper); 
         if (resizeCallback.length() > 0)
           jsoWindow.call(resizeCallback, new Object[] { htmlName,
               new Integer(newWidth), new Integer(newHeight)});
@@ -1065,8 +1061,8 @@ public class Jmol implements WrappedApplet {
       // we do NOT continue to notify the other applet
       if (!mayScript || syncCallback == null)
         return info;
-      JSObject jsoWindow = JSObject.getWindow(appletWrapper); 
       try {
+        JSObject jsoWindow = JSObject.getWindow(appletWrapper); 
         if (syncCallback.length() > 0)
           return (String)jsoWindow.call(syncCallback, 
               new Object[] { htmlName, info});

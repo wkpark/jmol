@@ -152,6 +152,12 @@ final public class Graphics3D implements JmolRendererInterface {
   private boolean antialias2; 
   private boolean antialiasEnabled;
     
+  public void destroy() {
+    releaseBuffers();
+    platform = null;
+    //System.out.println("g3d destroyed");
+  }
+
   /**
    * is full scene / oversampling antialiasing GENERALLY in effect
    *
@@ -320,11 +326,7 @@ final public class Graphics3D implements JmolRendererInterface {
       windowWidth = newWindowWidth;
       windowHeight = newWindowHeight;
       isFullSceneAntialiasingEnabled = newAntialiasing;
-      pbuf = null;
-      zbuf = null;
-      pbufT = null;
-      zbufT = null;
-      platform.releaseBuffers();
+      releaseBuffers();
     }
     normix3d.setRotationMatrix(rotationMatrix);
     antialiasEnabled = antialiasThisFrame = newAntialiasing;
@@ -348,6 +350,14 @@ final public class Graphics3D implements JmolRendererInterface {
     platform.obtainScreenBuffer();
   }
 
+  private void releaseBuffers() {
+    pbuf = null;
+    zbuf = null;
+    pbufT = null;
+    zbufT = null;
+    platform.releaseBuffers();
+  }
+  
   public boolean setPass2(boolean antialiasTranslucent) {
     if (!haveTranslucentObjects || !currentlyRendering)
       return false;
@@ -2826,4 +2836,5 @@ final public class Graphics3D implements JmolRendererInterface {
   public Vector3f getNormixVector(short normix) {
     return normix3d.getVector(normix);
   }
+
 }

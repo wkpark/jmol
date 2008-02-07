@@ -78,7 +78,7 @@ final public class Font3D {
 
   private final static int FONT_ALLOCATION_UNIT = 8;
   private static int fontkeyCount = 1;
-  private static short[] fontkeys = new short[FONT_ALLOCATION_UNIT];
+  private static int[] fontkeys = new int[FONT_ALLOCATION_UNIT];
   private static Font3D[] font3ds = new Font3D[FONT_ALLOCATION_UNIT];
 
   static Font3D getFont3D(int fontface, int fontstyle, float fontsize,
@@ -89,11 +89,11 @@ final public class Font3D {
     Logger.debug("Font3D.getFont3D("  + fontFaces[fontface] + "," +
                        fontStyles[fontstyle] + "," + fontsize + ")");
     */
-    if (fontsize > 255)
-      fontsize = 255;
+    if (fontsize > 0xFFF)
+      fontsize = 0xFFF;
     int fontsizeX16 = (int)(fontsize * 16f);
-    short fontkey =
-      (short)((fontface & 3) | ((fontstyle & 3) << 2) | (fontsizeX16 << 4));
+    int fontkey =
+      ((fontface & 3) | ((fontstyle & 3) << 2) | (fontsizeX16 << 4));
     // watch out for race condition here!
     for (int i = fontkeyCount; --i > 0; )
       if (fontkey == fontkeys[i])
@@ -109,7 +109,7 @@ final public class Font3D {
   }
   */
   
-  private static synchronized Font3D allocFont3D(short fontkey, int fontface,
+  private static synchronized Font3D allocFont3D(int fontkey, int fontface,
                                                 int fontstyle, float fontsize, float fontsizeNominal) {
     // recheck in case another process just allocated one
     for (int i = fontkeyCount; --i > 0; )
@@ -117,7 +117,7 @@ final public class Font3D {
         return font3ds[i];
     int fontIndexNext = fontkeyCount++;
     if (fontIndexNext == fontkeys.length) {
-      short[] t0 = new short[fontIndexNext + FONT_ALLOCATION_UNIT];
+      int[] t0 = new int[fontIndexNext + FONT_ALLOCATION_UNIT];
       System.arraycopy(fontkeys, 0, t0, 0, fontIndexNext);
       fontkeys = t0;
       

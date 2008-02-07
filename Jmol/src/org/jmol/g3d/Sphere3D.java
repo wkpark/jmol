@@ -56,7 +56,8 @@ class Sphere3D {
   
   private final static int maxSphereCache = 128;
   private final static int maxOddSizeSphere = 49;
-  private final static int maxSphereDiameter = 1000;
+  final static int maxSphereDiameter = 1000;
+  final static int maxSphereDiameter2 = maxSphereDiameter * 2;
   private final static int[][] sphereShapeCache = new int[maxSphereCache][];
 
   static synchronized void flushSphereCache() {
@@ -135,8 +136,7 @@ class Sphere3D {
     if (maxZ < g3d.slab || minZ > g3d.depth)
       return;
     if (diameter > maxSphereCache) {
-      if (diameter <= maxSphereDiameter)
-        renderLargeSphere(shades, tScreened, diameter, x, y, z);
+      renderLargeSphere(shades, tScreened, diameter, x, y, z);
       return;
     }
     zShift = g3d.getZShift(z);

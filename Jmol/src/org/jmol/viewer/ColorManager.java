@@ -49,6 +49,10 @@ class ColorManager {
     altArgbsCpk = ArrayUtil.arrayCopy(JmolConstants.altArgbsCpk, 0, -1, false);
   }
 
+  void clear() {
+    //causes problems? flushCaches();
+  }
+  
   private boolean isDefaultColorRasmol;
   boolean getDefaultColorRasmol() {
     return isDefaultColorRasmol;

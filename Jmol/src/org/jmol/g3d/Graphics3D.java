@@ -786,7 +786,9 @@ final public class Graphics3D implements JmolRendererInterface {
     case 0:
       return;
     }
-    sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z);
+    //System.out.println("Graphics3D fillSphereCentered diameter x y z" + diameter + " "+x+" "+y+" "+z);
+    if (diameter <= (antialiasThisFrame ? Sphere3D.maxSphereDiameter2 : Sphere3D.maxSphereDiameter))
+      sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z);
   }
 
   /**

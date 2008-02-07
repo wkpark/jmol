@@ -374,6 +374,8 @@ public class Text {
     textHeight = lines.length * lineHeight;
     boxWidth = textWidth + (fontScale >= 2 ? 16 : 8);
     boxHeight = textHeight + (fontScale >= 2 ? 16 : 8);
+    //System.out.println("Text recalc fontScale,font.fontScale,font.fontScaleNominal=" 
+      //  +fontScale + " "+ font.fontSize + " "+ font.fontSizeNominal);
   }
 
   private void formatText() {
@@ -388,7 +390,8 @@ public class Text {
               float imageFontScaling) {
     if (text == null)
       return;
-    //System.out.println("render scalePixelsPerMicron=" + scalePixelsPerMicron);
+    //if (imageFontScaling == 4)
+    //System.out.println("render scalePixelsPerMicron=" + scalePixelsPerMicron + " imageFontScaling=" + imageFontScaling);
     windowWidth = g3d.getRenderWidth();
     windowHeight = g3d.getRenderHeight();
     if (this.scalePixelsPerMicron < 0 && scalePixelsPerMicron != 0)

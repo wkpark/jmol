@@ -1786,6 +1786,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     stateManager.clear();
     global.clear();
     tempManager.clear();
+    colorManager.clear();
     //setRefreshing(true);
     refresh(0, "Viewer:clear()");
     dataManager.clear();

@@ -29,17 +29,17 @@ import org.jmol.util.Logger;
 
 class Jvm12 {
 
-  Component awtComponent;
+  private JmolViewer viewer;
+  private Component awtComponent;
   Console console;
-  JmolViewer viewer;
 
   Jvm12(Component awtComponent, JmolViewer viewer) {
     this.awtComponent = awtComponent;
     this.viewer = viewer;
   }
 
-  final Rectangle rectClip = new Rectangle();
-  final Dimension dimSize = new Dimension();
+  private final Rectangle rectClip = new Rectangle();
+  private final Dimension dimSize = new Dimension();
   Rectangle getClipBounds(Graphics g) {
     return g.getClipBounds(rectClip);
   }

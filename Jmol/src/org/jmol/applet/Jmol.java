@@ -217,6 +217,10 @@ public class Jmol implements WrappedApplet {
     JmolAppletRegistry.checkOut(fullName);
     viewer.setModeMouse(JmolConstants.MOUSE_NONE);
     viewer = null;
+    if (jvm12 != null) {
+      jvm12.console = null;
+      jvm12 = null;
+    }
     System.out.println("Jmol applet " + fullName + " destroyed");
   }
   
@@ -437,9 +441,13 @@ public class Jmol implements WrappedApplet {
   }
   
   void showStatusAndConsole(String message) {
-    appletWrapper.showStatus(message);
-    sendJsTextStatus(message);
-    consoleMessage(message);
+    try {
+      appletWrapper.showStatus(message);
+      sendJsTextStatus(message);
+      consoleMessage(message);
+    } catch (Exception e) {
+      //ignore if page is closing
+    }
   }
 
   void sendMessageCallback(String strMsg) {
@@ -534,8 +542,7 @@ public class Jmol implements WrappedApplet {
         startPaintClock();
       Dimension size = jvm12orGreater ? jvm12.getSize() : appletWrapper.size();
       viewer.setScreenDimension(size);
-      Rectangle rectClip = jvm12orGreater ? jvm12.getClipBounds(g) : g
-          .getClipRect();
+      //Rectangle rectClip = jvm12orGreater ? jvm12.getClipBounds(g) : g.getClipRect();
       ++paintCounter;
       if (REQUIRE_PROGRESSBAR && !hasProgressBar && paintCounter < 30
           && (paintCounter & 1) == 0) {
@@ -543,7 +550,7 @@ public class Jmol implements WrappedApplet {
         viewer.repaintView();
       } else {
         //System.out.println("UPDATE1: " + source + " " + Thread.currentThread());
-        viewer.renderScreenImage(g, size, rectClip);
+        viewer.renderScreenImage(g, size, null);//rectClip);
         //System.out.println("UPDATE2: " + source + " " + Thread.currentThread());
       }
   

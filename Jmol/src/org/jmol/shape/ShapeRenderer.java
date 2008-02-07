@@ -32,6 +32,10 @@ import org.jmol.viewer.Viewer;
 
 public abstract class ShapeRenderer {
 
+  //public void finalize() {
+  //  System.out.println("ShapeRenderer " + shapeID + " " + this + " finalized");
+  //}
+  
   protected Viewer viewer;
   protected JmolRendererInterface g3d;
   //Rectangle rectClip; //not implemented

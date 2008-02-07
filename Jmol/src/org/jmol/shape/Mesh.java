@@ -86,7 +86,13 @@ public class Mesh {
     this.thisID = thisID;
     this.g3d = g3d;
     this.colix = colix;
+    //System.out.println("Mesh " + this + " constructed");
   }
+
+  //public void finalize() {
+  //  System.out.println("Mesh " + this + " finalized");
+  //}
+  
 
   public void clear(String meshType) {
     vertexCount = polygonCount = 0;

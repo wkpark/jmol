@@ -52,6 +52,11 @@ import java.util.Vector;
 
 public final class ModelLoader extends ModelSet {
 
+  //public void finalize() {
+  //  System.out.println("ModelLoader " + this + " finalized");
+  //}
+  
+
   private ModelLoader mergeModelSet;
   private boolean merging;
   private boolean isMultiFile;
@@ -71,6 +76,9 @@ public final class ModelLoader extends ModelSet {
 
   public ModelLoader(Viewer viewer, JmolAdapter adapter, Object clientFile, 
       ModelLoader mergeModelSet, String modelSetName) {
+    
+    //System.out.println("ModelLoader " + this + " constructed");
+
     this.modelSetName = modelSetName;
     this.mergeModelSet = mergeModelSet;
     merging = (mergeModelSet != null && mergeModelSet.atomCount > 0);

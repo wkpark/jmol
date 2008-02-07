@@ -78,6 +78,14 @@ import java.util.Hashtable;
  */
 public abstract class Shape {
 
+  //public Shape () {
+  //  System.out.println("Shape " + this + " constructed");
+  //}
+  
+  //public void finalize() {
+  //  System.out.println("Shape " + shapeID + " " + this + " finalized");
+  //}
+  
   public Viewer viewer; //public for now for Backbone
   public ModelSet modelSet;
   protected Graphics3D g3d;
@@ -99,6 +107,8 @@ public abstract class Shape {
     this.myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(shapeID);
     setModelSet(modelSet);
     initShape();
+    //System.out.println("Shape " + shapeID + " " + this + " initialized");
+
   }
 
   public void setModelSet(ModelSet modelSet) {

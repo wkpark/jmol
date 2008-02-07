@@ -48,6 +48,10 @@ abstract public class JmolPopup {
   //list is saved in http://www.stolaf.edu/academics/chemapps/jmol/docs/misc
   private final static boolean dumpList = false;
 
+  //public void finalize() {
+  //  System.out.println("JmolPopup " + this + " finalize");
+  //}
+
   JmolViewer viewer;
   Component jmolComponent;
   MenuItemListener mil;
@@ -93,6 +97,7 @@ abstract public class JmolPopup {
     jmolComponent = viewer.getAwtComponent();
     mil = new MenuItemListener();
     cmil = new CheckboxMenuItemListener();
+    //System.out.println("JmolPopup " + this + " constructor");
   }
 
   static public JmolPopup newJmolPopup(JmolViewer viewer, boolean doTranslate, String menu) {

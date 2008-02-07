@@ -33,28 +33,38 @@ import javax.swing.text.*;
 import org.jmol.util.Logger;
 
 class Console implements ActionListener, WindowListener {
-  final JTextArea input = new ControlEnterTextArea();
-  final JTextPane output = new JTextPane();
-  final Document outputDocument = output.getDocument();
-  final JFrame jf = new JFrame(GT._("Jmol Script Console"));
+  private final JTextArea input = new ControlEnterTextArea();
+  private final JTextPane output = new JTextPane();
+  private final Document outputDocument = output.getDocument();
+  private final JFrame jf = new JFrame(GT._("Jmol Script Console"));
 
-  final JButton runButton = new JButton(GT._("Execute"));
-  final JButton clearOutButton = new JButton(GT._("Clear Output"));
-  final JButton clearInButton = new JButton(GT._("Clear Input"));
-  final JButton historyButton = new JButton(GT._("History"));
-  final JButton stateButton = new JButton(GT._("State"));
-  final JButton loadButton = new JButton(GT._("Load"));
+  private final JButton runButton = new JButton(GT._("Execute"));
+  private final JButton clearOutButton = new JButton(GT._("Clear Output"));
+  private final JButton clearInButton = new JButton(GT._("Clear Input"));
+  private final JButton historyButton = new JButton(GT._("History"));
+  private final JButton stateButton = new JButton(GT._("State"));
+  private final JButton loadButton = new JButton(GT._("Load"));
 
-  final SimpleAttributeSet attributesCommand = new SimpleAttributeSet();
+  private final SimpleAttributeSet attributesCommand = new SimpleAttributeSet();
 
-  final JmolViewer viewer;
-  final Jvm12 jvm12;
+  private final JmolViewer viewer;
+  
+  JmolViewer getViewer() {
+    return viewer;
+  }
+
+  //public void finalize() {
+  //  System.out.println("Console " + this + " finalize");
+  //}
+
+  private final Jvm12 jvm12;
 
   Console(Component componentParent, JmolViewer viewer, Jvm12 jvm12) {
     this.viewer = viewer;
     this.jvm12 = jvm12;
 
     Logger.debug("Console constructor");
+    //System.out.println("Console " + this + " constructed");
 
     setupInput();
     setupOutput();
@@ -104,7 +114,7 @@ class Console implements ActionListener, WindowListener {
     jf.addWindowListener(this);
   }
 
-  void setupInput() {
+  private void setupInput() {
     input.setLineWrap(true);
     input.setWrapStyleWord(true);
 
@@ -116,7 +126,7 @@ class Console implements ActionListener, WindowListener {
     map.removeKeyStrokeBinding(shiftA);
   }
 
-  void setupOutput() {
+  private void setupOutput() {
     output.setEditable(false);
     //    output.setLineWrap(true);
     //    output.setWrapStyleWord(true);
@@ -135,7 +145,7 @@ class Console implements ActionListener, WindowListener {
     output(message, null);
   }
 
-  void output(String message, AttributeSet att) {
+  private void output(String message, AttributeSet att) {
     if (message == null || message.length() == 0) {
       output.setText("");
       return;
@@ -209,7 +219,7 @@ class Console implements ActionListener, WindowListener {
     }
 
     private void recallCommand(boolean up) {
-      String cmd = viewer.getSetHistory(up ? -1 : 1);
+      String cmd = getViewer().getSetHistory(up ? -1 : 1);
       if (cmd == null)
         return;
       setText(cmd);

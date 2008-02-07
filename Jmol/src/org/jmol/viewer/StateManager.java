@@ -1073,6 +1073,7 @@ public class StateManager {
       setParameterValue("navigationSlab",0);
       setParameterValue("navigationSpeed",navigationSpeed);
       setParameterValue("perspectiveModel",11);
+      setParameterValue("perspectiveDepth",perspectiveDepth);
       setParameterValue("percentVdwAtom",percentVdwAtom);
       setParameterValue("picking","ident");
       setParameterValue("pickingSpinRate",pickingSpinRate);

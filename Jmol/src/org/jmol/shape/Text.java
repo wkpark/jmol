@@ -404,7 +404,8 @@ public class Text {
     if (isLabelOrHover) {
       boxXY[0] = movableX;
       boxXY[1] = movableY;      
-      setLabelPosition(boxWidth, boxHeight, offsetX * fontScale, offsetY * fontScale, boxXY);
+      setLabelPosition(boxWidth, boxHeight, 
+          offsetX * imageFontScaling, offsetY * imageFontScaling, boxXY);
     } else {
       setPosition();
     }

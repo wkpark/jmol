@@ -41,23 +41,24 @@ public class Labels extends AtomShape {
   byte[] fids;
   int[] offsets;
 
-  Hashtable atomLabels = new Hashtable();
-  Text text;
+  private Hashtable atomLabels = new Hashtable();
+  private Text text;
 
-  BitSet bsFontSet, bsBgColixSet;
+  private BitSet bsFontSet, bsBgColixSet;
 
-  int defaultOffset;
-  int defaultAlignment;
-  int defaultZPos;
-  byte defaultFontId;
-  short defaultColix;
-  short defaultBgcolix;
-  byte defaultPaletteID;
-  int defaultPointer;
+  private int defaultOffset;
+  private int defaultAlignment;
+  private int defaultZPos;
+  private byte defaultFontId;
+  private short defaultColix;
+  private short defaultBgcolix;
+  private byte defaultPaletteID;
+  private int defaultPointer;
+  private int zeroOffset;
+
   byte zeroFontId;
-  int zeroOffset;
 
-  boolean defaultsOnlyForNone = true;
+  private boolean defaultsOnlyForNone = true;
 
   //labels
 
@@ -117,7 +118,8 @@ public class Labels extends AtomShape {
         bsSizeSet = new BitSet();
       String strLabel = (String) value;
       boolean isScaled = viewer.getFontScaling();
-      float scalePixelsPerMicron = (isScaled ? viewer.getScalePixelsPerAngstrom() * 10000 : 0);
+      float scalePixelsPerMicron = (isScaled ? viewer.getScalePixelsPerAngstrom() * 10000f : 0);
+      //System.out.println("labels scalePixelsPerMicron=" + scalePixelsPerMicron);
       for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i)) {
           Atom atom = atoms[i];
@@ -320,14 +322,14 @@ public class Labels extends AtomShape {
     return (Text) atomLabels.get(atoms[i]);
   }
 
-  void setColix(int i, short colix, byte pid, int n) {
+  private void setColix(int i, short colix, byte pid, int n) {
     setColixAndPalette(colix, pid, i);
     text = getLabel(i);
     if (text != null)
       text.setColix(colixes[i]);
   }
 
-  void setBgcolix(int i, short bgcolix, int n) {
+  private void setBgcolix(int i, short bgcolix, int n) {
     if (bgcolixes == null || i >= bgcolixes.length) {
       if (bgcolix == 0)
         return;
@@ -348,6 +350,7 @@ public class Labels extends AtomShape {
   final static int SCALE_FLAG    = 0x40;
   //final static int TEXT_FLAG     = 0x80;
   final static int FLAGS         = 0xFF;
+  final static int FLAG_OFFSET   = 8;
 
   private void setOffsets(int i, int offset) {
     //entry is just xxxxxxxxyyyyyyyy
@@ -366,13 +369,13 @@ public class Labels extends AtomShape {
         return;
       offsets = ArrayUtil.ensureLength(offsets, i + 1);
     }
-    offsets[i] = (offsets[i] & FLAGS) + (offset << 8);
+    offsets[i] = (offsets[i] & FLAGS) | (offset << FLAG_OFFSET);
     text = getLabel(i);
     if (text != null)
       text.setOffset(offset);
   }
 
-  void setAlignment(int i, int alignment, int n) {
+  private void setAlignment(int i, int alignment, int n) {
     if (offsets == null || i >= offsets.length) {
       if (alignment == Text.ALIGN_LEFT)
         return;
@@ -388,7 +391,7 @@ public class Labels extends AtomShape {
     return (offsetFull & ALIGN_FLAGS) >> 2;
   }
   
-  void setPointer(int i, int pointer, int n) {
+  private void setPointer(int i, int pointer, int n) {
     if (offsets == null || i >= offsets.length) {
       if (pointer == Text.POINTER_NONE)
         return;
@@ -400,7 +403,7 @@ public class Labels extends AtomShape {
       text.setPointer(pointer);
   }
 
-  void setFront(int i, boolean TF, int n) {
+  private void setFront(int i, boolean TF, int n) {
     if (offsets == null || i >= offsets.length) {
       if (!TF)
         return;
@@ -409,7 +412,7 @@ public class Labels extends AtomShape {
     offsets[i] = (offsets[i] & ~ZPOS_FLAGS) + (TF ? FRONT_FLAG : 0);
   }
 
-  void setGroup(int i, boolean TF, int n) {
+  private void setGroup(int i, boolean TF, int n) {
     if (offsets == null || i >= offsets.length) {
       if (!TF)
         return;
@@ -418,7 +421,7 @@ public class Labels extends AtomShape {
     offsets[i] = (offsets[i] & ~ZPOS_FLAGS) + (TF ? GROUP_FLAG : 0);
   }
 
-  void setFont(int i, byte fid, int n) {
+  private void setFont(int i, byte fid, int n) {
     if (fids == null || i >= fids.length) {
       if (fid == zeroFontId)
         return;
@@ -427,8 +430,9 @@ public class Labels extends AtomShape {
     fids[i] = fid;
     bsFontSet.set(i);
     text = getLabel(i);
-    if (text != null)
+    if (text != null) {
       text.setFid(fid);
+    }
   }
 
   public void setModelClickability() {
@@ -482,8 +486,8 @@ public class Labels extends AtomShape {
         setStateInfo(temp2, i, "set labelScaleReference " + (10000f / sppm));
       if (offsets != null && offsets.length > i) {
         int offsetFull = offsets[i];
-        setStateInfo(temp2, i, "set labelOffset " + Text.getXOffset(offsetFull >> 8)
-              + " " + (-Text.getYOffset(offsetFull >> 8)));
+        setStateInfo(temp2, i, "set labelOffset " + Text.getXOffset(offsetFull >> FLAG_OFFSET)
+              + " " + (-Text.getYOffset(offsetFull >> FLAG_OFFSET)));
         String align = Text.getAlignment(offsetFull >> 2);
         String pointer = Text.getPointer(offsetFull);
         if (pointer.length() > 0)

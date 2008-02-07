@@ -38,6 +38,8 @@ public class LabelsRenderer extends ShapeRenderer {
   protected int ascent;
   protected int descent;
 
+  private final float[] boxXY = new float[2];
+  
   protected void render() {
     fidPrevious = 0;
 
@@ -53,7 +55,8 @@ public class LabelsRenderer extends ShapeRenderer {
     Atom[] atoms = modelSet.atoms;
     short backgroundColixContrast = viewer.getColixBackgroundContrast();
     int backgroundColor = viewer.getBackgroundArgb();
-    float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer.getScalePixelsPerAngstrom() * 10000 : 0);
+    float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer.getScalePixelsPerAngstrom() * 10000f : 0);
+    //System.out.println("labelsRenderer scalePixelsPerMicron=" + scalePixelsPerMicron);
     float imageFontScaling = viewer.getImageFontScaling();
          
     for (int i = labelStrings.length; --i >= 0;) {
@@ -76,10 +79,10 @@ public class LabelsRenderer extends ShapeRenderer {
       int offsetFull = (offsets == null || i >= offsets.length ? 0 : offsets[i]);
       boolean labelsFront = ((offsetFull & Labels.FRONT_FLAG) != 0);
       boolean labelsGroup = ((offsetFull & Labels.GROUP_FLAG) != 0);
-      int offset = offsetFull >> 6;
+      int offset = offsetFull >> Labels.FLAG_OFFSET;
       int textAlign = Labels.getAlignment(offsetFull);
-      int pointer = offsetFull & 3;
-      int zSlab = atom.screenZ - atom.getScreenRadius() - 2;
+      int pointer = offsetFull & Labels.POINTER_FLAGS;
+      int zSlab = atom.screenZ - atom.getScreenRadius() - 3;
       if (zSlab < 1)
         zSlab = 1;
       Group group;
@@ -113,10 +116,11 @@ public class LabelsRenderer extends ShapeRenderer {
           boolean doPointer = ((pointer & Text.POINTER_ON) != 0);
           short pointerColix = ((pointer & Text.POINTER_BACKGROUND) != 0
               && bgcolix != 0 ? bgcolix : colix);
-          Text.renderSimpleLabel(g3d, font3d, label, colix, bgcolix, atom.screenX,
-              atom.screenY, zBox, zSlab, Text.getXOffset(offset), Text
-                  .getYOffset(offset), ascent, descent, doPointer,
-              pointerColix);
+          boxXY[0] = atom.screenX;
+          boxXY[1] = atom.screenY;
+          Text.renderSimpleLabel(g3d, font3d, label, colix, bgcolix, boxXY, 
+              zBox, zSlab, Text.getXOffset(offset), Text.getYOffset(offset), 
+              ascent, descent, doPointer, pointerColix);
           continue;
         }
         text = new Text(g3d, font3d, label, colix, bgcolix, atom.screenX,

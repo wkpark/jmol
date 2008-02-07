@@ -56,7 +56,7 @@ public class Text {
   final static int VALIGN_MIDDLE = 3;
   final static int VALIGN_XYZ = 4;
 
-  private boolean atomBased;
+  private boolean isLabelOrHover;
   private Viewer viewer;
   private JmolRendererInterface g3d;
   Point3f xyz;
@@ -95,7 +95,7 @@ public class Text {
   private int windowWidth;
   private int windowHeight;
   private boolean adjustForWindow;
-  private float boxX, boxY, boxWidth, boxHeight;
+  private float boxWidth, boxHeight, boxX, boxY;
 
   int modelIndex = -1;
   boolean visible = true;
@@ -117,17 +117,17 @@ public class Text {
 
   // for labels and hover
   Text(JmolRendererInterface g3d, Font3D font, String text, short colix,
-      short bgcolix, int offsetX, int offsetY, int z, int zSlab, int textAlign,
+      short bgcolix, int x, int y, int z, int zSlab, int textAlign,
       float scalePixelsPerMicron) {
     this.scalePixelsPerMicron = scalePixelsPerMicron;
     //System.out.println("Text scalePixelsPerMicron=" + scalePixelsPerMicron);
     this.viewer = null;
     this.g3d = g3d;
-    atomBased = true;
+    isLabelOrHover = true;
     setText(text);
     this.colix = colix;
     this.bgcolix = bgcolix;
-    setXYZs(offsetX, offsetY, z, zSlab);
+    setXYZs(x, y, z, zSlab);
     align = textAlign;
     setFont(font);
   }
@@ -137,7 +137,7 @@ public class Text {
       int valign, int align, float scalePixelsPerMicron) {
     this.viewer = viewer;
     this.g3d = g3d;
-    atomBased = false;
+    isLabelOrHover = false;
     this.target = target;
     if (target.equals("error"))
       valign = VALIGN_TOP;
@@ -162,6 +162,7 @@ public class Text {
   void setFid(byte fid) { //labels only
     if (this.fid == fid)
       return;
+    fontScale = 0;
     setFont(Font3D.getFont3D(fid));
   }
 
@@ -381,6 +382,8 @@ public class Text {
     recalc();
   }
 
+  final float[] boxXY = new float[2];
+  
   void render(JmolRendererInterface g3d, float scalePixelsPerMicron,
               float imageFontScaling) {
     if (text == null)
@@ -394,19 +397,30 @@ public class Text {
       setFontScale(scalePixelsPerMicron / this.scalePixelsPerMicron);
     else if (fontScale != imageFontScaling)
       setFontScale(imageFontScaling);
+    
     if (doFormatText)
       formatText();
-    setPositions();
+
+    if (isLabelOrHover) {
+      boxXY[0] = movableX;
+      boxXY[1] = movableY;      
+      setLabelPosition(boxWidth, boxHeight, offsetX * fontScale, offsetY * fontScale, boxXY);
+    } else {
+      setPosition();
+    }
+    boxX = boxXY[0];
+    boxY = boxXY[1];
 
     // adjust positions if necessary
 
-    setBoxOffsetsInWindow();
+    if (adjustForWindow)
+      setBoxOffsetsInWindow();
 
     // draw the box if necessary
 
     if (bgcolix != 0 && g3d.setColix(bgcolix))
       showBox(g3d, colix, bgcolix, (int) boxX, (int) boxY, z + 2, zSlab, 
-          (int) boxWidth, (int) boxHeight, fontScale, atomBased);
+          (int) boxWidth, (int) boxHeight, fontScale, isLabelOrHover);
     if (g3d.setColix(colix)) {
 
       // now set x and y positions for text from (new?) box position
@@ -461,9 +475,9 @@ public class Text {
     }
   }
 
-  private void setPositions() {
+  private void setPosition() {
     float xLeft, xCenter, xRight;
-    boolean is3dEcho = (atomBased || xyz != null);
+    boolean is3dEcho = (xyz != null);
     if (valign == VALIGN_XY || valign == VALIGN_XYZ) {
       float x = (movableXPercent != Integer.MAX_VALUE ? movableXPercent
           * windowWidth / 100 : is3dEcho ? movableX : movableX * fontScale);
@@ -478,113 +492,42 @@ public class Text {
 
     // set box X from alignments
 
-    boxX = xLeft;
+    boxXY[0] = xLeft;
     switch (align) {
     case ALIGN_CENTER:
-      boxX = xCenter - boxWidth / 2;
+      boxXY[0] = xCenter - boxWidth / 2;
       break;
     case ALIGN_RIGHT:
-      boxX = xRight - boxWidth;
+      boxXY[0] = xRight - boxWidth;
     }
 
     // set box Y from alignments
 
-    boxY = 0;
+    boxXY[1] = 0;
     switch (valign) {
     case VALIGN_TOP:
       break;
     case VALIGN_MIDDLE:
-      boxY = windowHeight / 2;
+      boxXY[1] = windowHeight / 2;
       break;
     case VALIGN_BOTTOM:
-      boxY = windowHeight;
+      boxXY[1] = windowHeight;
       break;
     default:
       float y = (movableXPercent != Integer.MAX_VALUE ? movableYPercent
           * windowHeight / 100 : is3dEcho? movableY : movableY * fontScale);
       float offsetY = this.offsetY * fontScale;
-      boxY = (is3dEcho ? y : (windowHeight - y)) + offsetY;
-      //System.out.println(" movableY = " + movableY + " offsetY = " + offsetY + " boxY=" + boxY);
+      boxXY[1] = (is3dEcho ? y : (windowHeight - y)) + offsetY;
+      //System.out.println(" movableY = " + movableY + " offsetY = " + offsetY + " boxXY[1]=" + boxXY[1]);
     }
+    
+    if (valign == VALIGN_XYZ)
+      boxXY[1] += ascent / 2;
+
   }
 
-  void setBoxOffsetsInWindow() {
-    float xAdj = 0;
-    float yAdj = 0;
-    //System.out.println("lineHeight="+lineHeight);
-    //boolean is3dEcho = (atomBased || xyz != null);
-    if (!adjustForWindow)
-      yAdj -= lineHeight;
-    if (atomBased && align == ALIGN_NONE) {
-      xAdj += JmolConstants.LABEL_DEFAULT_X_OFFSET * fontScale;
-      yAdj -= JmolConstants.LABEL_DEFAULT_Y_OFFSET * fontScale + (fontScale >= 2 ? 8 : 4);
-    }
-/*    if (antialias && atomBased) {
-      yAdj -= lineHeight / 2;
-    }
-*/
-    if (valign == VALIGN_XYZ) {
-      yAdj += ascent / 2;
-    }
-
-    boxX += xAdj;
-    boxY += yAdj;
-
-    if (adjustForWindow) {
-      // not labels
-
-      // these coordinates are (0,0) in top left
-      // (user coordinates are (0,0) in bottom left)
-      float margin = 5 * fontScale;
-      float bw = boxWidth + margin;
-      float x = boxX;
-      if (x + bw > windowWidth)
-        x = windowWidth - bw;
-      if (x < margin)
-        x = margin;
-      boxX = x;
-
-      margin = (atomBased ? 16 * fontScale + lineHeight : 0);
-      float bh = boxHeight;
-      float y = boxY - textHeight;
-      if (y + bh > windowHeight)
-        y = windowHeight - bh;
-      if (y < margin)
-        y = margin;
-      boxY = y;
-    }
-  }
-
-  private static void showBox(JmolRendererInterface g3d, short colix,
-                              short bgcolix, int x, int y, int z, int zSlab,
-                              int boxWidth, int boxHeight,
-                              float imageFontScaling, boolean atomBased) {
-    g3d.fillRect(x, y, z, zSlab, boxWidth, boxHeight);
-    g3d.setColix(colix);
-    if (!atomBased)
-      return;
-    if (imageFontScaling >= 2) {
-      g3d.drawRect(x + 3, y + 3, z - 1, zSlab, boxWidth - 6, boxHeight - 6);
-      g3d.drawRect(x + 4, y + 4, z - 1, zSlab, boxWidth - 8, boxHeight - 8);
-    } else {
-      g3d.drawRect(x + 1, y + 1, z - 1, zSlab, boxWidth - 2, boxHeight - 2);
-    }
-  }
-
-  final static void renderSimpleLabel(JmolRendererInterface g3d, Font3D font,
-                                 String strLabel, short colix, short bgcolix,
-                                 float x, float y, int z, int zSlab,
-                                 int xOffset, int yOffset, float ascent,
-                                 int descent, boolean doPointer,
-                                 short pointerColix) {
-
-    // old static style -- quick, simple, no line breaks, odd alignment?
-    // LabelsRenderer only
-
-    int x0 = (int) x;
-    int y0 = (int) y;
-    float boxWidth = font.fontMetrics.stringWidth(strLabel) + 8;
-    float boxHeight = ascent + descent + 8;
+  static void setLabelPosition(float boxWidth, float boxHeight,
+                               float xOffset, float yOffset, float[] boxXY) {
     float xBoxOffset, yBoxOffset;
 
     // these are based on a standard |_ grid, so y is reversed.
@@ -607,14 +550,76 @@ public class Text {
         yBoxOffset = -boxHeight + yOffset;
     }
 
-    //if (antialias)
-    //yBoxOffset -= boxHeight;
-    x += xBoxOffset;
-    y += yBoxOffset;
+    boxXY[0] += xBoxOffset;
+    boxXY[1] += yBoxOffset;
+  
+  }
+  
+  void setBoxOffsetsInWindow() {
+    // not labels
 
+    // these coordinates are (0,0) in top left
+    // (user coordinates are (0,0) in bottom left)
+    float margin = 5 * fontScale;
+    float bw = boxWidth + margin;
+    float x = boxXY[0];
+    if (x + bw > windowWidth)
+      x = windowWidth - bw;
+    if (x < margin)
+      x = margin;
+    boxXY[0] = x;
+
+    margin = (isLabelOrHover ? 16 * fontScale + lineHeight : 0);
+    float bh = boxHeight;
+    float y = boxXY[1] - textHeight;
+    if (y + bh > windowHeight)
+      y = windowHeight - bh;
+    if (y < margin)
+      y = margin;
+    boxXY[1] = y;
+  }
+
+  private static void showBox(JmolRendererInterface g3d, short colix,
+                              short bgcolix, int x, int y, int z, int zSlab,
+                              int boxWidth, int boxHeight,
+                              float imageFontScaling, boolean atomBased) {
+    g3d.fillRect(x, y, z, zSlab, boxWidth, boxHeight);
+    g3d.setColix(colix);
+    if (!atomBased)
+      return;
+    if (imageFontScaling >= 2) {
+      g3d.drawRect(x + 3, y + 3, z - 1, zSlab, boxWidth - 6, boxHeight - 6);
+      g3d.drawRect(x + 4, y + 4, z - 1, zSlab, boxWidth - 8, boxHeight - 8);
+    } else {
+      g3d.drawRect(x + 1, y + 1, z - 1, zSlab, boxWidth - 2, boxHeight - 2);
+    }
+  }
+
+  final static void renderSimpleLabel(JmolRendererInterface g3d, Font3D font,
+                                 String strLabel, short colix, short bgcolix,
+                                 float[] boxXY, int z, int zSlab,
+                                 int xOffset, int yOffset, float ascent,
+                                 int descent, boolean doPointer,
+                                 short pointerColix) {
+
+    // old static style -- quick, simple, no line breaks, odd alignment?
+    // LabelsRenderer only
+
+    float boxWidth = font.fontMetrics.stringWidth(strLabel) + 8;
+    float boxHeight = ascent + descent + 8;
+    
+    int x0 = (int) boxXY[0];
+    int y0 = (int) boxXY[1];
+    
+    setLabelPosition(boxWidth, boxHeight, xOffset, yOffset, boxXY);
+
+    float x = boxXY[0];
+    float y = boxXY[1];
     if (bgcolix != 0 && g3d.setColix(bgcolix))
       showBox(g3d, colix, bgcolix, (int) x, (int) y, z, zSlab, (int) boxWidth,
           (int) boxHeight, 1, true);
+    else
+      g3d.setColix(colix);
     g3d.drawString(strLabel, font, (int) (x + 4),
         (int) (y + 4 + ascent), z - 1, zSlab);
 
@@ -630,7 +635,7 @@ public class Text {
 
   public String getState(boolean isDefine) {
     StringBuffer s = new StringBuffer();
-    if (text == null || atomBased || target.equals("error"))
+    if (text == null || isLabelOrHover || target.equals("error"))
       return "";
     //set echo top left
     //set echo myecho x y
@@ -694,8 +699,9 @@ public class Text {
   }
 
   public boolean checkObjectClicked(int x, int y) {
-    return (script != null && x >= boxX && x <= boxX + boxWidth && y >= boxY && y <= boxY
-        + boxHeight);
+    return (script != null 
+        && x >= boxX && x <= boxX + boxWidth 
+        && y >= boxY && y <= boxY + boxHeight);
   }
 
   private int stringWidth(String str) {

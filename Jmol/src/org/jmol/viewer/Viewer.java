@@ -1806,7 +1806,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setFrankOn(getShowFrank());
     mouseManager.startHoverWatcher(true);
     setTainted(true);
-    //finalizeTransformParameters();
+    finalizeTransformParameters();
   }
 
   public String getModelSetName() {
@@ -2944,6 +2944,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public int getScreenHeight() {
     return dimScreen.height;
+  }
+  
+  public int getScreenDim() {
+    return  (global.zoomLarge == (dimScreen.height > dimScreen.width) ? dimScreen.height : dimScreen.width);
   }
 
   /* not implemented
@@ -6201,8 +6205,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setImageFontScaling(int width, int height) {
     float screenDimNew = (global.zoomLarge == (height > width) ? height : width);
-    float screenDimNow = (global.zoomLarge == (dimScreen.height > dimScreen.width) ? dimScreen.height : dimScreen.width);
-    imageFontScaling = screenDimNew / screenDimNow;
+    imageFontScaling = screenDimNew / getScreenDim();
   }
   
   private boolean syncingScripts = false;

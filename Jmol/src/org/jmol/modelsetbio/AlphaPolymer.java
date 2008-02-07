@@ -32,6 +32,7 @@ public class AlphaPolymer extends BioPolymer {
 
   AlphaPolymer(Monomer[] monomers) {
     super(monomers);
+    //System.out.println("new AlphaPolymer " + monomers[0].getChainID() + " " + monomers[0].getSeqcodeString() + " " + monomers[monomers.length - 1].getSeqcodeString());
   }
 
   public void addSecondaryStructure(byte type,
@@ -41,6 +42,7 @@ public class AlphaPolymer extends BioPolymer {
     if ((indexStart = getIndex(startChainID, startSeqcode)) == -1 ||
         (indexEnd = getIndex(endChainID, endSeqcode)) == -1)
       return;
+    //System.out.println("AlphaPolymer addSecStr " + type + " " + indexStart + " " + indexEnd);
     addSecondaryStructure(type, indexStart, indexEnd);
   }
 

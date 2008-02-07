@@ -224,16 +224,20 @@ public abstract class BioPolymer extends Polymer {
   
   int getIndex(char chainID, int seqcode) {
     int i;
-    for (i = monomerCount; --i >= 0; )
-      if (monomers[i].getSeqcode() == seqcode &&
-          monomers[i].getChainID() == chainID)
-        break;
+    for (i = monomerCount; --i >= 0;)
+      if (monomers[i].getChainID() == chainID) {
+        //System.out.println("BioPolymer getIndex seqcode monomers[i].seqcode " + chainID + " "
+          //  + Group.getSeqcodeString(seqcode) + " "
+            //+ Group.getSeqcodeString(monomers[i].getSeqcode()));
+        if (monomers[i].getSeqcode() == seqcode)
+          break;
+      }
     return i;
   }
 
   final Point3f getLeadPoint(int monomerIndex) {
     return monomers[monomerIndex].getLeadAtomPoint();
-  }
+  } 
 
   final Point3f getInitiatorPoint() {
     return monomers[0].getInitiatorAtom();

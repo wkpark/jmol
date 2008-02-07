@@ -6297,7 +6297,7 @@ class Eval { //implements Runnable {
     switch (iToken = statementLength) {
     case 6:
       scaleAngstromsPerPixel = floatParameter(5);
-      if (scaleAngstromsPerPixel > 5) // actually a zoom value
+      if (scaleAngstromsPerPixel >= 5) // actually a zoom value
         scaleAngstromsPerPixel = 
           viewer.getZoomPercentFloat() / scaleAngstromsPerPixel 
             / viewer.getScalePixelsPerAngstrom();
@@ -7801,7 +7801,7 @@ class Eval { //implements Runnable {
     while (true) {
       if (str.equals("scalereference")) {
         float scaleAngstromsPerPixel = floatParameter(2);
-        if (scaleAngstromsPerPixel> 5) // actually a zoom value
+        if (scaleAngstromsPerPixel >= 5) // actually a zoom value
           scaleAngstromsPerPixel =  viewer.getZoomPercentFloat() / scaleAngstromsPerPixel 
               / viewer.getScalePixelsPerAngstrom();
         propertyValue = new Float(scaleAngstromsPerPixel);

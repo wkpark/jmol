@@ -101,6 +101,7 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "spartan", "smol", "SpartanSmol");
     result.addDirectory(false, "spartan", "txt", "Spartan");
     result.addDirectory(false, "sparchive", "sparchive", "Spartan");
+    result.addDirectory(false, "spinput", "spinput", "Odyssey");
     result.addDirectory(false, "v3000", "sdf");
     result.addDirectory(false, "xyz", "xyz");
     return result;

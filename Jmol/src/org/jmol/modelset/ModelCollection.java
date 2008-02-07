@@ -1900,8 +1900,8 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = atomCount; --i >= 0;) {
       boolean isAtomInSetA = (bsA == null || bsA.get(i));
       boolean isAtomInSetB = (bsB == null || bsB.get(i));
-      if (!isAtomInSetA && !isAtomInSetB || bsExclude != null
-          && bsExclude.get(i))
+      if (!isAtomInSetA && !isAtomInSetB)
+        //|| bsExclude != null && bsExclude.get(i))
         continue;
       Atom atom = atoms[i];
       int modelIndex = atom.modelIndex;
@@ -1930,8 +1930,10 @@ abstract public class ModelCollection extends BondCollection {
         int atomIndexNear = atomNear.atomIndex;
         boolean isNearInSetA = (bsA == null || bsA.get(atomIndexNear));
         boolean isNearInSetB = (bsB == null || bsB.get(atomIndexNear));
-        if (!isNearInSetA && !isNearInSetB || bsExclude != null
-            && bsExclude.get(atomIndexNear))
+        if (!isNearInSetA && !isNearInSetB 
+            || bsExclude != null && bsExclude.get(atomIndexNear)
+            && bsExclude.get(i) //this line forces BOTH to be excluded in order to ignore bonding
+             )
           continue;
         if (!(isAtomInSetA && isNearInSetB || isAtomInSetB && isNearInSetA))
           continue;

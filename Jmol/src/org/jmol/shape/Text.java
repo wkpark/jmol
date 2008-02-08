@@ -309,12 +309,13 @@ public class Text {
     recalc();
   }
 
-  private void setFontScale(float scale) {
+  void setFontScale(float scale) {
     if (fontScale == scale)
       return;
     //System.out.println(fontSize + " " + scale + " " + (fontSize * scale));
     fontScale = scale;
-    setFont(g3d.getFont3DScaled(font, scale));
+    if (fontScale != 0)
+      setFont(g3d.getFont3DScaled(font, scale));
   }
 
   boolean setAlignment(String align) {

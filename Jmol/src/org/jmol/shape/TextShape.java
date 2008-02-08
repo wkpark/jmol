@@ -163,6 +163,7 @@ public abstract class TextShape extends Shape {
         return;
       }
       currentText.setFont(currentFont);
+      currentText.setFontScale(0);
       return;
     }
 

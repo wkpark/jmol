@@ -100,21 +100,139 @@
 	estuvo disponible en diciembre de 2004. Tras ella llegó, en abril de 2006, 
 	una versión mejorada, la 10.2.
       </p>
+		</section>
+		<section title="Jmol deja atrás a Chime">
 			<p>
-	La versión 11, con un notable conjunto de 
-	nuevas prestaciones, está disponible desde febrero de 2007.
+	Poco después de que se publicara la versión 10.2, Bob Hanson comenzó a protagonizar el trabajo 
+	en el código de Jmol, y comenzó a añadir prestaciones nuevas que no están disponibles en
+	Rasmol y Chime --muchas de ellas tras tímidas preguntas o sueños de los usuarios--.
+	Como consecuencia de una tremenda cantidad de trabajo, se publicó la versión 11.0 
+	en febrero de 2007,  seguida en agosto por la versión 11.2 y a principios de 2008 por la 11.4.
       </p>
+			<p>
+	Éstas son algunas de las nuevas prestaciones más destacables:
+      </p>
+			<ul>
+				<li>Entrada y salida:
+		  <ul>
+						<li>Carga de varios archivos, incluso con múltiples modelos cada uno. Es posible cargar los archivos secuencialmente
+	en nuevos "fotogramas" o bien añadirlos al fotograma actual de modo que se combinen dos grupos de datos en uno solo.</li>
+						<li>Grabar y recuperar el estado del modelos. Tales "instantáneas" pueden usarse para copiar el modelo a una ventana
+	emergente, para grabarlo y recuperarlo posteriormente, o para enviar por correo electrónico a un colega una vista específica de un modelo 
+	especifico.</li>
+						<li>Compatibilidad con la base de datos PDB "remediada".</li>
+						<li>Compatibilidad con registros SITE en pdb y cif.</li>
+						<li>Lectura de directorios de Mac Spartan06.</li>
+						<li>Lectura de modelos desde archivos zip. Lectura de contenido de texto desde archivos zip y jar.</li>
+						<li>Lectura del formato Molden.</li>
+						<li>Archivos con formato plt de gOpenMol para isosuperficies.</li>
+						<li>Exportación a VRML.</li>
+						<li>Exportación a POV-Ray muy mejorada (sólo en la aplicación).</li>
+						<li>Diversos datos pueden grabarse a un archivo (sólo en la aplicación) o copiarse al portapapeles, incluyendo
+	el modelo, una imagen, el historial de instrucciones, el estado del modelo, el orbital molecular actual o la isosuperficie.</li>
+						<li>Creación en tiempo real de "instantáneas"  jpeg de la vista mostrada (aplicación y miniaplicación). La generación 
+	programada de éstas mediante un guión permite crear películas usando herramientas comunes.</li>
+						<li>La aplicación Jmol incluye el complemento WebExport, que permite crear fácilmente páginas web que incluyen
+	una miniaplicación mostrando la vista actual del modelo.</li>
+					</ul>
+				</li>
+				<li>Variables Jmol y aritmética:
+		  <ul>
+						<li>Uso de variables y operadores aritméticos.</li>
+						<li>Estructuras if/else/endif en los guiones.</li>
+						<li>Estructuras if/while/for.</li>
+						<li>Se puede leer un gran número de propiedades, lo que hace de Jmol un portal generalizado para la información
+	estructural de moléculas.</li>
+						<li>Tipos de datos definidos por el usuario y aplicación selectiva al modelo de datos atómicos contenidos en archivos externos, 
+	para la visualización de propiedades mediante colores.</li>
+						<li>Se pueden definir variables y manejarlas usando una aritmética sencilla, mediante variables de tipo lógico (verdadero/falso), 
+	entero, real, de texto, matrices, puntos o planos.</li>
+					</ul>
+				</li>
+				<li>Cristalografía:
+		  <ul>
+						<li>Se incluye y se maneja el concepto de simetría cristalográfica.</li>
+						<li>Se pueden definir grupos espaciales arbitrarios y celdillas unitarias, para cualquier modelo en cualquier formato de 
+	archivo, incluso si tal información no está contenida en el archivo y si las coordenadas no son fraccionarias.</li>
+						<li>Secciones planas a través de un modelo basadas en los planos de los índices de Miller.</li>
+						<li>Opciones ampliadas para la celdilla unitaria y la caja envolvente.</li>
+					</ul>
+				</li>
+				<li>Guiones:
+		  <ul>
+						<li>Se pueden designar funciones de retrollamada (<i>callback</i>) sobre la marcha.</li>
+						<li>Se implementa un mecanismo robusto de colas para los guiones, de modo que es posible iniciar varios guiones
+	sin riesgo de que uno interrumpa al otro.</li>
+						<li>Se incorpora en Jmol.js capacidad para AJAX, de modo que una miniaplicación en cualquier página web puede
+	acceder a un modelo en cualquier ubicación de internet en cualquier momento.</li>
+						<li>Nueva instrucción <tt>message</tt> para comunicar el estado de un guión a la página mientras se ejecuta el guión.</li>
+						<li>Es posible definir macros, subrutinas y funciones.</li>
+					</ul>
+				</li>
+				<li>Edición del modelo:
+		  <ul>
+						<li>Se pueden crear, modificar y eliminar enlaces a voluntad, incluyendo los sencillos, múltiples, aromáticos y
+	varios tipos de enlaces parciales.</li>
+						<li>Es posible mover los átomos de sus posiciones originales definidas en el archivo.</li>
+						<li>Translación, rotación, giro o inversión a través de un punto o un plano para los átomos que se seleccionen.</li>
+						<li>Las propiedades de los átomos pueden establecerse usando las matemáticas de Jmol o con una matriz.</li>
+					</ul>
+				</li>
+				<li>Biopolímeros:
+		  <ul>
+						<li>Hélices en forma de cilindros en lugar de "cohetes".</li>
+						<li>Recálculo de estructura secundaria sobre la marcha tras seleccionar un grupo determinado de posiciones alternativas de
+	los átomos.</li>
+						<li>Generación de una representación de Ramachandran interactiva, calculada a partir del modelo.</li>
+					</ul>
+				</li>
+				<li>Superficies:
+		  <ul>
+						<li>Objetos dibujados: esferas, elipsoides, vectores de dipolo, puntos, líneas, triángulos y cuadriláteros, flechas rectas y
+	curvas en tres dimensiones.</li>
+						<li>Superficies pmesh no planas.</li>
+						<li>Orbitales LCAO esquemáticos.</li>
+						<li>Superficies f(x,y) arbitrarias.</li>
+						<li>Isosuperficies no dependientes de archivos <tt>cube</tt>.</li>
+						<li>Gestión de orbitales moleculares.</li>
+						<li>Cálculo directo de superficies de orbitales moleculares a partir de datos de orbitales atómicos y coeficientes en el archivo.</li>
+						<li>Mapas de potencial electrostático molecular a partir de datos de carga en el archivo.</li>
+						<li>Superficies moleculares: con radio atómico fijo, con radio de van de Waals ajustable, de accesibilidad al disolvente, 
+	de exclusión del disolvente, cavidades biomoleculares.</li>
+						<li>Superficies creadas automáticamente mediante instrucciones de guión en la aplicación.</li>
+						<li>El formato de archivo Jmol Voxel (JVXL), con una compresión entre 300 y 600 veces superior a los archivos
+	<tt>cube</tt> con mapa de colores, permite suministrar superficies de accesibilidad al disolvente o de exclusión para proteínas completas, con mapa de colores. La aplicación Jmol puede grabar a disco tales superficies y luego la miniaplicación las puede mostrar casi instantáneamente.</li>
+						<li>Planos y superficies arbitrarias f(x,y) con curvas de nivel coloreadas.</li>
+						<li>Mapeo en isosuperficies de datos de potencial electrostático molecular y de orbital molecular sobre planos.</li>
+						<li>Cálculo de la distancia a una superficie.</li>
+					</ul>
+				</li>
+				<li>Anotación del modelo mediante texto colocado en cualquier coordenada {x y z}.</li>
+				<li>Selección y eliminación de átomos basada en uno o varios planos.</li>
+				<li>Un modelo en concreto puede designarse como modelo "de fondo" en situaciones multimodelo.</li>
+				<li>Coloración personalizada del modo estereográfico.</li>
+				<li>Puede hacerse rotar y girar el modelo alrededor de cualquier eje relativo a la molécula, independientemente de la orientación
+	elegida por el usuario.</li>
+				<li>El modo de navegación permite "vuelos a través" del modelo.</li>
+				<li>Nueva semitransparencia de los objetos, produciendo una representación vívida de varios objetos translúcidos con ocho 
+	grados de transparencia.</li>
+				<li>Suavizado (<i>antialiasing</i>) en la visualización y en las imágenes exportadas.</li>
+				<li>El idioma de la interfaz se puede cambiar en cualquier momento, desde el menú emergente o desde un guión.</li>
+				<li>El menú emergente se puede personalizar.</li>
+				<li>Títulos para los fotogramas y textos "echo" específicos para cada modelo.</li>
+				<li>Cambio del modelo al modo alambres mientras se lo hace girar.</li>
+				<li>Se pueden sincronizar varias miniaplicaciones de una página, de modo que las acciones sobre el modelo de una de ellas se transmitan a los de otras.</li>
+			</ul>
 		</section>
 		<section title="Historial de cambios">
-			<p>Cambios en el futuro Jmol 11.2: <a href="http://www.stolaf.edu/academics/chemapps/jmol/docs/examples-11/new.htm">lista y demostración</a></p>
-			<p>Cambios en Jmol 11.0:</p>
-			<ul>
-				<li><a href="http://sourceforge.net/forum/forum.php?forum_id=678304">Resumen</a></li>
-				<li><a href="http://www.stolaf.edu/academics/chemapps/jmol/docs/examples-11/new0.htm">Listado 
-				más detallado  y demostración</a></li>
-			</ul>
-			<p>Cambios en Jmol 10.2: <a href="http://www.stolaf.edu/people/hansonr/jmol/test/10.2/new.htm">lista y demostración</a>
+			<p><i>Consulta también la página de <a href="http://sourceforge.net/news/?group_id=23629">noticias</a>.</i></p>
+			<p>Hay listados y demostración de las nuevas prestaciones para
+	<a href="http://chemapps.stolaf.edu/jmol/docs/examples-11/new.htm">la última versión</a> |
+	<a href="http://chemapps.stolaf.edu/jmol/docs/examples-11/new2.htm">Jmol 11.2</a> | 
+	<a href="http://chemapps.stolaf.edu/jmol/docs/examples-11/new0.htm">Jmol 11.0</a> | 
+	<a href="http://chemapps.stolaf.edu/jmol/docs/examples-10.2/new.htm">Jmol 10.2</a>.
 			</p>
+			<p>Historial anterior:</p>
 			&changes;
 		</section>
 		<section title="Colaboradores">

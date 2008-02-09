@@ -80,7 +80,7 @@
 	(<a href="./faqs/index.es.html#%C2%BFC%C3%B3mo%20se%20escribe%20Jmol?">explicación</a>).
 	</p>
 			<p>Si lo prefieres, hay una lista de artículos que describen Jmol en la
-	<a href="http://wiki.jmol.org:81/index.php/Literature">Wiki de Jmol</a>.
+	<a href="http://wiki.jmol.org/index.php/Literature">Wiki de Jmol</a>.
 	</p>
 		</section>
 		<section title="Qué puede hacer Jmol">
@@ -149,7 +149,7 @@
 	  Representación gráfica tridimensional de alto rendimiento sin requisitos de hardware
 	</li>
 					<li>
-	  Formatos de archivo (véase también la sección <a href="http://wiki.jmol.org:81/index.php/File_formats">file formats</a> 
+	  Formatos de archivo (véase también la sección <a href="http://wiki.jmol.org/index.php/File_formats">file formats</a> 
 	de la Wiki de Jmol): 
 	  <ul>
 							<li>
@@ -288,6 +288,10 @@
 					<li>
 	  Exporta a .jpg, .png, .ppm, .pdf y PovRay
 	</li>
+					<li>
+	  Para más detalles, consulta el <a href="./history/#Historial%20de%20cambios">historial</a> 
+	  de desarrollo.
+	</li>
 				</ul>
 			</section>
 			<section title="¿Qué dice la crítica?">
@@ -319,11 +323,10 @@
 		</section>
 		<section title="Aprende a usar Jmol">
 			<section title="Manuales y guías">
-				<p>Se ha publicado un manual para aprender Jmol y hay también otras publicaciones acerca de Jmol. 
-	Puedes encontrar ambos en la sección <a href="http://wiki.jmol.org:81/index.php/Literature">Jmol Literature</a> de la Wiki de Jmol.
+				<p>Se ha publicado un <a href="http://biomodel.uah.es/anun/manual-jmol/">manual</a> para aprender Jmol y hay también <a href="http://wiki.jmol.org/index.php/Literature">otras publicaciones</a> acerca de Jmol.
 	</p>
-				<p>Hay también una lista de <a href="http://wiki.jmol.org:81/index.php/Main_Page">guías</a> diseñadas para
-	aprender a usar Jmol, y más ayudas, en la <a href="http://wiki.jmol.org:81/">Wiki de Jmol</a>. 
+				<p>Hay también una lista de <a href="http://wiki.jmol.org/index.php/Main_Page">guías</a> diseñadas para
+	aprender a usar Jmol, y más ayudas, en la <a href="http://wiki.jmol.org/">Wiki de Jmol</a>. 
 	</p>
 				<p>Por último, hay una sección de <a href="./docs/">documentación</a> en esta misma sede web, 
 	con detalles más técnicos. 
@@ -331,11 +334,11 @@
 			</section>
 			<section title="Aprende con ejemplos">
 				<p>También puedes aprender examinando páginas web que utilizan Jmol: <a href="./demo/">páginas de demostración</a>
- 	en esta sede web y una lista de <a href="http://wiki.jmol.org:81/index.php/Websites_Using_Jmol">sitios web que usan Jmol</a> dentro de 
+ 	en esta sede web y una lista de <a href="http://wiki.jmol.org/index.php/Websites_Using_Jmol">sitios web que usan Jmol</a> dentro de 
 	la Wiki de Jmol.
 	</p>
 			</section>
-			<section title="Interacción con la comunidad de Jmol">
+			<section title="Comunidad de Jmol">
 				<section title="Wiki de Jmol">
 					<p>Un sitio mantenido por los propios usuarios donde se recopila un montón de información sobre el uso de Jmol. 
 	<i>¡Más dinámico y actualizado con más frecuencia que esta sede web!</i>

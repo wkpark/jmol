@@ -1,11 +1,10 @@
+/* Jmol 11.4 script library Jmol.js 12:44 PM 12/10/2007 hansonr
 
-/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 5:35 PM 8/7/2007 hansonr
-
- checkbox heirarchy -- see http://www.stolaf.edu/academics/jmol/docs/examples-11/check.htm
+ checkbox heirarchy -- see http://chemapps.stolaf.edu/jmol/docs/examples-11/check.htm
 
     based on:
  *
- * Copyright (C) 2004-2005  Miguel, Jmol Development, www.jmol.org
+ * Copyright (C) 2004-2007  Miguel, Jmol Development, www.jmol.org
  *
  * Contact: hansonr@stolaf.edu
  *
@@ -57,7 +56,11 @@ try{if(typeof(_jmol)!="undefined")exit()
 // bh         -- jmolSetTranslation(TF) -- forces translation even if there might be message callback issues
 // bh         -- minor fixes suggested by Angel
 // bh         -- adds jmolSetSyncId() and jmolGetSyncId()
-	  	
+
+// bh         -- workaround for Mac liveConnect bug not able to match method signature in loadInline:
+//               ALWAYS USE jmolLoadInlineArray() or jmolLoadInlineString()
+
+
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
 
@@ -361,23 +364,58 @@ function jmolScript(script, targetSuffix) {
   }
 }
 
+//Java in MacOS X bug: cannot differentiate properly between signatures String and String[]
+//so we have to do these explicitly
+
+function jmolLoadInlineString(model, script, isAppend, targetSuffix) {
+  if (!model)return
+  if (!script)script ="";
+  if (!isAppend)isAppend = false;
+  if (!targetSuffix)targetSuffix = 0;
+  var applet=_jmolGetApplet(targetSuffix);
+  if (!applet)return;
+  if (applet.loadInlineString) //Jmol 11.4
+	applet.loadInlineString(model, script, isAppend);
+  else //Jmol 11.2
+	applet.loadInlineString(model, script);
+
+}
+
+//If the array contains strings that include newline characters, then the array is assumed to 
+//be a set of models; if not, then the array is assumed to be a set of lines for one model
+
+function jmolLoadInlineArray(model_or_models, script, isAppend, targetSuffix) {
+  if (!model_or_models)return
+  if (!script)script ="";
+  if (!isAppend)isAppend = false;
+  if (!targetSuffix)targetSuffix = 0;
+  var applet=_jmolGetApplet(targetSuffix);
+  if (!applet)return;
+  if (applet.loadInlineArray) //Jmol 11.4
+	applet.loadInlineArray(model_or_models, script, isAppend);
+  else //Jmol 11.2
+	applet.loadInline(model_or_models, script);
+}
+
+
+// modified to work under MAC OS
+
 function jmolLoadInline(model, targetSuffix) {
   if (!model)return
-  var applet=_jmolGetApplet(targetSuffix);
-  if (applet)applet.loadInline(model);
+  if (!targetSuffix)targetSuffix = 0;
+  jmolLoadInlineString(model, "", false, targetSuffix);
 }
+
+// modified to work under MAC OS
 
 function jmolLoadInlineScript(model, script, targetSuffix) {
   if (!model)return
-  var applet=_jmolGetApplet(targetSuffix);
-  if (applet)applet.loadInline(model, script);
-}
-
-function jmolLoadInlineArray(ModelArray, script, targetSuffix) {
-  if (!model)return
-  if (!script)script=""
-  var applet=_jmolGetApplet(targetSuffix);
-  if (applet)applet.loadInlineArray(ModelArray, script);
+  if (!script)script ="";
+  if (!targetSuffix)targetSuffix = 0;
+  if (typeof(model)=="object")
+    jmolLoadInlineArray(model, script, false, targetSuffix);
+  else
+    jmolLoadInlineString(model, script, false, targetSuffix);
 }
 
 function jmolCheckBrowser(action, urlOrMessage, nowOrLater) {
@@ -1097,10 +1135,10 @@ function _jmolSortMessages(A){
 /////////additional extensions //////////
 
 
-function _jmolDomScriptLoad(URL){
+function _jmolDomScriptLoad(URL, target){
  //open(URL) //to debug
  _jmol.servercall=URL
- var node = document.getElementById("_jmolScriptNode")
+ var node = document.getElementById("_jmolScriptNode" + target)
  if (node && _jmol.browser!="msie"){
     document.getElementsByTagName("HEAD")[0].removeChild(node)
     node=null
@@ -1109,7 +1147,7 @@ function _jmolDomScriptLoad(URL){
    node.setAttribute("src",URL)
  } else {
    node=document.createElement("script")
-   node.setAttribute("id","_jmolScriptNode")
+   node.setAttribute("id","_jmolScriptNode" + target)
    node.setAttribute("type","text/javascript")
    node.setAttribute("src",URL)
    document.getElementsByTagName("HEAD")[0].appendChild(node)
@@ -1133,7 +1171,7 @@ function _jmolLoadModel(targetSuffix,remoteURL,array,isError,errorMessage){
  //overload this function to customize return
  _jmol.remoteURL=remoteURL
  if(isError)alert(errorMessage)
- jmolLoadInlineScript(array.join("\n"),_jmol.optionalscript,targetSuffix)
+ jmolLoadInlineArray(array,_jmol.optionalscript,false,targetSuffix)
 }
 
 //////////user property/status functions/////////
@@ -1304,7 +1342,7 @@ function jmolLoadAjax_STOLAF_RCSB(fileformat,pdbid,optionalscript,targetSuffix){
  _jmol.thisurl=url
  _jmol.modelArray = new Array()
  url=_jmol.serverURL+"?returnfunction=_jmolLoadModel&returnArray=_jmol.modelArray&id="+targetSuffix+_jmolExtractPostData(url)
- _jmolDomScriptLoad(url)
+ _jmolDomScriptLoad(url, targetSuffix)
  return url
 }
 
@@ -1322,7 +1360,7 @@ function jmolLoadAjax_STOLAF_ANY(url, userid, optionalscript,targetSuffix){
  _jmol.modelArray = new Array()
  _jmol.thisurl = url
  url=_jmol.serverURL+"?returnfunction=_jmolLoadModel&returnArray=_jmol.modelArray&id="+targetSuffix+_jmolExtractPostData(url)
- _jmolDomScriptLoad(url)
+ _jmolDomScriptLoad(url, targetSuffix)
 }
 
 
@@ -1348,7 +1386,7 @@ function jmolLoadAjax_MSA(key,value,optionalscript,targetSuffix){
  _jmol.thisurl=url
  _jmol.modelArray = new Array()
  loadModel=_jmolLoadModel
- _jmolDomScriptLoad(url)
+ _jmolDomScriptLoad(url, targetSuffix)
  return url
 }
 
@@ -1364,7 +1402,7 @@ function jmolLoadAjaxJS(url, userid, optionalscript,targetSuffix){
  _jmol.modelArray = new Array()
  _jmol.thisurl = url
  url+="&returnFunction=_jmolLoadModel&returnArray=_jmol.modelArray&id="+targetSuffix
- _jmolDomScriptLoad(url)
+ _jmolDomScriptLoad(url, targetSuffix)
 }
 
 

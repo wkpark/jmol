@@ -3,86 +3,86 @@ set frank off;
 spacefill off; wireframe off;
 set echo top center; font echo 22 serif; color echo white
 echo "Le futur de la ..."
-delay 3
+delay 1.5
 set echo middle center; font echo 22 serif; color echo white
 echo "visualisation mol\u00E9culaire"
-delay 3
+delay 1.5
 set echo bottom center; font echo 22 serif; color echo white
 echo "... est arriv\u00E9 ..."
-delay 5
+delay 3
 #
 set echo off;
 set echo middle center; font echo 60 serif bold; color echo yellow
 echo "Jmol"
-delay 2
+delay 1.5
 set echo off;
 color atoms gold; color bonds yellow
 zoom 10;
 wireframe .25; spacefill .3;
-moveto 1 0 0 0 0 140;
-delay 2;
+moveto 1 0 0 0 0 120;
+delay 1.5;
 moveTo 1 5 345 939 79.5 24 51 57
 
-script script/smallMolecules.fr.txt
+script script/smallMolecules.en.txt
 set echo off;
 restrict none;
 set echo off;
 set echo top center; font echo 22; color echo cyan
 echo "Ce n'est *pas* un film ..."
-delay 2;
+delay 1.2;
 set echo middle center; font echo 30; color echo tomato
 echo "... c'est la r\u00E9alit\u00E9 ..."
-delay 2;
+delay 1.2;
 set echo bottom center; font echo 22; color echo lime
 echo "r\u00E9alit\u00E9 virtuelle pour mol\u00E9cules"
-delay 3;
+delay 1.5;
 #
 set echo off;
 set echo middle center; font echo 60 serif bold; color echo yellow
 echo "Jmol"
-delay 4
+delay 2
 #
 set echo off;
 restrict none;
 set echo off;
 set echo top center; font echo 18; color echo blueviolet
 echo "Compatibilit\u00E9 script RasMol/Chime"
-delay 2;
+delay 1.2;
 set echo middle center; font echo 20; color echo springgreen
-echo "Contr\u00F4le Bouton/menu"
-delay 2;
+echo "Contr\u00F4le bouton/menu"
+delay 1.2;
 set echo bottom center; font echo 22; color echo lavenderblush
 echo "pour cr\u00E9er des tutoriaux"
-delay 3;
+delay 1.5;
 #
 set echo off;
 set echo middle center; font echo 60 serif bold; color echo yellow
 echo "Jmol"
-delay 4
+delay 2
 #
 
 set echo off;
 
-script script/proteins.fr.txt
+script script/proteins.en.txt
 restrict none;
 set echo off;
 set echo top center; font echo 22; color echo dodgerblue
 echo "Applet pour navigateur ..."
-delay 2;
+delay 1.2;
 set echo middle center; font echo 22; color echo violet
 echo "*pas* d'installation"
-delay 2;
+delay 1.2;
 set echo bottom center; font echo 22; color echo orange
 echo "... facile \u00E0 d\u00E9ployer"
-delay 2;
+delay 1.2;
 #
 set echo off;
 set echo middle center; font echo 60 serif bold; color echo yellow
 echo "Jmol"
-delay 4
+delay 2
 #
 
-script script/dna.fr.txt
+script script/dna.en.txt
 set echo off;
 
 set echo top left; font echo 24; color echo khaki
@@ -174,37 +174,37 @@ delay .5
 
 set echo top center; font echo 20; color echo orchid
 echo "Si vous \u00EAtes sur le web ..."
-delay 2;
+delay 1.2;
 set echo middle center; font echo 20; color echo peachpuff
 echo "et que vous avez des mol\u00E9cules ..."
-delay 2;
+delay 1.2;
 set echo bottom center; font echo 20; color echo lightSkyBlue
 echo "alors vous avez besoin de ...";
-delay 3;
+delay 1.5;
 
 set echo off;
 set echo middle center; font echo 60 serif bold; color echo yellow
 echo "Jmol"
-delay 4
+delay 2
 #
 
-script script/macromolecules.fr.txt
+script script/macromolecules.en.txt
 
 set echo off
 set echo top center; font echo 20; color echo pink
 echo "Open Source, logiciel *gratuit*"
-delay 2;
+delay 1.2;
 set echo middle center; font echo 20; color echo violet
 echo "... amusement garanti ..."
-delay 2;
+delay 1.2;
 set echo bottom center; font echo 20; color echo orange
 echo "... ou on vous rembourse"
-delay 2;
+delay 1.2;
 #
 set echo off;
 set echo middle center; font echo 60 serif bold; color echo yellow
 echo "Jmol"
-delay 4
+delay 2
 #
 
 load model/jmol.mol.gz;
@@ -216,9 +216,9 @@ moveTo 0 -245 -957 157 176.4 16 -55 -56;
 moveTo 1 337 -276 900 81.7 35 -28 -16;
 moveTo 1 -661 120 -741 50.3 64 14 -17;
 moveTo 1 0 0 1000 39.0 102 16 20;
-moveTo 1 0 0 0 0 140;
-delay 5;
+moveTo 1 0 0 0 0 120;
+delay 3;
 moveTo 1 0 0 0 0;
 move 0 0 360 0 0 0 0 0 2;
-delay 5;
+delay 4;
 loop;

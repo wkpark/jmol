@@ -3,86 +3,86 @@ set frank off;
 spacefill off; wireframe off;
 set echo top center; font echo 22 serif; color echo white
 echo "De toekomst ..."
-delay 3
+delay 1.5
 set echo middle center; font echo 22 serif; color echo white
 echo "van moleculaire visualisatie"
-delay 3
+delay 1.5
 set echo bottom center; font echo 22 serif; color echo white
 echo "... is hier ..."
-delay 5
+delay 3
 #
 set echo off;
 set echo middle center; font echo 60 serif bold; color echo yellow
 echo "Jmol"
-delay 2
+delay 1.5
 set echo off;
 color atoms gold; color bonds yellow
 zoom 10;
 wireframe .25; spacefill .3;
-moveto 1 0 0 0 0 140;
-delay 2;
+moveto 1 0 0 0 0 120;
+delay 1.5;
 moveTo 1 5 345 939 79.5 24 51 57
 
-script script/smallMolecules.nl.txt
+script script/smallMolecules.en.txt
 set echo off;
 restrict none;
 set echo off;
 set echo top center; font echo 22; color echo cyan
 echo "Dit geen *geen* filmpje ..."
-delay 2;
+delay 1.2;
 set echo middle center; font echo 30; color echo tomato
 echo "... dit is live ..."
-delay 2;
+delay 1.2;
 set echo bottom center; font echo 22; color echo lime
 echo "virtual reality voor moleculen"
-delay 3;
+delay 1.5;
 #
 set echo off;
 set echo middle center; font echo 60 serif bold; color echo yellow
 echo "Jmol"
-delay 4
+delay 2
 #
 set echo off;
 restrict none;
 set echo off;
 set echo top center; font echo 18; color echo blueviolet
 echo "RasMol/Chime script compatibiliteit"
-delay 2;
+delay 1.2;
 set echo middle center; font echo 20; color echo springgreen
 echo "Knoppen/menu's"
-delay 2;
-set echo bottom center; font echo 22; color echo lavenderblush
+delay 1.2;
+set echo bottom center; font echo 20; color echo lavenderblush
 echo "voor het maken van handleidingen"
-delay 3;
+delay 1.5;
 #
 set echo off;
 set echo middle center; font echo 60 serif bold; color echo yellow
 echo "Jmol"
-delay 4
+delay 2
 #
 
 set echo off;
 
-script script/proteins.nl.txt
+script script/proteins.en.txt
 restrict none;
 set echo off;
 set echo top center; font echo 22; color echo dodgerblue
 echo "Web browser applet ..."
-delay 2;
+delay 1.2;
 set echo middle center; font echo 22; color echo violet
 echo "*geen* handmatige installatie"
-delay 2;
+delay 1.2;
 set echo bottom center; font echo 22; color echo orange
 echo "... eenvoudig op te zetten"
-delay 2;
+delay 1.2;
 #
 set echo off;
 set echo middle center; font echo 60 serif bold; color echo yellow
 echo "Jmol"
-delay 4
+delay 2
 #
 
-script script/dna.nl.txt
+script script/dna.en.txt
 set echo off;
 
 set echo top left; font echo 24; color echo khaki
@@ -165,8 +165,8 @@ set echo middle center; font echo 20; color echo lemonChiffon
 echo "Overheidsinstelligen";
 delay 1;
 
-set echo bottom center; font echo 18; color echo lightCyan
-echo "Web-gebaseerde chemische databases";
+set echo bottom center; font echo 22; color echo lightCyan
+echo "Web-gebaseerde chemische|databases";
 delay 1;
 
 set echo off;
@@ -174,37 +174,37 @@ delay .5
 
 set echo top center; font echo 20; color echo orchid
 echo "Als je op het internet zit ..."
-delay 2;
+delay 1.2;
 set echo middle center; font echo 20; color echo peachpuff
 echo "en je hebt moleculen ..."
-delay 2;
+delay 1.2;
 set echo bottom center; font echo 20; color echo lightSkyBlue
 echo "dan gebruik je ...";
-delay 3;
+delay 1.5;
 
 set echo off;
 set echo middle center; font echo 60 serif bold; color echo yellow
 echo "Jmol"
-delay 4
+delay 2
 #
 
-script script/macromolecules.nl.txt
+script script/macromolecules.en.txt
 
 set echo off
 set echo top center; font echo 20; color echo pink
 echo "Open Source, *gratis* software"
-delay 2;
+delay 1.2;
 set echo middle center; font echo 20; color echo violet
 echo "... gegarandeerd veel plezier ..."
-delay 2;
+delay 1.2;
 set echo bottom center; font echo 20; color echo orange
 echo "... of je geld terug"
-delay 2;
+delay 1.2;
 #
 set echo off;
 set echo middle center; font echo 60 serif bold; color echo yellow
 echo "Jmol"
-delay 4
+delay 2
 #
 
 load model/jmol.mol.gz;
@@ -216,9 +216,9 @@ moveTo 0 -245 -957 157 176.4 16 -55 -56;
 moveTo 1 337 -276 900 81.7 35 -28 -16;
 moveTo 1 -661 120 -741 50.3 64 14 -17;
 moveTo 1 0 0 1000 39.0 102 16 20;
-moveTo 1 0 0 0 0 140;
-delay 5;
+moveTo 1 0 0 0 0 120;
+delay 3;
 moveTo 1 0 0 0 0;
 move 0 0 360 0 0 0 0 0 2;
-delay 5;
+delay 4;
 loop;

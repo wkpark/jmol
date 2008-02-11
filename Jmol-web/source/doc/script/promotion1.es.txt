@@ -3,86 +3,86 @@ set frank off;
 spacefill off; wireframe off;
 set echo top center; font echo 22 serif; color echo white
 echo "El futuro ..."
-delay 3
+delay 1.5
 set echo middle center; font echo 22 serif; color echo white
 echo "de la visualizaci\u00F3n molecular"
-delay 3
+delay 1.5
 set echo bottom center; font echo 22 serif; color echo white
 echo "... ha llegado ..."
-delay 5
+delay 3
 #
 set echo off;
 set echo middle center; font echo 60 serif bold; color echo yellow
 echo "Jmol"
-delay 2
+delay 1.5
 set echo off;
 color atoms gold; color bonds yellow
 zoom 10;
 wireframe .25; spacefill .3;
-moveto 1 0 0 0 0 140;
-delay 2;
+moveto 1 0 0 0 0 120;
+delay 1.5;
 moveTo 1 5 345 939 79.5 24 51 57
 
-script script/smallMolecules.es.txt
+script script/smallMolecules.en.txt
 set echo off;
 restrict none;
 set echo off;
 set echo top center; font echo 22; color echo cyan
 echo "Esto *no* es una pel\u00EDcula ..."
-delay 2;
+delay 1.2;
 set echo middle center; font echo 30; color echo tomato
 echo "... esto es la realidad ..."
-delay 2;
+delay 1.2;
 set echo bottom center; font echo 22; color echo lime
 echo "realidad virtual para mol\u00E9culas"
-delay 3;
+delay 1.5;
 #
 set echo off;
 set echo middle center; font echo 60 serif bold; color echo yellow
 echo "Jmol"
-delay 4
+delay 2
 #
 set echo off;
 restrict none;
 set echo off;
 set echo top center; font echo 18; color echo blueviolet
-echo "Compatibilidad con instrucciones de RasMol/Chime"
-delay 2;
+echo "Compatibilidad con instrucciones|de RasMol/Chime"
+delay 1.2;
 set echo middle center; font echo 20; color echo springgreen
 echo "Control con botones y men\u00FAs"
-delay 2;
+delay 1.2;
 set echo bottom center; font echo 22; color echo lavenderblush
 echo "para elaborar gu\u00EDas"
-delay 3;
+delay 1.5;
 #
 set echo off;
 set echo middle center; font echo 60 serif bold; color echo yellow
 echo "Jmol"
-delay 4
+delay 2
 #
 
 set echo off;
 
-script script/proteins.es.txt
+script script/proteins.en.txt
 restrict none;
 set echo off;
 set echo top center; font echo 22; color echo dodgerblue
-echo "Miniaplicaci\u00F3n para el navegador web ..."
-delay 2;
+echo "Miniaplicaci\u00F3n para el|navegador de internet..."
+delay 1.2;
 set echo middle center; font echo 22; color echo violet
 echo "*sin* instalaci\u00F3n en el cliente"
-delay 2;
+delay 1.2;
 set echo bottom center; font echo 22; color echo orange
 echo "... f\u00E1cil de ofrecer"
-delay 2;
+delay 1.2;
 #
 set echo off;
 set echo middle center; font echo 60 serif bold; color echo yellow
 echo "Jmol"
-delay 4
+delay 2
 #
 
-script script/dna.es.txt
+script script/dna.en.txt
 set echo off;
 
 set echo top left; font echo 24; color echo khaki
@@ -157,7 +157,7 @@ set echo bottom right; font echo 24; color echo thistle
 echo "Cristalograf\u00EDa"
 delay 1;
 
-set echo top left; font echo 24; color echo lavender
+set echo top left; font echo 22; color echo lavender
 echo "Instituciones de investigaci\u00F3n";
 delay 1;
 
@@ -165,8 +165,8 @@ set echo middle center; font echo 20; color echo lemonChiffon
 echo "Organismos oficiales";
 delay 1;
 
-set echo bottom center; font echo 18; color echo lightCyan
-echo "Bases de datos qu\u00EDmicas basadas en web";
+set echo bottom center; font echo 20; color echo lightCyan
+echo "Bases de datos qu\u00EDmicas|basadas en web";
 delay 1;
 
 set echo off;
@@ -174,37 +174,37 @@ delay .5
 
 set echo top center; font echo 20; color echo orchid
 echo "Si est\u00E1s en la web ..."
-delay 2;
+delay 1.2;
 set echo middle center; font echo 20; color echo peachpuff
 echo "y tienes mol\u00E9culas ..."
-delay 2;
+delay 1.2;
 set echo bottom center; font echo 20; color echo lightSkyBlue
 echo "necesitas ...";
-delay 3;
+delay 1.5;
 
 set echo off;
 set echo middle center; font echo 60 serif bold; color echo yellow
 echo "Jmol"
-delay 4
+delay 2
 #
 
-script script/macromolecules.es.txt
+script script/macromolecules.en.txt
 
 set echo off
 set echo top center; font echo 20; color echo pink
-echo "Software de c\u00F3digo abierto y *gratuito*"
-delay 2;
+echo "Software de c\u00F3digo abierto|y *gratuito*"
+delay 1.2;
 set echo middle center; font echo 20; color echo violet
-echo "... garantizamos que ser\u00E1 divertido ..."
-delay 2;
+echo "garantizamos que ser\u00E1 divertido"
+delay 1.2;
 set echo bottom center; font echo 20; color echo orange
 echo "... o te devolvemos el dinero"
-delay 2;
+delay 1.2;
 #
 set echo off;
 set echo middle center; font echo 60 serif bold; color echo yellow
 echo "Jmol"
-delay 4
+delay 2
 #
 
 load model/jmol.mol.gz;
@@ -216,9 +216,9 @@ moveTo 0 -245 -957 157 176.4 16 -55 -56;
 moveTo 1 337 -276 900 81.7 35 -28 -16;
 moveTo 1 -661 120 -741 50.3 64 14 -17;
 moveTo 1 0 0 1000 39.0 102 16 20;
-moveTo 1 0 0 0 0 140;
-delay 5;
+moveTo 1 0 0 0 0 120;
+delay 3;
 moveTo 1 0 0 0 0;
 move 0 0 360 0 0 0 0 0 2;
-delay 5;
+delay 4;
 loop;

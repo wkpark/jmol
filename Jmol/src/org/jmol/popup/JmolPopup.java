@@ -218,7 +218,7 @@ abstract public class JmolPopup {
         String elementName = JmolConstants.elementNameFromNumber(i);
         String elementSymbol = JmolConstants.elementSymbolFromNumber(i);
         String entryName = elementSymbol + " - " + elementName;
-        addMenuItem(menu, entryName, elementName, null);
+          addMenuItem(menu, entryName, "SELECT " + elementName, null);
       }
     }
     for (int i = JmolConstants.firstIsotope; i < JmolConstants.altElementMax; ++i) {

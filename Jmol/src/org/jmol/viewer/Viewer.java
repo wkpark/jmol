@@ -1264,7 +1264,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     selectionManager.selectAll(false);
     refresh(0, "Viewer:selectAll()");
   }
+  
+  private boolean noneSelected;
+  void setNoneSelected(boolean noneSelected) {
+    this.noneSelected = noneSelected;
+  }
 
+  Boolean getNoneSelected() {
+    return (noneSelected ? Boolean.TRUE : Boolean.FALSE);
+  }
+  
   public void clearSelection() {
     //not used in this project; in jmolViewer interface, though
     selectionManager.clearSelection(false);
@@ -1796,6 +1805,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void initializeModel() {
     reset();
     selectAll();
+    noneSelected = false;
     transformManager.setCenter();
     if (eval != null)
       eval.clearDefinitionsAndLoadPredefined();

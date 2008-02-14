@@ -59,7 +59,8 @@ public class Labels extends AtomShape {
   byte zeroFontId;
 
   private boolean defaultsOnlyForNone = true;
-
+  private boolean setDefaults = false;
+  
   //labels
 
   public void initShape() {
@@ -76,15 +77,22 @@ public class Labels extends AtomShape {
 
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
     isActive = true;
+    System.out.println("labels "+propertyName + " "+ value);
+    
+    if ("setDefaults" == propertyName) {
+      setDefaults = ((Boolean) value).booleanValue();
+      return;
+    }
+    
     if ("color" == propertyName) {
       isActive = true;
-      int n = 0;
       byte pid = JmolConstants.pidOf(value);
       short colix = Graphics3D.getColix(value);
-      for (int i = atomCount; --i >= 0;)
-        if (bsSelected.get(i))
-          setColix(i, colix, pid, n++);
-      if (n == 0 || !defaultsOnlyForNone) {
+      if (!setDefaults)
+        for (int i = atomCount; --i >= 0;)
+          if (bsSelected.get(i))
+            setColix(i, colix, pid);
+      if (setDefaults || !defaultsOnlyForNone) {
         defaultColix = colix;
         defaultPaletteID = pid;
       }
@@ -137,25 +145,25 @@ public class Labels extends AtomShape {
             text = new Text(g3d, null, label, 
                 (short) 0, (short)0, 0, 0, 0, 0, 0, scalePixelsPerMicron);
             putLabel(i, text);
-          }
-          else if (text != null)
+          } else if (text != null) {
             text.setText(label);
+          }
           if (defaultOffset != zeroOffset)
             setOffsets(i, defaultOffset);
           if (defaultAlignment != Text.ALIGN_LEFT)
-            setAlignment(i, defaultAlignment, -1);
+            setAlignment(i, defaultAlignment);
           if ((defaultZPos & FRONT_FLAG) != 0)
-            setFront(i, true, -1);
+            setFront(i, true);
           else if ((defaultZPos & GROUP_FLAG) != 0)
-            setGroup(i, true, -1);
+            setGroup(i, true);
           if (defaultPointer != Text.POINTER_NONE)
-            setPointer(i, defaultPointer, -1);
+            setPointer(i, defaultPointer);
           if (defaultColix != 0 || defaultPaletteID != 0)
-            setColix(i, defaultColix, defaultPaletteID, -1);
+            setColix(i, defaultColix, defaultPaletteID);
           if (defaultBgcolix != 0)
-            setBgcolix(i, defaultBgcolix, -1);
+            setBgcolix(i, defaultBgcolix);
           if (defaultFontId != zeroFontId)
-            setFont(i, defaultFontId, -1);
+            setFont(i, defaultFontId);
         }
       return;
     }
@@ -166,11 +174,11 @@ public class Labels extends AtomShape {
       if (bsBgColixSet == null)
         bsBgColixSet = new BitSet();
       short bgcolix = Graphics3D.getColix(value);
-      int n = 0;
-      for (int i = atomCount; --i >= 0;)
-        if (bsSelected.get(i))
-          setBgcolix(i, bgcolix, n++);
-      if (n == 0 || !defaultsOnlyForNone)
+      if (!setDefaults)
+        for (int i = atomCount; --i >= 0;)
+          if (bsSelected.get(i))
+            setBgcolix(i, bgcolix);
+      if (setDefaults || !defaultsOnlyForNone)
         defaultBgcolix = bgcolix;
       return;
     }
@@ -187,22 +195,22 @@ public class Labels extends AtomShape {
         return;
       }
       byte fid = g3d.getFontFid(fontsize);
-      int n = 0;
-      for (int i = atomCount; --i >= 0;)
-        if (bsSelected.get(i))
-          setFont(i, fid, n++);
-      if (n == 0 || !defaultsOnlyForNone)
+      if (!setDefaults)
+        for (int i = atomCount; --i >= 0;)
+          if (bsSelected.get(i))
+            setFont(i, fid);
+      if (setDefaults || !defaultsOnlyForNone)
         defaultFontId = fid;
       return;
     }
 
     if ("font" == propertyName) {
       byte fid = ((Font3D) value).fid;
-      int n = 0;
-      for (int i = atomCount; --i >= 0;)
-        if (bsSelected.get(i))
-          setFont(i, fid, n++);
-      if (n == 0 || !defaultsOnlyForNone)
+      if (!setDefaults)
+        for (int i = atomCount; --i >= 0;)
+          if (bsSelected.get(i))
+            setFont(i, fid);
+      if (setDefaults || !defaultsOnlyForNone)
         defaultFontId = fid;
       return;
     }
@@ -217,13 +225,11 @@ public class Labels extends AtomShape {
         offset = Short.MAX_VALUE;
       else if (offset == zeroOffset)
         offset = 0;
-      int n = 0;
-      for (int i = atomCount; --i >= 0;)
-        if (bsSelected.get(i)) {
-          setOffsets(i, offset);
-          n++;
-        }
-      if (n == 0 || !defaultsOnlyForNone)
+      if (!setDefaults)
+        for (int i = atomCount; --i >= 0;)
+          if (bsSelected.get(i))
+            setOffsets(i, offset);
+      if (setDefaults || !defaultsOnlyForNone)
         defaultOffset = offset;
       return;
     }
@@ -235,44 +241,43 @@ public class Labels extends AtomShape {
         alignment = Text.ALIGN_RIGHT;
       else if (type.equalsIgnoreCase("center"))
         alignment = Text.ALIGN_CENTER;
-      int n = 0;
       for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i))
-          setAlignment(i, alignment, n++);
-      if (n == 0 || !defaultsOnlyForNone)
+          setAlignment(i, alignment);
+      if (setDefaults || !defaultsOnlyForNone)
         defaultAlignment = alignment;
       return;
     }
 
     if ("pointer" == propertyName) {
       int pointer = ((Integer) value).intValue();
-      int n = 0;
-      for (int i = atomCount; --i >= 0;)
-        if (bsSelected.get(i))
-          setPointer(i, pointer, n++);
-      if (n == 0 || !defaultsOnlyForNone)
+      if (!setDefaults)
+        for (int i = atomCount; --i >= 0;)
+          if (bsSelected.get(i))
+            setPointer(i, pointer);
+      if (setDefaults || !defaultsOnlyForNone)
         defaultPointer = pointer;
       return;
     }
 
     if ("front" == propertyName) {
       boolean TF = ((Boolean) value).booleanValue();
-      int n = 0;
-      for (int i = atomCount; --i >= 0;)
-        if (bsSelected.get(i))
-          setFront(i, TF, n++);
-      if (n == 0 || !defaultsOnlyForNone)
+      if (!setDefaults)
+        for (int i = atomCount; --i >= 0;)
+          if (bsSelected.get(i))
+            setFront(i, TF);
+      if (setDefaults || !defaultsOnlyForNone)
         defaultZPos = (TF ? FRONT_FLAG : 0);
       return;
     }
 
     if ("group" == propertyName) {
       boolean TF = ((Boolean) value).booleanValue();
-      int n = 0;
-      for (int i = atomCount; --i >= 0;)
-        if (bsSelected.get(i))
-          setGroup(i, TF, n++);
-      if (n == 0 || !defaultsOnlyForNone)
+      if (!setDefaults)
+        for (int i = atomCount; --i >= 0;)
+          if (bsSelected.get(i))
+            setGroup(i, TF);
+      if (setDefaults || !defaultsOnlyForNone)
         defaultZPos = (TF ? GROUP_FLAG : 0);
       return;
     }
@@ -322,14 +327,14 @@ public class Labels extends AtomShape {
     return (Text) atomLabels.get(atoms[i]);
   }
 
-  private void setColix(int i, short colix, byte pid, int n) {
+  private void setColix(int i, short colix, byte pid) {
     setColixAndPalette(colix, pid, i);
     text = getLabel(i);
     if (text != null)
       text.setColix(colixes[i]);
   }
 
-  private void setBgcolix(int i, short bgcolix, int n) {
+  private void setBgcolix(int i, short bgcolix) {
     if (bgcolixes == null || i >= bgcolixes.length) {
       if (bgcolix == 0)
         return;
@@ -375,7 +380,7 @@ public class Labels extends AtomShape {
       text.setOffset(offset);
   }
 
-  private void setAlignment(int i, int alignment, int n) {
+  private void setAlignment(int i, int alignment) {
     if (offsets == null || i >= offsets.length) {
       if (alignment == Text.ALIGN_LEFT)
         return;
@@ -391,7 +396,7 @@ public class Labels extends AtomShape {
     return (offsetFull & ALIGN_FLAGS) >> 2;
   }
   
-  private void setPointer(int i, int pointer, int n) {
+  private void setPointer(int i, int pointer) {
     if (offsets == null || i >= offsets.length) {
       if (pointer == Text.POINTER_NONE)
         return;
@@ -403,7 +408,7 @@ public class Labels extends AtomShape {
       text.setPointer(pointer);
   }
 
-  private void setFront(int i, boolean TF, int n) {
+  private void setFront(int i, boolean TF) {
     if (offsets == null || i >= offsets.length) {
       if (!TF)
         return;
@@ -412,7 +417,7 @@ public class Labels extends AtomShape {
     offsets[i] = (offsets[i] & ~ZPOS_FLAGS) + (TF ? FRONT_FLAG : 0);
   }
 
-  private void setGroup(int i, boolean TF, int n) {
+  private void setGroup(int i, boolean TF) {
     if (offsets == null || i >= offsets.length) {
       if (!TF)
         return;
@@ -421,7 +426,7 @@ public class Labels extends AtomShape {
     offsets[i] = (offsets[i] & ~ZPOS_FLAGS) + (TF ? GROUP_FLAG : 0);
   }
 
-  private void setFont(int i, byte fid, int n) {
+  private void setFont(int i, byte fid) {
     if (fids == null || i >= fids.length) {
       if (fid == zeroFontId)
         return;

@@ -3814,6 +3814,8 @@ class Eval { //implements Runnable {
                 : 0);
     if (typeMask == 0) {
       viewer.loadShape(shapeType);
+      if (shapeType == JmolConstants.SHAPE_LABELS)
+        setShapeProperty(JmolConstants.SHAPE_LABELS, "setDefaults", viewer.getNoneSelected());
     } else {
       if (bs != null) {
         viewer.selectBonds(bs);
@@ -5004,11 +5006,13 @@ class Eval { //implements Runnable {
 
   private void select() throws ScriptException {
     // NOTE this is called by restrict()
-    //select beginexpr bonds ( {...} ) endexpr
     if (statementLength == 1) {
       viewer.select(null, tQuiet || scriptLevel > scriptReportingLevel);
       return;
     }
+    //select beginexpr none endexpr
+    viewer.setNoneSelected(statementLength == 4 && tokAt(2) == Token.none);
+    //select beginexpr bonds ( {...} ) endexpr
     if (tokAt(2) == Token.bitset && getToken(2).value instanceof BondSet
         || getToken(2).tok == Token.bonds && getToken(3).tok == Token.bitset) {
       if (statementLength == iToken + 2) {
@@ -6342,6 +6346,7 @@ class Eval { //implements Runnable {
           || fontsize > JmolConstants.LABEL_MAXIMUM_FONTSIZE))
         numberOutOfRange(JmolConstants.LABEL_MINIMUM_FONTSIZE - sizeAdjust,
             JmolConstants.LABEL_MAXIMUM_FONTSIZE - sizeAdjust);
+      setShapeProperty(JmolConstants.SHAPE_LABELS, "setDefaults", viewer.getNoneSelected());
     }
     if (isSyntaxCheck)
       return;
@@ -7798,6 +7803,7 @@ class Eval { //implements Runnable {
   private boolean setLabel(String str) throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_LABELS);
     Object propertyValue = null;
+    setShapeProperty(JmolConstants.SHAPE_LABELS, "setDefaults", viewer.getNoneSelected());
     while (true) {
       if (str.equals("scalereference")) {
         float scaleAngstromsPerPixel = floatParameter(2);

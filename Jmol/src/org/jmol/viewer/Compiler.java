@@ -795,7 +795,7 @@ class Compiler {
                     .warn("WARNING: predefined term '"
                         + ident
                         + "' has been redefined by the user until the next file load.");
-              } else {
+              } else if (!isCheckOnly && ident.length() > 1){
                 Logger
                     .warn("WARNING: redefining "
                         + ident

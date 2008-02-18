@@ -2084,11 +2084,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int getChainCount() {
-    return modelSet.getChainCount();
+    return modelSet.getChainCount(true);
   }
 
   public int getChainCountInModel(int modelIndex) {
-    return modelSet.getChainCountInModel(modelIndex);
+    //revised to NOT include water chain (for menu)
+    return modelSet.getChainCountInModel(modelIndex, false);
+  }
+
+  public int getChainCountInModel(int modelIndex, boolean countWater) {
+    return modelSet.getChainCountInModel(modelIndex, countWater);
   }
 
   public int getGroupCount() {
@@ -3763,14 +3768,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void setStatusFrameChanged(int frameNo) {
     transformManager.setVibrationPeriod(Float.NaN);
     int modelIndex = repaintManager.currentModelIndex;
-    int fileNo = getModelFileNumber(modelIndex);
-    int modelNo = fileNo % 1000000;
-    int firstNo = getModelFileNumber(repaintManager.firstModelIndex);
-    int lastNo = getModelFileNumber(repaintManager.lastModelIndex);
+    int firstIndex = repaintManager.firstModelIndex;
+    int lastIndex = repaintManager.lastModelIndex;
+    if (firstIndex == lastIndex)
+      modelIndex = firstIndex;
+    int frameID = getModelFileNumber(modelIndex);
+    int fileNo = frameID;
+    int modelNo = frameID % 1000000;
+    int firstNo = getModelFileNumber(firstIndex);
+    int lastNo = getModelFileNumber(lastIndex);
     String s;
     if (fileNo == 0) {
-      s = getModelNumberDotted(repaintManager.firstModelIndex) + " - "
-          + getModelNumberDotted(repaintManager.lastModelIndex);
+      s = getModelNumberDotted(firstIndex);
+      if (firstIndex != lastIndex)
+        s+= " - " + getModelNumberDotted(lastIndex);
       if (firstNo / 1000000 == lastNo / 1000000)
         fileNo = firstNo;
     } else {
@@ -3781,6 +3792,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     global.setParameterValue("_currentFileNumber", fileNo);
     global.setParameterValue("_currentModelNumberInFile", modelNo);
+    global.setParameterValue("_frameID", frameID);
     global.setParameterValue("_modelNumber", s);
     global.setParameterValue("_modelName", (modelIndex < 0 ? ""
         : getModelName(modelIndex)));
@@ -3907,6 +3919,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return ((Boolean) global.htPropertyFlags.get(key)).booleanValue();
     }
     // special cases
+    if (key.equalsIgnoreCase("haveBFactors"))
+      return (modelSet.getBFactors() != null);
     if (key.equalsIgnoreCase("colorRasmol"))
       return colorManager.getDefaultColorRasmol();
     if (key.equalsIgnoreCase("frank"))

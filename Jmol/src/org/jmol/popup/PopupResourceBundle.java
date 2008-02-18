@@ -176,7 +176,7 @@ class PopupResourceBundle {
           "[color_backbone]Menu [color_cartoon]sMenu [color_ribbon]sMenu [color_rockets]Menu [color_strands]Menu [color_trace]Menu" },
 
       {   "schemeMenu",
-          "cpk altloc molecule formalcharge partialcharge#CHARGE - amino#PDB structure#PDB chain#PDB " },
+          "cpk - formalcharge partialcharge#CHARGE - altloc#PDB amino#PDB chain#PDB group#PDB molecule monomer#PDB shapely#PDB structure#PDB relativeTemperature#BFACTORS fixedTemperature#BFACTORS" },
 
       {   "zoomMenu",
           "zoom50 zoom100 zoom150 zoom200 zoom400 zoom800 - "
@@ -699,14 +699,19 @@ class PopupResourceBundle {
 
         "schemeMenu", GT._("By Scheme"),
         "cpk", GT._("Element (CPK)"),
-        "altloc", GT._("Alternative Location"),
+        "altloc#PDB", GT._("Alternative Location"),
         "molecule", GT._("Molecule"),
         "formalcharge", GT._("Formal Charge"),
         "partialcharge#CHARGE", GT._("Partial Charge"),
+        "relativeTemperature#BFACTORS", GT._("Temperature (Relative)"),
+        "fixedTemperature#BFACTORS", GT._("Temperature (Fixed)"),
 
         "amino#PDB", GT._("Amino Acid"),
         "structure#PDB", GT._("Secondary Structure"),
         "chain#PDB", GT._("Chain"),
+        "group#PDB", GT._("Group"),
+        "monomer#PDB", "Monomer",
+        "shapely#PDB", "Shapely",
 
         "none", GT._("Inherit"),
         "black", GT._("Black"),

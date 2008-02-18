@@ -73,6 +73,7 @@ abstract public class JmolPopup {
   Vector SymmetryOnly = new Vector();
   Vector AppletOnly = new Vector();
   Vector ChargesOnly = new Vector();
+  Vector TemperatureOnly = new Vector();
 
   boolean isPDB;
   boolean isSymmetry;
@@ -83,6 +84,7 @@ abstract public class JmolPopup {
   boolean isApplet;
   boolean isZapped;
   boolean haveCharges;
+  boolean haveBFactors;
   String altlocs;
 
   int modelIndex, modelCount, atomCount;
@@ -181,6 +183,7 @@ abstract public class JmolPopup {
     isMultiConfiguration = (altlocs.length() > 0);
     isVibration = (viewer.modelHasVibrationVectors(modelIndex));
     haveCharges = (viewer.havePartialCharges());
+    haveBFactors = (viewer.getBooleanProperty("haveBFactors"));
   }
 
   private void updateForShow() {
@@ -525,6 +528,8 @@ abstract public class JmolPopup {
       enableMenu(AppletOnly.get(i), isApplet);
     for (int i = 0; i < ChargesOnly.size(); i++)
       enableMenu(ChargesOnly.get(i), haveCharges);
+    for (int i = 0; i < TemperatureOnly.size(); i++)
+      enableMenu(TemperatureOnly.get(i), haveBFactors);
   }
 
   String getModelLabel() {
@@ -659,6 +664,8 @@ abstract public class JmolPopup {
         AppletOnly.add(newMenu);
       } else if (item.indexOf("CHARGE") >= 0) {
         ChargesOnly.add(newMenu);
+      } else if (item.indexOf("BFACTORS") >= 0) {
+        TemperatureOnly.add(newMenu);
       } else if (item.indexOf("UNITCELL") >= 0) {
         UnitcellOnly.add(newMenu);
       } else if (item.indexOf("FRAMES") >= 0) {

@@ -567,21 +567,21 @@ public class Text {
     // (user coordinates are (0,0) in bottom left)
     float margin = 5 * fontScale;
     float bw = boxWidth + margin;
-    float x = boxXY[0];
+    float x = boxX;
     if (x + bw > windowWidth)
       x = windowWidth - bw;
     if (x < margin)
       x = margin;
-    boxXY[0] = x;
+    boxX = x;
 
     margin = (isLabelOrHover ? 16 * fontScale + lineHeight : 0);
     float bh = boxHeight;
-    float y = boxXY[1] - textHeight;
+    float y = boxY - textHeight;
     if (y + bh > windowHeight)
       y = windowHeight - bh;
     if (y < margin)
       y = margin;
-    boxXY[1] = y;
+    boxY = y;
   }
 
   private static void showBox(JmolRendererInterface g3d, short colix,

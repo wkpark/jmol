@@ -665,10 +665,10 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
 
-  public int getChainCount() {
+  public int getChainCount(boolean addWater) {
     int chainCount = 0;
     for (int i = modelCount; --i >= 0;)
-      chainCount += models[i].getChainCount();
+      chainCount += models[i].getChainCount(addWater);
     return chainCount;
   }
 
@@ -716,10 +716,10 @@ abstract public class ModelCollection extends BondCollection {
     return models[iModel].getBioPolymer(iPolymer).getLeadMidpoints();
   }
 
-  public int getChainCountInModel(int modelIndex) {
+  public int getChainCountInModel(int modelIndex, boolean countWater) {
     if (modelIndex < 0)
-      return getChainCount();
-    return models[modelIndex].getChainCount();
+      return getChainCount(countWater);
+    return models[modelIndex].getChainCount(countWater);
   }
 
   public int getGroupCount() {
@@ -978,7 +978,7 @@ abstract public class ModelCollection extends BondCollection {
       model.put("bondCount", new Integer(getBondCountInModel(i)));
       model.put("groupCount", new Integer(getGroupCountInModel(i)));
       model.put("polymerCount", new Integer(models[i].getBioPolymerCount()));
-      model.put("chainCount", new Integer(getChainCountInModel(i)));
+      model.put("chainCount", new Integer(getChainCountInModel(i, true)));
       if (models[i].properties != null)
         model.put("modelProperties", models[i].properties);
       vModels.addElement(model);
@@ -2363,7 +2363,7 @@ abstract public class ModelCollection extends BondCollection {
 
   private Vector getChainInfo(int modelIndex, BitSet bs) {
     Model model = models[modelIndex];
-    int nChains = model.getChainCount();
+    int nChains = model.getChainCount(true);
     Vector infoChains = new Vector();    
     for(int i = 0; i < nChains; i++) {
       Chain chain = model.getChain(i);

@@ -11476,8 +11476,27 @@ class Eval { //implements Runnable {
         return false;
       Token x1 = getX();
       Token x2 = args[0];
-      if (x1.tok != Token.list && x1.tok != Token.string)
-        return false;
+      if (x1.tok != Token.list && x1.tok != Token.string) {
+        wasX = false;
+        addOp(Token.tokenLeftParen);
+        addX(x1);
+        switch (tok) {
+        case Token.add:
+          addOp(Token.tokenPlus);
+          break;
+        case Token.sub:
+          addOp(Token.tokenMinus);
+          break;
+        case Token.mul:
+          addOp(Token.tokenTimes);
+          break;
+        case Token.div:
+          addOp(Token.tokenDivide);
+          break;
+        }        
+        addX(x2);
+        return addOp(Token.tokenRightParen);
+      }
       if (isSyntaxCheck)
         return addX("");
 

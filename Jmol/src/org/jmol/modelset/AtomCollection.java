@@ -130,6 +130,10 @@ abstract public class AtomCollection {
     return partialCharges;
   }
 
+  public short[] getBFactors() {
+    return bfactor100s;
+  }
+
   protected int[] surfaceDistance100s;
 
   private BitSet bsHidden = new BitSet();

@@ -177,11 +177,15 @@ public final class Model {
   }
 
   public Chain[] getChains() {
-    // you will also need getChainCount();
     return chains;
   }
 
-  public int getChainCount() {
+  
+  public int getChainCount(boolean countWater) {
+    if (chainCount > 1 && !countWater)
+      for (int i = 0; i < chainCount; i++)
+        if (chains[i].chainID == '\0')
+          return chainCount - 1;
     return chainCount;
   }
 

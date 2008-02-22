@@ -68,14 +68,15 @@ public class AdfReader extends AtomSetCollectionReader {
     modelNumber = 0;
     try {
       while (readLine() != null) {
-        if (line.indexOf("Coordinates (Cartesian)") >= 0) {
+        if (line.indexOf("Coordinates (Cartesian)") >= 0
+            || line.indexOf("G E O M E T R Y  ***  3D  Molecule  ***") >= 0) {
           if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
             if (iHaveAtoms)
               break;
             continue;
           }
           iHaveAtoms = true;
-          readCoordinates();
+          readCoordinates();          
         } else if (line.indexOf("Energy:") >= 0) {
           String[] tokens = getTokens();
           energy = tokens[1];
@@ -106,22 +107,33 @@ public class AdfReader extends AtomSetCollectionReader {
  --------------------------------------------------------------------------------------------------------------
    1 XX         .000000     .000000     .000000        .000000     .000000     .000000      0       0       0
 
+
+OR
+
+
+ ATOMS
+ =====                            X Y Z                    CHARGE
+                                (Angstrom)             Nucl     +Core       At.Mass
+                       --------------------------    ----------------       -------
+    1  Ni              0.0000    0.0000    0.0000     28.00     28.00       57.9353
+
      * 
      */
     atomSetCollection.newAtomSet();
     atomSetCollection.setAtomSetName("" + energy); // start with an empty name
-    discardLinesUntilStartsWith(" -----");
+    discardLinesUntilContains("----");
     while (readLine() != null && !line.startsWith(" -----")) {
       String[] tokens = getTokens();
       if (tokens.length < 5)
-        continue;
+        break;
       String symbol = tokens[1];
       if (JmolAdapter.getElementNumber(symbol) < 1)
         continue;
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = symbol;
       atom.set(parseFloat(tokens[2]), parseFloat(tokens[3]), parseFloat(tokens[4]));
-      atom.scale(ANGSTROMS_PER_BOHR);
+      if (tokens.length > 8)
+        atom.scale(ANGSTROMS_PER_BOHR);
     }
   }
 

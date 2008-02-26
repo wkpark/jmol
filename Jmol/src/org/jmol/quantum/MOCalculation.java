@@ -249,7 +249,7 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
                    + " atom=" + atomIndex
                    );
     if (atomIndex != lastAtom && atomCoordBohr[atomIndex] != null) {
-      //Logger.("processSTO center " + atomCoordBohr[atomIndex]);
+      System.out.println("processSTO center " + atomIndex + " " + atomCoordBohr[atomIndex]);
       float x = atomCoordBohr[atomIndex].x;
       float y = atomCoordBohr[atomIndex].y;
       float z = atomCoordBohr[atomIndex].z;

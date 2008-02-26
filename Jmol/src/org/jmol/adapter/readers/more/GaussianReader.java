@@ -321,12 +321,8 @@ public class GaussianReader extends AtomSetCollectionReader {
     String[] tokens;
     
     final String calculationType = (String) moData.get("calculationType");
-    boolean doSpherical = false;
-    
-    if ( calculationType != null && (calculationType.indexOf("5D") > 0)
-                                    || calculationType.indexOf("7F") > 0 )
-      doSpherical = true;
-    
+    boolean doSphericalD = (calculationType != null && (calculationType.indexOf("5D") > 0));
+    boolean doSphericalF = (calculationType != null && (calculationType.indexOf("7F") > 0));
     while (readLine() != null && line.startsWith(" Atom")) {
       shellCount++;
       tokens = getTokens();
@@ -335,7 +331,8 @@ public class GaussianReader extends AtomSetCollectionReader {
         atomCount++;
       lastAtom = tokens[1];
       slater[0] = atomCount;
-      if (doSpherical)
+      String oType = tokens[4];
+      if (doSphericalF && oType.indexOf("F") >= 0 || doSphericalD && oType.indexOf("D") >= 0)
         slater[1] = JmolAdapter.getQuantumShellTagIDSpherical(tokens[4]);
       else
         slater[1] = JmolAdapter.getQuantumShellTagID(tokens[4]);

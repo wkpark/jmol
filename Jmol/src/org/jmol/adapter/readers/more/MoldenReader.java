@@ -184,6 +184,7 @@ public class MoldenReader extends MopacDataReader {
     
     readLine();
     if (line.equals("[5D]")) {
+      //TODO May be a bug here if there is a mixture of 6D and 7F
       // We don't know while parsing the [GTO] section if we'll be using 
       // spherical or Cartesian harmonics, so walk the list of shell information
       // and reset as appropriate.

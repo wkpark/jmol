@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-02-18 06:01+0100\n"
-"PO-Revision-Date: 2008-02-05 23:24-0300\n"
+"PO-Revision-Date: 2008-02-25 21:57-0300\n"
 "Last-Translator: Sérgio Ceroni da Silva <ceroni@cbiot.ufrgs.br>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -33,7 +33,8 @@ msgstr "Apagar saída"
 msgid "Clear Input"
 msgstr "Apagar entrada"
 
-#: org/jmol/applet/Console.java:44 org/jmol/popup/PopupResourceBundle.java:837
+#: org/jmol/applet/Console.java:44
+#: org/jmol/popup/PopupResourceBundle.java:837
 msgid "History"
 msgstr "Histórico"
 
@@ -47,9 +48,7 @@ msgstr "Carregar"
 
 #: org/jmol/applet/Console.java:101
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr ""
-"pressione CTRL-ENTER para uma nova linha ou cole os dados do modelo e "
-"pressione Carregar"
+msgstr "pressione CTRL-ENTER para uma nova linha ou cole os dados do modelo e pressione Carregar"
 
 #: org/jmol/applet/Jmol.java:741
 #, java-format
@@ -123,7 +122,8 @@ msgstr "Espanhol"
 msgid "Turkish"
 msgstr "Turco"
 
-#: org/jmol/popup/JmolPopup.java:422 org/jmol/popup/JmolPopup.java:462
+#: org/jmol/popup/JmolPopup.java:422
+#: org/jmol/popup/JmolPopup.java:462
 msgid "all"
 msgstr "todos"
 
@@ -689,11 +689,11 @@ msgstr "Carga parcial"
 
 #: org/jmol/popup/PopupResourceBundle.java:706
 msgid "Temperature (Relative)"
-msgstr ""
+msgstr "Temperatura (Relativa)"
 
 #: org/jmol/popup/PopupResourceBundle.java:707
 msgid "Temperature (Fixed)"
-msgstr ""
+msgstr "Temperatura (Fixa)"
 
 #: org/jmol/popup/PopupResourceBundle.java:709
 msgid "Amino Acid"
@@ -709,7 +709,7 @@ msgstr "Cadeia"
 
 #: org/jmol/popup/PopupResourceBundle.java:712
 msgid "Group"
-msgstr ""
+msgstr "Grupo"
 
 #: org/jmol/popup/PopupResourceBundle.java:716
 msgid "Inherit"
@@ -1158,7 +1158,8 @@ msgstr "END faltando para {0}"
 msgid "invalid context for {0}"
 msgstr "contexto inválido para {0}"
 
-#: org/jmol/viewer/Compiler.java:2408 org/jmol/viewer/Eval.java:4921
+#: org/jmol/viewer/Compiler.java:2408
+#: org/jmol/viewer/Eval.java:4921
 msgid "command expected"
 msgstr "comando esperado"
 
@@ -1172,11 +1173,13 @@ msgstr "símbolo de expressão inválido: {0}"
 msgid "unrecognized token: {0}"
 msgstr "símbolo não identificável: {0}"
 
-#: org/jmol/viewer/Compiler.java:2420 org/jmol/viewer/Eval.java:10530
+#: org/jmol/viewer/Compiler.java:2420
+#: org/jmol/viewer/Eval.java:10530
 msgid "unexpected end of script command"
 msgstr "comando de término de script inesperado"
 
-#: org/jmol/viewer/Compiler.java:2424 org/jmol/viewer/Eval.java:10534
+#: org/jmol/viewer/Compiler.java:2424
+#: org/jmol/viewer/Eval.java:10534
 msgid "bad argument count"
 msgstr "número de argumentos errôneo"
 
@@ -1217,7 +1220,8 @@ msgstr "esperado um operador de comparação"
 msgid "equal sign expected"
 msgstr "esperado um sinal de igualdade"
 
-#: org/jmol/viewer/Compiler.java:2464 org/jmol/viewer/Eval.java:10496
+#: org/jmol/viewer/Compiler.java:2464
+#: org/jmol/viewer/Eval.java:10496
 msgid "number expected"
 msgstr "esperado um número"
 
@@ -1225,7 +1229,8 @@ msgstr "esperado um número"
 msgid "number or variable name expected"
 msgstr "esperado um número ou um nome de variável"
 
-#: org/jmol/viewer/Compiler.java:2472 org/jmol/viewer/Eval.java:10542
+#: org/jmol/viewer/Compiler.java:2472
+#: org/jmol/viewer/Eval.java:10542
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "parâmetro {0} não identificável"
@@ -1250,7 +1255,8 @@ msgstr "especificação de modelo inválido"
 msgid "invalid atom specification"
 msgstr "especificação de átomo inválida"
 
-#: org/jmol/viewer/Compiler.java:2501 org/jmol/viewer/Eval.java:10501
+#: org/jmol/viewer/Compiler.java:2501
+#: org/jmol/viewer/Eval.java:10501
 msgid "quoted string expected"
 msgstr "esperada uma série de caracteres entre aspas"
 
@@ -1258,7 +1264,8 @@ msgstr "esperada uma série de caracteres entre aspas"
 msgid "comma or right parenthesis expected"
 msgstr "esperada uma vírgula ou um parêntese à direita"
 
-#: org/jmol/viewer/Eval.java:291 org/jmol/viewer/Eval.java:4902
+#: org/jmol/viewer/Eval.java:291
+#: org/jmol/viewer/Eval.java:4902
 msgid "script ERROR: "
 msgstr "ERRO no script: "
 
@@ -1268,12 +1275,8 @@ msgstr "excessivos níveis de script"
 
 #: org/jmol/viewer/Eval.java:2342
 #, java-format
-msgid ""
-"plane expected -- either three points or atom expressions or {0} or {1} or "
-"{2}"
-msgstr ""
-"esperado um plano -- três pontos ou uma \"atom expression\" ou {0} ou {1} ou "
-"{2}"
+msgid "plane expected -- either three points or atom expressions or {0} or {1} or {2}"
+msgstr "esperado um plano -- três pontos ou uma \"atom expression\" ou {0} ou {1} ou {2}"
 
 #: org/jmol/viewer/Eval.java:2355
 msgid "No unit cell"
@@ -1350,7 +1353,8 @@ msgstr "Escrever o quê? {0} ou {1} \"nome-de-arquivo\""
 msgid "No data available"
 msgstr "Nenhum dado disponível"
 
-#: org/jmol/viewer/Eval.java:8817 org/jmol/viewer/Eval.java:9703
+#: org/jmol/viewer/Eval.java:8817
+#: org/jmol/viewer/Eval.java:9703
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "nenhum dado de base/coeficiente MO está disponível para este quadro"
 
@@ -1372,12 +1376,8 @@ msgid "An MO index from 1 to {0} is required"
 msgstr "Um índice MO de 1 a {0} é necessário"
 
 #: org/jmol/viewer/Eval.java:10240
-msgid ""
-"No partial charges were read from the file; Jmol needs these to render the "
-"MEP data."
-msgstr ""
-"Nenhuma carga parcial foi lida do arquivo; Jmol necessita destas para "
-"renderizar os dados de MEP"
+msgid "No partial charges were read from the file; Jmol needs these to render the MEP data."
+msgstr "Nenhuma carga parcial foi lida do arquivo; Jmol necessita destas para renderizar os dados de MEP"
 
 #: org/jmol/viewer/Eval.java:10447
 #, java-format
@@ -1515,8 +1515,7 @@ msgstr "número excessivo de parênteses"
 
 #: org/jmol/viewer/PickingManager.java:169
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr ""
-"selecione um átomo adicional para poder girar o modelo em torno de um eixo"
+msgstr "selecione um átomo adicional para poder girar o modelo em torno de um eixo"
 
 #: org/jmol/viewer/PickingManager.java:170
 msgid "pick two atoms in order to spin the model around an axis"
@@ -1536,14 +1535,13 @@ msgstr "{0} átomo(s) selecionado(s)"
 #: org/jmol/viewer/Viewer.java:4073
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
-msgstr ""
-"ERRO: impossível designar um sinalizador booleano para uma \"string\": {0}"
+msgstr "ERRO: impossível designar um sinalizador booleano para uma \"string\": {0}"
 
-#: org/jmol/viewer/Viewer.java:4223 org/jmol/viewer/Viewer.java:4367
+#: org/jmol/viewer/Viewer.java:4223
+#: org/jmol/viewer/Viewer.java:4367
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-msgstr ""
-"ERRO: impossível designar um sinalizador booleano para um valor numérico: {0}"
+msgstr "ERRO: impossível designar um sinalizador booleano para um valor numérico: {0}"
 
 #: org/jmol/viewer/Viewer.java:4807
 #, java-format
@@ -1552,232 +1550,163 @@ msgstr "ERRO: impossível designar o valor desta variável para um booleano: {0}
 
 #~ msgid "trajectory not applicable in this context"
 #~ msgstr "trajetória não aplicável neste contexto"
-
 #~ msgid "{0} connections modified or created"
 #~ msgstr "{0} conexão(ões) modificada(s) ou criada(s)"
-
 #~ msgid "Select"
 #~ msgstr "Selecionar"
-
 #~ msgid "Too many nested {0} commands"
 #~ msgstr "Excessivos comandos {0} aninhados"
-
 #~ msgid "Invalid {0} command"
 #~ msgstr "Comando {0} inválido"
-
 #~ msgid ""
 #~ "ERROR: Cannot set value of a boolean to another type. use \"{0}\" first."
 #~ msgstr ""
 #~ "ERRO: impossível usar o valor de um booleano para outro tipo. Usar \"{0}"
 #~ "\" primeiro"
-
 #~ msgid "Compatibility"
 #~ msgstr "Compatibilidade"
-
 #~ msgid "RasMol/Chime Settings"
 #~ msgstr "Definições conforme RasMol/Chime"
-
 #~ msgid "Axes RasMol/Chime"
 #~ msgstr "Eixos conforme RasMol/Chime"
-
 #~ msgid "Zero-Based Xyz Rasmol"
 #~ msgstr "Rasmol Xyz \"zero-based\""
-
 #~ msgid "The {0} command is not available for the applet."
 #~ msgstr "O comando {0} não está disponível para uso com o applet."
-
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Jmol está a executar o script..."
 
 #, fuzzy
 #~ msgid "use {0}"
 #~ msgstr "Escala 0.2"
-
 #~ msgid "Animate"
 #~ msgstr "Animar"
-
 #~ msgid "Frame"
 #~ msgstr "Frame"
-
 #~ msgid "All Frames"
 #~ msgstr "Todos os frames"
-
 #~ msgid "Set Select Mode"
 #~ msgstr "Definir o modo de selecção"
-
 #~ msgid "Replace Selection"
 #~ msgstr "Substítuir Selecção"
-
 #~ msgid "Add to Selection (OR)"
 #~ msgstr "Adicionar à selecção (OR)"
-
 #~ msgid "Narrow Selection (AND)"
 #~ msgstr "Limitar a selecção (AND)"
-
 #~ msgid "Render"
 #~ msgstr "Renderizar"
-
 #~ msgid "Crimson"
 #~ msgstr "Crimson"
-
 #~ msgid "Dark Red"
 #~ msgstr "Vermelho Escuro"
-
 #~ msgid "Firebrick"
 #~ msgstr "Tijolo"
-
 #~ msgid "Indian Red"
 #~ msgstr "Vermelho Indiano"
-
 #~ msgid "Dark Magenta"
 #~ msgstr "Magenta Escuro"
-
 #~ msgid "Dark Salmon"
 #~ msgstr "Salmão Escuro"
-
 #~ msgid "Light Salmon"
 #~ msgstr "Samão claro"
-
 #~ msgid "Deep Pink"
 #~ msgstr "Rosa escuro"
-
 #~ msgid "Light Pink"
 #~ msgstr "Rosa claro"
-
 #~ msgid "Goldenrod"
 #~ msgstr "Haste dourada"
-
 #~ msgid "Lemon Chiffon"
 #~ msgstr "'Lemon Chiffon'"
-
 #~ msgid "Yellow-Green"
 #~ msgstr "Amarelo-Esverdeado"
-
 #~ msgid "Lime"
 #~ msgstr "lima"
-
 #~ msgid "Seagreen"
 #~ msgstr "Verde oceano"
-
 #~ msgid "Green-Blue"
 #~ msgstr "Verde-Azulado"
-
 #~ msgid "Spring Green"
 #~ msgstr "Verde primavera"
-
 #~ msgid "Aqua"
 #~ msgstr "Azul Aquático"
-
 #~ msgid "Azure"
 #~ msgstr "Azul celeste"
-
 #~ msgid "Carolina Blue"
 #~ msgstr "'Carolina Blue'"
-
 #~ msgid "Cadet Blue"
 #~ msgstr "'Cadet Blue'"
-
 #~ msgid "Cornflower"
 #~ msgstr "'Cornflower'"
-
 #~ msgid "Dark Slate Blue"
 #~ msgstr "'Dark Slate Blue'"
-
 #~ msgid "Light Steel Blue"
 #~ msgstr "'Light Steel Blue'"
-
 #~ msgid "Charge"
 #~ msgstr "Carga"
-
 #~ msgid "Crystal"
 #~ msgstr "Cristal"
-
 #~ msgid "Aquamarine"
 #~ msgstr "'Aquamarine'"
-
 #~ msgid "Forest Green"
 #~ msgstr "Verde Floresta"
-
 #~ msgid "Hot Pink"
 #~ msgstr "Rosa forte"
-
 #~ msgid "Options"
 #~ msgstr "Opções"
 
 #, fuzzy
 #~ msgid "Show Selected Atoms"
 #~ msgstr "Mostrar halos de selecção"
-
 #~ msgid "Jmol Colors"
 #~ msgstr "Cores Jmol"
 
 #, fuzzy
 #~ msgid "or dotted"
 #~ msgstr "Tracejado"
-
 #~ msgid "Except Solvent"
 #~ msgstr "Excipiente solvente"
-
 #~ msgid "Except Water"
 #~ msgstr "Excipiente água"
-
 #~ msgid "Other"
 #~ msgstr "Outro"
-
 #~ msgid "Lipid"
 #~ msgstr "Lípido"
-
 #~ msgid "Nanometers"
 #~ msgstr "Nanómetros"
-
 #~ msgid "Angstroms"
 #~ msgstr "Angstroms"
-
 #~ msgid "Picometers"
 #~ msgstr "Picómetros"
-
 #~ msgid "Open"
 #~ msgstr "Abrir"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotação de frameligado"
-
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
 #~ "for more information"
 #~ msgstr ""
 #~ "Jmol Applet. Parte do projecto OpenScience. Visite http://www.jmol.org "
 #~ "para mais informação"
-
 #~ msgid "20% vanderWaals"
 #~ msgstr "20% vanderWaals"
-
 #~ msgid "25% vanderWaals"
 #~ msgstr "25% vanderWaals"
-
 #~ msgid "75% vanderWaals"
 #~ msgstr "75% vanderWaals"
-
 #~ msgid "100% vanderWaals"
 #~ msgstr "100% vanderWaals"
-
 #~ msgid "Scale 0.5"
 #~ msgstr "Escala 0.5"
-
 #~ msgid "Scale 1"
 #~ msgstr "Escala 1"
-
 #~ msgid "Scale 2"
 #~ msgstr "Escala 2"
-
 #~ msgid "Scale 5"
 #~ msgstr "Escala 5"
-
 #~ msgid "1 px"
 #~ msgstr "1 px"
-
 #~ msgid "3 px"
 #~ msgstr "3 px"
-
 #~ msgid "5 px"
 #~ msgstr "% px"
+

@@ -3898,7 +3898,7 @@ class Eval { //implements Runnable {
         int[] atomMap = null;
         BitSet bsAtoms = new BitSet(atomCount);
         if (matchField > 0) {
-          atomMap = new int[atomCount + 1];
+          atomMap = new int[atomCount + 2];
           for (int j = 0; j <= atomCount; j++)
             atomMap[j] = -1;
           for (int j = 0; j < atomCount; j++) {

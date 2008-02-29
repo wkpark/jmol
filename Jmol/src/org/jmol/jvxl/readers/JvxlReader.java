@@ -940,9 +940,9 @@ public class JvxlReader extends VolumeFileReader {
 
   public static void jvxlUpdateSurfaceData(JvxlData jvxlData, float[] vertexValues, int vertexCount, int vertexIncrement, char isNaN) { 
     char[] chars = jvxlData.jvxlEdgeData.toCharArray();
-    for (int i = 0, ipt = 0; i < vertexCount; i+= vertexIncrement)
+    for (int i = 0, ipt = 0; i < vertexCount; i+= vertexIncrement, ipt++)
       if (Float.isNaN(vertexValues[i]))
-          chars[ipt++] = isNaN;
+          chars[ipt] = isNaN;
     jvxlData.jvxlEdgeData = String.copyValueOf(chars);
   }
   

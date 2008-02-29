@@ -338,10 +338,10 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
     if (property == "plane")
       return jvxlData.jvxlPlane;
     if (property == "jvxlFileData")
-      return JvxlReader.jvxlGetFile(jvxlData, title, "", true, index, thisMesh
+      return JvxlReader.jvxlGetFile(thisMesh.jvxlData, title, "", true, index, thisMesh
           .getState(myType), shortScript());
     if (property == "jvxlSurfaceData")
-      return JvxlReader.jvxlGetFile(jvxlData, title, "", false, 1, thisMesh
+      return JvxlReader.jvxlGetFile(thisMesh.jvxlData, title, "", false, 1, thisMesh
           .getState(myType), shortScript());
     return super.getProperty(property, index);
   }

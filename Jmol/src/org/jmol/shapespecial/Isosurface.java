@@ -328,22 +328,25 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
   public Object getProperty(String property, int index) {
     if (property == "dataRange")
       return (thisMesh == null ? null : new float[] {
-          thisMesh.jvxlData.mappedDataMin, thisMesh.jvxlData.mappedDataMax,
-          thisMesh.jvxlData.valueMappedToRed,
-          thisMesh.jvxlData.valueMappedToBlue });
+          jvxlData.mappedDataMin, jvxlData.mappedDataMax,
+          jvxlData.valueMappedToRed,
+          jvxlData.valueMappedToBlue });
     if (property == "moNumber")
       return new Integer(moNumber);
+    Object ret = super.getProperty(property, index);
+    if (ret != null)
+      return ret;
     if (thisMesh == null)
       return "no current isosurface";
     if (property == "plane")
       return jvxlData.jvxlPlane;
     if (property == "jvxlFileData")
-      return JvxlReader.jvxlGetFile(thisMesh.jvxlData, title, "", true, index, thisMesh
+      return JvxlReader.jvxlGetFile(jvxlData, title, "", true, index, thisMesh
           .getState(myType), shortScript());
     if (property == "jvxlSurfaceData")
-      return JvxlReader.jvxlGetFile(thisMesh.jvxlData, title, "", false, 1, thisMesh
+      return JvxlReader.jvxlGetFile(jvxlData, title, "", false, 1, thisMesh
           .getState(myType), shortScript());
-    return super.getProperty(property, index);
+    return null;
   }
 
   private String shortScript() {

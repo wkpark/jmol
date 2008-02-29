@@ -31,6 +31,7 @@ import javax.vecmath.Point3f;
 import java.util.Vector;
 import java.util.Hashtable;
 import java.util.BitSet;
+import java.util.Arrays;
 
 /*
  * See J. Computational Chemistry, vol 7, p 359, 1986.
@@ -158,6 +159,27 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
       if (shell == quantumShellIDs[i])
         return quantumShellTags[i];
     return "" + shell;
+  }
+  
+  final public static String canonicalizeQuantumSubshellTag(String tag) {
+    char firstChar = tag.charAt(0);
+    if (firstChar == 'X' || firstChar == 'Y' || firstChar == 'Z') {
+      char[] sorted = tag.toCharArray();
+      Arrays.sort(sorted);
+      return new String(sorted);
+    } 
+    return tag;
+  }
+  
+  final public static int getQuantumSubshellTagID(int shell, String tag) {
+    for (int iSubshell = shellOrder[shell].length; --iSubshell >= 0; )
+      if (shellOrder[shell][iSubshell].equals(tag))
+        return iSubshell;
+    return -1;
+  }
+  
+  final public static String getQuantumSubshellTag(int shell, int subshell) {
+    return shellOrder[shell][subshell];
   }
 
   public MOCalculation() {

@@ -297,24 +297,41 @@ public class GamessReader extends AtomSetCollectionReader {
   void readMolecularOrbitals() throws Exception {
     Hashtable[] mos = null;
     Vector[] data = null;
+    Vector coeffLabels = null;
     readLine(); // -------
     int nThisLine = 0;
-    while (readLine() != null
-        && line.indexOf("--") < 0 && line.indexOf(".....") < 0) {
+    while (readLine() != null) {
       String[] tokens = getTokens();
       if (Logger.debugging) {
         Logger.debug(tokens.length + " --- " + line);
       }
-      if (line.length() == 0) {
-        for (int i = 0; i < nThisLine; i++) {
-          float[] coefs = new float[data[i].size()];
-          for (int j = coefs.length; --j >= 0;)
-            coefs[j] = parseFloat((String) data[i].get(j));
-          mos[i].put("coefficients", coefs);
-          orbitals.addElement(mos[i]);
+      if (line.length() == 0 || line.indexOf("--") >= 0 || line.indexOf(".....") >=0) {
+        for (int iMo = 0; iMo < nThisLine; iMo++) {
+          float[] coefs = new float[data[iMo].size()];
+          int iCoeff = 0;
+          while (iCoeff < coefs.length) {
+            // Reorder F coeffs; leave the rest untouched
+            if (((String) coeffLabels.get(iCoeff)).equals("XXX")) {
+              Hashtable fCoeffs = new Hashtable();
+              for (int ifc = 0; ifc < 10; ifc++) {
+                fCoeffs.put(coeffLabels.get(iCoeff+ifc), data[iMo].get(iCoeff+ifc));
+              }
+              for (int ifc = 0; ifc < 10; ifc++) {
+                String orderLabel = JmolAdapter.getQuantumSubshellTag(JmolAdapter.SHELL_F_CARTESIAN, ifc);
+                coefs[iCoeff++] = parseFloat((String) fCoeffs.get(orderLabel));
+              }
+            } else {
+              coefs[iCoeff] = parseFloat((String) data[iMo].get(iCoeff));
+              iCoeff++;
+            }
+          }
+          mos[iMo].put("coefficients", coefs);
+          orbitals.addElement(mos[iMo]);
         }
         nThisLine = 0;
-        continue;
+        if (line.length() == 0)
+          continue;
+        break;
       }
       if (nThisLine == 0) {
         nThisLine = tokens.length;
@@ -331,11 +348,15 @@ public class GamessReader extends AtomSetCollectionReader {
         tokens = getTokens(readLine());
         for (int i = 0; i < nThisLine; i++)
           mos[i].put("symmetry", tokens[i]);
+        coeffLabels = new Vector();
         continue;
       }
+
       int nSkip = tokens.length - nThisLine;
-      for (int i = 0; i < nThisLine; i++)
+      coeffLabels.addElement(JmolAdapter.canonicalizeQuantumSubshellTag(tokens[nSkip - 1]));
+      for (int i = 0; i < nThisLine; i++) {
         data[i].addElement(tokens[i + nSkip]);
+      }    
     }
     Logger.debug(orbitals.size() + " molecular orbitals read in model " + modelNumber);
   }

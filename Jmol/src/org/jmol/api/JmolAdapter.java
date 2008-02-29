@@ -68,10 +68,14 @@ public abstract class JmolAdapter {
   public final static short ORDER_PARTIAL32       = JmolConstants.BOND_PARTIAL32;
   public final static short ORDER_UNSPECIFIED     = JmolConstants.BOND_ORDER_UNSPECIFIED;
   
-  public final static int SHELL_D_CARTESIAN = MOCalculation.SHELL_D_CARTESIAN;
-  public final static int SHELL_D_SPHERICAL = MOCalculation.SHELL_D_SPHERICAL;
-  public final static int SHELL_F_CARTESIAN = MOCalculation.SHELL_F_CARTESIAN;
-  public final static int SHELL_F_SPHERICAL = MOCalculation.SHELL_F_SPHERICAL;
+  public final static int        SHELL_S           = MOCalculation.SHELL_S;
+  public final static int        SHELL_P           = MOCalculation.SHELL_P;
+  public final static int        SHELL_SP          = MOCalculation.SHELL_SP;
+  public final static int        SHELL_L           = MOCalculation.SHELL_L;
+  public final static int        SHELL_D_CARTESIAN = MOCalculation.SHELL_D_CARTESIAN;
+  public final static int        SHELL_D_SPHERICAL = MOCalculation.SHELL_D_SPHERICAL;
+  public final static int        SHELL_F_CARTESIAN = MOCalculation.SHELL_F_CARTESIAN;
+  public final static int        SHELL_F_SPHERICAL = MOCalculation.SHELL_F_SPHERICAL;
   
   public static String getElementSymbol(int elementNumber) {
     return JmolConstants.elementSymbolFromNumber(elementNumber);
@@ -92,7 +96,18 @@ public abstract class JmolAdapter {
   public static int getQuantumShellTagIDSpherical(String tag) {
     return MOCalculation.getQuantumShellTagIDSpherical(tag);
   }
+  
+  final public static int getQuantumSubshellTagID(int shell, String tag) {
+    return MOCalculation.getQuantumSubshellTagID(shell, tag);
+  }
                                            
+  final public static String getQuantumSubshellTag(int shell, int subshell) {
+    return MOCalculation.getQuantumSubshellTag(shell, subshell);
+  }
+  
+  final public static String canonicalizeQuantumSubshellTag(String tag) {
+    return MOCalculation.canonicalizeQuantumSubshellTag(tag);
+  }
   
   //////////////////////////////////////////////////////////////////
   // file related

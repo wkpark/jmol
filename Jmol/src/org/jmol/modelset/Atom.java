@@ -218,20 +218,20 @@ final public class Atom extends Point3fi {
     } else if (size == -1001) // ionic
       size = (getBondingMar() * 2);
     else if (size == -100) { // simple van der waals
-      size = (int)(getVanderwaalsRadiusFloat() * 2000);
+      size = getVanderwaalsMad();
     } else if (size < 0) {
       size = -size;
       if (size > 200)
         size = 200;
       size = // we are going from a radius to a diameter
-        (int)(size / 100f * getVanderwaalsMar() * 2);
+        (int)(size / 100f * getVanderwaalsMad());
     } else if (size >= 10000) {
       // radiusAngstroms = vdw + x, where size = (x*2)*1000 + 10000
       // and vdwMar = vdw * 1000
       // we want mad = diameterAngstroms * 1000 = (radiusAngstroms *2)*1000 
       //             = (vdw * 2 * 1000) + x * 2 * 1000
       //             = vdwMar * 2 + (size - 10000)
-      size = size - 10000 + getVanderwaalsMar() * 2;
+      size = size - 10000 + getVanderwaalsMad();
     }
     return (short)size;
   }
@@ -367,8 +367,10 @@ final public class Atom extends Point3fi {
     return (dimension == 0 ? x : (dimension == 1 ? y : z));
   }
 
-  short getVanderwaalsMar() {
-    return JmolConstants.vanderwaalsMars[atomicAndIsotopeNumber % 128];
+  int getVanderwaalsMad() {
+    return (Float.isNaN(userDefinedVanDerWaalRadius) 
+        ? JmolConstants.vanderwaalsMars[atomicAndIsotopeNumber % 128] * 2
+        : (int)(userDefinedVanDerWaalRadius * 2000f));
   }
 
   public float getVanderwaalsRadiusFloat() {

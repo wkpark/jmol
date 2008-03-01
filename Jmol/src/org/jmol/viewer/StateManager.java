@@ -677,12 +677,10 @@ public class StateManager {
       //
       //place any parameter here you do NOT want to have in the state
       //
+      // _xxxxx variables are automatically exempt
+      //
       //this is a final static String. MAKE SURE ALL ENTRIES ARE LOWERCASE!
       //
-      ";_animating;_atomhovered;_atompicked;_pickinfo" +
-      ";_currentfilenumber;_currentmodelnumberinfile" +
-      ";_height;_memory;_modelfile;_modelname;_modelnumber;_modeltitle;_spinning;_version;_width" +
-      ";_firstframe;_lastframe;_trajectory;_slabplane;_depthplane" +
       ";ambientpercent;animationfps" +
       ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor" +
       ";axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color" +
@@ -707,9 +705,10 @@ public class StateManager {
       ";";
     
     boolean isJmolVariable(String key) {
-      return htParameterValues.containsKey(key = key.toLowerCase()) 
-      || htPropertyFlags.containsKey(key)
-      || unreportedProperties.indexOf(";" + key + ";") >= 0;
+      return key.charAt(0) == '_'
+          || htParameterValues.containsKey(key = key.toLowerCase()) 
+          || htPropertyFlags.containsKey(key)
+          || unreportedProperties.indexOf(";" + key + ";") >= 0;
     }
 
     void setParameterValue(String name, boolean value) {
@@ -780,10 +779,6 @@ public class StateManager {
       return htUserVariables.get(key);  
     }
     
-    boolean doRegister(String name) {
-      return (unreportedProperties.indexOf(";" + name + ";") < 0);
-    }
-
     String getParameterEscaped(String name, int nMax) {
       name = name.toLowerCase();
       if (htParameterValues.containsKey(name)) {
@@ -895,17 +890,18 @@ public class StateManager {
       e = htPropertyFlags.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
-        if (doRegister(key))
+        if (doReportProperty(key))
           list[n++] = "set " + key + " " + htPropertyFlags.get(key);
       }
-      //save as _xxxx if you don't want "set" to be there first
       e = htParameterValues.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
         String name = key;
-        if (key.charAt(0) != '@' && doRegister(key)) {
+        if (key.charAt(0) != '@' && doReportProperty(key)) {
           Object value = htParameterValues.get(key);
-          if (key.charAt(0) == '_') { //unitcell offset, for one _frame xx; set unitcell ...
+          if (key.charAt(0) == '=') {
+            //save as =xxxx if you don't want "set" to be there first
+            // (=color [element], =frame ...; set unitcell) -- see Viewer.java
             key = key.substring(1);
           } else {
             if (key.indexOf("default") == 0)
@@ -969,6 +965,10 @@ public class StateManager {
       return commands.toString();
     }
     
+    private boolean doReportProperty(String name) {
+      return (name.charAt(0) != '_' && unreportedProperties.indexOf(";" + name + ";") < 0);
+    }
+
     private String escapeVariable(String name, Object value) {
       if (!(value instanceof String))
         return Escape.escape(value);

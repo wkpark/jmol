@@ -974,7 +974,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void setElementArgb(int elementNumber, int argb) {
     //Eval
-    global.setParameterValue("_color "
+    global.setParameterValue("=color "
         + JmolConstants.elementNameFromNumber(elementNumber), Escape
         .escapeColor(argb));
     colorManager.setElementArgb(elementNumber, argb);
@@ -1560,8 +1560,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.applySymmetryToBonds = TF;
   }
 
-  void loadData(String type, String coordinateData) {
-    modelSet.loadData(type, coordinateData);
+  void loadData(int type, String name, String coordinateData) {
+    modelSet.loadData(type, name, coordinateData);
   }
 
   public void openDOM(Object DOMNode) {
@@ -2349,7 +2349,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isAll || type.equalsIgnoreCase("variableState"))
       s.append(global.getState(sfunc));
     if (isAll || type.equalsIgnoreCase("dataState"))
-      dataManager.getDataState(s, sfunc);
+      dataManager.getDataState(s, sfunc, modelSet.atoms, getAtomCount(), modelSet.getPropertyState());
 
     //  definitions, connections, atoms, bonds, labels, echos, shapes
     if (isAll || type.equalsIgnoreCase("modelState"))
@@ -2403,7 +2403,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return colorManager.getCurrentColorRange();
   }
   
-  void setData(String type, Object[] data, int atomCount, int matchField,
+  public void setData(String type, Object[] data, int atomCount, int matchField,
                int field) {
     dataManager.setData(type, data, atomCount, matchField, field);
   }
@@ -2468,14 +2468,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void setCurrentUnitCellOffset(int offset) {
     int modelIndex = repaintManager.currentModelIndex;
     if (modelSet.setUnitCellOffset(modelIndex, offset))
-      global.setParameterValue("_frame " + getModelNumberDotted(modelIndex)
+      global.setParameterValue("=frame " + getModelNumberDotted(modelIndex)
           + "; set unitcell ", offset);
   }
 
   void setCurrentUnitCellOffset(Point3f pt) {
     int modelIndex = repaintManager.currentModelIndex;
     if (modelSet.setUnitCellOffset(modelIndex, pt))
-      global.setParameterValue("_frame " + getModelNumberDotted(modelIndex)
+      global.setParameterValue("=frame " + getModelNumberDotted(modelIndex)
           + "; set unitcell ", Escape.escape(pt));
   }
 

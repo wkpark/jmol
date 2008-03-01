@@ -1422,7 +1422,7 @@ class Compiler {
 //    isEmbeddedExpression = (tokAttr(tokCommand, Token.embeddedExpression));
 //    boolean checkExpression = (tokAttrOr(tokCommand, Token.expressionCommand,
   //      Token.embeddedExpression));
-    isEmbeddedExpression = (!tokAttrOr(tokCommand, Token.expressionCommand, Token.specialstring));
+    isEmbeddedExpression = tokCommand != Token.function && (!tokAttrOr(tokCommand, Token.expressionCommand, Token.specialstring));
     boolean checkExpression = isEmbeddedExpression || (tokAttr(tokCommand, Token.expressionCommand));
 
       // $ at beginning disallow expression checking for center command

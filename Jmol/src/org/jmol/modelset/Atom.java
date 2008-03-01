@@ -50,7 +50,7 @@ final public class Atom extends Point3fi {
   BitSet atomSymmetry;
   int atomSite;
   public short screenDiameter;
-  public float radius;
+  private float userDefinedVanDerWaalRadius;
   
   public int getScreenRadius() {
     return screenDiameter / 2;
@@ -109,7 +109,7 @@ final public class Atom extends Point3fi {
       formalChargeAndFlags = IS_HETERO_FLAG;
     setFormalCharge(formalCharge);
     this.alternateLocationID = (byte)alternateLocationID;
-    this.radius = radius;
+    userDefinedVanDerWaalRadius = radius;
     setMadAtom(mad);
     set(x, y, z);
   }
@@ -218,7 +218,7 @@ final public class Atom extends Point3fi {
     } else if (size == -1001) // ionic
       size = (getBondingMar() * 2);
     else if (size == -100) { // simple van der waals
-      size = (int)(getVanderwaalsMar() * 2);
+      size = (int)(getVanderwaalsRadiusFloat() * 2000);
     } else if (size < 0) {
       size = -size;
       if (size > 200)
@@ -345,6 +345,10 @@ final public class Atom extends Point3fi {
     return bfactor100s[atomIndex];
   }
 
+  public boolean setRadius(float radius) {
+    return !Float.isNaN(userDefinedVanDerWaalRadius = (radius > 0 ? radius : Float.NaN));  
+  }
+  
   public void setValency(int nBonds) {
     if (nBonds > 7)
       nBonds = 7;
@@ -368,7 +372,9 @@ final public class Atom extends Point3fi {
   }
 
   public float getVanderwaalsRadiusFloat() {
-    return (Float.isNaN(radius) ? JmolConstants.vanderwaalsMars[atomicAndIsotopeNumber % 128] / 1000f : radius);
+    return (Float.isNaN(userDefinedVanDerWaalRadius) 
+        ? JmolConstants.vanderwaalsMars[atomicAndIsotopeNumber % 128] / 1000f
+        : userDefinedVanDerWaalRadius);
   }
 
   short getBondingMar() {
@@ -853,6 +859,10 @@ final public class Atom extends Point3fi {
     return group.chain.modelSet.getSurfaceDistance100(atomIndex);
   }
 
+  public Vector3f getVibrationVector() {
+    return group.chain.modelSet.getVibrationVector(atomIndex);
+  }
+
   public int getPolymerLength() {
     return group.getBioPolymerLength();
   }
@@ -1098,7 +1108,7 @@ final public class Atom extends Point3fi {
           default:
             if (ch != '\0')
               --ich;
-            Vector3f v = group.chain.modelSet.getVibrationVector(atomIndex);
+            Vector3f v = getVibrationVector();
             if (v == null) {
               floatT = 0;
               break;

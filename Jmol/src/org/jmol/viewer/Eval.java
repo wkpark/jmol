@@ -3881,23 +3881,40 @@ class Eval { //implements Runnable {
     }
     String dataType = dataLabel + " ";
     dataType = dataType.substring(0, dataType.indexOf(" "));
-    data = new Object[3];
-    data[0] = dataLabel;
-    data[1] = dataString;
     boolean isModel = dataType.equalsIgnoreCase("model");
     boolean isAppend = dataType.equalsIgnoreCase("append");
-    if (!isSyntaxCheck || isScriptCheck && (isModel || isAppend)
-        && fileOpenCheck) {
-      if (dataType.toLowerCase().indexOf("property_") == 0) {
+    boolean processModel = ((isModel || isAppend) && (!isSyntaxCheck || isScriptCheck
+        && fileOpenCheck));
+    if ((isModel || isAppend) && dataString == null)
+      invalidArgument();
+    int userType = -1;
+    if (!isSyntaxCheck || processModel) {
+      data = new Object[3];
+      String[] tokens = Parser.getTokens(dataLabel);
+      if (dataType.toLowerCase().indexOf("property_") == 0
+          && !(tokens.length == 2 && tokens[1].equalsIgnoreCase("set"))) {
         BitSet bs = viewer.getSelectionSet();
-        int dataField = isOneValue ? Integer.MIN_VALUE : ((Integer) viewer
-            .getParameter("propertyDataField")).intValue();
-        int matchField = isOneValue ? 0 : ((Integer) viewer
+        data[0] = dataType;
+        int atomNumberField = isOneValue ? 0 : ((Integer) viewer
             .getParameter("propertyAtomNumberField")).intValue();
+        int propertyField = isOneValue ? Integer.MIN_VALUE : ((Integer) viewer
+            .getParameter("propertyDataField")).intValue();
+        if (!isOneValue && dataLabel.indexOf(" ") >= 0) {
+          // DATA "property_whatever [atomField] [propertyField]"
+          if (tokens.length == 3) {
+            dataLabel = tokens[0];
+            atomNumberField = Parser.parseInt(tokens[1]);
+            propertyField = Parser.parseInt(tokens[2]);
+            if (atomNumberField < 0)
+              atomNumberField = 0;
+            if (propertyField < 0)
+              propertyField = 0;
+          }
+        }
         int atomCount = viewer.getAtomCount();
         int[] atomMap = null;
         BitSet bsAtoms = new BitSet(atomCount);
-        if (matchField > 0) {
+        if (atomNumberField > 0) {
           atomMap = new int[atomCount + 2];
           for (int j = 0; j <= atomCount; j++)
             atomMap[j] = -1;
@@ -3914,26 +3931,30 @@ class Eval { //implements Runnable {
         } else {
           data[2] = bs;
         }
-        viewer.setData(dataType, data, atomCount, matchField, dataField);
+        data[1] = dataString;
+        viewer.setData(dataType, data, atomCount, atomNumberField,
+            propertyField);
+        userType = Integer.MAX_VALUE; //we're done
       } else {
+        data[0] = dataLabel;
+        data[1] = dataString;
         viewer.setData(dataType, data, 0, 0, 0);
       }
     }
-    if ((isModel || isAppend) && dataString == null)
-      invalidArgument();
-    if ((isModel || isAppend)
-        && (!isSyntaxCheck || isScriptCheck && fileOpenCheck)) {
+    if (processModel) {
       // only if first character is "|" do we consider "|" to be new line
       char newLine = viewer.getInlineChar();
       if (dataString.length() > 0 && dataString.charAt(0) != newLine)
         newLine = '\0';
       viewer.loadInline(dataString, newLine, isAppend);
+      return;
     }
-    if (Parser
-        .isOneOf(
-            dataType.toLowerCase(),
-            "coord;formalcharge;occupany;partialcharge;temperature;valency;vibrationvector;"))
-      viewer.loadData(dataType, dataString);
+    if (isSyntaxCheck)
+      return;
+    if (userType < 0)
+      userType = AtomCollection.getUserSettableType(dataType);
+    if (userType >= 0 && userType <= AtomCollection.TAINT_MAX)
+      viewer.loadData(userType, dataType, dataString);
   }
 
   private void define() throws ScriptException {
@@ -4919,7 +4940,8 @@ class Eval { //implements Runnable {
     String name = (String) getToken(0).value;
     if (getFunction(name, tokType) == null)
       evalError(GT._("command expected"));
-    Vector params = (statementLength == 1 ? null
+    Vector params = (statementLength == 1 
+        || statementLength == 3 && tokAt(1) == Token.leftparen && tokAt(2) == Token.rightparen ? null
         : (Vector) parameterExpression(1, 0, null, true));
     if (isSyntaxCheck)
       return;

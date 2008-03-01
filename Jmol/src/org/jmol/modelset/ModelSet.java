@@ -550,6 +550,16 @@ abstract public class ModelSet extends ModelCollection {
    * 
    ********************************************************/
  
+  public String getPropertyState() {
+    BitSet bs;
+    StringBuffer commands = new StringBuffer();
+    for (byte i = 0; i < TAINT_MAX; i++)
+      if((bs = getTaintedAtoms(i)) != null) { 
+        getAtomicPropertyState(commands, atoms, atomCount, i, bs, null, null);
+      }
+    return commands.toString();
+  }
+  
   public String getState(StringBuffer sfunc, boolean isAll) {
     StringBuffer commands = new StringBuffer();
     if (isAll && sfunc != null) {
@@ -557,14 +567,6 @@ abstract public class ModelSet extends ModelCollection {
       commands.append("function _setModelState();\n");
     }
     String cmd;
-
-    // properties
-
-    if (isAll) {
-      for (byte i = 0; i < TAINT_MAX; i++)
-        if(getTaintedAtoms(i) != null) 
-          getTaintedState(commands, i);
-    }
 
     // connections
 

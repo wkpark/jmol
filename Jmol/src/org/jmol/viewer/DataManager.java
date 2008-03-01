@@ -27,8 +27,9 @@ import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.AtomCollection;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.Escape;
 import org.jmol.util.Parser;
 
 /*
@@ -62,7 +63,7 @@ class DataManager {
      *   Integer.MAX_VALUE ==> values are a simple list; don't clear the data
      *   Integer.MIN_VALUE ==> one SINGLE data value should be used for all selected atoms
      */
-    if (data[2] != null) {
+    if (data[2] != null && atomCount > 0) {
       boolean createNew = (matchField != 0 
           || field != Integer.MIN_VALUE && field != Integer.MAX_VALUE);
       Object[] oldData = (Object[]) dataValues.get(type);
@@ -135,11 +136,18 @@ class DataManager {
     return Float.NaN;
   }
 
-  void getDataState(StringBuffer s, StringBuffer sfunc) {
+  void getDataState(StringBuffer s, StringBuffer sfunc, Atom[] atoms,
+                    int atomCount, String atomProps) {
     if (dataValues == null)
       return;
     Enumeration e = (dataValues.keys());
     int n = 0;
+    if (atomProps != "") {
+      n = 1;
+      if (sfunc != null)
+        s.append("function _setDataState();\n");
+      s.append(atomProps);
+    }
     while (e.hasMoreElements()) {
       String name = (String) e.nextElement();
       if (name.indexOf("property_") == 0) {
@@ -148,20 +156,16 @@ class DataManager {
         n++;
         Object data = ((Object[]) dataValues.get(name))[1];
         if (data instanceof float[]) {
-          BitSet bs = (BitSet)((Object[]) dataValues.get(name))[2];
-          s.append("\n  select " + Escape.escape(bs))
-              .append(";\n  DATA \"").append(name).append("\"");
-          float[] f = (float[]) data;
-          int j = 0;
-          for (int i = 0; i < f.length; i++)
-            if (bs.get(i))
-              s.append((j++ % 10) == 0 ? "\n    " : "  ").append(f[i]);
+          AtomCollection.getAtomicPropertyState(s, atoms, atomCount,
+              AtomCollection.TAINT_MAX, 
+              (BitSet) ((Object[]) dataValues.get(name))[2], 
+              name, (float[]) data);
           s.append("\n");
         } else {
           s.append("\n  DATA \"").append(name).append("\"");
           s.append(data);
+          s.append("  end \"").append(name).append("\";\n");
         }
-        s.append("  end \"").append(name).append("\";\n");
       }
     }
     if (n == 0 || sfunc == null)
@@ -169,6 +173,4 @@ class DataManager {
     sfunc.append("  _setDataState\n");
     s.append("end function;\n\n");
   }
-
-
 }

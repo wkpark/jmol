@@ -566,6 +566,15 @@ abstract public class AtomCollection {
         atom.setValency(iValue);
         taint(i, TAINT_VALENCE);
         break;
+      case Token.vanderwaals:
+        if (atom.setRadius(fValue))        
+            taint(i, TAINT_VANDERWAALS);
+        else
+            untaint(i, TAINT_VANDERWAALS);
+        break;
+      default:
+        Logger.error("unsettable atom property: " + Token.nameOf(tok));
+        break;        
       }
     }
   }
@@ -644,37 +653,37 @@ abstract public class AtomCollection {
 
   // loading data
   
-  public void loadData(String dataType, String dataString) {
-    if (dataType.equalsIgnoreCase("coord")) {
+  public void loadData(int type, String name, String dataString) {
+    float[] fData = null;
+    BitSet bs = null;
+    switch (type) {
+    case TAINT_COORD:
       loadCoordinates(dataString, false);
       return;
-    } else if (dataType.equalsIgnoreCase("vibrationvector")) {
+    case TAINT_VIBRATION:
       loadCoordinates(dataString, true);
       return;
+    case TAINT_MAX:
+      fData = new float[atomCount];
+      bs = new BitSet(atomCount);break;
     }
-    byte type = 0;
-    if (dataType.equalsIgnoreCase("formalcharge"))
-      type = TAINT_FORMALCHARGE;
-    else if (dataType.equalsIgnoreCase("occupancy"))
-      type = TAINT_OCCUPANCY;
-    else if (dataType.equalsIgnoreCase("partialcharge"))
-      type = TAINT_PARTIALCHARGE;
-    else if (dataType.equalsIgnoreCase("temperature"))
-      type = TAINT_TEMPERATURE;
-    else if (dataType.equalsIgnoreCase("valence"))
-      type = TAINT_VALENCE;
-    else
-      return;
-    
     int[] lines = Parser.markLines(dataString, ';');
+    int n = 0;
     try {
       int nData = Parser.parseInt(dataString.substring(0, lines[0] - 1));
       for (int i = 1; i <= nData; i++) {
         String[] tokens = Parser.getTokens(Parser.parseTrimmed(dataString.substring(
             lines[i], lines[i + 1] - 1)));
         int atomIndex = Parser.parseInt(tokens[0]) - 1;
+        if (atomIndex < 0 || atomIndex >= atomCount)
+          continue;
+        n++;
         float x = Parser.parseFloat(tokens[tokens.length - 1]);
         switch (type) {
+        case TAINT_MAX:
+          fData[atomIndex] = x;
+          bs.set(atomIndex);
+          continue;
         case TAINT_FORMALCHARGE:
           atoms[atomIndex].setFormalCharge((int)x);          
           break;
@@ -687,11 +696,17 @@ abstract public class AtomCollection {
         case TAINT_VALENCE:
           atoms[atomIndex].setValency((int)x);          
           break;
+        case TAINT_VANDERWAALS:
+          atoms[atomIndex].setRadius(x);          
+          break;
         }
-        taint(atomIndex, type);
+        taint(atomIndex, (byte) type);
       }
+      if (type == TAINT_MAX && n > 0)
+        viewer.setData(name, new Object[] {name, fData, bs}, 0, 0, 0);
+        
     } catch (Exception e) {
-      Logger.error("Frame.loadCoordinate error: " + e);
+      Logger.error("AtomCollection.loadData error: " + e);
     }    
   }
   
@@ -734,10 +749,29 @@ abstract public class AtomCollection {
   final private static byte TAINT_PARTIALCHARGE = 3;
   final private static byte TAINT_TEMPERATURE = 4;
   final private static byte TAINT_VALENCE = 5;
-  final private static byte TAINT_VIBRATION = 6;
-  final protected static byte TAINT_MAX = 7;
-    
+  final private static byte TAINT_VANDERWAALS = 6;
+  final private static byte TAINT_VIBRATION = 7;
+  final public static byte TAINT_MAX = 8;
+
+  final private static String[] userSettableValues = {
+    "coord",
+    "formalCharge",
+    "occupany",
+    "partialCharge",
+    "temperature",
+    "valency",
+    "vanderWaals",
+    "vibrationVector"
+  };
+  
   protected BitSet[] tainted;  // not final -- can be set to null
+
+  public static int getUserSettableType(String dataType) {
+    for (int i = 0; i < userSettableValues.length; i++)
+      if (userSettableValues[i].equalsIgnoreCase(dataType))
+        return i;
+    return dataType.toLowerCase().indexOf("property_") == 0 ? TAINT_MAX : -1;
+  }
 
   public BitSet getTaintedAtoms(byte type) {
     return tainted == null ? null : tainted[type];
@@ -749,6 +783,12 @@ abstract public class AtomCollection {
     if (tainted[type] == null)
       tainted[type] = new BitSet(atomCount);
     tainted[type].set(atomIndex);
+  }
+
+  private void untaint(int i, byte type) {
+    if (tainted == null || tainted[type] == null)
+      return;
+    tainted[type].clear(i);
   }
 
   public void setTaintedAtoms(BitSet bs, byte type) {
@@ -765,39 +805,22 @@ abstract public class AtomCollection {
     BitSetUtil.copy(bs, tainted[type]);
   }
 
-  protected void getTaintedState(StringBuffer commands, byte type) {
-    BitSet t = getTaintedAtoms(type);
-    commands.append("\n");
+  public static void getAtomicPropertyState(StringBuffer commands,
+                                            Atom[] atoms, int atomCount,
+                                            byte type, BitSet bs, String label,
+                                            float[] fData) {
     StringBuffer s = new StringBuffer();
     int n = 0;
-    String dataLabel = "";
-    switch (type) {
-    case TAINT_COORD:
-      dataLabel = "coord set";
-      break;
-    case TAINT_FORMALCHARGE:
-      dataLabel = "formalcharge set";
-      break;
-    case TAINT_OCCUPANCY:
-      dataLabel = "occupancy set";
-      break;
-    case TAINT_PARTIALCHARGE:
-      dataLabel = "partialcharge set";
-      break;
-    case TAINT_TEMPERATURE:
-      dataLabel = "temperature set";
-      break;
-    case TAINT_VALENCE:
-      dataLabel = "valence set";
-      break;
-    case TAINT_VIBRATION:
-      dataLabel = "vibrationvector set";
-    }
+    String dataLabel = (label == null ? userSettableValues[type] : label)
+        + " set";
     for (int i = 0; i < atomCount; i++)
-      if (t.get(i)) {
-        s.append(i + 1).append(" ").append(atoms[i].getElementSymbol())
-        .append(" ").append(atoms[i].getInfo().replace(' ', '_')).append(" ");
+      if (bs.get(i)) {
+        s.append(i + 1).append(" ").append(atoms[i].getElementSymbol()).append(
+            " ").append(atoms[i].getInfo().replace(' ', '_')).append(" ");
         switch (type) {
+        case TAINT_MAX:
+          s.append(" ").append(fData[i]);
+          break;
         case TAINT_COORD:
           s.append(" ").append(atoms[i].x).append(" ").append(atoms[i].y)
               .append(" ").append(atoms[i].z);
@@ -817,16 +840,22 @@ abstract public class AtomCollection {
         case TAINT_VALENCE:
           s.append(atoms[i].getValence());
           break;
+        case TAINT_VANDERWAALS:
+          s.append(atoms[i].getVanderwaalsRadiusFloat());
+          break;
         case TAINT_VIBRATION:
-          Vector3f v = getVibrationVector(i);
+          Vector3f v = atoms[i].getVibrationVector();
           if (v == null)
             v = new Vector3f();
-          s.append(" ").append(v.x).append(" ").append(v.y).append(" ").append(v.z);
+          s.append(" ").append(v.x).append(" ").append(v.y).append(" ").append(
+              v.z);
         }
         s.append(" ;\n");
         ++n;
       }
-    commands.append("  DATA \"" + dataLabel + "\"\n").append(n).append(
+    if (n == 0)
+      return;
+    commands.append("\n  DATA \"" + dataLabel + "\"\n").append(n).append(
         " ;\nJmol Property Data Format 1 -- Jmol ").append(
         Viewer.getJmolVersion()).append(";\n");
     commands.append(s);

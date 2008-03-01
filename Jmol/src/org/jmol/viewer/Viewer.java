@@ -5357,8 +5357,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.percentVdwAtom;
   }
 
-  public short getMadAtom() {
-    return (short) -global.percentVdwAtom;
+  public short getDefaultMadAtom() {
+    return (short) (-2000 - global.percentVdwAtom);
   }
 
   public short getMadBond() {

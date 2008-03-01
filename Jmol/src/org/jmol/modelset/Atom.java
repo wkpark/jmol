@@ -219,7 +219,12 @@ final public class Atom extends Point3fi {
       size = (getBondingMar() * 2);
     else if (size == -100) { // simple van der waals
       size = getVanderwaalsMad(viewer);
+    } else if (size < -2000) {
+      // percent of Jmol size, to diameter
+      size = (int)((-2000 - size) / 50f * JmolConstants.getVanderwaalsMar(atomicAndIsotopeNumber % 128, 
+          JmolConstants.VDW_JMOL));
     } else if (size < 0) {
+      // percent
       size = -size;
       if (size > 200)
         size = 200;

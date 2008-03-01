@@ -630,14 +630,16 @@ class Eval { //implements Runnable {
       viewer.setBooleanProperty(key, value);
   }
 
-  private void setIntProperty(String key, int value) {
+  private boolean setIntProperty(String key, int value) {
     if (!isSyntaxCheck)
       viewer.setIntProperty(key, value);
+    return true;
   }
 
-  private void setFloatProperty(String key, float value) {
+  private boolean setFloatProperty(String key, float value) {
     if (!isSyntaxCheck)
       viewer.setFloatProperty(key, value);
+    return true;
   }
 
   private void setStringProperty(String key, String value) {
@@ -1018,16 +1020,16 @@ class Eval { //implements Runnable {
         slab(true);
         break;
       case Token.star:
-        star();
+        setAtomShapeSize(JmolConstants.SHAPE_STARS, (short) -100);
         break;
       case Token.structure:
         structure();
         break;
       case Token.halo:
-        halo();
+        setAtomShapeSize(JmolConstants.SHAPE_HALOS, (short) -20);
         break;
-      case Token.spacefill:
-        spacefill();
+      case Token.spacefill: // aka cpk
+        setAtomShapeSize(JmolConstants.SHAPE_BALLS, (short) -100);
         break;
       case Token.wireframe:
         wireframe();
@@ -2066,6 +2068,13 @@ class Eval { //implements Runnable {
     return integerExpected();
   }
 
+  private int intParameter(int i, int min, int max) throws ScriptException {
+    int val = intParameter(i);
+    if (val < min || val > max)
+      numberOutOfRange(min, max);
+    return val;
+  }
+
   private boolean isFloatParameter(int index) {
     switch (tokAt(index)) {
     case Token.integer:
@@ -2073,6 +2082,13 @@ class Eval { //implements Runnable {
       return true;
     }
     return false;
+  }
+
+  private float floatParameter(int i, float min, float max) throws ScriptException {
+    float val = floatParameter(i);
+    if (val < min || val > max)
+      numberOutOfRange(min, max);
+    return val;
   }
 
   private float floatParameter(int index) throws ScriptException {
@@ -2403,28 +2419,16 @@ class Eval { //implements Runnable {
       mad = 0;
       break;
     case Token.integer:
-      mad = getMadInteger(intParameter(1));
+      int radiusRasMol = intParameter(1, 0, 750); 
+      mad = (short) (radiusRasMol * 4 * 2);
       break;
     case Token.decimal:
-      mad = getMadFloat(floatParameter(1));
+      mad = (short) (floatParameter(1, 0, 3) * 1000 * 2);
       break;
     default:
       booleanOrNumberExpected();
     }
     return mad;
-  }
-
-  private short getMadInteger(int radiusRasMol) throws ScriptException {
-    //interesting question here about negatives... what if?
-    if (radiusRasMol < 0 || radiusRasMol > 750)
-      numberOutOfRange(0, 750);
-    return (short) (radiusRasMol * 4 * 2);
-  }
-
-  private short getMadFloat(float angstroms) throws ScriptException {
-    if (angstroms < 0 || angstroms > 3)
-      numberOutOfRange(0f, 3f);
-    return (short) (angstroms * 1000 * 2);
   }
 
   private short getSetAxesTypeMad(int index) throws ScriptException {
@@ -2439,14 +2443,9 @@ class Eval { //implements Runnable {
     case Token.dotted:
       return -1;
     case Token.integer:
-      int diameterPixels = intParameter(index);
-      if (diameterPixels < -1 || diameterPixels >= 20)
-        numberOutOfRange(-1, 19);
-      return (short) diameterPixels;
+      return (short) intParameter(index, -1, 19);
     case Token.decimal:
-      float angstroms = floatParameter(index);
-      if (angstroms < 0 || angstroms >= 2)
-        numberOutOfRange(0.01f, 1.99f);
+      float angstroms = floatParameter(index, 0, 2);
       return (short) (angstroms * 1000 * 2);
     }
     booleanOrNumberExpected("DOTTED");
@@ -5112,9 +5111,7 @@ class Eval { //implements Runnable {
   }
 
   private void translate() throws ScriptException {
-    float percent = floatParameter(2);
-    if (percent > 100 || percent < -100)
-      numberOutOfRange(-100, 100);
+    float percent = floatParameter(2, -100, 100);
     if (getToken(1).tok == Token.identifier) {
       String str = parameterAsString(1);
       if (str.equalsIgnoreCase("x")) {
@@ -5394,50 +5391,38 @@ class Eval { //implements Runnable {
       viewer.slabInternal(plane, isDepth);
   }
 
-  private int getDiameterTok() throws ScriptException {
-    if (statementLength == 1)
-      return Token.on;
-    int tok = getToken(1).tok;
-    switch (statementLength) {
-    case 2:
-      break;
-    case 3:
-      if (tok == Token.integer && getToken(2).tok == Token.percent
-          || tok == Token.plus && isFloatParameter(2))
-        break;
-      invalidArgument();
-    }
-    return tok;
-  }
-
-  private void star() throws ScriptException {
-    short mad = 0; // means back to selection business
-    switch (getDiameterTok()) {
+  private void setAtomShapeSize(int shape, short defOn) throws ScriptException {
+    //halo star spacefill
+    short mad = 0;
+    int tok = (statementLength == 1 ? Token.on : tokAt(1));
+    switch (tok) {
     case Token.on:
+      mad = defOn;
+      break;
     case Token.vanderwaals:
-      mad = -100; // cpk with no args goes to 100%
+      mad = -100;
       break;
     case Token.off:
       break;
-    case Token.integer:
-      int radiusRasMol = intParameter(1);
-      if (statementLength == 2) {
-        if (radiusRasMol >= 750 || radiusRasMol < -100)
-          numberOutOfRange(-100, 749);
-        mad = (short) radiusRasMol;
-        if (radiusRasMol > 0)
-          mad *= 4 * 2;
-      } else {
-        if (radiusRasMol < 0 || radiusRasMol > 100)
-          numberOutOfRange(0, 100);
-        mad = (short) -radiusRasMol; // use a negative number to specify %vdw
-      }
-      break;
+    case Token.plus:
     case Token.decimal:
-      float angstroms = floatParameter(1);
-      if (angstroms < 0 || angstroms > 3)
-        numberOutOfRange(0f, 3f);
-      mad = (short) (angstroms * 1000 * 2);
+      int i = (tok == Token.plus ? 2 : 1);
+      if (i == 2)
+        mad = 10000;
+      mad += (short) (floatParameter(i, 0, 3) * 1000 * 2);
+      break;
+    case Token.integer:
+      int intVal = intParameter(1);
+      if (tokAt(2) == Token.percent) {
+        if (intVal < 0 || intVal > 200)
+          numberOutOfRange(0, 200);
+        mad = (short) ((tokAt(3) == Token.jmol ? -2000 : 0) - intVal);
+        break;
+      }
+      //rasmol 250-scale if positive or percent (again), if negative (deprecated)
+      if (intVal > 749 || intVal < -200)
+        numberOutOfRange(-200, 749);
+      mad = (short) (intVal <= 0 ? intVal : intVal * 8);
       break;
     case Token.temperature:
       mad = -1000;
@@ -5448,9 +5433,9 @@ class Eval { //implements Runnable {
     default:
       booleanOrNumberExpected();
     }
-    setShapeSize(JmolConstants.SHAPE_STARS, mad);
+    setShapeSize(shape, mad);
   }
-
+  
   private void structure() throws ScriptException {
     String type = parameterAsString(1).toLowerCase();
     byte iType = 0;
@@ -5478,98 +5463,6 @@ class Eval { //implements Runnable {
       return;
     clearPredefined(JmolConstants.predefinedVariable);
     viewer.setProteinType(iType, bs);
-  }
-
-  private void halo() throws ScriptException {
-    short mad = 0;
-    switch (getDiameterTok()) {
-    case Token.on:
-      mad = -20; // on goes to 25%
-      break;
-    case Token.vanderwaals:
-      mad = -100; // cpk with no args goes to 100%
-      break;
-    case Token.off:
-      break;
-    case Token.integer:
-      int radiusRasMol = intParameter(1);
-      if (statementLength == 2) {
-        if (radiusRasMol >= 750 || radiusRasMol < -100)
-          numberOutOfRange(-100, 749);
-        mad = (short) radiusRasMol;
-        if (radiusRasMol > 0)
-          mad *= 4 * 2;
-      } else {
-        if (radiusRasMol < 0 || radiusRasMol > 100)
-          numberOutOfRange(0, 100);
-        mad = (short) -radiusRasMol; // use a negative number to specify %vdw
-      }
-      break;
-    case Token.decimal:
-      float angstroms = floatParameter(1);
-      if (angstroms < 0 || angstroms > 3)
-        numberOutOfRange(0f, 3f);
-      mad = (short) (angstroms * 1000 * 2);
-      break;
-    case Token.temperature:
-      mad = -1000;
-      break;
-    case Token.ionic:
-      mad = -1001;
-      break;
-    default:
-      booleanOrNumberExpected();
-    }
-    setShapeSize(JmolConstants.SHAPE_HALOS, mad);
-  }
-
-  /// aka cpk
-  private void spacefill() throws ScriptException {
-    short mad = 0;
-    boolean isSolventAccessibleSurface = false;
-    int i = 1;
-    switch (getDiameterTok()) {
-    case Token.on:
-    case Token.vanderwaals:
-      mad = -100; // cpk with no args goes to 100%
-      break;
-    case Token.off:
-      break;
-    case Token.plus:
-      isSolventAccessibleSurface = true;
-      i++;
-    case Token.decimal:
-      float angstroms = floatParameter(i);
-      if (angstroms < 0 || angstroms > 3)
-        numberOutOfRange(0f, 3f);
-      mad = (short) (angstroms * 1000 * 2);
-      if (isSolventAccessibleSurface)
-        mad += 10000;
-      break;
-    case Token.integer:
-      int radiusRasMol = intParameter(1);
-      if (statementLength == 2) {
-        if (radiusRasMol >= 750 || radiusRasMol < -200)
-          numberOutOfRange(-200, 749);
-        mad = (short) radiusRasMol;
-        if (radiusRasMol > 0)
-          mad *= 4 * 2;
-      } else {
-        if (radiusRasMol < 0 || radiusRasMol > 200)
-          numberOutOfRange(0, 200);
-        mad = (short) -radiusRasMol; // use a negative number to specify %vdw
-      }
-      break;
-    case Token.temperature:
-      mad = -1000;
-      break;
-    case Token.ionic:
-      mad = -1001;
-      break;
-    default:
-      booleanOrNumberExpected();
-    }
-    setShapeSize(JmolConstants.SHAPE_BALLS, mad);
   }
 
   private void wireframe() throws ScriptException {
@@ -5647,16 +5540,12 @@ class Eval { //implements Runnable {
         mad = 0;
         break;
       case Token.integer:
-        int diameterPixels = intParameter(1);
-        if (diameterPixels < 0 || diameterPixels >= 20)
-          numberOutOfRange(0, 19);
-        mad = (short) diameterPixels;
+        //diameter Pixels
+        mad = (short) intParameter(1, 0, 19);
         break;
       case Token.decimal:
-        float angstroms = floatParameter(1);
-        if (angstroms > 3)
-          numberOutOfRange(0f, 3f);
-        mad = (short) (angstroms * 1000 * 2);
+        //radius angstroms
+        mad = (short) (floatParameter(1, 0, 3) * 1000 * 2);
         break;
       default:
         booleanOrNumberExpected();
@@ -5664,10 +5553,7 @@ class Eval { //implements Runnable {
       break;
     case 3:
       if (parameterAsString(1).equalsIgnoreCase("scale")) {
-        float scale = floatParameter(2);
-        if (scale < -10 || scale > 10)
-          numberOutOfRange(-10f, 10f);
-        setFloatProperty("vectorScale", scale);
+        setFloatProperty("vectorScale", floatParameter(2, -10, 10));
         return;
       }
       invalidArgument();
@@ -5838,14 +5724,10 @@ class Eval { //implements Runnable {
     case Token.identifier:
       String cmd = optParameterAsString(1);
       if (cmd.equalsIgnoreCase("scale")) {
-        float scale = floatParameter(2);
-        if (scale < -10 || scale > 10)
-          numberOutOfRange(-10f, 10f);
-        setFloatProperty("vibrationScale", scale);
+        setFloatProperty("vibrationScale", floatParameter(2, -10, 10));
         return;
       } else if (cmd.equalsIgnoreCase("period")) {
-        period = floatParameter(2);
-        setFloatProperty("vibrationPeriod", period);
+        setFloatProperty("vibrationPeriod", floatParameter(2));
         return;
       } else {
         invalidArgument();
@@ -5965,22 +5847,17 @@ class Eval { //implements Runnable {
     case Token.off:
       break;
     case Token.plus:
-      radius = floatParameter(++ipt);
-      if (radius < 0f || radius > 10f)
-        numberOutOfRange(0f, 2f);
-      mad = (short) (radius == 0f ? 0 : radius * 1000f + 11002);
+      radius = floatParameter(++ipt, 0, 2); //ambiguity here
+      mad = (short) (radius == 0f ? 1 : radius * 1000f + 11002);
       break;
     case Token.decimal:
-      radius = floatParameter(ipt);
-      if (radius < 0f || radius > 10f)
-        numberOutOfRange(0f, 10f);
+      radius = floatParameter(ipt, 0, 10);
       mad = (short) (radius == 0f ? 0 : radius * 1000f + 1002);
       break;
     case Token.integer:
-      int dotsParam = intParameter(ipt);
-      if (statementLength > ipt + 1 && statement[ipt + 1].tok == Token.radius) {
+      int dotsParam = intParameter(ipt++);
+      if (statementLength > ipt && statement[ipt].tok == Token.radius) {
         setShapeProperty(iShape, "atom", new Integer(dotsParam));
-        ipt++;
         setShapeProperty(iShape, "radius", new Float(floatParameter(++ipt)));
         if (statementLength > ipt + 1 && statement[++ipt].tok == Token.color)
           setShapeProperty(iShape, "colorRGB", new Integer(getArgbParam(++ipt)));
@@ -5989,7 +5866,6 @@ class Eval { //implements Runnable {
         setShapeProperty(iShape, "dots", statement[ipt].value);
         return;
       }
-
       if (dotsParam < 0 || dotsParam > 1000)
         numberOutOfRange(0, 1000);
       mad = (short) (dotsParam == 0 ? 0 : dotsParam + 1);
@@ -6013,25 +5889,14 @@ class Eval { //implements Runnable {
       mad = -2;
       break;
     case Token.temperature:
-    // MTH 2004 03 15
-    // Let temperature return the mean positional displacement
-    // see what people think
-    // mad = -3;
-    // break;
     case Token.displacement:
       mad = -4;
       break;
-    case Token.integer:
-      int radiusRasMol = intParameter(1);
-      if (radiusRasMol >= 500)
-        numberOutOfRange(0, 499);
-      mad = (short) (radiusRasMol * 4 * 2);
+    case Token.integer:      
+      mad = (short) (intParameter(1, 0, 499) * 8);
       break;
     case Token.decimal:
-      float angstroms = floatParameter(1);
-      if (angstroms > 4)
-        numberOutOfRange(0f, 4f);
-      mad = (short) (angstroms * 1000 * 2);
+      mad = (short) (floatParameter(1, 0, 4) * 2000);
       break;
     case Token.bitset:
       if (!isSyntaxCheck)
@@ -6647,6 +6512,14 @@ class Eval { //implements Runnable {
       viewer.showParameter(key, true, 80);
   }
 
+  private int intSetting(int pt, int val, int min, int max) throws ScriptException {
+    if (val == Integer.MAX_VALUE)
+      val = intSetting(pt);
+    if (val < min || val > max)
+      numberOutOfRange(min, max);
+    return val;
+  }
+  
   private int intSetting(int pt) throws ScriptException {
     Vector v = (Vector) parameterExpression(pt, 0, "XXX", true);
     if (v == null || v.size() == 0)
@@ -6654,6 +6527,13 @@ class Eval { //implements Runnable {
     return Token.iValue((Token) v.elementAt(0));
   }
 
+  private float floatSetting(int pt, float min, float max) throws ScriptException {
+    float val = floatSetting(pt);
+    if (val < min || val > max)
+      numberOutOfRange(min, max);
+    return val;
+  }
+  
   private float floatSetting(int pt) throws ScriptException {
     Vector v = (Vector) parameterExpression(pt, 0, "XXX", true);
     if (v == null || v.size() == 0)
@@ -6795,22 +6675,12 @@ class Eval { //implements Runnable {
       }
       return true;
     }
-    if (key.equalsIgnoreCase("dipoleScale")) {
-      float scale = floatSetting(2);
-      if (scale < -10 || scale > 10)
-        numberOutOfRange(-10f, 10f);
-      setFloatProperty("dipoleScale", scale);
-      return true;
-    }
-    if (key.equalsIgnoreCase("axesScale")) {
-      float scale = floatSetting(2);
-      setFloatProperty("axesScale", scale);
-      return true;
-    }
-    if (key.equalsIgnoreCase("measurementUnits")) {
-      setMeasurementUnits(stringSetting(2, isJmolSet));
-      return true;
-    }
+    if (key.equalsIgnoreCase("dipoleScale"))
+      return setFloatProperty("dipoleScale", floatSetting(2, -10, 10));
+    if (key.equalsIgnoreCase("axesScale"))
+      return setFloatProperty("axesScale", floatSetting(2, -100, 100));
+    if (key.equalsIgnoreCase("measurementUnits"))
+      return setMeasurementUnits(stringSetting(2, isJmolSet));
     if (key.equalsIgnoreCase("defaultVDW")) {
       String val;
       if ((theTok = tokAt(2)) == Token.jmol || theTok == Token.rasmol || theTok == Token.babel) {
@@ -6837,29 +6707,12 @@ class Eval { //implements Runnable {
       setStringProperty((key.equalsIgnoreCase("defaults") ? key : "defaultColorScheme"), val);
       return true;
     }
-    if (Parser.isOneOf(lcKey, "strandcount;strandcountformeshribbon;strandcountforstrands")) {
-      intVal = intSetting(2);
-      if (intVal < 0 || intVal > 20)
-        numberOutOfRange(0, 20);
-      setIntProperty(key, intVal);
-      return true;
-    }
-    if (Parser.isOneOf(lcKey, "specularpercent;ambientpercent;diffusepercent;specularPower")) {
-      if (intVal == Integer.MAX_VALUE)
-        intVal = intSetting(2);
-      if (intVal < 0 || intVal > 100)
-        numberOutOfRange(0, 100);
-      setIntProperty(key, intVal);
-      return true;
-    }
-    if (key.equalsIgnoreCase("specularExponent")) {
-      if (intVal == Integer.MAX_VALUE)
-        intVal = intSetting(2);
-      if (intVal > 10 || intVal < 1)
-        numberOutOfRange(1, 10);
-      setIntProperty(key, intVal);
-      return true;
-    }
+    if (Parser.isOneOf(lcKey, "strandcount;strandcountformeshribbon;strandcountforstrands"))
+      return setIntProperty(key, intSetting(2, Integer.MAX_VALUE, 0, 20));
+    if (Parser.isOneOf(lcKey, "specularpercent;ambientpercent;diffusepercent;specularPower"))
+      return setIntProperty(key, intSetting(2, intVal, 0, 100));
+    if (key.equalsIgnoreCase("specularExponent"))
+      return setIntProperty(key, intSetting(2, intVal, 1, 10));
     boolean isJmolParameter = viewer.isJmolVariable(key);
     if (isJmolSet && !isJmolParameter) {
       iToken = 1;
@@ -7849,10 +7702,8 @@ class Eval { //implements Runnable {
         break;
       }
       if (str.equals("offset")) {
-        int xOffset = intParameter(2);
-        int yOffset = intParameter(3);
-        if (xOffset > 100 || yOffset > 100 || xOffset < -100 || yOffset < -100)
-          numberOutOfRange(-100, 100);
+        int xOffset = intParameter(2, -100, 100);
+        int yOffset = intParameter(3, -100, 100);
         propertyValue = new Integer(((xOffset & 0xFF) << 8) | (yOffset & 0xFF));
         break;
       }
@@ -7941,11 +7792,12 @@ class Eval { //implements Runnable {
     setShapeSize(JmolConstants.SHAPE_MEASURES, getSetAxesTypeMad(2));
   }
 
-  private void setMeasurementUnits(String units) throws ScriptException {
+  private boolean setMeasurementUnits(String units) throws ScriptException {
     if (!StateManager.isMeasurementUnit(units))
       unrecognizedParameter("set measurementUnits ", units);
     if (!isSyntaxCheck)
       viewer.setMeasureDistanceUnits(units);
+    return true;
   }
   
   private void setProperty() throws ScriptException {

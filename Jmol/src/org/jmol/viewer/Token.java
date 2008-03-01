@@ -184,7 +184,7 @@ public class Token {
   final static int initialize   = command | 49;
   // openrasmol commands
   final static int depth        = command | 50 | numberOrExpression;
-  final static int star         = command | 51;
+  final static int star         = command | 51 | negnums;
   // chime commands
   final static int delay        = command | 60;
   final static int loop         = command | 61;
@@ -199,7 +199,7 @@ public class Token {
   final static int vibration    = command | 82 | negnums;
   final static int vector       = command | 83 | negnums;
   final static int meshRibbon   = command | 84;
-  final static int halo         = command | 85;
+  final static int halo         = command | 85 | negnums;
   final static int rocket       = command | 86;
   final static int geosurface   = command | 87 | embeddedExpression;
   final static int moveto       = command | 88 | numberOrExpression;
@@ -999,7 +999,7 @@ public class Token {
     "set",               new Token(set,             varArgCount),
     "show",              new Token(show,                maxArg2),
     "slab",              new Token(slab,            varArgCount),
-    "spacefill",         new Token(spacefill,           maxArg2),
+    "spacefill",         new Token(spacefill,       varArgCount),
     "cpk",               null, 
     "ssbond",            new Token(ssbond,           onDefault1),
     "ssbonds",           null, 
@@ -1016,7 +1016,7 @@ public class Token {
     "initialize",        new Token(initialize,                0),
     //                   openrasmol commands
     "depth",             new Token(depth,           varArgCount),
-    "star",              new Token(star,                maxArg2),
+    "star",              new Token(star,            varArgCount),
     "stars",             null, 
                           
     //                   chime commands
@@ -1044,7 +1044,7 @@ public class Token {
     "vectors",           null, 
     "meshribbon",        new Token(meshRibbon, onDefault1),
     "meshribbons",       null, 
-    "halo",              new Token(halo,                maxArg2),
+    "halo",              new Token(halo,            varArgCount),
     "halos",             null, 
     "rocket",            new Token(rocket,           onDefault1),
     "rockets",           null, 

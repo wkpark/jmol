@@ -503,14 +503,13 @@ public final class ModelLoader extends ModelSet {
       setModelAuxiliaryInfo(i, "modelFileNumber", new Integer(modelFileNumbers[i]));
       setModelAuxiliaryInfo(i, "modelNumberDotted", getModelNumberDotted(i));
     }
-
   }
 
   private void iterateOverAllNewAtoms(JmolAdapter adapter, Object clientFile) {
     // atom is created, but not all methods are safe, because it
     // has no group -- this is only an issue for debugging
 
-    short mad = viewer.getMadAtom();
+    short mad = viewer.getDefaultMadAtom();
     for (JmolAdapter.AtomIterator iterAtom = adapter
         .getAtomIterator(clientFile); iterAtom.hasNext();) {
       short elementNumber = (short) iterAtom.getElementNumber();

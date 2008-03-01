@@ -710,7 +710,7 @@ class PopupResourceBundle {
         "structure#PDB", GT._("Secondary Structure"),
         "chain#PDB", GT._("Chain"),
         "group#PDB", GT._("Group"),
-        "monomer#PDB", "Monomer",
+        "monomer#PDB", GT._("Monomer"),
         "shapely#PDB", "Shapely",
 
         "none", GT._("Inherit"),

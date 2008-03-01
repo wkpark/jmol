@@ -260,14 +260,18 @@ abstract public class AtomCollection {
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
       float distAtom = center.distance(atom);
-      float radiusVdw = atom.getVanderwaalsRadiusFloat();
-      float outerVdw = distAtom + radiusVdw;
+      float outerVdw = distAtom + getRadiusVdwJmol(atom);
       if (outerVdw > maxRadius)
         maxRadius = outerVdw;
     }
     return (maxRadius == 0 ? 10 : maxRadius);
   }
 
+  protected float getRadiusVdwJmol(Atom atom) {
+    return JmolConstants.getVanderwaalsMar(atom.getElementNumber(),
+        JmolConstants.VDW_JMOL) / 1000f;
+  }
+  
   // the maximum BondingRadius seen in this set of atoms
   // used in autobonding
   protected float maxBondingRadius = Float.MIN_VALUE;

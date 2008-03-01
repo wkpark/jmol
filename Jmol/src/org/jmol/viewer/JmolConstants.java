@@ -870,6 +870,16 @@ final public class JmolConstants {
   public final static int VDW_BABEL = 1; // OpenBabel-2.1.1 
   public final static int VDW_RASMOL = 2; // OpenRasmol-2.7.2.1.1
   public final static int VDW_RESERVED = 3;
+  final static String[] vdwLabels = {
+    "Jmol", "Babel", "Rasmol", "Reserved"
+   };
+  
+  public static int getVdwType(String label) {
+    for (int i = 0; i < vdwLabels.length; i++)
+      if (vdwLabels[i].equalsIgnoreCase(label))
+        return i;
+    return VDW_JMOL;
+  }
   
   public static int getVanderwaalsMar(int i, int scale) {
     return vanderwaalsMars[(i << 2) + scale];
@@ -881,8 +891,10 @@ final public class JmolConstants {
    * Used for spacefill rendering of atoms.
    * Values taken from OpenBabel.
    * @see <a href="http://openbabel.sourceforge.net">openbabel.sourceforge.net</a>
+   * @see <a href="http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/_documents/vdw_comparison.xls">vdw_comparison.xls</a>
    */
   public final static short[] vanderwaalsMars = {
+  //Jmol,openBabel,openRasmol,reserved
     1000,1000,1000,0, // XX 0
     1200,1200,1100,0, // H 1
     1400,1400,2200,0, // He 2

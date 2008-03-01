@@ -857,6 +857,7 @@ public class Token {
   final static int normal       = misc |  4;
   final static int rasmol       = misc |  5;
   final static int axisangle    = misc |  6;
+  final static int babel        = misc |  7;
   final static int clear        = misc |  8;
   final static int mep          = misc |  9;
   final static int torsion      = misc | 10;
@@ -1256,6 +1257,7 @@ public class Token {
     "inherit",      null,
     "normal",       new Token(normal),
     "rasmol",       new Token(rasmol),
+    "babel",        new Token(babel),
     "torsion",      new Token(torsion),
     "coord",        new Token(coord),
     "coords",       null,

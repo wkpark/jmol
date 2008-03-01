@@ -348,8 +348,7 @@ abstract public class ModelCollection extends BondCollection {
       if (bs.get(i)) {
         Atom atom = atoms[i];
         float distAtom = center.distance(atom);
-        float radiusVdw = atom.getVanderwaalsRadiusFloat();
-        float outerVdw = distAtom + radiusVdw;
+        float outerVdw = distAtom + getRadiusVdwJmol(atom);
         if (outerVdw > maxRadius)
           maxRadius = outerVdw;
       }

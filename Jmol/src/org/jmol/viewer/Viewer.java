@@ -6394,24 +6394,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
   
   void setDefaultVdw(String mode) {
-    if (mode.equalsIgnoreCase("Babel"))
-      defaultVdw = JmolConstants.VDW_BABEL;
-    else if (mode.equalsIgnoreCase("RasMol"))
-      defaultVdw = JmolConstants.VDW_RASMOL;
-    else
-      defaultVdw = JmolConstants.VDW_JMOL;
+    defaultVdw = JmolConstants.getVdwType(mode);
     global.setParameterValue("defaultVDW", getDefaultVdw());
   }
   
   String getDefaultVdw() {
-    switch(defaultVdw) {
-    case JmolConstants.VDW_BABEL:
-      return "Babel";
-    case JmolConstants.VDW_RASMOL:
-      return "Rasmol";
-    default:
-      return "Jmol";
-    }
+    return JmolConstants.vdwLabels[defaultVdw];
   }
 
 }

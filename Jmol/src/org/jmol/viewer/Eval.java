@@ -6811,6 +6811,19 @@ class Eval { //implements Runnable {
       setMeasurementUnits(stringSetting(2, isJmolSet));
       return true;
     }
+    if (key.equalsIgnoreCase("defaultVDW")) {
+      String val;
+      if ((theTok = tokAt(2)) == Token.jmol || theTok == Token.rasmol || theTok == Token.babel) {
+        val = parameterAsString(2).toLowerCase();
+        checkLength3();
+      } else {
+        val = stringSetting(2, false).toLowerCase();
+      }
+      if (!Parser.isOneOf(val, "jmol;rasmol;babel"))
+        invalidArgument();
+      setStringProperty(key, val);
+      return true;
+    }
     if (Parser.isOneOf(lcKey, "defaults;defaultcolorscheme")) {
       String val;
       if ((theTok = tokAt(2)) == Token.jmol || theTok == Token.rasmol) {

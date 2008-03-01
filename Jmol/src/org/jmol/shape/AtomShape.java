@@ -69,7 +69,7 @@ public abstract class AtomShape extends Shape {
         if (mads == null)
           mads = new short[atomCount];
         Atom atom = atoms[i];
-        mads[i] = atom.convertEncodedMad(size);
+        mads[i] = atom.convertEncodedMad(viewer, size);
         bsSizeSet.set(i, isVisible);
         atom.setShapeVisibility(myVisibilityFlag, isVisible);
       }

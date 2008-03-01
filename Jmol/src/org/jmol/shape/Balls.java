@@ -44,7 +44,7 @@ public class Balls extends AtomShape {
     for (int i = bsLength; --i >= 0; ) {
       if (bsSelected.get(i)) {
         Atom atom = atoms[i];
-        atom.setMadAtom(mad);
+        atom.setMadAtom(viewer, mad);
         bsSizeSet.set(i);
       }
     }

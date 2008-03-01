@@ -113,6 +113,7 @@ public class StateManager {
     viewer.setShowAxes(true);
     viewer.setShowUnitCell(true);
     viewer.setBooleanProperty("perspectiveDepth", false);
+    viewer.setDefaultVdw("Babel");
   }
 
   void setCommonDefaults() {
@@ -128,6 +129,7 @@ public class StateManager {
     viewer.setStringProperty("defaultColorScheme", "Jmol");
     viewer.setBooleanProperty("axesOrientationRasmol", false);
     viewer.setBooleanProperty("zeroBasedXyzRasmol", false);
+    viewer.setDefaultVdw("Jmol");
   }
 
   void setRasMolDefaults() {
@@ -137,6 +139,7 @@ public class StateManager {
     viewer.setBooleanProperty("zeroBasedXyzRasmol", true);
     viewer.setIntProperty("percentVdwAtom", 0);
     viewer.setIntProperty("bondRadiusMilliAngstroms", 1);
+    viewer.setDefaultVdw("Rasmol");
   }
 
   String getStandardLabelFormat() {
@@ -448,7 +451,7 @@ public class StateManager {
       // now so that there is no chance any embedded scripts or
       // default load scripts will run and slow things down.
       StringBuffer str = new StringBuffer();
-      appendCmd(str, "allowEmbeddedScripts = false");
+      appendCmd(str, "set allowEmbeddedScripts false");
       if (allowEmbeddedScripts)
         setParameterValue("allowEmbeddedScripts", true);
       appendCmd(str, "set autoBond " + autoBond);
@@ -464,6 +467,7 @@ public class StateManager {
       appendCmd(str, "set defaultLoadScript \"\"");
       if (defaultLoadScript.length() > 0)
         setParameterValue("defaultLoadScript", defaultLoadScript);
+      appendCmd(str, "set defaultVDW " + viewer.getDefaultVdw());
       appendCmd(str, "set loadFormat " + Escape.escape(loadFormat));
 
       appendCmd(str, "set forceAutoBond " + forceAutoBond);
@@ -1034,6 +1038,7 @@ public class StateManager {
       setParameterValue("defaultDistanceLabel",defaultDistanceLabel);
       setParameterValue("defaultLoadScript",defaultLoadScript);
       setParameterValue("defaults", "Jmol");
+      setParameterValue("defaultVDW", "Jmol");
       setParameterValue("defaultTorsionLabel",defaultTorsionLabel);
       setParameterValue("defaultTranslucent",defaultTranslucent);
       setParameterValue("delayMaximumMs", delayMaximumMs);

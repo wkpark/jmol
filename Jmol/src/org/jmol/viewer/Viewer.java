@@ -3943,6 +3943,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //Eval
     boolean notFound = false;
     while (true) {
+      ///11.5.11//
+      if (key.equalsIgnoreCase("defaultVDW")) {
+        setDefaultVdw(value);
+        return;
+      }
+      
       ///11.1.30//
       if (key.equalsIgnoreCase("language")) {
         setLanguage(value); //fr cs en none, etc.
@@ -6380,6 +6386,32 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Vector3f getVibrationVector(int atomIndex) {
     return modelSet.getVibrationVector(atomIndex);
+  }
+
+  int defaultVdw = JmolConstants.VDW_JMOL;
+  public int getVanderwaalsMar(int i) {
+    return JmolConstants.getVanderwaalsMar(i, defaultVdw);
+  }
+  
+  void setDefaultVdw(String mode) {
+    if (mode.equalsIgnoreCase("Babel"))
+      defaultVdw = JmolConstants.VDW_BABEL;
+    else if (mode.equalsIgnoreCase("RasMol"))
+      defaultVdw = JmolConstants.VDW_RASMOL;
+    else
+      defaultVdw = JmolConstants.VDW_JMOL;
+    global.setParameterValue("defaultVDW", getDefaultVdw());
+  }
+  
+  String getDefaultVdw() {
+    switch(defaultVdw) {
+    case JmolConstants.VDW_BABEL:
+      return "Babel";
+    case JmolConstants.VDW_RASMOL:
+      return "Rasmol";
+    default:
+      return "Jmol";
+    }
   }
 
 }

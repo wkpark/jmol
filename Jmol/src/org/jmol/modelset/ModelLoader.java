@@ -552,7 +552,7 @@ public final class ModelLoader extends ModelSet {
         groupInsertionCode);
     if (atomCount == atoms.length)
       growAtomArrays(ATOM_GROWTH_INCREMENT);
-    Atom atom = new Atom(currentModelIndex, atomCount, atomSymmetry,
+    Atom atom = new Atom(viewer, currentModelIndex, atomCount, atomSymmetry,
         atomSite, atomicAndIsotopeNumber, mad, formalCharge, x, y, z, isHetero,
         chainID, alternateLocationID, radius);
     atoms[atomCount] = atom;

@@ -92,7 +92,7 @@ final public class Atom extends Point3fi {
     madAtom = 0;
   }
   
-  Atom(int modelIndex, int atomIndex,
+  Atom(Viewer viewer, int modelIndex, int atomIndex,
        BitSet atomSymmetry, int atomSite,
        short atomicAndIsotopeNumber,
        short mad, int formalCharge, 
@@ -110,7 +110,7 @@ final public class Atom extends Point3fi {
     setFormalCharge(formalCharge);
     this.alternateLocationID = (byte)alternateLocationID;
     userDefinedVanDerWaalRadius = radius;
-    setMadAtom(mad);
+    setMadAtom(viewer, mad);
     set(x, y, z);
   }
 
@@ -203,11 +203,11 @@ final public class Atom extends Point3fi {
    *  a rudimentary form of enumerations/user-defined primitive types)
    */
 
-  public void setMadAtom(short madAtom) {
-    this.madAtom = convertEncodedMad(madAtom);
+  public void setMadAtom(Viewer viewer,short madAtom) {
+    this.madAtom = convertEncodedMad(viewer, madAtom);
   }
 
-  public short convertEncodedMad(int size) {
+  public short convertEncodedMad(Viewer viewer, int size) {
     if (size == 0)
       return 0;
     if (size == -1000) { // temperature
@@ -218,20 +218,20 @@ final public class Atom extends Point3fi {
     } else if (size == -1001) // ionic
       size = (getBondingMar() * 2);
     else if (size == -100) { // simple van der waals
-      size = getVanderwaalsMad();
+      size = getVanderwaalsMad(viewer);
     } else if (size < 0) {
       size = -size;
       if (size > 200)
         size = 200;
       size = // we are going from a radius to a diameter
-        (int)(size / 100f * getVanderwaalsMad());
+        (int)(size / 100f * getVanderwaalsMad(viewer));
     } else if (size >= 10000) {
       // radiusAngstroms = vdw + x, where size = (x*2)*1000 + 10000
       // and vdwMar = vdw * 1000
       // we want mad = diameterAngstroms * 1000 = (radiusAngstroms *2)*1000 
       //             = (vdw * 2 * 1000) + x * 2 * 1000
       //             = vdwMar * 2 + (size - 10000)
-      size = size - 10000 + getVanderwaalsMad();
+      size = size - 10000 + getVanderwaalsMad(viewer);
     }
     return (short)size;
   }
@@ -367,15 +367,15 @@ final public class Atom extends Point3fi {
     return (dimension == 0 ? x : (dimension == 1 ? y : z));
   }
 
-  int getVanderwaalsMad() {
+  private int getVanderwaalsMad(Viewer viewer) {
     return (Float.isNaN(userDefinedVanDerWaalRadius) 
-        ? JmolConstants.vanderwaalsMars[atomicAndIsotopeNumber % 128] * 2
+        ? viewer.getVanderwaalsMar(atomicAndIsotopeNumber % 128) * 2
         : (int)(userDefinedVanDerWaalRadius * 2000f));
   }
 
   public float getVanderwaalsRadiusFloat() {
     return (Float.isNaN(userDefinedVanDerWaalRadius) 
-        ? JmolConstants.vanderwaalsMars[atomicAndIsotopeNumber % 128] / 1000f
+        ? group.chain.modelSet.getVanderwaalsMar(atomicAndIsotopeNumber % 128) / 1000f
         : userDefinedVanDerWaalRadius);
   }
 

@@ -342,7 +342,7 @@ abstract public class ModelSet extends ModelCollection {
   public void fillAtomData(AtomData atomData, int mode) {
     if (mode == AtomData.MODE_GET_ATTACHED_HYDROGENS) {
       int[] nH = new int[1];
-      atomData.hAtomRadius = JmolConstants.vanderwaalsMars[1] / 1000f;
+      atomData.hAtomRadius = viewer.getVanderwaalsMar(1) / 1000f;
       atomData.hAtoms = getAdditionalHydrogens(atomData.bsSelected, nH);
       atomData.hydrogenAtomCount = nH[0];
       return;
@@ -607,6 +607,10 @@ abstract public class ModelSet extends ModelCollection {
     if (sfunc != null)
       commands.append("\nend function;\n\n");
     return commands.toString();
+  }
+
+  public int getVanderwaalsMar(int i) {
+    return viewer.getVanderwaalsMar(i);
   }
 }
 

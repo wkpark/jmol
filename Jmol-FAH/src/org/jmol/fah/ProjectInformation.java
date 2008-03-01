@@ -1312,8 +1312,15 @@ public class ProjectInformation {
     if ((info._psFrames != null) && (!info._psFrames.equals(info._staticFrames))) {
       different = true;
     }
-    if ((info._psName != null) && (!info._psName.equals(info._staticName))) {
-      different = true;
+    if ((info._psName != null) &&
+        (!info._psName.equals(info._staticName))) {
+      if ((info._psName.indexOf('_') == info._psName.length() - 1) &&
+          (info._staticName != null) &&
+          (info._staticName.startsWith(info._psName))) {
+        //
+      } else {
+        different = true;
+      }
     }
     if ((info._psPreferred != null) && (!info._psPreferred.equals(info._staticPreferred))) {
       different = true;

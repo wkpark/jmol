@@ -3889,6 +3889,18 @@ class Eval { //implements Runnable {
     int userType = -1;
     if (!isSyntaxCheck || processModel) {
       data = new Object[3];
+      if (dataType.toLowerCase().indexOf("element_vdw") == 0) {
+        //vdw for now
+        data[0] = dataType;
+        data[1] = dataString.replace(';', '\n');
+        int n = JmolConstants.elementNumberMax;
+        int[] eArray = new int[n + 1];
+        for (int ie = 1; ie <= n; ie++)
+          eArray[ie] = ie;
+        data[2] = eArray;
+        viewer.setData("element_vdw", data, n, viewer.defaultVdw, 0);
+        return;
+      }
       String[] tokens = Parser.getTokens(dataLabel);
       if (dataType.toLowerCase().indexOf("property_") == 0
           && !(tokens.length == 2 && tokens[1].equalsIgnoreCase("set"))) {
@@ -6683,13 +6695,14 @@ class Eval { //implements Runnable {
       return setMeasurementUnits(stringSetting(2, isJmolSet));
     if (key.equalsIgnoreCase("defaultVDW")) {
       String val;
-      if ((theTok = tokAt(2)) == Token.jmol || theTok == Token.rasmol || theTok == Token.babel) {
+      if ((theTok = tokAt(2)) == Token.jmol || theTok == Token.rasmol 
+          || theTok == Token.babel || theTok == Token.user) {
         val = parameterAsString(2).toLowerCase();
         checkLength3();
       } else {
         val = stringSetting(2, false).toLowerCase();
       }
-      if (!Parser.isOneOf(val, "jmol;rasmol;babel"))
+      if (!Parser.isOneOf(val, "jmol;rasmol;babel;user"))
         invalidArgument();
       setStringProperty(key, val);
       return true;
@@ -8357,6 +8370,16 @@ class Eval { //implements Runnable {
       return;
     }
     switch (getToken(1).tok) {
+    case Token.vanderwaals:
+      if (statementLength == 2) {
+        if (!isSyntaxCheck)
+          showString(viewer.getDefaultVdw(-1));
+        return;
+      }
+      checkLength3();
+      if (!isSyntaxCheck)
+        showString(viewer.getDefaultVdw(JmolConstants.getVdwType(parameterAsString(2))));
+      return;
     case Token.function:
       checkLength23();
       if (!isSyntaxCheck)

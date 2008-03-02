@@ -869,9 +869,9 @@ final public class JmolConstants {
   public final static int VDW_JMOL = 0;
   public final static int VDW_BABEL = 1; // OpenBabel-2.1.1 
   public final static int VDW_RASMOL = 2; // OpenRasmol-2.7.2.1.1
-  public final static int VDW_RESERVED = 3;
+  public final static int VDW_USER = 3;
   final static String[] vdwLabels = {
-    "Jmol", "Babel", "Rasmol", "Reserved"
+    "Jmol", "Babel", "RasMol", "User"
    };
   
   public static int getVdwType(String label) {

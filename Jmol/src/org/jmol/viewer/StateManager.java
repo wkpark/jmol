@@ -467,7 +467,7 @@ public class StateManager {
       appendCmd(str, "set defaultLoadScript \"\"");
       if (defaultLoadScript.length() > 0)
         setParameterValue("defaultLoadScript", defaultLoadScript);
-      appendCmd(str, "set defaultVDW " + viewer.getDefaultVdw());
+      appendCmd(str, "set defaultVDW " + viewer.getDefaultVdw(Integer.MIN_VALUE));
       appendCmd(str, "set loadFormat " + Escape.escape(loadFormat));
 
       appendCmd(str, "set forceAutoBond " + forceAutoBond);

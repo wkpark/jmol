@@ -185,9 +185,7 @@ class DataManager {
       String info = getDefaultVdw(JmolConstants.VDW_USER, bsUserVdws);
       if (info.length() > 0) {
         n++;
-        sb.append("\n  DATA \"element_vdw\"\n")
-            .append(info)
-            .append("  end \"element_vdw\";\n\n");
+        sb.append(info);
       }
     }
     
@@ -236,6 +234,12 @@ class DataManager {
     // iMode < 0 -- use default view
     if (iMode < 0)
       iMode = defaultVdw;
+    // iMode = Integer.MAX_VALUE -- user, only selected
+    if (iMode == Integer.MAX_VALUE) {
+      if ((bs = bsUserVdws) == null)
+        return "";
+      iMode = JmolConstants.VDW_USER;
+    }
     if (iMode == JmolConstants.VDW_USER  && bsUserVdws == null)
       setUserVdw(defaultVdw);
     StringBuffer sb = new StringBuffer(JmolConstants.vdwLabels[iMode] + "\n");
@@ -245,7 +249,8 @@ class DataManager {
             userVdws[i] : JmolConstants.getVanderwaalsMar(i, iMode)/1000f)
             .append('\t').append(JmolConstants.elementSymbolFromNumber(i))
             .append('\n');
-    return sb.toString();
+    return (bs == null ? sb.toString() :
+      "\n  DATA \"element_vdw\"\n" + sb.append("  end \"element_vdw\";\n\n").toString());
   }
   
 }

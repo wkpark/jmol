@@ -113,7 +113,6 @@ public class StateManager {
     viewer.setShowAxes(true);
     viewer.setShowUnitCell(true);
     viewer.setBooleanProperty("perspectiveDepth", false);
-    viewer.setDefaultVdw("Babel");
   }
 
   void setCommonDefaults() {
@@ -467,7 +466,10 @@ public class StateManager {
       appendCmd(str, "set defaultLoadScript \"\"");
       if (defaultLoadScript.length() > 0)
         setParameterValue("defaultLoadScript", defaultLoadScript);
-      appendCmd(str, "set defaultVDW " + viewer.getDefaultVdw(Integer.MIN_VALUE));
+      String sMode = viewer.getDefaultVdw(Integer.MIN_VALUE);
+      appendCmd(str, "set defaultVDW " + sMode);
+      if (sMode.equals("User"))
+        appendCmd(str, viewer.getDefaultVdw(Integer.MAX_VALUE));
       appendCmd(str, "set loadFormat " + Escape.escape(loadFormat));
 
       appendCmd(str, "set forceAutoBond " + forceAutoBond);

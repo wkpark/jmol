@@ -98,6 +98,8 @@ public class Parser {
         if (iData == Integer.MIN_VALUE || iData < 0 || iData >= len
             || (iData = matchData[iData]) < 0)
           continue;
+        if (bs != null)
+          bs.set(iData);
       } else {
         while (++i < len && bs != null && !bs.get(i)) {
         }

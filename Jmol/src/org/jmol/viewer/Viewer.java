@@ -6388,37 +6388,26 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getVibrationVector(atomIndex);
   }
 
-  int defaultVdw = JmolConstants.VDW_JMOL;
-  
   public int getVanderwaalsMar(int i) {
-    return (defaultVdw == JmolConstants.VDW_USER ?
+    return (dataManager.defaultVdw == JmolConstants.VDW_USER ?
         dataManager.userVdwMars[i] 
-        : JmolConstants.getVanderwaalsMar(i, defaultVdw));
+        : JmolConstants.getVanderwaalsMar(i, dataManager.defaultVdw));
+  }
+  
+  public int getVanderwaalsMar(int i, int iMode) {
+    if (iMode == JmolConstants.VDW_USER && dataManager.bsUserVdws == null)
+      iMode = dataManager.defaultVdw;
+    return (iMode == JmolConstants.VDW_USER ?
+        dataManager.userVdwMars[i] : JmolConstants.getVanderwaalsMar(i, iMode));
   }
   
   void setDefaultVdw(String mode) {
-    int iMode = JmolConstants.getVdwType(mode);
-    if (iMode != defaultVdw && iMode == JmolConstants.VDW_USER  
-        && dataManager.userVdwMars == null)
-      dataManager.setUserVdw(defaultVdw);
-    defaultVdw = iMode;
+    dataManager.setDefaultVdw(mode);
     global.setParameterValue("defaultVDW", getDefaultVdw(Integer.MIN_VALUE));
   }
   
   String getDefaultVdw(int iMode) {
-    if (iMode == Integer.MIN_VALUE)
-      return JmolConstants.vdwLabels[defaultVdw];
-    if (iMode < 0)
-      iMode = defaultVdw;
-    if (iMode == JmolConstants.VDW_USER  && dataManager.userVdwMars == null)
-      dataManager.setUserVdw(defaultVdw);
-    StringBuffer s = new StringBuffer(JmolConstants.vdwLabels[iMode] + "\n");
-    for (int i = 1; i < JmolConstants.elementNumberMax; i++)
-      s.append(i).append('\t').append(iMode == JmolConstants.VDW_USER ?
-          dataManager.userVdws[i] : JmolConstants.getVanderwaalsMar(i, iMode)/1000f)
-          .append('\t').append(JmolConstants.elementSymbolFromNumber(i))
-          .append('\n');
-    return s.toString();
+    return dataManager.getDefaultVdw(iMode, null);
   }
 
 }

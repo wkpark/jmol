@@ -3898,7 +3898,7 @@ class Eval { //implements Runnable {
         for (int ie = 1; ie <= n; ie++)
           eArray[ie] = ie;
         data[2] = eArray;
-        viewer.setData("element_vdw", data, n, viewer.defaultVdw, 0);
+        viewer.setData("element_vdw", data, n, 0, 0);
         return;
       }
       String[] tokens = Parser.getTokens(dataLabel);
@@ -4557,6 +4557,10 @@ class Eval { //implements Runnable {
     if (tokAt(1) == Token.function) {
       Compiler.globalFunctions.clear();
       compiler.localFunctions.clear();
+      return;
+    }
+    if (tokAt(1) == Token.vanderwaals) {
+      viewer.setData("element_vdw", new Object[] {null, ""}, 0, 0, 0);
       return;
     }
     String var = parameterAsString(1);
@@ -5428,7 +5432,11 @@ class Eval { //implements Runnable {
       if (tokAt(2) == Token.percent) {
         if (intVal < 0 || intVal > 200)
           numberOutOfRange(0, 200);
-        mad = (short) ((tokAt(3) == Token.jmol ? -2000 : 0) - intVal);
+        int iMode = JmolConstants.getVdwType(optParameterAsString(3));
+        if (iMode >= 0)
+          mad = (short) (-(iMode + 1) * 2000  - intVal);
+        else 
+          mad = (short) (-intVal);
         break;
       }
       //rasmol 250-scale if positive or percent (again), if negative (deprecated)
@@ -6694,15 +6702,9 @@ class Eval { //implements Runnable {
     if (key.equalsIgnoreCase("measurementUnits"))
       return setMeasurementUnits(stringSetting(2, isJmolSet));
     if (key.equalsIgnoreCase("defaultVDW")) {
-      String val;
-      if ((theTok = tokAt(2)) == Token.jmol || theTok == Token.rasmol 
-          || theTok == Token.babel || theTok == Token.user) {
-        val = parameterAsString(2).toLowerCase();
-        checkLength3();
-      } else {
-        val = stringSetting(2, false).toLowerCase();
-      }
-      if (!Parser.isOneOf(val, "jmol;rasmol;babel;user"))
+      String val = (statementLength == 3 && JmolConstants.getVdwType(parameterAsString(2)) >= 0
+          ? parameterAsString(2) : stringSetting(2, false));
+      if (JmolConstants.getVdwType(val) < 0)
         invalidArgument();
       setStringProperty(key, val);
       return true;
@@ -8377,8 +8379,11 @@ class Eval { //implements Runnable {
         return;
       }
       checkLength3();
+      int iMode = JmolConstants.getVdwType(parameterAsString(2));
+      if (iMode < 0)
+        invalidArgument();
       if (!isSyntaxCheck)
-        showString(viewer.getDefaultVdw(JmolConstants.getVdwType(parameterAsString(2))));
+        showString(viewer.getDefaultVdw(iMode));
       return;
     case Token.function:
       checkLength23();

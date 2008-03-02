@@ -878,7 +878,7 @@ final public class JmolConstants {
     for (int i = 0; i < vdwLabels.length; i++)
       if (vdwLabels[i].equalsIgnoreCase(label))
         return i;
-    return VDW_JMOL;
+    return -1;
   }
   
   public static int getVanderwaalsMar(int i, int scale) {

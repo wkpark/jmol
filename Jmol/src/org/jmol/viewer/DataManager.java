@@ -63,21 +63,23 @@ class DataManager {
      *   Integer.MAX_VALUE ==> values are a simple list; don't clear the data
      *   Integer.MIN_VALUE ==> one SINGLE data value should be used for all selected atoms
      */
-    if (data[2] != null && atomCount > 0) {
+    if (type.equals("element_vdw")) {
       String stringData = ((String) data[1]).trim();
-      if (type.equals("element_vdw")) {
-        if (stringData.length() == 0) {
-          userVdwMars = null;
-          userVdws = null;
-          return;
-        }
-        if (userVdwMars == null)
-          setUserVdw(matchField);
-        Parser.parseFloatArrayFromMatchAndField(stringData, null, 1, (int[]) data[2], 2, userVdws);
-        for (int i = userVdws.length; --i >= 0; )
-           userVdwMars[i] = (int)(userVdws[i] * 1000);
+      if (stringData.length() == 0) {
+        userVdwMars = null;
+        userVdws = null;
+        bsUserVdws = null;
         return;
-      }      
+      }
+      if (bsUserVdws == null)
+        setUserVdw(defaultVdw);
+      Parser.parseFloatArrayFromMatchAndField(stringData, bsUserVdws, 1, (int[]) data[2], 2, userVdws);
+      for (int i = userVdws.length; --i >= 0; )
+         userVdwMars[i] = (int)(userVdws[i] * 1000);
+      return;
+    }      
+    if (data[2] != null && atomCount > 0) {
+      String stringData = (String) data[1];
       boolean createNew = (matchField != 0 
           || field != Integer.MIN_VALUE && field != Integer.MAX_VALUE);
       Object[] oldData = (Object[]) dataValues.get(type);
@@ -154,11 +156,11 @@ class DataManager {
     if (dataValues == null)
       return;
     Enumeration e = (dataValues.keys());
-    StringBuffer s = new StringBuffer();
+    StringBuffer sb = new StringBuffer();
     int n = 0;
-    if (atomProps != "") {
+    if (atomProps.length() > 0) {
       n = 1;
-      s.append(atomProps);
+      sb.append(atomProps);
     }
     while (e.hasMoreElements()) {
       String name = (String) e.nextElement();
@@ -166,35 +168,34 @@ class DataManager {
         n++;
         Object data = ((Object[]) dataValues.get(name))[1];
         if (data instanceof float[]) {
-          AtomCollection.getAtomicPropertyState(s, atoms, atomCount,
+          AtomCollection.getAtomicPropertyState(sb, atoms, atomCount,
               AtomCollection.TAINT_MAX, 
               (BitSet) ((Object[]) dataValues.get(name))[2], 
               name, (float[]) data);
-          s.append("\n");
+          sb.append("\n");
         } else {
-          s.append("\n  DATA \"").append(name).append("\"");
-          s.append(data);
-          s.append("  end \"").append(name).append("\";\n");
+          sb.append("\n  DATA \"").append(name).append("\"");
+          sb.append(data);
+          sb.append("  end \"").append(name).append("\";\n");
         }
       }
     }
     
     if (userVdws != null) {
-      n++;
-      s.append("\n  DATA \"element_vdw\"\n");
-      for (int i = 1; i < JmolConstants.elementNumberMax; i++)
-        s.append(i)
-            .append('\t').append(userVdws[i])
-            .append('\t').append(JmolConstants.elementSymbolFromNumber(i))
-            .append("\t;\n");
-      s.append("  end \"element_vdw\";\n\n");
+      String info = getDefaultVdw(JmolConstants.VDW_USER, bsUserVdws);
+      if (info.length() > 0) {
+        n++;
+        sb.append("\n  DATA \"element_vdw\"\n")
+            .append(info)
+            .append("  end \"element_vdw\";\n\n");
+      }
     }
     
     if (n == 0)
       return;
     if (sfunc != null)
       state.append("function _setDataState();\n");
-    state.append(s);  
+    state.append(sb);  
     if (sfunc != null) {
       sfunc.append("  _setDataState\n");
       state.append("end function;\n\n");
@@ -203,10 +204,13 @@ class DataManager {
 
   int[] userVdwMars;
   float[] userVdws;
-
+  int defaultVdw = JmolConstants.VDW_JMOL;
+  BitSet bsUserVdws;
+  
   public void setUserVdw(int iMode) {
     userVdwMars = new int[JmolConstants.elementNumberMax];
     userVdws = new float[JmolConstants.elementNumberMax];
+    bsUserVdws = new BitSet();
     if (iMode == JmolConstants.VDW_USER)
       iMode = JmolConstants.VDW_JMOL;
     for (int i = 1; i < JmolConstants.elementNumberMax; i++) {
@@ -214,4 +218,34 @@ class DataManager {
       userVdws[i] = userVdwMars[i] / 1000f;
     }
   }
+
+  public void setDefaultVdw(String mode) {
+    int iMode = JmolConstants.getVdwType(mode);
+    if (iMode < 0)
+      iMode = JmolConstants.VDW_JMOL;
+    if (iMode != defaultVdw && iMode == JmolConstants.VDW_USER  
+        && bsUserVdws == null)
+      setUserVdw(defaultVdw);
+    defaultVdw = iMode;    
+  }
+
+  public String getDefaultVdw(int iMode, BitSet bs) {
+    // iMode Integer.MIN_VALUE -- just the name
+    if (iMode == Integer.MIN_VALUE)
+      return JmolConstants.vdwLabels[defaultVdw];
+    // iMode < 0 -- use default view
+    if (iMode < 0)
+      iMode = defaultVdw;
+    if (iMode == JmolConstants.VDW_USER  && bsUserVdws == null)
+      setUserVdw(defaultVdw);
+    StringBuffer sb = new StringBuffer(JmolConstants.vdwLabels[iMode] + "\n");
+    for (int i = 1; i < JmolConstants.elementNumberMax; i++)
+      if (bs == null || bs.get(i))
+        sb.append(i).append('\t').append(iMode == JmolConstants.VDW_USER ?
+            userVdws[i] : JmolConstants.getVanderwaalsMar(i, iMode)/1000f)
+            .append('\t').append(JmolConstants.elementSymbolFromNumber(i))
+            .append('\n');
+    return sb.toString();
+  }
+  
 }

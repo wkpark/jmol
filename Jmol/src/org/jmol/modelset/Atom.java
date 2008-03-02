@@ -220,16 +220,19 @@ final public class Atom extends Point3fi {
     else if (size == -100) { // simple van der waals
       size = getVanderwaalsMad(viewer);
     } else if (size < -2000) {
-      // percent of Jmol size, to diameter
-      size = (int)((-2000 - size) / 50f * JmolConstants.getVanderwaalsMar(atomicAndIsotopeNumber % 128, 
-          JmolConstants.VDW_JMOL));
+      // percent of custom size, to diameter
+      // -2000 = Jmol, -3000 = Babel, -4000 = RasMol, -5000 = User
+      int iMode = (-size / 1000) - 2;
+      size = (-size) % 1000;
+      size = (int) (size / 50f * viewer.getVanderwaalsMar(
+          atomicAndIsotopeNumber % 128, iMode));
     } else if (size < 0) {
       // percent
       size = -size;
       if (size > 200)
         size = 200;
       size = // we are going from a radius to a diameter
-        (int)(size / 100f * getVanderwaalsMad(viewer));
+      (int) (size / 100f * getVanderwaalsMad(viewer));
     } else if (size >= 10000) {
       // radiusAngstroms = vdw + x, where size = (x*2)*1000 + 10000
       // and vdwMar = vdw * 1000
@@ -238,7 +241,7 @@ final public class Atom extends Point3fi {
       //             = vdwMar * 2 + (size - 10000)
       size = size - 10000 + getVanderwaalsMad(viewer);
     }
-    return (short)size;
+    return (short) size;
   }
 
   public int getRasMolRadius() {

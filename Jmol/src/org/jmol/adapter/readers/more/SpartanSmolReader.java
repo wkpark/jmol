@@ -70,7 +70,7 @@ public class SpartanSmolReader extends AtomSetCollectionReader {
         isDirectory = true;
       
       while (line != null) {
-        //System.out.println(line);
+        System.out.println(line);
         if (line.equals("HESSIAN") && bondData != null) {
           //cache for later if necessary -- this is from the INPUT section
           while (readLine() != null

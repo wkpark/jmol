@@ -25,6 +25,7 @@
 package org.jmol.adapter.readers.more;
 
 import org.jmol.adapter.smarter.*;
+import org.jmol.api.JmolAdapter;
 import org.jmol.util.Parser;
 
 import java.io.BufferedReader;
@@ -179,7 +180,7 @@ public class SpartanArchive {
       int bondOrder = parseInt(tokens[i++]);
       if (bondOrder > 0) {
         atomSetCollection.addBond(new Bond(sourceIndex, targetIndex,
-            bondOrder < 4 ? bondOrder : 1));  //aromatic would be 5
+            bondOrder < 4 ? bondOrder : bondOrder == 5 ? JmolAdapter.ORDER_AROMATIC : 1));
         bondCount++;
       }
     }

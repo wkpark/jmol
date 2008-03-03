@@ -84,7 +84,8 @@ public class SpartanSmolReader extends AtomSetCollectionReader {
             ) {
           spartanArchive = new SpartanArchive(this, atomSetCollection,
               moData, bondData, endCheck);
-          bondData = null;
+          if (atomSetCollection.getBondCount() > 0)
+            bondData = null;
           readArchiveHeader();
           atomCount = spartanArchive.readArchive(line, false);
           if (atomCount > 0) {

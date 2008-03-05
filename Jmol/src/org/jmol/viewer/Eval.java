@@ -8260,7 +8260,9 @@ class Eval { //implements Runnable {
         scriptStatus("Created " + fileName + ".ini:\n\n" + data);
         return;
       }
-    } else if (data == "PDB" || data == "XYZ" || data == "MOL") {
+    } else if (data == "PDB") {
+      data = viewer.getPdbData();
+    } else if (data == "XYZ" || data == "MOL") {
       data = viewer.getData("selected", data);
     } else if (data == "QUAT" || data == "RAMA") {
       int modelIndex = viewer.getCurrentModelIndex();

@@ -824,6 +824,32 @@ abstract public class ModelCollection extends BondCollection {
     return getProteinStructureState(bsAtoms, ctype == 'r') + pdbATOM.toString();
   }
 
+  public String getPdbAtomData(BitSet bs) {
+    if (atomCount == 0)
+      return "";
+    int iModel = atoms[0].modelIndex;
+    int iModelLast = -1;
+    StringBuffer sb = new StringBuffer();
+    boolean showModels = (iModel != atoms[atomCount - 1].modelIndex);
+    for (int i = 0; i < atomCount; i++) 
+      if (bs.get(i)) {
+      Atom a = atoms[i];
+      if (showModels && a.modelIndex != iModelLast) {
+        if (iModelLast != -1)
+          sb.append("ENDMDL\n");
+        iModelLast = a.modelIndex;
+        sb.append("MODEL     " + (iModelLast + 1) + "\n");
+      }
+      if (a.isHetero())
+        sb.append(a.formatLabel("HETATM%5i %-4a%1A%3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \n", '\0', null));
+      else
+        sb.append(a.formatLabel("ATOM  %5i %-4a%1A%3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \n", '\0', null));
+    }
+    if (showModels)
+        sb.append("ENDMDL\n");
+    return sb.toString();
+  }
+  
   /* **********************
    * 
    * Jmol Data Frame methods

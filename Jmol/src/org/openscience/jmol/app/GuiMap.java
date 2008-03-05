@@ -50,10 +50,10 @@ class GuiMap {
       labels.put("atomsetchooser", GT._("AtomSetChooser..."));
       labels.put("saveas", GT._("&Save As..."));
       labels.put("exportMenu", GT._("&Export"));
-      labels.put("export", GT._("Export &Image or Script..."));
+      labels.put("export", GT._("Export &Image..."));
       labels.put("toweb", GT._("Export to &Web Page..."));
       labels.put("povray", GT._("Render in POV-&Ray..."));
-      labels.put("pdf", GT._("Export &PDF..."));
+      labels.put("write", GT._("Write &State..."));
       labels.put("print", GT._("&Print..."));
       labels.put("close", GT._("Close"));
       labels.put("exit", GT._("E&xit"));

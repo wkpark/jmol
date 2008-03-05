@@ -81,7 +81,8 @@ public class Jmol extends JPanel {
   FilePreview openPreview;
   private JFileChooser saveChooser;
   private FileTyper fileTyper;
-  JFileChooser exportChooser;
+  JFileChooser exportChooser, writeChooser;
+  
   JmolPopup jmolpopup;
   String language;
   static String menuStructure;
@@ -293,10 +294,12 @@ public class Jmol extends JPanel {
       saveChooser.setCurrentDirectory(currentDir);
       exportChooser = new JFileChooser();
       exportChooser.setCurrentDirectory(currentDir);
+      writeChooser = new JFileChooser();
+      writeChooser.setCurrentDirectory(currentDir);
 
       pcs.addPropertyChangeListener(chemFileProperty, exportAction);
       pcs.addPropertyChangeListener(chemFileProperty, povrayAction);
-      pcs.addPropertyChangeListener(chemFileProperty, pdfAction);
+      pcs.addPropertyChangeListener(chemFileProperty, writeAction);
       pcs.addPropertyChangeListener(chemFileProperty, toWebAction);
       pcs.addPropertyChangeListener(chemFileProperty, printAction);
       pcs.addPropertyChangeListener(chemFileProperty,
@@ -1232,9 +1235,9 @@ public class Jmol extends JPanel {
   private static final String printActionProperty = "print";
   private static final String recentFilesAction = "recentFiles";
   private static final String povrayActionProperty = "povray";
-  private static final String pdfActionProperty = "pdf";
-  private static final String toWebActionProperty = "toweb";
+  private static final String writeActionProperty = "write";
   private static final String scriptAction = "script";
+  private static final String toWebActionProperty = "toweb";
   private static final String atomsetchooserAction = "atomsetchooser";
   private static final String copyImageActionProperty = "copyImage";
   private static final String copyScriptActionProperty = "copyScript";
@@ -1245,8 +1248,8 @@ public class Jmol extends JPanel {
 
   private ExportAction exportAction = new ExportAction();
   private PovrayAction povrayAction = new PovrayAction();
-  private PdfAction pdfAction = new PdfAction();
   private ToWebAction toWebAction = new ToWebAction();
+  private WriteAction writeAction = new WriteAction();
   private PrintAction printAction = new PrintAction();
   private CopyImageAction copyImageAction = new CopyImageAction();
   private CopyScriptAction copyScriptAction = new CopyScriptAction();
@@ -1265,7 +1268,7 @@ public class Jmol extends JPanel {
     pasteClipboardAction,
     new AboutAction(), new WhatsNewAction(),
     new UguideAction(), new ConsoleAction(),
-    new RecentFilesAction(), povrayAction, pdfAction, toWebAction,
+    new RecentFilesAction(), povrayAction, writeAction, toWebAction,
     new ScriptWindowAction(), new AtomSetChooserAction(),
     viewMeasurementTableAction
   };
@@ -1504,14 +1507,15 @@ public class Jmol extends JPanel {
 
       ImageTyper it = new ImageTyper(exportChooser);
       exportChooser.setAccessory(it);
-      
+
       String fileName = viewer.getModelSetFileName();
       String pathName = viewer.getModelSetPathName();
       File file = null;
       if ((fileName != null) && (pathName != null)) {
         int extensionStart = fileName.lastIndexOf('.');
         if (extensionStart != -1) {
-          fileName = fileName.substring(0, extensionStart) + "." + it.getExtension();
+          fileName = fileName.substring(0, extensionStart) + "."
+              + it.getExtension();
         }
         file = new File(pathName, fileName);
         exportChooser.setSelectedFile(file);
@@ -1525,9 +1529,35 @@ public class Jmol extends JPanel {
           ImageCreator c = new ImageCreator(viewer, status);
           int iQuality = it.getQuality();
           String sType = it.getType();
-          if (sType.equals("SPT")) {
-            sType = viewer.getStateInfo();
-            iQuality = Integer.MIN_VALUE;
+          if (sType.equals("PDF")) {
+
+            Document document = new Document();
+            try {
+              PdfWriter writer = PdfWriter.getInstance(document,
+                  new FileOutputStream(file));
+
+              document.open();
+
+              int w = display.getWidth();
+              int h = display.getHeight();
+              PdfContentByte cb = writer.getDirectContent();
+              PdfTemplate tp = cb.createTemplate(w, h);
+              Graphics2D g2 = tp.createGraphics(w, h);
+              g2.setStroke(new BasicStroke(0.1f));
+              tp.setWidth(w);
+              tp.setHeight(h);
+
+              display.print(g2);
+              g2.dispose();
+              cb.addTemplate(tp, 72, 720 - h);
+            } catch (DocumentException de) {
+              System.err.println(de.getMessage());
+            } catch (IOException ioe) {
+              System.err.println(ioe.getMessage());
+            }
+            document.close();
+
+            return;
           }
           c.createImage(file.getAbsolutePath(), sType, iQuality);
         }
@@ -1592,52 +1622,22 @@ public class Jmol extends JPanel {
 
   }
 
-  class PdfAction extends MoleculeDependentAction {
+  class WriteAction extends MoleculeDependentAction {
 
-    public PdfAction() {
-      super(pdfActionProperty);
+    public WriteAction() {
+      super(writeActionProperty);
     }
 
     public void actionPerformed(ActionEvent e) {
-
-      exportChooser.setAccessory(null);
-
-      int retval = exportChooser.showSaveDialog(Jmol.this);
+      int retval = writeChooser.showSaveDialog(Jmol.this);
       if (retval == JFileChooser.APPROVE_OPTION) {
-        File file = exportChooser.getSelectedFile();
-
+        File file = writeChooser.getSelectedFile();
         if (file != null) {
-          Document document = new Document();
-
-          try {
-            PdfWriter writer = PdfWriter.getInstance(document,
-                                 new FileOutputStream(file));
-
-            document.open();
-
-            int w = display.getWidth();
-            int h = display.getHeight();
-            PdfContentByte cb = writer.getDirectContent();
-            PdfTemplate tp = cb.createTemplate(w, h);
-            Graphics2D g2 = tp.createGraphics(w, h);
-            g2.setStroke(new BasicStroke(0.1f));
-            tp.setWidth(w);
-            tp.setHeight(h);
-
-            display.print(g2);
-            g2.dispose();
-            cb.addTemplate(tp, 72, 720 - h);
-          } catch (DocumentException de) {
-            System.err.println(de.getMessage());
-          } catch (IOException ioe) {
-            System.err.println(ioe.getMessage());
-          }
-
-          document.close();
+          ImageCreator c = new ImageCreator(viewer, status);
+          c.createImage(file.getAbsolutePath(), viewer.getStateInfo(), Integer.MIN_VALUE);
         }
       }
-    }
-
+    } 
   }
 
  WebExport webExport;

@@ -39,8 +39,8 @@ import org.jmol.i18n.GT;
 
 public class ImageTyper extends JPanel {
 
-  private final String[] Choices = { "JPEG", "PNG", "PPM", "SPT" };
-  final String[] Extensions = { "jpg", "png", "ppm", "spt" };
+  private final String[] Choices = { "JPEG", "PNG", "PPM", "PDF" };
+  final String[] Extensions = { "jpg", "png", "ppm", "pdf" };
   private static int def = 0;
   String result = Choices[def];
   String extension = Extensions[def];

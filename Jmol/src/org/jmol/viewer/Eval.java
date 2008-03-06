@@ -8261,7 +8261,7 @@ class Eval { //implements Runnable {
         return;
       }
     } else if (data == "PDB") {
-      data = viewer.getPdbData();
+      data = viewer.getPdbData(null);
     } else if (data == "XYZ" || data == "MOL") {
       data = viewer.getData("selected", data);
     } else if (data == "QUAT" || data == "RAMA") {
@@ -11579,8 +11579,10 @@ class Eval { //implements Runnable {
         Object[] data = viewer.getData(selected);
         return addX(data == null ? "" : "" + data[1]);
       }
+      if (type.equalsIgnoreCase("PDB"))
+        return addX(viewer.getPdbData(viewer.getAtomBitSet(selected)));
       // {selected atoms} XYZ, MOL, PDB file format 
-      return addX(viewer.getData(selected, type));
+        return addX(viewer.getData(selected, type));
     }
 
     private boolean evaluateLabel(Token[] args) throws ScriptException {

@@ -5977,9 +5977,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (String) Eval.evaluateExpression(this, exp);
   }
 
-  public String getPdbData() {
-    // TODO
-    return modelSet.getPdbAtomData(getSelectionSet());
+  public String getPdbData(BitSet bs) {
+    if (bs == null)
+      bs = getSelectionSet();
+    return modelSet.getPdbAtomData(bs);
   }
 
 

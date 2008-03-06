@@ -251,9 +251,16 @@ public class Parser {
     } else {
        next[0] = ich; // the exponent code finds its own ichNextParse
     }
-    return value;
+    return (checkTrailingText(str, next[0], ichMax) ? value : Float.NaN);
   }
 
+  private static boolean checkTrailingText(String str, int ich, int ichMax) {
+    //number must be pure -- no additional characters other than white space
+    while (ich < ichMax && isWhiteSpace(str, ich))
+      ++ich;
+    return (ich == ichMax);
+  }
+  
   public static int parseInt(String str, int[] next) {
     int cch = str.length();
     if (next[0] >= cch)
@@ -287,7 +294,7 @@ public class Parser {
       digitSeen = true;
       ++ich;
     }
-    if (!digitSeen)
+    if (!digitSeen || !checkTrailingText(str, ich, ichMax))
       value = Integer.MIN_VALUE;
     else if (negative)
       value = -value;

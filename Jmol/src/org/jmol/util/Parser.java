@@ -255,8 +255,10 @@ public class Parser {
   }
 
   private static boolean checkTrailingText(String str, int ich, int ichMax) {
-    //number must be pure -- no additional characters other than white space
-    while (ich < ichMax && isWhiteSpace(str, ich))
+    //number must be pure -- no additional characters other than white space or ;
+    char ch;
+    while (ich < ichMax && ((ch = str.charAt(ich)) == ' '
+        || ch == '\t' || ch == '\n' || ch == ';'))
       ++ich;
     return (ich == ichMax);
   }

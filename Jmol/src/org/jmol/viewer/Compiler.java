@@ -833,7 +833,7 @@ class Compiler {
             bracketCount--;
           //ensure anything goes for inside brackets 
           if (tok != Token.identifier && !tokAttr(tok, Token.expression)
-              && bracketCount == 0)
+              && tok != Token.min && tok != Token.max && bracketCount == 0)
             return invalidExpressionToken(ident);
           break;
         }

@@ -138,7 +138,14 @@ public class Parser {
     return parseFloat(str, new int[] {0});
   }
 
-   
+  public static float parseFloatStrict(String str) {
+    // checks trailing characters
+    int cch = str.length();
+    if (cch == 0)
+      return Float.NaN;
+    return parseFloatChecked(str, cch, new int[] {0}, true);
+  }
+
   public static int parseInt(String str) {
     return parseInt(str, new int[] {0});
   }
@@ -185,7 +192,7 @@ public class Parser {
     int cch = str.length();
     if (next[0] >= cch)
       return Float.NaN;
-    return parseFloatChecked(str, cch, next);
+    return parseFloatChecked(str, cch, next, false);
   }
 
   public static float parseFloat(String str, int ichMax, int[] next) {
@@ -194,7 +201,7 @@ public class Parser {
       ichMax = cch;
     if (next[0] >= ichMax)
       return Float.NaN;
-    return parseFloatChecked(str, ichMax, next);
+    return parseFloatChecked(str, ichMax, next, false);
   }
 
   private final static float[] decimalScale = { 0.1f, 0.01f, 0.001f, 0.0001f, 0.00001f,
@@ -202,7 +209,7 @@ public class Parser {
 
   private final static float[] tensScale = { 10, 100, 1000, 10000, 100000, 1000000 };
 
-  private static float parseFloatChecked(String str, int ichMax, int[] next) {
+  private static float parseFloatChecked(String str, int ichMax, int[] next, boolean checkTrailing) {
     boolean digitSeen = false;
     float value = 0;
     int ich = next[0];
@@ -251,7 +258,7 @@ public class Parser {
     } else {
        next[0] = ich; // the exponent code finds its own ichNextParse
     }
-    return (checkTrailingText(str, next[0], ichMax) ? value : Float.NaN);
+    return (!checkTrailing || checkTrailingText(str, next[0], ichMax) ? value : Float.NaN);
   }
 
   private static boolean checkTrailingText(String str, int ich, int ichMax) {
@@ -296,7 +303,7 @@ public class Parser {
       digitSeen = true;
       ++ich;
     }
-    if (!digitSeen || !checkTrailingText(str, ich, ichMax))
+    if (!digitSeen)// || !checkTrailingText(str, ich, ichMax))
       value = Integer.MIN_VALUE;
     else if (negative)
       value = -value;

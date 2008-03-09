@@ -578,7 +578,7 @@ public class Token {
         return 1;
       if (s.equalsIgnoreCase("false") || s.length() == 0)
         return 0;
-      return Parser.parseFloat(s);
+      return Parser.parseFloatStrict(s);
     case Token.bitset:
       return iValue(x);
     case Token.point3f:
@@ -808,7 +808,7 @@ public class Token {
     if (s.toLowerCase() == "false")
       return Token.tokenOff;
     float f;
-    if (!Float.isNaN(f = Parser.parseFloat(s)))
+    if (!Float.isNaN(f = Parser.parseFloatStrict(s)))
       return (f == (int) f && s.indexOf(".") < 0 ? intToken((int)f) 
           : new Token(Token.decimal, new Float(f)));
     return new Token(Token.string, v);  

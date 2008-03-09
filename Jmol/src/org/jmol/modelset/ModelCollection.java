@@ -1181,7 +1181,7 @@ abstract public class ModelCollection extends BondCollection {
 
   public void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate,
                              BitSet bsInput, boolean fullMolecule,
-                             boolean isInternal) {
+                             Point3f center, boolean isInternal) {
     bspf = null;
     BitSet bs = (fullMolecule ? getMoleculeBitSet(bsInput) : bsInput);
     matInv.set(matrixRotate);
@@ -1192,12 +1192,20 @@ abstract public class ModelCollection extends BondCollection {
     int n = 0;
     for (int i = atomCount; --i >= 0;)
       if (bs.get(i)) {
-        ptTemp.add(atoms[i]);
-        matTemp.transform(atoms[i]);
-        ptTemp.sub(atoms[i]);
+        if (isInternal) {
+          atoms[i].sub(center);
+          matTemp.transform(atoms[i]);
+          atoms[i].add(center);          
+        } else {
+          ptTemp.add(atoms[i]);
+          matTemp.transform(atoms[i]);
+          ptTemp.sub(atoms[i]);
+        }
         taint(i, TAINT_COORD);
         n++;
       }
+    if (n == 0)
+      return;
     if (!isInternal) {
       ptTemp.scale(1f / n);
       for (int i = atomCount; --i >= 0;)

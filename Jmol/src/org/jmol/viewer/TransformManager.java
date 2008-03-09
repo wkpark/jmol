@@ -319,7 +319,7 @@ abstract class TransformManager {
 
   void applyRotation(Matrix3f mNew, boolean isInternal) {
     if (rotateSelected)
-      viewer.rotateSelected(mNew, matrixRotate, rotateMolecule, isInternal);
+      viewer.rotateSelected(mNew, matrixRotate, rotateMolecule, internalRotationCenter, isInternal);
     else
       matrixRotate.mul(mNew, matrixRotate);
   }

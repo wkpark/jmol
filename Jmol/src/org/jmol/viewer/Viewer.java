@@ -6078,9 +6078,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate,
-                      boolean fullMolecule, boolean isInternal) {
+                      boolean fullMolecule, Point3f center, boolean isInternal) {
     modelSet.rotateSelected(mNew, matrixRotate,
-        selectionManager.bsSelection, fullMolecule, isInternal);
+        selectionManager.bsSelection, fullMolecule, center, isInternal);
   }
 
   /**

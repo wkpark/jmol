@@ -32,6 +32,8 @@ import org.jmol.i18n.GT;
 
 public class WebMaker extends JPanel {
 
+  // not currently implementable
+  
   private final static String WEB_MAKER_WINDOW_NAME = "JmolWebPageMaker";
 
   public static void main(String[] args) {

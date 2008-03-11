@@ -59,7 +59,7 @@ import org.openscience.jmol.io.ChemFileReader;
 import org.openscience.jmol.io.ReaderFactory;
 */
 
-class FileManager {
+public class FileManager {
 
   private Viewer viewer;
   private String openErrorMessage;
@@ -503,6 +503,10 @@ class FileManager {
   }
   
   Object getInputStreamOrErrorMessageFromName(String name, boolean showMsg) {
+    return getInputStream(name, showMsg, appletDocumentBase, appletProxy);    
+  }
+  
+  public static Object getInputStream(String name, boolean showMsg, URL appletDocumentBase, String appletProxy) {
     //System.out.println("inputstream for " + name);
     String errorMessage = null;
     int iurlPrefix;

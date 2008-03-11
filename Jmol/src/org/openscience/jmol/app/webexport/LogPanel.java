@@ -34,34 +34,7 @@ class LogPanel {
   private static JTextArea miniLogArea;
   private static boolean resetFlag;
 
-  static void log(String message) {
-    if (resetFlag){
-      logArea.setText("");
-      miniLogArea.setText("");
-    }
-    resetFlag = (message.length() == 0);
-    logArea.append(message + "\n");
-    miniLogArea.append(message + "\n");
-    logArea.setCaretPosition(logArea.getDocument().getLength());
-    miniLogArea.setCaretPosition(miniLogArea.getDocument().getLength());
-  }
-
-  static String getText() {
-    return logArea.getText();
-  }
-  
-  JPanel miniLog() {
-    JPanel miniPanel = new JPanel();
-    miniPanel.setLayout(new BorderLayout());
-    miniPanel.setBorder(BorderFactory.createTitledBorder("Messages (see Log tab for full history):"));
-    miniLogArea = new JTextArea(2,20);
-    miniLogArea.setEditable(false);
-    JScrollPane miniScrollPane = new JScrollPane(miniLogArea);
-    miniPanel.add(miniScrollPane);
-    return (miniPanel);
-  }
-
-  JComponent getPanel() {
+  static JPanel getPanel() {
     //Now layout the LogPanel.  It will be added to the tabs in the main class.
 
     //Create the log first, because the action listeners
@@ -76,7 +49,33 @@ class LogPanel {
     logPanel.setLayout(new BorderLayout());
     logPanel.setBorder(BorderFactory.createTitledBorder("Log and Error Messages:"));
     logPanel.add(logScrollPane);
-
-    return (logPanel);
+    return logPanel;
   }
+
+  static JPanel getMiniPanel() {
+    JPanel miniPanel = new JPanel();
+    miniPanel.setLayout(new BorderLayout());
+    miniPanel.setBorder(BorderFactory.createTitledBorder("Messages (see Log tab for full history):"));
+    miniLogArea = new JTextArea(2,20);
+    miniLogArea.setEditable(false);
+    JScrollPane miniScrollPane = new JScrollPane(miniLogArea);
+    miniPanel.add(miniScrollPane);
+    return miniPanel;
+  }
+
+  static void log(String message) {
+    if (resetFlag){
+      logArea.setText("");
+      miniLogArea.setText("");
+    }
+    resetFlag = (message.length() == 0);
+    logArea.append(message + "\n");
+    miniLogArea.append(message + "\n");
+    logArea.setCaretPosition(logArea.getDocument().getLength());
+    miniLogArea.setCaretPosition(miniLogArea.getDocument().getLength());
+  }
+
+  static String getText() {
+    return logArea.getText();
+  }  
 }

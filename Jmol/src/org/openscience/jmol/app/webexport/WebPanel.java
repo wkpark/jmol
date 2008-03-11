@@ -39,8 +39,14 @@ import org.jmol.api.JmolViewer;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.FileManager;
 import org.openscience.jmol.app.HelpDialog;
 
+/*
+ * an abstract class used as the basis for the tabbed panels
+ * in WebExport. (PopInJmol and ScriptButtons)
+ *  
+ */
 abstract class WebPanel extends JPanel implements ActionListener {
 
   abstract String getAppletDefs(int i, String html, StringBuffer appletDefs,
@@ -175,60 +181,12 @@ abstract class WebPanel extends JPanel implements ActionListener {
     return panel;
   }
 
-  int getInfoWidth() {
-    return editorScrollPane.getWidth();
-  }
-
-  int getInfoHeight() {
-    return editorScrollPane.getHeight();
-  }
-
-  private URL getResource(String fileName) {
-    URL url = this.getClass().getResource(fileName);
-    if (url == null) {
-      System.err.println("Couldn't find file: " + infoFile);
-    }
-    return url;
-  }
-
-  private String getResourceString(String name) throws IOException {
-    URL url = getResource(name);
-    if (url == null) {
-      throw new FileNotFoundException("Error loading resource " + name);
-    }
-    StringBuffer sb = new StringBuffer();
-    try {
-      //turns out from the Jar file
-      // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream
-      // and within Eclipse it's a BufferedInputStream
-      //LogPanel.log(name + " : " + url.getContent().toString());
-      BufferedReader br = new BufferedReader(new InputStreamReader(
-          (InputStream) url.getContent()));
-      String line;
-      while ((line = br.readLine()) != null)
-        sb.append(line).append("\n");
-      br.close();
-    } catch (Exception e) {
-      LogPanel.log(e.getMessage());
-    }
-    String str = sb.toString();
-    //LogPanel.log("Loading resource " + name + "("
-    //  + str.length() + " bytes)");
-    return str;
-  }
-
-  private void writeFile(String filename, String data) {
-    //LogPanel.log("Writing file " + filename + "("
-      //  + data.length() + " bytes)");
-    viewer.createImage(filename, data, Integer.MIN_VALUE, 0, 0);
-  }
-  
   private JPanel getLeftPanel(int w, int h) {
 
     helpButton = new JButton("Help/Instructions");
     helpButton.addActionListener(this);
     
-    URL pageCartoon = getResource(templateImage);
+    URL pageCartoon = WebExport.getResource(this, templateImage);
     ImageIcon pageImage = null;
     if (pageCartoon != null){
       pageImage = new ImageIcon(pageCartoon, "Cartoon of Page");
@@ -296,30 +254,46 @@ abstract class WebPanel extends JPanel implements ActionListener {
     return leftpanel;
   }
 
-/*
-  private JScrollPane getInstructionPane(int w, int h) {
-
-    //Create the instructions sub window (scrolling to read html file)
-    JEditorPane instructions = new JEditorPane();
-    instructions.setEditable(false);
-    URL InstructionsURL = getResource(infoFile);
-    if (InstructionsURL != null) {
-      try {
-        instructions.setPage(InstructionsURL);
-      } catch (IOException e) {
-        System.err.println("Attempted to read a bad URL: " + InstructionsURL);
-      }
-    }
-
-    //Put the editor pane in a scroll pane.
-    JScrollPane editorScrollPane = new JScrollPane(instructions);
-    editorScrollPane
-        .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-    editorScrollPane.setPreferredSize(new Dimension(w, h));
-    editorScrollPane.setMinimumSize(new Dimension(250, 10));
-    return editorScrollPane;
+  int getInfoWidth() {
+    return editorScrollPane.getWidth();
   }
-*/
+
+  int getInfoHeight() {
+    return editorScrollPane.getHeight();
+  }
+
+  private String getResourceString(String name) throws IOException {
+    URL url = WebExport.getResource(this, name);
+    if (url == null) {
+      throw new FileNotFoundException("Error loading resource " + name);
+    }
+    StringBuffer sb = new StringBuffer();
+    try {
+      //turns out from the Jar file
+      // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream
+      // and within Eclipse it's a BufferedInputStream
+      //LogPanel.log(name + " : " + url.getContent().toString());
+      BufferedReader br = new BufferedReader(new InputStreamReader(
+          (InputStream) url.getContent()));
+      String line;
+      while ((line = br.readLine()) != null)
+        sb.append(line).append("\n");
+      br.close();
+    } catch (Exception e) {
+      LogPanel.log(e.getMessage());
+    }
+    String str = sb.toString();
+    //LogPanel.log("Loading resource " + name + "("
+    //  + str.length() + " bytes)");
+    return str;
+  }
+
+  private void writeFile(String filename, String data) {
+    //LogPanel.log("Writing file " + filename + "("
+      //  + data.length() + " bytes)");
+    viewer.createImage(filename, data, Integer.MIN_VALUE, 0, 0);
+  }
+  
   public void actionPerformed(ActionEvent e) {
 
     if (e.getSource() == remoteAppletPath) {
@@ -427,7 +401,8 @@ abstract class WebPanel extends JPanel implements ActionListener {
       }
     }
     if (e.getSource() == helpButton){
-      HelpDialog webExportHelp = new HelpDialog(WebExport.getFrame(), getResource(infoFile));
+      HelpDialog webExportHelp = new HelpDialog(WebExport.getFrame(), 
+          WebExport.getResource(this, infoFile));
       webExportHelp.setVisible(true);
       webExportHelp.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
@@ -477,7 +452,15 @@ abstract class WebPanel extends JPanel implements ActionListener {
           throw IOe;
         }
 
-        String[] filesToCopy = getFileReferences(script);
+        String fileList = "";
+        fileList += addFileList(script, "/*file*/");
+        fileList += addFileList(script, "FILE0=");
+        fileList += addFileList(script, "FILE1=");
+        if (localAppletPath.getText().equals(".") 
+            || remoteAppletPath.getText().equals("."))
+          fileList += "Jmol.js\nJmolApplet.jar";
+        String[] filesToCopy = TextFormat.split(fileList,'\n');        
+
         String filesCopied = "";
         for (int iFile = 0; iFile < filesToCopy.length; iFile++)
           filesCopied = copyBinaryFile(filesToCopy[iFile], datadirPath, filesCopied);
@@ -524,15 +507,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     return true;
   }
 
-  private String[] getFileReferences(String script) {
-    String fileList = "";
-    fileList += addFileList(script, "/*file*/");
-    fileList += addFileList(script, "FILE0=");
-    fileList += addFileList(script, "FILE1=");
-    return TextFormat.split(fileList,'\n');
-  }
-
-  private String addFileList(String script, String tag) {
+  private static String addFileList(String script, String tag) {
     String fileList = "";
     int i = -1;
     while ((i = script.indexOf(tag, i + 1)) >= 0) {
@@ -541,7 +516,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     return fileList;
   }
   
-  private String copyBinaryFile(String fullPathName, String dataPath, String filesCopied) {
+  private static String copyBinaryFile(String fullPathName, String dataPath, String filesCopied) {
     String name = fullPathName.substring(fullPathName.lastIndexOf('/') + 1);
     int i;
     String s;
@@ -554,19 +529,27 @@ abstract class WebPanel extends JPanel implements ActionListener {
     try {
       LogPanel.log("      ...copying " + fullPathName + " to " + name);
       byte[] data = getFileAsBytes(fullPathName);
-      writeFileBytes(name, data);  
+      if (data == null)
+        LogPanel.log("Could not find or open " + fullPathName);
+      else
+        writeFileBytes(name, data);  
     } catch (Exception e) {
       LogPanel.log(e.getMessage());
     }
     return filesCopied;
   }
   
-  private byte[] getFileAsBytes(String path) throws IOException {
-    byte[] buf = new byte[1024];
-    byte[] bytes = new byte[4096];
+  private static byte[] getFileAsBytes(String path) throws IOException {
     int len = 0;
     int totalLen = 0;
-    BufferedInputStream bis = new BufferedInputStream(new FileInputStream(path));
+    Object streamOrError = FileManager.getInputStream(path, false, null, null);
+    if (streamOrError instanceof String) {
+      LogPanel.log((String) streamOrError);
+      return null;
+    }
+    byte[] buf = new byte[1024];
+    byte[] bytes = new byte[4096];
+    BufferedInputStream bis = new BufferedInputStream((InputStream) streamOrError);
     while ((len = bis.read(buf)) > 0) {
       totalLen += len;
       if (totalLen >= bytes.length)
@@ -578,7 +561,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     return buf;
   }
   
-  private void writeFileBytes(String path, byte[] data) {
+  private static void writeFileBytes(String path, byte[] data) {
     try {
       FileOutputStream os = new FileOutputStream(path);
       os.write(data);
@@ -589,7 +572,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     }
   }
   
-  private String localizeFileReferences(String script, String[] fileList) {
+  private static String localizeFileReferences(String script, String[] fileList) {
     for (int i = 0; i < fileList.length; i++) {
       String fullPathName = fileList[i];
       String name = fullPathName.substring(fullPathName.lastIndexOf('/') + 1);
@@ -733,7 +716,7 @@ class ArrayListTransferHandler extends TransferHandler {
     return true;
   }
 
-  private Object objectOf(DefaultListModel listModel, Object objectName) {
+  private static Object objectOf(DefaultListModel listModel, Object objectName) {
     if (objectName instanceof String) {
       String name = (String) objectName;
       Object o;

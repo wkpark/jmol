@@ -25,6 +25,13 @@
 package org.openscience.jmol.app.webexport;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -35,11 +42,11 @@ import org.openscience.jmol.app.HistoryFile;
 
 public class WebExport extends JPanel {
 
-  private boolean showMoleculesAndOrbitals;
+  private static boolean showMoleculesAndOrbitals = false; //not implemented
 
   //run status
-  private static final int STAND_ALONE = 0;
-  private static final int IN_JMOL = 1;
+  private final static int STAND_ALONE = 0;
+  private final static int IN_JMOL = 1;
 
   private static int runStatus = IN_JMOL; //assume running inside Jmol
 
@@ -70,8 +77,29 @@ public class WebExport extends JPanel {
 
     if (runStatus != STAND_ALONE) {
       //Add tabs to the tabbed pane
-      
-      JPanel introPanel = new IntroPanel().getPanel();
+
+      JPanel introPanel = new JPanel();
+      URL url = getResource(this, "WebExportIntro.html");
+      if (url == null) {
+        System.err.println("Couldn't find file: WebExportIntro.html");
+      }
+      JEditorPane intro = new JEditorPane();
+      if (url != null) {
+        try {
+          intro.setPage(url);
+        } catch (IOException e) {
+          System.err.println("Attempted to read a bad URL: " + url);
+        }
+      }
+      intro.setEditable(false);
+      JScrollPane introPane = new JScrollPane(intro);
+      introPane.setMaximumSize(new Dimension(450,350));
+      introPane.setPreferredSize(new Dimension(400,300));
+      introPanel.setLayout(new BorderLayout());
+      introPanel.add(introPane);
+      introPanel.setMaximumSize(new Dimension(450,350));
+      introPanel.setPreferredSize(new Dimension(400,300));
+
       mainTabs.add("Introduction",introPanel);
 
       webPanels[0] = new PopInJmol(viewer, fc, webPanels, 0);
@@ -100,14 +128,14 @@ public class WebExport extends JPanel {
 
     //The LogPanel should always be the last one
 
-    mainTabs.addTab("Log", new LogPanel().getPanel());
+    mainTabs.addTab("Log", LogPanel.getPanel());
 
     //Add the tabbed pane to this panel
     add(mainTabs);
     
     //Create the small log
-    JPanel miniLog = new LogPanel().miniLog();
-    add(miniLog, BorderLayout.SOUTH);
+
+    add(LogPanel.getMiniPanel(), BorderLayout.SOUTH);
 
 
     //Uncomment the following line to use scrolling tabs.
@@ -220,5 +248,43 @@ public class WebExport extends JPanel {
   
   static JFrame getFrame(){
     return webFrame;
+  }
+  
+  static URL getResource(Object object, String fileName) {
+    URL url = null;
+    try {
+      if ((url = object.getClass().getResource("html/" + fileName)) == null)
+        System.err.println("Couldn't find file: " + fileName);
+    } catch (Exception e) {
+      System.err.println("Exception " + e.getMessage() + " in getResource "
+          + fileName);
+    }
+    return url;
+  }
+
+  static String getResourceString(Object object, String name) throws IOException {
+    URL url = WebExport.getResource(object, name);
+    if (url == null) {
+      throw new FileNotFoundException("Error loading resource " + name);
+    }
+    StringBuffer sb = new StringBuffer();
+    try {
+      //turns out from the Jar file
+      // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream
+      // and within Eclipse it's a BufferedInputStream
+      //LogPanel.log(name + " : " + url.getContent().toString());
+      BufferedReader br = new BufferedReader(new InputStreamReader(
+          (InputStream) url.getContent()));
+      String line;
+      while ((line = br.readLine()) != null)
+        sb.append(line).append("\n");
+      br.close();
+    } catch (Exception e) {
+      LogPanel.log(e.getMessage());
+    }
+    String str = sb.toString();
+    //LogPanel.log("Loading resource " + name + "("
+    //  + str.length() + " bytes)");
+    return str;
   }
 }

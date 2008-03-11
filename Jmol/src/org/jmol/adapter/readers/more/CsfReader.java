@@ -108,7 +108,6 @@ public class CsfReader extends MopacDataReader {
   
   private Hashtable propertyItemCounts = new Hashtable();
   int[] fieldTypes = new int[100]; // should be enough
-  int nFields = 0;
   
   int getPropertyCount(String what) {
     Integer count = (Integer)(propertyItemCounts.get(what));
@@ -117,7 +116,8 @@ public class CsfReader extends MopacDataReader {
   
   private int parseLineParameters(String[] fields,
                           byte[] fieldMap) throws Exception {
-    
+    for (int i = 0; i < fieldCount; i++)
+      fieldTypes[i] = 0;
     fieldCount = -1;
     if (line == null || line.startsWith("property_flags:"))
       readLine();
@@ -136,18 +136,15 @@ public class CsfReader extends MopacDataReader {
       readLine();
     }
     // ID line:
-    for (int i = 0; i < nFields; i++)
-      fieldTypes[i] = 0;
     for (int ipt = 0, fpt = 0; ipt < tokens.length; ipt++ ) {
       String field = tokens[ipt];
       for (int i = fields.length; --i >= 0; )
         if (field.equals(fields[i])) {
           fieldTypes[fpt] = fieldMap[i];
-          fieldCount = ipt + 1;
+          fieldCount = fpt + 1;
           break;
         }
       fpt += getPropertyCount(field);
-      nFields = fpt;
     }
     return fieldCount;
   }

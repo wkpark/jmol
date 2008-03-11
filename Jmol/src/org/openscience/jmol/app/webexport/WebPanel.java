@@ -379,7 +379,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     }
 
     if (e.getSource() == saveButton) {
-      fc.setDialogTitle("Save file as (please do not use an extension):");
+      fc.setDialogTitle("Select a directory to create or an HTML file to save");
       int returnVal = fc.showSaveDialog(this);
       if (returnVal != JFileChooser.APPROVE_OPTION)
         return;

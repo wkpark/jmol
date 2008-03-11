@@ -2410,7 +2410,9 @@ abstract public class ModelCollection extends BondCollection {
         Hashtable infoGroup = new Hashtable();
         infoGroup.put("groupIndex", new Integer(igroup));
         infoGroup.put("groupID", new Short(group.getGroupID()));
-        infoGroup.put("seqCode", group.getSeqcodeString());
+        String s = group.getSeqcodeString();
+        if (s != null)
+          infoGroup.put("seqCode", s);
         infoGroup.put("_apt1", new Integer(group.firstAtomIndex));
         infoGroup.put("_apt2", new Integer(group.lastAtomIndex));
         infoGroup.put("atomInfo1", getAtomInfo(group.firstAtomIndex));

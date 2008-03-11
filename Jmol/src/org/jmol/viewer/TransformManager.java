@@ -191,26 +191,23 @@ abstract class TransformManager {
   String getSpinState(boolean isAll) {
     String s = "  set spinX " + (int) spinX + "; set spinY " + (int) spinY
         + "; set spinZ " + (int) spinZ + "; set spinFps " + (int) spinFps + ";";
-    if (spinOn) {
-      //if (isAll)
-        //s += "\n  refreshing = true;refresh;";
-      if (isSpinSelected)
-          s +="\n  select " + Escape.escape(viewer.getSelectionSet()) + ";\nrotateSelected ";
-      if (isSpinInternal) {
-        Point3f pt = new Point3f(internalRotationCenter);
-        pt.sub(rotationAxis);
-        s += "\n  spin " + rotationRate + " "
-            + Escape.escape(internalRotationCenter) + " "
-            + Escape.escape(pt);
-      } else if (isSpinFixed) {
-        s += "\n  spin axisangle " + Escape.escape(rotationAxis) + " "
-            + rotationRate;
-      } else {
-        s += "\n  spin on";
-      }
-      s += ";";
+    if (!spinOn)
+      return s;
+    String prefix = (isSpinSelected ? "\n  select "
+        + Escape.escape(viewer.getSelectionSet()) + ";\n  rotateSelected"
+        : "\n ");
+    if (isSpinInternal) {
+      Point3f pt = new Point3f(internalRotationCenter);
+      pt.sub(rotationAxis);
+      s += prefix + " spin " + rotationRate + " "
+          + Escape.escape(internalRotationCenter) + " " + Escape.escape(pt);
+    } else if (isSpinFixed) {
+      s += prefix + " spin axisangle " + Escape.escape(rotationAxis) + " "
+          + rotationRate;
+    } else {
+      s += " spin on";
     }
-    return s;
+    return s + ";";
   }
 
   protected boolean haveNotifiedNaN = false;

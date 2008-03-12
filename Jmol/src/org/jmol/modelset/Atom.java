@@ -1254,6 +1254,9 @@ final public class Atom extends Point3fi {
    * Many data structures involve reference to Atom, atomIndex, Model, or modelIndex
    * A first-pass list includes:
 
+org.jmol.modelset
+-----------------
+
 Atom.atomIndex
 Atom.modelIndex
 Bond.atom1
@@ -1312,6 +1315,16 @@ Measurement.countPlusIndices
 MeasurementPending.countPlusIndices
 Polymer.leadAtomIndices -- can be set null in BioPolymer.recalculateLeadMidpointsAndWingVectors()
 
+org.jmol.modelsetbio
+--------------------
+
+org.jmol.popup
+--------------
+ [ would need updating ]
+
+org.jmol.shape
+--------------
+
 AtomShape.mads
 AtomShape.colixes
 AtomShape.paletteIDs
@@ -1344,11 +1357,17 @@ Sticks.selectedBonds
 
 TextShape.modelIndex
 
+org.jmol.shapebio
+-----------------
+
 BioShape.modelIndex
 BioShape.leadAtomIndices
 BioShapeCollection.atoms
-
 BioShapeRenderer -- all need to be set null
+
+org.jmol.shapespecial
+---------------------
+
 Dipole.modelIndex
 Dipole.atoms
 DrawMesh.drawTypes
@@ -1359,6 +1378,20 @@ Draw.modelCount
 MolecularOrbital.htModels
 Polyhedra.Polyhedrons
 Polyhedra.Polyhedron.centralAtom
+
+org.jmol.viewer
+---------------
+
+SelectionManager.bsHidden
+SelectionManager.bsSelection
+SelectionManager.bsSubset
+Eval.bsSubset
+
+org.openscience.jmol.app
+------------------------
+
+AtomSetChooser ??
+
 
    * 
    */

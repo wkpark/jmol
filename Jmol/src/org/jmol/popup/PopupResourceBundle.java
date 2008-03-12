@@ -711,7 +711,7 @@ class PopupResourceBundle {
         "chain#PDB", GT._("Chain"),
         "group#PDB", GT._("Group"),
         "monomer#PDB", GT._("Monomer"),
-        "shapely#PDB", "Shapely",
+        "shapely#PDB", GT._("Shapely"),
 
         "none", GT._("Inherit"),
         "black", GT._("Black"),

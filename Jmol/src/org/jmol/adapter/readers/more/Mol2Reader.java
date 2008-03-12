@@ -108,10 +108,9 @@ public class Mol2Reader extends AtomSetCollectionReader {
     boolean iHaveCharges = (line.indexOf("NO_CHARGES") != 0);
     //optional SYBYL status
     if (readLine() != null && (line.length() == 0 || line.charAt(0) != '@')) {
-      //optional comment
+      //optional comment -- but present if comment is present
       if (readLine() != null && line.length() != 0 && line.charAt(0) != '@') {
-        thisDataSetName += ": " + readLineTrimmed();
-        readLine();
+        thisDataSetName += ": " + line.trim();
       }
     }
     newAtomSet(thisDataSetName);

@@ -231,7 +231,7 @@ abstract public class JmolPopup {
         String elementName = JmolConstants.elementNameFromNumber(n);
         String elementSymbol = JmolConstants.elementSymbolFromNumber(n);
         String entryName = elementSymbol + " - " + elementName;
-        addMenuItem(menu, entryName, elementName, null);
+        addMenuItem(menu, entryName, "SELECT " + elementName, null);
       }
     }
     enableMenu(menu, true);
@@ -253,7 +253,7 @@ abstract public class JmolPopup {
       if (heteroName.length() > 20)
         heteroName = heteroName.substring(0, 20) + "...";
       String entryName = heteroCode + " - " + heteroName;
-      addMenuItem(menu, entryName, "[" + heteroCode + "]", null);
+      addMenuItem(menu, entryName, "SELECT [" + heteroCode + "]", null);
       n++;
     }
     enableMenu(menu, (n > 0));
@@ -317,7 +317,7 @@ abstract public class JmolPopup {
     enableMenu(menu2, false);
     if (modelSetInfo == null)
       return;
-    int n = (modelIndex < 0 ? modelCount : modelIndex);
+    int n = (modelIndex < 0 ? 0 : modelIndex + 1);
     String[] lists = ((String[]) modelSetInfo.get("group3Lists"));
     group3List = (lists == null ? null : lists[n]);
     group3Counts = (lists == null ? null : ((int[][]) modelSetInfo
@@ -348,11 +348,15 @@ abstract public class JmolPopup {
   int updateGroup3List(Object menu, String name) {
     int nItems = 0;
     int n = group3Counts[group3List.indexOf(name) / 6];
+    String script = null;
     if (n > 0) {
+      script ="SELECT " + name;
       name += "  (" + n + ")";
       nItems++;
+    } else {
+      script = null;
     }
-    Object item = addMenuItem(menu, name, null, getId(menu) + "." + name);
+    Object item = addMenuItem(menu, name, script, getId(menu) + "." + name);
     if (n == 0)
       enableMenuItem(item, false);
     return nItems;
@@ -402,7 +406,7 @@ abstract public class JmolPopup {
         pt = 1;
       }
       String entryName = "symop=" + (i + 1) + " # " + list[i];
-      enableMenuItem(addMenuItem(subMenu, entryName, "symop=" + (i + 1), null),
+      enableMenuItem(addMenuItem(subMenu, entryName, "SELECT symop=" + (i + 1), null),
           haveUnitCellRange);
     }
     enableMenu(menu, true);

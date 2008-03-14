@@ -5534,7 +5534,6 @@ class Eval { //implements Runnable {
       int n = intParameter(1);
       bsConfigurations = viewer.setConformation(n - 1);
       viewer.addStateScript("configuration " + n + ";", true);
-      //System.out.println(n + " " + bsConfigurations);
     }
     if (isSyntaxCheck)
       return;
@@ -11317,7 +11316,6 @@ class Eval { //implements Runnable {
           Vector3f norm = new Vector3f();
           float nd = Graphics3D.getDirectedNormalThroughPoints(pt1, pt2, pt3,
               (args.length == 4 ? ptValue(args[3]) : null), norm, vAB, vAC);
-          //System.out.println("evaluatePlane: " + new Point4f(norm.x, norm.y, norm.z, nd));
           return addX(new Point4f(norm.x, norm.y, norm.z, nd));
         default:
           float x = Token.fValue(args[0]);

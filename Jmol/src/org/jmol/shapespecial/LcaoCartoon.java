@@ -85,6 +85,12 @@ public class LcaoCartoon extends Isosurface {
       return;
     }
 
+    if ("thisID" == propertyName) {
+      lcaoID = (String) value;
+      // pass on?
+    }
+
+
     if ("selectType" == propertyName) {
       thisType = (String) value;
       return;
@@ -160,6 +166,10 @@ public class LcaoCartoon extends Isosurface {
     }
 
     super.setProperty(propertyName, value, bs);
+    
+    //from the state:
+    if ("lobe" == propertyName || "sphere" == propertyName)
+      setScriptInfo();
   }
 
   private void setLcaoOn(boolean TF) {

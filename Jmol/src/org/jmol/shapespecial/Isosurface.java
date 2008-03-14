@@ -575,13 +575,13 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
     thisMesh.colix = defaultColix;
     if (lobeAxis == null) {
       setProperty("sphere", new Float(factor / 2f), null);
-      return;
+    } else {
+      lcaoDir.x = lobeAxis.x * factor;
+      lcaoDir.y = lobeAxis.y * factor;
+      lcaoDir.z = lobeAxis.z * factor;
+      lcaoDir.w = 0.7f;
+      setProperty("lobe", lcaoDir, null);
     }
-    lcaoDir.x = lobeAxis.x * factor;
-    lcaoDir.y = lobeAxis.y * factor;
-    lcaoDir.z = lobeAxis.z * factor;
-    lcaoDir.w = 0.7f;
-    setProperty("lobe", lcaoDir, null);
     setScriptInfo();
   }
 
@@ -694,7 +694,7 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
     thisMesh.ptCenter.set(center);
   }
 
-  private void setScriptInfo() {
+  protected void setScriptInfo() {
     thisMesh.title = sg.getTitle();
     thisMesh.scriptCommand = fixScript(sg.getScript(), sg.getBsSelected(), sg
         .getBsIgnore());

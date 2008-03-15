@@ -163,7 +163,11 @@ public class Sticks extends Shape {
       BitSetUtil.deleteBits(bsOrderSet, bs);
       return;
     }
-
+    
+    if ("deleteModelAtoms" == propertyName) {
+      return;
+    }
+    
     super.setProperty(propertyName, value, bsSelected);
   }
 
@@ -205,12 +209,9 @@ public class Sticks extends Shape {
         else
           setStateInfo(temp, i, getColorCommand("bonds", colix));
         
-        
-        
-        
-        
       }
     }
+    
     return getShapeCommands(temp, null, -1, "select BONDS") + "\n";
   }
 }

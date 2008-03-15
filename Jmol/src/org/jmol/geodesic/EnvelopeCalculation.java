@@ -568,8 +568,15 @@ public final class EnvelopeCalculation {
       bitmap[i] = 0;
   }
 
-  public void deleteAtoms(int firstAtomDeleted, int nAtomsDeleted) {
+  public void deleteAtoms(int firstAtomDeleted, int nAtomsDeleted, BitSet bsAtoms) {
     dotsConvexMaps = (int[][]) ArrayUtil.deleteElements(dotsConvexMaps, firstAtomDeleted, nAtomsDeleted);
     dotsConvexMax = dotsConvexMaps.length;
+    if (mads != null)
+      mads = (short[]) ArrayUtil.deleteElements(mads, firstAtomDeleted, nAtomsDeleted);
+    atomData.atomRadius = (float[]) ArrayUtil.deleteElements(atomData.atomRadius, firstAtomDeleted, nAtomsDeleted);
+    atomData.atomXyz = (Point3f[]) ArrayUtil.deleteElements(atomData.atomXyz, firstAtomDeleted, nAtomsDeleted);
+    atomData.atomCount -= nAtomsDeleted;
+    atomCount = atomData.atomCount;
+    
   }  
 }

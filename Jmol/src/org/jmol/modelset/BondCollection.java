@@ -115,8 +115,11 @@ abstract public class BondCollection extends AtomCollection {
   }
 
   public BitSet getBondsForSelectedAtoms(BitSet bsAtoms) {
+    return getBondsForSelectedAtoms(bsAtoms, viewer.getBondSelectionModeOr());
+  }
+  
+  protected BitSet getBondsForSelectedAtoms(BitSet bsAtoms, boolean bondSelectionModeOr) {
     BitSet bs = new BitSet();
-    boolean bondSelectionModeOr = viewer.getBondSelectionModeOr();
     for (int iBond = 0; iBond < bondCount; ++iBond) {
       Bond bond = bonds[iBond];
       boolean isSelected1 = bsAtoms.get(bond.atom1.atomIndex);

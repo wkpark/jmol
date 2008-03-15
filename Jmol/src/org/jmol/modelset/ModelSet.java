@@ -638,6 +638,8 @@ abstract public class ModelSet extends ModelCollection {
   public int deleteAtoms(BitSet bsAtoms) {
     BitSet bs = BitSetUtil.copy(bsAtoms);
     BitSet bsModels = getModelBitSet(bs);
+    System.out.println(bsAtoms.cardinality());
+    System.out.println("bsModels: " + bs);
     includeAllRelatedFrames(bsModels);
     int nAtomsDeleted = 0;
     
@@ -654,9 +656,6 @@ abstract public class ModelSet extends ModelCollection {
     
     bspf = null;
     molecules = null;
-    
-    // delete bonds
-    deleteBonds(getBondsForSelectedAtoms(bs));
 
     // create a new models array, 
     //   and pre-calculate Model.bsAtoms and Model.atomCount
@@ -665,13 +664,17 @@ abstract public class ModelSet extends ModelCollection {
     for (int i = 0, mpt = 0; i < modelCount; i++)
       if (bsModels.get(i)) { // get a good count now
         getAtomCountInModel(i);
-        getModelAtomBitSet(i, false);
+        bs.or(getModelAtomBitSet(i, false));
       } else {
         models[i].modelIndex = mpt;
         newModels[mpt++] = models[i];
       }
     models = newModels;
     int oldModelCount = modelCount;
+    
+    // delete bonds
+    deleteBonds(getBondsForSelectedAtoms(bs, true));
+    
     // main deletion cycle
     for (int i = 0, mpt = 0; i < oldModelCount; i++) {
       if (!bsModels.get(i)) {

@@ -45,7 +45,7 @@ class SelectionManager {
 
   final BitSet bsSelection = new BitSet();
   
-  private BitSet bsSubset; // only a copy of the Eval subset
+  BitSet bsSubset; // set in Eval and only pointed to here
   // this is a tri-state. the value -1 means unknown
   private final static int TRUE = 1;
   private final static int FALSE = 0;

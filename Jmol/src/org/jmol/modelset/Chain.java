@@ -180,4 +180,11 @@ public final class Chain {
     }
 
   }
+
+  public void fixIndices(int atomsDeleted) {
+    for (int i = 0; i < groupCount; i++) {
+      groups[i].firstAtomIndex -= atomsDeleted;
+      groups[i].lastAtomIndex -= atomsDeleted;
+    }
+  }
 }

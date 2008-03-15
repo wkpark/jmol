@@ -638,22 +638,24 @@ ActionListener, ChangeListener, Runnable {
   private void createTreeModel() {
     String key=null;
     String separator=null;
+    String name = viewer.getModelSetName();
     DefaultMutableTreeNode root =
-      new DefaultMutableTreeNode(viewer.getModelSetName());
+      new DefaultMutableTreeNode(name == null ? "zapped" : name);
     
     // first determine whether we have a PATH_KEY in the modelSetProperties
-    Properties modelSetProperties = viewer.getModelSetProperties();
+    Properties modelSetProperties = (name == null ? null : viewer.getModelSetProperties());
     if (modelSetProperties != null) {
       key = modelSetProperties.getProperty("PATH_KEY");
       separator = modelSetProperties.getProperty("PATH_SEPARATOR");
     }
     if (key == null || separator == null) {
       // make a flat hierarchy if no key or separator are known
-      for (int atomSetIndex = 0, count = viewer.getModelCount();
-      atomSetIndex < count; ++atomSetIndex) {
-        root.add(new AtomSet(atomSetIndex,
-            viewer.getModelName(atomSetIndex)));
-      }
+      if (name != null)
+        for (int atomSetIndex = 0, count = viewer.getModelCount();
+            atomSetIndex < count; ++atomSetIndex) {
+          root.add(new AtomSet(atomSetIndex,
+          viewer.getModelName(atomSetIndex)));
+        }
     } else {
       for (int atomSetIndex = 0, count = viewer.getModelCount();
       atomSetIndex < count; ++atomSetIndex) {

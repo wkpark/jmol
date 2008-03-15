@@ -26,6 +26,8 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Properties;
 
+import org.jmol.util.BitSetUtil;
+
 public final class Model {
 
   /*
@@ -251,5 +253,18 @@ public final class Model {
 
   public int getModelIndex() {
     return modelIndex;
+  }
+
+  void fixIndices(int modelIndex, int nAtomsDeleted, BitSet bsDeleted) {
+    if (dataSourceFrame > modelIndex)
+      dataSourceFrame--;
+    if (isTrajectory && trajectoryBaseIndex > modelIndex)
+      trajectoryBaseIndex--;
+    firstAtomIndex -= nAtomsDeleted;
+    for (int i = 0; i < chainCount; i++)
+      chains[i].fixIndices(nAtomsDeleted);
+    for (int i = 0; i < bioPolymerCount; i++)
+      bioPolymers[i].recalculateLeadMidpointsAndWingVectors();
+    BitSetUtil.deleteBits(bsAtoms, bsDeleted);
   }  
 }

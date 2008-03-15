@@ -29,6 +29,8 @@ import org.jmol.viewer.JmolConstants;
 
 import java.util.BitSet;
 
+import org.jmol.util.BitSetUtil;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Parser;
@@ -421,6 +423,18 @@ public abstract class MeshCollection extends Shape {
           : 0);
     }
   }
+ 
+ protected static int getModelIndex(String script) {
+   //pmesh and isosurface state
+   int i;
+   if (script == null || (i = script.indexOf("MODEL({")) < 0)
+     return -1;
+   int j = script.indexOf("})", i);
+   if (j < 0)
+     return -1;
+   BitSet bs = Escape.unescapeBitset(script.substring(i + 3, j + 1));
+   return (bs == null ? -1 : BitSetUtil.firstSetBit(bs));
+ }
 }
 
  

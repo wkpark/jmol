@@ -31,6 +31,7 @@ import java.util.Hashtable;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSetUtil;
 import org.jmol.viewer.JmolConstants;
 
 public abstract class AtomShape extends Shape {
@@ -102,6 +103,18 @@ public abstract class AtomShape extends Shape {
           if (isTranslucent)
             bsColixSet.set(i);
         }
+      return;
+    }
+    if (propertyName == "deleteModelAtoms") {
+      atoms = (Atom[])((Object[])value)[1];
+      int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
+      int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
+      mads = (short[]) ArrayUtil.deleteElements(mads, firstAtomDeleted, nAtomsDeleted);
+      colixes = (short[]) ArrayUtil.deleteElements(colixes, firstAtomDeleted, nAtomsDeleted);
+      paletteIDs = (byte[]) ArrayUtil.deleteElements(paletteIDs, firstAtomDeleted, nAtomsDeleted);
+      BitSetUtil.deleteBits(bsSizeSet, bs);
+      BitSetUtil.deleteBits(bsColixSet, bs);
+      atomCount = atoms.length;
       return;
     }
     super.setProperty(propertyName, value, bs);

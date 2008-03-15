@@ -24,10 +24,13 @@
 
 package org.jmol.shapespecial;
 
+import java.util.BitSet;
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.shape.Mesh;
+import org.jmol.util.ArrayUtil;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.g3d.Graphics3D;
 
@@ -37,6 +40,8 @@ public class DrawMesh extends Mesh {
     super(thisID, g3d, colix);
   }
 
+  BitSet modelFlags;
+  
   int drawType = JmolConstants.DRAW_TRIANGLE;
   int[] drawTypes;
   Point3f ptCenters[];
@@ -101,5 +106,17 @@ public class DrawMesh extends Mesh {
   void offset(Vector3f offset) {
     for (int i = vertexCount; --i >= 0;)
       vertices[i].add(offset);
+  }
+
+  public void deleteAtoms(int modelIndex) {
+    if (modelIndex >= polygonCount)
+      return;
+    polygonCount--;
+    polygonIndexes = (int[][]) ArrayUtil.deleteElements(polygonIndexes, modelIndex, 1);
+    drawTypes = (int[]) ArrayUtil.deleteElements(drawTypes, modelIndex, 1);
+    drawVertexCounts = (int[]) ArrayUtil.deleteElements(drawVertexCounts, modelIndex, 1);
+    ptCenters = (Point3f[]) ArrayUtil.deleteElements(ptCenters, modelIndex, 1);
+    axes = (Vector3f[]) ArrayUtil.deleteElements(axes, modelIndex, 1);
+    title = (String[]) ArrayUtil.deleteElements(title, modelIndex, 1);
   }
 }

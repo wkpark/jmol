@@ -180,5 +180,7 @@ final public class BitSetUtil {
     for (int i = ipt; i < len; i++)
       if (!bsDelete.get(i))
         bs.set(ipt++, bs.get(i));
+    for (; ipt < len; ipt++)
+      bs.clear(ipt);
   }
 }

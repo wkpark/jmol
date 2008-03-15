@@ -299,6 +299,32 @@ public class Draw extends MeshCollection {
     if ("translucency" == propertyName) {
       //let pass through
     }
+    
+    if (propertyName == "deleteModelAtoms") {
+      int modelIndex = ((int[])((Object[])value)[2])[0];
+      //int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
+      //int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
+      BitSet bsModels = new BitSet();
+      bsModels.set(modelIndex);
+      BitSetUtil.deleteBits(bsAllModels, bsModels);
+      for (int i = meshCount; --i >= 0;) {
+        if (meshes[i] == null)
+          continue;
+        if (bsAllModels != null) {
+           dmeshes[i].deleteAtoms(modelIndex);
+         } else if (meshes[i].modelIndex == modelIndex) {
+           meshCount--;
+            if (meshes[i] == currentMesh) 
+              currentMesh = thisMesh = null;
+            meshes = dmeshes = (DrawMesh[]) ArrayUtil.deleteElements(meshes, i, 1);
+          } else if (meshes[i].modelIndex > modelIndex) {
+            meshes[i].modelIndex--;
+          }
+      }
+      return;
+    }
+
+
     setPropertySuper(propertyName, value, bs);
   }
 
@@ -376,7 +402,7 @@ public class Draw extends MeshCollection {
       thisMesh.modelIndex = -1;
       thisMesh.setPolygonCount(modelCount);
       thisMesh.ptCenters = new Point3f[modelCount];
-      thisMesh.modelFlags = new int[modelCount];
+      thisMesh.modelFlags = new BitSet();
       thisMesh.drawTypes = new int[modelCount];
       thisMesh.drawVertexCounts = new int[modelCount];
       thisMesh.vertexCount = 0;
@@ -761,7 +787,7 @@ public class Draw extends MeshCollection {
       if (m.modelFlags == null)
         continue;
       for (int iModel = modelCount; --iModel >= 0;)
-        m.modelFlags[iModel] = (bs.get(iModel) ? 1 : 0);
+        m.modelFlags.set(iModel, bs.get(iModel));
     }
   }
   
@@ -892,8 +918,8 @@ public class Draw extends MeshCollection {
       if (m.visibilityFlags != 0) {
         int mCount = (m.modelFlags == null ? 1 : modelCount);
         for (int iModel = mCount; --iModel >= 0;) {
-          if (m.modelFlags != null && m.modelFlags[iModel] == 0 || m.polygonIndexes == null
-              || m.polygonIndexes[iModel] == null)
+          if (m.modelFlags != null && !m.modelFlags.get(iModel) 
+              || m.polygonIndexes == null || m.polygonIndexes[iModel] == null)
             continue;
           for (int iVertex = m.polygonIndexes[iModel].length; --iVertex >= 0;) {
             Point3f v = new Point3f();

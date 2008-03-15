@@ -27,6 +27,7 @@ package org.jmol.shape;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.viewer.JmolConstants;
 
@@ -167,7 +168,11 @@ public class Labels extends AtomShape {
       return;
     }
 
-    // no translucency
+    if ("translucency" == propertyName) {
+      // no translucency
+      return;
+    }
+    
     if ("bgcolor" == propertyName) {
       isActive = true;
       if (bsBgColixSet == null)
@@ -307,6 +312,22 @@ public class Labels extends AtomShape {
       }
       return;
     }
+    
+    if (propertyName == "deleteModelAtoms") {
+      int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
+      int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
+      fids = (byte[]) ArrayUtil.deleteElements(fids, firstAtomDeleted, nAtomsDeleted);
+      bgcolixes = (short[]) ArrayUtil.deleteElements(bgcolixes, firstAtomDeleted, nAtomsDeleted);
+      offsets = (int[]) ArrayUtil.deleteElements(offsets, firstAtomDeleted, nAtomsDeleted);
+      formats = (String[]) ArrayUtil.deleteElements(formats, firstAtomDeleted, nAtomsDeleted);
+      strings = (String[]) ArrayUtil.deleteElements(strings, firstAtomDeleted, nAtomsDeleted);
+      BitSetUtil.deleteBits(bsFontSet, bsSelected);
+      BitSetUtil.deleteBits(bsBgColixSet, bsSelected);
+      // pass to super
+    }
+    
+    super.setProperty(propertyName, value, bsSelected);
+
   }
 
   public Object getProperty(String property, int index) {

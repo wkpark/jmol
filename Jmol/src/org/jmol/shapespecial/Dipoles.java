@@ -320,6 +320,21 @@ public class Dipoles extends Shape {
       return;
     }
 
+    if (propertyName == "deleteModelAtoms") {
+      int modelIndex = ((int[])((Object[])value)[2])[0];
+      for (int i = dipoleCount; --i >= 0;)
+        if (dipoles[i].modelIndex > modelIndex) {
+          dipoles[i].modelIndex--;
+        } else if (dipoles[i].modelIndex == modelIndex) {
+          if (dipoles[i] == currentDipole)
+            currentDipole = null;            
+          dipoles = (Dipole[]) ArrayUtil.deleteElements(dipoles, i, 1);
+          dipoleCount--;
+        }
+      currentDipole = null;
+      return;
+    }
+
   }
 
   private void getBondDipoles() {

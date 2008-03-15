@@ -1756,17 +1756,16 @@ public class Jmol extends JPanel {
       String title = "Jmol";
       if (fullPathName == null) {
         // a 'clear/zap' operation
-        frame.setTitle(title);
-        return;
-      }
+      } else {
       if (modelName != null && fileName != null)
         title = fileName + " - " + modelName;
       else if (fileName != null)
         title = fileName;
       else if (modelName != null)
         title = modelName;
-      frame.setTitle(title);
       recentFiles.notifyFileOpen(fullPathName);
+      }
+      frame.setTitle(title);
       if (haveDisplay.booleanValue())
         pcs.firePropertyChange(chemFileProperty, null, clientFile);
     }

@@ -105,6 +105,11 @@ public class Hover extends TextShape {
       return;
     }
 
+    if (propertyName == "deleteModelAtoms") {
+      atomIndex = -1;
+      return;
+    }
+    
     super.setProperty(propertyName, value, null);
 
   }

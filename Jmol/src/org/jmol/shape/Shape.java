@@ -135,6 +135,11 @@ public abstract class Shape {
       return;
     }
 
+    if (propertyName == "deleteModelAtoms") {
+      //Object[] {newModels, atoms, new int[] {iModelDeleted, firstAtomIndex, nAtoms}
+      //return;
+    }
+    
     Logger.warn("unassigned " + JmolConstants.shapeClassBases[shapeID] + " + shape setProperty:" + propertyName + ":" + value);
   }
 

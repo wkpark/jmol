@@ -308,12 +308,12 @@ public final class ModelLoader extends ModelSet {
     int[][] mergeGroup3Counts = (int[][]) info.get("group3Counts");
     if (mergeGroup3Lists != null) {
       for (int i = 0; i < baseModelCount; i++) {
-        group3Lists[i] = mergeGroup3Lists[i];
-        group3Counts[i] = mergeGroup3Counts[i];
+        group3Lists[i + 1] = mergeGroup3Lists[i + 1];
+        group3Counts[i + 1] = mergeGroup3Counts[i + 1];
         structuresDefinedInFile.set(i);
       }
-      group3Lists[modelCount] = mergeGroup3Lists[baseModelCount];
-      group3Counts[modelCount] = mergeGroup3Counts[baseModelCount];
+      group3Lists[0] = mergeGroup3Lists[0];
+      group3Counts[0] = mergeGroup3Counts[0];
     }
     //if merging PDB data into an already-present model, and the 
     //structure is defined, consider the current structures in that 
@@ -353,11 +353,11 @@ public final class ModelLoader extends ModelSet {
       boolean isPDBModel = setModelNameNumberProperties(ipt, iTrajectory, modelName,
           modelNumber, modelProperties, modelAuxiliaryInfo, isPDB, jmolData);
       if (isPDBModel) {
-        group3Lists[ipt] = JmolConstants.group3List;
-        group3Counts[ipt] = new int[JmolConstants.group3Count + 10];
-        if (group3Lists[modelCount] == null) {
-          group3Lists[modelCount] = JmolConstants.group3List;
-          group3Counts[modelCount] = new int[JmolConstants.group3Count + 10];
+        group3Lists[ipt + 1] = JmolConstants.group3List;
+        group3Counts[ipt + 1] = new int[JmolConstants.group3Count + 10];
+        if (group3Lists[0] == null) {
+          group3Lists[0] = JmolConstants.group3List;
+          group3Counts[0] = new int[JmolConstants.group3Count + 10];
         }
       }
       if (getModelAuxiliaryInfo(ipt, "periodicOriginXyz") != null)
@@ -971,25 +971,26 @@ public final class ModelLoader extends ModelSet {
   }
 
   private void countGroup(int modelIndex, String code, String group3) {
-    if (group3Lists == null || group3Lists[modelIndex] == null)
+    int ptm = modelIndex + 1;
+    if (group3Lists == null || group3Lists[ptm] == null)
       return;
     String g3code = (group3 + "   ").substring(0, 3);
-    int pt = group3Lists[modelIndex].indexOf(g3code);
+    int pt = group3Lists[ptm].indexOf(g3code);
     if (pt < 0) {
-      group3Lists[modelIndex] += ",[" + g3code + "]";
-      pt = group3Lists[modelIndex].indexOf(g3code);
-      group3Counts[modelIndex] = (int[]) ArrayUtil.setLength(
-          group3Counts[modelIndex], group3Counts[modelIndex].length + 10);
+      group3Lists[ptm] += ",[" + g3code + "]";
+      pt = group3Lists[ptm].indexOf(g3code);
+      group3Counts[ptm] = (int[]) ArrayUtil.setLength(
+          group3Counts[ptm], group3Counts[ptm].length + 10);
     }
-    group3Counts[modelIndex][pt / 6]++;
-    pt = group3Lists[modelIndex].indexOf(",[" + g3code);
+    group3Counts[ptm][pt / 6]++;
+    pt = group3Lists[ptm].indexOf(",[" + g3code);
     if (pt >= 0)
-      group3Lists[modelIndex] = group3Lists[modelIndex].substring(0, pt) + code
-          + group3Lists[modelIndex].substring(pt + 2);
+      group3Lists[ptm] = group3Lists[ptm].substring(0, pt) + code
+          + group3Lists[ptm].substring(pt + 2);
     //becomes x> instead of ,[ 
     //these will be used for setting up the popup menu
-    if (modelIndex < modelCount)
-      countGroup(modelCount, code, group3);
+    if (modelIndex >= 0)
+      countGroup(-1, code, group3);
   }
 
   private void freeze() {

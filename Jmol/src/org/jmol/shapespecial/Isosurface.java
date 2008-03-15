@@ -93,6 +93,7 @@
 package org.jmol.shapespecial;
 
 import org.jmol.shape.Mesh;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.ColorEncoder;
@@ -142,6 +143,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   private int lighting;
   private boolean iHaveBitSets;
   private int modelIndex;
+  private boolean iHaveModelIndex;
   private int atomIndex;
   private int moNumber;
   private short defaultColix;
@@ -153,7 +155,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
 
   private ColorEncoder colorEncoder = new ColorEncoder();
 
-public void setProperty(String propertyName, Object value, BitSet bs) {
+  public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if (Logger.debugging) {
       Logger.debug("Isosurface state=" + sg.getState() + " setProperty: "
@@ -174,7 +176,7 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
         remapColors();
       return;
     }
-    
+
     if ("thisID" == propertyName) {
       setPropertySuper("thisID", value, null);
       return;
@@ -206,8 +208,11 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
     }
 
     if ("modelIndex" == propertyName) {
-      modelIndex = ((Integer) value).intValue();
-      sg.setModelIndex(modelIndex);
+      if (!iHaveModelIndex) {
+        modelIndex = ((Integer) value).intValue();
+        sg.setModelIndex(modelIndex);
+        isFixed = (modelIndex < 0);
+      }
       isFixed = (modelIndex < 0);
       return;
     }
@@ -228,7 +233,7 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
     // isosurface FIRST, but also need to set some parameters
 
     if ("title" == propertyName) {
-      if (value instanceof String && "-".equals((String)value))
+      if (value instanceof String && "-".equals((String) value))
         value = null;
       setPropertySuper(propertyName, value, bs);
       sg.setParameter("title", title, bs);
@@ -251,9 +256,10 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if ("pocket" == propertyName) {
       Boolean pocket = (Boolean) value;
-      lighting = (pocket.booleanValue() ? JmolConstants.FULLYLIT : JmolConstants.FRONTLIT);
+      lighting = (pocket.booleanValue() ? JmolConstants.FULLYLIT
+          : JmolConstants.FRONTLIT);
     }
-    
+
     if ("colorRGB" == propertyName) {
       int rgb = ((Integer) value).intValue();
       defaultColix = Graphics3D.getColix(rgb);
@@ -266,7 +272,7 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("center" == propertyName) {
       center.set((Point3f) value);
     }
-    
+
     if ("phase" == propertyName) {
       isPhaseColored = true;
     }
@@ -275,7 +281,7 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
       setScriptInfo();
       setJvxlInfo();
     }
-      //surface generator only (return TRUE) or shared (return FALSE)
+    //surface generator only (return TRUE) or shared (return FALSE)
 
     if (sg.setParameter(propertyName, value, bs))
       return;
@@ -284,7 +290,7 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if ("init" == propertyName) {
       setPropertySuper("thisID", JmolConstants.PREVIOUS_MESH_ID, null);
-      if (!(iHaveBitSets = getScriptBitSets(script = (String)value))) {
+      if (!(iHaveBitSets = getScriptBitSets(script = (String) value, null))) {
         sg.setParameter("select", bs);
       }
       initializeIsosurface();
@@ -298,7 +304,7 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
       return;
     }
 
-   /*
+    /*
      if ("background" == propertyName) {
      boolean doHide = !((Boolean) value).booleanValue();
      if (thisMesh != null)
@@ -311,6 +317,41 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
      }
 
      */
+
+    if (propertyName == "deleteModelAtoms") {
+      int modelIndex = ((int[]) ((Object[]) value)[2])[0];
+      BitSet bsModels = new BitSet();
+      bsModels.set(modelIndex);
+      int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
+      int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
+      for (int i = meshCount; --i >= 0;) {
+        if (meshes[i] == null)
+          continue;
+        if (meshes[i].modelIndex == modelIndex) {
+           meshCount--;
+            if (meshes[i] == currentMesh) 
+              currentMesh = thisMesh = null;
+            meshes = isomeshes = (IsosurfaceMesh[]) ArrayUtil.deleteElements(
+                meshes, i, 1);
+        } else if (meshes[i].modelIndex > modelIndex) {
+          meshes[i].modelIndex--;
+          if (meshes[i].atomIndex >= firstAtomDeleted)
+            meshes[i].atomIndex -= nAtomsDeleted;
+          //getScriptBitSets(String script, BitSet[] bsCmd) {
+          if (meshes[i].scriptCommand.indexOf("# ({") >= 0) {
+            BitSet[] bsCmd = new BitSet[3];
+            if (getScriptBitSets(meshes[i].scriptCommand, bsCmd)) {
+              BitSetUtil.deleteBits(bsCmd[0], bs);
+              BitSetUtil.deleteBits(bsCmd[1], bs);
+              BitSetUtil.deleteBits(bsCmd[2], bsModels);
+              meshes[i].scriptCommand = fixScript(shortScript(meshes[i].scriptCommand), 
+                  bsCmd[0], bsCmd[1], bsCmd[2], meshes[i].modelIndex);
+            }
+          }
+        }
+      }
+      return;
+    }
 
     // processed by meshCollection
 
@@ -343,19 +384,18 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
       return jvxlData.jvxlPlane;
     if (property == "jvxlFileData")
       return JvxlReader.jvxlGetFile(jvxlData, title, "", true, index, thisMesh
-          .getState(myType), shortScript());
+          .getState(myType), shortScript(thisMesh.scriptCommand));
     if (property == "jvxlSurfaceData")
       return JvxlReader.jvxlGetFile(jvxlData, title, "", false, 1, thisMesh
-          .getState(myType), shortScript());
+          .getState(myType), shortScript(thisMesh.scriptCommand));
     return null;
   }
 
-  private String shortScript() {
-    return (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand
-        .substring(0, (thisMesh.scriptCommand + ";").indexOf(";")));
+  private String shortScript(String script) {
+    return (script == null ? "" : script.substring(0, (script + ";").indexOf(";")));
   }
 
-  private boolean getScriptBitSets(String script) {
+  private boolean getScriptBitSets(String script, BitSet[] bsCmd) {
     if (script == null)
       return false;
     int i = script.indexOf("# ({");
@@ -364,22 +404,36 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
     int j = script.indexOf("})", i);
     if (j < 0)
       return false;
-    sg.setParameter("select", Escape.unescapeBitset(script.substring(i + 3, j + 1)));
+    BitSet bs = Escape.unescapeBitset(script.substring(i + 3, j + 1));
+    if (bsCmd == null)
+      sg.setParameter("select", bs);
+    else
+      bsCmd[0] = bs;
     if ((i = script.indexOf("({", j)) < 0)
-      return false;
+      return true;
     j = script.indexOf("})", i);
-    if (j > i)
-      sg.setParameter("ignore", Escape.unescapeBitset(script.substring(i + 1, j + 1)));
+    if (j < 0) 
+      return false;
+      bs = Escape.unescapeBitset(script.substring(i + 1, j + 1));
+      if (bsCmd == null)
+        sg.setParameter("ignore", bs);
+      else
+        bsCmd[1] = bs;
     if ((i = script.indexOf("/({", j)) == j + 2) {
       if ((j = script.indexOf("})", i)) < 0)
         return false;
-      viewer.setTrajectory(Escape
-          .unescapeBitset(script.substring(i + 3, j + 1)));
+      bs = Escape.unescapeBitset(script.substring(i + 3, j + 1));
+      if (bsCmd == null)
+        viewer.setTrajectory(bs);
+      else
+        bsCmd[2] = bs;
     }
     return true;
   }
 
-  private String fixScript(String script, BitSet bsSelected, BitSet bsIgnore) {
+  private String fixScript(String script, BitSet bsSelected, 
+                           BitSet bsIgnore, BitSet bsTrajectories,
+                           int modelIndex) {
     if (script == null)
       return null;
     if (script.indexOf("# ({") >= 0)
@@ -388,16 +442,19 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
       return myType + " " + thisMesh.thisID + script;
     if (!sg.getIUseBitSets())
       return script;
-    BitSet bs = viewer.getBitSetTrajectories();
     return script + "# "
         + (bsSelected == null ? "({null})" : Escape.escape(bsSelected))
         + " " + (bsIgnore == null ? "({null})" : Escape.escape(bsIgnore))
-        + (bs == null ? "" : "/" + Escape.escape(bs));
+        + (bsTrajectories == null ? "" : "/" + Escape.escape(bsTrajectories))
+        + (modelIndex < 0? "" : " MODEL({" + modelIndex + "})");
   }
 
   private void initializeIsosurface() {
     lighting = JmolConstants.FRONTLIT;
-    modelIndex = viewer.getCurrentModelIndex();
+    modelIndex = getModelIndex(script);
+    iHaveModelIndex = (modelIndex >= 0);
+    if (!iHaveModelIndex)
+      modelIndex = viewer.getCurrentModelIndex();
     isFixed = (modelIndex < 0);
     if (modelIndex < 0)
       modelIndex = 0;
@@ -697,8 +754,9 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
 
   protected void setScriptInfo() {
     thisMesh.title = sg.getTitle();
-    thisMesh.scriptCommand = fixScript(sg.getScript(), sg.getBsSelected(), sg
-        .getBsIgnore());
+    thisMesh.scriptCommand = fixScript(sg.getScript(), 
+        sg.getBsSelected(), sg.getBsIgnore(), 
+        viewer.getBitSetTrajectories(), modelIndex);
   }
 
   private void setJvxlInfo() {

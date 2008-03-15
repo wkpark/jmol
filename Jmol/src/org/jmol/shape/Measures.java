@@ -161,9 +161,37 @@ public class Measures extends Shape {
     } else if ("reformatDistances".equals(propertyName)) {
       reformatDistances();
     }
+
+    if (propertyName == "deleteModelAtoms") {
+      int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
+      int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
+      int atomMax = firstAtomDeleted + nAtomsDeleted;
+      BitSet bsDelete = new BitSet();
+      int nDeleted = 0;
+      for (int i = measurementCount; --i >= 0;) {
+        Measurement m = measurements[i];
+        int[] counts = m.getCountPlusIndices();
+        for (int j = 1; j <= counts[0]; j++) {
+          int iAtom = counts[j];
+          if (iAtom >= firstAtomDeleted) {
+            if (iAtom < atomMax) {
+              bsDelete.set(i);
+              nDeleted++;
+              break;
+            }
+            counts[j] -= nAtomsDeleted;
+          }
+        }
+      }
+      if (nDeleted == 0)
+        return;
+      for (int i = measurementCount; --i >= 0;) 
+        if (bsDelete.get(i))
+              define(measurements[i].getCountPlusIndices(), true, false, false);  
+    }
   }
 
- public Object getProperty(String property, int index) {
+  public Object getProperty(String property, int index) {
     //Logger.debug("Measures.getProperty(" +property + "," + index +")");
     if ("count".equals(property))
       { return new Integer(measurementCount); }
@@ -223,7 +251,7 @@ public class Measures extends Shape {
     if (value instanceof int[])
       define((int[])value, true, false, false);
     else if (value instanceof Integer)
-      define(measurements[((Integer)value).intValue()].getCountPlusIndices(), true, false, false);
+      define(measurements[((Integer)value).intValue()].getCountPlusIndices(), true, false, false);   
   }
  
   private void define(Vector monitorExpressions, boolean isDelete, boolean isShow, boolean isHide) {
@@ -284,7 +312,7 @@ public class Measures extends Shape {
         || count > 2 && atomCountPlusIndices[1] == atomCountPlusIndices[3]
         || count == 4 && atomCountPlusIndices[2] == atomCountPlusIndices[4])
       return;
-    float value = modelSet.getMeasurement(atomCountPlusIndices);
+    float value = (isDelete ? rangeMinMax[0] : modelSet.getMeasurement(atomCountPlusIndices));
     if (rangeMinMax[0] != Float.MAX_VALUE
         && (value < rangeMinMax[0] || value > rangeMinMax[1]))
       return;

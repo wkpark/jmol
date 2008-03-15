@@ -66,8 +66,6 @@ public class Mesh {
     visibilityFlags = n;//set to 1 in mps
   }
   
-  public int[] modelFlags = null; //one per POLYGON for DRAW
-  
   public boolean showPoints = false;
   public boolean drawTriangles = false;
   public boolean fillTriangles = true;

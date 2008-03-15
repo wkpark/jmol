@@ -31,6 +31,7 @@ import java.util.Hashtable;
 
 import javax.vecmath.Point4f;
 
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.jvxl.readers.Parameters;
@@ -79,7 +80,8 @@ public class MolecularOrbital extends Isosurface {
     if ("init" == propertyName) {
       myColorPt = 0;
       moDebug = false;
-      strID = getId(((Integer) value).intValue());
+      int modelIndex = ((Integer) value).intValue();
+      strID = getId(modelIndex);
       // overide bitset selection
       super.setProperty("init", null, null);
       if (htModels == null)
@@ -87,7 +89,7 @@ public class MolecularOrbital extends Isosurface {
       if (!htModels.containsKey(strID))
         htModels.put(strID, new Hashtable());
       thisModel = (Hashtable) htModels.get(strID);
-      moNumber = (thisModel == null || !thisModel.containsKey("moNumber") ? 0
+      moNumber = (!thisModel.containsKey("moNumber") ? 0
           : ((Integer) thisModel.get("moNumber")).intValue());
       return;
     }
@@ -194,9 +196,33 @@ public class MolecularOrbital extends Isosurface {
       htModels.remove(strID);
       //pass through
     }
-
+    
+    if (propertyName == "deleteModelAtoms") {
+      int modelIndex = ((int[])((Object[])value)[2])[0];
+      Hashtable htModelsNew = new Hashtable();
+      for (int i = meshCount; --i >= 0;) {
+        if (meshes[i] == null)
+          continue;
+        if (meshes[i].modelIndex == modelIndex) {
+           meshCount--;
+            if (meshes[i] == currentMesh) { 
+              currentMesh = null;
+              thisModel = null;
+            }
+            meshes = (IsosurfaceMesh[]) ArrayUtil.deleteElements(meshes, i, 1);
+            continue;
+        }
+        Hashtable htModel = (Hashtable) htModels.get(meshes[i].thisID);
+        if (meshes[i].modelIndex > modelIndex) {
+           meshes[i].modelIndex--;
+           meshes[i].thisID = getId(meshes[i].modelIndex);
+        }
+        htModelsNew.put(meshes[i].thisID, htModel);
+      }
+      htModels = htModelsNew;
+      return;
+    }
     super.setProperty(propertyName, value, bs);
-
   }
 
   private String getId(int modelIndex) {

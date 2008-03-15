@@ -40,7 +40,7 @@ public class Balls extends AtomShape {
     isActive = true;
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
-    int bsLength = bsSelected.length();
+    int bsLength = Math.min(atoms.length, bsSelected.length());
     for (int i = bsLength; --i >= 0; ) {
       if (bsSelected.get(i)) {
         Atom atom = atoms[i];

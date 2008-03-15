@@ -973,7 +973,7 @@ class Eval { //implements Runnable {
         translateSelected();
         break;
       case Token.zap:
-        zap();
+        zap(true);
         break;
       case Token.zoom:
         zoom(false);
@@ -2031,18 +2031,18 @@ class Eval { //implements Runnable {
     checkStatementLength(4);
   }
 
-  private int modelNumberParameter(Token token) {
+  private int modelNumberParameter(int index) throws ScriptException {
     int iFrame = 0;
     boolean useModelNumber = false;
-    switch (token.tok) {
+    switch (tokAt(index)) {
     case Token.integer:
       useModelNumber = true;
     //fall through
     case Token.decimal:
-      iFrame = token.intValue; //decimal Token intValue is model/frame number encoded
+      iFrame = getToken(index).intValue; //decimal Token intValue is model/frame number encoded
       break;
     default:
-      return -1;
+      invalidArgument();
     }
     return viewer.getModelNumberIndex(iFrame, useModelNumber, true);
   }
@@ -4117,7 +4117,7 @@ class Eval { //implements Runnable {
       if (i == 0 || (filename = parameterAsString(i)).length() == 0)
         filename = viewer.getFullPathName();
       if (filename == null) {
-        zap();
+        zap(false);
         return;
       }
       if (filename.equals("string[]"))
@@ -4136,7 +4136,7 @@ class Eval { //implements Runnable {
       if ((filename = parameterAsString(i++)).length() == 0)
         filename = viewer.getFullPathName();
       if (filename == null) {
-        zap();
+        zap(false);
         return;
       }
       if (filename.equals("string[]"))
@@ -5149,9 +5149,17 @@ class Eval { //implements Runnable {
     axisExpected();
   }
 
-  private void zap() {
-    viewer.zap(true);
-    refresh();
+  private void zap(boolean isZapCommand) throws ScriptException {
+    if (statementLength == 1 || ! isZapCommand) {
+      viewer.zap(true);
+      refresh();
+      return;
+    }
+    BitSet bs = expression(1);
+    if (isSyntaxCheck)
+      return;
+    scriptStatus(GT._("{0} atoms deleted", "" + viewer.deleteAtoms(bs)));
+    viewer.select(null, false);
   }
 
   private void zoom(boolean isZoomTo) throws ScriptException {
@@ -7598,7 +7606,7 @@ class Eval { //implements Runnable {
       propertyValue = parameterAsString(2);
       break;
     case Token.model:
-      int modelIndex = modelNumberParameter(statement[3]);
+      int modelIndex = modelNumberParameter(3);
       if (isSyntaxCheck)
         return;
       if (modelIndex >= viewer.getModelCount())
@@ -7631,7 +7639,7 @@ class Eval { //implements Runnable {
         propertyName = "off";
         break;
       case Token.model:
-        int modelIndex = modelNumberParameter(statement[4]);
+        int modelIndex = modelNumberParameter(4);
         if (isSyntaxCheck)
           return;
         if (modelIndex >= viewer.getModelCount())
@@ -7663,7 +7671,7 @@ class Eval { //implements Runnable {
         setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
         return;
       case Token.model:
-        int modelIndex = modelNumberParameter(statement[4]);
+        int modelIndex = modelNumberParameter(4);
         if (!isSyntaxCheck && modelIndex >= viewer.getModelCount())
           invalidArgument();
         propertyName = "model";
@@ -8777,7 +8785,7 @@ class Eval { //implements Runnable {
         propertyValue = str;
         break;
       case Token.model:
-        int modelIndex = modelNumberParameter(statement[++i]);
+        int modelIndex = modelNumberParameter(++i);
         if (modelIndex < 0) {
           propertyName = "fixed";
           propertyValue = Boolean.TRUE;
@@ -9758,7 +9766,7 @@ class Eval { //implements Runnable {
       case Token.model:
         if (surfaceObjectSeen)
           invalidArgument();
-        modelIndex = modelNumberParameter(statement[++i]);
+        modelIndex = modelNumberParameter(++i);
         if (modelIndex < 0) {
           propertyName = "fixed";
           propertyValue = Boolean.TRUE;

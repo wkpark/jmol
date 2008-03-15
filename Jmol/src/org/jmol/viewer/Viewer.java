@@ -1291,6 +1291,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     selectionManager.setSelectionSubset(subset);
   }
 
+  public BitSet getSelectionSubset() {
+    return selectionManager.bsSubset;
+  }
+
   private void setHideNotSelected(boolean TF) {
     selectionManager.setHideNotSelected(TF);
   }
@@ -1746,7 +1750,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.setEchoStateActive(TF);
   }
 
-  void zap(boolean notify) {
+  public void zap(boolean notify) {
     //Eval
     //setAppletContext
     clear();
@@ -1821,6 +1825,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getModelSetName() {
+    if (modelSet == null)
+      return null;
     return modelSet.getModelSetName();
   }
 
@@ -2921,7 +2927,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                            boolean isImageWrite, 
                            boolean isGenerator,
                            boolean isReset) {
-    //System.out.println("Viewer-resizeImage: isImageWrite/reset " + isImageWrite + " " + isReset);
     if (width > 0) {
       if (isImageWrite && !isReset)
         setImageFontScaling(width, height);
@@ -2938,7 +2943,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (antialiasDisplay)
       imageFontScaling *= 2;
-    //System.out.println("viewer:setImageFontScaling " + imageFontScaling);
     if (width > 0 && !isImageWrite) {
       global.setParameterValue("_width", width);
       global.setParameterValue("_height", height);
@@ -3176,14 +3180,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (checkHalt(strScript))
       return "script execution halted";
     if (isScriptExecuting() && (isInterrupt || eval.isExecutionPaused())) {
-      //System.out.println ("setting interrupt script: " + strScript);
       interruptScript = strScript;
       if (strScript.indexOf("moveto ") == 0)
         scriptManager.flushQueue("moveto ");
       return "!" + strScript;
     }
     interruptScript = "";
-    //System.out.println("adding script isInterrupt=" + isInterrupt + ": " + strScript);
     return scriptManager.addScript(strScript, false, isQuiet);
   }
 
@@ -3770,6 +3772,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int modelIndex = repaintManager.currentModelIndex;
     int firstIndex = repaintManager.firstModelIndex;
     int lastIndex = repaintManager.lastModelIndex;
+    
     if (firstIndex == lastIndex)
       modelIndex = firstIndex;
     int frameID = getModelFileNumber(modelIndex);
@@ -6416,6 +6419,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   
   String getDefaultVdw(int iMode) {
     return dataManager.getDefaultVdw(iMode, null);
+  }
+
+  public int deleteAtoms(BitSet bs) {
+    fileManager.addLoadScript("zap " + Escape.escape(bs));
+    setCurrentModelIndex(0, false);
+    repaintManager.setAnimationOn(false);
+    setAnimationRange(0, 0);
+    int nAtomsDeleted = modelSet.deleteAtoms(bs);
+    repaintManager.clear();
+    repaintManager.initializePointers(1);
+    setCurrentModelIndex(-1, true);
+    hoverAtomIndex = -1;
+    setStatusFileLoaded(0, null, null, null, null, null);
+    return nAtomsDeleted;
   }
 
 }

@@ -52,7 +52,7 @@ public class DrawRenderer extends MeshRenderer {
   
   protected boolean isPolygonDisplayable(int i) {
       return Draw.isPolygonDisplayable(dmesh, i) 
-          && (mesh.modelFlags == null || mesh.modelFlags[i] != 0); 
+          && (dmesh.modelFlags == null || dmesh.modelFlags.get(i)); 
   }
   
   private Point3f[] controlHermites;

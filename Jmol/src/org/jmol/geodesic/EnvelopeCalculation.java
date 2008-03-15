@@ -567,5 +567,9 @@ public final class EnvelopeCalculation {
     for (int i = bitmap.length; --i >= 0; )
       bitmap[i] = 0;
   }
-  
+
+  public void deleteAtoms(int firstAtomDeleted, int nAtomsDeleted) {
+    dotsConvexMaps = (int[][]) ArrayUtil.deleteElements(dotsConvexMaps, firstAtomDeleted, nAtomsDeleted);
+    dotsConvexMax = dotsConvexMaps.length;
+  }  
 }

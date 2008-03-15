@@ -178,7 +178,7 @@ public class Token {
   final static int translate    = command | 42 | negnums;
   final static int wireframe    = command | 44;
   final static int write        = command | 45;
-  final static int zap          = command | 46;
+  final static int zap          = command | 46 | expressionCommand;
   final static int zoom         = command | 47 | numberOrExpression;
   final static int zoomTo       = command | 48 | numberOrExpression;
   final static int initialize   = command | 49;
@@ -1010,7 +1010,7 @@ public class Token {
     "translate",         new Token(translate,                 2),
     "wireframe",         new Token(wireframe,        onDefault1),
     "write",             new Token(write,           varArgCount),
-    "zap",               new Token(zap,                       0),
+    "zap",               new Token(zap,             varArgCount),
     "zoom",              new Token(zoom,            varArgCount),
     "zoomTo",            new Token(zoomTo,          varArgCount),
     "initialize",        new Token(initialize,                0),

@@ -241,6 +241,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   }
 
   short getLeadColix(int i) {
+    //System.out.println("bioshaperend " + monomers[i] + " getLeadColix i=" + i + " leadatom = " + monomers[i].getLeadAtom().getInfo() + " index=" + monomers[i].getLeadAtom().getAtomIndex());
     return Graphics3D.getColixInherited(colixes[i],
         monomers[i].getLeadAtom().getColix());
   }

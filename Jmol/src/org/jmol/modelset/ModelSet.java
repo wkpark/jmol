@@ -612,5 +612,101 @@ abstract public class ModelSet extends ModelCollection {
   public int getVanderwaalsMar(int i) {
     return viewer.getVanderwaalsMar(i);
   }
+
+  void includeAllRelatedFrames(BitSet bsModels) {
+    int j;
+    for (int i = 0; i < modelCount; i++) {
+      if (bsModels.get(i)) {
+        if (isJmolDataFrame(i) && !bsModels.get(j = models[i].dataSourceFrame)) {
+          bsModels.set(j);
+          includeAllRelatedFrames(bsModels);
+          return;
+        }
+        if (isTrajectory(i) && !bsModels.get(j = models[i].trajectoryBaseIndex)) {
+          bsModels.set(j);
+          includeAllRelatedFrames(bsModels);
+          return;
+        }
+        continue;
+      }
+      if (isTrajectory(i) && bsModels.get(models[i].trajectoryBaseIndex)
+          || isJmolDataFrame(i) && bsModels.get(models[i].dataSourceFrame))
+        bsModels.set(i);
+    }
+  }
+  
+  public int deleteAtoms(BitSet bsAtoms) {
+    BitSet bs = BitSetUtil.copy(bsAtoms);
+    BitSet bsModels = getModelBitSet(bs);
+    includeAllRelatedFrames(bsModels);
+    int nAtomsDeleted = 0;
+    
+    int nModelsDeleted = BitSetUtil.cardinalityOf(bsModels);
+    if (nModelsDeleted == 0)
+      return 0;
+    if (nModelsDeleted == modelCount) {
+      nAtomsDeleted = atomCount;
+      viewer.zap(true);
+      return nAtomsDeleted;
+    }
+    
+    // zero out reproducible arrays
+    
+    bspf = null;
+    molecules = null;
+    
+    // delete bonds
+    deleteBonds(getBondsForSelectedAtoms(bs));
+
+    // create a new models array, 
+    //   and pre-calculate Model.bsAtoms and Model.atomCount
+    Model[] newModels = new Model[modelCount - nModelsDeleted];
+    Model[] oldModels = models;
+    for (int i = 0, mpt = 0; i < modelCount; i++)
+      if (bsModels.get(i)) { // get a good count now
+        getAtomCountInModel(i);
+        getModelAtomBitSet(i, false);
+      } else {
+        models[i].modelIndex = mpt;
+        newModels[mpt++] = models[i];
+      }
+    models = newModels;
+    int oldModelCount = modelCount;
+    // main deletion cycle
+    for (int i = 0, mpt = 0; i < oldModelCount; i++) {
+      if (!bsModels.get(i)) {
+        mpt++;
+        continue;
+      }
+      int nAtoms = oldModels[i].atomCount;
+      if (nAtoms == 0)
+        continue;
+      nAtomsDeleted += nAtoms;
+      bs = oldModels[i].bsAtoms;
+      int firstAtomIndex = oldModels[i].firstAtomIndex;
+
+      // delete atom arrays and atom bitsets
+      super.deleteAtoms(mpt, firstAtomIndex, nAtoms, bs);
+      
+      // adjust all models after this one
+      for (int j = oldModelCount; --j > i; )
+          oldModels[j].fixIndices(mpt, nAtoms, bs);
+
+      // adjust all shapes
+      Object[] value = new Object[] {newModels, atoms, 
+          new int[] {i, firstAtomIndex, nAtoms}};      
+      for (int j = 0; j < JmolConstants.SHAPE_MAX; j++)
+        if (shapes[j] != null)
+          setShapeProperty(j, "deleteModelAtoms", value, bs);
+      modelCount--;
+    }
+    
+    //set final values
+    bsAll = null;
+    calcBoundBoxDimensions(null);
+    return nAtomsDeleted;
+
+  }
+  
 }
 

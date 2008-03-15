@@ -317,7 +317,7 @@ abstract public class JmolPopup {
     enableMenu(menu2, false);
     if (modelSetInfo == null)
       return;
-    int n = (modelIndex < 0 ? modelCount : modelIndex);
+    int n = (modelIndex < 0 ? 0 : modelIndex + 1);
     String[] lists = ((String[]) modelSetInfo.get("group3Lists"));
     group3List = (lists == null ? null : lists[n]);
     group3Counts = (lists == null ? null : ((int[][]) modelSetInfo

@@ -46,10 +46,8 @@ public abstract class TextShape extends Shape {
   float currentTranslucentLevel;
   float currentBgTranslucentLevel;
   boolean isAll;
-  protected int modelIndex = -1;
 
   protected void initModelSet() {
-    modelIndex = -1;
     currentText = null;
     isAll = false;
   }
@@ -82,7 +80,7 @@ public abstract class TextShape extends Shape {
     }
 
     if ("model" == propertyName) {
-      modelIndex = ((Integer) value).intValue();
+      int modelIndex = ((Integer) value).intValue();
       if (currentText == null) {
         if (isAll) {
           Enumeration e = texts.elements();
@@ -229,7 +227,20 @@ public abstract class TextShape extends Shape {
       currentText.setTranslucent(translucentLevel, isBackground);
       return;
     }
-    
+   
+    if (propertyName == "deleteModelAtoms") {
+      int modelIndex = ((int[])((Object[])value)[2])[0];
+      Enumeration e = texts.elements();
+      while (e.hasMoreElements()) {
+        Text text = (Text) e.nextElement();
+        if (text.modelIndex == modelIndex)
+          texts.remove(text.target);
+        else if (text.modelIndex > modelIndex)
+          text.modelIndex--;
+      }
+      return;
+    }
+
     super.setProperty(propertyName, value, null);
   }
 }

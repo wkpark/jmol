@@ -38,6 +38,7 @@ import org.jmol.atomdata.AtomData;
 import org.jmol.bspt.Bspf;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.geodesic.EnvelopeCalculation;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -1716,6 +1717,43 @@ abstract public class AtomCollection {
       if (bsThis.get(getElementNumber(i)))
         bsResult.set(i);
     return bsResult;
+  }
+
+  public void deleteAtoms(int firstAtomIndex, int nAtoms, BitSet bs) {
+    BitSetUtil.deleteBits(bsHidden, bs);
+    BitSetUtil.deleteBits(viewer.getSelectionSet(), bs);
+    BitSetUtil.deleteBits(viewer.getSelectionSubset(), bs);
+    atoms = (Atom[]) ArrayUtil.deleteElements(atoms, firstAtomIndex, nAtoms);
+    atomCount = atoms.length;
+    for (int j = firstAtomIndex; j < atomCount; j++) {
+      atoms[j].atomIndex = j;
+      atoms[j].modelIndex--;
+    }
+    System.out.println("atomcollection deleteAtoms atomslen=" + atoms.length);
+
+    atomNames = (String[]) ArrayUtil.deleteElements(atomNames, firstAtomIndex,
+        nAtoms);
+    atomSerials = (int[]) ArrayUtil.deleteElements(atomSerials, firstAtomIndex,
+        nAtoms);
+    bfactor100s = (short[]) ArrayUtil.deleteElements(bfactor100s,
+        firstAtomIndex, nAtoms);
+    hasBfactorRange = false;
+    occupancies = (byte[]) ArrayUtil.deleteElements(occupancies,
+        firstAtomIndex, nAtoms);
+    partialCharges = (float[]) ArrayUtil.deleteElements(partialCharges,
+        firstAtomIndex, nAtoms);
+    specialAtomIDs = (byte[]) ArrayUtil.deleteElements(specialAtomIDs,
+        firstAtomIndex, nAtoms);
+    vibrationVectors = (Vector3f[]) ArrayUtil.deleteElements(vibrationVectors,
+        firstAtomIndex, nAtoms);
+    clientAtomReferences = (Object[]) ArrayUtil.deleteElements((Object) clientAtomReferences,
+        firstAtomIndex, nAtoms);
+    nSurfaceAtoms = 0;
+    bsSurface = null;
+    surfaceDistance100s = null;
+    if (tainted != null)
+      for (int i = 0; i < TAINT_MAX; i++)
+        BitSetUtil.deleteBits(tainted[i], bs);
   }
 
 }

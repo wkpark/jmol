@@ -33,6 +33,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Model;
 import org.jmol.modelsetbio.BioPolymer;
 import org.jmol.shape.Shape;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.viewer.JmolConstants;
 /****************************************************************
@@ -98,6 +99,22 @@ public abstract class BioShapeCollection extends Shape {
       }
       return;
     }
+    
+    if (propertyName == "deleteModelAtoms") {
+      atoms = (Atom[])((Object[])value)[1];
+      int modelIndex = ((int[])((Object[])value)[2])[0];
+      for (int i = bioShapes.length; --i >= 0; ){
+        BioShape b = bioShapes[i];
+        if (b.modelIndex > modelIndex) {
+          b.modelIndex--;
+          b.leadAtomIndices = b.bioPolymer.getLeadAtomIndices();
+        } else if (b.modelIndex == modelIndex) {
+          bioShapes = (BioShape[]) ArrayUtil.deleteElements(bioShapes, i, 1);
+        }
+      }
+      return;
+    }
+
     super.setProperty(propertyName, value, bsSelected);
   }
 
@@ -116,18 +133,13 @@ public abstract class BioShapeCollection extends Shape {
   void initialize() {
     int modelCount = modelSet.getModelCount();
     Model[] models = modelSet.getModels();
-    int nPolymers = modelSet.getBioPolymerCount();
-    BioShape[] shapes = new BioShape[nPolymers];
-    int n = nPolymers;
+    int n = modelSet.getBioPolymerCount();
+    BioShape[] shapes = new BioShape[n--];
     for (int i = modelCount; --i >= 0;)
-      for (int j = modelSet.getBioPolymerCountInModel(i); --j >= 0;) {
-        n--;
-        if (bioShapes == null || bioShapes.length <= n || bioShapes[n] == null) {
-          shapes[n] = new BioShape(this, i, (BioPolymer) models[i].getBioPolymer(j));
-        } else {
-          shapes[n] = bioShapes[n];
-        }
-      }
+      for (int j = modelSet.getBioPolymerCountInModel(i); --j >= 0; n--)
+        shapes[n] = (bioShapes == null || bioShapes.length <= n
+            || bioShapes[n] == null ? new BioShape(this, i,
+            (BioPolymer) models[i].getBioPolymer(j)) : bioShapes[n]);
     bioShapes = shapes;
   }
 

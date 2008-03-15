@@ -930,7 +930,7 @@ abstract public class ModelCollection extends BondCollection {
     return (modelIndex >= 0 && modelIndex < modelCount ? 
         models[modelIndex].dataSourceFrame : -1);
   }
-  
+
   private String pdbHeader;
   /*
    final static String[] pdbRecords = { "ATOM  ", "HELIX ", "SHEET ", "TURN  ",
@@ -1564,7 +1564,7 @@ abstract public class ModelCollection extends BondCollection {
     return (models[modelIndex].atomCount = super.getAtomCountInModel(modelIndex)); 
   }
   
-  private BitSet bsAll;
+  protected BitSet bsAll;
   
   /**
    * 
@@ -2501,4 +2501,53 @@ abstract public class ModelCollection extends BondCollection {
           "or \"C m m m\" or \"x, y, z;-x ,-y, -z\"";
     return sg.dumpInfo() + strOperations;
   }
+  
+  public void deleteAtoms(int modelIndex, int firstAtomIndex, int nAtoms, BitSet bs) {
+   /*
+    *   ModelCollection.modelSetAuxiliaryInfo["group3Lists", "group3Counts, "models"]
+    * ModelCollection.stateScripts ?????
+    */
+    modelNumbers = (int[]) ArrayUtil.deleteElements(modelNumbers, modelIndex, 1);
+    modelFileNumbers = (int[]) ArrayUtil.deleteElements(modelFileNumbers, modelIndex, 1);
+    modelNumbersForAtomLabel = (String[]) ArrayUtil.deleteElements(modelNumbersForAtomLabel, modelIndex, 1);
+    modelNames = (String[]) ArrayUtil.deleteElements(modelNames, modelIndex, 1);
+    frameTitles = (String[]) ArrayUtil.deleteElements(frameTitles, modelIndex, 1);
+    thisStateModel = -1;
+    int nDeleted = 0;
+    for (int i = structureCount; --i >= 0;) {
+      if (structures[i].modelIndex  > modelIndex) {
+        structures[i].modelIndex--;
+      } else if (structures[i].modelIndex == modelIndex) {
+        structures = (Structure[]) ArrayUtil.deleteElements(structures, i, 1);
+        nDeleted++;
+      } else {
+        break;
+      }
+    }
+    structureCount -= nDeleted;
+    String[] group3Lists = (String[]) getModelSetAuxiliaryInfo("group3Lists");
+    int[][] group3Counts = (int[][]) getModelSetAuxiliaryInfo("group3Counts");
+    int ptm = modelIndex + 1;
+    if (group3Lists != null && group3Lists[ptm] != null) {
+      for (int i = group3Lists[ptm].length() / 6; --i >= 0;) 
+        if (group3Counts[ptm][i] > 0) {
+          group3Counts[0][i] -= group3Counts[ptm][i];
+          if (group3Counts[0][i] == 0)
+            group3Lists[0] = group3Lists[0].substring(0, i * 6) + ",[" + group3Lists[0].substring(i * 6 + 2);
+        }
+    }
+    if (group3Lists != null) {
+      modelSetAuxiliaryInfo.put("group3Lists", ArrayUtil.deleteElements(group3Lists, modelIndex, 1));
+      modelSetAuxiliaryInfo.put("group3Counts", ArrayUtil.deleteElements(group3Counts, modelIndex, 1));
+    }     
+    if (cellInfos != null) {
+      for (int i = modelCount; --i > modelIndex;)
+        cellInfos[i].modelIndex--;
+      cellInfos = (CellInfo[]) ArrayUtil.deleteElements(cellInfos, modelIndex, 1);
+    }
+    
+    isBbcageDefault = false;
+    super.deleteAtoms(firstAtomIndex, nAtoms, bs);
+  }
+
 }

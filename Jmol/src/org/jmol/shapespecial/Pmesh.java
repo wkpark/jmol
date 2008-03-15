@@ -32,6 +32,8 @@ import java.io.InputStream;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.shape.Mesh;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
@@ -73,6 +75,7 @@ public class Pmesh extends MeshFileCollection {
   private boolean isOnePerLine;
   private boolean isBinary;
   private int modelIndex;
+  private boolean iHaveModelIndex;
   String pmeshError;
   
   private final static String PMESH_BINARY_MAGIC_NUMBER = "PM" + '\1' + '\0';
@@ -91,15 +94,17 @@ public class Pmesh extends MeshFileCollection {
       pmeshError = null;
       isFixed = false;
       isBinary = false;
-      modelIndex = -1;
       isOnePerLine = false;
       script = (String) value;
+      modelIndex = getModelIndex(script);
+      iHaveModelIndex = (modelIndex >= 0);
       super.setProperty("thisID", JmolConstants.PREVIOUS_MESH_ID, null);
       //fall through to MeshCollection "init"
     }
 
     if ("modelIndex" == propertyName) {
-      modelIndex = ((Integer) value).intValue();
+      if (!iHaveModelIndex)
+        modelIndex = ((Integer) value).intValue();
       return;
     }
 
@@ -139,6 +144,22 @@ public class Pmesh extends MeshFileCollection {
       return;
     }
 
+    if (propertyName == "deleteModelAtoms") {
+      int modelIndex = ((int[]) ((Object[]) value)[2])[0];
+      for (int i = meshCount; --i >= 0;) {
+        if (meshes[i] == null)
+          continue;
+        if (meshes[i].modelIndex == modelIndex) {
+           meshCount--;
+            if (meshes[i] == currentMesh) 
+              currentMesh = null;
+            meshes = (Mesh[]) ArrayUtil.deleteElements(meshes, i, 1);
+        } else if (meshes[i].modelIndex > modelIndex) {
+          meshes[i].modelIndex--;
+        }
+      }
+      return;
+    }
     super.setProperty(propertyName, value, bs);
   }
 

@@ -194,6 +194,19 @@ public class Polyhedra extends AtomShape {
       return;
     }
 
+    if (propertyName == "deleteModelAtoms") {
+      int modelIndex = ((int[]) ((Object[]) value)[2])[0];
+      for (int i = polyhedronCount; --i >= 0;) {
+        if (polyhedrons[i].modelIndex == modelIndex) {
+          polyhedronCount--;
+          polyhedrons = (Polyhedron[]) ArrayUtil.deleteElements(polyhedrons, i, 1);
+        } else if (polyhedrons[i].modelIndex > modelIndex) {
+          polyhedrons[i].modelIndex--;
+        }
+      }
+      //pass on to AtomShape
+    }
+
     super.setProperty(propertyName, value, bs);
   }
 
@@ -234,7 +247,6 @@ public class Polyhedra extends AtomShape {
         if (haveBitSetVertices)
           return;
       }
-
   }
 
   private Polyhedron constructBondsPolyhedron(int atomIndex) {
@@ -509,6 +521,7 @@ public class Polyhedra extends AtomShape {
   }
 
   class Polyhedron {
+    int modelIndex;
     final Atom centralAtom;
     final Atom[] vertices;
     int ptCenter;
@@ -524,6 +537,7 @@ public class Polyhedra extends AtomShape {
         Atom[] otherAtoms, short[] normixes, byte[] planes) {
       this.collapsed = isCollapsed;
       this.centralAtom = centralAtom;
+      modelIndex = centralAtom.getModelIndex();
       this.ptCenter = ptCenter;
       this.vertices = new Atom[nPoints];
       this.visible = true;
@@ -566,7 +580,7 @@ public class Polyhedra extends AtomShape {
      */
     for (int i = polyhedronCount; --i >= 0;) {
       Polyhedron p = polyhedrons[i];
-      p.visibilityFlags = (p.visible && bs.get(p.centralAtom.getModelIndex())
+      p.visibilityFlags = (p.visible && bs.get(p.modelIndex)
           && !modelSet.isAtomHidden(p.centralAtom.getAtomIndex()) ? myVisibilityFlag
           : 0);
     }

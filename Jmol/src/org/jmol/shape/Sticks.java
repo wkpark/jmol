@@ -160,8 +160,10 @@ public class Sticks extends Shape {
       BitSet bs = (BitSet) value;
       BitSetUtil.deleteBits(bsColixSet, bs);
       BitSetUtil.deleteBits(bsSizeSet, bs);
+      BitSetUtil.deleteBits(bsOrderSet, bs);
       return;
     }
+
     super.setProperty(propertyName, value, bsSelected);
   }
 

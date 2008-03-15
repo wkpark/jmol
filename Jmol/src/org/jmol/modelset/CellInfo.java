@@ -38,7 +38,7 @@ public class CellInfo {
   String[] symmetryOperations;
   String symmetryInfoString;
 
-  private int modelIndex;
+  int modelIndex;
   private UnitCell unitCell;
   private Point3f periodicOriginXyz;
   private int[] cellRange;

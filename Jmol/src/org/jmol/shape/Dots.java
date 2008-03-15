@@ -24,6 +24,7 @@
 
 package org.jmol.shape;
 
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.g3d.Graphics3D;
@@ -134,6 +135,14 @@ public class Dots extends AtomShape {
       bsSelected = null;
       setSize(0, bs);
       return;
+    }
+
+    if (propertyName == "deleteModelAtoms") {
+      int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
+      int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
+      BitSetUtil.deleteBits(bsOn, bs);
+      ec.deleteAtoms(firstAtomDeleted, nAtomsDeleted);
+      // pass to AtomShape via super
     }
 
     super.setProperty(propertyName, value, bs);

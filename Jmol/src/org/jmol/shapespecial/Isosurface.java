@@ -208,6 +208,7 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("modelIndex" == propertyName) {
       modelIndex = ((Integer) value).intValue();
       sg.setModelIndex(modelIndex);
+      isFixed = (modelIndex < 0);
       return;
     }
 

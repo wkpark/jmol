@@ -6421,18 +6421,25 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return dataManager.getDefaultVdw(iMode, null);
   }
 
-  public int deleteAtoms(BitSet bs) {
-    fileManager.addLoadScript("zap " + Escape.escape(bs));
-    setCurrentModelIndex(0, false);
-    repaintManager.setAnimationOn(false);
-    setAnimationRange(0, 0);
-    int nAtomsDeleted = modelSet.deleteAtoms(bs);
-    repaintManager.clear();
-    repaintManager.initializePointers(1);
-    setCurrentModelIndex(-1, true);
-    hoverAtomIndex = -1;
-    setStatusFileLoaded(0, null, null, null, null, null);
-    return nAtomsDeleted;
+  public int deleteAtoms(BitSet bs, boolean fullModels) {
+    if (fullModels) {
+      fileManager.addLoadScript("zap " + Escape.escape(bs));
+      setCurrentModelIndex(0, false);
+      repaintManager.setAnimationOn(false);
+      setAnimationRange(0, 0);
+      int nAtomsDeleted = modelSet.deleteAtoms(bs, true);
+      repaintManager.clear();
+      repaintManager.initializePointers(1);
+      setCurrentModelIndex(-1, true);
+      hoverAtomIndex = -1;
+      setStatusFileLoaded(0, null, null, null, null, null);
+      return nAtomsDeleted;
+    }
+    return selectionManager.deleteAtoms(bs);
+  }
+  
+  public BitSet getDeletedAtoms() {
+    return selectionManager.bsDeleted;
   }
 
 }

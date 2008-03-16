@@ -109,29 +109,35 @@ public class Balls extends AtomShape {
  }
 
  public void setModelClickability() {
-    for (int i = atomCount; --i >= 0;) {
-      Atom atom = atoms[i];
-      atom.setClickable(0);
-      if ((atom.getShapeVisibilityFlags() & myVisibilityFlag) == 0
-          || modelSet.isAtomHidden(i))
-        continue;
-      atom.setClickable(myVisibilityFlag);
-    }
-  }
+   BitSet bs = viewer.getDeletedAtoms();
+   if (bs == null)
+     bs = new BitSet();
+   for (int i = atomCount; --i >= 0;) {
+     Atom atom = atoms[i];
+     atom.setClickable(0);
+     if (bs.get(i) || (atom.getShapeVisibilityFlags() & myVisibilityFlag) == 0
+         || modelSet.isAtomHidden(i))
+       continue;
+     atom.setClickable(myVisibilityFlag);
+   }
+ }
   
  public void setVisibilityFlags(BitSet bs) {
     int displayModelIndex = viewer.getDisplayModelIndex();
     boolean isOneFrame = (displayModelIndex >= 0); 
     boolean showHydrogens = viewer.getShowHydrogens();
+    BitSet bsDeleted = viewer.getDeletedAtoms();
+    if (bsDeleted == null)
+      bsDeleted = new BitSet();
     for (int i = atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
       int flag = atom.getShapeVisibilityFlags();
       flag &= (~JmolConstants.ATOM_IN_MODEL & ~myVisibilityFlag);
       atom.setShapeVisibilityFlags(flag);
-      if (! showHydrogens && atom.getElementNumber() == 1)
+      if (bsDeleted.get(i) || !showHydrogens && atom.getElementNumber() == 1)
         continue;
       int modelIndex = atom.getModelIndex();
-      if (! isOneFrame && bs.get(modelIndex) 
+      if (!isOneFrame && bs.get(modelIndex) 
           || modelIndex == displayModelIndex) { 
         atom.setShapeVisibility(JmolConstants.ATOM_IN_MODEL, true);
         if (atom.getMadAtom() != 0 &&  !modelSet.isAtomHidden(i))

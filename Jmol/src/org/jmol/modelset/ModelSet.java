@@ -635,11 +635,13 @@ abstract public class ModelSet extends ModelCollection {
     }
   }
   
-  public int deleteAtoms(BitSet bsAtoms) {
+  public int deleteAtoms(BitSet bsAtoms, boolean fullModels) {
+    
+    if (!fullModels) {
+      return 0;
+    }
     BitSet bs = BitSetUtil.copy(bsAtoms);
     BitSet bsModels = getModelBitSet(bs);
-    System.out.println(bsAtoms.cardinality());
-    System.out.println("bsModels: " + bs);
     includeAllRelatedFrames(bsModels);
     int nAtomsDeleted = 0;
     

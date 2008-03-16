@@ -208,7 +208,7 @@ class Eval { //implements Runnable {
       scr = TextFormat.simpleReplace(scr, "()", "(none)");
       if (e.loadScript(null, scr, false)) {
         e.statement = e.aatoken[0];
-        bs = e.expression(e.statement, 1, 0, false, false, true);
+        bs = e.expression(e.statement, 1, 0, false, false, true, true);
       }
       e.popContext();
     } catch (Exception ex) {
@@ -533,6 +533,7 @@ class Eval { //implements Runnable {
     variables.clear();
     bsSubset = null;
     viewer.setSelectionSubset(null);
+    
     if (viewer.getModelSet() == null || viewer.getAtomCount() == 0)
       return;
     clearPredefined(JmolConstants.predefinedStatic);
@@ -957,6 +958,9 @@ class Eval { //implements Runnable {
       case Token.history:
         history(1);
         break;
+      case Token.delete:
+        delete();
+        break;
       case Token.select:
         select();
         break;
@@ -1330,12 +1334,12 @@ class Eval { //implements Runnable {
   private BitSet expression(int index) throws ScriptException {
     if (!checkToken(index))
       badArgumentCount();
-    return expression(statement, index, 0, true, false, true);
+    return expression(statement, index, 0, true, false, true, true);
   }
 
   private BitSet expression(Token[] code, int pcStart, int pcStop,
                             boolean allowRefresh, boolean allowUnderflow,
-                            boolean bsRequired) throws ScriptException {
+                            boolean mustBeBitSet, boolean andNotDeleted) throws ScriptException {
     //note that this is general -- NOT just statement[]
     //errors reported would improperly access statement/line context
     //there should be no errors anyway, because this is for 
@@ -1357,6 +1361,7 @@ class Eval { //implements Runnable {
     int atomCount = viewer.getAtomCount();
     if (ignoreSubset)
       pcStart = -pcStart;
+    ignoreSubset |= isSyntaxCheck;
     if (pcStop == 0)
       pcStop = pcStart + 1;
     //    if (logMessages)
@@ -1642,15 +1647,18 @@ class Eval { //implements Runnable {
       endOfStatementUnexpected();
     }
     expressionResult = ((Token) expressionResult).value;
-    if (bsRequired && expressionResult instanceof String) {
+    if (mustBeBitSet && expressionResult instanceof String) {
       // allow for select @{x} where x is a string that can evaluate to a bitset
       expressionResult = (isScriptCheck ? new BitSet() : getAtomBitSet(this, viewer, (String) expressionResult));
     }
-    if (!bsRequired && !(expressionResult instanceof BitSet))
+    if (!mustBeBitSet && !(expressionResult instanceof BitSet))
       return null; // because result is in expressionResult in that case
     BitSet bs = (expressionResult instanceof BitSet ? (BitSet) expressionResult
         : new BitSet());
     isBondSet = (expressionResult instanceof BondSet);
+    BitSet bsDeleted = viewer.getDeletedAtoms();
+    if (!isBondSet && bsDeleted != null)
+      BitSetUtil.andNot(bs, bsDeleted);
     if (!ignoreSubset && bsSubset != null && !isBondSet)
       bs.and(bsSubset);
     if (tempStatement != null) {
@@ -1721,7 +1729,7 @@ class Eval { //implements Runnable {
     if (value != null) {
       if (value instanceof Token[]) {
         pushContext(null);
-        value = expression((Token[]) value, -2, 0, true, false, true);
+        value = expression((Token[]) value, -2, 0, true, false, true, true);
         popContext();
         if (!isDynamic)
           variables.put(variable, value);
@@ -2221,7 +2229,7 @@ class Eval { //implements Runnable {
     switch (getToken(i).tok) {
     case Token.bitset:
     case Token.expressionBegin:
-      BitSet bs = expression(statement, i, 0, true, false, false);
+      BitSet bs = expression(statement, i, 0, true, false, false, true);
       if (bs != null)
         return viewer.getAtomSetCenter(bs);
       if (expressionResult instanceof Point3f)
@@ -4591,6 +4599,7 @@ class Eval { //implements Runnable {
       BitSetUtil.invertInPlace(bsSelected, viewer.getAtomCount());
       bsSelected.and(bsSubset);
     }
+    BitSetUtil.andNot(bsSelected, viewer.getDeletedAtoms());
     boolean bondmode = viewer.getBondSelectionModeOr();
     setBooleanProperty("bondModeOr", true);
     setShapeSize(JmolConstants.SHAPE_STICKS, 0);
@@ -5041,6 +5050,19 @@ class Eval { //implements Runnable {
       viewer.hide(bs, tQuiet);
   }
 
+  private void delete() throws ScriptException {
+    if (statementLength == 1) {
+      zap(true);
+      return;
+    }
+    BitSet bs = expression(statement, 1, 0, true, false, true, false);
+    if (isSyntaxCheck)
+      return;
+    int nDeleted = viewer.deleteAtoms(bs, false);
+    if (!(tQuiet || scriptLevel > scriptReportingLevel))
+      scriptStatus(GT._("{0} atoms deleted", nDeleted));
+  }
+
   private void select() throws ScriptException {
     // NOTE this is called by restrict()
     if (statementLength == 1) {
@@ -5079,10 +5101,13 @@ class Eval { //implements Runnable {
   }
 
   private void subset() throws ScriptException {
-    bsSubset = (statementLength == 1 ? null : expression(-1));
+    BitSet bs = (statementLength == 1 ? null : expression(-1));
     if (isSyntaxCheck)
       return;
-    viewer.setSelectionSubset(bsSubset);
+    // There might have been a reason to have bsSubset being set BEFORE
+    // checking syntax checking, but I can't remember why. 
+    // will leave it this way for now. Might cause some problems with script checking.
+    viewer.setSelectionSubset(bsSubset = bs);
     //I guess we do not want to select, because that could 
     //throw off picking in a strange way
     // viewer.select(bsSubset, false);
@@ -5158,7 +5183,9 @@ class Eval { //implements Runnable {
     BitSet bs = expression(1);
     if (isSyntaxCheck)
       return;
-    scriptStatus(GT._("{0} atoms deleted", "" + viewer.deleteAtoms(bs)));
+    int nDeleted = viewer.deleteAtoms(bs, true);
+    if (!(tQuiet || scriptLevel > scriptReportingLevel))
+      scriptStatus(GT._("{0} atoms deleted", nDeleted));
     viewer.select(null, false);
   }
 
@@ -5241,7 +5268,7 @@ class Eval { //implements Runnable {
       switch (statement[ptCenter].tok) {
       case Token.bitset:
       case Token.expressionBegin:
-        bs = expression(statement, ptCenter, 0, true, false, false);
+        bs = expression(statement, ptCenter, 0, true, false, false, true);
       }
       if (bs == null)
         invalidArgument();
@@ -6800,7 +6827,7 @@ class Eval { //implements Runnable {
         i = iToken;
         break;
       case Token.expressionBegin:
-        v = expression(statement, i, 0, true, true, true);
+        v = expression(statement, i, 0, true, true, true, true);
         i = iToken;
         break;
       case Token.expressionEnd:

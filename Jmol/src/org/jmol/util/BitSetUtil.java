@@ -78,6 +78,8 @@ final public class BitSetUtil {
   }
 
   public static void andNot(BitSet a, BitSet b) {
+    if (b == null)
+      return;
     for (int i = b.size(); --i >= 0;)
       if (b.get(i))
         a.clear(i);

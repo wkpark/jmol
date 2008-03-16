@@ -237,8 +237,7 @@ public final class EnvelopeCalculation {
     setRadii(useVanderwaalsRadius);    
     bsMySelected = (onlySelectedDots && bsSelected != null ? BitSetUtil.copy(bsSelected)
         : bsIgnore != null ? BitSetUtil.setAll(atomCount) : null);
-    if (bsIgnore != null)
-      BitSetUtil.andNot(bsMySelected, bsIgnore);
+    BitSetUtil.andNot(bsMySelected, bsIgnore);
     this.disregardNeighbors = disregardNeighbors;
     bsSurface = new BitSet();
     this.maxRadius = (maxRadius == Float.MAX_VALUE ? setRadius : maxRadius);

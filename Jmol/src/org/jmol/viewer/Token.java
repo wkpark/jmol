@@ -235,6 +235,7 @@ public class Token {
   final static int print          = command | 120 | implicitExpression;
   final static int returncmd      = command | 121 | implicitExpression;  
   final static int var            = command | 122 | implicitExpression | noeval | setparam;
+  final static int delete         = command | 123 | expressionCommand;
   
   //these commands control flow and may not be nested
   //sorry about GOTO!
@@ -875,7 +876,6 @@ public class Token {
   final static int monomer      = misc | 38;
   final static int opaque       = misc | 40;
   final static int translucent  = misc | 41;
-  final static int delete       = misc | 42;
   final static int solid        = misc | 45;
   final static int jmol         = misc | 46;
   final static int absolute     = misc | 47;

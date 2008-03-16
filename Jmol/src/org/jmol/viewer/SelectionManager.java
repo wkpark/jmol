@@ -25,6 +25,7 @@ package org.jmol.viewer;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Escape;
 
 import org.jmol.api.JmolSelectionListener;
 import org.jmol.i18n.GT;
@@ -46,6 +47,8 @@ class SelectionManager {
   final BitSet bsSelection = new BitSet();
   
   BitSet bsSubset; // set in Eval and only pointed to here
+  BitSet bsDeleted;
+  
   // this is a tri-state. the value -1 means unknown
   private final static int TRUE = 1;
   private final static int FALSE = 0;
@@ -59,6 +62,7 @@ class SelectionManager {
     clearSelection(true);
     hide(null, true);
     setSelectionSubset(null);
+    bsDeleted = null;
   }
   
   void hide(BitSet bs, boolean isQuiet) {
@@ -81,6 +85,7 @@ class SelectionManager {
       bsHidden.or(bsAll);
       BitSetUtil.andNot(bsHidden, bs);
     }
+    BitSetUtil.andNot(bsHidden, bsDeleted);
     ModelSet modelSet = viewer.getModelSet();
     if (modelSet != null)
       modelSet.setBsHidden(bsHidden);
@@ -129,6 +134,7 @@ class SelectionManager {
     empty = (count == 0) ? TRUE : FALSE;
     for (int i = count; --i >= 0; )
       bsSelection.set(i);
+    BitSetUtil.andNot(bsSelection, bsDeleted);
     selectionChanged(isQuiet);
   }
 
@@ -234,16 +240,14 @@ class SelectionManager {
       commands.append("function _setSelectionState();\n");
     }
     StateManager.appendCmd(commands, viewer.getTrajectoryInfo());
+    if (BitSetUtil.firstSetBit(bsHidden) >= 0)
+      StateManager.appendCmd(commands, "hide " + Escape.escape(bsHidden));
+    if (BitSetUtil.firstSetBit(bsSubset) >= 0)
+      StateManager.appendCmd(commands, "subset " + Escape.escape(bsSubset));
+    if (bsDeleted != null && BitSetUtil.firstSetBit(bsDeleted) >= 0)
+      StateManager.appendCmd(commands, "delete " + Escape.escape(bsDeleted));
     String cmd = null;
     Hashtable temp = new Hashtable();
-    if (BitSetUtil.firstSetBit(bsHidden) >= 0)
-      temp.put("hide selected", bsHidden);
-    if (BitSetUtil.firstSetBit(bsSubset) >= 0)
-      temp.put("subset selected", bsSubset);
-    cmd = StateManager.getCommands(temp);
-    if (cmd != null)
-      commands.append(cmd);
-    temp = new Hashtable();
     temp.put("-", bsSelection);
     cmd = StateManager.getCommands(temp, null, viewer.getAtomCount());
     if (cmd == null)
@@ -257,6 +261,23 @@ class SelectionManager {
     if (sfunc != null) 
       commands.append("end function;\n\n");
     return commands.toString();
+  }
+
+  public int deleteAtoms(BitSet bs) {
+    if (bsDeleted == null) {
+      bsDeleted = BitSetUtil.copy(bs);
+      return BitSetUtil.cardinalityOf(bs);
+    }
+    BitSet bsNew = BitSetUtil.copy(bs);
+    BitSetUtil.andNot(bsNew, bsDeleted);
+    bsDeleted.or(bs);
+    BitSetUtil.andNot(bsHidden, bsDeleted);
+    BitSetUtil.andNot(bsSelection, bsDeleted);
+    return BitSetUtil.cardinalityOf(bsNew);
+  }
+  
+  BitSet getDeletedAtoms() {
+    return bsDeleted;
   }
 
   /*

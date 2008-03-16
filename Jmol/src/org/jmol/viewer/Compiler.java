@@ -827,6 +827,7 @@ class Compiler {
         case Token.select:
         case Token.display:
         case Token.hide:
+        case Token.delete:
           if (tok == Token.leftsquare)
             bracketCount++;
           if (tok == Token.rightsquare)

@@ -10217,6 +10217,10 @@ class Eval { //implements Runnable {
          * 
          */
         String filename = parameterAsString(i);
+        if (filename.equals("TESTDATA") && Viewer.testData != null) {
+          propertyValue = Viewer.testData;
+          break;
+        }
         if (filename.length() == 0) {
           if (surfaceObjectSeen || planeSeen)
             propertyValue = viewer.getModelAuxiliaryInfo(modelIndex,

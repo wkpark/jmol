@@ -196,16 +196,18 @@ class VolumeDataReader extends VoxelReader {
       readVoxelDataIndividually(isMapData);
       return;
     }
-    if (dataType != Parameters.SURFACE_INFO) {
-      volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
-      generateCube();
-    }
+    generateCube();
     if (isMapData)
       return;
     nDataPoints = JvxlReader.jvxlCreateSurfaceData(jvxlData, volumeData.voxelData, params.cutoff, params.isCutoffAbsolute, nPointsX, nPointsY, nPointsZ);
   }
   
   protected void generateCube() {
-    //generic VolumeData reader does not require this; others do.
+    Logger.info("data type: user volumeData");
+    Logger.info("voxel grid origin:" + volumetricOrigin);
+    for (int i = 0; i < 3; ++i)
+      Logger.info("voxel grid vector:" + volumetricVectors[i]);
+    Logger.info("Read " + nPointsX + " x " + nPointsY + " x " + nPointsZ
+        + " data points");
   }  
  }

@@ -78,6 +78,7 @@ class IsoMOReader extends AtomDataReader {
   }
   
   protected void generateCube() {
+    volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
     Hashtable moData = params.moData;
     try {
       MOCalculationInterface q = (MOCalculationInterface) Class.forName(

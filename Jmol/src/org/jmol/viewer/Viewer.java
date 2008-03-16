@@ -6442,4 +6442,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return selectionManager.bsDeleted;
   }
 
+  public static Object testData; // for isosurface  
+
 }

@@ -257,14 +257,17 @@ public abstract class VoxelReader implements VertexDataServer {
     readVolumeParameters();
     jvxlData.insideOut = params.insideOut;
     if (justForPlane) {
+      float[][][] voxelDataTemp =  volumeData.voxelData;
       volumeData.setDataDistanceToPlane(params.thePlane);
       if (meshDataServer != null)
         meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
       params.setMapRanges(this);
+      generateSurfaceData();
+      volumeData.voxelData = voxelDataTemp;
     } else {
       readVolumeData(false);
+      generateSurfaceData();
     }
-    generateSurfaceData();
     jvxlData.jvxlFileHeader = jvxlFileHeaderBuffer.toString();
     jvxlData.cutoff = (isJvxl ? jvxlCutoff : params.cutoff);
     jvxlData.pointsPerAngstrom = 1f/volumeData.volumetricVectorLengths[0];

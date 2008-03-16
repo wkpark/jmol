@@ -135,8 +135,6 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   public void initShape() {
     super.initShape();
     myType = "isosurface";
-    jvxlData = new JvxlData();
-    sg = new SurfaceGenerator(viewer, this, colorEncoder, null, jvxlData);
   }
 
   //private boolean logMessages;
@@ -281,6 +279,10 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
       setScriptInfo();
       setJvxlInfo();
     }
+    if ("init" == propertyName) {
+      sg = new SurfaceGenerator(viewer, this, colorEncoder, null, jvxlData = new JvxlData());
+    }
+    
     //surface generator only (return TRUE) or shared (return FALSE)
 
     if (sg.setParameter(propertyName, value, bs))
@@ -493,6 +495,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     if (!discardAll)
       return;
     title = null;
+    sg = null;
     if (thisMesh == null)
       return;
     thisMesh.surfaceSet = null;

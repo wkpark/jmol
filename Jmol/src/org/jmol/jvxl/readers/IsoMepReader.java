@@ -44,6 +44,7 @@ class IsoMepReader extends AtomDataReader {
   }
 
   protected void generateCube() {
+    volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
     try {
       MepCalculationInterface m = (MepCalculationInterface) Class.forName(
           JmolConstants.CLASSBASE_QUANTUM + "MepCalculation").newInstance();

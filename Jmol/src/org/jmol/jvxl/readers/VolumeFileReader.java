@@ -29,6 +29,10 @@ import javax.vecmath.Vector3f;
 import org.jmol.util.Parser;
 import org.jmol.util.Logger;
 
+
+//import org.jmol.viewer.Viewer;
+
+
 class VolumeFileReader extends VoxelReader {
 
   protected BufferedReader br;
@@ -42,6 +46,7 @@ class VolumeFileReader extends VoxelReader {
   VolumeFileReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg);
     this.br = br;
+    //Viewer.testData = volumeData; //TESTING ONLY!!!  REMOVE IMPORT!!!
   }
 
   static String determineFileType(BufferedReader bufferedReader) {

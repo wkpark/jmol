@@ -150,7 +150,7 @@ class IsoSolventReader extends AtomDataReader {
   /////////////// calculation methods //////////////
   
   
- protected void generateCube() {
+  protected void generateCube() {
     /*
      * 
      * Jmol cavity rendering. Tim Driscoll suggested "filling a 
@@ -170,6 +170,7 @@ class IsoSolventReader extends AtomDataReader {
      * 
      */
 
+    volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
     if (isCavity && params.theProperty != null) {
       /*
        * couldn't get this to work -- we only have half of the points

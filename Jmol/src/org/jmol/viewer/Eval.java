@@ -1713,6 +1713,16 @@ class Eval { //implements Runnable {
     return viewer.getAtomBits(tokType, specInfo);
   }
 
+  void deleteAtomsInVariables(BitSet bsDeleted) { 
+    Enumeration e = variables.keys();
+    while (e.hasMoreElements()) {
+      String key = (String) e.nextElement();
+      Object value = variables.get(key);
+      if (value instanceof BitSet)
+        BitSetUtil.deleteBits((BitSet) value, bsDeleted);
+    }
+  }
+  
   private BitSet lookupValue(String variable, boolean plurals)
       throws ScriptException {
     if (isSyntaxCheck) {
@@ -1726,15 +1736,15 @@ class Eval { //implements Runnable {
       value = variables.get("!" + variable);
       isDynamic = (value != null);
     }
-    if (value != null) {
-      if (value instanceof Token[]) {
-        pushContext(null);
-        value = expression((Token[]) value, -2, 0, true, false, true, true);
-        popContext();
-        if (!isDynamic)
-          variables.put(variable, value);
-      }
+    if (value instanceof BitSet)
       return (BitSet) value;
+    if (value instanceof Token[]) {
+      pushContext(null);
+      BitSet bs = expression((Token[]) value, -2, 0, true, false, true, true);
+      popContext();
+      if (!isDynamic)
+        variables.put(variable, bs);
+      return bs;
     }
     if (plurals)
       return null;

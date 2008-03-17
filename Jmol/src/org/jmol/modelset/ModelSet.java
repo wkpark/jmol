@@ -635,10 +635,10 @@ abstract public class ModelSet extends ModelCollection {
     }
   }
   
-  public int deleteAtoms(BitSet bsAtoms, boolean fullModels) {
+  public BitSet deleteAtoms(BitSet bsAtoms, boolean fullModels) {
     
     if (!fullModels) {
-      return 0;
+      return null;
     }
     BitSet bs = BitSetUtil.copy(bsAtoms);
     BitSet bsModels = getModelBitSet(bs);
@@ -647,11 +647,11 @@ abstract public class ModelSet extends ModelCollection {
     
     int nModelsDeleted = BitSetUtil.cardinalityOf(bsModels);
     if (nModelsDeleted == 0)
-      return 0;
+      return null;
     if (nModelsDeleted == modelCount) {
-      nAtomsDeleted = atomCount;
+      bs = getModelAtomBitSet(-1, true);
       viewer.zap(true);
-      return nAtomsDeleted;
+      return bs;
     }
     
     // zero out reproducible arrays
@@ -673,9 +673,9 @@ abstract public class ModelSet extends ModelCollection {
       }
     models = newModels;
     int oldModelCount = modelCount;
-    
+    BitSet bsDeleted = bs;
     // delete bonds
-    deleteBonds(getBondsForSelectedAtoms(bs, true));
+    deleteBonds(getBondsForSelectedAtoms(bsDeleted, true));
     
     // main deletion cycle
     for (int i = 0, mpt = 0; i < oldModelCount; i++) {
@@ -709,8 +709,7 @@ abstract public class ModelSet extends ModelCollection {
     //set final values
     bsAll = null;
     calcBoundBoxDimensions(null);
-    return nAtomsDeleted;
-
+    return bs;
   }
   
 }

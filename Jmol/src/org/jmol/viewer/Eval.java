@@ -5194,9 +5194,10 @@ class Eval { //implements Runnable {
     if (isSyntaxCheck)
       return;
     int nDeleted = viewer.deleteAtoms(bs, true);
-    if (!(tQuiet || scriptLevel > scriptReportingLevel))
+    boolean isQuiet = (tQuiet || scriptLevel > scriptReportingLevel);
+    if (!isQuiet)
       scriptStatus(GT._("{0} atoms deleted", nDeleted));
-    viewer.select(null, false);
+    viewer.select(null, isQuiet);
   }
 
   private void zoom(boolean isZoomTo) throws ScriptException {

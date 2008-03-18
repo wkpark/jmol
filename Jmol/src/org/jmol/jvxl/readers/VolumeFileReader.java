@@ -45,7 +45,7 @@ class VolumeFileReader extends VoxelReader {
  
   VolumeFileReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg);
-    this.br = br;
+    this.br = br; 
     //Viewer.testData = volumeData; //TESTING ONLY!!!  REMOVE IMPORT!!!
   }
 

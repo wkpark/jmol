@@ -27,6 +27,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Matrix3f;
 
 import org.jmol.util.Logger;
+//import org.jmol.viewer.Viewer;
 
 class VolumeDataReader extends VoxelReader {
 
@@ -68,6 +69,8 @@ class VolumeDataReader extends VoxelReader {
     center = params.center;
     anisotropy = params.anisotropy;
     isAnisotropic = params.isAnisotropic;
+    //if (dataType != 0)
+      //Viewer.testData2 = volumeData; //TESTING ONLY!!!  REMOVE IMPORT!!!
     
     eccentricityMatrix = params.eccentricityMatrix;
     eccentricityMatrixInverse = params.eccentricityMatrixInverse;

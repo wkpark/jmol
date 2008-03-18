@@ -776,7 +776,6 @@ public class JvxlReader extends VolumeFileReader {
   public static String jvxlGetFile(JvxlData jvxlData, String[] title,
                                    String msg, boolean includeHeader,
                                    int nSurfaces, String state, String comment) {
-
     StringBuffer data = new StringBuffer();
     if (includeHeader) {
       String s = jvxlData.jvxlFileHeader

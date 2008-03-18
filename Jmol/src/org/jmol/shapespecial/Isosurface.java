@@ -154,7 +154,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if (Logger.debugging) {
-      Logger.debug("Isosurface state=" + sg.getState() + " setProperty: "
+      Logger.debug("Isosurface setProperty: "
           + propertyName + " = " + value);
     }
 

@@ -96,8 +96,7 @@ public class Pmesh extends MeshFileCollection {
       isBinary = false;
       isOnePerLine = false;
       script = (String) value;
-      modelIndex = getModelIndex(script);
-      iHaveModelIndex = (modelIndex >= 0);
+      getModelIndex(script);
       super.setProperty("thisID", JmolConstants.PREVIOUS_MESH_ID, null);
       //fall through to MeshCollection "init"
     }

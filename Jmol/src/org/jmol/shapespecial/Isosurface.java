@@ -140,8 +140,6 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   //private boolean logMessages;
   private int lighting;
   private boolean iHaveBitSets;
-  private int modelIndex;
-  private boolean iHaveModelIndex;
   private int atomIndex;
   private int moNumber;
   private short defaultColix;
@@ -285,14 +283,14 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     
     //surface generator only (return TRUE) or shared (return FALSE)
 
-    if (sg.setParameter(propertyName, value, bs))
+    if (sg != null && sg.setParameter(propertyName, value, bs))
       return;
 
     /////////////// isosurface LAST, shared
 
     if ("init" == propertyName) {
       setPropertySuper("thisID", JmolConstants.PREVIOUS_MESH_ID, null);
-      if (!(iHaveBitSets = getScriptBitSets(script = (String) value, null))) {
+      if (!(iHaveBitSets = getScriptBitSets((String) value, null))) {
         sg.setParameter("select", bs);
       }
       initializeIsosurface();
@@ -327,28 +325,23 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
       int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
       int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
       for (int i = meshCount; --i >= 0;) {
-        if (meshes[i] == null)
+        Mesh m = meshes[i];
+        if (m == null)
           continue;
-        if (meshes[i].modelIndex == modelIndex) {
+        if (m.modelIndex == modelIndex) {
            meshCount--;
-            if (meshes[i] == currentMesh) 
+            if (m == currentMesh) 
               currentMesh = thisMesh = null;
             meshes = isomeshes = (IsosurfaceMesh[]) ArrayUtil.deleteElements(
                 meshes, i, 1);
-        } else if (meshes[i].modelIndex > modelIndex) {
-          meshes[i].modelIndex--;
-          if (meshes[i].atomIndex >= firstAtomDeleted)
-            meshes[i].atomIndex -= nAtomsDeleted;
-          //getScriptBitSets(String script, BitSet[] bsCmd) {
-          if (meshes[i].scriptCommand.indexOf("# ({") >= 0) {
-            BitSet[] bsCmd = new BitSet[3];
-            if (getScriptBitSets(meshes[i].scriptCommand, bsCmd)) {
-              BitSetUtil.deleteBits(bsCmd[0], bs);
-              BitSetUtil.deleteBits(bsCmd[1], bs);
-              BitSetUtil.deleteBits(bsCmd[2], bsModels);
-              meshes[i].scriptCommand = fixScript(shortScript(meshes[i].scriptCommand), 
-                  bsCmd[0], bsCmd[1], bsCmd[2], meshes[i].modelIndex);
-            }
+        } else if (m.modelIndex > modelIndex) {
+          m.modelIndex--;
+          if (m.atomIndex >= firstAtomDeleted)
+            m.atomIndex -= nAtomsDeleted;
+          if (m.bitsets != null) {
+            BitSetUtil.deleteBits(m.bitsets[0], bs);
+            BitSetUtil.deleteBits(m.bitsets[1], bs);
+            BitSetUtil.deleteBits(m.bitsets[2], bsModels);
           }
         }
       }
@@ -386,18 +379,16 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
       return jvxlData.jvxlPlane;
     if (property == "jvxlFileData")
       return JvxlReader.jvxlGetFile(jvxlData, title, "", true, index, thisMesh
-          .getState(myType), shortScript(thisMesh.scriptCommand));
+          .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     if (property == "jvxlSurfaceData")
       return JvxlReader.jvxlGetFile(jvxlData, title, "", false, 1, thisMesh
-          .getState(myType), shortScript(thisMesh.scriptCommand));
+          .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     return null;
   }
 
-  private String shortScript(String script) {
-    return (script == null ? "" : script.substring(0, (script + ";").indexOf(";")));
-  }
-
   private boolean getScriptBitSets(String script, BitSet[] bsCmd) {
+    this.script = script;
+    getModelIndex(script);
     if (script == null)
       return false;
     int i = script.indexOf("# ({");
@@ -433,28 +424,8 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     return true;
   }
 
-  private String fixScript(String script, BitSet bsSelected, 
-                           BitSet bsIgnore, BitSet bsTrajectories,
-                           int modelIndex) {
-    if (script == null)
-      return null;
-    if (script.indexOf("# ({") >= 0)
-      return script;
-    if (script.charAt(0) == ' ')
-      return myType + " " + thisMesh.thisID + script;
-    if (!sg.getIUseBitSets())
-      return script;
-    return script + "# "
-        + (bsSelected == null ? "({null})" : Escape.escape(bsSelected))
-        + " " + (bsIgnore == null ? "({null})" : Escape.escape(bsIgnore))
-        + (bsTrajectories == null ? "" : "/" + Escape.escape(bsTrajectories))
-        + (modelIndex < 0? "" : " MODEL({" + modelIndex + "})");
-  }
-
   private void initializeIsosurface() {
     lighting = JmolConstants.FRONTLIT;
-    modelIndex = getModelIndex(script);
-    iHaveModelIndex = (modelIndex >= 0);
     if (!iHaveModelIndex)
       modelIndex = viewer.getCurrentModelIndex();
     isFixed = (modelIndex < 0);
@@ -757,9 +728,19 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
 
   protected void setScriptInfo() {
     thisMesh.title = sg.getTitle();
-    thisMesh.scriptCommand = fixScript(sg.getScript(), 
-        sg.getBsSelected(), sg.getBsIgnore(), 
-        viewer.getBitSetTrajectories(), modelIndex);
+    String script = sg.getScript();
+    thisMesh.bitsets = null;
+    if (script != null) {
+      if (script.charAt(0) == ' ') {
+        script = myType + " " + thisMesh.thisID + script;
+      } else if (sg.getIUseBitSets()) {
+        thisMesh.bitsets = new BitSet[3];
+        thisMesh.bitsets[0] = sg.getBsSelected();
+        thisMesh.bitsets[1] = sg.getBsIgnore();
+        thisMesh.bitsets[2] = viewer.getBitSetTrajectories();
+      }
+    }
+    thisMesh.scriptCommand = script;
   }
 
   private void setJvxlInfo() {

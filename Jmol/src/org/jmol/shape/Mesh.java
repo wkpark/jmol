@@ -24,6 +24,8 @@
 
 package org.jmol.shape;
 
+import java.util.BitSet;
+
 import org.jmol.util.ArrayUtil;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.api.JmolRendererInterface;
@@ -58,6 +60,7 @@ public class Mesh {
   public String meshType = null;
   public Mesh linkedMesh = null; //for lcaoOrbitals
   
+  public BitSet[] bitsets; // [0]bsSelected [1]bsIgnore [2]bsTrajectory
   public int atomIndex = -1;
   public int modelIndex = -1;  // for Isosurface and Draw
   public int visibilityFlags;

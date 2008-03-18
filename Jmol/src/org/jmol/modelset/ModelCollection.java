@@ -379,22 +379,94 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   protected Vector stateScripts = new Vector();
+  /*
+   * stateScripts are connect commands that must be executed in sequence.
+   * 
+   * What I fear is that in deleting models we must delete these connections,
+   * and in deleting atoms, the bitsets may not be retrieved properly. 
+   * 
+   * First, ZAP. We should be able to check these to see if the selected model
+   * 
+   */
   private int thisStateModel = 0;
 
-  public void addStateScript(String script, boolean addFrameNumber) {
+  public void addStateScript(String script1, BitSet bsBonds, BitSet bsAtoms1,
+                             BitSet bsAtoms2, String script2,
+                             boolean addFrameNumber) {
     if (addFrameNumber) {
       int iModel = viewer.getCurrentModelIndex();
       if (thisStateModel != iModel)
-        script = "  frame "
+        script1 = "  frame "
             + (iModel < 0 ? "" + iModel : getModelNumberDotted(iModel)) + ";\n"
-            + script;
+            + script1;
       thisStateModel = iModel;
     } else {
       thisStateModel = -1;
     }
-    stateScripts.addElement(script);
+    StateScript stateScript = new StateScript(thisStateModel, script1, bsBonds, bsAtoms1,
+        bsAtoms2, script2);
+    if (stateScript.isValid())
+      stateScripts.addElement(stateScript);
   }
 
+  protected class StateScript {
+    int modelIndex;
+    BitSet bsBonds;
+    BitSet bsAtoms1;
+    BitSet bsAtoms2;
+    String script1;
+    String script2;
+    
+    StateScript(int modelIndex, String script1, BitSet bsBonds, BitSet bsAtoms1,
+        BitSet bsAtoms2, String script2) {
+      this.modelIndex = modelIndex;
+      this.script1 = script1;
+      this.bsBonds = bsBonds;
+      this.bsAtoms1 = bsAtoms1;
+      this.bsAtoms2 = bsAtoms2;
+      this.script2 = script2;
+    }
+    
+    public boolean isValid() {
+      return script1 != null && script1.length() > 0
+        && (bsBonds == null || BitSetUtil.firstSetBit(bsBonds) >= 0)
+        && (bsAtoms1 == null || BitSetUtil.firstSetBit(bsAtoms1) >= 0)
+        && (bsAtoms2 == null || BitSetUtil.firstSetBit(bsAtoms2) >= 0);
+    }
+
+    public String toString() {
+      if (!isValid())
+        return "";
+      StringBuffer sb = new StringBuffer(script1);
+      if (bsBonds != null)
+        sb.append(" ").append(Escape.escape(bsBonds, false));
+      if (bsAtoms1 != null)
+        sb.append(" ").append(Escape.escape(bsAtoms1));
+      if (bsAtoms2 != null)
+        sb.append(" ").append(Escape.escape(bsAtoms2));
+      if (script2 != null)
+        sb.append(" ").append(script2);
+      String s = sb.toString();
+      if (s.charAt(s.length() - 1)!= ';')
+        s += ";";
+      return s;
+    }
+
+    public boolean isConnect() {
+      return (script1.indexOf("connect") == 0);
+    }
+    
+    public boolean deleteAtoms(int modelIndex, BitSet bsBonds, BitSet bsAtoms) {
+      //false return means delete this script
+      if (modelIndex <= this.modelIndex)
+        return (this.modelIndex < modelIndex);
+      BitSetUtil.deleteBits(this.bsBonds, bsBonds);
+      BitSetUtil.deleteBits(this.bsAtoms1, bsAtoms);
+      BitSetUtil.deleteBits(this.bsAtoms2, bsAtoms);
+      return isValid();
+    }
+  }
+  
   protected void defineStructure(int modelIndex, String structureType, char startChainID,
                        int startSequenceNumber, char startInsertionCode,
                        char endChainID, int endSequenceNumber,
@@ -1506,7 +1578,8 @@ abstract public class ModelCollection extends BondCollection {
     // not the full atom set.
     
     initializeBspf();
-    int modelIndex = models[atoms[atomIndex].modelIndex].trajectoryBaseIndex;
+    int modelIndex = atoms[atomIndex].modelIndex;
+    modelIndex = models[modelIndex].trajectoryBaseIndex;
     initializeBspt(modelIndex);
     if (withinAtomSetIterator == null)
       withinAtomSetIterator = new AtomIteratorWithinSet();
@@ -2502,20 +2575,37 @@ abstract public class ModelCollection extends BondCollection {
     return sg.dumpInfo() + strOperations;
   }
   
-  public void deleteAtoms(int modelIndex, int firstAtomIndex, int nAtoms, BitSet bs) {
-   /*
-    *   ModelCollection.modelSetAuxiliaryInfo["group3Lists", "group3Counts, "models"]
-    * ModelCollection.stateScripts ?????
-    */
-    modelNumbers = (int[]) ArrayUtil.deleteElements(modelNumbers, modelIndex, 1);
-    modelFileNumbers = (int[]) ArrayUtil.deleteElements(modelFileNumbers, modelIndex, 1);
-    modelNumbersForAtomLabel = (String[]) ArrayUtil.deleteElements(modelNumbersForAtomLabel, modelIndex, 1);
+  public void deleteAtoms(int modelIndex, int firstAtomIndex, int nAtoms,
+                          BitSet bsAtoms, BitSet bsBonds) {
+    /*
+     *   ModelCollection.modelSetAuxiliaryInfo["group3Lists", "group3Counts, "models"]
+     * ModelCollection.stateScripts ?????
+     */
+    if (modelIndex < 0) {
+      //final deletions
+      bspf = null;
+      bsAll = null;
+      molecules = null;
+      withinModelIterator = null;
+      withinAtomSetIterator = null;
+      isBbcageDefault = false;
+      calcBoundBoxDimensions(null);
+      return;
+    }
+    
+    modelNumbers = (int[]) ArrayUtil
+        .deleteElements(modelNumbers, modelIndex, 1);
+    modelFileNumbers = (int[]) ArrayUtil.deleteElements(modelFileNumbers,
+        modelIndex, 1);
+    modelNumbersForAtomLabel = (String[]) ArrayUtil.deleteElements(
+        modelNumbersForAtomLabel, modelIndex, 1);
     modelNames = (String[]) ArrayUtil.deleteElements(modelNames, modelIndex, 1);
-    frameTitles = (String[]) ArrayUtil.deleteElements(frameTitles, modelIndex, 1);
+    frameTitles = (String[]) ArrayUtil.deleteElements(frameTitles, modelIndex,
+        1);
     thisStateModel = -1;
     int nDeleted = 0;
     for (int i = structureCount; --i >= 0;) {
-      if (structures[i].modelIndex  > modelIndex) {
+      if (structures[i].modelIndex > modelIndex) {
         structures[i].modelIndex--;
       } else if (structures[i].modelIndex == modelIndex) {
         structures = (Structure[]) ArrayUtil.deleteElements(structures, i, 1);
@@ -2529,25 +2619,37 @@ abstract public class ModelCollection extends BondCollection {
     int[][] group3Counts = (int[][]) getModelSetAuxiliaryInfo("group3Counts");
     int ptm = modelIndex + 1;
     if (group3Lists != null && group3Lists[ptm] != null) {
-      for (int i = group3Lists[ptm].length() / 6; --i >= 0;) 
+      for (int i = group3Lists[ptm].length() / 6; --i >= 0;)
         if (group3Counts[ptm][i] > 0) {
           group3Counts[0][i] -= group3Counts[ptm][i];
           if (group3Counts[0][i] == 0)
-            group3Lists[0] = group3Lists[0].substring(0, i * 6) + ",[" + group3Lists[0].substring(i * 6 + 2);
+            group3Lists[0] = group3Lists[0].substring(0, i * 6) + ",["
+                + group3Lists[0].substring(i * 6 + 2);
         }
     }
     if (group3Lists != null) {
-      modelSetAuxiliaryInfo.put("group3Lists", ArrayUtil.deleteElements(group3Lists, modelIndex, 1));
-      modelSetAuxiliaryInfo.put("group3Counts", ArrayUtil.deleteElements(group3Counts, modelIndex, 1));
-    }     
+      modelSetAuxiliaryInfo.put("group3Lists", ArrayUtil.deleteElements(
+          group3Lists, modelIndex, 1));
+      modelSetAuxiliaryInfo.put("group3Counts", ArrayUtil.deleteElements(
+          group3Counts, modelIndex, 1));
+    }
+
+    //fix cellInfos array
     if (cellInfos != null) {
       for (int i = modelCount; --i > modelIndex;)
         cellInfos[i].modelIndex--;
-      cellInfos = (CellInfo[]) ArrayUtil.deleteElements(cellInfos, modelIndex, 1);
+      cellInfos = (CellInfo[]) ArrayUtil.deleteElements(cellInfos, modelIndex,
+          1);
     }
+
+    // correct stateScripts, particularly CONNECT scripts
+    for (int i = stateScripts.size(); --i >= 0;)
+      if (!((StateScript) stateScripts.get(i)).deleteAtoms(modelIndex, bsBonds,
+          bsAtoms))
+        stateScripts.removeElementAt(i);
     
-    isBbcageDefault = false;
-    super.deleteAtoms(firstAtomIndex, nAtoms, bs);
+    // set to recreate bounding box
+    super.deleteAtoms(firstAtomIndex, nAtoms, bsAtoms);
   }
 
 }

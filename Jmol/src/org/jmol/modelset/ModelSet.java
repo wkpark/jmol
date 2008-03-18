@@ -480,15 +480,11 @@ abstract public class ModelSet extends ModelCollection {
         stateScript += minDistance + " ";
       if (maxDistance != JmolConstants.DEFAULT_MAX_CONNECT_DISTANCE)
         stateScript += maxDistance + " ";
-      if (isBonds)
-        stateScript += Escape.escape(bsA, false) + " ";
-      else
-        stateScript += Escape.escape(bsA) + " " + Escape.escape(bsB) + " ";
-      if (connectOperation != JmolConstants.CONNECT_DELETE_BONDS)
-        stateScript += JmolConstants.getBondOrderNameFromOrder(order) + " ";
-      stateScript += JmolConstants.connectOperationName(connectOperation);
-      stateScript += ";";
-      stateScripts.addElement(stateScript);
+      addStateScript(stateScript, (isBonds? bsA : null), 
+          (isBonds? null : bsA), (isBonds ? null : bsB),  
+          (connectOperation == JmolConstants.CONNECT_DELETE_BONDS ? "" : 
+          JmolConstants.getBondOrderNameFromOrder(order) + " ")
+          + JmolConstants.connectOperationName(connectOperation) + ";", false);
     }
     return super.makeConnections(minDistance, maxDistance, order,
         connectOperation, bsA, bsB, bsBonds, isBonds);
@@ -535,12 +531,9 @@ abstract public class ModelSet extends ModelCollection {
   }
   
   public void deleteAllBonds() {
-    //StateManager
-    for (int i = 0; i < stateScripts.size();) 
-      if (((String) stateScripts.get(i)).indexOf("connect") == 0)
+    for (int i = stateScripts.size(); --i >= 0;) 
+      if (((StateScript) stateScripts.get(i)).isConnect())
         stateScripts.removeElementAt(i);
-      else
-        i++;
     super.deleteAllBonds();
   }
 
@@ -571,14 +564,14 @@ abstract public class ModelSet extends ModelCollection {
     // connections
 
     if (isAll) {
-      Vector fs = stateScripts;
-      int len = fs.size();
+      int len = stateScripts.size();
       if (len > 0) {
         commands.append("\n");
         for (int i = 0; i < len; i++)
-          commands.append("  ").append(fs.get(i)).append("\n");
+          if ((cmd = ((StateScript) stateScripts.get(i))
+              .toString()).length() > 0)
+            commands.append("  ").append(cmd).append("\n");
       }
-
       commands.append("\n");
       // shape construction
 
@@ -587,23 +580,23 @@ abstract public class ModelSet extends ModelCollection {
     setModelVisibility();
 
     commands.append(getProteinStructureState(null, false));
-    
+
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = shapes[i];
-      if (shape != null && (isAll || JmolConstants.isShapeSecondary(i)) 
+      if (shape != null && (isAll || JmolConstants.isShapeSecondary(i))
           && (cmd = shape.getShapeState()) != null && cmd.length() > 1)
         commands.append(cmd);
     }
-    
+
     for (int i = 0; i < modelCount; i++) {
-      String t = frameTitles[i]; 
+      String t = frameTitles[i];
       if (t != null && t.length() > 0)
-        commands.append("  frame " + getModelNumberDotted(i)
-            + "; frame title " + Escape.escape(t) + "\n;");
+        commands.append("  frame " + getModelNumberDotted(i) + "; frame title "
+            + Escape.escape(t) + "\n;");
     }
-    
+
     commands.append("  set fontScaling " + viewer.getFontScaling() + "\n;");
-    
+
     if (sfunc != null)
       commands.append("\nend function;\n\n");
     return commands.toString();
@@ -657,7 +650,6 @@ abstract public class ModelSet extends ModelCollection {
     // zero out reproducible arrays
     
     bspf = null;
-    molecules = null;
 
     // create a new models array, 
     //   and pre-calculate Model.bsAtoms and Model.atomCount
@@ -675,8 +667,9 @@ abstract public class ModelSet extends ModelCollection {
     int oldModelCount = modelCount;
     BitSet bsDeleted = bs;
     // delete bonds
-    deleteBonds(getBondsForSelectedAtoms(bsDeleted, true));
-    
+    BitSet bsBonds = getBondsForSelectedAtoms(bsDeleted, true);
+    deleteBonds(bsBonds);
+
     // main deletion cycle
     for (int i = 0, mpt = 0; i < oldModelCount; i++) {
       if (!bsModels.get(i)) {
@@ -690,8 +683,12 @@ abstract public class ModelSet extends ModelCollection {
       bs = oldModels[i].bsAtoms;
       int firstAtomIndex = oldModels[i].firstAtomIndex;
 
-      // delete atom arrays and atom bitsets
-      super.deleteAtoms(mpt, firstAtomIndex, nAtoms, bs);
+      // delete from symmetry set
+      BitSetUtil.deleteBits(bsSymmetry, bs);
+
+      // delete from stateScripts, model arrays and bitsets, 
+      //    atom arrays, and atom bitsets
+      super.deleteAtoms(mpt, firstAtomIndex, nAtoms, bs, bsBonds);
       
       // adjust all models after this one
       for (int j = oldModelCount; --j > i; )
@@ -707,8 +704,7 @@ abstract public class ModelSet extends ModelCollection {
     }
     
     //set final values
-    bsAll = null;
-    calcBoundBoxDimensions(null);
+    super.deleteAtoms(-1, 0, 0, null, null);
     return bs;
   }
   

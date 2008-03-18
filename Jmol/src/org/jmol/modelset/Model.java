@@ -258,7 +258,7 @@ public final class Model {
   void fixIndices(int modelIndex, int nAtomsDeleted, BitSet bsDeleted) {
     if (dataSourceFrame > modelIndex)
       dataSourceFrame--;
-    if (isTrajectory && trajectoryBaseIndex > modelIndex)
+    if (trajectoryBaseIndex > modelIndex)
       trajectoryBaseIndex--;
     firstAtomIndex -= nAtomsDeleted;
     for (int i = 0; i < chainCount; i++)

@@ -51,7 +51,9 @@ public abstract class MeshCollection extends Shape {
   public boolean explicitID;
   protected String previousMeshID;
   protected Mesh linkedMesh;
-  
+  protected boolean iHaveModelIndex;
+  protected int modelIndex;
+
   public String[] title;
   protected boolean allowMesh = true;
   
@@ -388,10 +390,21 @@ public abstract class MeshCollection extends Shape {
  public String getShapeState() {
     StringBuffer s = new StringBuffer("\n");
     for (int i = 0; i < meshCount; i++) {
-      String cmd = meshes[i].scriptCommand;
+      Mesh mesh = meshes[i];
+      String cmd = mesh.scriptCommand;
       if (cmd == null)
         continue;
-      Mesh mesh = meshes[i];
+      for (int pt = cmd.length(); --pt >= 0 && cmd.charAt(pt) != ';';)
+        if (cmd.charAt(pt) == '#')
+          cmd = cmd.substring(0, pt);
+      if (mesh.bitsets != null)  {
+        cmd += "# "
+            + (mesh.bitsets[0] == null ? "({null})" : Escape.escape(mesh.bitsets[0]))
+            + " " + (mesh.bitsets[1] == null ? "({null})" : Escape.escape(mesh.bitsets[1]))
+            + (mesh.bitsets[2] == null ? "" : "/" + Escape.escape(mesh.bitsets[2]));
+      }
+      if (mesh.modelIndex >= 0)
+        cmd += "# MODEL({" + mesh.modelIndex + "})";
       if (meshes[i].linkedMesh != null)
         cmd += " LINK";
       if (mesh.modelIndex >= 0 && modelCount > 1)
@@ -424,17 +437,20 @@ public abstract class MeshCollection extends Shape {
     }
   }
  
- protected static int getModelIndex(String script) {
-   //pmesh and isosurface state
-   int i;
-   if (script == null || (i = script.indexOf("MODEL({")) < 0)
-     return -1;
-   int j = script.indexOf("})", i);
-   if (j < 0)
-     return -1;
-   BitSet bs = Escape.unescapeBitset(script.substring(i + 3, j + 1));
-   return (bs == null ? -1 : BitSetUtil.firstSetBit(bs));
- }
+  protected void getModelIndex(String script) {
+    //pmesh and isosurface state
+    int i;
+    iHaveModelIndex = false;
+    modelIndex = -1;
+    if (script == null || (i = script.indexOf("MODEL({")) < 0)
+      return;
+    int j = script.indexOf("})", i);
+    if (j < 0)
+      return;
+    BitSet bs = Escape.unescapeBitset(script.substring(i + 3, j + 1));
+    modelIndex = (bs == null ? -1 : BitSetUtil.firstSetBit(bs));
+    iHaveModelIndex = (modelIndex >= 0);
+  }
 }
 
  

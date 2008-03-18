@@ -633,18 +633,18 @@ abstract public class ModelSet extends ModelCollection {
     if (!fullModels) {
       return null;
     }
-    BitSet bs = BitSetUtil.copy(bsAtoms);
-    BitSet bsModels = getModelBitSet(bs);
+    BitSet bsModels = getModelBitSet(bsAtoms);
     includeAllRelatedFrames(bsModels);
     int nAtomsDeleted = 0;
     
     int nModelsDeleted = BitSetUtil.cardinalityOf(bsModels);
     if (nModelsDeleted == 0)
       return null;
+    BitSet bsDeleted;
     if (nModelsDeleted == modelCount) {
-      bs = getModelAtomBitSet(-1, true);
+      bsDeleted = getModelAtomBitSet(-1, true);
       viewer.zap(true);
-      return bs;
+      return bsDeleted;
     }
     
     // zero out reproducible arrays
@@ -655,7 +655,7 @@ abstract public class ModelSet extends ModelCollection {
     //   and pre-calculate Model.bsAtoms and Model.atomCount
     Model[] newModels = new Model[modelCount - nModelsDeleted];
     Model[] oldModels = models;
-    BitSet bsDeleted = new BitSet();
+    bsDeleted = new BitSet();
     for (int i = 0, mpt = 0; i < modelCount; i++)
       if (bsModels.get(i)) { // get a good count now
         getAtomCountInModel(i);
@@ -680,7 +680,7 @@ abstract public class ModelSet extends ModelCollection {
       if (nAtoms == 0)
         continue;
       nAtomsDeleted += nAtoms;
-      bs = oldModels[i].bsAtoms;
+      BitSet bs = oldModels[i].bsAtoms;
       int firstAtomIndex = oldModels[i].firstAtomIndex;
 
       // delete from symmetry set

@@ -655,17 +655,17 @@ abstract public class ModelSet extends ModelCollection {
     //   and pre-calculate Model.bsAtoms and Model.atomCount
     Model[] newModels = new Model[modelCount - nModelsDeleted];
     Model[] oldModels = models;
+    BitSet bsDeleted = new BitSet();
     for (int i = 0, mpt = 0; i < modelCount; i++)
       if (bsModels.get(i)) { // get a good count now
         getAtomCountInModel(i);
-        bs.or(getModelAtomBitSet(i, false));
+        bsDeleted.or(getModelAtomBitSet(i, false));
       } else {
         models[i].modelIndex = mpt;
         newModels[mpt++] = models[i];
       }
     models = newModels;
     int oldModelCount = modelCount;
-    BitSet bsDeleted = bs;
     // delete bonds
     BitSet bsBonds = getBondsForSelectedAtoms(bsDeleted, true);
     deleteBonds(bsBonds);
@@ -705,7 +705,7 @@ abstract public class ModelSet extends ModelCollection {
     
     //set final values
     super.deleteAtoms(-1, 0, 0, null, null);
-    return bs;
+    return bsDeleted;
   }
   
 }

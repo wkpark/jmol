@@ -1729,7 +1729,7 @@ abstract public class AtomCollection {
       atoms[j].atomIndex = j;
       atoms[j].modelIndex--;
     }
-    System.out.println("atomcollection deleteAtoms atomslen=" + atoms.length);
+    //System.out.println("atomcollection deleteAtoms atomslen=" + atoms.length);
 
     atomNames = (String[]) ArrayUtil.deleteElements(atomNames, firstAtomIndex,
         nAtoms);

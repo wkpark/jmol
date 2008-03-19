@@ -79,6 +79,22 @@ public abstract class BioShapeCollection extends Shape {
   }
 
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
+
+    if (propertyName == "deleteModelAtoms") {
+      atoms = (Atom[])((Object[])value)[1];
+      int modelIndex = ((int[])((Object[])value)[2])[0];
+      for (int i = bioShapes.length; --i >= 0; ){
+        BioShape b = bioShapes[i];
+        if (b.modelIndex > modelIndex) {
+          b.modelIndex--;
+          b.leadAtomIndices = b.bioPolymer.getLeadAtomIndices();
+        } else if (b.modelIndex == modelIndex) {
+          bioShapes = (BioShape[]) ArrayUtil.deleteElements(bioShapes, i, 1);
+        }
+      }
+      return;
+    }
+
     initialize();
     if ("color" == propertyName) {
       byte pid = JmolConstants.pidOf(value);
@@ -100,21 +116,6 @@ public abstract class BioShapeCollection extends Shape {
       return;
     }
     
-    if (propertyName == "deleteModelAtoms") {
-      atoms = (Atom[])((Object[])value)[1];
-      int modelIndex = ((int[])((Object[])value)[2])[0];
-      for (int i = bioShapes.length; --i >= 0; ){
-        BioShape b = bioShapes[i];
-        if (b.modelIndex > modelIndex) {
-          b.modelIndex--;
-          b.leadAtomIndices = b.bioPolymer.getLeadAtomIndices();
-        } else if (b.modelIndex == modelIndex) {
-          bioShapes = (BioShape[]) ArrayUtil.deleteElements(bioShapes, i, 1);
-        }
-      }
-      return;
-    }
-
     super.setProperty(propertyName, value, bsSelected);
   }
 

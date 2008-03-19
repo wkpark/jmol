@@ -175,11 +175,14 @@ final public class BitSetUtil {
   }
   
   public static void deleteBits(BitSet bs, BitSet bsDelete) {
-    if (bs == null)
+    if (bs == null || bsDelete == null)
       return;
     int ipt = firstSetBit(bsDelete);
+    if (ipt < 0)
+      return;
     int len = bs.size();
-    for (int i = ipt; i < len; i++)
+    int lend = Math.min(len, bsDelete.size());
+    for (int i = ipt; i < lend; i++)
       if (!bsDelete.get(i))
         bs.set(ipt++, bs.get(i));
     for (; ipt < len; ipt++)

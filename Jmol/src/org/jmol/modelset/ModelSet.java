@@ -696,7 +696,7 @@ abstract public class ModelSet extends ModelCollection {
 
       // adjust all shapes
       Object[] value = new Object[] {newModels, atoms, 
-          new int[] {i, firstAtomIndex, nAtoms}};      
+          new int[] {mpt, firstAtomIndex, nAtoms}};      
       for (int j = 0; j < JmolConstants.SHAPE_MAX; j++)
         if (shapes[j] != null)
           setShapeProperty(j, "deleteModelAtoms", value, bs);

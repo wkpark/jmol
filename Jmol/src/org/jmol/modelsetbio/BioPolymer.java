@@ -216,10 +216,8 @@ public abstract class BioPolymer extends Polymer {
   public int[] getLeadAtomIndices() {
     if (leadAtomIndices == null) {
       leadAtomIndices = new int[monomerCount];
-      for (int i = monomerCount; --i >= 0; ) {
+      for (int i = monomerCount; --i >= 0; )
         leadAtomIndices[i] = monomers[i].getLeadAtomIndex();
- if(i==146)System.out.println("getlead146 " + this + " " + leadAtomIndices[i]);
-      }
     }
     return leadAtomIndices;
   }

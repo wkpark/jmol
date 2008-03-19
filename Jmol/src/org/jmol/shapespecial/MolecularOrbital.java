@@ -266,6 +266,10 @@ public class MolecularOrbital extends Isosurface {
     return null;
   }
 
+  protected void clearSg() {
+    //sg = null; // not Molecular Orbitals
+  }
+
   private boolean getSettings(String strID) {
     thisModel = (Hashtable) htModels.get(strID);
     if (thisModel == null || thisModel.get("moNumber") == null)

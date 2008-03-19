@@ -128,15 +128,20 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
         meshCount + 1);
     currentMesh = thisMesh = isomeshes[meshCount++] = new IsosurfaceMesh(
         thisID, g3d, colix);
-    sg.setJvxlData(jvxlData = thisMesh.jvxlData);
+      sg.setJvxlData(jvxlData = thisMesh.jvxlData);
     //System.out.println("Isosurface allocMesh thisMesh:" + thisMesh.thisID + " " + thisMesh);
   }
 
   public void initShape() {
     super.initShape();
     myType = "isosurface";
+    jvxlData = new JvxlData();
+    sg = new SurfaceGenerator(viewer, this, colorEncoder, null, jvxlData);
   }
 
+  protected void clearSg() {
+    sg = null; // not Molecular Orbitals
+  }
   //private boolean logMessages;
   private int lighting;
   private boolean iHaveBitSets;
@@ -276,7 +281,10 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     if ("finalize" == propertyName) {
       setScriptInfo();
       setJvxlInfo();
+      clearSg();
+      return;
     }
+    
     if ("init" == propertyName) {
       sg = new SurfaceGenerator(viewer, this, colorEncoder, null, jvxlData = new JvxlData());
     }
@@ -466,7 +474,6 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     if (!discardAll)
       return;
     title = null;
-    sg = null;
     if (thisMesh == null)
       return;
     thisMesh.surfaceSet = null;

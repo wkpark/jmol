@@ -91,8 +91,6 @@ public class JvxlReader extends VolumeFileReader {
   
   protected void initializeVoxelData() {
     thisInside = !params.isContoured;
-    if (params.insideOut)
-      thisInside = !thisInside;
     nThisValue = 0;
   }
   
@@ -757,12 +755,12 @@ public class JvxlReader extends VolumeFileReader {
           + ":1";
     if (jvxlData.isXLowToHigh)
       info += "\n# progressive JVXL+ -- X values read from low(0) to high(" + (jvxlData.nPointsX - 1) + ")";
-    info += "\n# created using Jvxl.java";
+    info += "\n# created using Jvxl.java\n#";
     if (jvxlData.insideOut) {
-      info += "\n# insideOut";
+      info += " insideOut";
       definitionLine += " insideOut";
     }
-    info += "precision: " + jvxlData.isJvxlPrecisionColor + " nColorData " + nColorData; 
+    info += " precision: " + jvxlData.isJvxlPrecisionColor + " nColorData " + nColorData; 
     return (isInfo ? info : definitionLine);
   }
 

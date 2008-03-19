@@ -64,6 +64,7 @@ public class Mesh {
   public int atomIndex = -1;
   public int modelIndex = -1;  // for Isosurface and Draw
   public int visibilityFlags;
+  public boolean insideOut;
   
   public void setVisibilityFlags(int n) {
     visibilityFlags = n;//set to 1 in mps
@@ -132,29 +133,26 @@ public class Mesh {
     for (int i = vertexCount; --i >= 0;)
       normixes[i] = g3d.getNormix(vectorSums[i]);
     this.lighting = JmolConstants.FRONTLIT;
-    setLighting(lighting);  
+    if (insideOut)
+      setLighting(-2);
+    setLighting(lighting);
   }
   
   public void setLighting(int lighting) {
-     if (lighting == this.lighting)
+    if (lighting == this.lighting)
       return;
-    switch (lighting < 0 ? this.lighting : lighting) {
-    case JmolConstants.BACKLIT:
-      if (this.lighting == JmolConstants.FULLYLIT)
-        setLighting(-1);
-      for (int i = vertexCount; --i >= 0;)
-        normixes[i] = g3d.getInverseNormix(normixes[i]);
-      break;
-    case JmolConstants.FULLYLIT:
-      if (lighting == JmolConstants.BACKLIT)
-        setLighting(-1); //reverses previous
+    if (lighting == -1 || this.lighting == JmolConstants.FULLYLIT)
       for (int i = vertexCount; --i >= 0;)
         normixes[i] = (short)~normixes[i];
-      break;
-    case JmolConstants.FRONTLIT:
-      setLighting(-1); //reverses previous
-      break;
-    }
+    else if (lighting == -2 || (this.lighting == JmolConstants.FRONTLIT) == insideOut)
+      for (int i = vertexCount; --i >= 0;)
+        normixes[i] = g3d.getInverseNormix(normixes[i]);
+    if (lighting < 0)
+      return;
+    if (lighting == JmolConstants.FULLYLIT)
+      setLighting(-1);
+    else if ((lighting == JmolConstants.FRONTLIT) == insideOut)
+      setLighting(-2);
     this.lighting = lighting;
   }
   

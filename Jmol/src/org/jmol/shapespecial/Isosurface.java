@@ -661,6 +661,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
 
   public void notifySurfaceGenerationCompleted() {
     setModelIndex();
+    thisMesh.insideOut = sg.isInsideOut();
     thisMesh.initialize(sg.getPlane() != null ? JmolConstants.FULLYLIT
         : lighting);
   }
@@ -744,6 +745,8 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   }
 
   private void setJvxlInfo() {
+    if (sg.getJvxlData() != jvxlData)
+      jvxlData = thisMesh.jvxlData = sg.getJvxlData();
     jvxlData.jvxlDefinitionLine = JvxlReader.jvxlGetDefinitionLine(jvxlData,
         false);
     jvxlData.jvxlInfoLine = JvxlReader.jvxlGetDefinitionLine(jvxlData, true);

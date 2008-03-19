@@ -372,8 +372,8 @@ public abstract class VoxelReader implements VertexDataServer {
     contourVertexCount = 0;
     int contourType = -1;
     marchingSquares = null;
-    if (params.isSquared || params.insideOut)
-      volumeData.filterData(params.isSquared, (params.insideOut && !isJvxl? params.cutoff * 2: Float.NaN));
+    if (params.isSquared)
+      volumeData.filterData(params.isSquared, Float.NaN);
     if (params.thePlane != null || params.isContoured) {
       marchingSquares = new MarchingSquares(this, volumeData, params.thePlane,
           params.nContours, params.thisContour, params.contourFromZero);

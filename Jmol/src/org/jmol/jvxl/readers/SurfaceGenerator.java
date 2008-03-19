@@ -181,7 +181,7 @@ public class SurfaceGenerator {
     this.jvxlData = jvxlData;
   }
 
-  JvxlData getJvxlData() {
+  public JvxlData getJvxlData() {
     return jvxlData;
   }
 
@@ -265,6 +265,10 @@ public class SurfaceGenerator {
     return params.isPositiveOnly;
   }
   
+  public boolean isInsideOut() {
+    return params.insideOut;
+  }
+
   public float getCutoff() {
     return params.cutoff;
   }

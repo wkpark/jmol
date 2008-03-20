@@ -2116,6 +2116,7 @@ class Eval { //implements Runnable {
       case Token.spec_seqcode:
       case Token.integer:
         return theToken.intValue;
+      case Token.spec_model2:
       case Token.decimal:
         return ((Float) theToken.value).floatValue();
       }

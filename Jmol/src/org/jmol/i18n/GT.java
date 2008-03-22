@@ -100,6 +100,7 @@ public class GT {
     languageList = new String[][] {
     {"ca", GT._("Catalan")},
     {"cs", GT._("Czech")},
+    {"da", GT._("Danish")},
     {"nl", GT._("Dutch")},
     {"en_US", GT._("English")},
     {"et", GT._("Estonian")},
@@ -108,6 +109,7 @@ public class GT {
     {"pt_BR", GT._("Portuguese - Brazil")},
     {"pt", GT._("Portuguese")},
     {"es", GT._("Spanish")},
+    {"sv", GT._("Swedish")},
     {"tr", GT._("Turkish")},};
     doTranslate = wasTranslating;
     return languageList;

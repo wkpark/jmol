@@ -103,6 +103,13 @@ public class Measures extends Shape {
       return;
     } 
 
+    if ("refresh".equals(propertyName)) {
+      for (int i = 0; i < measurements.length; i++)
+        if (measurements[i] != null)
+          measurements[i].refresh();
+      return;
+    } 
+
     if ("refreshTrajectories".equals(propertyName)) {
       for (int i = 0; i < measurements.length; i++)
         if (measurements[i] != null && measurements[i].isTrajectory())

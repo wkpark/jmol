@@ -77,7 +77,7 @@ public class Token {
   final public static int identifier        =  1;
   final static int integer           =  2;
   final static int decimal           =  3;
-  final static int string            =  4;
+  final public static int string            =  4;
   final static int seqcode           =  5;
   final static int list              =  6;
   final public static int point3f           =  7;

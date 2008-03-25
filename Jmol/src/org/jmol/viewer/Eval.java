@@ -5087,9 +5087,10 @@ class Eval { //implements Runnable {
     BitSet bsSelected = null;
     BitSet bsFixed = null;
     BitSet bsIgnore = null;
+    MinimizerInterface minimizer;
     if (statementLength == 1)
       bsSelected = viewer.getBitSetSelection();
-    else 
+    else
       for (int i = 1; i < statementLength; i++) {
         switch (tokAt(i)) {
         case Token.select:
@@ -5107,8 +5108,23 @@ class Eval { //implements Runnable {
             invalidArgument();
           i = iToken;
           break;
+        case Token.string:
         case Token.identifier:
           String cmd = parameterAsString(i);
+          if (cmd.equalsIgnoreCase("cancel")) {
+            checkLength2();
+            if (isSyntaxCheck || (minimizer = viewer.getMinimizer()) != null)
+              return;
+            minimizer.setProperty("cancel", null);
+            return;
+          }
+          if (cmd.equalsIgnoreCase("stop")) {
+            checkLength2();
+            if (isSyntaxCheck || (minimizer = viewer.getMinimizer()) != null)
+              return;
+            minimizer.setProperty("stop", null);
+            return;
+          }
           if (cmd.equalsIgnoreCase("ignore"))
             bsIgnore = expression(++i);
           else if (cmd.equalsIgnoreCase("fix"))
@@ -5116,10 +5132,10 @@ class Eval { //implements Runnable {
           else
             invalidArgument();
           i = iToken;
-        }      
+        }
       }
-    
-    if (isSyntaxCheck)
+
+    if (isSyntaxCheck || (minimizer = viewer.getMinimizer()) != null)
       return;
     int modelIndex = viewer.getCurrentModelIndex();
     if (modelIndex < 0)
@@ -5127,9 +5143,7 @@ class Eval { //implements Runnable {
     bsSelected.and(viewer.getModelAtomBitSet(modelIndex, false));
     try {
       String name = JmolConstants.CLASSBASE_OPTIONS + "minimize.Minimizer";
-      MinimizerInterface minimizer = (MinimizerInterface) Class
-          .forName(name)
-          .newInstance();
+      minimizer = (MinimizerInterface) Class.forName(name).newInstance();
       minimizer.minimize(viewer, bsSelected, bsFixed, bsIgnore);
     } catch (Exception e) {
       evalError(e.getMessage());

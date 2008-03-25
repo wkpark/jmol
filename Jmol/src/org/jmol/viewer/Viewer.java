@@ -114,6 +114,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   Compiler getCompiler() {
     return compiler;
   }
+
+  private MinimizerInterface minimizer;
+  public void setMinimizer(MinimizerInterface minimizer) { 
+    this.minimizer = minimizer;
+  }
+  public MinimizerInterface getMinimizer() { 
+    return minimizer;
+  }
+  
   private Eval eval;
   private DataManager dataManager;
   private FileManager fileManager;
@@ -1787,6 +1796,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void clear() {
     if (modelSet == null)
       return;
+    if (minimizer != null)
+      minimizer.setProperty("clear", null);
     fileManager.clear();
     repaintManager.clear();
     transformManager.clear();

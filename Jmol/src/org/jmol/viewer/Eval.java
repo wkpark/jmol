@@ -5113,14 +5113,14 @@ class Eval { //implements Runnable {
           String cmd = parameterAsString(i);
           if (cmd.equalsIgnoreCase("cancel")) {
             checkLength2();
-            if (isSyntaxCheck || (minimizer = viewer.getMinimizer()) != null)
+            if (isSyntaxCheck || (minimizer = viewer.getMinimizer()) == null)
               return;
             minimizer.setProperty("cancel", null);
             return;
           }
           if (cmd.equalsIgnoreCase("stop")) {
             checkLength2();
-            if (isSyntaxCheck || (minimizer = viewer.getMinimizer()) != null)
+            if (isSyntaxCheck || (minimizer = viewer.getMinimizer()) == null)
               return;
             minimizer.setProperty("stop", null);
             return;

@@ -32,24 +32,26 @@ public final class Logger {
 
   private static LoggerInterface _logger = new DefaultLogger();
 
-  public final static int LEVEL_DEBUG = 0;
-  public final static int LEVEL_INFO = LEVEL_DEBUG + 1;
-  public final static int LEVEL_WARN = LEVEL_INFO + 1;
-  public final static int LEVEL_ERROR = LEVEL_WARN + 1;
-  public final static int LEVEL_FATAL = LEVEL_ERROR + 1;
-  public final static int NB_LEVELS = LEVEL_FATAL + 1;
+  public final static int LEVEL_FATAL = 1;
+  public final static int LEVEL_ERROR = 2;
+  public final static int LEVEL_WARN = 3;
+  public final static int LEVEL_INFO = 4;
+  public final static int LEVEL_DEBUG = 5;
+  public final static int LEVEL_DEBUGHIGH = 6;
+  public final static int LEVEL_MAX = 7;
 
-  private final static boolean[] _activeLevels = new boolean[NB_LEVELS];
+  private final static boolean[] _activeLevels = new boolean[LEVEL_MAX];
   private       static boolean   _logLevel = false;
   public static boolean debugging;
   static {
+    _activeLevels[LEVEL_DEBUGHIGH] = getProperty("debugHigh",    false);
     _activeLevels[LEVEL_DEBUG] = getProperty("debug",    false);
     _activeLevels[LEVEL_INFO]  = getProperty("info",     true);
     _activeLevels[LEVEL_WARN]  = getProperty("warn",     true);
     _activeLevels[LEVEL_ERROR] = getProperty("error",    true);
     _activeLevels[LEVEL_FATAL] = getProperty("fatal",    true);
     _logLevel                  = getProperty("logLevel", false);
-    debugging = (_logger != null && _activeLevels[LEVEL_DEBUG]);
+    debugging = (_logger != null && (_activeLevels[LEVEL_DEBUG] || _activeLevels[LEVEL_DEBUGHIGH]));
   }
 
   private static boolean getProperty(String level, boolean defaultValue) {
@@ -71,7 +73,7 @@ public final class Logger {
    */
   public static void setLogger(LoggerInterface logger) {
     _logger = logger;
-    debugging = isActiveLevel(LEVEL_DEBUG);
+    debugging = isActiveLevel(LEVEL_DEBUG) || isActiveLevel(LEVEL_DEBUGHIGH);
   }
 
   /**
@@ -81,13 +83,8 @@ public final class Logger {
    * @return Active.
    */
   public static boolean isActiveLevel(int level) {
-    if (_logger == null) {
-      return false;
-    }
-    if ((level >= 0) && (level < _activeLevels.length)) {
-      return _activeLevels[level];
-    }
-    return false;
+    return _logger != null && level >= 0 && level < LEVEL_MAX 
+        && _activeLevels[level];
   }
 
   /**
@@ -97,11 +94,12 @@ public final class Logger {
    * @param active New activation state.
    */
   public static void setActiveLevel(int level, boolean active) {
-    if ((level >= 0) && (level < _activeLevels.length)) {
-      _activeLevels[level] = active;
-      if (level == LEVEL_DEBUG)
-        debugging = (_logger != null && active);
-    }
+    if (level < 0)
+      level = 0;
+    if (level >= LEVEL_MAX)
+      level = LEVEL_MAX - 1;
+    _activeLevels[level] = active;
+    debugging = isActiveLevel(LEVEL_DEBUG) || isActiveLevel(LEVEL_DEBUGHIGH);
   }
 
   /**
@@ -110,8 +108,8 @@ public final class Logger {
    * @param level
    */
   public static void setLogLevel(int level) {
-    for (int i = NB_LEVELS; --i >= 0;)
-      setActiveLevel(i, (NB_LEVELS - i) <= level);
+    for (int i = LEVEL_MAX; --i >= 0;)
+      setActiveLevel(i, i <= level);
   }
 
   /**
@@ -122,6 +120,8 @@ public final class Logger {
    */
   public static String getLevel(int level) {
     switch (level) {
+    case LEVEL_DEBUGHIGH:
+      return "DEBUGHIGH";
     case LEVEL_DEBUG:
       return "DEBUG";
     case LEVEL_INFO:

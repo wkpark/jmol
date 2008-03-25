@@ -637,11 +637,9 @@ public abstract class BioPolymer extends Polymer {
 */
         
         pdbATOM.append(a.formatLabel("ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
-        pdbATOM.append(TextFormat.formatString("%8.3x", "x", x * factor));
-        pdbATOM.append(TextFormat.formatString("%8.3x", "x", y * factor));
-        pdbATOM.append(TextFormat.formatString("%8.3x", "x", z * factor));
-        pdbATOM.append(TextFormat.formatString("%6.2x", "x", w * factor));
-        pdbATOM.append(TextFormat.formatString("                %2x    \n", "x", a.getElementSymbol().toUpperCase()));
+        pdbATOM.append(TextFormat.sprintf("%8.3f%8.3f%8.3f                %2s    \n", 
+            new String[] { a.getElementSymbol().toUpperCase() }, 
+            new float[]{ x * factor, y * factor, z * factor }));
         if (atomno != Integer.MIN_VALUE) {
           pdbCONECT.append("CONECT");
           pdbCONECT.append(TextFormat.formatString("%5i", "i", atomno));

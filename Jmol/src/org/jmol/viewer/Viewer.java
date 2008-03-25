@@ -236,7 +236,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!isApplet) {
       // not an applet -- used to pass along command line options
       if (str.indexOf("-i") >= 0) {
-        Logger.setLogLevel(3); //no info, but warnings and errors
+        Logger.setLogLevel(Logger.LEVEL_WARN); //no info, but warnings and errors
         isSilent = true;
       }
       if (str.indexOf("-c") >= 0) {
@@ -341,9 +341,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   static int getLogLevel() {
-    for (int i = 0; i < Logger.NB_LEVELS; i++)
+    for (int i = 0; i < Logger.LEVEL_MAX; i++)
       if (Logger.isActiveLevel(i))
-        return Logger.NB_LEVELS - i;
+        return Logger.LEVEL_MAX - i;
     return 0;
   }
 
@@ -5643,7 +5643,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       name = text.substring(i0, i);
       if (name.length() == 0)
         return text;
-      Object v = Eval.evaluateExpression(this, name);
+      Object v = evaluateExpression(name);
       if (v instanceof Point3f)
         v = Escape.escape((Point3f) v);
       text = text.substring(0, i0 - 2) + v.toString() + text.substring(i + 1);
@@ -5957,7 +5957,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getTaintedAtoms(type);
   }
 
-  void setTaintedAtoms(BitSet bs, byte type) {
+  public void setTaintedAtoms(BitSet bs, byte type) {
     modelSet.setTaintedAtoms(bs, type);
   }
 
@@ -5978,9 +5978,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       exp = "\"\" + {selected}.size + \"\n\n\"+{selected}.label(\"%-2e %10.5x %10.5y %10.5z\").lines";
     if (!atomExpression.equals("selected"))
       exp = TextFormat.simpleReplace(exp, "selected", atomExpression);
-    return (String) Eval.evaluateExpression(this, exp);
+    return (String) evaluateExpression(exp);
   }
 
+  public Object evaluateExpression(Object stringOrTokens) {
+    return Eval.evaluateExpression(this, stringOrTokens);
+  }
+  
   public String getPdbData(BitSet bs) {
     if (bs == null)
       bs = getSelectionSet();

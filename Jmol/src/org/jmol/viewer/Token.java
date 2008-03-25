@@ -46,7 +46,7 @@ public class Token {
   public Object value;
   public int intValue = Integer.MAX_VALUE;
 
-  Token(int tok, int intValue, Object value) {
+  public Token(int tok, int intValue, Object value) {
     this.tok = tok;
     this.intValue = intValue;
     this.value = value;
@@ -59,11 +59,11 @@ public class Token {
   //next two are private so that ALL tokens are either
   //integer tokens or have a value that is (more likely to be) non-null
   //null token values can cause problems in Eval.statementAsString()
-  private Token(int tok) {
+  public Token(int tok) {
     this.tok = tok;
   }
 
-  private Token(int tok, int intValue) {
+  public Token(int tok, int intValue) {
     this.tok = tok;
     this.intValue = intValue;
   }
@@ -129,7 +129,7 @@ public class Token {
   final static int mathproperty      = (1 << 22) | atomproperty;
   final static int mathop            = (1 << 23) | expression;
   final static int mathfunc          = (1 << 24) | expression;  
-  final static int comparator        = (1 << 25) | expression;
+  final public static int comparator        = (1 << 25) | expression;
   final static int settable          = (1 << 26);
 
   // These are unrelated
@@ -146,7 +146,7 @@ public class Token {
   final static int cartoon      = command |  3;
   final static int center       = command |  4 | expressionCommand;
   //final static int color        = command |  6 | colorparam | setparam | embeddedExpression; with mathfunc
-  final static int connect      = command |  7 | numberOrExpression | colorparam;
+  final public static int connect      = command |  7 | numberOrExpression | colorparam;
   //final static int data         = command |  8; with mathfunc
   final static int define       = command |  9 | expressionCommand | expression | setparam;
   final static int dots         = command | 10 | embeddedExpression;
@@ -236,6 +236,7 @@ public class Token {
   final static int returncmd      = command | 121 | implicitExpression;  
   final static int var            = command | 122 | implicitExpression | noeval | setparam;
   final static int delete         = command | 123 | expressionCommand;
+  final static int minimize       = command | 124 | embeddedExpression;
   
   //these commands control flow and may not be nested
   //sorry about GOTO!
@@ -338,7 +339,7 @@ public class Token {
   final static int opGE         = 1  | mathop | 6 << 3 | comparator;
   final static int opLE         = 2  | mathop | 6 << 3 | comparator;
   final static int opLT         = 3  | mathop | 6 << 3 | comparator;
-  final static int opEQ         = 4  | mathop | 6 << 3 | comparator;
+  final public static int opEQ         = 4  | mathop | 6 << 3 | comparator;
   final static int opNE         = 5  | mathop | 6 << 3 | comparator;
    
   final static int minus        = 0  | mathop | 7 << 3;
@@ -480,7 +481,7 @@ public class Token {
   // xxx(a,b,c,d,e)
   
   final static int within       = 1  | 5 << 3 | mathfunc;
-  final static int connected    = 2  | 5 << 3 | mathfunc;
+  final public static int connected    = 2  | 5 << 3 | mathfunc;
   
  // math-related Token static methods
   
@@ -927,20 +928,20 @@ public class Token {
   final static Token tokenOn  = new Token(on, 1, "on");
   final static Token tokenOff = new Token(off, 0, "off");
   final static Token tokenAll = new Token(all, "all");
-  final static Token tokenAnd = new Token(opAnd, "and");
-  final static Token tokenOr  = new Token(opOr, "or");
-  final static Token tokenComma = new Token(comma, ",");
+  final public static Token tokenAnd = new Token(opAnd, "and");
+  final public static Token tokenOr  = new Token(opOr, "or");
+  final public static Token tokenComma = new Token(comma, ",");
   final static Token tokenPlus = new Token(plus, "+");
   final static Token tokenMinus = new Token(minus, "-");
   final static Token tokenTimes = new Token(times, "*");
   final static Token tokenDivide = new Token(divide, "/");
 
-  final static Token tokenLeftParen = new Token(leftparen, "(");
-  final static Token tokenRightParen = new Token(rightparen, ")");
+  final public static Token tokenLeftParen = new Token(leftparen, "(");
+  final public static Token tokenRightParen = new Token(rightparen, ")");
   final static Token tokenArraySelector = new Token(leftsquare, "[");
  
-  final static Token tokenExpressionBegin = new Token(expressionBegin, "expressionBegin");
-  final static Token tokenExpressionEnd   = new Token(expressionEnd, "expressionEnd");
+  final public static Token tokenExpressionBegin = new Token(expressionBegin, "expressionBegin");
+  final public static Token tokenExpressionEnd   = new Token(expressionEnd, "expressionEnd");
   final static Token tokenCoordinateBegin = new Token(leftbrace, "{");
   final static Token tokenCoordinateEnd   = new Token(rightbrace, "}");
   final static Token tokenSet             = new Token(set, '=', "");
@@ -995,6 +996,7 @@ public class Token {
     "script",            new Token(script,          varArgCount),
     "source",            null, 
     "javascript",        new Token(javascript,                1),
+    "minimize",          new Token(minimize,          varArgCount),
     "select",            new Token(select,          varArgCount),
     "set",               new Token(set,             varArgCount),
     "show",              new Token(show,                maxArg2),

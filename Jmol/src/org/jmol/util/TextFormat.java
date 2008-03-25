@@ -126,6 +126,30 @@ public class TextFormat {
     return formatString(strFormat, key, "" + intT, Float.NaN);
   }
 
+  
+  public static String sprintf(String strFormat, String[] sVal, float[] fVal) {
+    return sprintf(strFormat, sVal, fVal, null);
+  }
+  
+  public static String sprintf(String strFormat, String[] sVal, float[] fVal, 
+                               int[] iVal) {
+    if (sVal != null)
+      for (int i = 0; i < sVal.length; i++)
+        strFormat = formatString(strFormat, "s", sVal[i], Float.NaN, true);
+    if (fVal != null)
+      for (int i = 0; i < fVal.length; i++)
+        strFormat = formatString(strFormat, "f", null, fVal[i], true);
+    if (iVal != null)
+      for (int i = 0; i < iVal.length; i++)
+        strFormat = formatString(strFormat, "i", "" + iVal[i], Float.NaN, true);
+    return strFormat;
+  }
+
+  public static String formatString(String strFormat, String key, String strT,
+                                    float floatT) {
+    return formatString(strFormat, key, strT, floatT, false);
+  }
+
   /**
    * generic string formatter  based on formatLabel in Atom
    * 
@@ -134,11 +158,12 @@ public class TextFormat {
    * @param key      any string to match
    * @param strT     replacement string or null
    * @param floatT   replacement float or Float.NaN
+   * @param doOne    mimic sprintf    
    * @return         formatted string
    */
 
-  public static String formatString(String strFormat, String key, String strT,
-                                    float floatT) {
+  private static String formatString(String strFormat, String key, String strT,
+                                    float floatT, boolean doOne) {
     if (strFormat == null)
       return null;
     if ("".equals(strFormat))
@@ -196,6 +221,8 @@ public class TextFormat {
         else if (strT != null)
           strLabel += TextFormat.format(strT, width, precision, alignLeft,
               zeroPad);
+        if (doOne)
+          break;
       } catch (IndexOutOfBoundsException ioobe) {
         ich = ichPercent;
         break;

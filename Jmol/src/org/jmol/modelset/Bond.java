@@ -231,7 +231,7 @@ public class Bond {
     return atom1.group.chain.modelSet.viewer.getColixArgb(getColix2());
   }
 
-  Atom getOtherAtom(Atom thisAtom) {
+  public Atom getOtherAtom(Atom thisAtom) {
     return (atom1 == thisAtom ? atom2 : atom2 == thisAtom ? atom1 : null);
   }
   

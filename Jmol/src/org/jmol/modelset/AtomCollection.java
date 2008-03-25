@@ -92,7 +92,7 @@ abstract public class AtomCollection {
   String[] atomNames;
 
 
-  Atom[] getAtoms() {
+  public Atom[] getAtoms() {
     return atoms;
   }
 

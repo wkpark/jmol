@@ -23,6 +23,7 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.api.MinimizerInterface;
 import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Font3D;
@@ -181,13 +182,17 @@ class Eval { //implements Runnable {
    *   Boolean, Integer, Float, String, Point3f, BitSet 
    */
 
-  static Object evaluateExpression(Viewer viewer, String expr) {
+  static Object evaluateExpression(Viewer viewer, Object expr) {
     // Text.formatText for MESSAGE and ECHO
     Eval e = new Eval(viewer);
     try {
+      if (expr instanceof String) {
       if (e.loadScript(null, EXPRESSION_KEY + " = " + expr, false)) {
         e.setStatement(0);
         return e.parameterExpression(2, 0, "", false);
+      }
+      } else if (expr instanceof Token[]) {
+        return e.expression((Token[])expr, 0, 0, true, false, true, false);
       }
     } catch (Exception ex) {
       Logger.error("Error evaluating: " + expr + "\n" + ex);
@@ -961,6 +966,9 @@ class Eval { //implements Runnable {
       case Token.delete:
         delete();
         break;
+      case Token.minimize:
+        minimize();
+        break;
       case Token.select:
         select();
         break;
@@ -1612,7 +1620,7 @@ class Eval { //implements Runnable {
           rpn.addX(bitSetForModelFileNumber(comparisonValue));
           break;
         }
-        if (((String) value).indexOf("-") >= 0) {
+        if (value != null && ((String) value).indexOf("-") >= 0) {
           if (!Float.isNaN(comparisonFloat))
             comparisonFloat = -comparisonFloat;
           comparisonValue = -comparisonValue;
@@ -1632,6 +1640,7 @@ class Eval { //implements Runnable {
         rpn.addX(instruction.intValue);
         break;
       default:
+        //System.out.println(" " + instruction +" " +(new Token(Token.isaromatic)) );
         if (Compiler.tokAttr(instruction.tok, Token.mathop))
           rpn.addOp(instruction);
         else
@@ -5074,6 +5083,59 @@ class Eval { //implements Runnable {
       scriptStatus(GT._("{0} atoms deleted", nDeleted));
   }
 
+  private void minimize() throws ScriptException {
+    BitSet bsSelected = null;
+    BitSet bsFixed = null;
+    BitSet bsIgnore = null;
+    if (statementLength == 1)
+      bsSelected = viewer.getBitSetSelection();
+    else 
+      for (int i = 1; i < statementLength; i++) {
+        switch (tokAt(i)) {
+        case Token.select:
+          bsSelected = expression(++i);
+          i = iToken;
+          break;
+        case Token.expressionBegin:
+          if (bsSelected == null)
+            bsSelected = expression(i);
+          else if (bsFixed == null)
+            bsFixed = expression(i);
+          else if (bsIgnore == null)
+            bsIgnore = expression(i);
+          else
+            invalidArgument();
+          i = iToken;
+          break;
+        case Token.identifier:
+          String cmd = parameterAsString(i);
+          if (cmd.equalsIgnoreCase("ignore"))
+            bsIgnore = expression(++i);
+          else if (cmd.equalsIgnoreCase("fix"))
+            bsFixed = expression(++i);
+          else
+            invalidArgument();
+          i = iToken;
+        }      
+      }
+    
+    if (isSyntaxCheck)
+      return;
+    int modelIndex = viewer.getCurrentModelIndex();
+    if (modelIndex < 0)
+      multipleModelsNotOK(GT._("minimizations"));
+    bsSelected.and(viewer.getModelAtomBitSet(modelIndex, false));
+    try {
+      String name = JmolConstants.CLASSBASE_OPTIONS + "minimize.Minimizer";
+      MinimizerInterface minimizer = (MinimizerInterface) Class
+          .forName(name)
+          .newInstance();
+      minimizer.minimize(viewer, bsSelected, bsFixed, bsIgnore);
+    } catch (Exception e) {
+      evalError(e.getMessage());
+    }
+  }
+  
   private void select() throws ScriptException {
     // NOTE this is called by restrict()
     if (statementLength == 1) {

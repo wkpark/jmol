@@ -611,6 +611,8 @@ public class ProjectInformation {
           info._fciCore = CoreType.GBGROMACS;
         } else if ("GC".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.GROCVS;
+        } else if ("GROCVS".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.GROCVS;
         } else if ("GROGPU".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.GROGPU;
         } else if ("GROMACS".equalsIgnoreCase(core)) {

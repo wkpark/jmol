@@ -200,6 +200,7 @@
         <include name="**/*.jpg" />
         <include name="**/*.gif" />
       	<include name="**/*.png" />
+      	<include name="**/*.prm" />
         <include name="**/*.html" />
         <include name="**/*.js" />
         <include name="**/*.dtd" />
@@ -245,6 +246,7 @@ support for assertions (which were introduced in 1.4).
 
     <copy todir="${applet.classes.dir}" >
       <fileset dir="src">
+        <include name="org/jmol/minimize/forcefield/*.prm" />
         <include name="jmol75x29x8.gif" />
       </fileset>
     </copy>
@@ -544,6 +546,12 @@ support for assertions (which were introduced in 1.4).
 	      </fileset>
 	    </jar>
 
+	  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_Minimize.jar" manifest="manifest/applet.txt">
+	      <fileset dir="${applet.classes.dir}">
+	        <include name="org/jmol/minimize/**" />
+	      </fileset>
+	    </jar>
+
 	    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Popup.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/popup/**" />
@@ -626,6 +634,7 @@ support for assertions (which were introduced in 1.4).
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Core.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Jars.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Jvxl.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Minimize.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Popup.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Quantum.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersCifPdb.jar" />
@@ -667,6 +676,11 @@ support for assertions (which were introduced in 1.4).
   	
     <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Jvxl.jar"
              signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Jvxl.jar"
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Minimize.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Minimize.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
@@ -752,6 +766,7 @@ support for assertions (which were introduced in 1.4).
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Core.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Jars.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Jvxl.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Minimize.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Popup.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Quantum.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersCifPdb.jar" />
@@ -1047,7 +1062,7 @@ support for assertions (which were introduced in 1.4).
              packagenames="org.openscience.*,org.jmol.*">
       <classpath refid="project.class.path" />
       <link href="http://java.sun.com/javase/6/docs/api/" />
-      <link href="http://download.java.net/media/java3d/javadoc/1.5.0/" />
+      <link href="http://java.sun.com/products/java-media/3D/forDevelopers/J3D_1_3_API/j3dapi/" />
     </javadoc>
   </target>
 

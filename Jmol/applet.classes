@@ -19,6 +19,10 @@ org/jmol/i18n/*.java
 
 org/jmol/jvxl/*.java
 
+
+org/jmol/minimize/*.java
+org/jmol/minimize/forcefield/*.java
+
 org/jmol/modelset/*.java
 org/jmol/modelsetbio/*.java
 

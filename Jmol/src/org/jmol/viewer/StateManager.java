@@ -698,7 +698,8 @@ public class StateManager {
       ";axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color" +
       ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth" +
       ";debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers" +
-      ";fontscaling;language;loglevel;navigationmode" +
+      ";fontscaling;language;loglevel" +
+      ";minimizationsteps;minimizationrefresh;minimizationcriterion;navigationmode" +
       ";perspectivedepth;visualrange;perspectivemodel;refreshing;rotationradius" +
       ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell" +
       ";slabenabled;specular;specularexponent;specularpercent;specularpower;stateversion" +

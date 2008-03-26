@@ -388,7 +388,7 @@ public class Token {
   final static int atomIndex     = atomproperty | 4;
   final public static int cell          = atomproperty | 5;
   final public static int element       = atomproperty | 6;
-  final static int elemno        = atomproperty | 7;
+  final public static int elemno        = atomproperty | 7;
   final static int file          = atomproperty | 8 | command;
   final public static int formalCharge  = atomproperty | 9 | setparam | settable;
   final static int groupID       = atomproperty | 10;

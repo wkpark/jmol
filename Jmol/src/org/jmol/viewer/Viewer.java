@@ -3865,8 +3865,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     statusManager.setScriptStatus(strStatus);
   }
 
-  private void setScriptDelay(int nSec) {
-    global.scriptDelay = nSec;    
+  private void setScriptDelay(int milliSec) {
+    global.scriptDelay = milliSec;    
   }
 
   int getScriptDelay() {

@@ -5087,10 +5087,12 @@ class Eval { //implements Runnable {
     BitSet bsSelected = null;
     BitSet bsFixed = null;
     BitSet bsIgnore = null;
-    MinimizerInterface minimizer;
-    if (statementLength == 1)
-      bsSelected = viewer.getBitSetSelection();
-    else
+    MinimizerInterface minimizer = viewer.getMinimizer();
+     if (statementLength == 1) {
+      //all atoms
+      int i = BitSetUtil.firstSetBit(viewer.getVisibleFramesBitSet());
+      bsSelected = viewer.getModelAtomBitSet(i, false);
+    } else
       for (int i = 1; i < statementLength; i++) {
         switch (tokAt(i)) {
         case Token.select:
@@ -5113,14 +5115,14 @@ class Eval { //implements Runnable {
           String cmd = parameterAsString(i);
           if (cmd.equalsIgnoreCase("cancel")) {
             checkLength2();
-            if (isSyntaxCheck || (minimizer = viewer.getMinimizer()) == null)
+            if (isSyntaxCheck || minimizer == null)
               return;
             minimizer.setProperty("cancel", null);
             return;
           }
           if (cmd.equalsIgnoreCase("stop")) {
             checkLength2();
-            if (isSyntaxCheck || (minimizer = viewer.getMinimizer()) == null)
+            if (isSyntaxCheck || minimizer == null)
               return;
             minimizer.setProperty("stop", null);
             return;
@@ -5135,7 +5137,7 @@ class Eval { //implements Runnable {
         }
       }
 
-    if (isSyntaxCheck || (minimizer = viewer.getMinimizer()) != null)
+    if (isSyntaxCheck)
       return;
     int modelIndex = viewer.getCurrentModelIndex();
     if (modelIndex < 0)
@@ -5143,7 +5145,8 @@ class Eval { //implements Runnable {
     bsSelected.and(viewer.getModelAtomBitSet(modelIndex, false));
     try {
       String name = JmolConstants.CLASSBASE_OPTIONS + "minimize.Minimizer";
-      minimizer = (MinimizerInterface) Class.forName(name).newInstance();
+      if (minimizer == null)
+        minimizer = (MinimizerInterface) Class.forName(name).newInstance();
       minimizer.minimize(viewer, bsSelected, bsFixed, bsIgnore);
     } catch (Exception e) {
       evalError(e.getMessage());

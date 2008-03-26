@@ -1798,6 +1798,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     if (minimizer != null)
       minimizer.setProperty("clear", null);
+    minimizer = null;
     fileManager.clear();
     repaintManager.clear();
     transformManager.clear();

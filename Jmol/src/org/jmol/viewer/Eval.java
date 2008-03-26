@@ -5139,10 +5139,6 @@ class Eval { //implements Runnable {
 
     if (isSyntaxCheck)
       return;
-    int modelIndex = viewer.getCurrentModelIndex();
-    if (modelIndex < 0)
-      multipleModelsNotOK(GT._("minimizations"));
-    bsSelected.and(viewer.getModelAtomBitSet(modelIndex, false));
     try {
       String name = JmolConstants.CLASSBASE_OPTIONS + "minimize.Minimizer";
       if (minimizer == null)

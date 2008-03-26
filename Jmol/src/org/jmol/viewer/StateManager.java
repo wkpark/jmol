@@ -518,6 +518,12 @@ public class StateManager {
     boolean justifyMeasurements = false;
     boolean measureAllModels    = false;
 
+    // minimization  // 11.5.21 03/2008
+    
+    int     minimizationSteps   = 100;  
+    boolean minimizationRefresh = true;
+    float   minimizationCriterion = 0.001f;
+    
     //rendering
 
     boolean antialiasDisplay            = false;
@@ -1074,6 +1080,9 @@ public class StateManager {
       setParameterValue("measurementLabels",measurementLabels=true);
       setParameterValue("measurementUnits", measureDistanceUnits);
       setParameterValue("minBondDistance",minBondDistance);
+      setParameterValue("minimizationSteps",minimizationSteps);
+      setParameterValue("minimizationRefresh",minimizationRefresh);
+      setParameterValue("minimizationCriterion",minimizationCriterion);
       setParameterValue("navigationMode",navigationMode);
       setParameterValue("navigationPeriodic",navigationPeriodic);
       setParameterValue("navigationDepth",0);

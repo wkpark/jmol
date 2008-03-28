@@ -551,7 +551,7 @@ public abstract class BioPolymer extends Polymer {
     Quaternion qlast = null;
     Quaternion qprev = null;
     float factor = (ctype == 'r' ? 1f : 10f);
-    float x = 0, y = 0, z = 0/*, w = 0*/;
+    float x = 0, y = 0, z = 0, w = 0;
     //boolean isQuaternion = ("wxyz".indexOf(ctype) >= 0);
     boolean isRamachandran = (ctype == 'r');
     if (isRamachandran && !p.calcPhiPsiAngles())
@@ -569,7 +569,7 @@ public abstract class BioPolymer extends Polymer {
           z -= 180;
           if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
             continue;
-          /*w = a.getPartialCharge();*/
+          w = a.getPartialCharge();
         } else {
           Quaternion q = monomer.getQuaternion();
           if (q == null) {
@@ -605,25 +605,25 @@ public abstract class BioPolymer extends Polymer {
             x = q.q1;
             y = q.q2;
             z = q.q3;
-            /*w = q.q0;*/
+            w = q.q0;
             break;
           case 'x':
             x = q.q0;
             y = q.q1;
             z = q.q2;
-            /*w = q.q3;*/
+            w = q.q3;
             break;
           case 'y':
             x = q.q3;
             y = q.q0;
             z = q.q1;
-            /*w = q.q2;*/
+            w = q.q2;
             break;
           case 'z':
             x = q.q2;
             y = q.q3;
             z = q.q0;
-            /*w = q.q1;*/
+            w = q.q1;
             break;
           }
         }
@@ -636,10 +636,13 @@ public abstract class BioPolymer extends Polymer {
             + "{ 0 0 "+(10*z)+"} color blue");
 */
         
+        
         pdbATOM.append(a.formatLabel("ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
-        pdbATOM.append(TextFormat.sprintf("%8.3f%8.3f%8.3f                %2s    \n", 
+        pdbATOM.append(TextFormat.formatString("                %2x    \n", "x", a.getElementSymbol().toUpperCase()));
+        pdbATOM.append(a.formatLabel("ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
+        pdbATOM.append(TextFormat.sprintf("%8.3f%8.3f%8.3f%6.2f                %2s    \n", 
             new String[] { a.getElementSymbol().toUpperCase() }, 
-            new float[]{ x * factor, y * factor, z * factor }));
+            new float[]{ x * factor, y * factor, z * factor, w * factor }));
         if (atomno != Integer.MIN_VALUE) {
           pdbCONECT.append("CONECT");
           pdbCONECT.append(TextFormat.formatString("%5i", "i", atomno));

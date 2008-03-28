@@ -1062,7 +1062,7 @@ support for assertions (which were introduced in 1.4).
              packagenames="org.openscience.*,org.jmol.*">
       <classpath refid="project.class.path" />
       <link href="http://java.sun.com/javase/6/docs/api/" />
-      <link href="http://java.sun.com/products/java-media/3D/forDevelopers/J3D_1_3_API/j3dapi/" />
+      <link href="http://download.java.net/media/java3d/javadoc/1.5.0/" />
     </javadoc>
   </target>
 

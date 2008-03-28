@@ -25,6 +25,7 @@ package org.jmol.viewer;
 
 import org.jmol.util.Logger;
 import org.jmol.util.CommandHistory;
+import org.jmol.util.TextFormat;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Group;
@@ -423,14 +424,15 @@ class Compiler {
         }
         if (lookingAtString()) {
           if (cchToken < 0)
-            return endOfCommandUnexpected();
+            return error(ERROR_endOfCommandUnexpected);
           String str = ((tokCommand == Token.load || tokCommand == Token.script)
               && !iHaveQuotedString ? script.substring(ichToken + 1, ichToken
               + cchToken - 1) : getUnescapedStringLiteral());
           addTokenToPrefix(new Token(Token.string, str));
           iHaveQuotedString = true;
-          if (tokCommand == Token.data && str.indexOf("@") < 0)
-            getData(str);
+          if (tokCommand == Token.data && str.indexOf("@") < 0
+              && !getData(str))
+            return error(ERROR_missingEnd, "data");
           continue;
         }
         if (tokCommand == Token.sync && nTokens == 1 && charToken()) {
@@ -533,10 +535,10 @@ class Compiler {
           int val = Integer.parseInt(intString);
           if (tokCommand == Token.breakcmd || tokCommand == Token.continuecmd) {
             if (nTokens != 1)
-              return badArgumentCount();
+              return error(ERROR_badArgumentCount);
             FlowContext f = getBreakableContext(val = Math.abs(val));
             if (f == null)
-              return badContext((String)tokenCommand.value);
+              return error(ERROR_badContext, (String)tokenCommand.value);
             ((Token)ltoken.get(0)).intValue = f.pt0; //copy
           }
           addTokenToPrefix(new Token(Token.integer, val, intString));
@@ -593,7 +595,7 @@ class Compiler {
             switch (tok) {
             case Token.end:
               if (flowContext == null)
-                return badContext("end");
+                return error(ERROR_badContext, "end");
               isEnd = true;
               if (flowContext.token.tok != Token.function)
                 token = new Token(tok, -flowContext.pt0, token.value); //copy
@@ -608,13 +610,13 @@ class Compiler {
                   flowContext.token.tok != Token.ifcmd
                   && flowContext.token.tok != Token.elsecmd 
                   && flowContext.token.tok != Token.elseif)
-                return badContext("endif");
+                return error(ERROR_badContext, "endif");
               break;
             case Token.elsecmd:
               if (flowContext == null 
                   || flowContext.token.tok != Token.ifcmd
                   && flowContext.token.tok != Token.elseif)
-                return badContext("else");
+                return error(ERROR_badContext, "else");
               flowContext.token.intValue = flowContext.pt0 = pt;
               break;
             case Token.breakcmd:
@@ -622,7 +624,7 @@ class Compiler {
               isNew = false;
               FlowContext f = getBreakableContext(0);
               if (f == null)
-                return badContext((String)token.value);
+                return error(ERROR_badContext, (String)token.value);
               token = new Token(tok, f.pt0, token.value); //copy
               break;
             case Token.elseif:
@@ -630,12 +632,12 @@ class Compiler {
                   || flowContext.token.tok != Token.ifcmd
                   && flowContext.token.tok != Token.elseif
                   && flowContext.token.tok != Token.elsecmd)
-                return badContext("elseif");
+                return error(ERROR_badContext, "elseif");
               flowContext.token.intValue = flowContext.pt0 = pt;
               break;
             case Token.function:
               if (flowContext != null)
-                return badContext("function");
+                return error(ERROR_badContext, "function");
               break;
             }
             if (isEnd) {
@@ -676,21 +678,21 @@ class Compiler {
           }
           if (nTokens == 2) {
             if (tok != Token.leftparen)
-              return leftParenthesisExpected();
+              return error(ERROR_leftParenthesisExpected);
             break;
           }
           if (nTokens == 3 && tok == Token.rightparen)
             break;
           if (nTokens % 2 == 0) {
             if (tok != Token.comma && tok != Token.rightparen)
-              return commaOrCloseExpected();
+              return error(ERROR_commaOrCloseExpected);
             break;
           }
           thisFunction.addVariable(ident, true);
           break;
         case Token.elsecmd:
           if (nTokens != 1 || tok != Token.ifcmd)
-            return badArgumentCount();
+            return error(ERROR_badArgumentCount);
           ltoken.removeElementAt(0);
           ltoken.addElement(token = new Token (Token.elseif, "elseif"));
           flowContext.token = token;
@@ -706,12 +708,12 @@ class Compiler {
           break;
         case Token.end:
           if (nTokens != 1)
-            return badArgumentCount();
+            return error(ERROR_badArgumentCount);
           if (flowContext == null || flowContext.token.tok != tok)
             if (tok != Token.ifcmd || 
                 flowContext.token.tok != Token.elsecmd 
                 && flowContext.token.tok != Token.elseif)
-              return badContext("end " + ident);
+              return error(ERROR_badContext, "end " + ident);
           switch (tok) {
           case Token.ifcmd:
           case Token.forcmd:
@@ -727,7 +729,7 @@ class Compiler {
             flowContext = flowContext.parent;
             continue;
           default:
-            return unrecognizedToken("end " + ident);
+            return error(ERROR_unrecognizedToken, "end " + ident);
           }
           flowContext = flowContext.parent;
           break;
@@ -735,7 +737,7 @@ class Compiler {
           if (nTokens == 1) {
             // for (
             if (tok != Token.leftparen)
-              return unrecognizedToken(ident);
+              return error(ERROR_unrecognizedToken, ident);
             nSemiSkip = 2; //checked twice
           }
           if (nTokens == 3 && ((Token)ltoken.get(2)).tok == Token.var)
@@ -773,8 +775,8 @@ class Compiler {
               break;
             }
             if (tok != Token.identifier && (!tokAttr(tok, Token.setparam)))
-              return isNewSet ? commandExpected() : unrecognizedParameter(
-                  "SET", ident);
+              return isNewSet ? commandExpected() : error(ERROR_unrecognizedParameter,
+                  "SET", ": " + ident);
             if (isSetArray) {
               addTokenToPrefix(token);
               token = Token.tokenArraySelector;
@@ -788,7 +790,7 @@ class Compiler {
             if (tok != Token.identifier) {
               if (preDefining) {
                 if (!tokAttr(tok, Token.predefinedset))
-                  return compileError("ERROR IN Token.java or JmolConstants.java -- the following term was used in JmolConstants.java but not listed as predefinedset in Token.java: "
+                  return error("ERROR IN Token.java or JmolConstants.java -- the following term was used in JmolConstants.java but not listed as predefinedset in Token.java: "
                       + ident);
               } else if (tokAttr(tok, Token.predefinedset)) {
                 Logger
@@ -815,13 +817,13 @@ class Compiler {
             // we are looking at the expression
             if (tok != Token.identifier && tok != Token.set
                 && !(tokAttr(tok, Token.expression)))
-              return invalidExpressionToken(ident);
+              return error(ERROR_invalidExpressionToken, ident);
           }
           break;
         case Token.center:
           if (tok != Token.identifier && tok != Token.dollarsign
               && !tokAttr(tok, Token.expression))
-            return invalidExpressionToken(ident);
+            return error(ERROR_invalidExpressionToken, ident);
           break;
         case Token.restrict:
         case Token.select:
@@ -835,7 +837,7 @@ class Compiler {
           //ensure anything goes for inside brackets 
           if (tok != Token.identifier && !tokAttr(tok, Token.expression)
               && tok != Token.min && tok != Token.max && bracketCount == 0)
-            return invalidExpressionToken(ident);
+            return error(ERROR_invalidExpressionToken, ident);
           break;
         }
         addTokenToPrefix(token);
@@ -844,13 +846,12 @@ class Compiler {
       if (nTokens == 0 || 
           (isNewSet || isSetBrace) && nTokens == ptNewSetModifier)
         return commandExpected();
-      return unrecognizedToken(script.substring(ichToken, ichToken+1));
+      return error(ERROR_unrecognizedToken, script.substring(ichToken, ichToken+1));
     }
     aatokenCompiled = new Token[lltoken.size()][];
     lltoken.copyInto(aatokenCompiled);
     if (flowContext != null)
-      return compileError(GT._("missing END for {0}", Token
-          .nameOf(flowContext.token.tok)));
+      return error(ERROR_missingEnd, Token.nameOf(flowContext.token.tok));
     return true;
   }
 
@@ -862,26 +863,21 @@ class Compiler {
     return f;
   }
   
-  private void getData(String key) {
+  private boolean getData(String key) {
     ichToken += key.length() + 2;
     if (script.length() > ichToken && script.charAt(ichToken) == '\r')
       ichToken++;
     if (script.length() > ichToken && script.charAt(ichToken) == '\n')
       ichToken++;
-    int nChar = 6;
-    int i = script.indexOf("end \"" + key + "\"", ichToken);
-    if (i < 0) {
-      i = script.indexOf("end " + key, ichToken);
-      if (i >= 0)
-        nChar = 4;
-    }
-    if (i < 0)
-      i = script.length();
+    int i = script.indexOf("\"" + key + "\"", ichToken) - 4;
+    if (i < 0 || !script.substring(i, i + 4).equalsIgnoreCase("END "))
+      return false;
     String str = script.substring(ichToken, i);
     addTokenToPrefix(new Token(Token.data, str));
     addTokenToPrefix(new Token(Token.identifier, "end"));
     addTokenToPrefix(new Token(Token.string, key));
-    cchToken = i - ichToken + nChar + key.length();
+    cchToken = i - ichToken + key.length() + 6;
+    return true;
   }
 
   private static boolean isSpaceOrTab(char ch) {
@@ -1458,12 +1454,12 @@ class Compiler {
     int allowedLen = (tokenCommand.intValue & 0x0F) + 1;
     if (!tokAttr(tokenCommand.intValue, Token.varArgCount)) {
       if (size > allowedLen)
-        return badArgumentCount();
+        return error(ERROR_badArgumentCount);
       if (size < allowedLen)
-        return endOfCommandUnexpected();
+        return error(ERROR_endOfCommandUnexpected);
     } else if (allowedLen > 1 && size > allowedLen) {
       // max2, max3, max4, etc.
-      return badArgumentCount();
+      return error(ERROR_badArgumentCount);
     }
     return true;
   }
@@ -1495,7 +1491,7 @@ class Compiler {
           && !(isEmbeddedExpression && lastToken == Token.tokenCoordinateEnd))
         addTokenToPostfix(Token.tokenExpressionEnd);
       if (moreTokens() && !isEmbeddedExpression)
-        return endOfExpressionExpected();
+        return error(ERROR_endOfExpressionExpected);
     }
     atokenInfix = new Token[ltokenPostfix.size()];
     ltokenPostfix.copyInto(atokenInfix);
@@ -1710,7 +1706,7 @@ class Compiler {
       }
       //fall through
       case Token.nada:
-        return endOfCommandUnexpected();
+        return error(ERROR_endOfCommandUnexpected);
     case Token.bonds:
     case Token.monitor:
       addNextToken();
@@ -1739,12 +1735,12 @@ class Compiler {
       if (!clauseOr(true))
         return false;
       if (!addNextTokenIf(Token.rightparen))
-        return rightParenthesisExpected();
+        return error(ERROR_rightParenthesisExpected);
       return checkForItemSelector();
     case Token.leftbrace:
       return checkForCoordinate(isImplicitExpression);
     }
-    return unrecognizedExpressionToken();
+    return error(ERROR_unrecognizedExpressionToken, "" + valuePeek());
   }
 
   private boolean checkForCoordinate(boolean isImplicitExpression) {
@@ -1788,7 +1784,7 @@ class Compiler {
     while (!tokPeek(Token.rightbrace)) {
         boolean haveComma = addNextTokenIf(Token.comma);
         if (!clauseOr(false))
-          return (haveComma || n < 3? false : rightBraceExpected());
+          return (haveComma || n < 3? false : error(ERROR_rightBraceExpected));
         n++;
     }
     isCoordinate = (n >= 2); // could be {1 -2 3}
@@ -1814,7 +1810,7 @@ class Compiler {
       if (!clauseItemSelector())
         return false;
       if (!addNextTokenIf(Token.rightsquare))
-        return rightBracketExpected();
+        return error(ERROR_rightBracketExpected);
     }
     return true;
   }
@@ -1837,7 +1833,7 @@ class Compiler {
       if (getToken() == null)
         return false;
       if (theToken.tok != Token.integer)
-        return numberExpected();
+        return error(ERROR_numberExpected);
       distance = -theToken.intValue;
       break;
     case Token.integer:
@@ -1861,7 +1857,7 @@ class Compiler {
       key = ((String) theValue).toLowerCase();
       break;
     default:
-      return unrecognizedParameter("WITHIN", "" + theToken.value);
+      return error(ERROR_unrecognizedParameter,"WITHIN", ": " + theToken.value);
     }
     if (key == null)
       addTokenToPostfix(Token.decimal, new Float(distance));
@@ -1906,14 +1902,14 @@ class Compiler {
         while (!tokPeek(Token.rightparen)) {
           switch (tokPeek()) {
           case Token.nada:
-            return endOfCommandUnexpected();
+            return error(ERROR_endOfCommandUnexpected);
           case Token.leftparen:
             addTokenToPostfix(Token.tokenExpressionBegin);
             addNextToken();
             if (!clauseOr(false))
-              return unrecognizedParameter("WITHIN", "?");
+              return error(ERROR_unrecognizedParameter,"WITHIN", ": ?");
             if (!addNextTokenIf(Token.rightparen))
-              return commaOrCloseExpected();
+              return error(ERROR_commaOrCloseExpected);
             addTokenToPostfix(Token.tokenExpressionEnd);
             break;
           case Token.define:
@@ -1926,11 +1922,11 @@ class Compiler {
           }
         }
       } else if (!clauseOr(true)) {// *expression*
-        return endOfCommandUnexpected();
+        return error(ERROR_endOfCommandUnexpected);
       }
     }
     if (!addNextTokenIf(Token.rightparen))
-      return rightParenthesisExpected();
+      return error(ERROR_rightParenthesisExpected);
     return true;
   }
 
@@ -1979,7 +1975,7 @@ class Compiler {
       break;
     }
     if (!addNextTokenIf(Token.rightparen))
-      return rightParenthesisExpected();
+      return error(ERROR_rightParenthesisExpected);
     return true;
   }
 
@@ -1987,9 +1983,9 @@ class Compiler {
     if (!addNextTokenIf(Token.leftparen))
       return false;
     if (!addNextTokenIf(Token.string))
-      return stringExpected();
+      return error(ERROR_stringExpected);
     if (!addNextTokenIf(Token.rightparen))
-      return rightParenthesisExpected();
+      return error(ERROR_rightParenthesisExpected);
     return true;
   }
 
@@ -2014,12 +2010,12 @@ class Compiler {
     Token tokenAtomProperty = tokenNext();
     Token tokenComparator = tokenNext();
     if (!tokenAttr(tokenComparator, Token.comparator))
-      return comparisonOperatorExpected();
+      return error(ERROR_comparisonOperatorExpected);
     if (getToken() == null)
-      return unrecognizedExpressionToken();
+      return error(ERROR_unrecognizedExpressionToken, "" + valuePeek());
     boolean isNegative = (isToken(Token.minus));
     if (isNegative && getToken() == null)
-      return numberExpected();
+      return error(ERROR_numberExpected);
     switch (theToken.tok) {
     case Token.integer:
     case Token.decimal:
@@ -2029,7 +2025,7 @@ class Compiler {
     case Token.define:
       break;
     default:
-      return numberOrVariableNameExpected();
+      return error(ERROR_numberOrVariableNameExpected);
     }
     addTokenToPostfix(tokenComparator.tok, tokenAtomProperty.tok,
         tokenComparator.value + (isNegative ? " -" : ""));
@@ -2049,9 +2045,9 @@ class Compiler {
     Point3f cell = new Point3f();
     tokenNext(); // CELL
     if (!tokenNext(Token.opEQ)) // =
-      return equalSignExpected();
+      return error(ERROR_equalSignExpected);
     if (getToken() == null)
-      return coordinateExpected();
+      return error(ERROR_coordinateExpected);
     // 555 = {1 1 1}
     //Token coord = tokenNext(); // 555 == {1 1 1}
     if (isToken(Token.integer)) {
@@ -2062,17 +2058,17 @@ class Compiler {
       return addTokenToPostfix(Token.cell, cell);
     }
     if (!isToken(Token.leftbrace) || !getNumericalToken())
-      return coordinateExpected(); // i
+      return error(ERROR_coordinateExpected); // i
     cell.x = floatValue();
     if (tokPeek(Token.comma)) // ,
       tokenNext();
     if (!getNumericalToken())
-      return coordinateExpected(); // j
+      return error(ERROR_coordinateExpected); // j
     cell.y = floatValue();
     if (tokPeek(Token.comma)) // ,
       tokenNext();
     if (!getNumericalToken() || !tokenNext(Token.rightbrace))
-      return coordinateExpected(); // k
+      return error(ERROR_coordinateExpected); // k
     cell.z = floatValue();
     return addTokenToPostfix(Token.cell, cell);
   }
@@ -2157,7 +2153,7 @@ class Compiler {
       tok = tokPeek();
     }
     if (!specSeen)
-      return residueSpecificationExpected();
+      return error(ERROR_residueSpecificationExpected);
     if (!residueSpecCodeGenerated) {
       // nobody generated any code, so everybody was a * (or equivalent)
       addTokenToPostfix(Token.tokenAll);
@@ -2180,7 +2176,7 @@ class Compiler {
       int pt;
       if (strSpec.length() > 0 && (pt = strSpec.indexOf("*")) >= 0
           && pt != strSpec.length() - 1)
-        return residueSpecificationExpected();
+        return error(ERROR_residueSpecificationExpected);
       strSpec = strSpec.toUpperCase();
       return generateResidueSpecCode(new Token(Token.spec_name_pattern, strSpec));
     }
@@ -2188,7 +2184,7 @@ class Compiler {
     // no [ ]:
 
     if (!isToken(Token.identifier))
-      return identifierOrResidueSpecificationExpected();
+      return error(ERROR_identifierOrResidueSpecificationExpected);
     //check for a * in the next token, which
     //would indicate this must be a name with wildcard
 
@@ -2279,19 +2275,19 @@ class Compiler {
       getToken();
       int val = theToken.intValue;
       if (val < 0 || val > 9)
-        return invalidChainSpecification();
+        return error(ERROR_invalidChainSpecification);
       chain = (char) ('0' + val);
       break;
     case Token.identifier:
       String strChain = (String) getToken().value;
       if (strChain.length() != 1)
-        return invalidChainSpecification();
+        return error(ERROR_invalidChainSpecification);
       chain = strChain.charAt(0);
       if (chain == '?')
         return true;
       break;
     default:
-      return invalidChainSpecification();
+      return error(ERROR_invalidChainSpecification);
     }
     return generateResidueSpecCode(new Token(Token.spec_chain, chain,
         "spec_chain"));
@@ -2325,7 +2321,7 @@ class Compiler {
     case Token.identifier:
       break;
     default:
-      return invalidModelSpecification();
+      return error(ERROR_invalidModelSpecification);
     }
     //Logger.debug("alternate specification seen:" + alternate);
     return generateResidueSpecCode(new Token(Token.spec_alternate, alternate));
@@ -2349,19 +2345,19 @@ class Compiler {
     case Token.nada:
       return generateResidueSpecCode(new Token(Token.spec_model, new Integer(1)));
     }
-    return invalidModelSpecification();
+    return error(ERROR_invalidModelSpecification);
   }
 
   private boolean clauseAtomSpec() {
     if (!tokenNext(Token.dot))
-      return invalidAtomSpecification();
+      return error(ERROR_invalidAtomSpecification);
     if (getToken() == null)
       return true;
     String atomSpec = "";
     if (isToken(Token.integer)) {
       atomSpec += "" + theToken.intValue;
       if (getToken() == null)
-        return invalidAtomSpecification();
+        return error(ERROR_invalidAtomSpecification);
     }
     switch (theToken.tok) {
     case Token.times:
@@ -2369,7 +2365,7 @@ class Compiler {
     case Token.identifier:
       break;
     default:
-      return invalidAtomSpecification();
+      return error(ERROR_invalidAtomSpecification);
     }
     atomSpec += theValue;
     if (tokPeek(Token.times)) {
@@ -2399,111 +2395,89 @@ class Compiler {
   }
   
   /// error handling
-  
-  private boolean badContext(String type) {
-    return compileError(GT._("invalid context for {0}", type));
-  }
+
+  private final static int ERROR_badArgumentCount  = 0;
+  private final static int ERROR_badContext  = 1;
+  private final static int ERROR_commandExpected = 2;
+  private final static int ERROR_commaOrCloseExpected  = 3;
+  private final static int ERROR_comparisonOperatorExpected  = 4;
+  private final static int ERROR_coordinateExpected  = 5;
+  private final static int ERROR_endOfCommandUnexpected  = 6;
+  private final static int ERROR_endOfExpressionExpected  = 7;
+  private final static int ERROR_equalSignExpected  = 8;
+  private final static int ERROR_identifierOrResidueSpecificationExpected  = 9;
+  private final static int ERROR_invalidAtomSpecification  = 10;
+  private final static int ERROR_invalidChainSpecification  = 11;
+  private final static int ERROR_invalidExpressionToken  = 12;
+  private final static int ERROR_invalidModelSpecification  = 13;
+  private final static int ERROR_leftParenthesisExpected  = 14;
+  private final static int ERROR_missingEnd  = 15;
+  private final static int ERROR_numberExpected  = 16;
+  private final static int ERROR_numberOrVariableNameExpected  = 17;
+  private final static int ERROR_residueSpecificationExpected  = 18;
+  private final static int ERROR_rightBraceExpected  = 19;
+  private final static int ERROR_rightBracketExpected  = 20;
+  private final static int ERROR_rightParenthesisExpected  = 21;
+  private final static int ERROR_stringExpected  = 22;
+  private final static int ERROR_unrecognizedExpressionToken  = 23;
+  private final static int ERROR_unrecognizedParameter  = 24;
+  private final static int ERROR_unrecognizedToken  = 25;
+
+
+  private final static String[] errors = {
+    GT._("bad argument count"), // 0
+    GT._("invalid context for {0}"), // 1
+    GT._("commandExpected"), // 2
+    GT._("comma or right parenthesis expected"), // 3
+    GT._("comparison operator expected"), // 4
+    GT._("{ number number number } expected"), // 5
+    GT._("unexpected end of script command"), // 6
+    GT._("end of expression expected"), // 7
+    GT._("equal sign expected"), // 8
+    GT._("identifier or residue specification expected"), // 9
+    GT._("invalid atom specification"), // 10
+    GT._("invalid chain specification"), // 11
+    GT._("invalid expression token: {0}"), // 12
+    GT._("invalid model specification"), // 13
+    GT._("left parenthesis expected"), // 14
+    GT._("missing END for {0}"), // 15
+    GT._("number expected"), // 16
+    GT._("number or variable name expected"), // 17
+    GT._("residue specification (ALA, AL?, A*) expected"), // 18
+    GT._("right brace expected"), // 19
+    GT._("right bracket expected"), // 20
+    GT._("right parenthesis expected"), // 21
+    GT._("quoted string expected"), // 22
+    GT._("unrecognized expression token: {0}"), // 23
+    GT._("unrecognized {0} parameter"), // 24
+    GT._("unrecognized token: {0}"), // 25
+  };
 
   private boolean commandExpected() {
     ichToken = ichCurrentCommand;
-    return compileError(GT._("command expected"));
+    return error(errors[ERROR_commandExpected]);
   }
 
-  private boolean invalidExpressionToken(String ident) {
-    return compileError(GT._("invalid expression token: {0}", ident));
+  private boolean error(int error) {
+    return error(error, null, null);
   }
 
-  private boolean unrecognizedToken(String ident) {
-    return compileError(GT._("unrecognized token: {0}", ident));
-  }
-
-  private boolean endOfCommandUnexpected() {
-    return compileError(GT._("unexpected end of script command"));
-  }
-
-  private boolean badArgumentCount() {
-    return compileError(GT._("bad argument count"));
-  }
-
-  private boolean endOfExpressionExpected() {
-    return compileError(GT._("end of expression expected"));
-  }
-
-  private boolean rightParenthesisExpected() {
-    return compileError(GT._("right parenthesis expected"));
-  }
-
-  private boolean leftParenthesisExpected() {
-    return compileError(GT._("left parenthesis expected"));
-  }
-
-  private boolean rightBraceExpected() {
-    return compileError(GT._("right brace expected"));
-  }
-
-  private boolean rightBracketExpected() {
-    return compileError(GT._("right bracket expected"));
-  }
-
-  private boolean coordinateExpected() {
-    return compileError(GT._("{ number number number } expected"));
-  }
-
-  private boolean unrecognizedExpressionToken() {
-    return compileError(GT._("unrecognized expression token: {0}", "" + valuePeek()));
-  }
-
-  private boolean comparisonOperatorExpected() {
-    return compileError(GT._("comparison operator expected"));
-  }
-
-  private boolean equalSignExpected() {
-    return compileError(GT._("equal sign expected"));
-  }
-
-  private boolean numberExpected() {
-    return compileError(GT._("number expected"));
-  }
-
-  private boolean numberOrVariableNameExpected() {
-    return compileError(GT._("number or variable name expected"));
-  }
-
-  private boolean unrecognizedParameter(String kind, String param) {
-    return compileError(GT._("unrecognized {0} parameter", kind) + ": " + param);
+  private boolean error(int error, String value) {
+    return error(error, value, null);
   }
   
-  private boolean identifierOrResidueSpecificationExpected() {
-    return compileError(GT._("identifier or residue specification expected"));
+  private boolean error(int error, String value, String more) {
+    String strError = errors[error];
+    if (value != null)
+      strError = TextFormat.simpleReplace(strError, "{0}", value);
+    if (more != null)
+      strError += more;
+    return error(strError);
   }
-
-  private boolean residueSpecificationExpected() {
-    return compileError(GT._("residue specification (ALA, AL?, A*) expected"));
-  }
-
-  private boolean invalidChainSpecification() {
-    return compileError(GT._("invalid chain specification"));
-  }
-
-  private boolean invalidModelSpecification() {
-    return compileError(GT._("invalid model specification"));
-  }
-
-  private boolean invalidAtomSpecification() {
-    return compileError(GT._("invalid atom specification"));
-  }
-
-  private boolean compileError(String errorMessage) {
+  
+  private boolean error(String errorMessage) {
     this.errorMessage = errorMessage;
     return false;
-  }
-
-  private boolean stringExpected() {
-    return compileError(GT._("quoted string expected"));
-  }
-
-  private boolean commaOrCloseExpected() {
-    return compileError(GT._("comma or right parenthesis expected"));
   }
 
   String getErrorMessage() {
@@ -2528,91 +2502,5 @@ class Compiler {
     }
     return false;
   }
-  
-  /*
-  mth -- I think I am going to be sick
-  the grammer is not context-free
-  what does the string cys120 mean?
-  if you have previously defined a variable, as in
-  define cys120 carbon
-  then when you use cys120 it refers to the previous definition.
-  however, if cys120 was *not* previously defined, then it refers to
-  the residue of type cys at number 120.
-  what a disaster.
-  
-  rmh -- Note that these syntax rules have not been recently updated.
-  Newer features such as if/else/endif, aa = xxx variation of set aa xxx,
-  using file.model instead of * /model, being able to express bitsets within
-  expressions, new CONNECTED syntax, among other things are not represented here.
-  
-  rmh 2/21/07 -- Up until this time, the compiler output was in Reverse Polish
-  Notation (RPN). I've added an RPN processor to Eval now, so this is no longer
-  necessary. The RPN processor allows processing of math separately from 
-  expressions, but it can (and now does) also process natural-language expressions.
-  
-  The main advantage to this is that the order of tokens out is the same as the 
-  order of all tokens in. This allows for a much more user-friendly syntax for
-  debugging, primarily. In addition, if we wanted, we could now include
-  math in expressions. For example, comparator values would not need to be 
-  constants.  
-  
-  
-
-  expression       :: = clauseOr
-
-  clauseOr         ::= clauseAnd {OR|XOR|OrNot clauseAnd}*
-
-  clauseAnd        ::= clauseNot {AND clauseNot}*
-
-  clauseNot        ::= NOT clauseNot | clausePrimitive
-
-  clausePrimitive  ::= clauseComparator |
-  clauseCell |       // RMH 6/06
-  WITHIN clauseFunction |
-  CONNECTED clauseFunction |  // RMH 3/06
-  SUBSTRUCTURE clauseFunction |  // RMH 3/06
-  clauseResidueSpec |
-  none | all |
-  ( clauseOr )
-
-  clauseComparator ::= atomproperty comparatorop integer
-
-  clauseDistance   ::= integer | decimal
-
-  clauseResidueSpec::= { clauseResNameSpec }
-  { clauseResNumSpec }
-  { clauseChainSpec }
-  { clauseAtomSpec }
-  { clauseAlternateSpec }
-  { clauseModelSpec }
-
-  clauseResNameSpec::= * | [ resNamePattern ] | resNamePattern
-
-  // question marks are part of identifiers
-  // they get split up and dealt with as wildcards at runtime
-  // and the integers which are residue number chains get bundled
-  // in with the identifier and also split out at runtime
-  // iff a variable of that name does not exist
-
-  resNamePattern   ::= up to 3 alphanumeric chars with * and ?
-
-  clauseResNumSpec ::= * | clauseSequenceRange
-
-  clauseSequenceRange ::= clauseSequenceCode { - clauseSequenceCode }
-
-  clauseSequenceCode ::= seqcode | {-} integer
-
-  clauseChainSpec  ::= {:} * | identifier | integer
-
-  clauseAtomSpec   ::= . * | . identifier {*}
-  // note that in atom spec context a * is *not* a wildcard
-  // rather, it denotes a 'prime'
-
-  clauseAlternateSpec ::= {%} identifier | integer
-
-  clauseModelSpec  ::= {:|/} * | integer | decimal
-
-  */
-
-
+ 
 }

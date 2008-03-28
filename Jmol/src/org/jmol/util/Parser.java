@@ -81,7 +81,7 @@ public class Parser {
     int len = data.length;
     int i = -1;
     boolean isMatch = (matchData != null);
-    int[] lines = markLines(str, '\n');
+    int[] lines = markLines(str, (str.indexOf('\n') >= 0 ? '\n' : ';'));
     int nLines = lines.length;
     int pt = 0;
     for (int iLine = 0; iLine < nLines; iLine++) {

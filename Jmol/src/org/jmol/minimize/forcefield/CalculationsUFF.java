@@ -136,19 +136,19 @@ class CalculationsUFF extends Calculations {
   }
 
   private void pairSearch(Vector calc, PairCalc type) {
-    A: for (int i = 0; i < atomCount - 1; i++) { // one atom...
+    /*A:*/ for (int i = 0; i < atomCount - 1; i++) { // one atom...
       MinAtom atomA = atoms[i];
       int[] atomList1 = atomA.getBondedAtomIndexes();
       B: for (int j = i + 1; j < atomCount; j++) { // another atom...
         MinAtom atomB = atoms[j];
-        nbrA: for (int k = atomList1.length; --k >= 0;) { // check bonded A-B
+        /*nbrA:*/ for (int k = atomList1.length; --k >= 0;) { // check bonded A-B
           MinAtom nbrA = atoms[atomList1[k]];
           if (nbrA == atomB)
             continue B; // pick another B
           if (nbrA.nBonds == 1)
             continue;
           int[] atomList2 = nbrA.getBondedAtomIndexes(); // check A-X-B
-          nbrAA: for (int l = atomList2.length; --l >= 0;) {
+          /*nbrAA:*/ for (int l = atomList2.length; --l >= 0;) {
             MinAtom nbrAA = atoms[atomList2[l]];
             if (nbrAA == atomB)
               continue B; // pick another B

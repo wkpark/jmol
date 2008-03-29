@@ -370,7 +370,7 @@ function jmolLoadInline(model, targetSuffix) {
   var applet=_jmolGetApplet(targetSuffix);
   if (!applet)return
   if (typeof(model) == "string")
-    applet.loadInlineScript(model, "", false);
+    applet.loadInlineString(model, "", false);
   else
     applet.loadInlineArray(model, "", false);
 }

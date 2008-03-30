@@ -55,7 +55,16 @@
   <!-- the main target -->
 
   <target name="main-i18n" id="main-i18n"
-          depends="init-i18n,update-pot,update-po,update-catalog"/>
+          depends="init-i18n,update-pot,update-po,update-catalog,tar-i18n"/>
+
+  <target name="tar-i18n" id="tar-i18n" depends="update-catalog">
+    <tar tarfile="${Jmol.po.dir}/Jmol.tgz" compression="gzip">
+      <tarfileset dir="${Jmol.po.dir}" includes="*.pot,*.po"/>
+    </tar>
+    <tar tarfile="${JmolApplet.po.dir}/JmolApplet.tgz" compression="gzip">
+      <tarfileset dir="${JmolApplet.po.dir}" includes="*.pot,*.po"/>
+    </tar>
+  </target>
 
   <target name="init-i18n" id="init-i18n">
     <tstamp/>

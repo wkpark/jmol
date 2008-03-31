@@ -41,7 +41,8 @@ class VolumeFileReader extends VoxelReader {
   protected int atomCount;
   private int nSurfaces;
   protected boolean isAngstroms;
-
+  protected boolean canDownsample;
+  private int[] downsampleRemainders;
  
   VolumeFileReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg);
@@ -129,14 +130,34 @@ class VolumeFileReader extends VoxelReader {
 
   protected int readVolumetricHeader() {
     try {
-        readTitleLines();
-        Logger.info(jvxlFileHeaderBuffer.toString());
-        readAtomCountAndOrigin();
-        Logger.info("voxel grid origin:" + volumetricOrigin);
-        for (int i = 0; i < 3; ++i)
-          readVoxelVector(i);
-        for (int i = 0; i < 3; ++i)
-          Logger.info("voxel grid vector:" + volumetricVectors[i]);
+      readTitleLines();
+      Logger.info(jvxlFileHeaderBuffer.toString());
+      readAtomCountAndOrigin();
+      Logger.info("voxel grid origin:" + volumetricOrigin);
+      int downsampleFactor = params.downsampleFactor;
+      boolean downsampling = (canDownsample && downsampleFactor > 0);
+      for (int i = 0; i < 3; ++i)
+        readVoxelVector(i);
+      if (downsampling) {
+        downsampleRemainders = new int[3];
+        Logger.info("downsample factor = " + downsampleFactor);
+        for (int i = 0; i < 3; ++i) {
+          int n = voxelCounts[i];
+          downsampleRemainders[i] = n % downsampleFactor;
+          voxelCounts[i] /= downsampleFactor;
+          volumetricVectors[i].scale(downsampleFactor);
+          Logger.info("downsampling axis " + (i + 1) + " from " + n + " to "
+              + voxelCounts[i]);
+        }
+      }
+      for (int i = 0; i < 3; ++i) {
+        line = voxelCounts[i] + " " + volumetricVectors[i].x + " "
+            + volumetricVectors[i].y + " " + volumetricVectors[i].z;
+        jvxlFileHeaderBuffer.append(line).append('\n');
+        Logger.info("voxel grid count/vector:" + line);
+        if (!isAngstroms)
+          volumetricVectors[i].scale(ANGSTROMS_PER_BOHR);
+      }
       JvxlReader.jvxlReadAtoms(br, jvxlFileHeaderBuffer, atomCount, volumeData);
       return readExtraLine();
     } catch (Exception e) {
@@ -164,20 +185,12 @@ class VolumeFileReader extends VoxelReader {
     //reader-specific
   }
 
-  protected void adjustVoxelVectorLine(int voxelVectorIndex) {
-    //for APBS reader
-  }
-
   protected void readVoxelVector(int voxelVectorIndex) throws Exception {    
     line = br.readLine();
-    adjustVoxelVectorLine(voxelVectorIndex);
-    jvxlFileHeaderBuffer.append(line).append('\n');
     Vector3f voxelVector = volumetricVectors[voxelVectorIndex];
     if ((voxelCounts[voxelVectorIndex] = parseInt(line)) == Integer.MIN_VALUE) //unreadable
       next[0] = line.indexOf(" ");
     voxelVector.set(parseFloat(), parseFloat(), parseFloat());
-    if (!isAngstroms)
-      voxelVector.scale(ANGSTROMS_PER_BOHR);
   }
 
   protected int readExtraLine() throws Exception {
@@ -220,6 +233,8 @@ class VolumeFileReader extends VoxelReader {
 
     next[0] = 0;
     boolean inside = false;
+    int downsampleFactor = params.downsampleFactor;
+    boolean isDownsampled = canDownsample && (downsampleFactor > 0);
     int dataCount = 0;
     if (params.thePlane != null) {
       params.cutoff = 0f;
@@ -232,6 +247,18 @@ class VolumeFileReader extends VoxelReader {
     StringBuffer sb = new StringBuffer();
     jvxlNSurfaceInts = 0;
     boolean collectData = (!isJvxl && params.thePlane == null);
+    int nSkipX = 0;
+    int nSkipY = 0;
+    int nSkipZ = 0;
+    if (isDownsampled) {
+      nSkipX = downsampleFactor - 1;
+      nSkipY = downsampleRemainders[2] + (downsampleFactor - 1)
+          * (nSkipZ = (nPointsZ * downsampleFactor + downsampleRemainders[2]));
+      nSkipZ = downsampleRemainders[1] * nSkipZ + (downsampleFactor - 1) * nSkipZ
+          * (nPointsY * downsampleFactor + downsampleRemainders[1]);
+      //System.out.println(nSkipX + " " + nSkipY + " " + nSkipZ);
+    }
+
     if (isMapData || isJvxl && params.thePlane == null) {
       for (int x = 0; x < nPointsX; ++x) {
         float[][] plane = new float[nPointsY][];
@@ -242,8 +269,14 @@ class VolumeFileReader extends VoxelReader {
           for (int z = 0; z < nPointsZ; ++z) {
             strip[z] = getNextVoxelValue(sb);
             ++nDataPoints;
+            if (isDownsampled)
+              skipVoxels(nSkipX);
           }
+          if (isDownsampled)
+            skipVoxels(nSkipY);
         }
+        if (isDownsampled)
+          skipVoxels(nSkipZ);
       }
     } else {
       float cutoff = params.cutoff;
@@ -269,8 +302,14 @@ class VolumeFileReader extends VoxelReader {
               dataCount = 1;
               inside = !inside;
             }
+            if (isDownsampled)
+              skipVoxels(nSkipX);
           }
+          if (isDownsampled)
+            skipVoxels(nSkipY);
         }
+        if (isDownsampled)
+          skipVoxels(nSkipZ);
       }
     }
     //Jvxl getNextVoxelValue records the data read on its own.
@@ -279,10 +318,16 @@ class VolumeFileReader extends VoxelReader {
       ++jvxlNSurfaceInts;
     }
     if (!isMapData)
-      JvxlReader.setSurfaceInfo(jvxlData, params.thePlane, jvxlNSurfaceInts, sb);
+      JvxlReader
+          .setSurfaceInfo(jvxlData, params.thePlane, jvxlNSurfaceInts, sb);
     volumeData.setVoxelData(voxelData);
   }
 
+  private void skipVoxels(int n) throws Exception {
+    for (int i = n; --i >= 0; )
+      getNextVoxelValue(null);
+  }
+  
   protected float getNextVoxelValue(StringBuffer sb) throws Exception {
     //overloaded in JvxlReader, where sb is appended to
     float voxelValue = 0;

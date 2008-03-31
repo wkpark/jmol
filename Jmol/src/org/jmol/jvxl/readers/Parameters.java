@@ -632,6 +632,7 @@ public class Parameters {
   boolean contourFromZero;
  
   float resolution;
+  int downsampleFactor;
 
   void setMapRanges(VoxelReader voxelReader) {
     if (colorByPhase || colorBySign || (thePlane != null || isBicolorMap) && !isContoured) {

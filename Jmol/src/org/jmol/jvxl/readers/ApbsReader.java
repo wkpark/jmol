@@ -57,17 +57,6 @@ class ApbsReader extends VolumeFileReader {
         atomLine, jvxlFileHeaderBuffer);
   }
 
-  protected void adjustVoxelVectorLine(int voxelVectorIndex) {
-    line = "%dx" + voxelVectorIndex + line;      
-    /* see http://apbs.sourceforge.net/doc/user-guide/index.html#opendx-format
-     * 
-        delta hx 0.0 0.0
-        delta 0.0 hy 0.0 
-        delta 0.0 0.0 hz
-     */
-    
-  }
-  
   protected void readVoxelVector(int voxelVectorIndex) throws Exception {
     super.readVoxelVector(voxelVectorIndex);
     if (voxelVectorIndex == 2) {
@@ -78,11 +67,8 @@ class ApbsReader extends VolumeFileReader {
        object 3 class array type double rank 0 times n data follows
        * 
        */
-      String s = jvxlFileHeaderBuffer.toString();
-      s = TextFormat.simpleReplace(s, "%dx0delta", "" + (voxelCounts[0] = parseInt(tokens[5])));
-      s = TextFormat.simpleReplace(s, "%dx1delta", "" + (voxelCounts[1] = parseInt(tokens[6])));
-      s = TextFormat.simpleReplace(s, "%dx2delta", "" + (voxelCounts[2] = parseInt(tokens[7])));
-      jvxlFileHeaderBuffer = new StringBuffer(s);
+      for (int i = 0; i < 2; i++)
+        voxelCounts[i] = parseInt(tokens[i + 5]);
       br.readLine();
     }
   }

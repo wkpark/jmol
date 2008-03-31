@@ -9995,6 +9995,11 @@ class Eval { //implements Runnable {
           propertyName = "remappable";
           break;
         }
+        if (str.equalsIgnoreCase("DOWNSAMPLE")) { 
+          propertyName = "downsample";
+          propertyValue = new Integer(intParameter(++i));
+          break;
+        }
         if (str.equalsIgnoreCase("LINK")) { // for state of lcaoCartoon
           propertyName = "link";
           break;

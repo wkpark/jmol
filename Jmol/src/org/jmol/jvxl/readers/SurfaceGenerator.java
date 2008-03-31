@@ -416,6 +416,12 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("downsample" == propertyName) {
+      int rate = ((Integer) value).intValue();
+      params.downsampleFactor = (rate >= 0 ? rate : 0);
+      return true;
+    }
+
     if ("anisotropy" == propertyName) {
       if ((params.dataType & Parameters.NO_ANISOTROPY) == 0)
         params.setAnisotropy((Point3f) value);

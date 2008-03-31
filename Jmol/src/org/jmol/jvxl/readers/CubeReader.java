@@ -32,6 +32,7 @@ class CubeReader extends VolumeFileReader {
     super(sg, br);
     isAngstroms = false;
     jvxlData.wasCubic = true;
+    canDownsample = true;
   }
 
   protected void readTitleLines() throws Exception {

@@ -31,7 +31,7 @@ import javax.vecmath.Vector3d;
 
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
-import org.jmol.util.Logger;
+import org.jmol.minimize.Minimizer;
 
 abstract class Calculations {
 
@@ -62,12 +62,12 @@ abstract class Calculations {
   Vector[] calculations = new Vector[CALC_MAX];
   public Hashtable ffParams;
 
-  Calculations(MinAtom[] atoms, MinBond[] bonds, int[][] angles,
-      int[][] torsions, double[] partialCharges) {
-    this.atoms = atoms;
-    this.bonds = bonds;
-    this.angles = angles;
-    this.torsions = torsions;
+  Calculations(Minimizer m) {
+    atoms = m.minAtoms;
+    bonds = m.minBonds;
+    angles = m.angles;
+    torsions = m.torsions;
+    partialCharges = m.partialCharges;
     atomCount = atoms.length;
     bondCount = bonds.length;
     if (partialCharges != null && partialCharges.length == atomCount)
@@ -76,6 +76,8 @@ abstract class Calculations {
           havePartialCharges = true;
           break;
         }
+    if (!havePartialCharges)
+      partialCharges = null;
   }
 
   boolean haveParams() {
@@ -92,7 +94,7 @@ abstract class Calculations {
 
   abstract boolean setupCalculations();
 
-  abstract void dumpAtomList(String title);
+  abstract String getAtomList(String title);
 
   abstract boolean setupElectrostatics();
 
@@ -102,7 +104,7 @@ abstract class Calculations {
 
   abstract String getUnit();
 
-  abstract double compute(int iType, boolean debugging, Object[] dataIn);
+  abstract double compute(int iType, Object[] dataIn);
 
   void addGradient(Vector3d v, int i, double dE) {
     atoms[i].gradient[0] += v.x * dE;
@@ -118,24 +120,39 @@ abstract class Calculations {
     silent = TF;
   }
   
+  StringBuffer logData = new StringBuffer();
+  public String getLogData() {
+    return logData.toString();
+  }
+
+  void appendLogData(String s) {
+    logData.append(s).append("\n");
+  }
+  
+  boolean logging;
+  boolean loggingEnabled;
+  
+  public void setLoggingEnabled(boolean TF) {
+    loggingEnabled = TF;
+    if (loggingEnabled)
+      logData = new StringBuffer();
+  }
+
   private double calc(int iType, boolean gradients) {
+    logging = loggingEnabled && !silent;
     this.gradients = gradients;
     Vector calc = calculations[iType];
     int nCalc;
     double energy = 0;
     if (calc == null || (nCalc = calc.size()) == 0)
       return 0;
-    boolean debugHigh = !silent && (Logger.isActiveLevel(Logger.LEVEL_DEBUGHIGH));
-    if (debugHigh)
-      Logger.info(getDebugHeader(iType));
-
+    if (logging)
+      appendLogData(getDebugHeader(iType));
     for (int ii = 0; ii < nCalc; ii++)
-      energy += compute(iType, debugHigh, (Object[]) calculations[iType]
+      energy += compute(iType, (Object[]) calculations[iType]
           .get(ii));
-
-    if (debugHigh)
-      Logger.info(getDebugFooter(iType, energy));
-
+    if (logging)
+      appendLogData(getDebugFooter(iType, energy));
     return energy;
   }
 

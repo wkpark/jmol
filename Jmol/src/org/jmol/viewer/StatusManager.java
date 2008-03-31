@@ -142,22 +142,29 @@ class StatusManager {
     return (String) htCallbacks.get(callbackType);
   }
   
-  synchronized void setStatusAtomPicked(int atomIndex, String strInfo){
-    if (atomIndex == -1) return;
+  boolean notifyEnabled(int type) {
+    return jmolStatusListener != null && jmolStatusListener.notifyEnabled(type);
+  }
+  synchronized void setStatusAtomPicked(int atomIndex, String strInfo) {
+    if (atomIndex == -1)
+      return;
     Logger.info("setStatusAtomPicked(" + atomIndex + "," + strInfo + ")");
     setStatusChanged("atomPicked", atomIndex, strInfo, false);
     if (jmolStatusListener != null)
-      jmolStatusListener.notifyAtomPicked(atomIndex, strInfo);
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_PICK,
+          new Object[] { "", strInfo, new Integer(atomIndex) });
   }
 
   synchronized void setStatusResized(int width, int height){
-    if (jmolStatusListener != null)
-      jmolStatusListener.notifyResized(width, height);
+    if (jmolStatusListener != null && jmolStatusListener.notifyEnabled(JmolConstants.CALLBACK_RESIZE))
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_PICK,
+          new Object[] { "", new Integer(width), new Integer(height) }); 
   }
 
   synchronized void setStatusAtomHovered(int iatom, String strInfo) {
-    if (jmolStatusListener != null)
-      jmolStatusListener.notifyAtomHovered(iatom, strInfo);
+    if (notifyEnabled(JmolConstants.CALLBACK_HOVER))
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_HOVER, 
+          new Object[] {"", strInfo, new Integer(iatom) });
   }
   
   synchronized void setStatusFileLoaded(String fullPathName, String fileName,
@@ -166,8 +173,8 @@ class StatusManager {
     if (errorMsg != null)
       setStatusChanged("fileLoadError", ptLoad, errorMsg, false);
     if (jmolStatusListener != null && (ptLoad <=0 || ptLoad == 3))
-      jmolStatusListener.notifyFileLoaded(fullPathName, fileName,
-             modelName, clientFile, errorMsg);
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_LOADSTRUCT, 
+          new Object[] {"", fullPathName, fileName, modelName, errorMsg, clientFile} );
   }
 
   synchronized void setStatusFrameChanged(int frameNo, int fileNo, int modelNo, int firstNo, int lastNo) {
@@ -180,42 +187,55 @@ class StatusManager {
     setStatusChanged("frameChanged", frameNo, (f >= 0 ? viewer
         .getModelNumberDotted(f) : ""), false);
     if (jmolStatusListener != null)
-      jmolStatusListener.notifyFrameChanged(frameNo, fileNo, modelNo, firstNo, lastNo);
-  }
-
-  synchronized void setStatusNewPickingModeMeasurement(int iatom, String strMeasure) {
-    setStatusChanged("measurePicked", iatom, strMeasure, false);
-    Logger.info("measurePicked " + iatom + " " + strMeasure);
-    if (jmolStatusListener != null)
-      jmolStatusListener.notifyNewPickingModeMeasurement(iatom, strMeasure);
-  }
-  
-  synchronized void setStatusNewDefaultModeMeasurement(String status, int count, String strMeasure) {
-    setStatusChanged(status, count, strMeasure, false);
-    if(status == "measureCompleted") 
-      Logger.info("measurement["+count+"] = "+strMeasure);
-    if (jmolStatusListener != null)
-      jmolStatusListener.notifyNewDefaultModeMeasurement(count, status + ": " + strMeasure);
-  }
-  
-  synchronized void setStatusScriptStarted(int iscript, String script) {
-    setStatusChanged("scriptStarted", iscript, script, false);
-    if (jmolStatusListener != null)
-      jmolStatusListener.notifyScriptStart("script " + iscript + " started", script);
-  }
-
-  synchronized void setStatusScriptTermination(String statusMessage, int msWalltime){
-    statusMessage = "Jmol script terminated";// + (statusMessage != null ? ": " + statusMessage : "");
-    if (jmolStatusListener == null)
-      return;
-    jmolStatusListener.notifyScriptTermination(statusMessage, msWalltime);
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_ANIMFRAME, 
+          new Object[] {"", new int[] {frameNo, fileNo, modelNo, firstNo, lastNo}} );
   }
 
   synchronized void setScriptEcho(String strEcho) {
     if (strEcho == null) return; 
     setStatusChanged("scriptEcho", 0, strEcho, false);
     if (jmolStatusListener != null)
-      jmolStatusListener.sendConsoleEcho(strEcho);
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_ECHO, new Object[] { "", strEcho });
+  }
+
+  synchronized void setStatusMeasurePicked(int iatom, String strMeasure) {
+    setStatusChanged("measurePicked", iatom, strMeasure, false);
+    Logger.info("measurePicked " + iatom + " " + strMeasure);
+    if (jmolStatusListener != null)
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_MEASURE, new Object[] { "", strMeasure, new Integer(iatom) });
+  }
+  
+  synchronized void setStatusMeasuring(String status, int count, String strMeasure) {
+    setStatusChanged(status, count, strMeasure, false);
+    if(status.equals("measureCompleted")) 
+      Logger.info("measurement["+count+"] = "+strMeasure);
+    if (jmolStatusListener != null)
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_MEASURE, new Object[] { "", strMeasure,  new Integer(count), status });
+  }
+  
+  synchronized void notifyMinimizationStatus() {
+    if (jmolStatusListener == null 
+        || !jmolStatusListener.notifyEnabled(JmolConstants.CALLBACK_MINIMIZATION))
+      return;
+    jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_MINIMIZATION,
+        new Object[] {"", viewer.getParameter("_minimizationStatus"),
+        viewer.getParameter("_minimizationSteps"),
+        viewer.getParameter("_minimizationEnergy"),
+        viewer.getParameter("_minimizationEnergyDiff"),
+        });
+  }
+  
+  synchronized void setStatusScriptStarted(int iscript, String script) {
+    setStatusChanged("scriptStarted", iscript, script, false);
+    if (jmolStatusListener != null)
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT, new Object[] { "", 
+          "script " + iscript + " started", script });
+  }
+
+  synchronized void setStatusScriptTermination(String statusMessage, int msWalltime){
+    if (jmolStatusListener != null)
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT, new Object[] { "", 
+          "Jmol script terminated", statusMessage, new Integer(msWalltime) });
   }
 
   synchronized void setScriptStatus(String strStatus) {
@@ -230,7 +250,7 @@ class StatusManager {
           + (isError ? " unsuccessfully: " + strStatus : " successfully"), false);
 
     if (jmolStatusListener != null)
-      jmolStatusListener.sendConsoleMessage(strStatus);
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_MESSAGE, new Object[] { "", strStatus });
   }
   
   int minSyncRepeatMs = 100;
@@ -298,7 +318,8 @@ class StatusManager {
 
   void syncSend(String script, String appletName) {
     if (jmolStatusListener != null)
-      jmolStatusListener.sendSyncScript(script, appletName);
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SYNC, 
+          new Object[] {"", script, appletName} );
   }
   
   int getSyncMode() {
@@ -312,7 +333,7 @@ class StatusManager {
 
   synchronized void clearConsole() {
     if (jmolStatusListener != null)
-      jmolStatusListener.sendConsoleMessage(null);
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_MESSAGE, null);
   }
 
   synchronized void showConsole(boolean showConsole) {

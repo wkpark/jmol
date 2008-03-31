@@ -79,6 +79,7 @@ class PropertyManager {
     "image"           , "", "",
     "evaluate"        , "<expression>", "",
     "menu"            , "", "",
+    "minimizationInfo", "", "",
   };
 
   private final static int PROP_APPLET_INFO = 0;
@@ -116,7 +117,8 @@ class PropertyManager {
   private final static int PROP_IMAGE = 27;
   private final static int PROP_EVALUATE = 28;
   private final static int PROP_MENU = 29;
-  private final static int PROP_COUNT = 30;
+  private final static int PROP_MINIMIZATION_INFO = 30;
+  private final static int PROP_COUNT = 31;
 
   //// static methods used by Eval and Viewer ////
   
@@ -327,6 +329,8 @@ class PropertyManager {
       return viewer.getMenu();
     case PROP_MESSAGE_QUEUE:
       return viewer.getMessageQueue();
+    case PROP_MINIMIZATION_INFO:
+      return viewer.getMinimizationInfo();
     case PROP_MODEL_INFO:
       return viewer.getModelInfo();
     case PROP_MOLECULE_INFO:

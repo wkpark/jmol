@@ -24,6 +24,7 @@
 
 package org.jmol.minimize.forcefield;
 
+import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -31,6 +32,7 @@ import javax.vecmath.Vector3d;
 
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
+import org.jmol.minimize.Minimizer;
 import org.jmol.minimize.Util;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
@@ -60,8 +62,8 @@ abstract public class ForceField {
 
   protected abstract Hashtable getFFParameters();
 
-  private double criterion, e0; 
-  private int stepCurrent, stepMax; 
+  private double criterion, e0, dE; 
+  private int currentStep, stepMax;
   private double[][] coordSaved;  
 
   int atomCount; 
@@ -70,31 +72,27 @@ abstract public class ForceField {
   Viewer viewer;
   MinAtom[] atoms;
   MinBond[] bonds;
-  int[][] angles;
-  int[][] torsions;
-  double[] partialCharges;
+  BitSet bsFixed;
   
   public ForceField() {}
   
-  public void setModel(Viewer viewer, MinAtom[] atoms, MinBond[] bonds, int[][] angles, 
-      int[][] torsions, double[] partialCharges) {
+  public void setModel(Minimizer m) {
   
-    this.viewer = viewer;
-    this.atoms = atoms;
-    this.bonds = bonds;
-    this.angles = angles;
-    this.torsions = torsions;
+    this.viewer = m.viewer;
+    this.atoms = m.minAtoms;
+    this.bonds = m.minBonds;
+    this.bsFixed = m.bsMinFixed; //not implemented
     atomCount = atoms.length;
     bondCount = bonds.length;
   }
     
   public boolean setup() {
-    if (!calc.haveParams()) {
-      Hashtable temp = getFFParameters();
-      if (temp == null)
-        return false;
-      calc.setParams(temp);
-    }
+    if (calc.haveParams())
+      return true;
+    Hashtable temp = getFFParameters();
+    if (temp == null)
+      return false;
+    calc.setParams(temp);
     return calc.setupCalculations();
   }
 
@@ -115,14 +113,19 @@ abstract public class ForceField {
   public void steepestDescentInitialize(int stepMax, double criterion) {
     this.stepMax = stepMax;//1000
     this.criterion = criterion; //1e-3
-    stepCurrent = 0;
+    currentStep = 0;
     clearGradients();
-
-    if (Logger.debugging)
-      calc.dumpAtomList("S T E E P E S T   D E S C E N T");
-    
+    calc.setLoggingEnabled(stepMax == 0 || Logger.isActiveLevel(Logger.LEVEL_DEBUGHIGH));
+    String s = calc.getDebugHeader(-1) + "Jmol Minimization Version " + Viewer.getJmolVersion() + "\n";
+    calc.appendLogData(s);
+    Logger.info(s);
+    if (calc.loggingEnabled)
+      calc.appendLogData(calc.getAtomList("S T E E P E S T   D E S C E N T"));
     e0 = energyFull(false, false);
-
+    s = TextFormat.sprintf(" Initial E = %10.3f " + calc.getUnit(), null,
+          new float[] { (float) e0 }, null);
+    viewer.scriptEcho(s);
+    calc.appendLogData(s);
   }
 
   private void clearGradients() {
@@ -136,35 +139,45 @@ abstract public class ForceField {
       return false;
 
     for (int iStep = 1; iStep <= n; iStep++) {
-      stepCurrent++;
+      currentStep++;
       calc.setSilent(true);
       for (int i = 0; i < atomCount; i++)
         setGradientsUsingNumericalDerivative(atoms[i], ENERGY);
       linearSearch();
       calc.setSilent(false);
 
-      if (Logger.debugging)
-        calc.dumpAtomList("S T E P    " + stepCurrent);
+      if (calc.loggingEnabled)
+        calc.appendLogData(calc.getAtomList("S T E P    " + currentStep));
 
       double e1 = energyFull(false, false);
-
+      dE = e1 - e0;
+      
       boolean done = Util.isNear(e1, e0, criterion);
-      if (done || stepCurrent % 10 == 0)
-        Logger.info(TextFormat.sprintf(" Step %-4i E = %10.6f    dE = %8.6f   criterion %10.8f", null,
-            new float[] { (float) e1, (float) (e1 - e0), (float) criterion },
-            new int[] { stepCurrent }));
-      if (done) {
-        Logger.info(TextFormat.formatString(
-            "   STEEPEST DESCENT HAS CONVERGED: E = %8.5f " + getUnits() + " after " + stepCurrent + " steps", "f",
-            (float) e1));
-        return false; //done
-      }
 
-      if (stepMax <= stepCurrent) {
-        return false; //done
+      if (done || currentStep % 10 == 0 || stepMax <= currentStep) {
+        String s = TextFormat.sprintf(" Step %-4i E = %10.6f    dE = %8.6f   criterion %10.8f", null,
+            new float[] { (float) e1, (float) (dE), (float) criterion },
+            new int[] { currentStep });
+        viewer.scriptEcho(s);
+        calc.appendLogData(s);
       }
-
       e0 = e1;
+
+      if (done || stepMax <= currentStep) {
+        if (calc.loggingEnabled)
+          calc.appendLogData(calc.getAtomList("F I N A L  G E O M E T R Y"));
+        if (done) {
+          String s = TextFormat.formatString(
+              "\n   STEEPEST DESCENT HAS CONVERGED: E = %8.5f " + getUnits() + " after " + currentStep + " steps", "f",
+              (float) e1);
+          calc.appendLogData(s);
+          viewer.scriptEcho(s);
+
+          Logger.info(s);
+        }
+        return false;
+      }
+      
     }
     return true; // continue
   }
@@ -244,9 +257,6 @@ abstract public class ForceField {
   public double energyFull(boolean gradients, boolean isSilent) {
     double energy;
 
-    if (!isSilent && Logger.debugging)
-      Logger.info("\nE N E R G Y\n");
-
     if (gradients)
       clearGradients();
 
@@ -257,8 +267,8 @@ abstract public class ForceField {
        + energyVDW(gradients)
        + energyES(gradients);
 
-    if (!isSilent && Logger.debugging)
-      Logger.info(TextFormat.sprintf("\nTOTAL ENERGY = %8.3f " + getUnits() + "\n", 
+    if (!isSilent && calc.loggingEnabled)
+      calc.appendLogData(TextFormat.sprintf("\nTOTAL ENERGY = %8.3f " + getUnits() + "\n", 
           null, new float[] { (float) energy }));
     return energy;
   }
@@ -390,12 +400,24 @@ abstract public class ForceField {
     return false;
   }
 
-  public int getStepCurrent() {
-    return stepCurrent;
+  public int getCurrentStep() {
+    return currentStep;
   }
 
-  public void dumpAtomList(String title) {
-    calc.dumpAtomList(title);
+  public double getEnergy() {
+    return e0;
+  }
+  
+  public String getAtomList(String title) {
+    return calc.getAtomList(title);
+  }
+
+  public double getEnergyDiff() {
+    return dE;
+  }
+
+  public String getLogData() {
+    return calc.getLogData();
   }
   
 }

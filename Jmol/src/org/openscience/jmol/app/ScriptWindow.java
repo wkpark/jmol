@@ -155,7 +155,7 @@ public final class ScriptWindow extends JDialog
     isError = TF;
   }
   
-  public void sendConsoleMessage(String strStatus) {
+  void sendConsoleMessage(String strStatus) {
     if (strStatus == null) {
       console.clearContent();
       console.outputStatus("");
@@ -169,12 +169,12 @@ public final class ScriptWindow extends JDialog
     }
   }
 
-  public void notifyScriptStart(String strMsg) {
+  void notifyScriptStart() {
     runButton.setEnabled(true);
     haltButton.setEnabled(true);
   }
 
-  public void notifyScriptTermination(String strMsg, int msWalltime) {
+  void notifyScriptTermination() {
     runButton.setEnabled(true);
     haltButton.setEnabled(false);
   }

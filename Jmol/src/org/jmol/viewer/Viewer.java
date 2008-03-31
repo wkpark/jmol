@@ -27,6 +27,7 @@ import org.jmol.shape.Shape;
 import org.jmol.symmetry.UnitCell;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.AtomIndexIterator;
 import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.ModelSet;
@@ -156,6 +157,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean jvm12orGreater = false;
   private boolean jvm14orGreater = false;
 
+  private Hashtable evalVariables;
+  Hashtable getEvalVariables() {
+    return evalVariables;
+  }
+  
   public Viewer(Component display, JmolAdapter modelAdapter) {
     if (Logger.debugging) {
       Logger.debug("Viewer constructor " + this);
@@ -194,6 +200,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     initialize();
     fileManager = new FileManager(this, modelAdapter);
     compiler = new Compiler(this);
+    evalVariables = new Hashtable();
     eval = new Eval(this);
   }
   
@@ -461,6 +468,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   boolean restoreBonds(String saveName) {
     //from Eval
+    clearMinimization();
     return stateManager.restoreBonds(saveName);
   }
 
@@ -480,6 +488,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   String getSavedStructure(String saveName) {
     return stateManager.getSavedStructure(saveName);
+  }
+
+  public void saveCoordinates(String saveName) {
+    //from Eval
+    stateManager.saveCoordinates(saveName);
+  }
+
+  String getSavedCoordinates(String saveName) {
+    return stateManager.getSavedCoordinates(saveName);
   }
 
   void saveSelection(String saveName) {
@@ -1796,9 +1813,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void clear() {
     if (modelSet == null)
       return;
-    if (minimizer != null)
-      minimizer.setProperty("clear", null);
-    minimizer = null;
+    clearMinimization();
     fileManager.clear();
     repaintManager.clear();
     transformManager.clear();
@@ -1812,12 +1827,37 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.clear();
     tempManager.clear();
     colorManager.clear();
+    evalVariables.clear();
     //setRefreshing(true);
     refresh(0, "Viewer:clear()");
     dataManager.clear();
     System.gc();
   }
 
+  private void clearMinimization() {
+    if (minimizer == null)
+      return;
+    minimizer.setProperty("clear", null);
+    minimizer = null;    
+  }
+  
+  public void notifyMinimizationStatus() {
+    String s = statusManager.getCallbackScript("minimizationcallback");
+    if (s != null)
+      evalStringQuiet(s, true, false);
+    else
+      statusManager.notifyMinimizationStatus();
+  }
+  
+  public String getMinimizationInfo() {
+    return (minimizer == null ? "" 
+        : (String) minimizer.getProperty("log", 0));
+  }
+  
+  public boolean useMinimizationThread() {
+    return !autoExit;
+  }
+  
   private void initializeModel() {
     reset();
     selectAll();
@@ -2367,7 +2407,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isAll || type.equalsIgnoreCase("variableState"))
       s.append(global.getState(sfunc));
     if (isAll || type.equalsIgnoreCase("dataState"))
-      dataManager.getDataState(s, sfunc, modelSet.atoms, getAtomCount(), modelSet.getPropertyState());
+      dataManager.getDataState(s, sfunc, modelSet.atoms, 
+          getAtomCount(), modelSet.getAtomicPropertyState(-1));
 
     //  definitions, connections, atoms, bonds, labels, echos, shapes
     if (isAll || type.equalsIgnoreCase("modelState"))
@@ -2402,6 +2443,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getState(null, false);
   }
 
+  public String getCoordinateState() {
+    return modelSet.getAtomicPropertyState(AtomCollection.TAINT_COORD);
+  }
+  
   void setCurrentColorRange(String label) {
     float[] data = getDataFloat(label);
     BitSet bs = (data == null ? null 
@@ -2589,7 +2634,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setShapeProperty(JmolConstants.SHAPE_MEASURES, isDelete ? "deleteVector"
         : isShowHide ? (isHidden ? "hideVector" : "showVector")
             : "defineVector", monitorExpressions);
-    setStatusNewDefaultModeMeasurement("scripted", 1, "?");
+    setStatusMeasuring("scripted", 1, "?");
   }
 
   public void deleteMeasurement(int i) {
@@ -3742,15 +3787,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       statusManager.setStatusAtomHovered(atomIndex, info);
   }
 
-  public void setStatusNewPickingModeMeasurement(int iatom, String strMeasure) {
-    //for pending measurements
-    statusManager.setStatusNewPickingModeMeasurement(iatom, strMeasure);
+  public void setStatusMeasurePicked(int iatom, String strMeasure) {
+    //for pending measurements or "set picking measure"
+    statusManager.setStatusMeasurePicked(iatom, strMeasure);
   }
 
-  public void setStatusNewDefaultModeMeasurement(String status, int count,
+  public void setStatusMeasuring(String status, int count,
                                                  String strMeasure) {
     //measurement completed
-    statusManager.setStatusNewDefaultModeMeasurement(status, count, strMeasure);
+    statusManager.setStatusMeasuring(status, count, strMeasure);
   }
 
   public void setStatusResized(int width, int height) {
@@ -3956,6 +4001,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setStringProperty(String key, String value) {
+    if (key.charAt(0) == '_') {
+      global.setParameterValue(key, value);
+      return;
+    }
     //Eval
     boolean notFound = false;
     while (true) {
@@ -4106,6 +4155,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void removeUserVariable(String key) {
     global.removeUserVariable(key);
+    if (key.indexOf("callback") >= 0)
+      statusManager.setCallbackFunction(key, null);
   }
   
   boolean isJmolVariable(String key) {
@@ -4113,6 +4164,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
   
   public void setFloatProperty(String key, float value) {
+    if (key.charAt(0) == '_') {
+      global.setParameterValue(key, value);
+      return;
+    }
     setFloatProperty(key, value, false);
   }
 
@@ -5302,6 +5357,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                       int connectOperation, BitSet bsA, BitSet bsB,
                       BitSet bsBonds, boolean isBonds) {
     //eval
+    clearMinimization();
     clearAllMeasurements(); // necessary for serialization
     return modelSet.makeConnections(minDistance, maxDistance, order,
         connectOperation, bsA, bsB, bsBonds, isBonds);
@@ -5309,6 +5365,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void rebond() {
     //Eval, PreferencesDialog
+    clearMinimization();
     modelSet.deleteAllBonds();
     modelSet.autoBond(null, null, null, null);
     modelSet.addStateScript("connect;", null, null, null, null, false);
@@ -5317,6 +5374,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void setPdbConectBonding(int baseAtomIndex, int baseModelIndex, boolean isAuto) {
     // from eval
+    clearMinimization();
     modelSet.deleteAllBonds();
     BitSet bsExclude = new BitSet();
     modelSet.setPdbConectBonding(baseAtomIndex, baseModelIndex, bsExclude);
@@ -5993,7 +6051,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (String) evaluateExpression(exp);
   }
 
-  public Object evaluateExpression(Object stringOrTokens) {
+  public synchronized Object evaluateExpression(Object stringOrTokens) {
     return Eval.evaluateExpression(this, stringOrTokens);
   }
   
@@ -6041,46 +6099,53 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getJmolDataSourceFrame(modelIndex);
   }
   
+  void setAtomProperty(BitSet bs, int tok, int iValue, float fValue, float[] values) {
+    modelSet.setAtomProperty(bs, tok, iValue, fValue, values);
+    switch(tok) {
+    case Token.atomX:
+    case Token.atomY:
+    case Token.atomZ:
+    case Token.fracX:
+    case Token.fracY:
+    case Token.fracZ:
+      refreshMeasures();
+    }    
+  }
+ 
   public void setAtomCoord(int atomIndex, float x, float y, float z) {
     //Frame equivalent used in DATA "coord set"
     modelSet.setAtomCoord(atomIndex, x, y, z);
+    // no measure refresh here -- because it may involve hundreds of calls
   }
 
-  void setAtomProperty(BitSet bs, int tok, int iValue, float fValue, float[] values) {
-    modelSet.setAtomProperty(bs, tok, iValue, fValue, values);
-  }
- 
   void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
     modelSet.setAtomCoord(bs, tokType, xyzValues);
+    refreshMeasures();
   }
 
   public void setAtomCoordRelative(int atomIndex, float x, float y, float z) {
     modelSet.setAtomCoordRelative(atomIndex, x, y, z);
+    // no measure refresh here -- because it may involve hundreds of calls
   }
 
   void setAtomCoordRelative(Point3f offset) {
     //Eval
     modelSet.setAtomCoordRelative(offset, selectionManager.bsSelection);
+    refreshMeasures();
   }
 
   void setRotateSelected(boolean TF) {
     transformManager.setRotateSelected(TF);
+    refreshMeasures();
   }
 
   void setRotateMolecule(boolean TF) {
     transformManager.setRotateMolecule(TF);
+    refreshMeasures();
   }
 
   void setAllowRotateSelected(boolean TF) {
     global.allowRotateSelected = TF;
-  }
-
-  void setDynamicMeasurements(boolean TF) {
-    global.dynamicMeasurements = TF;
-  }
-
-  public boolean getDynamicMeasurements() {
-    return global.dynamicMeasurements;
   }
 
   boolean allowRotateSelected() {
@@ -6090,17 +6155,32 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void invertSelected(Point3f pt, BitSet bs) {
     //Eval
     modelSet.invertSelected(pt, null, bs);
+    refreshMeasures();
   }
 
   void invertSelected(Point3f pt, Point4f plane) {
     //Eval
     modelSet.invertSelected(pt, plane, selectionManager.bsSelection);
+    refreshMeasures();
   }
 
   void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate,
                       boolean fullMolecule, Point3f center, boolean isInternal) {
     modelSet.rotateSelected(mNew, matrixRotate,
         selectionManager.bsSelection, fullMolecule, center, isInternal);
+    refreshMeasures();
+  }
+
+  public void refreshMeasures() {
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "refresh", null);
+  }
+  
+  void setDynamicMeasurements(boolean TF) { //deprecated; unnecessary
+    global.dynamicMeasurements = TF;
+  }
+
+  public boolean getDynamicMeasurements() {
+    return global.dynamicMeasurements;
   }
 
   /**
@@ -6439,6 +6519,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int deleteAtoms(BitSet bs, boolean fullModels) {
+    clearMinimization();
     if (!fullModels)
       return selectionManager.deleteAtoms(bs);
     fileManager.addLoadScript("zap " + Escape.escape(bs));
@@ -6452,6 +6533,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setCurrentModelIndex(-1, true);
     hoverAtomIndex = -1;
     setStatusFileLoaded(0, null, null, null, null, null);
+    refreshMeasures();
     return BitSetUtil.cardinalityOf(bsDeleted);
   }
   
@@ -6460,6 +6542,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public static Object testData; // for isosurface  
-  public static Object testData2; // for isosurface  
+  public static Object testData2; // for isosurface 
 
 }

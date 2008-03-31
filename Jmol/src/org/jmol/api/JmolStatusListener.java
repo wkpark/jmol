@@ -37,46 +37,23 @@ public interface JmolStatusListener {
  * 
  */
 
-  public void handlePopupMenu(int x, int y);
-
-  public void notifyAtomPicked(int atomIndex, String strInfo);
-
-  public void notifyAtomHovered(int atomIndex, String strInfo);
-
-  public void notifyFileLoaded(String fullPathName, String fileName,
-      String modelName, Object clientFile,
-      String errorMessage);
-
-  public void notifyResized(int newWidth, int newHeight);
-
-  public void notifyFrameChanged(int frameNo, int fileNo, int modelNo, int firstNo, int LastNo);
-
-  public void notifyNewDefaultModeMeasurement(int count, String strInfo);
-
-  public void notifyNewPickingModeMeasurement(int iatom, String strMeasure);
-
-  public void notifyScriptStart(String statusMessage, String additionalInfo);
+  public void setCallbackFunction(String callbackType, String callbackFunction);
   
-  public void notifyScriptTermination(String statusMessage, int msWalltime);
+  public void notifyCallback(int type, Object[] data);
 
-  public void sendConsoleEcho(String strEcho);
+  public boolean notifyEnabled(int callback_pick);
 
-  public void sendConsoleMessage(String strStatus);
-
-  public void sendSyncScript(String script, String appletName);
-
-  public void showUrl(String url);
-
-  public void showConsole(boolean showConsole);
-  
-  public float[][] functionXY(String functionName, int x, int y);
-  
   public String eval(String strEval);
   
-  public void setCallbackFunction(String callbackType, String callbackFunction);
+  public float[][] functionXY(String functionName, int x, int y);
   
   public void createImage(String file, Object type_or_text_or_bytes, int quality);
 
   public Hashtable getRegistryInfo();
+
+  public void handlePopupMenu(int x, int y);
+
+  public void showConsole(boolean showConsole);
   
+  public void showUrl(String url);
 }

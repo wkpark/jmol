@@ -86,7 +86,7 @@ class PickingManager {
       float distance = modelSet.getDistance(queuedAtomIndexes[0], atomIndex);
       value = "Distance " + viewer.getAtomInfo(queuedAtomIndexes[0]) + " - "
           + viewer.getAtomInfo(queuedAtomIndexes[1]) + " : " + distance;
-      viewer.setStatusNewPickingModeMeasurement(2, value);
+      viewer.setStatusMeasurePicked(2, value);
       if (pickingMode == JmolConstants.PICKING_MEASURE
           || pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON)
         toggleMeasurement(2);
@@ -102,7 +102,7 @@ class PickingManager {
       value = "Angle " + viewer.getAtomInfo(queuedAtomIndexes[0]) + " - "
           + viewer.getAtomInfo(queuedAtomIndexes[1]) + " - "
           + viewer.getAtomInfo(queuedAtomIndexes[2]) + " : " + angle;
-      viewer.setStatusNewPickingModeMeasurement(3, value);
+      viewer.setStatusMeasurePicked(3, value);
       if (pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON)
         toggleMeasurement(3);
       break;
@@ -118,7 +118,7 @@ class PickingManager {
           + viewer.getAtomInfo(queuedAtomIndexes[1]) + " - "
           + viewer.getAtomInfo(queuedAtomIndexes[2]) + " - "
           + viewer.getAtomInfo(queuedAtomIndexes[3]) + " : " + torsion;
-      viewer.setStatusNewPickingModeMeasurement(4, value);
+      viewer.setStatusMeasurePicked(4, value);
       if (pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON)
         toggleMeasurement(4);
       break;

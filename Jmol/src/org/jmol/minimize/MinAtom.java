@@ -52,6 +52,12 @@ public class MinAtom {
     this.type = type;
   }
 
+  void set() {
+    coord[0] = atom.x;
+    coord[1] = atom.y;
+    coord[2] = atom.z;
+  }
+
   public MinBond getBondTo(int iAtom) {
     getBondedAtomIndexes();
     for (int i = 0; i < nBonds; i++)
@@ -72,4 +78,5 @@ public class MinAtom {
   public String getIdentity() {
     return atom.getInfo();
   }
+
 }

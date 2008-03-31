@@ -41,25 +41,28 @@ import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
 
 public class Minimizer implements MinimizerInterface {
-  static Vector atomTypes;
-  Atom[] atoms;
-  MinAtom[] minAtoms;
-  MinBond[] minBonds;
-  int atomCount;
-  int bondCount;
-  
-  int[][] angles;
-  int[][] torsions;
-  double[] partialCharges;
-  
-  int steps = 50;
-  double crit = 1e-3;
-  boolean sd = true;
-  Viewer viewer;
 
-  ForceField pFF;
-  String ff = "UFF";
-  BitSet bsTaint;
+  public Viewer viewer;
+  public Atom[] atoms;
+  public MinAtom[] minAtoms;
+  public MinBond[] minBonds;
+  public BitSet bsMinFixed;
+  private int atomCount;
+  private int bondCount;
+  private int atomCountFull;
+  
+  public int[][] angles;
+  public int[][] torsions;
+  public double[] partialCharges;
+  
+  private int steps = 50;
+  private double crit = 1e-3;
+
+  private static Vector atomTypes;
+  private ForceField pFF;
+  private String ff = "UFF";
+  private BitSet bsTaint, bsSelected, bsAtoms;
+  private BitSet bsFixed;
   
   public Minimizer() {
   }
@@ -80,6 +83,13 @@ public class Minimizer implements MinimizerInterface {
     }
   }
 
+  public Object getProperty(String propertyName, int param) {
+    if (propertyName.equals("log")) {
+      return (pFF == null ? "" : pFF.getLogData());
+    }
+    return null;
+  }
+  
   private void clear() {
     setMinimizationOn(false);
     atomCount = 0;
@@ -93,32 +103,83 @@ public class Minimizer implements MinimizerInterface {
     partialCharges = null;
     coordSaved = null;
     bsTaint = null;
+    bsAtoms = null;
+    bsFixed = null;
+    bsMinFixed = null;
+    bsSelected = null;
     pFF = null;
   }
   
-  public boolean minimize(Viewer viewer, BitSet bsSelected, BitSet bsFixed,
-                          BitSet bsIgnore) {
-    clear();
-    this.viewer = viewer;
-    viewer.setMinimizer(this);
-    Object val = viewer.getParameter("minimizationSteps");
-    if (val != null && val instanceof Integer) {
-      steps = ((Integer) val).intValue();
+  public boolean minimize(Viewer viewer, int steps, double crit,
+                          BitSet bsSelected, BitSet bsFixed) {
+    if (minimizationOn)
+      return false;
+    Object val;
+    if (steps == Integer.MAX_VALUE) {
+      val = viewer.getParameter("minimizationSteps");
+      if (val != null && val instanceof Integer)
+        steps = ((Integer) val).intValue();
+    }
+    this.steps = steps;
+
+    if (crit <= 0) {
+      val = viewer.getParameter("minimizationCriterion");
+      if (val != null && val instanceof Float)
+        crit = ((Float) val).floatValue();
+    }
+    this.crit = Math.max(crit, 0.0001);
+
+    Logger.info("minimize: initializing (steps = " + steps + " criterion = "
+        + crit + ") ...");
+
+    getForceField();
+    if (pFF == null) {
+      Logger.error(GT._("Could not get class for force field {0}", ff));
+      return false;
     }
 
-    val = viewer.getParameter("minimizationCriterion");
-    if (val != null && val instanceof Float) {
-      crit = ((Float) val).floatValue();
+    if (this.viewer == null) {
+      this.viewer = viewer;
+      viewer.setMinimizer(this);
+      atomCountFull = viewer.getAtomCount();
+      atoms = viewer.getModelSet().getAtoms();
+      bsAtoms = BitSetUtil.copy(bsSelected);
+      atomCount = BitSetUtil.cardinalityOf(bsAtoms);
+      if (atomCount == 0) {
+        Logger.error(GT._("No atoms selected -- nothing to do!"));
+        return false;
+      }
     }
 
-    Logger.info("minimize: initializing (steps = " + steps + " criterion = " + crit + ") ...");
+    if (!BitSetUtil.compareBits(bsSelected, this.bsSelected) || !BitSetUtil
+        .compareBits(bsFixed, this.bsFixed)) {
+      if (!setupMinimization(bsFixed)) {
+        clear();
+        return false;
+      }
+    } else {
+      setAtomPositions();
+    }
+    this.bsSelected = bsSelected;
+    this.bsFixed = bsFixed;
 
-    int atomCountFull = viewer.getAtomCount();
-    atoms = viewer.getModelSet().getAtoms();
-    BitSet bsAtoms = BitSetUtil.copy(bsSelected);
-    BitSetUtil.andNot(bsAtoms, bsIgnore);
+    // minimize and store values
+
+    if (steps > 0 && !viewer.useMinimizationThread())
+      minimizeWithoutThread();
+    else if (steps > 0)
+      setMinimizationOn(true);
+    else
+      getEnergyOnly();
+    return true;
+  }
+
+  private boolean setupMinimization(BitSet bsFixed) {
+    
+    // not implemented
+    bsMinFixed = null;
     if (bsFixed != null) {
-      BitSet bsMinFixed = new BitSet();
+      bsMinFixed = new BitSet();
       for (int i = 0, pt = 0; i < atomCountFull; i++)
         if (bsAtoms.get(i)) {
           if (bsFixed.get(i))
@@ -129,11 +190,6 @@ public class Minimizer implements MinimizerInterface {
 
     // add all atoms
 
-    atomCount = BitSetUtil.cardinalityOf(bsAtoms);
-    if (atomCount == 0) {
-      Logger.error(GT._("No atoms selected -- nothing to do!"));
-      return false;
-    }
     int[] atomMap = new int[atomCountFull];
     minAtoms = new MinAtom[atomCount];
     int elemnoMax = 0;
@@ -230,7 +286,7 @@ public class Minimizer implements MinimizerInterface {
           if (bsAtoms.get(j)) {
             if (search.get(j)) {
               minAtoms[pt].type = data[1];
-            //System.out.println("pt" +pt + data[1]);
+              //System.out.println("pt" +pt + data[1]);
             }
             pt++;
           }
@@ -243,29 +299,29 @@ public class Minimizer implements MinimizerInterface {
     Logger.info("minimize: getting torsions...");
     getTorsions();
 
-    getForceField();
-    if (pFF == null) {
-      Logger.error(GT._("Could not get class for force field {0}", ff));
-      return false;
-    }
-
-    pFF.setModel(viewer, minAtoms, minBonds, angles, torsions, partialCharges);
+    pFF.setModel(this);
 
     if (!pFF.setup()) {
       Logger.error(GT._("could not setup force field {0}", ff));
       return false;
     }
 
-    bsTaint = BitSetUtil.copy(bsAtoms);
-    if (bsFixed != null)
-      BitSetUtil.andNot(bsTaint, bsFixed);
+    if (steps > 0) {
+      bsTaint = BitSetUtil.copy(bsAtoms);
+      if (bsFixed != null)
+        BitSetUtil.andNot(bsTaint, bsFixed);
+      viewer.setTaintedAtoms(bsTaint, AtomCollection.TAINT_COORD);
+    }
 
-    // minimize and store values
-
-    setMinimizationOn(true);
+    this.bsFixed = bsFixed;
     return true;
-  }
 
+  }
+  
+  private void setAtomPositions() {
+    for (int i = 0; i < atomCount; i++)
+      minAtoms[i].set();
+  }
   //////////////// atom type support //////////////////
   
   
@@ -424,7 +480,7 @@ Token[keyword(0x880001) value=")"]
     }
     search[PT_ELEMENT].intValue = elemNo;
     Object v = viewer.evaluateExpression(search);
-    System.out.println(smarts + " minimize atoms=" + v.toString());
+    //System.out.println(smarts + " minimize atoms=" + v.toString());
     return (v instanceof BitSet ? (BitSet) v : null);
   }
   
@@ -518,13 +574,13 @@ Token[keyword(0x880001) value=")"]
         String className = getClass().getName();
         className = className.substring(0, className.lastIndexOf(".")) 
         + ".forcefield.ForceField" + ff;
-        Logger.info( "Minimizer using " + className);
+        Logger.info( "minimize: using " + className);
         pFF = (ForceField) Class.forName(className).newInstance();
       } catch (Exception e) {
         System.out.println(e.getMessage());
       }
     }
-    System.out.println(" forcefield = " + pFF);
+    System.out.println("minimize: forcefield = " + pFF);
     return pFF;
   }
   
@@ -557,34 +613,56 @@ Token[keyword(0x880001) value=")"]
     this.minimizationOn = true;
   }
 
+  private void getEnergyOnly() {
+    if (pFF == null || viewer == null)
+      return;
+    pFF.steepestDescentInitialize(steps, crit);      
+    viewer.setFloatProperty("_minimizationEnergyDiff", 0);
+    viewer.setFloatProperty("_minimizationEnergy", (float) pFF.getEnergy());
+    viewer.setStringProperty("_minimizationStatus", "calculate");
+    viewer.notifyMinimizationStatus();
+  }
+  
   public void startMinimization() {
     if (pFF == null || viewer == null)
       return;
+    viewer.setIntProperty("_minimizationStep", 0);
+    viewer.setStringProperty("_minimizationStatus", "starting");
+    viewer.notifyMinimizationStatus();
+    viewer.saveCoordinates(null, bsTaint);
     pFF.steepestDescentInitialize(steps, crit);
+    viewer.setFloatProperty("_minimizationEnergy", (float) pFF.getEnergy());
+    viewer.setFloatProperty("_minimizationEnergyDiff", (float) pFF.getEnergyDiff());
     saveCoordinates();
   }
 
   boolean stepMinimization() {
     boolean doRefresh = viewer.getBooleanProperty("minimizationRefresh");
+    viewer.setStringProperty("_minimizationStatus", "running");
     boolean going = pFF.steepestDescentTakeNSteps(1);
+    int currentStep = pFF.getCurrentStep();
+    viewer.setIntProperty("_minimizationStep", currentStep);
+    viewer.setFloatProperty("_minimizationEnergy", (float) pFF.getEnergy());
+    viewer.notifyMinimizationStatus();
     if (doRefresh) {
       updateAtomXYZ();
-      viewer.refresh(0, "minimization step " + pFF.getStepCurrent());
+      viewer.refresh(0, "minimization step " + currentStep);
     }
     return going;
   }
 
   void endMinimization() {
     updateAtomXYZ();
-    if (Logger.debugging)
-      pFF.dumpAtomList("F I N A L  G E O M E T R Y");
     setMinimizationOn(false);
     boolean failed = pFF.DetectExplosion();
     if (failed)
       restoreCoordinates();
+    viewer.setIntProperty("_minimizationStep", pFF.getCurrentStep());
+    viewer.setFloatProperty("_minimizationEnergy", (float) pFF.getEnergy());
+    viewer.setStringProperty("_minimizationStatus", (failed ? "failed" : "done"));
+    viewer.notifyMinimizationStatus();
     viewer.refresh(0, "Minimizer:done" + (failed ? " EXPLODED" : "OK"));
-    clear();
-  }
+}
 
   double[][] coordSaved;
   
@@ -614,7 +692,7 @@ Token[keyword(0x880001) value=")"]
   }
   
   void updateAtomXYZ() {
-    if (steps == 0)
+    if (steps <= 0)
       return;
     for (int i = 0; i < atomCount; i++) {
       MinAtom minAtom = minAtoms[i];
@@ -623,10 +701,18 @@ Token[keyword(0x880001) value=")"]
       atom.y = (float) minAtom.coord[1];
       atom.z = (float) minAtom.coord[2];
     }
-    viewer.setTaintedAtoms(bsTaint, AtomCollection.TAINT_COORD);
-    viewer.setShapeProperty(JmolConstants.SHAPE_MEASURES, "refresh", null);
+    viewer.refreshMeasures();
   }
 
+  private void minimizeWithoutThread() {
+    //for batch operation
+    startMinimization();
+    do {
+      if (!stepMinimization())
+        endMinimization();
+    } while (true);
+  }
+  
   class MinimizationThread extends Thread implements Runnable {
     public void run() {
       long startTime = System.currentTimeMillis();

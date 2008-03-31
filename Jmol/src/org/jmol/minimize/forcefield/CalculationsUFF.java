@@ -30,8 +30,8 @@ import javax.vecmath.Vector3d;
 
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
+import org.jmol.minimize.Minimizer;
 import org.jmol.minimize.Util;
-import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
 /*
@@ -70,9 +70,8 @@ class CalculationsUFF extends Calculations {
   VDWCalc vdwCalc;
   ESCalc esCalc;
     
-  CalculationsUFF(MinAtom[] atoms, MinBond[] bonds, int[][] angles, 
-      int[][] torsions, double[] partialCharges) {
-    super(atoms, bonds, angles, torsions, partialCharges);    
+  CalculationsUFF(Minimizer m) {
+    super(m);    
     bondCalc = new BondCalc();
     angleCalc = new AngleCalc();
     torsionCalc = new TorsionCalc();
@@ -200,21 +199,21 @@ class CalculationsUFF extends Calculations {
     return (ri + rj + rbo - ren);
   }
 
-  double compute(int iType, boolean debugging, Object[] dataIn) {
+  double compute(int iType, Object[] dataIn) {
 
     switch (iType) {
     case CALC_BOND:
-      return bondCalc.compute(debugging, dataIn);
+      return bondCalc.compute(dataIn);
     case CALC_ANGLE:
-      return angleCalc.compute(debugging, dataIn);
+      return angleCalc.compute(dataIn);
     case CALC_TORSION:
-      return torsionCalc.compute(debugging, dataIn);
+      return torsionCalc.compute(dataIn);
     case CALC_OOP:
-      return oopCalc.compute(debugging, dataIn);
+      return oopCalc.compute(dataIn);
     case CALC_VDW:
-      return vdwCalc.compute(debugging, dataIn);
+      return vdwCalc.compute(dataIn);
     case CALC_ES:
-      return esCalc.compute(debugging, dataIn);
+      return esCalc.compute(dataIn);
     }
     return 0.0;
   }
@@ -249,7 +248,7 @@ class CalculationsUFF extends Calculations {
           new double[] {r0, kb, bondOrder} });
     }
 
-    double compute(boolean debugging, Object[] dataIn) {
+    double compute(Object[] dataIn) {
       getPointers(dataIn);
       r0 = dData[0];
       kb = dData[1];
@@ -274,8 +273,8 @@ class CalculationsUFF extends Calculations {
         addGradient(db, ib, dE);
       }
       
-      if (debugging)
-        Logger.info(getDebugLine(CALC_BOND, this));
+      if (logging)
+        appendLogData(getDebugLine(CALC_BOND, this));
       
       return energy;
     }
@@ -345,7 +344,7 @@ class CalculationsUFF extends Calculations {
           new double[] { ka, c0 - c2, c1, 2 * c2, theta0 * RAD_TO_DEG } });
     }
 
-    double compute(boolean debugging,  Object[] dataIn) {
+    double compute(Object[] dataIn) {
       
       getPointers(dataIn);
       ia = iData[0];
@@ -413,8 +412,8 @@ class CalculationsUFF extends Calculations {
         addGradient(dc, ic, dE);
       }
       
-      if (debugging)
-        Logger.info(getDebugLine(CALC_ANGLE, this));
+      if (logging)
+        appendLogData(getDebugLine(CALC_ANGLE, this));
       
       return energy;
     }
@@ -524,7 +523,7 @@ class CalculationsUFF extends Calculations {
     }
 
     
-    double compute(boolean debugging,  Object[] dataIn) {
+    double compute(Object[] dataIn) {
        
       getPointers(dataIn);
       
@@ -571,8 +570,8 @@ class CalculationsUFF extends Calculations {
         addGradient(dd, id, dE);
       }
       
-      if (debugging)
-        Logger.info(getDebugLine(CALC_TORSION, this));
+      if (logging)
+        appendLogData(getDebugLine(CALC_TORSION, this));
       
       return energy;
     }
@@ -761,7 +760,7 @@ class CalculationsUFF extends Calculations {
           new double[] { koop, a0, a1, a2 } });
     }
 
-    double compute(boolean debugging, Object[] dataIn) {
+    double compute(Object[] dataIn) {
 
       getPointers(dataIn);
       double koop = dData[0];
@@ -804,8 +803,8 @@ class CalculationsUFF extends Calculations {
         addGradient(dd, id, dE);
       }
 
-      if (debugging)
-        Logger.info(getDebugLine(CALC_OOP, this));
+      if (logging)
+        appendLogData(getDebugLine(CALC_OOP, this));
 
       return energy;
     }
@@ -848,7 +847,7 @@ class CalculationsUFF extends Calculations {
           new double[] { Xab, Dab } });
     }
 
-    double compute(boolean debugging,  Object[] dataIn) {
+    double compute(Object[] dataIn) {
 
       getPointers(dataIn);
       double Xab = dData[0];
@@ -881,8 +880,8 @@ class CalculationsUFF extends Calculations {
         addGradient(db, ib, dE);
       }
       
-      if (debugging)
-        Logger.info(getDebugLine(CALC_VDW, this));
+      if (logging)
+        appendLogData(getDebugLine(CALC_VDW, this));
       
       return energy;
     }
@@ -903,7 +902,7 @@ class CalculationsUFF extends Calculations {
             new double[] { qq } });
     }
 
-    double compute(boolean debugging,  Object[] dataIn) {
+    double compute(Object[] dataIn) {
       
       getPointers(dataIn);
       double qq = dData[0];      
@@ -928,8 +927,8 @@ class CalculationsUFF extends Calculations {
         addGradient(db, ib, dE);
       }
       
-      if (debugging)
-        Logger.info(getDebugLine(CALC_ES, this));
+      if (logging)
+        appendLogData(getDebugLine(CALC_ES, this));
       
       return energy;
     }
@@ -938,11 +937,12 @@ class CalculationsUFF extends Calculations {
   
   ///////// REPORTING /////////////
   
-  void dumpAtomList(String title) {
+  String getAtomList(String title) {
     String trailer =
           "----------------------------------------"
-          + "-------------------------------------------------------";  
-    Logger.info("\n" + title + "\n\n"
+          + "-------------------------------------------------------\n";  
+    StringBuffer sb = new StringBuffer();
+    sb.append("\n" + title + "\n\n"
         + " ATOM    X        Y        Z    TYPE     GRADX    GRADY    GRADZ  "
         + "---------BONDED ATOMS--------\n"
         + trailer);
@@ -956,18 +956,22 @@ class CalculationsUFF extends Calculations {
         s += " %3i";
         iVal[j + 1] = atoms[others[j]].atom.getAtomNumber();
       }
-      Logger.info(TextFormat.sprintf("%3i %8.3f %8.3f %8.3f  %-5s %8.3f %8.3f %8.3f" + s, 
+      sb.append(TextFormat.sprintf("%3i %8.3f %8.3f %8.3f  %-5s %8.3f %8.3f %8.3f" + s + "\n", 
           new String[] { atom.type },
           new float[] { (float) atom.coord[0], (float) atom.coord[1],
             (float) atom.coord[2], (float) atom.gradient[0], (float) atom.gradient[1],
             (float) atom.gradient[2], }, 
           iVal));
     }
-    Logger.info(trailer + "\n");
+    sb.append(trailer + "\n\n");
+    return sb.toString();
   }
 
   String getDebugHeader(int iType) {
     switch (iType){
+    case -1:
+      return  "Universal Force Field -- " +
+          "Rappe, A. K., et. al.; J. Am. Chem. Soc. (1992) 114(25) p. 10024-10035\n";
     case CALC_BOND:
       return
            "\nB O N D   S T R E T C H I N G (" + bondCount + " bonds)\n\n"

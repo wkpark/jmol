@@ -1707,6 +1707,69 @@ public class Jmol extends JPanel {
 
   class MyStatusListener implements JmolStatusListener {
     
+    public boolean notifyEnabled(int type) {
+      switch (type) {
+      case JmolConstants.CALLBACK_ANIMFRAME:
+      case JmolConstants.CALLBACK_ECHO:
+      case JmolConstants.CALLBACK_LOADSTRUCT:
+      case JmolConstants.CALLBACK_MEASURE:
+      case JmolConstants.CALLBACK_MESSAGE:
+      case JmolConstants.CALLBACK_PICK:
+      case JmolConstants.CALLBACK_SCRIPT:
+        return true; 
+      case JmolConstants.CALLBACK_HOVER:
+      case JmolConstants.CALLBACK_MINIMIZATION:
+      case JmolConstants.CALLBACK_RESIZE:
+      case JmolConstants.CALLBACK_SYNC:       
+        //applet only
+      }
+      return false;
+    }
+    
+    public void notifyCallback(int type, Object[] data) {
+      String strInfo = (data == null || data[1] == null ? null : data[1]
+          .toString());
+      switch (type) {
+      case JmolConstants.CALLBACK_LOADSTRUCT:
+        notifyFileLoaded(strInfo, (String) data[2], (String) data[3],
+            (String) data[4], data[5]);
+        break;
+      case JmolConstants.CALLBACK_ANIMFRAME:
+        notifyFrameChanged(((int[]) data[1])[0]);
+        break;
+      case JmolConstants.CALLBACK_ECHO:
+        sendConsoleEcho(strInfo);
+        break;
+      case JmolConstants.CALLBACK_MEASURE:
+        if (data.length == 3) //picking mode
+          notifyAtomPicked(strInfo);
+        else if (((String) data[3]).indexOf("Completed") >= 0)
+          sendConsoleEcho(strInfo.substring(strInfo.lastIndexOf(",") + 2, 
+              strInfo.length() - 1));
+        measurementTable.updateTables();
+        break;
+      case JmolConstants.CALLBACK_MESSAGE:
+        sendConsoleMessage(data == null ? null : strInfo);
+        break;
+      case JmolConstants.CALLBACK_PICK:
+        notifyAtomPicked(strInfo);
+        break;
+      case JmolConstants.CALLBACK_SCRIPT:
+        if (scriptWindow == null)
+          return;
+        if (data.length == 4)
+          scriptWindow.notifyScriptTermination();
+        else
+          scriptWindow.notifyScriptStart();
+        break;
+      case JmolConstants.CALLBACK_RESIZE:
+      case JmolConstants.CALLBACK_SYNC:
+      case JmolConstants.CALLBACK_HOVER:
+      case JmolConstants.CALLBACK_MINIMIZATION:
+        break;
+      }
+    }
+
     public String eval(String strEval) {
       if (strEval.equals("_GET_MENU"))
         return (jmolpopup == null ? "" : jmolpopup.getMenu("Jmol version " + Viewer.getJmolVersion()));
@@ -1735,13 +1798,16 @@ public class Jmol extends JPanel {
 
     }
 
-    public void notifyResized(int width, int height){
-      // applet only
+    private void notifyAtomPicked(String info) {
+      if (scriptWindow != null) {
+        scriptWindow.sendConsoleMessage(info);
+        scriptWindow.sendConsoleMessage("\n");
+      }
     }
-
-    public void notifyFileLoaded(String fullPathName, String fileName,
-                                 String modelName, Object clientFile,
-                                 String errorMsg) {
+    
+    private void notifyFileLoaded(String fullPathName, String fileName,
+                                 String modelName, String errorMsg,
+                                 Object clientFile) {
       if (errorMsg != null) {
         //        JOptionPane.showMessageDialog(null,
         //          fullPathName + "\n\n" + errorMsg + "\n\n" ,
@@ -1770,7 +1836,7 @@ public class Jmol extends JPanel {
         pcs.firePropertyChange(chemFileProperty, null, clientFile);
     }
 
-    public void notifyFrameChanged(int frameNo, int fileNo, int modelNo, int firstNo, int lastNo) {
+    private void notifyFrameChanged(int frameNo) {
       // Note: twos-complement. To get actual frame number, use 
       // Math.max(frameNo, -2 - frameNo)
       // -1 means all frames are now displayed
@@ -1794,26 +1860,14 @@ public class Jmol extends JPanel {
       jmolpopup.updateComputedMenus();
     }
 
-    public void notifyScriptStart(String statusMessage, String additionalInfo) {
-      if (scriptWindow != null)
-        scriptWindow.notifyScriptStart(statusMessage);
-     
-      //System.out.println("notifyScriptStart:" + statusMessage + (additionalInfo == "" ? "" : additionalInfo));
-    }
-    
-    public void sendConsoleEcho(String strEcho) {
+    private void sendConsoleEcho(String strEcho) {
       if (scriptWindow != null)
         scriptWindow.sendConsoleEcho(strEcho);
     }
 
-    public void sendConsoleMessage(String strStatus) {
+    private void sendConsoleMessage(String strStatus) {
       if (scriptWindow != null)
         scriptWindow.sendConsoleMessage(strStatus);
-    }
-
-    public void notifyScriptTermination(String strStatus, int msWalltime) {
-      if (scriptWindow != null)
-        scriptWindow.notifyScriptTermination(strStatus, msWalltime);
     }
 
     public void handlePopupMenu(int x, int y) {
@@ -1824,28 +1878,6 @@ public class Jmol extends JPanel {
       jmolpopup.show(x, y);
     }
 
-    public void notifyNewPickingModeMeasurement(int iatom, String strMeasure) {
-      notifyAtomPicked(iatom, strMeasure);
-    }
-
-    public void notifyNewDefaultModeMeasurement(int count, String strInfo) {
-      measurementTable.updateTables();
-    }
-
-    public void notifyAtomPicked(int atomIndex, String strInfo) {
-      if (scriptWindow != null) {
-        scriptWindow.sendConsoleMessage(strInfo);
-        scriptWindow.sendConsoleMessage("\n");
-      }
-    }
-
-    public void notifyAtomHovered(int atomIndex, String strInfo) {
-      
-    }
-
-    public void sendSyncScript(String script, String appletName) {  
-    }
-    
     public void showUrl(String url) {
       try {        
         Class c = Class.forName("java.awt.Desktop");

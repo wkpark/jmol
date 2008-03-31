@@ -90,6 +90,7 @@ public class StateManager {
   String lastSelected = "";
   String lastState = "";
   String lastShape = "";
+  String lastCoordinates = "";
 
   StateManager(Viewer viewer) {
     this.viewer = viewer;
@@ -215,6 +216,18 @@ public class StateManager {
   String getSavedStructure(String saveName) {
     String name = (saveName.length() > 0 ? "Shape_" + saveName
         : lastShape);
+    String script = (String) saved.get(name);
+    return (script == null ? "" : script); 
+  }
+
+  void saveCoordinates(String saveName) {
+    saveName = lastCoordinates = "Coordinates_" + saveName;
+    saved.put(saveName, viewer.getCoordinateState());
+  }
+
+  String getSavedCoordinates(String saveName) {
+    String name = (saveName.length() > 0 ? "Coordinates_" + saveName
+        : lastCoordinates);
     String script = (String) saved.get(name);
     return (script == null ? "" : script); 
   }
@@ -713,7 +726,7 @@ public class StateManager {
       ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred" +
       ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount" +
       ";spinx;spiny;spinz;spinfps" +
-      ";animframecallback;loadstructcallback;messagecallback;hovercallback" +
+      ";animframecallback;loadstructcallback;messagecallback;minimizationcallback;hovercallback" +
       ";resizecallback;pickcallback;synccallback" +
       ";";
     

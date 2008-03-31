@@ -810,6 +810,17 @@ abstract public class AtomCollection {
     BitSetUtil.copy(bs, tainted[type]);
   }
 
+  public String getAtomicPropertyState(int taintWhat) {
+    BitSet bs;
+    StringBuffer commands = new StringBuffer();
+    for (byte i = 0; i < TAINT_MAX; i++)
+      if (taintWhat < 0 || i == taintWhat)
+      if((bs = getTaintedAtoms(i)) != null) { 
+        getAtomicPropertyState(commands, atoms, atomCount, i, bs, null, null);
+      }
+    return commands.toString();
+  }
+  
   public static void getAtomicPropertyState(StringBuffer commands,
                                             Atom[] atoms, int atomCount,
                                             byte type, BitSet bs, String label,

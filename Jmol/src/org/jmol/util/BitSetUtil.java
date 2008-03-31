@@ -188,4 +188,13 @@ final public class BitSetUtil {
     for (; ipt < len; ipt++)
       bs.clear(ipt);
   }
+  
+  public static boolean compareBits(BitSet a, BitSet b) {
+    if (a == null || b == null)
+      return a == null && b == null;
+    for (int i = Math.max(a.size(), b.size()); --i >= 0; )
+      if (a.get(i) != b.get(i))
+        return false;
+    return true;
+  }
 }

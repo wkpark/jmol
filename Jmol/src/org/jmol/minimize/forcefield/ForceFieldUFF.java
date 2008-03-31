@@ -31,19 +31,18 @@ import java.net.URL;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.jmol.minimize.MinAtom;
-import org.jmol.minimize.MinBond;
+import org.jmol.minimize.Minimizer;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.viewer.Viewer;
+
 
 public class ForceFieldUFF extends ForceField {
 
   
-  public void setModel(Viewer viewer, MinAtom[] atoms, MinBond[] bonds, int[][] angles, 
-      int[][] torsions, double[] partialCharges) {
-    super.setModel(viewer, atoms, bonds, angles, torsions, partialCharges);
-    calc = new CalculationsUFF(atoms, bonds, angles, torsions, partialCharges);
+  public void setModel(Minimizer m) {
+    super.setModel(m);
+    calc = new CalculationsUFF(m);
+    calc.setLoggingEnabled(Logger.isActiveLevel(Logger.LEVEL_DEBUGHIGH));
   }
 
   protected Hashtable getFFParameters() {

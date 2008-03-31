@@ -49,7 +49,7 @@ abstract class Calculation {
 
   //! Compute the energy and gradients for this OBFFCalculation
 
-  abstract double compute(boolean debugging, Object[] dataIn);
+  abstract double compute(Object[] dataIn);
   
   //! \return Energy for this OBFFCalculation (call Compute() first)
   double getEnergy() {

@@ -128,13 +128,17 @@ class Eval { //implements Runnable {
   boolean isSyntaxCheck;
   Viewer viewer;
   int iToken;
+  private Hashtable variables;
 
   private StringBuffer outputBuffer;
 
   Eval(Viewer viewer) {
     compiler = viewer.getCompiler();
     this.viewer = viewer;
-    clearDefinitionsAndLoadPredefined();
+    //System.out.println("new eval: " + this.hashCode());
+    variables = viewer.getEvalVariables();
+    if (variables.isEmpty())
+      clearDefinitionsAndLoadPredefined();
   }
 
   private Object getParameter(String var, boolean asToken) {
@@ -582,36 +586,34 @@ class Eval { //implements Runnable {
   }
 
   private void predefine(String script) {
-    if (compiler.compile("#predefine", script, true, false, false, false)) {
-      Token[][] aatoken = compiler.getAatokenCompiled();
-      if (aatoken.length != 1) {
-        viewer
-            .scriptStatus("JmolConstants.java ERROR: predefinition does not have exactly 1 command:"
-                + script);
-        return;
-      }
-      Token[] statement = aatoken[0];
-      if (statement.length > 2) {
-        int tok = statement[iToken = 1].tok;
-        if (tok == Token.identifier
-            || Compiler.tokAttr(tok, Token.predefinedset)) {
-          String variable = (String) statement[1].value;
-          variables.put(variable, statement);
-        } else {
-          viewer
-              .scriptStatus("JmolConstants.java ERROR: invalid variable name:"
-                  + script);
-        }
-      } else {
-        viewer
-            .scriptStatus("JmolConstants.java ERROR: bad predefinition length:"
-                + script);
-      }
-    } else {
+    if (!compiler.compile("#predefine", script, true, false, false, false)) {
       viewer
           .scriptStatus("JmolConstants.java ERROR: predefined set compile error:"
               + script + "\ncompile error:" + compiler.getErrorMessage());
+      return;
     }
+
+    Token[][] aatoken = compiler.getAatokenCompiled();
+    if (aatoken.length != 1) {
+      viewer
+          .scriptStatus("JmolConstants.java ERROR: predefinition does not have exactly 1 command:"
+              + script);
+      return;
+    }
+    Token[] statement = aatoken[0];
+    if (statement.length <= 2) {
+      viewer.scriptStatus("JmolConstants.java ERROR: bad predefinition length:"
+          + script);
+      return;
+    }
+    int tok = statement[iToken = 1].tok;
+    if (tok != Token.identifier && !Compiler.tokAttr(tok, Token.predefinedset)) {
+      viewer.scriptStatus("JmolConstants.java ERROR: invalid variable name:"
+          + script);
+      return;
+    }
+    String variable = (String) statement[1].value;
+    variables.put(variable, statement);
   }
 
   /* ****************************************************************************
@@ -834,7 +836,7 @@ class Eval { //implements Runnable {
       viewer.scriptStatus(toString());
     }
     if (!historyDisabled && !isSyntaxCheck
-        && scriptLevel <= commandHistoryLevelMax)
+        && scriptLevel <= commandHistoryLevelMax && !tQuiet)
       viewer.addCommand(script);
     if (pcEnd == 0)
       pcEnd = Integer.MAX_VALUE;
@@ -3869,7 +3871,6 @@ class Eval { //implements Runnable {
       setShapeProperty(shapeType, prefix + "translucency", translucency);
   }
 
-  private Hashtable variables = new Hashtable();
   private Object[] data;
 
   private void data() throws ScriptException {
@@ -5082,64 +5083,71 @@ class Eval { //implements Runnable {
   private void minimize() throws ScriptException {
     BitSet bsSelected = null;
     BitSet bsFixed = null;
-    BitSet bsIgnore = null;
+    int steps = Integer.MAX_VALUE;
+    float crit = 0;
     MinimizerInterface minimizer = viewer.getMinimizer();
-     if (statementLength == 1) {
-      //all atoms
-      int i = BitSetUtil.firstSetBit(viewer.getVisibleFramesBitSet());
-      bsSelected = viewer.getModelAtomBitSet(i, false);
-    } else
-      for (int i = 1; i < statementLength; i++) {
-        switch (tokAt(i)) {
-        case Token.select:
-          bsSelected = expression(++i);
-          i = iToken;
-          break;
-        case Token.expressionBegin:
-          if (bsSelected == null)
-            bsSelected = expression(i);
-          else if (bsFixed == null)
-            bsFixed = expression(i);
-          else if (bsIgnore == null)
-            bsIgnore = expression(i);
-          else
-            error(ERROR_invalidArgument);
-          i = iToken;
-          break;
-        case Token.string:
-        case Token.identifier:
-          String cmd = parameterAsString(i);
-          if (cmd.equalsIgnoreCase("cancel")) {
-            checkLength2();
-            if (isSyntaxCheck || minimizer == null)
-              return;
-            minimizer.setProperty("cancel", null);
-            return;
-          }
-          if (cmd.equalsIgnoreCase("stop")) {
-            checkLength2();
-            if (isSyntaxCheck || minimizer == null)
-              return;
-            minimizer.setProperty("stop", null);
-            return;
-          }
-          if (cmd.equalsIgnoreCase("ignore"))
-            bsIgnore = expression(++i);
-          else if (cmd.equalsIgnoreCase("fix"))
-            bsFixed = expression(++i);
-          else
-            error(ERROR_invalidArgument);
-          i = iToken;
+    for (int i = 1; i < statementLength; i++)
+      switch (tokAt(i)) {
+      case Token.clear:
+        checkLength2();
+        if (isSyntaxCheck || minimizer == null)
+          return;
+        minimizer.setProperty("clear", null);
+        return;
+      case Token.select:
+        bsSelected = expression(++i);
+        i = iToken;
+        break;
+      case Token.expressionBegin:
+        if (bsSelected == null)
+          bsSelected = expression(i);
+        else if (bsFixed == null)
+          bsFixed = expression(i);
+        else
+          error(ERROR_invalidArgument);
+        i = iToken;
+        break;
+      case Token.string:
+      case Token.identifier:
+        String cmd = parameterAsString(i).toLowerCase();
+        if (cmd.equals("energy")) {
+          steps = 0;
+          continue;
         }
+        if (cmd.equals("criterion")) {
+          crit = floatParameter(++i);
+          continue;
+        }
+        if (cmd.equals("steps")) {
+          steps = intParameter(++i);
+          continue;
+        }
+        if (cmd.equals("stop") || cmd.equals("cancel")) {
+          checkLength2();
+          if (isSyntaxCheck || minimizer == null)
+            return;
+          minimizer.setProperty(cmd, null);
+          return;
+        }
+        if (cmd.equals("fix")) {
+          // not implemented
+          bsFixed = expression(++i);
+          i = iToken;
+          break;
+        }
+        error(ERROR_invalidArgument);
       }
-
     if (isSyntaxCheck)
       return;
     try {
+      if (bsSelected == null) {
+        int i = BitSetUtil.firstSetBit(viewer.getVisibleFramesBitSet());
+        bsSelected = viewer.getModelAtomBitSet(i, false);
+      }
       String name = JmolConstants.CLASSBASE_OPTIONS + "minimize.Minimizer";
       if (minimizer == null)
         minimizer = (MinimizerInterface) Class.forName(name).newInstance();
-      minimizer.minimize(viewer, bsSelected, bsFixed, bsIgnore);
+      minimizer.minimize(viewer, steps, crit, bsSelected, bsFixed);
     } catch (Exception e) {
       evalError(e.getMessage());
     }
@@ -8120,6 +8128,10 @@ class Eval { //implements Runnable {
         if (!isSyntaxCheck)
           viewer.saveStructure(saveName);
         return;
+      case Token.coord:
+        if (!isSyntaxCheck)
+          viewer.saveCoordinates(saveName);
+        return;
       case Token.identifier:
         if (parameterAsString(1).equalsIgnoreCase("selection")) {
           if (!isSyntaxCheck)
@@ -8128,7 +8140,7 @@ class Eval { //implements Runnable {
         }
       }
     }
-    error(ERROR_what, "SAVE", "bonds? orientation? selection? state? structure?");
+    error(ERROR_what, "SAVE", "bonds? coords? orientation? selection? state? structure?");
   }
 
   private void restore() throws ScriptException {
@@ -8149,13 +8161,20 @@ class Eval { //implements Runnable {
         if (!isSyntaxCheck)
           viewer.restoreBonds(saveName);
         return;
+      case Token.coord:
+        if (isSyntaxCheck)
+          return;
+        String script = viewer.getSavedCoordinates(saveName);
+        if (script == null)
+          error(ERROR_invalidArgument);
+        runScript(script);
+        return;
       case Token.state:
         if (isSyntaxCheck)
           return;
         String state = viewer.getSavedState(saveName);
         if (state == null)
           error(ERROR_invalidArgument);
-        //state = TextFormat.simpleReplace(state, "\\\"", "\"");
         runScript(state);
         return;
       case Token.structure:
@@ -8174,7 +8193,7 @@ class Eval { //implements Runnable {
         }
       }
     }
-    error(ERROR_what, "RESTORE", "bonds? orientation? selection? state? structure?");
+    error(ERROR_what, "RESTORE", "bonds? coords? orientation? selection? state? structure?");
   }
 
   private void write() throws ScriptException {

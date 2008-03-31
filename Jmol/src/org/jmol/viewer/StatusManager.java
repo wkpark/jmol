@@ -157,7 +157,7 @@ class StatusManager {
 
   synchronized void setStatusResized(int width, int height){
     if (jmolStatusListener != null && jmolStatusListener.notifyEnabled(JmolConstants.CALLBACK_RESIZE))
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_PICK,
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_RESIZE,
           new Object[] { "", new Integer(width), new Integer(height) }); 
   }
 
@@ -250,7 +250,7 @@ class StatusManager {
           + (isError ? " unsuccessfully: " + strStatus : " successfully"), false);
 
     if (jmolStatusListener != null)
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_MESSAGE, new Object[] { "", strStatus });
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT, new Object[] { "", strStatus });
   }
   
   int minSyncRepeatMs = 100;

@@ -37,6 +37,7 @@ import javax.swing.JTextField;
 
 import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolViewer;
+import org.jmol.viewer.JmolConstants;
 import org.openscience.jmol.app.Jmol;
 
 public class Export {
@@ -67,36 +68,84 @@ public class Export {
 class MyStatusListener implements JmolStatusListener {
   // JTextField monitor used to broadcast atom tracking out of Jmol
   public JTextField monitor;
+  
+  public boolean notifyEnabled(int type) {
+    // indicate here any callbacks you will be working with.
+    // some of these flags are not tested. See org.jmol.viewer.StatusManager.java
+    switch (type) {
+    case JmolConstants.CALLBACK_ANIMFRAME:
+    case JmolConstants.CALLBACK_ECHO:
+    case JmolConstants.CALLBACK_LOADSTRUCT:
+    case JmolConstants.CALLBACK_MEASURE:
+    case JmolConstants.CALLBACK_MESSAGE:
+    case JmolConstants.CALLBACK_PICK:
+    case JmolConstants.CALLBACK_SYNC:
+    case JmolConstants.CALLBACK_SCRIPT:
+    case JmolConstants.CALLBACK_HOVER:
+    case JmolConstants.CALLBACK_MINIMIZATION:
+    case JmolConstants.CALLBACK_RESIZE:
+    }
+    return false;
+  }
+  
+  public void notifyCallback(int type, Object[] data) {
+    // this method as of 11.5.23 gets all the callback notifications for
+    // any embedding application or for the applet.
+    // see org.jmol.applet.Jmol.java and org.jmol.openscience.app.Jmol.java
+    
+    // data is an object set up by org.jmol.viewer.StatusManager
+    // see that class for details.
+    // data[0] is always blank -- for inserting htmlName
+    // data[1] is either String (main message) or int[] (animFrameCallback only)
+    // data[2] is optional supplemental information such as status info
+    //         or sometimes an Integer value
+    // data[3] is more optional supplemental information, either a String or Integer
+    // etc. 
+    
+    switch (type) {
+    case JmolConstants.CALLBACK_ANIMFRAME:
+      break;
+    case JmolConstants.CALLBACK_ECHO:
+      sendConsoleEcho((String) data[1]);
+      break;
+    case JmolConstants.CALLBACK_HOVER:
+      break;
+    case JmolConstants.CALLBACK_LOADSTRUCT:
+      String strInfo = (String) data[1];
+      System.out.println(strInfo);
+      monitor.setText(strInfo);
+      break;
+    case JmolConstants.CALLBACK_MEASURE:
+      break;
+    case JmolConstants.CALLBACK_MESSAGE:
+      sendConsoleMessage((String) data[1]);
+      break;
+    case JmolConstants.CALLBACK_MINIMIZATION:
+      break;
+    case JmolConstants.CALLBACK_PICK:
+      //for example:
+      notifyAtomPicked(((Integer) data[2]).intValue(), (String) data[1]);
+      break;
+    case JmolConstants.CALLBACK_RESIZE:
+      break;
+    case JmolConstants.CALLBACK_SCRIPT:
+      break;
+    case JmolConstants.CALLBACK_SYNC:
+      break;
+    }
+  }  
 
-  /* (non-Javadoc)
-   * @see org.jmol.api.JmolStatusListener#notifyFileLoaded(java.lang.String, java.lang.String, java.lang.String, java.lang.Object, java.lang.String)
-   */
-  public void notifyFileLoaded(String fullPathName, String fileName,
-                               String modelName, Object clientFile,
-                               String errorMessage) {
-    System.out.println("loaded " + fileName);
+  private void notifyAtomPicked(int atomIndex, String strInfo) {
+    System.out.println(strInfo);
+    monitor.setText(strInfo);
   }
 
-  /* (non-Javadoc)
-   * @see org.jmol.api.JmolStatusListener#notifyScriptTermination(java.lang.String, int)
-   */
-  public void notifyScriptTermination(String statusMessage, int msWalltime) {
-    System.out.println(statusMessage);
-  }
 
   /* (non-Javadoc)
    * @see org.jmol.api.JmolStatusListener#handlePopupMenu(int, int)
    */
   public void handlePopupMenu(int x, int y) {
     System.out.println("");
-  }
-
-  /* (non-Javadoc)
-   * @see org.jmol.api.JmolStatusListener#notifyAtomPicked(int, java.lang.String)
-   */
-  public void notifyAtomPicked(int atomIndex, String strInfo) {
-    System.out.println(strInfo);
-    monitor.setText(strInfo);
   }
 
   /* (non-Javadoc)
@@ -128,59 +177,16 @@ class MyStatusListener implements JmolStatusListener {
   }
 
   /* (non-Javadoc)
-   * @see org.jmol.api.JmolStatusListener#notifyAtomHovered(int, java.lang.String)
-   */
-  public void notifyAtomHovered(int atomIndex, String strInfo) {
-    //
-  }
-
-
-  /* (non-Javadoc)
-   * @see org.jmol.api.JmolStatusListener
-   */
-  public void notifyResized(int newWidth, int newHeight) {
-    //
-  }
-
-  /* (non-Javadoc)
-   * @see org.jmol.api.JmolStatusListener#notifyNewDefaultModeMeasurement(int, java.lang.String)
-   */
-  public void notifyNewDefaultModeMeasurement(int count, String strInfo) {
-    //
-  }
-
-  /* (non-Javadoc)
-   * @see org.jmol.api.JmolStatusListener#notifyNewPickingModeMeasurement(int, java.lang.String)
-   */
-  public void notifyNewPickingModeMeasurement(int iatom, String strMeasure) {
-    //
-  }
-
-  /* (non-Javadoc)
-   * @see org.jmol.api.JmolStatusListener#notifyScriptStart(java.lang.String, java.lang.String)
-   */
-  public void notifyScriptStart(String statusMessage, String additionalInfo) {
-    //
-  }
-
-  /* (non-Javadoc)
    * @see org.jmol.api.JmolStatusListener#sendConsoleEcho(java.lang.String)
    */
-  public void sendConsoleEcho(String strEcho) {
+  private void sendConsoleEcho(String strEcho) {
     //
   }
 
   /* (non-Javadoc)
    * @see org.jmol.api.JmolStatusListener#sendConsoleMessage(java.lang.String)
    */
-  public void sendConsoleMessage(String strStatus) {
-    //
-  }
-
-  /* (non-Javadoc)
-   * @see org.jmol.api.JmolStatusListener#sendSyncScript(java.lang.String, java.lang.String)
-   */
-  public void sendSyncScript(String script, String appletName) {
+  private void sendConsoleMessage(String strStatus) {
     //
   }
 
@@ -198,20 +204,10 @@ class MyStatusListener implements JmolStatusListener {
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see org.jmol.api.JmolStatusListener#notifyFrameChanged(int, int, int, int, int)
-   */
-  public void notifyFrameChanged(int frameNo, int fileNo, int modelNo, int firstNo, int LastNo) {
-    //
-  }
-
   public void createImage(String file, Object type_or_text_or_bytes, int quality) {
-    // TODO
-    
   }
 
   public Hashtable getRegistryInfo() {
-    // TODO
     return null;
   }
 }

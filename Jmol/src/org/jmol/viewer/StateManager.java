@@ -220,9 +220,9 @@ public class StateManager {
     return (script == null ? "" : script); 
   }
 
-  void saveCoordinates(String saveName) {
+  void saveCoordinates(String saveName, BitSet bsSelected) {
     saveName = lastCoordinates = "Coordinates_" + saveName;
-    saved.put(saveName, viewer.getCoordinateState());
+    saved.put(saveName, viewer.getCoordinateState(bsSelected));
   }
 
   String getSavedCoordinates(String saveName) {

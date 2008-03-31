@@ -810,14 +810,13 @@ abstract public class AtomCollection {
     BitSetUtil.copy(bs, tainted[type]);
   }
 
-  public String getAtomicPropertyState(int taintWhat) {
+  public String getAtomicPropertyState(int taintWhat, BitSet bsSelected) {
     BitSet bs;
     StringBuffer commands = new StringBuffer();
     for (byte i = 0; i < TAINT_MAX; i++)
       if (taintWhat < 0 || i == taintWhat)
-      if((bs = getTaintedAtoms(i)) != null) { 
+      if((bs = (bsSelected != null ? bsSelected : getTaintedAtoms(i))) != null)
         getAtomicPropertyState(commands, atoms, atomCount, i, bs, null, null);
-      }
     return commands.toString();
   }
   

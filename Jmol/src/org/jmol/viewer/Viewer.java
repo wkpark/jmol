@@ -490,9 +490,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return stateManager.getSavedStructure(saveName);
   }
 
-  public void saveCoordinates(String saveName) {
+  public void saveCoordinates(String saveName, BitSet bsSelected) {
     //from Eval
-    stateManager.saveCoordinates(saveName);
+    stateManager.saveCoordinates(saveName, bsSelected);
   }
 
   String getSavedCoordinates(String saveName) {
@@ -2408,7 +2408,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       s.append(global.getState(sfunc));
     if (isAll || type.equalsIgnoreCase("dataState"))
       dataManager.getDataState(s, sfunc, modelSet.atoms, 
-          getAtomCount(), modelSet.getAtomicPropertyState(-1));
+          getAtomCount(), modelSet.getAtomicPropertyState(-1, null));
 
     //  definitions, connections, atoms, bonds, labels, echos, shapes
     if (isAll || type.equalsIgnoreCase("modelState"))
@@ -2443,8 +2443,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getState(null, false);
   }
 
-  public String getCoordinateState() {
-    return modelSet.getAtomicPropertyState(AtomCollection.TAINT_COORD);
+  public String getCoordinateState(BitSet bsSelected) {
+    return modelSet.getAtomicPropertyState(AtomCollection.TAINT_COORD, bsSelected);
   }
   
   void setCurrentColorRange(String label) {

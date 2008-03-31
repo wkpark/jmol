@@ -8130,7 +8130,7 @@ class Eval { //implements Runnable {
         return;
       case Token.coord:
         if (!isSyntaxCheck)
-          viewer.saveCoordinates(saveName);
+          viewer.saveCoordinates(saveName, viewer.getSelectionSet());
         return;
       case Token.identifier:
         if (parameterAsString(1).equalsIgnoreCase("selection")) {
@@ -8640,6 +8640,16 @@ class Eval { //implements Runnable {
     case Token.unitcell:
       if (!isSyntaxCheck)
         msg = viewer.getUnitCellInfoText();
+      break;
+    case Token.coord:
+      if ((len = statementLength) == 2) {
+        if (!isSyntaxCheck)
+          msg = viewer.getCoordinateState(viewer.getSelectionSet());
+        break;
+      }
+      String nameC = parameterAsString(2);
+      if (!isSyntaxCheck)
+        msg = viewer.getSavedCoordinates(nameC);
       break;
     case Token.state:
       if ((len = statementLength) == 2) {

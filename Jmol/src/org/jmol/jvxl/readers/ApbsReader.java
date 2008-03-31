@@ -25,7 +25,6 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
-import org.jmol.util.TextFormat;
 import org.jmol.util.Parser;
 
 class ApbsReader extends VolumeFileReader {

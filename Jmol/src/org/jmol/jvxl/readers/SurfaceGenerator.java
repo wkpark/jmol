@@ -604,6 +604,11 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("maxset" == propertyName) {
+      params.maxSet = ((Integer) value).intValue();
+      return true;
+    }
+
     if ("plane" == propertyName) {
       params.setPlane((Point4f) value);
 //      ++state;
@@ -802,6 +807,9 @@ public class SurfaceGenerator {
 
     if (params.minSet > 0)
       voxelReader.excludeMinimumSet();
+
+    if (params.maxSet > 0)
+      voxelReader.excludeMaximumSet();
 
     if (haveMeshDataServer)
       meshDataServer.notifySurfaceGenerationCompleted();

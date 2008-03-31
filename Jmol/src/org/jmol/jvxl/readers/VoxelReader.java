@@ -734,4 +734,24 @@ public abstract class VoxelReader implements VertexDataServer {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS);
   }
+
+  void excludeMaximumSet() {
+    if (meshDataServer != null)
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
+    meshData.getSurfaceSet();
+    BitSet bs;
+    for (int i = meshData.nSets; --i >= 0;)
+      if ((bs = meshData.surfaceSet[i]) != null) {
+        int n = 0;
+        for (int j = bs.size(); --j >= 0;)
+          // cardinality
+          if (bs.get(j))
+            n++;
+        if (n > params.maxSet)
+          meshData.invalidateSurfaceSet(i);
+      }
+    updateSurfaceData();
+    if (meshDataServer != null)
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS);
+  }
 }

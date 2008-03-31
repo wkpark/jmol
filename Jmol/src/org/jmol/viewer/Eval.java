@@ -10068,6 +10068,11 @@ class Eval { //implements Runnable {
           propertyValue = new Integer(intParameter(++i));
           break;
         }
+        if (str.equalsIgnoreCase("MAXSET")) {
+          propertyName = "maxset";
+          propertyValue = new Integer(intParameter(++i));
+          break;
+        }
         if (str.equalsIgnoreCase("ANGSTROMS")) {
           propertyName = "angstroms";
           break;

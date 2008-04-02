@@ -25,6 +25,7 @@
 package org.jmol.minimize;
 
 import java.util.BitSet;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import org.jmol.api.MinimizerInterface;
@@ -33,7 +34,9 @@ import org.jmol.minimize.forcefield.ForceField;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.viewer.JmolConstants;
@@ -50,7 +53,8 @@ public class Minimizer implements MinimizerInterface {
   private int atomCount;
   private int bondCount;
   private int atomCountFull;
-  
+  private int[] atomMap; 
+ 
   public int[][] angles;
   public int[][] torsions;
   public double[] partialCharges;
@@ -63,22 +67,35 @@ public class Minimizer implements MinimizerInterface {
   private String ff = "UFF";
   private BitSet bsTaint, bsSelected, bsAtoms;
   private BitSet bsFixed;
+  public Vector constraints;
   
   public Minimizer() {
   }
 
   public void setProperty(String propertyName, Object value) {
-    if (propertyName.equals("clear")) {
-      clear();
-      return;
-    }
     if (propertyName.equals("cancel")) {
       stopMinimization(false);
       return;
     }
-
+    if (propertyName.equals("clear")) {
+      stopMinimization(false);
+      clear();
+      return;
+    }
+    if (propertyName.equals("constraint")) {
+      addConstraint((Object[]) value);
+      return;
+    }
+    if (propertyName.equals("fixed")) {
+      bsFixed = (BitSet) value;
+      return;
+    }
     if (propertyName.equals("stop")) {
       stopMinimization(true);
+      return;
+    }
+    if (propertyName.equals("viewer")) {
+      viewer = (Viewer) value;
       return;
     }
   }
@@ -90,6 +107,36 @@ public class Minimizer implements MinimizerInterface {
     return null;
   }
   
+  Hashtable constraintMap;
+  
+  private void addConstraint(Object[] c) {
+    if (c == null)
+      return;
+    int[] atoms = (int[]) c[0];
+    int nAtoms = atoms[0];
+    if (nAtoms == 0) {
+      constraints = null;
+      return;
+    }
+    if (constraints == null) {
+      constraints = new Vector();
+      constraintMap = new Hashtable();
+    }
+    if (atoms[1] > atoms[nAtoms]) {
+        ArrayUtil.swap(atoms, 1, nAtoms);
+        if (nAtoms == 4)
+          ArrayUtil.swap(atoms, 2, 3);
+    }
+    String id = Escape.escape(atoms);
+    Object[] c1 = (Object[]) constraintMap.get(id);
+    if (c1 != null) {
+      c1[2] = c[2]; // just set target value
+      return;
+    }
+    constraintMap.put(id, c);
+    constraints.addElement(c);
+  }
+    
   private void clear() {
     setMinimizationOn(false);
     atomCount = 0;
@@ -102,16 +149,18 @@ public class Minimizer implements MinimizerInterface {
     torsions = null;
     partialCharges = null;
     coordSaved = null;
+    atomMap = null;
     bsTaint = null;
     bsAtoms = null;
     bsFixed = null;
     bsMinFixed = null;
     bsSelected = null;
+    constraints = null;
+    constraintMap = null;
     pFF = null;
   }
   
-  public boolean minimize(Viewer viewer, int steps, double crit,
-                          BitSet bsSelected, BitSet bsFixed) {
+  public boolean minimize(int steps, double crit, BitSet bsSelected) {
     if (minimizationOn)
       return false;
     Object val;
@@ -137,10 +186,7 @@ public class Minimizer implements MinimizerInterface {
       Logger.error(GT._("Could not get class for force field {0}", ff));
       return false;
     }
-
-    if (this.viewer == null) {
-      this.viewer = viewer;
-      viewer.setMinimizer(this);
+    if (atoms == null) {
       atomCountFull = viewer.getAtomCount();
       atoms = viewer.getModelSet().getAtoms();
       bsAtoms = BitSetUtil.copy(bsSelected);
@@ -151,18 +197,32 @@ public class Minimizer implements MinimizerInterface {
       }
     }
 
-    if (!BitSetUtil.compareBits(bsSelected, this.bsSelected) || !BitSetUtil
-        .compareBits(bsFixed, this.bsFixed)) {
-      if (!setupMinimization(bsFixed)) {
-        clear();
-        return false;
-      }
-    } else {
-      setAtomPositions();
+    if (!BitSetUtil.compareBits(bsSelected, this.bsSelected)
+        && !setupMinimization()) {
+      clear();
+      return false;
     }
+    setAtomPositions();
     this.bsSelected = bsSelected;
-    this.bsFixed = bsFixed;
 
+    if (constraints != null) {
+      for (int i = constraints.size(); --i >= 0;) {
+        Object[] constraint = (Object[]) constraints.elementAt(i);
+        int[] aList = (int[]) constraint[0];
+        int[] minList = (int[]) constraint[1];
+        int nAtoms = aList[0] = Math.abs(aList[0]);
+        for (int j = 1; j <= nAtoms; j++) {
+          if (steps <= 0 || !bsAtoms.get(aList[j])) {
+            aList[0] = -nAtoms; //disable
+            break;
+          }
+          minList[j - 1] = atomMap[aList[j]];
+        }
+      }
+    }
+
+    pFF.setConstraints(this);
+    
     // minimize and store values
 
     if (steps > 0 && !viewer.useMinimizationThread())
@@ -174,23 +234,11 @@ public class Minimizer implements MinimizerInterface {
     return true;
   }
 
-  private boolean setupMinimization(BitSet bsFixed) {
+  private boolean setupMinimization() {
     
-    // not implemented
-    bsMinFixed = null;
-    if (bsFixed != null) {
-      bsMinFixed = new BitSet();
-      for (int i = 0, pt = 0; i < atomCountFull; i++)
-        if (bsAtoms.get(i)) {
-          if (bsFixed.get(i))
-            bsMinFixed.set(pt);
-          pt++;
-        }
-    }
-
     // add all atoms
 
-    int[] atomMap = new int[atomCountFull];
+    atomMap = new int[atomCountFull];
     minAtoms = new MinAtom[atomCount];
     int elemnoMax = 0;
     BitSet bsElements = new BitSet();
@@ -201,11 +249,8 @@ public class Minimizer implements MinimizerInterface {
         int atomicNo = atoms[i].getElementNumber();
         elemnoMax = Math.max(elemnoMax, atomicNo);
         bsElements.set(atomicNo);
-        int flags = 0;
-        if (bsFixed != null && bsFixed.get(i))
-          flags = MinAtom.ATOM_FIXED;
         minAtoms[pt] = new MinAtom(pt, atom, new double[] { atom.x, atom.y,
-            atom.z }, flags, null);
+            atom.z }, null);
         pt++;
       }
     }
@@ -312,8 +357,6 @@ public class Minimizer implements MinimizerInterface {
         BitSetUtil.andNot(bsTaint, bsFixed);
       viewer.setTaintedAtoms(bsTaint, AtomCollection.TAINT_COORD);
     }
-
-    this.bsFixed = bsFixed;
     return true;
 
   }
@@ -321,6 +364,16 @@ public class Minimizer implements MinimizerInterface {
   private void setAtomPositions() {
     for (int i = 0; i < atomCount; i++)
       minAtoms[i].set();
+    bsMinFixed = null;
+    if (bsFixed != null) {
+      bsMinFixed = new BitSet();
+      for (int i = 0, pt = 0; i < atomCountFull; i++)
+        if (bsAtoms.get(i)) {
+          if (bsFixed.get(i))
+            bsMinFixed.set(pt);
+          pt++;
+        }
+    }
   }
   //////////////// atom type support //////////////////
   

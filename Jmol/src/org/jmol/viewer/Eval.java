@@ -2030,9 +2030,14 @@ class Eval { //implements Runnable {
    */
 
   private void checkStatementLength(int length) throws ScriptException {
-    iToken = statementLength;
-    if (statementLength != length)
-      error(ERROR_badArgumentCount);
+    checkStatementLength(length, 0);
+  }
+
+  private void checkStatementLength(int length, int errorPt) throws ScriptException {
+    if (statementLength == length)
+      return;
+    iToken = errorPt > 0 ? errorPt : statementLength;
+    error(errorPt > 0 ? ERROR_invalidArgument : ERROR_badArgumentCount);
   }
 
   private void checkLength34() throws ScriptException {
@@ -2049,15 +2054,15 @@ class Eval { //implements Runnable {
   }
 
   private void checkLength2() throws ScriptException {
-    checkStatementLength(2);
+    checkStatementLength(2, 0);
   }
 
   private void checkLength3() throws ScriptException {
-    checkStatementLength(3);
+    checkStatementLength(3, 0);
   }
 
   private void checkLength4() throws ScriptException {
-    checkStatementLength(4);
+    checkStatementLength(4, 0);
   }
 
   private int modelNumberParameter(int index) throws ScriptException {
@@ -5082,10 +5087,11 @@ class Eval { //implements Runnable {
 
   private void minimize() throws ScriptException {
     BitSet bsSelected = null;
-    BitSet bsFixed = null;
     int steps = Integer.MAX_VALUE;
     float crit = 0;
     MinimizerInterface minimizer = viewer.getMinimizer();
+    // may be null 
+
     for (int i = 1; i < statementLength; i++)
       switch (tokAt(i)) {
       case Token.clear:
@@ -5094,22 +5100,49 @@ class Eval { //implements Runnable {
           return;
         minimizer.setProperty("clear", null);
         return;
-      case Token.select:
-        bsSelected = expression(++i);
-        i = iToken;
-        break;
-      case Token.expressionBegin:
-        if (bsSelected == null)
-          bsSelected = expression(i);
-        else if (bsFixed == null)
-          bsFixed = expression(i);
-        else
+      case Token.constraint:
+        if (i != 1)
           error(ERROR_invalidArgument);
-        i = iToken;
-        break;
+        int n = 0;
+        i++;
+        float targetValue = 0;
+        int[] aList = new int[5];
+        if (tokAt(i) == Token.clear) {
+          checkLength2();
+        } else {
+          while (n < 4 && !isFloatParameter(i)) {
+            aList[++n] = BitSetUtil.firstSetBit(expression(i));
+            i = iToken + 1;
+          }
+          aList[0] = n;
+          targetValue = floatParameter(i++);
+          checkStatementLength(i);
+        }
+        if (!isSyntaxCheck)
+          getMinimizer().setProperty("constraint",
+              new Object[] { aList, new int[n], new Float(targetValue) });
+        return;
       case Token.string:
       case Token.identifier:
         String cmd = parameterAsString(i).toLowerCase();
+        if (cmd.equals("stop") || cmd.equals("cancel")) {
+          checkLength2();
+          if (isSyntaxCheck || minimizer == null)
+            return;
+          minimizer.setProperty(cmd, null);
+          return;
+        }
+        if (cmd.equals("fix")) {
+          if (i != 1)
+            error(ERROR_invalidArgument);
+          BitSet bsFixed = expression(++i);
+          if (BitSetUtil.firstSetBit(bsFixed) < 0)
+            bsFixed = null;
+          checkStatementLength(iToken + 1, 1);
+          if (!isSyntaxCheck)
+            getMinimizer().setProperty("fixed", bsFixed);
+          return;
+        }
         if (cmd.equals("energy")) {
           steps = 0;
           continue;
@@ -5122,35 +5155,38 @@ class Eval { //implements Runnable {
           steps = intParameter(++i);
           continue;
         }
-        if (cmd.equals("stop") || cmd.equals("cancel")) {
-          checkLength2();
-          if (isSyntaxCheck || minimizer == null)
-            return;
-          minimizer.setProperty(cmd, null);
-          return;
-        }
-        if (cmd.equals("fix")) {
-          // not implemented
-          bsFixed = expression(++i);
-          i = iToken;
-          break;
-        }
         error(ERROR_invalidArgument);
+      case Token.select:
+        bsSelected = expression(++i);
+        i = iToken;
+        continue;
       }
     if (isSyntaxCheck)
       return;
+    if (bsSelected == null) {
+      int i = BitSetUtil.firstSetBit(viewer.getVisibleFramesBitSet());
+      bsSelected = viewer.getModelAtomBitSet(i, false);
+    }
+    minimizer = getMinimizer();
     try {
-      if (bsSelected == null) {
-        int i = BitSetUtil.firstSetBit(viewer.getVisibleFramesBitSet());
-        bsSelected = viewer.getModelAtomBitSet(i, false);
-      }
-      String name = JmolConstants.CLASSBASE_OPTIONS + "minimize.Minimizer";
-      if (minimizer == null)
-        minimizer = (MinimizerInterface) Class.forName(name).newInstance();
-      minimizer.minimize(viewer, steps, crit, bsSelected, bsFixed);
+      minimizer.minimize(steps, crit, bsSelected);
     } catch (Exception e) {
       evalError(e.getMessage());
     }
+  }
+  
+  private MinimizerInterface getMinimizer() throws ScriptException {
+    MinimizerInterface minimizer = viewer.getMinimizer();
+    if (minimizer != null)
+      return minimizer;
+    try {
+      String name = JmolConstants.CLASSBASE_OPTIONS + "minimize.Minimizer";
+      minimizer = (MinimizerInterface) Class.forName(name).newInstance();
+      viewer.setMinimizer(minimizer);
+    } catch (Exception e) {
+      evalError(e.getMessage());
+    }
+    return minimizer;
   }
   
   private void select() throws ScriptException {
@@ -5226,7 +5262,7 @@ class Eval { //implements Runnable {
     } else if (type.equalsIgnoreCase("hkl")) {
       plane = hklParameter(2);
     }
-    checkStatementLength(iToken + 1);
+    checkStatementLength(iToken + 1, 1);
     if (plane == null && pt == null)
       error(ERROR_invalidArgument);
     if (isSyntaxCheck)
@@ -8586,6 +8622,9 @@ class Eval { //implements Runnable {
       } else if (str.equalsIgnoreCase("trajectory") || str.equalsIgnoreCase("trajectories")) {
         msg = viewer.getTrajectoryInfo();
       }
+      break;
+    case Token.minimize:
+      msg = viewer.getMinimizationInfo();
       break;
     case Token.axes:
       switch (viewer.getAxesMode()) {

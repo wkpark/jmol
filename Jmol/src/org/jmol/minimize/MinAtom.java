@@ -33,22 +33,17 @@ public class MinAtom {
   int index;
   public Atom atom;
   public double[] coord = new double[3];
-  public double[] gradient = new double[3];
+  public double[] force = new double[3];
   public Vector bonds = new Vector();
   public int nBonds;
-  
-  final static int ATOM_FIXED = 1;
-  final static int ATOM_IGNORE = 2;
-  public int flags;
   
   public String type;
   int[] bondedAtoms;
   
-  MinAtom(int index, Atom atom, double[] coord, int flags, String type) {
+  MinAtom(int index, Atom atom, double[] coord, String type) {
     this.index = index;
     this.atom = atom;
     this.coord = coord;
-    this.flags = flags;
     this.type = type;
   }
 

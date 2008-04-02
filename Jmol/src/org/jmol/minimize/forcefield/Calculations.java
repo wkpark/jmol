@@ -31,7 +31,7 @@ import javax.vecmath.Vector3d;
 
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
-import org.jmol.minimize.Minimizer;
+import org.jmol.minimize.Util;
 
 abstract class Calculations {
 
@@ -40,34 +40,40 @@ abstract class Calculations {
 
   final static double KCAL_TO_KJ = 4.1868;
 
-  final static int CALC_BOND = 0;
-  final static int CALC_ANGLE = 1;
+  final static int CALC_DISTANCE = 0; // do not change these
+  final static int CALC_ANGLE = 1;    // first three numbers
   final static int CALC_TORSION = 2;
   final static int CALC_OOP = 3;
   final static int CALC_VDW = 4;
   final static int CALC_ES = 5;
   final static int CALC_MAX = 6;
 
+  Vector[] calculations = new Vector[CALC_MAX];
+  public Hashtable ffParams;
+
   int atomCount;
   int bondCount;
-
   MinAtom[] atoms;
   MinBond[] bonds;
   int[][] angles;
   int[][] torsions;
   double[] partialCharges;
-
   boolean havePartialCharges;
+  Vector constraints;
 
-  Vector[] calculations = new Vector[CALC_MAX];
-  public Hashtable ffParams;
+  public void setConstraints(Vector constraints) {
+    this.constraints = constraints;
+  }
 
-  Calculations(Minimizer m) {
-    atoms = m.minAtoms;
-    bonds = m.minBonds;
-    angles = m.angles;
-    torsions = m.torsions;
-    partialCharges = m.partialCharges;
+  Calculations(MinAtom[] minAtoms, MinBond[] minBonds, 
+      int[][] angles, int[][] torsions, double[] partialCharges, 
+      Vector constraints) {
+    atoms = minAtoms;
+    bonds = minBonds;
+    this.angles = angles;
+    this.torsions = torsions;
+    this.partialCharges = partialCharges;
+    this.constraints = constraints;
     atomCount = atoms.length;
     bondCount = bonds.length;
     if (partialCharges != null && partialCharges.length == atomCount)
@@ -106,10 +112,10 @@ abstract class Calculations {
 
   abstract double compute(int iType, Object[] dataIn);
 
-  void addGradient(Vector3d v, int i, double dE) {
-    atoms[i].gradient[0] += v.x * dE;
-    atoms[i].gradient[1] += v.y * dE;
-    atoms[i].gradient[2] += v.z * dE;
+  void addForce(Vector3d v, int i, double dE) {
+    atoms[i].force[0] += v.x * dE;
+    atoms[i].force[1] += v.y * dE;
+    atoms[i].force[2] += v.z * dE;
   }
 
   boolean gradients;
@@ -153,6 +159,8 @@ abstract class Calculations {
           .get(ii));
     if (logging)
       appendLogData(getDebugFooter(iType, energy));
+    if (constraints != null && iType <= CALC_TORSION)
+      energy += constraintEnergy(iType);
     return energy;
   }
 
@@ -161,7 +169,7 @@ abstract class Calculations {
   }
 
   double energyBond(boolean gradients) {
-    return calc(CALC_BOND, gradients);
+    return calc(CALC_DISTANCE, gradients);
   }
 
   double energyAngle(boolean gradients) {
@@ -183,4 +191,105 @@ abstract class Calculations {
   double energyES(boolean gradients) {
     return calc(CALC_ES, gradients);
   }
+  
+  final Vector3d da = new Vector3d();
+  final Vector3d db = new Vector3d();
+  final Vector3d dc = new Vector3d();
+  final Vector3d dd = new Vector3d();
+  int ia, ib, ic, id;
+
+  final Vector3d v1 = new Vector3d();
+  final Vector3d v2 = new Vector3d();
+  final Vector3d v3 = new Vector3d();
+  
+  private final static double PI_OVER_2 = Math.PI / 2;
+  private final static double TWO_PI = Math.PI * 2;
+  
+  private double constraintEnergy(int iType) {
+
+    double value = 0;
+    double k = 0;
+    double energy = 0;
+
+    for (int i = constraints.size(); --i >= 0; ) {
+      Object[] c = (Object[])constraints.elementAt(i);
+      int nAtoms = ((int[]) c[0])[0];
+      if (nAtoms != iType + 2)
+        continue;
+      int[] minList = (int[]) c[1];
+      double targetValue = ((Float)c[2]).doubleValue();
+
+      switch (iType) {
+      case CALC_TORSION:
+        id = minList[3];
+        if (gradients)
+          dd.set(atoms[id].coord);
+        //fall through
+      case CALC_ANGLE:
+        ic = minList[2];
+        if (gradients)
+          dc.set(atoms[ic].coord);
+        //fall through
+      case CALC_DISTANCE:
+        ib = minList[1];
+        ia = minList[0];
+        if (gradients) {
+          db.set(atoms[ib].coord);
+          da.set(atoms[ia].coord);
+        }
+      }
+
+      k = 10000.0;
+
+      switch (iType) {
+      case CALC_TORSION:
+        targetValue *= DEG_TO_RAD;
+        value = (gradients ? Util.restorativeForceAndTorsionAngleRadians(da, db, dc, dd)
+            : Util.getTorsionAngleRadians(atoms[ia].coord, 
+              atoms[ib].coord, atoms[ic].coord, atoms[id].coord, v1, v2, v3));
+        if (value < 0 && targetValue >= PI_OVER_2)
+          value += TWO_PI; 
+        else if (value > 0 && targetValue <= -PI_OVER_2)
+          targetValue += TWO_PI;
+       break;
+      case CALC_ANGLE:
+        targetValue *= DEG_TO_RAD;
+        value = (gradients ? Util.restorativeForceAndAngleRadians(da, db, dc)
+            : Util.getAngleRadiansABC(atoms[ia].coord, atoms[ib].coord,
+              atoms[ic].coord));
+        break;
+      case CALC_DISTANCE:
+        value = (gradients ? Util.restorativeForceAndDistance(da, db, dc)
+            : Math.sqrt(Util.distance2(atoms[ia].coord, atoms[ib].coord)));
+        break;
+      }
+      energy += constrainQuadratic(value, targetValue, k, iType);
+    }
+    return energy;
+  }
+
+  private double constrainQuadratic(double value, double targetValue, double k, int iType) {
+
+    if (!Util.isFinite(value))
+      return 0;
+
+    double delta = value - targetValue;
+
+    if (gradients) {
+      double dE = 2.0 * k * delta;
+      switch(iType) {
+      case CALC_TORSION:
+        addForce(dd, id, dE);
+        //fall through
+      case CALC_ANGLE:
+        addForce(dc, ic, dE);
+        //fall through
+      case CALC_DISTANCE:
+        addForce(db, ib, dE);
+        addForce(da, ia, dE);
+      }
+    }
+    return k * delta * delta;
+  }
+
 }

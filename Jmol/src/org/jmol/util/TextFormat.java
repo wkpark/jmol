@@ -141,7 +141,7 @@ public class TextFormat {
         strFormat = formatString(strFormat, "f", null, fVal[i], true);
     if (iVal != null)
       for (int i = 0; i < iVal.length; i++)
-        strFormat = formatString(strFormat, "i", "" + iVal[i], Float.NaN, true);
+        strFormat = formatString(strFormat, "d", "" + iVal[i], Float.NaN, true);
     return strFormat;
   }
 

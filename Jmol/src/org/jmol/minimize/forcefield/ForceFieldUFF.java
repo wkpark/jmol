@@ -41,8 +41,8 @@ public class ForceFieldUFF extends ForceField {
   
   public void setModel(Minimizer m) {
     super.setModel(m);
-    calc = new CalculationsUFF(m);
-    calc.setLoggingEnabled(Logger.isActiveLevel(Logger.LEVEL_DEBUGHIGH));
+    calc = new CalculationsUFF(m.minAtoms, m.minBonds, 
+        m.angles, m.torsions, m.partialCharges, m.constraints);
   }
 
   protected Hashtable getFFParameters() {

@@ -81,9 +81,14 @@ abstract public class ForceField {
     this.viewer = m.viewer;
     this.atoms = m.minAtoms;
     this.bonds = m.minBonds;
-    this.bsFixed = m.bsMinFixed; //not implemented
+    this.bsFixed = m.bsMinFixed;
     atomCount = atoms.length;
     bondCount = bonds.length;
+  }
+  
+  public void setConstraints(Minimizer m) {
+    this.bsFixed = m.bsMinFixed;
+    calc.setConstraints(m.constraints);
   }
     
   public boolean setup() {
@@ -95,7 +100,6 @@ abstract public class ForceField {
     calc.setParams(temp);
     return calc.setupCalculations();
   }
-
 
   //////////////////////////////////////////////////////////////////////////////////
   //
@@ -114,7 +118,8 @@ abstract public class ForceField {
     this.stepMax = stepMax;//1000
     this.criterion = criterion; //1e-3
     currentStep = 0;
-    clearGradients();
+    clearForces();
+    calc.setLoggingEnabled(true);
     calc.setLoggingEnabled(stepMax == 0 || Logger.isActiveLevel(Logger.LEVEL_DEBUGHIGH));
     String s = calc.getDebugHeader(-1) + "Jmol Minimization Version " + Viewer.getJmolVersion() + "\n";
     calc.appendLogData(s);
@@ -122,15 +127,15 @@ abstract public class ForceField {
     if (calc.loggingEnabled)
       calc.appendLogData(calc.getAtomList("S T E E P E S T   D E S C E N T"));
     e0 = energyFull(false, false);
-    s = TextFormat.sprintf(" Initial E = %10.3f " + calc.getUnit(), null,
-          new float[] { (float) e0 }, null);
+    s = TextFormat.sprintf(" Initial E = %10.3f " + calc.getUnit() + " criterion = %8.6f max steps = " + stepMax, null,
+          new float[] { (float) e0, (float) criterion }, null);
     viewer.scriptEcho(s);
     calc.appendLogData(s);
   }
 
-  private void clearGradients() {
+  private void clearForces() {
     for (int i = 0; i < atomCount; i++)
-      atoms[i].gradient[0] = atoms[i].gradient[1] = atoms[i].gradient[2] = 0; 
+      atoms[i].force[0] = atoms[i].force[1] = atoms[i].force[2] = 0; 
   }
   
   Vector3d dir = new Vector3d();
@@ -142,7 +147,8 @@ abstract public class ForceField {
       currentStep++;
       calc.setSilent(true);
       for (int i = 0; i < atomCount; i++)
-        setGradientsUsingNumericalDerivative(atoms[i], ENERGY);
+        if (bsFixed == null || !bsFixed.get(i))
+          setForcesUsingNumericalDerivative(atoms[i], ENERGY);
       linearSearch();
       calc.setSilent(false);
 
@@ -155,7 +161,7 @@ abstract public class ForceField {
       boolean done = Util.isNear(e1, e0, criterion);
 
       if (done || currentStep % 10 == 0 || stepMax <= currentStep) {
-        String s = TextFormat.sprintf(" Step %-4i E = %10.6f    dE = %8.6f   criterion %10.8f", null,
+        String s = TextFormat.sprintf(" Step %-4d E = %10.6f    dE = %8.6f", null,
             new float[] { (float) e1, (float) (dE), (float) criterion },
             new int[] { currentStep });
         viewer.scriptEcho(s);
@@ -208,21 +214,25 @@ abstract public class ForceField {
   // f'(x) = ------------------- 
   //                delta
   //
-  private void setGradientsUsingNumericalDerivative(MinAtom atom, int terms) {
+  private void setForcesUsingNumericalDerivative(MinAtom atom, int terms) {
     double delta = 1.0e-5;
-    double e0 = getEnergy(terms, false);
-    atom.gradient[0] = getDx(atom, terms, 0, e0, delta);
-    atom.gradient[1] = getDx(atom, terms, 1, e0, delta);
-    atom.gradient[2] = getDx(atom, terms, 2, e0, delta);
-    //System.out.println(" atom + " + atom.atom.getAtomIndex() + " " + atom.gradient[0] + " " + atom.gradient[1] + " " + atom.gradient[2] );
+    atom.force[0] = -getDE(atom, terms, 0, delta);
+    atom.force[1] = -getDE(atom, terms, 1, delta);
+    atom.force[2] = -getDE(atom, terms, 2, delta);
+    //if (atom.atom.getAtomIndex() == 17) {
+      //System.out.println(" atom + " + atom.atom.getAtomIndex() + " " + atom.gradient[0] + " " + atom.gradient[1] + " " + atom.gradient[2] );
+    //}
     return;
   }
 
-  private double getDx(MinAtom atom, int terms, int i,
-                       double e0, double delta) {
+  private double getDE(MinAtom atom, int terms, int i, double delta) {
+    // get energy derivative
     atom.coord[i] += delta;
     double e = getEnergy(terms, false);
     atom.coord[i] -= delta;
+    //if (atom.atom.getAtomIndex() == 17) {
+      //System.out.println ("atom 17: " + atom.atom.getInfo() + " " + i + " " + (e - e0));
+    //}
     return (e - e0) / delta;
   }
 
@@ -258,7 +268,7 @@ abstract public class ForceField {
     double energy;
 
     if (gradients)
-      clearGradients();
+      clearForces();
 
     energy = energyBond(gradients)
        + energyAngle(gradients)
@@ -334,12 +344,13 @@ abstract public class ForceField {
 
     for (int iStep = 0; iStep < 10; iStep++) {
       saveCoordinates();
-      for (int i = 0; i < atomCount; ++i) {
-        double[] grad = atoms[i].gradient;
+      for (int i = 0; i < atomCount; ++i) 
+        if (bsFixed == null || !bsFixed.get(i)) {
+        double[] force = atoms[i].force;
         double[] coord = atoms[i].coord;
         for (int j = 0; j < 3; ++j) {
-          if (Util.isFinite(grad[j])) {
-            double tempStep = -grad[j] * step;
+          if (Util.isFinite(force[j])) {
+            double tempStep = force[j] * step;
             if (tempStep > trustRadius)
               coord[j] += trustRadius;
             else if (tempStep < -1.0 * trustRadius)

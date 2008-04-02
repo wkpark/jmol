@@ -71,6 +71,16 @@ public class Escape {
     return sb.toString();
   }
 
+  public static String escape(int[] f) {
+    StringBuffer sb = new StringBuffer();
+    for (int i = 0; i < f.length; i++) {
+      if (i > 0)
+        sb.append('\n');
+      sb.append("" + f[i]);
+    }
+    return sb.toString();
+  }
+
   public static String escape(String str) {
     if (str == null)
       return "\"\"";

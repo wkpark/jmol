@@ -24,17 +24,10 @@
 
 package org.jmol.minimize.forcefield;
 
-import javax.vecmath.Vector3d;
-
 import org.jmol.minimize.MinAtom;
 
 abstract class Calculation {
 
-  Vector3d da = new Vector3d();
-  Vector3d db = new Vector3d();
-  Vector3d dc = new Vector3d();
-  Vector3d dd = new Vector3d();
-  
   double dE;
   
   FFParam parA, parB, parC;  

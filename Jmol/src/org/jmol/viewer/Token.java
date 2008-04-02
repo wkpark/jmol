@@ -236,7 +236,7 @@ public class Token {
   final static int returncmd      = command | 121 | implicitExpression;  
   final static int var            = command | 122 | implicitExpression | noeval | setparam;
   final static int delete         = command | 123 | expressionCommand;
-  final static int minimize       = command | 124 | embeddedExpression;
+  final static int minimize       = command | 124 | embeddedExpression | negnums;
   
   //these commands control flow and may not be nested
   //sorry about GOTO!
@@ -919,6 +919,7 @@ public class Token {
   final static int triangles    = misc | 63;
   final static int url          = misc | 64; 
   final static int user         = misc | 65; //color option
+  final static int constraint   = misc | 66;
 
 
   // predefined Tokens: 
@@ -1211,6 +1212,7 @@ public class Token {
     "clickable",        new Token(clickable),
     "clipboard",        new Token(clipboard),
     "connected",        new Token(connected),
+    "constraint",       new Token(constraint),
     "coord",            new Token(coord),
     "coordinates",      null,
     "coords",           null,

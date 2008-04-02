@@ -119,8 +119,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private MinimizerInterface minimizer;
   public void setMinimizer(MinimizerInterface minimizer) { 
     this.minimizer = minimizer;
+    if (minimizer != null)
+      minimizer.setProperty("viewer", this);
   }
-  public MinimizerInterface getMinimizer() { 
+  
+  public MinimizerInterface getMinimizer() {
+    if (minimizer != null)
+      minimizer.setProperty("viewer", this);
     return minimizer;
   }
   

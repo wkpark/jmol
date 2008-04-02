@@ -26,11 +26,8 @@ package org.jmol.minimize.forcefield;
 
 import java.util.Vector;
 
-import javax.vecmath.Vector3d;
-
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
-import org.jmol.minimize.Minimizer;
 import org.jmol.minimize.Util;
 import org.jmol.util.TextFormat;
 
@@ -63,16 +60,18 @@ class CalculationsUFF extends Calculations {
   public final static int PAR_HARD = 9;    // not used?
   public final static int PAR_RADIUS = 10; // not used?
 
-  BondCalc bondCalc;
+  DistanceCalc bondCalc;
   AngleCalc angleCalc;
   TorsionCalc torsionCalc;
   OOPCalc oopCalc;
   VDWCalc vdwCalc;
   ESCalc esCalc;
     
-  CalculationsUFF(Minimizer m) {
-    super(m);    
-    bondCalc = new BondCalc();
+  CalculationsUFF(MinAtom[] minAtoms, MinBond[] minBonds, 
+      int[][] angles, int[][] torsions, double[] partialCharges,
+      Vector constraints) {
+    super(minAtoms, minBonds, angles, torsions, partialCharges, constraints);    
+    bondCalc = new DistanceCalc();
     angleCalc = new AngleCalc();
     torsionCalc = new TorsionCalc();
     oopCalc = new OOPCalc();
@@ -87,36 +86,42 @@ class CalculationsUFF extends Calculations {
   boolean setupCalculations() {
 
     Vector calc;
-    
-    BondCalc bondCalc = new BondCalc();
-    calc = calculations[CALC_BOND] = new Vector();
-    for (int i = 0; i < bondCount; i++)
-      bondCalc.setData(calc, i);
-    
+
+    DistanceCalc distanceCalc = new DistanceCalc();
+    calc = calculations[CALC_DISTANCE] = new Vector();
+    for (int i = 0; i < bondCount; i++) {
+      MinBond bond = bonds[i];
+      double bondOrder = bond.atomIndexes[2];
+      if (bond.isAromatic)
+        bondOrder = 1.5;
+      if (bond.isAmide)
+        bondOrder = 1.41;  
+      distanceCalc.setData(calc, bond.atomIndexes[0], bond.atomIndexes[1], bondOrder);
+    }
+
     calc = calculations[CALC_ANGLE] = new Vector();
     AngleCalc angleCalc = new AngleCalc();
-     for (int i = angles.length; --i >= 0;)
+    for (int i = angles.length; --i >= 0;)
       angleCalc.setData(calc, i);
 
-     calc = calculations[CALC_TORSION] = new Vector();
-     TorsionCalc torsionCalc = new TorsionCalc();
-     for (int i = torsions.length; --i >= 0;)
-       torsionCalc.setData(calc, i);
-     
-     calc = calculations[CALC_OOP] = new Vector();
+    calc = calculations[CALC_TORSION] = new Vector();
+    TorsionCalc torsionCalc = new TorsionCalc();
+    for (int i = torsions.length; --i >= 0;)
+      torsionCalc.setData(calc, i);
 
-     // set up the special atom arrays
-     OOPCalc oopCalc = new OOPCalc();
-     int elemNo;
-     for (int i = 0; i < atomCount; i++) {
-       MinAtom a = atoms[i];
-       if (a.nBonds == 3 && isInvertible(elemNo = a.atom.getElementNumber()))
-         oopCalc.setData(calc, i, elemNo);
-     }
+    calc = calculations[CALC_OOP] = new Vector();
+    // set up the special atom arrays
+    OOPCalc oopCalc = new OOPCalc();
+    int elemNo;
+    for (int i = 0; i < atomCount; i++) {
+      MinAtom a = atoms[i];
+      if (a.nBonds == 3 && isInvertible(elemNo = a.atom.getElementNumber()))
+        oopCalc.setData(calc, i, elemNo);
+    }
 
-     pairSearch(calculations[CALC_VDW] = new Vector(), new VDWCalc());
+    pairSearch(calculations[CALC_VDW] = new Vector(), new VDWCalc());
 
-     return true;
+    return true;
   }
 
   private boolean isInvertible(int n) {
@@ -202,7 +207,7 @@ class CalculationsUFF extends Calculations {
   double compute(int iType, Object[] dataIn) {
 
     switch (iType) {
-    case CALC_BOND:
+    case CALC_DISTANCE:
       return bondCalc.compute(dataIn);
     case CALC_ANGLE:
       return angleCalc.compute(dataIn);
@@ -218,34 +223,22 @@ class CalculationsUFF extends Calculations {
     return 0.0;
   }
 
-  class BondCalc extends Calculation {
+  class DistanceCalc extends Calculation {
 
     double r0, kb;
 
-    void setData(Vector calc, int i) {
-      MinBond bond = bonds[i];
-      ia = bond.atomIndexes[0];
-      ib = bond.atomIndexes[1];
-      double bondOrder = bond.atomIndexes[2];
-      if (bond.isAromatic)
-        bondOrder = 1.5;
-      if (bond.isAmide)
-        bondOrder = 1.41;  
+    void setData(Vector calc, int ia, int ib, double bondOrder) {
       parA = getParameter(atoms[ia].type, ffParams);
       parB = getParameter(atoms[ib].type, ffParams);
-      
-      r0 = calculateR0(parA.dVal[PAR_R], parB.dVal[PAR_R], 
-          parA.dVal[PAR_XI], parB.dVal[PAR_XI], bondOrder);
+      r0 = calculateR0(parA.dVal[PAR_R], parB.dVal[PAR_R], parA.dVal[PAR_XI],
+          parB.dVal[PAR_XI], bondOrder);
 
-      
       // here we fold the 1/2 into the kij from equation 1a
       // Otherwise, this is equation 6 from the UFF paper.
-      
-      kb = KCAL332 * parA.dVal[PAR_Z] * parB.dVal[PAR_Z]
-          / (r0 * r0 * r0);
-      calc.addElement(new Object[] {
-          new int[] { ia, ib },
-          new double[] {r0, kb, bondOrder} });
+
+      kb = KCAL332 * parA.dVal[PAR_Z] * parB.dVal[PAR_Z] / (r0 * r0 * r0);
+      calc.addElement(new Object[] { new int[] { ia, ib },
+          new double[] { r0, kb, bondOrder } });
     }
 
     double compute(Object[] dataIn) {
@@ -258,9 +251,10 @@ class CalculationsUFF extends Calculations {
       if (gradients) {
         da.set(atoms[ia].coord);
         db.set(atoms[ib].coord);
-        rab = Util.vectorLengthDerivative(da, db);
-      } else
+        rab = Util.restorativeForceAndDistance(da, db, dc);
+      } else {
         rab = Math.sqrt(Util.distance2(atoms[ia].coord, atoms[ib].coord));
+      }
 
       // Er = 0.5 k (r - r0)^2
       
@@ -269,12 +263,12 @@ class CalculationsUFF extends Calculations {
 
       if (gradients) {
         dE = 2.0 * kb * delta;
-        addGradient(da, ia, dE);
-        addGradient(db, ib, dE);
+        addForce(da, ia, dE);
+        addForce(db, ib, dE);
       }
       
       if (logging)
-        appendLogData(getDebugLine(CALC_BOND, this));
+        appendLogData(getDebugLine(CALC_DISTANCE, this));
       
       return energy;
     }
@@ -360,7 +354,7 @@ class CalculationsUFF extends Calculations {
         da.set(atoms[ia].coord);
         db.set(atoms[ib].coord);
         dc.set(atoms[ic].coord);
-        theta = Util.vectorAngleDerivative(da, db, dc) * DEG_TO_RAD;
+        theta = Util.restorativeForceAndAngleRadians(da, db, dc);
       } else {
         theta = Util.getAngleRadiansABC(atoms[ia].coord, atoms[ib].coord, atoms[ic].coord);
       }
@@ -375,6 +369,7 @@ class CalculationsUFF extends Calculations {
       double cosT = Math.cos(theta);
       double sinT = Math.sin(theta);
       switch (coordination) {
+      case 0: //constraint
       case 1: //sp
         energy = ka * (1.0 + cosT) * (1.0 + cosT) / 4.0;
         break;
@@ -394,6 +389,7 @@ class CalculationsUFF extends Calculations {
       if (gradients) {
         // da = dTheta/dx * dE/dTheta
         switch (coordination) {
+        case 0: //constraint
         case 1:
           dE = -0.5 * ka * sinT * (1 + cosT);
           break;
@@ -407,9 +403,9 @@ class CalculationsUFF extends Calculations {
         default:
           dE = -ka * (a1 * sinT - 2.0 * a2 * cosT * sinT);
         }
-        addGradient(da, ia, dE);
-        addGradient(db, ib, dE);
-        addGradient(dc, ic, dE);
+        addForce(da, ia, dE);
+        addForce(db, ib, dE);
+        addForce(dc, ic, dE);
       }
       
       if (logging)
@@ -540,34 +536,22 @@ class CalculationsUFF extends Calculations {
         db.set(atoms[ib].coord);
         dc.set(atoms[ic].coord);
         dd.set(atoms[id].coord);
-        theta = Util.vectorTorsionDerivativeRadians(da, db, dc, dd);
+        theta = Util.restorativeForceAndTorsionAngleRadians(da, db, dc, dd);
         if (!Util.isFinite(theta))
           theta = 0.001 * DEG_TO_RAD;
       } else {
-        Vector3d vab, vbc, vcd, abbc, bccd;
-        vab = Util.newSub(atoms[ia].coord, atoms[ib].coord);
-        vbc = Util.newSub(atoms[ib].coord, atoms[ic].coord);
-        vcd = Util.newSub(atoms[ic].coord, atoms[id].coord);
-        abbc = Util.newCross(vab, vbc);
-        bccd = Util.newCross(vbc, vcd);
-        double dotAbbcBccd = abbc.dot(bccd);
-        theta = Math.acos(dotAbbcBccd / (abbc.length() * bccd.length()));
-        if (Util.isNearZero(dotAbbcBccd) || !Util.isFinite(theta)) { 
-          // stop any NaN or infinity
-          theta = 0.001 * DEG_TO_RAD; // rather than NaN
-        } else if (dotAbbcBccd > 0.0) {
-          theta = -theta;
-        }
+        theta = Util.getTorsionAngleRadians(atoms[ia].coord, atoms[ib].coord, 
+            atoms[ic].coord, atoms[id].coord, v1, v2, v3);
       }
 
       energy = V * (1.0 - cosNPhi0 * Math.cos(theta * n));
 
       if (gradients) {
         dE = V * n * cosNPhi0 * Math.sin(n * theta);
-        addGradient(da, ia, dE);
-        addGradient(db, ib, dE);
-        addGradient(dc, ic, dE);
-        addGradient(dd, id, dE);
+        addForce(da, ia, dE);
+        addForce(db, ib, dE);
+        addForce(dc, ic, dE);
+        addForce(dd, id, dE);
       }
       
       if (logging)
@@ -778,9 +762,9 @@ class CalculationsUFF extends Calculations {
       dd.set(atoms[id].coord);
 
       if (gradients) {
-        theta = Util.vectorPlaneDerivativeRadians(da, db, dc, dd);
+        theta = Util.restorativeForceAndOutOfPlaneAngleRadians(da, db, dc, dd, v1, v2, v3);
       } else {
-        theta = Util.pointPlaneAngleRadians(dd, da, db, dc);
+        theta = Util.pointPlaneAngleRadians(dd, da, db, dc, v1, v2, v3);
       }
 
       if (!Util.isFinite(theta))
@@ -789,18 +773,19 @@ class CalculationsUFF extends Calculations {
       //energy = koop * (c0 + c1 * Math.cos(theta) + c2 * Math.cos(2.0 * theta));
       //
       //using
-      
+
       double cosTheta = Math.cos(theta);
       energy = koop * (a0 + a1 * cosTheta + a2 * cosTheta * cosTheta);
 
       if (gradients) {
         // somehow we already get the -1 from the OOPDeriv -- so we'll omit it here
         // not checked in Java
-        dE = koop * (a1 * Math.sin(theta) + a2 * 2.0 * Math.sin(theta) * cosTheta);
-        addGradient(da, ia, dE);
-        addGradient(db, ib, dE);
-        addGradient(dc, ic, dE);
-        addGradient(dd, id, dE);
+        dE = koop
+            * (a1 * Math.sin(theta) + a2 * 2.0 * Math.sin(theta) * cosTheta);
+        addForce(da, ia, dE);
+        addForce(db, ib, dE);
+        addForce(dc, ic, dE);
+        addForce(dd, id, dE);
       }
 
       if (logging)
@@ -858,7 +843,7 @@ class CalculationsUFF extends Calculations {
       if (gradients) {
         da.set(atoms[ia].coord);
         db.set(atoms[ib].coord);
-        rab = Util.vectorLengthDerivative(da, db);
+        rab = Util.restorativeForceAndDistance(da, db, dc);
       } else
         rab = Math.sqrt(Util.distance2(atoms[ia].coord, atoms[ib].coord));
 
@@ -876,8 +861,8 @@ class CalculationsUFF extends Calculations {
 
       if (gradients) {
         dE = Dab * 12.0 * (1.0 - term6) * term6 * term / Xab; // unchecked
-        addGradient(da, ia, dE);
-        addGradient(db, ib, dE);
+        addForce(da, ia, dE);
+        addForce(db, ib, dE);
       }
       
       if (logging)
@@ -912,7 +897,7 @@ class CalculationsUFF extends Calculations {
       if (gradients) {
         da.set(atoms[ia].coord);
         db.set(atoms[ib].coord);
-        rab = Util.vectorLengthDerivative(da, db);
+        rab = Util.restorativeForceAndDistance(da, db, dc);
       } else
         rab = Math.sqrt(Util.distance2(atoms[ia].coord, atoms[ib].coord));
 
@@ -923,8 +908,8 @@ class CalculationsUFF extends Calculations {
 
       if (gradients) {
         dE = -qq / (rab * rab);
-        addGradient(da, ia, dE);
-        addGradient(db, ib, dE);
+        addForce(da, ia, dE);
+        addForce(db, ib, dE);
       }
       
       if (logging)
@@ -953,14 +938,14 @@ class CalculationsUFF extends Calculations {
       iVal[0] = atom.atom.getAtomNumber();
       String s = "   ";
       for (int j = 0; j < others.length; j++) {
-        s += " %3i";
+        s += " %3d";
         iVal[j + 1] = atoms[others[j]].atom.getAtomNumber();
       }
-      sb.append(TextFormat.sprintf("%3i %8.3f %8.3f %8.3f  %-5s %8.3f %8.3f %8.3f" + s + "\n", 
+      sb.append(TextFormat.sprintf("%3d %8.3f %8.3f %8.3f  %-5s %8.3f %8.3f %8.3f" + s + "\n", 
           new String[] { atom.type },
           new float[] { (float) atom.coord[0], (float) atom.coord[1],
-            (float) atom.coord[2], (float) atom.gradient[0], (float) atom.gradient[1],
-            (float) atom.gradient[2], }, 
+            (float) atom.coord[2], (float) atom.force[0], (float) atom.force[1],
+            (float) atom.force[2], }, 
           iVal));
     }
     sb.append(trailer + "\n\n");
@@ -972,7 +957,7 @@ class CalculationsUFF extends Calculations {
     case -1:
       return  "Universal Force Field -- " +
           "Rappe, A. K., et. al.; J. Am. Chem. Soc. (1992) 114(25) p. 10024-10035\n";
-    case CALC_BOND:
+    case CALC_DISTANCE:
       return
            "\nB O N D   S T R E T C H I N G (" + bondCount + " bonds)\n\n"
           +"  ATOMS  ATOM TYPES   BOND    BOND       IDEAL      FORCE\n"
@@ -1014,9 +999,9 @@ class CalculationsUFF extends Calculations {
 
   String getDebugLine(int iType, Calculation c) {
     switch (iType) {
-    case CALC_BOND:
+    case CALC_DISTANCE:
       return TextFormat.sprintf(
-          "%3i %3i  %-5s %-5s  %4.2f%8.3f   %8.3f     %8.3f   %8.3f   %8.3f",
+          "%3d %3d  %-5s %-5s  %4.2f%8.3f   %8.3f     %8.3f   %8.3f   %8.3f",
           new String[] { atoms[c.ia].type, atoms[c.ib].type }, 
           new float[] { (float)c.dData[2]/*rab*/, (float)c.rab, 
               (float)c.dData[0], (float)c.dData[1], 
@@ -1024,7 +1009,7 @@ class CalculationsUFF extends Calculations {
           new int[] { atoms[c.ia].atom.getAtomNumber(), atoms[c.ib].atom.getAtomNumber() });
     case CALC_ANGLE:
       return TextFormat.sprintf(
-          "%3i %3i %3i  %-5s %-5s %-5s  %8.3f  %8.3f     %8.3f   %8.3f", 
+          "%3d %3d %3d  %-5s %-5s %-5s  %8.3f  %8.3f     %8.3f   %8.3f", 
           new String[] { atoms[c.ia].type, atoms[c.ib].type, 
               atoms[c.ic].type },
           new float[] { (float)(c.theta * RAD_TO_DEG), (float)c.dData[4] /*THETA0*/, 
@@ -1033,7 +1018,7 @@ class CalculationsUFF extends Calculations {
               atoms[c.ic].atom.getAtomNumber()} );
       case CALC_TORSION:
       return TextFormat.sprintf(
-          "%3i %3i %3i %3i  %-5s %-5s %-5s %-5s  %8.3f     %8.3f     %8.3f", 
+          "%3d %3d %3d %3d  %-5s %-5s %-5s %-5s  %8.3f     %8.3f     %8.3f", 
           new String[] { atoms[c.ia].type, atoms[c.ib].type, 
               atoms[c.ic].type, atoms[c.id].type },
           new float[] { (float) c.dData[0]/*V*/, 
@@ -1042,7 +1027,7 @@ class CalculationsUFF extends Calculations {
               atoms[c.ic].atom.getAtomNumber(), atoms[c.id].atom.getAtomNumber() } );
     case CALC_OOP:
       return TextFormat.sprintf("" +
-          "%3i %3i %3i %3i  %-5s %-5s %-5s %-5s  %8.3f   %8.3f     %8.3f",
+          "%3d %3d %3d %3d  %-5s %-5s %-5s %-5s  %8.3f   %8.3f     %8.3f",
           new String[] { atoms[c.ia].type, atoms[c.ib].type, 
               atoms[c.ic].type, atoms[c.id].type },
           new float[] { (float)(c.theta * RAD_TO_DEG), 
@@ -1050,12 +1035,12 @@ class CalculationsUFF extends Calculations {
           new int[] { atoms[c.ia].atom.getAtomNumber(), atoms[c.ib].atom.getAtomNumber(),
               atoms[c.ic].atom.getAtomNumber(), atoms[c.id].atom.getAtomNumber() } );
     case CALC_VDW:
-      return TextFormat.sprintf("%3i %3i  %-5s %-5s %6.3f  %8.3f  %8.3f", 
+      return TextFormat.sprintf("%3d %3d  %-5s %-5s %6.3f  %8.3f  %8.3f", 
           new String[] { atoms[c.iData[0]].type, atoms[c.iData[1]].type },
           new float[] { (float)c.rab, (float)c.dData[0]/*kab*/, (float)c.energy},
           new int[] { atoms[c.ia].atom.getAtomNumber(), atoms[c.ib].atom.getAtomNumber() } );
     case CALC_ES:
-      return TextFormat.sprintf("%3i %3i  %-5s %-5s %6.3f  %8.3f  %8.3f", 
+      return TextFormat.sprintf("%3d %3d  %-5s %-5s %6.3f  %8.3f  %8.3f", 
           new String[] { atoms[c.iData[0]].type, atoms[c.iData[1]].type },
           new float[] { (float)c.rab, (float)c.dData[0]/*qq*/, (float)c.energy },
           new int[] { atoms[c.ia].atom.getAtomNumber(), atoms[c.ib].atom.getAtomNumber() });
@@ -1066,7 +1051,7 @@ class CalculationsUFF extends Calculations {
   String getDebugFooter(int iType, double energy) {
     String s = "";
     switch (iType){
-    case CALC_BOND:
+    case CALC_DISTANCE:
       s = "BOND STRETCHING";
       break;
     case CALC_ANGLE:

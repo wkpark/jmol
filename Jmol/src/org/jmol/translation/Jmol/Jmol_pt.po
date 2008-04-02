@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-03-06 19:20+0100\n"
+"POT-Creation-Date: 2008-04-02 21:42+0200\n"
 "PO-Revision-Date: 2005-12-20 07:33-0000\n"
 "Last-Translator: Metro <portugalfolding@gmail.com>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
@@ -607,9 +607,8 @@ msgid "Open a file."
 msgstr "Abrir ficheiro"
 
 #: org/openscience/jmol/app/GuiMap.java:173
-#, fuzzy
-msgid "Export view to an image or script file."
-msgstr "Exportar para um ficheiro de imagem"
+msgid "Save current view as an image."
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:174
 msgid "Export one or more views to a web page."
@@ -656,7 +655,7 @@ msgid "JPEG Quality"
 msgstr "Qualidade JPEG"
 
 #: org/openscience/jmol/app/Jmol.java:144
-#: org/openscience/jmol/app/webexport/WebMaker.java:64
+#: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr "Erro ao iniciar o Jmol: a propriedade 'user.home' não está definida"
 
@@ -1240,6 +1239,10 @@ msgstr "Carregando..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "O que há de novo no Jmol"
+
+#, fuzzy
+#~ msgid "Export view to an image or script file."
+#~ msgstr "Exportar para um ficheiro de imagem"
 
 #, fuzzy
 #~ msgid "Export &PDF..."

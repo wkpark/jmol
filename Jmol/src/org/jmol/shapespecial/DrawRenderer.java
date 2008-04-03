@@ -79,7 +79,15 @@ public class DrawRenderer extends MeshRenderer {
     default:
       super.render2();
     case JmolConstants.DRAW_CIRCLE:
-      //unimplemented
+    case JmolConstants.DRAW_CIRCULARPLANE:
+      viewer.transformPoint(vertices[0], pt1i);
+      if (diameter == 0 && width == 0)
+        width = 1.0f;
+      if (width > 0)
+        diameter = viewer.scaleToScreen(pt1i.z, (int) (width * 1000));
+      if (diameter > 0)
+        g3d.drawCircleCentered(colix, diameter, pt1i.x, pt1i.y, pt1i.z, 
+            drawType == JmolConstants.DRAW_CIRCULARPLANE);
       break;
     case JmolConstants.DRAW_CURVE:
       //unnecessary

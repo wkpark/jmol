@@ -246,6 +246,15 @@ public class _PovrayExporter extends _Exporter {
         + "  clip()\n"
         + "  check_shadow()}\n" 
         + "#end\n\n");
+    // and just the cylinder
+    output("#macro c(X1,Y1,Z1,RADIUS1,X2,Y2,Z2,RADIUS2,R,G,B,T)\n"
+        + " cone{<X1,Y1,Z1>,RADIUS1,<X2,Y2,Z2>,RADIUS2 open\n"
+        + "  pigment{rgbt<R,G,B,T>}\n"
+        + "  translucentFinish(T)\n"
+        + "  clip()\n"
+        + "  check_shadow()}\n" 
+        + "#end\n\n");
+
   }
 
   private void writeMacrosJoint() {
@@ -367,8 +376,8 @@ public class _PovrayExporter extends _Exporter {
     // (float)viewer.getBondRadius(i);
 
     output("b(" + pt1.x + "," + pt1.y + "," + pt1.z + "," + radius1 + ","
-        + pt2.x + "," + pt2.y + "," + pt2.z + "," + radius2 + "," + color + ","
-        + translucencyFractionalFromColix(colix) + ")\n");
+        + pt2.x + "," + pt2.y + "," + pt2.z + "," + radius2 + "," 
+        + color + "," + translucencyFractionalFromColix(colix) + ")\n");
   }
 
   private void renderJoint(Point3f pt, short colix, byte endcaps, int madBond) {
@@ -377,8 +386,8 @@ public class _PovrayExporter extends _Exporter {
     if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
       String color = rgbFractionalFromColix(colix, ',');
       float radius = viewer.scaleToScreen((int) pt.z, madBond / 2);
-      output("s(" + pt.x + "," + pt.y + "," + pt.z + "," + radius + "," + color
-          + "," + translucencyFractionalFromColix(colix) + ")\n");
+      output("s(" + pt.x + "," + pt.y + "," + pt.z + "," + radius + "," 
+          + color + "," + translucencyFractionalFromColix(colix) + ")\n");
     }
   }
 
@@ -538,6 +547,16 @@ public class _PovrayExporter extends _Exporter {
     float radius2 = radius1;
     output("b(" + triad(screenA) + "," + radius1 + "," + triad(screenB) + ","
         + radius2 + "," + color4(colix) + ")\n");
+  }
+
+  public void drawCircleCentered(short colix, int diameter, int x,
+                                         int y, int z, boolean doFill) {
+    //draw circle
+    String color = rgbFractionalFromColix(colix, ',');
+    float r = diameter / 2.0f;
+    output((doFill ? "b" : "c") + "(" + x + "," + y + "," + z + "," + r + "," 
+        + x + "," + y + "," + (z + 1) + "," + (r + 2) + "," 
+        + color + "," + translucencyFractionalFromColix(colix) + ")\n");
   }
 
   public void fillScreenedCircleCentered(short colix, int diameter, int x,

@@ -88,7 +88,8 @@ final public class JmolConstants {
   public final static int DRAW_ARROW = 15;
   public final static int DRAW_CIRCLE = 16;
   public final static int DRAW_CURVE = 17;
-  
+  public static final int DRAW_CIRCULARPLANE = 18;
+
   public final static String CLASSBASE_OPTIONS = "org.jmol.";
   public final static String CLASSBASE_QUANTUM = "org.jmol.quantum.";
 

@@ -52,6 +52,9 @@ public interface JmolExportInterface {
   abstract void fillCylinder(short colix, byte endcaps, int diameter, 
                              Point3f screenA, Point3f screenB);
 
+  abstract void drawCircleCentered(short colix, int diameter, int x,
+                                           int y, int z, boolean doFill);  //draw circle 
+
   abstract void fillScreenedCircleCentered(short colix, int diameter, int x,
                                                     int y, int z);  //halos 
 

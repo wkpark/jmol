@@ -2041,7 +2041,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.calcRotationRadius(center);
   }
 
-  float calcRotationRadius(BitSet bs) {
+  public float calcRotationRadius(BitSet bs) {
     return modelSet.calcRotationRadius(bs);
   }
 

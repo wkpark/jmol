@@ -62,6 +62,20 @@ public interface JmolRendererInterface {
   /**
    * draws a screened circle ... every other dot is turned on
    *
+   * @param colix the color index
+   * @param diameter the pixel diameter
+   * @param x center x
+   * @param y center y
+   * @param z center z
+   * @param doFill fill or not
+   */
+  public abstract void drawCircleCentered(short colix, int diameter, int x, int y, int z,
+                                          boolean doFill);
+
+
+  /**
+   * draws a screened circle ... every other dot is turned on
+   *
    * @param colixFill the color index
    * @param diameter the pixel diameter
    * @param x center x

@@ -168,6 +168,11 @@ public class Draw extends MeshCollection {
       return;
     }
 
+    if ("circle" == propertyName) {
+      isCircle = true;
+      return;
+    }
+    
     if ("vector" == propertyName) {
       isArrow = true;
       isVector = true;
@@ -259,8 +264,11 @@ public class Draw extends MeshCollection {
     if ("atomSet" == propertyName) {
       if (BitSetUtil.cardinalityOf((BitSet) value) == 0)
         return;
-      ptBitSets[nbitsets++] = (BitSet) value;
+      bs = (BitSet) value;
+      ptBitSets[nbitsets++] = bs;
       nPoints++;
+      if (isCircle && diameter == 0 && width == 0)
+        width = viewer.calcRotationRadius(bs) * 2.0f;
       return;
     }
     if ("modelBasedPoints" == propertyName) {
@@ -475,7 +483,7 @@ public class Draw extends MeshCollection {
     if (nidentifiers > 0 && (iModel < 0 || bsAllModels.get(iModel)))
       for (int i = 0; i < nidentifiers; i++) {
         DrawMesh m = dmeshes[ptIdentifiers[i]];
-        if (isPlane || isPerpendicular || useVertices[i]) {
+        if (isPlane && !isCircle || isPerpendicular || useVertices[i]) {
           if (reversePoints[i]) {
             if (iModel < 0 || iModel >= m.polygonCount)
               for (int ipt = m.drawVertexCount; --ipt >= 0;)
@@ -570,9 +578,11 @@ public class Draw extends MeshCollection {
      */
 
     int drawType = JmolConstants.DRAW_POINT;
-    if ((isCurve || isArrow || isCircle) && nVertices >= 2)
-      drawType = (isCurve ? JmolConstants.DRAW_CURVE : isArrow ? JmolConstants.DRAW_ARROW
-          : JmolConstants.DRAW_CIRCLE);
+    
+    if (isCircle)
+      drawType = (isPlane ? JmolConstants.DRAW_CIRCULARPLANE : JmolConstants.DRAW_CIRCLE);
+    else if ((isCurve || isArrow) && nVertices >= 2)
+      drawType = (isCurve ? JmolConstants.DRAW_CURVE : JmolConstants.DRAW_ARROW);
     if (isVector) {
       if (nVertices > 2)
         nVertices = 2;
@@ -974,7 +984,10 @@ public class Draw extends MeshCollection {
       str.append(" ARROW");
       break;
     case JmolConstants.DRAW_CIRCLE:
-      str.append(" CIRCLE"); //not yet implemented
+      str.append(" CIRCLE");
+      break;
+    case JmolConstants.DRAW_CIRCULARPLANE:
+      str.append(" CIRCLE PLANE");
       break;
     case JmolConstants.DRAW_CURVE:
       str.append(" CURVE");

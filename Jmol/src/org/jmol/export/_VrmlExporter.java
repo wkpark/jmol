@@ -178,6 +178,11 @@ public class _VrmlExporter extends _Exporter {
                            Point3f screenB) {
   }
 
+  public void drawCircleCentered(short colix, int diameter, int x,
+                                         int y, int z, boolean doFill) {
+   //draw circle 
+  }
+
   public void fillScreenedCircleCentered(short colix, int diameter, int x,
                                          int y, int z) {
    //halos 

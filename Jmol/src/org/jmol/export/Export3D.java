@@ -95,6 +95,25 @@ final public class Export3D implements JmolRendererInterface {
     exporter.fillScreenedCircleCentered(colixFill, diameter, x, y, z);
   }
 
+  /**
+   * draws a simple circle (draw circle)
+   *
+   * @param colix the color index
+   * @param diameter the pixel diameter
+   * @param x center x
+   * @param y center y
+   * @param z center z
+   * @param doFill (not implemented in exporters)
+   */
+  
+  public void drawCircleCentered(short colix, int diameter, int x,
+                                           int y, int z, boolean doFill) {
+    //halos, draw
+    if (isClippedZ(z))
+      return;
+    exporter.drawCircleCentered(colix, diameter, x, y, z, doFill);
+  }
+
   private Point3f ptA = new Point3f();
   private Point3f ptB = new Point3f();
   private Point3f ptC = new Point3f();

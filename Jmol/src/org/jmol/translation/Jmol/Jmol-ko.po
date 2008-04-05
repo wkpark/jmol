@@ -1,0 +1,1219 @@
+# Copyright (C) 1998-2008 The Jmol Development Team
+# This file is distributed under the same license as the Jmol package.
+# Won-Kyu Park <wkpark@kldp.org>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Jmol\n"
+"Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
+"POT-Creation-Date: 2008-04-02 21:42+0200\n"
+"PO-Revision-Date: 2008-04-05 21:20+9000\n"
+"Last-Translator: Won-Kyu Park <wkpark@kldp.org>\n"
+"Language-Team: Korean <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: org/openscience/jmol/app/AboutDialog.java:57
+#: org/openscience/jmol/app/GuiMap.java:158
+msgid "About Jmol"
+msgstr "Jmol에 대해"
+
+#: org/openscience/jmol/app/AboutDialog.java:67
+#: org/openscience/jmol/app/HelpDialog.java:77
+#: org/openscience/jmol/app/WhatsNewDialog.java:68
+#, java-format
+msgid "Unable to find url \"{0}\"."
+msgstr "\"{0}\" URL을 찾을 수 없습니다."
+
+#: org/openscience/jmol/app/AboutDialog.java:95
+#: org/openscience/jmol/app/HelpDialog.java:106
+#: org/openscience/jmol/app/Jmol.java:455
+#: org/openscience/jmol/app/PreferencesDialog.java:173
+#: org/openscience/jmol/app/WhatsNewDialog.java:96
+msgid "OK"
+msgstr "예"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:163
+msgid "AtomSetChooser"
+msgstr "원자셋선택기"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:168
+msgid "No AtomSets"
+msgstr "원자셋 없음"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:197
+msgid "Properties"
+msgstr "속성"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:205
+msgid "Atom Set Collection"
+msgstr "원자 셋 콜렉션"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:226
+msgid "Collection"
+msgstr "콜렉션"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:231
+msgid "Info"
+msgstr "정보"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:238
+#: org/openscience/jmol/app/GuiMap.java:70
+#: org/openscience/jmol/app/PovrayDialog.java:175
+#: org/openscience/jmol/app/PovrayDialog.java:458
+#: org/openscience/jmol/app/PovrayDialog.java:605
+#: org/openscience/jmol/app/PovrayDialog.java:626
+msgid "Select"
+msgstr "선택"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:253
+msgid "Repeat"
+msgstr "반복"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:265
+msgid "FPS"
+msgstr ""
+
+#: org/openscience/jmol/app/AtomSetChooser.java:281
+#: org/openscience/jmol/app/GuiMap.java:103
+msgid "Vector"
+msgstr "벡터"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:288
+msgid "Radius"
+msgstr "반경"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:301
+msgid "Scale"
+msgstr "스케일"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:315
+msgid "Amplitude"
+msgstr "진폭"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:325
+msgid "Period"
+msgstr "주기"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:354
+msgid "Controller"
+msgstr "콘트롤"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:361
+msgid "atom set"
+msgstr "원자셋"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:363
+msgid "vector"
+msgstr "벡터"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:366
+#, java-format
+msgid "Go to first {0} in the collection"
+msgstr "콜렉션의 처음 {0}(으)로 가기"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:367
+#, java-format
+msgid "Go to previous {0} in the collection"
+msgstr "콜렉션의 {0} 이전으로 가기"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:368
+#, java-format
+msgid "Play the whole collection of {0}'s"
+msgstr "{0}의 모든 콜렉션 재생"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:369
+msgid "Pause playing"
+msgstr "재생 중지"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:370
+#, java-format
+msgid "Go to next {0} in the collection"
+msgstr "{0} 콜렉션의 다음으로"
+
+#: org/openscience/jmol/app/AtomSetChooser.java:371
+#, java-format
+msgid "Jump to last {0} in the collection"
+msgstr "{0} 콜렉션의 맨 마지막으로"
+
+#: org/openscience/jmol/app/ConsoleTextArea.java:87
+#, java-format
+msgid "Error reading from BufferedReader: {0}"
+msgstr "BufferedReader로 읽기 실패: {0}"
+
+#: org/openscience/jmol/app/DisplayPanel.java:156
+msgid "Delete Atoms"
+msgstr "원자 지우기"
+
+#: org/openscience/jmol/app/DisplayPanel.java:157
+msgid "Select Atoms"
+msgstr "원자 선택"
+
+#: org/openscience/jmol/app/FilePreview.java:67
+msgid "Preview"
+msgstr "미리보기"
+
+#: org/openscience/jmol/app/FilePreview.java:87
+msgid "Append models"
+msgstr "모델 추가"
+
+#: org/openscience/jmol/app/GuiMap.java:45
+msgid "&File"
+msgstr "파일(&F)"
+
+#: org/openscience/jmol/app/GuiMap.java:46
+msgid "New"
+msgstr "새파일"
+
+#: org/openscience/jmol/app/GuiMap.java:47
+msgid "&Open"
+msgstr "열기(&O)"
+
+#: org/openscience/jmol/app/GuiMap.java:48
+msgid "Open &URL"
+msgstr "&URL 열기"
+
+#: org/openscience/jmol/app/GuiMap.java:49
+msgid "Scrip&t..."
+msgstr "스크립트(&t)..."
+
+#: org/openscience/jmol/app/GuiMap.java:50
+msgid "AtomSetChooser..."
+msgstr "원자셋 선택..."
+
+#: org/openscience/jmol/app/GuiMap.java:51
+msgid "&Save As..."
+msgstr "다른이름 저장(&S)..."
+
+#: org/openscience/jmol/app/GuiMap.java:52
+msgid "&Export"
+msgstr "다른 형식 저장(&E)"
+
+#: org/openscience/jmol/app/GuiMap.java:53
+msgid "Export &Image..."
+msgstr "이미지로(&I)..."
+
+#: org/openscience/jmol/app/GuiMap.java:54
+msgid "Export to &Web Page..."
+msgstr "웹페이지로(&W)..."
+
+#: org/openscience/jmol/app/GuiMap.java:55
+msgid "Render in POV-&Ray..."
+msgstr "POV-&Ray로 렌더링..."
+
+#: org/openscience/jmol/app/GuiMap.java:56
+msgid "Write &State..."
+msgstr "상태 쓰기(&S)..."
+
+#: org/openscience/jmol/app/GuiMap.java:57
+msgid "&Print..."
+msgstr "인쇄(&P)..."
+
+#: org/openscience/jmol/app/GuiMap.java:58
+#: org/openscience/jmol/app/ScriptWindow.java:110
+msgid "Close"
+msgstr "닫기"
+
+#: org/openscience/jmol/app/GuiMap.java:59
+msgid "E&xit"
+msgstr "끝내기(&x)"
+
+#: org/openscience/jmol/app/GuiMap.java:60
+msgid "Recent Files..."
+msgstr "최근 파일..."
+
+#: org/openscience/jmol/app/GuiMap.java:61
+msgid "&Edit"
+msgstr "편집(&E)"
+
+#: org/openscience/jmol/app/GuiMap.java:62
+msgid "Make crystal..."
+msgstr "결정 만들기..."
+
+#: org/openscience/jmol/app/GuiMap.java:63
+#: org/openscience/jmol/app/GuiMap.java:69
+msgid "Select All"
+msgstr "모두 선택"
+
+#: org/openscience/jmol/app/GuiMap.java:64
+msgid "Deselect All"
+msgstr "선택해제"
+
+#: org/openscience/jmol/app/GuiMap.java:65
+msgid "Copy Image"
+msgstr "이미지 복사"
+
+#: org/openscience/jmol/app/GuiMap.java:66
+msgid "Copy Script"
+msgstr "스크립트 복사"
+
+#: org/openscience/jmol/app/GuiMap.java:67
+msgid "&Preferences..."
+msgstr "환경설정(&P)..."
+
+#: org/openscience/jmol/app/GuiMap.java:68
+msgid "&Paste"
+msgstr "붙이기(&P)"
+
+#: org/openscience/jmol/app/GuiMap.java:71
+msgid "All"
+msgstr "모두"
+
+#: org/openscience/jmol/app/GuiMap.java:72
+#: org/openscience/jmol/app/GuiMap.java:85
+#: org/openscience/jmol/app/GuiMap.java:91
+#: org/openscience/jmol/app/GuiMap.java:97
+#: org/openscience/jmol/app/GuiMap.java:104
+msgid "None"
+msgstr "없음"
+
+#: org/openscience/jmol/app/GuiMap.java:73
+msgid "Hydrogen"
+msgstr "수소"
+
+#: org/openscience/jmol/app/GuiMap.java:74
+msgid "Carbon"
+msgstr "탄소"
+
+#: org/openscience/jmol/app/GuiMap.java:75
+msgid "Nitrogen"
+msgstr "질소"
+
+#: org/openscience/jmol/app/GuiMap.java:76
+msgid "Oxygen"
+msgstr "산소"
+
+#: org/openscience/jmol/app/GuiMap.java:77
+msgid "Phosphorus"
+msgstr "인"
+
+#: org/openscience/jmol/app/GuiMap.java:78
+msgid "Sulphur"
+msgstr "황"
+
+#: org/openscience/jmol/app/GuiMap.java:79
+msgid "Amino"
+msgstr "질소"
+
+#: org/openscience/jmol/app/GuiMap.java:80
+msgid "Nucleic"
+msgstr "핵"
+
+#: org/openscience/jmol/app/GuiMap.java:81
+msgid "Water"
+msgstr "물"
+
+#: org/openscience/jmol/app/GuiMap.java:82
+msgid "Hetero"
+msgstr "헤테로"
+
+#: org/openscience/jmol/app/GuiMap.java:83
+msgid "&Display"
+msgstr "보기(&D)"
+
+#: org/openscience/jmol/app/GuiMap.java:84
+msgid "Atom"
+msgstr "원자"
+
+#: org/openscience/jmol/app/GuiMap.java:86
+#: org/openscience/jmol/app/GuiMap.java:87
+#: org/openscience/jmol/app/GuiMap.java:88
+#: org/openscience/jmol/app/GuiMap.java:89
+#, java-format
+msgid "{0}% vanderWaals"
+msgstr "{0}% 반데르발스"
+
+#: org/openscience/jmol/app/GuiMap.java:90
+msgid "Bond"
+msgstr "결합"
+
+#: org/openscience/jmol/app/GuiMap.java:92
+msgid "Wireframe"
+msgstr "와이어프레임"
+
+#: org/openscience/jmol/app/GuiMap.java:93
+#: org/openscience/jmol/app/GuiMap.java:94
+#: org/openscience/jmol/app/GuiMap.java:95
+#: org/openscience/jmol/app/GuiMap.java:107
+#: org/openscience/jmol/app/GuiMap.java:108
+#, java-format
+msgid "{0} Å"
+msgstr ""
+
+#: org/openscience/jmol/app/GuiMap.java:96
+msgid "Label"
+msgstr "라벨"
+
+#: org/openscience/jmol/app/GuiMap.java:98
+msgid "Symbol"
+msgstr "심볼"
+
+#: org/openscience/jmol/app/GuiMap.java:99
+#: org/openscience/jmol/app/Jmol.java:425
+msgid "Name"
+msgstr "이름"
+
+#: org/openscience/jmol/app/GuiMap.java:100
+msgid "Number"
+msgstr "번호"
+
+#: org/openscience/jmol/app/GuiMap.java:101
+msgid "Centered"
+msgstr "가운데정렬"
+
+#: org/openscience/jmol/app/GuiMap.java:102
+msgid "Upper right"
+msgstr "상단 오른쪽"
+
+#: org/openscience/jmol/app/GuiMap.java:105
+msgid "On"
+msgstr "켜기"
+
+#: org/openscience/jmol/app/GuiMap.java:106
+#, java-format
+msgid "{0} pixels"
+msgstr "{0} 픽셀"
+
+#: org/openscience/jmol/app/GuiMap.java:109
+#: org/openscience/jmol/app/GuiMap.java:110
+#: org/openscience/jmol/app/GuiMap.java:111
+#: org/openscience/jmol/app/GuiMap.java:112
+#: org/openscience/jmol/app/GuiMap.java:113
+#, java-format
+msgid "Scale {0}"
+msgstr "스케일 {0}"
+
+#: org/openscience/jmol/app/GuiMap.java:114
+msgid "Zoom"
+msgstr "줌"
+
+#: org/openscience/jmol/app/GuiMap.java:115
+#: org/openscience/jmol/app/GuiMap.java:116
+#: org/openscience/jmol/app/GuiMap.java:117
+#: org/openscience/jmol/app/GuiMap.java:118
+#: org/openscience/jmol/app/GuiMap.java:119
+#, java-format
+msgid "{0}%"
+msgstr ""
+
+#: org/openscience/jmol/app/GuiMap.java:120
+#: org/openscience/jmol/app/GuiMap.java:164
+msgid "Perspective Depth"
+msgstr "원근법"
+
+#: org/openscience/jmol/app/GuiMap.java:121
+#: org/openscience/jmol/app/GuiMap.java:165
+msgid "Axes"
+msgstr "축"
+
+#: org/openscience/jmol/app/GuiMap.java:122
+#: org/openscience/jmol/app/GuiMap.java:166
+msgid "Bounding Box"
+msgstr "경계상자"
+
+#: org/openscience/jmol/app/GuiMap.java:123
+msgid "&Hydrogens"
+msgstr "수소(&H)"
+
+#: org/openscience/jmol/app/GuiMap.java:124
+msgid "&Vectors"
+msgstr "벡터(&V)"
+
+#: org/openscience/jmol/app/GuiMap.java:125
+msgid "&Measurements"
+msgstr "측정(&M)"
+
+#: org/openscience/jmol/app/GuiMap.java:126
+msgid "&View"
+msgstr "보기(&V)"
+
+#: org/openscience/jmol/app/GuiMap.java:127
+msgid "Front"
+msgstr "앞쪽"
+
+#: org/openscience/jmol/app/GuiMap.java:128
+msgid "Top"
+msgstr "위쪽"
+
+#: org/openscience/jmol/app/GuiMap.java:129
+msgid "Bottom"
+msgstr "바닥"
+
+#: org/openscience/jmol/app/GuiMap.java:130
+msgid "Right"
+msgstr "오른쪽"
+
+#: org/openscience/jmol/app/GuiMap.java:131
+msgid "Left"
+msgstr "왼쪽"
+
+#: org/openscience/jmol/app/GuiMap.java:132
+msgid "Transform..."
+msgstr "변환..."
+
+#: org/openscience/jmol/app/GuiMap.java:133
+msgid "Define Center"
+msgstr "가운데 정의"
+
+#: org/openscience/jmol/app/GuiMap.java:134
+msgid "&Tools"
+msgstr "도구(&T)"
+
+#: org/openscience/jmol/app/GuiMap.java:135
+#: org/openscience/jmol/app/MeasurementTable.java:65
+msgid "Measurements..."
+msgstr "측정..."
+
+#: org/openscience/jmol/app/GuiMap.java:136
+msgid "Distance Units"
+msgstr "길이 단위"
+
+#: org/openscience/jmol/app/GuiMap.java:137
+msgid "Nanometers 1E-9"
+msgstr "나노미터 1E-9"
+
+#: org/openscience/jmol/app/GuiMap.java:138
+msgid "Angstroms 1E-10"
+msgstr "옹스트롬 1E-10"
+
+#: org/openscience/jmol/app/GuiMap.java:139
+msgid "Picometers 1E-12"
+msgstr "피코미터 1E-12"
+
+#: org/openscience/jmol/app/GuiMap.java:140
+msgid "Animate..."
+msgstr "동영상..."
+
+#: org/openscience/jmol/app/GuiMap.java:141
+msgid "Vibrate..."
+msgstr "진동..."
+
+#: org/openscience/jmol/app/GuiMap.java:142
+msgid "&Graph..."
+msgstr "그래프(&G)..."
+
+#: org/openscience/jmol/app/GuiMap.java:143
+msgid "Calculate chemical &shifts..."
+msgstr "화학적 쉬프트(&s) 계산..."
+
+#: org/openscience/jmol/app/GuiMap.java:144
+msgid "&Crystal Properties"
+msgstr "단결정 속성(&C)"
+
+#: org/openscience/jmol/app/GuiMap.java:145
+msgid "Once"
+msgstr "한번"
+
+#: org/openscience/jmol/app/GuiMap.java:146
+msgid "Loop"
+msgstr "무한반복"
+
+#: org/openscience/jmol/app/GuiMap.java:147
+msgid "Palindrome"
+msgstr "왔다갔다"
+
+#: org/openscience/jmol/app/GuiMap.java:148
+msgid "Stop animation"
+msgstr "재생 정지"
+
+#: org/openscience/jmol/app/GuiMap.java:149
+#: org/openscience/jmol/app/GuiMap.java:181
+msgid "Rewind to first frame"
+msgstr "맨앞으로 되감기"
+
+#: org/openscience/jmol/app/GuiMap.java:150
+#: org/openscience/jmol/app/GuiMap.java:182
+msgid "Go to next frame"
+msgstr "다음 장면"
+
+#: org/openscience/jmol/app/GuiMap.java:151
+#: org/openscience/jmol/app/GuiMap.java:183
+msgid "Go to previous frame"
+msgstr "이전 장면"
+
+#: org/openscience/jmol/app/GuiMap.java:152
+msgid "Start vibration"
+msgstr "진동 시작"
+
+#: org/openscience/jmol/app/GuiMap.java:153
+msgid "Stop vibration"
+msgstr "진동 끝내기"
+
+#: org/openscience/jmol/app/GuiMap.java:154
+msgid "First frequency"
+msgstr "처음 진동수"
+
+#: org/openscience/jmol/app/GuiMap.java:155
+msgid "Next frequency"
+msgstr "다음 진동수"
+
+#: org/openscience/jmol/app/GuiMap.java:156
+msgid "Previous frequency"
+msgstr "이전 진동수"
+
+#: org/openscience/jmol/app/GuiMap.java:157
+msgid "&Help"
+msgstr "도움말(&H)"
+
+#: org/openscience/jmol/app/GuiMap.java:159
+msgid "User Guide"
+msgstr "사용자 도움말"
+
+#: org/openscience/jmol/app/GuiMap.java:160
+msgid "What's New"
+msgstr "새소식"
+
+#: org/openscience/jmol/app/GuiMap.java:161
+msgid "Jmol Java &Console"
+msgstr "Jmol 자바 콘솔(&C)"
+
+#: org/openscience/jmol/app/GuiMap.java:162
+msgid "Hydrogens"
+msgstr "수소"
+
+#: org/openscience/jmol/app/GuiMap.java:163
+msgid "Measurements"
+msgstr "측정"
+
+#: org/openscience/jmol/app/GuiMap.java:167
+msgid "RasMol/Chime compatible axes orientation/rotations"
+msgstr "RasMol/Chime 호환 축 방향/회전"
+
+#: org/openscience/jmol/app/GuiMap.java:168
+msgid "File Preview (needs restarting Jmol)"
+msgstr "파일 미리보기 (Jmol 재시작 필요)"
+
+#: org/openscience/jmol/app/GuiMap.java:169
+msgid "Clear console button (needs restarting Jmol)"
+msgstr "콘솔 버튼 지우기 (Jmol 재시작 필요)"
+
+#: org/openscience/jmol/app/GuiMap.java:170
+#: org/openscience/jmol/app/GuiMap.java:171
+msgid "Use Atom Color"
+msgstr "원자 색깔 사용"
+
+#: org/openscience/jmol/app/GuiMap.java:172
+msgid "Open a file."
+msgstr "파일 열기."
+
+#: org/openscience/jmol/app/GuiMap.java:173
+msgid "Save current view as an image."
+msgstr "현재 장면 이미지로 저장"
+
+#: org/openscience/jmol/app/GuiMap.java:174
+msgid "Export one or more views to a web page."
+msgstr "한개 혹은 여러 장면 웹페이지로 저장"
+
+#: org/openscience/jmol/app/GuiMap.java:175
+msgid "Render in pov-ray."
+msgstr "pov-ray로 렌더링"
+
+#: org/openscience/jmol/app/GuiMap.java:176
+msgid "Print view."
+msgstr "출력 보기."
+
+#: org/openscience/jmol/app/GuiMap.java:177
+msgid "Rotate molecule."
+msgstr "분자 회전."
+
+#: org/openscience/jmol/app/GuiMap.java:178
+msgid "Select an atom or region."
+msgstr "원자 혹은 영역 선택"
+
+#: org/openscience/jmol/app/GuiMap.java:179
+msgid "View measurement table."
+msgstr "측정 테이블 보기"
+
+#: org/openscience/jmol/app/GuiMap.java:180
+msgid "Return molecule to home position."
+msgstr "처음 위치로 돌아가기"
+
+#: org/openscience/jmol/app/HelpDialog.java:64
+msgid "Jmol Help"
+msgstr "Jmol 도움말"
+
+#: org/openscience/jmol/app/ImageCreator.java:110
+msgid "IO Exception:"
+msgstr "IO 예외"
+
+#: org/openscience/jmol/app/ImageTyper.java:63
+msgid "Image Type"
+msgstr "그림 형식"
+
+#: org/openscience/jmol/app/ImageTyper.java:99
+msgid "JPEG Quality"
+msgstr "JPEG 화질"
+
+#: org/openscience/jmol/app/Jmol.java:144
+#: org/openscience/jmol/app/webexport/WebMaker.java:66
+msgid "Error starting Jmol: the property 'user.home' is not defined."
+msgstr "Jmol 시작 오류: 'user.home'이 정의되지 않았습니다."
+
+#: org/openscience/jmol/app/Jmol.java:189
+msgid "Initializing 3D display..."
+msgstr "3D 장면 초기화..."
+
+#: org/openscience/jmol/app/Jmol.java:214
+msgid "Initializing Preferences..."
+msgstr "환경 초기화..."
+
+#: org/openscience/jmol/app/Jmol.java:216
+msgid "Initializing Recent Files..."
+msgstr "최근 파일 초기화..."
+
+#: org/openscience/jmol/app/Jmol.java:219
+msgid "Initializing Script Window..."
+msgstr "스크립트 창 초기화..."
+
+#: org/openscience/jmol/app/Jmol.java:221
+msgid "Initializing AtomSetChooser Window..."
+msgstr "원자선택 창 초기화..."
+
+#: org/openscience/jmol/app/Jmol.java:229
+msgid "Initializing Measurements..."
+msgstr "측정 초기화..."
+
+#: org/openscience/jmol/app/Jmol.java:253
+msgid "Building Command Hooks..."
+msgstr "명령 후크 구성..."
+
+#: org/openscience/jmol/app/Jmol.java:264
+msgid "Building Menubar..."
+msgstr "메뉴바 구성..."
+
+#: org/openscience/jmol/app/Jmol.java:280
+msgid "Starting display..."
+msgstr "디스플레이 시작..."
+
+#: org/openscience/jmol/app/Jmol.java:283
+msgid "Setting up File Choosers..."
+msgstr "파일 선택기 셋업..."
+
+#: org/openscience/jmol/app/Jmol.java:344
+msgid "Setting up Drag-and-Drop..."
+msgstr "드랙-앤-드롭 셋업..."
+
+#: org/openscience/jmol/app/Jmol.java:365
+msgid "Launching main frame..."
+msgstr "기본 프레임 적제..."
+
+#: org/openscience/jmol/app/Jmol.java:383
+msgid "Creating main window..."
+msgstr "기본 창 구성..."
+
+#: org/openscience/jmol/app/Jmol.java:384
+msgid "Initializing Swing..."
+msgstr "Swing 초기화..."
+
+#: org/openscience/jmol/app/Jmol.java:396
+msgid "Initializing Jmol..."
+msgstr "Jmol 초기화..."
+
+#: org/openscience/jmol/app/Jmol.java:414
+msgid "All Files"
+msgstr "모든 파일"
+
+#: org/openscience/jmol/app/Jmol.java:415
+#: org/openscience/jmol/app/Jmol.java:453
+#: org/openscience/jmol/app/PovrayDialog.java:500
+#: org/openscience/jmol/app/PreferencesDialog.java:165
+#: org/openscience/jmol/app/RecentFilesDialog.java:69
+msgid "Cancel"
+msgstr "취소"
+
+#: org/openscience/jmol/app/Jmol.java:416
+msgid "Abort file chooser dialog"
+msgstr "파일 선택 대화창 취소"
+
+#: org/openscience/jmol/app/Jmol.java:417
+#: org/openscience/jmol/app/Jmol.java:418
+msgid "Details"
+msgstr "자세히"
+
+#: org/openscience/jmol/app/Jmol.java:419
+msgid "Directory"
+msgstr "디렉토리"
+
+#: org/openscience/jmol/app/Jmol.java:420
+#: org/openscience/jmol/app/Jmol.java:440
+#: org/openscience/jmol/app/Jmol.java:442
+#: org/openscience/jmol/app/RecentFilesDialog.java:65
+msgid "Open"
+msgstr "열기"
+
+#: org/openscience/jmol/app/Jmol.java:421
+msgid "Open selected directory"
+msgstr "선택된 디렉토리 열기"
+
+#: org/openscience/jmol/app/Jmol.java:422
+msgid "Attributes"
+msgstr "속성"
+
+#: org/openscience/jmol/app/Jmol.java:423
+msgid "Modified"
+msgstr "변경"
+
+#: org/openscience/jmol/app/Jmol.java:424
+msgid "Generic File"
+msgstr "일반 파일"
+
+#: org/openscience/jmol/app/Jmol.java:426
+msgid "File Name:"
+msgstr "파일 이름:"
+
+#: org/openscience/jmol/app/Jmol.java:427
+msgid "Size"
+msgstr "크기"
+
+#: org/openscience/jmol/app/Jmol.java:428
+msgid "Files of Type:"
+msgstr "파일 형식:"
+
+#: org/openscience/jmol/app/Jmol.java:429
+msgid "Type"
+msgstr "형식"
+
+#: org/openscience/jmol/app/Jmol.java:430
+#: org/openscience/jmol/app/ScriptWindow.java:106
+msgid "Help"
+msgstr "도움말"
+
+#: org/openscience/jmol/app/Jmol.java:431
+msgid "FileChooser help"
+msgstr "파일 선택기 도움말"
+
+#: org/openscience/jmol/app/Jmol.java:432
+#: org/openscience/jmol/app/Jmol.java:433
+msgid "Home"
+msgstr "홈"
+
+#: org/openscience/jmol/app/Jmol.java:434
+#: org/openscience/jmol/app/Jmol.java:435
+msgid "List"
+msgstr "리스트"
+
+#: org/openscience/jmol/app/Jmol.java:436
+msgid "Look In:"
+msgstr "보기 방식:"
+
+#: org/openscience/jmol/app/Jmol.java:437
+msgid "Error creating new folder"
+msgstr "새 폴더 만들기 실패"
+
+#: org/openscience/jmol/app/Jmol.java:438
+msgid "New Folder"
+msgstr "새 폴더"
+
+#: org/openscience/jmol/app/Jmol.java:439
+msgid "Create New Folder"
+msgstr "폴더 만들기"
+
+#: org/openscience/jmol/app/Jmol.java:441
+msgid "Open selected file"
+msgstr "선택한 파일 열기"
+
+#: org/openscience/jmol/app/Jmol.java:443
+#: org/openscience/jmol/app/Jmol.java:445
+#: org/openscience/jmol/app/PovrayDialog.java:756
+msgid "Save"
+msgstr "저장"
+
+#: org/openscience/jmol/app/Jmol.java:444
+msgid "Save selected file"
+msgstr "선택한 파일 저장"
+
+#: org/openscience/jmol/app/Jmol.java:446
+msgid "Save In:"
+msgstr "선택 보기:"
+
+#: org/openscience/jmol/app/Jmol.java:447
+msgid "Update"
+msgstr "갱신"
+
+#: org/openscience/jmol/app/Jmol.java:448
+msgid "Update directory listing"
+msgstr "디렉토리 리스트 갱신"
+
+#: org/openscience/jmol/app/Jmol.java:449
+msgid "Up"
+msgstr "위로"
+
+#: org/openscience/jmol/app/Jmol.java:450
+msgid "Up One Level"
+msgstr "한단계 위"
+
+#: org/openscience/jmol/app/Jmol.java:454
+msgid "No"
+msgstr "아니오"
+
+#: org/openscience/jmol/app/Jmol.java:456
+msgid "Yes"
+msgstr "예"
+
+#: org/openscience/jmol/app/Jmol.java:478
+msgid "give this help page"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:480
+msgid "no display (and also exit when done)"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:481
+msgid "check script syntax only"
+msgstr "스크립트 문법검사만"
+
+#: org/openscience/jmol/app/Jmol.java:482
+msgid "silent startup operation"
+msgstr "조용히 시작하기"
+
+#: org/openscience/jmol/app/Jmol.java:483
+msgid "list commands during script execution"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:485
+msgid "no console -- all output to sysout"
+msgstr "콘솔 없음 -- 모든 출력은 sysout으로"
+
+#: org/openscience/jmol/app/Jmol.java:487
+msgid "exit after script (implicit with -n)"
+msgstr "스크립트 실행후 끝내기 (-n을 내포함)"
+
+#: org/openscience/jmol/app/Jmol.java:501
+msgid "property=value"
+msgstr "속성=값"
+
+#: org/openscience/jmol/app/Jmol.java:504
+msgid "supported options are given below"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:509
+#, java-format
+msgid "window width x height, e.g. {0}"
+msgstr "창 너비 x 높이, 예) . {0}"
+
+#: org/openscience/jmol/app/Jmol.java:517
+msgid ""
+"JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
+"2, maximum compression 9)"
+msgstr ""
+"JPG 이미지 화질 (1-100: 기본값 75) 혹은 PNG 이미지 압축률 (0-9: 기본값 2, 최"
+"대 압축률 9)"
+
+#: org/openscience/jmol/app/Jmol.java:523
+#, java-format
+msgid "{0} or {1}:filename"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:545
+msgid "For example:"
+msgstr "예:"
+
+#: org/openscience/jmol/app/Jmol.java:551
+msgid "The -D options are as follows (defaults in parathesis):"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:713
+msgid "Executing script..."
+msgstr "스크립트 실행..."
+
+#: org/openscience/jmol/app/Jmol.java:725
+msgid "Jmol Java Console"
+msgstr "Jmol 자바 콘솔"
+
+#: org/openscience/jmol/app/Jmol.java:733
+#: org/openscience/jmol/app/ScriptWindow.java:94
+msgid "Clear"
+msgstr "지움"
+
+#: org/openscience/jmol/app/Jmol.java:747
+msgid "Could not create ConsoleTextArea: "
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:833
+msgid "Closing Jmol..."
+msgstr "Jmol 닫기..."
+
+#: org/openscience/jmol/app/Jmol.java:1085
+msgid "Macros"
+msgstr "매크로"
+
+#: org/openscience/jmol/app/Jmol.java:1454
+msgid "Open URL"
+msgstr "URL 열기"
+
+#: org/openscience/jmol/app/Jmol.java:1455
+msgid "Enter URL of molecular model"
+msgstr "분자 모델의 URL을 넣으세요"
+
+#: org/openscience/jmol/app/MeasurementTable.java:123
+msgid "Delete"
+msgstr "지우기"
+
+#: org/openscience/jmol/app/MeasurementTable.java:132
+msgid "DeleteAll"
+msgstr "다지우기"
+
+#: org/openscience/jmol/app/MeasurementTable.java:150
+msgid "Dismiss"
+msgstr ""
+
+#: org/openscience/jmol/app/MeasurementTable.java:200
+msgid "Value"
+msgstr "값"
+
+#: org/openscience/jmol/app/PovrayDialog.java:113
+msgid "Render in POV-Ray"
+msgstr "POV-Ray로 랜더링"
+
+#: org/openscience/jmol/app/PovrayDialog.java:151
+msgid "Jmol-to-POV-Ray Conversion"
+msgstr "Jmol를 POV-Ray로 변환"
+
+#: org/openscience/jmol/app/PovrayDialog.java:155
+msgid "Filename"
+msgstr "파일이름"
+
+#: org/openscience/jmol/app/PovrayDialog.java:157
+msgid ""
+"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
+msgstr ""
+
+#: org/openscience/jmol/app/PovrayDialog.java:167
+msgid "Working Directory"
+msgstr "작업 폴더"
+
+#: org/openscience/jmol/app/PovrayDialog.java:169
+msgid "Where the .pov files will be saved"
+msgstr ".pov 파일이 저장될 위치"
+
+#: org/openscience/jmol/app/PovrayDialog.java:189
+msgid "POV-Ray Runtime Options"
+msgstr "POV-Ray 실행 옵션"
+
+#: org/openscience/jmol/app/PovrayDialog.java:194
+msgid "Run POV-Ray directly"
+msgstr "POV-Ray 직접 실행"
+
+#: org/openscience/jmol/app/PovrayDialog.java:196
+msgid "Launch POV-Ray from within Jmol"
+msgstr "Jmol에서 POV-Ray 실행"
+
+#: org/openscience/jmol/app/PovrayDialog.java:241
+msgid "Display While Rendering"
+msgstr "랜더링중 보여주기"
+
+#: org/openscience/jmol/app/PovrayDialog.java:243
+msgid "Should povray attempt to display while rendering?"
+msgstr "렌더링중에 povray가 보여주기를 할까요?"
+
+#: org/openscience/jmol/app/PovrayDialog.java:266
+msgid "Width : "
+msgstr "너비 : "
+
+#: org/openscience/jmol/app/PovrayDialog.java:268
+msgid "Image width"
+msgstr "이미지 너비"
+
+#: org/openscience/jmol/app/PovrayDialog.java:283
+msgid "Height : "
+msgstr "높이 : "
+
+#: org/openscience/jmol/app/PovrayDialog.java:285
+msgid "Image height"
+msgstr "이미지 높이"
+
+#: org/openscience/jmol/app/PovrayDialog.java:302
+msgid "Fixed ratio : "
+msgstr "고정 비율 : "
+
+#: org/openscience/jmol/app/PovrayDialog.java:304
+msgid "Use a fixed ratio for width:height"
+msgstr "너비:높이 고정 비율 사용"
+
+#: org/openscience/jmol/app/PovrayDialog.java:315
+msgid "User defined"
+msgstr "사용자 정의"
+
+#: org/openscience/jmol/app/PovrayDialog.java:317
+msgid "Keep ratio of Jmol window"
+msgstr "Jmol 창의 비율 보존"
+
+#: org/openscience/jmol/app/PovrayDialog.java:357
+msgid "N - PNG"
+msgstr ""
+
+#: org/openscience/jmol/app/PovrayDialog.java:360
+msgid "P - PPM"
+msgstr ""
+
+#: org/openscience/jmol/app/PovrayDialog.java:363
+msgid "C - Compressed Targa-24"
+msgstr "C - 압축된 Targa-24"
+
+#: org/openscience/jmol/app/PovrayDialog.java:366
+msgid "T - Uncompressed Targa-24"
+msgstr "T - 비압축 Targa-24"
+
+#: org/openscience/jmol/app/PovrayDialog.java:382
+msgid "Alpha transparency"
+msgstr "알파 투명"
+
+#: org/openscience/jmol/app/PovrayDialog.java:384
+msgid "Output Alpha transparency data"
+msgstr "알파 투명 데이타로 출력"
+
+#: org/openscience/jmol/app/PovrayDialog.java:397
+msgid "Mosaic preview"
+msgstr "모자익 미리보기"
+
+#: org/openscience/jmol/app/PovrayDialog.java:399
+msgid "Render the image in several passes"
+msgstr ""
+
+#: org/openscience/jmol/app/PovrayDialog.java:409
+msgid "Start size : "
+msgstr "시작 크기 : "
+
+#: org/openscience/jmol/app/PovrayDialog.java:411
+msgid "Inital size of the tiles"
+msgstr "타일의 초기 크기"
+
+#: org/openscience/jmol/app/PovrayDialog.java:427
+msgid "End size : "
+msgstr "종료 크기 : "
+
+#: org/openscience/jmol/app/PovrayDialog.java:429
+msgid "Final size of the tiles"
+msgstr "타일의 마지막 크기"
+
+#: org/openscience/jmol/app/PovrayDialog.java:450
+msgid "POV-Ray Executable Location"
+msgstr "POV-Ray 실행파일 위치"
+
+#: org/openscience/jmol/app/PovrayDialog.java:452
+msgid "Location of the povray Executable"
+msgstr "Povray 실행파일의 위치"
+
+#: org/openscience/jmol/app/PovrayDialog.java:489
+#: org/openscience/jmol/app/PovrayDialog.java:754
+msgid "Go!"
+msgstr "시작!"
+
+#: org/openscience/jmol/app/PovrayDialog.java:491
+msgid "Save file and possibly launch povray"
+msgstr "이미 실행중인 povray 저장하기"
+
+#: org/openscience/jmol/app/PovrayDialog.java:502
+msgid "Cancel this dialog without saving"
+msgstr "저장하지 않고 취소"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:133
+msgid "Preferences"
+msgstr "설정"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:150
+msgid "Display"
+msgstr "보기"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:151
+msgid "Atoms"
+msgstr "원자"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:152
+msgid "Bonds"
+msgstr "결합"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:157
+msgid "Jmol Defaults"
+msgstr "Jmol 기본값"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:161
+msgid "RasMol Defaults"
+msgstr "RasMol 기본값"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:169
+msgid "Apply"
+msgstr "적용"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:197
+msgid "Show All"
+msgstr "모두 보이기"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:296
+msgid "Default atom size"
+msgstr "기본 원자 크기"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:297
+msgid "(percentage of vanDerWaals radius)"
+msgstr "(반데르발스 반지름 비율)"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:349
+msgid "Compute Bonds"
+msgstr "결합 계산"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:351
+msgid "Automatically"
+msgstr "자동"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:352
+msgid "Don't Compute Bonds"
+msgstr "결합 계산하지 않음"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:379
+msgid "Default Bond Radius"
+msgstr "결합 반지름 기본값"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:380
+#: org/openscience/jmol/app/PreferencesDialog.java:418
+#: org/openscience/jmol/app/PreferencesDialog.java:469
+msgid "(Angstroms)"
+msgstr "(옹스트롬)"
+
+#: org/openscience/jmol/app/PreferencesDialog.java:417
+msgid "Bond Tolerance - sum of two covalent radii + this value"
+msgstr ""
+
+#: org/openscience/jmol/app/PreferencesDialog.java:468
+msgid "Minimum Bonding Distance"
+msgstr "최소 결합 길이"
+
+#: org/openscience/jmol/app/RecentFilesDialog.java:60
+msgid "Recent Files"
+msgstr "최근 파일"
+
+#: org/openscience/jmol/app/ScriptWindow.java:71
+msgid "Jmol Script Console"
+msgstr "Jmol 스크립트 콘솔"
+
+#: org/openscience/jmol/app/ScriptWindow.java:85
+msgid "Run"
+msgstr "실행"
+
+#: org/openscience/jmol/app/ScriptWindow.java:89
+msgid "Halt"
+msgstr "끝내기"
+
+#: org/openscience/jmol/app/ScriptWindow.java:98
+msgid "History"
+msgstr "히스토리"
+
+#: org/openscience/jmol/app/ScriptWindow.java:102
+msgid "State"
+msgstr "상태"
+
+#: org/openscience/jmol/app/ScriptWindow.java:114
+msgid "Undo"
+msgstr "무르기"
+
+#: org/openscience/jmol/app/ScriptWindow.java:118
+msgid "Redo"
+msgstr "되무르기"
+
+#: org/openscience/jmol/app/Splash.java:45
+msgid "Loading..."
+msgstr "불러오기..."
+
+#: org/openscience/jmol/app/WhatsNewDialog.java:57
+msgid "What's New in Jmol"
+msgstr "Jmol의 새로와진 점"

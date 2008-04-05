@@ -100,16 +100,17 @@ public class GT {
     languageList = new String[][] {
     {"ca", GT._("Catalan")},
     {"cs", GT._("Czech")},
-    {"da", GT._("Danish")},
+    //{"da", GT._("Danish")},
     {"nl", GT._("Dutch")},
     {"en_US", GT._("English")},
     {"et", GT._("Estonian")},
     {"fr", GT._("French")},
     {"de", GT._("German")},
+    {"ko", GT._("Korean")},
     {"pt_BR", GT._("Portuguese - Brazil")},
     {"pt", GT._("Portuguese")},
     {"es", GT._("Spanish")},
-    {"sv", GT._("Swedish")},
+    //{"sv", GT._("Swedish")},
     {"tr", GT._("Turkish")},};
     doTranslate = wasTranslating;
     return languageList;

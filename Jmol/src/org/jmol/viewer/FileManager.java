@@ -197,7 +197,7 @@ public class FileManager {
 
   void openStringInline(String strModel, Hashtable htParams, boolean isAppend) {
     String tag = (isAppend ? "append" : "model");
-    String script = "data \""+tag+" inline\"" + strModel + "end \""+tag+" inline\";";
+    String script = "data \""+tag+" inline\"\n" + strModel + "end \""+tag+" inline\";";
     setLoadScript(script, isAppend);
     Logger.info("FileManager.openStringInline()");
     openErrorMessage = null;

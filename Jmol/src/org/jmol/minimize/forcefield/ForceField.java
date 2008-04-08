@@ -28,6 +28,7 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
+//import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
 
 import org.jmol.minimize.MinAtom;
@@ -109,11 +110,6 @@ abstract public class ForceField {
 
   ////////////// calculation /////////////////
   
-  void steepestDescent(int steps, double econv) {
-    steepestDescentInitialize(steps, econv);
-    steepestDescentTakeNSteps(steps);
-  }
-
   public void steepestDescentInitialize(int stepMax, double criterion) {
     this.stepMax = stepMax;//1000
     this.criterion = criterion; //1e-3
@@ -126,6 +122,8 @@ abstract public class ForceField {
     Logger.info(s);
     if (calc.loggingEnabled)
       calc.appendLogData(calc.getAtomList("S T E E P E S T   D E S C E N T"));
+    dE = 0;
+    calc.setPreliminary(stepMax > 0);
     e0 = energyFull(false, false);
     s = TextFormat.sprintf(" Initial E = %10.3f " + calc.getUnit() + " criterion = %8.6f max steps = " + stepMax, null,
           new float[] { (float) e0, (float) criterion }, null);
@@ -142,7 +140,7 @@ abstract public class ForceField {
   public boolean steepestDescentTakeNSteps(int n) {
     if (stepMax == 0)
       return false;
-
+    boolean isPreliminary = true;
     for (int iStep = 1; iStep <= n; iStep++) {
       currentStep++;
       calc.setSilent(true);
@@ -157,7 +155,6 @@ abstract public class ForceField {
 
       double e1 = energyFull(false, false);
       dE = e1 - e0;
-      
       boolean done = Util.isNear(e1, e0, criterion);
 
       if (done || currentStep % 10 == 0 || stepMax <= currentStep) {
@@ -168,7 +165,6 @@ abstract public class ForceField {
         calc.appendLogData(s);
       }
       e0 = e1;
-
       if (done || stepMax <= currentStep) {
         if (calc.loggingEnabled)
           calc.appendLogData(calc.getAtomList("F I N A L  G E O M E T R Y"));
@@ -183,7 +179,10 @@ abstract public class ForceField {
         }
         return false;
       }
-      
+      if (isPreliminary && getNormalizedDE() >= 2) {
+        calc.setPreliminary(isPreliminary = false);
+        e0 = energyFull(false, false);
+      }
     }
     return true; // continue
   }
@@ -219,9 +218,8 @@ abstract public class ForceField {
     atom.force[0] = -getDE(atom, terms, 0, delta);
     atom.force[1] = -getDE(atom, terms, 1, delta);
     atom.force[2] = -getDE(atom, terms, 2, delta);
-    //if (atom.atom.getAtomIndex() == 17) {
-      //System.out.println(" atom + " + atom.atom.getAtomIndex() + " " + atom.gradient[0] + " " + atom.gradient[1] + " " + atom.gradient[2] );
-    //}
+    //if (atom.atom.getAtomIndex() == 2)
+      //System.out.println(" atom + " + atom.atom.getAtomIndex() + " force=" + atom.force[0] + " " + atom.force[1] + " " + atom.force[2] );
     return;
   }
 
@@ -230,9 +228,8 @@ abstract public class ForceField {
     atom.coord[i] += delta;
     double e = getEnergy(terms, false);
     atom.coord[i] -= delta;
-    //if (atom.atom.getAtomIndex() == 17) {
-      //System.out.println ("atom 17: " + atom.atom.getInfo() + " " + i + " " + (e - e0));
-    //}
+    //if (atom.atom.getAtomIndex() == 2)
+      //System.out.println ((i==0 ? "\n" : "") + "atom 3: " + atom.atom.getInfo() + " " + i + " " + (e - e0) + " " + (Point3f)atom.atom + "{" + atom.coord[0] + " " + atom.coord[1] + " " + atom.coord[2] + "} delta=" + delta);
     return (e - e0) / delta;
   }
 
@@ -270,8 +267,8 @@ abstract public class ForceField {
     if (gradients)
       clearForces();
 
-    energy = energyBond(gradients)
-       + energyAngle(gradients)
+    energy = energyBond(gradients) +
+        energyAngle(gradients)
        + energyTorsion(gradients)
        + energyOOP(gradients)
        + energyVDW(gradients)
@@ -337,8 +334,9 @@ abstract public class ForceField {
   private void linearSearch() {
 
     double alpha = 0.0; // Scale factor along direction vector
-    double step = 0.2;
+    double step = 0.23;
     double trustRadius = 0.3; // don't move further than 0.3 Angstroms
+    double trustRadius2 = trustRadius * trustRadius;
 
     double e1 = energyFull(false, true);
 
@@ -348,12 +346,30 @@ abstract public class ForceField {
         if (bsFixed == null || !bsFixed.get(i)) {
         double[] force = atoms[i].force;
         double[] coord = atoms[i].coord;
-        for (int j = 0; j < 3; ++j) {
+        double f2 = (force[0] * force[0] + force[1] * force[1] + force[2] * force[2]);
+        if (f2 > trustRadius2 / step / step) {
+          f2 = trustRadius / Math.sqrt(f2) / step;
+          //if (i == 2)
+            //System.out.println("atom 3: force/coord " + force[0] + " " + force[1] + " " + force[2] + "/" + coord[0] + " " + coord[1] + " " + coord[2] + " " + f2);
+          force[0] *= f2;
+          force[1] *= f2;
+          force[2] *= f2;
+        }
+/*        if (i == 2)
+         f.println("#atom 3; draw " +
+                "{" + coord[0] + " " + coord[1] + " " + coord[2] + "} " +
+                  "{" 
+                + (coord[0] + force[0]) + " " 
+                + (coord[1] + force[1]) + " " 
+                + (coord[2] + force[2])
+                +"}"
+          );
+*/        for (int j = 0; j < 3; ++j) {
           if (Util.isFinite(force[j])) {
             double tempStep = force[j] * step;
             if (tempStep > trustRadius)
               coord[j] += trustRadius;
-            else if (tempStep < -1.0 * trustRadius)
+            else if (tempStep < -trustRadius)
               coord[j] -= trustRadius;
             else
               coord[j] += tempStep;
@@ -363,13 +379,12 @@ abstract public class ForceField {
 
       double e2 = energyFull(false, true);
 
-      //System.out.println("linearSearch e2=" + e2 + " e1=" + e1 + " step=" + step);
-
+      //System.out.println("step is " + step + " " + (e2 <  e1) + " " + e1  + " " + e2);
       if (Util.isNear(e2, e1, 1.0e-3))
         break;
       if (e2 > e1) {
         step *= 0.1;
-        restoreCoordinates();
+         restoreCoordinates();
       } else if (e2 < e1) {
         e1 = e2;
         alpha += step;
@@ -378,7 +393,7 @@ abstract public class ForceField {
           step = 1.0;
       }
     }
-    
+    //System.out.println("alpha = " + alpha);
   }
 
   private void saveCoordinates() {
@@ -431,4 +446,8 @@ abstract public class ForceField {
     return calc.getLogData();
   }
   
+  double getNormalizedDE() {
+    return Math.abs(dE/criterion);
+  }
+
 }

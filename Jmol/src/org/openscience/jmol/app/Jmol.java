@@ -1757,10 +1757,17 @@ public class Jmol extends JPanel {
       case JmolConstants.CALLBACK_SCRIPT:
         if (scriptWindow == null)
           return;
-        if (data.length == 4)
+        switch (data.length) {
+        case 4:
           scriptWindow.notifyScriptTermination();
-        else
+          break;
+        case 3:
           scriptWindow.notifyScriptStart();
+          break;
+        case 2:
+          scriptWindow.sendConsoleMessage(strInfo);
+          break;
+        }
         break;
       case JmolConstants.CALLBACK_RESIZE:
       case JmolConstants.CALLBACK_SYNC:

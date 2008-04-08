@@ -3069,6 +3069,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
+    //System.out.println("renderScreenImage");
     if (isTainted || getSlabEnabled())
       setModelVisibility();
     isTainted = false;
@@ -3620,7 +3621,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         argb | 0xFF000000));
   }
 
-  Object getShapeProperty(int shapeType, String propertyName) {
+  public Object getShapeProperty(int shapeType, String propertyName) {
     return modelSet.getShapeProperty(shapeType, propertyName,
         Integer.MIN_VALUE);
   }

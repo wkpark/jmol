@@ -48,9 +48,10 @@ abstract class Calculations {
   final static int CALC_ES = 5;
   final static int CALC_MAX = 6;
 
+  ForceField ff;
   Vector[] calculations = new Vector[CALC_MAX];
   public Hashtable ffParams;
-
+  
   int atomCount;
   int bondCount;
   MinAtom[] atoms;
@@ -60,14 +61,16 @@ abstract class Calculations {
   double[] partialCharges;
   boolean havePartialCharges;
   Vector constraints;
+  boolean isPreliminary;
 
   public void setConstraints(Vector constraints) {
     this.constraints = constraints;
   }
 
-  Calculations(MinAtom[] minAtoms, MinBond[] minBonds, 
+  Calculations(ForceField ff, MinAtom[] minAtoms, MinBond[] minBonds, 
       int[][] angles, int[][] torsions, double[] partialCharges, 
       Vector constraints) {
+    this.ff = ff;
     atoms = minAtoms;
     bonds = minBonds;
     this.angles = angles;
@@ -138,12 +141,16 @@ abstract class Calculations {
   boolean logging;
   boolean loggingEnabled;
   
-  public void setLoggingEnabled(boolean TF) {
+  void setLoggingEnabled(boolean TF) {
     loggingEnabled = TF;
     if (loggingEnabled)
       logData = new StringBuffer();
   }
 
+  void setPreliminary(boolean TF) {
+    isPreliminary = TF;
+  }
+  
   private double calc(int iType, boolean gradients) {
     logging = loggingEnabled && !silent;
     this.gradients = gradients;

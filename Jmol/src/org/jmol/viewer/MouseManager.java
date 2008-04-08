@@ -23,7 +23,6 @@
  */
 package org.jmol.viewer;
 
-
 import java.awt.Rectangle;
 import java.awt.Event;
 
@@ -39,9 +38,10 @@ public abstract class MouseManager implements KeyListener {
   Thread hoverWatcherThread;
 
   int previousDragX, previousDragY;
-  int xCurrent, yCurrent;
-  long timeCurrent;
-  
+  int xCurrent = -1000;
+  int yCurrent = -1000;
+  long timeCurrent = -1;
+
   boolean measurementMode = false;
   boolean drawMode = false;
   boolean measuresEnabled = true;
@@ -59,27 +59,32 @@ public abstract class MouseManager implements KeyListener {
     if (display != null)
       display.addKeyListener(this);
   }
-  
+
   void clear() {
-    startHoverWatcher(false);  
+    startHoverWatcher(false);
   }
-  
+
   synchronized void startHoverWatcher(boolean isStart) {
     if (isStart) {
       if (hoverWatcherThread != null)
         return;
+      timeCurrent = -1;
       hoverWatcherThread = new Thread(new HoverWatcher());
       hoverWatcherThread.start();
     } else {
       if (hoverWatcherThread == null)
         return;
+      timeCurrent = -1;
       hoverWatcherThread.interrupt();
       hoverWatcherThread = null;
     }
   }
 
-  void removeMouseListeners11() {}
-  void removeMouseListeners14() {}
+  void removeMouseListeners11() {
+  }
+
+  void removeMouseListeners14() {
+  }
 
   void setModeMouse(int modeMouse) {
     if (modeMouse == JmolConstants.MOUSE_NONE) {
@@ -102,7 +107,8 @@ public abstract class MouseManager implements KeyListener {
     int i = ke.getKeyCode();
     int m = ke.getModifiers();
     if (viewer.getBooleanProperty("showKeyStrokes", false))
-      viewer.script("!set echo bottom left;!echo " + (i == 0 ? "" : i + " " + m));
+      viewer.script("!set echo bottom left;!echo "
+          + (i == 0 ? "" : i + " " + m));
     switch (i) {
     case KeyEvent.VK_UP:
     case KeyEvent.VK_DOWN:
@@ -112,7 +118,7 @@ public abstract class MouseManager implements KeyListener {
       break;
     }
   }
-  
+
   public void keyReleased(KeyEvent ke) {
     if (!viewer.getNavigationMode())
       return;
@@ -128,7 +134,7 @@ public abstract class MouseManager implements KeyListener {
       break;
     }
   }
-    
+
   protected void processKeyEvent(KeyEvent ke) {
     //System.out.println("processKeyEvent"+ke);
   }
@@ -157,12 +163,12 @@ public abstract class MouseManager implements KeyListener {
   }
 
   final static long MAX_DOUBLE_CLICK_MILLIS = 700;
-  
+
   final static int LEFT = 16;
-  final static int MIDDLE = Event.ALT_MASK;  // 8 note that MIDDLE
-  final static int ALT = Event.ALT_MASK;     // 8 and ALT are the same
-  final static int RIGHT = Event.META_MASK;  // 4
-  final static int CTRL = Event.CTRL_MASK;   // 2
+  final static int MIDDLE = Event.ALT_MASK; // 8 note that MIDDLE
+  final static int ALT = Event.ALT_MASK; // 8 and ALT are the same
+  final static int RIGHT = Event.META_MASK; // 4
+  final static int CTRL = Event.CTRL_MASK; // 2
   public final static int SHIFT = Event.SHIFT_MASK; // 1
   final static int MIDDLE_RIGHT = MIDDLE | RIGHT;
   final static int LEFT_MIDDLE_RIGHT = LEFT | MIDDLE | RIGHT;
@@ -181,8 +187,8 @@ public abstract class MouseManager implements KeyListener {
   final static int SHIFT_RIGHT = SHIFT | RIGHT;
   final static int CTRL_SHIFT_RIGHT = CTRL | SHIFT | RIGHT;
   final static int CTRL_ALT_SHIFT_RIGHT = CTRL | ALT | SHIFT | RIGHT;
-  public final static int BUTTON_MODIFIER_MASK =
-    CTRL | ALT | SHIFT | LEFT | MIDDLE | RIGHT;
+  public final static int BUTTON_MODIFIER_MASK = CTRL | ALT | SHIFT | LEFT
+      | MIDDLE | RIGHT;
 
   int previousPressedX, previousPressedY;
   int previousPressedModifiers;
@@ -192,9 +198,9 @@ public abstract class MouseManager implements KeyListener {
   void mousePressed(long time, int x, int y, int modifiers,
                     boolean isPopupTrigger) {
 
-    if (previousPressedX == x && previousPressedY == y &&
-        previousPressedModifiers == modifiers && 
-        (time - previousPressedTime) < MAX_DOUBLE_CLICK_MILLIS) {
+    if (previousPressedX == x && previousPressedY == y
+        && previousPressedModifiers == modifiers
+        && (time - previousPressedTime) < MAX_DOUBLE_CLICK_MILLIS) {
       ++pressedCount;
     } else {
       pressedCount = 1;
@@ -207,23 +213,23 @@ public abstract class MouseManager implements KeyListener {
     previousPressedTime = timeCurrent = time;
 
     if (logMouseEvents && Logger.debugging)
-      Logger.debug("mousePressed("+x+","+y+","+modifiers+
-                         " isPopupTrigger=" + isPopupTrigger+")");
+      Logger.debug("mousePressed(" + x + "," + y + "," + modifiers
+          + " isPopupTrigger=" + isPopupTrigger + ")");
 
     //viewer.setStatusUserAction("mousePressed: " + modifiers);
-    
+
     switch (modifiers & BUTTON_MODIFIER_MASK) {
-      /****************************************************************
-       * mth 2004 03 17
-       * this isPopupTrigger stuff just doesn't work reliably for me
-       * and I don't have a Mac to test out CTRL-CLICK behavior
-       * Therefore ... we are going to implement both gestures
-       * to bring up the popup menu
-       * The fact that we are using CTRL_LEFT may 
-       * interfere with other platforms if/when we
-       * need to support multiple selections, but we will
-       * cross that bridge when we come to it
-       ****************************************************************/
+    /****************************************************************
+     * mth 2004 03 17
+     * this isPopupTrigger stuff just doesn't work reliably for me
+     * and I don't have a Mac to test out CTRL-CLICK behavior
+     * Therefore ... we are going to implement both gestures
+     * to bring up the popup menu
+     * The fact that we are using CTRL_LEFT may 
+     * interfere with other platforms if/when we
+     * need to support multiple selections, but we will
+     * cross that bridge when we come to it
+     ****************************************************************/
     case CTRL_LEFT: // on MacOSX this brings up popup
     case RIGHT: // with multi-button mice, this will too
       viewer.popupMenu(x, y);
@@ -233,27 +239,30 @@ public abstract class MouseManager implements KeyListener {
 
   void mouseEntered(long time, int x, int y) {
     if (logMouseEvents && Logger.debugging)
-      Logger.debug("mouseEntered("+x+","+y+")");
+      Logger.debug("mouseEntered(" + x + "," + y + ")");
     hoverOff();
     timeCurrent = time;
-    xCurrent = x; yCurrent = y;
+    xCurrent = x;
+    yCurrent = y;
   }
 
   void mouseExited(long time, int x, int y) {
     if (logMouseEvents && Logger.debugging)
-      Logger.debug("mouseExited("+x+","+y+")");
+      Logger.debug("mouseExited(" + x + "," + y + ")");
     hoverOff();
     timeCurrent = time;
-    xCurrent = x; yCurrent = y;
+    xCurrent = x;
+    yCurrent = y;
     exitMeasurementMode();
   }
 
   void mouseReleased(long time, int x, int y, int modifiers) {
     hoverOff();
     timeCurrent = time;
-    xCurrent = x; yCurrent = y;
+    xCurrent = x;
+    yCurrent = y;
     if (logMouseEvents && Logger.debugging)
-      Logger.debug("mouseReleased("+x+","+y+","+modifiers+")");
+      Logger.debug("mouseReleased(" + x + "," + y + "," + modifiers + ")");
     viewer.setInMotion(false);
     viewer.setCursor(Viewer.CURSOR_DEFAULT);
   }
@@ -286,37 +295,37 @@ public abstract class MouseManager implements KeyListener {
     }
     exitMeasurementMode();
   }
-  
+
   void mouseClicked(long time, int x, int y, int modifiers, int clickCount) {
     // clickCount is not reliable on some platforms
     // so we will just deal with it ourselves
     //viewer.setStatusUserAction("mouseClicked: " + modifiers);
     setMouseMode();
     clickCount = 1;
-    if (previousClickX == x && previousClickY == y &&
-        previousClickModifiers == modifiers && 
-        (time - previousClickTime) < MAX_DOUBLE_CLICK_MILLIS) {
+    if (previousClickX == x && previousClickY == y
+        && previousClickModifiers == modifiers
+        && (time - previousClickTime) < MAX_DOUBLE_CLICK_MILLIS) {
       clickCount = previousClickCount + 1;
     }
     if (!viewer.getAwtComponent().hasFocus())
       viewer.getAwtComponent().requestFocusInWindow();
     hoverOff();
-    xCurrent = previousClickX = x; yCurrent = previousClickY = y;
+    xCurrent = previousClickX = x;
+    yCurrent = previousClickY = y;
     previousClickModifiers = modifiers;
     previousClickCount = clickCount;
     timeCurrent = previousClickTime = time;
 
     if (logMouseEvents && Logger.debugging)
-      Logger.debug("mouseClicked("+x+","+y+","+modifiers+
-                         ",clickCount="+clickCount+
-                         ",time=" + (time - previousClickTime) +
-                         ")");
-    if (! viewer.haveModelSet())
+      Logger.debug("mouseClicked(" + x + "," + y + "," + modifiers
+          + ",clickCount=" + clickCount + ",time=" + (time - previousClickTime)
+          + ")");
+    if (!viewer.haveModelSet())
       return;
 
     int nearestAtomIndex = (drawMode ? -1 : viewer.findNearestAtomIndex(x, y));
     if (nearestAtomIndex >= 0 && !viewer.isInSelectionSubset(nearestAtomIndex))
-        nearestAtomIndex = -1;
+      nearestAtomIndex = -1;
     if (clickCount == 1)
       mouseSingleClick(x, y, modifiers, nearestAtomIndex);
     else if (clickCount == 2)
@@ -381,12 +390,13 @@ public abstract class MouseManager implements KeyListener {
   void mouseDragged(long time, int x, int y, int modifiers) {
     setMouseMode();
     if (logMouseEvents && Logger.debugging)
-      Logger.debug("mouseDragged("+x+","+y+","+modifiers + ")");
+      Logger.debug("mouseDragged(" + x + "," + y + "," + modifiers + ")");
     int deltaX = x - previousDragX;
     int deltaY = y - previousDragY;
     hoverOff();
     timeCurrent = time;
-    xCurrent = previousDragX = x; yCurrent = previousDragY = y;
+    xCurrent = previousDragX = x;
+    yCurrent = previousDragY = y;
     if (!viewer.getInMotion())
       viewer.setCursor(Viewer.CURSOR_MOVE);
     viewer.setInMotion(true);
@@ -423,9 +433,11 @@ public abstract class MouseManager implements KeyListener {
         viewer.rotateZBy(-deltaX);
       break;
     case SHIFT_RIGHT: // the one-button Mac folks won't get this gesture
-      viewer.rotateZBy((Math.abs(deltaY) > 5 * Math.abs(deltaX) 
-          ? (xCurrent < viewer.getScreenWidth() / 2 ? deltaY : -deltaY) : 0)
-          + (yCurrent > viewer.getScreenHeight() / 2 ? deltaX : -deltaX));
+      viewer
+          .rotateZBy((Math.abs(deltaY) > 5 * Math.abs(deltaX) ? (xCurrent < viewer
+              .getScreenWidth() / 2 ? deltaY : -deltaY)
+              : 0)
+              + (yCurrent > viewer.getScreenHeight() / 2 ? deltaX : -deltaX));
       break;
     case CTRL_ALT_LEFT:
     /*
@@ -469,31 +481,33 @@ public abstract class MouseManager implements KeyListener {
 
   void mouseMoved(long time, int x, int y, int modifiers) {
     /*
-    if (logMouseEvents)
-      Logger.debug("mouseMoved("+x+","+y+","+modifiers"+)");
-    */
+     if (logMouseEvents)
+     Logger.debug("mouseMoved("+x+","+y+","+modifiers"+)");
+     */
     hoverOff();
     if (hoverWatcherThread == null)
       startHoverWatcher(true);
     timeCurrent = mouseMovedTime = time;
-    mouseMovedX = xCurrent = x; mouseMovedY = yCurrent = y;
+    mouseMovedX = xCurrent = x;
+    mouseMovedY = yCurrent = y;
     if (measurementMode || hoverActive) {
       int atomIndex = viewer.findNearestAtomIndex(x, y);
-      if (!measurementMode && atomIndex >= 0 && viewer.isInSelectionSubset(atomIndex))
-          atomIndex = -1;
+      if (!measurementMode && atomIndex >= 0
+          && viewer.isInSelectionSubset(atomIndex))
+        atomIndex = -1;
       setAttractiveMeasurementTarget(atomIndex);
     }
   }
 
   final static float wheelClickFractionUp = 1.15f;
-  final static float wheelClickFractionDown = 1/wheelClickFractionUp;
+  final static float wheelClickFractionDown = 1 / wheelClickFractionUp;
 
   void mouseWheel(long time, int rotation, int modifiers) {
     if (!viewer.getAwtComponent().hasFocus())
-      return;  
+      return;
     // sun bug? noted by Charles Xie that wheeling on a Java page
     // effected inappropriate wheeling on this Java component
-    
+
     hoverOff();
     timeCurrent = time;
     //Logger.debug("mouseWheel time:" + time + " rotation:" + rotation + " modifiers:" + modifiers);
@@ -511,7 +525,6 @@ public abstract class MouseManager implements KeyListener {
       viewer.zoomByFactor(zoomFactor);
     }
   }
-  
 
   abstract boolean handleOldJvm10Event(Event e);
 
@@ -525,14 +538,16 @@ public abstract class MouseManager implements KeyListener {
 
   // the attractive target may be -1
   void setAttractiveMeasurementTarget(int atomIndex) {
-    if (measurementCountPlusIndices[0] == measurementCount + 1 &&
-        measurementCountPlusIndices[measurementCount + 1] == atomIndex) {
-      viewer.refresh(0, "MouseManager:setAttractiveMeasurementTarget("+atomIndex+")");
+    if (measurementCountPlusIndices[0] == measurementCount + 1
+        && measurementCountPlusIndices[measurementCount + 1] == atomIndex) {
+      viewer.refresh(0, "MouseManager:setAttractiveMeasurementTarget("
+          + atomIndex + ")");
       return;
     }
     for (int i = measurementCount; i > 0; --i)
       if (measurementCountPlusIndices[i] == atomIndex) {
-        viewer.refresh(0, "MouseManager:setAttractiveMeasurementTarget("+atomIndex+")");
+        viewer.refresh(0, "MouseManager:setAttractiveMeasurementTarget("
+            + atomIndex + ")");
         return;
       }
     int attractiveCount = measurementCount + 1;
@@ -546,7 +561,7 @@ public abstract class MouseManager implements KeyListener {
       exitMeasurementMode();
       return;
     }
-    for (int i = measurementCount; --i >= 0; )
+    for (int i = measurementCount; --i >= 0;)
       if (measurementCountPlusIndices[i + 1] == atomIndex) {
         //        exitMeasurementMode();
         return;
@@ -579,7 +594,8 @@ public abstract class MouseManager implements KeyListener {
   void toggleMeasurement() {
     if (measurementCount >= 2 && measurementCount <= 4) {
       measurementCountPlusIndices[0] = measurementCount;
-      viewer.script("!" + Measurement.getMeasurementScript(measurementCountPlusIndices));
+      viewer.script("!"
+          + Measurement.getMeasurementScript(measurementCountPlusIndices));
     }
     exitMeasurementMode();
   }
@@ -605,7 +621,8 @@ public abstract class MouseManager implements KeyListener {
             long currentTime = System.currentTimeMillis();
             int howLong = (int) (currentTime - mouseMovedTime);
             if (howLong > hoverDelay) {
-              if (hoverWatcherThread != null && !viewer.getInMotion() && !viewer.getSpinOn() 
+              if (hoverWatcherThread != null && !viewer.getInMotion()
+                  && !viewer.getSpinOn()
                   && !viewer.checkObjectHovered(xCurrent, yCurrent)) {
                 int atomIndex = viewer.findNearestAtomIndex(xCurrent, yCurrent);
                 if (atomIndex >= 0)

@@ -271,7 +271,7 @@ final public class JmolConstants {
    *
    */
 
-  // | calculated                  1 << 15
+  // | tainted                     1 << 15 NOT IMPLEMENTED
   //  ||| | Hydrogen bond 0x3800   F << 11
   //       |Stereo 0x400           1 << 10
   //        |Aromatic 0x200        1 << 9
@@ -284,29 +284,32 @@ final public class JmolConstants {
   public final static short BOND_ORDER_ANY     = -2;
   public final static short BOND_ORDER_NULL    = -1;
 
-  public final static short BOND_HBOND_SHIFT = 11;
-  public final static short BOND_HBOND_CALC    = (short) (1 << 15);
+  public final static short BOND_HBOND_SHIFT   = 11;
+  public final static short BOND_TAINTED       = 0;//(short) (1 << 15);
   public final static short BOND_HYDROGEN_MASK = 0xF << 11;
   public final static short BOND_H_REGULAR     = 1 << 11;
-  public final static short BOND_H_PLUS_2      = 2 << 11;
-  public final static short BOND_H_PLUS_3      = 3 << 11;
-  public final static short BOND_H_PLUS_4      = 4 << 11;
-  public final static short BOND_H_PLUS_5      = 5 << 11;
-  public final static short BOND_H_MINUS_3     = 6 << 11;
-  public final static short BOND_H_MINUS_4     = 7 << 11;
-  public final static short BOND_H_NUCLEOTIDE  = 8 << 11;
+  public final static short BOND_H_CALC_MASK   = 0xE << 11; // excludes regular
+  public final static short BOND_H_CALC        = 2 << 11;
+  public final static short BOND_H_PLUS_2      = 3 << 11;
+  public final static short BOND_H_PLUS_3      = 4 << 11;
+  public final static short BOND_H_PLUS_4      = 5 << 11;
+  public final static short BOND_H_PLUS_5      = 6 << 11;
+  public final static short BOND_H_MINUS_3     = 7 << 11;
+  public final static short BOND_H_MINUS_4     = 8 << 11;
+  public final static short BOND_H_NUCLEOTIDE  = 9 << 11;
   
   public final static int[] argbsHbondType =
   {
-    0xFFFF69B4, // unused - pink
-    0xFFFFFF00, // regular yellow
-    0xFFFFFFFF, // +2 white
-    0xFFFF00FF, // +3 magenta
-    0xFFFF0000, // +4 red
-    0xFFFFA500, // +5 orange
-    0xFF00FFFF, // -3 cyan
-    0xFF00FF00, // -4 green
-    0xFFFF8080, // nucleotide
+    0xFFFF69B4, // 0  unused - pink
+    0xFFFFFF00, // 1  regular yellow
+    0xFFFFFF00, // 2  calc -- unspecified; yellow
+    0xFFFFFFFF, // 3  +2 white
+    0xFFFF00FF, // 4  +3 magenta
+    0xFFFF0000, // 5  +4 red
+    0xFFFFA500, // 6  +5 orange
+    0xFF00FFFF, // 7  -3 cyan
+    0xFF00FF00, // 8  -4 green
+    0xFFFF8080, // 9  nucleotide
   };
 
   public static int getArgbHbondType(short order) {
@@ -406,7 +409,6 @@ final public class JmolConstants {
   }
   
   public final static String getBondOrderNameFromOrder(short order) {
-
     switch (order) {
     case BOND_ORDER_ANY:
     case BOND_ORDER_NULL:

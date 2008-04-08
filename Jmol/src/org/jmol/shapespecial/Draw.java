@@ -110,7 +110,7 @@ public class Draw extends MeshCollection {
       newScale = 0;
       ncoord = nbitsets = nidentifiers = 0;
       isFixed = isReversed = isRotated45 = isCrossed = false;
-      isCurve = isArrow = isPlane = isVertices = isPerpendicular = isVector = false;
+      isCurve = isArrow = isPlane = isVertices = isPerpendicular = isVector = isCircle = false;
       isVisible = isValid = true;
       length = Float.MAX_VALUE;
       diameter = 0;

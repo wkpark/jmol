@@ -29,6 +29,7 @@ import java.util.BitSet;
 
 import org.jmol.bspt.CubeIterator;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
@@ -144,9 +145,10 @@ abstract public class BondCollection extends AtomCollection {
       i = atom.getBond(atomOther).index;
     } else {
       if (bondCount == bonds.length)
-        bonds = (Bond[]) ArrayUtil
-            .setLength(bonds, bondCount + bondGrowthIncrement);
-      if (order < 0 && (order & JmolConstants.BOND_HYDROGEN_MASK) == 0)
+        bonds = (Bond[]) ArrayUtil.setLength(bonds, bondCount
+            + bondGrowthIncrement);
+      if (order == JmolConstants.BOND_ORDER_NULL
+          || order == JmolConstants.BOND_ORDER_ANY)
         order = 1;
       i = setBond(bondCount++, bondMutually(atom, atomOther, order, mad)).index;
     }
@@ -333,7 +335,6 @@ abstract public class BondCollection extends AtomCollection {
   }
 
   protected void deleteBonds(BitSet bs) {
-    bsAromatic = new BitSet();
     int iDst = 0;
     for (int iSrc = 0; iSrc < bondCount; ++iSrc) {
       Bond bond = bonds[iSrc];
@@ -345,7 +346,12 @@ abstract public class BondCollection extends AtomCollection {
     for (int i = bondCount; --i >= iDst;)
       bonds[i] = null;
     bondCount = iDst;
-    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "delete", bs);
+    BitSet[] sets = (BitSet[]) viewer.getShapeProperty(
+        JmolConstants.SHAPE_STICKS, "sets");
+    for (int i = 0; i < sets.length; i++)
+      BitSetUtil.deleteBits(sets[i], bs);
+    BitSetUtil.deleteBits(bsPseudoHBonds, bs);
+    BitSetUtil.deleteBits(bsAromatic, bs);
   }
 
   private float hbondMax = 3.25f;
@@ -373,12 +379,13 @@ abstract public class BondCollection extends AtomCollection {
             || iter.foundDistance2() < hbondMin2
             || atom.isBonded(atomNear))
           continue;
-        getOrAddBond(atom, atomNear, JmolConstants.BOND_H_REGULAR, (short) 1,
-            bsPseudoHBonds);
+        getOrAddBond(atom, atomNear, JmolConstants.BOND_H_REGULAR, 
+            (short) 1, bsPseudoHBonds);
         nNew++;
       }
       iter.release();
     }
+    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, bsPseudoHBonds);
     if (showRebondTimes && Logger.debugging) {
       long timeEnd = System.currentTimeMillis();
       Logger.debug("Time to hbond=" + (timeEnd - timeBegin));

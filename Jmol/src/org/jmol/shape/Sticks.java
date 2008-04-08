@@ -41,6 +41,7 @@ public class Sticks extends Shape {
 
   short myMask;
   boolean reportAll;
+  
   BitSet bsOrderSet;
   BitSet bsSizeSet;
   BitSet bsColixSet;
@@ -156,14 +157,6 @@ public class Sticks extends Shape {
       return;
     }
     
-    if ("delete" == propertyName) {
-      BitSet bs = (BitSet) value;
-      BitSetUtil.deleteBits(bsColixSet, bs);
-      BitSetUtil.deleteBits(bsSizeSet, bs);
-      BitSetUtil.deleteBits(bsOrderSet, bs);
-      return;
-    }
-    
     if ("deleteModelAtoms" == propertyName) {
       return;
     }
@@ -174,6 +167,8 @@ public class Sticks extends Shape {
   public Object getProperty(String property, int index) {
     if (property.equals("selectionState"))
       return (selectedBonds != null ? "select BONDS " + Escape.escape(selectedBonds) + "\n":"");
+    if (property.equals("sets"))
+      return new BitSet[] { bsOrderSet, bsSizeSet, bsColixSet };
     return null;
   }
 
@@ -192,6 +187,8 @@ public class Sticks extends Shape {
 
   public String getShapeState() {
     Hashtable temp = new Hashtable();
+    Hashtable temp2 = new Hashtable();
+    boolean haveTainted = false;
     Bond[] bonds = modelSet.getBonds();
     for (int i = modelSet.getBondCount(); --i >= 0;) {
       Bond bond = bonds[i];
@@ -205,13 +202,15 @@ public class Sticks extends Shape {
       if (bsColixSet != null && bsColixSet.get(i)) {
         short colix = bond.getColix();
         if ((colix & Graphics3D.OPAQUE_MASK) == Graphics3D.USE_PALETTE)
-          setStateInfo(temp, i, getColorCommand("bonds", JmolConstants.PALETTE_CPK, colix));
+          setStateInfo(temp, i, getColorCommand("bonds",
+              JmolConstants.PALETTE_CPK, colix));
         else
           setStateInfo(temp, i, getColorCommand("bonds", colix));
-        
       }
     }
-    
-    return getShapeCommands(temp, null, -1, "select BONDS") + "\n";
+
+    return getShapeCommands(temp, null, -1, "select BONDS") + "\n"
+        + (haveTainted ? getShapeCommands(temp2, null, -1, "select BONDS") + "\n"
+             : "");
   }
 }

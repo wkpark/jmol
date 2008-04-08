@@ -78,6 +78,7 @@ public class DrawRenderer extends MeshRenderer {
     switch (drawType) {
     default:
       super.render2();
+      break;
     case JmolConstants.DRAW_CIRCLE:
     case JmolConstants.DRAW_CIRCULARPLANE:
       viewer.transformPoint(vertices[0], pt1i);

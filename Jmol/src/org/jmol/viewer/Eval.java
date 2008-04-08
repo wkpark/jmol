@@ -3250,7 +3250,6 @@ class Eval { //implements Runnable {
     float radius = Float.NaN;
     int color = Integer.MIN_VALUE;
     int distanceCount = 0;
-    int atomSetCount = 0;
     short bondOrder = JmolConstants.BOND_ORDER_NULL;
     short bo;
     int operation = JmolConstants.CONNECT_MODIFY_OR_CREATE;
@@ -3308,21 +3307,11 @@ class Eval { //implements Runnable {
         break;
       case Token.bitset:
       case Token.expressionBegin:
-        if (++nAtomSets > 2 || isBonds && nAtomSets > 1)
+        if (nAtomSets > 2 || isBonds && nAtomSets > 0)
           error(ERROR_badArgumentCount);
         if (haveType || isColorOrRadius)
           error(ERROR_invalidParameterOrder);
-        atomSets[atomSetCount++] = expression(i);
-        if (atomSetCount == 2) {
-          int pt = iToken;
-          for (int j = i; j < pt; j++)
-            if (tokAt(j) == Token.identifier
-                && parameterAsString(j).equals("_1")) {
-              expression2 = i;
-              break;
-            }
-          iToken = pt;
-        }
+        atomSets[nAtomSets++] = expression(i);
         isBonds = isBondSet;
         i = iToken; // the for loop will increment i
         break;
@@ -4083,7 +4072,7 @@ class Eval { //implements Runnable {
       strLabel = null;
     } 
     viewer.loadShape(JmolConstants.SHAPE_LABELS);
-    viewer.setLabel(strLabel);
+    viewer.setLabel(strLabel);           
   }
 
   private void hover() throws ScriptException {

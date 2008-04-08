@@ -122,10 +122,15 @@ public class Util {
                                               Vector3d v1,Vector3d v2, 
                                               Vector3d norm) {
     v1.sub(b, c);
-    v2.sub(c, d);
+    v2.sub(b, d);
     norm.cross(v1, v2);
-    v1.sub(a, c);
-    return Math.PI / 2.0 - vectorAngleRadians(norm, v1);
+    v2.add(v1);
+    v1.sub(b, a);
+    double angleA_CD = vectorAngleRadians(v2, v1);
+    double angleNorm = vectorAngleRadians(norm, v1);
+    if (angleNorm > Math.PI / 2)
+      angleNorm = Math.PI - angleNorm;
+    return Math.PI / 2.0 + (angleA_CD > Math.PI / 2.0 ? -angleNorm : angleNorm) ;
   }
   
   private static double vectorAngleRadians(Vector3d v1, Vector3d v2) {

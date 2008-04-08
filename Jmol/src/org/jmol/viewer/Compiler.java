@@ -2427,7 +2427,7 @@ class Compiler {
   private final static String[] errors = {
     GT._("bad argument count"), // 0
     GT._("invalid context for {0}"), // 1
-    GT._("commandExpected"), // 2
+    GT._("command expected"), // 2
     GT._("comma or right parenthesis expected"), // 3
     GT._("comparison operator expected"), // 4
     GT._("{ number number number } expected"), // 5

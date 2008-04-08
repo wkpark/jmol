@@ -974,10 +974,12 @@ public class Jmol implements WrappedApplet {
         break;
       case JmolConstants.CALLBACK_SCRIPT:
         showStatusAndConsole(strInfo);
-        if (!doCallback)
-          doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
         if (data.length == 4) // termination -- button legacy
           notifyScriptTermination();
+          //termination messsage ONLY if script callback enabled -- not to message queue
+          //for compatibility reasons
+        else if (!doCallback)
+          doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
         break;
       case JmolConstants.CALLBACK_SYNC:
         sendSyncScript(doCallback, strInfo, (String) data[2]);

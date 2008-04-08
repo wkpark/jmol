@@ -51,7 +51,7 @@ public class NucleicPolymer extends BioPolymer {
     }
   }
 
-  private final static short HBOND_MASK = JmolConstants.BOND_H_NUCLEOTIDE | JmolConstants.BOND_HBOND_CALC;
+  private final static short HBOND_MASK = JmolConstants.BOND_H_NUCLEOTIDE;
   
   void lookForHbonds(NucleicPolymer other, BitSet bsA, BitSet bsB) {
     //Logger.debug("NucleicPolymer.lookForHbonds()");

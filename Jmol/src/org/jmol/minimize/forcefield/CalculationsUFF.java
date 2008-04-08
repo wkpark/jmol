@@ -67,10 +67,10 @@ class CalculationsUFF extends Calculations {
   VDWCalc vdwCalc;
   ESCalc esCalc;
     
-  CalculationsUFF(MinAtom[] minAtoms, MinBond[] minBonds, 
+  CalculationsUFF(ForceField ff, MinAtom[] minAtoms, MinBond[] minBonds, 
       int[][] angles, int[][] torsions, double[] partialCharges,
       Vector constraints) {
-    super(minAtoms, minBonds, angles, torsions, partialCharges, constraints);    
+    super(ff, minAtoms, minBonds, angles, torsions, partialCharges, constraints);    
     bondCalc = new DistanceCalc();
     angleCalc = new AngleCalc();
     torsionCalc = new TorsionCalc();
@@ -284,6 +284,7 @@ class CalculationsUFF extends Calculations {
       a = atoms[ia = angle[0]];
       b = atoms[ib = angle[1]];
       c = atoms[ic = angle[2]];
+      boolean isHXH = (a.type.equals("H_") && c.type.equals("H_"));
 
       parA = getParameter(a.type, ffParams);
       parB = getParameter(b.type, ffParams);
@@ -335,7 +336,7 @@ class CalculationsUFF extends Calculations {
           * (3.0 * rab * rbc * (1.0 - cosT0 * cosT0) - rac * rac * cosT0);
       calc.addElement(new Object[] {
           new int[] { ia, ib, ic, coordination },
-          new double[] { ka, c0 - c2, c1, 2 * c2, theta0 * RAD_TO_DEG } });
+          new double[] { ka, c0 - c2, c1, 2 * c2, theta0 * RAD_TO_DEG, (isHXH ? ka * 10 : ka) } });
     }
 
     double compute(Object[] dataIn) {
@@ -345,7 +346,7 @@ class CalculationsUFF extends Calculations {
       ib = iData[1];
       ic = iData[2];
       int coordination = iData[3];
-      double ka = dData[0];
+      double ka = (isPreliminary ? dData[4] : dData[0]);
       double a0 = dData[1];
       double a1 = dData[2];
       double a2 = dData[3];
@@ -697,10 +698,10 @@ class CalculationsUFF extends Calculations {
         if ((a.type + c.type + d.type).indexOf("O_2") == 0) {
           koop += KCAL44;
           break;
-        } else if (b.type.lastIndexOf("R") == 2) 
+        }/* else if (b.type.lastIndexOf("R") == 2) 
           koop *= 10; // Bob's idea to force flat aromatic rings. 
            // Who would EVER want otherwise?
-        break;
+*/        break;
       case 7:
       case 8:
         break;
@@ -731,23 +732,23 @@ class CalculationsUFF extends Calculations {
 
       koop /= 3.0;
 
-      // A-B-CD || C-B-AD  PLANE = ABC
+      // A-BCD 
       calc.addElement(new Object[] { new int[] { ia, ib, ic, id },
-          new double[] { koop, a0, a1, a2 } });
+          new double[] { koop, a0, a1, a2, koop * 10 } });
 
-      // C-B-DA || D-B-CA  PLANE BCD
-      calc.addElement(new Object[] { new int[] { id, ib, ic, ia },
-          new double[] { koop, a0, a1, a2 } });
+      // C-BDA
+      calc.addElement(new Object[] { new int[] { ic, ib, id, ia },
+          new double[] { koop, a0, a1, a2, koop * 10 } });
 
-      // A-B-DC || D-B-AC  PLANE ABD
-      calc.addElement(new Object[] { new int[] { ia, ib, id, ic },
-          new double[] { koop, a0, a1, a2 } });
+      // D-BAC
+      calc.addElement(new Object[] { new int[] { id, ib, ia, ic },
+          new double[] { koop, a0, a1, a2, koop * 10 } });
     }
 
     double compute(Object[] dataIn) {
 
       getPointers(dataIn);
-      double koop = dData[0];
+      double koop = (isPreliminary ? dData[4] : dData[0]);
       double a0 = dData[1];
       double a1 = dData[2];
       double a2 = dData[3];
@@ -764,7 +765,10 @@ class CalculationsUFF extends Calculations {
       if (gradients) {
         theta = Util.restorativeForceAndOutOfPlaneAngleRadians(da, db, dc, dd, v1, v2, v3);
       } else {
-        theta = Util.pointPlaneAngleRadians(dd, da, db, dc, v1, v2, v3);
+        //if (atoms[ib].atom.getAtomIndex() == 20)
+          //System.out.println(" atom palne angl " + atoms[ib].atom.getInfo());
+          
+        theta = Util.pointPlaneAngleRadians(da, db, dc, dd, v1, v2, v3);
       }
 
       if (!Util.isFinite(theta))
@@ -776,6 +780,9 @@ class CalculationsUFF extends Calculations {
 
       double cosTheta = Math.cos(theta);
       energy = koop * (a0 + a1 * cosTheta + a2 * cosTheta * cosTheta);
+
+      //if (atoms[ib].atom.getAtomIndex() == 20)
+        //System.out.println(ib + " testing oop theta cosTheta=" + (theta * 180/Math.PI) + " " + cosTheta + " energy=" + energy + " koop=" + koop + " a0 a1 a2="+ a0 + " " + a1 + " "+ a2);
 
       if (gradients) {
         // somehow we already get the -1 from the OOPDeriv -- so we'll omit it here

@@ -1502,7 +1502,7 @@ abstract public class ModelCollection extends BondCollection {
       Bond bond = bonds[i];
       if (baseIndex >= 0 
            && models[bond.atom1.modelIndex].trajectoryBaseIndex != baseIndex
-          || (bond.order & JmolConstants.BOND_HBOND_CALC) == 0)
+          || (bond.order & JmolConstants.BOND_H_CALC_MASK) == 0)
         continue;
       if (bsAtoms != null && !bsAtoms.get(bond.atom1.atomIndex)) {
         models[baseIndex].hasCalculatedHBonds = true;
@@ -1964,13 +1964,17 @@ abstract public class ModelCollection extends BondCollection {
             nModified++;
           }
         } else {
-          bondAtoms(atomA, atomB, order, mad, bsBonds);
+          bsBonds.set(
+              bondAtoms(atomA, atomB, order, 
+                  mad, bsBonds).index);
           nNew++;
         }
       }
     }
     if (autoAromatize)
       assignAromaticBonds(true, bsBonds);
+    if (!identifyOnly)
+      viewer.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, bsBonds);
     return new int[] { nNew, nModified };
   }
 

@@ -90,6 +90,29 @@ final public class JmolConstants {
   public final static int DRAW_CURVE = 17;
   public static final int DRAW_CIRCULARPLANE = 18;
 
+  public static String getDrawTypeName(int drawType) {
+    switch (drawType) {
+    case JmolConstants.DRAW_MULTIPLE:
+      return "multiple";
+    case JmolConstants.DRAW_POINT:
+      return "point";
+    case JmolConstants.DRAW_LINE:
+      return "line";
+    case JmolConstants.DRAW_TRIANGLE:
+      return "triangle";
+    case JmolConstants.DRAW_PLANE:
+      return "plane";
+    case JmolConstants.DRAW_ARROW:
+      return "arrow";
+    case JmolConstants.DRAW_CIRCLE:
+    case JmolConstants.DRAW_CIRCULARPLANE:
+      return "circle";
+    case JmolConstants.DRAW_CURVE:
+      return "curve";
+    }
+    return "drawObject";
+}
+
   public final static String CLASSBASE_OPTIONS = "org.jmol.";
   public final static String CLASSBASE_QUANTUM = "org.jmol.quantum.";
 

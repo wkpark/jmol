@@ -150,24 +150,28 @@ public abstract class MeshRenderer extends ShapeRenderer {
       int iC = vertexIndexes[2];
       if (iB == iC) {
         //line or point
+        byte endCap = (iA != iB && !fill ? Graphics3D.ENDCAPS_NONE : width < 0
+            || isTranslucent ? Graphics3D.ENDCAPS_FLAT
+            : Graphics3D.ENDCAPS_SPHERICAL);
         if (diameter == 0)
           diameter = (mesh.diameter > 0 ? mesh.diameter : iA == iB ? 6 : 3);
-        if (width != 0) {
+        if (width == 0) {
+          g3d.fillCylinder(endCap, diameter, screens[iA], screens[iB]);
+        } else {
           pt1f.set(vertices[iA]);
           pt1f.add(vertices[iB]);
-          pt1f.scale(1f/2f);
+          pt1f.scale(1f / 2f);
           viewer.transformPoint(pt1f, pt1i);
+      
           //System.out.println("meshrenderer: pt=" + pt1i);
-          diameter = viewer.scaleToScreen(pt1i.z, (int) (Math.abs(width) * 1000));
+          diameter = viewer.scaleToScreen(pt1i.z,
+              (int) (Math.abs(width) * 1000));
           if (diameter == 0)
             diameter = 1;
+          viewer.transformPoint(vertices[iA], pt1f);
+          viewer.transformPoint(vertices[iB], pt2f);
+          g3d.fillCylinderBits(endCap, diameter, pt1f, pt2f);
         }
-        g3d.fillCylinder(
-            iA != iB && !fill 
-            ? Graphics3D.ENDCAPS_NONE 
-            : width < 0 || isTranslucent ? Graphics3D.ENDCAPS_FLAT 
-            : Graphics3D.ENDCAPS_SPHERICAL,
-            diameter, screens[iA], screens[iB]);
         continue;
       }
       switch (vertexIndexes.length) {
@@ -215,7 +219,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     }
     if (generateSet)
       renderExport();
-   }
+  }
 
   protected void renderExport() {
     //not implemented for this yet.

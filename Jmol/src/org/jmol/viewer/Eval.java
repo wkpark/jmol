@@ -10854,7 +10854,7 @@ class Eval { //implements Runnable {
                                     int pcCurrent, String lineInfo) {
     String err = "\n----";
     if (filename != null)
-      err += "line " + lineCurrent + " command " + (pcCurrent + 1) + " of"
+      err += "line " + lineCurrent + " command " + (pcCurrent + 1) + " of "
           + filename + ":";
     err += "\n         " + lineInfo;
     return err;

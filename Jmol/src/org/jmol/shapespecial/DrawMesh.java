@@ -52,28 +52,6 @@ public class DrawMesh extends Mesh {
   boolean isFixed;
   float drawArrowScale;
 
-  String getDrawType() {
-    switch (drawType) {
-    case JmolConstants.DRAW_MULTIPLE:
-      return "multiple";
-    case JmolConstants.DRAW_ARROW:
-      return "arrow";
-    case JmolConstants.DRAW_CIRCLE:
-      return "circle";
-    case JmolConstants.DRAW_CURVE:
-      return "curve";
-    case JmolConstants.DRAW_POINT:
-      return "point";
-    case JmolConstants.DRAW_LINE:
-      return "line";
-    case JmolConstants.DRAW_TRIANGLE:
-      return "triangle";
-    case JmolConstants.DRAW_PLANE:
-      return "plane";
-    }
-    return "type is not identified in mesh.getDrawType()";
-  }
-
   final void setCenter(int iModel) {
     Point3f center = new Point3f(0, 0, 0);
     int iptlast = -1;

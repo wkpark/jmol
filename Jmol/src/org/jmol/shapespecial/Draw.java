@@ -110,7 +110,8 @@ public class Draw extends MeshCollection {
       newScale = 0;
       ncoord = nbitsets = nidentifiers = 0;
       isFixed = isReversed = isRotated45 = isCrossed = false;
-      isCurve = isArrow = isPlane = isVertices = isPerpendicular = isVector = isCircle = false;
+      isCurve = isArrow = isPlane = isCircle = false;
+      isVertices = isPerpendicular = isVector = false;
       isVisible = isValid = true;
       length = Float.MAX_VALUE;
       diameter = 0;
@@ -455,7 +456,7 @@ public class Draw extends MeshCollection {
     thisMesh.width = width;
     thisMesh.setCenter(-1);
     if (thisMesh.thisID == null) {
-      thisMesh.thisID = thisMesh.getDrawType() + (++nUnnamed);
+      thisMesh.thisID = JmolConstants.getDrawTypeName(thisMesh.drawType) + (++nUnnamed);
     }
     return true;
   }
@@ -1054,9 +1055,11 @@ public class Draw extends MeshCollection {
       Hashtable info = new Hashtable();
       info.put("fixed", mesh.ptCenters == null ? Boolean.TRUE : Boolean.FALSE);
       info.put("ID", (mesh.thisID == null ? "<noid>" : mesh.thisID));
-      info.put("drawType", mesh.getDrawType());
+      info.put("drawType", JmolConstants.getDrawTypeName(mesh.drawType));
       if (mesh.diameter > 0)
         info.put("diameter", new Integer(mesh.diameter));
+      if (mesh.width > 0)
+        info.put("width", new Float(mesh.width));
       info.put("scale", new Float(mesh.scale));
       if (mesh.drawType == JmolConstants.DRAW_MULTIPLE) {
         Vector m = new Vector();

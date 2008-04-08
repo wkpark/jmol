@@ -125,7 +125,7 @@ class Cylinder3D {
   void renderBits(short colixA, short colixB, boolean isScreenedA,
                   boolean isScreenedB, byte endcaps, int diameter, float xA,
                   float yA, float zA, float xB, float yB, float zB) {
-    // dipole cross, cartoonRockets
+    // dipole cross, cartoonRockets, draw mesh nofill or width = -1
     if (diameter > g3d.height * 3)
       return;
     this.isScreenedA = isScreenedA;
@@ -157,7 +157,8 @@ class Cylinder3D {
       this.yAf = yA;
       this.zAf = zA;
     }
-    drawBackside = (!isScreenedA && !isScreenedB && (!notClipped || endcaps == Graphics3D.ENDCAPS_FLAT));
+    drawBackside = (!isScreenedA && !isScreenedB && (!notClipped 
+        || endcaps == Graphics3D.ENDCAPS_FLAT || endcaps == Graphics3D.ENDCAPS_NONE));
     this.xA = (int) xAf;
     this.yA = (int) yAf;
     this.zA = (int) zAf;
@@ -173,7 +174,7 @@ class Cylinder3D {
     if (diameter > 0)
       generateBaseEllipsePrecisely();
     if (endcaps == Graphics3D.ENDCAPS_FLAT)
-      renderFlatEndcap(true);
+      renderFlatEndcapPrecisely(true);
     line3d.setLineBits(this.dxBf, this.dyBf);
     g3d.setZMargin(5);
     for (int i = rasterCount; --i >= 0;)
@@ -546,6 +547,29 @@ class Cylinder3D {
       yT += dyB;
       zT += dzB;
     }
+    findMinMaxY();
+    for (int y = yMin; y <= yMax; ++y) {
+      findMinMaxX(y);
+      int count = xMax - xMin + 1;
+      g3d.setColorNoisy(intensityEndcap);
+      g3d.plotPixelsClipped(count, xT + xMin, yT + y, zT - zXMin - 1, zT
+          - zXMax - 1, null, null);
+    }
+  }
+
+  private void renderFlatEndcapPrecisely(boolean tCylinder) {
+    if (dzBf == 0 || !g3d.setColix(colixEndcap))
+      return;
+    float xTf = xAf, yTf = yAf, zTf = zAf;
+    if (tCylinder && dzBf < 0) {
+      xTf += dxBf;
+      yTf += dyBf;
+      zTf += dzBf;
+    }
+    int xT = (int) xTf;
+    int yT = (int) yTf;
+    int zT = (int) zTf;
+    
     findMinMaxY();
     for (int y = yMin; y <= yMax; ++y) {
       findMinMaxX(y);

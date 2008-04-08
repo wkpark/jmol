@@ -9117,8 +9117,12 @@ class Eval { //implements Runnable {
           propertyName = "arrow";
           break;
         }
-        if (str.equalsIgnoreCase("CIRCLE")) { //circle <center>; not yet implemented
+        if (str.equalsIgnoreCase("CIRCLE")) {
           propertyName = "circle";
+          break;
+        }
+        if (str.equalsIgnoreCase("CYLINDER")) {
+          propertyName = "cylinder";
           break;
         }
         if (str.equalsIgnoreCase("VERTICES")) {

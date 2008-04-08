@@ -167,13 +167,10 @@ public class DrawRenderer extends MeshRenderer {
   private void renderHandles() {
     int diameter = (int) (10 * imageFontScaling);
     switch (drawType) {
-    case JmolConstants.DRAW_POINT:
-    case JmolConstants.DRAW_ARROW:
-    case JmolConstants.DRAW_CURVE:
-    case JmolConstants.DRAW_LINE:
-    case JmolConstants.DRAW_PLANE:
-    case JmolConstants.DRAW_CIRCLE:
-    case JmolConstants.DRAW_MULTIPLE:
+    case JmolConstants.DRAW_NONE:
+    case JmolConstants.DRAW_TRIANGLE:
+      return;
+    default:
       for (int i = dmesh.polygonCount; --i >= 0;) {
         if (!isPolygonDisplayable(i))
           continue;

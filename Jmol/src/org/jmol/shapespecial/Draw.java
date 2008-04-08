@@ -90,6 +90,7 @@ public class Draw extends MeshCollection {
   private boolean isCircle;
   private boolean isVisible;
   private boolean isPerpendicular;
+  private boolean isCylinder;
   private boolean isVertices;
   private boolean isPlane;
   private boolean isReversed;
@@ -110,7 +111,7 @@ public class Draw extends MeshCollection {
       newScale = 0;
       ncoord = nbitsets = nidentifiers = 0;
       isFixed = isReversed = isRotated45 = isCrossed = false;
-      isCurve = isArrow = isPlane = isCircle = false;
+      isCurve = isArrow = isPlane = isCircle = isCylinder = false;
       isVertices = isPerpendicular = isVector = false;
       isVisible = isValid = true;
       length = Float.MAX_VALUE;
@@ -151,6 +152,11 @@ public class Draw extends MeshCollection {
 
     if ("perp" == propertyName) {
       isPerpendicular = true;
+      return;
+    }
+
+    if ("cylinder" == propertyName) {
+      isCylinder = true;
       return;
     }
 
@@ -453,7 +459,7 @@ public class Draw extends MeshCollection {
       }
     }
     thisMesh.diameter = diameter;
-    thisMesh.width = width;
+    thisMesh.width = (thisMesh.drawType == JmolConstants.DRAW_CYLINDER ? -Math.abs(width) : width);
     thisMesh.setCenter(-1);
     if (thisMesh.thisID == null) {
       thisMesh.thisID = JmolConstants.getDrawTypeName(thisMesh.drawType) + (++nUnnamed);
@@ -679,7 +685,7 @@ public class Draw extends MeshCollection {
       case 1:
         break;
       case 2:
-        drawType = JmolConstants.DRAW_LINE;
+        drawType = (isCylinder ? JmolConstants.DRAW_CYLINDER : JmolConstants.DRAW_LINE);
         break;
       default:
         drawType = JmolConstants.DRAW_PLANE;
@@ -975,7 +981,7 @@ public class Draw extends MeshCollection {
     if (iModel < 0)
       iModel = 0;
     if (mesh.width != 0)
-      str.append(" diameter ").append(mesh.width);
+      str.append(" diameter ").append((mesh.drawType == JmolConstants.DRAW_CYLINDER ? Math.abs(mesh.width) : mesh.width));
     else if (mesh.diameter > 0)
       str.append(" diameter ").append(mesh.diameter);
     int nVertices = mesh.drawVertexCount > 0 ? mesh.drawVertexCount 
@@ -992,6 +998,9 @@ public class Draw extends MeshCollection {
       break;
     case JmolConstants.DRAW_CURVE:
       str.append(" CURVE");
+      break;
+    case JmolConstants.DRAW_CYLINDER:
+      str.append(" CYLINDER");
       break;
     case JmolConstants.DRAW_POINT:
       nVertices = 1; // because this might be multiple points
@@ -1058,7 +1067,7 @@ public class Draw extends MeshCollection {
       info.put("drawType", JmolConstants.getDrawTypeName(mesh.drawType));
       if (mesh.diameter > 0)
         info.put("diameter", new Integer(mesh.diameter));
-      if (mesh.width > 0)
+      if (mesh.width != 0)
         info.put("width", new Float(mesh.width));
       info.put("scale", new Float(mesh.scale));
       if (mesh.drawType == JmolConstants.DRAW_MULTIPLE) {

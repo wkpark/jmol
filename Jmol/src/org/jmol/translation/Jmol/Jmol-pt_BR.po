@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-04-02 21:42+0200\n"
-"PO-Revision-Date: 2008-03-09 18:52-0300\n"
+"PO-Revision-Date: 2008-04-10 09:41-0300\n"
 "Last-Translator: Sérgio Ceroni da Silva <ceroni@cbiot.ufrgs.br>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -602,7 +602,7 @@ msgstr "Abrir um arquivo"
 
 #: org/openscience/jmol/app/GuiMap.java:173
 msgid "Save current view as an image."
-msgstr ""
+msgstr "Gravar visualização atual como imagem"
 
 #: org/openscience/jmol/app/GuiMap.java:174
 msgid "Export one or more views to a web page."
@@ -896,12 +896,8 @@ msgid "window width x height, e.g. {0}"
 msgstr "largura x altura da janela, por exemplo {0}"
 
 #: org/openscience/jmol/app/Jmol.java:517
-msgid ""
-"JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
-"2, maximum compression 9)"
-msgstr ""
-"qualidade da imagem JPG (1-100; padrão=75) ou compressão da imagem PNG (0-9; "
-"padrão=2, compressão máxima=9)"
+msgid "JPG image quality (1-100; default 75) or PNG image compression (0-9; default 2, maximum compression 9)"
+msgstr "qualidade da imagem JPG (1-100; padrão=75) ou compressão da imagem PNG (0-9; padrão=2, compressão máxima=9)"
 
 #: org/openscience/jmol/app/Jmol.java:523
 #, java-format
@@ -978,8 +974,7 @@ msgid "Filename"
 msgstr "Nome do arquivo"
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
-msgid ""
-"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
+msgid "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 msgstr "'cafeína.pov' -> 'cafeína.pov', 'cafeína.pov.ini', 'cafeína.pov.spt'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:167
@@ -1175,8 +1170,7 @@ msgstr "(Angstroms)"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:417
 msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr ""
-"Tolerância de Ligação - somatório de dois raios covalentes + este valor"
+msgstr "Tolerância de Ligação - somatório de dois raios covalentes + este valor"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:468
 msgid "Minimum Bonding Distance"
@@ -1224,53 +1218,37 @@ msgstr "Novidades no Jmol"
 
 #~ msgid "Export view to an image or script file."
 #~ msgstr "Exportar visualização para um arquivo de imagem ou de script"
-
 #~ msgid "Export &PDF..."
 #~ msgstr "Exportar &PDF..."
-
 #~ msgid "Image size"
 #~ msgstr "Tamanho da imagem"
-
 #~ msgid "Output format : "
 #~ msgstr "Formato de saida : "
-
 #~ msgid "Select the file format of the output file"
 #~ msgstr "Selecionar o formato do arquivo de saída"
-
 #~ msgid "Command Line to Execute"
 #~ msgstr "Linha de comando a ser executada"
-
 #~ msgid "The actual command which will be executed"
 #~ msgstr "O comando a ser executado"
-
 #~ msgid "null component string"
 #~ msgstr "\"null component string\""
-
 #~ msgid "Filename Stem"
 #~ msgstr "Nome-base para o arquivo"
-
 #~ msgid "Use .ini file"
 #~ msgstr "Usar arquivo .ini"
-
 #~ msgid "Save options in a .ini file"
 #~ msgstr "Gravar as opções em um arquivo .ini"
-
 #~ msgid "Render all frames"
 #~ msgstr "Renderizar todos os quadros"
-
 #~ msgid "Render each model (not only the currently displayed one)"
 #~ msgstr "Renderizar cada modelo (não somente o que está sendo visualizado)"
-
 #~ msgid "Turn on POV-Ray anti-aliasing"
 #~ msgstr "Ligar filtro anti-serrilhado do POV-Ray"
-
 #~ msgid "Use povray's slower but higher quality anti-aliasing mode"
 #~ msgstr ""
 #~ "Usar o modo anti-serrilhado (mais lento, melhor qualidade) do POV-Ray"
-
 #~ msgid "Render in pov-ray..."
 #~ msgstr "Renderizar no POV-Ray..."
-
 #~ msgid "File not loaded"
 #~ msgstr "Ficheiro não carregado"
 
@@ -1281,111 +1259,76 @@ msgstr "Novidades no Jmol"
 #, fuzzy
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Executando um script..."
-
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "Rotação de FrameLi&gado"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotação de frame"
-
 #~ msgid "Colors"
 #~ msgstr "Cores"
-
 #~ msgid "Background"
 #~ msgstr "Fundo"
-
 #~ msgid "Set the Background Color"
 #~ msgstr "Definir cor de fundo"
-
 #~ msgid "Background Color"
 #~ msgstr "Cores do fundo"
-
 #~ msgid "Picked Atoms"
 #~ msgstr "Átomos escolhidos"
-
 #~ msgid "Set the Color for Picked Atoms"
 #~ msgstr "Definir cor de átomos escolhidos"
-
 #~ msgid "Picked Atom Color"
 #~ msgstr "Cor do átomo escolhido"
-
 #~ msgid "Text"
 #~ msgstr "Texto"
-
 #~ msgid "Set the Color for Text"
 #~ msgstr "Definir cor do texto"
-
 #~ msgid "Text Color"
 #~ msgstr "Cor do texto"
-
 #~ msgid "Set the Color for Bonds"
 #~ msgstr "Definir cor para as ligações"
-
 #~ msgid "Bond Color"
 #~ msgstr "Cor da ligação"
-
 #~ msgid "Vectors"
 #~ msgstr "Vectores"
-
 #~ msgid "Set the Vector Color"
 #~ msgstr "Definir cor do Vector"
-
 #~ msgid "Vector Color"
 #~ msgstr "Cor do vector"
-
 #~ msgid "Color for distance, angle, & torsion measurements"
 #~ msgstr "Cor para a distância, ângulo, e medições de torção"
-
 #~ msgid "Measurements Color"
 #~ msgstr "Cor das meidções"
-
 #~ msgid "Loading plugins..."
 #~ msgstr "Carregamento de plugins..."
-
 #~ msgid "15% vanderWaals"
 #~ msgstr "15% vanderWaals"
-
 #~ msgid "25% vanderWaals"
 #~ msgstr "20% vanderWaals"
-
 #~ msgid "100% vanderWaals"
 #~ msgstr "20% vanderWaals"
-
 #~ msgid "0.10 Å"
 #~ msgstr "0.10 Å"
-
 #~ msgid "0.15 Å"
 #~ msgstr "0.15 Å"
-
 #~ msgid "0.20 Å"
 #~ msgstr "0.15 Å"
-
 #~ msgid "0.05 Å"
 #~ msgstr "0.05 Å"
-
 #~ msgid "Scale 0.5"
 #~ msgstr "Escala 0.5"
-
 #~ msgid "Scale 1"
 #~ msgstr "Escala 1"
-
 #~ msgid "Scale 2"
 #~ msgstr "Escala 2"
-
 #~ msgid "Scale 5"
 #~ msgstr "Escala 5"
-
 #~ msgid "100%"
 #~ msgstr "100%"
-
 #~ msgid "150%"
 #~ msgstr "150%"
-
 #~ msgid "200%"
 #~ msgstr "200%"
-
 #~ msgid "400%"
 #~ msgstr "400%"
-
 #~ msgid "800%"
 #~ msgstr "800%"
+

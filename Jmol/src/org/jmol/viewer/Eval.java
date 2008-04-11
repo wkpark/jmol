@@ -3897,10 +3897,11 @@ class Eval { //implements Runnable {
     default:
       error(ERROR_badArgumentCount);
     }
+    dataLabel = dataLabel.toLowerCase();
     String dataType = dataLabel + " ";
     dataType = dataType.substring(0, dataType.indexOf(" "));
-    boolean    isModel = dataType.equalsIgnoreCase("model");
-    boolean isAppend = dataType.equalsIgnoreCase("append");
+    boolean    isModel = dataType.equals("model");
+    boolean isAppend = dataType.equals("append");
     boolean processModel = ((isModel || isAppend) && (!isSyntaxCheck || isScriptCheck
         && fileOpenCheck));
     if ((isModel || isAppend) && dataString == null)
@@ -3908,7 +3909,7 @@ class Eval { //implements Runnable {
     int userType = -1;
     if (!isSyntaxCheck || processModel) {
       data = new Object[3];
-      if (dataType.toLowerCase().indexOf("element_vdw") == 0) {
+      if (dataType.equals("element_vdw")) {
         //vdw for now
         data[0] = dataType;
         data[1] = dataString.replace(';', '\n');
@@ -3919,10 +3920,16 @@ class Eval { //implements Runnable {
         data[2] = eArray;
         viewer.setData("element_vdw", data, n, 0, 0);
         return;
+      } else if (dataType.indexOf("data2d_") == 0) {
+        //data2d someName
+        data[0] = dataLabel;
+        data[1] = Parser.parseFloatArray2d(dataString);
+        viewer.setData(dataLabel, data, 0, 0, 0);
+        return;
       }
       String[] tokens = Parser.getTokens(dataLabel);
-      if (dataType.toLowerCase().indexOf("property_") == 0
-          && !(tokens.length == 2 && tokens[1].equalsIgnoreCase("set"))) {
+      if (dataType.indexOf("property_") == 0
+          && !(tokens.length == 2 && tokens[1].equals("set"))) {
         BitSet bs = viewer.getSelectionSet();
         data[0] = dataType;
         int atomNumberField = isOneValue ? 0 : ((Integer) viewer
@@ -8707,7 +8714,9 @@ class Eval { //implements Runnable {
             + data[0]
             + "\"\n"
             + (data[1] instanceof float[] ? Escape.escape((float[]) data[1])
-                : "" + data[1]));
+                : data[1] instanceof float[][] ? Escape.escape((float[][]) data[1], false)
+                : "" + data[1]))
+            + "\nend \"" + data[0] + "\";";
       }
       break;
     case Token.spacegroup:
@@ -10239,6 +10248,9 @@ class Eval { //implements Runnable {
           break;
         }
         if (str.equalsIgnoreCase("functionXY")) {
+          // isosurface functionXY "functionName"|"data2d_xxxxx"
+          //     {origin} {ni ix iy iz} {nj jx jy jz} {nk kx ky kz}
+          
           surfaceObjectSeen = true;
           Vector v = new Vector();
           if (getToken(++i).tok != Token.string)
@@ -10248,15 +10260,30 @@ class Eval { //implements Runnable {
           v.addElement(getPoint3f(i, false)); //(1) = {origin}
           Point4f pt;
           int nX, nY;
-          v.addElement(pt = getPoint4f(++iToken)); //(2) = {ni ix iy iz}
+          int ptX = ++iToken;
+          v.addElement(pt = getPoint4f(ptX)); //(2) = {ni ix iy iz}
           nX = (int) pt.x;
-          v.addElement(pt = getPoint4f(++iToken)); //(3) = {nj jx jy jz}
+          int ptY = ++iToken;
+          v.addElement(pt = getPoint4f(ptY)); //(3) = {nj jx jy jz}
           nY = (int) pt.x;
           v.addElement(getPoint4f(++iToken)); //(4) = {nk kx ky kz}
           if (nX == 0 || nY == 0)
             error(ERROR_invalidArgument);
-          if (!isSyntaxCheck)
-            v.addElement(viewer.functionXY(fName, nX, nY)); //(5) = float[][] data
+          if (!isSyntaxCheck) {
+            float[][] fdata = (fName.toLowerCase().indexOf("data2d_") == 0 ?
+                viewer.getDataFloat2D(fName)
+                : viewer.functionXY(fName, nX, nY));
+            if (fdata == null || fdata.length != nX) {
+              iToken = ptX;
+              error(ERROR_invalidArgument);
+            }
+            for (int j = 0; j < nX; j++)
+              if (fdata[j] == null || fdata[j].length != nY) {
+               iToken = ptY;
+               error(ERROR_invalidArgument);
+              }
+            v.addElement(fdata);                  
+          }
           i = iToken;
           propertyName = "functionXY";
           propertyValue = v;
@@ -11398,7 +11425,7 @@ class Eval { //implements Runnable {
     private boolean evaluateGetProperty(Token[] args) throws ScriptException {
       if (isSyntaxCheck)
         return addX("");
-      int pt = 0;
+      int pt = 0; 
       String propertyName = (args.length > pt ? Token.sValue(args[pt++]).toLowerCase() : "");
       Object propertyValue = (args.length > pt && args[pt].tok == Token.bitset ? 
           (Object) Token.bsSelect(args[pt++]) 
@@ -11735,10 +11762,26 @@ class Eval { //implements Runnable {
           return addX("");
         float[] f2 = (type.indexOf("property_") == 0 ? viewer
             .getDataFloat(type) : null);
-        if (f2 != null)
+        if (f2 != null) {
+          f1 = (float[]) f1.clone();
           for (int i = Math.min(f1.length, f2.length); --i >= 0;)
             f1[i] += f2[i];
+        }
         return addX(Escape.escape(f1));
+      }
+      if (selected.indexOf("data2d_") == 0) {
+        float[][] f1 = viewer.getDataFloat2D(selected);
+        if (f1 == null)
+          return addX("");
+        if (args.length == 2 && args[1].tok == Token.integer) {
+          int pt = args[1].intValue;
+          if (pt < 0)
+            pt += f1.length;
+          if (pt >= 0 && pt < f1.length)
+            return addX(Escape.escape(f1[pt]));
+          return addX("");
+        }
+        return addX(Escape.escape(f1, false));
       }
 
       // some other data type -- just return it

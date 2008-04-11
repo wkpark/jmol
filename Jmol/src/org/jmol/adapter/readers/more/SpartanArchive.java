@@ -85,6 +85,7 @@ public class SpartanArchive {
   int readArchive(String infoLine, boolean haveGeometryLine) throws Exception {
     atomCount = setInfo(infoLine);
     line = (haveGeometryLine ? "GEOMETRY" : "");
+    boolean haveMOData = false;
     while (line != null) {
       if (line.equals("GEOMETRY")) {
         readAtoms();
@@ -94,13 +95,15 @@ public class SpartanArchive {
         readBasis();
       } else if (line.indexOf("WAVEFUNC") == 0 || line.indexOf("BETA") == 0) {
         readMolecularOrbital();
-        atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
+        haveMOData = true;
       } else if (line.equals("ENDARCHIVE")
           || endCheck != null && line.indexOf(endCheck) == 0) {
         break;
       }
       readLine();
     }
+    if (haveMOData)
+      r.setMOData(moData);
     return atomCount;
   }
 

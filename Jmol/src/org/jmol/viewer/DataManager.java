@@ -30,6 +30,7 @@ import java.util.Hashtable;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Escape;
 import org.jmol.util.Parser;
 
 /*
@@ -54,7 +55,7 @@ class DataManager {
     //Eval
     /*
      * data[0] -- label
-     * data[1] -- string or float[]
+     * data[1] -- string or float[] or float[][]
      * data[2] -- selection bitset or int[] atomMap when field > 0
      * 
      * matchField = data must match atomNo in this column, >= 1
@@ -124,7 +125,7 @@ class DataManager {
       int n = 0;
       Enumeration e = (dataValues.keys());
       while (e.hasMoreElements())
-        info[1] += (n++ == 0 ? "," : "") + e.nextElement();
+        info[1] += (n++ > 0 ? "\n" : "") + e.nextElement();
       return info;
     }
     return (Object[]) dataValues.get(type);
@@ -149,6 +150,15 @@ class DataManager {
       }
     }
     return Float.NaN;
+  }
+
+  float[][] getDataFloat2D(String label) {
+    if (dataValues == null)
+      return null;
+    Object[] data = getData(label);
+    if (data == null || !(data[1] instanceof float[][]))
+      return null;
+    return (float[][]) data[1];
   }
 
   void getDataState(StringBuffer state, StringBuffer sfunc, Atom[] atoms,
@@ -177,6 +187,14 @@ class DataManager {
           sb.append("\n  DATA \"").append(name).append("\"");
           sb.append(data);
           sb.append("  end \"").append(name).append("\";\n");
+        }
+      } else if (name.indexOf("data2d") == 0) {
+        Object data = ((Object[]) dataValues.get(name))[1];
+        if (data instanceof float[][]) {
+          n++;
+          sb.append("\n  DATA \"").append(name).append("\"\n");
+          sb.append(Escape.escape((float[][]) data, true));
+          sb.append(";\n  end \"").append(name).append("\";\n");
         }
       }
     }

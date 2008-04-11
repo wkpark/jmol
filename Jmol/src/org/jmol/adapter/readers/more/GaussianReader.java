@@ -181,7 +181,7 @@ public class GaussianReader extends AtomSetCollectionReader {
             Logger.debug(orbitals.size() + " molecular orbitals read");
           }
           moData.put("mos", orbitals);
-          atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
+          setMOData(moData);
         } else if (line.startsWith(" Normal termination of Gaussian")) {
           ++calculationNumber;
           equivalentAtomSets=0; // avoid next calculation to set the last title string

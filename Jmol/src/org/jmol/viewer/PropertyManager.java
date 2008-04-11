@@ -228,6 +228,14 @@ class PropertyManager {
           return extractProperty(iilist[pt], args, ptr);
         return "";
       }
+      if (property instanceof Object[]) {
+        Object[] olist = (Object[]) property;
+        if (pt < 0)
+          pt += olist.length;
+        if (pt >= 0 && pt < olist.length)
+          return olist[pt];
+        return "";
+      }
       break;
     case Token.string:
       String key = Token.sValue(arg);

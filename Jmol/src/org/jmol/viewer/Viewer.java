@@ -2476,6 +2476,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     dataManager.setData(type, data, atomCount, matchField, field);
   }
   
+  public static Object testData; // for isosurface  
+  public static Object testData2; // for isosurface 
+
   Object[] getData(String type) {
     return dataManager.getData(type);  
   }
@@ -2484,6 +2487,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return dataManager.getDataFloat(label);
   }
 
+  float[][] getDataFloat2D(String label) {
+    return dataManager.getDataFloat2D(label);  
+  }
+  
   public float getDataFloat(String label, int atomIndex) {
     return dataManager.getDataFloat(label, atomIndex);
   }
@@ -6546,8 +6553,5 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public BitSet getDeletedAtoms() {
     return selectionManager.bsDeleted;
   }
-
-  public static Object testData; // for isosurface  
-  public static Object testData2; // for isosurface 
 
 }

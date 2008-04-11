@@ -92,7 +92,7 @@ public class PsiReader extends AtomSetCollectionReader {
             Logger.debug(orbitals.size() + " molecular orbitals read");
           }
           moData.put("mos", orbitals);
-          atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
+          setMOData(moData);
         } else if (iHaveAtoms && line.indexOf("SCF total energy   =") >= 0) {
           readSCFDone();
         }

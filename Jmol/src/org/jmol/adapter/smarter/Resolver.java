@@ -589,8 +589,11 @@ public class Resolver {
   final static String[] qchemRecords = 
   { "Qchem", "Welcome to Q-Chem", "A Quantum Leap Into The Future Of Chemistry" };
 
-  final static String[] gamessRecords =
-  { "Gamess", "GAMESS" };
+  final static String[] gamessUKRecords =
+  { "GamessUK", "GAMESS-UK", "G A M E S S - U K" };
+
+  final static String[] gamessUSRecords =
+  { "GamessUS", "GAMESS" };
 
   final static String[] spartanBinaryRecords =
   { "SpartanSmol" , "|PropertyArchive", "_spartan", "spardir" };
@@ -608,7 +611,8 @@ public class Resolver {
   { "NWChem", " argument  1 = "};
 
   final static String[][] containsRecords =
-  { xmlRecords, gaussianRecords, mopacRecords, qchemRecords, gamessRecords,
+  { xmlRecords, gaussianRecords, mopacRecords, qchemRecords, 
+    gamessUKRecords, gamessUSRecords,
     spartanBinaryRecords, spartanRecords, mol2Records, adfRecords, psiRecords,
     nwchemRecords, 
   };

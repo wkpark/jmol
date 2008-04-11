@@ -62,6 +62,19 @@ public class Parser {
     }
   }
 
+  public static float[][] parseFloatArray2d(String str) {
+    str = str.replace(';', str.indexOf('\n') < 0 ? '\n' : ' ');
+    str = TextFormat.trim(str, "\n");
+    int[] lines = markLines(str, '\n');
+    int nLines = lines.length;
+    float[][] data = new float[nLines][];
+    for (int iLine = 0, pt = 0; iLine < lines.length; pt = lines[iLine++]) {
+      String[] tokens = getTokens(str.substring(pt, lines[iLine]));
+      parseFloatArray(tokens, data[iLine] = new float[tokens.length]);
+    }
+    return data;
+  }
+  
   public static void parseFloatArrayFromMatchAndField(String str, BitSet bs,
                                                       int fieldMatch,
                                                       int[] matchData,
@@ -417,5 +430,5 @@ public class Parser {
   public static boolean isOneOf(String key, String semiList) {
     return (';' + semiList + ';').indexOf(';' + key + ';') >= 0;
   }
-  
+
 }

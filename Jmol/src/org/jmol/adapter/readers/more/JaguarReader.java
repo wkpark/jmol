@@ -80,7 +80,7 @@ public class JaguarReader extends AtomSetCollectionReader {
         }
       }
       if (moCount > 0 && gaussianCount > 0) {
-        atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
+        setMOData(moData);
       }
     } catch (Exception e) {
       return setError(e);

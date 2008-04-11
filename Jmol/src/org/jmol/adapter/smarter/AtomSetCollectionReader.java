@@ -34,6 +34,7 @@ import java.io.BufferedReader;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Vector;
 
 /*
  * Notes 9/2006 Bob Hanson
@@ -455,6 +456,13 @@ public abstract class AtomSetCollectionReader {
       }
     }
     initializeSymmetry();
+  }
+
+  public void setMOData(Hashtable moData) {
+    atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
+    Vector orbitals = (Vector) moData.get("mos");
+    if (orbitals != null)
+      Logger.info(orbitals.size() + " molecular orbitals read in model " + modelNumber);
   }
 
   public static String getElementSymbol(int elementNumber) {

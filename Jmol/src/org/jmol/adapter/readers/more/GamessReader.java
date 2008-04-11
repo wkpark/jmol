@@ -33,167 +33,38 @@ import java.util.Vector;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
-public class GamessReader extends AtomSetCollectionReader {
+abstract public class GamessReader extends AtomSetCollectionReader {
 
-  int atomCount = 0;
+  protected int atomCount = 0;
   //int moCount = 0;
-  int shellCount = 0;
-  int gaussianCount = 0;
-  String calculationType = "?";
-  Hashtable moData = new Hashtable();
-  Vector orbitals = new Vector();
-
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("gamess");
-    try {
-      readLine();
-      boolean iHaveAtoms = false;
-      while (line != null) {
-        if (line.indexOf("COORDINATES (BOHR)") >= 0 || line.indexOf("COORDINATES OF ALL ATOMS ARE (ANGS)") >= 0) {
-          if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
-            if (iHaveAtoms)
-              break;
-            readLine();
-            continue;
-          }
-          if (line.indexOf("COORDINATES (BOHR)") >= 0)
-            readAtomsInBohrCoordinates();
-          else
-            readAtomsInAngstromCoordinates();
-          iHaveAtoms = true;
-        } else if (iHaveAtoms && line.indexOf("FREQUENCIES IN CM") >= 0) {
-          readFrequencies();
-        } else if (iHaveAtoms && line.indexOf("ATOMIC BASIS SET") >= 0) {
-          readGaussianBasis();
-          moData.put("calculationType", calculationType);
-          atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
-          continue;
-        } else if (iHaveAtoms && (line.indexOf("  EIGENVECTORS") >= 0  
-            || line.indexOf("  MOLECULAR ORBITALS") >= 0)) {
-          readMolecularOrbitals();
-          moData.put("mos", orbitals);
-          atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
-          continue;
-        }
-        readLine();
-      }
-    } catch (Exception e) {
-      return setError(e);
-    }
-    return atomSetCollection;
-  }
-  
-  void readAtomsInBohrCoordinates() throws Exception {
-/*
- ATOM      ATOMIC                      COORDINATES (BOHR)
-           CHARGE         X                   Y                   Z
- C           6.0     3.9770911639       -2.7036584676       -0.3453920672
-
-0         1         2         3         4         5         6         7    
-01234567890123456789012345678901234567890123456789012345678901234567890123456789
-
-*/    
-
-    readLine(); // discard one line
-    String atomName;
-    atomSetCollection.newAtomSet();
-    int n = 0;
-    while (readLine() != null
-        && (atomName = parseToken(line, 1, 6)) != null) {
-      float x = parseFloat(line, 17, 37);
-      float y = parseFloat(line, 37, 57);
-      float z = parseFloat(line, 57, 77);
-      if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
-        break;
-      Atom atom = atomSetCollection.addNewAtom();
-      atom.atomName = atomName + (++n);
-      atom.set(x, y, z);
-      atom.scale(ANGSTROMS_PER_BOHR);
-      atomNames.addElement(atomName);
-    }
-  }
-
-  Vector atomNames = new Vector();
-  void readAtomsInAngstromCoordinates() throws Exception {
-    readLine(); 
-    readLine(); // discard two lines
-    String atomName;
-    atomSetCollection.newAtomSet();
-/*    
-       COORDINATES OF ALL ATOMS ARE (ANGS)
-   ATOM   CHARGE       X              Y              Z
- ------------------------------------------------------------
- C           6.0   2.1045861621  -1.4307145508  -0.1827736240
-
-0         1         2         3         4         5         6    
-0123456789012345678901234567890123456789012345678901234567890
-
-*/
-    int n = 0;
-    while (readLine() != null
-        && (atomName = parseToken(line, 1, 6)) != null) {
-      float x = parseFloat(line, 16, 31);
-      float y = parseFloat(line, 31, 46);
-      float z = parseFloat(line, 46, 61);
-      if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
-        break;
-      Atom atom = atomSetCollection.addNewAtom();
-      atom.atomName = atomName + (++n);
-      atom.set(x, y, z);
-      atomNames.addElement(atomName);
-    }
-  }
-  /*
-   * 
-   ATOMIC BASIS SET
-   ----------------
-   THE CONTRACTED PRIMITIVE FUNCTIONS HAVE BEEN UNNORMALIZED
-   THE CONTRACTED BASIS FUNCTIONS ARE NOW NORMALIZED TO UNITY
-
-   SHELL TYPE PRIMITIVE    EXPONENT          CONTRACTION COEFFICIENTS
-
-   C         
-
-
-   1   S    1           172.2560000       .061766907377
-   1   S    2            25.9109000       .358794042852
-   1   S    3             5.5333500       .700713083689
-
-   2   L    4             3.6649800      -.395895162119       .236459946619
-   2   L    5              .7705450      1.215834355681       .860618805716
-
-   OR:
-
-   SHELL TYPE PRIM    EXPONENT          CONTRACTION COEFFICIENTS
-
-   C         
-
-   1   S    1      71.616837    2.707814 (  0.154329) 
-   1   S    2      13.045096    2.618880 (  0.535328) 
-   1   S    3       3.530512    0.816191 (  0.444635) 
-
-   2   L    4       2.941249   -0.160017 ( -0.099967)     0.856045 (  0.155916) 
-   2   L    5       0.683483    0.214036 (  0.399513)     0.538304 (  0.607684) 
-   2   L    6       0.222290    0.161536 (  0.700115)     0.085276 (  0.391957) 
-
-   */
-  void readGaussianBasis() throws Exception {
+  protected int shellCount = 0;
+  protected int gaussianCount = 0;
+  protected String calculationType = "?";
+  protected Hashtable moData = new Hashtable();
+  protected Vector orbitals = new Vector();
+  protected Vector atomNames = new Vector();
+  abstract public AtomSetCollection readAtomSetCollection(BufferedReader reader); 
+ 
+  abstract protected void readAtomsInBohrCoordinates() throws Exception;  
+ 
+  protected void readGaussianBasis(String initiator, String terminator) throws Exception {
     Vector gdata = new Vector();
     gaussianCount = 0;
     int nGaussians = 0;
     shellCount = 0;
     String thisShell = "0";
     String[] tokens;
-    discardLinesUntilContains("SHELL TYPE");
+    discardLinesUntilContains(initiator);
     readLine();
     int[] slater = null;
     Hashtable shellsByAtomType = new Hashtable();
     Vector slatersByAtomType = new Vector();
     String atomType = null;
     
-    while (readLine() != null && line.indexOf("TOTAL") < 0) {
+    while (readLine() != null && line.indexOf(terminator) < 0) {
       //System.out.println(line);
+      if (line.indexOf("(") >= 0)
+        line = GamessReader.fixBasisLine(line);
       tokens = getTokens();
       switch (tokens.length) {
       case 1:
@@ -219,27 +90,13 @@ public class GamessReader extends AtomSetCollectionReader {
           thisShell = tokens[0];
           shellCount++;
           slater = new int[] {
-              JmolAdapter.getQuantumShellTagID(tokens[1]), gaussianCount,
+              JmolAdapter.getQuantumShellTagID(fixShellTag(tokens[1])), gaussianCount,
               0 };
           nGaussians = 0;
         }
         ++nGaussians;
         ++gaussianCount;
-        if (line.indexOf("(") >= 0) {
-          String[] s = new String[4 + (tokens.length - 4) / 3];
-          int j = 0;
-          for (int i = 0; i < tokens.length; i++) {
-            s[j] = tokens[i];
-            if (s[j].indexOf(")") >= 0)
-              s[j] = s[j].substring(0, s[j].indexOf(")"));
-            if (i >= 3)
-              i += 2;
-            j++;
-          }
-          gdata.addElement(s);
-        } else {
-          gdata.addElement(tokens);
-        }
+        gdata.addElement(tokens);
       }
     }
     if (slater != null) {
@@ -278,23 +135,49 @@ public class GamessReader extends AtomSetCollectionReader {
       Logger.debug(shellCount + " slater shells read");
       Logger.debug(gaussianCount + " gaussian primitives read");
     }
+    moData.put("calculationType", calculationType);
+    atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
   }
+
+  abstract protected String fixShellTag(String tag);
 
   /*
    ------------------
    MOLECULAR ORBITALS
    ------------------
 
-   1          2          3          4          5
-   -20.4836   -11.2809    -1.4178     -.8698     -.6993
-   A          A          A          A          A   
-   1  C  1  S    -.000189    .986390   -.119709   -.171964    .000000
-   2  C  1  S    -.000594    .093565    .132951    .200942    .000000
-   3  C  1  X     .000000    .000000    .000000    .000000    .356539
+          ------------
+          EIGENVECTORS
+          ------------
+
+                      1          2          3          4          5
+                  -79.9156   -20.4669   -20.4579   -20.4496   -20.4419
+                     A          A          A          A          A   
+    1  C  1  S   -0.000003  -0.000029  -0.000004   0.000011   0.000016
+    2  C  1  S   -0.000009   0.000140   0.000001   0.000057   0.000065
+    3  C  1  X    0.000007  -0.000241  -0.000022  -0.000010  -0.000061
+    4  C  1  Y   -0.000008   0.000017  -0.000027  -0.000010   0.000024
+    5  C  1  Z    0.000007   0.000313   0.000009  -0.000002  -0.000001
+    6  C  1  S    0.000049   0.000875  -0.000164  -0.000521  -0.000440
+    7  C  1  X   -0.000066   0.000161   0.000125   0.000034   0.000406
+    8  C  1  Y    0.000042   0.000195  -0.000165  -0.000254  -0.000573
+    9  C  1  Z    0.000003   0.000045   0.000052   0.000112  -0.000129
+   10  C  1 XX   -0.000010   0.000010  -0.000040   0.000019   0.000045
+   11  C  1 YY   -0.000010  -0.000031   0.000000  -0.000003   0.000019
+...
+
+                      6          7          8          9         10
+                  -20.4354   -20.4324   -20.3459   -20.3360   -11.2242
+                     A          A          A          A          A   
+    1  C  1  S    0.000000  -0.000001   0.000001   0.000000   0.008876
+    2  C  1  S   -0.000003   0.000002   0.000003   0.000002   0.000370
+
+...
+ TOTAL NUMBER OF BASIS SET SHELLS             =  101
 
    */
 
-  void readMolecularOrbitals() throws Exception {
+  protected void readMolecularOrbitals() throws Exception {
     Hashtable[] mos = null;
     Vector[] data = null;
     Vector coeffLabels = null;
@@ -305,6 +188,8 @@ public class GamessReader extends AtomSetCollectionReader {
       if (Logger.debugging) {
         Logger.debug(tokens.length + " --- " + line);
       }
+      if (line.indexOf("end") >= 0)
+        break;
       if (line.length() == 0 || line.indexOf("--") >= 0 || line.indexOf(".....") >=0) {
         for (int iMo = 0; iMo < nThisLine; iMo++) {
           float[] coefs = new float[data[iMo].size()];
@@ -333,9 +218,9 @@ public class GamessReader extends AtomSetCollectionReader {
           continue;
         break;
       }
+      //read the data line:
       if (nThisLine == 0) {
         nThisLine = tokens.length;
-        tokens = getTokens(readLine());
         if (mos == null || nThisLine > mos.length) {
            mos = new Hashtable[nThisLine];
            data = new Vector[nThisLine];
@@ -343,25 +228,26 @@ public class GamessReader extends AtomSetCollectionReader {
         for (int i = 0; i < nThisLine; i++) {
           mos[i] = new Hashtable();
           data[i] = new Vector();
-          mos[i].put("energy", new Float(tokens[i]));
         }
-        tokens = getTokens(readLine());
-        for (int i = 0; i < nThisLine; i++)
-          mos[i].put("symmetry", tokens[i]);
+        getMOHeader(tokens, mos, nThisLine);
         coeffLabels = new Vector();
         continue;
       }
 
       int nSkip = tokens.length - nThisLine;
-      coeffLabels.addElement(JmolAdapter.canonicalizeQuantumSubshellTag(tokens[nSkip - 1]));
-      for (int i = 0; i < nThisLine; i++) {
+      coeffLabels.addElement(JmolAdapter.canonicalizeQuantumSubshellTag(tokens[nSkip - 1].toUpperCase()));
+      for (int i = 0; i < nThisLine; i++)
         data[i].addElement(tokens[i + nSkip]);
-      }    
+      line = "";
     }
-    Logger.debug(orbitals.size() + " molecular orbitals read in model " + modelNumber);
+    moData.put("mos", orbitals);
+    setMOData(moData);
   }
 
-  void readFrequencies() throws Exception {
+  abstract protected void getMOHeader(String[] tokens, Hashtable[] mos, int nThisLine) throws Exception;
+  
+  protected void readFrequencies() throws Exception {
+    //not for GamessUK yet
     int totalFrequencyCount = 0;
     int atomCountInFirstModel = atomSetCollection.getAtomCount();
     float[] xComponents = new float[5];
@@ -434,8 +320,20 @@ public class GamessReader extends AtomSetCollectionReader {
     }
   }
 
-  void readComponents(int count, float[] components) {
+  private void readComponents(int count, float[] components) {
     for (int i = 0, start = 20; i < count; ++i, start += 12)
       components[i] = parseFloat(line, start, start + 12);
+  }
+
+  protected static String fixBasisLine(String line) {
+    int pt, pt1;
+    line = line.replace(')', ' ');
+    while ((pt = line.indexOf("(")) >= 0) {
+      pt1 = pt;
+      while (line.charAt(--pt1) == ' '){}
+      while (line.charAt(--pt1) != ' '){}
+      line = line.substring(0, ++pt1) + line.substring(pt + 1);
+    }
+    return line;
   }
 }

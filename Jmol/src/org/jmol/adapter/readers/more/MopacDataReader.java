@@ -79,6 +79,6 @@ abstract class MopacDataReader extends AtomSetCollectionReader {
   protected final void setMOs(String units) {
     moData.put("mos", orbitals);
     moData.put("energyUnits", units);
-    atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
+    setMOData(moData);
   }
 }

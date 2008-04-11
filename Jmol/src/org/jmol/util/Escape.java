@@ -66,7 +66,20 @@ public class Escape {
     for (int i = 0; i < f.length; i++) {
       if (i > 0)
         sb.append('\n');
-      sb.append("" + f[i]);
+      sb.append(f[i]);
+    }
+    return sb.toString();
+  }
+
+  public static String escape(float[][] f, boolean addSemi) {
+    StringBuffer sb = new StringBuffer();
+    String eol = (addSemi ? ";\n" : "\n");
+    for (int i = 0; i < f.length; i++) {
+      if (i > 0)
+        sb.append(eol);
+      for (int j = 0; j < f[i].length; j++) {
+        sb.append(f[i][j]).append('\t');
+      }
     }
     return sb.toString();
   }
@@ -440,11 +453,11 @@ public class Escape {
       return packageReadable(infoType, "int[" + imax + "][]", sb);
     }
     if (info instanceof float[][]) {
-      sb.append("[");
+      sb.append("[\n");
       int imax = ((float[][]) info).length;
       for (int i = 0; i < imax; i++) {
         sb.append(sep).append(toReadable(null, ((float[][]) info)[i]));
-        sep = ",";
+        sep = ",\n";
       }
       sb.append("]");
       return packageReadable(infoType, "float[][]", sb);

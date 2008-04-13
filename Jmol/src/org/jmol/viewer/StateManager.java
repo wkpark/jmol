@@ -785,7 +785,7 @@ public class StateManager {
     void setUserVariable(String key, Token value) {
       key = key.toLowerCase();
       if (value == null) {
-        if (key.equals("all")) {
+        if (key.equals("all") || key.equals("variables")) {
           htUserVariables.clear();
           Logger.info("all user-defined variables deleted");
         } else if (htUserVariables.containsKey(key)) {

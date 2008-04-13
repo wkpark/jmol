@@ -59,6 +59,7 @@ class IsoFxyReader extends VolumeDataReader {
   }
 
   protected float getValue(int x, int y, int z) {
-    return (isPlanarMapping ? data[x][y] : data[x][y] - z);
+    //System.out.println("isofxyreader getValue x y z " + x + " " + y + " " + z + " zreal " + (volumeData.origin[2] + z * volumeData.volumetricVectors[2].z) + " data " + data[x][y] + " diff " + ((volumeData.origin[2] + z * volumeData.volumetricVectors[2].z)-data[x][y]));
+    return (isPlanarMapping ? data[x][y] : data[x][y] - (volumeData.origin[2] + z * volumeData.volumetricVectors[2].z));
   }
 }

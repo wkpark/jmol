@@ -10262,7 +10262,10 @@ class Eval { //implements Runnable {
           String fName = parameterAsString(i++);
           //override of function or data name when saved as a state
           String dataName = extractCommandOption("# DATA");
-          v.addElement(dataName != null ? dataName : fName); //(0) = name
+          if (dataName != null)
+            fName = dataName;
+          boolean isXYZ = (fName.indexOf("data2d_xyz") == 0);
+          v.addElement(fName); //(0) = name
           v.addElement(getPoint3f(i, false)); //(1) = {origin}
           Point4f pt;
           int nX, nY;
@@ -10279,7 +10282,11 @@ class Eval { //implements Runnable {
             float[][] fdata = (fName.toLowerCase().indexOf("data2d_") == 0 ?
                 viewer.getDataFloat2D(fName)
                 : viewer.functionXY(fName, nX, nY));
-            if (fdata == null || fdata.length != nX) {
+            if (isXYZ) {
+              nX = (fdata == null ? 0 : fdata.length);
+              nY = 3;
+            }
+            if (fdata == null || fdata.length != nX && !isXYZ) {
               iToken = ptX;
               error(ERROR_invalidArgument);
             }

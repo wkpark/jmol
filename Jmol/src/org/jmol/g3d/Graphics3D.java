@@ -2615,7 +2615,7 @@ final public class Graphics3D implements JmolRendererInterface {
         / (float) Math.sqrt(norm.x * norm.x + norm.y * norm.y + norm.z
             * norm.z));
   }
-  
+
   public static void calcNormalizedNormal(Point3f pointA, Point3f pointB,
          Point3f pointC, Vector3f vNormNorm, Vector3f vAB, Vector3f vAC) {
     vAB.sub(pointB, pointA);

@@ -123,6 +123,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.util.*;
 import org.jmol.atomdata.AtomDataServer;
+import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.data.MeshData;
@@ -669,6 +670,9 @@ public class SurfaceGenerator {
       params.setFunctionXY((Vector) value);
       if (params.isContoured)
         volumeData.setPlaneParameters(new Point4f(0, 0, 1, 0)); //xy plane through origin
+      if (((String)params.functionXYinfo.get(0)).indexOf("_xyz") >= 0) {
+        getFunctionZfromXY();
+      }
       generateSurface();
       return true;
     }
@@ -923,5 +927,94 @@ public class SurfaceGenerator {
     params.colorNeg = params.colorNegLCAO;
     return params.lcaoType;
 
+  }
+
+  
+  private void getFunctionZfromXY() {
+    Point3f origin = (Point3f) params.functionXYinfo.get(1);
+    int[] counts = new int[3];
+    int[] nearest = new int[3];
+    Vector3f[] vectors = new Vector3f[3];
+    for (int i = 0; i < 3; i++) {
+      Point4f info = (Point4f) params.functionXYinfo.get(i + 2);
+      counts[i] = Math.abs((int) info.x);
+      vectors[i] = new Vector3f(info.y, info.z, info.w);
+    }
+    int nx = counts[0];
+    int ny = counts[1];
+    Point3f pt = new Point3f();
+    Point3f pta = new Point3f();
+    Point3f ptb = new Point3f();
+    Point3f ptc = new Point3f();
+
+    float[][] data = (float[][]) params.functionXYinfo.get(5);
+    float[][] data2 = new float[nx][ny];
+    float[] d;
+    //int n = 0;
+    //for (int i = 0; i < data.length; i++) 
+      //System.out.println("draw pt"+(++n)+" {" + data[i][0] + " " + data[i][1] + " " + data[i][2] + "} color yellow");
+    for (int i = 0; i < nx; i++)
+      for (int j = 0; j < ny; j++) {
+        pt.scaleAdd(i, vectors[0], origin);
+        pt.scaleAdd(j, vectors[1], pt);
+        float dist = findNearestThreePoints(pt.x, pt.y, data, nearest);
+        pta.set((d = data[nearest[0]])[0], d[1], d[2]);
+        if (dist < 0.00001) {
+          pt.z = d[2];
+        } else {
+          ptb.set((d = data[nearest[1]])[0], d[1], d[2]);
+          ptc.set((d = data[nearest[2]])[0], d[1], d[2]);
+          pt.z = distanceVerticalToPlane(pt.x, pt.y, pta, ptb, ptc);
+        }
+        data2[i][j] = pt.z;
+        //System.out.println("draw pt"+(++n)+" " + Escape.escape(pt) + " color red");
+      }
+    params.functionXYinfo.setElementAt(data2, 5);
+  }
+
+  final Vector3f vAC = new Vector3f();
+  final Vector3f vAB = new Vector3f();
+  final Vector3f vNorm = new Vector3f();
+  
+  private float distanceVerticalToPlane(float x, float y, Point3f pta,
+                                              Point3f ptb, Point3f ptc) {
+    // ax + by + cz + d = 0
+
+    float d = Graphics3D.getNormalThroughPoints(pta, ptb, ptc, vNorm, vAB, vAC);
+    //
+
+    return (vNorm.x * x + vNorm.y * y + d) / -vNorm.z;
+  }
+  
+  private static float findNearestThreePoints(float x, float y, float[][] xyz, int[] result) {
+    //result should be int[3];
+    float d, dist1, dist2, dist3;
+    int i1, i2, i3;
+    i1 = i2 = i3 = -1;
+    dist1 = dist2 = dist3 = Float.MAX_VALUE;
+    for (int i = xyz.length; --i >= 0;) {
+      d = (d = xyz[i][0] - x) * d + (d = xyz[i][1] - y) * d;
+      if (d < dist1) {
+        dist3 = dist2;
+        dist2 = dist1;
+        dist1 = d;
+        i3 = i2;
+        i2 = i1;
+        i1 = i;
+      } else if (d < dist2) {
+        dist3 = dist2;
+        dist2 = d;
+        i3 = i2;
+        i2 = i;
+      } else if (d < dist3) {
+        dist3 = d;
+        i3 = i;
+      }
+    }
+    //System.out.println("findnearest " + dist1);
+    result[0] = i1;
+    result[1] = i2;
+    result[2] = i3;
+    return dist1;
   }
 }

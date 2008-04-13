@@ -25,6 +25,7 @@
 package org.jmol.shape;
 
 import java.util.BitSet;
+import java.util.Vector;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.viewer.JmolConstants;
@@ -164,6 +165,7 @@ public class Mesh {
   public final Vector3f vAC = new Vector3f();
 
   protected boolean haveCheckByte;
+  public Vector data;
   
   public void sumVertexNormals(Vector3f[] vectorSums) {
     final Vector3f vNormalizedNormal = new Vector3f();

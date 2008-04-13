@@ -1300,6 +1300,10 @@ class Eval { //implements Runnable {
     String s = "";
     try {
       s = script.substring(ichBegin, ichEnd);
+      if (s.indexOf("\\\n") >= 0)
+        s = TextFormat.simpleReplace(s, "\\\n", "  ");
+      if (s.indexOf("\\\r") >= 0)
+        s = TextFormat.simpleReplace(s, "\\\r", "  ");
       int i;
       if ((i = s.indexOf("\n")) >= 0)
         s = s.substring(0, i);
@@ -8998,7 +9002,7 @@ class Eval { //implements Runnable {
           if (isSyntaxCheck)
             return;
           if (thisCommand.indexOf("# FILE0=") >= 0)
-            filename = extractCommandOption("FILE0");
+            filename = extractCommandOption("# FILE0");
           String[] fullPathNameReturn = new String[1];
           t = viewer.getBufferedReaderOrErrorMessageFromName(filename,
               fullPathNameReturn, isBinary);
@@ -9049,7 +9053,7 @@ class Eval { //implements Runnable {
   
   private String extractCommandOption(String name) {
     int i = thisCommand.indexOf(name + "=");
-    return (i < 0 ? name : Parser.getNextQuotedString(thisCommand, i));
+    return (i < 0 ? null : Parser.getNextQuotedString(thisCommand, i));
   }
 
   private void draw() throws ScriptException {
@@ -10255,8 +10259,10 @@ class Eval { //implements Runnable {
           Vector v = new Vector();
           if (getToken(++i).tok != Token.string)
             error(ERROR_invalidArgument);
-          String fName;
-          v.addElement(fName = parameterAsString(i++)); //(0) = name
+          String fName = parameterAsString(i++);
+          //override of function or data name when saved as a state
+          String dataName = extractCommandOption("# DATA");
+          v.addElement(dataName != null ? dataName : fName); //(0) = name
           v.addElement(getPoint3f(i, false)); //(1) = {origin}
           Point4f pt;
           int nX, nY;
@@ -10282,7 +10288,7 @@ class Eval { //implements Runnable {
                iToken = ptY;
                error(ERROR_invalidArgument);
               }
-            v.addElement(fdata);                  
+            v.addElement(fdata); //(5) = float[][] data                 
           }
           i = iToken;
           propertyName = "functionXY";
@@ -10420,7 +10426,7 @@ class Eval { //implements Runnable {
         if (tokAt(i + 1) == Token.integer)
           setShapeProperty(iShape, "fileIndex", new Integer(intParameter(++i)));
         if (thisCommand.indexOf("# FILE" + nFiles + "=") >= 0)
-          filename = extractCommandOption("FILE" + nFiles);
+          filename = extractCommandOption("# FILE" + nFiles);
         String[] fullPathNameReturn = new String[1];
         Object t = (isSyntaxCheck ? null : viewer
             .getBufferedReaderOrErrorMessageFromName(filename,

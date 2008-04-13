@@ -148,7 +148,7 @@ class Cylinder3D {
     if (diameter == 0 || diameter == 1) {
       line3d.plotLineDelta(g3d.getColixArgb(colixA), isScreenedA, g3d
           .getColixArgb(colixB), isScreenedB, (int) xA, (int) yA, (int) zA,
-          (int) dxB, (int) dyB, (int) dzB, notClipped);
+          (int) dxBf, (int) dyBf, (int) dzBf, notClipped);
       return;
     }
     if (diameter > 0) {

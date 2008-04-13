@@ -64,7 +64,7 @@ public class Parser {
 
   public static float[][] parseFloatArray2d(String str) {
     str = str.replace(';', str.indexOf('\n') < 0 ? '\n' : ' ');
-    str = TextFormat.trim(str, "\n");
+    str = TextFormat.trim(str, "\n \t");
     int[] lines = markLines(str, '\n');
     int nLines = lines.length;
     float[][] data = new float[nLines][];

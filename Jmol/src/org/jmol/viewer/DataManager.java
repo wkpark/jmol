@@ -64,6 +64,10 @@ class DataManager {
      *   Integer.MAX_VALUE ==> values are a simple list; don't clear the data
      *   Integer.MIN_VALUE ==> one SINGLE data value should be used for all selected atoms
      */
+    if (type == null) {
+      clear();
+      return;
+    }
     if (type.equals("element_vdw")) {
       String stringData = ((String) data[1]).trim();
       if (stringData.length() == 0) {
@@ -184,17 +188,13 @@ class DataManager {
               name, (float[]) data);
           sb.append("\n");
         } else {
-          sb.append("\n  DATA \"").append(name).append("\"");
-          sb.append(data);
-          sb.append("  end \"").append(name).append("\";\n");
+          sb.append("\n").append(Escape.encapsulateData(name, data));
         }
       } else if (name.indexOf("data2d") == 0) {
         Object data = ((Object[]) dataValues.get(name))[1];
         if (data instanceof float[][]) {
           n++;
-          sb.append("\n  DATA \"").append(name).append("\"\n");
-          sb.append(Escape.escape((float[][]) data, true));
-          sb.append(";\n  end \"").append(name).append("\";\n");
+          sb.append("\n").append(Escape.encapsulateData(name, data));
         }
       }
     }
@@ -213,7 +213,7 @@ class DataManager {
       state.append("function _setDataState();\n");
     state.append(sb);  
     if (sfunc != null) {
-      sfunc.append("  _setDataState\n");
+      sfunc.append("  _setDataState;\n");
       state.append("end function;\n\n");
     }
   }

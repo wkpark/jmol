@@ -84,6 +84,11 @@ public class DrawMesh extends Mesh {
   void offset(Vector3f offset) {
     for (int i = vertexCount; --i >= 0;)
       vertices[i].add(offset);
+    if (ptCenters != null)
+      for (int i = ptCenters.length; --i >= 0;)
+        ptCenters[i].add(offset);
+    if (ptCenter != null)
+      ptCenter.add(offset);
   }
 
   public void deleteAtoms(int modelIndex) {

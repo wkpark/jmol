@@ -121,7 +121,7 @@ public class Draw extends MeshCollection {
       modelBasedPoints = null;
       bsAllModels = null;
       indicatedModelIndex = -1;
-      offset = new Vector3f();
+      offset = null;
       setPropertySuper("thisID", JmolConstants.PREVIOUS_MESH_ID, null);
       //fall through to MeshCollection "init"
     }
@@ -461,6 +461,8 @@ public class Draw extends MeshCollection {
     thisMesh.diameter = diameter;
     thisMesh.width = (thisMesh.drawType == JmolConstants.DRAW_CYLINDER ? -Math.abs(width) : width);
     thisMesh.setCenter(-1);
+    if (offset != null)
+      thisMesh.offset(offset);
     if (thisMesh.thisID == null) {
       thisMesh.thisID = JmolConstants.getDrawTypeName(thisMesh.drawType) + (++nUnnamed);
     }
@@ -469,8 +471,6 @@ public class Draw extends MeshCollection {
 
   private void addPoint(Point3f newPt) {
     ptList[nPoints] = new Point3f(newPt);
-    if (offset != null)
-      ptList[nPoints].add(offset);    
     if (++nPoints > MAX_POINTS)
       nPoints = MAX_POINTS;
   }
@@ -749,7 +749,6 @@ public class Draw extends MeshCollection {
       return null;
     Point3f pt = (vertexIndex >= 0 ? m.vertices[vertexIndex]
         : m.ptCenters == null || modelIndex < 0 ? m.ptCenter : m.ptCenters[modelIndex]);
-    pt.add(offset);
     return pt;
   }
   

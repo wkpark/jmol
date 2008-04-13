@@ -341,16 +341,16 @@ public class TextFormat {
   }
 
   public static String trim(String str, String chars) {
-    int len = chars.length();
-    if (len == 0)
+    if (chars.length() == 0)
       return str.trim();
+    int len = str.length();
     int k = 0;
-    while (str.indexOf(chars, k) == k)
-      k += len;
-    int m = str.length() - len;
-    while (str.indexOf(chars, m) == m)
-      m -= len;
-    return str.substring(k, m + len);
+    while (k < len && chars.indexOf(str.charAt(k)) >= 0)
+      k++;
+    int m = str.length() - 1;
+    while (m > k && chars.indexOf(str.charAt(m)) >= 0)
+      m--;
+    return str.substring(k, m + 1);
   }
 
   public static String[] split(String text, char ch) {

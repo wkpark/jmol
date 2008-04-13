@@ -890,19 +890,20 @@ class Compiler {
   
   private boolean lookingAtLeadingWhitespace() {
     int ichT = ichToken;
-    char ch;
     while (ichT < cchScript && isSpaceOrTab(script.charAt(ichT)))
       ++ichT;
-    if (ichT < cchScript - 1 
-        && script.charAt(ichT) == '\\'
-       && ((ch = script.charAt(ichT + 1)) == '\r' 
-         || ch == '\n')) {
-      while (++ichT < cchScript 
-          && ((ch = script.charAt(ichT)) == '\r' || ch == '\n')) {
-      }
-    }
+    if (isLineContinuation(ichT))
+      ichT += 2;
     cchToken = ichT - ichToken;
     return cchToken > 0;
+  }
+
+  private boolean isLineContinuation(int ichT) {
+    char ch;
+    return (ichT < cchScript - 1 
+        && script.charAt(ichT) == '\\'
+       && ((ch = script.charAt(ichT + 1)) == '\r' 
+         || ch == '\n'));
   }
 
   private boolean isShowCommand;
@@ -921,7 +922,8 @@ class Compiler {
      * use those statements as our commands and any line WITHOUT
      * those as comments. 
      */
-    if (ichToken == ichCurrentCommand && ichToken < cchScript && script.charAt(ichToken) == '$') {
+    if (ichToken == ichCurrentCommand && ichToken < cchScript 
+        && script.charAt(ichToken) == '$') {
       isShowScriptOutput = true;
       while (ch != ']' && ichEnd < cchScript
           && !eol(ch = script.charAt(ichEnd)))
@@ -938,9 +940,14 @@ class Compiler {
       }
     }
 
-    for (; ichEnd < cchScript && !eol(ch = script.charAt(ichEnd)); ichEnd++)
+    for (; ichEnd < cchScript && !eol(ch = script.charAt(ichEnd)); ichEnd++) {
+      if (isLineContinuation(ichEnd)) {
+        ichEnd++;
+        continue;
+      }
       if (ch == '#' && ichFirstSharp == -1)
         ichFirstSharp = ichEnd;
+    }
     if (ichFirstSharp == -1) // there were no sharps found
       return false;
 

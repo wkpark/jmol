@@ -861,6 +861,8 @@ public class SurfaceGenerator {
     //JvxlReader.jvxlCreateHeader("line1", "line2", volumeData, bs);
     //System.out.println(bs);
 
+    if (property == "functionXYinfo")
+      return params.functionXYinfo;
     if (property == "plane")
       return (jvxlData.jvxlPlane);
     if (property == "jvxlFileData")

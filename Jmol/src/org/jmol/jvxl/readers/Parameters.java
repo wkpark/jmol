@@ -190,6 +190,7 @@ public class Parameters {
     envelopeRadius = 10f;
     fileIndex = 1;
     fileName = "";
+    functionXYinfo = null;
     iAddGridPoints = false;
     insideOut = false;
     isAngstroms = false;

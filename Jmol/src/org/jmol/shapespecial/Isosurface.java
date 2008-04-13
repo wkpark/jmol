@@ -749,6 +749,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
       }
     }
     thisMesh.scriptCommand = script;
+    thisMesh.data = (Vector) sg.getProperty("functionXYinfo", 0);
   }
 
   private void setJvxlInfo() {

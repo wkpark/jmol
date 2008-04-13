@@ -394,9 +394,10 @@ public abstract class MeshCollection extends Shape {
       String cmd = mesh.scriptCommand;
       if (cmd == null)
         continue;
-      for (int pt = cmd.length(); --pt >= 0 && cmd.charAt(pt) != ';';)
-        if (cmd.charAt(pt) == '#')
-          cmd = cmd.substring(0, pt);
+      int pt = cmd.indexOf(";#");
+      //not perfect -- user may have that in a title, I suppose...
+      if (pt >= 0)
+          cmd = cmd.substring(0, pt + 1);
       if (mesh.bitsets != null)  {
         cmd += "# "
             + (mesh.bitsets[0] == null ? "({null})" : Escape.escape(mesh.bitsets[0]))
@@ -405,8 +406,16 @@ public abstract class MeshCollection extends Shape {
       }
       if (mesh.modelIndex >= 0)
         cmd += "# MODEL({" + mesh.modelIndex + "})";
-      if (meshes[i].linkedMesh != null)
+      if (mesh.linkedMesh != null)
         cmd += " LINK";
+      if (mesh.data != null) {
+        String name = ((String) mesh.data.elementAt(0)).toLowerCase();
+        if (name.indexOf("data2d_") != 0)
+          name = "data2d_" + name;
+        cmd = Escape.encapsulateData(name, mesh.data.elementAt(5)) 
+            + "  " + cmd + "# DATA=\"" + name + "\"";
+      }
+      
       if (mesh.modelIndex >= 0 && modelCount > 1)
         appendCmd(s, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));
       appendCmd(s, cmd);

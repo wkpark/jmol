@@ -197,7 +197,6 @@ public class _PovrayExporter extends _Exporter {
     writeMacrosFinish();
     writeMacrosAtom();
     writeMacrosBond();
-    writeMacrosJoint();
     writeMacrosTriangle();
     writeMacrosTextPixel();
     //    writeMacrosRing();
@@ -254,18 +253,8 @@ public class _PovrayExporter extends _Exporter {
         + "  clip()\n"
         + "  check_shadow()}\n" 
         + "#end\n\n");
+    // and rounded endcaps
 
-  }
-
-  private void writeMacrosJoint() {
-    output("#macro s(X,Y,Z,RADIUS,R,G,B,T)\n" 
-        + " sphere{<X,Y,Z>,RADIUS\n"
-        + "  pigment{rgbt<R,G,B,T>}\n" 
-        + "  translucentFinish(T)\n"
-        + "  clip()\n"
-        + "  check_shadow()}\n" 
-        + (isSlabEnabled? " circleCap(Z,RADIUS,R,G,B,T)\n" : "")
-        + "#end\n\n");
   }
 
   private void writeMacrosTriangle() {
@@ -366,7 +355,6 @@ public class _PovrayExporter extends _Exporter {
       fillSphereCentered(colix, d, pt1);
       return;
     }
-    String color = rgbFractionalFromColix(colix, ',');
     //transformPoint is not needed when bonds are rendered via super.fillCylinders
     //viewer.transformPoint(pt1, tempP1);
     //viewer.transformPoint(pt2, tempP2);
@@ -375,19 +363,16 @@ public class _PovrayExporter extends _Exporter {
 
     // (float)viewer.getBondRadius(i);
 
-    output("b(" + pt1.x + "," + pt1.y + "," + pt1.z + "," + radius1 + ","
-        + pt2.x + "," + pt2.y + "," + pt2.z + "," + radius2 + "," 
-        + color + "," + translucencyFractionalFromColix(colix) + ")\n");
+    output("b(" + triad(pt1) + "," + radius1 + ","
+        + triad(pt2) + "," + radius2 + "," + color4(colix) + ")\n");
   }
 
   private void renderJoint(Point3f pt, short colix, byte endcaps, int madBond) {
     // povray by default creates flat endcaps, therefore
     //   joints are only needed in the other cases.
     if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
-      String color = rgbFractionalFromColix(colix, ',');
       float radius = viewer.scaleToScreen((int) pt.z, madBond / 2);
-      output("s(" + pt.x + "," + pt.y + "," + pt.z + "," + radius + "," 
-          + color + "," + translucencyFractionalFromColix(colix) + ")\n");
+      output("a(" + triad(pt) + "," + radius + "," + color4(colix) + ")\n");
     }
   }
 
@@ -545,27 +530,32 @@ public class _PovrayExporter extends _Exporter {
     }
     float radius1 = diameter / 2f;
     float radius2 = radius1;
-    output("b(" + triad(screenA) + "," + radius1 + "," + triad(screenB) + ","
-        + radius2 + "," + color4(colix) + ")\n");
+    String color = color4(colix);
+    output((endcaps == Graphics3D.ENDCAPS_FLAT ? "b(" : "c(") 
+        + triad(screenA) + "," + radius1 + "," + triad(screenB) + ","
+        + radius2 + "," + color + ")\n");
+    if (endcaps != Graphics3D.ENDCAPS_SPHERICAL)
+      return;
+    output("a(" + triad(screenA) + "," + radius1 + "," + color + ")\n");
+    output("a(" + triad(screenB) + "," + radius2 + "," + color + ")\n");
   }
 
   public void drawCircleCentered(short colix, int diameter, int x,
                                          int y, int z, boolean doFill) {
     //draw circle
-    String color = rgbFractionalFromColix(colix, ',');
     float r = diameter / 2.0f;
-    output((doFill ? "b" : "c") + "(" + x + "," + y + "," + z + "," + r + "," 
+    output((doFill ? "b(" : "c(") + x + "," + y + "," + z + "," + r + "," 
         + x + "," + y + "," + (z + 1) + "," + (r + 2) + "," 
-        + color + "," + translucencyFractionalFromColix(colix) + ")\n");
+        + color4(colix) + ")\n");
   }
 
   public void fillScreenedCircleCentered(short colix, int diameter, int x,
                                          int y, int z) {
     //halos
-    String color = rgbFractionalFromColix(colix, ',');
     float r = diameter / 2.0f;
-    output("b(" + x + "," + y + "," + z + "," + r + "," + x + "," + y + ","
-        + (z + 1) + "," + r + "," + color + ",0.8)\n");
+    output("b(" + x + "," + y + "," + z + "," + r + "," 
+        + x + "," + y + "," + (z + 1) + "," + r + "," 
+        + rgbFractionalFromColix(colix, ',') + ",0.8)\n");
   }
 
   public void drawPixel(short colix, int x, int y, int z) {

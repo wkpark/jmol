@@ -504,4 +504,11 @@ public class Escape {
   public static String escapeModelFileNumber(int iv) {
     return "" + (iv / 1000000) + "." + (iv % 1000000);
   }
+
+  public static Object encapsulateData(String name, Object data) {
+    return "  DATA \"" + name + "\"\n" + 
+        (data instanceof float[][] ?
+          escape((float[][]) data, true) + ";\n"
+        : data) + "    END \"" + name + "\";\n";
+  }
 }

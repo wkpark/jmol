@@ -67,6 +67,7 @@ abstract public class AtomCollection {
     bfactor100s = null;
     partialCharges = null;
     specialAtomIDs = null;
+    ellipsoids = null;
 
   }
 
@@ -79,6 +80,7 @@ abstract public class AtomCollection {
     occupancies = mergeModelSet.occupancies;
     bfactor100s = mergeModelSet.bfactor100s;
     partialCharges = mergeModelSet.partialCharges;
+    ellipsoids = mergeModelSet.ellipsoids;
     specialAtomIDs = mergeModelSet.specialAtomIDs;
   }
   
@@ -126,6 +128,7 @@ abstract public class AtomCollection {
   byte[] occupancies;
   short[] bfactor100s;
   float[] partialCharges;
+  Object[][] ellipsoids;
   
   public float[] getPartialCharges() {
     return partialCharges;
@@ -218,6 +221,11 @@ abstract public class AtomCollection {
     return atoms[i].getModelIndex();
   }
   
+  public Object[] getEllipsoid(int i) {
+    return (i < 0 || ellipsoids == null || i >= ellipsoids.length ? null
+        : ellipsoids[i]);
+  }
+
   protected int getAtomCountInModel(int modelIndex) {
     int n = 0;
     for (int i = atomCount; --i >= 0;)
@@ -646,6 +654,14 @@ abstract public class AtomCollection {
     if (partialCharges == null)
       partialCharges = new float[atoms.length];
     partialCharges[atomIndex] = partialCharge;
+  }
+
+  protected void setEllipsoid(int atomIndex, Object[] ellipsoid) {
+    if (ellipsoid == null)
+      return;
+    if (ellipsoids == null)
+      ellipsoids = new Object[atoms.length][];
+    ellipsoids[atomIndex] = ellipsoid;
   }
 
   protected void setBFactor(int atomIndex, float bfactor) {
@@ -1751,6 +1767,9 @@ abstract public class AtomCollection {
     occupancies = (byte[]) ArrayUtil.deleteElements(occupancies,
         firstAtomIndex, nAtoms);
     partialCharges = (float[]) ArrayUtil.deleteElements(partialCharges,
+        firstAtomIndex, nAtoms);
+    //maybe will not work?
+    ellipsoids = (Object[][]) ArrayUtil.deleteElements(ellipsoids,
         firstAtomIndex, nAtoms);
     specialAtomIDs = (byte[]) ArrayUtil.deleteElements(specialAtomIDs,
         firstAtomIndex, nAtoms);

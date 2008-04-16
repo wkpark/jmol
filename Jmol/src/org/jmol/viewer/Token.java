@@ -185,6 +185,7 @@ public class Token {
   // openrasmol commands
   final static int depth        = command | 50 | numberOrExpression;
   final static int star         = command | 51 | negnums;
+  final static int ellipsoid    = command | 52 | negnums;
   // chime commands
   final static int delay        = command | 60;
   final static int loop         = command | 61;
@@ -984,6 +985,8 @@ public class Token {
     "dots",              new Token(dots,            varArgCount),
     "draw",              new Token(draw,            varArgCount),
     "echo",              new Token(echo,                maxArg1),
+    "ellipsoid",         new Token(ellipsoid,       varArgCount),
+    "ellipsoids",        null, 
     "else",              new Token(elsecmd,                   0),
     "elseif",            new Token(elseif,          varArgCount),
     "end",               new Token(end,             varArgCount), //varArgCount required

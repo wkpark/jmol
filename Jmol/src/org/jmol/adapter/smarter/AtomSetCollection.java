@@ -700,6 +700,8 @@ public class AtomSetCollection {
     notionalUnitCell = new float[6];
     coordinatesAreFractional = false; //turn off global fractional conversion -- this wil be model by model
     setGlobalBoolean(GLOBAL_SYMMETRY);
+    for (int i = atomIndex; i < atomCount; i++)
+      atoms[i].ellipsoid = unitCell.getEllipsoid(atoms[i].anisoU, false);
   }
   
   Point3f[] cartesians;

@@ -1033,6 +1033,9 @@ class Eval { //implements Runnable {
       case Token.depth:
         slab(true);
         break;
+      case Token.ellipsoid:
+        ellipsoid();
+        break;
       case Token.star:
         setAtomShapeSize(JmolConstants.SHAPE_STARS, (short) -100);
         break;
@@ -1510,7 +1513,7 @@ class Eval { //implements Runnable {
       case Token.spec_model2:
         // from just using the number 1.2
         int iModel = instruction.intValue;
-        if (iModel == Integer.MAX_VALUE) {
+        if (iModel == Integer.MAX_VALUE && value instanceof Integer) {
           // from select */n 
           iModel = ((Integer) value).intValue();
           if (!viewer.haveFileSet()) {
@@ -5569,6 +5572,25 @@ class Eval { //implements Runnable {
       viewer.slabInternal(plane, isDepth);
   }
 
+  private void ellipsoid() throws ScriptException {
+    short mad = 0;
+    int tok = (statementLength == 1 ? Token.on : tokAt(1));
+    switch (tok) {
+    case Token.on:
+      mad = 50;
+      break;
+    case Token.off:
+      break;
+    case Token.integer:
+      mad = (short) (intParameter(1));
+      break;
+    case Token.temperature:
+    default:
+      error(ERROR_booleanOrNumberExpected);
+    }
+    setShapeSize(JmolConstants.SHAPE_ELLIPSOIDS, mad);
+  }
+  
   private void setAtomShapeSize(int shape, short defOn) throws ScriptException {
     //halo star spacefill
     short mad = 0;
@@ -10040,7 +10062,7 @@ class Eval { //implements Runnable {
           propertyName = "remappable";
           break;
         }
-        if (str.equalsIgnoreCase("DOWNSAMPLE")) { 
+        if (str.equalsIgnoreCase("DOWNSAMPLE")) {
           propertyName = "downsample";
           propertyValue = new Integer(intParameter(++i));
           break;
@@ -10226,10 +10248,34 @@ class Eval { //implements Runnable {
         }
         if (str.equalsIgnoreCase("ellipsoid")) {
           //ellipsoid {xc yc zc f} where a = b and f = a/c 
+          //OR ellipsoid {u11 u22 u33 u12 u13 u23}
           surfaceObjectSeen = true;
-          propertyName = "ellipsoid";
-          propertyValue = getPoint4f(++i);
+          ++i;
+          try {
+            propertyValue = getPoint4f(i);
+            propertyName = "ellipsoid";
+            i = iToken;
+            break;
+          } catch (ScriptException e) {
+          }
+          try {
+            float[] fparams = new float[6];
+            i = floatParameterSet(i, fparams);
+            propertyValue = fparams;
+            propertyName = "ellipsoid";
+            break;
+          } catch (ScriptException e) {
+          }
+          BitSet bs = expression(i);
+          int iAtom = BitSetUtil.firstSetBit(bs);
+          Atom[] atoms = viewer.getModelSet().atoms;
+          propertyValue = atoms[iAtom].getEllipsoid();
+          if (propertyValue == null)
+            return;
           i = iToken;
+          propertyName = "ellipsoid";
+          if (!isSyntaxCheck)
+            setShapeProperty(iShape, "center", viewer.getAtomPoint3f(iAtom));
           break;
         }
         if (str.equalsIgnoreCase("lobe")) {
@@ -10254,7 +10300,7 @@ class Eval { //implements Runnable {
         if (str.equalsIgnoreCase("functionXY")) {
           // isosurface functionXY "functionName"|"data2d_xxxxx"
           //     {origin} {ni ix iy iz} {nj jx jy jz} {nk kx ky kz}
-          
+
           surfaceObjectSeen = true;
           Vector v = new Vector();
           if (getToken(++i).tok != Token.string)
@@ -10279,8 +10325,8 @@ class Eval { //implements Runnable {
           if (nX == 0 || nY == 0)
             error(ERROR_invalidArgument);
           if (!isSyntaxCheck) {
-            float[][] fdata = (fName.toLowerCase().indexOf("data2d_") == 0 ?
-                viewer.getDataFloat2D(fName)
+            float[][] fdata = (fName.toLowerCase().indexOf("data2d_") == 0 ? viewer
+                .getDataFloat2D(fName)
                 : viewer.functionXY(fName, nX, nY));
             if (isXYZ) {
               nX = (fdata == null ? 0 : fdata.length);
@@ -10292,8 +10338,8 @@ class Eval { //implements Runnable {
             }
             for (int j = 0; j < nX; j++)
               if (fdata[j] == null || fdata[j].length != nY) {
-               iToken = ptY;
-               error(ERROR_invalidArgument);
+                iToken = ptY;
+                error(ERROR_invalidArgument);
               }
             v.addElement(fdata); //(5) = float[][] data                 
           }
@@ -10347,7 +10393,8 @@ class Eval { //implements Runnable {
             pt = viewer.getAtomPoint3f(atomIndex);
           }
           setShapeProperty(iShape, "modelIndex", new Integer(modelIndex));
-          Vector3f[] axes = { new Vector3f(), new Vector3f(), new Vector3f(pt), new Vector3f() };
+          Vector3f[] axes = { new Vector3f(), new Vector3f(), new Vector3f(pt),
+              new Vector3f() };
           if (!isSyntaxCheck)
             viewer.getHybridizationAndAxes(atomIndex, axes[0], axes[1],
                 lcaoType, false);

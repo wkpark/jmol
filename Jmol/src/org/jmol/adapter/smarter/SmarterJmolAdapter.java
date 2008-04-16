@@ -476,6 +476,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     public String getAtomName() { return atom.atomName; }
     public int getFormalCharge() { return atom.formalCharge; }
     public float getPartialCharge() { return atom.partialCharge; }
+    public Object[] getEllipsoid() { return atom.ellipsoid; }
     public float getRadius() { return atom.radius; }
     public float getX() { return atom.x; }
     public float getY() { return atom.y; }
@@ -483,7 +484,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     public float getVectorX() { return atom.vectorX; }
     public float getVectorY() { return atom.vectorY; }
     public float getVectorZ() { return atom.vectorZ; }
-    public float getBfactor() { return atom.bfactor; }
+    public float getBfactor() { return atom.anisoU != null ? (atom.anisoU[0] + atom.anisoU[1] + atom.anisoU[2]) / 3f: atom.bfactor; }
     public int getOccupancy() { return atom.occupancy; }
     public boolean getIsHetero() { return atom.isHetero; }
     public int getAtomSerial() { return atom.atomSerial; }

@@ -49,6 +49,8 @@ public class Atom extends Point3f implements Cloneable {
   public String group3;
   public int sequenceNumber = Integer.MIN_VALUE;
   public char insertionCode = '\0';
+  public float[] anisoU;
+  public Object[] ellipsoid;
 
   public Atom() {
   }

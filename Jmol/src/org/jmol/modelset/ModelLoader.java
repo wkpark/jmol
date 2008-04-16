@@ -519,8 +519,9 @@ public final class ModelLoader extends ModelSet {
       char alternateLocation = iterAtom.getAlternateLocationID();
       addAtom(iterAtom.getAtomSetIndex() + baseModelIndex, iterAtom.getAtomSymmetry(), iterAtom.getAtomSite(),
           iterAtom.getUniqueID(), elementNumber, iterAtom.getAtomName(), mad,
-          iterAtom.getFormalCharge(), iterAtom.getPartialCharge(), iterAtom
-              .getOccupancy(), iterAtom.getBfactor(), iterAtom.getX(),
+          iterAtom.getFormalCharge(), iterAtom.getPartialCharge(),
+          iterAtom.getEllipsoid(), 
+          iterAtom.getOccupancy(), iterAtom.getBfactor(), iterAtom.getX(),
           iterAtom.getY(), iterAtom.getZ(), iterAtom.getIsHetero(), iterAtom
               .getAtomSerial(), iterAtom.getChainID(), iterAtom.getGroup3(),
           iterAtom.getSequenceNumber(), iterAtom.getInsertionCode(), iterAtom
@@ -535,12 +536,15 @@ public final class ModelLoader extends ModelSet {
         models[iLast].firstAtomIndex = i;
         models[iLast].bsAtoms = null;
       }
+    //if (uFactors != null)
+      //System.out.println(Escape.escape(uFactors, false));
   }
 
   private void addAtom(int modelIndex, BitSet atomSymmetry, int atomSite,
                        Object atomUid, short atomicAndIsotopeNumber,
                        String atomName, short mad, int formalCharge,
-                       float partialCharge, int occupancy, float bfactor,
+                       float partialCharge, Object[] ellipsoid,
+                       int occupancy, float bfactor,
                        float x, float y, float z, boolean isHetero,
                        int atomSerial, char chainID, String group3,
                        int groupSequenceNumber, char groupInsertionCode,
@@ -558,6 +562,8 @@ public final class ModelLoader extends ModelSet {
     setBFactor(atomCount, bfactor);
     setOccupancy(atomCount, occupancy);
     setPartialCharge(atomCount, partialCharge);
+    if (ellipsoid != null)
+      setEllipsoid(atomCount, ellipsoid);
     atom.group = nullGroup;
     atom.colixAtom = viewer.getColixAtomPalette(atom, JmolConstants.PALETTE_CPK);
     if (atomName != null) {
@@ -675,6 +681,12 @@ public final class ModelLoader extends ModelSet {
       bfactor100s = ArrayUtil.setLength(bfactor100s, newLength);
     if (partialCharges != null)
       partialCharges = ArrayUtil.setLength(partialCharges, newLength);
+    if (ellipsoids != null) {
+      Object[][] ellipsoids2 = new Object[newLength][];
+      for (int i = 0; i < ellipsoids.length; i++)
+        ellipsoids2[i] = ellipsoids[i];
+      ellipsoids = ellipsoids2;
+    }
     if (atomNames != null)
       atomNames = ArrayUtil.setLength(atomNames, newLength);
     if (atomSerials != null)

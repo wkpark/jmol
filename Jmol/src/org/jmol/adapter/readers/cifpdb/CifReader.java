@@ -139,21 +139,19 @@ public class CifReader extends AtomSetCollectionReader {
           continue;
         }
         if (!skipping) {
+          key = key.replace('.', '_');
           if (key.startsWith("_chemical_name")) {
             processChemicalInfo("name");
           } else if (key.startsWith("_chemical_formula_structural")) {
             processChemicalInfo("structuralFormula");
           } else if (key.startsWith("_chemical_formula_sum")) {
             processChemicalInfo("formula");
-          } else if (key.startsWith("_cell_") || key.startsWith("_cell.")) {
+          } else if (key.startsWith("_cell_")) {
             processCellParameter();
           } else if (key.startsWith("_symmetry_space_group_name_H-M")
-              || key.startsWith("_symmetry.space_group_name_H-M")
-              || key.startsWith("_symmetry_space_group_name_Hall")
-              || key.startsWith("_symmetry.space_group_name_Hall")) {
+              || key.startsWith("_symmetry_space_group_name_Hall")) {
             processSymmetrySpaceGroupName();
-          } else if (key.startsWith("_atom_sites.fract_tran")
-              || key.startsWith("_atom_sites.fract_tran")) {
+          } else if (key.startsWith("_atom_sites_fract_tran")) {
             processUnitCellTransformMatrix();
           } else if (key.startsWith("_pdbx_entity_nonpoly")) {
             processNonpolyData();
@@ -228,9 +226,7 @@ public class CifReader extends AtomSetCollectionReader {
 
   final public static String[] cellParamNames = { "_cell_length_a", "_cell_length_b",
       "_cell_length_c", "_cell_angle_alpha", "_cell_angle_beta",
-      "_cell_angle_gamma", "_cell.length_a", "_cell.length_b",
-      "_cell.length_c", "_cell.angle_alpha", "_cell.angle_beta",
-      "_cell.angle_gamma" };
+      "_cell_angle_gamma" };
 
   /**
    * unit cell parameters -- two options, so we use MOD 6
@@ -240,7 +236,7 @@ public class CifReader extends AtomSetCollectionReader {
   void processCellParameter() throws Exception {
     for (int i = cellParamNames.length; --i >= 0;)
       if (isMatch(key, cellParamNames[i])) {
-        setUnitCellItem(i % 6, parseFloat(data));
+        setUnitCellItem(i, parseFloat(data));
         return;
       }
   }
@@ -468,6 +464,19 @@ public class CifReader extends AtomSetCollectionReader {
   final static byte MODEL_NO = 17;
   final static byte DUMMY_ATOM = 18;
   final static byte DISORDER_GROUP = 19;
+  final static byte ANISO_LABEL = 20;
+  final static byte ANISO_U11 = 21;
+  final static byte ANISO_U22 = 22;
+  final static byte ANISO_U33 = 23;
+  final static byte ANISO_U12 = 24;
+  final static byte ANISO_U13 = 25;
+  final static byte ANISO_U23 = 26;
+  final static byte ANISO_MMCIF_U11 = 27;
+  final static byte ANISO_MMCIF_U22 = 28;
+  final static byte ANISO_MMCIF_U33 = 29;
+  final static byte ANISO_MMCIF_U12 = 30;
+  final static byte ANISO_MMCIF_U13 = 31;
+  final static byte ANISO_MMCIF_U23 = 32;
 
   final static String[] atomFields = { 
       "_atom_site_type_symbol",
@@ -476,20 +485,33 @@ public class CifReader extends AtomSetCollectionReader {
       "_atom_site_fract_x",
       "_atom_site_fract_y", 
       "_atom_site_fract_z", 
-      "_atom_site.Cartn_x",
-      "_atom_site.Cartn_y", 
-      "_atom_site.Cartn_z", 
+      "_atom_site_Cartn_x",
+      "_atom_site_Cartn_y", 
+      "_atom_site_Cartn_z", 
       "_atom_site_occupancy",
-      "_atom_site.b_iso_or_equiv", 
-      "_atom_site.auth_comp_id",
-      "_atom_site.auth_asym_id", 
-      "_atom_site.auth_seq_id",
-      "_atom_site.pdbx_PDB_ins_code", 
-      "_atom_site.label_alt_id",
-      "_atom_site.group_PDB", 
-      "_atom_site.pdbx_PDB_model_num",
+      "_atom_site_b_iso_or_equiv", 
+      "_atom_site_auth_comp_id",
+      "_atom_site_auth_asym_id", 
+      "_atom_site_auth_seq_id",
+      "_atom_site_pdbx_PDB_ins_code", 
+      "_atom_site_label_alt_id",
+      "_atom_site_group_PDB", 
+      "_atom_site_pdbx_PDB_model_num",
       "_atom_site_calc_flag", 
       "_atom_site_disorder_group",
+      "_atom_site_aniso_label", 
+      "_atom_site_aniso_U_11",
+      "_atom_site_aniso_U_22",
+      "_atom_site_aniso_U_33",
+      "_atom_site_aniso_U_12",
+      "_atom_site_aniso_U_13",
+      "_atom_site_aniso_U_23",
+      "_atom_site_anisotrop_U[1][1]",
+      "_atom_site_anisotrop_U[2][2]",
+      "_atom_site_anisotrop_U[3][3]",
+      "_atom_site_anisotrop_U[1][2]",
+      "_atom_site_anisotrop_U[1][3]",
+      "_atom_site_anisotrop_U[2][3]",
   };
 
 
@@ -520,6 +542,7 @@ public class CifReader extends AtomSetCollectionReader {
       setFractionalCoordinates(true);
       for (int i = CARTN_X; i < CARTN_Z; ++i)
         disableField(i);
+    } else if (propertyReferenced[ANISO_LABEL]){
     } else {
       // it is a different kind of _atom_site loop block
       skipLoop();
@@ -624,11 +647,34 @@ public class CifReader extends AtomSetCollectionReader {
             continue; //skip 
           }
           break;
+        case ANISO_LABEL:
+          atom = atomSetCollection.getAtom(atomSetCollection.getAtomNameIndex(field));
+          atom.anisoU = new float[6];          
+          break;
+        case ANISO_U11:
+        case ANISO_U22:
+        case ANISO_U33:
+        case ANISO_U12:
+        case ANISO_U13:
+        case ANISO_U23:
+        case ANISO_MMCIF_U11:
+        case ANISO_MMCIF_U22:
+        case ANISO_MMCIF_U33:
+        case ANISO_MMCIF_U12:
+        case ANISO_MMCIF_U13:
+        case ANISO_MMCIF_U23:
+          if (atom.anisoU == null)
+            atom.anisoU = new float[6];
+          int iType = (fieldTypes[i] - ANISO_U11) % 6;
+          atom.anisoU[iType] = parseFloat(field);          
+          break;
         }
       }
       if (Float.isNaN(atom.x) || Float.isNaN(atom.y) || Float.isNaN(atom.z)) {
         Logger.warn("atom " + atom.atomName + " has invalid/unknown coordinates");
       } else {
+        if (propertyReferenced[ANISO_LABEL])
+          continue;
         setAtomCoord(atom);
         atomSetCollection.addAtomWithMappedName(atom);
         if (atom.isHetero && htHetero != null) {
@@ -719,9 +765,9 @@ public class CifReader extends AtomSetCollectionReader {
   final static byte NONPOLY_COMP_ID = 2;
 
   final static String[] nonpolyFields = { 
-      "_pdbx_entity_nonpoly.entity_id",
-      "_pdbx_entity_nonpoly.name", 
-      "_pdbx_entity_nonpoly.comp_id", 
+      "_pdbx_entity_nonpoly_entity_id",
+      "_pdbx_entity_nonpoly_name", 
+      "_pdbx_entity_nonpoly_comp_id", 
   };
   
   /**
@@ -749,8 +795,8 @@ public class CifReader extends AtomSetCollectionReader {
   final static byte CHEM_COMP_NAME = 1;
 
   final static String[] chemCompFields = { 
-      "_chem_comp.id",
-      "_chem_comp.name",  
+      "_chem_comp_id",
+      "_chem_comp_name",  
   };
   
 
@@ -849,13 +895,13 @@ public class CifReader extends AtomSetCollectionReader {
   final static byte END_INS_CODE = 6;
 
   final static String[] structConfFields = { 
-      "_struct_conf.conf_type_id",
-      "_struct_conf.beg_auth_asym_id", 
-      "_struct_conf.beg_auth_seq_id",
-      "_struct_conf.pdbx_beg_PDB_ins_code",
-      "_struct_conf.end_auth_asym_id", 
-      "_struct_conf.end_auth_seq_id",
-      "_struct_conf.pdbx_end_PDB_ins_code", 
+      "_struct_conf_conf_type_id",
+      "_struct_conf_beg_auth_asym_id", 
+      "_struct_conf_beg_auth_seq_id",
+      "_struct_conf_pdbx_beg_PDB_ins_code",
+      "_struct_conf_end_auth_asym_id", 
+      "_struct_conf_end_auth_seq_id",
+      "_struct_conf_pdbx_end_PDB_ins_code", 
   };
 
   /**
@@ -920,13 +966,13 @@ public class CifReader extends AtomSetCollectionReader {
   ////////////////////////////////////////////////////////////////
 
   final static String[] structSheetRangeFields = {
-    "_struct_sheet_range.sheet_id",  //unused placeholder
-    "_struct_sheet_range.beg_auth_asym_id",
-    "_struct_sheet_range.beg_auth_seq_id",
-    "_struct_sheet_range.pdbx_beg_PDB_ins_code",
-    "_struct_sheet_range.end_auth_asym_id",
-    "_struct_sheet_range.end_auth_seq_id",
-    "_struct_sheet_range.pdbx_end_PDB_ins_code", 
+    "_struct_sheet_range_sheet_id",  //unused placeholder
+    "_struct_sheet_range_beg_auth_asym_id",
+    "_struct_sheet_range_beg_auth_seq_id",
+    "_struct_sheet_range_pdbx_beg_PDB_ins_code",
+    "_struct_sheet_range_end_auth_asym_id",
+    "_struct_sheet_range_end_auth_seq_id",
+    "_struct_sheet_range_pdbx_end_PDB_ins_code", 
   };
 
   /**
@@ -985,11 +1031,11 @@ public class CifReader extends AtomSetCollectionReader {
   final static byte SITE_INS_CODE = 4; //???
 
   final static String[] structSiteRangeFields = {
-    "_struct_site_gen.site_id",  
-    "_struct_site_gen.auth_comp_id", 
-    "_struct_site_gen.auth_asym_id", 
-    "_struct_site_gen.auth_seq_id",  
-    "_struct_site_gen.label_alt_id",  //should be an insertion code, not an alt ID? 
+    "_struct_site_gen_site_id",  
+    "_struct_site_gen_auth_comp_id", 
+    "_struct_site_gen_auth_asym_id", 
+    "_struct_site_gen_auth_seq_id",  
+    "_struct_site_gen_label_alt_id",  //should be an insertion code, not an alt ID? 
   };
 
   

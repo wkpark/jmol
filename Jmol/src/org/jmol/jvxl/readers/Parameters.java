@@ -148,11 +148,11 @@ public class Parameters {
 
   //getSurface only:
   final static int SURFACE_SPHERE = 1 | IS_SILENT;
-  final static int SURFACE_ELLIPSOID = 2 | IS_SILENT;
-  final static int SURFACE_LOBE = 3 | IS_SILENT;
-  final static int SURFACE_LCAOCARTOON = 4 | IS_SILENT;
-
-  final static int SURFACE_FUNCTIONXY = 5 | CAN_CONTOUR;
+  final static int SURFACE_ELLIPSOID2 = 2 | IS_SILENT;
+  final static int SURFACE_ELLIPSOID3 = 3 | IS_SILENT;
+  final static int SURFACE_LOBE = 4 | IS_SILENT;
+  final static int SURFACE_LCAOCARTOON = 5 | IS_SILENT;
+  final static int SURFACE_FUNCTIONXY = 6 | CAN_CONTOUR;
 
   // getSurface or mapColor:
   final static int SURFACE_SOLVENT = 11 | IS_SOLVENTTYPE | NO_ANISOTROPY;
@@ -311,6 +311,7 @@ public class Parameters {
   boolean isEccentric;
   float eccentricityScale;
   float eccentricityRatio;
+  float[] aniosU;
 
   void setEccentricity(Point4f info) {
     /*
@@ -368,7 +369,7 @@ public class Parameters {
   }
   
   void setEllipsoid(Point4f v) {
-    dataType = SURFACE_ELLIPSOID;
+    dataType = SURFACE_ELLIPSOID2;
     distance = 1f;
     setEccentricity(v);
     cutoff = Float.MIN_VALUE;
@@ -379,7 +380,25 @@ public class Parameters {
         + " " + v.y + " " + v.z + " " + v.w + "}";
   }
 
-    void setLobe(Point4f v) {
+  float[] anisoB;
+  public void setEllipsoid(float[] bList) {
+    anisoB = bList;
+    for (int i = 0; i < 6; i++)System.out.print(bList[i] + " ");System.out.println( " in Parameters setEllipsoid" + center);
+    dataType = SURFACE_ELLIPSOID3;
+    distance = 0.3f * (Float.isNaN(scale) ? 1f : scale);
+    cutoff = Float.MIN_VALUE;
+    isCutoffAbsolute = false;
+    isSilent = !logMessages;
+    if (center.x == Float.MAX_VALUE)
+      center.set(0, 0, 0);
+    if (resolution == Float.MAX_VALUE)
+      resolution = 6;
+    script = " center " + Escape.escape(center)
+        + (Float.isNaN(scale) ? "" : " scale " + scale) + " ELLIPSOID {" + bList[0]
+        + " " + bList[1] + " " + bList[2] + " " + bList[3] + " " + bList[4] + " " + bList[5] + "}";
+  }
+
+  void setLobe(Point4f v) {
     dataType = SURFACE_LOBE;
     setEccentricity(v);
     if (cutoff == Float.MAX_VALUE) {
@@ -656,4 +675,5 @@ public class Parameters {
       valueMappedToBlue = mappedDataMax;
     }
   }
+
 }

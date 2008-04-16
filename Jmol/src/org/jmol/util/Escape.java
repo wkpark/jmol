@@ -74,13 +74,13 @@ public class Escape {
   public static String escape(float[][] f, boolean addSemi) {
     StringBuffer sb = new StringBuffer();
     String eol = (addSemi ? ";\n" : "\n");
-    for (int i = 0; i < f.length; i++) {
-      if (i > 0)
-        sb.append(eol);
-      for (int j = 0; j < f[i].length; j++) {
-        sb.append(f[i][j]).append('\t');
+    for (int i = 0; i < f.length; i++)
+      if (f[i] != null) {
+        if (i > 0)
+          sb.append(eol);
+        for (int j = 0; j < f[i].length; j++)
+          sb.append(f[i][j]).append('\t');
       }
-    }
     return sb.toString();
   }
 

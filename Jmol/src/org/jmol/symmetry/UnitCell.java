@@ -29,8 +29,13 @@ package org.jmol.symmetry;
  * Bob Hanson 9/2006
  * 
  */
+//import javax.vecmath.AxisAngle4f;
+//import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
+
+//import org.jmol.util.Escape;
 
 public class UnitCell {
   
@@ -170,34 +175,142 @@ public class UnitCell {
     calcUnitcellVertices();
   }
 
-  private final void calcNotionalMatrix() {
+  private Data data;
+  
+  private class Data {
+    double cosAlpha, sinAlpha;
+    double cosBeta, sinBeta;
+    double cosGamma, sinGamma;
+    double volume;
+    double cA_, cB_, a_, b_, c_;
+    
+    Data() {
+      cosAlpha = Math.cos(toRadians * alpha);
+      sinAlpha = Math.sin(toRadians * alpha);
+      cosBeta = Math.cos(toRadians * beta);
+      sinBeta = Math.sin(toRadians * beta);
+      cosGamma = Math.cos(toRadians * gamma);
+      sinGamma = Math.sin(toRadians * gamma);
+      double unitVolume = Math.sqrt(sinAlpha * sinAlpha + sinBeta * sinBeta
+          + sinGamma * sinGamma + 2.0 * cosAlpha * cosBeta * cosGamma - 2);
+      volume = a * b * c * unitVolume;
+      // these next few are for the B' calculation
+      cA_ = (cosAlpha - cosBeta * cosGamma) / sinGamma;
+      cB_ = unitVolume / sinGamma;
+      a_ = b * c * sinAlpha / volume;
+      b_ = a * c * sinBeta / volume;
+      c_ = a * b * sinGamma / volume;
+    }
+
+    Object[] getEllipsoid(float[] U, boolean asInverseMatrix) {
+      //returns {Vector3f[3] unitVectors, float[3] lengths}
+      //from J.W. Jeffery, Methods in X-Ray Crystallography, Appendix VI,
+      // Academic Press, 1971
+      double twoP2 = 2 * Math.PI * Math.PI;
+      double B11 = twoP2 * U[0] * a_ * a_;
+      double B22 = twoP2 * U[1] * b_ * b_;
+      double B33 = twoP2 * U[2] * c_ * c_;
+      double B12 = 2 * twoP2 * U[3] * a_ * b_;
+      double B13 = 2 * twoP2 * U[4] * a_ * c_;
+      double B23 = 2 * twoP2 * U[5] * b_ * c_;
+      double BP11, BP22, BP33, BP12, BP13, BP23;
+      // using lambda = 1 here
+      BP11 = a * a * B11 
+          + b * b * cosGamma * cosGamma * B22
+          + c * c * cosBeta * cosBeta * B33
+          + a * b * cosGamma * B12
+          + b * c * cosGamma * cosBeta * B23
+          + a * c * cosBeta * B13;
+      BP22 = b * b * sinGamma * sinGamma * B22
+          + c * c * cA_ * cA_ * B33
+          + b * c * cA_ * sinGamma * B23;
+      BP33 = c * c * cB_ * cB_ * B33;
+      BP12 = 2 * b * b * cosGamma * sinGamma * B22 
+          + 2 * c * c * cA_ * cosBeta * B33 
+          + a * b * sinGamma * B12
+          + b * c * (cA_ * cosGamma + sinGamma * cosBeta) * B23
+          + a * c * cA_ * B13;
+      BP13 = 2 * c * c * cB_ * cosBeta * B33 
+          + b * c * cosGamma * B23
+          + a * c * cB_ * B13;
+      BP23 = 2 * c * c * cA_ * cB_ * B33
+          + b * c * cB_ * sinGamma * B23;
+      
+      double[][] BP = new double[3][3];
+      BP[0][0] = 2 * BP11;
+      BP[1][1] = 2 * BP22;
+      BP[2][2] = 2 * BP33;
+      BP[0][1] = BP[1][0] = BP12;
+      BP[0][2] = BP[2][0] = BP13;
+      BP[1][2] = BP[2][1] = BP23;
+            
+      Eigen eigen = new Eigen(BP);
+      float[][] eigenVectors = Eigen.toFloat3x3(eigen.getEigenvectors());
+      float[] lengths = Eigen.toFloat(eigen.getEigenvalues());
+      for (int i = 0; i < 3; i++)
+        lengths[i] = (float) (Math.sqrt(lengths[i])/ 2 / Math.PI);
+
+      Vector3f unitVectors[] = new Vector3f[3];
+      Vector3f v = new Vector3f();
+      for (int i = 0; i < 3; i++) {
+        unitVectors[i] = new Vector3f(eigenVectors[i]);
+        v.set(unitVectors[i]);
+        v.scale(lengths[i]);
+//        System.out.println("draw v" + i + " {0 0 0} " + Escape.escape(v) + "# "+lengths[i]);
+      }
+  //    System.out.println();
+      if (!asInverseMatrix)
+        return new Object[] {unitVectors, lengths};
+      return null; 
+      /*
+      Matrix3f mRot = new Matrix3f();
+      Matrix3f mRot0 = new Matrix3f();
+      Matrix3f mRot1 = new Matrix3f();
+      mRot0.setIdentity();
+      mRot.setColumn(0, unitVectors[0]);
+      mRot.setColumn(1, unitVectors[1]);
+      mRot.setColumn(2, unitVectors[2]);
+      Vector3f v0 =  new Vector3f(1, 0, 0);
+      v.cross(unitVectors[0], v0);
+      float cosTheta = unitVectors[0].dot(v0);
+      AxisAngle4f aa = new AxisAngle4f();
+      aa.set(v, Math.acos())*/
+    }
+    
+  }
+  
+  public Object[] getEllipsoid(float[] U, boolean asInverseMatrix){
+    //returns {Vector3f[3] unitVectors, float[3] lengths}
+    if (U == null)
+      return null;
+    if (data == null)
+      data = new Data();
+    return data.getEllipsoid(U, asInverseMatrix);
+  }
+
+  private void calcNotionalMatrix() {
     // note that these are oriented as columns, not as row
     // this is because we will later use the transform method,
     // which operates M * P, where P is a column vector
     matrixNotional = new Matrix4f();
 
-    float cosAlpha = (float) Math.cos(toRadians * alpha);
-    float cosBeta = (float) Math.cos(toRadians * beta);
-    float cosGamma = (float) Math.cos(toRadians * gamma);
-    float sinGamma = (float) Math.sin(toRadians * gamma);
+    if (data == null)
+      data = new Data();
 
     // 1. align the a axis with x axis
     matrixNotional.setColumn(0, a, 0, 0, 0);
     // 2. place the b is in xy plane making a angle gamma with a
-    matrixNotional.setColumn(1, b * cosGamma, b * sinGamma, 0, 0);
+    matrixNotional.setColumn(1, (float) (b * data.cosGamma), 
+        (float) (b * data.sinGamma), 0, 0);
     // 3. now the c axis,
     // http://server.ccl.net/cca/documents/molecular-modeling/node4.html
-    float V = a
-        * b
-        * c
-        * (float) Math.sqrt(1.0 - cosAlpha * cosAlpha - cosBeta * cosBeta
-            - cosGamma * cosGamma + 2.0 * cosAlpha * cosBeta * cosGamma);
-    matrixNotional.setColumn(2, c * cosBeta, c
-        * (cosAlpha - cosBeta * cosGamma) / sinGamma, V / (a * b * sinGamma), 0);
+    matrixNotional.setColumn(2, (float) (c * data.cosBeta), 
+        (float) (c * (data.cosAlpha - data.cosBeta * data.cosGamma) / data.sinGamma), 
+        (float) (data.volume / (a * b * data.sinGamma)), 0);
     matrixNotional.setColumn(3, 0, 0, 0, 1);
   }
 
-  private final void constructFractionalMatrices() {
+  private void constructFractionalMatrices() {
     if (notionalUnitcell.length > 6 && !Float.isNaN(notionalUnitcell[6])) {
         float[] scaleMatrix = new float[16];
       for (int i = 0; i < 16; i++)
@@ -220,11 +333,11 @@ public class UnitCell {
     */
   }
 
-  private final void calcUnitcellVertices() {
+  private void calcUnitcellVertices() {
     vertices = new Point3f[8];
     for (int i = 8; --i >= 0;) {
       vertices[i] = new Point3f();
       matrixFractionalToCartesian.transform(unitCubePoints[i], vertices[i]);
     }
-  }
+  }  
 }

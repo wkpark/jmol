@@ -644,7 +644,20 @@ public class SurfaceGenerator {
     }
 
     if ("ellipsoid" == propertyName) {
-      params.setEllipsoid((Point4f) value);
+      if (value instanceof Point4f)
+        params.setEllipsoid((Point4f) value);
+      else if (value instanceof float[])
+        params.setEllipsoid((float[]) value);
+      else
+        return true; 
+    //    params.setEllipsoid((Object[]) value);        
+      voxelReader = new IsoShapeReader(this, params.distance);
+      generateSurface();
+      return true;
+    }
+
+    if ("ellipsoid3" == propertyName) {
+      params.setEllipsoid((float[]) value);
       voxelReader = new IsoShapeReader(this, params.distance);
       generateSurface();
       return true;
@@ -975,14 +988,13 @@ public class SurfaceGenerator {
   final Vector3f vAC = new Vector3f();
   final Vector3f vAB = new Vector3f();
   final Vector3f vNorm = new Vector3f();
+  final Point3f ptRef = new Point3f(0, 0, 1e15f);
   
   private float distanceVerticalToPlane(float x, float y, Point3f pta,
                                               Point3f ptb, Point3f ptc) {
     // ax + by + cz + d = 0
 
-    float d = Graphics3D.getNormalThroughPoints(pta, ptb, ptc, vNorm, vAB, vAC);
-    //
-
+    float d = Graphics3D.getDirectedNormalThroughPoints(pta, ptb, ptc, ptRef, vNorm, vAB, vAC);
     return (vNorm.x * x + vNorm.y * y + d) / -vNorm.z;
   }
   

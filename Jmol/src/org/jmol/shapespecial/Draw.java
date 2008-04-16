@@ -824,7 +824,8 @@ public class Draw extends MeshCollection {
     if (isDrawPicking && !isPickingMode) {
       Point3f v = pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][pickedVertex]];
       viewer.setStatusAtomPicked(-2, "[\"draw\",\"" + pickedMesh.thisID + "\"," +
-          + pickedModel + "," + pickedVertex + "," + v.x + "," + v.y + "," + v.z+"]");
+          + pickedModel + "," + pickedVertex + "," + v.x + "," + v.y + "," + v.z+"]"
+          + pickedMesh.title == null ? "" : "\"" + pickedMesh.title[pickedModel]+"\"");
       return true; 
     }
     if (pickedMesh.polygonIndexes[pickedModel][0] == pickedMesh.polygonIndexes[pickedModel][1])

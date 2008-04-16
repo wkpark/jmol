@@ -522,6 +522,10 @@ final public class Atom extends Point3fi {
      return partialCharges == null ? 0 : partialCharges[atomIndex];
    }
 
+   public Object[] getEllipsoid() {
+     return group.chain.modelSet.getEllipsoid(atomIndex);
+   }
+
    /**
     * Given a symmetry operation number, the set of cells in the model, and the
     * number of operations, this method returns either 0 or the cell number (555, 666)
@@ -1246,7 +1250,7 @@ final public class Atom extends Point3fi {
     }
     return null;
   }
-  
+
   /* DEVELOPER NOTE -- ATOM/MODEL DELETION --
    * 
    * The challenge of atom deletion:

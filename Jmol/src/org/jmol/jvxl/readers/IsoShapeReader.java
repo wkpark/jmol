@@ -87,7 +87,13 @@ class IsoShapeReader extends VolumeDataReader {
       maxGrid = 21;
       type = "lobe";
       break;
-    case Parameters.SURFACE_ELLIPSOID:
+    case Parameters.SURFACE_ELLIPSOID3:
+      type = "ellipsoid(thermal)";
+      radius = 3.0f * sphere_radiusAngstroms;
+      ppa = 10f;
+      maxGrid = 22;
+      break;
+    case Parameters.SURFACE_ELLIPSOID2:
       type = "ellipsoid";
       // fall through
     case Parameters.SURFACE_SPHERE:
@@ -109,10 +115,25 @@ class IsoShapeReader extends VolumeDataReader {
   protected float getValue(int x, int y, int z) {
     volumeData.voxelPtToXYZ(x, y, z, ptPsi);
     getCalcPoint(ptPsi);
-    if (sphere_radiusAngstroms > 0)
+    if (sphere_radiusAngstroms > 0) {
+      if (params.anisoB != null) {
+        
+        return sphere_radiusAngstroms - 
+        
+        (float) Math.sqrt(ptPsi.x * ptPsi.x + ptPsi.y * ptPsi.y + ptPsi.z
+            * ptPsi.z) /
+        (float) (Math.sqrt(
+            params.anisoB[0] * ptPsi.x * ptPsi.x +
+            params.anisoB[1] * ptPsi.y * ptPsi.y +
+            params.anisoB[2] * ptPsi.z * ptPsi.z +
+            params.anisoB[3] * ptPsi.x * ptPsi.y +
+            params.anisoB[4] * ptPsi.x * ptPsi.z +
+            params.anisoB[5] * ptPsi.y * ptPsi.z));
+      }
       return sphere_radiusAngstroms
           - (float) Math.sqrt(ptPsi.x * ptPsi.x + ptPsi.y * ptPsi.y + ptPsi.z
               * ptPsi.z);
+    }
     float value = (float) hydrogenAtomPsiAt(ptPsi, psi_n, psi_l, psi_m);
     return (allowNegative || value >= 0 ? value : 0);
   }

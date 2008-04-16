@@ -33,6 +33,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Shape;
 import org.jmol.shape.ShapeRenderer;
+import org.jmol.util.Logger;
 
 public class EllipsoidsRenderer extends ShapeRenderer {
 
@@ -70,19 +71,38 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     float[] lengths = (float[]) ellipsoid[1];
     float f = mad / 100.0f * 4f;
     points[0].scaleAdd(-lengths[0] * f, axes[0], atom);
-    points[1].scaleAdd(lengths[0]* f, axes[0], atom);
-    points[2].scaleAdd(-lengths[1]* f, axes[1], atom);
-    points[3].scaleAdd(lengths[1]* f, axes[1], atom);
-    points[4].scaleAdd(-lengths[2]* f, axes[2], atom);
-    points[5].scaleAdd(lengths[2]* f, axes[2], atom);
+    points[1].scaleAdd(lengths[0] * f, axes[0], atom);
+    points[2].scaleAdd(-lengths[1] * f, axes[1], atom);
+    points[3].scaleAdd(lengths[1] * f, axes[1], atom);
+    points[4].scaleAdd(-lengths[2] * f, axes[2], atom);
+    points[5].scaleAdd(lengths[2] * f, axes[2], atom);
     for (int i = 0; i < 6; i++)
       viewer.transformPoint(points[i], screens[i]);
     int d = viewer.scaleToScreen(atom.screenZ, 3);
     d -= (d & 1) ^ 1; // round down to odd value
 
-    for (int i = 0; i < 6; i += 2)
-      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, d, screens[i], screens[i + 1]);
+    if (Logger.debugging)
+      g3d.setColix(Graphics3D.RED);
+    g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, d, screens[0], screens[1]);
+    if (Logger.debugging)
+      g3d.setColix(Graphics3D.GREEN);
+    g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, d, screens[2], screens[3]);
+    if (Logger.debugging)
+      g3d.setColix(Graphics3D.BLUE);
+    g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, d, screens[4], screens[5]);
+    if (Logger.debugging) {
+      g3d.setColix(viewer.getColixBackgroundContrast());
+      for (int i = 0; i < 6; i++) {
+        g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, d, screens[i],
+            screens[(i + 2) % 6]);
+        g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, d, screens[i],
+            screens[(i + 3) % 6]);
+      }
+      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, d, screens[1], screens[2]);
+      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, d, screens[3], screens[4]);
+      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, d, screens[5], screens[0]);
 
+    }
   }
 
 }

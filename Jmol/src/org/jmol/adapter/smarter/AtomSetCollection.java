@@ -29,6 +29,7 @@ import java.util.Vector;
 import java.util.Properties;
 import java.util.BitSet;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.jvxl.data.VolumeData;
@@ -587,11 +588,13 @@ public class AtomSetCollection {
    private void applyAllSymmetry(int maxX, int maxY, int maxZ) throws Exception {
 
     int noSymmetryCount = getLastAtomSetAtomCount();
-    int atomIndex = getLastAtomSetAtomIndex();
+    int iAtomFirst = getLastAtomSetAtomIndex();
+    for (int i = iAtomFirst; i < atomCount; i++)
+      atoms[i].ellipsoid = unitCell.getEllipsoid(atoms[i].anisoU);
     bondCount0 = bondCount;
 
     SymmetryOperation[] finalOperations = spaceGroup.getFinalOperations(atoms,
-        atomIndex, noSymmetryCount, doNormalize);
+        iAtomFirst, noSymmetryCount, doNormalize);
     int operationCount = finalOperations.length;
     int minX = 0;
     int minY = 0;
@@ -616,7 +619,7 @@ public class AtomSetCollection {
     );
     cartesians = new Point3f[cartesianCount];
     for (int i = 0; i < noSymmetryCount; i++)
-      atoms[i + atomIndex].bsSymmetry = new BitSet(operationCount
+      atoms[i + iAtomFirst].bsSymmetry = new BitSet(operationCount
           * (nCells + 1));
     int pt = 0;
     int[] unitCells = new int[nCells];
@@ -641,7 +644,7 @@ public class AtomSetCollection {
           unitCells[iCell++] = 555 + tx * 100 + ty * 10 + tz;
           if (tx == 0 && ty == 0 && tz == 0 && cartesians.length > 0) {
             for (pt = 0; pt < noSymmetryCount; pt++) {
-              Atom atom = atoms[atomIndex + pt];
+              Atom atom = atoms[iAtomFirst + pt];
               Point3f c = new Point3f(atom);
               finalOperations[0].transform(c);
               unitCell.toCartesian(c);
@@ -660,7 +663,7 @@ public class AtomSetCollection {
               rmaxy += absRange;
               rmaxz += absRange;
             }
-            cell555Count = pt = symmetryAddAtoms(finalOperations, atomIndex,
+            cell555Count = pt = symmetryAddAtoms(finalOperations, iAtomFirst,
                 noSymmetryCount, 0, 0, 0, 0, pt, iCell * operationCount);
           }
         }
@@ -678,7 +681,7 @@ public class AtomSetCollection {
         for (int tz = minZ; tz < maxZ; tz++) {
           iCell++;
           if (tx != 0 || ty != 0 || tz != 0)
-            pt = symmetryAddAtoms(finalOperations, atomIndex, noSymmetryCount,
+            pt = symmetryAddAtoms(finalOperations, iAtomFirst, noSymmetryCount,
                 tx, ty, tz, cell555Count, pt, iCell * operationCount);
         }
     if (operationCount > 0) {
@@ -689,7 +692,7 @@ public class AtomSetCollection {
                 .getXyzOriginal());
       setAtomSetAuxiliaryInfo("symmetryOperations", symmetryList);
     }
-    setAtomSetAuxiliaryInfo("presymmetryAtomIndex", new Integer(atomIndex));
+    setAtomSetAuxiliaryInfo("presymmetryAtomIndex", new Integer(iAtomFirst));
     setAtomSetAuxiliaryInfo("presymmetryAtomCount",
         new Integer(noSymmetryCount));
     setAtomSetAuxiliaryInfo("symmetryCount", new Integer(operationCount));
@@ -698,10 +701,9 @@ public class AtomSetCollection {
     setAtomSetAuxiliaryInfo("unitCellRange", unitCells);
     spaceGroup = null;
     notionalUnitCell = new float[6];
-    coordinatesAreFractional = false; //turn off global fractional conversion -- this wil be model by model
+    coordinatesAreFractional = false; 
+    //turn off global fractional conversion -- this wil be model by model
     setGlobalBoolean(GLOBAL_SYMMETRY);
-    for (int i = atomIndex; i < atomCount; i++)
-      atoms[i].ellipsoid = unitCell.getEllipsoid(atoms[i].anisoU, false);
   }
   
   Point3f[] cartesians;
@@ -719,7 +721,7 @@ public class AtomSetCollection {
   }
   
   private int symmetryAddAtoms(SymmetryOperation[] finalOperations,
-                               int atomIndex, int noSymmetryCount, int transX,
+                               int iAtomFirst, int noSymmetryCount, int transX,
                                int transY, int transZ, int baseCount, int pt,
                                int iCellOpPt) throws Exception {
     boolean isBaseCell = (baseCount == 0);
@@ -745,7 +747,7 @@ public class AtomSetCollection {
     if (checkRangeNoSymmetry)
       baseCount = noSymmetryCount;
     int nOperations = finalOperations.length;
-    int atomMax = atomIndex + noSymmetryCount;
+    int atomMax = iAtomFirst + noSymmetryCount;
     Point3f ptAtom = new Point3f();
     for (int iSym = 0; iSym < nOperations; iSym++) {
       if (isBaseCell && finalOperations[iSym].getXyz().equals("x,y,z"))
@@ -762,7 +764,7 @@ public class AtomSetCollection {
        */
 
       int pt0 = (checkSpecial ? pt : checkRange111 ? baseCount : 0);
-      for (int i = atomIndex; i < atomMax; i++) {
+      for (int i = iAtomFirst; i < atomMax; i++) {
         finalOperations[iSym]
             .newPoint(atoms[i], ptAtom, transX, transY, transZ);
         Atom special = null;
@@ -781,7 +783,7 @@ public class AtomSetCollection {
           for (int j = pt0; --j >= 0;) {
             float d2 = cartesian.distanceSquared(cartesians[j]);
             if (checkSpecial && d2 < 0.0001) {
-              special = atoms[atomIndex + j];
+              special = atoms[iAtomFirst + j];
               break;
             }
             if (checkRange111 && j < baseCount && d2 < minDist2)
@@ -805,6 +807,11 @@ public class AtomSetCollection {
           atom1.bsSymmetry = new BitSet();
           atom1.bsSymmetry.set(iCellOpPt + iSym);
           atom1.bsSymmetry.set(iSym);
+          if (atom1.ellipsoid != null)
+            atom1.ellipsoid = new Object[] {
+              finalOperations[iSym].rotate((Vector3f[]) atom1.ellipsoid[0], 
+                  cartesians[i - iAtomFirst], cartesian, unitCell, transX, transY, transZ), 
+              atom1.ellipsoid[1] };
           if (addCartesian)
             cartesians[pt++] = cartesian;
         }

@@ -47,7 +47,7 @@ public class Eigen {
   private double[][] Vo;
 
   public Eigen(double[][] A) {
-    
+
     Vx = new double[3][3];
     Vo = new double[3][3];
     d = new double[3];
@@ -62,22 +62,43 @@ public class Eigen {
 
     // Diagonalize.
     tql2();
-    
+
+    // Sort eigenvalues and corresponding vectors.
+
+    for (int i = 0; i < 2; i++) {
+      int k = i;
+      double p = d[i];
+      for (int j = i + 1; j < 3; j++) {
+        if (d[j] < p) {
+          k = j;
+          p = d[j];
+        }
+      }
+      if (k != i) {
+        d[k] = d[i];
+        d[i] = p;
+        for (int j = 0; j < 3; j++) {
+          p = Vx[i][j];
+          Vx[i][j] = Vx[k][j];
+          Vx[k][j] = p;
+        }
+      }
+    }
     //dump();
 
- /*
-  double[][] V = new double[3][3];
-  for (int i = 0; i < 3; i++)
-    for (int j = 0; j < 3; j++)
-      V[i][j] = A[i][j];
-    d = new double[3];
-    e = new double[3];
-    tred2_orig(V);
-    tql2_orig(V);
-    System.out.println(Escape.escape(toFloat3x3(V), false));
-    System.out.println(Escape.escape(toFloat(d)));
-    System.out.println("##");
-    */
+    /*
+     double[][] V = new double[3][3];
+     for (int i = 0; i < 3; i++)
+     for (int j = 0; j < 3; j++)
+     V[i][j] = A[i][j];
+     d = new double[3];
+     e = new double[3];
+     tred2_orig(V);
+     tql2_orig(V);
+     System.out.println(Escape.escape(toFloat3x3(V), false));
+     System.out.println(Escape.escape(toFloat(d)));
+     System.out.println("##");
+     */
   }
 
   public double[][] getEigenvectors() {

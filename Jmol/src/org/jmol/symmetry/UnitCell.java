@@ -202,7 +202,7 @@ public class UnitCell {
       c_ = a * b * sinGamma / volume;
     }
 
-    Object[] getEllipsoid(float[] U, boolean asInverseMatrix) {
+    Object[] getEllipsoid(float[] U) {
       //returns {Vector3f[3] unitVectors, float[3] lengths}
       //from J.W. Jeffery, Methods in X-Ray Crystallography, Appendix VI,
       // Academic Press, 1971
@@ -251,41 +251,26 @@ public class UnitCell {
         lengths[i] = (float) (Math.sqrt(lengths[i])/ 2 / Math.PI);
 
       Vector3f unitVectors[] = new Vector3f[3];
-      Vector3f v = new Vector3f();
+      //Vector3f v = new Vector3f();
       for (int i = 0; i < 3; i++) {
         unitVectors[i] = new Vector3f(eigenVectors[i]);
-        v.set(unitVectors[i]);
-        v.scale(lengths[i]);
+//        v.set(unitVectors[i]);
+//        v.scale(lengths[i]);
 //        System.out.println("draw v" + i + " {0 0 0} " + Escape.escape(v) + "# "+lengths[i]);
       }
   //    System.out.println();
-      if (!asInverseMatrix)
-        return new Object[] {unitVectors, lengths};
-      return null; 
-      /*
-      Matrix3f mRot = new Matrix3f();
-      Matrix3f mRot0 = new Matrix3f();
-      Matrix3f mRot1 = new Matrix3f();
-      mRot0.setIdentity();
-      mRot.setColumn(0, unitVectors[0]);
-      mRot.setColumn(1, unitVectors[1]);
-      mRot.setColumn(2, unitVectors[2]);
-      Vector3f v0 =  new Vector3f(1, 0, 0);
-      v.cross(unitVectors[0], v0);
-      float cosTheta = unitVectors[0].dot(v0);
-      AxisAngle4f aa = new AxisAngle4f();
-      aa.set(v, Math.acos())*/
+      return new Object[] {unitVectors, lengths};
     }
     
   }
   
-  public Object[] getEllipsoid(float[] U, boolean asInverseMatrix){
+  public Object[] getEllipsoid(float[] U){
     //returns {Vector3f[3] unitVectors, float[3] lengths}
     if (U == null)
       return null;
     if (data == null)
       data = new Data();
-    return data.getEllipsoid(U, asInverseMatrix);
+    return data.getEllipsoid(U);
   }
 
   private void calcNotionalMatrix() {

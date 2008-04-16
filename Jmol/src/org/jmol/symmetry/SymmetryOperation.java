@@ -27,6 +27,8 @@ package org.jmol.symmetry;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Vector3f;
+
 import org.jmol.util.Logger;
 
 /*
@@ -309,5 +311,36 @@ public class SymmetryOperation extends Matrix4f {
       z += (z < 0 ? count : -count);
     }
     //System.out.println((Matrix4f)this);
+  }
+
+  public Vector3f[] rotate(Vector3f[] vectors, Point3f cart0, Point3f cartXYZ,
+                           UnitCell unitcell, float transX, float transY,
+                           float transZ) {
+    //System.out.println("SymmetryOperation..transform " + xyz + "\n"
+        //+ ((Matrix4f) this) + "\ntrans " + transX + " " + transY + " " + transZ);
+    Vector3f[] vRot = new Vector3f[3];
+    //System.out.println("cart0=" + cart0);
+    //System.out.println("cartXYZ="+ cartXYZ);
+    for (int i = vectors.length; --i >= 0;) {
+      //System.out.println("vectors[i]= " + vectors[i]);
+      Point3f pt = new Point3f(cart0);
+      pt.add(vectors[i]);
+      //System.out.println("cart0+vectors[i]=" + pt);
+      unitcell.toFractional(pt);
+      transform(pt);
+      pt.x += transX;
+      pt.y += transY;
+      pt.z += transZ;
+      unitcell.toCartesian(pt);
+      vRot[i] = new Vector3f(pt);
+      vRot[i].sub(cartXYZ);
+      //System.out.println("new vRot[i]=" + vRot[i]);
+    }
+    //for (int i = 0; i < 3; i++) {
+      //System.out.println(vectors[i].dot(vectors[(i + 1) % 3]));
+      //System.out.println(vRot[i].dot(vRot[(i + 1) % 3]));
+    //}
+    //System.out.println();
+    return vRot;
   }
 }

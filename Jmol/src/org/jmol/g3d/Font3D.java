@@ -51,7 +51,6 @@ final public class Font3D {
   public final int idFontStyle;
   public final float fontSize;
   public final Font font;
-  public Font antialiasFont;
   public final FontMetrics fontMetrics;
 
   private Font3D(byte fid,
@@ -66,6 +65,7 @@ final public class Font3D {
     this.fontSizeNominal = fontSizeNominal;
     this.font = font;
     this.fontMetrics = fontMetrics;
+    //System.out.println("font3d constructed for fontsizeNominal=" + fontSizeNominal + "  and fontSize=" + fontSize);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ final public class Font3D {
       ((fontface & 3) | ((fontstyle & 3) << 2) | (fontsizeX16 << 4));
     // watch out for race condition here!
     for (int i = fontkeyCount; --i > 0; )
-      if (fontkey == fontkeys[i])
+      if (fontkey == fontkeys[i] && font3ds[i].fontSizeNominal == fontsizeNominal)
         return font3ds[i];
     return allocFont3D(fontkey, fontface, fontstyle, fontsize, fontsizeNominal);
   }
@@ -113,7 +113,7 @@ final public class Font3D {
                                                 int fontstyle, float fontsize, float fontsizeNominal) {
     // recheck in case another process just allocated one
     for (int i = fontkeyCount; --i > 0; )
-      if (fontkey == fontkeys[i])
+      if (fontkey == fontkeys[i] && font3ds[i].fontSizeNominal == fontsizeNominal)
         return font3ds[i];
     int fontIndexNext = fontkeyCount++;
     if (fontIndexNext == fontkeys.length) {

@@ -103,7 +103,6 @@ public class Text {
   Font3D font;
   private FontMetrics fm;
   private byte fid;
-  float fontSize;
   private int ascent;
   private int descent;
   private int lineHeight;
@@ -148,7 +147,6 @@ public class Text {
     this.scalePixelsPerMicron = scalePixelsPerMicron;
     this.z = 2;
     this.zSlab = Integer.MIN_VALUE;
-    fontSize = font.fontSizeNominal;
     getFontMetrics();
   }
 
@@ -304,7 +302,7 @@ public class Text {
     if (font == null)
       return;
     fid = font.fid;
-    fontSize = font.fontSizeNominal;
+    //System.out.println("setFont fontSize/nominal now " + font.fontSize + "/" + font.fontSizeNominal);
     getFontMetrics();
     recalc();
   }
@@ -312,7 +310,6 @@ public class Text {
   void setFontScale(float scale) {
     if (fontScale == scale)
       return;
-    //System.out.println(fontSize + " " + scale + " " + (fontSize * scale));
     fontScale = scale;
     if (fontScale != 0)
       setFont(g3d.getFont3DScaled(font, scale));

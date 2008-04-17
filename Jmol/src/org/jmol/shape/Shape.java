@@ -88,7 +88,7 @@ public abstract class Shape {
   
   public Viewer viewer; //public for now for Backbone
   public ModelSet modelSet;
-  protected Graphics3D g3d;
+  public Graphics3D g3d;
   public int shapeID;
   public int myVisibilityFlag;
   protected float translucentLevel;

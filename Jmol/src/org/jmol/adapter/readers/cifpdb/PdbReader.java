@@ -106,6 +106,10 @@ public class PdbReader extends AtomSetCollectionReader {
           hetnam();
           continue;
         }
+        if (line.startsWith("ANISOU")) {
+          anisou();
+          continue;
+        }
         if (line.startsWith("SITE  ")) {
           site();
           continue;
@@ -174,6 +178,8 @@ public class PdbReader extends AtomSetCollectionReader {
   }
 
  int atomCount;
+ String lastAtomData;
+ int lastAtomIndex;
   void atom() {
     boolean isHetero = line.startsWith("HETATM");
     char charAlternateLocation = line.charAt(16);
@@ -182,6 +188,7 @@ public class PdbReader extends AtomSetCollectionReader {
     int serial = parseInt(line, 6, 11);
     if (serial > maxSerial)
       maxSerial = serial;
+    lastAtomData = line.substring(6, 26);
     char chainID = line.charAt(21);
     int sequenceNumber = parseInt(line, 22, 26);
     char insertionCode = line.charAt(26);
@@ -257,7 +264,11 @@ public class PdbReader extends AtomSetCollectionReader {
     atom.sequenceNumber = sequenceNumber;
     atom.insertionCode = JmolAdapter.canonizeInsertionCode(insertionCode);
     atom.radius = radius;
-    atomSetCollection.addAtom(atom);
+    lastAtomIndex = atomSetCollection.getAtomCount();
+    if (haveMappedSerials)
+      atomSetCollection.addAtomWithMappedSerialNumber(atom);
+    else
+      atomSetCollection.addAtom(atom);
     if (atomCount++ == 0)
       atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     // note that values are +1 in this serial map
@@ -420,6 +431,7 @@ TURN     1  T1 GLY    42  TYR    44
       if (endModelColumn > lineLength)
         endModelColumn = lineLength;
       int modelNumber = parseInt(line, startModelColumn, endModelColumn);
+      haveMappedSerials = false;
       atomSetCollection.newAtomSet();
       atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
       atomSetCollection.setAtomSetNumber(modelNumber);
@@ -505,6 +517,85 @@ TURN     1  T1 GLY    42  TYR    44
     //Logger.debug("hetero: "+groupName+" "+hetName);
   }
   
+  /*
+ The ANISOU records present the anisotropic temperature factors.
+
+Record Format
+
+COLUMNS        DATA TYPE       FIELD         DEFINITION                  
+----------------------------------------------------------------------
+ 1 -  6        Record name     "ANISOU"                                  
+
+ 7 - 11        Integer         serial        Atom serial number.         
+
+13 - 16        Atom            name          Atom name.                  
+
+17             Character       altLoc        Alternate location indicator.                  
+
+18 - 20        Residue name    resName       Residue name.               
+
+22             Character       chainID       Chain identifier.           
+
+23 - 26        Integer         resSeq        Residue sequence number.    
+
+27             AChar           iCode         Insertion code.             
+
+29 - 35        Integer         u[0][0]       U(1,1)                
+
+36 - 42        Integer         u[1][1]       U(2,2)                
+
+43 - 49        Integer         u[2][2]       U(3,3)                
+
+50 - 56        Integer         u[0][1]       U(1,2)                
+
+57 - 63        Integer         u[0][2]       U(1,3)                
+
+64 - 70        Integer         u[1][2]       U(2,3)                
+
+73 - 76        LString(4)      segID         Segment identifier, left-justified.
+
+77 - 78        LString(2)      element       Element symbol, right-justified.
+
+79 - 80        LString(2)      charge        Charge on the atom.       
+
+Details
+
+* Columns 7 - 27 and 73 - 80 are identical to the corresponding ATOM/HETATM record.
+
+* The anisotropic temperature factors (columns 29 - 70) are scaled by a factor of 10**4 (Angstroms**2) and are presented as integers.
+
+* The anisotropic temperature factors are stored in the same coordinate frame as the atomic coordinate records. 
+   */
+  boolean  haveMappedSerials;
+  
+  void anisou() {
+    float[] data = new float[6];
+    int serial = parseInt(line, 6, 11);
+    int index;
+    if (line.substring(6, 26).equals(lastAtomData)) {
+      index = lastAtomIndex;
+    } else {
+      if (!haveMappedSerials)
+        atomSetCollection.createAtomSerialMap();
+      index = atomSetCollection.getAtomSerialNumberIndex(serial);
+      haveMappedSerials = true;
+    }
+    if (index < 0) {
+      System.out.println("ERROR: ANISOU record does not correspond to known atom");
+      return;
+    }
+    Atom atom = atomSetCollection.getAtom(index);
+    for (int i = 28, pt = 0; i < 70; i += 7, pt++)
+      data[pt] = parseFloat(line, i, i + 7);
+    for (int i = 0; i < 6; i++) {
+      if (Float.isNaN(data[i])) {
+          System.out.println("Bad ANISOU record: " + line);
+          return;
+      }
+      data[i] /= 10000f;
+    }
+    atom.anisoU = data;
+  }
   /*
    * http://www.wwpdb.org/documentation/format23/sect7.html
    * 

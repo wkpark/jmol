@@ -287,7 +287,7 @@ public class AtomSetCollection {
     for (int i = atomCount; --i >= 0; )
       atoms[i] = null;
     atomCount = 0;
-    atomSymbolicMap.clear();
+    clearSymbolicMap();
     atomSetCount = 0;
     currentAtomSetIndex = -1;
     for (int i = atomSetNames.length; --i >= 0; ) {
@@ -720,6 +720,8 @@ public class AtomSetCollection {
     applySymmetryToBonds = TF;
   }
   
+  private final Point3f ptTemp = new Point3f();
+  
   private int symmetryAddAtoms(SymmetryOperation[] finalOperations,
                                int iAtomFirst, int noSymmetryCount, int transX,
                                int transY, int transZ, int baseCount, int pt,
@@ -803,17 +805,25 @@ public class AtomSetCollection {
             atomMap[atomSite] = atomCount;
           Atom atom1 = newCloneAtom(atoms[i]);
           atom1.set(ptAtom);
-          atom1.atomSite = atomSite; 
+          atom1.atomSite = atomSite;
           atom1.bsSymmetry = new BitSet();
           atom1.bsSymmetry.set(iCellOpPt + iSym);
           atom1.bsSymmetry.set(iSym);
-          if (atom1.ellipsoid != null)
-            atom1.ellipsoid = new Object[] {
-              finalOperations[iSym].rotate((Vector3f[]) atom1.ellipsoid[0], 
-                  cartesians[i - iAtomFirst], cartesian, unitCell, transX, transY, transZ), 
-              atom1.ellipsoid[1] };
           if (addCartesian)
             cartesians[pt++] = cartesian;
+          if (atoms[i].ellipsoid != null) {
+            // note -- PDB reader specifically turns off cartesians
+            if (addCartesian) {
+              ptTemp.set(cartesians[i - iAtomFirst]);
+            } else {
+              ptTemp.set(atoms[i]);
+              unitCell.toCartesian(ptTemp);
+            }
+            atom1.ellipsoid = new Object[] {
+                finalOperations[iSym].rotate((Vector3f[]) atoms[i].ellipsoid[0],
+                    ptTemp, cartesian, unitCell, transX, transY, transZ),
+                atoms[i].ellipsoid[1] };
+          }
         }
       }
       if (addBonds) {
@@ -853,14 +863,32 @@ public class AtomSetCollection {
     }
   }
 
+  private void clearSymbolicMap() {
+    atomSymbolicMap.clear();
+    haveMappedSerials = false;
+  }
+
+  boolean haveMappedSerials;
   void mapMostRecentAtomSerialNumber() {
     // from ?? 
-    if (atomCount > 0) {
+    if (atomCount == 0) 
+      return;
       int index = atomCount - 1;
       int atomSerial = atoms[index].atomSerial;
       if (atomSerial != Integer.MIN_VALUE)
         atomSymbolicMap.put(new Integer(atomSerial), new Integer(index));
+      haveMappedSerials = true;
+  }
+
+  public void createAtomSerialMap() {
+    if (haveMappedSerials)
+      return;
+    for (int i = getLastAtomSetAtomCount(); i < atomCount; i++) {
+      int atomSerial = atoms[i].atomSerial;
+      if (atomSerial != Integer.MIN_VALUE)
+        atomSymbolicMap.put(new Integer(atomSerial), new Integer(i));
     }
+    haveMappedSerials = true;
   }
 
   void mapAtomName(String atomName, int atomIndex) {
@@ -876,7 +904,7 @@ public class AtomSetCollection {
     return index;
   }
 
-  int getAtomSerialNumberIndex(int serialNumber) {
+  public int getAtomSerialNumberIndex(int serialNumber) {
     int index = -1;
     Object value = atomSymbolicMap.get(new Integer(serialNumber));
     if (value != null)
@@ -1235,4 +1263,5 @@ public class AtomSetCollection {
     vd = null; //delete adapter reference
     return v;
   }
+
 }

@@ -484,7 +484,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     public float getVectorX() { return atom.vectorX; }
     public float getVectorY() { return atom.vectorY; }
     public float getVectorZ() { return atom.vectorZ; }
-    public float getBfactor() { return atom.anisoU != null ? (atom.anisoU[0] + atom.anisoU[1] + atom.anisoU[2]) / 3f: atom.bfactor; }
+    public float getBfactor() { return atom.anisoU != null ? (atom.anisoU[0] + atom.anisoU[1] + atom.anisoU[2]) / 3f * 100f: atom.bfactor; }
     public int getOccupancy() { return atom.occupancy; }
     public boolean getIsHetero() { return atom.isHetero; }
     public int getAtomSerial() { return atom.atomSerial; }

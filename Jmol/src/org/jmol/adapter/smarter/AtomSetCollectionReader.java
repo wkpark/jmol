@@ -267,8 +267,7 @@ public abstract class AtomSetCollectionReader {
     latticeCells[0] = params[1];
     latticeCells[1] = params[2];
     latticeCells[2] = params[3];
-    doApplySymmetry = (latticeCells[0] > 0 && latticeCells[1] > 0
-        && latticeCells[2] > 0 || latticeCells[0] > 9 && latticeCells[1] > 9);
+    doApplySymmetry = (latticeCells[0] > 0 && latticeCells[1] > 0);
     //allows for {1 1 1} or {555 555 0|1}
     if (!doApplySymmetry) {
       latticeCells[0] = 0;

@@ -336,11 +336,12 @@ public class SymmetryOperation extends Matrix4f {
       vRot[i].sub(cartXYZ);
       //System.out.println("new vRot[i]=" + vRot[i]);
     }
-    //for (int i = 0; i < 3; i++) {
-      //System.out.println(vectors[i].dot(vectors[(i + 1) % 3]));
-      //System.out.println(vRot[i].dot(vRot[(i + 1) % 3]));
-    //}
-    //System.out.println();
+/*    for (int i = 0; i < 3; i++) {
+      System.out.println(vectors[i].dot(vectors[(i + 1) % 3]));
+      System.out.println(vRot[i].dot(vRot[(i + 1) % 3]));
+    }
+    System.out.println();
+*/
     return vRot;
   }
 }

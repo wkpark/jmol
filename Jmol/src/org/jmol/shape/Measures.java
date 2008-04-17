@@ -509,7 +509,7 @@ public class Measures extends Shape {
     appendCmd(commands, "measures delete");
     for (int i = 0; i < measurementCount; i++)
       appendCmd(commands, getState(i));
-    appendCmd(commands, "set measures " + viewer.getMeasureDistanceUnits());
+    appendCmd(commands, "select *; set measures " + viewer.getMeasureDistanceUnits());
     appendCmd(commands, getFontCommand("measures", font3d));
     int n = 0;
     Hashtable temp = new Hashtable();

@@ -626,10 +626,11 @@ public class StateManager {
     boolean[] objStateOn                = new boolean[OBJ_MAX];
     int[]     objMad                    = new int[OBJ_MAX];
     
-    boolean  ellipsoidAxes              = false;
-    boolean  ellipsoidDots              = true;
-    boolean  ellipsoidArcs              = false;
+    boolean  ellipsoidAxes              = true;
+    boolean  ellipsoidDots              = false;
+    boolean  ellipsoidArcs              = true;
     boolean  ellipsoidFill              = false;
+    boolean  ellipsoidBall              = false;
     int      ellipsoidDotCount          = 200;
     
 
@@ -1082,6 +1083,7 @@ public class StateManager {
       setParameterValue("dynamicMeasurements",dynamicMeasurements);
       setParameterValue("ellipsoidArcs", ellipsoidArcs);
       setParameterValue("ellipsoidAxes", ellipsoidAxes);
+      setParameterValue("ellipsoidBall", ellipsoidBall);  
       setParameterValue("ellipsoidDotCount", ellipsoidDotCount);
       setParameterValue("ellipsoidDots", ellipsoidDots);
       setParameterValue("ellipsoidFill", ellipsoidFill);

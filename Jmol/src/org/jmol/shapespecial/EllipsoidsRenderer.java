@@ -38,7 +38,7 @@ import org.jmol.util.Logger;
 public class EllipsoidsRenderer extends ShapeRenderer {
 
   private Ellipsoids ellipsoids;
-  private boolean drawDots, drawArcs, drawAxes, drawFill;
+  private boolean drawDots, drawArcs, drawAxes, drawFill, drawBall;
   private int dotCount;
   private int[] coords;
   private Vector3f[] axes;
@@ -50,19 +50,35 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       return;
     drawAxes = viewer.getBooleanProperty("ellipsoidAxes");
     drawDots = viewer.getBooleanProperty("ellipsoidDots");
-    if (drawDots) {
-      dotCount = ((Integer) viewer.getParameter("ellipsoidDotCount")).intValue();
-      coords = new int[dotCount * 3];
-    }
     drawArcs = viewer.getBooleanProperty("ellipsoidArcs");
     drawFill = viewer.getBooleanProperty("ellipsoidFill");
-    if (drawFill && !drawArcs)
-      drawArcs = true;
-    if (!drawDots && !drawArcs)
+    drawBall = viewer.getBooleanProperty("ellipsoidBall");
+
+    /* general logic:
+     * 
+     * 
+     * 1) octant and DOTS are incompatible; octant preferred over dots
+     * 2) If not BALL, ARCS, or DOTS, the rendering defaults to AXES
+     * 3) If DOTS, then turn off ARCS and FILL
+     * 
+     * note that FILL serves to provide a cut-out for BALL and a 
+     * filling for ARCS
+     */
+       
+    if (drawBall)
+      drawDots = false;
+    if (!drawDots && !drawArcs && !drawBall)
       drawAxes = true;
-    if (drawFill)
-      drawAxes = false;
-    
+    if (drawDots) {
+      drawArcs = false;
+      drawFill = false;
+    }
+  
+    if (drawDots) {
+      dotCount = ((Integer) viewer.getParameter("ellipsoidDotCount")).intValue();
+      if (coords == null || coords.length != dotCount * 3)
+        coords = new int[dotCount * 3];
+    }
     Atom[] atoms = modelSet.atoms;
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
@@ -79,66 +95,97 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     coords = null;
   }
 
-  private final Point3i[] screens = new Point3i[6];
+  private final Point3i[] screens = new Point3i[32];
+  private final short[] normixes = new short[32];
   private final Point3f[] points = new Point3f[6];
-  private final Point3f[] ptEllipse = new Point3f[72];
   {
-    for (int i = 0; i < 6; i++) {
-      screens[i] = new Point3i();
+    for (int i = 0; i < 6; i++)
       points[i] = new Point3f();
-    }
-    for (int i = 0; i < 72; i++)
-      ptEllipse[i] = new Point3f();
+    for (int i = 0; i < 32; i++)
+      screens[i] = new Point3i();
   }
 
+  private int diameter;
+  
+  private static int[] axisPoints = {-1, 1, -2, 2, -3, 3};
+  
+  // octants are sets of three axisPoints references in proper rotation order
+  // axisPoints[octants[i]] indicates the axis and direction (pos/neg)
+  private static int[] octants = {
+    0, 3, 5,
+    0, 5, 2, //arc
+    0, 2, 4,
+    0, 4, 3, //arc
+    1, 5, 2,
+    1, 3, 5, //arc
+    1, 4, 3,
+    1, 2, 4  //arc
+  };
+ 
   private void render1(Atom atom, short mad, Object[] ellipsoid) {
     s0.set(atom.screenX, atom.screenY, atom.screenZ);
     axes = (Vector3f[]) ellipsoid[0];
-    float[] lengths = (float[]) ellipsoid[1];
+    float[] af = (float[]) ellipsoid[1];
     float f = mad / 100.0f * 4f;
-    points[0].scaleAdd(-lengths[0] * f, axes[0], atom);
-    points[1].scaleAdd(this.lengths[0] = lengths[0] * f, axes[0], atom);
-    points[2].scaleAdd(-lengths[1] * f, axes[1], atom);
-    points[3].scaleAdd(this.lengths[1] = lengths[1] * f, axes[1], atom);
-    points[4].scaleAdd(-lengths[2] * f, axes[2], atom);
-    points[5].scaleAdd(this.lengths[2] = lengths[2] * f, axes[2], atom);
-    for (int i = 0; i < 6; i++)
-      viewer.transformPoint(points[i], screens[i]);
-    int diam = viewer.scaleToScreen(atom.screenZ, 3);
-    diam -= (diam & 1) ^ 1; // round down to odd value
-    if (drawAxes)
-      renderAxes(diam);  
-    if (drawArcs)
-      renderPlanes(atom, diam);
+    for (int i = 3; --i >= 0; )
+      lengths[i] = af[i] * f;
+    if (drawAxes || drawArcs || drawBall) 
+      setAxes(atom, 1.0f);
+    diameter = viewer.scaleToScreen(atom.screenZ, 6);
     if (drawDots)
       renderDots(atom);
+    if (drawAxes && !drawBall)
+      renderAxes();  
+    if (drawArcs && !drawBall)
+      renderArcs(atom);
+    if (drawBall) {
+      renderBall(atom);
+      if (drawArcs || drawAxes) {
+        g3d.setColix(Graphics3D.BLACK);
+        //setAxes(atom, 1.0f);
+        if (drawAxes)
+          renderAxes();
+        if (drawArcs)
+          renderArcs(atom);
+        g3d.setColix(colix);
+      }
+    }
   }
 
-  private void renderAxes(int diam) {
+  private void setAxes(Atom atom, float f) {
+    for (int i = 0; i < 6; i++) {
+      int iAxis = axisPoints[i];
+      int i012 = Math.abs(iAxis) - 1;
+      points[i].scaleAdd(f * lengths[i012] * (iAxis < 0 ? -1 : 1), axes[i012], atom);
+      viewer.transformPoint(points[i], screens[i]);
+    }
+  }
+
+  private void renderAxes() {
     if (Logger.debugging)
       g3d.setColix(Graphics3D.RED);
-    g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diam, screens[0], screens[1]);
+    g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[0], screens[1]);
     if (Logger.debugging)
       g3d.setColix(Graphics3D.GREEN);
-    g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diam, screens[2], screens[3]);
+    g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[2], screens[3]);
     if (Logger.debugging)
       g3d.setColix(Graphics3D.BLUE);
-    g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diam, screens[4], screens[5]);
+    g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[4], screens[5]);
     if (Logger.debugging) {
       g3d.setColix(viewer.getColixBackgroundContrast());
       for (int i = 0; i < 6; i++) {
-        g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diam, screens[i],
+        g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[i],
             screens[(i + 2) % 6]);
-        g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diam, screens[i],
+        g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[i],
             screens[(i + 3) % 6]);
       }
-      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diam, screens[1], screens[2]);
-      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diam, screens[3], screens[4]);
-      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diam, screens[5], screens[0]);
+      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[1], screens[2]);
+      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[3], screens[4]);
+      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[5], screens[0]);
     }
   }
   
-  private void renderDots(Atom atom) {
+  private void renderDots(Point3f ptAtom) {
     for (int i = 0; i < coords.length;) {
       float fx = (float) Math.random();
       float fy = (float) Math.random();
@@ -147,9 +194,10 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       float fz = (float) Math.sqrt(1 - fx * fx - fy * fy);
       if (Float.isNaN(fz))
         continue;
-      pt1.scaleAdd(fx * lengths[0], axes[0], atom);
+      fz = (float) (Math.random() > 0.5 ? -1 : 1) * fz;
+      pt1.scaleAdd(fx * lengths[0], axes[0], ptAtom);
       pt1.scaleAdd(fy * lengths[1], axes[1], pt1);
-      pt1.scaleAdd((float) (Math.random() > 0.5 ? -1 : 1) * fz * lengths[2], axes[2], pt1);
+      pt1.scaleAdd(fz * lengths[2], axes[2], pt1);
       viewer.transformPoint(pt1, s1);
       coords[i++] = s1.x;
       coords[i++] = s1.y;
@@ -158,17 +206,13 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     g3d.drawPoints(dotCount, coords);
   }
 
-  private void renderPlanes(Atom atom, int diam) {
-    renderOctant(atom, 0, 2, 5, diam);
-    renderOctant(atom, 2, 4, 1, diam);
-    renderOctant(atom, 4, 3, 0, diam);
-    renderOctant(atom, 1, 3, 5, diam);
-  }
-  
-  private void renderOctant(Atom atom, int pt1, int pt2, int pt3, int diam) {
-    renderSegment(atom, pt1, pt2, diam); 
-    renderSegment(atom, pt2, pt3, diam); 
-    renderSegment(atom, pt3, pt1, diam); 
+  private void renderArcs(Point3f ptAtom) {
+    for (int i = 1; i < 8; i += 2) {
+      int pt = i*3;
+      renderArc(ptAtom, octants[pt], octants[pt + 1]);
+      renderArc(ptAtom, octants[pt + 1], octants[pt + 2]);
+      renderArc(ptAtom, octants[pt + 2], octants[pt]);      
+    }
   }
   
   private final Vector3f v1 = new Vector3f();
@@ -189,11 +233,11 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     }
   }
   
-  private void renderSegment(Atom atom, int ptA, int ptB, int diam) {
+  private void renderArc(Point3f ptAtom, int ptA, int ptB) {
     v1.set(points[ptA]);
-    v1.sub(atom);
+    v1.sub(ptAtom);
     v2.set(points[ptB]);
-    v2.sub(atom);
+    v2.sub(ptAtom);
     float d1 = v1.length();
     float d2 = v2.length();
     v1.normalize();
@@ -203,15 +247,134 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     s1.set(screens[ptA]);
     short normix = ellipsoids.g3d.get2SidedNormix(v3);
     for (int i = 0; i < 36;) {
-      pt2.scaleAdd(cossin[i++] * d1, v1, atom);
+      pt2.scaleAdd(cossin[i++] * d1, v1, ptAtom);
       pt2.scaleAdd(cossin[i++] * d2, v2, pt2);
       viewer.transformPoint(pt2, s2);
-      if (drawFill)
+      if (drawFill && !drawBall)
         g3d.fillTriangle(s0, colix, normix, s1, colix, normix, s2, colix, normix);
       else
-        g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diam, s1, s2);
+        g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, s1, s2);
       pt1.set(pt2);
       s1.set(s2);
     }    
   }
+
+  private void renderBall(Point3f ptAtom) {
+    int iCutout = -1;
+    int zMin = Integer.MAX_VALUE;
+    if (drawFill)
+      for (int i = 0; i < 8; i++) {
+        int ptA = octants[i * 3];
+        int ptB = octants[i * 3 + 1];
+        int ptC = octants[i * 3 + 2];
+        int z = screens[ptA].z + screens[ptB].z + screens[ptC].z;
+        if (z < zMin) {
+          zMin = z;
+          iCutout = i;
+        }
+      }
+
+    for (int i = 0; i < 8; i++) {
+      int ptA = octants[i * 3];
+      int ptB = octants[i * 3 + 1];
+      int ptC = octants[i * 3 + 2];
+      boolean isSwapped = (axisPoints[ptA] < 0);
+      renderBall(ptAtom, axisPoints[ptA], axisPoints[ptB], axisPoints[ptC],
+          isSwapped, iCutout == i);
+    }
+  }
+
+  Vector3f a = new Vector3f();
+  Vector3f b = new Vector3f();
+  Vector3f c = new Vector3f();
+  
+  private void renderBall(Point3f ptAtom, int axisA, int axisB, int axisC,
+                           boolean isSwapped, boolean cutoutOnly) {
+    int nSegments = 16;
+    int i;
+    a.set(axes[i = (Math.abs(axisA) - 1)]);
+    float la = lengths[i];
+    b.set(axes[i = (Math.abs(axisB) - 1)]);
+    float lb = lengths[i];
+    c.set(axes[i = (Math.abs(axisC) - 1)]);
+    float lc = lengths[i];
+    if (axisA < 0)
+      a.scale(-1);
+    if (axisB < 0)
+      b.scale(-1);
+    if (axisC < 0)
+      c.scale(-1);
+
+    if (cutoutOnly) {
+      renderCutout(ptAtom, a, b, la, lb, nSegments, isSwapped);
+      renderCutout(ptAtom, a, c, la, lc, nSegments, isSwapped);
+      renderCutout(ptAtom, c, b, lc, lb, nSegments, isSwapped);
+      return;
+    }
+    short n2 = 0;
+    short normix = 0;
+    for (int ifx = 0, ify = 0, scrPt = 0; ifx < nSegments; ifx++) {
+      float fx = ifx * 1f / (nSegments - 1);
+      for (ify = 0; ify < nSegments; ify++) {
+        float fy = ify * 1f / (nSegments - 1);
+        float fz = (float) Math.sqrt(1 - fx * fx - fy * fy);
+        if (Float.isNaN(fz)) {
+          fy = (float) Math.sqrt(1 - fx * fx);
+          fz = 0;
+        }
+        pt1.scaleAdd(fx * la, a, ptAtom);
+        pt1.scaleAdd(fy * lb, b, pt1);
+        pt1.scaleAdd(fz * lc, c, pt1);
+        viewer.transformPoint(pt1, s1);
+        v1.set(pt1);
+        v1.sub(ptAtom);
+        normix = g3d.getNormix(v1);
+        scrPt = ify + 6;
+        if (ify != 0) {
+          if (ifx != 0) {
+            if (isSwapped)
+              g3d.fillQuadrilateral(s2, colix, n2, s1, colix, normix,
+                  screens[scrPt], colix, normixes[scrPt], screens[scrPt - 1],
+                  colix, normixes[scrPt - 1]);
+            else
+              g3d.fillQuadrilateral(screens[scrPt - 1], colix,
+                  normixes[scrPt - 1], screens[scrPt], colix, normixes[scrPt],
+                  s1, colix, normix, s2, colix, n2);
+          }
+          screens[scrPt - 1].set(s2);
+          normixes[scrPt - 1] = n2;
+        }
+        s2.set(s1);
+        n2 = normix;
+      }
+      screens[scrPt].set(s2);
+      normixes[scrPt] = n2;
+    }
+  }
+
+  private void renderCutout(Point3f ptAtom, Vector3f a, Vector3f b, 
+                            float la, float lb, int nSegments, boolean isSwapped) {
+    if (isSwapped)
+      v3.cross(a, b);
+    else
+      v3.cross(b, a);
+    short normix = ellipsoids.g3d.get2SidedNormix(v3);
+    for (int ify = 0; ify < nSegments; ify++) {
+      float fy = ify * 1f / (nSegments - 1);
+      float fz = (float) Math.sqrt(1 - fy * fy);
+      pt1.scaleAdd(fy * la, a, ptAtom);
+      viewer.transformPoint(pt1, s1);
+      pt1.scaleAdd(fz * lb, b, pt1);
+      viewer.transformPoint(pt1, s2);
+      if (ify > 0) {
+        g3d.fillTriangle(s1, colix, normix, s2, colix, normix, screens[7],
+            colix, normix);
+        g3d.fillTriangle(s1, colix, normix, screens[7], colix, normix,
+            screens[6], colix, normix);
+      }
+      screens[6].set(s1);
+      screens[7].set(s2);
+    }
+  }
+
 }

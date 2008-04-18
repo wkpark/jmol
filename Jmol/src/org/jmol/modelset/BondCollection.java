@@ -360,9 +360,8 @@ abstract public class BondCollection extends AtomCollection {
 
   protected int autoHbond(BitSet bsA, BitSet bsB, BitSet bsBonds) {
     int nNew = 0;
-    long timeBegin = 0;
-    if (showRebondTimes)
-      timeBegin = System.currentTimeMillis();
+    if (showRebondTimes && Logger.debugging)
+      Logger.startTimer();      
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
       int elementNumber = atom.getElementNumber();
@@ -386,10 +385,8 @@ abstract public class BondCollection extends AtomCollection {
       iter.release();
     }
     viewer.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, bsPseudoHBonds);
-    if (showRebondTimes && Logger.debugging) {
-      long timeEnd = System.currentTimeMillis();
-      Logger.debug("Time to hbond=" + (timeEnd - timeBegin));
-    }
+    if (showRebondTimes && Logger.debugging)
+      Logger.checkTimer("Time to hbond");
     return nNew;
   }
 

@@ -32,7 +32,7 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
 
   float imageFontScaling;
   
-  protected void render(short mad, Point3f[] vertices, Point3i[] screens,
+  protected void render(int mad, Point3f[] vertices, Point3i[] screens,
                         Point3f[] axisPoints, int firstLine) {
     //used by Bbcage and Uccage
     g3d.setColix(colix);

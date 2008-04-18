@@ -1037,16 +1037,16 @@ class Eval { //implements Runnable {
         ellipsoid();
         break;
       case Token.star:
-        setAtomShapeSize(JmolConstants.SHAPE_STARS, (short) -100);
+        setAtomShapeSize(JmolConstants.SHAPE_STARS, -100);
         break;
       case Token.structure:
         structure();
         break;
       case Token.halo:
-        setAtomShapeSize(JmolConstants.SHAPE_HALOS, (short) -20);
+        setAtomShapeSize(JmolConstants.SHAPE_HALOS, -20);
         break;
       case Token.spacefill: // aka cpk
-        setAtomShapeSize(JmolConstants.SHAPE_BALLS, (short) -100);
+        setAtomShapeSize(JmolConstants.SHAPE_BALLS, -100);
         break;
       case Token.wireframe:
         wireframe();
@@ -2447,9 +2447,9 @@ class Eval { //implements Runnable {
     return p;
   }
 
-  private short getMadParameter() throws ScriptException {
+  private int getMadParameter() throws ScriptException {
     // wireframe, ssbond, hbond
-    short mad = 1;
+    int mad = 1;
     switch (getToken(1).tok) {
     case Token.on:
       break;
@@ -2458,10 +2458,10 @@ class Eval { //implements Runnable {
       break;
     case Token.integer:
       int radiusRasMol = intParameter(1, 0, 750); 
-      mad = (short) (radiusRasMol * 4 * 2);
+      mad = radiusRasMol * 4 * 2;
       break;
     case Token.decimal:
-      mad = (short) (floatParameter(1, 0, 3) * 1000 * 2);
+      mad = (int) (floatParameter(1, 0, 3) * 1000 * 2);
       break;
     default:
       error(ERROR_booleanOrNumberExpected);
@@ -2469,7 +2469,7 @@ class Eval { //implements Runnable {
     return mad;
   }
 
-  private short getSetAxesTypeMad(int index) throws ScriptException {
+  private int getSetAxesTypeMad(int index) throws ScriptException {
     if (index == statementLength)
       return 1;
     checkStatementLength(index + 1);
@@ -2481,10 +2481,10 @@ class Eval { //implements Runnable {
     case Token.dotted:
       return -1;
     case Token.integer:
-      return (short) intParameter(index, -1, 19);
+      return intParameter(index, -1, 19);
     case Token.decimal:
       float angstroms = floatParameter(index, 0, 2);
-      return (short) (angstroms * 1000 * 2);
+      return (int) (angstroms * 1000 * 2);
     }
     error(ERROR_booleanOrWhateverExpected, "\"DOTTED\"");
     return 0;
@@ -5573,7 +5573,7 @@ class Eval { //implements Runnable {
   }
 
   private void ellipsoid() throws ScriptException {
-    short mad = 0;
+    int mad = 0;
     int tok = (statementLength == 1 ? Token.on : tokAt(1));
     switch (tok) {
     case Token.on:
@@ -5582,7 +5582,7 @@ class Eval { //implements Runnable {
     case Token.off:
       break;
     case Token.integer:
-      mad = (short) (intParameter(1));
+      mad = intParameter(1);
       break;
     case Token.temperature:
     default:
@@ -5591,9 +5591,9 @@ class Eval { //implements Runnable {
     setShapeSize(JmolConstants.SHAPE_ELLIPSOIDS, mad);
   }
   
-  private void setAtomShapeSize(int shape, short defOn) throws ScriptException {
+  private void setAtomShapeSize(int shape, int defOn) throws ScriptException {
     //halo star spacefill
-    short mad = 0;
+    int mad = 0;
     int tok = (statementLength == 1 ? Token.on : tokAt(1));
     switch (tok) {
     case Token.on:
@@ -5609,7 +5609,7 @@ class Eval { //implements Runnable {
       int i = (tok == Token.plus ? 2 : 1);
       if (i == 2)
         mad = 10000;
-      mad += (short) (floatParameter(i, 0, 3) * 1000 * 2);
+      mad += (int) (floatParameter(i, 0, 3) * 1000 * 2);
       break;
     case Token.integer:
       int intVal = intParameter(1);
@@ -5618,21 +5618,33 @@ class Eval { //implements Runnable {
           integerOutOfRange(0, 200);
         int iMode = JmolConstants.getVdwType(optParameterAsString(3));
         if (iMode >= 0)
-          mad = (short) (-(iMode + 1) * 2000  - intVal);
+          mad = (-(iMode + 1) * 2000  - intVal);
         else 
-          mad = (short) (-intVal);
+          mad = (-intVal);
         break;
       }
       //rasmol 250-scale if positive or percent (again), if negative (deprecated)
       if (intVal > 749 || intVal < -200)
         integerOutOfRange(-200, 749);
-      mad = (short) (intVal <= 0 ? intVal : intVal * 8);
+      mad = (intVal <= 0 ? intVal : intVal * 8);
       break;
     case Token.temperature:
       mad = -1000;
       break;
     case Token.ionic:
       mad = -1001;
+      break;
+    case Token.string:
+    case Token.identifier:
+      if (parameterAsString(1).equalsIgnoreCase("ADPMIN")) {
+        mad = Short.MIN_VALUE;
+        if (tokAt(2) == Token.integer)
+          mad -= intParameter(2);
+      } else if (parameterAsString(1).equalsIgnoreCase("ADPMAX")) {
+        mad = Short.MAX_VALUE;
+        if (tokAt(2) == Token.integer)
+          mad += intParameter(2);
+      }
       break;
     default:
       error(ERROR_booleanOrNumberExpected);
@@ -5670,7 +5682,7 @@ class Eval { //implements Runnable {
   }
 
   private void wireframe() throws ScriptException {
-    short mad = getMadParameter();
+    int mad = getMadParameter();
     if (isSyntaxCheck)
       return;
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
@@ -5731,7 +5743,7 @@ class Eval { //implements Runnable {
   }
 
   private void vector() throws ScriptException {
-    short mad = 1;
+    int mad = 1;
     switch (iToken = statementLength) {
     case 1:
       break;
@@ -5744,11 +5756,11 @@ class Eval { //implements Runnable {
         break;
       case Token.integer:
         //diameter Pixels
-        mad = (short) intParameter(1, 0, 19);
+        mad = intParameter(1, 0, 19);
         break;
       case Token.decimal:
         //radius angstroms
-        mad = (short) (floatParameter(1, 0, 3) * 1000 * 2);
+        mad = (int) (floatParameter(1, 0, 3) * 1000 * 2);
         break;
       default:
         error(ERROR_booleanOrNumberExpected);
@@ -6037,7 +6049,7 @@ class Eval { //implements Runnable {
       setShapeSize(iShape, 1);
       return;
     }
-    short mad = 0;
+    int mad = 0;
     float radius;
     switch (getToken(ipt).tok) {
     case Token.on:
@@ -6051,11 +6063,11 @@ class Eval { //implements Runnable {
       break;
     case Token.plus:
       radius = floatParameter(++ipt, 0, 2); //ambiguity here
-      mad = (short) (radius == 0f ? 1 : radius * 1000f + 11002);
+      mad = (int) (radius == 0f ? 1 : radius * 1000f + 11002);
       break;
     case Token.decimal:
       radius = floatParameter(ipt, 0, 10);
-      mad = (short) (radius == 0f ? 0 : radius * 1000f + 1002);
+      mad = (int) (radius == 0f ? 0 : radius * 1000f + 1002);
       break;
     case Token.integer:
       int dotsParam = intParameter(ipt++);
@@ -6071,7 +6083,19 @@ class Eval { //implements Runnable {
       }
       if (dotsParam < 0 || dotsParam > 1000)
         integerOutOfRange(0, 1000);
-      mad = (short) (dotsParam == 0 ? 0 : dotsParam + 1);
+      mad = (dotsParam == 0 ? 0 : dotsParam + 1);
+      break;
+    case Token.string:
+    case Token.identifier:
+      if (parameterAsString(1).equalsIgnoreCase("ADPMIN")) {
+        mad = Short.MIN_VALUE;
+        if (tokAt(2) == Token.integer)
+          mad -= intParameter(2);
+      } else if (parameterAsString(1).equalsIgnoreCase("ADPMAX")) {
+        mad = Short.MAX_VALUE;
+        if (tokAt(2) == Token.integer)
+          mad += intParameter(2);
+      }
       break;
     default:
       error(ERROR_booleanOrNumberExpected);
@@ -6080,7 +6104,7 @@ class Eval { //implements Runnable {
   }
 
   private void proteinShape(int shapeType) throws ScriptException {
-    short mad = 0;
+    int mad = 0;
     //token has ondefault1
     switch (getToken(1).tok) {
     case Token.on:
@@ -6096,10 +6120,10 @@ class Eval { //implements Runnable {
       mad = -4;
       break;
     case Token.integer:      
-      mad = (short) (intParameter(1, 0, 499) * 8);
+      mad = (intParameter(1, 0, 499) * 8);
       break;
     case Token.decimal:
-      mad = (short) (floatParameter(1, 0, 4) * 2000);
+      mad = (int) (floatParameter(1, 0, 4) * 2000);
       break;
     case Token.bitset:
       if (!isSyntaxCheck)
@@ -7638,7 +7662,7 @@ class Eval { //implements Runnable {
       setFloatProperty("axesScale", floatParameter(++index));
       return;
     }
-    short mad = getSetAxesTypeMad(index);
+    int mad = getSetAxesTypeMad(index);
     if (!isSyntaxCheck)
       viewer.setObjectMad(JmolConstants.SHAPE_AXES, "axes", mad);
   }
@@ -7671,7 +7695,7 @@ class Eval { //implements Runnable {
       if (index == statementLength)
         return;
     }
-    short mad = getSetAxesTypeMad(index);
+    int mad = getSetAxesTypeMad(index);
     if (!isSyntaxCheck)
       viewer.setObjectMad(JmolConstants.SHAPE_BBCAGE, "boundbox", mad);
   }
@@ -7687,7 +7711,7 @@ class Eval { //implements Runnable {
         if (!isSyntaxCheck)
           viewer.setCurrentUnitCellOffset(intParameter(index));
       } else {
-        short mad = getSetAxesTypeMad(index);
+        int mad = getSetAxesTypeMad(index);
         if (!isSyntaxCheck)
           viewer.setObjectMad(JmolConstants.SHAPE_UCCAGE, "unitCell", mad);
       }

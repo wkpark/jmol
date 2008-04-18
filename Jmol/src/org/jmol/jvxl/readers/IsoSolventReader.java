@@ -268,13 +268,14 @@ class IsoSolventReader extends AtomDataReader {
   final Point3f ptXyzTemp = new Point3f();
 
   void generateSolventCube(boolean isFirstPass) {
-    long time = System.currentTimeMillis();
     float distance = params.distance;
     float rA, rB;
     Point3f ptA;
     Point3f ptY0 = new Point3f(), ptZ0 = new Point3f();
     Point3i pt0 = new Point3i(), pt1 = new Point3i();
     float value = (doSmoothProperty ? Float.NaN : Float.MAX_VALUE);
+    if (Logger.debugging)
+      Logger.startTimer();
     for (int x = 0; x < nPointsX; ++x)
       for (int y = 0; y < nPointsY; ++y)
         for (int z = 0; z < nPointsZ; ++z)
@@ -428,10 +429,8 @@ class IsoSolventReader extends AtomDataReader {
               voxelData[x][y][z] = value;
             }
     }
-    if (Logger.debugging) {
-      Logger.debug("solvent surface time:"
-          + (System.currentTimeMillis() - time));
-    }
+    if (Logger.debugging)
+      Logger.checkTimer("solvent surface time");
   }
 
   void setGridLimitsForAtom(Point3f ptA, float rA, Point3i pt0, Point3i pt1) {

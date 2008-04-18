@@ -49,7 +49,7 @@ public class UccageRenderer extends FontLineShapeRenderer {
 
   protected void render() {
     imageFontScaling = viewer.getImageFontScaling();
-    short mad = viewer.getObjectMad(StateManager.OBJ_UNITCELL);
+    int mad = viewer.getObjectMad(StateManager.OBJ_UNITCELL);
     colix = viewer.getObjectColix(StateManager.OBJ_UNITCELL);
     if (mad == 0 || !g3d.setColix(colix) || viewer.isJmolDataFrame())
       return;
@@ -57,7 +57,7 @@ public class UccageRenderer extends FontLineShapeRenderer {
     render1(mad);
   }
 
-  void render1(short mad) {
+  void render1(int mad) {
     CellInfo[] cellInfos = modelSet.getCellInfos();
     if (cellInfos == null)
       return;

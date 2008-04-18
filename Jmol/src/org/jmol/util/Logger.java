@@ -276,4 +276,13 @@ public final class Logger {
       //
     }
   }
+
+  static long startTime;
+  public static void startTimer() {
+    startTime = System.currentTimeMillis();  
+  }
+
+  public static void checkTimer(String msg) {
+    info(msg + ": " + (System.currentTimeMillis() - startTime) + " ms");
+  }
 }

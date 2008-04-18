@@ -509,7 +509,7 @@ public final class ModelLoader extends ModelSet {
     // atom is created, but not all methods are safe, because it
     // has no group -- this is only an issue for debugging
 
-    short mad = viewer.getDefaultMadAtom();
+    int size = viewer.getDefaultMadAtom();
     for (JmolAdapter.AtomIterator iterAtom = adapter
         .getAtomIterator(clientFile); iterAtom.hasNext();) {
       short elementNumber = (short) iterAtom.getElementNumber();
@@ -518,7 +518,7 @@ public final class ModelLoader extends ModelSet {
             .getElementSymbol());
       char alternateLocation = iterAtom.getAlternateLocationID();
       addAtom(iterAtom.getAtomSetIndex() + baseModelIndex, iterAtom.getAtomSymmetry(), iterAtom.getAtomSite(),
-          iterAtom.getUniqueID(), elementNumber, iterAtom.getAtomName(), mad,
+          iterAtom.getUniqueID(), elementNumber, iterAtom.getAtomName(), size,
           iterAtom.getFormalCharge(), iterAtom.getPartialCharge(),
           iterAtom.getEllipsoid(), 
           iterAtom.getOccupancy(), iterAtom.getBfactor(), iterAtom.getX(),
@@ -542,7 +542,7 @@ public final class ModelLoader extends ModelSet {
 
   private void addAtom(int modelIndex, BitSet atomSymmetry, int atomSite,
                        Object atomUid, short atomicAndIsotopeNumber,
-                       String atomName, short mad, int formalCharge,
+                       String atomName, int size, int formalCharge,
                        float partialCharge, Object[] ellipsoid,
                        int occupancy, float bfactor,
                        float x, float y, float z, boolean isHetero,
@@ -556,7 +556,7 @@ public final class ModelLoader extends ModelSet {
     if (atomCount == atoms.length)
       growAtomArrays(ATOM_GROWTH_INCREMENT);
     Atom atom = new Atom(viewer, currentModelIndex, atomCount, atomSymmetry,
-        atomSite, atomicAndIsotopeNumber, mad, formalCharge, x, y, z, isHetero,
+        atomSite, atomicAndIsotopeNumber, size, formalCharge, x, y, z, isHetero,
         chainID, alternateLocationID, radius);
     atoms[atomCount] = atom;
     setBFactor(atomCount, bfactor);

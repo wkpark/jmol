@@ -50,16 +50,8 @@ public class Dots extends AtomShape {
   float thisRadius;
   int thisArgb;
 
-  //short mad = 0;
-  short lastMad = 0;
+  int lastSize = 0;
   float lastSolventRadius = 0;
-
-  long timeBeginExecution;
-  long timeEndExecution;
-
-  int getExecutionWalltime() {
-    return (int) (timeEndExecution - timeBeginExecution);
-  }
 
   public void initShape() {
     super.initShape();
@@ -165,7 +157,9 @@ public class Dots extends AtomShape {
     //   -1           ionic/covalent
     // 2 - 1001       (mad-1)/100 * van der Waals
     // 1002 - 11002    (mad - 1002)/1000 set radius 0.0 to 10.0 angstroms
-    // 11003- 13002    (mad - 11002)/1000 set radius to vdw + additional radius 
+    // 11003- 13002    (mad - 11002)/1000 set radius to vdw + additional radius
+    // Short.MIN_VALUE -- ADP min
+    // Short.MAX_VALUE -- ADP max
 
     if (Logger.debugging) {
       Logger.debug("Dots.setSize " + size);
@@ -177,32 +171,45 @@ public class Dots extends AtomShape {
     float scale = 1;
 
     isActive = true;
-    short mad = (short) size;
-    if (mad < 0) { // ionic
-      useVanderwaalsRadius = false;
-    } else if (mad == 0) {
+    switch (size) {
+    case 0:
       isVisible = false;
-    } else if (mad == 1) {
-    } else if (mad <= 1001) {
-      scale = (mad - 1) / 100f;
-    } else if (mad <= 11002) {
-      useVanderwaalsRadius = false;
-      setRadius = (mad - 1002) / 1000f;
-    } else if (mad <= 13002) {
-      addRadius = (mad - 11002) / 1000f;
-      scale = 1;
+      break;
+    case 1:
+      break;
+    default:
+      if (size <= Short.MIN_VALUE) {
+        setRadius = Short.MIN_VALUE;
+        if (size < Short.MIN_VALUE)
+          scale = (Short.MIN_VALUE - size) / 100f;
+      } else if (size < 0) { // ionic
+        useVanderwaalsRadius = false;
+      } else if (size <= 1001) {
+        scale = (size - 1) / 100f;
+      } else if (size <= 11002) {
+        useVanderwaalsRadius = false;
+        setRadius = (size - 1002) / 1000f;
+      } else if (size <= 13002) {
+        addRadius = (size - 11002) / 1000f;
+        scale = 1;
+      } else if (size >= Short.MAX_VALUE) {
+        setRadius = Short.MAX_VALUE;
+        if (size > Short.MAX_VALUE)
+          scale = (size - Short.MAX_VALUE) / 100f;
+      }
     }
-    float maxRadius = !useVanderwaalsRadius ? setRadius : modelSet
-        .getMaxVanderwaalsRadius();
+    float maxRadius = (!useVanderwaalsRadius ? setRadius : modelSet
+        .getMaxVanderwaalsRadius());
     float solventRadius = viewer.getCurrentSolventProbeRadius();
     if (addRadius == Float.MAX_VALUE)
       addRadius = (solventRadius != 0 ? solventRadius : 0);
 
-    timeBeginExecution = System.currentTimeMillis();
+    if (Logger.debugging)
+      Logger.startTimer();
 
     // combine current and selected set
-    boolean newSet = (lastSolventRadius != addRadius || mad != 0
-        && mad != lastMad || ec.getDotsConvexMax() == 0);
+    boolean newSet = (lastSolventRadius != addRadius || size != 0
+        && size != lastSize || ec.getDotsConvexMax() == 0);
 
     // for an solvent-accessible surface there is no torus/cavity issue. 
     // we just increment the atom radius and set the probe radius = 0;
@@ -237,22 +244,19 @@ public class Dots extends AtomShape {
     }
     // now, calculate surface for selected atoms
     if (isVisible) {
-      lastMad = mad;
+      lastSize = size;
       if (dotsConvexMaps == null) {
         colixes = new short[atomCount];
         paletteIDs = new byte[atomCount];
       }
       boolean disregardNeighbors = (viewer.getDotSurfaceFlag() == false);
       boolean onlySelectedDots = (viewer.getDotsSelectedOnlyFlag() == true);
-      ec
-          .calculate(addRadius, setRadius, scale, maxRadius, bsOn, bsIgnore,
-              useVanderwaalsRadius, disregardNeighbors, onlySelectedDots,
-              isSurface, true);
+      ec.calculate(addRadius, setRadius, scale, maxRadius, bsOn, bsIgnore,
+          useVanderwaalsRadius, disregardNeighbors, onlySelectedDots,
+          isSurface, true);
     }
-    timeEndExecution = System.currentTimeMillis();
-    if (Logger.debugging) {
-      Logger.debug("dots generation time = " + getExecutionWalltime());
-    }
+    if (Logger.debugging)
+      Logger.checkTimer("dots generation time");
   }
 
   public void setModelClickability() {

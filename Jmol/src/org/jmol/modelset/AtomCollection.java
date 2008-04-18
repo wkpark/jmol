@@ -962,7 +962,8 @@ abstract public class AtomCollection {
     if (includeRadii)
       atomData.atomRadius = new float[atomCount];
     for (int i = 0; i < atomCount; i++) {
-      if (atomData.modelIndex >= 0 && atoms[i].modelIndex != atomData.firstModelIndex) {
+      if (atomData.modelIndex >= 0
+          && atoms[i].modelIndex != atomData.firstModelIndex) {
         if (atomData.bsIgnored == null)
           atomData.bsIgnored = new BitSet();
         atomData.bsIgnored.set(i);
@@ -971,7 +972,9 @@ abstract public class AtomCollection {
       atomData.atomicNumber[i] = atoms[i].getElementNumber();
       atomData.lastModelIndex = atoms[i].modelIndex;
       if (includeRadii)
-        atomData.atomRadius[i] = (atomData.useIonic ? atoms[i]
+        atomData.atomRadius[i] = (atomData.adpMode == 1 ? atoms[i]
+            .getADPMinMax(true) : atomData.adpMode == -1 ? atoms[i]
+            .getADPMinMax(false) : atomData.useIonic ? atoms[i]
             .getBondingRadiusFloat() : atoms[i].getVanderwaalsRadiusFloat());
     }
   }

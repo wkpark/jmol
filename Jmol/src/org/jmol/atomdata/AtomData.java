@@ -152,5 +152,6 @@ public class AtomData {
   public Point3f[][] hAtoms;
   public int atomCount;
   public int hydrogenAtomCount;
+  public int adpMode;
 }
 

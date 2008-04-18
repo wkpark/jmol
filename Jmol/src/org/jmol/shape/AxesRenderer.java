@@ -48,7 +48,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
 
   protected void render() {
     Axes axes = (Axes) shape;
-    short mad = viewer.getObjectMad(StateManager.OBJ_AXIS1);
+    int mad = viewer.getObjectMad(StateManager.OBJ_AXIS1);
     if (mad == 0 || !g3d.checkTranslucent(false))
       return;
     imageFontScaling = viewer.getImageFontScaling();

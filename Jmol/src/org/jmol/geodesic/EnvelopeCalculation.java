@@ -229,6 +229,7 @@ public final class EnvelopeCalculation {
         : setRadius);
     this.scale = scale;
     atomData.useIonic = !useVanderwaalsRadius;
+    atomData.adpMode = (setRadius == Short.MAX_VALUE ? 1 : setRadius == Short.MIN_VALUE ? -1 : 0);
     atomData.modelIndex = (multiModel ? -1 : 0);
     modelZeroBased = !multiModel;
     
@@ -255,8 +256,11 @@ public final class EnvelopeCalculation {
   
   private void setRadii(boolean useVanderwaalsRadius) {
     for (int i = 0; i < atomCount; i++) {
-      atomData.atomRadius[i] = (mads != null ? mads[i] / 1000f : addRadius
-          + (setRadius != Float.MAX_VALUE ? setRadius : atomData.atomRadius[i]
+      atomData.atomRadius[i] = (mads != null ? mads[i] / 1000f
+          : addRadius
+          + (setRadius != Float.MAX_VALUE 
+              && setRadius != Short.MAX_VALUE && setRadius != Short.MIN_VALUE
+              ? setRadius : atomData.atomRadius[i]
               * scale));
     }
   }

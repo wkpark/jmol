@@ -37,7 +37,6 @@ import org.jmol.util.Logger;
 public class FrameRenderer {
 
   boolean logTime;
-  long timeBegin;
     
   Viewer viewer;
 
@@ -57,7 +56,7 @@ public class FrameRenderer {
     viewer.finalizeTransformParameters();
 
     if (logTime)
-      timeBegin = System.currentTimeMillis();
+      Logger.startTimer();
 
     for (int i = 0; i < JmolConstants.SHAPE_MAX && g3d.currentlyRendering(); ++i) {
       Shape shape = modelSet.getShape(i);
@@ -68,8 +67,7 @@ public class FrameRenderer {
         getRenderer(i, g3d).render(g3d, modelSet, shape); //, rectClip
     }
     if (logTime)
-      Logger.info("render time: " + (System.currentTimeMillis() - timeBegin)
-          + " ms");
+      Logger.checkTimer("render time");
   }
 
   public void clear() {

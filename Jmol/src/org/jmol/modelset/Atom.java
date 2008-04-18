@@ -95,7 +95,7 @@ final public class Atom extends Point3fi {
   Atom(Viewer viewer, int modelIndex, int atomIndex,
        BitSet atomSymmetry, int atomSite,
        short atomicAndIsotopeNumber,
-       short mad, int formalCharge, 
+       int size, int formalCharge, 
        float x, float y, float z,
        boolean isHetero, char chainID,
        char alternateLocationID,
@@ -110,7 +110,7 @@ final public class Atom extends Point3fi {
     setFormalCharge(formalCharge);
     this.alternateLocationID = (byte)alternateLocationID;
     userDefinedVanDerWaalRadius = radius;
-    setMadAtom(viewer, mad);
+    setMadAtom(viewer, size);
     set(x, y, z);
   }
 
@@ -203,45 +203,73 @@ final public class Atom extends Point3fi {
    *  a rudimentary form of enumerations/user-defined primitive types)
    */
 
-  public void setMadAtom(Viewer viewer,short madAtom) {
-    this.madAtom = convertEncodedMad(viewer, madAtom);
+  public void setMadAtom(Viewer viewer, int size) {
+    madAtom = convertEncodedMad(viewer, size);
   }
 
   public short convertEncodedMad(Viewer viewer, int size) {
-    if (size == 0)
+    switch (size) {
+    case 0:
       return 0;
-    if (size == -1000) { // temperature
+    case -1000: // temperature
       int diameter = getBfactor100() * 10 * 2;
       if (diameter > 4000)
         diameter = 4000;
       size = diameter;
-    } else if (size == -1001) // ionic
+      break;
+    case -1001: // ionic
       size = (getBondingMar() * 2);
-    else if (size == -100) { // simple van der waals
+      break;
+    case -100: // simple van der waals
       size = getVanderwaalsMad(viewer);
-    } else if (size < -2000) {
-      // percent of custom size, to diameter
-      // -2000 = Jmol, -3000 = Babel, -4000 = RasMol, -5000 = User
-      int iMode = (-size / 1000) - 2;
-      size = (-size) % 1000;
-      size = (int) (size / 50f * viewer.getVanderwaalsMar(
-          atomicAndIsotopeNumber % 128, iMode));
-    } else if (size < 0) {
-      // percent
-      size = -size;
-      if (size > 200)
-        size = 200;
-      size = // we are going from a radius to a diameter
-      (int) (size / 100f * getVanderwaalsMad(viewer));
-    } else if (size >= 10000) {
-      // radiusAngstroms = vdw + x, where size = (x*2)*1000 + 10000
-      // and vdwMar = vdw * 1000
-      // we want mad = diameterAngstroms * 1000 = (radiusAngstroms *2)*1000 
-      //             = (vdw * 2 * 1000) + x * 2 * 1000
-      //             = vdwMar * 2 + (size - 10000)
-      size = size - 10000 + getVanderwaalsMad(viewer);
+    default:
+      if (size <= Short.MIN_VALUE) { //ADPMIN
+        float d = 2000 * getADPMinMax(false);
+        if (size < Short.MIN_VALUE)
+          size = (int) (d * (Short.MIN_VALUE - size) / 100f);
+        else
+          size = (int) d;
+        break;
+      } else if (size < -2000) {
+        // percent of custom size, to diameter
+        // -2000 = Jmol, -3000 = Babel, -4000 = RasMol, -5000 = User
+        int iMode = (-size / 1000) - 2;
+        size = (-size) % 1000;
+        size = (int) (size / 50f * viewer.getVanderwaalsMar(
+            atomicAndIsotopeNumber % 128, iMode));
+      } else if (size < 0) {
+        // percent
+        //      we are going from a radius to a diameter
+        size = -size;
+        if (size > 200)
+          size = 200;
+        size = (int) (size / 100f * getVanderwaalsMad(viewer));
+      } else if (size >= Short.MAX_VALUE) { //ADPMAX
+          float d = 2000 * getADPMinMax(true);
+          if (size > Short.MAX_VALUE)
+            size = (int) (d * (size - Short.MAX_VALUE) / 100f);
+          else
+            size = (int) d;
+          break;
+      } else if (size >= 10000) {
+        // radiusAngstroms = vdw + x, where size = (x*2)*1000 + 10000
+        // max is SHORT.MAX_VALUE - 1 = 32766
+        // so max x is about 11 -- should be plenty!
+        // and vdwMar = vdw * 1000
+        // we want mad = diameterAngstroms * 1000 = (radiusAngstroms *2)*1000 
+        //             = (vdw * 2 * 1000) + x * 2 * 1000
+        //             = vdwMar * 2 + (size - 10000)
+        size = size - 10000 + getVanderwaalsMad(viewer);
+      }
     }
     return (short) size;
+  }
+
+  public float getADPMinMax(boolean isMax) {
+    Object[] ellipsoid = getEllipsoid();
+    if (ellipsoid == null)
+      return 0;
+    return 4.1f*((float[])ellipsoid[1])[isMax ? 2 : 0];
   }
 
   public int getRasMolRadius() {

@@ -1097,7 +1097,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         .getObjectIdFromName(name.equalsIgnoreCase("axes") ? "axis" : name);
     if (objId < 0)
       return "";
-    short mad = getObjectMad(objId);
+    int mad = getObjectMad(objId);
     StringBuffer s = new StringBuffer("\n");
     Shape.appendCmd(s, name
         + (mad == 0 ? " off" : mad == 1 ? " on" : mad == -1 ? " dotted"
@@ -1115,13 +1115,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return getObjectArgb(StateManager.OBJ_BACKGROUND);
   }
 
-  void setObjectMad(int iShape, String name, short mad) {
+  void setObjectMad(int iShape, String name, int mad) {
     int objId = StateManager
         .getObjectIdFromName(name.equalsIgnoreCase("axes") ? "axis" : name);
     if (objId < 0)
       return;
     if (mad == -2 || mad == -4) { //turn on if not set "showAxes = true"
-      short m = (short) (mad + 3);
+      int m = mad + 3;
       mad = getObjectMad(objId);
       if (mad == 0)
         mad = m;
@@ -1134,7 +1134,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setShapeSize(iShape, mad); //just loads it
   }
 
-  public short getObjectMad(int objId) {
+  public int getObjectMad(int objId) {
     return (global.objStateOn[objId] ? global.objMad[objId] : 0);
   }
 
@@ -1449,15 +1449,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (!isAppend)
       zap(false);
-    long timeBegin = System.currentTimeMillis();
+    Logger.startTimer();
     fileManager.openFile(name, htParams, loadScript, isAppend);
-    long ms = System.currentTimeMillis() - timeBegin;
+    Logger.checkTimer("openFile(" + name + ")");
     setStatusFileLoaded(1, name, "", getModelSetName(), null, null);
-    String sp = "";
-    //if (params != null)
-    //for (int i = 0; i < params.length; i++)
-    //sp += "," + params[i];
-    Logger.info("openFile(" + name + sp + ")" + ms + " ms");
   }
 
   public void openFiles(String modelName, String[] names) {

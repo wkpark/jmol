@@ -624,7 +624,14 @@ public class StateManager {
     
     int[]     objColors                 = new int[OBJ_MAX];
     boolean[] objStateOn                = new boolean[OBJ_MAX];
-    short[]   objMad                    = new short[OBJ_MAX];
+    int[]     objMad                    = new int[OBJ_MAX];
+    
+    boolean  ellipsoidAxes              = false;
+    boolean  ellipsoidDots              = true;
+    boolean  ellipsoidArcs              = false;
+    boolean  ellipsoidFill              = false;
+    int      ellipsoidDotCount          = 200;
+    
 
     String getWindowState(StringBuffer sfunc) {
       StringBuffer str = new StringBuffer();
@@ -1073,6 +1080,11 @@ public class StateManager {
       setParameterValue("drawHover",false);
       setParameterValue("drawPicking",drawPicking);
       setParameterValue("dynamicMeasurements",dynamicMeasurements);
+      setParameterValue("ellipsoidArcs", ellipsoidArcs);
+      setParameterValue("ellipsoidAxes", ellipsoidAxes);
+      setParameterValue("ellipsoidDotCount", ellipsoidDotCount);
+      setParameterValue("ellipsoidDots", ellipsoidDots);
+      setParameterValue("ellipsoidFill", ellipsoidFill);
       setParameterValue("exportDrivers", JmolConstants.EXPORT_DRIVER_LIST);
       setParameterValue("fontScaling",fontScaling);
       setParameterValue("forceAutoBond",forceAutoBond);

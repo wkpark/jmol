@@ -803,13 +803,11 @@ class MonitorInputStream extends FilterInputStream {
   int position;
   int markPosition;
   int readEventCount;
-  long timeBegin;
 
   MonitorInputStream(InputStream in, int length) {
     super(in);
     this.length = length;
     this.position = 0;
-    timeBegin = System.currentTimeMillis();
   }
 
   public int read() throws IOException{
@@ -863,10 +861,6 @@ class MonitorInputStream extends FilterInputStream {
 
   int getPercentageRead() {
     return position * 100 / length;
-  }
-
-  int getReadingTimeMillis() {
-    return (int)(System.currentTimeMillis() - timeBegin);
   }
 
 }

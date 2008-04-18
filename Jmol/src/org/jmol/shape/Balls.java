@@ -36,7 +36,6 @@ import java.util.Hashtable;
 public class Balls extends AtomShape {
   
   public void setSize(int size, BitSet bsSelected) {
-    short mad = (short)size;
     isActive = true;
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
@@ -44,7 +43,7 @@ public class Balls extends AtomShape {
     for (int i = bsLength; --i >= 0; ) {
       if (bsSelected.get(i)) {
         Atom atom = atoms[i];
-        atom.setMadAtom(viewer, mad);
+        atom.setMadAtom(viewer, size);
         bsSizeSet.set(i);
       }
     }

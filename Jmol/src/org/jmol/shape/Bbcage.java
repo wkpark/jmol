@@ -42,7 +42,7 @@ public class Bbcage extends FontLineShape {
   }
   
   boolean isVisible;
-  short mad;
+  int mad;
   
   public void setVisibilityFlags(BitSet bs) {
     isVisible = ((mad = viewer.getObjectMad(StateManager.OBJ_BOUNDBOX)) != 0);

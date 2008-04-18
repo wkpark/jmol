@@ -1522,9 +1522,8 @@ abstract public class ModelCollection extends BondCollection {
 
   protected void initializeBspf() {
     if (bspf == null) {
-      long timeBegin = 0;
-      if (showRebondTimes)
-        timeBegin = System.currentTimeMillis();
+      if (showRebondTimes && Logger.debugging)
+        Logger.startTimer();
       bspf = new Bspf(3);
       /*      if (MIX_BSPT_ORDER) {
        Logger.debug("mixing bspt order");
@@ -1548,9 +1547,8 @@ abstract public class ModelCollection extends BondCollection {
         bspf.addTuple(models[atom.modelIndex].trajectoryBaseIndex, atom);
       }
       //      }
-      if (showRebondTimes) {
-        long timeEnd = System.currentTimeMillis();
-        Logger.debug("time to build bspf=" + (timeEnd - timeBegin) + " ms");
+      if (showRebondTimes && Logger.debugging) {
+        Logger.checkTimer("Time to build bspf");
         bspf.stats();
         //        bspf.dump();
       }
@@ -1990,10 +1988,8 @@ abstract public class ModelCollection extends BondCollection {
     short mad = viewer.getMadBond();
     int nNew = 0;
     initializeBspf();
-
-    long timeBegin = 0;
-    if (showRebondTimes)
-      timeBegin = System.currentTimeMillis();
+    if (showRebondTimes && Logger.debugging)
+      Logger.startTimer();
     /*
      * miguel 2006 04 02
      * note that the way that these loops + iterators are constructed,
@@ -2057,11 +2053,8 @@ abstract public class ModelCollection extends BondCollection {
       }
       iter.release();
     }
-    if (showRebondTimes && Logger.debugging) {
-      long timeEnd = System.currentTimeMillis();
-      Logger.debug("Time to autoBond=" + (timeEnd - timeBegin));
-    }
-
+    if (showRebondTimes && Logger.debugging)
+      Logger.checkTimer("Time to autoBond");
     return nNew;
   }
 

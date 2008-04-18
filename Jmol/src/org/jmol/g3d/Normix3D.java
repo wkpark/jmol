@@ -85,9 +85,9 @@ class Normix3D {
       Vector3f vSum = new Vector3f();
       
       int runCount = 100000;
-      long timeBegin, runTime;
       short[] neighborVertexes = neighborVertexesArrays[NORMIX_GEODESIC_LEVEL];
-      timeBegin = System.currentTimeMillis();
+      if (Logger.debugging)
+        Logger.startTimer();
       for (int i = 0; i < runCount; ++i) {
         short foo = (short)(rand.nextDouble() * normixCount);
         int offsetNeighbor;
@@ -103,13 +103,10 @@ class Normix3D {
         vSum.add(vFoo, vBar);
         vSum.normalize();
       }
-      runTime = System.currentTimeMillis() - timeBegin;
       if (Logger.debugging) {
-        Logger.debug(
-            "base runtime for " + runCount + " -> " + runTime + " ms");
+        Logger.checkTimer("base runtime for " + runCount);
+        Logger.startTimer();
       }
-
-      timeBegin = System.currentTimeMillis();
       for (int i = 0; i < runCount; ++i) {
         short foo = (short)(rand.nextDouble() * normixCount);
         int offsetNeighbor;
@@ -146,10 +143,8 @@ class Normix3D {
           throw new NullPointerException();
         }
       }
-      runTime = System.currentTimeMillis() - timeBegin;
-      Logger.debug("normix2 runtime for " + runCount + " -> " +
-                         runTime + " ms");
-
+      if (Logger.debugging)
+        Logger.checkTimer("normix2 runtime for " + runCount);
     }
   }
 

@@ -41,7 +41,7 @@ public class BallsRenderer extends ShapeRenderer {
     //maxX = minX + rectClip.width;
     //minY = rectClip.y;
     //maxY = minY + rectClip.height;
-    boolean renderBalls = !viewer.getInMotion() || !viewer.getWireframeRotation();
+    boolean renderBalls = !viewer.getWireframeRotation() || !viewer.getInMotion();
     slabbing = viewer.getSlabEnabled();
     //isNav = viewer.getNavigationMode();
     if (slabbing) {

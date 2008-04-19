@@ -39,20 +39,23 @@ public class EllipsoidsRenderer extends ShapeRenderer {
 
   private Ellipsoids ellipsoids;
   private boolean drawDots, drawArcs, drawAxes, drawFill, drawBall;
+  private boolean wireframeOnly;
   private int dotCount;
   private int[] coords;
   private Vector3f[] axes;
   private final float[] lengths = new float[3];
-  
+  private int diameter;
+    
   protected void render() {
     ellipsoids = (Ellipsoids) shape;
     if (ellipsoids.mads == null)
       return;
+    wireframeOnly = (viewer.getWireframeRotation() && viewer.getInMotion());
     drawAxes = viewer.getBooleanProperty("ellipsoidAxes");
-    drawDots = viewer.getBooleanProperty("ellipsoidDots");
     drawArcs = viewer.getBooleanProperty("ellipsoidArcs");
-    drawFill = viewer.getBooleanProperty("ellipsoidFill");
-    drawBall = viewer.getBooleanProperty("ellipsoidBall");
+    drawBall = viewer.getBooleanProperty("ellipsoidBall") && !wireframeOnly;
+    drawDots = viewer.getBooleanProperty("ellipsoidDots") && !wireframeOnly;
+    drawFill = viewer.getBooleanProperty("ellipsoidFill") && !wireframeOnly;
 
     /* general logic:
      * 
@@ -99,14 +102,12 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private final short[] normixes = new short[32];
   private final Point3f[] points = new Point3f[6];
   {
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < points.length; i++)
       points[i] = new Point3f();
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i < screens.length; i++)
       screens[i] = new Point3i();
   }
 
-  private int diameter;
-  
   private static int[] axisPoints = {-1, 1, -2, 2, -3, 3};
   
   // octants are sets of three axisPoints references in proper rotation order
@@ -131,7 +132,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       lengths[i] = af[i] * f;
     if (drawAxes || drawArcs || drawBall) 
       setAxes(atom, 1.0f);
-    diameter = viewer.scaleToScreen(atom.screenZ, 6);
+    diameter = viewer.scaleToScreen(atom.screenZ, wireframeOnly ? 1 : 100);
     if (drawDots)
       renderDots(atom);
     if (drawAxes && !drawBall)
@@ -141,7 +142,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     if (drawBall) {
       renderBall(atom);
       if (drawArcs || drawAxes) {
-        g3d.setColix(Graphics3D.BLACK);
+        g3d.setColix(viewer.getColixBackgroundContrast());
         //setAxes(atom, 1.0f);
         if (drawAxes)
           renderAxes();
@@ -245,18 +246,31 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     v3.cross(v1, v2);
     pt1.set(points[ptA]);
     s1.set(screens[ptA]);
+    boolean fillArc = drawFill && !drawBall;
     short normix = ellipsoids.g3d.get2SidedNormix(v3);
-    for (int i = 0; i < 36;) {
-      pt2.scaleAdd(cossin[i++] * d1, v1, ptAtom);
-      pt2.scaleAdd(cossin[i++] * d2, v2, pt2);
+    if (!fillArc && !wireframeOnly)
+      screens[6].set(s1);
+    for (int i = 0, pt = 0; i < 18; i++, pt += 2) {
+      pt2.scaleAdd(cossin[pt] * d1, v1, ptAtom);
+      pt2.scaleAdd(cossin[pt + 1] * d2, v2, pt2);
       viewer.transformPoint(pt2, s2);
-      if (drawFill && !drawBall)
-        g3d.fillTriangle(s0, colix, normix, s1, colix, normix, s2, colix, normix);
-      else
+      if (fillArc)
+        g3d.fillTriangle(s0, colix, normix, s1, colix, normix, s2, colix,
+            normix);
+      else if (wireframeOnly)
         g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, s1, s2);
+      else
+        screens[i + 7].set(s2);
       pt1.set(pt2);
       s1.set(s2);
-    }    
+    }
+    if (!fillArc && !wireframeOnly)
+      for (int i = 0; i < 18; i++)
+        g3d.fillHermite(5, diameter, diameter, diameter, 
+            screens[i == 0 ? i + 6 : i + 5], 
+            screens[i + 6], 
+            screens[i + 7], 
+            screens[i == 17 ? i + 7 : i + 8]);
   }
 
   private void renderBall(Point3f ptAtom) {

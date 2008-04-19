@@ -1041,14 +1041,13 @@ public class Draw extends MeshCollection {
   
   private static String getVertexList(Mesh mesh, int iModel, int nVertices) {
     String str = "";
-    for (int i = 0; i < nVertices; i++) {
-      Point3f v = new Point3f();
-      try{
-        v.set(mesh.vertices[mesh.polygonIndexes[iModel][i]]);
-      }catch(Exception e) {
-        Logger.error("Unexpected error in Draw.getVertexList");
-      }
-      str += " " + Escape.escape(v);
+    try {
+      if (iModel >= mesh.polygonIndexes.length)
+        iModel = 0; // arrows and curves may not have multiple model representations
+      for (int i = 0; i < nVertices; i++)
+        str += " " + Escape.escape(mesh.vertices[mesh.polygonIndexes[iModel][i]]);
+    } catch (Exception e) {
+      Logger.error("Unexpected error in Draw.getVertexList");
     }
     return str;
   }

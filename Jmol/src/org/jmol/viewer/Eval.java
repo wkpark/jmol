@@ -6943,10 +6943,9 @@ class Eval { //implements Runnable {
       return setIntProperty(key, intSetting(2, intVal, 1, 10));
     boolean isJmolParameter = viewer.isJmolVariable(key);
     if (isJmolSet && !isJmolParameter) {
-      if (!isStateScript) {
-        iToken = 1;
+      iToken = 1;
+      if (!isStateScript)
         error(ERROR_unrecognizedParameter, "SET", key);
-      }
       warning(ERROR_unrecognizedParameterWarning, "SET", key);
     }
     switch (statementLength) {

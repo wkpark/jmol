@@ -55,11 +55,6 @@ public class AtomSetCollection {
    final public static String[] notionalUnitcellTags =
   { "a", "b", "c", "alpha", "beta", "gamma" };
 
-  final static String[] dictRefUnitcellTags =
-  {"cif:_cell_length_a", "cif:_cell_length_b", "cif:cell_length_c",
-   "cif:_cell_length_alpha", "cif:_cell_length_beta",
-   "cif:_cell_length_gamma"};
-
   int atomCount;
   public int getAtomCount() {
     return atomCount;

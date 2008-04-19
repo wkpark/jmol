@@ -2382,13 +2382,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return getStateInfo(null);
   }
 
+  final static String STATE_VERSION_STAMP = "# Jmol state version ";
+  
   public String getStateInfo(String type) {
     boolean isAll = (type == null || type.equalsIgnoreCase("all"));
     StringBuffer s = new StringBuffer("");
     StringBuffer sfunc = (isAll ? new StringBuffer("function _setState();\n")
         : null);
     if (isAll)
-      s.append("# Jmol state version " + getJmolVersion() + ";\n");
+      s.append(STATE_VERSION_STAMP + getJmolVersion() + ";\n");
     if (isApplet && isAll) {
       StateManager.appendCmd(s, "# fullName = " + Escape.escape(fullName));
       StateManager.appendCmd(s, "# documentBase = "

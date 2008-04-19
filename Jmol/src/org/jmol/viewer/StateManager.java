@@ -631,7 +631,9 @@ public class StateManager {
     boolean  ellipsoidArcs              = true;
     boolean  ellipsoidFill              = false;
     boolean  ellipsoidBall              = false;
+    
     int      ellipsoidDotCount          = 200;
+    float    ellipsoidAxisDiameter      = 0.02f;
     
 
     String getWindowState(StringBuffer sfunc) {
@@ -1083,6 +1085,7 @@ public class StateManager {
       setParameterValue("dynamicMeasurements",dynamicMeasurements);
       setParameterValue("ellipsoidArcs", ellipsoidArcs);
       setParameterValue("ellipsoidAxes", ellipsoidAxes);
+      setParameterValue("ellipsoidAxisDiameter", ellipsoidAxisDiameter);
       setParameterValue("ellipsoidBall", ellipsoidBall);  
       setParameterValue("ellipsoidDotCount", ellipsoidDotCount);
       setParameterValue("ellipsoidDots", ellipsoidDots);

@@ -78,7 +78,8 @@ class Eval { //implements Runnable {
     int iToken;
     StringBuffer outputBuffer;
     Hashtable contextVariables;
-
+    boolean isStateScript;
+    
     Context() {
       //
     }
@@ -95,6 +96,7 @@ class Eval { //implements Runnable {
   private String functionName;
   private String script;
   private Hashtable contextVariables;
+  private boolean isStateScript;
 
   String getScript() {
     return script;
@@ -338,6 +340,7 @@ class Eval { //implements Runnable {
     context.iToken = iToken;
     context.outputBuffer = outputBuffer;
     context.contextVariables = contextVariables;
+    context.isStateScript = isStateScript;
     stack[scriptLevel++] = context;
     if (isScriptCheck)
       Logger.info("-->>-------------".substring(0, scriptLevel + 5) + filename);
@@ -364,6 +367,8 @@ class Eval { //implements Runnable {
     iToken = context.iToken;
     outputBuffer = context.outputBuffer;
     contextVariables = context.contextVariables;
+    isStateScript = context.isStateScript;
+    
   }
 
   private boolean loadScript(String filename, String script,
@@ -381,6 +386,7 @@ class Eval { //implements Runnable {
     lineNumbers = compiler.getLineNumbers();
     lineIndices = compiler.getLineIndices();
     contextVariables = compiler.getContextVariables();
+    isStateScript = (script.indexOf(Viewer.STATE_VERSION_STAMP) >= 0);
     return true;
   }
 
@@ -6937,8 +6943,11 @@ class Eval { //implements Runnable {
       return setIntProperty(key, intSetting(2, intVal, 1, 10));
     boolean isJmolParameter = viewer.isJmolVariable(key);
     if (isJmolSet && !isJmolParameter) {
-      iToken = 1;
-      error(ERROR_unrecognizedParameter, "SET", key);
+      if (!isStateScript) {
+        iToken = 1;
+        error(ERROR_unrecognizedParameter, "SET", key);
+      }
+      warning(ERROR_unrecognizedParameterWarning, "SET", key);
     }
     switch (statementLength) {
     case 2:
@@ -10712,10 +10721,11 @@ class Eval { //implements Runnable {
   final static int ERROR_unrecognizedExpression = 37;
   final static int ERROR_unrecognizedObject = 38;
   final static int ERROR_unrecognizedParameter = 39;
-  final static int ERROR_unrecognizedShowParameter = 40;
-  final static int ERROR_what = 41;
+  final static int ERROR_unrecognizedParameterWarning = 40;
+  final static int ERROR_unrecognizedShowParameter = 41;
+  final static int ERROR_what = 42;
 
-  String[] errors = {
+  final static String[] errors = {
     GT._("x y z axis expected"), // 0
     GT._("bad argument count"), // 1
     GT._("Miller indices cannot all be zero."), // 2
@@ -10756,7 +10766,8 @@ class Eval { //implements Runnable {
     GT._("runtime unrecognized expression"), // 37
     GT._("unrecognized object"), // 38
     GT._("unrecognized {0} parameter"), // 39
-    GT._("unrecognized SHOW parameter --  use {0}"), // 40
+    GT._("unrecognized {0} parameter in Jmol state script (set anyway)"), // 40
+    GT._("unrecognized SHOW parameter --  use {0}"), // 41
     "{0}?", // 41
   };
 
@@ -10769,26 +10780,40 @@ class Eval { //implements Runnable {
   }
 
   void error(int error) throws ScriptException {
-    error(error, null, null);
+    error(error, null, null, false);
   }
 
   void error(int error, String value) throws ScriptException {
-    error(error, value, null);
+    error(error, value, null, false);
   }
-  
+
   void error(int error, String value, String more) throws ScriptException {
+    error(error, value, more, false);
+  }
+
+  private boolean warning(int error, String value, String more)
+      throws ScriptException {
+    return error(error, value, more, true);
+  }
+
+  boolean error(int error, String value, String more, boolean warningOnly)
+      throws ScriptException {
     String strError = errors[error];
-    if (value != null) {
-      if (strError.indexOf("{0}") < 0) {
-        more = value;
-        value = null;
-      } else {
-        strError = TextFormat.simpleReplace(strError, "{0}", value);
-        if (strError.indexOf("{1}") >= 0)
-          evalError(TextFormat.simpleReplace(strError, "{1}", more));
-      }
+    if (strError.indexOf("{0}") < 0) {
+      if (value != null)
+      strError += ": " + value;
+    } else {
+      strError = TextFormat.simpleReplace(strError, "{0}", value);
+      if (strError.indexOf("{1}") >= 0)
+        strError = TextFormat.simpleReplace(strError, "{1}", more);
+      else if (more != null)
+        strError += ": " + more;
     }
-      evalError(more == null ? strError : strError + ": " + more);
+
+    if (!warningOnly)
+      evalError(strError);
+    showString(strError);
+    return false;
   }
   
   private String statementAsString() {

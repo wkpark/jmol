@@ -44,7 +44,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private int[] coords;
   private Vector3f[] axes;
   private final float[] lengths = new float[3];
-  private int diameter;
+  private int diameter, diameter0;
     
   protected void render() {
     ellipsoids = (Ellipsoids) shape;
@@ -56,6 +56,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     drawBall = viewer.getBooleanProperty("ellipsoidBall") && !wireframeOnly;
     drawDots = viewer.getBooleanProperty("ellipsoidDots") && !wireframeOnly;
     drawFill = viewer.getBooleanProperty("ellipsoidFill") && !wireframeOnly;
+    diameter0 = (int) (((Float) viewer.getParameter("ellipsoidAxisDiameter")).floatValue() * 1000);
 
     /* general logic:
      * 
@@ -132,7 +133,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       lengths[i] = af[i] * f;
     if (drawAxes || drawArcs || drawBall) 
       setAxes(atom, 1.0f);
-    diameter = viewer.scaleToScreen(atom.screenZ, wireframeOnly ? 1 : 100);
+    diameter = viewer.scaleToScreen(atom.screenZ, wireframeOnly ? 1 : diameter0);
     if (drawDots)
       renderDots(atom);
     if (drawAxes && !drawBall)

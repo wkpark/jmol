@@ -1542,7 +1542,7 @@ class Eval { //implements Runnable {
           rpn.addX(instruction.intValue);
           break;
         }
-        rpn.addX(getAtomBits(instruction.tok, getSeqCode(instruction)));
+        rpn.addX(getAtomBits(Token.spec_seqcode, getSeqCode(instruction)));
         break;
       case Token.spec_seqcode_range:
         if (isInMath) {
@@ -1551,17 +1551,23 @@ class Eval { //implements Runnable {
           rpn.addX(code[++pc].intValue);
           break;
         }
-        if (viewer.getBooleanProperty("sequenceRangeRasmol")) {
-          BitSet bs = comparatorInstruction(Token.resno, null, Token.opGE,
-              Group.getSequenceNumber(getSeqCode(instruction)), 0);
-          int seqcode2 = getSeqCode(code[++pc]);
-          if (seqcode2 != Integer.MAX_VALUE) // not just "select 3-" 
-            bs.and(comparatorInstruction(Token.resno, null, Token.opLE,
-                Group.getSequenceNumber(seqcode2), 0));
-          rpn.addX(bs);
-        } else {
-          rpn.addX(getAtomBits(instruction.tok, new int[] {
+        if (viewer.getBooleanProperty("sequenceRangePhysical")) {
+          rpn.addX(getAtomBits(Token.spec_seqcode_range, new int[] {
               getSeqCode(instruction), getSeqCode(code[++pc]) }));
+        } else {
+          int seqcode = getSeqCode(instruction);
+          int inscode = Group.getInsertionCodeValue(seqcode);
+          BitSet bs = comparatorInstruction(Token.resno, null, Token.opGE,
+              Group.getSequenceNumber(seqcode), 0);
+          seqcode = getSeqCode(code[++pc]);
+          if (seqcode != Integer.MAX_VALUE) { // not just "select 3-"
+            bs.and(comparatorInstruction(Token.resno, null, Token.opLE,
+                Group.getSequenceNumber(seqcode), 0));
+            inscode = Group.getInsertionCodeValue(seqcode);
+          }
+          if (inscode != 0)
+            bs.and(getAtomBits(Token.spec_seqcode, inscode));
+          rpn.addX(bs);
         }
         break;
       case Token.cell:

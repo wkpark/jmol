@@ -136,23 +136,19 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
 
   private void renderAngle(Atom atomA, Atom atomB, Atom atomC,
                    boolean renderArcs) {
+    int zOffset = atomB.screenDiameter + 10;
     int zA = atomA.screenZ - atomA.screenDiameter - 10;
-    int zB = atomB.screenZ - atomB.screenDiameter - 10;
+    int zB = atomB.screenZ - zOffset;
     int zC = atomC.screenZ - atomC.screenDiameter - 10;
-    int zOffset = (zA + zB + zC) / 3;
     int radius = drawSegment(atomA.screenX, atomA.screenY, zA,
                              atomB.screenX, atomB.screenY, zB);
     radius += drawSegment(atomB.screenX, atomB.screenY, zB,
                           atomC.screenX, atomC.screenY, zC);
-    radius = (radius + 1) / 2;
-
     if (! renderArcs)
       return;
 
+    radius = (radius + 1) / 2;
 
-    // FIXME mth -- this really should be a function of pixelsPerAngstrom
-    // in addition, the location of the arc is not correct
-    // should probably be some percentage of the smaller distance
     AxisAngle4f aa = measurement.getAxisAngle();
     if (aa == null) { // 180 degrees
       int offset = (int) (5 * imageFontScaling);
@@ -171,20 +167,23 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       pointT.set(ptArc);
       matrixT.transform(pointT);
       pointT.add(atomB);
-      //CAUTION! screenArc and screenLabel are the SAME OBJECT, TransformManager.point3iScreenTemp
-      Point3i screenArc = viewer.transformPoint(pointT);
-      int zArc = screenArc.z - zOffset;
+      // NOTE! Point3i screen is just a pointer 
+      //  to viewer.transformManager.point3iScreenTemp
+      Point3i point3iScreenTemp = viewer.transformPoint(pointT);
+      int zArc = point3iScreenTemp.z - zOffset;
       if (zArc < 0) zArc = 0;
-      g3d.drawPixel(screenArc.x, screenArc.y, zArc);
+      g3d.drawPixel(point3iScreenTemp.x, point3iScreenTemp.y, zArc);
       if (i == iMid) {
         pointT.set(ptArc);
         pointT.scale(1.1f);
+        // next line modifies Point3i point3iScreenTemp
         matrixT.transform(pointT);
         pointT.add(atomB);
-        Point3i screenLabel = viewer.transformPoint(pointT);
-        int zLabel = screenLabel.z - zOffset;
-        paintMeasurementString(screenLabel.x, screenLabel.y, zLabel,
-                               radius, screenLabel.x < atomB.screenX, atomB.screenY);
+        viewer.transformPoint(pointT);
+        int zLabel = point3iScreenTemp.z - zOffset;
+        paintMeasurementString(point3iScreenTemp.x, 
+            point3iScreenTemp.y, zLabel, radius, 
+            point3iScreenTemp.x < atomB.screenX, atomB.screenY);
       }
     }
   }

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-04-02 21:42+0200\n"
+"POT-Creation-Date: 2008-04-20 11:58+0200\n"
 "PO-Revision-Date: 2007-05-10 16:31+0200\n"
 "Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -523,17 +523,17 @@ msgid "Stop animation"
 msgstr "Canlandırmayı durdur"
 
 #: org/openscience/jmol/app/GuiMap.java:149
-#: org/openscience/jmol/app/GuiMap.java:181
+#: org/openscience/jmol/app/GuiMap.java:182
 msgid "Rewind to first frame"
 msgstr "İlk çerçeveye geri dön"
 
 #: org/openscience/jmol/app/GuiMap.java:150
-#: org/openscience/jmol/app/GuiMap.java:182
+#: org/openscience/jmol/app/GuiMap.java:183
 msgid "Go to next frame"
 msgstr "Bir sonraki çerçeveye git"
 
 #: org/openscience/jmol/app/GuiMap.java:151
-#: org/openscience/jmol/app/GuiMap.java:183
+#: org/openscience/jmol/app/GuiMap.java:184
 msgid "Go to previous frame"
 msgstr "Bir önceki çerçeveye git"
 
@@ -607,30 +607,34 @@ msgid "Save current view as an image."
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:174
-msgid "Export one or more views to a web page."
+msgid "Save current view as a Jmol state script."
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:175
+msgid "Export one or more views to a web page."
+msgstr ""
+
+#: org/openscience/jmol/app/GuiMap.java:176
 msgid "Render in pov-ray."
 msgstr "Pov-ray'de kapla"
 
-#: org/openscience/jmol/app/GuiMap.java:176
+#: org/openscience/jmol/app/GuiMap.java:177
 msgid "Print view."
 msgstr "Baskı izleme."
 
-#: org/openscience/jmol/app/GuiMap.java:177
+#: org/openscience/jmol/app/GuiMap.java:178
 msgid "Rotate molecule."
 msgstr "Molekülü Döndür."
 
-#: org/openscience/jmol/app/GuiMap.java:178
+#: org/openscience/jmol/app/GuiMap.java:179
 msgid "Select an atom or region."
 msgstr "Atom veya alan seç."
 
-#: org/openscience/jmol/app/GuiMap.java:179
+#: org/openscience/jmol/app/GuiMap.java:180
 msgid "View measurement table."
 msgstr "Ölçüm tablosunu görüntüle."
 
-#: org/openscience/jmol/app/GuiMap.java:180
+#: org/openscience/jmol/app/GuiMap.java:181
 msgid "Return molecule to home position."
 msgstr "Molekülü ana konumuna getir."
 

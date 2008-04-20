@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-04-02 21:42+0200\n"
+"POT-Creation-Date: 2008-04-20 11:58+0200\n"
 "PO-Revision-Date: 2007-05-13 18:40+0200\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -524,17 +524,17 @@ msgid "Stop animation"
 msgstr "Atura l'animació"
 
 #: org/openscience/jmol/app/GuiMap.java:149
-#: org/openscience/jmol/app/GuiMap.java:181
+#: org/openscience/jmol/app/GuiMap.java:182
 msgid "Rewind to first frame"
 msgstr "Rebobina fins al primer fotograma"
 
 #: org/openscience/jmol/app/GuiMap.java:150
-#: org/openscience/jmol/app/GuiMap.java:182
+#: org/openscience/jmol/app/GuiMap.java:183
 msgid "Go to next frame"
 msgstr "Vés al següent fotograma"
 
 #: org/openscience/jmol/app/GuiMap.java:151
-#: org/openscience/jmol/app/GuiMap.java:183
+#: org/openscience/jmol/app/GuiMap.java:184
 msgid "Go to previous frame"
 msgstr "Vés a l'anterior fotograma"
 
@@ -608,30 +608,34 @@ msgid "Save current view as an image."
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:174
-msgid "Export one or more views to a web page."
+msgid "Save current view as a Jmol state script."
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:175
+msgid "Export one or more views to a web page."
+msgstr ""
+
+#: org/openscience/jmol/app/GuiMap.java:176
 msgid "Render in pov-ray."
 msgstr "Renderitza en el POV-Ray."
 
-#: org/openscience/jmol/app/GuiMap.java:176
+#: org/openscience/jmol/app/GuiMap.java:177
 msgid "Print view."
 msgstr "Imprimeix la visualització."
 
-#: org/openscience/jmol/app/GuiMap.java:177
+#: org/openscience/jmol/app/GuiMap.java:178
 msgid "Rotate molecule."
 msgstr "Rota la molècula."
 
-#: org/openscience/jmol/app/GuiMap.java:178
+#: org/openscience/jmol/app/GuiMap.java:179
 msgid "Select an atom or region."
 msgstr "Selecciona un àtom o una regió."
 
-#: org/openscience/jmol/app/GuiMap.java:179
+#: org/openscience/jmol/app/GuiMap.java:180
 msgid "View measurement table."
 msgstr "Visualitza la taula de mesures."
 
-#: org/openscience/jmol/app/GuiMap.java:180
+#: org/openscience/jmol/app/GuiMap.java:181
 msgid "Return molecule to home position."
 msgstr "Retorna la molècula a la posició inicial."
 

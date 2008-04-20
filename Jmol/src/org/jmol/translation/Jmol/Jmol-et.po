@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-04-02 21:42+0200\n"
+"POT-Creation-Date: 2008-04-20 11:58+0200\n"
 "PO-Revision-Date: 2007-12-26 15:51+0200\n"
 "Last-Translator: Ivo Sarak <ivo@vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -522,17 +522,17 @@ msgid "Stop animation"
 msgstr "Seiska animatsioon"
 
 #: org/openscience/jmol/app/GuiMap.java:149
-#: org/openscience/jmol/app/GuiMap.java:181
+#: org/openscience/jmol/app/GuiMap.java:182
 msgid "Rewind to first frame"
 msgstr "Keri tagasi esimese kaadrini"
 
 #: org/openscience/jmol/app/GuiMap.java:150
-#: org/openscience/jmol/app/GuiMap.java:182
+#: org/openscience/jmol/app/GuiMap.java:183
 msgid "Go to next frame"
 msgstr "Mine järgmise kaadri juurde"
 
 #: org/openscience/jmol/app/GuiMap.java:151
-#: org/openscience/jmol/app/GuiMap.java:183
+#: org/openscience/jmol/app/GuiMap.java:184
 msgid "Go to previous frame"
 msgstr "Mine eelmise kaadri juurde"
 
@@ -606,30 +606,34 @@ msgid "Save current view as an image."
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:174
+msgid "Save current view as a Jmol state script."
+msgstr ""
+
+#: org/openscience/jmol/app/GuiMap.java:175
 msgid "Export one or more views to a web page."
 msgstr "Ekspordi üks või rohkem vaateid veebileheks."
 
-#: org/openscience/jmol/app/GuiMap.java:175
+#: org/openscience/jmol/app/GuiMap.java:176
 msgid "Render in pov-ray."
 msgstr "Renderda pov-ray's."
 
-#: org/openscience/jmol/app/GuiMap.java:176
+#: org/openscience/jmol/app/GuiMap.java:177
 msgid "Print view."
 msgstr "Prindi vaade."
 
-#: org/openscience/jmol/app/GuiMap.java:177
+#: org/openscience/jmol/app/GuiMap.java:178
 msgid "Rotate molecule."
 msgstr "Keera molekuli"
 
-#: org/openscience/jmol/app/GuiMap.java:178
+#: org/openscience/jmol/app/GuiMap.java:179
 msgid "Select an atom or region."
 msgstr "Vali aatom või regioon."
 
-#: org/openscience/jmol/app/GuiMap.java:179
+#: org/openscience/jmol/app/GuiMap.java:180
 msgid "View measurement table."
 msgstr "Vaata mõõtetabelit."
 
-#: org/openscience/jmol/app/GuiMap.java:180
+#: org/openscience/jmol/app/GuiMap.java:181
 msgid "Return molecule to home position."
 msgstr "Taasta molekuli lähtepositsioon."
 

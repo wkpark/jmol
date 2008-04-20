@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-04-02 21:42+0200\n"
+"POT-Creation-Date: 2008-04-20 11:58+0200\n"
 "PO-Revision-Date: 2008-03-19 14:59+0000\n"
 "Last-Translator: carson <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
@@ -522,17 +522,17 @@ msgid "Stop animation"
 msgstr "Stop animation"
 
 #: org/openscience/jmol/app/GuiMap.java:149
-#: org/openscience/jmol/app/GuiMap.java:181
+#: org/openscience/jmol/app/GuiMap.java:182
 msgid "Rewind to first frame"
 msgstr "Gå tilbage til første ramme"
 
 #: org/openscience/jmol/app/GuiMap.java:150
-#: org/openscience/jmol/app/GuiMap.java:182
+#: org/openscience/jmol/app/GuiMap.java:183
 msgid "Go to next frame"
 msgstr "Gå til næste ramme"
 
 #: org/openscience/jmol/app/GuiMap.java:151
-#: org/openscience/jmol/app/GuiMap.java:183
+#: org/openscience/jmol/app/GuiMap.java:184
 msgid "Go to previous frame"
 msgstr "Gå til foregående ramme"
 
@@ -606,30 +606,34 @@ msgid "Save current view as an image."
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:174
-msgid "Export one or more views to a web page."
+msgid "Save current view as a Jmol state script."
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:175
-msgid "Render in pov-ray."
+msgid "Export one or more views to a web page."
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:176
+msgid "Render in pov-ray."
+msgstr ""
+
+#: org/openscience/jmol/app/GuiMap.java:177
 msgid "Print view."
 msgstr "Udskriv visningen."
 
-#: org/openscience/jmol/app/GuiMap.java:177
+#: org/openscience/jmol/app/GuiMap.java:178
 msgid "Rotate molecule."
 msgstr ""
 
-#: org/openscience/jmol/app/GuiMap.java:178
+#: org/openscience/jmol/app/GuiMap.java:179
 msgid "Select an atom or region."
 msgstr ""
 
-#: org/openscience/jmol/app/GuiMap.java:179
+#: org/openscience/jmol/app/GuiMap.java:180
 msgid "View measurement table."
 msgstr "Vis måltabel."
 
-#: org/openscience/jmol/app/GuiMap.java:180
+#: org/openscience/jmol/app/GuiMap.java:181
 msgid "Return molecule to home position."
 msgstr ""
 

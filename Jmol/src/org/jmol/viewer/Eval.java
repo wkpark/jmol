@@ -1551,8 +1551,18 @@ class Eval { //implements Runnable {
           rpn.addX(code[++pc].intValue);
           break;
         }
-        rpn.addX(getAtomBits(instruction.tok, new int[] {
-            getSeqCode(instruction), getSeqCode(code[++pc]) }));
+        if (viewer.getBooleanProperty("sequenceRangeRasmol")) {
+          BitSet bs = comparatorInstruction(Token.resno, null, Token.opGE,
+              Group.getSequenceNumber(getSeqCode(instruction)), 0);
+          int seqcode2 = getSeqCode(code[++pc]);
+          if (seqcode2 != Integer.MAX_VALUE) // not just "select 3-" 
+            bs.and(comparatorInstruction(Token.resno, null, Token.opLE,
+                Group.getSequenceNumber(seqcode2), 0));
+          rpn.addX(bs);
+        } else {
+          rpn.addX(getAtomBits(instruction.tok, new int[] {
+              getSeqCode(instruction), getSeqCode(code[++pc]) }));
+        }
         break;
       case Token.cell:
         Point3f pt = (Point3f) value;
@@ -1642,7 +1652,7 @@ class Eval { //implements Runnable {
         }
         float[] data = (tokWhat == Token.property ? viewer
             .getDataFloat(property) : null);
-        rpn.addX(comparatorInstruction(instruction, tokWhat, data, tokOperator,
+        rpn.addX(comparatorInstruction(tokWhat, data, tokOperator,
             comparisonValue, comparisonFloat));
         break;
       case Token.bitset:
@@ -1784,7 +1794,7 @@ class Eval { //implements Runnable {
     return lookupValue(variable, true);
   }
 
-  private BitSet comparatorInstruction(Token token, int tokWhat, float[] data,
+  private BitSet comparatorInstruction(int tokWhat, float[] data,
                                        int tokOperator, int comparisonValue,
                                        float comparisonFloat)
       throws ScriptException {
@@ -8367,6 +8377,7 @@ class Eval { //implements Runnable {
           height = intParameter(pt++);
         }
       } else if (Parser.isOneOf(type, driverList.toLowerCase())) {
+        // povray, maya, vrml
         pt++;
         type = type.substring(0, 1).toUpperCase() + type.substring(1);
         isExport = true;

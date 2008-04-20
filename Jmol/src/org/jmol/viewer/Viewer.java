@@ -4185,6 +4185,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //Eval
     boolean notFound = false;
     while (true) {
+      //11.5.30//
+      // ellipsoidAxisDiameter" just handled as getParameter()
 
       ///11.3.52//
       if (key.equalsIgnoreCase("spinX")) {
@@ -4333,6 +4335,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setIntProperty(String key, int value, boolean defineNew) {
     boolean notFound = false;    
     while (true) {
+      //11.5.30//
+      // ellipsoidDotCount" just handled as getParameter()
+
       //11.5.4//
       if (key.equalsIgnoreCase("delayMaximumMs")) {
         setDelayMaximum(value);
@@ -4486,6 +4491,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean notFound = false;
     boolean doRepaint = true;
     while (true) {
+      //11.5.30
+      // sequenceRangeRasmol" just handled as getBooleanProperty()
+      // ellipsoidAxes" just handled as getBooleanProperty()
+      // ellipsoidArcs" just handled as getBooleanProperty()
+      // ellipsoidDots" just handled as getBooleanProperty()
+      // ellipsoidBall" just handled as getBooleanProperty()
       //11.5.4
       if (key.equalsIgnoreCase("fontScaling")) {
         setFontScaling(value);

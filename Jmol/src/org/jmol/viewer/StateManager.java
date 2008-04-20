@@ -129,6 +129,7 @@ public class StateManager {
     viewer.setStringProperty("defaultColorScheme", "Jmol");
     viewer.setBooleanProperty("axesOrientationRasmol", false);
     viewer.setBooleanProperty("zeroBasedXyzRasmol", false);
+    viewer.setBooleanProperty("sequenceRangeRasmol", false);
     viewer.setDefaultVdw("Jmol");
   }
 
@@ -137,6 +138,7 @@ public class StateManager {
     viewer.setStringProperty("defaultColorScheme", "RasMol");
     viewer.setBooleanProperty("axesOrientationRasmol", true);
     viewer.setBooleanProperty("zeroBasedXyzRasmol", true);
+    viewer.setBooleanProperty("sequenceRangeRasmol", true);
     viewer.setIntProperty("percentVdwAtom", 0);
     viewer.setIntProperty("bondRadiusMilliAngstroms", 1);
     viewer.setDefaultVdw("Rasmol");
@@ -600,6 +602,7 @@ public class StateManager {
     boolean measurementLabels         = true;
     int     pickingSpinRate           = 10;
     String  propertyColorScheme       = "roygb";
+    boolean sequenceRangeRasmol       = false;
     float   solventProbeRadius        = 1.2f;
     int     scriptDelay               = 0;
     boolean statusReporting           = true;
@@ -1138,6 +1141,7 @@ public class StateManager {
       setParameterValue("selectionHalos",false);
       setParameterValue("selectHetero",rasmolHeteroSetting);
       setParameterValue("selectHydrogen",rasmolHydrogenSetting);
+      setParameterValue("sequenceRangeRasmol", sequenceRangeRasmol);
       setParameterValue("sheetSmoothing",sheetSmoothing);
       setParameterValue("showaxes",false);
       setParameterValue("showboundbox",false);

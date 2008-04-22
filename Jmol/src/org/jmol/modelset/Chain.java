@@ -94,12 +94,18 @@ public final class Chain {
     }
   }
 
-  public void selectSeqcodeRange(int seqcodeA, int seqcodeB, BitSet bs) {
+  public int selectSeqcodeRange(int index0, int seqcodeA, int seqcodeB,
+                                BitSet bs) {
     int seqcode, indexA, indexB, minDiff;
-    for (indexA = 0; indexA < groupCount && groups[indexA].seqcode != seqcodeA; indexA++) {
+    boolean isInexact = false;
+    for (indexA = index0; indexA < groupCount
+        && groups[indexA].seqcode != seqcodeA; indexA++) {
     }
     if (indexA == groupCount) {
       // didn't find A exactly -- go find the nearest that is GREATER than this value
+      if (index0 > 0)
+        return -1;
+      isInexact = true;
       minDiff = Integer.MAX_VALUE;
       for (int i = groupCount; --i >= 0;)
         if ((seqcode = groups[i].seqcode) > seqcodeA
@@ -108,27 +114,34 @@ public final class Chain {
           minDiff = seqcode - seqcodeA;
         }
       if (minDiff == Integer.MAX_VALUE)
-        return;
+        return -1;
     }
-    if (seqcodeB == Integer.MAX_VALUE)
+    if (seqcodeB == Integer.MAX_VALUE) {
       indexB = groupCount - 1;
-    else 
-      for (indexB = indexA; indexB < groupCount && groups[indexB].seqcode != seqcodeB; indexB++) {
+      isInexact = true;
+    } else {
+      for (indexB = indexA; indexB < groupCount
+          && groups[indexB].seqcode != seqcodeB; indexB++) {
       }
-    if (indexB == groupCount) {
-      // didn't find B exactly -- get the nearest that is LESS than this value
-      minDiff = Integer.MAX_VALUE;
-      for (int i = indexA; i < groupCount; i++)
-        if ((seqcode = groups[i].seqcode) < seqcodeB
-            && (seqcodeB - seqcode) < minDiff) {
-          indexB = i;
-          minDiff = seqcodeB - seqcode;
-        }
-      if (minDiff == Integer.MAX_VALUE)
-        return;
+      if (indexB == groupCount) {
+        // didn't find B exactly -- get the nearest that is LESS than this value
+        if (index0 > 0)
+          return -1;
+        isInexact = true;
+        minDiff = Integer.MAX_VALUE;
+        for (int i = indexA; i < groupCount; i++)
+          if ((seqcode = groups[i].seqcode) < seqcodeB
+              && (seqcodeB - seqcode) < minDiff) {
+            indexB = i;
+            minDiff = seqcodeB - seqcode;
+          }
+        if (minDiff == Integer.MAX_VALUE)
+          return -1;
+      }
     }
     for (int i = indexA; i <= indexB; ++i)
       groups[i].selectAtoms(bs);
+    return (isInexact ? -1 : indexB + 1);
   }
   
   int getSelectedGroupCount() {

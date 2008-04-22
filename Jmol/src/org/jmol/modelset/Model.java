@@ -208,7 +208,8 @@ public final class Model {
   void selectSeqcodeRange(int seqcodeA, int seqcodeB, char chainID, BitSet bs) {
     for (int i = chainCount; --i >= 0; )
       if (chainID == '\t' || chainID == chains[i].chainID)
-        chains[i].selectSeqcodeRange(seqcodeA, seqcodeB, bs);
+        for (int index = 0; index >= 0; )
+          index = chains[i].selectSeqcodeRange(index, seqcodeA, seqcodeB, bs);      
   }
 
   int getGroupCount() {

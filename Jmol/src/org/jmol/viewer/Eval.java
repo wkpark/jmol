@@ -1551,8 +1551,12 @@ class Eval { //implements Runnable {
           rpn.addX(code[++pc].intValue);
           break;
         }
+        int chainID = (pc + 3 < code.length && code[pc + 2].tok == Token.opAnd 
+            && code[pc + 3].tok == Token.spec_chain ? code[pc + 3].intValue : '\t');
         rpn.addX(getAtomBits(Token.spec_seqcode_range, new int[] {
-            getSeqCode(instruction), getSeqCode(code[++pc]) }));
+            getSeqCode(instruction), getSeqCode(code[++pc]), chainID }));
+        if (chainID != '\t')
+          pc += 2;
         break;
       case Token.cell:
         Point3f pt = (Point3f) value;

@@ -1735,17 +1735,17 @@ abstract public class ModelCollection extends BondCollection {
   public BitSet getAtomBits(int tokType, int[] specInfo) {
     switch (tokType) {
     case Token.spec_seqcode_range:
-      return getSpecSeqcodeRange(specInfo[0], specInfo[1]);
+      return getSpecSeqcodeRange(specInfo[0], specInfo[1], (char) specInfo[2]);
     case Token.cell:
       return getCellSet(specInfo[0], specInfo[1], specInfo[2]);
     }
     return null;
   }
 
-  private BitSet getSpecSeqcodeRange(int seqcodeA, int seqcodeB) {
+  private BitSet getSpecSeqcodeRange(int seqcodeA, int seqcodeB, char chainID) {
     BitSet bs = new BitSet();
     for (int i = modelCount; --i >= 0;)
-      models[i].selectSeqcodeRange(seqcodeA, seqcodeB, bs);
+      models[i].selectSeqcodeRange(seqcodeA, seqcodeB, chainID, bs);
     return bs;
   }
 

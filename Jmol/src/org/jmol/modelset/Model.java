@@ -205,9 +205,10 @@ public final class Model {
       bioPolymers[i].calcSelectedMonomersCount(bsSelected);
   }
 
-  void selectSeqcodeRange(int seqcodeA, int seqcodeB, BitSet bs) {
+  void selectSeqcodeRange(int seqcodeA, int seqcodeB, char chainID, BitSet bs) {
     for (int i = chainCount; --i >= 0; )
-      chains[i].selectSeqcodeRange(seqcodeA, seqcodeB, bs);
+      if (chainID == '\t' || chainID == chains[i].chainID)
+        chains[i].selectSeqcodeRange(seqcodeA, seqcodeB, bs);
   }
 
   int getGroupCount() {

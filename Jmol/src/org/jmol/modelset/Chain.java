@@ -111,9 +111,10 @@ public final class Chain {
         return;
     }
     if (seqcodeB == Integer.MAX_VALUE)
-      seqcodeB = groups[groupCount - 1].seqcode;
-    for (indexB = indexA; indexB < groupCount && groups[indexB].seqcode != seqcodeB; indexB++) {
-    }
+      indexB = groupCount - 1;
+    else 
+      for (indexB = indexA; indexB < groupCount && groups[indexB].seqcode != seqcodeB; indexB++) {
+      }
     if (indexB == groupCount) {
       // didn't find B exactly -- get the nearest that is LESS than this value
       minDiff = Integer.MAX_VALUE;

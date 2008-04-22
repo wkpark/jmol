@@ -95,46 +95,39 @@ public final class Chain {
   }
 
   public void selectSeqcodeRange(int seqcodeA, int seqcodeB, BitSet bs) {
-    int i = 0;
-    if (seqcodeB == Integer.MAX_VALUE)
-      seqcodeB = getMaxSeqcode();
-    int groupIndexB = getNextSeqcodeIndex(0, seqcodeB);
-    if (groupIndexB < 0)
-      return;
-    do {
-      int groupIndexA = getNextSeqcodeIndex(i, seqcodeA);
-      if (groupIndexA < 0)
+    int seqcode, indexA, indexB, minDiff;
+    for (indexA = 0; indexA < groupCount && groups[indexA].seqcode != seqcodeA; indexA++) {
+    }
+    if (indexA == groupCount) {
+      // didn't find A exactly -- go find the nearest that is GREATER than this value
+      minDiff = Integer.MAX_VALUE;
+      for (int i = groupCount; --i >= 0;)
+        if ((seqcode = groups[i].seqcode) > seqcodeA
+            && (seqcode - seqcodeA) < minDiff) {
+          indexA = i;
+          minDiff = seqcode - seqcodeA;
+        }
+      if (minDiff == Integer.MAX_VALUE)
         return;
-      if (groupIndexB < 0 && (groupIndexB = getNextSeqcodeIndex(i, seqcodeB)) < 0)
-          return;
-      int indexFirst;
-      int indexLast;
-      if (groupIndexA <= groupIndexB) {
-        indexFirst = groupIndexA;
-        indexLast = groupIndexB;
-      } else {
-        indexFirst = groupIndexB;
-        indexLast = groupIndexA;
-      }
-      groupIndexB = -1;
-      for (i = indexFirst; i <= indexLast; ++i)
-        groups[i].selectAtoms(bs);
-    } while (i < groupCount);
-  }
-
-  int getMaxSeqcode() {
-    int n = 0;
-    for (int i = 0; i < groupCount; ++i)
-      if (groups[i].seqcode > n)
-        n = groups[i].seqcode;
-    return n;
-  }
-  
-  int getNextSeqcodeIndex(int iStart, int seqcode) {
-    for (int i = iStart; i < groupCount; ++i)
-      if (groups[i].seqcode == seqcode)
-        return i;
-    return -1;
+    }
+    if (seqcodeB == Integer.MAX_VALUE)
+      seqcodeB = groups[groupCount - 1].seqcode;
+    for (indexB = indexA; indexB < groupCount && groups[indexB].seqcode != seqcodeB; indexB++) {
+    }
+    if (indexB == groupCount) {
+      // didn't find B exactly -- get the nearest that is LESS than this value
+      minDiff = Integer.MAX_VALUE;
+      for (int i = indexA; i < groupCount; i++)
+        if ((seqcode = groups[i].seqcode) < seqcodeB
+            && (seqcodeB - seqcode) < minDiff) {
+          indexB = i;
+          minDiff = seqcodeB - seqcode;
+        }
+      if (minDiff == Integer.MAX_VALUE)
+        return;
+    }
+    for (int i = indexA; i <= indexB; ++i)
+      groups[i].selectAtoms(bs);
   }
   
   int getSelectedGroupCount() {

@@ -600,7 +600,6 @@ public class StateManager {
     boolean measurementLabels         = true;
     int     pickingSpinRate           = 10;
     String  propertyColorScheme       = "roygb";
-    boolean sequenceRangePhysical     = false;
     float   solventProbeRadius        = 1.2f;
     int     scriptDelay               = 0;
     boolean statusReporting           = true;
@@ -1139,7 +1138,6 @@ public class StateManager {
       setParameterValue("selectionHalos",false);
       setParameterValue("selectHetero",rasmolHeteroSetting);
       setParameterValue("selectHydrogen",rasmolHydrogenSetting);
-      setParameterValue("sequenceRangePhysical", sequenceRangePhysical);
       setParameterValue("sheetSmoothing",sheetSmoothing);
       setParameterValue("showaxes",false);
       setParameterValue("showboundbox",false);

@@ -4492,7 +4492,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean doRepaint = true;
     while (true) {
       //11.5.30
-      // sequenceRangePhysical" just handled as getBooleanProperty()
       // ellipsoidAxes" just handled as getBooleanProperty()
       // ellipsoidArcs" just handled as getBooleanProperty()
       // ellipsoidDots" just handled as getBooleanProperty()

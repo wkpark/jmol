@@ -4186,7 +4186,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean notFound = false;
     while (true) {
       //11.5.30//
-      // ellipsoidAxisDiameter" just handled as getParameter()
+      if (key.equalsIgnoreCase("ellipsoidAxisDiameter")) {
+        if (isInt)
+          value = value / 1000;
+        // ellipsoidAxisDiameter" just handled as getParameter()
+        break;
+      }
 
       ///11.3.52//
       if (key.equalsIgnoreCase("spinX")) {

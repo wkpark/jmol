@@ -1259,6 +1259,13 @@ final public class Graphics3D implements JmolRendererInterface {
     triangle3d.fillTriangle(xA, yA, zA, xB, yB, zB, xC, yC, zC, false);
   }
   
+  public void fillTriangle(Point3i screenA, int intensityA,
+                           Point3i screenB, int intensityB,
+                           Point3i screenC, int intensityC) {
+    triangle3d.setGouraud(intensityA, intensityB, intensityC);
+    triangle3d.fillTriangle(screenA, screenB, screenC, true);
+  }
+  
   public void fillTriangle(Point3i screenA, short colixA, short normixA,
                            Point3i screenB, short colixB, short normixB,
                            Point3i screenC, short colixC, short normixC) {
@@ -2131,22 +2138,25 @@ final public class Graphics3D implements JmolRendererInterface {
   private final Vector3f vectorNormal = new Vector3f();
   // these points are in screen coordinates even though 3f
 
-  public void calcSurfaceShade(Point3i screenA, Point3i screenB, Point3i screenC) {
-    vectorAB.x = screenB.x - screenA.x;
-    vectorAB.y = screenB.y - screenA.y;
-    vectorAB.z = screenB.z - screenA.z;
-
-    vectorAC.x = screenC.x - screenA.x;
-    vectorAC.y = screenC.y - screenA.y;
-    vectorAC.z = screenC.z - screenA.z;
-
-    vectorNormal.cross(vectorAB, vectorAC);
-    int intensity = vectorNormal.z >= 0 ? Shade3D.calcIntensity(
-        -vectorNormal.x, -vectorNormal.y, vectorNormal.z) : Shade3D
-        .calcIntensity(vectorNormal.x, vectorNormal.y, -vectorNormal.z);
+  public int calcSurfaceShade(Point3i screenA, Point3i screenB, Point3i screenC) {
+    // or center and point, as for an ellipse
+    vectorAB.set(screenB.x - screenA.x, screenB.y - screenA.y, screenB.z
+        - screenA.z);
+    int intensity;
+    if (screenC == null) {
+      intensity = Shade3D.calcIntensity(-vectorAB.x, -vectorAB.y, vectorAB.z);
+    } else {
+      vectorAC.set(screenC.x - screenA.x, screenC.y - screenA.y, screenC.z
+          - screenA.z);
+      vectorAB.cross(vectorAB, vectorAC);
+      intensity = vectorAB.z >= 0 ? Shade3D.calcIntensity(-vectorAB.x,
+          -vectorAB.y, vectorAB.z) : Shade3D.calcIntensity(vectorAB.x,
+          vectorAB.y, -vectorAB.z);
+    }
     if (intensity > intensitySpecularSurfaceLimit)
       intensity = intensitySpecularSurfaceLimit;
     setColorNoisy(intensity);
+    return argbCurrent;
   }
 
   private int calcIntensityScreen(Point3f screenA,

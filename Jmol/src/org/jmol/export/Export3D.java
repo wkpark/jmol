@@ -536,6 +536,15 @@ final public class Export3D implements JmolRendererInterface {
     fillTriangle(ptA, ptB, ptC);
   }
   
+  public void fillTriangle(Point3i pointA, int intensityA,
+                           Point3i pointB, int intensityB,
+                           Point3i pointC, int intensityC) {
+    ptA.set(pointA.x, pointA.y, pointA.z);
+    ptB.set(pointB.x, pointB.y, pointB.z);
+    ptC.set(pointC.x, pointC.y, pointC.z);
+    exporter.fillTriangle(colix, ptA, ptB, ptC);
+  }
+  
   public void fillTriangle(Point3i pointA, short colixA, short normixA,
                            Point3i pointB, short colixB, short normixB,
                            Point3i pointC, short colixC, short normixC) {
@@ -720,8 +729,8 @@ final public class Export3D implements JmolRendererInterface {
     return g3d.getHexColorFromIndex(colix);
   }
 
-  public void calcSurfaceShade(Point3i pointA, Point3i pointB, Point3i pointC) {
-    g3d.calcSurfaceShade(pointA, pointB, pointC);
+  public int calcSurfaceShade(Point3i pointA, Point3i pointB, Point3i pointC) {
+    return g3d.calcSurfaceShade(pointA, pointB, pointC);
   }
 
   public byte getFontFid(String fontFace, float fontSize) {
@@ -756,5 +765,5 @@ final public class Export3D implements JmolRendererInterface {
   public byte getFontFid(float fontSize) {
     return g3d.getFontFid(fontSize);
   }
-  
+
 }

@@ -259,7 +259,7 @@ public class UnitCell {
 //        System.out.println("draw v" + i + " {0 0 0} " + Escape.escape(v) + "# "+lengths[i]);
       }
   //    System.out.println();
-      return new Object[] {unitVectors, lengths};
+      return new Object[] {unitVectors, lengths, BP};
     }
     
   }

@@ -25,6 +25,7 @@
 
 package org.jmol.shapespecial;
 
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
@@ -39,12 +40,14 @@ public class EllipsoidsRenderer extends ShapeRenderer {
 
   private Ellipsoids ellipsoids;
   private boolean drawDots, drawArcs, drawAxes, drawFill, drawBall;
-  private boolean wireframeOnly, perspectiveOn;
+  private boolean wireframeOnly;
   private int dotCount;
   private int[] coords;
   private Vector3f[] axes;
   private final float[] lengths = new float[3];
   private int diameter, diameter0;
+  private Matrix4f mat = new Matrix4f();
+  private Matrix4f matToScreenInv = new Matrix4f();
   protected void render() {
     ellipsoids = (Ellipsoids) shape;
     if (ellipsoids.mads == null)
@@ -55,8 +58,9 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     drawBall = viewer.getBooleanProperty("ellipsoidBall") && !wireframeOnly;
     drawDots = viewer.getBooleanProperty("ellipsoidDots") && !wireframeOnly;
     drawFill = viewer.getBooleanProperty("ellipsoidFill") && !wireframeOnly;
-    diameter0 = (int) (((Float) viewer.getParameter("ellipsoidAxisDiameter")).floatValue() * 1000);
-    perspectiveOn = viewer.getPerspectiveDepth();
+    diameter0 = (int) (((Float) viewer.getParameter("ellipsoidAxisDiameter"))
+        .floatValue() * 1000);
+    //perspectiveOn = viewer.getPerspectiveDepth();
     /* general logic:
      * 
      * 
@@ -67,7 +71,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
      * note that FILL serves to provide a cut-out for BALL and a 
      * filling for ARCS
      */
-       
+
     if (drawBall)
       drawDots = false;
     if (!drawDots && !drawArcs && !drawBall)
@@ -76,12 +80,20 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       drawArcs = false;
       drawFill = false;
     }
-  
+
     if (drawDots) {
-      dotCount = ((Integer) viewer.getParameter("ellipsoidDotCount")).intValue();
+      dotCount = ((Integer) viewer.getParameter("ellipsoidDotCount"))
+          .intValue();
       if (coords == null || coords.length != dotCount * 3)
         coords = new int[dotCount * 3];
     }
+
+    if (drawBall) {
+      mat.set(viewer.getMatrixtransform());
+      mat.m03 = mat.m13 = mat.m23 = 0; // remove translation
+      matToScreenInv.invert(mat);
+    }
+
     Atom[] atoms = modelSet.atoms;
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
@@ -112,17 +124,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   
   // octants are sets of three axisPoints references in proper rotation order
   // axisPoints[octants[i]] indicates the axis and direction (pos/neg)
-/*  private static int[] octants = {
-    0, 3, 5,
-    0, 5, 2, //arc
-    0, 2, 4,
-    0, 4, 3, //arc
-    1, 5, 2,
-    1, 3, 5, //arc
-    1, 4, 3,
-    1, 2, 4  //arc
-  };
-*/
+
   private static int[] octants = {
     5, 0, 3,
     5, 2, 0, //arc
@@ -134,26 +136,30 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     4, 1, 2  //arc
   };
 
+  int maxX, dx;
+  
   private void render1(Atom atom, short mad, Object[] ellipsoid) {
     s0.set(atom.screenX, atom.screenY, atom.screenZ);
     //System.out.println(ellipsoid[2]);
     axes = (Vector3f[]) ellipsoid[0];
     float[] af = (float[]) ellipsoid[1];
     float f = mad / 100.0f * 4f;
-    for (int i = 3; --i >= 0; )
+    for (int i = 3; --i >= 0;)
       lengths[i] = af[i] * f;
     //[0] is shortest; [2] is longest
-    if (drawAxes || drawArcs || drawBall) 
+    if (drawAxes || drawArcs || drawBall)
       setAxes(atom, 1.0f);
-    diameter = viewer.scaleToScreen(atom.screenZ, wireframeOnly ? 1 : diameter0);
+    diameter = viewer
+        .scaleToScreen(atom.screenZ, wireframeOnly ? 1 : diameter0);
+    dx = viewer.scaleToScreen(atom.screenZ, (int)(lengths[2] * 1100));
     if (drawDots)
       renderDots(atom);
     if (drawAxes && !drawBall)
-      renderAxes();  
+      renderAxes();
     if (drawArcs && !drawBall)
       renderArcs(atom);
     if (drawBall) {
-      renderBall(atom);
+      renderBall(atom, ellipsoid);
       if (drawArcs || drawAxes) {
         g3d.setColix(viewer.getColixBackgroundContrast());
         //setAxes(atom, 1.0f);
@@ -166,6 +172,83 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     }
   }
 
+  private Matrix4f setEllipsoidMatrix() {
+    /*
+     * 
+     Create a matrix that transforms screen pixel coorinates
+     into ellipsoid coordinates, where in that system we 
+     are drawing a sphere. 
+     
+     S are screen coordinates
+     X are Cartesian coordinates
+     X' are ellipsoid axis coordinates 
+
+     T is the current transform matrix minus the translation part
+     E is the transform matrix from ellipsoid to cartesian
+       E has scaled Eigenvector axes as columns
+     M is the matrix converting screen coordinates to ellipsoid space
+
+       S = TX
+       (T-1)S = X
+     
+       EX' = X
+       (E-1)X = X'
+    
+     then
+     
+       M = (E-1)(S-1)
+     
+     and 
+     
+       MS = (E-1)(S-1)S = (E-1)X = X' 
+     
+     and we can know x, y, and z in our standard ellipsoidal
+     coordinate system, where the ellipsoid behaves as a sphere:
+     
+       x^2 + y^2 + z^2 = 1
+
+     We will scan ix and iy -- our pixel position on the
+     screen, but we won't know iz. The goal is to calculate that:
+     
+     Break M into two components -- one constant based on ix and iy
+     and one variable, based on iz:
+     
+       M(ix iy iz) =  M(ix iy 0) + M(0 0 1)*iz
+     
+     assign 
+     
+       C = M(iz iy 0)
+       A = M(0 0 1)
+     
+     Then we have
+     
+       MS = C + AZ
+     
+     for which the equation is now a simple quadratic in z:
+     
+       (c0 + a0iz)^2 + (c1 + a1iz)^2 + (c2 + a2iz)^2 = 1
+     
+     collecting terms and writing as dot products:
+     
+       (A.A)iz^2 + 2(A.C)iz + C.C - 1 = 0
+     
+     Solving this will give the two pixels at position 
+     ix iy that satisfy the relationship for the ellipsoid. 
+
+     */
+
+    for (int i = 0; i < 3; i++) {
+      v1.set(axes[i]);
+      v1.scale(lengths[i]);
+      mat.setColumn(i, v1.x, v1.y, v1.z, 0);
+    }
+    mat.setColumn(3, 0, 0, 0, 1);
+    mat.invert(mat);
+    mat.mul(mat, matToScreenInv);
+    return mat;
+
+  }
+  
   private void setAxes(Atom atom, float f) {
     for (int i = 0; i < 6; i++) {
       int iAxis = axisPoints[i];
@@ -291,7 +374,13 @@ public class EllipsoidsRenderer extends ShapeRenderer {
             screens[i == 17 ? i + 7 : i + 8]);
   }
 
-  private void renderBall(Atom atom) {
+  private void renderBall(Atom atom, Object[] ellipsoid) {
+    if (!drawFill && !isGenerator) {
+      //TODO  don't know how to do drawFill or POV-Ray of ellipsoids
+      ellipsoid[3] = setEllipsoidMatrix();
+      g3d.renderEllipsoid(s0.x, s0.y, s0.z, ellipsoid, dx + dx);
+      return;
+    }
     int iCutout = -1;
     int zMin = Integer.MAX_VALUE;
     if (drawFill)
@@ -305,30 +394,14 @@ public class EllipsoidsRenderer extends ShapeRenderer {
           iCutout = i;
         }
       }
-
-    if (true || perspectiveOn) {
-      for (int i = 0; i < 8; i++) {
-        int ptA = octants[i * 3];
-        int ptB = octants[i * 3 + 1];
-        int ptC = octants[i * 3 + 2];
-        boolean isSwapped = (axisPoints[ptA] < 0);
-        renderBall(atom, axisPoints[ptA], axisPoints[ptB], axisPoints[ptC],
-            isSwapped, iCutout == i);
-      }
-      return;
+    for (int i = 0; i < 8; i++) {
+      int ptA = octants[i * 3];
+      int ptB = octants[i * 3 + 1];
+      int ptC = octants[i * 3 + 2];
+      boolean isSwapped = (axisPoints[ptA] < 0);
+      renderBall(atom, axisPoints[ptA], axisPoints[ptB], axisPoints[ptC],
+          isSwapped, iCutout == i);
     }
-    // max distance is longest
-    int scrRadius = viewer.scaleToScreen(atom.screenZ, (int) (lengths[2] * 1000));
-    //System.out.println(atom.getAtomIndex() + " " + atom.isClickable() + " r=" + scrRadius + " " + atom.screenX + " "+ atom.screenY + " " + atom.screenZ);
-    int x = atom.screenX - scrRadius + 1;
-    int y = atom.screenY - scrRadius + 1;
-    for (int ix = x; --ix >= 0; )
-      for (int iy = y; --iy >= 0; ) {
-        //pt1.set(ix, iy, );
-        //viewer.untransformPoint()
-        //renderPixel(ix, iy, atom);
-      }
-        
   }
 
   
@@ -429,5 +502,4 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       screens[7].set(s2);
     }
   }
-
 }

@@ -231,9 +231,9 @@ class TransformManager11 extends TransformManager {
       // must just be (not so!) simple navigation
       // navigation center will initially move
       // but we center it by moving the rotation center instead
-      matrixTransform(navigationCenter, pointT);
+      matrixTransform.transform(navigationCenter, pointT);
       float z = pointT.z;
-      matrixTransform(fixedRotationCenter, pointT);
+      matrixTransform.transform(fixedRotationCenter, pointT);
       modelCenterOffset = referencePlaneOffset + (pointT.z - z);
       calcCameraFactors();
       calcTransformMatrix();
@@ -244,19 +244,19 @@ class TransformManager11 extends TransformManager {
       unTransformPoint(navigationOffset, navigationCenter);
       break;
     }
-    matrixTransform(navigationCenter, navigationShiftXY);
+    matrixTransform.transform(navigationCenter, navigationShiftXY);
     if (viewer.getNavigationPeriodic()) {
       //TODO
       // but if periodic, then the navigationCenter may have to be moved back a notch
       viewer.toUnitCell(navigationCenter, null);
       if (pointT.distance(navigationCenter) > 0.01) {
-        matrixTransform(navigationCenter, pointT);
+        matrixTransform.transform(navigationCenter, pointT);
         float dz = navigationShiftXY.z - pointT.z;
         //the new navigation center determines the navigationZOffset
         modelCenterOffset += dz;
         calcCameraFactors();
         calcTransformMatrix();
-        matrixTransform(navigationCenter, navigationShiftXY);
+        matrixTransform.transform(navigationCenter, navigationShiftXY);
       }
     }
     transformPoint(fixedRotationCenter, fixedTranslation);

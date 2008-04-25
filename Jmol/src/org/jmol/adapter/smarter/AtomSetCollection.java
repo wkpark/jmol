@@ -817,7 +817,7 @@ public class AtomSetCollection {
             atom1.ellipsoid = new Object[] {
                 finalOperations[iSym].rotate((Vector3f[]) atoms[i].ellipsoid[0],
                     ptTemp, cartesian, unitCell, transX, transY, transZ),
-                atoms[i].ellipsoid[1] };
+                atoms[i].ellipsoid[1], atoms[i].ellipsoid[2], null };
           }
         }
       }

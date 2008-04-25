@@ -232,6 +232,14 @@ public class _PovrayExporter extends _Exporter {
         + "  check_shadow()}\n"
         + (isSlabEnabled? " circleCap(Z,RADIUS,R,G,B,T)\n" : "")
         + "#end\n\n");
+    output("#macro q(X,Y,Z,B11,B22,B33,B12,B13,B23,SCALE,R,G,B,T)\n" 
+        + " sphere{<X,Y,Z>,RADIUS\n"
+        + "  pigment{rgbt<R,G,B,T>}\n"
+        + "  translucentFinish(T)\n"
+        + "  clip()\n"
+        + "  check_shadow()}\n"
+        + (isSlabEnabled? " circleCap(Z,RADIUS,R,G,B,T)\n" : "")
+        + "#end\n\n");
   }
 
   private void writeMacrosBond() {
@@ -631,5 +639,8 @@ public class _PovrayExporter extends _Exporter {
                          int yBaseline, int z, int zSlab) {
   }
 
+  public void renderEllipsoid(int x, int y, int z, Object[] ellipsoid, int diameter) {
+    
+  }
 
 }

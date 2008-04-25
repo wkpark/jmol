@@ -24,6 +24,9 @@
 
 package org.jmol.g3d;
 
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Vector3f;
+
 /**
  *<p>
  * Implements high performance rendering of shaded spheres.
@@ -44,7 +47,7 @@ package org.jmol.g3d;
  *
  * @author Miguel, miguel@jmol.org
  */
-class Sphere3D {
+public class Sphere3D {
 
   Graphics3D g3d;
   
@@ -119,23 +122,30 @@ class Sphere3D {
     return sphereShapeCache[diameter - 1] = sphereShape;
   }
 
+  int minX, maxX, minY, maxY, minZ, maxZ;
   void render(int[] shades, boolean tScreened, int diameter,
-              int x, int y, int z) {
+              int x, int y, int z, Matrix4f mat) {
     if (z == 1)
       return;
     if (diameter > maxOddSizeSphere)
       diameter &= ~1;
     int radius = (diameter + 1) >> 1;
-    int minX = x - radius, maxX = x + radius;
+    minX = x - radius;
+    maxX = x + radius;
     if (maxX < 0 || minX >= g3d.width)
       return;
-    int minY = y - radius, maxY = y + radius;
+    minY = y - radius;
+    maxY = y + radius;
     if (maxY < 0 || minY >= g3d.height)
       return;
-    int minZ = z - radius, maxZ = z + radius;
+    minZ = z - radius;
+    maxZ = z + radius;
     if (maxZ < g3d.slab || minZ > g3d.depth)
       return;
-    if (diameter > maxSphereCache) {
+    if (mat != null) {
+      renderEllipsoid(shades, tScreened, diameter, x, y, z, mat);
+      return;
+    } else if (diameter > maxSphereCache) {
       renderLargeSphere(shades, tScreened, diameter, x, y, z);
       return;
     }
@@ -149,6 +159,7 @@ class Sphere3D {
       renderShapeUnclipped(shades, tScreened, ss, diameter, x, y, z);
   }
   
+
   private void renderShapeUnclipped(int[] shades, boolean tScreened,
                                     int[] sphereShape, int diameter, int x,
                                     int y, int z) {
@@ -487,4 +498,115 @@ class Sphere3D {
       randu = ((randu + xCurrent + yCurrent) | 1) & 0x7FFFFFFF;
     }
   }
+
+  //////////  Ellipsoid Code ///////////
+  
+  Vector3f vA = new Vector3f();
+  Vector3f vC = new Vector3f();
+  int[] zroot = new int[2];
+  final static Vector3f vZ = new Vector3f(0, 0, 1);
+  
+  private void renderEllipsoid(int[] shades, boolean tScreened, int diameter,
+                               int x, int y, int z, Matrix4f mat) {
+    int radius = diameter / 2;
+    vA.set(vZ);
+    mat.transform(vA);
+    int x0 = x - radius;
+    y -= radius;
+    int[] zbuf = g3d.zbuf;
+    int slab = g3d.slab;
+    int depth = g3d.depth;
+    int height = g3d.height;
+    int width = g3d.width;
+    int randu = (x0 << 16) + (y << 1) ^ 0x33333333;
+    int pt = y * width + x0 - 1;
+    for (int j = -radius; j < radius; j++, pt += width, y++) {
+      if (y < 0)
+        continue;
+      if (y >= height)
+        return;
+      int ptBuf = pt;
+      x = x0;
+      for (int i = -radius; i < radius; i++, x++) {
+        ptBuf++;
+        if (x < 0)
+          continue;
+        if (x >= width)
+          break;
+        randu = ((randu << 16) + (randu << 1) + randu) & 0x7FFFFFFF;
+        if (tScreened && (((x ^ y) & 1) != 0))
+          continue;
+        vC.set(i, j, 0);
+        mat.transform(vC);
+        if (!getPixelZ(vA, vC, zroot))
+          continue;
+        int zOffset;
+        int zPixel;
+        boolean isCore;
+        if (z < slab) {
+          // center in front of plane -- possibly show back half
+          zPixel = z + (zOffset = zroot[1]);
+          isCore = (zPixel >= slab);
+        } else {
+          // center is behind, show front, possibly as solid core
+          zPixel = z + (zOffset = zroot[0]);
+          isCore = (zPixel < slab);
+        }
+        if (isCore)
+          zPixel = slab;
+        if (zPixel < slab || zPixel > depth || zbuf[ptBuf] <= zPixel)
+          continue;
+        int s;
+        if (isCore) {
+          s = (SHADE_SLAB_CLIPPED - 3 + ((randu >> 8) & 0x07)) >> zShift;
+          randu = ((randu << 16) + (randu << 1) + randu) & 0x7FFFFFFF;
+        } else {
+          s = Shade3D.calcIntensity(i, j, -zOffset);
+        }
+        g3d.addPixel(ptBuf, zPixel, shades[s]);
+        randu = ((randu + x + y) | 1) & 0x7FFFFFFF;
+      }
+    }
+  }
+
+  private static boolean getPixelZ(Vector3f vA, Vector3f vC, int[] zroot) {
+    /*
+
+         For ellipsoid of general equation:
+         
+         (A.A)iz^2 + 2(A.C)iz + C.C - 1 = 0
+         
+         and
+         
+         iz = [-2(A.C) +/- sqrt[4(A.C)^2 - 4 (A.A)(C.C-1)]]/2(A.A)
+         
+         or where d = (A.C)/(A.A) and e = (C.C-1)/(A.A), 
+         
+         iz = -d +- sqrt(d^2 - e)
+         
+         Those will be the two pixels at position ix iy that satisfy the
+         relationship for the ellipsoid. 
+         
+         Note that if ix and iy are too large, then the pixel should not be 
+         rendered, because we are outside the ellipsoid.
+         
+         That range is for d^2 - e >= 0
+ 
+         returns true/[zNear, zFar] or false
+     */
+    float adotc = vA.dot(vC);
+    float adota = vA.lengthSquared();
+    float cdotc = vC.lengthSquared();
+    float d = adotc/adota;
+    float e = (cdotc-1)/adota;
+    float f = d*d-e;
+    if (f < 0)
+      return false;
+    f = (float)Math.sqrt(f);
+    zroot[0] = (int) (-d - f);
+    zroot[1] = (int) (-d + f);
+    return true;
+  }
+
+  
 }

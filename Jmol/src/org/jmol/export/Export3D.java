@@ -635,6 +635,9 @@ final public class Export3D implements JmolRendererInterface {
                               indices, bsFaces, nVertices, faceVertexMax);
   }
 
+  public void renderEllipsoid(int x, int y, int z, Object[] ellipsoid, int diameter) {
+    exporter.renderEllipsoid(x, y, z, ellipsoid, diameter);    
+  }
 
   /* ***************************************************************
    * g3d-relayed info specifically needed for the renderers

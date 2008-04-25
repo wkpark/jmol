@@ -233,5 +233,9 @@ public class _VrmlExporter extends _Exporter {
                             int aspectRatio) {
     //cartoons, meshRibbons:
   }
+
+  public void renderEllipsoid(int x, int y, int z, Object[] ellipsoid, int diameter) {
+    
+  }
            
 }

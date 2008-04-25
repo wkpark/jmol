@@ -519,6 +519,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // delegated to TransformManager
   // ///////////////////////////////////////////////////////////////
 
+  public Matrix4f getMatrixtransform() {
+    return transformManager.getMatrixtransform();
+  }
+  
   public float getRotationRadius() {
     return transformManager.getRotationRadius();
   }

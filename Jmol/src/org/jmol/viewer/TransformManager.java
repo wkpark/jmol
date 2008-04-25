@@ -1110,6 +1110,11 @@ abstract class TransformManager {
    ****************************************************************/
 
   protected final Matrix4f matrixTransform = new Matrix4f();
+  
+  Matrix4f getMatrixtransform() {
+    return matrixTransform;
+  }
+  
   protected final Point3f point3fScreenTemp = new Point3f();
   protected final Point3i point3iScreenTemp = new Point3i();
 
@@ -1233,7 +1238,7 @@ abstract class TransformManager {
    * @return POINTER TO point3iScreenTemp
    */
   synchronized Point3i transformPoint(Point3f pointAngstroms) {
-    matrixTransform(pointAngstroms, point3fScreenTemp);
+    matrixTransform.transform(pointAngstroms, point3fScreenTemp);
     adjustTemporaryScreenPoint();
     if (internalSlab && checkInternalSlab(pointAngstroms))
       point3iScreenTemp.z = 1;
@@ -1246,7 +1251,7 @@ abstract class TransformManager {
    * @return POINTER TO point3iScreenTemp
    */
   synchronized Point3i transformPointNoClip(Point3f pointAngstroms) {
-    matrixTransform(pointAngstroms, point3fScreenTemp);
+    matrixTransform.transform(pointAngstroms, point3fScreenTemp);
     adjustTemporaryScreenPoint();
     return point3iScreenTemp;
   }
@@ -1261,7 +1266,7 @@ abstract class TransformManager {
     if (vibrationOn && vibrationVector != null)
       point3fVibrationTemp.scaleAdd(vibrationAmplitude, vibrationVector,
           pointAngstroms);
-    matrixTransform(point3fVibrationTemp, point3fScreenTemp);
+    matrixTransform.transform(point3fVibrationTemp, point3fScreenTemp);
     adjustTemporaryScreenPoint();
     if (internalSlab && checkInternalSlab(pointAngstroms))
       point3iScreenTemp.z = 1;
@@ -1272,7 +1277,7 @@ abstract class TransformManager {
 
     //used solely by RocketsRenderer
 
-    matrixTransform(pointAngstroms, point3fScreenTemp);
+    matrixTransform.transform(pointAngstroms, point3fScreenTemp);
     adjustTemporaryScreenPoint();
     if (internalSlab && checkInternalSlab(pointAngstroms))
       point3fScreenTemp.z = 1;
@@ -1281,12 +1286,12 @@ abstract class TransformManager {
 
   void transformVector(Vector3f vectorAngstroms, Vector3f vectorTransformed) {
     //dots renderer, geodesic only
-    matrixTransform(vectorAngstroms, vectorTransformed);
+    matrixTransform.transform(vectorAngstroms, vectorTransformed);
   }
 
   void unTransformPoint(Point3f screenPt, Point3f coordPt) {
     //draw move2D
-    pointT.set(screenPt.x, screenPt.y, screenPt.z);
+    pointT.set(screenPt);
     //System.out.println("unTransformPt screenpt " + pointT + " " + fixedRotationOffset);
     if (isNavigationMode) {
       pointT.x -= navigationOffset.x;
@@ -1311,14 +1316,6 @@ abstract class TransformManager {
   protected void matrixUnTransform(Point3f screen, Point3f angstroms) {
     matrixTemp.invert(matrixTransform);
     matrixTemp.transform(screen, angstroms);
-  }
-
-  protected void matrixTransform(Point3f angstroms, Point3f screen) {
-    matrixTransform.transform(angstroms, screen);
-  }
-
-  protected void matrixTransform(Vector3f angstroms, Vector3f screen) {
-    matrixTransform.transform(angstroms, screen);
   }
 
   /* ***************************************************************
@@ -1388,7 +1385,7 @@ abstract class TransformManager {
   protected final AxisAngle4f aaStep = new AxisAngle4f();
   protected final AxisAngle4f aaTotal = new AxisAngle4f();
   protected final Matrix3f matrixStart = new Matrix3f();
-  protected final Matrix3f matrixInverse = new Matrix3f();
+  private final Matrix3f matrixStartInv = new Matrix3f();
   protected final Matrix3f matrixStep = new Matrix3f();
   protected final Matrix3f matrixTest = new Matrix3f();
   protected final Matrix3f matrixEnd = new Matrix3f();
@@ -1449,9 +1446,9 @@ abstract class TransformManager {
     float targetPixelScale = (center == null ? startPixelScale
         : defaultScaleToScreen(targetRotationRadius));
     getRotation(matrixStart);
-    matrixInverse.invert(matrixStart);
+    matrixStartInv.invert(matrixStart);
 
-    matrixStep.mul(matrixEnd, matrixInverse);
+    matrixStep.mul(matrixEnd, matrixStartInv);
     aaTotal.set(matrixStep);
 
     int fps = 30;
@@ -1486,8 +1483,8 @@ abstract class TransformManager {
       for (int iStep = 1; iStep < totalSteps; ++iStep) {
 
         getRotation(matrixStart);
-        matrixInverse.invert(matrixStart);
-        matrixStep.mul(matrixEnd, matrixInverse);
+        matrixStartInv.invert(matrixStart);
+        matrixStep.mul(matrixEnd, matrixStartInv);
         aaTotal.set(matrixStep);
 
         aaStep.set(aaTotal);

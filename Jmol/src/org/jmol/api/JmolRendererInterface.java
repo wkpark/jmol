@@ -2,6 +2,7 @@ package org.jmol.api;
 
 import java.util.BitSet;
 
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
@@ -310,5 +311,7 @@ public interface JmolRendererInterface {
   public abstract Font3D getFont3DScaled(Font3D font3d, float imageFontScaling);
 
   public abstract byte getFontFid(float fontSize);
-  
+
+  public abstract void renderEllipsoid(int x, int y, int z, Object[] ellipsoid, int diameter);
+    
 }

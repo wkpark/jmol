@@ -701,6 +701,10 @@ public class Text {
   }
 
   public boolean checkObjectClicked(int x, int y) {
+    if (g3d.isAntialiased()) {
+      x <<= 1;
+      y <<= 1;
+    }
     return (script != null 
         && x >= boxX && x <= boxX + boxWidth 
         && y >= boxY && y <= boxY + boxHeight);

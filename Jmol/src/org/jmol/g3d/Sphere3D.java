@@ -66,6 +66,7 @@ public class Sphere3D {
   static synchronized void flushSphereCache() {
     for (int i =  maxSphereCache; --i >= 0;)
       sphereShapeCache[i] = null;
+    ellipsoidShades = null;
   }
 
   private static int[] getSphereShape(int diameter) {
@@ -506,8 +507,12 @@ public class Sphere3D {
   int[] zroot = new int[2];
   final static Vector3f vZ = new Vector3f(0, 0, 1);
   
+  private static byte[][][] ellipsoidShades;
+  
   private void renderEllipsoid(int[] shades, boolean tScreened, int diameter,
                                int x, int y, int z, Matrix4f mat) {
+    if (ellipsoidShades == null) 
+      createEllipsoidShades();
     int radius = diameter / 2;
     vA.set(vZ);
     mat.transform(vA);
@@ -561,7 +566,8 @@ public class Sphere3D {
           s = (SHADE_SLAB_CLIPPED - 3 + ((randu >> 8) & 0x07)) >> zShift;
           randu = ((randu << 16) + (randu << 1) + randu) & 0x7FFFFFFF;
         } else {
-          s = Shade3D.calcIntensity(i, j, -zOffset);
+          
+          s = getEllipsoidShade(i, j, -zOffset);
         }
         g3d.addPixel(ptBuf, zPixel, shades[s]);
         randu = ((randu + x + y) | 1) & 0x7FFFFFFF;
@@ -569,6 +575,23 @@ public class Sphere3D {
     }
   }
 
+  private static void createEllipsoidShades() {
+    ellipsoidShades = new byte[40][40][40];
+    for (int ii = 0; ii < 40; ii++)
+      for (int jj = 0; jj < 40; jj++)
+        for (int kk = 0; kk < 40; kk++)
+          ellipsoidShades[ii][jj][kk] = Shade3D.calcIntensity(ii - 20, jj - 20,
+              kk - 20);
+  }
+
+  private static int getEllipsoidShade(int i, int j, int k) {
+    return (i < -20 || i >= 20
+        || j < -20 || j >= 20
+        || k < -20 || k >= 20 
+            ? Shade3D.calcIntensity(i, j, k)
+            : ellipsoidShades[i + 20][j + 20][k + 20]); 
+  }
+  
   private static boolean getPixelZ(Vector3f vA, Vector3f vC, int[] zroot) {
     /*
 

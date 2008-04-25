@@ -575,21 +575,31 @@ public class Sphere3D {
     }
   }
 
+  final private static int SLIM = 20;
+  final private static int SDIM = SLIM * 2;
   private static void createEllipsoidShades() {
-    ellipsoidShades = new byte[40][40][40];
-    for (int ii = 0; ii < 40; ii++)
-      for (int jj = 0; jj < 40; jj++)
-        for (int kk = 0; kk < 40; kk++)
-          ellipsoidShades[ii][jj][kk] = Shade3D.calcIntensity(ii - 20, jj - 20,
-              kk - 20);
+    ellipsoidShades = new byte[SDIM][SDIM][SDIM];
+    for (int ii = 0; ii < SDIM; ii++)
+      for (int jj = 0; jj < SDIM; jj++)
+        for (int kk = 0; kk < SDIM; kk++)
+          ellipsoidShades[ii][jj][kk] = Shade3D.calcIntensity(ii - SLIM, jj - SLIM,
+              kk - SLIM);
   }
 
   private static int getEllipsoidShade(int i, int j, int k) {
-    return (i < -20 || i >= 20
-        || j < -20 || j >= 20
-        || k < -20 || k >= 20 
-            ? Shade3D.calcIntensity(i, j, k)
-            : ellipsoidShades[i + 20][j + 20][k + 20]); 
+    boolean outside = i < -SLIM || i >= SLIM || j < -SLIM || j >= SLIM
+        || k < -SLIM || k >= SLIM;
+    if (outside) {
+      while (i % 2 == 0 && j % 2 == 0 && k % 2 == 0 && i + j + k > 0) {
+        i >>= 1;
+        j >>= 1;
+        k >>= 1;
+      }
+      outside = i < -SLIM || i >= SLIM || j < -SLIM || j >= SLIM || k < -SLIM
+          || k >= SLIM;
+    }
+    return (outside ? Shade3D.calcIntensity(i, j, k)
+        : ellipsoidShades[i + SLIM][j + SLIM][k + SLIM]);
   }
   
   private static boolean getPixelZ(Vector3f vA, Vector3f vC, int[] zroot) {

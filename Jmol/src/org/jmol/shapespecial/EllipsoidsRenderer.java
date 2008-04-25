@@ -149,9 +149,10 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     //[0] is shortest; [2] is longest
     if (drawAxes || drawArcs || drawBall)
       setAxes(atom, 1.0f);
-    diameter = viewer
-        .scaleToScreen(atom.screenZ, wireframeOnly ? 1 : diameter0);
-    dx = viewer.scaleToScreen(atom.screenZ, (int)(lengths[2] * 1100));
+    dx = 2 + viewer.scaleToScreen(atom.screenZ, (int)(lengths[2] * 1000));
+    if (g3d.isClippedXY(dx + dx, atom.screenX, atom.screenY))
+      return;
+    diameter = viewer.scaleToScreen(atom.screenZ, wireframeOnly ? 1 : diameter0);
     if (drawDots)
       renderDots(atom);
     if (drawAxes && !drawBall)

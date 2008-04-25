@@ -2,7 +2,6 @@ package org.jmol.api;
 
 import java.util.BitSet;
 
-import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
@@ -289,6 +288,8 @@ public interface JmolRendererInterface {
 
   public abstract boolean isClippedZ(int z);
 
+  public abstract boolean isClippedXY(int i, int screenX, int screenY);
+
   public abstract int getColixArgb(short colix);
 
   public abstract String getHexColorFromIndex(short colix);
@@ -313,5 +314,6 @@ public interface JmolRendererInterface {
   public abstract byte getFontFid(float fontSize);
 
   public abstract void renderEllipsoid(int x, int y, int z, Object[] ellipsoid, int diameter);
+
     
 }

@@ -724,7 +724,11 @@ final public class Export3D implements JmolRendererInterface {
     return g3d.isClippedZ(z);
   }
   
-  public int getColixArgb(short colix) {
+  public boolean isClippedXY(int diameter, int x, int y) {
+    return g3d.isClippedXY(diameter, x, y);
+  }
+
+    public int getColixArgb(short colix) {
     return g3d.getColixArgb(colix);
   }
 

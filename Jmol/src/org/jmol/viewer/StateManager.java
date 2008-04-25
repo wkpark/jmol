@@ -628,9 +628,9 @@ public class StateManager {
     
     boolean  ellipsoidAxes              = true;
     boolean  ellipsoidDots              = false;
-    boolean  ellipsoidArcs              = true;
+    boolean  ellipsoidArcs              = false;
     boolean  ellipsoidFill              = false;
-    boolean  ellipsoidBall              = false;
+    boolean  ellipsoidBall              = true;
     
     int      ellipsoidDotCount          = 200;
     float    ellipsoidAxisDiameter      = 0.02f;

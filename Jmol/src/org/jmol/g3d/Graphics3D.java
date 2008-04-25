@@ -1416,7 +1416,7 @@ final public class Graphics3D implements JmolRendererInterface {
     return (x >= displayMinX && x < displayMaxX && y >= displayMinY && y < displayMaxY);
   }
   
-  private boolean isClippedXY(int diameter, int x, int y) {
+  public boolean isClippedXY(int diameter, int x, int y) {
     int r = (diameter + 1) >> 1;
     return (x < -r || x >= width + r || y < -r || y >= height + r);
   }

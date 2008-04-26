@@ -30,12 +30,14 @@ import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
+import org.jmol.g3d.Sphere3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Text;
 import org.jmol.util.BitSetUtil;
@@ -232,13 +234,13 @@ public class _PovrayExporter extends _Exporter {
         + "  check_shadow()}\n"
         + (isSlabEnabled? " circleCap(Z,RADIUS,R,G,B,T)\n" : "")
         + "#end\n\n");
-    output("#macro q(X,Y,Z,B11,B22,B33,B12,B13,B23,SCALE,R,G,B,T)\n" 
-        + " sphere{<X,Y,Z>,RADIUS\n"
+    output("#macro q(XX,YY,ZZ,XY,XZ,YZ,X,Y,Z,J,R,G,B,T)\n" 
+        + " quadric{<XX,YY,ZZ>,<XY,XZ,YZ>,<X,Y,Z>,J\n"
         + "  pigment{rgbt<R,G,B,T>}\n"
         + "  translucentFinish(T)\n"
         + "  clip()\n"
         + "  check_shadow()}\n"
-        + (isSlabEnabled? " circleCap(Z,RADIUS,R,G,B,T)\n" : "")
+//        + (isSlabEnabled? " circleCap(Z,RADIUS,R,G,B,T)\n" : "")
         + "#end\n\n");
   }
 
@@ -298,6 +300,14 @@ public class _PovrayExporter extends _Exporter {
     if (Float.isNaN(pt.x))
       return "0,0,0";
     return pt.x + "," + pt.y + "," + pt.z;
+  }
+
+  private String triad(float a, float b, float c) {
+    return a + "," + b + "," + c;
+  }
+
+  private String triad(int[] i) {
+    return i[0] + "," + i[1] + "," + i[2];
   }
 
   private String color4(short colix) {
@@ -453,8 +463,7 @@ public class _PovrayExporter extends _Exporter {
         continue;
       //if ((p++) % 10 == 0)
       //  output("\n");
-      output(", <" + indices[i][0] + "," + indices[i][1] + "," + indices[i][2]
-          + ">");
+      output(", <" + triad(indices[i]) + ">");
       if (colixes != null) {
         color = color4(colixes[indices[i][0]]);
         output("," + ((Integer) htColixes.get(color)).intValue());
@@ -465,7 +474,7 @@ public class _PovrayExporter extends _Exporter {
       }
       output(" //\n");
       if (faceVertexMax == 4 && indices[i].length == 4) {
-        output(", <" + indices[i][0] + "," + indices[i][2] + ","
+        output(", <" + triad(indices[i]) + ","
             + indices[i][3] + ">");
         if (colixes != null) {
           color = color4(colixes[indices[i][0]]);
@@ -639,7 +648,15 @@ public class _PovrayExporter extends _Exporter {
                          int yBaseline, int z, int zSlab) {
   }
 
-  public void renderEllipsoid(int x, int y, int z, Object[] ellipsoid, int diameter) {
+  float[] coef = new float[10];
+  
+  public void renderEllipsoid(short colix, int ix, int iy, int iz,
+                              Object[] ellipsoid, int diameter) {
+    Sphere3D.getEquationForEllipsoid(ix, iy, iz, (Matrix3f) ellipsoid[2], tempM, tempV1, coef);
+    output("q(" + triad(coef[0], coef[1], coef[2]) 
+        + "," + triad(coef[3], coef[4], coef[5]) 
+        + "," + triad(coef[6], coef[7], coef[8]) 
+        + "," + coef[9] + "," + color4(colix) + ")\n");
     
   }
 

@@ -35,6 +35,8 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.g3d.Sphere3D;
+
 //import org.jmol.util.Escape;
 
 public class UnitCell {
@@ -213,54 +215,42 @@ public class UnitCell {
       double B12 = 2 * twoP2 * U[3] * a_ * b_;
       double B13 = 2 * twoP2 * U[4] * a_ * c_;
       double B23 = 2 * twoP2 * U[5] * b_ * c_;
-      double BP11, BP22, BP33, BP12, BP13, BP23;
-      // using lambda = 1 here
-      BP11 = a * a * B11 
+      
+      double[] Bcart = new double[6];
+      
+      Bcart[0] = a * a * B11 
           + b * b * cosGamma * cosGamma * B22
           + c * c * cosBeta * cosBeta * B33
           + a * b * cosGamma * B12
           + b * c * cosGamma * cosBeta * B23
           + a * c * cosBeta * B13;
-      BP22 = b * b * sinGamma * sinGamma * B22
+      Bcart[1] = b * b * sinGamma * sinGamma * B22
           + c * c * cA_ * cA_ * B33
           + b * c * cA_ * sinGamma * B23;
-      BP33 = c * c * cB_ * cB_ * B33;
-      BP12 = 2 * b * b * cosGamma * sinGamma * B22 
+      Bcart[2] = c * c * cB_ * cB_ * B33;
+      Bcart[3] = 2 * b * b * cosGamma * sinGamma * B22 
           + 2 * c * c * cA_ * cosBeta * B33 
           + a * b * sinGamma * B12
           + b * c * (cA_ * cosGamma + sinGamma * cosBeta) * B23
           + a * c * cA_ * B13;
-      BP13 = 2 * c * c * cB_ * cosBeta * B33 
+      Bcart[4] = 2 * c * c * cB_ * cosBeta * B33 
           + b * c * cosGamma * B23
           + a * c * cB_ * B13;
-      BP23 = 2 * c * c * cA_ * cB_ * B33
+      Bcart[5] = 2 * c * c * cA_ * cB_ * B33
           + b * c * cB_ * sinGamma * B23;
-      
-      double[][] BP = new double[3][3];
-      BP[0][0] = 2 * BP11;
-      BP[1][1] = 2 * BP22;
-      BP[2][2] = 2 * BP33;
-      BP[0][1] = BP[1][0] = BP12;
-      BP[0][2] = BP[2][0] = BP13;
-      BP[1][2] = BP[2][1] = BP23;
-            
-      Eigen eigen = new Eigen(BP);
-      float[][] eigenVectors = Eigen.toFloat3x3(eigen.getEigenvectors());
-      float[] lengths = Eigen.toFloat(eigen.getEigenvalues());
-      for (int i = 0; i < 3; i++)
-        lengths[i] = (float) (Math.sqrt(lengths[i])/ 2 / Math.PI);
 
       Vector3f unitVectors[] = new Vector3f[3];
-      //Vector3f v = new Vector3f();
-      for (int i = 0; i < 3; i++) {
-        unitVectors[i] = new Vector3f(eigenVectors[i]);
-//        v.set(unitVectors[i]);
-//        v.scale(lengths[i]);
-//        System.out.println("draw v" + i + " {0 0 0} " + Escape.escape(v) + "# "+lengths[i]);
-      }
-  //    System.out.println();
-      return new Object[] {unitVectors, lengths, 
-          new double[] { BP11, BP22, BP33, BP12, BP13, BP23}, null /* transformed */};
+      for (int i = 0; i < 3; i++)
+        unitVectors[i] = new Vector3f();      
+      float[] lengths = new float[3];
+      Sphere3D.getAxesFromCoefficients(Bcart, unitVectors, lengths);
+
+      // note -- this is the ellipsoid in INVERSE CARTESIAN SPACE!
+      
+      double factor = Math.sqrt(8) / Math.PI;
+      for (int i = 0; i < 3; i++)
+        lengths[i] = (float) (factor / lengths[i]);
+      return new Object[] {unitVectors, lengths, null, null /* transformed */};
     }
     
   }

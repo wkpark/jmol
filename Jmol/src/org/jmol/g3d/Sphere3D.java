@@ -24,8 +24,10 @@
 
 package org.jmol.g3d;
 
-import javax.vecmath.Matrix4f;
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Vector3f;
+
+import org.jmol.symmetry.Eigen;
 
 /**
  *<p>
@@ -125,7 +127,7 @@ public class Sphere3D {
 
   int minX, maxX, minY, maxY, minZ, maxZ;
   void render(int[] shades, boolean tScreened, int diameter,
-              int x, int y, int z, Matrix4f mat) {
+              int x, int y, int z, Matrix3f mat) {
     if (z == 1)
       return;
     if (diameter > maxOddSizeSphere)
@@ -504,13 +506,13 @@ public class Sphere3D {
   
   Vector3f vA = new Vector3f();
   Vector3f vC = new Vector3f();
-  int[] zroot = new int[2];
+  float[] zroot = new float[2];
   final static Vector3f vZ = new Vector3f(0, 0, 1);
   
   private static byte[][][] ellipsoidShades;
   
   private void renderEllipsoid(int[] shades, boolean tScreened, int diameter,
-                               int x, int y, int z, Matrix4f mat) {
+                               int x, int y, int z, Matrix3f mat) {
     if (ellipsoidShades == null) 
       createEllipsoidShades();
     int radius = diameter / 2;
@@ -550,11 +552,11 @@ public class Sphere3D {
         boolean isCore;
         if (z < slab) {
           // center in front of plane -- possibly show back half
-          zPixel = z + (zOffset = zroot[1]);
+          zPixel = z + (zOffset = (int) zroot[1]);
           isCore = (zPixel >= slab);
         } else {
           // center is behind, show front, possibly as solid core
-          zPixel = z + (zOffset = zroot[0]);
+          zPixel = z + (zOffset = (int) zroot[0]);
           isCore = (zPixel < slab);
         }
         if (isCore)
@@ -602,44 +604,109 @@ public class Sphere3D {
         : ellipsoidShades[i + SLIM][j + SLIM][k + SLIM]);
   }
   
-  private static boolean getPixelZ(Vector3f vA, Vector3f vC, int[] zroot) {
+  private static boolean getPixelZ(Vector3f vA, Vector3f vC, float[] zroot) {
     /*
 
-         For ellipsoid of general equation:
-         
-         (A.A)iz^2 + 2(A.C)iz + C.C - 1 = 0
-         
-         and
-         
-         iz = [-2(A.C) +/- sqrt[4(A.C)^2 - 4 (A.A)(C.C-1)]]/2(A.A)
-         
-         or where d = (A.C)/(A.A) and e = (C.C-1)/(A.A), 
-         
-         iz = -d +- sqrt(d^2 - e)
-         
-         Those will be the two pixels at position ix iy that satisfy the
-         relationship for the ellipsoid. 
-         
-         Note that if ix and iy are too large, then the pixel should not be 
-         rendered, because we are outside the ellipsoid.
-         
-         That range is for d^2 - e >= 0
- 
-         returns true/[zNear, zFar] or false
+     For ellipsoid of general equation:
+
+     (A iz + C).(A iz + C) = 1
+     
+     (A.A)iz^2 + 2(A.C)iz + C.C - 1 = 0
+     
+     and
+     
+     iz = [-2(A.C) +/- sqrt[4(A.C)^2 - 4 (A.A)(C.C-1)]]/2(A.A)
+     
+     or where d = (A.C)/(A.A) and e = (C.C-1)/(A.A), 
+     
+     iz = -d +- sqrt(d^2 - e)
+     
+     Those will be the two pixels at position ix iy that satisfy the
+     relationship for the ellipsoid. 
+     
+     Note that if ix and iy are too large, then the pixel should not be 
+     rendered, because we are outside the ellipsoid.
+     
+     That range is for d^2 - e >= 0
+     
+     returns true/[zNear, zFar] or false
      */
     float adotc = vA.dot(vC);
     float adota = vA.lengthSquared();
     float cdotc = vC.lengthSquared();
-    float d = adotc/adota;
-    float e = (cdotc-1)/adota;
-    float f = d*d-e;
+    float d = adotc / adota;
+    float e = (cdotc - 1) / adota;
+    float f = d * d - e;
     if (f < 0)
       return false;
-    f = (float)Math.sqrt(f);
-    zroot[0] = (int) (-d - f);
-    zroot[1] = (int) (-d + f);
+    f = (float) Math.sqrt(f);
+    zroot[0] = -d - f;
+    zroot[1] = -d + f;
     return true;
   }
 
+  public static Matrix3f setEllipsoidMatrix(Vector3f[] unitAxes, float[] lengths, Vector3f vTemp, Matrix3f mat) {
+    /*
+     * Create a matrix that transforms cartesian coordinates
+     * into ellipsoidal coordinates, where in that system we 
+     * are drawing a sphere. 
+     *
+     */
+    
+    for (int i = 0; i < 3; i++) {
+      vTemp.set(unitAxes[i]);
+      vTemp.scale(lengths[i]);
+      mat.setColumn(i, vTemp);
+    }
+    mat.invert(mat);
+    return mat;
+  }
   
+  public static void getEquationForEllipsoid(float x, float y, float z, Matrix3f m, 
+                                             Matrix3f mTemp, Vector3f vTemp, float[] coef) {
+    /* Starting with a center point and a matrix that converts cartesian 
+     * or screen coordinates to ellipsoidal coordinates, 
+     * this method fills a float[10] with the terms for the 
+     * equation for the ellipsoid:
+     * 
+     * [ aXX  aYY  aZZ aXY aXZ aYZ aX aY aZ a ]
+     * 
+     * I made this up; I haven't seen it in print. -- Bob Hanson, 4/2008
+     * 
+     */
+    
+    vTemp.set(x, y, z);
+    m.transform(vTemp);
+    coef[9] = vTemp.dot(vTemp) - 1;
+    mTemp.transpose(m);
+    mTemp.transform(vTemp);
+    mTemp.mul(m);
+    coef[0] = mTemp.m00;
+    coef[1] = mTemp.m11;
+    coef[2] = mTemp.m22;
+    coef[3] = mTemp.m01 * 2;
+    coef[4] = mTemp.m02 * 2;
+    coef[5] = mTemp.m12 * 2;
+    coef[6] = -2 * vTemp.x;
+    coef[7] = -2 * vTemp.y;
+    coef[8] = -2 * vTemp.z;
+  }
+
+  public static void getAxesFromCoefficients(double[] coef, Vector3f[] unitVectors, float[] lengths) {
+    // assumes an ellipsoid centered on 0,0,0
+    double[][] mat = new double[3][3];
+    mat[0][0] = coef[0]; //XX
+    mat[1][1] = coef[1]; //YY
+    mat[2][2] = coef[2]; //ZZ
+    mat[0][1] = mat[1][0] = coef[3] / 2; //XY
+    mat[0][2] = mat[2][0] = coef[4] / 2; //XZ
+    mat[1][2] = mat[2][1] = coef[5] / 2; //YZ
+    Eigen eigen = new Eigen(mat);
+    float[][] eigenVectors = Eigen.toFloat3x3(eigen.getEigenvectors());
+    double[] eigenValues = eigen.getEigenvalues();
+    for (int i = 0; i < 3; i++)
+      lengths[i] = (float) (1/Math.sqrt(eigenValues[i]));
+    for (int i = 0; i < 3; i++)
+      unitVectors[i].set(eigenVectors[i]);
+  }
 }

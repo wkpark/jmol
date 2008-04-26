@@ -91,6 +91,6 @@ public interface JmolExportInterface {
   abstract void drawHermite(short colix, int tension,
                              Point3f s0, Point3f s1, Point3f s2, Point3f s3);
 
-  abstract void renderEllipsoid(int x, int y, int z, Object[] ellipsoid, int diameter);
+  abstract void renderEllipsoid(short colix, int x, int y, int z, Object[] ellipsoid, int diameter);
 
 }

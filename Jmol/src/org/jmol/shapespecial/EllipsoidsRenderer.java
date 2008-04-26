@@ -25,12 +25,14 @@
 
 package org.jmol.shapespecial;
 
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.g3d.Sphere3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Shape;
 import org.jmol.shape.ShapeRenderer;
@@ -46,8 +48,8 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private Vector3f[] axes;
   private final float[] lengths = new float[3];
   private int diameter, diameter0;
-  private Matrix4f mat = new Matrix4f();
-  private Matrix4f matToScreenInv = new Matrix4f();
+  private Matrix3f mat = new Matrix3f();
+  private Matrix3f matToScreenInv = new Matrix3f();
   protected void render() {
     ellipsoids = (Ellipsoids) shape;
     if (ellipsoids.mads == null)
@@ -89,8 +91,10 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     }
 
     if (drawBall) {
-      mat.set(viewer.getMatrixtransform());
-      mat.m03 = mat.m13 = mat.m23 = 0; // remove translation
+      Matrix4f m4 = viewer.getMatrixtransform();
+      mat.setRow(0, m4.m00, m4.m01, m4.m02);
+      mat.setRow(1, m4.m10, m4.m11, m4.m12);
+      mat.setRow(2, m4.m20, m4.m21, m4.m22);
       matToScreenInv.invert(mat);
     }
 
@@ -98,6 +102,8 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
       if (!atom.isShapeVisible(myVisibilityFlag) || modelSet.isAtomHidden(i))
+        continue;
+      if (atom.screenZ <= 1)
         continue;
       Object[] ellipsoid = atom.getEllipsoid();
       if (ellipsoid == null)
@@ -143,7 +149,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     //System.out.println(ellipsoid[2]);
     axes = (Vector3f[]) ellipsoid[0];
     float[] af = (float[]) ellipsoid[1];
-    float f = mad / 100.0f * 4f;
+    float f = mad / 100.0f;
     for (int i = 3; --i >= 0;)
       lengths[i] = af[i] * f;
     //[0] is shortest; [2] is longest
@@ -173,83 +179,66 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     }
   }
 
-  private Matrix4f setEllipsoidMatrix() {
-    /*
-     * 
-     Create a matrix that transforms screen pixel coorinates
-     into ellipsoid coordinates, where in that system we 
-     are drawing a sphere. 
-     
-     S are screen coordinates
-     X are Cartesian coordinates
-     X' are ellipsoid axis coordinates 
+  /*
+   * How this works -- Bob Hanson, 4/2008
 
-     T is the current transform matrix minus the translation part
-     E is the transform matrix from ellipsoid to cartesian
-       E has scaled Eigenvector axes as columns
-     M is the matrix converting screen coordinates to ellipsoid space
+   X are Cartesian coordinates
+   X' are ellipsoid axis coordinates 
 
-       S = TX
-       (T-1)S = X
-     
-       EX' = X
-       (E-1)X = X'
-    
-     then
-     
-       M = (E-1)(S-1)
-     
-     and 
-     
-       MS = (E-1)(S-1)S = (E-1)X = X' 
-     
-     and we can know x, y, and z in our standard ellipsoidal
-     coordinate system, where the ellipsoid behaves as a sphere:
-     
-       x^2 + y^2 + z^2 = 1
+   T is the current transform matrix minus the translation part
+   E is the transform matrix from ellipsoid to cartesian
+     E has scaled Eigenvector axes as columns
+   M is the matrix converting screen coordinates to ellipsoid space
 
-     We will scan ix and iy -- our pixel position on the
-     screen, but we won't know iz. The goal is to calculate that:
-     
-     Break M into two components -- one constant based on ix and iy
-     and one variable, based on iz:
-     
-       M(ix iy iz) =  M(ix iy 0) + M(0 0 1)*iz
-     
-     assign 
-     
-       C = M(iz iy 0)
-       A = M(0 0 1)
-     
-     Then we have
-     
-       MS = C + AZ
-     
-     for which the equation is now a simple quadratic in z:
-     
-       (c0 + a0iz)^2 + (c1 + a1iz)^2 + (c2 + a2iz)^2 = 1
-     
-     collecting terms and writing as dot products:
-     
-       (A.A)iz^2 + 2(A.C)iz + C.C - 1 = 0
-     
-     Solving this will give the two pixels at position 
-     ix iy that satisfy the relationship for the ellipsoid. 
-
-     */
-
-    for (int i = 0; i < 3; i++) {
-      v1.set(axes[i]);
-      v1.scale(lengths[i]);
-      mat.setColumn(i, v1.x, v1.y, v1.z, 0);
-    }
-    mat.setColumn(3, 0, 0, 0, 1);
-    mat.invert(mat);
-    mat.mul(mat, matToScreenInv);
-    return mat;
-
-  }
+     S = TX
+     (T-1)S = X
+   
+     EX' = X
+     (E-1)X = X'
   
+   then
+   
+     M = (E-1)(S-1)
+   
+   and 
+   
+     MS = (E-1)(S-1)S = (E-1)X = X' 
+   
+   and we can know x, y, and z in our standard ellipsoidal
+   coordinate system, where the ellipsoid behaves as a sphere:
+   
+     x^2 + y^2 + z^2 = 1
+
+   We will scan ix and iy -- our pixel position on the
+   screen, but we won't know iz. The goal is to calculate that:
+   
+   Break M into two components -- one constant based on ix and iy
+   and one variable, based on iz:
+   
+     M(ix iy iz) =  M(ix iy 0) + M(0 0 1)*iz
+   
+   assign 
+   
+     C = M(iz iy 0)
+     A = M(0 0 1)
+   
+   Then we have
+   
+     MS = C + AZ
+   
+   for which the equation is now a simple quadratic in z:
+   
+     (c0 + a0iz)^2 + (c1 + a1iz)^2 + (c2 + a2iz)^2 = 1
+   
+   collecting terms and writing as dot products:
+   
+     (A.A)iz^2 + 2(A.C)iz + C.C - 1 = 0
+   
+   Solving this will give the two pixels at position 
+   ix iy that satisfy the relationship for the ellipsoid. 
+
+   */
+
   private void setAxes(Atom atom, float f) {
     for (int i = 0; i < 6; i++) {
       int iAxis = axisPoints[i];
@@ -257,11 +246,6 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       points[i].scaleAdd(f * lengths[i012] * (iAxis < 0 ? -1 : 1), axes[i012], atom);
       viewer.transformPoint(points[i], screens[i]);
     }
-    //System.out.println(atom);
-    //for (int i = 0; i < 6; i++) {
-    //s1.scaleAdd(-1, screens[i], s0);
-    //System.out.println(s1);
-    //}
   }
 
   private void renderAxes() {
@@ -320,7 +304,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   
   private final Vector3f v1 = new Vector3f();
   private final Vector3f v2 = new Vector3f();
-  private final Vector3f v3 = new Vector3f();
+  private final Vector3f v3 = new Vector3f();  
   private final Point3f pt1 = new Point3f();
   private final Point3f pt2 = new Point3f();
   private final Point3i s0 = new Point3i();
@@ -376,9 +360,29 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   }
 
   private void renderBall(Atom atom, Object[] ellipsoid) {
-    if (!drawFill && !isGenerator) {
-      //TODO  don't know how to do drawFill or POV-Ray of ellipsoids
-      ellipsoid[3] = setEllipsoidMatrix();
+    if (!drawFill) {
+      //TODO  don't know how to do drawFill in g3d
+      ellipsoid[2] = mat;
+      Sphere3D.setEllipsoidMatrix(axes, lengths, v1, mat);
+/*
+      // check for Eigen returning proper lengths
+      float[] coef = new float[10];
+      Matrix3f m2 = new Matrix3f();
+      Sphere3D.getEquationForEllipsoid(0,0,0, mat, m2, v1, coef);
+      double t[] = new double[6];
+      for (int i = 0; i < 6; i++)
+        t[i] = coef[i];
+      Vector3f[] tv = new Vector3f[3];
+      tv[0] = new Vector3f();
+      tv[1] = new Vector3f();
+      tv[2] = new Vector3f();
+      float tlen[] = new float[3];
+      Sphere3D.getAxesFromCoefficients(t, tv, tlen);
+      for (int i = 0; i < 3; i++)
+        System.out.println(lengths[i] + "\t" + tlen[i] + "\t" + axes[i] + "\t" + tv[i]);
+ */                                                                                     
+      // make this screen coordinates to ellisoidal coordinates
+      mat.mul(mat, matToScreenInv);
       g3d.renderEllipsoid(s0.x, s0.y, s0.z, ellipsoid, dx + dx);
       return;
     }

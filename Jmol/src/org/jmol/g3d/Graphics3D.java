@@ -28,7 +28,6 @@ import java.awt.Image;
 import java.util.BitSet;
 import java.util.Hashtable;
 
-import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -806,7 +805,6 @@ final public class Graphics3D implements JmolRendererInterface {
     case 0:
       return;
     }
-    //System.out.println("Graphics3D fillSphereCentered diameter x y z" + diameter + " "+x+" "+y+" "+z);
     if (diameter <= (antialiasThisFrame ? Sphere3D.maxSphereDiameter2 : Sphere3D.maxSphereDiameter))
       sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z, null);
   }
@@ -839,9 +837,8 @@ final public class Graphics3D implements JmolRendererInterface {
     case 0:
       return;
     }
-    //System.out.println("Graphics3D fillSphereCentered diameter x y z" + diameter + " "+x+" "+y+" "+z);
     if (diameter <= (antialiasThisFrame ? Sphere3D.maxSphereDiameter2 : Sphere3D.maxSphereDiameter))
-      sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z, (Matrix4f) ellipsoid[3]);
+      sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z, (Matrix3f) ellipsoid[2]);
   }
 
   /**

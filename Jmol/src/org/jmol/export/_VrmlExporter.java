@@ -234,7 +234,7 @@ public class _VrmlExporter extends _Exporter {
     //cartoons, meshRibbons:
   }
 
-  public void renderEllipsoid(int x, int y, int z, Object[] ellipsoid, int diameter) {
+  public void renderEllipsoid(short colix, int x, int y, int z, Object[] ellipsoid, int diameter) {
     
   }
            

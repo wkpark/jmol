@@ -636,7 +636,7 @@ final public class Export3D implements JmolRendererInterface {
   }
 
   public void renderEllipsoid(int x, int y, int z, Object[] ellipsoid, int diameter) {
-    exporter.renderEllipsoid(x, y, z, ellipsoid, diameter);    
+    exporter.renderEllipsoid(colix, x, y, z, ellipsoid, diameter);    
   }
 
   /* ***************************************************************

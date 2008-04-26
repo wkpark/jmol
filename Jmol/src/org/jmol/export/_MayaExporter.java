@@ -223,7 +223,7 @@ public class _MayaExporter extends _Exporter {
     //cartoons, meshRibbons:
   }
 
-  public void renderEllipsoid(short colix, int x, int y, int z, Object[] ellipsoid, int diameter) {
+  public void renderEllipsoid(short colix, int x, int y, int z, int diameter, Object[] ellipsoid, double[] coef) {
     
   }
 

@@ -25,6 +25,8 @@ package org.jmol.export;
 
 import java.util.BitSet;
 
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -635,8 +637,10 @@ final public class Export3D implements JmolRendererInterface {
                               indices, bsFaces, nVertices, faceVertexMax);
   }
 
-  public void renderEllipsoid(int x, int y, int z, Object[] ellipsoid, int diameter) {
-    exporter.renderEllipsoid(colix, x, y, z, ellipsoid, diameter);    
+  public void renderEllipsoid(int x, int y, int z, int diameter, 
+                              Object[] ellipsoid, Matrix3f mToEllipsoidal, 
+                              double[] coef, Matrix4f mDeriv) {
+    exporter.renderEllipsoid(colix, x, y, z, diameter, ellipsoid, coef);    
   }
 
   /* ***************************************************************

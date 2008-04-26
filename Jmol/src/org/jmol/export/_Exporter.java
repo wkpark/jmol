@@ -156,7 +156,6 @@ public abstract class _Exporter implements JmolExportInterface {
   protected Vector3f tempV2 = new Vector3f();
   protected Vector3f tempV3 = new Vector3f();
   protected AxisAngle4f tempA = new AxisAngle4f();
-  protected Matrix3f tempM = new Matrix3f();
   
   public _Exporter() {
   }

@@ -28,6 +28,7 @@ import java.awt.Image;
 import java.util.BitSet;
 import java.util.Hashtable;
 
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -806,7 +807,7 @@ final public class Graphics3D implements JmolRendererInterface {
       return;
     }
     if (diameter <= (antialiasThisFrame ? Sphere3D.maxSphereDiameter2 : Sphere3D.maxSphereDiameter))
-      sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z, null);
+      sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z, null, null, null);
   }
 
   /**
@@ -830,7 +831,8 @@ final public class Graphics3D implements JmolRendererInterface {
     fillSphereCentered(diameter, (int)center.x, (int)center.y, (int)center.z);
   }
 
-  public void renderEllipsoid(int x, int y, int z, Object[] ellipsoid, int diameter) {
+  public void renderEllipsoid(int x, int y, int z, int diameter, Object[] ellipsoid, 
+                              Matrix3f mToEllipsoidal, double[] coef, Matrix4f mDeriv) {
     switch (diameter) {
     case 1:
       plotPixelClipped(argbCurrent, x, y, z);
@@ -838,7 +840,7 @@ final public class Graphics3D implements JmolRendererInterface {
       return;
     }
     if (diameter <= (antialiasThisFrame ? Sphere3D.maxSphereDiameter2 : Sphere3D.maxSphereDiameter))
-      sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z, (Matrix3f) ellipsoid[2]);
+      sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z, mToEllipsoidal, coef, mDeriv);
   }
 
   /**

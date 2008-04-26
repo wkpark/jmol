@@ -32,7 +32,7 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.g3d.Sphere3D;
+import org.jmol.util.Quadric;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Shape;
 import org.jmol.shape.ShapeRenderer;
@@ -49,7 +49,11 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private final float[] lengths = new float[3];
   private int diameter, diameter0;
   private Matrix3f mat = new Matrix3f();
+  private Matrix3f mTemp = new Matrix3f();
+  private Matrix4f mDeriv = new Matrix4f();
   private Matrix3f matToScreenInv = new Matrix3f();
+  private double[] coef = new double[10];
+
   protected void render() {
     ellipsoids = (Ellipsoids) shape;
     if (ellipsoids.mads == null)
@@ -359,11 +363,11 @@ public class EllipsoidsRenderer extends ShapeRenderer {
             screens[i == 17 ? i + 7 : i + 8]);
   }
 
+  
   private void renderBall(Atom atom, Object[] ellipsoid) {
     if (!drawFill) {
       //TODO  don't know how to do drawFill in g3d
-      ellipsoid[2] = mat;
-      Sphere3D.setEllipsoidMatrix(axes, lengths, v1, mat);
+      Quadric.setEllipsoidMatrix(axes, lengths, v1, mat);
 /*
       // check for Eigen returning proper lengths
       float[] coef = new float[10];
@@ -383,7 +387,10 @@ public class EllipsoidsRenderer extends ShapeRenderer {
  */                                                                                     
       // make this screen coordinates to ellisoidal coordinates
       mat.mul(mat, matToScreenInv);
-      g3d.renderEllipsoid(s0.x, s0.y, s0.z, ellipsoid, dx + dx);
+      // get equation and differential
+      Quadric.getEquationForQuadric(s0.x, s0.y, s0.z, 
+          mat, v1, mTemp, coef, mDeriv);
+      g3d.renderEllipsoid(s0.x, s0.y, s0.z, dx + dx, ellipsoid, mat, coef, mDeriv);
       return;
     }
     int iCutout = -1;

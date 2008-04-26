@@ -30,14 +30,12 @@ import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
-import org.jmol.g3d.Sphere3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Text;
 import org.jmol.util.BitSetUtil;
@@ -648,16 +646,13 @@ public class _PovrayExporter extends _Exporter {
                          int yBaseline, int z, int zSlab) {
   }
 
-  float[] coef = new float[10];
   
   public void renderEllipsoid(short colix, int ix, int iy, int iz,
-                              Object[] ellipsoid, int diameter) {
-    Sphere3D.getEquationForEllipsoid(ix, iy, iz, (Matrix3f) ellipsoid[2], tempM, tempV1, coef);
-    output("q(" + triad(coef[0], coef[1], coef[2]) 
-        + "," + triad(coef[3], coef[4], coef[5]) 
-        + "," + triad(coef[6], coef[7], coef[8]) 
+                              int diameter, Object[] ellipsoid, double[] coef) {
+    output("q(" + coef[0] + "," + coef[1] + "," + coef[2] 
+        + "," + coef[3] + "," + coef[4] + "," + coef[5] 
+        + "," + coef[6] + "," + coef[7] + "," + coef[8] 
         + "," + coef[9] + "," + color4(colix) + ")\n");
-    
   }
 
 }

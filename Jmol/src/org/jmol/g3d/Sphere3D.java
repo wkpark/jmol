@@ -25,9 +25,12 @@
 package org.jmol.g3d;
 
 import javax.vecmath.Matrix3f;
-import javax.vecmath.Vector3f;
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Vector4f;
 
-import org.jmol.symmetry.Eigen;
+import org.jmol.util.Quadric;
+
+
 
 /**
  *<p>
@@ -64,6 +67,11 @@ public class Sphere3D {
   final static int maxSphereDiameter = 1000;
   final static int maxSphereDiameter2 = maxSphereDiameter * 2;
   private final static int[][] sphereShapeCache = new int[maxSphereCache][];
+
+  Vector4f vN = new Vector4f();
+  double[] zroot = new double[2];
+  //private static int nOut, nIn;
+  
 
   static synchronized void flushSphereCache() {
     for (int i =  maxSphereCache; --i >= 0;)
@@ -127,7 +135,7 @@ public class Sphere3D {
 
   int minX, maxX, minY, maxY, minZ, maxZ;
   void render(int[] shades, boolean tScreened, int diameter,
-              int x, int y, int z, Matrix3f mat) {
+              int x, int y, int z, Matrix3f mat, double[] coef, Matrix4f mDeriv) {
     if (z == 1)
       return;
     if (diameter > maxOddSizeSphere)
@@ -145,11 +153,8 @@ public class Sphere3D {
     maxZ = z + radius;
     if (maxZ < g3d.slab || minZ > g3d.depth)
       return;
-    if (mat != null) {
-      renderEllipsoid(shades, tScreened, diameter, x, y, z, mat);
-      return;
-    } else if (diameter > maxSphereCache) {
-      renderLargeSphere(shades, tScreened, diameter, x, y, z);
+    if (mat != null || diameter > maxSphereCache) {
+      renderLarge(shades, tScreened, diameter, x, y, z, mat, coef, mDeriv);
       return;
     }
     zShift = g3d.getZShift(z);
@@ -348,19 +353,23 @@ public class Sphere3D {
     } while (--nLines > 0);
   }
 
-  private void renderLargeSphere(int[] shades, boolean tScreened, int diameter,
-                         int x, int y, int z) {
-    if (!Shade3D.sphereShadingCalculated)
+  private void renderLarge(int[] shades, boolean tScreened, int diameter,
+                         int x, int y, int z, Matrix3f mat, double[] coef, Matrix4f mDeriv) {
+    if (mat != null) {
+      if (ellipsoidShades == null) 
+      createEllipsoidShades();
+    } else if (!Shade3D.sphereShadingCalculated)
       Shade3D.calcSphereShading();
     int radius = diameter / 2;
-    renderQuadrant(shades, tScreened, radius, x, y, z, -1, -1);
-    renderQuadrant(shades, tScreened, radius, x, y, z, -1,  1);
-    renderQuadrant(shades, tScreened, radius, x, y, z,  1, -1);
-    renderQuadrant(shades, tScreened, radius, x, y, z,  1,  1);
+    renderQuadrant(shades, tScreened, radius, x, y, z, -1, -1, mat, coef, mDeriv);
+    renderQuadrant(shades, tScreened, radius, x, y, z, -1,  1, mat, coef, mDeriv);
+    renderQuadrant(shades, tScreened, radius, x, y, z,  1, -1, mat, coef, mDeriv);
+    renderQuadrant(shades, tScreened, radius, x, y, z,  1,  1, mat, coef, mDeriv);
   }
 
   private void renderQuadrant(int[] shades, boolean tScreened, int radius, int x,
-                      int y, int z, int xSign, int ySign) {
+                      int y, int z, int xSign, int ySign,
+                      Matrix3f mat, double[] coef, Matrix4f mDeriv) {
     int t = x + radius * xSign;
     int xStatus = (x < 0 ? -1 : x < g3d.width ? 0 : 1)
         + (t < 0 ? -2 : t < g3d.width ? 0 : 2);
@@ -373,12 +382,12 @@ public class Sphere3D {
     if (yStatus == -3 || yStatus == 3)
       return;
 
-    boolean zStatus = (z - radius >= g3d.slab  && z <= g3d.depth);
-    
-    if (xStatus == 0 && yStatus == 0 && zStatus)
+    boolean unclipped = (mat == null && xStatus == 0 && yStatus == 0 
+        && z - radius >= g3d.slab  && z <= g3d.depth);
+    if (unclipped)
       renderQuadrantUnclipped(shades, tScreened, radius, x, y, z, xSign, ySign);
     else
-      renderQuadrantClipped(shades, tScreened, radius, x, y, z, xSign, ySign);
+      renderQuadrantClipped(shades, tScreened, radius, x, y, z, xSign, ySign, mat, coef, mDeriv);
   }
 
   private void renderQuadrantUnclipped(int[] shades, boolean tScreened, int radius,
@@ -422,7 +431,9 @@ public class Sphere3D {
 
   private void renderQuadrantClipped(int[] shades, boolean tScreened, int radius,
                              int x, int y, int z,
-                             int xSign, int ySign) {
+                             int xSign, int ySign, 
+                             Matrix3f mat, double[] coef, Matrix4f mDeriv) {
+    boolean isEllipsoid = (mat != null);
     int r2 = radius * radius;
     int dDivisor = radius * 2 + 1;
     int[] zbuf = g3d.zbuf;
@@ -436,6 +447,7 @@ public class Sphere3D {
     if (ySign < 0)
       lineIncrement = -width;
     int yCurrent = y - ySign;
+    int y8 = 0;
     for (int i = 0, i2 = 0;
          i2 <= r2;
          i2 += i + i + 1, ++i, offsetPbufBeginLine += lineIncrement) {
@@ -451,10 +463,14 @@ public class Sphere3D {
         continue;
       }
       int offsetPbuf = offsetPbufBeginLine;
-      int s2 = r2 - i2;
+      int s2 = r2 - (isEllipsoid? 0 : i2);
       int xCurrent = x - xSign;
-      int y8 = ((i * ySign + radius) << 8) / dDivisor;
+      if (!isEllipsoid) {
+        y8 = ((i * ySign + radius) << 8) / dDivisor;
+      }
       randu = ((randu << 16) + (randu << 1) + randu) & 0x7FFFFFFF;
+      int iRoot = -1;
+      int mode = 1;
       for (int j = 0, j2 = 0; j2 <= s2;
            j2 += j + j + 1, ++j, offsetPbuf += xSign) {
         xCurrent += xSign;
@@ -470,31 +486,45 @@ public class Sphere3D {
         }
         if (tScreened && (((xCurrent ^ yCurrent) & 1) != 0))
           continue;
-        int zOffset = (int)Math.sqrt(s2 - j2);
         int zPixel;
-        boolean isCore;
-        if (z < slab) {
-          // center in front of plane -- possibly show back half
-          zPixel = z + zOffset;
-          isCore = (zPixel >= slab);
+        if (isEllipsoid) {
+          if (!Quadric.getQuardricZ(xCurrent, yCurrent, coef, zroot)) {
+            if (iRoot >= 0) {
+              // done for this line
+              break;
+            }
+            continue;
+          }
+          iRoot = (z < slab ? 1 : 0);
+          zPixel = (int) zroot[iRoot];
+          mode = 2;
         } else {
-          // center is behind, show front, possibly as solid core
-          zPixel = z - zOffset;
-          isCore = (zPixel < slab);
+          int zOffset = (int)Math.sqrt(s2 - j2);
+          zPixel = z + (z < slab ? zOffset : -zOffset);          
         }
-        if (isCore)
+        boolean isCore = (z < slab ? zPixel >= slab : zPixel < slab);
+        if (isCore) {
           zPixel = slab;
+          mode = 0;
+        }
         if (zPixel < slab || zPixel > depth || zbuf[offsetPbuf] <= zPixel)
           continue;
-        int s;
-        if (isCore) {
-          s = SHADE_SLAB_CLIPPED - 3 + ((randu >> 8) & 0x07);
+        int iShade;
+        switch(mode) {
+        case 0: //core
+          iShade = (SHADE_SLAB_CLIPPED - 3 + ((randu >> 8) & 0x07)) >> zShift;
           randu = ((randu << 16) + (randu << 1) + randu) & 0x7FFFFFFF;
-        } else {
+          mode = 1;
+          break;
+        case 2: //ellipsoid
+          iShade = getEllipsoidShade(xCurrent, yCurrent, (float) zroot[iRoot], radius, mDeriv, vN);
+          break;
+        default: //sphere
           int x8 = ((j * xSign + radius) << 8) / dDivisor;
-          s = Shade3D.sphereIntensities[(y8 << 8) + x8];
+          iShade = Shade3D.sphereIntensities[(y8 << 8) + x8] >> zShift;
+          break;
         }
-        g3d.addPixel(offsetPbuf, zPixel, shades[s >> zShift]);
+        g3d.addPixel(offsetPbuf, zPixel, shades[iShade]);
       }
       // randu is failing me and generating moire patterns :-(
       // so throw in a little more salt
@@ -503,210 +533,58 @@ public class Sphere3D {
   }
 
   //////////  Ellipsoid Code ///////////
-  
-  Vector3f vA = new Vector3f();
-  Vector3f vC = new Vector3f();
-  float[] zroot = new float[2];
-  final static Vector3f vZ = new Vector3f(0, 0, 1);
+  //
+  // Bob Hanson, 4/2008
+  //
+  //////////////////////////////////////
   
   private static byte[][][] ellipsoidShades;
   
-  private void renderEllipsoid(int[] shades, boolean tScreened, int diameter,
-                               int x, int y, int z, Matrix3f mat) {
-    if (ellipsoidShades == null) 
-      createEllipsoidShades();
-    int radius = diameter / 2;
-    vA.set(vZ);
-    mat.transform(vA);
-    int x0 = x - radius;
-    y -= radius;
-    int[] zbuf = g3d.zbuf;
-    int slab = g3d.slab;
-    int depth = g3d.depth;
-    int height = g3d.height;
-    int width = g3d.width;
-    int randu = (x0 << 16) + (y << 1) ^ 0x33333333;
-    int pt = y * width + x0 - 1;
-    for (int j = -radius; j < radius; j++, pt += width, y++) {
-      if (y < 0)
-        continue;
-      if (y >= height)
-        return;
-      int ptBuf = pt;
-      x = x0;
-      for (int i = -radius; i < radius; i++, x++) {
-        ptBuf++;
-        if (x < 0)
-          continue;
-        if (x >= width)
-          break;
-        randu = ((randu << 16) + (randu << 1) + randu) & 0x7FFFFFFF;
-        if (tScreened && (((x ^ y) & 1) != 0))
-          continue;
-        vC.set(i, j, 0);
-        mat.transform(vC);
-        if (!getPixelZ(vA, vC, zroot))
-          continue;
-        int zOffset;
-        int zPixel;
-        boolean isCore;
-        if (z < slab) {
-          // center in front of plane -- possibly show back half
-          zPixel = z + (zOffset = (int) zroot[1]);
-          isCore = (zPixel >= slab);
-        } else {
-          // center is behind, show front, possibly as solid core
-          zPixel = z + (zOffset = (int) zroot[0]);
-          isCore = (zPixel < slab);
-        }
-        if (isCore)
-          zPixel = slab;
-        if (zPixel < slab || zPixel > depth || zbuf[ptBuf] <= zPixel)
-          continue;
-        int s;
-        if (isCore) {
-          s = (SHADE_SLAB_CLIPPED - 3 + ((randu >> 8) & 0x07)) >> zShift;
-          randu = ((randu << 16) + (randu << 1) + randu) & 0x7FFFFFFF;
-        } else {
-          
-          s = getEllipsoidShade(i, j, -zOffset);
-        }
-        g3d.addPixel(ptBuf, zPixel, shades[s]);
-        randu = ((randu + x + y) | 1) & 0x7FFFFFFF;
-      }
-    }
-  }
-
   final private static int SLIM = 20;
   final private static int SDIM = SLIM * 2;
   private static void createEllipsoidShades() {
+    
+    // we don't need to cache rear-directed normals (kk < 0)
+    
     ellipsoidShades = new byte[SDIM][SDIM][SDIM];
     for (int ii = 0; ii < SDIM; ii++)
       for (int jj = 0; jj < SDIM; jj++)
         for (int kk = 0; kk < SDIM; kk++)
-          ellipsoidShades[ii][jj][kk] = Shade3D.calcIntensity(ii - SLIM, jj - SLIM,
-              kk - SLIM);
+          ellipsoidShades[ii][jj][kk] = Shade3D.calcIntensity(ii - SLIM, jj
+              - SLIM, kk);
   }
 
-  private static int getEllipsoidShade(int i, int j, int k) {
+  private static int getEllipsoidShade(float x, float y, float z, int radius,
+                                       Matrix4f mDeriv, Vector4f vTemp) {
+    vTemp.set(x, y, z, 1);
+    mDeriv.transform(vTemp);
+    vTemp.w = 0;
+    vTemp.normalize();
+    
+    float f = Math.min(radius/2f, 50);
+    // optimized for about 30-100% inclusion
+    int i = (int) (-vTemp.x * f);
+    int j = (int) (-vTemp.y * f);
+    int k = (int) (vTemp.z * f);
     boolean outside = i < -SLIM || i >= SLIM || j < -SLIM || j >= SLIM
-        || k < -SLIM || k >= SLIM;
+        || k < 0 || k >= SDIM;
     if (outside) {
       while (i % 2 == 0 && j % 2 == 0 && k % 2 == 0 && i + j + k > 0) {
         i >>= 1;
         j >>= 1;
         k >>= 1;
       }
-      outside = i < -SLIM || i >= SLIM || j < -SLIM || j >= SLIM || k < -SLIM
-          || k >= SLIM;
+      outside = i < -SLIM || i >= SLIM || j < -SLIM || j >= SLIM || k < 0
+          || k >= SDIM;
     }
+/*    if (outside)
+      nOut++;
+    else
+      nIn++;
+*/
     return (outside ? Shade3D.calcIntensity(i, j, k)
-        : ellipsoidShades[i + SLIM][j + SLIM][k + SLIM]);
+        : ellipsoidShades[i + SLIM][j + SLIM][k]);
   }
   
-  private static boolean getPixelZ(Vector3f vA, Vector3f vC, float[] zroot) {
-    /*
 
-     For ellipsoid of general equation:
-
-     (A iz + C).(A iz + C) = 1
-     
-     (A.A)iz^2 + 2(A.C)iz + C.C - 1 = 0
-     
-     and
-     
-     iz = [-2(A.C) +/- sqrt[4(A.C)^2 - 4 (A.A)(C.C-1)]]/2(A.A)
-     
-     or where d = (A.C)/(A.A) and e = (C.C-1)/(A.A), 
-     
-     iz = -d +- sqrt(d^2 - e)
-     
-     Those will be the two pixels at position ix iy that satisfy the
-     relationship for the ellipsoid. 
-     
-     Note that if ix and iy are too large, then the pixel should not be 
-     rendered, because we are outside the ellipsoid.
-     
-     That range is for d^2 - e >= 0
-     
-     returns true/[zNear, zFar] or false
-     */
-    float adotc = vA.dot(vC);
-    float adota = vA.lengthSquared();
-    float cdotc = vC.lengthSquared();
-    float d = adotc / adota;
-    float e = (cdotc - 1) / adota;
-    float f = d * d - e;
-    if (f < 0)
-      return false;
-    f = (float) Math.sqrt(f);
-    zroot[0] = -d - f;
-    zroot[1] = -d + f;
-    return true;
-  }
-
-  public static Matrix3f setEllipsoidMatrix(Vector3f[] unitAxes, float[] lengths, Vector3f vTemp, Matrix3f mat) {
-    /*
-     * Create a matrix that transforms cartesian coordinates
-     * into ellipsoidal coordinates, where in that system we 
-     * are drawing a sphere. 
-     *
-     */
-    
-    for (int i = 0; i < 3; i++) {
-      vTemp.set(unitAxes[i]);
-      vTemp.scale(lengths[i]);
-      mat.setColumn(i, vTemp);
-    }
-    mat.invert(mat);
-    return mat;
-  }
-  
-  public static void getEquationForEllipsoid(float x, float y, float z, Matrix3f m, 
-                                             Matrix3f mTemp, Vector3f vTemp, float[] coef) {
-    /* Starting with a center point and a matrix that converts cartesian 
-     * or screen coordinates to ellipsoidal coordinates, 
-     * this method fills a float[10] with the terms for the 
-     * equation for the ellipsoid:
-     * 
-     * [ aXX  aYY  aZZ aXY aXZ aYZ aX aY aZ a ]
-     * 
-     * I made this up; I haven't seen it in print. -- Bob Hanson, 4/2008
-     * 
-     */
-    
-    vTemp.set(x, y, z);
-    m.transform(vTemp);
-    coef[9] = vTemp.dot(vTemp) - 1;
-    mTemp.transpose(m);
-    mTemp.transform(vTemp);
-    mTemp.mul(m);
-    coef[0] = mTemp.m00;
-    coef[1] = mTemp.m11;
-    coef[2] = mTemp.m22;
-    coef[3] = mTemp.m01 * 2;
-    coef[4] = mTemp.m02 * 2;
-    coef[5] = mTemp.m12 * 2;
-    coef[6] = -2 * vTemp.x;
-    coef[7] = -2 * vTemp.y;
-    coef[8] = -2 * vTemp.z;
-  }
-
-  public static void getAxesFromCoefficients(double[] coef, Vector3f[] unitVectors, float[] lengths) {
-    // assumes an ellipsoid centered on 0,0,0
-    double[][] mat = new double[3][3];
-    mat[0][0] = coef[0]; //XX
-    mat[1][1] = coef[1]; //YY
-    mat[2][2] = coef[2]; //ZZ
-    mat[0][1] = mat[1][0] = coef[3] / 2; //XY
-    mat[0][2] = mat[2][0] = coef[4] / 2; //XZ
-    mat[1][2] = mat[2][1] = coef[5] / 2; //YZ
-    Eigen eigen = new Eigen(mat);
-    float[][] eigenVectors = Eigen.toFloat3x3(eigen.getEigenvectors());
-    double[] eigenValues = eigen.getEigenvalues();
-    for (int i = 0; i < 3; i++)
-      lengths[i] = (float) (1/Math.sqrt(eigenValues[i]));
-    for (int i = 0; i < 3; i++)
-      unitVectors[i].set(eigenVectors[i]);
-  }
 }

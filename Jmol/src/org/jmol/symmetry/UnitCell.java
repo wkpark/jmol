@@ -35,7 +35,8 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.g3d.Sphere3D;
+import org.jmol.util.Quadric;
+
 
 //import org.jmol.util.Escape;
 
@@ -243,14 +244,14 @@ public class UnitCell {
       for (int i = 0; i < 3; i++)
         unitVectors[i] = new Vector3f();      
       float[] lengths = new float[3];
-      Sphere3D.getAxesFromCoefficients(Bcart, unitVectors, lengths);
+      Quadric.getAxesForEllipsoid(Bcart, unitVectors, lengths);
 
       // note -- this is the ellipsoid in INVERSE CARTESIAN SPACE!
       
       double factor = Math.sqrt(8) / Math.PI;
       for (int i = 0; i < 3; i++)
         lengths[i] = (float) (factor / lengths[i]);
-      return new Object[] {unitVectors, lengths, null, null /* transformed */};
+      return new Object[] {unitVectors, lengths};
     }
     
   }

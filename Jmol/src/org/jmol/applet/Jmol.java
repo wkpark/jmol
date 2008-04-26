@@ -949,14 +949,13 @@ public class Jmol implements WrappedApplet {
         }
         break;
       case JmolConstants.CALLBACK_MEASURE:
-        if (data.length == 3) {//picking mode -- never sent to message queue
-          showStatusAndConsole(strInfo);
-          break;
-        }
         //pending, deleted, or completed
         if (!doCallback) 
           doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
-        consoleMessage((String) data[3] + ": " + strInfo);
+        if (data.length == 3)
+          showStatusAndConsole(strInfo); // set picking measure distance
+        else
+          consoleMessage((String) data[3] + ": " + strInfo);
         break;
       case JmolConstants.CALLBACK_MESSAGE:
         consoleMessage(strInfo);

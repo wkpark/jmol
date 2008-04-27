@@ -51,6 +51,7 @@ import org.jmol.util.Quadric;
  * There is a lot of bit-twiddling going on here, which may
  * make the code difficult to understand for non-systems programmers.
  *</p>
+ * Ellipsoid code added 4/2008 -- Bob Hanson hansonr@stolaf.edu
  *
  * @author Miguel, miguel@jmol.org
  */

@@ -626,7 +626,7 @@ public class StateManager {
     boolean[] objStateOn                = new boolean[OBJ_MAX];
     int[]     objMad                    = new int[OBJ_MAX];
     
-    boolean  ellipsoidAxes              = true;
+    boolean  ellipsoidAxes              = false;
     boolean  ellipsoidDots              = false;
     boolean  ellipsoidArcs              = false;
     boolean  ellipsoidFill              = false;

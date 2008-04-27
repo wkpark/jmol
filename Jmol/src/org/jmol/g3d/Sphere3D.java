@@ -28,8 +28,7 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
-import javax.vecmath.Vector4f;
-
+//import javax.vecmath.Vector4f;  !NO -- requires Vector4d in applet
 import org.jmol.util.Quadric;
 
 
@@ -71,14 +70,13 @@ public class Sphere3D {
   final static int maxSphereDiameter2 = maxSphereDiameter * 2;
   private final static int[][] sphereShapeCache = new int[maxSphereCache][];
 
-  private Vector4f vN = new Vector4f();
   private double[] zroot = new double[2];
-  //private static int nOut, nIn;
+  private static int nOut, nIn;
   private Matrix3f mat;
   private double[] coef;
   private Matrix4f mDeriv;
   private int selectedOctant;
-  private Point3i[] selectedPoints;
+  private Point3i[] octantPoints;
   private int planeShade;
   private int[] zbuf;
   private int width;
@@ -155,7 +153,7 @@ public class Sphere3D {
   
   void render(int[] shades, boolean tScreened, int diameter, int x, int y,
               int z, Matrix3f mat, double[] coef, Matrix4f mDeriv,
-              int selectedOctant, Point3i[] selectedPoints) {
+              int selectedOctant, Point3i[] octantPoints) {
     if (z == 1)
       return;
     width = g3d.width;
@@ -178,6 +176,8 @@ public class Sphere3D {
     maxZ = z + radius;
     if (maxZ < slab || minZ > depth)
       return;
+    
+    nOut = nIn = 0;
     zbuf = g3d.zbuf;
     addAllPixels = g3d.addAllPixels;
     offsetPbufBeginLine = width * y + x;
@@ -192,7 +192,7 @@ public class Sphere3D {
       this.coef = coef;
       this.mDeriv = mDeriv;
       this.selectedOctant = selectedOctant;
-      this.selectedPoints = selectedPoints;
+      this.octantPoints = octantPoints;
     }
     if (mat != null || diameter > maxSphereCache) {
       renderLarge();
@@ -200,7 +200,7 @@ public class Sphere3D {
         this.mat = null;
         this.coef = null;
         this.mDeriv = null;
-        this.selectedPoints = null;
+        this.octantPoints = null;
       }
     } else {
       zShift = g3d.getZShift(z);
@@ -212,7 +212,9 @@ public class Sphere3D {
         renderShapeUnclipped(ss);
     }
     this.shades = null;
-  }
+    this.zbuf = null;
+    //System.out.println(nIn + " " + nOut + " " + (1.0 * nIn / (nIn + nOut)));
+  } 
   
 
   private void renderShapeUnclipped(int[] sphereShape) {
@@ -393,7 +395,7 @@ public class Sphere3D {
     if (mat != null) {
       if (ellipsoidShades == null)
         createEllipsoidShades();
-      if (selectedPoints != null)
+      if (octantPoints != null)
         setPlaneDerivatives();
     } else if (!Shade3D.sphereShadingCalculated)
       Shade3D.calcSphereShading();
@@ -555,7 +557,7 @@ public class Sphere3D {
           mode = 1;
           break;
         case 2: //ellipsoid
-          iShade = getEllipsoidShade(xCurrent, yCurrent, (float) zroot[iRoot], radius, mDeriv, vN);
+          iShade = getEllipsoidShade(xCurrent, yCurrent, (float) zroot[iRoot], radius, mDeriv);
           break;
         case 3: //ellipsoid fill
           break;
@@ -581,9 +583,9 @@ public class Sphere3D {
   private void setPlaneDerivatives() {
     planeShade = -1;
     for (int i = 0; i < 3; i ++) {
-      float dx = dxyz[i][0] = selectedPoints[i].x - x;
-      float dy = dxyz[i][1] = selectedPoints[i].y - y;
-      float dz = dxyz[i][2] = selectedPoints[i].z - z;
+      float dx = dxyz[i][0] = octantPoints[i].x - x;
+      float dy = dxyz[i][1] = octantPoints[i].y - y;
+      float dz = dxyz[i][2] = octantPoints[i].z - z;
       planeShades[i] = Shade3D.calcIntensity(dx, dy, -dz);
       if (dx == 0 && dy == 0) {
         planeShade = planeShades[i];
@@ -633,17 +635,16 @@ public class Sphere3D {
   }
 
   private static int getEllipsoidShade(float x, float y, float z, int radius,
-                                       Matrix4f mDeriv, Vector4f vTemp) {
-    vTemp.set(x, y, z, 1);
-    mDeriv.transform(vTemp);
-    vTemp.w = 0;
-    vTemp.normalize();
-    
-    float f = Math.min(radius/2f, 50);
+                                       Matrix4f mDeriv) {
+    float tx = mDeriv.m00 * x + mDeriv.m01 * y + mDeriv.m02 * z + mDeriv.m03;
+    float ty = mDeriv.m10 * x + mDeriv.m11 * y + mDeriv.m12 * z + mDeriv.m13;
+    float tz = mDeriv.m20 * x + mDeriv.m21 * y + mDeriv.m22 * z + mDeriv.m23;
+    float f = Math.min(radius/2f, 45) / 
+        (float) Math.sqrt(tx * tx + ty * ty + tz * tz);
     // optimized for about 30-100% inclusion
-    int i = (int) (-vTemp.x * f);
-    int j = (int) (-vTemp.y * f);
-    int k = (int) (vTemp.z * f);
+    int i = (int) (-tx * f);
+    int j = (int) (-ty * f);
+    int k = (int) (tz * f);
     boolean outside = i < -SLIM || i >= SLIM || j < -SLIM || j >= SLIM
         || k < 0 || k >= SDIM;
     if (outside) {
@@ -655,11 +656,12 @@ public class Sphere3D {
       outside = i < -SLIM || i >= SLIM || j < -SLIM || j >= SLIM || k < 0
           || k >= SDIM;
     }
-/*    if (outside)
+    
+    if (outside)
       nOut++;
     else
       nIn++;
-*/
+
     return (outside ? Shade3D.calcIntensity(i, j, k)
         : ellipsoidShades[i + SLIM][j + SLIM][k]);
   }

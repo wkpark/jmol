@@ -640,8 +640,8 @@ final public class Export3D implements JmolRendererInterface {
   public void renderEllipsoid(int x, int y, int z, int diameter,
                               Matrix3f mToEllipsoidal, double[] coef,
                               Matrix4f mDeriv, int selectedOctant,
-                              Point3i[] selectedPoints) {
-    exporter.renderEllipsoid(colix, x, y, z, diameter, coef, selectedPoints);
+                              Point3i[] octantPoints) {
+    exporter.renderEllipsoid(colix, x, y, z, diameter, coef, octantPoints);
   }
 
   /* ***************************************************************

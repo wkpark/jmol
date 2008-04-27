@@ -50,6 +50,9 @@ public class CoreType {
       if (code.equalsIgnoreCase(DGROMACSB._code)) {
         return DGROMACSB;
       }
+      if (code.equalsIgnoreCase(DGROMACSC._code)) {
+        return DGROMACSC;
+      }
       if (code.equalsIgnoreCase(GBGROMACS._code)) {
         return GBGROMACS;
       }
@@ -106,6 +109,9 @@ public class CoreType {
       }
       if (name.equalsIgnoreCase(DGROMACSB._name)) {
         return DGROMACSB;
+      }
+      if (name.equalsIgnoreCase(DGROMACSC._name)) {
+        return DGROMACSC;
       }
       if (name.equalsIgnoreCase(GBGROMACS._name)) {
         return GBGROMACS;
@@ -171,6 +177,7 @@ public class CoreType {
   static public final CoreType AMBER        = new CoreType("Amber", "A", true); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType DGROMACS     = new CoreType("DGromacs", "DG", true); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType DGROMACSB    = new CoreType("DGromacsB", "DB", true); //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType DGROMACSC    = new CoreType("DGromacsC", "DC", true); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType GBGROMACS    = new CoreType("GBGromacs", "GB", true); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType GROCVS       = new CoreType("GroCVS", "GC", false);  //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType GROGPU       = new CoreType("GroGPU", "GG", false);  //$NON-NLS-1$ //$NON-NLS-2$
@@ -193,7 +200,7 @@ public class CoreType {
    * 
    * @param name Name of core
    * @param code Letter code of core
-   * @param hasFile Flad indicating the present of a current.xyz file
+   * @param hasFile Flag indicating the present of a current.xyz file
    */
   private CoreType(String name, String code, boolean hasFile) {
     this._name = name;

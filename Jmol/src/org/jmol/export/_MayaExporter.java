@@ -28,6 +28,7 @@ package org.jmol.export;
 import java.util.BitSet;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
@@ -223,7 +224,7 @@ public class _MayaExporter extends _Exporter {
     //cartoons, meshRibbons:
   }
 
-  public void renderEllipsoid(short colix, int x, int y, int z, int diameter, Object[] ellipsoid, double[] coef) {
+  public void renderEllipsoid(short colix, int x, int y, int z, int diameter, double[] coef, Point3i[] selectedPoints) {
     
   }
 

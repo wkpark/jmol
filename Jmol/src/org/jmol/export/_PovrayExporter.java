@@ -31,6 +31,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
@@ -232,6 +233,7 @@ public class _PovrayExporter extends _Exporter {
         + "  check_shadow()}\n"
         + (isSlabEnabled? " circleCap(Z,RADIUS,R,G,B,T)\n" : "")
         + "#end\n\n");
+
     output("#macro q(XX,YY,ZZ,XY,XZ,YZ,X,Y,Z,J,R,G,B,T)\n" 
         + " quadric{<XX,YY,ZZ>,<XY,XZ,YZ>,<X,Y,Z>,J\n"
         + "  pigment{rgbt<R,G,B,T>}\n"
@@ -240,6 +242,18 @@ public class _PovrayExporter extends _Exporter {
         + "  check_shadow()}\n"
 //        + (isSlabEnabled? " circleCap(Z,RADIUS,R,G,B,T)\n" : "")
         + "#end\n\n");
+    output("#macro qf(XX,YY,ZZ,XY,XZ,YZ,X,Y,Z,J,R,G,B,T,X0,Y0,Z0,X1,Y1,Z1)\n" 
+        + " difference{\n" 
+        + "  quadric{<XX,YY,ZZ>,<XY,XZ,YZ>,<X,Y,Z>,J\n"
+        + "   pigment{rgbt<R,G,B,T>}\n"
+        + "  box {<X0,Y0,Z0>,<X1,Y1,Z1>}\n"
+        + "   translucentFinish(T)\n"
+        + "   clip()\n"
+        + "   check_shadow()}\n"
+        + " }\n"
+//        + (isSlabEnabled? " circleCap(Z,RADIUS,R,G,B,T)\n" : "")
+        + "#end\n\n");
+
   }
 
   private void writeMacrosBond() {
@@ -298,10 +312,6 @@ public class _PovrayExporter extends _Exporter {
     if (Float.isNaN(pt.x))
       return "0,0,0";
     return pt.x + "," + pt.y + "," + pt.z;
-  }
-
-  private String triad(float a, float b, float c) {
-    return a + "," + b + "," + c;
   }
 
   private String triad(int[] i) {
@@ -648,11 +658,24 @@ public class _PovrayExporter extends _Exporter {
 
   
   public void renderEllipsoid(short colix, int ix, int iy, int iz,
-                              int diameter, Object[] ellipsoid, double[] coef) {
-    output("q(" + coef[0] + "," + coef[1] + "," + coef[2] 
-        + "," + coef[3] + "," + coef[4] + "," + coef[5] 
-        + "," + coef[6] + "," + coef[7] + "," + coef[8] 
-        + "," + coef[9] + "," + color4(colix) + ")\n");
+                              int diameter, double[] coef,
+                              Point3i[] selectedPoints) {
+    String s = coef[0] + "," + coef[1] + "," + coef[2] + "," + coef[3] + ","
+        + coef[4] + "," + coef[5] + "," + coef[6] + "," + coef[7] + ","
+        + coef[8] + "," + coef[9] + "," + color4(colix);
+    if (true || selectedPoints == null) {
+      output("q(" + s + ")\n");
+      return;
+    }
+    //TODO: The following does not work. 
+    tempP1.set(ix, iy, iz);
+    for (int i = 0; i < 3; i++) {
+      tempP1.x += selectedPoints[i].x - ix; 
+      tempP1.y += selectedPoints[i].y - iy; 
+      tempP1.z += selectedPoints[i].z - iz; 
+    }
+    output("qf(" + s + "," + ix + "," + iy + "," + iz 
+        + "," + tempP1.x + "," + tempP1.y + "," + tempP1.z + ")\n");
   }
 
 }

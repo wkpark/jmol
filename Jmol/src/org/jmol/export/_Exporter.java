@@ -34,7 +34,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 

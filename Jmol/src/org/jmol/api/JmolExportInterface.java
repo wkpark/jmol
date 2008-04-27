@@ -1,6 +1,7 @@
 package org.jmol.api;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Font3D;
@@ -91,6 +92,7 @@ public interface JmolExportInterface {
   abstract void drawHermite(short colix, int tension,
                              Point3f s0, Point3f s1, Point3f s2, Point3f s3);
 
-  abstract void renderEllipsoid(short colix, int x, int y, int z, int diameter, Object[] ellipsoid, double[] coef);
+  abstract void renderEllipsoid(short colix, int x, int y, int z, int diameter,
+                                double[] coef, Point3i[] selectedPoints);
 
 }

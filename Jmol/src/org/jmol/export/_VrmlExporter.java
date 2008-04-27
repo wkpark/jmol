@@ -28,6 +28,7 @@ package org.jmol.export;
 import java.util.BitSet;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Font3D;
@@ -234,7 +235,7 @@ public class _VrmlExporter extends _Exporter {
     //cartoons, meshRibbons:
   }
 
-  public void renderEllipsoid(short colix, int x, int y, int z, int diameter, Object[] ellipsoid, double[] coef) {
+  public void renderEllipsoid(short colix, int x, int y, int z, int diameter, double[] coef, Point3i[] selectedPoints) {
     
   }
            

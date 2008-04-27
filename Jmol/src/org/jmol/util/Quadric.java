@@ -26,6 +26,7 @@ package org.jmol.util;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.jvxl.util.Eigen;
@@ -80,7 +81,7 @@ public class Quadric {
     return mat;
   }
 
-  public static void getEquationForQuadric(float x, float y, float z, Matrix3f m, 
+  public static void getEquationForQuadricWithCenter(float x, float y, float z, Matrix3f m, 
                                              Vector3f vTemp, Matrix3f mTemp, double[] coef, Matrix4f mDeriv) {
     /* Starting with a center point and a matrix that converts cartesian 
      * or screen coordinates to ellipsoidal coordinates, 
@@ -157,6 +158,17 @@ public class Quadric {
     zroot[0] = (-b_2a - f);
     zroot[1] = (-b_2a + f);
     return true;
+  }
+
+  public static int getOctant(Point3f pt) {
+    int i = 0;
+    if (pt.x < 0)
+      i += 1;
+    if (pt.y < 0)
+      i += 2;
+    if (pt.z < 0)
+      i += 4;
+    return i;
   }
 
 }

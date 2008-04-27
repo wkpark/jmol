@@ -807,7 +807,7 @@ final public class Graphics3D implements JmolRendererInterface {
       return;
     }
     if (diameter <= (antialiasThisFrame ? Sphere3D.maxSphereDiameter2 : Sphere3D.maxSphereDiameter))
-      sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z, null, null, null);
+      sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z, null, null, null, -1);
   }
 
   /**
@@ -831,16 +831,20 @@ final public class Graphics3D implements JmolRendererInterface {
     fillSphereCentered(diameter, (int)center.x, (int)center.y, (int)center.z);
   }
 
-  public void renderEllipsoid(int x, int y, int z, int diameter, Object[] ellipsoid, 
-                              Matrix3f mToEllipsoidal, double[] coef, Matrix4f mDeriv) {
+  public void renderEllipsoid(int x, int y, int z, int diameter,
+                              Matrix3f mToEllipsoidal, double[] coef,
+                              Matrix4f mDeriv, int selectedOctant, 
+                              Point3i[] selectedPoints) {
     switch (diameter) {
     case 1:
       plotPixelClipped(argbCurrent, x, y, z);
     case 0:
       return;
     }
-    if (diameter <= (antialiasThisFrame ? Sphere3D.maxSphereDiameter2 : Sphere3D.maxSphereDiameter))
-      sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z, mToEllipsoidal, coef, mDeriv);
+    if (diameter <= (antialiasThisFrame ? Sphere3D.maxSphereDiameter2
+        : Sphere3D.maxSphereDiameter))
+      sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z,
+          mToEllipsoidal, coef, mDeriv, selectedOctant);
   }
 
   /**

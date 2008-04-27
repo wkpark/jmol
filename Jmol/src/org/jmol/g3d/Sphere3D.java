@@ -26,6 +26,7 @@ package org.jmol.g3d;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector4f;
 
 import org.jmol.util.Quadric;
@@ -68,10 +69,13 @@ public class Sphere3D {
   final static int maxSphereDiameter2 = maxSphereDiameter * 2;
   private final static int[][] sphereShapeCache = new int[maxSphereCache][];
 
-  Vector4f vN = new Vector4f();
-  double[] zroot = new double[2];
+  private Vector4f vN = new Vector4f();
+  private double[] zroot = new double[2];
   //private static int nOut, nIn;
-  
+  private Matrix3f mat;
+  private double[] coef;
+  private Matrix4f mDeriv;
+  private int selectedOctant;
 
   static synchronized void flushSphereCache() {
     for (int i =  maxSphereCache; --i >= 0;)
@@ -134,8 +138,9 @@ public class Sphere3D {
   }
 
   int minX, maxX, minY, maxY, minZ, maxZ;
-  void render(int[] shades, boolean tScreened, int diameter,
-              int x, int y, int z, Matrix3f mat, double[] coef, Matrix4f mDeriv) {
+  void render(int[] shades, boolean tScreened, int diameter, int x, int y,
+              int z, Matrix3f mat, double[] coef, Matrix4f mDeriv,
+              int selectedOctant) {
     if (z == 1)
       return;
     if (diameter > maxOddSizeSphere)
@@ -153,15 +158,20 @@ public class Sphere3D {
     maxZ = z + radius;
     if (maxZ < g3d.slab || minZ > g3d.depth)
       return;
+    this.mat = mat;
+    if (mat != null) {
+      this.coef = coef;
+      this.mDeriv = mDeriv;
+      this.selectedOctant = selectedOctant;
+    }
     if (mat != null || diameter > maxSphereCache) {
-      renderLarge(shades, tScreened, diameter, x, y, z, mat, coef, mDeriv);
+      renderLarge(shades, tScreened, diameter, x, y, z);
       return;
     }
     zShift = g3d.getZShift(z);
     int[] ss = getSphereShape(diameter);
-    if (minX < 0 || maxX >= g3d.width ||
-        minY < 0 || maxY >= g3d.height ||
-        minZ < g3d.slab || z > g3d.depth)
+    if (minX < 0 || maxX >= g3d.width || minY < 0 || maxY >= g3d.height
+        || minZ < g3d.slab || z > g3d.depth)
       renderShapeClipped(shades, tScreened, ss, diameter, x, y, z);
     else
       renderShapeUnclipped(shades, tScreened, ss, diameter, x, y, z);
@@ -354,22 +364,21 @@ public class Sphere3D {
   }
 
   private void renderLarge(int[] shades, boolean tScreened, int diameter,
-                         int x, int y, int z, Matrix3f mat, double[] coef, Matrix4f mDeriv) {
+                           int x, int y, int z) {
     if (mat != null) {
-      if (ellipsoidShades == null) 
-      createEllipsoidShades();
+      if (ellipsoidShades == null)
+        createEllipsoidShades();
     } else if (!Shade3D.sphereShadingCalculated)
       Shade3D.calcSphereShading();
     int radius = diameter / 2;
-    renderQuadrant(shades, tScreened, radius, x, y, z, -1, -1, mat, coef, mDeriv);
-    renderQuadrant(shades, tScreened, radius, x, y, z, -1,  1, mat, coef, mDeriv);
-    renderQuadrant(shades, tScreened, radius, x, y, z,  1, -1, mat, coef, mDeriv);
-    renderQuadrant(shades, tScreened, radius, x, y, z,  1,  1, mat, coef, mDeriv);
+    renderQuadrant(shades, tScreened, radius, x, y, z, -1, -1);
+    renderQuadrant(shades, tScreened, radius, x, y, z, -1, 1);
+    renderQuadrant(shades, tScreened, radius, x, y, z, 1, -1);
+    renderQuadrant(shades, tScreened, radius, x, y, z, 1, 1);
   }
 
   private void renderQuadrant(int[] shades, boolean tScreened, int radius, int x,
-                      int y, int z, int xSign, int ySign,
-                      Matrix3f mat, double[] coef, Matrix4f mDeriv) {
+                      int y, int z, int xSign, int ySign) {
     int t = x + radius * xSign;
     int xStatus = (x < 0 ? -1 : x < g3d.width ? 0 : 1)
         + (t < 0 ? -2 : t < g3d.width ? 0 : 2);
@@ -387,7 +396,7 @@ public class Sphere3D {
     if (unclipped)
       renderQuadrantUnclipped(shades, tScreened, radius, x, y, z, xSign, ySign);
     else
-      renderQuadrantClipped(shades, tScreened, radius, x, y, z, xSign, ySign, mat, coef, mDeriv);
+      renderQuadrantClipped(shades, tScreened, radius, x, y, z, xSign, ySign);
   }
 
   private void renderQuadrantUnclipped(int[] shades, boolean tScreened, int radius,
@@ -429,11 +438,13 @@ public class Sphere3D {
     }
   }
 
+  private final Point3f ptTemp = new Point3f();
+  
   private void renderQuadrantClipped(int[] shades, boolean tScreened, int radius,
                              int x, int y, int z,
-                             int xSign, int ySign, 
-                             Matrix3f mat, double[] coef, Matrix4f mDeriv) {
+                             int xSign, int ySign) {
     boolean isEllipsoid = (mat != null);
+    boolean checkOctant = (selectedOctant >= 0);
     int r2 = radius * radius;
     int dDivisor = radius * 2 + 1;
     int[] zbuf = g3d.zbuf;
@@ -498,6 +509,16 @@ public class Sphere3D {
           iRoot = (z < slab ? 1 : 0);
           zPixel = (int) zroot[iRoot];
           mode = 2;
+          if (checkOctant) {
+            ptTemp.set(xCurrent - x, yCurrent - y, zPixel - z);
+            mat.transform(ptTemp);
+            int thisOctant = Quadric.getOctant(ptTemp); 
+            if (thisOctant == selectedOctant) {
+              iRoot = 1;
+              zPixel = (int) zroot[iRoot];
+              // for now
+            }
+          }
         } else {
           int zOffset = (int)Math.sqrt(s2 - j2);
           zPixel = z + (z < slab ? zOffset : -zOffset);          

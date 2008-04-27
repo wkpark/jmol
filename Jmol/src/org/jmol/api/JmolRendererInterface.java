@@ -315,7 +315,7 @@ public interface JmolRendererInterface {
 
   public abstract byte getFontFid(float fontSize);
 
-  public abstract void renderEllipsoid(int x, int y, int z, int diameter, Object[] ellipsoid, Matrix3f mToEllipsoidal, double[] coef, Matrix4f mDeriv);
+  public abstract void renderEllipsoid(int x, int y, int z, int diameter, Matrix3f mToEllipsoidal, double[] coef, Matrix4f mDeriv, int selectedOctant, Point3i[] selectedPoints);
 
     
 }

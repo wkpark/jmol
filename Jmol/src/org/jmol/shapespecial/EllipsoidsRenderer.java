@@ -48,11 +48,33 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private Vector3f[] axes;
   private final float[] lengths = new float[3];
   private int diameter, diameter0;
+  private int selectedOctant = -1;
+  private Point3i[] selectedPoints = new Point3i[3];
+  private int iCutout = -1;
+
   private Matrix3f mat = new Matrix3f();
   private Matrix3f mTemp = new Matrix3f();
   private Matrix4f mDeriv = new Matrix4f();
   private Matrix3f matToScreenInv = new Matrix3f();
   private double[] coef = new double[10];
+  private final Vector3f v1 = new Vector3f();
+  private final Vector3f v2 = new Vector3f();
+  private final Vector3f v3 = new Vector3f();  
+  private final Point3f pt1 = new Point3f();
+  private final Point3f pt2 = new Point3f();
+  private final Point3i s0 = new Point3i();
+  private final Point3i s1 = new Point3i();
+  private final Point3i s2 = new Point3i();
+  
+  private final static float toRadians = (float) Math.PI/180f;
+  private final static float[] cossin = new float[36];
+  static {
+    for (int i = 5, pt = 0; i <= 90; i += 5) {
+      cossin[pt++] = (float) Math.cos(i * toRadians);
+      cossin[pt++] = (float) Math.sin(i * toRadians);
+    }
+  }
+  
 
   protected void render() {
     ellipsoids = (Ellipsoids) shape;
@@ -82,6 +104,8 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       drawDots = false;
     if (!drawDots && !drawArcs && !drawBall)
       drawAxes = true;
+    if (drawBall && drawFill)
+      drawAxes = true; //for now
     if (drawDots) {
       drawArcs = false;
       drawFill = false;
@@ -96,6 +120,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
 
     if (drawBall) {
       Matrix4f m4 = viewer.getMatrixtransform();
+      mat.setIdentity();
       mat.setRow(0, m4.m00, m4.m01, m4.m02);
       mat.setRow(1, m4.m10, m4.m11, m4.m12);
       mat.setRow(2, m4.m20, m4.m21, m4.m22);
@@ -121,7 +146,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   }
 
   private final Point3i[] screens = new Point3i[32];
-  private final int[] intensities = new int[32];
+  //private final int[] intensities = new int[32];
   private final Point3f[] points = new Point3f[6];
   {
     for (int i = 0; i < points.length; i++)
@@ -253,27 +278,36 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   }
 
   private void renderAxes() {
-    if (Logger.debugging)
-      g3d.setColix(Graphics3D.RED);
-    g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[0], screens[1]);
-    if (Logger.debugging)
-      g3d.setColix(Graphics3D.GREEN);
-    g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[2], screens[3]);
-    if (Logger.debugging)
-      g3d.setColix(Graphics3D.BLUE);
-    g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[4], screens[5]);
-    if (Logger.debugging) {
-      g3d.setColix(viewer.getColixBackgroundContrast());
-      for (int i = 0; i < 6; i++) {
-        g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[i],
-            screens[(i + 2) % 6]);
-        g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[i],
-            screens[(i + 3) % 6]);
-      }
-      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[1], screens[2]);
-      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[3], screens[4]);
-      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[5], screens[0]);
+    if (drawBall && drawFill) {
+      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, s0,
+          selectedPoints[0]);
+      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, s0,
+          selectedPoints[1]);
+      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, s0,
+          selectedPoints[2]);
+      return;
     }
+
+    if (Logger.debugging) {
+      g3d.setColix(Graphics3D.RED);
+      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[0],
+          screens[1]);
+      g3d.setColix(Graphics3D.GREEN);
+      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[2],
+          screens[3]);
+      g3d.setColix(Graphics3D.BLUE);
+      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[4],
+          screens[5]);
+      g3d.setColix(colix);
+    } else {
+      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[0],
+          screens[1]);
+      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[2],
+          screens[3]);
+      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[4],
+          screens[5]);
+    }
+
   }
   
   private void renderDots(Point3f ptAtom) {
@@ -303,24 +337,6 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       renderArc(ptAtom, octants[pt], octants[pt + 1]);
       renderArc(ptAtom, octants[pt + 1], octants[pt + 2]);
       renderArc(ptAtom, octants[pt + 2], octants[pt]);      
-    }
-  }
-  
-  private final Vector3f v1 = new Vector3f();
-  private final Vector3f v2 = new Vector3f();
-  private final Vector3f v3 = new Vector3f();  
-  private final Point3f pt1 = new Point3f();
-  private final Point3f pt2 = new Point3f();
-  private final Point3i s0 = new Point3i();
-  private final Point3i s1 = new Point3i();
-  private final Point3i s2 = new Point3i();
-  
-  private final static float toRadians = (float) Math.PI/180f;
-  private final static float[] cossin = new float[36];
-  static {
-    for (int i = 5, pt = 0; i <= 90; i += 5) {
-      cossin[pt++] = (float) Math.cos(i * toRadians);
-      cossin[pt++] = (float) Math.sin(i * toRadians);
     }
   }
   
@@ -365,37 +381,33 @@ public class EllipsoidsRenderer extends ShapeRenderer {
 
   
   private void renderBall(Atom atom, Object[] ellipsoid) {
-    if (!drawFill) {
-      //TODO  don't know how to do drawFill in g3d
-      Quadric.setEllipsoidMatrix(axes, lengths, v1, mat);
-/*
-      // check for Eigen returning proper lengths
-      float[] coef = new float[10];
-      Matrix3f m2 = new Matrix3f();
-      Sphere3D.getEquationForEllipsoid(0,0,0, mat, m2, v1, coef);
-      double t[] = new double[6];
-      for (int i = 0; i < 6; i++)
-        t[i] = coef[i];
-      Vector3f[] tv = new Vector3f[3];
-      tv[0] = new Vector3f();
-      tv[1] = new Vector3f();
-      tv[2] = new Vector3f();
-      float tlen[] = new float[3];
-      Sphere3D.getAxesFromCoefficients(t, tv, tlen);
-      for (int i = 0; i < 3; i++)
-        System.out.println(lengths[i] + "\t" + tlen[i] + "\t" + axes[i] + "\t" + tv[i]);
- */                                                                                     
-      // make this screen coordinates to ellisoidal coordinates
-      mat.mul(mat, matToScreenInv);
-      // get equation and differential
-      Quadric.getEquationForQuadric(s0.x, s0.y, s0.z, 
-          mat, v1, mTemp, coef, mDeriv);
-      g3d.renderEllipsoid(s0.x, s0.y, s0.z, dx + dx, ellipsoid, mat, coef, mDeriv);
-      return;
+    Quadric.setEllipsoidMatrix(axes, lengths, v1, mat);
+    // make this screen coordinates to ellisoidal coordinates
+    mat.mul(mat, matToScreenInv);
+    // get equation and differential
+    Quadric.getEquationForQuadricWithCenter(s0.x, s0.y, s0.z, mat, v1, mTemp,
+        coef, mDeriv);
+    setSelectedOctant();
+    g3d.renderEllipsoid(s0.x, s0.y, s0.z, dx + dx, mat, coef, mDeriv,
+      selectedOctant, selectedOctant >= 0 ? selectedPoints : null);
+    
+    /*
+    for (int i = 0; i < 8; i++) {
+      int ptA = octants[i * 3];
+      int ptB = octants[i * 3 + 1];
+      int ptC = octants[i * 3 + 2];
+      boolean isSwapped = (axisPoints[ptA] < 0);
+      renderBall(atom, axisPoints[ptA], axisPoints[ptB], axisPoints[ptC],
+          isSwapped, iCutout == i);
     }
-    int iCutout = -1;
+    */
+    }
+
+  private void setSelectedOctant() {
     int zMin = Integer.MAX_VALUE;
-    if (drawFill)
+    selectedOctant = -1;
+    iCutout = -1;
+    if (drawFill) {
       for (int i = 0; i < 8; i++) {
         int ptA = octants[i * 3];
         int ptB = octants[i * 3 + 1];
@@ -406,18 +418,17 @@ public class EllipsoidsRenderer extends ShapeRenderer {
           iCutout = i;
         }
       }
-    for (int i = 0; i < 8; i++) {
-      int ptA = octants[i * 3];
-      int ptB = octants[i * 3 + 1];
-      int ptC = octants[i * 3 + 2];
-      boolean isSwapped = (axisPoints[ptA] < 0);
-      renderBall(atom, axisPoints[ptA], axisPoints[ptB], axisPoints[ptC],
-          isSwapped, iCutout == i);
+      s1.set(selectedPoints[0] = screens[octants[iCutout * 3]]);
+      s1.add(selectedPoints[1] = screens[octants[iCutout * 3 + 1]]);
+      s1.add(selectedPoints[2] = screens[octants[iCutout * 3 + 2]]);
+      s1.scaleAdd(-3, s0, s1);
+      pt1.set(s1.x, s1.y, s1.z);
+      mat.transform(pt1);
+      selectedOctant = Quadric.getOctant(pt1);
     }
   }
 
-  
-  Vector3f a = new Vector3f();
+/*  Vector3f a = new Vector3f();
   Vector3f b = new Vector3f();
   Vector3f c = new Vector3f();
   
@@ -514,4 +525,6 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       screens[7].set(s2);
     }
   }
+*/
+  
 }

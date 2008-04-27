@@ -41,6 +41,6 @@ public class SticksGenerator extends SticksRenderer {
   protected void fillCylinder(short colixA, short colixB, byte endcaps,
                               int diameter, int xA, int yA, int zA, int xB,
                               int yB, int zB) {
-    g3d.fillCylinder(colixA, colixB, endcaps, mad, xA, yA, zA, xB, yB, zB);
+    g3d.fillCylinder(colixA, colixB, endcaps, mad == 1 ? diameter : mad, xA, yA, zA, xB, yB, zB);
   }
 }

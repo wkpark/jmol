@@ -104,8 +104,6 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       drawDots = false;
     if (!drawDots && !drawArcs && !drawBall)
       drawAxes = true;
-    if (drawBall && drawFill)
-      drawAxes = true; //for now
     if (drawDots) {
       drawArcs = false;
       drawFill = false;

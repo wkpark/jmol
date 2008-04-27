@@ -52,6 +52,7 @@ public class SticksRenderer extends ShapeRenderer {
   protected int width;
   protected int bondOrder;
   private boolean renderWireframe;
+  private boolean isAntialiased;
 
 
   protected void render() {
@@ -63,6 +64,7 @@ public class SticksRenderer extends ShapeRenderer {
     hbondsBackbone = viewer.getHbondsBackbone();
     bondsBackbone = hbondsBackbone | ssbondsBackbone;
     hbondsSolid = viewer.getHbondsSolid();
+    isAntialiased = g3d.isAntialiased();
     Bond[] bonds = modelSet.getBonds();
     for (int i = modelSet.getBondCount(); --i >= 0; ) {
       bond = bonds[i];
@@ -185,6 +187,11 @@ public class SticksRenderer extends ShapeRenderer {
   protected boolean lineBond;
   protected void renderBond(int dottedMask) {
     lineBond = (width <= 1);
+    if (lineBond && (isAntialiased || isGenerator)) {
+      width = 3;
+      lineBond = false;
+    }
+      
     if (dx == 0 && dy == 0) {
       // end-on view
       if (! lineBond) {

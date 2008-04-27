@@ -242,17 +242,17 @@ public class _PovrayExporter extends _Exporter {
         + "  check_shadow()}\n"
 //        + (isSlabEnabled? " circleCap(Z,RADIUS,R,G,B,T)\n" : "")
         + "#end\n\n");
-    output("#macro qf(XX,YY,ZZ,XY,XZ,YZ,X,Y,Z,J,R,G,B,T,X0,Y0,Z0,X1,Y1,Z1)\n" 
+/*    output("#macro qf(XX,YY,ZZ,XY,XZ,YZ,X,Y,Z,J,R,G,B,T,X0,Y0,Z0,X1,Y1,Z1)\n" 
         + " difference{\n" 
         + "  quadric{<XX,YY,ZZ>,<XY,XZ,YZ>,<X,Y,Z>,J\n"
         + "   pigment{rgbt<R,G,B,T>}\n"
-        + "  box {<X0,Y0,Z0>,<X1,Y1,Z1>}\n"
         + "   translucentFinish(T)\n"
         + "   clip()\n"
         + "   check_shadow()}\n"
+        + "  box {<X0,Y0,Z0>,<X1,Y1,Z1>}\n"
         + " }\n"
-//        + (isSlabEnabled? " circleCap(Z,RADIUS,R,G,B,T)\n" : "")
-        + "#end\n\n");
+*///        + (isSlabEnabled? " circleCap(Z,RADIUS,R,G,B,T)\n" : "")
+//        + "#end\n\n");
 
   }
 

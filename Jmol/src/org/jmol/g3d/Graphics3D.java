@@ -807,7 +807,7 @@ final public class Graphics3D implements JmolRendererInterface {
       return;
     }
     if (diameter <= (antialiasThisFrame ? Sphere3D.maxSphereDiameter2 : Sphere3D.maxSphereDiameter))
-      sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z, null, null, null, -1);
+      sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z, null, null, null, -1, null);
   }
 
   /**
@@ -844,7 +844,7 @@ final public class Graphics3D implements JmolRendererInterface {
     if (diameter <= (antialiasThisFrame ? Sphere3D.maxSphereDiameter2
         : Sphere3D.maxSphereDiameter))
       sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z,
-          mToEllipsoidal, coef, mDeriv, selectedOctant);
+          mToEllipsoidal, coef, mDeriv, selectedOctant, selectedPoints);
   }
 
   /**

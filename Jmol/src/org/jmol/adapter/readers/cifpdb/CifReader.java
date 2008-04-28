@@ -701,7 +701,7 @@ public class CifReader extends AtomSetCollectionReader {
   }
   
   private boolean filterAtom(Atom atom) {
-    if (filter.indexOf(".") >= 0 && filter.indexOf("." + atom.atomName + ";") < 0)
+    if (filter.indexOf("*.") >= 0 && filter.toUpperCase().indexOf("*." + atom.atomName.toUpperCase() + ";") < 0)
       return false;
     if (filter.indexOf(":") >= 0 && filter.indexOf(":" + atom.chainID) < 0)
       return false;
@@ -711,6 +711,7 @@ public class CifReader extends AtomSetCollectionReader {
       return false;
     return true;
   }
+  
   
   ////////////////////////////////////////////////////////////////
   // bond data

@@ -282,7 +282,10 @@ public final class Logger {
     startTime = System.currentTimeMillis();  
   }
 
-  public static void checkTimer(String msg) {
-    info(msg + ": " + (System.currentTimeMillis() - startTime) + " ms");
+  public static long checkTimer(String msg) {
+    long time = System.currentTimeMillis() - startTime;
+    if (msg != null)
+      info(msg + ": " + (time) + " ms");
+    return time;
   }
 }

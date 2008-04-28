@@ -1174,6 +1174,7 @@ public class StateManager {
       setParameterValue("testFlag3",testFlag3);
       setParameterValue("testFlag4",testFlag4);
       setParameterValue("traceAlpha",traceAlpha);
+      setParameterValue("undo",true);
       setParameterValue("useNumberLocalization",useNumberLocalization);
       setParameterValue("vectorScale",vectorScale);
       setParameterValue("vibrationPeriod",vibrationPeriod);

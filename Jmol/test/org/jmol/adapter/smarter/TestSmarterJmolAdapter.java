@@ -76,8 +76,8 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(true,  "folding", "xyz.gz", "FoldingXyz");
     result.addDirectory(false, "../Jmol-FAH/projects", "xyz", "FoldingXyz");
     result.addDirectory(true,  "../Jmol-FAH/projects", "xyz.gz", "FoldingXyz");
-    result.addDirectory(false, "gamess", "log");
-    result.addDirectory(false, "gamess", "out");
+    result.addDirectory(false, "gamess", "log", ";GamessUS;GamessUK;");
+    result.addDirectory(false, "gamess", "out", ";GamessUS;GamessUK;");
     result.addDirectory(false, "gaussian", "log");
     result.addDirectory(false, "gaussian", "out");
     result.addDirectory(false, "ghemical", "gpr", "GhemicalMM");
@@ -222,7 +222,7 @@ class TestSmarterJmolAdapterImpl extends TestCase {
     SmarterJmolAdapter adapter = new SmarterJmolAdapter();
     if (typeAllowed != null) {
       String fileType = adapter.getFileTypeName(bReader);
-      if (!typeAllowed.equals(fileType)) {
+      if (!typeAllowed.equals(fileType) && typeAllowed.indexOf(";"+ fileType + ";") < 0) {
         fail("Wrong type for " + file.getPath() + ": " + fileType + " instead of " + typeAllowed);
       }
     }

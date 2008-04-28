@@ -4270,6 +4270,15 @@ class Eval { //implements Runnable {
           htParams.put("params", params);
         }
       }
+      if (tokAt(i) == Token.identifier
+          && parameterAsString(i).equalsIgnoreCase("filter")) {
+        String filter = stringParameter(++i);
+        htParams.put("filter", filter);
+        sOptions += " FITLER " + Escape.escape(filter);
+      }
+      
+      
+      
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck) {
         viewer.openFile(filename, htParams, null, isAppend);
         loadScript.append(" ");

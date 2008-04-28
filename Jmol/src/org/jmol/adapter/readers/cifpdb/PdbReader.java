@@ -30,6 +30,7 @@ import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 import java.io.BufferedReader;
 import java.util.Hashtable;
+import java.util.Vector;
 
 /**
  * PDB file reader.
@@ -138,6 +139,10 @@ public class PdbReader extends AtomSetCollectionReader {
           formul();
           continue;
         }
+        if (line.startsWith("REMARK 350")) {
+          remark350();
+          continue;
+        }
         if (line.startsWith("REMARK")) {
           //Logger.debug(line);
           checkLineForScript();
@@ -166,8 +171,15 @@ public class PdbReader extends AtomSetCollectionReader {
           continue;
         }
       }
-      //if (!isNMRdata)
       atomSetCollection.connectAll(maxSerial);
+      if (biomolecules.size() > 0) {
+        atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", biomolecules);
+        if (biomts != null && filter != null
+            && filter.toUpperCase().indexOf("APPLY SYMMETRY") >= 0) {
+          atomSetCollection.applySymmetry(biomts);
+        }
+
+      }
       applySymmetry();
       if (htSites != null)
         addSites(htSites);
@@ -177,9 +189,82 @@ public class PdbReader extends AtomSetCollectionReader {
     return atomSetCollection;
   }
 
- int atomCount;
- String lastAtomData;
- int lastAtomIndex;
+ Vector biomolecules;
+ Vector biomts;
+  private void remark350() throws Exception {
+    Vector biomts = null;
+    biomolecules = new Vector();
+    String title = "";
+    String chainlist = "";
+    int iMolecule = 0;
+    while (readLine() != null) {
+      if (!line.startsWith("REMARK 350"))
+          break;
+      if (line.indexOf("REMARK 350 BIOMOLECULE:") == 0) {
+        if (biomts != null) {
+          Hashtable info = new Hashtable();
+          info.put("title", title);
+          info.put("chains", chainlist);
+          info.put("molecule", new Integer(iMolecule));
+          info.put("biomts", biomts);
+          biomolecules.add(info);
+        }
+        iMolecule = parseInt(line.substring(line.indexOf(":") + 1));
+        biomts = new Vector();
+        title = line.trim();
+        if (!line.startsWith("REMARK 350"))
+          break;
+        continue;
+      }
+      if (line.indexOf("REMARK 350 APPLY THE FOLLOWING TO CHAINS:") == 0) {
+        line = line.substring(41).trim();
+        chainlist = ":" + line.replace(' ', ':');
+        if (filter != null && filter.toUpperCase().indexOf("BIOMOLECULE " + iMolecule + ";") >= 0) {
+          filter += chainlist;
+          this.biomts = biomts;
+        }
+        continue;
+      }
+      if (line.indexOf("REMARK 350   BIOMT1 ") == 0) {
+        float[] mat = new float[16];
+        String[] tokens = getTokens();
+        mat[0] = parseFloat(tokens[4]);
+        mat[1] = parseFloat(tokens[5]);
+        mat[2] = parseFloat(tokens[6]);
+        mat[3] = parseFloat(tokens[7]);
+
+        tokens = getTokens(readLine());
+        mat[4] = parseFloat(tokens[4]);
+        mat[5] = parseFloat(tokens[5]);
+        mat[6] = parseFloat(tokens[6]);
+        mat[7] = parseFloat(tokens[7]);
+
+        tokens = getTokens(readLine());
+        mat[8] = parseFloat(tokens[4]);
+        mat[9] = parseFloat(tokens[5]);
+        mat[10] = parseFloat(tokens[6]);
+        mat[11] = parseFloat(tokens[7]);
+
+        mat[15] = 1;
+       
+        biomts.add(mat);
+        continue;
+      }
+    }
+    if (biomts != null) {
+      Hashtable info = new Hashtable();
+      info.put("title", title);
+      info.put("chains", chainlist);
+      info.put("molecule", new Integer(iMolecule));
+      info.put("biomts", biomts);
+      biomolecules.add(info);
+    }
+  }
+
+  int atomCount;
+  String lastAtomData;
+  int lastAtomIndex;
+  
   void atom() {
     boolean isHetero = line.startsWith("HETATM");
     char charAlternateLocation = line.charAt(16);
@@ -264,6 +349,9 @@ public class PdbReader extends AtomSetCollectionReader {
     atom.sequenceNumber = sequenceNumber;
     atom.insertionCode = JmolAdapter.canonizeInsertionCode(insertionCode);
     atom.radius = radius;
+    if (filter != null)
+      if (!filterAtom(atom))
+        return;
     lastAtomIndex = atomSetCollection.getAtomCount();
     if (haveMappedSerials)
       atomSetCollection.addAtomWithMappedSerialNumber(atom);
@@ -280,6 +368,18 @@ public class PdbReader extends AtomSetCollectionReader {
     }
   }
 
+  private boolean filterAtom(Atom atom) {
+    if (filter.indexOf(".") >= 0 && filter.indexOf("." + atom.atomName + ";") < 0)
+      return false;
+    if (filter.indexOf(":") >= 0 && filter.indexOf(":" + atom.chainID) < 0)
+      return false;
+    if (filter.indexOf("^") >= 0 && filter.indexOf("^" + atom.insertionCode) < 0)
+      return false;
+    if (filter.indexOf("%") >= 0 && filter.indexOf("%" + atom.alternateLocationID) < 0)
+      return false;
+    return true;
+  }
+  
   protected int readOccupancy() {
 
     /****************************************************************

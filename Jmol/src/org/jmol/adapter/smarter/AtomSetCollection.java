@@ -28,7 +28,10 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.Properties;
 import java.util.BitSet;
+
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolAdapter;
@@ -538,7 +541,8 @@ public class AtomSetCollection {
     spaceGroup.setLattice(latt);
   }
   
-   void applySymmetry() throws Exception {
+
+  void applySymmetry() throws Exception {
      //parameters are counts of unit cells as [a b c]
      applySymmetry(latticeCells[0], latticeCells[1], latticeCells[2]);
    }
@@ -833,6 +837,30 @@ public class AtomSetCollection {
       }
     }
     return pt;
+  }
+  
+  public void applySymmetry(Vector biomts) {
+    int len = biomts.size();
+    int n = atomCount;
+    Point3f pt = new Point3f();
+    for (int i = 1; i < len; i++) { //skip 1, it's the identity
+      Matrix4f mat = new Matrix4f();
+      mat.set((float[]) biomts.get(i));
+      for (int iAtom = 0; iAtom < n; iAtom++) {
+        try {
+          Atom atom1 = newCloneAtom(atoms[iAtom]);
+          pt.set(atom1.x, atom1.y, atom1.z);
+          mat.transform(pt);
+          atom1.x = pt.x;
+          atom1.y = pt.y;
+          atom1.z = pt.z;
+        } catch (Exception e) {
+          errorMessage = "appendAtomCollection error: " + e;
+        }
+      }
+    }
+    //need to clone bonds
+    
   }
   
   

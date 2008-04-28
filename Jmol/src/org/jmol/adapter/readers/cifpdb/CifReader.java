@@ -681,6 +681,9 @@ public class CifReader extends AtomSetCollectionReader {
       } else {
         if (fieldOf[ANISO_LABEL] != NONE)
           continue;
+        if (filter != null)
+          if (!filterAtom(atom))
+            continue;
         setAtomCoord(atom);
         atomSetCollection.addAtomWithMappedName(atom);
         if (atom.isHetero && htHetero != null) {
@@ -696,7 +699,19 @@ public class CifReader extends AtomSetCollectionReader {
     }
     return true;
   }
-
+  
+  private boolean filterAtom(Atom atom) {
+    if (filter.indexOf(".") >= 0 && filter.indexOf("." + atom.atomName + ";") < 0)
+      return false;
+    if (filter.indexOf(":") >= 0 && filter.indexOf(":" + atom.chainID) < 0)
+      return false;
+    if (filter.indexOf("^") >= 0 && filter.indexOf("^" + atom.insertionCode) < 0)
+      return false;
+    if (filter.indexOf("%") >= 0 && filter.indexOf("%" + atom.alternateLocationID) < 0)
+      return false;
+    return true;
+  }
+  
   ////////////////////////////////////////////////////////////////
   // bond data
   ////////////////////////////////////////////////////////////////

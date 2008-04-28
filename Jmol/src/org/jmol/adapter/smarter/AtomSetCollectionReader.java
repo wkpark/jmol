@@ -91,6 +91,8 @@ public abstract class AtomSetCollectionReader {
   public int modelNumber;
   public boolean iHaveDesiredModel;
 
+  public String filter;
+  
   public String spaceGroup;
   public UnitCell unitcell;
   public float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
@@ -250,6 +252,12 @@ public abstract class AtomSetCollectionReader {
       readerName = (String) htParams.get("readerName");
       params = (int[]) htParams.get("params");
       applySymmetryToBonds = htParams.containsKey("applySymmetryToBonds");
+      filter = (String) htParams.get("filter");
+      if (filter != null) {
+        filter = ";" + filter + ";";
+        Logger.info("filtering atoms using " + filter);
+      }
+      
     }
     if (params == null)
       return;

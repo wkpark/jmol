@@ -700,7 +700,7 @@ public class AtomSetCollection {
     spaceGroup = null;
     notionalUnitCell = new float[6];
     coordinatesAreFractional = false; 
-    //turn off global fractional conversion -- this wil be model by model
+    //turn off global fractional conversion -- this will be model by model
     setGlobalBoolean(GLOBAL_SYMMETRY);
   }
   
@@ -804,7 +804,7 @@ public class AtomSetCollection {
           Atom atom1 = newCloneAtom(atoms[i]);
           atom1.set(ptAtom);
           atom1.atomSite = atomSite;
-          atom1.bsSymmetry = new BitSet();
+          atom1.bsSymmetry = new BitSet(1);
           atom1.bsSymmetry.set(iCellOpPt + iSym);
           atom1.bsSymmetry.set(iSym);
           if (addCartesian)
@@ -838,31 +838,58 @@ public class AtomSetCollection {
     return pt;
   }
   
-  public void applySymmetry(Vector biomts) {
+  public void applySymmetry(Vector biomts, boolean applySymmetryToBonds) {
     int len = biomts.size();
-    int n = atomCount;
+    setApplySymmetryToBonds(applySymmetryToBonds);
+    bondCount0 = bondCount;
+    boolean addBonds = (bondCount0 > bondIndex0 && applySymmetryToBonds);
+    int[] atomMap = (addBonds ? new int[atomCount] : null);
+    int atomMax = atomCount;
     Point3f pt = new Point3f();
     for (int i = 1; i < len; i++) { //skip 1, it's the identity
       Matrix4f mat = new Matrix4f();
       mat.set((float[]) biomts.get(i));
-      for (int iAtom = 0; iAtom < n; iAtom++) {
+      int iAtomFirst = getLastAtomSetAtomIndex();
+      for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++) {
         try {
+          int atomSite = atoms[i].atomSite;
+          if (addBonds)
+            atomMap[atomSite] = atomCount;
           Atom atom1 = newCloneAtom(atoms[iAtom]);
+          atom1.atomSite = atomSite;
           pt.set(atom1.x, atom1.y, atom1.z);
           mat.transform(pt);
           atom1.x = pt.x;
           atom1.y = pt.y;
           atom1.z = pt.z;
+          atom1.bsSymmetry = new BitSet(1);
+          atom1.bsSymmetry.set(i);
+          if (addBonds) {
+            // Clone bonds
+            for (int bondNum = bondIndex0; bondNum < bondCount0; bondNum++) {
+              Bond bond = bonds[bondNum];
+              int iAtom1 = atomMap[atoms[bond.atomIndex1].atomSite];
+              int iAtom2 = atomMap[atoms[bond.atomIndex2].atomSite];
+              if (iAtom1 >= atomMax || iAtom2 >= atomMax)
+                addNewBond(iAtom1, iAtom2, bond.order);
+            }
+          }
         } catch (Exception e) {
           errorMessage = "appendAtomCollection error: " + e;
         }
       }
+      setAtomSetAuxiliaryInfo("presymmetryAtomIndex", new Integer(iAtomFirst));
+      setAtomSetAuxiliaryInfo("presymmetryAtomCount",
+          new Integer(atomMax - iAtomFirst));
+      setAtomSetAuxiliaryInfo("symmetryCount", new Integer(len));
+      spaceGroup = null;
+      notionalUnitCell = new float[6];
+      coordinatesAreFractional = false; 
+      setGlobalBoolean(GLOBAL_SYMMETRY);
     }
     //need to clone bonds
-    
+
   }
-  
-  
   
   public void setCollectionName(String collectionName) {
     if (collectionName != null) {
@@ -1135,6 +1162,8 @@ public class AtomSetCollection {
    * @param atomSetIndex The index of the AtomSet to get the property
    */
   void setAtomSetAuxiliaryInfo(String key, Object value, int atomSetIndex) {
+    if (atomSetIndex < 0)
+      return;
     if (atomSetAuxiliaryInfo[atomSetIndex] == null)
       atomSetAuxiliaryInfo[atomSetIndex] = new Hashtable();
     //Logger.debug(atomSetIndex + " key="+ key + " value="+ value);

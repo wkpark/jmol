@@ -174,11 +174,11 @@ public class PdbReader extends AtomSetCollectionReader {
         }
       }
       atomSetCollection.connectAll(maxSerial);
-      if (biomolecules.size() > 0) {
+      if (biomolecules != null && biomolecules.size() > 0) {
         atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", biomolecules);
         if (biomts != null && filter != null
             && filter.toUpperCase().indexOf("APPLY SYMMETRY") >= 0) {
-          atomSetCollection.applySymmetry(biomts);
+          atomSetCollection.applySymmetry(biomts, applySymmetryToBonds);
         }
 
       }
@@ -191,6 +191,17 @@ public class PdbReader extends AtomSetCollectionReader {
     return atomSetCollection;
   }
 
+/* 
+ REMARK 350 BIOMOLECULE: 1                                                       
+ REMARK 350 APPLY THE FOLLOWING TO CHAINS: 1, 2, 3, 4, 5, 6                      
+ REMARK 350   BIOMT1   1  1.000000  0.000000  0.000000        0.00000            
+ REMARK 350   BIOMT2   1  0.000000  1.000000  0.000000        0.00000            
+ REMARK 350   BIOMT3   1  0.000000  0.000000  1.000000        0.00000            
+ REMARK 350   BIOMT1   2  0.309017 -0.809017  0.500000        0.00000            
+ REMARK 350   BIOMT2   2  0.809017  0.500000  0.309017        0.00000            
+ REMARK 350   BIOMT3   2 -0.500000  0.309017  0.809017        0.00000            
+*/
+ 
  Vector biomolecules;
  Vector biomts;
   private void remark350() throws Exception {
@@ -199,10 +210,10 @@ public class PdbReader extends AtomSetCollectionReader {
     String title = "";
     String chainlist = "";
     int iMolecule = 0;
-    while (readLine() != null) {
-      if (!line.startsWith("REMARK 350"))
-          break;
-      if (line.indexOf("REMARK 350 BIOMOLECULE:") == 0) {
+    while (true) {
+      readLine();
+      if (line == null || !line.startsWith("REMARK 350") 
+          || line.startsWith("REMARK 350 BIOMOLECULE:")) {
         if (biomts != null) {
           Hashtable info = new Hashtable();
           info.put("title", title);
@@ -211,56 +222,42 @@ public class PdbReader extends AtomSetCollectionReader {
           info.put("biomts", biomts);
           biomolecules.add(info);
         }
+        if (line == null  || !line.startsWith("REMARK 350"))
+          break;
         iMolecule = parseInt(line.substring(line.indexOf(":") + 1));
         biomts = new Vector();
         title = line.trim();
-        if (!line.startsWith("REMARK 350"))
-          break;
         continue;
       }
-      if (line.indexOf("REMARK 350 APPLY THE FOLLOWING TO CHAINS:") == 0) {
+      if (line.startsWith("REMARK 350 APPLY THE FOLLOWING TO CHAINS:")) {
         line = line.substring(41).trim();
         chainlist = ":" + line.replace(' ', ':');
-        if (filter != null && filter.toUpperCase().indexOf("BIOMOLECULE " + iMolecule + ";") >= 0) {
+        if (filter != null
+            && filter.toUpperCase().indexOf("BIOMOLECULE " + iMolecule + ";") >= 0) {
           filter += chainlist;
           Logger.info("filter set to \"" + filter + "\"");
           this.biomts = biomts;
         }
         continue;
       }
-      if (line.indexOf("REMARK 350   BIOMT1 ") == 0) {
+      /*
+       0         1         2         3         4         5         6         7
+       0123456789012345678901234567890123456789012345678901234567890123456789
+       REMARK 350   BIOMT2   1  0.000000  1.000000  0.000000        0.00000
+       */
+      if (line.startsWith("REMARK 350   BIOMT1 ")) {
         float[] mat = new float[16];
-        String[] tokens = getTokens();
-        mat[0] = parseFloat(tokens[4]);
-        mat[1] = parseFloat(tokens[5]);
-        mat[2] = parseFloat(tokens[6]);
-        mat[3] = parseFloat(tokens[7]);
-
-        tokens = getTokens(readLine());
-        mat[4] = parseFloat(tokens[4]);
-        mat[5] = parseFloat(tokens[5]);
-        mat[6] = parseFloat(tokens[6]);
-        mat[7] = parseFloat(tokens[7]);
-
-        tokens = getTokens(readLine());
-        mat[8] = parseFloat(tokens[4]);
-        mat[9] = parseFloat(tokens[5]);
-        mat[10] = parseFloat(tokens[6]);
-        mat[11] = parseFloat(tokens[7]);
-
+        for (int i = 0; i < 12; i++) {
+          int iWide = (i == 3 || i == 7 || i == 11 ? 4 : 0);
+          mat[i] = parseFloat(line.substring(23 + 10 * (i % 4),
+              33 + 10 * (i % 4) + iWide));
+          if (i == 3 || i == 7)
+            readLine();
+        }
         mat[15] = 1;
-       
         biomts.add(mat);
         continue;
       }
-    }
-    if (biomts != null) {
-      Hashtable info = new Hashtable();
-      info.put("title", title);
-      info.put("chains", chainlist);
-      info.put("molecule", new Integer(iMolecule));
-      info.put("biomts", biomts);
-      biomolecules.add(info);
     }
   }
 

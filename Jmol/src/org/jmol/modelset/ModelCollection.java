@@ -221,9 +221,10 @@ abstract public class ModelCollection extends BondCollection {
 
   protected boolean someModelsHaveSymmetry;
   protected boolean someModelsHaveAromaticBonds;
+  protected boolean someModelsHaveFractionalCoordinates;
 
-  public boolean haveSymmetry() {
-    return someModelsHaveSymmetry;
+  public boolean setCrystallographicDefaults() {
+    return someModelsHaveSymmetry && someModelsHaveFractionalCoordinates;
   }
 
   //note: Molecules is set up to only be calculated WHEN NEEDED

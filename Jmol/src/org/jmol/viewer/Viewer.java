@@ -382,7 +382,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.calcBoundBoxDimensions(null);
     axesAreTainted = true;
     transformManager.homePosition();
-    if (modelSet.haveSymmetry())
+    if (modelSet.setCrystallographicDefaults())
       stateManager.setCrystallographicDefaults();//modelSet.someModelsHavePeriodicOrigin);
     else
       setAxesModeMolecular(false);

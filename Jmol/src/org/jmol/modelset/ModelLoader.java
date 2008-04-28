@@ -110,7 +110,6 @@ public final class ModelLoader extends ModelSet {
 */
 
   private boolean someModelsHaveUnitcells;
-  private boolean someModelsHaveFractionalCoordinates;
   private boolean isTrajectory;
 
   private void initializeInfo(String name, int nAtoms, Properties properties,

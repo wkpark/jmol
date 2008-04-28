@@ -28,6 +28,8 @@ import org.jmol.adapter.smarter.*;
 
 
 import org.jmol.api.JmolAdapter;
+import org.jmol.util.Logger;
+
 import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -221,6 +223,7 @@ public class PdbReader extends AtomSetCollectionReader {
         chainlist = ":" + line.replace(' ', ':');
         if (filter != null && filter.toUpperCase().indexOf("BIOMOLECULE " + iMolecule + ";") >= 0) {
           filter += chainlist;
+          Logger.info("filter set to \"" + filter + "\"");
           this.biomts = biomts;
         }
         continue;

@@ -234,6 +234,8 @@ public final class ScriptWindow extends JDialog
   void undoRedo(boolean isRedo) {
     // pointer is always left at the undo slot when a command is given
     // redo at CURRENT pointer position
+    if (!viewer.getBooleanProperty("undo"))
+      return;
     if (!undoSaved) 
       undoSave();
     String state = undoStack[undoPointer];
@@ -255,6 +257,8 @@ public final class ScriptWindow extends JDialog
   }
   
   void undoSave() {
+    if (!viewer.getBooleanProperty("undo"))
+      return;
     //shift stack if full
     undoPointer++;
     if (undoPointer == MAXUNDO) {
@@ -265,9 +269,16 @@ public final class ScriptWindow extends JDialog
     //delete redo items, since they will no longer be valid
     for (int i = undoPointer; i < MAXUNDO; i++)
       undoStack[i] = null;
-    
+    Logger.startTimer();
     undoStack[undoPointer] = (String) viewer.getProperty("readable", "stateInfo",
         null);
+    if (Logger.checkTimer(null) > 1000) {
+      viewer.setBooleanProperty("undo", false);
+      Logger.info("command processing slow; undo disabled");
+      for (int i = 0; i < MAXUNDO; i++)
+        undoStack[i] = "";
+        undoPointer = 0;
+    }
     undoSaved = true;
   }
   

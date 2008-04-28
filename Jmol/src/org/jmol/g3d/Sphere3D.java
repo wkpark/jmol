@@ -213,7 +213,7 @@ public class Sphere3D {
     }
     this.shades = null;
     this.zbuf = null;
-    //System.out.println(nIn + " " + nOut + " " + (1.0 * nIn / (nIn + nOut)));
+    //System.out.println("sphere3d " + nIn + " " + nOut + " " + (1.0 * nIn / (nIn + nOut)));
   } 
   
 

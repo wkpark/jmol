@@ -5594,7 +5594,67 @@ class Eval { //implements Runnable {
     case Token.integer:
       mad = intParameter(1);
       break;
-    case Token.temperature:
+    case Token.identifier:
+      String id = parameterAsString(1);
+      viewer.loadShape(JmolConstants.SHAPE_ELLIPSOIDS);
+      for (int i = 2; i < statementLength; i++) {
+        String key = parameterAsString(i);
+        Object value = null;
+        if (key.equalsIgnoreCase("modelIndex")) {
+          value = new Integer(intParameter(++i));
+          key = "modelindex";
+        } else if (key.equalsIgnoreCase("axes")) {
+          Vector3f[] axes = new Vector3f[3];
+          for (int j = 0; j < 3; j++) {
+            axes[j] = new Vector3f();
+            axes[j].set(getPoint3f(++i, true));
+            i = iToken;
+          }
+          value = axes;
+        } else if (key.equalsIgnoreCase("on")) {
+          value = Boolean.TRUE;
+        } else if (key.equalsIgnoreCase("off")) {
+          key = "on";
+          value = Boolean.FALSE;
+        } else if (key.equalsIgnoreCase("center")) {
+          value = centerParameter(++i);
+          i = iToken;
+        } else if (key.equalsIgnoreCase("scale")) {
+          value = new Float(floatParameter(++i));
+        } else if (key.equalsIgnoreCase("color")) {
+          float translucentLevel = Float.NaN;
+          i++;
+          if (tokAt(i) == Token.translucent) {
+            value = "translucent";
+            if (isFloatParameter(++i))
+              translucentLevel = floatParameter(i++);
+            else
+              translucentLevel = viewer.getDefaultTranslucent();
+          } else if (theTok == Token.opaque) {
+            value = "opaque";
+            i++;
+          }
+          if (isColorParam(i)) {
+            setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS, "color",
+                  new Object[] { id, new Integer(getArgbParam(i))});
+            i = iToken;
+          }
+          if (value == null)
+            continue;
+          if (translucentLevel != Float.NaN)
+            setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS, 
+                "translucentLevel", new Float(translucentLevel));
+          key = "translucency";
+        }
+        if (value == null)
+          error(ERROR_invalidArgument);
+        value = new Object[] {id, value};
+        setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS, 
+            key.toLowerCase(), value);
+      }
+
+      break;
+
     default:
       error(ERROR_booleanOrNumberExpected);
     }
@@ -9947,6 +10007,7 @@ class Eval { //implements Runnable {
     float[] nlmZ = new float[5];
     float[] data = null;
     int nFiles = 0;
+    BitSet bs;
     String str;
     int modelIndex = (isSyntaxCheck ? 0 : viewer.getDisplayModelIndex());
     if (!isSyntaxCheck)
@@ -10283,38 +10344,6 @@ class Eval { //implements Runnable {
           propertyValue = new Float(floatParameter(++i));
           break;
         }
-        if (str.equalsIgnoreCase("ellipsoid")) {
-          //ellipsoid {xc yc zc f} where a = b and f = a/c 
-          //OR ellipsoid {u11 u22 u33 u12 u13 u23}
-          surfaceObjectSeen = true;
-          ++i;
-          try {
-            propertyValue = getPoint4f(i);
-            propertyName = "ellipsoid";
-            i = iToken;
-            break;
-          } catch (ScriptException e) {
-          }
-          try {
-            float[] fparams = new float[6];
-            i = floatParameterSet(i, fparams);
-            propertyValue = fparams;
-            propertyName = "ellipsoid";
-            break;
-          } catch (ScriptException e) {
-          }
-          BitSet bs = expression(i);
-          int iAtom = BitSetUtil.firstSetBit(bs);
-          Atom[] atoms = viewer.getModelSet().atoms;
-          propertyValue = atoms[iAtom].getEllipsoid();
-          if (propertyValue == null)
-            return;
-          i = iToken;
-          propertyName = "ellipsoid";
-          if (!isSyntaxCheck)
-            setShapeProperty(iShape, "center", viewer.getAtomPoint3f(iAtom));
-          break;
-        }
         if (str.equalsIgnoreCase("lobe")) {
           //lobe {eccentricity} 
           surfaceObjectSeen = true;
@@ -10408,6 +10437,37 @@ class Eval { //implements Runnable {
           error(ERROR_invalidArgument);
         propertyName = "thisID";
         break;
+      case Token.ellipsoid:
+        //ellipsoid {xc yc zc f} where a = b and f = a/c 
+        //OR ellipsoid {u11 u22 u33 u12 u13 u23}
+        surfaceObjectSeen = true;
+        ++i;
+        try {
+          propertyValue = getPoint4f(i);
+          propertyName = "ellipsoid";
+          i = iToken;
+          break;
+        } catch (ScriptException e) {
+        }
+        try {
+          float[] fparams = new float[6];
+          i = floatParameterSet(i, fparams);
+          propertyValue = fparams;
+          propertyName = "ellipsoid";
+          break;
+        } catch (ScriptException e) {
+        }
+        bs = expression(i);
+        int iAtom = BitSetUtil.firstSetBit(bs);
+        Atom[] atoms = viewer.getModelSet().atoms;
+        propertyValue = atoms[iAtom].getEllipsoid();
+        if (propertyValue == null)
+          return;
+        i = iToken;
+        propertyName = "ellipsoid";
+        if (!isSyntaxCheck)
+          setShapeProperty(iShape, "center", viewer.getAtomPoint3f(iAtom));
+        break;
       case Token.lcaocartoon:
         surfaceObjectSeen = true;
         String lcaoType = parameterAsString(++i);
@@ -10416,7 +10476,7 @@ class Eval { //implements Runnable {
         case Token.bitset:
         case Token.expressionBegin:
           propertyName = "lcaoCartoon";
-          BitSet bs = expression(i);
+          bs = expression(i);
           i = iToken;
           int atomIndex = BitSetUtil.firstSetBit(bs);
           modelIndex = 0;

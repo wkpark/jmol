@@ -118,6 +118,8 @@ public class Quadric {
      * df/dz =  Ex +  Fy + 2Cz + I
      */
     
+    if (mDeriv == null)
+      return;
     mDeriv.setIdentity();
     mDeriv.m00 = (float) (2 * coef[0]);
     mDeriv.m11 = (float) (2 * coef[1]);

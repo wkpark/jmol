@@ -25,6 +25,8 @@
 
 package org.jmol.shapespecial;
 
+import java.util.Enumeration;
+
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
@@ -36,6 +38,7 @@ import org.jmol.util.Quadric;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Shape;
 import org.jmol.shape.ShapeRenderer;
+import org.jmol.shapespecial.Ellipsoids.Ellipsoid;
 import org.jmol.util.Logger;
 
 public class EllipsoidsRenderer extends ShapeRenderer {
@@ -78,7 +81,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
 
   protected void render() {
     ellipsoids = (Ellipsoids) shape;
-    if (ellipsoids.mads == null)
+    if (ellipsoids.mads == null && !ellipsoids.haveEllipsoids)
       return;
     wireframeOnly = (viewer.getWireframeRotation() && viewer.getInMotion());
     drawAxes = viewer.getBooleanProperty("ellipsoidAxes");
@@ -140,6 +143,15 @@ public class EllipsoidsRenderer extends ShapeRenderer {
         continue;
       render1(atom, ellipsoids.mads[i], ellipsoid);
     }
+    
+    if (ellipsoids.haveEllipsoids) {
+      Enumeration e = ellipsoids.htEllipsoids.elements();
+      while (e.hasMoreElements()) {
+        Ellipsoid ellipsoid = (Ellipsoid) e.nextElement();
+        if (ellipsoid.visible && ellipsoid.isValid)
+          renderEllipsoid(ellipsoid); 
+      }
+    }
     coords = null;
   }
 
@@ -173,7 +185,6 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   
   private void render1(Atom atom, short mad, Object[] ellipsoid) {
     s0.set(atom.screenX, atom.screenY, atom.screenZ);
-    //System.out.println(ellipsoid[2]);
     axes = (Vector3f[]) ellipsoid[0];
     float[] af = (float[]) ellipsoid[1];
     float f = mad / 100.0f;
@@ -182,7 +193,6 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     //[0] is shortest; [2] is longest
     if (drawAxes || drawArcs || drawBall)
       setAxes(atom, 1.0f);
-    dx = 2 + viewer.scaleToScreen(atom.screenZ, (int)(lengths[2] * 1000));
     if (g3d.isClippedXY(dx + dx, atom.screenX, atom.screenY))
       return;
     diameter = viewer.scaleToScreen(atom.screenZ, wireframeOnly ? 1 : diameter0);
@@ -193,7 +203,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     if (drawArcs && !drawBall)
       renderArcs(atom);
     if (drawBall) {
-      renderBall(atom, ellipsoid);
+      renderBall();
       if (drawArcs || drawAxes) {
         g3d.setColix(viewer.getColixBackgroundContrast());
         //setAxes(atom, 1.0f);
@@ -206,73 +216,14 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     }
   }
 
-  /*
-   * How this works -- Bob Hanson, 4/2008
-
-   X are Cartesian coordinates
-   X' are ellipsoid axis coordinates 
-
-   T is the current transform matrix minus the translation part
-   E is the transform matrix from ellipsoid to cartesian
-     E has scaled Eigenvector axes as columns
-   M is the matrix converting screen coordinates to ellipsoid space
-
-     S = TX
-     (T-1)S = X
-   
-     EX' = X
-     (E-1)X = X'
-  
-   then
-   
-     M = (E-1)(S-1)
-   
-   and 
-   
-     MS = (E-1)(S-1)S = (E-1)X = X' 
-   
-   and we can know x, y, and z in our standard ellipsoidal
-   coordinate system, where the ellipsoid behaves as a sphere:
-   
-     x^2 + y^2 + z^2 = 1
-
-   We will scan ix and iy -- our pixel position on the
-   screen, but we won't know iz. The goal is to calculate that:
-   
-   Break M into two components -- one constant based on ix and iy
-   and one variable, based on iz:
-   
-     M(ix iy iz) =  M(ix iy 0) + M(0 0 1)*iz
-   
-   assign 
-   
-     C = M(iz iy 0)
-     A = M(0 0 1)
-   
-   Then we have
-   
-     MS = C + AZ
-   
-   for which the equation is now a simple quadratic in z:
-   
-     (c0 + a0iz)^2 + (c1 + a1iz)^2 + (c2 + a2iz)^2 = 1
-   
-   collecting terms and writing as dot products:
-   
-     (A.A)iz^2 + 2(A.C)iz + C.C - 1 = 0
-   
-   Solving this will give the two pixels at position 
-   ix iy that satisfy the relationship for the ellipsoid. 
-
-   */
-
-  private void setAxes(Atom atom, float f) {
+  private void setAxes(Point3f center, float f) {
     for (int i = 0; i < 6; i++) {
       int iAxis = axisPoints[i];
       int i012 = Math.abs(iAxis) - 1;
-      points[i].scaleAdd(f * lengths[i012] * (iAxis < 0 ? -1 : 1), axes[i012], atom);
+      points[i].scaleAdd(f * lengths[i012] * (iAxis < 0 ? -1 : 1), axes[i012], center);
       viewer.transformPoint(points[i], screens[i]);
     }
+    dx = 2 + viewer.scaleToScreen(s0.z, (int)(lengths[2] * 1000));
   }
 
   private void renderAxes() {
@@ -377,28 +328,29 @@ public class EllipsoidsRenderer extends ShapeRenderer {
             screens[i == 17 ? i + 7 : i + 8]);
   }
 
+
+  private void renderEllipsoid(Ellipsoid ellipsoid) {
+    axes = ellipsoid.axes;
+    for (int i = 0; i < 3; i++)
+      lengths[i] = ellipsoid.lengths[i];
+    setAxes(ellipsoid.center, 1);
+    viewer.transformPoint(ellipsoid.center, s0);
+    colix = ellipsoid.colix;
+    if (!g3d.setColix(colix))
+      return;
+    renderBall();
+  }
   
-  private void renderBall(Atom atom, Object[] ellipsoid) {
+  private void renderBall() {
     Quadric.setEllipsoidMatrix(axes, lengths, v1, mat);
     // make this screen coordinates to ellisoidal coordinates
     mat.mul(mat, matToScreenInv);
+    setSelectedOctant();
     // get equation and differential
     Quadric.getEquationForQuadricWithCenter(s0.x, s0.y, s0.z, mat, v1, mTemp,
         coef, mDeriv);
-    setSelectedOctant();
     g3d.renderEllipsoid(s0.x, s0.y, s0.z, dx + dx, mat, coef, mDeriv,
       selectedOctant, selectedOctant >= 0 ? selectedPoints : null);
-    
-    /*
-    for (int i = 0; i < 8; i++) {
-      int ptA = octants[i * 3];
-      int ptB = octants[i * 3 + 1];
-      int ptC = octants[i * 3 + 2];
-      boolean isSwapped = (axisPoints[ptA] < 0);
-      renderBall(atom, axisPoints[ptA], axisPoints[ptB], axisPoints[ptC],
-          isSwapped, iCutout == i);
-    }
-    */
     }
 
   private void setSelectedOctant() {
@@ -424,105 +376,5 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       mat.transform(pt1);
       selectedOctant = Quadric.getOctant(pt1);
     }
-  }
-
-/*  Vector3f a = new Vector3f();
-  Vector3f b = new Vector3f();
-  Vector3f c = new Vector3f();
-  
-  private void renderBall(Point3f ptAtom, int axisA, int axisB, int axisC,
-                           boolean isSwapped, boolean cutoutOnly) {
-    int nSegments = 24;
-    int i;
-    a.set(axes[i = (Math.abs(axisA) - 1)]);
-    float la = lengths[i];
-    b.set(axes[i = (Math.abs(axisB) - 1)]);
-    float lb = lengths[i];
-    c.set(axes[i = (Math.abs(axisC) - 1)]);
-    float lc = lengths[i];
-    if (axisA < 0)
-      a.scale(-1);
-    if (axisB < 0)
-      b.scale(-1);
-    if (axisC < 0)
-      c.scale(-1);
-
-    if (cutoutOnly) {
-      renderCutout(ptAtom, a, b, la, lb, nSegments, isSwapped);
-      renderCutout(ptAtom, a, c, la, lc, nSegments, isSwapped);
-      renderCutout(ptAtom, c, b, lc, lb, nSegments, isSwapped);
-      return;
-    }
-    int intensity2 = 0;
-    int intensity = 0;
-    for (int ifx = 0, ify = 0, scrPt = 0; ifx < nSegments; ifx++) {
-      float fx = ifx * 1f / (nSegments - 1);
-      for (ify = 0; ify < nSegments; ify++) {
-        float fy = ify * 1f / (nSegments - 1);
-        float fz = (float) Math.sqrt(1 - fx * fx - fy * fy);
-        if (Float.isNaN(fz)) {
-          fy = (float) Math.sqrt(1 - fx * fx);
-          fz = 0;
-        }
-        //15 ms
-        pt1.scaleAdd(fx * la, a, ptAtom);
-        pt1.scaleAdd(fy * lb, b, pt1);
-        pt1.scaleAdd(fz * lc, c, pt1);
-        viewer.transformPoint(pt1, s1);
-        //90 ms
-        intensity = g3d.calcSurfaceShade(s1, s0, null);
-        //438 ms
-        scrPt = ify + 6;
-        if (ify != 0) {
-          if (ifx != 0) {
-            if (isSwapped) {
-              g3d.fillTriangle(s2, intensity2, s1, intensity, 
-                  screens[scrPt], intensities[scrPt]);
-              g3d.fillTriangle(s2, intensity2, screens[scrPt], intensities[scrPt],
-                  screens[scrPt - 1], intensities[scrPt - 1]);
-            } else {
-              g3d.fillTriangle(screens[scrPt - 1], intensities[scrPt - 1],
-                  screens[scrPt], intensities[scrPt], s1, intensity);
-              g3d.fillTriangle(screens[scrPt - 1], intensities[scrPt - 1], 
-                  s1, intensity, s2, intensity2);
-            }
-          }
-          screens[scrPt - 1].set(s2);
-          intensities[scrPt - 1] = intensity2;
-        }
-        s2.set(s1);
-        intensity2 = intensity;
-      }
-      screens[scrPt].set(s2);
-      intensities[scrPt] = intensity2;
-    }
-    //547 ms
-  }
-
-  private void renderCutout(Point3f ptAtom, Vector3f a, Vector3f b, 
-                            float la, float lb, int nSegments, boolean isSwapped) {
-    if (isSwapped)
-      v3.cross(a, b);
-    else
-      v3.cross(b, a);
-    short normix = ellipsoids.g3d.get2SidedNormix(v3);
-    for (int ify = 0; ify < nSegments; ify++) {
-      float fy = ify * 1f / (nSegments - 1);
-      float fz = (float) Math.sqrt(1 - fy * fy);
-      pt1.scaleAdd(fy * la, a, ptAtom);
-      viewer.transformPoint(pt1, s1);
-      pt1.scaleAdd(fz * lb, b, pt1);
-      viewer.transformPoint(pt1, s2);
-      if (ify > 0) {
-        g3d.fillTriangle(s1, colix, normix, s2, colix, normix, screens[7],
-            colix, normix);
-        g3d.fillTriangle(s1, colix, normix, screens[7], colix, normix,
-            screens[6], colix, normix);
-      }
-      screens[6].set(s1);
-      screens[7].set(s2);
-    }
-  }
-*/
-  
+  }  
 }

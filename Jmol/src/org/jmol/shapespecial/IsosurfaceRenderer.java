@@ -109,6 +109,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
     //+ normixes.length);
     // two-sided means like a plane, with no front/back distinction
     for (int i = imesh.polygonCount; --i >= 0;) {
+//      if (i > 500)
+  //      continue;
       int[] vertexIndexes = polygonIndexes[i];
       if (vertexIndexes == null)
         continue;

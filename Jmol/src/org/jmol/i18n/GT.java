@@ -106,6 +106,7 @@ public class GT {
     {"et", GT._("Estonian")},
     {"fr", GT._("French")},
     {"de", GT._("German")},
+    {"hu", GT._("Hungarian")},
     {"ko", GT._("Korean")},
     {"pt_BR", GT._("Portuguese - Brazil")},
     {"pt", GT._("Portuguese")},

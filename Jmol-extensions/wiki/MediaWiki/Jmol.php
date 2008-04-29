@@ -15,11 +15,33 @@ $wgExtensionCredits['parserhook'][] = array(
   'version'     => StubManager::getRevisionId( '$Id$' )
 );
 
+/* Global configuration parameters */
+global $wgJmolAuthorizeChoosingSignedApplet;
+global $wgJmolAuthorizeUploadedFile;
+global $wgJmolAuthorizeUrl;
+global $wgJmolDefaultAppletSize;
+global $wgJmolDefaultScript;
+global $wgJmolExtensionPath;
+global $wgJmolForceNameSpace;
+global $wgJmolShowWarnings;
+global $wgJmolUsingSignedAppletByDefault;
+
+$wgJmolAuthorizeChoosingSignedApplet = false;
+$wgJmolAuthorizeUploadedFile = true;
+$wgJmolAuthorizeUrl = false;
+$wgJmolDefaultAppletSize = "400";
+$wgJmolDefaultScript = "";
+$wgJmolExtensionPath = "/extensions/Jmol";
+$wgJmolForceNameSpace = "";
+$wgJmolShowWarnings = true;
+$wgJmolUsingSignedAppletByDefault = false;
+
 StubManager::createStub(
     'Jmol',
     dirname(__FILE__).'/Jmol.body.php',
     null, //dirname(__FILE__).'/Jmol.i18n.php',
-    array( 'ParserBeforeStrip',
+    array( 'OutputPageBeforeHTML',
+           'ParserBeforeStrip',
            'ParserAfterStrip' ),
     false,                              // no need for logging support
     array( 'jmol' ),                    // tags

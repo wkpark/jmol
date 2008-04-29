@@ -10,6 +10,7 @@ if (!defined('MEDIAWIKI')) {
 
 require_once("Title.php");
 
+/* Global configuration parameters */
 global $wgJmolAuthorizeChoosingSignedApplet;
 global $wgJmolAuthorizeUploadedFile;
 global $wgJmolAuthorizeUrl;
@@ -20,24 +21,11 @@ global $wgJmolForceNameSpace;
 global $wgJmolShowWarnings;
 global $wgJmolUsingSignedAppletByDefault;
 
-/* Global configuration parameters */
-$wgJmolAuthorizeChoosingSignedApplet = false;
-$wgJmolAuthorizeUploadedFile = true;
-$wgJmolAuthorizeUrl = false;
-$wgJmolDefaultAppletSize = "400";
-$wgJmolDefaultScript = "";
-$wgJmolExtensionPath = "$IP/extensions/Jmol";
-$wgJmolForceNameSpace = "";
-$wgJmolShowWarnings = true;
-$wgJmolUsingSignedAppletByDefault = false;
-
 class Jmol {
 
   var $mOutput, $mDepth;
   var $mCurrentObject, $mCurrentTag, $mCurrentSubTag;
   
-  var $mJmolTagPresent;
-
   var $mValChecked;
   var $mValColor;
   var $mValInlineContents;
@@ -63,7 +51,6 @@ class Jmol {
   function __construct() {
     $this->mOutput = "";
     $this->mDepth = 0;
-    $this->mJmolTagPresent = false;
     $this->resetValues();
   }
 
@@ -73,9 +60,8 @@ class Jmol {
 
   // Render Jmol tag
   private function renderJmol($input) {
-    $this->mOutput = "";
+    $this->mOutput = "<!-- Jmol -->";
     $this->mDepth = 0;
-    $this->mJmolTagPresent = true;
     $xmlParser = xml_parser_create();
     xml_set_object($xmlParser, $this);
     xml_set_element_handler($xmlParser, "startElement", "endElement");
@@ -566,28 +552,39 @@ class Jmol {
   // DIRECTING THE EXTENSION //
   // *********************** //
 
-  private function beginParsing() {
-    $this->mJmolTagPresent = false;
-  }
-
   private function parseJmolTag(&$text, &$params, &$parser) {
     $parser->disableCache();
-    $parser->mOutput->mJmolTag = true;
     return $this->renderJmol($text);
   }
 
-  private function endParsing() {
-    global $wgJmolExtensionPath,$wgOut;
-    if ($this->mJmolTagPresent == true) {
-      $this->includeScript($wgOut, $wgJmolExtensionPath."/Jmol.js");
-      $this->includeScript($wgOut, $wgJmolExtensionPath."/JmolMediaWiki.js");
-      if ($this->mValSigned) {
-        $this->addScript($wgOut, "jmolInitialize('".$wgJmolExtensionPath."', true);");
-      } else {
-        $this->addScript($wgOut, "jmolInitialize('".$wgJmolExtensionPath."', false);");
-      }
+  private function beforeHMTLOutput(&$outputPage, &$text) {
+    global $wgJmolExtensionPath;
+    //if (preg_match_all('/<!-- Jmol -->/m', $text, $matches) === false) {
+    //  return true;
+    //}
+    $this->includeScript($outputPage, $wgJmolExtensionPath."/Jmol.js");
+    $this->includeScript($outputPage, $wgJmolExtensionPath."/JmolMediaWiki.js");
+    if ($this->mValSigned) {
+      $this->addScript($outputPage, "jmolInitialize('".$wgJmolExtensionPath."', true);");
+    } else {
+      $this->addScript($outputPage, "jmolInitialize('".$wgJmolExtensionPath."', false);");
     }
-    $this->mJmolTagPresent = false;
+    return true;
+  }
+
+  private function toto(&$outputPage, &$text) {
+    global $wgJmolExtensionPath;
+    if (preg_match_all('/<!-- Jmol -->/m', $text, $matches) === false) {
+      return true;
+    }
+    $this->includeScript($outputPage, $wgJmolExtensionPath."/Jmol.js");
+    $this->includeScript($outputPage, $wgJmolExtensionPath."/JmolMediaWiki.js");
+    if ($this->mValSigned) {
+      $this->addScript($outputPage, "jmolInitialize('".$wgJmolExtensionPath."', true);");
+    } else {
+      $this->addScript($outputPage, "jmolInitialize('".$wgJmolExtensionPath."', false);");
+    }
+    return true;
   }
 
   // ******************* //
@@ -603,15 +600,18 @@ class Jmol {
   // MEDIAWIKI HOOKS //
   // *************** //
 
+  // OutputPageBeforeHTML
+  function hOutputPageBeforeHTML(&$out, &$text) {
+    return $this->toto($out, $text); //$this->beforeHTMLOutput($out, $text);
+  }
+
   // ParserBeforeStrip hook
   function hParserBeforeStrip(&$parser, &$text, &$strip_state) {
-    $this->beginParsing();
     return true;
   }
 
   // ParserAfterStrip hook
   function hParserAfterStrip(&$parser, &$text, &$strip_state) {
-    $this->endParsing();
     return true;
   }
 

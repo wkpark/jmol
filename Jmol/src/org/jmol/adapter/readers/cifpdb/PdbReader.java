@@ -141,7 +141,7 @@ public class PdbReader extends AtomSetCollectionReader {
           formul();
           continue;
         }
-        if (line.startsWith("REMARK 350")) {
+        if (line.startsWith("REMARK 350 GENERATING THE BIOMOLECULE")) {
           remark350();
           continue;
         }
@@ -243,6 +243,8 @@ public class PdbReader extends AtomSetCollectionReader {
           Logger.info("filter set to \"" + filter + "\"");
           this.biomts = biomts;
         }
+        if (info == null)
+          return; //bad file format
         info.put("chains", chainlist);
         continue;
       }

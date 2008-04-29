@@ -168,6 +168,7 @@ public class SticksRenderer extends ShapeRenderer {
   }
     
   int getRenderBondOrder(int order) {
+    order &= ~JmolConstants.BOND_TAINTED; 
     if ((order & JmolConstants.BOND_PARTIAL_MASK) != 0)
       return order;
     if ((order & JmolConstants.BOND_SULFUR_MASK) != 0)
@@ -228,7 +229,7 @@ public class SticksRenderer extends ShapeRenderer {
         fillCylinder(colixA, colixB, endcaps, width,
                            xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
       dottedMask >>= 1;
-      if (--bondOrder == 0)
+      if (--bondOrder <= 0)
         break;
       stepAxisCoordinates();
     }

@@ -1743,7 +1743,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Point3f[] calculateSurface(BitSet bsSelected, float envelopeRadius) {
     if (bsSelected == null) bsSelected = selectionManager.bsSelection;
-    modelSet.addStateScript("calculate surfaceDistance "
+    addStateScript("calculate surfaceDistance "
         + (envelopeRadius == Float.MAX_VALUE ? "FROM" : "WITHIN"), null,
         bsSelected, null, "", false);
     return modelSet.calculateSurface(bsSelected, envelopeRadius);
@@ -1769,7 +1769,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void addStateScript(String script, boolean addFrameNumber) {
-    modelSet.addStateScript(script, null, null, null, null, addFrameNumber);
+    addStateScript(script, null, null, null, null, addFrameNumber);
+  }
+
+  void addStateScript(String script1, BitSet bsBonds, BitSet bsAtoms1,
+                      BitSet bsAtoms2, String script2, boolean addFrameNumber) {
+    modelSet.addStateScript(script1, bsBonds, bsAtoms1, bsAtoms2, script2,
+        addFrameNumber);
   }
 
   public boolean getEchoStateActive() {
@@ -2515,8 +2521,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   int autoHbond(BitSet bsBonds) {
     //Eval
-    modelSet.addStateScript("select", null, selectionManager.bsSelection, null,
-        "; calculate hbonds;", false);
+ //   modelSet.addStateScript("select", null, selectionManager.bsSelection, null,
+   //     "; calculate hbonds;", false);
     return autoHbond(selectionManager.bsSelection,
         selectionManager.bsSelection, bsBonds);
   }
@@ -5397,22 +5403,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     clearMinimization();
     modelSet.deleteAllBonds();
     modelSet.autoBond(null, null, null, null);
-    modelSet.addStateScript("connect;", null, null, null, null, false);
+    addStateScript("connect;", false);
     refresh(0, "Viewer:rebond()");
   }
 
-  void setPdbConectBonding(int baseAtomIndex, int baseModelIndex, boolean isAuto) {
+  void setPdbConectBonding(boolean isAuto) {
     // from eval
     clearMinimization();
     modelSet.deleteAllBonds();
     BitSet bsExclude = new BitSet();
-    modelSet.setPdbConectBonding(baseAtomIndex, baseModelIndex, bsExclude);
+    modelSet.setPdbConectBonding(0, 0, bsExclude);
     if (isAuto) {
       modelSet.autoBond(null, null, bsExclude, null);
-      modelSet.addStateScript("connect PDB AUTO;", null, null, null, null, false);
+      addStateScript("connect PDB AUTO;", false);
       return;
     }
-    modelSet.addStateScript("connect PDB;", null, null, null, null, false);
+    addStateScript("connect PDB;", false);
     refresh(0, "Viewer:setPdbConnectBonding()");
   }
     

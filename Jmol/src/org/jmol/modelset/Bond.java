@@ -95,7 +95,7 @@ public class Bond {
   }
 
   public String getIdentity() {
-    return (index + 1) + " "+ order + " " + atom1.getInfo() + " -- "
+    return (index + 1) + " "+ getOrderNumber() + " " + atom1.getInfo() + " -- "
         + atom2.getInfo() + " " + atom1.distance(atom2);
   }
 
@@ -135,7 +135,7 @@ public class Bond {
 
   int getValence() {
     return (!isCovalent() ? 0
-        : isPartial() || order == JmolConstants.BOND_AROMATIC ? 1
+        : isPartial() || is(JmolConstants.BOND_AROMATIC) ? 1
         : order & 7);
   }
 
@@ -180,7 +180,7 @@ public class Bond {
   }
 
   public void setOrder(short order) {
-    this.order = order;
+    this.order = (short) (order | (this.order & JmolConstants.BOND_TAINTED));
   }
 
   public Atom getAtom1() {
@@ -243,6 +243,10 @@ public class Bond {
 
   public void setIndex(int i) {
     index = i;
+  }
+
+  public boolean is(int bondType) {
+    return (order & ~JmolConstants.BOND_TAINTED) != bondType;
   }
 
 }

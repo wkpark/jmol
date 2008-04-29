@@ -36,6 +36,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolBioResolver;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.CubeIterator;
@@ -1920,6 +1921,7 @@ abstract public class ModelCollection extends BondCollection {
     int m = (isBonds ? 1 : atomCount);
     Atom atomA = null;
     Atom atomB = null;
+    short taintOrder = (short) (order | JmolConstants.BOND_TAINTED);
     for (int iA = n; --iA >= 0;) {
       if (!bsA.get(iA))
         continue;
@@ -1954,18 +1956,18 @@ abstract public class ModelCollection extends BondCollection {
           continue;
         if (bondAB != null) {
           if (!identifyOnly && !matchAny) {
-            bondAB.order = order;
+            bondAB.setOrder(order);
             bsAromatic.clear(bondAB.index);
           }
-          if (!identifyOnly || matchAny || order == bondAB.order || matchHbond
-              && bondAB.isHydrogen()) {
+          if (!identifyOnly || matchAny 
+              || order == bondAB.order || taintOrder == bondAB.order  
+              || matchHbond && bondAB.isHydrogen()) {
             bsBonds.set(bondAB.index);
             nModified++;
           }
         } else {
           bsBonds.set(
-              bondAtoms(atomA, atomB, order, 
-                  mad, bsBonds).index);
+               bondAtoms(atomA, atomB, order, mad, bsBonds).index);
           nNew++;
         }
       }
@@ -2238,7 +2240,7 @@ abstract public class ModelCollection extends BondCollection {
     int i;
     for (int ibond = 0; ibond < bondCount; ibond++) {
       Bond bond = bonds[ibond];
-      if (intType == JmolConstants.BOND_ORDER_ANY || bond.order == intType) {
+      if (intType == JmolConstants.BOND_ORDER_ANY || bond.is(intType)) {
         if (bs.get(bond.atom1.atomIndex)) {
           nBonded[i = bond.atom2.atomIndex]++;
           bsResult.set(i);
@@ -2277,7 +2279,7 @@ abstract public class ModelCollection extends BondCollection {
       Bond bond = bonds[i];
       if (bs.get(bond.atom1.atomIndex) 
           && bs.get(bond.atom2.atomIndex)) {
-        if (bond.order >= 1 && bond.order < 3) {
+        if (!bond.isHydrogen()) {
           getBondRecordMOL(s, i,atomMap);
           nBonds++;
         }
@@ -2310,7 +2312,24 @@ abstract public class ModelCollection extends BondCollection {
     Bond b = bonds[i];
     TextFormat.rFill(s, "   ","" + atomMap[b.atom1.atomIndex]);
     TextFormat.rFill(s, "   ","" + atomMap[b.atom2.atomIndex]);
-    s.append("  ").append(b.order).append("\n"); 
+    int order = b.getValence();
+    if (order > 3)
+      order = 1;
+    switch (b.order & ~JmolConstants.BOND_TAINTED) {
+    case JmolAdapter.ORDER_AROMATIC:
+      order = 4;
+      break;
+    case JmolAdapter.ORDER_PARTIAL12:
+      order = 5;
+      break;
+    case JmolAdapter.ORDER_AROMATIC_SINGLE:
+      order = 6;
+      break;
+    case JmolAdapter.ORDER_AROMATIC_DOUBLE:
+      order = 7;
+      break;
+    }
+    s.append("  ").append(order).append("\n"); 
   }
   
   public String getModelFileInfo(BitSet frames) {
@@ -2435,7 +2454,7 @@ abstract public class ModelCollection extends BondCollection {
     getAtomIdentityInfo(atom2.atomIndex, infoB);
     info.put("atom1",infoA);
     info.put("atom2",infoB);
-    info.put("order", new Integer(bonds[i].order));
+    info.put("order", new Float(JmolConstants.getBondOrderNumberFromOrder(bonds[i].order)));
     info.put("radius", new Float(bond.mad/2000.));
     info.put("length_Ang",new Float(atom1.distance(atom2)));
     info.put("visible", Boolean.valueOf(bond.shapeVisibilityFlags != 0));

@@ -305,13 +305,15 @@ final public class JmolConstants {
   //           ||| Partial n       7 << 5
   //              | |||| Partial m 0x1F
   //       ||| |||| |||| Covalent 0x3FF
-  // 1111 1111 1111 1111
+  // 0011 1111 1111 1111 ANY
+  // 0111 1111 1111 1111 NULL
   
-  public final static short BOND_ORDER_ANY     = -2;
-  public final static short BOND_ORDER_NULL    = -1;
+  
+  public final static short BOND_ORDER_ANY     = 0x3FFF;
+  public final static short BOND_ORDER_NULL    = 0x7FFF;
 
   public final static short BOND_HBOND_SHIFT   = 11;
-  public final static short BOND_TAINTED       = 0;//(short) (1 << 15);
+  public final static short BOND_TAINTED       = (short) (1 << 15);
   public final static short BOND_HYDROGEN_MASK = 0xF << 11;
   public final static short BOND_H_REGULAR     = 1 << 11;
   public final static short BOND_H_CALC_MASK   = 0xE << 11; // excludes regular
@@ -416,7 +418,7 @@ final public class JmolConstants {
   }
 
   public final static short getPartialBondOrder(int order) {
-    return (short) (order >> 5);
+    return (short) ((order & ~BOND_TAINTED) >> 5);
   }
   
   public final static int getPartialBondDotted(int order) {
@@ -435,6 +437,7 @@ final public class JmolConstants {
   }
   
   public final static String getBondOrderNameFromOrder(short order) {
+    order &= ~BOND_TAINTED;
     switch (order) {
     case BOND_ORDER_ANY:
     case BOND_ORDER_NULL:
@@ -464,6 +467,7 @@ final public class JmolConstants {
    * @return a string representation to preserve float n.m
    */
   public final static String getBondOrderNumberFromOrder(short order) {
+    order &= ~BOND_TAINTED;
     if (order == BOND_ORDER_NULL || order == BOND_ORDER_ANY)
       return "0"; // I don't think this is possible
     if ((order & BOND_HYDROGEN_MASK) != 0)

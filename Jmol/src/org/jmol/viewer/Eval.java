@@ -3343,7 +3343,7 @@ class Eval { //implements Runnable {
             checkLength2();
           if (isSyntaxCheck)
             return;
-          viewer.setPdbConectBonding(0, 0, isAuto);
+          viewer.setPdbConectBonding(isAuto);
           return;
         }
         if ((bo = JmolConstants.getBondOrderFromString(cmd)) == JmolConstants.BOND_ORDER_NULL) {
@@ -4417,8 +4417,7 @@ class Eval { //implements Runnable {
       break;
     }
     viewer.loadShape(JmolConstants.SHAPE_ECHO);
-    viewer.addStateScript("frame " + viewer.getModelNumberDotted(modelIndex)
-        + "; " + type + ";", false);
+    viewer.addStateScript(type, true);
     showString("frame " + viewer.getModelNumberDotted(modelCount - 1) + " created: "
         + type);
   }
@@ -5800,8 +5799,8 @@ class Eval { //implements Runnable {
     BitSet bsConfigurations;
     if (statementLength == 1) {
       bsConfigurations = viewer.setConformation();
-      viewer.addStateScript("select " + Escape.escape(viewer.getSelectionSet())
-          + "; configuration;", true);
+      viewer.addStateScript("select", null, viewer.getSelectionSet(), null,
+          "configuration", true);
     } else {
       checkLength2();
       if (isSyntaxCheck)

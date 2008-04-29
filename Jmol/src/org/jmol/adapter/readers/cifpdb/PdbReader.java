@@ -193,7 +193,8 @@ public class PdbReader extends AtomSetCollectionReader {
 
 /* 
  REMARK 350 BIOMOLECULE: 1                                                       
- REMARK 350 APPLY THE FOLLOWING TO CHAINS: 1, 2, 3, 4, 5, 6                      
+ REMARK 350 APPLY THE FOLLOWING TO CHAINS: 1, 2, 3, 4, 5, 6,  
+ REMARK 350 A, B, C
  REMARK 350   BIOMT1   1  1.000000  0.000000  0.000000        0.00000            
  REMARK 350   BIOMT2   1  0.000000  1.000000  0.000000        0.00000            
  REMARK 350   BIOMT3   1  0.000000  0.000000  1.000000        0.00000            
@@ -210,34 +211,39 @@ public class PdbReader extends AtomSetCollectionReader {
     String title = "";
     String chainlist = "";
     int iMolecule = 0;
+    boolean needLine = true;
+    Hashtable info = null;
     while (true) {
-      readLine();
-      if (line == null || !line.startsWith("REMARK 350") 
-          || line.startsWith("REMARK 350 BIOMOLECULE:")) {
-        if (biomts != null) {
-          Hashtable info = new Hashtable();
-          info.put("title", title);
-          info.put("chains", chainlist);
-          info.put("molecule", new Integer(iMolecule));
-          info.put("biomts", biomts);
-          biomolecules.add(info);
-        }
-        if (line == null  || !line.startsWith("REMARK 350"))
-          break;
-        iMolecule = parseInt(line.substring(line.indexOf(":") + 1));
+      if (needLine)
+        readLine();
+      else
+        needLine = true;
+      if (line == null || !line.startsWith("REMARK 350")) 
+        break;
+      if (line.startsWith("REMARK 350 BIOMOLECULE:")) {
+        info = new Hashtable();
         biomts = new Vector();
+        iMolecule = parseInt(line.substring(line.indexOf(":") + 1));
         title = line.trim();
+        info.put("molecule", new Integer(iMolecule));
+        info.put("title", title);
+        info.put("chains", "");
+        info.put("biomts", biomts);
+        biomolecules.add(info);
         continue;
       }
       if (line.startsWith("REMARK 350 APPLY THE FOLLOWING TO CHAINS:")) {
-        line = line.substring(41).trim();
-        chainlist = ":" + line.replace(' ', ':');
+        chainlist = ":" + line.substring(41).trim().replace(' ', ':');
+        needLine = false;
+        while (readLine() != null && line.indexOf("BIOMT") < 0)
+          chainlist += ":" + line.substring(11).trim().replace(' ', ':');
         if (filter != null
             && filter.toUpperCase().indexOf("BIOMOLECULE " + iMolecule + ";") >= 0) {
           filter += chainlist;
           Logger.info("filter set to \"" + filter + "\"");
           this.biomts = biomts;
         }
+        info.put("chains", chainlist);
         continue;
       }
       /*

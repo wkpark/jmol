@@ -197,7 +197,7 @@ public class Sticks extends Shape {
         setStateInfo(temp, i, "wireframe "
             + ((r = bond.getMad()) == 1 ? "on" : "" + (r / 2000f)));
       if (reportAll || bsOrderSet != null && bsOrderSet.get(i)
-          && (bond.getOrder() & JmolConstants.BOND_TAINTED) == 0)
+          && (bond.getOrder() & JmolConstants.BOND_NEW) == 0)
         setStateInfo(temp, i, "bondOrder "
             + JmolConstants.getBondOrderNameFromOrder(bond.getOrder()));
       if (bsColixSet != null && bsColixSet.get(i)) {

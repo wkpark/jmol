@@ -133,14 +133,12 @@ abstract public class BondCollection extends AtomCollection {
   }
 
   public Bond bondAtoms(Atom atom1, Atom atom2, short order, short mad, BitSet bsBonds) {
-    // this method used when a bond must be tainted
-    return taintBond(getOrAddBond(atom1, atom2, order, mad, bsBonds));
-  }
-
-  private Bond taintBond(Bond bond) {
-    bond.order |= JmolConstants.BOND_TAINTED;
+    // this method used when a bond must be flagged as new
+    Bond bond = getOrAddBond(atom1, atom2, order, mad, bsBonds);
+    bond.order |= JmolConstants.BOND_NEW;
     return bond;
   }
+
   private final static int bondGrowthIncrement = 250;
 
   private Bond getOrAddBond(Atom atom, Atom atomOther, short order, short mad,
@@ -311,7 +309,7 @@ abstract public class BondCollection extends AtomCollection {
                         float minDistanceSquared, float maxDistanceSquared) {
     BitSet bsDelete = new BitSet();
     int nDeleted = 0;
-    int taintOrder = order |= JmolConstants.BOND_TAINTED;
+    int newOrder = order |= JmolConstants.BOND_NEW;
     if (!matchNull && (order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
       order = JmolConstants.BOND_HYDROGEN_MASK;
     for (int i = bondCount; --i >= 0;) {
@@ -326,8 +324,8 @@ abstract public class BondCollection extends AtomCollection {
           float distanceSquared = atom1.distanceSquared(atom2);
           if (distanceSquared >= minDistanceSquared
               && distanceSquared <= maxDistanceSquared
-              && (matchNull || taintOrder == 
-                (bond.order & ~JmolConstants.BOND_SULFUR_MASK | JmolConstants.BOND_TAINTED)
+              && (matchNull || newOrder == 
+                (bond.order & ~JmolConstants.BOND_SULFUR_MASK | JmolConstants.BOND_NEW)
                 || (order & bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0)) {
               bsDelete.set(i);
               nDeleted++;
@@ -505,7 +503,7 @@ abstract public class BondCollection extends AtomCollection {
         Bond bond = bonds[i];
         if (bsAromatic.get(i))
           bond.setOrder(JmolConstants.BOND_AROMATIC);
-        switch (bond.order & ~JmolConstants.BOND_TAINTED) {
+        switch (bond.order & ~JmolConstants.BOND_NEW) {
         case JmolConstants.BOND_AROMATIC:
           bsAromatic.set(i);
           break;

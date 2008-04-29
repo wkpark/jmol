@@ -168,7 +168,7 @@ public class SticksRenderer extends ShapeRenderer {
   }
     
   int getRenderBondOrder(int order) {
-    order &= ~JmolConstants.BOND_TAINTED; 
+    order &= ~JmolConstants.BOND_NEW; 
     if ((order & JmolConstants.BOND_PARTIAL_MASK) != 0)
       return order;
     if ((order & JmolConstants.BOND_SULFUR_MASK) != 0)

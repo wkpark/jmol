@@ -1921,7 +1921,7 @@ abstract public class ModelCollection extends BondCollection {
     int m = (isBonds ? 1 : atomCount);
     Atom atomA = null;
     Atom atomB = null;
-    short taintOrder = (short) (order | JmolConstants.BOND_TAINTED);
+    short newOrder = (short) (order | JmolConstants.BOND_NEW);
     for (int iA = n; --iA >= 0;) {
       if (!bsA.get(iA))
         continue;
@@ -1960,7 +1960,7 @@ abstract public class ModelCollection extends BondCollection {
             bsAromatic.clear(bondAB.index);
           }
           if (!identifyOnly || matchAny 
-              || order == bondAB.order || taintOrder == bondAB.order  
+              || order == bondAB.order || newOrder == bondAB.order  
               || matchHbond && bondAB.isHydrogen()) {
             bsBonds.set(bondAB.index);
             nModified++;
@@ -2315,7 +2315,7 @@ abstract public class ModelCollection extends BondCollection {
     int order = b.getValence();
     if (order > 3)
       order = 1;
-    switch (b.order & ~JmolConstants.BOND_TAINTED) {
+    switch (b.order & ~JmolConstants.BOND_NEW) {
     case JmolAdapter.ORDER_AROMATIC:
       order = 4;
       break;

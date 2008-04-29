@@ -180,7 +180,7 @@ public class Bond {
   }
 
   public void setOrder(short order) {
-    this.order = (short) (order | (this.order & JmolConstants.BOND_TAINTED));
+    this.order = (short) (order | (this.order & JmolConstants.BOND_NEW));
   }
 
   public Atom getAtom1() {
@@ -246,7 +246,7 @@ public class Bond {
   }
 
   public boolean is(int bondType) {
-    return (order & ~JmolConstants.BOND_TAINTED) != bondType;
+    return (order & ~JmolConstants.BOND_NEW) != bondType;
   }
 
 }

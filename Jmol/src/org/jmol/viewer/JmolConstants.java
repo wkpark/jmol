@@ -297,7 +297,7 @@ final public class JmolConstants {
    *
    */
 
-  // | tainted                     1 << 15 NOT IMPLEMENTED
+  // | new connection              1 << 15
   //  ||| | Hydrogen bond 0x3800   F << 11
   //       |Stereo 0x400           1 << 10
   //        |Aromatic 0x200        1 << 9
@@ -313,7 +313,7 @@ final public class JmolConstants {
   public final static short BOND_ORDER_NULL    = 0x7FFF;
 
   public final static short BOND_HBOND_SHIFT   = 11;
-  public final static short BOND_TAINTED       = (short) (1 << 15);
+  public final static short BOND_NEW  = (short) (1 << 15);
   public final static short BOND_HYDROGEN_MASK = 0xF << 11;
   public final static short BOND_H_REGULAR     = 1 << 11;
   public final static short BOND_H_CALC_MASK   = 0xE << 11; // excludes regular
@@ -418,7 +418,7 @@ final public class JmolConstants {
   }
 
   public final static short getPartialBondOrder(int order) {
-    return (short) ((order & ~BOND_TAINTED) >> 5);
+    return (short) ((order & ~BOND_NEW) >> 5);
   }
   
   public final static int getPartialBondDotted(int order) {
@@ -437,7 +437,7 @@ final public class JmolConstants {
   }
   
   public final static String getBondOrderNameFromOrder(short order) {
-    order &= ~BOND_TAINTED;
+    order &= ~BOND_NEW;
     switch (order) {
     case BOND_ORDER_ANY:
     case BOND_ORDER_NULL:
@@ -467,7 +467,7 @@ final public class JmolConstants {
    * @return a string representation to preserve float n.m
    */
   public final static String getBondOrderNumberFromOrder(short order) {
-    order &= ~BOND_TAINTED;
+    order &= ~BOND_NEW;
     if (order == BOND_ORDER_NULL || order == BOND_ORDER_ANY)
       return "0"; // I don't think this is possible
     if ((order & BOND_HYDROGEN_MASK) != 0)

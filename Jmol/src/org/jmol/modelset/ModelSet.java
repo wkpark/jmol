@@ -561,7 +561,7 @@ abstract public class ModelSet extends ModelCollection {
             commands.append("  ").append(cmd).append("\n");
       }
       for (int i = 0; i < bondCount; i++) {
-        if ((bonds[i].order & JmolConstants.BOND_TAINTED) != 0
+        if ((bonds[i].order & JmolConstants.BOND_NEW) != 0
             || bonds[i].isHydrogen()) {
           Bond bond = bonds[i];
           commands.append("  connect ") 

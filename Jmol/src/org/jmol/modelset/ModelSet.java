@@ -288,12 +288,10 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   public int getShapeIdFromObjectName(String objectName) {
-    for (int i = JmolConstants.SHAPE_MIN_MESH_COLLECTION; i < JmolConstants.SHAPE_MAX_MESH_COLLECTION; ++i)
+    for (int i = JmolConstants.SHAPE_MIN_SPECIAL; i < JmolConstants.SHAPE_MAX_MESH_COLLECTION; ++i)
       if (shapes[i] != null && shapes[i].getIndexFromName(objectName) >= 0)
         return i;
-    Shape dipoles = shapes[JmolConstants.SHAPE_DIPOLES];
-    return (dipoles == null || dipoles.getIndexFromName(objectName) < 0 ? -1
-        : JmolConstants.SHAPE_DIPOLES);
+    return -1;
   }
 
   public void setModelVisibility() {

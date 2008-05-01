@@ -37,6 +37,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.shape.AtomShape;
 import org.jmol.util.Escape;
 import org.jmol.util.Quadric;
+import org.jmol.viewer.JmolConstants;
 
 public class Ellipsoids extends AtomShape {
   // most differences are in renderer
@@ -65,6 +66,12 @@ public class Ellipsoids extends AtomShape {
 
   }
     
+  public int getIndexFromName(String thisID) {
+    if (htEllipsoids.containsKey(thisID))
+      return 1; 
+    return -1; 
+  }
+
   public void setProperty(String propertyName, Object value, BitSet bs) {
     if (propertyName == "deleteModelAtoms") {
       int modelIndex = ((int[])((Object[])value)[2])[0];

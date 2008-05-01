@@ -69,6 +69,10 @@ public final class Chain {
     return groupCount;
   }
 
+  public int getAtomCount() {
+    return groups[groupCount - 1].lastAtomIndex + 1 - groups[0].firstAtomIndex;
+  }
+  
   public Atom getAtom(int index) {
     return modelSet.atoms[index];
   }

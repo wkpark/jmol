@@ -81,7 +81,7 @@ public class Quadric {
     return mat;
   }
 
-  public static void getEquationForQuadricWithCenter(float x, float y, float z, Matrix3f m, 
+  public static void getEquationForQuadricWithCenter(float x, float y, float z, Matrix3f mToElliptical, 
                                              Vector3f vTemp, Matrix3f mTemp, double[] coef, Matrix4f mDeriv) {
     /* Starting with a center point and a matrix that converts cartesian 
      * or screen coordinates to ellipsoidal coordinates, 
@@ -95,11 +95,11 @@ public class Quadric {
      */
     
     vTemp.set(x, y, z);
-    m.transform(vTemp);
+    mToElliptical.transform(vTemp);
     double f = 1 - vTemp.dot(vTemp); // J
-    mTemp.transpose(m);
+    mTemp.transpose(mToElliptical);
     mTemp.transform(vTemp);
-    mTemp.mul(m);
+    mTemp.mul(mToElliptical);
     coef[0] = mTemp.m00 / f;     // A = aXX
     coef[1] = mTemp.m11 / f;     // B = aYY
     coef[2] = mTemp.m22 / f;     // C = aZZ

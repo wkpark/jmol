@@ -213,6 +213,7 @@ public class PdbReader extends AtomSetCollectionReader {
     int iMolecule = 0;
     boolean needLine = true;
     Hashtable info = null;
+    int nBiomt = 0;
     while (true) {
       if (needLine)
         readLine();
@@ -221,6 +222,8 @@ public class PdbReader extends AtomSetCollectionReader {
       if (line == null || !line.startsWith("REMARK 350")) 
         break;
       if (line.startsWith("REMARK 350 BIOMOLECULE:")) {
+        if (nBiomt > 0)
+          Logger.info("biomolecule " + iMolecule + ": number of transforms: " + nBiomt);
         info = new Hashtable();
         biomts = new Vector();
         iMolecule = parseInt(line.substring(line.indexOf(":") + 1));
@@ -230,6 +233,7 @@ public class PdbReader extends AtomSetCollectionReader {
         info.put("chains", "");
         info.put("biomts", biomts);
         biomolecules.add(info);
+        nBiomt = 0;
         continue;
       }
       if (line.startsWith("REMARK 350 APPLY THE FOLLOWING TO CHAINS:")) {
@@ -254,12 +258,15 @@ public class PdbReader extends AtomSetCollectionReader {
        REMARK 350   BIOMT2   1  0.000000  1.000000  0.000000        0.00000
        */
       if (line.startsWith("REMARK 350   BIOMT1 ")) {
+        nBiomt++;
         float[] mat = new float[16];
-        for (int i = 0; i < 12; i++) {
-          int iWide = (i == 3 || i == 7 || i == 11 ? 4 : 0);
-          mat[i] = parseFloat(line.substring(23 + 10 * (i % 4),
-              33 + 10 * (i % 4) + iWide));
-          if (i == 3 || i == 7)
+        for (int i = 0; i < 12;) {
+          String[] tokens = getTokens();
+          mat[i++] = parseFloat(tokens[4]);
+          mat[i++] = parseFloat(tokens[5]);
+          mat[i++] = parseFloat(tokens[6]);
+          mat[i++] = parseFloat(tokens[7]);
+          if (i == 4 || i == 8)
             readLine();
         }
         mat[15] = 1;
@@ -267,6 +274,8 @@ public class PdbReader extends AtomSetCollectionReader {
         continue;
       }
     }
+    if (nBiomt > 0)
+      Logger.info("biomolecule " + iMolecule + ": number of transforms: " + nBiomt);
   }
 
   int atomCount;

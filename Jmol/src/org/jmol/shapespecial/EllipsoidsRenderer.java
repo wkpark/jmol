@@ -58,7 +58,11 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private Matrix3f mat = new Matrix3f();
   private Matrix3f mTemp = new Matrix3f();
   private Matrix4f mDeriv = new Matrix4f();
-  private Matrix3f matToScreenInv = new Matrix3f();
+  private Matrix3f matScreenToCartesian = new Matrix3f();
+  private Matrix3f matScreenToEllipsoid = new Matrix3f();
+  private Matrix3f matEllipsoidToScreen = new Matrix3f();
+  
+  
   private double[] coef = new double[10];
   private final Vector3f v1 = new Vector3f();
   private final Vector3f v2 = new Vector3f();
@@ -125,7 +129,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       mat.setRow(0, m4.m00, m4.m01, m4.m02);
       mat.setRow(1, m4.m10, m4.m11, m4.m12);
       mat.setRow(2, m4.m20, m4.m21, m4.m22);
-      matToScreenInv.invert(mat);
+      matScreenToCartesian.invert(mat);
     }
 
     Atom[] atoms = modelSet.atoms;
@@ -141,7 +145,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       colix = Shape.getColix(ellipsoids.colixes, i, atom);
       if (!g3d.setColix(colix))
         continue;
-      render1(atom, ellipsoids.mads[i], ellipsoid);
+      render1(atom, ellipsoids.mads[i] / 100f, ellipsoid);
     }
     
     if (ellipsoids.haveEllipsoids) {
@@ -182,14 +186,15 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   };
 
   int maxX, dx;
+  float perspectiveFactor;
   
-  private void render1(Atom atom, short mad, Object[] ellipsoid) {
+  private void render1(Atom atom, float factor, Object[] ellipsoid) {
     s0.set(atom.screenX, atom.screenY, atom.screenZ);
     axes = (Vector3f[]) ellipsoid[0];
     float[] af = (float[]) ellipsoid[1];
-    float f = mad / 100.0f;
     for (int i = 3; --i >= 0;)
-      lengths[i] = af[i] * f;
+      lengths[i] = af[i] * factor;
+    setMatrices();
     //[0] is shortest; [2] is longest
     if (drawAxes || drawArcs || drawBall)
       setAxes(atom, 1.0f);
@@ -216,14 +221,38 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     }
   }
 
+  private void setMatrices() {
+    Quadric.setEllipsoidMatrix(axes, lengths, v1, mat);
+    // make this screen coordinates to ellisoidal coordinates
+    matScreenToEllipsoid.mul(mat, matScreenToCartesian);
+    matEllipsoidToScreen.invert(matScreenToEllipsoid);
+    //matEllipsoidToScreen.mul(viewer.scaleToScreen(s0.z, 1000));
+    perspectiveFactor = viewer.scaleToPerspective(s0.z, 1.0f);
+    matScreenToEllipsoid.mul(1f/perspectiveFactor);
+  }
+  
+  private final static Point3f[] unitAxisPoints = {
+    new Point3f(-1, 0, 0),
+    new Point3f( 1, 0, 0),
+    new Point3f( 0,-1, 0),
+    new Point3f( 0, 1, 0),
+    new Point3f( 0, 0,-1),
+    new Point3f( 0, 0, 1)
+  };
+
   private void setAxes(Point3f center, float f) {
     for (int i = 0; i < 6; i++) {
       int iAxis = axisPoints[i];
       int i012 = Math.abs(iAxis) - 1;
       points[i].scaleAdd(f * lengths[i012] * (iAxis < 0 ? -1 : 1), axes[i012], center);
-      viewer.transformPoint(points[i], screens[i]);
+      pt1.set(unitAxisPoints[i]);
+      pt1.scale(f);
+      matEllipsoidToScreen.transform(pt1);
+      screens[i].set((int)(s0.x + pt1.x * perspectiveFactor), 
+          (int)(s0.y + pt1.y * perspectiveFactor), 
+          (int)(pt1.z + s0.z));
     }
-    dx = 2 + viewer.scaleToScreen(s0.z, (int)(lengths[2] * 1000));
+    dx = 2 + viewer.scaleToScreen(s0.z, (int)(f * lengths[2] * 1000));
   }
 
   private void renderAxes() {
@@ -340,18 +369,15 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       return;
     renderBall();
   }
-  
+ 
   private void renderBall() {
-    Quadric.setEllipsoidMatrix(axes, lengths, v1, mat);
-    // make this screen coordinates to ellisoidal coordinates
-    mat.mul(mat, matToScreenInv);
     setSelectedOctant();
     // get equation and differential
-    Quadric.getEquationForQuadricWithCenter(s0.x, s0.y, s0.z, mat, v1, mTemp,
-        coef, mDeriv);
-    g3d.renderEllipsoid(s0.x, s0.y, s0.z, dx + dx, mat, coef, mDeriv,
-      selectedOctant, selectedOctant >= 0 ? selectedPoints : null);
-    }
+    Quadric.getEquationForQuadricWithCenter(s0.x, s0.y, s0.z,
+        matScreenToEllipsoid, v1, mTemp, coef, mDeriv);
+    g3d.renderEllipsoid(s0.x, s0.y, s0.z, dx + dx, matScreenToEllipsoid, coef,
+        mDeriv, selectedOctant, selectedOctant >= 0 ? selectedPoints : null);
+  }
 
   private void setSelectedOctant() {
     int zMin = Integer.MAX_VALUE;
@@ -368,12 +394,13 @@ public class EllipsoidsRenderer extends ShapeRenderer {
           iCutout = i;
         }
       }
+      //TODO -- adjust x and y for perspective?
       s1.set(selectedPoints[0] = screens[octants[iCutout * 3]]);
       s1.add(selectedPoints[1] = screens[octants[iCutout * 3 + 1]]);
       s1.add(selectedPoints[2] = screens[octants[iCutout * 3 + 2]]);
       s1.scaleAdd(-3, s0, s1);
       pt1.set(s1.x, s1.y, s1.z);
-      mat.transform(pt1);
+      matScreenToEllipsoid.transform(pt1);
       selectedOctant = Quadric.getOctant(pt1);
     }
   }  

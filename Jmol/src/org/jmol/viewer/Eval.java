@@ -5604,7 +5604,10 @@ class Eval { //implements Runnable {
       break;
     case Token.identifier:
       String id = parameterAsString(1);
+      if (id.length() == 0)
+        error(ERROR_invalidArgument);
       viewer.loadShape(JmolConstants.SHAPE_ELLIPSOIDS);
+      setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS, "thisID", id);      
       for (int i = 2; i < statementLength; i++) {
         String key = parameterAsString(i);
         Object value = null;
@@ -5624,6 +5627,9 @@ class Eval { //implements Runnable {
         } else if (key.equalsIgnoreCase("off")) {
           key = "on";
           value = Boolean.FALSE;
+        } else if (key.equalsIgnoreCase("delete")) {
+          value = Boolean.TRUE;
+          checkLength3();
         } else if (key.equalsIgnoreCase("center")) {
           value = centerParameter(++i);
           i = iToken;
@@ -5632,7 +5638,7 @@ class Eval { //implements Runnable {
         } else if (key.equalsIgnoreCase("color")) {
           float translucentLevel = Float.NaN;
           i++;
-          if (tokAt(i) == Token.translucent) {
+          if ((theTok = tokAt(i)) == Token.translucent) {
             value = "translucent";
             if (isFloatParameter(++i))
               translucentLevel = floatParameter(i++);
@@ -5644,7 +5650,7 @@ class Eval { //implements Runnable {
           }
           if (isColorParam(i)) {
             setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS, "color",
-                  new Object[] { id, new Integer(getArgbParam(i))});
+                  new Integer(getArgbParam(i)));
             i = iToken;
           }
           if (value == null)
@@ -5656,13 +5662,11 @@ class Eval { //implements Runnable {
         }
         if (value == null)
           error(ERROR_invalidArgument);
-        value = new Object[] {id, value};
         setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS, 
             key.toLowerCase(), value);
       }
-
-      break;
-
+      setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS, "thisID", null);
+      return;
     default:
       error(ERROR_booleanOrNumberExpected);
     }

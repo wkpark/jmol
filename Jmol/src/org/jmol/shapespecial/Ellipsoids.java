@@ -37,7 +37,6 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.shape.AtomShape;
 import org.jmol.util.Escape;
 import org.jmol.util.Quadric;
-import org.jmol.viewer.JmolConstants;
 
 public class Ellipsoids extends AtomShape {
   // most differences are in renderer
@@ -67,14 +66,27 @@ public class Ellipsoids extends AtomShape {
   }
     
   public int getIndexFromName(String thisID) {
-    if (htEllipsoids.containsKey(thisID))
-      return 1; 
-    return -1; 
+    return ((ellipsoid = (Ellipsoid) htEllipsoids.get(thisID))
+        == null ? -1 : 1);
   }
 
+  Ellipsoid ellipsoid;
+  
   public void setProperty(String propertyName, Object value, BitSet bs) {
+    if (propertyName == "thisID") {
+      ellipsoid = (value == null ? null : (Ellipsoid) htEllipsoids
+          .get((String) value));
+      if (value == null)
+        return;
+      if (ellipsoid == null) {
+        String id = (String) value;
+        ellipsoid = new Ellipsoid(id, viewer.getCurrentModelIndex());
+        htEllipsoids.put(id, ellipsoid);
+      }
+      return;
+    }
     if (propertyName == "deleteModelAtoms") {
-      int modelIndex = ((int[])((Object[])value)[2])[0];
+      int modelIndex = ((int[]) ((Object[]) value)[2])[0];
       Enumeration e = htEllipsoids.keys();
       while (e.hasMoreElements()) {
         String id = (String) e.nextElement();
@@ -84,34 +96,30 @@ public class Ellipsoids extends AtomShape {
         else if (ellipsoid.modelIndex == modelIndex)
           htEllipsoids.remove(id);
       }
-    } else if (value instanceof Object[]) { // not atom-based
-      Ellipsoid ellipsoid;
-      String id;
-      
-      Object[] info = (Object[]) value;
-      id = (String) info[0];
-      ellipsoid = (Ellipsoid) htEllipsoids.get(id);
-      if (ellipsoid == null) {
-        ellipsoid = new Ellipsoid(id, viewer.getCurrentModelIndex());
-        htEllipsoids.put(id, ellipsoid);
-      }
+      ellipsoid = null;
+      return;
+    }
+    if (ellipsoid != null) {
       haveEllipsoids = true;
-      value = info[1];
+      if ("delete" == propertyName) {
+        htEllipsoids.remove(ellipsoid.id);
+        return;
+      }
       if ("modelindex" == propertyName) {
         ellipsoid.modelIndex = ((Integer) value).intValue();
         return;
-      }
+      } 
       if ("on" == propertyName) {
         ellipsoid.isOn = ((Boolean) value).booleanValue();
         return;
-      }
+      } 
       if ("axes" == propertyName) {
         ellipsoid.isValid = false;
         ellipsoid.axes = (Vector3f[]) value;
         ellipsoid.lengths = new float[3];
         ellipsoid.scale = 1;
         for (int i = 0; i < 2; i++) {
-          if (ellipsoid.axes[i].length() > ellipsoid.axes[i+1].length()) {
+          if (ellipsoid.axes[i].length() > ellipsoid.axes[i + 1].length()) {
             Vector3f v = ellipsoid.axes[i];
             ellipsoid.axes[i] = ellipsoid.axes[i + 1];
             ellipsoid.axes[i + 1] = v;
@@ -121,16 +129,14 @@ public class Ellipsoids extends AtomShape {
         }
         for (int i = 0; i < 3; i++) {
           ellipsoid.lengths[i] = ellipsoid.axes[i].length();
-          if (ellipsoid.lengths[i] == 0) {
+          if (ellipsoid.lengths[i] == 0)
             return;
-          }
           ellipsoid.axes[i].normalize();
         }
         if (Math.abs(ellipsoid.axes[0].dot(ellipsoid.axes[1])) > 0.0001f
             || Math.abs(ellipsoid.axes[0].dot(ellipsoid.axes[1])) > 0.0001f
-            || Math.abs(ellipsoid.axes[0].dot(ellipsoid.axes[1])) > 0.0001f
-            )
-            return;
+            || Math.abs(ellipsoid.axes[0].dot(ellipsoid.axes[1])) > 0.0001f)
+          return;
         updateEquation(ellipsoid);
         return;
       }
@@ -138,7 +144,8 @@ public class Ellipsoids extends AtomShape {
         ellipsoid.coef = (double[]) value;
         ellipsoid.axes = new Vector3f[3];
         ellipsoid.lengths = new float[3];
-        Quadric.getAxesForEllipsoid(ellipsoid.coef, ellipsoid.axes, ellipsoid.lengths);
+        Quadric.getAxesForEllipsoid(ellipsoid.coef, ellipsoid.axes,
+            ellipsoid.lengths);
         return;
       }
       if ("center" == propertyName) {
@@ -150,24 +157,28 @@ public class Ellipsoids extends AtomShape {
         float scale = ((Float) value).floatValue();
         if (scale <= 0 || ellipsoid.lengths == null) {
           ellipsoid.isValid = false;
-          return;
+        } else {
+          for (int i = 0; i < 3; i++)
+            ellipsoid.lengths[i] *= scale / ellipsoid.scale;
+          ellipsoid.scale = scale;
+          updateEquation(ellipsoid);
         }
-        for (int i = 0; i < 3; i++)
-          ellipsoid.lengths[i] *= scale / ellipsoid.scale;
-        ellipsoid.scale = scale;
-        updateEquation(ellipsoid);
         return;
       }
       if ("color" == propertyName) {
         ellipsoid.colix = Graphics3D.getColix(value);
         return;
       }
-      if ("translucency" == propertyName) {
-        boolean isTranslucent = (value.equals("translucent"));
-        ellipsoid.colix = Graphics3D.getColixTranslucent(ellipsoid.colix, isTranslucent, translucentLevel);
+      if ("translucentLevel" == propertyName) {
+        super.setProperty(propertyName, value, bs);
         return;
       }
-      return; 
+      if ("translucency" == propertyName) {
+        boolean isTranslucent = (value.equals("translucent"));
+        ellipsoid.colix = Graphics3D.getColixTranslucent(ellipsoid.colix,
+            isTranslucent, translucentLevel);
+        return;
+      }
     }
     super.setProperty(propertyName, value, bs);
   }

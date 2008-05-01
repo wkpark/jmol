@@ -177,7 +177,7 @@ public class PdbReader extends AtomSetCollectionReader {
       if (biomolecules != null && biomolecules.size() > 0) {
         atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", biomolecules);
         if (biomts != null && filter != null
-            && filter.toUpperCase().indexOf("APPLY SYMMETRY") >= 0) {
+            && filter.toUpperCase().indexOf("NOSYMMETRY") < 0) {
           atomSetCollection.applySymmetry(biomts, applySymmetryToBonds);
         }
 

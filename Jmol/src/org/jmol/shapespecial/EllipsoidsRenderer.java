@@ -125,7 +125,6 @@ public class EllipsoidsRenderer extends ShapeRenderer {
 
     if (drawBall) {
       Matrix4f m4 = viewer.getMatrixtransform();
-      mat.setIdentity();
       mat.setRow(0, m4.m00, m4.m01, m4.m02);
       mat.setRow(1, m4.m10, m4.m11, m4.m12);
       mat.setRow(2, m4.m20, m4.m21, m4.m22);
@@ -362,8 +361,9 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     axes = ellipsoid.axes;
     for (int i = 0; i < 3; i++)
       lengths[i] = ellipsoid.lengths[i];
-    setAxes(ellipsoid.center, 1);
     viewer.transformPoint(ellipsoid.center, s0);
+    setMatrices();
+    setAxes(ellipsoid.center, 1);
     colix = ellipsoid.colix;
     if (!g3d.setColix(colix))
       return;

@@ -424,7 +424,7 @@ public abstract class AtomSetCollectionReader {
     if (filter.indexOf("!:") >= 0) {
       if (filter.indexOf(":" + atom.chainID) >= 0)
         return false;
-    } else if (filter.indexOf("*:") >= 0 
+    } else if (filter.indexOf(":") >= 0 
         && filter.indexOf(":" + atom.chainID) < 0)
       return false;
     return true;

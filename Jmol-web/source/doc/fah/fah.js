@@ -280,6 +280,8 @@ function showProjectInfo(value) {
     document.fahForm.infoCode.value = "Gromacs 33";
   } else if (code == "DB") {
     document.fahForm.infoCode.value = "Double Gromacs B";
+  } else if (code == "DC") {
+    document.fahForm.infoCode.value = "Double Gromacs C";
   } else if (code == "DG") {
     document.fahForm.infoCode.value = "Double Gromacs";
   } else if (code == "G") {

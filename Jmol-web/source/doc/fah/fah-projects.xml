@@ -2137,9 +2137,9 @@
   <fah_proj number="892" name="p892_p53wtpeptide_gb" public="y" file="y"
     server="130.49.240.81" atoms="230" preferred="30" deadline="45"
     credit="165" frames="100" code="A" contact="ltchong" contrib="Pette Broad"/>
-  <fah_proj number="893" name="p893_p53peptides893" public="y"
+  <fah_proj number="893" name="p893_p53peptides893" public="y" file="y"
     server="130.49.240.81" atoms="10528" preferred="118" deadline="176"
-    credit="647" frames="100" code="A0" contact="ltchong"/>
+    credit="647" frames="100" code="A0" contact="ltchong" contrib="v00d00"/>
 
   <!-- Projects 900 to 999 -->
   <fah_proj number="901" public="y"
@@ -3974,10 +3974,10 @@
     credit="79" frames="100" code="G" contact="alexrson" contrib="Bruce"/>
   <fah_proj number="2008" name="p2008_BBA5" public="y" file="y"
     server="171.64.122.136" atoms="12200" preferred="42" deadline="61"
-    credit="218" frames="100" code="G" contact="alexrson" contrib="ChelseaOilman"/>
+    credit="218" frames="100" code="G" contact="luttmann" contrib="ChelseaOilman"/>
   <fah_proj number="2009" name="p2009_BBA5" public="y" file="y"
     server="171.64.122.136" atoms="12200" preferred="30" deadline="45"
-    credit="157" frames="100" code="DG" contact="alexrson" contrib="smartcat99s"/>
+    credit="157" frames="100" code="DG" contact="luttmann" contrib="smartcat99s"/>
   <fah_proj number="2010" name="p2010_BBA5_ext" public="y" file="y"
     server="171.64.122.136" atoms="12200" preferred="27" deadline="39"
     credit="136" frames="100" code="G" contact="alexrson" contrib="John Deas,TheWeatherMan"/>
@@ -3986,10 +3986,10 @@
     credit="136" frames="100" code="G" contact="alexrson" contrib="efishy"/>
   <fah_proj number="2012" name="p2012_BBA5" public="y" file="y"
     server="171.64.122.136" atoms="12200" preferred="27" deadline="39"
-    credit="136" frames="100" code="G" contact="alexrson" contrib="efishy"/>
+    credit="136" frames="100" code="G" contact="luttmann" contrib="efishy"/>
   <fah_proj number="2013" name="p2013_BBA5" public="y" file="y"
     server="171.64.122.136" atoms="12200" preferred="39" deadline="57"
-    credit="201" frames="100" code="G" contact="alexrson" contrib="glennk721"/>
+    credit="201" frames="100" code="G" contact="luttmann" contrib="glennk721"/>
   <fah_proj number="2014" name="p2014_BBA5" public="n"
     server="171.64.122.136" atoms="12200" preferred="230" deadline="34"
     credit="116" frames="100" code="G" contact="alexrson"/>
@@ -4007,7 +4007,7 @@
     credit="101" frames="100" code="DG" contact="alexrson"/>
   <fah_proj number="2019" name="p2019_BBA5" public="y" file="y"
     server="171.64.122.136" atoms="12200" preferred="19" deadline="28"
-    credit="95" frames="100" code="DG" contact="alexrson" contrib="Outback_Jon"/>
+    credit="95" frames="100" code="DG" contact="luttmann" contrib="Outback_Jon"/>
   <fah_proj number="2020" name="p2020_BBA5" public="y" file="y"
     server="171.64.122.136" atoms="12200" preferred="17" deadline="24"
     credit="80" frames="100" code="DG" contact="alexrson" contrib="familyte"/>
@@ -4433,6 +4433,9 @@
   <fah_proj number="2169" name="p2169_halr-wt, CN inhib, NADP+ in water" public="y" file="y"
     server="171.64.122.141" atoms="86987" preferred="47" deadline="69"
     credit="492" frames="100" code="G" contact="densign" contrib="daveb"/>
+  <fah_proj number="2170" name="p2170_lambda_obc_300K" public="y"
+    server="171.65.103.160" atoms="1258" preferred="66" deadline="45"
+    credit="234" frames="100" code="A" contact="densign"/>
 
   <!-- Projects 2200 to 2299 -->
   <fah_proj number="2200" name="p2200_ProteinA" public="y" file="y"
@@ -4457,13 +4460,13 @@
     credit="48" frames="100" code="DG" contact="alexrson" contrib="Macaholic"/>
   <fah_proj number="2305" name="p2305_BBA5_Mutant" public="y" file="y"
     server="171.64.122.139" atoms="12285" preferred="6" deadline="15"
-    credit="46" frames="100" code="G" contact="alexrson" contrib="efishy,rickoic"/>
+    credit="46" frames="100" code="G" contact="luttmann" contrib="efishy,rickoic"/>
   <fah_proj number="2306" name="p2306_BBA5_pfold in water" public="y" file="y"
     server="171.64.122.139" atoms="374" preferred="36" deadline="53"
     credit="188" frames="100" code="GB" contact="alexrson" contrib="uncle_fungus"/>
   <fah_proj number="2307" name="p2307_BBA5" public="y" file="y"
     server="171.64.122.139" atoms="12200" preferred="30" deadline="61"
-    credit="218" frames="100" code="DG" contact="alexrson" contrib="Ivoshiee"/>
+    credit="218" frames="100" code="DG" contact="luttmann" contrib="Ivoshiee"/>
   <fah_proj number="2308" name="p2308_BBA5" public="n" file="y"
     server="171.64.122.139" atoms="12200" preferred="17" deadline="24"
     credit="85" frames="100" code="DG" contact="alexrson" contrib="daveb"/>
@@ -4996,7 +4999,16 @@
     server="171.64.65.64" atoms="77583" preferred="3" deadline="4"
     credit="1760" frames="100" code="GS" contact="kasson" contrib="P5-133XL"/>
   <fah_proj number="2660" name="p2660_IBX in water" public="n"
+    server="171.64.65.64" atoms="14170" preferred="0.04" deadline="0.04"
+    credit="1" frames="100" code="GC" contact="kasson"/>
+  <fah_proj number="2661" name="p2661_IBX in water" public="n"
     server="171.64.65.64" atoms="14170" preferred="7" deadline="7"
+    credit="1" frames="100" code="GC" contact="kasson"/>
+  <fah_proj number="2662" name="p2662_IBX in water" public="n"
+    server="171.64.65.56" atoms="14170" preferred="1" deadline="2"
+    credit="638" frames="100" code="GC" contact="kasson"/>
+  <fah_proj number="2663" name="p2663_IBX in water" public="n"
+    server="171.64.65.64" atoms="14170" preferred="0.04" deadline="0.04"
     credit="1" frames="100" code="GC" contact="kasson"/>
 
   <!-- Projects 2700 to 2799 -->
@@ -5191,22 +5203,22 @@
     credit="0" frames="100" code="GG2" contact="densign"/>
   <fah_proj number="2791" name="p2791_supervillin_300K" public="y"
     server="171.64.65.103" atoms="576" preferred="20" deadline="20"
-    credit="0" frames="100" code="GG2" contact="densign"/>
+    credit="100" frames="100" code="GG2" contact="densign"/>
   <fah_proj number="2792" name="p2792_supervillin_330K" public="y"
     server="171.64.65.103" atoms="576" preferred="20" deadline="20"
-    credit="0" frames="100" code="GG2" contact="densign"/>
+    credit="100" frames="100" code="GG2" contact="densign"/>
   <fah_proj number="2793" name="p2793_supervillin_370K" public="y"
     server="171.64.65.103" atoms="576" preferred="20" deadline="20"
-    credit="0" frames="100" code="GG2" contact="densign"/>
+    credit="100" frames="100" code="GG2" contact="densign"/>
   <fah_proj number="2794" name="p2794_lam5w_300K" public="y"
-    server="171.64.65.103" atoms="1254" preferred="20" deadline="20"
-    credit="0" frames="100" code="GG2" contact="densign"/>
+    server="171.64.65.103" atoms="1254" preferred="2" deadline="3"
+    credit="30" frames="100" code="GG2" contact="densign"/>
   <fah_proj number="2795" name="p2795_lam5w_330K" public="y"
-    server="171.64.65.103" atoms="1254" preferred="20" deadline="20"
-    credit="0" frames="100" code="GG2" contact="densign"/>
+    server="171.64.65.103" atoms="1254" preferred="2" deadline="3"
+    credit="30" frames="100" code="GG2" contact="densign"/>
   <fah_proj number="2796" name="p2796_lam5w_370K" public="y"
-    server="171.64.65.103" atoms="1254" preferred="20" deadline="20"
-    credit="0" frames="100" code="GG2" contact="densign"/>
+    server="171.64.65.103" atoms="1254" preferred="2" deadline="3"
+    credit="30" frames="100" code="GG2" contact="densign"/>
   <fah_proj number="2797" name="p2797_p2789_N68H_AM03" public="n"
     server="171.64.65.103" atoms="582" preferred="20" deadline="20"
     credit="0" frames="100" code="GG2" contact="densign"/>
@@ -5214,7 +5226,7 @@
     server="171.64.65.103" atoms="582" preferred="2" deadline="4"
     credit="97" frames="100" code="GG2" contact="densign"/>
   <fah_proj number="2799" name="p2799_N68H_AM03" public="y"
-    server="171.64.65.103" atoms="582" preferred="2" deadline="4"
+    server="171.64.65.103" atoms="582" preferred="1" deadline="4"
     credit="97" frames="100" code="GG2" contact="densign"/>
 
   <!-- Projects 2800 to 2899 -->
@@ -5816,9 +5828,9 @@
   <fah_proj number="3641" name="p3641_GCAA_TETRALOOP_HAIRPIN_Extended" public="y" file="y"
     server="171.64.122.78" atoms="12229" preferred="64" deadline="96"
     credit="343" frames="100" code="GT" contact="gbowman" contrib="Bruce"/>
-  <fah_proj number="3643" name="p3643_Seq15_Amber03_Native" public="y"
+  <fah_proj number="3643" name="p3643_Seq15_Amber03_Native" public="y" file="y"
     server="171.64.122.82" atoms="12385" preferred="64" deadline="96"
-    credit="343" frames="100" code="GST" contact="gbowman"/>
+    credit="343" frames="100" code="GST" contact="gbowman" contrib="Torswin"/>
   <fah_proj number="3644" name="p3644_Seq15_Amber03_Extended" public="y" file="y"
     server="171.64.122.82" atoms="12385" preferred="64" deadline="96"
     credit="343" frames="100" code="GST" contact="gbowman" contrib="Smoking2000"/>
@@ -6132,6 +6144,12 @@
   <fah_proj number="3853" name="p3853_p3851_fkbprelative_complex" public="y" file="y"
     server="128.59.74.4" atoms="14907" preferred="24" deadline="40"
     credit="443" frames="100" code="DB" contact="mrshirts" contrib="Brunold"/>
+  <fah_proj number="3855" name="p3855_fkbprelative_complex" public="n" file="y"
+    server="128.59.74.4" atoms="14907" preferred="40" deadline="60"
+    credit="450" frames="100" code="DC" contact="mrshirts" contrib="Bruce"/>
+  <fah_proj number="3856" name="p3856_fkbprelative_ligand" public="n" file="y"
+    server="128.59.74.4" atoms="2722" preferred="40" deadline="60"
+    credit="401" frames="100" code="DC" contact="mrshirts" contrib="toTOW"/>
 
   <!-- Projects 3900 to 3999 -->
   <fah_proj number="3900" name="p3900_Protein in POPC" public="n"
@@ -6268,6 +6286,9 @@
   <fah_proj number="4043" name="p4043_supervillin_StillGBSA_AM03" public="y"
     server="171.64.122.73" atoms="576" preferred="2" deadline="3"
     credit="125" frames="100" code="G3" contact="densign"/>
+  <fah_proj number="4044" name="p4044_p4043_supervillin_StillGBSA_AM03" public="y"
+    server="171.64.122.73" atoms="576" preferred="20" deadline="30"
+    credit="1250" frames="100" code="G3" contact="densign"/>
 
   <!-- Projects 4100 to 4199 -->
   <fah_proj number="4100" name="p4100_villinwt_folded_Amber03_Native" public="y" file="y"
@@ -6422,6 +6443,76 @@
   <fah_proj number="4427" name="p4427_Seq_55_unf_AMBER" public="y" file="y"
     server="171.64.122.72" atoms="7866" preferred="5" deadline="10"
     credit="15" frames="100" code="GST" contact="huangx" contrib="v00d00"/>
+
+  <!-- Projects 4500 to 4599 -->
+  <fah_proj number="4507" name="p4507_PTL-8_minout" public="n" file="y"
+    credit="4.5" contrib="John Deas"/>
+  <fah_proj number="4508" name="p4508_PTL-16_minout" public="n" file="y"
+    credit="4.5" contrib="John Deas"/>
+  <fah_proj number="4509" name="p4509_PTL-12_minout" public="n" file="y"
+    credit="4.5" contrib="John Deas"/>
+  <fah_proj number="4510" name="p4510_PTL-SIMM-16_minout" public="n"
+    server="169.230.26.30" atoms="254" preferred="2" deadline="3"
+    credit="10" frames="100" code="A" contact="vvoelz" contrib="John Deas"/>
+  <fah_proj number="4511" name="p4511_PTL-SIMM-8_minout" public="n" file="y"
+    server="169.230.26.30" atoms="140" preferred="1" deadline="1.5"
+    credit="4.5" frames="100" contact="vvoelz" contrib="John Deas"/>
+  <fah_proj number="4512" name="p4512_PTL-SIMM-12_minout" public="n" file="y"
+    server="169.230.26.30" atoms="140" preferred="1" deadline="1.5"
+    credit="4.5" frames="100" contact="vvoelz"/>
+  <fah_proj number="4513" name="p4513_PTL-SIMM100-8_minout" public="n" file="y"
+    server="169.230.26.30" atoms="140" preferred="1" deadline="1.5"
+    credit="4.5" frames="100" contact="vvoelz" contrib="JSchouwenburg"/>
+  <fah_proj number="4514" name="p4514_PTL-SIMM100-16_minout" public="n" file="y"
+    server="169.230.26.30" atoms="254" preferred="2" deadline="3"
+    credit="10" frames="100" contact="vvoelz" contrib="JSchouwenburg"/>
+  <fah_proj number="4515" name="p4515_PTL-SIMM100-12_minout" public="n" file="y"
+    server="169.230.26.30" atoms="212" preferred="1.5" deadline="2"
+    credit="7.2" frames="100" contact="vvoelz" contrib="John Deas"/>
+  <fah_proj number="4516" name="p4516_2CVR-16_minout" public="n" file="y"
+    server="169.230.26.30" atoms="279" preferred="6.5" deadline="9.8"
+    credit="35.79" frames="100" code="A" contact="vvoelz" contrib="John Deas"/>
+  <fah_proj number="4517" name="p4517_2CVR-8_minout" public="n"
+    server="169.230.26.30" atoms="159" preferred="2.5" deadline="3.7"
+    credit="13.5" frames="100" code="A" contact="vvoelz"/>
+  <fah_proj number="4518" name="p4518_2CVR-12_minout" public="n" file="y"
+    server="169.230.26.30" atoms="215" preferred="4.6" deadline="6.9"
+    credit="25.41" frames="100" code="A" contact="vvoelz" contrib="John Deas"/>
+  <fah_proj number="4519" name="p4519_2CVR-8-10ns_minout" public="y"
+    server="169.230.26.30" atoms="159" preferred="12.3" deadline="18.4"
+    credit="70.5" frames="100" code="A" contact="vvoelz"/>
+  <fah_proj number="4520" name="p4520_2CVR-16-10ns_minout" public="y"
+    server="169.230.26.30" atoms="279" preferred="32.5" deadline="48.8"
+    credit="178.95" frames="100" code="A" contact="vvoelz"/>
+  <fah_proj number="4521" name="p4521_2CVR-12-10ns_minout" public="y"
+    server="169.230.26.30" atoms="215" preferred="23.1" deadline="34.7"
+    credit="127.05" frames="100" code="A" contact="vvoelz"/>
+
+  <!-- Projects 4700 to 4799 -->
+  <fah_proj number="4700" name="p4700_N68H_AM03" public="y"
+    server="171.64.65.103" atoms="582" preferred="1" deadline="2"
+    credit="97" frames="100" code="GG2" contact="densign"/>
+  <fah_proj number="4701" name="p4701_N68H_AM03" public="y"
+    server="171.64.65.103" atoms="582" preferred="1" deadline="2"
+    credit="97" frames="100" code="GG2" contact="densign"/>
+  <fah_proj number="4702" name="p4702_N68H_AM03" public="y"
+    server="171.64.65.103" atoms="582" preferred="3.1" deadline="4.6"
+    credit="1940" frames="100" code="GG2" contact="densign"/>
+  <fah_proj number="4703" name="p4703_N68H_AM03" public="y"
+    server="171.64.65.103" atoms="582" preferred="3.1" deadline="4.6"
+    credit="1940" frames="100" code="GG2" contact="densign"/>
+  <fah_proj number="4707" name="p4707_supervillin_e1" public="y"
+    server="171.64.65.103" atoms="576" preferred="2" deadline="3"
+    credit="98" frames="100" code="GG2" contact="densign"/>
+  <fah_proj number="4711" name="p4711_lambda_remd" public="n"
+    server="171.64.65.103" atoms="1258" preferred="2" deadline="3"
+    credit="504" frames="100" code="GG2" contact="densign"/>
+  <fah_proj number="4712" name="p4712_lambda_remd" public="n"
+    server="171.64.65.103" atoms="1258" preferred="2" deadline="3"
+    credit="592" frames="100" code="GG2" contact="densign"/>
+  <fah_proj number="4713" name="p4713_lambda_remd" public="n"
+    server="171.64.65.103" atoms="1258" preferred="2" deadline="3"
+    credit="593" frames="100" code="GG2" contact="densign"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9994" name="p9994_A21_agbnp_amber99" public="n"

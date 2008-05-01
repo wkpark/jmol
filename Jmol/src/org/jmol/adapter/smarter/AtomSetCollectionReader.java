@@ -399,6 +399,37 @@ public abstract class AtomSetCollectionReader {
     iHaveFractionalCoordinates = fileCoordinatesAreFractional = TF;
   }
 
+  public boolean filterAtom(Atom atom) {
+    String code;
+    if (atom.group3 != null) {
+      code = "[" + atom.group3.toUpperCase() + "]";
+      if (filter.indexOf("![") >= 0) {
+        if (filter.toUpperCase().indexOf(code) >= 0)
+          return false;
+      } else if (filter.indexOf("[") >= 0
+          && filter.toUpperCase().indexOf(code) < 0) {
+        return false;
+      }
+    }
+    if (atom.atomName != null) {
+      code = "." + atom.atomName.toUpperCase() + ";";
+      if (filter.indexOf("!.") >= 0) {
+        if (filter.toUpperCase().indexOf(code) >= 0)
+          return false;
+      } else if (filter.indexOf("*.") >= 0
+          && filter.toUpperCase().indexOf(code) < 0) {
+        return false;
+      }
+    }
+    if (filter.indexOf("!:") >= 0) {
+      if (filter.indexOf(":" + atom.chainID) >= 0)
+        return false;
+    } else if (filter.indexOf("*:") >= 0 
+        && filter.indexOf(":" + atom.chainID) < 0)
+      return false;
+    return true;
+  }
+  
   public void setAtomCoord(Atom atom, float x, float y, float z) {
     atom.set(x, y, z);
     setAtomCoord(atom);

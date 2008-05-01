@@ -655,7 +655,10 @@ public class CifReader extends AtomSetCollectionReader {
           }
           break;
         case ANISO_LABEL:
-          atom = atomSetCollection.getAtom(atomSetCollection.getAtomNameIndex(field));
+          int iAtom = atomSetCollection.getAtomNameIndex(field);
+          if (iAtom < 0)
+            return false;
+            atom = atomSetCollection.getAtom(iAtom);
           break;
         case ANISO_U11:
         case ANISO_U22:
@@ -699,20 +702,7 @@ public class CifReader extends AtomSetCollectionReader {
     }
     return true;
   }
-  
-  private boolean filterAtom(Atom atom) {
-    if (filter.indexOf("*.") >= 0 && filter.toUpperCase().indexOf("*." + atom.atomName.toUpperCase() + ";") < 0)
-      return false;
-    if (filter.indexOf(":") >= 0 && filter.indexOf(":" + atom.chainID) < 0)
-      return false;
-    if (filter.indexOf("^") >= 0 && filter.indexOf("^" + atom.insertionCode) < 0)
-      return false;
-    if (filter.indexOf("%") >= 0 && filter.indexOf("%" + atom.alternateLocationID) < 0)
-      return false;
-    return true;
-  }
-  
-  
+    
   ////////////////////////////////////////////////////////////////
   // bond data
   ////////////////////////////////////////////////////////////////

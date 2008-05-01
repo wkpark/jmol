@@ -838,18 +838,29 @@ public class AtomSetCollection {
     return pt;
   }
   
-  public void applySymmetry(Vector biomts, boolean applySymmetryToBonds) {
+  public void applySymmetry(Vector biomts, boolean applySymmetryToBonds, String filter) {
     int len = biomts.size();
     setApplySymmetryToBonds(applySymmetryToBonds);
     bondCount0 = bondCount;
     boolean addBonds = (bondCount0 > bondIndex0 && applySymmetryToBonds);
     int[] atomMap = (addBonds ? new int[atomCount] : null);
+    int iAtomFirst = getLastAtomSetAtomIndex();
     int atomMax = atomCount;
     Point3f pt = new Point3f();
+    for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++) {
+      atoms[iAtom].bsSymmetry = new BitSet(1);
+      atoms[iAtom].bsSymmetry.set(0);
+    }
     for (int i = 1; i < len; i++) { //skip 1, it's the identity
+      if (filter.indexOf("!#") >= 0) {
+        if (filter.toUpperCase().indexOf("!#" + (i + 1) + ";") >= 0)
+          continue;
+      } else if (filter.indexOf("#") >= 0
+          && filter.toUpperCase().indexOf("#" + (i + 1) + ";") < 0) {
+        continue;
+      }
       Matrix4f mat = new Matrix4f();
       mat.set((float[]) biomts.get(i));
-      int iAtomFirst = getLastAtomSetAtomIndex();
       for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++) {
         try {
           int atomSite = atoms[i].atomSite;

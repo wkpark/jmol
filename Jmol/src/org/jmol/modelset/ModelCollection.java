@@ -506,7 +506,7 @@ abstract public class ModelCollection extends BondCollection {
       m.groupCount = -1;
       m.getGroupCount();      
       for (int i = 0; i < m.chainCount; ++i)
-        m.chains[i].groups = (Group[])ArrayUtil.setLength(m.chains[i].groups, groupCount);
+        m.chains[i].groups = (Group[])ArrayUtil.setLength(m.chains[i].groups, m.chains[i].groupCount);
       m.bioPolymers = (Polymer[])ArrayUtil.setLength(m.bioPolymers, m.bioPolymerCount);
       for (int i = m.bioPolymerCount; --i >= 0; ) {
         m.bioPolymers[i].freeze();

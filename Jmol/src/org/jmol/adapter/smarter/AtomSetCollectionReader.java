@@ -254,7 +254,7 @@ public abstract class AtomSetCollectionReader {
       applySymmetryToBonds = htParams.containsKey("applySymmetryToBonds");
       filter = (String) htParams.get("filter");
       if (filter != null) {
-        filter = ";" + filter + ";";
+        filter = (";" + filter + ";").replace(',',';');
         Logger.info("filtering atoms using " + filter);
       }
       

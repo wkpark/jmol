@@ -942,7 +942,7 @@ public class Jmol implements WrappedApplet {
         break;
       case JmolConstants.CALLBACK_LOADSTRUCT:
         String errorMsg = (String) data[4];
-        data[5] = (String) null; // don't pass reference to clientFile reference
+        //data[5] = (String) null; // don't pass reference to clientFile reference
         if (errorMsg != null) {
           showStatusAndConsole(GT._("File Error:") + errorMsg);
           return;

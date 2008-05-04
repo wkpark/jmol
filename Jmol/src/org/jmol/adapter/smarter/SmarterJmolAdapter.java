@@ -69,6 +69,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
   public Object openBufferedReader(String name, String type,
                                    BufferedReader bufferedReader, Hashtable htParams) {
+    return staticOpenBufferedReader(name, type, bufferedReader, htParams);
+  }
+
+  private static Object staticOpenBufferedReader(String name, String type, BufferedReader bufferedReader, Hashtable htParams) {
     //FileOpenThread, TesetSmarterJmolAdapter
     try {
       Object atomSetCollectionOrErrorMessage =
@@ -92,6 +96,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
   public Object openBufferedReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
                                     Hashtable[] htParams) {
+    return staticOpenBufferedReaders(fileReader, names, types, htParams);
+  }
+
+  private static Object staticOpenBufferedReaders(JmolFileReaderInterface fileReader, String[] names, String[] types, Hashtable[] htParams) {
     //FilesOpenThread
     int size = names.length;
     AtomSetCollection[] atomSetCollections = new AtomSetCollection[size];
@@ -127,10 +135,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
   public Object openZipFiles(InputStream is, String fileName, String[] zipDirectory,
                              Hashtable htParams, boolean asBufferedReader) {
-    return openZipFiles(is, fileName, zipDirectory, htParams, 1, asBufferedReader);
+    return staticOpenZipFiles(is, fileName, zipDirectory, htParams, 1, asBufferedReader);
   }
 
-  private Object openZipFiles(InputStream is, String fileName, String[] zipDirectory,
+  private static Object staticOpenZipFiles(InputStream is, String fileName, String[] zipDirectory,
                              Hashtable htParams, int subFilePtr, boolean asBufferedReader) {
 
     boolean doCombine = (subFilePtr == 1);
@@ -205,7 +213,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
               new ByteArrayInputStream(bytes));
           String[] zipDir2 = ZipUtil.getZipDirectoryAndClose(bis, true);
           bis = new BufferedInputStream(new ByteArrayInputStream(bytes));
-          Object clientFiles = openZipFiles(bis, fileName
+          Object clientFiles = staticOpenZipFiles(bis, fileName
               + "|" + thisEntry, zipDir2, htParams, ++subFilePtr, asBufferedReader);
           if (clientFiles instanceof String) {
             if (ignoreErrors)
@@ -323,6 +331,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
 
   public Object openDOMReader(Object DOMNode) {
+    return staticOpenDOMReader(DOMNode);
+  }
+
+  private static Object staticOpenDOMReader(Object DOMNode) {
     try {
       Object atomSetCollectionOrErrorMessage = 
         Resolver.DOMResolve(DOMNode);
@@ -343,6 +355,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
 
   public String getFileTypeName(Object clientFile) {
+    return staticGetFileTypeName(clientFile);
+  }
+
+  private static String staticGetFileTypeName(Object clientFile) {
     if (clientFile == null)
       return null;
     if (clientFile instanceof BufferedReader)

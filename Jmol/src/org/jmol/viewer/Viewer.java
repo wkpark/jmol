@@ -1456,7 +1456,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     Logger.startTimer();
     fileManager.openFile(name, htParams, loadScript, isAppend);
     Logger.checkTimer("openFile(" + name + ")");
-    setStatusFileLoaded(1, name, "", getModelSetName(), null, null);
+    setStatusFileLoaded(1, name, "", getModelSetName(), null);
   }
 
   public void openFiles(String modelName, String[] names) {
@@ -1474,7 +1474,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     fileManager.openFiles(modelName, names, loadScript, isAppend);
     long ms = System.currentTimeMillis() - timeBegin;
     for (int i = 0; i < names.length; i++) {
-      setStatusFileLoaded(1, names[i], "", getModelSetName(), null, null);
+      setStatusFileLoaded(1, names[i], "", getModelSetName(), null);
     }
     Logger.info("openFiles(" + names.length + ") " + ms + " ms");
   }
@@ -1492,7 +1492,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     fileManager.openStringInline(strModel, htParams, isAppend);
     String errorMsg = getOpenFileError(isAppend);
     if (errorMsg == null)
-      setStatusFileLoaded(1, "string", "", getModelSetName(), null, null);
+      setStatusFileLoaded(1, "string", "", getModelSetName(), null);
     return (errorMsg == null);
   }
 
@@ -1504,7 +1504,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     fileManager.openStringsInline(arrayModels, htParams, isAppend);
     String errorMsg = getOpenFileError(isAppend);
     if (errorMsg == null)
-      setStatusFileLoaded(1, "string[]", "", getModelSetName(), null, null);
+      setStatusFileLoaded(1, "string[]", "", getModelSetName(), null);
   }
 
   public char getInlineChar() {
@@ -1605,7 +1605,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     fileManager.openDOM(DOMNode);
     long ms = System.currentTimeMillis() - timeBegin;
     Logger.info("openDOM " + ms + " ms");
-    setStatusFileLoaded(1, "JSNode", "", getModelSetName(), null,
+    setStatusFileLoaded(1, "JSNode", "", getModelSetName(), 
         getOpenFileError());
   }
 
@@ -1666,6 +1666,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } else {
       openClientFile(fullPathName, fileName, clientFile);
     }
+    clientFile = null;
+    System.gc();
     return null;
   }
 
@@ -1675,14 +1677,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // or something like that here
     // for when CdkEditBus calls this directly
     setStatusFileLoaded(2, fullPathName, fileName, 
-      null, clientFile, null);
+      null, null);
     pushHoldRepaint();
     modelSet = modelManager
         .setClientFile(fullPathName, fileName, modelAdapter, clientFile);
     initializeModel();
     popHoldRepaint();
     setStatusFileLoaded(3, fullPathName, fileName, 
-        getModelSetName(), clientFile, null);
+        getModelSetName(), null);
   }
 
 
@@ -1804,7 +1806,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     Logger.debug("ZAP memory inuse, total, free, max: " + (bTotal - bFree)
         + " " + bTotal + " " + bFree + " " + bMax);
     if (notify)
-      setStatusFileLoaded(0, null, (resetUndo ? "resetUndo" : null), null, null, null);
+      setStatusFileLoaded(0, null, (resetUndo ? "resetUndo" : null), null, null);
   }
 
   private void zap(String msg) {
@@ -3902,17 +3904,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   
   private void setStatusFileLoaded(int ptLoad, String fullPathName,
                                    String fileName, String modelName,
-                                   Object clientFile, String strError) {
+                                   String strError) {
     String s = statusManager.getCallbackScript("loadstructcallback");
     if (s != null)
       evalStringQuiet(s, true, false);
     else
-      statusManager.setStatusFileLoaded(fullPathName, fileName, modelName,
-          clientFile, strError, ptLoad);
+      statusManager.setStatusFileLoaded(fullPathName, fileName, modelName, strError, ptLoad);
   }
 
   private void setStatusFileNotLoaded(String fullPathName, String errorMsg) {
-    setStatusFileLoaded(-1, fullPathName, null, null, null, errorMsg);
+    setStatusFileLoaded(-1, fullPathName, null, null, errorMsg);
   }
 
   public void scriptEcho(String strEcho) {
@@ -6567,7 +6568,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     repaintManager.initializePointers(1);
     setCurrentModelIndex(-1, true);
     hoverAtomIndex = -1;
-    setStatusFileLoaded(0, null, null, null, null, null);
+    setStatusFileLoaded(0, null, null, null, null);
     refreshMeasures();
     return BitSetUtil.cardinalityOf(bsDeleted);
   }

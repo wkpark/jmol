@@ -738,7 +738,7 @@ public class StateManager {
       ";spinx;spiny;spinz;spinfps" +
       ";animframecallback;loadstructcallback;messagecallback;minimizationcallback;hovercallback" +
       ";resizecallback;pickcallback;synccallback" +
-      ";";
+      ";undo;";
     
     boolean isJmolVariable(String key) {
       return key.charAt(0) == '_'

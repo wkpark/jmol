@@ -88,7 +88,6 @@ public final class ModelLoader extends ModelSet {
             .getAtomSetCollectionProperties(clientFile), adapter
             .getAtomSetCollectionAuxiliaryInfo(clientFile));
     initializeModelSet(adapter, clientFile);
-    adapter.finish(clientFile);
     // dumpAtomSetNameDiagnostics(adapter, clientFile);
   }
 /*
@@ -226,7 +225,8 @@ public final class ModelLoader extends ModelSet {
       iterateOverAllNewAtoms(adapter, clientFile);
       iterateOverAllNewBonds(adapter, clientFile);
       iterateOverAllNewStructures(adapter, clientFile);
-
+      if (adapter != null)
+        adapter.finish(clientFile);
       initializeUnitCellAndSymmetry();
       initializeBonding();
     }

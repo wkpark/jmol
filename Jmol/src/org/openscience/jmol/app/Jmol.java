@@ -1732,7 +1732,7 @@ public class Jmol extends JPanel {
       switch (type) {
       case JmolConstants.CALLBACK_LOADSTRUCT:
         notifyFileLoaded(strInfo, (String) data[2], (String) data[3],
-            (String) data[4], data[5]);
+            (String) data[4]);
         break;
       case JmolConstants.CALLBACK_ANIMFRAME:
         notifyFrameChanged(((int[]) data[1])[0]);
@@ -1813,8 +1813,7 @@ public class Jmol extends JPanel {
     }
     
     private void notifyFileLoaded(String fullPathName, String fileName,
-                                  String modelName, String errorMsg,
-                                  Object clientFile) {
+                                  String modelName, String errorMsg) {
       if (errorMsg != null) {
         //        JOptionPane.showMessageDialog(null,
         //          fullPathName + "\n\n" + errorMsg + "\n\n" ,
@@ -1840,7 +1839,7 @@ public class Jmol extends JPanel {
         recentFiles.notifyFileOpen(fullPathName);
       }
       frame.setTitle(title);
-      pcs.firePropertyChange(chemFileProperty, null, clientFile);
+      pcs.firePropertyChange(chemFileProperty, null, null);
     }
 
     private void notifyFrameChanged(int frameNo) {

@@ -103,7 +103,11 @@ public abstract class AtomSetCollectionReader {
   
   // parser functions are static, so they need notstatic counterparts
    
-  
+/*  
+  public void finalize() {
+    System.out.println(this + " finalized");
+  }
+*/  
   protected String[] getTokens() {
     return Parser.getTokens(line);  
   }

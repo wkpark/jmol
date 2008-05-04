@@ -42,10 +42,12 @@ import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 
 public class AtomSetCollection {
+  
   String fileTypeName;
   String collectionName;
   Properties atomSetCollectionProperties = new Properties();
   Hashtable atomSetCollectionAuxiliaryInfo = new Hashtable();
+
   
   final static String[] globalBooleans = {"someModelsHaveFractionalCoordinates",
     "someModelsHaveSymmetry", "someModelsHaveUnitcells", "isPDB"};
@@ -123,6 +125,7 @@ public class AtomSetCollection {
   UnitCell unitCell;
 
   public AtomSetCollection(String fileTypeName) {
+    //System.out.println(this + " initialized");
     this.fileTypeName = fileTypeName;
     // set the default PATH properties as defined in the SmarterJmolAdapter
     atomSetCollectionProperties.put("PATH_KEY",
@@ -250,27 +253,39 @@ public class AtomSetCollection {
           collection.getAtomSetCollectionAuxiliaryInfo(globalBooleans[i])))
         setGlobalBoolean(i);
   }
-
+/*
   protected void finalize() {
-    //Logger.debug("Model.finalize() called");
+    //System.out.println(this + " finalized");
       try{super.finalize();}catch(Throwable t){}
   }
-
+*/
   void finish() {
     atoms = null;
+    atomSetAtomCounts = new int[16];
+    atomSetAuxiliaryInfo = new Hashtable[16];
+    atomSetCollectionProperties = new Properties();
+    atomSetCollectionAuxiliaryInfo = new Hashtable();
+    atomSetCount = 0;
+    atomSetNumbers = new int[16];
+    atomSetNames = new String[16];
+    atomSetProperties = new Properties[16];
+    atomSymbolicMap = new Hashtable();
     bonds = null;
+    cartesians = null;
+    connectLast = null;
+    currentAtomSetIndex = -1;
+    latticeCells = null;
     notionalUnitCell = null;
     spaceGroup = null;
     structures = new Structure[16];
-    atomSetNumbers = new int[16];
-    atomSetNames = new String[16];
-    atomSetAtomCounts = new int[16];
-    atomSetProperties = new Properties[16];
-    atomSetAuxiliaryInfo = new Hashtable[16];
     structureCount = 0;
-    atomSetCount = 0;
-    currentAtomSetIndex = -1;
+    trajectory = null;
+    trajectories = null;
+    unitCell = null;
+    vConnect = null;
+    vd = null;
   }
+
 
   void freeze() {
     //Logger.debug("AtomSetCollection.freeze; atomCount = " + atomCount);
@@ -423,7 +438,6 @@ public class AtomSetCollection {
   int connectNextAtomIndex = 0;
   int connectNextAtomSet = 0;
   int[] connectLast;
-  
   
   public void addConnection(int[] is) {
     if (vConnect == null) {
@@ -709,7 +723,7 @@ public class AtomSetCollection {
   int bondIndex0;
   boolean applySymmetryToBonds = false;
   boolean checkSpecial = true;
-  
+
   public void setCheckSpecial(boolean TF) {
     checkSpecial = TF;
   }

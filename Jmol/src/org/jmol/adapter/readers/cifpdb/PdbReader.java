@@ -70,6 +70,7 @@ public class PdbReader extends AtomSetCollectionReader {
   int maxSerial = 0;
 
  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+    //System.out.println(this + " initialized");
     this.reader = reader;
     atomSetCollection = new AtomSetCollection(fileType);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);

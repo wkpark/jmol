@@ -87,7 +87,7 @@ class StatusManager {
   }
 
   void clear() {
-    setStatusFileLoaded(null, null, null, null, null, 0);
+    setStatusFileLoaded(null, null, null, null, 0);
   }
   
   synchronized boolean resetMessageQueue(String statusList) {
@@ -168,13 +168,13 @@ class StatusManager {
   }
   
   synchronized void setStatusFileLoaded(String fullPathName, String fileName,
-      String modelName, Object clientFile, String errorMsg, int ptLoad) {
+      String modelName, String errorMsg, int ptLoad) {
     setStatusChanged("fileLoaded", ptLoad, fullPathName, false);
     if (errorMsg != null)
       setStatusChanged("fileLoadError", ptLoad, errorMsg, false);
     if (jmolStatusListener != null && (ptLoad <=0 || ptLoad == 3))
       jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_LOADSTRUCT, 
-          new Object[] {"", fullPathName, fileName, modelName, errorMsg, clientFile} );
+          new Object[] {"", fullPathName, fileName, modelName, errorMsg} );
   }
 
   synchronized void setStatusFrameChanged(int frameNo, int fileNo, int modelNo, int firstNo, int lastNo) {

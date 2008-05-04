@@ -267,8 +267,8 @@ public final class ScriptWindow extends JDialog
       viewer.evalStringQuiet(state);
       undoPointer = ptr;
     }
-    for (int i =0; i < 10; i++) 
-      System.out.println("stack: " + undoPointer + " / " + i + " " +(undoStack[i] == null ? 0 : undoStack[i].length()));
+    //for (int i =0; i < 10; i++) 
+      //System.out.println("stack: " + undoPointer + " / " + i + " " +(undoStack[i] == null ? 0 : undoStack[i].length()));
     undoSetEnabled();
   }
   

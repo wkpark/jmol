@@ -1005,7 +1005,7 @@ public final class ModelLoader extends ModelSet {
   }
 
   private void freeze() {
-
+    htAtomMap.clear();
     // resize arrays
     if (atomCount < atoms.length)
       growAtomArrays(0);
@@ -1034,9 +1034,7 @@ public final class ModelLoader extends ModelSet {
     molecules = null;
     moleculeCount = 0;
     currentModel = null;
-    currentChain = null;
-    htAtomMap.clear();
-    
+    currentChain = null;    
   }
 
   private void setAtomNamesAndNumbers() {

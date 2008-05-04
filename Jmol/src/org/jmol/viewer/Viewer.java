@@ -302,7 +302,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isApplet)
       fileManager.setAppletContext(documentBase, codeBase,
           appletProxyOrCommandOptions);
-    zap(false); //here to allow echos
+    zap(false, false); //here to allow echos
     global.setParameterValue("language", GT.getLanguage());
   }
 
@@ -1452,7 +1452,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     }
     if (!isAppend)
-      zap(false);
+      zap(false, false);
     Logger.startTimer();
     fileManager.openFile(name, htParams, loadScript, isAppend);
     Logger.checkTimer("openFile(" + name + ")");
@@ -1467,7 +1467,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                  boolean isAppend) {
     //Eval -- names will be loaded with full path names
     if (!isAppend)
-      zap(false);
+      zap(false, false);
     // keep old screen image while new file is being loaded
     // forceRefresh();
     long timeBegin = System.currentTimeMillis();
@@ -1786,7 +1786,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.setEchoStateActive(TF);
   }
 
-  public void zap(boolean notify) {
+  public void zap(boolean notify, boolean resetUndo) {
     //Eval
     //setAppletContext
     clear();
@@ -1804,11 +1804,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     Logger.debug("ZAP memory inuse, total, free, max: " + (bTotal - bFree)
         + " " + bTotal + " " + bFree + " " + bMax);
     if (notify)
-      setStatusFileLoaded(0, null, null, null, null, null);
+      setStatusFileLoaded(0, null, (resetUndo ? "resetUndo" : null), null, null, null);
   }
 
   private void zap(String msg) {
-    zap(true);
+    zap(true, false);
     echoMessage(msg);
   }
 

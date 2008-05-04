@@ -1813,8 +1813,8 @@ public class Jmol extends JPanel {
     }
     
     private void notifyFileLoaded(String fullPathName, String fileName,
-                                 String modelName, String errorMsg,
-                                 Object clientFile) {
+                                  String modelName, String errorMsg,
+                                  Object clientFile) {
       if (errorMsg != null) {
         //        JOptionPane.showMessageDialog(null,
         //          fullPathName + "\n\n" + errorMsg + "\n\n" ,
@@ -1822,25 +1822,25 @@ public class Jmol extends JPanel {
         //          JOptionPane.ERROR_MESSAGE);
         return;
       }
-
       if (!haveDisplay.booleanValue())
         return;
       //      jmolpopup.updateComputedMenus();
       String title = "Jmol";
       if (fullPathName == null) {
+        if (fileName != null && scriptWindow != null)
+          scriptWindow.undoClear();
         // a 'clear/zap' operation
       } else {
-      if (modelName != null && fileName != null)
-        title = fileName + " - " + modelName;
-      else if (fileName != null)
-        title = fileName;
-      else if (modelName != null)
-        title = modelName;
-      recentFiles.notifyFileOpen(fullPathName);
+        if (modelName != null && fileName != null)
+          title = fileName + " - " + modelName;
+        else if (fileName != null)
+          title = fileName;
+        else if (modelName != null)
+          title = modelName;
+        recentFiles.notifyFileOpen(fullPathName);
       }
       frame.setTitle(title);
-      if (haveDisplay.booleanValue())
-        pcs.firePropertyChange(chemFileProperty, null, clientFile);
+      pcs.firePropertyChange(chemFileProperty, null, clientFile);
     }
 
     private void notifyFrameChanged(int frameNo) {

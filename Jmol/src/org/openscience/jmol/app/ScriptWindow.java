@@ -113,10 +113,12 @@ public final class ScriptWindow extends JDialog
 
     undoButton = new JButton(GT._("Undo"));
     undoButton.addActionListener(this);
+    undoButton.setEnabled(false);
     buttonPanel.add(undoButton);
 
     redoButton = new JButton(GT._("Redo"));
     redoButton.addActionListener(this);
+    redoButton.setEnabled(false);
     buttonPanel.add(redoButton);
 
     
@@ -230,6 +232,19 @@ public final class ScriptWindow extends JDialog
   String[] undoStack = new String[MAXUNDO];
   int undoPointer = 0;
   boolean undoSaved = false;
+ 
+  void undoClear() {
+    for (int i = 0; i < MAXUNDO; i++)
+      undoStack[i] = null;
+    undoPointer = 0;
+    undoButton.setEnabled(false);
+    redoButton.setEnabled(false);
+  }
+  
+  void undoSetEnabled() {
+    undoButton.setEnabled(undoPointer > 0 && undoStack[undoPointer - 1] != null);
+    redoButton.setEnabled(undoPointer + 1 < MAXUNDO && undoStack[undoPointer + 1] != null);
+  }
   
   void undoRedo(boolean isRedo) {
     // pointer is always left at the undo slot when a command is given
@@ -246,14 +261,15 @@ public final class ScriptWindow extends JDialog
       ptr = 0;
     //console.outputError("undoredo " + isRedo + " " + ptr);
     state = undoStack[ptr];
-    if (state == null)
-      return;
-    state += CommandHistory.NOHISTORYATALL_FLAG;
-    setError(false);
-    viewer.evalStringQuiet(state);
-    undoPointer = ptr;
-    //for (int i =0; i < MAXUNDO; i++) 
-      //console.outputError("stack: " + undoPointer + " / " + i + " " +(undoStack[i] == null ? 0 : undoStack[i].length()));
+    if (state != null) {
+      state += CommandHistory.NOHISTORYATALL_FLAG;
+      setError(false);
+      viewer.evalStringQuiet(state);
+      undoPointer = ptr;
+    }
+    for (int i =0; i < 10; i++) 
+      System.out.println("stack: " + undoPointer + " / " + i + " " +(undoStack[i] == null ? 0 : undoStack[i].length()));
+    undoSetEnabled();
   }
   
   void undoSave() {
@@ -275,9 +291,9 @@ public final class ScriptWindow extends JDialog
     if (Logger.checkTimer(null) > 1000) {
       viewer.setBooleanProperty("undo", false);
       Logger.info("command processing slow; undo disabled");
-      for (int i = 0; i < MAXUNDO; i++)
-        undoStack[i] = "";
-        undoPointer = 0;
+      undoClear();
+    } else {
+      undoSetEnabled();
     }
     undoSaved = true;
   }

@@ -576,7 +576,8 @@ abstract public class ModelSet extends ModelCollection {
 
     setModelVisibility();
 
-    commands.append(getProteinStructureState(null, false));
+    //unnecessary. Removed in 11.5.35
+    //commands.append(getProteinStructureState(null, false));
 
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = shapes[i];
@@ -640,7 +641,7 @@ abstract public class ModelSet extends ModelCollection {
     BitSet bsDeleted;
     if (nModelsDeleted == modelCount) {
       bsDeleted = getModelAtomBitSet(-1, true);
-      viewer.zap(true);
+      viewer.zap(true, false);
       return bsDeleted;
     }
     

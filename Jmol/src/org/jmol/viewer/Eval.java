@@ -3551,6 +3551,7 @@ class Eval { //implements Runnable {
     case Token.opaque:
     case Token.jmol:
     case Token.rasmol:
+    case Token.symop:
     case Token.user:
     case Token.property:
       colorObject(Token.atoms, 1);
@@ -4274,7 +4275,7 @@ class Eval { //implements Runnable {
           && parameterAsString(i).equalsIgnoreCase("filter")) {
         String filter = stringParameter(++i);
         htParams.put("filter", filter);
-        sOptions += " FITLER " + Escape.escape(filter);
+        sOptions += " FILTER " + Escape.escape(filter);
       }
       
       
@@ -5323,7 +5324,7 @@ class Eval { //implements Runnable {
 
   private void zap(boolean isZapCommand) throws ScriptException {
     if (statementLength == 1 || ! isZapCommand) {
-      viewer.zap(true);
+      viewer.zap(true, isZapCommand && !isStateScript);
       refresh();
       return;
     }

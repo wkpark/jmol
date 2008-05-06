@@ -605,10 +605,12 @@ public class ProjectInformation {
           info._fciCore = CoreType.AMBER;
         } else if ("DC".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.DGROMACSC;
-        } else if ("DGROMACSB".equalsIgnoreCase(core)) {
-          info._fciCore = CoreType.DGROMACSB;
         } else if ("DGROMACS".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.DGROMACS;
+        } else if ("DGROMACSB".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.DGROMACSB;
+        } else if ("DGROMACSC".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.DGROMACSC;
         } else if ("GBGROMACS".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.GBGROMACS;
         } else if ("GC".equalsIgnoreCase(core)) {

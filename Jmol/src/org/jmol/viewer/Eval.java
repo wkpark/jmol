@@ -1800,7 +1800,7 @@ class Eval { //implements Runnable {
     int atomCount = viewer.getAtomCount();
     ModelSet modelSet = viewer.getModelSet();
     Atom[] atoms = modelSet.atoms;
-    int imax = 0;
+    int imax = -1;
     int imin = 0;
     int iModel = -1;
     int[] cellRange = null;
@@ -1844,7 +1844,15 @@ class Eval { //implements Runnable {
         continue;
       case Token.symop:
         propertyBitSet = atom.getAtomSymmetry();
+        if (atom.getModelIndex() != iModel) {
+          iModel = atom.getModelIndex();
+          cellRange = modelSet.getModelCellRange(iModel);
+          nOps = modelSet.getModelSymmetryCount(iModel);
+          imax = nOps;
+        }
         if (bitsetBaseValue >= 200) {
+          if (cellRange == null)
+            continue;
           /*
            * symop>=1000 indicates symop*1000 + lattice_translation(555)
            * for this the comparision is only with the
@@ -1865,11 +1873,6 @@ class Eval { //implements Runnable {
            * Bob Hanson - 10/2006
            */
           comparisonValue = bitsetBaseValue % 1000;
-          if (atom.getModelIndex() != iModel) {
-            iModel = atom.getModelIndex();
-            cellRange = modelSet.getModelCellRange(iModel);
-            nOps = modelSet.getModelSymmetryCount(iModel);
-          }
           int symop = bitsetBaseValue / 1000 - 1;
           if (symop < 0) {
             match = true;
@@ -1881,6 +1884,19 @@ class Eval { //implements Runnable {
             propertyValue = atom.getCellTranslation(comparisonValue, cellRange, nOps);
           else
             propertyValue = atom.getSymmetryTranslation(symop, cellRange, nOps);
+        } else if (nOps > 0) {
+          if (comparisonValue > nOps) {
+            if (bitsetComparator != Token.opLT
+              && bitsetComparator != Token.opLE)
+            continue;
+          }
+          if (bitsetComparator == Token.opNE) { 
+            if (comparisonValue > 0 && comparisonValue <= nOps 
+                && !propertyBitSet.get(comparisonValue)) {              
+              bs.set(i);
+            }
+            continue;
+          }
         }
         break;
       }
@@ -1896,11 +1912,13 @@ class Eval { //implements Runnable {
           imin = 0;
           break;
         case Token.opGE:
-          imax = propertyBitSet.size();
+          if (imax < 0)
+            imax = propertyBitSet.size();
           imin = comparisonValue - 1;
           break;
         case Token.opGT:
-          imax = propertyBitSet.size();
+          if (imax < 0)
+            imax = propertyBitSet.size();
           imin = comparisonValue;
           break;
         case Token.opEQ:
@@ -7415,7 +7433,10 @@ class Eval { //implements Runnable {
     float[] data = (tok == Token.property ? viewer
         .getDataFloat((String) opValue) : null);
     int count = 0;
+
     if (isAtoms) {
+      int iModel = -1;
+      int nOps = 0;
       count = (isSyntaxCheck ? 0 : viewer.getAtomCount());
       if (isAll)
         list = new float[count];
@@ -7446,8 +7467,12 @@ class Eval { //implements Runnable {
               break;
             case Token.symop:
               // a little weird
+              if (atom.getModelIndex() != iModel) {
+                iModel = atom.getModelIndex();
+                nOps = modelSet.getModelSymmetryCount(iModel);
+              }
               BitSet bsSym = atom.getAtomSymmetry();
-              int len = bsSym.size();
+              int len = nOps;
               int p = 0;
               int ivvMin = Integer.MAX_VALUE;
               int ivvMax = Integer.MIN_VALUE;

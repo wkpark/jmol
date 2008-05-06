@@ -620,8 +620,10 @@ final public class Atom extends Point3fi {
     ModelSet f = group.chain.modelSet;
     if (atomSymmetry == null || f.cellInfos == null
         || f.cellInfos[modelIndex] == null)
-      return str;
+      return "";
     int[] cellRange = f.getModelCellRange(modelIndex);
+    if (cellRange == null)
+      return "";
     int nOps = f.getModelSymmetryCount(modelIndex);
     int pt = nOps;
     for (int i = 0; i < cellRange.length; i++)

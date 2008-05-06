@@ -906,7 +906,7 @@ public class AtomSetCollection {
       setAtomSetAuxiliaryInfo("presymmetryAtomIndex", new Integer(iAtomFirst));
       setAtomSetAuxiliaryInfo("presymmetryAtomCount",
           new Integer(atomMax - iAtomFirst));
-      setAtomSetAuxiliaryInfo("symmetryCount", new Integer(len));
+      setAtomSetAuxiliaryInfo("biomoleculeCount", new Integer(len));
       spaceGroup = null;
       notionalUnitCell = new float[6];
       coordinatesAreFractional = false; 

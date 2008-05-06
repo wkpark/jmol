@@ -1130,8 +1130,11 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public int getModelSymmetryCount(int modelIndex) {
-    return (cellInfos == null || cellInfos[modelIndex] == null ? 0
-        : cellInfos[modelIndex].symmetryOperations.length);
+    String[] operations;
+    if (cellInfos == null || cellInfos[modelIndex] == null ||
+        (operations = cellInfos[modelIndex].symmetryOperations) == null)
+      return models[modelIndex].biomoleculeCount;
+    return operations.length;
   }
 
   public int[] getModelCellRange(int modelIndex) {
@@ -1688,6 +1691,8 @@ abstract public class ModelCollection extends BondCollection {
       if (bsSym != null) {
         if (atom.modelIndex!=modelIndex) {
           modelIndex = atom.modelIndex;
+          if (getModelCellRange(modelIndex) == null)
+            continue;
           nOps = getModelSymmetryCount(modelIndex);
         }
         //special positions are characterized by

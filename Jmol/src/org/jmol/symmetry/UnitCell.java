@@ -248,7 +248,7 @@ public class UnitCell {
 
       // note -- this is the ellipsoid in INVERSE CARTESIAN SPACE!
       
-      double factor = Math.sqrt(8) / Math.PI;
+      double factor = Math.sqrt(0.5) / Math.PI;
       for (int i = 0; i < 3; i++)
         lengths[i] = (float) (factor / lengths[i]);
       return new Object[] {unitVectors, lengths};

@@ -144,7 +144,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       colix = Shape.getColix(ellipsoids.colixes, i, atom);
       if (!g3d.setColix(colix))
         continue;
-      render1(atom, ellipsoids.mads[i] / 100f, ellipsoid);
+      render1(atom, ellipsoids.mads[i], ellipsoid);
     }
     
     if (ellipsoids.haveEllipsoids) {
@@ -187,10 +187,12 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   int maxX, dx;
   float perspectiveFactor;
   
-  private void render1(Atom atom, float factor, Object[] ellipsoid) {
+  private void render1(Atom atom, int probPercent, Object[] ellipsoid) {
     s0.set(atom.screenX, atom.screenY, atom.screenZ);
     axes = (Vector3f[]) ellipsoid[0];
     float[] af = (float[]) ellipsoid[1];
+    //float factor = Ellipsoids.getRadius((int)(probPercent * probPercent / 100f)) / Ellipsoids.getRadius(50) / 2f;
+    float factor = Ellipsoids.getRadius(probPercent);
     for (int i = 3; --i >= 0;)
       lengths[i] = af[i] * factor;
     setMatrices();

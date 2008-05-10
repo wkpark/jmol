@@ -157,7 +157,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
           diameter = (mesh.diameter > 0 ? mesh.diameter : iA == iB ? 6 : 3);
         if (width == 0) {
           g3d.fillCylinder(endCap, diameter, screens[iA], screens[iB]);
-          System.out.println("meshrenderer: pt=" + screens[iA]);
+          //System.out.println("meshrenderer: pt=" + screens[iA]);
         } else {
           pt1f.set(vertices[iA]);
           pt1f.add(vertices[iB]);

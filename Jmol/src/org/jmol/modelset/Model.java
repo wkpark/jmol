@@ -122,7 +122,7 @@ public final class Model {
   int bioPolymerCount = 0;
   Polymer[] bioPolymers = new Polymer[8];
 
-  int biomoleculeCount;
+  int biosymmetryCount;
 
   Hashtable auxiliaryInfo;
   Properties properties;
@@ -138,8 +138,8 @@ public final class Model {
     if (auxiliaryInfo == null)
       auxiliaryInfo = new Hashtable();
     this.auxiliaryInfo = auxiliaryInfo;
-    if (auxiliaryInfo.containsKey("biomoleculeCount"))
-      biomoleculeCount = ((Integer)auxiliaryInfo.get("biomoleculeCount")).intValue();
+    if (auxiliaryInfo.containsKey("biosymmetryCount"))
+      biosymmetryCount = ((Integer)auxiliaryInfo.get("biosymmetryCount")).intValue();
     this.properties = properties;
     if (jmolData == null) {
       jmolFrameType = "modelSet";

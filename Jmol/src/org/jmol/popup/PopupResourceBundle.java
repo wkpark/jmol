@@ -550,6 +550,9 @@ class PopupResourceBundle {
         "modelMenuText", GT._("model {0}"),
         "viewMenuText", GT._("View {0}"),
         "mainMenuText", GT._("Main Menu"),
+        "biomoleculesMenuText", GT._("Biomolecules"),
+        "biomoleculeText", GT._("biomolecule {0} ({1} atoms)"),
+        "loadBiomoleculeText", GT._("load biomolecule {0} ({1} atoms)"),
         
         
 //        "selectMenu", GT._("Select"),
@@ -894,7 +897,6 @@ class PopupResourceBundle {
         "showAxesCheckbox", GT._("Axes"),
         "showUNITCELLCheckbox", GT._("Unit Cell"),      
         "colorrasmolCheckbox", GT._("RasMol Colors"),
-
         "aboutComputedMenu", GT._("About Jmol"),
         
         //"rasmolChimeCompatibility", GT._("RasMol/Chime Settings"),

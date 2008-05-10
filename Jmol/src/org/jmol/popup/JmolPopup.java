@@ -492,14 +492,14 @@ abstract public class JmolPopup {
     } else if (viewer.getBooleanProperty("hideNameInPopup")) {
       modelSetName = getMenuText("hiddenModelSetText");
     } else if (modelSetName.length() > TITLE_MAX_WIDTH) {
-        modelSetName = modelSetName.substring(0, TITLE_MAX_WIDTH) + "...";
+      modelSetName = modelSetName.substring(0, TITLE_MAX_WIDTH) + "...";
     }
     renameMenu(menu, modelSetName);
     enableMenu(menu, true);
     addMenuSeparator(menu);
     addMenuItem(menu, GT._(getMenuText("atomsText"), atomCount, true));
-    addMenuItem(menu, GT._(getMenuText("bondsText"),
-        viewer.getBondCountInModel(modelIndex), true));
+    addMenuItem(menu, GT._(getMenuText("bondsText"), viewer
+        .getBondCountInModel(modelIndex), true));
     if (isPDB) {
       addMenuSeparator(menu);
       addMenuItem(menu, GT._(getMenuText("groupsText"), viewer
@@ -508,12 +508,36 @@ abstract public class JmolPopup {
           .getChainCountInModel(modelIndex), true));
       addMenuItem(menu, GT._(getMenuText("polymersText"), viewer
           .getPolymerCountInModel(modelIndex), true));
+      Object submenu = htMenus.get("BiomoleculesMenu");
+      if (submenu == null) {
+        submenu = newMenu(GT._(getMenuText("biomoleculesMenuText")),
+            getId(menu) + ".biomolecules");
+        addMenuSubMenu(menu, submenu);
+      }
+      removeAll(submenu);
+      enableMenu(submenu, false);
+      Vector biomolecules;
+      if (modelIndex >= 0
+          && (biomolecules = (Vector) viewer.getModelAuxiliaryInfo(modelIndex,
+              "biomolecules")) != null) {
+        enableMenu(submenu, true);
+        int nBiomolecules = biomolecules.size();
+        for (int i = 0; i < nBiomolecules; i++) {
+          String script = (isMultiFrame ? ""
+              : "save orientation;load \"\" FILTER \"biomolecule " + (i + 1) + "\";restore orientation;");
+          int nAtoms = ((Integer) ((Hashtable) biomolecules.elementAt(i)).get("atomCount")).intValue();
+          String entryName = GT._(getMenuText(isMultiFrame ? "biomoleculeText"
+              : "loadBiomoleculeText"), new Object[] { new Integer(i + 1),
+              new Integer(nAtoms) });
+          addMenuItem(submenu, entryName, script, null);
+        }
+      }
     }
     if (isApplet && viewer.showModelSetDownload()
         && !viewer.getBooleanProperty("hideNameInPopup")) {
       addMenuSeparator(menu);
-      addMenuItem(menu, GT._(getMenuText("viewMenuText"), viewer.getModelSetFileName(), true),
-          "show url", null);
+      addMenuItem(menu, GT._(getMenuText("viewMenuText"), viewer
+          .getModelSetFileName(), true), "show url", null);
     }
   }
 

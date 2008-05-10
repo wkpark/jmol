@@ -68,6 +68,7 @@ public class PdbReader extends AtomSetCollectionReader {
   String currentGroup3;
   Hashtable htElementsInCurrentGroup;
   int maxSerial = 0;
+  int[] chainAtomCounts;
 
  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     //System.out.println(this + " initialized");
@@ -177,6 +178,7 @@ public class PdbReader extends AtomSetCollectionReader {
       atomSetCollection.connectAll(maxSerial);
       if (biomolecules != null && biomolecules.size() > 0) {
         atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", biomolecules);
+        setBiomoleculeAtomCounts();
         if (biomts != null && filter != null
             && filter.toUpperCase().indexOf("NOSYMMETRY") < 0) {
           atomSetCollection.applySymmetry(biomts, applySymmetryToBonds, filter);
@@ -190,6 +192,19 @@ public class PdbReader extends AtomSetCollectionReader {
       return setError(e);
     }
     return atomSetCollection;
+  }
+
+  private void setBiomoleculeAtomCounts() {
+    for (int i = biomolecules.size(); --i >= 0;) {
+      Hashtable biomolecule = (Hashtable) (biomolecules.elementAt(i));
+      String chain = (String) biomolecule.get("chains");
+      int nTransforms = ((Vector) biomolecule.get("biomts")).size();
+      int nAtoms = 0;
+      for (int j = chain.length() - 1; --j >= 0;)
+        if (chain.charAt(j) == ':')
+          nAtoms += chainAtomCounts[chain.charAt(j + 1)];
+      biomolecule.put("atomCount", new Integer(nAtoms * nTransforms));
+    }
   }
 
 /* 
@@ -209,6 +224,7 @@ public class PdbReader extends AtomSetCollectionReader {
   private void remark350() throws Exception {
     Vector biomts = null;
     biomolecules = new Vector();
+    chainAtomCounts = new int[255];
     String title = "";
     String chainlist = "";
     int iMolecule = 0;
@@ -293,6 +309,8 @@ public class PdbReader extends AtomSetCollectionReader {
       maxSerial = serial;
     lastAtomData = line.substring(6, 26);
     char chainID = line.charAt(21);
+    if (chainAtomCounts != null)
+      chainAtomCounts[chainID]++;
     int sequenceNumber = parseInt(line, 22, 26);
     char insertionCode = line.charAt(26);
     String group3 = parseToken(line, 17, 20);

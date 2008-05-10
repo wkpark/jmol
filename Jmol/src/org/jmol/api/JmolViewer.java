@@ -159,7 +159,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public int getGroupCountInModel(int modelIndex);
   abstract public int getChainCountInModel(int modelIindex);
   abstract public int getPolymerCountInModel(int modelIndex);
-
   abstract public int getSelectionCount();
 
   abstract public void addSelectionListener(JmolSelectionListener listener);
@@ -304,6 +303,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void rotateToX(float radians);
   abstract public void rotateToY(float radians);
   abstract public void rotateToZ(float radians);
+
 
 }
 

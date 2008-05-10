@@ -1133,7 +1133,7 @@ abstract public class ModelCollection extends BondCollection {
     String[] operations;
     if (cellInfos == null || cellInfos[modelIndex] == null ||
         (operations = cellInfos[modelIndex].symmetryOperations) == null)
-      return models[modelIndex].biomoleculeCount;
+      return models[modelIndex].biosymmetryCount;
     return operations.length;
   }
 

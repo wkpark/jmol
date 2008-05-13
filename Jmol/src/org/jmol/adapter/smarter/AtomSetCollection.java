@@ -733,6 +733,8 @@ public class AtomSetCollection {
   }
   
   private final Point3f ptTemp = new Point3f();
+  private final Point3f ptTemp1 = new Point3f();
+  private final Point3f ptTemp2 = new Point3f();
   
   private int symmetryAddAtoms(SymmetryOperation[] finalOperations,
                                int iAtomFirst, int noSymmetryCount, int transX,
@@ -832,9 +834,9 @@ public class AtomSetCollection {
               unitCell.toCartesian(ptTemp);
             }
             atom1.ellipsoid = new Object[] {
-                finalOperations[iSym].rotate((Vector3f[]) atoms[i].ellipsoid[0],
-                    ptTemp, cartesian, unitCell, transX, transY, transZ),
-                atoms[i].ellipsoid[1]};
+                finalOperations[iSym].rotateEllipsoid(ptTemp,
+                    (Vector3f[]) atoms[i].ellipsoid[0], unitCell, ptTemp1, ptTemp2),
+                atoms[i].ellipsoid[1] };
           }
         }
       }
@@ -860,7 +862,6 @@ public class AtomSetCollection {
     int[] atomMap = (addBonds ? new int[atomCount] : null);
     int iAtomFirst = getLastAtomSetAtomIndex();
     int atomMax = atomCount;
-    Point3f pt = new Point3f();
     for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++) {
       atoms[iAtom].bsSymmetry = new BitSet(1);
       atoms[iAtom].bsSymmetry.set(0);
@@ -882,11 +883,7 @@ public class AtomSetCollection {
             atomMap[atomSite] = atomCount;
           Atom atom1 = newCloneAtom(atoms[iAtom]);
           atom1.atomSite = atomSite;
-          pt.set(atom1.x, atom1.y, atom1.z);
-          mat.transform(pt);
-          atom1.x = pt.x;
-          atom1.y = pt.y;
-          atom1.z = pt.z;
+          mat.transform(atom1);
           atom1.bsSymmetry = new BitSet(1);
           atom1.bsSymmetry.set(i);
           if (addBonds) {

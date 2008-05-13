@@ -303,6 +303,12 @@ public abstract class BioPolymer extends Polymer {
     leadAtomIndices = null;
     sheetPoints = null;
     getLeadAtomIndices();
+    ProteinStructure ps;
+    ProteinStructure psLast = null;
+    for (int i = 0; i < monomerCount; i++)
+        if ((ps = getProteinStructure(i)) != null && ps != psLast) {
+          (psLast = ps).resetAxes();
+    }
     calcLeadMidpointsAndWingVectors(false);
   }
   
@@ -363,6 +369,7 @@ public abstract class BioPolymer extends Polymer {
       wingVectors = new Vector3f[count + 1];
       sheetSmoothing = Float.MIN_VALUE;
     }
+    
     boolean hasWingPoints = hasWingPoints();
     //if (model.getModelSet().viewer.getTestFlag1()) hasWingPoints = false;
     
@@ -515,16 +522,30 @@ public abstract class BioPolymer extends Polymer {
   public Hashtable getPolymerInfo(BitSet bs) {
     Hashtable returnInfo = new Hashtable();
     Vector info = new Vector();
+    Vector structureInfo = null;
+    ProteinStructure ps;
+    ProteinStructure psLast = null;
+    int n = 0;
     for (int i = 0; i < monomerCount; i++) {
       if (bs.get(monomers[i].getLeadAtomIndex())) {
         Hashtable monomerInfo = monomers[i].getMyInfo();
         monomerInfo.put("monomerIndex", new Integer(i));
         info.addElement(monomerInfo);
+        if ((ps = getProteinStructure(i)) != null && ps != psLast) {
+          Hashtable psInfo = new Hashtable();
+          (psLast = ps).getInfo(psInfo);
+          if (structureInfo == null)
+            structureInfo = new Vector();
+          psInfo.put("index", new Integer(n++));
+          structureInfo.addElement(psInfo);
+        }
       }
     }
     if (info.size() > 0) {
       returnInfo.put("sequence", getSequence());
       returnInfo.put("monomers", info);
+      if (structureInfo != null)
+        returnInfo.put("structures", structureInfo);
     }
     return returnInfo;
   }

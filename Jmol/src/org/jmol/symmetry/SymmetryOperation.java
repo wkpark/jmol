@@ -313,35 +313,37 @@ public class SymmetryOperation extends Matrix4f {
     //System.out.println((Matrix4f)this);
   }
 
-  public Vector3f[] rotate(Vector3f[] vectors, Point3f cart0, Point3f cartXYZ,
-                           UnitCell unitcell, float transX, float transY,
-                           float transZ) {
-    //System.out.println("SymmetryOperation..transform " + xyz + "\n"
-        //+ ((Matrix4f) this) + "\ntrans " + transX + " " + transY + " " + transZ);
+  private void transformCartesian(UnitCell unitcell, Point3f pt) {
+    unitcell.toFractional(pt);
+    transform(pt);
+    unitcell.toCartesian(pt);
+
+  }
+  
+  public Vector3f[] rotateEllipsoid(Point3f cartCenter, Vector3f[] vectors,
+                                    UnitCell unitcell, Point3f ptTemp1, Point3f ptTemp2) {
     Vector3f[] vRot = new Vector3f[3];
     //System.out.println("cart0=" + cart0);
     //System.out.println("cartXYZ="+ cartXYZ);
+    ptTemp2.set(cartCenter);
+    transformCartesian(unitcell, ptTemp2);
+    //System.out.println("cartXYZ' = " + ptTemp2);
     for (int i = vectors.length; --i >= 0;) {
       //System.out.println("vectors[i]= " + vectors[i]);
-      Point3f pt = new Point3f(cart0);
-      pt.add(vectors[i]);
-      //System.out.println("cart0+vectors[i]=" + pt);
-      unitcell.toFractional(pt);
-      transform(pt);
-      pt.x += transX;
-      pt.y += transY;
-      pt.z += transZ;
-      unitcell.toCartesian(pt);
-      vRot[i] = new Vector3f(pt);
-      vRot[i].sub(cartXYZ);
+      ptTemp1.set(cartCenter);
+      ptTemp1.add(vectors[i]);
+      //System.out.println("cart0+vectors[i]=" + ptTemp1);
+      transformCartesian(unitcell, ptTemp1);
+      vRot[i] = new Vector3f(ptTemp1);
+      vRot[i].sub(ptTemp2);
       //System.out.println("new vRot[i]=" + vRot[i]);
     }
-/*    for (int i = 0; i < 3; i++) {
-      System.out.println(vectors[i].dot(vectors[(i + 1) % 3]));
-      System.out.println(vRot[i].dot(vRot[(i + 1) % 3]));
-    }
-    System.out.println();
-*/
+    //for (int i = 0; i < 3; i++) {
+    //System.out.println(vectors[i].dot(vectors[(i + 1) % 3]));
+    //System.out.println(vRot[i].dot(vRot[(i + 1) % 3]));
+    //}
+    //System.out.println();
+
     return vRot;
   }
 }

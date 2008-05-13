@@ -63,4 +63,5 @@ public class Helix extends ProteinStructure {
    * Peter C Kahn
    * Computers Chem. Vol 13, No 3, pp 191-195, 1989
    ****************************************************************/
+  
 }

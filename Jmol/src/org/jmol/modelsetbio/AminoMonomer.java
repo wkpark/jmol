@@ -237,8 +237,7 @@ public class AminoMonomer extends AlphaMonomer {
     Vector3f vB = new Vector3f(ptCa);
     vB.sub(ptC);
   
-   */    
-    
+   */
     return Quaternion.getQuaternionFrame(vA, vB);   
   }
   

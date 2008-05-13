@@ -5687,7 +5687,7 @@ class Eval { //implements Runnable {
       setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS, "thisID", null);
       return;
     default:
-      error(ERROR_booleanOrNumberExpected);
+      error(ERROR_invalidArgument);
     }
     setShapeSize(JmolConstants.SHAPE_ELLIPSOIDS, mad);
   }

@@ -882,13 +882,13 @@ public class Jmol implements WrappedApplet {
       case JmolConstants.CALLBACK_MINIMIZATION:
       case JmolConstants.CALLBACK_RESIZE:
       }
-      return (mayScript && callbacks[type] != null);
+      return (callbacks[type] != null);
     }
     
     public void notifyCallback(int type, Object[] data) {
 
       String callback = callbacks[type];
-      boolean doCallback = (mayScript && callback != null);
+      boolean doCallback = (callback != null);
 
       if (data != null)
         data[0] = htmlName;
@@ -984,7 +984,7 @@ public class Jmol implements WrappedApplet {
         sendSyncScript(doCallback, strInfo, (String) data[2]);
         return;
       }
-      if (!doCallback)
+      if (!doCallback || !mayScript)
         return;
       try {
         JSObject jsoWindow = JSObject.getWindow(appletWrapper);

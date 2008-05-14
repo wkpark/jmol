@@ -185,7 +185,7 @@ public abstract class ProteinStructure {
     info.put("axisUnitVector", axisUnitVector);
   }
 
-  public void resetAxes() {
+  void resetAxes() {
     axisA = null;
     segments = null;
   }

@@ -693,7 +693,8 @@ Details
   boolean  haveMappedSerials;
   
   void anisou() {
-    float[] data = new float[6];
+    float[] data = new float[8];
+    data[6] = 1; //U not B
     int serial = parseInt(line, 6, 11);
     int index;
     if (line.substring(6, 26).equals(lastAtomData)) {
@@ -718,7 +719,7 @@ Details
       }
       data[i] /= 10000f;
     }
-    atom.anisoU = data;
+    atom.anisoBorU = data;
   }
   /*
    * http://www.wwpdb.org/documentation/format23/sect7.html

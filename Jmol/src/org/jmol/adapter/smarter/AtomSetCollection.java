@@ -601,8 +601,9 @@ public class AtomSetCollection {
 
     int noSymmetryCount = getLastAtomSetAtomCount();
     int iAtomFirst = getLastAtomSetAtomIndex();
-    for (int i = iAtomFirst; i < atomCount; i++)
-      atoms[i].ellipsoid = unitCell.getEllipsoid(atoms[i].anisoU);
+    for (int i = iAtomFirst; i < atomCount; i++) {
+      atoms[i].ellipsoid = unitCell.getEllipsoid(atoms[i].anisoBorU);
+    }
     bondCount0 = bondCount;
 
     SymmetryOperation[] finalOperations = spaceGroup.getFinalOperations(atoms,

@@ -476,7 +476,13 @@ public class CifReader extends AtomSetCollectionReader {
   final private static byte ANISO_MMCIF_U13 = 31;
   final private static byte ANISO_MMCIF_U23 = 32;
   final private static byte U_ISO_OR_EQUIV = 33;
-  final private static byte ADP_TYPE = 34;
+  final private static byte ANISO_B11 = 34;
+  final private static byte ANISO_B22 = 35;
+  final private static byte ANISO_B33 = 36;
+  final private static byte ANISO_B12 = 37;
+  final private static byte ANISO_B13 = 38;
+  final private static byte ANISO_B23 = 39;
+  final private static byte ADP_TYPE = 40;
 
   final private static String[] atomFields = { 
       "_atom_site_type_symbol",
@@ -513,6 +519,12 @@ public class CifReader extends AtomSetCollectionReader {
       "_atom_site_anisotrop_U[1][3]",
       "_atom_site_anisotrop_U[2][3]",
       "_atom_site_U_iso_or_equiv",
+      "_atom_site_aniso_B_11",
+      "_atom_site_aniso_B_22",
+      "_atom_site_aniso_B_33",
+      "_atom_site_aniso_B_12",
+      "_atom_site_aniso_B_13",
+      "_atom_site_aniso_B_23",
       "_atom_site_adp_type",
   };
 
@@ -546,7 +558,7 @@ public class CifReader extends AtomSetCollectionReader {
       disableField(CARTN_X);
       disableField(CARTN_Y);
       disableField(CARTN_Z);
-    } else if (fieldOf[ANISO_LABEL] != NONE){
+    } else if (fieldOf[ANISO_LABEL] != NONE) {
     } else {
       // it is a different kind of _atom_site loop block
       skipLoop();
@@ -576,9 +588,8 @@ public class CifReader extends AtomSetCollectionReader {
             //because otherwise -1.6 is rounded UP to -1, and  1.6 is rounded DOWN to 1
             if (Math.abs(atom.formalCharge - charge) > 0.1)
               if (Logger.debugging) {
-                Logger.debug(
-                    "CIF charge on " + field + " was " + charge +
-                    "; rounded to " + atom.formalCharge);
+                Logger.debug("CIF charge on " + field + " was " + charge
+                    + "; rounded to " + atom.formalCharge);
               }
           }
           break;
@@ -611,7 +622,8 @@ public class CifReader extends AtomSetCollectionReader {
           break;
         case ASYM_ID:
           if (field.length() > 1)
-            Logger.warn("Don't know how to deal with chains more than 1 char: " + field);
+            Logger.warn("Don't know how to deal with chains more than 1 char: "
+                + field);
           atom.chainID = firstChar;
           break;
         case SEQ_ID:
@@ -648,9 +660,10 @@ public class CifReader extends AtomSetCollectionReader {
           if (field.equalsIgnoreCase("Uiso")) {
             int j = fieldOf[U_ISO_OR_EQUIV];
             if (j != NONE) {
-              if (atom.anisoU == null)
-                atom.anisoU = new float[6];
-              atom.anisoU[0] = atom.anisoU[1] = atom.anisoU[2] = parseFloat(loopData[j]);
+              if (atom.anisoBorU == null)
+                atom.anisoBorU = new float[8];
+              atom.anisoBorU[0] = atom.anisoBorU[1] = atom.anisoBorU[2] = parseFloat(loopData[j]);
+              atom.anisoBorU[6] = 1; // U not B
             }
           }
           break;
@@ -658,7 +671,7 @@ public class CifReader extends AtomSetCollectionReader {
           int iAtom = atomSetCollection.getAtomNameIndex(field);
           if (iAtom < 0)
             return false;
-            atom = atomSetCollection.getAtom(iAtom);
+          atom = atomSetCollection.getAtom(iAtom);
           break;
         case ANISO_U11:
         case ANISO_U22:
@@ -672,15 +685,30 @@ public class CifReader extends AtomSetCollectionReader {
         case ANISO_MMCIF_U12:
         case ANISO_MMCIF_U13:
         case ANISO_MMCIF_U23:
-          if (atom.anisoU == null)
-            atom.anisoU = new float[6];
+          if (atom.anisoBorU == null)
+            atom.anisoBorU = new float[8];
           int iType = (propertyOf[i] - ANISO_U11) % 6;
-          atom.anisoU[iType] = parseFloat(field);          
+          atom.anisoBorU[iType] = parseFloat(field);
+          atom.anisoBorU[6] = 1; // U not B
+          break;
+        case ANISO_B11:
+        case ANISO_B22:
+        case ANISO_B33:
+        case ANISO_B12:
+        case ANISO_B13:
+        case ANISO_B23:
+          /*          if (atom.anisoBorU == null)
+           atom.anisoBorU = new float[8];
+           int iTypeB = (propertyOf[i] - ANISO_B11) % 6;
+           atom.anisoBorU[iTypeB] = parseFloat(field) / EIGHT_PI_SQUARED;          
+           atom.anisoBorU[6] = 1; // still U
+           */
           break;
         }
       }
       if (Float.isNaN(atom.x) || Float.isNaN(atom.y) || Float.isNaN(atom.z)) {
-        Logger.warn("atom " + atom.atomName + " has invalid/unknown coordinates");
+        Logger.warn("atom " + atom.atomName
+            + " has invalid/unknown coordinates");
       } else {
         if (fieldOf[ANISO_LABEL] != NONE)
           continue;
@@ -691,18 +719,22 @@ public class CifReader extends AtomSetCollectionReader {
         atomSetCollection.addAtomWithMappedName(atom);
         if (atom.isHetero && htHetero != null) {
           atomSetCollection.setAtomSetAuxiliaryInfo("hetNames", htHetero);
-          atomSetCollection.setAtomSetCollectionAuxiliaryInfo("hetNames", htHetero);
+          atomSetCollection.setAtomSetCollectionAuxiliaryInfo("hetNames",
+              htHetero);
           htHetero = null;
         }
       }
     }
     if (isPDB) {
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
+      atomSetCollection
+          .setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
       atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     }
     return true;
   }
     
+//  final private static float EIGHT_PI_SQUARED = (float) (8 * Math.PI * Math.PI);
+  
   ////////////////////////////////////////////////////////////////
   // bond data
   ////////////////////////////////////////////////////////////////

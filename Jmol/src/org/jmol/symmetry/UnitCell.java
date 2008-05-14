@@ -205,17 +205,30 @@ public class UnitCell {
       c_ = a * b * sinGamma / volume;
     }
 
-    Object[] getEllipsoid(float[] U) {
+    final static double twoP2 = 2 * Math.PI * Math.PI;
+    
+    Object[] getEllipsoid(float[] parBorU, boolean isU) {
       //returns {Vector3f[3] unitVectors, float[3] lengths}
       //from J.W. Jeffery, Methods in X-Ray Crystallography, Appendix VI,
       // Academic Press, 1971
-      double twoP2 = 2 * Math.PI * Math.PI;
-      double B11 = twoP2 * U[0] * a_ * a_;
-      double B22 = twoP2 * U[1] * b_ * b_;
-      double B33 = twoP2 * U[2] * c_ * c_;
-      double B12 = 2 * twoP2 * U[3] * a_ * b_;
-      double B13 = 2 * twoP2 * U[4] * a_ * c_;
-      double B23 = 2 * twoP2 * U[5] * b_ * c_;
+     
+      // comparing with Fischer and Tillmanns, Acta Cryst C44 775-776, 1988,
+      // these are really BETA values, almost -- at least by this definition
+      // there is a factor of 2 in the cross terms. 
+      // THIS FACTOR IS NECESSARY for agreement with Mercury.
+      // 
+      double B11 = parBorU[0] * (isU ? twoP2 * a_ * a_ : 1);
+      double B22 = parBorU[1] * (isU ? twoP2 * b_ * b_ : 1);
+      double B33 = parBorU[2] * (isU ? twoP2 * c_ * c_: 1);
+      double B12 = parBorU[3] * (isU ? twoP2 * a_ * b_ * 2: 1);
+      double B13 = parBorU[4] * (isU ? twoP2 * a_ * c_ * 2: 1);
+      double B23 = parBorU[5] * (isU ? twoP2 * b_ * c_ * 2: 1);
+      
+      // set bFactor = (U11*U22*U33)
+      parBorU[7] = 100f * (float) Math.pow(
+          B11 / twoP2 / a_ / a_ *
+          B22 / twoP2 / b_ / b_ *
+          B33 / twoP2 / c_ / c_, 0.3333);
       
       double[] Bcart = new double[6];
       
@@ -256,13 +269,13 @@ public class UnitCell {
     
   }
   
-  public Object[] getEllipsoid(float[] U){
+  public Object[] getEllipsoid(float[] parBorU){
     //returns {Vector3f[3] unitVectors, float[3] lengths}
-    if (U == null)
+    if (parBorU == null)
       return null;
     if (data == null)
       data = new Data();
-    return data.getEllipsoid(U);
+    return data.getEllipsoid(parBorU, parBorU[6] != 0);
   }
 
   private void calcNotionalMatrix() {

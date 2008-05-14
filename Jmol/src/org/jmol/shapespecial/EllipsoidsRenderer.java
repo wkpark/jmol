@@ -123,13 +123,11 @@ public class EllipsoidsRenderer extends ShapeRenderer {
         coords = new int[dotCount * 3];
     }
 
-    if (drawBall) {
-      Matrix4f m4 = viewer.getMatrixtransform();
-      mat.setRow(0, m4.m00, m4.m01, m4.m02);
-      mat.setRow(1, m4.m10, m4.m11, m4.m12);
-      mat.setRow(2, m4.m20, m4.m21, m4.m22);
-      matScreenToCartesian.invert(mat);
-    }
+    Matrix4f m4 = viewer.getMatrixtransform();
+    mat.setRow(0, m4.m00, m4.m01, m4.m02);
+    mat.setRow(1, m4.m10, m4.m11, m4.m12);
+    mat.setRow(2, m4.m20, m4.m21, m4.m22);
+    matScreenToCartesian.invert(mat);
 
     Atom[] atoms = modelSet.atoms;
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
@@ -248,6 +246,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       points[i].scaleAdd(f * lengths[i012] * (iAxis < 0 ? -1 : 1), axes[i012], center);
       pt1.set(unitAxisPoints[i]);
       pt1.scale(f);
+      
       matEllipsoidToScreen.transform(pt1);
       screens[i].set((int)(s0.x + pt1.x * perspectiveFactor), 
           (int)(s0.y + pt1.y * perspectiveFactor), 
@@ -350,12 +349,13 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       s1.set(s2);
     }
     if (!fillArc && !wireframeOnly)
-      for (int i = 0; i < 18; i++)
+      for (int i = 0; i < 18; i++) {
         g3d.fillHermite(5, diameter, diameter, diameter, 
             screens[i == 0 ? i + 6 : i + 5], 
             screens[i + 6], 
             screens[i + 7], 
             screens[i == 17 ? i + 7 : i + 8]);
+      }
   }
 
 

@@ -534,10 +534,10 @@ public class ProjectInformation {
     factory.setNamespaceAware(true);
 
     try {
-        //Load document
+      //Load document
       InputStream stream = null;
       if (_local == true) {
-    	stream = new FileInputStream("project-summary.xml"); //$NON-NLS-1$
+        stream = new FileInputStream("project-summary.xml"); //$NON-NLS-1$
       } else {
         StringBuffer urlName = new StringBuffer();
         urlName.append("http://fci.fatalerrorgroup.com/xml-data/"); //$NON-NLS-1$

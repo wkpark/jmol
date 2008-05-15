@@ -34,7 +34,6 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.modelset.Atom;
 import org.jmol.shape.AtomShape;
 import org.jmol.util.Escape;
 import org.jmol.util.Quadric;
@@ -74,29 +73,19 @@ public class Ellipsoids extends AtomShape {
   Ellipsoid ellipsoid;
   
   public void setSize(int size, BitSet bsSelected) {
-    isActive = true;
-    if (bsSizeSet == null)
-      bsSizeSet = new BitSet();
-    boolean isVisible = (size != 0);
+    super.setSize(size, bsSelected);
+    if (size == 0)
+      return;
     float factor = Ellipsoids.getRadius(size);
+    Object[] ellipsoid;
     for (int i = atomCount; --i >= 0;)
-      if (bsSelected == null || bsSelected.get(i)) {
-        Object[] ellipsoid = atoms[i].getEllipsoid();
-        if (ellipsoid == null)
-          continue;
-        if (size > 0) {
-          float[] lengths = (float[]) ellipsoid[1];
-          for (int j = 3; --j >= 0;)
-            lengths[j + 3] = lengths[j] * factor;
-          if (ellipsoid[0] == null)
-            lengths[3] = lengths[5] = lengths[4];
-        }
-        if (mads == null)
-          mads = new short[atomCount];
-        Atom atom = atoms[i];
-        mads[i] = (short) size;
-        bsSizeSet.set(i, isVisible);
-        atom.setShapeVisibility(myVisibilityFlag, isVisible);
+      if ((bsSelected == null || bsSelected.get(i))
+          && (ellipsoid = atoms[i].getEllipsoid()) != null) {
+        float[] lengths = (float[]) ellipsoid[1];
+        for (int j = 3; --j >= 0;)
+          lengths[j + 3] = lengths[j] * factor;
+        if (ellipsoid[0] == null)
+          lengths[3] = lengths[5] = lengths[4];
       }
   }
 

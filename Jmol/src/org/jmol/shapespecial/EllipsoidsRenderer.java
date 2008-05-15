@@ -182,8 +182,8 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     4, 1, 2  //arc
   };
 
-  int maxX, dx;
-  float perspectiveFactor;
+  private int dx;
+  private float perspectiveFactor;
   
   private void render1(Atom atom, Object[] ellipsoid) {
     s0.set(atom.screenX, atom.screenY, atom.screenZ);

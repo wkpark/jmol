@@ -5741,14 +5741,16 @@ class Eval { //implements Runnable {
         mad = Short.MIN_VALUE;
         if (tokAt(2) == Token.integer)
           mad -= intParameter(2);
+        break;
       } else if (parameterAsString(1).equalsIgnoreCase("ADPMAX")) {
         mad = Short.MAX_VALUE;
         if (tokAt(2) == Token.integer)
           mad += intParameter(2);
+        break;
       }
-      break;
+      //fall through
     default:
-      error(ERROR_booleanOrNumberExpected);
+      error(ERROR_invalidArgument);
     }
     setShapeSize(shape, mad);
   }

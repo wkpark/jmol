@@ -827,17 +827,20 @@ public class AtomSetCollection {
           if (addCartesian)
             cartesians[pt++] = cartesian;
           if (atoms[i].ellipsoid != null) {
-            // note -- PDB reader specifically turns off cartesians
-            if (addCartesian) {
-              ptTemp.set(cartesians[i - iAtomFirst]);
-            } else {
-              ptTemp.set(atoms[i]);
-              unitCell.toCartesian(ptTemp);
+            Object axes = atoms[i].ellipsoid[0];
+            Object lengths = atoms[i].ellipsoid[1];
+            if (axes != null) {
+              // note -- PDB reader specifically turns off cartesians
+              if (addCartesian) {
+                ptTemp.set(cartesians[i - iAtomFirst]);
+              } else {
+                ptTemp.set(atoms[i]);
+                unitCell.toCartesian(ptTemp);
+              }
+              axes = finalOperations[iSym].rotateEllipsoid(ptTemp,
+                  (Vector3f[]) axes, unitCell, ptTemp1, ptTemp2);
             }
-            atom1.ellipsoid = new Object[] {
-                finalOperations[iSym].rotateEllipsoid(ptTemp,
-                    (Vector3f[]) atoms[i].ellipsoid[0], unitCell, ptTemp1, ptTemp2),
-                atoms[i].ellipsoid[1] };
+            atom1.ellipsoid = new Object[] { axes, lengths };
           }
         }
       }

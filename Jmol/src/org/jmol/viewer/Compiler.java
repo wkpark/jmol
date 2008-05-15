@@ -335,6 +335,7 @@ class Compiler {
     nSemiSkip = 0;
     cchScript = script.length();
     ichToken = 0;
+    ichCurrentCommand = 0;
     lineCurrent = 1;
     iCommand = 0;
     int lnLength = 8;
@@ -345,7 +346,6 @@ class Compiler {
     isNewSet = isSetBrace = false;
     ptNewSetModifier = 1;
     isShowScriptOutput = false;
-
     Vector lltoken = new Vector();
     ltoken = new Vector();
     int tokCommand = Token.nada;
@@ -393,6 +393,8 @@ class Compiler {
         if (ichToken < cchScript) {
           if (endOfLine)
             ++lineCurrent;
+          if (isShowScriptOutput)
+            ichCurrentCommand = ichToken + cchToken;
           continue;
         }
         break;
@@ -597,6 +599,7 @@ class Compiler {
               if (flowContext == null)
                 return error(ERROR_badContext, "end");
               isEnd = true;
+              System.out.println("end flowContext" + flowContext.token.value);
               if (flowContext.token.tok != Token.function)
                 token = new Token(tok, -flowContext.pt0, token.value); //copy
               break;
@@ -650,6 +653,7 @@ class Compiler {
                 flowContext.token = token;
               else
                 flowContext = new FlowContext(token, pt, flowContext);
+              System.out.println("flowContext" + flowContext.token.value + " " + lineCurrent);
             }
             break;
           }

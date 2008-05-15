@@ -211,60 +211,53 @@ public class UnitCell {
       //returns {Vector3f[3] unitVectors, float[3] lengths}
       //from J.W. Jeffery, Methods in X-Ray Crystallography, Appendix VI,
       // Academic Press, 1971
-     
+
       // comparing with Fischer and Tillmanns, Acta Cryst C44 775-776, 1988,
       // these are really BETA values, almost -- at least by this definition
       // there is a factor of 2 in the cross terms. 
       // THIS FACTOR IS NECESSARY for agreement with Mercury.
       // 
+      float[] lengths = new float[3];
+      if (parBorU[0] == 0) { // this is iso
+        lengths[1] = (float) Math.sqrt(parBorU[7]);
+        return new Object[] { null, lengths };
+      }
       double B11 = parBorU[0] * (isU ? twoP2 * a_ * a_ : 1);
       double B22 = parBorU[1] * (isU ? twoP2 * b_ * b_ : 1);
-      double B33 = parBorU[2] * (isU ? twoP2 * c_ * c_: 1);
-      double B12 = parBorU[3] * (isU ? twoP2 * a_ * b_ * 2: 1);
-      double B13 = parBorU[4] * (isU ? twoP2 * a_ * c_ * 2: 1);
-      double B23 = parBorU[5] * (isU ? twoP2 * b_ * c_ * 2: 1);
-      
+      double B33 = parBorU[2] * (isU ? twoP2 * c_ * c_ : 1);
+      double B12 = parBorU[3] * (isU ? twoP2 * a_ * b_ * 2 : 1);
+      double B13 = parBorU[4] * (isU ? twoP2 * a_ * c_ * 2 : 1);
+      double B23 = parBorU[5] * (isU ? twoP2 * b_ * c_ * 2 : 1);
+
       // set bFactor = (U11*U22*U33)
-      parBorU[7] = 100f * (float) Math.pow(
-          B11 / twoP2 / a_ / a_ *
-          B22 / twoP2 / b_ / b_ *
-          B33 / twoP2 / c_ / c_, 0.3333);
-      
+      parBorU[7] = (float) Math.pow(B11 / twoP2 / a_ / a_ * B22 / twoP2
+          / b_ / b_ * B33 / twoP2 / c_ / c_, 0.3333);
+
       double[] Bcart = new double[6];
-      
-      Bcart[0] = a * a * B11 
-          + b * b * cosGamma * cosGamma * B22
-          + c * c * cosBeta * cosBeta * B33
-          + a * b * cosGamma * B12
-          + b * c * cosGamma * cosBeta * B23
-          + a * c * cosBeta * B13;
-      Bcart[1] = b * b * sinGamma * sinGamma * B22
-          + c * c * cA_ * cA_ * B33
+
+      Bcart[0] = a * a * B11 + b * b * cosGamma * cosGamma * B22 + c * c
+          * cosBeta * cosBeta * B33 + a * b * cosGamma * B12 + b * c * cosGamma
+          * cosBeta * B23 + a * c * cosBeta * B13;
+      Bcart[1] = b * b * sinGamma * sinGamma * B22 + c * c * cA_ * cA_ * B33
           + b * c * cA_ * sinGamma * B23;
       Bcart[2] = c * c * cB_ * cB_ * B33;
-      Bcart[3] = 2 * b * b * cosGamma * sinGamma * B22 
-          + 2 * c * c * cA_ * cosBeta * B33 
-          + a * b * sinGamma * B12
-          + b * c * (cA_ * cosGamma + sinGamma * cosBeta) * B23
-          + a * c * cA_ * B13;
-      Bcart[4] = 2 * c * c * cB_ * cosBeta * B33 
-          + b * c * cosGamma * B23
-          + a * c * cB_ * B13;
-      Bcart[5] = 2 * c * c * cA_ * cB_ * B33
-          + b * c * cB_ * sinGamma * B23;
-
+      Bcart[3] = 2 * b * b * cosGamma * sinGamma * B22 + 2 * c * c * cA_
+          * cosBeta * B33 + a * b * sinGamma * B12 + b * c
+          * (cA_ * cosGamma + sinGamma * cosBeta) * B23 + a * c * cA_ * B13;
+      Bcart[4] = 2 * c * c * cB_ * cosBeta * B33 + b * c * cosGamma * B23 + a
+          * c * cB_ * B13;
+      Bcart[5] = 2 * c * c * cA_ * cB_ * B33 + b * c * cB_ * sinGamma * B23;
       Vector3f unitVectors[] = new Vector3f[3];
       for (int i = 0; i < 3; i++)
-        unitVectors[i] = new Vector3f();      
-      float[] lengths = new float[3];
-      Quadric.getAxesForEllipsoid(Bcart, unitVectors, lengths);
+        unitVectors[i] = new Vector3f();
+        Quadric.getAxesForEllipsoid(Bcart, unitVectors, lengths);
 
-      // note -- this is the ellipsoid in INVERSE CARTESIAN SPACE!
-      
-      double factor = Math.sqrt(0.5) / Math.PI;
-      for (int i = 0; i < 3; i++)
-        lengths[i] = (float) (factor / lengths[i]);
-      return new Object[] {unitVectors, lengths};
+        // note -- this is the ellipsoid in INVERSE CARTESIAN SPACE!
+
+        double factor = Math.sqrt(0.5) / Math.PI;
+        for (int i = 0; i < 3; i++)
+          lengths[i] = (float) (factor / lengths[i]);
+        return new Object[] { unitVectors, lengths };
     }
     
   }

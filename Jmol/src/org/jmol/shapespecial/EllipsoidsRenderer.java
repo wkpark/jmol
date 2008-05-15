@@ -187,12 +187,16 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   
   private void render1(Atom atom, int probPercent, Object[] ellipsoid) {
     s0.set(atom.screenX, atom.screenY, atom.screenZ);
-    axes = (Vector3f[]) ellipsoid[0];
     float[] af = (float[]) ellipsoid[1];
     //float factor = Ellipsoids.getRadius((int)(probPercent * probPercent / 100f)) / Ellipsoids.getRadius(50) / 2f;
     float factor = Ellipsoids.getRadius(probPercent);
     for (int i = 3; --i >= 0;)
       lengths[i] = af[i] * factor;
+    axes = (Vector3f[]) ellipsoid[0];
+    if (axes == null) { //isotropic
+      axes = unitVectors;
+      lengths[0] = lengths[2] = lengths[1];
+    }
     setMatrices();
     //[0] is shortest; [2] is longest
     if (drawAxes || drawArcs || drawBall)
@@ -229,6 +233,12 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     perspectiveFactor = viewer.scaleToPerspective(s0.z, 1.0f);
     matScreenToEllipsoid.mul(1f/perspectiveFactor);
   }
+  
+  private final static Vector3f[] unitVectors = {
+    new Vector3f(1, 0, 0),
+    new Vector3f(0, 1, 0),
+    new Vector3f(0, 0, 1),
+  };
   
   private final static Point3f[] unitAxisPoints = {
     new Point3f(-1, 0, 0),

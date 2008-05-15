@@ -615,7 +615,7 @@ public class CifReader extends AtomSetCollectionReader {
             atom.occupancy = (int) (floatOccupancy * 100);
           break;
         case B_ISO:
-          atom.bfactor = parseFloat(field);
+          atom.bfactor = parseFloat(field) * 100f;
           break;
         case COMP_ID:
           atom.group3 = field;
@@ -662,7 +662,7 @@ public class CifReader extends AtomSetCollectionReader {
             if (j != NONE) {
               if (atom.anisoBorU == null)
                 atom.anisoBorU = new float[8];
-              atom.anisoBorU[0] = atom.anisoBorU[1] = atom.anisoBorU[2] = parseFloat(loopData[j]);
+              atom.anisoBorU[7] = parseFloat(loopData[j]);
               atom.anisoBorU[6] = 1; // U not B
             }
           }

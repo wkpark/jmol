@@ -49,7 +49,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private int dotCount;
   private int[] coords;
   private Vector3f[] axes;
-  private final float[] lengths = new float[3];
+  private final float[] factoredLengths = new float[3];
   private int diameter, diameter0;
   private int selectedOctant = -1;
   private Point3i[] selectedPoints = new Point3i[3];
@@ -142,7 +142,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       colix = Shape.getColix(ellipsoids.colixes, i, atom);
       if (!g3d.setColix(colix))
         continue;
-      render1(atom, ellipsoids.mads[i], ellipsoid);
+      render1(atom, ellipsoid);
     }
     
     if (ellipsoids.haveEllipsoids) {
@@ -185,17 +185,14 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   int maxX, dx;
   float perspectiveFactor;
   
-  private void render1(Atom atom, int probPercent, Object[] ellipsoid) {
+  private void render1(Atom atom, Object[] ellipsoid) {
     s0.set(atom.screenX, atom.screenY, atom.screenZ);
-    float[] af = (float[]) ellipsoid[1];
-    //float factor = Ellipsoids.getRadius((int)(probPercent * probPercent / 100f)) / Ellipsoids.getRadius(50) / 2f;
-    float factor = Ellipsoids.getRadius(probPercent);
+    float[] lengths = (float[]) ellipsoid[1];
     for (int i = 3; --i >= 0;)
-      lengths[i] = af[i] * factor;
+      factoredLengths[i] = lengths[i + 3];
     axes = (Vector3f[]) ellipsoid[0];
     if (axes == null) { //isotropic
       axes = unitVectors;
-      lengths[0] = lengths[2] = lengths[1];
     }
     setMatrices();
     //[0] is shortest; [2] is longest
@@ -225,7 +222,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   }
 
   private void setMatrices() {
-    Quadric.setEllipsoidMatrix(axes, lengths, v1, mat);
+    Quadric.setEllipsoidMatrix(axes, factoredLengths, v1, mat);
     // make this screen coordinates to ellisoidal coordinates
     matScreenToEllipsoid.mul(mat, matScreenToCartesian);
     matEllipsoidToScreen.invert(matScreenToEllipsoid);
@@ -253,7 +250,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     for (int i = 0; i < 6; i++) {
       int iAxis = axisPoints[i];
       int i012 = Math.abs(iAxis) - 1;
-      points[i].scaleAdd(f * lengths[i012] * (iAxis < 0 ? -1 : 1), axes[i012], center);
+      points[i].scaleAdd(f * factoredLengths[i012] * (iAxis < 0 ? -1 : 1), axes[i012], center);
       pt1.set(unitAxisPoints[i]);
       pt1.scale(f);
       
@@ -262,7 +259,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
           (int)(s0.y + pt1.y * perspectiveFactor), 
           (int)(pt1.z + s0.z));
     }
-    dx = 2 + viewer.scaleToScreen(s0.z, (int)(f * lengths[2] * 1000));
+    dx = 2 + viewer.scaleToScreen(s0.z, (int)(f * factoredLengths[2] * 1000));
   }
 
   private void renderAxes() {
@@ -308,9 +305,9 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       if (Float.isNaN(fz))
         continue;
       fz = (float) (Math.random() > 0.5 ? -1 : 1) * fz;
-      pt1.scaleAdd(fx * lengths[0], axes[0], ptAtom);
-      pt1.scaleAdd(fy * lengths[1], axes[1], pt1);
-      pt1.scaleAdd(fz * lengths[2], axes[2], pt1);
+      pt1.scaleAdd(fx * factoredLengths[0], axes[0], ptAtom);
+      pt1.scaleAdd(fy * factoredLengths[1], axes[1], pt1);
+      pt1.scaleAdd(fz * factoredLengths[2], axes[2], pt1);
       viewer.transformPoint(pt1, s1);
       coords[i++] = s1.x;
       coords[i++] = s1.y;
@@ -372,7 +369,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private void renderEllipsoid(Ellipsoid ellipsoid) {
     axes = ellipsoid.axes;
     for (int i = 0; i < 3; i++)
-      lengths[i] = ellipsoid.lengths[i];
+      factoredLengths[i] = ellipsoid.lengths[i];
     viewer.transformPoint(ellipsoid.center, s0);
     setMatrices();
     setAxes(ellipsoid.center, 1);

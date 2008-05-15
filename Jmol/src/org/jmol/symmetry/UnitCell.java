@@ -217,7 +217,7 @@ public class UnitCell {
       // there is a factor of 2 in the cross terms. 
       // THIS FACTOR IS NECESSARY for agreement with Mercury.
       // 
-      float[] lengths = new float[3];
+      float[] lengths = new float[6]; // last three are for factored lengths
       if (parBorU[0] == 0) { // this is iso
         lengths[1] = (float) Math.sqrt(parBorU[7]);
         return new Object[] { null, lengths };

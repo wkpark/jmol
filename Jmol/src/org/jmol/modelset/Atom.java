@@ -269,7 +269,7 @@ final public class Atom extends Point3fi {
     Object[] ellipsoid = getEllipsoid();
     if (ellipsoid == null)
       return 0;
-    return 4.1f*((float[])ellipsoid[1])[isMax ? 2 : 0];
+    return ((float[])ellipsoid[1])[isMax ? 5 : 3];
   }
 
   public int getRasMolRadius() {

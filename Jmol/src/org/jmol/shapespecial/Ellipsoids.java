@@ -84,11 +84,13 @@ public class Ellipsoids extends AtomShape {
         Object[] ellipsoid = atoms[i].getEllipsoid();
         if (ellipsoid == null)
           continue;
-        float[] lengths = (float[]) ellipsoid[1];
-        for (int j = 3; --j >= 0;)
-          lengths[j + 3] = lengths[j] * factor;
-        if (ellipsoid[0] == null)
-          lengths[3] = lengths[5] = lengths[4];
+        if (size > 0) {
+          float[] lengths = (float[]) ellipsoid[1];
+          for (int j = 3; --j >= 0;)
+            lengths[j + 3] = lengths[j] * factor;
+          if (ellipsoid[0] == null)
+            lengths[3] = lengths[5] = lengths[4];
+        }
         if (mads == null)
           mads = new short[atomCount];
         Atom atom = atoms[i];

@@ -209,11 +209,13 @@ public final class Model {
       bioPolymers[i].calcSelectedMonomersCount(bsSelected);
   }
 
-  void selectSeqcodeRange(int seqcodeA, int seqcodeB, char chainID, BitSet bs) {
-    for (int i = chainCount; --i >= 0; )
-      if (chainID == '\t' || chainID == chains[i].chainID)
-        for (int index = 0; index >= 0; )
-          index = chains[i].selectSeqcodeRange(index, seqcodeA, seqcodeB, bs);      
+  void selectSeqcodeRange(int seqcodeA, int seqcodeB, char chainID, BitSet bs,
+                          boolean caseSensitive) {
+    for (int i = chainCount; --i >= 0;)
+      if (chainID == '\t' || chainID == chains[i].chainID || !caseSensitive
+          && chainID == Character.toUpperCase(chains[i].chainID))
+        for (int index = 0; index >= 0;)
+          index = chains[i].selectSeqcodeRange(index, seqcodeA, seqcodeB, bs);
   }
 
   int getGroupCount() {

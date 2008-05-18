@@ -1751,8 +1751,11 @@ abstract public class ModelCollection extends BondCollection {
 
   private BitSet getSpecSeqcodeRange(int seqcodeA, int seqcodeB, char chainID) {
     BitSet bs = new BitSet();
+    boolean caseSensitive = viewer.getChainCaseSensitive();
+    if (!caseSensitive)
+      chainID = Character.toUpperCase(chainID);
     for (int i = modelCount; --i >= 0;)
-      models[i].selectSeqcodeRange(seqcodeA, seqcodeB, chainID, bs);
+      models[i].selectSeqcodeRange(seqcodeA, seqcodeB, chainID, bs, caseSensitive);
     return bs;
   }
 

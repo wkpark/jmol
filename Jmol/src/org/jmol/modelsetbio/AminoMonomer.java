@@ -174,7 +174,7 @@ public class AminoMonomer extends AlphaMonomer {
       closest[0] = alpha;
   }
   
-  Quaternion getQuaternion() {
+  Quaternion getQuaternion(char qType) {
     /*
      * also NucleicMonomer
      *  
@@ -212,33 +212,57 @@ public class AminoMonomer extends AlphaMonomer {
      *   http://cnx.org/content/m11621/latest
      *   
      */
-      
-    Point3f ptC = getCarbonylCarbonAtomPoint(); 
+
+    Point3f ptC = getCarbonylCarbonAtomPoint();
     Point3f ptCa = getLeadAtomPoint();
-    
+    Point3f ptN;
+    Vector3f vA, vB;
+    Monomer[] monomers;
+    AminoMonomer m;
     
     //vA = ptC - ptCa
-    Vector3f vA = new Vector3f(ptC);
+    vA = new Vector3f(ptC);
     vA.sub(ptCa);
-    
-    //vB = ptN - ptCa
-    Point3f ptN = getNitrogenAtomPoint();
-    Vector3f vB = new Vector3f(ptN);
-    vB.sub(ptCa);
-    
-    /* alternative frame:
-     
-    Point3f ptO = getCarbonylOxygenAtomPoint(); 
-    //vA = ptO - ptC
-    Vector3f vA = new Vector3f(ptO);
-    vA.sub(ptC);
-    
-    //vB = ptCa - ptC
-    Vector3f vB = new Vector3f(ptCa);
-    vB.sub(ptC);
-  
-   */
-    return Quaternion.getQuaternionFrame(vA, vB);   
+
+    switch (qType) {
+    default:
+    case 'c':
+      //vB = ptN - ptCa
+      ptN = getNitrogenAtomPoint();
+      vB = new Vector3f(ptN);
+      vB.sub(ptCa);
+      break;
+    case 'p':
+      //Bob's idea for a peptide plane frame
+      //vB = ptN' - ptC
+      monomers = (Monomer[]) bioPolymer.getMonomers();
+      if (monomerIndex == monomers.length - 1)
+        return null;
+      m = (AminoMonomer) monomers[monomerIndex + 1];
+      ptN = m.getNitrogenAtomPoint();
+      vB = new Vector3f(ptN);
+      vB.sub(ptC);
+      ptCa = getLeadAtomPoint();
+      System.out.println("draw monomer"+monomerIndex +"vB VECTOR {" + ptCa.x + "," + ptCa.y + "," + ptCa.z + "} {" + vB.x + "," + vB.y + "," + vB.z + "}");
+      break;
+    case 'q':
+      /* alternative frame from J.R.Quine, J. Mol. Struc. (Theochem) 460 (1999) 53-66
+       * does not work, because Ca-->C and N'-->Ca' are almost colinear
+       */
+      //vB = ptCa' - ptN'
+      monomers = (Monomer[]) bioPolymer.getMonomers();
+      if (monomerIndex == monomers.length - 1)
+        return null;
+      m = (AminoMonomer) monomers[monomerIndex + 1];
+      ptN = m.getNitrogenAtomPoint();
+      ptCa = m.getLeadAtomPoint();
+      vB = new Vector3f(ptCa);
+      vB.sub(ptN);
+      ptCa = getLeadAtomPoint();
+      System.out.println("draw monomer"+monomerIndex +"vB VECTOR {" + ptCa.x + "," + ptCa.y + "," + ptCa.z + "} {" + vB.x + "," + vB.y + "," + vB.z + "}");
+      break;
+    }
+    return Quaternion.getQuaternionFrame(vA, vB);
   }
   
 }

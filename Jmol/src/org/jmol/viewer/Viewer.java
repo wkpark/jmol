@@ -4029,6 +4029,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //Eval
     boolean notFound = false;
     while (true) {
+      
+      ///11.5.39//
+      if (key.equalsIgnoreCase("quaternionFrame")) {
+        setQuaternionFrame(value);
+        break;
+      }
+      
       ///11.5.11//
       if (key.equalsIgnoreCase("defaultVDW")) {
         setDefaultVdw(value);
@@ -6561,12 +6568,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     fileManager.addLoadScript("zap " + Escape.escape(bs));
     setCurrentModelIndex(0, false);
     repaintManager.setAnimationOn(false);
-    setAnimationRange(0, 0);
     BitSet bsDeleted = modelSet.deleteAtoms(bs, true);
+    setAnimationRange(0, 0);
     eval.deleteAtomsInVariables(bsDeleted);
     repaintManager.clear();
     repaintManager.initializePointers(1);
-    setCurrentModelIndex(-1, true);
+    if (getModelCount() > 1)
+      setCurrentModelIndex(-1, true);
     hoverAtomIndex = -1;
     setStatusFileLoaded(0, null, null, null, null);
     refreshMeasures();
@@ -6575,6 +6583,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   
   public BitSet getDeletedAtoms() {
     return selectionManager.bsDeleted;
+  }
+
+  public char getQuaternionFrame() {
+    return global.quaternionFrame.charAt(0);
+  }
+  
+  void setQuaternionFrame(String qType) {
+    global.quaternionFrame = "" + (qType.toLowerCase()+"c").charAt(0);
   }
 
 }

@@ -608,11 +608,11 @@ abstract public class ModelSet extends ModelCollection {
     int j;
     for (int i = 0; i < modelCount; i++) {
       if (bsModels.get(i)) {
-        if (isJmolDataFrame(i) && !bsModels.get(j = models[i].dataSourceFrame)) {
-          bsModels.set(j);
-          includeAllRelatedFrames(bsModels);
-          return;
-        }
+       // if (isJmolDataFrame(i) && !bsModels.get(j = models[i].dataSourceFrame)) {
+         // bsModels.set(j);
+        //  includeAllRelatedFrames(bsModels);
+          //return;
+       // }
         if (isTrajectory(i) && !bsModels.get(j = models[i].trajectoryBaseIndex)) {
           bsModels.set(j);
           includeAllRelatedFrames(bsModels);
@@ -638,6 +638,13 @@ abstract public class ModelSet extends ModelCollection {
     int nModelsDeleted = BitSetUtil.cardinalityOf(bsModels);
     if (nModelsDeleted == 0)
       return null;
+
+    // clear references to this frame if it is a dataFrame
+    
+    for (int i = 0; i < modelCount; i++)
+      if (bsModels.get(i))
+        clearDataFrameReference(i);
+
     BitSet bsDeleted;
     if (nModelsDeleted == modelCount) {
       bsDeleted = getModelAtomBitSet(-1, true);

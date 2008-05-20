@@ -59,7 +59,7 @@ class GuiMap {
       labels.put("exit", GT._("E&xit"));
       labels.put("recentFiles", GT._("Recent Files..."));
       labels.put("edit", GT._("&Edit"));
-      labels.put("makecrystal", GT._("Make crystal..."));
+      //labels.put("makecrystal", GT. _("Make crystal..."));
       labels.put("selectall", GT._("Select All"));
       labels.put("deselectall", GT._("Deselect All"));
       labels.put("copyImage", GT._("Copy Image"));

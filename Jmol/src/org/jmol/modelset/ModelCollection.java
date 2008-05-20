@@ -995,6 +995,19 @@ abstract public class ModelCollection extends BondCollection {
     return (index == null ? -1 : index.intValue());
   }
 
+  protected void clearDataFrameReference(int modelIndex) {
+    for (int i = 0; i < modelCount; i++) { 
+      Hashtable df = models[i].dataFrames;
+      if (df == null)
+        continue;
+      Object key;
+      Enumeration e = df.keys();
+      while (e.hasMoreElements())
+        if (((Integer)(df.get(key = e.nextElement()))).intValue() == modelIndex)
+          df.remove(key);
+    }  
+  }
+  
   public String getJmolFrameType(int modelIndex) {
     return (modelIndex >= 0 && modelIndex < modelCount ? 
         models[modelIndex].jmolFrameType : "modelSet");

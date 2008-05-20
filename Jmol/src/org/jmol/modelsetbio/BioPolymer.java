@@ -578,6 +578,7 @@ public abstract class BioPolymer extends Polymer {
     boolean isRamachandran = (ctype == 'r');
     if (isRamachandran && !p.calcPhiPsiAngles())
       return;    
+    char qType = (isRamachandran ? 'c' : p.model.getModelSet().viewer.getQuaternionFrame()); 
     for (int m = 0; m < p.monomerCount; m++) {
       Monomer monomer = p.monomers[m];
       if (bsAtoms.get(monomer.getLeadAtomIndex())) {
@@ -593,7 +594,7 @@ public abstract class BioPolymer extends Polymer {
             continue;
           w = a.getPartialCharge();
         } else {
-          Quaternion q = monomer.getQuaternion();
+          Quaternion q = monomer.getQuaternion(qType);
           if (q == null) {
             qlast = null;
             atomno = Integer.MIN_VALUE;

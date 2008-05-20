@@ -600,6 +600,7 @@ public class StateManager {
     boolean measurementLabels         = true;
     int     pickingSpinRate           = 10;
     String  propertyColorScheme       = "roygb";
+    String  quaternionFrame           = "c";
     float   solventProbeRadius        = 1.2f;
     int     scriptDelay               = 0;
     boolean statusReporting           = true;
@@ -1128,6 +1129,7 @@ public class StateManager {
       setParameterValue("propertyColorScheme",propertyColorScheme);
       setParameterValue("propertyDataField",0);
       setParameterValue("propertyAtomNumberField",0);
+      setParameterValue("quaternionFrame",quaternionFrame);
       setParameterValue("rangeSelected",rangeSelected);
       setParameterValue("refreshing",true);
       setParameterValue("ribbonAspectRatio",ribbonAspectRatio);

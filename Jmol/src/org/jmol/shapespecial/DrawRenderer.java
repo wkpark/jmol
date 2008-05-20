@@ -86,9 +86,9 @@ public class DrawRenderer extends MeshRenderer {
         width = 1.0f;
       if (width > 0)
         diameter = viewer.scaleToScreen(pt1i.z, (int) (width * 1000));
-      if (diameter > 0)
+      if (diameter > 0 && (mesh.drawTriangles || mesh.fillTriangles))
         g3d.drawCircleCentered(colix, diameter, pt1i.x, pt1i.y, pt1i.z, 
-            drawType == JmolConstants.DRAW_CIRCULARPLANE);
+            mesh.fillTriangles);
       break;
     case JmolConstants.DRAW_CURVE:
       //unnecessary
@@ -196,10 +196,15 @@ public class DrawRenderer extends MeshRenderer {
         //just the first line of the title -- nothing fancy here.
         byte fid = g3d.getFontFid(14 * imageFontScaling);
         g3d.setFont(fid);
-        viewer.transformPoint(vertices[dmesh.polygonIndexes[i][0]], pt1i);
+        String s = mesh.title[i < mesh.title.length ? i : mesh.title.length - 1];
+        int pt = 0;
+        if (s.length() > 1 && s.charAt(0) == '>') {
+          pt = dmesh.polygonIndexes[i].length - 1;
+          s = s.substring(1);
+        }
+        viewer.transformPoint(vertices[dmesh.polygonIndexes[i][pt]], pt1i);
         int offset = (int) (5 * imageFontScaling);
-        g3d.drawString(mesh.title[i < mesh.title.length ? i
-            : mesh.title.length - 1], null, pt1i.x + offset, pt1i.y - offset,
+        g3d.drawString(s, null, pt1i.x + offset, pt1i.y - offset,
             pt1i.z, pt1i.z);
         break;
       }

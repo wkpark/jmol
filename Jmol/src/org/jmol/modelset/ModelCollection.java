@@ -398,8 +398,8 @@ abstract public class ModelCollection extends BondCollection {
     if (addFrameNumber) {
       int iModel = viewer.getCurrentModelIndex();
       if (thisStateModel != iModel)
-        script1 = "  frame "
-            + (iModel < 0 ? "" + iModel : getModelNumberDotted(iModel)) + ";\n"
+        script1 = "frame "
+            + (iModel < 0 ? "" + iModel : getModelNumberDotted(iModel)) + ";\n  "
             + script1;
       thisStateModel = iModel;
     } else {

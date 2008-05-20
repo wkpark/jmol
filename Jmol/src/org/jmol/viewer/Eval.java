@@ -4405,6 +4405,7 @@ class Eval { //implements Runnable {
       //  viewer.display(BitSetUtil.setAll(viewer.getAtomCount()), bs2, tQuiet);
       return;
     }
+    viewer.addStateScript(type, true);
     String[] savedFileInfo = viewer.getFileInfo();
     boolean oldAppendNew = viewer.getAppendNew();
     viewer.setAppendNew(true);
@@ -4436,7 +4437,6 @@ class Eval { //implements Runnable {
       break;
     }
     viewer.loadShape(JmolConstants.SHAPE_ECHO);
-    viewer.addStateScript(type, true);
     showString("frame " + viewer.getModelNumberDotted(modelCount - 1) + " created: "
         + type);
   }

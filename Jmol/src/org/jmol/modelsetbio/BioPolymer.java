@@ -29,6 +29,7 @@ import org.jmol.modelset.Model;
 import org.jmol.modelset.Polymer;
 import org.jmol.util.BitSetUtil;
 //import org.jmol.util.Escape;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
@@ -613,20 +614,24 @@ public abstract class BioPolymer extends Polymer {
           if (qlast != null && q.dot(qlast) < 0)
             q = q.mul(-1);
           qlast = q;
-/*
-          System.out.println("Draw c" + a.getAtomNumber() + "x vector " + Escape.escape(a) 
-              + Escape.escape(q.getVector(0))+ " color white");
-          System.out.println("Draw c" + a.getAtomNumber() + "y vector " + Escape.escape(a) 
-              + Escape.escape(q.getVector(1)) + " color yellow");
-          System.out.println("Draw c" + a.getAtomNumber() + "z vector " + Escape.escape(a) 
-              + Escape.escape(q.getVector(2)) +  " color orange");
-*/
           switch (ctype) {
           case 'w':
             x = q.q1;
             y = q.q2;
             z = q.q3;
             w = q.q0;
+            if (Logger.debugging) {
+              String id = "draw q" + a.getAtomIndex();
+              String strV = " VECTOR " + Escape.escape((Point3f)a) + " ";
+              int deg = (int) (Math.acos(w) * 360 / Math.PI);
+              if (deg > 180)
+                deg -= 360;
+              Logger.info(id + "x" + strV + Escape.escape(q.getVector(0)) + " color red"
+                  + "\n" + id + "y" + strV + Escape.escape(q.getVector(1)) + " color green"
+                  + "\n" + id + "z" + strV + Escape.escape(q.getVector(2)) + " color blue"
+                  + "\n" + id + "q" + strV + " {" + (x*5) + "," + (y*5) + "," + (z*5) 
+                  + "} \">" + deg + "\" color yellow");
+            }
             break;
           case 'x':
             x = q.q0;
@@ -648,18 +653,6 @@ public abstract class BioPolymer extends Polymer {
             break;
           }
         }
-/*
-        System.out.println("Draw v" + a.getAtomNumber() + "x vector " + Escape.escape(a) 
-            + "{ "+(10*x)+" 0 0} color red");
-        System.out.println("Draw v" + a.getAtomNumber() + "y vector " + Escape.escape(a) 
-            + "{ 0 "+(10*y)+" 0} color green");
-        System.out.println("Draw v" + a.getAtomNumber() + "z vector " + Escape.escape(a) 
-            + "{ 0 0 "+(10*z)+"} color blue");
-*/
-        
-        
-//        pdbATOM.append(a.formatLabel("ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
-//        pdbATOM.append(TextFormat.formatString("                %2x    \n", "x", a.getElementSymbol().toUpperCase()));
         pdbATOM.append(a.formatLabel("ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
         pdbATOM.append(TextFormat.sprintf("%8.3f%8.3f%8.3f%6.2f                %2s    \n", 
             new String[] { a.getElementSymbol().toUpperCase() }, 

@@ -66,20 +66,9 @@ public class Draw extends MeshCollection {
     myType = "draw";
   }
   
-  private final static int MAX_POINTS = 256; // a few extras here
-  private Point3f[] ptList = new Point3f[MAX_POINTS];
-  private int[] ptIdentifiers = new int[MAX_POINTS];
-  private boolean[] reversePoints = new boolean[MAX_POINTS];
-  private boolean[] useVertices = new boolean[MAX_POINTS];
-  private BitSet[] ptBitSets = new BitSet[MAX_POINTS];
-  private String[][] modelBasedPoints;
-  private BitSet bsAllModels;
+  private Point3f[] ptList;
   private Vector3f offset = new Vector3f();
   private int nPoints;
-  private int nbitsets;
-  private int nModelBased;
-  private int ncoord;
-  private int nidentifiers;
   private int diameter;
   private float width;
   private float newScale;
@@ -98,7 +87,18 @@ public class Draw extends MeshCollection {
   private boolean isCrossed;
   private boolean isValid;
   private int indicatedModelIndex = -1;
-  private Point3f[][] modelVertices;
+  private int[] modelInfo;
+  private boolean makePoints;
+  private int nidentifiers;
+  private int nbitsets;
+  private BitSet bsAllModels;
+  
+  private Vector vData;
+  private final static int PT_COORD = 1;
+  private final static int PT_IDENTIFIER = 2;
+  private final static int PT_BITSET = 3;
+  private final static int PT_MODEL_INDEX = 4;
+  private final static int PT_MODEL_BASED_POINTS = 5;
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
     if (Logger.debugging) {
@@ -107,9 +107,7 @@ public class Draw extends MeshCollection {
 
     if ("init" == propertyName) {
       colix = Graphics3D.ORANGE;
-      nPoints = -1;
       newScale = 0;
-      ncoord = nbitsets = nidentifiers = 0;
       isFixed = isReversed = isRotated45 = isCrossed = false;
       isCurve = isArrow = isPlane = isCircle = isCylinder = false;
       isVertices = isPerpendicular = isVector = false;
@@ -117,11 +115,12 @@ public class Draw extends MeshCollection {
       length = Float.MAX_VALUE;
       diameter = 0;
       width = 0;
-      modelVertices = null;
-      modelBasedPoints = null;
-      bsAllModels = null;
       indicatedModelIndex = -1;
       offset = null;
+      nidentifiers = nbitsets = 0;
+      vData = new Vector();
+      modelCount = viewer.getModelCount();
+      bsAllModels = null;
       setPropertySuper("thisID", JmolConstants.PREVIOUS_MESH_ID, null);
       //fall through to MeshCollection "init"
     }
@@ -135,19 +134,15 @@ public class Draw extends MeshCollection {
       isFixed = ((Boolean) value).booleanValue();
       return;
     }
-    
+
     if ("modelIndex" == propertyName) {
+      //from saved state -- used to set modelVertices
       indicatedModelIndex = ((Integer) value).intValue();
-      if (indicatedModelIndex < 0 || indicatedModelIndex > modelCount)
+      if (indicatedModelIndex < 0 || indicatedModelIndex >= modelCount)
         return;
-      if (ncoord > 0) {
-        ptList = new Point3f[5];
-      } else {
-        modelVertices = new Point3f[modelCount][];
-      }      
-      modelVertices[indicatedModelIndex] = ptList;
-      ncoord = 0;
-      return;      
+      vData.add(new Object[] { new Integer(PT_MODEL_INDEX),
+          (modelInfo = new int[] { indicatedModelIndex, 0 }) });
+      return;
     }
 
     if ("perp" == propertyName) {
@@ -179,7 +174,7 @@ public class Draw extends MeshCollection {
       isCircle = true;
       return;
     }
-    
+
     if ("vector" == propertyName) {
       isArrow = true;
       isVector = true;
@@ -207,7 +202,6 @@ public class Draw extends MeshCollection {
     }
 
     if ("points" == propertyName) {
-      nPoints = 0;
       newScale = ((Integer) value).floatValue() / 100;
       if (newScale == 0)
         newScale = 1;
@@ -240,12 +234,10 @@ public class Draw extends MeshCollection {
       String thisID = (String) value;
       int meshIndex = getIndexFromName(thisID);
       if (meshIndex >= 0) {
-        reversePoints[nidentifiers] = isReversed;
-        useVertices[nidentifiers] = isVertices;
-        ptIdentifiers[nidentifiers] = meshIndex;
-        nidentifiers++;
-        nPoints++;
+        vData.add(new Object[] { new Integer(PT_IDENTIFIER),
+            new int[] { meshIndex, isReversed ? 1 : 0, isVertices ? 1 : 0 } });
         isReversed = isVertices = false;
+        nidentifiers++;
       } else {
         Logger.error("draw identifier " + value + " not found");
         isValid = false;
@@ -254,10 +246,9 @@ public class Draw extends MeshCollection {
     }
 
     if ("coord" == propertyName) {
-      if (ncoord == MAX_POINTS)
-        return;
-      ptList[ncoord++] = new Point3f((Point3f) value);
-      nPoints++;
+      vData.add(new Object[] { new Integer(PT_COORD), value });
+      if (indicatedModelIndex >= 0)
+        modelInfo[1]++; // counts vertices
       return;
     }
 
@@ -272,19 +263,14 @@ public class Draw extends MeshCollection {
       if (BitSetUtil.cardinalityOf((BitSet) value) == 0)
         return;
       bs = (BitSet) value;
-      ptBitSets[nbitsets++] = bs;
-      nPoints++;
+      vData.add(new Object[] { new Integer(PT_BITSET), bs });
+      nbitsets++;
       if (isCircle && diameter == 0 && width == 0)
         width = viewer.calcRotationRadius(bs) * 2.0f;
       return;
     }
     if ("modelBasedPoints" == propertyName) {
-      if (modelBasedPoints == null) {
-        modelBasedPoints = new String[MAX_POINTS][];
-        nModelBased = 0;
-      }
-      modelBasedPoints[nModelBased++] = (String[]) value;
-      nPoints++;
+      vData.add(new Object[] { new Integer(PT_MODEL_BASED_POINTS), value });
       return;
     }
     if ("set" == propertyName) {
@@ -301,9 +287,10 @@ public class Draw extends MeshCollection {
         thisMesh.initialize(JmolConstants.FULLYLIT);
         setAxes(thisMesh);
         thisMesh.title = title;
-        thisMesh.visible = isVisible; 
+        thisMesh.visible = isVisible;
       }
       nPoints = -1; // for later scaling
+      vData = null;
       return;
     }
     if ("off" == propertyName) {
@@ -314,31 +301,28 @@ public class Draw extends MeshCollection {
     if ("translucency" == propertyName) {
       //let pass through
     }
-    
+
     if (propertyName == "deleteModelAtoms") {
-      int modelIndex = ((int[])((Object[])value)[2])[0];
+      int modelIndex = ((int[]) ((Object[]) value)[2])[0];
       //int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
       //int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
-      BitSet bsModels = new BitSet();
-      bsModels.set(modelIndex);
-      BitSetUtil.deleteBits(bsAllModels, bsModels);
       for (int i = meshCount; --i >= 0;) {
         if (meshes[i] == null)
           continue;
-        if (bsAllModels != null) {
-           dmeshes[i].deleteAtoms(modelIndex);
-         } else if (meshes[i].modelIndex == modelIndex) {
-           meshCount--;
-            if (meshes[i] == currentMesh) 
-              currentMesh = thisMesh = null;
-            meshes = dmeshes = (DrawMesh[]) ArrayUtil.deleteElements(meshes, i, 1);
-          } else if (meshes[i].modelIndex > modelIndex) {
-            meshes[i].modelIndex--;
-          }
+        if (dmeshes[i].modelFlags != null) {
+          dmeshes[i].deleteAtoms(modelIndex);
+        } else if (meshes[i].modelIndex == modelIndex) {
+          meshCount--;
+          if (meshes[i] == currentMesh)
+            currentMesh = thisMesh = null;
+          meshes = dmeshes = (DrawMesh[]) ArrayUtil
+              .deleteElements(meshes, i, 1);
+        } else if (meshes[i].modelIndex > modelIndex) {
+          meshes[i].modelIndex--;
+        }
       }
       return;
     }
-
 
     setPropertySuper(propertyName, value, bs);
   }
@@ -360,14 +344,21 @@ public class Draw extends MeshCollection {
   private Point3f getSpinCenter(String axisID, int modelIndex) {
     int pt = axisID.indexOf(".");
     String id = (pt > 0 ? axisID.substring(0, pt) : axisID);
-    int meshIndex = getIndexFromName(id);
     int vertexIndex = (pt > 0 ? Integer.parseInt(axisID.substring(pt + 1)) : 0) - 1;
-    return (meshIndex < 0 ? null : getSpinCenter(meshIndex, vertexIndex, modelIndex));
-   }
+    int meshIndex = getIndexFromName(id);
+    DrawMesh m;
+    return (meshIndex < 0 || (m = dmeshes[meshIndex]).vertices == null
+        || m.vertexCount <= vertexIndex ? null 
+        : vertexIndex >= 0 ? m.vertices[vertexIndex] 
+        : m.ptCenters == null || modelIndex < 0 ? m.ptCenter 
+        : m.ptCenters[modelIndex]);
+  }
    
   private Vector3f getSpinAxis(String axisID, int modelIndex) {
     int meshIndex = getIndexFromName(axisID);
-    return (meshIndex < 0 ? null : getSpinAxis(meshIndex, modelIndex));
+    DrawMesh m;
+    return (meshIndex < 0 || (m = dmeshes[meshIndex]).vertices == null ? null :
+      m.ptCenters == null || modelIndex < 0 ? m.axis : m.axes[modelIndex]);
    }
   
   private Object getPath(Mesh mesh) {
@@ -380,11 +371,11 @@ public class Draw extends MeshCollection {
     if (thisMesh == null)
       allocMesh(null);
     thisMesh.clear("draw");
-    if (nPoints == 0)
+    int nData = vData.size();
+    if (nData == 0)
       return false;
-    int nPoly = 0;
-    if (modelVertices == null
-        && (isFixed || isArrow || isCurve || modelCount == 1)) {
+    if (indicatedModelIndex < 0
+        && (isFixed || isArrow || isCurve || isCircle || isCylinder || modelCount == 1)) {
       // make just ONE copy 
       // arrows and curves simply can't be handled as
       // multiple frames yet
@@ -399,21 +390,11 @@ public class Draw extends MeshCollection {
       thisMesh.modelFlags = null;
       thisMesh.drawTypes = null;
       thisMesh.drawVertexCounts = null;
-//      if (rgb != null)
-  //      super.setProperty("color", rgb, null);
-      addModelPoints(-1);
-      nPoly = setPolygons(nPoly);
+      if (setPoints(-1, -1))
+        setPoints(-1, nPoints);
+      setPolygon(0); 
     } else {
       // multiple copies, one for each model involved
-      if (nidentifiers > 0) {
-        bsAllModels = new BitSet();
-        for (int i = 0; i < nidentifiers; i++)
-          for (int j = dmeshes[ptIdentifiers[i]].polygonCount; --j >= 0;)
-            if (dmeshes[ptIdentifiers[i]].polygonIndexes[j] != null)
-              bsAllModels.set(j);
-      }
-      if (bsAllModels == null && nbitsets == 0 && modelBasedPoints == null)
-        bsAllModels = viewer.getVisibleFramesBitSet();
       thisMesh.modelIndex = -1;
       thisMesh.setPolygonCount(modelCount);
       thisMesh.ptCenters = new Point3f[modelCount];
@@ -422,29 +403,15 @@ public class Draw extends MeshCollection {
       thisMesh.drawVertexCounts = new int[modelCount];
       thisMesh.vertexCount = 0;
       if (indicatedModelIndex >= 0) {
-        int nVertices = Math.max(ncoord, 3);
-        for (int i = 0; i < modelCount; i++) {
-          int n0 = thisMesh.vertexCount;
-          Point3f[] pts = modelVertices[i];
-          if (pts != null) {
-            int[] p = thisMesh.polygonIndexes[i] = new int[nVertices];
-            for (int j = 0; j < ncoord; j++) {
-              p[j] = thisMesh.addVertexCopy(pts[j]);
-            }
-            for (int j = ncoord; j < 3; j++) {
-              p[j] = n0 + ncoord - 1;
-            }
-            thisMesh.drawTypes[i] = thisMesh.drawVertexCounts[i] = ncoord;
-          }
-        }
+        setPoints(-1, 0);
         thisMesh.drawType = JmolConstants.DRAW_MULTIPLE;
         thisMesh.drawVertexCount = -1;
-        modelVertices = null;
+        indicatedModelIndex = -1;
       } else {
         for (int iModel = 0; iModel < modelCount; iModel++) {
-
-          if (addModelPoints(iModel)) {
-            setPolygons(nPoly);
+          if (setPoints(iModel, -1)) {
+            setPoints(iModel, nPoints);
+            setPolygon(iModel); 
             thisMesh.setCenter(iModel);
             thisMesh.drawTypes[iModel] = thisMesh.drawType;
             thisMesh.drawVertexCounts[iModel] = thisMesh.drawVertexCount;
@@ -454,7 +421,6 @@ public class Draw extends MeshCollection {
             thisMesh.drawTypes[iModel] = JmolConstants.DRAW_NONE;
             thisMesh.polygonIndexes[iModel] = new int[0];
           }
-          nPoly++;
         }
       }
     }
@@ -469,133 +435,156 @@ public class Draw extends MeshCollection {
     return true;
   }
 
-  private void addPoint(Point3f newPt) {
-    ptList[nPoints] = new Point3f(newPt);
-    if (++nPoints > MAX_POINTS)
-      nPoints = MAX_POINTS;
+  private void addPoint(Point3f newPt, int iModel) {
+    boolean isOK = (iModel < 0 || bsAllModels.get(iModel));
+    if (makePoints) {
+      if (!isOK)
+        return;
+      ptList[nPoints] = new Point3f(newPt);
+    } else if (iModel >= 0) {
+      bsAllModels.set(iModel);
+    }
+    nPoints++;
   }
 
-  private boolean addModelPoints(int iModel) {
-    nPoints = ncoord;
+  private boolean setPoints(int iModel, int n) {
     // {x,y,z} points are already defined in ptList
     // $drawID references may be fixed or not
-    // Note that points are created in the order:
+    // Prior to 11.5.37, points were created in the order:
     //  1) all {x,y,z} points
     //  2) all $drawID points
     //  3) all {atomExpression} points
     //  4) all {atomExpression}.split() points
     // Order is only important when there are four points, 
     // where they may become crossed, so
-    // we also provide a flag CROSSED to uncross them 
-    if (nidentifiers > 0 && (iModel < 0 || bsAllModels.get(iModel)))
-      for (int i = 0; i < nidentifiers; i++) {
-        DrawMesh m = dmeshes[ptIdentifiers[i]];
-        if (isPlane && !isCircle || isPerpendicular || useVertices[i]) {
-          if (reversePoints[i]) {
+    // we also provide a flag CROSSED to uncross them
+    this.makePoints = (n >= 0);
+    if (makePoints) {
+      ptList = new Point3f[n];
+      if (bsAllModels == null)
+        bsAllModels = viewer.getVisibleFramesBitSet();
+    }
+    nPoints = 0;
+    int nData = vData.size();
+    int modelIndex = 0;
+    BitSet bs;
+    BitSet bsModel = (iModel < 0 ? null : viewer.getModelAtomBitSet(iModel,
+        false));
+    for (int i = 0; i < nData; i++) {
+      Object[] info = (Object[]) vData.elementAt(i);
+      switch (((Integer) info[0]).intValue()) {
+      case PT_MODEL_INDEX:
+        // from the saved state
+        int[] modelInfo = (int[]) info[1];
+        modelIndex = modelInfo[0];
+        nPoints = modelInfo[1];
+        int nVertices = Math.max(nPoints, 3);
+        int n0 = thisMesh.vertexCount;
+        if (nPoints > 0) {
+          int[] p = thisMesh.polygonIndexes[modelIndex] = new int[nVertices];
+          for (int j = 0; j < nPoints; j++) {
+            info = (Object[]) vData.elementAt(++i);
+            p[j] = thisMesh.addVertexCopy((Point3f) info[1]);
+          }
+          for (int j = nPoints; j < 3; j++) {
+            p[j] = n0 + nPoints - 1;
+          }
+          thisMesh.drawTypes[modelIndex] = thisMesh.drawVertexCounts[modelIndex] = nPoints;
+        }
+        break;
+      case PT_COORD:
+        addPoint((Point3f) info[1], (makePoints ? iModel : -1));
+        break;
+      case PT_BITSET:
+        // (atom set) references must be filtered for relevant model
+        // note that if a model doesn't have a relevant point, one may
+        // get a line instead of a plane, a point instead of a line, etc.
+        bs = BitSetUtil.copy((BitSet) info[1]);
+        if (bsModel != null)
+          bs.and(bsModel);
+        if (BitSetUtil.firstSetBit(bs) >= 0)
+          addPoint(viewer.getAtomSetCenter(bs), (makePoints ? iModel : -1));
+        break;
+      case PT_IDENTIFIER:
+        int[] idInfo = (int[]) info[1];
+        DrawMesh m = dmeshes[idInfo[0]];
+        boolean isReversed = (idInfo[1] == 1);
+        boolean isVertices = (idInfo[2] == 1);
+        if (bsAllModels == null)
+          bsAllModels = new BitSet();
+        if (isPlane && !isCircle || isPerpendicular || isVertices) {
+          if (isReversed) {
             if (iModel < 0 || iModel >= m.polygonCount)
               for (int ipt = m.drawVertexCount; --ipt >= 0;)
-                addPoint(m.vertices[ipt]);
-            else
+                addPoint(m.vertices[ipt], iModel);
+            else if (m.polygonIndexes[iModel] != null)
               for (int ipt = m.drawVertexCounts[iModel]; --ipt >= 0;)
-                addPoint(m.vertices[m.polygonIndexes[iModel][ipt]]);
+                addPoint(m.vertices[m.polygonIndexes[iModel][ipt]], iModel);
           } else {
             if (iModel < 0 || iModel >= m.polygonCount)
               for (int ipt = 0; ipt < m.drawVertexCount; ipt++)
-                addPoint(m.vertices[ipt]);
-            else
+                addPoint(m.vertices[ipt], iModel);
+            else if (m.polygonIndexes[iModel] != null)
               for (int ipt = m.drawVertexCounts[iModel]; --ipt >= 0;)
-                addPoint(m.vertices[m.polygonIndexes[iModel][ipt]]);
+                addPoint(m.vertices[m.polygonIndexes[iModel][ipt]], iModel);
           }
         } else {
           if (iModel < 0 || m.ptCenters == null || m.ptCenters[iModel] == null)
-            addPoint(m.ptCenter);
+            addPoint(m.ptCenter, iModel);
           else
-            addPoint(m.ptCenters[iModel]);
+            addPoint(m.ptCenters[iModel], iModel);
         }
-      }
-    // for just points, we make sure model is visible
-    if (nbitsets == 0 && modelBasedPoints == null)
-      return (nPoints > 0 && (iModel < 0 || bsAllModels.get(iModel)));
-    // (atom set) references must be filtered for relevant model
-    // note that if a model doesn't have a relevant point, one may
-    // get a line instead of a plane, a point instead of a line, etc.
-    BitSet bsModel = (iModel < 0 ? null : viewer.getModelAtomBitSet(iModel,
-        false));
-    if (bsAllModels == null)
-      bsAllModels = new BitSet();
-    if (nbitsets > 0) {
-      for (int i = 0; i < nbitsets; i++) {
-        BitSet bs = BitSetUtil.copy(ptBitSets[i]);
-        if (bsModel != null)
-          bs.and(bsModel);
-        if (BitSetUtil.cardinalityOf(bs) > 0) {
-          addPoint(viewer.getAtomSetCenter(bs));
-          if (iModel < 0)
-            bsAllModels.or(viewer.getModelBitSet(bs));
-          else
-            bsAllModels.set(iModel);
-        }
-      }
-    }
-    if (modelBasedPoints != null) {
-      for (int i = 0; i < nModelBased; i++)
-        for (int j = 0; j < modelBasedPoints[i].length; j++)
+        break;
+      case PT_MODEL_BASED_POINTS:
+        // from list variables
+        String[] modelBasedPoints = (String[]) info[1];
+        for (int j = 0; j < modelBasedPoints.length; j++)
           if (iModel < 0 || j == iModel) {
-            Object points = Token.unescapePointOrBitsetAsToken(modelBasedPoints[i][j]);
+            Object points = Token
+                .unescapePointOrBitsetAsToken(modelBasedPoints[j]);
             if (!(points instanceof Token))
               continue;
             switch (((Token) points).tok) {
             case Token.point3f:
-              addPoint((Point3f) ((Token) points).value);
-              bsAllModels.set(j);
+              addPoint((Point3f) ((Token) points).value, j);
               break;
             case Token.bitset:
-              BitSet bs = (BitSet) ((Token) points).value;
+              bs = (BitSet) ((Token) points).value;
               if (bsModel != null)
                 bs.and(bsModel);
-              if (BitSetUtil.cardinalityOf(bs) > 0) {
-                addPoint(viewer.getAtomSetCenter(bs));
-                bsAllModels.set(j);
-              }
+              if (BitSetUtil.firstSetBit(bs) >= 0)
+                addPoint(viewer.getAtomSetCenter(bs), j);
               break;
             default:
             //ignored
             }
           }
+        break;
+      }
     }
-    return (nPoints > ncoord);
-  }
-
-  private int setPolygons(int nPoly) {
-    if (nPoints == 4 && isCrossed) {
-      Point3f pt = new Point3f(ptList[1]);
-      ptList[1].set(ptList[2]);
-      ptList[2].set(pt);
+    if (makePoints && isCrossed && nPoints == 4) {
+      Point3f pt = ptList[1];
+      ptList[1] = ptList[2];
+      ptList[2] = pt;
     }
-    return setPolygon(thisMesh, nPoints, nPoly);
+    return (nPoints > 0);
   }
 
   private final Vector3f vAB = new Vector3f();
   private final Vector3f vAC = new Vector3f();
 
-  private int setPolygon(DrawMesh mesh, int nVertices, int nPoly) {
-    /*
-     * for now, just add all new vertices. It's simpler this way
-     * though a bit redundant. We could reuse the fixed ones -- no matter
-     */
-
+  private void setPolygon(int nPoly) {
+    int nVertices = nPoints; 
     int drawType = JmolConstants.DRAW_POINT;
-    
     if (isCircle)
-      drawType = (isPlane ? JmolConstants.DRAW_CIRCULARPLANE : JmolConstants.DRAW_CIRCLE);
+      drawType = (isPlane ? JmolConstants.DRAW_CIRCULARPLANE
+          : JmolConstants.DRAW_CIRCLE);
     else if ((isCurve || isArrow) && nVertices >= 2)
       drawType = (isCurve ? JmolConstants.DRAW_CURVE : JmolConstants.DRAW_ARROW);
-    if (isVector) {
-      if (nVertices > 2)
-        nVertices = 2;
-      if (nVertices == 2)
-        ptList[1].add(ptList[0]);
-    }
+    if (isVector && nVertices > 2)
+      nVertices = 2;
+    if (isVector)
+      ptList[1].add(ptList[0]);
     if (drawType == JmolConstants.DRAW_POINT) {
       Point3f pt;
       Point3f center = new Point3f();
@@ -612,7 +601,8 @@ public class Draw extends MeshCollection {
         nVertices = 4;
       } else if (nVertices >= 3 && !isPlane && isPerpendicular) {
         // normal to plane
-        Graphics3D.calcNormalizedNormal(ptList[0], ptList[1], ptList[2], normal, vAB, vAC);
+        Graphics3D.calcNormalizedNormal(ptList[0], ptList[1], ptList[2],
+            normal, vAB, vAC);
         center = new Point3f();
         Graphics3D.calcAveragePointN(ptList, nVertices, center);
         dist = (length == Float.MAX_VALUE ? ptList[0].distance(center) : length);
@@ -641,7 +631,8 @@ public class Draw extends MeshCollection {
           //  0-------+--------1
           //          |
           //          2
-          Graphics3D.calcNormalizedNormal(ptList[0], ptList[1], ptList[2], normal, vAB, vAC);
+          Graphics3D.calcNormalizedNormal(ptList[0], ptList[1], ptList[2],
+              normal, vAB, vAC);
           normal.scale(dist);
           ptList[3] = new Point3f(center);
           ptList[3].add(normal);
@@ -685,30 +676,31 @@ public class Draw extends MeshCollection {
       case 1:
         break;
       case 2:
-        drawType = (isCylinder ? JmolConstants.DRAW_CYLINDER : JmolConstants.DRAW_LINE);
+        drawType = (isCylinder ? JmolConstants.DRAW_CYLINDER
+            : JmolConstants.DRAW_LINE);
         break;
       default:
         drawType = JmolConstants.DRAW_PLANE;
       }
     }
-    mesh.drawType = drawType;
-    mesh.drawVertexCount = nVertices;
+    thisMesh.drawType = drawType;
+    thisMesh.drawVertexCount = nVertices;
 
     if (nVertices == 0)
-      return nPoly;
-    int nVertices0 = mesh.vertexCount;
+      return;
+    int nVertices0 = thisMesh.vertexCount;
 
     for (int i = 0; i < nVertices; i++) {
-      mesh.addVertexCopy(ptList[i]);
+      thisMesh.addVertexCopy(ptList[i]);
     }
     int npoints = (nVertices < 3 ? 3 : nVertices);
-    mesh.setPolygonCount(nPoly + 1);
-    mesh.polygonIndexes[nPoly] = new int[npoints];
+    thisMesh.setPolygonCount(nPoly + 1);
+    thisMesh.polygonIndexes[nPoly] = new int[npoints];
     for (int i = 0; i < npoints; i++) {
-      mesh.polygonIndexes[nPoly][i] = nVertices0
+      thisMesh.polygonIndexes[nPoly][i] = nVertices0
           + (i < nVertices ? i : nVertices - 1);
     }
-    return nPoly + 1;
+    return;
   }
 
   private static void scaleDrawing(DrawMesh mesh, float newScale) {
@@ -743,22 +735,6 @@ public class Draw extends MeshCollection {
     }
   }
 
-  private final Point3f getSpinCenter(int meshIndex, int vertexIndex, int modelIndex) {
-    DrawMesh m = dmeshes[meshIndex];
-    if (m.vertices == null || m.vertexCount <= vertexIndex)
-      return null;
-    Point3f pt = (vertexIndex >= 0 ? m.vertices[vertexIndex]
-        : m.ptCenters == null || modelIndex < 0 ? m.ptCenter : m.ptCenters[modelIndex]);
-    return pt;
-  }
-  
-  private final Vector3f getSpinAxis(int meshIndex, int modelIndex) {
-    DrawMesh m = dmeshes[meshIndex];
-    if (m.vertices == null)
-      return null;
-    return (m.ptCenters == null || modelIndex < 0 ? m.axis : m.axes[modelIndex]);
-  }
-  
   private final static void setAxes(DrawMesh m) {
     m.axis = new Vector3f(0, 0, 0);
     m.axes = new Vector3f[m.polygonCount > 0 ? m.polygonCount : 1];
@@ -965,6 +941,7 @@ public class Draw extends MeshCollection {
   private String getDrawCommand(DrawMesh mesh) {
     if (mesh == null)
       return "no current draw object";
+    modelCount = viewer.getModelCount();
     return getDrawCommand(mesh, mesh.modelIndex);
   }
 
@@ -1054,8 +1031,6 @@ public class Draw extends MeshCollection {
   
   public Vector getShapeDetail() {
     Vector V = new Vector();
-    if (nPoints == 0)
-      return V;
     for (int i = 0; i < meshCount; i++) {
       DrawMesh mesh = dmeshes[i];
       if (mesh.vertexCount == 0)
@@ -1071,6 +1046,7 @@ public class Draw extends MeshCollection {
       info.put("scale", new Float(mesh.scale));
       if (mesh.drawType == JmolConstants.DRAW_MULTIPLE) {
         Vector m = new Vector();
+        modelCount = viewer.getModelCount();
         for (int k = 0; k < modelCount; k++) {
           if (mesh.ptCenters[k] == null)
             continue;            
@@ -1115,6 +1091,7 @@ public class Draw extends MeshCollection {
  public String getShapeState() {
     StringBuffer s = new StringBuffer("\n");
     appendCmd(s, "draw delete");
+    modelCount = viewer.getModelCount();
     for (int i = 0; i < meshCount; i++) {
       DrawMesh mesh = dmeshes[i];
       if (mesh.vertexCount == 0)

@@ -446,6 +446,7 @@ public class StateManager {
     char    inlineNewlineChar        = '|';    //pseudo static
     String  loadFormat               = "http://www.rcsb.org/pdb/files/%FILE.pdb";
     float   minBondDistance          = JmolConstants.DEFAULT_MIN_BOND_DISTANCE;
+    boolean pdbSequential            = false; // true for no bonding check
     int     percentVdwAtom           = JmolConstants.DEFAULT_PERCENT_VDW_ATOM;
     boolean smartAromatic            = true;
     boolean zeroBasedXyzRasmol       = false;
@@ -1120,6 +1121,7 @@ public class StateManager {
       setParameterValue("navigationDepth",0);
       setParameterValue("navigationSlab",0);
       setParameterValue("navigationSpeed",navigationSpeed);
+      setParameterValue("pdbSequential", pdbSequential); // new 11.5.39
       setParameterValue("perspectiveModel",11);
       setParameterValue("perspectiveDepth",perspectiveDepth);
       setParameterValue("percentVdwAtom",percentVdwAtom);

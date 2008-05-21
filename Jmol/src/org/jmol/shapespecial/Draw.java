@@ -581,8 +581,12 @@ public class Draw extends MeshCollection {
           : JmolConstants.DRAW_CIRCLE);
     else if ((isCurve || isArrow) && nVertices >= 2)
       drawType = (isCurve ? JmolConstants.DRAW_CURVE : JmolConstants.DRAW_ARROW);
-    if (isVector && nVertices > 2)
-      nVertices = 2;
+    if (isVector) {
+      if (nVertices > 2)
+        nVertices = 2;
+      else if (nVertices != 2)
+        isVector = false;
+    }
     if (isVector)
       ptList[1].add(ptList[0]);
     if (drawType == JmolConstants.DRAW_POINT) {

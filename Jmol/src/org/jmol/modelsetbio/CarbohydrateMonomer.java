@@ -50,7 +50,7 @@ public class CarbohydrateMonomer extends Monomer {
   public boolean isCarbohydrate() { return true; }
 
   boolean isConnectedAfter(Monomer possiblyPreviousMonomer) {
-    return false;
+    return true;
   }
 
 }

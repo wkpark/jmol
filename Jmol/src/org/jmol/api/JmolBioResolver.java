@@ -14,7 +14,7 @@ public interface JmolBioResolver {
                                                   int modelIndex, int[] specialAtomIndexes,
                                                   byte[] specialAtomIDs, Atom[] atoms);
   
-  public Polymer buildBioPolymer(Group group, Group[] groups, int i);
+  public Polymer buildBioPolymer(Group group, Group[] groups, int i, boolean checkPolymerConnections);
   
   public void clearBioPolymers(Group[] groups, int groupCount, BitSet alreadyDefined);
 }

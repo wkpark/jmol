@@ -65,142 +65,38 @@ public abstract class BioPolymer extends Polymer {
     model = monomers[0].getModel();
   }
   
-  static BioPolymer allocateBioPolymer(Group[] groups, int firstGroupIndex) {
-    Monomer[] monomers;
-    monomers = getAminoMonomers(groups, firstGroupIndex);
-    if (monomers != null) {
+  static BioPolymer allocateBioPolymer(Group[] groups, int firstGroupIndex,
+                                       boolean checkConnections) {
+    Monomer previous = null;
+    int count = 0;
+    for (int i = firstGroupIndex; i < groups.length; ++i) {
+      Group group = groups[i];
+      Monomer current;
+      if (!(group instanceof Monomer) 
+          || (current = (Monomer)group).bioPolymer != null
+          || previous != null && previous.getClass() != current.getClass()
+          || checkConnections && !current.isConnectedAfter(previous))
+        break;
+      previous = current;
+      count++;
+    }
+    if (count == 0)
+      return null;
+    Monomer[] monomers = new Monomer[count];
+    for (int j = 0; j < count; ++j)
+      monomers[j] = (Monomer)groups[firstGroupIndex + j];
+    if (previous instanceof AminoMonomer)
       return new AminoPolymer(monomers);
-    }
-    monomers = getAlphaMonomers(groups, firstGroupIndex);
-    if (monomers != null) {
+    if (previous instanceof AlphaMonomer)
       return new AlphaPolymer(monomers);
-    }
-    monomers = getNucleicMonomers(groups, firstGroupIndex);
-    if (monomers != null) {
+    if (previous instanceof NucleicMonomer)  
       return new NucleicPolymer(monomers);
-    }
-    monomers = getPhosphorusMonomers(groups, firstGroupIndex);
-    if (monomers != null) {
+    if (previous instanceof PhosphorusMonomer)
       return new PhosphorusPolymer(monomers);
-    }
-    monomers = getCarbohydrateMonomers(groups, firstGroupIndex);
-    if (monomers != null) {
+    if (previous instanceof CarbohydrateMonomer)
       return new CarbohydratePolymer(monomers);
-    }
-    Logger.error("Polymer.allocatePolymer() ... why am I here?");
+    Logger.error("Polymer.allocatePolymer() ... no matching polymer for monomor " + previous);
     throw new NullPointerException();
-  }
-
-  private static Monomer[] getAlphaMonomers(Group[] groups, int firstGroupIndex) {
-    AlphaMonomer previous = null;
-    int count = 0;
-    for (int i = firstGroupIndex; i < groups.length; ++i, ++count) {
-      Group group = groups[i];
-      if (! (group instanceof AlphaMonomer))
-        break;
-      AlphaMonomer current = (AlphaMonomer)group;
-      if (current.bioPolymer != null)
-        break;
-      if (! current.isConnectedAfter(previous))
-        break;
-      previous = current;
-    }
-    if (count == 0)
-      return null;
-    Monomer[] monomers = new Monomer[count];
-    for (int j = 0; j < count; ++j)
-      monomers[j] = (AlphaMonomer)groups[firstGroupIndex + j];
-    return monomers;
-  }
-
-  private static Monomer[] getAminoMonomers(Group[] groups, int firstGroupIndex) {
-    AminoMonomer previous = null;
-    int count = 0;
-    for (int i = firstGroupIndex; i < groups.length; ++i, ++count) {
-      Group group = groups[i];
-      if (! (group instanceof AminoMonomer))
-        break;
-      AminoMonomer current = (AminoMonomer)group;
-      if (current.bioPolymer != null)
-        break;
-      if (! current.isConnectedAfter(previous))
-        break;
-      previous = current;
-    }
-    if (count == 0)
-      return null;
-    Monomer[] monomers = new Monomer[count];
-    for (int j = 0; j < count; ++j)
-      monomers[j] = (AminoMonomer)groups[firstGroupIndex + j];
-    return monomers;
-  }
-
-  private static Monomer[] getCarbohydrateMonomers(Group[] groups, int firstGroupIndex) {
-    //CarbohydrateMonomer previous = null;
-    int count = 0;
-    for (int i = firstGroupIndex; i < groups.length; ++i, ++count) {
-      Group group = groups[i];
-      if (! (group instanceof CarbohydrateMonomer))
-        break;
-      CarbohydrateMonomer current = (CarbohydrateMonomer)group;
-      if (current.bioPolymer != null)
-        break;
-      //ignoring how these are connected for now
-      //if (current.isConnectedAfter(previous))
-        //break;
-      //previous = current;
-    }
-    
-    if (count == 0)
-      return null;
-    Monomer[] monomers = new Monomer[count];
-    for (int j = 0; j < count; ++j)
-      monomers[j] = (CarbohydrateMonomer)groups[firstGroupIndex + j];
-    return monomers;
-  }
-
-  private static Monomer[] getPhosphorusMonomers(Group[] groups, int firstGroupIndex) {
-    PhosphorusMonomer previous = null;
-    int count = 0;
-    for (int i = firstGroupIndex; i < groups.length; ++i, ++count) {
-      Group group = groups[i];
-      if (! (group instanceof PhosphorusMonomer))
-        break;
-      PhosphorusMonomer current = (PhosphorusMonomer)group;
-      if (current.bioPolymer != null)
-        break;
-      if (! current.isConnectedAfter(previous))
-        break;
-      previous = current;
-    }
-    if (count == 0)
-      return null;
-    Monomer[] monomers = new Monomer[count];
-    for (int j = 0; j < count; ++j)
-      monomers[j] = (PhosphorusMonomer)groups[firstGroupIndex + j];
-    return monomers;
-  }
-
-  private static Monomer[] getNucleicMonomers(Group[] groups, int firstGroupIndex) {
-    NucleicMonomer previous = null;
-    int count = 0;
-    for (int i = firstGroupIndex; i < groups.length; ++i, ++count) {
-      Group group = groups[i];
-      if (! (group instanceof NucleicMonomer))
-        break;
-      NucleicMonomer current = (NucleicMonomer)group;
-      if (current.bioPolymer != null)
-        break;
-      if (! current.isConnectedAfter(previous))
-        break;
-      previous = current;
-    }
-    if (count == 0)
-      return null;
-    Monomer[] monomers = new Monomer[count];
-    for (int j = 0; j < count; ++j)
-      monomers[j] = (NucleicMonomer)groups[firstGroupIndex + j];
-    return monomers;
   }
 
   public void clearStructures() {
@@ -628,16 +524,17 @@ public abstract class BioPolymer extends Polymer {
             z = q.q3;
             w = q.q0;
             if (Logger.debugging || ctype == 's') {
-              String id = "draw q" + a.getAtomIndex();
+              String id = "draw q" + monomer.getResno();
               String strV = " VECTOR " + Escape.escape((Point3f)a) + " ";
               int deg = (int) (Math.acos(w) * 360 / Math.PI);
-              if (deg > 180)
-                deg -= 360;
+              //this is the angle required to rotate the INITIAL FRAME to this position
+              if (deg < 0)
+                deg += 360;
               Logger.info(strV = id + "x" + strV + Escape.escape(q.getVector(0)) + " color red"
                   + "\n" + id + "y" + strV + Escape.escape(q.getVector(1)) + " color green"
                   + "\n" + id + "z" + strV + Escape.escape(q.getVector(2)) + " color blue"
                   + "\n" + id + "q1" + strV + " {" + (x*2) + "," + (y*2) + "," + (z*2) + "} \">" + deg + "\" color yellow"
-                  + "\n" + id + "q2" + strV + " {" + (-x*2) + "," + (-y*2) + "," + (-z*2) + "} \">" + (-deg) + "\" color yellow");
+                  + "\n" + id + "q2" + strV + " {" + (-x*2) + "," + (-y*2) + "," + (-z*2) + "} \">" + (deg < 0 ? -deg : 360 - deg) + "\" color yellow");
               if (ctype == 's') {
                 pdbATOM.append(strV + "\n");
                 continue;

@@ -113,9 +113,10 @@ public final class Resolver implements JmolBioResolver {
     return null;
   }   
   
-  public Polymer buildBioPolymer(Group group, Group[] groups, int i) {
+  public Polymer buildBioPolymer(Group group, Group[] groups, int i, 
+                                 boolean checkPolymerConnections) {
     return (group instanceof Monomer && ((Monomer) group).getBioPolymer() == null ?
-      BioPolymer.allocateBioPolymer(groups, i) : null);
+      BioPolymer.allocateBioPolymer(groups, i, checkPolymerConnections) : null);
   }
   
   public void clearBioPolymers(Group[] groups, int groupCount,

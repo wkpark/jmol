@@ -828,8 +828,11 @@ public class Draw extends MeshCollection {
       x <<= 1;
       y <<= 1;
     }      
-    viewer.hoverOn(x, y, (pickedMesh.title == null ? pickedMesh.thisID
-        : pickedMesh.title[0]));
+    String s = (pickedMesh.title == null ? pickedMesh.thisID
+        : pickedMesh.title[0]);
+    if (s.length() > 1 && s.charAt(0) == '>')
+      s = s.substring(1);
+    viewer.hoverOn(x, y, s);
     return true;
   }
 

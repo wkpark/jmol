@@ -4370,13 +4370,14 @@ class Eval { //implements Runnable {
   private void dataFrame(int datatype) throws ScriptException {
     String type = "";
     boolean isQuaternion = false;
+    boolean isDerivative = false;
     switch (datatype) {
     case JmolConstants.JMOL_DATA_RAMACHANDRAN:
       type = "ramachandran";
       break;
     case JmolConstants.JMOL_DATA_QUATERNION:
       type = (statementLength == 1 ? "w" : optParameterAsString(1));
-      boolean isDerivative = (optParameterAsString(statementLength - 1)
+      isDerivative = (optParameterAsString(statementLength - 1)
           .indexOf("deriv") == 0);
       if (isDerivative && statementLength == 2)
         type = "w";
@@ -4417,25 +4418,28 @@ class Eval { //implements Runnable {
       return;
     int modelCount = viewer.getModelCount();
     viewer.setJmolDataFrame(type, modelIndex, modelCount - 1);
+    String script;
     switch (datatype) {
     case JmolConstants.JMOL_DATA_RAMACHANDRAN:
     default:
       viewer.setFrameTitle(modelCount - 1, "ramachandran plot for model "
           + viewer.getModelNumberDotted(modelIndex));
-      runScript("frame 0.0; frame last; reset;"
+      script = "frame 0.0; frame last; reset;"
           + "select visible; color structure; spacefill 3.0; wireframe 0; set rotationRadius 260;"
           + "draw ramaAxisX" + modelCount + " {200 0 0} {-200 0 0} \"phi\";"
-          + "draw ramaAxisY" + modelCount + " {0 200 0} {0 -200 0} \"psi\";");
+          + "draw ramaAxisY" + modelCount + " {0 200 0} {0 -200 0} \"psi\";";
       break;
     case JmolConstants.JMOL_DATA_QUATERNION:
       viewer.setFrameTitle(modelCount - 1, type + " for model "
           + viewer.getModelNumberDotted(modelIndex));
-      runScript("frame 0.0; frame last; reset; set rotationRadius 12;"
-          + "select visible; trace 0.1; wireframe 0; color trace structure;"
+      script = "frame 0.0; frame last; reset; set rotationRadius 12;"
+          + "select visible; wireframe 0; "
           + "isosurface quatSphere" + modelCount
-          + " resolution 1.0 sphere 10.0 mesh nofill translucent 0.8;set rotationRadius 12");
+          + " resolution 1.0 sphere 10.0 mesh nofill translucent 0.8;set rotationRadius 12;"
+          + (isDerivative ? "color structure" : "trace 0.1; color trace structure;");
       break;
     }
+    runScript(script);
     viewer.loadShape(JmolConstants.SHAPE_ECHO);
     showString("frame " + viewer.getModelNumberDotted(modelCount - 1) + " created: "
         + type);
@@ -8410,7 +8414,7 @@ class Eval { //implements Runnable {
     case Token.quaternion:
       pt++;
       type2 = optParameterAsString(pt).toLowerCase();
-      if (Parser.isOneOf(type2, "w;x;y;z"))
+      if (Parser.isOneOf(type2, "w;x;y;z;s")) // s is draw script
         pt++;
       else
         type2 = "w";
@@ -11516,6 +11520,8 @@ class Eval { //implements Runnable {
         return evaluateReplace(args);
       case Token.array:
         return evaluateArray(args);
+      case Token.random:
+        return evaluateRandom(args);
       case Token.split:
       case Token.join:
       case Token.trim:
@@ -11935,6 +11941,17 @@ class Eval { //implements Runnable {
       for (int i = 0; i < args.length; i++)
         array[i] = Token.sValue(args[i]);
       return addX(array);
+    }
+
+    private boolean evaluateRandom(Token[] args) throws ScriptException {
+      if (args.length > 2)
+        return false;
+      if (isSyntaxCheck)
+        return addX(1);
+      float lower = (args.length < 2 ? 0 : Token.fValue(args[0]));
+      float range = (args.length == 0 ? 1 : Token.fValue(args[args.length - 1]));
+      range -= lower;
+      return addX((float)(Math.random() * range) + lower);
     }
 
     private boolean evaluateLoad(Token[] args) throws ScriptException {

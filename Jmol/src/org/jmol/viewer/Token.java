@@ -456,8 +456,10 @@ public class Token {
   // we really could put any of these in the 2 << 3 set, because this only specifies
   // a maximum number of parameters, and the actual number is check in the evaluateXXX call.
   
+
   // xxx(a,b)
 
+  final static int random       = 1  | 2 << 3 | mathfunc;
   final static int data         = 2  | 2 << 3 | mathfunc | command;
   // ___.xxx(a,b)
 
@@ -1049,7 +1051,7 @@ public class Token {
     "quaternions",       null,
     "quit",              new Token(quit,                      0),
     "ramachandran",      new Token(ramachandran,              0),
-    "rama",              null, 
+    "rama",              null,
     "refresh",           new Token(refresh,                   0),
     "reset",             new Token(reset,               maxArg1),
     "restore",           new Token(restore,             maxArg3),
@@ -1304,6 +1306,7 @@ public class Token {
     "psi",              new Token(psi),
     "purine",           new Token(purine),
     "pyrimidine",       new Token(pyrimidine),
+    "random",           new Token(random),
     "range",            new Token(range),
     "rasmol",           new Token(rasmol),
     "replace",          new Token(replace),

@@ -605,33 +605,43 @@ public abstract class BioPolymer extends Polymer {
               qprev = q;
               continue;
             }
+            //not sure of this
             if (q.dot(qprev) < 0)
-              q = q.mul(-1);
+              qprev = qprev.mul(-1);
             Quaternion qthis = q;
             q = qprev.inv().mul(q);
             //System.out.println("" + qprev+q+ qprev.mul(q) + qthis);
             qprev = qthis;
+          } else if (qlast == null && q.q0 < 0) {
+            //initialize with a positive q0
+            q = q.mul(-1);
           }
+          
           if (qlast != null && q.dot(qlast) < 0)
             q = q.mul(-1);
           qlast = q;
           switch (ctype) {
+          case 's':
           case 'w':
             x = q.q1;
             y = q.q2;
             z = q.q3;
             w = q.q0;
-            if (Logger.debugging) {
+            if (Logger.debugging || ctype == 's') {
               String id = "draw q" + a.getAtomIndex();
               String strV = " VECTOR " + Escape.escape((Point3f)a) + " ";
               int deg = (int) (Math.acos(w) * 360 / Math.PI);
               if (deg > 180)
                 deg -= 360;
-              Logger.info(id + "x" + strV + Escape.escape(q.getVector(0)) + " color red"
+              Logger.info(strV = id + "x" + strV + Escape.escape(q.getVector(0)) + " color red"
                   + "\n" + id + "y" + strV + Escape.escape(q.getVector(1)) + " color green"
                   + "\n" + id + "z" + strV + Escape.escape(q.getVector(2)) + " color blue"
-                  + "\n" + id + "q" + strV + " {" + (x*5) + "," + (y*5) + "," + (z*5) 
-                  + "} \">" + deg + "\" color yellow");
+                  + "\n" + id + "q1" + strV + " {" + (x*2) + "," + (y*2) + "," + (z*2) + "} \">" + deg + "\" color yellow"
+                  + "\n" + id + "q2" + strV + " {" + (-x*2) + "," + (-y*2) + "," + (-z*2) + "} \">" + (-deg) + "\" color yellow");
+              if (ctype == 's') {
+                pdbATOM.append(strV + "\n");
+                continue;
+              }
             }
             break;
           case 'x':

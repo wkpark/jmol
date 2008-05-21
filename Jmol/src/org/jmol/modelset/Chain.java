@@ -47,6 +47,10 @@ public final class Chain {
     this.chainID = chainID;
   }
 
+  public void setModelSet(ModelSet modelSet) {
+    this.modelSet = modelSet;
+  }
+  
   public char getChainID() {
     return chainID;
   }

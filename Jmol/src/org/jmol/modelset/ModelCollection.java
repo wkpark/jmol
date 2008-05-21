@@ -66,8 +66,11 @@ abstract public class ModelCollection extends BondCollection {
    */
   void merge(ModelSet modelSet) {
     for (int i = 0; i < modelSet.modelCount; i++) {
-      models[i] = modelSet.models[i];
-      models[i].bsAtoms = null;
+      Model m = models[i] = modelSet.models[i];
+      m.bsAtoms = null;
+      m.modelSet = (ModelSet) this;
+      for (int j = 0; j < m.chainCount; j++)
+        m.chains[j].setModelSet(m.modelSet);
       stateScripts = modelSet.stateScripts;
       thisStateModel = -1;
     }
@@ -895,7 +898,8 @@ abstract public class ModelCollection extends BondCollection {
         model.bioPolymers[p].getPdbData(ctype, isDerivative, bsAtoms, pdbATOM,
             pdbCONECT);
     pdbATOM.append(pdbCONECT);
-    return getProteinStructureState(bsAtoms, ctype == 'r') + pdbATOM.toString();
+    return (ctype == 's' ? "" : getProteinStructureState(bsAtoms, ctype == 'r')) 
+        + pdbATOM.toString();
   }
 
   public String getPdbAtomData(BitSet bs) {
@@ -955,6 +959,10 @@ abstract public class ModelCollection extends BondCollection {
       break;
     case 'r':
       remark += "(phi,psi,omega,partialCharge)";
+      break;
+    case 's':
+      remark = "# draw sequence for quaternions";
+      break;
     }
     remark += "\n";
     return remark + s;
@@ -982,7 +990,7 @@ abstract public class ModelCollection extends BondCollection {
       models[modelDataIndex].jmolFrameType = type;
       model.dataFrames.put(type, new Integer(modelDataIndex));
     }
-    if (type.indexOf(" ") > 0) { //generic quaternion
+    if (type.indexOf(" ") > 0 && type.indexOf("deriv") < 0) { //generic quaternion
       type = type.substring(0, type.indexOf(" "));
       model.dataFrames.put(type, new Integer(modelDataIndex));
     }

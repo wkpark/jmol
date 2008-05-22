@@ -794,22 +794,23 @@ public class Draw extends MeshCollection {
   private int pickedVertex;
   private final Point3i ptXY = new Point3i();
   
-  public boolean checkObjectClicked(int x, int y, int modifiers) {
+  public Point3f checkObjectClicked(int x, int y, int modifiers) {
     boolean isPickingMode = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
     boolean isDrawPicking = viewer.getDrawPicking();
     if (!isPickingMode && !isDrawPicking)
-      return false;
+      return null;
     if (!findPickedObject(x, y, false))
-      return false;
+      return null;
+    Point3f v = pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][pickedVertex]];
     if (isDrawPicking && !isPickingMode) {
-      Point3f v = pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][pickedVertex]];
       viewer.setStatusAtomPicked(-2, "[\"draw\",\"" + pickedMesh.thisID + "\"," +
           + pickedModel + "," + pickedVertex + "," + v.x + "," + v.y + "," + v.z+"]"
-          + pickedMesh.title == null ? "" : "\"" + pickedMesh.title[pickedModel]+"\"");
-      return true; 
+          + (pickedMesh.title == null ? "" :      
+            "\"" + pickedMesh.title[pickedModel]+"\""));
+      return v; 
     }
-    if (pickedMesh.polygonIndexes[pickedModel][0] == pickedMesh.polygonIndexes[pickedModel][1])
-      return false; // single point
+    if (modifiers == 0 || pickedMesh.polygonIndexes[pickedModel][0] == pickedMesh.polygonIndexes[pickedModel][1])
+      return (modifiers == 0 ? v : null); // single point
     if (pickedVertex == 0) {
       viewer.startSpinningAxis(
           pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][0]],
@@ -821,7 +822,7 @@ public class Draw extends MeshCollection {
           pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][0]],
           ((modifiers & MouseManager.SHIFT) != 0));
     }
-    return true;
+    return null;
   }
 
   public boolean checkObjectHovered(int x, int y) {

@@ -523,22 +523,20 @@ public abstract class BioPolymer extends Polymer {
             y = q.q2;
             z = q.q3;
             w = q.q0;
-            if (Logger.debugging || ctype == 's') {
+            if (ctype == 's') {
               String id = "draw q" + monomer.getResno();
               String strV = " VECTOR " + Escape.escape((Point3f)a) + " ";
               int deg = (int) (Math.acos(w) * 360 / Math.PI);
               //this is the angle required to rotate the INITIAL FRAME to this position
               if (deg < 0)
                 deg += 360;
-              Logger.info(strV = id + "x" + strV + Escape.escape(q.getVector(0)) + " color red"
+              strV = id + "x" + strV + Escape.escape(q.getVector(0)) + " color red"
                   + "\n" + id + "y" + strV + Escape.escape(q.getVector(1)) + " color green"
                   + "\n" + id + "z" + strV + Escape.escape(q.getVector(2)) + " color blue"
                   + "\n" + id + "q1" + strV + " {" + (x*2) + "," + (y*2) + "," + (z*2) + "} \">" + deg + "\" color yellow"
-                  + "\n" + id + "q2" + strV + " {" + (-x*2) + "," + (-y*2) + "," + (-z*2) + "} \">" + (deg < 0 ? -deg : 360 - deg) + "\" color yellow");
-              if (ctype == 's') {
-                pdbATOM.append(strV + "\n");
-                continue;
-              }
+                  + "\n" + id + "q2" + strV + " {" + (-x*2) + "," + (-y*2) + "," + (-z*2) + "} \">" + (deg < 0 ? -deg : 360 - deg) + "\" color yellow";
+              pdbATOM.append(strV + "\n");
+              continue;
             }
             break;
           case 'x':

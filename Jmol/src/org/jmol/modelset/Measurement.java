@@ -27,6 +27,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Measure;
 
+import org.jmol.vecmath.Point3fi;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
@@ -38,16 +39,17 @@ import java.util.Vector;
 
 public class Measurement {
 
+  private Viewer viewer;
+
   public ModelSet modelSet;
-  Viewer viewer;
-  
+
   protected int count;
+  protected int[] countPlusIndices;
+  protected Point3fi[] points = new Point3fi[4];
   
   public int getCount() {
     return count;
   }
-  
-  protected int[] countPlusIndices;
   
   public int[] getCountPlusIndices() {
     return countPlusIndices;
@@ -57,12 +59,13 @@ public class Measurement {
     return (n > 0 && n <= count ? countPlusIndices[n] : -1);
   }
   
+  public Point3fi getAtom(int i) {
+    int pt = countPlusIndices[i];
+    return (pt < -1 ? points[-2 - pt] : modelSet.getAtomAt(pt));
+  }
+
   public int getLastIndex() {
     return (count > 0 ? countPlusIndices[count] : -1);
-  }
-  
-  public int getPreviousIndex() {
-    return (count > 0 ? countPlusIndices[count - 1] : -1);
   }
   
   private String strMeasurement;
@@ -71,13 +74,13 @@ public class Measurement {
     return strMeasurement;
   }
   
-  String strFormat;
+  private String strFormat;
   
   public String getStrFormat() {
     return strFormat;
   }
   
-  float value;
+  protected float value;
   
   public float getValue() {
     return value;
@@ -112,7 +115,6 @@ public class Measurement {
     this.isDynamic = TF;
   }
   
-  
   private short colix;
   
   public short getColix() {
@@ -140,6 +142,7 @@ public class Measurement {
   }
   
   private Point3f pointArc;
+  
   public Point3f getPointArc() {
     return pointArc;
   }
@@ -155,7 +158,7 @@ public class Measurement {
   }   
 
   public void refresh() {
-    value = modelSet.getMeasurement(countPlusIndices);
+    value = getMeasurement();
     isTrajectory = modelSet.isTrajectory(countPlusIndices);
     formatMeasurement();
   }
@@ -174,7 +177,7 @@ public class Measurement {
     return str;  
   }
   
-  void setInfo(ModelSet modelSet, int[] atomCountPlusIndices, float value, int index) {
+  private void setInfo(ModelSet modelSet, int[] atomCountPlusIndices, float value, int index) {
     if (atomCountPlusIndices == null)
       count = 0;
     else {
@@ -184,15 +187,11 @@ public class Measurement {
     }
     isTrajectory = modelSet.isTrajectory(countPlusIndices);    
     if (countPlusIndices != null && (Float.isNaN(value) || isTrajectory)) {
-      value = modelSet.getMeasurement(countPlusIndices);
+      value = getMeasurement();
     }
     this.value = value;
     this.index = index;
     formatMeasurement();
-  }
-
-  void setFormat(String strFormat) {
-    this.strFormat = strFormat; 
   }
 
   public void formatMeasurement(String strFormat, boolean useDefault) {
@@ -200,11 +199,11 @@ public class Measurement {
       strFormat = null;
     if (!useDefault && strFormat != null && strFormat.indexOf(countPlusIndices[0]+":")!=0)
       return;
-    setFormat(strFormat);
+    this.strFormat = strFormat; 
     formatMeasurement();
   }
 
-  void formatMeasurement() {
+  protected void formatMeasurement() {
     strMeasurement = null;
     if (Float.isNaN(value) || count == 0) {
       strMeasurement = null;
@@ -221,7 +220,7 @@ public class Measurement {
       } else {
         Vector3f vectorBA = new Vector3f();
         Vector3f vectorBC = new Vector3f();        
-        float radians = Measure.computeAngle(getAtomPoint3f(1), getAtomPoint3f(2), getAtomPoint3f(3), vectorBA, vectorBC, false);
+        float radians = Measure.computeAngle(getAtom(1), getAtom(2), getAtom(3), vectorBA, vectorBC, false);
         Vector3f vectorAxis = new Vector3f();
         vectorAxis.cross(vectorBA, vectorBC);
         aa = new AxisAngle4f(vectorAxis.x, vectorAxis.y, vectorAxis.z, radians);
@@ -247,11 +246,7 @@ public class Measurement {
       formatMeasurement();
   }
 
-  Point3f getAtomPoint3f(int i) {
-    return modelSet.getAtomAt(countPlusIndices[i]);
-  }
-
-  String formatDistance(float dist) {
+  private String formatDistance(float dist) {
     int nDist = (int)(dist * 100 + 0.5f);
     float value = nDist;
     String units = viewer.getMeasureDistanceUnits();
@@ -270,13 +265,13 @@ public class Measurement {
     return formatString(value, units);
   }
 
-  String formatAngle(float angle) {
+  private String formatAngle(float angle) {
     angle = (int)(angle * 10 + (angle >= 0 ? 0.5f : -0.5f));
     angle /= 10;
     return formatString(angle, "\u00B0");
   }
 
-  String formatString(float value, String units) {
+  private String formatString(float value, String units) {
     String s = countPlusIndices[0]+":" + "";
     String label = (strFormat != null && strFormat.indexOf(s)==0? strFormat : viewer
         .getDefaultMeasurementLabel(countPlusIndices[0]));
@@ -324,6 +319,40 @@ public class Measurement {
     for (int i = 0; i < count + 1; i++ ) V.addElement(new Integer(countPlusIndices[i]));
     V.addElement(strMeasurement);
     return V;  
+  }
+  
+  protected float getMeasurement() {
+    float value = Float.NaN;
+    if (countPlusIndices == null)
+      return value;
+    int count = countPlusIndices[0];
+    if (count < 2)
+      return value;
+    for (int i = count; --i >= 0;)
+      if (countPlusIndices[i + 1] == -1) {
+        return value;
+      }
+    Point3fi ptA = getAtom(1);
+    Point3fi ptB = getAtom(2);
+    Point3fi ptC, ptD;
+    switch (count) {
+    case 2:
+      value = ptA.distance(ptB);
+      break;
+    case 3:
+      ptC = getAtom(3);
+      value = Measure.computeAngle(ptA, ptB, ptC, true);
+      break;
+    case 4:
+      ptC = getAtom(3);
+      ptD = getAtom(4);
+      value = Measure.computeTorsion(ptA, ptB, ptC, ptD, true);
+      break;
+    default:
+      Logger.error("Invalid count in measurement calculation:" + count);
+      throw new IndexOutOfBoundsException();
+    }
+    return value;
   }
 }
 

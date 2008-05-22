@@ -25,9 +25,9 @@
 package org.jmol.shape;
 
 import org.jmol.g3d.*;
-import org.jmol.modelset.Atom;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementPending;
+import org.jmol.vecmath.Point3fi;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -73,29 +73,44 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     renderMeasurement(measurement.getCount(), measurement, true); 
   }
 
+  Point3fi atomA, atomB, atomC, atomD;
+  
+  private Point3fi getAtom(int i) {
+    Point3fi a = measurement.getAtom(i);
+    if (a.screenDiameter < 0) {
+      viewer.transformPoint(a, ptA);
+      a.screenX = ptA.x;
+      a.screenY = ptA.y;
+      a.screenZ = ptA.z;
+    }
+    return a;
+  }
+  
   private void renderMeasurement(int count, Measurement measurement, boolean renderArcs) {
     this.measurement = measurement;
     switch(count) {
     case 2:
-      renderDistance(modelSet.getAtomAt(measurement.getIndex(1)),
-          modelSet.getAtomAt(measurement.getIndex(2)));
+      atomA = getAtom(1);
+      atomB = getAtom(2);
+      renderDistance();
       break;
     case 3:
-      renderAngle(modelSet.getAtomAt(measurement.getIndex(1)),
-          modelSet.getAtomAt(measurement.getIndex(2)),
-          modelSet.getAtomAt(measurement.getIndex(3)),
-          renderArcs);
+      atomA = getAtom(1);
+      atomB = getAtom(2);
+      atomC = getAtom(3);
+      renderAngle(renderArcs);
       break;
     case 4:
-      renderTorsion(modelSet.getAtomAt(measurement.getIndex(1)),
-          modelSet.getAtomAt(measurement.getIndex(2)),
-          modelSet.getAtomAt(measurement.getIndex(3)),
-          modelSet.getAtomAt(measurement.getIndex(4)),
-          renderArcs);
+      atomA = getAtom(1);
+      atomB = getAtom(2);
+      atomC = getAtom(3);
+      atomD = getAtom(4);
+      renderTorsion(renderArcs);
       break;
     default:
       throw new NullPointerException();
     }
+    atomA = atomB = atomC = atomD = null;
   }
 
   private Point3i ptA = new Point3i();
@@ -116,7 +131,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     return (widthPixels + 1) / 2;
   }
 
-  void renderDistance(Atom atomA, Atom atomB) {
+  void renderDistance() {
     int zA = atomA.screenZ - atomA.screenDiameter - 10;
     int zB = atomB.screenZ - atomB.screenDiameter - 10;
     int radius = drawSegment(atomA.screenX, atomA.screenY, zA, atomB
@@ -134,8 +149,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   private Matrix3f matrixT = new Matrix3f();
   private Point3f pointT = new Point3f();
 
-  private void renderAngle(Atom atomA, Atom atomB, Atom atomC,
-                   boolean renderArcs) {
+  private void renderAngle(boolean renderArcs) {
     int zOffset = atomB.screenDiameter + 10;
     int zA = atomA.screenZ - atomA.screenDiameter - 10;
     int zB = atomB.screenZ - zOffset;
@@ -188,8 +202,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     }
   }
 
-  private void renderTorsion(Atom atomA, Atom atomB, Atom atomC, Atom atomD,
-                     boolean renderArcs) {
+  private void renderTorsion(boolean renderArcs) {
     int zA = atomA.screenZ - atomA.screenDiameter - 10;
     int zB = atomB.screenZ - atomB.screenDiameter - 10;
     int zC = atomC.screenZ - atomC.screenDiameter - 10;
@@ -242,12 +255,14 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   }
   
   private void renderPendingWithCursor(MeasurementPending pendingMeasurement) {
+    
     int count = pendingMeasurement.getCount();
     if (count < 2)
       return;
     if (count > 2)
       renderMeasurement(count - 1, pendingMeasurement, false);
-    Atom atomLast = modelSet.getAtomAt(pendingMeasurement.getPreviousIndex());
+    measurement = pendingMeasurement;
+    Point3fi atomLast = getAtom(count - 1);
     int lastZ = atomLast.screenZ - atomLast.screenDiameter - 10;
     int x = viewer.getCursorX();
     int y = viewer.getCursorY();

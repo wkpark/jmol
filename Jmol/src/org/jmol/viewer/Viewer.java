@@ -2615,9 +2615,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return List;
   }
 
-  void setPendingMeasurement(int[] atomCountPlusIndices) {
+  void setPendingMeasurement(int[] atomCountPlusIndices, Point3f ptClicked) {
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "pending",
-        atomCountPlusIndices);
+        new Object[] {atomCountPlusIndices, ptClicked});
   }
 
   void clearAllMeasurements() {
@@ -3754,7 +3754,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       pickingStyle = JmolConstants.PICKINGSTYLE_SELECT_JMOL;
     pickingManager.setPickingStyle(pickingStyle);
     global.setParameterValue("pickingStyle", 
-        JmolConstants.getPickingStyleName(pickingManager.getPickingStyleMode()));
+        JmolConstants.getPickingStyleName(pickingManager.getPickingStyle()));
   }
 
   void setDrawHover(boolean TF) {
@@ -5971,7 +5971,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     axesAreTainted = TF && refreshing;
   }
 
-  boolean checkObjectClicked(int x, int y, int modifiers) {
+  Point3f checkObjectClicked(int x, int y, int modifiers) {
     return modelSet.checkObjectClicked(x, y, modifiers);
   }
 

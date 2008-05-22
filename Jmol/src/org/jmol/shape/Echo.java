@@ -32,6 +32,8 @@ import org.jmol.g3d.*;
 import java.util.BitSet;
 import java.util.Enumeration;
 
+import javax.vecmath.Point3f;
+
 public class Echo extends TextShape {
 
   /*
@@ -137,7 +139,7 @@ public class Echo extends TextShape {
     return s.toString();
   }
 
-  public boolean checkObjectClicked(int x, int y, int modifiers) {
+  public Point3f checkObjectClicked(int x, int y, int modifiers) {
     Enumeration e = texts.elements();
     while (e.hasMoreElements()) {
       Text t = (Text) e.nextElement();
@@ -145,10 +147,10 @@ public class Echo extends TextShape {
         String s = t.getScript();
         if (s != null)
           viewer.evalStringQuiet(s);
-        return true;
+        return (t.xyz == null ? new Point3f() : t.xyz); // may or may not be null
       }
     }
-    return false;
+    return null;
   }
 
   public boolean checkObjectHovered(int x, int y) {

@@ -31,6 +31,8 @@ import org.jmol.util.Logger;
 import java.awt.event.*;
 import java.awt.Component;
 
+import javax.vecmath.Point3f;
+
 public abstract class MouseManager implements KeyListener {
 
   Viewer viewer;
@@ -322,17 +324,19 @@ public abstract class MouseManager implements KeyListener {
           + ")");
     if (!viewer.haveModelSet())
       return;
-
-    int nearestAtomIndex = (drawMode ? -1 : viewer.findNearestAtomIndex(x, y));
+    Point3f ptClicked = (drawMode ? null :
+      viewer.checkObjectClicked(x, y, modifiers));
+    int nearestAtomIndex = (drawMode || ptClicked != null ? -1 : viewer.findNearestAtomIndex(x, y));
     if (nearestAtomIndex >= 0 && !viewer.isInSelectionSubset(nearestAtomIndex))
       nearestAtomIndex = -1;
     if (clickCount == 1)
-      mouseSingleClick(x, y, modifiers, nearestAtomIndex);
+      mouseSingleClick(x, y, modifiers, nearestAtomIndex, ptClicked);
     else if (clickCount == 2)
-      mouseDoubleClick(x, y, modifiers, nearestAtomIndex);
+      mouseDoubleClick(x, y, modifiers, nearestAtomIndex, ptClicked);
   }
 
-  void mouseSingleClick(int x, int y, int modifiers, int nearestAtomIndex) {
+  private void mouseSingleClick(int x, int y, int modifiers, int nearestAtomIndex,
+                                Point3f ptClicked) {
     //viewer.setStatusUserAction("mouseSingleClick: " + modifiers);
     setMouseMode();
     if (logMouseEvents && Logger.debugging)
@@ -350,32 +354,30 @@ public abstract class MouseManager implements KeyListener {
               - 50f, y * 100f / viewer.getScreenHeight() - 50f);
         return;
       }
-      if (!measurementMode)
-        viewer.checkObjectClicked(x, y, modifiers);
       viewer.atomPicked(nearestAtomIndex, modifiers);
       if (measurementMode)
-        addToMeasurement(nearestAtomIndex, false);
+        addToMeasurement(nearestAtomIndex, ptClicked, false);
       break;
     case ALT_LEFT:
     case SHIFT_LEFT:
     case ALT_SHIFT_LEFT:
-      if (!drawMode && !viewer.checkObjectClicked(x, y, modifiers))
+      if (!drawMode && viewer.checkObjectClicked(x, y, modifiers) == null)
         viewer.atomPicked(nearestAtomIndex, modifiers);
       break;
     }
   }
 
-  void mouseDoubleClick(int x, int y, int modifiers, int nearestAtomIndex) {
+  private void mouseDoubleClick(int x, int y, int modifiers, int nearestAtomIndex, Point3f ptClicked) {
     //viewer.setStatusUserAction("mouseDoubleClick: " + modifiers);
     setMouseMode();
     switch (modifiers & BUTTON_MODIFIER_MASK) {
     case LEFT:
       if (measurementMode) {
-        addToMeasurement(nearestAtomIndex, true);
+        addToMeasurement(nearestAtomIndex, null, true);
         toggleMeasurement();
       } else if (!drawMode && measuresEnabled) {
         enterMeasurementMode();
-        addToMeasurement(nearestAtomIndex, true);
+        addToMeasurement(nearestAtomIndex, ptClicked, true);
       }
       break;
     case ALT_LEFT:
@@ -491,11 +493,12 @@ public abstract class MouseManager implements KeyListener {
     mouseMovedX = xCurrent = x;
     mouseMovedY = yCurrent = y;
     if (measurementMode || hoverActive) {
+      Point3f ptClicked = viewer.checkObjectClicked(x, y, 0);
       int atomIndex = viewer.findNearestAtomIndex(x, y);
       if (!measurementMode && atomIndex >= 0
           && viewer.isInSelectionSubset(atomIndex))
         atomIndex = -1;
-      setAttractiveMeasurementTarget(atomIndex);
+      setAttractiveMeasurementTarget(atomIndex, ptClicked);
     }
   }
 
@@ -530,68 +533,83 @@ public abstract class MouseManager implements KeyListener {
 
   // note that these two may *not* be consistent
   // this term refers to the count of what has actually been selected
-  int measurementCount = 0;
+  private int measurementCount = 0;
   // measurementCountPlusIndices[0] may be one higher if there is
   // an attractive measurement target
   // ie. the cursor is hovering near an atom
-  int[] measurementCountPlusIndices = new int[5];
+  private int[] measurementCountPlusIndices = new int[5];
 
   // the attractive target may be -1
-  void setAttractiveMeasurementTarget(int atomIndex) {
-    if (measurementCountPlusIndices[0] == measurementCount + 1
-        && measurementCountPlusIndices[measurementCount + 1] == atomIndex) {
-      viewer.refresh(0, "MouseManager:setAttractiveMeasurementTarget("
-          + atomIndex + ")");
-      return;
-    }
-    for (int i = measurementCount; i > 0; --i)
-      if (measurementCountPlusIndices[i] == atomIndex) {
+  private void setAttractiveMeasurementTarget(int atomIndex, Point3f ptClicked) {
+    if (ptClicked == null) {
+      if (measurementCountPlusIndices[0] == measurementCount + 1
+          && measurementCountPlusIndices[measurementCount + 1] == atomIndex) {
         viewer.refresh(0, "MouseManager:setAttractiveMeasurementTarget("
             + atomIndex + ")");
         return;
       }
+      for (int i = measurementCount; i > 0; --i)
+        if (measurementCountPlusIndices[i] == atomIndex) {
+          viewer.refresh(0, "MouseManager:setAttractiveMeasurementTarget("
+              + atomIndex + ")");
+          return;
+        }
+    }
     int attractiveCount = measurementCount + 1;
     measurementCountPlusIndices[0] = attractiveCount;
     measurementCountPlusIndices[attractiveCount] = atomIndex;
-    viewer.setPendingMeasurement(measurementCountPlusIndices);
+    // note that if ptClicked is not valid, then measurementCountPlusIndices
+    // will be updated, and if it is valid, then it will still be updated
+    viewer.setPendingMeasurement(measurementCountPlusIndices, ptClicked);
   }
 
-  void addToMeasurement(int atomIndex, boolean dblClick) {
-    if (atomIndex == -1) {
+  boolean haveMeasurementPoints;
+  
+  private void addToMeasurement(int atomIndex, Point3f ptClicked,
+                                boolean dblClick) {
+    if (atomIndex == -1 && ptClicked == null) {
       exitMeasurementMode();
       return;
     }
-    for (int i = measurementCount; --i >= 0;)
-      if (measurementCountPlusIndices[i + 1] == atomIndex) {
-        //        exitMeasurementMode();
-        return;
+    if (ptClicked == null)
+      for (int i = measurementCount; --i >= 0;) {
+        int ipt = measurementCountPlusIndices[i + 1];
+        if (ipt == atomIndex) {
+          return;
+        }
       }
+    if (measurementCount == 0)
+      haveMeasurementPoints = false;
     if (measurementCount == 3 && !dblClick)
       return;
-    measurementCountPlusIndices[++measurementCount] = atomIndex;
+    haveMeasurementPoints |= (ptClicked != null);
+    measurementCountPlusIndices[++measurementCount] = (ptClicked != null ? -1
+        : atomIndex);
     measurementCountPlusIndices[0] = measurementCount;
-    if (measurementCount == 4)
+    if (measurementCount == 4) {
       toggleMeasurement();
-    else
-      viewer.setPendingMeasurement(measurementCountPlusIndices);
+    } else {
+      viewer.setPendingMeasurement(measurementCountPlusIndices, ptClicked);
+      measurementCount = measurementCountPlusIndices[0];
+    }
   }
 
-  void exitMeasurementMode() {
+  private void exitMeasurementMode() {
     if (!measurementMode)
       return;
-    viewer.setPendingMeasurement(null);
+    viewer.setPendingMeasurement(null, null);
     measurementMode = false;
     measurementCount = 0;
     viewer.setCursor(Viewer.CURSOR_DEFAULT);
   }
 
-  void enterMeasurementMode() {
+  private void enterMeasurementMode() {
     viewer.setCursor(Viewer.CURSOR_CROSSHAIR);
     measurementCount = 0;
     measurementMode = true;
   }
 
-  void toggleMeasurement() {
+  private void toggleMeasurement() {
     if (measurementCount >= 2 && measurementCount <= 4) {
       measurementCountPlusIndices[0] = measurementCount;
       viewer.script("!"

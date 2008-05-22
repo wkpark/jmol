@@ -31,12 +31,16 @@ import org.jmol.modelset.MeasurementPending;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
+import org.jmol.util.Measure;
+import org.jmol.vecmath.Point3fi;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
 
 import java.util.BitSet;
 import java.util.Vector;
 import java.util.Hashtable;
+
+import javax.vecmath.Point3f;
 
 public class Measures extends Shape {
 
@@ -160,7 +164,8 @@ public class Measures extends Shape {
     } else if ("toggleOn".equals(propertyName)) {
       toggleOn((int[]) value);
     } else if ("pending".equals(propertyName)) {
-      pending((int[]) value);
+      Object[] data = (Object[]) value;
+      pending((int[]) data[0], (Point3f) data[1]);
     } else if ("font".equals(propertyName)) {
       font3d = (Font3D) value;
     } else if ("clear".equals(propertyName)) {
@@ -319,7 +324,7 @@ public class Measures extends Shape {
         || count > 2 && atomCountPlusIndices[1] == atomCountPlusIndices[3]
         || count == 4 && atomCountPlusIndices[2] == atomCountPlusIndices[4])
       return;
-    float value = (isDelete ? rangeMinMax[0] : modelSet.getMeasurement(atomCountPlusIndices));
+    float value = (isDelete ? rangeMinMax[0] : getMeasurement(atomCountPlusIndices));
     if (rangeMinMax[0] != Float.MAX_VALUE
         && (value < rangeMinMax[0] || value > rangeMinMax[1]))
       return;
@@ -346,6 +351,30 @@ public class Measures extends Shape {
     viewer.setStatusMeasuring("measureCompleted",
         measurementCount, measureNew.toVector().toString());
     measurements[measurementCount++] = measureNew;
+  }
+
+  private float getMeasurement(int[] countPlusIndices) {
+      float value = Float.NaN;
+      int count = countPlusIndices[0];
+      Atom[] atoms = modelSet.getAtoms();
+      Point3fi ptA = atoms[countPlusIndices[1]];
+      Point3fi ptB = atoms[countPlusIndices[2]];
+      Point3fi ptC, ptD;
+      switch (count) {
+      case 2:
+        value = ptA.distance(ptB);
+        break;
+      case 3:
+        ptC = atoms[countPlusIndices[3]];
+        value = Measure.computeAngle(ptA, ptB, ptC, true);
+        break;
+      case 4:
+        ptC = atoms[countPlusIndices[3]];
+        ptD = atoms[countPlusIndices[4]];
+        value = Measure.computeTorsion(ptA, ptB, ptC, ptD, true);
+        break;
+      }
+      return value;
   }
 
   private void showHide(int[] atomCountPlusIndices, boolean isHide) {
@@ -420,10 +449,14 @@ public class Measures extends Shape {
     this.isAllConnected = isAllConnected;  
   }
   
-  private void pending(int[] countPlusIndices) {
-    pendingMeasurement.setCountPlusIndices(countPlusIndices);
+  private void pending(int[] countPlusIndices, Point3f ptClicked) {
+    if (ptClicked != null && !pendingMeasurement.checkPoint(countPlusIndices, ptClicked)) {
+      countPlusIndices[0]--;
+      return;
+    }
+    pendingMeasurement.setCountPlusIndices(countPlusIndices, ptClicked);
     if (pendingMeasurement.getCount() > 1)
-      viewer.setStatusMeasuring("measurePending" , pendingMeasurement.getCount(), pendingMeasurement.getString());
+      viewer.setStatusMeasuring("measurePending", pendingMeasurement.getCount(), pendingMeasurement.getString());
   }
 
   private void reformatDistances() {

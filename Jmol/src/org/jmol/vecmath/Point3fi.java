@@ -29,10 +29,12 @@ public class Point3fi extends Point3f {
   public int screenX;
   public int screenY;
   public int screenZ;
+  public short screenDiameter = -1;
 
   /* (non-Javadoc)
    * @see java.lang.Object#equals(java.lang.Object)
    */
+  
   public boolean equals(Object obj) {
     if (this == obj) {
       return true;

@@ -599,7 +599,6 @@ class Compiler {
               if (flowContext == null)
                 return error(ERROR_badContext, "end");
               isEnd = true;
-              System.out.println("end flowContext" + flowContext.token.value);
               if (flowContext.token.tok != Token.function)
                 token = new Token(tok, -flowContext.pt0, token.value); //copy
               break;
@@ -653,7 +652,6 @@ class Compiler {
                 flowContext.token = token;
               else
                 flowContext = new FlowContext(token, pt, flowContext);
-              System.out.println("flowContext" + flowContext.token.value + " " + lineCurrent);
             }
             break;
           }

@@ -42,7 +42,6 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
@@ -409,54 +408,6 @@ abstract public class AtomCollection {
       }
     }
     return points;
-  }
-
-  public float getMeasurement(int[] countPlusIndices) {
-    float value = Float.NaN;
-    if (countPlusIndices == null)
-      return value;
-    int count = countPlusIndices[0];
-    if (count < 2)
-      return value;
-    for (int i = count; --i >= 0;)
-      if (countPlusIndices[i + 1] < 0) {
-        return value;
-      }
-    switch (count) {
-    case 2:
-      value = getDistance(countPlusIndices[1], countPlusIndices[2]);
-      break;
-    case 3:
-      value = getAngle(countPlusIndices[1], countPlusIndices[2],
-          countPlusIndices[3]);
-      break;
-    case 4:
-      value = getTorsion(countPlusIndices[1], countPlusIndices[2],
-          countPlusIndices[3], countPlusIndices[4]);
-      break;
-    default:
-      Logger.error("Invalid count in measurement calculation:" + count);
-      throw new IndexOutOfBoundsException();
-    }
-
-    return value;
-  }
-
-  public float getDistance(int atomIndexA, int atomIndexB) {
-    return atoms[atomIndexA].distance(atoms[atomIndexB]);
-  }
-
-  public float getAngle(int atomIndexA, int atomIndexB, int atomIndexC) {
-    Point3f pointA = atoms[atomIndexA];
-    Point3f pointB = atoms[atomIndexB];
-    Point3f pointC = atoms[atomIndexC];
-    return Measure.computeAngle(pointA, pointB, pointC, true);
-  }
-
-  public float getTorsion(int atomIndexA, int atomIndexB, int atomIndexC,
-                   int atomIndexD) {
-    return Measure.computeTorsion(atoms[atomIndexA], atoms[atomIndexB],
-        atoms[atomIndexC], atoms[atomIndexD], true);
   }
 
   public void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {

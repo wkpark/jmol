@@ -49,7 +49,6 @@ final public class Atom extends Point3fi {
   int atomIndex;
   BitSet atomSymmetry;
   int atomSite;
-  public short screenDiameter;
   private float userDefinedVanDerWaalRadius;
   
   public int getScreenRadius() {
@@ -83,7 +82,7 @@ final public class Atom extends Point3fi {
     return isSimple;
   }
   
-  public Atom(Point3f pt) { 
+  public Atom(Point3f pt) {
     //just a point -- just enough to determine a position
     isSimple = true;
     this.x = pt.x; this.y = pt.y; this.z = pt.z;

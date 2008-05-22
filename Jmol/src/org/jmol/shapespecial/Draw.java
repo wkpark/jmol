@@ -460,7 +460,7 @@ public class Draw extends MeshCollection {
     // we also provide a flag CROSSED to uncross them
     this.makePoints = (n >= 0);
     if (makePoints) {
-      ptList = new Point3f[n];
+      ptList = new Point3f[Math.max(5,n)];
       if (bsAllModels == null)
         bsAllModels = viewer.getVisibleFramesBitSet();
     }

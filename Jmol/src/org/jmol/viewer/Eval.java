@@ -10993,6 +10993,9 @@ class Eval { //implements Runnable {
       case Token.bitset:
         sb.append(Token.sValue(token));
         continue;
+      case Token.seqcode:
+        sb.append('^');
+        continue;
       case Token.spec_seqcode_range:
         if (token.intValue != Integer.MAX_VALUE)
           sb.append(token.intValue);

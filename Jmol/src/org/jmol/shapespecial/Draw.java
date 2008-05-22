@@ -425,6 +425,7 @@ public class Draw extends MeshCollection {
       }
     }
     thisMesh.diameter = diameter;
+    thisMesh.isVector = isVector;
     thisMesh.width = (thisMesh.drawType == JmolConstants.DRAW_CYLINDER ? -Math.abs(width) : width);
     thisMesh.setCenter(-1);
     if (offset != null)
@@ -721,7 +722,8 @@ public class Draw extends MeshCollection {
     int iptlast = -1;
     int ipt = 0;
     for (int i = mesh.polygonCount; --i >= 0;) {
-      Point3f center = (mesh.ptCenters == null ? mesh.ptCenter
+      Point3f center = (mesh.isVector ? mesh.vertices[0] 
+          : mesh.ptCenters == null ? mesh.ptCenter
           : mesh.ptCenters[i]);
       if (center == null)
         return;

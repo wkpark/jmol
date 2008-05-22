@@ -62,13 +62,12 @@ public class DrawRenderer extends MeshRenderer {
     drawType = dmesh.drawType;
     diameter = dmesh.diameter;
     width = dmesh.width;
-    boolean isCurved = ((drawType == JmolConstants.DRAW_CURVE || drawType == JmolConstants.DRAW_ARROW)
-        && vertexCount >= 2);
+    boolean isCurved = ((drawType == JmolConstants.DRAW_CURVE || drawType == JmolConstants.DRAW_ARROW) && vertexCount >= 2);
     if (width > 0 && isCurved) {
-      pt1f.set(0,0,0);
+      pt1f.set(0, 0, 0);
       for (int i = 0; i < vertexCount; i++)
-      pt1f.add(vertices[i]);
-      pt1f.scale(1f/vertexCount);
+        pt1f.add(vertices[i]);
+      pt1f.scale(1f / vertexCount);
       viewer.transformPoint(pt1f, pt1i);
       diameter = viewer.scaleToScreen(pt1i.z, (int) (width * 1000));
       if (diameter == 0)
@@ -87,7 +86,7 @@ public class DrawRenderer extends MeshRenderer {
       if (width > 0)
         diameter = viewer.scaleToScreen(pt1i.z, (int) (width * 1000));
       if (diameter > 0 && (mesh.drawTriangles || mesh.fillTriangles))
-        g3d.drawCircleCentered(colix, diameter, pt1i.x, pt1i.y, pt1i.z, 
+        g3d.drawCircleCentered(colix, diameter, pt1i.x, pt1i.y, pt1i.z,
             mesh.fillTriangles);
       break;
     case JmolConstants.DRAW_CURVE:

@@ -50,6 +50,7 @@ public class DrawMesh extends Mesh {
   int drawVertexCount;
   int[] drawVertexCounts;
   boolean isFixed;
+  boolean isVector;
   float drawArrowScale;
 
   final void setCenter(int iModel) {

@@ -11734,6 +11734,8 @@ class Eval { //implements Runnable {
               (args.length == 4 ? ptValue(args[3]) : null), norm, vAB, vAC);
           return addX(new Point4f(norm.x, norm.y, norm.z, nd));
         default:
+          if (args.length != 4)
+            return false;
           float x = Token.fValue(args[0]);
           float y = Token.fValue(args[1]);
           float z = Token.fValue(args[2]);

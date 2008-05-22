@@ -207,27 +207,75 @@ public class UnitCell {
 
     final static double twoP2 = 2 * Math.PI * Math.PI;
     
-    Object[] getEllipsoid(float[] parBorU, boolean isU) {
-      //returns {Vector3f[3] unitVectors, float[3] lengths}
-      //from J.W. Jeffery, Methods in X-Ray Crystallography, Appendix VI,
-      // Academic Press, 1971
+    Object[] getEllipsoid(float[] parBorU) {
+      /*
+       * 
+       * returns {Vector3f[3] unitVectors, float[3] lengths}
+       * from J.W. Jeffery, Methods in X-Ray Crystallography, Appendix VI,
+       * Academic Press, 1971
+       * 
+       * comparing with Fischer and Tillmanns, Acta Cryst C44 775-776, 1988,
+       * these are really BETA values. Note that
 
-      // comparing with Fischer and Tillmanns, Acta Cryst C44 775-776, 1988,
-      // these are really BETA values, almost -- at least by this definition
-      // there is a factor of 2 in the cross terms. 
-      // THIS FACTOR IS NECESSARY for agreement with Mercury.
-      // 
+          T = exp(-2 pi^2 (a*b* U11h^2 + b*b* U22k^2 + c*c* U33l^2 
+              + 2 a*b* U12hk + 2 a*c* U13hl + 2 b*c* U23kl))
+
+       * (ORTEP type 8) is the same as
+
+          T = exp{-2 pi^2^ sum~i~[sum~j~(U~ij~ h~i~ h~j~ a*~i~ a*~j~)]}
+
+       * http://ndbserver.rutgers.edu/mmcif/dictionaries/html/cif_mm.dic/Items/_atom_site.aniso_u[1][2].html
+       * 
+       * Ortep:
+       * 
+Anisotropic temperature factor Types 0, 1, 2, 3, and 10 use the following formula for the
+complete temperature factor.
+
+Base^(-D(b11h2 + b22k2 + b33l2 + cb12hk + cb13hl + cb23kl))
+
+The coefficients bij (i,j = 1,2,3) of the various types are defined with the following constant settings.
+
+Type 0: Base = e, c = 2, D = 1
+Type 1: Base = e, c = 1, D = l
+Type 2: Base = 2, c = 2, D = l
+Type 3: Base = 2, c = 1, D = l
+
+Anisotropic temperature factor Types 4, 5, 8, and 9 use the following formula for the
+complete temperature factor, in which a1* , a2*, a3* are reciprocal cell dimensions.
+
+exp[ -D(a1*2U11h2 + a2*2U22k2 + a3*2U33l2 + C a1*a2*U12hk + C a1*a3 * U13hl + C a2*a3 * U23kl)]
+
+The coefficients Uij (i,j = 1,2,3) of the various types are defined with the following constant settings.
+
+Type 4: C = 2, D = 1?4
+Type 5: C = 1, D = 1?4
+Type 8: C = 2, D = 2p2
+Type 9: C = 1, D = 2p2
+
+       */
+      
       float[] lengths = new float[6]; // last three are for factored lengths
       if (parBorU[0] == 0) { // this is iso
         lengths[1] = (float) Math.sqrt(parBorU[7]);
         return new Object[] { null, lengths };
       }
-      double B11 = parBorU[0] * (isU ? twoP2 * a_ * a_ : 1);
-      double B22 = parBorU[1] * (isU ? twoP2 * b_ * b_ : 1);
-      double B33 = parBorU[2] * (isU ? twoP2 * c_ * c_ : 1);
-      double B12 = parBorU[3] * (isU ? twoP2 * a_ * b_ * 2 : 1);
-      double B13 = parBorU[4] * (isU ? twoP2 * a_ * c_ * 2 : 1);
-      double B23 = parBorU[5] * (isU ? twoP2 * b_ * c_ * 2 : 1);
+
+      int ortepType = (int) parBorU[6];
+      boolean isFractional = (ortepType == 4 || ortepType == 5
+          || ortepType == 8 || ortepType == 9);
+      double cc = 2 - (ortepType % 2);
+      double dd = (ortepType == 8 || ortepType == 9 || ortepType == 10 ? twoP2
+          : ortepType == 4 || ortepType == 5 ? 0.25 
+          : ortepType == 2 || ortepType == 3 ? Math.log(2)
+          : 1 );
+      // types 6 and 7 not supported
+      
+      double B11 = parBorU[0] * dd * (isFractional ? a_ * a_ : 1);
+      double B22 = parBorU[1] * dd * (isFractional ? b_ * b_ : 1);
+      double B33 = parBorU[2] * dd * (isFractional ? c_ * c_ : 1);
+      double B12 = parBorU[3] * dd * (isFractional ? a_ * b_ : 1) * cc;
+      double B13 = parBorU[4] * dd * (isFractional ? a_ * c_ : 1) * cc;
+      double B23 = parBorU[5] * dd * (isFractional ? b_ * c_ : 1) * cc;
 
       // set bFactor = (U11*U22*U33)
       parBorU[7] = (float) Math.pow(B11 / twoP2 / a_ / a_ * B22 / twoP2
@@ -247,6 +295,7 @@ public class UnitCell {
       Bcart[4] = 2 * c * c * cB_ * cosBeta * B33 + b * c * cosGamma * B23 + a
           * c * cB_ * B13;
       Bcart[5] = 2 * c * c * cA_ * cB_ * B33 + b * c * cB_ * sinGamma * B23;
+
       Vector3f unitVectors[] = new Vector3f[3];
       for (int i = 0; i < 3; i++)
         unitVectors[i] = new Vector3f();
@@ -268,7 +317,7 @@ public class UnitCell {
       return null;
     if (data == null)
       data = new Data();
-    return data.getEllipsoid(parBorU, parBorU[6] != 0);
+    return data.getEllipsoid(parBorU);
   }
 
   private void calcNotionalMatrix() {

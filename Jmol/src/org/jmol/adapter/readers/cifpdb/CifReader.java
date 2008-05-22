@@ -663,7 +663,7 @@ public class CifReader extends AtomSetCollectionReader {
               if (atom.anisoBorU == null)
                 atom.anisoBorU = new float[8];
               atom.anisoBorU[7] = parseFloat(loopData[j]);
-              atom.anisoBorU[6] = 1; // U not B
+              atom.anisoBorU[6] = 8; // Ortep Type 8: D = 2pi^2, C = 2, a*b*
             }
           }
           break;
@@ -689,7 +689,7 @@ public class CifReader extends AtomSetCollectionReader {
             atom.anisoBorU = new float[8];
           int iType = (propertyOf[i] - ANISO_U11) % 6;
           atom.anisoBorU[iType] = parseFloat(field);
-          atom.anisoBorU[6] = 1; // U not B
+          atom.anisoBorU[6] = 8; // D = 2pi^2, C = 2, a*b*
           break;
         case ANISO_B11:
         case ANISO_B22:
@@ -697,12 +697,11 @@ public class CifReader extends AtomSetCollectionReader {
         case ANISO_B12:
         case ANISO_B13:
         case ANISO_B23:
-          /*          if (atom.anisoBorU == null)
-           atom.anisoBorU = new float[8];
+           if (atom.anisoBorU == null)
+             atom.anisoBorU = new float[8];
            int iTypeB = (propertyOf[i] - ANISO_B11) % 6;
-           atom.anisoBorU[iTypeB] = parseFloat(field) / EIGHT_PI_SQUARED;          
-           atom.anisoBorU[6] = 1; // still U
-           */
+           atom.anisoBorU[iTypeB] = parseFloat(field);
+           atom.anisoBorU[6] = 4; // Ortep Type 4: D = 1/4, C = 2, a*b*
           break;
         }
       }
@@ -732,9 +731,7 @@ public class CifReader extends AtomSetCollectionReader {
     }
     return true;
   }
-    
-//  final private static float EIGHT_PI_SQUARED = (float) (8 * Math.PI * Math.PI);
-  
+     
   ////////////////////////////////////////////////////////////////
   // bond data
   ////////////////////////////////////////////////////////////////

@@ -6820,6 +6820,8 @@ class Eval { //implements Runnable {
       }
       if (key.equalsIgnoreCase("trajectory") || key.equalsIgnoreCase("trajectories")) {
         Token token = tokenSetting(2); //if an expression, we are done
+        if (isSyntaxCheck)
+          return;
         if (token.tok == Token.decimal) //if a number, we just set its trajectory
           viewer.getModelNumberIndex(token.intValue, false, true);
         return;

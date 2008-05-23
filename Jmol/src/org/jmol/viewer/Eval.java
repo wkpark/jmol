@@ -5641,7 +5641,7 @@ class Eval { //implements Runnable {
           Vector3f[] axes = new Vector3f[3];
           for (int j = 0; j < 3; j++) {
             axes[j] = new Vector3f();
-            axes[j].set(getPoint3f(++i, true));
+            axes[j].set(centerParameter(++i));
             i = iToken;
           }
           value = axes;
@@ -11523,6 +11523,9 @@ class Eval { //implements Runnable {
         return evaluateReplace(args);
       case Token.array:
         return evaluateArray(args);
+      case Token.cos:
+      case Token.sin:
+        return evaluateCosSin(args, tok == Token.cos);
       case Token.cross:
         return evaluateCross(args);
       case Token.random:
@@ -11948,6 +11951,15 @@ class Eval { //implements Runnable {
       for (int i = 0; i < args.length; i++)
         array[i] = Token.sValue(args[i]);
       return addX(array);
+    }
+
+    private boolean evaluateCosSin(Token[] args, boolean isCos) throws ScriptException {
+      if (args.length != 1)
+        return false;
+      if (isSyntaxCheck)
+        return addX(1);
+      double x = Token.fValue(args[0]) * Math.PI / 180;
+      return addX((float) ((isCos ? Math.cos(x) : Math.sin(x))));
     }
 
     private boolean evaluateRandom(Token[] args) throws ScriptException {

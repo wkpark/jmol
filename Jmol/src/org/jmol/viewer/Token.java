@@ -437,6 +437,8 @@ public class Token {
   final static int substructure = 2  | 1 << 3 | mathfunc;
   final static int script       = 3  | 1 << 3 | mathfunc | command;
   final static int javascript   = 4  | 1 << 3 | mathfunc | command | specialstring;
+  final static int sin          = 5  | 1 << 3 | mathfunc;
+  final static int cos          = 6  | 1 << 3 | mathfunc;
 
   // ___.xxx(a)
   
@@ -1223,6 +1225,7 @@ public class Token {
     "coord",            new Token(coord),
     "coordinates",      null,
     "coords",           null,
+    "cos",            new Token(cos),
     "cross",            new Token(cross),
     "defaultColors",    new Token(defaultColors),
     "delete",           new Token(delete),
@@ -1323,6 +1326,7 @@ public class Token {
     "selected",         new Token(selected),
     "shapely",          new Token(shapely),
     "sidechain",        new Token(sidechain),
+    "sin",              new Token(sin),
     "site",             new Token(site),
     "size",             new Token(size),
     "solid",            new Token(solid),

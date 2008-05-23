@@ -511,6 +511,8 @@ public class Draw extends MeshCollection {
         DrawMesh m = dmeshes[idInfo[0]];
         boolean isReversed = (idInfo[1] == 1);
         boolean isVertices = (idInfo[2] == 1);
+        if (m.modelIndex > 0 && m.modelIndex != iModel)
+          return false;
         if (bsAllModels == null)
           bsAllModels = new BitSet();
         if (isPlane && !isCircle || isPerpendicular || isVertices) {

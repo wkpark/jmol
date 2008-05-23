@@ -11523,6 +11523,8 @@ class Eval { //implements Runnable {
         return evaluateReplace(args);
       case Token.array:
         return evaluateArray(args);
+      case Token.cross:
+        return evaluateCross(args);
       case Token.random:
         return evaluateRandom(args);
       case Token.split:
@@ -11957,6 +11959,21 @@ class Eval { //implements Runnable {
       float range = (args.length == 0 ? 1 : Token.fValue(args[args.length - 1]));
       range -= lower;
       return addX((float)(Math.random() * range) + lower);
+    }
+
+    private boolean evaluateCross(Token[] args) throws ScriptException {
+      if (args.length != 2)
+        return false;
+      Token x1 = args[0];
+      Token x2 = args[1];
+      if (x1.tok != Token.point3f || x2.tok != Token.point3f)
+        return false;
+      if (isSyntaxCheck)
+        return addX(new Point3f());
+      Vector3f a = new Vector3f((Point3f)x1.value);
+      Vector3f b = new Vector3f((Point3f)x2.value);
+      a.cross(a, b);
+      return addX(new Point3f(a));
     }
 
     private boolean evaluateLoad(Token[] args) throws ScriptException {

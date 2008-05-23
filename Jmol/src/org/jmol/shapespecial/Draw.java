@@ -727,6 +727,8 @@ public class Draw extends MeshCollection {
           : mesh.ptCenters[i]);
       if (center == null)
         return;
+      if (mesh.polygonIndexes[i] == null)
+        continue;
       iptlast = -1;
       for (int iV = mesh.polygonIndexes[i].length; --iV >= 0;) {
         ipt = mesh.polygonIndexes[i][iV];

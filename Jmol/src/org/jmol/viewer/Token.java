@@ -461,6 +461,8 @@ public class Token {
 
   final static int random       = 1  | 2 << 3 | mathfunc;
   final static int data         = 2  | 2 << 3 | mathfunc | command;
+  final static int cross        = 3  | 2 << 3 | mathfunc;
+
   // ___.xxx(a,b)
 
   // note that distance is here because it can take two forms:
@@ -1221,6 +1223,7 @@ public class Token {
     "coord",            new Token(coord),
     "coordinates",      null,
     "coords",           null,
+    "cross",            new Token(cross),
     "defaultColors",    new Token(defaultColors),
     "delete",           new Token(delete),
     "direction",        new Token(direction),

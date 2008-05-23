@@ -248,14 +248,14 @@ public class Measurement {
 
   private String formatDistance(float dist) {
     int nDist = (int)(dist * 100 + 0.5f);
-    float value = nDist;
+    float value;
     String units = viewer.getMeasureDistanceUnits();
     if (units == "nanometers") {
       units = "nm";
       value = nDist / 1000f;
     } else if (units == "picometers") {
       units = "pm";
-      value = nDist;
+      value = (int)((dist * 1000 + 0.5)) / 10f;
     } else if (units == "au") {
       value = (int) (dist / JmolConstants.ANGSTROMS_PER_BOHR * 1000 + 0.5f) / 1000f;
     } else {

@@ -525,6 +525,8 @@ public class Sphere3D {
           }
           iRoot = (z < slab ? 1 : 0);
           zPixel = (int) zroot[iRoot];
+          if (zPixel == 0)
+            zPixel = z;
           mode = 2;
           if (checkOctant) {
             ptTemp.set(xCurrent - x, yCurrent - y, zPixel - z);

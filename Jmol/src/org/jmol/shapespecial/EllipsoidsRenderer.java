@@ -188,27 +188,26 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private void render1(Atom atom, Object[] ellipsoid) {
     s0.set(atom.screenX, atom.screenY, atom.screenZ);
     float[] lengths = (float[]) ellipsoid[1];
-    for (int i = 3; --i >= 0;)
+    boolean isOK = true;
+    for (int i = 3; --i >= 0;) {
       factoredLengths[i] = lengths[i + 3];
+      if (Float.isNaN(factoredLengths[i]))
+        isOK = false;
+    }
     axes = (Vector3f[]) ellipsoid[0];
     if (axes == null) { //isotropic
       axes = unitVectors;
     }
     setMatrices();
     //[0] is shortest; [2] is longest
-    if (drawAxes || drawArcs || drawBall)
-      setAxes(atom, 1.0f);
+    setAxes(atom, 1.0f);
     if (g3d.isClippedXY(dx + dx, atom.screenX, atom.screenY))
       return;
     diameter = viewer.scaleToScreen(atom.screenZ, wireframeOnly ? 1 : diameter0);
-    if (drawDots)
-      renderDots(atom);
-    if (drawAxes && !drawBall)
-      renderAxes();
-    if (drawArcs && !drawBall)
-      renderArcs(atom);
-    if (drawBall) {
+    if (!isOK || drawBall) {
       renderBall();
+      if (!isOK)
+        return;
       if (drawArcs || drawAxes) {
         g3d.setColix(viewer.getColixBackgroundContrast());
         //setAxes(atom, 1.0f);
@@ -218,7 +217,14 @@ public class EllipsoidsRenderer extends ShapeRenderer {
           renderArcs(atom);
         g3d.setColix(colix);
       }
+    } else {
+      if (drawAxes)
+        renderAxes();
+      if (drawArcs)
+        renderArcs(atom);      
     }
+    if (drawDots)
+      renderDots(atom);
   }
 
   private void setMatrices() {
@@ -250,16 +256,17 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     for (int i = 0; i < 6; i++) {
       int iAxis = axisPoints[i];
       int i012 = Math.abs(iAxis) - 1;
-      points[i].scaleAdd(f * factoredLengths[i012] * (iAxis < 0 ? -1 : 1), axes[i012], center);
+      points[i].scaleAdd(f * factoredLengths[i012] * (iAxis < 0 ? -1 : 1),
+          axes[i012], center);
       pt1.set(unitAxisPoints[i]);
       pt1.scale(f);
-      
+
       matEllipsoidToScreen.transform(pt1);
-      screens[i].set((int)(s0.x + pt1.x * perspectiveFactor), 
-          (int)(s0.y + pt1.y * perspectiveFactor), 
-          (int)(pt1.z + s0.z));
+      screens[i].set((int) (s0.x + pt1.x * perspectiveFactor),
+          (int) (s0.y + pt1.y * perspectiveFactor), (int) (pt1.z + s0.z));
     }
-    dx = 2 + viewer.scaleToScreen(s0.z, (int)(f * factoredLengths[2] * 1000));
+    dx = 2 + viewer.scaleToScreen(s0.z, 
+        (int) (f * (Float.isNaN(factoredLengths[2]) ? 1.0 : factoredLengths[2]) * 1000));
   }
 
   private void renderAxes() {

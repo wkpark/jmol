@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-04-20 11:58+0200\n"
+"POT-Creation-Date: 2008-05-24 21:38+0200\n"
 "PO-Revision-Date: 2007-05-10 16:31+0200\n"
 "Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -231,10 +231,6 @@ msgstr "Son Dosyalar..."
 #: org/openscience/jmol/app/GuiMap.java:61
 msgid "&Edit"
 msgstr "Düz&enle"
-
-#: org/openscience/jmol/app/GuiMap.java:62
-msgid "Make crystal..."
-msgstr "Kristal oluştur..."
 
 #: org/openscience/jmol/app/GuiMap.java:63
 #: org/openscience/jmol/app/GuiMap.java:69
@@ -1227,7 +1223,7 @@ msgstr "Durum"
 msgid "Undo"
 msgstr "Geri Al"
 
-#: org/openscience/jmol/app/ScriptWindow.java:118
+#: org/openscience/jmol/app/ScriptWindow.java:119
 msgid "Redo"
 msgstr "Yinele"
 
@@ -1238,6 +1234,9 @@ msgstr "Yükleniyor..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Jmol'da Neler Yeni"
+
+#~ msgid "Make crystal..."
+#~ msgstr "Kristal oluştur..."
 
 #~ msgid "Export view to an image or script file."
 #~ msgstr "Görünümü bir resim ya da betik dosyasına aktar."

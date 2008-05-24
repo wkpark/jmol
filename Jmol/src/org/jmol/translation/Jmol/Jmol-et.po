@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-04-20 11:58+0200\n"
+"POT-Creation-Date: 2008-05-24 21:38+0200\n"
 "PO-Revision-Date: 2007-12-26 15:51+0200\n"
 "Last-Translator: Ivo Sarak <ivo@vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -230,10 +230,6 @@ msgstr "Hiljutised failid..."
 #: org/openscience/jmol/app/GuiMap.java:61
 msgid "&Edit"
 msgstr "&Muuda"
-
-#: org/openscience/jmol/app/GuiMap.java:62
-msgid "Make crystal..."
-msgstr "Tee kristall..."
 
 #: org/openscience/jmol/app/GuiMap.java:63
 #: org/openscience/jmol/app/GuiMap.java:69
@@ -1215,7 +1211,7 @@ msgstr "Olek"
 msgid "Undo"
 msgstr "Tühista"
 
-#: org/openscience/jmol/app/ScriptWindow.java:118
+#: org/openscience/jmol/app/ScriptWindow.java:119
 msgid "Redo"
 msgstr "Tee uuesti"
 
@@ -1226,6 +1222,9 @@ msgstr "Laeb..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Mida uut on Jmol'is"
+
+#~ msgid "Make crystal..."
+#~ msgstr "Tee kristall..."
 
 #~ msgid "Export view to an image or script file."
 #~ msgstr "Ekspordi vaade pildiks või skripti faili."

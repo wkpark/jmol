@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-04-20 11:58+0200\n"
+"POT-Creation-Date: 2008-05-24 21:38+0200\n"
 "PO-Revision-Date: 2008-04-05 21:20+0900\n"
 "Last-Translator: Won-Kyu Park <wkpark@kldp.org>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -226,10 +226,6 @@ msgstr "최근 파일..."
 #: org/openscience/jmol/app/GuiMap.java:61
 msgid "&Edit"
 msgstr "편집(&E)"
-
-#: org/openscience/jmol/app/GuiMap.java:62
-msgid "Make crystal..."
-msgstr "결정 만들기..."
 
 #: org/openscience/jmol/app/GuiMap.java:63
 #: org/openscience/jmol/app/GuiMap.java:69
@@ -1211,7 +1207,7 @@ msgstr "상태"
 msgid "Undo"
 msgstr "무르기"
 
-#: org/openscience/jmol/app/ScriptWindow.java:118
+#: org/openscience/jmol/app/ScriptWindow.java:119
 msgid "Redo"
 msgstr "되무르기"
 
@@ -1222,3 +1218,6 @@ msgstr "불러오기..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Jmol의 새로와진 점"
+
+#~ msgid "Make crystal..."
+#~ msgstr "결정 만들기..."

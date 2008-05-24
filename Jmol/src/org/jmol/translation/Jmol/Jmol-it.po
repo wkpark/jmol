@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-04-20 11:58+0200\n"
+"POT-Creation-Date: 2008-05-24 21:38+0200\n"
 "PO-Revision-Date: 2008-04-14 12:26+0000\n"
 "Last-Translator: Matteo Ferrabone <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
@@ -229,10 +229,6 @@ msgstr "File Recenti"
 #: org/openscience/jmol/app/GuiMap.java:61
 msgid "&Edit"
 msgstr "&Modifica"
-
-#: org/openscience/jmol/app/GuiMap.java:62
-msgid "Make crystal..."
-msgstr "Crea cristallo..."
 
 #: org/openscience/jmol/app/GuiMap.java:63
 #: org/openscience/jmol/app/GuiMap.java:69
@@ -1215,7 +1211,7 @@ msgstr "Stato"
 msgid "Undo"
 msgstr "Annulla"
 
-#: org/openscience/jmol/app/ScriptWindow.java:118
+#: org/openscience/jmol/app/ScriptWindow.java:119
 msgid "Redo"
 msgstr "Ripeti"
 
@@ -1226,3 +1222,6 @@ msgstr "Caricamento..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Cosa c'è di nuovo in Jmol"
+
+#~ msgid "Make crystal..."
+#~ msgstr "Crea cristallo..."

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-04-20 11:58+0200\n"
+"POT-Creation-Date: 2008-05-24 21:38+0200\n"
 "PO-Revision-Date: 2007-05-13 18:40+0200\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -232,10 +232,6 @@ msgstr "Fitxers recents..."
 #: org/openscience/jmol/app/GuiMap.java:61
 msgid "&Edit"
 msgstr "&Edita"
-
-#: org/openscience/jmol/app/GuiMap.java:62
-msgid "Make crystal..."
-msgstr "Fes un cristall..."
 
 #: org/openscience/jmol/app/GuiMap.java:63
 #: org/openscience/jmol/app/GuiMap.java:69
@@ -1230,7 +1226,7 @@ msgstr "Estat"
 msgid "Undo"
 msgstr "Desfés"
 
-#: org/openscience/jmol/app/ScriptWindow.java:118
+#: org/openscience/jmol/app/ScriptWindow.java:119
 msgid "Redo"
 msgstr "Refés"
 
@@ -1241,6 +1237,9 @@ msgstr "S'està carregant..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Novetats del Jmol"
+
+#~ msgid "Make crystal..."
+#~ msgstr "Fes un cristall..."
 
 #~ msgid "Export view to an image or script file."
 #~ msgstr "Exporta la visualització a un fitxer d'imatge o script."

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-04-20 11:58+0200\n"
+"POT-Creation-Date: 2008-05-24 21:38+0200\n"
 "PO-Revision-Date: 2007-02-20 21:38+0100\n"
 "Last-Translator: Martin Slavík <martin.slavik@tul.cz>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
@@ -234,10 +234,6 @@ msgstr "Naposledy otevřené soubory..."
 #: org/openscience/jmol/app/GuiMap.java:61
 msgid "&Edit"
 msgstr "&Upravit"
-
-#: org/openscience/jmol/app/GuiMap.java:62
-msgid "Make crystal..."
-msgstr "Vytvořit krystal..."
 
 #: org/openscience/jmol/app/GuiMap.java:63
 #: org/openscience/jmol/app/GuiMap.java:69
@@ -1230,7 +1226,7 @@ msgstr "Stav"
 msgid "Undo"
 msgstr ""
 
-#: org/openscience/jmol/app/ScriptWindow.java:118
+#: org/openscience/jmol/app/ScriptWindow.java:119
 msgid "Redo"
 msgstr ""
 
@@ -1241,6 +1237,9 @@ msgstr "Nahrávám..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Novinky v programu Jmol"
+
+#~ msgid "Make crystal..."
+#~ msgstr "Vytvořit krystal..."
 
 #~ msgid "Export view to an image or script file."
 #~ msgstr "Exportovat pohled do obrázku nebo skriptovacího souboru."

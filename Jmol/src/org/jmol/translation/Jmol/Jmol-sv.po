@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-04-20 11:58+0200\n"
+"POT-Creation-Date: 2008-05-24 21:38+0200\n"
 "PO-Revision-Date: 2008-03-19 14:42+0000\n"
 "Last-Translator: carson <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -229,10 +229,6 @@ msgstr ""
 #: org/openscience/jmol/app/GuiMap.java:61
 msgid "&Edit"
 msgstr "&Redigera"
-
-#: org/openscience/jmol/app/GuiMap.java:62
-msgid "Make crystal..."
-msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:63
 #: org/openscience/jmol/app/GuiMap.java:69
@@ -1211,7 +1207,7 @@ msgstr ""
 msgid "Undo"
 msgstr ""
 
-#: org/openscience/jmol/app/ScriptWindow.java:118
+#: org/openscience/jmol/app/ScriptWindow.java:119
 msgid "Redo"
 msgstr ""
 

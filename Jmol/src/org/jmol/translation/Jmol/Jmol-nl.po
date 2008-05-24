@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-04-20 11:58+0200\n"
+"POT-Creation-Date: 2008-05-24 21:38+0200\n"
 "PO-Revision-Date: 2007-12-27 08:57+0100\n"
 "Last-Translator: Egon Willighagen <egon.willighagen@gmail.com>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -230,10 +230,6 @@ msgstr "Recente Bestanden..."
 #: org/openscience/jmol/app/GuiMap.java:61
 msgid "&Edit"
 msgstr "B&ewerken"
-
-#: org/openscience/jmol/app/GuiMap.java:62
-msgid "Make crystal..."
-msgstr "Maak kristal..."
 
 #: org/openscience/jmol/app/GuiMap.java:63
 #: org/openscience/jmol/app/GuiMap.java:69
@@ -1215,7 +1211,7 @@ msgstr "Toestand"
 msgid "Undo"
 msgstr "Ongedaan maken"
 
-#: org/openscience/jmol/app/ScriptWindow.java:118
+#: org/openscience/jmol/app/ScriptWindow.java:119
 msgid "Redo"
 msgstr "Opnieuw uitvoeren"
 
@@ -1226,6 +1222,9 @@ msgstr "Laden..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Wat is nieuw in Jmol"
+
+#~ msgid "Make crystal..."
+#~ msgstr "Maak kristal..."
 
 #~ msgid "Export view to an image or script file."
 #~ msgstr "Exporteer de weergave of een script naar bestand."

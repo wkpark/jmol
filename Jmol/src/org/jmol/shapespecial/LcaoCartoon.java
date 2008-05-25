@@ -204,9 +204,12 @@ public class LcaoCartoon extends Isosurface {
     isMolecular = (isMolecular && (thisType.indexOf("px") >= 0
         || thisType.indexOf("py") >= 0 || thisType.indexOf("pz") >= 0));
     int atomCount = viewer.getAtomCount();
+    String lcaoID0 = lcaoID;
     for (int i = 0; i < atomCount; i++)
-      if (thisSet.get(i))
+      if (thisSet.get(i)) {
         createLcaoCartoon(i);
+        lcaoID = lcaoID0;
+      }
   }
 
   private void createLcaoCartoon(int iAtom) {
@@ -216,6 +219,7 @@ public class LcaoCartoon extends Isosurface {
         deleteMesh(i);
     super.setProperty("init", null, null);
     super.setProperty("thisID", id, null);
+    System.out.println("lcaocartoon: " + id);
     if (lcaoScale != null)
       super.setProperty("scale", lcaoScale, null);
     if (lcaoColorNeg != null) {

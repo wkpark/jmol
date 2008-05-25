@@ -122,7 +122,8 @@ public class Draw extends MeshCollection {
       modelCount = viewer.getModelCount();
       bsAllModels = null;
       setPropertySuper("thisID", JmolConstants.PREVIOUS_MESH_ID, null);
-      //fall through to MeshCollection "init"
+      setPropertySuper("init", value, bs);
+      return;
     }
 
     if ("length" == propertyName) {

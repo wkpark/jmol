@@ -6514,6 +6514,12 @@ class Eval { //implements Runnable {
     return iShape;
   }
 
+  private String getShapeId(int index) throws ScriptException {
+    return parameterAsString(index) 
+        + (tokAt(index + 1) == Token.times 
+            ? getToken(++index).value : "");
+  }
+  
   private void font(int shapeType, float fontsize) throws ScriptException {
     String fontface = "SansSerif";
     String fontstyle = "Plain";
@@ -9125,7 +9131,8 @@ class Eval { //implements Runnable {
         if (idSeen)
           error(ERROR_invalidArgument);
         propertyName = "thisID";
-        propertyValue = str;
+        propertyValue = getShapeId(i);
+        i = iToken;
         break;
       case Token.model:
         int modelIndex = modelNumberParameter(++i);
@@ -9354,7 +9361,8 @@ class Eval { //implements Runnable {
         if (idSeen)
           error(ERROR_invalidArgument);
         propertyName = "thisID";
-        propertyValue = str;
+        propertyValue = getShapeId(i);
+        i = iToken;
         break;
       case Token.dollarsign:
         // $drawObject[m]
@@ -10476,8 +10484,10 @@ class Eval { //implements Runnable {
           propertyValue = data;
           break;
         }
-        propertyValue = str;
-      //fall through for identifiers
+        propertyName = "thisID";
+        propertyValue = getShapeId(i);
+        i = iToken;
+        break;
       case Token.all:
         if (idSeen)
           error(ERROR_invalidArgument);

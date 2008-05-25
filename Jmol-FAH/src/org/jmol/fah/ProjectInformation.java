@@ -25,17 +25,22 @@
 
 package org.jmol.fah;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Vector;
@@ -228,6 +233,75 @@ public class ProjectInformation {
     addPSInformation();
     addQDInformation();
     addFCIInformation();
+  }
+
+  /**
+   * Update a local file from an URL.
+   * 
+   * @param file Local file.
+   * @param url URL.
+   */
+  private void updateFileFromUrl(File file, URL url) {
+    if ((file == null) || (url == null)) {
+      return;
+    }
+    OutputStream output = null;
+    InputStream input = null;
+    try {
+
+      System.out.print("Updating " + file.getName() + " from " + url.toExternalForm() + ": ");
+      // Get last-modified times of the URL
+      URLConnection connection = url.openConnection();
+      if (connection == null) {
+        System.out.println("Unable to access URL");
+        return;
+      }
+      long urlTime = connection.getLastModified();
+      if (urlTime == 0) {
+        System.out.println("Unable to retrieve last-modified information");
+        return;
+      }
+
+      // Get last-modified time of the file
+      long fileTime = file.lastModified();
+      if (fileTime >= urlTime) {
+        System.out.println("File already up to date");
+        return;
+      }
+
+      // Retrieve the file
+      File tmpFile = new File(file.getParentFile(), file.getName() + ".tmp");
+      output = new BufferedOutputStream(new FileOutputStream(tmpFile));
+      input = new BufferedInputStream(connection.getInputStream());
+      int data;
+      while ((data = input.read()) != -1) {
+        output.write(data);
+      }
+      input.close();
+      output.close();
+
+      // Manage local file
+      file.delete();
+      tmpFile.renameTo(file);
+      System.out.println("File updated");
+    } catch (IOException e) {
+      System.out.println("Error " + e.getMessage());
+    } finally {
+      if (input != null) {
+        try {
+          input.close();
+        } catch (IOException e) {
+          //
+        }
+      }
+      if (output != null) {
+        try {
+          output.close();
+        } catch (IOException e) {
+          //
+        }
+      }
+    }
   }
 
   /**
@@ -534,21 +608,15 @@ public class ProjectInformation {
     factory.setNamespaceAware(true);
 
     try {
-      //Load document
-      InputStream stream = null;
-      if (_local == true) {
-        stream = new FileInputStream("project-summary.xml"); //$NON-NLS-1$
-      } else {
-        StringBuffer urlName = new StringBuffer();
-        urlName.append("http://fci.fatalerrorgroup.com/xml-data/"); //$NON-NLS-1$
-        urlName.append("project-summary.xml"); //$NON-NLS-1$
-        try {
-          URL url = new URL(urlName.toString());
-          stream = url.openStream();
-        } catch (MalformedURLException mue) {
-          mue.printStackTrace();
-        }
+      // Retrieve distant file
+      File localFile = new File("fci-data.xml");
+      URL distantUrl = new URL("http://fci.fatalerrorgroup.com/xml-data/project-summary.xml");
+      if (_local == false) {
+        updateFileFromUrl(localFile, distantUrl);
       }
+
+      //Load document
+      InputStream stream = new FileInputStream(localFile);
       DocumentBuilder builder = factory.newDocumentBuilder();
       Document document = builder.parse(stream);
 

@@ -60,7 +60,7 @@ public abstract class MeshCollection extends Shape {
   
   private Mesh setMesh(String thisID) {
     linkedMesh = null;
-    if (thisID == null) {
+    if (thisID == null || thisID.indexOf("*") >= 0) {
       currentMesh = null;
       return null;
     }
@@ -130,7 +130,7 @@ public abstract class MeshCollection extends Shape {
     if ("thisID" == propertyName) {
       String id = (String) value;
       setMesh(id);
-      explicitID = id != null && !id.equals(JmolConstants.PREVIOUS_MESH_ID);
+      explicitID = (id != null && !id.equals(JmolConstants.PREVIOUS_MESH_ID));
       if (explicitID)
         previousMeshID = id;
       return;
@@ -174,25 +174,28 @@ public abstract class MeshCollection extends Shape {
       return;
     }
 
-    if ("on" == propertyName) {
-      if (currentMesh != null)
-        currentMesh.visible = true;
-      else {
-        for (int i = meshCount; --i >= 0;)
-          meshes[i].visible = true;
+    boolean isOn; 
+    if ((isOn = ("on" == propertyName)) || "off" == propertyName) {
+      if (currentMesh != null) {
+        currentMesh.visible = isOn;
+      } else {
+        int i = 0;
+        String key = (explicitID && previousMeshID != null
+            && (i = previousMeshID.indexOf("*")) >= 0 ? 
+                previousMeshID.substring(0, i).toLowerCase() : null);
+        if (key == null || key.length() == 0) {
+          for (i = meshCount; --i >= 0;)
+            meshes[i].visible = isOn;
+        } else {
+          for (i = 0; i < meshCount; i++) {
+            if (meshes[i].thisID.toLowerCase().indexOf(key) == 0)
+              meshes[i].visible = isOn;
+          }
+        }
       }
       return;
     }
-    if ("off" == propertyName) {
-      if (currentMesh != null)
-        currentMesh.visible = false;
-      else {
-        for (int i = meshCount; --i >= 0;)
-          meshes[i].visible = false;
-      }
-      return;
-    }
-
+    
     if ("color" == propertyName) {
       if (value == null)
         return;
@@ -342,18 +345,28 @@ public abstract class MeshCollection extends Shape {
   }
 
   private void deleteMesh() {
+    int i = 0;
     if (explicitID && currentMesh != null) {
-      int iCurrent;
-      for (iCurrent = meshCount; meshes[--iCurrent] != currentMesh; )
-        {}
-      deleteMesh(iCurrent);
+      for (i = meshCount; meshes[--i] != currentMesh;) {
+      }
+      deleteMesh(i);
     } else {
-      for (int i = meshCount; --i >= 0; )
-        meshes[i] = null;
-      meshCount = 0;
-      nUnnamed = 0;
+      String key = (explicitID && previousMeshID != null
+          && (i = previousMeshID.indexOf("*")) >= 0 ? 
+              previousMeshID.substring(0, i).toLowerCase() : null);
+      if (key == null || key.length() == 0) {
+        for (i = meshCount; --i >= 0; )
+          meshes[i] = null;
+        meshCount = 0;
+        nUnnamed = 0;
+      } else {
+        for (i = meshCount; --i >= 0; ) {
+          if (meshes[i].thisID.toLowerCase().indexOf(key) == 0)
+            deleteMesh(i);
+        }
+      }
     }
-    currentMesh = null; 
+    currentMesh = null;
   }
 
   public void deleteMesh(int i) {

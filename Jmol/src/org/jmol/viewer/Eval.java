@@ -6514,12 +6514,6 @@ class Eval { //implements Runnable {
     return iShape;
   }
 
-  private String getShapeId(int index) throws ScriptException {
-    return parameterAsString(index) 
-        + (tokAt(index + 1) == Token.times 
-            ? getToken(++index).value : "");
-  }
-  
   private void font(int shapeType, float fontsize) throws ScriptException {
     String fontface = "SansSerif";
     String fontstyle = "Plain";
@@ -9111,7 +9105,14 @@ class Eval { //implements Runnable {
     for (int i = iToken; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
-      switch (getToken(i).tok) {
+      int tok = getToken(i).tok;
+      if (i == 1 && tokAt(2) == Token.times)
+        tok = Token.nada;
+      switch (tok) {
+      case Token.nada:
+        propertyName = "thisID";
+        propertyValue = parameterAsString(i) + getToken(++i).value;
+        break;
       case Token.identifier:
         String str = parameterAsString(i);
         if (str.equalsIgnoreCase("FIXED")) {
@@ -9131,8 +9132,7 @@ class Eval { //implements Runnable {
         if (idSeen)
           error(ERROR_invalidArgument);
         propertyName = "thisID";
-        propertyValue = getShapeId(i);
-        i = iToken;
+        propertyValue = str;
         break;
       case Token.model:
         int modelIndex = modelNumberParameter(++i);
@@ -9245,7 +9245,14 @@ class Eval { //implements Runnable {
     for (int i = iToken; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
-      switch (getToken(i).tok) {
+      int tok = getToken(i).tok;
+      if (i == 1 && tokAt(2) == Token.times)
+        tok = Token.nada;
+      switch (tok) {
+      case Token.nada:
+        propertyName = "thisID";
+        propertyValue = parameterAsString(i) + getToken(++i).value;
+        break;
       case Token.string:
         propertyValue = stringParameter(i);
         propertyName = "title";
@@ -9361,7 +9368,7 @@ class Eval { //implements Runnable {
         if (idSeen)
           error(ERROR_invalidArgument);
         propertyName = "thisID";
-        propertyValue = getShapeId(i);
+        propertyValue = str;
         i = iToken;
         break;
       case Token.dollarsign:
@@ -10081,7 +10088,14 @@ class Eval { //implements Runnable {
       }
       String propertyName = null;
       Object propertyValue = null;
-      switch (getToken(i).tok) {
+      int tok = getToken(i).tok;
+      if (i == 1 && tokAt(2) == Token.times)
+        tok = Token.nada;
+      switch (tok) {
+      case Token.nada:
+        propertyName = "thisID";
+        propertyValue = parameterAsString(i) + getToken(++i).value;
+        break;
       case Token.within:
         float distance = floatParameter(++i);
         propertyValue = centerParameter(++i);
@@ -10485,8 +10499,7 @@ class Eval { //implements Runnable {
           break;
         }
         propertyName = "thisID";
-        propertyValue = getShapeId(i);
-        i = iToken;
+        propertyValue = str;
         break;
       case Token.all:
         if (idSeen)

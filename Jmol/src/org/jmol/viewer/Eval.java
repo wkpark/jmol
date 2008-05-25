@@ -11550,7 +11550,7 @@ class Eval { //implements Runnable {
         return evaluateArray(args);
       case Token.cos:
       case Token.sin:
-        return evaluateCosSin(args, tok == Token.cos);
+        return evaluateMath(args, tok);
       case Token.cross:
         return evaluateCross(args);
       case Token.random:
@@ -11978,13 +11978,19 @@ class Eval { //implements Runnable {
       return addX(array);
     }
 
-    private boolean evaluateCosSin(Token[] args, boolean isCos) throws ScriptException {
+    private boolean evaluateMath(Token[] args, int tok) throws ScriptException {
       if (args.length != 1)
         return false;
       if (isSyntaxCheck)
         return addX(1);
-      double x = Token.fValue(args[0]) * Math.PI / 180;
-      return addX((float) ((isCos ? Math.cos(x) : Math.sin(x))));
+      double x = Token.fValue(args[0]);
+      switch (tok) {
+      case Token.cos:
+        return addX((float) Math.cos(x * Math.PI / 180));
+      case Token.sin:
+        return addX((float) Math.sin(x * Math.PI / 180));
+      }
+      return false;
     }
 
     private boolean evaluateRandom(Token[] args) throws ScriptException {

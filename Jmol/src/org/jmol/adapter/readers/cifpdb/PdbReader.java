@@ -152,8 +152,20 @@ public class PdbReader extends AtomSetCollectionReader {
           checkLineForScript();
           continue;
         }
-        if (line.startsWith("HEADER") && lineLength >= 66) {
-          atomSetCollection.setCollectionName(line.substring(62, 66));
+        if (line.startsWith("HEADER")) {
+          if (lineLength >= 66) {
+            atomSetCollection.setCollectionName(line.substring(62, 66));
+            line = line.substring(0, 50);
+          }
+          atomSetCollection.setAtomSetCollectionAuxiliaryInfo("CLASSIFICATION", line.substring(7).trim());
+          continue;
+        }
+        if (line.startsWith("COMPND    ")) {
+          //just first line for now
+          if (lineLength >= 66) {
+            line = line.substring(0, 62);
+          }
+          atomSetCollection.setAtomSetCollectionAuxiliaryInfo("COMPND", line.substring(7).trim());
           continue;
         }
         /*

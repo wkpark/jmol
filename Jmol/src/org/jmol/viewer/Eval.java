@@ -724,6 +724,8 @@ class Eval { //implements Runnable {
   private boolean setStatement(int pc) throws ScriptException {
     statement = aatoken[pc];
     statementLength = statement.length;
+    if (statementLength == 0)
+      return true;
     Token[] fixed;
     int i;
     int tok;
@@ -839,7 +841,7 @@ class Eval { //implements Runnable {
     if (logMessages) {
       timeBegin = System.currentTimeMillis();
       viewer.scriptStatus("Eval.instructionDispatchLoop():" + timeBegin);
-      viewer.scriptStatus(toString());
+      viewer.scriptStatus(script);
     }
     if (!historyDisabled && !isSyntaxCheck
         && scriptLevel <= commandHistoryLevelMax && !tQuiet)
@@ -851,7 +853,7 @@ class Eval { //implements Runnable {
     for (; pc < aatoken.length && pc < pcEnd; pc++) {
       if (!checkContinue())
         break;
-      Token token = aatoken[pc][0];
+      Token token = (aatoken[pc].length == 0 ? null : aatoken[pc][0]);
       //  when checking scripts, we can't check statments 
       //  containing @{...}
       if (!setStatement(pc)) {
@@ -883,9 +885,11 @@ class Eval { //implements Runnable {
       } else {
         if (debugScript)
           logDebugScript(0);
-        if (logMessages)
+        if (logMessages && token != null)
           Logger.debug(token.toString());
       }
+      if (token == null)
+        continue;
       switch (token.tok) {
 
       case Token.elseif:
@@ -1333,15 +1337,21 @@ class Eval { //implements Runnable {
   private void logDebugScript(int ifLevel) {
     strbufLog.setLength(0);
     if (logMessages) {
-      Logger.debug(statement[0].toString());
+      if (statement.length > 0)
+        Logger.debug(statement[0].toString());
       for (int i = 1; i < statementLength; ++i)
         Logger.debug(statement[i].toString());
     }
     iToken = -2;
-    String s = (ifLevel > 0 ? "                          ".substring(0,
-        ifLevel * 2) : "");
-    strbufLog.append(s).append(statementAsString());
-    viewer.scriptStatus(strbufLog.toString());
+    if (logMessages) {
+      String s = (ifLevel > 0 ? "                          ".substring(0,
+          ifLevel * 2) : "");
+      strbufLog.append(s).append(statementAsString());
+      viewer.scriptStatus(strbufLog.toString());
+    } else {
+      viewer.scriptStatus(getCommand());
+    }
+
   }
 
   /* ****************************************************************************
@@ -10950,6 +10960,8 @@ class Eval { //implements Runnable {
   }
   
   private String statementAsString() {
+    if (statement.length == 0)
+      return "";
     StringBuffer sb = new StringBuffer();
     int tok = statement[0].tok;
     boolean addParens = (Compiler.tokAttr(tok, Token.embeddedExpression));

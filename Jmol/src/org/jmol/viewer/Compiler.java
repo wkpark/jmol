@@ -349,20 +349,31 @@ class Compiler {
     Vector lltoken = new Vector();
     ltoken = new Vector();
     int tokCommand = Token.nada;
+    String comment = null;
+    boolean endOfLine = false;
     for (; true; ichToken += cchToken) {
       int nTokens = ltoken.size();
-      if (nTokens == 0) {
-        if (thisFunction != null && thisFunction.chpt0 == 0) {
-          thisFunction.chpt0 = ichToken;
-        }
-      }
+      if (nTokens == 0 && thisFunction != null && thisFunction.chpt0 == 0)
+        thisFunction.chpt0 = ichToken;
       if (lookingAtLeadingWhitespace())
         continue;
-      if (lookingAtComment())
-        continue;
-      boolean endOfLine = lookingAtEndOfLine();
-      if (endOfLine || lookingAtEndOfStatement()) {
-        if (nTokens > 0) {
+      if (lookingAtComment()) {
+        if (nTokens > 0)
+          continue;
+        comment = script.substring(ichToken, ichToken + cchToken);
+        int nChar = cchToken;
+        ichCurrentCommand = ichToken;
+        ichToken += cchToken;
+        if ((endOfLine = lookingAtEndOfLine()) || lookingAtEndOfStatement())
+          cchToken += nChar;
+        ichToken = ichCurrentCommand;
+      } else {
+        endOfLine = lookingAtEndOfLine();
+      }
+      if (comment != null || endOfLine || lookingAtEndOfStatement()) {
+        if (nTokens > 0 || comment != null) {
+          if (nTokens == 0)
+            ichCurrentCommand = ichToken;
           iCommand = lltoken.size();
           if (thisFunction != null && thisFunction.cmdpt0 < 0) {
             thisFunction.cmdpt0 = iCommand;
@@ -389,6 +400,9 @@ class Compiler {
           tokCommand = Token.nada;
           tokenCommand = null;
           iHaveQuotedString = false;
+          if (comment != null) {
+            comment = null;
+          }
         }
         if (ichToken < cchScript) {
           if (endOfLine)
@@ -1405,6 +1419,12 @@ class Compiler {
   boolean isCommaAsOrAllowed;
   
   private boolean compileCommand() {
+    if (ltoken.size() == 0) {
+      // comment
+      atokenInfix = new Token[0];
+      ltoken.copyInto(atokenInfix);
+      return true;
+    }
     tokenCommand = (Token) ltoken.firstElement();
     tokCommand = tokenCommand.tok;
     isImplicitExpression = tokAttr(tokCommand, Token.implicitExpression);

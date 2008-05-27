@@ -106,10 +106,20 @@
             <xsl:when test="@file = 'y'">
             </xsl:when>
             <xsl:otherwise>
-              <xsl:text>addMissingProject('</xsl:text>
-              <xsl:value-of select="@number" />
-              <xsl:text>');
+              <xsl:choose>
+                <xsl:when test="@code = 'G3'">
+                </xsl:when>
+                <xsl:when test="@code = 'GG'">
+                </xsl:when>
+                <xsl:when test="@code = 'GG2'">
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:text>addMissingProject('</xsl:text>
+                  <xsl:value-of select="@number" />
+                  <xsl:text>');
 </xsl:text>
+                </xsl:otherwise>
+              </xsl:choose>
             </xsl:otherwise>
           </xsl:choose>
         </xsl:if>

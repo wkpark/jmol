@@ -1204,7 +1204,7 @@ abstract public class AtomCollection {
   }
   
   protected String getChimeInfo(int tok, BitSet bs) {
-    StringBuffer info = new StringBuffer('\n');
+    StringBuffer info = new StringBuffer("\n");
     char id;
     String s = "";
     Chain clast = null;

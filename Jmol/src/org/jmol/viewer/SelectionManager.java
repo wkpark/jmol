@@ -124,9 +124,11 @@ class SelectionManager {
     } else {
       setSelectionSet(bs);
     }
-    if (!isQuiet)
-      viewer.reportSelection(GT._("{0} atoms selected",
-          "" + getSelectionCount()));
+    int n = getSelectionCount();
+    if (viewer.getMessageStyleChime())
+      viewer.reportSelection((n == 0 ? "No atoms" : n == 1 ? "1 atom": n + " atoms") + " selected!");
+    else if (!isQuiet)
+      viewer.reportSelection(GT._("{0} atoms selected", n));
   }
 
   void selectAll(boolean isQuiet) {

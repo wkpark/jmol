@@ -163,6 +163,8 @@ public class FileManager {
       Logger.error("file ERROR: " + openErrorMessage);
       return;
     }
+    if (viewer.getMessageStyleChime() && viewer.getDebugScript())
+      viewer.scriptStatus("Requesting " + fullPathName);
     fileOpenThread = new FileOpenThread(fullPathName, nameAsGiven, fileType, null, htParams);
     fileOpenThread.run();
   }

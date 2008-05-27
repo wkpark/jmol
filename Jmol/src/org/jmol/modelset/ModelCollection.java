@@ -2362,6 +2362,62 @@ abstract public class ModelCollection extends BondCollection {
     s.append("  ").append(order).append("\n"); 
   }
   
+  public String getChimeInfo(int tok, BitSet bs) {
+    if (tok != Token.info)
+      return super.getChimeInfo(tok, bs);
+    int n = 0;
+    StringBuffer sb = new StringBuffer();
+    int nHetero = 0;
+    if (models[0].isPDB) {
+      sb.append("\nMolecule name ....... "
+              + getModelSetAuxiliaryInfo("COMPND"));
+      sb.append("\nSecondary Structure . PDB Data Records");
+      sb.append("\nBrookhaven Code ..... " + modelSetName);
+      for (int i = modelCount; --i >= 0;)
+        n += models[i].getChainCount(false);
+      sb.append("\nNumber of Chains .... " + n);
+      n = 0;
+      for (int i = modelCount; --i >= 0;)
+        n += models[i].getGroupCount(false);
+      nHetero = 0;
+      for (int i = modelCount; --i >= 0;)
+        nHetero += models[i].getGroupCount(true);
+      sb.append("\nNumber of Groups .... " + n);
+      if (nHetero > 0)
+        sb.append(" (" + nHetero + ")");
+      for (int i = atomCount; --i >= 0;)
+        if (atoms[i].isHetero())
+          nHetero++;
+    }
+    sb.append("\nNumber of Atoms ..... " + (atomCount - nHetero));
+    if (nHetero > 0)
+      sb.append(" (" + nHetero + ")");
+    sb.append("\nNumber of Bonds ..... " + bondCount);
+    sb.append("\nNumber of Models ...... " + modelCount);
+    if (models[0].isPDB) {
+      int nH = 0;
+      int nS = 0;
+      int nT = 0;
+      if (structures != null)
+        for (int i = structureCount; --i >= 0;)
+          switch (structures[i].type) {
+          case JmolConstants.PROTEIN_STRUCTURE_HELIX:
+            nH++;
+            break;
+          case JmolConstants.PROTEIN_STRUCTURE_SHEET:
+            nS++;
+            break;
+          case JmolConstants.PROTEIN_STRUCTURE_TURN:
+            nT++;
+            break;
+          }
+      sb.append("\nNumber of Helices ... " + nH);
+      sb.append("\nNumber of Strands ... " + nS);
+      sb.append("\nNumber of Turns ..... " + nT);
+    }
+    return sb.append('\n').toString().substring(1);
+  }
+
   public String getModelFileInfo(BitSet frames) {
     StringBuffer sb = new StringBuffer();
     for (int i = 0; i < modelCount; ++i) {

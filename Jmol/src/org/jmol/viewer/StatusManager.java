@@ -249,8 +249,13 @@ class StatusManager {
       setStatusChanged("scriptTerminated", 1, "Jmol script terminated"
           + (isError ? " unsuccessfully: " + strStatus : " successfully"), false);
 
-    if (jmolStatusListener != null)
+    if (jmolStatusListener != null) {
+      if (strStatus.equals("Script completed") && viewer.getMessageStyleChime() && viewer.getDebugScript()) {
+        jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT, new Object[] { "", "script <exiting>" });
+        strStatus = "Chime script completed.";
+      }
       jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT, new Object[] { "", strStatus });
+    }
   }
   
   int minSyncRepeatMs = 100;

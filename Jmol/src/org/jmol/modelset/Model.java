@@ -195,6 +195,15 @@ public final class Model {
     return chainCount;
   }
 
+  public int getGroupCount(boolean isHetero) {
+    int n = 0;
+    for (int i = chainCount; --i >= 0;)
+      for (int j = chains[i].groupCount; --j >= 0;)
+        if (chains[i].groups[j].isHetero() == isHetero)
+          n++;
+    return n;
+  }
+  
   public int getBioPolymerCount() {
     return bioPolymerCount;
   }

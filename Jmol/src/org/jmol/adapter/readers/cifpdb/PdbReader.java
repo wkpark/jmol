@@ -66,6 +66,7 @@ public class PdbReader extends AtomSetCollectionReader {
   Hashtable htSites = null;
   protected String fileType = "pdb";  
   String currentGroup3;
+  String compnd;
   Hashtable htElementsInCurrentGroup;
   int maxSerial = 0;
   int[] chainAtomCounts;
@@ -153,19 +154,11 @@ public class PdbReader extends AtomSetCollectionReader {
           continue;
         }
         if (line.startsWith("HEADER")) {
-          if (lineLength >= 66) {
-            atomSetCollection.setCollectionName(line.substring(62, 66));
-            line = line.substring(0, 50);
-          }
-          atomSetCollection.setAtomSetCollectionAuxiliaryInfo("CLASSIFICATION", line.substring(7).trim());
+          header();
           continue;
         }
-        if (line.startsWith("COMPND    ")) {
-          //just first line for now
-          if (lineLength >= 66) {
-            line = line.substring(0, 62);
-          }
-          atomSetCollection.setAtomSetCollectionAuxiliaryInfo("COMPND", line.substring(7).trim());
+        if (line.startsWith("COMPND")) {
+          compnd();
           continue;
         }
         /*
@@ -204,6 +197,25 @@ public class PdbReader extends AtomSetCollectionReader {
       return setError(e);
     }
     return atomSetCollection;
+  }
+
+  private void header() {
+    if (lineLength >= 66)
+      atomSetCollection.setCollectionName(line.substring(62, 66));
+    if (lineLength > 50)
+      line = line.substring(0, 50);
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("CLASSIFICATION", line.substring(7).trim());
+  }
+
+  private void compnd() {
+    if (compnd == null)
+      compnd = "";
+    else
+      compnd += " ";
+    if (lineLength > 62)
+      line = line.substring(0, 62);
+    compnd += line.substring(10).trim();
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("COMPND", compnd);
   }
 
   private void setBiomoleculeAtomCounts() {

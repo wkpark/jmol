@@ -599,6 +599,7 @@ public class StateManager {
     boolean hideNameInPopup           = false;
     int     hoverDelayMs              = 500;
     boolean measurementLabels         = true;
+    boolean messageStyleChime         = false;
     int     pickingSpinRate           = 10;
     String  propertyColorScheme       = "roygb";
     String  quaternionFrame           = "c";
@@ -723,7 +724,7 @@ public class StateManager {
       ";axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color" +
       ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth" +
       ";debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers" +
-      ";fontscaling;language;loglevel" +
+      ";fontscaling;language;loglevel;measureStyleChime" +
       ";minimizationsteps;minimizationrefresh;minimizationcriterion;navigationmode" +
       ";perspectivedepth;visualrange;perspectivemodel;refreshing;rotationradius" +
       ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell" +
@@ -1112,6 +1113,7 @@ public class StateManager {
       setParameterValue("measureAllModels",measureAllModels);
       setParameterValue("measurementLabels",measurementLabels=true);
       setParameterValue("measurementUnits", measureDistanceUnits);
+      setParameterValue("messageStyleChime", messageStyleChime);
       setParameterValue("minBondDistance",minBondDistance);
       setParameterValue("minimizationSteps",minimizationSteps);
       setParameterValue("minimizationRefresh",minimizationRefresh);

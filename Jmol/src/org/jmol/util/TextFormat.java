@@ -357,8 +357,17 @@ public class TextFormat {
     return split(text, "" + ch);
   }
   
+  public static void lFill(StringBuffer s, String s1, String s2) {
+    s.append(s2);
+    int n = s1.length() - s2.length();
+    if (n > 0)
+      s.append(s1.substring(0, n));
+  }
+  
   public static void rFill(StringBuffer s, String s1, String s2) {
-    s.append(s1.substring(0, s1.length() - s2.length()));
+    int n = s1.length() - s2.length();
+    if (n > 0)
+      s.append(s1.substring(0, n));
     s.append(s2);
   }
   

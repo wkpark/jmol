@@ -737,9 +737,19 @@ final public class Atom extends Point3fi {
     return getIdentity(true);
   } 
 
-  String getInfoXYZ(boolean withScreens) {
-    return getIdentity(true) + " " + x + " " + y + " " + z
-        + (withScreens ? " ### " + screenX + " " + screenY + " " + screenZ : "");
+  String getInfoXYZ(boolean useChimeFormat) {
+    if (useChimeFormat) {
+      String group3 = getGroup3();
+      char chainID = getChainID();    
+      return "Atom: " + (group3 == null ? getElementSymbol() : getAtomName()) + " " + getAtomNumber() 
+          + (group3 != null && group3.length() > 0 ? 
+              (isHetero() ? " Hetero: " : " Group: ") + group3 + " " + getResno() 
+              + (chainID != 0 && chainID != ' ' ? " Chain: " + chainID : "")              
+              : "")
+          + " Model: " + getModelNumber()
+          + " Coordinates: " + x + " " + y + " " + z;
+    }
+    return getIdentity(true) + " " + x + " " + y + " " + z;
   }
 
   private String getIdentityXYZ() {

@@ -115,7 +115,8 @@ class PickingManager {
     case JmolConstants.PICKING_OFF:
       break;
     case JmolConstants.PICKING_IDENT:
-      viewer.setStatusAtomPicked(atomIndex, viewer.getAtomInfoXYZ(atomIndex));
+      viewer.setStatusAtomPicked(atomIndex, 
+          viewer.getAtomInfoXYZ(atomIndex, viewer.getMessageStyleChime()));
       break;
     case JmolConstants.PICKING_MEASURE:
     case JmolConstants.PICKING_MEASURE_DISTANCE:

@@ -43,6 +43,7 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
@@ -155,8 +156,8 @@ abstract public class AtomCollection {
     return atoms[i].getInfo();
   }
 
-  public String getAtomInfoXYZ(int i, boolean withScreens) {
-    return atoms[i].getInfoXYZ(withScreens);
+  public String getAtomInfoXYZ(int i, boolean useChimeFormat) {
+    return atoms[i].getInfoXYZ(useChimeFormat);
   }
 
   public String getElementSymbol(int i) {
@@ -1202,6 +1203,61 @@ abstract public class AtomCollection {
     return hybridization;
   }
   
+  protected String getChimeInfo(int tok, BitSet bs) {
+    StringBuffer info = new StringBuffer('\n');
+    char id;
+    String s = "";
+    Chain clast = null;
+    Group glast = null;
+    int modelLast = -1;
+    int n = 0;
+    for (int i = 0; i < atomCount; i++)
+      if (bs.get(i)) {
+        id = atoms[i].getChainID();
+        s = (id == '\0' ? " " : "" + id);
+        switch (tok) {
+        case Token.chain:
+          break;
+        case Token.residue:
+          s = "[" + atoms[i].getGroup3() + "]" + atoms[i].getSeqcodeString()
+              + ":" + s;
+          break;
+        case Token.sequence:
+          if (atoms[i].getModelIndex() != modelLast) {
+            info.append('\n');
+            n = 0;
+            modelLast = atoms[i].getModelIndex();
+            info.append("Model " + atoms[i].getModelNumber());
+            glast = null;
+            clast = null;
+          }
+          if (atoms[i].getChain() != clast) {
+            info.append('\n');
+            n = 0;
+            clast = atoms[i].getChain();
+            info.append("Chain " + s + ":\n");
+            glast = null;
+          }
+          Group g = atoms[i].getGroup();
+          if (g != glast) {
+            if ((n++) % 5 == 0 && n > 1)
+              info.append('\n');
+            TextFormat.lFill(info, "          ", "[" + atoms[i].getGroup3()
+                + "]" + atoms[i].getResno() + " ");
+            glast = g;
+          }
+          continue;
+        default:
+          return "";
+        }
+        if (info.indexOf("\n" + s + "\n") < 0)
+          info.append(s).append('\n');
+      }
+    if (tok == Token.sequence)
+      info.append('\n');
+    return info.toString().substring(1);
+  }
+
   /* ******************************************************
    * 
    * These next methods are used by Eval to select for 

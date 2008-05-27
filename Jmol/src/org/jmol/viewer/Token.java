@@ -873,6 +873,7 @@ public class Token {
   final static int clear        = misc | 10;
   final static int clipboard    = misc | 11;
   final static int colorRGB     = misc | 12 | colorparam;
+  final static int constraint   = misc | 112;
   final static int direction    = misc | 13;
   final static int displacement = misc | 14;
   final static int dotted       = misc | 15;
@@ -882,6 +883,7 @@ public class Token {
   final static int frontlit     = misc | 19;
   final static int frontonly    = misc | 20;
   final static int fullylit     = misc | 21;
+  final public static int info  = misc | 121;
   final static int ionic        = misc | 22;
   final static int jmol         = misc | 23;
   final static int last         = misc | 24;
@@ -906,7 +908,7 @@ public class Token {
   final static int prev         = misc | 43;
   final static int range        = misc | 44;
   final static int rasmol       = misc | 45;
-  final static int residue      = misc | 46;
+  final public static int residue= misc | 46;
   final static int resume       = misc | 47;
   final static int rewind       = misc | 48;
   final static int right        = misc | 49;
@@ -926,7 +928,6 @@ public class Token {
   final static int triangles    = misc | 63;
   final static int url          = misc | 64; 
   final static int user         = misc | 65; //color option
-  final static int constraint   = misc | 66;
 
 
   // predefined Tokens: 
@@ -1139,6 +1140,7 @@ public class Token {
     "polymer",           new Token(polymer),
     "polymers",          null,
     "residue",           new Token(residue),
+    "residues",          null,
     "rotation",          new Token(rotation),
     "sequence",          new Token(sequence),
     "shape",             new Token(shape),
@@ -1217,6 +1219,7 @@ public class Token {
     "carbohydrate",     new Token(carbohydrate),
     "cell",             new Token(cell),
     "chain",            new Token(chain),
+    "chains",           null,
     "clear",            new Token(clear),
     "clickable",        new Token(clickable),
     "clipboard",        new Token(clipboard),
@@ -1261,6 +1264,7 @@ public class Token {
     "hydrogen",         new Token(hydrogen),
     "hydrogens",        null,
     "ident",            new Token(ident),
+    "info",             new Token(info),
     "insertion",        new Token(insertion),
     "insertions",       null, 
     "ionic",            new Token(ionic),

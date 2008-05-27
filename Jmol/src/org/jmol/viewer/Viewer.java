@@ -2382,6 +2382,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getMoleculeInfo(getAtomBitSet(atomExpression));
   }
 
+  public String getChimeInfo(int tok) {
+    return modelSet.getChimeInfo(tok, selectionManager.bsSelection);
+  }
+
   public Hashtable getAllChainInfo(Object atomExpression) {
     return modelSet.getAllChainInfo(getAtomBitSet(atomExpression));
   }
@@ -3266,7 +3270,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return "!" + strScript;
     }
     interruptScript = "";
-    return scriptManager.addScript(strScript, false, isQuiet);
+    return scriptManager.addScript(strScript, false, isQuiet && !getMessageStyleChime());
   }
 
   private void setScriptQueue(boolean value) {
@@ -3377,6 +3381,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       int msWalltime = eval.getExecutionWalltime();
       strErrorMessage = eval.getErrorMessage();
       statusManager.setStatusScriptTermination(strErrorMessage, msWalltime);
+/*      if (getMessageStyleChime())
+        scriptStatus("script <exiting>");
+*/
       if (isScriptFile && writeInfo != null)
         createImage(writeInfo);
     } else {
@@ -3769,8 +3776,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getAtomInfo(atomIndex);
   }
 
-  public String getAtomInfoXYZ(int atomIndex) {
-    return modelSet.getAtomInfoXYZ(atomIndex, getTestFlag1());
+  public String getAtomInfoXYZ(int atomIndex, boolean useChimeFormat) {
+    return modelSet.getAtomInfoXYZ(atomIndex, useChimeFormat);
   }
 
   // //////////////status manager dispatch//////////////
@@ -4514,11 +4521,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean notFound = false;
     boolean doRepaint = true;
     while (true) {
+      //11.5.39
+      if (key.equalsIgnoreCase("messageStyleChime")) {
+        setMessageStyleChime(value);
+        break;
+      }
+      
       //11.5.30
-      // ellipsoidAxes" just handled as getBooleanProperty()
-      // ellipsoidArcs" just handled as getBooleanProperty()
-      // ellipsoidDots" just handled as getBooleanProperty()
-      // ellipsoidBall" just handled as getBooleanProperty()
+      // ellipsoidAxes just handled as getBooleanProperty()
+      // ellipsoidArcs just handled as getBooleanProperty()
+      // ellipsoidDots just handled as getBooleanProperty()
+      // ellipsoidBall just handled as getBooleanProperty()
       //11.5.4
       if (key.equalsIgnoreCase("fontScaling")) {
         setFontScaling(value);
@@ -4941,6 +4954,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return true;
   }
 
+  private void setMessageStyleChime(boolean value) {
+    global.messageStyleChime = value;
+  }
+
+  boolean getMessageStyleChime() {
+    return global.messageStyleChime;
+  }
+  
   private void setFontScaling(boolean value) {
     global.fontScaling = value;    
   }

@@ -1349,7 +1349,10 @@ class Eval { //implements Runnable {
       strbufLog.append(s).append(statementAsString());
       viewer.scriptStatus(strbufLog.toString());
     } else {
-      viewer.scriptStatus(getCommand());
+      String cmd = getCommand();
+      if (cmd.length() > 0 && cmd.lastIndexOf(";") == cmd.length() - 1)
+        cmd = cmd.substring(0, cmd.length() - 1);
+      viewer.scriptStatus(cmd);
     }
 
   }
@@ -5017,6 +5020,8 @@ class Eval { //implements Runnable {
       boolean saveLoadCheck = fileOpenCheck;
       fileOpenCheck = fileOpenCheck && loadCheck;
       instructionDispatchLoop(isCheck);
+      if (debugScript && viewer.getMessageStyleChime())
+        viewer.scriptStatus("script <exiting>");
       fileOpenCheck = saveLoadCheck;
       popContext();
     } else {
@@ -8718,7 +8723,8 @@ class Eval { //implements Runnable {
       showString(viewer.getAllSettings(str.substring(0, str.indexOf("?"))));
       return;
     }
-    switch (getToken(1).tok) {
+    int tok;
+    switch (tok = getToken(1).tok) {
     case Token.vanderwaals:
       if (statementLength == 2) {
         if (!isSyntaxCheck)
@@ -9007,14 +9013,18 @@ class Eval { //implements Runnable {
     case Token.radius:
       str = "solventProbeRadius";
       break;
+    // Chime related
+    case Token.chain:
+    case Token.sequence:
+    case Token.residue:
+    case Token.info:
+      msg = viewer.getChimeInfo(tok);
+      break;
     // not implemented
     case Token.translation:
     case Token.rotation:
       error(ERROR_unrecognizedShowParameter, "show ORIENTATION");
-    case Token.chain:
     case Token.group:
-    case Token.sequence:
-    case Token.residue:
       error(ERROR_unrecognizedShowParameter, "getProperty CHAININFO (atom expression)");
     case Token.selected:
       error(ERROR_unrecognizedShowParameter, "getProperty ATOMINFO (selected)");

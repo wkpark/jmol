@@ -8988,7 +8988,8 @@ class Eval { //implements Runnable {
       break;
     case Token.orientation:
       if (!isSyntaxCheck)
-        msg = viewer.getOrientationText();
+        msg = viewer.getOrientationText(tokAt(2) != Token.moveto);
+      len = (tokAt(2) == Token.moveto ? 3 : 2);
       break;
     case Token.pdbheader:
       if (!isSyntaxCheck)

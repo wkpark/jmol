@@ -543,8 +543,8 @@ abstract class TransformManager {
     return info;
   }
 
-  String getOrientationText() {
-    return getMoveToText(1, true) + "\nOR\n" + getRotateZyzText(true);
+  String getOrientationText(boolean isAll) {
+    return getMoveToText(1, isAll) + (isAll ? "\n#OR\n" + getRotateZyzText(true): "");
   }
 
   Hashtable getOrientationInfo() {

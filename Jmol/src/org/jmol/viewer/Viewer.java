@@ -2347,11 +2347,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   String getFileHeader() {
-    return modelSet.getFileHeader();
+    return modelSet.getFileHeader(repaintManager.currentModelIndex);
   }
 
   String getPDBHeader() {
-    return modelSet.getPDBHeader();
+    return modelSet.getPDBHeader(repaintManager.currentModelIndex);
   }
 
   public Hashtable getModelInfo() {
@@ -4526,6 +4526,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         setMessageStyleChime(value);
         break;
       }
+      // pdbSequential -- just handled as getBooleanProperty
+      // pdbSaveHeader -- just handled as getBooleanProperty
       
       //11.5.30
       // ellipsoidAxes just handled as getBooleanProperty()

@@ -122,7 +122,7 @@ public class MolReader extends AtomSetCollectionReader {
       return;
     header += line + "\n";
     checkLineForScript();
-    atomSetCollection.setAtomSetCollectionProperty("fileHeader", header);
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader", header);
     newAtomSet(thisDataSetName);
   }
 

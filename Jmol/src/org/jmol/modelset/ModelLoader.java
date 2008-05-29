@@ -110,6 +110,7 @@ public final class ModelLoader extends ModelSet {
 
   private boolean someModelsHaveUnitcells;
   private boolean isTrajectory;
+  private String fileHeader;
 
   private void initializeInfo(String name, int nAtoms, Properties properties,
                        Hashtable info) {
@@ -123,6 +124,7 @@ public final class ModelLoader extends ModelSet {
     isMultiFile = getModelSetAuxiliaryInfoBoolean("isMultiFile");
     isPDB = getModelSetAuxiliaryInfoBoolean("isPDB");
     jmolData = (String) getModelSetAuxiliaryInfo("jmolData");
+    fileHeader = (String) getModelSetAuxiliaryInfo("fileHeader");
     trajectories = (Vector) getModelSetAuxiliaryInfo("trajectories");
     isTrajectory = (trajectories != null);
     adapterTrajectoryCount = (trajectories == null ? 0 : trajectories.size()); 
@@ -466,6 +468,8 @@ public final class ModelLoader extends ModelSet {
         modelNumbers[i] += filenumber;
     }
     for (int i = baseModelCount; i < modelCount; ++i) {
+      if (fileHeader != null)
+        setModelAuxiliaryInfo(i, "fileHeader", fileHeader);
       int filenumber = modelNumbers[i] / 1000000;
       if (filenumber != lastfilenumber) {
         modelnumber = 0;

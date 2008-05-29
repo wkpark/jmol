@@ -1027,7 +1027,6 @@ abstract public class ModelCollection extends BondCollection {
         models[modelIndex].dataSourceFrame : -1);
   }
 
-  private String pdbHeader;
   /*
    final static String[] pdbRecords = { "ATOM  ", "HELIX ", "SHEET ", "TURN  ",
    "MODEL ", "SCALE",  "HETATM", "SEQRES",
@@ -1036,9 +1035,13 @@ abstract public class ModelCollection extends BondCollection {
 
   final static String[] pdbRecords = { "ATOM  ", "MODEL ", "HETATM" };
 
-  private String getFullPDBHeader() {
-    String info = (pdbHeader == null ? (pdbHeader = viewer
-        .getCurrentFileAsString()) : pdbHeader);
+  private String getFullPDBHeader(int modelIndex) {
+    if (modelIndex < 0)
+      return "";
+    String info = (String) getModelAuxiliaryInfo(modelIndex, "fileHeader");
+    if (info != null)
+      return info;
+    info = viewer.getCurrentFileAsString();
     int ichMin = info.length();
     for (int i = pdbRecords.length; --i >= 0;) {
       int ichFound;
@@ -1054,17 +1057,21 @@ abstract public class ModelCollection extends BondCollection {
           ichMin = ++ichFound;
       }
     }
-    return info.substring(0, ichMin);
+    info = info.substring(0, ichMin);
+    setModelAuxiliaryInfo(modelIndex, "fileHeader", info);
+    return info;
   }
 
-  public String getPDBHeader() {
-    return (isPDB ? getFullPDBHeader() : getFileHeader());
+  public String getPDBHeader(int modelIndex) {
+    return (isPDB ? getFullPDBHeader(modelIndex) : getFileHeader(modelIndex));
   }
 
-  public String getFileHeader() {
+  public String getFileHeader(int modelIndex) {
+    if (modelIndex < 0)
+      return "";
     if (isPDB)
-      return getFullPDBHeader();
-    String info = getModelSetProperty("fileHeader");
+      return getFullPDBHeader(modelIndex);
+    String info = (String) getModelAuxiliaryInfo(modelIndex, "fileHeader");
     if (info == null)
       info = modelSetName;
     if (info != null)

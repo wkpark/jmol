@@ -90,7 +90,8 @@ public abstract class AtomSetCollectionReader {
   public int desiredModelNumber;
   public int modelNumber;
   public boolean iHaveDesiredModel;
-
+  public boolean getHeader;
+  
   public String filter;
   
   public String spaceGroup;
@@ -225,7 +226,7 @@ public abstract class AtomSetCollectionReader {
     modelNumber = 0;
     desiredModelNumber = -1;
     iHaveDesiredModel = false;
-
+    getHeader = false;
     latticeCells[0] = latticeCells[1] = latticeCells[2] = 0;
 
     desiredSpaceGroupIndex = -1;
@@ -250,9 +251,11 @@ public abstract class AtomSetCollectionReader {
   }
 
   public void initialize(Hashtable htParams) {
+    
     initialize();
     int[] params = null;
     if (htParams != null) {
+      getHeader = htParams.containsKey("getHeader");
       readerName = (String) htParams.get("readerName");
       params = (int[]) htParams.get("params");
       applySymmetryToBonds = htParams.containsKey("applySymmetryToBonds");

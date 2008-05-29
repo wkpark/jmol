@@ -71,6 +71,28 @@ public class PdbReader extends AtomSetCollectionReader {
   int maxSerial = 0;
   int[] chainAtomCounts;
 
+ final private static String lineOptions = 
+   "ATOM    " + //0
+   "HETATM  " + //1
+   "MODEL   " + //2
+   "CONECT  " + //3
+   "HELIX   " + //4,5,6
+   "SHEET   " +
+   "TURN    " +
+   "HET     " + //7
+   "HETNAM  " + //8
+   "ANISOU  " + //9
+   "SITE    " + //10
+   "CRYST1  " + //11
+   "SCALE1  " + //12,13,14
+   "SCALE2  " +
+   "SCALE3  " +
+   "EXPDTA  " + //15
+   "FORMUL  " + //16
+   "REMARK  " + //17
+   "HEADER  " + //18
+   "COMPND  ";  //19
+
  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     //System.out.println(this + " initialized");
     this.reader = reader;
@@ -82,10 +104,21 @@ public class PdbReader extends AtomSetCollectionReader {
     isNMRdata = false;
     boolean iHaveModel = false;
     boolean iHaveModelStatement = false;
+    StringBuffer pdbHeader = (getHeader ? new StringBuffer() : null);
     try {
       while (readLine() != null) {
-        lineLength = line.length();
-        if (line.startsWith("MODEL ")) {
+        int ptOption = ((lineLength = line.length()) < 6 ? -1 :
+          lineOptions.indexOf(line.substring(0, 6))) >> 3;
+        boolean isAtom = (ptOption == 0 || ptOption == 1);
+        boolean isModel = (ptOption == 2); 
+        if (getHeader) {
+          if (isAtom || isModel)
+            getHeader = false;
+          else
+            pdbHeader.append(line).append('\n');
+        }
+        if (isModel) {
+          getHeader = false;
           iHaveModelStatement = true;
           if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
             if (iHaveModel)
@@ -99,68 +132,6 @@ public class PdbReader extends AtomSetCollectionReader {
           model();
           continue;
         }
-        if (line.startsWith("HELIX ") || line.startsWith("SHEET ")
-            || line.startsWith("TURN  ")) {
-          structure();
-          continue;
-        }
-        if (line.startsWith("HET   ")) {
-          het();
-          continue;
-        }
-        if (line.startsWith("HETNAM")) {
-          hetnam();
-          continue;
-        }
-        if (line.startsWith("ANISOU")) {
-          anisou();
-          continue;
-        }
-        if (line.startsWith("SITE  ")) {
-          site();
-          continue;
-        }
-        if (line.startsWith("CRYST1")) {
-          cryst1();
-          continue;
-        }
-        if (line.startsWith("SCALE1")) {
-          scale(1);
-          continue;
-        }
-        if (line.startsWith("SCALE2")) {
-          scale(2);
-          continue;
-        }
-        if (line.startsWith("SCALE3")) {
-          scale(3);
-          continue;
-        }
-        if (line.startsWith("EXPDTA")) {
-          expdta();
-          continue;
-        }
-        if (line.startsWith("FORMUL")) {
-          formul();
-          continue;
-        }
-        if (line.startsWith("REMARK 350 GENERATING THE BIOMOLECULE")) {
-          remark350();
-          continue;
-        }
-        if (line.startsWith("REMARK")) {
-          //Logger.debug(line);
-          checkLineForScript();
-          continue;
-        }
-        if (line.startsWith("HEADER")) {
-          header();
-          continue;
-        }
-        if (line.startsWith("COMPND")) {
-          compnd();
-          continue;
-        }
         /*
          * OK, the PDB file format is messed up here, because the 
          * above commands are all OUTSIDE of the Model framework. 
@@ -171,12 +142,73 @@ public class PdbReader extends AtomSetCollectionReader {
          */
         if (iHaveModelStatement && !iHaveModel)
           continue;
-        if (line.startsWith("ATOM  ") || line.startsWith("HETATM")) {
+        if (isAtom) {
+          getHeader = false;
           atom();
           continue;
         }
-        if (line.startsWith("CONECT")) {
+        switch (ptOption) {
+        case 3:
+        //if (line.startsWith("CONECT")) {
           conect();
+          continue;
+        case 4:
+        case 5:
+        case 6:
+        //if (line.startsWith("HELIX ") || line.startsWith("SHEET ")
+          //  || line.startsWith("TURN  ")) {
+          structure();
+          continue;
+        case 7:
+          //if (line.startsWith("HET   ")) {
+          het();
+          continue;
+        case 8:
+          //if (line.startsWith("HETNAM")) {
+          hetnam();
+          continue;
+        case 9:
+        //if (line.startsWith("ANISOU")) {
+          anisou();
+          continue;
+        case 10:
+        //if (line.startsWith("SITE  ")) {
+          site();
+          continue;
+        case 11:
+        //if (line.startsWith("CRYST1")) {
+          cryst1();
+          continue;
+        case 12:
+        case 13:
+        case 14:
+        //if (line.startsWith("SCALE1")) {
+        //if (line.startsWith("SCALE2")) {
+        //if (line.startsWith("SCALE3")) {
+          scale(ptOption - 11);
+          continue;
+        case 15:
+        //if (line.startsWith("EXPDTA")) {
+          expdta();
+          continue;
+        case 16:
+        //if (line.startsWith("FORMUL")) {
+          formul();
+          continue;
+        case 17:
+        //if (line.startsWith("REMARK")) {
+          if (line.startsWith("REMARK 350 GENERATING THE BIOMOLECULE")) {
+            remark350();
+            continue;
+          }
+          checkLineForScript();
+          continue;
+        case 18:
+          header();
+          continue;
+        case 19:
+        //if (line.startsWith("COMPND")) {
+          compnd();
           continue;
         }
       }
@@ -196,6 +228,8 @@ public class PdbReader extends AtomSetCollectionReader {
     } catch (Exception e) {
       return setError(e);
     }
+    if (pdbHeader != null)
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader", pdbHeader.toString());
     return atomSetCollection;
   }
 

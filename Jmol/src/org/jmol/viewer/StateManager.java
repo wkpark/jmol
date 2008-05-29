@@ -43,21 +43,19 @@ import java.util.Arrays;
 
 public class StateManager {
 
-  
-
   /* steps in adding a global variable:
- 
-  In Viewer:
-  
-  1. add a check in setIntProperty or setBooleanProperty or setFloat.. or setString...
-  2. create new set/get methods
-  
-  In StateManager
-  
-  3. create the global.xxx variable
-  4. in registerParameter() register it so that it shows up as having a value in math
-  
-  */
+   
+   In Viewer:
+   
+   1. add a check in setIntProperty or setBooleanProperty or setFloat.. or setString...
+   2. create new set/get methods
+   
+   In StateManager
+   
+   3. create the global.xxx variable
+   4. in registerParameter() register it so that it shows up as having a value in math
+   
+   */
 
   public final static int OBJ_BACKGROUND = 0;
   public final static int OBJ_AXIS1 = 1;
@@ -67,22 +65,21 @@ public class StateManager {
   public final static int OBJ_UNITCELL = 5;
   public final static int OBJ_FRANK = 6;
   public final static int OBJ_MAX = 7;
-  private final static String objectNameList =
-      "background axis1      axis2      axis3      boundbox   unitcell   frank      ";
-  
+  private final static String objectNameList = "background axis1      axis2      axis3      boundbox   unitcell   frank      ";
+
   static int getObjectIdFromName(String name) {
     if (name == null)
       return -1;
     int objID = objectNameList.indexOf(name.toLowerCase());
     return (objID < 0 ? objID : objID / 11);
   }
-  
+
   static String getObjectNameFromId(int objId) {
     if (objId < 0 || objId >= OBJ_MAX)
       return null;
-   return objectNameList.substring(objId * 11,objId*11 + 11).trim();
+    return objectNameList.substring(objId * 11, objId * 11 + 11).trim();
   }
-  
+
   Viewer viewer;
   Hashtable saved = new Hashtable();
   String lastOrientation = "";
@@ -99,9 +96,9 @@ public class StateManager {
   GlobalSettings getGlobalSettings() {
     GlobalSettings g = new GlobalSettings();
     g.registerAllValues();
-    return g;  
+    return g;
   }
-  
+
   void clear() {
     viewer.setShowAxes(false);
     viewer.setShowBbcage(false);
@@ -118,10 +115,14 @@ public class StateManager {
 
   void setCommonDefaults() {
     viewer.setBooleanProperty("perspectiveDepth", true);
-    viewer.setIntProperty("percentVdwAtom", JmolConstants.DEFAULT_PERCENT_VDW_ATOM);
-    viewer.setFloatProperty("bondTolerance", JmolConstants.DEFAULT_BOND_TOLERANCE);
-    viewer.setFloatProperty("minBondDistance", JmolConstants.DEFAULT_MIN_BOND_DISTANCE);
-    viewer.setIntProperty("bondRadiusMilliAngstroms", JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS);
+    viewer.setIntProperty("percentVdwAtom",
+        JmolConstants.DEFAULT_PERCENT_VDW_ATOM);
+    viewer.setFloatProperty("bondTolerance",
+        JmolConstants.DEFAULT_BOND_TOLERANCE);
+    viewer.setFloatProperty("minBondDistance",
+        JmolConstants.DEFAULT_MIN_BOND_DISTANCE);
+    viewer.setIntProperty("bondRadiusMilliAngstroms",
+        JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS);
   }
 
   void setJmolDefaults() {
@@ -191,33 +192,32 @@ public class StateManager {
   }
 
   String getSavedState(String saveName) {
-    String name = (saveName.length() > 0 ? "State_" + saveName
-        : lastState);
+    String name = (saveName.length() > 0 ? "State_" + saveName : lastState);
     String script = (String) saved.get(name);
-    return (script == null ? "" : script); 
+    return (script == null ? "" : script);
   }
-/*  
-  boolean restoreState(String saveName) {
-    //not used -- more efficient just to run the script 
-    String name = (saveName.length() > 0 ? "State_" + saveName
-        : lastState);
-    String script = (String) saved.get(name);
-    if (script == null)
-      return false;
-    viewer.script(script + CommandHistory.NOHISTORYATALL_FLAG);
-    return true;
-  }
-*/
+
+  /*  
+   boolean restoreState(String saveName) {
+   //not used -- more efficient just to run the script 
+   String name = (saveName.length() > 0 ? "State_" + saveName
+   : lastState);
+   String script = (String) saved.get(name);
+   if (script == null)
+   return false;
+   viewer.script(script + CommandHistory.NOHISTORYATALL_FLAG);
+   return true;
+   }
+   */
   void saveStructure(String saveName) {
     saveName = lastShape = "Shape_" + saveName;
     saved.put(saveName, viewer.getStructureState());
   }
 
   String getSavedStructure(String saveName) {
-    String name = (saveName.length() > 0 ? "Shape_" + saveName
-        : lastShape);
+    String name = (saveName.length() > 0 ? "Shape_" + saveName : lastShape);
     String script = (String) saved.get(name);
-    return (script == null ? "" : script); 
+    return (script == null ? "" : script);
   }
 
   void saveCoordinates(String saveName, BitSet bsSelected) {
@@ -229,9 +229,9 @@ public class StateManager {
     String name = (saveName.length() > 0 ? "Coordinates_" + saveName
         : lastCoordinates);
     String script = (String) saved.get(name);
-    return (script == null ? "" : script); 
+    return (script == null ? "" : script);
   }
-  
+
   void saveOrientation(String saveName) {
     Orientation o = new Orientation();
     o.saveName = lastOrientation = "Orientation_" + saveName;
@@ -272,14 +272,14 @@ public class StateManager {
       center.set(viewer.getRotationCenter());
       windowCenteredFlag = viewer.isWindowCentered();
       rotationRadius = viewer.getRotationRadius();
-      navigationMode = viewer.getNavigationMode(); 
+      navigationMode = viewer.getNavigationMode();
       if (navigationMode) {
         navCenter = viewer.getNavigationOffset();
         xNav = viewer.getNavigationOffsetPercent('X');
         yNav = viewer.getNavigationOffsetPercent('Y');
         navDepth = viewer.getNavigationDepthPercent();
         navCenter = viewer.getNavigationCenter();
-      }     
+      }
     }
 
     void restore(float timeSeconds) {
@@ -322,8 +322,8 @@ public class StateManager {
       Bond[] bonds = modelSet.getBonds();
       for (int i = bondCount; --i >= 0;) {
         Bond b = bonds[i];
-        connections[i] = new Connection(b.getAtomIndex1(), b.getAtomIndex2(),
-            b.getMad(), b.getColix(), b.getOrder(), b.getShapeVisibilityFlags());
+        connections[i] = new Connection(b.getAtomIndex1(), b.getAtomIndex2(), b
+            .getMad(), b.getColix(), b.getOrder(), b.getShapeVisibilityFlags());
       }
     }
 
@@ -368,9 +368,10 @@ public class StateManager {
   }
 
   static boolean isMeasurementUnit(String units) {
-    return Parser.isOneOf(units.toLowerCase(),"angstroms;au;bohr;nanometers;nm;picometers;pm");
+    return Parser.isOneOf(units.toLowerCase(),
+        "angstroms;au;bohr;nanometers;nm;picometers;pm");
   }
-  
+
   class GlobalSettings {
 
     /*
@@ -389,13 +390,12 @@ public class StateManager {
     }
 
     Hashtable listVariables = new Hashtable();
-    
+
     void clear() {
       Enumeration e = htUserVariables.keys();
       while (e.hasMoreElements()) {
         String key = (String) e.nextElement();
-        if (key.charAt(0) == '@'
-          || key.startsWith("site_")) 
+        if (key.charAt(0) == '@' || key.startsWith("site_"))
           htUserVariables.remove(key);
       }
 
@@ -421,35 +421,36 @@ public class StateManager {
       name = name.toLowerCase();
       return (listVariables.containsKey(name) ? listVariables.get(name) : value);
     }
-    
+
     //lighting (see Graphics3D.Shade3D
-    
-    int ambientPercent   = 45;
-    int diffusePercent   = 84;
-    boolean specular     = true;
+
+    int ambientPercent = 45;
+    int diffusePercent = 84;
+    boolean specular = true;
     int specularExponent = 6;
-    int specularPercent  = 22;
-    int specularPower    = 40;
+    int specularPercent = 22;
+    int specularPower = 40;
 
     //file loading
 
-    boolean allowEmbeddedScripts     = true;
-    boolean appendNew                = true;
-    String  appletProxy              = "";
-    boolean applySymmetryToBonds     = false; //new 11.1.29
-    boolean autoBond                 = true;
-    short   bondRadiusMilliAngstroms = JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS;
-    float   bondTolerance            = JmolConstants.DEFAULT_BOND_TOLERANCE;
-    String  defaultLoadScript        = "";
-    String  defaultDirectory         = "";
-    boolean forceAutoBond            = false;
-    char    inlineNewlineChar        = '|';    //pseudo static
-    String  loadFormat               = "http://www.rcsb.org/pdb/files/%FILE.pdb";
-    float   minBondDistance          = JmolConstants.DEFAULT_MIN_BOND_DISTANCE;
-    boolean pdbSequential            = false; // true for no bonding check
-    int     percentVdwAtom           = JmolConstants.DEFAULT_PERCENT_VDW_ATOM;
-    boolean smartAromatic            = true;
-    boolean zeroBasedXyzRasmol       = false;
+    boolean allowEmbeddedScripts = true;
+    boolean appendNew = true;
+    String appletProxy = "";
+    boolean applySymmetryToBonds = false; //new 11.1.29
+    boolean autoBond = true;
+    short bondRadiusMilliAngstroms = JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS;
+    float bondTolerance = JmolConstants.DEFAULT_BOND_TOLERANCE;
+    String defaultLoadScript = "";
+    String defaultDirectory = "";
+    boolean forceAutoBond = false;
+    char inlineNewlineChar = '|'; //pseudo static
+    String loadFormat = "http://www.rcsb.org/pdb/files/%FILE.pdb";
+    float minBondDistance = JmolConstants.DEFAULT_MIN_BOND_DISTANCE;
+    boolean pdbGetHeader = false; // true to get PDB header in auxiliary info
+    boolean pdbSequential = false; // true for no bonding check
+    int percentVdwAtom = JmolConstants.DEFAULT_PERCENT_VDW_ATOM;
+    boolean smartAromatic = true;
+    boolean zeroBasedXyzRasmol = false;
 
     /**
      *  these settings are determined when the file is loaded and are
@@ -488,6 +489,7 @@ public class StateManager {
       appendCmd(str, "set loadFormat " + Escape.escape(loadFormat));
       appendCmd(str, "set minBondDistance " + minBondDistance);
       appendCmd(str, "set pdbSequential " + pdbSequential);
+      appendCmd(str, "set pdbGetHeader " + pdbGetHeader);
       appendCmd(str, "set percentVdwAtom " + percentVdwAtom);
       appendCmd(str, "set smartAromatic " + smartAromatic);
       if (zeroBasedXyzRasmol)
@@ -500,7 +502,7 @@ public class StateManager {
     void setDefaultLattice(Point3f ptLattice) {
       ptDefaultLattice.set(ptLattice);
     }
-    
+
     Point3f getDefaultLatticePoint() {
       return ptDefaultLattice;
     }
@@ -516,9 +518,9 @@ public class StateManager {
     //centering and perspective
 
     boolean allowRotateSelected = false;
-    boolean perspectiveDepth    = true;
-    int     stereoDegrees       = 5;
-    float   visualRange         = 5f;
+    boolean perspectiveDepth = true;
+    int stereoDegrees = 5;
+    float visualRange = 5f;
 
     //solvent
 
@@ -526,128 +528,127 @@ public class StateManager {
 
     //measurements
 
-    String defaultAngleLabel    = "%VALUE %UNITS";
+    String defaultAngleLabel = "%VALUE %UNITS";
     String defaultDistanceLabel = "%VALUE %UNITS"; //also %_ and %a1 %a2 %m1 %m2, etc.
-    String defaultTorsionLabel  = "%VALUE %UNITS";
+    String defaultTorsionLabel = "%VALUE %UNITS";
     boolean justifyMeasurements = false;
-    boolean measureAllModels    = false;
+    boolean measureAllModels = false;
 
     // minimization  // 11.5.21 03/2008
-    
-    int     minimizationSteps   = 100;  
+
+    int minimizationSteps = 100;
     boolean minimizationRefresh = true;
-    float   minimizationCriterion = 0.001f;
-    
+    float minimizationCriterion = 0.001f;
+
     //rendering
 
-    boolean antialiasDisplay            = false;
-    boolean antialiasImages             = true;
-    boolean antialiasTranslucent        = true;
-    boolean displayCellParameters       = true;
-    boolean dotsSelectedOnly            = false;
-    boolean dotSurface                  = true;
-    boolean dynamicMeasurements         = false;
-    boolean greyscaleRendering          = false;
+    boolean antialiasDisplay = false;
+    boolean antialiasImages = true;
+    boolean antialiasTranslucent = true;
+    boolean displayCellParameters = true;
+    boolean dotsSelectedOnly = false;
+    boolean dotSurface = true;
+    boolean dynamicMeasurements = false;
+    boolean greyscaleRendering = false;
     boolean isosurfacePropertySmoothing = true;
-    boolean showHiddenSelectionHalos    = false;
-    boolean showMeasurements            = true;
-    boolean zoomLarge                   = true; //false would be like Chime
-    boolean zShade                      = false;
-    
+    boolean showHiddenSelectionHalos = false;
+    boolean showMeasurements = true;
+    boolean zoomLarge = true; //false would be like Chime
+    boolean zShade = false;
+
     //atoms and bonds
 
-    boolean bondModeOr          = false;
-    boolean hbondsBackbone      = false;
-    boolean hbondsSolid         = false;
-    byte    modeMultipleBond    = JmolConstants.MULTIBOND_NOTSMALL;
-    boolean showHydrogens       = true;
-    boolean showMultipleBonds   = true;
-    boolean ssbondsBackbone     = false;
+    boolean bondModeOr = false;
+    boolean hbondsBackbone = false;
+    boolean hbondsSolid = false;
+    byte modeMultipleBond = JmolConstants.MULTIBOND_NOTSMALL;
+    boolean showHydrogens = true;
+    boolean showMultipleBonds = true;
+    boolean ssbondsBackbone = false;
 
     //secondary structure + Rasmol
 
-    boolean cartoonRockets        = false;
-    boolean chainCaseSensitive    = false;
-    int     hermiteLevel          = 0;
-    boolean highResolutionFlag    = false;
-    boolean rangeSelected         = false;
+    boolean cartoonRockets = false;
+    boolean chainCaseSensitive = false;
+    int hermiteLevel = 0;
+    boolean highResolutionFlag = false;
+    boolean rangeSelected = false;
     boolean rasmolHydrogenSetting = true;
-    boolean rasmolHeteroSetting   = true;
-    int     ribbonAspectRatio     = 16;
-    boolean ribbonBorder          = false;
-    boolean rocketBarrels         = false;
-    float   sheetSmoothing        = 1; // 0: traceAlpha on alphas for helix, 1 on midpoints
-    boolean traceAlpha            = true;
+    boolean rasmolHeteroSetting = true;
+    int ribbonAspectRatio = 16;
+    boolean ribbonBorder = false;
+    boolean rocketBarrels = false;
+    float sheetSmoothing = 1; // 0: traceAlpha on alphas for helix, 1 on midpoints
+    boolean traceAlpha = true;
 
     //misc
 
-    int     animationFps              = 10;
-    boolean autoFps                   = false;
-    int     axesMode                  = JmolConstants.AXES_MODE_BOUNDBOX;
-    float   axesScale                 = 2;        
-    float   cameraDepth               = 3.0f;
-    String  dataSeparator             = "~~~";
-    boolean debugScript               = false;
-    float   defaultDrawArrowScale     = 0.5f;
-    float   defaultTranslucent        = 0.5f;
-    int     delayMaximumMs            = 0;
-    float   dipoleScale               = 1.0f;
-    boolean disablePopupMenu          = false;
-    boolean drawPicking               = false;
-    String  helpPath                  = JmolConstants.DEFAULT_HELP_PATH;
-    boolean fontScaling               = false;
-    boolean hideNameInPopup           = false;
-    int     hoverDelayMs              = 500;
-    boolean measurementLabels         = true;
-    boolean messageStyleChime         = false;
-    int     pickingSpinRate           = 10;
-    String  propertyColorScheme       = "roygb";
-    String  quaternionFrame           = "c";
-    float   solventProbeRadius        = 1.2f;
-    int     scriptDelay               = 0;
-    boolean statusReporting           = true;
-    int     strandCountForStrands     = 5;
-    int     strandCountForMeshRibbon  = 7;
-    boolean useNumberLocalization     = true;
-    float   vectorScale               = 1f;
-    float   vibrationPeriod           = 1f;
-    float   vibrationScale            = 1f;
-    boolean wireframeRotation         = false;
-    
+    int animationFps = 10;
+    boolean autoFps = false;
+    int axesMode = JmolConstants.AXES_MODE_BOUNDBOX;
+    float axesScale = 2;
+    float cameraDepth = 3.0f;
+    String dataSeparator = "~~~";
+    boolean debugScript = false;
+    float defaultDrawArrowScale = 0.5f;
+    float defaultTranslucent = 0.5f;
+    int delayMaximumMs = 0;
+    float dipoleScale = 1.0f;
+    boolean disablePopupMenu = false;
+    boolean drawPicking = false;
+    String helpPath = JmolConstants.DEFAULT_HELP_PATH;
+    boolean fontScaling = false;
+    boolean hideNameInPopup = false;
+    int hoverDelayMs = 500;
+    boolean measurementLabels = true;
+    boolean messageStyleChime = false;
+    int pickingSpinRate = 10;
+    String propertyColorScheme = "roygb";
+    String quaternionFrame = "c";
+    float solventProbeRadius = 1.2f;
+    int scriptDelay = 0;
+    boolean statusReporting = true;
+    int strandCountForStrands = 5;
+    int strandCountForMeshRibbon = 7;
+    boolean useNumberLocalization = true;
+    float vectorScale = 1f;
+    float vibrationPeriod = 1f;
+    float vibrationScale = 1f;
+    boolean wireframeRotation = false;
+
     // window
-    
-    boolean   hideNavigationPoint       = false;
-    boolean   navigationMode            = false;
-    boolean   navigationPeriodic        = false;
-    float     navigationSpeed           = 5;
-    boolean   showNavigationPointAlways = false;
-    String    stereoState               = null;
+
+    boolean hideNavigationPoint = false;
+    boolean navigationMode = false;
+    boolean navigationPeriodic = false;
+    float navigationSpeed = 5;
+    boolean showNavigationPointAlways = false;
+    String stereoState = null;
 
     // special persistent object characteristics -- bbcage, uccage, axes:
-    
-    int[]     objColors                 = new int[OBJ_MAX];
-    boolean[] objStateOn                = new boolean[OBJ_MAX];
-    int[]     objMad                    = new int[OBJ_MAX];
-    
-    boolean  ellipsoidAxes              = false;
-    boolean  ellipsoidDots              = false;
-    boolean  ellipsoidArcs              = false;
-    boolean  ellipsoidFill              = false;
-    boolean  ellipsoidBall              = true;
-    
-    int      ellipsoidDotCount          = 200;
-    float    ellipsoidAxisDiameter      = 0.02f;
-    
+
+    int[] objColors = new int[OBJ_MAX];
+    boolean[] objStateOn = new boolean[OBJ_MAX];
+    int[] objMad = new int[OBJ_MAX];
+
+    boolean ellipsoidAxes = false;
+    boolean ellipsoidDots = false;
+    boolean ellipsoidArcs = false;
+    boolean ellipsoidFill = false;
+    boolean ellipsoidBall = true;
+
+    int ellipsoidDotCount = 200;
+    float ellipsoidAxisDiameter = 0.02f;
 
     String getWindowState(StringBuffer sfunc) {
       StringBuffer str = new StringBuffer();
       if (sfunc != null) {
-        sfunc.append("  initialize;\n  set refreshing false;\n  _setWindowState;\n");
+        sfunc
+            .append("  initialize;\n  set refreshing false;\n  _setWindowState;\n");
         str.append("\nfunction _setWindowState();\n");
       }
-      str.append("# height "
-          + viewer.getScreenHeight() + ";\n# width " + viewer.getScreenWidth()
-          + ";\n");
+      str.append("# height " + viewer.getScreenHeight() + ";\n# width "
+          + viewer.getScreenWidth() + ";\n");
       appendCmd(str, "stateVersion = " + getParameter("_version"));
       for (int i = 0; i < OBJ_MAX; i++)
         if (objColors[i] != 0)
@@ -671,7 +672,7 @@ public class StateManager {
       appendCmd(str, "specularPower = " + Graphics3D.getSpecularPower());
       appendCmd(str, "specularExponent = " + Graphics3D.getSpecularExponent());
       return str.toString();
-    }    
+    }
 
     //testing
 
@@ -683,6 +684,7 @@ public class StateManager {
     //controlled access:
 
     private String measureDistanceUnits = "nanometers";
+
     void setMeasureDistanceUnits(String units) {
       if (units.equalsIgnoreCase("angstroms"))
         measureDistanceUnits = "angstroms";
@@ -692,60 +694,60 @@ public class StateManager {
       else if (units.equalsIgnoreCase("picometers")
           || units.equalsIgnoreCase("pm"))
         measureDistanceUnits = "picometers";
-      else if (units.equalsIgnoreCase("bohr")
-          || units.equalsIgnoreCase("au"))
+      else if (units.equalsIgnoreCase("bohr") || units.equalsIgnoreCase("au"))
         measureDistanceUnits = "au";
       setParameterValue("measurementUnits", measureDistanceUnits);
     }
-    
+
     String getMeasureDistanceUnits() {
       return measureDistanceUnits;
     }
-    
+
     Hashtable htParameterValues;
     Hashtable htPropertyFlags;
     Hashtable htPropertyFlagsRemoved;
 
-    final static String unreportedProperties = 
-      //these are handled individually in terms of reporting for the state
-      //NOT EXCLUDING the load state settings, because although we
-      //handle these specially for the CURRENT FILE, their current
-      //settings won't be reflected in the load state, which is determined
-      //earlier, when the file loads. 
-      //
-      //place any parameter here you do NOT want to have in the state
-      //
-      // _xxxxx variables are automatically exempt
-      //
-      //this is a final static String. MAKE SURE ALL ENTRIES ARE LOWERCASE!
-      //
-      ";ambientpercent;animationfps" +
-      ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor" +
-      ";axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color" +
-      ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth" +
-      ";debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers" +
-      ";fontscaling;language;loglevel;measureStyleChime" +
-      ";minimizationsteps;minimizationrefresh;minimizationcriterion;navigationmode" +
-      ";perspectivedepth;visualrange;perspectivemodel;refreshing;rotationradius" +
-      ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell" +
-      ";slabenabled;specular;specularexponent;specularpercent;specularpower;stateversion" +
-      ";statusreporting;stereo;stereostate" +
-      ";unitcellcolor;windowcentered;zerobasedxyzrasmol;zoomenabled;" +
-      //    saved in the hash table but not considered part of the state:
-      ";scriptqueue;scriptreportinglevel;syncscript;syncmouse" +
-      //    more settable Jmol variables    
-      ";ambient;bonds;colorrasmol;diffuse;drawhover;frank;hetero;hidenotselected" +
-      ";hoverlabel;hydrogen;languagetranslation;measurementunits;navigationdepth;navigationslab" +
-      ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred" +
-      ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount" +
-      ";spinx;spiny;spinz;spinfps" +
-      ";animframecallback;loadstructcallback;messagecallback;minimizationcallback;hovercallback" +
-      ";resizecallback;pickcallback;synccallback" +
-      ";undo;";
-    
+    final static String unreportedProperties =
+    //these are handled individually in terms of reporting for the state
+    //NOT EXCLUDING the load state settings, because although we
+    //handle these specially for the CURRENT FILE, their current
+    //settings won't be reflected in the load state, which is determined
+    //earlier, when the file loads. 
+    //
+    //place any parameter here you do NOT want to have in the state
+    //
+    // _xxxxx variables are automatically exempt
+    //
+    //this is a final static String. MAKE SURE ALL ENTRIES ARE LOWERCASE!
+    //
+    ";ambientpercent;animationfps"
+        + ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor"
+        + ";axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color"
+        + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
+        + ";debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
+        + ";fontscaling;language;loglevel;measureStyleChime"
+        + ";minimizationsteps;minimizationrefresh;minimizationcriterion;navigationmode"
+        + ";perspectivedepth;visualrange;perspectivemodel;refreshing;rotationradius"
+        + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
+        + ";slabenabled;specular;specularexponent;specularpercent;specularpower;stateversion"
+        + ";statusreporting;stereo;stereostate"
+        + ";unitcellcolor;windowcentered;zerobasedxyzrasmol;zoomenabled;"
+        +
+        //    saved in the hash table but not considered part of the state:
+        ";scriptqueue;scriptreportinglevel;syncscript;syncmouse"
+        +
+        //    more settable Jmol variables    
+        ";ambient;bonds;colorrasmol;diffuse;drawhover;frank;hetero;hidenotselected"
+        + ";hoverlabel;hydrogen;languagetranslation;measurementunits;navigationdepth;navigationslab"
+        + ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred"
+        + ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount"
+        + ";spinx;spiny;spinz;spinfps"
+        + ";animframecallback;loadstructcallback;messagecallback;minimizationcallback;hovercallback"
+        + ";resizecallback;pickcallback;synccallback" + ";undo;";
+
     boolean isJmolVariable(String key) {
       return key.charAt(0) == '_'
-          || htParameterValues.containsKey(key = key.toLowerCase()) 
+          || htParameterValues.containsKey(key = key.toLowerCase())
           || htPropertyFlags.containsKey(key)
           || unreportedProperties.indexOf(";" + key + ";") >= 0;
     }
@@ -754,7 +756,7 @@ public class StateManager {
       name = name.toLowerCase();
       if (htParameterValues.containsKey(name))
         return; // don't allow setting boolean of a numeric
-      htPropertyFlags.put(name, value ? Boolean.TRUE : Boolean.FALSE);  
+      htPropertyFlags.put(name, value ? Boolean.TRUE : Boolean.FALSE);
     }
 
     void setParameterValue(String name, int value) {
@@ -763,7 +765,7 @@ public class StateManager {
         return; // don't allow setting numeric of a boolean
       htParameterValues.put(name, new Integer(value));
     }
-    
+
     void setParameterValue(String name, float value) {
       name = name.toLowerCase();
       if (Float.isNaN(value)) {
@@ -775,14 +777,14 @@ public class StateManager {
         return; // don't allow setting numeric of a boolean
       htParameterValues.put(name, new Float(value));
     }
-    
+
     void setParameterValue(String name, String value) {
       name = name.toLowerCase();
       if (value == null || htPropertyFlags.containsKey(name))
         return; // don't allow setting string of a boolean
       htParameterValues.put(name, value);
     }
-    
+
     void removeJmolParameter(String key) {
       if (htPropertyFlags.containsKey(key)) {
         htPropertyFlags.remove(key);
@@ -791,10 +793,11 @@ public class StateManager {
         return;
       }
       if (htParameterValues.containsKey(key))
-          htParameterValues.remove(key);
+        htParameterValues.remove(key);
     }
 
     Hashtable htUserVariables = new Hashtable();
+
     void setUserVariable(String key, Token value) {
       key = key.toLowerCase();
       if (value == null) {
@@ -809,15 +812,15 @@ public class StateManager {
       }
       htUserVariables.put(key, value);
     }
-    
+
     void removeUserVariable(String key) {
-      htUserVariables.remove(key);  
+      htUserVariables.remove(key);
     }
-    
+
     Object getUserParameterValue(String key) {
-      return htUserVariables.get(key);  
+      return htUserVariables.get(key);
     }
-    
+
     String getParameterEscaped(String name, int nMax) {
       name = name.toLowerCase();
       if (htParameterValues.containsKey(name)) {
@@ -850,9 +853,9 @@ public class StateManager {
         return "" + token.intValue;
       default:
         return escapeVariable(name, token.value);
-      }        
+      }
     }
-    
+
     Object getParameter(String name) {
       name = name.toLowerCase();
       if (name.equals("_memory")) {
@@ -887,8 +890,8 @@ public class StateManager {
       e = htPropertyFlags.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
-        if (prefix == null 
-            || key.indexOf(prefix) == 0 || key.indexOf(_prefix) == 0)
+        if (prefix == null || key.indexOf(prefix) == 0
+            || key.indexOf(_prefix) == 0)
           list[n++] = (key.indexOf("_") == 0 ? key + " = " : "set " + key + " ")
               + htPropertyFlags.get(key);
       }
@@ -897,8 +900,8 @@ public class StateManager {
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
         if (key.charAt(0) != '@'
-            && (prefix == null 
-                || key.indexOf(prefix) == 0 || key.indexOf(_prefix) == 0)) {
+            && (prefix == null || key.indexOf(prefix) == 0 || key
+                .indexOf(_prefix) == 0)) {
           Object value = htParameterValues.get(key);
           if (value instanceof String)
             value = Escape.escape((String) value);
@@ -913,7 +916,7 @@ public class StateManager {
       commands.append("\n");
       return commands.toString();
     }
-    
+
     String getState(StringBuffer sfunc) {
       int n = 0;
       String[] list = new String[htPropertyFlags.size()
@@ -983,9 +986,9 @@ public class StateManager {
       list = new String[htUserVariables.size()];
       while (e.hasMoreElements())
         list[n++] = (key = (String) e.nextElement())
-            + (key.charAt(0) == '@' 
-                ? " " + Token.sValue((Token) htUserVariables.get(key))
-                : " = " + escapeUserVariable(key));
+            + (key.charAt(0) == '@' ? " "
+                + Token.sValue((Token) htUserVariables.get(key)) : " = "
+                + escapeUserVariable(key));
 
       Arrays.sort(list, 0, n);
       for (int i = 0; i < n; i++)
@@ -993,19 +996,21 @@ public class StateManager {
           appendCmd(commands, list[i]);
       if (n == 0)
         commands.append("# --none--;\n");
-      
+
       // label defaults
 
       viewer.loadShape(JmolConstants.SHAPE_LABELS);
-      commands.append(viewer.getShapeProperty(JmolConstants.SHAPE_LABELS, "defaultState"));
+      commands.append(viewer.getShapeProperty(JmolConstants.SHAPE_LABELS,
+          "defaultState"));
 
       if (sfunc != null)
         commands.append("\nend function;\n\n");
       return commands.toString();
     }
-    
+
     private boolean doReportProperty(String name) {
-      return (name.charAt(0) != '_' && unreportedProperties.indexOf(";" + name + ";") < 0);
+      return (name.charAt(0) != '_' && unreportedProperties.indexOf(";" + name
+          + ";") < 0);
     }
 
     private String escapeVariable(String name, Object value) {
@@ -1016,7 +1021,7 @@ public class StateManager {
         return Escape.escape(value);
       return Escape.escape((String[]) var.value);
     }
-        
+
     void registerAllValues() {
       htParameterValues = new Hashtable();
       htPropertyFlags = new Hashtable();
@@ -1025,173 +1030,175 @@ public class StateManager {
       // some of these are just placeholders so that the math processor
       // knows they are Jmol variables. They are held by other managers
 
-      setParameterValue("hoverLabel","");
-      setParameterValue("rotationRadius",0);
-      setParameterValue("scriptqueue",true);
+      setParameterValue("hoverLabel", "");
+      setParameterValue("rotationRadius", 0);
+      setParameterValue("scriptqueue", true);
 
-      setParameterValue("_version",0);
-      setParameterValue("stateversion",0);
+      setParameterValue("_version", 0);
+      setParameterValue("stateversion", 0);
       setParameterValue("animFrameCallback", "");
       setParameterValue("loadStructCallback", "");
       setParameterValue("messageCallback", "");
       setParameterValue("hoverCallback", "");
       setParameterValue("resizeCallback", "");
       setParameterValue("pickCallback", "");
-      setParameterValue("allowEmbeddedScripts",allowEmbeddedScripts);
-      setParameterValue("allowRotateSelected",allowRotateSelected);
-      setParameterValue("ambientPercent",ambientPercent);
-      setParameterValue("animationFps",animationFps);
-      setParameterValue("antialiasImages",antialiasImages);
-      setParameterValue("antialiasDisplay",antialiasDisplay);
-      setParameterValue("antialiasTranslucent",antialiasTranslucent);
-      setParameterValue("appendNew",appendNew);
-      setParameterValue("appletProxy",appletProxy);
-      setParameterValue("applySymmetryToBonds",applySymmetryToBonds);
-      setParameterValue("autoBond",autoBond);
-      setParameterValue("autoFps",autoFps);
-      setParameterValue("axesMode",axesMode);
-      setParameterValue("axesScale",axesScale);
+      setParameterValue("allowEmbeddedScripts", allowEmbeddedScripts);
+      setParameterValue("allowRotateSelected", allowRotateSelected);
+      setParameterValue("ambientPercent", ambientPercent);
+      setParameterValue("animationFps", animationFps);
+      setParameterValue("antialiasImages", antialiasImages);
+      setParameterValue("antialiasDisplay", antialiasDisplay);
+      setParameterValue("antialiasTranslucent", antialiasTranslucent);
+      setParameterValue("appendNew", appendNew);
+      setParameterValue("appletProxy", appletProxy);
+      setParameterValue("applySymmetryToBonds", applySymmetryToBonds);
+      setParameterValue("autoBond", autoBond);
+      setParameterValue("autoFps", autoFps);
+      setParameterValue("axesMode", axesMode);
+      setParameterValue("axesScale", axesScale);
       setParameterValue("axesWindow", true);
       setParameterValue("axesMolecular", false);
       setParameterValue("axesUnitcell", false);
       setParameterValue("axesOrientationRasmol", false);
       setParameterValue("backgroundModel", 0);
-      setParameterValue("bondModeOr",bondModeOr);
-      setParameterValue("bondRadiusMilliAngstroms",bondRadiusMilliAngstroms);
-      setParameterValue("bondTolerance",bondTolerance);
-      setParameterValue("cameraDepth",cameraDepth);
-      setParameterValue("cartoonRockets",cartoonRockets);
-      setParameterValue("chainCaseSensitive",chainCaseSensitive);
-      setParameterValue("colorRasmol",false);
-      setParameterValue("dataSeparator",dataSeparator);
-      setParameterValue("debugScript",debugScript);
-      setParameterValue("defaultLattice","{0 0 0}");
-      setParameterValue("defaultAngleLabel",defaultAngleLabel);
-      setParameterValue("defaultColorScheme","Jmol");
-      setParameterValue("defaultDrawArrowScale",defaultDrawArrowScale);
-      setParameterValue("defaultDirectory",defaultDirectory);
-      setParameterValue("defaultDistanceLabel",defaultDistanceLabel);
-      setParameterValue("defaultLoadScript",defaultLoadScript);
+      setParameterValue("bondModeOr", bondModeOr);
+      setParameterValue("bondRadiusMilliAngstroms", bondRadiusMilliAngstroms);
+      setParameterValue("bondTolerance", bondTolerance);
+      setParameterValue("cameraDepth", cameraDepth);
+      setParameterValue("cartoonRockets", cartoonRockets);
+      setParameterValue("chainCaseSensitive", chainCaseSensitive);
+      setParameterValue("colorRasmol", false);
+      setParameterValue("dataSeparator", dataSeparator);
+      setParameterValue("debugScript", debugScript);
+      setParameterValue("defaultLattice", "{0 0 0}");
+      setParameterValue("defaultAngleLabel", defaultAngleLabel);
+      setParameterValue("defaultColorScheme", "Jmol");
+      setParameterValue("defaultDrawArrowScale", defaultDrawArrowScale);
+      setParameterValue("defaultDirectory", defaultDirectory);
+      setParameterValue("defaultDistanceLabel", defaultDistanceLabel);
+      setParameterValue("defaultLoadScript", defaultLoadScript);
       setParameterValue("defaults", "Jmol");
       setParameterValue("defaultVDW", "Jmol");
-      setParameterValue("defaultTorsionLabel",defaultTorsionLabel);
-      setParameterValue("defaultTranslucent",defaultTranslucent);
+      setParameterValue("defaultTorsionLabel", defaultTorsionLabel);
+      setParameterValue("defaultTranslucent", defaultTranslucent);
       setParameterValue("delayMaximumMs", delayMaximumMs);
-      setParameterValue("diffusePercent",diffusePercent);
+      setParameterValue("diffusePercent", diffusePercent);
       setParameterValue("dipoleScale", dipoleScale);
-      setParameterValue("disablePopupMenu",disablePopupMenu);
-      setParameterValue("displayCellParameters",displayCellParameters);
-      setParameterValue("dotsSelectedOnly",dotsSelectedOnly);
-      setParameterValue("dotSurface",dotSurface);
-      setParameterValue("drawHover",false);
-      setParameterValue("drawPicking",drawPicking);
-      setParameterValue("dynamicMeasurements",dynamicMeasurements);
+      setParameterValue("disablePopupMenu", disablePopupMenu);
+      setParameterValue("displayCellParameters", displayCellParameters);
+      setParameterValue("dotsSelectedOnly", dotsSelectedOnly);
+      setParameterValue("dotSurface", dotSurface);
+      setParameterValue("drawHover", false);
+      setParameterValue("drawPicking", drawPicking);
+      setParameterValue("dynamicMeasurements", dynamicMeasurements);
       setParameterValue("ellipsoidArcs", ellipsoidArcs);
       setParameterValue("ellipsoidAxes", ellipsoidAxes);
       setParameterValue("ellipsoidAxisDiameter", ellipsoidAxisDiameter);
-      setParameterValue("ellipsoidBall", ellipsoidBall);  
+      setParameterValue("ellipsoidBall", ellipsoidBall);
       setParameterValue("ellipsoidDotCount", ellipsoidDotCount);
       setParameterValue("ellipsoidDots", ellipsoidDots);
       setParameterValue("ellipsoidFill", ellipsoidFill);
       setParameterValue("exportDrivers", JmolConstants.EXPORT_DRIVER_LIST);
-      setParameterValue("fontScaling",fontScaling);
-      setParameterValue("forceAutoBond",forceAutoBond);
-      setParameterValue("greyscaleRendering",greyscaleRendering);
-      setParameterValue("hbondsBackbone",hbondsBackbone);
-      setParameterValue("hbondsSolid",hbondsSolid);
-      setParameterValue("helpPath",helpPath);
-      setParameterValue("hermiteLevel",hermiteLevel);
-      setParameterValue("hideNameInPopup",hideNameInPopup);
-      setParameterValue("hideNavigationPoint",hideNavigationPoint);
-      setParameterValue("hideNotSelected",false); // saved in selectionManager
-      setParameterValue("highResolution",highResolutionFlag);
+      setParameterValue("fontScaling", fontScaling);
+      setParameterValue("forceAutoBond", forceAutoBond);
+      setParameterValue("greyscaleRendering", greyscaleRendering);
+      setParameterValue("hbondsBackbone", hbondsBackbone);
+      setParameterValue("hbondsSolid", hbondsSolid);
+      setParameterValue("helpPath", helpPath);
+      setParameterValue("hermiteLevel", hermiteLevel);
+      setParameterValue("hideNameInPopup", hideNameInPopup);
+      setParameterValue("hideNavigationPoint", hideNavigationPoint);
+      setParameterValue("hideNotSelected", false); // saved in selectionManager
+      setParameterValue("highResolution", highResolutionFlag);
       setParameterValue("historyLevel", 0);
-      setParameterValue("hoverDelay",hoverDelayMs/1000f);
-      setParameterValue("isosurfacePropertySmoothing", isosurfacePropertySmoothing);
-      setParameterValue("justifyMeasurements",justifyMeasurements);
-      setParameterValue("loadFormat",loadFormat);
-      setParameterValue("measureAllModels",measureAllModels);
-      setParameterValue("measurementLabels",measurementLabels=true);
+      setParameterValue("hoverDelay", hoverDelayMs / 1000f);
+      setParameterValue("isosurfacePropertySmoothing",
+          isosurfacePropertySmoothing);
+      setParameterValue("justifyMeasurements", justifyMeasurements);
+      setParameterValue("loadFormat", loadFormat);
+      setParameterValue("measureAllModels", measureAllModels);
+      setParameterValue("measurementLabels", measurementLabels = true);
       setParameterValue("measurementUnits", measureDistanceUnits);
       setParameterValue("messageStyleChime", messageStyleChime);
-      setParameterValue("minBondDistance",minBondDistance);
-      setParameterValue("minimizationSteps",minimizationSteps);
-      setParameterValue("minimizationRefresh",minimizationRefresh);
-      setParameterValue("minimizationCriterion",minimizationCriterion);
-      setParameterValue("navigationMode",navigationMode);
-      setParameterValue("navigationPeriodic",navigationPeriodic);
-      setParameterValue("navigationDepth",0);
-      setParameterValue("navigationSlab",0);
-      setParameterValue("navigationSpeed",navigationSpeed);
+      setParameterValue("minBondDistance", minBondDistance);
+      setParameterValue("minimizationSteps", minimizationSteps);
+      setParameterValue("minimizationRefresh", minimizationRefresh);
+      setParameterValue("minimizationCriterion", minimizationCriterion);
+      setParameterValue("navigationMode", navigationMode);
+      setParameterValue("navigationPeriodic", navigationPeriodic);
+      setParameterValue("navigationDepth", 0);
+      setParameterValue("navigationSlab", 0);
+      setParameterValue("navigationSpeed", navigationSpeed);
+      setParameterValue("pdbGetHeader", pdbGetHeader); // new 11.5.39
       setParameterValue("pdbSequential", pdbSequential); // new 11.5.39
-      setParameterValue("perspectiveModel",11);
-      setParameterValue("perspectiveDepth",perspectiveDepth);
-      setParameterValue("percentVdwAtom",percentVdwAtom);
-      setParameterValue("picking","ident");
-      setParameterValue("pickingSpinRate",pickingSpinRate);
-      setParameterValue("pickingStyle","toggle");
-      setParameterValue("propertyColorScheme",propertyColorScheme);
-      setParameterValue("propertyDataField",0);
-      setParameterValue("propertyAtomNumberField",0);
-      setParameterValue("quaternionFrame",quaternionFrame);
-      setParameterValue("rangeSelected",rangeSelected);
-      setParameterValue("refreshing",true);
-      setParameterValue("ribbonAspectRatio",ribbonAspectRatio);
-      setParameterValue("ribbonBorder",ribbonBorder);
-      setParameterValue("rocketBarrels",rocketBarrels);
-      setParameterValue("scaleAngstromsPerInch",0);
-      setParameterValue("scriptReportingLevel",0);
-      setParameterValue("selectionHalos",false);
-      setParameterValue("selectHetero",rasmolHeteroSetting);
-      setParameterValue("selectHydrogen",rasmolHydrogenSetting);
-      setParameterValue("sheetSmoothing",sheetSmoothing);
-      setParameterValue("showaxes",false);
-      setParameterValue("showboundbox",false);
-      setParameterValue("showfrank",false);
-      setParameterValue("showHiddenSelectionHalos",showHiddenSelectionHalos);
-      setParameterValue("showHydrogens",showHydrogens);
-      setParameterValue("showMeasurements",showMeasurements);
-      setParameterValue("showMultipleBonds",showMultipleBonds);
-      setParameterValue("showNavigationPointAlways",showNavigationPointAlways);
-      setParameterValue("showScript",scriptDelay);
-      setParameterValue("showUnitcell",false);
-      setParameterValue("slabEnabled",false);
-      setParameterValue("smartAromatic",smartAromatic);
-      setParameterValue("solventProbe",solventOn);
-      setParameterValue("solventProbeRadius",solventProbeRadius);
-      setParameterValue("specular",specular);
-      setParameterValue("specularExponent",specularExponent);
-      setParameterValue("specularPercent",specularPercent);
-      setParameterValue("specularPower",specularPower);
+      setParameterValue("perspectiveModel", 11);
+      setParameterValue("perspectiveDepth", perspectiveDepth);
+      setParameterValue("percentVdwAtom", percentVdwAtom);
+      setParameterValue("picking", "ident");
+      setParameterValue("pickingSpinRate", pickingSpinRate);
+      setParameterValue("pickingStyle", "toggle");
+      setParameterValue("propertyColorScheme", propertyColorScheme);
+      setParameterValue("propertyDataField", 0);
+      setParameterValue("propertyAtomNumberField", 0);
+      setParameterValue("quaternionFrame", quaternionFrame);
+      setParameterValue("rangeSelected", rangeSelected);
+      setParameterValue("refreshing", true);
+      setParameterValue("ribbonAspectRatio", ribbonAspectRatio);
+      setParameterValue("ribbonBorder", ribbonBorder);
+      setParameterValue("rocketBarrels", rocketBarrels);
+      setParameterValue("scaleAngstromsPerInch", 0);
+      setParameterValue("scriptReportingLevel", 0);
+      setParameterValue("selectionHalos", false);
+      setParameterValue("selectHetero", rasmolHeteroSetting);
+      setParameterValue("selectHydrogen", rasmolHydrogenSetting);
+      setParameterValue("sheetSmoothing", sheetSmoothing);
+      setParameterValue("showaxes", false);
+      setParameterValue("showboundbox", false);
+      setParameterValue("showfrank", false);
+      setParameterValue("showHiddenSelectionHalos", showHiddenSelectionHalos);
+      setParameterValue("showHydrogens", showHydrogens);
+      setParameterValue("showMeasurements", showMeasurements);
+      setParameterValue("showMultipleBonds", showMultipleBonds);
+      setParameterValue("showNavigationPointAlways", showNavigationPointAlways);
+      setParameterValue("showScript", scriptDelay);
+      setParameterValue("showUnitcell", false);
+      setParameterValue("slabEnabled", false);
+      setParameterValue("smartAromatic", smartAromatic);
+      setParameterValue("solventProbe", solventOn);
+      setParameterValue("solventProbeRadius", solventProbeRadius);
+      setParameterValue("specular", specular);
+      setParameterValue("specularExponent", specularExponent);
+      setParameterValue("specularPercent", specularPercent);
+      setParameterValue("specularPower", specularPower);
       setParameterValue("spinX", 0);
       setParameterValue("spinY", 30);
       setParameterValue("spinZ", 0);
       setParameterValue("spinFps", 30);
-      setParameterValue("ssbondsBackbone",ssbondsBackbone);
-      setParameterValue("stereoDegrees",stereoDegrees);
-      setParameterValue("statusReporting",statusReporting);
-      setParameterValue("strandCount",strandCountForStrands);
-      setParameterValue("strandCountForStrands",strandCountForStrands);
-      setParameterValue("strandCountForMeshRibbon",strandCountForMeshRibbon);
-      setParameterValue("syncMouse",false);
-      setParameterValue("syncScript",false);
-      setParameterValue("testFlag1",testFlag1);
-      setParameterValue("testFlag2",testFlag2);
-      setParameterValue("testFlag3",testFlag3);
-      setParameterValue("testFlag4",testFlag4);
-      setParameterValue("traceAlpha",traceAlpha);
-      setParameterValue("undo",true);
-      setParameterValue("useNumberLocalization",useNumberLocalization);
-      setParameterValue("vectorScale",vectorScale);
-      setParameterValue("vibrationPeriod",vibrationPeriod);
-      setParameterValue("vibrationScale",vibrationScale);
-      setParameterValue("visualRange",visualRange);
-      setParameterValue("windowCentered",true);
-      setParameterValue("wireframeRotation",wireframeRotation);
-      setParameterValue("zoomEnabled",true);
-      setParameterValue("zoomLarge",zoomLarge);
-      setParameterValue("zShade",zShade);
-      setParameterValue("zeroBasedXyzRasmol",zeroBasedXyzRasmol);
+      setParameterValue("ssbondsBackbone", ssbondsBackbone);
+      setParameterValue("stereoDegrees", stereoDegrees);
+      setParameterValue("statusReporting", statusReporting);
+      setParameterValue("strandCount", strandCountForStrands);
+      setParameterValue("strandCountForStrands", strandCountForStrands);
+      setParameterValue("strandCountForMeshRibbon", strandCountForMeshRibbon);
+      setParameterValue("syncMouse", false);
+      setParameterValue("syncScript", false);
+      setParameterValue("testFlag1", testFlag1);
+      setParameterValue("testFlag2", testFlag2);
+      setParameterValue("testFlag3", testFlag3);
+      setParameterValue("testFlag4", testFlag4);
+      setParameterValue("traceAlpha", traceAlpha);
+      setParameterValue("undo", true);
+      setParameterValue("useNumberLocalization", useNumberLocalization);
+      setParameterValue("vectorScale", vectorScale);
+      setParameterValue("vibrationPeriod", vibrationPeriod);
+      setParameterValue("vibrationScale", vibrationScale);
+      setParameterValue("visualRange", visualRange);
+      setParameterValue("windowCentered", true);
+      setParameterValue("wireframeRotation", wireframeRotation);
+      setParameterValue("zoomEnabled", true);
+      setParameterValue("zoomLarge", zoomLarge);
+      setParameterValue("zShade", zShade);
+      setParameterValue("zeroBasedXyzRasmol", zeroBasedXyzRasmol);
     }
   }
 
@@ -1213,11 +1220,13 @@ public class StateManager {
     return getCommands(ht, null, -1, "select");
   }
 
-  public static String getCommands(Hashtable htDefine, Hashtable htMore, int nAll) {
+  public static String getCommands(Hashtable htDefine, Hashtable htMore,
+                                   int nAll) {
     return getCommands(htDefine, htMore, nAll, "select");
   }
 
-  public static String getCommands(Hashtable htDefine, Hashtable htMore, int nAll, String selectCmd) {
+  public static String getCommands(Hashtable htDefine, Hashtable htMore,
+                                   int nAll, String selectCmd) {
     StringBuffer s = new StringBuffer();
     String setPrev = getCommands(htDefine, s, null, nAll, selectCmd);
     if (htMore != null)
@@ -1225,8 +1234,8 @@ public class StateManager {
     return s.toString();
   }
 
-  public static String getCommands(Hashtable ht, StringBuffer s, String setPrev,
-                            int nAll, String selectCmd) {
+  public static String getCommands(Hashtable ht, StringBuffer s,
+                                   String setPrev, int nAll, String selectCmd) {
     if (ht == null)
       return "";
     String strAll = "({0:" + (nAll - 1) + "})";
@@ -1236,7 +1245,7 @@ public class StateManager {
       String set = Escape.escape((BitSet) ht.get(key));
       if (set.length() < 5) // nothing selected
         continue;
-      set = selectCmd + " " + (set.equals(strAll) && false? "*" : set);
+      set = selectCmd + " " + (set.equals(strAll) && false ? "*" : set);
       if (!set.equals(setPrev))
         appendCmd(s, set);
       setPrev = set;
@@ -1244,13 +1253,12 @@ public class StateManager {
         appendCmd(s, key);
     }
     return setPrev;
-  } 
+  }
 
   public static void appendCmd(StringBuffer s, String cmd) {
     if (cmd.length() == 0)
       return;
     s.append("  ").append(cmd).append(";\n");
   }
-  
 
 }

@@ -177,9 +177,11 @@ class Compiler {
         function.lineNumbers[i] = (short) (lineNumbers[cmdpt0 + i] - line0);
         function.lineIndices[i] = lineIndices[cmdpt0 + i] - chpt0;
         aatoken[i] = (Token[]) lltoken.get(cmdpt0 + i);
-        Token tokenCommand = aatoken[i][0];
-        if (Compiler.tokAttr(tokenCommand.tok, Token.flowCommand))
-          tokenCommand.intValue -= (tokenCommand.intValue < 0 ? -cmdpt0 : cmdpt0);
+        if (aatoken[i].length > 0) {
+          Token tokenCommand = aatoken[i][0];
+          if (Compiler.tokAttr(tokenCommand.tok, Token.flowCommand))
+            tokenCommand.intValue -= (tokenCommand.intValue < 0 ? -cmdpt0 : cmdpt0);
+        }
       }
       for (int i = pt; --i >= cmdpt0;) {
         lltoken.remove(i);

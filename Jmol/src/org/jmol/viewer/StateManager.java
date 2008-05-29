@@ -484,10 +484,10 @@ public class StateManager {
       appendCmd(str, "set defaultVDW " + sMode);
       if (sMode.equals("User"))
         appendCmd(str, viewer.getDefaultVdw(Integer.MAX_VALUE));
-      appendCmd(str, "set loadFormat " + Escape.escape(loadFormat));
-
       appendCmd(str, "set forceAutoBond " + forceAutoBond);
+      appendCmd(str, "set loadFormat " + Escape.escape(loadFormat));
       appendCmd(str, "set minBondDistance " + minBondDistance);
+      appendCmd(str, "set pdbSequential " + pdbSequential);
       appendCmd(str, "set percentVdwAtom " + percentVdwAtom);
       appendCmd(str, "set smartAromatic " + smartAromatic);
       if (zeroBasedXyzRasmol)

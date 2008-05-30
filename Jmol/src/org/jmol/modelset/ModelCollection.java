@@ -190,7 +190,7 @@ abstract public class ModelCollection extends BondCollection {
     if (alreadyDefined != null) {
       jbr.clearBioPolymers(groups, groupCount, alreadyDefined);
     }
-    boolean checkPolymerConnections = !viewer.getBooleanProperty("pdbSequential");
+    boolean checkPolymerConnections = !viewer.getPdbLoadInfo(1);
     for (int i = baseGroupIndex; i < groupCount; ++i) {
       Polymer bp = jbr.buildBioPolymer(groups[i], groups, i, checkPolymerConnections);
       if (bp != null)

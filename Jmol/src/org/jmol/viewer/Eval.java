@@ -4156,7 +4156,7 @@ class Eval { //implements Runnable {
     if (viewer.getApplySymmetryToBonds())
       htParams.put("applySymmetryToBonds", Boolean.TRUE);
     htParams.put("params", params);
-    if (viewer.getBooleanProperty("pdbGetHeader"))
+    if (viewer.getPdbLoadInfo(2))
       htParams.put("getHeader", Boolean.TRUE);
     //params[0] will be a designated model number or -1 for a trajectory
     params[1] = (int) unitCells.x;

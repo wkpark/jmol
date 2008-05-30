@@ -4526,8 +4526,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         setMessageStyleChime(value);
         break;
       }
-      // pdbSequential -- just handled as getBooleanProperty
-      // pdbSaveHeader -- just handled as getBooleanProperty
+      if (key.equalsIgnoreCase("pdbSequential")) {
+        setPdbLoadInfo(value, 1);
+        break;
+      }
+      if (key.equalsIgnoreCase("pdbGetHeader")) {
+        setPdbLoadInfo(value, 2);
+        break;
+      }
       
       //11.5.30
       // ellipsoidAxes just handled as getBooleanProperty()
@@ -4956,6 +4962,27 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return true;
   }
 
+  private void setPdbLoadInfo(boolean value, int type) {
+    switch(type) {
+    case 1:
+      global.pdbSequential = value;
+      return;
+    case 2:
+      global.pdbGetHeader = value;
+      return;
+    }
+  }
+
+  public boolean getPdbLoadInfo(int type) {
+    switch(type) {
+    case 1:
+      return global.pdbSequential;
+    case 2:
+      return global.pdbGetHeader;
+    }
+    return false;
+  }
+  
   private void setMessageStyleChime(boolean value) {
     global.messageStyleChime = value;
   }

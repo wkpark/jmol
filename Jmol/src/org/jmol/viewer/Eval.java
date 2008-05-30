@@ -558,13 +558,13 @@ class Eval { //implements Runnable {
 
     int firstIsotope = JmolConstants.firstIsotope;
     // name ==> e_=n for all standard elements
-    for (int i = JmolConstants.elementNumberMax; --i > 1;) {
+    for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
       String definition = "@" + JmolConstants.elementNameFromNumber(i) + " _e="
           + i;
       predefine(definition);
     }
     // _Xx ==> name for of all elements, isotope-blind
-    for (int i = JmolConstants.elementNumberMax; --i >= 1;) {
+    for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
       String definition = "@_" + JmolConstants.elementSymbolFromNumber(i) + " "
           + JmolConstants.elementNameFromNumber(i);
       predefine(definition);

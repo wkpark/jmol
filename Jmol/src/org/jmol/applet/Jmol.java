@@ -100,17 +100,19 @@ import netscape.javascript.JSObject;
  *  script javascript:...
  *  javascript ...
  *  x = eval(...) 
+ *  
+ * However, this can be overridden by adding an evalCallback function 
+ * This MUST be defined along with applet loading using a <param> tag
+ * Easiest way to do this is to define
  * 
- * callbacks include:
+ * jmolSetCallback("evalCallback", "whateverFunction")
  * 
- * [param name="AnimFrameCallback" value="yourJavaScriptMethodName" /]
- * [param name="HoverCallback" value="yourJavaScriptMethodName" /] 
- * [param name="LoadStructCallback" value="yourJavaScriptMethodName" /]
- * [param name="MessageCallback" value="yourJavaScriptMethodName" /] 
- * [param name="MinimizationCallback" value="yourJavaScriptMethodName" /]
- * [param name="PickCallback" value="yourJavaScriptMethodName" /]
- * [param name="ResizeCallback" value="yourJavaScriptMethodName" /] 
- * [param name="SyncCallback" value="yourJavaScriptMethodName" /]
+ * prior to the jmolApplet() command
+ * 
+ * This is because the signed applet was having trouble finding _jmol in 
+ * Protein Explorer
+ * 
+ * see JmolConstants for callback types.
  * 
  * The use of jmolButtons is fully deprecated and NOT recommended.
  * 
@@ -341,6 +343,7 @@ public class Jmol implements WrappedApplet {
   
   
   boolean needPopupMenu;
+  boolean loading;
   
   public void initApplication() {
     viewer.pushHoldRepaint();
@@ -362,8 +365,12 @@ public class Jmol implements WrappedApplet {
 
       viewer.setBooleanProperty("frank", true);
 
-      for (int i = 0; i < JmolConstants.CALLBACK_COUNT; i++)
-        setValue(JmolConstants.getCallbackName(i), null);
+      loading = true;
+      for (int i = 0; i < JmolConstants.CALLBACK_COUNT; i++) {
+        String name = JmolConstants.getCallbackName(i);
+        setValue(name, null);
+      }
+      loading = false;
 
       boolean haveCallback = false;
       //these are set by viewer.setStringProperty() from setValue
@@ -871,6 +878,7 @@ public class Jmol implements WrappedApplet {
       switch (type) {
       case JmolConstants.CALLBACK_ANIMFRAME:
       case JmolConstants.CALLBACK_ECHO:
+      case JmolConstants.CALLBACK_EVAL:
       case JmolConstants.CALLBACK_LOADSTRUCT:
       case JmolConstants.CALLBACK_MEASURE:
       case JmolConstants.CALLBACK_MESSAGE:
@@ -938,6 +946,7 @@ public class Jmol implements WrappedApplet {
         if (!doCallback)
           doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
         break;
+      case JmolConstants.CALLBACK_EVAL:
       case JmolConstants.CALLBACK_HOVER:
         break;
       case JmolConstants.CALLBACK_LOADSTRUCT:
@@ -1051,7 +1060,8 @@ public class Jmol implements WrappedApplet {
       }
       for (int i = 0; i < JmolConstants.CALLBACK_COUNT; i++)
         if (JmolConstants.getCallbackName(i).equalsIgnoreCase(callbackName)) {
-          callbacks[i] = callbackFunction;
+          if (loading || i != JmolConstants.CALLBACK_EVAL)
+            callbacks[i] = callbackFunction;
           return;
         }
       String s = "";
@@ -1079,6 +1089,10 @@ public class Jmol implements WrappedApplet {
         if (Logger.debugging)
           Logger.debug(" error setting jsoWindow or jsoDocument:" + jsoWindow + ", " + jsoDocument);
         return "NO EVAL ALLOWED";
+      }
+      if (callbacks[JmolConstants.CALLBACK_EVAL] != null) {
+        notifyCallback(JmolConstants.CALLBACK_EVAL, new Object[] { "", strEval });
+        return "";
       }
       try {
         if(!haveDocumentAccess || ((Boolean)jsoDocument.eval("!!_jmol.noEval")).booleanValue())

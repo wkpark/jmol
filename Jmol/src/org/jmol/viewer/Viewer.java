@@ -426,7 +426,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // ///////////////////////////////////////////////////////////////
 
   void initialize() {
+    boolean haveGlobal = (global != null);
+    boolean debugScript = (haveGlobal ? global.debugScript : false);
+    boolean messageStyleChime = (haveGlobal ? global.messageStyleChime : false);
     global = stateManager.getGlobalSettings();
+    if (haveGlobal) {
+      setBooleanProperty("debugScript", debugScript);
+      setBooleanProperty("messageStyleChime", messageStyleChime);
+    }
     setIntProperty("_version", getJmolVersionInt(), true);
     colorManager.resetElementColors();
     setObjectColor("background", "black");

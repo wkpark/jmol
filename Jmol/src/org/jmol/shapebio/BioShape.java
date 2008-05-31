@@ -293,7 +293,8 @@ class BioShape {
     for (int i = 0; i < monomerCount; i++) {
       int atomIndex1 = monomers[i].getFirstAtomIndex();
       int atomIndex2 = monomers[i].getLastAtomIndex();
-      if (bsSizeSet != null && (bsSizeSet.get(i) || bsColixSet.get(i))) {//shapes MUST have been set with a size
+      if (bsSizeSet != null && (bsSizeSet.get(i) 
+          || bsColixSet != null && bsColixSet.get(i))) {//shapes MUST have been set with a size
         if (bsSizeDefault.get(i))
           Shape.setStateInfo(temp, atomIndex1, atomIndex2, type + (bsSizeSet.get(i) ? " on" : " off"));
         else

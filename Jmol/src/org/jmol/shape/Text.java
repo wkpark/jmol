@@ -523,8 +523,8 @@ public class Text {
       //System.out.println(" movableY = " + movableY + " offsetY = " + offsetY + " boxXY[1]=" + boxXY[1]);
     }
     
-    if (valign == VALIGN_XYZ)
-      boxXY[1] += ascent / 2;
+    if (is3dEcho)
+      boxXY[1] -= (align == ALIGN_CENTER ? boxHeight : ascent ) / 2;
 
   }
 

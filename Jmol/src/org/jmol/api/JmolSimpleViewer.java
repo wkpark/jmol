@@ -38,7 +38,9 @@ abstract public class JmolSimpleViewer {
 
   static public JmolSimpleViewer
     allocateSimpleViewer(Component awtComponent, JmolAdapter jmolAdapter) {
-    return Viewer.allocateViewer(awtComponent, jmolAdapter);
+    JmolViewer viewer = Viewer.allocateViewer(awtComponent, jmolAdapter);
+    viewer.setAppletContext("", null, null, "");
+    return viewer;
   }
 
   abstract public void renderScreenImage(Graphics g, Dimension size,

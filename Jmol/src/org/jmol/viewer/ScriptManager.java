@@ -26,6 +26,7 @@ package org.jmol.viewer;
 import java.util.Vector;
 
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 
 class ScriptManager {
 
@@ -33,9 +34,14 @@ class ScriptManager {
   Thread queueThread;
   Vector scriptQueue = new Vector();
   boolean useQueue = true;
+  Thread commandWatcherThread;
   
   ScriptManager(Viewer viewer) {
     this.viewer = viewer;
+  }
+
+  void clear() {
+    startCommandWatcher(false);
   }
 
   public void setQueue(boolean TF) {
@@ -45,11 +51,11 @@ class ScriptManager {
   }
   
   public String addScript(String strScript) {
-    return (String) addScript("string", strScript, "", false, false);
+    return (String) addScript("string", strScript, "", false, false, null);
   }
 
   public String addScript(String strScript, boolean isScriptFile, boolean isQuiet) {
-    return (String) addScript("String", strScript, "", isScriptFile, isQuiet);
+    return (String) addScript("String", strScript, "", isScriptFile, isQuiet, null);
   }
 
   public synchronized void flushQueue(String command) {
@@ -63,24 +69,42 @@ class ScriptManager {
     }
   }
 
+  void addScript(Vector scriptItem) {
+    addScript(null, null, null, false, false, scriptItem);  
+  }
+  
   public Object addScript(String returnType, String strScript,
                           String statusList, boolean isScriptFile,
-                          boolean isQuiet) {
-    Vector scriptItem = new Vector();
-    scriptItem.addElement(strScript);
-    scriptItem.addElement(statusList);
-    scriptItem.addElement(returnType);
-    scriptItem.addElement(isScriptFile ? Boolean.TRUE : Boolean.FALSE);
-    scriptItem.addElement(isQuiet ? Boolean.TRUE : Boolean.FALSE);
-    
+                          boolean isQuiet, Vector scriptItem) {
     if (!useQueue) {
       clearQueue();
       viewer.haltScriptExecution();
     }
+    if (scriptItem == null) {
+      if (commandWatcherThread == null && useCommandWatcherThread)
+        startCommandWatcher(true);
+      if (commandWatcherThread != null && strScript.indexOf("/*SPLIT*/") >=0) {
+        String[] scripts = TextFormat.split(strScript, "/*SPLIT*/");
+        for (int i = 0; i < scripts.length; i++)
+          addScript(returnType, scripts[i], statusList, isScriptFile, isQuiet, scriptItem);
+        return "split into " + scripts.length + " sections for processing";
+      }
+      scriptItem = new Vector();
+      scriptItem.addElement(strScript);
+      scriptItem.addElement(statusList);
+      scriptItem.addElement(returnType);
+      scriptItem.addElement(isScriptFile ? Boolean.TRUE : Boolean.FALSE);
+      scriptItem.addElement(isQuiet ? Boolean.TRUE : Boolean.FALSE);      
+      if (commandWatcherThread != null && strScript.indexOf("javascript ") < 0) {
+        getSetCommandIndirect(scriptItem);
+        if (Logger.debugging)
+          Logger.debug(commands.size() + " scripts in command watcher queue; added: " + strScript);
+        return "processing";
+      }
+    }      
     scriptQueue.addElement(scriptItem);
-    if (Logger.debugging) {
+    if (Logger.debugging)
       Logger.debug(scriptQueue.size() + " scripts; added: " + strScript);
-    }
     startScriptQueue();
     return "pending";
   }
@@ -160,6 +184,75 @@ class ScriptManager {
       viewer.setSyncDriver(StatusManager.SYNC_ENABLE);
     }
   }
+
+  boolean useCommandWatcherThread = false;
+  synchronized void startCommandWatcher(boolean isStart) {
+    useCommandWatcherThread = isStart;
+    if (isStart) {
+      if (commandWatcherThread != null)
+        return;
+      commandWatcherThread = new Thread(new CommandWatcher());
+      commandWatcherThread.start();
+    } else {
+      if (commandWatcherThread == null)
+        return;
+      commandWatcherThread.interrupt();
+      commandWatcherThread = null;
+    }
+    if (Logger.debugging) {
+      Logger.debug("command watcher " + (isStart ? "started" : "stopped"));
+    }
+  }
+
+  /*
+   * CommandWatcher thread handles processing of 
+   * command scripts independently of the user thread.
+   * This is important for the signed applet, where the
+   * thread opening remote files cannot be the browser's,
+   * and commands that utilize JavaScript must.  
+   * 
+   * 
+   */
   
   
+  Vector commands = new Vector();
+  synchronized Vector getSetCommandIndirect(Vector cmd) {
+    if (cmd != null) {
+      commands.add(cmd);
+    } else if (commands.size() > 0){
+      cmd = (Vector) commands.elementAt(0);
+      commands.remove(0);
+      return cmd;
+    }
+    return null;
+  }
+  
+  class CommandWatcher implements Runnable {
+    public void run() {
+      Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+      int commandDelay = 200;
+      while (commandWatcherThread != null) {
+        try {
+          Thread.sleep(commandDelay);
+          if (commandWatcherThread != null) {
+            Vector cmd;
+            while ((cmd = getSetCommandIndirect(null)) != null) {
+              addScript(cmd);
+            }
+          }
+        } catch (InterruptedException ie) {
+          Logger.debug("CommandWatcher InterruptedException!");
+          break;
+        } catch (Exception ie) {
+          String s = "script processing ERROR:\n\n" + ie.toString();
+          for (int i = 0; i < ie.getStackTrace().length; i++) {
+            s += "\n" + ie.getStackTrace()[i].toString();
+          }
+          viewer.showString(s);
+          break;
+        }
+      }
+      commandWatcherThread = null;
+    }
+  }  
 }

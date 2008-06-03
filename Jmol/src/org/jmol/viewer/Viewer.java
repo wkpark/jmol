@@ -241,15 +241,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return new Viewer(display, modelAdapter);
   }
 
-  boolean isSilent = false;
-  boolean isApplet = false;
-  boolean autoExit = false;
-  String writeInfo;
-  boolean haveDisplay = true;
-  boolean mustRender = true;
-  boolean checkScriptOnly = false;
-  boolean listCommands = false;
-  boolean fileOpenCheck = true;
+  private boolean isSilent = false;
+  private boolean isApplet = false;
+  private boolean autoExit = false;
+  private String writeInfo;
+  private boolean haveDisplay = true;
+  private boolean mustRender = true;
+  private boolean checkScriptOnly = false;
+  private boolean listCommands = false;
+  private boolean fileOpenCheck = true;
+  private boolean useCommandThread = false;
+  private boolean isSignedApplet = false;
 
   public boolean isApplet() {
     return (htmlName.length() > 0);
@@ -267,7 +269,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         .substring(i + 1, fullName.length() - 1));
     isApplet = (documentBase != null);
     String str = appletProxyOrCommandOptions;
+    if (str == null)
+      str = "";
     String mem = (String) getParameter("_memory");
+
+    String appletProxy = null;
+    if (isApplet && (i = str.indexOf("-appletProxy ")) >= 0) {
+      appletProxy = str.substring(i + 13);
+      str = str.substring(0, i);
+    }
+
+    useCommandThread = (str.indexOf("-t") >= 0);
+    if (useCommandThread)
+      scriptManager.startCommandWatcher(true);
+    isSignedApplet = (isApplet && str.indexOf("-signed") >= 0);
+    setBooleanProperty("_signedApplet", isSignedApplet);
+    setBooleanProperty("_useCommandThread", useCommandThread);
     if (!isApplet) {
       // not an applet -- used to pass along command line options
       if (str.indexOf("-i") >= 0) {
@@ -307,15 +324,25 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      + jvm14orGreater);
      */
     if (!isSilent) {
-      Logger.info(JmolConstants.copyright + "\nJmol Version "
-          + getJmolVersion() + "\njava.vendor:" + strJavaVendor
-          + "\njava.version:" + strJavaVersion + "\nos.name:" + strOSName
-          + "\nmemory:" + mem + "\nappletId:" + htmlName);
+      Logger.info(JmolConstants.copyright
+          + "\nJmol Version "
+          + getJmolVersion()
+          + "\njava.vendor:"
+          + strJavaVendor
+          + "\njava.version:"
+          + strJavaVersion
+          + "\nos.name:"
+          + strOSName
+          + "\nmemory:"
+          + mem
+          + "\nuseCommandThread: "
+          + useCommandThread
+          + (!isApplet ? "" : "\nappletId:" + htmlName
+              + (isSignedApplet ? " (signed)" : "")));
     }
 
     if (isApplet)
-      fileManager.setAppletContext(documentBase, codeBase,
-          appletProxyOrCommandOptions);
+      fileManager.setAppletContext(documentBase, codeBase, appletProxy);
     zap(false, false); //here to allow echos
     global.setParameterValue("language", GT.getLanguage());
   }
@@ -449,6 +476,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setBooleanProperty("messageStyleChime", messageStyleChime);
     }
     setIntProperty("_version", getJmolVersionInt(), true);
+    setBooleanProperty("_signedApplet", isSignedApplet);
+    setBooleanProperty("_useCommandThread", useCommandThread);
     colorManager.resetElementColors();
     setObjectColor("background", "black");
     setObjectColor("axis1", "red");
@@ -1401,6 +1430,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       //applet is being destroyed
       clearScriptQueue();
       haltScriptExecution();
+      scriptManager.startCommandWatcher(false);
       g3d.destroy();
     }
   }

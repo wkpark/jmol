@@ -93,8 +93,20 @@ public class AppletWrapper extends Applet {
     this.preloadThreadCount = preloadThreadCount;
     this.preloadClassNames = preloadClassNames;
     needToCompleteInitialization = true;
+    isSigned = false;
   }
 
+  public boolean isSigned() {
+    try {
+      URL urlImage =
+        getClass().getClassLoader().getResource(preloadImageName);
+      isSigned = (("" + urlImage).indexOf("Signed") >= 0);
+    } catch (Exception e) {
+      Logger.error("getImage failed: " + e);
+    }
+    return isSigned;
+  }
+  
   public String getAppletInfo() {
     return (wrappedApplet != null ? wrappedApplet.getAppletInfo() : null);
   }
@@ -176,8 +188,8 @@ public class AppletWrapper extends Applet {
       repaint(clockX, clockBaseline - fontAscent, clockWidth, fontHeight);
   }
 
-      
-  private void completeInitialization(Graphics g, Dimension dim) {
+  private boolean isSigned;
+  private boolean completeInitialization(Graphics g, Dimension dim) {
     needToCompleteInitialization = false;
     if (preloadImageName != null) {
       try {
@@ -187,6 +199,7 @@ public class AppletWrapper extends Applet {
         URL urlImage =
           getClass().getClassLoader().getResource(preloadImageName);
         Logger.info("urlImage=" + urlImage);
+        isSigned = (("" + urlImage).indexOf("Signed") >= 0);
         if (urlImage != null) {
           preloadImage =
             Toolkit.getDefaultToolkit().getImage(urlImage);
@@ -202,6 +215,7 @@ public class AppletWrapper extends Applet {
         Logger.error("getImage failed: " + e);
       }
     }
+    
     String bgcolorName = getParameter("boxbgcolor");
     if (bgcolorName == null)
       bgcolorName = getParameter("bgcolor");
@@ -225,6 +239,7 @@ public class AppletWrapper extends Applet {
     }
     fontHeight = fontMetrics.getHeight();
     fontAscent = fontMetrics.getAscent();
+    return isSigned;
   }
 
   private final static String[] colorNames = {

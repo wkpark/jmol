@@ -101,10 +101,10 @@ class Quaternion {
   
   Quaternion mul(Quaternion p) {
     return new Quaternion(mat, 
-        p.q0 * q0 - p.q1 * q1 - p.q2 * q2 - p.q3 * q3,
-        p.q0 * q1 + p.q1 * q0 + p.q2 * q3 - p.q3 * q2,
-        p.q0 * q2 + p.q2 * q0 + p.q3 * q1 - p.q1 * q3,
-        p.q0 * q3 + p.q3 * q0 + p.q1 * q2 - p.q2 * q1
+        q0 * p.q0 - q1 * p.q1 - q2 * p.q2 - q3 * p.q3,
+        q0 * p.q1 + q1 * p.q0 + q2 * p.q3 - q3 * p.q2,
+        q0 * p.q2 + q2 * p.q0 + q3 * p.q1 - q1 * p.q3,
+        q0 * p.q3 + q3 * p.q0 + q1 * p.q2 - q2 * p.q1
         );
   }
   

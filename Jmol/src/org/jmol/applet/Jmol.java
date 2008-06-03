@@ -77,6 +77,11 @@ import netscape.javascript.JSObject;
  * To disable ALL access to JavaScript (as, for example, in a Wiki) 
  * remove the MAYSCRIPT tag or set MAYSCRIPT="false"
  * 
+ * You can specify that the signed or unsign applet or application should
+ * use an independent command thread (EXCEPT for scripts containing the "javascript" command)  
+ * 
+ * [param name="useCommandThread" value="true"]
+ * 
  * You can specify a language (French in this case) using  
  * 
  * [param name="language" value="fr"]
@@ -232,8 +237,17 @@ public class Jmol implements WrappedApplet {
     // to enable CDK
     // viewer = new JmolViewer(this, new CdkJmolAdapter(null));
     viewer = JmolViewer.allocateViewer(appletWrapper, new SmarterJmolAdapter());
+    String options = "";
+    boolean isSigned = appletWrapper.isSigned(); 
+    if (isSigned)
+      options += "-signed";
+    if (getBooleanValue("useCommandThread", isSigned))
+      options += "-threaded";
+    String appletProxy = getValue("JmolAppletProxy", null);
+    if (appletProxy != null)
+      options += "-appletProxy " + appletProxy;
     viewer.setAppletContext(fullName, appletWrapper.getDocumentBase(),
-        appletWrapper.getCodeBase(), getValue("JmolAppletProxy", null));
+        appletWrapper.getCodeBase(), options);
     myStatusListener = new MyStatusListener();
     viewer.setJmolStatusListener(myStatusListener);
     String menuFile = getParameter("menuFile");
@@ -364,7 +378,6 @@ public class Jmol implements WrappedApplet {
       loadNodeId(getValue("loadNodeId", null));
 
       viewer.setBooleanProperty("frank", true);
-
       loading = true;
       for (int i = 0; i < JmolConstants.CALLBACK_COUNT; i++) {
         String name = JmolConstants.getCallbackName(i);

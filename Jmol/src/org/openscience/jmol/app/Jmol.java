@@ -483,6 +483,7 @@ public class Jmol extends JPanel {
     options.addOption("l", "list", false, GT._("list commands during script execution"));
     options.addOption("o", "noconsole", false, GT
         ._("no console -- all output to sysout"));
+    options.addOption("t", "threaded", false, GT._("independent commmand thread"));
     options.addOption("x", "exit", false, GT
         ._("exit after script (implicit with -n)"));
 
@@ -580,6 +581,11 @@ public class Jmol extends JPanel {
     if (line.hasOption("i")) {
       commandOptions += "-i";
       isSilent = Boolean.TRUE;
+    }
+
+    // independent command thread
+    if (line.hasOption("t")) {
+      commandOptions += "-t";
     }
 
     //list commands during script operation

@@ -505,9 +505,7 @@ public abstract class BioPolymer extends Polymer {
             if (q.dot(qprev) < 0)
               qprev = qprev.mul(-1);
             Quaternion qthis = q;
-//            q = qprev.inv().mul(q);
-            q = q.mul(qprev.inv());
-            //System.out.println("" + qprev+q+ qprev.mul(q) + qthis);
+            q = qprev.inv().mul(q);
             qprev = qthis;
           } else if (qlast == null && q.q0 < 0) {
             //initialize with a positive q0

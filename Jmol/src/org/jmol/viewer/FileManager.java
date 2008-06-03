@@ -461,11 +461,17 @@ public class FileManager {
     if (appletDocumentBase != null) {
       // This code is only for the applet
       try {
+        if (name.indexOf(":\\") == 1 || name.indexOf(":/") == 1)
+          name = "file:///" + name;
+        //System.out.println("filemanager name " + name);
+        //System.out.println("filemanager adb " + appletDocumentBase);
         URL url = new URL(appletDocumentBase, name);
         names[0] = url.toString();
         // we add one to lastIndexOf(), so don't worry about -1 return value
         names[1] = names[0].substring(names[0].lastIndexOf('/') + 1,
                 names[0].length());
+        //System.out.println("filemanager 0 " + names[0]);
+        //System.out.println("filemanager 1 " + names[1]);
       } catch (MalformedURLException e) {
         openErrorMessage = e.getMessage();
       }

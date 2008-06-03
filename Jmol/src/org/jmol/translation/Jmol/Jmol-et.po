@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-05-24 21:38+0200\n"
+"POT-Creation-Date: 2008-06-03 21:34+0200\n"
 "PO-Revision-Date: 2007-12-26 15:51+0200\n"
 "Last-Translator: Ivo Sarak <ivo@vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -879,24 +879,28 @@ msgstr ""
 msgid "no console -- all output to sysout"
 msgstr "konsool puudub -- kogu väljastus suunatud sysout'i"
 
-#: org/openscience/jmol/app/Jmol.java:487
+#: org/openscience/jmol/app/Jmol.java:486
+msgid "independent commmand thread"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:488
 msgid "exit after script (implicit with -n)"
 msgstr "välju peale skripti (kaudne -n)"
 
-#: org/openscience/jmol/app/Jmol.java:501
+#: org/openscience/jmol/app/Jmol.java:502
 msgid "property=value"
 msgstr "omadus=väärtus"
 
-#: org/openscience/jmol/app/Jmol.java:504
+#: org/openscience/jmol/app/Jmol.java:505
 msgid "supported options are given below"
 msgstr "lubatud valikud on eespool"
 
-#: org/openscience/jmol/app/Jmol.java:509
+#: org/openscience/jmol/app/Jmol.java:510
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "akna laius x kõrgus 500x500 , {0}"
 
-#: org/openscience/jmol/app/Jmol.java:517
+#: org/openscience/jmol/app/Jmol.java:518
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -904,49 +908,49 @@ msgstr ""
 "JPG pildi kvaliteet (1-100; vaikeväärtus 75) või PNG pildi pakkimistihedus "
 "(0-9; vaikeväärtus on 2, suurim pakkimistihedus on  9)"
 
-#: org/openscience/jmol/app/Jmol.java:523
+#: org/openscience/jmol/app/Jmol.java:524
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} või {1}:failinimi"
 
-#: org/openscience/jmol/app/Jmol.java:545
+#: org/openscience/jmol/app/Jmol.java:546
 msgid "For example:"
 msgstr "Näiteks:"
 
-#: org/openscience/jmol/app/Jmol.java:551
+#: org/openscience/jmol/app/Jmol.java:552
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr "-D valikud on järgnevad (vaikeväärtus on sulgudes):"
 
-#: org/openscience/jmol/app/Jmol.java:713
+#: org/openscience/jmol/app/Jmol.java:719
 msgid "Executing script..."
 msgstr "Käivitan skripti..."
 
-#: org/openscience/jmol/app/Jmol.java:725
+#: org/openscience/jmol/app/Jmol.java:731
 msgid "Jmol Java Console"
 msgstr "Jmol Java konsool"
 
-#: org/openscience/jmol/app/Jmol.java:733
+#: org/openscience/jmol/app/Jmol.java:739
 #: org/openscience/jmol/app/ScriptWindow.java:94
 msgid "Clear"
 msgstr "Puhasta"
 
-#: org/openscience/jmol/app/Jmol.java:747
+#: org/openscience/jmol/app/Jmol.java:753
 msgid "Could not create ConsoleTextArea: "
 msgstr "Ei saa luua ConsoleTextArea: "
 
-#: org/openscience/jmol/app/Jmol.java:833
+#: org/openscience/jmol/app/Jmol.java:839
 msgid "Closing Jmol..."
 msgstr "Jmol sulgemine..."
 
-#: org/openscience/jmol/app/Jmol.java:1085
+#: org/openscience/jmol/app/Jmol.java:1091
 msgid "Macros"
 msgstr "Makrod"
 
-#: org/openscience/jmol/app/Jmol.java:1454
+#: org/openscience/jmol/app/Jmol.java:1460
 msgid "Open URL"
 msgstr "Ava URL"
 
-#: org/openscience/jmol/app/Jmol.java:1455
+#: org/openscience/jmol/app/Jmol.java:1461
 msgid "Enter URL of molecular model"
 msgstr "Sisesta molekulaarmudeli URL"
 

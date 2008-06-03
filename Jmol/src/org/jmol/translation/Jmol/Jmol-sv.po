@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-05-24 21:38+0200\n"
+"POT-Creation-Date: 2008-06-03 21:34+0200\n"
 "PO-Revision-Date: 2008-03-19 14:42+0000\n"
 "Last-Translator: carson <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -878,72 +878,76 @@ msgstr ""
 msgid "no console -- all output to sysout"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:487
+#: org/openscience/jmol/app/Jmol.java:486
+msgid "independent commmand thread"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:488
 msgid "exit after script (implicit with -n)"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:501
+#: org/openscience/jmol/app/Jmol.java:502
 msgid "property=value"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:504
+#: org/openscience/jmol/app/Jmol.java:505
 msgid "supported options are given below"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:509
+#: org/openscience/jmol/app/Jmol.java:510
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:517
+#: org/openscience/jmol/app/Jmol.java:518
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:523
+#: org/openscience/jmol/app/Jmol.java:524
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:545
+#: org/openscience/jmol/app/Jmol.java:546
 msgid "For example:"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:551
+#: org/openscience/jmol/app/Jmol.java:552
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:713
+#: org/openscience/jmol/app/Jmol.java:719
 msgid "Executing script..."
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:725
+#: org/openscience/jmol/app/Jmol.java:731
 msgid "Jmol Java Console"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:733
+#: org/openscience/jmol/app/Jmol.java:739
 #: org/openscience/jmol/app/ScriptWindow.java:94
 msgid "Clear"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:747
+#: org/openscience/jmol/app/Jmol.java:753
 msgid "Could not create ConsoleTextArea: "
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:833
+#: org/openscience/jmol/app/Jmol.java:839
 msgid "Closing Jmol..."
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1085
+#: org/openscience/jmol/app/Jmol.java:1091
 msgid "Macros"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1454
+#: org/openscience/jmol/app/Jmol.java:1460
 msgid "Open URL"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:1455
+#: org/openscience/jmol/app/Jmol.java:1461
 msgid "Enter URL of molecular model"
 msgstr ""
 

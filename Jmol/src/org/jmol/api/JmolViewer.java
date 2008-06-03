@@ -55,7 +55,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    *  
    *    viewer.evalString("ZAP");
    *    
-   *    or
+   *    or at least:
    *    
    *    viewer.setAppletContext("",null,null,"")
    *    

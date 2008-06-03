@@ -218,6 +218,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * 
    * in order to remove references to display window in listeners and hoverWatcher
    * 
+   *  This is the main access point for creating an application
+   *  or applet viewer. After allocation it is MANDATORY that one of 
+   *  the next commands is either 
+   *  
+   *      viewer.evalString("ZAP");
+   *    
+   *    or at least:
+   *    
+   *      viewer.setAppletContext("",null,null,"")
+   *    
+   *    One or the other of these is necessary to establish the 
+   *    first modelset, which might be required by one or more
+   *    later evaluated commands or file loadings.
+   *    
    * @param display       either DisplayPanel or WrappedApplet
    * @param modelAdapter  the model reader
    * @return              a viewer instance 

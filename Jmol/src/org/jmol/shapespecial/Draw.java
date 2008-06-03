@@ -542,12 +542,15 @@ public class Draw extends MeshCollection {
       case PT_MODEL_BASED_POINTS:
         // from list variables
         String[] modelBasedPoints = (String[]) info[1];
+        if (bsAllModels == null)
+          bsAllModels = new BitSet();
         for (int j = 0; j < modelBasedPoints.length; j++)
           if (iModel < 0 || j == iModel) {
             Object points = Token
                 .unescapePointOrBitsetAsToken(modelBasedPoints[j]);
             if (!(points instanceof Token))
               continue;
+            bsAllModels.set(j);
             switch (((Token) points).tok) {
             case Token.point3f:
               addPoint((Point3f) ((Token) points).value, j);

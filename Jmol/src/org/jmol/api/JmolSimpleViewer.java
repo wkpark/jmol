@@ -36,6 +36,21 @@ import org.jmol.viewer.Viewer;
 
 abstract public class JmolSimpleViewer {
 
+  /**
+   *  This is the main access point for creating an application
+   *  or applet viewer. After allocation it is MANDATORY that one of 
+   *  the next commands is either 
+   *  
+   *    viewer.evalString("ZAP");
+   *    
+   *    This command is necessary to establish the 
+   *    first modelset, which might be required by one or more
+   *    later evaluated commands or file loadings.
+   *    
+   * @param awtComponent
+   * @param jmolAdapter
+   * @return              a JmolViewer object
+   */
   static public JmolSimpleViewer
     allocateSimpleViewer(Component awtComponent, JmolAdapter jmolAdapter) {
     JmolViewer viewer = Viewer.allocateViewer(awtComponent, jmolAdapter);

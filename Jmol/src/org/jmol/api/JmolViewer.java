@@ -42,12 +42,35 @@ import org.jmol.viewer.Viewer;
  * This is the high-level API for the JmolViewer for simple access.
  * <p>
  * We will implement a low-level API at some point
+ * 
+ *
  **/
 
 abstract public class JmolViewer extends JmolSimpleViewer {
 
+  /**
+   *  This is the main access point for creating an application
+   *  or applet viewer. After allocation it is MANDATORY that one of 
+   *  the next commands is either 
+   *  
+   *    viewer.evalString("ZAP");
+   *    
+   *    or
+   *    
+   *    viewer.setAppletContext("",null,null,"")
+   *    
+   *    One or the other of these is necessary to establish the 
+   *    first modelset, which might be required by one or more
+   *    later evaluated commands or file loadings.
+   *    
+   * 
+   * @param awtComponent
+   * @param jmolAdapter
+   * @return              a JmolViewer object
+   */
   static public JmolViewer allocateViewer(Component awtComponent,
                                           JmolAdapter jmolAdapter) {
+    
     return Viewer.allocateViewer(awtComponent, jmolAdapter);
   }
 

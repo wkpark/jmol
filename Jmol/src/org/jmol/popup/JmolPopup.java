@@ -82,6 +82,7 @@ abstract public class JmolPopup {
   boolean isMultiConfiguration;
   boolean isVibration;
   boolean isApplet;
+  boolean isSigned;
   boolean isZapped;
   boolean haveCharges;
   boolean haveBFactors;
@@ -166,6 +167,7 @@ abstract public class JmolPopup {
 
   private void getViewerData() {
     isApplet = viewer.isApplet();
+    isSigned = (viewer.getBooleanProperty("_signedApplet"));
     modelSetName = viewer.getModelSetName();
     isZapped = (modelSetName == "zapped");
     modelIndex = viewer.getDisplayModelIndex();
@@ -571,7 +573,7 @@ abstract public class JmolPopup {
     for (int i = getMenuItemCount(menu); --i >= aboutComputedMenuBaseCount;)
       removeMenuItem(menu, i);
     addMenuSeparator(menu);
-    addMenuItem(menu, "Jmol " + JmolConstants.version);
+    addMenuItem(menu, "Jmol " + JmolConstants.version + (isSigned ? " (signed)" : ""));
     addMenuItem(menu, JmolConstants.date);
     addMenuItem(menu, viewer.getOperatingSystemName());
     addMenuItem(menu, viewer.getJavaVendor());

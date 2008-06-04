@@ -24,7 +24,6 @@
 
 package org.jmol.shape;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Font3D;
 
 import java.awt.FontMetrics;
@@ -36,7 +35,6 @@ public class Frank extends FontLineShape {
   final static String frankString = "Jmol";
   final static String defaultFontName = "SansSerif";
   final static String defaultFontStyle = "Bold";
-  final static short defaultFontColix = Graphics3D.GRAY;
   final static int defaultFontSize = 16;
   final static int frankMargin = 4;
 

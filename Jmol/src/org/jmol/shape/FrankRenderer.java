@@ -33,8 +33,9 @@ public class FrankRenderer extends FontLineShapeRenderer {
   
   protected void render() {
     Frank frank = (Frank) shape;
-    if (isGenerator || !viewer.getShowFrank()
-        || !g3d.setColix(Graphics3D.getColixTranslucent(Frank.defaultFontColix,
+    colix = viewer.getFrankColix();
+    if (isGenerator || colix == Short.MIN_VALUE
+        || !g3d.setColix(Graphics3D.getColixTranslucent(colix,
             g3d.haveTranslucentObjects(), 0.5f)))
       return;
     imageFontScaling = viewer.getImageFontScaling();

@@ -3462,6 +3462,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   boolean checking;
 
+  void  setStatusScriptTermination(String strErrorMessage, int msWalltime) {
+    statusManager.setStatusScriptTermination(strErrorMessage, msWalltime);
+  }
+
   public String scriptCheck(String strScript) {
     // from ConsoleTextPane.checkCommand() and applet Jmol.scriptProcessor()
     if (strScript == null || checking)

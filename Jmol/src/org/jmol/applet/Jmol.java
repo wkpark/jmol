@@ -955,10 +955,10 @@ public class Jmol implements WrappedApplet {
           jmolpopup.updateComputedMenus();
         break;
       case JmolConstants.CALLBACK_ECHO:
-        consoleMessage(strInfo);
         if (!doCallback)
           doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
-        break;
+        if (!doCallback)
+          consoleMessage(strInfo);
       case JmolConstants.CALLBACK_EVAL:
       case JmolConstants.CALLBACK_HOVER:
         break;
@@ -980,7 +980,8 @@ public class Jmol implements WrappedApplet {
           consoleMessage((String) data[3] + ": " + strInfo);
         break;
       case JmolConstants.CALLBACK_MESSAGE:
-        consoleMessage(strInfo);
+        if (!doCallback)
+          consoleMessage(strInfo);
         if (strInfo == null)
           return;
         break;

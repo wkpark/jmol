@@ -79,7 +79,6 @@ class ScriptManager {
         (strScript.indexOf("javascript") < 0 
             || strScript.indexOf("#javascript ") >= 0));
     // scripts with #javascript will be processed at the browser end
-      useCommandThread = true;
     Vector scriptItem = new Vector();
     scriptItem.addElement(strScript);
     scriptItem.addElement(statusList);

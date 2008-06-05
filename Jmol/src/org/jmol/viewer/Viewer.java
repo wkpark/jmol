@@ -5676,8 +5676,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return getObjectMad(StateManager.OBJ_FRANK) != 0;
   }
   
-  public short getFrankColix() {
-    return (isSignedApplet ? Graphics3D.RED : Graphics3D.GRAY);
+  public boolean isSignedApplet() {
+    return isSignedApplet;
   }
   
   public void setShowMeasurements(boolean TF) {

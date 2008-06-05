@@ -33,7 +33,7 @@ public class FrankRenderer extends FontLineShapeRenderer {
   
   protected void render() {
     Frank frank = (Frank) shape;
-    colix = viewer.getFrankColix();
+    colix = (viewer.isSignedApplet() ? Graphics3D.RED : Graphics3D.GRAY);
     if (isGenerator || !viewer.getShowFrank()
         || !g3d.setColix(Graphics3D.getColixTranslucent(colix,
             g3d.haveTranslucentObjects(), 0.5f)))
@@ -42,7 +42,7 @@ public class FrankRenderer extends FontLineShapeRenderer {
     frank.getFont(imageFontScaling);
     int dx = (int) (frank.frankWidth + Frank.frankMargin * imageFontScaling);
     int dy = frank.frankDescent;
-    g3d.drawStringNoSlab(Frank.frankString, frank.font3d,
+    g3d.drawStringNoSlab(frank.frankString, frank.font3d,
         g3d.getRenderWidth() - dx, g3d.getRenderHeight() - dy, 0);
   }
 }

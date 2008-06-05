@@ -274,7 +274,28 @@ public class PdbReader extends AtomSetCollectionReader {
  REMARK 350   BIOMT3   1  0.000000  0.000000  1.000000        0.00000            
  REMARK 350   BIOMT1   2  0.309017 -0.809017  0.500000        0.00000            
  REMARK 350   BIOMT2   2  0.809017  0.500000  0.309017        0.00000            
- REMARK 350   BIOMT3   2 -0.500000  0.309017  0.809017        0.00000            
+ REMARK 350   BIOMT3   2 -0.500000  0.309017  0.809017        0.00000
+ 
+             
+             or, as fount in http://www.ebi.ac.uk/msd-srv/pqs/pqs-doc/macmol/1k28.mmol
+             
+REMARK 350 AN OLIGOMER OF TYPE :HEXAMERIC : CAN BE ASSEMBLED BY
+REMARK 350 APPLYING THE FOLLOWING TO CHAINS:
+REMARK 350 A, D
+REMARK 350   BIOMT1   1  1.000000  0.000000  0.000000        0.00000
+REMARK 350   BIOMT2   1  0.000000  1.000000  0.000000        0.00000
+REMARK 350   BIOMT3   1  0.000000  0.000000  1.000000        0.00000
+REMARK 350 IN ADDITION APPLY THE FOLLOWING TO CHAINS:
+REMARK 350 A, D
+REMARK 350   BIOMT1   2  0.000000 -1.000000  0.000000        0.00000
+REMARK 350   BIOMT2   2  1.000000 -1.000000  0.000000        0.00000
+REMARK 350   BIOMT3   2  0.000000  0.000000  1.000000        0.00000
+REMARK 350 IN ADDITION APPLY THE FOLLOWING TO CHAINS:
+REMARK 350 A, D
+REMARK 350   BIOMT1   3 -1.000000  1.000000  0.000000        0.00000
+REMARK 350   BIOMT2   3 -1.000000  0.000000  0.000000        0.00000
+REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
+
 */
  
  Vector biomolecules;
@@ -294,63 +315,79 @@ public class PdbReader extends AtomSetCollectionReader {
         readLine();
       else
         needLine = true;
-      if (line == null || !line.startsWith("REMARK 350")) 
+      if (line == null || !line.startsWith("REMARK 350"))
         break;
-      if (line.startsWith("REMARK 350 BIOMOLECULE:")) {
-        if (nBiomt > 0)
-          Logger.info("biomolecule " + iMolecule + ": number of transforms: " + nBiomt);
-        info = new Hashtable();
-        biomts = new Vector();
-        iMolecule = parseInt(line.substring(line.indexOf(":") + 1));
-        title = line.trim();
-        info.put("molecule", new Integer(iMolecule));
-        info.put("title", title);
-        info.put("chains", "");
-        info.put("biomts", biomts);
-        biomolecules.add(info);
-        nBiomt = 0;
-        continue;
-      }
-      if (line.startsWith("REMARK 350 APPLY THE FOLLOWING TO CHAINS:")) {
-        chainlist = ":" + line.substring(41).trim().replace(' ', ':');
-        needLine = false;
-        while (readLine() != null && line.indexOf("BIOMT") < 0)
-          chainlist += ":" + line.substring(11).trim().replace(' ', ':');
-        if (filter != null
-            && filter.toUpperCase().indexOf("BIOMOLECULE " + iMolecule + ";") >= 0) {
-          filter += chainlist;
-          Logger.info("filter set to \"" + filter + "\"");
-          this.biomts = biomts;
+      try {
+        if (line.startsWith("REMARK 350 BIOMOLECULE:")) {
+          if (nBiomt > 0)
+            Logger.info("biomolecule " + iMolecule + ": number of transforms: "
+                + nBiomt);
+          info = new Hashtable();
+          biomts = new Vector();
+          iMolecule = parseInt(line.substring(line.indexOf(":") + 1));
+          title = line.trim();
+          info.put("molecule", new Integer(iMolecule));
+          info.put("title", title);
+          info.put("chains", "");
+          info.put("biomts", biomts);
+          biomolecules.add(info);
+          nBiomt = 0;
+          //continue; need to allow for next IF, in case this is a reconstruction
         }
-        if (info == null)
-          return; //bad file format
-        info.put("chains", chainlist);
-        continue;
-      }
-      /*
-       0         1         2         3         4         5         6         7
-       0123456789012345678901234567890123456789012345678901234567890123456789
-       REMARK 350   BIOMT2   1  0.000000  1.000000  0.000000        0.00000
-       */
-      if (line.startsWith("REMARK 350   BIOMT1 ")) {
-        nBiomt++;
-        float[] mat = new float[16];
-        for (int i = 0; i < 12;) {
-          String[] tokens = getTokens();
-          mat[i++] = parseFloat(tokens[4]);
-          mat[i++] = parseFloat(tokens[5]);
-          mat[i++] = parseFloat(tokens[6]);
-          mat[i++] = parseFloat(tokens[7]);
-          if (i == 4 || i == 8)
-            readLine();
+        if (line.indexOf("APPLY THE FOLLOWING TO CHAINS:") >= 0) {
+          if (info == null) {
+            // need to initialize biomolecule business first and still flag this section
+            // see http://www.ebi.ac.uk/msd-srv/pqs/pqs-doc/macmol/1k28.mmol
+            needLine = false;
+            line = "REMARK 350 BIOMOLECULE: 1  APPLY THE FOLLOWING TO CHAINS:";
+            continue;
+          }
+          chainlist = ":" + line.substring(41).trim().replace(' ', ':');
+          needLine = false;
+          while (readLine() != null && line.indexOf("BIOMT") < 0)
+            chainlist += ":" + line.substring(11).trim().replace(' ', ':');
+          if (filter != null
+              && filter.toUpperCase().indexOf("BIOMOLECULE " + iMolecule + ";") >= 0) {
+            filter += chainlist;
+            Logger.info("filter set to \"" + filter + "\"");
+            this.biomts = biomts;
+          }
+          if (info == null)
+            return; //bad file format
+          info.put("chains", chainlist);
+          continue;
         }
-        mat[15] = 1;
-        biomts.add(mat);
-        continue;
+        /*
+         0         1         2         3         4         5         6         7
+         0123456789012345678901234567890123456789012345678901234567890123456789
+         REMARK 350   BIOMT2   1  0.000000  1.000000  0.000000        0.00000
+         */
+        if (line.startsWith("REMARK 350   BIOMT1 ")) {
+          nBiomt++;
+          float[] mat = new float[16];
+          for (int i = 0; i < 12;) {
+            String[] tokens = getTokens();
+            mat[i++] = parseFloat(tokens[4]);
+            mat[i++] = parseFloat(tokens[5]);
+            mat[i++] = parseFloat(tokens[6]);
+            mat[i++] = parseFloat(tokens[7]);
+            if (i == 4 || i == 8)
+              readLine();
+          }
+          mat[15] = 1;
+          biomts.add(mat);
+          continue;
+        }
+      } catch (Exception e) {
+        // probably just 
+        this.biomts = null;
+        this.biomolecules = null;
+        return;
       }
     }
     if (nBiomt > 0)
-      Logger.info("biomolecule " + iMolecule + ": number of transforms: " + nBiomt);
+      Logger.info("biomolecule " + iMolecule + ": number of transforms: "
+          + nBiomt);
   }
 
   int atomCount;

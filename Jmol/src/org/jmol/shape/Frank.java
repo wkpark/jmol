@@ -32,12 +32,12 @@ public class Frank extends FontLineShape {
 
   // Axes, Bbcage, Frank, Uccage
 
-  final static String frankString = "Jmol";
   final static String defaultFontName = "SansSerif";
   final static String defaultFontStyle = "Bold";
   final static int defaultFontSize = 16;
   final static int frankMargin = 4;
 
+  String frankString = "Jmol";
   Font3D currentMetricsFont3d;
   Font3D baseFont3d;
   int frankWidth;
@@ -60,6 +60,8 @@ public class Frank extends FontLineShape {
   }
 
   void calcMetrics() {
+    if (viewer.isSignedApplet())
+      frankString = "Jmol_S";
     if (font3d == currentMetricsFont3d) 
       return;
     currentMetricsFont3d = font3d;

@@ -5673,7 +5673,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean getShowFrank() {
-    return getObjectMad(StateManager.OBJ_FRANK) != 0;
+    return isSignedApplet || getObjectMad(StateManager.OBJ_FRANK) != 0;
   }
   
   public boolean isSignedApplet() {

@@ -742,8 +742,10 @@ public class StateManager {
         + ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred"
         + ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount"
         + ";spinx;spiny;spinz;spinfps"
-        + ";animframecallback;loadstructcallback;messagecallback;minimizationcallback;hovercallback"
-        + ";resizecallback;pickcallback;synccallback" + ";undo;";
+        + ";animframecallback;echocallback;evalcallback;loadstructcallback"
+        + ";measurecallback;messagecallback;minimizationcallback;hovercallback"
+        + ";resizecallback;pickcallback;scriptcallback;synccallback;undo;";
+
 
     boolean isJmolVariable(String key) {
       return key.charAt(0) == '_'

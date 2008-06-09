@@ -8236,7 +8236,7 @@ class Eval { //implements Runnable {
 
   private void setPicking() throws ScriptException {
     if (statementLength == 2) {
-      setStringProperty("picking", "ident");
+      setStringProperty("picking", "identify");
       return;
     }
     if (statementLength > 4 || tokAt(2) == Token.string) {

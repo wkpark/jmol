@@ -164,16 +164,16 @@ public abstract class Shape {
   public void setModelClickability() {
   }
 
-  public Point3f checkObjectClicked(int x, int y, int modifiers) {
+  public Point3f checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
     return null;
   }
 
-  public boolean checkObjectHovered(int x, int y) {
+  public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
     return false;
   }
 
   public boolean checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,
-                             int modifiers) {
+                             int modifiers, BitSet bsVisible) {
     return false;
   }
 

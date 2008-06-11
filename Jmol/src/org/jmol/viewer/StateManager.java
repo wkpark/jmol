@@ -722,7 +722,7 @@ public class StateManager {
     //
     ";ambientpercent;animationfps"
         + ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor"
-        + ";axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color"
+        + ";axesposition;axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color"
         + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
         + ";debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
         + ";fontscaling;language;loglevel;measureStyleChime"
@@ -1060,6 +1060,7 @@ public class StateManager {
       setParameterValue("axesScale", axesScale);
       setParameterValue("axesWindow", true);
       setParameterValue("axesMolecular", false);
+      setParameterValue("axesPosition", false);
       setParameterValue("axesUnitcell", false);
       setParameterValue("axesOrientationRasmol", false);
       setParameterValue("backgroundModel", 0);

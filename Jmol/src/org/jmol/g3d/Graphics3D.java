@@ -542,6 +542,10 @@ final public class Graphics3D implements JmolRendererInterface {
     this.zShade = zShade;
   }
 
+  public void setSlab(int slabValue) {
+    slab = slabValue;
+  }
+  
   int getZShift(int z) {
     return (zShade ? (z - slab) * 5 / (depth - slab): 0);
   }

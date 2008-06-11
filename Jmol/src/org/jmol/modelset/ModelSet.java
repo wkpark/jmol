@@ -363,32 +363,32 @@ abstract public class ModelSet extends ModelCollection {
     return (frankShape != null && frankShape.wasClicked(x, y));
   }
 
-  public boolean checkObjectHovered(int x, int y) {
+  public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
     Shape shape = shapes[JmolConstants.SHAPE_ECHO];
-    if (shape != null && shape.checkObjectHovered(x, y))
+    if (shape != null && shape.checkObjectHovered(x, y, bsVisible))
       return true;
     shape = shapes[JmolConstants.SHAPE_DRAW];
     if (shape == null || !viewer.getDrawHover())
       return false;
-    return shape.checkObjectHovered(x, y);
+    return shape.checkObjectHovered(x, y, bsVisible);
   }
 
-  public Point3f checkObjectClicked(int x, int y, int modifiers) {
+  public Point3f checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
     Shape shape = shapes[JmolConstants.SHAPE_ECHO];
     Point3f pt = null;
     if (shape != null && modifiers != 0 
-        && (pt = shape.checkObjectClicked(x, y, modifiers)) != null)
+        && (pt = shape.checkObjectClicked(x, y, modifiers, bsVisible)) != null)
       return pt;
     return ((shape = shapes[JmolConstants.SHAPE_DRAW]) == null ? null
-        : shape.checkObjectClicked(x, y, modifiers));
+        : shape.checkObjectClicked(x, y, modifiers, bsVisible));
   }
  
   public void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,
-                          int modifiers) {
+                          int modifiers, BitSet bsVisible) {
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = shapes[i];
       if (shape != null
-          && shape.checkObjectDragged(prevX, prevY, deltaX, deltaY, modifiers))
+          && shape.checkObjectDragged(prevX, prevY, deltaX, deltaY, modifiers, bsVisible))
         break;
     }
   }

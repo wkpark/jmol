@@ -47,6 +47,8 @@ public interface JmolRendererInterface {
    */
   public abstract int getSlab();
 
+  public abstract void setSlab(int slabValue);
+
   /**
    * gets g3d depth
    *

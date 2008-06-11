@@ -23,6 +23,8 @@
  */
 package org.jmol.shape;
 
+import java.util.BitSet;
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -31,6 +33,7 @@ import org.jmol.viewer.JmolConstants;
 
 public class Axes extends FontLineShape {
 
+  Point3f axisXY = new Point3f(Integer.MAX_VALUE, Integer.MAX_VALUE, 0);
   
   private final static Point3f[] unitAxisPoints = {
     new Point3f( 1, 0, 0),
@@ -51,12 +54,12 @@ public class Axes extends FontLineShape {
   }
 
   Point3f getOriginPoint(boolean isDataFrame) {
-    return (isDataFrame ? pt0 : originPoint);
+    return (isDataFrame || axisXY.z != 0? pt0 : originPoint);
   }
   
   final Point3f ptTemp = new Point3f();
   Point3f getAxisPoint(int i, boolean isDataFrame) {
-    if (!isDataFrame)
+    if (!isDataFrame && axisXY.z == 0)
       return axisPoints[i];
     ptTemp.set(axisPoints[i]);
     ptTemp.sub(originPoint);
@@ -65,7 +68,17 @@ public class Axes extends FontLineShape {
   }
   
   private final static float MIN_AXIS_LEN = 1.5f;
-  
+
+  public void setProperty(String propertyName, Object value, BitSet bs) {
+    if ("position" == propertyName) {
+      axisXY = (Point3f) value;
+      // MIN_VALUE for no set xy position (default)
+      //z = -1 here for percent, 1 for positioned, 0 for not positioned
+      return;
+    }
+    super.setProperty(propertyName, value, bs);
+  }
+
   public void initShape() {
     super.initShape();
     myType = "axes";
@@ -127,7 +140,13 @@ public class Axes extends FontLineShape {
   }
   
  public String getShapeState() {
-    return super.getShapeState() + "  axisScale = " + viewer.getAxesScale() + ";\n";
+   String axisState = "";
+   if (axisXY.z != 0) {
+     String percent = (axisXY.z < 0 ? "%" : "");
+     axisState = "  axes position " + (int)axisXY.x + percent + " " + (int)axisXY.y + percent  + ";\n";
+   }
+    return super.getShapeState() + "  axisScale = " + viewer.getAxesScale() + ";\n"
+      + axisState;
   }
 
 }

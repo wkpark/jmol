@@ -178,6 +178,9 @@ class Eval { //implements Runnable {
         .escape(token.value));
   }
 
+  String getState() {
+    return getFunctionCalls("");
+  }
   private final static String EXPRESSION_KEY = "e_x_p_r_e_s_s_i_o_n";
 
   /**
@@ -1195,7 +1198,7 @@ class Eval { //implements Runnable {
         dataFrame(JmolConstants.JMOL_DATA_QUATERNION);
         break;
       case Token.write:
-        write();
+        write(null);
         break;
       case Token.print:
         print();
@@ -2781,6 +2784,14 @@ class Eval { //implements Runnable {
 
   private int tokAt(int i) {
     return (i < statementLength ? statement[i].tok : Token.nada);
+  }
+
+  private int tokAt(int i, Token[] args) {
+    return (i < args.length ? args[i].tok : Token.nada);
+  }
+
+  private Token tokenAt(int i, Token[] args) {
+    return (i < args.length ? args[i] : null);
   }
 
   private boolean checkToken(int i) {
@@ -7113,6 +7124,8 @@ class Eval { //implements Runnable {
       case Token.point3f:
       case Token.point4f:
       case Token.bitset:
+      case Token.quaternion:
+      case Token.ramachandran:
         rpn.addX(theToken);
         break;
       case Token.spec_seqcode:
@@ -7782,6 +7795,7 @@ class Eval { //implements Runnable {
   }
 
   private void axes(int index) throws ScriptException {
+    //axes or set axes
     if (statementLength == 1) {
       setShapeSize(JmolConstants.SHAPE_AXES, 1);
       return;
@@ -7792,9 +7806,28 @@ class Eval { //implements Runnable {
       setBooleanProperty("axes" + type, true);
       return;
     }
-    // axes = scale x.xxx
+    // axes scale x.xxx
     if (statementLength == index + 2 && type.equals("scale")) {
       setFloatProperty("axesScale", floatParameter(++index));
+      return;
+    }
+    // axes position x y [%] 
+    if (type.equals("position")) {
+      Point3f xyp = new Point3f(Integer.MAX_VALUE, Integer.MAX_VALUE, 0);
+      switch (tokAt(++index)) {
+      case Token.off:
+          break;
+      case Token.integer:
+        xyp.x = intParameter(index);
+        if (tokAt(++index) == Token.percent)
+            index++; // skip first percent
+        xyp.y = intParameter(index);
+        xyp.z = (tokAt(++index) == Token.percent ? -1 : 1);
+        break;
+      default:
+        error(ERROR_invalidArgument);
+      }
+      setShapeProperty(JmolConstants.SHAPE_AXES, "position", xyp);
       return;
     }
     int mad = getSetAxesTypeMad(index);
@@ -8413,11 +8446,18 @@ class Eval { //implements Runnable {
     error(ERROR_what, "RESTORE", "bonds? coords? orientation? selection? state? structure?");
   }
 
-  private void write() throws ScriptException {
-    int pt = 1;
+  String write(Token[] args) throws ScriptException {
+    int pt = 0;
     boolean isApplet = viewer.isApplet();
+    boolean isCommand = false;
     String driverList = viewer.getExportDriverList();
-    int tok = (statementLength == 1 ? Token.clipboard : tokAt(pt));
+    if (args == null) {
+      args = statement;
+      isCommand = true;
+      pt++;
+    }
+    int argCount = args.length;
+    int tok = (isCommand && args.length == 1 ? Token.clipboard : tokAt(pt, args));
     int len = 0;
     int width = -1;
     int height = -1;
@@ -8432,13 +8472,13 @@ class Eval { //implements Runnable {
     switch (tok) {
     case Token.quaternion:
       pt++;
-      type2 = optParameterAsString(pt).toLowerCase();
+      type2 = Token.sValue(tokenAt(pt, args)).toLowerCase();
       if (Parser.isOneOf(type2, "w;x;y;z;s")) // s is draw script
         pt++;
       else
         type2 = "w";
       type2 = "quaternion " + type2;
-      type = optParameterAsString(pt);
+      type = Token.sValue(tokenAt(pt, args));
       if (type.indexOf("deriv") == 0) {
         type2 += " derivative";
         pt++;
@@ -8456,10 +8496,9 @@ class Eval { //implements Runnable {
       break;
     case Token.coord:
     case Token.data:
-      type = optParameterAsString(pt + 1).toLowerCase();
+      type = Token.sValue(tokenAt(++pt, args)).toLowerCase();
       type = "data";
       isCoord = true;
-      pt++;
       break;
     case Token.state:
     case Token.script:
@@ -8486,12 +8525,13 @@ class Eval { //implements Runnable {
       pt++;
       break;
     case Token.identifier:
-      type = parameterAsString(1).toLowerCase();
+    case Token.string:
+      type = Token.sValue(tokenAt(pt, args)).toLowerCase();
       if (type.equals("image")) {
         pt++;
-        if (tokAt(pt) == Token.integer) {
-          width = intParameter(pt++);
-          height = intParameter(pt++);
+        if (tokAt(pt, args) == Token.integer) {
+          width = Token.iValue(tokenAt(pt++, args));
+          height = Token.iValue(tokenAt(pt++, args));
         }
       } else if (Parser.isOneOf(type, driverList.toLowerCase())) {
         // povray, maya, vrml
@@ -8499,28 +8539,28 @@ class Eval { //implements Runnable {
         type = type.substring(0, 1).toUpperCase() + type.substring(1);
         isExport = true;
         fileName = "Jmol." + type;
-        if (tokAt(pt) == Token.integer) {
-          width = intParameter(pt++);
-          height = intParameter(pt++);
+        if (tokAt(pt, args) == Token.integer) {
+          width = Token.iValue(tokenAt(pt++, args));
+          height = Token.iValue(tokenAt(pt++, args));
         }
       } else {
         type = "(image)";
       }
       break;
     }
-    String val = optParameterAsString(pt);
+    String val = Token.sValue(tokenAt(pt, args));
     if (val.equalsIgnoreCase("clipboard")) {
       if (isSyntaxCheck)
-        return;
+        return "";
       //      if (isApplet)
       //      evalError(GT._("The {0} command is not available for the applet.",
       //        "WRITE CLIPBOARD"));
     } else if (Parser.isOneOf(val.toLowerCase(), "png;jpg;jpeg;jpg64")
-        && tokAt(pt + 1) == Token.integer) {
-      quality = intParameter(++pt);
+        && tokAt(pt + 1, args) == Token.integer) {
+      quality = Token.iValue(tokenAt(++pt, args));
     } else if (Parser.isOneOf(val.toLowerCase(), "xyz;mol;pdb")) {
       type = val.toUpperCase();
-      if (pt + 1 == statementLength)
+      if (pt + 1 == argCount)
         pt++;
     }
 
@@ -8536,27 +8576,27 @@ class Eval { //implements Runnable {
       pt++;
     }
 
-    if (pt + 2 == statementLength) {
-      data = parameterAsString(++pt);
+    if (pt + 2 == argCount) {
+      data = Token.sValue(tokenAt(++pt, args));
       if (data.charAt(0) != '.')
         type = val.toUpperCase();
     }
-    switch (tokAt(pt)) {
+    switch (tokAt(pt, args)) {
     case Token.nada:
       isShow = true;
       break;
     case Token.identifier:
     case Token.string:
-      fileName = parameterAsString(pt);
-      if (pt == statementLength - 3 && tokAt(pt + 1) == Token.dot) {
+      fileName = Token.sValue(tokenAt(pt, args));
+      if (pt == argCount - 3 && tokAt(pt + 1, args) == Token.dot) {
         //write filename.xxx  gets separated as filename .spt
         //write isosurface filename.xxx also 
-        fileName += "." + parameterAsString(pt + 2);
+        fileName += "." + Token.sValue(tokenAt(pt + 2, args));
       }
       if (type != "VAR" && pt == 1)
         type = "image";
       else if (fileName.charAt(0) == '.' && (pt == 2 || pt == 3)) {
-        fileName = parameterAsString(pt - 1) + fileName;
+        fileName = Token.sValue(tokenAt(pt - 1, args)) + fileName;
         if (type != "VAR" && pt == 2)
           type = "image";
       }
@@ -8596,7 +8636,7 @@ class Eval { //implements Runnable {
                   "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB|"
                       + driverList.toUpperCase().replace(';', '|') }));
     if (isSyntaxCheck)
-      return;
+      return "";
     data = type.intern();
     Object bytes = null;
     if (isExport) {
@@ -8608,9 +8648,11 @@ class Eval { //implements Runnable {
         data = TextFormat.simpleReplace(data, "%FILETYPE%", "N");
         data = TextFormat.simpleReplace(data, "%OUTPUTFILENAME%", fileName
             + ".png");
+        if (!isCommand)
+          return data;
         viewer.createImage(fileName + ".ini", data, Integer.MIN_VALUE, 0, 0);
         scriptStatus("Created " + fileName + ".ini:\n\n" + data);
-        return;
+        return "";
       }
     } else if (data == "PDB") {
       data = viewer.getPdbData(null);
@@ -8630,7 +8672,7 @@ class Eval { //implements Runnable {
         bytes = viewer.getCurrentFileAsBytes();
       quality = Integer.MIN_VALUE;
     } else if (data == "VAR") {
-      data = "" + getParameter(parameterAsString(2), false);
+      data = "" + getParameter(Token.sValue(tokenAt(isCommand ? 2 : 1, args)), false);
     } else if (data == "SPT") {
       if (isCoord) {
         BitSet tainted = viewer.getTaintedAtoms(AtomCollection.TAINT_COORD);
@@ -8669,6 +8711,8 @@ class Eval { //implements Runnable {
       if (height < 0)
         height = viewer.getScreenHeight();
     }
+    if (!isCommand)
+        return data;
     if (isShow) {
       showString(data);
     } else if (bytes != null && bytes instanceof String) {
@@ -8683,6 +8727,7 @@ class Eval { //implements Runnable {
           + (isImage ? "; width=" + width + "; height=" + height : "")
           + (quality >= 0 ? "; quality=" + quality : ""));
     }
+    return "";
   }
 
   private void print() throws ScriptException {
@@ -11595,6 +11640,8 @@ class Eval { //implements Runnable {
         return evaluateData(args);
       case Token.load:
         return evaluateLoad(args);
+      case Token.write:
+        return evaluateWrite(args);
       case Token.script:
       case Token.javascript:
         return evaluateScript(args, tok == Token.javascript);
@@ -12052,6 +12099,14 @@ class Eval { //implements Runnable {
       return addX(viewer.getFileAsString(Token.sValue(args[0])));
     }
 
+    private boolean evaluateWrite(Token[] args) throws ScriptException {
+      if (args.length == 0)
+        return false;
+      if (isSyntaxCheck)
+        return addX("");
+      return addX(write(args));
+    }
+
     private boolean evaluateScript(Token[] args, boolean isJavaScript)
         throws ScriptException {
       if (args.length != 1)
@@ -12110,8 +12165,6 @@ class Eval { //implements Runnable {
         Object[] data = viewer.getData(selected);
         return addX(data == null ? "" : "" + data[1]);
       }
-      if (type.equalsIgnoreCase("PDB"))
-        return addX(viewer.getPdbData(viewer.getAtomBitSet(selected)));
       // {selected atoms} XYZ, MOL, PDB file format 
         return addX(viewer.getData(selected, type));
     }

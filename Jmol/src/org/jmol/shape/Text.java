@@ -24,6 +24,8 @@
 package org.jmol.shape;
 
 import java.awt.FontMetrics;
+import java.util.BitSet;
+
 import javax.vecmath.Point3f;
 
 import org.jmol.api.JmolRendererInterface;
@@ -700,7 +702,9 @@ public class Text {
     return s.toString();
   }
 
-  public boolean checkObjectClicked(int x, int y) {
+  public boolean checkObjectClicked(int x, int y, BitSet bsVisible) {
+    if (modelIndex >= 0 && !bsVisible.get(modelIndex))
+      return false;
     if (g3d.isAntialiased()) {
       x <<= 1;
       y <<= 1;

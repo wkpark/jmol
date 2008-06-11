@@ -2469,6 +2469,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //  window state
     if (isAll || type.equalsIgnoreCase("windowState"))
       s.append(global.getWindowState(sfunc));
+    if (isAll)
+      s.append(eval.getState());
     //  file state
     if (isAll || type.equalsIgnoreCase("fileState"))
       s.append(fileManager.getState(sfunc));
@@ -6081,18 +6083,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   Point3f checkObjectClicked(int x, int y, int modifiers) {
-    return modelSet.checkObjectClicked(x, y, modifiers);
+    return modelSet.checkObjectClicked(x, y, modifiers, 
+        getVisibleFramesBitSet());
   }
 
   boolean checkObjectHovered(int x, int y) {
     if (modelSet == null)
       return false;
-    return modelSet.checkObjectHovered(x, y);
+    return modelSet.checkObjectHovered(x, y, getVisibleFramesBitSet());
   }
 
   void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,
                           int modifiers) {
-    modelSet.checkObjectDragged(prevX, prevY, deltaX, deltaY, modifiers);
+    modelSet.checkObjectDragged(prevX, prevY, deltaX, deltaY, modifiers, 
+        getVisibleFramesBitSet());
   }
 
   void rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis,

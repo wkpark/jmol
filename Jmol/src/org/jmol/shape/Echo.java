@@ -139,11 +139,11 @@ public class Echo extends TextShape {
     return s.toString();
   }
 
-  public Point3f checkObjectClicked(int x, int y, int modifiers) {
+  public Point3f checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
     Enumeration e = texts.elements();
     while (e.hasMoreElements()) {
       Text t = (Text) e.nextElement();
-      if (t.checkObjectClicked(x, y)) {
+      if (t.checkObjectClicked(x, y, bsVisible)) {
         String s = t.getScript();
         if (s != null)
           viewer.evalStringQuiet(s);
@@ -153,7 +153,7 @@ public class Echo extends TextShape {
     return null;
   }
 
-  public boolean checkObjectHovered(int x, int y) {
+  public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
     Enumeration e = texts.elements();
     boolean haveScripts = false;
     while (e.hasMoreElements()) {
@@ -161,7 +161,7 @@ public class Echo extends TextShape {
       String s = t.getScript();
       if (s != null) {
         haveScripts = true;
-        if (t.checkObjectClicked(x, y)) {
+        if (t.checkObjectClicked(x, y, bsVisible)) {
           viewer.setCursor(Viewer.CURSOR_HAND);
           return true;
         }

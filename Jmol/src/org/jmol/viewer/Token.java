@@ -177,7 +177,7 @@ public class Token {
   final static int trace        = command | 41;
   final static int translate    = command | 42 | negnums;
   final static int wireframe    = command | 44;
-  final static int write        = command | 45;
+  //final static int write        = command | 45; with mathfunc
   final static int zap          = command | 46 | expressionCommand;
   final static int zoom         = command | 47 | numberOrExpression;
   final static int zoomTo       = command | 48 | numberOrExpression;
@@ -230,8 +230,8 @@ public class Token {
   final static int gotocmd       = command | 114;
   final static int invertSelected = command | 115 | numberOrExpression;
   final static int rotateSelected = command | 116 | numberOrExpression;
-  final static int quaternion     = command | 117;
-  final static int ramachandran   = command | 118;
+  final static int quaternion     = command | 117 | expression;
+  final static int ramachandran   = command | 118 | expression;
   final static int sync           = command | 119;
   final static int print          = command | 120 | implicitExpression;
   final static int returncmd      = command | 121 | implicitExpression;  
@@ -241,7 +241,7 @@ public class Token {
   
   //these commands control flow and may not be nested
   //sorry about GOTO!
-  final static int function       = command | 1 | flowCommand | noeval | mathfunc; //not implemented
+  final static int function       = command | 1 | flowCommand | noeval | mathfunc;
   final static int ifcmd          = command | 2 | flowCommand | implicitExpression;
   final static int elseif         = command | 3 | flowCommand | implicitExpression;
   final static int elsecmd        = command | 4 | flowCommand;
@@ -431,7 +431,8 @@ public class Token {
   // xxx(a)
  
   final static int array        = 1  | 0 << 3 | mathfunc;
-  final static int getproperty  = 1  | 0 << 3 | mathfunc | command | embeddedExpression;
+  final static int getproperty  = 2  | 0 << 3 | mathfunc | command | embeddedExpression;
+  final static int write        = 3  | 0 << 3 | mathfunc | command;
 
   final static int load         = 1  | 1 << 3 | mathfunc | command | negnums;
   final static int substructure = 2  | 1 << 3 | mathfunc;
@@ -494,37 +495,38 @@ public class Token {
   
   final static Point3f pt0 = new Point3f();
 
-  static Object oValue(Token token) {
-    switch (token.tok) {
+  static Object oValue(Token x) {
+    switch (x == null ? nada : x.tok) {
     case Token.on:
       return Boolean.TRUE;
+    case Token.nada:
     case Token.off:
       return Boolean.FALSE;
     case Token.integer:
-      return new Integer(token.intValue);
+      return new Integer(x.intValue);
     default:
-      return token.value;
+      return x.value;
     }        
   }
   
-  static Object nValue(Token token) {
+  static Object nValue(Token x) {
     int iValue = 0;
-    switch (token.tok) {
-    case Token.integer:
-      iValue = token.intValue;
-      break;
-    case Token.decimal:
-      return token.value;
-    case Token.string:
-      if (((String)token.value).indexOf(".") >= 0)
-        return new Float(fValue(token));
-      iValue = iValue(token);
-    }
+    switch (x == null ? nada : x.tok) {
+      case Token.integer:
+        iValue = x.intValue;
+        break;
+      case Token.decimal:
+        return x.value;
+      case Token.string:
+        if (((String) x.value).indexOf(".") >= 0)
+          return new Float(fValue(x));
+        iValue = iValue(x);
+      }
     return new Integer(iValue);
   }
   
   static boolean bValue(Token x) {
-    switch (x.tok) {
+    switch (x == null ? nada : x.tok) {
     case Token.on:
       return true;
     case Token.off:
@@ -546,7 +548,7 @@ public class Token {
   }
 
   static int iValue(Token x) {
-    switch (x.tok) {
+    switch (x == null ? nada : x.tok) {
     case Token.on:
       return 1;
     case Token.off:
@@ -567,7 +569,7 @@ public class Token {
   }
 
   static float fValue(Token x) {
-    switch (x.tok) {
+    switch (x == null ? nada : x.tok) {
     case Token.on:
       return 1;
     case Token.off:
@@ -600,6 +602,8 @@ public class Token {
   }  
   
   static String sValue(Token x) {
+    if (x == null)
+        return "";
     int i;
     switch (x.tok) {
     case Token.on:
@@ -642,7 +646,7 @@ public class Token {
   }
 
   static int sizeOf(Token x) {
-    switch (x.tok) {
+    switch (x == null ? nada : x.tok) {
     case Token.on:
     case Token.off:
       return -1;
@@ -666,7 +670,7 @@ public class Token {
   }
 
   static String typeOf(Token x) {
-    switch (x.tok) {
+    switch (x == null ? nada : x.tok) {
     case Token.on:
     case Token.off:
       return "boolean";
@@ -1158,9 +1162,9 @@ public class Token {
     "&",            null,
     "&&",           null,
     "or",           tokenOr,
-    ",",            tokenComma,
     "|",            null,
     "||",           null,
+    ",",            tokenComma,
     "not",          new Token(opNot),
     "!",            null,
     "xor",          new Token(opXor),

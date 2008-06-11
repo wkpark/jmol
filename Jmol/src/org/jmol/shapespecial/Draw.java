@@ -804,12 +804,12 @@ public class Draw extends MeshCollection {
   private int pickedVertex;
   private final Point3i ptXY = new Point3i();
   
-  public Point3f checkObjectClicked(int x, int y, int modifiers) {
+  public Point3f checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
     boolean isPickingMode = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
     boolean isDrawPicking = viewer.getDrawPicking();
     if (!isPickingMode && !isDrawPicking)
       return null;
-    if (!findPickedObject(x, y, false))
+    if (!findPickedObject(x, y, false, bsVisible))
       return null;
     Point3f v = pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][pickedVertex]];
     if (isDrawPicking && !isPickingMode) {
@@ -835,8 +835,8 @@ public class Draw extends MeshCollection {
     return null;
   }
 
-  public boolean checkObjectHovered(int x, int y) {
-    if (!findPickedObject(x, y, false))
+  public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
+    if (!findPickedObject(x, y, false, bsVisible))
       return false;
     if (g3d.isDisplayAntialiased()) {
       //because hover rendering is done in FIRST pass only
@@ -852,10 +852,10 @@ public class Draw extends MeshCollection {
   }
 
   public synchronized boolean checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,
-                          int modifiers) {
+                          int modifiers, BitSet bsVisible) {
     if (viewer.getPickingMode() != JmolConstants.PICKING_DRAW)
       return false;
-    if (!findPickedObject(prevX, prevY, true))
+    if (!findPickedObject(prevX, prevY, true, bsVisible))
       return false;
     boolean moveAll = false;
     switch (modifiers & MouseManager.BUTTON_MODIFIER_MASK) {
@@ -914,7 +914,7 @@ public class Draw extends MeshCollection {
     viewer.refresh(0, "draw");
   }
   
-  private boolean findPickedObject(int x, int y, boolean isPicking) {
+  private boolean findPickedObject(int x, int y, boolean isPicking, BitSet bsVisible) {
     int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
     if (g3d.isAntialiased()) {
       x <<= 1;

@@ -36,7 +36,7 @@ import javax.vecmath.Point3i;
 public class AxesRenderer extends FontLineShapeRenderer {
 
   String[] axisLabels = { "+X", "+Y", "+Z",
-                          null, null, null, "a", "b", "c" };
+                          null, null, null, "a", "b", "c" , "X", "Y", "Z"};
 
   final Point3i[] axisScreens = new Point3i[6];
   {
@@ -44,6 +44,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
       axisScreens[i] = new Point3i();
   }
   final Point3i originScreen = new Point3i();
+  
   short[] colixes = new short[3];
 
   protected void render() {
@@ -57,7 +58,11 @@ public class AxesRenderer extends FontLineShapeRenderer {
     int nPoints = 6;
     int labelPtr = 0;
     CellInfo[] cellInfos = modelSet.getCellInfos();
-    if (viewer.getAxesMode() == JmolConstants.AXES_MODE_UNITCELL
+    boolean isXY = (axes.axisXY.z != 0);
+    if (isXY) {
+      nPoints = 3;
+      labelPtr = 9;
+    } else if (viewer.getAxesMode() == JmolConstants.AXES_MODE_UNITCELL
         && cellInfos != null) {
       int modelIndex = viewer.getDisplayModelIndex();
       if (modelIndex < 0 || cellInfos[modelIndex].getUnitCell() == null)
@@ -69,9 +74,34 @@ public class AxesRenderer extends FontLineShapeRenderer {
     viewer.transformPointNoClip(axes.getOriginPoint(isDataFrame), originScreen);
     for (int i = nPoints; --i >= 0;)
       viewer.transformPointNoClip(axes.getAxisPoint(i, isDataFrame), axisScreens[i]);
-    int widthPixels = mad;
-    if (mad >= 20)
-      widthPixels = viewer.scaleToScreen(originScreen.z, mad);
+    int aFactor = (g3d.isAntialiased() ? 2 : 1);
+    int widthPixels = (mad < 20 ? mad * aFactor : viewer.scaleToScreen(originScreen.z, mad));
+    int minZ = originScreen.z;
+    int slab = g3d.getSlab();
+    if (isXY) {
+      g3d.setSlab(0);
+      float d = 50f / viewer.getZoomPercentFloat();
+      int w = viewer.getScreenWidth();
+      int h = viewer.getScreenHeight();
+      float factor = (axes.axisXY.z < 0 ? h / 250 : 1);
+      int x0 = (int) (axes.axisXY.x * (axes.axisXY.z < 0 ? w / 100f : 1f));
+      int y0 = (int) (axes.axisXY.y * (axes.axisXY.z < 0 ? h / 100f : 1f));
+      for (int i = 0; i < 3; i++) {
+        axisScreens[i].x = (x0 * aFactor + (int) ((axisScreens[i].x - originScreen.x) * factor * d));
+        axisScreens[i].y = (h * aFactor - (y0 * aFactor - (int) ((axisScreens[i].y - originScreen.y) * factor * d)));
+        minZ = Math.min(minZ, axisScreens[i].z);
+      }
+      originScreen.x = (int) x0 * aFactor;
+      originScreen.y = (h - (int) y0) * aFactor;
+      widthPixels = (int) (widthPixels * d);
+      if (widthPixels > 5)
+        widthPixels = 5;
+      for (int i = 0; i < 3; i++)
+        axisScreens[i].z -= (minZ - 1);
+      originScreen.z  -= (minZ - 1);
+    }
+    float xCenter = originScreen.x;
+    float yCenter = originScreen.y;
     colixes[0] = viewer.getObjectColix(StateManager.OBJ_AXIS1);
     colixes[1] = viewer.getObjectColix(StateManager.OBJ_AXIS2);
     colixes[2] = viewer.getObjectColix(StateManager.OBJ_AXIS3);
@@ -82,26 +112,26 @@ public class AxesRenderer extends FontLineShapeRenderer {
       String label = axisLabels[i + labelPtr];
       if (label != null)
         renderLabel(label, font, axisScreens[i].x,
-            axisScreens[i].y, axisScreens[i].z);
+            axisScreens[i].y, axisScreens[i].z, xCenter, yCenter);
       if (mad < 0)
         g3d.drawDottedLine(originScreen, axisScreens[i]);
       else
         g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, widthPixels,
             originScreen, axisScreens[i]);
     }
-    if (nPoints == 3) { //a b c
+    if (nPoints == 3 && !isXY) { //a b c
       colix = viewer.getColixBackgroundContrast();
       g3d.setColix(colix);
-      renderLabel("0", font, originScreen.x, originScreen.y, originScreen.z);
+      renderLabel("0", font, originScreen.x, originScreen.y, originScreen.z, xCenter, yCenter);
     }
+    if (isXY)
+      g3d.setSlab(slab);
   }
   
-  private void renderLabel(String str, Font3D font3d, int x, int y, int z) {
+  private void renderLabel(String str, Font3D font3d, int x, int y, int z, float xCenter, float yCenter) {
     FontMetrics fontMetrics = font3d.fontMetrics;
     int strAscent = fontMetrics.getAscent();
     int strWidth = fontMetrics.stringWidth(str);
-    float xCenter = viewer.getBoundBoxCenterX();
-    float yCenter = viewer.getBoundBoxCenterY();
     float dx = x - xCenter;
     float dy = y - yCenter;
     if ((dx != 0 || dy != 0)) {

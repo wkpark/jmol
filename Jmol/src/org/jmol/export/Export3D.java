@@ -75,6 +75,11 @@ final public class Export3D implements JmolRendererInterface {
     exporter.setRenderer(this);
   }
   
+  public void setSlab(int slabValue) {
+    slab = slabValue;
+    g3d.setSlab(slabValue);
+  }
+  
   public void setRenderer(ShapeRenderer shapeRenderer) {
  //   this.shapeRenderer = shapeRenderer;
   }

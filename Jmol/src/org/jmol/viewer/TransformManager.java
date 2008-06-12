@@ -1218,6 +1218,12 @@ abstract class TransformManager {
 
   }
 
+  void rotatePoint(Point3f pt, Point3f ptRot) {
+    matrixRotate.transform(pt, ptRot);
+    if (!axesOrientationRasmol)
+      ptRot.y = -ptRot.y;
+  }
+  
   void transformPoints(int count, Point3f[] angstroms, Point3i[] screens) {
     for (int i = count; --i >= 0;)
       screens[i].set(transformPoint(angstroms[i]));
@@ -1227,7 +1233,7 @@ abstract class TransformManager {
     pointScreen.set(transformPoint(pointAngstroms));
   }
 
-  void transformPointNoClip(Point3f pointAngstroms, Point3i pointScreen) {
+  void transformPointNoClip(Point3f pointAngstroms, Point3f pointScreen) {
     pointScreen.set(transformPointNoClip(pointAngstroms));
   }
 
@@ -1238,10 +1244,30 @@ abstract class TransformManager {
    * @return POINTER TO point3iScreenTemp
    */
   synchronized Point3i transformPoint(Point3f pointAngstroms) {
+    if (pointAngstroms.z == Float.MAX_VALUE || pointAngstroms.z == -Float.MAX_VALUE)
+      return transformScreenPoint(pointAngstroms);
     matrixTransform.transform(pointAngstroms, point3fScreenTemp);
     adjustTemporaryScreenPoint();
     if (internalSlab && checkInternalSlab(pointAngstroms))
       point3iScreenTemp.z = 1;
+    return point3iScreenTemp;
+  }
+
+  private Point3i transformScreenPoint(Point3f ptXyp) {
+    // just does the processing for [x y] and [x y %]
+    if (ptXyp.z == -Float.MAX_VALUE) {
+      point3iScreenTemp.x = (int)(ptXyp.x / 100 * screenWidth);
+      point3iScreenTemp.y = (int) ((1 - ptXyp.y / 100) * screenHeight);      
+    } else {
+      point3iScreenTemp.x = (int)ptXyp.x;
+      point3iScreenTemp.y = (screenHeight - (int)ptXyp.y);
+    }
+    if (antialias) {
+      point3iScreenTemp.x <<= 1;
+      point3iScreenTemp.y <<= 1;
+    }
+    matrixTransform.transform(fixedRotationCenter, pointT);
+    point3iScreenTemp.z = (int) pointT.z;
     return point3iScreenTemp;
   }
 
@@ -1250,10 +1276,10 @@ abstract class TransformManager {
    * @param pointAngstroms
    * @return POINTER TO point3iScreenTemp
    */
-  synchronized Point3i transformPointNoClip(Point3f pointAngstroms) {
+  synchronized Point3f transformPointNoClip(Point3f pointAngstroms) {
     matrixTransform.transform(pointAngstroms, point3fScreenTemp);
     adjustTemporaryScreenPoint();
-    return point3iScreenTemp;
+    return point3fScreenTemp;
   }
 
   /**
@@ -2232,5 +2258,5 @@ abstract class TransformManager {
   boolean isNavigationCentered() {
     return false;
   }
-  
+
 }

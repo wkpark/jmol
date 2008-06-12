@@ -33,7 +33,8 @@ import org.jmol.viewer.JmolConstants;
 
 public class Axes extends FontLineShape {
 
-  Point3f axisXY = new Point3f(Integer.MAX_VALUE, Integer.MAX_VALUE, 0);
+  Point3f axisXY = new Point3f();
+  float scale;
   
   private final static Point3f[] unitAxisPoints = {
     new Point3f( 1, 0, 0),
@@ -54,7 +55,7 @@ public class Axes extends FontLineShape {
   }
 
   Point3f getOriginPoint(boolean isDataFrame) {
-    return (isDataFrame || axisXY.z != 0? pt0 : originPoint);
+    return (isDataFrame ? pt0 : originPoint);
   }
   
   final Point3f ptTemp = new Point3f();
@@ -72,8 +73,9 @@ public class Axes extends FontLineShape {
   public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("position" == propertyName) {
       axisXY = (Point3f) value;
-      // MIN_VALUE for no set xy position (default)
-      //z = -1 here for percent, 1 for positioned, 0 for not positioned
+      // z = 0 for no set xy position (default)
+      // z = -Float.MAX_VALUE for percent
+      // z = Float.MAX_VALUE for positioned
       return;
     }
     super.setProperty(propertyName, value, bs);
@@ -91,15 +93,12 @@ public class Axes extends FontLineShape {
       Point3f[] vectors = unitcell.getVertices();
       Point3f offset = unitcell.getCartesianOffset();
       originPoint.set(offset);
-      float scale = viewer.getAxesScale() / 2f;
+      scale = viewer.getAxesScale() / 2f;
       // We must divide by 2 because that is the default for ALL axis types.
       // Not great, but it will have to do. 
       axisPoints[0].scaleAdd(scale, vectors[4], offset);
       axisPoints[1].scaleAdd(scale, vectors[2], offset);
       axisPoints[2].scaleAdd(scale, vectors[1], offset);
-      //axisPoints[0].add(offset, vectors[4]);
-      //axisPoints[1].add(offset, vectors[2]);
-      //axisPoints[2].add(offset, vectors[1]);
       return;
     } else if (axesMode == JmolConstants.AXES_MODE_MOLECULAR) {
       originPoint.set(0, 0, 0);
@@ -112,11 +111,14 @@ public class Axes extends FontLineShape {
   public Object getProperty(String property, int index) {
     if (property.equals("axisPoints"))
       return axisPoints;
+    if (property == "axesTypeXY")
+      return (axisXY.z == 0 ? Boolean.FALSE : Boolean.TRUE);
     return null;
   }
 
   Vector3f corner = new Vector3f();
   void setScale(float scale) {
+    this.scale = scale;
     corner.set(viewer.getBoundBoxCornerVector());
     for (int i = 6; --i >= 0;) {
       Point3f axisPoint = axisPoints[i];
@@ -131,20 +133,19 @@ public class Axes extends FontLineShape {
         corner.y = MIN_AXIS_LEN;
       if (corner.z < MIN_AXIS_LEN)
         corner.z = MIN_AXIS_LEN;
-
-      axisPoint.x *= corner.x * scale;
-      axisPoint.y *= corner.y * scale;
-      axisPoint.z *= corner.z * scale;
+      if (axisXY.z == 0) {
+        axisPoint.x *= corner.x * scale;
+        axisPoint.y *= corner.y * scale;
+        axisPoint.z *= corner.z * scale;
+      }
       axisPoint.add(originPoint);
     }
   }
   
  public String getShapeState() {
-   String axisState = "";
-   if (axisXY.z != 0) {
-     String percent = (axisXY.z < 0 ? "%" : "");
-     axisState = "  axes position " + (int)axisXY.x + percent + " " + (int)axisXY.y + percent  + ";\n";
-   }
+   String axisState = (axisXY.z == 0 ? "" : 
+       "  axes position [" + (int)axisXY.x + " " + (int)axisXY.y 
+       + (axisXY.z < 0 ? " %" : "") + "];\n");
     return super.getShapeState() + "  axisScale = " + viewer.getAxesScale() + ";\n"
       + axisState;
   }

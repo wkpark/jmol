@@ -32,8 +32,6 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Enumeration;
 
-import javax.vecmath.Point3f;
-
 public abstract class TextShape extends Shape {
 
   // echo, hover
@@ -171,39 +169,6 @@ public abstract class TextShape extends Shape {
       if (isAll || target.equals("none"))
         currentText = null;
       //handled by individual types -- echo or hover
-      return;
-    }
-
-    if ("xpos" == propertyName) {
-      if (currentText != null)
-        currentText.setMovableX(((Integer) value).intValue());
-      return;
-    }
-
-    if ("ypos" == propertyName) {
-      if (currentText != null)
-        currentText.setMovableY(((Integer) value).intValue());
-      return;
-    }
-
-    if ("%xpos" == propertyName) {
-      if (currentText != null)
-        currentText.setMovableXPercent(((Integer) value).intValue());
-      return;
-    }
-
-    if ("%ypos" == propertyName) {
-      if (currentText != null)
-        currentText.setMovableYPercent(((Integer) value).intValue());
-      return;
-    }
-
-    if ("xyz" == propertyName) {
-      if (currentText != null) {
-        currentText.setXYZ((Point3f) value);
-        if (viewer.getFontScaling())
-          currentText.setScalePixelsPerMicron(viewer.getScalePixelsPerAngstrom() * 10000f);
-      }
       return;
     }
 

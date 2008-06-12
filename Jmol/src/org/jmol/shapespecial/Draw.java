@@ -86,6 +86,7 @@ public class Draw extends MeshCollection {
   private boolean isRotated45;
   private boolean isCrossed;
   private boolean isValid;
+  private boolean noHead;
   private int indicatedModelIndex = -1;
   private int[] modelInfo;
   private boolean makePoints;
@@ -108,7 +109,7 @@ public class Draw extends MeshCollection {
     if ("init" == propertyName) {
       colix = Graphics3D.ORANGE;
       newScale = 0;
-      isFixed = isReversed = isRotated45 = isCrossed = false;
+      isFixed = isReversed = isRotated45 = isCrossed = noHead = false;
       isCurve = isArrow = isPlane = isCircle = isCylinder = false;
       isVertices = isPerpendicular = isVector = false;
       isVisible = isValid = true;
@@ -189,6 +190,11 @@ public class Draw extends MeshCollection {
 
     if ("reverse" == propertyName) {
       isReversed = true;
+      return;
+    }
+
+    if ("nohead" == propertyName) {
+      noHead = true;
       return;
     }
 
@@ -427,6 +433,7 @@ public class Draw extends MeshCollection {
     }
     thisMesh.diameter = diameter;
     thisMesh.isVector = isVector;
+    thisMesh.nohead = noHead;
     thisMesh.width = (thisMesh.drawType == JmolConstants.DRAW_CYLINDER ? -Math.abs(width) : width);
     thisMesh.setCenter(-1);
     if (offset != null)
@@ -443,6 +450,8 @@ public class Draw extends MeshCollection {
       if (!isOK)
         return;
       ptList[nPoints] = new Point3f(newPt);
+      if (newPt.z == Float.MAX_VALUE || newPt.z == -Float.MAX_VALUE)
+        thisMesh.haveXyPoints = true;
     } else if (iModel >= 0) {
       bsAllModels.set(iModel);
     }
@@ -594,8 +603,15 @@ public class Draw extends MeshCollection {
       else if (nVertices != 2)
         isVector = false;
     }
-    if (isVector)
+    if (thisMesh.haveXyPoints) {
+      isPerpendicular = false;
+      if (nVertices == 3 && isPlane)
+        isPlane = false;
+      length = Float.MAX_VALUE;
+      thisMesh.diameter = 0;
+    } else if (isVector) {
       ptList[1].add(ptList[0]);
+    }
     if (drawType == JmolConstants.DRAW_POINT) {
       Point3f pt;
       Point3f center = new Point3f();
@@ -611,6 +627,7 @@ public class Draw extends MeshCollection {
         ptList[3].sub(pt);
         nVertices = 4;
       } else if (nVertices >= 3 && !isPlane && isPerpendicular) {
+        nVertices = 2;
         // normal to plane
         Graphics3D.calcNormalizedNormal(ptList[0], ptList[1], ptList[2],
             normal, vAB, vAC);
@@ -621,7 +638,6 @@ public class Draw extends MeshCollection {
         ptList[0].set(center);
         ptList[1].set(center);
         ptList[1].add(normal);
-        nVertices = 2;
       } else if (nVertices == 2 && isPerpendicular) {
         // perpendicular line to line or plane to line
         Graphics3D.calcAveragePoint(ptList[0], ptList[1], center);
@@ -722,9 +738,11 @@ public class Draw extends MeshCollection {
      */
     if (newScale == 0 || mesh.vertexCount == 0 || mesh.scale == newScale)
       return;
+    mesh.scale = newScale;
+    if (mesh.haveXyPoints)
+      return; // done in renderer
     Vector3f diff = new Vector3f();
     float f = newScale / mesh.scale;
-    mesh.scale = newScale;
     int iptlast = -1;
     int ipt = 0;
     for (int i = mesh.polygonCount; --i >= 0;) {
@@ -975,6 +993,8 @@ public class Draw extends MeshCollection {
       str.append(" fixed");
     if (iModel < 0)
       iModel = 0;
+    if (mesh.nohead)
+      str.append(" hoHead");
     if (mesh.width != 0)
       str.append(" diameter ").append((mesh.drawType == JmolConstants.DRAW_CYLINDER ? Math.abs(mesh.width) : mesh.width));
     else if (mesh.diameter > 0)
@@ -983,7 +1003,7 @@ public class Draw extends MeshCollection {
       : mesh.drawVertexCounts[iModel >= 0 ? iModel : 0];
     switch (mesh.drawTypes == null ? mesh.drawType : mesh.drawTypes[iModel]) {
     case JmolConstants.DRAW_ARROW:
-      str.append(" ARROW");
+      str.append(mesh.isVector ? " VECTOR" : " ARROW");
       break;
     case JmolConstants.DRAW_CIRCLE:
       str.append(" CIRCLE");
@@ -1039,8 +1059,14 @@ public class Draw extends MeshCollection {
     try {
       if (iModel >= mesh.polygonIndexes.length)
         iModel = 0; // arrows and curves may not have multiple model representations
-      for (int i = 0; i < nVertices; i++)
-        str += " " + Escape.escape(mesh.vertices[mesh.polygonIndexes[iModel][i]]);
+      for (int i = 0; i < nVertices; i++) {
+        Point3f pt = mesh.vertices[mesh.polygonIndexes[iModel][i]];
+        if (pt.z == Float.MAX_VALUE || pt.z == -Float.MAX_VALUE) {
+          str += (i == 0 ? " " : " ,") + "[" + (int) pt.x + " " + (int) pt.y + (pt.z < 0 ? " %]" : "]");
+        } else {
+          str += " " + Escape.escape(pt);
+        }
+      }
     } catch (Exception e) {
       Logger.error("Unexpected error in Draw.getVertexList");
     }

@@ -897,6 +897,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         transformManager.depthValue, global.zShade);
   }
 
+  public void rotatePoint(Point3f pt, Point3f ptRot) {
+    transformManager.rotatePoint(pt, ptRot);
+  }
+
   public Point3i transformPoint(Point3f pointAngstroms) {
     return transformManager.transformPoint(pointAngstroms);
   }
@@ -909,8 +913,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.transformPoint(pointAngstroms, pointScreen);
   }
 
-  public void transformPointNoClip(Point3f pointAngstroms, Point3i point3i) {
-    transformManager.transformPointNoClip(pointAngstroms, point3i);
+  public void transformPointNoClip(Point3f pointAngstroms, Point3f pt) {
+    transformManager.transformPointNoClip(pointAngstroms, pt);
   }
 
   public void transformPoint(Point3f pointAngstroms, Point3f pointScreen) {
@@ -5249,8 +5253,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Point3f[] getAxisPoints() {
+    // for uccage renderer
     return (getObjectMad(StateManager.OBJ_AXIS1) == 0
-        || getAxesMode() != JmolConstants.AXES_MODE_UNITCELL ? null
+        || getAxesMode() != JmolConstants.AXES_MODE_UNITCELL 
+        || ((Boolean) getShapeProperty(JmolConstants.SHAPE_AXES, "axesTypeXY")).booleanValue()
+        ? null
         : (Point3f[]) getShapeProperty(JmolConstants.SHAPE_AXES, "axisPoints"));
   }
 

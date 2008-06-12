@@ -23,7 +23,6 @@
  */
 package org.jmol.shape;
 
-import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
 import java.text.NumberFormat;
 
@@ -38,11 +37,11 @@ public class UccageRenderer extends FontLineShapeRenderer {
   byte fid;
   boolean doLocalize;
   
-  final Point3i[] screens = new Point3i[8];
+  final Point3f[] screens = new Point3f[8];
   final Point3f[] verticesT = new Point3f[8];  
   {
     for (int i = 8; --i >= 0; ) {
-      screens[i] = new Point3i();
+      screens[i] = new Point3f();
       verticesT[i] = new Point3f();
     }
   }
@@ -71,7 +70,7 @@ public class UccageRenderer extends FontLineShapeRenderer {
       verticesT[i].add(vertices[i], offset);
     Point3f[] axisPoints = viewer.getAxisPoints();
     boolean drawAllLines = (viewer.getObjectMad(StateManager.OBJ_AXIS1) == 0 
-        || viewer.getAxesScale() < 2);
+        || viewer.getAxesScale() < 2 || axisPoints == null);
     render(mad, verticesT, screens, axisPoints, drawAllLines ? 0 : 3);
     if (viewer.getDisplayCellParameters() && !cellInfo.isPeriodic())
       renderInfo(cellInfo, unitCell);

@@ -2771,6 +2771,33 @@ class Eval { //implements Runnable {
     return coord;
   }
 
+  private Point3f xypParameter(int index) throws ScriptException {
+    // [x y] or [x,y] refers to an xy point on the screen
+    // just a Point3f with z = Float.MAX_VALUE
+    //  [x y %] or [x,y %] refers to an xy point on the screen
+    // as a percent 
+    // just a Point3f with z = -Float.MAX_VALUE
+    
+    if (tokAt(index) != Token.leftsquare
+        || !isFloatParameter(++index))
+      return null;
+    Point3f pt = new Point3f();
+    pt.x = floatParameter(index);
+    if (tokAt(++index) == Token.comma)
+      index++;
+    if (!isFloatParameter(index))
+      return null;
+    pt.y = floatParameter(index);
+    boolean isPercent = (tokAt(++index) == Token.percent);
+    if (isPercent)
+      ++index;
+    if (tokAt(index) != Token.rightsquare)
+      return null;
+    iToken = index;
+    pt.z = (isPercent ? -1 : 1) * Float.MAX_VALUE;
+    return pt;
+  }
+  
   private int theTok;
   private Token theToken;
 
@@ -4397,19 +4424,22 @@ class Eval { //implements Runnable {
     String type = "";
     boolean isQuaternion = false;
     boolean isDerivative = false;
+    boolean isSecondDerivative = false;
     switch (datatype) {
     case JmolConstants.JMOL_DATA_RAMACHANDRAN:
       type = "ramachandran";
       break;
     case JmolConstants.JMOL_DATA_QUATERNION:
-      type = (statementLength == 1 ? "w" : optParameterAsString(1));
-      isDerivative = (optParameterAsString(statementLength - 1)
+      isDerivative = ((type = optParameterAsString(statementLength - 1))
           .indexOf("deriv") == 0);
+      isSecondDerivative = (type.indexOf("derivative2") == 0);
+      type = (statementLength == 1 ? "w" : optParameterAsString(1));
       if (isDerivative && statementLength == 2)
         type = "w";
-      if (!Parser.isOneOf(type, "w;x;y;z"))
+      if (!Parser.isOneOf(type, "w;x;y;z;e")) // e "experimental derivative"
         evalError("QUATERNION [w,x,y,z] [derivative]");
-      type = "quaternion " + type + (isDerivative ? " derivative" : "");
+      type = "quaternion " + type + (isDerivative ? " derivative" : "")
+          + (isSecondDerivative ? "2" : "");
       isQuaternion = true;
       break;
     }
@@ -5421,7 +5451,8 @@ class Eval { //implements Runnable {
       i = iToken + 1;
     }
 
-    boolean isSameAtom = (center != null && currentCenter.distance(center) < 0.1);
+    // disabled sameAtom stuff -- just too weird
+    boolean isSameAtom = false && (center != null && currentCenter.distance(center) < 0.1);
     //zoom/zoomTo percent|-factor|+factor|*factor|/factor | 0
     float factor = getZoomFactor(i, ptCenter, radius, zoom);
 
@@ -7811,21 +7842,16 @@ class Eval { //implements Runnable {
       setFloatProperty("axesScale", floatParameter(++index));
       return;
     }
-    // axes position x y [%] 
+    // axes position [x y %] 
     if (type.equals("position")) {
-      Point3f xyp = new Point3f(Integer.MAX_VALUE, Integer.MAX_VALUE, 0);
-      switch (tokAt(++index)) {
-      case Token.off:
-          break;
-      case Token.integer:
-        xyp.x = intParameter(index);
-        if (tokAt(++index) == Token.percent)
-            index++; // skip first percent
-        xyp.y = intParameter(index);
-        xyp.z = (tokAt(++index) == Token.percent ? -1 : 1);
-        break;
-      default:
-        error(ERROR_invalidArgument);
+      Point3f xyp;
+      if (tokAt(++index) == Token.off) {
+        xyp = new Point3f(); 
+      } else {
+        xyp = xypParameter(index);
+        if (xyp == null)
+          error(ERROR_invalidArgument);
+        index = iToken;
       }
       setShapeProperty(JmolConstants.SHAPE_AXES, "position", xyp);
       return;
@@ -8048,7 +8074,9 @@ class Eval { //implements Runnable {
         return;
       }
     }
+    //set echo name [x y] or set echo name [x y %]
     //set echo name x-pos y-pos
+
     getToken(4);
     int i = 3;
     //set echo name {x y z}
@@ -8057,23 +8085,26 @@ class Eval { //implements Runnable {
         setShapeProperty(JmolConstants.SHAPE_ECHO, "xyz", centerParameter(i));
       return;
     }
-    int pos = intParameter(i++);
-    String type;
-    propertyValue = new Integer(pos);
-    if (tokAt(i) == Token.percent) {
-      type = "%xpos";
-      i++;
-    } else {
-      type = "xpos";
-    }
-    setShapeProperty(JmolConstants.SHAPE_ECHO, type, propertyValue);
-    pos = intParameter(i++);
-    propertyValue = new Integer(pos);
-    if (tokAt(i) == Token.percent) {
-      type = "%ypos";
-      i++;
-    } else {
-      type = "ypos";
+    propertyValue = xypParameter(i);
+    String type = "xypos";
+    if (propertyValue == null) {
+      int pos = intParameter(i++);
+      propertyValue = new Integer(pos);
+      if (tokAt(i) == Token.percent) {
+        type = "%xpos";
+        i++;
+      } else {
+        type = "xpos";
+      }
+      setShapeProperty(JmolConstants.SHAPE_ECHO, type, propertyValue);
+      pos = intParameter(i++);
+      propertyValue = new Integer(pos);
+      if (tokAt(i) == Token.percent) {
+        type = "%ypos";
+        i++;
+      } else {
+        type = "ypos";
+      }
     }
     setShapeProperty(JmolConstants.SHAPE_ECHO, type, propertyValue);
   }
@@ -8473,7 +8504,7 @@ class Eval { //implements Runnable {
     case Token.quaternion:
       pt++;
       type2 = Token.sValue(tokenAt(pt, args)).toLowerCase();
-      if (Parser.isOneOf(type2, "w;x;y;z;s")) // s is draw script
+      if (Parser.isOneOf(type2, "w;x;y;z;s;e")) // s is draw script; e experimental
         pt++;
       else
         type2 = "w";
@@ -9321,6 +9352,41 @@ class Eval { //implements Runnable {
         propertyName = "thisID";
         propertyValue = parameterAsString(i) + getToken(++i).value;
         break;
+      case Token.leftbrace:
+      case Token.point3f:
+        // {X, Y, Z}
+        propertyValue = getPoint3f(i, true);
+        i = iToken;
+        propertyName = "coord";
+        havePoints = true;
+        break;
+      case Token.bitset:
+      case Token.expressionBegin:
+        propertyName = "atomSet";
+        propertyValue = expression(i);
+        i = iToken;
+        havePoints = true;
+        break;
+      case Token.list:
+        propertyName = "modelBasedPoints";
+        propertyValue = theToken.value;
+        havePoints = true;
+        break;
+      case Token.comma: //ignore -- necessary between { } and [x y]
+        break;
+      case Token.leftsquare:
+        // [x y] or [x y %]
+        propertyValue = xypParameter(i);
+        if (propertyValue != null) {
+          i = iToken;
+          propertyName = "coord";
+          havePoints = true;
+          break;
+        }
+      case Token.rightsquare:
+        if ((isSavedState = !isSavedState) == (theTok == Token.rightsquare))
+          error(ERROR_invalidArgument);
+        break;
       case Token.string:
         propertyValue = stringParameter(i);
         propertyName = "title";
@@ -9344,11 +9410,6 @@ class Eval { //implements Runnable {
         } else {
           intScale = intParameter(i);
         }
-        break;
-      case Token.rightsquare:
-      case Token.leftsquare:
-        if ((isSavedState = !isSavedState) == (theTok == Token.rightsquare))
-          error(ERROR_invalidArgument);
         break;
       case Token.plane:
         propertyName = "plane";
@@ -9391,6 +9452,10 @@ class Eval { //implements Runnable {
         }
         if (str.equalsIgnoreCase("REVERSE")) {
           propertyName = "reverse";
+          break;
+        }
+        if (str.equalsIgnoreCase("NOHEAD")) {
+          propertyName = "nohead";
           break;
         }
         if (str.equalsIgnoreCase("ROTATE45")) {
@@ -9480,27 +9545,6 @@ class Eval { //implements Runnable {
           error(ERROR_invalidArgument);
         idSeen = true;
         continue;
-      case Token.leftbrace:
-      case Token.point3f:
-        // {X, Y, Z}
-        Point3f pt = getPoint3f(i, true);
-        i = iToken;
-        propertyName = "coord";
-        propertyValue = pt;
-        havePoints = true;
-        break;
-      case Token.bitset:
-      case Token.expressionBegin:
-        propertyName = "atomSet";
-        propertyValue = expression(i);
-        i = iToken;
-        havePoints = true;
-        break;
-      case Token.list:
-        propertyName = "modelBasedPoints";
-        propertyValue = theToken.value;
-        havePoints = true;
-        break;
       default:
         if (iptDisplayProperty == 0)
           iptDisplayProperty = i;

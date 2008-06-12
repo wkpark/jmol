@@ -35,6 +35,8 @@ import java.util.Properties;
 
 final public class JmolConstants {
 
+  public final static int XY_ZTOP = 100; // Z value for [x y] positioned echos and axis origin
+
   public final static String EMBEDDED_SCRIPT_TAG = "**** Jmol Embedded Script ****";
 
   public final static int CALLBACK_ANIMFRAME = 0;
@@ -250,7 +252,7 @@ final public class JmolConstants {
   public final static int PICKING_NAVIGATE         = 18;
 
   private final static String[] pickingModeNames = {
-    "off", "ident", "label", "center", "draw", "spin",
+    "off", "identify", "label", "center", "draw", "spin",
     "coord NOT IMPLEMENTED", "bond NOT IMPLEMENTED", 
     "atom", "group", "chain", "molecule", "site", "element", 
     "measure", "distance", "angle", "torsion", "navigate"

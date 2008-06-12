@@ -649,10 +649,15 @@ public class Text {
       String strOff = null;
       switch (valign) {
       case VALIGN_XY:
-        strOff = (movableXPercent == Integer.MAX_VALUE ? movableX + " "
-            : movableXPercent + "% ");
-        strOff += (movableYPercent == Integer.MAX_VALUE ? movableY + ""
-            : movableYPercent + "%");
+        if (movableXPercent == Integer.MAX_VALUE
+            || movableYPercent == Integer.MAX_VALUE) {
+          strOff = (movableXPercent == Integer.MAX_VALUE ? movableX + " "
+              : movableXPercent + "% ");
+          strOff += (movableYPercent == Integer.MAX_VALUE ? movableY + ""
+              : movableYPercent + "%");
+        } else {
+          strOff = "[" + movableXPercent + " " + movableYPercent + "%]";
+        }
       //fall through
       case VALIGN_XYZ:
         if (strOff == null)
@@ -685,7 +690,7 @@ public class Text {
     // these may not change much:
     s.append("  " + Shape.getFontCommand("echo", font));
     if (scalePixelsPerMicron > 0)
-      s.append (" " + (10000f / scalePixelsPerMicron)); // Angstroms per pixel
+      s.append(" " + (10000f / scalePixelsPerMicron)); // Angstroms per pixel
     s.append(";\n");
     s.append("  color echo");
     if (Graphics3D.isColixTranslucent(colix))

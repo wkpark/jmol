@@ -75,6 +75,53 @@ public class Echo extends TextShape {
       return;
     }
     
+    if ("xpos" == propertyName) {
+      if (currentText != null)
+        currentText.setMovableX(((Integer) value).intValue());
+      return;
+    }
+
+    if ("ypos" == propertyName) {
+      if (currentText != null)
+        currentText.setMovableY(((Integer) value).intValue());
+      return;
+    }
+
+    if ("%xpos" == propertyName) {
+      if (currentText != null)
+        currentText.setMovableXPercent(((Integer) value).intValue());
+      return;
+    }
+
+    if ("%ypos" == propertyName) {
+      if (currentText != null)
+        currentText.setMovableYPercent(((Integer) value).intValue());
+      return;
+    }
+    
+    if ("xypos" == propertyName) {
+      if (currentText == null)
+        return;
+      Point3f pt = (Point3f) value;
+      if (pt.z == Float.MAX_VALUE) {
+        currentText.setMovableX((int) pt.x);        
+        currentText.setMovableY((int) pt.y);        
+      } else {
+        currentText.setMovableXPercent((int) pt.x);        
+        currentText.setMovableYPercent((int) pt.y);        
+      }
+      return;
+    }
+
+    if ("xyz" == propertyName) {
+      if (currentText != null) {
+        currentText.setXYZ((Point3f) value);
+        if (viewer.getFontScaling())
+          currentText.setScalePixelsPerMicron(viewer.getScalePixelsPerAngstrom() * 10000f);
+      }
+      return;
+    }
+
     if ("target" == propertyName) {
       String target = ((String) value).intern().toLowerCase();
       if (target != "none" && target != "all") {

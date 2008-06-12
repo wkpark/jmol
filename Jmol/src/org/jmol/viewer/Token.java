@@ -1232,7 +1232,7 @@ public class Token {
     "coord",            new Token(coord),
     "coordinates",      null,
     "coords",           null,
-    "cos",            new Token(cos),
+    "cos",              new Token(cos),
     "cross",            new Token(cross),
     "defaultColors",    new Token(defaultColors),
     "delete",           new Token(delete),

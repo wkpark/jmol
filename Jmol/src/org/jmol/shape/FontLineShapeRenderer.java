@@ -32,11 +32,14 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
 
   float imageFontScaling;
   
-  protected void render(int mad, Point3f[] vertices, Point3i[] screens,
+  Point3i pt0 = new Point3i();
+  Point3i pt1 = new Point3i();
+  
+  protected void render(int mad, Point3f[] vertices, Point3f[] screens,
                         Point3f[] axisPoints, int firstLine) {
     //used by Bbcage and Uccage
     g3d.setColix(colix);
-    int zSum = 0;
+    float zSum = 0;
     for (int i = 8; --i >= 0;) {
       viewer.transformPointNoClip(vertices[i], screens[i]);
       zSum += screens[i].z;
@@ -44,20 +47,16 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
     if (mad > 0 && mad < 2)
       mad = 2;
     int widthPixels = mad;
-    if (mad >= 20) {
-      widthPixels = viewer.scaleToScreen(zSum / 8, mad);
-    }
+    if (mad >= 20)
+      widthPixels = viewer.scaleToScreen((int)(zSum / 8), mad);
     int axisPt = 2;
     for (int i = firstLine * 2; i < 24; i += 2) {
       int edge0 = Bbcage.edges[i];
+      int edge1 = Bbcage.edges[i + 1];
       if (axisPoints != null && edge0 == 0)
         viewer.transformPointNoClip(axisPoints[axisPt--], screens[0]);
-      if (mad < 0)
-        g3d.drawDottedLine(screens[edge0], screens[Bbcage.edges[i + 1]]);
-      else
-        g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, widthPixels, screens[edge0],
-            screens[Bbcage.edges[i + 1]]);
+      renderLine(screens[edge0], screens[edge1], widthPixels, Graphics3D.ENDCAPS_SPHERICAL, pt0, pt1);
     }
-  }    
+  }
 }
 

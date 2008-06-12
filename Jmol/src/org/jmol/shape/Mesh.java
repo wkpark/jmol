@@ -55,6 +55,7 @@ public class Mesh {
   public int[][] polygonIndexes = null;
   
   public float scale = 1;
+  public boolean haveXyPoints;
   public int diameter;
   public float width;
   public Point3f ptCenter = new Point3f(0,0,0);

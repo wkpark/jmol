@@ -54,8 +54,10 @@ public class DrawRenderer extends MeshRenderer {
       return Draw.isPolygonDisplayable(dmesh, i) 
           && (dmesh.modelFlags == null || dmesh.modelFlags.get(i)); 
   }
-  
+    
   private Point3f[] controlHermites;
+  private final Point3f vpt0 = new Point3f();
+  private final Point3f vpt1 = new Point3f();
   
   protected void render2() {
     boolean isDrawPickMode = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
@@ -72,7 +74,17 @@ public class DrawRenderer extends MeshRenderer {
       diameter = viewer.scaleToScreen(pt1i.z, (int) (width * 1000));
       if (diameter == 0)
         diameter = 1;
-    }
+    }    
+    if (dmesh.isVector && dmesh.haveXyPoints) {
+      int ptXY = 0;
+      for (int i = 0; i < 2; i++)
+        if (vertices[i].z == Float.MAX_VALUE || vertices[i].z == Float.MAX_VALUE)
+          ptXY += i + 1;
+      if (--ptXY < 2) {
+        renderXyArrow(ptXY);
+        return;
+      }
+    }    
     int tension = 5;
     switch (drawType) {
     default:
@@ -93,13 +105,6 @@ public class DrawRenderer extends MeshRenderer {
       //unnecessary
       break;
     case JmolConstants.DRAW_ARROW:
-      Vector3f tip = new Vector3f();
-      float d;
-      float fScale = dmesh.drawArrowScale;
-      if (fScale == 0)
-        fScale = viewer.getDefaultDrawArrowScale();
-      if (fScale <= 0)
-        fScale = 0.5f;
       int nHermites = 5;
       if (controlHermites == null || controlHermites.length < nHermites + 1) {
         controlHermites = new Point3f[nHermites + 1];
@@ -118,34 +123,7 @@ public class DrawRenderer extends MeshRenderer {
             vertices[vertexCount - 1], vertices[vertexCount - 1],
             controlHermites, 0, nHermites);
       }
-      pt1f.set(controlHermites[nHermites - 2]);
-      pt2f.set(controlHermites[nHermites - 1]);
-      tip.set(pt2f);
-      tip.sub(pt1f);
-      d = tip.length();
-      if (d == 0)
-        break;
-      tip.scale(fScale / d / 5);
-      pt2f.add(tip);
-      tip.scale(5);
-      pt1f.set(pt2f);
-      pt1f.sub(tip);
-      viewer.transformPoint(pt2f, pt2i);
-      viewer.transformPoint(pt1f, pt1i);
-      tip.set(pt2i.x - pt1i.x, pt2i.y - pt1i.y, pt2i.z - pt1i.z);
-      if (pt2i.z == 1 || pt1i.z == 1) //slabbed
-        break;
-      int headDiameter;
-      if (diameter > 0) {
-        headDiameter = diameter * 5;
-      } else {
-        headDiameter = (int) (tip.length() * .5);
-        diameter = headDiameter / 5;
-      }
-      if (diameter < 1)
-        diameter = 1;
-      if (headDiameter > 2)
-        g3d.fillCone(Graphics3D.ENDCAPS_FLAT, headDiameter, pt1i, pt2i);
+      renderArrowHead(controlHermites[nHermites - 2], controlHermites[nHermites - 1], false);
       break;
     }
     if (diameter == 0)
@@ -158,9 +136,74 @@ public class DrawRenderer extends MeshRenderer {
         i0 = i;
       }
     }
+    
     if (isDrawPickMode && !isGenerator) {
       renderHandles();
     }
+  }
+  
+  private void renderXyArrow(int ptXY) {
+    int ptXYZ = 1 - ptXY;
+    Point3f[] arrowPt = new Point3f[2];
+    arrowPt[ptXYZ] = vpt1;
+    arrowPt[ptXY] = vpt0;
+    // set up (0,0,0) to ptXYZ in real and screen coordinates
+    vpt0.set(screens[ptXY].x, screens[ptXY].y, screens[ptXY].z);
+    viewer.rotatePoint(vertices[ptXYZ], vpt1);
+    vpt1.z *= -1;
+    float zoomDimension = viewer.getScreenDim();
+    float scaleFactor = zoomDimension / 20f;
+    vpt1.scaleAdd(dmesh.scale * scaleFactor, vpt1, vpt0);
+    if (diameter == 0)
+      diameter = 1;
+    renderLine(vpt0, vpt1, diameter, Graphics3D.ENDCAPS_FLAT, pt1i, pt2i);
+    renderArrowHead(vpt0, vpt1, true);
+  }
+
+  private Vector3f tip = new Vector3f();
+  private void renderArrowHead(Point3f pt1, Point3f pt2, boolean isTransformed) {
+    if (dmesh.nohead)
+      return;
+    float fScale = dmesh.drawArrowScale;
+    if (fScale == 0)
+      fScale = viewer.getDefaultDrawArrowScale();
+    if (fScale <= 0)
+      fScale = 0.5f;
+    if (isTransformed)
+      fScale *= 40;
+    pt1f.set(pt1);
+    pt2f.set(pt2);
+    tip.set(pt2f);
+    tip.sub(pt1f);
+    float d = tip.length();
+    if (d == 0)
+      return;
+    tip.scale(fScale / d / 5);
+    pt2f.add(tip);
+    tip.scale(5);
+    pt1f.set(pt2f);
+    pt1f.sub(tip);
+    if (isTransformed) {
+      pt1i.set((int)pt1f.x, (int)pt1f.y, (int)pt1f.z);
+      pt2i.set((int)pt2f.x, (int)pt2f.y, (int)pt2f.z);
+    } else {
+      viewer.transformPoint(pt2f, pt2i);
+      viewer.transformPoint(pt1f, pt1i);
+    }
+    if (pt2i.z == 1 || pt1i.z == 1) //slabbed
+      return;
+    int headDiameter;
+    if (diameter > 0) {
+      headDiameter = diameter * 3;
+    } else {
+      tip.set(pt2i.x - pt1i.x, pt2i.y - pt1i.y, pt2i.z - pt1i.z);
+      headDiameter = (int) (tip.length() * .5);
+      diameter = headDiameter / 5;
+    }
+    if (diameter < 1)
+      diameter = 1;
+    if (headDiameter > 2)
+      g3d.fillCone(Graphics3D.ENDCAPS_FLAT, headDiameter, pt1i, pt2i);
   }
   
   private void renderHandles() {

@@ -169,6 +169,10 @@ public abstract class MeshRenderer extends ShapeRenderer {
             diameter = 1;
           viewer.transformPoint(vertices[iA], pt1f);
           viewer.transformPoint(vertices[iB], pt2f);
+          if (mesh.scale != 0 && mesh.haveXyPoints) {
+            
+          }
+
           g3d.fillCylinderBits(endCap, diameter, pt1f, pt2f);
         }
         continue;

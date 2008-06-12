@@ -885,7 +885,7 @@ abstract public class ModelCollection extends BondCollection {
    * 
    */
   private String getPdbData(String type, char ctype, int modelIndex,
-                            boolean isDerivative) {
+                            int derivType) {
     StringBuffer pdbCONECT = new StringBuffer();
     if (isJmolDataFrame(modelIndex))
       modelIndex = getJmolDataSourceFrame(modelIndex);
@@ -896,7 +896,7 @@ abstract public class ModelCollection extends BondCollection {
     BitSet bsAtoms = getModelAtomBitSet(modelIndex, false);
     int nPoly = model.getBioPolymerCount();
     for (int p = 0; p < nPoly; p++)
-        model.bioPolymers[p].getPdbData(ctype, isDerivative, bsAtoms, pdbATOM,
+        model.bioPolymers[p].getPdbData(ctype, derivType, bsAtoms, pdbATOM,
             pdbCONECT);
     pdbATOM.append(pdbCONECT);
     return (ctype == 's' ? "" : getProteinStructureState(bsAtoms, ctype == 'r')) 
@@ -940,7 +940,9 @@ abstract public class ModelCollection extends BondCollection {
       return null;
     char ctype = (type.length() > 11 && type.indexOf("quaternion ") >= 0 ? type
         .charAt(11) : 'r');
-    String s = getPdbData(type, ctype, modelIndex, (type.indexOf(" deriv") >= 0));
+    int derivType = (type.indexOf(" derivative2") >= 0 ? 2 : type
+        .indexOf(" deriv") >= 0 ? 1 : 0);
+    String s = getPdbData(type, ctype, modelIndex, derivType);
     if (s.length() == 0)
       return "";
     String remark = "REMARK   6 Jmol PDB-encoded data: " + type
@@ -2217,18 +2219,21 @@ abstract public class ModelCollection extends BondCollection {
                   .getGroupPsi())))
             continue;
         }
+        char ch = atoms[i].getChainID();
+        if (ch == 0)
+          ch = ' ';
         if (bs == null) {
           bs = new BitSet();
           res1 = atoms[i].getResno();
           group1 = atoms[i].getGroup3();
-          chain1 = "" + atoms[i].getChainID();
+          chain1 = "" + ch;
         }
         itype = atoms[i].getProteinStructureType();
         bs.set(i);
         lastId = id;
         res2 = atoms[i].getResno();
         group2 = atoms[i].getGroup3();
-        chain2 = "" + atoms[i].getChainID();
+        chain2 = "" + ch;
         iLastAtom = i;
       }
     if (n > 0)

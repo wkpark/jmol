@@ -105,7 +105,7 @@ abstract public class Polymer {
   public void recalculateLeadMidpointsAndWingVectors() {  
   }
   
-  public void getPdbData(char ctype, boolean isDerivative, BitSet bsAtoms, StringBuffer pdbATOM, StringBuffer pdbCONECT) {
+  public void getPdbData(char ctype, int derivType, BitSet bsAtoms, StringBuffer pdbATOM, StringBuffer pdbCONECT) {
     return;
   }
 

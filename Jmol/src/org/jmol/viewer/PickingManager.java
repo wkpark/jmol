@@ -103,8 +103,9 @@ class PickingManager {
       if (pickingMode == JmolConstants.PICKING_MEASURE
           || pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON)
         queuedAtomCount = 0;
-      if (pickingMode == JmolConstants.PICKING_CENTER)
-        viewer.script("zoomTo out");
+      // disabled sameAtom stuff -- just too weird
+      //if (pickingMode == JmolConstants.PICKING_CENTER)
+        //viewer.script("zoomTo out");
       return;
     }
 

@@ -463,11 +463,14 @@ public abstract class BioPolymer extends Polymer {
     return false;
   }
   
-  final public static void getPdbData(BioPolymer p, char ctype, boolean isDerivative, BitSet bsAtoms,
+  final public static void getPdbData(BioPolymer p, char ctype, int derivType, BitSet bsAtoms,
                          StringBuffer pdbATOM, StringBuffer pdbCONECT) {
     int atomno = Integer.MIN_VALUE;
     Quaternion qlast = null;
     Quaternion qprev = null;
+    Quaternion dq = null;
+    Quaternion dqprev = null;
+    Quaternion ddq = null;
     float factor = (ctype == 'r' ? 1f : 10f);
     float x = 0, y = 0, z = 0, w = 0;
     //boolean isQuaternion = ("wxyz".indexOf(ctype) >= 0);
@@ -496,28 +499,48 @@ public abstract class BioPolymer extends Polymer {
             atomno = Integer.MIN_VALUE;
             continue;
           }
-          if (isDerivative) {
+          if (derivType > 0) {
             if (qprev == null) {
               qprev = q;
               continue;
             }
-            //not sure of this
-            if (q.dot(qprev) < 0)
-              qprev = qprev.mul(-1);
-            Quaternion qthis = q;
-            q = qprev.inv().mul(q);
-            qprev = qthis;
+            // get dq or dq*
+            if (ctype == 'e')
+              dq = q.mul(qprev.inv()); //NOT -- but gives plane!
+            else 
+              dq = qprev.inv().mul(q);
+            // save this q as q'
+            qprev = q;
+            
+            if (derivType == 2) {
+              // SECOND derivative:
+              if (dqprev == null) {
+                dqprev = dq;            
+                continue;
+              }
+              ddq = dqprev.inv().mul(dq);
+              dqprev = dq;
+              q = ddq;
+            } else {
+              // first deriv:
+              q = dq;
+            }
+            
+            // save this dq as dq'
+            dqprev = dq;            
+            if (q.q0 < 0)
+              q = q.mul(-1);
           } else if (qlast == null && q.q0 < 0) {
             //initialize with a positive q0
             q = q.mul(-1);
           }
-          
           if (qlast != null && q.dot(qlast) < 0)
             q = q.mul(-1);
           qlast = q;
           switch (ctype) {
           case 's':
           case 'w':
+          case 'e':
             x = q.q1;
             y = q.q2;
             z = q.q3;

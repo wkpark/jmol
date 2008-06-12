@@ -31,21 +31,21 @@ import org.jmol.modelset.CellInfo;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
 
-import javax.vecmath.Point3i;
+import javax.vecmath.Point3f;
 
 public class AxesRenderer extends FontLineShapeRenderer {
 
-  String[] axisLabels = { "+X", "+Y", "+Z",
+  private String[] axisLabels = { "+X", "+Y", "+Z",
                           null, null, null, "a", "b", "c" , "X", "Y", "Z"};
 
-  final Point3i[] axisScreens = new Point3i[6];
+  private final Point3f[] axisScreens = new Point3f[6];
   {
     for (int i = 6; --i >= 0; )
-      axisScreens[i] = new Point3i();
+      axisScreens[i] = new Point3f();
   }
-  final Point3i originScreen = new Point3i();
+  private final Point3f originScreen = new Point3f();
   
-  short[] colixes = new short[3];
+  private short[] colixes = new short[3];
 
   protected void render() {
     Axes axes = (Axes) shape;
@@ -59,47 +59,46 @@ public class AxesRenderer extends FontLineShapeRenderer {
     int labelPtr = 0;
     CellInfo[] cellInfos = modelSet.getCellInfos();
     boolean isXY = (axes.axisXY.z != 0);
-    if (isXY) {
-      nPoints = 3;
-      labelPtr = 9;
-    } else if (viewer.getAxesMode() == JmolConstants.AXES_MODE_UNITCELL
+    if (viewer.getAxesMode() == JmolConstants.AXES_MODE_UNITCELL
         && cellInfos != null) {
       int modelIndex = viewer.getDisplayModelIndex();
       if (modelIndex < 0 || cellInfos[modelIndex].getUnitCell() == null)
         return;
       nPoints = 3;
       labelPtr = 6;
+    } else if (isXY) {
+      nPoints = 3;
+      labelPtr = 9;
     }
+    
     boolean isDataFrame = viewer.isJmolDataFrame();
-    viewer.transformPointNoClip(axes.getOriginPoint(isDataFrame), originScreen);
-    for (int i = nPoints; --i >= 0;)
-      viewer.transformPointNoClip(axes.getAxisPoint(i, isDataFrame), axisScreens[i]);
+
     int aFactor = (g3d.isAntialiased() ? 2 : 1);
-    int widthPixels = (mad < 20 ? mad * aFactor : viewer.scaleToScreen(originScreen.z, mad));
-    int minZ = originScreen.z;
     int slab = g3d.getSlab();
+    int widthPixels = (mad < 20 ? mad * aFactor : -1);
     if (isXY) {
+      if (widthPixels < 0)
+        widthPixels = (int) (mad > 500 ? 5 : mad / 100f);
       g3d.setSlab(0);
-      float d = 50f / viewer.getZoomPercentFloat();
-      int w = viewer.getScreenWidth();
-      int h = viewer.getScreenHeight();
-      float factor = (axes.axisXY.z < 0 ? h / 250 : 1);
-      int x0 = (int) (axes.axisXY.x * (axes.axisXY.z < 0 ? w / 100f : 1f));
-      int y0 = (int) (axes.axisXY.y * (axes.axisXY.z < 0 ? h / 100f : 1f));
-      for (int i = 0; i < 3; i++) {
-        axisScreens[i].x = (x0 * aFactor + (int) ((axisScreens[i].x - originScreen.x) * factor * d));
-        axisScreens[i].y = (h * aFactor - (y0 * aFactor - (int) ((axisScreens[i].y - originScreen.y) * factor * d)));
-        minZ = Math.min(minZ, axisScreens[i].z);
+      pt0.set(viewer.transformPoint(axes.axisXY));
+      originScreen.set(pt0.x, pt0.y, pt0.z);
+      float zoomDimension = viewer.getScreenDim();
+      float scaleFactor = zoomDimension / 10f * axes.scale;
+      for (int i = 0; i < 3; i++) { 
+        viewer.rotatePoint(axes.getAxisPoint(i, false), axisScreens[i]);
+        axisScreens[i].z *= -1;
+        axisScreens[i].scaleAdd(scaleFactor, axisScreens[i], originScreen);
       }
-      originScreen.x = (int) x0 * aFactor;
-      originScreen.y = (h - (int) y0) * aFactor;
-      widthPixels = (int) (widthPixels * d);
-      if (widthPixels > 5)
-        widthPixels = 5;
-      for (int i = 0; i < 3; i++)
-        axisScreens[i].z -= (minZ - 1);
-      originScreen.z  -= (minZ - 1);
+      
+    } else {
+      viewer.transformPointNoClip(axes.getOriginPoint(isDataFrame), originScreen);
+      if (widthPixels < 0)
+        widthPixels = viewer.scaleToScreen((int)originScreen.z, mad);
+      for (int i = nPoints; --i >= 0;)
+        viewer.transformPointNoClip(axes.getAxisPoint(i, isDataFrame), axisScreens[i]);
     }
+    
+
     float xCenter = originScreen.x;
     float yCenter = originScreen.y;
     colixes[0] = viewer.getObjectColix(StateManager.OBJ_AXIS1);
@@ -113,11 +112,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
       if (label != null)
         renderLabel(label, font, axisScreens[i].x,
             axisScreens[i].y, axisScreens[i].z, xCenter, yCenter);
-      if (mad < 0)
-        g3d.drawDottedLine(originScreen, axisScreens[i]);
-      else
-        g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, widthPixels,
-            originScreen, axisScreens[i]);
+      renderLine(originScreen, axisScreens[i], widthPixels, Graphics3D.ENDCAPS_FLAT, pt0, pt1);
     }
     if (nPoints == 3 && !isXY) { //a b c
       colix = viewer.getColixBackgroundContrast();
@@ -128,7 +123,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
       g3d.setSlab(slab);
   }
   
-  private void renderLabel(String str, Font3D font3d, int x, int y, int z, float xCenter, float yCenter) {
+  private void renderLabel(String str, Font3D font3d, float x, float y, float z, float xCenter, float yCenter) {
     FontMetrics fontMetrics = font3d.fontMetrics;
     int strAscent = fontMetrics.getAscent();
     int strWidth = fontMetrics.stringWidth(str);
@@ -136,14 +131,13 @@ public class AxesRenderer extends FontLineShapeRenderer {
     float dy = y - yCenter;
     if ((dx != 0 || dy != 0)) {
       float dist = (float) Math.sqrt(dx * dx + dy * dy);
-      dx = (int) (strWidth * 0.75f * dx / dist);
-      dy = (int) (strAscent * 0.75f * dy / dist);
+      dx = (strWidth * 0.75f * dx / dist);
+      dy = (strAscent * 0.75f * dy / dist);
       x += dx;
       y += dy;
     }
-
-    int xStrBaseline = x - strWidth / 2;
-    int yStrBaseline = y + strAscent / 2;
-    g3d.drawString(str, font3d, xStrBaseline, yStrBaseline, z, z);
+    float xStrBaseline = x - strWidth / 2;
+    float yStrBaseline = y + strAscent / 2;
+    g3d.drawString(str, font3d, (int) xStrBaseline, (int) yStrBaseline, (int) z, (int) z);
   }
 }

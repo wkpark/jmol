@@ -108,7 +108,7 @@ public class Token {
   // command types
   
   final static int command           = (1 <<  8);
-  final static int expressionCommand = (1 <<  9); // expression command
+  final static int expressionCommand = (3 <<  8); // expression command
   final static int embeddedExpression= (1 << 10); // embedded expression
   final static int specialstring     = (1 << 11); // echo, label, javascript
   // generally, the minus sign is used to denote atom ranges
@@ -497,7 +497,7 @@ public class Token {
   // xxx(a,b,c)
   
   final static int point        = 1  | 3 << 3 | mathfunc;
-  final static int select       = 2  | 3 << 3 | command | expressionCommand;
+  final static int select       = 2  | 3 << 3 | mathfunc | expressionCommand;
   // xxx(a,b,c,d)
   
   final static int angle        = 1  | 4 << 3 | mathfunc;

@@ -58,8 +58,17 @@ class RepaintManager {
       viewer.saveOrientation(viewer.getJmolFrameType(currentModelIndex));
       //System.out.println("saving orientation for " + currentModelIndex + " " + viewer.getJmolDataFrameType(currentModelIndex));
       if (fromDataFrame || toDataFrame) {
-        viewer.restoreOrientation(viewer.getJmolFrameType(modelIndex), -1);
+        String fromID = viewer.getJmolFrameType(currentModelIndex); 
+        String toID = viewer.getJmolFrameType(modelIndex);
+        viewer.restoreOrientation(toID, -1);
         //System.out.println("restoring orientation for " + modelIndex + " " + viewer.getJmolDataFrameType(modelIndex));
+        if (viewer.getJmolDataSourceFrame(modelIndex) == viewer.getJmolDataSourceFrame(currentModelIndex)) {
+          //same set -- check if NOT Ramachandran...
+          if ((fromID + toID).indexOf("quaternion") >= 0) {
+            viewer.restoreRotation(fromID, -1);
+          }
+        }
+        
       }
     }
     if (modelSet == null || modelIndex < 0

@@ -238,6 +238,17 @@ public class StateManager {
     saved.put(o.saveName, o);
   }
 
+  boolean restoreRotation(String saveName, float timeSeconds) {
+    String name = (saveName.length() > 0 ? "Orientation_" + saveName
+        : lastOrientation);
+    Orientation o = (Orientation) saved.get(name);
+    if (o == null)
+      return false;
+    viewer.moveTo(timeSeconds, o.rotationMatrix, null, Float.NaN, Float.NaN,
+        Float.NaN, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN);
+    return true;
+  }
+
   boolean restoreOrientation(String saveName, float timeSeconds) {
     String name = (saveName.length() > 0 ? "Orientation_" + saveName
         : lastOrientation);

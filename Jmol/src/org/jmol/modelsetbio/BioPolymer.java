@@ -476,7 +476,32 @@ public abstract class BioPolymer extends Polymer {
     //boolean isQuaternion = ("wxyz".indexOf(ctype) >= 0);
     boolean isRamachandran = (ctype == 'r');
     if (isRamachandran && !p.calcPhiPsiAngles())
-      return;    
+      return;
+    /*
+     * A quaternion visualization involves assigning a frame to each amino
+     * acid residue or nucleic acid base. This frame is an orthonormal x-y-z
+     * axis system, which can be defined any number of ways. 
+     * 
+     *  'c'  C-alpha, as defined by Andy Hanson, U. of Indiana (unpublished results)
+     *  
+     *    X: CA-C (carbonyl carbon)
+     *    Z: (CA-C) x (CA-N)
+     *    Y: Z x X
+     *    
+     *  'p'  Peptide plane as defined by Bob Hanson, St. Olaf College (unpublished results)
+     *  
+     *    X: CA-
+     *
+     * 
+     * 
+     * 
+     * quaternion types:
+     * 
+     * w, x, y, z : which of the q-terms to expunge in order to display
+     * the other three. 
+     * 
+     */ 
+   
     char qType = (isRamachandran ? 'c' : p.model.getModelSet().viewer.getQuaternionFrame()); 
     for (int m = 0; m < p.monomerCount; m++) {
       Monomer monomer = p.monomers[m];

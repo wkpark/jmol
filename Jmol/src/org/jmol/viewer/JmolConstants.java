@@ -2189,7 +2189,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
     "C7", // 49 - base methyl carbon, unique to DT
 
-    null, null, null, null, null, //50
+    "H1",  // 50  - NOT backbone
+    "H3",  // 51 - NOT backbone
+    null, null, null, //52
     null, null, null, null, null, //55
     null, null, null, null,       //60 - 63
     
@@ -2241,9 +2243,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "HA2",
     "HA3",
     "HA2", 
-    "H1", 
     "H2", 
-    "H3", 
     "H5'", 
     "H5''",
     "H2'",

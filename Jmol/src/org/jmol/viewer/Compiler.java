@@ -605,6 +605,10 @@ class Compiler {
             token = new Token(Token.identifier, ident);
         }
         int tok = token.tok;
+        // both the select() function and the for command use dual semicolon notation
+        if (tokCommand != Token.nada && tok == Token.select
+            || tokCommand == Token.nada && tok == Token.forcmd)
+            nSemiSkip += 2;
         switch (tokCommand) {
         // special cases
         case Token.nada:
@@ -754,12 +758,8 @@ class Compiler {
           flowContext = flowContext.parent;
           break;
         case Token.forcmd:
-          if (nTokens == 1) {
-            // for (
-            if (tok != Token.leftparen)
+          if (nTokens == 1 && tok != Token.leftparen)
               return error(ERROR_unrecognizedToken, ident);
-            nSemiSkip = 2; //checked twice
-          }
           if (nTokens == 3 && ((Token) ltoken.get(2)).tok == Token.var)
             addContextVariable(ident);
           break;

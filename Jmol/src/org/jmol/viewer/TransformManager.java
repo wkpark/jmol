@@ -1471,6 +1471,8 @@ abstract class TransformManager {
     float startPixelScale = scaleDefaultPixelsPerAngstrom;
     float targetPixelScale = (center == null ? startPixelScale
         : defaultScaleToScreen(targetRotationRadius));
+    if (Float.isNaN(zoom))
+      zoom = zoomPercent;
     getRotation(matrixStart);
     matrixStartInv.invert(matrixStart);
 
@@ -1524,9 +1526,11 @@ abstract class TransformManager {
         modelRadius = startRotationRadius + rotationRadiusDelta * fStep;
         scaleDefaultPixelsPerAngstrom = startPixelScale + pixelScaleDelta
             * fStep;
-        zoomToPercent(zoomStart + zoomDelta * fStep);
-        translateToXPercent(xTransStart + xTransDelta * fStep);
-        translateToYPercent(yTransStart + yTransDelta * fStep);
+        if (!Float.isNaN(xTrans)) {
+          zoomToPercent(zoomStart + zoomDelta * fStep);
+          translateToXPercent(xTransStart + xTransDelta * fStep);
+          translateToYPercent(yTransStart + yTransDelta * fStep);
+        }
         setRotation(matrixStep);
         if (center != null)
           fixedRotationCenter.add(aaStepCenter);
@@ -1566,9 +1570,11 @@ abstract class TransformManager {
     scaleDefaultPixelsPerAngstrom = targetPixelScale;
     if (center != null)
       moveRotationCenter(center, !windowCentered);
-    zoomToPercent(zoom);
-    translateToXPercent(xTrans);
-    translateToYPercent(yTrans);
+    if (!Float.isNaN(xTrans)) {
+      zoomToPercent(zoom);
+      translateToXPercent(xTrans);
+      translateToYPercent(yTrans);
+    }
     setRotation(matrixEnd);
     if (navCenter != null && isNavigationMode) {
       navigationCenter.set(navCenter);

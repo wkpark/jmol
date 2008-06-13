@@ -51,6 +51,21 @@ public class Token {
     this.intValue = intValue;
     this.value = value;
   }
+ 
+  // a wrapper class that allows a second int value
+  // implemented for bitsets that mascarade for single
+  // atom values -- that index stored in intValue2
+  
+  public static class Token2 extends Token {
+    int intValue2;
+    Token2(int tok, int intValue2, Object value) {
+      super(tok, value);
+      this.intValue2 = intValue2;
+    }
+    public static int bsItem2(Object x1) {
+      return (x1 instanceof Token2 ? ((Token2)x1).intValue2 : -1);
+    }
+  }
 
   final public static Token intToken(int intValue) {
     return new Token(integer, intValue);
@@ -165,8 +180,8 @@ public class Token {
   final static int ribbon       = command | 26;
   final static int rotate       = command | 27 | numberOrExpression;
   final static int save         = command | 28;
-//  final static int script       = command | 29; with mathfunc
-  final static int select       = command | 30 | expressionCommand;
+//  final static int script       = command | 29; with mathfunc 
+  // final static int select       = command | 30 | expressionCommand; with mathfunc
   final static int set          = command | 31 | implicitExpression | colorparam;
   final static int show         = command | 32;
   final static int slab         = command | 33 | numberOrExpression;
@@ -380,6 +395,8 @@ public class Token {
   final public static int vibXyz    =11 | mathproperty | settable;
   final static int property         =12 | mathproperty | setparam | settable;
   final public static int boundbox  =13 | mathproperty | setparam | command | numberOrExpression;
+  final public static int adpmax    =14 | mathproperty;
+  final public static int adpmin    =15 | mathproperty;
 
   final static int atompropertyfloat = atomproperty | 1 << 5;
   
@@ -480,7 +497,7 @@ public class Token {
   // xxx(a,b,c)
   
   final static int point        = 1  | 3 << 3 | mathfunc;
-
+  final static int select       = 2  | 3 << 3 | command | expressionCommand;
   // xxx(a,b,c,d)
   
   final static int angle        = 1  | 4 << 3 | mathfunc;
@@ -497,12 +514,12 @@ public class Token {
 
   static Object oValue(Token x) {
     switch (x == null ? nada : x.tok) {
-    case Token.on:
+    case on:
       return Boolean.TRUE;
-    case Token.nada:
-    case Token.off:
+    case nada:
+    case off:
       return Boolean.FALSE;
-    case Token.integer:
+    case integer:
       return new Integer(x.intValue);
     default:
       return x.value;
@@ -512,12 +529,12 @@ public class Token {
   static Object nValue(Token x) {
     int iValue = 0;
     switch (x == null ? nada : x.tok) {
-      case Token.integer:
+      case integer:
         iValue = x.intValue;
         break;
-      case Token.decimal:
+      case decimal:
         return x.value;
-      case Token.string:
+      case string:
         if (((String) x.value).indexOf(".") >= 0)
           return new Float(fValue(x));
         iValue = iValue(x);
@@ -527,20 +544,20 @@ public class Token {
   
   static boolean bValue(Token x) {
     switch (x == null ? nada : x.tok) {
-    case Token.on:
+    case on:
       return true;
-    case Token.off:
+    case off:
       return false;
-    case Token.integer:
+    case integer:
       return x.intValue != 0;
-    case Token.decimal:
-    case Token.string:
-    case Token.list:
+    case decimal:
+    case string:
+    case list:
       return fValue(x) != 0;
-    case Token.bitset:
+    case bitset:
       return iValue(x) != 0;
-    case Token.point3f:
-    case Token.point4f:
+    case point3f:
+    case point4f:
       return Math.abs(fValue(x)) > 0.0001f;
     default:
       return false;
@@ -549,19 +566,19 @@ public class Token {
 
   static int iValue(Token x) {
     switch (x == null ? nada : x.tok) {
-    case Token.on:
+    case on:
       return 1;
-    case Token.off:
+    case off:
       return 0;
-    case Token.integer:
+    case integer:
       return x.intValue;
-    case Token.decimal:
-    case Token.list:
-    case Token.string:
-    case Token.point3f:
-    case Token.point4f:
+    case decimal:
+    case list:
+    case string:
+    case point3f:
+    case point4f:
       return (int)fValue(x);
-    case Token.bitset:
+    case bitset:
       return BitSetUtil.cardinalityOf(bsSelect(x));
     default:
       return 0;
@@ -570,31 +587,31 @@ public class Token {
 
   static float fValue(Token x) {
     switch (x == null ? nada : x.tok) {
-    case Token.on:
+    case on:
       return 1;
-    case Token.off:
+    case off:
       return 0;
-    case Token.integer:
+    case integer:
       return x.intValue;
-    case Token.decimal:
+    case decimal:
       return ((Float) x.value).floatValue();
-    case Token.list:
+    case list:
       int i = x.intValue;
       String[] list = (String[]) x.value;
       if (i == Integer.MAX_VALUE)
         return list.length;
-    case Token.string: 
+    case string: 
       String s = sValue(x);
       if (s.equalsIgnoreCase("true"))
         return 1;
       if (s.equalsIgnoreCase("false") || s.length() == 0)
         return 0;
       return Parser.parseFloatStrict(s);
-    case Token.bitset:
+    case bitset:
       return iValue(x);
-    case Token.point3f:
+    case point3f:
       return ((Point3f) x.value).distance(pt0);
-    case Token.point4f:
+    case point4f:
       return Graphics3D.distanceToPlane((Point4f) x.value, pt0);
     default:
       return 0;
@@ -606,19 +623,19 @@ public class Token {
         return "";
     int i;
     switch (x.tok) {
-    case Token.on:
+    case on:
       return "true";
-    case Token.off:
+    case off:
       return "false";
-    case Token.integer:
+    case integer:
       return "" + x.intValue;
-    case Token.point3f:
+    case point3f:
       return Escape.escape((Point3f) x.value);
-    case Token.point4f:
+    case point4f:
       return Escape.escape((Point4f) x.value);
-    case Token.bitset:
+    case bitset:
       return Escape.escape(bsSelect(x), !(x.value instanceof BondSet));
-    case Token.list:
+    case list:
       String[] list = (String[]) x.value;
       i = x.intValue;
       if (i <= 0)
@@ -629,7 +646,7 @@ public class Token {
       for (i = 0; i < list.length; i++)
         sb.append(list[i]).append("\n");
       return sb.toString();
-    case Token.string:
+    case string:
       String s = (String) x.value;
       i = x.intValue;
       if (i <= 0)
@@ -639,7 +656,7 @@ public class Token {
       if (i < 1 || i > s.length())
         return "";
       return "" + s.charAt(i-1);
-    case Token.decimal:
+    case decimal:
     default:
       return "" + x.value;
     }
@@ -647,22 +664,22 @@ public class Token {
 
   static int sizeOf(Token x) {
     switch (x == null ? nada : x.tok) {
-    case Token.on:
-    case Token.off:
+    case on:
+    case off:
       return -1;
-    case Token.integer:
+    case integer:
       return -2;
-    case Token.decimal:
+    case decimal:
       return -4;
-    case Token.point3f:
+    case point3f:
       return -8;
-    case Token.point4f:
+    case point4f:
       return -16;
-    case Token.string:
+    case string:
       return ((String)x.value).length();
-    case Token.list:
+    case list:
       return x.intValue == Integer.MAX_VALUE ? ((String[])x.value).length : sizeOf(selectItem(x));
-    case Token.bitset:
+    case bitset:
       return BitSetUtil.cardinalityOf(bsSelect(x));
     default:
       return 0;
@@ -671,22 +688,22 @@ public class Token {
 
   static String typeOf(Token x) {
     switch (x == null ? nada : x.tok) {
-    case Token.on:
-    case Token.off:
+    case on:
+    case off:
       return "boolean";
-    case Token.integer:
+    case integer:
       return "integer";
-    case Token.decimal:
+    case decimal:
       return "decimal";
-    case Token.point3f:
+    case point3f:
       return "point";
-    case Token.point4f:
+    case point4f:
       return "plane";
-    case Token.string:
+    case string:
       return "string";
-    case Token.list:
+    case list:
       return "array";
-    case Token.bitset:
+    case bitset:
       return "bitset";
     default:
       return "?";
@@ -694,10 +711,10 @@ public class Token {
   }
 
   static String[] concatList(Token x1, Token x2) {
-    String[] list1 = (x1.tok == Token.list ? (String[]) x1.value : TextFormat.split(
-        Token.sValue(x1), "\n"));
-    String[] list2 = (x2.tok == Token.list ? (String[]) x2.value : TextFormat.split(
-        Token.sValue(x2), "\n"));
+    String[] list1 = (x1.tok == list ? (String[]) x1.value : TextFormat.split(
+        sValue(x1), "\n"));
+    String[] list2 = (x2.tok == list ? (String[]) x2.value : TextFormat.split(
+        sValue(x2), "\n"));
     String[] list = new String[list1.length + list2.length];
     int pt = 0;
     for (int i = 0; i < list1.length; i++)
@@ -724,9 +741,9 @@ public class Token {
   }
 
   static Token selectItem(Token tokenIn, int i2) {
-    if (tokenIn.tok != Token.bitset 
-        && tokenIn.tok != Token.list
-        && tokenIn.tok != Token.string)
+    if (tokenIn.tok != bitset 
+        && tokenIn.tok != list
+        && tokenIn.tok != string)
       return tokenIn;
 
     // negative number is a count from the end
@@ -737,15 +754,18 @@ public class Token {
     
     int i1 = tokenIn.intValue;
     if (i1 == Integer.MAX_VALUE) {
+      // no selections have been made yet --
+      // we just create a new token with the 
+      // same bitset and now indicate either
+      // the selected value or "ALL" (max_value)
       if (i2 == Integer.MIN_VALUE)
-        i2 = tokenIn.intValue;
+        i2 = i1;
       return new Token(tokenIn.tok, i2, tokenIn.value);
     }
     int len = 0;
-    int n = 0;
     Token tokenOut = new Token(tokenIn.tok, Integer.MAX_VALUE);
     switch (tokenIn.tok) {
-    case Token.bitset:
+    case bitset:
       if (tokenIn.value instanceof BondSet) {
         tokenOut.value = new BondSet((BitSet) tokenIn.value, ((BondSet)tokenIn.value).getAssociatedAtoms());
         bs = (BitSet) tokenOut.value;
@@ -753,14 +773,14 @@ public class Token {
         break;
       }
       bs = BitSetUtil.copy((BitSet) tokenIn.value);
-      len = BitSetUtil.cardinalityOf(bs);
+      len = (tokenIn instanceof Token2 ? 1 : BitSetUtil.cardinalityOf(bs));
       tokenOut.value = bs;
       break;
-    case Token.list:
+    case list:
       st = (String[]) tokenIn.value;
       len = st.length;
       break;
-    case Token.string:
+    case string:
       s = (String) tokenIn.value;
       len = s.length();
     }
@@ -785,21 +805,27 @@ public class Token {
       i2 = i1;
 
     switch (tokenIn.tok) {
-    case Token.bitset:
+    case bitset:
+      if (tokenIn instanceof Token2) {
+        if (i1 > 1)
+          bs.clear();
+        break;
+      }
       len = BitSetUtil.length(bs);
-      for (int j = 0; j < len; j++)
-        if (bs.get(j) && (++n < i1 || n > i2))
-          bs.clear(j);
+      int n = 0;
+        for (int j = 0; j < len; j++)
+          if (bs.get(j) && (++n < i1 || n > i2))
+            bs.clear(j);
       break;
-    case Token.string:
+    case string:
       if (i1 < 1 || i1 > len)
         tokenOut.value = "";
       else
         tokenOut.value = s.substring(i1 - 1, i2);
       break;
-    case Token.list:
+    case list:
       if (i1 < 1 || i1 > len || i2 > len)
-        return new Token(Token.string, "");     
+        return new Token(string, "");     
       if (i2 == i1)
         return tValue(st[i1 - 1]);
       String[]list = new String[i2 - i1 + 1];
@@ -817,14 +843,14 @@ public class Token {
       return (Token) v;
     String s = (String) v;
     if (s.toLowerCase() == "true")
-      return Token.tokenOn;
+      return tokenOn;
     if (s.toLowerCase() == "false")
-      return Token.tokenOff;
+      return tokenOff;
     float f;
     if (!Float.isNaN(f = Parser.parseFloatStrict(s)))
       return (f == (int) f && s.indexOf(".") < 0 ? intToken((int)f) 
-          : new Token(Token.decimal, new Float(f)));
-    return new Token(Token.string, v);  
+          : new Token(decimal, new Float(f)));
+    return new Token(string, v);  
   }
   
   public static Object unescapePointOrBitsetAsToken(String s) {
@@ -1200,6 +1226,8 @@ public class Token {
         
     "absolute",         new Token(absolute),
     "add",              new Token(add),
+    "adpmax",           new Token(adpmax),
+    "adpmin",           new Token(adpmin),
     "all",              tokenAll,
     "altloc",           new Token(altloc),
     "altlocs",          null,
@@ -1439,7 +1467,7 @@ public class Token {
     while (e.hasMoreElements()) {
       String name = (String) e.nextElement();
       Token token = (Token) map.get(name);
-      if ((token.tok & Token.command) != 0
+      if ((token.tok & command) != 0
           && (s == null || name.indexOf(s) == 0)
           && (isMultiCharacter || ((String) token.value).equals(name)))
         htSet.put(name, Boolean.TRUE);
@@ -1460,7 +1488,7 @@ public class Token {
     while (e.hasMoreElements()) {
       String name = (String) e.nextElement();
       Token token = (Token) map.get(name);
-      if ((token.tok & Token.setparam) != 0)
+      if ((token.tok & setparam) != 0)
         cmds +=name + "\n";
     }
     return cmds;

@@ -78,8 +78,14 @@ public class HalosRenderer extends ShapeRenderer {
     int halowidth = 0;
     if (diameter < 0) { //unsized selection
       diameter = atom.screenDiameter;
-      if (diameter == 0)
-        diameter = viewer.scaleToScreen(z, 500);
+      if (diameter == 0) {
+        float ellipsemax = atom.getADPMinMax(true);
+        if (ellipsemax > 0)
+          diameter = viewer.scaleToScreen(z, (int) (ellipsemax * 2000));
+        if (diameter == 0) {
+          diameter = viewer.scaleToScreen(z, 500);
+        }
+      }
     } else {
       diameter = viewer.scaleToScreen(z, mad);
     }

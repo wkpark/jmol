@@ -516,6 +516,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return stateManager.restoreOrientation(saveName, timeSeconds);
   }
 
+  boolean restoreRotation(String saveName, float timeSeconds) {
+    //from Eval
+    return stateManager.restoreRotation(saveName, timeSeconds);
+  }
+
   void saveBonds(String saveName) {
     //from Eval
     stateManager.saveBonds(saveName);

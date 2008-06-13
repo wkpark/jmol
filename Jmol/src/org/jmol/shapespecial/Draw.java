@@ -738,11 +738,11 @@ public class Draw extends MeshCollection {
      */
     if (newScale == 0 || mesh.vertexCount == 0 || mesh.scale == newScale)
       return;
+    float f = newScale / mesh.scale;
     mesh.scale = newScale;
     if (mesh.haveXyPoints)
       return; // done in renderer
     Vector3f diff = new Vector3f();
-    float f = newScale / mesh.scale;
     int iptlast = -1;
     int ipt = 0;
     for (int i = mesh.polygonCount; --i >= 0;) {

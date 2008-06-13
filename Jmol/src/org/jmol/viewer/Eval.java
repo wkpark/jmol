@@ -7178,6 +7178,7 @@ class Eval { //implements Runnable {
     boolean isOneExpressionOnly = (pt < 0);
     if (isOneExpressionOnly)
       pt = -pt;
+    int nParen = 0;
     boolean isSetCmd = (key != null && key.length() > 0);
     Rpn rpn = new Rpn(64, isSetCmd && tokAt(pt) == Token.leftsquare, asVector);
     if (ptMax < pt)
@@ -7225,12 +7226,8 @@ class Eval { //implements Runnable {
             if (!isSelectX && tokAt(iToken) != Token.rightparen)
               error(ERROR_invalidArgument);
           }
-        if (isSelectX) {
-          Vector resx = new Vector();
-          if (v instanceof BitSet)
-            resx.addElement(new Token(Token.bitset, v));
-          return resx;
-        }
+        if (isSelectX) 
+          return bitsetTokenVector(bsSelect);
         i = iToken;
         v = bsSelect;
         break;
@@ -7262,13 +7259,8 @@ class Eval { //implements Runnable {
       case Token.expressionBegin:
         v = expression(statement, i, 0, true, true, true, true);
         i = iToken;
-        if (isOneExpressionOnly) {
-          iToken++; // skip end expression
-          Vector res = new Vector();
-          if (v instanceof BitSet)
-            res.addElement(new Token(Token.bitset, v));
-          return res;
-        }
+        if (nParen == 0 && isOneExpressionOnly)
+          return bitsetTokenVector(v);
         break;
       case Token.expressionEnd:
         i++;
@@ -7310,6 +7302,14 @@ class Eval { //implements Runnable {
             }
             //iToken--;
             error(ERROR_invalidArgument);
+          }
+          if (theTok == Token.leftparen)
+            nParen++;
+          else if (theTok == Token.rightparen) {
+            if (--nParen == 0 && isOneExpressionOnly) {
+              iToken++;
+              break out;
+            }  
           }
         } else {
           String name = parameterAsString(i);
@@ -7386,6 +7386,13 @@ class Eval { //implements Runnable {
     default:
       return result.value;
     }
+  }
+
+  Object bitsetTokenVector(Object v) {
+    Vector resx = new Vector();
+    if (v instanceof BitSet)
+      resx.addElement(new Token(Token.bitset, v));
+    return resx;
   }
 
   private boolean insertArrayValue(String key, Token result) {

@@ -987,6 +987,9 @@ class Eval { //implements Runnable {
       case Token.select:
         select();
         break;
+      case Token.selectx:
+        selectX();
+        break;
       case Token.translate:
         translate();
         break;
@@ -5343,6 +5346,21 @@ class Eval { //implements Runnable {
     }
   }
 
+  private void selectX() throws ScriptException {
+    // NOTE this is called by restrict()
+    if (statementLength == 1) {
+      viewer.select(null, tQuiet || scriptLevel > scriptReportingLevel);
+      return;
+    }
+    Object v = tokenSetting(0).value;
+    if (!(v instanceof BitSet))
+      error(ERROR_invalidArgument);
+    checkStatementLength(++iToken);
+    if (isSyntaxCheck)
+      return;    
+    viewer.select((BitSet)v, tQuiet || scriptLevel > scriptReportingLevel);
+  }
+
   private void subset() throws ScriptException {
     BitSet bs = (statementLength == 1 ? null : expression(-1));
     if (isSyntaxCheck)
@@ -6925,7 +6943,7 @@ class Eval { //implements Runnable {
   }
   
   private int intSetting(int pt) throws ScriptException {
-    Vector v = (Vector) parameterExpression(pt, 0, "XXX", true);
+    Vector v = (Vector) parameterExpression(pt, -1, "XXX", true);
     if (v == null || v.size() == 0)
       error(ERROR_invalidArgument);
     return Token.iValue((Token) v.elementAt(0));
@@ -6939,7 +6957,7 @@ class Eval { //implements Runnable {
   }
   
   private float floatSetting(int pt) throws ScriptException {
-    Vector v = (Vector) parameterExpression(pt, 0, "XXX", true);
+    Vector v = (Vector) parameterExpression(pt, -1, "XXX", true);
     if (v == null || v.size() == 0)
       error(ERROR_invalidArgument);
     return Token.fValue((Token) v.elementAt(0));
@@ -6948,14 +6966,14 @@ class Eval { //implements Runnable {
   private String stringSetting(int pt, boolean isJmolSet) throws ScriptException {
     if (isJmolSet && statementLength == pt + 1)
         return parameterAsString(pt);
-    Vector v = (Vector) parameterExpression(pt, 0, "XXX", true);
+    Vector v = (Vector) parameterExpression(pt, -1, "XXX", true);
     if (v == null || v.size() == 0)
       error(ERROR_invalidArgument);
     return Token.sValue((Token) v.elementAt(0));
   }
 
   private Token tokenSetting(int pt) throws ScriptException {
-    Vector v = (Vector) parameterExpression(pt, 0, "XXX", true);
+    Vector v = (Vector) parameterExpression(pt, -1, "XXX", true);
     if (v == null || v.size() == 0)
       error(ERROR_invalidArgument);
     return (Token) v.elementAt(0);
@@ -7157,6 +7175,9 @@ class Eval { //implements Runnable {
                                      Hashtable localVars)
       throws ScriptException {
     Object v;
+    boolean isOneExpressionOnly = (pt < 0);
+    if (isOneExpressionOnly)
+      pt = -pt;
     boolean isSetCmd = (key != null && key.length() > 0);
     Rpn rpn = new Rpn(64, isSetCmd && tokAt(pt) == Token.leftsquare, asVector);
     if (ptMax < pt)
@@ -7164,20 +7185,28 @@ class Eval { //implements Runnable {
     out: for (int i = pt; i < ptMax; i++) {
       v = null;
       switch (getToken(i).tok) {
+      case Token.selectx:
+        if (i != 0)
+          error(ERROR_invalidArgument);
+        // fall through
       case Token.select:
-        if (getToken(++i).tok != Token.leftparen
-            || getToken(++i).tok != Token.identifier)
-          error(ERROR_invalidArgument);
-        String dummy = parameterAsString(i);
-        if (getToken(++i).tok != Token.semicolon)
-          error(ERROR_invalidArgument);
-        v = tokenSetting(++i).value;
+        String dummy = "x";
+        boolean isSelectX = (theTok == Token.selectx);
+        if (!isSelectX) {
+          if (getToken(++i).tok != Token.leftparen
+              || getToken(++i).tok != Token.identifier)
+            error(ERROR_invalidArgument);
+          dummy = parameterAsString(i);
+          if (getToken(++i).tok != Token.semicolon)
+            error(ERROR_invalidArgument);
+        }
+        v = tokenSetting(-(++i)).value;
         if (!(v instanceof BitSet))
           error(ERROR_invalidArgument);
         BitSet bsAtoms = (BitSet) v;
-        if (getToken(i = iToken).tok != Token.semicolon)
+        i = iToken;
+        if (!isSelectX && getToken(i++).tok != Token.semicolon)
           error(ERROR_invalidArgument);
-        ++i; //skip semicolon
         BitSet bsSelect = new BitSet();
         BitSet bsX = new BitSet();
         Token.Token2 t = null;
@@ -7193,9 +7222,15 @@ class Eval { //implements Runnable {
             if (((Boolean) parameterExpression(i, -1, null, false, j, localVars))
                 .booleanValue())
               bsSelect.set(j);
-            if (tokAt(iToken) != Token.rightparen)
+            if (!isSelectX && tokAt(iToken) != Token.rightparen)
               error(ERROR_invalidArgument);
           }
+        if (isSelectX) {
+          Vector resx = new Vector();
+          if (v instanceof BitSet)
+            resx.addElement(new Token(Token.bitset, v));
+          return resx;
+        }
         i = iToken;
         v = bsSelect;
         break;
@@ -7227,6 +7262,13 @@ class Eval { //implements Runnable {
       case Token.expressionBegin:
         v = expression(statement, i, 0, true, true, true, true);
         i = iToken;
+        if (isOneExpressionOnly) {
+          iToken++; // skip end expression
+          Vector res = new Vector();
+          if (v instanceof BitSet)
+            res.addElement(new Token(Token.bitset, v));
+          return res;
+        }
         break;
       case Token.expressionEnd:
         i++;

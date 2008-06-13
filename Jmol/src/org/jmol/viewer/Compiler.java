@@ -1411,6 +1411,7 @@ class Compiler {
 
   boolean isImplicitExpression;
   boolean isSetOrDefine;
+  boolean isSelectX;
   Token tokenCommand;
   int tokCommand;
 
@@ -1431,6 +1432,7 @@ class Compiler {
     tokCommand = tokenCommand.tok;
     isImplicitExpression = tokAttr(tokCommand, Token.implicitExpression);
     isSetOrDefine = (tokCommand == Token.set || tokCommand == Token.define);
+    isSelectX = (tokCommand == Token.selectx);
     isCommaAsOrAllowed = tokAttr(tokCommand, Token.expressionCommand);
     int size = ltoken.size();
     if (size == 1 && !tokAttr(tokCommand, Token.flowCommand) 
@@ -1525,7 +1527,7 @@ class Compiler {
       if (!isImplicitExpression
           && !(isEmbeddedExpression && lastToken == Token.tokenCoordinateEnd))
         addTokenToPostfix(Token.tokenExpressionEnd);
-      if (moreTokens() && !isEmbeddedExpression)
+      if (!isSelectX && moreTokens() && !isEmbeddedExpression)
         return error(ERROR_endOfExpressionExpected);
     }
     atokenInfix = new Token[ltokenPostfix.size()];

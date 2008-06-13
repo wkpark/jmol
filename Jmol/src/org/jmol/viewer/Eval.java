@@ -7153,7 +7153,8 @@ class Eval { //implements Runnable {
   }
 
   private Object parameterExpression(int pt, int ptMax, String key,
-                                     boolean asVector, int ptAtom, Hashtable localVars)
+                                     boolean asVector, int ptAtom,
+                                     Hashtable localVars)
       throws ScriptException {
     Object v;
     boolean isSetCmd = (key != null && key.length() > 0);
@@ -7174,31 +7175,28 @@ class Eval { //implements Runnable {
         if (!(v instanceof BitSet))
           error(ERROR_invalidArgument);
         BitSet bsAtoms = (BitSet) v;
-        if (getToken(i = iToken).tok != Token.semicolon) 
+        if (getToken(i = iToken).tok != Token.semicolon)
           error(ERROR_invalidArgument);
         ++i; //skip semicolon
         BitSet bsSelect = new BitSet();
         BitSet bsX = new BitSet();
         Token.Token2 t = null;
         int atomCount = (isSyntaxCheck ? 0 : viewer.getAtomCount());
-          if (localVars == null)
-            localVars = new Hashtable();
-          localVars.put(dummy, t = new Token.Token2(Token.bitset, 0, bsX));
-          
-          for (int j = 0; j < atomCount; j++)
-            if (bsAtoms.get(j)) {
-              bsX.clear(); 
-              bsX.set(j);
-              t.intValue2 = j;
-              v = parameterExpression(i, -1, null, false, j, localVars);
-              if (!(v instanceof Boolean))
-                error(ERROR_invalidArgument);
-              if (((Boolean) v).booleanValue())
-                bsSelect.set(j);
-              if (tokAt(iToken) != Token.rightparen)
-                error(ERROR_invalidArgument);
-            }
-          i = iToken;
+        if (localVars == null)
+          localVars = new Hashtable();
+        localVars.put(dummy, t = new Token.Token2(Token.bitset, 0, bsX));
+        for (int j = 0; j < atomCount; j++)
+          if (bsAtoms.get(j)) {
+            bsX.clear();
+            bsX.set(j);
+            t.intValue2 = j;
+            if (((Boolean) parameterExpression(i, -1, null, false, j, localVars))
+                .booleanValue())
+              bsSelect.set(j);
+            if (tokAt(iToken) != Token.rightparen)
+              error(ERROR_invalidArgument);
+          }
+        i = iToken;
         v = bsSelect;
         break;
       case Token.semicolon: //for (i = 1; i < 3; i=i+1)

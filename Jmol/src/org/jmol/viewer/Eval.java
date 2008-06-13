@@ -7259,8 +7259,10 @@ class Eval { //implements Runnable {
       case Token.expressionBegin:
         v = expression(statement, i, 0, true, true, true, true);
         i = iToken;
-        if (nParen == 0 && isOneExpressionOnly)
+        if (nParen == 0 && isOneExpressionOnly) {
+          iToken++;
           return bitsetTokenVector(v);
+        }
         break;
       case Token.expressionEnd:
         i++;
@@ -7300,7 +7302,6 @@ class Eval { //implements Runnable {
               // this is expected -- the right parenthesis
               break out;
             }
-            //iToken--;
             error(ERROR_invalidArgument);
           }
           if (theTok == Token.leftparen)
@@ -7316,12 +7317,6 @@ class Eval { //implements Runnable {
           if (isSyntaxCheck) {
             v = name;
           } else {
-            //            if (tokAt(i + 1) == Token.leftsquare || tokAt(i + 1) == Token.dot) {
-            //            Object o = getParameter(name, true);
-            //Object o = getParameter(name+"_set", true);
-            //              if (o instanceof String && ((String) o).indexOf("({") == 0)
-            //              name += "_set";            
-            //        }
             if (localVars == null || (v = localVars.get(name)) == null) {
               v = getParameter(name, true);
               if (v instanceof String)

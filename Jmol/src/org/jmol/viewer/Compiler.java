@@ -293,7 +293,7 @@ class Compiler {
         break;
       String scrap = script.substring(pt, pt1);
       if ((pt2 = scrap.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG)) >= 0)
-        return scrap.substring(pt2 + 30);
+        return cleanScriptComments(scrap.substring(pt2 + 30));
       script = script.substring(0, pt) + script.substring(pt1 + 3);
     }
     while ((pt = script.indexOf("/*")) >= 0) {

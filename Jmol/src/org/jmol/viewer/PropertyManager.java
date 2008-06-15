@@ -78,7 +78,7 @@ class PropertyManager {
     "dataInfo"        , "<data type>", "types",
     "image"           , "", "",
     "evaluate"        , "<expression>", "",
-    "menu"            , "", "",
+    "menu"            , "<type>", "current",
     "minimizationInfo", "", "",
   };
 
@@ -334,7 +334,7 @@ class PropertyManager {
     case PROP_MEASUREMENT_INFO:
       return viewer.getMeasurementInfo();
     case PROP_MENU:
-      return viewer.getMenu();
+      return viewer.getMenu(myParam.toString());
     case PROP_MESSAGE_QUEUE:
       return viewer.getMessageQueue();
     case PROP_MINIMIZATION_INFO:

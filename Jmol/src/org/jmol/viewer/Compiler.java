@@ -567,7 +567,7 @@ class Compiler {
           addTokenToPrefix(new Token(Token.integer, val, intString));
           continue;
         }
-        if (!tokenAttr(lastToken, Token.mathfunc)) {
+        if (lastToken != null && lastToken.tok == Token.select || !tokenAttr(lastToken, Token.mathfunc)) {
           // don't want to mess up x.distance({1 2 3})
           // if you want to use a bitset there, you must use 
           // bitsets properly: x.distance( ({1 2 3}) )
@@ -1290,8 +1290,10 @@ class Compiler {
       cchToken = 8;
       return new BitSet();
     }
-    if (ichToken + 4 > cchScript || script.charAt(ichToken + 1) != '{'
-      ||(script.charAt(ichToken) != '(' && script.charAt(ichToken) != '['))
+    if (ichToken + 4 > cchScript 
+        || script.charAt(ichToken + 1) != '{'
+      ||(script.charAt(ichToken) != '(' 
+        && script.charAt(ichToken) != '['))
       return null;
     int ichT = ichToken + 2;
     char chEnd = (script.charAt(ichToken) == '(' ? ')' : ']');

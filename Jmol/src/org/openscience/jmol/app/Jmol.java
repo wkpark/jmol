@@ -1784,8 +1784,8 @@ public class Jmol extends JPanel {
     }
 
     public String eval(String strEval) {
-      if (strEval.equals("_GET_MENU"))
-        return (jmolpopup == null ? "" : jmolpopup.getMenu("Jmol version " + Viewer.getJmolVersion()));
+      if (strEval.startsWith("_GET_MENU"))
+        return (jmolpopup == null ? "" : jmolpopup.getMenu("Jmol version " + Viewer.getJmolVersion() + "|" + strEval));
       sendConsoleMessage("javascript: " + strEval);
       return "# 'eval' is implemented only for the applet.";
     }

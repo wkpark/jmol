@@ -6633,8 +6633,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     statusManager.setCallbackFunction("menu", fileOrText);
   }
   
-  String getMenu() {
-    return statusManager.eval("_GET_MENU");
+  String getMenu(String type) {
+    return statusManager.eval("_GET_MENU|" + type);
   }
 
   void setListVariable(String name, Token value) {

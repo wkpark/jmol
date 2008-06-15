@@ -240,5 +240,37 @@ public class JmolPopupSwing extends JmolPopup {
 
   int availableProcessorsForNewerJvm() {
     return Runtime.getRuntime().availableProcessors();
-  }  
+  }
+
+  String getMenuCurrent() {
+    StringBuffer sb = new StringBuffer();
+    JPopupMenu main = (JPopupMenu) htMenus.get("popupMenu");
+    getMenuCurrent(sb, main, "PopupMenu");
+    return sb.toString();
+  }
+
+  private void getMenuCurrent(StringBuffer sb, JPopupMenu menu, String menuName) {
+    String name = menuName;
+    Component[] subMenus = ((JPopupMenu) menu).getComponents();
+    for (int i = 0; i < subMenus.length; i++) {
+      Object m = subMenus[i];
+      String flags;
+      if (m instanceof JMenu) {
+        JMenu jm = (JMenu) m;
+        name = jm.getName();
+        flags = "enabled:" + jm.isEnabled();
+        addCurrentItem(sb, name, jm.getText(), null, flags);
+        getMenuCurrent(sb, ((JMenu) m).getPopupMenu(), name);
+      } else if (m instanceof JMenuItem) {
+        JMenuItem jmi = (JMenuItem) m;
+        flags = "enabled:" + jmi.isEnabled();
+        if (m instanceof JCheckBoxMenuItem) 
+          flags += ";checked:" + ((JCheckBoxMenuItem)m).getState();
+        String script = fixScript(jmi.getName(), jmi.getActionCommand());
+        addCurrentItem(sb, jmi.getName(), jmi.getText(), script, flags);
+      } else {
+        addCurrentItem(sb, name, null, null, null);
+      }
+    }
+  }
 }

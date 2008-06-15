@@ -128,14 +128,38 @@ abstract public class JmolPopup {
   }
 
   void build(Object popupMenu) {
+    htMenus.put("popupMenu", popupMenu);
     addMenuItems("", "popupMenu", popupMenu, new PopupResourceBundle(menuStructure, menuText), viewer
         .isJvm12orGreater());
   }
 
   public String getMenu(String title) {
+    int pt = title.indexOf("|"); 
+    if (pt >= 0) {
+      String type = title.substring(pt);
+      title = title.substring(0, pt);
+      if (type.indexOf("current") >= 0) {
+        return getMenuCurrent();
+      }
+    }
     return (new PopupResourceBundle(menuStructure, null)).getMenu(title);
   }
   
+  abstract String getMenuCurrent();
+  
+  static protected void addCurrentItem(StringBuffer sb, String name, String label, String script, String flags) {
+    sb.append(script == null && label != null ? "M\t" : "I\t");
+    sb.append(name);
+    if(label == null) {
+      sb.append("\tSEP\n");
+      return;
+    }
+    sb.append("\t").append(label)
+        .append("\t").append(script == null || script.length() == 0 ? "-" : script)
+        .append("\t").append(flags)
+        .append("\n");
+  }
+
   final static int UPDATE_ALL = 0;
   final static int UPDATE_CONFIG = 1;
   final static int UPDATE_SHOW = 2;

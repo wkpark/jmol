@@ -1090,8 +1090,8 @@ public class Jmol implements WrappedApplet {
     }
 
     public String eval(String strEval) {
-      if (strEval.equals("_GET_MENU"))
-        return (jmolpopup == null ? "" : jmolpopup.getMenu("Jmol version " + Viewer.getJmolVersion()));
+      if (strEval.startsWith("_GET_MENU"))
+        return (jmolpopup == null ? "" : jmolpopup.getMenu("Jmol version " + Viewer.getJmolVersion() + "|" + strEval));
       if(!haveDocumentAccess)
         return "NO EVAL ALLOWED";
       JSObject jsoWindow = null; 

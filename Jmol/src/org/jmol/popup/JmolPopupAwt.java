@@ -205,5 +205,39 @@ public class JmolPopupAwt extends JmolPopup {
   
   void enableMenuItem(Object item, boolean enable) {
     ((MenuItem)item).setEnabled(enable);
-  }  
+  }
+  
+  String getMenuCurrent() {
+    StringBuffer sb = new StringBuffer();
+    PopupMenu main = (PopupMenu) htMenus.get("popupMenu");
+    getMenuCurrent(sb, main, "PopupMenu");
+    return sb.toString();
+  }
+
+  private void getMenuCurrent(StringBuffer sb, Menu menu, String menuName) {
+    String name = menuName;
+    String flags;
+    int itemCount = menu.getItemCount();
+    for (int i = 0; i < itemCount; i++) {
+      Object mio = menu.getItem(i);
+      if (mio instanceof Menu) {
+        Menu m = (Menu) mio;
+        name = m.getName();
+        flags = "enabled:" + m.isEnabled();
+        addCurrentItem(sb, name, m.getLabel(), null, flags);
+        getMenuCurrent(sb, m, name);
+      } else if (mio instanceof MenuItem) {
+        MenuItem mi = (MenuItem) mio;
+        String script = fixScript(mi.getName(), mi.getActionCommand());
+        String label = mi.getLabel();
+        flags = "enabled:" + mi.isEnabled();
+        if (mi instanceof CheckboxMenuItem) 
+          flags += ";checked:" + ((CheckboxMenuItem)mi).getState();
+        if (label == "-")
+          addCurrentItem(sb, name, null, null, null);
+        else          
+          addCurrentItem(sb, mi.getName(), label, script, flags);
+      }
+    }
+  }
 }

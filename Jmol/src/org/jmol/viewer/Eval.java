@@ -8998,7 +8998,7 @@ class Eval { //implements Runnable {
           value = viewer.getColorSchemeList(name, true);
       } else if (str.equalsIgnoreCase("menu")) {
         if (!isSyntaxCheck)
-          value = viewer.getMenu();
+          value = viewer.getMenu("");
       } else if (str.equalsIgnoreCase("strandCount")) {
         msg = "set strandCountForStrands " + viewer.getStrandCount(JmolConstants.SHAPE_STRANDS) 
           + "; set strandCountForMeshRibbon " + viewer.getStrandCount(JmolConstants.SHAPE_MESHRIBBON);

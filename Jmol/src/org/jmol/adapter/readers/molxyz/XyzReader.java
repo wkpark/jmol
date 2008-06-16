@@ -27,7 +27,6 @@ package org.jmol.adapter.readers.molxyz;
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 
-
 import java.io.BufferedReader;
 
 import org.jmol.util.Logger;
@@ -43,11 +42,19 @@ import org.jmol.util.Logger;
  *  
  *  extended to read XYZI files (Bob's invention -- allows isotope numbers)
  * 
+ * extended to read XYZ files with fractional charges as, for example:
+ * 
+ * http://www.ccl.net/cca/software/SOURCES/FORTRAN/molden/test/reacpth.xyz
+ * 
+ * http://web.archive.org/web/20000120031517/www.msc.edu/msc/docs/xmol/v1.3/g94toxyz.c
+ * 
+ * 
+ * 
  */
 
 public class XyzReader extends AtomSetCollectionReader {
-    
- public AtomSetCollection readAtomSetCollection(BufferedReader reader)  {
+
+  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("xyz");
     boolean iHaveAtoms = false;
@@ -71,13 +78,13 @@ public class XyzReader extends AtomSetCollectionReader {
     }
     return atomSetCollection;
   }
-    
+
   void skipAtomSet(int modelAtomCount) throws Exception {
     readLine(); //comment
-    for (int i = modelAtomCount; --i >=0; )
+    for (int i = modelAtomCount; --i >= 0;)
       readLine(); //atoms
   }
-  
+
   int readAtomCount() throws Exception {
     readLine();
     if (line != null) {
@@ -91,55 +98,71 @@ public class XyzReader extends AtomSetCollectionReader {
   void readAtomSetName() throws Exception {
     readLineTrimmed();
     checkLineForScript();
-//    newAtomSet(line); // makes that the titles of multi-xyz file gets messed up
+    //    newAtomSet(line); // makes that the titles of multi-xyz file gets messed up
     atomSetCollection.newAtomSet();
     atomSetCollection.setAtomSetName(line);
   }
 
-  final float[] chargeAndOrVector = new float[4];
-  final boolean isNaN[] = new boolean[4];
-  
   void readAtoms(int modelAtomCount) throws Exception {
     for (int i = 0; i < modelAtomCount; ++i) {
       readLine();
+      String[] tokens = getTokens();
+      if (tokens.length < 4) {
+        Logger.warn("line cannot be read for XYZ atom data: " + line);
+        continue;
+      }
       Atom atom = atomSetCollection.addNewAtom();
-      int isotope = parseInt(line);
-      String str = parseToken(line);
+      String str = tokens[0];
+      int isotope = parseInt(str);
       // xyzI
       if (isotope == Integer.MIN_VALUE) {
         atom.elementSymbol = str;
       } else {
-        str = str.substring((""+isotope).length());
-        atom.elementNumber = (short)((isotope << 7) + JmolAdapter.getElementNumber(str));
+        str = str.substring(("" + isotope).length());
+        atom.elementNumber = (short) ((isotope << 7) + JmolAdapter
+            .getElementNumber(str));
         atomSetCollection.setFileTypeName("xyzi");
       }
-      atom.x = parseFloat();
-      atom.y = parseFloat();
-      atom.z = parseFloat();
+      atom.x = parseFloat(tokens[1]);
+      atom.y = parseFloat(tokens[2]);
+      atom.z = parseFloat(tokens[3]);
       if (Float.isNaN(atom.x) || Float.isNaN(atom.y) || Float.isNaN(atom.z)) {
         Logger.warn("line cannot be read for XYZ atom data: " + line);
         atom.set(0, 0, 0);
       }
+      int vpt = 4;
       setAtomCoord(atom);
-      for (int j = 0; j < 4; ++j)
-        isNaN[j] =
-          Float.isNaN(chargeAndOrVector[j] = parseFloat());
-      if (isNaN[0])
+      switch (tokens.length) {
+      case 4:
+      case 6:
         continue;
-      if (isNaN[1]) {
-        atom.formalCharge = (int)chargeAndOrVector[0];
-        continue;
+      case 5:
+      case 8:
+        // accepts  sym x y z c
+        // accepts  sym x y z c vx vy vz
+        if ((str = tokens[4]).indexOf(".") >= 0) {
+          atom.partialCharge = parseFloat(str);
+        } else {
+          int charge = parseInt(str);
+          if (charge != Integer.MIN_VALUE)
+            atom.formalCharge = charge;
+        }        
+        if (tokens.length == 5)
+          continue;
+        vpt++;
+        //fall through:
+      default:
+         // accepts  sym x y z c vx vy vz
+         // or       sym x y z vx vy vz
+        float vx = parseFloat(tokens[vpt++]);
+        float vy = parseFloat(tokens[vpt++]);
+        float vz = parseFloat(tokens[vpt++]);
+        if (Float.isNaN(vx) || Float.isNaN(vy) || Float.isNaN(vz))
+          continue;
+        atom.vectorX = vx;
+        atom.vectorY = vy;
+        atom.vectorZ = vz;
       }
-      if (isNaN[3]) {
-        atom.vectorX = chargeAndOrVector[0];
-        atom.vectorY = chargeAndOrVector[1];
-        atom.vectorZ = chargeAndOrVector[2];
-        continue;
-      }
-      atom.formalCharge = (int)chargeAndOrVector[0];
-      atom.vectorX = chargeAndOrVector[1];
-      atom.vectorY = chargeAndOrVector[2];
-      atom.vectorZ = chargeAndOrVector[3];
     }
   }
 }

@@ -210,11 +210,11 @@ public class JmolPopupAwt extends JmolPopup {
   String getMenuCurrent() {
     StringBuffer sb = new StringBuffer();
     PopupMenu main = (PopupMenu) htMenus.get("popupMenu");
-    getMenuCurrent(sb, main, "PopupMenu");
+    getMenuCurrent(sb, 0, main, "PopupMenu");
     return sb.toString();
   }
 
-  private void getMenuCurrent(StringBuffer sb, Menu menu, String menuName) {
+  private static void getMenuCurrent(StringBuffer sb, int level, Menu menu, String menuName) {
     String name = menuName;
     String flags;
     int itemCount = menu.getItemCount();
@@ -224,8 +224,8 @@ public class JmolPopupAwt extends JmolPopup {
         Menu m = (Menu) mio;
         name = m.getName();
         flags = "enabled:" + m.isEnabled();
-        addCurrentItem(sb, name, m.getLabel(), null, flags);
-        getMenuCurrent(sb, m, name);
+        addCurrentItem(sb, 'M', level, name, m.getLabel(), null, flags);
+        getMenuCurrent(sb, level + 1, m, name);
       } else if (mio instanceof MenuItem) {
         MenuItem mi = (MenuItem) mio;
         String script = fixScript(mi.getName(), mi.getActionCommand());
@@ -234,9 +234,9 @@ public class JmolPopupAwt extends JmolPopup {
         if (mi instanceof CheckboxMenuItem) 
           flags += ";checked:" + ((CheckboxMenuItem)mi).getState();
         if (label == "-")
-          addCurrentItem(sb, name, null, null, null);
+          addCurrentItem(sb, 'S', level, name, null, null, null);
         else          
-          addCurrentItem(sb, mi.getName(), label, script, flags);
+          addCurrentItem(sb, 'I', level, mi.getName(), label, script, flags);
       }
     }
   }

@@ -956,9 +956,9 @@ public class Jmol implements WrappedApplet {
         break;
       case JmolConstants.CALLBACK_ECHO:
         if (!doCallback)
-          doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
-        if (!doCallback)
           consoleMessage(strInfo);
+        if (!doCallback)
+          doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
       case JmolConstants.CALLBACK_EVAL:
       case JmolConstants.CALLBACK_HOVER:
         break;

@@ -280,6 +280,7 @@ class Eval { //implements Runnable {
       if (script != "")
         runScript(script, null);
     } catch (ScriptException e) {
+      if (error)
       error = true;
       setErrorMessage(e.toString());
       scriptStatus(errorMessage);
@@ -4403,8 +4404,14 @@ class Eval { //implements Runnable {
     String errMsg = viewer.getOpenFileError(isAppend);
     // int millis = (int)(System.currentTimeMillis() - timeBegin);
     // Logger.debug("!!!!!!!!! took " + millis + " ms");
-    if (errMsg != null && !isScriptCheck)
-      evalError(errMsg);
+    if (errMsg != null && !isScriptCheck) {
+      if (errMsg.indexOf("file recognized as a script file:") >= 0) {
+        viewer.addLoadScript("-");
+        script(false);
+        return;
+      }
+      evalError(errMsg);      
+    }
 
     if (isAppend && (appendNew || nFiles > 1)) {
       viewer.setAnimationRange(-1, -1);
@@ -11379,10 +11386,17 @@ class Eval { //implements Runnable {
     private String message;
 
     ScriptException(String message) {
-      this.message = (message == null ? "" : message) + contextTrace();
-
-      if (!isSyntaxCheck)
-        Logger.error("eval ERROR: " + toString());
+      boolean isOK = false;
+      this.message = message;
+      if (message == null)
+        this.message = "";
+      else if (message.indexOf("file recognized as a script file:") >= 0)
+        isOK = true;
+      if (!isOK) {
+        this.message +=  contextTrace();
+        if (!isSyntaxCheck)
+          Logger.error("eval ERROR: " + toString());
+      }
     }
 
     public String toString() {

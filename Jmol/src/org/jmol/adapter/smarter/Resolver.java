@@ -31,7 +31,6 @@ import netscape.javascript.JSObject;
 
 import org.jmol.util.Logger;
 
-
 import java.util.Hashtable;
 
 public class Resolver {
@@ -114,6 +113,8 @@ public class Resolver {
       if (atomSetCollectionReaderName.indexOf("\n") >= 0)
         return "unrecognized file format for file " + fullName + "\n"
             + atomSetCollectionReaderName;
+      if (atomSetCollectionReaderName.equals("spt"))
+        return "file recognized as a script file: " + fullName + "\n";
       Logger.info("The Resolver thinks " + atomSetCollectionReaderName);
     }
     if (htParams == null)
@@ -237,6 +238,13 @@ public class Resolver {
       }
     }
 
+    for (int i = 0; i < lines.length; ++i)
+      if (lines[i].indexOf("# Jmol state") >= 0)
+        return "spt";
+
+    //check for spt as a last resort, but ahead of XML, just in case
+    //a web file is being returned with an XML header.
+    
     String header = llr.getHeader(0);
     String type = null;
     for (int i = 0; i < containsRecords.length; ++i) {
@@ -653,8 +661,15 @@ class LimitedLineReader {
       if (ch == '\r' && ichCurrent < cchBuf && buf[ichCurrent] == '\n')
         ++ichCurrent;
       int cchLine = ichCurrent - ichBeginningOfLine;
-      if (buf[ichBeginningOfLine] == '#') // flush comment lines;
+      if (buf[ichBeginningOfLine] == '#') {// flush comment lines;
+        if (buf.length < ichBeginningOfLine + 6 || 
+            buf[ichBeginningOfLine + 1] != ' '
+            || buf[ichBeginningOfLine + 2] != 'J'
+            || buf[ichBeginningOfLine + 3] != 'm'
+            || buf[ichBeginningOfLine + 4] != 'o'
+            || buf[ichBeginningOfLine + 5] != 'l')
         continue;
+      }
       StringBuffer sb = new StringBuffer(cchLine);
       sb.append(buf, ichBeginningOfLine, cchLine);
       return sb.toString();

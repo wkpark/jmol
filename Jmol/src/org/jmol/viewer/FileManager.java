@@ -146,6 +146,10 @@ public class FileManager {
   void addLoadScript(String script) {
     if (script == null)
       return;
+    if (script.equals("-")) {
+      loadScript = "";
+      return;
+    }
     loadScript += "  " + script + ";\n";  
   }
   

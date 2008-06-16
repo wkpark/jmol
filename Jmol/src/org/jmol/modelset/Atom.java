@@ -740,14 +740,16 @@ final public class Atom extends Point3fi {
   String getInfoXYZ(boolean useChimeFormat) {
     if (useChimeFormat) {
       String group3 = getGroup3();
-      char chainID = getChainID();    
+      char chainID = getChainID();
+      Point3f pt = (group.chain.modelSet.cellInfos == null ? null : getFractionalCoord());
       return "Atom: " + (group3 == null ? getElementSymbol() : getAtomName()) + " " + getAtomNumber() 
           + (group3 != null && group3.length() > 0 ? 
               (isHetero() ? " Hetero: " : " Group: ") + group3 + " " + getResno() 
               + (chainID != 0 && chainID != ' ' ? " Chain: " + chainID : "")              
               : "")
           + " Model: " + getModelNumber()
-          + " Coordinates: " + x + " " + y + " " + z;
+          + " Coordinates: " + x + " " + y + " " + z
+          + (pt == null ? "" : " Fractional: "  + pt.x + " " + pt.y + " " + pt.z); 
     }
     return getIdentity(true) + " " + x + " " + y + " " + z;
   }

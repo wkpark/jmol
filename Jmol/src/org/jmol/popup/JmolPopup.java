@@ -147,11 +147,10 @@ abstract public class JmolPopup {
   
   abstract String getMenuCurrent();
   
-  static protected void addCurrentItem(StringBuffer sb, String name, String label, String script, String flags) {
-    sb.append(script == null && label != null ? "M\t" : "I\t");
-    sb.append(name);
+  static protected void addCurrentItem(StringBuffer sb, char type, int level, String name, String label, String script, String flags) {
+    sb.append(type).append(level).append('\t').append(name);
     if(label == null) {
-      sb.append("\tSEP\n");
+      sb.append(".\n");
       return;
     }
     sb.append("\t").append(label)
@@ -804,7 +803,7 @@ abstract public class JmolPopup {
     }
   }
 
-  String fixScript(String id, String script) {
+  static String fixScript(String id, String script) {
     int pt;
     if (script == "" || id.endsWith("Checkbox"))
       return script;

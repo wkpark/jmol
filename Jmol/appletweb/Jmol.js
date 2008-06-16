@@ -59,6 +59,7 @@ try{if(typeof(_jmol)!="undefined")exit()
 // bh         -- adds jmolSetSyncId() and jmolGetSyncId()
 // bh 3/2008  -- adds jmolAppendInlineScript() and jmolAppendInlineArray()
 // bh 3/2008  -- fixes IE7 bug in relation to jmolLoadInlineArray()
+// Angel H. 6/2008  -- added html <label> tags to checkboxes and radio buttons [in jmolCheckbox() and _jmolRadio() functions]
 
 	  	
 var defaultdir = "."
@@ -182,7 +183,7 @@ function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
 	t += eospan
 	eospan = "";
   }
-  t += labelHtml +eospan;
+  t += "<label for=\"" + id + "\">" + labelHtml + "</label>" +eospan;
   if (_jmol.debugAlert)
     alert(t);
   return _jmolDocumentWrite(t);
@@ -891,7 +892,8 @@ function _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName, id, 
 	t += eospan
 	eospan = "";
   }
-  t += labelHtml +eospan + separatorHtml;
+  t += "<label for=\"" + id + "\">" + labelHtml + "</label>" +eospan + separatorHtml;
+
   return t;
 }
 

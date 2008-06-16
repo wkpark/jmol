@@ -398,8 +398,9 @@ abstract public class JmolPopup {
       if (nItems++ == 0 && addSeparator)
         addMenuSeparator(menu);
       int n = group3Counts[pt / 6];
-      String name = group3List.substring(pt + 2, pt + 5) + "  (" + n + ")";
-      addMenuItem(menu, name, null, getId(menu) + "." + name);
+      String heteroCode = group3List.substring(pt + 2, pt + 5);
+      String name = heteroCode + "  (" + n + ")";
+      addMenuItem(menu, name, "SELECT [" + heteroCode + "]", getId(menu) + "." + name);
       pt++;
     }
     return nItems;

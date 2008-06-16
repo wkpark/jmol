@@ -59,6 +59,7 @@ try{if(typeof(_jmol)!="undefined")exit()
 // bh         -- adds jmolSetSyncId() and jmolGetSyncId()
 // bh 3/2008  -- adds jmolAppendInlineScript() and jmolAppendInlineArray()
 // bh 3/2008  -- fixes IE7 bug in relation to jmolLoadInlineArray()
+// bh 6/2008  -- adds jmolSetAppletWindow()
 // Angel H. 6/2008  -- added html <label> tags to checkboxes and radio buttons [in jmolCheckbox() and _jmolRadio() functions]
 
 	  	
@@ -124,6 +125,10 @@ function jmolSetAppletColor(boxbgcolor, boxfgcolor, progresscolor) {
     alert(" boxbgcolor=" + _jmol.params.boxbgcolor +
           " boxfgcolor=" + _jmol.params.boxfgcolor +
           " progresscolor=" + _jmol.params.progresscolor);
+}
+
+function jmolSetAppletWindow(w) {
+  _jmol.appletWindow = w;
 }
 
 function jmolApplet(size, script, nameSuffix) {
@@ -498,6 +503,7 @@ var _jmol = {
   
   appletCount: 0,
   appletSuffixes: [],
+  appletWindow: null,
   
   buttonCount: 0,
   checkboxCount: 0,
@@ -643,6 +649,7 @@ with (_jmol) {
  doTranslate = true;
  haveSetTranslate = false;
 }
+
 
 function jmolSetCallback(callbackName,funcName) {
   _jmol.params[callbackName] = funcName
@@ -842,7 +849,7 @@ function _jmolSterilizeInline(model) {
 		2048 standard for GeoWall (http://geowall.geo.lsa.umich.edu/home.html)
 	*/
 
-if (allowedJmolSize==undefined) var allowedJmolSize = [25, 2048, 300]   // min, max, default (pixels)
+if (allowedJmolSize==undefined) var allowedJmolSize = [1, 2048, 300]   // min, max, default (pixels)
 function _jmolGetAppletSize(size) {
 	/*  AngelH, mar2007
 		Accepts single number or 2-value array, each one can be either:
@@ -899,7 +906,7 @@ function _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName, id, 
 
 function _jmolFindApplet(target) {
   // first look for the target in the current window
-  var applet = _jmolFindAppletInWindow(window, target);
+  var applet = _jmolFindAppletInWindow(_jmol.appletWindow != null ? _jmol.appletWindow : window, target);
   // THEN look for the target in child frames
   if (applet == undefined)
     applet = _jmolSearchFrames(window, target);
@@ -922,15 +929,18 @@ function _jmolSearchFrames(win, target) {
   var applet;
   var frames = win.frames;
   if (frames && frames.length) { // look in all the frames below this window
+   try{
     for (var i = 0; i < frames.length; ++i) {
       applet = _jmolSearchFrames(frames[i], target);
       if (applet)
-        break;
+        return applet;
     }
-  } else { // look for the applet in this window
-   applet = _jmolFindAppletInWindow(win, target)
+   }catch(e) {
+	if (_jmol.debugAlert)
+		alert("Jmol.js _jmolSearchFrames cannot access " + win.name + ".frame[" + i + "] consider using jmolSetAppletWindow()") 
+   }
   }
-  return applet;
+  return applet = _jmolFindAppletInWindow(win, target)
 }
 
 function _jmolFindAppletInWindow(win, target) {
@@ -952,7 +962,8 @@ function _jmolAddScript(script) {
   return index;
 }
 
-function _jmolClick(scriptIndex, targetSuffix) {
+function _jmolClick(scriptIndex, targetSuffix, elementClicked) {
+  _jmol.element = elementClicked;
   jmolScript(_jmol.scripts[scriptIndex], targetSuffix);
 }
 
@@ -1023,6 +1034,7 @@ function _jmolNotifyGroup(m, isOn){
 }
 
 function _jmolCbClick(ckbox, whenChecked, whenUnchecked, targetSuffix) {
+  _jmol.control = ckbox
   _jmolClick(ckbox.checked ? whenChecked : whenUnchecked, targetSuffix);
   if(_jmol.checkboxMasters[ckbox.id])
 	_jmolNotifyGroup(_jmol.checkboxMasters[ckbox.id], ckbox.checked)

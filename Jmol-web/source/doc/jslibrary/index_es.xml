@@ -395,6 +395,10 @@ Cada páginaCada página      </p>
 	  en forma de texto flotante o "<i>tooltip</i>"
 	  al detener el puntero del ratón sobre la casilla o su texto/etiqueta acompañante. 
 				</blockquote>
+	  <br/>
+	  <i>(Nuevo en Jmol 11.5.41)</i> La etiqueta estará rodeada por etiquetas <code>&lt;label&gt;</code>;
+	  el resultado es que haciendo clic sobre el texto de la etiqueta se consigue lo mismo
+	  que haciendo clic sobre la propia casilla.
 			</section>
 			<section title="jmolRadioGroup">
 				<code>
@@ -439,6 +443,10 @@ Cada páginaCada página      </p>
 	etiqueta, un parámetro HTML id de "span_" seguido del identificador del grupo,
 	de un guión bajo y de un número secuencial (comenzando por cero), y como
 	parámetro HTML title, el <code>title</code> del grupo (opcional).
+	  <br/>
+	  <i>(Nuevo en Jmol 11.5.41)</i> La etiqueta de cada opción estará rodeada por etiquetas <code>&lt;label&gt;</code>;
+	  el resultado es que haciendo clic sobre el texto de la etiqueta se consigue lo mismo
+	  que haciendo clic sobre el propio botón radio.
 				</blockquote>
 			</section>
 			<section title="jmolMenu">
@@ -808,6 +816,10 @@ Cada páginaCada página      </p>
 	  y un parámetro HTML title del <code>title</code> indicado.
 	Además, el botón tendrá el <code>id</code> indicado como su propio 
 	parámetro HTML id.
+	  <br/>
+	  <i>(Nuevo en Jmol 11.5.41)</i> La etiqueta estará rodeada por etiquetas <code>&lt;label&gt;</code>;
+	  el resultado es que haciendo clic sobre el texto de la etiqueta se consigue lo mismo
+	  que haciendo clic sobre el propio botón radio.
 				</blockquote>
 			</section>
 			<section title="jmolStartNewRadioGroup">
@@ -914,6 +926,23 @@ Cada páginaCada página      </p>
 		</li>
 				</ul>
 			</section>
+
+			<section title="jmolSetAppletWindow">
+				<code>jmolSetAppletWindow(ventanaDiana)</code>
+				<p><i>(Nuevo en Jmol 11.5.41)</i><br/>
+	Cada vez que se proporciona una instrucción de Jmol.js 
+	que requiere la interacción con la miniaplicación, debe primero localizarse el 
+	objeto miniaplicación. Para ello, deben examinarse varias ventanas
+	(o "marcos" de documento, si es que se usan). Por defecto, primero se busca
+	la miniaplicación en la ventana actual, luego en los marcos hijos y finalmente
+	en el marco superior y en sus descendientes. Aunque este procedimiento debería
+	de tener éxito, en ciertas circunstancias puede ser preferible indicar 
+	explícitamente qué ventana debe investigarse primero. Esto se hace utilizando
+	la instrucción jmolSetAppletWindow(). El parámetro <code>ventanaDiana</code> 
+	debe de ser un objeto de tipo ventana (o marco).
+				</p>
+			</section>
+			
 			<section title="jmolAppletInline">
 				<code>jmolAppletInline(tamaño, modeloEnLinea, <span class="optP">guión</span>, <span class="optP">sufijoNombre</span>)</code>
 				<p>

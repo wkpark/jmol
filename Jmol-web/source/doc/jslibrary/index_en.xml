@@ -383,6 +383,10 @@
 	  <br/>
 	  Browsers will hence show <code>title</code> as a tooltip when mouse pointer 
 	  stays over the checkbox or over its accompanying <code>labelHtml</code>. 
+	  <br/>
+	  <i>(New in Jmol 11.5.41)</i> The label will be surrounded by <code>&lt;label&gt;</code> tags;
+	  the effect is that clicking on the label text will have the same effect as 
+	  clicking on the checkbox itself.
 				</blockquote>
 			</section>
 			<section title="jmolRadioGroup">
@@ -426,6 +430,10 @@
 	  as its HTML id "span_" plus the group's id plus an underscore plus 
 	  a sequential number (starting at zero),
 	  and as its HTML title, the common <code>title</code> (optional).
+	  <br/>
+	  <i>(New in Jmol 11.5.41)</i> Each radio button label will be surrounded by <code>&lt;label&gt;</code> tags;
+	  the effect is that clicking on the label text will have the same effect as 
+	  clicking on the radio button itself.
 				</blockquote>
 			</section>
 			<section title="jmolMenu">
@@ -776,6 +784,10 @@
 	  and as their HTML title, the given <code>title</code> (optional).
 	In addition, the radio buttom itself will have the given <code>id</code> as its HTML id
 	(optional).
+	  <br/>
+	  <i>(New in Jmol 11.5.41)</i> The label will be surrounded by <code>&lt;label&gt;</code> tags;
+	  the effect is that clicking on the label text will have the same effect as 
+	  clicking on the radio button itself.
 				</blockquote>
 			</section>
 			<section title="jmolStartNewRadioGroup">
@@ -887,6 +899,23 @@
 		</li>
 				</ul>
 			</section>
+			
+			<section title="jmolSetAppletWindow">
+				<code>jmolSetAppletWindow(targetWindow)</code>
+				<p><i>(New in Jmol 11.5.41)</i><br/>
+	Whenever a Jmol.js command is given that requires interaction with the 
+	applet, the applet object must first be found. In order to do 
+	this, one or more windows (or document "frames" if employed) must be 
+	checked. By default, checking for the existence of the applet is 
+	carried out first in the current window, then in its child frames, and 
+	finally in the "top" frame and any of its children. While this should be
+	successful, in certain circumstances it may be preferable to explicitly 
+	identify which window to investigate first. This is done by using the
+	jmolSetAppletWindow() command. The <code>targetWindow</code> parameter must be 
+	a window (or frame) object.
+				</p>
+			</section>
+			
 			<section title="jmolAppletInline">
 				<code>jmolAppletInline(size, inlineModel, <span class="optP">script</span>, <span class="optP">nameSuffix</span>)</code>
 				<p>

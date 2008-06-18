@@ -98,7 +98,7 @@ public abstract class ShapeRenderer {
                             Point3i pt0, Point3i pt1) {
     pt0.set((int) p0.x, (int) p0.y, (int) p0.z );
     pt1.set((int) p1.x, (int) p1.y, (int) p1.z );
-    if (mad < 0)
+    if (widthPixels < 0)
       g3d.drawDottedLine(pt0, pt1);
     else
       g3d.fillCylinder(endcap, widthPixels, pt0, pt1);

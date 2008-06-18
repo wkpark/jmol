@@ -948,7 +948,8 @@ public class Draw extends MeshCollection {
         int mCount = (m.modelFlags == null ? 1 : modelCount);
         for (int iModel = mCount; --iModel >= 0;) {
           if (m.modelFlags != null && !m.modelFlags.get(iModel) 
-              || m.polygonIndexes == null || m.polygonIndexes[iModel] == null)
+              || m.polygonIndexes == null 
+              || iModel >= m.polygonIndexes.length || m.polygonIndexes[iModel] == null)
             continue;
           for (int iVertex = m.polygonIndexes[iModel].length; --iVertex >= 0;) {
             Point3f v = new Point3f();
@@ -1054,7 +1055,7 @@ public class Draw extends MeshCollection {
         && mesh.polygonIndexes[i].length > 0);
   }
   
-  private static String getVertexList(Mesh mesh, int iModel, int nVertices) {
+  private static String getVertexList(DrawMesh mesh, int iModel, int nVertices) {
     String str = "";
     try {
       if (iModel >= mesh.polygonIndexes.length)
@@ -1063,6 +1064,10 @@ public class Draw extends MeshCollection {
         Point3f pt = mesh.vertices[mesh.polygonIndexes[iModel][i]];
         if (pt.z == Float.MAX_VALUE || pt.z == -Float.MAX_VALUE) {
           str += (i == 0 ? " " : " ,") + "[" + (int) pt.x + " " + (int) pt.y + (pt.z < 0 ? " %]" : "]");
+        } else if (mesh.isVector && i == 1){
+          Point3f pt1 = new Point3f(pt);
+          pt1.sub(mesh.vertices[mesh.polygonIndexes[iModel][0]]);
+          str += " " + Escape.escape(pt1);
         } else {
           str += " " + Escape.escape(pt);
         }

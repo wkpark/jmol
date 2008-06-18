@@ -44,8 +44,6 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
       viewer.transformPointNoClip(vertices[i], screens[i]);
       zSum += screens[i].z;
     }
-    if (mad > 0 && mad < 2)
-      mad = 2;
     int widthPixels = mad;
     if (mad >= 20)
       widthPixels = viewer.scaleToScreen((int)(zSum / 8), mad);

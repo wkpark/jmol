@@ -1439,6 +1439,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       //applet is being destroyed
       clearScriptQueue();
       haltScriptExecution();
+      transformManager.setSpinOn(false);
       scriptManager.startCommandWatcher(false);
       g3d.destroy();
     }
@@ -2483,14 +2484,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //  file state
     if (isAll || type.equalsIgnoreCase("fileState"))
       s.append(fileManager.getState(sfunc));
+    // all state scripts (definitions, dataFrames, calculations, configurations, rebonding 
+    if (isAll || type.equalsIgnoreCase("definedState"))
+      s.append(modelSet.getDefinedState(sfunc, true));
     //  numerical values
     if (isAll || type.equalsIgnoreCase("variableState"))
       s.append(global.getState(sfunc));
     if (isAll || type.equalsIgnoreCase("dataState"))
       dataManager.getDataState(s, sfunc, modelSet.atoms, 
           getAtomCount(), modelSet.getAtomicPropertyState(-1, null));
-
-    //  definitions, connections, atoms, bonds, labels, echos, shapes
+    // connections, atoms, bonds, labels, echos, shapes
     if (isAll || type.equalsIgnoreCase("modelState"))
       s.append(modelSet.getState(sfunc, true));
     //  color scheme
@@ -5662,7 +5665,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setShowUnitCell(boolean value) {
-    setObjectMad(JmolConstants.SHAPE_UCCAGE, "unitcell", (short) (value ? -4
+    setObjectMad(JmolConstants.SHAPE_UCCAGE, "unitcell", (short) (value ? -2
         : 0));
     global.setParameterValue("showUnitCell", value);
   }

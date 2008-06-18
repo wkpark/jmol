@@ -540,7 +540,28 @@ abstract public class ModelSet extends ModelCollection {
    * methods for definining the state 
    * 
    ********************************************************/
- 
+
+  public String getDefinedState(StringBuffer sfunc, boolean isAll) {
+    int len = stateScripts.size();
+    if (len == 0)
+      return "";
+    StringBuffer commands = new StringBuffer();
+    if (isAll && sfunc != null) {
+      sfunc.append("  _setDefinedState;\n");
+      commands.append("function _setDefinedState();\n");
+    }
+    String cmd;
+
+    commands.append("\n");
+    for (int i = 0; i < len; i++)
+      if ((cmd = ((StateScript) stateScripts.get(i)).toString()).length() > 0)
+        commands.append("  ").append(cmd).append("\n");
+
+    if (sfunc != null)
+      commands.append("\nend function;\n\n");
+    return commands.toString();
+  }
+  
   public String getState(StringBuffer sfunc, boolean isAll) {
     StringBuffer commands = new StringBuffer();
     if (isAll && sfunc != null) {
@@ -552,14 +573,6 @@ abstract public class ModelSet extends ModelCollection {
     // connections
 
     if (isAll) {
-      int len = stateScripts.size();
-      if (len > 0) {
-        commands.append("\n");
-        for (int i = 0; i < len; i++)
-          if ((cmd = ((StateScript) stateScripts.get(i))
-              .toString()).length() > 0)
-            commands.append("  ").append(cmd).append("\n");
-      }
       for (int i = 0; i < bondCount; i++) {
         if ((bonds[i].order & JmolConstants.BOND_NEW) != 0
             || bonds[i].isHydrogen()) {

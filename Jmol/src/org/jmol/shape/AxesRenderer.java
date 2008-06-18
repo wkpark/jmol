@@ -75,7 +75,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
 
     int aFactor = (g3d.isAntialiased() ? 2 : 1);
     int slab = g3d.getSlab();
-    int widthPixels = (mad < 20 ? mad * aFactor : -1);
+    int widthPixels = (mad < 20 ? mad * aFactor : Integer.MIN_VALUE);
     if (isXY) {
       if (widthPixels < 0)
         widthPixels = (int) (mad > 500 ? 5 : mad / 100f);
@@ -92,7 +92,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
       
     } else {
       viewer.transformPointNoClip(axes.getOriginPoint(isDataFrame), originScreen);
-      if (widthPixels < 0)
+      if (widthPixels == Integer.MIN_VALUE)
         widthPixels = viewer.scaleToScreen((int)originScreen.z, mad);
       for (int i = nPoints; --i >= 0;)
         viewer.transformPointNoClip(axes.getAxisPoint(i, isDataFrame), axisScreens[i]);

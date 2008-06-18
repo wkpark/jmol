@@ -231,11 +231,21 @@ public class AminoMonomer extends AlphaMonomer {
       ptN = getNitrogenAtomPoint();
       vB = new Vector3f(ptN);
       vB.sub(ptCa);
+      break;
+    case 'x':
+      vB = new Vector3f(vA);
       
-      //System.out.print("TAMX");
-      //vB.set( (float)Math.random(), (float)Math.random(), (float)Math.random());
+      ptN = getNitrogenAtomPoint();
+      vA = new Vector3f(ptN);
+      vA.sub(ptCa);
+      break;
+    case 'y':
+      vB = new Vector3f(vA);
       
-      
+      ptN = getNitrogenAtomPoint();
+      vA = new Vector3f(ptN);
+      vA.sub(ptCa);
+      vA.cross(vA,vB);
       break;
     case 'p':
       //Bob's idea for a peptide plane frame

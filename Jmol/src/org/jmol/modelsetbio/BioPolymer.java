@@ -531,7 +531,8 @@ public abstract class BioPolymer extends Polymer {
             }
             // get dq or dq*
             if (ctype == 'e')
-              dq = q.mul(qprev.inv()); //NOT -- but gives plane!
+              dq = q.mul(qprev.inv()); // B * Ainv -- gives 2nd derivative as a rotation about X
+              // dq = qprev.mul(q.inv()); // A * Binv aka "q deriv. in inverse quaternion space"
             else 
               dq = qprev.inv().mul(q);
             // save this q as q'

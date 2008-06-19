@@ -399,29 +399,36 @@ public abstract class MouseManager implements KeyListener {
     timeCurrent = time;
     xCurrent = previousDragX = x;
     yCurrent = previousDragY = y;
-    if (!viewer.getInMotion())
-      viewer.setCursor(Viewer.CURSOR_MOVE);
-    viewer.setInMotion(true);
+    
+    
     if (pressedCount == 1)
       mouseSinglePressDrag(deltaX, deltaY, modifiers);
     else if (pressedCount == 2)
       mouseDoublePressDrag(deltaX, deltaY, modifiers);
   }
 
+  void checkMotion() {
+    if (!viewer.getInMotion())
+      viewer.setCursor(Viewer.CURSOR_MOVE);
+    viewer.setInMotion(true);
+  }
   void mouseSinglePressDrag(int deltaX, int deltaY, int modifiers) {
     //viewer.setStatusUserAction("mouseSinglePressDrag: " + modifiers);
     switch (modifiers & BUTTON_MODIFIER_MASK) {
     case LEFT:
+      checkMotion();
       viewer.rotateXYBy(deltaX, deltaY);
       break;
     case ALT_LEFT:
       if (viewer.allowRotateSelected()) {
+        checkMotion();
         viewer.rotateMolecule(deltaX, deltaY);
         break;
       }
     case SHIFT_LEFT:
     case ALT_SHIFT_LEFT:
       if (drawMode) {
+        checkMotion();
         viewer.checkObjectDragged(previousDragX, previousDragY, deltaX, deltaY,
             modifiers);
         break;
@@ -429,16 +436,17 @@ public abstract class MouseManager implements KeyListener {
     case MIDDLE:
       //      if (deltaY < 0 && deltaX > deltaY || deltaY > 0 && deltaX < deltaY)
       if (Math.abs(deltaY) > 5 * Math.abs(deltaX))
+        checkMotion();
         viewer.zoomBy(deltaY);
       //      if (deltaX < 0 && deltaY > deltaX || deltaX > 0 && deltaY < deltaX)
       if (Math.abs(deltaX) > 5 * Math.abs(deltaY))
+        checkMotion();
         viewer.rotateZBy(-deltaX);
       break;
     case SHIFT_RIGHT: // the one-button Mac folks won't get this gesture
-      viewer
-          .rotateZBy((Math.abs(deltaY) > 5 * Math.abs(deltaX) ? (xCurrent < viewer
-              .getScreenWidth() / 2 ? deltaY : -deltaY)
-              : 0)
+      checkMotion();
+      viewer.rotateZBy((Math.abs(deltaY) > 5 * Math.abs(deltaX) 
+          ? (xCurrent < viewer.getScreenWidth() / 2 ? deltaY : -deltaY) : 0)
               + (yCurrent > viewer.getScreenHeight() / 2 ? deltaX : -deltaX));
       break;
     case CTRL_ALT_LEFT:
@@ -451,6 +459,7 @@ public abstract class MouseManager implements KeyListener {
      * I submitted a bug to apple
      */
     case CTRL_RIGHT:
+      checkMotion();
       viewer.translateXYBy(deltaX, deltaY);
       break;
     case CTRL_SHIFT_LEFT:
@@ -469,6 +478,7 @@ public abstract class MouseManager implements KeyListener {
     case SHIFT_LEFT:
     case ALT_LEFT:
     case MIDDLE:
+      checkMotion();
       viewer.translateXYBy(deltaX, deltaY);
       break;
     case CTRL_SHIFT_LEFT:

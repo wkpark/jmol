@@ -66,7 +66,16 @@ public class Group {
   protected float phi = Float.NaN;
   protected float psi = Float.NaN;
   protected float omega = Float.NaN;
+  protected float straightness = Float.NaN;
 
+  public float getStraightness() {
+    return straightness;
+  }
+  
+  public void setStraightness(float straightness) {
+    this.straightness = straightness; 
+  }
+  
   public float getPhi() {
     return phi;
   }
@@ -382,5 +391,5 @@ public class Group {
   
   public Atom getLeadAtom() {
     return null; // but see Monomer class
-  }  
+  }
 }

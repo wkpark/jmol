@@ -165,10 +165,6 @@ public abstract class Monomer extends Group {
     return chain.getAtom(firstAtomIndex + offset);
   }
 
-  protected final Point3f getAtomPointFromOffsetIndex(int offsetIndex) {
-    return getAtomFromOffsetIndex(offsetIndex);
-  }
-
   protected final Atom getSpecialAtom(byte[] interestingIDs, byte specialAtomID) {
     for (int i = interestingIDs.length; --i >= 0; ) {
       int interestingID = interestingIDs[i];
@@ -214,7 +210,7 @@ public abstract class Monomer extends Group {
   }
 
   final Point3f getLeadAtomPoint() {
-    return getAtomPointFromOffsetIndex(0);
+    return getAtomFromOffsetIndex(0);
   }
 
   public final Atom getWingAtom() {
@@ -222,11 +218,11 @@ public abstract class Monomer extends Group {
   }
 
   public final Point3f getWingAtomPoint() {
-    return getAtomPointFromOffsetIndex(1);
+    return getAtomFromOffsetIndex(1);
   }
 
   final Point3f getPointAtomPoint() {
-    return getAtomPointFromOffsetIndex(3);
+    return getAtomFromOffsetIndex(3);
   }
 
   Atom getInitiatorAtom() {
@@ -322,9 +318,6 @@ public abstract class Monomer extends Group {
     return true;
   }
   
-  Quaternion getQuaternion(char qType) {
-    return null;
-  }
 }
   
 

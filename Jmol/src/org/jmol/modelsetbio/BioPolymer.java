@@ -31,6 +31,7 @@ import org.jmol.util.BitSetUtil;
 //import org.jmol.util.Escape;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 
 import javax.vecmath.Point3f;
@@ -463,18 +464,20 @@ public abstract class BioPolymer extends Polymer {
     return false;
   }
   
-  final public static void getPdbData(BioPolymer p, char ctype, int derivType, BitSet bsAtoms,
-                         StringBuffer pdbATOM, StringBuffer pdbCONECT) {
+  final public static void getPdbData(BioPolymer p, char ctype, char qtype,
+                                      int derivType, BitSet bsAtoms,
+                                      StringBuffer pdbATOM,
+                                      StringBuffer pdbCONECT, BitSet bsSelected) {
     int atomno = Integer.MIN_VALUE;
     Quaternion qlast = null;
     Quaternion qprev = null;
     Quaternion dq = null;
     Quaternion dqprev = null;
     Quaternion ddq = null;
-    float factor = (ctype == 'r' ? 1f : 10f);
+    float factor = (ctype == 'R' ? 1f : 10f);
     float x = 0, y = 0, z = 0, w = 0;
     //boolean isQuaternion = ("wxyz".indexOf(ctype) >= 0);
-    boolean isRamachandran = (ctype == 'r');
+    boolean isRamachandran = (ctype == 'R');
     if (isRamachandran && !p.calcPhiPsiAngles())
       return;
     /*
@@ -500,12 +503,17 @@ public abstract class BioPolymer extends Polymer {
      * w, x, y, z : which of the q-terms to expunge in order to display
      * the other three. 
      * 
-     */ 
-   
-    char qType = (isRamachandran ? 'c' : p.model.getModelSet().viewer.getQuaternionFrame()); 
+     * a : absolute (standard) derivative
+     * r : relative (commuted) derivative
+     * 
+     */
+
+    Atom aprev = null;
+    String strExtra = "";
+    boolean isRelativeAlias = (ctype == 'r');
     for (int m = 0; m < p.monomerCount; m++) {
       Monomer monomer = p.monomers[m];
-      if (bsAtoms.get(monomer.getLeadAtomIndex())) {
+      if (bsAtoms == null || bsAtoms.get(monomer.getLeadAtomIndex())) {
         Atom a = monomer.getLeadAtom();
         if (isRamachandran) {
           x = monomer.getPhi();
@@ -518,72 +526,128 @@ public abstract class BioPolymer extends Polymer {
             continue;
           w = a.getPartialCharge();
         } else {
-          Quaternion q = monomer.getQuaternion(qType);
+          char cid = monomer.getChainID();
+          String id = "" + monomer.getResno()
+              + (cid == '\0' ? "" : "" + cid);
+          Quaternion q = p.getQuaternion(m, qtype);
           if (q == null) {
             qlast = null;
             atomno = Integer.MIN_VALUE;
             continue;
           }
           if (derivType > 0) {
-            if (qprev == null) {
+            if (aprev == null) {
               qprev = q;
+              aprev = a;
               continue;
             }
             // get dq or dq*
-            if (ctype == 'e')
-              dq = q.mul(qprev.inv()); // B * Ainv -- gives 2nd derivative as a rotation about X
-              // dq = qprev.mul(q.inv()); // A * Binv aka "q deriv. in inverse quaternion space"
-            else 
+            if (isRelativeAlias) {
+              // ctype = 'r';
+              // relative quaterion derivative = Q(i_inverse) * Q(i+1) 
+              //  R = Q(i_inverse) * Q(i+1) * (0, v) * Q(i+1_inverse) * Q(i)
+              // used for aligning all standard amino acids along X axis 
+              // in the second derivative and in an ellipse in the first derivative
               dq = qprev.inv().mul(q);
+            } else {
+              // ctype = 'a' or 'w'
+              // the standard difference dq
+              // absolute quaterion derivative = Q(i+1) * Q(i_inverse) 
+              //  R = Q(i+1) * Q(i_inverse) * (0, v) * Q(i) * Q(i+1_inverse)
+              // used for definition of the local helical axis
+              dq = q.mul(qprev.inv());
+            }
             // save this q as q'
             qprev = q;
-            
             if (derivType == 2) {
               // SECOND derivative:
               if (dqprev == null) {
-                dqprev = dq;            
+                dqprev = dq;
+                aprev = a;
                 continue;
               }
-              ddq = dqprev.inv().mul(dq);
+              // standard second deriv.
+              ddq = dq.mul(dqprev.inv());
               dqprev = dq;
               q = ddq;
             } else {
               // first deriv:
               q = dq;
             }
-            
-            // save this dq as dq'
-            dqprev = dq;            
             if (q.q0 < 0)
               q = q.mul(-1);
-          } else if (qlast == null && q.q0 < 0) {
-            //initialize with a positive q0
-            q = q.mul(-1);
+            if (qlast != null && q.dot(qlast) < 0)
+              q = q.mul(-1);
+
+            if (derivType == 1 && aprev != null && qlast != null && ctype == 'w')
+              aprev.getGroup().setStraightness(getStraightness(id, qlast, q));
+            
+            // and assign a to aprev so that the proper 
+            // residue gets reported.
+            // without these next three lines, the first
+            // residues of helices and sheets are missed;
+            // with these lines, the last residues of 
+            // helices and sheets are missed
+            // (in terms of assigning structure from quaternions).
+            Atom atemp = a;
+            a = aprev;
+            aprev = atemp;
+            // save this dq as dq'
+            dqprev = dq;
+          } else {
+             if (qlast == null && q.q0 < 0) {
+               //initialize with a positive q0
+               q = q.mul(-1);
+             }
+             if (qlast != null && q.dot(qlast) < 0)
+               q = q.mul(-1);
           }
-          if (qlast != null && q.dot(qlast) < 0)
-            q = q.mul(-1);
           qlast = q;
+          Point3f ptCenter = (p instanceof AminoPolymer ? AminoPolymer
+              .getQuaternionFrameCenter((AminoMonomer) a.getGroup(), qtype)
+              : p instanceof NucleicPolymer ? NucleicPolymer
+                  .getQuaternionFrameCenter((NucleicMonomer) a.getGroup(),
+                      qtype) : new Point3f());
+          strExtra = TextFormat.sprintf("%8.3p%8.3p%8.3p",
+              new Object[] { new Point3f[] { ptCenter } });
+          if (qtype == 'n')
+            strExtra += TextFormat.sprintf(" %8.3p%8.3p%8.3p",
+                new Object[] { new Point3f[] { ((AminoPolymer) p)
+                    .getNHPoint((AminoMonomer) a.getGroup()) } });
           switch (ctype) {
-          case 's':
-          case 'w':
-          case 'e':
+          default:
             x = q.q1;
             y = q.q2;
             z = q.q3;
             w = q.q0;
             if (ctype == 's') {
-              String id = "" + monomer.getResno();
-              String strV = " VECTOR " + Escape.escape((Point3f)a) + " ";
+              if (bsSelected != null && !bsSelected.get(a.getAtomIndex()))
+                continue;
+              String strV = " VECTOR " + Escape.escape(ptCenter) + " ";
               int deg = (int) (Math.acos(w) * 360 / Math.PI);
               //this is the angle required to rotate the INITIAL FRAME to this position
-              if (deg < 0)
-                deg += 360;
-              strV = "draw qx" + id + strV + Escape.escape(q.getVector(0)) + " color red"
-                  + "\ndraw qy" + id + strV + Escape.escape(q.getVector(1)) + " color green"
-                  + "\ndraw qz" + id + strV + Escape.escape(q.getVector(2)) + " color blue"
-                  + "\ndraw qa" + id + strV + " {" + (x*2) + "," + (y*2) + "," + (z*2) + "} \">" + deg + "\" color yellow"
-                  + "\ndraw qb" + id + strV + " {" + (-x*2) + "," + (-y*2) + "," + (-z*2) + "} \">" + (deg < 0 ? -deg : 360 - deg) + "\" color yellow";
-              pdbATOM.append(strV + "\n");
+              //if (deg < 0)
+              //deg += 360;
+              if (deg > 180)
+                deg = deg - 360;
+              if (deg < -180)
+                deg = deg + 360;
+              int ndeg = -deg;
+              if (ndeg > 180)
+                ndeg = ndeg - 360;
+              if (ndeg < -180)
+                ndeg = ndeg + 360;
+
+              strV = "draw qx" + id + strV + Escape.escape(q.getVector(0))
+                  + " color red" + "\ndraw qy" + id + strV
+                  + Escape.escape(q.getVector(1)) + " color green"
+                  + "\ndraw qz" + id + strV + Escape.escape(q.getVector(2))
+                  + " color blue" + "\ndraw qa" + id + strV + " {" + (x * 2)
+                  + "," + (y * 2) + "," + (z * 2) + "} \">" + deg
+                  + "\" color yellow" + "\ndraw qb" + id + strV + " {"
+                  + (-x * 2) + "," + (-y * 2) + "," + (-z * 2) + "} \">" + ndeg
+                  + "\" color yellow\n";
+              pdbATOM.append(strV);
               continue;
             }
             break;
@@ -607,10 +671,13 @@ public abstract class BioPolymer extends Polymer {
             break;
           }
         }
+        if (pdbATOM == null)
+          continue;
         pdbATOM.append(a.formatLabel("ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
-        pdbATOM.append(TextFormat.sprintf("%8.3f%8.3f%8.3f%6.2f                %2s    \n", 
-            new String[] { a.getElementSymbol().toUpperCase() }, 
-            new float[]{ x * factor, y * factor, z * factor, w * factor }));
+        pdbATOM.append(TextFormat.sprintf(
+            "%8.3f%8.3f%8.3f%6.2f                %2s    %s\n", new String[] {
+                a.getElementSymbol().toUpperCase(), strExtra }, new float[] {
+                x * factor, y * factor, z * factor, w * factor }));
         if (atomno != Integer.MIN_VALUE) {
           pdbCONECT.append("CONECT");
           pdbCONECT.append(TextFormat.formatString("%5i", "i", atomno));
@@ -622,4 +689,15 @@ public abstract class BioPolymer extends Polymer {
       }
     }
   }
+  
+  private static float getStraightness(String id, Quaternion dqprev, Quaternion dq) {
+    float f = dqprev.getNormal().dot(dq.getNormal());
+    System.out.println(id + " " + f + " " + dqprev + " " + dq);
+    return f;
+  }
+
+  Quaternion getQuaternion(int m, char qtype) {
+    //implemented in AminoPolymer and NucleicPolymer
+    return null;
+  } 
 }

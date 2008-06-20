@@ -37,6 +37,7 @@ import org.jmol.util.CommandHistory;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Parser;
 
@@ -2029,6 +2030,8 @@ class Eval { //implements Runnable {
       propertyValue = atom.getBfactor100();
       return (propertyValue < 0 ? Integer.MAX_VALUE : asInt ? propertyValue
           : propertyValue / 100f);
+    case Token.straightness:
+      return atom.getStraightness();
     case Token.surfacedistance:
       viewer.getSurfaceDistanceMax();
       propertyValue = atom.getSurfaceDistance100();
@@ -3418,7 +3421,17 @@ class Eval { //implements Runnable {
           error(ERROR_invalidParameterOrder);
         atomSets[nAtomSets++] = expression(i);
         isBonds = isBondSet;
-        i = iToken; // the for loop will increment i
+        if (nAtomSets == 2) {
+          int pt = iToken;
+          for (int j = i; j < pt; j++)
+            if (tokAt(j) == Token.identifier
+                && parameterAsString(j).equals("_1")) {
+              expression2 = i;
+              break;
+            }
+          iToken = pt;
+        }
+        i = iToken;
         break;
       case Token.identifier:
       case Token.hbond:
@@ -3629,6 +3642,7 @@ class Eval { //implements Runnable {
     case Token.fixedtemp:
     case Token.formalCharge:
     case Token.partialCharge:
+    case Token.straightness:
     case Token.surfacedistance:
     case Token.vanderwaals:
     case Token.monomer:
@@ -4448,6 +4462,7 @@ class Eval { //implements Runnable {
   private void dataFrame(int datatype) throws ScriptException {
     String type = "";
     boolean isQuaternion = false;
+    boolean isDraw = false;
     boolean isDerivative = false;
     boolean isSecondDerivative = false;
     switch (datatype) {
@@ -4455,17 +4470,25 @@ class Eval { //implements Runnable {
       type = "ramachandran";
       break;
     case JmolConstants.JMOL_DATA_QUATERNION:
-      isDerivative = ((type = optParameterAsString(statementLength - 1))
-          .indexOf("deriv") == 0);
-      isSecondDerivative = (type.indexOf("derivative2") == 0);
-      type = (statementLength == 1 ? "w" : optParameterAsString(1));
-      if (isDerivative && statementLength == 2)
-        type = "w";
-      if (!Parser.isOneOf(type, "w;x;y;z;e")) // e "experimental derivative"
-        evalError("QUATERNION [w,x,y,z] [derivative]");
-      type = "quaternion " + type + (isDerivative ? " derivative" : "")
-          + (isSecondDerivative ? "2" : "");
       isQuaternion = true;
+      type = optParameterAsString(statementLength - 1).toLowerCase();
+      if (type.equalsIgnoreCase("draw")) {
+        isDraw = true;
+        break;
+      }
+      isDerivative = (type.indexOf("deriv") == 0 || type.indexOf("difference") == 0);
+      isSecondDerivative = (type.indexOf("derivative2") == 0 || type.indexOf("difference2") == 0);
+      type = (statementLength == 1 ? "w" : optParameterAsString(1));
+      if (isDerivative && statementLength == 2 || type.length() == 0)
+        type = "w";
+      type = type.substring(0, 1);
+      if (type == "a" || type == "r")
+        isDerivative = true;
+      if (!Parser.isOneOf(type, "w;x;y;z;r;a")) // a absolute; r relative
+        evalError("QUATERNION [w,x,y,z,a,r] [difference][2]");
+      type = "quaternion " + type + (isDerivative ? " difference" : "")
+          + (isSecondDerivative ? "2" : "") 
+          + " quaternionFrame: " + viewer.getQuaternionFrame();
       break;
     }
     if (isSyntaxCheck) //just in case we later add parameter options to this
@@ -4475,6 +4498,10 @@ class Eval { //implements Runnable {
     if (modelIndex < 0)
       error(ERROR_multipleModelsNotOK, type);
     modelIndex = viewer.getJmolDataSourceFrame(modelIndex);
+    if (isQuaternion && isDraw) {
+      runScript(viewer.getPdbData(modelIndex, "quaternion s"));
+      return;
+    }    
     int ptDataFrame = viewer.getJmolDataFrameIndex(modelIndex, type);
     if (isQuaternion && ptDataFrame < 0 && statementLength == 1)
       ptDataFrame = viewer.getJmolDataFrameIndex(modelIndex, "quaternion");
@@ -6185,6 +6212,9 @@ class Eval { //implements Runnable {
     if ((iToken = statementLength) >= 2) {
       clearPredefined(JmolConstants.predefinedVariable);
       switch (getToken(1).tok) {
+      case Token.straightness:
+        viewer.calculateStraightness();
+        return;
       case Token.surface:
         isSurface = true;
         //deprecated
@@ -7247,8 +7277,6 @@ class Eval { //implements Runnable {
       case Token.point3f:
       case Token.point4f:
       case Token.bitset:
-      case Token.quaternion:
-      case Token.ramachandran:
         rpn.addX(theToken);
         break;
       case Token.spec_seqcode:
@@ -7780,6 +7808,9 @@ class Eval { //implements Runnable {
             break;
           case Token.psi:
             fv = atom.getGroupPsi();
+            break;
+          case Token.straightness:
+            fv = atom.getStraightness();
             break;
           case Token.surfacedistance:
             viewer.getSurfaceDistanceMax();
@@ -8631,18 +8662,23 @@ class Eval { //implements Runnable {
     boolean isShow = false;
     boolean isExport = false;
     int quality = Integer.MIN_VALUE;
+    if (tok == Token.string) {
+      Token t = Token.getTokenFromName(Token.sValue(args[pt]));
+      if (t != null)
+        tok = t.tok;
+    }
     switch (tok) {
     case Token.quaternion:
       pt++;
       type2 = Token.sValue(tokenAt(pt, args)).toLowerCase();
-      if (Parser.isOneOf(type2, "w;x;y;z;s;e")) // s is draw script; e experimental
+      if (Parser.isOneOf(type2, "w;x;y;z;s;a;r")) // s is draw script; e experimental
         pt++;
       else
         type2 = "w";
       type2 = "quaternion " + type2;
       type = Token.sValue(tokenAt(pt, args));
-      if (type.indexOf("deriv") == 0) {
-        type2 += " derivative";
+      if (type.indexOf("deriv") == 0 || type.indexOf("difference") == 0) {
+        type2 += " difference";
         pt++;
       }
       type = "QUAT";
@@ -11802,6 +11838,7 @@ class Eval { //implements Runnable {
         return evaluateArray(args);
       case Token.cos:
       case Token.sin:
+      case Token.quaternion:
         return evaluateMath(args, tok);
       case Token.cross:
         return evaluateCross(args);
@@ -12233,6 +12270,19 @@ class Eval { //implements Runnable {
     }
 
     private boolean evaluateMath(Token[] args, int tok) throws ScriptException {
+      if (tok == Token.quaternion) {
+        // quaternion(vector, theta)
+        // quaternion (q0, q1, q2, q3)
+        if (args.length != 2 && args.length != 4 || args.length == 2
+            && args[0].tok != Token.point3f)
+          return false;
+        if (isSyntaxCheck)
+          return addX(new Point4f(0, 0, 0, 1));
+        return addX(args.length == 4 ? new Point4f(Token.fValue(args[0]), Token
+            .fValue(args[1]), Token.fValue(args[2]), Token.fValue(args[3]))
+            : (new Quaternion((Point3f) args[0].value, Token.fValue(args[1]))
+                .toPoint4f()));
+      }
       if (args.length != 1)
         return false;
       if (isSyntaxCheck)
@@ -12560,7 +12610,9 @@ class Eval { //implements Runnable {
         x2 = Token.selectItem(x2);
 
       if (op.tok == Token.opNot) 
-        return (isScriptCheck ? addX(true) 
+        return (isScriptCheck ? addX(true)
+            : x2.tok == Token.point4f ? // quaternion
+                addX((new Quaternion((Point4f) x2.value)).inv().toPoint4f())                
             : x2.tok == Token.bitset ? 
               addX(BitSetUtil.copyInvert(Token.bsSelect(x2), 
                 (x2.value instanceof BondSet ? viewer.getBondCount() 
@@ -12684,6 +12736,11 @@ class Eval { //implements Runnable {
           case Token.point3f:
             pt.add((Point3f) x2.value);
             return addX(pt);
+          case Token.point4f:
+           //extract {xyz}
+            Point4f pt4 = (Point4f) x2.value;
+            pt.add(new Point3f(pt4.x, pt4.y, pt4.z));
+            return addX(pt);
           default:
             float f = Token.fValue(x2);
             return addX(new Point3f(pt.x + f, pt.y + f, pt.z + f));
@@ -12712,6 +12769,11 @@ class Eval { //implements Runnable {
           case Token.point3f:
             pt.sub((Point3f) x2.value);
             return addX(pt);
+          case Token.point4f:
+            //extract {xyz}
+             Point4f pt4 = (Point4f) x2.value;
+             pt.sub(new Point3f(pt4.x, pt4.y, pt4.z));
+             return addX(pt);
           default:
             float f = Token.fValue(x2);
             return addX(new Point3f(pt.x - f, pt.y - f, pt.z - f));
@@ -12749,6 +12811,15 @@ class Eval { //implements Runnable {
             return addX(new Point3f(pt.x * f, pt.y * f, pt.z * f));
           }
         }
+        if (x1.tok == Token.point4f && x2.tok == Token.point4f) {
+          //quaternion multiplication
+          // note that Point4f is {x,y,z,w} so we use that for
+          // quaternion notation as well here. 
+          Quaternion q1 = new Quaternion((Point4f)x1.value);
+          Quaternion q = new Quaternion((Point4f)x2.value);
+          q = q1.mul(q);
+          return addX(new Point4f(q.q1, q.q2, q.q3, q.q0));
+        }
         return addX(Token.fValue(x1) * Token.fValue(x2));
       case Token.percent:
         // more than just modulus
@@ -12761,6 +12832,7 @@ class Eval { //implements Runnable {
         //  Point3f * Point3f  does dot product
         //  Point3f / Point3f  divides by magnitude
         //  float * Point3f gets magnitude
+        //  Point4f % n returns q0, q1, q2, q3, or theta
 
         s = null;
         int n = Token.iValue(x2);
@@ -12801,6 +12873,23 @@ class Eval { //implements Runnable {
           Point3f pt = new Point3f((Point3f) x1.value);
           viewer.toUnitCell(pt, new Point3f(n, n, n));
           return addX(pt);
+        case Token.point4f:
+          Point4f q = (Point4f) x1.value;
+          switch(n) {
+          case 0:
+            return addX(q.w);
+          case 1:
+            return addX(q.x);
+          case 2:
+            return addX(q.y);
+          case 3:
+            return addX(q.z);
+          case -1:
+            return addX(new Point3f(q.x, q.y, q.z));
+          case -2:
+          default:
+            return addX((new Quaternion(q)).getTheta());
+          }
         case Token.bitset:
           return addX(Token.bsSelect(x1, n));
         }

@@ -832,6 +832,15 @@ abstract public class ModelCollection extends BondCollection {
       }
   }
 
+  public void calculateStraightness() {
+    for (int i = modelCount; --i >= 0;) {
+      Model model = models[i];
+      int nPoly = model.getBioPolymerCount();
+      for (int p = 0; p < nPoly; p++)
+        model.bioPolymers[p].getPdbData('w','p', 1, null, null, null, null);
+    }
+  }
+
   static class Structure {
     String typeName;
     byte type;
@@ -885,7 +894,7 @@ abstract public class ModelCollection extends BondCollection {
    * 
    */
   private String getPdbData(String type, char ctype, int modelIndex,
-                            int derivType) {
+                            int derivType, BitSet bsSelected) {
     StringBuffer pdbCONECT = new StringBuffer();
     if (isJmolDataFrame(modelIndex))
       modelIndex = getJmolDataSourceFrame(modelIndex);
@@ -896,10 +905,11 @@ abstract public class ModelCollection extends BondCollection {
     BitSet bsAtoms = getModelAtomBitSet(modelIndex, false);
     int nPoly = model.getBioPolymerCount();
     for (int p = 0; p < nPoly; p++)
-        model.bioPolymers[p].getPdbData(ctype, derivType, bsAtoms, pdbATOM,
-            pdbCONECT);
+        model.bioPolymers[p].getPdbData(ctype, (ctype == 'R' ? 'R' 
+          : viewer.getQuaternionFrame()), derivType, bsAtoms,
+            pdbATOM, pdbCONECT, bsSelected);
     pdbATOM.append(pdbCONECT);
-    return (ctype == 's' ? "" : getProteinStructureState(bsAtoms, ctype == 'r')) 
+    return (ctype == 's' ? "" : getProteinStructureState(bsAtoms, ctype == 'R')) 
         + pdbATOM.toString();
   }
 
@@ -935,19 +945,20 @@ abstract public class ModelCollection extends BondCollection {
    * 
    *****************************/
 
-  public String getPdbData(int modelIndex, String type) {
+  public String getPdbData(int modelIndex, String type, BitSet bsSelected) {
     if (!models[modelIndex].isPDB)
       return null;
     char ctype = (type.length() > 11 && type.indexOf("quaternion ") >= 0 ? type
-        .charAt(11) : 'r');
-    int derivType = (type.indexOf(" derivative2") >= 0 ? 2 : type
-        .indexOf(" deriv") >= 0 ? 1 : 0);
-    String s = getPdbData(type, ctype, modelIndex, derivType);
-    if (s.length() == 0)
-      return "";
+        .charAt(11) : 'R');
+    int derivType = (type.indexOf(" derivative2") >= 0 ||type.indexOf(" difference2") >= 0 ? 2 
+        : type.indexOf(" deriv") >= 0 || type.indexOf(" diff") >= 0 ? 1 : 0);
+    String s = getPdbData(type, ctype, modelIndex, derivType, bsSelected);
+    if (s.length() == 0 || ctype == 's')
+      return s;
     String remark = "REMARK   6 Jmol PDB-encoded data: " + type
         + " data(x,y,z,charge)=";
     switch (ctype) {
+    default:
     case 'w':
       remark += "(x,y,z,w)";
       break;
@@ -960,7 +971,7 @@ abstract public class ModelCollection extends BondCollection {
     case 'z':
       remark += "(w,x,y,z)";
       break;
-    case 'r':
+    case 'R':
       remark += "(phi,psi,omega,partialCharge)";
       break;
     case 's':

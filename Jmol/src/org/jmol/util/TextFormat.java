@@ -27,6 +27,8 @@ package org.jmol.util;
 
 import java.text.DecimalFormat;
 
+import javax.vecmath.Point3f;
+
 public class TextFormat {
 
   private final static DecimalFormat[] formatters = new DecimalFormat[10];
@@ -125,24 +127,44 @@ public class TextFormat {
   public static String formatString(String strFormat, String key, int intT) {
     return formatString(strFormat, key, "" + intT, Float.NaN);
   }
-
   
+  public static String sprintf(String strFormat, Object[] values) {
+    if (values == null)
+      return strFormat;
+    for (int o = 0; o < values.length; o++)
+      if (values[o] != null) {
+        if (values[o] instanceof String[]) {
+          String[] sVal = (String[]) values[o];
+          for (int i = 0; i < sVal.length; i++)
+            strFormat = formatString(strFormat, "s", sVal[i], Float.NaN, true);
+        } else if (values[o] instanceof float[]) {
+          float[] fVal = (float[]) values[o];
+          for (int i = 0; i < fVal.length; i++)
+            strFormat = formatString(strFormat, "f", null, fVal[i], true);
+        } else if (values[o] instanceof int[]) {
+          int[] iVal = (int[]) values[o];
+          for (int i = 0; i < iVal.length; i++)
+            strFormat = formatString(strFormat, "d", "" + iVal[i], Float.NaN,
+                true);
+        } else if (values[o] instanceof Point3f[]) {
+          Point3f[] pVal = (Point3f[]) values[o];
+          for (int i = 0; i < pVal.length; i++) {
+            strFormat = formatString(strFormat, "p", null, pVal[i].x, true);
+            strFormat = formatString(strFormat, "p", null, pVal[i].y, true);
+            strFormat = formatString(strFormat, "p", null, pVal[i].z, true);
+          }
+        }
+      }
+    return strFormat;
+  }
+
   public static String sprintf(String strFormat, String[] sVal, float[] fVal) {
-    return sprintf(strFormat, sVal, fVal, null);
+    return sprintf(strFormat, new Object[] {sVal, fVal});
   }
   
   public static String sprintf(String strFormat, String[] sVal, float[] fVal, 
                                int[] iVal) {
-    if (sVal != null)
-      for (int i = 0; i < sVal.length; i++)
-        strFormat = formatString(strFormat, "s", sVal[i], Float.NaN, true);
-    if (fVal != null)
-      for (int i = 0; i < fVal.length; i++)
-        strFormat = formatString(strFormat, "f", null, fVal[i], true);
-    if (iVal != null)
-      for (int i = 0; i < iVal.length; i++)
-        strFormat = formatString(strFormat, "d", "" + iVal[i], Float.NaN, true);
-    return strFormat;
+    return sprintf(strFormat, new Object[] {sVal, fVal, iVal});
   }
 
   public static String formatString(String strFormat, String key, String strT,

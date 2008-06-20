@@ -23,9 +23,7 @@
  */
 package org.jmol.modelsetbio;
 
-
 import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
@@ -102,7 +100,7 @@ public class AminoMonomer extends AlphaMonomer {
   }
 
   Point3f getNitrogenAtomPoint() {
-    return getAtomPointFromOffsetIndex(N);
+    return getAtomFromOffsetIndex(N);
   }
 
   Atom getCarbonylCarbonAtom() {
@@ -110,7 +108,7 @@ public class AminoMonomer extends AlphaMonomer {
   }
 
   Point3f getCarbonylCarbonAtomPoint() {
-    return getAtomPointFromOffsetIndex(C);
+    return getAtomFromOffsetIndex(C);
   }
 
   Atom getCarbonylOxygenAtom() {
@@ -173,111 +171,12 @@ public class AminoMonomer extends AlphaMonomer {
         || isCursorOnTopOf(ccarbon, x, y, radiusEnd, competitor))
       closest[0] = alpha;
   }
-  
-  Quaternion getQuaternion(char qType) {
-    /*
-     * also NucleicMonomer
-     *  
-     * see:
-     * 
-     *  Hanson and Thakur: http://www.cs.indiana.edu/~hanson/  http://www.cs.indiana.edu/~sithakur/
-     *  
-     *  Albrecht, Hart, Shaw, Dunker: 
-     *  
-     *   Contact Ribbons: a New Tool for Visualizing Intra- and Intermolecular Interactions in Proteins
-     *   Electronic Proceedings for the 1996 Pacific Symposium on Biocomputing
-     *   http://psb.stanford.edu/psb-online/proceedings/psb96/albrecht.pdfx
-     *   
-     *  Kneller and Calligari:
-     *  
-     *   Efficient characterization of protein secondary structure in terms of screw motion
-     *   Acta Cryst. (2006). D62, 302-311    [ doi:10.1107/S0907444905042654 ]
-     *   http://scripts.iucr.org/cgi-bin/paper?ol5289
-     * 
-     *  Wang and Zang:
-     *   
-     *   Protein secondary structure prediction with Bayesian learning method
-     *   http://cat.inist.fr/?aModele=afficheN&cpsidt=15618506
-     *
-     *  Geetha:
-     *  
-     *   Distortions in protein helices
-     *   International Journal of Biological Macromolecules, Volume 19, Number 2, August 1996 , pp. 81-89(9)
-     *   http://www.ingentaconnect.com/content/els/01418130/1996/00000019/00000002/art01106
-     *   DOI: 10.1016/0141-8130(96)01106-3
-     *    
-     *  Kavraki:
-     *  
-     *   Representing Proteins in Silico and Protein Forward Kinematics
-     *   http://cnx.org/content/m11621/latest
-     *   
-     */
 
-    Point3f ptC = getCarbonylCarbonAtomPoint();
-    Point3f ptCa = getLeadAtomPoint();
-    Point3f ptN;
-    Vector3f vA, vB;
-    Monomer[] monomers;
-    AminoMonomer m;
-    
-    //vA = ptC - ptCa
-    vA = new Vector3f(ptC);
-    vA.sub(ptCa);
-
-    switch (qType) {
-    default:
-    case 'c':
-      //vB = ptN - ptCa
-      ptN = getNitrogenAtomPoint();
-      vB = new Vector3f(ptN);
-      vB.sub(ptCa);
-      break;
-    case 'x':
-      vB = new Vector3f(vA);
-      
-      ptN = getNitrogenAtomPoint();
-      vA = new Vector3f(ptN);
-      vA.sub(ptCa);
-      break;
-    case 'y':
-      vB = new Vector3f(vA);
-      
-      ptN = getNitrogenAtomPoint();
-      vA = new Vector3f(ptN);
-      vA.sub(ptCa);
-      vA.cross(vA,vB);
-      break;
-    case 'p':
-      //Bob's idea for a peptide plane frame
-      //vB = ptN' - ptC
-      monomers = (Monomer[]) bioPolymer.getMonomers();
-      if (monomerIndex == monomers.length - 1)
-        return null;
-      m = (AminoMonomer) monomers[monomerIndex + 1];
-      ptN = m.getNitrogenAtomPoint();
-      vB = new Vector3f(ptN);
-      vB.sub(ptC);
-      ptCa = getLeadAtomPoint();
-      System.out.println("draw monomer"+monomerIndex +"vB VECTOR {" + ptCa.x + "," + ptCa.y + "," + ptCa.z + "} {" + vB.x + "," + vB.y + "," + vB.z + "}");
-      break;
-    case 'q':
-      /* alternative frame from J.R.Quine, J. Mol. Struc. (Theochem) 460 (1999) 53-66
-       * does not work, because Ca-->C and N'-->Ca' are almost colinear
-       */
-      //vB = ptCa' - ptN'
-      monomers = (Monomer[]) bioPolymer.getMonomers();
-      if (monomerIndex == monomers.length - 1)
-        return null;
-      m = (AminoMonomer) monomers[monomerIndex + 1];
-      ptN = m.getNitrogenAtomPoint();
-      ptCa = m.getLeadAtomPoint();
-      vB = new Vector3f(ptCa);
-      vB.sub(ptN);
-      ptCa = getLeadAtomPoint();
-      System.out.println("draw monomer"+monomerIndex +"vB VECTOR {" + ptCa.x + "," + ptCa.y + "," + ptCa.z + "} {" + vB.x + "," + vB.y + "," + vB.z + "}");
-      break;
-    }
-    return Quaternion.getQuaternionFrame(vA, vB);
+  void setNitrogenHydrogenPoint(Point3f aminoHydrogenPoint) {
+    nitrogenHydrogenPoint = new Point3f(aminoHydrogenPoint);
   }
   
+  Point3f getNitrogenHydrogenPoint() {
+    return nitrogenHydrogenPoint;
+  }
 }

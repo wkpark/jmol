@@ -245,7 +245,7 @@ public class Token {
   final static int gotocmd       = command | 114;
   final static int invertSelected = command | 115 | numberOrExpression;
   final static int rotateSelected = command | 116 | numberOrExpression;
-  final static int quaternion     = command | 117 | expression;
+  //final static int quaternion     = command | 117 | expression; mathfunc
   final static int ramachandran   = command | 118 | expression;
   final static int sync           = command | 119;
   final static int print          = command | 120 | implicitExpression;
@@ -417,10 +417,10 @@ public class Token {
   final static int radius               = atomproperty | 17 | setparam;
   final static int resno                = atomproperty | 18;
   final public static int site          = atomproperty | 19;
-  final public static int structure     = atomproperty | 20 | command | embeddedExpression;
-  final static int symop                = atomproperty | 21;
-  final public static int vanderwaals   = atomproperty | 22 | settable;
-  final public static int valence       = atomproperty | 23 | settable;
+  final public static int structure     = atomproperty | 21 | command | embeddedExpression;
+  final static int symop                = atomproperty | 22;
+  final public static int vanderwaals   = atomproperty | 23 | settable;
+  final public static int valence       = atomproperty | 24 | settable;
 
   final public static int atomX           = atompropertyfloat | 0 | settable;
   final public static int atomY           = atompropertyfloat | 1 | settable;
@@ -431,11 +431,12 @@ public class Token {
   final public static int partialCharge   = atompropertyfloat | 6 | settable;
   final static int phi                    = atompropertyfloat | 7;
   final static int psi                    = atompropertyfloat | 8;
-  final static int surfacedistance        = atompropertyfloat | 9;
-  final public static int temperature     = atompropertyfloat |10 | settable;
-  final public static int vibX            = atompropertyfloat |11 | settable;
-  final public static int vibY            = atompropertyfloat |12 | settable;
-  final public static int vibZ            = atompropertyfloat |13 | settable;
+  final public static int straightness    = atompropertyfloat | 9;
+  final static int surfacedistance        = atompropertyfloat |10;
+  final public static int temperature     = atompropertyfloat |11 | settable;
+  final public static int vibX            = atompropertyfloat |12 | settable;
+  final public static int vibY            = atompropertyfloat |13 | settable;
+  final public static int vibZ            = atompropertyfloat |14 | settable;
 
 
   // mathfunc               means x = somefunc(a,b,c)
@@ -482,6 +483,7 @@ public class Token {
   final static int random       = 1  | 2 << 3 | mathfunc;
   final static int data         = 2  | 2 << 3 | mathfunc | command;
   final static int cross        = 3  | 2 << 3 | mathfunc;
+  final static int quaternion   = 4  | 2 << 3 | mathfunc | command;
 
   // ___.xxx(a,b)
 
@@ -1372,6 +1374,7 @@ public class Token {
     "solvent",          new Token(solvent),
     "specialPosition",  new Token(specialposition),
     "split",            new Token(split),
+    "straightness",     new Token(straightness),
     "sub",              new Token(sub),
     "substructure",     new Token(substructure),
     "surface",          new Token(surface),

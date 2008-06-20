@@ -1496,14 +1496,16 @@ final public class JmolConstants {
   public final static byte PALETTE_TYPE = 18;  //b0001 0010
   public final static byte PALETTE_PROPERTY = 19 | PALETTE_VOLATILE;  //b0001 0011
   public final static byte PALETTE_VARIABLE = 20 | PALETTE_VOLATILE;  //b0001 0011
-  
+
+  public final static byte PALETTE_STRAIGHTNESS = 21;
+
   private final static String[] paletteNames = {
     /* 0 */ "none", "cpk", "partialcharge", "formalcharge", "temperature",  
     /* 5 */ "fixedtemperature", "surfacedistance", "structure", "amino", 
     /* 9 */ "shapely", "chain", "group", "monomer", "molecule", "altloc", 
     /*15 */ "insertion", "jmol", "rasmol", 
     /*18 */ "type" /* hbonds only */, 
-    /*19 */ "property", "variable", 
+    /*19 */ "property", "variable", "straightness" 
    };
    
   private final static byte[] paletteIDs = {
@@ -1532,6 +1534,7 @@ final public class JmolConstants {
     
     PALETTE_PROPERTY,
     PALETTE_VARIABLE,
+    PALETTE_STRAIGHTNESS,
     };
    
   

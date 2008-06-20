@@ -549,6 +549,10 @@ final public class Atom extends Point3fi {
      return partialCharges == null ? 0 : partialCharges[atomIndex];
    }
 
+   public float getStraightness() {
+     return group.getStraightness();
+   }
+
    public Object[] getEllipsoid() {
      return group.chain.modelSet.getEllipsoid(atomIndex);
    }

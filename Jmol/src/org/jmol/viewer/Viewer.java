@@ -1804,6 +1804,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // delegated to ModelManager
   // ///////////////////////////////////////////////////////////////
 
+  public void calculateStraightness() {
+    modelSet.calculateStraightness();
+  }
+
   public Point3f[] calculateSurface(BitSet bsSelected, float envelopeRadius) {
     if (bsSelected == null) bsSelected = selectionManager.bsSelection;
     addStateScript("calculate surfaceDistance "
@@ -6234,7 +6238,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
 
   String getPdbData(int modelIndex, String type) {
-    return modelSet.getPdbData(modelIndex, type);
+    return modelSet.getPdbData(modelIndex, type, selectionManager.bsSelection);
   }
 
   public boolean isJmolDataFrame(int modelIndex) {
@@ -6720,5 +6724,4 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void setQuaternionFrame(String qType) {
     global.quaternionFrame = "" + (qType.toLowerCase()+"c").charAt(0);
   }
-
 }

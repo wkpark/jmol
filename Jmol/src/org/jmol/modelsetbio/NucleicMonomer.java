@@ -25,7 +25,6 @@
 package org.jmol.modelsetbio;
 
 import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
@@ -33,17 +32,17 @@ import org.jmol.viewer.JmolConstants;
 
 public class NucleicMonomer extends PhosphorusMonomer {
 
-  private final static byte C6 = 1;
+  final static byte C6 = 1;
   private final static byte O2Pr = 2;
   private final static byte C5 = 3;
   private final static byte N1 = 4;
-  private final static byte C2 = 5;
+  final static byte C2 = 5;
   private final static byte N3 = 6;
-  private final static byte C4 = 7;
+  final static byte C4 = 7;
   private final static byte O2 = 8;
   private final static byte N7 = 9;
-  private final static byte C8 = 10;
-  private final static byte N9 = 11;  
+  final static byte C8 = 10;
+  final static byte N9 = 11;  
   private final static byte O4 = 12;
   private final static byte O6 = 13;
   private final static byte N4 = 14;
@@ -285,54 +284,4 @@ public class NucleicMonomer extends PhosphorusMonomer {
       }
   }
  
- Quaternion getQuaternion(char qType) {
-   /*
-    * also AminoMonomer
-    *   
-    */
-    
-   /*
-   Point3f ptP = getP(); 
-   Point3f ptO1P = getO1P();
-   Point3f ptO2P = getO2P();
-   if(ptP == null || ptO1P == null || ptO2P == null)
-     return null;
-   //vA = ptO1P - ptP
-   Vector3f vA = new Vector3f(ptO1P);
-   vA.sub(ptP);
-   
-   //vB = ptO2P - ptP
-   Vector3f vB = new Vector3f(ptO2P);
-   vB.sub(ptP);
-   return Quaternion.getQuaternionFrame(vA, vB);   
-   
-   */
-   
-   if (getLeadAtom().getElementSymbol() != "P")
-     return null;
-   Point3f ptA, ptB, ptN;
-   if (isPurine) {
-     ptN = getAtomFromOffsetIndex(N9);
-     ptA = getAtomFromOffsetIndex(C4);
-     ptB = getAtomFromOffsetIndex(C8);
-   } else {
-     ptN = getAtomFromOffsetIndex(N1);
-     ptA = getAtomFromOffsetIndex(C2);
-     ptB = getAtomFromOffsetIndex(C6);
-   }
-   if(ptN == null || ptA == null || ptB == null)
-     return null;
-
-   Vector3f vA = new Vector3f(ptA);
-   vA.sub(ptN);
-   
-   Vector3f vB = new Vector3f(ptB);
-   vB.sub(ptN);
-   //vA.set(1f, 0.2f, 0f);
-   //vB.set(-0.2f, 1f, 0f);
-   return Quaternion.getQuaternionFrame(vA, vB);
- }
-   
- 
-
 }

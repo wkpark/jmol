@@ -145,7 +145,7 @@ class ColorManager {
           lo, hi, ColorEncoder.BWR);
     case JmolConstants.PALETTE_STRAIGHTNESS:
       return ColorEncoder.getColorIndexFromPalette(atom.getStraightness(), 
-          -1, 1, ColorEncoder.BWR);
+          0, 1, ColorEncoder.BWR);
     case JmolConstants.PALETTE_SURFACE:
       hi = viewer.getSurfaceDistanceMax();
       return ColorEncoder.getColorIndexFromPalette(atom.getSurfaceDistance100(), 

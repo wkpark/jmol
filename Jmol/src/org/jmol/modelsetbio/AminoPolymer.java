@@ -127,7 +127,8 @@ public class AminoPolymer extends AlphaPolymer {
     vNH.normalize();
     aminoHydrogenPoint.add(nitrogenPoint, vNH);
     residue.setNitrogenHydrogenPoint(aminoHydrogenPoint);
-    System.out.println("draw pta" + i + " {" + aminoHydrogenPoint.x + " " + aminoHydrogenPoint.y + " " + aminoHydrogenPoint.z + "} color red#aminoPolymer.calchbonds");
+    if (Logger.debugging)
+      Logger.info("draw pta" + i + " {" + aminoHydrogenPoint.x + " " + aminoHydrogenPoint.y + " " + aminoHydrogenPoint.z + "} color red#aminoPolymer.calchbonds");
     return true;
   }
 

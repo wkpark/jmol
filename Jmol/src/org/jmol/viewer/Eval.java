@@ -2031,7 +2031,8 @@ class Eval { //implements Runnable {
       return (propertyValue < 0 ? Integer.MAX_VALUE : asInt ? propertyValue
           : propertyValue / 100f);
     case Token.straightness:
-      return atom.getStraightness();
+      propertyValue = atom.getStraightness();
+      return asInt ? propertyValue * 100 : propertyValue;
     case Token.surfacedistance:
       viewer.getSurfaceDistanceMax();
       propertyValue = atom.getSurfaceDistance100();
@@ -5381,7 +5382,6 @@ class Eval { //implements Runnable {
   }
 
   private void selectX() throws ScriptException {
-    // NOTE this is called by restrict()
     if (statementLength == 1) {
       viewer.select(null, tQuiet || scriptLevel > scriptReportingLevel);
       return;
@@ -6213,7 +6213,8 @@ class Eval { //implements Runnable {
       clearPredefined(JmolConstants.predefinedVariable);
       switch (getToken(1).tok) {
       case Token.straightness:
-        viewer.calculateStraightness();
+        if (!isSyntaxCheck)
+          viewer.calculateStraightness();
         return;
       case Token.surface:
         isSurface = true;
@@ -7836,15 +7837,21 @@ class Eval { //implements Runnable {
             error(ERROR_unrecognizedAtomProperty, Token.nameOf(tok));
           }
 
-          if (fv != Float.MAX_VALUE) {
+          if (fv == Float.MAX_VALUE) {
+            n--; //don't count this one
+          } else {
             if (isAll)
               list[i] = fv;
-            else if (isMin)
-              fvMin = Math.min(fvMin, fv);
-            else if (isMax)
-              fvMax = Math.max(fvMax, fv);
-            else
-              fvAvg += fv;
+            else if (Float.isNaN(fv)) {
+              n--; //don't count this one
+            } else {
+              if (isMin)
+                fvMin = Math.min(fvMin, fv);
+              else if (isMax)
+                fvMax = Math.max(fvMax, fv);
+              else
+                fvAvg += fv;
+            }
           }
           if (ptAtom >= 0)
             i = count;

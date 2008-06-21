@@ -1497,7 +1497,7 @@ final public class JmolConstants {
   public final static byte PALETTE_PROPERTY = 19 | PALETTE_VOLATILE;  //b0001 0011
   public final static byte PALETTE_VARIABLE = 20 | PALETTE_VOLATILE;  //b0001 0011
 
-  public final static byte PALETTE_STRAIGHTNESS = 21;
+  public final static byte PALETTE_STRAIGHTNESS = 21 | PALETTE_VOLATILE;
 
   private final static String[] paletteNames = {
     /* 0 */ "none", "cpk", "partialcharge", "formalcharge", "temperature",  

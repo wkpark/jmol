@@ -580,7 +580,7 @@ public abstract class BioPolymer extends Polymer {
               q = q.mul(-1);
 
             if (derivType == 1 && aprev != null && qlast != null && ctype == 'w')
-              aprev.getGroup().setStraightness(getStraightness(id, qlast, q));
+              aprev.getGroup().setStraightness(getStraightness(qlast, q));
             
             // and assign a to aprev so that the proper 
             // residue gets reported.
@@ -690,9 +690,9 @@ public abstract class BioPolymer extends Polymer {
     }
   }
   
-  private static float getStraightness(String id, Quaternion dqprev, Quaternion dq) {
+  private static float getStraightness(Quaternion dqprev, Quaternion dq) {
     float f = dqprev.getNormal().dot(dq.getNormal());
-    System.out.println(id + " " + f + " " + dqprev + " " + dq);
+    //System.out.println(id + " " + f + " " + dqprev + " " + dq);
     return f;
   }
 

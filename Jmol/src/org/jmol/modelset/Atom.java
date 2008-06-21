@@ -1070,6 +1070,7 @@ final public class Atom extends Point3fi {
          case 'S': crystallographic Site
          case 's': strand (chain)
          case 't': temperature factor
+         case 'T': straighTness
          case 'U': identity
          case 'u': sUrface distance
          case 'v': vibration x, y, or z  vx vy vz
@@ -1095,12 +1096,6 @@ final public class Atom extends Point3fi {
           ich++;
         }
         switch (ch) {
-        case 'i':
-          strT = "" + getAtomNumber();
-          break;
-        case 'l':
-          strT = "" + getElementNumber();
-          break;
         case 'A':
           strT = (alternateLocationID != 0 ? ((char) alternateLocationID) + ""
               : "");
@@ -1108,33 +1103,8 @@ final public class Atom extends Point3fi {
         case 'a':
           strT = getAtomName();
           break;
-        case 'e':
-          strT = getElementSymbol();
-          break;
-        case 'E':
-          ch = getInsertionCode();
-          strT = (ch == '\0' ? "" : "" + ch);
-          break;
-        case 'g':
-          strT = "" + getSelectedGroupIndexWithinChain();
-          break;
-        case 'x':
-          floatT = x;
-          break;
-        case 'y':
-          floatT = y;
-          break;
-        case 'z':
-          floatT = z;
-          break;
-        case 'X':
-        case 'Y':
-        case 'Z':
-          floatT = getFractionalCoord(ch);
-          break;
-        case 'D':
-          strT = "" + (indices == null ? atomIndex : indices[atomIndex]);
-          break;
+//        case 'b': // see 't'
+//        case 'c': // see 's'
         case 'C':
           int formalCharge = getFormalCharge();
           if (formalCharge > 0)
@@ -1144,17 +1114,92 @@ final public class Atom extends Point3fi {
           else
             strT = "0";
           break;
+        case 'D':
+          strT = "" + (indices == null ? atomIndex : indices[atomIndex]);
+          break;
+        case 'e':
+          strT = getElementSymbol();
+          break;
+        case 'E':
+          ch = getInsertionCode();
+          strT = (ch == '\0' ? "" : "" + ch);
+          break;
+        case 'f':
+          floatT = getGroupPhi();
+          break;
+        case 'g':
+          strT = "" + getSelectedGroupIndexWithinChain();
+          break;
+        case 'I':
+          floatT = getBondingRadiusFloat();
+          break;
+        case 'i':
+          strT = "" + getAtomNumber();
+          break;
+        case 'L':
+          strT = "" + getPolymerLength();
+          break;
+        case 'l':
+          strT = "" + getElementNumber();
+          break;
+        case 'M':
+          strT = getModelNumberForLabel();
+          break;
+        case 'm':
+          strT = getGroup1();
+          break;
+        case 'N':
+          strT = "" + getMoleculeNumber();
+          break;
+        case 'n':
+          strT = getGroup3();
+          if (strT == null || strT.length() == 0)
+            strT = "UNK";
+          break;
         case 'o':
           strT = getSymmetryOperatorList();
           break;
         case 'P':
           floatT = getPartialCharge();
           break;
-        case 'f':
-          floatT = getGroupPhi();
-          break;
         case 'p':
           floatT = getGroupPsi();
+          break;
+        case 'q':
+          strT = "" + getOccupancy();
+          break;
+        case 'Q':
+          floatT = getOccupancy() / 100f;
+          break;
+        case 'R':
+          strT = "" + getResno();
+          break;
+        case 'r':
+          strT = getSeqcodeString();
+          break;
+        case 'S':
+          strT = "" + atomSite;
+          break;
+        case 's':
+        case 'c': // these two are the same
+          ch = getChainID();
+          strT = (ch == '\0' ? "" : "" + ch);
+          break;
+        case 'T':
+          floatT = getStraightness();
+          break;
+        case 't':
+        case 'b': // these two are the same
+          floatT = getBfactor100() / 100f;
+          break;
+        case 'U':
+          strT = getIdentity(true);
+          break;
+        case 'u':
+          floatT = getSurfaceDistance100() / 100f;
+          break;
+        case 'V':
+          floatT = getVanderwaalsRadiusFloat();
           break;
         case 'v':
           ch = (ich < strFormat.length() ? strFormat.charAt(ich++) : '\0');
@@ -1175,61 +1220,22 @@ final public class Atom extends Point3fi {
             strT = v.x + " " + v.y + " " + v.z;
           }
           break;
-        case 'V':
-          floatT = getVanderwaalsRadiusFloat();
-          break;
-        case 'I':
-          floatT = getBondingRadiusFloat();
-          break;
-        case 'b': // these two are the same
-        case 't':
-          floatT = getBfactor100() / 100f;
-          break;
-        case 'q':
-          strT = "" + getOccupancy();
-          break;
-        case 'Q':
-          floatT = getOccupancy() / 100f;
-          break;
-        case 'c': // these two are the same
-        case 's':
-          ch = getChainID();
-          strT = (ch == '\0' ? "" : "" + ch);
-          break;
-        case 'S':
-          strT = "" + atomSite;
-          break;
-        case 'L':
-          strT = "" + getPolymerLength();
-          break;
-        case 'M':
-          strT = getModelNumberForLabel();
-          break;
-        case 'm':
-          strT = getGroup1();
-          break;
-        case 'n':
-          strT = getGroup3();
-          if (strT == null || strT.length() == 0)
-            strT = "UNK";
-          break;
-        case 'r':
-          strT = getSeqcodeString();
-          break;
-        case 'R':
-          strT = "" + getResno();
-          break;
-        case 'U':
-          strT = getIdentity(true);
-          break;
         case 'W':
           strT = getIdentityXYZ();
           break;
-        case 'u':
-          floatT = getSurfaceDistance100() / 100f;
+        case 'x':
+          floatT = x;
           break;
-        case 'N':
-          strT = "" + getMoleculeNumber();
+        case 'y':
+          floatT = y;
+          break;
+        case 'z':
+          floatT = z;
+          break;
+        case 'X':
+        case 'Y':
+        case 'Z':
+          floatT = getFractionalCoord(ch);
           break;
         case '%':
           strT = "%";

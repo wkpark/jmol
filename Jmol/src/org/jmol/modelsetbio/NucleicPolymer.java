@@ -130,8 +130,8 @@ public class NucleicPolymer extends BioPolymer {
     */
     
     NucleicMonomer m = (NucleicMonomer) monomers[i];
-    if (m.getLeadAtom().getElementSymbol() != "P")
-      return null;
+    //if (m.getLeadAtom().getElementSymbol() != "P")
+      //return null;
     Point3f ptA, ptB;
     Point3f ptN = getQuaternionFrameCenter(m, qType);
     if (m.isPurine) {

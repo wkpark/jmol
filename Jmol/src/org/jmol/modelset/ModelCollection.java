@@ -2482,7 +2482,7 @@ abstract public class ModelCollection extends BondCollection {
     info.put("_ipt", new Integer(i));
     info.put("atomIndex", new Integer(i));
     info.put("atomno", new Integer(getAtomNumber(i)));
-    info.put("info", getAtomInfo(i));
+    info.put("info", getAtomInfo(i, null));
     info.put("sym", getElementSymbol(i));
   }
   
@@ -2614,8 +2614,8 @@ abstract public class ModelCollection extends BondCollection {
           infoGroup.put("seqCode", s);
         infoGroup.put("_apt1", new Integer(group.firstAtomIndex));
         infoGroup.put("_apt2", new Integer(group.lastAtomIndex));
-        infoGroup.put("atomInfo1", getAtomInfo(group.firstAtomIndex));
-        infoGroup.put("atomInfo2", getAtomInfo(group.lastAtomIndex));
+        infoGroup.put("atomInfo1", getAtomInfo(group.firstAtomIndex, null));
+        infoGroup.put("atomInfo2", getAtomInfo(group.lastAtomIndex, null));
         infoGroup.put("visibilityFlags", new Integer(group.shapeVisibilityFlags));
         infoChain.addElement(infoGroup);
       }

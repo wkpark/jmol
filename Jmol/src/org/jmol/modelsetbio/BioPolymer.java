@@ -580,7 +580,7 @@ public abstract class BioPolymer extends Polymer {
               q = q.mul(-1);
 
             if (derivType == 1 && aprev != null && qlast != null && ctype == 'w')
-              aprev.getGroup().setStraightness(getStraightness(qlast, q));
+              aprev.getGroup().setStraightness(getStraightness(id, qlast, q));
             
             // and assign a to aprev so that the proper 
             // residue gets reported.
@@ -638,16 +638,19 @@ public abstract class BioPolymer extends Polymer {
               if (ndeg < -180)
                 ndeg = ndeg + 360;
 
-              strV = "draw qx" + id + strV + Escape.escape(q.getVector(0))
-                  + " color red" + "\ndraw qy" + id + strV
-                  + Escape.escape(q.getVector(1)) + " color green"
-                  + "\ndraw qz" + id + strV + Escape.escape(q.getVector(2))
-                  + " color blue" + "\ndraw qa" + id + strV + " {" + (x * 2)
-                  + "," + (y * 2) + "," + (z * 2) + "} \">" + deg
-                  + "\" color yellow" + "\ndraw qb" + id + strV + " {"
-                  + (-x * 2) + "," + (-y * 2) + "," + (-z * 2) + "} \">" + ndeg
-                  + "\" color yellow\n";
-              pdbATOM.append(strV);
+              pdbATOM.append(
+                    "draw qx" + id + strV + Escape.escape(q.getVector(0)) + " color red\n" 
+                  + "draw qy" + id + strV + Escape.escape(q.getVector(1)) + " color green\n"
+                  + "draw qz" + id + strV + Escape.escape(q.getVector(2)) + " color blue\n" 
+                  + "draw qa" + id + strV + " {" + (x * 2)
+                      + "," + (y * 2) + "," + (z * 2) + "}"
+                      + (deg >= 0 ? " \">" + deg + "\"" : "")
+                      + " color yellow\n" 
+                  + "draw qb" + id + strV + " {" + (-x * 2) 
+                      + "," + (-y * 2) + "," + (-z * 2) + "}"
+                      + (ndeg > 0 ? " \">" + ndeg + "\"" : "")
+                      + " color yellow\n"
+              );
               continue;
             }
             break;
@@ -690,9 +693,9 @@ public abstract class BioPolymer extends Polymer {
     }
   }
   
-  private static float getStraightness(Quaternion dqprev, Quaternion dq) {
+  private static float getStraightness(String id, Quaternion dqprev, Quaternion dq) {
     float f = dqprev.getNormal().dot(dq.getNormal());
-    //System.out.println(id + " " + f + " " + dqprev + " " + dq);
+    //System.out.println(id + " " + f + " " + dqprev.getNormal() + " " + dq.getNormal());
     return f;
   }
 

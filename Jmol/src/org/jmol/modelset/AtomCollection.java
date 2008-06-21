@@ -152,8 +152,8 @@ abstract public class AtomCollection {
   
   //////////// atoms //////////////
   
-  public String getAtomInfo(int i) {
-    return atoms[i].getInfo();
+  public String getAtomInfo(int i, String format) {
+    return (format == null ? atoms[i].getInfo() : atoms[i].formatLabel(format));
   }
 
   public String getAtomInfoXYZ(int i, boolean useChimeFormat) {

@@ -93,9 +93,9 @@ public class StateManager {
     this.viewer = viewer;
   }
 
-  GlobalSettings getGlobalSettings() {
+  GlobalSettings getGlobalSettings(GlobalSettings gsOld) {
     GlobalSettings g = new GlobalSettings();
-    g.registerAllValues();
+    g.registerAllValues(gsOld);
     return g;
   }
 
@@ -614,6 +614,7 @@ public class StateManager {
     boolean measurementLabels = true;
     boolean messageStyleChime = false;
     int pickingSpinRate = 10;
+    String pickLabel = "";
     String propertyColorScheme = "roygb";
     String quaternionFrame = "c";
     float solventProbeRadius = 1.2f;
@@ -765,6 +766,10 @@ public class StateManager {
           || unreportedProperties.indexOf(";" + key + ";") >= 0;
     }
 
+    private void resetParameterStringValue(String name, GlobalSettings g) {
+      setParameterValue(name, g == null ? "" : (String) g.getParameter(name));
+    }
+    
     void setParameterValue(String name, boolean value) {
       name = name.toLowerCase();
       if (htParameterValues.containsKey(name))
@@ -1035,10 +1040,29 @@ public class StateManager {
       return Escape.escape((String[]) var.value);
     }
 
-    void registerAllValues() {
+    void registerAllValues(GlobalSettings g) {
       htParameterValues = new Hashtable();
       htPropertyFlags = new Hashtable();
       htPropertyFlagsRemoved = new Hashtable();
+
+      if (g != null) {
+        //persistent values not reset with the "initialize" command
+        debugScript = g.debugScript;
+        messageStyleChime = g.messageStyleChime;
+      }
+      
+      resetParameterStringValue("animFrameCallback", g);
+      resetParameterStringValue("echoCallback", g);
+      resetParameterStringValue("evalCallback", g);
+      resetParameterStringValue("hoverCallback", g);
+      resetParameterStringValue("loadStructCallback", g);
+      resetParameterStringValue("measureCallback", g);
+      resetParameterStringValue("messageCallback", g);
+      resetParameterStringValue("minimizationCallback", g);
+      resetParameterStringValue("pickCallback", g);
+      resetParameterStringValue("resizeCallback", g);
+      resetParameterStringValue("scriptCallback", g);
+      resetParameterStringValue("syncCallback", g);
 
       // some of these are just placeholders so that the math processor
       // knows they are Jmol variables. They are held by other managers
@@ -1049,12 +1073,7 @@ public class StateManager {
 
       setParameterValue("_version", 0);
       setParameterValue("stateversion", 0);
-      setParameterValue("animFrameCallback", "");
-      setParameterValue("loadStructCallback", "");
-      setParameterValue("messageCallback", "");
-      setParameterValue("hoverCallback", "");
-      setParameterValue("resizeCallback", "");
-      setParameterValue("pickCallback", "");
+
       setParameterValue("allowEmbeddedScripts", allowEmbeddedScripts);
       setParameterValue("allowRotateSelected", allowRotateSelected);
       setParameterValue("ambientPercent", ambientPercent);
@@ -1151,6 +1170,7 @@ public class StateManager {
       setParameterValue("picking", "ident");
       setParameterValue("pickingSpinRate", pickingSpinRate);
       setParameterValue("pickingStyle", "toggle");
+      setParameterValue("pickLabel", pickLabel);
       setParameterValue("propertyColorScheme", propertyColorScheme);
       setParameterValue("propertyDataField", 0);
       setParameterValue("propertyAtomNumberField", 0);
@@ -1214,6 +1234,7 @@ public class StateManager {
       setParameterValue("zShade", zShade);
       setParameterValue("zeroBasedXyzRasmol", zeroBasedXyzRasmol);
     }
+
   }
 
   ///////// state serialization 

@@ -467,15 +467,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // ///////////////////////////////////////////////////////////////
 
   void initialize() {
-    boolean haveGlobal = (global != null);
-    boolean debugScript = (haveGlobal ? global.debugScript : false);
-    boolean messageStyleChime = (haveGlobal ? global.messageStyleChime : false);
-    global = stateManager.getGlobalSettings();
-    if (haveGlobal) {
-      setBooleanProperty("debugScript", debugScript);
-      setBooleanProperty("messageStyleChime", messageStyleChime);
-    }
+    global = stateManager.getGlobalSettings(global);
     setIntProperty("_version", getJmolVersionInt(), true);
+    setBooleanProperty("_applet", isApplet);
     setBooleanProperty("_signedApplet", isSignedApplet);
     setBooleanProperty("_useCommandThread", useCommandThread);
     colorManager.resetElementColors();
@@ -3846,7 +3840,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getAtomInfo(int atomIndex) {
-    return modelSet.getAtomInfo(atomIndex);
+    return modelSet.getAtomInfo(atomIndex, null);
   }
 
   public String getAtomInfoXYZ(int atomIndex, boolean useChimeFormat) {
@@ -3870,7 +3864,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    no local version of MessageCallback
    */
 
+  private void setPickLabel(String value) {
+    global.pickLabel = value;  
+  }
+  
   public void setStatusAtomPicked(int atomIndex, String info) {
+    if (info == null) {
+      info = global.pickLabel;
+      if (info.length() == 0)
+        info = getAtomInfoXYZ(atomIndex, getMessageStyleChime());
+      else
+        info = modelSet.getAtomInfo(atomIndex, info);
+    }
     String s = statusManager.getCallbackScript("pickcallback");
     global.setParameterValue("_atompicked", atomIndex);
     global.setParameterValue("_pickinfo", info);
@@ -4110,6 +4115,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean notFound = false;
     while (true) {
       
+      ///11.5.42
+      // pickLabel
+      if (key.equalsIgnoreCase("pickLabel")) {
+        setPickLabel(value);
+        break;
+      }
+
       ///11.5.39//
       if (key.equalsIgnoreCase("quaternionFrame")) {
         setQuaternionFrame(value);

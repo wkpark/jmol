@@ -398,7 +398,7 @@ abstract public class ModelCollection extends BondCollection {
 
   public void addStateScript(String script1, BitSet bsBonds, BitSet bsAtoms1,
                              BitSet bsAtoms2, String script2,
-                             boolean addFrameNumber) {
+                             boolean addFrameNumber, boolean postDefinitions) {
     if (addFrameNumber) {
       int iModel = viewer.getCurrentModelIndex();
       if (thisStateModel != iModel)
@@ -410,7 +410,7 @@ abstract public class ModelCollection extends BondCollection {
       thisStateModel = -1;
     }
     StateScript stateScript = new StateScript(thisStateModel, script1, bsBonds, bsAtoms1,
-        bsAtoms2, script2);
+        bsAtoms2, script2, postDefinitions);
     if (stateScript.isValid())
       stateScripts.addElement(stateScript);
   }
@@ -422,15 +422,17 @@ abstract public class ModelCollection extends BondCollection {
     BitSet bsAtoms2;
     String script1;
     String script2;
+    boolean postDefinitions;
     
     StateScript(int modelIndex, String script1, BitSet bsBonds, BitSet bsAtoms1,
-        BitSet bsAtoms2, String script2) {
+        BitSet bsAtoms2, String script2, boolean postDefinitions) {
       this.modelIndex = modelIndex;
       this.script1 = script1;
       this.bsBonds = bsBonds;
       this.bsAtoms1 = bsAtoms1;
       this.bsAtoms2 = bsAtoms2;
       this.script2 = script2;
+      this.postDefinitions = postDefinitions;
     }
     
     public boolean isValid() {
@@ -837,7 +839,7 @@ abstract public class ModelCollection extends BondCollection {
       Model model = models[i];
       int nPoly = model.getBioPolymerCount();
       for (int p = 0; p < nPoly; p++)
-        model.bioPolymers[p].getPdbData('w','p', 1, null, null, null, null);
+        model.bioPolymers[p].getPdbData('w','p', 1, false, null, null, null, null);
     }
   }
 
@@ -893,24 +895,25 @@ abstract public class ModelCollection extends BondCollection {
   /* ONLY from one model 
    * 
    */
-  private String getPdbData(String type, char ctype, int modelIndex,
-                            int derivType, BitSet bsSelected) {
-    StringBuffer pdbCONECT = new StringBuffer();
+  private String getPdbData(int modelIndex, char ctype, int derivType, 
+                            boolean isDraw, BitSet bsSelected) {
     if (isJmolDataFrame(modelIndex))
       modelIndex = getJmolDataSourceFrame(modelIndex);
     if (modelIndex < 0)
       return "";
-    StringBuffer pdbATOM = new StringBuffer();
+    char qtype = (ctype == 'R' ? 'R' : viewer.getQuaternionFrame());
     Model model = models[modelIndex];
     BitSet bsAtoms = getModelAtomBitSet(modelIndex, false);
     int nPoly = model.getBioPolymerCount();
+    StringBuffer pdbATOM = new StringBuffer();
+    StringBuffer pdbCONECT = new StringBuffer();
+    if (!isDraw)
+      pdbATOM.append(getProteinStructureState(bsAtoms, ctype == 'R'));
     for (int p = 0; p < nPoly; p++)
-        model.bioPolymers[p].getPdbData(ctype, (ctype == 'R' ? 'R' 
-          : viewer.getQuaternionFrame()), derivType, bsAtoms,
-            pdbATOM, pdbCONECT, bsSelected);
+        model.bioPolymers[p].getPdbData(ctype, qtype, derivType, isDraw,
+            bsAtoms, pdbATOM, pdbCONECT, bsSelected);
     pdbATOM.append(pdbCONECT);
-    return (ctype == 's' ? "" : getProteinStructureState(bsAtoms, ctype == 'R')) 
-        + pdbATOM.toString();
+    return pdbATOM.toString();
   }
 
   public String getPdbAtomData(BitSet bs) {
@@ -950,10 +953,10 @@ abstract public class ModelCollection extends BondCollection {
       return null;
     char ctype = (type.length() > 11 && type.indexOf("quaternion ") >= 0 ? type
         .charAt(11) : 'R');
-    int derivType = (type.indexOf(" derivative2") >= 0 ||type.indexOf(" difference2") >= 0 ? 2 
-        : type.indexOf(" deriv") >= 0 || type.indexOf(" diff") >= 0 ? 1 : 0);
-    String s = getPdbData(type, ctype, modelIndex, derivType, bsSelected);
-    if (s.length() == 0 || ctype == 's')
+    String s = getPdbData(modelIndex, ctype, 
+        (type.indexOf("diff") < 0 ? 0 : type.indexOf("2") < 0 ? 1 : 2),
+        (type.indexOf("draw") >= 0), bsSelected);
+    if (s.length() == 0 || type.indexOf("draw") >= 0)
       return s;
     String remark = "REMARK   6 Jmol PDB-encoded data: " + type
         + " data(x,y,z,charge)=";

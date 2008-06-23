@@ -570,10 +570,11 @@ public class AminoPolymer extends AlphaPolymer {
    */
 
   public void getPdbData(char ctype, char qtype, int derivType,
-                         BitSet bsAtoms, StringBuffer pdbATOM, 
-                         StringBuffer pdbCONECT, BitSet bsSelected) {
-    getPdbData(this, ctype, qtype, derivType, bsAtoms, pdbATOM, pdbCONECT, 
-        bsSelected);
+                         boolean isDraw, BitSet bsAtoms, 
+                         StringBuffer pdbATOM, StringBuffer pdbCONECT, 
+                         BitSet bsSelected) {
+    getPdbData(this, ctype, qtype, derivType, isDraw, bsAtoms, pdbATOM, 
+        pdbCONECT, bsSelected);
   }
 
   final private Point3f ptTemp = new Point3f();

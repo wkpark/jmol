@@ -458,6 +458,7 @@ public class Token {
   final static int javascript   = 4  | 1 << 3 | mathfunc | command | specialstring;
   final static int sin          = 5  | 1 << 3 | mathfunc;
   final static int cos          = 6  | 1 << 3 | mathfunc;
+  final static int sqrt         = 7  | 1 << 3 | mathfunc;
 
   // ___.xxx(a)
   
@@ -1373,6 +1374,7 @@ public class Token {
     "solid",            new Token(solid),
     "solvent",          new Token(solvent),
     "specialPosition",  new Token(specialposition),
+    "sqrt",             new Token(sqrt),
     "split",            new Token(split),
     "straightness",     new Token(straightness),
     "sub",              new Token(sub),

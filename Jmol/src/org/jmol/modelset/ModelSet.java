@@ -482,7 +482,7 @@ abstract public class ModelSet extends ModelCollection {
         stateScript += maxDistance + " ";
       addStateScript(stateScript, (isBonds? bsA : null), 
           (isBonds? null : bsA), (isBonds ? null : bsB),  
-          " delete;", false);
+          " delete;", false, true);
     }
     return super.makeConnections(minDistance, maxDistance, order,
         connectOperation, bsA, bsB, bsBonds, isBonds);
@@ -545,21 +545,29 @@ abstract public class ModelSet extends ModelCollection {
     int len = stateScripts.size();
     if (len == 0)
       return "";
+    
+    boolean haveDefs = false;    
     StringBuffer commands = new StringBuffer();
+    String cmd;
+    for (int i = 0; i < len; i++) {
+      StateScript ss = (StateScript) stateScripts.get(i); 
+      if (!ss.postDefinitions && (cmd = ss.toString()).length() > 0) {
+        commands.append("  ").append(cmd).append("\n");
+        haveDefs = true;
+      }
+    }
+
+    if (!haveDefs)
+      return "";
+    cmd = "";
     if (isAll && sfunc != null) {
       sfunc.append("  _setDefinedState;\n");
-      commands.append("function _setDefinedState();\n");
+      cmd = "function _setDefinedState();\n\n";
     }
-    String cmd;
-
-    commands.append("\n");
-    for (int i = 0; i < len; i++)
-      if ((cmd = ((StateScript) stateScripts.get(i)).toString()).length() > 0)
-        commands.append("  ").append(cmd).append("\n");
 
     if (sfunc != null)
       commands.append("\nend function;\n\n");
-    return commands.toString();
+    return cmd + commands.toString();
   }
   
   public String getState(StringBuffer sfunc, boolean isAll) {
@@ -572,7 +580,16 @@ abstract public class ModelSet extends ModelCollection {
 
     // connections
 
+    
     if (isAll) {
+      
+      int len = stateScripts.size();
+      for (int i = 0; i < len; i++) {
+        StateScript ss = (StateScript) stateScripts.get(i); 
+        if (ss.postDefinitions && (cmd = ss.toString()).length() > 0)
+          commands.append("  ").append(cmd).append("\n");
+      }
+
       for (int i = 0; i < bondCount; i++) {
         if ((bonds[i].order & JmolConstants.BOND_NEW) != 0
             || bonds[i].isHydrogen()) {

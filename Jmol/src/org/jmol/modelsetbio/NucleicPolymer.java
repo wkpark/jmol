@@ -95,10 +95,11 @@ public class NucleicPolymer extends BioPolymer {
   }
 
   public void getPdbData(char ctype, char qtype, int derivType,
-                         BitSet bsAtoms, StringBuffer pdbATOM, 
-                         StringBuffer pdbCONECT, BitSet bsSelected) {
-    getPdbData(this, ctype, qtype, derivType, bsAtoms, pdbATOM, pdbCONECT, 
-        bsSelected);
+                         boolean isDraw, BitSet bsAtoms, 
+                         StringBuffer pdbATOM, StringBuffer pdbCONECT, 
+                         BitSet bsSelected) {
+    getPdbData(this, ctype, qtype, derivType, isDraw, bsAtoms, pdbATOM, 
+        pdbCONECT, bsSelected);
   }
 
   static Point3f getQuaternionFrameCenter(NucleicMonomer m, char qType) {
@@ -135,9 +136,13 @@ public class NucleicPolymer extends BioPolymer {
     Point3f ptA, ptB;
     Point3f ptN = getQuaternionFrameCenter(m, qType);
     if (m.isPurine) {
+      // vA = N9--C4
+      // vB = N9--C8
       ptA = m.getAtomFromOffsetIndex(NucleicMonomer.C4);
       ptB = m.getAtomFromOffsetIndex(NucleicMonomer.C8);
     } else {
+      // vA = N1--C2
+      // vB = N1--C6
       ptA = m.getAtomFromOffsetIndex(NucleicMonomer.C2);
       ptB = m.getAtomFromOffsetIndex(NucleicMonomer.C6);
     }
@@ -149,8 +154,6 @@ public class NucleicPolymer extends BioPolymer {
     
     Vector3f vB = new Vector3f(ptB);
     vB.sub(ptN);
-    //vA.set(1f, 0.2f, 0f);
-    //vB.set(-0.2f, 1f, 0f);
     return Quaternion.getQuaternionFrame(vA, vB, null);
   }
    

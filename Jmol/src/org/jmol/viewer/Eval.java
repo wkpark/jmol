@@ -4143,7 +4143,7 @@ class Eval { //implements Runnable {
       for (int i = statementLength; --i >= 0;)
         code[i] = statement[i];
       variables.put("!" + variable.substring(8), code);
-      viewer.addStateScript(thisCommand, false);
+      viewer.addStateScript(thisCommand, false, true);
     } else {
       assignBitsetVariable(variable, bs);
     }
@@ -4472,24 +4472,25 @@ class Eval { //implements Runnable {
       break;
     case JmolConstants.JMOL_DATA_QUATERNION:
       isQuaternion = true;
-      type = optParameterAsString(statementLength - 1).toLowerCase();
+      // working backward this time:
+      int pt = statementLength - 1;
+      type = optParameterAsString(pt).toLowerCase();
       if (type.equalsIgnoreCase("draw")) {
         isDraw = true;
-        break;
+        type = optParameterAsString(--pt).toLowerCase();
       }
-      isDerivative = (type.indexOf("deriv") == 0 || type.indexOf("difference") == 0);
-      isSecondDerivative = (type.indexOf("derivative2") == 0 || type.indexOf("difference2") == 0);
-      type = (statementLength == 1 ? "w" : optParameterAsString(1));
-      if (isDerivative && statementLength == 2 || type.length() == 0)
-        type = "w";
-      type = type.substring(0, 1);
+      isDerivative = (type.startsWith("deriv") || type.startsWith("diff"));
+      isSecondDerivative = (isDerivative && type.indexOf("2") > 0);
+      if (isDerivative)
+        pt--;
+      type = ((pt == 0 ? "" : optParameterAsString(pt))+"w").substring(0, 1);
       if (type == "a" || type == "r")
         isDerivative = true;
       if (!Parser.isOneOf(type, "w;x;y;z;r;a")) // a absolute; r relative
         evalError("QUATERNION [w,x,y,z,a,r] [difference][2]");
       type = "quaternion " + type + (isDerivative ? " difference" : "")
           + (isSecondDerivative ? "2" : "") 
-          + " quaternionFrame: " + viewer.getQuaternionFrame();
+          + (isDraw ? " draw" : " (quaternionFrame " + viewer.getQuaternionFrame() + ")");
       break;
     }
     if (isSyntaxCheck) //just in case we later add parameter options to this
@@ -4500,7 +4501,7 @@ class Eval { //implements Runnable {
       error(ERROR_multipleModelsNotOK, type);
     modelIndex = viewer.getJmolDataSourceFrame(modelIndex);
     if (isQuaternion && isDraw) {
-      runScript(viewer.getPdbData(modelIndex, "quaternion s"));
+      runScript(viewer.getPdbData(modelIndex, type));
       return;
     }    
     int ptDataFrame = viewer.getJmolDataFrameIndex(modelIndex, type);
@@ -4515,7 +4516,7 @@ class Eval { //implements Runnable {
       //  viewer.display(BitSetUtil.setAll(viewer.getAtomCount()), bs2, tQuiet);
       return;
     }
-    viewer.addStateScript(type, true);
+    viewer.addStateScript(type, true, false);
     String[] savedFileInfo = viewer.getFileInfo();
     boolean oldAppendNew = viewer.getAppendNew();
     viewer.setAppendNew(true);
@@ -5951,14 +5952,14 @@ class Eval { //implements Runnable {
     if (statementLength == 1) {
       bsConfigurations = viewer.setConformation();
       viewer.addStateScript("select", null, viewer.getSelectionSet(), null,
-          "configuration", true);
+          "configuration", true, false);
     } else {
       checkLength2();
       if (isSyntaxCheck)
         return;
       int n = intParameter(1);
       bsConfigurations = viewer.setConformation(n - 1);
-      viewer.addStateScript("configuration " + n + ";", true);
+      viewer.addStateScript("configuration " + n + ";", true, false);
     }
     if (isSyntaxCheck)
       return;
@@ -6213,8 +6214,10 @@ class Eval { //implements Runnable {
       clearPredefined(JmolConstants.predefinedVariable);
       switch (getToken(1).tok) {
       case Token.straightness:
-        if (!isSyntaxCheck)
+        if (!isSyntaxCheck) {
           viewer.calculateStraightness();
+          viewer.addStateScript(thisCommand, false, true);
+        }
         return;
       case Token.surface:
         isSurface = true;
@@ -6266,12 +6269,12 @@ class Eval { //implements Runnable {
         if (bs == null)
           bs = viewer.getModelAtomBitSet(-1, false);
           viewer.calculateStructures(bs);
-        viewer.addStateScript(thisCommand, false);
+        viewer.addStateScript(thisCommand, false, true);
         return;
       }
     }
     error(ERROR_what, "CALCULATE", 
-        "aromatic? hbonds? polymers? structure? surfaceDistance FROM? surfaceDistance WITHIN?");
+        "aromatic? hbonds? polymers? straightness? structure? surfaceDistance FROM? surfaceDistance WITHIN?");
   }
 
   private void dots(int ipt, int iShape) throws ScriptException {
@@ -8678,16 +8681,22 @@ class Eval { //implements Runnable {
     case Token.quaternion:
       pt++;
       type2 = Token.sValue(tokenAt(pt, args)).toLowerCase();
-      if (Parser.isOneOf(type2, "w;x;y;z;s;a;r")) // s is draw script; e experimental
+      if (Parser.isOneOf(type2, "w;x;y;z;a;r"))
         pt++;
       else
         type2 = "w";
-      type2 = "quaternion " + type2;
-      type = Token.sValue(tokenAt(pt, args));
-      if (type.indexOf("deriv") == 0 || type.indexOf("difference") == 0) {
-        type2 += " difference";
+      type = Token.sValue(tokenAt(pt, args)).toLowerCase();
+      boolean isDerivative = (type.indexOf("deriv") == 0 || type.indexOf("diff") == 0);
+      if (isDerivative || type2.equals("a") || type2.equals("r")) {
+        type2 += " difference" + (type.indexOf("2") >= 0 ? "2" : "");
+        if (isDerivative)
+          type = Token.sValue(tokenAt(++pt, args)).toLowerCase();
+      }
+      if (type.equals("draw")) {
+        type2 += " draw";
         pt++;
       }
+      type2 = "quaternion " + type2;
       type = "QUAT";
       break;
     case Token.ramachandran:
@@ -11845,6 +11854,7 @@ class Eval { //implements Runnable {
         return evaluateArray(args);
       case Token.cos:
       case Token.sin:
+      case Token.sqrt:
       case Token.quaternion:
         return evaluateMath(args, tok);
       case Token.cross:
@@ -12300,6 +12310,8 @@ class Eval { //implements Runnable {
         return addX((float) Math.cos(x * Math.PI / 180));
       case Token.sin:
         return addX((float) Math.sin(x * Math.PI / 180));
+      case Token.sqrt:
+        return addX((float) Math.sqrt(x));
       }
       return false;
     }

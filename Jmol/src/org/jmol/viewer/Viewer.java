@@ -1806,7 +1806,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (bsSelected == null) bsSelected = selectionManager.bsSelection;
     addStateScript("calculate surfaceDistance "
         + (envelopeRadius == Float.MAX_VALUE ? "FROM" : "WITHIN"), null,
-        bsSelected, null, "", false);
+        bsSelected, null, "", false, true);
     return modelSet.calculateSurface(bsSelected, envelopeRadius);
   }
 
@@ -1829,14 +1829,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.fillAtomData(atomData, mode);
   }
 
-  void addStateScript(String script, boolean addFrameNumber) {
-    addStateScript(script, null, null, null, null, addFrameNumber);
+  void addStateScript(String script, boolean addFrameNumber, boolean postDefinitions) {
+    addStateScript(script, null, null, null, null, addFrameNumber, postDefinitions);
   }
 
   void addStateScript(String script1, BitSet bsBonds, BitSet bsAtoms1,
-                      BitSet bsAtoms2, String script2, boolean addFrameNumber) {
+                      BitSet bsAtoms2, String script2, boolean addFrameNumber,
+                      boolean postDefinitions) {
     modelSet.addStateScript(script1, bsBonds, bsAtoms1, bsAtoms2, script2,
-        addFrameNumber);
+        addFrameNumber, postDefinitions);
   }
 
   public boolean getEchoStateActive() {
@@ -5549,7 +5550,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     clearMinimization();
     modelSet.deleteAllBonds();
     modelSet.autoBond(null, null, null, null);
-    addStateScript("connect;", false);
+    addStateScript("connect;", false, true);
     refresh(0, "Viewer:rebond()");
   }
 
@@ -5561,10 +5562,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.setPdbConectBonding(0, 0, bsExclude);
     if (isAuto) {
       modelSet.autoBond(null, null, bsExclude, null);
-      addStateScript("connect PDB AUTO;", false);
+      addStateScript("connect PDB AUTO;", false, true);
       return;
     }
-    addStateScript("connect PDB;", false);
+    addStateScript("connect PDB;", false, true);
     refresh(0, "Viewer:setPdbConnectBonding()");
   }
     

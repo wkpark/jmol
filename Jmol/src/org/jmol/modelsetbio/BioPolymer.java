@@ -464,9 +464,11 @@ public abstract class BioPolymer extends Polymer {
     return false;
   }
   
+  final private static String[] qColor = { "yellow", "orange", "purple" };
+  
   final public static void getPdbData(BioPolymer p, char ctype, char qtype,
-                                      int derivType, BitSet bsAtoms,
-                                      StringBuffer pdbATOM,
+                                      int derivType, boolean isDraw,
+                                      BitSet bsAtoms, StringBuffer pdbATOM, 
                                       StringBuffer pdbCONECT, BitSet bsSelected) {
     int atomno = Integer.MIN_VALUE;
     Quaternion qlast = null;
@@ -511,6 +513,7 @@ public abstract class BioPolymer extends Polymer {
     Atom aprev = null;
     String strExtra = "";
     boolean isRelativeAlias = (ctype == 'r');
+    String prefix = (derivType > 0 ? "dq" + (derivType  == 2 ? "2" : "") : "q");
     for (int m = 0; m < p.monomerCount; m++) {
       Monomer monomer = p.monomers[m];
       if (bsAtoms == null || bsAtoms.get(monomer.getLeadAtomIndex())) {
@@ -620,39 +623,6 @@ public abstract class BioPolymer extends Polymer {
             y = q.q2;
             z = q.q3;
             w = q.q0;
-            if (ctype == 's') {
-              if (bsSelected != null && !bsSelected.get(a.getAtomIndex()))
-                continue;
-              String strV = " VECTOR " + Escape.escape(ptCenter) + " ";
-              int deg = (int) (Math.acos(w) * 360 / Math.PI);
-              //this is the angle required to rotate the INITIAL FRAME to this position
-              //if (deg < 0)
-              //deg += 360;
-              if (deg > 180)
-                deg = deg - 360;
-              if (deg < -180)
-                deg = deg + 360;
-              int ndeg = -deg;
-              if (ndeg > 180)
-                ndeg = ndeg - 360;
-              if (ndeg < -180)
-                ndeg = ndeg + 360;
-
-              pdbATOM.append(
-                    "draw qx" + id + strV + Escape.escape(q.getVector(0)) + " color red\n" 
-                  + "draw qy" + id + strV + Escape.escape(q.getVector(1)) + " color green\n"
-                  + "draw qz" + id + strV + Escape.escape(q.getVector(2)) + " color blue\n" 
-                  + "draw qa" + id + strV + " {" + (x * 2)
-                      + "," + (y * 2) + "," + (z * 2) + "}"
-                      + (deg >= 0 ? " \">" + deg + "\"" : "")
-                      + " color yellow\n" 
-                  + "draw qb" + id + strV + " {" + (-x * 2) 
-                      + "," + (-y * 2) + "," + (-z * 2) + "}"
-                      + (ndeg > 0 ? " \">" + ndeg + "\"" : "")
-                      + " color yellow\n"
-              );
-              continue;
-            }
             break;
           case 'x':
             x = q.q0;
@@ -672,6 +642,39 @@ public abstract class BioPolymer extends Polymer {
             z = q.q0;
             w = q.q1;
             break;
+          }
+          if (isDraw) {
+            if (bsSelected != null && !bsSelected.get(a.getAtomIndex()))
+              continue;
+            String strV = " VECTOR " + Escape.escape(ptCenter) + " ";
+            int deg = (int) (Math.acos(w) * 360 / Math.PI);
+            //this is the angle required to rotate the INITIAL FRAME to this position
+            //if (deg < 0)
+            //deg += 360;
+            if (deg > 180)
+              deg = deg - 360;
+            if (deg < -180)
+              deg = deg + 360;
+            int ndeg = -deg;
+            if (ndeg > 180)
+              ndeg = ndeg - 360;
+            if (ndeg < -180)
+              ndeg = ndeg + 360;
+            if (derivType == 0)
+              pdbATOM.append("draw " + prefix + "x" + id + strV + Escape.escape(q.getVector(0)))
+                  .append(" color red\n")
+                  .append("draw " + prefix + "y" + id + strV + Escape.escape(q.getVector(1)))
+                  .append(" color green\n")
+                  .append("draw " + prefix + "z" + id + strV + Escape.escape(q.getVector(2)))
+                  .append(" color blue\n");            
+            pdbATOM.append(deg >= 0 
+                ? "draw " + prefix + "a" + id + strV + " {" + (x * 2)
+                  + "," + (y * 2) + "," + (z * 2) + "}" + " \">" + deg + "\""
+                : "draw " + prefix + "b" + id + strV + " {" + (-x * 2) 
+                  + "," + (-y * 2) + "," + (-z * 2) + "}" + " \">" + ndeg + "\""
+                )
+            .append(" color ").append(qColor[derivType]).append('\n');
+            continue;
           }
         }
         if (pdbATOM == null)
@@ -696,7 +699,7 @@ public abstract class BioPolymer extends Polymer {
   private static float getStraightness(String id, Quaternion dqprev, Quaternion dq) {
     float f = Math.abs(dqprev.getNormal().dot(dq.getNormal()));
     //System.out.println(id + " " + f + " " + dqprev.getNormal() + " " + dq.getNormal());
-    return f;
+    return (2 * f - 1);
   }
 
   Quaternion getQuaternion(int m, char qtype) {

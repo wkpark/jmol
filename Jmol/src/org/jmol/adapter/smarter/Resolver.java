@@ -114,7 +114,7 @@ public class Resolver {
         return "unrecognized file format for file " + fullName + "\n"
             + atomSetCollectionReaderName;
       if (atomSetCollectionReaderName.equals("spt"))
-        return "file recognized as a script file: " + fullName + "\n";
+        return "NOTE: file recognized as a script file: " + fullName + "\n";
       Logger.info("The Resolver thinks " + atomSetCollectionReaderName);
     }
     if (htParams == null)

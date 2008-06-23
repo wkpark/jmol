@@ -966,7 +966,7 @@ public class Jmol implements WrappedApplet {
         String errorMsg = (String) data[4];
         //data[5] = (String) null; // don't pass reference to clientFile reference
         if (errorMsg != null) {
-          showStatusAndConsole(GT._("File Error:") + errorMsg);
+          showStatusAndConsole((errorMsg.indexOf("NOTE:") >= 0 ? "" : GT._("File Error:")) + errorMsg);
           return;
         }
         break;

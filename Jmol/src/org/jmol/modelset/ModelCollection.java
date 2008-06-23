@@ -892,29 +892,6 @@ abstract public class ModelCollection extends BondCollection {
   /* ONLY from one model 
    * 
    */
-  /* ONLY from one model 
-   * 
-   */
-  private String getPdbData(int modelIndex, char ctype, int derivType, 
-                            boolean isDraw, BitSet bsSelected) {
-    if (isJmolDataFrame(modelIndex))
-      modelIndex = getJmolDataSourceFrame(modelIndex);
-    if (modelIndex < 0)
-      return "";
-    char qtype = (ctype == 'R' ? 'R' : viewer.getQuaternionFrame());
-    Model model = models[modelIndex];
-    BitSet bsAtoms = getModelAtomBitSet(modelIndex, false);
-    int nPoly = model.getBioPolymerCount();
-    StringBuffer pdbATOM = new StringBuffer();
-    StringBuffer pdbCONECT = new StringBuffer();
-    if (!isDraw)
-      pdbATOM.append(getProteinStructureState(bsAtoms, ctype == 'R'));
-    for (int p = 0; p < nPoly; p++)
-        model.bioPolymers[p].getPdbData(ctype, qtype, derivType, isDraw,
-            bsAtoms, pdbATOM, pdbCONECT, bsSelected);
-    pdbATOM.append(pdbCONECT);
-    return pdbATOM.toString();
-  }
 
   public String getPdbAtomData(BitSet bs) {
     if (atomCount == 0)
@@ -949,39 +926,58 @@ abstract public class ModelCollection extends BondCollection {
    *****************************/
 
   public String getPdbData(int modelIndex, String type, BitSet bsSelected) {
+    if (isJmolDataFrame(modelIndex))
+      modelIndex = getJmolDataSourceFrame(modelIndex);
+    if (modelIndex < 0)
+      return "";
     if (!models[modelIndex].isPDB)
       return null;
+    Model model = models[modelIndex];
     char ctype = (type.length() > 11 && type.indexOf("quaternion ") >= 0 ? type
         .charAt(11) : 'R');
-    String s = getPdbData(modelIndex, ctype, 
-        (type.indexOf("diff") < 0 ? 0 : type.indexOf("2") < 0 ? 1 : 2),
-        (type.indexOf("draw") >= 0), bsSelected);
-    if (s.length() == 0 || type.indexOf("draw") >= 0)
+    char qtype = (ctype == 'R' ? 'R' : viewer.getQuaternionFrame());
+    int derivType = (type.indexOf("diff") < 0 ? 0 : type.indexOf("2") < 0 ? 1 : 2);
+    boolean isDraw = (type.indexOf("draw") >= 0);    
+    BitSet bsAtoms = getModelAtomBitSet(modelIndex, false);
+    int nPoly = model.getBioPolymerCount();
+    StringBuffer pdbATOM = new StringBuffer();
+    StringBuffer pdbCONECT = new StringBuffer();
+    for (int p = 0; p < nPoly; p++)
+        model.bioPolymers[p].getPdbData(ctype, qtype, derivType, isDraw,
+            bsAtoms, pdbATOM, pdbCONECT, bsSelected);
+    pdbATOM.append(pdbCONECT);
+    String s = pdbATOM.toString();
+    if (isDraw || s.length() == 0)
       return s;
-    String remark = "REMARK   6 Jmol PDB-encoded data: " + type
-        + " data(x,y,z,charge)=";
+    String remark = "REMARK   6 Jmol PDB-encoded data: " + type + ";";
+    if (ctype != 'R')
+      remark += "  quaternionFrame = \"" + qtype + "\""; 
+    String data;
     switch (ctype) {
     default:
     case 'w':
-      remark += "(x,y,z,w)";
+      data = "x*10___ y*10___ z*10___      w*10__       ";
       break;
     case 'x':
-      remark += "(y,z,w,x)";
+      data = "y*10___ z*10___ w*10___      x*10__       ";
       break;
     case 'y':
-      remark += "(z,w,x,y)";
+      data = "z*10___ w*10___ x*10___      y*10__       ";
       break;
     case 'z':
-      remark += "(w,x,y,z)";
+      data = "w*10___ x*10___ y*10___      z*10__       ";
       break;
     case 'R':
-      remark += "(phi,psi,omega,partialCharge)";
-      break;
-    case 's':
-      remark = "# draw sequence for quaternions";
+      data = "phi____ psi____ omega-180    PartialCharge";
       break;
     }
-    remark += "\n";
+    remark += "\n\n" + getProteinStructureState(bsAtoms, ctype == 'R');
+    remark += "REMARK   6    AT GRP CH RESNO  " + data + "    Sym";
+    if (ctype != 'R')
+      remark += "   q0_______ q1_______ q2_______ q3_______  centerX___ centerY___ centerZ___";
+    if (qtype == 'n')
+      remark += "  NHX_______ NHY_______ NYZ_______";
+    remark += "\n\n";
     return remark + s;
   }
 

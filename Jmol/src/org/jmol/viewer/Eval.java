@@ -4491,7 +4491,7 @@ class Eval { //implements Runnable {
         evalError("QUATERNION [w,x,y,z,a,r] [difference][2]");
       type = "quaternion " + type + (isDerivative ? " difference" : "")
           + (isSecondDerivative ? "2" : "") 
-          + (isDraw ? " draw" : " (quaternionFrame " + viewer.getQuaternionFrame() + ")");
+          + (isDraw ? " draw" : "");
       break;
     }
     if (isSyntaxCheck) //just in case we later add parameter options to this

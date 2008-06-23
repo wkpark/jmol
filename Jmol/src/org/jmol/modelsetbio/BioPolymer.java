@@ -606,17 +606,6 @@ public abstract class BioPolymer extends Polymer {
                q = q.mul(-1);
           }
           qlast = q;
-          Point3f ptCenter = (p instanceof AminoPolymer ? AminoPolymer
-              .getQuaternionFrameCenter((AminoMonomer) a.getGroup(), qtype)
-              : p instanceof NucleicPolymer ? NucleicPolymer
-                  .getQuaternionFrameCenter((NucleicMonomer) a.getGroup(),
-                      qtype) : new Point3f());
-          strExtra = TextFormat.sprintf("%8.3p%8.3p%8.3p",
-              new Object[] { new Point3f[] { ptCenter } });
-          if (qtype == 'n')
-            strExtra += TextFormat.sprintf(" %8.3p%8.3p%8.3p",
-                new Object[] { new Point3f[] { ((AminoPolymer) p)
-                    .getNHPoint((AminoMonomer) a.getGroup()) } });
           switch (ctype) {
           default:
             x = q.q1;
@@ -643,6 +632,11 @@ public abstract class BioPolymer extends Polymer {
             w = q.q1;
             break;
           }
+          Point3f ptCenter = (p instanceof AminoPolymer ? AminoPolymer
+              .getQuaternionFrameCenter((AminoMonomer) a.getGroup(), qtype)
+              : p instanceof NucleicPolymer ? NucleicPolymer
+                  .getQuaternionFrameCenter((NucleicMonomer) a.getGroup(),
+                      qtype) : new Point3f());
           if (isDraw) {
             if (bsSelected != null && !bsSelected.get(a.getAtomIndex()))
               continue;
@@ -676,12 +670,21 @@ public abstract class BioPolymer extends Polymer {
             .append(" color ").append(qColor[derivType]).append('\n');
             continue;
           }
-        }
+          strExtra = TextFormat.sprintf("%10.6f%10.6f%10.6f%10.6f  %10.5p %10.5p %10.5p",
+              new Object[] { 
+                new float[] { q.q0, q.q1, q.q2, q.q3 },  
+                new Point3f[] { ptCenter }
+              });
+          if (qtype == 'n')
+            strExtra += TextFormat.sprintf("  %10.5p %10.5p %10.5p",
+                new Object[] { new Point3f[] { ((AminoPolymer) p)
+                    .getNHPoint((AminoMonomer) a.getGroup()) } });
+        } 
         if (pdbATOM == null)
           continue;
         pdbATOM.append(a.formatLabel("ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
         pdbATOM.append(TextFormat.sprintf(
-            "%8.3f%8.3f%8.3f%6.2f                %2s    %s\n", new String[] {
+            "%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n", new String[] {
                 a.getElementSymbol().toUpperCase(), strExtra }, new float[] {
                 x * factor, y * factor, z * factor, w * factor }));
         if (atomno != Integer.MIN_VALUE) {

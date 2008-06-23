@@ -349,7 +349,7 @@ public final class ModelLoader extends ModelSet {
           clientFile, i);
       if (modelName == null)
         modelName = (jmolData != null ? jmolData.substring(jmolData
-            .indexOf(":") + 2, jmolData.indexOf("data("))
+            .indexOf(":") + 2, jmolData.indexOf(";"))
             : modelNumber == Integer.MAX_VALUE ? "" : "" + (modelNumber % 1000000));
       boolean isPDBModel = setModelNameNumberProperties(ipt, iTrajectory, modelName,
           modelNumber, modelProperties, modelAuxiliaryInfo, isPDB, jmolData);

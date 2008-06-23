@@ -4463,7 +4463,8 @@ class Eval { //implements Runnable {
   private void dataFrame(int datatype) throws ScriptException {
     String type = "";
     boolean isQuaternion = false;
-    boolean isDraw = false;
+    boolean isDraw = (tokAt(0) == Token.draw);
+    int pt0 = (isDraw ? 1 : 0);
     boolean isDerivative = false;
     boolean isSecondDerivative = false;
     switch (datatype) {
@@ -4483,7 +4484,7 @@ class Eval { //implements Runnable {
       isSecondDerivative = (isDerivative && type.indexOf("2") > 0);
       if (isDerivative)
         pt--;
-      type = ((pt == 0 ? "" : optParameterAsString(pt))+"w").substring(0, 1);
+      type = ((pt <= pt0 ? "" : optParameterAsString(pt))+"w").substring(0, 1);
       if (type == "a" || type == "r")
         isDerivative = true;
       if (!Parser.isOneOf(type, "w;x;y;z;r;a")) // a absolute; r relative
@@ -9514,6 +9515,10 @@ class Eval { //implements Runnable {
     viewer.loadShape(JmolConstants.SHAPE_DRAW);
     if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_DRAW))
       return;
+    if (tokAt(1) == Token.quaternion) {
+      dataFrame(JmolConstants.JMOL_DATA_QUATERNION);
+      return;
+    }
     boolean havePoints = false;
     boolean isInitialized = false;
     boolean isSavedState = false;

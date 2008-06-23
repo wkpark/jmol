@@ -524,7 +524,7 @@ public abstract class BioPolymer extends Polymer {
           z = monomer.getOmega();
           if (z < -90)
             z += 360;
-          z -= 180;
+          //z -= 180;
           if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
             continue;
           w = a.getPartialCharge();

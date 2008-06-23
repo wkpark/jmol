@@ -195,7 +195,7 @@ abstract public class ModelSet extends ModelCollection {
     Point3f[] trajectory = (Point3f[]) trajectories.get(modelIndex);
     BitSet bs = new BitSet();
     int nAtoms = getAtomCountInModel(modelIndex);
-    for (int pt = 0, i = iFirst; i < nAtoms && pt < trajectory.length; i++) {
+    for (int pt = 0, i = iFirst; i < nAtoms && pt < trajectory.length && trajectory[pt]!= null; i++) {
       atoms[i].set(trajectory[pt++]);
       atoms[i].modelIndex = (short) modelIndex;
       bs.set(i);

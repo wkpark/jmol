@@ -1033,8 +1033,10 @@ public class AtomSetCollection {
   ////////////////////////////////////////////////////////////////
   
   void addTrajectory() {
-    if (trajectory.length == 0) //done with FIRST atom set
-      trajectory = new Point3f[atomCount];
+    //System.out.println(atomCount);
+    if (trajectory.length == 0 || trajectory.length < atomCount) {
+      trajectory = new Point3f[atomCount];      
+    }
     for (int i = 0; i < atomCount; i++)
       trajectory[i] = new Point3f(atoms[i]);
     trajectories.addElement(trajectory);

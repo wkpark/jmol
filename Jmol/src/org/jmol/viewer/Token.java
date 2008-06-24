@@ -499,13 +499,13 @@ public class Token {
 
   // xxx(a,b,c)
   
-  final static int point        = 1  | 3 << 3 | mathfunc;
-  final static int select       = 2  | 3 << 3 | mathfunc | expressionCommand;
+  final static int select       = 1  | 3 << 3 | mathfunc | expressionCommand;
   
   // xxx(a,b,c,d)
   
   final static int angle        = 1  | 4 << 3 | mathfunc;
   final static int plane        = 2  | 4 << 3 | mathfunc | specialstring; //may appear as string alone
+  final static int point        = 3  | 4 << 3 | mathfunc;
 
   // xxx(a,b,c,d,e)
   
@@ -962,6 +962,7 @@ public class Token {
   final static int triangles    = misc | 63;
   final static int url          = misc | 64; 
   final static int user         = misc | 65; //color option
+  final static int qw           = misc | 66;
 
 
   // predefined Tokens: 

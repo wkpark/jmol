@@ -24,6 +24,7 @@
 package org.jmol.util;
 
 import javax.vecmath.Matrix3f;
+import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
@@ -236,4 +237,21 @@ public class Quaternion {
   public Point4f toPoint4f() {
     return new Point4f(q1, q2, q3, q0);
   }
+  
+  public Point3f transform(Point3f pt) {
+    if (mat == null)
+      setMatrix();
+    Point3f ptNew = new Point3f(pt);
+    mat.transform(ptNew);
+    return ptNew;
+  }
+
+  public Vector3f transform(Vector3f v) {
+    if (mat == null)
+      setMatrix();
+    Vector3f vNew = new Vector3f(v);
+    mat.transform(vNew);
+    return vNew;
+  }
+
 }

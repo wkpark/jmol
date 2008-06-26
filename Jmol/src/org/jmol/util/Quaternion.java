@@ -33,12 +33,19 @@ import javax.vecmath.Vector3f;
 //import javax.vecmath.Point3f;
 //import javax.vecmath.Quat4f;
 
+/*
+ * Standard UNIT quaternion math -- for rotation.
+ * 
+ * 
+ */
+
+
 public class Quaternion {
   public float q0, q1, q2, q3;
 
   public Matrix3f mat;
   // create a new object with the given components
-  public Quaternion(float q0, float q1, float q2, float q3) {
+  private Quaternion(float q0, float q1, float q2, float q3) {
     this.q0 = q0;
     this.q1 = q1;
     this.q2 = q2;
@@ -46,10 +53,15 @@ public class Quaternion {
   }
 
   public Quaternion(Point4f pt) {
-    q0 = pt.w;
-    q1 = pt.x;
-    q2 = pt.y;
-    q3 = pt.z;
+    float factor = pt.distance(new Point4f(0,0,0,0));
+    if (factor == 0) {
+      q0 = 1;
+      return;
+    }
+    q0 = pt.w / factor;
+    q1 = pt.x / factor;
+    q2 = pt.y / factor;
+    q3 = pt.z / factor;
   }
 
   public Quaternion(Tuple3f pt, float theta) {
@@ -191,8 +203,16 @@ public class Quaternion {
     mat.m22 = q0 * q0 - q1 * q1 - q2 * q2 + q3 * q3;
   }
   
+  public Quaternion add(float x) {
+    // UNIT addition 
+    return new Quaternion(getNormal(), getTheta() + x);
+  }
+
   public Quaternion mul(float x) {
-    return new Quaternion(q0 * x, q1 * x, q2 * x, q3 * x);
+    // UNIT multiplication
+    if (x == 1 || x == -1)
+      return new Quaternion(q0 * x, q1 * x, q2 * x, q3 * x);
+    return new Quaternion(getNormal(), getTheta() * x);
   }
   
   public Quaternion mul(Quaternion p) {
@@ -202,6 +222,16 @@ public class Quaternion {
         q0 * p.q2 + q2 * p.q0 + q3 * p.q1 - q1 * p.q3,
         q0 * p.q3 + q3 * p.q0 + q1 * p.q2 - q2 * p.q1
         );
+  }
+  
+  public Quaternion div(Quaternion p) {
+    // unit quaternions assumed -- otherwise would scale by 1/p.dot(p)
+    return mul(p.inv());
+  }
+  
+  public Quaternion divLeft(Quaternion p) {
+    // unit quaternions assumed -- otherwise would scale by 1/p.dot(p)
+    return p.inv().mul(this);
   }
   
   public float dot(Quaternion q) {

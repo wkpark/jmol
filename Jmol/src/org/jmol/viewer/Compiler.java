@@ -1359,6 +1359,7 @@ class Compiler {
     case '%':
     case '[':
     case ']':
+    case '\\':  // leftdivide
     break;
     case '&':
     case '|':

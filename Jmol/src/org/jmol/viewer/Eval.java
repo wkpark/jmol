@@ -12304,10 +12304,11 @@ class Eval { //implements Runnable {
           return false;
         if (isSyntaxCheck)
           return addX(new Point4f(0, 0, 0, 1));
-        return addX(args.length == 4 ? new Point4f(Token.fValue(args[0]), Token
-            .fValue(args[1]), Token.fValue(args[2]), Token.fValue(args[3]))
-            : (new Quaternion((Point3f) args[0].value, Token.fValue(args[1]))
-                .toPoint4f()));
+        return addX(args.length == 4 ? (new Quaternion(new Point4f(
+            Token.fValue(args[1]), Token.fValue(args[2]),
+            Token.fValue(args[3]),Token.fValue(args[0])))).toPoint4f() 
+            : (new Quaternion(
+            (Point3f) args[0].value, Token.fValue(args[1])).toPoint4f()));
       }
       if (args.length != 1)
         return false;
@@ -12637,15 +12638,13 @@ class Eval { //implements Runnable {
       if (x2.tok == Token.list)
         x2 = Token.selectItem(x2);
 
-      if (op.tok == Token.opNot) 
-        return (isScriptCheck ? addX(true)
-            : x2.tok == Token.point4f ? // quaternion
-                addX((new Quaternion((Point4f) x2.value)).inv().toPoint4f())                
-            : x2.tok == Token.bitset ? 
-              addX(BitSetUtil.copyInvert(Token.bsSelect(x2), 
-                (x2.value instanceof BondSet ? viewer.getBondCount() 
-                    : viewer.getAtomCount()))) 
-            : addX(!Token.bValue(x2)));
+      if (op.tok == Token.opNot)
+        return (isScriptCheck ? addX(true) : x2.tok == Token.point4f ? // quaternion
+            addX((new Quaternion((Point4f) x2.value)).inv().toPoint4f())
+            : x2.tok == Token.bitset ? addX(BitSetUtil.copyInvert(Token
+                .bsSelect(x2), (x2.value instanceof BondSet ? viewer
+                .getBondCount() : viewer.getAtomCount()))) : addX(!Token
+                .bValue(x2)));
       int iv = op.intValue & ~Token.minmaxmask;
       if (op.tok == Token.propselector) {
         switch (iv) {
@@ -12743,29 +12742,34 @@ class Eval { //implements Runnable {
       case Token.plus:
         if (x1.tok == Token.list || x2.tok == Token.list)
           return addX(Token.concatList(x1, x2));
-        if (x1.tok == Token.string)
+        switch (x1.tok) {
+        default:
+          return addX(Token.fValue(x1) + Token.fValue(x2));
+        case Token.string:
           return addX(Token.sValue(x1) + Token.sValue(x2));
-        if (x1.tok == Token.string && x2.tok == Token.integer) {
-          if ((s = (Token.sValue(x1)).trim()).indexOf(".") < 0
-              && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
-            return addX(Token.iValue(x1) + x2.intValue);
-        }
-        if (x1.tok == Token.integer) {
+        case Token.point4f:
+          Quaternion q1 = new Quaternion((Point4f) x1.value);
+          switch (x2.tok) {
+          default:
+            return addX(q1.add(Token.fValue(x2)).toPoint4f());
+          case Token.point4f:
+            return addX(q1.mul(new Quaternion((Point4f) x2.value)).toPoint4f());
+          }
+        case Token.integer:
           if (x2.tok == Token.string) {
             if ((s = (Token.sValue(x2)).trim()).indexOf(".") < 0
                 && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
               return addX(x1.intValue + Token.iValue(x2));
           } else if (x2.tok != Token.decimal)
             return addX(x1.intValue + Token.iValue(x2));
-        }
-        if (x1.tok == Token.point3f) {
+        case Token.point3f:
           Point3f pt = new Point3f((Point3f) x1.value);
           switch (x2.tok) {
           case Token.point3f:
             pt.add((Point3f) x2.value);
             return addX(pt);
           case Token.point4f:
-           //extract {xyz}
+            //extract {xyz}
             Point4f pt4 = (Point4f) x2.value;
             pt.add(new Point3f(pt4.x, pt4.y, pt4.z));
             return addX(pt);
@@ -12774,7 +12778,6 @@ class Eval { //implements Runnable {
             return addX(new Point3f(pt.x + f, pt.y + f, pt.z + f));
           }
         }
-        return addX(Token.fValue(x1) + Token.fValue(x2));
       case Token.minus:
         if (x1.tok == Token.integer) {
           if (x2.tok == Token.string) {
@@ -12789,34 +12792,38 @@ class Eval { //implements Runnable {
               && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
             return addX(Token.iValue(x1) - x2.intValue);
         }
-        if (x1.tok == Token.integer && x2.tok == Token.integer)
-          return addX(x1.intValue - Token.iValue(x2));
-        if (x1.tok == Token.point3f) {
+        switch (x1.tok) {
+        default:
+          return addX(Token.fValue(x1) - Token.fValue(x2));
+        case Token.point3f:
           Point3f pt = new Point3f((Point3f) x1.value);
           switch (x2.tok) {
+          default:
+            float f = Token.fValue(x2);
+            return addX(new Point3f(pt.x - f, pt.y - f, pt.z - f));
           case Token.point3f:
             pt.sub((Point3f) x2.value);
             return addX(pt);
           case Token.point4f:
             //extract {xyz}
-             Point4f pt4 = (Point4f) x2.value;
-             pt.sub(new Point3f(pt4.x, pt4.y, pt4.z));
-             return addX(pt);
-          default:
-            float f = Token.fValue(x2);
-            return addX(new Point3f(pt.x - f, pt.y - f, pt.z - f));
+            Point4f pt4 = (Point4f) x2.value;
+            pt.sub(new Point3f(pt4.x, pt4.y, pt4.z));
+            return addX(pt);
           }
-        }
-        if (x1.tok == Token.point4f) {
-          if (x2.tok == Token.point4f) {
-            Quaternion q1 = new Quaternion((Point4f)x1.value);
-            Quaternion q2 = new Quaternion((Point4f)x2.value);
+        case Token.point4f:
+          Quaternion q1 = new Quaternion((Point4f) x1.value);
+          switch (x2.tok) {
+          default:
+            return addX(q1.add(-Token.fValue(x2)).toPoint4f());
+          case Token.point4f:
+            Quaternion q2 = new Quaternion((Point4f) x2.value);
             return addX(q2.mul(q1.inv()).toPoint4f());
           }
         }
-        return addX(Token.fValue(x1) - Token.fValue(x2));
       case Token.unaryMinus:
         switch (x2.tok) {
+        default:
+          return addX(-Token.fValue(x2));
         case Token.integer:
           return addX(-Token.iValue(x2));
         case Token.point3f:
@@ -12828,14 +12835,17 @@ class Eval { //implements Runnable {
           plane.scale(-1f);
           return addX(plane);
         case Token.bitset:
-          return addX(BitSetUtil.copyInvert(Token.bsSelect(x2), 
-              (x2.value instanceof BondSet ? viewer.getBondCount() : viewer.getAtomCount())));
+          return addX(BitSetUtil.copyInvert(Token.bsSelect(x2),
+              (x2.value instanceof BondSet ? viewer.getBondCount() : viewer
+                  .getAtomCount())));
         }
-        return addX(-Token.fValue(x2));
       case Token.times:
         if (x1.tok == Token.integer && x2.tok != Token.decimal)
           return addX(x1.intValue * Token.iValue(x2));
-        if (x1.tok == Token.point3f) {
+        switch (x1.tok) {
+        default:
+          return addX(Token.fValue(x1) * Token.fValue(x2));
+        case Token.point3f:
           Point3f pt = new Point3f((Point3f) x1.value);
           switch (x2.tok) {
           case Token.point3f:
@@ -12845,17 +12855,19 @@ class Eval { //implements Runnable {
             float f = Token.fValue(x2);
             return addX(new Point3f(pt.x * f, pt.y * f, pt.z * f));
           }
+        case Token.point4f:
+          if (x2.tok == Token.point4f) {
+            //quaternion multiplication
+            // note that Point4f is {x,y,z,w} so we use that for
+            // quaternion notation as well here.
+            Quaternion q1 = new Quaternion((Point4f) x1.value);
+            Quaternion q = new Quaternion((Point4f) x2.value);
+            q = q1.mul(q);
+            return addX(new Point4f(q.q1, q.q2, q.q3, q.q0));
+          }
+          return addX(new Quaternion((Point4f) x1.value).mul(Token.fValue(x2))
+              .toPoint4f());
         }
-        if (x1.tok == Token.point4f && x2.tok == Token.point4f) {
-          //quaternion multiplication
-          // note that Point4f is {x,y,z,w} so we use that for
-          // quaternion notation as well here. 
-          Quaternion q1 = new Quaternion((Point4f)x1.value);
-          Quaternion q = new Quaternion((Point4f)x2.value);
-          q = q1.mul(q);
-          return addX(new Point4f(q.q1, q.q2, q.q3, q.q0));
-        }
-        return addX(Token.fValue(x1) * Token.fValue(x2));
       case Token.percent:
         // more than just modulus
 
@@ -12875,6 +12887,7 @@ class Eval { //implements Runnable {
         case Token.on:
         case Token.off:
         case Token.integer:
+        default:
           if (n == 0)
             return addX((int) 0);
           return addX(Token.iValue(x1) % n);
@@ -12911,8 +12924,8 @@ class Eval { //implements Runnable {
         case Token.point4f:
           Point4f q = (Point4f) x1.value;
           if (x2.tok == Token.point3f)
-            return addX((new Quaternion(q)).transform((Point3f)x2.value));
-          switch(n) {
+            return addX((new Quaternion(q)).transform((Point3f) x2.value));
+          switch (n) {
           case 0:
             return addX(q.w);
           case 1:
@@ -12941,20 +12954,43 @@ class Eval { //implements Runnable {
         if (x1.tok == Token.integer && x2.tok == Token.integer
             && x2.intValue != 0)
           return addX(x1.intValue / x2.intValue);
-        if (x1.tok == Token.point3f) {
-          Point3f pt = new Point3f((Point3f) x1.value);
-          float f = Token.fValue(x2);
-          if (f == 0)
-            return addX(new Point3f(Float.NaN, Float.NaN, Float.NaN));
-          return addX(new Point3f(pt.x / f, pt.y / f, pt.z / f));
-        }
-        float f1 = Token.fValue(x1);
         float f2 = Token.fValue(x2);
-        if (f2 == 0)
-          return addX(f1 == 0 ? 0f : f1 < 0 ? Float.POSITIVE_INFINITY
-              : Float.POSITIVE_INFINITY);
-        return addX(f1 / f2);
+        switch (x1.tok) {
+        default:
+          float f1 = Token.fValue(x1);
+          if (f2 == 0)
+            return addX(f1 == 0 ? 0f : f1 < 0 ? Float.POSITIVE_INFINITY
+                : Float.POSITIVE_INFINITY);
+          return addX(f1 / f2);
+        case Token.point3f:
+          Point3f pt = new Point3f((Point3f) x1.value);
+          if (f2 == 0)
+            return addX(new Point3f(Float.NaN, Float.NaN, Float.NaN));
+          return addX(new Point3f(pt.x / f2, pt.y / f2, pt.z / f2));
+        case Token.point4f:
+          if (f2 == 0)
+            return addX(new Point4f(Float.NaN, Float.NaN, Float.NaN, Float.NaN));
+          if (x2.tok == Token.point4f)
+            return addX(new Quaternion((Point4f) x1.value).div(
+                new Quaternion((Point4f) x2.value)).toPoint4f());
+          return addX(new Quaternion((Point4f) x1.value).mul(1 / f2)
+              .toPoint4f());
+        }
+    case Token.leftdivide:
+      float f = Token.fValue(x2);
+      switch (x1.tok) {
+      default:
+        return addX(f == 0 ? 0 : (int) (Token.fValue(x1) / Token.fValue(x2)));
+      case Token.point4f:
+        if (f == 0)
+          return addX(new Point4f(Float.NaN, Float.NaN, Float.NaN, Float.NaN));
+        if (x2.tok == Token.point4f)
+          return addX(new Quaternion((Point4f) x1.value).divLeft(
+              new Quaternion((Point4f) x2.value)).toPoint4f());
+        return addX(new Quaternion((Point4f) x1.value).mul(1 / f)
+            .toPoint4f());
       }
+    }
       return true;
     }
 

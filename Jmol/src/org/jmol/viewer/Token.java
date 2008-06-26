@@ -364,6 +364,7 @@ public class Token {
   final static int divide       = 0  | mathop | 8 << 3;
   final static int times        = 1  | mathop | 8 << 3;
   final static int percent      = 2  | mathop | 8 << 3;
+  final static int leftdivide   = 3  | mathop | 8 << 3;  //   quaternion1 \ quaternion2
   
   final static int unaryMinus   = 0  | mathop | 9 << 3;
   
@@ -484,7 +485,6 @@ public class Token {
   final static int random       = 1  | 2 << 3 | mathfunc;
   final static int data         = 2  | 2 << 3 | mathfunc | command;
   final static int cross        = 3  | 2 << 3 | mathfunc;
-  final static int quaternion   = 4  | 2 << 3 | mathfunc | command;
 
   // ___.xxx(a,b)
 
@@ -506,6 +506,7 @@ public class Token {
   final static int angle        = 1  | 4 << 3 | mathfunc;
   final static int plane        = 2  | 4 << 3 | mathfunc | specialstring; //may appear as string alone
   final static int point        = 3  | 4 << 3 | mathfunc;
+  final static int quaternion   = 4  | 4 << 3 | mathfunc | command;
 
   // xxx(a,b,c,d,e)
   
@@ -1227,6 +1228,7 @@ public class Token {
     "-",            tokenMinus,
     "*",            tokenTimes,
     "/",            tokenDivide,
+    "\\",           new Token(leftdivide),
 
     // misc
         

@@ -700,9 +700,8 @@ public abstract class BioPolymer extends Polymer {
   }
   
   private static float getStraightness(String id, Quaternion dqprev, Quaternion dq) {
-    float f = Math.abs(dqprev.getNormal().dot(dq.getNormal()));
-    //System.out.println(id + " " + f + " " + dqprev.getNormal() + " " + dq.getNormal());
-    return (2 * f - 1);
+    float f = (float) (Math.acos(dqprev.getNormal().dot(dq.getNormal()))/ Math.PI);
+    return 1 - 2 * f;
   }
 
   Quaternion getQuaternion(int m, char qtype) {

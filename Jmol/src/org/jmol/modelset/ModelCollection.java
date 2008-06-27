@@ -2131,7 +2131,7 @@ abstract public class ModelCollection extends BondCollection {
   
   //////////// state definition ///////////
 
-  protected String getProteinStructureState(BitSet bsAtoms, boolean needPhiPsi) {
+  public String getProteinStructureState(BitSet bsAtoms, boolean needPhiPsi) {
     BitSet bs = null;
     StringBuffer cmd = new StringBuffer();
     StringBuffer sbTurn = new StringBuffer();

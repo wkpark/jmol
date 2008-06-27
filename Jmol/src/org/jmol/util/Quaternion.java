@@ -36,6 +36,18 @@ import javax.vecmath.Vector3f;
 /*
  * Standard UNIT quaternion math -- for rotation.
  * 
+ * All rotations can be represented as two identical quaternions. 
+ * This is because any rotation can be considered from either end of the
+ * rotational axis -- either as a + rotation or a - rotation. This code
+ * is designed to always maintain the quaternion with a rotation in the
+ * [0, PI) range. 
+ * 
+ * This ensures that the reported theta is always positive, and the normal
+ * reported is always associated with a positive theta.  
+ * 
+ * By Bob Hanson, hansonr@stolaf.edu 6/2008
+ * 
+ * 
  * 
  */
 
@@ -50,6 +62,7 @@ public class Quaternion {
     this.q1 = q1;
     this.q2 = q2;
     this.q3 = q3;
+    fixQ();
   }
 
   public Quaternion(Point4f pt) {
@@ -62,7 +75,8 @@ public class Quaternion {
     q1 = pt.x / factor;
     q2 = pt.y / factor;
     q3 = pt.z / factor;
-  }
+    fixQ();
+}
 
   public Quaternion(Tuple3f pt, float theta) {
     if (pt.x == 0 && pt.y == 0 && pt.z == 0) {
@@ -74,8 +88,19 @@ public class Quaternion {
     q1 = pt.x * fact;
     q2 = pt.y * fact;
     q3 = pt.z * fact;
+    fixQ();
   }
   
+  private Quaternion fixQ() {
+    if (q0 < 0) {
+      q0 = -q0;
+      q1 = -q1;
+      q2 = -q2;
+      q3 = -q3;
+    }
+    return this;
+  }
+
   public Quaternion(Matrix3f mat) {
 
     /*
@@ -92,44 +117,37 @@ public class Quaternion {
 
     float tr = mat.m00 + mat.m11 + mat.m22; /* Matrix trace */
     float s;
+    float[] q = new float[4];
     if (tr > 0) {
       s = (float) Math.sqrt(tr + 1);
       q0 = 0.5f * s;
       s = 0.5f / s;
-      q1 = (mat.m12 - mat.m21) * s;
-      q2 = (mat.m20 - mat.m02) * s;
-      q3 = (mat.m01 - mat.m10) * s;
-      
-      q1 = -q1;
-      q2 = -q2;
-      q3 = -q3;
-      
+      q1 = (mat.m21 - mat.m12) * s;
+      q2 = (mat.m02 - mat.m20) * s;
+      q3 = (mat.m10 - mat.m01) * s;
     } else {
       float[][] m = new float[][] { new float[3], new float[3], new float[3] };
       mat.getRow(0, m[0]);
       mat.getRow(1, m[1]);
       mat.getRow(2, m[2]);
 
-      /* Find out the bigger element from diagonal */
+      /* Find out the biggest element along the diagonal */
       float max = Math.max(mat.m11, mat.m00);
-      int i = (max == mat.m00 ? 0 : mat.m22 > max ? 2 : 1);
+      int i = (mat.m22 > max ? 2 : max == mat.m11 ? 1 : 0);
       int j = (i + 1) % 3;
       int k = (j + 1) % 3;
-      s = (float) Math.sqrt((m[i][i] - (m[j][j] + m[k][k])) + 1);
-      float[] q = new float[4];
+      s = -(float) Math.sqrt((m[i][i] - (m[j][j] + m[k][k])) + 1);
       q[i] = s * 0.5f;
       if (s != 0)
         s = 0.5f / s;
       q[j] = (m[i][j] + m[j][i]) * s;
       q[k] = (m[i][k] + m[k][i]) * s;
-      q[3] = (m[j][k] - m[k][j]) * s;
-
-      q1 = -q[0];  // x
-      q2 = -q[1];  // y
-      q3 = -q[2];  // z  
-      q0 = q[3];  // w
-
+      q0 = (m[k][j] - m[j][k]) * s;
+      q1 = q[0];  // x
+      q2 = q[1];  // y
+      q3 = q[2];  // z  
     }
+    fixQ();
   }
   
   public static final Quaternion getQuaternionFrame(Vector3f vA, Vector3f vB, Vector3f vC) {
@@ -243,6 +261,7 @@ public class Quaternion {
   }
   
   public String toString() {
+    fixQ();
     return "{" + q0 + " " + q1 + " " + q2 + " " + q3 + "}";
   }
   
@@ -255,16 +274,19 @@ public class Quaternion {
   }
   
   public Vector3f getNormal() {
+    fixQ();
     Vector3f v = new Vector3f(q1, q2, q3);
     v.normalize();
     return v;
   }
   
   public float getTheta() {
+    fixQ();
     return (float) (Math.acos(q0) * 2 * 180/Math.PI);  
   }
   
   public Point4f toPoint4f() {
+    fixQ();
     return new Point4f(q1, q2, q3, q0);
   }
   

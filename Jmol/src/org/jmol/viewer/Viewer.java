@@ -2525,6 +2525,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getState(null, false);
   }
 
+  String getProteinStructureState() {
+    return modelSet.getProteinStructureState(selectionManager.bsSelection, false);
+  }
+
   public String getCoordinateState(BitSet bsSelected) {
     return modelSet.getAtomicPropertyState(AtomCollection.TAINT_COORD, bsSelected);
   }
@@ -6737,4 +6741,5 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void setQuaternionFrame(String qType) {
     global.quaternionFrame = "" + (qType.toLowerCase()+"c").charAt(0);
   }
+
 }

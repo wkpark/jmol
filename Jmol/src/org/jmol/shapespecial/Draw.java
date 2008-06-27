@@ -831,10 +831,11 @@ public class Draw extends MeshCollection {
       return null;
     Point3f v = pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][pickedVertex]];
     if (isDrawPicking && !isPickingMode) {
-      viewer.setStatusAtomPicked(-2, "[\"draw\",\"" + pickedMesh.thisID + "\"," +
+      if (modifiers != 0) // not mouseMove
+        viewer.setStatusAtomPicked(-2, "[\"draw\",\"" + pickedMesh.thisID + "\"," +
           + pickedModel + "," + pickedVertex + "," + v.x + "," + v.y + "," + v.z+"]"
-          + (pickedMesh.title == null ? "" :      
-            "\"" + pickedMesh.title[pickedModel]+"\""));
+          + (pickedMesh.title == null ? "" 
+               : "\"" + pickedMesh.title[pickedModel]+"\""));
       return v; 
     }
     if (modifiers == 0 || pickedMesh.polygonIndexes[pickedModel][0] == pickedMesh.polygonIndexes[pickedModel][1])

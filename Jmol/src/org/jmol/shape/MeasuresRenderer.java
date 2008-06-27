@@ -64,13 +64,9 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       if (colix == 0)
         colix = viewer.getColixBackgroundContrast();
       g3d.setColix(colix);
-      renderMeasurement(m);
+      renderMeasurement(m.getCount(), m, true);
     }
     renderPendingMeasurement(measures.pendingMeasurement);
-  }
-
-  private void renderMeasurement(Measurement measurement) {
-    renderMeasurement(measurement.getCount(), measurement, true); 
   }
 
   Point3fi atomA, atomB, atomC, atomD;
@@ -251,7 +247,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     if (pendingMeasurement.getLastIndex() == -1)
       renderPendingWithCursor(pendingMeasurement);
     else
-      renderMeasurement(pendingMeasurement);
+      renderMeasurement(pendingMeasurement.getCount(), pendingMeasurement, true);
   }
   
   private void renderPendingWithCursor(MeasurementPending pendingMeasurement) {

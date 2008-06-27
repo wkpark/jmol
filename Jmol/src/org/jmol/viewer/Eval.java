@@ -4547,7 +4547,7 @@ class Eval { //implements Runnable {
           + "select visible; wireframe 0; "
           + "isosurface quatSphere" + modelCount
           + " resolution 1.0 sphere 10.0 mesh nofill translucent 0.8;set rotationRadius 12;"
-          + (isDerivative ? "color structure" : "trace 0.1; color trace structure;");
+          + "color structure";
       break;
     }
     runScript(script);
@@ -9148,7 +9148,7 @@ class Eval { //implements Runnable {
     case Token.structure:
       if ((len = statementLength) == 2) {
         if (!isSyntaxCheck)
-          msg = viewer.getStructureState();
+          msg = viewer.getProteinStructureState();
         break;
       }
       String shape = parameterAsString(2);

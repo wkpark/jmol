@@ -580,12 +580,11 @@ abstract public class ModelSet extends ModelCollection {
 
     // connections
 
-    
     if (isAll) {
-      
+
       int len = stateScripts.size();
       for (int i = 0; i < len; i++) {
-        StateScript ss = (StateScript) stateScripts.get(i); 
+        StateScript ss = (StateScript) stateScripts.get(i);
         if (ss.postDefinitions && (cmd = ss.toString()).length() > 0)
           commands.append("  ").append(cmd).append("\n");
       }
@@ -594,14 +593,14 @@ abstract public class ModelSet extends ModelCollection {
         if ((bonds[i].order & JmolConstants.BOND_NEW) != 0
             || bonds[i].isHydrogen()) {
           Bond bond = bonds[i];
-          commands.append("  connect ") 
-              .append("({").append(bond.atom1.atomIndex).append("}) ") 
-              .append("({").append(bond.atom2.atomIndex).append("}) ") 
-              .append(JmolConstants.getBondOrderNameFromOrder(bond.order))
+          commands.append("  connect ").append("({").append(
+              bond.atom1.atomIndex).append("}) ").append("({").append(
+              bond.atom2.atomIndex).append("}) ").append(
+              JmolConstants.getBondOrderNameFromOrder(bond.order))
               .append(";\n");
         }
       }
-      commands.append("\n");      
+      commands.append("\n");
     }
 
     // shape construction
@@ -618,15 +617,17 @@ abstract public class ModelSet extends ModelCollection {
         commands.append(cmd);
     }
 
-    for (int i = 0; i < modelCount; i++) {
-      String t = frameTitles[i];
-      if (t != null && t.length() > 0)
-        commands.append("  frame " + getModelNumberDotted(i) + "; frame title "
-            + Escape.escape(t) + ";\n");
+    if (isAll) {
+      for (int i = 0; i < modelCount; i++) {
+        String t = frameTitles[i];
+        if (t != null && t.length() > 0)
+          commands.append("  frame " + getModelNumberDotted(i)
+              + "; frame title " + Escape.escape(t) + ";\n");
+      }
+
+      commands.append("  set fontScaling " + viewer.getFontScaling() + ";\n");
+
     }
-
-    commands.append("  set fontScaling " + viewer.getFontScaling() + ";\n");
-
     if (sfunc != null)
       commands.append("\nend function;\n\n");
     return commands.toString();

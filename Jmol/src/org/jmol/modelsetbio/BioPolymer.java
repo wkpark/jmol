@@ -514,6 +514,8 @@ public abstract class BioPolymer extends Polymer {
     String strExtra = "";
     boolean isRelativeAlias = (ctype == 'r');
     String prefix = (derivType > 0 ? "dq" + (derivType  == 2 ? "2" : "") : "q");
+    float psiLast = Float.NaN;
+    Quaternion q;
     for (int m = 0; m < p.monomerCount; m++) {
       Monomer monomer = p.monomers[m];
       if (bsAtoms == null || bsAtoms.get(monomer.getLeadAtomIndex())) {
@@ -528,11 +530,21 @@ public abstract class BioPolymer extends Polymer {
           if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
             continue;
           w = a.getPartialCharge();
+          float phiNext = (m == p.monomerCount - 1 ? Float.NaN : p.monomers[m + 1].getPhi());   
+          float angle = y + phiNext - psiLast - x;//psi[i] + phi[i+1] - psi[i-1] - phi[i]
+          if (Float.isNaN(angle)) {
+            strExtra = "";
+          } else {
+            q = new Quaternion (new Point3f(1, 0, 0), angle);
+            strExtra = TextFormat.sprintf("%10.6f%10.6f%10.6f%10.6f  %6.2f",
+                new Object[] { new float[] { q.q0, q.q1, q.q2, q.q3, q.getTheta() } });
+          }
+          psiLast = y;
         } else {
           char cid = monomer.getChainID();
           String id = "" + monomer.getResno()
               + (cid == '\0' ? "" : "" + cid);
-          Quaternion q = p.getQuaternion(m, qtype);
+          q = p.getQuaternion(m, qtype);
           if (q == null) {
             qlast = null;
             atomno = Integer.MIN_VALUE;
@@ -642,9 +654,9 @@ public abstract class BioPolymer extends Polymer {
             .append(" color ").append(qColor[derivType]).append('\n');
             continue;
           }
-          strExtra = TextFormat.sprintf("%10.6f%10.6f%10.6f%10.6f  %10.5p %10.5p %10.5p",
+          strExtra = TextFormat.sprintf("%10.6f%10.6f%10.6f%10.6f  %6.2f  %10.5p %10.5p %10.5p",
               new Object[] { 
-                new float[] { q.q0, q.q1, q.q2, q.q3 },  
+                new float[] { q.q0, q.q1, q.q2, q.q3, q.getTheta() },  
                 new Point3f[] { ptCenter }
               });
           if (qtype == 'n')

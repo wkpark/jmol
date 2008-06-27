@@ -8812,7 +8812,7 @@ class Eval { //implements Runnable {
       }
       if (type != "VAR" && pt == 1)
         type = "image";
-      else if (fileName.charAt(0) == '.' && (pt == 2 || pt == 3)) {
+      else if (fileName.length() > 0 && fileName.charAt(0) == '.' && (pt == 2 || pt == 3)) {
         fileName = Token.sValue(tokenAt(pt - 1, args)) + fileName;
         if (type != "VAR" && pt == 2)
           type = "image";
@@ -12755,13 +12755,6 @@ class Eval { //implements Runnable {
           case Token.point4f:
             return addX(q1.mul(new Quaternion((Point4f) x2.value)).toPoint4f());
           }
-        case Token.integer:
-          if (x2.tok == Token.string) {
-            if ((s = (Token.sValue(x2)).trim()).indexOf(".") < 0
-                && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
-              return addX(x1.intValue + Token.iValue(x2));
-          } else if (x2.tok != Token.decimal)
-            return addX(x1.intValue + Token.iValue(x2));
         case Token.point3f:
           Point3f pt = new Point3f((Point3f) x1.value);
           switch (x2.tok) {
@@ -12773,6 +12766,14 @@ class Eval { //implements Runnable {
             Point4f pt4 = (Point4f) x2.value;
             pt.add(new Point3f(pt4.x, pt4.y, pt4.z));
             return addX(pt);
+          case Token.integer:
+            if (x2.tok == Token.string) {
+              if ((s = (Token.sValue(x2)).trim()).indexOf(".") < 0
+                  && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
+                return addX(x1.intValue + Token.iValue(x2));
+            } else if (x2.tok != Token.decimal)
+              return addX(x1.intValue + Token.iValue(x2));
+            // fall through
           default:
             float f = Token.fValue(x2);
             return addX(new Point3f(pt.x + f, pt.y + f, pt.z + f));

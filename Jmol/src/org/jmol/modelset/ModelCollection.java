@@ -972,9 +972,9 @@ abstract public class ModelCollection extends BondCollection {
       break;
     }
     remark += "\n\n" + getProteinStructureState(bsAtoms, ctype == 'R');
-    remark += "REMARK   6    AT GRP CH RESNO  " + data + "    Sym";
+    remark += "REMARK   6    AT GRP CH RESNO  " + data + "    Sym   q0_______ q1_______ q2_______ q3_______  theta_";
     if (ctype != 'R')
-      remark += "   q0_______ q1_______ q2_______ q3_______  centerX___ centerY___ centerZ___";
+      remark += "  centerX___ centerY___ centerZ___";
     if (qtype == 'n')
       remark += "  NHX_______ NHY_______ NYZ_______";
     remark += "\n\n";

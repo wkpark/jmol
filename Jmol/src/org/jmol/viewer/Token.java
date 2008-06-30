@@ -181,7 +181,6 @@ public class Token {
   final static int rotate       = command | 27 | numberOrExpression;
   final static int save         = command | 28;
 //  final static int script       = command | 29; with mathfunc 
-  final static int selectx      = command | 30 | implicitExpression;
   final static int set          = command | 31 | implicitExpression | colorparam;
   final static int show         = command | 32;
   final static int slab         = command | 33 | numberOrExpression;
@@ -463,7 +462,7 @@ public class Token {
 
   // ___.xxx(a)
   
-  // a.distance(b) is in a different set -- x.distance(b,c) -- because it CAN take
+  // a.distance(b) is in a different set -- distance(b,c) -- because it CAN take
   // two parameters and it CAN be a dot-function (but not both together)
   
   final static int split        = 0  | 1 << 3 | mathfunc | mathproperty;
@@ -1108,7 +1107,6 @@ public class Token {
     "script",            new Token(script,          varArgCount),
     "source",            null, 
     "select",            new Token(select,          varArgCount),
-    "selectX",           new Token(selectx,         varArgCount),
     "selectionHalos",    new Token(selectionHalo,    onDefault1),
     "selectionHalo",     null, 
     "set",               new Token(set,             varArgCount),

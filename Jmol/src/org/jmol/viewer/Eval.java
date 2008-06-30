@@ -989,9 +989,6 @@ class Eval { //implements Runnable {
       case Token.select:
         select();
         break;
-      case Token.selectx:
-        selectX();
-        break;
       case Token.translate:
         translate();
         break;
@@ -5376,7 +5373,16 @@ class Eval { //implements Runnable {
       }
       error(ERROR_invalidArgument);
     }
-    BitSet bs = expression(1);
+    BitSet bs = null;
+    if (getToken(1).intValue != statementLength) {
+      Object v = tokenSetting(0).value;
+      if (!(v instanceof BitSet))
+        error(ERROR_invalidArgument);
+      checkStatementLength(++iToken);
+      bs = (BitSet) v;
+    } else {
+      bs = expression(1);
+    }
     if (isSyntaxCheck)
       return;
     if (isBondSet) {
@@ -5384,20 +5390,6 @@ class Eval { //implements Runnable {
     } else {
       viewer.select(bs, tQuiet || scriptLevel > scriptReportingLevel);
     }
-  }
-
-  private void selectX() throws ScriptException {
-    if (statementLength == 1) {
-      viewer.select(null, tQuiet || scriptLevel > scriptReportingLevel);
-      return;
-    }
-    Object v = tokenSetting(0).value;
-    if (!(v instanceof BitSet))
-      error(ERROR_invalidArgument);
-    checkStatementLength(++iToken);
-    if (isSyntaxCheck)
-      return;    
-    viewer.select((BitSet)v, tQuiet || scriptLevel > scriptReportingLevel);
   }
 
   private void subset() throws ScriptException {
@@ -7034,7 +7026,9 @@ class Eval { //implements Runnable {
     }
     int tokProperty = Token.nada;
     if (tokAt(pt) == Token.dot) {
-      Token token = getBitsetPropertySelector(pt++, true);
+      Token token = getBitsetPropertySelector(++pt, true);
+      if (token == null)
+        error(ERROR_invalidArgument);
       if (tokAt(++pt) != Token.opEQ)
         error(ERROR_invalidArgument);
       pt++;
@@ -7212,15 +7206,17 @@ class Eval { //implements Runnable {
 
   private Object parameterExpression(int pt, int ptMax, String key,
                                      boolean asVector) throws ScriptException {
-    return parameterExpression(pt, ptMax, key, asVector, -1, null);
+    return parameterExpression(pt, ptMax, key, asVector, -1, null, null);
   }
 
   private Object parameterExpression(int pt, int ptMax, String key,
                                      boolean asVector, int ptAtom,
-                                     Hashtable localVars)
+                                     Hashtable localVars, String localVar)
       throws ScriptException {
     Object v;
+    boolean isSelectX = (pt == 0);
     boolean isOneExpressionOnly = (pt < 0);
+    boolean isImplicitAtomProperty = (localVar != null);
     if (isOneExpressionOnly)
       pt = -pt;
     int nParen = 0;
@@ -7230,14 +7226,18 @@ class Eval { //implements Runnable {
       ptMax = statementLength;
     out: for (int i = pt; i < ptMax; i++) {
       v = null;
-      switch (getToken(i).tok) {
-      case Token.selectx:
-        if (i != 0)
-          error(ERROR_invalidArgument);
-        // fall through
+      int tok = getToken(i).tok;
+      if (isImplicitAtomProperty && tokAt(i + 1) != Token.dot) {
+        if (Compiler.tokAttr(tok, Token.atomproperty)) {
+          rpn.addX((Token) localVars.get(localVar));
+          if (!rpn.addOp(new Token(Token.propselector, tok, parameterAsString(i).toLowerCase())))
+            error(ERROR_invalidArgument);
+          continue;
+        }
+      }
+      switch (tok) {
       case Token.select:
-        String dummy = "x";
-        boolean isSelectX = (theTok == Token.selectx);
+        String dummy = "_x";
         if (!isSelectX) {
           if (getToken(++i).tok != Token.leftparen
               || getToken(++i).tok != Token.identifier)
@@ -7265,8 +7265,8 @@ class Eval { //implements Runnable {
             bsX.clear();
             bsX.set(j);
             t.intValue2 = j;
-            if (((Boolean) parameterExpression(i, -1, null, false, j, localVars))
-                .booleanValue())
+            if (((Boolean) parameterExpression(i, -1, null, false, j, 
+                localVars, isSelectX ? dummy : null)).booleanValue())
               bsSelect.set(j);
             if (!isSelectX && tokAt(iToken) != Token.rightparen)
               error(ERROR_invalidArgument);
@@ -7317,7 +7317,9 @@ class Eval { //implements Runnable {
           error(ERROR_invalidArgument);
         break;
       case Token.dot:
-        Token token = getBitsetPropertySelector(i, false);
+        Token token = getBitsetPropertySelector(i + 1, false);
+        if (token == null)
+          error(ERROR_invalidArgument);
         //check for added min/max modifier
         if (tokAt(iToken + 1) == Token.dot) {
           if (tokAt(iToken + 2) == Token.all) {
@@ -7565,16 +7567,17 @@ class Eval { //implements Runnable {
 
   private Token getBitsetPropertySelector(int i, boolean mustBeSettable)
       throws ScriptException {
-    int tok = getToken(++i).tok;
-    String s = parameterAsString(i).toLowerCase();
+    int tok = getToken(i).tok;
+    String s = null;
     switch (tok) {
     default:
       if (Compiler.tokAttrOr(tok, Token.atomproperty, Token.mathproperty))
         break;
-      error(ERROR_invalidArgument);
+      return null; 
     case Token.property:
       break;
     case Token.identifier:
+      s = parameterAsString(i).toLowerCase();
       if (s.equals("x"))
         tok = Token.atomX;
       else if (s.equals("y"))
@@ -7584,11 +7587,13 @@ class Eval { //implements Runnable {
       else if (s.equals("w"))
         tok = Token.qw;
       else
-        error(ERROR_invalidArgument);
+        return null;
       break;
     }
     if (mustBeSettable && !Compiler.tokAttr(tok, Token.settable))
-      error(ERROR_invalidArgument);
+      return null;
+    if (s == null)
+      s = parameterAsString(i).toLowerCase();
     return new Token(Token.propselector, tok, s);
   }
 

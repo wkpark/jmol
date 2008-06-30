@@ -1414,7 +1414,6 @@ class Compiler {
 
   boolean isImplicitExpression;
   boolean isSetOrDefine;
-  boolean isSelectX;
   Token tokenCommand;
   int tokCommand;
 
@@ -1435,7 +1434,6 @@ class Compiler {
     tokCommand = tokenCommand.tok;
     isImplicitExpression = tokAttr(tokCommand, Token.implicitExpression);
     isSetOrDefine = (tokCommand == Token.set || tokCommand == Token.define);
-    isSelectX = (tokCommand == Token.selectx);
     isCommaAsOrAllowed = tokAttr(tokCommand, Token.expressionCommand);
     int size = ltoken.size();
     if (size == 1 && !tokAttr(tokCommand, Token.flowCommand) 
@@ -1456,9 +1454,6 @@ class Compiler {
 
     //compile expressions
 
-//    isEmbeddedExpression = (tokAttr(tokCommand, Token.embeddedExpression));
-//    boolean checkExpression = (tokAttrOr(tokCommand, Token.expressionCommand,
-  //      Token.embeddedExpression));
     isEmbeddedExpression = tokCommand != Token.function && (!tokAttrOr(tokCommand, Token.expressionCommand, Token.specialstring));
     boolean checkExpression = isEmbeddedExpression || (tokAttr(tokCommand, Token.expressionCommand));
 
@@ -1508,6 +1503,7 @@ class Compiler {
     int firstToken = (isSetOrDefine && !isSetBrace ? 2 : 1);
     ltokenPostfix = new Vector();
     itokenInfix = 0;
+    Token tokenBegin = null;
     for (int i = 0; i < firstToken && addNextToken(); i++) {
     }
     while (moreTokens()) {
@@ -1523,15 +1519,27 @@ class Compiler {
         continue;
       }
       if (!isImplicitExpression)
-        addTokenToPostfix(Token.tokenExpressionBegin);
+        addTokenToPostfix(tokenBegin = new Token(Token.expressionBegin, "implicitExpressionBegin"));
       if (!clauseOr(isCommaAsOrAllowed || !isImplicitExpression
           && tokPeek(Token.leftparen)))
         return false;
       if (!isImplicitExpression
-          && !(isEmbeddedExpression && lastToken == Token.tokenCoordinateEnd))
+          && !(isEmbeddedExpression && lastToken == Token.tokenCoordinateEnd)) {
         addTokenToPostfix(Token.tokenExpressionEnd);
-      if (!isSelectX && moreTokens() && !isEmbeddedExpression)
-        return error(ERROR_endOfExpressionExpected);
+        tokenBegin.intValue = ltokenPostfix.size();
+      }
+      if (moreTokens()) {
+        if (tokCommand != Token.select && !isEmbeddedExpression)
+          return error(ERROR_endOfExpressionExpected);
+        if (tokCommand == Token.select) {
+          // advanced select, with two expressions, the first
+          // being an atom expression; the second being a property selector expression
+          tokCommand = Token.nada;
+          isEmbeddedExpression = true;
+          isImplicitExpression = true;
+          isCommaAsOrAllowed = false;
+        }
+      }
     }
     atokenInfix = new Token[ltokenPostfix.size()];
     ltokenPostfix.copyInto(atokenInfix);

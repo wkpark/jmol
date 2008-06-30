@@ -2154,7 +2154,7 @@ abstract public class ModelCollection extends BondCollection {
     int nTurn = 0;
     int nSheet = 0;
     for (int i = 0; i <= atomCount; i++)
-      if (bsAtoms == null || bsAtoms.get(i)) {
+      if (i == atomCount || bsAtoms == null || bsAtoms.get(i)) {
         id = Integer.MIN_VALUE;
         if (i == atomCount || (id = atoms[i].getProteinStructureID()) != lastId) {
           if (bs != null) {

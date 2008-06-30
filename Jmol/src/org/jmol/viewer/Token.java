@@ -1091,7 +1091,7 @@ public class Token {
     "quaternion",        new Token(quaternion,      varArgCount),
     "quaternions",       null,
     "quit",              new Token(quit,                      0),
-    "ramachandran",      new Token(ramachandran,              0),
+    "ramachandran",      new Token(ramachandran,    varArgCount),
     "rama",              null,
     "refresh",           new Token(refresh,                   0),
     "reset",             new Token(reset,               maxArg1),

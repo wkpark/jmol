@@ -4461,21 +4461,22 @@ class Eval { //implements Runnable {
   }
 
   private void dataFrame(int datatype) throws ScriptException {
-    String type = "";
     boolean isQuaternion = false;
     boolean isDraw = (tokAt(0) == Token.draw);
     int pt0 = (isDraw ? 1 : 0);
     boolean isDerivative = false;
     boolean isSecondDerivative = false;
+    boolean isRamachandranRelative = false;
+    int pt = statementLength - 1;
+    String type = optParameterAsString(pt).toLowerCase();
     switch (datatype) {
     case JmolConstants.JMOL_DATA_RAMACHANDRAN:
-      type = "ramachandran";
+      isRamachandranRelative = (pt > pt0 && type.startsWith("r"));
+      type = "ramachandran" + (isRamachandranRelative ? " r" : "");
       break;
     case JmolConstants.JMOL_DATA_QUATERNION:
       isQuaternion = true;
       // working backward this time:
-      int pt = statementLength - 1;
-      type = optParameterAsString(pt).toLowerCase();
       if (type.equalsIgnoreCase("draw")) {
         isDraw = true;
         type = optParameterAsString(--pt).toLowerCase();
@@ -4533,12 +4534,14 @@ class Eval { //implements Runnable {
     switch (datatype) {
     case JmolConstants.JMOL_DATA_RAMACHANDRAN:
     default:
-      viewer.setFrameTitle(modelCount - 1, "ramachandran plot for model "
+      viewer.setFrameTitle(modelCount - 1, type + " plot for model "
           + viewer.getModelNumberDotted(modelIndex));
       script = "frame 0.0; frame last; reset;"
           + "select visible; color structure; spacefill 3.0; wireframe 0; set rotationRadius 260;"
           + "draw ramaAxisX" + modelCount + " {200 0 0} {-200 0 0} \"phi\";"
-          + "draw ramaAxisY" + modelCount + " {0 200 0} {0 -200 0} \"psi\";";
+          + "draw ramaAxisY" + modelCount + " {0 200 0} {0 -200 0} \"psi\";"
+          //+ "draw ramaAxisZ" + modelCount + " {0 0 400} {0 0 0} \"" + (isRamachandranRelative ? "theta" : "omega") +"\";"
+          ;
       break;
     case JmolConstants.JMOL_DATA_QUATERNION:
       viewer.setFrameTitle(modelCount - 1, type + " for model "

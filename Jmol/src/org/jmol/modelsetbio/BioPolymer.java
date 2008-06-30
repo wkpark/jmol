@@ -515,6 +515,8 @@ public abstract class BioPolymer extends Polymer {
     boolean isRelativeAlias = (ctype == 'r');
     String prefix = (derivType > 0 ? "dq" + (derivType  == 2 ? "2" : "") : "q");
     float psiLast = Float.NaN;
+    if (derivType == 2 && isRelativeAlias)
+      ctype= 'x';
     Quaternion q;
     for (int m = 0; m < p.monomerCount; m++) {
       Monomer monomer = p.monomers[m];
@@ -526,20 +528,24 @@ public abstract class BioPolymer extends Polymer {
           z = monomer.getOmega();
           if (z < -90)
             z += 360;
-          //z -= 180;
+          z -= 180; // center on 0
           if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
             continue;
           w = a.getPartialCharge();
           float phiNext = (m == p.monomerCount - 1 ? Float.NaN : p.monomers[m + 1].getPhi());   
           float angle = y + phiNext - psiLast - x;//psi[i] + phi[i+1] - psi[i-1] - phi[i]
+          psiLast = y;
           if (Float.isNaN(angle)) {
             strExtra = "";
+            if (qtype == 'r')
+              continue;
           } else {
             q = new Quaternion (new Point3f(1, 0, 0), angle);
             strExtra = TextFormat.sprintf("%10.6f%10.6f%10.6f%10.6f  %6.2f",
                 new Object[] { new float[] { q.q0, q.q1, q.q2, q.q3, q.getTheta() } });
+            if (qtype == 'r')
+              z = angle;
           }
-          psiLast = y;
         } else {
           char cid = monomer.getChainID();
           String id = "" + monomer.getResno()

@@ -935,7 +935,9 @@ abstract public class ModelCollection extends BondCollection {
     Model model = models[modelIndex];
     char ctype = (type.length() > 11 && type.indexOf("quaternion ") >= 0 ? type
         .charAt(11) : 'R');
-    char qtype = (ctype == 'R' ? 'R' : viewer.getQuaternionFrame());
+    char qtype = (ctype != 'R' ? viewer.getQuaternionFrame() 
+        : type.length() > 13 && type.indexOf("ramachandran ") >= 0 ?
+          type.charAt(13) : 'R');
     int derivType = (type.indexOf("diff") < 0 ? 0 : type.indexOf("2") < 0 ? 1 : 2);
     boolean isDraw = (type.indexOf("draw") >= 0);    
     BitSet bsAtoms = getModelAtomBitSet(modelIndex, false);

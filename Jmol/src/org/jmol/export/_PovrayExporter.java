@@ -446,7 +446,7 @@ public class _PovrayExporter extends _Exporter {
       int nColix = 0;
       for (int i = 0; i < nVertices; i++) {
         color = color4(colixes[i]);
-        if (!htColixes.containsKey(color)) 
+        if (!htColixes.containsKey(color))
           htColixes.put(color, new Integer(nColix++));
       }
       String[] list = new String[nColix];
@@ -457,11 +457,11 @@ public class _PovrayExporter extends _Exporter {
       }
 
       output("texture_list { " + nColix);
-      for (int i = 0; i < nColix; i++) 
-        output("\n, texture{pigment{rgbt<" + list[i] + ">}" 
-          + " translucentFinish(" 
-          + translucencyFractionalFromColix(colixes[0]) + ")}");
-          // just using the transparency of the first colix there... 
+      for (int i = 0; i < nColix; i++)
+        output("\n, texture{pigment{rgbt<" + list[i] + ">}"
+            + " translucentFinish("
+            + translucencyFractionalFromColix(colixes[0]) + ")}");
+      // just using the transparency of the first colix there... 
       output("\n}\n");
     }
     output("face_indices { " + nFaces);
@@ -480,10 +480,8 @@ public class _PovrayExporter extends _Exporter {
         color = color4(colixes[indices[i][2]]);
         output("," + ((Integer) htColixes.get(color)).intValue());
       }
-      output(" //\n");
       if (faceVertexMax == 4 && indices[i].length == 4) {
-        output(", <" + triad(indices[i]) + ","
-            + indices[i][3] + ">");
+        output(", <" + indices[i][0] + "," + indices[i][2] + "," + indices[i][3] + ">");
         if (colixes != null) {
           color = color4(colixes[indices[i][0]]);
           output("," + ((Integer) htColixes.get(color)).intValue());
@@ -492,15 +490,15 @@ public class _PovrayExporter extends _Exporter {
           color = color4(colixes[indices[i][3]]);
           output("," + ((Integer) htColixes.get(color)).intValue());
         }
-        output(" //\n");
       }
+      output("\n");
     }
     output("\n}\n");
 
     if (colixes == null) {
       output("pigment{rgbt<" + color4(colix) + ">}\n");
-      output("  translucentFinish("  
-        + translucencyFractionalFromColix(colix) +")\n");
+      output("  translucentFinish(" + translucencyFractionalFromColix(colix)
+          + ")\n");
     }
     output("  check_shadow()\n");
     output("  clip()\n");

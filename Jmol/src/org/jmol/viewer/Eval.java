@@ -12929,6 +12929,11 @@ class Eval { //implements Runnable {
           Point4f q = (Point4f) x1.value;
           if (x2.tok == Token.point3f)
             return addX((new Quaternion(q)).transform((Point3f) x2.value));
+          if (x2.tok == Token.point4f) {
+            Point4f v4 = new Point4f((Point4f) x2.value);
+            (new Quaternion(q)).getThetaDirected(v4);
+            return addX(v4);
+          }
           switch (n) {
           case 0:
             return addX(q.w);

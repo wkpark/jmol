@@ -7836,16 +7836,20 @@ class Eval { //implements Runnable {
             break;
           case Token.xyz:
             pt.add(atom);
+            fv = 0;
             break;
           case Token.fracXyz:
             pt.add(atom.getFractionalCoord());
+            fv = 0;
             break;
           case Token.vibXyz:
             pt.add(viewer.getVibrationVector(i));
+            fv = 0;
             break;
           case Token.color:
             pt.add(Graphics3D.colorPointFromInt(viewer.getColixArgb(atom
                 .getColix()), ptT));
+            fv = 0;
             break;
           default:
             error(ERROR_unrecognizedAtomProperty, Token.nameOf(tok));

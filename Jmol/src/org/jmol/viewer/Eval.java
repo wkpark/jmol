@@ -12451,6 +12451,7 @@ class Eval { //implements Runnable {
     private boolean evaluateWithin(Token[] args) throws ScriptException {
       if (args.length < 1)
         return false;
+      int i = args.length;
       Object withinSpec = args[0].value;
       int tok = args[0].tok;
       String withinStr = "" + withinSpec;
@@ -12458,9 +12459,16 @@ class Eval { //implements Runnable {
       float distance = 0;
       boolean isSequence = false;
       boolean isBoundbox = false;
-      int i = args.length;
       boolean isWithinModelSet = false;
       boolean isDistance = (tok == Token.decimal || tok == Token.integer);
+      if (withinStr.equals("branch")) {
+        if (i != 3 || !(args[1].value instanceof BitSet)
+            || !(args[2].value instanceof BitSet))
+          return false;
+        return addX(viewer.getConnectedBitSet(BitSetUtil
+            .firstSetBit((BitSet) args[2].value), BitSetUtil
+            .firstSetBit((BitSet) args[1].value)));
+      }
       if (withinSpec instanceof String) {
         isSequence = !Parser.isOneOf(withinStr,
             "element;site;group;chain;structure;molecule;model;boundbox");
@@ -12499,8 +12507,9 @@ class Eval { //implements Runnable {
         plane = (Point4f) args[i].value;
       else if (args[i].value instanceof Point3f)
         pt = (Point3f) args[i].value;
-      
-      if (i > 0 && plane == null && pt == null && !(args[i].value instanceof BitSet))
+
+      if (i > 0 && plane == null && pt == null
+          && !(args[i].value instanceof BitSet))
         return false;
       if (isSyntaxCheck)
         return addX(bs);
@@ -12750,6 +12759,14 @@ class Eval { //implements Runnable {
       case Token.plus:
         if (x1.tok == Token.list || x2.tok == Token.list)
           return addX(Token.concatList(x1, x2));
+        if (x1.tok == Token.integer) {
+          if (x2.tok == Token.string) {
+            if ((s = (Token.sValue(x2)).trim()).indexOf(".") < 0
+                && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
+              return addX(x1.intValue + Token.iValue(x2));
+          } else if (x2.tok != Token.decimal)
+            return addX(x1.intValue + Token.iValue(x2));
+        }
         switch (x1.tok) {
         default:
           return addX(Token.fValue(x1) + Token.fValue(x2));

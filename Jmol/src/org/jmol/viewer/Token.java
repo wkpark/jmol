@@ -284,6 +284,7 @@ public class Token {
   final public static int group        = expression | 8;
   final public static int chain        = expression | 9;
   final public static int sequence     = expression | 10;
+  final public static int branch       = expression | 11;
   final static int coord               = expression | 12;
   final static int none                = expression | 13;
   final static int semicolon           = expression | 14;
@@ -1253,7 +1254,8 @@ public class Token {
     "back",             new Token(back),    
     "backlit",          new Token(backlit),
     "bondCount",        new Token(bondcount),
-    "bottom",           new Token(bottom),    
+    "bottom",           new Token(bottom),
+    "branch",           new Token(branch),
     "carbohydrate",     new Token(carbohydrate),
     "cell",             new Token(cell),
     "chain",            new Token(chain),

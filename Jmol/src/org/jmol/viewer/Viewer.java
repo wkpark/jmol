@@ -2374,6 +2374,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getAtomsConnected(min, max, intType, bs);
   }
 
+  BitSet getConnectedBitSet(int atomIndex, int atomIndexNot) {
+    return modelSet.getConnectedBitSet(atomIndex, atomIndexNot);  
+  }
+  
   int getAtomIndexFromAtomNumber(int atomNumber) {
     return modelSet.getAtomIndexFromAtomNumber(atomNumber);
   }

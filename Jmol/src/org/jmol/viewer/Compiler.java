@@ -1526,7 +1526,6 @@ class Compiler {
       if (!isImplicitExpression
           && !(isEmbeddedExpression && lastToken == Token.tokenCoordinateEnd)) {
         addTokenToPostfix(Token.tokenExpressionEnd);
-        tokenBegin.intValue = ltokenPostfix.size();
       }
       if (moreTokens()) {
         if (tokCommand != Token.select && !isEmbeddedExpression)
@@ -1534,6 +1533,7 @@ class Compiler {
         if (tokCommand == Token.select) {
           // advanced select, with two expressions, the first
           // being an atom expression; the second being a property selector expression
+          tokenBegin.intValue = 0;
           tokCommand = Token.nada;
           isEmbeddedExpression = true;
           isImplicitExpression = true;

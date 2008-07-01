@@ -5374,7 +5374,7 @@ class Eval { //implements Runnable {
       error(ERROR_invalidArgument);
     }
     BitSet bs = null;
-    if (getToken(1).intValue != statementLength) {
+    if (getToken(1).intValue == 0) {
       Object v = tokenSetting(0).value;
       if (!(v instanceof BitSet))
         error(ERROR_invalidArgument);

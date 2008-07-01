@@ -1493,7 +1493,7 @@ abstract public class ModelCollection extends BondCollection {
           thisModelIndex = modelIndex;
         }
         indexInModel++;
-        bs = getConnectedBitSet(i);
+        bs = getConnectedBitSet(i, -1);
         atomlist.or(bs);
         if (moleculeCount == molecules.length)
           molecules = (Molecule[]) ArrayUtil.setLength(molecules,
@@ -1505,9 +1505,13 @@ abstract public class ModelCollection extends BondCollection {
       }
   }
 
-  private BitSet getConnectedBitSet(int atomIndex) {
+  public BitSet getConnectedBitSet(int atomIndex, int atomIndexNot) {
     BitSet bs = new BitSet(atomCount);
+    if (atomIndex < 0)
+      return bs;
     BitSet bsToTest = getModelAtomBitSet(atoms[atomIndex].modelIndex, true);
+    if (atomIndexNot >= 0)
+      bsToTest.clear(atomIndexNot);
     getCovalentlyConnectedBitSet(atoms[atomIndex], bs, bsToTest);
     return bs;
   }
@@ -1525,11 +1529,7 @@ abstract public class ModelCollection extends BondCollection {
       Bond bond = atom.bonds[i];
       if ((bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
         continue;
-      if (bond.atom1 == atom) {
-        getCovalentlyConnectedBitSet(bond.atom2, bs, bsToTest);
-      } else {
-        getCovalentlyConnectedBitSet(bond.atom1, bs, bsToTest);
-      }
+        getCovalentlyConnectedBitSet(bond.getOtherAtom(atom), bs, bsToTest);
     }
   }
 

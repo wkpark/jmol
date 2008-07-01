@@ -268,6 +268,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     this.syncId = (i < 0 ? "" : fullName
         .substring(i + 1, fullName.length() - 1));
     isApplet = (documentBase != null);
+
     String str = appletProxyOrCommandOptions;
     if (str == null)
       str = "";
@@ -283,6 +284,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (useCommandThread)
       scriptManager.startCommandWatcher(true);
     isSignedApplet = (isApplet && str.indexOf("-signed") >= 0);
+    setBooleanProperty("_applet", isApplet);
     setBooleanProperty("_signedApplet", isSignedApplet);
     setBooleanProperty("_useCommandThread", useCommandThread);
     if (!isApplet) {
@@ -3161,7 +3163,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
-    //System.out.println("renderScreenImage");
     if (isTainted || getSlabEnabled())
       setModelVisibility();
     isTainted = false;
@@ -3325,7 +3326,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // initiated WITHIN this applet (not sent to it) 
     // we append #NOSYNC; here so that the receiving applet does not attempt
     // to pass it back to us or any other applet.
-    //System.out.println(getHtmlName() + " evalstringquiet " + strScript);
     if (allowSyncScript && syncingScripts && strScript.indexOf("#NOSYNC;") < 0  )
       syncScript(strScript + " #NOSYNC;", null);
     boolean isInterrupt = (strScript.length() > 0 && strScript.charAt(0) == '!');
@@ -6565,7 +6565,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean allButMe = (">".equals(applet));
     boolean disableSend = ("~".equals(applet));
     boolean justMe = disableSend || (".".equals(applet));
-    //System.out.println(getHtmlName() + " syncscript " + script + " --- applet " + applet);
     //null same as ">" -- "all others"
     if (!justMe) {
       statusManager.syncSend(script, (isAll || allButMe ? null : applet));

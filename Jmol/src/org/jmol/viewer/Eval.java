@@ -11725,6 +11725,8 @@ class Eval { //implements Runnable {
         // ) and ] must wait until matching ( or [ is found
         if (op.tok == Token.rightparen && oStack[oPt].tok == Token.leftparen) { 
           // (x[2]) finalizes the selection
+          if (xPt < 0)
+            return false;
           xStack[xPt] = Token.selectItem(xStack[xPt]);
           break;
         }

@@ -824,8 +824,9 @@ public class Draw extends MeshCollection {
   
   public Point3f checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
     boolean isPickingMode = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
+    boolean isSpinMode = (viewer.getPickingMode() == JmolConstants.PICKING_SPIN);
     boolean isDrawPicking = viewer.getDrawPicking();
-    if (!isPickingMode && !isDrawPicking)
+    if (!isPickingMode && !isDrawPicking && !isSpinMode)
       return null;
     if (!findPickedObject(x, y, false, bsVisible))
       return null;

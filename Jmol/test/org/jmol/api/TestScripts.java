@@ -275,7 +275,7 @@ class TestScriptsImpl extends TestCase {
     } else {
       viewer.setAppletContext("", null, null, "-n -l "); // set no display; list commmands as they execute
     }
-    String s = viewer.evalFile(file.getPath() + " -nowait");
+    String s = viewer.evalFile(file.getPath() + " -noqueue");
     assertNull("Error in script [" + file.getPath() + ":\n" + s, s);
   }
 

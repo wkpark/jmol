@@ -197,15 +197,16 @@ public abstract class BioPolymer extends Polymer {
     //calculateStructures();
   }
   
-  public void recalculateLeadMidpointsAndWingVectors() {    
+  public void recalculateLeadMidpointsAndWingVectors() {
     leadAtomIndices = null;
     sheetPoints = null;
     getLeadAtomIndices();
     ProteinStructure ps;
     ProteinStructure psLast = null;
-    for (int i = 0; i < monomerCount; i++)
-        if ((ps = getProteinStructure(i)) != null && ps != psLast) {
-          (psLast = ps).resetAxes();
+    for (int i = 0; i < monomerCount; i++) {
+      if ((ps = getProteinStructure(i)) != null && ps != psLast)
+        (psLast = ps).resetAxes();
+      monomers[i].nhChecked = false;
     }
     calcLeadMidpointsAndWingVectors(false);
   }

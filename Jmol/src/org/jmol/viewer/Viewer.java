@@ -3289,10 +3289,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String evalFile(String strFilename) {
     //app -s flag
-    int ptWait = strFilename.indexOf(" -nowait");
+    int ptWait = strFilename.indexOf(" -noqueue"); // for TestScripts.java
     if (ptWait >= 0) {
       return (String) evalStringWaitStatus("String", strFilename.substring(0,
-          ptWait), "", true, false);
+          ptWait), "", true, false, false);
     }
     return scriptManager.addScript(strFilename, true, false);
   }
@@ -3399,7 +3399,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     GT.setDoTranslate(false);
     String str = (String) evalStringWaitStatus("JSON", strScript,
         "+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated", false,
-        false);
+        false, false);
     GT.setDoTranslate(doTranslateTemp);
     return str;
   }
@@ -3409,7 +3409,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean doTranslateTemp = GT.getDoTranslate();
     GT.setDoTranslate(false);
     Object ret = evalStringWaitStatus("object", strScript, statusList, false,
-        false);
+        false, false);
     GT.setDoTranslate(doTranslateTemp);
     return ret;
   }
@@ -3417,14 +3417,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public Object evalStringWaitStatus(String returnType, String strScript,
                                      String statusList) {
     scriptManager.waitForQueue();
-    return evalStringWaitStatus(returnType, strScript, statusList, false, false);
+    return evalStringWaitStatus(returnType, strScript, statusList, false, false, false);
   }
 
   int scriptIndex;
 
   synchronized Object evalStringWaitStatus(String returnType, String strScript,
                                            String statusList,
-                                           boolean isScriptFile, boolean isQuiet) {
+                                           boolean isScriptFile, boolean isQuiet, boolean isQueued) {
     // from the scriptManager only!
     if (checkResume(strScript))
       return "script processing resumed"; //be very odd if this fired
@@ -3443,6 +3443,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean historyDisabled = (strScript.indexOf(")") == 0);
     if (historyDisabled)
       strScript = strScript.substring(1);
+    historyDisabled = historyDisabled || !isQueued; //no history for scriptWait 11.5.45
     boolean isOK = (isScriptFile ? eval.loadScriptFile(strScript, isQuiet)
         : eval.loadScriptString(strScript, isQuiet));
     String strErrorMessage = eval.getErrorMessage();

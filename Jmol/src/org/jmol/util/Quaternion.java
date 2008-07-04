@@ -51,11 +51,11 @@ import javax.vecmath.Vector3f;
  * 
  */
 
-
 public class Quaternion {
   public float q0, q1, q2, q3;
 
   public Matrix3f mat;
+
   // create a new object with the given components
   private Quaternion(float q0, float q1, float q2, float q3) {
     this.q0 = q0;
@@ -66,7 +66,7 @@ public class Quaternion {
   }
 
   public Quaternion(Point4f pt) {
-    float factor = pt.distance(new Point4f(0,0,0,0));
+    float factor = pt.distance(new Point4f(0, 0, 0, 0));
     if (factor == 0) {
       q0 = 1;
       return;
@@ -76,21 +76,22 @@ public class Quaternion {
     q2 = pt.y / factor;
     q3 = pt.z / factor;
     fixQ();
-}
+  }
 
   public Quaternion(Tuple3f pt, float theta) {
     if (pt.x == 0 && pt.y == 0 && pt.z == 0) {
       q0 = 1;
       return;
     }
-    float fact = (float)(Math.sin(theta/2*Math.PI/180)/Math.sqrt(pt.x * pt.x + pt.y * pt.y + pt.z * pt.z));
-    q0 = (float) (Math.cos(theta/2 * Math.PI/180));
+    float fact = (float) (Math.sin(theta / 2 * Math.PI / 180) / Math.sqrt(pt.x
+        * pt.x + pt.y * pt.y + pt.z * pt.z));
+    q0 = (float) (Math.cos(theta / 2 * Math.PI / 180));
     q1 = pt.x * fact;
     q2 = pt.y * fact;
     q3 = pt.z * fact;
     fixQ();
   }
-  
+
   private Quaternion fixQ() {
     if (q0 < 0) {
       q0 = -q0;
@@ -143,15 +144,16 @@ public class Quaternion {
       q[j] = (m[i][j] + m[j][i]) * s;
       q[k] = (m[i][k] + m[k][i]) * s;
       q0 = (m[k][j] - m[j][k]) * s;
-      q1 = q[0];  // x
-      q2 = q[1];  // y
-      q3 = q[2];  // z  
+      q1 = q[0]; // x
+      q2 = q[1]; // y
+      q3 = q[2]; // z  
     }
     fixQ();
   }
-  
-  public static final Quaternion getQuaternionFrame(Vector3f vA, Vector3f vB, Vector3f vC) {
-    if (vC == null) { 
+
+  public static final Quaternion getQuaternionFrame(Vector3f vA, Vector3f vB,
+                                                    Vector3f vC) {
+    if (vC == null) {
       vC = new Vector3f();
       vC.cross(vA, vB);
     }
@@ -164,40 +166,40 @@ public class Quaternion {
     mat.setColumn(0, vA);
     mat.setColumn(1, vBprime);
     mat.setColumn(2, vC);
-    
+
     /*
      * 
      * Verification tests using Quat4f and AngleAxis4f:
      * 
-    System.out.println("quaternion frame matrix: " + mat);
-    
-    Point3f pt2 = new Point3f();
-    mat.transform(new Point3f(1, 0, 0), pt2);
-    System.out.println("vA=" + vA + " M(100)=" + pt2);
-    mat.transform(new Point3f(0, 1, 0), pt2);
-    System.out.println("vB'=" + vBprime + " M(010)=" + pt2);
-    mat.transform(new Point3f(0, 0, 1), pt2);
-    System.out.println("vC=" + vC + " M(001)=" + pt2);
-    Quat4f q4 = new Quat4f();
-    q4.set(mat);
-    System.out.println("----");
-    System.out.println("Quat4f: {" + q4.w + " " + q4.x + " " + q4.y + " " + q4.z + "}");
-    System.out.println("Quat4f: 2xy + 2wz = m10: " + (2 * q4.x * q4.y + 2 * q4.w * q4.z) + " = " + mat.m10);   
-    
+     System.out.println("quaternion frame matrix: " + mat);
+     
+     Point3f pt2 = new Point3f();
+     mat.transform(new Point3f(1, 0, 0), pt2);
+     System.out.println("vA=" + vA + " M(100)=" + pt2);
+     mat.transform(new Point3f(0, 1, 0), pt2);
+     System.out.println("vB'=" + vBprime + " M(010)=" + pt2);
+     mat.transform(new Point3f(0, 0, 1), pt2);
+     System.out.println("vC=" + vC + " M(001)=" + pt2);
+     Quat4f q4 = new Quat4f();
+     q4.set(mat);
+     System.out.println("----");
+     System.out.println("Quat4f: {" + q4.w + " " + q4.x + " " + q4.y + " " + q4.z + "}");
+     System.out.println("Quat4f: 2xy + 2wz = m10: " + (2 * q4.x * q4.y + 2 * q4.w * q4.z) + " = " + mat.m10);   
+     
      */
-    
+
     Quaternion q = new Quaternion(mat);
-    
+
     /*
-    System.out.println("Quaternion mat from q \n" + q.getMatrix());
-    System.out.println("Quaternion: " + q.getNormal() + " " + q.getTheta());
-    AxisAngle4f a = new AxisAngle4f();
-    a.set(mat);
-    Vector3f v = new Vector3f(a.x, a.y, a.z);
-    v.normalize();
-    System.out.println("angleAxis: " + v + " "+(a.angle/Math.PI * 180));
-    */
-    
+     System.out.println("Quaternion mat from q \n" + q.getMatrix());
+     System.out.println("Quaternion: " + q.getNormal() + " " + q.getTheta());
+     AxisAngle4f a = new AxisAngle4f();
+     a.set(mat);
+     Vector3f v = new Vector3f(a.x, a.y, a.z);
+     v.normalize();
+     System.out.println("angleAxis: " + v + " "+(a.angle/Math.PI * 180));
+     */
+
     return q;
   }
 
@@ -206,7 +208,7 @@ public class Quaternion {
       setMatrix();
     return mat;
   }
-  
+
   private void setMatrix() {
     mat = new Matrix3f();
     // q0 = w, q1 = x, q2 = y, q3 = z
@@ -220,7 +222,7 @@ public class Quaternion {
     mat.m21 = 2 * q2 * q3 + 2 * q0 * q1;
     mat.m22 = q0 * q0 - q1 * q1 - q2 * q2 + q3 * q3;
   }
-  
+
   public Quaternion add(float x) {
     // UNIT addition 
     return new Quaternion(getNormal(), getTheta() + x);
@@ -228,63 +230,64 @@ public class Quaternion {
 
   public Quaternion mul(float x) {
     // UNIT multiplication
-    if (x == 1 || x == -1)
-      return new Quaternion(q0 * x, q1 * x, q2 * x, q3 * x);
+    if (x == 1)
+      return new Quaternion(q0, q1, q2, q3);
     return new Quaternion(getNormal(), getTheta() * x);
   }
-  
+
   public Quaternion mul(Quaternion p) {
-    return new Quaternion(
-        q0 * p.q0 - q1 * p.q1 - q2 * p.q2 - q3 * p.q3,
-        q0 * p.q1 + q1 * p.q0 + q2 * p.q3 - q3 * p.q2,
-        q0 * p.q2 + q2 * p.q0 + q3 * p.q1 - q1 * p.q3,
-        q0 * p.q3 + q3 * p.q0 + q1 * p.q2 - q2 * p.q1
-        );
+    return new Quaternion(q0 * p.q0 - q1 * p.q1 - q2 * p.q2 - q3 * p.q3, q0
+        * p.q1 + q1 * p.q0 + q2 * p.q3 - q3 * p.q2, q0 * p.q2 + q2 * p.q0 + q3
+        * p.q1 - q1 * p.q3, q0 * p.q3 + q3 * p.q0 + q1 * p.q2 - q2 * p.q1);
   }
-  
+
   public Quaternion div(Quaternion p) {
     // unit quaternions assumed -- otherwise would scale by 1/p.dot(p)
     return mul(p.inv());
   }
-  
+
   public Quaternion divLeft(Quaternion p) {
     // unit quaternions assumed -- otherwise would scale by 1/p.dot(p)
-    return p.inv().mul(this);
+    return this.inv().mul(p);
   }
-  
+
   public float dot(Quaternion q) {
-    return this.q0*q.q0 + this.q1*q.q1 + this.q2*q.q2 + this.q3*q.q3;
+    return this.q0 * q.q0 + this.q1 * q.q1 + this.q2 * q.q2 + this.q3 * q.q3;
   }
-  
+
   public Quaternion inv() {
     return new Quaternion(q0, -q1, -q2, -q3);
   }
-  
+
   public String toString() {
     fixQ();
     return "{" + q0 + " " + q1 + " " + q2 + " " + q3 + "}";
   }
-  
+
   public Vector3f getVector(int i) {
+    if (i == -1) {
+      fixQ();
+      return new Vector3f(q1, q2, q3);
+    }
     if (mat == null)
       setMatrix();
     Vector3f v = new Vector3f();
     mat.getColumn(i, v);
     return v;
   }
-  
+
   public Vector3f getNormal() {
     fixQ();
     Vector3f v = new Vector3f(q1, q2, q3);
     v.normalize();
     return v;
   }
-  
+
   public float getTheta() {
     fixQ();
-    return (float) (Math.acos(q0) * 2 * 180/Math.PI);  
+    return (float) (Math.acos(q0) * 2 * 180 / Math.PI);
   }
-  
+
   public void getThetaDirected(Point4f axisAngle) {
     //fills in .w;
     float theta = getTheta();
@@ -295,12 +298,12 @@ public class Quaternion {
     }
     axisAngle.set(v.x, v.y, v.z, theta);
   }
-  
+
   public Point4f toPoint4f() {
     fixQ();
     return new Point4f(q1, q2, q3, q0);
   }
-  
+
   public Point3f transform(Point3f pt) {
     if (mat == null)
       setMatrix();

@@ -26,6 +26,7 @@ package org.jmol.modelsetbio;
 import javax.vecmath.Point3f;
 
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
 import org.jmol.viewer.JmolConstants;
 
@@ -177,6 +178,17 @@ public class AminoMonomer extends AlphaMonomer {
   }
   
   Point3f getNitrogenHydrogenPoint() {
+    if (nitrogenHydrogenPoint == null && !nhChecked) {
+      Atom nitrogen = getNitrogenAtom();
+      Atom h = null;
+      Bond[] bonds = nitrogen.getBonds();
+      nhChecked = true;
+      for (int i = 0; i < bonds.length; i++)
+        if ((h = bonds[i].getOtherAtom(nitrogen)).getElementNumber() == 1) {
+          nitrogenHydrogenPoint = h;
+          break;          
+        }
+    }
     return nitrogenHydrogenPoint;
   }
 }

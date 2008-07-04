@@ -205,7 +205,7 @@ class ScriptManager {
                            String statusList, boolean isScriptFile,
                            boolean isQuiet) {
       viewer.evalStringWaitStatus(returnType, strScript, statusList,
-          isScriptFile, isQuiet);
+          isScriptFile, isQuiet, true);
     }
 
   }

@@ -395,7 +395,7 @@ class Eval { //implements Runnable {
     return true;
   }
 
-  private Function getFunction(String name, int tok) {
+  private Function getFunction(String name) {
     if (name == null)
       return null;
     Function function = (Function) (name.indexOf("_") == 0 ? compiler.localFunctions
@@ -403,8 +403,8 @@ class Eval { //implements Runnable {
     return (function == null || function.aatoken == null ? null : function);
   }
 
-  private boolean loadFunction(String name, Vector params, int tok) {
-    Function function = getFunction(name, tok);
+  private boolean loadFunction(String name, Vector params) {
+    Function function = getFunction(name);
     if (function == null)
       return false;
     aatoken = function.aatoken;
@@ -422,7 +422,7 @@ class Eval { //implements Runnable {
 
   Token getFunctionReturn(String name, Vector params) throws ScriptException {
     pushContext(null);
-    loadFunction(name, params, Token.function);
+    loadFunction(name, params);
     instructionDispatchLoop(false);
     Token token = getContextVariableAsToken("_retval");
     popContext();
@@ -972,7 +972,7 @@ class Eval { //implements Runnable {
         script(token.tok == Token.javascript);
         break;
       case Token.function:
-        function(token.tok);
+        function();
         break;
       case Token.sync:
         sync();
@@ -5137,11 +5137,11 @@ class Eval { //implements Runnable {
     isScriptCheck = wasScriptCheck;
   }
 
-  private void function(int tokType) throws ScriptException {
+  private void function() throws ScriptException {
     if (isSyntaxCheck && !isScriptCheck)
       return;
     String name = (String) getToken(0).value;
-    if (getFunction(name, tokType) == null)
+    if (getFunction(name) == null)
       evalError(GT._("command expected"));
     Vector params = (statementLength == 1 
         || statementLength == 3 && tokAt(1) == Token.leftparen && tokAt(2) == Token.rightparen ? null
@@ -5149,7 +5149,7 @@ class Eval { //implements Runnable {
     if (isSyntaxCheck)
       return;
     pushContext(null);
-    loadFunction(name, params, tokType);
+    loadFunction(name, params);
     instructionDispatchLoop(false);
     popContext();
   }
@@ -7437,14 +7437,20 @@ class Eval { //implements Runnable {
 
   private boolean insertArrayValue(String key, Token result) {
     int selector = result.intValue;
+    boolean isLocalArray = false;
     if (selector == Integer.MAX_VALUE)
       return false;
     result.intValue = Integer.MAX_VALUE;
     String s = Token.sValue(result);
     Object v = getParameter(key, false);
-    if (!(v instanceof String))
+    if (v instanceof String[]) {
+      v = getParameter(key, true);
+      isLocalArray = true;
+    } else if (!(v instanceof String)) {
       return false;
-    v = getStringObjectAsToken((String) v, key);
+    } else {
+      v = getStringObjectAsToken((String) v, key);
+    }
     if (v instanceof Token) {
       Token token = (Token) v;
       if (token.tok != Token.list)
@@ -7456,7 +7462,8 @@ class Eval { //implements Runnable {
         selector = 0;
       if (array.length > selector) {
         array[selector] = s;
-        viewer.setListVariable(key, token);
+        if (!isLocalArray)
+          viewer.setListVariable(key, token);
         return true;
       }
       String[] arrayNew = ArrayUtil.ensureLength(array, selector + 1);
@@ -7464,7 +7471,8 @@ class Eval { //implements Runnable {
         arrayNew[i] = "";
       arrayNew[selector] = s;
       token.value = arrayNew;
-      viewer.setListVariable(key, token);
+      if (!isLocalArray)
+        viewer.setListVariable(key, token);
       return true;
     } else if (v instanceof String) {
       String str = (String) v;
@@ -11500,7 +11508,7 @@ class Eval { //implements Runnable {
       oStack = new Token[maxLevel];
       xStack = new Token[maxLevel];
       if (logMessages)
-        Logger.info("initialize RPN on " + getScript());
+        Logger.info("initialize RPN");
     }
 
     Token getResult(boolean allowUnderflow, String key) throws ScriptException {
@@ -11718,16 +11726,15 @@ class Eval { //implements Runnable {
         if (logMessages) {
           dumpStacks();
           Logger.info("\noperating, oPt=" + oPt + " isLeftOp=" + isLeftOp
-              + " oStack[oPt]=" + Token.nameOf(oStack[oPt].tok) + "/"
-              + Token.prec(oStack[oPt].tok) + " op=" + Token.nameOf(op.tok)
-              + "/" + Token.prec(op.tok));
+              + " oStack[oPt]=" + Token.nameOf(oStack[oPt].tok) + "        prec="
+              + Token.prec(oStack[oPt].tok) + " pending op=" + Token.nameOf(op.tok)
+              + " prec=" + Token.prec(op.tok));
         }
         // ) and ] must wait until matching ( or [ is found
         if (op.tok == Token.rightparen && oStack[oPt].tok == Token.leftparen) { 
           // (x[2]) finalizes the selection
-          if (xPt < 0)
-            return false;
-          xStack[xPt] = Token.selectItem(xStack[xPt]);
+          if (xPt >= 0)
+            xStack[xPt] = Token.selectItem(xStack[xPt]);
           break;
         }
 
@@ -11822,7 +11829,7 @@ class Eval { //implements Runnable {
     }
 
     void dumpStacks() {
-      Logger.info("RPN stacks: for " + getScript());
+      Logger.info("RPN stacks:");
       for (int i = 0; i <= xPt; i++)
         Logger.info("x[" + i + "]: " + xStack[i]);
       Logger.info("\n");
@@ -11852,7 +11859,7 @@ class Eval { //implements Runnable {
         return false;
       Token[] args = new Token[nParam];
       for (int i = nParam; --i >= 0;)
-        args[i] = getX();
+        args[i] = Token.selectItem(getX());
       xPt--;
       //no script checking of functions because
       //we cannot know what variables are real
@@ -12971,8 +12978,10 @@ class Eval { //implements Runnable {
             return addX(q.y);
           case 3:
             return addX(q.z);
+          case 4: 
+            return addX((new Quaternion(q)).getNormal());
           case -1:
-            return addX(new Point3f(q.x, q.y, q.z));
+            return addX(new Quaternion(q).getVector(-1));
           case -2:
             return addX((new Quaternion(q)).getTheta());
           case -3:

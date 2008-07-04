@@ -61,7 +61,7 @@ try{if(typeof(_jmol)!="undefined")exit()
 // bh 3/2008  -- fixes IE7 bug in relation to jmolLoadInlineArray()
 // bh 6/2008  -- adds jmolSetAppletWindow()
 // Angel H. 6/2008  -- added html <label> tags to checkboxes and radio buttons [in jmolCheckbox() and _jmolRadio() functions]
-
+// bh 7/2008  -- code fix "for(i..." not "for(var i..."
 	  	
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
@@ -1229,8 +1229,8 @@ function jmolScriptWait(script, targetSuffix) {
   if(!targetSuffix)targetSuffix="0"
   var Ret=jmolScriptWaitAsArray(script, targetSuffix)
   var s = ""
-  for(i=Ret.length;--i>=0;)
-  for(j=0;j< Ret[i].length;j++)
+  for(var i=Ret.length;--i>=0;)
+  for(var j=0;j< Ret[i].length;j++)
 	s+=Ret[i][j]+"\n"
   return s
 }
@@ -1253,8 +1253,8 @@ function jmolScriptEcho(script, targetSuffix) {
   if(!targetSuffix)targetSuffix="0"
   var Ret=jmolScriptWaitAsArray(script, targetSuffix)
   var s = ""
-  for(i=Ret.length;--i>=0;)
-  for(j=Ret[i].length;--j>=0;)
+  for(var i=Ret.length;--i>=0;)
+  for(var j=Ret[i].length;--j>=0;)
         if (Ret[i][j][1] == "scriptEcho")s+=Ret[i][j][3]+"\n"
   return s.replace(/ \| /g, "\n")
 }
@@ -1265,8 +1265,8 @@ function jmolScriptMessage(script, targetSuffix) {
   if(!targetSuffix)targetSuffix="0"
   var Ret=jmolScriptWaitAsArray(script, targetSuffix)
   var s = ""
-  for(i=Ret.length;--i>=0;)
-  for(j=Ret[i].length;--j>=0;)
+  for(var i=Ret.length;--i>=0;)
+  for(var j=Ret[i].length;--j>=0;)
         if (Ret[i][j][1] == "scriptStatus")s+=Ret[i][j][3]+"\n"
   return s.replace(/ \| /g, "\n")
 }

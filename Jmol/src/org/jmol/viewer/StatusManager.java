@@ -191,11 +191,12 @@ class StatusManager {
           new Object[] {"", new int[] {frameNo, fileNo, modelNo, firstNo, lastNo}} );
   }
 
-  synchronized void setScriptEcho(String strEcho) {
+  synchronized void setScriptEcho(String strEcho, boolean isScriptQueued) {
     if (strEcho == null) return; 
     setStatusChanged("scriptEcho", 0, strEcho, false);
     if (jmolStatusListener != null)
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_ECHO, new Object[] { "", strEcho });
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_ECHO, new Object[] { "", strEcho, 
+          new Integer(isScriptQueued ? 1 : 0) });
   }
 
   synchronized void setStatusMeasurePicked(int iatom, String strMeasure) {
@@ -229,32 +230,30 @@ class StatusManager {
     setStatusChanged("scriptStarted", iscript, script, false);
     if (jmolStatusListener != null)
       jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT, new Object[] { "", 
-          "script " + iscript + " started", script });
+          "script " + iscript + " started", script, new Integer(-1) });
   }
 
-  synchronized void setStatusScriptTermination(String statusMessage, int msWalltime){
-    if (jmolStatusListener != null)
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT, new Object[] { "", 
-          "Jmol script terminated", statusMessage, new Integer(msWalltime) });
-  }
-
-  synchronized void setScriptStatus(String strStatus) {
+  synchronized void setScriptStatus(String strStatus, String statusMessage, int msWalltime) {
     if (strStatus == null)
       return;
     boolean isError = strStatus.indexOf("ERROR:") >= 0;
     setStatusChanged((isError ? "scriptError" : "scriptStatus"), 0, strStatus,
         false);
-
-    if (isError || strStatus.equals("Script completed"))
+    boolean isScriptCompletion = (strStatus == Eval.SCRIPT_COMPLETED);
+    if (isError || isScriptCompletion)
       setStatusChanged("scriptTerminated", 1, "Jmol script terminated"
-          + (isError ? " unsuccessfully: " + strStatus : " successfully"), false);
-
-    if (jmolStatusListener != null) {
-      if (strStatus.equals("Script completed") && viewer.getMessageStyleChime() && viewer.getDebugScript()) {
-        jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT, new Object[] { "", "script <exiting>" });
+          + (isError ? " unsuccessfully: " + strStatus : " successfully"),
+          false);
+   if (jmolStatusListener != null) {
+      if (isScriptCompletion && viewer.getMessageStyleChime()
+          && viewer.getDebugScript()) {
+        jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT,
+            new Object[] { "", "script <exiting>", statusMessage, new Integer(-1) });
         strStatus = "Chime script completed.";
       }
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT, new Object[] { "", strStatus });
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT,
+          new Object[] { "", strStatus, statusMessage,
+              new Integer(isScriptCompletion ? -1 : msWalltime) });
     }
   }
   

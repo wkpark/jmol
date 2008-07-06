@@ -450,11 +450,12 @@ public class Jmol implements WrappedApplet {
     viewer.setStringProperty(name, value);
   }
   
-  void showStatusAndConsole(String message) {
+  void showStatusAndConsole(String message, boolean toConsole) {
     try {
       appletWrapper.showStatus(message);
       sendJsTextStatus(message);
-      consoleMessage(message);
+      if (toConsole)
+        consoleMessage(message);
     } catch (Exception e) {
       //ignore if page is closing
     }
@@ -955,7 +956,8 @@ public class Jmol implements WrappedApplet {
           jmolpopup.updateComputedMenus();
         break;
       case JmolConstants.CALLBACK_ECHO:
-        if (!doCallback)
+        boolean isScriptQueued = (((Integer) data[2]).intValue() == 1);
+        if (isScriptQueued && !doCallback)
           consoleMessage(strInfo);
         if (!doCallback)
           doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
@@ -966,7 +968,7 @@ public class Jmol implements WrappedApplet {
         String errorMsg = (String) data[4];
         //data[5] = (String) null; // don't pass reference to clientFile reference
         if (errorMsg != null) {
-          showStatusAndConsole((errorMsg.indexOf("NOTE:") >= 0 ? "" : GT._("File Error:")) + errorMsg);
+          showStatusAndConsole((errorMsg.indexOf("NOTE:") >= 0 ? "" : GT._("File Error:")) + errorMsg, true);
           return;
         }
         break;
@@ -975,7 +977,7 @@ public class Jmol implements WrappedApplet {
         if (!doCallback) 
           doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
         if (data.length == 3)
-          showStatusAndConsole(strInfo); // set picking measure distance
+          showStatusAndConsole(strInfo, true); // set picking measure distance
         else
           consoleMessage((String) data[3] + ": " + strInfo);
         break;
@@ -989,19 +991,29 @@ public class Jmol implements WrappedApplet {
         //just send it
         break;
       case JmolConstants.CALLBACK_PICK:
-        showStatusAndConsole(strInfo);
+        showStatusAndConsole(strInfo, true);
         break;
       case JmolConstants.CALLBACK_RESIZE:
         //just send it
         break;
       case JmolConstants.CALLBACK_SCRIPT:
-        showStatusAndConsole(strInfo);
-        if (data.length == 4) // termination -- button legacy
+        int msWalltime = ((Integer) data[3]).intValue();
+        // general message has msWalltime = 0
+        // special messages have msWalltime < 0
+        // termination message has msWalltime > 0 (1 + msWalltime)
+        // "script started"/"pending"/"script terminated"/"script completed"
+        //   do not get sent to console
+        boolean toConsole = (msWalltime == 0);
+        if (msWalltime > 0) {
+          // termination -- button legacy
           notifyScriptTermination();
+        } 
+        if (msWalltime < 0 && !doCallback) {
           //termination messsage ONLY if script callback enabled -- not to message queue
           //for compatibility reasons
-        else if (!doCallback)
           doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
+        }
+        showStatusAndConsole(strInfo, toConsole);
         break;
       case JmolConstants.CALLBACK_SYNC:
         sendSyncScript(doCallback, strInfo, (String) data[2]);
@@ -1198,7 +1210,7 @@ public class Jmol implements WrappedApplet {
           URL url = new URL(urlString);
           appletWrapper.getAppletContext().showDocument(url, "_blank");
         } catch (MalformedURLException mue) {
-          showStatusAndConsole("Malformed URL:" + urlString);
+          showStatusAndConsole("Malformed URL:" + urlString, true);
         }
       }
     }

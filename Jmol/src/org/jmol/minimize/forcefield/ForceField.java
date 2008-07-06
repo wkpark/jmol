@@ -127,7 +127,7 @@ abstract public class ForceField {
     e0 = energyFull(false, false);
     s = TextFormat.sprintf(" Initial E = %10.3f " + calc.getUnit() + " criterion = %8.6f max steps = " + stepMax, null,
           new float[] { (float) e0, (float) criterion }, null);
-    viewer.scriptEcho(s);
+    viewer.showString(s);
     calc.appendLogData(s);
   }
 
@@ -161,7 +161,7 @@ abstract public class ForceField {
         String s = TextFormat.sprintf(" Step %-4d E = %10.6f    dE = %8.6f", null,
             new float[] { (float) e1, (float) (dE), (float) criterion },
             new int[] { currentStep });
-        viewer.scriptEcho(s);
+        viewer.showString(s);
         calc.appendLogData(s);
       }
       e0 = e1;

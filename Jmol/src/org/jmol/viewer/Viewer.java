@@ -1342,7 +1342,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void reportSelection(String msg) {
     if (modelSet.getSelectionHaloEnabled())
       setTainted(true);
-    scriptStatus(msg);
+    if (isScriptQueued)
+      scriptStatus(msg);
   }
 
   public Point3f getAtomSetCenter(BitSet bs) {
@@ -3421,11 +3422,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   int scriptIndex;
-
+  boolean isScriptQueued = true;
   synchronized Object evalStringWaitStatus(String returnType, String strScript,
                                            String statusList,
-                                           boolean isScriptFile, boolean isQuiet, boolean isQueued) {
-    // from the scriptManager only!
+                                           boolean isScriptFile,
+                                           boolean isQuiet, boolean isQueued) {
+    // from the scriptManager or scriptWait()
     if (checkResume(strScript))
       return "script processing resumed"; //be very odd if this fired
     if (checkHalt(strScript))
@@ -3448,15 +3450,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         : eval.loadScriptString(strScript, isQuiet));
     String strErrorMessage = eval.getErrorMessage();
     if (isOK) {
+      isScriptQueued = isQueued;
       statusManager.setStatusScriptStarted(++scriptIndex, strScript);
       eval.runEval(checkScriptOnly, !checkScriptOnly || fileOpenCheck,
           historyDisabled, listCommands);
-      int msWalltime = eval.getExecutionWalltime();
-      strErrorMessage = eval.getErrorMessage();
-      statusManager.setStatusScriptTermination(strErrorMessage, msWalltime);
-/*      if (getMessageStyleChime())
-        scriptStatus("script <exiting>");
-*/
+      statusManager.setScriptStatus("Jmol script terminated", 
+          eval.getErrorMessage(), 1 + eval.getExecutionWalltime());
       if (isScriptFile && writeInfo != null)
         createImage(writeInfo);
     } else {
@@ -3473,6 +3472,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       System.exit(0);
     } else if (checkScriptOnly)
       Logger.info("(use 'exit' to stop checking)");
+    isScriptQueued = true;
     if (returnType.equalsIgnoreCase("String"))
       return eval.getErrorMessage();
     // get  Vector of Vectors of Vectors info
@@ -3483,10 +3483,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   boolean checking;
-
-  void  setStatusScriptTermination(String strErrorMessage, int msWalltime) {
-    statusManager.setStatusScriptTermination(strErrorMessage, msWalltime);
-  }
 
   public String scriptCheck(String strScript) {
     // from ConsoleTextPane.checkCommand() and applet Jmol.scriptProcessor()
@@ -3768,8 +3764,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void atomPicked(int atomIndex, int modifiers) {
-    if (!isInSelectionSubset(atomIndex))
-      return;
     pickingManager.atomPicked(atomIndex, modifiers);
   }
 
@@ -4012,7 +4006,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void scriptEcho(String strEcho) {
-    statusManager.setScriptEcho(strEcho);
+    statusManager.setScriptEcho(strEcho, isScriptQueued);
     if (listCommands && strEcho != null && strEcho.indexOf("$[") == 0)
       Logger.info(strEcho);
   }
@@ -4023,7 +4017,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void scriptStatus(String strStatus) {
-    statusManager.setScriptStatus(strStatus);
+    statusManager.setScriptStatus(strStatus, "", 0);
   }
 
   private void setScriptDelay(int milliSec) {
@@ -5100,8 +5094,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       showString(key + " = " + sv);
   }
 
-  void showString(String str) {
-    Logger.warn(str);
+  public void showString(String str) {
+    if (isScriptQueued)
+      Logger.warn(str);
     scriptEcho(str);
   }
 

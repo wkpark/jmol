@@ -291,7 +291,7 @@ class Eval { //implements Runnable {
     if (errorMessage == null && interruptExecution.booleanValue())
       errorMessage = "execution interrupted";
     else if (!tQuiet && !isSyntaxCheck)
-      viewer.scriptStatus("Script completed");
+      viewer.scriptStatus(SCRIPT_COMPLETED);
     isExecuting = isSyntaxCheck = isScriptCheck = historyDisabled = false;
     viewer.setTainted(true);
     viewer.popHoldRepaint();
@@ -11193,6 +11193,8 @@ class Eval { //implements Runnable {
     GT._("unrecognized SHOW parameter --  use {0}"), // 41
     "{0}?", // 41
   };
+
+  static final String SCRIPT_COMPLETED = "Script completed";
 
   private void integerOutOfRange(int min, int max) throws ScriptException {
     error(ERROR_integerOutOfRange, "" + min, "" + max);

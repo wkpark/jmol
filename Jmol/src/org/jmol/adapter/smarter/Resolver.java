@@ -636,7 +636,7 @@ class LimitedLineReader {
     throws Exception {
     bufferedReader.mark(readLimit);
     buf = new char[readLimit];
-    cchBuf = bufferedReader.read(buf);
+    cchBuf = Math.max(bufferedReader.read(buf), 0);
     ichCurrent = 0;
     bufferedReader.reset();
   }

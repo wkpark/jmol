@@ -93,19 +93,16 @@ class PickingManager {
   }
 
   void atomPicked(int atomIndex, int modifiers) {
+    // atomIndex < 0 is possible here.
     boolean shiftKey = ((modifiers & MouseManager.SHIFT) != 0);
     boolean alternateKey = ((modifiers & MouseManager.ALT) != 0);
     if (atomIndex < 0) {
       if (pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_PFAAT 
-          && !shiftKey && !alternateKey) {
+          && !shiftKey && !alternateKey)
         viewer.script("select none");
-      }
-      if (pickingMode == JmolConstants.PICKING_MEASURE
-          || pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON)
-        queuedAtomCount = 0;
-      // disabled sameAtom stuff -- just too weird
-      //if (pickingMode == JmolConstants.PICKING_CENTER)
-        //viewer.script("zoomTo out");
+      //if (pickingMode == JmolConstants.PICKING_MEASURE
+      //    || pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON)
+      queuedAtomCount = 0;
       return;
     }
 

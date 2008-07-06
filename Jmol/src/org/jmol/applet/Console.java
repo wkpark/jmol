@@ -184,9 +184,9 @@ class Console implements ActionListener, WindowListener {
   void execute() {
     String strCommand = input.getText();
     input.setText(null);
-    output(strCommand, attributesCommand);
+    //output(strCommand, attributesCommand);
     String strErrorMessage = viewer.script(strCommand);
-    if (strErrorMessage != null)
+    if (strErrorMessage != null && !strErrorMessage.equals("pending"))
       output(strErrorMessage);
     input.requestFocus();
   }

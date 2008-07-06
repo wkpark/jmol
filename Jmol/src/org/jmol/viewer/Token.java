@@ -1296,6 +1296,7 @@ public class Token {
     "fz",               new Token(fracZ),
     "fxyz",             new Token(fracXyz),
     "group",            new Token(group),
+    "groups",           null,
     "groupID",          new Token(groupID),
     "_groupID",         null, 
     "_g",               null, 

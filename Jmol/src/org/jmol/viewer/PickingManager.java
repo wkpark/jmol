@@ -103,7 +103,8 @@ class PickingManager {
       //if (pickingMode == JmolConstants.PICKING_MEASURE
       //    || pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON)
       queuedAtomCount = 0;
-      return;
+      if (pickingMode != JmolConstants.PICKING_SPIN)
+        return;
     }
 
     String value;
@@ -206,10 +207,9 @@ class PickingManager {
         queuedAtomCount = 0;
       if (queuedAtomCount == 1 && queuedAtomIndexes[0] == atomIndex)
         break;
-      queueAtom(atomIndex);
+      if (atomIndex >= 0)
+        queueAtom(atomIndex);
       if (queuedAtomCount < 2) {
-        if (viewer.getSpinOn())
-          viewer.script("spin off");
         viewer.scriptStatus(queuedAtomCount == 1 ?
             GT._("pick one more atom in order to spin the model around an axis") :
             GT._("pick two atoms in order to spin the model around an axis"));

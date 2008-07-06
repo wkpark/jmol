@@ -33,6 +33,7 @@ import javax.vecmath.AxisAngle4f;
 
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Quaternion;
 
 import java.util.Hashtable;
 
@@ -543,8 +544,21 @@ abstract class TransformManager {
     return info;
   }
 
-  String getOrientationText(boolean isAll) {
-    return getMoveToText(1, isAll) + (isAll ? "\n#OR\n" + getRotateZyzText(true): "");
+  String getOrientationText(int type) {
+    switch (type) {
+    case Token.moveto:
+      return getMoveToText(1, false);
+    case Token.rotation:
+      return getRotationText(true);
+    case Token.translation:
+      StringBuffer sb = new StringBuffer();
+      truncate2(sb, getTranslationXPercent());
+      truncate2(sb, getTranslationYPercent());
+      return sb.toString();
+    default:
+      return getMoveToText(1, true) + "\n#OR\n" + getRotateZyzText(true);
+
+    }
   }
 
   Hashtable getOrientationInfo() {
@@ -1588,27 +1602,33 @@ abstract class TransformManager {
     viewer.setInMotion(false);
   }
 
-  String getMoveToText(float timespan, boolean addComments) {
+  String getRotationText(boolean asQuaternion) {
     axisangleT.set(matrixRotate);
     float degrees = axisangleT.angle * degreesPerRadian;
+    StringBuffer sb = new StringBuffer();
+    vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
+    if (asQuaternion)
+      return new Quaternion(vectorT, degrees).toString();
+    if (degrees < 0.01f)
+      return "{0 0 1 0}";
+    vectorT.normalize();
+    vectorT.scale(1000);
+    sb.append("{");
+    truncate0(sb, vectorT.x);
+    truncate0(sb, vectorT.y);
+    truncate0(sb, vectorT.z);
+    truncate2(sb, degrees);
+    sb.append("}");
+    return sb.toString();
+  }
+  
+  String getMoveToText(float timespan, boolean addComments) {
     StringBuffer sb = new StringBuffer();
     sb.append("moveto ");
     if (addComments)
       sb.append("/* time, axisAngle */ "); 
     sb.append(timespan);
-    if (degrees < 0.01f) {
-      sb.append(" {0 0 1 0}");
-    } else {
-      vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
-      vectorT.normalize();
-      vectorT.scale(1000);
-      sb.append(" {");
-      truncate0(sb, vectorT.x);
-      truncate0(sb, vectorT.y);
-      truncate0(sb, vectorT.z);
-      truncate2(sb, degrees);
-      sb.append("}");
-    }
+    sb.append(" ").append(getRotationText(false));
     if (addComments)
       sb.append(" /* zoom, translation */ ");
     truncate2(sb, zoomPercentSetting);
@@ -1815,6 +1835,7 @@ abstract class TransformManager {
     SpinThread(float endDegrees, boolean isSelected) {
       this.endDegrees = Math.abs(endDegrees);
       this.isSelected = isSelected;
+      this.setName("SpinThread");
     }
 
     public void run() {
@@ -1967,6 +1988,10 @@ abstract class TransformManager {
   /*private -- removed for fixing warning*/
   class VibrationThread extends Thread implements Runnable {
 
+    VibrationThread() {
+      this.setName("VibrationThread");
+    }
+    
     public void run() {
       long startTime = System.currentTimeMillis();
       long lastRepaintTime = startTime;

@@ -277,7 +277,7 @@ abstract public class BondCollection extends AtomCollection {
         return;
     }
     if (atomA.alternateLocationID != atomB.alternateLocationID
-        && atomA.alternateLocationID != 0 && atomB.alternateLocationID != 0)
+        && atomA.alternateLocationID != '\0' && atomB.alternateLocationID != '\0')
       return;
     getOrAddBond(atomA, atomB, order, mad, bsBonds);
   }

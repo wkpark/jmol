@@ -358,7 +358,7 @@ public abstract class BioPolymer extends Polymer {
                             Atom[] closest, short[] mads, int myVisibilityFlag) {
     for (int i = monomerCount; --i >= 0; ) {
       if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
-          || model.isAtomHidden(monomers[i].getLeadAtomIndex()))
+          || !monomers[i].getLeadAtom().isVisible())
         continue;  
       if (mads[i] > 0 || mads[i + 1] > 0)
         monomers[i].findNearestAtomIndex(xMouse, yMouse, closest,
@@ -551,6 +551,9 @@ public abstract class BioPolymer extends Polymer {
           char cid = monomer.getChainID();
           String id = "" + monomer.getResno()
               + (cid == '\0' ? "" : "" + cid);
+          cid = monomer.getLeadAtom().getAlternateLocationID();
+          if (cid != '\0')
+            id += cid;
           q = p.getQuaternion(m, qtype);
           if (q == null) {
             qlast = null;

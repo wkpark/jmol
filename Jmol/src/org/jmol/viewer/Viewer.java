@@ -1008,8 +1008,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.getSpinOn();
   }
 
-  String getOrientationText(boolean isAll) {
-    return transformManager.getOrientationText(isAll);
+  String getOrientationText(int type) {
+    return transformManager.getOrientationText(type);
   }
 
   Hashtable getOrientationInfo() {

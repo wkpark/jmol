@@ -271,7 +271,7 @@ class Eval { //implements Runnable {
     interruptExecution = Boolean.FALSE;
     executionPaused = Boolean.FALSE;
     isExecuting = true;
-    currentThread = Thread.currentThread();
+    currentThread = Thread.currentThread();   
     isSyntaxCheck = isScriptCheck = checkScriptOnly;
     timeBeginExecution = System.currentTimeMillis();
     this.historyDisabled = historyDisabled;
@@ -4547,6 +4547,9 @@ class Eval { //implements Runnable {
           + "select visible; wireframe 0; "
           + "isosurface quatSphere" + modelCount
           + " resolution 1.0 sphere 10.0 mesh nofill translucent 0.8;set rotationRadius 12;"
+          + "draw quatAxisX" + modelCount + " {10 0 0} {-10 0 0} \"x\";"
+          + "draw quatAxisY" + modelCount + " {0 10 0} {0 -10 0} \"y\";"
+          + "draw quatAxisZ" + modelCount + " {0 0 10} {0 0 -10} \"z\";"
           + "color structure";
       break;
     }
@@ -4795,6 +4798,9 @@ class Eval { //implements Runnable {
   private void rotate(boolean isSpin, boolean isSelected)
       throws ScriptException {
 
+    //rotate is a full replacement for spin
+    //spin is DEPRECATED
+
     /*
      * The Chime spin method:
      * 
@@ -4838,7 +4844,7 @@ class Eval { //implements Runnable {
      *  carried out in the internal molecular coordinate frame, not the
      *  fixed room frame. 
      *  
-     *  In the case of rotateSelected, all rotations are internal
+     *  In the case of rotateSelected, all rotations are molecular
      *  and the absense of the MOLECULAR keyword indicates to 
      *  rotate about the geometric center of the molecule, not {0 0 0}
      *  
@@ -4872,105 +4878,80 @@ class Eval { //implements Runnable {
     float degrees = Float.MIN_VALUE;
     int nPoints = 0;
     float endDegrees = Float.MAX_VALUE;
-    boolean isAxisAngle = false;
-    boolean isInternal = false;
-    Point3f[] points = new Point3f[3];
-    Point3f rotCenter = null;
+    boolean isMolecular = false;
+    Point3f[] points = new Point3f[2];
     Vector3f rotAxis = new Vector3f(0, 1, 0);
-    String axisID;
     int direction = 1;
+    int tok;
     boolean axesOrientationRasmol = viewer.getAxesOrientationRasmol();
 
-    for (int i = 0; i < 3; ++i)
-      points[i] = new Point3f(0, 0, 0);
     for (int i = 1; i < statementLength; ++i) {
-      switch (getToken(i).tok) {
+      switch (tok = getToken(i).tok) {
       case Token.spin:
         isSpin = true;
-        break;
+        continue;
       case Token.minus:
         direction = -1;
+        continue;
+      case Token.quaternion:
+        i++;
+      //fall through
+      case Token.point4f:
+        Quaternion q = new Quaternion(getPoint4f(i));
+        rotAxis.set(q.getNormal());
+        degrees = q.getTheta();
         break;
       case Token.axisangle:
-        isAxisAngle = true;
+        if (isPoint3f(++i)) {
+          rotAxis.set(centerParameter(i));
+          break;
+        }
+        Point4f p4 = getPoint4f(i);
+        rotAxis.set(p4.x, p4.y, p4.z);
+        degrees = p4.w;
         break;
       case Token.identifier:
         String str = parameterAsString(i);
         if (str.equalsIgnoreCase("x")) {
           rotAxis.set(direction, 0, 0);
-          break;
+          continue;
         }
         if (str.equalsIgnoreCase("y")) {
           if (axesOrientationRasmol)
             direction = -direction;
           rotAxis.set(0, direction, 0);
-          break;
+          continue;
         }
         if (str.equalsIgnoreCase("z")) {
           rotAxis.set(0, 0, direction);
-          break;
+          continue;
         }
         if (str.equalsIgnoreCase("internal")
             || str.equalsIgnoreCase("molecular")) {
-          isInternal = true;
-          break;
+          isMolecular = true;
+          continue;
         }
         error(ERROR_invalidArgument);
+      case Token.bitset:
+      case Token.expressionBegin:
       case Token.leftbrace:
       case Token.point3f:
-        // {X, Y, Z}
-        Point3f pt = getPoint3f(i, true);
-        i = iToken;
-        if (isAxisAngle) {
-          if (axesOrientationRasmol)
-            pt.y = -pt.y;
-          rotAxis.set(pt);
-          isAxisAngle = false;
-        } else {
-          points[nPoints++].set(pt);
-        }
-        break;
       case Token.dollarsign:
+        if (nPoints == 2) //only 2 allowed for rotation -- for now
+          evalError(GT._("too many rotation points were specified"));
+        // {X, Y, Z}
         // $drawObject[n]
-        if (tokAt(i + 2) == Token.leftsquare) {
-          Point3f pt1 = centerParameter(i);
-          i = iToken;
-          if (isAxisAngle) {
-            if (axesOrientationRasmol)
-              pt1.y = -pt1.y;
-            rotAxis.set(pt1);
-            isAxisAngle = false;
-          } else {
-            points[nPoints++].set(pt1);
-          }
-          break;
-        }
-        // $drawObject
-        isInternal = true;
-        axisID = objectNameParameter(++i);
-        if (isSyntaxCheck) {
-          rotCenter = new Point3f();
-          rotAxis = new Vector3f();
-        } else {
-          //I was going to make this dependent upon type, but
-          //upon reflection, I think it is correct.
-          //bh
-          rotCenter = getDrawObjectCenter(axisID);
-          rotAxis = getDrawObjectAxis(axisID);
-          if (rotCenter == null)
-            error(ERROR_drawObjectNotDefined, axisID);
-        }
-        points[nPoints++].set(rotCenter);
+        Point3f pt1 = centerParameter(i);
+        if (!isSyntaxCheck && tok == Token.dollarsign
+            && tokAt(i + 2) != Token.leftsquare)
+          rotAxis = getDrawObjectAxis(objectNameParameter(++i));
+        points[nPoints++] = pt1;
         break;
       case Token.comma:
-        break;
+        continue;
       case Token.integer:
       case Token.decimal:
-        //spin: degrees per second followed by final value
-        //rotate: end degrees followed by degrees per second
-        //rotate is a full replacement for spin
-        //spin is DEPRECATED
-
+        //end degrees followed by degrees per second
         if (degrees == Float.MIN_VALUE)
           degrees = floatParameter(i);
         else {
@@ -4978,59 +4959,40 @@ class Eval { //implements Runnable {
           degrees = floatParameter(i);
           isSpin = true;
         }
-        break;
-      case Token.bitset:
-      case Token.expressionBegin:
-        BitSet bs = expression(i);
-        i = iToken;
-        rotCenter = viewer.getAtomSetCenter(bs);
-        points[nPoints++].set(rotCenter);
-        break;
+        continue;
       default:
         error(ERROR_invalidArgument);
       }
-      if (nPoints >= 3) //only 2 allowed for rotation -- for now
-        evalError(GT._("too many rotation points were specified"));
+      i = iToken;
     }
-    if (nPoints < 2 && !isInternal) {
-      // simple, standard fixed-frame rotation
-      // rotate x  10
-      // rotate axisangle {0 1 0} 10
-
-      if (nPoints == 1)
-        rotCenter = new Point3f(points[0]);
-
-      // point-centered rotation, but not internal -- "frieda"
-      // rotate x 10 (atoms)
-      // rotate x 10 $object
-      // rotate x 10 
-      if (degrees == Float.MIN_VALUE)
-        degrees = 10;
-      if (isSyntaxCheck)
-        return;
-      viewer.rotateAxisAngleAtCenter(rotCenter, rotAxis, degrees, endDegrees,
-          isSpin, isSelected);
+    if (isSyntaxCheck)
       return;
-    }
-    if (nPoints < 2 && !isSyntaxCheck) {
+    if (degrees == Float.MIN_VALUE)
+      degrees = 10;
+    if (nPoints == 0)
+      points[0] = new Point3f();
+    if (nPoints < 2) {
+      if (!isMolecular) {
+        // fixed-frame rotation
+        // rotate x 10  # Chime-like
+        // rotate axisangle {0 1 0} 10
+        // rotate x 10 (atoms) # point-centered
+        // rotate x 10 $object # point-centered
+        viewer.rotateAxisAngleAtCenter(points[0], rotAxis, degrees, endDegrees,
+            isSpin, isSelected);
+        return;
+      }
       // rotate MOLECULAR
       // rotate MOLECULAR (atom1)
       // rotate MOLECULAR x 10 (atom1)
       // rotate axisangle MOLECULAR (atom1)
-      points[1].set(points[0]);
+      points[1] = new Point3f(points[0]);
       points[1].sub(rotAxis);
-    } else {
-      // rotate 10 (atom1) (atom2)
-      // rotate 10 {x y z} {x y z}
-      // rotate 10 (atom1) {x y z}
     }
-
-    if (!isSyntaxCheck && points[0].distance(points[1]) == 0)
-      evalError(GT._("rotation points cannot be identical"));
-    if (degrees == Float.MIN_VALUE)
-      degrees = 10;
-    if (isSyntaxCheck)
-      return;
+    if (points[0].distance(points[1]) == 0) {
+      points[1] = new Point3f(points[0]);
+      points[1].y += 1.0;
+    }
     viewer.rotateAboutPointsInternal(points[0], points[1], degrees, endDegrees,
         isSpin, isSelected);
   }
@@ -9270,10 +9232,16 @@ class Eval { //implements Runnable {
       if (!isSyntaxCheck)
         msg = viewer.getMeasurementInfoAsString();
       break;
+    case Token.translation:
+    case Token.rotation:
+    case Token.moveto:
+      if (!isSyntaxCheck)
+        msg = viewer.getOrientationText(tok);
+      break;
     case Token.orientation:
       if (!isSyntaxCheck)
-        msg = viewer.getOrientationText(tokAt(2) != Token.moveto);
-      len = (tokAt(2) == Token.moveto ? 3 : 2);
+        msg = viewer.getOrientationText(tokAt(2));
+      len = (statementLength == 3 ? 3 : 2);
       break;
     case Token.pdbheader:
       if (!isSyntaxCheck)
@@ -9302,23 +9270,17 @@ class Eval { //implements Runnable {
     case Token.chain:
     case Token.sequence:
     case Token.residue:
+    case Token.selected:
+    case Token.group:
+    case Token.atoms:
     case Token.info:
+    case Token.bonds:
       msg = viewer.getChimeInfo(tok);
       break;
     // not implemented
-    case Token.translation:
-    case Token.rotation:
-      error(ERROR_unrecognizedShowParameter, "show ORIENTATION");
-    case Token.group:
-      error(ERROR_unrecognizedShowParameter, "getProperty CHAININFO (atom expression)");
-    case Token.selected:
-      error(ERROR_unrecognizedShowParameter, "getProperty ATOMINFO (selected)");
-    case Token.atoms:
-      error(ERROR_unrecognizedShowParameter, "getProperty ATOMINFO (atom expression)");
     case Token.echo:
     case Token.fontsize:
     case Token.property: // huh? why?
-    case Token.bonds:
     case Token.help:
     case Token.solvent:
       value = "?";
@@ -9563,11 +9525,17 @@ class Eval { //implements Runnable {
         propertyValue = parameterAsString(i) + getToken(++i).value;
         break;
       case Token.leftbrace:
+      case Token.point4f:
       case Token.point3f:
         // {X, Y, Z}
-        propertyValue = getPoint3f(i, true);
+        if (tok == Token.point4f || !isPoint3f(i)) {
+          propertyValue = getPoint4f(i);
+          propertyName = "planedef";
+        } else {
+          propertyValue = getPoint3f(i, true);
+          propertyName = "coord";
+        }
         i = iToken;
-        propertyName = "coord";
         havePoints = true;
         break;
       case Token.bitset:
@@ -11886,6 +11854,7 @@ class Eval { //implements Runnable {
       case Token.sin:
       case Token.sqrt:
       case Token.quaternion:
+      case Token.axisangle:
         return evaluateMath(args, tok);
       case Token.cross:
         return evaluateCross(args);
@@ -12317,19 +12286,47 @@ class Eval { //implements Runnable {
     }
 
     private boolean evaluateMath(Token[] args, int tok) throws ScriptException {
-      if (tok == Token.quaternion) {
+      if (tok == Token.quaternion || tok == Token.axisangle) {
         // quaternion(vector, theta)
-        // quaternion (q0, q1, q2, q3)
-        if (args.length != 2 && args.length != 4 || args.length == 2
-            && args[0].tok != Token.point3f)
+        // quaternion(q0, q1, q2, q3)
+        // quaternion("{x, y, z, w"})
+        // axisangle(vector, theta)
+        // axisangle(x, y, z, theta)
+        // axisangle("{x, y, z, theta"})
+        if (args.length != 1 && args.length != 2 && args.length != 4
+            || args.length == 2 && args[0].tok != Token.point3f)
           return false;
         if (isSyntaxCheck)
           return addX(new Point4f(0, 0, 0, 1));
-        return addX(args.length == 4 ? (new Quaternion(new Point4f(
-            Token.fValue(args[1]), Token.fValue(args[2]),
-            Token.fValue(args[3]),Token.fValue(args[0])))).toPoint4f() 
-            : (new Quaternion(
-            (Point3f) args[0].value, Token.fValue(args[1])).toPoint4f()));
+        Quaternion q = null;
+        Point4f p4 = null;
+        switch (args.length) {
+        case 4:
+          if (tok == Token.quaternion)
+            p4 = new Point4f(Token.fValue(args[1]), Token
+                .fValue(args[2]), Token.fValue(args[3]), Token.fValue(args[0]));
+          else
+            q = new Quaternion(new Point3f(Token.fValue(args[0]), Token
+                .fValue(args[1]), Token.fValue(args[2])), Token.fValue(args[3]));
+          break;
+        case 2:
+          q = new Quaternion((Point3f) args[0].value, Token.fValue(args[1]));
+          break;
+        default:
+          if (args[0].tok == Token.point4f) {
+            p4 = (Point4f) args[0].value;
+          } else {
+            Object v = Escape.unescapePoint(Token.sValue(args[0]));
+            if (!(v instanceof Point4f))
+              return false;
+            p4 = (Point4f) v;
+          }
+          if (tok == Token.axisangle)
+            q = new Quaternion(new Point3f(p4.x, p4.y ,p4.z), p4.w);
+        }
+        if (q == null)
+          q = new Quaternion(p4);
+        return addX(q.toPoint4f());
       }
       if (args.length != 1)
         return false;
@@ -12764,11 +12761,19 @@ class Eval { //implements Runnable {
       case Token.opEQ:
         if (x1.tok == Token.string && x2.tok == Token.string)
           return addX(Token.sValue(x1).equalsIgnoreCase(Token.sValue(x2)));
-        return addX(Token.fValue(x1) == Token.fValue(x2));
+        if (x1.tok == Token.point3f && x2.tok == Token.point3f)
+          return addX(((Point3f)x1.value).distance((Point3f)x2.value) < 0.000001);        
+        if (x1.tok == Token.point4f && x2.tok == Token.point4f)
+          return addX(((Point4f)x1.value).distance((Point4f)x2.value) < 0.000001);
+        return addX(Math.abs(Token.fValue(x1) - Token.fValue(x2)) < 0.000001);
       case Token.opNE:
         if (x1.tok == Token.string && x2.tok == Token.string)
           return addX(!(Token.sValue(x1).equalsIgnoreCase(Token.sValue(x2))));
-        return addX(Token.fValue(x1) != Token.fValue(x2));
+        if (x1.tok == Token.point3f && x2.tok == Token.point3f)
+          return addX(((Point3f)x1.value).distance((Point3f)x2.value) >= 0.000001);        
+        if (x1.tok == Token.point4f && x2.tok == Token.point4f)
+          return addX(((Point4f)x1.value).distance((Point4f)x2.value) >= 0.000001);        
+        return addX(Math.abs(Token.fValue(x1) - Token.fValue(x2)) >= 0.000001);
       case Token.plus:
         if (x1.tok == Token.list || x2.tok == Token.list)
           return addX(Token.concatList(x1, x2));

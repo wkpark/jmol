@@ -185,7 +185,7 @@ class ColorManager {
       modelIndex = atom.getModelIndex();
       return ColorEncoder.getColorIndexFromPalette(
           modelSet.getAltLocIndexInModel(modelIndex,
-          (char) atom.getAlternateLocationID()), 
+          atom.getAlternateLocationID()), 
           0, modelSet.getAltLocCountInModel(modelIndex),
           ColorEncoder.ROYGB);
     case JmolConstants.PALETTE_INSERTION:

@@ -767,6 +767,11 @@ Token[keyword(0x880001) value=")"]
   }
   
   class MinimizationThread extends Thread implements Runnable {
+    
+    MinimizationThread() {
+      this.setName("MinimizationThread");
+    }
+    
     public void run() {
       long startTime = System.currentTimeMillis();
       long lastRepaintTime = startTime;

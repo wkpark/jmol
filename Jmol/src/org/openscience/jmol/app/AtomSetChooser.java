@@ -463,7 +463,7 @@ ActionListener, ChangeListener, Runnable {
             showAtomSetIndex(currentIndex-1, true);
           } else if (PLAY.equals(cmd)) {
             if (animThread == null) {
-              animThread = new Thread(this,"Animation");
+              animThread = new Thread(this,"AtomSetChooserAnimationThread");
               animThread.start();
             }
           } else if (PAUSE.equals(cmd)) {

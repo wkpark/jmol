@@ -58,7 +58,7 @@ final public class Atom extends Point3fi {
   short modelIndex;
   private short atomicAndIsotopeNumber;
   private byte formalChargeAndFlags;
-  byte alternateLocationID;
+  char alternateLocationID;
   short madAtom;
   public short getMadAtom() {
     return madAtom;
@@ -107,7 +107,7 @@ final public class Atom extends Point3fi {
     if (isHetero)
       formalChargeAndFlags = IS_HETERO_FLAG;
     setFormalCharge(formalCharge);
-    this.alternateLocationID = (byte)alternateLocationID;
+    this.alternateLocationID = alternateLocationID;
     userDefinedVanDerWaalRadius = radius;
     setMadAtom(viewer, size);
     set(x, y, z);
@@ -332,13 +332,13 @@ final public class Atom extends Point3fi {
     return JmolConstants.elementSymbolFromNumber(atomicAndIsotopeNumber);
   }
 
-  public byte getAlternateLocationID() {
+  public char getAlternateLocationID() {
     return alternateLocationID;
   }
   
   boolean isAlternateLocationMatch(String strPattern) {
     if (strPattern == null)
-      return (alternateLocationID == 0);
+      return (alternateLocationID == '\0');
     if (strPattern.length() != 1)
       return false;
     char ch = strPattern.charAt(0);
@@ -791,9 +791,9 @@ final public class Atom extends Point3fi {
       info.append(" ");
       info.append(getAtomNumber());
     }
-    if (alternateLocationID > 0) {
+    if (alternateLocationID != 0) {
       info.append("%");
-      info.append((char) alternateLocationID);
+      info.append(alternateLocationID);
     }
     if (group.chain.modelSet.getModelCount() > 1) {
       info.append("/");
@@ -885,7 +885,7 @@ final public class Atom extends Point3fi {
    * determine if an atom or its PDB group is visible
    * @return true if the atom is in the "select visible" set
    */
-  boolean isVisible() {
+  public boolean isVisible() {
     // Is the atom's model visible? Is the atom NOT hidden?
     if (!isModelVisible() || group.chain.modelSet.isAtomHidden(atomIndex))
       return false;
@@ -1097,7 +1097,7 @@ final public class Atom extends Point3fi {
         }
         switch (ch) {
         case 'A':
-          strT = (alternateLocationID != 0 ? ((char) alternateLocationID) + ""
+          strT = (alternateLocationID != '\0' ? alternateLocationID + ""
               : "");
           break;
         case 'a':

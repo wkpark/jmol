@@ -308,7 +308,7 @@ public class Token {
   final static int amino                = predefinedset |  0;
   final public static int hetero        = predefinedset |  1 | setparam;
   final public static int hydrogen      = predefinedset |  2 | setparam;
-  final static int selected             = predefinedset |  3;
+  final public static int selected             = predefinedset |  3;
   final static int solvent              = predefinedset |  4 | setparam;
   final static int sidechain            = predefinedset |  5;
   final public static int protein       = predefinedset |  6;
@@ -383,7 +383,7 @@ public class Token {
   
   // ___.xxx math properties and all atom properties 
   
-  final static int atoms            = 1 | mathproperty;
+  final public static int atoms            = 1 | mathproperty;
   final public static int bonds     = 2 | mathproperty | setparam;
   final static int color            = 3 | mathproperty | command | colorparam | setparam | numberOrExpression | settable;
   final static int ident            = 4 | mathproperty;
@@ -507,6 +507,7 @@ public class Token {
   final static int plane        = 2  | 4 << 3 | mathfunc | specialstring; //may appear as string alone
   final static int point        = 3  | 4 << 3 | mathfunc;
   final static int quaternion   = 4  | 4 << 3 | mathfunc | command;
+  final static int axisangle    = 5  | 4 << 3 | mathfunc;
 
   // xxx(a,b,c,d,e)
   
@@ -898,7 +899,6 @@ public class Token {
 
   final static int absolute     = misc |  1;
   final static int average      = misc |  2;
-  final static int axisangle    = misc |  3;
   final static int babel        = misc |  4;
   final static int back         = misc |  5;
   final static int backlit      = misc |  6;

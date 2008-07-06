@@ -481,6 +481,7 @@ class RepaintManager {
     AnimationThread(int framePointer, int framePointer2, int intAnimThread) {
       this.framePointer = framePointer;
       this.framePointer2 = framePointer2;
+      this.setName("AnimationThread");
       intThread = intAnimThread;
     }
 

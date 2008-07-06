@@ -87,6 +87,7 @@ class TickerThread extends Thread {
 
   TickerThread(AppletWrapper appletWrapper) {
     this.appletWrapper = appletWrapper;
+    this.setName("AppletLoaderTickerThread");
   }
 
   public void run() {

@@ -261,7 +261,7 @@ public class Quaternion {
 
   public String toString() {
     fixQ();
-    return "{" + q0 + " " + q1 + " " + q2 + " " + q3 + "}";
+    return "{" + q1 + " " + q2 + " " + q3 + " " + q0 + "}";
   }
 
   public Vector3f getVector(int i) {

@@ -1218,6 +1218,15 @@ abstract public class AtomCollection {
         switch (tok) {
         case Token.chain:
           break;
+        case Token.selected:
+          s = atoms[i].getInfo();
+          break;
+        case Token.atoms:
+          s = "" + atoms[i].getAtomNumber();
+          break;
+        case Token.group:
+          s = atoms[i].getGroup3();
+          break;
         case Token.residue:
           s = "[" + atoms[i].getGroup3() + "]" + atoms[i].getSeqcodeString()
               + ":" + s;

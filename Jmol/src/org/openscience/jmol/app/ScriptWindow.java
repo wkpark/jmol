@@ -190,6 +190,7 @@ public final class ScriptWindow extends JDialog
     String strCommand;
     ExecuteCommandThread (String command) {
       strCommand = command;
+      this.setName("ScriptWindowExecuteCommandThread");
     }
     
     public void run() {

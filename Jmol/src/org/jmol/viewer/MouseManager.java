@@ -72,6 +72,7 @@ public abstract class MouseManager implements KeyListener {
         return;
       timeCurrent = -1;
       hoverWatcherThread = new Thread(new HoverWatcher());
+      hoverWatcherThread.setName("HoverWatcher");
       hoverWatcherThread.start();
     } else {
       if (hoverWatcherThread == null)

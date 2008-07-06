@@ -30,6 +30,7 @@ import java.util.Vector;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
+import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.ArrayUtil;
@@ -92,6 +93,7 @@ public class Draw extends MeshCollection {
   private boolean makePoints;
   private int nidentifiers;
   private int nbitsets;
+  private Point4f plane;
   private BitSet bsAllModels;
   
   private Vector vData;
@@ -118,6 +120,7 @@ public class Draw extends MeshCollection {
       width = 0;
       indicatedModelIndex = -1;
       offset = null;
+      plane = null;
       nidentifiers = nbitsets = 0;
       vData = new Vector();
       modelCount = viewer.getModelCount();
@@ -144,6 +147,11 @@ public class Draw extends MeshCollection {
         return;
       vData.add(new Object[] { new Integer(PT_MODEL_INDEX),
           (modelInfo = new int[] { indicatedModelIndex, 0 }) });
+      return;
+    }
+
+    if ("planedef" == propertyName) {
+      plane = (Point4f) value;
       return;
     }
 
@@ -600,7 +608,7 @@ public class Draw extends MeshCollection {
     if (isVector) {
       if (nVertices > 2)
         nVertices = 2;
-      else if (nVertices != 2)
+      else if (plane == null && nVertices != 2)
         isVector = false;
     }
     if (thisMesh.haveXyPoints) {
@@ -609,7 +617,7 @@ public class Draw extends MeshCollection {
         isPlane = false;
       length = Float.MAX_VALUE;
       thisMesh.diameter = 0;
-    } else if (isVector) {
+    } else if (nVertices == 2 && isVector) {
       ptList[1].add(ptList[0]);
     }
     if (drawType == JmolConstants.DRAW_POINT) {
@@ -617,7 +625,18 @@ public class Draw extends MeshCollection {
       Point3f center = new Point3f();
       Vector3f normal = new Vector3f();
       float dist;
-      if (nVertices == 3 && isPlane && !isPerpendicular) {
+      if (nVertices == 1 && plane != null) {
+        dist = Graphics3D.distanceToPlane(plane, ptList[0]);
+        vAC.set(plane.x, plane.y, plane.z);
+        vAC.normalize();
+        vAC.scale(-dist);
+        vAC.add(ptList[0]);
+        ptList[1]= new Point3f(vAC);
+        nVertices = -2;
+        if (isArrow)
+          drawType = JmolConstants.DRAW_ARROW;
+        System.out.println("DRAW " + ptList[0] + " " + ptList[1]);
+      } else if (nVertices == 3 && isPlane && !isPerpendicular) {
         // three points define a plane
         pt = new Point3f(ptList[1]);
         pt.sub(ptList[0]);
@@ -627,7 +646,6 @@ public class Draw extends MeshCollection {
         ptList[3].sub(pt);
         nVertices = 4;
       } else if (nVertices >= 3 && !isPlane && isPerpendicular) {
-        nVertices = 2;
         // normal to plane
         Graphics3D.calcNormalizedNormal(ptList[0], ptList[1], ptList[2],
             normal, vAB, vAC);
@@ -638,6 +656,7 @@ public class Draw extends MeshCollection {
         ptList[0].set(center);
         ptList[1].set(center);
         ptList[1].add(normal);
+        nVertices = 2;
       } else if (nVertices == 2 && isPerpendicular) {
         // perpendicular line to line or plane to line
         Graphics3D.calcAveragePoint(ptList[0], ptList[1], center);
@@ -686,6 +705,8 @@ public class Draw extends MeshCollection {
           ptList[0].sub(normal);
           ptList[1].add(normal);
         }
+        if (isArrow && nVertices != -2)
+          isArrow = false;
       } else if (nVertices == 2 && length != Float.MAX_VALUE) {
         Graphics3D.calcAveragePoint(ptList[0], ptList[1], center);
         normal.set(ptList[1]);
@@ -700,6 +721,9 @@ public class Draw extends MeshCollection {
         nVertices = 4; // for now
 
       switch (nVertices) {
+      case -2:
+        nVertices = 2;
+        break;
       case 1:
         break;
       case 2:

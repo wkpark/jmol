@@ -136,6 +136,7 @@ class ScriptManager {
     scriptQueueRunning[pt] = true;
     queueThreads[pt] = new Thread(new ScriptQueueRunnable(
         startedByCommandWatcher, pt));
+    queueThreads[pt].setName("QueueThread" + pt);
     queueThreads[pt].start();
   }
 
@@ -218,6 +219,7 @@ class ScriptManager {
       if (commandWatcherThread != null)
         return;
       commandWatcherThread = new Thread(new CommandWatcher());
+      commandWatcherThread.setName("CommmandWatcherThread");
       commandWatcherThread.start();
     } else {
       if (commandWatcherThread == null)

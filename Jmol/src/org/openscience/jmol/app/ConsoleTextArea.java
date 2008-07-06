@@ -66,7 +66,7 @@ public class ConsoleTextArea extends JTextArea {
     new Thread(new Runnable() {
 
       public void run() {
-
+        Thread.currentThread().setName("ConsoleReaderThread");
         StringBuffer sb = new StringBuffer();
         try {
           String s;

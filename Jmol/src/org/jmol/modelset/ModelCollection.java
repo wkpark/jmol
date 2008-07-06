@@ -1993,8 +1993,8 @@ abstract public class ModelCollection extends BondCollection {
           if (atomA.modelIndex != atomB.modelIndex)
             continue;
           if (atomA.alternateLocationID != atomB.alternateLocationID
-              && atomA.alternateLocationID != 0
-              && atomB.alternateLocationID != 0)
+              && atomA.alternateLocationID != '\0'
+              && atomB.alternateLocationID != '\0')
             continue;
           bondAB = atomA.getBond(atomB);
         }

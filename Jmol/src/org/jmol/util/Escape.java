@@ -168,12 +168,14 @@ public class Escape {
   }
 
   public static Object unescapePoint(String strPoint) {
-    if (strPoint == null || strPoint.length() == 0 || strPoint.charAt(0) != '{'
-        || strPoint.charAt(strPoint.length() - 1) != '}')
+    if (strPoint == null || strPoint.length() == 0)
+      return strPoint;
+    String str = TextFormat.simpleReplace(strPoint, "\n", " ").trim();
+    if (str.charAt(0) != '{' || str.charAt(str.length() - 1) != '}')
       return strPoint;
     float[] points = new float[5];
     int nPoints = 0;
-    String str = strPoint.substring(1, strPoint.length() - 1);
+    str = str.substring(1, str.length() - 1);
     int[] next = new int[1];
     for (; nPoints < 5; nPoints++) {
       points[nPoints] = Parser.parseFloat(str, next);

@@ -10749,22 +10749,33 @@ class Eval { //implements Runnable {
           if (nX == 0 || nY == 0)
             error(ERROR_invalidArgument);
           if (!isSyntaxCheck) {
-            float[][] fdata = (fName.toLowerCase().indexOf("data2d_") == 0 ? viewer
-                .getDataFloat2D(fName)
+            float[][] fdata = (isXYZ ? viewer.getDataFloat2D(fName)
                 : viewer.functionXY(fName, nX, nY));
             if (isXYZ) {
               nX = (fdata == null ? 0 : fdata.length);
               nY = 3;
+            } else {
+              nX = Math.abs(nX);
+              nY = Math.abs(nY);
             }
-            if (fdata == null || fdata.length != nX && !isXYZ) {
+            if (fdata == null) {
               iToken = ptX;
-              error(ERROR_invalidArgument);
+              error(ERROR_what,"fdata is null");
             }
-            for (int j = 0; j < nX; j++)
-              if (fdata[j] == null || fdata[j].length != nY) {
+            if (fdata.length != nX && !isXYZ) {
+              iToken = ptX;
+              error(ERROR_what,"fdata length is not correct: " + fdata.length + " " + nX);
+            }
+            for (int j = 0; j < nX; j++) {
+              if (fdata[j] == null) {
                 iToken = ptY;
-                error(ERROR_invalidArgument);
+                error(ERROR_what,"fdata[" + j + "] is null");
               }
+              if (fdata[j].length != nY) {
+                iToken = ptY;
+                error(ERROR_what,"fdata[" + j + "] is not the right length: " + fdata[j].length + " " + nY);
+              }
+            }
             v.addElement(fdata); //(5) = float[][] data                 
           }
           i = iToken;
@@ -11191,7 +11202,7 @@ class Eval { //implements Runnable {
     GT._("unrecognized {0} parameter"), // 39
     GT._("unrecognized {0} parameter in Jmol state script (set anyway)"), // 40
     GT._("unrecognized SHOW parameter --  use {0}"), // 41
-    "{0}?", // 41
+    "{0}?", // 42
   };
 
   static final String SCRIPT_COMPLETED = "Script completed";

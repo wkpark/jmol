@@ -230,7 +230,7 @@ class StatusManager {
     setStatusChanged("scriptStarted", iscript, script, false);
     if (jmolStatusListener != null)
       jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT, new Object[] { "", 
-          "script " + iscript + " started", script, new Integer(-1) });
+          "script " + iscript + " started", script, new Integer(-2) });
   }
 
   synchronized void setScriptStatus(String strStatus, String statusMessage, int msWalltime) {

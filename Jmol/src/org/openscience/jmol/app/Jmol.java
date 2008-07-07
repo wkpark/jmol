@@ -1763,16 +1763,20 @@ public class Jmol extends JPanel {
       case JmolConstants.CALLBACK_SCRIPT:
         if (scriptWindow == null)
           return;
-        switch (data.length) {
-        case 4:
+        int msWalltime = ((Integer) data[3]).intValue();
+        // general message has msWalltime = 0
+        // special messages have msWalltime < 0
+        // termination message has msWalltime > 0 (1 + msWalltime)
+        // "script started"/"pending"/"script terminated"/"script completed"
+        //   do not get sent to console
+        if (msWalltime > 0) {
+          // termination -- button legacy
           scriptWindow.notifyScriptTermination();
-          break;
-        case 3:
-          scriptWindow.notifyScriptStart();
-          break;
-        case 2:
+        } else if (msWalltime < 0) {
+          if (msWalltime == -2)
+            scriptWindow.notifyScriptStart();
+        } else {
           scriptWindow.sendConsoleMessage(strInfo);
-          break;
         }
         break;
       case JmolConstants.CALLBACK_RESIZE:

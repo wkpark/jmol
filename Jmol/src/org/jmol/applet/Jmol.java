@@ -1185,9 +1185,9 @@ public class Jmol implements WrappedApplet {
       } catch (Exception e) {
         Logger.error("Exception " + e.getMessage() + " with nX, nY: "+ nX + " " + nY);
       }
-      //for (int i = 0; i < nX; i++)
-        //for (int j = 0; j < nY; j++) 
-          //System.out.println("i j fxy " + i + " " + j + " " + fxy[i][j]);
+      for (int i = 0; i < nX; i++)
+        for (int j = 0; j < nY; j++) 
+          System.out.println("i j fxy " + i + " " + j + " " + fxy[i][j]);
       return fxy;
     }
     

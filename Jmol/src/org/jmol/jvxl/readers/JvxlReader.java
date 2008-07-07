@@ -417,7 +417,7 @@ public class JvxlReader extends VolumeFileReader {
 
     if (surfaceDataCount <= 0)
       return 0f; //unnecessary -- probably a plane
-    if (nThisValue == 0) {
+    while (nThisValue == 0) {
       nThisValue = parseInt();
       if (nThisValue == Integer.MIN_VALUE) {
         line = br.readLine();

@@ -108,6 +108,8 @@ final public class ArrayUtil {
     if (nElements == 0 || array == null)
       return array;
     int oldLength = Array.getLength(array);
+    if (oldLength - nElements <= 0)
+      return array;
     Object t = Array.newInstance(array.getClass().getComponentType(), oldLength
         - nElements);
     if (firstElement > 0)

@@ -4547,9 +4547,9 @@ class Eval { //implements Runnable {
           + "select visible; wireframe 0; "
           + "isosurface quatSphere" + modelCount
           + " resolution 1.0 sphere 10.0 mesh nofill translucent 0.8;set rotationRadius 12;"
-          + "draw quatAxisX" + modelCount + " {10 0 0} {-10 0 0} \"x\";"
-          + "draw quatAxisY" + modelCount + " {0 10 0} {0 -10 0} \"y\";"
-          + "draw quatAxisZ" + modelCount + " {0 0 10} {0 0 -10} \"z\";"
+          + "draw quatAxis" + modelCount + "X {10 0 0} {-10 0 0} color red \"x\";"
+          + "draw quatAxis" + modelCount + "Y {0 10 0} {0 -10 0} color green \"y\";"
+          + "draw quatAxis" + modelCount + "Z {0 0 10} {0 0 -10} color blue \"z\";"
           + "color structure";
       break;
     }

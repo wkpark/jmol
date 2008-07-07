@@ -517,7 +517,7 @@ public abstract class BioPolymer extends Polymer {
     String prefix = (derivType > 0 ? "dq" + (derivType  == 2 ? "2" : "") : "q");
     float psiLast = Float.NaN;
     if (derivType == 2 && isRelativeAlias)
-      ctype= 'x';
+      ctype= 'w';
     Quaternion q;
     for (int m = 0; m < p.monomerCount; m++) {
       Monomer monomer = p.monomers[m];

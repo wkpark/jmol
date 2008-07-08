@@ -106,14 +106,29 @@ public class XmlCmlReader extends XmlReader {
   int tokenCount;
   String[] tokens = new String[16];
 
+  int moduleCount = 0;
+  boolean haveMolecule = false;
+  String localSpaceGroupName;
   /**
    * state constants
    */
-  final protected int START = 0, CML = 1, CRYSTAL = 2, CRYSTAL_SCALAR = 3,
-      CRYSTAL_SYMMETRY = 4, CRYSTAL_SYMMETRY_TRANSFORM3 = 5, MOLECULE = 6,
-      MOLECULE_ATOM_ARRAY = 7, MOLECULE_ATOM = 8, MOLECULE_ATOM_SCALAR = 9,
-      MOLECULE_BOND_ARRAY = 10, MOLECULE_BOND = 11, MOLECULE_FORMULA = 12,
-      MOLECULE_ATOM_BUILTIN = 13, MOLECULE_BOND_BUILTIN = 14;
+  final protected int START = 0, 
+    CML = 1, 
+    CRYSTAL = 2, 
+    CRYSTAL_SCALAR = 3,
+    CRYSTAL_SYMMETRY = 4, 
+    CRYSTAL_SYMMETRY_TRANSFORM3 = 5, 
+    MOLECULE = 6,
+    MOLECULE_ATOM_ARRAY = 7, 
+    MOLECULE_ATOM = 8, 
+    MOLECULE_ATOM_SCALAR = 9,
+    MOLECULE_BOND_ARRAY = 10, 
+    MOLECULE_BOND = 11, 
+    MOLECULE_FORMULA = 12,
+    MOLECULE_ATOM_BUILTIN = 13, 
+    MOLECULE_BOND_BUILTIN = 14,
+    MODULE = 15,
+    SYMMETRY = 17;
 
   /**
    * the current state
@@ -180,14 +195,22 @@ public class XmlCmlReader extends XmlReader {
     case START:
       if (name.equals("molecule")) {
         state = MOLECULE;
+        haveMolecule = true;
         if (moleculeNesting == 0) {
           createNewAtomSet(atts);
         }
         moleculeNesting++;
-      }
-      if (name.equals("crystal")) {
+      } else if (name.equals("crystal")) {
         state = CRYSTAL;
+      } else if (name.equals("symmetry")) {
+        state = SYMMETRY;
+        if (atts.containsKey("spaceGroup")) {
+          localSpaceGroupName = (String) atts.get("spaceGroup");
+        }
+      } else if (name.equals("module")) {
+        moduleCount++;      
       }
+
       break;
     case CRYSTAL:
       if (name.equals("scalar")) {
@@ -204,12 +227,11 @@ public class XmlCmlReader extends XmlReader {
       } else if (name.equals("symmetry")) {
         state = CRYSTAL_SYMMETRY;
         if (atts.containsKey("spaceGroup")) {
-          String spaceGroup = (String) atts.get("spaceGroup");
-          for (int i = 0; i < spaceGroup.length(); i++)
-            if (spaceGroup.charAt(i) == '_')
-              spaceGroup = spaceGroup.substring(0, i)
-                  + spaceGroup.substring((i--) + 1);
-          parent.setSpaceGroupName(spaceGroup);
+          localSpaceGroupName = (String) atts.get("spaceGroup");
+          for (int i = 0; i < localSpaceGroupName.length(); i++)
+            if (localSpaceGroupName.charAt(i) == '_')
+              localSpaceGroupName = localSpaceGroupName.substring(0, i)
+                  + localSpaceGroupName.substring((i--) + 1);
         }
       } else if (name.equals("cellParameter")) {
         if (atts.containsKey("parameterType")) {
@@ -217,6 +239,8 @@ public class XmlCmlReader extends XmlReader {
           setKeepChars(true);
         }
       }
+      break;
+    case SYMMETRY:
       break;
     case CRYSTAL_SCALAR:
     case CRYSTAL_SYMMETRY:
@@ -398,6 +422,12 @@ public class XmlCmlReader extends XmlReader {
     //if (!uri.equals(NAMESPACE_URI))
       //return;
     switch (state) {
+    case START:
+      if (name.equals("module")) {
+        moduleCount--;
+        applySymmetry();
+      }
+      break;
     case CRYSTAL:
       if (name.equals("crystal")) {
         if (embeddedCrystal) {
@@ -461,9 +491,17 @@ public class XmlCmlReader extends XmlReader {
         state = CRYSTAL_SYMMETRY;
       }
       break;
+    case SYMMETRY:
+      if (name.equals("symmetry")) {
+        state = START;
+      }
+      break;
     case MOLECULE:
       if (name.equals("molecule")) {
         if (--moleculeNesting == 0) {
+          // if <molecule> is within <module>, then
+          // we have to wait until the end of <module> to
+          // apply symmetry.
           applySymmetry();
           state = START;
         } else {
@@ -634,6 +672,10 @@ public class XmlCmlReader extends XmlReader {
   }
   
   public void applySymmetry() {
+    if (moduleCount > 0 || !haveMolecule)
+      return;
+    if (localSpaceGroupName != null)
+      parent.setSpaceGroupName(localSpaceGroupName);
     try {
       parent.applySymmetry();
     } catch (Exception e) {

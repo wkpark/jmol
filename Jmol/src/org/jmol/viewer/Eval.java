@@ -10838,7 +10838,8 @@ class Eval { //implements Runnable {
         bs = expression(i);
         int iAtom = BitSetUtil.firstSetBit(bs);
         Atom[] atoms = viewer.getModelSet().atoms;
-        propertyValue = atoms[iAtom].getEllipsoid();
+        if (iAtom >= 0)
+          propertyValue = atoms[iAtom].getEllipsoid();
         if (propertyValue == null)
           return;
         i = iToken;

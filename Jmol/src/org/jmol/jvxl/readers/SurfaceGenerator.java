@@ -166,6 +166,10 @@ public class SurfaceGenerator {
     initializeIsosurface();
   }
   
+  public boolean isStateDataRead() {
+    return params.state == Parameters.STATE_DATA_READ;
+  }
+
   MeshDataServer getMeshDataServer() {
     return meshDataServer;
   }
@@ -230,12 +234,6 @@ public class SurfaceGenerator {
     return params.thePlane;
   }
   
-  private int state;
-
-  public int getState() {
-    return state;
-  }
-
   public int getColor(int which) {
     switch(which) {
     case -1:
@@ -282,10 +280,6 @@ public class SurfaceGenerator {
     return jvxlData.wasCubic;
   }
   
-  public final static int STATE_INITIALIZED = 1;
-  public final static int STATE_DATA_READ = 2;
-  public final static int STATE_DATA_COLORED = 3;
-
   //////////////////////////////////////////////////////////////
 
   int colorPtr;
@@ -509,7 +503,7 @@ public class SurfaceGenerator {
         propertyName = "mapColor";
       } else {
         colorEncoder.setColorScheme(colorScheme);
-        if (state == STATE_DATA_COLORED)
+        if (params.state == Parameters.STATE_DATA_COLORED)
           voxelReader.applyColorScale();
         return true;
       }
@@ -546,9 +540,9 @@ public class SurfaceGenerator {
         params.colorPhase = 0;
       }
       params.colorByPhase = params.colorPhase != 0;
-      if (state >= STATE_DATA_READ) {
+      if (params.state >= Parameters.STATE_DATA_READ) {
         params.dataType = params.surfaceType;
-        state = STATE_DATA_COLORED;
+        params.state = Parameters.STATE_DATA_COLORED;
         params.isBicolorMap = true;
         voxelReader.applyColorScale();
       }
@@ -669,7 +663,7 @@ public class SurfaceGenerator {
     }
 
     if ("hydrogenOrbital" == propertyName) {
-      if (!params.setAtomicOrbital((float[]) value, state >= STATE_DATA_READ))
+      if (!params.setAtomicOrbital((float[]) value))
         return true;
       voxelReader = new IsoShapeReader(this, params.psi_n, params.psi_l,
           params.psi_m, params.psi_Znuc);
@@ -693,7 +687,7 @@ public class SurfaceGenerator {
     }
 
     if ("lcaoCartoonCenter" == propertyName) {
-      if (++state != STATE_DATA_READ)
+      if (++params.state != Parameters.STATE_DATA_READ)
         return true;
       if (params.center.x == Float.MAX_VALUE)
         params.center.set((Vector3f) value);
@@ -704,7 +698,7 @@ public class SurfaceGenerator {
         || "sasurface" == propertyName || "nomap" == propertyName) {
       params.setSolvent(propertyName, ((Float) value).floatValue());
       Logger.info(params.calculationType);
-      if (state < STATE_DATA_READ)
+      if (params.state < Parameters.STATE_DATA_READ)
         params.cutoff = 0.0f;
       processState();
       return true;
@@ -716,13 +710,13 @@ public class SurfaceGenerator {
     }
 
     if ("mep" == propertyName) {
-      params.setMep((float[]) value, state >= STATE_DATA_READ, rangeDefined); // mep charges
+      params.setMep((float[]) value, rangeDefined); // mep charges
       processState();
       return true;
     }
 
     if ("molecularOrbital" == propertyName) {
-      params.setMO(((Integer) value).intValue(), state >= STATE_DATA_READ);
+      params.setMO(((Integer) value).intValue());
       Logger.info(params.calculationType);
       processState();
       return true;
@@ -767,9 +761,9 @@ public class SurfaceGenerator {
   }
 
   private void processState() {   
-    if (state == STATE_INITIALIZED && params.thePlane != null)
-      state++;
-    if (state >= STATE_DATA_READ) {
+    if (params.state == Parameters.STATE_INITIALIZED && params.thePlane != null)
+      params.state++;
+    if (params.state >= Parameters.STATE_DATA_READ) {
       mapSurface(null);
     } else {
       generateSurface();
@@ -801,7 +795,7 @@ public class SurfaceGenerator {
   }
   
   private void generateSurface() {       
-    if (++state != STATE_DATA_READ)
+    if (++params.state != Parameters.STATE_DATA_READ)
       return;
     setReader();    
     boolean haveMeshDataServer = (meshDataServer != null);
@@ -830,10 +824,10 @@ public class SurfaceGenerator {
     
     if (jvxlData.jvxlDataIs2dContour) {
       voxelReader.colorIsosurface();
-      state = STATE_DATA_COLORED;
+      params.state = Parameters.STATE_DATA_COLORED;
     }
     if (params.colorBySign || params.isBicolorMap) {
-      state = STATE_DATA_COLORED;
+      params.state = Parameters.STATE_DATA_COLORED;
       voxelReader.applyColorScale();
     }
     voxelReader.jvxlUpdateInfo();
@@ -844,11 +838,10 @@ public class SurfaceGenerator {
   }
 
   private void mapSurface(Object value) {
-    if (state == STATE_INITIALIZED && params.thePlane != null)
-      state++;
-    if (++state != STATE_DATA_COLORED)
+    if (params.state == Parameters.STATE_INITIALIZED && params.thePlane != null)
+      params.state++;
+    if (++params.state != Parameters.STATE_DATA_COLORED)
       return;
-    params.state = state;
     setReader();    
     params.doCapIsosurface = false;
     //if (params.dataType == Parameters.SURFACE_FUNCTIONXY)
@@ -931,7 +924,7 @@ public class SurfaceGenerator {
   }
 
   public void initState() {
-    state = STATE_INITIALIZED;
+    params.state = Parameters.STATE_INITIALIZED;
     params.dataType = params.surfaceType = Parameters.SURFACE_NONE;
   }
 

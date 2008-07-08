@@ -128,6 +128,13 @@ import org.jmol.viewer.JmolConstants;
 
 public class Parameters {
 
+  public final static int STATE_UNINITIALIZED = 0;
+  public final static int STATE_INITIALIZED = 1;
+  public final static int STATE_DATA_READ = 2;
+  public final static int STATE_DATA_COLORED = 3;
+
+  int state = STATE_UNINITIALIZED;
+
   boolean logMessages = false;
   boolean logCompression = false;
   boolean logCube = false;
@@ -215,7 +222,7 @@ public class Parameters {
     solventAtomRadiusFactor = 1;
     solventAtomRadiusOffset = 0;
     solventExtendedAtomRadius = 0;
-    state = 0;
+    state = STATE_INITIALIZED;
     thePlane = null;
     theProperty = null;
     thisContour = -1;
@@ -226,7 +233,6 @@ public class Parameters {
   }
   
   String calculationType = "";
-  int state = 0;
 
   //solvent/molecular-related:
   boolean addHydrogens;
@@ -498,7 +504,7 @@ public class Parameters {
   float psi_Znuc = 1; // hydrogen
   float psi_ptsPerAngstrom = 5f;
 
-  boolean setAtomicOrbital(float[] nlmZ, boolean isMapping) {
+  boolean setAtomicOrbital(float[] nlmZ) {
     dataType = SURFACE_ATOMICORBITAL;
     psi_n = (int) nlmZ[0];
     psi_l = (int) nlmZ[1];
@@ -512,7 +518,7 @@ public class Parameters {
         cutoff = cutoff * cutoff;
     }
     isCutoffAbsolute = true;
-    if (!isMapping && thePlane == null) {
+    if (state < STATE_DATA_READ && thePlane == null) {
       if (colorBySign) {
         isBicolorMap = true;
       }
@@ -528,7 +534,7 @@ public class Parameters {
   float mep_ptsPerAngstrom = 3f;
   float mep_marginAngstroms = 1f; // may have to adjust this
 
-  void setMep(float[] charges, boolean isMapping, boolean isRangeDefined) {
+  void setMep(float[] charges, boolean isRangeDefined) {
     dataType = SURFACE_MEP;
     theProperty = charges;
     isEccentric = isAnisotropic = false;
@@ -541,7 +547,7 @@ public class Parameters {
     contourFromZero = false; // fills out the plane
     //colorBySign = false;
     //isBicolorMap = false;
-    if (isMapping || thePlane != null) {
+    if (state >= STATE_DATA_READ || thePlane != null) {
       if (!rangeDefined && !rangeAll) {
         valueMappedToRed = defaultMepMin;
         valueMappedToBlue = defaultMepMax;
@@ -571,7 +577,7 @@ public class Parameters {
   int qm_nAtoms;
   int qm_moNumber = Integer.MAX_VALUE;
   
-  void setMO(int iMo, boolean isMapping) {
+  void setMO(int iMo) {
     iUseBitSets = true;
     qm_moNumber = iMo;
     qmOrbitalType = (moData.containsKey("gaussians") ? QM_TYPE_GAUSSIAN
@@ -607,7 +613,7 @@ public class Parameters {
         cutoff = cutoff * cutoff;
     }
     isCutoffAbsolute = (cutoff > 0 && !isPositiveOnly);
-    if (isMapping || thePlane != null)
+    if (state >= STATE_DATA_READ || thePlane != null)
       return;
     colorBySign = true;
     if (colorByPhase && colorPhase == 0)

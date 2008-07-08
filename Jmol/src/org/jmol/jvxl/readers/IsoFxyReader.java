@@ -40,7 +40,7 @@ class IsoFxyReader extends VolumeDataReader {
   
   protected void setup() {
     //isAngstroms = params.isAngstroms;
-    isPlanarMapping = (params.thePlane != null || params.state == SurfaceGenerator.STATE_DATA_COLORED);
+    isPlanarMapping = (params.thePlane != null || params.state == Parameters.STATE_DATA_COLORED);
     functionName = (String) params.functionXYinfo.get(0);
     jvxlFileHeaderBuffer = new StringBuffer();
     jvxlFileHeaderBuffer.append("functionXY\n").append(functionName).append("\n");

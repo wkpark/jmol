@@ -271,7 +271,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     }
 
     if (propertyName == "functionXY") {
-      if (sg.getState() == SurfaceGenerator.STATE_DATA_READ)
+      if (sg.isStateDataRead())
         setScriptInfo(); // for script DATA1
     }
 

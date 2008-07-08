@@ -981,8 +981,8 @@ select (atomno=10);lcaoCartoon delete create "sp3d"
 select (atomno=10);lcaoCartoon color red create "sp3a" color green create "sp3b" color white create "sp3c" color blue create "sp3d"
 load caffeine.xyz;moveto 1.0 930 274 -244 107.0;
 select (carbon and connected(nitrogen));lcaocartoon create "pz"
-color $lcao_5pza red
-color $lcao_5pzb translucent white
+color $lcao_5_pza red
+color $lcao_5_pzb translucent white
 load cyclohexane_movie.xyz;select atomno=5;lcaocartoon "sp3a" ;refresh;#35 atoms
 animation on
 frame 0

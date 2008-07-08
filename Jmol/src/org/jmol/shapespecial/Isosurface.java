@@ -270,6 +270,11 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
       moNumber = ((Integer) value).intValue();
     }
 
+    if (propertyName == "functionXY") {
+      if (sg.getState() == SurfaceGenerator.STATE_DATA_READ)
+        setScriptInfo(); // for script DATA1
+    }
+
     if ("center" == propertyName) {
       center.set((Point3f) value);
     }
@@ -355,7 +360,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
       }
       return;
     }
-
+    
     // processed by meshCollection
 
     setPropertySuper(propertyName, value, bs);
@@ -739,7 +744,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     String script = sg.getScript();
     thisMesh.bitsets = null;
     if (script != null) {
-      if (script.charAt(0) == ' ') {
+      if (script.charAt(0) == ' ') { // lobe only
         script = myType + " " + thisMesh.thisID + script;
       } else if (sg.getIUseBitSets()) {
         thisMesh.bitsets = new BitSet[3];
@@ -749,7 +754,11 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
       }
     }
     thisMesh.scriptCommand = script;
-    thisMesh.data = (Vector) sg.getProperty("functionXYinfo", 0);
+    Vector v = (Vector) sg.getProperty("functionXYinfo", 0);
+    if (thisMesh.data1 == null)
+      thisMesh.data1 = v;
+    else
+      thisMesh.data2 = v;
   }
 
   private void setJvxlInfo() {

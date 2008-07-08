@@ -282,9 +282,9 @@ public class SurfaceGenerator {
     return jvxlData.wasCubic;
   }
   
-  private final static int STATE_INITIALIZED = 1;
-  private final static int STATE_DATA_READ = 2;
-  private final static int STATE_DATA_COLORED = 3;
+  public final static int STATE_INITIALIZED = 1;
+  public final static int STATE_DATA_READ = 2;
+  public final static int STATE_DATA_COLORED = 3;
 
   //////////////////////////////////////////////////////////////
 
@@ -319,7 +319,7 @@ public class SurfaceGenerator {
       params.script = (String) value;
       return false; //more to do
     }
-    
+
     if ("finalize" == propertyName) {
       initializeIsosurface();
       return true;
@@ -509,7 +509,7 @@ public class SurfaceGenerator {
         propertyName = "mapColor";
       } else {
         colorEncoder.setColorScheme(colorScheme);
-        if(state == STATE_DATA_COLORED)
+        if (state == STATE_DATA_COLORED)
           voxelReader.applyColorScale();
         return true;
       }
@@ -612,7 +612,6 @@ public class SurfaceGenerator {
 
     if ("plane" == propertyName) {
       params.setPlane((Point4f) value);
-//      ++state;
       return true;
     }
 
@@ -649,8 +648,7 @@ public class SurfaceGenerator {
       else if (value instanceof float[])
         params.setEllipsoid((float[]) value);
       else
-        return true; 
-    //    params.setEllipsoid((Object[]) value);        
+        return true;
       voxelReader = new IsoShapeReader(this, params.distance);
       generateSurface();
       return true;
@@ -683,10 +681,9 @@ public class SurfaceGenerator {
       params.setFunctionXY((Vector) value);
       if (params.isContoured)
         volumeData.setPlaneParameters(new Point4f(0, 0, 1, 0)); //xy plane through origin
-      if (((String)params.functionXYinfo.get(0)).indexOf("_xyz") >= 0) {
+      if (((String) params.functionXYinfo.get(0)).indexOf("_xyz") >= 0)
         getFunctionZfromXY();
-      }
-      generateSurface();
+      processState();
       return true;
     }
 
@@ -699,7 +696,7 @@ public class SurfaceGenerator {
       if (++state != STATE_DATA_READ)
         return true;
       if (params.center.x == Float.MAX_VALUE)
-        params.center.set((Vector3f)value);
+        params.center.set((Vector3f) value);
       return false;
     }
 
@@ -756,15 +753,15 @@ public class SurfaceGenerator {
         }
         params.colorBySets = true;
       } else {
-         if ((voxelReader = setFileData(value)) == null) {
-           Logger.error("Could not set the mapping data");
-           return true;
-         }
+        if ((voxelReader = setFileData(value)) == null) {
+          Logger.error("Could not set the mapping data");
+          return true;
+        }
       }
       mapSurface(value);
       return true;
     }
-    
+
     // continue with operations in calling class...
     return false;
   }
@@ -851,8 +848,11 @@ public class SurfaceGenerator {
       state++;
     if (++state != STATE_DATA_COLORED)
       return;
+    params.state = state;
     setReader();    
     params.doCapIsosurface = false;
+    //if (params.dataType == Parameters.SURFACE_FUNCTIONXY)
+      //params.thePlane = new Point4f(0, 0, 1, 0);
     if (params.thePlane != null) {
       params.cutoff = 0;
       voxelReader.createIsosurface(true);//but don't read volume data yet

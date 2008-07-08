@@ -121,9 +121,9 @@ public abstract class MeshCollection extends Shape {
     }
     
     if ("commandOption" == propertyName) {
-      String s = " # " + (String) value;
+      String s = "# " + (String) value;
       if (script.indexOf(s) < 0)
-        script += s;
+        script += " " + s;
       return;
     }
 
@@ -422,13 +422,21 @@ public abstract class MeshCollection extends Shape {
         cmd += "# MODEL({" + mesh.modelIndex + "})";
       if (mesh.linkedMesh != null)
         cmd += " LINK";
-      if (mesh.data != null) {
-        String name = ((String) mesh.data.elementAt(0)).toLowerCase();
+      if (mesh.data1 != null) {
+        String name = ((String) mesh.data1.elementAt(0)).toLowerCase();
         if (name.indexOf("data2d_") != 0)
           name = "data2d_" + name;
         name = TextFormat.simpleReplace(name, "_xyz", "_");
-        cmd = Escape.encapsulateData(name, mesh.data.elementAt(5)) 
+        cmd = Escape.encapsulateData(name, mesh.data1.elementAt(5)) 
             + "  " + cmd + "# DATA=\"" + name + "\"";
+      }
+      if (mesh.data2 != null) {
+        String name = ((String) mesh.data2.elementAt(0)).toLowerCase();
+        if (name.indexOf("data2d_") != 0)
+          name = "data2d_" + name;
+        name = TextFormat.simpleReplace(name, "_xyz", "_");
+        cmd = Escape.encapsulateData(name, mesh.data2.elementAt(5)) 
+            + "  " + cmd + "# DATA2=\"" + name + "\"";
       }
       
       if (mesh.modelIndex >= 0 && modelCount > 1)

@@ -166,7 +166,8 @@ public class Mesh {
   public final Vector3f vAC = new Vector3f();
 
   protected boolean haveCheckByte;
-  public Vector data;
+  public Vector data1;
+  public Vector data2;
   
   public void sumVertexNormals(Vector3f[] vectorSums) {
     final Vector3f vNormalizedNormal = new Vector3f();

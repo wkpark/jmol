@@ -6391,14 +6391,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @return    nX by nY array of floating values
    */
   public float[][] functionXY(String functionName, int nX, int nY) {
-    if (functionName.indexOf("file:") < 0)
+    String data = null;
+    if (functionName.indexOf("file:") == 0)
+      data = getFileAsString(functionName.substring(5));
+    else if (functionName.indexOf("data2d_") != 0)
       return statusManager.functionXY(functionName, nX, nY);
-    String data = getFileAsString(functionName.substring(5));
     nX = Math.abs(nX);
     nY = Math.abs(nY);
+    float[][] fdata;
+    if (data == null) {
+      fdata = getDataFloat2D(functionName);
+      if (fdata != null)
+        return fdata;
+      data = "";
+    }
+    fdata = new float[nX][nY];
     float[] f = new float[nX * nY];
     Parser.parseFloatArray(data, null, f);
-    float[][] fdata = new float[nX][nY];
     for (int i = 0, n = 0; i < nX; i++)
       for (int j = 0; j < nY; j++)
         fdata[i][j] = f[n++];

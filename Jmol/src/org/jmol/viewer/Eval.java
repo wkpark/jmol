@@ -104,6 +104,7 @@ class Eval { //implements Runnable {
   }
 
   private String thisCommand;
+  private String fullCommand;
   private short[] lineNumbers;
   private int[] lineIndices;
   private Token[][] aatoken;
@@ -862,12 +863,13 @@ class Eval { //implements Runnable {
       //  when checking scripts, we can't check statments 
       //  containing @{...}
       if (!setStatement(pc)) {
-        Logger.info(getCommand() + " -- STATEMENT CONTAINING @{} SKIPPED");
+        Logger.info(getCommand(pc) + " -- STATEMENT CONTAINING @{} SKIPPED");
         continue;
       }
       if (lineNumbers[pc] > lineEnd)
         break;
-      thisCommand = getCommand();
+      thisCommand = getCommand(pc);
+      fullCommand = thisCommand + getNextComment();
       iToken = 0;
       String script = viewer.getInterruptScript();
       if (script != "")
@@ -1320,12 +1322,13 @@ class Eval { //implements Runnable {
     return lineNumbers[pc];
   }
 
-  private String getCommand() {
+  private String getCommand(int pc) {
+    if (pc >= lineIndices.length)
+      return "";
     int ichBegin = lineIndices[pc];
     int ichEnd = (pc + 1 == lineIndices.length || lineIndices[pc + 1] == 0 ? script
         .length()
         : lineIndices[pc + 1]);
-
     String s = "";
     try {
       s = script.substring(ichBegin, ichEnd);
@@ -1365,7 +1368,7 @@ class Eval { //implements Runnable {
       strbufLog.append(s).append(statementAsString());
       viewer.scriptStatus(strbufLog.toString());
     } else {
-      String cmd = getCommand();
+      String cmd = getCommand(pc);
       if (cmd.length() > 0 && cmd.lastIndexOf(";") == cmd.length() - 1)
         cmd = cmd.substring(0, cmd.length() - 1);
       viewer.scriptStatus(cmd);
@@ -9491,8 +9494,8 @@ class Eval { //implements Runnable {
   }
   
   private String extractCommandOption(String name) {
-    int i = thisCommand.indexOf(name + "=");
-    return (i < 0 ? null : Parser.getNextQuotedString(thisCommand, i));
+    int i = fullCommand.indexOf(name + "=");
+    return (i < 0 ? null : Parser.getNextQuotedString(fullCommand, i));
   }
 
   private void draw() throws ScriptException {
@@ -10316,14 +10319,14 @@ class Eval { //implements Runnable {
 
     //handle isosurface/mo/pmesh delete and id delete here
 
-    setShapeProperty(iShape, "init", thisCommand);
+    setShapeProperty(iShape, "init", fullCommand);
     iToken = 0;
     if (tokAt(1) == Token.delete || tokAt(2) == Token.delete
         && tokAt(++iToken) == Token.all) {
       setShapeProperty(iShape, "delete", null);
       iToken += 2;
       if (statementLength > iToken) {
-        setShapeProperty(iShape, "init", thisCommand);
+        setShapeProperty(iShape, "init", fullCommand);
         setShapeProperty(iShape, "thisID", JmolConstants.PREVIOUS_MESH_ID);
       }
       return;
@@ -10334,6 +10337,11 @@ class Eval { //implements Runnable {
       if (iShape != JmolConstants.SHAPE_DRAW)
         setShapeProperty(iShape, "title", new String[] { thisCommand });
     }
+  }
+
+  private String getNextComment() {
+    String nextCommand = getCommand(pc + 1);
+    return (nextCommand.startsWith("#") ? nextCommand : "");
   }
 
   private boolean listIsosurface(int iShape) throws ScriptException {
@@ -10355,6 +10363,7 @@ class Eval { //implements Runnable {
     boolean surfaceObjectSeen = false;
     boolean planeSeen = false;
     boolean isCavity = false;
+    boolean isFxy = false;
     float[] nlmZ = new float[5];
     float[] data = null;
     int nFiles = 0;
@@ -10396,8 +10405,8 @@ class Eval { //implements Runnable {
       case Token.property:
         setShapeProperty(iShape, "propertySmoothing", viewer
             .getIsosurfacePropertySmoothing() ? Boolean.TRUE : Boolean.FALSE);
-        propertyName = "property";
         str = parameterAsString(i);
+        propertyName = "property";
         if (!isCavity && str.toLowerCase().indexOf("property_") == 0) {
           data = new float[viewer.getAtomCount()];
           if (isSyntaxCheck)
@@ -10408,8 +10417,8 @@ class Eval { //implements Runnable {
           propertyValue = data;
           break;
         }
-        int atomCount = viewer.getAtomCount();
         int tokProperty = getToken(++i).tok;
+        int atomCount = viewer.getAtomCount();
         data = (isCavity ? new float[0] : new float[atomCount]);
         if (isCavity)//not implemented: && tokProperty != Token.surfacedistance)
           error(ERROR_invalidArgument);
@@ -10724,14 +10733,12 @@ class Eval { //implements Runnable {
         if (str.equalsIgnoreCase("functionXY")) {
           // isosurface functionXY "functionName"|"data2d_xxxxx"
           //     {origin} {ni ix iy iz} {nj jx jy jz} {nk kx ky kz}
-
-          surfaceObjectSeen = true;
           Vector v = new Vector();
           if (getToken(++i).tok != Token.string)
-            error(ERROR_invalidArgument);
+            error(ERROR_what, "functionXY must be followed by a function name in quotes.");
           String fName = parameterAsString(i++);
           //override of function or data name when saved as a state
-          String dataName = extractCommandOption("# DATA");
+          String dataName = extractCommandOption("# DATA" + (isFxy ? "2" : ""));
           if (dataName != null)
             fName = dataName;
           boolean isXYZ = (fName.indexOf("data2d_xyz") == 0);
@@ -10760,20 +10767,20 @@ class Eval { //implements Runnable {
             }
             if (fdata == null) {
               iToken = ptX;
-              error(ERROR_what,"fdata is null");
+              error(ERROR_what,"fdata is null.");
             }
             if (fdata.length != nX && !isXYZ) {
               iToken = ptX;
-              error(ERROR_what,"fdata length is not correct: " + fdata.length + " " + nX);
+              error(ERROR_what,"fdata length is not correct: " + fdata.length + " " + nX + ".");
             }
             for (int j = 0; j < nX; j++) {
               if (fdata[j] == null) {
                 iToken = ptY;
-                error(ERROR_what,"fdata[" + j + "] is null");
+                error(ERROR_what,"fdata[" + j + "] is null.");
               }
               if (fdata[j].length != nY) {
                 iToken = ptY;
-                error(ERROR_what,"fdata[" + j + "] is not the right length: " + fdata[j].length + " " + nY);
+                error(ERROR_what,"fdata[" + j + "] is not the right length: " + fdata[j].length + " " + nY + ".");
               }
             }
             v.addElement(fdata); //(5) = float[][] data                 
@@ -10781,6 +10788,7 @@ class Eval { //implements Runnable {
           i = iToken;
           propertyName = "functionXY";
           propertyValue = v;
+          isFxy = surfaceObjectSeen = true;          
           break;
         }
         if (str.equalsIgnoreCase("molecular")) {
@@ -11202,7 +11210,7 @@ class Eval { //implements Runnable {
     GT._("unrecognized {0} parameter"), // 39
     GT._("unrecognized {0} parameter in Jmol state script (set anyway)"), // 40
     GT._("unrecognized SHOW parameter --  use {0}"), // 41
-    "{0}?", // 42
+    "{0}", // 42
   };
 
   static final String SCRIPT_COMPLETED = "Script completed";

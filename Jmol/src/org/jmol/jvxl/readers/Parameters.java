@@ -215,6 +215,7 @@ public class Parameters {
     solventAtomRadiusFactor = 1;
     solventAtomRadiusOffset = 0;
     solventExtendedAtomRadius = 0;
+    state = 0;
     thePlane = null;
     theProperty = null;
     thisContour = -1;
@@ -225,7 +226,8 @@ public class Parameters {
   }
   
   String calculationType = "";
-  
+  int state = 0;
+
   //solvent/molecular-related:
   boolean addHydrogens;
   float solventRadius;
@@ -364,8 +366,8 @@ public class Parameters {
     cutoff = Float.MIN_VALUE;
     isCutoffAbsolute = false;
     isSilent = !logMessages;
-    script = " center " + Escape.escape(center) + " SPHERE "
-         + radius;
+    //script = " center " + Escape.escape(center) + " SPHERE "
+      //   + radius + ";";
   }
   
   void setEllipsoid(Point4f v) {
@@ -375,9 +377,9 @@ public class Parameters {
     cutoff = Float.MIN_VALUE;
     isCutoffAbsolute = false;
     isSilent = !logMessages;
-    script = " center " + Escape.escape(center)
-        + (Float.isNaN(scale) ? "" : " scale " + scale) + " ELLIPSOID {" + v.x
-        + " " + v.y + " " + v.z + " " + v.w + "}";
+    //script = " center " + Escape.escape(center)
+      //  + (Float.isNaN(scale) ? "" : " scale " + scale) + " ELLIPSOID {" + v.x
+        //+ " " + v.y + " " + v.z + " " + v.w + "};";
   }
 
   float[] anisoB;
@@ -393,9 +395,9 @@ public class Parameters {
       center.set(0, 0, 0);
     if (resolution == Float.MAX_VALUE)
       resolution = 6;
-    script = " center " + Escape.escape(center)
-        + (Float.isNaN(scale) ? "" : " scale " + scale) + " ELLIPSOID {" + bList[0]
-        + " " + bList[1] + " " + bList[2] + " " + bList[3] + " " + bList[4] + " " + bList[5] + "}";
+    //script = " center " + Escape.escape(center)
+      //  + (Float.isNaN(scale) ? "" : " scale " + scale) + " ELLIPSOID {" + bList[0]
+        //+ " " + bList[1] + " " + bList[2] + " " + bList[3] + " " + bList[4] + " " + bList[5] + "};";
   }
 
   void setLobe(Point4f v) {
@@ -409,7 +411,7 @@ public class Parameters {
     isSilent = !logMessages;
     script = " center " + Escape.escape(center)
         + (Float.isNaN(scale) ? "" : " scale " + scale) + " LOBE {" + v.x + " "
-        + v.y + " " + v.z + " " + v.w + "}";
+        + v.y + " " + v.z + " " + v.w + "};";
   }
   
   String lcaoType;
@@ -647,6 +649,7 @@ public class Parameters {
 
   Point4f thePlane;
   boolean isContoured;
+  
   int nContours;
   int thisContour; 
   boolean contourFromZero;

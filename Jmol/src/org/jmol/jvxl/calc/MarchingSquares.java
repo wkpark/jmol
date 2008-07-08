@@ -272,9 +272,10 @@ public class MarchingSquares {
      * note that this may be out of the actual range of data
      * 
      */
-    planarOrigin.set(0, 0, 0);
-    if (contourVertexCount == 0)
+    if (contourVertexCount == 0) {
+      planarOrigin.set(0, 0, 0);
       return;
+    }
 
     float minX = Float.MAX_VALUE;
     float minY = Float.MAX_VALUE;

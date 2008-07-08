@@ -1922,7 +1922,19 @@ public class Jmol extends JPanel {
     }
     
     public float[][] functionXY(String functionName, int nX, int nY) {
-      return new float[Math.abs(nX)][Math.abs(nY)];  // for user-defined isosurface functions (testing only -- bob hanson)
+      nX = Math.abs(nX);
+      nY = Math.abs(nY);
+      float[][] f = new float[nX][nY];
+      boolean isSecond = (functionName.indexOf("2") >= 0);
+      
+      for (int i = nX; --i >= 0; )
+        for (int j = nY; --j >= 0; ) {
+          f[i][j] = (isSecond ? (float) ((i + j - nX) / (2f)) : (float)Math.sqrt(Math.abs(i*i + j*j))/2f);
+          //if (i < 10 && j < 10)
+            //System.out.println(" functionXY " + i + " " + j + " " + f[i][j]);
+        }
+      
+      return f;  // for user-defined isosurface functions (testing only -- bob hanson)
     }
 
     public Hashtable getRegistryInfo() {

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-07-06 23:11+0200\n"
+"POT-Creation-Date: 2008-07-10 21:24+0200\n"
 "PO-Revision-Date: 2008-04-09 10:00+0900\n"
 "Last-Translator: Won Kyu-Park <wkpark@kldp.org>\n"
 "Language-Team: Korean <Jmol-developers@lists.sf.net>\n"
@@ -1196,7 +1196,7 @@ msgstr "마우스 설명서"
 msgid "Translations"
 msgstr "번역"
 
-#: org/jmol/viewer/Compiler.java:2476 org/jmol/viewer/Eval.java:11153
+#: org/jmol/viewer/Compiler.java:2476 org/jmol/viewer/Eval.java:11173
 msgid "bad argument count"
 msgstr "인자 개수 오류"
 
@@ -1205,7 +1205,7 @@ msgstr "인자 개수 오류"
 msgid "invalid context for {0}"
 msgstr ""
 
-#: org/jmol/viewer/Compiler.java:2478 org/jmol/viewer/Eval.java:5107
+#: org/jmol/viewer/Compiler.java:2478 org/jmol/viewer/Eval.java:5110
 msgid "command expected"
 msgstr ""
 
@@ -1221,7 +1221,7 @@ msgstr "비교 연산자 필요"
 msgid "{ number number number } expected"
 msgstr "{ 숫자 숫자 숫자 } 필요"
 
-#: org/jmol/viewer/Compiler.java:2482 org/jmol/viewer/Eval.java:11163
+#: org/jmol/viewer/Compiler.java:2482 org/jmol/viewer/Eval.java:11183
 msgid "unexpected end of script command"
 msgstr "예상치않은 스크립트 명령"
 
@@ -1263,7 +1263,7 @@ msgstr "왼쪽 괄화가 필요"
 msgid "missing END for {0}"
 msgstr "{0}에 END가 없습니다"
 
-#: org/jmol/viewer/Compiler.java:2492 org/jmol/viewer/Eval.java:11177
+#: org/jmol/viewer/Compiler.java:2492 org/jmol/viewer/Eval.java:11197
 msgid "number expected"
 msgstr "숫자 필요"
 
@@ -1287,7 +1287,7 @@ msgstr "오른쪽 꺽쇠괄호 필요"
 msgid "right parenthesis expected"
 msgstr "오른쪽 괄호가 필요"
 
-#: org/jmol/viewer/Compiler.java:2498 org/jmol/viewer/Eval.java:11183
+#: org/jmol/viewer/Compiler.java:2498 org/jmol/viewer/Eval.java:11203
 msgid "quoted string expected"
 msgstr "따옴표로 감싼 문자열 필요"
 
@@ -1296,7 +1296,7 @@ msgstr "따옴표로 감싼 문자열 필요"
 msgid "unrecognized expression token: {0}"
 msgstr "이해할 수 없는 토큰: {0}"
 
-#: org/jmol/viewer/Compiler.java:2500 org/jmol/viewer/Eval.java:11191
+#: org/jmol/viewer/Compiler.java:2500 org/jmol/viewer/Eval.java:11211
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "이해할 수 없는 {0} 파라메터"
@@ -1306,70 +1306,70 @@ msgstr "이해할 수 없는 {0} 파라메터"
 msgid "unrecognized token: {0}"
 msgstr "이해할 수 없는 토큰: {0}"
 
-#: org/jmol/viewer/Eval.java:307 org/jmol/viewer/Eval.java:5088
+#: org/jmol/viewer/Eval.java:308 org/jmol/viewer/Eval.java:5091
 msgid "script ERROR: "
 msgstr "스크립트 오류: "
 
-#: org/jmol/viewer/Eval.java:3543
+#: org/jmol/viewer/Eval.java:3546
 #, java-format
 msgid "{0} connections deleted"
 msgstr "{0} 연결 지움"
 
-#: org/jmol/viewer/Eval.java:3564
+#: org/jmol/viewer/Eval.java:3567
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} 새 결합: {1} 변경됨"
 
-#: org/jmol/viewer/Eval.java:4941
+#: org/jmol/viewer/Eval.java:4944
 msgid "too many rotation points were specified"
 msgstr "너무 많은 회전 포인트가 지정됨"
 
-#: org/jmol/viewer/Eval.java:5204 org/jmol/viewer/Eval.java:5443
+#: org/jmol/viewer/Eval.java:5207 org/jmol/viewer/Eval.java:5446
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} 원자 지움"
 
-#: org/jmol/viewer/Eval.java:5895
+#: org/jmol/viewer/Eval.java:5898
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} 수소 결합"
 
-#: org/jmol/viewer/Eval.java:5907
+#: org/jmol/viewer/Eval.java:5910
 #, java-format
 msgid "{0} not allowed with background model displayed"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:8831
+#: org/jmol/viewer/Eval.java:8834
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr "무엇을 쓰나요? {0} 혹은 {1} \"파일이름\""
 
-#: org/jmol/viewer/Eval.java:8890
+#: org/jmol/viewer/Eval.java:8893
 msgid "No data available"
 msgstr "아무 정보가 없음"
 
-#: org/jmol/viewer/Eval.java:9351 org/jmol/viewer/Eval.java:10279
+#: org/jmol/viewer/Eval.java:9354 org/jmol/viewer/Eval.java:10282
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "현재 프레임에 대한 MO basis/계수 정보가 없음"
 
-#: org/jmol/viewer/Eval.java:10283
+#: org/jmol/viewer/Eval.java:10286
 msgid "no MO coefficient data available"
 msgstr "MO 계수 정보 없음"
 
-#: org/jmol/viewer/Eval.java:10285
+#: org/jmol/viewer/Eval.java:10288
 msgid "Only one molecular orbital is available in this file"
 msgstr "단 하나의 분자궤도가 있습니다"
 
-#: org/jmol/viewer/Eval.java:10295
+#: org/jmol/viewer/Eval.java:10298
 msgid "no MO occupancy data available"
 msgstr "MO 점유값이 없음"
 
-#: org/jmol/viewer/Eval.java:10305
+#: org/jmol/viewer/Eval.java:10308
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr "1에서 {0} 사이의 MO 지정값이 필요함"
 
-#: org/jmol/viewer/Eval.java:10886
+#: org/jmol/viewer/Eval.java:10906
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
@@ -1377,172 +1377,168 @@ msgstr ""
 "부분 전하 정보가 없습니다; Jmol은 MEP 정보를 보여주기 위해 이 정보가필요합니"
 "다."
 
-#: org/jmol/viewer/Eval.java:11086
+#: org/jmol/viewer/Eval.java:11106
 #, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
 "{2}"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:11152
+#: org/jmol/viewer/Eval.java:11172
 msgid "x y z axis expected"
 msgstr "x y z 축 필요"
 
-#: org/jmol/viewer/Eval.java:11154
+#: org/jmol/viewer/Eval.java:11174
 msgid "Miller indices cannot all be zero."
 msgstr "밀러 지수는 모든 값이 0일 수 없음"
 
-#: org/jmol/viewer/Eval.java:11155
+#: org/jmol/viewer/Eval.java:11175
 msgid "bad [R,G,B] color"
 msgstr "잘못된 [R,G,B] 색상"
 
-#: org/jmol/viewer/Eval.java:11156
+#: org/jmol/viewer/Eval.java:11176
 msgid "boolean expected"
 msgstr "부울린값 필요"
 
-#: org/jmol/viewer/Eval.java:11157
+#: org/jmol/viewer/Eval.java:11177
 msgid "boolean or number expected"
 msgstr "부울린 혹은 숫자 필요"
 
-#: org/jmol/viewer/Eval.java:11158
+#: org/jmol/viewer/Eval.java:11178
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr "부울린, 숫자 혹은 {0} 필요"
 
-#: org/jmol/viewer/Eval.java:11159
+#: org/jmol/viewer/Eval.java:11179
 msgid "color expected"
 msgstr "색상 필요"
 
-#: org/jmol/viewer/Eval.java:11160
+#: org/jmol/viewer/Eval.java:11180
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "색상 혹은 팔레트 이름 (Jmol, Rasmol)이 필요"
 
-#: org/jmol/viewer/Eval.java:11161
+#: org/jmol/viewer/Eval.java:11181
 msgid " {x y z} or $name or (atom expression) required"
 msgstr "{x y z} 혹은 $name 혹은 (원자 표현식) 필요"
 
-#: org/jmol/viewer/Eval.java:11162
+#: org/jmol/viewer/Eval.java:11182
 msgid "draw object not defined"
 msgstr "그림 객체가 정의 안됨"
 
-#: org/jmol/viewer/Eval.java:11164
+#: org/jmol/viewer/Eval.java:11184
 msgid "valid (atom expression) expected"
 msgstr "유효한 (원자 표현식) 필요"
 
-#: org/jmol/viewer/Eval.java:11165
+#: org/jmol/viewer/Eval.java:11185
 msgid "(atom expression) or integer expected"
 msgstr "(원자 표현식) 혹은 정수 필요"
 
-#: org/jmol/viewer/Eval.java:11166
+#: org/jmol/viewer/Eval.java:11186
 msgid "filename expected"
 msgstr "파일 이름 필요"
 
-#: org/jmol/viewer/Eval.java:11167
+#: org/jmol/viewer/Eval.java:11187
 msgid "file not found"
 msgstr "파일 없음"
 
-#: org/jmol/viewer/Eval.java:11168
+#: org/jmol/viewer/Eval.java:11188
 msgid "incompatible arguments"
 msgstr "비호환 인자"
 
-#: org/jmol/viewer/Eval.java:11169
+#: org/jmol/viewer/Eval.java:11189
 msgid "insufficient arguments"
 msgstr "부족한 인자"
 
-#: org/jmol/viewer/Eval.java:11170
+#: org/jmol/viewer/Eval.java:11190
 msgid "integer expected"
 msgstr "정수가 필요"
 
-#: org/jmol/viewer/Eval.java:11171
+#: org/jmol/viewer/Eval.java:11191
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr "정수가 범위에 벗어남 ({0} - {1})"
 
-#: org/jmol/viewer/Eval.java:11172
+#: org/jmol/viewer/Eval.java:11192
 msgid "invalid argument"
 msgstr "잘못된 인자"
 
-#: org/jmol/viewer/Eval.java:11173
+#: org/jmol/viewer/Eval.java:11193
 msgid "invalid parameter order"
 msgstr "잘못된 인자 순서"
 
-#: org/jmol/viewer/Eval.java:11174
+#: org/jmol/viewer/Eval.java:11194
 msgid "keyword expected"
 msgstr "키워드 필요"
 
-#: org/jmol/viewer/Eval.java:11175
+#: org/jmol/viewer/Eval.java:11195
 #, java-format
 msgid "{0} require that only one model be displayed"
 msgstr "{0}(은)는 단 하나의 모델만 표시됨"
 
-#: org/jmol/viewer/Eval.java:11176
+#: org/jmol/viewer/Eval.java:11196
 msgid "No unit cell"
 msgstr "단위 cell 없음"
 
-#: org/jmol/viewer/Eval.java:11178
+#: org/jmol/viewer/Eval.java:11198
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr "유효한 숫자는 ({0} 혹은 {1})"
 
-#: org/jmol/viewer/Eval.java:11179
+#: org/jmol/viewer/Eval.java:11199
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr "십진수가 범위에 벗어남 ({0} - {1})"
 
-#: org/jmol/viewer/Eval.java:11180
+#: org/jmol/viewer/Eval.java:11200
 msgid "object name expected after '$'"
 msgstr "'$' 뒤에 객체 이름이 필요"
 
-#: org/jmol/viewer/Eval.java:11181
+#: org/jmol/viewer/Eval.java:11201
 msgid "property name expected"
 msgstr "속성 이름 필요"
 
-#: org/jmol/viewer/Eval.java:11182
+#: org/jmol/viewer/Eval.java:11202
 #, java-format
 msgid "space group {0} was not found."
 msgstr "공간 그룹 {0}(을)를 찾을 수 없음"
 
-#: org/jmol/viewer/Eval.java:11184
+#: org/jmol/viewer/Eval.java:11204
 msgid "quoted string or identifier expected"
 msgstr "인용된 문자열 혹은 지정자 필요"
 
-#: org/jmol/viewer/Eval.java:11185
+#: org/jmol/viewer/Eval.java:11205
 msgid "too many script levels"
 msgstr "너무 많은 스크립트 단계"
 
-#: org/jmol/viewer/Eval.java:11186
+#: org/jmol/viewer/Eval.java:11206
 msgid "unrecognized atom property"
 msgstr "모르는 원자 속성"
 
-#: org/jmol/viewer/Eval.java:11187
+#: org/jmol/viewer/Eval.java:11207
 msgid "unrecognized bond property"
 msgstr "모르는 결합 속성"
 
-#: org/jmol/viewer/Eval.java:11188
+#: org/jmol/viewer/Eval.java:11208
 msgid "unrecognized command"
 msgstr "모르는 명령"
 
-#: org/jmol/viewer/Eval.java:11189
+#: org/jmol/viewer/Eval.java:11209
 msgid "runtime unrecognized expression"
 msgstr "런타임시 인식안되는 표현식"
 
-#: org/jmol/viewer/Eval.java:11190
+#: org/jmol/viewer/Eval.java:11210
 msgid "unrecognized object"
 msgstr "모르는 객체"
 
-#: org/jmol/viewer/Eval.java:11192
+#: org/jmol/viewer/Eval.java:11212
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:11193
+#: org/jmol/viewer/Eval.java:11213
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "SHOW 인자가 인식안됨 -- {0} 사용"
-
-#: org/jmol/viewer/Eval.java:13155
-msgid "too many parentheses"
-msgstr "너무 많은 괄호"
 
 #: org/jmol/viewer/PickingManager.java:214
 msgid "pick one more atom in order to spin the model around an axis"
@@ -1577,6 +1573,9 @@ msgstr "오류: 숫자에 부울린값을 지정할 수 없음: {0}"
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr "오류: 부울린에 이 값을 넣을 수 없음: {0}"
+
+#~ msgid "too many parentheses"
+#~ msgstr "너무 많은 괄호"
 
 #~ msgid "rotation points cannot be identical"
 #~ msgstr "회전 포인트가 같게 지정됨"

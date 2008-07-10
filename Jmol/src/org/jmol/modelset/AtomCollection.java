@@ -43,6 +43,7 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
@@ -225,6 +226,10 @@ abstract public class AtomCollection {
     return (i < 0 || ellipsoids == null || i >= ellipsoids.length ? null
         : ellipsoids[i]);
   }
+
+  public Quaternion getQuaternion(int i, char qtype) {
+    return atoms[i].group.getQuaternion(qtype);
+  } 
 
   protected int getAtomCountInModel(int modelIndex) {
     int n = 0;

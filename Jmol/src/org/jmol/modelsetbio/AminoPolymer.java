@@ -26,15 +26,12 @@ package org.jmol.modelsetbio;
 import org.jmol.modelset.Atom;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 
 import java.util.BitSet;
 
-import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
-import javax.vecmath.Matrix3f;
 
 public class AminoPolymer extends AlphaPolymer {
 
@@ -96,40 +93,13 @@ public class AminoPolymer extends AlphaPolymer {
 */
 
   private void calcProteinMainchainHydrogenBonds(BitSet bsA, BitSet bsB) {
-    Point3f aminoHydrogenPoint = new Point3f();
+    Point3f pt = new Point3f();
     Vector3f vNH = new Vector3f();
     for (int i = 1; i < monomerCount; ++i) { //not first N
       mainchainHbondOffsets[i] = 0;
-      if (getNHPoint(i, aminoHydrogenPoint, vNH))
-        bondAminoHydrogen(i, aminoHydrogenPoint, bsA, bsB);
+      if (((AminoMonomer)monomers[i]).getNHPoint(pt, vNH))
+        bondAminoHydrogen(i, pt, bsA, bsB);
     }
-  }
-
-  Point3f getNHPoint(AminoMonomer m) {
-    return m.getNitrogenHydrogenPoint();
-  }
-  
-  boolean getNHPoint(int i, Point3f aminoHydrogenPoint, Vector3f vNH) {
-    AminoMonomer residue;
-    if (i == 0 
-        || (residue = (AminoMonomer)monomers[i]).getGroupID() == JmolConstants.GROUPID_PROLINE) 
-      return false;      
-    Point3f nitrogenPoint = residue.getNitrogenAtomPoint();
-    Point3f nhPoint = residue.getNitrogenHydrogenPoint();
-    if (nhPoint != null) {
-      vNH.sub(nhPoint, nitrogenPoint);
-      aminoHydrogenPoint.set(nhPoint);
-      return true;
-    }
-    vNH.sub(nitrogenPoint, residue.getLeadAtomPoint());
-    vNH.add(nitrogenPoint);
-    vNH.sub(((AminoMonomer)monomers[i - 1]).getCarbonylCarbonAtomPoint());
-    vNH.normalize();
-    aminoHydrogenPoint.add(nitrogenPoint, vNH);
-    residue.setNitrogenHydrogenPoint(aminoHydrogenPoint);
-    if (Logger.debugging)
-      Logger.info("draw pta" + i + " {" + aminoHydrogenPoint.x + " " + aminoHydrogenPoint.y + " " + aminoHydrogenPoint.z + "} color red#aminoPolymer.calchbonds");
-    return true;
   }
 
   private final static float maxHbondAlphaDistance = 9;
@@ -577,102 +547,4 @@ public class AminoPolymer extends AlphaPolymer {
         pdbCONECT, bsSelected);
   }
 
-  final private Point3f ptTemp = new Point3f();
-  final private static float beta = (float) (17 * Math.PI/180);
-  
-  
-  static Point3f getQuaternionFrameCenter(AminoMonomer m, char qType) {
-    switch (qType) {
-    default:
-    case 'c':
-      return m.getLeadAtomPoint();
-    case 'p':
-      return m.getCarbonylCarbonAtomPoint();
-    case 'n':
-      return m.getNitrogenAtomPoint();
-    }
-  }
-
-  Quaternion getQuaternion(int i, char qType) {
-    /*
-     * also NucleicMonomer
-     *  
-     * see:
-     * 
-     *  Hanson and Thakur: http://www.cs.indiana.edu/~hanson/  http://www.cs.indiana.edu/~sithakur/
-     *  
-     *  Albrecht, Hart, Shaw, Dunker: 
-     *  
-     *   Contact Ribbons: a New Tool for Visualizing Intra- and Intermolecular Interactions in Proteins
-     *   Electronic Proceedings for the 1996 Pacific Symposium on Biocomputing
-     *   http://psb.stanford.edu/psb-online/proceedings/psb96/albrecht.pdfx
-     *   
-     *  Kneller and Calligari:
-     *  
-     *   Efficient characterization of protein secondary structure in terms of screw motion
-     *   Acta Cryst. (2006). D62, 302-311    [ doi:10.1107/S0907444905042654 ]
-     *   http://scripts.iucr.org/cgi-bin/paper?ol5289
-     * 
-     *  Wang and Zang:
-     *   
-     *   Protein secondary structure prediction with Bayesian learning method
-     *   http://cat.inist.fr/?aModele=afficheN&cpsidt=15618506
-     *
-     *  Geetha:
-     *  
-     *   Distortions in protein helices
-     *   International Journal of Biological Macromolecules, Volume 19, Number 2, August 1996 , pp. 81-89(9)
-     *   http://www.ingentaconnect.com/content/els/01418130/1996/00000019/00000002/art01106
-     *   DOI: 10.1016/0141-8130(96)01106-3
-     *    
-     *  Kavraki:
-     *  
-     *   Representing Proteins in Silico and Protein Forward Kinematics
-     *   http://cnx.org/content/m11621/latest
-     *   
-     */
-
-    AminoMonomer m = (AminoMonomer) monomers[i];
-    Point3f ptC = m.getCarbonylCarbonAtomPoint();
-    Point3f ptCa = m.getLeadAtomPoint();
-    Vector3f vA = new Vector3f();
-    Vector3f vB = new Vector3f();
-    Vector3f vC = null;
-    
-    switch (qType) {
-    default:
-    case 'c':
-      //vA = ptC - ptCa
-      //vB = ptN - ptCa
-      vA.sub(ptC, ptCa);
-      vB.sub(m.getNitrogenAtomPoint(), ptCa);
-      break;
-    case 'p':
-      //Bob's idea for a peptide plane frame
-      //vA = ptCa - ptC
-      //vB = ptN' - ptC
-      vA.sub(ptCa, ptC);
-      if (i == monomers.length - 1)
-        return null;
-      vB.sub(((AminoMonomer) monomers[i + 1]).getNitrogenAtomPoint(), ptC);
-      break;
-    case 'n':
-      // amino nitrogen chemical shift tensor frame      
-      // vA = ptH - ptN rotated beta (17 degrees) clockwise (-) around Y (perp to plane)
-      // vB = ptCa - ptN
-      if (i == 0 || m.getGroupID() == JmolConstants.GROUPID_PROLINE)
-        return null;
-      vC = new Vector3f();
-      getNHPoint(i, ptTemp, vC);
-      vB.sub(ptCa, m.getNitrogenAtomPoint());
-      vB.cross(vC, vB);
-      Matrix3f mat = new Matrix3f();
-      mat.set(new AxisAngle4f(vB, -beta));
-      mat.transform(vC);
-      vA.cross(vB, vC);
-      break;
-    }
-    return Quaternion.getQuaternionFrame(vA, vB, vC);
-  }
-  
 }

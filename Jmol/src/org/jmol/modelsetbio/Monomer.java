@@ -319,7 +319,10 @@ public abstract class Monomer extends Group {
     offsets[atom] = (byte)(index - firstAtomIndex);
     return true;
   }
-  
+
+  Point3f getQuaternionFrameCenter(char qtype) {
+    return null; 
+  }
 }
   
 

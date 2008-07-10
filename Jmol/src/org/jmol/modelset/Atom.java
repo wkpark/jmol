@@ -30,6 +30,7 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
 import org.jmol.g3d.Graphics3D;
+import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 
 import java.util.BitSet;
@@ -926,6 +927,10 @@ final public class Atom extends Point3fi {
     return group.getBioPolymerLength();
   }
 
+  public Quaternion getQuaternion(char qtype) {
+    return group.getQuaternion(qtype);
+  }
+  
   int getPolymerIndex() {
     return group.getBioPolymerIndex();
   }

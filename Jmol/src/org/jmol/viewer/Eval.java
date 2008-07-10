@@ -12337,6 +12337,11 @@ class Eval { //implements Runnable {
         default:
           if (args[0].tok == Token.point4f) {
             p4 = (Point4f) args[0].value;
+          } else if (args[0].tok == Token.bitset && tok == Token.quaternion) {
+              int i= BitSetUtil.firstSetBit((BitSet) args[0].value);
+              if (i < 0 || (q = viewer.getModelSet().getAtomAt(i).getQuaternion(viewer.getQuaternionFrame()))
+                  == null)
+                return addX(0);
           } else {
             Object v = Escape.unescapePoint(Token.sValue(args[0]));
             if (!(v instanceof Point4f))

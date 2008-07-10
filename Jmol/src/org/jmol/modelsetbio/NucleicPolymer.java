@@ -25,11 +25,7 @@ package org.jmol.modelsetbio;
 
 import java.util.BitSet;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
-
 import org.jmol.modelset.Atom;
-import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 
 public class NucleicPolymer extends BioPolymer {
@@ -100,61 +96,5 @@ public class NucleicPolymer extends BioPolymer {
                          BitSet bsSelected) {
     getPdbData(this, ctype, qtype, derivType, isDraw, bsAtoms, pdbATOM, 
         pdbCONECT, bsSelected);
-  }
-
-  static Point3f getQuaternionFrameCenter(NucleicMonomer m, char qType) {
-    return (m.isPurine() ? m.getAtomFromOffsetIndex(NucleicMonomer.N9)
-        : m.getN1());
-  }
-  
-  Quaternion getQuaternion(int i, char qType) {
-    /*
-     * also AminoMonomer
-     *   
-     */
-     
-    /*
-    Point3f ptP = getP(); 
-    Point3f ptO1P = getO1P();
-    Point3f ptO2P = getO2P();
-    if(ptP == null || ptO1P == null || ptO2P == null)
-      return null;
-    //vA = ptO1P - ptP
-    Vector3f vA = new Vector3f(ptO1P);
-    vA.sub(ptP);
-    
-    //vB = ptO2P - ptP
-    Vector3f vB = new Vector3f(ptO2P);
-    vB.sub(ptP);
-    return Quaternion.getQuaternionFrame(vA, vB);   
-    
-    */
-    
-    NucleicMonomer m = (NucleicMonomer) monomers[i];
-    //if (m.getLeadAtom().getElementSymbol() != "P")
-      //return null;
-    Point3f ptA, ptB;
-    Point3f ptN = getQuaternionFrameCenter(m, qType);
-    if (m.isPurine) {
-      // vA = N9--C4
-      // vB = N9--C8
-      ptA = m.getAtomFromOffsetIndex(NucleicMonomer.C4);
-      ptB = m.getAtomFromOffsetIndex(NucleicMonomer.C8);
-    } else {
-      // vA = N1--C2
-      // vB = N1--C6
-      ptA = m.getAtomFromOffsetIndex(NucleicMonomer.C2);
-      ptB = m.getAtomFromOffsetIndex(NucleicMonomer.C6);
-    }
-    if(ptN == null || ptA == null || ptB == null)
-      return null;
-
-    Vector3f vA = new Vector3f(ptA);
-    vA.sub(ptN);
-    
-    Vector3f vB = new Vector3f(ptB);
-    vB.sub(ptN);
-    return Quaternion.getQuaternionFrame(vA, vB, null);
-  }
-   
+  }   
 }

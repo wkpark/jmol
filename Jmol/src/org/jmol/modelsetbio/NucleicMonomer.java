@@ -25,9 +25,11 @@
 package org.jmol.modelsetbio;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
+import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 
 public class NucleicMonomer extends PhosphorusMonomer {
@@ -36,13 +38,13 @@ public class NucleicMonomer extends PhosphorusMonomer {
   private final static byte O2Pr = 2;
   private final static byte C5 = 3;
   private final static byte N1 = 4;
-  final static byte C2 = 5;
+  private final static byte C2 = 5;
   private final static byte N3 = 6;
-  final static byte C4 = 7;
+  private final static byte C4 = 7;
   private final static byte O2 = 8;
   private final static byte N7 = 9;
-  final static byte C8 = 10;
-  final static byte N9 = 11;  
+  private final static byte C8 = 10;
+  private final static byte N9 = 11;  
   private final static byte O4 = 12;
   private final static byte O6 = 13;
   private final static byte N4 = 14;
@@ -284,4 +286,57 @@ public class NucleicMonomer extends PhosphorusMonomer {
       }
   }
  
+ Point3f getQuaternionFrameCenter(char qType) {
+   return (getAtomFromOffsetIndex(isPurine ? N9 : N1));
+ }
+ 
+ public Quaternion getQuaternion(char qType) {
+   /*
+    * also AminoMonomer
+    *   
+    */
+    
+   /*
+   Point3f ptP = getP(); 
+   Point3f ptO1P = getO1P();
+   Point3f ptO2P = getO2P();
+   if(ptP == null || ptO1P == null || ptO2P == null)
+     return null;
+   //vA = ptO1P - ptP
+   Vector3f vA = new Vector3f(ptO1P);
+   vA.sub(ptP);
+   
+   //vB = ptO2P - ptP
+   Vector3f vB = new Vector3f(ptO2P);
+   vB.sub(ptP);
+   return Quaternion.getQuaternionFrame(vA, vB);   
+   
+   */
+   
+   //if (m.getLeadAtom().getElementSymbol() != "P")
+     //return null;
+   Point3f ptA, ptB;
+   Point3f ptN = getQuaternionFrameCenter(qType);
+   if (isPurine) {
+     // vA = N9--C4
+     // vB = N9--C8
+     ptA = getAtomFromOffsetIndex(C4);
+     ptB = getAtomFromOffsetIndex(C8);
+   } else {
+     // vA = N1--C2
+     // vB = N1--C6
+     ptA = getAtomFromOffsetIndex(C2);
+     ptB = getAtomFromOffsetIndex(C6);
+   }
+   if(ptN == null || ptA == null || ptB == null)
+     return null;
+
+   Vector3f vA = new Vector3f(ptA);
+   vA.sub(ptN);
+   
+   Vector3f vB = new Vector3f(ptB);
+   vB.sub(ptN);
+   return Quaternion.getQuaternionFrame(vA, vB, null);
+ }
+
 }

@@ -30,8 +30,6 @@ import java.util.Hashtable;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-
-
 abstract public class Polymer {
 
   /*
@@ -110,5 +108,4 @@ abstract public class Polymer {
               StringBuffer pdbCONECT, BitSet bsSelected) {
     return;
   }
-
 }

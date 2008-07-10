@@ -469,7 +469,7 @@ public abstract class BioPolymer extends Polymer {
   
   final public static void getPdbData(BioPolymer p, char ctype, char qtype,
                                       int derivType, boolean isDraw,
-                                      BitSet bsAtoms, StringBuffer pdbATOM, 
+                                      BitSet bsAtoms, StringBuffer pdbATOM,
                                       StringBuffer pdbCONECT, BitSet bsSelected) {
     int atomno = Integer.MIN_VALUE;
     Quaternion qlast = null;
@@ -513,11 +513,12 @@ public abstract class BioPolymer extends Polymer {
 
     Atom aprev = null;
     String strExtra = "";
+    boolean isAmino = (p instanceof AminoPolymer);
     boolean isRelativeAlias = (ctype == 'r');
-    String prefix = (derivType > 0 ? "dq" + (derivType  == 2 ? "2" : "") : "q");
+    String prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
     float psiLast = Float.NaN;
     if (derivType == 2 && isRelativeAlias)
-      ctype= 'w';
+      ctype = 'w';
     Quaternion q;
     for (int m = 0; m < p.monomerCount; m++) {
       Monomer monomer = p.monomers[m];
@@ -533,7 +534,8 @@ public abstract class BioPolymer extends Polymer {
           if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
             continue;
           w = a.getPartialCharge();
-          float phiNext = (m == p.monomerCount - 1 ? Float.NaN : p.monomers[m + 1].getPhi());   
+          float phiNext = (m == p.monomerCount - 1 ? Float.NaN
+              : p.monomers[m + 1].getPhi());
           float angle = y + phiNext - psiLast - x;//psi[i] + phi[i+1] - psi[i-1] - phi[i]
           psiLast = y;
           if (Float.isNaN(angle)) {
@@ -541,20 +543,20 @@ public abstract class BioPolymer extends Polymer {
             if (qtype == 'r')
               continue;
           } else {
-            q = new Quaternion (new Point3f(1, 0, 0), angle);
+            q = new Quaternion(new Point3f(1, 0, 0), angle);
             strExtra = TextFormat.sprintf("%10.6f%10.6f%10.6f%10.6f  %6.2f",
-                new Object[] { new float[] { q.q0, q.q1, q.q2, q.q3, q.getTheta() } });
+                new Object[] { new float[] { q.q0, q.q1, q.q2, q.q3,
+                    q.getTheta() } });
             if (qtype == 'r')
               z = angle;
           }
         } else {
           char cid = monomer.getChainID();
-          String id = "" + monomer.getResno()
-              + (cid == '\0' ? "" : "" + cid);
+          String id = "" + monomer.getResno() + (cid == '\0' ? "" : "" + cid);
           cid = monomer.getLeadAtom().getAlternateLocationID();
           if (cid != '\0')
             id += cid;
-          q = p.getQuaternion(m, qtype);
+          q = monomer.getQuaternion(qtype);
           if (q == null) {
             qlast = null;
             atomno = Integer.MIN_VALUE;
@@ -599,9 +601,10 @@ public abstract class BioPolymer extends Polymer {
               // first deriv:
               q = dq;
             }
-            if (derivType == 1 && aprev != null && qlast != null && ctype == 'w')
+            if (derivType == 1 && aprev != null && qlast != null
+                && ctype == 'w')
               aprev.getGroup().setStraightness(getStraightness(id, qlast, q));
-            
+
             // and assign a to aprev so that the proper 
             // residue gets reported.
             // without these next three lines, the first
@@ -642,38 +645,49 @@ public abstract class BioPolymer extends Polymer {
             w = q.q1;
             break;
           }
-          Point3f ptCenter = (p instanceof AminoPolymer ? AminoPolymer
-              .getQuaternionFrameCenter((AminoMonomer) a.getGroup(), qtype)
-              : p instanceof NucleicPolymer ? NucleicPolymer
-                  .getQuaternionFrameCenter((NucleicMonomer) a.getGroup(),
-                      qtype) : new Point3f());
+          Point3f ptCenter = (isAmino ? ((AminoMonomer) monomer).getQuaternionFrameCenter(qtype)
+              : p instanceof NucleicPolymer ? 
+                  ((NucleicMonomer) monomer).getQuaternionFrameCenter(qtype) 
+              : new Point3f());
           if (isDraw) {
             if (bsSelected != null && !bsSelected.get(a.getAtomIndex()))
               continue;
             String strV = " VECTOR " + Escape.escape(ptCenter) + " ";
             int deg = (int) (Math.acos(w) * 360 / Math.PI);
-            if (derivType == 0)
-              pdbATOM.append("draw " + prefix + "x" + id + strV + Escape.escape(q.getVector(0)))
-                  .append(" color red\n")
-                  .append("draw " + prefix + "y" + id + strV + Escape.escape(q.getVector(1)))
-                  .append(" color green\n")
-                  .append("draw " + prefix + "z" + id + strV + Escape.escape(q.getVector(2)))
-                  .append(" color blue\n");            
-            pdbATOM.append("draw " + prefix + "a" + id + strV + " {" + (x * 2)
-                  + "," + (y * 2) + "," + (z * 2) + "}" + " \">" + deg + "\"")
-            .append(" color ").append(qColor[derivType]).append('\n');
+            if (derivType == 0) {
+              pdbATOM.append(
+                  "draw " + prefix + "x" + id + strV
+                      + Escape.escape(q.getVector(0))).append(" color red\n")
+                  .append(
+                      "draw " + prefix + "y" + id + strV
+                          + Escape.escape(q.getVector(1))).append(
+                      " color green\n").append(
+                      "draw " + prefix + "z" + id + strV
+                          + Escape.escape(q.getVector(2))).append(
+                      " color blue\n");
+              if (qtype == 'n' && isAmino) {
+                Point3f ptH = ((AminoMonomer) monomer).getNitrogenHydrogenPoint();
+                if (ptH != null)
+                  pdbATOM.append(
+                      "draw " + prefix + "nh" + id + " width 0.1 " + Escape.escape(ptH) + "\n");
+              }
+            }
+            pdbATOM.append(
+                "draw " + prefix + "a" + id + strV + " {" + (x * 2) + ","
+                    + (y * 2) + "," + (z * 2) + "}" + " \">" + deg + "\"")
+                .append(" color ").append(qColor[derivType]).append('\n');
             continue;
           }
-          strExtra = TextFormat.sprintf("%10.6f%10.6f%10.6f%10.6f  %6.2f  %10.5p %10.5p %10.5p",
-              new Object[] { 
-                new float[] { q.q0, q.q1, q.q2, q.q3, q.getTheta() },  
-                new Point3f[] { ptCenter }
-              });
-          if (qtype == 'n')
+          strExtra = TextFormat.sprintf(
+              "%10.6f%10.6f%10.6f%10.6f  %6.2f  %10.5p %10.5p %10.5p",
+              new Object[] {
+                  new float[] { q.q0, q.q1, q.q2, q.q3, q.getTheta() },
+                  new Point3f[] { ptCenter } });
+          if (qtype == 'n' && isAmino)
             strExtra += TextFormat.sprintf("  %10.5p %10.5p %10.5p",
-                new Object[] { new Point3f[] { ((AminoPolymer) p)
-                    .getNHPoint((AminoMonomer) a.getGroup()) } });
-        } 
+                new Object[] { new Point3f[] { ((AminoMonomer) a.getGroup())
+                    .getNitrogenHydrogenPoint() } });
+        }
         if (pdbATOM == null)
           continue;
         pdbATOM.append(a.formatLabel("ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
@@ -698,9 +712,4 @@ public abstract class BioPolymer extends Polymer {
     float f = (float) (Math.acos(dqprev.getNormal().dot(dq.getNormal()))/ Math.PI);
     return 1 - 2 * f;
   }
-
-  Quaternion getQuaternion(int m, char qtype) {
-    //implemented in AminoPolymer and NucleicPolymer
-    return null;
-  } 
 }

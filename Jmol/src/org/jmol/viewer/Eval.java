@@ -11575,57 +11575,57 @@ class Eval { //implements Runnable {
       return false;
     }
 
-    boolean addX(boolean x) throws ScriptException {
-      if (++xPt == maxLevel)
+    boolean addX(boolean x) {
+      if (++xPt >= maxLevel)
         stackOverflow();
       xStack[xPt] = (x ? Token.tokenOn : Token.tokenOff);
       return true;
     }
 
-    boolean addX(int x) throws ScriptException {
-      if (++xPt == maxLevel)
+    boolean addX(int x) {
+      if (++xPt >= maxLevel)
         stackOverflow();
       xStack[xPt] = Token.intToken(x);
       return wasX = true;
     }
 
-    boolean addX(float x) throws ScriptException {
-      if (++xPt == maxLevel)
+    boolean addX(float x) {
+      if (++xPt >= maxLevel)
         stackOverflow();
       xStack[xPt] = new Token(Token.decimal, new Float(x));
       return wasX = true;
     }
 
-    boolean addX(String x) throws ScriptException {
-      if (++xPt == maxLevel)
+    boolean addX(String x) {
+      if (++xPt >= maxLevel)
         stackOverflow();
       xStack[xPt] = new Token(Token.string, x);
       return wasX = true;
     }
 
-    boolean addX(String[] x) throws ScriptException {
-      if (++xPt == maxLevel)
+    boolean addX(String[] x) {
+      if (++xPt >= maxLevel)
         stackOverflow();
       xStack[xPt] = new Token(Token.list, x);
       return wasX = true;
     }
 
-    boolean addX(Point3f x) throws ScriptException {
-      if (++xPt == maxLevel)
+    boolean addX(Point3f x) {
+      if (++xPt >= maxLevel)
         stackOverflow();
       xStack[xPt] = new Token(Token.point3f, x);
       return wasX = true;
     }
 
-    boolean addX(Point4f x) throws ScriptException {
-      if (++xPt == maxLevel)
+    boolean addX(Point4f x) {
+      if (++xPt >= maxLevel)
         stackOverflow();
       xStack[xPt] = new Token(Token.point4f, x);
       return wasX = true;
     }
 
-    boolean addX(BitSet x) throws ScriptException {
-      if (++xPt == maxLevel)
+    boolean addX(BitSet x) {
+      if (++xPt >= maxLevel)
         stackOverflow();
       xStack[xPt] = new Token(Token.bitset, x);
       return wasX = true;
@@ -11794,7 +11794,7 @@ class Eval { //implements Runnable {
 
       //add the operator if possible
 
-      if (++oPt == maxLevel)
+      if (++oPt >= maxLevel)
         stackOverflow();
       oStack[oPt] = op;
       return true;
@@ -12294,7 +12294,7 @@ class Eval { //implements Runnable {
       return addX(sList3);
     }
 
-    private boolean evaluateArray(Token[] args) throws ScriptException {
+    private boolean evaluateArray(Token[] args) {
       if (isSyntaxCheck)
         return addX("");
       int len = args.length;
@@ -12307,7 +12307,7 @@ class Eval { //implements Runnable {
       return addX(array);
     }
 
-    private boolean evaluateMath(Token[] args, int tok) throws ScriptException {
+    private boolean evaluateMath(Token[] args, int tok) {
       if (tok == Token.quaternion || tok == Token.axisangle) {
         // quaternion(vector, theta)
         // quaternion(q0, q1, q2, q3)
@@ -12371,7 +12371,7 @@ class Eval { //implements Runnable {
       return false;
     }
 
-    private boolean evaluateRandom(Token[] args) throws ScriptException {
+    private boolean evaluateRandom(Token[] args) {
       if (args.length > 2)
         return false;
       if (isSyntaxCheck)
@@ -12382,7 +12382,7 @@ class Eval { //implements Runnable {
       return addX((float)(Math.random() * range) + lower);
     }
 
-    private boolean evaluateCross(Token[] args) throws ScriptException {
+    private boolean evaluateCross(Token[] args) {
       if (args.length != 2)
         return false;
       Token x1 = args[0];
@@ -12397,7 +12397,7 @@ class Eval { //implements Runnable {
       return addX(new Point3f(a));
     }
 
-    private boolean evaluateLoad(Token[] args) throws ScriptException {
+    private boolean evaluateLoad(Token[] args) {
       if (args.length != 1)
         return false;
       if (isSyntaxCheck)
@@ -12427,7 +12427,7 @@ class Eval { //implements Runnable {
       return addX(sb.toString());
     }
 
-    private boolean evaluateData(Token[] args) throws ScriptException {
+    private boolean evaluateData(Token[] args) {
       if (args.length == 0 || args.length > 2)
         return false;
       if (isSyntaxCheck)
@@ -12485,7 +12485,7 @@ class Eval { //implements Runnable {
       return addX(getBitsetIdent(Token.bsSelect(x1), format, x1.value, true));
     }
 
-    private boolean evaluateWithin(Token[] args) throws ScriptException {
+    private boolean evaluateWithin(Token[] args) {
       if (args.length < 1)
         return false;
       int i = args.length;
@@ -13072,7 +13072,7 @@ class Eval { //implements Runnable {
       return true;
     }
 
-    private boolean evaluateBoundBox(Token x2) throws ScriptException {
+    private boolean evaluateBoundBox(Token x2) {
       if (x2.tok != Token.bitset)
         return false;
       if (isSyntaxCheck)
@@ -13176,8 +13176,13 @@ class Eval { //implements Runnable {
       return null;
     }
 
-    void stackOverflow() throws ScriptException {
-      evalError(GT._("too many parentheses"));
+    void stackOverflow() {
+      oStack = (Token[]) ArrayUtil.doubleLength(oStack);
+      xStack = (Token[]) ArrayUtil.doubleLength(xStack);
+      maxLevel *= 2;
+      return;
+      //
+      //evalError(GT._("too many parentheses"));
     }
 
   }

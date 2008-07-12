@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-07-10 21:24+0200\n"
+"POT-Creation-Date: 2008-07-12 12:34+0200\n"
 "PO-Revision-Date: 2008-04-28 14:02+0100\n"
 "Last-Translator: Zörgő Zoltán <zorgoz@iit.uni-miskolc.hu>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
@@ -81,56 +81,75 @@ msgstr "A Jmol kisalkalmazás töltődik..."
 msgid "  {0} seconds"
 msgstr "  {0} másodperc"
 
-#: org/jmol/i18n/GT.java:101
+#: org/jmol/i18n/GT.java:116
 msgid "Catalan"
 msgstr "Katalán"
 
-#: org/jmol/i18n/GT.java:102
+#: org/jmol/i18n/GT.java:117
 msgid "Czech"
 msgstr "Cseh"
 
-#: org/jmol/i18n/GT.java:104
+#: org/jmol/i18n/GT.java:118
+#, fuzzy
+msgid "Danish"
+msgstr "Dán"
+
+#: org/jmol/i18n/GT.java:119
 msgid "Dutch"
 msgstr "Holland"
 
-#: org/jmol/i18n/GT.java:105
+#: org/jmol/i18n/GT.java:120
 msgid "English"
 msgstr "Angol"
 
-#: org/jmol/i18n/GT.java:106
+#: org/jmol/i18n/GT.java:121
 msgid "Estonian"
 msgstr "Észt"
 
-#: org/jmol/i18n/GT.java:107
+#: org/jmol/i18n/GT.java:122
 msgid "French"
 msgstr "Francia"
 
-#: org/jmol/i18n/GT.java:108
+#: org/jmol/i18n/GT.java:123
 msgid "German"
 msgstr "Német"
 
 # Hungarian message ID not yet implemented!
-#: org/jmol/i18n/GT.java:109
+#: org/jmol/i18n/GT.java:124
 msgid "Hungarian"
 msgstr "Magyar"
 
-#: org/jmol/i18n/GT.java:110
+#: org/jmol/i18n/GT.java:125
+#, fuzzy
+msgid "Italian"
+msgstr "Katalán"
+
+#: org/jmol/i18n/GT.java:126
 msgid "Korean"
 msgstr "Kóreai"
 
-#: org/jmol/i18n/GT.java:111
+#: org/jmol/i18n/GT.java:127
+#, fuzzy
+msgid "Polish"
+msgstr "Angol"
+
+#: org/jmol/i18n/GT.java:128
 msgid "Portuguese - Brazil"
 msgstr "Brazil - portugál"
 
-#: org/jmol/i18n/GT.java:112
+#: org/jmol/i18n/GT.java:129
 msgid "Portuguese"
 msgstr "Portugál"
 
-#: org/jmol/i18n/GT.java:113
+#: org/jmol/i18n/GT.java:130
 msgid "Spanish"
 msgstr "Spanyol"
 
-#: org/jmol/i18n/GT.java:115
+#: org/jmol/i18n/GT.java:131
+msgid "Swedish"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:132
 msgid "Turkish"
 msgstr "Török"
 
@@ -1579,10 +1598,6 @@ msgstr ""
 
 #~ msgid "rotation points cannot be identical"
 #~ msgstr "a forgáspontok nem lehetnek azonosak"
-
-#, fuzzy
-#~ msgid "Danish"
-#~ msgstr "Dán"
 
 #~ msgid "Calculate what?"
 #~ msgstr "Mit számoljak ki?"

@@ -44,9 +44,24 @@ public class GT {
     getTranslation(null);
   }
 
-  private static String[][] languageList;
+  // =============
+  // Language list
+  // =============
+
+  public static class Language {
+    public final String code;
+    public final String language;
+    public final boolean display;
+    public Language(String code, String language, boolean display) {
+      this.code = code;
+      this.language = language;
+      this.display = display;
+    }
+  }
+
+  private static Language[] languageList;
   
-  public static String[][] getLanguageList() {
+  public static Language[] getLanguageList() {
     return (languageList != null ? languageList : getTextWrapper().createLanguageList());
   }
 
@@ -94,39 +109,40 @@ public class GT {
    * Author Bob Hanson May 7, 2007
    * @return  list of codes and untranslated names
    */
-  synchronized private String[][] createLanguageList() {
+  synchronized private Language[] createLanguageList() {
     boolean wasTranslating = doTranslate;
     doTranslate = false;
-    languageList = new String[][] {
-    {"ca", GT._("Catalan")},
-    {"cs", GT._("Czech")},
-    //{"da", GT._("Danish")},
-    {"nl", GT._("Dutch")},
-    {"en_US", GT._("English")},
-    {"et", GT._("Estonian")},
-    {"fr", GT._("French")},
-    {"de", GT._("German")},
-    {"hu", GT._("Hungarian")},
-    //{"it", GT._("Italian")},
-    {"ko", GT._("Korean")},
-    //{"pl", GT._("Polish")},
-    {"pt_BR", GT._("Portuguese - Brazil")},
-    {"pt", GT._("Portuguese")},
-    {"es", GT._("Spanish")},
-    //{"sv", GT._("Swedish")},
-    {"tr", GT._("Turkish")},};
+    languageList = new Language[] {
+      new Language("ca",    GT._("Catalan"),             true),
+      new Language("cs",    GT._("Czech"),               true),
+      new Language("da",    GT._("Danish"),              false),
+      new Language("nl",    GT._("Dutch"),               true),
+      new Language("en_US", GT._("English"),             true),
+      new Language("et",    GT._("Estonian"),            true),
+      new Language("fr",    GT._("French"),              true),
+      new Language("de",    GT._("German"),              true),
+      new Language("hu",    GT._("Hungarian"),           true),
+      new Language("it",    GT._("Italian"),             false),
+      new Language("ko",    GT._("Korean"),              true),
+      new Language("pl",    GT._("Polish"),              false),
+      new Language("pt_BR", GT._("Portuguese - Brazil"), true),
+      new Language("pt",    GT._("Portuguese"),          true),
+      new Language("es",    GT._("Spanish"),             true),
+      new Language("sv",    GT._("Swedish"),             false),
+      new Language("tr",    GT._("Turkish"),             true),
+    };
     doTranslate = wasTranslating;
     return languageList;
   }
 
   private String getSupported(String languageCode, boolean isExact) {
-    if (  languageCode == null)
+    if (languageCode == null)
       return null;
     if (languageList == null)
       createLanguageList();
     for (int i = 0; i < languageList.length; i++) {
-      if (languageList[i][0].equalsIgnoreCase(languageCode))
-        return languageList[i][0];
+      if (languageList[i].code.equalsIgnoreCase(languageCode))
+        return languageList[i].code;
     }
     return (isExact ? null : findClosest(languageCode));
   }
@@ -138,8 +154,8 @@ public class GT {
    */
   private String findClosest(String la) {
     for (int i = languageList.length; --i >= 0; ) {
-      if (languageList[i][0].startsWith(la))
-        return languageList[i][0];
+      if (languageList[i].code.startsWith(la))
+        return languageList[i].code;
     }
     return null;    
   }

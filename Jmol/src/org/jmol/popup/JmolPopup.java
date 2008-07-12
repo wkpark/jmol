@@ -634,13 +634,18 @@ abstract public class JmolPopup {
       removeMenuItem(menu, i);
     String language = GT.getLanguage();
     String id = getId(menu);
-    String[][] languages = GT.getLanguageList();
+    GT.Language[] languages = GT.getLanguageList();
     for (int i = 0; i < languages.length; i++) {
-      String code = languages[i][0];
-      String name = languages[i][1];
-      addCheckboxMenuItem(menu, GT._(name, true) + " (" + code + ")",
-          "language = \"" + code + "\" ##" + name, id + "." + code, language
-              .equals(code));
+      if (languages[i].display) {
+        String code = languages[i].code;
+        String name = languages[i].language;
+        addCheckboxMenuItem(
+            menu,
+            GT._(name, true) + " (" + code + ")",
+            "language = \"" + code + "\" ##" + name,
+            id + "." + code,
+            language.equals(code));
+      }
     }
   }
 

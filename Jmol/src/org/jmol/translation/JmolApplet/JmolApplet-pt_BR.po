@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-07-10 21:24+0200\n"
+"POT-Creation-Date: 2008-07-12 12:34+0200\n"
 "PO-Revision-Date: 2008-05-15 09:48-0300\n"
 "Last-Translator: Sérgio Ceroni da Silva <ceroni@cbiot.ufrgs.br>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
@@ -79,55 +79,73 @@ msgstr "Carregando o applet Jmol ..."
 msgid "  {0} seconds"
 msgstr "  {0} segundos"
 
-#: org/jmol/i18n/GT.java:101
+#: org/jmol/i18n/GT.java:116
 msgid "Catalan"
 msgstr "Catalão"
 
-#: org/jmol/i18n/GT.java:102
+#: org/jmol/i18n/GT.java:117
 msgid "Czech"
 msgstr "Tcheco"
 
-#: org/jmol/i18n/GT.java:104
+#: org/jmol/i18n/GT.java:118
+msgid "Danish"
+msgstr "Dinamarquês"
+
+#: org/jmol/i18n/GT.java:119
 msgid "Dutch"
 msgstr "Holandês"
 
-#: org/jmol/i18n/GT.java:105
+#: org/jmol/i18n/GT.java:120
 msgid "English"
 msgstr "Inglês"
 
-#: org/jmol/i18n/GT.java:106
+#: org/jmol/i18n/GT.java:121
 msgid "Estonian"
 msgstr "Estoniano"
 
-#: org/jmol/i18n/GT.java:107
+#: org/jmol/i18n/GT.java:122
 msgid "French"
 msgstr "Francês"
 
-#: org/jmol/i18n/GT.java:108
+#: org/jmol/i18n/GT.java:123
 msgid "German"
 msgstr "Alemão"
 
-#: org/jmol/i18n/GT.java:109
+#: org/jmol/i18n/GT.java:124
 msgid "Hungarian"
 msgstr "Húngaro"
 
-#: org/jmol/i18n/GT.java:110
+#: org/jmol/i18n/GT.java:125
+#, fuzzy
+msgid "Italian"
+msgstr "Catalão"
+
+#: org/jmol/i18n/GT.java:126
 msgid "Korean"
 msgstr "Coreano"
 
-#: org/jmol/i18n/GT.java:111
+#: org/jmol/i18n/GT.java:127
+#, fuzzy
+msgid "Polish"
+msgstr "Inglês"
+
+#: org/jmol/i18n/GT.java:128
 msgid "Portuguese - Brazil"
 msgstr "Português - Brasil"
 
-#: org/jmol/i18n/GT.java:112
+#: org/jmol/i18n/GT.java:129
 msgid "Portuguese"
 msgstr "Português"
 
-#: org/jmol/i18n/GT.java:113
+#: org/jmol/i18n/GT.java:130
 msgid "Spanish"
 msgstr "Espanhol"
 
-#: org/jmol/i18n/GT.java:115
+#: org/jmol/i18n/GT.java:131
+msgid "Swedish"
+msgstr "Sueco"
+
+#: org/jmol/i18n/GT.java:132
 msgid "Turkish"
 msgstr "Turco"
 
@@ -1590,12 +1608,6 @@ msgstr "ERRO: impossível designar o valor desta variável para um booleano: {0}
 
 #~ msgid "commandExpected"
 #~ msgstr "esperado um comando"
-
-#~ msgid "Danish"
-#~ msgstr "Dinamarquês"
-
-#~ msgid "Swedish"
-#~ msgstr "Sueco"
 
 #~ msgid "bad atom number"
 #~ msgstr "número de átomo errôneo"

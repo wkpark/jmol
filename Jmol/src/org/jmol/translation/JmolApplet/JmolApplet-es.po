@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-07-10 21:24+0200\n"
+"POT-Creation-Date: 2008-07-12 12:34+0200\n"
 "PO-Revision-Date: 2008-05-28 18:21+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -74,55 +74,73 @@ msgstr "Cargando Jmol..."
 msgid "  {0} seconds"
 msgstr "  {0} segundos"
 
-#: org/jmol/i18n/GT.java:101
+#: org/jmol/i18n/GT.java:116
 msgid "Catalan"
 msgstr "Catalán"
 
-#: org/jmol/i18n/GT.java:102
+#: org/jmol/i18n/GT.java:117
 msgid "Czech"
 msgstr "Checo"
 
-#: org/jmol/i18n/GT.java:104
+#: org/jmol/i18n/GT.java:118
+msgid "Danish"
+msgstr "Danés"
+
+#: org/jmol/i18n/GT.java:119
 msgid "Dutch"
 msgstr "Neerlandés"
 
-#: org/jmol/i18n/GT.java:105
+#: org/jmol/i18n/GT.java:120
 msgid "English"
 msgstr "Inglés"
 
-#: org/jmol/i18n/GT.java:106
+#: org/jmol/i18n/GT.java:121
 msgid "Estonian"
 msgstr "Estonio"
 
-#: org/jmol/i18n/GT.java:107
+#: org/jmol/i18n/GT.java:122
 msgid "French"
 msgstr "Francés"
 
-#: org/jmol/i18n/GT.java:108
+#: org/jmol/i18n/GT.java:123
 msgid "German"
 msgstr "Alemán"
 
-#: org/jmol/i18n/GT.java:109
+#: org/jmol/i18n/GT.java:124
 msgid "Hungarian"
 msgstr "Húngaro"
 
-#: org/jmol/i18n/GT.java:110
+#: org/jmol/i18n/GT.java:125
+#, fuzzy
+msgid "Italian"
+msgstr "Catalán"
+
+#: org/jmol/i18n/GT.java:126
 msgid "Korean"
 msgstr "Coreano"
 
-#: org/jmol/i18n/GT.java:111
+#: org/jmol/i18n/GT.java:127
+#, fuzzy
+msgid "Polish"
+msgstr "Inglés"
+
+#: org/jmol/i18n/GT.java:128
 msgid "Portuguese - Brazil"
 msgstr "Portugués de Brasil"
 
-#: org/jmol/i18n/GT.java:112
+#: org/jmol/i18n/GT.java:129
 msgid "Portuguese"
 msgstr "Portugués"
 
-#: org/jmol/i18n/GT.java:113
+#: org/jmol/i18n/GT.java:130
 msgid "Spanish"
 msgstr "Español"
 
-#: org/jmol/i18n/GT.java:115
+#: org/jmol/i18n/GT.java:131
+msgid "Swedish"
+msgstr "Sueco"
+
+#: org/jmol/i18n/GT.java:132
 msgid "Turkish"
 msgstr "Turco"
 
@@ -1587,12 +1605,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "commandExpected"
 #~ msgstr "se esperaba una instrucción"
-
-#~ msgid "Danish"
-#~ msgstr "Danés"
-
-#~ msgid "Swedish"
-#~ msgstr "Sueco"
 
 #~ msgid "bad atom number"
 #~ msgstr "número de átomo incorrecto"

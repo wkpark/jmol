@@ -35,6 +35,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
 
+import java.util.BitSet;
 import java.util.Hashtable;
 
 abstract class TransformManager {
@@ -247,11 +248,7 @@ abstract class TransformManager {
   final static int MAXIMUM_ZOOM_PERCENTAGE = 200000;
   final static int MAXIMUM_ZOOM_PERSPECTIVE_DEPTH = 10000;
 
-  private boolean rotateSelected, rotateMolecule;
-  
-  void setRotateSelected(boolean TF) {
-    rotateSelected = TF;
-  }
+  private boolean rotateMolecule;
   
   void setRotateMolecule(boolean TF) {
     rotateMolecule = TF;
@@ -289,10 +286,10 @@ abstract class TransformManager {
     return radians;
   }
 
-  void rotateXYBy(int xDelta, int yDelta) {
+  void rotateXYBy(int xDelta, int yDelta, BitSet bsAtoms) {
     // from mouse action
-    rotateXRadians(yDelta * radiansPerDegree);
-    rotateYRadians(xDelta * radiansPerDegree);
+    rotateXRadians(yDelta * radiansPerDegree, bsAtoms);
+    rotateYRadians(xDelta * radiansPerDegree, bsAtoms);
   }
 
   void rotateZBy(int zDelta) {
@@ -315,41 +312,42 @@ abstract class TransformManager {
     matrixRotate.rotZ(angleRadians);
   }
 
-  void applyRotation(Matrix3f mNew, boolean isInternal) {
-    if (rotateSelected)
-      viewer.rotateSelected(mNew, matrixRotate, rotateMolecule, internalRotationCenter, isInternal);
-    else
+  private void applyRotation(Matrix3f mNew, boolean isInternal, BitSet bsAtoms) {
+    if (bsAtoms == null)
       matrixRotate.mul(mNew, matrixRotate);
+    else
+      viewer.rotateAtoms(mNew, matrixRotate, rotateMolecule,
+          internalRotationCenter, isInternal, bsAtoms);
   }
   
-  synchronized void rotateXRadians(float angleRadians) {
+  synchronized void rotateXRadians(float angleRadians, BitSet bsAtoms) {
     matrixTemp3.rotX(angleRadians);
-    applyRotation(matrixTemp3, false);
+    applyRotation(matrixTemp3, false, bsAtoms);
   }
 
-  synchronized void rotateYRadians(float angleRadians) {
+  synchronized void rotateYRadians(float angleRadians, BitSet bsAtoms) {
     if (axesOrientationRasmol)
       angleRadians = -angleRadians;
     matrixTemp3.rotY(angleRadians);
-    applyRotation(matrixTemp3, false);
+    applyRotation(matrixTemp3, false, bsAtoms);
   }
 
   synchronized void rotateZRadians(float angleRadians) {
     if (axesOrientationRasmol)
       angleRadians = -angleRadians;
     matrixTemp3.rotZ(angleRadians);
-    applyRotation(matrixTemp3, false);
+    applyRotation(matrixTemp3, false, null);
   }
 
   protected void rotateAxisAngle(Vector3f rotAxis, float radians) {
     axisangleT.set(rotAxis, radians);
-    rotateAxisAngle(axisangleT);
+    rotateAxisAngle(axisangleT, null);
   }
 
-  synchronized void rotateAxisAngle(AxisAngle4f axisAngle) {
+  synchronized void rotateAxisAngle(AxisAngle4f axisAngle, BitSet bsAtoms) {
     matrixTemp3.setIdentity();
     matrixTemp3.set(axisAngle);
-    applyRotation(matrixTemp3, false);
+    applyRotation(matrixTemp3, false, bsAtoms);
   }
 
   /* ***************************************************************
@@ -357,7 +355,8 @@ abstract class TransformManager {
    ****************************************************************/
 
   void rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis,
-                               float degrees, float endDegrees, boolean isSpin, boolean isSelected) {
+                               float degrees, float endDegrees, boolean isSpin, 
+                               BitSet bsAtoms) {
 
     //*THE* Viewer FIXED frame rotation/spinning entry point
     if (rotCenter != null)
@@ -375,22 +374,18 @@ abstract class TransformManager {
     if (isSpin) {
       isSpinInternal = false;
       isSpinFixed = true;
-      isSpinSelected = isSelected;
-      setSpinOn(true, endDegrees, isSelected);
+      isSpinSelected = (bsAtoms != null);
+      setSpinOn(true, endDegrees, bsAtoms);
       return;
     }
-    if (isSelected)
-      setRotateSelected(true);
-    rotateAxisAngleRadiansFixed(angle);
-    if (isSelected)
-      setRotateSelected(false);
+    rotateAxisAngleRadiansFixed(angle, bsAtoms);
   }
 
-  synchronized void rotateAxisAngleRadiansFixed(float angleRadians) {
+  synchronized void rotateAxisAngleRadiansFixed(float angleRadians, BitSet bsAtoms) {
     // for spinning -- reduced number of radians
     axisangleT.set(fixedRotationAxis);
     axisangleT.angle = angleRadians;
-    rotateAxisAngle(axisangleT);
+    rotateAxisAngle(axisangleT, bsAtoms);
   }
 
   /* ***************************************************************
@@ -399,7 +394,7 @@ abstract class TransformManager {
 
   void rotateAboutPointsInternal(Point3f point1, Point3f point2, float degrees,
                                  float endDegrees, boolean isClockwise,
-                                 boolean isSpin, boolean isSelected) {
+                                 boolean isSpin, BitSet bsAtoms) {
 
     // *THE* Viewer INTERNAL frame rotation entry point
 
@@ -412,22 +407,18 @@ abstract class TransformManager {
     if (isClockwise)
       axis.scale(-1f);
     float angle = setRotateInternal(point1, axis, degrees);
-
+    boolean isSelected = (bsAtoms != null);
     if (isSpin) {
       isSpinInternal = true;
       isSpinFixed = false;
       isSpinSelected = isSelected;
-      setSpinOn(true, endDegrees, isSelected);
+      setSpinOn(true, endDegrees, bsAtoms);
       return;
     }
-    if (isSelected)
-      setRotateSelected(true);
-    rotateAxisAngleRadiansInternal(angle);
-    if (isSelected)
-      setRotateSelected(false);
+    rotateAxisAngleRadiansInternal(angle, bsAtoms);
   }
 
-  synchronized void rotateAxisAngleRadiansInternal(float radians) {
+  synchronized void rotateAxisAngleRadiansInternal(float radians, BitSet bsAtoms) {
 
     // final matrix rotation when spinning or just rotating
 
@@ -443,8 +434,8 @@ abstract class TransformManager {
     // NOW apply that rotation  
 
     matrixTemp3.set(axisangleT);
-    applyRotation(matrixTemp3, true);
-    if (!rotateSelected)
+    applyRotation(matrixTemp3, true, bsAtoms);
+    if (bsAtoms == null)
       getNewFixedRotationCenter();
   }
 
@@ -1382,9 +1373,9 @@ abstract class TransformManager {
     float zoomPercent0 = zoomPercent;
     for (int i = 1; i <= totalSteps; ++i) {
       if (dRot.x != 0)
-        rotateXRadians(radiansXStep);
+        rotateXRadians(radiansXStep, null);
       if (dRot.y != 0)
-        rotateYRadians(radiansYStep);
+        rotateYRadians(radiansYStep, null);
       if (dRot.z != 0)
         rotateZRadians(radiansZStep);
       if (dZoom != 0)
@@ -1808,15 +1799,15 @@ abstract class TransformManager {
   private SpinThread spinThread;
 
   void setSpinOn(boolean spinOn) {
-    setSpinOn(spinOn, Float.MAX_VALUE, false);
+    setSpinOn(spinOn, Float.MAX_VALUE, null);
   }
 
-  private void setSpinOn(boolean spinOn, float endDegrees, boolean isSelected) {
+  private void setSpinOn(boolean spinOn, float endDegrees, BitSet bsAtoms) {
     this.spinOn = spinOn;
     viewer.getGlobalSettings().setParameterValue("_spinning", spinOn);
     if (spinOn) {
       if (spinThread == null) {
-        spinThread = new SpinThread(endDegrees, isSelected);
+        spinThread = new SpinThread(endDegrees, bsAtoms);
         spinThread.start();
       }
     } else {
@@ -1830,12 +1821,12 @@ abstract class TransformManager {
   private class SpinThread extends Thread implements Runnable {
     float endDegrees;
     float nDegrees = 0;
-    boolean isSelected;
+    BitSet bsAtoms;
 
-    SpinThread(float endDegrees, boolean isSelected) {
+    SpinThread(float endDegrees, BitSet bsAtoms) {
       this.endDegrees = Math.abs(endDegrees);
-      this.isSelected = isSelected;
       this.setName("SpinThread");
+      this.bsAtoms = bsAtoms;
     }
 
     public void run() {
@@ -1867,31 +1858,27 @@ abstract class TransformManager {
             sleepTime += 1000;
           if (refreshNeeded && spinOn && !isInMotion) {
             float angle = 0;
-            if (isSelected)
-              setRotateSelected(true);
             if (isSpinInternal || isSpinFixed) {
               angle = (isSpinInternal ? internalRotationAxis
                   : fixedRotationAxis).angle
                   / myFps;
               if (isSpinInternal) {
-                rotateAxisAngleRadiansInternal(angle);
+                rotateAxisAngleRadiansInternal(angle, bsAtoms);
               } else {
-                rotateAxisAngleRadiansFixed(angle);
+                rotateAxisAngleRadiansFixed(angle, bsAtoms);
               }
               nDegrees += Math.abs(angle / twoPI * 360f);
             } else { // old way: Rx * Ry * Rz
               if (spinX != 0) {
-                rotateXRadians(spinX * radiansPerDegree / myFps);
+                rotateXRadians(spinX * radiansPerDegree / myFps, null);
               }
               if (spinY != 0) {
-                rotateYRadians(spinY * radiansPerDegree / myFps);
+                rotateYRadians(spinY * radiansPerDegree / myFps, null);
               }
               if (spinZ != 0) {
                 rotateZRadians(spinZ * radiansPerDegree / myFps);
               }
             }
-            if (isSelected)
-              setRotateSelected(false);
             viewer.refresh(1, "TransformationManager:SpinThread:run()");
             if (nDegrees >= endDegrees - 0.00001)
               setSpinOn(false);
@@ -1904,8 +1891,6 @@ abstract class TransformManager {
         }
       }
       viewer.getGlobalSettings().setParameterValue("_spinning", false);
-      if (isSelected)
-        setRotateSelected(false);
     }
   }
 

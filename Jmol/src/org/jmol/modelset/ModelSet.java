@@ -229,10 +229,10 @@ abstract public class ModelSet extends ModelCollection {
    * @param specInfo  
    * @return bitset; null only if we mess up with name
    */
-  public BitSet getAtomBits(int tokType, int specInfo) {
+  public BitSet getAtomBits(int tokType, Object specInfo) {
     switch (tokType) {
     case Token.spec_model:
-      return getSpecModel(specInfo);
+      return getSpecModel(((Integer) specInfo).intValue());
     }
     return super.getAtomBits(tokType, specInfo);
   }

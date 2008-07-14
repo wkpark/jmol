@@ -29,53 +29,68 @@ import org.jmol.vecmath.Point3fi;
 
 public class MeasurementPending extends Measurement {
 
-  private boolean isActive = false;
+  private boolean haveTarget = false;
   
-  public boolean getIsActive() {
-    return isActive;
-  }
-  public void setIsActive(boolean TF) {
-    isActive = TF;
+  public boolean haveTarget() {
+    return haveTarget;
   }
   
-  public MeasurementPending(ModelSet modelSet) {
-    super(modelSet, null, Float.NaN, (short) 0, null, 0);
-    countPlusIndices = new int[5];
+  int numSet = 0;
+  public int getNumSet() {
+    return numSet;
   }
 
-  public void setPoint(int i, Point3f pt) {
-    i--;
-    if (points[i] == null)
-      points[i] = new Point3fi();
-    points[i].set(pt);
+  public MeasurementPending(ModelSet modelSet) {
+    super(modelSet, null, null, Float.NaN, (short) 0, null, 0);
   }
-  
-  public void setCountPlusIndices(int[] countPlusIndices, Point3f ptClicked) {
-    
-    if (countPlusIndices == null) {
-      count = 0;
-      isActive = false;
-    } else {
-      count = countPlusIndices[0];
-      if (ptClicked != null) {
-        setPoint(count, ptClicked);
-        countPlusIndices[count] = -1 - count; 
-      }
-      this.countPlusIndices = new int[count + 1];
-      System.arraycopy(countPlusIndices, 0, this.countPlusIndices, 0,
-                       count + 1);
-      isActive = true;
-    }
-    if (this.countPlusIndices != null) 
-      value = getMeasurement();
-    formatMeasurement();
-  }
-  public boolean checkPoint(int[] countPlusIndices, Point3f ptClicked) {
-    for (int i = count; --i >= 0;)
-      if (countPlusIndices[i + 1] == -2 - i 
-          && points[i].distance(ptClicked) < 0.01)
+
+  private boolean checkPoint(Point3f ptClicked) {
+    for (int i = 1; i <= numSet; i++)
+      if (countPlusIndices[i] == -1 - i
+          && points[i - 1].distance(ptClicked) < 0.01)
         return false;
     return true;
+  }
+  
+  public int getIndexOf(int atomIndex) {
+    for (int i = 1; i <= numSet; i++)
+      if (countPlusIndices[i] == atomIndex)
+        return i;
+    return 0;
+  }
+
+  public int addPoint(int atomIndex, Point3f ptClicked, boolean doSet) {
+    if (ptClicked == null) {
+      if (getIndexOf(atomIndex) > 0) {
+        if (doSet)
+          numSet = count;
+        return count;
+      }
+      haveTarget = (atomIndex >= 0);
+      if (!haveTarget)
+        return count = numSet;
+      count = numSet + 1;
+      countPlusIndices[count] = atomIndex;
+    } else {
+      if (!checkPoint(ptClicked)) {
+        if (doSet)
+          numSet = count;
+        return count;
+      }
+      int pt = numSet;
+      haveTarget = true;
+      count = numSet + 1;
+      if (points[pt] == null)
+        points[pt] = new Point3fi();
+      points[pt].set(ptClicked);
+      countPlusIndices[count] = -2 - pt;
+    }
+    countPlusIndices[0] = count;
+    if (doSet)
+      numSet = count;
+    value = getMeasurement();
+    formatMeasurement();
+    return count;
   }
 }
 

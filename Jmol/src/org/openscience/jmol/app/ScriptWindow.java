@@ -55,7 +55,7 @@ import org.jmol.util.CommandHistory;
 public final class ScriptWindow extends JDialog
     implements ActionListener, EnterListener{
   
-  private ConsoleTextPane console;
+  ConsoleTextPane console;
   private JButton closeButton;
   private JButton runButton;
   private JButton haltButton;
@@ -194,7 +194,17 @@ public final class ScriptWindow extends JDialog
     }
     
     public void run() {
+      
       try {
+        
+        while (console.checking) {
+            try {
+              Thread.sleep(100); //wait for command checker
+            } catch (Exception e) {
+              break; //-- interrupt? 
+            }
+        }
+
         executeCommand(strCommand);
       } catch (Exception ie) {
         Logger.error("execution command interrupted!",ie);
@@ -353,6 +363,7 @@ public final class ScriptWindow extends JDialog
       } else {
         runButton.setEnabled(true);
         haltButton.setEnabled(true);
+        //System.out.println("Scriptwindow sending "+ strCommand + " " + Thread.currentThread().toString());
         viewer.script(strCommand);
       }
     }
@@ -392,6 +403,8 @@ class ConsoleTextPane extends JTextPane {
   ConsoleDocument consoleDoc;
   EnterListener enterListener;
   JmolViewer viewer;
+  
+  boolean checking = false;
   
   ConsoleTextPane(ScriptWindow scriptWindow) {
     super(new ConsoleDocument());
@@ -505,8 +518,9 @@ class ConsoleTextPane extends JTextPane {
          //that is -- that the script itself is not being fully checked
          
          //not perfect -- help here?
-         if (ke.getID() == KeyEvent.KEY_RELEASED
-             && (ke.getKeyCode() > KeyEvent.VK_DOWN) || ke.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+         int kcode = ke.getID();
+         if (kcode == KeyEvent.KEY_RELEASED && ke.getModifiers() < 2
+             && (kcode > KeyEvent.VK_DOWN || kcode == KeyEvent.VK_BACK_SPACE))
            checkCommand();
       }
    }
@@ -533,15 +547,20 @@ class ConsoleTextPane extends JTextPane {
     }
   }  
 
-   void checkCommand() {
+   
+  synchronized void checkCommand() {
     String strCommand = consoleDoc.getCommandString();
     //System.out.println(Token.getCommandSet(strCommand));
     if (strCommand.length() == 0 || strCommand.charAt(0) == '!'
         || viewer.isScriptExecuting())
       return;
+    //System.out.println("Scrpt WIndow checking command:" + strCommand + " "
+      //  + Thread.currentThread().toString());
+    checking = true;
     consoleDoc
         .colorCommand(viewer.scriptCheck(strCommand) == null ? consoleDoc.attUserInput
             : consoleDoc.attError);
+    checking = false;
   }
 }
 

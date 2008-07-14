@@ -23,13 +23,13 @@
  */
 package org.jmol.viewer;
 
+import javax.vecmath.Point3f;
+
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Measure;
 
 import org.jmol.i18n.GT;
-import org.jmol.modelset.Atom;
-import org.jmol.modelset.Measurement;
-import org.jmol.modelset.ModelSet;
+import org.jmol.modelset.MeasurementPending;
 
 class PickingManager {
 
@@ -42,10 +42,8 @@ class PickingManager {
   private boolean drawHover;
   private int pickingStyle;
     
-  private int queuedAtomCount;
-  private int[] queuedAtomIndexes = new int[4];
-  private int[] countPlusIndices = new int[5];
-
+  private MeasurementPending measurementQueued;
+  
   PickingManager(Viewer viewer) {
     this.viewer = viewer;
     clear();
@@ -58,13 +56,17 @@ class PickingManager {
   
   void setPickingMode(int pickingMode) {
     this.pickingMode = pickingMode;
-    queuedAtomCount = 0;
+    resetMeasurement();
   }
 
   int getPickingMode() {
     return pickingMode;
   }
     
+  private void resetMeasurement() {
+    measurementQueued = new MeasurementPending(viewer.getModelSet());    
+  }
+
   void setPickingStyle(int pickingStyle) {
     this.pickingStyle = pickingStyle;
     if (Logger.debugging) {
@@ -74,7 +76,7 @@ class PickingManager {
     }
     if (pickingStyle >= JmolConstants.PICKINGSTYLE_MEASURE_ON) {
       pickingStyleMeasure = pickingStyle;
-      queuedAtomCount = 0;
+      resetMeasurement();
     } else {
       pickingStyleSelect = pickingStyle;
     }
@@ -92,7 +94,7 @@ class PickingManager {
     return drawHover;
   }
 
-  void atomPicked(int atomIndex, int modifiers) {
+  void atomPicked(int atomIndex, Point3f ptClicked, int modifiers) {
     // atomIndex < 0 is possible here.
     boolean shiftKey = ((modifiers & MouseManager.SHIFT) != 0);
     boolean alternateKey = ((modifiers & MouseManager.ALT) != 0);
@@ -102,143 +104,121 @@ class PickingManager {
         viewer.script("select none");
       //if (pickingMode == JmolConstants.PICKING_MEASURE
       //    || pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON)
-      queuedAtomCount = 0;
+      resetMeasurement();
       if (pickingMode != JmolConstants.PICKING_SPIN)
         return;
     }
-
-    String value;
-    Atom[] atoms;
-    ModelSet modelSet = viewer.getModelSet();
+    int n = 2;
     switch (pickingMode) {
     case JmolConstants.PICKING_OFF:
-      break;
-    case JmolConstants.PICKING_IDENT:
-      viewer.setStatusAtomPicked(atomIndex, null);
-      break;
+      return;
+    case JmolConstants.PICKING_MEASURE_TORSION:
+      n++;
+      //fall through
+    case JmolConstants.PICKING_MEASURE_ANGLE:
+      n++;
+      //fall through
     case JmolConstants.PICKING_MEASURE:
     case JmolConstants.PICKING_MEASURE_DISTANCE:
-      if (queuedAtomCount >= 2)
-        queuedAtomCount = 0;
-      queueAtom(atomIndex);
-      if (queuedAtomCount < 2)
-        break;
-      atoms = modelSet.getAtoms();
-      float distance = atoms[queuedAtomIndexes[0]].distance(atoms[atomIndex]);
-      value = "Distance " + viewer.getAtomInfo(queuedAtomIndexes[0]) + " - "
-          + viewer.getAtomInfo(atomIndex) + " : " + distance;
-      viewer.setStatusMeasurePicked(2, value);
+      if (measurementQueued == null || measurementQueued.getCount() >= n)
+        resetMeasurement();
+      if (queueAtom(atomIndex, ptClicked) < n)
+        return;
+      viewer.setStatusMeasurePicked(n, measurementQueued.getStringDetail());
       if (pickingMode == JmolConstants.PICKING_MEASURE
-          || pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON)
-        toggleMeasurement(2);
-      break;
-    case JmolConstants.PICKING_MEASURE_ANGLE:
-      if (queuedAtomCount >= 3)
-        queuedAtomCount = 0;
-      queueAtom(atomIndex);
-      if (queuedAtomCount < 3)
-        break;
-      atoms = modelSet.getAtoms();
-      float angle = Measure.computeAngle(atoms[queuedAtomIndexes[0]], 
-          atoms[queuedAtomIndexes[1]],
-          atoms[atomIndex], true);
-      value = "Angle " + viewer.getAtomInfo(queuedAtomIndexes[0]) + " - "
-          + viewer.getAtomInfo(queuedAtomIndexes[1]) + " - "
-          + viewer.getAtomInfo(atomIndex) + " : " + angle;
-      viewer.setStatusMeasurePicked(3, value);
-      if (pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON)
-        toggleMeasurement(3);
-      break;
-    case JmolConstants.PICKING_MEASURE_TORSION:
-      if (queuedAtomCount >= 4)
-        queuedAtomCount = 0;
-      queueAtom(atomIndex);
-      if (queuedAtomCount < 4)
-        break;
-      atoms = modelSet.getAtoms();
-      float torsion = Measure.computeTorsion(atoms[queuedAtomIndexes[0]], 
-          atoms[queuedAtomIndexes[1]],
-          atoms[queuedAtomIndexes[2]],
-          atoms[atomIndex], true);
-      value = "Torsion " + viewer.getAtomInfo(queuedAtomIndexes[0]) + " - "
-          + viewer.getAtomInfo(queuedAtomIndexes[1]) + " - "
-          + viewer.getAtomInfo(queuedAtomIndexes[2]) + " - "
-          + viewer.getAtomInfo(atomIndex) + " : " + torsion;
-      viewer.setStatusMeasurePicked(4, value);
-      if (pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON)
-        toggleMeasurement(4);
-      break;
-    case JmolConstants.PICKING_LABEL:
-      viewer.script("set labeltoggle {atomindex="+atomIndex+"}");
-      break;
+          || pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON) {
+/*        int iLast = -1;
+        int iThis;
+        for (int i = 1; i <= n; i++) {
+          if (iLast == (iThis = measurementQueued.getIndex(i))) {
+            queuedAtomCount = i - 1;
+            return;
+          }
+          iLast = iThis;
+        }
+*/
+        viewer.script("measure " + measurementQueued.getMeasurementScript(" "));
+      }
+      return;
     case JmolConstants.PICKING_CENTER:
-      viewer.script("zoomTo (atomindex=" + atomIndex+")");
-      break;
-    case JmolConstants.PICKING_SELECT_ATOM:
-      applyMouseStyle("atomIndex="+atomIndex, shiftKey, alternateKey);
-      viewer.clearClickCount();
-      break;
-    case JmolConstants.PICKING_SELECT_GROUP:
-      applyMouseStyle("within(group, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
-      viewer.clearClickCount();
-      break;
-    case JmolConstants.PICKING_SELECT_CHAIN:
-      applyMouseStyle("within(chain, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
-      viewer.clearClickCount();
-      break;
-    case JmolConstants.PICKING_SELECT_MOLECULE:
-      applyMouseStyle("visible and within(molecule, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
-      viewer.clearClickCount();
-      break;
-    case JmolConstants.PICKING_SELECT_SITE:
-      applyMouseStyle("visible and within(site, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
-      viewer.clearClickCount();
-      break;
-    case JmolConstants.PICKING_SELECT_ELEMENT:
-      applyMouseStyle("visible and within(element, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
-      viewer.clearClickCount();
-      break;
+      if (ptClicked == null)
+        viewer.script("zoomTo (atomindex=" + atomIndex+")");
+      else
+        viewer.script("zoomTo " + Escape.escape(ptClicked));
+      return;
     case JmolConstants.PICKING_SPIN:
       if (viewer.getSpinOn()) {
         viewer.script("spin off");
-        break;
+        return;
       }
-      if (queuedAtomCount >= 2)
-        queuedAtomCount = 0;
-      if (queuedAtomCount == 1 && queuedAtomIndexes[0] == atomIndex)
-        break;
-      if (atomIndex >= 0)
-        queueAtom(atomIndex);
+      if (measurementQueued.getCount() >= 2)
+        resetMeasurement();
+      int queuedAtomCount = measurementQueued.getCount(); 
+      if (queuedAtomCount < 2)
+        return;
+      if (queuedAtomCount == 1) {
+        if (ptClicked == null) {
+          if (measurementQueued.getAtomIndex(1) == atomIndex)
+            return;
+        } else {
+          if (measurementQueued.getAtom(1).distance(ptClicked) == 0)
+            return;
+        }
+      }
+      if (atomIndex >= 0 || ptClicked != null)
+        queuedAtomCount = queueAtom(atomIndex, ptClicked);
       if (queuedAtomCount < 2) {
         viewer.scriptStatus(queuedAtomCount == 1 ?
             GT._("pick one more atom in order to spin the model around an axis") :
             GT._("pick two atoms in order to spin the model around an axis"));
-        break;
-      }
-      viewer.script("spin (atomindex="+queuedAtomIndexes[0]+") (atomIndex="+atomIndex+") "+viewer.getPickingSpinRate());
-    }
-  }
-
-  private void queueAtom(int atomIndex) {
-    queuedAtomIndexes[queuedAtomCount++] = atomIndex;
-    viewer.setStatusAtomPicked(atomIndex, "Atom #" + queuedAtomCount + ":" +
-                        viewer.getAtomInfo(atomIndex));
-  }
-
-  private void toggleMeasurement(int nAtoms) {
-    countPlusIndices[0] = nAtoms;
-    int iLast = -1;
-    int iThis;
-    for (int i = 0; i < nAtoms; i++) {
-      if (iLast == (iThis = queuedAtomIndexes[i])) {
-        queuedAtomCount = i;
         return;
       }
-      iLast = countPlusIndices[i + 1] = iThis;
+      viewer.script("spin" + measurementQueued.getMeasurementScript(" ") + " " + viewer.getPickingSpinRate());
     }
-    viewer.script(Measurement.getMeasurementScript(countPlusIndices));
+    if (ptClicked != null)
+      return;
+    switch (pickingMode) {
+    case JmolConstants.PICKING_IDENT:
+      viewer.setStatusAtomPicked(atomIndex, null);
+      return;
+    case JmolConstants.PICKING_LABEL:
+      viewer.script("set labeltoggle {atomindex="+atomIndex+"}");
+      return;
+    case JmolConstants.PICKING_SELECT_ATOM:
+      applyMouseStyle("atomIndex="+atomIndex, shiftKey, alternateKey);
+      viewer.clearClickCount();
+      return;
+    case JmolConstants.PICKING_SELECT_GROUP:
+      applyMouseStyle("within(group, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
+      viewer.clearClickCount();
+      return;
+    case JmolConstants.PICKING_SELECT_CHAIN:
+      applyMouseStyle("within(chain, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
+      viewer.clearClickCount();
+      return;
+    case JmolConstants.PICKING_SELECT_MOLECULE:
+      applyMouseStyle("visible and within(molecule, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
+      viewer.clearClickCount();
+      return;
+    case JmolConstants.PICKING_SELECT_SITE:
+      applyMouseStyle("visible and within(site, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
+      viewer.clearClickCount();
+      return;
+    case JmolConstants.PICKING_SELECT_ELEMENT:
+      applyMouseStyle("visible and within(element, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
+      viewer.clearClickCount();
+      return;
+    }
   }
-  
+
+  private int queueAtom(int atomIndex, Point3f ptClicked) {
+    int n = measurementQueued.addPoint(atomIndex, ptClicked, true);
+    if (atomIndex >= 0)
+      viewer.setStatusAtomPicked(atomIndex, "Atom #" + n + ":"
+          + viewer.getAtomInfo(atomIndex));
+    return n;
+  }
+
   private void applyMouseStyle(String item, boolean shiftKey, boolean alternateKey) {
     item = "(" + item + ")";
     if (pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_PFAAT) {

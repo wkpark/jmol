@@ -36,22 +36,24 @@ import javax.vecmath.AxisAngle4f;
 
 public class MeasuresRenderer extends FontLineShapeRenderer {
 
-  private boolean showMeasurementLabels;
   private short measurementMad;
   private Font3D font3d;
   private Measurement measurement;
   private boolean doJustify;
   protected void render() {
-    if (!viewer.getShowMeasurements() || !g3d.checkTranslucent(false))
+    if (!g3d.checkTranslucent(false))
       return;
     imageFontScaling = viewer.getImageFontScaling();
     Measures measures = (Measures) shape;
     doJustify = viewer.getJustifyMeasurements();
     measurementMad = measures.mad;
     font3d = g3d.getFont3DScaled(measures.font3d, imageFontScaling);
-    showMeasurementLabels = viewer.getShowMeasurementLabels();
-    measures.setVisibilityInfo();
+    renderPendingMeasurement(measures.measurementPending);
+    if (!viewer.getShowMeasurements())
+      return;
+    boolean showMeasurementLabels = viewer.getShowMeasurementLabels();
     boolean dynamicMeasurements = viewer.getDynamicMeasurements();
+    measures.setVisibilityInfo();
     for (int i = measures.measurementCount; --i >= 0;) {
       Measurement m = measures.measurements[i];
       if (dynamicMeasurements || m.isDynamic())
@@ -64,9 +66,8 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       if (colix == 0)
         colix = viewer.getColixBackgroundContrast();
       g3d.setColix(colix);
-      renderMeasurement(m.getCount(), m, true);
+      renderMeasurement(m.getCount(), m, showMeasurementLabels);
     }
-    renderPendingMeasurement(measures.pendingMeasurement);
   }
 
   Point3fi atomA, atomB, atomC, atomD;
@@ -82,29 +83,27 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     return a;
   }
   
-  private void renderMeasurement(int count, Measurement measurement, boolean renderArcs) {
+  private void renderMeasurement(int count, Measurement measurement, boolean renderLabel) {
     this.measurement = measurement;
     switch(count) {
     case 2:
       atomA = getAtom(1);
       atomB = getAtom(2);
-      renderDistance();
+      renderDistance(renderLabel);
       break;
     case 3:
       atomA = getAtom(1);
       atomB = getAtom(2);
       atomC = getAtom(3);
-      renderAngle(renderArcs);
+      renderAngle(renderLabel);
       break;
     case 4:
       atomA = getAtom(1);
       atomB = getAtom(2);
       atomC = getAtom(3);
       atomD = getAtom(4);
-      renderTorsion(renderArcs);
+      renderTorsion(renderLabel);
       break;
-    default:
-      throw new NullPointerException();
     }
     atomA = atomB = atomC = atomD = null;
   }
@@ -127,11 +126,13 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     return (widthPixels + 1) / 2;
   }
 
-  void renderDistance() {
+  void renderDistance(boolean renderLabel) {
     int zA = atomA.screenZ - atomA.screenDiameter - 10;
     int zB = atomB.screenZ - atomB.screenDiameter - 10;
     int radius = drawSegment(atomA.screenX, atomA.screenY, zA, atomB
         .screenX, atomB.screenY, zB);
+    if (!renderLabel)
+      return;
     int z = (zA + zB) / 2;
     if (z < 1)
       z = 1;
@@ -145,7 +146,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   private Matrix3f matrixT = new Matrix3f();
   private Point3f pointT = new Point3f();
 
-  private void renderAngle(boolean renderArcs) {
+  private void renderAngle(boolean renderLabel) {
     int zOffset = atomB.screenDiameter + 10;
     int zA = atomA.screenZ - atomA.screenDiameter - 10;
     int zB = atomB.screenZ - zOffset;
@@ -153,10 +154,9 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     int radius = drawSegment(atomA.screenX, atomA.screenY, zA,
                              atomB.screenX, atomB.screenY, zB);
     radius += drawSegment(atomB.screenX, atomB.screenY, zB,
-                          atomC.screenX, atomC.screenY, zC);
-    if (! renderArcs)
+                          atomC.screenX, atomC.screenY, zC);    
+    if (!renderLabel)
       return;
-
     radius = (radius + 1) / 2;
 
     AxisAngle4f aa = measurement.getAxisAngle();
@@ -198,7 +198,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     }
   }
 
-  private void renderTorsion(boolean renderArcs) {
+  private void renderTorsion(boolean renderLabel) {
     int zA = atomA.screenZ - atomA.screenDiameter - 10;
     int zB = atomB.screenZ - atomB.screenDiameter - 10;
     int zC = atomC.screenZ - atomC.screenDiameter - 10;
@@ -206,6 +206,8 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     int radius = drawSegment(atomA.screenX, atomA.screenY, zA, atomB.screenX, atomB.screenY, zB);
     radius += drawSegment(atomB.screenX, atomB.screenY, zB, atomC.screenX, atomC.screenY, zC);
     radius += drawSegment(atomC.screenX, atomC.screenY, zC, atomD.screenX, atomD.screenY, zD);
+    if (!renderLabel)
+      return;
     radius /= 3;
     paintMeasurementString((atomA.screenX + atomB.screenX + atomC.screenX + atomD.screenX) / 4,
                            (atomA.screenY + atomB.screenY + atomC.screenY + atomD.screenY) / 4,
@@ -214,8 +216,6 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
 
   private void paintMeasurementString(int x, int y, int z, int radius,
                               boolean rightJustify, int yRef) {
-    if (!showMeasurementLabels)
-      return;
     if (!doJustify) {
       rightJustify = false;
       yRef = y;
@@ -237,28 +237,25 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     g3d.drawString(strMeasurement, font3d, xT, yT, zT, zT);
   }
 
-  private void renderPendingMeasurement(MeasurementPending pendingMeasurement) {
-    if (isGenerator)
+  private void renderPendingMeasurement(MeasurementPending measurementPending) {
+    if (isGenerator || measurementPending == null)
       return;
-    int count = pendingMeasurement.getCount();
-    if (! pendingMeasurement.getIsActive() || count < 2)
+    int count = measurementPending.getCount();
+    if (count == 0)
       return;
     g3d.setColix(viewer.getColixRubberband());
-    if (pendingMeasurement.getLastIndex() == -1)
-      renderPendingWithCursor(pendingMeasurement);
+    measurementPending.refresh();
+    if (measurementPending.haveTarget())
+      renderMeasurement(count, measurementPending, true);
     else
-      renderMeasurement(pendingMeasurement.getCount(), pendingMeasurement, true);
+      renderPendingWithCursor(count, measurementPending);
   }
   
-  private void renderPendingWithCursor(MeasurementPending pendingMeasurement) {
-    
-    int count = pendingMeasurement.getCount();
-    if (count < 2)
-      return;
-    if (count > 2)
-      renderMeasurement(count - 1, pendingMeasurement, false);
-    measurement = pendingMeasurement;
-    Point3fi atomLast = getAtom(count - 1);
+  private void renderPendingWithCursor(int count, MeasurementPending measurementPending) {
+    if (count > 1)
+      renderMeasurement(count, measurementPending, false);
+    measurement = measurementPending;
+    Point3fi atomLast = getAtom(count);
     int lastZ = atomLast.screenZ - atomLast.screenDiameter - 10;
     int x = viewer.getCursorX();
     int y = viewer.getCursorY();

@@ -117,9 +117,9 @@ class SelectionManager {
     if (bs == null) {
       selectAll(true);
       if (!viewer.getRasmolHydrogenSetting())
-        excludeSelectionSet(viewer.getAtomBits(Token.hydrogen));
+        excludeSelectionSet(viewer.getAtomBits(Token.hydrogen, null));
       if (!viewer.getRasmolHeteroSetting())
-        excludeSelectionSet(viewer.getAtomBits(Token.hetero));
+        excludeSelectionSet(viewer.getAtomBits(Token.hetero, null));
       selectionChanged(false);
     } else {
       setSelectionSet(bs);

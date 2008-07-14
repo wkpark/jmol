@@ -26,7 +26,7 @@ package org.jmol.viewer;
 import java.awt.Rectangle;
 import java.awt.Event;
 
-import org.jmol.modelset.Measurement;
+import org.jmol.modelset.MeasurementPending;
 import org.jmol.util.Logger;
 import java.awt.event.*;
 import java.awt.Component;
@@ -44,16 +44,15 @@ public abstract class MouseManager implements KeyListener {
   int yCurrent = -1000;
   long timeCurrent = -1;
 
-  boolean measurementMode = false;
   boolean drawMode = false;
   boolean measuresEnabled = true;
+  MeasurementPending measurementPending;
+  
   boolean hoverActive = false;
 
   boolean rubberbandSelectionMode = false;
   int xAnchor, yAnchor;
   final static Rectangle rectRubber = new Rectangle();
-
-  private static final boolean logMouseEvents = false;
 
   abstract boolean handleOldJvm10Event(Event e);
 
@@ -200,6 +199,45 @@ public abstract class MouseManager implements KeyListener {
   long previousPressedTime;
   int pressedCount;
 
+  int mouseMovedX, mouseMovedY;
+  long mouseMovedTime;
+
+  void mouseMoved(long time, int x, int y, int modifiers) {
+    hoverOff();
+    if (hoverWatcherThread == null)
+      startHoverWatcher(true);
+    timeCurrent = mouseMovedTime = time;
+    mouseMovedX = xCurrent = x;
+    mouseMovedY = yCurrent = y;
+    if (measurementPending != null || hoverActive)
+      checkPointOrAtomClicked(x, y, 0, 0);
+  }
+
+  final static float wheelClickFractionUp = 1.15f;
+  final static float wheelClickFractionDown = 1 / wheelClickFractionUp;
+
+  void mouseWheel(long time, int rotation, int modifiers) {
+    if (!viewer.getAwtComponent().hasFocus())
+      return;
+    // sun bug? noted by Charles Xie that wheeling on a Java page
+    // effected inappropriate wheeling on this Java component
+
+    hoverOff();
+    timeCurrent = time;
+    if (rotation == 0)
+      return;
+    if ((modifiers & BUTTON_MODIFIER_MASK) == 0) {
+      float zoomFactor = 1f;
+      if (rotation > 0)
+        while (--rotation >= 0)
+          zoomFactor *= wheelClickFractionUp;
+      else
+        while (++rotation <= 0)
+          zoomFactor *= wheelClickFractionDown;
+      viewer.zoomByFactor(zoomFactor);
+    }
+  }
+
   void mousePressed(long time, int x, int y, int modifiers,
                     boolean isPopupTrigger) {
 
@@ -216,10 +254,6 @@ public abstract class MouseManager implements KeyListener {
     previousPressedY = previousDragY = yCurrent = y;
     previousPressedModifiers = modifiers;
     previousPressedTime = timeCurrent = time;
-
-    if (logMouseEvents && Logger.debugging)
-      Logger.debug("mousePressed(" + x + "," + y + "," + modifiers
-          + " isPopupTrigger=" + isPopupTrigger + ")");
 
     //viewer.setStatusUserAction("mousePressed: " + modifiers);
 
@@ -243,8 +277,6 @@ public abstract class MouseManager implements KeyListener {
   }
 
   void mouseEntered(long time, int x, int y) {
-    if (logMouseEvents && Logger.debugging)
-      Logger.debug("mouseEntered(" + x + "," + y + ")");
     hoverOff();
     timeCurrent = time;
     xCurrent = x;
@@ -252,8 +284,6 @@ public abstract class MouseManager implements KeyListener {
   }
 
   void mouseExited(long time, int x, int y) {
-    if (logMouseEvents && Logger.debugging)
-      Logger.debug("mouseExited(" + x + "," + y + ")");
     hoverOff();
     timeCurrent = time;
     xCurrent = x;
@@ -266,8 +296,6 @@ public abstract class MouseManager implements KeyListener {
     timeCurrent = time;
     xCurrent = x;
     yCurrent = y;
-    if (logMouseEvents && Logger.debugging)
-      Logger.debug("mouseReleased(" + x + "," + y + "," + modifiers + ")");
     viewer.setInMotion(false);
     viewer.setCursor(Viewer.CURSOR_DEFAULT);
   }
@@ -278,27 +306,6 @@ public abstract class MouseManager implements KeyListener {
 
   void clearClickCount() {
     previousClickX = -1;
-  }
-
-  void setMouseMode() {
-    drawMode = false;
-    measuresEnabled = true;
-    switch (viewer.getPickingMode()) {
-    case JmolConstants.PICKING_DRAW:
-      drawMode = true;
-      measuresEnabled = false;
-      break;
-    //other cases here?
-    case JmolConstants.PICKING_LABEL:
-    case JmolConstants.PICKING_MEASURE_DISTANCE:
-    case JmolConstants.PICKING_MEASURE_ANGLE:
-    case JmolConstants.PICKING_MEASURE_TORSION:
-      measuresEnabled = false;
-      break;
-    default:
-      return;
-    }
-    exitMeasurementMode();
   }
 
   void mouseClicked(long time, int x, int y, int modifiers, int clickCount) {
@@ -320,101 +327,107 @@ public abstract class MouseManager implements KeyListener {
     previousClickModifiers = modifiers;
     previousClickCount = clickCount;
     timeCurrent = previousClickTime = time;
-
-    if (logMouseEvents && Logger.debugging)
-      Logger.debug("mouseClicked(" + x + "," + y + "," + modifiers
-          + ",clickCount=" + clickCount + ",time=" + (time - previousClickTime)
-          + ")");
     if (viewer.haveModelSet())
       checkPointOrAtomClicked(x, y, modifiers, clickCount);
+  }
+
+  void setMouseMode() {
+    drawMode = false;
+    measuresEnabled = true;
+    switch (viewer.getPickingMode()) {
+    default:
+      return;
+    case JmolConstants.PICKING_DRAW:
+      drawMode = true;
+      measuresEnabled = false;
+      break;
+    //other cases here?
+    case JmolConstants.PICKING_LABEL:
+    case JmolConstants.PICKING_MEASURE_DISTANCE:
+    case JmolConstants.PICKING_MEASURE_ANGLE:
+    case JmolConstants.PICKING_MEASURE_TORSION:
+      measuresEnabled = false;
+      break;
+    }
+    exitMeasurementMode();
   }
 
   private void checkPointOrAtomClicked(int x, int y, int modifiers, int clickCount) {
     // points are always picked up first, then atoms
     // so that atom picking can be superceded by draw picking
-    Point3f ptClicked = (drawMode ? null :
+    Point3f nearestPoint = (drawMode ? null :
       viewer.checkObjectClicked(x, y, modifiers));
-    int nearestAtomIndex = (drawMode || ptClicked != null ? -1 
+    int nearestAtomIndex = (drawMode || nearestPoint != null ? -1 
         : viewer.findNearestAtomIndex(x, y));
     if (nearestAtomIndex >= 0 
-        && (clickCount > 0 || !measurementMode) 
+        && (clickCount > 0 || measurementPending == null) 
         && !viewer.isInSelectionSubset(nearestAtomIndex))
       nearestAtomIndex = -1;
     switch(clickCount) {
     case 0:
       // mouse move
-      setAttractiveMeasurementTarget(nearestAtomIndex, ptClicked);
+      if (measurementPending == null) 
+        return;
+      if (nearestPoint != null || measurementPending.getIndexOf(nearestAtomIndex) == 0)
+        measurementPending.addPoint(nearestAtomIndex, nearestPoint, false);
+      viewer.refresh(0, "measurementPending");
       return;
     case 1:
       // mouse single click
-      mouseSingleClick(x, y, modifiers, nearestAtomIndex, ptClicked);
+      setMouseMode();
+      switch (modifiers & BUTTON_MODIFIER_MASK) {
+      case LEFT:
+        if (viewer.frankClicked(x, y)) {
+          viewer.popupMenu(-x, y);
+          return;
+        }
+        if (viewer.getPickingMode() == JmolConstants.PICKING_NAVIGATE) {
+          if (viewer.getNavigationMode())
+            viewer.navTranslatePercent(0f, x * 100f / viewer.getScreenWidth()
+                - 50f, y * 100f / viewer.getScreenHeight() - 50f);
+          return;
+        }
+        viewer.atomPicked(nearestAtomIndex, nearestPoint, modifiers);
+        if (measurementPending != null)
+          if (addToMeasurement(nearestAtomIndex, nearestPoint, false) == 4) {
+            previousClickCount = 0;
+            toggleMeasurement();
+          }
+        break;
+      case ALT_LEFT:
+      case SHIFT_LEFT:
+      case ALT_SHIFT_LEFT:
+        if (!drawMode)
+          viewer.atomPicked(nearestAtomIndex, nearestPoint, modifiers);
+        break;
+      }
       return;
     case 2:
       // mouse double click
-      mouseDoubleClick(x, y, modifiers, nearestAtomIndex, ptClicked);
+      setMouseMode();
+      switch (modifiers & BUTTON_MODIFIER_MASK) {
+      case LEFT:
+        if (measurementPending != null) {
+          addToMeasurement(nearestAtomIndex, nearestPoint, true);
+          toggleMeasurement();
+        } else if (!drawMode && measuresEnabled) {
+          enterMeasurementMode();
+          addToMeasurement(nearestAtomIndex, nearestPoint, true);
+        }
+        break;
+      case ALT_LEFT:
+      case MIDDLE:
+      case SHIFT_LEFT:
+        if (nearestAtomIndex < 0)
+          viewer.script("!reset");
+        break;
+      }
       return;
-    }
-  }
-
-  private void mouseSingleClick(int x, int y, int modifiers, int nearestAtomIndex,
-                                Point3f ptClicked) {
-    //viewer.setStatusUserAction("mouseSingleClick: " + modifiers);
-    setMouseMode();
-    if (logMouseEvents && Logger.debugging)
-      Logger.debug("mouseSingleClick(" + x + "," + y + "," + modifiers
-          + " nearestAtom=" + nearestAtomIndex);
-    switch (modifiers & BUTTON_MODIFIER_MASK) {
-    case LEFT:
-      if (viewer.frankClicked(x, y)) {
-        viewer.popupMenu(-x, y);
-        return;
-      }
-      if (viewer.getPickingMode() == JmolConstants.PICKING_NAVIGATE) {
-        if (viewer.getNavigationMode())
-          viewer.navTranslatePercent(0f, x * 100f / viewer.getScreenWidth()
-              - 50f, y * 100f / viewer.getScreenHeight() - 50f);
-        return;
-      }
-      if (ptClicked == null)
-        viewer.atomPicked(nearestAtomIndex, modifiers);
-      if (measurementMode)
-        addToMeasurement(nearestAtomIndex, ptClicked, false);
-      break;
-    case ALT_LEFT:
-    case SHIFT_LEFT:
-    case ALT_SHIFT_LEFT:
-      if (!drawMode && ptClicked == null)
-        viewer.atomPicked(nearestAtomIndex, modifiers);
-      break;
-    }
-  }
-
-  private void mouseDoubleClick(int x, int y, int modifiers, int nearestAtomIndex, Point3f ptClicked) {
-    //viewer.setStatusUserAction("mouseDoubleClick: " + modifiers);
-    setMouseMode();
-    switch (modifiers & BUTTON_MODIFIER_MASK) {
-    case LEFT:
-      if (measurementMode) {
-        addToMeasurement(nearestAtomIndex, null, true);
-        toggleMeasurement();
-      } else if (!drawMode && measuresEnabled) {
-        enterMeasurementMode();
-        addToMeasurement(nearestAtomIndex, ptClicked, true);
-      }
-      break;
-    case ALT_LEFT:
-    case MIDDLE:
-    case SHIFT_LEFT:
-      if (nearestAtomIndex < 0)
-        viewer.script("!reset");
-      break;
     }
   }
 
   void mouseDragged(long time, int x, int y, int modifiers) {
     setMouseMode();
-    if (logMouseEvents && Logger.debugging)
-      Logger.debug("mouseDragged(" + x + "," + y + "," + modifiers + ")");
     int deltaX = x - previousDragX;
     int deltaY = y - previousDragY;
     hoverOff();
@@ -422,11 +435,81 @@ public abstract class MouseManager implements KeyListener {
     xCurrent = previousDragX = x;
     yCurrent = previousDragY = y;
     
-    
-    if (pressedCount == 1)
-      mouseSinglePressDrag(deltaX, deltaY, modifiers);
-    else if (pressedCount == 2)
-      mouseDoublePressDrag(deltaX, deltaY, modifiers);
+    switch (pressedCount) {
+    case 2:
+      //viewer.setStatusUserAction("mouseDoublePressDrag: " + modifiers);
+      switch (modifiers & BUTTON_MODIFIER_MASK) {
+      case SHIFT_LEFT:
+      case ALT_LEFT:
+      case MIDDLE:
+        checkMotion();
+        viewer.translateXYBy(deltaX, deltaY);
+        break;
+      case CTRL_SHIFT_LEFT:
+        if (viewer.getSlabEnabled())
+          viewer.depthByPixels(deltaY);
+        break;
+      }
+      return;
+    case 1:
+      switch (modifiers & BUTTON_MODIFIER_MASK) {
+      case LEFT:
+        checkMotion();
+        viewer.rotateXYBy(deltaX, deltaY);
+        break;
+      case ALT_LEFT:
+        if (viewer.allowRotateSelected()) {
+          checkMotion();
+          viewer.rotateMolecule(deltaX, deltaY);
+          break;
+        }
+      case SHIFT_LEFT:
+      case ALT_SHIFT_LEFT:
+        if (drawMode) {
+          checkMotion();
+          viewer.checkObjectDragged(previousDragX, previousDragY, deltaX, deltaY,
+              modifiers);
+          break;
+        }
+      case MIDDLE:
+        //      if (deltaY < 0 && deltaX > deltaY || deltaY > 0 && deltaX < deltaY)
+        if (Math.abs(deltaY) > 5 * Math.abs(deltaX))
+          checkMotion();
+          viewer.zoomBy(deltaY);
+        //      if (deltaX < 0 && deltaY > deltaX || deltaX > 0 && deltaY < deltaX)
+        if (Math.abs(deltaX) > 5 * Math.abs(deltaY))
+          checkMotion();
+          viewer.rotateZBy(-deltaX);
+        break;
+      case SHIFT_RIGHT: // the one-button Mac folks won't get this gesture
+        checkMotion();
+        viewer.rotateZBy((Math.abs(deltaY) > 5 * Math.abs(deltaX) 
+            ? (xCurrent < viewer.getScreenWidth() / 2 ? deltaY : -deltaY) : 0)
+                + (yCurrent > viewer.getScreenHeight() / 2 ? deltaX : -deltaX));
+        break;
+      case CTRL_ALT_LEFT:
+      /*
+       * miguel 2004 11 23
+       * CTRL_ALT_LEFT *should* work on the mac
+       * however, Apple has a bug in that mouseDragged events
+       * do not get passed through if the CTL button is held down
+       *
+       * I submitted a bug to apple
+       */
+      case CTRL_RIGHT:
+        checkMotion();
+        viewer.translateXYBy(deltaX, deltaY);
+        break;
+      case CTRL_SHIFT_LEFT:
+        if (viewer.getSlabEnabled())
+          viewer.slabByPixels(deltaY);
+        break;
+      case CTRL_ALT_SHIFT_LEFT:
+        if (viewer.getSlabEnabled())
+          viewer.slabDepthByPixels(deltaY);
+      }
+      return;
+    }
   }
 
   void checkMotion() {
@@ -434,208 +517,37 @@ public abstract class MouseManager implements KeyListener {
       viewer.setCursor(Viewer.CURSOR_MOVE);
     viewer.setInMotion(true);
   }
-  void mouseSinglePressDrag(int deltaX, int deltaY, int modifiers) {
-    //viewer.setStatusUserAction("mouseSinglePressDrag: " + modifiers);
-    switch (modifiers & BUTTON_MODIFIER_MASK) {
-    case LEFT:
-      checkMotion();
-      viewer.rotateXYBy(deltaX, deltaY);
-      break;
-    case ALT_LEFT:
-      if (viewer.allowRotateSelected()) {
-        checkMotion();
-        viewer.rotateMolecule(deltaX, deltaY);
-        break;
-      }
-    case SHIFT_LEFT:
-    case ALT_SHIFT_LEFT:
-      if (drawMode) {
-        checkMotion();
-        viewer.checkObjectDragged(previousDragX, previousDragY, deltaX, deltaY,
-            modifiers);
-        break;
-      }
-    case MIDDLE:
-      //      if (deltaY < 0 && deltaX > deltaY || deltaY > 0 && deltaX < deltaY)
-      if (Math.abs(deltaY) > 5 * Math.abs(deltaX))
-        checkMotion();
-        viewer.zoomBy(deltaY);
-      //      if (deltaX < 0 && deltaY > deltaX || deltaX > 0 && deltaY < deltaX)
-      if (Math.abs(deltaX) > 5 * Math.abs(deltaY))
-        checkMotion();
-        viewer.rotateZBy(-deltaX);
-      break;
-    case SHIFT_RIGHT: // the one-button Mac folks won't get this gesture
-      checkMotion();
-      viewer.rotateZBy((Math.abs(deltaY) > 5 * Math.abs(deltaX) 
-          ? (xCurrent < viewer.getScreenWidth() / 2 ? deltaY : -deltaY) : 0)
-              + (yCurrent > viewer.getScreenHeight() / 2 ? deltaX : -deltaX));
-      break;
-    case CTRL_ALT_LEFT:
-    /*
-     * miguel 2004 11 23
-     * CTRL_ALT_LEFT *should* work on the mac
-     * however, Apple has a bug in that mouseDragged events
-     * do not get passed through if the CTL button is held down
-     *
-     * I submitted a bug to apple
-     */
-    case CTRL_RIGHT:
-      checkMotion();
-      viewer.translateXYBy(deltaX, deltaY);
-      break;
-    case CTRL_SHIFT_LEFT:
-      if (viewer.getSlabEnabled())
-        viewer.slabByPixels(deltaY);
-      break;
-    case CTRL_ALT_SHIFT_LEFT:
-      if (viewer.getSlabEnabled())
-        viewer.slabDepthByPixels(deltaY);
-    }
-  }
 
-  void mouseDoublePressDrag(int deltaX, int deltaY, int modifiers) {
-    //viewer.setStatusUserAction("mouseDoublePressDrag: " + modifiers);
-    switch (modifiers & BUTTON_MODIFIER_MASK) {
-    case SHIFT_LEFT:
-    case ALT_LEFT:
-    case MIDDLE:
-      checkMotion();
-      viewer.translateXYBy(deltaX, deltaY);
-      break;
-    case CTRL_SHIFT_LEFT:
-      if (viewer.getSlabEnabled())
-        viewer.depthByPixels(deltaY);
-      break;
-    }
-  }
-
-  int mouseMovedX, mouseMovedY;
-  long mouseMovedTime;
-
-  void mouseMoved(long time, int x, int y, int modifiers) {
-    /*
-     if (logMouseEvents)
-     Logger.debug("mouseMoved("+x+","+y+","+modifiers"+)");
-     */
-    hoverOff();
-    if (hoverWatcherThread == null)
-      startHoverWatcher(true);
-    timeCurrent = mouseMovedTime = time;
-    mouseMovedX = xCurrent = x;
-    mouseMovedY = yCurrent = y;
-    if (measurementMode || hoverActive)
-      checkPointOrAtomClicked(x, y, 0, 0);
-  }
-
-  final static float wheelClickFractionUp = 1.15f;
-  final static float wheelClickFractionDown = 1 / wheelClickFractionUp;
-
-  void mouseWheel(long time, int rotation, int modifiers) {
-    if (!viewer.getAwtComponent().hasFocus())
-      return;
-    // sun bug? noted by Charles Xie that wheeling on a Java page
-    // effected inappropriate wheeling on this Java component
-
-    hoverOff();
-    timeCurrent = time;
-    //Logger.debug("mouseWheel time:" + time + " rotation:" + rotation + " modifiers:" + modifiers);
-    if (rotation == 0)
-      return;
-    if ((modifiers & BUTTON_MODIFIER_MASK) == 0) {
-      float zoomFactor = 1f;
-      if (rotation > 0) {
-        while (--rotation >= 0)
-          zoomFactor *= wheelClickFractionUp;
-      } else {
-        while (++rotation <= 0)
-          zoomFactor *= wheelClickFractionDown;
-      }
-      viewer.zoomByFactor(zoomFactor);
-    }
-  }
-
-/*
- * Note that measurementCountPlusIndices[0] and measurementCount
- * may not be the same. measurementCount refers to the count of what has 
- * actually been selected. 
- * measurementCountPlusIndices[0] may be one higher if there is
- * an attractive measurement target (cursor is hovering near an atom)
- * 
- * With the addition of draw point-measurements (set drawPicking TRUE), 
- * the attractive target may be -1
- * 
- */
-  
-  private int measurementCount = 0;
-  private int[] measurementCountPlusIndices = new int[5];
-
-  private void setAttractiveMeasurementTarget(int atomIndex, Point3f ptClicked) {
-    if (ptClicked == null)
-      for (int i = Math.max(measurementCountPlusIndices[0], measurementCount); i > 0; --i)
-        if (measurementCountPlusIndices[i] == atomIndex) {
-          viewer.refresh(0, "MouseManager:setAttractiveMeasurementTarget("
-              + atomIndex + ")");
-          return;
-        }
-    setMeasurement(measurementCount + 1, atomIndex);
-    // note that if ptClicked is not valid, then measurementCountPlusIndices
-    // will be updated, and if it is valid, then it will still be updated
-    viewer.setPendingMeasurement(measurementCountPlusIndices, ptClicked);
-  }
-
-  private void setMeasurement(int i, int atomIndex) {
-    measurementCountPlusIndices[i] = atomIndex;
-    measurementCountPlusIndices[0] = i;    
-  }
-
-  boolean haveMeasurementPoints;
-  
-  private void addToMeasurement(int atomIndex, Point3f ptClicked,
+  private int addToMeasurement(int atomIndex, Point3f nearestPoint,
                                 boolean dblClick) {
-    if (atomIndex == -1 && ptClicked == null) {
+    if (atomIndex == -1 && nearestPoint == null) {
       exitMeasurementMode();
-      return;
+      return 0;
     }
-    if (ptClicked == null)
-      for (int i = measurementCount; --i >= 0;) {
-        int ipt = measurementCountPlusIndices[i + 1];
-        if (ipt == atomIndex) {
-          return;
-        }
-      }
-    if (measurementCount == 0)
-      haveMeasurementPoints = false;
-    if (measurementCount == 3 && !dblClick)
-      return;
-    haveMeasurementPoints |= (ptClicked != null);
-    setMeasurement(++measurementCount, ptClicked != null ? -1 : atomIndex);
-    if (measurementCount == 4)
-      toggleMeasurement();
-    else
-      viewer.setPendingMeasurement(measurementCountPlusIndices, ptClicked);
-  }
-
-  private void exitMeasurementMode() {
-    if (!measurementMode)
-      return;
-    viewer.setPendingMeasurement(null, null);
-    measurementMode = false;
-    measurementCount = 0;
-    viewer.setCursor(Viewer.CURSOR_DEFAULT);
+    int measurementCount = measurementPending.getCount();
+    return (measurementCount == 4 && !dblClick ? measurementCount
+        : measurementPending.addPoint(atomIndex, nearestPoint, true));
   }
 
   private void enterMeasurementMode() {
     viewer.setCursor(Viewer.CURSOR_CROSSHAIR);
-    measurementCount = 0;
-    measurementMode = true;
+    viewer.setPendingMeasurement(measurementPending = new MeasurementPending(viewer.getModelSet()));
+  }
+
+  private void exitMeasurementMode() {
+    if (measurementPending == null)
+      return;
+    viewer.setPendingMeasurement(measurementPending = null);
+    viewer.setCursor(Viewer.CURSOR_DEFAULT);
   }
 
   private void toggleMeasurement() {
+    if (measurementPending == null)
+      return;
+    int measurementCount = measurementPending.getCount();
     if (measurementCount >= 2 && measurementCount <= 4) {
-      measurementCountPlusIndices[0] = measurementCount;
-      viewer.script("!"
-          + Measurement.getMeasurementScript(measurementCountPlusIndices));
+      viewer.script("!measure "
+          + measurementPending.getMeasurementScript(" "));
     }
     exitMeasurementMode();
   }

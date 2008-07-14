@@ -48,6 +48,7 @@ public abstract class AtomShape extends Shape {
   public boolean isActive;
   
   protected void initModelSet() {
+    atoms = modelSet.atoms;  
     atomCount = modelSet.getAtomCount();
     //in case this is due to "load append"
     if (mads != null)
@@ -56,7 +57,6 @@ public abstract class AtomShape extends Shape {
       colixes = ArrayUtil.setLength(colixes, atomCount);
     if (paletteIDs != null)
       paletteIDs = ArrayUtil.setLength(paletteIDs, atomCount);
-    atoms = modelSet.atoms;  
   }
   
   public void setSize(int size, BitSet bsSelected) {
@@ -107,6 +107,7 @@ public abstract class AtomShape extends Shape {
     }
     if (propertyName == "deleteModelAtoms") {
       atoms = (Atom[])((Object[])value)[1];
+      atomCount = modelSet.getAtomCount();
       int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
       int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
       mads = (short[]) ArrayUtil.deleteElements(mads, firstAtomDeleted, nAtomsDeleted);
@@ -114,7 +115,6 @@ public abstract class AtomShape extends Shape {
       paletteIDs = (byte[]) ArrayUtil.deleteElements(paletteIDs, firstAtomDeleted, nAtomsDeleted);
       BitSetUtil.deleteBits(bsSizeSet, bs);
       BitSetUtil.deleteBits(bsColixSet, bs);
-      atomCount = atoms.length;
       return;
     }
     super.setProperty(propertyName, value, bs);

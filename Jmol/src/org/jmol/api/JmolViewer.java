@@ -201,7 +201,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public int getAtomNumber(int atomIndex);
   abstract public String getAtomName(int atomIndex);
-  abstract public String getAtomInfo(int atomIndex);
+  abstract public String getAtomInfo(int atomIndex); // also gets measurement information for points
 
   abstract public float getRotationRadius();
 

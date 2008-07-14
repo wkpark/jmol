@@ -1538,7 +1538,7 @@ class Eval { //implements Runnable {
       case Token.purine:
       case Token.pyrimidine:
       case Token.isaromatic:
-        rpn.addX(getAtomBits(instruction.tok));
+        rpn.addX(getAtomBits(instruction.tok, null));
         break;
       case Token.spec_atom:
       case Token.spec_name_pattern:
@@ -1555,7 +1555,7 @@ class Eval { //implements Runnable {
           // from select */n 
           iModel = ((Integer) value).intValue();
           if (!viewer.haveFileSet()) {
-            rpn.addX(getAtomBits(Token.spec_model, iModel));
+            rpn.addX(getAtomBits(Token.spec_model, new Integer(iModel)));
             break;
           }
           if (iModel < 1000)
@@ -1567,14 +1567,14 @@ class Eval { //implements Runnable {
         break;
       case Token.spec_resid:
       case Token.spec_chain:
-        rpn.addX(getAtomBits(instruction.tok, instruction.intValue));
+        rpn.addX(getAtomBits(instruction.tok, new Integer(instruction.intValue)));
         break;
       case Token.spec_seqcode:
         if (isInMath) {
           rpn.addX(instruction.intValue);
           break;
         }
-        rpn.addX(getAtomBits(Token.spec_seqcode, getSeqCode(instruction)));
+        rpn.addX(getAtomBits(Token.spec_seqcode, new Integer(getSeqCode(instruction))));
         break;
       case Token.spec_seqcode_range:
         if (isInMath) {
@@ -1698,6 +1698,7 @@ class Eval { //implements Runnable {
           error(ERROR_unrecognizedExpression);
       }
     }
+    Logger.setActiveLevel(Logger.LEVEL_DEBUG, true);
     expressionResult = rpn.getResult(allowUnderflow, null);
     if (expressionResult == null) {
       if (allowUnderflow)
@@ -1707,7 +1708,8 @@ class Eval { //implements Runnable {
       error(ERROR_endOfStatementUnexpected);
     }
     expressionResult = ((Token) expressionResult).value;
-    if (mustBeBitSet && expressionResult instanceof String) {
+    if (expressionResult instanceof String &&
+        (mustBeBitSet || ((String) expressionResult).startsWith("({"))) {
       // allow for select @{x} where x is a string that can evaluate to a bitset
       expressionResult = (isScriptCheck ? new BitSet() : getAtomBitSet(this, viewer, (String) expressionResult));
     }
@@ -1749,25 +1751,7 @@ class Eval { //implements Runnable {
     return (bs == null ? new BitSet() : bs);
   }
 
-  private BitSet getAtomBits(int tokType) {
-    if (isSyntaxCheck)
-      return new BitSet();
-    return viewer.getAtomBits(tokType);
-  }
-
-  private BitSet getAtomBits(int tokType, String specInfo) {
-    if (isSyntaxCheck)
-      return new BitSet();
-    return viewer.getAtomBits(tokType, specInfo);
-  }
-
-  private BitSet getAtomBits(int tokType, int specInfo) {
-    if (isSyntaxCheck)
-      return new BitSet();
-    return viewer.getAtomBits(tokType, specInfo);
-  }
-
-  private BitSet getAtomBits(int tokType, int[] specInfo) {
+  private BitSet getAtomBits(int tokType, Object specInfo) {
     if (isSyntaxCheck)
       return new BitSet();
     return viewer.getAtomBits(tokType, specInfo);
@@ -2683,9 +2667,16 @@ class Eval { //implements Runnable {
   private boolean coordinatesAreFractional;
 
   private boolean isPoint3f(int i) {
+    // first check for simple possibilities:
+    boolean isOK;
+    if ((isOK = (tokAt(i) == Token.point3f)) 
+        || tokAt(i) == Token.point4f 
+        || isFloatParameter(i + 1) && isFloatParameter(i + 2) 
+           && isFloatParameter(i + 3) && isFloatParameter(i + 4))
+      return isOK;
     ignoreError = true;
-    boolean isOK = true;
     int t = iToken;
+    isOK = true;
     try {
       getPoint3f(i, true);
     } catch (Exception e) {
@@ -4565,8 +4556,6 @@ class Eval { //implements Runnable {
   //measure() see monitor()
 
   private void monitor() throws ScriptException {
-    int[] countPlusIndexes = new int[5];
-    float[] rangeMinMax = new float[2];
     if (statementLength == 1) {
       viewer.hideMeasurements(false);
       return;
@@ -4605,27 +4594,27 @@ class Eval { //implements Runnable {
         return;
       }
     }
+    
     int nAtoms = 0;
     int expressionCount = 0;
     int atomIndex = -1;
-    int atomNumber = 0;
     int ptFloat = -1;
-    rangeMinMax[0] = Float.MAX_VALUE;
-    rangeMinMax[1] = Float.MAX_VALUE;
+    int[] countPlusIndexes = new int[5];
+    float[] rangeMinMax = new float[] { Float.MAX_VALUE, Float.MAX_VALUE };
     boolean isAll = false;
     boolean isAllConnected = false;
-    boolean isExpression = false;
     boolean isDelete = false;
     boolean isRange = true;
     boolean isON = false;
     boolean isOFF = false;
     String strFormat = null;
     Vector monitorExpressions = new Vector();
-
     BitSet bs = new BitSet();
-
+    Object value = null;
     for (int i = 1; i < statementLength; ++i) {
       switch (getToken(i).tok) {
+      default:
+        error(ERROR_expressionOrIntegerExpected);
       case Token.on:
         if (isON || isOFF || isDelete)
           error(ERROR_invalidArgument);
@@ -4642,15 +4631,14 @@ class Eval { //implements Runnable {
         isDelete = true;
         continue;
       case Token.range:
+        isAll = true;
         isRange = true; //unnecessary
         atomIndex = -1;
-        isAll = true;
         continue;
       case Token.identifier:
-        if (parameterAsString(i).equalsIgnoreCase("ALLCONNECTED"))
-          isAllConnected = true;
-        else
+        if (!parameterAsString(i).equalsIgnoreCase("ALLCONNECTED"))
           error(ERROR_keywordExpected, "ALL, ALLCONNECTED, DELETE");
+        isAllConnected = true;
       // fall through
       case Token.all:
         atomIndex = -1;
@@ -4667,59 +4655,59 @@ class Eval { //implements Runnable {
         rangeMinMax[ptFloat] = floatParameter(i);
         continue;
       case Token.integer:
-        isRange = true; // irrelevant if just four integers
-        atomNumber = intParameter(i);
-        atomIndex = viewer.getAtomIndexFromAtomNumber(atomNumber);
-        ptFloat = (ptFloat + 1) % 2;
-        rangeMinMax[ptFloat] = atomNumber;
-        break;
+        int iParam = intParameter(i);
+        if (isAll) {
+          isRange = true; // irrelevant if just four integers
+          ptFloat = (ptFloat + 1) % 2;
+          rangeMinMax[ptFloat] = iParam;
+        } else {
+          atomIndex = viewer.getAtomIndexFromAtomNumber(iParam);
+          if (!isSyntaxCheck && atomIndex < 0)
+            return;
+          if (value != null)
+            error(ERROR_invalidArgument);
+          if ((countPlusIndexes[0] = ++nAtoms) > 4)
+            error(ERROR_badArgumentCount);
+          countPlusIndexes[nAtoms] = atomIndex;
+        }
+        continue;
       case Token.bitset:
       case Token.expressionBegin:
-        isExpression = true;
-        bs = expression(i);
-        i = iToken;
-        atomIndex = BitSetUtil.firstSetBit(bs);
-        break;
-      default:
-        error(ERROR_expressionOrIntegerExpected);
-      }
-      //only here for point definition
-      if (atomIndex == -1 || isAll && (bs == null || bs.size() == 0)) {
-        if (!isSyntaxCheck) {
-          if (isExpression)
-            return; //there's just nothing to measure
+      case Token.leftbrace:
+      case Token.point3f:
+      case Token.dollarsign:
+        if (atomIndex >= 0)
           error(ERROR_invalidArgument);
+        expressionResult = Boolean.FALSE;
+        value = centerParameter(i);
+        if (expressionResult instanceof BitSet) {
+          value = bs = (BitSet) expressionResult;
+          if (!isSyntaxCheck && BitSetUtil.firstSetBit(bs) < 0)
+            return;
         }
-      }
-      if (isAll) {
-        if (++expressionCount > 4)
+        if ((nAtoms = ++expressionCount) > 4)
           error(ERROR_badArgumentCount);
-        monitorExpressions.addElement(bs);
-        nAtoms = expressionCount;
-      } else {
-        if (++nAtoms > 4)
-          error(ERROR_badArgumentCount);
-        countPlusIndexes[nAtoms] = atomIndex;
+        monitorExpressions.addElement(value);
+        i = iToken;
+        continue;
       }
     }
-    countPlusIndexes[0] = nAtoms;
+    if (nAtoms < 2)
+      error(ERROR_badArgumentCount);
     if (strFormat != null && strFormat.indexOf(nAtoms + ":") != 0)
       strFormat = nAtoms + ":" + strFormat;
-    if (isAll) {
-      if (!isExpression)
-        error(ERROR_expressionExpected);
-      if (isRange && rangeMinMax[1] < rangeMinMax[0]) {
+    if (isRange && rangeMinMax[1] < rangeMinMax[0]) {
         rangeMinMax[1] = rangeMinMax[0];
         rangeMinMax[0] = (rangeMinMax[1] == Float.MAX_VALUE ? Float.MAX_VALUE
             : -200F);
-      }
-      if (!isSyntaxCheck)
-        viewer.defineMeasurement(monitorExpressions, rangeMinMax, isDelete,
-            isAllConnected, isON || isOFF, isOFF, strFormat);
-      return;
     }
     if (isSyntaxCheck)
       return;
+    if (value != null) {
+      viewer.defineMeasurement(monitorExpressions, rangeMinMax, isDelete,
+          isAll, isAllConnected, isON, isOFF, strFormat);
+      return;
+    }
     if (isDelete)
       viewer.deleteMeasurement(countPlusIndexes);
     else if (isON)
@@ -4878,6 +4866,7 @@ class Eval { //implements Runnable {
         return;
       }
 
+    BitSet bsAtoms = null;
     float degrees = Float.MIN_VALUE;
     int nPoints = 0;
     float endDegrees = Float.MAX_VALUE;
@@ -4935,6 +4924,18 @@ class Eval { //implements Runnable {
           continue;
         }
         error(ERROR_invalidArgument);
+      case Token.branch:
+        int iAtom1 = BitSetUtil.firstSetBit(expression(++i));
+        int iAtom2 = BitSetUtil.firstSetBit(expression(++iToken));
+        if (iAtom1 < 0 || iAtom2 < 0)
+          return;
+        bsAtoms = viewer.getBranchBitSet(iAtom2, iAtom1);
+        isMolecular = true;
+        points[0] = viewer.getAtomPoint3f(iAtom2);
+        points[1] = viewer.getAtomPoint3f(iAtom1);
+        nPoints = 2;
+        i = iToken;
+        break;
       case Token.bitset:
       case Token.expressionBegin:
       case Token.leftbrace:
@@ -4974,6 +4975,8 @@ class Eval { //implements Runnable {
       degrees = 10;
     if (nPoints == 0)
       points[0] = new Point3f();
+    if (isSelected && bsAtoms == null)
+        bsAtoms = viewer.getSelectionSet();
     if (nPoints < 2) {
       if (!isMolecular) {
         // fixed-frame rotation
@@ -4982,7 +4985,7 @@ class Eval { //implements Runnable {
         // rotate x 10 (atoms) # point-centered
         // rotate x 10 $object # point-centered
         viewer.rotateAxisAngleAtCenter(points[0], rotAxis, degrees, endDegrees,
-            isSpin, isSelected);
+            isSpin, bsAtoms);
         return;
       }
       // rotate MOLECULAR
@@ -4997,7 +5000,7 @@ class Eval { //implements Runnable {
       points[1].y += 1.0;
     }
     viewer.rotateAboutPointsInternal(points[0], points[1], degrees, endDegrees,
-        isSpin, isSelected);
+        isSpin, bsAtoms);
   }
 
   private Point3f getDrawObjectCenter(String axisID) {
@@ -7585,7 +7588,7 @@ class Eval { //implements Runnable {
     BitSet bsNew = null;
 
     if (tok == Token.atoms)
-      bsNew = (!isAtoms && !isSyntaxCheck ? viewer.getAtomsWithin(Token.bonds,
+      bsNew = (!isAtoms && !isSyntaxCheck ? viewer.getAtomBits(Token.bonds,
           bs) : bs);
     if (tok == Token.bonds)
       bsNew = (isAtoms && !isSyntaxCheck ? viewer.getBondsForSelectedAtoms(bs)
@@ -7610,7 +7613,7 @@ class Eval { //implements Runnable {
       return bsNew;
     }
 
-    if (tok == Token.ident)
+    if (tok == Token.identify)
       return (isMin || isMax ? "" : getBitsetIdent(bs, null, tokenValue,
           useAtomMap));
 
@@ -8477,7 +8480,7 @@ class Eval { //implements Runnable {
     switch (getToken(i).tok) {
     case Token.on:
     case Token.normal:
-      str = "ident";
+      str = "identify";
       break;
     case Token.none:
       str = "off";
@@ -12502,7 +12505,7 @@ class Eval { //implements Runnable {
         if (i != 3 || !(args[1].value instanceof BitSet)
             || !(args[2].value instanceof BitSet))
           return false;
-        return addX(viewer.getConnectedBitSet(BitSetUtil
+        return addX(viewer.getBranchBitSet(BitSetUtil
             .firstSetBit((BitSet) args[2].value), BitSetUtil
             .firstSetBit((BitSet) args[1].value)));
       }
@@ -12558,8 +12561,8 @@ class Eval { //implements Runnable {
       if (isDistance)
         return addX(viewer.getAtomsWithin(distance, bs, isWithinModelSet));
       if (isSequence)
-        return addX(viewer.getAtomsWithin(Token.sequence, withinStr, bs));
-      return addX(viewer.getAtomsWithin(Token.getTokenFromName(withinStr).tok,
+        return addX(viewer.getSequenceBits(withinStr, bs));
+      return addX(viewer.getAtomBits(Token.getTokenFromName(withinStr).tok,
           bs));
     }
 
@@ -12647,7 +12650,7 @@ class Eval { //implements Runnable {
             JmolConstants.CONNECT_IDENTIFY_ONLY, atoms1, atoms2, bsBonds,
             isBonds);
         return addX(new Token(Token.bitset, new BondSet(bsBonds, viewer
-            .getAtomIndices(viewer.getAtomsWithin(Token.bonds, bsBonds)))));
+            .getAtomIndices(viewer.getAtomBits(Token.bonds, bsBonds)))));
       }
       if (isSyntaxCheck)
         return addX(atoms1);

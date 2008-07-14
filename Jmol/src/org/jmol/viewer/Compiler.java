@@ -340,8 +340,10 @@ class Compiler {
     ichCurrentCommand = 0;
     lineCurrent = 1;
     iCommand = 0;
+    lastToken = Token.tokenOff;
     int lnLength = 8;
     int braceCount = 0;
+    int parenCount = 0;
     int bracketCount = 0;
     lineNumbers = new short[lnLength];
     lineIndices = new int[lnLength];
@@ -567,7 +569,7 @@ class Compiler {
           addTokenToPrefix(new Token(Token.integer, val, intString));
           continue;
         }
-        if (lastToken != null && lastToken.tok == Token.select || !tokenAttr(lastToken, Token.mathfunc)) {
+        if (lastToken.tok == Token.select || !tokenAttr(lastToken, Token.mathfunc)) {
           // don't want to mess up x.distance({1 2 3})
           // if you want to use a bitset there, you must use 
           // bitsets properly: x.distance( ({1 2 3}) )
@@ -605,13 +607,25 @@ class Compiler {
             token = new Token(Token.identifier, ident);
         }
         int tok = token.tok;
-        // both the select() function and the for command use dual semicolon notation
-        if (tokCommand != Token.nada && tok == Token.select
-            || tokCommand == Token.nada && tok == Token.forcmd)
-            nSemiSkip += 2;
+        if (tok == Token.leftparen || tok == Token.leftbrace) {
+          // the select() function uses dual semicolon notation
+          // but we must differentiate from isosurface select(...) and set picking select
+          if (nTokens > 1 && (lastToken.tok == Token.select))
+              nSemiSkip += 2;
+          parenCount++;
+        }
+        if (tok == Token.rightparen || tok == Token.rightbrace) {
+          if (parenCount == 0)
+            return error(ERROR_leftParenthesisExpected);
+          parenCount--;
+          // we need to remove the semiskip if parentheses or braces have been closed. 11.5.46
+          if (parenCount == 0)
+            nSemiSkip = 0;
+        }
         switch (tokCommand) {
         // special cases
         case Token.nada:
+          lastToken = Token.tokenOff;
           ichCurrentCommand = ichToken;
           tokenCommand = token;
           tokCommand = tok;
@@ -758,9 +772,11 @@ class Compiler {
           flowContext = flowContext.parent;
           break;
         case Token.forcmd:
-          if (nTokens == 1 && tok != Token.leftparen)
+          if (nTokens == 1) {
+            if (tok != Token.leftparen)
               return error(ERROR_unrecognizedToken, ident);
-          if (nTokens == 3 && ((Token) ltoken.get(2)).tok == Token.var)
+            nSemiSkip += 2;
+          } else if (nTokens == 3 && ((Token) ltoken.get(2)).tok == Token.var)
             addContextVariable(ident);
           break;
         case Token.set:
@@ -1876,6 +1892,7 @@ class Compiler {
       return false;
     float distance = Float.MAX_VALUE;
     String key = null;
+    boolean allowComma = true;
     switch (theToken.tok) {
     case Token.minus:
       if (getToken() == null)
@@ -1888,17 +1905,20 @@ class Compiler {
     case Token.decimal:
       distance = floatValue();
       break;
-    case Token.group:
-    case Token.chain:
-    case Token.structure:
-    case Token.molecule:
-    case Token.model:
-    case Token.site:
-    case Token.coord:
+    case Token.branch:
+      allowComma = false;
+      //fall through
     case Token.boundbox:
+    case Token.chain:
+    case Token.coord:
     case Token.element:
-    case Token.string:
+    case Token.group:
+    case Token.model:
+    case Token.molecule:
     case Token.plane:
+    case Token.site:
+    case Token.string:
+    case Token.structure:
       key = (String) theValue;
       break;
     case Token.identifier:
@@ -1943,8 +1963,8 @@ class Compiler {
           addTokenToPostfix(Token
               .getTokenFromName(distance == Float.MAX_VALUE ? "plane" : "coord"));
         }
+        addNextTokenIf(Token.comma);
       }
-      addNextTokenIf(Token.comma);
       tok = tokPeek();
       if (isCoordOrPlane) {
         while (!tokPeek(Token.rightparen)) {
@@ -1969,7 +1989,7 @@ class Compiler {
             addTokenToPostfix(getToken());
           }
         }
-      } else if (!clauseOr(true)) {// *expression*
+      } else if (!clauseOr(allowComma)) {// *expression*
         return error(ERROR_endOfCommandUnexpected);
       }
     }

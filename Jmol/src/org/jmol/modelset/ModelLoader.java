@@ -28,6 +28,7 @@ package org.jmol.modelset;
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
 
 import org.jmol.api.JmolAdapter;
@@ -829,7 +830,7 @@ public final class ModelLoader extends ModelSet {
         cellInfos[i] = new CellInfo(i, doPdbScale, getModelAuxiliaryInfo(i));
     }
     if (someModelsHaveSymmetry) {
-      getSymmetrySet();
+      getAtomBits(Token.symmetry, null);
       for (int iAtom = baseAtomIndex, iModel = -1, i0 = 0; iAtom < atomCount; iAtom++) {
         if (atoms[iAtom].modelIndex != iModel) {
           iModel = atoms[iAtom].modelIndex;

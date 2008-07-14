@@ -386,7 +386,7 @@ public class Token {
   final public static int atoms            = 1 | mathproperty;
   final public static int bonds     = 2 | mathproperty | setparam;
   final static int color            = 3 | mathproperty | command | colorparam | setparam | numberOrExpression | settable;
-  final static int ident            = 4 | mathproperty;
+  final static int identify         = 4 | mathproperty;
   final static int length           = 5 | mathproperty;
   final static int lines            = 6 | mathproperty;
   final static int size             = 7 | mathproperty;
@@ -1304,7 +1304,7 @@ public class Token {
     "hidden",           new Token(hidden),
     "hydrogen",         new Token(hydrogen),
     "hydrogens",        null,
-    "identify",         new Token(ident),
+    "identify",         new Token(identify),
     "ident",            null,
     "info",             new Token(info),
     "insertion",        new Token(insertion),

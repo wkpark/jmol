@@ -216,7 +216,7 @@ public class MeasurementTable extends JDialog {
       if (col >= countPlusIndices.length)
         return null;
       int atomIndex = countPlusIndices[col];
-      return (viewer.getAtomInfo(atomIndex));
+      return (viewer.getAtomInfo(atomIndex >= 0 ? atomIndex : -row * 10 - col));
     }
 
     public boolean isCellEditable(int row, int col) { return false; }

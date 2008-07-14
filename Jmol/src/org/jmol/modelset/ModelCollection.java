@@ -101,6 +101,8 @@ abstract public class ModelCollection extends BondCollection {
     super.releaseModelSet();
   }
 
+  protected BitSet bsSymmetry;
+  
   protected String modelSetName;
 
   public String getModelSetName() {
@@ -535,8 +537,8 @@ abstract public class ModelCollection extends BondCollection {
       if (conformationIndex >= 0)
         for (int c = models[modelIndex].nAltLocs; --c >= 0;)
           if (c != conformationIndex)
-            BitSetUtil.andNot(bsConformation, getSpecAlternate(altLocs
-                .substring(c, c + 1)));
+            BitSetUtil.andNot(bsConformation, getAtomBits(Token.spec_alternate,
+                altLocs.substring(c, c + 1)));
       if (BitSetUtil.length(bsConformation) > 0) {
         setConformation(modelIndex, bsConformation);
         bs.or(bsConformation);
@@ -621,12 +623,11 @@ abstract public class ModelCollection extends BondCollection {
     if (countPlusIndices == null)
       return false;
     int count = countPlusIndices[0];
-    for (int i = count; --i >= 0;) {
-      if (countPlusIndices[i + 1] < 0)
-        return false;
-      if (models[atoms[countPlusIndices[i + 1]].modelIndex].isTrajectory)
+    int atomIndex;
+    for (int i = 1; i <= count; i++)
+      if ((atomIndex = countPlusIndices[i]) >= 0 
+          && models[atoms[atomIndex].modelIndex].isTrajectory)
         return true;
-      }
     return false;
   }
 
@@ -1299,11 +1300,11 @@ abstract public class ModelCollection extends BondCollection {
    }
    */
 
-  public void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate,
-                             BitSet bsInput, boolean fullMolecule,
+  public void rotateAtoms(Matrix3f mNew, Matrix3f matrixRotate,
+                             BitSet bsAtoms, boolean fullMolecule,
                              Point3f center, boolean isInternal) {
     bspf = null;
-    BitSet bs = (fullMolecule ? getMoleculeBitSet(bsInput) : bsInput);
+    BitSet bs = (fullMolecule ? getMoleculeBitSet(bsAtoms) : bsAtoms);
     matInv.set(matrixRotate);
     matInv.invert();
     ptTemp.set(0, 0, 0);
@@ -1493,7 +1494,7 @@ abstract public class ModelCollection extends BondCollection {
           thisModelIndex = modelIndex;
         }
         indexInModel++;
-        bs = getConnectedBitSet(i, -1);
+        bs = getBranchBitSet(i, -1);
         atomlist.or(bs);
         if (moleculeCount == molecules.length)
           molecules = (Molecule[]) ArrayUtil.setLength(molecules,
@@ -1505,7 +1506,7 @@ abstract public class ModelCollection extends BondCollection {
       }
   }
 
-  public BitSet getConnectedBitSet(int atomIndex, int atomIndexNot) {
+  public BitSet getBranchBitSet(int atomIndex, int atomIndexNot) {
     BitSet bs = new BitSet(atomCount);
     if (atomIndex < 0)
       return bs;
@@ -1710,96 +1711,82 @@ abstract public class ModelCollection extends BondCollection {
   /**
    * general unqualified lookup of atom set type
    * @param tokType
+   * @param specInfo
    * @return BitSet; or null if we mess up the type
    */
-  public BitSet getAtomBits(int tokType) {
+  public BitSet getAtomBits(int tokType, Object specInfo) {
+    int[] info;
+    BitSet bs;
     switch (tokType) {
-    case Token.specialposition:
-      return getSpecialPosition();
-    case Token.symmetry:
-      return getSymmetrySet();
-    case Token.unitcell:
-      return getUnitCellSet();
-    }
-    return super.getAtomBits(tokType);
-  }
-
-  private BitSet getSpecialPosition() {
-    BitSet bs = new BitSet(atomCount);
-    int modelIndex = -1;
-    int nOps = 0;
-    for (int i = atomCount; --i >= 0;) {
-      Atom atom = atoms[i];
-      BitSet bsSym = atom.getAtomSymmetry();
-      if (bsSym != null) {
-        if (atom.modelIndex!=modelIndex) {
-          modelIndex = atom.modelIndex;
-          if (getModelCellRange(modelIndex) == null)
-            continue;
-          nOps = getModelSymmetryCount(modelIndex);
-        }
-        //special positions are characterized by
-        //multiple operator bits set in the first (overall)
-        //block of nOpts bits.
-        //only strictly true with load {nnn mmm 1}
-        
-        int n = 0;
-        for (int j = nOps; --j>= 0; )
-          if (bsSym.get(j))
-            if (++n > 1) {
-              bs.set(i);
-              break;
-            }
-      }
-    }
-    return bs;
-  }
-
-  private BitSet getUnitCellSet() {
-    BitSet bsCell = new BitSet();
-    UnitCell unitcell = viewer.getCurrentUnitCell();
-    if (unitcell == null)
-      return bsCell;
-    Point3f cell = new Point3f(unitcell.getFractionalOffset());
-    cell.x += 1;
-    cell.y += 1;
-    cell.z += 1;
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isInLatticeCell(cell))
-        bsCell.set(i);
-    return bsCell;
-  }
-  
-  protected BitSet bsSymmetry;
-  
-  protected BitSet getSymmetrySet() {
-    return BitSetUtil.copy(bsSymmetry == null ? bsSymmetry = new BitSet(atomCount) : bsSymmetry);
-  }
-
-  /**
-   * general lookup involving a range
-   * @param tokType
-   * @param specInfo
-   * @return BitSet; or null if mess up with type
-   */
-  public BitSet getAtomBits(int tokType, int[] specInfo) {
-    switch (tokType) {
+    default:
+      return super.getAtomBits(tokType, specInfo);
+    case Token.molecule:
+      return getMoleculeBitSet((BitSet) specInfo);
+    case Token.boundbox:
+      BoxInfo boxInfo = getBoxInfo((BitSet) specInfo);
+      bs = getAtomsWithin(boxInfo.getBoundBoxCornerVector().length() + 0.0001f,
+          boxInfo.getBoundBoxCenter());
+      for (int i = 0; i < atomCount; i++)
+        if (bs.get(i) && !boxInfo.isWithin(atoms[i]))
+          bs.clear(i);
+      return bs;
     case Token.spec_seqcode_range:
-      return getSpecSeqcodeRange(specInfo[0], specInfo[1], (char) specInfo[2]);
-    case Token.cell:
-      return getCellSet(specInfo[0], specInfo[1], specInfo[2]);
+      info = (int[]) specInfo;
+      int seqcodeA = info[0];
+      int seqcodeB = info[1];
+      char chainID = (char) info[2];
+      bs = new BitSet();
+      boolean caseSensitive = viewer.getChainCaseSensitive();
+      if (!caseSensitive)
+        chainID = Character.toUpperCase(chainID);
+      for (int i = modelCount; --i >= 0;)
+        models[i].selectSeqcodeRange(seqcodeA, seqcodeB, chainID, bs, caseSensitive);
+      return bs;
+    case Token.specialposition:
+      bs = new BitSet(atomCount);
+      int modelIndex = -1;
+      int nOps = 0;
+      for (int i = atomCount; --i >= 0;) {
+        Atom atom = atoms[i];
+        BitSet bsSym = atom.getAtomSymmetry();
+        if (bsSym != null) {
+          if (atom.modelIndex!=modelIndex) {
+            modelIndex = atom.modelIndex;
+            if (getModelCellRange(modelIndex) == null)
+              continue;
+            nOps = getModelSymmetryCount(modelIndex);
+          }
+          //special positions are characterized by
+          //multiple operator bits set in the first (overall)
+          //block of nOpts bits.
+          //only strictly true with load {nnn mmm 1}
+          
+          int n = 0;
+          for (int j = nOps; --j>= 0; )
+            if (bsSym.get(j))
+              if (++n > 1) {
+                bs.set(i);
+                break;
+              }
+        }
+      }
+      return bs;
+    case Token.symmetry:
+      BitSetUtil.copy(bsSymmetry == null ? bsSymmetry = new BitSet(atomCount) : bsSymmetry);
+    case Token.unitcell:
+      bs = new BitSet();
+      UnitCell unitcell = viewer.getCurrentUnitCell();
+      if (unitcell == null)
+        return bs;
+      Point3f cell = new Point3f(unitcell.getFractionalOffset());
+      cell.x += 1;
+      cell.y += 1;
+      cell.z += 1;
+      for (int i = atomCount; --i >= 0;)
+        if (atoms[i].isInLatticeCell(cell))
+          bs.set(i);
+      return bs;
     }
-    return null;
-  }
-
-  private BitSet getSpecSeqcodeRange(int seqcodeA, int seqcodeB, char chainID) {
-    BitSet bs = new BitSet();
-    boolean caseSensitive = viewer.getChainCaseSensitive();
-    if (!caseSensitive)
-      chainID = Character.toUpperCase(chainID);
-    for (int i = modelCount; --i >= 0;)
-      models[i].selectSeqcodeRange(seqcodeA, seqcodeB, chainID, bs, caseSensitive);
-    return bs;
   }
 
   /**
@@ -1880,32 +1867,7 @@ abstract public class ModelCollection extends BondCollection {
     return bsResult;
   }
  
-  public BitSet getAtomsWithin(int tokType, BitSet bs) {
-    switch (tokType) {
-    case Token.molecule:
-      return getMoleculeBitSet(bs);
-    case Token.boundbox:
-      return getAtomsWithinBox(getBoxInfo(bs));
-    }
-    return super.getAtomsWithin(tokType, bs);
-  }
-
-  private BitSet getAtomsWithinBox(BoxInfo boxInfo) {
-    BitSet bs = getAtomsWithin(boxInfo.getBoundBoxCornerVector().length() + 0.0001f,
-        boxInfo.getBoundBoxCenter());
-    for (int i = 0; i < atomCount; i++)
-      if (bs.get(i) && !boxInfo.isWithin(atoms[i]))
-        bs.clear(i);
-    return bs;
-  }
-
-  public BitSet getAtomsWithin(int tokType, String specInfo, BitSet bs) {
-    if (tokType == Token.sequence)
-      return withinSequence(specInfo, bs);
-    return null;
-  }
-  
-  private BitSet withinSequence(String specInfo, BitSet bs) {
+  public BitSet getSequenceBits(String specInfo, BitSet bs) {
     //Logger.debug("withinSequence");
     String sequence = "";
     int lenInfo = specInfo.length();

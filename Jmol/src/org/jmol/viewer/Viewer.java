@@ -30,6 +30,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.AtomIndexIterator;
 import org.jmol.modelset.BoxInfo;
+import org.jmol.modelset.MeasurementPending;
 import org.jmol.modelset.ModelSet;
 
 import org.jmol.api.*;
@@ -718,7 +719,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void rotateXYBy(int xDelta, int yDelta) {
     //mouseSinglePressDrag
-    transformManager.rotateXYBy(xDelta, yDelta);
+    transformManager.rotateXYBy(xDelta, yDelta, null);
     refresh(2, syncingMouse ? "Mouse: rotateXYBy " + xDelta + " " + yDelta : "");
   }
 
@@ -729,11 +730,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void rotateMolecule(int deltaX, int deltaY) {
-    setRotateSelected(true);
-    setRotateMolecule(true);
-    transformManager.rotateXYBy(deltaX, deltaY);
-    setRotateMolecule(false);
-    setRotateSelected(false);
+    transformManager.setRotateMolecule(true);
+    transformManager.rotateXYBy(deltaX, deltaY, selectionManager.bsSelection);
+    transformManager.setRotateMolecule(false);
+    refreshMeasures();
     refresh(2, syncingMouse ? "Mouse: rotateMolecule " + deltaX + " " + deltaY : "");
   }
 
@@ -2337,24 +2337,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getAtomIndices(bs);
   }
 
-  BitSet getAtomBits(int tokType) {
-    return modelSet.getAtomBits(tokType);
-  }
-
-  BitSet getAtomBits(int tokType, String specInfo) {
+  public BitSet getAtomBits(int tokType, Object specInfo) {
     return modelSet.getAtomBits(tokType, specInfo);
   }
 
-  public BitSet getAtomBits(int tokType, int specInfo) {
-    return modelSet.getAtomBits(tokType, specInfo);
-  }
-
-  BitSet getAtomBits(int tokType, int[] specInfo) {
-    return modelSet.getAtomBits(tokType, specInfo);
-  }
-
-  BitSet getAtomsWithin(int tokType, BitSet bs) {
-    return modelSet.getAtomsWithin(tokType, bs);
+  BitSet getSequenceBits(String specInfo, BitSet bs) {
+    return modelSet.getSequenceBits(specInfo, bs);
   }
 
   BitSet getAtomsWithin(float distance, Point3f coord) {
@@ -2365,10 +2353,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getAtomsWithin(distance, plane);
   }
 
-  BitSet getAtomsWithin(int tokType, String specInfo, BitSet bs) {
-    return modelSet.getAtomsWithin(tokType, specInfo, bs);
-  }
-
   BitSet getAtomsWithin(float distance, BitSet bs, boolean isWithinModelSet) {
     return modelSet.getAtomsWithin(distance, bs, isWithinModelSet);
   }
@@ -2377,8 +2361,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getAtomsConnected(min, max, intType, bs);
   }
 
-  BitSet getConnectedBitSet(int atomIndex, int atomIndexNot) {
-    return modelSet.getConnectedBitSet(atomIndex, atomIndexNot);  
+  BitSet getBranchBitSet(int atomIndex, int atomIndexNot) {
+    return modelSet.getBranchBitSet(atomIndex, atomIndexNot);  
   }
   
   int getAtomIndexFromAtomNumber(int atomNumber) {
@@ -2694,9 +2678,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return List;
   }
 
-  void setPendingMeasurement(int[] atomCountPlusIndices, Point3f ptClicked) {
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, "pending",
-        new Object[] {atomCountPlusIndices, ptClicked});
+  void setPendingMeasurement(MeasurementPending measurementPending) {
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "pending", measurementPending);
   }
 
   void clearAllMeasurements() {
@@ -2724,16 +2707,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void defineMeasurement(Vector monitorExpressions, float[] rangeMinMax,
-                         boolean isDelete, boolean isAllConnected,
-                         boolean isShowHide, boolean isHidden, String strFormat) {
+                         boolean isDelete, boolean isAll, boolean isAllConnected,
+                         boolean isOn, boolean isOff, String strFormat) {
     //Eval.monitor()
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, "setConnected", Boolean
-        .valueOf(isAllConnected));
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "setConnected", isAllConnected ?
+        Boolean.TRUE : Boolean.FALSE);
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "setRange", rangeMinMax);
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "setFormat", strFormat);
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, isDelete ? "deleteVector"
-        : isShowHide ? (isHidden ? "hideVector" : "showVector")
-            : "defineVector", monitorExpressions);
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, (isDelete ? "deleteVector"
+        : isOn ? "showVector" : isOff ? "hideVector" : "defineVector") 
+        + (isAll ? "_All" : ""), monitorExpressions);
     setStatusMeasuring("scripted", 1, "?");
   }
 
@@ -3763,8 +3746,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setParameterValue("debugScript", debugScript);
   }
 
-  void atomPicked(int atomIndex, int modifiers) {
-    pickingManager.atomPicked(atomIndex, modifiers);
+  void atomPicked(int atomIndex, Point3f ptClicked, int modifiers) {
+    pickingManager.atomPicked(atomIndex, ptClicked, modifiers);
   }
 
   void clearClickCount() {
@@ -3844,7 +3827,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getAtomInfo(int atomIndex) {
-    return modelSet.getAtomInfo(atomIndex, null);
+    //only for MeasurementTable and PickingManager
+    return (atomIndex >= 0 ? modelSet.getAtomInfo(atomIndex, null)
+        : (String) modelSet.getShapeProperty(JmolConstants.SHAPE_MEASURES, "pointInfo", -atomIndex));
   }
 
   public String getAtomInfoXYZ(int atomIndex, boolean useChimeFormat) {
@@ -6137,19 +6122,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis,
                                float degrees, float endDegrees, boolean isSpin,
-                               boolean isSelected) {
+                               BitSet bsSelected) {
     // Eval: rotate FIXED
     transformManager.rotateAxisAngleAtCenter(rotCenter, rotAxis, degrees,
-        endDegrees, isSpin, isSelected);
+        endDegrees, isSpin, bsSelected);
     refresh(-1, "rotateAxisAngleAtCenter");
   }
 
   void rotateAboutPointsInternal(Point3f point1, Point3f point2,
                                  float nDegrees, float endDegrees,
-                                 boolean isSpin, boolean isSelected) {
+                                 boolean isSpin, BitSet bsSelected) {
     // Eval: rotate INTERNAL
     transformManager.rotateAboutPointsInternal(point1, point2, nDegrees,
-        endDegrees, false, isSpin, isSelected);
+        endDegrees, false, isSpin, bsSelected);
     refresh(-1, "rotateAxisAboutPointsInternal");
   }
 
@@ -6181,7 +6166,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     }
     transformManager.rotateAboutPointsInternal(pt1, pt2,
-        global.pickingSpinRate, Float.MAX_VALUE, isClockwise, true, false);
+        global.pickingSpinRate, Float.MAX_VALUE, isClockwise, true, null);
   }
 
   public Vector3f getModelDipole() {
@@ -6326,16 +6311,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     refreshMeasures();
   }
 
-  void setRotateSelected(boolean TF) {
-    transformManager.setRotateSelected(TF);
-    refreshMeasures();
-  }
-
-  void setRotateMolecule(boolean TF) {
-    transformManager.setRotateMolecule(TF);
-    refreshMeasures();
-  }
-
   void setAllowRotateSelected(boolean TF) {
     global.allowRotateSelected = TF;
   }
@@ -6356,10 +6331,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     refreshMeasures();
   }
 
-  void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate,
-                      boolean fullMolecule, Point3f center, boolean isInternal) {
-    modelSet.rotateSelected(mNew, matrixRotate,
-        selectionManager.bsSelection, fullMolecule, center, isInternal);
+  void rotateAtoms(Matrix3f mNew, Matrix3f matrixRotate, boolean fullMolecule,
+                   Point3f center, boolean isInternal, BitSet bsAtoms) {
+    modelSet.rotateAtoms(mNew, matrixRotate, bsAtoms, fullMolecule, center,
+        isInternal);
     refreshMeasures();
   }
 

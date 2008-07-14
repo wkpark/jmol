@@ -394,7 +394,7 @@ class TransformManager11 extends TransformManager {
         break;
       }
       if (isAltKey) {
-        rotateXRadians(radiansPerDegree * -.2f * multiplier);
+        rotateXRadians(radiansPerDegree * -.2f * multiplier, null);
         navMode = NAV_MODE_NEWXYZ;
         break;
       }
@@ -408,7 +408,7 @@ class TransformManager11 extends TransformManager {
         break;
       }
       if (isAltKey) {
-        rotateXRadians(radiansPerDegree * .2f * multiplier);
+        rotateXRadians(radiansPerDegree * .2f * multiplier, null);
         navMode = NAV_MODE_NEWXYZ;
         break;
       }
@@ -421,7 +421,7 @@ class TransformManager11 extends TransformManager {
         navMode = NAV_MODE_NEWXY;
         break;
       }
-      rotateYRadians(radiansPerDegree * 3 * -.2f * multiplier);
+      rotateYRadians(radiansPerDegree * 3 * -.2f * multiplier, null);
       navMode = NAV_MODE_NEWXYZ;
       break;
     case KeyEvent.VK_RIGHT:
@@ -430,7 +430,7 @@ class TransformManager11 extends TransformManager {
         navMode = NAV_MODE_NEWXY;
         break;
       }
-      rotateYRadians(radiansPerDegree * 3 * .2f * multiplier);
+      rotateYRadians(radiansPerDegree * 3 * .2f * multiplier, null);
       navMode = NAV_MODE_NEWXYZ;
       break;
     default:

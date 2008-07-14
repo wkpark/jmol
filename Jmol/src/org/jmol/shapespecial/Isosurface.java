@@ -673,6 +673,8 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
 
   public void notifySurfaceGenerationCompleted() {
     setModelIndex();
+    if (sg == null)
+      System.out.println("isosurface -- OHOH");
     thisMesh.insideOut = sg.isInsideOut();
     thisMesh.initialize(sg.getPlane() != null ? JmolConstants.FULLYLIT
         : lighting);

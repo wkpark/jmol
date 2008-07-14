@@ -23,7 +23,7 @@
  */
 package org.jmol.modelset;
 
-import org.jmol.util.Logger;
+import org.jmol.util.Escape;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Measure;
 
@@ -44,18 +44,26 @@ public class Measurement {
   public ModelSet modelSet;
 
   protected int count;
-  protected int[] countPlusIndices;
-  protected Point3fi[] points = new Point3fi[4];
+  protected int[] countPlusIndices = new int[5];
+  protected Point3fi[] points;
   
   public int getCount() {
     return count;
   }
   
+  public void setCount(int count) {
+    this.count = countPlusIndices[0] = count;
+  }
+
   public int[] getCountPlusIndices() {
     return countPlusIndices;
   }
   
-  public int getIndex(int n) {
+  public Point3fi[] getPoints() {
+    return points;
+  }
+
+  public int getAtomIndex(int n) {
     return (n > 0 && n <= count ? countPlusIndices[n] : -1);
   }
   
@@ -72,6 +80,11 @@ public class Measurement {
   
   public String getString() {
     return strMeasurement;
+  }
+  
+  public String getStringDetail() {
+    return (count == 2 ? "Distance" : count == 3 ? "Angle" : "Torsion")
+        + getMeasurementScript(" - ") + " : " + value;  
   }
   
   private String strFormat;
@@ -147,15 +160,31 @@ public class Measurement {
     return pointArc;
   }
   
-  public Measurement(ModelSet modelSet, int[] atomCountPlusIndices, float value,
-      short colix, String strFormat, int index) {
+  public Measurement(ModelSet modelSet, int[] indices,
+      Point3fi[] points, float value, short colix, String strFormat, int index) {
     //value Float.isNaN ==> pending
+    this.index = index;
     this.modelSet = modelSet;
     this.viewer = modelSet.viewer;
     this.colix = colix;
     this.strFormat = strFormat;
-    setInfo(modelSet, atomCountPlusIndices, value, index);
+    count = (indices == null ? 0 : indices[0]);
+    if (count > 0) {
+      System.arraycopy(indices, 0, countPlusIndices, 0, count + 1);
+      isTrajectory = modelSet.isTrajectory(countPlusIndices);
+    }
+    this.value = (Float.isNaN(value) || isTrajectory ? getMeasurement() : value);
+    this.points = (points == null ? new Point3fi[4] : points);
+    formatMeasurement();
   }   
+
+  public Measurement(ModelSet modelSet, int[] indices, Point3fi[] points) {
+    // temporary holding structure only; -- no viewer
+    countPlusIndices = indices;
+    count = indices[0];
+    this.points = (points == null ? new Point3fi[4] : points);
+    this.modelSet = modelSet;
+  }
 
   public void refresh() {
     value = getMeasurement();
@@ -165,35 +194,19 @@ public class Measurement {
   
   /**
    * Used by MouseManager and Picking Manager to build the script
-   * @param countPlusIndexes
+   * @param sep
    * @return measure (atomIndex=1) (atomIndex=2)....
    */
-  public static String getMeasurementScript(int[] countPlusIndexes) {
-    String str = "measure";
-    int nAtoms = countPlusIndexes[0];
-    for (int i = 0; i < nAtoms; i++) {
-      str += " (atomIndex=" + countPlusIndexes[i + 1] + ")"; 
+  public String getMeasurementScript(String sep) {
+    String str = "";
+    for (int i = 1; i <= count; i++) {
+      int atomIndex = countPlusIndices[i];
+      str += (i > 1 ? sep : " ") + (atomIndex >= 0 ? "{atomIndex=" + countPlusIndices[i] + "}"
+           : Escape.escape(getAtom(i))); 
     }
     return str;  
   }
   
-  private void setInfo(ModelSet modelSet, int[] atomCountPlusIndices, float value, int index) {
-    if (atomCountPlusIndices == null)
-      count = 0;
-    else {
-      count = atomCountPlusIndices[0];
-      countPlusIndices = new int[count + 1];
-      System.arraycopy(atomCountPlusIndices, 0, countPlusIndices, 0, count+1);
-    }
-    isTrajectory = modelSet.isTrajectory(countPlusIndices);    
-    if (countPlusIndices != null && (Float.isNaN(value) || isTrajectory)) {
-      value = getMeasurement();
-    }
-    this.value = value;
-    this.index = index;
-    formatMeasurement();
-  }
-
   public void formatMeasurement(String strFormat, boolean useDefault) {
     if (strFormat != null && strFormat.length() == 0)
       strFormat = null;
@@ -205,14 +218,12 @@ public class Measurement {
 
   protected void formatMeasurement() {
     strMeasurement = null;
-    if (Float.isNaN(value) || count == 0) {
-      strMeasurement = null;
+    if (Float.isNaN(value) || count == 0)
       return;
-    }
     switch (count) {
     case 2:
       strMeasurement = formatDistance(value);
-      break;
+      return;
     case 3:
       if (value == 180) {
         aa = null;
@@ -229,12 +240,10 @@ public class Measurement {
         vectorBA.scale(0.5f);
         pointArc = new Point3f(vectorBA);
       }
+      // fall through
     case 4:
       strMeasurement = formatAngle(value);
-      break;
-    default:
-      Logger.error("Invalid count to measurement shape:" + count);
-      throw new IndexOutOfBoundsException();
+      return;
     }
   }
   
@@ -290,70 +299,92 @@ public class Measurement {
     return label;
   }
 
-  public boolean sameAs(int[] atomCountPlusIndices) {
-    if (count != atomCountPlusIndices[0])
+  public boolean sameAs(int[] indices, Point3fi[] points) {
+    if (count != indices[0]) 
       return false;
-    if (count == 2)
-      return ((atomCountPlusIndices[1] == this.countPlusIndices[1] &&
-               atomCountPlusIndices[2] == this.countPlusIndices[2]) ||
-              (atomCountPlusIndices[1] == this.countPlusIndices[2] &&
-               atomCountPlusIndices[2] == this.countPlusIndices[1]));
-    if (count == 3)
-      return (atomCountPlusIndices[2] == this.countPlusIndices[2] &&
-              ((atomCountPlusIndices[1] == this.countPlusIndices[1] &&
-                atomCountPlusIndices[3] == this.countPlusIndices[3]) ||
-               (atomCountPlusIndices[1] == this.countPlusIndices[3] &&
-                atomCountPlusIndices[3] == this.countPlusIndices[1])));    
-    return ((atomCountPlusIndices[1] == this.countPlusIndices[1] &&
-             atomCountPlusIndices[2] == this.countPlusIndices[2] &&
-             atomCountPlusIndices[3] == this.countPlusIndices[3] &&
-             atomCountPlusIndices[4] == this.countPlusIndices[4]) ||
-            (atomCountPlusIndices[1] == this.countPlusIndices[4] &&
-             atomCountPlusIndices[2] == this.countPlusIndices[3] &&
-             atomCountPlusIndices[3] == this.countPlusIndices[2] &&
-             atomCountPlusIndices[4] == this.countPlusIndices[1]));
+    boolean isSame = true;
+    for (int i = 1; i <= count && isSame; i++)
+      isSame = (countPlusIndices[i] == indices[i]);
+    if (isSame)
+      for (int i = 0; i < count && isSame; i++) {
+        if (points[i] != null)
+          isSame = (this.points[i].distance(points[i]) < 0.01); 
+      }
+    if (isSame)
+      return true;
+    switch (count) {
+    default:
+      return true;
+    case 2:
+      return sameAs(indices, points, 1, 2) 
+          && sameAs(indices, points, 2, 1);
+    case 3:
+      return sameAs(indices, points, 1, 3)
+          && sameAs(indices, points, 2, 2)
+          && sameAs(indices, points, 3, 1);
+    case 4:  
+      return  sameAs(indices, points, 1, 4)
+          && sameAs(indices, points, 2, 3) 
+          && sameAs(indices, points, 3, 2)
+          && sameAs(indices, points, 4, 1);
+    } 
+  }
+
+  private boolean sameAs(int[] atoms, Point3fi[] points, int i, int j) {
+    int ipt = countPlusIndices[i];
+    int jpt = atoms[j];
+    if (jpt < 0 && points[-2-jpt] == null)
+      System.out.println("measurement -- ohoh");
+    return (ipt >= 0 || jpt >= 0 ? ipt == jpt 
+        : this.points[-2 - ipt].distance(points[-2 - jpt]) < 0.01);
+  }
+
+  public boolean sameAs(int i, int j) {
+    return sameAs(countPlusIndices, points, i, j);
   }
 
   public Vector toVector() {
     Vector V = new Vector();
-    for (int i = 0; i < count + 1; i++ ) V.addElement(new Integer(countPlusIndices[i]));
+    for (int i = 0; i < count + 1; i++ )
+      V.addElement(getLabel(i, false));
     V.addElement(strMeasurement);
     return V;  
   }
   
-  protected float getMeasurement() {
-    float value = Float.NaN;
+  public float getMeasurement() {
     if (countPlusIndices == null)
-      return value;
-    int count = countPlusIndices[0];
+      return Float.NaN;
     if (count < 2)
-      return value;
+      return Float.NaN;
     for (int i = count; --i >= 0;)
       if (countPlusIndices[i + 1] == -1) {
-        return value;
+        return Float.NaN;
       }
     Point3fi ptA = getAtom(1);
     Point3fi ptB = getAtom(2);
     Point3fi ptC, ptD;
     switch (count) {
     case 2:
-      value = ptA.distance(ptB);
-      break;
+      return ptA.distance(ptB);
     case 3:
       ptC = getAtom(3);
-      value = Measure.computeAngle(ptA, ptB, ptC, true);
-      break;
+      return Measure.computeAngle(ptA, ptB, ptC, true);
     case 4:
       ptC = getAtom(3);
       ptD = getAtom(4);
-      value = Measure.computeTorsion(ptA, ptB, ptC, ptD, true);
-      break;
+      return Measure.computeTorsion(ptA, ptB, ptC, ptD, true);
     default:
-      Logger.error("Invalid count in measurement calculation:" + count);
-      throw new IndexOutOfBoundsException();
+      return Float.NaN;
     }
-    return value;
   }
+
+  public String getLabel(int i, boolean asBitSet) {
+    int atomIndex = countPlusIndices[i];
+    return (atomIndex < 0 ? Escape.escape(getAtom(i))
+        : asBitSet ? "({" + atomIndex + "})"
+        : modelSet.atoms[atomIndex].getInfo());
+  }
+
 }
 
 

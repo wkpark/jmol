@@ -718,42 +718,29 @@ abstract public class BondCollection extends AtomCollection {
       }
   }
 
-  protected BitSet getAtomBits(int tokType) {
+  protected BitSet getAtomBits(int tokType, Object specInfo) {
+    BitSet bs;
     switch (tokType) {
     case Token.isaromatic:
-      return getAromaticSet();
-    }
-    return super.getAtomBits(tokType);
-  }
-
-  private BitSet getAromaticSet() {
-    BitSet bs = new BitSet();
-    for (int i = bondCount; --i >= 0;)
-      if (bonds[i].isAromatic()) {
+      bs = new BitSet();
+      for (int i = bondCount; --i >= 0;)
+        if (bonds[i].isAromatic()) {
+          bs.set(bonds[i].atom1.atomIndex);
+          bs.set(bonds[i].atom2.atomIndex);
+        }
+      return bs;
+    case Token.bonds:
+      bs = new BitSet();
+      BitSet bsBonds = (BitSet) specInfo;
+      for (int i = bondCount; --i >= 0;) {
+        if (!bsBonds.get(i))
+          continue;
         bs.set(bonds[i].atom1.atomIndex);
         bs.set(bonds[i].atom2.atomIndex);
       }
-    return bs;
-  }
-
-  public BitSet getAtomsWithin(int tokType, BitSet bs) {
-    switch (tokType) {
-    case Token.bonds:
-      return getAtomBitsetFromBonds(bs);
+      return bs;
     }
-    return super.getAtomsWithin(tokType, bs);
+    return super.getAtomBits(tokType, specInfo);
   }
-  
-  BitSet getAtomBitsetFromBonds(BitSet bsBonds) {
-    BitSet bsAtoms = new BitSet();
-    for (int i = bondCount; --i >= 0;) {
-      if (!bsBonds.get(i))
-        continue;
-      bsAtoms.set(bonds[i].atom1.atomIndex);
-      bsAtoms.set(bonds[i].atom2.atomIndex);
-    }
-    return bsAtoms;
-  }
-
 }
 

@@ -1282,29 +1282,175 @@ abstract public class AtomCollection {
   /**
    * general unqualified lookup of atom set type
    * @param tokType
+   * @param specInfo
    * @return BitSet; or null if we mess up the type
    */
-  protected BitSet getAtomBits(int tokType) {
+  protected BitSet getAtomBits(int tokType, Object specInfo) {
+    BitSet bs = new BitSet();
+    BitSet bsInfo, bsTemp;
+    int iSpec;
     switch (tokType) {
+    case Token.atomno:
+      iSpec = ((Integer) specInfo).intValue();
+      for (int i = atomCount; --i >= 0;) {
+        if (atoms[i].getAtomNumber() == iSpec)
+          bs.set(i);
+      }
+      return bs;
+    case Token.spec_resid:
+      iSpec = ((Integer) specInfo).intValue();
+      for (int i = atomCount; --i >= 0;)
+        if (atoms[i].getGroupID() == iSpec)
+          bs.set(i);
+      return bs;
+    case Token.spec_chain:
+      return getChainBits((char) ((Integer)specInfo).intValue());
+    case Token.spec_seqcode:
+      return getSeqcodeBits(((Integer) specInfo).intValue(), true);
     case Token.hetero:
-      return getHeteroSet();
+      for (int i = atomCount; --i >= 0;)
+        if (atoms[i].isHetero())
+          bs.set(i);
+      return bs;
     case Token.hydrogen:
-      return getHydrogenSet();
+      for (int i = atomCount; --i >= 0;) {
+        if (atoms[i].getElementNumber() == 1)
+          bs.set(i);
+      }
+      return bs;
     case Token.protein:
-      return getProteinSet();
+      for (int i = atomCount; --i >= 0;)
+        if (atoms[i].isProtein())
+          bs.set(i);
+      return bs;
     case Token.carbohydrate:
-      return getCarbohydrateSet();
+      for (int i = atomCount; --i >= 0;)
+        if (atoms[i].isCarbohydrate())
+          bs.set(i);
+      return bs;
     case Token.nucleic:
-      return getNucleicSet();
+      for (int i = atomCount; --i >= 0;)
+        if (atoms[i].isNucleic())
+          bs.set(i);
+      return bs;
     case Token.dna:
-      return getDnaSet();
+      for (int i = atomCount; --i >= 0;)
+        if (atoms[i].isDna())
+          bs.set(i);
+      return bs;
     case Token.rna:
-      return getRnaSet();
+      for (int i = atomCount; --i >= 0;)
+        if (atoms[i].isRna())
+          bs.set(i);
+      return bs;
     case Token.purine:
-      return getPurineSet();
+      for (int i = atomCount; --i >= 0;)
+        if (atoms[i].isPurine())
+          bs.set(i);
     case Token.pyrimidine:
-      return getPyrimidineSet();
+      for (int i = atomCount; --i >= 0;)
+        if (atoms[i].isPyrimidine())
+          bs.set(i);
+      return bs;
+    case Token.cell:
+      int[] info = (int[]) specInfo;
+      Point3f cell = new Point3f(info[0] / 1000f, info[1] / 1000f, info[2] / 1000f);
+      for (int i = atomCount; --i >= 0;)
+        if (atoms[i].isInLatticeCell(cell))
+          bs.set(i);
+      return bs;
+    case Token.group:
+      bsInfo = (BitSet) specInfo;
+      Group groupLast = null;
+      for (int i = atomCount; --i >= 0;) {
+        if (!bsInfo.get(i))
+          continue;
+        Atom atom = atoms[i];
+        Group group = atom.getGroup();
+        if (group != groupLast) {
+          group.selectAtoms(bs);
+          groupLast = group;
+        }
+      }
+      return bs;
+    case Token.chain:
+      bsInfo = (BitSet) specInfo;
+      Chain chainLast = null;
+      for (int i = atomCount; --i >= 0;) {
+        if (!bsInfo.get(i))
+          continue;
+        Chain chain = atoms[i].getChain();
+        if (chain != chainLast) {
+          for (int j = atomCount; --j >= 0;)
+            if (atoms[j].getChain() == chain)
+              bs.set(j);
+          chainLast = chain;
+        }
+      }
+      return bs;
+    case Token.structure:
+      bsInfo = (BitSet) specInfo;
+      Object structureLast = null;
+      for (int i = atomCount; --i >= 0;) {
+        if (!bsInfo.get(i))
+          continue;
+        Object structure = atoms[i].getGroup().getStructure();
+        if (structure != null && structure != structureLast) {
+          for (int j = atomCount; --j >= 0;)
+            if (atoms[j].getGroup().getStructure() == structure)
+              bs.set(j);
+          structureLast = structure;
+        }
+      }
+      return bs;
+    case Token.model:
+      bsInfo = (BitSet) specInfo;
+      bsTemp = new BitSet();
+      for (int i = atomCount; --i >= 0;)
+        if (bsInfo.get(i))
+          bsTemp.set(atoms[i].modelIndex);
+      for (int i = atomCount; --i >= 0;)
+        if (bsTemp.get(atoms[i].modelIndex))
+          bs.set(i);
+      return bs;
+    case Token.element:
+      bsInfo = (BitSet) specInfo;
+      bsTemp = new BitSet();
+      for (int i = atomCount; --i >= 0;)
+        if (bsInfo.get(i))
+          bsTemp.set(getElementNumber(i));
+      for (int i = atomCount; --i >= 0;)
+        if (bsTemp.get(getElementNumber(i)))
+          bs.set(i);
+      return bs;
+    case Token.site:
+      bsInfo = (BitSet) specInfo;
+      bsTemp = new BitSet();
+      for (int i = atomCount; --i >= 0;)
+        if (bsInfo.get(i))
+          bsTemp.set(atoms[i].atomSite);
+      for (int i = atomCount; --i >= 0;)
+        if (bsTemp.get(atoms[i].atomSite))
+          bs.set(i);
+      return bs;
+    case Token.identifier:
+      return getIdentifierOrNull((String) specInfo);
+    case Token.spec_atom:
+      String atomSpec = ((String) specInfo).toUpperCase();
+      for (int i = atomCount; --i >= 0;)
+        if (atoms[i].isAtomNameMatch(atomSpec))
+          bs.set(i);
+      return bs;
+    case Token.spec_alternate:
+      String spec = (String) specInfo;
+      for (int i = atomCount; --i >= 0;)
+        if (atoms[i].isAlternateLocationMatch(spec))
+          bs.set(i);
+      return bs;
+    case Token.spec_name_pattern:
+      return getSpecName((String) specInfo);
     }
+    Logger.error("MISSING getAtomBits entry for " + Token.nameOf(tokType));
     return null;
   }
 
@@ -1316,114 +1462,7 @@ abstract public class AtomCollection {
     return bs;
   }
 
-  private BitSet getHeteroSet() {
-    BitSet bs = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isHetero())
-        bs.set(i);
-    return bs;
-  }
-
-  private BitSet getHydrogenSet() {
-    BitSet bs = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].getElementNumber() == 1)
-        bs.set(i);
-    }
-    return bs;
-  }
-
-  private BitSet getProteinSet() {
-    BitSet bs = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isProtein())
-        bs.set(i);
-    return bs;
-  }
-
-  private BitSet getCarbohydrateSet() {
-    BitSet bs = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isCarbohydrate())
-        bs.set(i);
-    return bs;
-  }
-
-  private BitSet getNucleicSet() {
-    BitSet bs = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isNucleic())
-        bs.set(i);
-    return bs;
-  }
-
-  private BitSet getDnaSet() {
-    BitSet bs = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isDna())
-        bs.set(i);
-    return bs;
-  }
-
-  private BitSet getRnaSet() {
-    BitSet bs = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isRna())
-        bs.set(i);
-    return bs;
-  }
-
-  private BitSet getPurineSet() {
-    BitSet bs = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isPurine())
-        bs.set(i);
-    return bs;
-  }
-
-  private BitSet getPyrimidineSet() {
-    BitSet bs = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isPyrimidine())
-        bs.set(i);
-    return bs;
-  }
-
-  /**
-   * general lookup for String type
-   * @param tokType
-   * @param specInfo
-   * @return BitSet or null in certain cases
-   */
-  public BitSet getAtomBits(int tokType, String specInfo) {
-    switch (tokType) {
-    case Token.identifier:
-      return getIdentifierOrNull(specInfo);
-    case Token.spec_atom:
-      return getSpecAtom(specInfo);
-    case Token.spec_name_pattern:
-      return getSpecName(specInfo);
-    case Token.spec_alternate:
-      return getSpecAlternate(specInfo);
-    }
-    return null;
-  }
-
-  protected BitSet getAtomBits(int tokType, int specInfo) {
-    switch (tokType) {
-    case Token.atomno:
-      return getSpecAtomNumber(specInfo);
-    case Token.spec_resid:
-      return getSpecResid(specInfo);
-    case Token.spec_chain:
-      return getSpecChain((char) specInfo);
-    case Token.spec_seqcode:
-      return getSpecSeqcode(specInfo, true);
-    }
-    return null;
-  }
-
-  /**
+   /**
    * overhauled by RMH Nov 1, 2006.
    * 
    * @param identifier
@@ -1480,10 +1519,10 @@ abstract public class AtomCollection {
       if (++pt < len)
         insertionCode = identifier.charAt(pt);
     int seqcode = Group.getSeqcode(seqNumber, insertionCode);
-    BitSet bsInsert = getSpecSeqcode(seqcode, false);
+    BitSet bsInsert = getSeqcodeBits(seqcode, false);
     if (bsInsert == null) {
       if (insertionCode != ' ')
-        bsInsert = getSpecSeqcode(Character.toUpperCase(identifier.charAt(pt)),
+        bsInsert = getSeqcodeBits(Character.toUpperCase(identifier.charAt(pt)),
             false);
       if (bsInsert == null)
         return null;
@@ -1496,24 +1535,13 @@ abstract public class AtomCollection {
     // look for a chain spec -- no colon
     //
     char chainID = identifier.charAt(pt++);
-    bs.and(getSpecChain(chainID));
+    bs.and(getChainBits(chainID));
     if (pt == len)
       return bs;
     //
     // not applicable
     //
     return null;
-  }
-
-  private BitSet getSpecAtom(String atomSpec) {
-    BitSet bs = new BitSet();
-    atomSpec = atomSpec.toUpperCase();
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].isAtomNameMatch(atomSpec)) {
-        bs.set(i);
-      }
-    }
-    return bs;
   }
 
   private BitSet getSpecName(String name) {
@@ -1540,25 +1568,7 @@ abstract public class AtomCollection {
     return bs;
   }
 
-  protected BitSet getSpecAlternate(String alternateSpec) {
-    BitSet bs = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].isAlternateLocationMatch(alternateSpec))
-        bs.set(i);
-    }
-    return bs;
-  }
-
-  protected BitSet getSpecResid(int resid) {
-    BitSet bs = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].getGroupID() == resid)
-        bs.set(i);
-    }
-    return bs;
-  }
-
-  protected BitSet getSpecSeqcode(int seqcode, boolean returnEmpty) {
+  protected BitSet getSeqcodeBits(int seqcode, boolean returnEmpty) {
     BitSet bs = new BitSet();
     int seqNum = Group.getSequenceNumber(seqcode);
     boolean haveSeqNumber = (seqNum != Integer.MAX_VALUE);
@@ -1590,7 +1600,7 @@ abstract public class AtomCollection {
     return (!isEmpty || returnEmpty ? bs : null);
   }
 
-  protected BitSet getSpecChain(char chain) {
+  protected BitSet getChainBits(char chain) {
     boolean caseSensitive = viewer.getChainCaseSensitive();
     if (!caseSensitive)
       chain = Character.toUpperCase(chain);
@@ -1602,25 +1612,6 @@ abstract public class AtomCollection {
       if (chain == ch)
         bs.set(i);
     }
-    return bs;
-  }
-
-  protected BitSet getSpecAtomNumber(int atomno) {
-    //for Measures
-    BitSet bs = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].getAtomNumber() == atomno)
-        bs.set(i);
-    }
-    return bs;
-  }
-
-  protected BitSet getCellSet(int ix, int jy, int kz) {
-    BitSet bs = new BitSet();
-    Point3f cell = new Point3f(ix / 1000f, jy / 1000f, kz / 1000f);
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isInLatticeCell(cell))
-        bs.set(i);
     return bs;
   }
 
@@ -1660,113 +1651,6 @@ abstract public class AtomCollection {
       if (atoms[i].isClickable())
         bs.set(i);
     return bs;
-  }
-
-  public BitSet getAtomsWithin(int tokType, BitSet bs) {
-    switch (tokType) {
-    case Token.group:
-      return withinGroup(bs);
-    case Token.chain:
-      return withinChain(bs);
-    case Token.structure:
-      return withinStructure(bs);
-    case Token.model:
-      return withinModel(bs);
-    case Token.element:
-      return withinElement(bs);
-    case Token.site:
-      return withinSite(bs);
-    }
-    return null;
-  }
-
-  private BitSet withinStructure(BitSet bs) {
-    Object structureLast = null;
-    BitSet bsResult = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (!bs.get(i))
-        continue;
-      Object structure = atoms[i].getGroup().getStructure();
-      if (structure != null && structure != structureLast) {
-        for (int j = atomCount; --j >= 0;)
-          if (atoms[j].getGroup().getStructure() == structure)
-            bsResult.set(j);
-        structureLast = structure;
-      }
-    }
-    return bsResult;
-  }
-
-  private BitSet withinGroup(BitSet bs) {
-    //Logger.debug("withinGroup");
-    Group groupLast = null;
-    BitSet bsResult = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (!bs.get(i))
-        continue;
-      Atom atom = atoms[i];
-      Group group = atom.getGroup();
-      if (group != groupLast) {
-        group.selectAtoms(bsResult);
-        groupLast = group;
-      }
-    }
-    return bsResult;
-  }
-
-  private BitSet withinChain(BitSet bs) {
-    Chain chainLast = null;
-    BitSet bsResult = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (!bs.get(i))
-        continue;
-      Chain chain = atoms[i].getChain();
-      if (chain != chainLast) {
-        for (int j = atomCount; --j >= 0;)
-          if (atoms[j].getChain() == chain)
-            bsResult.set(j);
-        chainLast = chain;
-      }
-    }
-    return bsResult;
-  }
-
-  private BitSet withinModel(BitSet bs) {
-    BitSet bsResult = new BitSet();
-    BitSet bsThis = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      if (bs.get(i))
-        bsThis.set(atoms[i].modelIndex);
-    for (int i = atomCount; --i >= 0;)
-      if (bsThis.get(atoms[i].modelIndex))
-        bsResult.set(i);
-    return bsResult;
-  }
-
-  private BitSet withinSite(BitSet bs) {
-    //Logger.debug("withinGroup");
-    BitSet bsResult = new BitSet();
-    BitSet bsThis = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      if (bs.get(i))
-        bsThis.set(atoms[i].atomSite);
-    for (int i = atomCount; --i >= 0;)
-      if (bsThis.get(atoms[i].atomSite))
-        bsResult.set(i);
-    return bsResult;
-  }
-
-  private BitSet withinElement(BitSet bs) {
-    //Logger.debug("withinGroup");
-    BitSet bsResult = new BitSet();
-    BitSet bsThis = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      if (bs.get(i))
-        bsThis.set(getElementNumber(i));
-    for (int i = atomCount; --i >= 0;)
-      if (bsThis.get(getElementNumber(i)))
-        bsResult.set(i);
-    return bsResult;
   }
 
   public void deleteAtoms(int firstAtomIndex, int nAtoms, BitSet bs) {

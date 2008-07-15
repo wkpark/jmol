@@ -4977,20 +4977,21 @@ class Eval { //implements Runnable {
       return;
     if (degrees == Float.MIN_VALUE)
       degrees = 10;
-    if (nPoints == 0)
-      points[0] = new Point3f();
     if (isSelected && bsAtoms == null)
         bsAtoms = viewer.getSelectionSet();
     if (nPoints < 2) {
+      
       if (!isMolecular) {
         // fixed-frame rotation
         // rotate x 10  # Chime-like
         // rotate axisangle {0 1 0} 10
         // rotate x 10 (atoms) # point-centered
         // rotate x 10 $object # point-centered
-        viewer.rotateAxisAngleAtCenter(nPoints == 1 ? new Point3f(points[0]) : null, 
+        viewer.rotateAxisAngleAtCenter(points[0], 
             rotAxis, degrees, endDegrees, isSpin, bsAtoms);
         return;
+      } else if (nPoints == 0) {
+        points[0] = new Point3f(); 
       }
       // rotate MOLECULAR
       // rotate MOLECULAR (atom1)
@@ -5001,7 +5002,7 @@ class Eval { //implements Runnable {
     }
     if (points[0].distance(points[1]) == 0) {
       points[1] = new Point3f(points[0]);
-      points[1].y += 1.0;
+      points[1].y -= 1.0;
     }
     viewer.rotateAboutPointsInternal(points[0], points[1], degrees, endDegrees,
         isSpin, bsAtoms);

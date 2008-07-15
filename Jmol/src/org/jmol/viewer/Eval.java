@@ -4988,8 +4988,8 @@ class Eval { //implements Runnable {
         // rotate axisangle {0 1 0} 10
         // rotate x 10 (atoms) # point-centered
         // rotate x 10 $object # point-centered
-        viewer.rotateAxisAngleAtCenter(points[0], rotAxis, degrees, endDegrees,
-            isSpin, bsAtoms);
+        viewer.rotateAxisAngleAtCenter(nPoints == 1 ? new Point3f(points[0]) : null, 
+            rotAxis, degrees, endDegrees, isSpin, bsAtoms);
         return;
       }
       // rotate MOLECULAR

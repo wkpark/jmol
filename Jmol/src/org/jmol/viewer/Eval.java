@@ -4989,9 +4989,9 @@ class Eval { //implements Runnable {
         viewer.rotateAxisAngleAtCenter(points[0], 
             rotAxis, degrees, endDegrees, isSpin, bsAtoms);
         return;
-      } else if (nPoints == 0) {
-        points[0] = new Point3f(); 
       }
+      if (nPoints == 0)
+        points[0] = new Point3f(); 
       // rotate MOLECULAR
       // rotate MOLECULAR (atom1)
       // rotate MOLECULAR x 10 (atom1)

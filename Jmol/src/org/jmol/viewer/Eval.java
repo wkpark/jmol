@@ -4980,7 +4980,6 @@ class Eval { //implements Runnable {
     if (isSelected && bsAtoms == null)
         bsAtoms = viewer.getSelectionSet();
     if (nPoints < 2) {
-      
       if (!isMolecular) {
         // fixed-frame rotation
         // rotate x 10  # Chime-like

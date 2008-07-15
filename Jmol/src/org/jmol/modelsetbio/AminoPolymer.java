@@ -49,8 +49,6 @@ public class AminoPolymer extends AlphaPolymer {
   private boolean hasOAtoms;
   boolean hasWingPoints() { return hasOAtoms; }
 
-  //boolean hbondsAlreadyCalculated;
-
   //boolean debugHbonds;
 
   public void calcHydrogenBonds(BitSet bsA, BitSet bsB) {

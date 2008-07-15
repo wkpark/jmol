@@ -1698,7 +1698,6 @@ class Eval { //implements Runnable {
           error(ERROR_unrecognizedExpression);
       }
     }
-    Logger.setActiveLevel(Logger.LEVEL_DEBUG, true);
     expressionResult = rpn.getResult(allowUnderflow, null);
     if (expressionResult == null) {
       if (allowUnderflow)
@@ -4462,8 +4461,13 @@ class Eval { //implements Runnable {
     String type = optParameterAsString(pt).toLowerCase();
     switch (datatype) {
     case JmolConstants.JMOL_DATA_RAMACHANDRAN:
+      if (type.equalsIgnoreCase("draw")) {
+        isDraw = true;
+        type = optParameterAsString(--pt).toLowerCase();
+      }
       isRamachandranRelative = (pt > pt0 && type.startsWith("r"));
-      type = "ramachandran" + (isRamachandranRelative ? " r" : "");
+      type = "ramachandran" + (isRamachandranRelative ? " r" : "") 
+        + (isDraw ? " draw" : "");
       break;
     case JmolConstants.JMOL_DATA_QUATERNION:
       isQuaternion = true;
@@ -4493,7 +4497,7 @@ class Eval { //implements Runnable {
     if (modelIndex < 0)
       error(ERROR_multipleModelsNotOK, type);
     modelIndex = viewer.getJmolDataSourceFrame(modelIndex);
-    if (isQuaternion && isDraw) {
+    if (isDraw) {
       runScript(viewer.getPdbData(modelIndex, type));
       return;
     }    
@@ -8691,9 +8695,19 @@ class Eval { //implements Runnable {
       type = "QUAT";
       break;
     case Token.ramachandran:
-      type = "RAMA";
-      type2 = "ramachandran";
       pt++;
+      type2 = Token.sValue(tokenAt(pt, args)).toLowerCase();
+      if (Parser.isOneOf(type2, "r"))
+        pt++;
+      else
+        type2 = "";
+      type = Token.sValue(tokenAt(pt, args)).toLowerCase();
+      if (type.equals("draw")) {
+        type2 += " draw";
+        pt++;
+      }
+      type2 = "ramachandran " + type2;
+      type = "RAMA";
       break;
     case Token.function:
       type = "FUNCS";
@@ -9509,6 +9523,10 @@ class Eval { //implements Runnable {
       dataFrame(JmolConstants.JMOL_DATA_QUATERNION);
       return;
     }
+    if (tokAt(1) == Token.ramachandran) {
+      dataFrame(JmolConstants.JMOL_DATA_RAMACHANDRAN);
+      return;
+    }    
     boolean havePoints = false;
     boolean isInitialized = false;
     boolean isSavedState = false;
@@ -9620,6 +9638,10 @@ class Eval { //implements Runnable {
         }
         if (str.equalsIgnoreCase("ARROW")) {
           propertyName = "arrow";
+          break;
+        }
+        if (str.equalsIgnoreCase("ARC")) {
+          propertyName = "arc";
           break;
         }
         if (str.equalsIgnoreCase("CIRCLE")) {

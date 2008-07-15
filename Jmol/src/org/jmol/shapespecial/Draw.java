@@ -75,6 +75,7 @@ public class Draw extends MeshCollection {
   private float newScale;
   private float length;
   private boolean isCurve;
+  private boolean isArc;
   private boolean isArrow;
   private boolean isVector;
   private boolean isCircle;
@@ -112,7 +113,7 @@ public class Draw extends MeshCollection {
       colix = Graphics3D.ORANGE;
       newScale = 0;
       isFixed = isReversed = isRotated45 = isCrossed = noHead = false;
-      isCurve = isArrow = isPlane = isCircle = isCylinder = false;
+      isCurve = isArc = isArrow = isPlane = isCircle = isCylinder = false;
       isVertices = isPerpendicular = isVector = false;
       isVisible = isValid = true;
       length = Float.MAX_VALUE;
@@ -177,6 +178,16 @@ public class Draw extends MeshCollection {
 
     if ("arrow" == propertyName) {
       isArrow = true;
+      return;
+    }
+
+    if ("arc" == propertyName) {
+      isCurve = true;
+      isArc = true;
+      if (isArrow) {
+        isArrow = false;
+        isVector = true;
+      }
       return;
     }
 
@@ -600,12 +611,22 @@ public class Draw extends MeshCollection {
   private void setPolygon(int nPoly) {
     int nVertices = nPoints; 
     int drawType = JmolConstants.DRAW_POINT;
+    if (isArc) {
+      if (nVertices == 4) {
+        drawType = JmolConstants.DRAW_ARC;
+      } else {
+        isArc = false;
+        isVector = false;
+        isCurve = false;
+        isArrow = true;
+      }
+    }
     if (isCircle)
       drawType = (isPlane ? JmolConstants.DRAW_CIRCULARPLANE
           : JmolConstants.DRAW_CIRCLE);
-    else if ((isCurve || isArrow) && nVertices >= 2)
+    else if ((isCurve || isArrow) && nVertices >= 2 && !isArc)
       drawType = (isCurve ? JmolConstants.DRAW_CURVE : JmolConstants.DRAW_ARROW);
-    if (isVector) {
+    if (isVector && !isArc) {
       if (nVertices > 2)
         nVertices = 2;
       else if (plane == null && nVertices != 2)
@@ -764,7 +785,7 @@ public class Draw extends MeshCollection {
       return;
     float f = newScale / mesh.scale;
     mesh.scale = newScale;
-    if (mesh.haveXyPoints)
+    if (mesh.haveXyPoints || mesh.drawType == JmolConstants.DRAW_ARC)
       return; // done in renderer
     Vector3f diff = new Vector3f();
     int iptlast = -1;
@@ -1029,6 +1050,9 @@ public class Draw extends MeshCollection {
     int nVertices = mesh.drawVertexCount > 0 ? mesh.drawVertexCount 
       : mesh.drawVertexCounts[iModel >= 0 ? iModel : 0];
     switch (mesh.drawTypes == null ? mesh.drawType : mesh.drawTypes[iModel]) {
+    case JmolConstants.DRAW_ARC:
+      str.append(mesh.isVector ? " ARROW ARC" : " ARC");
+      break;
     case JmolConstants.DRAW_ARROW:
       str.append(mesh.isVector ? " VECTOR" : " ARROW");
       break;
@@ -1086,11 +1110,12 @@ public class Draw extends MeshCollection {
     try {
       if (iModel >= mesh.polygonIndexes.length)
         iModel = 0; // arrows and curves may not have multiple model representations
+      boolean adjustPt = (mesh.isVector && mesh.drawType != JmolConstants.DRAW_ARC);
       for (int i = 0; i < nVertices; i++) {
         Point3f pt = mesh.vertices[mesh.polygonIndexes[iModel][i]];
         if (pt.z == Float.MAX_VALUE || pt.z == -Float.MAX_VALUE) {
           str += (i == 0 ? " " : " ,") + "[" + (int) pt.x + " " + (int) pt.y + (pt.z < 0 ? " %]" : "]");
-        } else if (mesh.isVector && i == 1){
+        } else if (adjustPt && i == 1){
           Point3f pt1 = new Point3f(pt);
           pt1.sub(mesh.vertices[mesh.polygonIndexes[iModel][0]]);
           str += " " + Escape.escape(pt1);

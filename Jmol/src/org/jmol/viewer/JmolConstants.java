@@ -94,6 +94,7 @@ final public class JmolConstants {
   public final static int DRAW_CIRCLE = 16;
   public final static int DRAW_CURVE = 17;
   public static final int DRAW_CIRCULARPLANE = 18;
+  public final static int DRAW_ARC = 19;
   
   public static String getDrawTypeName(int drawType) {
     switch (drawType) {
@@ -111,6 +112,8 @@ final public class JmolConstants {
       return "plane";
     case JmolConstants.DRAW_ARROW:
       return "arrow";
+    case JmolConstants.DRAW_ARC:
+      return "arc";
     case JmolConstants.DRAW_CIRCLE:
     case JmolConstants.DRAW_CIRCULARPLANE:
       return "circle";

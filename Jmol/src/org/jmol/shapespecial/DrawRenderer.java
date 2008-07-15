@@ -24,6 +24,8 @@
 package org.jmol.shapespecial;
 
 
+import javax.vecmath.AxisAngle4f;
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -35,6 +37,13 @@ public class DrawRenderer extends MeshRenderer {
 
   private int drawType;
   private DrawMesh dmesh;
+  
+  private Point3f[] controlHermites;
+  private final Point3f vpt0 = new Point3f();
+  private final Point3f vpt1 = new Point3f();
+  private final Point3f vpt2 = new Point3f();
+  private final Vector3f vTemp = new Vector3f();
+  private final Vector3f vTemp2 = new Vector3f();
 
   protected void render() {
     /*
@@ -54,22 +63,24 @@ public class DrawRenderer extends MeshRenderer {
       return Draw.isPolygonDisplayable(dmesh, i) 
           && (dmesh.modelFlags == null || dmesh.modelFlags.get(i)); 
   }
-    
-  private Point3f[] controlHermites;
-  private final Point3f vpt0 = new Point3f();
-  private final Point3f vpt1 = new Point3f();
   
   protected void render2() {
     boolean isDrawPickMode = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
     drawType = dmesh.drawType;
     diameter = dmesh.diameter;
     width = dmesh.width;
-    boolean isCurved = ((drawType == JmolConstants.DRAW_CURVE || drawType == JmolConstants.DRAW_ARROW) && vertexCount >= 2);
+    int nPoints = vertexCount;
+    boolean isCurved = (
+        (drawType == JmolConstants.DRAW_CURVE 
+            || drawType == JmolConstants.DRAW_ARROW
+            || drawType == JmolConstants.DRAW_ARC) 
+        && vertexCount >= 2);
     if (width > 0 && isCurved) {
       pt1f.set(0, 0, 0);
-      for (int i = 0; i < vertexCount; i++)
+      int n = (drawType == JmolConstants.DRAW_ARC ? 2 :vertexCount);
+      for (int i = 0; i < n; i++)
         pt1f.add(vertices[i]);
-      pt1f.scale(1f / vertexCount);
+      pt1f.scale(1f / n);
       viewer.transformPoint(pt1f, pt1i);
       diameter = viewer.scaleToScreen(pt1i.z, (int) (width * 1000));
       if (diameter == 0)
@@ -104,15 +115,66 @@ public class DrawRenderer extends MeshRenderer {
     case JmolConstants.DRAW_CURVE:
       //unnecessary
       break;
+    case JmolConstants.DRAW_ARC:
+      //renderArrowHead(controlHermites[nHermites - 2], controlHermites[nHermites - 1], false);
+      // 
+      // {pt1} {pt2} {ptref} {starting theta, nDegrees, fractionalOffset}
+      float theta = vertices[3].x;
+      float nDegrees = vertices[3].y;
+      float fractionalOffset = vertices[3].z;
+      vTemp.set(vertices[1]);
+      vTemp.sub(vertices[0]);
+      // crossing point
+      pt1f.scaleAdd(fractionalOffset, vTemp, vertices[0]);
+      // define rotational axis
+      Matrix3f mat = new Matrix3f();
+      mat.set(new AxisAngle4f(vTemp, (float) (theta * Math.PI / 180)));
+      // vector to rotate
+      vTemp2.set(vertices[2]);
+      vTemp2.sub(vertices[0]);
+      vTemp2.cross(vTemp, vTemp2);
+      vTemp2.cross(vTemp2, vTemp);
+      vTemp2.normalize();
+      vTemp2.scale(dmesh.scale);
+      mat.transform(vTemp2);
+      //control points
+      float degrees = nDegrees / 5;
+      while (Math.abs(degrees) > 5)
+        degrees /= 2;
+      nPoints = (int) (nDegrees / degrees + 0.5f) + 1;
+      while (nPoints < 10) {
+        degrees /= 2;
+        nPoints = (int) (nDegrees / degrees + 0.5f) + 1;
+      }
+      mat.set(new AxisAngle4f(vTemp, (float) (degrees * Math.PI / 180)));
+      screens = viewer.allocTempScreens(nPoints);
+      int iBase = nPoints - (dmesh.scale < 2 ? 3 : 3);
+      for (int i = 0; i < nPoints; i++) {
+        if (i == iBase)
+          vpt0.set(vpt1);
+        vpt1.scaleAdd(1, vTemp2, pt1f);
+        if (i == 0)
+          vpt2.set(vpt1);
+        viewer.transformPoint(vpt1, screens[i]);
+        mat.transform(vTemp2);
+      }
+      if (dmesh.isVector && !dmesh.nohead) {
+        renderArrowHead(vpt0, vpt1, 0.3f, false);
+        viewer.transformPoint(pt1f, screens[nPoints - 1]);
+      }
+      pt1f.set(vpt2);
+      break;
     case JmolConstants.DRAW_ARROW:
       int nHermites = 5;
       if (controlHermites == null || controlHermites.length < nHermites + 1) {
         controlHermites = new Point3f[nHermites + 1];
       }
+      float d = 0;
       if (vertexCount == 2) {
         if (controlHermites[nHermites - 1] == null) {
           controlHermites[nHermites - 2] = new Point3f(vertices[0]);
           controlHermites[nHermites - 1] = new Point3f(vertices[1]);
+          d = vertices[1].distance(vertices[0]);
         } else {
           controlHermites[nHermites - 2].set(vertices[0]);
           controlHermites[nHermites - 1].set(vertices[1]);
@@ -123,16 +185,16 @@ public class DrawRenderer extends MeshRenderer {
             vertices[vertexCount - 1], vertices[vertexCount - 1],
             controlHermites, 0, nHermites);
       }
-      renderArrowHead(controlHermites[nHermites - 2], controlHermites[nHermites - 1], false);
+      renderArrowHead(controlHermites[nHermites - 2], controlHermites[nHermites - 1], d, false);
       break;
     }
     if (diameter == 0)
       diameter = 3;
     if (isCurved) {
-      for (int i = 0, i0 = 0; i < vertexCount - 1; i++) {
+      for (int i = 0, i0 = 0; i < nPoints - 1; i++) {
         g3d.fillHermite(tension, diameter, diameter, diameter, screens[i0],
             screens[i], screens[i + 1], screens[i
-                + (i + 2 == vertexCount ? 1 : 2)]);
+                + (i == nPoints - 2 ? 1 : 2)]);
         i0 = i;
       }
     }
@@ -140,7 +202,7 @@ public class DrawRenderer extends MeshRenderer {
     if (isDrawPickMode && !isGenerator) {
       renderHandles();
     }
-  }
+}
   
   private void renderXyArrow(int ptXY) {
     int ptXYZ = 1 - ptXY;
@@ -157,11 +219,10 @@ public class DrawRenderer extends MeshRenderer {
     if (diameter == 0)
       diameter = 1;
     renderLine(vpt0, vpt1, diameter, Graphics3D.ENDCAPS_FLAT, pt1i, pt2i);
-    renderArrowHead(vpt0, vpt1, true);
+    renderArrowHead(vpt0, vpt1, 0, true);
   }
 
-  private Vector3f tip = new Vector3f();
-  private void renderArrowHead(Point3f pt1, Point3f pt2, boolean isTransformed) {
+  private void renderArrowHead(Point3f pt1, Point3f pt2, float factor2, boolean isTransformed) {
     if (dmesh.nohead)
       return;
     float fScale = dmesh.drawArrowScale;
@@ -171,18 +232,22 @@ public class DrawRenderer extends MeshRenderer {
       fScale = 0.5f;
     if (isTransformed)
       fScale *= 40;
+    if (factor2 > 0)
+      fScale *= factor2;
+    
     pt1f.set(pt1);
     pt2f.set(pt2);
-    tip.set(pt2f);
-    tip.sub(pt1f);
-    float d = tip.length();
+    float d = pt1f.distance(pt2f);
     if (d == 0)
       return;
-    tip.scale(fScale / d / 5);
-    pt2f.add(tip);
-    tip.scale(5);
+    vTemp.set(pt2f);
+    vTemp.sub(pt1f);
+    vTemp.normalize();
+    vTemp.scale(fScale / 5);
+    pt2f.add(vTemp);
+    vTemp.scale(5);
     pt1f.set(pt2f);
-    pt1f.sub(tip);
+    pt1f.sub(vTemp);
     if (isTransformed) {
       pt1i.set((int)pt1f.x, (int)pt1f.y, (int)pt1f.z);
       pt2i.set((int)pt2f.x, (int)pt2f.y, (int)pt2f.z);
@@ -196,8 +261,8 @@ public class DrawRenderer extends MeshRenderer {
     if (diameter > 0) {
       headDiameter = diameter * 3;
     } else {
-      tip.set(pt2i.x - pt1i.x, pt2i.y - pt1i.y, pt2i.z - pt1i.z);
-      headDiameter = (int) (tip.length() * .5);
+      vTemp.set(pt2i.x - pt1i.x, pt2i.y - pt1i.y, pt2i.z - pt1i.z);
+      headDiameter = (int) (vTemp.length() * .5);
       diameter = headDiameter / 5;
     }
     if (diameter < 1)
@@ -243,8 +308,11 @@ public class DrawRenderer extends MeshRenderer {
         if (s.length() > 1 && s.charAt(0) == '>') {
           pt = dmesh.polygonIndexes[i].length - 1;
           s = s.substring(1);
-        }
-        viewer.transformPoint(vertices[dmesh.polygonIndexes[i][pt]], pt1i);
+          if (drawType == JmolConstants.DRAW_ARC)
+            pt1f.set(pt2f);
+        } else if (drawType != JmolConstants.DRAW_ARC)
+          pt1f.set(vertices[dmesh.polygonIndexes[i][pt]]);
+        viewer.transformPoint(pt1f, pt1i);
         int offset = (int) (5 * imageFontScaling);
         g3d.drawString(s, null, pt1i.x + offset, pt1i.y - offset,
             pt1i.z, pt1i.z);

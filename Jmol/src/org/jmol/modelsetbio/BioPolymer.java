@@ -524,6 +524,8 @@ public abstract class BioPolymer extends Polymer {
       Monomer monomer = p.monomers[m];
       if (bsAtoms == null || bsAtoms.get(monomer.getLeadAtomIndex())) {
         Atom a = monomer.getLeadAtom();
+        char cid = monomer.getChainID();
+        String id = "" + monomer.getResno() + (cid == '\0' ? "" : "" + cid);
         if (isRamachandran) {
           x = monomer.getPhi();
           y = monomer.getPsi();
@@ -533,6 +535,30 @@ public abstract class BioPolymer extends Polymer {
           z -= 180; // center on 0
           if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
             continue;
+          
+          if (isDraw) {
+            if (bsSelected != null && !bsSelected.get(a.getAtomIndex()))
+              continue;
+          // draw arrow arc {3.N} {3.ca} {3.C} {131 -131 0.5} "phi -131"
+          // draw arrow arc {3.CA} {3.C} {3.N} {0 133 0.5} "psi 133"
+          // as looked DOWN the bond, with {pt1} in the back, using
+          // standard dihedral/Jmol definitions for anticlockwise positive angles
+            AminoMonomer aa = (AminoMonomer)monomer;
+            pdbATOM.append("draw phi" + id + " arrow arc scale 0.5 ") 
+                .append(Escape.escape(aa.getNitrogenAtomPoint()))
+                .append(Escape.escape((Point3f)a)) 
+                .append(Escape.escape(aa.getCarbonylCarbonAtomPoint()))
+                .append("{" + (-x) + " " + x + " 0.2} \"phi = " + (int) x + "\"")
+                .append(" color ").append(qColor[0]).append('\n');
+            pdbATOM.append("draw psi" + id + " arrow arc scale 0.5 ") 
+                .append(Escape.escape((Point3f)a)) 
+                .append(Escape.escape(aa.getCarbonylCarbonAtomPoint()))
+                .append(Escape.escape(aa.getNitrogenAtomPoint()))
+                .append("{0 " + y + " 0.2} \"psi = " + (int) y + "\"")
+                .append(" color ").append(qColor[1]).append('\n');
+            continue;
+          }
+
           w = a.getPartialCharge();
           float phiNext = (m == p.monomerCount - 1 ? Float.NaN
               : p.monomers[m + 1].getPhi());
@@ -551,8 +577,6 @@ public abstract class BioPolymer extends Polymer {
               z = angle;
           }
         } else {
-          char cid = monomer.getChainID();
-          String id = "" + monomer.getResno() + (cid == '\0' ? "" : "" + cid);
           cid = monomer.getLeadAtom().getAlternateLocationID();
           if (cid != '\0')
             id += cid;
@@ -649,6 +673,7 @@ public abstract class BioPolymer extends Polymer {
               : p instanceof NucleicPolymer ? 
                   ((NucleicMonomer) monomer).getQuaternionFrameCenter(qtype) 
               : new Point3f());
+
           if (isDraw) {
             if (bsSelected != null && !bsSelected.get(a.getAtomIndex()))
               continue;

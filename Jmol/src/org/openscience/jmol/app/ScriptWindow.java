@@ -278,8 +278,6 @@ public final class ScriptWindow extends JDialog
       viewer.evalStringQuiet(state);
       undoPointer = ptr;
     }
-    //for (int i =0; i < 10; i++) 
-      //System.out.println("stack: " + undoPointer + " / " + i + " " +(undoStack[i] == null ? 0 : undoStack[i].length()));
     undoSetEnabled();
   }
   
@@ -363,7 +361,6 @@ public final class ScriptWindow extends JDialog
       } else {
         runButton.setEnabled(true);
         haltButton.setEnabled(true);
-        //System.out.println("Scriptwindow sending "+ strCommand + " " + Thread.currentThread().toString());
         viewer.script(strCommand);
       }
     }
@@ -475,42 +472,38 @@ class ConsoleTextPane extends JTextPane {
    {
       // Id Control key is down, captures events does command
       // history recall and inhibits caret vertical shift.
-      if (ke.getKeyCode() == KeyEvent.VK_UP
-         && ke.getID() == KeyEvent.KEY_PRESSED
-         && !ke.isControlDown())
-      {
+
+     int kcode = ke.getKeyCode();
+     int kid = ke.getID();
+     if (kcode == KeyEvent.VK_UP
+         && kid == KeyEvent.KEY_PRESSED
+         && !ke.isControlDown()) {
          recallCommand(true);
-      }
-      else if (
-         ke.getKeyCode() == KeyEvent.VK_DOWN
-            && ke.getID() == KeyEvent.KEY_PRESSED
-            && !ke.isControlDown())
-      {
+      } else if (
+         kcode == KeyEvent.VK_DOWN
+            && kid == KeyEvent.KEY_PRESSED
+            && !ke.isControlDown()) {
          recallCommand(false);
-      }
-      // If Control key is down, redefines the event as if it 
-      // where a key up or key down stroke without modifiers.  
-      // This allows to move the caret up and down
-      // with no command history recall.
-      else if (
-         (ke.getKeyCode() == KeyEvent.VK_DOWN
-            || ke.getKeyCode() == KeyEvent.VK_UP)
-            && ke.getID() == KeyEvent.KEY_PRESSED
-            && ke.isControlDown())
-      {
+      } else if (
+         (kcode == KeyEvent.VK_DOWN
+            || kcode == KeyEvent.VK_UP)
+            && kid == KeyEvent.KEY_PRESSED
+            && ke.isControlDown()) {
+        // If Control key is down, redefines the event as if it 
+        // where a key up or key down stroke without modifiers.  
+        // This allows to move the caret up and down
+        // with no command history recall.
          super
             .processKeyEvent(new KeyEvent(
                (Component) ke.getSource(),
-               ke.getID(),
+               kid,
                ke.getWhen(),
                0,         // No modifiers
-               ke.getKeyCode(), 
+               kcode, 
                ke.getKeyChar(), 
                ke.getKeyLocation()));
-      }
-      // Standard processing for other events.
-      else
-      {
+      } else {
+        // Standard processing for other events.
          super.processKeyEvent(ke);
          //check command for compiler-identifyable syntax issues
          //this may have to be taken out if people start complaining
@@ -518,9 +511,8 @@ class ConsoleTextPane extends JTextPane {
          //that is -- that the script itself is not being fully checked
          
          //not perfect -- help here?
-         int kcode = ke.getID();
-         if (kcode == KeyEvent.KEY_RELEASED && ke.getModifiers() < 2
-             && (kcode > KeyEvent.VK_DOWN || kcode == KeyEvent.VK_BACK_SPACE))
+         if (kid == KeyEvent.KEY_RELEASED && ke.getModifiers() < 2
+             && (kcode > KeyEvent.VK_DOWN  && kcode < 400 || kcode == KeyEvent.VK_BACK_SPACE))
            checkCommand();
       }
    }
@@ -550,12 +542,9 @@ class ConsoleTextPane extends JTextPane {
    
   synchronized void checkCommand() {
     String strCommand = consoleDoc.getCommandString();
-    //System.out.println(Token.getCommandSet(strCommand));
     if (strCommand.length() == 0 || strCommand.charAt(0) == '!'
         || viewer.isScriptExecuting())
       return;
-    //System.out.println("Scrpt WIndow checking command:" + strCommand + " "
-      //  + Thread.currentThread().toString());
     checking = true;
     consoleDoc
         .colorCommand(viewer.scriptCheck(strCommand) == null ? consoleDoc.attUserInput

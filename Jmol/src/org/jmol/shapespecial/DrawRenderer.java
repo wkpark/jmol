@@ -233,8 +233,6 @@ public class DrawRenderer extends MeshRenderer {
     if (factor2 > 0)
       fScale *= factor2;
     
-    System.out.println("drawrend " + factor2 + " " + fScale);
-
     pt1f.set(pt1);
     pt2f.set(pt2);
     float d = pt1f.distance(pt2f);

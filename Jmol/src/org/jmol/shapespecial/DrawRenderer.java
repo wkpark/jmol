@@ -169,12 +169,10 @@ public class DrawRenderer extends MeshRenderer {
       if (controlHermites == null || controlHermites.length < nHermites + 1) {
         controlHermites = new Point3f[nHermites + 1];
       }
-      float d = 0;
       if (vertexCount == 2) {
         if (controlHermites[nHermites - 1] == null) {
           controlHermites[nHermites - 2] = new Point3f(vertices[0]);
           controlHermites[nHermites - 1] = new Point3f(vertices[1]);
-          d = vertices[1].distance(vertices[0]);
         } else {
           controlHermites[nHermites - 2].set(vertices[0]);
           controlHermites[nHermites - 1].set(vertices[1]);
@@ -185,7 +183,7 @@ public class DrawRenderer extends MeshRenderer {
             vertices[vertexCount - 1], vertices[vertexCount - 1],
             controlHermites, 0, nHermites);
       }
-      renderArrowHead(controlHermites[nHermites - 2], controlHermites[nHermites - 1], d, false);
+      renderArrowHead(controlHermites[nHermites - 2], controlHermites[nHermites - 1], 0, false);
       break;
     }
     if (diameter == 0)
@@ -235,6 +233,8 @@ public class DrawRenderer extends MeshRenderer {
     if (factor2 > 0)
       fScale *= factor2;
     
+    System.out.println("drawrend " + factor2 + " " + fScale);
+
     pt1f.set(pt1);
     pt2f.set(pt2);
     float d = pt1f.distance(pt2f);

@@ -206,7 +206,7 @@ public abstract class BioPolymer extends Polymer {
     for (int i = 0; i < monomerCount; i++) {
       if ((ps = getProteinStructure(i)) != null && ps != psLast)
         (psLast = ps).resetAxes();
-      monomers[i].nhChecked = false;
+      monomers[i].resetHydrogenPoint();
     }
     calcLeadMidpointsAndWingVectors(false);
   }

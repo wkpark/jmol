@@ -274,19 +274,30 @@ class Compiler {
   }
 
  /**
-   * allows for two kinds of comments. 
+   * allows for three kinds of comments.
+   * NOTE: closing involves two asterisks and slash together, but that can't be shown here. 
    * 
-   * 1) /** .... ** /  (closing involved two asterisks and slash together, but that can't be shown here.
-   * 2) /* ..... * /  (same deal here).
-   * 
+   * 1) /** .... ** / 
+   * 2) /* ..... * /   may be INSIDE /**....** /).
+   * 3)  \n//.....\n   single-line comments -- like #, but removed entirely 
    * The reason is that /* ... * / will appear as standard in MOVETO command
    * but we still might want to escape it, so around that you can have /** .... ** /
    * 
+   * also, 
    * @param script
    * @return cleaned script
    */
   private static String cleanScriptComments(String script) {
-    int pt, pt1, pt2;
+    int pt1, pt2;
+    int pt = -1;
+    while ((pt = script.indexOf("//", ++pt)) >= 0) {
+      if (pt != 0 && script.charAt(pt - 1) != '\n')
+        continue;
+      pt1 = script.indexOf("\n", pt) + 1;
+      if (pt1 == 0)
+        pt1 = script.length();
+      script = script.substring(0, pt) + script.substring(pt1);
+    }
     while ((pt = script.indexOf("/**")) >= 0) {
       pt1 = script.indexOf("**/", pt + 3);
       if (pt1 < 0)

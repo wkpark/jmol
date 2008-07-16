@@ -39,8 +39,6 @@ public abstract class Monomer extends Group {
 
   protected final byte[] offsets;
 
-  boolean nhChecked = false;
-
   protected Monomer(Chain chain, String group3, int seqcode,
           int firstAtomIndex, int lastAtomIndex,
           byte[] interestingAtomOffsets) {
@@ -322,6 +320,9 @@ public abstract class Monomer extends Group {
 
   Point3f getQuaternionFrameCenter(char qtype) {
     return null; 
+  }
+
+  public void resetHydrogenPoint() {
   }
 }
   

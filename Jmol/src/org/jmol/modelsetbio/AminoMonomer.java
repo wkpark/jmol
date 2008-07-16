@@ -178,6 +178,13 @@ public class AminoMonomer extends AlphaMonomer {
       closest[0] = alpha;
   }
 
+  boolean nhChecked = false;
+
+  public void resetHydrogenPoint() {
+    nhChecked = false;
+    nitrogenHydrogenPoint = null;
+  }
+
   Point3f getNitrogenHydrogenPoint() {
     if (nitrogenHydrogenPoint == null && !nhChecked) {
       nhChecked = true;

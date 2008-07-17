@@ -17,7 +17,7 @@
             value="${Jmol.translation.dir}/JmolApplet" />
   <property name="classes.dir" value="build/classes" />
   <property name="JmolApplet.classes.dir" value="build/classes/org/jmol/translation/JmolApplet" />
-  <property name="all.Jmol.languages" value="ca,cs,da,de,es,et,fr,hu,it,ko,nl,pl,pt,pt_BR,sv,tr" />
+  <property name="all.Jmol.languages" value="ca,cs,da,de,es,et,fr,hu,it,ko,nl,pl,pt,pt_BR,ru,sv,tr" />
   <property name="all.JmolApplet.languages" value="ca,cs,de,es,et,fr,hu,it,ko,nl,pt,pt_BR,tr" />
 
   <!-- NOTE:

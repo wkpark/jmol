@@ -1007,8 +1007,7 @@ public class Jmol implements WrappedApplet {
         if (msWalltime > 0) {
           // termination -- button legacy
           notifyScriptTermination();
-        } 
-        if (msWalltime < 0 && !doCallback) {
+        } else if (!doCallback) {
           //termination messsage ONLY if script callback enabled -- not to message queue
           //for compatibility reasons
           doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);

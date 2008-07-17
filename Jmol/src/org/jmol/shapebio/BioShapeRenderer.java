@@ -47,40 +47,77 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
   //ultimately this renderer calls MeshRenderer.render1(mesh)
 
-  int aspectRatio;
-  int hermiteLevel;
-  float sheetSmoothing;
+  private boolean invalidateMesh;
+  private boolean invalidateSheets;
+  private boolean isHighRes;
+  private boolean isTraceAlpha;
+  private boolean ribbonBorder = false;
+  private boolean haveControlPointScreens;
+  private int aspectRatio;
+  private int hermiteLevel;
+  private float sheetSmoothing;
 
-  boolean isHighRes;
-  boolean isTraceAlpha;
-  boolean isNucleic;
-  boolean isCarbohydrate;
-  boolean ribbonBorder = false;
-  BitSet bsVisible = new BitSet();
-  Point3i[] ribbonTopScreens;
-  Point3i[] ribbonBottomScreens;
-
-  Mesh[] meshes;
-  boolean[] meshReady;
-
-  int monomerCount;
-  Monomer[] monomers;
-
-  Point3f[] controlPoints;
-  Point3i[] controlPointScreens;
-  boolean haveControlPointScreens;
-  Vector3f[] wingVectors;
-  short[] mads;
-  short[] colixes;
+  private Mesh[] meshes;
+  private boolean[] meshReady;
   
-  int[] leadAtomIndices;
-  byte[] structureTypes;
+  protected int monomerCount;
+  protected Monomer[] monomers;
+
+  protected boolean isNucleic;
+  protected boolean isCarbohydrate;
+  protected BitSet bsVisible = new BitSet();
+  protected Point3i[] ribbonTopScreens;
+  protected Point3i[] ribbonBottomScreens;
+  protected Point3f[] controlPoints;
+  protected Point3i[] controlPointScreens;
+  
+  protected int[] leadAtomIndices;
+  protected Vector3f[] wingVectors;
+  protected short[] mads;
+  protected short[] colixes;
+  protected byte[] structureTypes;
+
+  protected abstract void renderBioShape(BioShape bioShape);
 
   protected void render() {
     if (shape == null)
       return;
-    //frontOnly = viewer.getTestFlag2();
+    
+    invalidateMesh = false;
+    boolean TF = isGenerator || viewer.getHighResolution();
+    if (TF != isHighRes)
+      invalidateMesh = true;
+    isHighRes = TF;
+
+    int val = viewer.getRibbonAspectRatio();
+    val = Math.min(Math.max(0, val), 20);
+    if (val != aspectRatio && val != 0)
+      invalidateMesh = true;
+    aspectRatio = val;
+
+    val = viewer.getHermiteLevel();
+    val = (val <= 0 ? -val : viewer.getInMotion() ? 0 : val);
+    if (val != hermiteLevel && val != 0)
+      invalidateMesh = true;
+    hermiteLevel = Math.min(val, 8);
+    if (hermiteLevel == 0)
+      aspectRatio = 0;
+
+    TF = (viewer.getTraceAlpha()); 
+    if (TF != isTraceAlpha)
+      invalidateMesh = true;
+    isTraceAlpha = TF;
+
+    invalidateSheets = false;    
+    float fval = viewer.getSheetSmoothing();
+    if (fval != sheetSmoothing && isTraceAlpha) {
+      sheetSmoothing = fval;
+      invalidateMesh = true;
+      invalidateSheets = true;
+    }
+
     BioShapeCollection mps = (BioShapeCollection) shape;
+    
     for (int c = mps.bioShapes.length; --c >= 0;) {
       BioShape bioShape = mps.getBioShape(c);
       if ((bioShape.modelVisibilityFlags & myVisibilityFlag) == 0)
@@ -98,45 +135,13 @@ abstract class BioShapeRenderer extends MeshRenderer {
     viewer.freeTempBytes(structureTypes);
   }
 
-  protected abstract void renderBioShape(BioShape bioShape);
-
-  //Point3f[] tempPoints;
-
   private boolean initializePolymer(BioShape bioShape) {
-
-    boolean invalidate = false;
-    boolean TF = isGenerator || viewer.getHighResolution();
-    if (TF != isHighRes)
-      invalidate = true;
-    isHighRes = TF;
-
-    TF = (viewer.isJmolDataFrame(bioShape.modelIndex) || viewer.getTraceAlpha()); 
-    if (TF != isTraceAlpha) {
-      invalidate = true;
+    if (viewer.isJmolDataFrame(bioShape.modelIndex)) {
+      controlPoints = bioShape.bioPolymer.getControlPoints(true, 0, false);
+    } else {
+      controlPoints = bioShape.bioPolymer.getControlPoints(isTraceAlpha,
+          sheetSmoothing, invalidateSheets);
     }
-    isTraceAlpha = TF;
-
-    int val = viewer.getRibbonAspectRatio();
-    val = Math.min(Math.max(0, val), 20);
-    if (val != aspectRatio && val != 0)
-      invalidate = true;
-    aspectRatio = val;
-
-    val = viewer.getHermiteLevel();
-    val = (val <= 0 ? -val : viewer.getInMotion() ? 0 : val);
-    if (val != hermiteLevel && val != 0)
-      invalidate = true;
-    hermiteLevel = Math.min(val, 8);
-    if (hermiteLevel == 0)
-      aspectRatio = 0;
-
-    float fval = (viewer.isJmolDataFrame(bioShape.modelIndex) ? 0 
-        : viewer.getSheetSmoothing());
-    if (fval != sheetSmoothing && isTraceAlpha) {
-      sheetSmoothing = fval;
-      invalidate = true;
-    }
-    controlPoints = bioShape.bioPolymer.getControlPoints(isTraceAlpha, sheetSmoothing);
     monomerCount = bioShape.monomerCount;
     monomers = bioShape.monomers;
     leadAtomIndices = bioShape.bioPolymer.getLeadAtomIndices();
@@ -144,7 +149,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     bsVisible.clear();
     boolean haveVisible = false;
     for (int i = monomerCount; --i >= 0;) {
-      if (invalidate)
+      if (invalidateMesh)
         bioShape.falsifyMesh(i, false);
       if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
           || modelSet.isAtomHidden(leadAtomIndices[i]))
@@ -158,13 +163,13 @@ abstract class BioShapeRenderer extends MeshRenderer {
     if (!haveVisible)
       return false;
     ribbonBorder = viewer.getRibbonBorder();
-    //thisChain = schain;
 
     // note that we are not treating a PhosphorusPolymer
     // as nucleic because we are not calculating the wing
     // vector correctly.
     // if/when we do that then this test will become
-    // isNucleic = schain.bioPolymer.isNucleic();    
+    // isNucleic = bioShape.bioPolymer.isNucleic();
+    
     isNucleic = bioShape.bioPolymer instanceof NucleicPolymer;
     isCarbohydrate = bioShape.bioPolymer instanceof CarbohydratePolymer;
     haveControlPointScreens = false;
@@ -187,19 +192,15 @@ abstract class BioShapeRenderer extends MeshRenderer {
     structureTypes[monomerCount] = structureTypes[monomerCount - 1];
   }
 
-  boolean isHelix(int i) {
+  protected boolean isHelix(int i) {
     return structureTypes[i] == JmolConstants.PROTEIN_STRUCTURE_HELIX;
   }
 
-  boolean isSheet(int i) {
-    return structureTypes[i] == JmolConstants.PROTEIN_STRUCTURE_SHEET;
-  }
-
-  void calcScreenControlPoints() {
+  protected void calcScreenControlPoints() {
     calcScreenControlPoints(controlPoints);
   }
 
-  void calcScreenControlPoints(Point3f[] points) {
+  protected void calcScreenControlPoints(Point3f[] points) {
     int count = monomerCount + 1;
     controlPointScreens = viewer.allocTempScreens(count);
     for (int i = count; --i >= 0;) {
@@ -208,8 +209,6 @@ abstract class BioShapeRenderer extends MeshRenderer {
     haveControlPointScreens = true;
   }
 
-  final Point3f pointT = new Point3f();
-
   /**
    * calculate screen points based on control points and wing positions
    * (cartoon, strand, meshRibbon, and ribbon)
@@ -217,7 +216,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
    * @param offsetFraction
    * @return Point3i array THAT MUST BE LATER FREED
    */
-  Point3i[] calcScreens(float offsetFraction) {
+  protected Point3i[] calcScreens(float offsetFraction) {
     int count = controlPoints.length;
     Point3i[] screens = viewer.allocTempScreens(count);
     if (offsetFraction == 0) {
@@ -232,6 +231,8 @@ abstract class BioShapeRenderer extends MeshRenderer {
     return screens;
   }
 
+  private final Point3f pointT = new Point3f();
+
   private void calc1Screen(Point3f center, Vector3f vector, short mad,
                            float offset_1000, Point3i screen) {
     pointT.set(vector);
@@ -240,7 +241,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     viewer.transformPoint(pointT, screen);
   }
 
-  short getLeadColix(int i) {
+  protected short getLeadColix(int i) {
     //System.out.println("bioshaperend " + monomers[i] + " getLeadColix i=" + i + " leadatom = " + monomers[i].getLeadAtom().getInfo() + " index=" + monomers[i].getLeadAtom().getAtomIndex());
     return Graphics3D.getColixInherited(colixes[i],
         monomers[i].getLeadAtom().getColix());
@@ -248,9 +249,9 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
   //// cardinal hermite constant cylinder (meshRibbon, strands)
 
-  int iPrev, iNext, iNext2, iNext3;
-  int diameterBeg, diameterMid, diameterEnd;
-  boolean doCap0, doCap1;
+  private int iPrev, iNext, iNext2, iNext3;
+  private int diameterBeg, diameterMid, diameterEnd;
+  private boolean doCap0, doCap1;
 
   private void setNeighbors(int i) {
     iPrev = Math.max(i - 1, 0);
@@ -259,7 +260,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     iNext3 = Math.min(i + 3, monomerCount);
   }
 
-  final void renderHermiteCylinder(Point3i[] screens, int i) {
+  protected void renderHermiteCylinder(Point3i[] screens, int i) {
     //strands
     colix = getLeadColix(i);
     if (!g3d.setColix(colix))
@@ -309,7 +310,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   }
 
   //cartoons, rockets, trace:
-  final void renderHermiteConic(int i, boolean thisTypeOnly) {
+  protected void renderHermiteConic(int i, boolean thisTypeOnly) {
     setNeighbors(i);
     colix = getLeadColix(i);
     if (!g3d.setColix(colix))
@@ -335,7 +336,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   //// cardinal hermite box or flat ribbon or twin strand (cartoons, meshRibbon, ribbon)
 
   //cartoons, meshribbon
-  final void renderHermiteRibbon(boolean doFill, int i, boolean thisTypeOnly) {
+  protected void renderHermiteRibbon(boolean doFill, int i, boolean thisTypeOnly) {
     setNeighbors(i);
     colix = getLeadColix(i);
     if (!g3d.setColix(colix))
@@ -364,13 +365,13 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
   //// cardinal hermite (box or flat) arrow head (cartoon)
 
-  final Point3i screenArrowTop = new Point3i();
-  final Point3i screenArrowTopPrev = new Point3i();
-  final Point3i screenArrowBot = new Point3i();
-  final Point3i screenArrowBotPrev = new Point3i();
+  private final Point3i screenArrowTop = new Point3i();
+  private final Point3i screenArrowTopPrev = new Point3i();
+  private final Point3i screenArrowBot = new Point3i();
+  private final Point3i screenArrowBotPrev = new Point3i();
 
   //cartoons
-  final void renderHermiteArrowHead(int i) {
+  protected void renderHermiteArrowHead(int i) {
     colix = getLeadColix(i);
     if (!g3d.setColix(colix))
       return;
@@ -413,7 +414,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   }
 
   //  rockets --not satisfactory yet
-  void renderCone(int i, Point3f pointBegin, Point3f pointEnd,
+  protected void renderCone(int i, Point3f pointBegin, Point3f pointEnd,
                   Point3f screenPtBegin, Point3f screenPtEnd) {
     int coneDiameter = mad + (mad >> 2);
     coneDiameter = viewer.scaleToScreen((int) Math.floor(screenPtBegin.z), 
@@ -443,25 +444,25 @@ abstract class BioShapeRenderer extends MeshRenderer {
   // know what all the options are, and they aren't important,
   // until it gets rendered, if ever
 
-  final static int ABSOLUTE_MIN_MESH_SIZE = 3;
-  final static int MIN_MESH_RENDER_SIZE = 8;
+  private final static int ABSOLUTE_MIN_MESH_SIZE = 3;
+  private final static int MIN_MESH_RENDER_SIZE = 8;
 
-  Point3f[] controlHermites;
-  Vector3f[] wingHermites;
-  Point3f[] radiusHermites;
+  private Point3f[] controlHermites;
+  private Vector3f[] wingHermites;
+  private Point3f[] radiusHermites;
 
-  final Vector3f Z = new Vector3f(0.1345f, 0.5426f, 0.3675f); //random reference
-  Vector3f norm = new Vector3f();
-  final Vector3f wing = new Vector3f();
-  final Vector3f wing0 = new Vector3f();
-  final Vector3f wing1 = new Vector3f();
-  final Vector3f wingT = new Vector3f();
-  final AxisAngle4f aa = new AxisAngle4f();
-  final Point3f pt = new Point3f();
-  final Point3f pt1 = new Point3f();
-  final Point3f ptPrev = new Point3f();
-  final Point3f ptNext = new Point3f();
-  final Matrix3f mat = new Matrix3f();
+  private Vector3f norm = new Vector3f();
+  private final Vector3f Z = new Vector3f(0.1345f, 0.5426f, 0.3675f); //random reference
+  private final Vector3f wing = new Vector3f();
+  private final Vector3f wing0 = new Vector3f();
+  private final Vector3f wing1 = new Vector3f();
+  private final Vector3f wingT = new Vector3f();
+  private final AxisAngle4f aa = new AxisAngle4f();
+  private final Point3f pt = new Point3f();
+  private final Point3f pt1 = new Point3f();
+  private final Point3f ptPrev = new Point3f();
+  private final Point3f ptNext = new Point3f();
+  private final Matrix3f mat = new Matrix3f();
 
   private boolean createMeshCylinder(int i, int madBeg, int madMid, int madEnd,
                                   int aspectRatio) {
@@ -585,6 +586,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     return (meshReady[i] = true);
   }
 
+  /*
   void createMeshCone(int i, Point3f pointBegin, Point3f pointEnd, int mad) {
     int level = 5;
     int nHermites = (level + 1) * 2 + 1; // (not used)
@@ -615,7 +617,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     meshReady[i] = true;
     mesh.setVisibilityFlags(1);
   }
-
+  */
   /*
   private void dumpPoint(Point3f pt, short color) {
     Point3i pt1 = viewer.transformPoint(pt);

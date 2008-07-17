@@ -223,7 +223,9 @@ public abstract class BioPolymer extends Polymer {
     return leadPoints;
   }
 
-  public Point3f[] getControlPoints(boolean isTraceAlpha, float sheetSmoothing) {
+  public Point3f[] getControlPoints(boolean isTraceAlpha, float sheetSmoothing, boolean invalidate) {
+    if (invalidate)
+      sheetPoints = null;
     if (!isTraceAlpha)
       return leadMidpoints;
     else if (sheetSmoothing == 0)
@@ -394,7 +396,7 @@ public abstract class BioPolymer extends Polymer {
   public int getPolymerPointsAndVectors(int last, BitSet bs, Vector vList,
                                         boolean isTraceAlpha,
                                         float sheetSmoothing) {
-    Point3f[] points = getControlPoints(isTraceAlpha, sheetSmoothing);
+    Point3f[] points = getControlPoints(isTraceAlpha, sheetSmoothing, false);
     Vector3f[] vectors = getWingVectors();
     int count = monomerCount;
     for (int j = 0; j < count; j++)

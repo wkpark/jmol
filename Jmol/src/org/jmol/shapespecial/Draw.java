@@ -656,7 +656,6 @@ public class Draw extends MeshCollection {
         nVertices = -2;
         if (isArrow)
           drawType = JmolConstants.DRAW_ARROW;
-        System.out.println("DRAW " + ptList[0] + " " + ptList[1]);
       } else if (nVertices == 3 && isPlane && !isPerpendicular) {
         // three points define a plane
         pt = new Point3f(ptList[1]);

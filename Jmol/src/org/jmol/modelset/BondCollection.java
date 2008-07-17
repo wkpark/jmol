@@ -520,7 +520,7 @@ abstract public class BondCollection extends AtomCollection {
     for (int i = bondCount; --i >= 0;)
       if (bsBonds == null || bsBonds.get(i)) {
         bond = bonds[i];
-        if (bond.is(JmolConstants.BOND_AROMATIC)
+        if (!bond.is(JmolConstants.BOND_AROMATIC)
             || bsAromaticDouble.get(i) || bsAromaticSingle.get(i))
           continue;
         if (!assignAromaticDouble(bond))

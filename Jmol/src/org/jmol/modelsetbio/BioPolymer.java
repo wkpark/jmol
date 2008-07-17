@@ -639,7 +639,7 @@ public abstract class BioPolymer extends Polymer {
             // helices and sheets are missed
             // (in terms of assigning structure from quaternions).
             Atom atemp = a;
-            a = aprev;
+            monomer = (Monomer) (a = aprev).getGroup();
             aprev = atemp;
             // save this dq as dq'
             dqprev = dq;
@@ -675,7 +675,6 @@ public abstract class BioPolymer extends Polymer {
               : p instanceof NucleicPolymer ? 
                   ((NucleicMonomer) monomer).getQuaternionFrameCenter(qtype) 
               : new Point3f());
-
           if (isDraw) {
             if (bsSelected != null && !bsSelected.get(a.getAtomIndex()))
               continue;
@@ -712,7 +711,7 @@ public abstract class BioPolymer extends Polymer {
                   new Point3f[] { ptCenter } });
           if (qtype == 'n' && isAmino)
             strExtra += TextFormat.sprintf("  %10.5p %10.5p %10.5p",
-                new Object[] { new Point3f[] { ((AminoMonomer) a.getGroup())
+                new Object[] { new Point3f[] { ((AminoMonomer) monomer)
                     .getNitrogenHydrogenPoint() } });
         }
         if (pdbATOM == null)

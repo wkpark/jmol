@@ -246,7 +246,7 @@ public class Bond {
   }
 
   public boolean is(int bondType) {
-    return (order & ~JmolConstants.BOND_NEW) != bondType;
+    return (order & ~JmolConstants.BOND_NEW) == bondType;
   }
 
 }

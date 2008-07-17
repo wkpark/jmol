@@ -1438,6 +1438,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       haltScriptExecution();
       transformManager.setSpinOn(false);
       scriptManager.startCommandWatcher(false);
+      scriptManager.interruptQueueThreads();
       g3d.destroy();
     }
   }

@@ -298,4 +298,11 @@ class ScriptManager {
       commandWatcherThread = null;
     }
   }
+
+  void interruptQueueThreads() {
+    for (int i = 0; i < queueThreads.length; i++) {
+      if (queueThreads[i] != null)
+        queueThreads[i].interrupt();
+    }
+  }
 }

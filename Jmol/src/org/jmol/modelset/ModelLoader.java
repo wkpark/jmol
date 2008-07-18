@@ -45,7 +45,8 @@ import java.util.Vector;
  * 
  * This subclass contains only the private methods 
  * used to load a model. Methods exclusively after 
- * file loading are included only in the superclass, Frame.
+ * file loading are included only in the superclass, ModelSet,
+ * and its superclasses, ModelCollection, BondCollection, and AtomCollection.
  * 
  * Bob Hanson, 5/2007
  *  

@@ -393,6 +393,8 @@ class Compiler {
           if (thisFunction != null && thisFunction.cmdpt0 < 0) {
             thisFunction.cmdpt0 = iCommand;
           }
+          if (parenCount > 0 || bracketCount > 0 || braceCount > 0)
+            return error(ERROR_endOfCommandUnexpected);
           if (!compileCommand())
             return false;
           if (!tokAttr(tokCommand, Token.noeval)
@@ -580,7 +582,8 @@ class Compiler {
           addTokenToPrefix(new Token(Token.integer, val, intString));
           continue;
         }
-        if (lastToken.tok == Token.select || !tokenAttr(lastToken, Token.mathfunc)) {
+        if (lastToken.tok == Token.select
+            || !tokenAttr(lastToken, Token.mathfunc)) {
           // don't want to mess up x.distance({1 2 3})
           // if you want to use a bitset there, you must use 
           // bitsets properly: x.distance( ({1 2 3}) )
@@ -618,20 +621,31 @@ class Compiler {
             token = new Token(Token.identifier, ident);
         }
         int tok = token.tok;
-        if (tok == Token.leftparen || tok == Token.leftbrace) {
+        switch (tok) {
+        case Token.leftparen:
+        case Token.leftbrace:
+          parenCount++;
           // the select() function uses dual semicolon notation
           // but we must differentiate from isosurface select(...) and set picking select
           if (nTokens > 1 && (lastToken.tok == Token.select))
-              nSemiSkip += 2;
-          parenCount++;
-        }
-        if (tok == Token.rightparen || tok == Token.rightbrace) {
-          if (parenCount == 0)
-            return error(ERROR_leftParenthesisExpected);
+            nSemiSkip += 2;
+          break;
+        case Token.rightparen:
+        case Token.rightbrace:
           parenCount--;
+          if (parenCount < 0)
+            return error(ERROR_tokenUnexpected, (String) token.value);
           // we need to remove the semiskip if parentheses or braces have been closed. 11.5.46
           if (parenCount == 0)
             nSemiSkip = 0;
+          break;
+        case Token.leftsquare:
+          bracketCount++;
+          break;
+        case Token.rightsquare:
+          bracketCount--;
+          if (bracketCount < 0)
+            return error(ERROR_tokenUnexpected, "]");
         }
         switch (tokCommand) {
         // special cases
@@ -727,14 +741,14 @@ class Compiler {
           }
           if (nTokens == 2) {
             if (tok != Token.leftparen)
-              return error(ERROR_leftParenthesisExpected);
+              return error(ERROR_tokenExpected, "(");
             break;
           }
           if (nTokens == 3 && tok == Token.rightparen)
             break;
           if (nTokens % 2 == 0) {
             if (tok != Token.comma && tok != Token.rightparen)
-              return error(ERROR_commaOrCloseExpected);
+              return error(ERROR_tokenExpected, ", / )");
             break;
           }
           thisFunction.addVariable(ident, true);
@@ -832,10 +846,17 @@ class Compiler {
             }
           }
           break;
+        case Token.restrict:
+        case Token.select:
+        case Token.display:
+        case Token.hide:
+        case Token.delete:
         case Token.define:
-          if (nTokens == 1) {
-            // we are looking at the variable name
-            if (tok != Token.identifier) {
+          if (tok == Token.define) {
+            if (nTokens == 1) {
+              // we are looking at the variable name
+              if (tok == Token.identifier)
+                break;
               if (preDefining) {
                 if (!tokAttr(tok, Token.predefinedset))
                   return error("ERROR IN Token.java or JmolConstants.java -- the following term was used in JmolConstants.java but not listed as predefinedset in Token.java: "
@@ -855,36 +876,23 @@ class Compiler {
                 tok = token.tok = Token.identifier;
                 Token.addToken(ident, token);
               }
+              break;
             }
-          } else if (nTokens == 2 && tok == Token.opEQ) {
-            // we are looking at @x =.... just insert a SET command
-            // and ignore the =. It's the same as set @x ... 
-            ltoken.insertElementAt(Token.tokenSet, 0);
-            continue;
-          } else {
-            // we are looking at the expression
-            if (tok != Token.identifier && tok != Token.set
-                && !(tokAttr(tok, Token.expression)))
-              return error(ERROR_invalidExpressionToken, ident);
+            if (nTokens == 2 && tok == Token.opEQ) {
+              // we are looking at @x =.... just insert a SET command
+              // and ignore the =. It's the same as set @x ... 
+              ltoken.insertElementAt(Token.tokenSet, 0);
+              continue;
+            }
           }
+          if (bracketCount == 0 && tok != Token.identifier 
+              && !tokAttr(tok, Token.expression)
+              && tok != Token.min && tok != Token.max)
+            return error(ERROR_invalidExpressionToken, ident);
           break;
         case Token.center:
           if (tok != Token.identifier && tok != Token.dollarsign
               && !tokAttr(tok, Token.expression))
-            return error(ERROR_invalidExpressionToken, ident);
-          break;
-        case Token.restrict:
-        case Token.select:
-        case Token.display:
-        case Token.hide:
-        case Token.delete:
-          if (tok == Token.leftsquare)
-            bracketCount++;
-          if (tok == Token.rightsquare)
-            bracketCount--;
-          //ensure anything goes for inside brackets 
-          if (tok != Token.identifier && !tokAttr(tok, Token.expression)
-              && tok != Token.min && tok != Token.max && bracketCount == 0)
             return error(ERROR_invalidExpressionToken, ident);
           break;
         }
@@ -1810,7 +1818,7 @@ class Compiler {
       if (!clauseOr(true))
         return false;
       if (!addNextTokenIf(Token.rightparen))
-        return error(ERROR_rightParenthesisExpected);
+        return error(ERROR_tokenExpected, ")");
       return checkForItemSelector();
     case Token.leftbrace:
       return checkForCoordinate(isImplicitExpression);
@@ -1859,7 +1867,7 @@ class Compiler {
     while (!tokPeek(Token.rightbrace)) {
         boolean haveComma = addNextTokenIf(Token.comma);
         if (!clauseOr(false))
-          return (haveComma || n < 3? false : error(ERROR_rightBraceExpected));
+          return (haveComma || n < 3? false : error(ERROR_tokenExpected, "}"));
         n++;
     }
     isCoordinate = (n >= 2); // could be {1 -2 3}
@@ -1885,7 +1893,7 @@ class Compiler {
       if (!clauseItemSelector())
         return false;
       if (!addNextTokenIf(Token.rightsquare))
-        return error(ERROR_rightBracketExpected);
+        return error(ERROR_tokenExpected, "]");
     }
     return true;
   }
@@ -1988,7 +1996,7 @@ class Compiler {
             if (!clauseOr(false))
               return error(ERROR_unrecognizedParameter,"WITHIN", ": ?");
             if (!addNextTokenIf(Token.rightparen))
-              return error(ERROR_commaOrCloseExpected);
+              return error(ERROR_tokenExpected, ", / )");
             addTokenToPostfix(Token.tokenExpressionEnd);
             break;
           case Token.define:
@@ -2001,11 +2009,11 @@ class Compiler {
           }
         }
       } else if (!clauseOr(allowComma)) {// *expression*
-        return error(ERROR_endOfCommandUnexpected);
+        return error(ERROR_badArgumentCount);
       }
     }
     if (!addNextTokenIf(Token.rightparen))
-      return error(ERROR_rightParenthesisExpected);
+      return error(ERROR_tokenExpected, ")");
     return true;
   }
 
@@ -2054,7 +2062,7 @@ class Compiler {
       break;
     }
     if (!addNextTokenIf(Token.rightparen))
-      return error(ERROR_rightParenthesisExpected);
+      return error(ERROR_tokenExpected, ")");
     return true;
   }
 
@@ -2062,9 +2070,9 @@ class Compiler {
     if (!addNextTokenIf(Token.leftparen))
       return false;
     if (!addNextTokenIf(Token.string))
-      return error(ERROR_stringExpected);
+      return error(ERROR_tokenExpected, "\"...\"");
     if (!addNextTokenIf(Token.rightparen))
-      return error(ERROR_rightParenthesisExpected);
+      return error(ERROR_tokenExpected, ")");
     return true;
   }
 
@@ -2089,7 +2097,7 @@ class Compiler {
     Token tokenAtomProperty = tokenNext();
     Token tokenComparator = tokenNext();
     if (!tokenAttr(tokenComparator, Token.comparator))
-      return error(ERROR_comparisonOperatorExpected);
+      return error(ERROR_tokenExpected, "== != < > <= >=");
     if (getToken() == null)
       return error(ERROR_unrecognizedExpressionToken, "" + valuePeek());
     boolean isNegative = (isToken(Token.minus));
@@ -2124,7 +2132,7 @@ class Compiler {
     Point3f cell = new Point3f();
     tokenNext(); // CELL
     if (!tokenNext(Token.opEQ)) // =
-      return error(ERROR_equalSignExpected);
+      return error(ERROR_tokenExpected, "=");
     if (getToken() == null)
       return error(ERROR_coordinateExpected);
     // 555 = {1 1 1}
@@ -2478,58 +2486,46 @@ class Compiler {
   private final static int ERROR_badArgumentCount  = 0;
   private final static int ERROR_badContext  = 1;
   private final static int ERROR_commandExpected = 2;
-  private final static int ERROR_commaOrCloseExpected  = 3;
-  private final static int ERROR_comparisonOperatorExpected  = 4;
-  private final static int ERROR_coordinateExpected  = 5;
-  private final static int ERROR_endOfCommandUnexpected  = 6;
-  private final static int ERROR_endOfExpressionExpected  = 7;
-  private final static int ERROR_equalSignExpected  = 8;
-  private final static int ERROR_identifierOrResidueSpecificationExpected  = 9;
-  private final static int ERROR_invalidAtomSpecification  = 10;
-  private final static int ERROR_invalidChainSpecification  = 11;
-  private final static int ERROR_invalidExpressionToken  = 12;
-  private final static int ERROR_invalidModelSpecification  = 13;
-  private final static int ERROR_leftParenthesisExpected  = 14;
-  private final static int ERROR_missingEnd  = 15;
-  private final static int ERROR_numberExpected  = 16;
-  private final static int ERROR_numberOrVariableNameExpected  = 17;
-  private final static int ERROR_residueSpecificationExpected  = 18;
-  private final static int ERROR_rightBraceExpected  = 19;
-  private final static int ERROR_rightBracketExpected  = 20;
-  private final static int ERROR_rightParenthesisExpected  = 21;
-  private final static int ERROR_stringExpected  = 22;
-  private final static int ERROR_unrecognizedExpressionToken  = 23;
-  private final static int ERROR_unrecognizedParameter  = 24;
-  private final static int ERROR_unrecognizedToken  = 25;
+  private final static int ERROR_coordinateExpected  = 3;
+  private final static int ERROR_endOfCommandUnexpected  = 4;
+  private final static int ERROR_endOfExpressionExpected  = 5;
+  private final static int ERROR_identifierOrResidueSpecificationExpected  = 6;
+  private final static int ERROR_invalidAtomSpecification  = 7;
+  private final static int ERROR_invalidChainSpecification  = 8;
+  private final static int ERROR_invalidExpressionToken  = 9;
+  private final static int ERROR_invalidModelSpecification  = 10;
+  private final static int ERROR_missingEnd  = 11;
+  private final static int ERROR_numberExpected  = 12;
+  private final static int ERROR_numberOrVariableNameExpected  = 13;
+  private final static int ERROR_residueSpecificationExpected  = 14;
+  private final static int ERROR_tokenExpected  = 15;
+  private final static int ERROR_tokenUnexpected  = 16;
+  private final static int ERROR_unrecognizedExpressionToken  = 17;
+  private final static int ERROR_unrecognizedParameter  = 18;
+  private final static int ERROR_unrecognizedToken  = 19;
 
 
   private final static String[] errors = {
     GT._("bad argument count"), // 0
     GT._("invalid context for {0}"), // 1
     GT._("command expected"), // 2
-    GT._("comma or right parenthesis expected"), // 3
-    GT._("comparison operator expected"), // 4
-    GT._("{ number number number } expected"), // 5
-    GT._("unexpected end of script command"), // 6
-    GT._("end of expression expected"), // 7
-    GT._("equal sign expected"), // 8
-    GT._("identifier or residue specification expected"), // 9
-    GT._("invalid atom specification"), // 10
-    GT._("invalid chain specification"), // 11
-    GT._("invalid expression token: {0}"), // 12
-    GT._("invalid model specification"), // 13
-    GT._("left parenthesis expected"), // 14
-    GT._("missing END for {0}"), // 15
-    GT._("number expected"), // 16
-    GT._("number or variable name expected"), // 17
-    GT._("residue specification (ALA, AL?, A*) expected"), // 18
-    GT._("right brace expected"), // 19
-    GT._("right bracket expected"), // 20
-    GT._("right parenthesis expected"), // 21
-    GT._("quoted string expected"), // 22
-    GT._("unrecognized expression token: {0}"), // 23
-    GT._("unrecognized {0} parameter"), // 24
-    GT._("unrecognized token: {0}"), // 25
+    GT._("{ number number number } expected"), // 3
+    GT._("unexpected end of script command"), // 4
+    GT._("end of expression expected"), // 5
+    GT._("identifier or residue specification expected"), // 6
+    GT._("invalid atom specification"), // 7
+    GT._("invalid chain specification"), // 8
+    GT._("invalid expression token: {0}"), // 9
+    GT._("invalid model specification"), // 10
+    GT._("missing END for {0}"), // 11
+    GT._("number expected"), // 12
+    GT._("number or variable name expected"), // 13
+    GT._("residue specification (ALA, AL?, A*) expected"), // 14
+    GT._("{0} expected"), // 15
+    GT._("{0} unexpected"), // 16
+    GT._("unrecognized expression token: {0}"), // 17
+    GT._("unrecognized {0} parameter"), // 18
+    GT._("unrecognized token: {0}"), // 19
   };
 
   private boolean commandExpected() {

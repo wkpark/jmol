@@ -466,6 +466,8 @@ public abstract class AtomSetCollectionReader {
           name = name.substring(0, i) + "_" + name.substring(i + 1);
       String seqNum = (String) htSite.get("seqNum");
       String groups = (String) htSite.get("groups");
+      if (groups.length() == 0)
+        continue;
       addJmolScript("@site_" + name + " " + groups);
       addJmolScript("@" + seqNum + " " + groups);
       addJmolScript("site_" + name + " = \"" + groups + "\".split(\",\")");

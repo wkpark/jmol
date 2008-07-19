@@ -8344,9 +8344,10 @@ class Eval { //implements Runnable {
     checkStatementLength(iToken + 1);
     if (isSyntaxCheck)
       return true;
-    if (bs != null)
+    if (bs == null)
+      setShapeProperty(JmolConstants.SHAPE_LABELS, str, propertyValue);
+    else
       viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, str, propertyValue, bs);
-    else      setShapeProperty(JmolConstants.SHAPE_LABELS, str, propertyValue);
     return true;
   }
 

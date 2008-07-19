@@ -541,8 +541,6 @@ public final class ModelLoader extends ModelSet {
         models[iLast].firstAtomIndex = i;
         models[iLast].bsAtoms = null;
       }
-    //if (uFactors != null)
-      //System.out.println(Escape.escape(uFactors, false));
   }
 
   private void addAtom(int modelIndex, BitSet atomSymmetry, int atomSite,
@@ -608,7 +606,6 @@ public final class ModelLoader extends ModelSet {
       if (specialAtomName != null) {
         Integer boxedI = new Integer(i);
         htAtom.put(specialAtomName, boxedI);
-        //System.out.println("atom: "+specialAtomName+" "+i);
       }
     }
   }

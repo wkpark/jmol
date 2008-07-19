@@ -729,6 +729,10 @@ TURN     1  T1 GLY    42  TYR    44
       htHetero = new Hashtable();
     String groupName = parseToken(line, 11, 14);
     String hetName = parseTrimmed(line, 15, 70);
+    if (groupName == null) {
+      System.out.println("ERROR: HETNAM record does not contain a group name: " + line);
+      return;
+    }
     String htName = (String) htHetero.get(groupName);
     if (htName != null)
       hetName = htName + hetName;

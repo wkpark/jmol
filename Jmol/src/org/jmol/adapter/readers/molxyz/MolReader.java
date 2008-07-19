@@ -220,8 +220,15 @@ public class MolReader extends AtomSetCollectionReader {
       int atomIndex2 = parseInt(line, 3, 6);
       int order = parseInt(line, 6, 9);
       switch (order) {
+      case 1:
+      case 2:
+      case 3:
+        break;
       case 4:
         order = JmolAdapter.ORDER_AROMATIC;
+        break;
+      case 5:
+        order = JmolAdapter.ORDER_PARTIAL12;
         break;
       case 6:
         order = JmolAdapter.ORDER_AROMATIC_SINGLE;
@@ -229,8 +236,8 @@ public class MolReader extends AtomSetCollectionReader {
       case 7:
         order = JmolAdapter.ORDER_AROMATIC_DOUBLE;
         break;
-      case 5:
-        order = JmolAdapter.ORDER_PARTIAL12;
+      case 8:
+        order = JmolAdapter.ORDER_PARTIAL01;
         break;
       }
       atomSetCollection

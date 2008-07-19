@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-07-17 23:13+0200\n"
+"POT-Creation-Date: 2008-07-19 07:47+0200\n"
 "PO-Revision-Date: 2008-07-12 19:15+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -1212,26 +1212,18 @@ msgstr "Manual del ratón"
 msgid "Translations"
 msgstr "Traducciones"
 
-#: org/jmol/viewer/Compiler.java:2507 org/jmol/viewer/Eval.java:11198
+#: org/jmol/viewer/Compiler.java:2509 org/jmol/viewer/Eval.java:11198
 msgid "bad argument count"
 msgstr "el número de argumentos no es correcto"
 
-#: org/jmol/viewer/Compiler.java:2508
+#: org/jmol/viewer/Compiler.java:2510
 #, java-format
 msgid "invalid context for {0}"
 msgstr "contexto no válido para {0}"
 
-#: org/jmol/viewer/Compiler.java:2509 org/jmol/viewer/Eval.java:5117
+#: org/jmol/viewer/Compiler.java:2511 org/jmol/viewer/Eval.java:5117
 msgid "command expected"
 msgstr "se esperaba una instrucción"
-
-#: org/jmol/viewer/Compiler.java:2510
-msgid "comma or right parenthesis expected"
-msgstr "se esperaba una coma o un cierre de paréntesis"
-
-#: org/jmol/viewer/Compiler.java:2511
-msgid "comparison operator expected"
-msgstr "se esperaba un operador de comparación"
 
 #: org/jmol/viewer/Compiler.java:2512
 msgid "{ number number number } expected"
@@ -1246,78 +1238,64 @@ msgid "end of expression expected"
 msgstr "se esperaba el fin de una expresión"
 
 #: org/jmol/viewer/Compiler.java:2515
-msgid "equal sign expected"
-msgstr "se esperaba un signo igual"
-
-#: org/jmol/viewer/Compiler.java:2516
 msgid "identifier or residue specification expected"
 msgstr "se esperaba un identificador o una identificación de residuo"
 
-#: org/jmol/viewer/Compiler.java:2517
+#: org/jmol/viewer/Compiler.java:2516
 msgid "invalid atom specification"
 msgstr "identificación de átomo no válida"
 
-#: org/jmol/viewer/Compiler.java:2518
+#: org/jmol/viewer/Compiler.java:2517
 msgid "invalid chain specification"
 msgstr "identificador de cadena no válido"
 
-#: org/jmol/viewer/Compiler.java:2519
+#: org/jmol/viewer/Compiler.java:2518
 #, java-format
 msgid "invalid expression token: {0}"
 msgstr "palabra clave {0} no válida"
 
-#: org/jmol/viewer/Compiler.java:2520
+#: org/jmol/viewer/Compiler.java:2519
 msgid "invalid model specification"
 msgstr "identificación de modelo no válida"
 
-#: org/jmol/viewer/Compiler.java:2521
-msgid "left parenthesis expected"
-msgstr "se esperaba la apertura de un paréntesis"
-
-#: org/jmol/viewer/Compiler.java:2522
+#: org/jmol/viewer/Compiler.java:2520
 #, java-format
 msgid "missing END for {0}"
 msgstr "falta END para {0}"
 
-#: org/jmol/viewer/Compiler.java:2523 org/jmol/viewer/Eval.java:11222
+#: org/jmol/viewer/Compiler.java:2521 org/jmol/viewer/Eval.java:11222
 msgid "number expected"
 msgstr "se esperaba un número"
 
-#: org/jmol/viewer/Compiler.java:2524
+#: org/jmol/viewer/Compiler.java:2522
 msgid "number or variable name expected"
 msgstr "se esperaba  un número o un nombre de variable"
 
-#: org/jmol/viewer/Compiler.java:2525
+#: org/jmol/viewer/Compiler.java:2523
 msgid "residue specification (ALA, AL?, A*) expected"
 msgstr "se esperaba una identificación de residuo (ALA, AL?, A*)"
 
+#: org/jmol/viewer/Compiler.java:2524
+#, fuzzy, java-format
+msgid "{0} expected"
+msgstr "se esperaba una coma"
+
+#: org/jmol/viewer/Compiler.java:2525
+#, fuzzy, java-format
+msgid "{0} unexpected"
+msgstr "se esperaba un color"
+
 #: org/jmol/viewer/Compiler.java:2526
-msgid "right brace expected"
-msgstr "se esperaba el cierre de una llave"
-
-#: org/jmol/viewer/Compiler.java:2527
-msgid "right bracket expected"
-msgstr "se esperaba el cierre de un corchete"
-
-#: org/jmol/viewer/Compiler.java:2528
-msgid "right parenthesis expected"
-msgstr "se esperaba el cierre de un paréntesis"
-
-#: org/jmol/viewer/Compiler.java:2529 org/jmol/viewer/Eval.java:11228
-msgid "quoted string expected"
-msgstr "se esperaba un texto entre comillas"
-
-#: org/jmol/viewer/Compiler.java:2530
 #, java-format
 msgid "unrecognized expression token: {0}"
 msgstr "no se reconoce la palabra clave {0} en la expresión"
 
-#: org/jmol/viewer/Compiler.java:2531 org/jmol/viewer/Eval.java:11236
+#: org/jmol/viewer/Compiler.java:2527 org/jmol/viewer/Eval.java:11236
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "no se reconoce el parámetro {0}"
 
-#: org/jmol/viewer/Compiler.java:2532
+#: org/jmol/viewer/Compiler.java:2528
 #, java-format
 msgid "unrecognized token: {0}"
 msgstr "no se reconoce la palabra clave {0}"
@@ -1520,6 +1498,10 @@ msgstr "se esperaba un nombre de propiedad"
 msgid "space group {0} was not found."
 msgstr "no se ha encotrado el grupo espacial {0}"
 
+#: org/jmol/viewer/Eval.java:11228
+msgid "quoted string expected"
+msgstr "se esperaba un texto entre comillas"
+
 #: org/jmol/viewer/Eval.java:11229
 msgid "quoted string or identifier expected"
 msgstr "se esperaba un texto entre comillas o un identificador"
@@ -1598,6 +1580,27 @@ msgstr ""
 "ERROR: no es posible ajustar el valor de esta variable a un valor lógico "
 "booleano: {0}"
 
+#~ msgid "comma or right parenthesis expected"
+#~ msgstr "se esperaba una coma o un cierre de paréntesis"
+
+#~ msgid "comparison operator expected"
+#~ msgstr "se esperaba un operador de comparación"
+
+#~ msgid "equal sign expected"
+#~ msgstr "se esperaba un signo igual"
+
+#~ msgid "left parenthesis expected"
+#~ msgstr "se esperaba la apertura de un paréntesis"
+
+#~ msgid "right brace expected"
+#~ msgstr "se esperaba el cierre de una llave"
+
+#~ msgid "right bracket expected"
+#~ msgstr "se esperaba el cierre de un corchete"
+
+#~ msgid "right parenthesis expected"
+#~ msgstr "se esperaba el cierre de un paréntesis"
+
 #~ msgid "too many parentheses"
 #~ msgstr "demasiados paréntesis"
 
@@ -1669,9 +1672,6 @@ msgstr ""
 
 #~ msgid "command ignored (not implemented): {0}"
 #~ msgstr "instrucción ignorada (no implementada): {0}"
-
-#~ msgid "comma expected"
-#~ msgstr "se esperaba una coma"
 
 #~ msgid "nonnegative integer expected"
 #~ msgstr "se esperaba un número entero no negativo"

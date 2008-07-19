@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-07-17 23:13+0200\n"
+"POT-Creation-Date: 2008-07-19 07:47+0200\n"
 "PO-Revision-Date: 2007-12-27 08:57+0100\n"
 "Last-Translator: Egon Willighagen <egon.willighagen@gmail.com>\n"
 "Language-Team: Nederlands <jmol-developers@lists.sourceforge.net>\n"
@@ -1221,26 +1221,18 @@ msgstr "Handleiding Muiscontrole"
 msgid "Translations"
 msgstr "Translaties"
 
-#: org/jmol/viewer/Compiler.java:2507 org/jmol/viewer/Eval.java:11198
+#: org/jmol/viewer/Compiler.java:2509 org/jmol/viewer/Eval.java:11198
 msgid "bad argument count"
 msgstr "injuist aantal parameters"
 
-#: org/jmol/viewer/Compiler.java:2508
+#: org/jmol/viewer/Compiler.java:2510
 #, java-format
 msgid "invalid context for {0}"
 msgstr "ongeldige context voor {0}"
 
-#: org/jmol/viewer/Compiler.java:2509 org/jmol/viewer/Eval.java:5117
+#: org/jmol/viewer/Compiler.java:2511 org/jmol/viewer/Eval.java:5117
 msgid "command expected"
 msgstr "commando verwacht"
-
-#: org/jmol/viewer/Compiler.java:2510
-msgid "comma or right parenthesis expected"
-msgstr "komma of rechter haakje verwacht"
-
-#: org/jmol/viewer/Compiler.java:2511
-msgid "comparison operator expected"
-msgstr "vergelijkingsoperator verwacht"
 
 #: org/jmol/viewer/Compiler.java:2512
 msgid "{ number number number } expected"
@@ -1255,78 +1247,64 @@ msgid "end of expression expected"
 msgstr "einde van commando verwacht"
 
 #: org/jmol/viewer/Compiler.java:2515
-msgid "equal sign expected"
-msgstr "gelijkheidsteken verwacht"
-
-#: org/jmol/viewer/Compiler.java:2516
 msgid "identifier or residue specification expected"
 msgstr "identificatie of residuespecificatie verwacht"
 
-#: org/jmol/viewer/Compiler.java:2517
+#: org/jmol/viewer/Compiler.java:2516
 msgid "invalid atom specification"
 msgstr "ongeldige atoomspecificatie"
 
-#: org/jmol/viewer/Compiler.java:2518
+#: org/jmol/viewer/Compiler.java:2517
 msgid "invalid chain specification"
 msgstr "ongeldige ketenspecificatie"
 
-#: org/jmol/viewer/Compiler.java:2519
+#: org/jmol/viewer/Compiler.java:2518
 #, java-format
 msgid "invalid expression token: {0}"
 msgstr "ongeldige expressie woord: {0}"
 
-#: org/jmol/viewer/Compiler.java:2520
+#: org/jmol/viewer/Compiler.java:2519
 msgid "invalid model specification"
 msgstr "ongeldige modelspecificatie"
 
-#: org/jmol/viewer/Compiler.java:2521
-msgid "left parenthesis expected"
-msgstr "linker haakje verwacht"
-
-#: org/jmol/viewer/Compiler.java:2522
+#: org/jmol/viewer/Compiler.java:2520
 #, java-format
 msgid "missing END for {0}"
 msgstr "missende END voor {0}"
 
-#: org/jmol/viewer/Compiler.java:2523 org/jmol/viewer/Eval.java:11222
+#: org/jmol/viewer/Compiler.java:2521 org/jmol/viewer/Eval.java:11222
 msgid "number expected"
 msgstr "getal verwacht"
 
-#: org/jmol/viewer/Compiler.java:2524
+#: org/jmol/viewer/Compiler.java:2522
 msgid "number or variable name expected"
 msgstr "getal of variabelenaam verwacht"
 
-#: org/jmol/viewer/Compiler.java:2525
+#: org/jmol/viewer/Compiler.java:2523
 msgid "residue specification (ALA, AL?, A*) expected"
 msgstr "residueindicator (ALA, AL?, A*) verwacht"
 
+#: org/jmol/viewer/Compiler.java:2524
+#, fuzzy, java-format
+msgid "{0} expected"
+msgstr "kleur verwacht"
+
+#: org/jmol/viewer/Compiler.java:2525
+#, fuzzy, java-format
+msgid "{0} unexpected"
+msgstr "kleur verwacht"
+
 #: org/jmol/viewer/Compiler.java:2526
-msgid "right brace expected"
-msgstr "rechter haakje verwacht"
-
-#: org/jmol/viewer/Compiler.java:2527
-msgid "right bracket expected"
-msgstr "rechter haakje verwacht"
-
-#: org/jmol/viewer/Compiler.java:2528
-msgid "right parenthesis expected"
-msgstr "rechter haakje verwacht"
-
-#: org/jmol/viewer/Compiler.java:2529 org/jmol/viewer/Eval.java:11228
-msgid "quoted string expected"
-msgstr "string in haakjes verwacht"
-
-#: org/jmol/viewer/Compiler.java:2530
 #, java-format
 msgid "unrecognized expression token: {0}"
 msgstr "onbekend expressie woord: {0}"
 
-#: org/jmol/viewer/Compiler.java:2531 org/jmol/viewer/Eval.java:11236
+#: org/jmol/viewer/Compiler.java:2527 org/jmol/viewer/Eval.java:11236
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "onbekende {0} parameter"
 
-#: org/jmol/viewer/Compiler.java:2532
+#: org/jmol/viewer/Compiler.java:2528
 #, java-format
 msgid "unrecognized token: {0}"
 msgstr "onbekend woord: {0}"
@@ -1528,6 +1506,10 @@ msgstr "naam van eigenschap verwacht"
 msgid "space group {0} was not found."
 msgstr "ruimtegroep {0} is niet bekend"
 
+#: org/jmol/viewer/Eval.java:11228
+msgid "quoted string expected"
+msgstr "string in haakjes verwacht"
+
 #: org/jmol/viewer/Eval.java:11229
 msgid "quoted string or identifier expected"
 msgstr "String-inhaakjes of geheel getal verwacht"
@@ -1601,6 +1583,27 @@ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
 "FOUT: Kan de waarde van deze variabele niet veranderen naar een booleaans: "
 "{0}"
+
+#~ msgid "comma or right parenthesis expected"
+#~ msgstr "komma of rechter haakje verwacht"
+
+#~ msgid "comparison operator expected"
+#~ msgstr "vergelijkingsoperator verwacht"
+
+#~ msgid "equal sign expected"
+#~ msgstr "gelijkheidsteken verwacht"
+
+#~ msgid "left parenthesis expected"
+#~ msgstr "linker haakje verwacht"
+
+#~ msgid "right brace expected"
+#~ msgstr "rechter haakje verwacht"
+
+#~ msgid "right bracket expected"
+#~ msgstr "rechter haakje verwacht"
+
+#~ msgid "right parenthesis expected"
+#~ msgstr "rechter haakje verwacht"
 
 #~ msgid "too many parentheses"
 #~ msgstr "te veel haakjes"

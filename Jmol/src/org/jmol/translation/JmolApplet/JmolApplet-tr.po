@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-07-17 23:13+0200\n"
+"POT-Creation-Date: 2008-07-19 07:47+0200\n"
 "PO-Revision-Date: 2007-05-10 19:34+0200\n"
 "Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -1220,26 +1220,18 @@ msgstr "Fare Elle"
 msgid "Translations"
 msgstr "Çeviriler"
 
-#: org/jmol/viewer/Compiler.java:2507 org/jmol/viewer/Eval.java:11198
+#: org/jmol/viewer/Compiler.java:2509 org/jmol/viewer/Eval.java:11198
 msgid "bad argument count"
 msgstr "Yanlış bağımsız değişken hesabı"
 
-#: org/jmol/viewer/Compiler.java:2508
+#: org/jmol/viewer/Compiler.java:2510
 #, fuzzy, java-format
 msgid "invalid context for {0}"
 msgstr "geçersiz ifade belirtkesi: {0}"
 
-#: org/jmol/viewer/Compiler.java:2509 org/jmol/viewer/Eval.java:5117
+#: org/jmol/viewer/Compiler.java:2511 org/jmol/viewer/Eval.java:5117
 msgid "command expected"
 msgstr "komut bekleniyor"
-
-#: org/jmol/viewer/Compiler.java:2510
-msgid "comma or right parenthesis expected"
-msgstr "virgül ya da parantez (sağ) bekleniyor"
-
-#: org/jmol/viewer/Compiler.java:2511
-msgid "comparison operator expected"
-msgstr "karşılaştırma operatörü bekleniyor"
 
 #: org/jmol/viewer/Compiler.java:2512
 msgid "{ number number number } expected"
@@ -1254,79 +1246,64 @@ msgid "end of expression expected"
 msgstr "ifade sonu bekleniyor"
 
 #: org/jmol/viewer/Compiler.java:2515
-msgid "equal sign expected"
-msgstr "eşittir işareti bekleniyor"
-
-#: org/jmol/viewer/Compiler.java:2516
 msgid "identifier or residue specification expected"
 msgstr "tanımlayıcı ya da artık belirtimi bekleniyor"
 
-#: org/jmol/viewer/Compiler.java:2517
+#: org/jmol/viewer/Compiler.java:2516
 msgid "invalid atom specification"
 msgstr "geçersiz atom belirtimi"
 
-#: org/jmol/viewer/Compiler.java:2518
+#: org/jmol/viewer/Compiler.java:2517
 msgid "invalid chain specification"
 msgstr "geçersiz zincir belirtimi"
 
-#: org/jmol/viewer/Compiler.java:2519
+#: org/jmol/viewer/Compiler.java:2518
 #, java-format
 msgid "invalid expression token: {0}"
 msgstr "geçersiz ifade belirtkesi: {0}"
 
-#: org/jmol/viewer/Compiler.java:2520
+#: org/jmol/viewer/Compiler.java:2519
 msgid "invalid model specification"
 msgstr "geçersiz model belirtimi"
 
-#: org/jmol/viewer/Compiler.java:2521
-#, fuzzy
-msgid "left parenthesis expected"
-msgstr "boole veya yüzde gerekli"
-
-#: org/jmol/viewer/Compiler.java:2522
+#: org/jmol/viewer/Compiler.java:2520
 #, java-format
 msgid "missing END for {0}"
 msgstr ""
 
-#: org/jmol/viewer/Compiler.java:2523 org/jmol/viewer/Eval.java:11222
+#: org/jmol/viewer/Compiler.java:2521 org/jmol/viewer/Eval.java:11222
 msgid "number expected"
 msgstr "sayı gerekli"
 
-#: org/jmol/viewer/Compiler.java:2524
+#: org/jmol/viewer/Compiler.java:2522
 msgid "number or variable name expected"
 msgstr "sayı ya da değişken adı bekleniyor"
 
-#: org/jmol/viewer/Compiler.java:2525
+#: org/jmol/viewer/Compiler.java:2523
 msgid "residue specification (ALA, AL?, A*) expected"
 msgstr "artık belirtimi (ALA, AL?, A*) bekleniyor"
 
+#: org/jmol/viewer/Compiler.java:2524
+#, fuzzy, java-format
+msgid "{0} expected"
+msgstr "altkomut gerekli"
+
+#: org/jmol/viewer/Compiler.java:2525
+#, fuzzy, java-format
+msgid "{0} unexpected"
+msgstr "renk gerekli"
+
 #: org/jmol/viewer/Compiler.java:2526
-msgid "right brace expected"
-msgstr "kaşlı ayraç (sağ) bekleniyor"
-
-#: org/jmol/viewer/Compiler.java:2527
-msgid "right bracket expected"
-msgstr "köşeli ayraç (sağ) bekleniyor"
-
-#: org/jmol/viewer/Compiler.java:2528
-msgid "right parenthesis expected"
-msgstr "sağ parantez bekleniyor"
-
-#: org/jmol/viewer/Compiler.java:2529 org/jmol/viewer/Eval.java:11228
-msgid "quoted string expected"
-msgstr "Tırnak içindeki karakter dizgisi gerekli"
-
-#: org/jmol/viewer/Compiler.java:2530
 #, java-format
 msgid "unrecognized expression token: {0}"
 msgstr "tanınmayan ifade belirtkesi: {0}"
 
-#: org/jmol/viewer/Compiler.java:2531 org/jmol/viewer/Eval.java:11236
+#: org/jmol/viewer/Compiler.java:2527 org/jmol/viewer/Eval.java:11236
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "tanınmayan {0} parametre"
 
-#: org/jmol/viewer/Compiler.java:2532
+#: org/jmol/viewer/Compiler.java:2528
 #, java-format
 msgid "unrecognized token: {0}"
 msgstr "tanınmayan belirtke: {0}"
@@ -1529,6 +1506,10 @@ msgstr "özellik adı gerekli"
 msgid "space group {0} was not found."
 msgstr "Uzay grubu {0} bulunamadı."
 
+#: org/jmol/viewer/Eval.java:11228
+msgid "quoted string expected"
+msgstr "Tırnak içindeki karakter dizgisi gerekli"
+
 #: org/jmol/viewer/Eval.java:11229
 msgid "quoted string or identifier expected"
 msgstr "tırnak içindeki karakter dizgisi veya tanımlayıcı gerekli"
@@ -1604,6 +1585,28 @@ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
 "HATA: Bu değişkenin değeri bir bool'a ayarlanamaz. önce \"{0}\" kullanın."
 
+#~ msgid "comma or right parenthesis expected"
+#~ msgstr "virgül ya da parantez (sağ) bekleniyor"
+
+#~ msgid "comparison operator expected"
+#~ msgstr "karşılaştırma operatörü bekleniyor"
+
+#~ msgid "equal sign expected"
+#~ msgstr "eşittir işareti bekleniyor"
+
+#, fuzzy
+#~ msgid "left parenthesis expected"
+#~ msgstr "boole veya yüzde gerekli"
+
+#~ msgid "right brace expected"
+#~ msgstr "kaşlı ayraç (sağ) bekleniyor"
+
+#~ msgid "right bracket expected"
+#~ msgstr "köşeli ayraç (sağ) bekleniyor"
+
+#~ msgid "right parenthesis expected"
+#~ msgstr "sağ parantez bekleniyor"
+
 #~ msgid "too many parentheses"
 #~ msgstr "çok fazla parantez"
 
@@ -1664,10 +1667,6 @@ msgstr ""
 
 #~ msgid "the {0} command requires that only one model be displayed"
 #~ msgstr "{0} komutu sadece bir model gösterilmesine ihtiyaç duyuyor"
-
-#, fuzzy
-#~ msgid "comma expected"
-#~ msgstr "altkomut gerekli"
 
 #, fuzzy
 #~ msgid "nonnegative integer expected"

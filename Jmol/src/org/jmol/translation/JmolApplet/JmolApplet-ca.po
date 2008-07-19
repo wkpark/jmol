@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-07-17 23:13+0200\n"
+"POT-Creation-Date: 2008-07-19 07:47+0200\n"
 "PO-Revision-Date: 2008-04-12 17:05+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
@@ -1222,26 +1222,18 @@ msgstr "Manual del ratolí"
 msgid "Translations"
 msgstr "Translacions"
 
-#: org/jmol/viewer/Compiler.java:2507 org/jmol/viewer/Eval.java:11198
+#: org/jmol/viewer/Compiler.java:2509 org/jmol/viewer/Eval.java:11198
 msgid "bad argument count"
 msgstr "recompte incorrecte dels arguments"
 
-#: org/jmol/viewer/Compiler.java:2508
+#: org/jmol/viewer/Compiler.java:2510
 #, java-format
 msgid "invalid context for {0}"
 msgstr "el testimoni d''expressió no és vàlid: {0}"
 
-#: org/jmol/viewer/Compiler.java:2509 org/jmol/viewer/Eval.java:5117
+#: org/jmol/viewer/Compiler.java:2511 org/jmol/viewer/Eval.java:5117
 msgid "command expected"
 msgstr "s'esperava una ordre"
-
-#: org/jmol/viewer/Compiler.java:2510
-msgid "comma or right parenthesis expected"
-msgstr "s'esperava una coma o un parèntesis dret"
-
-#: org/jmol/viewer/Compiler.java:2511
-msgid "comparison operator expected"
-msgstr "s'esperava un operador de comparació"
 
 #: org/jmol/viewer/Compiler.java:2512
 msgid "{ number number number } expected"
@@ -1256,79 +1248,64 @@ msgid "end of expression expected"
 msgstr "s'esperava la fi d'una expressió"
 
 #: org/jmol/viewer/Compiler.java:2515
-msgid "equal sign expected"
-msgstr "s'esperava un signe igual"
-
-#: org/jmol/viewer/Compiler.java:2516
 msgid "identifier or residue specification expected"
 msgstr "s'esperava un identificador o una especifació de residu"
 
-#: org/jmol/viewer/Compiler.java:2517
+#: org/jmol/viewer/Compiler.java:2516
 msgid "invalid atom specification"
 msgstr "l'especificació d'àtom no és vàlida"
 
-#: org/jmol/viewer/Compiler.java:2518
+#: org/jmol/viewer/Compiler.java:2517
 msgid "invalid chain specification"
 msgstr "l'especificació de cadena no és vàlida"
 
-#: org/jmol/viewer/Compiler.java:2519
+#: org/jmol/viewer/Compiler.java:2518
 #, java-format
 msgid "invalid expression token: {0}"
 msgstr "el testimoni d''expressió no és vàlid: {0}"
 
-#: org/jmol/viewer/Compiler.java:2520
+#: org/jmol/viewer/Compiler.java:2519
 msgid "invalid model specification"
 msgstr "l'especificació de model no és vàlida"
 
-#: org/jmol/viewer/Compiler.java:2521
-#, fuzzy
-msgid "left parenthesis expected"
-msgstr "s'esperava un booleà o un percentatge"
-
-#: org/jmol/viewer/Compiler.java:2522
+#: org/jmol/viewer/Compiler.java:2520
 #, java-format
 msgid "missing END for {0}"
 msgstr ""
 
-#: org/jmol/viewer/Compiler.java:2523 org/jmol/viewer/Eval.java:11222
+#: org/jmol/viewer/Compiler.java:2521 org/jmol/viewer/Eval.java:11222
 msgid "number expected"
 msgstr "s'esperava un nombre"
 
-#: org/jmol/viewer/Compiler.java:2524
+#: org/jmol/viewer/Compiler.java:2522
 msgid "number or variable name expected"
 msgstr "s'esperava un nombre o nom de variable"
 
-#: org/jmol/viewer/Compiler.java:2525
+#: org/jmol/viewer/Compiler.java:2523
 msgid "residue specification (ALA, AL?, A*) expected"
 msgstr "s'esperava una especificació de residu (ALA, AL?, A*)"
 
+#: org/jmol/viewer/Compiler.java:2524
+#, fuzzy, java-format
+msgid "{0} expected"
+msgstr "s'esperava una subordre"
+
+#: org/jmol/viewer/Compiler.java:2525
+#, fuzzy, java-format
+msgid "{0} unexpected"
+msgstr "s'esperava un color"
+
 #: org/jmol/viewer/Compiler.java:2526
-msgid "right brace expected"
-msgstr "s'esperava un claudàtor dret"
-
-#: org/jmol/viewer/Compiler.java:2527
-msgid "right bracket expected"
-msgstr "s'esperava un claudàtor dret"
-
-#: org/jmol/viewer/Compiler.java:2528
-msgid "right parenthesis expected"
-msgstr "s'esperava un parèntesis dret"
-
-#: org/jmol/viewer/Compiler.java:2529 org/jmol/viewer/Eval.java:11228
-msgid "quoted string expected"
-msgstr "s'esperava una cadena entre cometes"
-
-#: org/jmol/viewer/Compiler.java:2530
 #, java-format
 msgid "unrecognized expression token: {0}"
 msgstr "no es reconeix el testimoni de l''expressió: {0}"
 
-#: org/jmol/viewer/Compiler.java:2531 org/jmol/viewer/Eval.java:11236
+#: org/jmol/viewer/Compiler.java:2527 org/jmol/viewer/Eval.java:11236
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "el paràmetre {0} no està reconegut"
 
-#: org/jmol/viewer/Compiler.java:2532
+#: org/jmol/viewer/Compiler.java:2528
 #, java-format
 msgid "unrecognized token: {0}"
 msgstr "no es reconeix el testimoni: {0}"
@@ -1530,6 +1507,10 @@ msgstr "s'esperava un nom de propietat"
 msgid "space group {0} was not found."
 msgstr "no s''ha trobat el grup espacial {0}."
 
+#: org/jmol/viewer/Eval.java:11228
+msgid "quoted string expected"
+msgstr "s'esperava una cadena entre cometes"
+
 #: org/jmol/viewer/Eval.java:11229
 msgid "quoted string or identifier expected"
 msgstr "s'esperava una cadena entre cometes o un identificador"
@@ -1608,6 +1589,28 @@ msgstr ""
 "ERROR: No es pot definir el valor d''aquesta variable a un booleà. Utilitzeu "
 "«{0}» primer."
 
+#~ msgid "comma or right parenthesis expected"
+#~ msgstr "s'esperava una coma o un parèntesis dret"
+
+#~ msgid "comparison operator expected"
+#~ msgstr "s'esperava un operador de comparació"
+
+#~ msgid "equal sign expected"
+#~ msgstr "s'esperava un signe igual"
+
+#, fuzzy
+#~ msgid "left parenthesis expected"
+#~ msgstr "s'esperava un booleà o un percentatge"
+
+#~ msgid "right brace expected"
+#~ msgstr "s'esperava un claudàtor dret"
+
+#~ msgid "right bracket expected"
+#~ msgstr "s'esperava un claudàtor dret"
+
+#~ msgid "right parenthesis expected"
+#~ msgstr "s'esperava un parèntesis dret"
+
 #~ msgid "too many parentheses"
 #~ msgstr "masses parèntesis"
 
@@ -1665,10 +1668,6 @@ msgstr ""
 
 #~ msgid "The {0} command is not available for the applet."
 #~ msgstr "L'ordre {0} no està disponible a la miniaplicació."
-
-#, fuzzy
-#~ msgid "comma expected"
-#~ msgstr "s'esperava una subordre"
 
 #, fuzzy
 #~ msgid "nonnegative integer expected"

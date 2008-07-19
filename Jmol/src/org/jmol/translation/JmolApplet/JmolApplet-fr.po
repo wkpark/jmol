@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-07-17 23:13+0200\n"
+"POT-Creation-Date: 2008-07-19 07:47+0200\n"
 "PO-Revision-Date: 2008-04-12 17:07+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sourceforge.net>\n"
@@ -1223,26 +1223,18 @@ msgstr "Manuel Souris"
 msgid "Translations"
 msgstr "Traductions"
 
-#: org/jmol/viewer/Compiler.java:2507 org/jmol/viewer/Eval.java:11198
+#: org/jmol/viewer/Compiler.java:2509 org/jmol/viewer/Eval.java:11198
 msgid "bad argument count"
 msgstr "mauvais nombre d'arguments"
 
-#: org/jmol/viewer/Compiler.java:2508
+#: org/jmol/viewer/Compiler.java:2510
 #, java-format
 msgid "invalid context for {0}"
 msgstr "context incorrect pour {0}"
 
-#: org/jmol/viewer/Compiler.java:2509 org/jmol/viewer/Eval.java:5117
+#: org/jmol/viewer/Compiler.java:2511 org/jmol/viewer/Eval.java:5117
 msgid "command expected"
 msgstr "commande attendue"
-
-#: org/jmol/viewer/Compiler.java:2510
-msgid "comma or right parenthesis expected"
-msgstr "virgule ou parenthèse fermante attendue"
-
-#: org/jmol/viewer/Compiler.java:2511
-msgid "comparison operator expected"
-msgstr "opérateur de comparaison attendu"
 
 #: org/jmol/viewer/Compiler.java:2512
 msgid "{ number number number } expected"
@@ -1257,78 +1249,64 @@ msgid "end of expression expected"
 msgstr "fin d'expression attendue"
 
 #: org/jmol/viewer/Compiler.java:2515
-msgid "equal sign expected"
-msgstr "signe égal attendu"
-
-#: org/jmol/viewer/Compiler.java:2516
 msgid "identifier or residue specification expected"
 msgstr ""
 
-#: org/jmol/viewer/Compiler.java:2517
+#: org/jmol/viewer/Compiler.java:2516
 msgid "invalid atom specification"
 msgstr "spécification d'atome incorrecte"
 
-#: org/jmol/viewer/Compiler.java:2518
+#: org/jmol/viewer/Compiler.java:2517
 msgid "invalid chain specification"
 msgstr "spécification de chaîne incorrecte"
 
-#: org/jmol/viewer/Compiler.java:2519
+#: org/jmol/viewer/Compiler.java:2518
 #, java-format
 msgid "invalid expression token: {0}"
 msgstr "élément d''expression incorrect: {0}"
 
-#: org/jmol/viewer/Compiler.java:2520
+#: org/jmol/viewer/Compiler.java:2519
 msgid "invalid model specification"
 msgstr "spécification de modèle incorrecte"
 
-#: org/jmol/viewer/Compiler.java:2521
-msgid "left parenthesis expected"
-msgstr "parenthèse ouvrante attendue"
-
-#: org/jmol/viewer/Compiler.java:2522
+#: org/jmol/viewer/Compiler.java:2520
 #, java-format
 msgid "missing END for {0}"
 msgstr ""
 
-#: org/jmol/viewer/Compiler.java:2523 org/jmol/viewer/Eval.java:11222
+#: org/jmol/viewer/Compiler.java:2521 org/jmol/viewer/Eval.java:11222
 msgid "number expected"
 msgstr "nombre attendu"
 
-#: org/jmol/viewer/Compiler.java:2524
+#: org/jmol/viewer/Compiler.java:2522
 msgid "number or variable name expected"
 msgstr "nombre ou nom de variable attendu"
 
-#: org/jmol/viewer/Compiler.java:2525
+#: org/jmol/viewer/Compiler.java:2523
 msgid "residue specification (ALA, AL?, A*) expected"
 msgstr "spécification de résidu (ALA, AL?, A*) attendue"
 
+#: org/jmol/viewer/Compiler.java:2524
+#, fuzzy, java-format
+msgid "{0} expected"
+msgstr "virgule attendue"
+
+#: org/jmol/viewer/Compiler.java:2525
+#, fuzzy, java-format
+msgid "{0} unexpected"
+msgstr "couleur attendue"
+
 #: org/jmol/viewer/Compiler.java:2526
-msgid "right brace expected"
-msgstr "crochet fermant attendue"
-
-#: org/jmol/viewer/Compiler.java:2527
-msgid "right bracket expected"
-msgstr "crochet fermant attendu"
-
-#: org/jmol/viewer/Compiler.java:2528
-msgid "right parenthesis expected"
-msgstr "parenthèse fermante attendue"
-
-#: org/jmol/viewer/Compiler.java:2529 org/jmol/viewer/Eval.java:11228
-msgid "quoted string expected"
-msgstr "chaîne de caractères entre guillemets attendue"
-
-#: org/jmol/viewer/Compiler.java:2530
 #, java-format
 msgid "unrecognized expression token: {0}"
 msgstr "élément d''expression non reconnu: {0}"
 
-#: org/jmol/viewer/Compiler.java:2531 org/jmol/viewer/Eval.java:11236
+#: org/jmol/viewer/Compiler.java:2527 org/jmol/viewer/Eval.java:11236
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "Paramètre {0} non reconnu"
 
-#: org/jmol/viewer/Compiler.java:2532
+#: org/jmol/viewer/Compiler.java:2528
 #, java-format
 msgid "unrecognized token: {0}"
 msgstr "élément non reconnu: {0}"
@@ -1531,6 +1509,10 @@ msgstr "nom de propriété attendu"
 msgid "space group {0} was not found."
 msgstr "Le groupe spatial {0} n'a pas été trouvé"
 
+#: org/jmol/viewer/Eval.java:11228
+msgid "quoted string expected"
+msgstr "chaîne de caractères entre guillemets attendue"
+
 #: org/jmol/viewer/Eval.java:11229
 msgid "quoted string or identifier expected"
 msgstr "chaîne de caractères entre guillemets ou identifiant attendu"
@@ -1604,6 +1586,27 @@ msgstr ""
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
 
+#~ msgid "comma or right parenthesis expected"
+#~ msgstr "virgule ou parenthèse fermante attendue"
+
+#~ msgid "comparison operator expected"
+#~ msgstr "opérateur de comparaison attendu"
+
+#~ msgid "equal sign expected"
+#~ msgstr "signe égal attendu"
+
+#~ msgid "left parenthesis expected"
+#~ msgstr "parenthèse ouvrante attendue"
+
+#~ msgid "right brace expected"
+#~ msgstr "crochet fermant attendue"
+
+#~ msgid "right bracket expected"
+#~ msgstr "crochet fermant attendu"
+
+#~ msgid "right parenthesis expected"
+#~ msgstr "parenthèse fermante attendue"
+
 #~ msgid "too many parentheses"
 #~ msgstr "trop de parenthèses"
 
@@ -1661,9 +1664,6 @@ msgstr ""
 
 #~ msgid "The {0} command is not available for the applet."
 #~ msgstr "La commande {0} n'est pas disponible pour l'applet."
-
-#~ msgid "comma expected"
-#~ msgstr "virgule attendue"
 
 #~ msgid "nonnegative integer expected"
 #~ msgstr "entier positif attendu"

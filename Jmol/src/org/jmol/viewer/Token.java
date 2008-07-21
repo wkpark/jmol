@@ -251,7 +251,7 @@ public class Token {
   final static int end          = 9 | flowCommand | noeval;
   
   final static int animation    = command | 1;
-  final static int axes         = command | 2 | setparam;
+  final static int axes         = command | 2 | setparam | defaultON;
   final static int backbone     = command | 3 | predefinedset | defaultON;
   final static int background   = command | 4 | setparam;
   final static int bondorder    = command | 5;
@@ -264,19 +264,19 @@ public class Token {
   final static int console      = command | 11 | defaultON;
 //final static int data         see mathfunc
   final static int delay        = command | 12 | defaultON;
-  final static int depth        = command | 13;
+  final static int depth        = command | 13 | defaultON;
   final static int dipole       = command | 14;
-  final static int dots         = command | 15;
+  final static int dots         = command | 15 | defaultON;
   final static int draw         = command | 16;
-  final static int ellipsoid    = command | 17;
+  final static int ellipsoid    = command | 17 | defaultON;
   final static int exit         = command | 18 | noArgs;
 //final static int file         see mathfunc
   final static int font         = command | 19;
   final static int frame        = command | 20;
   final static int frank        = command | 21 | setparam | defaultON;
-  final static int geosurface   = command | 22;
+  final static int geosurface   = command | 22 | defaultON;
   final static int gotocmd      = command | 23;
-  final static int halo         = command | 24;
+  final static int halo         = command | 24 | defaultON;
   final static int hbond        = command | 25 | setparam | expression | defaultON;
   final static int history      = command | 26 | setparam;
   final static int initialize   = command | 27 | noArgs;
@@ -289,7 +289,7 @@ public class Token {
   final static int minimize     = command | 33;
   final static int mo           = command | 34;
 //final static int model        see mathfunc
-  final static int monitor      = command | 35 | setparam | expression;
+  final static int monitor      = command | 35 | setparam | expression | defaultON;
   final static int move         = command | 36;
   final static int moveto       = command | 37;
   final static int navigate     = command | 38;
@@ -303,24 +303,24 @@ public class Token {
   final static int restore      = command | 45;
   final static int ribbon       = command | 46 | defaultON;
   final static int rocket       = command | 47 | defaultON;
-  final static int rotate       = command | 48;
+  final static int rotate       = command | 48 | defaultON;
   final static int rotateSelected = command | 49;
   final static int save         = command | 50;
 //final static int script   see mathfunc
   final static int selectionHalo = command | 51 | setparam | defaultON;
   final static int show         = command | 52;
-  final static int slab         = command | 53;
-  final static int spacefill    = command | 54;
-  final static int spin         = command | 55 | setparam;
+  final static int slab         = command | 53 | defaultON;
+  final static int spacefill    = command | 54 | defaultON;
+  final static int spin         = command | 55 | setparam | defaultON;
   final static int ssbond       = command | 56 | setparam | defaultON;
-  final static int star         = command | 57;
-  final static int stereo       = command | 58;
+  final static int star         = command | 57 | defaultON;
+  final static int stereo       = command | 58 | defaultON;
   final static int strands      = command | 59 | setparam | defaultON;
   final static int sync         = command | 60;
   final static int trace        = command | 61 | defaultON;
   final static int translate    = command | 62;
   final static int translateSelected = command | 63;
-  final public static int unitcell = command | 64 | setparam | expression | predefinedset;
+  final public static int unitcell = command | 64 | setparam | expression | predefinedset | defaultON;
   final static int vector       = command | 65;
   final static int vibration    = command | 66;
   final static int wireframe    = command | 67 | defaultON;
@@ -455,7 +455,7 @@ public class Token {
   final public static int fracXyz   =10 | mathproperty | settable;
   final public static int vibXyz    =11 | mathproperty | settable;
   final static int property         =12 | mathproperty | setparam | settable;
-  final public static int boundbox  =13 | mathproperty | setparam | command;
+  final public static int boundbox  =13 | mathproperty | setparam | command | defaultON;
   final public static int adpmax    =14 | mathproperty;
   final public static int adpmin    =15 | mathproperty;
   

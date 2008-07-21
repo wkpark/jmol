@@ -2086,8 +2086,10 @@ class Eval { //implements Runnable {
    */
 
   private void checkLength(int length) throws ScriptException {
-    if (length >= 0)
+    if (length >= 0) {
       checkLength(length, 0);
+      return;
+    }
     //max
     if (statementLength <= -length)
       return;

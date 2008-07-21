@@ -213,7 +213,7 @@ public class MeasurementTable extends JDialog {
       if (col == 0)
         return viewer.getMeasurementStringValue(row);
       int[] countPlusIndices = viewer.getMeasurementCountPlusIndices(row);
-      if (col >= countPlusIndices.length)
+      if (col > countPlusIndices[0])
         return null;
       int atomIndex = countPlusIndices[col];
       return (viewer.getAtomInfo(atomIndex >= 0 ? atomIndex : -row * 10 - col));

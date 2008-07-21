@@ -199,10 +199,12 @@ public class Measurement {
    */
   public String getMeasurementScript(String sep) {
     String str = "";
+    boolean asScript = (sep.equals(" "));
     for (int i = 1; i <= count; i++) {
       int atomIndex = countPlusIndices[i];
-      str += (i > 1 ? sep : " ") + (atomIndex >= 0 ? "{atomIndex=" + countPlusIndices[i] + "}"
-           : Escape.escape(getAtom(i))); 
+      str += (i > 1 ? sep : " ") + (atomIndex < 0 ? Escape.escape(getAtom(i))
+          : asScript ? "{atomIndex=" + countPlusIndices[i] + "}"
+          : viewer.getAtomInfo(atomIndex)); 
     }
     return str;  
   }
@@ -345,7 +347,7 @@ public class Measurement {
 
   public Vector toVector() {
     Vector V = new Vector();
-    for (int i = 0; i < count + 1; i++ )
+    for (int i = 1; i <= count; i++ )
       V.addElement(getLabel(i, false));
     V.addElement(strMeasurement);
     return V;  
@@ -382,7 +384,7 @@ public class Measurement {
     int atomIndex = countPlusIndices[i];
     return (atomIndex < 0 ? Escape.escape(getAtom(i))
         : asBitSet ? "({" + atomIndex + "})"
-        : modelSet.atoms[atomIndex].getInfo());
+        : viewer.getAtomInfo(atomIndex));
   }
 
 }

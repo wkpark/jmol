@@ -40,6 +40,7 @@ import org.jmol.api.JmolExportInterface;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.shape.ShapeRenderer;
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 
 /**
  * Provides high-level graphics primitives for 3D visualization.
@@ -2594,8 +2595,22 @@ final public class Graphics3D implements JmolRendererInterface {
     int len = 0;
     if (strColor == null || (len = strColor.length()) == 0)
       return 0;
+    int red, grn, blu;
     if (strColor.charAt(0) == '[' && strColor.charAt(len - 1) == ']') {
       String check;
+      if (strColor.indexOf(",") >= 0) {
+        String[] tokens = TextFormat.split(strColor.substring(1, strColor.length() - 1), ",");
+        if (tokens.length != 3)
+          return 0;
+        try {
+          red = Integer.parseInt(tokens[0]);
+          grn = Integer.parseInt(tokens[1]);
+          blu = Integer.parseInt(tokens[2]);
+          return (0xFF000000 | (red & 0xFF) << 16 | (grn & 0xFF) << 8 | (blu & 0xFF));
+        } catch (NumberFormatException e) {
+          return 0;
+        }
+      }
       switch (len) {
       case 9:
         check = "x";
@@ -2613,9 +2628,9 @@ final public class Graphics3D implements JmolRendererInterface {
     }
     if (len == 7 && strColor.charAt(0) == '#') {
       try {
-        int red = Integer.parseInt(strColor.substring(1, 3), 16);
-        int grn = Integer.parseInt(strColor.substring(3, 5), 16);
-        int blu = Integer.parseInt(strColor.substring(5, 7), 16);
+        red = Integer.parseInt(strColor.substring(1, 3), 16);
+        grn = Integer.parseInt(strColor.substring(3, 5), 16);
+        blu = Integer.parseInt(strColor.substring(5, 7), 16);
         return (0xFF000000 | (red & 0xFF) << 16 | (grn & 0xFF) << 8 | (blu & 0xFF));
       } catch (NumberFormatException e) {
         return 0;

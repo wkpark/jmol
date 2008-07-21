@@ -368,9 +368,23 @@ public class Draw extends MeshCollection {
   }
 
   private Point3f getSpinCenter(String axisID, int modelIndex) {
-    int pt = axisID.indexOf(".");
-    String id = (pt > 0 ? axisID.substring(0, pt) : axisID);
-    int vertexIndex = (pt > 0 ? Integer.parseInt(axisID.substring(pt + 1)) : 0) - 1;
+    String id;
+    int vertexIndex = -1;
+    int pt = axisID.indexOf("[");
+    int pt2;
+    if (pt > 0) {
+      id = axisID.substring(0,pt);
+      if ((pt2 = axisID.lastIndexOf("]")) < pt)
+        pt2 = axisID.length();
+      try {
+        vertexIndex = Integer.parseInt(axisID.substring(pt + 1), pt2) - 1;
+      } catch (Exception e) {
+        // ignore
+      }
+    } else {
+      id = axisID;
+      vertexIndex = -1;
+    }
     int meshIndex = getIndexFromName(id);
     DrawMesh m;
     return (meshIndex < 0 || (m = dmeshes[meshIndex]).vertices == null
@@ -1035,7 +1049,7 @@ public class Draw extends MeshCollection {
     StringBuffer str = new StringBuffer();
     if (!mesh.isFixed && iModel >= 0 && modelCount > 1)
       appendCmd(str,"frame " + viewer.getModelNumberDotted(iModel));
-    str.append("  draw ").append(mesh.thisID);
+    str.append("  draw ID ").append(mesh.thisID);
     if (mesh.isFixed)
       str.append(" fixed");
     if (iModel < 0)

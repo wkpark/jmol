@@ -279,7 +279,7 @@ public class LcaoCartoon extends Isosurface {
       appendCmd(sb, "lcaoCartoon translucent " + translucentLevel);
     for (int i = meshCount; --i >= 0;)
       if (!meshes[i].visible)
-        appendCmd(sb, "lcaoCartoon " + meshes[i].thisID + " off");
+        appendCmd(sb, "lcaoCartoon ID " + meshes[i].thisID + " off");
     return super.getShapeState() + sb.toString();
   }
 }

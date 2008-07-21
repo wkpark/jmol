@@ -786,14 +786,13 @@ class Eval { //implements Runnable {
           } else {
             // identifiers cannot have periods; file names can, though
             s = (String) v;
-            tok = (isExpression ? Token.bitset
-                : isClauseDefine ? Token.string : s.indexOf(".") >= 0
-                    || s.indexOf("=") >= 0 || s.indexOf("[") >= 0
-                    || s.indexOf("{") >= 0 ? Token.string : Token.identifier);
             if (isExpression)
-              fixed[j] = new Token(Token.bitset, getAtomBitSet(this, viewer, s));
+              v = getAtomBitSet(this, viewer, s);
             else
-              fixed[j] = new Token(tok, s);
+              tok = (isClauseDefine ? Token.string : s.indexOf(".") >= 0
+                  || s.indexOf("=") >= 0 || s.indexOf("[") >= 0
+                  || s.indexOf("{") >= 0 ? Token.string : Token.identifier);
+            fixed[j] = new Token(tok, v);
           }
         } else if (v instanceof BitSet) {
           fixed[j] = new Token(Token.bitset, v);
@@ -1641,7 +1640,7 @@ class Eval { //implements Runnable {
         }
         if (val instanceof Integer || tokValue == Token.integer) {
           comparisonValue *= (Compiler
-              .tokAttr(tokWhat, Token.atompropertyfloat) ? 100 : 1);
+              .tokAttr(tokWhat, Token.comparefloatx100) ? 100 : 1);
           comparisonFloat = comparisonValue;
           if (isModel && viewer.haveFileSet()) {
             if (comparisonValue >= 1000 && comparisonValue < 1000000) {
@@ -2216,7 +2215,7 @@ class Eval { //implements Runnable {
   }
 
   private String objectNameParameter(int index) throws ScriptException {
-    if (!checkToken(index) || getToken(index).tok != Token.identifier)
+    if (!checkToken(index))
       error(ERROR_objectNameExpected);
     return parameterAsString(index);
   }
@@ -2342,7 +2341,7 @@ class Eval { //implements Runnable {
         String id = objectNameParameter(++i);
         // allow for $pt2.3 -- specific vertex
         if (tokAt(i + 1) == Token.leftsquare) {
-          id += "." + intParameter(i + 2);
+          id += "[" + intParameter(i + 2) + "]";
           if (getToken(i + 3).tok != Token.rightsquare)
             error(ERROR_invalidArgument);
         }
@@ -2542,8 +2541,8 @@ class Eval { //implements Runnable {
 
   private boolean isColorParam(int i) {
     int tok = tokAt(i);
-    return (tok == Token.colorRGB || tok == Token.leftsquare
-        || tok == Token.point3f || isPoint3f(i) || (tok == Token.string || tok == Token.identifier)
+    return (tok == Token.leftsquare || tok == Token.point3f || isPoint3f(i) 
+        || (tok == Token.string || tok == Token.identifier)
         && Graphics3D.getArgbFromString((String) statement[i].value) != 0);
   }
 
@@ -2567,8 +2566,6 @@ class Eval { //implements Runnable {
         return Graphics3D.getArgbFromString(parameterAsString(index));
       case Token.leftsquare:
         return getColorTriad(++index);
-      case Token.colorRGB:
-        return theToken.intValue;
       case Token.point3f:
         pt = (Point3f) theToken.value;
         break;
@@ -2588,24 +2585,6 @@ class Eval { //implements Runnable {
   static int colorPtToInt(Point3f pt) {
     return 0xFF000000 | (((int) pt.x) & 0xFF) << 16
         | (((int) pt.y) & 0xFF) << 8 | (((int) pt.z) & 0xFF);
-  }
-
-  private int getArgbOrPaletteParam(int index) throws ScriptException {
-    if (checkToken(index)) {
-      switch (getToken(index).tok) {
-      case Token.leftsquare:
-      case Token.colorRGB:
-        return getArgbParam(index);
-      case Token.rasmol:
-        return Token.rasmol;
-      case Token.none:
-      case Token.jmol:
-        return Token.jmol;
-      }
-    }
-    error(ERROR_colorOrPaletteRequired);
-    //unattainable
-    return 0;
   }
 
   private int getColorTriad(int i) throws ScriptException {
@@ -3613,14 +3592,15 @@ class Eval { //implements Runnable {
   }
 
   private void color() throws ScriptException {
-    int argb;
+    int argb = 0;
     if (isColorParam(1)) {
       colorObject(Token.atoms, 1);
       return;
     }
     switch (getToken(1).tok) {
     case Token.dollarsign:
-      colorNamedObject(2);
+      // color $ whatever green
+      colorShape(setShapeByNameParameter(2), 3, false);
       return;
     case Token.none:
     case Token.spacefill:
@@ -3699,7 +3679,21 @@ class Eval { //implements Runnable {
     case Token.hydrogen:
       //color element
       String str = parameterAsString(1);
-      argb = getArgbOrPaletteParam(2);
+      if (checkToken(2)) {
+        switch (getToken(2).tok) {
+        case Token.rasmol:
+          argb = Token.rasmol;
+          break;
+        case Token.none:
+        case Token.jmol:
+          argb = Token.jmol;
+          break;
+        default:
+          argb = getArgbParam(2);
+        }
+      }
+      if (argb == 0)
+        error(ERROR_colorOrPaletteRequired);
       checkStatementLength(iToken + 1);
       if (str.equalsIgnoreCase("axes")) {
         setStringProperty("axesColor", Escape.escapeColor(argb));
@@ -3762,12 +3756,6 @@ class Eval { //implements Runnable {
       }
     }
     return false;
-  }
-
-  private void colorNamedObject(int index) throws ScriptException {
-    // color $ whatever green
-    int shapeType = setShapeByNameParameter(index);
-    colorShape(shapeType, index + 1, false);
   }
 
   private void colorObject(int tokObject, int index) throws ScriptException {
@@ -5710,7 +5698,8 @@ class Eval { //implements Runnable {
 
   private void ellipsoid() throws ScriptException {
     int mad = 0;
-    int tok = (statementLength == 1 ? Token.on : tokAt(1));
+    int i = 1;
+    int tok = (statementLength == 1 ? Token.on : getToken(i).tok);
     switch (tok) {
     case Token.on:
       mad = 50;
@@ -5721,12 +5710,11 @@ class Eval { //implements Runnable {
       mad = intParameter(1);
       break;
     case Token.identifier:
-      String id = parameterAsString(1);
-      if (id.length() == 0)
-        error(ERROR_invalidArgument);
       viewer.loadShape(JmolConstants.SHAPE_ELLIPSOIDS);
-      setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS, "thisID", id);      
-      for (int i = 2; i < statementLength; i++) {
+      if (parameterAsString(i).equalsIgnoreCase("ID"))
+        i++;
+      setShapeId(JmolConstants.SHAPE_ELLIPSOIDS, i, false);
+      for (++i; i < statementLength; i++) {
         String key = parameterAsString(i);
         Object value = null;
         if (key.equalsIgnoreCase("modelIndex")) {
@@ -5791,6 +5779,16 @@ class Eval { //implements Runnable {
     setShapeSize(JmolConstants.SHAPE_ELLIPSOIDS, mad);
   }
   
+  private int setShapeId(int iShape, int i, boolean idSeen) throws ScriptException {
+    if (idSeen)
+      error(ERROR_invalidArgument);
+    String id = parameterAsString(i);
+    if (id.length() == 0)
+      error(ERROR_invalidArgument);
+    setShapeProperty(iShape, "thisID", id.toLowerCase());
+    return i;
+  }
+
   private void setAtomShapeSize(int shape, int defOn) throws ScriptException {
     //halo star spacefill
     int mad = 0;
@@ -6035,6 +6033,10 @@ class Eval { //implements Runnable {
         break;
       case Token.identifier:
         String cmd = parameterAsString(i);
+        if (cmd.equalsIgnoreCase("id")) {
+          setShapeId(JmolConstants.SHAPE_DIPOLES, ++i, idSeen);
+          break;
+        }
         if (cmd.equalsIgnoreCase("cross")) {
           propertyName = "cross";
           propertyValue = Boolean.TRUE;
@@ -6071,10 +6073,7 @@ class Eval { //implements Runnable {
           propertyValue = new Float(floatParameter(++i));
           break;
         }
-        if (idSeen)
-          error(ERROR_invalidArgument);
-        propertyName = "thisID"; // might be "molecular"
-        propertyValue = cmd.toLowerCase();
+        setShapeId(JmolConstants.SHAPE_DIPOLES, i, idSeen);
         break;
       default:
         error(ERROR_invalidArgument);
@@ -9403,6 +9402,10 @@ class Eval { //implements Runnable {
         break;
       case Token.identifier:
         String str = parameterAsString(i);
+        if (str.equalsIgnoreCase("id")) {
+          setShapeId(JmolConstants.SHAPE_PMESH, ++i, idSeen);
+          break;
+        }
         if (str.equalsIgnoreCase("FIXED")) {
           propertyName = "fixed";
           propertyValue = Boolean.TRUE;
@@ -9417,10 +9420,7 @@ class Eval { //implements Runnable {
           propertyValue = Boolean.FALSE;
           break;
         }
-        if (idSeen)
-          error(ERROR_invalidArgument);
-        propertyName = "thisID";
-        propertyValue = str;
+        i = setShapeId(JmolConstants.SHAPE_PMESH, i, idSeen);
         break;
       case Token.model:
         int modelIndex = modelNumberParameter(++i);
@@ -9563,6 +9563,15 @@ class Eval { //implements Runnable {
         i = iToken;
         havePoints = true;
         break;
+      case Token.plane:
+        if (havePoints) {
+          propertyValue = planeParameter(++i);
+          i = iToken;
+          propertyName = "planedef";
+        } else {
+          propertyName = "plane";
+        }
+        break;
       case Token.bitset:
       case Token.expressionBegin:
         propertyName = "atomSet";
@@ -9614,11 +9623,12 @@ class Eval { //implements Runnable {
           intScale = intParameter(i);
         }
         break;
-      case Token.plane:
-        propertyName = "plane";
-        break;
       case Token.identifier:
         String str = parameterAsString(i);
+        if (str.equalsIgnoreCase("id")) {
+          setShapeId(JmolConstants.SHAPE_DRAW, ++i, idSeen);
+          break;
+        }
         if (str.equalsIgnoreCase("FIXED")) {
           propertyName = "fixed";
           propertyValue = Boolean.TRUE;
@@ -9705,11 +9715,7 @@ class Eval { //implements Runnable {
           propertyName = "width";
           break;
         }
-        if (idSeen)
-          error(ERROR_invalidArgument);
-        propertyName = "thisID";
-        propertyValue = str;
-        i = iToken;
+        setShapeId(JmolConstants.SHAPE_DRAW, i, idSeen);
         break;
       case Token.dollarsign:
         // $drawObject[m]
@@ -10549,6 +10555,10 @@ class Eval { //implements Runnable {
         break;
       case Token.identifier:
         str = parameterAsString(i);
+        if (str.equalsIgnoreCase("id")) {
+          setShapeId(iShape, ++i, idSeen);
+          break;
+        }
         if (str.equalsIgnoreCase("REMAPPABLE")) { // testing only
           propertyName = "remappable";
           break;
@@ -10833,8 +10843,7 @@ class Eval { //implements Runnable {
           propertyValue = data;
           break;
         }
-        propertyName = "thisID";
-        propertyValue = str;
+        i = setShapeId(iShape, i, idSeen);
         break;
       case Token.all:
         if (idSeen)
@@ -11292,8 +11301,7 @@ class Eval { //implements Runnable {
       return "";
     StringBuffer sb = new StringBuffer();
     int tok = statement[0].tok;
-    boolean addParens = (Compiler.tokAttr(tok, Token.embeddedExpression));
-    boolean useBraces = (Compiler.tokAttr(tok, Token.implicitExpression));
+    boolean useBraces = true;//(!Compiler.tokAttr(tok, Token.atomExpressionCommand));
     boolean inBrace = false;
     boolean inClauseDefine = false;
     boolean setEquals = (tok == Token.set && ((String) statement[0].value) == "");
@@ -11313,16 +11321,12 @@ class Eval { //implements Runnable {
       case Token.expressionBegin:
         if (useBraces)
           sb.append("{");
-        else if (addParens)
-          sb.append("(");
         continue;
       case Token.expressionEnd:
         if (inClauseDefine && i == statementLength - 1)
           useBraces = false;
         if (useBraces)
           sb.append("}");
-        else if (addParens)
-          sb.append(")");
         continue;
       case Token.leftsquare:
       case Token.rightsquare:
@@ -11557,7 +11561,7 @@ class Eval { //implements Runnable {
         return x;
       }
       if (!allowUnderflow && (xPt >= 0 || oPt >= 0)) {
-        iToken--;
+//        iToken--;
         error(ERROR_invalidArgument);
       }
       return null;
@@ -11681,8 +11685,7 @@ class Eval { //implements Runnable {
       boolean isMathFunc = isOpFunc(op);
 
       // the word "plane" can also appear alone, not as a function
-      if (oPt >= 1 && op.tok != Token.leftparen
-          && Compiler.tokAttr(oStack[oPt].tok, Token.specialstring))
+      if (oPt >= 1 && op.tok != Token.leftparen && oStack[oPt].tok == Token.plane)
         oPt--;
 
       // math functions as arguments appear without a prefixing operator
@@ -11737,14 +11740,14 @@ class Eval { //implements Runnable {
       while (oPt >= 0
           && (!(isLeftOp || op.tok == Token.leftsquare) || (op.tok == Token.propselector || op.tok == Token.leftsquare)
               && oStack[oPt].tok == Token.propselector)
-          && Token.prec(oStack[oPt].tok) >= Token.prec(op.tok)) {
+          && Token.getPrecedence(oStack[oPt].tok) >= Token.getPrecedence(op.tok)) {
 
         if (logMessages) {
           dumpStacks();
           Logger.info("\noperating, oPt=" + oPt + " isLeftOp=" + isLeftOp
               + " oStack[oPt]=" + Token.nameOf(oStack[oPt].tok) + "        prec="
-              + Token.prec(oStack[oPt].tok) + " pending op=" + Token.nameOf(op.tok)
-              + " prec=" + Token.prec(op.tok));
+              + Token.getPrecedence(oStack[oPt].tok) + " pending op=" + Token.nameOf(op.tok)
+              + " prec=" + Token.getPrecedence(op.tok));
         }
         // ) and ] must wait until matching ( or [ is found
         if (op.tok == Token.rightparen && oStack[oPt].tok == Token.leftparen) { 
@@ -11851,7 +11854,7 @@ class Eval { //implements Runnable {
       Logger.info("\n");
       for (int i = 0; i <= oPt; i++)
         Logger.info("o[" + i + "]: " + oStack[i] + " prec="
-            + Token.prec(oStack[i].tok));
+            + Token.getPrecedence(oStack[i].tok));
     }
 
     Token getX() throws ScriptException {
@@ -11866,7 +11869,7 @@ class Eval { //implements Runnable {
       int tok = (op.tok == Token.propselector ? op.intValue : op.tok);
       // for .xxx or .xxx() functions
       // we store the token inthe intValue field of the propselector token
-      int nParamMax = Token.prec(tok); // note - this is NINE for dot-operators
+      int nParamMax = Token.getMaxMathParams(tok); // note - this is NINE for dot-operators
       int nParam = 0;
       int pt = xPt;
       while (pt >= 0 && xStack[pt--] != op)

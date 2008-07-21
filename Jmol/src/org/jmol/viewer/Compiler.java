@@ -26,7 +26,6 @@ package org.jmol.viewer;
 import org.jmol.util.Logger;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.TextFormat;
-import org.jmol.g3d.Graphics3D;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Bond.BondSet;
@@ -268,11 +267,6 @@ class Compiler {
     return i * 1000000 + j;
   }
   
-  private void log(String message) {
-    if (logMessages)
-      Logger.debug(message);
-  }
-
  /**
    * allows for three kinds of comments.
    * NOTE: closing involves two asterisks and slash together, but that can't be shown here. 
@@ -449,10 +443,12 @@ class Compiler {
               tokCommand = Token.set;
               ltoken.insertElementAt(tokenCommand, 0);
               cchToken = 1;
-              if (ch == '[')
+              if (ch == '[') {
                 addTokenToPrefix(new Token(Token.leftsquare, "["));
-              if (ch == '.')
+                bracketCount++;
+              } else if (ch == '.') {
                 addTokenToPrefix(new Token(Token.dot, "."));
+              }
               continue;
             }
           }
@@ -529,7 +525,7 @@ class Compiler {
             cchToken = pt;
           }
         }
-        if (tokAttr(tokCommand, Token.specialstring)
+        if (tokAttr(tokCommand, Token.implicitStringCommand)
             && !(tokCommand == Token.script && iHaveQuotedString)
             && lookingAtSpecialString()) {
           String str = script.substring(ichToken, ichToken + cchToken);
@@ -568,7 +564,7 @@ class Compiler {
             return error(ERROR_invalidExpressionToken, "" + ch);
           }
         }
-        if (lookingAtInteger(tokAttr(tokCommand, Token.negnums))) {
+        if (lookingAtInteger()) {
           String intString = script.substring(ichToken, ichToken + cchToken);
           int val = Integer.parseInt(intString);
           if (tokCommand == Token.breakcmd || tokCommand == Token.continuecmd) {
@@ -1187,7 +1183,8 @@ class Compiler {
         && (ichT <= ichToken + 1 || script.charAt(ichToken + 1) != '{'))
       return false;
     cchToken = ichT - ichToken;
-    log("lookingAtSpecialString cchToken=" + cchToken);
+    if (logMessages)
+      Logger.debug("lookingAtSpecialString cchToken=" + cchToken);
     return cchToken > 0;
   }
 
@@ -1299,11 +1296,11 @@ class Compiler {
     return true;
   }
 
-  private boolean lookingAtInteger(boolean allowNegative) {
+  private boolean lookingAtInteger() {
     if (ichToken == cchScript)
       return false;
     int ichT = ichToken;
-    if (allowNegative && script.charAt(ichToken) == '-')
+    if (script.charAt(ichToken) == '-')
       ++ichT;
     int ichBeginDigits = ichT;
     while (ichT < cchScript && Character.isDigit(script.charAt(ichT)))
@@ -1467,13 +1464,11 @@ class Compiler {
     }
     tokenCommand = (Token) ltoken.firstElement();
     tokCommand = tokenCommand.tok;
-    isImplicitExpression = tokAttr(tokCommand, Token.implicitExpression);
+    isImplicitExpression = tokAttr(tokCommand, Token.mathExpressionCommand);
     isSetOrDefine = (tokCommand == Token.set || tokCommand == Token.define);
-    isCommaAsOrAllowed = tokAttr(tokCommand, Token.expressionCommand);
+    isCommaAsOrAllowed = tokAttr(tokCommand, Token.atomExpressionCommand);
     int size = ltoken.size();
-    if (size == 1 && !tokAttr(tokCommand, Token.flowCommand) 
-        && tokenCommand.intValue != Integer.MAX_VALUE
-        && tokAttr(tokenCommand.intValue, Token.onDefault1))
+    if (size == 1 && tokAttr(tokCommand, Token.defaultON))
       addTokenToPrefix(Token.tokenOn);
     atokenInfix = new Token[ltoken.size()];
     ltoken.copyInto(atokenInfix);
@@ -1482,15 +1477,11 @@ class Compiler {
         Logger.debug(i + ": " + atokenInfix[i]);
     }
 
-    //compile color parameters
-
-    if (tokAttr(tokCommand, Token.colorparam) && !compileColorParam())
-      return false;
-
     //compile expressions
 
-    isEmbeddedExpression = tokCommand != Token.function && (!tokAttrOr(tokCommand, Token.expressionCommand, Token.specialstring));
-    boolean checkExpression = isEmbeddedExpression || (tokAttr(tokCommand, Token.expressionCommand));
+    isEmbeddedExpression = (tokCommand != Token.function 
+        && !tokAttrOr(tokCommand, Token.atomExpressionCommand, Token.implicitStringCommand));
+    boolean checkExpression = isEmbeddedExpression || (tokAttr(tokCommand, Token.atomExpressionCommand));
 
       // $ at beginning disallow expression checking for center command
     if (tokCommand == Token.center && tokAt(1) == Token.dollarsign)
@@ -1519,19 +1510,8 @@ class Compiler {
 
     if ((isNewSet || isSetBrace) && size < ptNewSetModifier + 2)
       return commandExpected();
-    if (isSetOrDefine || tokAttrOr(tokenCommand.tok, Token.noeval, Token.flowCommand)) //intValue is NOT of this nature
-      return true;
-    int allowedLen = (tokenCommand.intValue & 0x0F) + 1;
-    if (!tokAttr(tokenCommand.intValue, Token.varArgCount)) {
-      if (size > allowedLen)
-        return error(ERROR_badArgumentCount);
-      if (size < allowedLen)
-        return error(ERROR_endOfCommandUnexpected);
-    } else if (allowedLen > 1 && size > allowedLen) {
-      // max2, max3, max4, etc.
-      return error(ERROR_badArgumentCount);
-    }
-    return true;
+    return (size == 1 || !tokAttr(tokCommand, Token.noArgs) ? true 
+        : error(ERROR_badArgumentCount));
   }
 
   private boolean compileExpression() {
@@ -1684,7 +1664,7 @@ class Compiler {
     if (token == null)
       return false;
     if (logMessages)
-      log("addTokenToPostfix" + token);
+        Logger.debug("addTokenToPostfix" + token);
     ltokenPostfix.addElement(token);
     lastToken = token;
     return true;
@@ -1749,47 +1729,58 @@ class Compiler {
   private boolean clausePrimitive() {
     int tok = tokPeek();
     switch (tok) {
-    case Token.minus: // selecting a negative residue spec
-    case Token.seqcode:
-    case Token.times:
-    case Token.leftsquare:
-    case Token.identifier:
-    case Token.colon:
-    case Token.percent:
-      if (clauseResidueSpec())
-        return true;
-      //fall through for identifier specifically
-    default:
-      if (tokAttrOr(tok, Token.property,  Token.atomproperty))
-        return clauseComparator();
-      if (!tokAttr(tok, Token.predefinedset))
-        break;
-    // fall into the code and below and just add the token
+    case Token.nada:
+      return error(ERROR_endOfCommandUnexpected);
+
     case Token.all:
-    case Token.none:
-    case Token.isaromatic:
     case Token.bitset:
-      return addNextToken();
-    case Token.integer:
-      if (clauseResidueSpec())
-        return true;
     case Token.divide:
-      addNextToken();
-      return true;
+    case Token.isaromatic:
+    case Token.none:
+      // nothing special
+      return addNextToken();
+
     case Token.string:
       haveString = true;
       return addNextToken();
+
+    case Token.decimal:
+      // create a file_model integer as part of the token
+      return addTokenToPostfix(Token.spec_model2, getToken().intValue, theValue);
+
+    case Token.colon:
+    case Token.identifier:
+    case Token.integer:
+    case Token.leftsquare:
+    case Token.percent:
+    case Token.seqcode:
+    case Token.times:
+      // may be a residue specification
+      if (clauseResidueSpec())
+        return true;
+    //fall through for integer and identifier specifically
+    default:
+      if (tokAttrOr(tok, Token.property, Token.atomproperty))
+        return clauseComparator();
+      if (!tokAttrOr(tok, Token.integer, Token.predefinedset))
+        break;
+      return addNextToken();
+
+    case Token.cell:
+      return clauseCell();
+    case Token.connected:
+      return clauseConnected();
+    case Token.substructure:
+      return clauseSubstructure();
+    case Token.within:
+      return clauseWithin();
+
     case Token.define:
       addNextToken();
-      switch (tokPeek()) {
-      case Token.nada:
-        break;
-      default:
-        return clauseDefine();
-      }
-      //fall through
-      case Token.nada:
+      if (tokPeek() == Token.nada)
         return error(ERROR_endOfCommandUnexpected);
+      return clauseDefine();
+      
     case Token.bonds:
     case Token.monitor:
       addNextToken();
@@ -1800,19 +1791,6 @@ class Compiler {
         return clauseDefine();
       }
       return true;
-    case Token.cell:
-      return clauseCell();
-    case Token.within:
-      addNextToken();
-      return clauseWithin();
-    case Token.connected:
-      addNextToken();
-      return clauseConnected();
-    case Token.substructure:
-      addNextToken();
-      return clauseSubstructure();
-    case Token.decimal:
-      return addTokenToPostfix(Token.spec_model2, getToken().intValue, theValue);
     case Token.leftparen:
       addNextToken();
       if (!clauseOr(true))
@@ -1905,6 +1883,7 @@ class Compiler {
   // within ( group, ....)
 
   private boolean clauseWithin() {
+    addNextToken();
     if (!addNextTokenIf(Token.leftparen))
       return false;
     if (getToken() == null)
@@ -2018,6 +1997,7 @@ class Compiler {
   }
 
   private boolean clauseConnected() {
+    addNextToken();
     // connected (1,3, single, .....)
     if (!addNextTokenIf(Token.leftparen)) {
       addTokenToPostfix(Token.tokenLeftParen);
@@ -2067,6 +2047,7 @@ class Compiler {
   }
 
   private boolean clauseSubstructure() {
+    addNextToken();
     if (!addNextTokenIf(Token.leftparen))
       return false;
     if (!addNextTokenIf(Token.string))
@@ -2206,10 +2187,12 @@ class Compiler {
       tok = tokPeek();
     }
     boolean wasInteger = false;
-    if (tok == Token.times || tok == Token.minus || tok == Token.integer
-        || tok == Token.seqcode) {
+    if (tok == Token.times || tok == Token.integer || tok == Token.seqcode) {
       wasInteger = (tok == Token.integer);
-      if (!clauseResNumSpec())
+      
+      if (tokPeek(Token.times))
+        getToken();
+      else if (!clauseSequenceSpec())
         return false;
       specSeen = true;
       tok = tokPeek();
@@ -2283,14 +2266,7 @@ class Compiler {
     return generateResidueSpecCode(theToken);
   }
 
-  private boolean clauseResNumSpec() {
-    log("clauseResNumSpec()");
-    if (tokPeek(Token.times))
-      return (getToken() != null);
-    return clauseSequenceRange();
-  }
-
-  private boolean clauseSequenceRange() {
+  private boolean clauseSequenceSpec() {
     Token seqToken = getSequenceCode(false);
     if (seqToken == null)
       return false;
@@ -2298,7 +2274,7 @@ class Compiler {
     if (tok == Token.minus || tok == Token.integer && intPeek() < 0) {
       if (tok == Token.minus) {
         tokenNext();
-      } else if (tokPeek() == Token.integer && intPeek() < 0) {
+      } else {
          // hyphen masquerading as neg int
           int i = -intPeek();
           tokenNext().intValue = i;
@@ -2306,42 +2282,23 @@ class Compiler {
       }
       seqToken.tok = Token.spec_seqcode_range;
       generateResidueSpecCode(seqToken);
-      seqToken = getSequenceCode(true);
-      return addTokenToPostfix(seqToken);
+      return addTokenToPostfix(getSequenceCode(true));
     }
     return generateResidueSpecCode(seqToken);
   }
 
   private Token getSequenceCode(boolean isSecond) {
-    // problem is that some commands, like zoomTo allow negative numbers,
-    // while other, like center, do not.
-    // 
-    // (25 [-] 35)     ==> 25 - 35
-    // (25 -35)        ==> 25 - 35
-    
-    // (25 [-] [-] 35) ==> 25 - -35
-    // (25 [-] -35)    ==> 25 - -35
-    
-    // ([-] 25 [-] 35) ==> -25 - 35
-    // (-25 -35)       ==> -25 - 35
-    
-    boolean negative = false;
     int seqcode = Integer.MAX_VALUE;
     int seqvalue = Integer.MAX_VALUE;
     int tokPeek = tokPeek();
-    if (tokPeek == Token.minus) {
-      tokenNext();
-      tokPeek = tokPeek();
-      negative = true;
-    }
     if (tokPeek == Token.seqcode)
-      seqcode = tokenNext().intValue * (negative ? -1 : 1);
+      seqcode = tokenNext().intValue;
     else if (tokPeek == Token.integer)
-      seqvalue = tokenNext().intValue * (negative ? -1 : 1);
+      seqvalue = tokenNext().intValue;
     else if (!isSecond){
-      if (negative)
-        returnToken();
       return null;
+      // can have open-ended range  
+      // select 3-
     }
     return new Token(Token.spec_seqcode, seqvalue, new Integer(seqcode));
   }
@@ -2463,24 +2420,6 @@ class Compiler {
     return generateResidueSpecCode(new Token(Token.spec_atom, atomSpec));
   }
 
-  private boolean compileColorParam() {
-    for (int i = 1; i < atokenInfix.length; ++i) {
-      theToken = atokenInfix[i];
-      //Logger.debug(token + " atokenInfix: " + atokenInfix.length);
-      if (isToken(Token.dollarsign)) {
-        i++; // skip identifier
-      } else if (isToken(Token.identifier)) {
-        String id = (String) theToken.value;
-        int argb = Graphics3D.getArgbFromString(id);
-        if (argb != 0) {
-          theToken.tok = Token.colorRGB;
-          theToken.intValue = argb;
-        }
-      }
-    }
-    return true;
-  }
-  
   /// error handling
 
   private final static int ERROR_badArgumentCount  = 0;

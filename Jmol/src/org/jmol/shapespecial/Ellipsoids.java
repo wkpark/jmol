@@ -222,7 +222,7 @@ public class Ellipsoids extends AtomShape {
       Ellipsoid ellipsoid = (Ellipsoid) e.nextElement();
       if (ellipsoid.axes == null || ellipsoid.lengths == null)
         continue;
-      sb.append("  Ellipsoid ").append(ellipsoid.id).append(" modelIndex ")
+      sb.append("  Ellipsoid ID ").append(ellipsoid.id).append(" modelIndex ")
           .append(ellipsoid.modelIndex).append(" center ").append(
               Escape.escape(ellipsoid.center)).append(" axes");
       for (int i = 0; i < 3; i++) {

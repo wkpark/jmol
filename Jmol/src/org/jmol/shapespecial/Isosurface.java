@@ -614,7 +614,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   private void createLcaoLobe(Vector3f lobeAxis, float factor) {
     initState();
     if (Logger.debugging) {
-      Logger.debug("creating isosurface " + thisMesh.thisID);
+      Logger.debug("creating isosurface ID " + thisMesh.thisID);
     }
     thisMesh.colix = defaultColix;
     if (lobeAxis == null) {
@@ -687,11 +687,8 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     viewer.setCurrentColorRange(jvxlData.valueMappedToRed,
         jvxlData.valueMappedToBlue);
     thisMesh.isColorSolid = false;
-    thisMesh.colorCommand = "color $"
-        + thisMesh.thisID
-        + " "
-        + getUserColorScheme(schemeName)
-        + " range "
+    thisMesh.colorCommand = "color $" + thisMesh.thisID + " "
+        + getUserColorScheme(schemeName) + " range "
         + (jvxlData.isColorReversed ? jvxlData.valueMappedToBlue + " "
             + jvxlData.valueMappedToRed : jvxlData.valueMappedToRed + " "
             + jvxlData.valueMappedToBlue);
@@ -747,7 +744,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     thisMesh.bitsets = null;
     if (script != null) {
       if (script.charAt(0) == ' ') { // lobe only
-        script = myType + " " + thisMesh.thisID + script;
+        script = myType + " ID " + thisMesh.thisID + script;
       } else if (sg.getIUseBitSets()) {
         thisMesh.bitsets = new BitSet[3];
         thisMesh.bitsets[0] = sg.getBsSelected();

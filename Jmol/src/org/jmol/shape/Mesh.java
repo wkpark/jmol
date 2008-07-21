@@ -255,7 +255,7 @@ public class Mesh {
   public String getState(String type) {
     StringBuffer s = new StringBuffer(type);
     if (!type.equals("mo"))
-      s.append(" ").append(thisID);
+      s.append(" ID ").append(thisID);
     s.append(fillTriangles ? " fill" : " noFill");
     s.append(drawTriangles ? " mesh" : " noMesh");
     s.append(showPoints ? " dots" : " noDots");

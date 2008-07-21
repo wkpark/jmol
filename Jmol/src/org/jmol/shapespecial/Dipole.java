@@ -188,7 +188,7 @@ class Dipole {
     if (!isValid)
       return "";
     StringBuffer s = new StringBuffer();
-    s.append("dipole ").append(thisID);
+    s.append("dipole ID ").append(thisID);
     if (haveAtoms)
       s.append(" ({").append(atoms[0].getAtomIndex()).append(" ").
                       append(atoms[1].getAtomIndex()).append("})");

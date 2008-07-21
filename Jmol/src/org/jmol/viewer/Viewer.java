@@ -2718,7 +2718,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setShapeProperty(JmolConstants.SHAPE_MEASURES, (isDelete ? "deleteVector"
         : isOn ? "showVector" : isOff ? "hideVector" : "defineVector") 
         + (isAll ? "_All" : ""), monitorExpressions);
-    setStatusMeasuring("scripted", 1, "?");
   }
 
   public void deleteMeasurement(int i) {

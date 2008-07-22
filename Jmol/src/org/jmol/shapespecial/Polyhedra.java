@@ -407,12 +407,12 @@ public class Polyhedra extends AtomShape {
 
           if (planeCount >= FACE_COUNT_MAX) {
             Logger.error("Polyhedron error: maximum face(" + FACE_COUNT_MAX
-                + ") -- reduce RADIUS ");
+                + ") -- reduce RADIUS or DISTANCEFACTOR");
             return null;
           }
           if (nPoints >= MAX_VERTICES) {
             Logger.error("Polyhedron error: maximum vertex count("
-                + MAX_VERTICES + ") -- reduce RADIUS ");
+                + MAX_VERTICES + ") -- reduce RADIUS");
             return null;
           }
           boolean isFaceCentered = (faceCatalog.indexOf(faceId(i, j, k)) >= 0);

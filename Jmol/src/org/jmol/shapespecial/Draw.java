@@ -377,7 +377,7 @@ public class Draw extends MeshCollection {
       if ((pt2 = axisID.lastIndexOf("]")) < pt)
         pt2 = axisID.length();
       try {
-        vertexIndex = Integer.parseInt(axisID.substring(pt + 1), pt2) - 1;
+        vertexIndex = Integer.parseInt(axisID.substring(pt + 1, pt2)) - 1;
       } catch (Exception e) {
         // ignore
       }

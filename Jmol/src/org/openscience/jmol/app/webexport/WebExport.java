@@ -63,7 +63,7 @@ public class WebExport extends JPanel {
 
     historyFile = hFile;
     remoteAppletPath = historyFile.getProperty("webMakerAppletPath", "..");
-    localAppletPath = historyFile.getProperty("webMakerAppletPath", "..");
+    localAppletPath = historyFile.getProperty("webMakerLocalAppletPath", "..");
     pageAuthorName = historyFile.getProperty("webMakerPageAuthorName", "Jmol Web Export");
 
 

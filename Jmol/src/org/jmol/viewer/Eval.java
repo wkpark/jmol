@@ -960,7 +960,7 @@ class Eval { //implements Runnable {
         refresh();
         break;
       case Token.initialize:
-        initialize();
+        viewer.initialize();
         break;
       case Token.reset:
         reset();
@@ -4742,10 +4742,6 @@ class Eval { //implements Runnable {
       viewer.unsetProperty(var);
       //viewer.removeUserVariable(var + "_set");
     }
-  }
-
-  private void initialize() {
-    viewer.initialize();
   }
 
   private void restrict() throws ScriptException {

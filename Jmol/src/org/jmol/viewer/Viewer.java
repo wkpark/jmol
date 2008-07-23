@@ -5432,6 +5432,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.navigationMode = TF;
     if (TF && !transformManager.canNavigate()) {
       setVibrationOff();
+      setSpinOn(false);
       transformManager = transformManager.getNavigationManager(this,
           dimScreen.width, dimScreen.height);
       transformManager.homePosition();
@@ -5450,6 +5451,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setPerspectiveModel(int mode) {
     setVibrationOff();
+    setSpinOn(false);
     switch (mode) {
     case 10:
       transformManager = new TransformManager10(this, dimScreen.width,
@@ -5468,6 +5470,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.setPerspectiveDepth(global.perspectiveDepth);
     transformManager.setStereoDegrees(global.stereoDegrees);
     transformManager.setVisualRange(global.visualRange);
+    transformManager.setSpinOn(false);
+    transformManager.setVibrationPeriod(0);
   }
 
   private void setZoomLarge(boolean TF) {

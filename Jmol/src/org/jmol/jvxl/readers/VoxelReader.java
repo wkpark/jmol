@@ -206,6 +206,8 @@ public abstract class VoxelReader implements VertexDataServer {
   protected Vector3f[] volumetricVectors;
   protected int[] voxelCounts;
   protected float[][][] voxelData;
+  
+//  boolean mustCalcPoint = true; // for now
 
   void setVolumeData(VolumeData v) {
     nBytes = 0;
@@ -214,7 +216,9 @@ public abstract class VoxelReader implements VertexDataServer {
     voxelCounts = v.voxelCounts;
     voxelData = v.voxelData;
     volumeData = v;
-  }
+/*    if (mustCalcPoint)
+      v.setDataSource(this);
+*/  }
 
   abstract void readVolumeParameters();
 
@@ -409,7 +413,7 @@ public abstract class VoxelReader implements VertexDataServer {
                                   Point3f pointA, Vector3f edgeVector,
                                   boolean isContourType) {
     float thisValue = readSurfacePoint(cutoff, isCutoffAbsolute, valueA,
-        valueB, pointA, edgeVector, fReturn);
+        valueB, pointA, edgeVector, fReturn, ptTemp);
     /* 
      * In the case of a setup for a Marching Squares calculation,
      * we are collecting just the desired type of intersection for the 2D marching
@@ -439,13 +443,14 @@ public abstract class VoxelReader implements VertexDataServer {
 
   protected float readSurfacePoint(float cutoff, boolean isCutoffAbsolute,
                                    float valueA, float valueB, Point3f pointA,
-                                   Vector3f edgeVector, float[] fReturn) {
+                                   Vector3f edgeVector, 
+                                   float[] fReturn, Point3f ptReturn) {
 
     //JvxlReader may or may not call this
 
-    float fraction, thisValue;
+    
     float diff = valueB - valueA;
-    fraction = (cutoff - valueA) / diff;
+    float fraction = (cutoff - valueA) / diff;
     if (isCutoffAbsolute && (fraction < 0 || fraction > 1))
       fraction = (-cutoff - valueA) / diff;
 
@@ -459,9 +464,9 @@ public abstract class VoxelReader implements VertexDataServer {
       fractionData.append(JvxlReader.jvxlFractionAsCharacter(fraction,
           edgeFractionBase, edgeFractionRange));
 
-    thisValue = valueA + fraction * diff;
-    ptTemp.scaleAdd(fraction, edgeVector, pointA);
-    return thisValue;
+    ptReturn.scaleAdd(fraction, edgeVector, pointA);
+    //System.out.println("VoxelReader " + ptReturn + " " + (valueA + fraction * diff));
+    return valueA + fraction * diff;
   }
 
   public int addVertexCopy(Point3f vertexXYZ, float value, int assocVertex) {
@@ -753,5 +758,9 @@ public abstract class VoxelReader implements VertexDataServer {
     updateSurfaceData();
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS);
+  }
+  
+  public void getCalcPoint(Point3f pt) {
+    // for VertexDataServer - isoShapeReader only
   }
 }

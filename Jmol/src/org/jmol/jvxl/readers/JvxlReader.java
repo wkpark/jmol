@@ -447,14 +447,14 @@ public class JvxlReader extends VolumeFileReader {
   }
   
   protected float readSurfacePoint(float cutoff, boolean isCutoffAbsolute, float valueA,
-                         float valueB, Point3f pointA, Vector3f edgeVector, float[] fReturn) {
-    float fraction;
+                         float valueB, Point3f pointA, Vector3f edgeVector, 
+                         float[] fReturn, Point3f ptReturn) {
     if (edgeDataCount <= 0)
       return super.readSurfacePoint(cutoff, isCutoffAbsolute, valueA, valueB,
-          pointA, edgeVector, fReturn);
-    fraction = jvxlGetNextFraction(edgeFractionBase, edgeFractionRange, 0.5f);
-    ptTemp.scaleAdd(fraction, edgeVector, pointA);
-    return fReturn[0] = fraction;
+          pointA, edgeVector, fReturn, ptReturn);
+    ptReturn.scaleAdd(fReturn[0] = jvxlGetNextFraction(edgeFractionBase, edgeFractionRange, 0.5f), 
+        edgeVector, pointA);
+    return fReturn[0];
   }
 
   private int fractionPtr;

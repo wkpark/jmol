@@ -203,7 +203,7 @@ public class Mesh {
       polygonIndexes = new int[polygonCount][];
   }
 
-  public int addVertexCopy(Point3f vertex) { //used by mps
+  public int addVertexCopy(Point3f vertex) { //used by mps and surfaceGenerator
     if (vertexCount == 0)
       vertices = new Point3f[SEED_COUNT];
     else if (vertexCount == vertices.length)

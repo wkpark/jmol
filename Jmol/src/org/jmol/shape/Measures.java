@@ -401,7 +401,7 @@ public class Measures extends Shape {
   }
 
   private void deleteMeasurement(int i) {
-    viewer.setStatusMeasuring("measureDeleted", i, "");
+    viewer.setStatusMeasuring("measureDeleted", i, measurements[i].toVector().toString());
     System.arraycopy(measurements, i + 1, measurements, i, measurementCount
         - i - 1);
     --measurementCount;
@@ -489,7 +489,7 @@ public class Measures extends Shape {
       return;
     if (measurementPending.getCount() > 1)
       viewer.setStatusMeasuring("measurePending",
-          measurementPending.getCount(), measurementPending.getString());
+          measurementPending.getCount(), measurementPending.toVector().toString());
   }
 
   private void reformatDistances() {

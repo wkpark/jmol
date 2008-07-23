@@ -474,14 +474,6 @@ public abstract class BioPolymer extends Polymer {
                                       BitSet bsAtoms, StringBuffer pdbATOM,
                                       StringBuffer pdbCONECT, BitSet bsSelected) {
     int atomno = Integer.MIN_VALUE;
-    Quaternion qlast = null;
-    Quaternion qprev = null;
-    Quaternion dq = null;
-    Quaternion dqprev = null;
-    Quaternion ddq = null;
-    float factor = (ctype == 'R' ? 1f : 10f);
-    float x = 0, y = 0, z = 0, w = 0;
-    //boolean isQuaternion = ("wxyz".indexOf(ctype) >= 0);
     boolean isRamachandran = (ctype == 'R');
     if (isRamachandran && !p.calcPhiPsiAngles())
       return;
@@ -492,35 +484,49 @@ public abstract class BioPolymer extends Polymer {
      * 
      *  'c'  C-alpha, as defined by Andy Hanson, U. of Indiana (unpublished results)
      *  
-     *    X: CA-C (carbonyl carbon)
-     *    Z: (CA-C) x (CA-N)
+     *    X: CA->C (carbonyl carbon)
+     *    Z: X x (CA->N)
      *    Y: Z x X
      *    
      *  'p'  Peptide plane as defined by Bob Hanson, St. Olaf College (unpublished results)
      *  
-     *    X: CA-
+     *    X: C->CA
+     *    Z: X x (C->N')
+     *    Y: Z x X
+     *    
+     *  'n' NMR frame using Beta = 17 degrees (Quine, Cross, et al.)
+     *  
+     *    Y: (N->H) x (N->CA)
+     *    X: R[Y,-17](N->H)
+     *    Z: X x Y
      *
-     * 
-     * 
-     * 
      * quaternion types:
      * 
      * w, x, y, z : which of the q-terms to expunge in order to display
      * the other three. 
      * 
+     * 
      * a : absolute (standard) derivative
      * r : relative (commuted) derivative
+     * s : same as w but for calculating straightness
      * 
      */
 
     Atom aprev = null;
+    Quaternion qprev = null;
+    Quaternion dq = null;
+    Quaternion dqprev = null;
+    float factor = (ctype == 'R' ? 1f : 10f);
+    float x = 0, y = 0, z = 0, w = 0;
     String strExtra = "";
     boolean isAmino = (p instanceof AminoPolymer);
     boolean isRelativeAlias = (ctype == 'r');
-    String prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
-    float psiLast = Float.NaN;
     if (derivType == 2 && isRelativeAlias)
       ctype = 'w';
+    if (ctype == 's')
+      derivType = 2;
+    String prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
+    float psiLast = Float.NaN;
     Quaternion q;
     for (int m = 0; m < p.monomerCount; m++) {
       Monomer monomer = p.monomers[m];
@@ -528,6 +534,9 @@ public abstract class BioPolymer extends Polymer {
         Atom a = monomer.getLeadAtom();
         char cid = monomer.getChainID();
         String id = "" + monomer.getResno() + (cid == '\0' ? "" : "" + cid);
+        cid = monomer.getLeadAtom().getAlternateLocationID();
+        if (cid != '\0')
+          id += cid;
         if (isRamachandran) {
           x = monomer.getPhi();
           y = monomer.getPsi();
@@ -536,8 +545,7 @@ public abstract class BioPolymer extends Polymer {
             z += 360;
           z -= 180; // center on 0
           if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
-            continue;
-          
+            continue;        
           if (isDraw) {
             if (bsSelected != null && !bsSelected.get(a.getAtomIndex()))
               continue;
@@ -560,7 +568,6 @@ public abstract class BioPolymer extends Polymer {
                 .append(" color ").append(qColor[1]).append('\n');
             continue;
           }
-
           w = a.getPartialCharge();
           float phiNext = (m == p.monomerCount - 1 ? Float.NaN
               : p.monomers[m + 1].getPhi());
@@ -579,72 +586,73 @@ public abstract class BioPolymer extends Polymer {
               z = angle;
           }
         } else {
-          cid = monomer.getLeadAtom().getAlternateLocationID();
-          if (cid != '\0')
-            id += cid;
-          q = monomer.getQuaternion(qtype);
+          // quaternion
+          if ((q = monomer.getQuaternion(qtype)) == null) {
+            qprev = null;
+          } else if (derivType > 0) {
+            Atom anext = a;
+            Quaternion qnext = q;
+            if (qprev == null) {
+              q = null;
+              dqprev = null;
+            } else {
+              // back up to previous frame pointer
+              a = aprev;
+              q = qprev;
+              monomer = (Monomer) a.getGroup();
+              // get dq or dq* for PREVIOUS atom
+              if (isRelativeAlias) {
+                // ctype = 'r';
+                // dq*[i] = q[i] \ q[i+1]
+                //  R(v) = q[i] \ q(i+1) * (0, v) * q[i+1] \ q[i]
+                // used for aligning all standard amino acids along X axis 
+                // in the second derivative and in an ellipse in the first derivative
+                dq = q.inv().mul(qnext);
+              } else {
+                // ctype = 'a' or 'w' or 's'
+                // the standard "absolute" difference dq
+                // dq[i] = q[i+1] / q[i]
+                //  R(v) = q[i+1] / q[i] * (0, v) * q[i] / q[i+1]
+                // used for definition of the local helical axis
+                dq = qnext.mul(q.inv());
+              }
+              if (derivType == 1) {
+                // first deriv:
+                q = dq;
+              } else if (dqprev == null) {
+                q = null;
+              } else {
+                /*
+                 *  standard second deriv.
+                    
+                       ddq[i] =defined= (q[i+1] \/ q[i]) / (q[i] \/ q[i-1])
+                       
+                    Relative to the previous atom as "i" (which is now "a"), we have:
+                                  
+                       dqprev = q[i] \/ q[i-1]
+                       dq = q[i+1] \/ q[i]
+                    
+                    and so
+                    
+                      ddq[i] = dq / dqprev     
+                              
+                    Looks odd, perhaps, because it is written "dq[i] / dq[i-1]"
+                    but this is correct; we are assigning ddq to the correct atom.
+                     
+                */
+                q = dq.mul(dqprev.inv());
+                if (ctype == 's')
+                  a.getGroup().setStraightness(getStraightness(id, dqprev, dq));
+              }
+              dqprev = dq;
+            }
+            aprev = anext;
+            qprev = qnext;
+          }
           if (q == null) {
-            qlast = null;
             atomno = Integer.MIN_VALUE;
             continue;
           }
-          if (derivType > 0) {
-            if (aprev == null) {
-              qprev = q;
-              aprev = a;
-              continue;
-            }
-            // get dq or dq*
-            if (isRelativeAlias) {
-              // ctype = 'r';
-              // relative quaterion derivative = Q(i_inverse) * Q(i+1) 
-              //  R = Q(i_inverse) * Q(i+1) * (0, v) * Q(i+1_inverse) * Q(i)
-              // used for aligning all standard amino acids along X axis 
-              // in the second derivative and in an ellipse in the first derivative
-              dq = qprev.inv().mul(q);
-            } else {
-              // ctype = 'a' or 'w'
-              // the standard difference dq
-              // absolute quaterion derivative = Q(i+1) * Q(i_inverse) 
-              //  R = Q(i+1) * Q(i_inverse) * (0, v) * Q(i) * Q(i+1_inverse)
-              // used for definition of the local helical axis
-              dq = q.mul(qprev.inv());
-            }
-            // save this q as q'
-            qprev = q;
-            if (derivType == 2) {
-              // SECOND derivative:
-              if (dqprev == null) {
-                dqprev = dq;
-                aprev = a;
-                continue;
-              }
-              // standard second deriv.
-              ddq = dq.mul(dqprev.inv());
-              dqprev = dq;
-              q = ddq;
-            } else {
-              // first deriv:
-              q = dq;
-            }
-            if (derivType == 1 && aprev != null && qlast != null
-                && ctype == 'w')
-              aprev.getGroup().setStraightness(getStraightness(id, qlast, q));
-
-            // and assign a to aprev so that the proper 
-            // residue gets reported.
-            // without these next three lines, the first
-            // residues of helices and sheets are missed;
-            // with these lines, the last residues of 
-            // helices and sheets are missed
-            // (in terms of assigning structure from quaternions).
-            Atom atemp = a;
-            monomer = (Monomer) (a = aprev).getGroup();
-            aprev = atemp;
-            // save this dq as dq'
-            dqprev = dq;
-          }
-          qlast = q;
           switch (ctype) {
           default:
             x = q.q1;

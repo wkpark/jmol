@@ -50,6 +50,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
+import org.jmol.viewer.Viewer;
 
 abstract public class ModelCollection extends BondCollection {
 
@@ -840,7 +841,7 @@ abstract public class ModelCollection extends BondCollection {
       Model model = models[i];
       int nPoly = model.getBioPolymerCount();
       for (int p = 0; p < nPoly; p++)
-        model.bioPolymers[p].getPdbData('w','p', 1, false, null, null, null, null);
+        model.bioPolymers[p].getPdbData('s','p', 2, false, null, null, null, null);
     }
   }
 
@@ -954,7 +955,8 @@ abstract public class ModelCollection extends BondCollection {
       return s;
     String remark = "REMARK   6 Jmol PDB-encoded data: " + type + ";";
     if (ctype != 'R')
-      remark += "  quaternionFrame = \"" + qtype + "\""; 
+      remark += "  quaternionFrame = \"" + qtype + "\"";
+    remark += "\nREMARK   6 Jmol Version " + Viewer.getJmolVersion();
     String data;
     switch (ctype) {
     default:

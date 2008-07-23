@@ -186,7 +186,6 @@ public class VolumeData {
     pt.scaleAdd(x, volumetricVectors[0], volumetricOrigin);
     pt.scaleAdd(y, volumetricVectors[1], pt);
     pt.scaleAdd(z, volumetricVectors[2], pt);
-    return;
   }
 
   public void setUnitVectors() {
@@ -206,29 +205,25 @@ public class VolumeData {
     return (vector.dot(unitVolumetricVectors[voxelVectorIndex]) / volumetricVectorLengths[voxelVectorIndex]);
   }
 
-  private void xyzToVoxelPt(Point3f point, Point3f pt2) {
-    pointVector.set(point);
-    pointVector.sub(volumetricOrigin);
-    pt2.x = scaleByVoxelVector(pointVector, 0);
-    pt2.y = scaleByVoxelVector(pointVector, 1);
-    pt2.z = scaleByVoxelVector(pointVector, 2);
+  public void xyzToVoxelPt(float x, float y, float z, Point3i pt3i) {
+    pointVector.set(x, y, z);
+    setVoxelPoint();
+    pt3i.set((int) ptXyzTemp.x, (int) ptXyzTemp.y, (int) ptXyzTemp.z);
   }
 
-  public void xyzToVoxelPt(float x, float y, float z, Point3i pt2) {
-    pointVector.set(x, y, z);
+  private void setVoxelPoint() {
     pointVector.sub(volumetricOrigin);
     ptXyzTemp.x = scaleByVoxelVector(pointVector, 0);
     ptXyzTemp.y = scaleByVoxelVector(pointVector, 1);
     ptXyzTemp.z = scaleByVoxelVector(pointVector, 2);
-    pt2.set((int) ptXyzTemp.x, (int) ptXyzTemp.y, (int) ptXyzTemp.z);
   }
-
+  
   public float lookupInterpolatedVoxelValue(Point3f point) {
     //ARGH!!! ONLY FOR ORTHOGONAL AXES!!!!!
     //the dot product presumes axes are PERPENDICULAR.
-    Point3f pt = new Point3f();
-    xyzToVoxelPt(point, pt);
-    return getInterpolatedVoxelValue(pt);
+    pointVector.set(point);
+    setVoxelPoint();
+    return getInterpolatedVoxelValue(ptXyzTemp);
   }
 
   private float getInterpolatedVoxelValue(Point3f pt) {

@@ -38,10 +38,6 @@ class IsoShapeReader extends VolumeDataReader {
     sphere_radiusAngstroms = radius;    
   }
   
-  IsoShapeReader(SurfaceGenerator sg) {
-    super(sg);
-  }
-
   IsoShapeReader(SurfaceGenerator sg, int n, int l, int m, float z_eff) {
     super(sg);
     psi_n = n;
@@ -114,7 +110,14 @@ class IsoShapeReader extends VolumeDataReader {
 
   protected float getValue(int x, int y, int z) {
     volumeData.voxelPtToXYZ(x, y, z, ptPsi);
-    getCalcPoint(ptPsi);
+    ptPsi.sub(center);
+    if (isEccentric)
+      eccentricityMatrixInverse.transform(ptPsi);
+    if (isAnisotropic) {
+      ptPsi.x /= anisotropy[0];
+      ptPsi.y /= anisotropy[1];
+      ptPsi.z /= anisotropy[2];
+    }
     if (sphere_radiusAngstroms > 0) {
       if (params.anisoB != null) {
         
@@ -137,18 +140,7 @@ class IsoShapeReader extends VolumeDataReader {
     float value = (float) hydrogenAtomPsiAt(ptPsi, psi_n, psi_l, psi_m);
     return (allowNegative || value >= 0 ? value : 0);
   }
-
-  private void getCalcPoint(Point3f pt) {
-    pt.sub(center);
-    if (isEccentric)
-      eccentricityMatrixInverse.transform(pt);
-    if (isAnisotropic) {
-      pt.x /= anisotropy[0];
-      pt.y /= anisotropy[1];
-      pt.z /= anisotropy[2];
-    }
-  }  
-
+  
   private void setHeader(String line1) {
     jvxlFileHeaderBuffer = new StringBuffer(line1);
     if(sphere_radiusAngstroms > 0) {

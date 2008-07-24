@@ -296,13 +296,13 @@ abstract class WebPanel extends JPanel implements ActionListener {
   
   public void actionPerformed(ActionEvent e) {
 
-    if (e.getSource() == remoteAppletPath) {
+    if (e.getSource() == remoteAppletPath) {//apparently no events are fired to reach this, maybe "enter" does it
       String path = remoteAppletPath.getText();
       WebExport.setAppletPath(path, true);
       return;
     }
 
-    if (e.getSource() == localAppletPath) {
+    if (e.getSource() == localAppletPath) {//apparently no events are fired to reach this, maybe "enter" does it
       String path = localAppletPath.getText();
       WebExport.setAppletPath(path, false);
       return;
@@ -361,8 +361,15 @@ abstract class WebPanel extends JPanel implements ActionListener {
       //find out which are selected and remove them.
       int[] todelete = instanceList.getSelectedIndices();
       int nDeleted = 0;
-      for (int i = 0; i < todelete.length; i++)
+      for (int i = 0; i < todelete.length; i++){
+        JmolInstance instance = (JmolInstance) listModel.get(todelete[i]);
+        try {
+          instance.delete();
+        } catch (IOException err) {
+          LogPanel.log(err.getMessage());
+        }
         listModel.remove(todelete[i] - nDeleted++);
+      }
       syncLists();
       return;
     }

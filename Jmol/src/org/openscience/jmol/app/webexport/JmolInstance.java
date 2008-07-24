@@ -72,7 +72,6 @@ class JmolInstance {
   }
 
   boolean movepict(String dirpath) throws IOException {
-    //need the file writing stuff...
     String imagename = dirpath + "/" + this.javaname + ".png";
     if (this.pictFile.equals(imagename))
       return false;
@@ -116,6 +115,20 @@ class JmolInstance {
     this.pictFile = imagename;
     this.pictIsScratchFile = false;
 */
+    return true;
+  }
+  boolean delete() throws IOException {
+    File scratchtoerase = new File(this.pictFile);
+    boolean scratchexists = scratchtoerase.exists();
+    if (scratchexists){
+      boolean deleteOK = scratchtoerase.delete();
+      if (!(deleteOK)) {
+        IOException IOe = (new IOException("Failed to delete scratch file "
+            + this.pictFile + "."));
+        throw IOe;
+      }
+      //delete any other scratch files we create with an instance.
+    }
     return true;
   }
 }

@@ -24,9 +24,12 @@
  */
 package org.openscience.jmol.app.webexport;
 
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,11 +39,12 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Properties;
 import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
 
 import org.jmol.api.JmolViewer;
 import org.openscience.jmol.app.HistoryFile;
 
-public class WebExport extends JPanel {
+public class WebExport extends JPanel implements WindowListener {
 
   private static boolean showMoleculesAndOrbitals = false; //not implemented
 
@@ -140,6 +144,7 @@ public class WebExport extends JPanel {
 
     //Uncomment the following line to use scrolling tabs.
     //tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+    
 
   }
 
@@ -159,6 +164,7 @@ public class WebExport extends JPanel {
    * this method should be invoked from the
    * event-dispatching thread.
    */
+ 
   public static WebExport createAndShowGUI(JmolViewer viewer,
                                         HistoryFile historyFile, String wName) {
 
@@ -187,6 +193,8 @@ public class WebExport extends JPanel {
     webExport = new WebExport(viewer, historyFile);
     webExport.setOpaque(true); //content panes must be opaque
     webFrame.setContentPane(webExport);
+    webFrame.addWindowListener(webExport);
+
 
     //Display the window.
     webFrame.pack();
@@ -287,4 +295,54 @@ public class WebExport extends JPanel {
     //  + str.length() + " bytes)");
     return str;
   }
+  
+  /* Window event code for cleanup*/
+  public void windowClosing(WindowEvent e) {
+}
+
+public void windowClosed(WindowEvent e) {
+    //cleanUp(); Should do this, but then states during a session loose their .png files if window is closed.
+}
+
+public void windowOpened(WindowEvent e) {
+ }
+
+public void windowIconified(WindowEvent e) {
+}
+
+public void windowDeiconified(WindowEvent e) {
+}
+
+public void windowActivated(WindowEvent e) {
+}
+
+public void windowDeactivated(WindowEvent e) {
+}
+
+public void windowGainedFocus(WindowEvent e) {
+}
+
+public void windowLostFocus(WindowEvent e) {
+}
+
+public void windowStateChanged(WindowEvent e) {
+}
+
+public static void cleanUp(){
+    //gets rid of scratch files.
+    FileSystemView Directories = FileSystemView.getFileSystemView();
+    File homedir = Directories.getHomeDirectory();
+    String homedirpath = homedir.getPath();
+    String scratchpath = homedirpath + "/.jmol_WPM";
+    File scratchdir = new File(scratchpath);
+    if (scratchdir.exists()) {
+      File[] dirListing = null;
+      dirListing = scratchdir.listFiles();
+      for (int i = 0; i < (dirListing.length);i++){
+        dirListing[i].delete();
+       }
+      }
+    saveHistory();//force save of history.
+    System.gc();//force garbage collection.
+    }
 }

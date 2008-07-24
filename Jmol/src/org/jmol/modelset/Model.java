@@ -22,11 +22,13 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.jmol.modelset;
+
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Properties;
 
 import org.jmol.util.BitSetUtil;
+import org.jmol.viewer.StateManager.Orientation;
 
 public final class Model {
 
@@ -126,7 +128,9 @@ public final class Model {
 
   Hashtable auxiliaryInfo;
   Properties properties;
+  float defaultRotationRadius;
 
+  Orientation orientation;
 
   Model(ModelSet modelSet, int modelIndex, int trajectoryBaseIndex, 
       String jmolData, Properties properties, Hashtable auxiliaryInfo) {

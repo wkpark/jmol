@@ -41,20 +41,27 @@ class GuiMap {
   Hashtable labels = null;
   
   private Hashtable setupLabels() {
+    String x;
       Hashtable labels = new Hashtable();
       labels.put("file", GT._("&File"));
       labels.put("newwin", GT._("New"));
       labels.put("open", GT._("&Open"));
+      labels.put("openTip", GT._("Open a file."));
       labels.put("openurl", GT._("Open &URL"));
       labels.put("script", GT._("Scrip&t..."));
       labels.put("atomsetchooser", GT._("AtomSetChooser..."));
       labels.put("saveas", GT._("&Save As..."));
       labels.put("exportMenu", GT._("&Export"));
       labels.put("export", GT._("Export &Image..."));
+      labels.put("exportTip", GT._("Save current view as an image."));
       labels.put("toweb", GT._("Export to &Web Page..."));
+      labels.put("towebTip", GT._("Export one or more views to a web page."));
       labels.put("povray", GT._("Render in POV-&Ray..."));
+      labels.put("povrayTip", GT._("Render in pov-ray."));
       labels.put("write", GT._("Write &State..."));
+      labels.put("writeTip", GT._("Save current view as a Jmol state script."));
       labels.put("print", GT._("&Print..."));
+      labels.put("printTip", GT._("Print view."));
       labels.put("close", GT._("Close"));
       labels.put("exit", GT._("E&xit"));
       labels.put("recentFiles", GT._("Recent Files..."));
@@ -133,6 +140,7 @@ class GuiMap {
       labels.put("definecenter", GT._("Define Center"));
       labels.put("tools", GT._("&Tools"));
       labels.put("viewMeasurementTable", GT._("Measurements..."));
+      labels.put("viewMeasurementTableTip", GT._("View measurement table."));
       labels.put("distanceUnitsMenu", GT._("Distance Units"));
       labels.put("distanceNanometersScript", GT._("Nanometers 1E-9"));
       labels.put("distanceAngstromsScript", GT._("Angstroms 1E-10"));
@@ -146,9 +154,14 @@ class GuiMap {
       labels.put("animateLoopScript", GT._("Loop"));
       labels.put("animatePalindromeScript", GT._("Palindrome"));
       labels.put("animateStopScript", GT._("Stop animation"));
-      labels.put("animateRewindScript", GT._("Rewind to first frame"));
-      labels.put("animateNextScript", GT._("Go to next frame"));
-      labels.put("animatePrevScript", GT._("Go to previous frame"));
+      labels.put("animateRewindScript", x = GT._("Rewind to first frame"));
+      labels.put("animateRewindScriptTip",x);
+      labels.put("animateNextScript", x = GT._("Go to next frame"));
+      labels.put("animateNextScriptTip", x);
+      labels.put("animatePrevScript", x = GT._("Go to previous frame"));
+      labels.put("animatePrevScriptTip", x);
+      labels.put("animateLastScript", x = GT._("Go to last frame"));
+      labels.put("animateLastScriptTip", x);
       labels.put("vibrateStartScript", GT._("Start vibration"));
       labels.put("vibrateStopScript", GT._("Stop vibration"));
       labels.put("vibrateRewindScript", GT._("First frequency"));
@@ -169,19 +182,9 @@ class GuiMap {
       labels.put("Prefs.clearConsoleButton", GT._("Clear console button (needs restarting Jmol)"));
       labels.put("Prefs.isLabelAtomColor", GT._("Use Atom Color"));
       labels.put("Prefs.isBondAtomColor", GT._("Use Atom Color"));
-      labels.put("openTip", GT._("Open a file."));
-      labels.put("exportTip", GT._("Save current view as an image."));
-      labels.put("writeTip", GT._("Save current view as a Jmol state script."));
-      labels.put("towebTip", GT._("Export one or more views to a web page."));
-      labels.put("povrayTip", GT._("Render in pov-ray."));
-      labels.put("printTip", GT._("Print view."));
       labels.put("rotateTip", GT._("Rotate molecule."));
       labels.put("pickTip", GT._("Select an atom or region."));
-      labels.put("viewMeasurementTableTip", GT._("View measurement table."));
       labels.put("homeTip", GT._("Return molecule to home position."));
-      labels.put("animateRewindScriptTip", GT._("Rewind to first frame"));
-      labels.put("animateNextScriptTip", GT._("Go to next frame"));
-      labels.put("animatePrevScriptTip", GT._("Go to previous frame"));
 
       return labels;
   }
@@ -191,7 +194,6 @@ class GuiMap {
       labels = setupLabels();
     }
     String label = (String)labels.get(key);
-    if (label == null)
     // Use the previous system as backup
     if (label == null) {
       Logger.warn("Missing i18n menu resource, trying old scheme for: " +key);

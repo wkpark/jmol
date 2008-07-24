@@ -510,12 +510,30 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   boolean restoreOrientation(String saveName, float timeSeconds) {
     //from Eval
-    return stateManager.restoreOrientation(saveName, timeSeconds);
+    return stateManager.restoreOrientation(saveName, timeSeconds, true);
   }
 
-  boolean restoreRotation(String saveName, float timeSeconds) {
-    //from Eval
-    return stateManager.restoreRotation(saveName, timeSeconds);
+  public void restoreRotation(String saveName, float timeSeconds) {
+    stateManager.restoreOrientation(saveName, timeSeconds, false);
+  }
+
+  void saveModelOrientation() {
+    modelSet.saveModelOrientation(repaintManager.currentModelIndex, 
+        stateManager.getOrientation());
+  }
+
+  void restoreModelOrientation(int modelIndex) {
+    //System.out.println("resetoremodelorientation " + modelIndex);
+    StateManager.Orientation o = modelSet.getModelOrientation(modelIndex);
+    if (o != null)
+      o.restore(-1, true);
+  }
+
+  void restoreModelRotation(int modelIndex) {
+    //System.out.println("resetoremodelrotate " + modelIndex);
+    StateManager.Orientation o = modelSet.getModelOrientation(modelIndex);
+    if (o != null)
+      o.restore(-1, false);
   }
 
   void saveBonds(String saveName) {
@@ -579,8 +597,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.getRotationRadius();
   }
 
-  public void setRotationRadius(float angstroms) {
-    transformManager.setRotationRadius(angstroms);
+  void setRotationRadius(float angstroms, boolean doAll) {
+    if (doAll)
+      angstroms = transformManager.setRotationRadius(angstroms, false);
+    if (!modelSet.setRotationRadius(repaintManager.currentModelIndex, angstroms))
+      global.setParameterValue("rotationRadius", angstroms);
   }
 
   public Point3f getRotationCenter() {
@@ -589,6 +610,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void setCenterAt(String relativeTo, Point3f pt) {
     //Eval centerAt boundbox|absolute|average {pt}
+    if (isJmolDataFrame())
+      return;
     transformManager.setCenterAt(relativeTo, pt);
     refresh(0, "Viewer:setCenter(" + relativeTo + ")");
   }
@@ -600,12 +623,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     Point3f center = (bsCenter != null
         && BitSetUtil.cardinalityOf(bsCenter) > 0 ? getAtomSetCenter(bsCenter)
         : null);
+    if (isJmolDataFrame())
+      return;
     transformManager.setNewRotationCenter(center, doScale);
     refresh(0, "Viewer:setCenterBitSet()");
   }
 
   void setNewRotationCenter(Point3f center) {
-    // eval ???
+    // eval CENTER command
+    if (isJmolDataFrame())
+      return;
     transformManager.setNewRotationCenter(center, true);
     refresh(0, "Viewer:setCenterBitSet()");
   }
@@ -623,6 +650,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void navigate(int keyWhere, int modifiers) {
+    if (isJmolDataFrame())
+      return;
     transformManager.navigate(keyWhere, modifiers);
     if (!transformManager.vibrationOn)
       refresh(1, "Viewer:navigate()");
@@ -668,36 +697,48 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   String getMoveToText(float timespan) {
-    return transformManager.getMoveToText(timespan, true);
+    return transformManager.getMoveToText(timespan, false);
   }
 
   void navigate(float timeSeconds, Point3f[] path, float[] theta,
                 int indexStart, int indexEnd) {
+    if (isJmolDataFrame())
+      return;
     transformManager.navigate(timeSeconds, path, theta, indexStart, indexEnd);
     refresh(1, "navigate");
   }
 
   void navigate(float timeSeconds, Point3f center) {
+    if (isJmolDataFrame())
+      return;
     transformManager.navigate(timeSeconds, center);
     refresh(1, "navigate");
   }
 
   void navigate(float timeSeconds, Point3f[][] pathGuide) {
+    if (isJmolDataFrame())
+      return;
     transformManager.navigate(timeSeconds, pathGuide);
     refresh(1, "navigate");
   }
 
   void navigate(float timeSeconds, Vector3f rotAxis, float degrees) {
+    if (isJmolDataFrame())
+      return;
     transformManager.navigate(timeSeconds, rotAxis, degrees);
     refresh(1, "navigate");
   }
 
   void navTranslate(float timeSeconds, Point3f center) {
+    if (isJmolDataFrame())
+      return;
     transformManager.navTranslate(timeSeconds, center);
     refresh(1, "navigate");
   }
 
   void navTranslatePercent(float timeSeconds, float x, float y) {
+    if (isJmolDataFrame())
+      return;
     transformManager.navTranslatePercent(timeSeconds, x, y);
     refresh(1, "navigate");
   }
@@ -730,6 +771,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void rotateMolecule(int deltaX, int deltaY) {
+    if (isJmolDataFrame())
+      return;
     transformManager.setRotateMolecule(true);
     transformManager.rotateXYBy(deltaX, deltaY, selectionManager.bsSelection);
     transformManager.setRotateMolecule(false);
@@ -749,32 +792,32 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     refresh(1, "Viewer:rotateFront()");
   }
 
-  public void rotateToX(float angleRadians) {
+  public void rotateX(float angleRadians) {
     //deprecated
-    transformManager.rotateToX(angleRadians);
-    refresh(1, "Viewer:rotateToX()");
+    transformManager.rotateX(angleRadians);
+    refresh(1, "Viewer:rotateX()");
   }
 
-  public void rotateToY(float angleRadians) {
+  public void rotateY(float angleRadians) {
     //deprecated
-    transformManager.rotateToY(angleRadians);
-    refresh(1, "Viewer:rotateToY()");
+    transformManager.rotateY(angleRadians);
+    refresh(1, "Viewer:rotateY()");
   }
 
-  public void rotateToZ(float angleRadians) {
+  public void rotateZ(float angleRadians) {
     //deprecated
-    transformManager.rotateToZ(angleRadians);
-    refresh(1, "Viewer:rotateToZ()");
+    transformManager.rotateZ(angleRadians);
+    refresh(1, "Viewer:rotateZ()");
   }
 
-  public void rotateToX(int angleDegrees) {
+  public void rotateX(int angleDegrees) {
     //deprecated
-    rotateToX(angleDegrees * Measure.radiansPerDegree);
+    rotateX(angleDegrees * Measure.radiansPerDegree);
   }
 
-  public void rotateToY(int angleDegrees) {
+  public void rotateY(int angleDegrees) {
     //deprecated
-    rotateToY(angleDegrees * Measure.radiansPerDegree);
+    rotateY(angleDegrees * Measure.radiansPerDegree);
   }
 
   void translateToXPercent(float percent) {
@@ -813,10 +856,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public int getZoomPercent() {
     //deprecated 
-    return (int) getZoomPercentFloat();
+    return (int) getZoomSetting();
+  }
+
+  float getZoomSetting() {
+    return transformManager.getZoomSetting();
   }
 
   public float getZoomPercentFloat() {
+    //note -- this value is only after rendering.
     return transformManager.getZoomPercentFloat();
   }
 
@@ -2092,7 +2140,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
   
   public Point3f getBoundBoxCenter() {
-    return modelSet.getBoundBoxCenter();
+    return modelSet.getBoundBoxCenter(repaintManager.currentModelIndex);
   }
 
   Point3f getAverageAtomPoint() {
@@ -2110,7 +2158,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
   
   float calcRotationRadius(Point3f center) {
-    return modelSet.calcRotationRadius(center);
+    return modelSet.calcRotationRadius(repaintManager.currentModelIndex, center);
   }
 
   public float calcRotationRadius(BitSet bs) {
@@ -4349,8 +4397,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       }
       if (key.equalsIgnoreCase("rotationRadius")) {
-        setRotationRadius(value);
-        break;
+        setRotationRadius(value, true);
+        return true;
       }
       if (key.equalsIgnoreCase("hoverDelay")) {
         setHoverDelay((int) (value * 1000));
@@ -5252,13 +5300,26 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //app PreferencesDialog
     //stateManager
     //setBooleanproperty
+    /* ***************************************************************
+     * RasMol has the +Y axis pointing down
+     * And rotations about the y axis are left-handed
+     * setting this flag makes Jmol mimic this behavior
+     * 
+     * All versions of Jmol prior to 11.5.51 incompletely implement this
+     * flag. Really all it is just a flag to tell Eval to flip the
+     * sign of the Y rotation when specified specifically as "rotate/spin y 30".
+     * 
+     * In principal, we could display the axis opposite as well, but
+     * that is only aesthetic and not at all justified if the axis
+     * is molecular.
+     ****************************************************************/
     global.setParameterValue("axesOrientationRasmol", TF);
-    transformManager.setAxesOrientationRasmol(TF);
-    refresh(0, "Viewer:setAxesOrientationRasmol()");
+    global.axesOrientationRasmol = TF;
+    reset();
   }
 
   public boolean getAxesOrientationRasmol() {
-    return transformManager.axesOrientationRasmol;
+    return global.axesOrientationRasmol;
   }
 
   void setAxesScale(float scale) {
@@ -5608,7 +5669,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public short getDefaultMadAtom() {
-    return (short) (-2000 - global.percentVdwAtom);
+    return (short) (global.percentVdwAtom == 0 ? 0 : -2000 - global.percentVdwAtom);
   }
 
   public short getMadBond() {
@@ -5786,13 +5847,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     }
     stateManager.setJmolDefaults();
+    setShapeSize(JmolConstants.SHAPE_BALLS, getDefaultMadAtom()
+        , getModelAtomBitSet(-1, true));
   }
 
   private void setZeroBasedXyzRasmol(boolean zeroBasedXyzRasmol) {
     //stateManager
     //setBooleanProperty
     global.zeroBasedXyzRasmol = zeroBasedXyzRasmol;
-    modelSet.setZeroBased();
+    reset();
   }
 
   public boolean getZeroBasedXyzRasmol() {
@@ -6729,5 +6792,4 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void setQuaternionFrame(String qType) {
     global.quaternionFrame = "" + (qType.toLowerCase()+"c").charAt(0);
   }
-
 }

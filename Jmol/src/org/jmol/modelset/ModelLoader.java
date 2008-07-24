@@ -120,7 +120,6 @@ public final class ModelLoader extends ModelSet {
     //long timeBegin = System.currentTimeMillis();
     modelSetTypeName = name;
     isXYZ = (modelSetTypeName == "xyz");
-    setZeroBased();
     setModelSetProperties(properties);
     setModelSetAuxiliaryInfo(info);
     isMultiFile = getModelSetAuxiliaryInfoBoolean("isMultiFile");
@@ -1045,13 +1044,14 @@ public final class ModelLoader extends ModelSet {
     if (atomSerials == null)
       atomSerials = new int[atomCount];
     // now, we'll assign 1-based atom numbers within each model
+    boolean isZeroBased = isXYZ && viewer.getZeroBasedXyzRasmol();
     int lastModelIndex = Integer.MAX_VALUE;
-    int modelAtomIndex = 0;
+    int atomNo = 1;
     for (int i = 0; i < atomCount; ++i) {
       Atom atom = atoms[i];
       if (atom.modelIndex != lastModelIndex) {
         lastModelIndex = atom.modelIndex;
-        modelAtomIndex = (isZeroBased ? 0 : 1);
+        atomNo = (isZeroBased ? 0 : 1);
       }
       // 1) do not change numbers assigned by adapter
       // 2) do not change the number already assigned when merging
@@ -1059,7 +1059,7 @@ public final class ModelLoader extends ModelSet {
       
       if (atomSerials[i] == 0)
         atomSerials[i] = (i < baseAtomIndex ? mergeModelSet.atomSerials[i]
-            : modelAtomIndex++);
+            : atomNo++);
     }
     if (atomNames == null)
       atomNames = new String[atomCount];

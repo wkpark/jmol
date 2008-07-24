@@ -269,18 +269,6 @@ abstract public class AtomCollection {
       }
   }
   
-  public float calcRotationRadius(Point3f center) {
-    float maxRadius = 0;
-    for (int i = atomCount; --i >= 0;) {
-      Atom atom = atoms[i];
-      float distAtom = center.distance(atom);
-      float outerVdw = distAtom + getRadiusVdwJmol(atom);
-      if (outerVdw > maxRadius)
-        maxRadius = outerVdw;
-    }
-    return (maxRadius == 0 ? 10 : maxRadius);
-  }
-
   protected float getRadiusVdwJmol(Atom atom) {
     return JmolConstants.getVanderwaalsMar(atom.getElementNumber(),
         JmolConstants.VDW_JMOL) / 1000f;

@@ -113,16 +113,12 @@ public class StateManager {
     viewer.setBooleanProperty("perspectiveDepth", false);
   }
 
-  void setCommonDefaults() {
+  private void setCommonDefaults() {
     viewer.setBooleanProperty("perspectiveDepth", true);
-    viewer.setIntProperty("percentVdwAtom",
-        JmolConstants.DEFAULT_PERCENT_VDW_ATOM);
     viewer.setFloatProperty("bondTolerance",
         JmolConstants.DEFAULT_BOND_TOLERANCE);
     viewer.setFloatProperty("minBondDistance",
         JmolConstants.DEFAULT_MIN_BOND_DISTANCE);
-    viewer.setIntProperty("bondRadiusMilliAngstroms",
-        JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS);
   }
 
   void setJmolDefaults() {
@@ -130,6 +126,10 @@ public class StateManager {
     viewer.setStringProperty("defaultColorScheme", "Jmol");
     viewer.setBooleanProperty("axesOrientationRasmol", false);
     viewer.setBooleanProperty("zeroBasedXyzRasmol", false);
+    viewer.setIntProperty("percentVdwAtom",
+        JmolConstants.DEFAULT_PERCENT_VDW_ATOM);
+    viewer.setIntProperty("bondRadiusMilliAngstroms",
+        JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS);
     viewer.setDefaultVdw("Jmol");
   }
 
@@ -232,35 +232,28 @@ public class StateManager {
     return (script == null ? "" : script);
   }
 
+  Orientation getOrientation() {
+    return new Orientation();
+  }
+
   void saveOrientation(String saveName) {
     Orientation o = new Orientation();
     o.saveName = lastOrientation = "Orientation_" + saveName;
     saved.put(o.saveName, o);
   }
 
-  boolean restoreRotation(String saveName, float timeSeconds) {
+  boolean restoreOrientation(String saveName, float timeSeconds, boolean isAll) {
     String name = (saveName.length() > 0 ? "Orientation_" + saveName
         : lastOrientation);
     Orientation o = (Orientation) saved.get(name);
     if (o == null)
       return false;
-    viewer.moveTo(timeSeconds, o.rotationMatrix, null, Float.NaN, Float.NaN,
-        Float.NaN, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN);
-    return true;
-  }
-
-  boolean restoreOrientation(String saveName, float timeSeconds) {
-    String name = (saveName.length() > 0 ? "Orientation_" + saveName
-        : lastOrientation);
-    Orientation o = (Orientation) saved.get(name);
-    if (o == null)
-      return false;
-    o.restore(timeSeconds);
+    o.restore(timeSeconds, isAll);
     //    Logger.info(listSavedStates());
     return true;
   }
 
-  class Orientation {
+  public class Orientation {
 
     String saveName;
 
@@ -274,16 +267,18 @@ public class StateManager {
     float navDepth = Float.NaN;
     boolean windowCenteredFlag;
     boolean navigationMode;
+    String moveToText;
 
     Orientation() {
       viewer.getRotation(rotationMatrix);
       xTrans = viewer.getTranslationXPercent();
       yTrans = viewer.getTranslationYPercent();
-      zoom = viewer.getZoomPercentFloat();
+      zoom = viewer.getZoomSetting();
       center.set(viewer.getRotationCenter());
       windowCenteredFlag = viewer.isWindowCentered();
       rotationRadius = viewer.getRotationRadius();
       navigationMode = viewer.getNavigationMode();
+      moveToText = viewer.getMoveToText(-1);
       if (navigationMode) {
         navCenter = viewer.getNavigationOffset();
         xNav = viewer.getNavigationOffsetPercent('X');
@@ -293,7 +288,17 @@ public class StateManager {
       }
     }
 
-    void restore(float timeSeconds) {
+    public String getMoveToText() {
+      return moveToText;
+    }
+    
+    void restore(float timeSeconds, boolean isAll) {
+      //System.out.println("statemanager restore " + isAll + " " + saveName  + " " + moveToText);
+      if (!isAll) {
+        viewer.moveTo(timeSeconds, rotationMatrix, null, Float.NaN, Float.NaN,
+            Float.NaN, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN);
+        return;
+      }
       viewer.setBooleanProperty("windowCentered", windowCenteredFlag);
       viewer.setBooleanProperty("navigationMode", navigationMode);
       viewer.moveTo(timeSeconds, rotationMatrix, center, zoom, xTrans, yTrans,
@@ -483,7 +488,7 @@ public class StateManager {
       appendCmd(str, "set appendNew " + appendNew);
       appendCmd(str, "set appletProxy " + Escape.escape(appletProxy));
       appendCmd(str, "set applySymmetryToBonds " + applySymmetryToBonds);
-      if (viewer.getAxesOrientationRasmol())
+      if (axesOrientationRasmol)
         appendCmd(str, "set axesOrientationRasmol true");
       appendCmd(str, "set bondRadiusMilliAngstroms " + bondRadiusMilliAngstroms);
       appendCmd(str, "set bondTolerance " + bondTolerance);
@@ -596,6 +601,7 @@ public class StateManager {
 
     int animationFps = 10;
     boolean autoFps = false;
+    boolean axesOrientationRasmol = false;
     int axesMode = JmolConstants.AXES_MODE_BOUNDBOX;
     float axesScale = 2;
     float cameraDepth = 3.0f;
@@ -1092,7 +1098,7 @@ public class StateManager {
       setParameterValue("axesMolecular", false);
       setParameterValue("axesPosition", false);
       setParameterValue("axesUnitcell", false);
-      setParameterValue("axesOrientationRasmol", false);
+      setParameterValue("axesOrientationRasmol", axesOrientationRasmol);
       setParameterValue("backgroundModel", 0);
       setParameterValue("bondModeOr", bondModeOr);
       setParameterValue("bondRadiusMilliAngstroms", bondRadiusMilliAngstroms);

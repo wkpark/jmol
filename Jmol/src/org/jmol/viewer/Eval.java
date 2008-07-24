@@ -2868,8 +2868,6 @@ class Eval { //implements Runnable {
     Point3f center = null;
     int i = 1;
     float floatSecondsTotal = (isFloatParameter(i) ? floatParameter(i++) : 2.0f);
-    if (floatSecondsTotal < 0)
-      error(ERROR_invalidArgument);
     float zoom = Float.NaN;
     float xTrans = 0;
     float yTrans = 0;
@@ -2927,7 +2925,7 @@ class Eval { //implements Runnable {
 
     boolean isChange = !viewer.isInPosition(pt, degrees);
     //zoom xTrans yTrans (center) rotationRadius 
-    float zoom0 = viewer.getZoomPercentFloat();
+    float zoom0 = viewer.getZoomSetting();
     if (i != statementLength && !isCenterParameter(i)) {
       zoom = floatParameter(i++);
     }
@@ -4518,7 +4516,7 @@ class Eval { //implements Runnable {
       viewer.setFrameTitle(modelCount - 1, type + " plot for model "
           + viewer.getModelNumberDotted(modelIndex));
       script = "frame 0.0; frame last; reset;"
-          + "select visible; color structure; spacefill 3.0; wireframe 0; set rotationRadius 260;"
+          + "select visible; color structure; spacefill 3.0; wireframe 0;"
           + "draw ramaAxisX" + modelCount + " {200 0 0} {-200 0 0} \"phi\";"
           + "draw ramaAxisY" + modelCount + " {0 200 0} {0 -200 0} \"psi\";"
           //+ "draw ramaAxisZ" + modelCount + " {0 0 400} {0 0 0} \"" + (isRamachandranRelative ? "theta" : "omega") +"\";"
@@ -4527,10 +4525,10 @@ class Eval { //implements Runnable {
     case JmolConstants.JMOL_DATA_QUATERNION:
       viewer.setFrameTitle(modelCount - 1, type + " for model "
           + viewer.getModelNumberDotted(modelIndex));
-      script = "frame 0.0; frame last; reset; set rotationRadius 12;"
+      script = "frame 0.0; frame last; reset;"
           + "select visible; wireframe 0; "
           + "isosurface quatSphere" + modelCount
-          + " resolution 1.0 sphere 10.0 mesh nofill translucent 0.8;set rotationRadius 12;"
+          + " resolution 1.0 sphere 10.0 mesh nofill translucent 0.8;"
           + "draw quatAxis" + modelCount + "X {10 0 0} {-10 0 0} color red \"x\";"
           + "draw quatAxis" + modelCount + "Y {0 10 0} {0 -10 0} color green \"y\";"
           + "draw quatAxis" + modelCount + "Z {0 0 10} {0 0 -10} color blue \"z\";"
@@ -4896,9 +4894,8 @@ class Eval { //implements Runnable {
           continue;
         }
         if (str.equalsIgnoreCase("y")) {
-          if (axesOrientationRasmol)
-            direction = -direction;
-          rotAxis.set(0, direction, 0);
+          rotAxis.set(0, (axesOrientationRasmol && !isMolecular ? -direction
+              : direction), 0);
           continue;
         }
         if (str.equalsIgnoreCase("z")) {
@@ -4961,7 +4958,7 @@ class Eval { //implements Runnable {
     if (degrees == Float.MIN_VALUE)
       degrees = 10;
     if (isSelected && bsAtoms == null)
-        bsAtoms = viewer.getSelectionSet();
+      bsAtoms = viewer.getSelectionSet();
     if (nPoints < 2) {
       if (!isMolecular) {
         // fixed-frame rotation
@@ -4969,12 +4966,12 @@ class Eval { //implements Runnable {
         // rotate axisangle {0 1 0} 10
         // rotate x 10 (atoms) # point-centered
         // rotate x 10 $object # point-centered
-        viewer.rotateAxisAngleAtCenter(points[0], 
-            rotAxis, degrees, endDegrees, isSpin, bsAtoms);
+        viewer.rotateAxisAngleAtCenter(points[0], rotAxis, degrees, endDegrees,
+            isSpin, bsAtoms);
         return;
       }
       if (nPoints == 0)
-        points[0] = new Point3f(); 
+        points[0] = new Point3f();
       // rotate MOLECULAR
       // rotate MOLECULAR (atom1)
       // rotate MOLECULAR x 10 (atom1)
@@ -5455,7 +5452,7 @@ class Eval { //implements Runnable {
         return;
       }
     }
-    float zoom = viewer.getZoomPercentFloat();
+    float zoom = viewer.getZoomSetting();
     float radius = viewer.getRotationRadius();
     Point3f center = null;
     Point3f currentCenter = viewer.getRotationCenter();
@@ -6615,7 +6612,7 @@ class Eval { //implements Runnable {
       scaleAngstromsPerPixel = floatParameter(5);
       if (scaleAngstromsPerPixel >= 5) // actually a zoom value
         scaleAngstromsPerPixel = 
-          viewer.getZoomPercentFloat() / scaleAngstromsPerPixel 
+          viewer.getZoomSetting() / scaleAngstromsPerPixel 
             / viewer.getScalePixelsPerAngstrom();
     //fall through
     case 5:
@@ -8253,7 +8250,7 @@ class Eval { //implements Runnable {
       if (str.equals("scalereference")) {
         float scaleAngstromsPerPixel = floatParameter(2);
         if (scaleAngstromsPerPixel >= 5) // actually a zoom value
-          scaleAngstromsPerPixel =  viewer.getZoomPercentFloat() / scaleAngstromsPerPixel 
+          scaleAngstromsPerPixel =  viewer.getZoomSetting() / scaleAngstromsPerPixel 
               / viewer.getScalePixelsPerAngstrom();
         propertyValue = new Float(scaleAngstromsPerPixel);
         break;
@@ -9259,7 +9256,7 @@ class Eval { //implements Runnable {
       break;
     case Token.zoom:
       msg = "zoom "
-          + (viewer.getZoomEnabled() ? ("" + viewer.getZoomPercentFloat())
+          + (viewer.getZoomEnabled() ? ("" + viewer.getZoomSetting())
               : "off");
       break;
     case Token.frank:

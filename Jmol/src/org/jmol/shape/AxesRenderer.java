@@ -35,8 +35,10 @@ import javax.vecmath.Point3f;
 
 public class AxesRenderer extends FontLineShapeRenderer {
 
-  private String[] axisLabels = { "+X", "+Y", "+Z",
-                          null, null, null, "a", "b", "c" , "X", "Y", "Z"};
+  private final static String[] axisLabels = { "+X", "+Y", "+Z", null, null, null, 
+                                  "a", "b", "c", 
+                                  "X", "Y", "Z", null, null, null,
+                                  "X", null, "Z", null, "(Y)", null};
 
   private final Point3f[] axisScreens = new Point3f[6];
   {
@@ -52,6 +54,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     int mad = viewer.getObjectMad(StateManager.OBJ_AXIS1);
     if (mad == 0 || !g3d.checkTranslucent(false))
       return;
+    int axesMode = viewer.getAxesMode();
     imageFontScaling = viewer.getImageFontScaling();
     if (viewer.areAxesTainted())
       axes.initShape();
@@ -59,9 +62,11 @@ public class AxesRenderer extends FontLineShapeRenderer {
     int labelPtr = 0;
     CellInfo[] cellInfos = modelSet.getCellInfos();
     boolean isXY = (axes.axisXY.z != 0);
-    if (viewer.getAxesMode() == JmolConstants.AXES_MODE_UNITCELL
+    int modelIndex = viewer.getDisplayModelIndex();
+    if (viewer.isJmolDataFrame(modelIndex))
+      return;
+    if (axesMode == JmolConstants.AXES_MODE_UNITCELL
         && cellInfos != null) {
-      int modelIndex = viewer.getDisplayModelIndex();
       if (modelIndex < 0 || cellInfos[modelIndex].getUnitCell() == null)
         return;
       nPoints = 3;
@@ -69,8 +74,10 @@ public class AxesRenderer extends FontLineShapeRenderer {
     } else if (isXY) {
       nPoints = 3;
       labelPtr = 9;
-    }
-    
+    } if (axesMode == JmolConstants.AXES_MODE_BOUNDBOX) {
+      nPoints = 6;
+      labelPtr = (viewer.getAxesOrientationRasmol() ? 15 : 9);
+    }    
     boolean isDataFrame = viewer.isJmolDataFrame();
 
     int aFactor = (g3d.isAntialiased() ? 2 : 1);

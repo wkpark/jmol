@@ -51,6 +51,7 @@ import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
+import org.jmol.viewer.StateManager.Orientation;
 
 abstract public class ModelCollection extends BondCollection {
 
@@ -258,7 +259,9 @@ abstract public class ModelCollection extends BondCollection {
     return averageAtomPoint;
   }
 
-  public Point3f getBoundBoxCenter() {
+  public Point3f getBoundBoxCenter(int modelIndex) {
+    if (isJmolDataFrame(modelIndex))
+      return new Point3f();
     return boxInfo.getBoundBoxCenter();
   }
 
@@ -300,6 +303,36 @@ abstract public class ModelCollection extends BondCollection {
     float v = Math.abs(8 * bbVector.x * bbVector.y * bbVector.z);
     s += Escape.escape(ptTemp) + " # volume = " + v;
     return s;
+  }
+
+
+  public boolean setRotationRadius(int modelIndex, float angstroms) {
+    if (!isJmolDataFrame(modelIndex))
+      return false;
+    models[modelIndex].defaultRotationRadius = angstroms;
+    return true;
+  }
+
+  public float calcRotationRadius(int modelIndex, Point3f center) {
+    if (isJmolDataFrame(modelIndex)) {
+      float r = models[modelIndex].defaultRotationRadius;
+      return (r == 0 ? 10 : r);
+    }
+    float maxRadius = 0;
+    for (int i = atomCount; --i >= 0;) {
+      if (isJmolDataFrame(atoms[i])) {
+        modelIndex = atoms[i].modelIndex;
+        while (i >= 0 && atoms[i].modelIndex == modelIndex)
+          i--;
+        continue;
+      }
+        Atom atom = atoms[i];
+        float distAtom = center.distance(atom);
+        float outerVdw = distAtom + getRadiusVdwJmol(atom);
+        if (outerVdw > maxRadius)
+          maxRadius = outerVdw;     
+    }
+    return (maxRadius == 0 ? 10 : maxRadius);
   }
 
   public void calcBoundBoxDimensions(BitSet bs) {
@@ -1006,6 +1039,8 @@ abstract public class ModelCollection extends BondCollection {
         model.dataFrames = new Hashtable();
       models[modelDataIndex].dataSourceFrame = modelIndex;
       models[modelDataIndex].jmolFrameType = type;
+      models[modelDataIndex].defaultRotationRadius = (type
+          .startsWith("ramachandran") ? 260 : 12);
       model.dataFrames.put(type, new Integer(modelDataIndex));
     }
     if (type.indexOf(" ") > 0 && type.indexOf("deriv") < 0) { //generic quaternion
@@ -1042,6 +1077,14 @@ abstract public class ModelCollection extends BondCollection {
   public int getJmolDataSourceFrame(int modelIndex) {
     return (modelIndex >= 0 && modelIndex < modelCount ? 
         models[modelIndex].dataSourceFrame : -1);
+  }
+
+  public void saveModelOrientation(int modelIndex, Orientation orientation) {
+    models[modelIndex].orientation = orientation;
+  }
+
+  public Orientation getModelOrientation(int modelIndex) {
+    return models[modelIndex].orientation;
   }
 
   /*
@@ -1427,10 +1470,8 @@ abstract public class ModelCollection extends BondCollection {
       return null;
     pos.scale(1f/cPos);
     neg.scale(1f/cNeg);
-    //System.out.print("draw ptn {" + neg.x + " " + neg.y + " " + neg.z + "};draw ptp {" + pos.x + " " + pos.y + " " + pos.z + " }#" + cNeg + " " + cPos+" ");
     pos.sub(neg);
-    //System.out.println(pos.length() + " " + cPos);
-    Logger.warn(" this is an untested result -- needs checking");
+    Logger.warn("CalculateMolecularDipole: this is an approximate result -- needs checking");
     pos.scale(cPos * 4.8f); //1e-10f * 1.6e-19f/ 3.336e-30f;
     
     // SUM_Q[(SUM_pos Q_iRi) / SUM_Q   -  (SUM_neg Q_iRi) / (-SUM_Q) ]    

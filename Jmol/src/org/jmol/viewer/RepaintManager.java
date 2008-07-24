@@ -49,46 +49,45 @@ class RepaintManager {
   }
   
   void setCurrentModelIndex(int modelIndex, boolean clearBackgroundModel) {
-      ModelSet modelSet = viewer.getModelSet();
-    if (modelSet != null && currentModelIndex != modelIndex) {
+    int formerModelIndex = currentModelIndex;
+    ModelSet modelSet = viewer.getModelSet();
+    int modelCount = (modelSet == null ? 0 : modelSet.getModelCount());
+    if (modelCount == 1)
+      currentModelIndex = modelIndex = 0;
+    else if (modelIndex < 0 || modelIndex >= modelCount)
+      modelIndex = -1;
+    String ids = null;
+    boolean isSameSource = false;
+    if (currentModelIndex == modelIndex)
+      return;
+    if (modelCount > 0) {
       boolean fromDataFrame = viewer.isJmolDataFrame(currentModelIndex);
-      boolean toDataFrame = viewer.isJmolDataFrame(modelIndex);
+      //System.out.println("from state " + currentModelIndex + " to "+ modelIndex);
       if (fromDataFrame)
         viewer.setJmolDataFrame(null, -1, currentModelIndex);
-      viewer.saveOrientation(viewer.getJmolFrameType(currentModelIndex));
-      //System.out.println("saving orientation for " + currentModelIndex + " " + viewer.getJmolDataFrameType(currentModelIndex));
-      if (fromDataFrame || toDataFrame) {
-        String fromID = viewer.getJmolFrameType(currentModelIndex); 
-        String toID = viewer.getJmolFrameType(modelIndex);
-        viewer.restoreOrientation(toID, -1);
-        //System.out.println("restoring orientation for " + modelIndex + " " + viewer.getJmolDataFrameType(modelIndex));
-        if (viewer.getJmolDataSourceFrame(modelIndex) == viewer.getJmolDataSourceFrame(currentModelIndex)) {
-          //same set -- check if NOT Ramachandran...
-          if ((fromID + toID).indexOf("quaternion") >= 0) {
-            viewer.restoreRotation(fromID, -1);
-          }
-        }
-        
+      if (currentModelIndex != -1)
+        viewer.saveModelOrientation();
+      if (fromDataFrame || viewer.isJmolDataFrame(modelIndex)) {
+        ids = viewer.getJmolFrameType(modelIndex) + viewer.getJmolFrameType(currentModelIndex);
+        isSameSource = (viewer.getJmolDataSourceFrame(modelIndex) == viewer
+            .getJmolDataSourceFrame(currentModelIndex));
       }
     }
-    if (modelSet == null || modelIndex < 0
-        || modelIndex >= modelSet.getModelCount())
-      currentModelIndex = -1;
-    else
-      currentModelIndex = modelIndex;
+    currentModelIndex = modelIndex;
+    if (ids != null) {
+      viewer.restoreModelOrientation(modelIndex);
+      if (isSameSource && ids.indexOf("quaternion") >= 0 
+          && ids.indexOf("ramachandran") < 0)
+        viewer.restoreModelRotation(formerModelIndex);
+    }
     viewer.setTrajectory(currentModelIndex);
     if (currentModelIndex == -1 && clearBackgroundModel)
       setBackgroundModelIndex(-1);
-    if (modelSet != null && currentModelIndex >= 0) {
-      // entering data frame
-      if (viewer.isJmolDataFrame(currentModelIndex)) {
-        viewer.restoreOrientation("frameIndex" + currentModelIndex, 0);
-      }
-    }
     viewer.setTainted(true);
     setFrameRangeVisible();
     if (modelSet != null)
       setStatusFrameChanged();
+  
   }
 
   

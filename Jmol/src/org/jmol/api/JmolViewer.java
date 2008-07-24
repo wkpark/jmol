@@ -321,11 +321,14 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   //not used in Jmol application:
   
   abstract public void rotateFront();
-  abstract public void rotateToX(int degrees);
-  abstract public void rotateToY(int degrees);
-  abstract public void rotateToX(float radians);
-  abstract public void rotateToY(float radians);
-  abstract public void rotateToZ(float radians);
+  // "To" was removed in the next, because they don't 
+  // rotate "TO" anything. They just rotate.
+  
+  abstract public void rotateX(int degrees);
+  abstract public void rotateY(int degrees);
+  abstract public void rotateX(float radians);
+  abstract public void rotateY(float radians);
+  abstract public void rotateZ(float radians);
 
 
 }

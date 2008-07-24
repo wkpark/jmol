@@ -102,12 +102,6 @@ abstract public class ModelSet extends ModelCollection {
     return modelSetTypeName;
   }
 
-  protected boolean isZeroBased;
-
-  public void setZeroBased() {
-    isZeroBased = isXYZ && viewer.getZeroBasedXyzRasmol();
-  }
-
   protected final Shape[] shapes = new Shape[JmolConstants.SHAPE_MAX];
   
   private Shape allocateShape(int shapeID) {
@@ -413,7 +407,6 @@ abstract public class ModelSet extends ModelCollection {
     return info;
   }
 
-
   public void calculateStructures(BitSet bsAtoms) {
     BitSet bsAllAtoms = new BitSet();
     BitSet bsDefined = BitSetUtil.invertInPlace(modelsOf(bsAtoms, bsAllAtoms), modelCount);
@@ -623,6 +616,9 @@ abstract public class ModelSet extends ModelCollection {
         if (t != null && t.length() > 0)
           commands.append("  frame " + getModelNumberDotted(i)
               + "; frame title " + Escape.escape(t) + ";\n");
+        if (models[i].orientation != null)
+          commands.append("  frame " + getModelNumberDotted(i)
+              + "; " + models[i].orientation.getMoveToText()+ "\n");
       }
 
       commands.append("  set fontScaling " + viewer.getFontScaling() + ";\n");

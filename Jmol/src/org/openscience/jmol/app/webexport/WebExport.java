@@ -24,10 +24,10 @@
  */
 package org.openscience.jmol.app.webexport;
 
-import java.awt.*;
-import java.awt.event.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,7 +38,15 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Properties;
-import javax.swing.*;
+
+import javax.swing.JDialog;
+import javax.swing.JEditorPane;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileSystemView;
 
 import org.jmol.api.JmolViewer;

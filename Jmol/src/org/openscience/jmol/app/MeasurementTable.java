@@ -52,7 +52,7 @@ public class MeasurementTable extends JDialog {
   private MeasurementTableModel measurementTableModel;
   int selectedMeasurementRow = -1;
   JButton deleteButton;
-  private JButton deleteAllButton;
+  JButton deleteAllButton;
 
   /**
    * Constructor

@@ -210,8 +210,10 @@ public class MeasurementTable extends JDialog {
       return stringClass;
     }
     public Object getValueAt(int row, int col) {
-      if (col == 0)
+      if (col == 0) {
+        deleteAllButton.setEnabled(true);
         return viewer.getMeasurementStringValue(row);
+      }
       int[] countPlusIndices = viewer.getMeasurementCountPlusIndices(row);
       if (col > countPlusIndices[0])
         return null;

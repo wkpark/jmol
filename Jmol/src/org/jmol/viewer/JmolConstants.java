@@ -248,17 +248,18 @@ final public class JmolConstants {
   public final static int PICKING_SELECT_MOLECULE  = 11;
   public final static int PICKING_SELECT_SITE      = 12;
   public final static int PICKING_SELECT_ELEMENT   = 13;
-  public final static int PICKING_MEASURE          = 14;
-  public final static int PICKING_MEASURE_DISTANCE = 15;
-  public final static int PICKING_MEASURE_ANGLE    = 16;
-  public final static int PICKING_MEASURE_TORSION  = 17;
-  public final static int PICKING_NAVIGATE         = 18;
+  public static final int PICKING_SELECT_DRAG      = 14;
+  public final static int PICKING_MEASURE          = 15;
+  public final static int PICKING_MEASURE_DISTANCE = 16;
+  public final static int PICKING_MEASURE_ANGLE    = 17;
+  public final static int PICKING_MEASURE_TORSION  = 18;
+  public final static int PICKING_NAVIGATE         = 19;
 
   private final static String[] pickingModeNames = {
     "off", "identify", "label", "center", "draw", "spin",
     "coord NOT IMPLEMENTED", "bond NOT IMPLEMENTED", 
     "atom", "group", "chain", "molecule", "site", "element", 
-    "measure", "distance", "angle", "torsion", "navigate"
+    "drag", "measure", "distance", "angle", "torsion", "navigate"
   };
  
   public final static String getPickingModeName(int pickingMode) {
@@ -279,11 +280,12 @@ final public class JmolConstants {
   public final static int PICKINGSTYLE_SELECT_CHIME = 0;
   public final static int PICKINGSTYLE_SELECT_RASMOL = 1;
   public final static int PICKINGSTYLE_SELECT_PFAAT = 2;
-  public final static int PICKINGSTYLE_MEASURE_ON = 3;
-  public final static int PICKINGSTYLE_MEASURE_OFF = 4;
+  public final static int PICKINGSTYLE_SELECT_DRAG = 3;
+  public final static int PICKINGSTYLE_MEASURE_ON = 4;
+  public final static int PICKINGSTYLE_MEASURE_OFF = 5;
   
   private final static String[] pickingStyleNames = {
-    "toggle", "selectOrToggle", "extendedSelect", 
+    "toggle", "selectOrToggle", "extendedSelect", "drag",
     "measure", "measureoff"
   };
 
@@ -2838,6 +2840,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int STEREO_REDBLUE  = 3;
   public final static int STEREO_REDGREEN = 4;
   public final static int STEREO_CUSTOM   = 5;
+
 
   // all of these things are compile-time constants
   // if they are false then the compiler should take them away

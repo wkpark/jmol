@@ -1673,6 +1673,7 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
+      viewer.script("set picking measure distance;set pickingstyle measure");
       measurementTable.activate();
     }
   }
@@ -1743,7 +1744,8 @@ public class Jmol extends JPanel {
             (String) data[4]);
         break;
       case JmolConstants.CALLBACK_ANIMFRAME:
-        notifyFrameChanged(((int[]) data[1])[0]);
+        int[] iData = (int[]) data[1];
+        notifyFrameChanged(iData[0], iData[1], iData[2]);
         break;
       case JmolConstants.CALLBACK_ECHO:
         sendConsoleEcho(strInfo);
@@ -1833,7 +1835,7 @@ public class Jmol extends JPanel {
         //          JOptionPane.ERROR_MESSAGE);
         return;
       }
-      if (!haveDisplay.booleanValue())
+      if (display == null)
         return;
       //      jmolpopup.updateComputedMenus();
       String title = "Jmol";
@@ -1854,7 +1856,7 @@ public class Jmol extends JPanel {
       pcs.firePropertyChange(chemFileProperty, null, null);
     }
 
-    private void notifyFrameChanged(int frameNo) {
+    private void notifyFrameChanged(int frameNo, int file, int model) {
       // Note: twos-complement. To get actual frame number, use 
       // Math.max(frameNo, -2 - frameNo)
       // -1 means all frames are now displayed
@@ -1872,7 +1874,9 @@ public class Jmol extends JPanel {
       //int animationDirection = (firstNo < 0 ? -1 : 1);
       //int currentDirection = (lastNo < 0 ? -1 : 1);
       //System.out.println("notifyFrameChange " + frameNo + " " + fileNo + " " + modelNo + " " + firstNo + " " + lastNo + " " + animationDirection + " " + currentDirection);
-
+      
+      if (display != null)
+        display.status.setStatus(1, file + "." + model);
       if (jmolpopup == null || isAnimationRunning)
         return;
       jmolpopup.updateComputedMenus();

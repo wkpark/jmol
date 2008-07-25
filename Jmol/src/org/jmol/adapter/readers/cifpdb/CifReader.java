@@ -482,7 +482,13 @@ public class CifReader extends AtomSetCollectionReader {
   final private static byte ANISO_B12 = 37;
   final private static byte ANISO_B13 = 38;
   final private static byte ANISO_B23 = 39;
-  final private static byte ADP_TYPE = 40;
+  final private static byte ANISO_Beta_11 = 40;
+  final private static byte ANISO_Beta_22 = 41;
+  final private static byte ANISO_Beta_33 = 42;
+  final private static byte ANISO_Beta_12 = 43;
+  final private static byte ANISO_Beta_13 = 44;
+  final private static byte ANISO_Beta_23 = 45;
+  final private static byte ADP_TYPE = 46;
 
   final private static String[] atomFields = { 
       "_atom_site_type_symbol",
@@ -525,6 +531,12 @@ public class CifReader extends AtomSetCollectionReader {
       "_atom_site_aniso_B_12",
       "_atom_site_aniso_B_13",
       "_atom_site_aniso_B_23",
+      "_atom_site_aniso_Beta_11",
+      "_atom_site_aniso_Beta_22",
+      "_atom_site_aniso_Beta_33",
+      "_atom_site_aniso_Beta_12",
+      "_atom_site_aniso_Beta_13",
+      "_atom_site_aniso_Beta_23",
       "_atom_site_adp_type",
   };
 
@@ -689,7 +701,7 @@ public class CifReader extends AtomSetCollectionReader {
             atom.anisoBorU = new float[8];
           int iType = (propertyOf[i] - ANISO_U11) % 6;
           atom.anisoBorU[iType] = parseFloat(field);
-          atom.anisoBorU[6] = 8; // D = 2pi^2, C = 2, a*b*
+          atom.anisoBorU[6] = 8; // Ortep type 8: D = 2pi^2, C = 2, a*b*
           break;
         case ANISO_B11:
         case ANISO_B22:
@@ -702,6 +714,19 @@ public class CifReader extends AtomSetCollectionReader {
            int iTypeB = (propertyOf[i] - ANISO_B11) % 6;
            atom.anisoBorU[iTypeB] = parseFloat(field);
            atom.anisoBorU[6] = 4; // Ortep Type 4: D = 1/4, C = 2, a*b*
+          break;
+        case ANISO_Beta_11:
+        case ANISO_Beta_22:
+        case ANISO_Beta_33:
+        case ANISO_Beta_12:
+        case ANISO_Beta_13:
+        case ANISO_Beta_23:
+           if (atom.anisoBorU == null)
+             atom.anisoBorU = new float[8];
+           int iTypeBeta = (propertyOf[i] - ANISO_Beta_11) % 6;
+           atom.anisoBorU[iTypeBeta] = parseFloat(field);
+           atom.anisoBorU[6] = 0; // NOT VERIFIED! Ortep Type 0: D = 1, c = 2
+           System.out.println("ANISO_Beta NOT VERIFIED -- TESTING ONLY");
           break;
         }
       }

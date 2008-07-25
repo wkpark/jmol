@@ -50,7 +50,7 @@ public abstract class MouseManager implements KeyListener {
   
   boolean hoverActive = false;
 
-  boolean rubberbandSelectionMode = false;
+  private boolean rubberbandSelectionMode = false;
   int xAnchor, yAnchor;
   final static Rectangle rectRubber = new Rectangle();
 
@@ -144,12 +144,12 @@ public abstract class MouseManager implements KeyListener {
   }
 
   Rectangle getRubberBand() {
-    if (!rubberbandSelectionMode)
+    if (!rubberbandSelectionMode || rectRubber.x == Integer.MAX_VALUE)
       return null;
     return rectRubber;
   }
 
-  void calcRectRubberBand() {
+  private void calcRectRubberBand() {
     if (xCurrent < xAnchor) {
       rectRubber.x = xCurrent;
       rectRubber.width = xAnchor - xCurrent;
@@ -250,8 +250,8 @@ public abstract class MouseManager implements KeyListener {
     }
 
     hoverOff();
-    previousPressedX = previousDragX = xCurrent = x;
-    previousPressedY = previousDragY = yCurrent = y;
+    xAnchor = previousPressedX = previousDragX = xCurrent = x;
+    yAnchor = previousPressedY = previousDragY = yCurrent = y;
     previousPressedModifiers = modifiers;
     previousPressedTime = timeCurrent = time;
 
@@ -298,6 +298,12 @@ public abstract class MouseManager implements KeyListener {
     yCurrent = y;
     viewer.setInMotion(false);
     viewer.setCursor(Viewer.CURSOR_DEFAULT);
+    if (rubberbandSelectionMode && ((modifiers & BUTTON_MODIFIER_MASK) == SHIFT_LEFT)) {
+      viewer.selectRectangle(rectRubber, modifiers);
+      viewer.refresh(0, "mouseReleased");
+    } 
+    rubberbandSelectionMode = false;
+    rectRubber.x = Integer.MAX_VALUE;
   }
 
   int previousClickX, previousClickY;
@@ -333,6 +339,7 @@ public abstract class MouseManager implements KeyListener {
 
   void setMouseMode() {
     drawMode = false;
+    rubberbandSelectionMode = (viewer.getPickingStyle() == JmolConstants.PICKINGSTYLE_SELECT_DRAG);
     measuresEnabled = true;
     switch (viewer.getPickingMode()) {
     default:
@@ -434,7 +441,7 @@ public abstract class MouseManager implements KeyListener {
     timeCurrent = time;
     xCurrent = previousDragX = x;
     yCurrent = previousDragY = y;
-    
+
     switch (pressedCount) {
     case 2:
       //viewer.setStatusUserAction("mouseDoublePressDrag: " + modifiers);
@@ -444,11 +451,11 @@ public abstract class MouseManager implements KeyListener {
       case MIDDLE:
         checkMotion();
         viewer.translateXYBy(deltaX, deltaY);
-        break;
+        return;
       case CTRL_SHIFT_LEFT:
         if (viewer.getSlabEnabled())
           viewer.depthByPixels(deltaY);
-        break;
+        return;
       }
       return;
     case 1:
@@ -456,37 +463,43 @@ public abstract class MouseManager implements KeyListener {
       case LEFT:
         checkMotion();
         viewer.rotateXYBy(deltaX, deltaY);
-        break;
+        return;
       case ALT_LEFT:
         if (viewer.allowRotateSelected()) {
           checkMotion();
           viewer.rotateMolecule(deltaX, deltaY);
-          break;
+          return;
         }
       case SHIFT_LEFT:
       case ALT_SHIFT_LEFT:
         if (drawMode) {
           checkMotion();
-          viewer.checkObjectDragged(previousDragX, previousDragY, deltaX, deltaY,
-              modifiers);
-          break;
+          viewer.checkObjectDragged(previousDragX, previousDragY, deltaX,
+              deltaY, modifiers);
+          return;
+        } else if (rubberbandSelectionMode) {
+          calcRectRubberBand();
+          viewer.refresh(0,"mouse-drag selection");
+          return;
         }
       case MIDDLE:
         //      if (deltaY < 0 && deltaX > deltaY || deltaY > 0 && deltaX < deltaY)
         if (Math.abs(deltaY) > 5 * Math.abs(deltaX))
           checkMotion();
-          viewer.zoomBy(deltaY);
+        viewer.zoomBy(deltaY);
         //      if (deltaX < 0 && deltaY > deltaX || deltaX > 0 && deltaY < deltaX)
         if (Math.abs(deltaX) > 5 * Math.abs(deltaY))
           checkMotion();
-          viewer.rotateZBy(-deltaX);
-        break;
+        viewer.rotateZBy(-deltaX);
+        return;
       case SHIFT_RIGHT: // the one-button Mac folks won't get this gesture
         checkMotion();
-        viewer.rotateZBy((Math.abs(deltaY) > 5 * Math.abs(deltaX) 
-            ? (xCurrent < viewer.getScreenWidth() / 2 ? deltaY : -deltaY) : 0)
+        viewer
+            .rotateZBy((Math.abs(deltaY) > 5 * Math.abs(deltaX) ? (xCurrent < viewer
+                .getScreenWidth() / 2 ? deltaY : -deltaY)
+                : 0)
                 + (yCurrent > viewer.getScreenHeight() / 2 ? deltaX : -deltaX));
-        break;
+        return;
       case CTRL_ALT_LEFT:
       /*
        * miguel 2004 11 23
@@ -499,16 +512,16 @@ public abstract class MouseManager implements KeyListener {
       case CTRL_RIGHT:
         checkMotion();
         viewer.translateXYBy(deltaX, deltaY);
-        break;
+        return;
       case CTRL_SHIFT_LEFT:
         if (viewer.getSlabEnabled())
           viewer.slabByPixels(deltaY);
-        break;
+        return;
       case CTRL_ALT_SHIFT_LEFT:
         if (viewer.getSlabEnabled())
           viewer.slabDepthByPixels(deltaY);
+        return;
       }
-      return;
     }
   }
 

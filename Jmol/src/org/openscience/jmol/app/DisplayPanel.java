@@ -153,9 +153,9 @@ public class DisplayPanel extends JPanel
 
   private HomeAction homeAction = new HomeAction();
   private DefineCenterAction defineCenterAction = new DefineCenterAction();
-  private Action deleteAction       = new SetStatusAction("delete", GT._("Delete Atoms"));
-  private Action pickAction         = new SetStatusAction("pick",   GT._("Select Atoms"));
-  private Action rotateAction       = new SetStatusAction("rotate", null);
+  private Action deleteAction       = new SetStatusAction("delete", GT._("Delete atoms"));
+  private Action pickAction         = new EvalStringQuietAction("pick", "if ({*}=={selected});select none;endif;selectionHalos on;set pickingstyle drag;set picking select atom");
+  private Action rotateAction       = new EvalStringQuietAction("rotate", "selectionHalos off;set pickingstyle toggle;set picking identify");
   private Action zoomAction         = new SetStatusAction("zoom",   null);
   private Action xlateAction        = new SetStatusAction("xlate",  null);
   private Action frontAction        = new MoveToAction("front",  "moveto 2.0 front");

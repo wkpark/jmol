@@ -247,6 +247,7 @@ public class Measures extends Shape {
     measurementCount = 0;
     for (int i = countT; --i >= 0; )
       measurements[i] = null;
+    viewer.setStatusMeasuring("measureDeleted", -1, "all");
   }
 
   private int findMeasurement(int[] indices, Point3fi[] points) {

@@ -1496,6 +1496,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return mouseManager.getRubberBand();
   }
 
+  
   public int getCursorX() {
     return mouseManager.xCurrent;
   }
@@ -2336,6 +2337,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   BitSet findAtomsInRectangle(Rectangle rectRubberBand) {
     return modelSet.findAtomsInRectangle(rectRubberBand);
+  }
+
+  void selectRectangle(Rectangle rectRubber, int modifiers) {
+    BitSet bs = findAtomsInRectangle(rectRubber);
+    if (BitSetUtil.firstSetBit(bs) < 0)
+      return;
+    pickingManager.atomsPicked(bs, modifiers);
   }
 
   void toCartesian(Point3f pt) {
@@ -3867,6 +3875,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         JmolConstants.getPickingStyleName(pickingManager.getPickingStyle()));
   }
 
+  int getPickingStyle() {
+    return pickingManager.getPickingStyle();
+  }
+  
   void setDrawHover(boolean TF) {
     pickingManager.setDrawHover(TF);
   }

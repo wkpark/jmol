@@ -23,10 +23,12 @@
  */
 package org.jmol.viewer;
 
+import java.util.BitSet;
+
 import javax.vecmath.Point3f;
 
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
-import org.jmol.util.Logger;
 
 import org.jmol.i18n.GT;
 import org.jmol.modelset.MeasurementPending;
@@ -36,7 +38,7 @@ class PickingManager {
   private Viewer viewer;
 
   private int pickingMode = JmolConstants.PICKING_IDENT;
-  private int pickingStyleSelect = JmolConstants.PICKINGSTYLE_SELECT_CHIME;
+  private int pickingStyleSelect = JmolConstants.PICKINGSTYLE_SELECT_JMOL;
   private int pickingStyleMeasure = JmolConstants.PICKINGSTYLE_MEASURE_OFF;
 
   private boolean drawHover;
@@ -69,11 +71,6 @@ class PickingManager {
 
   void setPickingStyle(int pickingStyle) {
     this.pickingStyle = pickingStyle;
-    if (Logger.debugging) {
-      Logger.debug(
-          " setPickingStyle " + pickingStyle+": " +
-          JmolConstants.getPickingStyleName(pickingStyle));
-    }
     if (pickingStyle >= JmolConstants.PICKINGSTYLE_MEASURE_ON) {
       pickingStyleMeasure = pickingStyle;
       resetMeasurement();
@@ -94,6 +91,46 @@ class PickingManager {
     return drawHover;
   }
 
+  void atomsPicked(BitSet bs, int modifiers) {
+    if (BitSetUtil.firstSetBit(bs) < 0)
+      return;
+    pickSelected(Escape.escape(bs), modifiers);
+  }  
+
+  private void pickSelected(String spec, int modifiers) {
+    boolean shiftKey = ((modifiers & MouseManager.SHIFT) != 0);
+    boolean alternateKey = ((modifiers & MouseManager.ALT) != 0);
+    switch (pickingMode) {
+    case JmolConstants.PICKING_LABEL:
+      viewer.script("set labeltoggle " + spec);
+      return;
+    case JmolConstants.PICKING_IDENT:
+    case JmolConstants.PICKING_SELECT_ATOM:
+      applyMouseStyle(spec, shiftKey, alternateKey);
+      viewer.clearClickCount();
+      return;
+    case JmolConstants.PICKING_SELECT_GROUP:
+      applyMouseStyle("within(group, " + spec +")", shiftKey, alternateKey);
+      viewer.clearClickCount();
+      return;
+    case JmolConstants.PICKING_SELECT_CHAIN:
+      applyMouseStyle("within(chain, " + spec +")", shiftKey, alternateKey);
+      viewer.clearClickCount();
+      return;
+    case JmolConstants.PICKING_SELECT_MOLECULE:
+      applyMouseStyle("visible and within(molecule, " + spec +")", shiftKey, alternateKey);
+      viewer.clearClickCount();
+      return;
+    case JmolConstants.PICKING_SELECT_SITE:
+      applyMouseStyle("visible and within(site, " + spec +")", shiftKey, alternateKey);
+      viewer.clearClickCount();
+      return;
+    case JmolConstants.PICKING_SELECT_ELEMENT:
+      applyMouseStyle("visible and within(element, " + spec +")", shiftKey, alternateKey);
+      viewer.clearClickCount();
+      return;
+    }
+  }
   void atomPicked(int atomIndex, Point3f ptClicked, int modifiers) {
     // atomIndex < 0 is possible here.
     boolean shiftKey = ((modifiers & MouseManager.SHIFT) != 0);
@@ -184,31 +221,8 @@ class PickingManager {
     case JmolConstants.PICKING_LABEL:
       viewer.script("set labeltoggle {atomindex="+atomIndex+"}");
       return;
-    case JmolConstants.PICKING_SELECT_ATOM:
-      applyMouseStyle("atomIndex="+atomIndex, shiftKey, alternateKey);
-      viewer.clearClickCount();
-      return;
-    case JmolConstants.PICKING_SELECT_GROUP:
-      applyMouseStyle("within(group, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
-      viewer.clearClickCount();
-      return;
-    case JmolConstants.PICKING_SELECT_CHAIN:
-      applyMouseStyle("within(chain, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
-      viewer.clearClickCount();
-      return;
-    case JmolConstants.PICKING_SELECT_MOLECULE:
-      applyMouseStyle("visible and within(molecule, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
-      viewer.clearClickCount();
-      return;
-    case JmolConstants.PICKING_SELECT_SITE:
-      applyMouseStyle("visible and within(site, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
-      viewer.clearClickCount();
-      return;
-    case JmolConstants.PICKING_SELECT_ELEMENT:
-      applyMouseStyle("visible and within(element, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
-      viewer.clearClickCount();
-      return;
     }
+    pickSelected("atomindex=" + atomIndex, modifiers);
   }
 
   private int queueAtom(int atomIndex, Point3f ptClicked) {
@@ -221,7 +235,8 @@ class PickingManager {
 
   private void applyMouseStyle(String item, boolean shiftKey, boolean alternateKey) {
     item = "(" + item + ")";
-    if (pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_PFAAT) {
+    if (pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_PFAAT
+        ||  pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_DRAG) {
       if (shiftKey && alternateKey)
         viewer.script("select selected and not " + item);
       else if (shiftKey)
@@ -231,10 +246,11 @@ class PickingManager {
       else
         viewer.script("select " + item);
     } else {
-      if (shiftKey | pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_CHIME)
+      if (shiftKey || pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_JMOL)
         viewer.script("select selected tog " + item); //toggle
       else
         viewer.script("select " + item);
     }
-  }  
+  }
+
 }

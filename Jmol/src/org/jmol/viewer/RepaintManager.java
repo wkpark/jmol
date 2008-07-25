@@ -58,31 +58,31 @@ class RepaintManager {
       modelIndex = -1;
     String ids = null;
     boolean isSameSource = false;
-    if (currentModelIndex == modelIndex)
-      return;
-    if (modelCount > 0) {
-      boolean fromDataFrame = viewer.isJmolDataFrame(currentModelIndex);
-      //System.out.println("from state " + currentModelIndex + " to "+ modelIndex);
-      if (fromDataFrame)
-        viewer.setJmolDataFrame(null, -1, currentModelIndex);
-      if (currentModelIndex != -1)
-        viewer.saveModelOrientation();
-      if (fromDataFrame || viewer.isJmolDataFrame(modelIndex)) {
-        ids = viewer.getJmolFrameType(modelIndex) + viewer.getJmolFrameType(currentModelIndex);
-        isSameSource = (viewer.getJmolDataSourceFrame(modelIndex) == viewer
-            .getJmolDataSourceFrame(currentModelIndex));
+    if (currentModelIndex != modelIndex) {
+      if (modelCount > 0) {
+        boolean fromDataFrame = viewer.isJmolDataFrame(currentModelIndex);
+        //System.out.println("from state " + currentModelIndex + " to "+ modelIndex);
+        if (fromDataFrame)
+          viewer.setJmolDataFrame(null, -1, currentModelIndex);
+        if (currentModelIndex != -1)
+          viewer.saveModelOrientation();
+        if (fromDataFrame || viewer.isJmolDataFrame(modelIndex)) {
+          ids = viewer.getJmolFrameType(modelIndex) + viewer.getJmolFrameType(currentModelIndex);
+          isSameSource = (viewer.getJmolDataSourceFrame(modelIndex) == viewer
+              .getJmolDataSourceFrame(currentModelIndex));
+        }
       }
-    }
-    currentModelIndex = modelIndex;
-    if (ids != null) {
-      viewer.restoreModelOrientation(modelIndex);
-      if (isSameSource && ids.indexOf("quaternion") >= 0 
-          && ids.indexOf("ramachandran") < 0)
-        viewer.restoreModelRotation(formerModelIndex);
+      currentModelIndex = modelIndex;
+      if (ids != null) {
+        viewer.restoreModelOrientation(modelIndex);
+        if (isSameSource && ids.indexOf("quaternion") >= 0 
+            && ids.indexOf("ramachandran") < 0)
+          viewer.restoreModelRotation(formerModelIndex);
+      }
     }
     viewer.setTrajectory(currentModelIndex);
     if (currentModelIndex == -1 && clearBackgroundModel)
-      setBackgroundModelIndex(-1);
+      setBackgroundModelIndex(-1);  
     viewer.setTainted(true);
     setFrameRangeVisible();
     if (modelSet != null)

@@ -226,7 +226,7 @@ public class UnitCell {
 
        * http://ndbserver.rutgers.edu/mmcif/dictionaries/html/cif_mm.dic/Items/_atom_site.aniso_u[1][2].html
        * 
-       * Ortep:
+       * Ortep: http://www.ornl.gov/sci/ortep/man_pdf.html
        * 
 Anisotropic temperature factor Types 0, 1, 2, 3, and 10 use the following formula for the
 complete temperature factor.
@@ -247,10 +247,10 @@ exp[ -D(a1*2U11h2 + a2*2U22k2 + a3*2U33l2 + C a1*a2*U12hk + C a1*a3 * U13hl + C 
 
 The coefficients Uij (i,j = 1,2,3) of the various types are defined with the following constant settings.
 
-Type 4: C = 2, D = 1?4
-Type 5: C = 1, D = 1?4
-Type 8: C = 2, D = 2p2
-Type 9: C = 1, D = 2p2
+Type 4: C = 2, D = 1/4
+Type 5: C = 1, D = 1/4
+Type 8: C = 2, D = 2pi2
+Type 9: C = 1, D = 2pi2
 
        */
       
@@ -269,7 +269,8 @@ Type 9: C = 1, D = 2p2
           : ortepType == 2 || ortepType == 3 ? Math.log(2)
           : 1 );
       // types 6 and 7 not supported
-      
+
+      System.out.println("ortep type " + ortepType + " isFractional=" + isFractional + " D = " + dd + " C=" + cc);
       double B11 = parBorU[0] * dd * (isFractional ? a_ * a_ : 1);
       double B22 = parBorU[1] * dd * (isFractional ? b_ * b_ : 1);
       double B33 = parBorU[2] * dd * (isFractional ? c_ * c_ : 1);
@@ -296,6 +297,7 @@ Type 9: C = 1, D = 2p2
           * c * cB_ * B13;
       Bcart[5] = 2 * c * c * cA_ * cB_ * B33 + b * c * cB_ * sinGamma * B23;
 
+      System.out.println("UnitCell Bcart="+Bcart[0] + " " + Bcart[1] + " " +  Bcart[2] + " " + Bcart[3] + " " + Bcart[4] + " " + Bcart[5]);
       Vector3f unitVectors[] = new Vector3f[3];
       for (int i = 0; i < 3; i++)
         unitVectors[i] = new Vector3f();

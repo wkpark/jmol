@@ -437,7 +437,7 @@ public class Token {
 
   final static int minmaxmask       = 3 << 5;
   final static int min              = 1 << 5;
-  final static int max              = 2 << 6;
+  final static int max              = 2 << 5;
   final static int comparefloatx100 = 1 << 7;
   final static int settable         = 1 << 8;
   

@@ -74,7 +74,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     } else if (isXY) {
       nPoints = 3;
       labelPtr = 9;
-    } if (axesMode == JmolConstants.AXES_MODE_BOUNDBOX) {
+    } else if (axesMode == JmolConstants.AXES_MODE_BOUNDBOX) {
       nPoints = 6;
       labelPtr = (viewer.getAxesOrientationRasmol() ? 15 : 9);
     }    

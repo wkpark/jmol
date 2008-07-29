@@ -1171,6 +1171,11 @@ public class Jmol extends JPanel {
 
     // Get label associated with this menu:
     JMenu menu = guimap.newJMenu(key);
+    ImageIcon f = JmolResourceHandler.getIconX(key + "Image");
+    if (f != null) {
+      menu.setHorizontalTextPosition(SwingConstants.RIGHT);
+      menu.setIcon(f);
+    }
 
     // Loop over the items in this menu:
     for (int i = 0; i < itemKeys.length; i++) {

@@ -820,6 +820,7 @@ abstract public class ModelCollection extends BondCollection {
         recalculateLeadMidpointsAndWingVectors(i);
       return;
     }
+    models[modelIndex].pointGroup = null;
     int polymerCount = models[modelIndex].getBioPolymerCount();
     for (int ip = 0; ip < polymerCount; ip++)
       models[modelIndex].getBioPolymer(ip)

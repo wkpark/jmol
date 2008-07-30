@@ -6808,4 +6808,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   String calculatePointGroup() {
     return modelSet.calculatePointGroup(selectionManager.bsSelection);
   }
+
+  public String getPointGroupDraw(int modelIndex) {
+    return modelSet.getPointGroupDraw(modelIndex);
+  }
 }

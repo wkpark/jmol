@@ -6189,7 +6189,10 @@ class Eval { //implements Runnable {
         int modelIndex = viewer.getCurrentModelIndex();
         if (modelIndex < 0)
           error(ERROR_multipleModelsNotOK, "CALCULATE SYMMETRY");
-        showString(viewer.calculatePointGroup());        
+        if (tokAt(0) == Token.draw)
+          runScript(viewer.getPointGroupDraw(modelIndex));
+        else
+          showString(viewer.calculatePointGroup());        
         return;
       case Token.surface:
         isSurface = true;
@@ -8663,6 +8666,10 @@ class Eval { //implements Runnable {
         tok = t.tok;
     }
     switch (tok) {
+    case Token.pointgroup:
+      type = "PGRP";
+      pt++;
+      break;
     case Token.quaternion:
       pt++;
       type2 = Token.sValue(tokenAt(pt, args)).toLowerCase();
@@ -8835,12 +8842,12 @@ class Eval { //implements Runnable {
     if (!isImage
         && !isExport
         && !Parser.isOneOf(type,
-            "SPT;HIS;MO;ISO;VAR;FILE;XYZ;MOL;PDB;QUAT;RAMA;FUNCS;"))
+            "SPT;HIS;MO;ISO;VAR;FILE;XYZ;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
       evalError(GT
           ._(
               "write what? {0} or {1} \"filename\"",
               new Object[] {
-                  "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|MO|QUATERNION [w,x,y,z] [derivative]"
+                  "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
                       + "|RAMACHANDRAN|STATE|VAR x  CLIPBOARD",
                   "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB|"
                       + driverList.toUpperCase().replace(';', '|') }));
@@ -8863,6 +8870,8 @@ class Eval { //implements Runnable {
         scriptStatus("Created " + fileName + ".ini:\n\n" + data);
         return "";
       }
+    } else if (data == "PGRP") {
+      data = viewer.getPointGroupDraw(viewer.getCurrentModelIndex());
     } else if (data == "PDB") {
       data = viewer.getPdbData(null);
     } else if (data == "XYZ" || data == "MOL") {
@@ -9508,16 +9517,21 @@ class Eval { //implements Runnable {
 
   private void draw() throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_DRAW);
-    if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_DRAW))
+    switch (tokAt(1)) {
+    case Token.list:
+      if (listIsosurface(JmolConstants.SHAPE_DRAW))
+        return;
+      break;
+    case Token.pointgroup:
+      calculate();
       return;
-    if (tokAt(1) == Token.quaternion) {
+    case Token.quaternion:
       dataFrame(JmolConstants.JMOL_DATA_QUATERNION);
       return;
-    }
-    if (tokAt(1) == Token.ramachandran) {
+    case Token.ramachandran:
       dataFrame(JmolConstants.JMOL_DATA_RAMACHANDRAN);
       return;
-    }    
+    }
     boolean havePoints = false;
     boolean isInitialized = false;
     boolean isSavedState = false;
@@ -10132,8 +10146,8 @@ class Eval { //implements Runnable {
   private int lastMoNumber = 0;
 
   private boolean mo(boolean isInitOnly) throws ScriptException {
-    int modelIndex = viewer.getDisplayModelIndex();
     int offset = Integer.MAX_VALUE;
+    int modelIndex = viewer.getDisplayModelIndex();
     if (!isSyntaxCheck && modelIndex < 0)
       error(ERROR_multipleModelsNotOK, "MO isosurfaces");
     viewer.loadShape(JmolConstants.SHAPE_MO);

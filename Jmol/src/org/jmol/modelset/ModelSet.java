@@ -434,6 +434,14 @@ abstract public class ModelSet extends ModelCollection {
     return pg.getName();
   }
 
+  public String getPointGroupDraw(int modelIndex) {
+    if (modelIndex < 0)
+      return "";
+    if (models[modelIndex].pointGroup == null)
+      calculatePointGroup(viewer.getSelectionSet());
+    return models[modelIndex].pointGroup.drawInfo();
+  }
+
   private BitSet modelsOf(BitSet bsAtoms, BitSet bsAllAtoms) {
     BitSet bsModels = new BitSet(modelCount);
     for (int i = 0; i < atomCount; i++) {

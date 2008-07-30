@@ -828,10 +828,10 @@ public class PointGroup {
         v.add(center);
         float scale = 4.0f + op.order / 4.0f;
         sb.append("draw va").append(i).append("_").append(j)
-        .append(" scale -" + scale + " ").append(Escape.escape(v));
+        .append(" width 0.05 scale -" + scale + " ").append(Escape.escape(v));
         v.scaleAdd(-2, op.normalOrAxis, v);
         sb.append(Escape.escape(v))
-        .append("\""+op.getLabel()+"\"").append(";\n");
+        .append("\""+op.getLabel()+"\"").append(op.type == OPERATION_IMPROPER_AXIS ? " color red" : "").append(";\n");
       }
     }
     for (int j = 0; j < nC[0]; j++) {
@@ -839,11 +839,24 @@ public class PointGroup {
       v.set(op.normalOrAxis);
       v.scale(0.01f);
       v.add(center);
-      sb.append("draw vp").append(j).append(" width 6.0 cylinder ")
+      sb.append("draw vp").append(j).append("disk width 6.0 cylinder ")
       .append(Escape.escape(v));
       v.scaleAdd(-0.02f, op.normalOrAxis, v);
+      sb.append(Escape.escape(v)).append(" color translucent;\n");
+
+      v.set(op.normalOrAxis);
+      v.add(center);
+      sb.append("draw vp").append(j).append("ring width 0.05 scale 3.0 arc ")
+      .append(Escape.escape(v));
+      v.scaleAdd(-2, op.normalOrAxis, v);
+      sb.append(Escape.escape(v));
+      v.x += 0.011;
+      v.y += 0.012;
+      v.z += 0.013;
       sb.append(Escape.escape(v))
-      .append("\""+op.getLabel()+"\"").append(" color translucent;\n");
+      .append("{0 360 0.5} color red;\n");
+
+    
     }
     return sb.toString();
   }

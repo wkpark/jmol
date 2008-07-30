@@ -835,12 +835,15 @@ public class PointGroup {
       }
     }
     for (int j = 0; j < nC[0]; j++) {
-      v.set((op=axes[0][j]).normalOrAxis);
+      op=axes[0][j];
       v.set(op.normalOrAxis);
-      sb.append("draw vp").append(j).append(" scale 3.0 plane perp ").append(Escape.escape(v));
-      v.scale(-1);
+      v.scale(0.01f);
+      v.add(center);
+      sb.append("draw vp").append(j).append(" width 6.0 cylinder ")
+      .append(Escape.escape(v));
+      v.scaleAdd(-0.02f, op.normalOrAxis, v);
       sb.append(Escape.escape(v))
-      .append("\""+op.getLabel()+"\"").append(";\n");
+      .append("\""+op.getLabel()+"\"").append(" color translucent;\n");
     }
     return sb.toString();
   }

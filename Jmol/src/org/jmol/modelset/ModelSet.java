@@ -32,6 +32,7 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
 import org.jmol.atomdata.AtomData;
 import org.jmol.shape.Shape;
+import org.jmol.symmetry.PointGroup;
 
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -422,6 +423,16 @@ abstract public class ModelSet extends ModelCollection {
       }
   }
 
+  public String calculatePointGroup(BitSet bsAtoms) {
+    int iAtom = BitSetUtil.firstSetBit(bsAtoms);
+    int modelIndex = atoms[iAtom].getModelIndex();
+    for (int i = 0; i < atomCount; i++)
+      if (bsAtoms.get(i) && atoms[i].modelIndex != modelIndex)
+        bsAtoms.clear(i);
+    PointGroup pg = new PointGroup(atoms, bsAtoms);
+    models[modelIndex].pointGroup = pg;
+    return pg.getName();
+  }
 
   private BitSet modelsOf(BitSet bsAtoms, BitSet bsAllAtoms) {
     BitSet bsModels = new BitSet(modelCount);

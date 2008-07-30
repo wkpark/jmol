@@ -6173,6 +6173,7 @@ class Eval { //implements Runnable {
 
   private void calculate() throws ScriptException {
     boolean isSurface = false;
+    BitSet bs;
     if ((iToken = statementLength) >= 2) {
       clearPredefined(JmolConstants.predefinedVariable);
       switch (getToken(1).tok) {
@@ -6182,10 +6183,18 @@ class Eval { //implements Runnable {
           viewer.addStateScript(thisCommand, false, true);
         }
         return;
+      case Token.pointgroup:
+        if (isSyntaxCheck)
+          return;
+        int modelIndex = viewer.getCurrentModelIndex();
+        if (modelIndex < 0)
+          error(ERROR_multipleModelsNotOK, "CALCULATE SYMMETRY");
+        showString(viewer.calculatePointGroup());        
+        return;
       case Token.surface:
         isSurface = true;
-        //deprecated
-        //fall through
+      //deprecated
+      //fall through
       case Token.surfacedistance:
         /* preferred:
          * 
@@ -6202,14 +6211,14 @@ class Eval { //implements Runnable {
           isFrom = true;
           iToken--;
         } else if (!isSurface) {
-          isFrom = true;          
+          isFrom = true;
         }
-        BitSet bsSelected = (iToken + 1 < statementLength ? expression(++iToken)
-            : viewer.getSelectionSet());
+        bs = (iToken + 1 < statementLength ? expression(++iToken) : viewer
+            .getSelectionSet());
         checkLength(++iToken);
         if (isSyntaxCheck)
           return;
-        viewer.calculateSurface(bsSelected, (isFrom ? Float.MAX_VALUE : -1));
+        viewer.calculateSurface(bs, (isFrom ? Float.MAX_VALUE : -1));
         return;
       case Token.identifier:
         if (parameterAsString(1).equalsIgnoreCase("AROMATIC")) {
@@ -6226,17 +6235,19 @@ class Eval { //implements Runnable {
         viewer.autoHbond(null);
         return;
       case Token.structure:
-        BitSet bs = (statementLength == 2 ? null : expression(2));
+        bs = (statementLength == 2 ? null : expression(2));
         if (isSyntaxCheck)
           return;
         if (bs == null)
           bs = viewer.getModelAtomBitSet(-1, false);
-          viewer.calculateStructures(bs);
+        viewer.calculateStructures(bs);
         viewer.addStateScript(thisCommand, false, true);
         return;
       }
     }
-    error(ERROR_what, "CALCULATE", 
+    error(
+        ERROR_what,
+        "CALCULATE",
         "aromatic? hbonds? polymers? straightness? structure? surfaceDistance FROM? surfaceDistance WITHIN?");
   }
 

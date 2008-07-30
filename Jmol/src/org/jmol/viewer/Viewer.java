@@ -6804,4 +6804,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void setQuaternionFrame(String qType) {
     global.quaternionFrame = "" + (qType.toLowerCase()+"c").charAt(0);
   }
+
+  String calculatePointGroup() {
+    return modelSet.calculatePointGroup(selectionManager.bsSelection);
+  }
 }

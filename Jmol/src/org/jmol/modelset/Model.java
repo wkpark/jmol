@@ -27,6 +27,7 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Properties;
 
+import org.jmol.symmetry.PointGroup;
 import org.jmol.util.BitSetUtil;
 import org.jmol.viewer.StateManager.Orientation;
 
@@ -132,6 +133,8 @@ public final class Model {
 
   Orientation orientation;
 
+  PointGroup pointGroup;
+  
   Model(ModelSet modelSet, int modelIndex, int trajectoryBaseIndex, 
       String jmolData, Properties properties, Hashtable auxiliaryInfo) {
     this.modelSet = modelSet;
@@ -156,6 +159,10 @@ public final class Model {
     }
   }
 
+  PointGroup getPointGroup() {
+    return pointGroup;
+  }
+  
   void setNAltLocs(int nAltLocs) {
     this.nAltLocs = nAltLocs;  
   }

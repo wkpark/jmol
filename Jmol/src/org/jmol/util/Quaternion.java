@@ -406,6 +406,12 @@ public class Quaternion {
     return ptNew;
   }
 
+  public void transform(Point3f pt, Point3f ptNew) {
+    if (mat == null)
+      setMatrix();
+    mat.transform(pt, ptNew);
+  }
+
   public Vector3f transform(Vector3f v) {
     if (mat == null)
       setMatrix();

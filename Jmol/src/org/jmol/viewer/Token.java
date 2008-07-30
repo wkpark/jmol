@@ -994,6 +994,7 @@ public class Token {
   final static int pdbheader    = misc | 39;
   final static int play         = misc | 40;
   final static int playrev      = misc | 41;
+  final static int pointgroup   = misc | 411;
   final static int polymer      = misc | 42;
   final static int prev         = misc | 43;
   final static int range        = misc | 44;
@@ -1406,6 +1407,7 @@ public class Token {
     "play",             new Token(play),
     "playRev",          new Token(playrev),
     "point",            new Token(point),
+    "pointGroup",       new Token(pointgroup),
     "polymerLength",    new Token(polymerLength),
     "previous",         new Token(prev),
     "prev",             null,

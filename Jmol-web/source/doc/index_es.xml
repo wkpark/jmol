@@ -7,7 +7,9 @@
 	<body>
 		<title>Jmol: un visor Java de código abierto para estructuras químicas en tres dimensiones</title>
 		<header>
-			<h2>con prestaciones para compuestos químicos, cristales, materiales y biomoléculas</h2>
+			<div style="float:right; position:relative; top:-1em;"><img src="images/Jmol_icon_128.png" alt="icono Jmol" title="" />
+			</div>
+			<h2 style="margin-top:0;padding-top:0;">con prestaciones para compuestos químicos, cristales, materiales y biomoléculas</h2>
 			<script type="text/javascript">
 				function changePromoDisplay()
 				{
@@ -24,7 +26,7 @@
 				}
 			</script>
 			<center>
-				<table border="1" width="600" bgcolor="#FFFAF0" cellpadding="10">
+				<table border="0" width="600" bgcolor="#FFFAF0" cellpadding="10">
 					<tr>
 						<td width="320">
 							<div id="JmolPromo">
@@ -320,6 +322,10 @@
       </p>
 			<p>Puedes conseguir tanto la versión oficial como las preliminares en la <a href="./download/">página de descargas</a>.
       </p>
+			<p>Al ser un archivo .jar, la aplicación Jmol se mostrará con un icono de Java.
+	Si quieres que se muestre un icono de Jmol, puedes conseguir uno en la
+	<a href="http://wiki.jmol.org:81/index.php/Recycling_Corner#Jmol_icons">Wiki de Jmol</a>. 
+	</p>
 		</section>
 		<section title="Aprende a usar Jmol">
 			<section title="Manuales y guías">

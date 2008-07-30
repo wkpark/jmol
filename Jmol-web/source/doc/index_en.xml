@@ -3,7 +3,9 @@
 	<body>
 		<title>Jmol: an open-source Java viewer for chemical structures in 3D</title>
 		<header>
-			<h2>with features for chemicals, crystals, materials and biomolecules</h2>
+			<div style="float:right; position:relative; top:-1em;"><img src="images/Jmol_icon_128.png" alt="Jmol icon" title="" />
+			</div>
+			<h2 style="margin-top:0;padding-top:0;">with features for chemicals, crystals, materials and biomolecules</h2>
 			<script type="text/javascript">
 				function changePromoDisplay()
 				{
@@ -20,7 +22,7 @@
 				}
 			</script>
 			<center>
-				<table border="1" width="600" bgcolor="#FFFAF0" cellpadding="10">
+				<table border="0" width="600" bgcolor="#FFFAF0" cellpadding="10">
 					<tr>
 						<td width="320">
 							<div id="JmolPromo">
@@ -318,6 +320,10 @@
 	(odd-numbered versions like 11.1, 11.3, 11.5). 
       </p>
 			<p>You can get both the stable release and the prereleases from the <a href="./download/">download page</a>. 
+	</p>
+			<p>Being a .jar file, the Jmol application will be displayed as a Java icon.
+	If you want a Jmol icon to be shown instead, you can get it from the 
+	<a href="http://wiki.jmol.org:81/index.php/Recycling_Corner#Jmol_icons">Jmol Wiki</a>. 
 	</p>
 		</section>
 		<section title="Learn to use Jmol">

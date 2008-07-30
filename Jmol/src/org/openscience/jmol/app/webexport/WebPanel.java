@@ -33,6 +33,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.zip.GZIPOutputStream;
+
 import javax.swing.*;
 
 import org.jmol.api.JmolViewer;
@@ -466,12 +468,14 @@ abstract class WebPanel extends JPanel implements ActionListener {
         if (localAppletPath.getText().equals(".") 
             || remoteAppletPath.getText().equals("."))
           fileList += "Jmol.js\nJmolApplet.jar";
-        String[] filesToCopy = TextFormat.split(fileList,'\n');        
-
-        String filesCopied = "";
-        for (int iFile = 0; iFile < filesToCopy.length; iFile++)
-          filesCopied = copyBinaryFile(filesToCopy[iFile], datadirPath, filesCopied);
-        script = localizeFileReferences(script, filesToCopy);
+        String[] filesToCopy = fileList.split("\n");
+        String[] copiedFileNames = new String[filesToCopy.length];
+        for (int iFile = 0; iFile < filesToCopy.length; iFile++){
+          if(filesToCopy[iFile].contains("|"))
+           filesToCopy[iFile]=filesToCopy[iFile].substring(0,filesToCopy[iFile].indexOf("|"));
+          copiedFileNames[iFile] = copyBinaryFile(filesToCopy[iFile], datadirPath);
+        }
+        script = localizeFileReferences(script, filesToCopy, copiedFileNames);
         LogPanel.log("      ...adding " + javaname + ".spt");
         writeFile(datadirPath + "/" + javaname + ".spt", script);
       }
@@ -523,27 +527,29 @@ abstract class WebPanel extends JPanel implements ActionListener {
     return fileList;
   }
   
-  private static String copyBinaryFile(String fullPathName, String dataPath, String filesCopied) {
+  private static String copyBinaryFile(String fullPathName, String dataPath) {
     String name = fullPathName.substring(fullPathName.lastIndexOf('/') + 1);
-    int i;
-    String s;
-    if ((i = name.indexOf("|")) >= 0)
-      name = name.substring(0, i);
-    if (filesCopied.indexOf((s = ";" + name + ";")) >= 0)
-      return filesCopied;
-    filesCopied += s;
     name = dataPath + "/" + name;
+    String gzname = name.concat(".gz");
+    File outFile = new File(name);
+    File gzoutFile = new File(gzname);
+    if (outFile.exists())
+      return name;
+    if (gzoutFile.exists())
+      return gzname;
     try {
-      LogPanel.log("      ...copying " + fullPathName + " to " + name);
+      LogPanel.log("      ...copying\n" + fullPathName + "\n         to");
       byte[] data = getFileAsBytes(fullPathName);
       if (data == null)
-        LogPanel.log("Could not find or open " + fullPathName);
-      else
-        writeFileBytes(name, data);  
+        LogPanel.log("Could not find or open:\n" + fullPathName);
+      else { 
+        name = writeFileBytes(name, data); 
+        LogPanel.log(name);
+      }
     } catch (Exception e) {
       LogPanel.log(e.getMessage());
     }
-    return filesCopied;
+    return name;
   }
   
   private static byte[] getFileAsBytes(String path) throws IOException {
@@ -568,23 +574,34 @@ abstract class WebPanel extends JPanel implements ActionListener {
     return buf;
   }
   
-  private static void writeFileBytes(String path, byte[] data) {
+  private static String writeFileBytes(String path, byte[] data) {
     try {
-      FileOutputStream os = new FileOutputStream(path);
-      os.write(data);
-      os.flush();
-      os.close();
+      if (data.length>=524288 && !path.endsWith("JmolApplet.jar") ){ //gzip it
+        path = path.concat(".gz");
+        GZIPOutputStream gzFile = new GZIPOutputStream(new FileOutputStream(path));
+        gzFile.write(data);
+        LogPanel.log("      ...Compressing large data file to\n");
+        gzFile.flush();
+        gzFile.close();
+      } else {
+        FileOutputStream os = new FileOutputStream(path);
+        os.write(data);
+        os.flush();
+        os.close();
+      }
     } catch (IOException e) {
       LogPanel.log(e.getMessage());
     }
+    return path;
   }
   
-  private static String localizeFileReferences(String script, String[] fileList) {
-    for (int i = 0; i < fileList.length; i++) {
-      String fullPathName = fileList[i];
-      String name = fullPathName.substring(fullPathName.lastIndexOf('/') + 1);
+  private static String localizeFileReferences(String script, String[] origFileList, String [] copiedFileNames) {
+    for (int i = 0; i < origFileList.length; i++) {
+      String fullPathName = origFileList[i];
+      String fullCopiedName = copiedFileNames[i];
+      String name = fullCopiedName.substring(fullCopiedName.lastIndexOf('/') + 1);
       if (!name.equals(fullPathName))
-        script = TextFormat.simpleReplace(script, "\"" + fullPathName + "\"", "\"" + name + "\"");
+        script = TextFormat.simpleReplace(script, fullPathName,name);
     }
     return script;
   }

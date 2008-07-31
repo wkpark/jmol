@@ -60,7 +60,7 @@ public abstract class MeshCollection extends Shape {
   
   private Mesh setMesh(String thisID) {
     linkedMesh = null;
-    if (thisID == null || thisID.indexOf("*") >= 0) {
+    if (thisID == null || TextFormat.isWild(thisID)) {
       currentMesh = null;
       return null;
     }
@@ -179,16 +179,15 @@ public abstract class MeshCollection extends Shape {
       if (currentMesh != null) {
         currentMesh.visible = isOn;
       } else {
-        int i = 0;
         String key = (explicitID && previousMeshID != null
-            && (i = previousMeshID.indexOf("*")) >= 0 ? 
-                previousMeshID.substring(0, i).toLowerCase() : null);
+            && TextFormat.isWild(previousMeshID) ?  
+                previousMeshID.toUpperCase() : null);
         if (key == null || key.length() == 0) {
-          for (i = meshCount; --i >= 0;)
+          for (int i = meshCount; --i >= 0;)
             meshes[i].visible = isOn;
         } else {
-          for (i = 0; i < meshCount; i++) {
-            if (meshes[i].thisID.toLowerCase().indexOf(key) == 0)
+          for (int i = 0; i < meshCount; i++) {
+            if (TextFormat.isMatch(meshes[i].thisID.toUpperCase(), key, true, true))
               meshes[i].visible = isOn;
           }
         }
@@ -352,8 +351,8 @@ public abstract class MeshCollection extends Shape {
       deleteMesh(i);
     } else {
       String key = (explicitID && previousMeshID != null
-          && (i = previousMeshID.indexOf("*")) >= 0 ? 
-              previousMeshID.substring(0, i).toLowerCase() : null);
+          && TextFormat.isWild(previousMeshID) ?  
+              previousMeshID.toUpperCase() : null);
       if (key == null || key.length() == 0) {
         for (i = meshCount; --i >= 0; )
           meshes[i] = null;
@@ -361,7 +360,7 @@ public abstract class MeshCollection extends Shape {
         nUnnamed = 0;
       } else {
         for (i = meshCount; --i >= 0; ) {
-          if (meshes[i].thisID.toLowerCase().indexOf(key) == 0)
+          if (TextFormat.isMatch(meshes[i].thisID.toUpperCase(), key, true, true))
             deleteMesh(i);
         }
       }

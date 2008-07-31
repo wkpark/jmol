@@ -44,28 +44,28 @@ import org.jmol.util.Quaternion;
 public class PointGroup {
 
   private final static int[] axesMaxProperN = new int[] { 
-    0, // not used
-    0, // not used 
+    0, // n/a
+    0, // n/a 
     15,// C2 
     10,// C3 
     6, // C4
     6, // C5
-    10, // C6,S6
+    10,// C6
     };
 
   private final static int[] axesMaxImproperN = new int[] { 
-    9, // S2 planes
-    0, // not used 
-    0, // n/a
+    9, // used for plane count
+    0, // n/a 
+    0, // not used -- would be S2 (inversion)
     0, // n/a
     1, // S4
-    0, // C5
-    10, // S6
-    0, // not used
+    0, // n/a
+    10,// S6
+    0, // n/a
     1, // S8
-    0, // not used
+    0, // n/a
     6, // S10
-    0, // not used 
+    0, // n/a 
     1  // S12
     };
 
@@ -313,90 +313,6 @@ public class PointGroup {
     return (Math.abs(v1.dot(v2)) >= LINEAR_DOT_MINIMUM);
   }
   
-/*
-  private Operation findAxes(Point3f[] atoms, int[] elements, int[] nC,
-                             Operation[][] axes, boolean isImproper) {
-    Point3f pt = new Point3f();
-    Point3f pt1 = new Point3f();
-    Vector3f v1 = new Vector3f();
-    Vector3f v2 = new Vector3f();
-    Vector3f v3 = new Vector3f();
-    for (int i = atoms.length; --i >= 0;) {
-      if (i == centerAtomIndex)
-        continue;
-      Point3f a1 = atoms[i];
-      int e1 = elements[i];
-      for (int j = atoms.length; --j > i;) {
-        Point3f a2 = atoms[j];
-        if (elements[j] != e1)
-          continue;
-        
-        //define *pt* based on cross-products
-        //this is for Dnh and Cnh, ferrocene-types
-        if (isImproper) {
-          v1.sub(center, a1);
-          pt1.scaleAdd(2, v1, a1);
-        } else {
-          pt1.set(a1);
-        }
-        pt.add(pt1, a2);
-        pt.scale(0.5f);
-        v1.sub(a1, center);
-        v2.sub(a2, center);
-        v1.normalize();
-        v2.normalize();
-        if (isParallel(v1, v2)) {
-          if (!isImproper) {
-            for (int o = 2; o <= 8; o++)
-              checkAxisOrder(atoms, elements, o, v1, center);
-          }
-          continue;
-        }
-        if (nC[2] < axesMaxN[2]) {
-          v3.set(pt);
-          checkAxisOrder(atoms, elements, 2, v3, center);
-        }
-        
-        float order = (float) (2 * Math.PI / v1.angle(v2));
-        int iOrder = (int) (order + 0.01f);
-        boolean isIntegerOrder =(order - iOrder <= 0.02f); 
-        if (!isIntegerOrder)
-          continue; // not an integer order
-        if (isImproper) {
-          if (iOrder != 4 && iOrder != 6)
-            continue;
-        }
-        if (iOrder <= 8 && nC[iOrder] < axesMaxN[iOrder]) {
-          // not a valid order, or plenty of these already
-          v3.cross(v1, v2);
-          checkAxisOrder(atoms, elements, iOrder, v3, center);
-        }
-      }
-    }
-    if (isImproper)
-      return null;
-    Vector3f[] vs = new Vector3f[nC[2] * 2];
-    for (int i = 0; i < vs.length; i++)
-      vs[i] = new Vector3f();
-    int n = 0;
-    for (int i = 0; i < nC[2]; i++) {
-      vs[n++].set(axes[2][i].normalOrAxis);
-      vs[n].set(axes[2][i].normalOrAxis);
-      vs[n++].scale(-1);
-    }
-    for (int i = vs.length; --i >= 2;)
-      for (int j = i; --j >= 1;)
-        for (int k = j; --k >= 0;) {
-          v3.set(vs[i]);
-          v3.add(vs[j]);
-          v3.add(vs[k]);
-          if (v3.length() < 1.0)
-            continue;
-          checkAxisOrder(atoms, elements, 3, v3, center);
-        }
-    return null;
-  }
-*/
   int maxElement = 0;
   int[] eCounts;
   private void getElementArrays(Point3f[] atoms, int[] elements) {
@@ -837,11 +753,11 @@ public class PointGroup {
     for (int j = 0; j < nC[0]; j++) {
       op=axes[0][j];
       v.set(op.normalOrAxis);
-      v.scale(0.01f);
+      v.scale(0.025f);
       v.add(center);
       sb.append("draw vp").append(j).append("disk width 6.0 cylinder ")
       .append(Escape.escape(v));
-      v.scaleAdd(-0.02f, op.normalOrAxis, v);
+      v.scaleAdd(-0.05f, op.normalOrAxis, v);
       sb.append(Escape.escape(v)).append(" color translucent;\n");
 
       v.set(op.normalOrAxis);

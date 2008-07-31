@@ -1425,8 +1425,9 @@ abstract public class AtomCollection {
       return getIdentifierOrNull((String) specInfo);
     case Token.spec_atom:
       String atomSpec = ((String) specInfo).toUpperCase();
+      /// here xx*yy is NOT changed to "xx??????????yy"
       for (int i = atomCount; --i >= 0;)
-        if (atoms[i].isAtomNameMatch(atomSpec))
+        if (isAtomNameMatch(atoms[i], atomSpec, false))
           bs.set(i);
       return bs;
     case Token.spec_alternate:
@@ -1472,20 +1473,20 @@ abstract public class AtomCollection {
     //H3?
 
     //in the case of a ?, we take the whole thing
-
-    BitSet bs = getSpecNameOrNull(identifier);
+    // * can be used here, but not with ?
+    //first check with * option OFF
+    BitSet bs = getSpecNameOrNull(identifier, false);
     if (bs != null || identifier.indexOf("?") > 0)
       return bs;
-
-    int pt = identifier.indexOf("*");
-    if (pt > 0)
-      return getSpecNameOrNull(identifier.substring(0, pt) + "??????????"
-          + identifier.substring(pt + 1));
+    // now check with * option ON
+    if (identifier.indexOf("*") > 0) 
+      return getSpecNameOrNull(identifier, true);
+    
     int len = identifier.length();
-    pt = 0;
+    int pt = 0;
     while (pt < len && Character.isLetter(identifier.charAt(pt)))
       ++pt;
-    bs = getSpecNameOrNull(identifier.substring(0, pt));
+    bs = getSpecNameOrNull(identifier.substring(0, pt), false);
     if (pt == len)
       return bs;
     if (bs == null)
@@ -1533,29 +1534,49 @@ abstract public class AtomCollection {
   }
 
   private BitSet getSpecName(String name) {
-    BitSet bs = getSpecNameOrNull(name);
+    // * can be used here with ?
+    BitSet bs = getSpecNameOrNull(name, false);
     if (bs != null)
       return bs;
-    int pt = name.indexOf("*");
-    if (pt > 0) {
-      bs = getSpecNameOrNull(name.substring(0, pt) + "??????????"
-          + name.substring(pt + 1));
-    }
+    if (name.indexOf("*") > 0)     
+      bs = getSpecNameOrNull(name, true);
     return (bs == null ? new BitSet() : bs);
   }
 
-  private BitSet getSpecNameOrNull(String name) {
+  private BitSet getSpecNameOrNull(String name, boolean checkStar) {
+    /// here xx*yy is changed to "xx??????????yy" when coming from getSpecName
+    /// but not necessarily when coming from getIdentifierOrNull
     BitSet bs = null;
     name = name.toUpperCase();
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isGroup3OrNameMatch(name)) {
+    for (int i = atomCount; --i >= 0;) {
+      String g3 = atoms[i].getGroup3();
+      if (g3.length() > 0) {
+        if (TextFormat.isMatch(g3, name, checkStar, true)) {
+          if (bs == null)
+            bs = new BitSet(i + 1);
+          bs.set(i);
+          while (--i >= 0 && atoms[i].getGroup3().equals(g3))
+            bs.set(i);
+          i++;
+        }
+      } else if (isAtomNameMatch(atoms[i], name, checkStar)) {
         if (bs == null)
           bs = new BitSet(i + 1);
         bs.set(i);
       }
+    }
     return bs;
   }
 
+  boolean isAtomNameMatch(Atom atom, String strPattern, boolean checkStar) {
+    /// here xx*yy is changed to "xx??????????yy" when coming from getSpecName
+    /// but not necessarily when coming from getIdentifierOrNull
+    /// and NOT when coming from getAtomBits with Token.spec_atom
+    /// because it is presumed that some names can include "*"
+    return TextFormat.isMatch(atom.getAtomName().toUpperCase(), strPattern,
+        checkStar, false);
+  }
+  
   protected BitSet getSeqcodeBits(int seqcode, boolean returnEmpty) {
     BitSet bs = new BitSet();
     int seqNum = Group.getSequenceNumber(seqcode);

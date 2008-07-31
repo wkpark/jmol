@@ -490,40 +490,11 @@ final public class Atom extends Point3fi {
      screenDiameter = viewer.scaleToScreen(screenZ, Math.abs(madAtom));
    }
 
-   String getAtomNameOrNull() {
-     String[] atomNames = group.chain.modelSet.atomNames;
-     return atomNames == null ? null : atomNames[atomIndex];
-   }
-
-   String getAtomName() {
-     String atomName = getAtomNameOrNull();
-     return (atomName != null ? atomName : getElementSymbol());
-   }
+   // note: atomName cannot be null
+   // note: atomNames cannot be null
    
-   String getPdbAtomName4() {
-     String atomName = getAtomNameOrNull();
-     return atomName != null ? atomName : "";
-   }
-
-   /**
-    * matches atom name possibly with wildcard
-    * @param strPattern  -- for efficiency, upper case already
-    * @return true/false
-    */
-   boolean isAtomNameMatch(String strPattern) {
-     String atomName = getAtomNameOrNull();
-     int cchAtomName = atomName == null ? 0 : atomName.length();
-     int cchPattern = strPattern.length();
-     int ich;
-     for (ich = 0; ich < cchPattern; ++ich) {
-       char charWild = strPattern.charAt(ich);
-       if (charWild == '?')
-         continue;
-       if (ich >= cchAtomName ||
-           charWild != Character.toUpperCase(atomName.charAt(ich)))
-         return false;
-     }
-     return ich >= cchAtomName;
+   String getAtomName() {
+     return group.chain.modelSet.atomNames[atomIndex];
    }
    
    public int getAtomNumber() {
@@ -781,13 +752,11 @@ final public class Atom extends Point3fi {
     }
     if (!allInfo)
       return info.toString();
-    String atomName = getAtomNameOrNull();
-    if (atomName != null) {
-      if (info.length() > 0)
-        info.append(".");
-      info.append(atomName);
-    }
+    if (info.length() > 0)
+      info.append(".");
+    info.append(getAtomName());
     if (info.length() == 0) {
+      // since atomName cannot be null, this is unreachable
       info.append(getElementSymbol());
       info.append(" ");
       info.append(getAtomNumber());
@@ -816,10 +785,6 @@ final public class Atom extends Point3fi {
 
   boolean isGroup3(String group3) {
     return group.isGroup3(group3);
-  }
-
-  boolean isGroup3Match(String strWildcard) {
-    return group.isGroup3Match(strWildcard);
   }
 
   boolean isProtein() {
@@ -856,11 +821,6 @@ final public class Atom extends Point3fi {
 
   public int getResno() {
     return group.getResno();   
-  }
-
-  boolean isGroup3OrNameMatch(String strPattern) {
-    return (getGroup3().length() > 0 ? isGroup3Match(strPattern)
-        : isAtomNameMatch(strPattern));
   }
 
   public boolean isClickable() {

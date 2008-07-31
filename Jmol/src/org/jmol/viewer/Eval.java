@@ -1542,7 +1542,7 @@ class Eval { //implements Runnable {
       case Token.spec_atom:
       case Token.spec_name_pattern:
       case Token.spec_alternate:
-        rpn.addX(viewer.getAtomBits(instruction.tok, (String) value));
+        rpn.addX(getAtomBits(instruction.tok, (String) value));
         break;
       case Token.spec_model:
         // from select */1002 or */1000002 or */1.2
@@ -1750,9 +1750,8 @@ class Eval { //implements Runnable {
   }
 
   private BitSet getAtomBits(int tokType, Object specInfo) {
-    if (isSyntaxCheck)
-      return new BitSet();
-    return viewer.getAtomBits(tokType, specInfo);
+    return (isSyntaxCheck ? new BitSet()
+        : viewer.getAtomBits(tokType, specInfo));
   }
 
   void deleteAtomsInVariables(BitSet bsDeleted) { 
@@ -5704,11 +5703,12 @@ class Eval { //implements Runnable {
     case Token.integer:
       mad = intParameter(1);
       break;
+    case Token.times:
     case Token.identifier:
       viewer.loadShape(JmolConstants.SHAPE_ELLIPSOIDS);
       if (parameterAsString(i).equalsIgnoreCase("ID"))
         i++;
-      setShapeId(JmolConstants.SHAPE_ELLIPSOIDS, i, false);
+      i = setShapeId(JmolConstants.SHAPE_ELLIPSOIDS, i, false);
       for (++i; i < statementLength; i++) {
         String key = parameterAsString(i);
         Object value = null;
@@ -5778,8 +5778,23 @@ class Eval { //implements Runnable {
     if (idSeen)
       error(ERROR_invalidArgument);
     String id = parameterAsString(i);
+    boolean isWild = (id.equals("*"));
     if (id.length() == 0)
       error(ERROR_invalidArgument);
+    if (isWild) {
+      switch(tokAt(i + 1)) {
+      case Token.nada:
+      case Token.on:
+      case Token.off:
+      case Token.color:
+      case Token.delete:
+        break;
+      default:
+        id += optParameterAsString(++i);
+      }
+    }
+    if (tokAt(i + 1) == Token.times)
+      id += parameterAsString(++i);
     setShapeProperty(iShape, "thisID", id.toLowerCase());
     return i;
   }
@@ -6026,10 +6041,11 @@ class Eval { //implements Runnable {
       case Token.calculate:
         propertyName = "calculate";
         break;
+      case Token.times:
       case Token.identifier:
         String cmd = parameterAsString(i);
         if (cmd.equalsIgnoreCase("id")) {
-          setShapeId(JmolConstants.SHAPE_DIPOLES, ++i, idSeen);
+          i = setShapeId(JmolConstants.SHAPE_DIPOLES, ++i, idSeen);
           break;
         }
         if (cmd.equalsIgnoreCase("cross")) {
@@ -6068,7 +6084,7 @@ class Eval { //implements Runnable {
           propertyValue = new Float(floatParameter(++i));
           break;
         }
-        setShapeId(JmolConstants.SHAPE_DIPOLES, i, idSeen);
+        i = setShapeId(JmolConstants.SHAPE_DIPOLES, i, idSeen);
         break;
       default:
         error(ERROR_invalidArgument);
@@ -9392,17 +9408,11 @@ class Eval { //implements Runnable {
       String propertyName = null;
       Object propertyValue = null;
       int tok = getToken(i).tok;
-      if (i == 1 && tokAt(2) == Token.times)
-        tok = Token.nada;
       switch (tok) {
-      case Token.nada:
-        propertyName = "thisID";
-        propertyValue = parameterAsString(i) + getToken(++i).value;
-        break;
       case Token.identifier:
         String str = parameterAsString(i);
         if (str.equalsIgnoreCase("id")) {
-          setShapeId(JmolConstants.SHAPE_PMESH, ++i, idSeen);
+          i = setShapeId(JmolConstants.SHAPE_PMESH, ++i, idSeen);
           break;
         }
         if (str.equalsIgnoreCase("FIXED")) {
@@ -9546,13 +9556,7 @@ class Eval { //implements Runnable {
       String propertyName = null;
       Object propertyValue = null;
       int tok = getToken(i).tok;
-      if (i == 1 && tokAt(2) == Token.times)
-        tok = Token.nada;
       switch (tok) {
-      case Token.nada:
-        propertyName = "thisID";
-        propertyValue = parameterAsString(i) + getToken(++i).value;
-        break;
       case Token.leftbrace:
       case Token.point4f:
       case Token.point3f:
@@ -9627,10 +9631,11 @@ class Eval { //implements Runnable {
           intScale = intParameter(i);
         }
         break;
+      case Token.times:
       case Token.identifier:
         String str = parameterAsString(i);
         if (str.equalsIgnoreCase("id")) {
-          setShapeId(JmolConstants.SHAPE_DRAW, ++i, idSeen);
+          i = setShapeId(JmolConstants.SHAPE_DRAW, ++i, idSeen);
           break;
         }
         if (str.equalsIgnoreCase("FIXED")) {
@@ -9719,7 +9724,7 @@ class Eval { //implements Runnable {
           propertyName = "width";
           break;
         }
-        setShapeId(JmolConstants.SHAPE_DRAW, i, idSeen);
+        i = setShapeId(JmolConstants.SHAPE_DRAW, i, idSeen);
         break;
       case Token.dollarsign:
         // $drawObject[m]
@@ -10424,13 +10429,7 @@ class Eval { //implements Runnable {
       String propertyName = null;
       Object propertyValue = null;
       int tok = getToken(i).tok;
-      if (i == 1 && tokAt(2) == Token.times)
-        tok = Token.nada;
       switch (tok) {
-      case Token.nada:
-        propertyName = "thisID";
-        propertyValue = parameterAsString(i) + getToken(++i).value;
-        break;
       case Token.within:
         float distance = floatParameter(++i);
         propertyValue = centerParameter(++i);
@@ -10560,7 +10559,7 @@ class Eval { //implements Runnable {
       case Token.identifier:
         str = parameterAsString(i);
         if (str.equalsIgnoreCase("id")) {
-          setShapeId(iShape, ++i, idSeen);
+          i = setShapeId(iShape, ++i, idSeen);
           break;
         }
         if (str.equalsIgnoreCase("REMAPPABLE")) { // testing only

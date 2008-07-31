@@ -26,7 +26,6 @@
 package org.jmol.util;
 
 import java.text.DecimalFormat;
-
 import javax.vecmath.Point3f;
 
 public class TextFormat {
@@ -399,4 +398,58 @@ public class TextFormat {
     return (f + "         ").substring(0,n);
   }
 
+  public static boolean isWild(String s) {
+    return s.indexOf("*") >= 0 || s.indexOf("?") >= 0;
+  }
+
+  public static boolean isMatch(String s, String strWildcard,
+                                boolean checkStar, boolean allowInitialStar) {
+
+    int ich = 0;
+    int cchWildcard = strWildcard.length();
+    int cchs = s.length();
+    if (cchs == 0 || cchWildcard == 0)
+      return false;
+    if (checkStar) {
+      if (allowInitialStar && strWildcard.charAt(0) == '*')
+        strWildcard = "??????????" + strWildcard.substring(1);
+      if (strWildcard.charAt(ich = strWildcard.length() - 1) == '*')
+        strWildcard = strWildcard.substring(0, ich) + "??????????";
+      cchWildcard = strWildcard.length();
+    }
+
+    if (cchWildcard < cchs)
+      return false;
+
+    ich = 0;
+
+    // atom name variant (trimLeadingMarks == false)
+
+    // -- each ? matches ONE character if not at end
+    // -- extra ? at end ignored
+
+    //group3 variant (trimLeadingMarks == true)
+
+    // -- each ? matches ONE character if not at end
+    // -- extra ? at beginning reduced to match length
+    // -- extra ? at end ignored
+
+    while (cchWildcard > cchs) {
+      if (allowInitialStar && strWildcard.charAt(ich) == '?') {
+        ++ich;
+      } else if (strWildcard.charAt(ich + cchWildcard - 1) != '?') {
+        return false;
+      }
+      --cchWildcard;
+    }
+
+    for (int i = cchs; --i >= 0;) {
+      char charWild = strWildcard.charAt(ich + i);
+      if (charWild == '?')
+        continue;
+      if (charWild != s.charAt(i))
+        return false;
+    }
+    return true;
+  }
 }

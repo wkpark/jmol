@@ -149,33 +149,6 @@ public class Group {
     return groupID;
   }
 
-  final boolean isGroup3Match(String strWildcard) {
-    int cchWildcard = strWildcard.length();
-    int ichWildcard = 0;
-    String group3 = group3Names[groupID];
-    int cchGroup3 = group3.length();
-    if (cchWildcard < cchGroup3)
-      return false;
-    while (cchWildcard > cchGroup3) {
-      // wildcard is too long
-      // so strip '?' from the beginning and the end, if possible
-      if (strWildcard.charAt(ichWildcard) == '?') {
-        ++ichWildcard;
-      } else if (strWildcard.charAt(ichWildcard + cchWildcard - 1) != '?') {
-        return false;
-      }
-      --cchWildcard;
-    }
-    for (int i = cchGroup3; --i >= 0; ) {
-      char charWild = strWildcard.charAt(ichWildcard + i);
-      if (charWild == '?')
-        continue;
-      if (charWild != group3.charAt(i))
-        return false;
-    }
-    return true;
-  }
-
   public final char getChainID() {
     return chain.chainID;
   }

@@ -425,8 +425,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     return (instance == null ? "" : instance.name);
   }
 
-  boolean fileWriter(File file, JList InstanceList)
-      throws IOException { //returns true if successful.
+  boolean fileWriter(File file, JList InstanceList) throws IOException { //returns true if successful.
     useAppletJS = JmolViewer.checkOption(viewer, "webMakerCreateJS");
     //          JOptionPane.showMessageDialog(null, "Creating directory for data...");
     String datadirPath = file.getPath();
@@ -447,8 +446,9 @@ abstract class WebPanel extends JPanel implements ActionListener {
     if (made_datadir) {
       LogPanel.log("Using directory " + datadirPath);
       LogPanel.log("  adding JmolPopIn.js");
-      
-      writeFile(datadirPath + "/JmolPopIn.js", getResourceString("JmolPopIn.js"));
+
+      writeFile(datadirPath + "/JmolPopIn.js",
+          getResourceString("JmolPopIn.js"));
       for (int i = 0; i < listModel.getSize(); i++) {
         JmolInstance thisInstance = (JmolInstance) (listModel.getElementAt(i));
         String javaname = thisInstance.javaname;
@@ -465,15 +465,18 @@ abstract class WebPanel extends JPanel implements ActionListener {
         fileList += addFileList(script, "/*file*/");
         fileList += addFileList(script, "FILE0=");
         fileList += addFileList(script, "FILE1=");
-        if (localAppletPath.getText().equals(".") 
+        if (localAppletPath.getText().equals(".")
             || remoteAppletPath.getText().equals("."))
           fileList += "Jmol.js\nJmolApplet.jar";
         String[] filesToCopy = fileList.split("\n");
         String[] copiedFileNames = new String[filesToCopy.length];
-        for (int iFile = 0; iFile < filesToCopy.length; iFile++){
-          if(filesToCopy[iFile].contains("|"))
-           filesToCopy[iFile]=filesToCopy[iFile].substring(0,filesToCopy[iFile].indexOf("|"));
-          copiedFileNames[iFile] = copyBinaryFile(filesToCopy[iFile], datadirPath);
+        String f;
+        int pt;
+        for (int iFile = 0; iFile < filesToCopy.length; iFile++) {
+          if ((pt = (f = filesToCopy[iFile]).indexOf("|")) >= 0)
+            filesToCopy[iFile] = f.substring(0, pt);
+          copiedFileNames[iFile] = copyBinaryFile(filesToCopy[iFile],
+              datadirPath);
         }
         script = localizeFileReferences(script, filesToCopy, copiedFileNames);
         LogPanel.log("      ...adding " + javaname + ".spt");
@@ -488,10 +491,13 @@ abstract class WebPanel extends JPanel implements ActionListener {
       for (int i = 0; i < listModel.getSize(); i++)
         html = getAppletDefs(i, html, appletDefs, (JmolInstance) listModel
             .getElementAt(i));
-      html = TextFormat.simpleReplace(html, "@AUTHOR@", pageAuthorName.getText());
+      html = TextFormat.simpleReplace(html, "@AUTHOR@", pageAuthorName
+          .getText());
       html = TextFormat.simpleReplace(html, "@TITLE@", webPageTitle.getText());
-      html = TextFormat.simpleReplace(html, "@REMOTEAPPLETPATH@", remoteAppletPath.getText());
-      html = TextFormat.simpleReplace(html, "@LOCALAPPLETPATH@", localAppletPath.getText());
+      html = TextFormat.simpleReplace(html, "@REMOTEAPPLETPATH@",
+          remoteAppletPath.getText());
+      html = TextFormat.simpleReplace(html, "@LOCALAPPLETPATH@",
+          localAppletPath.getText());
       html = TextFormat.simpleReplace(html, "@DATADIRNAME@", datadirName);
       if (appletInfoDivs.length() > 0)
         appletInfoDivs = "\n<div style='display:none'>\n" + appletInfoDivs

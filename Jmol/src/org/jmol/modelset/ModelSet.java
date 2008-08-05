@@ -429,8 +429,10 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   private int calculatePointGroupForFirstModel(BitSet bsAtoms, boolean forceNew) {
+    int modelIndex = viewer.getCurrentModelIndex();
     int iAtom = BitSetUtil.firstSetBit(bsAtoms);
-    int modelIndex = (iAtom < 0 ? -1 : atoms[iAtom].getModelIndex());
+    if (modelIndex < 0 && iAtom >= 0)
+      modelIndex = atoms[iAtom].getModelIndex();
     if (modelIndex < 0) {
       modelIndex = BitSetUtil.firstSetBit(viewer.getVisibleFramesBitSet());
       bsAtoms = null;
@@ -443,6 +445,10 @@ abstract public class ModelSet extends ModelCollection {
             if (!bsAtoms.get(i))
               bs.clear(i);
       iAtom = BitSetUtil.firstSetBit(bs);
+      if (iAtom < 0) {
+        bs = getModelAtomBitSet(modelIndex, true);
+        iAtom = BitSetUtil.firstSetBit(bs);
+      }
       Object obj = getShapeProperty(JmolConstants.SHAPE_VECTORS, "mad", iAtom);
       boolean haveVibration = (obj != null && ((Integer)obj).intValue() != 0 
           || viewer.isVibrationOn());

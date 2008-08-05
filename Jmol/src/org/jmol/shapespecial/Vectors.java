@@ -44,7 +44,7 @@ public class Vectors extends AtomShape {
   
  public Object getProperty(String propertyName, int param) {
    if (propertyName == "mad")
-     return new Integer(mads == null || mads.length <= param ? 0 : mads[param]);
+     return new Integer(mads == null || param < 0 || mads.length <= param ? 0 : mads[param]);
    return super.getProperty(propertyName, param);
  }
 

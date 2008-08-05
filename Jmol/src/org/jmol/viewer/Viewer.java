@@ -1145,6 +1145,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   float getVibrationPeriod() {
     return global.vibrationPeriod;
   }
+  
+  public boolean isVibrationOn() {
+    return transformManager.vibrationOn;
+  }
 
   public void setVibrationScale(float scale) {
     //Eval
@@ -6816,7 +6820,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.calculatePointGroup(selectionManager.bsSelection);
   }
 
-  public String getPointGroupDraw(int modelIndex) {
-    return modelSet.getPointGroupDraw(modelIndex);
+  public String getPointGroupDraw() {
+    return modelSet.getPointGroupDraw(selectionManager.bsSelection);
   }
 }

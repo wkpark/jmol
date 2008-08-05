@@ -424,22 +424,38 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   public String calculatePointGroup(BitSet bsAtoms) {
-    int iAtom = BitSetUtil.firstSetBit(bsAtoms);
-    int modelIndex = atoms[iAtom].getModelIndex();
-    for (int i = 0; i < atomCount; i++)
-      if (bsAtoms.get(i) && atoms[i].modelIndex != modelIndex)
-        bsAtoms.clear(i);
-    PointGroup pg = new PointGroup(atoms, bsAtoms);
-    models[modelIndex].pointGroup = pg;
-    return pg.getName();
+    int modelIndex = calculatePointGroupForFirstModel(bsAtoms, true);
+    return models[modelIndex].pointGroup.getName();
   }
 
-  public String getPointGroupDraw(int modelIndex) {
-    if (modelIndex < 0)
-      return "";
-    if (models[modelIndex].pointGroup == null)
-      calculatePointGroup(viewer.getSelectionSet());
-    return models[modelIndex].pointGroup.drawInfo();
+  private int calculatePointGroupForFirstModel(BitSet bsAtoms, boolean forceNew) {
+    int iAtom = BitSetUtil.firstSetBit(bsAtoms);
+    int modelIndex = (iAtom < 0 ? -1 : atoms[iAtom].getModelIndex());
+    if (modelIndex < 0) {
+      modelIndex = BitSetUtil.firstSetBit(viewer.getVisibleFramesBitSet());
+      bsAtoms = null;
+    }
+    if (forceNew || models[modelIndex].pointGroup == null) {
+      BitSet bs = getModelAtomBitSet(modelIndex, true);
+      if (bsAtoms != null)
+        for (int i = 0; i < atomCount; i++)
+          if (atoms[i].modelIndex == modelIndex)
+            if (!bsAtoms.get(i))
+              bs.clear(i);
+      iAtom = BitSetUtil.firstSetBit(bs);
+      Object obj = getShapeProperty(JmolConstants.SHAPE_VECTORS, "mad", iAtom);
+      boolean haveVibration = (obj != null && ((Integer)obj).intValue() != 0 
+          || viewer.isVibrationOn());
+      PointGroup pg = new PointGroup(atoms, bs, haveVibration);
+      models[modelIndex].pointGroup = pg;
+    }
+    return modelIndex;
+  }
+
+  public String getPointGroupDraw(BitSet bsAtoms) {
+      int modelIndex = calculatePointGroupForFirstModel(bsAtoms, false);
+    return (modelCount > 1 ? "frame " + getModelNumberDotted(modelIndex) + "; " : "")
+        + models[modelIndex].pointGroup.drawInfo();
   }
 
   private BitSet modelsOf(BitSet bsAtoms, BitSet bsAllAtoms) {

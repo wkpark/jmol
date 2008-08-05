@@ -100,7 +100,7 @@ public class PointGroup {
 
   final private Point3f center = new Point3f();
 
-  public PointGroup(Atom[] atomset, BitSet bsAtoms) {
+  public PointGroup(Atom[] atomset, BitSet bsAtoms, boolean haveVibration) {
     nAxes = new int[maxAxis];
     axes = new Operation[maxAxis][];
     Point3f[] atoms;
@@ -117,6 +117,16 @@ public class PointGroup {
         elements[n++] = atomset[i].getElementNumber() * bondIndex;
       }
     getElementArrays(atoms, elements);
+    if (haveVibration) {
+      Point3f[] atomVibs = new Point3f[atoms.length];
+      for (int i = atoms.length; --i >= 0;) {
+        atomVibs[i] = new Point3f(atoms[i]);
+        Vector3f v = ((Atom)atoms[i]).getVibrationVector();
+        if (v != null)
+          atomVibs[i].add(v);
+      }
+      atoms = atomVibs;
+    }
     findInversionCenter(atoms, elements);
 
     if (isLinear(atoms)) {

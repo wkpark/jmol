@@ -1952,6 +1952,10 @@ abstract class TransformManager {
 
   private VibrationThread vibrationThread;
 
+  boolean isVibrationOn() {
+    return vibrationOn;
+  }
+  
   private void setVibrationOn(boolean vibrationOn) {
     if (!vibrationOn) {
       if (vibrationThread != null) {

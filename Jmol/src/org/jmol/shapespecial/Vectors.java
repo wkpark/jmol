@@ -42,6 +42,12 @@ public class Vectors extends AtomShape {
     super.setProperty(propertyName, value, bsSelected);
   }
   
+ public Object getProperty(String propertyName, int param) {
+   if (propertyName == "mad")
+     return new Integer(mads == null || mads.length <= param ? 0 : mads[param]);
+   return super.getProperty(propertyName, param);
+ }
+
  public String getShapeState() {
     return (isActive ? super.getShapeState() : "");
   }

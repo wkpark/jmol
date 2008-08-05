@@ -6214,11 +6214,8 @@ class Eval {
       case Token.pointgroup:
         if (isSyntaxCheck)
           return;
-        int modelIndex = viewer.getCurrentModelIndex();
-        if (modelIndex < 0)
-          error(ERROR_multipleModelsNotOK, "CALCULATE SYMMETRY");
         if (tokAt(0) == Token.draw)
-          runScript(viewer.getPointGroupDraw(modelIndex));
+          runScript(viewer.getPointGroupDraw());
         else
           showString(viewer.calculatePointGroup());        
         return;
@@ -8909,7 +8906,7 @@ class Eval {
         return "";
       }
     } else if (data == "PGRP") {
-      data = viewer.getPointGroupDraw(viewer.getCurrentModelIndex());
+      data = viewer.getPointGroupDraw();
     } else if (data == "PDB") {
       data = viewer.getPdbData(null);
     } else if (data == "XYZ" || data == "MOL") {

@@ -182,8 +182,8 @@ class GuiMap {
       labels.put("Prefs.clearConsoleButton", GT._("Clear console button (needs restarting Jmol)"));
       labels.put("Prefs.isLabelAtomColor", GT._("Use Atom Color"));
       labels.put("Prefs.isBondAtomColor", GT._("Use Atom Color"));
-      labels.put("rotateTip", GT._("Rotate molecule."));
-      labels.put("pickTip", GT._("Select a set of atoms using SHIFT-LEFT-  DRAG."));
+      labels.put("rotateScriptTip", GT._("Rotate molecule."));
+      labels.put("pickScriptTip", GT._("Select a set of atoms using SHIFT-LEFT-  DRAG."));
       labels.put("homeTip", GT._("Return molecule to home position."));
 
       return labels;

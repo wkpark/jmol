@@ -472,7 +472,8 @@ public abstract class BioPolymer extends Polymer {
   final public static void getPdbData(BioPolymer p, char ctype, char qtype,
                                       int derivType, boolean isDraw,
                                       BitSet bsAtoms, StringBuffer pdbATOM,
-                                      StringBuffer pdbCONECT, BitSet bsSelected) {
+                                      StringBuffer pdbCONECT,
+                                      BitSet bsSelected, boolean addHeader) {
     int atomno = Integer.MIN_VALUE;
     boolean isRamachandran = (ctype == 'R');
     if (isRamachandran && !p.calcPhiPsiAngles())
@@ -516,6 +517,7 @@ public abstract class BioPolymer extends Polymer {
     Quaternion qprev = null;
     Quaternion dq = null;
     Quaternion dqprev = null;
+    Quaternion qref = null;
     float factor = (ctype == 'R' ? 1f : 10f);
     float x = 0, y = 0, z = 0, w = 0;
     String strExtra = "";
@@ -528,6 +530,35 @@ public abstract class BioPolymer extends Polymer {
     String prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
     float psiLast = Float.NaN;
     Quaternion q;
+    if (addHeader && !isDraw) {
+      pdbATOM.append("REMARK   6    AT GRP CH RESNO  ");
+      switch (ctype) {
+      default:
+      case 'w':
+        pdbATOM.append("x*10___ y*10___ z*10___      w*10__       ");
+        break;
+      case 'x':
+        pdbATOM.append("y*10___ z*10___ w*10___      x*10__       ");
+        break;
+      case 'y':
+        pdbATOM.append("z*10___ w*10___ x*10___      y*10__       ");
+        break;
+      case 'z':
+        pdbATOM.append("w*10___ x*10___ y*10___      z*10__       ");
+        break;
+      case 'R':
+        pdbATOM.append("phi____ psi____ omega-180    PartialCharge");
+        break;
+      }
+      pdbATOM.append("    Sym   q0_______ q1_______ q2_______ q3_______");
+      pdbATOM.append("  theta_  aaX_______ aaY_______ aaZ_______");
+      if (ctype != 'R')
+        pdbATOM.append("  centerX___ centerY___ centerZ___");
+      if (qtype == 'n')
+        pdbATOM.append("  NHX_______ NHY_______ NHZ_______");
+      pdbATOM.append("\n\n");
+    }
+
     for (int m = 0; m < p.monomerCount; m++) {
       Monomer monomer = p.monomers[m];
       if (bsAtoms == null || bsAtoms.get(monomer.getLeadAtomIndex())) {
@@ -545,33 +576,33 @@ public abstract class BioPolymer extends Polymer {
             z += 360;
           z -= 180; // center on 0
           if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
-            continue;        
+            continue;
           if (isDraw) {
             if (bsSelected != null && !bsSelected.get(a.getAtomIndex()))
               continue;
-          // draw arrow arc {3.N} {3.ca} {3.C} {131 -131 0.5} "phi -131"
-          // draw arrow arc {3.CA} {3.C} {3.N} {0 133 0.5} "psi 133"
-          // as looked DOWN the bond, with {pt1} in the back, using
-          // standard dihedral/Jmol definitions for anticlockwise positive angles
-            AminoMonomer aa = (AminoMonomer)monomer;
-            pdbATOM.append("draw phi" + id + " arrow arc scale 0.5 ") 
-                .append(Escape.escape(aa.getNitrogenAtomPoint()))
-                .append(Escape.escape((Point3f)a)) 
-                .append(Escape.escape(aa.getCarbonylCarbonAtomPoint()))
-                .append("{" + (-x) + " " + x + " 0.2} \"phi = " + (int) x + "\"")
+            // draw arrow arc {3.N} {3.ca} {3.C} {131 -131 0.5} "phi -131"
+            // draw arrow arc {3.CA} {3.C} {3.N} {0 133 0.5} "psi 133"
+            // as looked DOWN the bond, with {pt1} in the back, using
+            // standard dihedral/Jmol definitions for anticlockwise positive angles
+            AminoMonomer aa = (AminoMonomer) monomer;
+            pdbATOM.append("draw phi" + id + " arrow arc scale 0.5 ").append(
+                Escape.escape(aa.getNitrogenAtomPoint())).append(
+                Escape.escape((Point3f) a)).append(
+                Escape.escape(aa.getCarbonylCarbonAtomPoint())).append(
+                "{" + (-x) + " " + x + " 0.2} \"phi = " + (int) x + "\"")
                 .append(" color ").append(qColor[0]).append('\n');
-            pdbATOM.append("draw psi" + id + " arrow arc scale 0.5 ") 
-                .append(Escape.escape((Point3f)a)) 
-                .append(Escape.escape(aa.getCarbonylCarbonAtomPoint()))
-                .append(Escape.escape(aa.getNitrogenAtomPoint()))
-                .append("{0 " + y + " 0.2} \"psi = " + (int) y + "\"")
+            pdbATOM.append("draw psi" + id + " arrow arc scale 0.5 ").append(
+                Escape.escape((Point3f) a)).append(
+                Escape.escape(aa.getCarbonylCarbonAtomPoint())).append(
+                Escape.escape(aa.getNitrogenAtomPoint())).append(
+                "{0 " + y + " 0.2} \"psi = " + (int) y + "\"")
                 .append(" color ").append(qColor[1]).append('\n');
             continue;
           }
           w = a.getPartialCharge();
           float phiNext = (m == p.monomerCount - 1 ? Float.NaN
               : p.monomers[m + 1].getPhi());
-          float angle = y + phiNext - psiLast - x;//psi[i] + phi[i+1] - psi[i-1] - phi[i]
+          float angle = Math.abs(y + phiNext - psiLast - x);// | psi[i] + phi[i+1] - psi[i-1] - phi[i] |
           psiLast = y;
           if (Float.isNaN(angle)) {
             strExtra = "";
@@ -579,16 +610,20 @@ public abstract class BioPolymer extends Polymer {
               continue;
           } else {
             q = new Quaternion(new Point3f(1, 0, 0), angle);
-            strExtra = TextFormat.sprintf("%10.6f%10.6f%10.6f%10.6f  %6.2f",
-                new Object[] { new float[] { q.q0, q.q1, q.q2, q.q3,
-                    q.getTheta() } });
+            strExtra = q.getInfo();
             if (qtype == 'r')
               z = angle;
           }
         } else {
           // quaternion
-          if ((q = monomer.getQuaternion(qtype)) == null) {
+          q = monomer.getQuaternion(qtype);
+          if (q != null) {
+            q.setRef(qref);
+            qref = new Quaternion(q);
+          }
+          if (q == null) {
             qprev = null;
+            qref = null;
           } else if (derivType > 0) {
             Atom anext = a;
             Quaternion qnext = q;
@@ -607,14 +642,14 @@ public abstract class BioPolymer extends Polymer {
                 //  R(v) = q[i] \ q(i+1) * (0, v) * q[i+1] \ q[i]
                 // used for aligning all standard amino acids along X axis 
                 // in the second derivative and in an ellipse in the first derivative
-                dq = q.inv().mul(qnext);
+                dq = q.leftDifference(qnext);//q.inv().mul(qnext);
               } else {
                 // ctype = 'a' or 'w' or 's'
                 // the standard "absolute" difference dq
                 // dq[i] = q[i+1] / q[i]
                 //  R(v) = q[i+1] / q[i] * (0, v) * q[i] / q[i+1]
                 // used for definition of the local helical axis
-                dq = qnext.mul(q.inv());
+                dq = qnext.rightDifference(q);//qnext.mul(q.inv());
               }
               if (derivType == 1) {
                 // first deriv:
@@ -624,23 +659,23 @@ public abstract class BioPolymer extends Polymer {
               } else {
                 /*
                  *  standard second deriv.
-                    
-                       ddq[i] =defined= (q[i+1] \/ q[i]) / (q[i] \/ q[i-1])
-                       
-                    Relative to the previous atom as "i" (which is now "a"), we have:
-                                  
-                       dqprev = q[i] \/ q[i-1]
-                       dq = q[i+1] \/ q[i]
-                    
-                    and so
-                    
-                      ddq[i] = dq / dqprev     
-                              
-                    Looks odd, perhaps, because it is written "dq[i] / dq[i-1]"
-                    but this is correct; we are assigning ddq to the correct atom.
-                     
-                */
-                q = dq.mul(dqprev.inv());
+                 
+                 ddq[i] =defined= (q[i+1] \/ q[i]) / (q[i] \/ q[i-1])
+                 
+                 Relative to the previous atom as "i" (which is now "a"), we have:
+                 
+                 dqprev = q[i] \/ q[i-1]
+                 dq = q[i+1] \/ q[i]
+                 
+                 and so
+                 
+                 ddq[i] = dq / dqprev     
+                 
+                 Looks odd, perhaps, because it is written "dq[i] / dq[i-1]"
+                 but this is correct; we are assigning ddq to the correct atom.
+                 
+                 */
+                q = dq.rightDifference(dqprev); //q = dq.mul(dqprev.inv());
                 if (ctype == 's')
                   a.getGroup().setStraightness(getStraightness(id, dqprev, dq));
               }
@@ -679,10 +714,10 @@ public abstract class BioPolymer extends Polymer {
             w = q.q1;
             break;
           }
-          Point3f ptCenter = (isAmino ? ((AminoMonomer) monomer).getQuaternionFrameCenter(qtype)
-              : p instanceof NucleicPolymer ? 
-                  ((NucleicMonomer) monomer).getQuaternionFrameCenter(qtype) 
-              : new Point3f());
+          Point3f ptCenter = (isAmino ? ((AminoMonomer) monomer)
+              .getQuaternionFrameCenter(qtype)
+              : p instanceof NucleicPolymer ? ((NucleicMonomer) monomer)
+                  .getQuaternionFrameCenter(qtype) : new Point3f());
           if (isDraw) {
             if (bsSelected != null && !bsSelected.get(a.getAtomIndex()))
               continue;
@@ -700,10 +735,11 @@ public abstract class BioPolymer extends Polymer {
                           + Escape.escape(q.getVector(2))).append(
                       " color blue\n");
               if (qtype == 'n' && isAmino) {
-                Point3f ptH = ((AminoMonomer) monomer).getNitrogenHydrogenPoint();
+                Point3f ptH = ((AminoMonomer) monomer)
+                    .getNitrogenHydrogenPoint();
                 if (ptH != null)
-                  pdbATOM.append(
-                      "draw " + prefix + "nh" + id + " width 0.1 " + Escape.escape(ptH) + "\n");
+                  pdbATOM.append("draw " + prefix + "nh" + id + " width 0.1 "
+                      + Escape.escape(ptH) + "\n");
               }
             }
             pdbATOM.append(
@@ -712,15 +748,14 @@ public abstract class BioPolymer extends Polymer {
                 .append(" color ").append(qColor[derivType]).append('\n');
             continue;
           }
-          strExtra = TextFormat.sprintf(
-              "%10.6f%10.6f%10.6f%10.6f  %6.2f  %10.5p %10.5p %10.5p",
-              new Object[] {
-                  new float[] { q.q0, q.q1, q.q2, q.q3, q.getTheta() },
-                  new Point3f[] { ptCenter } });
-          if (qtype == 'n' && isAmino)
+          strExtra = q.getInfo()
+              + TextFormat.sprintf("  %10.5p %10.5p %10.5p",
+                  new Object[] { new Point3f[] { ptCenter } });
+          if (qtype == 'n' && isAmino) {
             strExtra += TextFormat.sprintf("  %10.5p %10.5p %10.5p",
                 new Object[] { new Point3f[] { ((AminoMonomer) monomer)
                     .getNitrogenHydrogenPoint() } });
+          }
         }
         if (pdbATOM == null)
           continue;
@@ -744,6 +779,9 @@ public abstract class BioPolymer extends Polymer {
   private static float getStraightness(String id, Quaternion dqprev, Quaternion dq) {
     //System.out.println(id + " " + dqprev.getTheta() + " " + dq.getTheta());
     float f = (float) (Math.acos(dqprev.getNormal().dot(dq.getNormal()))/ Math.PI);
+    
+    //f = (float) (Math.acos(dqprev.dot(dq))/ Math.PI);
+
     return 1 - 2 * f;
   }
 }

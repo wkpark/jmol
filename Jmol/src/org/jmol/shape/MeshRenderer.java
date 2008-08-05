@@ -39,7 +39,6 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected Point3i[] screens;
   protected Vector3f[] transformedVectors;
   protected int vertexCount;
-  protected int lighting;
   protected boolean frontOnly;
   protected boolean antialias;
   protected Mesh mesh;
@@ -89,7 +88,6 @@ public abstract class MeshRenderer extends ShapeRenderer {
     //this can happen when user switches windows 
     // during a surface calculation
     
-    lighting = mesh.lighting;
     frontOnly = !slabbing && mesh.frontOnly && !mesh.isTwoSided;
     screens = viewer.allocTempScreens(vertexCount);
     transformedVectors = g3d.getTransformedVertexVectors();

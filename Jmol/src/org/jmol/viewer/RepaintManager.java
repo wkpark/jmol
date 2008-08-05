@@ -85,8 +85,11 @@ class RepaintManager {
       setBackgroundModelIndex(-1);  
     viewer.setTainted(true);
     setFrameRangeVisible();
-    if (modelSet != null)
+    if (modelSet != null) {
       setStatusFrameChanged();
+      if (!viewer.getSelectAllModels())
+        viewer.setSelectionSubset(viewer.getModelAtomBitSet(currentModelIndex, false));
+    }
   
   }
 

@@ -889,11 +889,12 @@ abstract public class AtomCollection {
   final BitSet bsEmpty = new BitSet();
   final BitSet bsFoundRectangle = new BitSet();
 
-  public BitSet findAtomsInRectangle(Rectangle rect) {
+  public BitSet findAtomsInRectangle(Rectangle rect, BitSet bsModels) {
     bsFoundRectangle.and(bsEmpty);
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
-      if (rect.contains(atom.screenX, atom.screenY))
+      if (bsModels.get(atom.modelIndex) && atom.isVisible() 
+          && rect.contains(atom.screenX, atom.screenY))
         bsFoundRectangle.set(i);
     }
     return bsFoundRectangle;

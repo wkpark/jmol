@@ -31,6 +31,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.Token;
 
 public class LcaoCartoon extends Isosurface {
 
@@ -150,19 +151,20 @@ public class LcaoCartoon extends Isosurface {
       return;
     }
 
-    if ("on" == propertyName) {
-      setLcaoOn(true);
-      return;
-    }
-
-    if ("off" == propertyName) {
-      setLcaoOn(false);
-      return;
-    }
-
     if ("delete" == propertyName) {
       deleteLcaoCartoon();
       return;
+    }
+
+    if ("token" == propertyName) {
+      switch(((Integer)value).intValue()) {
+      case Token.on:
+        setLcaoOn(true);
+        return;
+      case Token.off:
+        setLcaoOn(false);
+        return;
+      }
     }
 
     super.setProperty(propertyName, value, bs);

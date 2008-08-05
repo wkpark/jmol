@@ -625,6 +625,7 @@ public class StateManager {
     String quaternionFrame = "c";
     float solventProbeRadius = 1.2f;
     int scriptDelay = 0;
+    boolean selectAllModels = true;
     boolean statusReporting = true;
     int strandCountForStrands = 5;
     int strandCountForMeshRibbon = 7;
@@ -1188,6 +1189,7 @@ public class StateManager {
       setParameterValue("rocketBarrels", rocketBarrels);
       setParameterValue("scaleAngstromsPerInch", 0);
       setParameterValue("scriptReportingLevel", 0);
+      setParameterValue("selectAllModels", selectAllModels);
       setParameterValue("selectionHalos", false);
       setParameterValue("selectHetero", rasmolHeteroSetting);
       setParameterValue("selectHydrogen", rasmolHydrogenSetting);

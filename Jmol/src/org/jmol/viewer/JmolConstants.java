@@ -500,15 +500,10 @@ final public class JmolConstants {
    * 
    */
   
-  public final static int FRONTLIT = 0;
-  public final static int BACKLIT = 1;
-  public final static int FULLYLIT = 2;
+  public final static int FRONTLIT = Token.frontlit;
+  public final static int BACKLIT = Token.backlit;
+  public final static int FULLYLIT = Token.fullylit;
 
-  /*
-   * lighting options for isosurfaces
-   * 
-   */
-    
   /**
    * The default elementSymbols. Presumably the only entry which may cause
    * confusion is element 0, whose symbol we have defined as "Xx". 

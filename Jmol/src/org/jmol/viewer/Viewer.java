@@ -1370,9 +1370,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     selectionManager.hide(bs, isQuiet);
   }
 
-  void display(BitSet bsAll, BitSet bs, boolean isQuiet) {
+  void display(BitSet bs, boolean isQuiet) {
     //Eval
-    selectionManager.display(bsAll, bs, isQuiet);
+    selectionManager.display(getModelAtomBitSet(-1, false), bs, isQuiet);
   }
 
   BitSet getHiddenSet() {
@@ -1770,7 +1770,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       modelSet = modelManager.merge(modelAdapter, clientFile);
       if (eval != null)
         eval.clearDefinitionsAndLoadPredefined();
-      selectAll();
+      selectAll(); // could be an issue here. Do we really want to "select all"?
       setTainted(true);
     } else {
       openClientFile(fullPathName, fileName, clientFile);
@@ -1991,8 +1991,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.setCenter();
     if (eval != null)
       eval.clearDefinitionsAndLoadPredefined();
-    // there probably needs to be a better startup mechanism for shapes
-
     repaintManager.initializePointers(1);
     setCurrentModelIndex(0);
     setBackgroundModelIndex(-1);
@@ -2335,12 +2333,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (modelSet == null ? -1 : modelSet.findNearestAtomIndex(x, y));
   }
 
-  BitSet findAtomsInRectangle(Rectangle rectRubberBand) {
-    return modelSet.findAtomsInRectangle(rectRubberBand);
-  }
-
-  void selectRectangle(Rectangle rectRubber, int modifiers) {
-    BitSet bs = findAtomsInRectangle(rectRubber);
+  void selectRectangle(Rectangle rect, int modifiers) {
+    BitSet bs = modelSet.findAtomsInRectangle(rect, getVisibleFramesBitSet());
     if (BitSetUtil.firstSetBit(bs) < 0)
       return;
     pickingManager.atomsPicked(bs, modifiers);
@@ -4656,6 +4650,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean notFound = false;
     boolean doRepaint = true;
     while (true) {
+      //11.5.52
+      if (key.equalsIgnoreCase("selectAllModels")) {
+        setSelectAllModels(value);
+        break;
+      }
       //11.5.39
       if (key.equalsIgnoreCase("messageStyleChime")) {
         setMessageStyleChime(value);
@@ -5116,6 +5115,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return global.pdbGetHeader;
     }
     return false;
+  }
+  
+  private void setSelectAllModels(boolean value) {
+    global.selectAllModels = value;
+  }
+  
+  boolean getSelectAllModels() {
+    return global.selectAllModels;
   }
   
   private void setMessageStyleChime(boolean value) {
@@ -6320,7 +6327,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
 
   String getPdbData(int modelIndex, String type) {
-    return modelSet.getPdbData(modelIndex, type, selectionManager.bsSelection);
+    return modelSet.getPdbData(modelIndex, type, selectionManager.bsSelection, false);
   }
 
   public boolean isJmolDataFrame(int modelIndex) {

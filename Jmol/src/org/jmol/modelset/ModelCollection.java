@@ -875,7 +875,7 @@ abstract public class ModelCollection extends BondCollection {
       Model model = models[i];
       int nPoly = model.getBioPolymerCount();
       for (int p = 0; p < nPoly; p++)
-        model.bioPolymers[p].getPdbData('s','p', 2, false, null, null, null, null);
+        model.bioPolymers[p].getPdbData('s','p', 2, false, null, null, null, null, false);
     }
   }
 
@@ -961,7 +961,7 @@ abstract public class ModelCollection extends BondCollection {
    * 
    *****************************/
 
-  public String getPdbData(int modelIndex, String type, BitSet bsSelected) {
+  public String getPdbData(int modelIndex, String type, BitSet bsSelected, boolean addHeader) {
     if (isJmolDataFrame(modelIndex))
       modelIndex = getJmolDataSourceFrame(modelIndex);
     if (modelIndex < 0)
@@ -982,7 +982,7 @@ abstract public class ModelCollection extends BondCollection {
     StringBuffer pdbCONECT = new StringBuffer();
     for (int p = 0; p < nPoly; p++)
         model.bioPolymers[p].getPdbData(ctype, qtype, derivType, isDraw,
-            bsAtoms, pdbATOM, pdbCONECT, bsSelected);
+            bsAtoms, pdbATOM, pdbCONECT, bsSelected, p == 0);
     pdbATOM.append(pdbCONECT);
     String s = pdbATOM.toString();
     if (isDraw || s.length() == 0)
@@ -991,32 +991,7 @@ abstract public class ModelCollection extends BondCollection {
     if (ctype != 'R')
       remark += "  quaternionFrame = \"" + qtype + "\"";
     remark += "\nREMARK   6 Jmol Version " + Viewer.getJmolVersion();
-    String data;
-    switch (ctype) {
-    default:
-    case 'w':
-      data = "x*10___ y*10___ z*10___      w*10__       ";
-      break;
-    case 'x':
-      data = "y*10___ z*10___ w*10___      x*10__       ";
-      break;
-    case 'y':
-      data = "z*10___ w*10___ x*10___      y*10__       ";
-      break;
-    case 'z':
-      data = "w*10___ x*10___ y*10___      z*10__       ";
-      break;
-    case 'R':
-      data = "phi____ psi____ omega-180    PartialCharge";
-      break;
-    }
     remark += "\n\n" + getProteinStructureState(bsAtoms, ctype == 'R');
-    remark += "REMARK   6    AT GRP CH RESNO  " + data + "    Sym   q0_______ q1_______ q2_______ q3_______  theta_";
-    if (ctype != 'R')
-      remark += "  centerX___ centerY___ centerZ___";
-    if (qtype == 'n')
-      remark += "  NHX_______ NHY_______ NYZ_______";
-    remark += "\n\n";
     return remark + s;
   }
 

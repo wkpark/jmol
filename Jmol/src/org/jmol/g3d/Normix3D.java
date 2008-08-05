@@ -239,9 +239,9 @@ class Normix3D {
       inverseNormixes[n] = getNormix(-v.x, -v.y, -v.z, NORMIX_GEODESIC_LEVEL);
       }
     // validate that everyone's inverse is themselves
-    for (int n = normixCount; --n >= 0; )
-      if (inverseNormixes[inverseNormixes[n]] != n)
-        throw new NullPointerException();
+    //for (int n = normixCount; --n >= 0; )
+    //  if (inverseNormixes[inverseNormixes[n]] != n)
+    //    throw new NullPointerException();
   }
 
   byte getIntensity(short normix) {

@@ -23,6 +23,7 @@
  */
 package org.jmol.util;
 
+import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -56,13 +57,33 @@ public class Quaternion {
 
   public Matrix3f mat;
 
+
+  public Quaternion(Quaternion q) {
+    q0 = q.q0;
+    q1 = q.q1;
+    q2 = q.q2;
+    q3 = q.q3;
+  }
+
+  public void setRef(Quaternion qref) {
+    if (qref == null) {
+      fixQ(this);
+      return;
+    }
+    if (this.dot(qref) >= 0)
+      return;
+    q0 *= -1;
+    q1 *= -1;
+    q2 *= -1;
+    q3 *= -1;
+  }
+
   // create a new object with the given components
   private Quaternion(float q0, float q1, float q2, float q3) {
     this.q0 = q0;
     this.q1 = q1;
     this.q2 = q2;
     this.q3 = q3;
-    fixQ();
   }
 
   public Quaternion(Point4f pt) {
@@ -75,7 +96,6 @@ public class Quaternion {
     q1 = pt.x / factor;
     q2 = pt.y / factor;
     q3 = pt.z / factor;
-    fixQ();
   }
 
   public Quaternion(Tuple3f pt, float theta) {
@@ -89,17 +109,6 @@ public class Quaternion {
     q1 = (float) (pt.x * fact);
     q2 = (float) (pt.y * fact);
     q3 = (float) (pt.z * fact);
-    fixQ();
-  }
-
-  private Quaternion fixQ() {
-    if (q0 < 0) {
-      q0 = -q0;
-      q1 = -q1;
-      q2 = -q2;
-      q3 = -q3;
-    }
-    return this;
   }
 
   public Quaternion(Matrix3f mat) {
@@ -186,8 +195,6 @@ public class Quaternion {
     q2 = (float) (y * 0.5);
     q3 = (float) (z * 0.5);
      
-    fixQ();
-
     /*
      *  Originally from http://www.gamedev.net/community/forums/topic.asp?topic_id=448380
      *  later algorithm was adapted from Visualizing Quaternions, by Andrew J. Hanson
@@ -353,15 +360,28 @@ public class Quaternion {
     return new Quaternion(q0, -q1, -q2, -q3);
   }
 
+  public Quaternion negate() {
+    return new Quaternion(-q0, -q1, -q2, -q3);
+  }
+
+  private void fixQ(Quaternion qNew) {
+    float f = (q0 < 0 ? -1 : 1); 
+    qNew.q0 = q0 * f;
+    qNew.q1 = q1 * f;
+    qNew.q2 = q2 * f;
+    qNew.q3 = q3 * f;
+  }
+
+  private final static Quaternion qTemp = new Quaternion(0, 0, 0, 0);
+  
   public String toString() {
-    fixQ();
     return "{" + q1 + " " + q2 + " " + q3 + " " + q0 + "}";
   }
 
   public Vector3f getVector(int i) {
     if (i == -1) {
-      fixQ();
-      return new Vector3f(q1, q2, q3);
+      fixQ(qTemp);
+      return new Vector3f(qTemp.q1, qTemp.q2, qTemp.q3);
     }
     if (mat == null)
       setMatrix();
@@ -371,15 +391,15 @@ public class Quaternion {
   }
 
   public Vector3f getNormal() {
-    fixQ();
-    Vector3f v = new Vector3f(q1, q2, q3);
+    fixQ(qTemp);
+    Vector3f v = new Vector3f(qTemp.q1, qTemp.q2, qTemp.q3);
     v.normalize();
     return v;
   }
 
   public float getTheta() {
-    fixQ();
-    return (float) (Math.acos(q0) * 2 * 180 / Math.PI);
+    fixQ(qTemp);
+    return (float) (Math.acos(qTemp.q0) * 2 * 180 / Math.PI);
   }
 
   public void getThetaDirected(Point4f axisAngle) {
@@ -394,8 +414,20 @@ public class Quaternion {
   }
 
   public Point4f toPoint4f() {
-    fixQ();
+    // NO q0 normalization here
     return new Point4f(q1, q2, q3, q0);
+  }
+
+  public AxisAngle4f toAxisAngle4f() {
+    fixQ(qTemp);
+    double theta = 2 * Math.acos(qTemp.q0);
+    double sinTheta2 = Math.sin(theta/2);
+    Vector3f v = getNormal();
+    if (sinTheta2 < 0) {
+      v.scale(-1);
+      theta = Math.PI - theta;
+    }
+    return new AxisAngle4f(v, (float) theta);
   }
 
   public Point3f transform(Point3f pt) {
@@ -420,4 +452,22 @@ public class Quaternion {
     return vNew;
   }
 
+  public Quaternion leftDifference(Quaternion q2) {
+    //dq = q.leftDifference(qnext);//q.inv().mul(qnext);
+    Quaternion q2adjusted = (this.dot(q2) < 0 ? q2.negate() : q2);
+    return inv().mul(q2adjusted);
+  }
+
+  public Quaternion rightDifference(Quaternion q2) {
+    //dq = qnext.rightDifference(q);//qnext.mul(q.inv());
+    Quaternion q2adjusted = (this.dot(q2) < 0 ? q2.negate() : q2);
+    return mul(q2adjusted.inv());
+  }
+
+  public String getInfo() {
+    AxisAngle4f axis = toAxisAngle4f();
+    return TextFormat.sprintf("%10.6f%10.6f%10.6f%10.6f  %6.2f  %10.5f %10.5f %10.5f",
+        new Object[] { new float[] { q0, q1, q2, q3, 
+            (float) (axis.angle * 180 / Math.PI), axis.x, axis.y, axis.z } });
+  }
 }

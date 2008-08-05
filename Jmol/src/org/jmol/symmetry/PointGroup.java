@@ -43,38 +43,51 @@ import org.jmol.util.Quaternion;
 
 public class PointGroup {
 
-  private final static int[] axesMaxProperN = new int[] { 
-    0, // n/a
-    0, // n/a 
-    15,// C2 
-    10,// C3 
-    6, // C4
-    6, // C5
-    10,// C6
-    };
+  private final static int[] axesMaxN = new int[] { 
+     15, // used for plane count
+      0, // n/a 
+      0, // not used -- would be S2 (inversion)
+      1, // S3
+      3, // S4
+      1, // S5
+      10,// S6
+      0, // n/a
+      1, // S8
+      0, // n/a
+      6, // S10
+      0, // n/a 
+      1, // S12
+      0, // n/a
+      0, // n/a firstProper = 14
+      0, // n/a 
+      15,// C2 
+      10,// C3 
+      6, // C4
+      6, // C5
+      10,// C6
+      0, // C7
+      1, // C8
+  };
 
-  private final static int[] axesMaxImproperN = new int[] { 
-    9, // used for plane count
-    0, // n/a 
-    0, // not used -- would be S2 (inversion)
-    0, // n/a
-    1, // S4
-    0, // n/a
-    10,// S6
-    0, // n/a
-    1, // S8
-    0, // n/a
-    6, // S10
-    0, // n/a 
-    1  // S12
-    };
+  private final static int s3 = 3;
+  private final static int s4 = 4;
+  private final static int s5 = 5;
+  private final static int s6 = 6;
+  private final static int s8 = 8;
+  private final static int s10 = 10;
+  private final static int s12 = 12;
+  private final static int firstProper = 14;
+  private final static int c2 = firstProper + 2;
+  private final static int c3 = firstProper + 3;
+  private final static int c4 = firstProper + 4;
+  private final static int c5 = firstProper + 5;
+  private final static int c6 = firstProper + 6;
+  private final static int c8 = firstProper + 8;
+  private final static int maxAxis = axesMaxN.length;
 
-  private static int maxProper = axesMaxProperN.length;   
-  private static int maxImproper = axesMaxImproperN.length;
-  
-  private int[] nC;
+  private int[] nAxes;
   private Operation[][] axes;
-  
+
   private String name = "C_1?";
 
   public String getName() {
@@ -84,157 +97,141 @@ public class PointGroup {
   private final Vector3f vTemp = new Vector3f();
   private int centerAtomIndex = -1;
   private boolean haveInversionCenter;
-  
+
   final private Point3f center = new Point3f();
-  
+
   public PointGroup(Atom[] atomset, BitSet bsAtoms) {
-    nC = new int[maxImproper];
-    axes = new Operation[maxImproper][];
+    nAxes = new int[maxAxis];
+    axes = new Operation[maxAxis][];
     Point3f[] atoms;
-    if ((atoms = getCenter(atomset, bsAtoms)) == null)
+    if ((atoms = getCenter(atomset, bsAtoms)) == null) {
+      Logger.error("Too many atoms for point group calculation");
+      name = "point group not determined -- atomCount > " + ATOM_COUNT_MAX + " -- select fewer atoms and try again.";
       return;
+    }
     int[] elements = new int[atoms.length];
     int n = 0;
     for (int i = atomset.length; --i >= 0;)
-      if (bsAtoms.get(i))
-        elements[n++] = atomset[i].getElementNumber();
+      if (bsAtoms.get(i)) {
+        int bondIndex = 1 + Math.max(3, atomset[i].getCovalentBondCount());
+        elements[n++] = atomset[i].getElementNumber() * bondIndex;
+      }
     getElementArrays(atoms, elements);
-
-    haveInversionCenter = haveInversionCenter(atoms, elements);
+    findInversionCenter(atoms, elements);
 
     if (isLinear(atoms)) {
       if (haveInversionCenter) {
-        name = "D_(infinity)h";
+        name = "D(infinity)h";
       } else {
-        name = "C_(infinity)v";
+        name = "C(infinity)v";
       }
       return;
     }
-    axes[0] = new Operation[9];
+    axes[0] = new Operation[15];
     int nPlanes = 0;
-    //findAxes(atoms, elements, false);
-
-    //    n = findAxesByElement(atoms, elements, haveInversionCenter);
-
     findCAxes(atoms, elements);
     nPlanes = findPlanes(atoms, elements);
     findAdditionalAxes(nPlanes, atoms, elements);
 
     /* flow chart contribution of Dean Johnston */
 
-    n = getHighestOrder(nC);
-
-    if (nC[3] > 1) {
+    n = getHighestOrder();
+    if (nAxes[c3] > 1) {
       // must be Ix, Ox, or Tx
-      if (nC[5] > 1) {
+      if (nAxes[c5] > 1) {
         if (haveInversionCenter) {
-          name = "I_h";
+          name = "Ih";
         } else {
           name = "I";
         }
-      } else if (nC[4] > 1) {
+      } else if (nAxes[c4] > 1) {
         if (haveInversionCenter) {
-          name = "O_h";
+          name = "Oh";
         } else {
           name = "O";
         }
       } else {
         if (nPlanes > 0) {
           if (haveInversionCenter) {
-            name = "T_h";
+            name = "Th";
           } else {
-            name = "T_d";
+            name = "Td";
           }
         } else {
           name = "T";
         }
       }
     } else {
-      // options Dnh, Dnd, Dn, Cnh, Cnv, Cn, Sn, Ci, Cs
+      // Cs, Ci, C1
       if (n < 2) {
         if (nPlanes == 1) {
-          // C_s, C_i, S_2, C_1
-          name = "C_s";
+          name = "Cs";
           return;
         }
         if (haveInversionCenter) {
-          name = "C_i";
+          name = "Ci";
           return;
         }
-        name = "C_1";
-      } else if ((n % 2) == 1 && nC[2] > 0 || (n % 2) == 0 && nC[2] > 1) {
+        name = "C1";
+      } else if ((n % 2) == 1 && nAxes[c2] > 0 || (n % 2) == 0 && nAxes[c2] > 1) {
+        // Dnh, Dnd, Dn, S4
+
         // here based on the presence of C2 axes in any odd-order group
         // and more than one C2 if even order (since the one will be part of the 
         // principal axis
 
-        // Dnh, Dnd, Dn, Sn
         if (nPlanes == 0) {
-          if (axes[n][0].type == OPERATION_IMPROPER_AXIS) {
-            name = "S_" + n;
+          if (n < firstProper) {
+            name = "S" + n;
           } else {
-            name = "D_" + n;
+            name = "D" + (n - firstProper);
           }
         } else {
-          if (axes[n][0].type == OPERATION_IMPROPER_AXIS)
-            n /= 2;
+          // highest axis may be S8, but this is really D4h/D4d
+          if (n < firstProper)
+            n = n / 2;
+          else
+            n -= firstProper;
           if (nPlanes == n) {
-            name = "D_" + n + "d";
+            name = "D" + n + "d";
           } else {
-            name = "D_" + n + "h";
+            name = "D" + n + "h";
           }
         }
       } else if (nPlanes == 0) {
-        if (axes[n][0].type == OPERATION_IMPROPER_AXIS) {
-          name = "S_" + n;
+        // Cn, S3, S6 
+        if (n < firstProper) {
+          name = "S" + n;
         } else {
-          name = "C_" + n;
+          name = "C" + (n - firstProper);
         }
-      } else if (nPlanes == n) {
-        name = "C_" + n + "v";
+      } else if (nPlanes == n - firstProper) {
+        name = "C" + nPlanes + "v";
       } else {
-        name = "C_" + n + "h";
+        if (n < firstProper)
+          n /= 2;
+        else
+          n -= firstProper;
+        name = "C" + n + "h";
       }
     }
-    System.out.println(drawInfo());
+    //System.out.println(drawInfo());
   }
 
-  private void findAdditionalAxes(int nPlanes, Point3f[] atoms, int[] elements) {
-    
-    Operation[] planes = axes[0];
-    // first, cross pairs of plane normals. We don't need many.
-    if (nPlanes > 1 && nPlanes < maxProper && nC[nPlanes] == 0) {
-      vTemp.cross(planes[0].normalOrAxis, planes[1].normalOrAxis);
-      if (!checkAxisOrder(atoms, elements, nPlanes, vTemp, center)
-          && nPlanes > 2) {
-        vTemp.cross(planes[1].normalOrAxis, planes[2].normalOrAxis);
-        checkAxisOrder(atoms, elements, nPlanes - 1, vTemp, center);
-      }
-    }
-    if (nC[2] == 0 && nPlanes > 2) {
-      for (int i = 0; i < nPlanes - 1; i++) {
-        for (int j = i + 1; j < nPlanes; j++) {
-          vTemp.add(planes[1].normalOrAxis, planes[2].normalOrAxis);
-          checkAxisOrder(atoms, elements, 2, vTemp, center);
-        }
-      }
-    }
-  }
-
+  private final static int ATOM_COUNT_MAX = 100;
   private Atom[] getCenter(Atom[] atomset, BitSet bsAtoms) {
     int atomCount = BitSetUtil.cardinalityOf(bsAtoms);
-    if (atomCount > 100) {
-      Logger.error("Too many atoms for point group calculation");
+    if (atomCount > ATOM_COUNT_MAX)
       return null;
-    }
     Atom[] atoms = new Atom[atomCount];
+    if (atomCount == 0)
+      return atoms;
     int nAtoms = 0;
     for (int i = BitSetUtil.length(bsAtoms); --i >= 0;)
       if (bsAtoms.get(i)) {
         atoms[nAtoms] = atomset[i];
         center.add(atoms[nAtoms++]);
       }
-    if (nAtoms < 2)
-      return null;
     center.scale(1f / nAtoms);
     for (int i = nAtoms; --i >= 0;)
       if (atoms[i].distance(center) < 0.1) {
@@ -244,14 +241,20 @@ public class PointGroup {
     return atoms;
   }
 
-  private boolean haveInversionCenter(Point3f[] atoms, int[] elements) {
-    return checkOperation(atoms, elements, null, center, true);
+  private void findInversionCenter(Point3f[] atoms, int[] elements) {
+    haveInversionCenter = checkOperation(atoms, elements, null, center, -1);
+    if (haveInversionCenter) {
+      axes[1] = new Operation[1];
+      axes[1][0] = new Operation();
+    }
   }
 
+  private final static float DISTANCE_TOLERANCE = 0.2f;
   private boolean checkOperation(Point3f[] atoms, int[] elements, Quaternion q,
-                                 Point3f center, boolean isInversion) {
+                                 Point3f center, int iOrder) {
     Point3f pt = new Point3f();
     int nFound = 0;
+    boolean isInversion = (iOrder < firstProper);
     out: for (int i = atoms.length; --i >= 0 && nFound < atoms.length;)
       if (i == centerAtomIndex) {
         nFound++;
@@ -267,10 +270,17 @@ public class PointGroup {
           pt.set(a1);
         }
         if (isInversion) {
+          // A trick here: rather than 
+          // actually doing a rotation/reflection
+          // we do a rotation INVERSION. This works
+          // due to the symmetry of S2, S4, and S8
+          // For S3 and S6, we play the trick of 
+          // rotating as C6 and C3, respectively, 
+          // THEN doing the rotation/inversion. 
           vTemp.sub(center, pt);
           pt.scaleAdd(2, vTemp, pt);
         }
-        if ((q != null || isInversion) && pt.distance(a1) < 0.1) {
+        if ((q != null || isInversion) && pt.distance(a1) < DISTANCE_TOLERANCE) {
           nFound++;
           continue;
         }
@@ -278,7 +288,9 @@ public class PointGroup {
           if (j == i || elements[j] != e1)
             continue;
           Point3f a2 = atoms[j];
-          if (pt.distance(a2) < 0.1) {
+          //  System.out.println(i + " " + j + " " + a1 + " " + a2 + " " + pt 
+          //      + nFound + " " + pt.distance(a2));
+          if (pt.distance(a2) < DISTANCE_TOLERANCE) {
             nFound++;
             continue out;
           }
@@ -307,14 +319,15 @@ public class PointGroup {
     return true;
   }
 
-  private final static float LINEAR_DOT_MINIMUM = 0.9999f;
+  private final static float LINEAR_DOT_MINIMUM = 0.99f; // 8 degrees
 
   private static boolean isParallel(Vector3f v1, Vector3f v2) {
     return (Math.abs(v1.dot(v2)) >= LINEAR_DOT_MINIMUM);
   }
-  
+
   int maxElement = 0;
   int[] eCounts;
+
   private void getElementArrays(Point3f[] atoms, int[] elements) {
     for (int i = atoms.length; --i >= 0;) {
       int e1 = elements[i];
@@ -323,9 +336,9 @@ public class PointGroup {
     }
     eCounts = new int[++maxElement];
     for (int i = atoms.length; --i >= 0;)
-      eCounts[elements[i]]++;    
+      eCounts[elements[i]]++;
   }
-  
+
   private int findCAxes(Point3f[] atoms, int[] elements) {
     Vector3f v1 = new Vector3f();
     Vector3f v2 = new Vector3f();
@@ -333,7 +346,7 @@ public class PointGroup {
     Point3f pt = new Point3f();
 
     // look for the proper and improper axes relating pairs of atoms
-    
+
     for (int i = atoms.length; --i >= 0;) {
       if (i == centerAtomIndex)
         continue;
@@ -343,48 +356,48 @@ public class PointGroup {
         Point3f a2 = atoms[j];
         if (elements[j] != e1)
           continue;
-        
+
         // look for all axes to average position of A and B
         // or including A and B if A - 0 - B is linear
-        
+
         pt.add(a1, a2);
-        pt.scale(0.5f);        
+        pt.scale(0.5f);
         v1.sub(a1, center);
         v2.sub(a2, center);
         v1.normalize();
         v2.normalize();
-        if (isParallel(v1, v2)){
+        if (isParallel(v1, v2)) {
           getAllAxes(v1, atoms, elements);
           continue;
-        } 
-        if (nC[2] < axesMaxProperN[2]) {
+        }
+        if (nAxes[c2] < axesMaxN[c2]) {
           v3.set(pt);
           getAllAxes(v3, atoms, elements);
         }
-        
+
         // look for the axis perpendicular to the A -- 0 -- B plane
 
         float order = (float) (2 * Math.PI / v1.angle(v2));
         int iOrder = (int) (order + 0.01f);
-        boolean isIntegerOrder =(order - iOrder <= 0.02f); 
-        if (!isIntegerOrder)
+        boolean isIntegerOrder = (order - iOrder <= 0.02f);
+        if (!isIntegerOrder || (iOrder = iOrder + firstProper) >= maxAxis)
           continue;
-        if (nC[iOrder] < axesMaxProperN[iOrder]) {
+        if (nAxes[iOrder] < axesMaxN[iOrder]) {
           v3.cross(v1, v2);
           checkAxisOrder(atoms, elements, iOrder, v3, center);
         }
       }
     }
-    
+
     // check all C2 axes for C3-related axes
-    
-    Vector3f[] vs = new Vector3f[nC[2] * 2];
+
+    Vector3f[] vs = new Vector3f[nAxes[c2] * 2];
     for (int i = 0; i < vs.length; i++)
       vs[i] = new Vector3f();
     int n = 0;
-    for (int i = 0; i < nC[2]; i++) {
-      vs[n++].set(axes[2][i].normalOrAxis);
-      vs[n].set(axes[2][i].normalOrAxis);
+    for (int i = 0; i < nAxes[c2]; i++) {
+      vs[n++].set(axes[c2][i].normalOrAxis);
+      vs[n].set(axes[c2][i].normalOrAxis);
       vs[n++].scale(-1);
     }
     for (int i = vs.length; --i >= 2;)
@@ -395,12 +408,9 @@ public class PointGroup {
           v3.add(vs[k]);
           if (v3.length() < 1.0)
             continue;
-          checkAxisOrder(atoms, elements, 3, v3, center);
+          checkAxisOrder(atoms, elements, c3, v3, center);
         }
 
-    // Check all pairs of atoms for C2 relationships
-    
-    
     // Now check for triples of elements that will define
     // axes using the element with the smallest
     // number of atoms n, with n >= 3 
@@ -409,6 +419,8 @@ public class PointGroup {
 
     // Also check for vectors from {0 0 0} to
     // the midpoint of each triple of atoms
+
+    // get minimum element count > 2
 
     int nMin = Integer.MAX_VALUE;
     int iMin = -1;
@@ -419,7 +431,6 @@ public class PointGroup {
       }
     }
 
-
     out: for (int i = 0; i < atoms.length - 2; i++)
       if (elements[i] == iMin)
         for (int j = i + 1; j < atoms.length - 1; j++)
@@ -431,7 +442,8 @@ public class PointGroup {
                 v1.normalize();
                 v2.normalize();
                 v3.cross(v1, v2);
-                checkAxisOrder(atoms, elements, 3, v3, center);
+                getAllAxes(v3, atoms, elements);
+//                checkAxisOrder(atoms, elements, 3, v3, center);
                 pt.set(atoms[i]);
                 pt.add(atoms[j]);
                 pt.add(atoms[k]);
@@ -439,190 +451,158 @@ public class PointGroup {
                 v1.normalize();
                 if (!isParallel(v1, v3))
                   getAllAxes(v1, atoms, elements);
-                if (nC[5] == axesMaxProperN[5])
+                if (nAxes[c5] == axesMaxN[c5])
                   break out;
               }
-    
-    // get minimum element count > 2
 
-    if (!haveInversionCenter) {
+    //check for C2 by looking for axes along element-based geometric centers
 
-      //check for C2 by looking for axes along element-based geometric centers
-
-      vs = new Vector3f[maxElement];
-      for (int i = atoms.length; --i >= 0;) {
-        int e1 = elements[i];
-        if (vs[e1] == null)
-          vs[e1] = new Vector3f();
-        vs[e1].add(atoms[i]);
-      }
+    vs = new Vector3f[maxElement];
+    for (int i = atoms.length; --i >= 0;) {
+      int e1 = elements[i];
+      if (vs[e1] == null)
+        vs[e1] = new Vector3f();
+      else if (haveInversionCenter)
+        continue;
+      vs[e1].add(atoms[i]);
+    }
+    if (!haveInversionCenter)
       for (int i = 0; i < maxElement; i++)
         if (vs[i] != null)
           vs[i].scale(1f / eCounts[i]);
 
-      // check for vectors from {0 0 0} to
-      // the midpoint of each pair of atoms
-      // within the same element
+    // check for vectors from {0 0 0} to
+    // the midpoint of each pair of atoms
+    // within the same element if there is no inversion center,
+    // otherwise, check for cross-product axis
 
-      for (int i = 0; i < maxElement; i++)
-        if (vs[i] != null)
-          for (int j = 0; j < maxElement; j++) {
-            if (i == j || vs[j] == null)
-              continue;
+    for (int i = 0; i < maxElement; i++)
+      if (vs[i] != null)
+        for (int j = 0; j < maxElement; j++) {
+          if (i == j || vs[j] == null)
+            continue;
+          if (haveInversionCenter) {
+           v1.cross(vs[i], vs[j]);
+          } else {
             v1.set(vs[i]);
             v1.sub(vs[j]);
-            checkAxisOrder(atoms, elements, 2, v1, center);
           }
-    }
+          checkAxisOrder(atoms, elements, c2, v1, center);
+          
+        }
 
-    return getHighestOrder(nC);
+    return getHighestOrder();
   }
 
   private void getAllAxes(Vector3f v3, Point3f[] atoms, int[] elements) {
-    for (int o = maxProper; --o >= 2;) 
-      if (nC[o] < axesMaxProperN[o])
+    for (int o = c2; o < maxAxis; o++)
+      if (nAxes[o] < axesMaxN[o])
         checkAxisOrder(atoms, elements, o, v3, center);
   }
 
-  private int getHighestOrder(int[] nC) {
-    int n;
-    for (n = maxImproper; --n > 1 && nC[n] == 0;) {
+  private int getHighestOrder() {
+    int n = 0;
+    // highest S
+    for (n = firstProper; --n > 1 && nAxes[n] == 0;) {
+    }
+    // or highest C
+    if (n > 1)
+      return (n + firstProper < maxAxis && nAxes[n + firstProper] > 0 ? n + firstProper : n);
+    for (n = maxAxis; --n > 1 && nAxes[n] == 0;) {
     }
     return n;
   }
-/*  
-  private int findAxesByElement(Point3f[] atoms, int[] elements, int[] nC,
-                                Operation[][] axes, boolean isInversion) {
-    Vector3f v1 = new Vector3f();
-    Vector3f v2 = new Vector3f();
-    Vector3f v3 = new Vector3f();
-    Vector3f[] vs = new Vector3f[120];
-    int[] eCounts = new int[120];
-    int maxElement = 0;
-    for (int i = atoms.length; --i >= 0;) {
-      Point3f a1 = atoms[i];
-      int e1 = elements[i];
-      if (vs[e1] == null)
-        vs[e1] = new Vector3f();
-      vs[e1].add(a1);
-      eCounts[e1]++;
-      if (e1 > maxElement)
-        maxElement = e1;
-    }
-    int nMin = Integer.MAX_VALUE;
-    int iMin = -1;
-    for (int i = 0; i <= maxElement; i++)
-      if (vs[i] != null) {
-        if (eCounts[i] < nMin && eCounts[i] > 1) {
-          nMin = eCounts[i];
-          iMin = i;
-        }
-        vs[i].scale(1f / eCounts[i]);
-      }
-    if (!isInversion) {
-      for (int i = 0; i <= maxElement; i++)
-        if (vs[i] != null)
-          for (int j = 0; j <= maxElement; j++) {
-            if (i == j || vs[j] == null)
-              continue;
-            v1.set(vs[i]);
-            v1.sub(vs[j]);
-            getAllAxes(v1, atoms, elements);
-          }
-    }
-    out: for (int i = 0; i < atoms.length - 2; i++)
-      if (elements[i] == iMin)
-        for (int j = i + 1; j < atoms.length - 1; j++)
-          if (elements[j] == iMin)
-            for (int k = j + 1; k < atoms.length; k++)
-              if (elements[k] == iMin) {
-                v1.sub(atoms[i], atoms[j]);
-                v2.sub(atoms[i], atoms[k]);
-                v1.normalize();
-                v2.normalize();
-                v3.cross(v1, v2);
-                //System.out.println(v3 + " " + (v1.dot(v2)/Math.PI * 180));
-                getAllAxes(v3, atoms, elements);
-                if (nC[5] > 2)
-                  break out;
-              }
-    return getHighestOrder(nC);
-  }
-*/
-  private boolean checkAxisOrder(Point3f[] atoms, int[] elements,
-                                 int iOrder, Vector3f v, Point3f center) {
+
+  private boolean checkAxisOrder(Point3f[] atoms, int[] elements, int iOrder,
+                                 Vector3f v, Point3f center) {
     switch (iOrder) {
-    case 6:
-    case 4:
-      if (nC[5] > 0)
+    case c8:
+      if (nAxes[c3] > 0)
+        return false;
+      // fall through;
+    case c6:
+    case c4:
+      if (nAxes[c5] > 0)
         return false;
       break;
-    case 5:
-      if (nC[4] > 0 || nC[6] > 0)
+    case c3:
+      if (nAxes[c8] > 0)
+        return false;
+      break;
+    case c5:
+      if (nAxes[c4] > 0 || nAxes[c6] > 0 || nAxes[c8] > 0) 
         return false;
       break;
     }
-    
+
     v.normalize();
     if (haveAxis(iOrder, v))
       return false;
-    Quaternion q = new Quaternion(v, 360 / (iOrder < 0 ? -iOrder : iOrder));
-    if (!checkOperation(atoms, elements, q, center, iOrder < 0))
+    Quaternion q = new Quaternion(v, (iOrder < firstProper ? 180 : 0) + 360 / (iOrder % firstProper));
+    if (!checkOperation(atoms, elements, q, center, iOrder))
       return false;
     addAxis(iOrder, v);
+    // check for Sn:
     switch (iOrder) {
-    case 2:
-      checkAxisOrder(atoms, elements, -4, v, center);
+    case c2:
+      checkAxisOrder(atoms, elements, s4, v, center);//D2d, D4h, D6d
       break;
-    case 3:
-      checkAxisOrder(atoms, elements, -6, v, center);
+    case c3:
+      checkAxisOrder(atoms, elements, s3, v, center);//C3h, D3h
+      if (haveInversionCenter)
+        addAxis(s6, v);
       break;
-    case 4:
-      addAxis(2, v);
-      checkAxisOrder(atoms, elements, -8, v, center);
+    case c4:
+      addAxis(c2, v);
+      checkAxisOrder(atoms, elements, s4, v, center);//D2d, D4h, D6d
+      checkAxisOrder(atoms, elements, s8, v, center);//D4d
       break;
-    case 5:
-      checkAxisOrder(atoms, elements, -10, v, center);
+    case c5:
+      checkAxisOrder(atoms, elements, s5, v, center); //C5h, D5h
+      if (haveInversionCenter)
+        addAxis(s10, v);
       break;
-    case 6:
-      addAxis(2, v);
-      addAxis(3, v);
+    case c6:
+      addAxis(c2, v);
+      addAxis(c3, v);
+      checkAxisOrder(atoms, elements, s3, v, center);//C6h, D6h
+      checkAxisOrder(atoms, elements, s6, v, center);//C6h, D6h
+      checkAxisOrder(atoms, elements, s12, v, center);//D6d
       break;
-    case 8:
-      addAxis(2, v);
-      addAxis(4, v);
+    case c8:
+      //note -- D8d would have a S16 axis. This will not be found.
+      addAxis(c2, v);
+      addAxis(c4, v);
       break;
     }
     return true;
   }
 
   private void addAxis(int iOrder, Vector3f v) {
-    int aiOrder = Math.abs(iOrder);
     if (haveAxis(iOrder, v))
       return;
-    if (axes[aiOrder] == null)
-      axes[aiOrder] = new Operation[Math.max(
-          (aiOrder < maxProper ? axesMaxProperN[aiOrder] : 0),
-          axesMaxImproperN[aiOrder])];
-    axes[aiOrder][nC[aiOrder]++] = new Operation(v, iOrder);
+    if (axes[iOrder] == null)
+      axes[iOrder] = new Operation[axesMaxN[iOrder]];
+    axes[iOrder][nAxes[iOrder]++] = new Operation(v, iOrder);
   }
 
   private boolean haveAxis(int iOrder, Vector3f v) {
-    int aiOrder = Math.abs(iOrder);
-    if (nC[aiOrder] == (iOrder > 0 ? axesMaxProperN[aiOrder] : axesMaxImproperN[aiOrder]))
+    if (nAxes[iOrder] == axesMaxN[iOrder]) {
+      //System.out.println(iOrder + " " + (iOrder-firstProper) + " is maxed at " + axesMaxN[iOrder]);
       return true;
-    if (nC[aiOrder] > 0)
-      for (int i = nC[aiOrder]; --i >= 0;) {
-        if (isParallel(v, axes[aiOrder][i].normalOrAxis))
+    }
+    if (nAxes[iOrder] > 0)
+      for (int i = nAxes[iOrder]; --i >= 0;) {
+        if (isParallel(v, axes[iOrder][i].normalOrAxis))
           return true;
       }
     return false;
   }
 
   private int findPlanes(Point3f[] atoms, int[] elements) {
-    Operation[] axesC2 = axes[2];
-    int nC2 = nC[2];
-    
+    Operation[] axesC2 = axes[c2];
+    int nC2 = nAxes[c2];
+
     Point3f pt = new Point3f();
     Vector3f v1 = new Vector3f();
     Vector3f v2 = new Vector3f();
@@ -647,7 +627,7 @@ public class PointGroup {
         pt.scale(0.5f);
         v1.sub(a1, center);
         v2.sub(a2, center);
-        if (!isParallel(v1, v2)) {    
+        if (!isParallel(v1, v2)) {
           v3.cross(v1, v2);
           v3.normalize();
           nPlanes = getPlane(nPlanes, v3, atoms, elements, center);
@@ -659,33 +639,62 @@ public class PointGroup {
         v3.sub(a1);
         v3.normalize();
         nPlanes = getPlane(nPlanes, v3, atoms, elements, center);
-        if (nPlanes == axesMaxImproperN[0])
+        if (nPlanes == axesMaxN[0])
           return nPlanes;
       }
     }
-    
+
     // also look for planes normal to any C2 axis
-    
+
     for (int i = 0; i < nC2; i++)
-      nPlanes = getPlane(nPlanes, axesC2[i].normalOrAxis, atoms, elements, center);
+      nPlanes = getPlane(nPlanes, axesC2[i].normalOrAxis, atoms, elements,
+          center);
     return nPlanes;
   }
 
-  private int getPlane(int nPlanes, Vector3f v3, Point3f[] atoms, int[] elements, 
-                       Point3f center2) {
+  private int getPlane(int nPlanes, Vector3f v3, Point3f[] atoms,
+                       int[] elements, Point3f center2) {
     if (!haveAxis(0, v3)
-        && checkOperation(atoms, elements, new Quaternion(v3, 180),
-            center, true))
-      axes[0][nC[0]++] = new Operation(v3);
-    return nC[0];
+        && checkOperation(atoms, elements, new Quaternion(v3, 180), center,
+            -1))
+      axes[0][nAxes[0]++] = new Operation(v3);
+    return nAxes[0];
   }
 
-  final static int OPERATION_AXIS = 0;
-  final static int OPERATION_PLANE = 1;
+  private void findAdditionalAxes(int nPlanes, Point3f[] atoms, int[] elements) {
+
+    Operation[] planes = axes[0];
+    int Cn = 0;
+    if (nPlanes > 1
+        && ((Cn = nPlanes + firstProper) < maxAxis) 
+        && nAxes[Cn] == 0) {
+      // cross pairs of plane normals. We don't need many.
+      vTemp.cross(planes[0].normalOrAxis, planes[1].normalOrAxis);
+      if (!checkAxisOrder(atoms, elements, Cn, vTemp, center)
+          && nPlanes > 2) {
+        vTemp.cross(planes[1].normalOrAxis, planes[2].normalOrAxis);
+        checkAxisOrder(atoms, elements, Cn - 1, vTemp, center);
+      }
+    }
+    if (nAxes[c2] == 0 && nPlanes > 2) {
+      // check for C2 axis relating 
+      for (int i = 0; i < nPlanes - 1; i++) {
+        for (int j = i + 1; j < nPlanes; j++) {
+          vTemp.add(planes[1].normalOrAxis, planes[2].normalOrAxis);
+          if (checkAxisOrder(atoms, elements, c2, vTemp, center))
+            System.out.println("found a C2 axis by adding plane normals");
+        }
+      }
+    }
+  }
+
+  final static int OPERATION_PLANE = 0;
+  final static int OPERATION_PROPER_AXIS = 1;
   final static int OPERATION_IMPROPER_AXIS = 2;
   final static int OPERATION_INVERSION_CENTER = 3;
 
-  final static String[] typeNames = { "axis", "plane", "improper axis", "center of inversion" };
+  final static String[] typeNames = { "plane", "proper axis", "improper axis",
+      "center of inversion" };
 
   public class Operation {
 
@@ -695,21 +704,25 @@ public class PointGroup {
 
     Operation() {
       type = OPERATION_INVERSION_CENTER;
-      Logger.info("new operation -- " + typeNames[type]);
+      //if (Logger.debugging)
+        Logger.info("new operation -- " + typeNames[type]);
       order = 1;
     }
 
     Operation(Vector3f v, int i) {
-      type = (i < 0 ? OPERATION_IMPROPER_AXIS : OPERATION_AXIS);
-      order = Math.abs(i);
+      type = (i < firstProper ? OPERATION_IMPROPER_AXIS : OPERATION_PROPER_AXIS);
+      order = i % firstProper;
       normalOrAxis = new Quaternion(v, 180).getNormal();
-      Logger.info("new operation -- " + typeNames[type] + " order = " + i + " " + normalOrAxis);
+      //if (Logger.debugging)
+        Logger.info("new operation -- " + (order == i ? "S" : "C") + order + " "
+            + normalOrAxis);
     }
 
     Operation(Vector3f v) {
       type = OPERATION_PLANE;
       normalOrAxis = new Quaternion(v, 180).getNormal();
-      Logger.info("new operation -- " + typeNames[type] + " " + normalOrAxis );
+      //if (Logger.debugging)
+        Logger.info("new operation -- plane " + normalOrAxis);
     }
 
     public String toString() {
@@ -717,7 +730,7 @@ public class PointGroup {
     }
 
     public String getLabel() {
-      switch(type) {
+      switch (type) {
       case OPERATION_PLANE:
         return "";
       case OPERATION_IMPROPER_AXIS:
@@ -731,49 +744,61 @@ public class PointGroup {
   public String drawInfo() {
     Vector3f v = new Vector3f();
     Operation op;
-    int nAxes = 0;
-    for (int i = 1; i < maxImproper; i++)
-      nAxes += nC[i];
-    StringBuffer sb = new StringBuffer("# name=" + name + ", nPlanes=" + nC[0] + ", nAxes=" + nAxes + ";\n");
-    sb.append("draw p0" + (haveInversionCenter ? "inv " : " ") + center
+    int n = 0;
+    int[] nType = new int[4];
+    for (int i = 1; i < maxAxis; i++) {
+      n += nAxes[i];
+      for (int j = nAxes[i]; --j >= 0;)
+        nType[axes[i][j].type]++; 
+    }
+    StringBuffer sb = new StringBuffer("set perspectivedepth off;\n");
+    sb.append("draw p0" + (haveInversionCenter ? "inv " : " ") + Escape.escape(center)
         + (haveInversionCenter ? "\"i\";\n" : ";\n"));
-    for (int i = 2; i < maxImproper; i++) {
-      for (int j = 0; j < nC[i]; j++) {
-        op=axes[i][j];
+    for (int i = 2; i < maxAxis; i++) {
+      for (int j = 0; j < nAxes[i]; j++) {
+        op = axes[i][j];
         v.set(op.normalOrAxis);
         v.add(center);
-        float scale = 4.0f + op.order / 4.0f;
-        sb.append("draw va").append(i).append("_").append(j)
-        .append(" width 0.05 scale -" + scale + " ").append(Escape.escape(v));
+        float scale = (4.0f + op.order / 4.0f) * (op.type == OPERATION_IMPROPER_AXIS ? -1 : 1);
+        sb.append("draw va").append(op.getLabel()).append("_").append(j).append(
+            " width 0.05 scale " + scale + " ").append(Escape.escape(v));
         v.scaleAdd(-2, op.normalOrAxis, v);
-        sb.append(Escape.escape(v))
-        .append("\""+op.getLabel()+"\"").append(op.type == OPERATION_IMPROPER_AXIS ? " color red" : "").append(";\n");
+        sb.append(Escape.escape(v)).append("\"" + op.getLabel() + "\"").append(
+            op.type == OPERATION_IMPROPER_AXIS ? " color red" : "").append(
+            ";\n");
       }
     }
-    for (int j = 0; j < nC[0]; j++) {
-      op=axes[0][j];
+    for (int j = 0; j < nAxes[0]; j++) {
+      op = axes[0][j];
       v.set(op.normalOrAxis);
       v.scale(0.025f);
       v.add(center);
-      sb.append("draw vp").append(j).append("disk width 6.0 cylinder ")
-      .append(Escape.escape(v));
+      sb.append("draw vp").append(j).append("disk width 6.0 cylinder ").append(
+          Escape.escape(v));
       v.scaleAdd(-0.05f, op.normalOrAxis, v);
       sb.append(Escape.escape(v)).append(" color translucent;\n");
 
       v.set(op.normalOrAxis);
       v.add(center);
       sb.append("draw vp").append(j).append("ring width 0.05 scale 3.0 arc ")
-      .append(Escape.escape(v));
+          .append(Escape.escape(v));
       v.scaleAdd(-2, op.normalOrAxis, v);
       sb.append(Escape.escape(v));
       v.x += 0.011;
       v.y += 0.012;
       v.z += 0.013;
-      sb.append(Escape.escape(v))
-      .append("{0 360 0.5} color red;\n");
-
-    
+      sb.append(Escape.escape(v)).append("{0 360 0.5} color red;\n");
     }
+    sb.append("# name=" + name);
+    sb.append(", nCi=" + (haveInversionCenter ? 1 : 0));
+    sb.append(", nCs=" + nAxes[0]);
+    sb.append(", nCn=" + nType[OPERATION_PROPER_AXIS]);
+    sb.append(", nSn=" + nType[OPERATION_IMPROPER_AXIS]);
+    sb.append(": ");
+    for (int i = maxAxis; --i >= 2; )
+      if (nAxes[i] > 0)
+        sb.append(" n" + (i < firstProper ? "S" : "C") + (i % firstProper) + "=" + nAxes[i]);
+    sb.append(";\n");
     return sb.toString();
   }
 }

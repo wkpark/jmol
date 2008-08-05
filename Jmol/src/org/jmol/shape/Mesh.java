@@ -136,28 +136,30 @@ public class Mesh {
       normixes[i] = g3d.getNormix(vectorSums[i]);
     this.lighting = JmolConstants.FRONTLIT;
     if (insideOut)
-      setLighting(-2);
+      invertNormixes();
     setLighting(lighting);
   }
   
   public void setLighting(int lighting) {
     if (lighting == this.lighting)
       return;
-    if (lighting == -1 || this.lighting == JmolConstants.FULLYLIT)
-      for (int i = vertexCount; --i >= 0;)
-        normixes[i] = (short)~normixes[i];
-    else if (lighting == -2 || (this.lighting == JmolConstants.FRONTLIT) == insideOut)
-      for (int i = vertexCount; --i >= 0;)
-        normixes[i] = g3d.getInverseNormix(normixes[i]);
-    if (lighting < 0)
-      return;
-    if (lighting == JmolConstants.FULLYLIT)
-      setLighting(-1);
-    else if ((lighting == JmolConstants.FRONTLIT) == insideOut)
-      setLighting(-2);
-    this.lighting = lighting;
+    flipLighting(this.lighting);
+    flipLighting(this.lighting = lighting);
   }
   
+  private void flipLighting(int lighting) {
+    if (lighting == JmolConstants.FULLYLIT)
+      for (int i = vertexCount; --i >= 0;)
+        normixes[i] = (short)~normixes[i];
+    else if ((lighting == JmolConstants.FRONTLIT) == insideOut)
+      invertNormixes();
+  }
+
+  private void invertNormixes() {
+    for (int i = vertexCount; --i >= 0;)
+      normixes[i] = g3d.getInverseNormix(normixes[i]);
+  }
+
   public void setTranslucent(boolean isTranslucent, float iLevel) {
     colix = Graphics3D.getColixTranslucent(colix, isTranslucent, iLevel);
   }

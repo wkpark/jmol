@@ -266,8 +266,8 @@ public class Token {
   final static int delay        = command | 12 | defaultON;
   final static int depth        = command | 13 | defaultON;
   final static int dipole       = command | 14;
-  final static int dots         = command | 15 | defaultON;
-  final static int draw         = command | 16;
+  final public static int dots         = command | 15 | defaultON;
+  final public static int draw         = command | 16;
   final static int ellipsoid    = command | 17 | defaultON;
   final static int exit         = command | 18 | noArgs;
 //final static int file         see mathfunc
@@ -348,8 +348,8 @@ public class Token {
   final public static int isaromatic   = expression | 13;
   final static int leftbrace           = expression | 14;
   final static int none                = expression | 15;
-  final static int off                 = expression | 16; //for within(dist,false,...)
-  final static int on                  = expression | 17; //for within(dist,true,...)
+  final public static int off                 = expression | 16; //for within(dist,false,...)
+  final public static int on                  = expression | 17; //for within(dist,true,...)
   final static int rightbrace          = expression | 18;
   final static int semicolon           = expression | 19;
   final public static int sequence     = expression | 20;
@@ -445,7 +445,7 @@ public class Token {
   
   final public static int atoms     = 1 | mathproperty;
   final public static int bonds     = 2 | mathproperty | setparam;
-  final static int color            = 3 | mathproperty | command | setparam | settable;
+  final public static int color            = 3 | mathproperty | command | setparam | settable;
   final static int identify         = 4 | mathproperty;
   final static int length           = 5 | mathproperty;
   final static int lines            = 6 | mathproperty;
@@ -937,7 +937,7 @@ public class Token {
 
   // more SET parameters
   
-  final static int ambient       = setparam |  1;
+  final public static int ambient       = setparam |  1;
   final static int bondmode      = setparam |  2;
   final static int fontsize      = setparam |  3;
   final static int picking       = setparam |  4;
@@ -957,7 +957,7 @@ public class Token {
   final static int average      = misc |  2;
   final static int babel        = misc |  4;
   final static int back         = misc |  5;
-  final static int backlit      = misc |  6;
+  final public static int backlit      = misc |  6;
   final public static int bitset= misc |  7;
   final static int bondset      = misc |  8;
   final static int bottom       = misc |  9;
@@ -967,28 +967,29 @@ public class Token {
   final static int direction    = misc | 13;
   final static int displacement = misc | 14;
   final static int dotted       = misc | 15;
-  final static int fill         = misc | 16;
+  final public static int fill         = misc | 16;
   final static int fixedtemp    = misc | 17; // color option
-  final static int front        = misc | 18;
-  final static int frontlit     = misc | 19;
-  final static int frontonly    = misc | 20;
-  final static int fullylit     = misc | 21;
+  final public static int front        = misc | 18;
+  final public static int frontlit     = misc | 19;
+  final public static int frontonly    = misc | 20;
+  final public static int fullylit     = misc | 21;
   final public static int info  = misc | 121;
   final static int ionic        = misc | 22;
   final static int jmol         = misc | 23;
   final static int last         = misc | 24;
   final static int left         = misc | 25;
   final static int mep          = misc | 26;
-  final static int mesh         = misc | 27;
+  final public static int mesh         = misc | 27;
   final static int mode         = misc | 28;
   final static int monomer      = misc | 29;
   final static int next         = misc | 30;
-  final static int nodots       = misc | 31;
-  final static int nofill       = misc | 32;
-  final static int nomesh       = misc | 33;
+  final public static int nodots       = misc | 31;
+  final public static int nofill       = misc | 32;
+  final public static int nomesh       = misc | 33;
   final static int normal       = misc | 34;
-  final static int notfrontonly = misc | 35;
-  final static int notriangles  = misc | 36;
+  final public static int notfrontonly = misc | 35;
+  final public static int notriangles  = misc | 36;
+  final static int only         = misc | 136;
   final static int opaque       = misc | 37;
   final static int orientation  = misc | 38;
   final static int pdbheader    = misc | 39;
@@ -1015,8 +1016,8 @@ public class Token {
   final static int torsion      = misc | 59;
   final static int transform    = misc | 60;
   final static int translation  = misc | 61;
-  final static int translucent  = misc | 62;
-  final static int triangles    = misc | 63;
+  final public static int translucent  = misc | 62;
+  final public static int triangles    = misc | 63;
   final static int url          = misc | 64; 
   final static int user         = misc | 65; //color option
   final static int qw           = misc | 66;
@@ -1398,7 +1399,8 @@ public class Token {
     "occupancy",        new Token(occupancy),
     "off",              tokenOff, 
     "false",            null, 
-    "on",               tokenOn, 
+    "on",               tokenOn,
+    "only",             new Token(only),
     "true",             null,                           
     "opaque",           new Token(opaque),
     "partialCharge",    new Token(partialCharge),

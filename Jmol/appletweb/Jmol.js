@@ -61,7 +61,7 @@ try{if(typeof(_jmol)!="undefined")exit()
 // bh 3/2008  -- fixes IE7 bug in relation to jmolLoadInlineArray()
 // bh 6/2008  -- adds jmolSetAppletWindow()
 // Angel H. 6/2008  -- added html <label> tags to checkboxes and radio buttons [in jmolCheckbox() and _jmolRadio() functions]
-// bh 7/2008  -- code fix "for(i..." not "for(var i..."
+// bh 7/2000  -- code fix "for(i..." not "for(var i..."
 	  	
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"

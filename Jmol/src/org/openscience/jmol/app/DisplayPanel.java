@@ -153,41 +153,25 @@ public class DisplayPanel extends JPanel
 
   private HomeAction homeAction = new HomeAction();
   private DefineCenterAction defineCenterAction = new DefineCenterAction();
-  private Action deleteAction       = new SetStatusAction("delete", GT._("Delete atoms"));
-  private Action pickAction         = new EvalStringQuietAction("pick", "if ({*}=={selected});select none;endif;selectionHalos on;set pickingstyle drag;set picking select atom");
-  private Action rotateAction       = new EvalStringQuietAction("rotate", "selectionHalos off;set pickingstyle toggle;set picking identify");
-  private Action zoomAction         = new SetStatusAction("zoom",   null);
-  private Action xlateAction        = new SetStatusAction("xlate",  null);
   private Action frontAction        = new MoveToAction("front",  "moveto 2.0 front");
   private Action topAction          = new MoveToAction("top",    "moveto 1.0 front;moveto 2.0 top");
   private Action bottomAction       = new MoveToAction("bottom", "moveto 1.0 front;moveto 2.0 bottom");
   private Action rightAction        = new MoveToAction("right",  "moveto 1.0 front;moveto 2.0 right");
   private Action leftAction         = new MoveToAction("left",   "moveto 1.0 front;moveto 2.0 left");
-  private Action selectallAction    = new EvalStringQuietAction("selectall",   "select all");
-  private Action deselectallAction  = new EvalStringQuietAction("deselectall", "select none");
   private Action hydrogensAction    = new CheckBoxMenuItemAction("hydrogensCheck",    "set showHydrogens");
   private Action measurementsAction = new CheckBoxMenuItemAction("measurementsCheck", "set showMeasurements");
   private Action perspectiveAction  = new CheckBoxMenuItemAction("perspectiveCheck",  "set PerspectiveDepth");
   private Action axesAction         = new CheckBoxMenuItemAction("axesCheck",         "set showAxes");
   private Action boundboxAction     = new CheckBoxMenuItemAction("boundboxCheck",     "set showBoundBox");
+  // next three are not implemented
+  private Action deleteAction       = new SetStatusAction("delete", GT._("Delete atoms"));
+  private Action zoomAction         = new SetStatusAction("zoom",   null);
+  private Action xlateAction        = new SetStatusAction("xlate",  null);
+  //
 
-  /**
-   * Action calling evalStringQuiet() 
-   */
-  private class EvalStringQuietAction extends AbstractAction {
-    private final String action;
-
-    public EvalStringQuietAction(String name, String action) {
-      super(name);
-      this.action = action;
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      viewer.evalStringQuiet(action);
-    }
-  }
-
+  // script actions are defined in Properties/Jmol-resource.properties
+  // 
+  
   /**
    * Action calling setStatus() 
    */
@@ -302,16 +286,14 @@ public class DisplayPanel extends JPanel
 
   public Action[] getActions() {
 
-    Action[] defaultActions = {
-      deleteAction, pickAction, rotateAction, zoomAction, xlateAction,
+    return new Action[] {
+      deleteAction, zoomAction, xlateAction,
       frontAction, topAction, bottomAction, rightAction, leftAction,
       defineCenterAction,
       hydrogensAction, measurementsAction,
-      selectallAction, deselectallAction,
       homeAction, perspectiveAction,
       axesAction, boundboxAction,
     };
-    return defaultActions;
   }
 
   // code to record last and average times

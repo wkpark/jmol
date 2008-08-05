@@ -62,7 +62,7 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.ModelCollection;
 import org.jmol.modelset.ModelSet;
 
-class Eval { //implements Runnable {
+class Eval {
 
   private static class Context {
     String filename;
@@ -117,7 +117,6 @@ class Eval { //implements Runnable {
   private String errorMessage;
   private Token[] statement;
   private int statementLength;
-  private BitSet bsSubset;
   boolean isScriptCheck;
 
   private boolean historyDisabled;
@@ -551,10 +550,8 @@ class Eval { //implements Runnable {
 
   void clearDefinitionsAndLoadPredefined() {
     //executed each time a file is loaded; like clear() for the managers
-    variables.clear();
-    bsSubset = null;
     viewer.setSelectionSubset(null);
-    
+    variables.clear();
     if (viewer.getModelSet() == null || viewer.getAtomCount() == 0)
       return;
     clearPredefined(JmolConstants.predefinedStatic);
@@ -1503,6 +1500,7 @@ class Eval { //implements Runnable {
         rpn.addX(BitSetUtil.copy(viewer.getSelectionSet()));
         break;
       case Token.subset:
+        BitSet bsSubset = viewer.getSelectionSubset();
         rpn.addX(bsSubset == null ? viewer.getModelAtomBitSet(-1, true)
             : BitSetUtil.copy(bsSubset));
         break;
@@ -1719,6 +1717,7 @@ class Eval { //implements Runnable {
     BitSet bsDeleted = viewer.getDeletedAtoms();
     if (!isBondSet && bsDeleted != null)
       BitSetUtil.andNot(bs, bsDeleted);
+    BitSet bsSubset = viewer.getSelectionSubset();
     if (!ignoreSubset && bsSubset != null && !isBondSet)
       bs.and(bsSubset);
     if (tempStatement != null) {
@@ -3784,10 +3783,11 @@ class Eval { //implements Runnable {
       if (theTok == Token.translucent && isFloatParameter(index))
         translucentLevel = floatParameter(index++);
     }
+    int tok = 0;
     if (index < statementLength && tokAt(index) != Token.on
         && tokAt(index) != Token.off) {
       isColor = true;
-      int tok = getToken(index).tok;
+      tok = getToken(index).tok;
       if (isColorParam(index)) {
         int argb = getArgbParam(index, false);
         colorvalue = (argb == 0 ? null : new Integer(argb));
@@ -3895,9 +3895,27 @@ class Eval { //implements Runnable {
         colorvalue = new Byte((byte) pid);
         checkLength(index);
       }
-      if (isSyntaxCheck || shapeType < 0)
-        return;
-
+    }
+    if (isSyntaxCheck || shapeType < 0)
+      return;
+    typeMask = (shapeType == JmolConstants.SHAPE_HSTICKS ? JmolConstants.BOND_HYDROGEN_MASK
+        : shapeType == JmolConstants.SHAPE_SSSTICKS ? JmolConstants.BOND_SULFUR_MASK
+            : shapeType == JmolConstants.SHAPE_STICKS ? JmolConstants.BOND_COVALENT_MASK
+                : 0);
+    if (typeMask == 0) {
+      viewer.loadShape(shapeType);
+      if (shapeType == JmolConstants.SHAPE_LABELS)
+        setShapeProperty(JmolConstants.SHAPE_LABELS, "setDefaults", viewer
+            .getNoneSelected());
+    } else {
+      if (bs != null) {
+        viewer.selectBonds(bs);
+        bs = null;
+      }
+      shapeType = JmolConstants.SHAPE_STICKS;
+      setShapeProperty(shapeType, "type", new Integer(typeMask));
+    }
+    if (isColor) {
       //ok, the following five options require precalculation.
       //the state must not save them as paletteIDs, only as pure
       //color values. 
@@ -3919,28 +3937,10 @@ class Eval { //implements Runnable {
         viewer.calcSelectedMoleculesCount();
         break;
       }
-    }
-    typeMask = (shapeType == JmolConstants.SHAPE_HSTICKS ? JmolConstants.BOND_HYDROGEN_MASK
-        : shapeType == JmolConstants.SHAPE_SSSTICKS ? JmolConstants.BOND_SULFUR_MASK
-            : shapeType == JmolConstants.SHAPE_STICKS ? JmolConstants.BOND_COVALENT_MASK
-                : 0);
-    if (typeMask == 0) {
-      viewer.loadShape(shapeType);
-      if (shapeType == JmolConstants.SHAPE_LABELS)
-        setShapeProperty(JmolConstants.SHAPE_LABELS, "setDefaults", viewer.getNoneSelected());
-    } else {
-      if (bs != null) {
-        viewer.selectBonds(bs);
-        bs = null;
-      }
-      shapeType = JmolConstants.SHAPE_STICKS;
-      setShapeProperty(shapeType, "type", new Integer(typeMask));
-    }
-    if (isColor) {
-      if (bs != null)
-        viewer.setShapeProperty(shapeType, prefix + "color", colorvalue, bs);
-      else
+      if (bs == null)
         viewer.setShapeProperty(shapeType, prefix + "color", colorvalue);
+      else
+        viewer.setShapeProperty(shapeType, prefix + "color", colorvalue, bs);
     }
     if (translucency != null)
       setShapeTranslucency(shapeType, prefix, translucency, translucentLevel);
@@ -4745,9 +4745,15 @@ class Eval { //implements Runnable {
     select();
     if (isSyntaxCheck)
       return;
+    restrictSelected(true);
+  }
+
+  private void restrictSelected(boolean doInvert) {
     BitSet bsSelected = BitSetUtil.copy(viewer.getSelectionSet());
-    viewer.invertSelection();
-    if (bsSubset != null) {
+    if (doInvert)
+      viewer.invertSelection();
+    BitSet bsSubset = viewer.getSelectionSubset();
+    if (doInvert && bsSubset != null) {
       bsSelected = BitSetUtil.copy(viewer.getSelectionSet());
       bsSelected.and(bsSubset);
       viewer.setSelectionSet(bsSelected);
@@ -5177,7 +5183,7 @@ class Eval { //implements Runnable {
     if (isSyntaxCheck)
       return;
     if (isDisplay)
-      viewer.display(viewer.getModelAtomBitSet(-1, false), bs, tQuiet);
+      viewer.display(bs, tQuiet);
     else
       viewer.hide(bs, tQuiet);
   }
@@ -5305,6 +5311,8 @@ class Eval { //implements Runnable {
       viewer.select(null, tQuiet || scriptLevel > scriptReportingLevel);
       return;
     }
+    if (statementLength == 2 && tokAt(1) == Token.only)
+      return; // coming from "cartoon only"
     //select beginexpr none endexpr
     viewer.setNoneSelected(statementLength == 4 && tokAt(2) == Token.none);
     //select beginexpr bonds ( {...} ) endexpr
@@ -5352,7 +5360,7 @@ class Eval { //implements Runnable {
     // There might have been a reason to have bsSubset being set BEFORE
     // checking syntax checking, but I can't remember why. 
     // will leave it this way for now. Might cause some problems with script checking.
-    viewer.setSelectionSubset(bsSubset = bs);
+    viewer.setSelectionSubset(bs);
     //I guess we do not want to select, because that could 
     //throw off picking in a strange way
     // viewer.select(bsSubset, false);
@@ -5804,6 +5812,10 @@ class Eval { //implements Runnable {
     int mad = 0;
     int tok = tokAt(1);
     switch (tok) {
+    case Token.only:
+      restrictSelected(false);
+      mad = defOn;
+      break;
     case Token.on:
       mad = defOn;
       break;
@@ -6278,6 +6290,10 @@ class Eval { //implements Runnable {
     float radius;
     int ipt = 1;
     switch (getToken(1).tok) {
+    case Token.only:
+      restrictSelected(false);
+      mad = 1;
+      break;
     case Token.on:
     case Token.vanderwaals:
       mad = 1;
@@ -6331,6 +6347,12 @@ class Eval { //implements Runnable {
     int mad = 0;
     //token has ondefault1
     switch (getToken(1).tok) {
+    case Token.only:
+      if (isSyntaxCheck)
+        return;
+      restrictSelected(false);
+      mad = -1;
+      break;
     case Token.on:
       mad = -1; // means take default
       break;
@@ -11061,67 +11083,44 @@ class Eval { //implements Runnable {
     Object propertyValue = null;
     boolean checkOnly = (i == 0);
     //these properties are all processed in MeshCollection.java
-
     switch (tok) {
-    case Token.nada:
-    case Token.on:
-    case Token.off:
-    case Token.delete:
-      if (iToken == 1)
-        setShapeProperty(shape, "thisID", (String) null);
-      if (tok == Token.nada)
-        return (iToken == 1);
-      if (!checkOnly)
-        setShapeProperty(shape, parameterAsString(iToken), null);
-      return true;
-    case Token.dots:
-      propertyValue = Boolean.TRUE;
-    //fall through
-    case Token.nodots:
-      propertyName = "dots";
-      break;
-    case Token.mesh:
-      propertyValue = Boolean.TRUE;
-    //fall through
-    case Token.nomesh:
-      propertyName = "mesh";
-      break;
-    case Token.fill:
-      propertyValue = Boolean.TRUE;
-    //fall through
-    case Token.nofill:
-      propertyName = "fill";
-      break;
-    case Token.triangles:
-      propertyValue = Boolean.TRUE;
-    //fall through
-    case Token.notriangles:
-      propertyName = "triangles";
-      break;
-    case Token.frontonly:
-      propertyValue = Boolean.TRUE;
-    //fall through
-    case Token.notfrontonly:
-      propertyName = "frontOnly";
-      break;
-    case Token.frontlit:
-      propertyName = "lighting";
-      propertyValue = new Integer(JmolConstants.FRONTLIT);
-      break;
-    case Token.backlit:
-      propertyName = "lighting";
-      propertyValue = new Integer(JmolConstants.BACKLIT);
-      break;
-    case Token.fullylit:
-      propertyName = "lighting";
-      propertyValue = new Integer(JmolConstants.FULLYLIT);
-      break;
     case Token.opaque:
     case Token.translucent:
       if (checkOnly)
         return true;
       colorShape(shape, iToken, false);
       return true;
+    case Token.nada:
+    case Token.delete:
+    case Token.on:
+    case Token.off:
+      if (iToken == 1)
+        setShapeProperty(shape, "thisID", (String) null);
+      if (tok == Token.nada)
+        return (iToken == 1);
+      if (checkOnly)
+        return true;
+      if (tok == Token.delete) {
+        setShapeProperty(shape, "delete", null);
+        return true;
+      }
+      // fall through for on/off
+    case Token.frontlit:
+    case Token.backlit:
+    case Token.fullylit:
+    case Token.dots:
+    case Token.nodots:
+    case Token.mesh:
+    case Token.nomesh:
+    case Token.fill:
+    case Token.nofill:
+    case Token.triangles:
+    case Token.notriangles:
+    case Token.frontonly:
+    case Token.notfrontonly:
+      propertyName = "token";
+      propertyValue = new Integer(tok);
+      break;
     }
     if (propertyName == null)
       return false;

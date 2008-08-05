@@ -26,6 +26,7 @@ package org.jmol.shape;
 
 import org.jmol.g3d.*;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Token;
 
 import java.util.BitSet;
 
@@ -33,7 +34,6 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 
 public abstract class MeshCollection extends Shape {
@@ -96,30 +96,18 @@ public abstract class MeshCollection extends Shape {
       Logger.debug("MeshCollection.setProperty(" + propertyName + "," + value
           + ")");
     }
-    /*
-     Logger.debug("meshCount=" + meshCount +
-     " currentMesh=" + currentMesh);
-     for (int i = 0; i < meshCount; ++i) {
-     Mesh mesh = meshes[i];
-     Logger.debug("i=" + i +
-     " mesh.thisID=" + mesh.thisID +
-     " mesh.visible=" + mesh.visible +
-     " mesh.translucent=" + mesh.translucent +
-     " mesh.colix=" + mesh.meshColix);
-     }
-     */
 
     if ("init" == propertyName) {
       title = null;
       return;
     }
-    
+
     if ("link" == propertyName) {
       if (meshCount >= 2 && currentMesh != null)
         currentMesh.linkedMesh = meshes[meshCount - 2];
       return;
     }
-    
+
     if ("commandOption" == propertyName) {
       String s = "# " + (String) value;
       if (script.indexOf(s) < 0)
@@ -174,139 +162,152 @@ public abstract class MeshCollection extends Shape {
       return;
     }
 
-    boolean isOn; 
-    if ((isOn = ("on" == propertyName)) || "off" == propertyName) {
-      if (currentMesh != null) {
-        currentMesh.visible = isOn;
-      } else {
-        String key = (explicitID && previousMeshID != null
-            && TextFormat.isWild(previousMeshID) ?  
-                previousMeshID.toUpperCase() : null);
-        if (key == null || key.length() == 0) {
-          for (int i = meshCount; --i >= 0;)
-            meshes[i].visible = isOn;
-        } else {
-          for (int i = 0; i < meshCount; i++) {
-            if (TextFormat.isMatch(meshes[i].thisID.toUpperCase(), key, true, true))
-              meshes[i].visible = isOn;
-          }
-        }
-      }
-      return;
-    }
-    
     if ("color" == propertyName) {
       if (value == null)
         return;
       colix = Graphics3D.getColix(value);
-      if (currentMesh != null) {
-        currentMesh.colix = colix;
-        if (linkedMesh != null)
-          linkedMesh.colix = colix;         
-      } else {
-        for (int i = meshCount; --i >= 0;)
-          meshes[i].colix = colix;
-      }
+      setProperty(Token.color, false);
       return;
-    }   
+    }
 
     if ("translucency" == propertyName) {
-      boolean isTranslucent = (((String) value).equals("translucent"));
-      if (currentMesh != null) {
-        currentMesh.setTranslucent(isTranslucent, translucentLevel);
-        if (linkedMesh != null)
-          linkedMesh.setTranslucent(isTranslucent, translucentLevel);         
-      } else {
-        for (int i = meshCount; --i >= 0;)
-          meshes[i].setTranslucent(isTranslucent, translucentLevel);
-      }
-      return;
-    }
-    boolean test;
-    if ((test = ("nodots" == propertyName)) || "dots" == propertyName) {
-      boolean showDots = (!test && value == Boolean.TRUE);
-      if (currentMesh != null) {
-        currentMesh.showPoints = showDots;
-        if (linkedMesh != null)
-          linkedMesh.showPoints = showDots;
-      } else {
-        for (int i = meshCount; --i >= 0;)
-          meshes[i].showPoints = showDots;
-      }
+      setProperty(Token.translucent, (((String) value).equals("translucent")));
       return;
     }
 
-    if ((test = ("nomesh" == propertyName)) || "mesh" == propertyName) {
-      boolean showMesh = (!test && value == Boolean.TRUE);
-      if (currentMesh != null) {
-        currentMesh.drawTriangles = showMesh;
-        if (linkedMesh != null)
-          linkedMesh.drawTriangles = showMesh;
-      } else {
-        for (int i = meshCount; --i >= 0;)
-          meshes[i].drawTriangles = showMesh;
+    if ("token" == propertyName) {
+      int tok = ((Integer) value).intValue();
+      boolean test = true;
+      switch (tok) {
+      case Token.on:
+      case Token.frontlit:
+      case Token.backlit:
+      case Token.fullylit:
+      case Token.dots:
+      case Token.mesh:
+      case Token.fill:
+      case Token.triangles:
+      case Token.frontonly:
+        break;
+      case Token.off:
+        test = false;
+        tok = Token.on;
+        break;
+      case Token.nodots:
+        test = false;
+        tok = Token.dots;
+        break;
+      case Token.nomesh:
+        test = false;
+        tok = Token.mesh;
+        break;
+      case Token.nofill:
+        test = false;
+        tok = Token.fill;
+        break;
+      case Token.notriangles:
+        test = false;
+        tok = Token.triangles;
+        break;
+      case Token.notfrontonly:
+        test = false;
+        tok = Token.frontonly;
+        break;
+      default:
+        System.out.println("PROBLEM IN MESHCOLLECTION: token? " + Token.nameOf(tok));
       }
+      setProperty(tok, test);
       return;
     }
-
-    if ((test = ("nofill" == propertyName)) || "fill" == propertyName) {
-      boolean showFill = (!test && value == Boolean.TRUE);
-      if (currentMesh != null) {
-        currentMesh.fillTriangles = showFill;
-        if (linkedMesh != null)
-          linkedMesh.fillTriangles = showFill;
-      } else {
-        for (int i = meshCount; --i >= 0;)
-          meshes[i].fillTriangles = showFill;
-      }
-      return;
-    }
-
-    if ("triangles" == propertyName) {
-      boolean showTriangles = (value == Boolean.TRUE);
-      if (currentMesh != null) {
-        currentMesh.showTriangles = showTriangles;
-        if (linkedMesh != null)
-          linkedMesh.showTriangles = showTriangles;
-      } else {
-        for (int i = meshCount; --i >= 0;)
-          meshes[i].showTriangles = showTriangles;
-      }
-      return;
-    }
-
-    if ("frontOnly" == propertyName) {
-      boolean frontOnly = (value == Boolean.TRUE);
-      if (currentMesh != null) {
-        currentMesh.frontOnly = frontOnly;
-        if (linkedMesh != null)
-          linkedMesh.frontOnly = frontOnly;
-      } else {
-        for (int i = meshCount; --i >= 0;)
-          meshes[i].frontOnly = frontOnly;
-      }
-      return;
-    }
-
-    if ((test = ("lighting" == propertyName))
-        || Parser.isOneOf(propertyName, "backlit;frontlit;fulllit")) {
-      int lighting = (test ? ((Integer) value).intValue()
-          : "frontlit" == propertyName ? JmolConstants.FRONTLIT
-              : "backlit" == propertyName ? JmolConstants.BACKLIT : JmolConstants.FULLYLIT);
-      if (currentMesh != null) {
-        currentMesh.setLighting(lighting);
-        if (linkedMesh != null)
-          linkedMesh.setLighting(lighting);         
-      } else {
-        for (int i = meshCount; --i >= 0;)
-          meshes[i].setLighting(lighting);
-      }
-      return;
-    }
-    
     super.setProperty(propertyName, value, bs);
   }
 
+ private void setProperty(int tokProp, boolean bProp) {
+    if (currentMesh != null) {
+      switch (tokProp) {
+      case Token.on:
+        currentMesh.visible = bProp;
+        return;
+      case Token.color:
+        currentMesh.colix = colix;
+        if (linkedMesh != null)
+          linkedMesh.colix = colix;
+        return;
+      case Token.translucent:
+        currentMesh.setTranslucent(bProp, translucentLevel);
+        if (linkedMesh != null)
+          linkedMesh.setTranslucent(bProp, translucentLevel);
+        return;
+      case Token.frontlit:
+      case Token.backlit:
+      case Token.fullylit:
+        currentMesh.setLighting(tokProp);
+        if (linkedMesh != null)
+          linkedMesh.setLighting(tokProp);
+        return;
+      case Token.dots:
+        currentMesh.showPoints = bProp;
+        if (linkedMesh != null)
+          linkedMesh.showPoints = bProp;
+        return;
+      case Token.mesh:
+        currentMesh.drawTriangles = bProp;
+        if (linkedMesh != null)
+          linkedMesh.drawTriangles = bProp;
+        return;
+      case Token.fill:
+        currentMesh.fillTriangles = bProp;
+        if (linkedMesh != null)
+          linkedMesh.fillTriangles = bProp;
+        return;
+      case Token.triangles:
+        currentMesh.showTriangles = bProp;
+        if (linkedMesh != null)
+          linkedMesh.showTriangles = bProp;
+        return;
+      }
+      return;
+    }
+    String key = (explicitID && previousMeshID != null
+        && TextFormat.isWild(previousMeshID) ? previousMeshID.toUpperCase()
+        : null);
+    if (key != null && key.length() == 0)
+      key = null;
+    for (int i = 0; i < meshCount; i++) {
+      Mesh m = meshes[i];
+      if (key == null
+          || TextFormat.isMatch(m.thisID.toUpperCase(), key, true, true))
+        switch (tokProp) {
+        case Token.on:
+          m.visible = bProp;
+          break;
+        case Token.color:
+          m.colix = colix;
+          break;
+        case Token.translucent:
+          m.setTranslucent(bProp, translucentLevel);
+          break;
+        case Token.frontlit:
+        case Token.backlit:
+        case Token.fullylit:
+          m.setLighting(tokProp);
+          break;
+        case Token.dots:
+          m.showPoints = bProp;
+          break;
+        case Token.mesh:
+          m.drawTriangles = bProp;
+          break;
+        case Token.fill:
+          m.fillTriangles = bProp;
+          break;
+        case Token.triangles:
+          m.showTriangles = bProp;
+          break;
+        }
+    }
+  }
+ 
  public Object getProperty(String property, int index) {
     if (property == "count") {
       int n = 0;
@@ -376,13 +377,20 @@ public abstract class MeshCollection extends Shape {
   
   public int getIndexFromName(String thisID) {
     if (JmolConstants.PREVIOUS_MESH_ID.equals(thisID))
-      return (previousMeshID == null 
-          ? meshCount - 1 : getIndexFromName(previousMeshID));
-    for (int i = meshCount; --i >= 0; ) {
-      if (meshes[i] != null && thisID.equals(meshes[i].thisID))
-        return i;
-    }
-    return -1; 
+      return (previousMeshID == null ? meshCount - 1
+          : getIndexFromName(previousMeshID));
+    if (TextFormat.isWild(thisID))
+      for (int i = meshCount; --i >= 0;) {
+        if (meshes[i] != null
+            && TextFormat.isMatch(meshes[i].thisID, thisID, true, true))
+          return i;
+      }
+    else
+      for (int i = meshCount; --i >= 0;) {
+        if (meshes[i] != null && thisID.equals(meshes[i].thisID))
+          return i;
+      }
+    return -1;
   }
   
   public void setModelIndex(int atomIndex, int modelIndex) {

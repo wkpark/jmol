@@ -243,6 +243,8 @@ public class Measures extends Shape {
   }
 
   private void clear() {
+    if (measurementCount == 0)
+      return;
     int countT = measurementCount;
     measurementCount = 0;
     for (int i = countT; --i >= 0; )

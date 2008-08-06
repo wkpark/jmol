@@ -13,6 +13,5 @@
 	<classpathentry path="jars/itext-1.4.5.jar" kind="lib"/>
 	<classpathentry path="screensaver/jars/saverbeans-api.jar" kind="lib"/>
 	<classpathentry path="jars/junit.jar" kind="lib"/>
-	<classpathentry path="data" kind="src"/>
 	<classpathentry path="bin" kind="output"/>
 </classpath>

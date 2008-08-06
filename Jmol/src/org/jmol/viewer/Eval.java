@@ -2494,6 +2494,9 @@ class Eval {
     // wireframe, ssbond, hbond
     int mad = 1;
     switch (getToken(1).tok) {
+    case Token.only:
+      restrictSelected(false);
+      break;
     case Token.on:
       break;
     case Token.off:

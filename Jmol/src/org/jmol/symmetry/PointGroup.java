@@ -641,9 +641,6 @@ public class PointGroup {
   }
 
   private int findPlanes(Point3f[] atoms, int[] elements) {
-    Operation[] axesC2 = axes[c2];
-    int nC2 = nAxes[c2];
-
     Point3f pt = new Point3f();
     Vector3f v1 = new Vector3f();
     Vector3f v2 = new Vector3f();
@@ -685,10 +682,11 @@ public class PointGroup {
       }
     }
 
-    // also look for planes normal to any C2 axis
+    // also look for planes normal to any C axis
 
-    for (int i = 0; i < nC2; i++)
-      nPlanes = getPlane(nPlanes, axesC2[i].normalOrAxis, atoms, elements,
+    for (int i = c2; i < maxAxis; i++)
+      for (int j = 0; j < nAxes[i]; i++)
+        nPlanes = getPlane(nPlanes, axes[i][j].normalOrAxis, atoms, elements,
           center);
     return nPlanes;
   }

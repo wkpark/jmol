@@ -25,6 +25,7 @@
 
 package org.jmol.export;
 
+import java.awt.Image;
 import java.util.BitSet;
 
 import javax.vecmath.Point3f;
@@ -236,6 +237,11 @@ public class _VrmlExporter extends _Exporter {
   }
 
   public void renderEllipsoid(short colix, int x, int y, int z, int diameter, double[] coef, Point3i[] selectedPoints) {
+    
+  }
+
+  public void plotImage(int x, int y, int z, Image image, int width, int height, short bgcolix) {
+    // TODO
     
   }
            

@@ -243,7 +243,7 @@ Type 3: Base = 2, c = 1, D = l
 Anisotropic temperature factor Types 4, 5, 8, and 9 use the following formula for the
 complete temperature factor, in which a1* , a2*, a3* are reciprocal cell dimensions.
 
-exp[ -D(a1*2U11h2 + a2*2U22k2 + a3*2U33l2 + C a1*a2*U12hk + C a1*a3 * U13hl + C a2*a3 * U23kl)]
+exp[ -D(a1*a1*U11hh + a2*a2*U22kk + a3*a3*U33ll + C a1*a2*U12hk + C a1*a3 * U13hl + C a2*a3 * U23kl)]
 
 The coefficients Uij (i,j = 1,2,3) of the various types are defined with the following constant settings.
 
@@ -251,6 +251,21 @@ Type 4: C = 2, D = 1/4
 Type 5: C = 1, D = 1/4
 Type 8: C = 2, D = 2pi2
 Type 9: C = 1, D = 2pi2
+
+
+For beta, we use definitions at http://www.iucr.org/iucr-top/comm/cnom/adp/finrepone/finrepone.html
+
+that betaij = 2pi^2ai*aj* Uij
+
+So if Type 8 is 
+
+exp[ -2pi^2(a1*a1*U11hh + a2*a2*U22kk + a3*a3*U33ll + 2a1*a2*U12hk + 2a1*a3 * U13hl + 2a2*a3 * U23kl)]
+
+then we have
+
+exp[ -pi^2(beta11hh + beta22kk + beta33ll + 2beta12hk + 2beta13hl + 2beta23kl)]
+
+and the betaij should be entered as Type 0. 
 
        */
       

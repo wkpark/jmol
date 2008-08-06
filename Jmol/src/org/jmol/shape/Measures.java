@@ -173,14 +173,14 @@ public class Measures extends Shape {
     } else if ("deleteVector".equals(propertyName)) {
       define(setSingleItem((Vector) value), true, false, false);
       setIndices();
-    } else if ("defineVector_ALL".equals(propertyName)) {
+    } else if ("defineVector_All".equals(propertyName)) {
       define((Vector) value, false, false, false);
-    } else if ("deleteVector_ALL".equals(propertyName)) {
+    } else if ("deleteVector_All".equals(propertyName)) {
       define((Vector) value, true, false, false);
       setIndices();
-    } else if ("hideVector_ALL".equals(propertyName)) {
+    } else if ("hideVector_All".equals(propertyName)) {
       define((Vector) value, false, false, true);
-    } else if ("showVector_ALL".equals(propertyName)) {
+    } else if ("showVector_All".equals(propertyName)) {
       define((Vector) value, false, true, false);
     } else if ("deleteModelAtoms".equals(propertyName)) {
       atoms = (Atom[])((Object[])value)[1];
@@ -415,7 +415,7 @@ public class Measures extends Shape {
                            boolean isHide) {
     if (thispt > ptLastAtom) {
       // all atom bitsets have been iterated
-      if (isAllConnected && !isConnected(m, ptLastAtom))
+      if (isAllConnected && !isConnected(m, thispt))
         return;
       int iThis = findMeasurement(m);
       if (iThis >= 0) {

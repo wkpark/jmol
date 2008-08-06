@@ -6233,7 +6233,7 @@ class Eval {
         if (isSyntaxCheck)
           return;
         if (tokAt(0) == Token.draw)
-          runScript(viewer.getPointGroupDraw());
+          runScript(viewer.getPointGroupAsString(true));
         else
           showString(viewer.calculatePointGroup());        
         return;
@@ -8744,6 +8744,9 @@ class Eval {
     case Token.pointgroup:
       type = "PGRP";
       pt++;
+      type2 = Token.sValue(tokenAt(pt, args)).toLowerCase();
+      if (type2.equals("draw"))
+        pt++;
       break;
     case Token.quaternion:
       pt++;
@@ -8946,7 +8949,7 @@ class Eval {
         return "";
       }
     } else if (data == "PGRP") {
-      data = viewer.getPointGroupDraw();
+      data = viewer.getPointGroupAsString((type2.equals("draw")));
     } else if (data == "PDB") {
       data = viewer.getPdbData(null);
     } else if (data == "XYZ" || data == "MOL") {
@@ -9340,6 +9343,10 @@ class Eval {
     case Token.pdbheader:
       if (!isSyntaxCheck)
         msg = viewer.getPDBHeader();
+      break;
+    case Token.pointgroup:
+      if (!isSyntaxCheck)
+        msg = viewer.getPointGroupAsString(false);
       break;
     case Token.symmetry:
       if (!isSyntaxCheck)

@@ -6825,8 +6825,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.calculatePointGroup(selectionManager.bsSelection);
   }
 
-  public String getPointGroupDraw() {
-    return modelSet.getPointGroupDraw(selectionManager.bsSelection);
+  public String getPointGroupAsString(boolean asDraw) {
+    return modelSet.getPointGroupAsString(selectionManager.bsSelection, asDraw);
   }
 
   Object getFileAsImage(String pathName, Hashtable htParams) {

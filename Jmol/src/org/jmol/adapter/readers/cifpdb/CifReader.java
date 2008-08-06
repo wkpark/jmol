@@ -725,8 +725,7 @@ public class CifReader extends AtomSetCollectionReader {
              atom.anisoBorU = new float[8];
            int iTypeBeta = (propertyOf[i] - ANISO_Beta_11) % 6;
            atom.anisoBorU[iTypeBeta] = parseFloat(field);
-           atom.anisoBorU[6] = 0; // NOT VERIFIED! Ortep Type 0: D = 1, c = 2
-           System.out.println("ANISO_Beta NOT VERIFIED -- TESTING ONLY");
+           atom.anisoBorU[6] = 0; // Ortep Type 0: D = 1, c = 2 -- see org.jmol.symmetry/UnitCell.java
           break;
         }
       }

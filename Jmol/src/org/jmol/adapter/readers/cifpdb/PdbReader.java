@@ -120,7 +120,9 @@ public class PdbReader extends AtomSetCollectionReader {
         if (isModel) {
           getHeader = false;
           iHaveModelStatement = true;
-          if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
+          // PDB is different -- targets actual model number
+          int modelNumber = getModelNumber();
+          if (desiredModelNumber != Integer.MIN_VALUE && modelNumber != desiredModelNumber) {
             if (iHaveModel)
               break;
             continue;
@@ -129,7 +131,7 @@ public class PdbReader extends AtomSetCollectionReader {
           atomSetCollection.connectAll(maxSerial);
           applySymmetry();
           //supposedly MODEL is only for NMR
-          model();
+          model(modelNumber);
           continue;
         }
         /*
@@ -631,8 +633,19 @@ TURN     1  T1 GLY    42  TYR    44
                                         endSequenceNumber, endInsertionCode);
     atomSetCollection.addStructure(structure);
   }
-  
-  void model() {
+
+  private int getModelNumber() {
+    try {
+      int startModelColumn = 6; // should be 10 0-based
+      int endModelColumn = 14;
+      if (endModelColumn > lineLength)
+        endModelColumn = lineLength;
+      return modelNumber = parseInt(line, startModelColumn, endModelColumn);
+    } catch (NumberFormatException e) {
+      return 0;
+    }
+  }
+  void model(int modelNumber) {
     /****************************************************************
      * mth 2004 02 28
      * note that the pdb spec says:
@@ -644,19 +657,10 @@ TURN     1  T1 GLY    42  TYR    44
      * but I received a file with the serial
      * number right after the word MODEL :-(
      ****************************************************************/
-    try {
-      int startModelColumn = 6; // should be 10 0-based
-      int endModelColumn = 14;
-      if (endModelColumn > lineLength)
-        endModelColumn = lineLength;
-      int modelNumber = parseInt(line, startModelColumn, endModelColumn);
       haveMappedSerials = false;
       atomSetCollection.newAtomSet();
       atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
       atomSetCollection.setAtomSetNumber(modelNumber);
-    } catch (NumberFormatException e) {
-      //ingore model number errors
-    }
   }
 
   void cryst1() throws Exception {

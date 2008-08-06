@@ -4213,6 +4213,7 @@ class Eval {
     boolean appendNew = viewer.getAppendNew();
     StringBuffer loadScript = new StringBuffer("load");
     int[] params = new int[4];
+    params[0] = Integer.MIN_VALUE;
     int nFiles = 1;
     Point3f unitCells = viewer.getDefaultLattice();
     Hashtable htParams = new Hashtable();
@@ -4246,7 +4247,7 @@ class Eval {
         loadScript.append(" " + modelName);
         isAppend = (modelName.equalsIgnoreCase("append"));
         if (modelName.equalsIgnoreCase("trajectory"))
-          params[0] = -1;
+          params[0] = Integer.MIN_VALUE;
       }
       if (getToken(i).tok != Token.string)
         error(ERROR_filenameExpected);

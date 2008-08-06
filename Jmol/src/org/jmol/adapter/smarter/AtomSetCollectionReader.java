@@ -224,7 +224,7 @@ public abstract class AtomSetCollectionReader {
   public void initialize() {
     // called by the resolver
     modelNumber = 0;
-    desiredModelNumber = -1;
+    desiredModelNumber = Integer.MIN_VALUE;
     iHaveDesiredModel = false;
     getHeader = false;
     latticeCells[0] = latticeCells[1] = latticeCells[2] = 0;

@@ -48,11 +48,12 @@ public class Hover extends TextShape {
 
   public void initShape() {
     super.initShape();
+    isHover = true;
     Font3D font3d = g3d.getFont3D(FONTFACE, FONTSTYLE, FONTSIZE);
     short bgcolix = Graphics3D.getColix("#FFFFC3"); // 255, 255, 195
     short colix = Graphics3D.BLACK;
-    currentText = hoverText = new Text(g3d, font3d, null, colix, bgcolix, 0, 0,
-        1, Integer.MIN_VALUE, Text.ALIGN_LEFT, 0);
+    currentObject = hoverText = new Text(g3d, font3d, null, colix, bgcolix, 0, 0,
+        1, Integer.MIN_VALUE, Object2d.ALIGN_LEFT, 0);
     hoverText.setAdjustForWindow(true);
   }
 

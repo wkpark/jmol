@@ -275,8 +275,8 @@ class TransformManager11 extends TransformManager {
     if (!slabEnabled)
       return;
     slabValue = (int) (referencePlaneOffset - navigationSlabOffset);
-    depthValue = (int) ((1 - depthPercentSetting / 50f) * modelRadiusPixels + modelCenterOffset);
-    
+    depthValue = zValueFromPercent(depthPercentSetting);
+
     viewer.getGlobalSettings().setParameterValue("navigationDepth",getNavigationDepthPercent());
     viewer.getGlobalSettings().setParameterValue("navigationSlab",getNavigationSlabOffsetPercent());
 

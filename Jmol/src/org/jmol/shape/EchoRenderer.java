@@ -33,16 +33,19 @@ public class EchoRenderer extends ShapeRenderer {
   protected void render() {
     Echo echo = (Echo)shape;
     Point3i pt = new Point3i();
-    Enumeration e = echo.texts.elements();
+    Enumeration e = echo.objects.elements();
     float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer.getScalePixelsPerAngstrom() * 10000 : 0);
     imageFontScaling = viewer.getImageFontScaling();
     while (e.hasMoreElements()) {
       Text t = (Text)e.nextElement();
       if (!t.visible)
         continue;
-      if (t.valign == Text.VALIGN_XYZ) {
+      if (t.valign == Object2d.VALIGN_XYZ) {
         viewer.transformPoint(t.xyz, pt);
         t.setXYZs(pt.x, pt.y, pt.z, pt.z);
+      } else if (t.movableZPercent != Integer.MAX_VALUE) {
+        int z = viewer.zValueFromPercent(t.movableZPercent);
+        t.setZs(z, z);
       }
       t.render(g3d, scalePixelsPerMicron, imageFontScaling);
     }

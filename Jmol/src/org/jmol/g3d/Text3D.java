@@ -27,6 +27,7 @@ package org.jmol.g3d;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.FontMetrics;
+import java.awt.Image;
 import java.awt.image.PixelGrabber;
 import java.util.Hashtable;
 
@@ -105,6 +106,83 @@ public class Text3D {
     else
       plotUnclipped(x, y, z, argb, g3d, mapWidth, textHeight, bitmap);
     return textWidth;
+  }
+
+  public static void plotImage(int x, int y, int z, Image image, int width,
+                               int height, Graphics3D g3d,
+                               JmolRendererInterface jmolRenderer,
+                               boolean antialias, int argbBackground) {
+    //System.out.println(x + " " + width + ", " + y + " " + height + " w/h " + g3d.width + " " + g3d.height + " " + g3d.isAntialiased());
+    if (g3d.isAntialiased()) {
+      width += width;
+      height += height;
+    }
+    if (x + width < 0 || x > g3d.width || y + height < 0 || y > g3d.height)
+      return;
+    g3d.platform.checkOffscreenSize(width, height);
+    Graphics g = g3d.platform.gOffscreen;
+    if (g3d.isAntialiased()) {
+      g.drawImage(image, 0, 0, width, height, 0, 0, width >> 1, height >> 1, null);
+    } else {
+      g.drawImage(image, 0, 0, null);
+    }
+    PixelGrabber pixelGrabber = new PixelGrabber(g3d.platform.imageOffscreen, 0, 0,
+        width, height, true);
+    try {
+      pixelGrabber.grabPixels();
+    } catch (InterruptedException e) {
+      // impossible?
+      return;
+    }
+    int[] buffer = (int[]) pixelGrabber.getPixels();
+    if (jmolRenderer != null
+        || (x < 0 || x + width > g3d.width || y < 0 || y + height > g3d.height))
+      plotImageClipped(x, y, z, g3d, jmolRenderer, width, height, buffer, argbBackground);
+    else
+      plotImageUnClipped(x, y, z, g3d, width, height, buffer, argbBackground);
+    return;
+  }
+
+  private static void plotImageClipped(int x, int y, int z, Graphics3D g3d,
+                                       JmolRendererInterface jmolRenderer,
+                                       int width, int height,
+                                       int[] buffer, int argbBackground) {
+    if (jmolRenderer == null)
+      jmolRenderer = g3d;
+    int bgcolor = (argbBackground == 0 ? buffer[0] : argbBackground);
+    for (int i = 0, offset = 0; i < height; i++)
+      for (int j = 0; j < width; j++) {
+        int argb = buffer[offset++];
+        if (argb != bgcolor)
+          jmolRenderer.plotPixelClippedNoSlab(argb, x + j, y + i, z);
+      }
+  }
+
+       private static void plotImageUnClipped(int x, int y, int z, Graphics3D g3d,
+                                         int textWidth, int textHeight,
+                                         int[] buffer, int argbBackground) {
+    int[] zbuf = g3d.zbuf;
+    int renderWidth = g3d.width;
+    int pbufOffset = y * renderWidth + x;
+    int i = 0;
+    int j = 0;
+    int offset = 0;
+    int bgcolor = (argbBackground == 0 ? buffer[0] : argbBackground);
+    while (i < textHeight) {
+      while (j < textWidth) {
+        if (z < zbuf[pbufOffset]) {
+          int argb = buffer[offset];
+          if (argb != bgcolor)
+            g3d.addPixel(pbufOffset, z, argb);
+        }
+        ++offset;
+        ++j;
+        ++pbufOffset;
+      }
+      ++i;
+      j -= textWidth;
+      pbufOffset += (renderWidth - textWidth);
+    }
   }
 
   private static int plotByCharacter(int x, int y, int z, int argb, 
@@ -329,4 +407,5 @@ public class Text3D {
       htForThisFont.put(text, text3d);
     return text3d;
   }
+
 }

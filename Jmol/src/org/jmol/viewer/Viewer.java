@@ -52,6 +52,7 @@ import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Dimension;
+import java.awt.MediaTracker;
 import java.awt.Rectangle;
 import java.awt.Component;
 import java.awt.Event;
@@ -933,6 +934,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.setSlabDepthInternal(isDepth);
   }
 
+  public int zValueFromPercent(int zPercent) {
+    return transformManager.zValueFromPercent(zPercent);
+  }
+  
   public Matrix4f getUnscaledTransformMatrix() {
     return transformManager.getUnscaledTransformMatrix();
   }
@@ -6822,5 +6827,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String getPointGroupDraw() {
     return modelSet.getPointGroupDraw(selectionManager.bsSelection);
+  }
+
+  Object getFileAsImage(String pathName, Hashtable htParams) {
+    if (!haveDisplay)
+      return "no display";
+    Object obj = fileManager.getFileAsImage(pathName, htParams);
+    if (obj instanceof String)
+      return obj;
+    Image image = (Image) obj;
+    MediaTracker tracker = new MediaTracker(display);
+    tracker.addImage(image, 0);
+    try {
+      tracker.waitForID(0);
+    }
+    catch (InterruptedException e) {
+      // Got to do something?
+    }
+    return image;
+
   }
 }

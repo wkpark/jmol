@@ -490,6 +490,7 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   private int backgroundArgb;
+  public int bgcolor;
   
   /**
    * sets background color to the specified argb value
@@ -498,6 +499,7 @@ final public class Graphics3D implements JmolRendererInterface {
    */
   public void setBackgroundArgb(int argb) {
     // clear alpha channel and make distinct
+    bgcolor = argb;
     backgroundArgb = argb + ((argb & 0xFF) == 0xFF ? -1 : 1); 
     platform.setBackground(backgroundArgb);
   }
@@ -1031,6 +1033,24 @@ final public class Graphics3D implements JmolRendererInterface {
         antialiasThisFrame);    
   }
   
+  public void drawImage(Image image, int x, int y, int z, int zSlab, int width, int height, short bgcolix) {
+    if (image == null || width == 0 || height == 0)
+      return;
+    if (isClippedZ(zSlab))
+      return;
+    plotImage(x, y, z, image, width, height, null, bgcolix);
+  }
+
+  public void plotImage(int x, int y, int z, Image image, int width,
+                        int height, JmolRendererInterface jmolRenderer,
+                        short bgcolix) {
+    setColix(bgcolix);
+    if (bgcolix == 0)
+      argbCurrent = 0;
+    Text3D.plotImage(x, y, z, image, width, height, this, jmolRenderer,
+        antialiasThisFrame, argbCurrent);
+  }
+
   public void setFont(byte fid) {
     font3dCurrent = Font3D.getFont3D(fid);
   }

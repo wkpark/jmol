@@ -27,7 +27,7 @@ import org.jmol.api.MinimizerInterface;
 import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Font3D;
-import org.jmol.shape.Text;
+import org.jmol.shape.Object2d;
 import org.jmol.symmetry.SpaceGroup;
 import org.jmol.symmetry.UnitCell;
 import org.jmol.util.ArrayUtil;
@@ -925,7 +925,7 @@ class Eval {
         define();
         break;
       case Token.echo:
-        echo(1);
+        echo(1, false);
         break;
       case Token.message:
         message();
@@ -4121,13 +4121,28 @@ class Eval {
     }
   }
 
-  private void echo(int index) throws ScriptException {
+  private void echo(int index, boolean isImage) throws ScriptException {
     if (isSyntaxCheck)
       return;
     String text = optParameterAsString(index);
-    if (viewer.getEchoStateActive())
-      setShapeProperty(JmolConstants.SHAPE_ECHO, "text", text);
-    if (viewer.getRefreshing())
+    if (viewer.getEchoStateActive()) {
+      if (isImage) {
+        Hashtable htParams = new Hashtable();
+        Object image = viewer.getFileAsImage(text, htParams);
+        if (image instanceof String) {
+          text = (String) image;
+          isImage = false;
+        } else {
+          setShapeProperty(JmolConstants.SHAPE_ECHO, "text", htParams
+              .get("fullPathName"));
+          setShapeProperty(JmolConstants.SHAPE_ECHO, "image", image);
+          text = null; 
+        }
+      }
+      if (text != null)
+        setShapeProperty(JmolConstants.SHAPE_ECHO, "text", text);
+    }
+    if (!isImage && viewer.getRefreshing())
       showString(viewer.formatText(text));
   }
 
@@ -8161,6 +8176,7 @@ class Eval {
     Object propertyValue = null;
     boolean echoShapeActive = true;
     //set echo xxx
+    int len = 3;
     switch (getToken(2).tok) {
     case Token.off:
       checkLength(3);
@@ -8189,9 +8205,20 @@ class Eval {
         error(ERROR_invalidArgument);
       propertyName = "model";
       propertyValue = new Integer(modelIndex);
+      len = 4;
+      break;
+    case Token.image:
+      //set echo image "..."
+      echo(3, true);
+      return;
+    case Token.depth:
+      //set echo depth zzz
+      propertyName = "%zpos";
+      propertyValue = new Integer((int) floatParameter(3));
+      len = 4;
       break;
     case Token.string:
-      echo(2);
+      echo(2, false);
       return;
     default:
       error(ERROR_invalidArgument);
@@ -8201,7 +8228,7 @@ class Eval {
       viewer.loadShape(JmolConstants.SHAPE_ECHO);
       setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
     }
-    if (statementLength == 3)
+    if (statementLength == len)
       return;
     propertyName = "align";
     // set echo name xxx
@@ -8239,6 +8266,8 @@ class Eval {
     }
     //set echo name script "some script"
     //set echo name model x.y
+    //set echo name depth nnnn
+    //set echo name image "myimage.jpg"
     if (statementLength == 5) {
       switch (tokAt(3)) {
       case Token.script:
@@ -8253,6 +8282,14 @@ class Eval {
         propertyName = "model";
         propertyValue = new Integer(modelIndex);
         setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
+        return;
+      case Token.image:
+        //set echo name image "xxx"
+        echo(4, true);
+        return;
+      case Token.depth:
+        propertyName = "%zpos";
+        propertyValue = new Integer((int) floatParameter(4));
         return;
       }
     }
@@ -8324,15 +8361,15 @@ class Eval {
         break;
       }
       if (str.equals("pointer")) {
-        int flags = Text.POINTER_NONE;
+        int flags = Object2d.POINTER_NONE;
         switch (getToken(2).tok) {
         case Token.off:
         case Token.none:
           break;
         case Token.background:
-          flags |= Text.POINTER_BACKGROUND;
+          flags |= Object2d.POINTER_BACKGROUND;
         case Token.on:
-          flags |= Text.POINTER_ON;
+          flags |= Object2d.POINTER_ON;
           break;
         default:
           error(ERROR_invalidArgument);

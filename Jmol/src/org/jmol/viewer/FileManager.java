@@ -36,6 +36,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.MalformedURLException;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.io.InputStream;
 import java.io.BufferedInputStream;
 import java.io.FilterInputStream;
@@ -329,6 +331,27 @@ public class FileManager {
     }
   }
 
+  Object getFileAsImage(String name, Hashtable htParams) {
+    if (name == null)
+      return "";
+    String[] names = classifyName(name);
+    if (names == null)
+      return "cannot read file name: " + name;
+    Image image = null;
+    //try {
+    fullPathName = names[0].replace('\\', '/');
+    try {
+      if (urlTypeIndex(fullPathName) >= 0)
+        image = Toolkit.getDefaultToolkit().getImage(new URL(fullPathName));
+      else
+        image = Toolkit.getDefaultToolkit().getImage(fullPathName);
+    } catch (MalformedURLException e) {
+      return "cannot create image from " + fullPathName;
+    }
+    htParams.put("fullPathName", fullPathName);
+    return image;
+  }
+  
   
   /**
    * 
@@ -482,18 +505,17 @@ public class FileManager {
       return names;
     }
     // This code is for the app
-    for (int i = 0; i < urlPrefixes.length; ++i) {
-      if (name.startsWith(urlPrefixes[i])) {
-        try {
-          URL url = new URL(name);
-          names[0] = url.toString();
-          names[1] = names[0].substring(names[0].lastIndexOf('/') + 1,
-              names[0].length());
-        } catch (MalformedURLException e) {
-          openErrorMessage = e.getMessage();
-        }
-        return names;
+    int i = urlTypeIndex(name);
+    if (i >= 0) {
+      try {
+        URL url = new URL(name);
+        names[0] = url.toString();
+        names[1] = names[0].substring(names[0].lastIndexOf('/') + 1,
+            names[0].length());
+      } catch (MalformedURLException e) {
+        openErrorMessage = e.getMessage();
       }
+      return names;
     }
     File file = new File(name);
     names[0] = file.getAbsolutePath();
@@ -501,6 +523,15 @@ public class FileManager {
     return names;
   }
 
+  private static int urlTypeIndex(String name) {
+    for (int i = 0; i < urlPrefixes.length; ++i) {
+      if (name.startsWith(urlPrefixes[i])) {
+        return i;
+      }
+    }
+    return -1;
+  }
+  
   private String addDirectory(String defaultDirectory, String name) {
     if (defaultDirectory.length() == 0)
       return name;

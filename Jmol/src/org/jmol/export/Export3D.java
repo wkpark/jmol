@@ -23,6 +23,7 @@
  */
 package org.jmol.export;
 
+import java.awt.Image;
 import java.util.BitSet;
 
 import javax.vecmath.Matrix3f;
@@ -293,6 +294,16 @@ final public class Export3D implements JmolRendererInterface {
                 z, getColixArgb(colix), str, font3d);
   }
   
+  public void drawImage(Image image, int x, int y, int z, int zSlab, int width,
+                        int height, short bgcolix) {
+    if (image == null || width == 0 || height == 0)
+      return;
+    if (isClippedZ(zSlab))
+      return;
+    z = Math.max(slab, z);
+    exporter.plotImage(x, y, z, image, width, height, bgcolix);
+  }
+
   //mostly public drawing methods -- add "public" if you need to
 
   /* ***************************************************************
@@ -782,5 +793,4 @@ final public class Export3D implements JmolRendererInterface {
   public byte getFontFid(float fontSize) {
     return g3d.getFontFid(fontSize);
   }
-
 }

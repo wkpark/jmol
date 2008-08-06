@@ -973,7 +973,8 @@ public class Token {
   final public static int frontlit     = misc | 19;
   final public static int frontonly    = misc | 20;
   final public static int fullylit     = misc | 21;
-  final public static int info  = misc | 121;
+  final static int image               = misc | 121;  //11.5.53
+  final public static int info  = misc | 122;
   final static int ionic        = misc | 22;
   final static int jmol         = misc | 23;
   final static int last         = misc | 24;
@@ -1114,6 +1115,7 @@ public class Token {
     "history",           new Token(history),
     "hover",             new Token(hover),
     "if",                new Token(ifcmd),
+    "image",             new Token(image),
     "initialize",        new Token(initialize),
     "invertSelected",    new Token(invertSelected),
     "isosurface",        new Token(isosurface),
@@ -1400,8 +1402,8 @@ public class Token {
     "off",              tokenOff, 
     "false",            null, 
     "on",               tokenOn,
-    "only",             new Token(only),
     "true",             null,                           
+    "only",             new Token(only),
     "opaque",           new Token(opaque),
     "partialCharge",    new Token(partialCharge),
     "phi",              new Token(phi),

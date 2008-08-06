@@ -9,6 +9,8 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Text;
 import org.jmol.viewer.Viewer;
+
+import java.awt.Image;
 import java.util.BitSet;
 
 public interface JmolExportInterface {
@@ -74,6 +76,8 @@ public interface JmolExportInterface {
   abstract void fillSphereCentered(short colix, int diameter, Point3f pt);
   
   abstract void plotText(int x, int y, int z, int argb, String text, Font3D font3d);
+
+  abstract void plotImage(int x, int y, int z, Image image, int width, int height, short bgcolix);
 
   // NOT IMPLEMENTED, but could be if needed:
   

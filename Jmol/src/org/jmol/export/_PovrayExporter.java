@@ -25,6 +25,7 @@
 
 package org.jmol.export;
 
+import java.awt.Image;
 import java.io.IOException;
 import java.util.BitSet;
 import java.util.Enumeration;
@@ -617,6 +618,7 @@ public class _PovrayExporter extends _Exporter {
   }
 
   int nText;
+  int nImage;
   public void plotText(int x, int y, int z, int argb,
                        String text, Font3D font3d) {
     // trick here is that we use Jmol's standard g3d package to construct
@@ -627,6 +629,11 @@ public class _PovrayExporter extends _Exporter {
     output("// end text " + nText + ": " + text + "\n");
   }
 
+  public void plotImage(int x, int y, int z, Image image, int width, int height, short bgcolix) {
+    output("// start image " + (++nImage) + "\n");
+    g3d.plotImage(x, y, z, image, width, height, jmolRenderer, bgcolix);
+    output("// end image " + nImage + "\n");
+  }
   // not needed:
   
   public void fillHermite(short colix, int tension, int diameterBeg,

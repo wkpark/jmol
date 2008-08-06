@@ -150,13 +150,13 @@ public class Labels extends AtomShape {
           }
           if (defaultOffset != zeroOffset)
             setOffsets(i, defaultOffset);
-          if (defaultAlignment != Text.ALIGN_LEFT)
+          if (defaultAlignment != Object2d.ALIGN_LEFT)
             setAlignment(i, defaultAlignment);
           if ((defaultZPos & FRONT_FLAG) != 0)
             setFront(i, true);
           else if ((defaultZPos & GROUP_FLAG) != 0)
             setGroup(i, true);
-          if (defaultPointer != Text.POINTER_NONE)
+          if (defaultPointer != Object2d.POINTER_NONE)
             setPointer(i, defaultPointer);
           if (defaultColix != 0 || defaultPaletteID != 0)
             setColix(i, defaultColix, defaultPaletteID);
@@ -240,11 +240,11 @@ public class Labels extends AtomShape {
 
     if ("align" == propertyName) {
       String type = (String) value;
-      int alignment = Text.ALIGN_LEFT;
+      int alignment = Object2d.ALIGN_LEFT;
       if (type.equalsIgnoreCase("right"))
-        alignment = Text.ALIGN_RIGHT;
+        alignment = Object2d.ALIGN_RIGHT;
       else if (type.equalsIgnoreCase("center"))
-        alignment = Text.ALIGN_CENTER;
+        alignment = Object2d.ALIGN_CENTER;
       for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i))
           setAlignment(i, alignment);
@@ -402,7 +402,7 @@ public class Labels extends AtomShape {
 
   private void setAlignment(int i, int alignment) {
     if (offsets == null || i >= offsets.length) {
-      if (alignment == Text.ALIGN_LEFT)
+      if (alignment == Object2d.ALIGN_LEFT)
         return;
       offsets = ArrayUtil.ensureLength(offsets, i + 1);
     }
@@ -418,7 +418,7 @@ public class Labels extends AtomShape {
   
   private void setPointer(int i, int pointer) {
     if (offsets == null || i >= offsets.length) {
-      if (pointer == Text.POINTER_NONE)
+      if (pointer == Object2d.POINTER_NONE)
         return;
       offsets = ArrayUtil.ensureLength(offsets, i + 1);
     }
@@ -476,11 +476,11 @@ public class Labels extends AtomShape {
     appendCmd(s, "select none");
     appendCmd(s, getColorCommand("label", defaultPaletteID, defaultColix));
     appendCmd(s, "background label " + encodeColor(defaultBgcolix));
-    appendCmd(s, "set labelOffset " + Text.getXOffset(defaultOffset) + " "
-        + (-Text.getYOffset(defaultOffset)));
-    String align = Text.getAlignment(defaultAlignment);
+    appendCmd(s, "set labelOffset " + Object2d.getXOffset(defaultOffset) + " "
+        + (-Object2d.getYOffset(defaultOffset)));
+    String align = Object2d.getAlignment(defaultAlignment);
     appendCmd(s, "set labelAlignment " + (align.length() < 5 ? "left" : align));
-    String pointer = Text.getPointer(defaultPointer);
+    String pointer = Object2d.getPointer(defaultPointer);
     appendCmd(s, "set labelPointer " + (pointer.length() == 0 ? "off" : pointer));
     if ((defaultZPos & FRONT_FLAG) != 0)
       appendCmd(s, "set labelFront");
@@ -511,10 +511,10 @@ public class Labels extends AtomShape {
         setStateInfo(temp2, i, "set labelScaleReference " + (10000f / sppm));
       if (offsets != null && offsets.length > i) {
         int offsetFull = offsets[i];
-        setStateInfo(temp2, i, "set labelOffset " + Text.getXOffset(offsetFull >> FLAG_OFFSET)
-              + " " + (-Text.getYOffset(offsetFull >> FLAG_OFFSET)));
-        String align = Text.getAlignment(offsetFull >> 2);
-        String pointer = Text.getPointer(offsetFull);
+        setStateInfo(temp2, i, "set labelOffset " + Object2d.getXOffset(offsetFull >> FLAG_OFFSET)
+              + " " + (-Object2d.getYOffset(offsetFull >> FLAG_OFFSET)));
+        String align = Object2d.getAlignment(offsetFull >> 2);
+        String pointer = Object2d.getPointer(offsetFull);
         if (pointer.length() > 0)
           setStateInfo(temp2, i, "set labelPointer " + pointer);
         if ((offsetFull & FRONT_FLAG) != 0)

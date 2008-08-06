@@ -1181,8 +1181,8 @@ abstract class TransformManager {
    */
 
   protected void calcSlabAndDepthValues() {
-    slabValue = (int) ((1 - slabPercentSetting / 50f) * modelRadiusPixels + modelCenterOffset);
-    depthValue = (int) ((1 - depthPercentSetting / 50f) * modelRadiusPixels + modelCenterOffset);
+    slabValue = zValueFromPercent(slabPercentSetting);
+    depthValue = zValueFromPercent(depthPercentSetting);
     viewer.getGlobalSettings().setParameterValue("_slabPlane",
         Escape.escape(getSlabDepthPlane(false)));
     viewer.getGlobalSettings().setParameterValue("_depthPlane",
@@ -1193,6 +1193,10 @@ abstract class TransformManager {
     depthValue = Integer.MAX_VALUE;
   }
 
+  int zValueFromPercent(int zPercent) {
+    return (int) ((1 - zPercent / 50f) * modelRadiusPixels + modelCenterOffset);
+  }
+  
   synchronized protected void calcTransformMatrix() {
     matrixTransform.setIdentity();
 

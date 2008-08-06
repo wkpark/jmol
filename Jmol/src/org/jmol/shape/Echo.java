@@ -25,14 +25,10 @@
 package org.jmol.shape;
 
 import org.jmol.util.Logger;
-import org.jmol.viewer.Viewer;
-
 import org.jmol.g3d.*;
 
 import java.util.BitSet;
 import java.util.Enumeration;
-
-import javax.vecmath.Point3f;
 
 public class Echo extends TextShape {
 
@@ -60,88 +56,46 @@ public class Echo extends TextShape {
     if (Logger.debugging) {
       Logger.debug("Echo.setProperty(" + propertyName + "," + value + ")");
     }
-
-    if ("script" == propertyName) {
-      if (currentText != null)
-        currentText.setScript((String) value);
-      return;
-    }
-
+    
     if ("scalereference" == propertyName) {
-      if (currentText != null) {
+      if (currentObject != null) {
         float val = ((Float) value).floatValue();
-        currentText.setScalePixelsPerMicron(val == 0 ? 0 : 10000f / val);
+        currentObject.setScalePixelsPerMicron(val == 0 ? 0 : 10000f / val);
       }
       return;
     }
     
-    if ("xpos" == propertyName) {
-      if (currentText != null)
-        currentText.setMovableX(((Integer) value).intValue());
-      return;
-    }
-
-    if ("ypos" == propertyName) {
-      if (currentText != null)
-        currentText.setMovableY(((Integer) value).intValue());
-      return;
-    }
-
-    if ("%xpos" == propertyName) {
-      if (currentText != null)
-        currentText.setMovableXPercent(((Integer) value).intValue());
-      return;
-    }
-
-    if ("%ypos" == propertyName) {
-      if (currentText != null)
-        currentText.setMovableYPercent(((Integer) value).intValue());
-      return;
-    }
-    
-    if ("xypos" == propertyName) {
-      if (currentText == null)
-        return;
-      Point3f pt = (Point3f) value;
-      if (pt.z == Float.MAX_VALUE) {
-        currentText.setMovableX((int) pt.x);        
-        currentText.setMovableY((int) pt.y);        
-      } else {
-        currentText.setMovableXPercent((int) pt.x);        
-        currentText.setMovableYPercent((int) pt.y);        
-      }
-      return;
-    }
-
     if ("xyz" == propertyName) {
-      if (currentText != null) {
-        currentText.setXYZ((Point3f) value);
-        if (viewer.getFontScaling())
-          currentText.setScalePixelsPerMicron(viewer.getScalePixelsPerAngstrom() * 10000f);
-      }
-      return;
+      if (currentObject != null && viewer.getFontScaling())
+          currentObject.setScalePixelsPerMicron(viewer.getScalePixelsPerAngstrom() * 10000f);
+      // continue on to Object2d setting
     }
 
+    if (Object2d.setProperty(propertyName, value, currentObject))
+      return;
+    
     if ("target" == propertyName) {
       String target = ((String) value).intern().toLowerCase();
-      if (target != "none" && target != "all") {
-        Text text = (Text) texts.get(target);
+      if (target == "none" || target == "all") {
+        // process in Object2dShape
+      } else {
+        Text text = (Text) objects.get(target);
         if (text == null) {
-          int valign = Text.VALIGN_XY;
-          int halign = Text.ALIGN_LEFT;
+          int valign = Object2d.VALIGN_XY;
+          int halign = Object2d.ALIGN_LEFT;
           if ("top" == target) {
-            valign = Text.VALIGN_TOP;
-            halign = Text.ALIGN_CENTER;
+            valign = Object2d.VALIGN_TOP;
+            halign = Object2d.ALIGN_CENTER;
           } else if ("middle" == target) {
-            valign = Text.VALIGN_MIDDLE;
-            halign = Text.ALIGN_CENTER;
+            valign = Object2d.VALIGN_MIDDLE;
+            halign = Object2d.ALIGN_CENTER;
           } else if ("bottom" == target) {
-            valign = Text.VALIGN_BOTTOM;
+            valign = Object2d.VALIGN_BOTTOM;
           }
           text = new Text(viewer, g3d, g3d.getFont3D(FONTFACE, FONTSIZE),
               target, COLOR, valign, halign, 0);
           text.setAdjustForWindow(true); // when a box is around it
-          texts.put(target, text);
+          objects.put(target, text);
           if (currentFont != null)
             text.setFont(currentFont);
           if (currentColor != null)
@@ -154,26 +108,17 @@ public class Echo extends TextShape {
             text.setTranslucent(currentBgTranslucentLevel, true);
           
         }
-        currentText = text;
-        //process super
+        currentObject = text;
+        return;
       }
     }
     super.setProperty(propertyName, value, null);
   }
 
-  public void setVisibilityFlags(BitSet bs) {
-    Enumeration e = texts.elements();
-    while (e.hasMoreElements()) {
-      Text t = (Text)e.nextElement();
-      t.setVisibility(t.modelIndex < 0 || bs.get(t.modelIndex));
-    }
-  }
-
-
   public String getShapeState() {
     StringBuffer s = new StringBuffer("\n  set echo off;\n");
     String lastFormat = "";
-    Enumeration e = texts.elements();
+    Enumeration e = objects.elements();
     while (e.hasMoreElements()) {
       Text t = (Text) e.nextElement();
       s.append(t.getState(true));
@@ -185,38 +130,4 @@ public class Echo extends TextShape {
     }
     return s.toString();
   }
-
-  public Point3f checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
-    Enumeration e = texts.elements();
-    while (e.hasMoreElements()) {
-      Text t = (Text) e.nextElement();
-      if (t.checkObjectClicked(x, y, bsVisible)) {
-        String s = t.getScript();
-        if (s != null)
-          viewer.evalStringQuiet(s);
-        return (t.xyz == null ? new Point3f() : t.xyz); // may or may not be null
-      }
-    }
-    return null;
-  }
-
-  public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
-    Enumeration e = texts.elements();
-    boolean haveScripts = false;
-    while (e.hasMoreElements()) {
-      Text t = (Text) e.nextElement();
-      String s = t.getScript();
-      if (s != null) {
-        haveScripts = true;
-        if (t.checkObjectClicked(x, y, bsVisible)) {
-          viewer.setCursor(Viewer.CURSOR_HAND);
-          return true;
-        }
-      }
-    }
-    if (haveScripts)
-      viewer.setCursor(Viewer.CURSOR_DEFAULT);
-    return false;
-  }
-
 }

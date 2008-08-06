@@ -99,7 +99,7 @@ public class LabelsRenderer extends ShapeRenderer {
         text.setColix(colix);
         text.setBgColix(bgcolix);
       } else {
-        boolean isLeft = (textAlign == Text.ALIGN_LEFT || textAlign == Text.ALIGN_NONE);
+        boolean isLeft = (textAlign == Object2d.ALIGN_LEFT || textAlign == Object2d.ALIGN_NONE);
         if (fid != fidPrevious || ascent == 0) {
           g3d.setFont(fid);
           fidPrevious = fid;
@@ -113,13 +113,13 @@ public class LabelsRenderer extends ShapeRenderer {
         boolean isSimple = isLeft && (imageFontScaling == 1 && scalePixelsPerMicron == 0
             && label.indexOf("|") < 0 && label.indexOf("<su") < 0);
         if (isSimple) {
-          boolean doPointer = ((pointer & Text.POINTER_ON) != 0);
-          short pointerColix = ((pointer & Text.POINTER_BACKGROUND) != 0
+          boolean doPointer = ((pointer & Object2d.POINTER_ON) != 0);
+          short pointerColix = ((pointer & Object2d.POINTER_BACKGROUND) != 0
               && bgcolix != 0 ? bgcolix : colix);
           boxXY[0] = atom.screenX;
           boxXY[1] = atom.screenY;
           Text.renderSimpleLabel(g3d, font3d, label, colix, bgcolix, boxXY, 
-              zBox, zSlab, Text.getXOffset(offset), Text.getYOffset(offset), 
+              zBox, zSlab, Object2d.getXOffset(offset), Object2d.getYOffset(offset), 
               ascent, descent, doPointer, pointerColix);
           continue;
         }
@@ -128,7 +128,7 @@ public class LabelsRenderer extends ShapeRenderer {
         labels.putLabel(i, text);
       }
       text.setOffset(offset);
-      if (textAlign != Text.ALIGN_NONE)
+      if (textAlign != Object2d.ALIGN_NONE)
         text.setAlignment(textAlign);
       text.setPointer(pointer); 
       text.render(g3d, scalePixelsPerMicron, imageFontScaling);

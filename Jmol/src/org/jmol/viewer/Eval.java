@@ -8277,16 +8277,14 @@ class Eval {
       case Token.script:
         propertyName = "script";
         propertyValue = parameterAsString(4);
-        setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
-        return;
+        break;
       case Token.model:
         int modelIndex = modelNumberParameter(4);
         if (!isSyntaxCheck && modelIndex >= viewer.getModelCount())
           error(ERROR_invalidArgument);
         propertyName = "model";
         propertyValue = new Integer(modelIndex);
-        setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
-        return;
+        break;
       case Token.image:
         //set echo name image "xxx"
         echo(4, true);
@@ -8294,6 +8292,10 @@ class Eval {
       case Token.depth:
         propertyName = "%zpos";
         propertyValue = new Integer((int) floatParameter(4));
+        break;
+      }
+      if (propertyValue != null) {
+        setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
         return;
       }
     }
@@ -8308,9 +8310,8 @@ class Eval {
         setShapeProperty(JmolConstants.SHAPE_ECHO, "xyz", centerParameter(i));
       return;
     }
-    propertyValue = xypParameter(i);
     String type = "xypos";
-    if (propertyValue == null) {
+    if ((propertyValue = xypParameter(i)) == null) {
       int pos = intParameter(i++);
       propertyValue = new Integer(pos);
       if (tokAt(i) == Token.percent) {

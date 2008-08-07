@@ -646,13 +646,14 @@ public class PointGroup {
     Vector3f v2 = new Vector3f();
     Vector3f v3 = new Vector3f();
     int nPlanes = 0;
+    boolean haveAxes = (getHighestOrder() > 1);
     for (int i = atoms.length; --i >= 0;) {
       if (i == centerAtomIndex)
         continue;
       Point3f a1 = atoms[i];
       int e1 = elements[i];
       for (int j = atoms.length; --j > i;) {
-        if (elements[j] != e1)
+        if (haveAxes && elements[j] != e1)
           continue;
 
         // plane are treated as S2 axes here
@@ -683,11 +684,11 @@ public class PointGroup {
     }
 
     // also look for planes normal to any C axis
-
-    for (int i = c2; i < maxAxis; i++)
-      for (int j = 0; j < nAxes[i]; i++)
-        nPlanes = getPlane(nPlanes, axes[i][j].normalOrAxis, atoms, elements,
-          center);
+    if (haveAxes)
+      for (int i = c2; i < maxAxis; i++)
+        for (int j = 0; j < nAxes[i]; i++)
+          nPlanes = getPlane(nPlanes, axes[i][j].normalOrAxis, atoms, elements,
+              center);
     return nPlanes;
   }
 

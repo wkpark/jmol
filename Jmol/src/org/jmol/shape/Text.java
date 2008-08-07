@@ -208,7 +208,7 @@ public class Text extends Object2d {
     // adjust positions if necessary
 
     if (adjustForWindow)
-      setBoxOffsetsInWindow(fontScale, isLabelOrHover ? 16 * fontScale
+      setBoxOffsetsInWindow(image == null ? fontScale : 0, isLabelOrHover ? 16 * fontScale
           + lineHeight : 0, boxY - textHeight);
 
     // draw the box if necessary
@@ -220,24 +220,24 @@ public class Text extends Object2d {
 
       // now set x and y positions for text from (new?) box position
 
-      int adj = (fontScale >= 2 ? 8 : 4);
-      int x0 = (int) boxX;
-      switch (align) {
-      case ALIGN_CENTER:
-        x0 += boxWidth / 2;
-        break;
-      case ALIGN_RIGHT:
-        x0 += boxWidth - adj;
-        break;
-      default:
-        x0 += adj;
-      }
-
       if (image != null) {
         g3d.drawImage(image, (int) boxX, (int) boxY, z, zSlab, (int) boxWidth,
             (int) boxHeight, bgcolix);
       } else {
         // now write properly aligned text
+
+        int adj = (fontScale >= 2 ? 8 : 4);
+        int x0 = (int) boxX;
+        switch (align) {
+        case ALIGN_CENTER:
+          x0 += boxWidth / 2;
+          break;
+        case ALIGN_RIGHT:
+          x0 += boxWidth - adj;
+          break;
+        default:
+          x0 += adj;
+        }
 
         float x = x0;
         float y = boxY + ascent + adj;

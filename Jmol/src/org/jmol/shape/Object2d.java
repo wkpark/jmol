@@ -154,7 +154,7 @@ public abstract class Object2d {
   }
 
   public void setMovableZ(int z) {
-    if (valign == VALIGN_XYZ)
+    if (valign != VALIGN_XYZ)
       valign = VALIGN_XY;
     movableZ = z;
     movableZPercent = Integer.MAX_VALUE;
@@ -173,7 +173,7 @@ public abstract class Object2d {
   }
 
   public void setMovableZPercent(int z) {
-    if (valign == VALIGN_XYZ)
+    if (valign != VALIGN_XYZ)
       valign = VALIGN_XY;
     movableZ = Integer.MAX_VALUE;
     movableZPercent = z;
@@ -318,7 +318,7 @@ public abstract class Object2d {
       boxXY[1] = windowHeight;
       break;
     default:
-      float y = (movableXPercent != Integer.MAX_VALUE ? movableYPercent
+      float y = (movableYPercent != Integer.MAX_VALUE ? movableYPercent
           * windowHeight / 100 : is3dEcho? movableY : movableY * scale);
       float offsetY = this.offsetY * scale;
       boxXY[1] = (is3dEcho ? y : (windowHeight - y)) + offsetY;

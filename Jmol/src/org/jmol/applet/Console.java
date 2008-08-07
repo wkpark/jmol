@@ -27,6 +27,7 @@ import org.jmol.api.*;
 import org.jmol.i18n.*;
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import javax.swing.text.*;
 
@@ -58,11 +59,15 @@ class Console implements ActionListener, WindowListener {
   //}
 
   private final Jvm12 jvm12;
+  private JMenuBar menubar; // requiring Swing here for now
+
+  public Object getMyMenuBar() {
+    return menubar;
+  }
 
   Console(Component componentParent, JmolViewer viewer, Jvm12 jvm12) {
     this.viewer = viewer;
     this.jvm12 = jvm12;
-
     Logger.debug("Console constructor");
     //System.out.println("Console " + this + " constructed");
 
@@ -75,13 +80,16 @@ class Console implements ActionListener, WindowListener {
     JScrollPane jscrollOutput = new JScrollPane(output);
     jscrollOutput.setMinimumSize(new Dimension(2, 100));
     Container c = jf.getContentPane();
+    menubar = createMenubar();
+    jf.setJMenuBar(menubar);
+    c.setLayout(new BoxLayout(c, BoxLayout.Y_AXIS));
+
 
     JSplitPane jsp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, jscrollOutput,
         jscrollInput);
     jsp.setResizeWeight(.9);
     jsp.setDividerLocation(200);
 
-    c.setLayout(new BoxLayout(c, BoxLayout.Y_AXIS));
     jsp.setAlignmentX(Component.CENTER_ALIGNMENT);
     c.add(jsp);
 
@@ -114,9 +122,169 @@ class Console implements ActionListener, WindowListener {
     jf.addWindowListener(this);
   }
 
+  protected JMenuBar createMenubar() {
+    JMenuBar mb = new JMenuBar();
+    //addNormalMenuBar(mb);
+    mb.add(Box.createHorizontalGlue());
+    addHelpMenuBar(mb);
+    return mb;
+  }
+  
+  protected void addHelpMenuBar(JMenuBar menuBar) {
+    String menuKey = "help";
+    JMenu m0 = createMenu(menuKey);
+    if (m0 == null)
+      return;
+    addHelpItems(m0, "commands", "command");
+    addHelpItems(m0, "math functions", "mathfunc");
+    addHelpItems(m0, "set parameters", "setparam");
+    addHelpItems(m0, "more", "misc");
+    menuBar.add(m0);
+  }
+
+  
+  private void addHelpItems(JMenu m0, String label, String attr) {
+
+    String[] commands = (String[]) viewer.getProperty(null, "tokenList", attr);
+    JMenu m = new JMenu(label);
+    m0.add(m);
+    JMenu m2 = null;
+    String firstCommand = null;
+    int n = 20;
+    for (int i = 0; i < commands.length; i++) {
+      String cmd = commands[i];
+      if (!Character.isLetter(cmd.charAt(0)))
+        continue;
+      JMenuItem item = new JMenuItem(cmd);
+      item.addActionListener(this);
+      item.setName("help " + cmd);
+      if (m2 == null) {
+        m2 = new JMenu();
+        firstCommand = cmd;
+        m2.add(item);
+        m2.setText(firstCommand);
+        continue;
+      }
+      if ((i % n) + 1 == n) {
+        m2.add(item);
+        m2.setText(firstCommand + " - " + cmd);
+        m.add(m2);
+        m2 = null;
+        continue;
+      }
+      m2.add(item);
+      if (i + 1 == commands.length && m2 != null) {
+        m2.setText(firstCommand + " - " + cmd);
+        m.add(m2);
+      }
+    }
+  }
+
+  JMenu newJMenu(String key) {
+    String label = "Help";
+    return new KeyJMenu(key, getLabelWithoutMnemonic(label), getMnemonic(label));
+  }
+
+  class KeyJMenu extends JMenu {
+    String key;
+    KeyJMenu(String key, String label, char mnemonic) {
+      super(label);
+      if (mnemonic != ' ') {
+          setMnemonic(mnemonic);
+      }
+      this.key = key;
+      //map.put(key, this);
+    }
+    public String getKey() {
+      return key;
+    }
+  }
+
+
+  private char getMnemonic(String label) {
+    return 'h';
+  }
+
+  private String getLabelWithoutMnemonic(String label) {
+    return label;
+  }
+
+  protected JMenu createMenu(String key) {
+
+    // Get list of items from resource file:
+//    String[] itemKeys = new tokenize(JmolResourceHandler.getStringX(key));
+
+    // Get label associated with this menu:
+    JMenu menu = newJMenu(key);
+    /*
+    ImageIcon f = JmolResourceHandler.getIconX(key + "Image");
+    if (f != null) {
+      menu.setHorizontalTextPosition(SwingConstants.RIGHT);
+      menu.setIcon(f);
+    }
+
+    // Loop over the items in this menu:
+    for (int i = 0; i < itemKeys.length; i++) {
+
+      String item = itemKeys[i];
+      if (item.equals("-")) {
+        menu.addSeparator();
+        continue;
+      }
+      if (item.endsWith("Menu")) {
+        JMenu pm;
+        if ("recentFilesMenu".equals(item)) {
+          recentFilesMenu = pm = createMenu(item);
+        } else {
+          pm = createMenu(item);
+        }
+        menu.add(pm);
+        continue;
+      }
+      JMenuItem mi = createMenuItem(item);
+      menu.add(mi);
+    }
+*/  
+    
+   //menu.addMenuListener(display.getMenuListener());
+
+    JMenuItem mi = createMenuItem("Help");
+    menu.add(mi);
+
+    return menu;
+  }
+
+  protected JMenuItem createMenuItem(String cmd) {
+
+    JMenuItem mi;
+    mi = newJMenuItem(cmd);
+    return mi;
+  }
+
+  JMenuItem newJMenuItem(String key) {
+    String label = "Help";
+    return new KeyJMenuItem(key, getLabelWithoutMnemonic(label), getMnemonic(label));
+  }
+  
+  class KeyJMenuItem extends JMenuItem {
+    String key;
+    KeyJMenuItem(String key, String label, char mnemonic) {
+      super(label);
+      if (mnemonic != ' ') {
+          setMnemonic(mnemonic);
+      }
+      this.key = key;
+      //map.put(key, this);
+    }
+    public String getKey() {
+      return key;
+    }
+  }
+
   private void setupInput() {
     input.setLineWrap(true);
     input.setWrapStyleWord(true);
+    //input.setText("Input a command in the box below or select a menu item from above.");
 
     Keymap map = input.getKeymap();
     //    KeyStroke shiftCR = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,
@@ -162,7 +330,7 @@ class Console implements ActionListener, WindowListener {
   public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
     if (source == runButton) {
-      execute();
+      execute(null);
     }
     if (source == clearInButton) {
       input.setText("");
@@ -179,16 +347,20 @@ class Console implements ActionListener, WindowListener {
     if (source == loadButton) {
       viewer.loadInline(input.getText(), false);
     }
+    if (source instanceof JMenuItem) {
+      execute(((JMenuItem) source).getName());
+    }
   }
 
-  void execute() {
-    String strCommand = input.getText();
-    input.setText(null);
-    //output(strCommand, attributesCommand);
-    String strErrorMessage = viewer.script(strCommand);
+  void execute(String strCommand) {
+    String cmd = (strCommand == null ? input.getText() : strCommand);
+    if (strCommand == null)
+      input.setText(null);
+    String strErrorMessage = viewer.script(cmd);
     if (strErrorMessage != null && !strErrorMessage.equals("pending"))
       output(strErrorMessage);
-    input.requestFocus();
+    if (strCommand == null)
+      input.requestFocus();
   }
 
   class ControlEnterTextArea extends JTextArea {
@@ -196,7 +368,7 @@ class Console implements ActionListener, WindowListener {
       switch (ke.getID()) {
       case KeyEvent.KEY_PRESSED:
         if (ke.getKeyCode() == KeyEvent.VK_ENTER && !ke.isControlDown()) {
-          execute();
+          execute(null);
           return;
         }
         if (ke.getKeyCode() == KeyEvent.VK_UP) {

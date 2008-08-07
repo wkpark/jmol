@@ -6845,6 +6845,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // Got to do something?
     }
     return image;
-
   }
+  
 }

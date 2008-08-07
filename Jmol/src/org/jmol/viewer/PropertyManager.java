@@ -292,6 +292,9 @@ class PropertyManager {
   
   private static Object getPropertyAsObject(Viewer viewer, String infoType, Object paramInfo) {
     //Logger.debug("getPropertyAsObject(\"" + infoType+"\", \"" + paramInfo + "\")");
+    if (infoType.equals("tokenList")) {
+      return Token.getTokensLike((String) paramInfo);
+    }
     int id = getPropertyNumber(infoType);
     boolean iHaveParameter = (paramInfo != null && paramInfo.toString()
         .length() > 0);

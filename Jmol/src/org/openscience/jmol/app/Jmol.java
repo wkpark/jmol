@@ -309,7 +309,7 @@ public class Jmol extends JPanel {
       if (menuFile != null) {
         menuStructure = viewer.getFileAsString(menuFile);
       }
-      jmolpopup = JmolPopup.newJmolPopup(viewer, true, menuStructure);
+      jmolpopup = JmolPopup.newJmolPopup(viewer, true, menuStructure, true);
 
     }
 
@@ -1899,7 +1899,7 @@ public class Jmol extends JPanel {
 
     public void handlePopupMenu(int x, int y) {
       if (!language.equals(GT.getLanguage())) {
-        jmolpopup = JmolPopup.newJmolPopup(viewer, true, menuStructure);
+        jmolpopup = JmolPopup.newJmolPopup(viewer, true, menuStructure, true);
         language = GT.getLanguage();
       }
       jmolpopup.show(x, y);

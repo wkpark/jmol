@@ -38,18 +38,27 @@ import java.awt.CheckboxMenuItem;
 public class JmolPopupAwt extends JmolPopup {
 
   PopupMenu awtPopup;
+  Menu mainMenu;
   Menu elementComputedMenu;
   static int MENUITEM_HEIGHT = 20; 
 
-  public JmolPopupAwt(JmolViewer viewer) {
-    super(viewer);
-    awtPopup = new PopupMenu("Jmol");
-    jmolComponent.add(awtPopup);
-    build(awtPopup);
+  public JmolPopupAwt(JmolViewer viewer, boolean asPopup) {
+    super(viewer, asPopup);
+    if (asPopup) {
+      mainMenu = awtPopup = new PopupMenu("Jmol");
+      jmolComponent.add(awtPopup);
+    } else {
+      mainMenu = new Menu("Jmol");
+    }
+    build(mainMenu);
   }
 
   void showPopupMenu(int x, int y) {
     awtPopup.show(jmolComponent, x, y);
+  }
+
+  public void installMainMenu(Object objMenuBar) {
+    // not needed for AWT system.
   }
 
   Object getParent(Object menu) {

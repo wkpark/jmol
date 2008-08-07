@@ -56,10 +56,18 @@ class Jvm12 {
       }
       return;
     }
+    getConsole();
+    if (console != null)
+      console.setVisible(true);
+  }
+
+  void consoleMessage(String message) {
+    if (console != null)
+      console.output(message);
+  }
+  
+  Console getConsole() {
     if (console == null) {
-      if (Logger.debugging) {
-        Logger.debug("Jvm12.showConsole(" + showConsole + ")");
-      }
       try {
         console = new Console(awtComponent, viewer, this);
       } catch (Exception e) {
@@ -72,12 +80,6 @@ class Jvm12 {
       } catch (Exception e) {
       }
     }
-    if (console != null)
-      console.setVisible(true);
+    return console;
   }
-
-  void consoleMessage(String message) {
-    if (console != null)
-      console.output(message);
-  }  
 }

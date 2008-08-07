@@ -24,9 +24,11 @@
 
 package org.jmol.viewer;
 
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.BitSet;
+import java.util.Vector;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -169,7 +171,7 @@ public class Token {
     return  ((tokCommand >> 9) & 0x7);
   }
 
-  final static int command            = (1 << 12);
+  final public static int command            = (1 << 12);
   
   // the command assumes an atom expression as the first parameter
   // -- center, define, delete, display, hide, restrict, select, subset, zap
@@ -1557,6 +1559,26 @@ public class Token {
     }
     return cmds;
   }
+  
+  static String[] getTokensLike(String type) {
+    int attr = (type.equals("setparam") ? setparam 
+        : type.equals("misc") ? misc 
+        : type.equals("mathfunc") ? mathfunc : command);
+    Vector v = new Vector();
+    Enumeration e = map.keys();
+    while (e.hasMoreElements()) {
+      String name = (String) e.nextElement();
+      Token token = (Token) map.get(name);
+      if (Compiler.tokAttr(token.tok, attr))
+        v.add(name);
+    }
+    String[] a = new String[v.size()];
+    for (int i = 0; i < a.length; i++)
+      a[i] = (String) v.get(i);
+    Arrays.sort(a);
+    return a;
+  }
+  
 /*
   public static String getSetParameters() {
     String cmds = "";

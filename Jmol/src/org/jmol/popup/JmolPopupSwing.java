@@ -27,6 +27,7 @@ import org.jmol.api.*;
 import org.jmol.util.Logger;
 
 import javax.swing.JComponent;
+import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -38,13 +39,20 @@ public class JmolPopupSwing extends JmolPopup {
 
   JPopupMenu swingPopup;
   JMenu elementComputedMenu;
+  JMenu mainMenu;
   
-  static int MENUITEM_HEIGHT = 20; 
 
-  public JmolPopupSwing(JmolViewer viewer) {
-    super(viewer);
-    swingPopup = new JPopupMenu("Jmol");
-    build(swingPopup);
+  static int MENUITEM_HEIGHT = 20;
+
+  public JmolPopupSwing(JmolViewer viewer, boolean asPopup) {
+    super(viewer, asPopup);
+    if (asPopup) {
+      swingPopup = new JPopupMenu("Jmol");
+      build(swingPopup);
+    } else {
+      mainMenu = new JMenu("Jmol");
+      build(mainMenu);
+    }
   }
 
   void showPopupMenu(int x, int y) {
@@ -53,14 +61,24 @@ public class JmolPopupSwing extends JmolPopup {
     try {
       swingPopup.show(jmolComponent, x, y);
     } catch (Exception e) {
-      // probably a permissions problem in Java 7
+      System.out.println("popup error: " + e.getMessage());
+      // browser in Java 1.6.0_10 is blocking setting WindowAlwaysOnTop 
+
+    }
+  }
+
+  public void installMainMenu(Object objMenuBar) {
+    if (objMenuBar instanceof JMenuBar) {
+      JMenuBar mb = (JMenuBar) objMenuBar;
+      mb.remove(0);
+      mb.add(mainMenu, 0);
     }
   }
 
   Object getParent(Object menu) {
-    return ((JMenu)menu).getParent();  
+    return ((JMenu) menu).getParent();
   }
-  
+
   int getMenuItemHeight() {
     return MENUITEM_HEIGHT;
   }
@@ -81,20 +99,20 @@ public class JmolPopupSwing extends JmolPopup {
 
   void insertMenuSubMenu(Object menu, Object subMenu, int index) {
     if (menu instanceof JPopupMenu)
-      ((JPopupMenu)menu).insert((JMenu)subMenu, index);
+      ((JPopupMenu) menu).insert((JMenu) subMenu, index);
     else
-   ((JMenu)menu).insert((JMenu)subMenu, index);
+      ((JMenu) menu).insert((JMenu) subMenu, index);
   }
-  
+
   void createFrankPopup() {
     frankPopup = new JPopupMenu("Frank");
   }
-  
+
   void showFrankMenu(int x, int y) {
     if (jmolComponent == null)
       return;
     try {
-      ((JPopupMenu)frankPopup).show(jmolComponent, x, y);
+      ((JPopupMenu) frankPopup).show(jmolComponent, x, y);
     } catch (Exception e) {
       // probably a permissions problem in Java 7
     }
@@ -107,9 +125,9 @@ public class JmolPopupSwing extends JmolPopup {
 
   void addToMenu(Object menu, JComponent item) {
     if (menu instanceof JPopupMenu) {
-      ((JPopupMenu)menu).add(item);
+      ((JPopupMenu) menu).add(item);
     } else if (menu instanceof JMenu) {
-      ((JMenu)menu).add(item);
+      ((JMenu) menu).add(item);
     } else {
       Logger.warn("cannot add object to menu: " + menu);
     }
@@ -119,16 +137,16 @@ public class JmolPopupSwing extends JmolPopup {
 
   void addMenuSeparator(Object menu) {
     if (menu instanceof JPopupMenu)
-      ((JPopupMenu)menu).addSeparator();
+      ((JPopupMenu) menu).addSeparator();
     else
-      ((JMenu)menu).addSeparator();
+      ((JMenu) menu).addSeparator();
   }
 
   Object addMenuItem(Object menu, String entry, String script, String id) {
     JMenuItem jmi = new JMenuItem(entry);
     updateMenuItem(jmi, entry, script);
     jmi.addActionListener(mil);
-    jmi.setName(id == null ? ((Component)menu).getName() + ".": id);
+    jmi.setName(id == null ? ((Component) menu).getName() + "." : id);
     addToMenu(menu, jmi);
     return jmi;
   }
@@ -139,11 +157,11 @@ public class JmolPopupSwing extends JmolPopup {
     else
       ((JMenu) menu).setLabel(entry);
   }
-  
+
   String getId(Object menu) {
     return ((Component) menu).getName();
   }
-  
+
   void setCheckBoxValue(Object source) {
     JCheckBoxMenuItem jcmi = (JCheckBoxMenuItem) source;
     setCheckBoxValue(jcmi.getActionCommand(), jcmi.getState());
@@ -152,29 +170,30 @@ public class JmolPopupSwing extends JmolPopup {
   void setCheckBoxState(Object item, boolean state) {
     ((JCheckBoxMenuItem) item).setState(state);
   }
- 
+
   void updateMenuItem(Object menuItem, String entry, String script) {
-    JMenuItem jmi = (JMenuItem)menuItem;
+    JMenuItem jmi = (JMenuItem) menuItem;
     jmi.setLabel(entry);
     jmi.setActionCommand(script);
   }
 
-  Object addCheckboxMenuItem(Object menu, String entry, String basename, String id, boolean state) {
+  Object addCheckboxMenuItem(Object menu, String entry, String basename,
+                             String id, boolean state) {
     JCheckBoxMenuItem jcmi = new JCheckBoxMenuItem(entry);
     jcmi.setState(state);
     jcmi.addItemListener(cmil);
     jcmi.setActionCommand(basename);
-    jcmi.setName(id == null ? ((Component)menu).getName() + "." : id);
+    jcmi.setName(id == null ? ((Component) menu).getName() + "." : id);
     addToMenu(menu, jcmi);
     return jcmi;
   }
 
   Object cloneMenu(Object menu) {
-    return null;  
+    return null;
   }
-  
+
   void addMenuSubMenu(Object menu, Object subMenu) {
-    addToMenu(menu, (JMenu)subMenu);
+    addToMenu(menu, (JMenu) subMenu);
   }
 
   Object newMenu(String menuName, String id) {
@@ -185,11 +204,11 @@ public class JmolPopupSwing extends JmolPopup {
   }
 
   void setAutoscrolls(Object menu) {
-   ((JMenu) menu).setAutoscrolls(true);  
+    ((JMenu) menu).setAutoscrolls(true);
   }
-  
+
   void renameMenu(Object menu, String newMenuName) {
-    ((JMenu)menu).setLabel(newMenuName);
+    ((JMenu) menu).setLabel(newMenuName);
   }
 
   Object newComputedMenu(String key, String word) {
@@ -201,15 +220,15 @@ public class JmolPopupSwing extends JmolPopup {
   }
 
   int getMenuItemCount(Object menu) {
-    return ((JMenu)menu).getItemCount();
+    return ((JMenu) menu).getItemCount();
   }
 
   void removeMenuItem(Object menu, int index) {
-    ((JMenu)menu).remove(index);
+    ((JMenu) menu).remove(index);
   }
 
   void removeAll(Object menu) {
-    ((JMenu)menu).removeAll();
+    ((JMenu) menu).removeAll();
   }
 
   void enableMenu(Object menu, boolean enable) {
@@ -217,19 +236,17 @@ public class JmolPopupSwing extends JmolPopup {
       enableMenuItem(menu, enable);
       return;
     }
-    try{
-      ((JMenu)menu).setEnabled(enable);
-    } 
-    catch(Exception e) {
+    try {
+      ((JMenu) menu).setEnabled(enable);
+    } catch (Exception e) {
       //no menu item;
     }
   }
 
   void enableMenuItem(Object item, boolean enable) {
-    try{
-      ((JMenuItem)item).setEnabled(enable);
-    } 
-    catch(Exception e) {
+    try {
+      ((JMenuItem) item).setEnabled(enable);
+    } catch (Exception e) {
       //no menu item;
     }
   }
@@ -244,14 +261,17 @@ public class JmolPopupSwing extends JmolPopup {
 
   String getMenuCurrent() {
     StringBuffer sb = new StringBuffer();
-    JPopupMenu main = (JPopupMenu) htMenus.get("popupMenu");
-    getMenuCurrent(sb, 0, main, "PopupMenu");
+    Object menu = htMenus.get("popupMenu");
+    getMenuCurrent(sb, 0, menu, "PopupMenu");
     return sb.toString();
   }
 
-  private static void getMenuCurrent(StringBuffer sb, int level, JPopupMenu menu, String menuName) {
+  private static void getMenuCurrent(StringBuffer sb, int level,
+                                     Object menu, String menuName) {
     String name = menuName;
-    Component[] subMenus = ((JPopupMenu) menu).getComponents();
+    Component[] subMenus = 
+      (menu instanceof JPopupMenu ? ((JPopupMenu) menu).getComponents()
+       : ((JMenu) menu).getPopupMenu().getComponents());
     for (int i = 0; i < subMenus.length; i++) {
       Object m = subMenus[i];
       String flags;
@@ -264,10 +284,11 @@ public class JmolPopupSwing extends JmolPopup {
       } else if (m instanceof JMenuItem) {
         JMenuItem jmi = (JMenuItem) m;
         flags = "enabled:" + jmi.isEnabled();
-        if (m instanceof JCheckBoxMenuItem) 
-          flags += ";checked:" + ((JCheckBoxMenuItem)m).getState();
+        if (m instanceof JCheckBoxMenuItem)
+          flags += ";checked:" + ((JCheckBoxMenuItem) m).getState();
         String script = fixScript(jmi.getName(), jmi.getActionCommand());
-        addCurrentItem(sb, 'I', level, jmi.getName(), jmi.getText(), script, flags);
+        addCurrentItem(sb, 'I', level, jmi.getName(), jmi.getText(), script,
+            flags);
       } else {
         addCurrentItem(sb, 'S', level, name, null, null, null);
       }

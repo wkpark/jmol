@@ -165,6 +165,8 @@ public class Jmol implements WrappedApplet {
 
   boolean hasProgressBar;
 
+  boolean popupMenuAllowed = true;
+  
   int paintCounter;
 
   /*
@@ -184,7 +186,7 @@ public class Jmol implements WrappedApplet {
 
   String language;
   String menuStructure;
-  
+
   public void init() {
     htmlName = getParameter("name");
     syncId = getParameter("syncId");
@@ -199,14 +201,14 @@ public class Jmol implements WrappedApplet {
     }
     language = GT.getLanguage();
     System.out.println("language=" + language);
-    doTranslate = getBooleanValue("doTranslate", true);    
+    doTranslate = getBooleanValue("doTranslate", true);
     if ("none".equals(language))
       doTranslate = false;
     if (!doTranslate) {
       GT.setDoTranslate(false);
       Logger.warn("Note -- language translation disabled");
     }
-    
+
     String ms = getParameter("mayscript");
     mayScript = (ms != null) && (!ms.equalsIgnoreCase("false"));
     JmolAppletRegistry.checkIn(fullName, appletWrapper);
@@ -366,14 +368,27 @@ public class Jmol implements WrappedApplet {
       hasProgressBar = getBooleanValue("progressbar", false);
       // should the popupMenu be loaded ?
       needPopupMenu = getBooleanValue("popupMenu", true);
-      if (needPopupMenu)
-        jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate, menuStructure);  
+      if (needPopupMenu) {
+        // Java 1.6.0_10 disallows popup menus via this security issue.
+        SecurityManager security = System.getSecurityManager();
+        try {
+          if (security != null) {
+            security.checkPermission(new java.awt.AWTPermission(
+                "setWindowAlwaysOnTop"));
+          }
+        } catch (Exception e) {
+          popupMenuAllowed = false;
+          System.out.println("popup menu not available");
+        }
+        getPopupMenu(false);
+      }
       //if (needPopupMenu)
-        //loadPopupMenuAsBackgroundTask();
+      //loadPopupMenuAsBackgroundTask();
 
       String emulate = getValueLowerCase("emulate", "jmol");
       setStringProperty("defaults", emulate.equals("chime") ? "RasMol" : "Jmol");
-      setStringProperty("backgroundColor", getValue("bgcolor", getValue("boxbgcolor", "black")));
+      setStringProperty("backgroundColor", getValue("bgcolor", getValue(
+          "boxbgcolor", "black")));
 
       loadNodeId(getValue("loadNodeId", null));
 
@@ -388,28 +403,28 @@ public class Jmol implements WrappedApplet {
       boolean haveCallback = false;
       //these are set by viewer.setStringProperty() from setValue
       for (int i = 0; i < JmolConstants.CALLBACK_COUNT && !haveCallback; i++)
-        haveCallback =  (callbacks[i] != null);
+        haveCallback = (callbacks[i] != null);
       if (haveCallback || statusForm != null || statusText != null) {
         if (!mayScript)
           Logger
               .warn("MAYSCRIPT missing -- all applet JavaScript calls disabled");
       }
-      if (callbacks[JmolConstants.CALLBACK_MESSAGE] != null 
+      if (callbacks[JmolConstants.CALLBACK_MESSAGE] != null
           || statusForm != null || statusText != null) {
         if ((getValue("doTranslate", null) == null)) {
           doTranslate = false;
           Logger
-              .warn("Note -- Presence of message callback will disable translation;" +
-                  " to enable message translation" +
-                  " use jmolSetTranslation(true) prior to jmolApplet()");
+              .warn("Note -- Presence of message callback will disable translation;"
+                  + " to enable message translation"
+                  + " use jmolSetTranslation(true) prior to jmolApplet()");
         }
         if (doTranslate)
           Logger
-              .warn("Note -- Automatic language translation may affect parsing of callback" +
-                  " messages; to disable language translation of callback messages," +
-                  " use jmolSetTranslation(false) prior to jmolApplet()");
+              .warn("Note -- Automatic language translation may affect parsing of callback"
+                  + " messages; to disable language translation of callback messages,"
+                  + " use jmolSetTranslation(false) prior to jmolApplet()");
       }
-      
+
       statusForm = getValue("StatusForm", null);
       statusText = getValue("StatusText", null); //text
       statusTextarea = getValue("StatusTextarea", null); //textarea
@@ -422,10 +437,9 @@ public class Jmol implements WrappedApplet {
         Logger.info("applet textarea status will be reported to document."
             + statusForm + "." + statusTextarea);
       }
-      
+
       String loadParam;
       String scriptParam = getValue("script", "");
-      System.out.println(scriptParam);
       if ((loadParam = getValue("loadInline", null)) != null) {
         loadInlineSeparated(loadParam, (scriptParam.length() > 0 ? scriptParam
             : null));
@@ -861,9 +875,9 @@ public class Jmol implements WrappedApplet {
         loadDOMNode(tryNode);
     }
   }
-
+/*
   void loadPopupMenuAsBackgroundTask() {
-    // no popup on MacOS 9 NetScape
+    // no popup on MacOS 9 NetScape 
     if (viewer.getOperatingSystemName().equals("Mac OS")
         && viewer.getJavaVersion().equals("1.1.5"))
       return;
@@ -882,10 +896,10 @@ public class Jmol implements WrappedApplet {
       // long beginTime = System.currentTimeMillis();
       // Logger.debug("LoadPopupThread starting ");
       // this is a background task
-      jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate, menuStructure);
+      getPopupMenu();
     }
   }
-
+*/
   class MyStatusListener implements JmolStatusListener {
 
     public boolean notifyEnabled(int type) {
@@ -1073,14 +1087,14 @@ public class Jmol implements WrappedApplet {
       if (callbackName.equalsIgnoreCase("menu")) {
         menuStructure = callbackFunction;
         if (needPopupMenu)
-          jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate, menuStructure);  
+          getPopupMenu(false);
         return;
       }
       if (callbackName.equalsIgnoreCase("language")) {
         new GT(callbackFunction);
         language = GT.getLanguage();
         if (needPopupMenu)
-          jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate, menuStructure);  
+          getPopupMenu(true);
         return;
       }
       for (int i = 0; i < JmolConstants.CALLBACK_COUNT; i++)
@@ -1191,10 +1205,14 @@ public class Jmol implements WrappedApplet {
     }
     
     public void handlePopupMenu(int x, int y) {
+      if (!popupMenuAllowed) {
+        showConsole(true);
+        return;
+      }
       if (jmolpopup == null)
         return;
       if (!language.equals(GT.getLanguage())) {
-        jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate, menuStructure);
+        getPopupMenu(true);
         language = GT.getLanguage();
       }
       jmolpopup.show(x, y);
@@ -1253,5 +1271,17 @@ public class Jmol implements WrappedApplet {
       return JmolAppletRegistry.htRegistry;
     }
 
+  }
+
+  public void getPopupMenu(boolean forceNewConsole) {
+    jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate, menuStructure, popupMenuAllowed);
+    if (jmolpopup != null && jvm12 != null && !popupMenuAllowed) {
+      if (forceNewConsole) {
+        jvm12.showConsole(false);
+      }
+      if (jvm12.console == null)
+        jvm12.getConsole();
+      jmolpopup.installMainMenu(jvm12.console.getMyMenuBar());
+    }
   }
 }

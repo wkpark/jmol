@@ -56,6 +56,7 @@ abstract public class JmolPopup {
   Component jmolComponent;
   MenuItemListener mil;
   CheckboxMenuItemListener cmil;
+  boolean asPopup = true;
 
   Hashtable htMenus = new Hashtable();
   Properties menuText = new Properties();
@@ -95,22 +96,23 @@ abstract public class JmolPopup {
 
   static String menuStructure;
   
-  JmolPopup(JmolViewer viewer) {
+  JmolPopup(JmolViewer viewer, boolean asPopup) {
     this.viewer = viewer;
+    this.asPopup = asPopup;
     jmolComponent = viewer.getAwtComponent();
     mil = new MenuItemListener();
     cmil = new CheckboxMenuItemListener();
     //System.out.println("JmolPopup " + this + " constructor");
   }
 
-  static public JmolPopup newJmolPopup(JmolViewer viewer, boolean doTranslate, String menu) {
+  static public JmolPopup newJmolPopup(JmolViewer viewer, boolean doTranslate, String menu, boolean asPopup) {
     menuStructure = menu;
     GT.setDoTranslate(true);
     JmolPopup popup;
     try {
       popup = (!viewer.isJvm12orGreater() || forceAwt ? (JmolPopup) new JmolPopupAwt(
-          viewer)
-          : (JmolPopup) new JmolPopupSwing(viewer));
+          viewer, asPopup)
+          : (JmolPopup) new JmolPopupSwing(viewer, asPopup));
     } catch (Exception e) {
       Logger.error("JmolPopup not loaded");
       return null;
@@ -127,6 +129,8 @@ abstract public class JmolPopup {
     return popup;
   }
 
+  public abstract void installMainMenu(Object objMenuBar); 
+  
   void build(Object popupMenu) {
     htMenus.put("popupMenu", popupMenu);
     addMenuItems("", "popupMenu", popupMenu, new PopupResourceBundle(menuStructure, menuText), viewer
@@ -866,7 +870,8 @@ abstract public class JmolPopup {
       }
     }
     restorePopupMenu();
-    showPopupMenu(thisx, thisy);
+    if (asPopup)
+      showPopupMenu(thisx, thisy);
   }
 
   Object[][] frankList = new Object[10][]; //enough to cover menu drilling

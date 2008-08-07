@@ -121,6 +121,7 @@ public class Text3D {
       return;
     g3d.platform.checkOffscreenSize(width, height);
     Graphics g = g3d.platform.gOffscreen;
+    g.clearRect(0,0,width,height);
     if (g3d.isAntialiased()) {
       g.drawImage(image, 0, 0, width, height, 0, 0, width >> 1, height >> 1, null);
     } else {
@@ -150,12 +151,14 @@ public class Text3D {
     if (jmolRenderer == null)
       jmolRenderer = g3d;
     int bgcolor = (argbBackground == 0 ? buffer[0] : argbBackground);
-    for (int i = 0, offset = 0; i < height; i++)
+    for (int i = 0, offset = 0; i < height; i++) {
+      //System.out.println(Integer.toHexString(buffer[offset]));
       for (int j = 0; j < width; j++) {
         int argb = buffer[offset++];
-        if (argb != bgcolor)
+        if (argb != bgcolor && (argb & 0xFF000000) == 0xFF000000)
           jmolRenderer.plotPixelClippedNoSlab(argb, x + j, y + i, z);
       }
+    }
   }
 
        private static void plotImageUnClipped(int x, int y, int z, Graphics3D g3d,
@@ -169,10 +172,11 @@ public class Text3D {
     int offset = 0;
     int bgcolor = (argbBackground == 0 ? buffer[0] : argbBackground);
     while (i < textHeight) {
+      //System.out.println(Integer.toHexString(buffer[offset]));
       while (j < textWidth) {
         if (z < zbuf[pbufOffset]) {
           int argb = buffer[offset];
-          if (argb != bgcolor)
+          if (argb != bgcolor && (argb & 0xFF000000) == 0xFF000000)
             g3d.addPixel(pbufOffset, z, argb);
         }
         ++offset;

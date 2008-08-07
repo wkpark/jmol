@@ -621,6 +621,8 @@ public class StateManager {
     boolean messageStyleChime = false;
     int pickingSpinRate = 10;
     String pickLabel = "";
+    float pointGroupDistanceTolerance = 0.2f;
+    float pointGroupLinearTolerance = 8.0f;
     String propertyColorScheme = "roygb";
     String quaternionFrame = "c";
     float solventProbeRadius = 1.2f;
@@ -1178,6 +1180,8 @@ public class StateManager {
       setParameterValue("pickingSpinRate", pickingSpinRate);
       setParameterValue("pickingStyle", "toggle");
       setParameterValue("pickLabel", pickLabel);
+      setParameterValue("pointGroupLinearTolerance", pointGroupLinearTolerance);
+      setParameterValue("pointGroupDistanceTolerance", pointGroupDistanceTolerance);
       setParameterValue("propertyColorScheme", propertyColorScheme);
       setParameterValue("propertyDataField", 0);
       setParameterValue("propertyAtomNumberField", 0);

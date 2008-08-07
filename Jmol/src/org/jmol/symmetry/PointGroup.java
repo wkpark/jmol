@@ -117,6 +117,8 @@ public class PointGroup {
   private int nAtoms;
   private String name = "C_1?";
   private int modelIndex;
+  private float distanceTolerance = 0.2f;
+  private float linearTolerance = 0.99f; // 8 degrees
 
   public int getModelIndex() {
     return modelIndex;
@@ -132,12 +134,16 @@ public class PointGroup {
 
   final private Point3f center = new Point3f();
 
-  public PointGroup(Atom[] atomset, BitSet bsAtoms, boolean haveVibration, int modelIndex) {
+  public PointGroup(Atom[] atomset, BitSet bsAtoms, boolean haveVibration,
+      int modelIndex, float distanceTolerance, float linearTolerance) {
     this.modelIndex = modelIndex;
+    this.distanceTolerance = distanceTolerance;
+    this.linearTolerance = (float) (Math.cos(linearTolerance / 180 * Math.PI));
     Point3f[] atoms;
     if ((atoms = getCenter(atomset, bsAtoms)) == null) {
       Logger.error("Too many atoms for point group calculation");
-      name = "point group not determined -- atomCount > " + ATOM_COUNT_MAX + " -- select fewer atoms and try again.";
+      name = "point group not determined -- atomCount > " + ATOM_COUNT_MAX
+          + " -- select fewer atoms and try again.";
       return;
     }
     int[] elements = new int[atoms.length];
@@ -152,7 +158,7 @@ public class PointGroup {
       Point3f[] atomVibs = new Point3f[atoms.length];
       for (int i = atoms.length; --i >= 0;) {
         atomVibs[i] = new Point3f(atoms[i]);
-        Vector3f v = ((Atom)atoms[i]).getVibrationVector();
+        Vector3f v = ((Atom) atoms[i]).getVibrationVector();
         if (v != null)
           atomVibs[i].add(v);
       }
@@ -290,7 +296,6 @@ public class PointGroup {
     }
   }
 
-  private final static float DISTANCE_TOLERANCE = 0.2f;
   private boolean checkOperation(Point3f[] atoms, int[] elements, Quaternion q,
                                  Point3f center, int iOrder) {
     Point3f pt = new Point3f();
@@ -321,7 +326,7 @@ public class PointGroup {
           vTemp.sub(center, pt);
           pt.scaleAdd(2, vTemp, pt);
         }
-        if ((q != null || isInversion) && pt.distance(a1) < DISTANCE_TOLERANCE) {
+        if ((q != null || isInversion) && pt.distance(a1) < distanceTolerance) {
           nFound++;
           continue;
         }
@@ -331,7 +336,7 @@ public class PointGroup {
           Point3f a2 = atoms[j];
           //  System.out.println(i + " " + j + " " + a1 + " " + a2 + " " + pt 
           //      + nFound + " " + pt.distance(a2));
-          if (pt.distance(a2) < DISTANCE_TOLERANCE) {
+          if (pt.distance(a2) < distanceTolerance) {
             nFound++;
             continue out;
           }
@@ -360,10 +365,9 @@ public class PointGroup {
     return true;
   }
 
-  private final static float LINEAR_DOT_MINIMUM = 0.99f; // 8 degrees
-
-  private static boolean isParallel(Vector3f v1, Vector3f v2) {
-    return (Math.abs(v1.dot(v2)) >= LINEAR_DOT_MINIMUM);
+  private boolean isParallel(Vector3f v1, Vector3f v2) {
+    // note -- these MUST be unit vectors
+    return (Math.abs(v1.dot(v2)) >= linearTolerance);
   }
 
   int maxElement = 0;

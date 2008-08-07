@@ -433,7 +433,8 @@ abstract public class ModelSet extends ModelCollection {
         : "") + pg.getInfo(asDraw);
   }
 
-  private PointGroup calculatePointGroupForFirstModel(BitSet bsAtoms, boolean forceNew) {
+  private PointGroup calculatePointGroupForFirstModel(BitSet bsAtoms,
+                                                      boolean forceNew) {
     int modelIndex = viewer.getCurrentModelIndex();
     int iAtom = BitSetUtil.firstSetBit(bsAtoms);
     if (modelIndex < 0 && iAtom >= 0)
@@ -442,21 +443,22 @@ abstract public class ModelSet extends ModelCollection {
       modelIndex = BitSetUtil.firstSetBit(viewer.getVisibleFramesBitSet());
       bsAtoms = null;
     }
-      BitSet bs = getModelAtomBitSet(modelIndex, true);
-      if (bsAtoms != null)
-        for (int i = 0; i < atomCount; i++)
-          if (atoms[i].modelIndex == modelIndex)
-            if (!bsAtoms.get(i))
-              bs.clear(i);
+    BitSet bs = getModelAtomBitSet(modelIndex, true);
+    if (bsAtoms != null)
+      for (int i = 0; i < atomCount; i++)
+        if (atoms[i].modelIndex == modelIndex)
+          if (!bsAtoms.get(i))
+            bs.clear(i);
+    iAtom = BitSetUtil.firstSetBit(bs);
+    if (iAtom < 0) {
+      bs = getModelAtomBitSet(modelIndex, true);
       iAtom = BitSetUtil.firstSetBit(bs);
-      if (iAtom < 0) {
-        bs = getModelAtomBitSet(modelIndex, true);
-        iAtom = BitSetUtil.firstSetBit(bs);
-      }
-      Object obj = getShapeProperty(JmolConstants.SHAPE_VECTORS, "mad", iAtom);
-      boolean haveVibration = (obj != null && ((Integer)obj).intValue() != 0 
-          || viewer.isVibrationOn());
-      return new PointGroup(atoms, bs, haveVibration, modelIndex);
+    }
+    Object obj = getShapeProperty(JmolConstants.SHAPE_VECTORS, "mad", iAtom);
+    boolean haveVibration = (obj != null && ((Integer) obj).intValue() != 0 || viewer
+        .isVibrationOn());
+    return new PointGroup(atoms, bs, haveVibration, modelIndex, viewer
+        .getPointGroupTolerance(0), viewer.getPointGroupTolerance(1));
   }
 
   private BitSet modelsOf(BitSet bsAtoms, BitSet bsAllAtoms) {

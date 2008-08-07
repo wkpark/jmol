@@ -4348,6 +4348,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //Eval
     boolean notFound = false;
     while (true) {
+      //11.6.RC2//
+      if (key.equalsIgnoreCase("pointGroupDistanceTolerance")) {
+        setPointGroupTolerance(value, 0);
+        break;
+      }
+      if (key.equalsIgnoreCase("pointGroupLinearTolerance")) {
+        setPointGroupTolerance(value, 1);
+        break;
+      }
+      
       //11.5.30//
       if (key.equalsIgnoreCase("ellipsoidAxisDiameter")) {
         if (isInt)
@@ -4488,7 +4498,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     else
       global.setUserVariable(key, new Token(Token.decimal, new Float(value)));
     return true;
-  }
+   }
 
   public void setIntProperty(String key, int value) {
     if (key.charAt(0) == '_') {
@@ -6829,6 +6839,27 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getPointGroupAsString(selectionManager.bsSelection, asDraw);
   }
 
+  private void setPointGroupTolerance(float value, int type) {
+    switch (type) {
+    case 0:
+      global.pointGroupDistanceTolerance = value;
+      break;
+    case 1:
+      global.pointGroupLinearTolerance = value;
+      break;
+    }
+  }
+  
+  public float getPointGroupTolerance(int type) {
+    switch (type) {
+    case 0:
+      return global.pointGroupDistanceTolerance;
+    case 1:
+      return global.pointGroupLinearTolerance;
+    }
+    return 0;
+  }
+  
   Object getFileAsImage(String pathName, Hashtable htParams) {
     if (!haveDisplay)
       return "no display";

@@ -427,10 +427,12 @@ abstract public class ModelSet extends ModelCollection {
     return calculatePointGroupForFirstModel(bsAtoms, true).getName();
   }
 
-  public String getPointGroupAsString(BitSet bsAtoms, boolean asDraw) {
+  public String getPointGroupAsString(BitSet bsAtoms, boolean asDraw,
+                                      String type, int index, float scale) {
     PointGroup pg = calculatePointGroupForFirstModel(bsAtoms, false);
-    return (modelCount > 1 ? "frame " + getModelNumberDotted(pg.getModelIndex()) + "; "
-        : "") + pg.getInfo(asDraw);
+    return (modelCount > 1 ? "frame "
+        + getModelNumberDotted(pg.getModelIndex()) + "; " : "")
+        + pg.getInfo(asDraw, type, index, scale);
   }
 
   private PointGroup calculatePointGroupForFirstModel(BitSet bsAtoms,

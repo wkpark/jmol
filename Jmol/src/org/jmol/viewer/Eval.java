@@ -6005,7 +6005,7 @@ class Eval {
       }
       break;
     case 3:
-      if (parameterAsString(1).equalsIgnoreCase("scale")) {
+      if (tokAt(1) == Token.scale) {
         setFloatProperty("vectorScale", floatParameter(2, -10, 10));
         return;
       }
@@ -6176,12 +6176,11 @@ class Eval {
       checkLength(2);
       period = floatParameter(1);
       break;
+    case Token.scale:
+      setFloatProperty("vibrationScale", floatParameter(2, -10, 10));
+      return;
     case Token.identifier:
       String cmd = optParameterAsString(1);
-      if (cmd.equalsIgnoreCase("scale")) {
-        setFloatProperty("vibrationScale", floatParameter(2, -10, 10));
-        return;
-      }
       if (cmd.equalsIgnoreCase("period")) {
         setFloatProperty("vibrationPeriod", floatParameter(2));
         return;
@@ -6231,12 +6230,7 @@ class Eval {
         }
         return;
       case Token.pointgroup:
-        if (isSyntaxCheck)
-          return;
-        if (tokAt(0) == Token.draw)
-          runScript(viewer.getPointGroupAsString(true));
-        else
-          showString(viewer.calculatePointGroup());        
+        pointGroup();
         return;
       case Token.surface:
         isSurface = true;
@@ -6296,6 +6290,32 @@ class Eval {
         ERROR_what,
         "CALCULATE",
         "aromatic? hbonds? polymers? straightness? structure? surfaceDistance FROM? surfaceDistance WITHIN?");
+  }
+
+  private void pointGroup() throws ScriptException {
+    switch (tokAt(0)) {
+    case Token.calculate:
+      if (!isSyntaxCheck)
+        showString(viewer.calculatePointGroup());
+      return;
+    case Token.show:
+      if (!isSyntaxCheck)
+        showString(viewer.getPointGroupAsString(false, null, 0, 0));
+      return;
+    }
+    // draw pointgroup [C2|C3|Cs|Ci|etc.] [n] [scale x]
+    int pt = 2;
+    String type = (tokAt(pt) == Token.scale ? "" : optParameterAsString(pt));
+    float scale = 1;
+    int index = 0;
+    if (type.length() > 0) {
+      if (isFloatParameter(++pt))
+        index = intParameter(pt++);
+    }
+    if (tokAt(pt) == Token.scale)
+      scale = floatParameter(++pt);
+    if (!isSyntaxCheck)
+      runScript(viewer.getPointGroupAsString(true, type, index, scale));
   }
 
   private void dots(int iShape) throws ScriptException {
@@ -8951,7 +8971,7 @@ class Eval {
         return "";
       }
     } else if (data == "PGRP") {
-      data = viewer.getPointGroupAsString((type2.equals("draw")));
+      data = viewer.getPointGroupAsString(type2.equals("draw"), null, 0, 1.0f);
     } else if (data == "PDB") {
       data = viewer.getPdbData(null);
     } else if (data == "XYZ" || data == "MOL") {
@@ -9347,9 +9367,8 @@ class Eval {
         msg = viewer.getPDBHeader();
       break;
     case Token.pointgroup:
-      if (!isSyntaxCheck)
-        msg = viewer.getPointGroupAsString(false);
-      break;
+      pointGroup();
+      return;
     case Token.symmetry:
       if (!isSyntaxCheck)
         msg = viewer.getSymmetryInfoAsString();
@@ -9601,7 +9620,7 @@ class Eval {
         return;
       break;
     case Token.pointgroup:
-      calculate();
+      pointGroup();
       return;
     case Token.quaternion:
       dataFrame(JmolConstants.JMOL_DATA_QUATERNION);
@@ -9699,6 +9718,18 @@ class Eval {
           intScale = intParameter(i);
         }
         break;
+      case Token.scale:
+        if (++i >= statementLength)
+          error(ERROR_numberExpected);
+        switch (getToken(i).tok) {
+        case Token.integer:
+          intScale = intParameter(i);
+          continue;
+        case Token.decimal:
+          intScale = (int) (floatParameter(i) * 100);
+          continue;
+        }
+        error(ERROR_numberExpected);
       case Token.times:
       case Token.identifier:
         String str = parameterAsString(i);
@@ -9768,20 +9799,6 @@ class Eval {
           propertyValue = pt;
           break;
         }
-        if (str.equalsIgnoreCase("SCALE")) {
-          if (++i >= statementLength)
-            error(ERROR_numberExpected);
-          switch (getToken(i).tok) {
-          case Token.integer:
-            intScale = intParameter(i);
-            continue;
-          case Token.decimal:
-            intScale = (int) (floatParameter(i) * 100);
-            continue;
-          default:
-            error(ERROR_numberExpected);
-          }
-        }
         if (str.equalsIgnoreCase("DIAMETER")) { //pixels
           propertyValue = new Float(floatParameter(++i));
           propertyName = (tokAt(i) == Token.decimal ? "width" : "diameter");
@@ -9812,7 +9829,7 @@ class Eval {
         break;
       case Token.color:
         i++;
-        //fall through
+      //fall through
       case Token.translucent:
       case Token.opaque:
         isTranslucent = false;
@@ -9856,8 +9873,8 @@ class Eval {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "set", null);
     }
     if (colorArgb != Integer.MIN_VALUE)
-      setShapeProperty(JmolConstants.SHAPE_DRAW, "color", new Integer(
-          colorArgb));
+      setShapeProperty(JmolConstants.SHAPE_DRAW, "color",
+          new Integer(colorArgb));
     if (isTranslucent)
       setShapeTranslucency(JmolConstants.SHAPE_DRAW, "", "translucent",
           translucentLevel);
@@ -9865,7 +9882,7 @@ class Eval {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "scale", new Integer(intScale));
     }
     if (iptDisplayProperty > 0) {
-      if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, iptDisplayProperty, 
+      if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, iptDisplayProperty,
           getToken(iptDisplayProperty).tok))
         error(ERROR_invalidArgument);
     }
@@ -10178,13 +10195,12 @@ class Eval {
           propertyValue = parameterAsString(++i);
         }
         break;
+      case Token.scale:
+        propertyName = "scale";
+        propertyValue = new Float(floatParameter(++i));
+        break;
       case Token.identifier:
         String str = parameterAsString(i);
-        if (str.equalsIgnoreCase("SCALE")) {
-          propertyName = "scale";
-          propertyValue = new Float(floatParameter(++i));
-          break;
-        }
         if (str.equalsIgnoreCase("MOLECULAR")) {
           propertyName = "molecular";
           break;
@@ -10257,6 +10273,10 @@ class Eval {
       propertyName = "plane";
       propertyValue = planeParameter(2);
       break;
+    case Token.scale:
+      propertyName = "scale";
+      propertyValue = new Float(floatParameter(2));
+      break;
     case Token.identifier:
       str = parameterAsString(1);
       if ((offset = moOffset(1)) != Integer.MAX_VALUE) {
@@ -10276,11 +10296,6 @@ class Eval {
       if (str.equalsIgnoreCase("RESOLUTION")
           || str.equalsIgnoreCase("POINTSPERANGSTROM")) {
         propertyName = "resolution";
-        propertyValue = new Float(floatParameter(2));
-        break;
-      }
-      if (str.equalsIgnoreCase("SCALE")) {
-        propertyName = "scale";
         propertyValue = new Float(floatParameter(2));
         break;
       }
@@ -10624,6 +10639,10 @@ class Eval {
         propertyValue = planeParameter(++i);
         i = iToken;
         break;
+      case Token.scale:
+        propertyName = "scale";
+        propertyValue = new Float(floatParameter(++i));
+        break;
       case Token.identifier:
         str = parameterAsString(i);
         if (str.equalsIgnoreCase("id")) {
@@ -10695,11 +10714,6 @@ class Eval {
         if (str.equalsIgnoreCase("INTERIOR")) {
           propertyName = "pocket";
           propertyValue = Boolean.FALSE;
-          break;
-        }
-        if (str.equalsIgnoreCase("SCALE")) {
-          propertyName = "scale";
-          propertyValue = new Float(floatParameter(++i));
           break;
         }
         if (str.equalsIgnoreCase("MINSET")) {

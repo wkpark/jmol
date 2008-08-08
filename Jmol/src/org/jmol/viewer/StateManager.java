@@ -564,6 +564,7 @@ public class StateManager {
     boolean displayCellParameters = true;
     boolean dotsSelectedOnly = false;
     boolean dotSurface = true;
+    int dotDensity = 3;
     boolean dynamicMeasurements = false;
     boolean greyscaleRendering = false;
     boolean isosurfacePropertySmoothing = true;
@@ -1128,6 +1129,7 @@ public class StateManager {
       setParameterValue("dipoleScale", dipoleScale);
       setParameterValue("disablePopupMenu", disablePopupMenu);
       setParameterValue("displayCellParameters", displayCellParameters);
+      setParameterValue("dotDensity", dotDensity);
       setParameterValue("dotsSelectedOnly", dotsSelectedOnly);
       setParameterValue("dotSurface", dotSurface);
       setParameterValue("drawHover", false);

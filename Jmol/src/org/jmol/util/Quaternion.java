@@ -365,7 +365,8 @@ public class Quaternion {
   }
 
   private void fixQ(Quaternion qNew) {
-    float f = (q0 < 0 ? -1 : 1); 
+    float f = (q0 < 0 || q0 == 0
+        && (q1 < 0 || q1 == 0 && (q2 < 0 || q2 == 0 && q3 < 0)) ? -1 : 1);
     qNew.q0 = q0 * f;
     qNew.q1 = q1 * f;
     qNew.q2 = q2 * f;

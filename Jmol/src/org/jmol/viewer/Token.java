@@ -957,6 +957,7 @@ public class Token {
 
   final static int absolute     = misc |  1;
   final static int average      = misc |  2;
+  final static int axis         = misc |  3;
   final static int babel        = misc |  4;
   final static int back         = misc |  5;
   final public static int backlit      = misc |  6;
@@ -1010,20 +1011,21 @@ public class Token {
   final static int rotation     = misc | 50;
   final static int rubberband   = misc | 51;
   final static int sasurface    = misc | 52;
-  final static int shape        = misc | 53;
-  final static int shapely      = misc | 54;
-  final static int solid        = misc | 55;
-  final static int spacegroup   = misc | 56;
-  final static int state        = misc | 57;
-  final static int top          = misc | 58;
-  final static int torsion      = misc | 59;
-  final static int transform    = misc | 60;
-  final static int translation  = misc | 61;
-  final public static int translucent  = misc | 62;
-  final public static int triangles    = misc | 63;
-  final static int url          = misc | 64; 
-  final static int user         = misc | 65; //color option
-  final static int qw           = misc | 66;
+  final static int scale        = misc | 53;
+  final static int shape        = misc | 54;
+  final static int shapely      = misc | 55;
+  final static int solid        = misc | 56;
+  final static int spacegroup   = misc | 57;
+  final static int state        = misc | 58;
+  final static int top          = misc | 59;
+  final static int torsion      = misc | 60;
+  final static int transform    = misc | 61;
+  final static int translation  = misc | 62;
+  final public static int translucent  = misc | 63;
+  final public static int triangles    = misc | 64;
+  final static int url          = misc | 65; 
+  final static int user         = misc | 66; //color option
+  final static int qw           = misc | 67;
 
 
   // predefined Tokens: 
@@ -1214,7 +1216,8 @@ public class Token {
     "fontsize",          new Token(fontsize),
     "picking",           new Token(picking),
     "pickingStyle",      new Token(pickingStyle),
-    "radius",            new Token(radius),    
+    "radius",            new Token(radius),
+    "scale",             new Token(scale),
     "scale3D",           new Token(scale3d),
                           
     //                   lighting 
@@ -1232,7 +1235,8 @@ public class Token {
     //                   show parameters
 
     "atom",              new Token(atoms),
-    "atoms",             null, 
+    "atoms",             null,
+    "axis",              new Token(axis),
     "axisangle",         new Token(axisangle),
     "orientation",       new Token(orientation),
     "pdbheader",         new Token(pdbheader),                          

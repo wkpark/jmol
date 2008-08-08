@@ -63,6 +63,10 @@ public class DotsRenderer extends ShapeRenderer {
     int sppa = (int) viewer.getScalePixelsPerAngstrom();
     screenLevel = (iShowSolid || sppa > 20 ? 3 : sppa > 10 ? 2 : sppa > 5 ? 1
         : 0);
+    if (!iShowSolid) {
+      screenLevel += viewer.getDotDensity() - 3;
+      screenLevel = Math.max(Math.min(screenLevel, 3), 0);
+    }
     screenDotCount = Geodesic.getVertexCount(screenLevel);
     for (int i = screenDotCount; --i >= 0;)
       viewer.transformVector(Geodesic.getVertexVector(i),

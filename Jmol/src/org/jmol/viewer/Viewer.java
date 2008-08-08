@@ -4513,6 +4513,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setIntProperty(String key, int value, boolean defineNew) {
     boolean notFound = false;    
     while (true) {
+      
+      //11.6.RC2//
+      if (key.equalsIgnoreCase("dotDensity")) {
+        setDotDensity(value);
+        break;
+      }
+      
       //11.5.30//
       // ellipsoidDotCount" just handled as getParameter()
 
@@ -5194,6 +5201,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.dotsSelectedOnly = TF;
   }
 
+  private void setDotDensity(int value) {
+    global.dotDensity = value;
+    refresh(0, "Viewer:setDotDensity()"); 
+  }
+  
+  public int getDotDensity() {
+    return global.dotDensity;
+  }
+  
   public boolean isRangeSelected() {
     return global.rangeSelected;
   }
@@ -6835,8 +6851,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.calculatePointGroup(selectionManager.bsSelection);
   }
 
-  public String getPointGroupAsString(boolean asDraw) {
-    return modelSet.getPointGroupAsString(selectionManager.bsSelection, asDraw);
+  public String getPointGroupAsString(boolean asDraw, String type, int index,
+                                      float scale) {
+    return modelSet.getPointGroupAsString(selectionManager.bsSelection, asDraw,
+        type, index, scale);
   }
 
   private void setPointGroupTolerance(float value, int type) {
@@ -6877,5 +6895,5 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     return image;
   }
-  
+
 }

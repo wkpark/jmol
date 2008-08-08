@@ -119,6 +119,8 @@ public class PointGroup {
   private int modelIndex;
   private float distanceTolerance = 0.2f;
   private float linearTolerance = 0.99f; // 8 degrees
+  private Operation principalAxis = new Operation(null);
+  private Operation principalPlane = new Operation(null);
 
   public int getModelIndex() {
     return modelIndex;
@@ -171,6 +173,13 @@ public class PointGroup {
         name = "D(infinity)h";
       } else {
         name = "C(infinity)v";
+      }
+      vTemp.sub(atoms[1], atoms[0]);
+      addAxis(c2, vTemp);
+      principalAxis = axes[c2][0];
+      if (haveInversionCenter) {
+        axes[0] = new Operation[1];
+        principalPlane = axes[0][nAxes[0]++] = new Operation(vTemp);
       }
       return;
     }
@@ -227,6 +236,7 @@ public class PointGroup {
         // and more than one C2 if even order (since the one will be part of the 
         // principal axis
 
+        principalAxis = setPrincipalAxis(n, nPlanes);
         if (nPlanes == 0) {
           if (n < firstProper) {
             name = "S" + n;
@@ -247,14 +257,18 @@ public class PointGroup {
         }
       } else if (nPlanes == 0) {
         // Cn, S3, S6 
+        principalAxis = axes[n][0];
         if (n < firstProper) {
           name = "S" + n;
         } else {
           name = "C" + (n - firstProper);
         }
       } else if (nPlanes == n - firstProper) {
+        principalAxis = axes[n][0];
         name = "C" + nPlanes + "v";
       } else {
+        principalAxis = axes[n < firstProper ? n + firstProper : n][0];
+        principalPlane = axes[0][0];
         if (n < firstProper)
           n /= 2;
         else
@@ -263,6 +277,47 @@ public class PointGroup {
       }
     }
     //System.out.println(drawInfo());
+  }
+
+  private Operation setPrincipalAxis(int n, int nPlanes) {
+    Operation principalPlane = setPrincipalPlane(n, nPlanes);
+    if (nPlanes == 0 && n < firstProper || nAxes[n] == 1) {
+      if (nPlanes > 0 && n < firstProper)
+        n = firstProper + n / 2;
+        return axes[n][0];
+    }
+    // D2, D2d, D2h -- which c2 axis is it?
+    if (principalPlane == null)
+      return null;
+    for (int i = 0; i < nAxes[c2]; i++)
+      if (isParallel(principalPlane.normalOrAxis, axes[c2][i].normalOrAxis)) {
+        if (i != 0) {
+          Operation o = axes[c2][0];
+          axes[c2][0] = axes[c2][i];
+          axes[c2][i] = o;
+        }
+        return axes[c2][0];
+      }
+    return null;
+  }
+
+  private Operation setPrincipalPlane(int n, int nPlanes) {
+    // principal plane is perpendicular to more than two other planes
+    if (nPlanes == 1)
+      return principalPlane = axes[0][0];
+    if (nPlanes == 0 || nPlanes == n - firstProper)
+      return null;
+    for (int i = 0; i < nPlanes; i++)
+      for (int j = 0, nPerp = 0; j < nPlanes; j++)
+        if (isPerpendicular(axes[0][i].normalOrAxis, axes[0][j].normalOrAxis) && ++nPerp > 2) {
+          if (i != 0) {
+            Operation o = axes[0][0];
+            axes[0][0] = axes[0][i];
+            axes[0][i] = o;
+          }
+          return principalPlane = axes[0][0];
+        }
+    return null;
   }
 
   private final static int ATOM_COUNT_MAX = 100;
@@ -368,6 +423,11 @@ public class PointGroup {
   private boolean isParallel(Vector3f v1, Vector3f v2) {
     // note -- these MUST be unit vectors
     return (Math.abs(v1.dot(v2)) >= linearTolerance);
+  }
+
+  private boolean isPerpendicular(Vector3f v1, Vector3f v2) {
+    // note -- these MUST be unit vectors
+    return (Math.abs(v1.dot(v2)) <= 1 - linearTolerance);
   }
 
   int maxElement = 0;
@@ -690,7 +750,7 @@ public class PointGroup {
     // also look for planes normal to any C axis
     if (haveAxes)
       for (int i = c2; i < maxAxis; i++)
-        for (int j = 0; j < nAxes[i]; i++)
+        for (int j = 0; j < nAxes[i]; j++)
           nPlanes = getPlane(nPlanes, axes[i][j].normalOrAxis, atoms, elements,
               center);
     return nPlanes;
@@ -740,32 +800,38 @@ public class PointGroup {
   final static String[] typeNames = { "plane", "proper axis", "improper axis",
       "center of inversion" };
 
+  int nOps = 0;
   public class Operation {
-
     int type;
     int order;
+    int index;
     Vector3f normalOrAxis;
 
     Operation() {
+      index = ++nOps;
       type = OPERATION_INVERSION_CENTER;
-      //if (Logger.debugging)
-        Logger.info("new operation -- " + typeNames[type]);
       order = 1;
+      if (Logger.debugging)
+        Logger.info("new operation -- " + typeNames[type]);
     }
 
     Operation(Vector3f v, int i) {
+      index = ++nOps;
       type = (i < firstProper ? OPERATION_IMPROPER_AXIS : OPERATION_PROPER_AXIS);
       order = i % firstProper;
       normalOrAxis = new Quaternion(v, 180).getNormal();
-      //if (Logger.debugging)
+      if (Logger.debugging)
         Logger.info("new operation -- " + (order == i ? "S" : "C") + order + " "
             + normalOrAxis);
     }
 
     Operation(Vector3f v) {
+      if (v == null)
+        return;
+      index = ++nOps;
       type = OPERATION_PLANE;
       normalOrAxis = new Quaternion(v, 180).getNormal();
-      //if (Logger.debugging)
+      if (Logger.debugging)
         Logger.info("new operation -- plane " + normalOrAxis);
     }
 
@@ -785,57 +851,84 @@ public class PointGroup {
     }
   }
 
-  public String getInfo(boolean asDraw) {
+  public String getInfo(boolean asDraw, String type, int index,
+                        float scaleFactor) {
     Vector3f v = new Vector3f();
     Operation op;
+    if (scaleFactor == 0)
+      scaleFactor = 1;
     int[][] nType = new int[4][2];
     for (int i = 1; i < maxAxis; i++)
       for (int j = nAxes[i]; --j >= 0;)
         nType[axes[i][j].type][0]++;
     StringBuffer sb = new StringBuffer("# " + nAtoms + " atoms\n");
     if (asDraw) {
-      String m = "_" + modelIndex + "_";
-      sb.append("draw delete pg0" + m + "*;draw delete pgva" + m + "*;draw delete pgvp" + m + "*;");
+      boolean haveType = (type.length() > 0);
+      boolean anyProperAxis = (type.equalsIgnoreCase("Cn"));
+      boolean anyImproperAxis = (type.equalsIgnoreCase("Sn"));
       sb.append("set perspectivedepth off;\n");
-      sb.append("draw pg0").append(m).append(haveInversionCenter ? "inv " : " ");
-      sb.append(Escape.escape(center) + (haveInversionCenter ? "\"i\";\n" : ";\n"));
+      String m = "_" + modelIndex + "_";
+      if (!haveType)
+        sb.append("draw delete pg0" + m + "*;draw delete pgva" + m
+            + "*;draw delete pgvp" + m + "*;");
+      if (!haveType || type.equalsIgnoreCase("Ci"))
+        sb.append("draw pg0").append(m).append(
+            haveInversionCenter ? "inv " : " ").append(
+            Escape.escape(center) + (haveInversionCenter ? "\"i\";\n" : ";\n"));
       for (int i = 2; i < maxAxis; i++) {
+        if (nAxes[i] == 0)
+          continue;
+        String label = axes[i][0].getLabel();
+        if (!haveType || type.equalsIgnoreCase(label)
+            || anyProperAxis && i >= firstProper 
+            || anyImproperAxis && i < firstProper)
         for (int j = 0; j < nAxes[i]; j++) {
+          if (index > 0 && j + 1 != index)
+            continue;
           op = axes[i][j];
           v.set(op.normalOrAxis);
           v.add(center);
-          float scale = (4.0f + op.order / 4.0f)
-              * (op.type == OPERATION_IMPROPER_AXIS ? -1 : 1);
-          sb.append("draw pgva").append(m).append(op.getLabel()).append("_").append(j + 1)
-              .append(" width 0.05 scale " + scale + " ").append(
-                  Escape.escape(v));
-          v.scaleAdd(-2, op.normalOrAxis, v);
-          sb.append(Escape.escape(v)).append("\"" + op.getLabel() + "\"")
-              .append(op.type == OPERATION_IMPROPER_AXIS ? " color red" : "")
-              .append(";\n");
+            float scale = scaleFactor * (4.0f + op.order / 4.0f)
+                * (op.type == OPERATION_IMPROPER_AXIS ? -1 : 1);
+            sb.append("draw pgva").append(m).append(label).append("_").append(
+                j + 1).append(" width 0.05 scale " + scale + " ").append(
+                Escape.escape(v));
+            v.scaleAdd(-2, op.normalOrAxis, v);
+            sb.append(Escape.escape(v)).append("\"" + label + 
+                (op.index == principalAxis.index ? "*" : "") + "\" color ").append(
+                op.index == principalAxis.index ? "red"
+                    : op.type == OPERATION_IMPROPER_AXIS ? "blue" : "yellow")
+                .append(";\n");
         }
       }
-      for (int j = 0; j < nAxes[0]; j++) {
-        op = axes[0][j];
-        v.set(op.normalOrAxis);
-        v.scale(0.025f);
-        v.add(center);
-        sb.append("draw pgvp").append(m).append(j + 1).append("disk width 6.0 cylinder ")
-            .append(Escape.escape(v));
-        v.scaleAdd(-0.05f, op.normalOrAxis, v);
-        sb.append(Escape.escape(v)).append(" color translucent;\n");
-
-        v.set(op.normalOrAxis);
-        v.add(center);
-        sb.append("draw pgvp").append(m).append(j + 1).append(
-            "ring width 0.05 scale 3.0 arc ").append(Escape.escape(v));
-        v.scaleAdd(-2, op.normalOrAxis, v);
-        sb.append(Escape.escape(v));
-        v.x += 0.011;
-        v.y += 0.012;
-        v.z += 0.013;
-        sb.append(Escape.escape(v)).append("{0 360 0.5} color red;\n");
-      }
+      if (!haveType || type.equalsIgnoreCase("Cs"))
+        for (int j = 0; j < nAxes[0]; j++) {
+          if (index > 0 && j + 1 != index)
+            continue;
+          op = axes[0][j];
+          v.set(op.normalOrAxis);
+          v.scale(0.025f);
+          v.add(center);
+          sb.append("draw pgvp").append(m).append(j + 1).append(
+              "disk width " + (scaleFactor * 6.0) + " cylinder ").append(
+              Escape.escape(v));
+          v.scaleAdd(-0.05f, op.normalOrAxis, v);
+          sb.append(Escape.escape(v)).append(" color translucent yellow;\n");
+          v.set(op.normalOrAxis);
+          v.add(center);
+          sb.append("draw pgvp").append(m).append(j + 1).append(
+              "ring width 0.05 scale " + (scaleFactor * 3.0) + " arc ").append(
+              Escape.escape(v));
+          v.scaleAdd(-2, op.normalOrAxis, v);
+          sb.append(Escape.escape(v));
+          v.x += 0.011;
+          v.y += 0.012;
+          v.z += 0.013;
+          sb.append(Escape.escape(v))
+              .append("{0 360 0.5} color ")
+              .append(op.index == principalPlane.index ? "red" : "blue")
+              .append(";\n");
+        }
       sb.append("# name=" + name);
       sb.append(", nCi=" + (haveInversionCenter ? 1 : 0));
       sb.append(", nCs=" + nAxes[0]);
@@ -871,24 +964,24 @@ public class PointGroup {
       sb.append("\n");
       sb.append("\n" + name + "\ttype\tnType\tnUnique");
       sb.append("\n" + name + "\tE\t  1\t  1");
-      
+
       n = (haveInversionCenter ? 1 : 0);
       sb.append("\n" + name + "\tCi\t  " + n + "\t  " + n);
-      
+
       sb.append("\n" + name + "\tCs\t");
-      TextFormat.rFill(sb, "    ",nAxes[0] + "\t");
-      TextFormat.rFill(sb, "    ",nAxes[0] + "\n");
+      TextFormat.rFill(sb, "    ", nAxes[0] + "\t");
+      TextFormat.rFill(sb, "    ", nAxes[0] + "\n");
 
       sb.append(name + "\tCn\t");
-      TextFormat.rFill(sb, "    ",nType[OPERATION_PROPER_AXIS][0] + "\t");
-      TextFormat.rFill(sb, "    ",nType[OPERATION_PROPER_AXIS][1] + "\n");
+      TextFormat.rFill(sb, "    ", nType[OPERATION_PROPER_AXIS][0] + "\t");
+      TextFormat.rFill(sb, "    ", nType[OPERATION_PROPER_AXIS][1] + "\n");
 
       sb.append(name + "\tSn\t");
-      TextFormat.rFill(sb, "    ",nType[OPERATION_IMPROPER_AXIS][0] + "\t");
-      TextFormat.rFill(sb, "    ",nType[OPERATION_IMPROPER_AXIS][1] + "\n");
-      
+      TextFormat.rFill(sb, "    ", nType[OPERATION_IMPROPER_AXIS][0] + "\t");
+      TextFormat.rFill(sb, "    ", nType[OPERATION_IMPROPER_AXIS][1] + "\n");
+
       sb.append(name + "\t\tTOTAL\t");
-      TextFormat.rFill(sb, "    ",nTotal + "\n");
+      TextFormat.rFill(sb, "    ", nTotal + "\n");
     }
     return sb.toString();
   }

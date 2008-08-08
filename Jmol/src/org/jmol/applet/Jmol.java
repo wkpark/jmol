@@ -377,7 +377,7 @@ public class Jmol implements WrappedApplet {
                 "setWindowAlwaysOnTop"));
           }
         } catch (Exception e) {
-          popupMenuAllowed = false;
+          //popupMenuAllowed = false;
           System.out.println("popup menu not available");
         }
         getPopupMenu(false);

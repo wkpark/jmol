@@ -115,10 +115,11 @@ public class PointGroup {
   private int[]  nAxes = new int[maxAxis];
   private Operation[][] axes = new Operation[maxAxis][];
   private int nAtoms;
-  private String name = "C_1?";
+  private float radius;
   private int modelIndex;
   private float distanceTolerance = 0.2f;
   private float linearTolerance = 0.99f; // 8 degrees
+  private String name = "C_1?";
   private Operation principalAxis = new Operation(null);
   private Operation principalPlane = new Operation(null);
 
@@ -133,16 +134,18 @@ public class PointGroup {
   private final Vector3f vTemp = new Vector3f();
   private int centerAtomIndex = -1;
   private boolean haveInversionCenter;
-
+  
   final private Point3f center = new Point3f();
 
-  public PointGroup(Atom[] atomset, BitSet bsAtoms, boolean haveVibration,
-      int modelIndex, float distanceTolerance, float linearTolerance) {
+  public PointGroup(Atom[] atomset, BitSet bsAtoms,  
+                    boolean haveVibration, int modelIndex, 
+                    float distanceTolerance, float linearTolerance) {
     this.modelIndex = modelIndex;
     this.distanceTolerance = distanceTolerance;
     this.linearTolerance = (float) (Math.cos(linearTolerance / 180 * Math.PI));
+    
     Point3f[] atoms;
-    if ((atoms = getCenter(atomset, bsAtoms)) == null) {
+    if ((atoms = getAtoms(atomset, bsAtoms)) == null) {
       Logger.error("Too many atoms for point group calculation");
       name = "point group not determined -- atomCount > " + ATOM_COUNT_MAX
           + " -- select fewer atoms and try again.";
@@ -276,7 +279,6 @@ public class PointGroup {
         name = "C" + n + "h";
       }
     }
-    //System.out.println(drawInfo());
   }
 
   private Operation setPrincipalAxis(int n, int nPlanes) {
@@ -321,7 +323,7 @@ public class PointGroup {
   }
 
   private final static int ATOM_COUNT_MAX = 100;
-  private Atom[] getCenter(Atom[] atomset, BitSet bsAtoms) {
+  private Atom[] getAtoms(Atom[] atomset, BitSet bsAtoms) {
     int atomCount = BitSetUtil.cardinalityOf(bsAtoms);
     if (atomCount > ATOM_COUNT_MAX)
       return null;
@@ -335,11 +337,12 @@ public class PointGroup {
         center.add(atoms[nAtoms++]);
       }
     center.scale(1f / nAtoms);
-    for (int i = nAtoms; --i >= 0;)
-      if (atoms[i].distance(center) < 0.1) {
+    for (int i = nAtoms; --i >= 0;) {
+      float r = center.distance(atoms[i]);
+      if (r < distanceTolerance)
         centerAtomIndex = i;
-        break;
-      }
+      radius = Math.max(radius, r);
+    }
     return atoms;
   }
 
@@ -389,8 +392,6 @@ public class PointGroup {
           if (j == i || elements[j] != e1)
             continue;
           Point3f a2 = atoms[j];
-          //  System.out.println(i + " " + j + " " + a1 + " " + a2 + " " + pt 
-          //      + nFound + " " + pt.distance(a2));
           if (pt.distance(a2) < distanceTolerance) {
             nFound++;
             continue out;
@@ -693,7 +694,6 @@ public class PointGroup {
 
   private boolean haveAxis(int iOrder, Vector3f v) {
     if (nAxes[iOrder] == axesMaxN[iOrder]) {
-      //System.out.println(iOrder + " " + (iOrder-firstProper) + " is maxed at " + axesMaxN[iOrder]);
       return true;
     }
     if (nAxes[iOrder] > 0)
@@ -875,31 +875,36 @@ public class PointGroup {
         sb.append("draw pg0").append(m).append(
             haveInversionCenter ? "inv " : " ").append(
             Escape.escape(center) + (haveInversionCenter ? "\"i\";\n" : ";\n"));
+      float offset = 0.1f;
       for (int i = 2; i < maxAxis; i++) {
+        if (i == firstProper)
+          offset = 0.1f;
         if (nAxes[i] == 0)
           continue;
         String label = axes[i][0].getLabel();
-        if (!haveType || type.equalsIgnoreCase(label)
-            || anyProperAxis && i >= firstProper 
-            || anyImproperAxis && i < firstProper)
-        for (int j = 0; j < nAxes[i]; j++) {
-          if (index > 0 && j + 1 != index)
-            continue;
-          op = axes[i][j];
-          v.set(op.normalOrAxis);
-          v.add(center);
-            float scale = scaleFactor * (4.0f + op.order / 4.0f)
-                * (op.type == OPERATION_IMPROPER_AXIS ? -1 : 1);
+        offset += 0.25f;
+        float scale = scaleFactor * radius + offset;
+        if (!haveType || type.equalsIgnoreCase(label) || anyProperAxis
+            && i >= firstProper || anyImproperAxis && i < firstProper)
+          for (int j = 0; j < nAxes[i]; j++) {
+            if (index > 0 && j + 1 != index)
+              continue;
+            op = axes[i][j];
+            v.set(op.normalOrAxis);
+            v.add(center);
+            if (op.type == OPERATION_IMPROPER_AXIS)
+              scale = -scale;
             sb.append("draw pgva").append(m).append(label).append("_").append(
                 j + 1).append(" width 0.05 scale " + scale + " ").append(
                 Escape.escape(v));
             v.scaleAdd(-2, op.normalOrAxis, v);
-            sb.append(Escape.escape(v)).append("\"" + label + 
-                (op.index == principalAxis.index ? "*" : "") + "\" color ").append(
+            sb.append(Escape.escape(v)).append(
+                "\"" + label + (op.index == principalAxis.index ? "*" : "")
+                    + "\" color ").append(
                 op.index == principalAxis.index ? "red"
                     : op.type == OPERATION_IMPROPER_AXIS ? "blue" : "yellow")
                 .append(";\n");
-        }
+          }
       }
       if (!haveType || type.equalsIgnoreCase("Cs"))
         for (int j = 0; j < nAxes[0]; j++) {
@@ -910,24 +915,22 @@ public class PointGroup {
           v.scale(0.025f);
           v.add(center);
           sb.append("draw pgvp").append(m).append(j + 1).append(
-              "disk width " + (scaleFactor * 6.0) + " cylinder ").append(
-              Escape.escape(v));
+              "disk width " + (scaleFactor * radius * 2) + " cylinder ")
+              .append(Escape.escape(v));
           v.scaleAdd(-0.05f, op.normalOrAxis, v);
           sb.append(Escape.escape(v)).append(" color translucent yellow;\n");
           v.set(op.normalOrAxis);
           v.add(center);
           sb.append("draw pgvp").append(m).append(j + 1).append(
-              "ring width 0.05 scale " + (scaleFactor * 3.0) + " arc ").append(
-              Escape.escape(v));
+              "ring width 0.05 scale " + (scaleFactor * radius) + " arc ")
+              .append(Escape.escape(v));
           v.scaleAdd(-2, op.normalOrAxis, v);
           sb.append(Escape.escape(v));
           v.x += 0.011;
           v.y += 0.012;
           v.z += 0.013;
-          sb.append(Escape.escape(v))
-              .append("{0 360 0.5} color ")
-              .append(op.index == principalPlane.index ? "red" : "blue")
-              .append(";\n");
+          sb.append(Escape.escape(v)).append("{0 360 0.5} color ").append(
+              op.index == principalPlane.index ? "red" : "blue").append(";\n");
         }
       sb.append("# name=" + name);
       sb.append(", nCi=" + (haveInversionCenter ? 1 : 0));

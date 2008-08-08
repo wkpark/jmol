@@ -459,8 +459,8 @@ abstract public class ModelSet extends ModelCollection {
     Object obj = getShapeProperty(JmolConstants.SHAPE_VECTORS, "mad", iAtom);
     boolean haveVibration = (obj != null && ((Integer) obj).intValue() != 0 || viewer
         .isVibrationOn());
-    return new PointGroup(atoms, bs, haveVibration, modelIndex, viewer
-        .getPointGroupTolerance(0), viewer.getPointGroupTolerance(1));
+    return new PointGroup(atoms, bs, haveVibration, modelIndex, 
+        viewer.getPointGroupTolerance(0), viewer.getPointGroupTolerance(1));
   }
 
   private BitSet modelsOf(BitSet bsAtoms, BitSet bsAllAtoms) {

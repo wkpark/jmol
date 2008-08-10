@@ -496,12 +496,11 @@ public abstract class AtomSetCollectionReader {
       atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds);
       if (ignoreFileSpaceGroupName || !iHaveSymmetryOperators) {
         SymmetryInterface symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
-        if (!symmetry.createSpaceGroup(desiredSpaceGroupIndex, (spaceGroup
+        if (symmetry.createSpaceGroup(desiredSpaceGroupIndex, (spaceGroup
             .indexOf("*") >= 0 ? "P1" : spaceGroup), notionalUnitCell,
             atomSetCollection.doNormalize)) {
           atomSetCollection
-              .setAtomSetSpaceGroupName((spaceGroup.indexOf("*") >= 0 ? spaceGroup
-                  : symmetry.getSpaceGroupName()));
+              .setAtomSetSpaceGroupName(symmetry.getSpaceGroupName());
           atomSetCollection.applySymmetry(symmetry);
         }
       } else {

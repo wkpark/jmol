@@ -35,7 +35,52 @@ import java.util.Properties;
 
 final public class JmolConstants {
 
-  public final static int XY_ZTOP = 100; // Z value for [x y] positioned echos and axis origin
+  public final static String copyright = "(C) 2008 Jmol Development";
+  public final static String version;
+
+  static {
+    String tmpVersion = null;
+    Properties props = new Properties();
+
+    // Reading version from resource   inside jar
+    if (tmpVersion == null) {
+      BufferedInputStream bis = null;
+      InputStream is = null;
+      try {
+        is = JmolConstants.class.getClassLoader().getResourceAsStream("org/jmol/viewer/Jmol.properties");        
+        bis = new BufferedInputStream(is);
+        props.load(bis);
+        tmpVersion = props.getProperty("version", tmpVersion);
+      } catch (IOException e) {
+        // Nothing to do
+      } finally {
+        if (bis != null) {
+          try {
+            bis.close();
+          } catch (IOException e) {
+            // Nothing to do
+          }
+        }
+        if (is != null) {
+          try {
+            is.close();
+          } catch (IOException e) {
+            // Nothing to do
+          }
+        }
+      }
+    }
+    version = (tmpVersion != null ? tmpVersion : "(Unknown version)");
+  }
+    
+  public final static String cvsDate = "$Date$";
+  public final static String date = cvsDate.substring(7, 23);
+    
+  public final static boolean officialRelease = false;
+
+  public final static String CLASSBASE_OPTIONS = "org.jmol.";
+
+  public final static String DEFAULT_HELP_PATH = "http://www.stolaf.edu/academics/chemapps/jmol/docs/index.htm";
 
   public final static String EMBEDDED_SCRIPT_TAG = "**** Jmol Embedded Script ****";
 
@@ -72,6 +117,17 @@ final public class JmolConstants {
     return callbackNames[i];
   }
  
+  // unit cell parameters
+  
+  public final static int INFO_A = 0;
+  public final static int INFO_B = 1;
+  public final static int INFO_C = 2;
+  public final static int INFO_ALPHA = 3;
+  public final static int INFO_BETA = 4;
+  public final static int INFO_GAMMA = 5;
+
+  // Jmol data frame types
+  
   public final static int JMOL_DATA_RAMACHANDRAN = 0;
   public final static int JMOL_DATA_QUATERNION = 1;
   public final static int JMOL_DATA_OTHER = 2;
@@ -123,53 +179,7 @@ final public class JmolConstants {
     return "drawObject";
 }
 
-  public final static String CLASSBASE_OPTIONS = "org.jmol.";
-
-  public final static String copyright = "(C) 2007 Jmol Development";
-  public final static String version;
-
-  static {
-    String tmpVersion = null;
-    Properties props = new Properties();
-
-    // Reading version from resource   inside jar
-    if (tmpVersion == null) {
-      BufferedInputStream bis = null;
-      InputStream is = null;
-      try {
-        is = JmolConstants.class.getClassLoader().getResourceAsStream("org/jmol/viewer/Jmol.properties");        
-        bis = new BufferedInputStream(is);
-        props.load(bis);
-        tmpVersion = props.getProperty("version", tmpVersion);
-      } catch (IOException e) {
-        // Nothing to do
-      } finally {
-        if (bis != null) {
-          try {
-            bis.close();
-          } catch (IOException e) {
-            // Nothing to do
-          }
-        }
-        if (is != null) {
-          try {
-            is.close();
-          } catch (IOException e) {
-            // Nothing to do
-          }
-        }
-      }
-    }
-    version = (tmpVersion != null ? tmpVersion : "(Unknown version)");
-  }
-    
-  public final static String cvsDate = "$Date$";
-  public final static String date = cvsDate.substring(7, 23);
-    
-  public final static boolean officialRelease = false;
-
-  public final static String DEFAULT_HELP_PATH = "http://www.stolaf.edu/academics/chemapps/jmol/docs/index.htm";
-
+  public final static int XY_ZTOP = 100; // Z value for [x y] positioned echos and axis origin
   public final static int DEFAULT_PERCENT_VDW_ATOM = 20;
   public final static float DEFAULT_BOND_RADIUS = 0.15f;
   public final static short DEFAULT_BOND_MILLIANGSTROM_RADIUS = (short) (DEFAULT_BOND_RADIUS * 1000);
@@ -2677,43 +2687,45 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_LABELS     = 4;
   public final static int SHAPE_MEASURES   = 5;
   public final static int SHAPE_DOTS       = 6;
-  
-  public final static int SHAPE_MIN_SECONDARY  = 7; //////////
-  
-  public final static int SHAPE_BACKBONE   = 7;
-  public final static int SHAPE_TRACE      = 8;
-  public final static int SHAPE_CARTOON    = 9;
-  public final static int SHAPE_STRANDS    = 10;
-  public final static int SHAPE_MESHRIBBON = 11;
-  public final static int SHAPE_RIBBONS    = 12;
-  public final static int SHAPE_ROCKETS    = 13;
-  
-  public final static int SHAPE_MAX_SECONDARY  = 14; //////////
-  
-  public final static int SHAPE_STARS      = 14;
-  public final static int SHAPE_HALOS      = 15;
+  public final static int SHAPE_STARS      = 7;
+  public final static int SHAPE_HALOS      = 8;
 
-  public final static int SHAPE_MIN_SPECIAL= 16; //////////
+  public final static int SHAPE_MIN_SECONDARY = 9; //////////
+  
+    public final static int SHAPE_BACKBONE   = 9;
+    public final static int SHAPE_TRACE      = 10;
+    public final static int SHAPE_CARTOON    = 11;
+    public final static int SHAPE_STRANDS    = 12;
+    public final static int SHAPE_MESHRIBBON = 13;
+    public final static int SHAPE_RIBBONS    = 14;
+    public final static int SHAPE_ROCKETS    = 15;
+  
+  public final static int SHAPE_MAX_SECONDARY = 16; //////////
+  public final static int SHAPE_MIN_SPECIAL   = 16; //////////
 
-  public final static int SHAPE_DIPOLES    = 16;
-  public final static int SHAPE_VECTORS    = 17;
-  public final static int SHAPE_GEOSURFACE = 18;
-  public final static int SHAPE_ELLIPSOIDS = 19;
+    public final static int SHAPE_DIPOLES    = 16;
+    public final static int SHAPE_VECTORS    = 17;
+    public final static int SHAPE_GEOSURFACE = 18;
+    public final static int SHAPE_ELLIPSOIDS = 19;
 
   public final static int SHAPE_MAX_SIZE_ZERO_ON_RESTRICT = 20; //////////
-
-  public final static int SHAPE_POLYHEDRA  = 20;  
   
+    public final static int SHAPE_POLYHEDRA  = 20;  // for restrict, uses setProperty(), not setSize()
+
   public final static int SHAPE_MIN_MESH_COLLECTION = 21; //////////
   
-  public final static int SHAPE_DRAW        = 21;
-  public final static int SHAPE_ISOSURFACE  = 22;
-  public final static int SHAPE_LCAOCARTOON = 23;
-  public final static int SHAPE_MO          = 24;
-  public final static int SHAPE_PMESH       = 25;
+    public final static int SHAPE_DRAW        = 21;
+  
+  public final static int SHAPE_MAX_SPECIAL = 22; //////////
+  public final static int SHAPE_MIN_SURFACE = 22; //////////
 
+    public final static int SHAPE_ISOSURFACE  = 22;
+    public final static int SHAPE_LCAOCARTOON = 23;
+    public final static int SHAPE_MO          = 24;
+    public final static int SHAPE_PMESH       = 25;
+
+  public final static int SHAPE_MAX_SURFACE = 26; //////////
   public final static int SHAPE_MAX_MESH_COLLECTION = 26; //////////
-  public final static int SHAPE_MAX_SPECIAL = 26; //////////
   
   public final static int SHAPE_AXES       = 26;
   public final static int SHAPE_BBCAGE     = 27;
@@ -2726,10 +2738,73 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_MAX        = SHAPE_FRANK + 1;
 
   public final static boolean isShapeSecondary(int i ) {
-    return i < JmolConstants.SHAPE_MAX_SECONDARY && i >= JmolConstants.SHAPE_MIN_SECONDARY;
+    return i >= JmolConstants.SHAPE_MIN_SECONDARY && i < JmolConstants.SHAPE_MAX_SECONDARY;
   }
   
+  // note that these next two arrays *MUST* be in the same sequence 
+  // given in SHAPE_* and they must be capitalized exactly as in their class name 
 
+  public final static String[] shapeClassBases = {
+    "Balls", "Sticks", "Hsticks", "Sssticks",   //Hsticks and Sssticks classes do not exist, but this returns Token for them
+    "Labels", "Measures", "Dots", "Stars", "Halos",
+    "Backbone", "Trace", "Cartoon", "Strands", "MeshRibbon", "Ribbons", "Rockets", 
+    "Dipoles", "Vectors", "GeoSurface", "Ellipsoids", "Polyhedra", 
+    "Draw", "Isosurface", "LcaoCartoon", "MolecularOrbital", "Pmesh", 
+    "Axes", "Bbcage", "Uccage", "Echo", "Hover", 
+    "Frank"
+     };
+  static {
+    if (shapeClassBases.length != SHAPE_MAX) {
+      Logger.error("the shapeClassBases array has the wrong length");
+      throw new NullPointerException();
+    }
+  }
+
+  //.hbond and .ssbonds will return a class, 
+  //but the class is never loaded, so it is skipped in each case.
+  //coloring and sizing of hydrogen bonds and S-S bonds is now 
+  //done by Sticks.
+  
+  public final static int[] shapeToks = { 
+    Token.atoms, Token.bonds, Token.hbond, Token.ssbond, 
+    Token.label, Token.monitor, Token.dots, Token.star, Token.halo, 
+    Token.backbone, Token.trace, Token.cartoon, Token.strands,
+    Token.meshRibbon, Token.ribbon, Token.rocket, 
+    Token.dipole, Token.vector, Token.geosurface, Token.ellipsoid, Token.polyhedra, 
+    Token.draw, Token.isosurface, Token.lcaocartoon, Token.mo, Token.pmesh,
+    Token.axes, Token.boundbox, Token.unitcell,
+    Token.echo, Token.hover,
+    Token.frank
+  };
+
+  static {
+    if (shapeToks.length != SHAPE_MAX) {
+      Logger.error("the shapeToks array has the wrong length");
+      throw new NullPointerException();
+    }
+  }
+
+  final static int shapeTokenIndex(int tok) {
+    for (int i = shapeToks.length; --i >= 0;)
+      if (tok == shapeToks[i])
+        return i;
+    return -1;
+  }
+  
+  public final static String getShapeClassName(int shapeID) {
+    if (shapeID < 0)
+      return shapeClassBases[~shapeID];
+    return CLASSBASE_OPTIONS + "shape" 
+        + (shapeID >= SHAPE_MIN_SECONDARY && shapeID < SHAPE_MAX_SECONDARY 
+            ? "bio."
+        : shapeID >= SHAPE_MIN_SPECIAL && shapeID < SHAPE_MAX_SPECIAL 
+            ? "special." 
+        : shapeID >= SHAPE_MIN_SURFACE && shapeID < SHAPE_MAX_SURFACE 
+            ? "surface." 
+        : ".") + shapeClassBases[shapeID];
+  }
+
+  
   // this atom flag simply associates an atom with the current model
   // but doesn't necessarily mean it is visible
 
@@ -2755,75 +2830,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       | getShapeVisibilityFlag(SHAPE_MESHRIBBON)
       | getShapeVisibilityFlag(SHAPE_RIBBONS);
 
-  
-  //see Jmol 10.2 for programming information --- pruned from 11.0
-  //Bob Hanson 7/17/06
-  
-  // note that these next two arrays *MUST* be in the same sequence 
-  // given in SHAPE_* and they must be capitalized exactly as in their class name 
-
-  public final static String[] shapeClassBases = {
-    "Balls", "Sticks", "Hsticks", "Sssticks",   //Hsticks and Sssticks classes do not exist, but this returns Token for them
-    "Labels", "Measures", "Dots",   
-    "Backbone", "Trace", "Cartoon", "Strands", "MeshRibbon", "Ribbons", "Rockets", 
-    "Stars", "Halos",
-    "Dipoles", "Vectors", "GeoSurface", "Ellipsoids", "Polyhedra", 
-    "Draw", "Isosurface", "LcaoCartoon", "MolecularOrbital", "Pmesh", 
-    "Axes", "Bbcage", "Uccage", "Echo", "Hover", 
-    "Frank"
-     };
-  static {
-    if (shapeClassBases.length != SHAPE_MAX) {
-      Logger.error("the shapeClassBases array has the wrong length");
-      throw new NullPointerException();
-    }
-  }
-
-  public final static int CLASS_BASE_BIO = -1;
-  public final static int CLASS_BASE_SPECIAL = -2;
-  
-  public final static String getShapeClassName(int shapeID) {
-    return (shapeID < 0 ? shapeClassBases[~shapeID] : 
-      shapeID == CLASS_BASE_BIO || 
-          shapeID >= SHAPE_MIN_SECONDARY && shapeID < SHAPE_MAX_SECONDARY 
-        ? CLASSBASE_OPTIONS + "shapebio."
-        : shapeID == CLASS_BASE_SPECIAL || 
-          shapeID >= SHAPE_MIN_SPECIAL && shapeID < SHAPE_MAX_SPECIAL 
-        ? CLASSBASE_OPTIONS + "shapespecial." : "org.jmol.shape.")
-        + (shapeID >= 0 ? shapeClassBases[shapeID] : "");
-  }
-  //.hbond and .ssbonds will return a class, 
-  //but the class is never loaded, so it is skipped in each case.
-  //coloring and sizing of hydrogen bonds and S-S bonds is now 
-  //done by Sticks.
-  
-  public final static int[] shapeToks = { 
-    Token.atoms, Token.bonds, Token.hbond, Token.ssbond, 
-    Token.label, Token.monitor, Token.dots,  
-    Token.backbone, Token.trace, Token.cartoon, Token.strands,
-    Token.meshRibbon, Token.ribbon, Token.rocket, 
-    Token.star, Token.halo, 
-    Token.dipole, Token.vector, Token.geosurface, Token.ellipsoid, Token.polyhedra, 
-    Token.draw, Token.isosurface, Token.lcaocartoon, Token.mo, Token.pmesh,
-    Token.axes, Token.boundbox, Token.unitcell,
-    Token.echo, Token.hover,
-    Token.frank
-  };
-
-  static {
-    if (shapeToks.length != SHAPE_MAX) {
-      Logger.error("the shapeToks array has the wrong length");
-      throw new NullPointerException();
-    }
-  }
-
-  final static int shapeTokenIndex(int tok) {
-    for (int i = shapeToks.length; --i >= 0;)
-      if (tok == shapeToks[i])
-        return i;
-    return -1;
-
-  }
   
   ////////////////////////////////////////////////////////////////
   // Stereo modes
@@ -2860,16 +2866,4 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       throw new NullPointerException();
     }
   }
-
-  public final static int INFO_A = 0;
-
-  public final static int INFO_B = 1;
-
-  public final static int INFO_C = 2;
-
-  public final static int INFO_ALPHA = 3;
-
-  public final static int INFO_BETA = 4;
-
-  public final static int INFO_GAMMA = 5;
 }

@@ -26,6 +26,7 @@
 package org.jmol.export;
 
 import org.jmol.shapespecial.*;
+import org.jmol.shapesurface.PmeshRenderer;
 
 public class PmeshGenerator extends PmeshRenderer {
 

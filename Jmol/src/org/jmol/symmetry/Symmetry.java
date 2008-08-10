@@ -26,6 +26,7 @@
 package org.jmol.symmetry;
 
 import java.util.BitSet;
+import java.util.Hashtable;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
@@ -33,19 +34,36 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.modelset.Atom;
-import org.jmol.modelset.CellInfo;
 import org.jmol.util.Logger;
 
 public class Symmetry implements SymmetryInterface {
   
   // NOTE: THIS CLASS IS VERY IMPORTANT.
   // IN ORDER TO MODULARIZE IT, IT IS REFERENCED USING 
-  // symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
-  
-  private SpaceGroup spaceGroup;
+  // xxxx = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+
+  /* Symmetry is a wrapper class that allows access to the package-local
+   * classes PointGroup, SpaceGroup, SymmetryInfo, and UnitCell.
+   * 
+   * When symmetry is detected in ANY model being loaded, a SymmetryInterface
+   * is established for ALL models.
+   * 
+   * The SpaceGroup information could be saved with each model, but because this 
+   * depends closely on what atoms have been selected, and since tracking that with atom
+   * deletion is a bit complicated, instead we just use local instances of that class.
+   * 
+   * The three PointGroup methods here could be their own interface; they are just here
+   * for convenience.
+   * 
+   * The file readers use SpaceGroup and UnitCell methods
+   * 
+   * The modelSet and modelLoader classes use UnitCell and SymmetryInfo 
+   * 
+   */
   private PointGroup pointGroup;
+  private SpaceGroup spaceGroup;
+  private SymmetryInfo symmetryInfo;
   private UnitCell unitCell;
-  private CellInfo cellInfo;
   
   public Symmetry() {
     // instantiated ONLY using
@@ -85,7 +103,8 @@ public class Symmetry implements SymmetryInterface {
   }
 
   public String getSpaceGroupName() {
-    return spaceGroup.getName();
+    return (symmetryInfo != null ? symmetryInfo.spaceGroup
+        : spaceGroup != null ? spaceGroup.getName() : "");
   }
 
   public Object getSpaceGroup() {
@@ -150,11 +169,21 @@ public class Symmetry implements SymmetryInterface {
 
   // UnitCell methods
 
+  public boolean haveUnitCell() {
+    return (unitCell != null);
+  }
+
+  public String getUnitsymmetryInfo() {
+    return (unitCell == null ? "no unit cell information" : unitCell.dumpInfo(false));
+  }
+
   public void setUnitCell(float[] notionalUnitCell) {
     unitCell = new UnitCell(notionalUnitCell);
   }
 
   public void toCartesian(Point3f pt) {
+    if (unitCell == null)
+      return;
     unitCell.toCartesian(pt);
   }
 
@@ -167,6 +196,8 @@ public class Symmetry implements SymmetryInterface {
   }
 
   public void toFractional(Point3f pt) {
+    if (unitCell == null)
+      return;
     unitCell.toFractional(pt);
   }
 
@@ -179,15 +210,12 @@ public class Symmetry implements SymmetryInterface {
   }
 
   public float[] getNotionalUnitCell() {
-    return cellInfo.getNotionalUnitCell();
+    return unitCell == null ? null : unitCell.getNotionalUnitCell();
   }
 
   public void toUnitCell(Point3f pt, Point3f offset) {
-    unitCell.toUnitCell(pt, offset);
-  }
-
-  public String dumpUnitCellInfo(boolean isFull) {
-    return unitCell.dumpInfo(isFull);
+    if (symmetryInfo.isMultiCell && unitCell != null)
+      unitCell.toUnitCell(pt, offset);
   }
 
   public void setUnitCellOffset(Point3f pt) {
@@ -202,7 +230,56 @@ public class Symmetry implements SymmetryInterface {
     return unitCell.getFractionalOffset();
   }
 
+  public float getUnitsymmetryInfo(int infoType) {
+    return unitCell.getInfo(infoType);
+  }
+
+  public int getModelIndex() {
+    return symmetryInfo.modelIndex;
+  }
+
+  public void setModelIndex(int i) {
+    symmetryInfo.modelIndex = i;    
+  }
+
+  public boolean getCoordinatesAreFractional() {
+    return symmetryInfo.coordinatesAreFractional;
+  }
+
+  public int[] getCellRange() {
+    return symmetryInfo.cellRange;
+  }
+
+  public String getSymmetryInfoString() {
+    return symmetryInfo.symmetryInfoString;
+  }
+
+  public String[] getSymmetryOperations() {
+    return symmetryInfo.symmetryOperations;
+  }
+
+  public boolean isPeriodic() {
+    return symmetryInfo.isPeriodic();
+  }
+
+  public void setSymmetryInfo(int modelIndex, Hashtable modelAuxiliaryInfo) {
+    symmetryInfo = new SymmetryInfo();
+    float[] notionalUnitcell = symmetryInfo.setSymmetryInfo(modelIndex,
+        modelAuxiliaryInfo);
+    if (notionalUnitcell == null)
+      return;
+    setUnitCell(notionalUnitcell);
+    if (Logger.debugging)
+      Logger
+          .debug("symmetryInfos[" + modelIndex + "]:\n" + unitCell.dumpInfo(true));
+  }
+
   public float getUnitCellInfo(int infoType) {
     return unitCell.getInfo(infoType);
-  }  
+  }
+
+  public String getUnitCellInfo() {
+    return (unitCell == null ? "no unit cell information" 
+        : unitCell.dumpInfo(false));
+  }
 }  

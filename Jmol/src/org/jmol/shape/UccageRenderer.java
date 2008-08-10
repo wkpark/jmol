@@ -27,7 +27,6 @@ import javax.vecmath.Point3f;
 import java.text.NumberFormat;
 
 import org.jmol.api.SymmetryInterface;
-import org.jmol.modelset.CellInfo;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
@@ -58,13 +57,12 @@ public class UccageRenderer extends FontLineShapeRenderer {
   }
 
   void render1(int mad) {
-    CellInfo[] cellInfos = modelSet.getCellInfos();
+    SymmetryInterface[] cellInfos = modelSet.getCellInfos();
     if (cellInfos == null)
       return;
     SymmetryInterface symmetry = viewer.getCurrentUnitCell();
     if (symmetry == null)
       return;
-    CellInfo cellInfo = cellInfos[viewer.getDisplayModelIndex()];
     Point3f[] vertices = symmetry.getUnitCellVertices();
     Point3f offset = symmetry.getCartesianOffset();
     for (int i = 8; --i >= 0;)
@@ -73,15 +71,15 @@ public class UccageRenderer extends FontLineShapeRenderer {
     boolean drawAllLines = (viewer.getObjectMad(StateManager.OBJ_AXIS1) == 0 
         || viewer.getAxesScale() < 2 || axisPoints == null);
     render(mad, verticesT, screens, axisPoints, drawAllLines ? 0 : 3);
-    if (viewer.getDisplayCellParameters() && !cellInfo.isPeriodic())
-      renderInfo(cellInfo, symmetry);
+    if (viewer.getDisplayCellParameters() && !symmetry.isPeriodic())
+      renderInfo(symmetry);
   }
   
   private String nfformat(float x) {
     return (doLocalize && nf != null ? nf.format(x) : TextFormat.formatDecimal(x, 3));
   }
 
-  private void renderInfo(CellInfo cellInfo, SymmetryInterface symmetry) {
+  private void renderInfo(SymmetryInterface symmetry) {
     if (isGenerator || !g3d.setColix(viewer.getColixBackgroundContrast()))
       return;
     if (nf == null) {
@@ -100,7 +98,7 @@ public class UccageRenderer extends FontLineShapeRenderer {
     int x = (int) (5 * imageFontScaling);
     int y = lineheight;
     
-    String spaceGroup = cellInfo.getSpaceGroup(); 
+    String spaceGroup = symmetry.getSpaceGroupName(); 
     if (spaceGroup != null) {
       y += lineheight;
       g3d.drawStringNoSlab(spaceGroup, null, x, y, 0);

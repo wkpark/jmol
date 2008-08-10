@@ -22,7 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.shapespecial;
+package org.jmol.shapesurface;
 
 import org.jmol.shape.MeshCollection;
 import org.jmol.util.Parser;

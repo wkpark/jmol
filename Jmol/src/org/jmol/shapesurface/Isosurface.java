@@ -90,7 +90,7 @@
  * 
  */
 
-package org.jmol.shapespecial;
+package org.jmol.shapesurface;
 
 import org.jmol.shape.Mesh;
 import org.jmol.util.BitSetUtil;

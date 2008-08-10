@@ -1,6 +1,7 @@
 package org.jmol.api;
 
 import java.util.BitSet;
+import java.util.Hashtable;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
@@ -80,8 +81,6 @@ public interface SymmetryInterface {
 
   public abstract void toUnitCell(Point3f pt, Point3f offset);
 
-  public abstract String dumpUnitCellInfo(boolean isFull);
-
   public abstract void setUnitCellOffset(Point3f pt);
 
   public abstract void setOffset(int nnn);
@@ -89,5 +88,25 @@ public interface SymmetryInterface {
   public abstract Point3f getFractionalOffset();
 
   public abstract float getUnitCellInfo(int infoType);
+
+  public abstract int getModelIndex();
+
+  public abstract void setModelIndex(int i);
+
+  public abstract boolean getCoordinatesAreFractional();
+
+  public abstract int[] getCellRange();
+
+  public abstract String getSymmetryInfoString();
+
+  public abstract String[] getSymmetryOperations();
+
+  public abstract boolean haveUnitCell();
+
+  public abstract String getUnitCellInfo();
+
+  public abstract boolean isPeriodic();
+
+  public abstract void setSymmetryInfo(int modelIndex, Hashtable modelAuxiliaryInfo);
 
 }

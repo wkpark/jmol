@@ -26,6 +26,7 @@
 package org.jmol.export;
 
 import org.jmol.shapespecial.*;
+import org.jmol.shapesurface.LcaoCartoonRenderer;
 
 public class LcaoCartoonGenerator extends LcaoCartoonRenderer {
 

@@ -31,6 +31,7 @@ org/jmol/quantum/*.java
 org/jmol/shape/*.java
 org/jmol/shapebio/*.java
 org/jmol/shapespecial/*.java
+org/jmol/shapesurface/*.java
 
 org/jmol/smiles/*.java
 

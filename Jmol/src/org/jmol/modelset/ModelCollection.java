@@ -97,7 +97,7 @@ abstract public class ModelCollection extends BondCollection {
     models = null;
     bsSymmetry = null;
     bsAll = null;
-    cellInfos = null;
+    unitCells = null;
     withinModelIterator = null;
     withinAtomSetIterator = null;
     super.releaseModelSet();
@@ -124,14 +124,15 @@ abstract public class ModelCollection extends BondCollection {
     return modelCount;
   }
 
-  CellInfo[] cellInfos;
+  SymmetryInterface[] unitCells;
 
-  public CellInfo[] getCellInfos() {
-    return cellInfos;
+  public SymmetryInterface[] getCellInfos() {
+    return unitCells;
   }
 
   public SymmetryInterface getUnitCell(int modelIndex) {
-    return (modelIndex >= 0 && cellInfos != null ? cellInfos[modelIndex].getUnitCell() : null);
+    return (unitCells != null && modelIndex >= 0 && modelIndex < unitCells.length 
+        ? unitCells[modelIndex] : null);
   }
 
   int[] modelNumbers = new int[1];  // from adapter -- possibly PDB MODEL record; possibly modelFileNumber
@@ -221,7 +222,7 @@ abstract public class ModelCollection extends BondCollection {
    * 
    */
   public float[] getNotionalUnitcell() {
-    return (cellInfos == null || cellInfos[0] == null ? null : cellInfos[0]
+    return (unitCells == null || unitCells[0] == null ? null : unitCells[0]
         .getNotionalUnitCell());
   }
 
@@ -344,7 +345,7 @@ abstract public class ModelCollection extends BondCollection {
       isBbcageDefault = true;
     if (bs == null) { // from modelLoader or reset
       averageAtomPoint.set(getAtomSetCenter(null));
-      if (cellInfos != null)
+      if (unitCells != null)
         calcUnitCellMinMax();
     }
     boxInfo.setBbcage();
@@ -373,9 +374,9 @@ abstract public class ModelCollection extends BondCollection {
 
   private void calcUnitCellMinMax() {
     for (int i = 0; i < modelCount; i++) {
-      if (!cellInfos[i].coordinatesAreFractional)
+      if (!unitCells[i].getCoordinatesAreFractional())
         continue;
-      Point3f[] vertices = cellInfos[i].getUnitCellVertices();
+      Point3f[] vertices = unitCells[i].getUnitCellVertices();
       for (int j = 0; j < 8; j++)
         boxInfo.addBoundBoxPoint(vertices[j]);
     }
@@ -1182,9 +1183,9 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   protected String getModelSymmetryList(int modelIndex) {
-    if (cellInfos == null || cellInfos[modelIndex] == null)
+    if (unitCells == null || unitCells[modelIndex] == null)
       return "";
-    String[] list = cellInfos[modelIndex].symmetryOperations;
+    String[] list = unitCells[modelIndex].getSymmetryOperations();
     String str = "";
     if (list != null)
       for (int i = 0; i < list.length; i++)
@@ -1194,16 +1195,16 @@ abstract public class ModelCollection extends BondCollection {
 
   public int getModelSymmetryCount(int modelIndex) {
     String[] operations;
-    if (cellInfos == null || cellInfos[modelIndex] == null ||
-        (operations = cellInfos[modelIndex].symmetryOperations) == null)
+    if (unitCells == null || unitCells[modelIndex] == null ||
+        (operations = unitCells[modelIndex].getSymmetryOperations()) == null)
       return models[modelIndex].biosymmetryCount;
     return operations.length;
   }
 
   public int[] getModelCellRange(int modelIndex) {
-    if (cellInfos == null)
+    if (unitCells == null)
       return null;
-    return cellInfos[modelIndex].getCellRange();
+    return unitCells[modelIndex].getCellRange();
   }
 
   public boolean modelHasVibrationVectors(int modelIndex) {
@@ -1225,46 +1226,33 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   String getSymmetryInfoAsString(int modelIndex) {
-    if (cellInfos == null)
-      return "no symmetry information";
-    return cellInfos[modelIndex].symmetryInfoString;
+    SymmetryInterface unitCell = getUnitCell(modelIndex);
+    return (unitCell == null ? "no symmetry information" 
+        : unitCell.getSymmetryInfoString());
   }
 
   public void toCartesian(int modelIndex, Point3f pt) {
-    if (modelIndex < 0)
-      modelIndex = 0;
-    if (cellInfos == null || modelIndex >= cellInfos.length
-        || cellInfos[modelIndex] == null)
-      return;
-    cellInfos[modelIndex].toCartesian(pt);
-    //String str = "Frame convertFractional " + pt + "--->";
-    //Logger.info(str + pt);
-  }
-
-  public void toUnitCell(int modelIndex, Point3f pt, Point3f offset) {
-    if (modelIndex < 0)
-      return;
-    if (cellInfos == null || modelIndex >= cellInfos.length
-        || cellInfos[modelIndex] == null)
-      return;
-    cellInfos[modelIndex].toUnitCell(pt, offset);
+    SymmetryInterface unitCell = getUnitCell(modelIndex);
+    if (unitCell != null)
+      unitCell.toCartesian(pt);
   }
 
   public void toFractional(int modelIndex, Point3f pt) {
-    if (modelIndex < 0)
-      return;
-    if (cellInfos == null || modelIndex >= cellInfos.length
-        || cellInfos[modelIndex] == null)
-      return;
-    cellInfos[modelIndex].toFractional(pt);
+    SymmetryInterface unitCell = getUnitCell(modelIndex);
+    if (unitCell != null)
+      unitCell.toFractional(pt);
+  }
+
+  public void toUnitCell(int modelIndex, Point3f pt, Point3f offset) {
+    SymmetryInterface unitCell = getUnitCell(modelIndex);
+    if (unitCell != null)
+      unitCells[modelIndex].toUnitCell(pt, offset);
   }
 
   public Point3f getUnitCellOffset(int modelIndex) {
     // from "unitcell {i j k}" via uccage
     SymmetryInterface unitCell = getUnitCell(modelIndex);
-    if (unitCell == null)
-      return null;
-    return unitCell.getCartesianOffset();
+    return (unitCell == null ? null : unitCell.getCartesianOffset());
   }
 
   public boolean setUnitCellOffset(int modelIndex, Point3f pt) {
@@ -2633,9 +2621,9 @@ abstract public class ModelCollection extends BondCollection {
     int modelIndex = viewer.getCurrentModelIndex();
     if (modelIndex < 0)
       return "no single current model";
-    if (cellInfos == null)
+    if (unitCells == null)
       return "not applicable";
-    return cellInfos[modelIndex].getUnitCellInfo();
+    return unitCells[modelIndex].getUnitCellInfo();
   }
 
   public String getSpaceGroupInfoText(String spaceGroup) {
@@ -2645,10 +2633,10 @@ abstract public class ModelCollection extends BondCollection {
       int modelIndex = viewer.getCurrentModelIndex();
       if (modelIndex < 0)
         return "no single current model";
-      if (cellInfos == null)
+      if (unitCells == null)
         return "not applicable";
-      CellInfo cellInfo = cellInfos[modelIndex];      
-      spaceGroup = cellInfo.spaceGroup;
+      SymmetryInterface cellInfo = unitCells[modelIndex];      
+      spaceGroup = cellInfo.getSpaceGroupName();
       unitCell = cellInfo.getNotionalUnitCell();
       strOperations = "\nSymmetry operations employed:"
         + getModelSymmetryList(modelIndex);
@@ -2726,10 +2714,10 @@ abstract public class ModelCollection extends BondCollection {
     }
 
     //fix cellInfos array
-    if (cellInfos != null) {
+    if (unitCells != null) {
       for (int i = modelCount; --i > modelIndex;)
-        cellInfos[i].modelIndex--;
-      cellInfos = (CellInfo[]) ArrayUtil.deleteElements(cellInfos, modelIndex,
+        unitCells[i].setModelIndex(unitCells[i].getModelIndex() - 1);
+      unitCells = (SymmetryInterface[]) ArrayUtil.deleteElements(unitCells, modelIndex,
           1);
     }
 

@@ -539,12 +539,6 @@ support for assertions (which were introduced in 1.4).
 	    </jar>
 
 
-	  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_Jvxl.jar" manifest="manifest/applet.txt" >
-	      <fileset dir="${applet.classes.dir}">
-	        <include name="org/jmol/jvxl/**" />
-	      </fileset>
-	    </jar>
-	  	
 	  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_Minimize.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/minimize/**" />
@@ -603,6 +597,13 @@ support for assertions (which were introduced in 1.4).
 	      </fileset>
 	    </jar>
 
+	  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_ShapeSurface.jar" manifest="manifest/applet.txt" >
+	      <fileset dir="${applet.classes.dir}">
+	        <include name="org/jmol/jvxl/**" />
+	        <include name="org/jmol/shapesurface/**" />
+	      </fileset>
+	    </jar>
+
 	  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_Smiles.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/smiles/**" />
@@ -638,7 +639,6 @@ support for assertions (which were introduced in 1.4).
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Main.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Core.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Jars.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Jvxl.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Minimize.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Popup.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Quantum.jar" />
@@ -648,6 +648,7 @@ support for assertions (which were introduced in 1.4).
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersXml.jar" /> 
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeBio.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeSpecial.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeSurface.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Smiles.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Symmetry.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Viewer.jar" />
@@ -680,11 +681,6 @@ support for assertions (which were introduced in 1.4).
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
   	
-    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Jvxl.jar"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Jvxl.jar"
-             keystore="selfSignedCertificate/selfSignedCertificate.store"
-             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
-
     <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Minimize.jar"
              signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Minimize.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
@@ -733,6 +729,11 @@ support for assertions (which were introduced in 1.4).
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_ShapeSurface.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSurface.jar"
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+
     <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Smiles.jar"
              signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Smiles.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
@@ -775,7 +776,6 @@ support for assertions (which were introduced in 1.4).
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Main.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Core.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Jars.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Jvxl.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Minimize.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Popup.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Quantum.jar" />
@@ -785,6 +785,7 @@ support for assertions (which were introduced in 1.4).
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXml.jar" /> 
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeBio.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSpecial.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSurface.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Smiles.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Symmetry.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Viewer.jar" />

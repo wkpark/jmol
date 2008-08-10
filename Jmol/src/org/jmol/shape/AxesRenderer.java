@@ -25,9 +25,9 @@ package org.jmol.shape;
 
 import java.awt.FontMetrics;
 
+import org.jmol.api.SymmetryInterface;
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
-import org.jmol.modelset.CellInfo;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
 
@@ -60,14 +60,14 @@ public class AxesRenderer extends FontLineShapeRenderer {
       axes.initShape();
     int nPoints = 6;
     int labelPtr = 0;
-    CellInfo[] cellInfos = modelSet.getCellInfos();
+    SymmetryInterface[] cellInfos = modelSet.getCellInfos();
     boolean isXY = (axes.axisXY.z != 0);
     int modelIndex = viewer.getDisplayModelIndex();
     if (viewer.isJmolDataFrame(modelIndex))
       return;
     if (axesMode == JmolConstants.AXES_MODE_UNITCELL
         && cellInfos != null) {
-      if (modelIndex < 0 || cellInfos[modelIndex].getUnitCell() == null)
+      if (modelIndex < 0 || !cellInfos[modelIndex].haveUnitCell())
         return;
       nPoints = 3;
       labelPtr = 6;

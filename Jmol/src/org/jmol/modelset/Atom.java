@@ -29,6 +29,7 @@ import org.jmol.vecmath.Point3fi;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
+import org.jmol.api.SymmetryInterface;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
@@ -577,8 +578,8 @@ final public class Atom extends Point3fi {
    private String getSymmetryOperatorList() {
     String str = "";
     ModelSet f = group.chain.modelSet;
-    if (atomSymmetry == null || f.cellInfos == null
-        || f.cellInfos[modelIndex] == null)
+    if (atomSymmetry == null || f.unitCells == null
+        || f.unitCells[modelIndex] == null)
       return "";
     int[] cellRange = f.getModelCellRange(modelIndex);
     if (cellRange == null)
@@ -620,7 +621,7 @@ final public class Atom extends Point3fi {
   }
     
   public Point3f getFractionalCoord() {
-    CellInfo[] c = group.chain.modelSet.cellInfos;
+    SymmetryInterface[] c = group.chain.modelSet.unitCells;
     if (c == null)
       return this;
     Point3f pt = new Point3f(this);
@@ -629,7 +630,7 @@ final public class Atom extends Point3fi {
   }
   
   void setFractionalCoord(int tok, float fValue) {
-    CellInfo[] c = group.chain.modelSet.cellInfos;
+    SymmetryInterface[] c = group.chain.modelSet.unitCells;
     if (c != null)
       c[modelIndex].toFractional(this);
     switch (tok) {
@@ -649,7 +650,7 @@ final public class Atom extends Point3fi {
   
   void setFractionalCoord(Point3f ptNew) {
     set(ptNew);
-    CellInfo[] c = group.chain.modelSet.cellInfos;
+    SymmetryInterface[] c = group.chain.modelSet.unitCells;
     if (c != null)
       c[modelIndex].toCartesian(this);
   }
@@ -701,7 +702,7 @@ final public class Atom extends Point3fi {
     if (useChimeFormat) {
       String group3 = getGroup3();
       char chainID = getChainID();
-      Point3f pt = (group.chain.modelSet.cellInfos == null ? null : getFractionalCoord());
+      Point3f pt = (group.chain.modelSet.unitCells == null ? null : getFractionalCoord());
       return "Atom: " + (group3 == null ? getElementSymbol() : getAtomName()) + " " + getAtomNumber() 
           + (group3 != null && group3.length() > 0 ? 
               (isHetero() ? " Hetero: " : " Group: ") + group3 + " " + getResno() 

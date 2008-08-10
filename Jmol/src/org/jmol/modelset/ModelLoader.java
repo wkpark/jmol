@@ -31,8 +31,10 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
 
+import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolBioResolver;
+import org.jmol.api.SymmetryInterface;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -818,13 +820,16 @@ public final class ModelLoader extends ModelSet {
      */
 
     if (someModelsHaveUnitcells) {
-      boolean doPdbScale = (adapterModelCount == 1);
-      cellInfos = new CellInfo[modelCount];
-      for (int i = 0; i < baseModelCount; i++)
-        cellInfos[i] = (mergeModelSet.cellInfos != null ? mergeModelSet.cellInfos[i]
-            : new CellInfo(i, false, getModelAuxiliaryInfo(i)));
-      for (int i = baseModelCount; i < modelCount; i++)
-        cellInfos[i] = new CellInfo(i, doPdbScale, getModelAuxiliaryInfo(i));
+      unitCells = new SymmetryInterface[modelCount];
+      boolean haveMergeCells = (mergeModelSet != null && mergeModelSet.unitCells != null);
+      for (int i = 0; i < modelCount; i++) {
+        if (haveMergeCells && i < baseModelCount) {
+          unitCells[i] = mergeModelSet.unitCells[i];
+        } else {
+          unitCells[i] = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+          unitCells[i].setSymmetryInfo(i, getModelAuxiliaryInfo(i));
+        }
+      }
     }
     if (someModelsHaveSymmetry) {
       getAtomBits(Token.symmetry, null);
@@ -842,9 +847,9 @@ public final class ModelLoader extends ModelSet {
     if (someModelsHaveFractionalCoordinates) {
       for (int i = baseAtomIndex; i < atomCount; i++) {
         int modelIndex = atoms[i].modelIndex;
-        if (!cellInfos[modelIndex].coordinatesAreFractional)
+        if (!unitCells[modelIndex].getCoordinatesAreFractional())
           continue;
-        cellInfos[modelIndex].toCartesian(atoms[i]);
+        unitCells[modelIndex].toCartesian(atoms[i]);
         if (Logger.debugging)
           Logger.debug("atom " + i + ": " + (Point3f) atoms[i]);
       }

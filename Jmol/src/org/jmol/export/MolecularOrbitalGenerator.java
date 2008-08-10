@@ -25,7 +25,6 @@
 
 package org.jmol.export;
 
-import org.jmol.shapespecial.*;
 import org.jmol.shapesurface.MolecularOrbitalRenderer;
 
 public class MolecularOrbitalGenerator extends MolecularOrbitalRenderer {

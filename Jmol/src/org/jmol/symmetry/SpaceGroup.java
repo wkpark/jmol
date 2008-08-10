@@ -28,6 +28,7 @@ import java.util.Arrays;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
@@ -45,9 +46,12 @@ import org.jmol.util.Logger;
  *
  * data table is from Syd Hall, private email, 9/4/2006 
  * 
+ * NEVER ACCESS THESE METHODS DIRECTLY! ONLY THROUGH CLASS Symmetry
+ * 
+ *
  */
 
-public class SpaceGroup {
+class SpaceGroup {
 
   int index;
   String hallSymbol;
@@ -73,12 +77,8 @@ public class SpaceGroup {
   SymmetryOperation[] operations;
   int operationCount;
   boolean doNormalize = true;
- 
-  public SpaceGroup() {
-    addSymmetry("x,y,z");
-  }
-  
-  public SpaceGroup(boolean doNormalize) {
+
+  SpaceGroup(boolean doNormalize) {
     this.doNormalize = doNormalize;
     addSymmetry("x,y,z");
   }
@@ -86,6 +86,175 @@ public class SpaceGroup {
   private SpaceGroup(String cifLine) {
     buildSpaceGroup(cifLine);
   }
+
+  static SpaceGroup createSpaceGroup(int desiredSpaceGroupIndex,
+                                                  String name,
+                                                  float[] notionalUnitcell, boolean doNormalize) {
+
+    SpaceGroup sg = null;
+    if (desiredSpaceGroupIndex >= 0) {
+      if (desiredSpaceGroupIndex == SPACE_GROUP_QUERY)
+        sg = createSpaceGroup((String) query[0], doNormalize);
+      else
+        sg = spaceGroupDefinitions[desiredSpaceGroupIndex];
+    } else {
+      sg = determineSpaceGroup(name, notionalUnitcell);
+      if (sg == null)
+        sg = createSpaceGroup(name, doNormalize);
+    }
+    if (sg != null)
+      sg.generateAllOperators(null);
+    return sg;
+  }
+
+  static int determineSpaceGroupIndex(String name) {
+    int i = determineSpaceGroupIndex(name, 0f, 0f, 0f, 0f, 0f, 0f, -1);
+    if (i < 0) {
+      query[0] = name;
+      i = SPACE_GROUP_QUERY;
+    }
+    return i;
+  }
+
+  static SpaceGroup determineSpaceGroup(String name, float a,
+                                                     float b, float c,
+                                                     float alpha, float beta,
+                                                     float gamma, int lastIndex) {
+    
+    int i = determineSpaceGroupIndex(name, a, b, c, alpha, beta,  gamma, lastIndex);
+    return (i >=0 ? spaceGroupDefinitions[i] : null);
+  }
+
+  boolean addSymmetry(String xyz) {
+    xyz = xyz.toLowerCase();
+    if (xyz.indexOf("x") < 0 || xyz.indexOf("y") < 0 || xyz.indexOf("z") < 0)
+      return false;
+    SymmetryOperation symmetryOperation = new SymmetryOperation(doNormalize);
+    if (!symmetryOperation.setMatrixFromXYZ(xyz)) {
+      Logger.error("couldn't interpret symmetry operation: " + xyz);      
+      return false;
+    }
+    addOperation(symmetryOperation);
+    return true;
+  }
+   
+  SymmetryOperation[] finalOperations;
+  
+  void setFinalOperations(Point3f[] atoms, int atomIndex,
+                                                int count, boolean doNormalize) {
+    //from AtomSetCollection.applySymmetry only
+    if (hallInfo == null && latticeParameter != 0) {
+      HallInfo h = new HallInfo(Translation
+          .getHallLatticeEquivalent(latticeParameter));
+      generateAllOperators(h);
+      doNormalize = false;
+    }
+
+    finalOperations = new SymmetryOperation[operationCount];
+    for (int i = 0; i < operationCount; i++) {
+      finalOperations[i] = new SymmetryOperation(operations[i], atoms,
+          atomIndex, count, doNormalize);
+    }
+  }
+
+  int getOperationCount() {
+    return finalOperations.length;
+  }
+
+  Matrix4f getOperation(int i) {
+    return finalOperations[i];
+  }
+
+  String getXyz(int i, boolean doNormalize) {
+    return finalOperations[i].getXyz(doNormalize);
+  }
+
+  void newPoint(int i, Point3f atom1, Point3f atom2,
+                       int transX, int transY, int transZ) {
+    finalOperations[i].newPoint(atom1, atom2, transX, transY, transZ);
+  }
+    
+  Object rotateEllipsoid(int i, Point3f ptTemp, Vector3f[] axes,
+                                UnitCell unitCell, Point3f ptTemp1,
+                                Point3f ptTemp2) {
+    return finalOperations[i].rotateEllipsoid(ptTemp, axes, unitCell, ptTemp1,
+        ptTemp2);
+  }
+
+  static String getInfo(String spaceGroup, float[] unitCell) {
+    SpaceGroup sg;
+    if (unitCell != null) {
+      if (spaceGroup.indexOf("[") >= 0)
+        spaceGroup = spaceGroup.substring(0, spaceGroup.indexOf("[")).trim();
+      if (spaceGroup == "spacegroup unspecified")
+        return "no space group identified in file";
+      sg = SpaceGroup.determineSpaceGroup(spaceGroup, unitCell);
+    } else if (spaceGroup.equalsIgnoreCase("ALL")) {
+      return SpaceGroup.dumpAll();
+    } else if (spaceGroup.equalsIgnoreCase("ALLSEITZ")) {
+      return SpaceGroup.dumpAllSeitz();
+    } else {
+      sg = SpaceGroup.determineSpaceGroup(spaceGroup);
+      if (sg == null) {
+        sg = SpaceGroup.createSpaceGroup(spaceGroup, false);
+      } else {
+        StringBuffer sb = new StringBuffer();
+        while (sg != null) {
+          sb.append(sg.dumpInfo());
+          sg = SpaceGroup.determineSpaceGroup(spaceGroup, sg);
+        }
+        return sb.toString();
+      }
+    }
+    return sg.dumpInfo();
+  }
+  
+  String dumpInfo() {
+    Object info  = dumpCanonicalSeitzList();
+    if (info instanceof SpaceGroup)
+      return ((SpaceGroup)info).dumpInfo();
+    StringBuffer sb = new StringBuffer("\nHermann-Mauguin symbol: ");
+    sb.append(hmSymbol).append(hmSymbolExt.length() > 0 ? ":" + hmSymbolExt : "")
+        .append("\ninternational table number: ").append(intlTableNumber)
+        .append(intlTableNumberExt.length() > 0 ? ":" + intlTableNumberExt : "")
+        .append("\n\n").append(operationCount).append(" operators")
+        .append(!hallInfo.hallSymbol.equals("--") ? " from Hall symbol "  + hallInfo.hallSymbol: "")
+        .append(": ");
+    for (int i = 0; i < operationCount; i++)
+      sb.append("\n").append(operations[i].xyz);
+    sb.append("\n\n").append(hallInfo == null ? "invalid Hall symbol" : hallInfo.dumpInfo());
+
+    sb.append("\n\ncanonical Seitz: ").append((String) info) 
+        .append("\n----------------------------------------------------\n");
+    return sb.toString();
+  }
+
+  String getName() {
+    return hallSymbol + " ["+hmSymbolFull+"]";  
+  }
+/*  
+  int getLatticeParameter() {
+    return latticeParameter;
+  }
+ 
+  char getLatticeCode() {
+    return latticeCode;
+  }
+*/ 
+  String getLatticeDesignation() {    
+    return latticeCode + ": " + Translation.getLatticeDesignation(latticeParameter);
+  }  
+ 
+  void setLattice(int latticeParameter) {
+    // implication here is that we do NOT have a Hall symbol.
+    // so we generate one.
+    // The idea here is that we can represent any LATT number
+    // as a simple set of rotation/translation operations
+    this.latticeParameter = latticeParameter;
+    latticeCode = Translation.getLatticeCode(latticeParameter);
+  }
+
+  ///// private methods /////
   
   private void buildSpaceGroup(String cifLine) {
     index = ++sgIndex;
@@ -145,28 +314,8 @@ public class SpaceGroup {
     }
   }
 
-  public String dumpInfo() {
-    Object info  = dumpCanonicalSeitzList();
-    if (info instanceof SpaceGroup)
-      return ((SpaceGroup)info).dumpInfo();
-    StringBuffer sb = new StringBuffer("\nHermann-Mauguin symbol: ");
-    sb.append(hmSymbol).append(hmSymbolExt.length() > 0 ? ":" + hmSymbolExt : "")
-        .append("\ninternational table number: ").append(intlTableNumber)
-        .append(intlTableNumberExt.length() > 0 ? ":" + intlTableNumberExt : "")
-        .append("\n\n").append(operationCount).append(" operators")
-        .append(!hallInfo.hallSymbol.equals("--") ? " from Hall symbol "  + hallInfo.hallSymbol: "")
-        .append(": ");
-    for (int i = 0; i < operationCount; i++)
-      sb.append("\n").append(operations[i].xyz);
-    sb.append("\n\n").append(hallInfo == null ? "invalid Hall symbol" : hallInfo.dumpInfo());
-
-    sb.append("\n\ncanonical Seitz: ").append((String) info) 
-        .append("\n----------------------------------------------------\n");
-    return sb.toString();
-  }
-
   private static String[] canonicalSeitzList;
-  public Object dumpCanonicalSeitzList() {
+  private Object dumpCanonicalSeitzList() {
     if (hallInfo == null)
       hallInfo = new HallInfo(hallSymbol);
     generateAllOperators(null);
@@ -193,54 +342,28 @@ public class SpaceGroup {
         ? hallSymbol + " = " : "") + sb.toString();
   }
   
-
-  public final static String dumpAll() {
+  private final static String dumpAll() {
    StringBuffer sb = new StringBuffer();
    for (int i = 0; i < spaceGroupDefinitions.length; i++)
      sb.append("\n----------------------\n" + spaceGroupDefinitions[i].dumpInfo());
    return sb.toString();
   }
   
-  public final static String dumpAllSeitz() {
+  private final static String dumpAllSeitz() {
     StringBuffer sb = new StringBuffer();
     for (int i = 0; i < spaceGroupDefinitions.length; i++)
       sb.append("\n").append(spaceGroupDefinitions[i].dumpCanonicalSeitzList());
     return sb.toString();
   }
    
-  public String getName() {
-    return hallSymbol + " ["+hmSymbolFull+"]";  
-  }
-  
-  public int getLatticeParameter() {
-    return latticeParameter;
-  }
-  
-  public char getLatticeCode() {
-    return latticeCode;
-  }
-
-  public String getLatticeDesignation() {    
-    return latticeCode + ": " + Translation.getLatticeDesignation(latticeParameter);
-  }  
- 
-  public void setLattice(int latticeParameter) {
-    // implication here is that we do NOT have a Hall symbol.
-    // so we generate one.
-    // The idea here is that we can represent any LATT number
-    // as a simple set of rotation/translation operations
-    this.latticeParameter = latticeParameter;
-    latticeCode = Translation.getLatticeCode(latticeParameter);
-  }
-  
-  public void setLattice(char latticeCode, boolean isCentrosymmetric) {
+  private void setLattice(char latticeCode, boolean isCentrosymmetric) {
     this.latticeCode = latticeCode;
     latticeParameter = Translation.getLatticeIndex(latticeCode);
     if (!isCentrosymmetric)
       latticeParameter = - latticeParameter;
   }
   
-  public final static SpaceGroup createSpaceGroup(String name, boolean doNormalize) {
+  private final static SpaceGroup createSpaceGroup(String name, boolean doNormalize) {
     SpaceGroup sg = determineSpaceGroup(name);
     HallInfo hallInfo;
     if (sg == null) {
@@ -266,35 +389,15 @@ public class SpaceGroup {
     return sg;
   }
   
-  public final static SpaceGroup createSpaceGroup(int desiredSpaceGroupIndex,
-                                                  String name,
-                                                  float[] notionalUnitcell, boolean doNormalize) {
-
-    SpaceGroup sg = null;
-    if (desiredSpaceGroupIndex >= 0) {
-      if (desiredSpaceGroupIndex == SPACE_GROUP_QUERY)
-        sg = createSpaceGroup((String) query[0], doNormalize);
-      else
-        sg = spaceGroupDefinitions[desiredSpaceGroupIndex];
-    } else {
-      sg = determineSpaceGroup(name, notionalUnitcell);
-      if (sg == null)
-        sg = createSpaceGroup(name, doNormalize);
-    }
-    if (sg != null)
-      sg.generateAllOperators(null);
-    return sg;
-  }
-
-  public final static SpaceGroup determineSpaceGroup(String name) {
+  private final static SpaceGroup determineSpaceGroup(String name) {
     return determineSpaceGroup(name, 0f, 0f, 0f, 0f, 0f, 0f, -1);
   }
 
-  public final static SpaceGroup determineSpaceGroup(String name, SpaceGroup sg) {
+  private final static SpaceGroup determineSpaceGroup(String name, SpaceGroup sg) {
     return determineSpaceGroup(name, 0f, 0f, 0f, 0f, 0f, 0f, sg.index);
   }
 
-  public final static SpaceGroup determineSpaceGroup(String name,
+  private final static SpaceGroup determineSpaceGroup(String name,
                                                      float[] notionalUnitcell) {
     if (notionalUnitcell == null)
       return determineSpaceGroup(name, 0f, 0f, 0f, 0f, 0f, 0f, -1);
@@ -303,32 +406,11 @@ public class SpaceGroup {
         notionalUnitcell[5], -1);
   }
 
-  static Object[] query = new Object[2];
-  {
-    query[0] = "";
-    query[1] = "";
-  }
-  final static int SPACE_GROUP_QUERY = 9999;
+  private static Object[] query = new Object[] {"", ""};
+
+  private final static int SPACE_GROUP_QUERY = 9999;
   
-  public final static int determineSpaceGroupIndex(String name) {
-    int i = determineSpaceGroupIndex(name, 0f, 0f, 0f, 0f, 0f, 0f, -1);
-    if (i < 0) {
-      query[0] = name;
-      i = SPACE_GROUP_QUERY;
-    }
-    return i;
-  }
-
-  public final static SpaceGroup determineSpaceGroup(String name, float a,
-                                                     float b, float c,
-                                                     float alpha, float beta,
-                                                     float gamma, int lastIndex) {
-    
-    int i = determineSpaceGroupIndex(name, a, b, c, alpha, beta,  gamma, lastIndex);
-    return (i >=0 ? spaceGroupDefinitions[i] : null);
-  }
-
-  public final static int determineSpaceGroupIndex(String name, float a,
+  private final static int determineSpaceGroupIndex(String name, float a,
                                                    float b, float c,
                                                    float alpha, float beta,
                                                    float gamma, int lastIndex) {
@@ -469,37 +551,6 @@ public class SpaceGroup {
     return -1;
   }
   
-  public boolean addSymmetry(String xyz) {
-    xyz = xyz.toLowerCase();
-    if (xyz.indexOf("x") < 0 || xyz.indexOf("y") < 0 || xyz.indexOf("z") < 0)
-      return false;
-    SymmetryOperation symmetryOperation = new SymmetryOperation(doNormalize);
-    if (!symmetryOperation.setMatrixFromXYZ(xyz)) {
-      Logger.error("couldn't interpret symmetry operation: " + xyz);      
-      return false;
-    }
-    addOperation(symmetryOperation);
-    return true;
-  }
-   
-  public SymmetryOperation[] getFinalOperations(Point3f[] atoms, int atomIndex,
-                                                int count, boolean doNormalize) {
-    //from AtomSetCollection.applySymmetry only
-    if (hallInfo == null && latticeParameter != 0) {
-      HallInfo h = new HallInfo(Translation
-          .getHallLatticeEquivalent(latticeParameter));
-      generateAllOperators(h);
-      doNormalize = false;
-    }
-
-    SymmetryOperation[] finalOperations = new SymmetryOperation[operationCount];
-    for (int i = 0; i < operationCount; i++) {
-      finalOperations[i] = new SymmetryOperation(operations[i], atoms,
-          atomIndex, count, doNormalize);
-    }
-    return finalOperations;
-  }
-
   private final static char determineUniqueAxis(float a, float b, float c, float alpha, float beta, float gamma) {
     if (a == b)
       return (b == c ? '\0' : 'c');
@@ -628,9 +679,9 @@ public class SpaceGroup {
 
   ///  data  ///
 
-  static int sgIndex = -1;
+  private static int sgIndex = -1;
   
-  final static SpaceGroup[] spaceGroupDefinitions = {
+  private final static SpaceGroup[] spaceGroupDefinitions = {
       new SpaceGroup("1 c1^1 p_1 p_1")
     , new SpaceGroup("2 ci^1 p_-1 -p_1")
     , new SpaceGroup("3:b c2^1 p_1_2_1 p_2y")
@@ -1224,5 +1275,5 @@ public class SpaceGroup {
     , new SpaceGroup("228:2 oh^8 f_d_-3_c:2 -f_4ud_2vw_3")
     , new SpaceGroup("229 oh^9 i_m_-3_m -i_4_2_3")
     , new SpaceGroup("230 oh^10 i_a_-3_d -i_4bd_2c_3")
-  }; 
+  };
 }

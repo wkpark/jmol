@@ -6,11 +6,10 @@ import java.util.Vector;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.jvxl.data.VolumeData;
 
 public interface MOCalculationInterface {
 
-  public abstract void calculate(VolumeData volumeData, BitSet bsSelected,
+  public abstract void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
                                  String calculationType,
                                  Point3f[] atomCoordAngstroms,
                                  int firstAtomOffset, Vector shells,

@@ -31,8 +31,9 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.util.*;
 import org.jmol.jvxl.data.*;
+import org.jmol.jvxl.api.MeshDataServer;
+import org.jmol.jvxl.api.VertexDataServer;
 import org.jmol.jvxl.calc.*;
-import org.jmol.jvxl.api.*;
 
 public abstract class VoxelReader implements VertexDataServer {
 

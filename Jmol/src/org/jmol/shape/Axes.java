@@ -28,7 +28,7 @@ import java.util.BitSet;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.symmetry.UnitCell;
+import org.jmol.api.SymmetryInterface;
 import org.jmol.viewer.JmolConstants;
 
 public class Axes extends FontLineShape {
@@ -87,10 +87,10 @@ public class Axes extends FontLineShape {
     font3d = g3d.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
     int axesMode = viewer.getAxesMode();
     if (axesMode == JmolConstants.AXES_MODE_UNITCELL && modelSet.getCellInfos() != null) {
-      UnitCell unitcell = viewer.getCurrentUnitCell();
+      SymmetryInterface unitcell = viewer.getCurrentUnitCell();
       if (unitcell == null)
         return;
-      Point3f[] vectors = unitcell.getVertices();
+      Point3f[] vectors = unitcell.getUnitCellVertices();
       Point3f offset = unitcell.getCartesianOffset();
       originPoint.set(offset);
       scale = viewer.getAxesScale() / 2f;

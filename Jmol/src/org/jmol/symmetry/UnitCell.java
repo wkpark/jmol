@@ -28,19 +28,21 @@ package org.jmol.symmetry;
 /*
  * Bob Hanson 9/2006
  * 
+ * NEVER ACCESS THESE METHODS DIRECTLY! ONLY THROUGH CLASS Symmetry
+ * 
+ *
  */
-//import javax.vecmath.AxisAngle4f;
-//import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.Quadric;
+import org.jmol.viewer.JmolConstants;
 
 
 //import org.jmol.util.Escape;
 
-public class UnitCell {
+class UnitCell {
   
   final static float toRadians = (float) Math.PI * 2 / 360;
   final static Point3f[] unitCubePoints = { new Point3f(0, 0, 0),
@@ -48,13 +50,6 @@ public class UnitCell {
       new Point3f(1, 0, 0), new Point3f(1, 0, 1), new Point3f(1, 1, 0),
       new Point3f(1, 1, 1), };
 
-  public final static int INFO_A = 0;
-  public final static int INFO_B = 1;
-  public final static int INFO_C = 2;
-  public final static int INFO_ALPHA = 3;
-  public final static int INFO_BETA = 4;
-  public final static int INFO_GAMMA = 5;
-  
   float a, b, c, alpha, beta, gamma;
   float[] notionalUnitcell; //6 parameters + 16 matrix items
   Matrix4f matrixNotional;
@@ -65,17 +60,17 @@ public class UnitCell {
   Point3f cartesianOffset = new Point3f();
   Point3f fractionalOffset = new Point3f();
   
-  public UnitCell(float[] notionalUnitcell) {
+  UnitCell(float[] notionalUnitcell) {
     setUnitCell(notionalUnitcell);
   }
 
-  public final void toCartesian(Point3f pt) {
+  final void toCartesian(Point3f pt) {
     if (matrixFractionalToCartesian == null)
       return;
     matrixFractionalToCartesian.transform(pt);
   }
   
-  public final void toFractional(Point3f pt) {
+  final void toFractional(Point3f pt) {
     if (matrixCartesianToFractional == null)
       return;
     matrixCartesianToFractional.transform(pt);
@@ -90,7 +85,7 @@ public class UnitCell {
     pt.z = (float)(pt.z - Math.floor(pt.z));    
   }
   
-  public final void toUnitCell(Point3f pt, Point3f offset) {
+  final void toUnitCell(Point3f pt, Point3f offset) {
     if (matrixCartesianToFractional == null)
       return;
     toFractionalUnitCell(pt);
@@ -100,19 +95,19 @@ public class UnitCell {
     matrixFractionalToCartesian.transform(pt);
   }
   
-  public void setOffset(Point3f pt) {
+  void setOffset(Point3f pt) {
     // from "unitcell {i j k}" via uccage
     fractionalOffset.set(pt);
     cartesianOffset.set(pt);
     matrixFractionalToCartesian.transform(cartesianOffset);
   }
 
-  public void setOffset(int nnn) {
+  void setOffset(int nnn) {
     // from "unitcell ijk" via uccage
     setOffset(ijkToPoint3f(nnn));
   }
 
-  public static Point3f ijkToPoint3f(int nnn) {
+  static Point3f ijkToPoint3f(int nnn) {
     Point3f cell = new Point3f();
     cell.x = nnn / 100 - 5;
     cell.y = (nnn % 100) / 10 - 5;
@@ -120,41 +115,41 @@ public class UnitCell {
     return cell;
   }
   
-  public final String dumpInfo(boolean isFull) {
+  final String dumpInfo(boolean isFull) {
     return "a=" + a + ", b=" + b + ", c=" + c + ", alpha=" + alpha + ", beta=" + beta + ", gamma=" + gamma
        + (isFull ? "\nfractional to cartesian: " + matrixFractionalToCartesian 
        + "\ncartesian to fractional: " + matrixCartesianToFractional : "");
   }
 
-  public Point3f[] getVertices() {
+  Point3f[] getVertices() {
     return vertices;
   }
   
-  public Point3f getCartesianOffset() {
+  Point3f getCartesianOffset() {
     return cartesianOffset;
   }
   
-  public Point3f getFractionalOffset() {
+  Point3f getFractionalOffset() {
     return fractionalOffset;
   }
   
-  public float[] getNotionalUnitCell() {
+  float[] getNotionalUnitCell() {
     return notionalUnitcell;
   }
   
-  public float getInfo(int infoType) {
+  float getInfo(int infoType) {
     switch (infoType) {
-    case INFO_A:
+    case JmolConstants.INFO_A:
       return a;
-    case INFO_B:
+    case JmolConstants.INFO_B:
       return b;
-    case INFO_C:
+    case JmolConstants.INFO_C:
       return c;
-    case INFO_ALPHA:
+    case JmolConstants.INFO_ALPHA:
       return alpha;
-    case INFO_BETA:
+    case JmolConstants.INFO_BETA:
       return beta;
-    case INFO_GAMMA:
+    case JmolConstants.INFO_GAMMA:
       return gamma;
     }
     return Float.NaN;
@@ -167,12 +162,12 @@ public class UnitCell {
       return;
     this.notionalUnitcell = notionalUnitcell;
 
-    a = notionalUnitcell[INFO_A];
-    b = notionalUnitcell[INFO_B];
-    c = notionalUnitcell[INFO_C];
-    alpha = notionalUnitcell[INFO_ALPHA];
-    beta = notionalUnitcell[INFO_BETA];
-    gamma = notionalUnitcell[INFO_GAMMA];
+    a = notionalUnitcell[JmolConstants.INFO_A];
+    b = notionalUnitcell[JmolConstants.INFO_B];
+    c = notionalUnitcell[JmolConstants.INFO_C];
+    alpha = notionalUnitcell[JmolConstants.INFO_ALPHA];
+    beta = notionalUnitcell[JmolConstants.INFO_BETA];
+    gamma = notionalUnitcell[JmolConstants.INFO_GAMMA];
     calcNotionalMatrix();
     constructFractionalMatrices();
     calcUnitcellVertices();
@@ -328,7 +323,7 @@ and the betaij should be entered as Type 0.
     
   }
   
-  public Object[] getEllipsoid(float[] parBorU){
+  Object[] getEllipsoid(float[] parBorU){
     //returns {Vector3f[3] unitVectors, float[3] lengths}
     if (parBorU == null)
       return null;

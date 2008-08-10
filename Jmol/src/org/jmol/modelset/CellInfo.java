@@ -26,7 +26,8 @@
 package org.jmol.modelset;
 
 import org.jmol.util.Logger;
-import org.jmol.symmetry.UnitCell;
+import org.jmol.api.Interface;
+import org.jmol.api.SymmetryInterface;
 
 import javax.vecmath.Point3f;
 import java.util.Hashtable;
@@ -39,7 +40,7 @@ public class CellInfo {
   String symmetryInfoString;
 
   int modelIndex;
-  private UnitCell unitCell;
+  private SymmetryInterface symmetry;
   private Point3f periodicOriginXyz;
   private int[] cellRange;
 
@@ -75,52 +76,57 @@ public class CellInfo {
         : false;
     if (notionalUnitcell == null || notionalUnitcell[0] == 0)
       return;
-    unitCell = new UnitCell(notionalUnitcell);
+    symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+    symmetry.setUnitCell(notionalUnitcell);
     showInfo();
   }
 
-  public UnitCell getUnitCell() {
-    return unitCell;
+  public SymmetryInterface getUnitCell() {
+    return symmetry;
   }
 
   int[] getCellRange() {
     return cellRange;
   }
 
-  float[] getNotionalUnitCell() {
-    return (unitCell == null ? null : unitCell.getNotionalUnitCell());
+  public float[] getNotionalUnitCell() {
+    return (symmetry == null ? null : symmetry.getNotionalUnitCell());
   }
 
   void toCartesian(Point3f pt) {
-    if (unitCell == null)
+    if (symmetry == null)
       return;
-    unitCell.toCartesian(pt);
+    symmetry.toCartesian(pt);
   }
 
   void toFractional(Point3f pt) {
-    if (unitCell == null)
+    if (symmetry == null)
       return;
-    unitCell.toFractional(pt);
+    symmetry.toFractional(pt);
   }
 
   void toUnitCell(Point3f pt, Point3f offset) {
     if (!coordinatesAreFractional || symmetryOperations == null)
       return;
-    unitCell.toUnitCell(pt, offset);
+    symmetry.toUnitCell(pt, offset);
   }
 
   void showInfo() {
     if (Logger.debugging)
       Logger
-          .debug("cellInfos[" + modelIndex + "]:\n" + unitCell.dumpInfo(true));
+          .debug("cellInfos[" + modelIndex + "]:\n" + symmetry.dumpUnitCellInfo(true));
   }
 
   String getUnitCellInfo() {
-    return (unitCell == null ? "no unit cell information" : unitCell
-        .dumpInfo(false));
+    return (symmetry == null ? "no unit cell information" : symmetry
+        .dumpUnitCellInfo(false));
   }
 
   public String getSpaceGroup() {
     return spaceGroup;
+  }
+
+  public Point3f[] getUnitCellVertices() {
+    return symmetry.getUnitCellVertices();
   }
 }

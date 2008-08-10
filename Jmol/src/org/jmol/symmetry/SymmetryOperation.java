@@ -41,21 +41,24 @@ import org.jmol.util.Logger;
  *
  * LATT : http://macxray.chem.upenn.edu/LATT.pdf thank you, Patrick Carroll
  * 
+ * NEVER ACCESS THESE METHODS DIRECTLY! ONLY THROUGH CLASS Symmetry
+ * 
+ *
  */
 
-public class SymmetryOperation extends Matrix4f {
+class SymmetryOperation extends Matrix4f {
   String xyzOriginal;
   String xyz;
   boolean doNormalize = true;
 
-  public SymmetryOperation() {
+  SymmetryOperation() {
   }
 
-  public SymmetryOperation(boolean doNormalize) {
+  SymmetryOperation(boolean doNormalize) {
     this.doNormalize = doNormalize;
   }
 
-  public SymmetryOperation(SymmetryOperation op, Point3f[] atoms,
+  SymmetryOperation(SymmetryOperation op, Point3f[] atoms,
                            int atomIndex, int count, boolean doNormalize) {
     /*
      * externalizes and transforms an operation for use in atom reader
@@ -72,16 +75,12 @@ public class SymmetryOperation extends Matrix4f {
       setOffset(atoms, atomIndex, count);
   }
   
-  public String getXyz() {
-    return xyz;
-  }
-
-  public String getXyzOriginal() {
-    return xyzOriginal;
+  String getXyz(boolean normalized) {
+    return (normalized ? xyz : xyzOriginal);
   }
 
   private Point4f temp = new Point4f();
-  public void newPoint(Point3f atom1, Point3f atom2,
+  void newPoint(Point3f atom1, Point3f atom2,
                        int transX, int transY, int transZ) {
     temp.set(atom1.x, atom1.y, atom1.z, 1);
     transform(temp, temp);
@@ -320,7 +319,7 @@ public class SymmetryOperation extends Matrix4f {
 
   }
   
-  public Vector3f[] rotateEllipsoid(Point3f cartCenter, Vector3f[] vectors,
+  Vector3f[] rotateEllipsoid(Point3f cartCenter, Vector3f[] vectors,
                                     UnitCell unitcell, Point3f ptTemp1, Point3f ptTemp2) {
     Vector3f[] vRot = new Vector3f[3];
     //System.out.println("cart0=" + cart0);

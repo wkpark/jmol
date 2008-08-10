@@ -113,9 +113,9 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.MeshData;
-import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.readers.SurfaceGenerator;
 
 public class Isosurface extends MeshFileCollection implements MeshDataServer {

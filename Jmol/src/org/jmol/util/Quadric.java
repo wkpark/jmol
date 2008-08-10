@@ -29,7 +29,6 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.jvxl.util.Eigen;
 
 public class Quadric {
 

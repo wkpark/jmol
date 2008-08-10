@@ -28,7 +28,7 @@ import java.util.BitSet;
 import javax.vecmath.Point3f;
 
 import org.jmol.api.MepCalculationInterface;
-import org.jmol.jvxl.data.VolumeData;
+import org.jmol.api.VolumeDataInterface;
 import org.jmol.jvxl.readers.Parameters;
 
 /*
@@ -39,6 +39,8 @@ import org.jmol.jvxl.readers.Parameters;
  * 
  * applying some of the tricks in QuantumCalculation for speed
  * 
+ * NOTE -- THIS CLASS IS INSTANTIATED USING Interface.getOptionInterface
+ * NOT DIRECTLY -- FOR MODULARIZATION. NEVER USE THE CONSTRUCTOR DIRECTLY!
  */
 public class MepCalculation extends QuantumCalculation implements MepCalculationInterface {
 
@@ -47,7 +49,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
   public MepCalculation() {
   }
   
-  public void calculate(VolumeData volumeData, BitSet bsSelected, Point3f[] atomCoordAngstroms, float[] charges) {
+  public void calculate(VolumeDataInterface volumeData, BitSet bsSelected, Point3f[] atomCoordAngstroms, float[] charges) {
     this.atomCoordAngstroms = atomCoordAngstroms;
     this.charges = charges;
     initialize(Parameters.MEP_MAX_GRID);

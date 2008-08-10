@@ -24,11 +24,12 @@
 
 package org.jmol.adapter.smarter;
 
+import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
-import org.jmol.symmetry.SpaceGroup;
-import org.jmol.symmetry.UnitCell;
+import org.jmol.api.SymmetryInterface;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.viewer.JmolConstants;
 
 import java.io.BufferedReader;
 
@@ -93,9 +94,8 @@ public abstract class AtomSetCollectionReader {
   public boolean getHeader;
   
   public String filter;
-  
   public String spaceGroup;
-  public UnitCell unitcell;
+  private SymmetryInterface symmetry;
   public float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
   public int[] latticeCells = new int[3];
   public int desiredSpaceGroupIndex;
@@ -319,7 +319,7 @@ public abstract class AtomSetCollectionReader {
       //0-5 a b c alpha beta gamma; 6-21 m00 m01... m33 cartesian-->fractional
       for (int i = 22; --i >= 0;)
         notionalUnitCell[i] = Float.NaN;
-      unitcell = null;
+      symmetry = null;
     }
     if (!ignoreFileSpaceGroupName)
       spaceGroup = "unspecified *";
@@ -348,7 +348,7 @@ public abstract class AtomSetCollectionReader {
     if (ignoreFileSymmetryOperators)
       return;
     atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds);
-    if (!atomSetCollection.addSymmetry(jonesFaithful))
+    if (!atomSetCollection.addSpaceGroupOperation(jonesFaithful))
       Logger.warn("Skipping symmetry operation " + jonesFaithful);
     iHaveSymmetryOperators = true;
   }
@@ -382,12 +382,12 @@ public abstract class AtomSetCollectionReader {
                    float gamma) {
     if (ignoreFileUnitCell)
       return;
-    notionalUnitCell[UnitCell.INFO_A] = a;
-    notionalUnitCell[UnitCell.INFO_B] = b;
-    notionalUnitCell[UnitCell.INFO_C] = c;
-    notionalUnitCell[UnitCell.INFO_ALPHA] = alpha;
-    notionalUnitCell[UnitCell.INFO_BETA] = beta;
-    notionalUnitCell[UnitCell.INFO_GAMMA] = gamma;
+    notionalUnitCell[JmolConstants.INFO_A] = a;
+    notionalUnitCell[JmolConstants.INFO_B] = b;
+    notionalUnitCell[JmolConstants.INFO_C] = c;
+    notionalUnitCell[JmolConstants.INFO_ALPHA] = alpha;
+    notionalUnitCell[JmolConstants.INFO_BETA] = beta;
+    notionalUnitCell[JmolConstants.INFO_GAMMA] = gamma;
     iHaveUnitCell = checkUnitCell(6);
   }
 
@@ -395,11 +395,16 @@ public abstract class AtomSetCollectionReader {
     for (int i = 0; i < n; i++)
       if (Float.isNaN(notionalUnitCell[i]))
         return false;
-    unitcell = new UnitCell(notionalUnitCell);
+    newSymmetry().setUnitCell(notionalUnitCell);
     if (doApplySymmetry)
       doConvertToFractional = !fileCoordinatesAreFractional;
     //if (but not only if) applying symmetry do we force conversion
     return true;
+  }
+
+  private SymmetryInterface newSymmetry() {
+    symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+    return symmetry;
   }
 
   public void setFractionalCoordinates(boolean TF) {
@@ -444,8 +449,8 @@ public abstract class AtomSetCollectionReader {
 
   public void setAtomCoord(Atom atom) {
     if (doConvertToFractional && !fileCoordinatesAreFractional
-        && unitcell != null) {
-      unitcell.toFractional(atom);
+        && symmetry != null) {
+      symmetry.toFractional(atom);
       iHaveFractionalCoordinates = true;
     }
     //if (Logger.debugging)
@@ -490,13 +495,14 @@ public abstract class AtomSetCollectionReader {
     if (doConvertToFractional || fileCoordinatesAreFractional) {
       atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds);
       if (ignoreFileSpaceGroupName || !iHaveSymmetryOperators) {
-        SpaceGroup sg = SpaceGroup.createSpaceGroup(desiredSpaceGroupIndex,
-            (spaceGroup.indexOf("*")>=0 ? "P1" : spaceGroup), notionalUnitCell, atomSetCollection.doNormalize);
-        if (sg != null) {
-          if (Logger.debugging)
-            Logger.debug("using generated space group " + sg.dumpInfo());
-          atomSetCollection.setAtomSetSpaceGroupName((spaceGroup.indexOf("*")>=0 ? spaceGroup : sg.getName()));
-          atomSetCollection.applySymmetry(sg);
+        SymmetryInterface symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+        if (!symmetry.createSpaceGroup(desiredSpaceGroupIndex, (spaceGroup
+            .indexOf("*") >= 0 ? "P1" : spaceGroup), notionalUnitCell,
+            atomSetCollection.doNormalize)) {
+          atomSetCollection
+              .setAtomSetSpaceGroupName((spaceGroup.indexOf("*") >= 0 ? spaceGroup
+                  : symmetry.getSpaceGroupName()));
+          atomSetCollection.applySymmetry(symmetry);
         }
       } else {
         atomSetCollection.applySymmetry();

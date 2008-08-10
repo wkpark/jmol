@@ -23,13 +23,13 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.api.Interface;
 import org.jmol.api.MinimizerInterface;
 import org.jmol.api.SmilesMatcherInterface;
+import org.jmol.api.SymmetryInterface;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Font3D;
 import org.jmol.shape.Object2d;
-import org.jmol.symmetry.SpaceGroup;
-import org.jmol.symmetry.UnitCell;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.ColorEncoder;
@@ -134,6 +134,13 @@ class Eval {
   private Hashtable variables;
 
   private StringBuffer outputBuffer;
+
+  private SymmetryInterface symmetry;
+  private SymmetryInterface getSymmetry() {
+    if (symmetry == null)
+      symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+    return symmetry;
+  }
 
   Eval(Viewer viewer) {
     compiler = viewer.getCompiler();
@@ -4339,7 +4346,7 @@ class Eval {
             if (spacegroup.indexOf(",") >= 0) //Jones Faithful
               if ((unitCells.x < 9 && unitCells.y < 9 && unitCells.z == 0))
                 spacegroup += "#doNormalize=0";
-            iGroup = SpaceGroup.determineSpaceGroupIndex(spacegroup);
+            iGroup = getSymmetry().determineSpaceGroupIndex(spacegroup);
             if (iGroup == -1)
               error(ERROR_spaceGroupNotFound, spacegroup);
           }
@@ -5310,16 +5317,11 @@ class Eval {
     }
   }
   
-  private MinimizerInterface getMinimizer() throws ScriptException {
+  private MinimizerInterface getMinimizer() {
     MinimizerInterface minimizer = viewer.getMinimizer();
-    if (minimizer != null)
-      return minimizer;
-    try {
-      String name = JmolConstants.CLASSBASE_OPTIONS + "minimize.Minimizer";
-      minimizer = (MinimizerInterface) Class.forName(name).newInstance();
+    if (minimizer == null) {
+      minimizer = (MinimizerInterface) Interface.getOptionInterface("minimize.Minimizer");
       viewer.setMinimizer(minimizer);
-    } catch (Exception e) {
-      evalError(e.getMessage());
     }
     return minimizer;
   }
@@ -6944,7 +6946,7 @@ class Eval {
           if (ijk < 555)
             pt = new Point3f();
           else
-            pt = UnitCell.ijkToPoint3f(ijk + 111);
+            pt = getSymmetry().ijkToPoint3f(ijk + 111);
         }
         if (!isSyntaxCheck)
           viewer.setDefaultLattice(pt);
@@ -12754,12 +12756,9 @@ class Eval {
       String smiles = Token.sValue(args[0]);
       if (smiles.length() == 0)
         return false;
-
+      SmilesMatcherInterface matcher = (SmilesMatcherInterface) Interface.getOptionInterface("smiles.PatternMatcher");
+      matcher.setViewer(viewer);
       try {
-        SmilesMatcherInterface matcher = (SmilesMatcherInterface) Class
-            .forName(JmolConstants.CLASSBASE_OPTIONS + "smiles.PatternMatcher")
-            .newInstance();
-        matcher.setViewer(viewer);
         bs = matcher.getSubstructureSet(smiles);
       } catch (Exception e) {
         evalError(e.getMessage());

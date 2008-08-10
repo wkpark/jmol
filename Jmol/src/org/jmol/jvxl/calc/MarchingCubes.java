@@ -27,8 +27,8 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
+import org.jmol.jvxl.api.VertexDataServer;
 import org.jmol.jvxl.data.VolumeData;
-import org.jmol.jvxl.api.*;
 
 public class MarchingCubes {
 

@@ -47,13 +47,16 @@ package org.jmol.symmetry;
  * 
  * lattice types S and T are not supported here
  * 
+ * NEVER ACCESS THESE METHODS OUTSIDE OF THIS PACKAGE
+ * 
+ *
  */
 
 import javax.vecmath.Point3i;
 import javax.vecmath.Matrix4f;
 import org.jmol.util.Logger;
 
-public class HallInfo {
+class HallInfo {
   
   String hallSymbol;
   String primitiveHallSymbol;
@@ -65,7 +68,7 @@ public class HallInfo {
   Point3i vector12ths;
   String vectorCode;
   
-  public HallInfo(String hallSymbol) {
+  HallInfo(String hallSymbol) {
     try {
       String str = this.hallSymbol = hallSymbol.trim();
       str = extractLatticeInfo(str);
@@ -91,7 +94,7 @@ public class HallInfo {
     }
   }
   
-  public String dumpInfo() {
+  String dumpInfo() {
     StringBuffer sb =  new StringBuffer("\nHall symbol: ").append(hallSymbol)
         .append("\nprimitive Hall symbol: ").append(primitiveHallSymbol)
         .append("\nlattice type: ").append(getLatticeDesignation());
@@ -102,7 +105,7 @@ public class HallInfo {
   }
 
 /*  
-   public String getCanonicalSeitzList() {
+  String getCanonicalSeitzList() {
     String[] list = new String[nRotations];
     for (int i = 0; i < nRotations; i++)
       list[i] = SymmetryOperation.dumpSeitz(rotationTerms[i].seitzMatrix12ths);
@@ -114,7 +117,7 @@ public class HallInfo {
     return s;
   }
 */
-  public String getLatticeDesignation() {    
+  private String getLatticeDesignation() {    
     return Translation.getLatticeDesignation(latticeCode, isCentrosymmetric);
   }  
    

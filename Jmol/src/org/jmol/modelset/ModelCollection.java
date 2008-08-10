@@ -36,13 +36,13 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolBioResolver;
+import org.jmol.api.SymmetryInterface;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.CubeIterator;
 import org.jmol.g3d.Graphics3D;
-import org.jmol.symmetry.SpaceGroup;
-import org.jmol.symmetry.UnitCell;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
@@ -103,6 +103,7 @@ abstract public class ModelCollection extends BondCollection {
     super.releaseModelSet();
   }
 
+  
   protected BitSet bsSymmetry;
   
   protected String modelSetName;
@@ -128,11 +129,9 @@ abstract public class ModelCollection extends BondCollection {
   public CellInfo[] getCellInfos() {
     return cellInfos;
   }
-  
-  public UnitCell getUnitCell(int modelIndex) {
-    if (modelIndex < 0)
-      return null;
-    return (cellInfos == null ? null : cellInfos[modelIndex].getUnitCell());
+
+  public SymmetryInterface getUnitCell(int modelIndex) {
+    return (modelIndex >= 0 && cellInfos != null ? cellInfos[modelIndex].getUnitCell() : null);
   }
 
   int[] modelNumbers = new int[1];  // from adapter -- possibly PDB MODEL record; possibly modelFileNumber
@@ -376,7 +375,7 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = 0; i < modelCount; i++) {
       if (!cellInfos[i].coordinatesAreFractional)
         continue;
-      Point3f[] vertices = cellInfos[i].getUnitCell().getVertices();
+      Point3f[] vertices = cellInfos[i].getUnitCellVertices();
       for (int j = 0; j < 8; j++)
         boxInfo.addBoundBoxPoint(vertices[j]);
     }
@@ -820,7 +819,6 @@ abstract public class ModelCollection extends BondCollection {
         recalculateLeadMidpointsAndWingVectors(i);
       return;
     }
-    models[modelIndex].pointGroup = null;
     int polymerCount = models[modelIndex].getBioPolymerCount();
     for (int ip = 0; ip < polymerCount; ip++)
       models[modelIndex].getBioPolymer(ip)
@@ -1263,7 +1261,7 @@ abstract public class ModelCollection extends BondCollection {
 
   public Point3f getUnitCellOffset(int modelIndex) {
     // from "unitcell {i j k}" via uccage
-    UnitCell unitCell = getUnitCell(modelIndex);
+    SymmetryInterface unitCell = getUnitCell(modelIndex);
     if (unitCell == null)
       return null;
     return unitCell.getCartesianOffset();
@@ -1271,15 +1269,15 @@ abstract public class ModelCollection extends BondCollection {
 
   public boolean setUnitCellOffset(int modelIndex, Point3f pt) {
     // from "unitcell {i j k}" via uccage
-    UnitCell unitCell = getUnitCell(modelIndex);
+    SymmetryInterface unitCell = getUnitCell(modelIndex);
     if (unitCell == null)
       return false;
-    unitCell.setOffset(pt);
+    unitCell.setUnitCellOffset(pt);
     return true;
   }
 
   public boolean setUnitCellOffset(int modelIndex, int nnn) {
-    UnitCell unitCell = getUnitCell(modelIndex);
+    SymmetryInterface unitCell = getUnitCell(modelIndex);
     if (unitCell == null)
       return false;
     unitCell.setOffset(nnn);
@@ -1794,7 +1792,7 @@ abstract public class ModelCollection extends BondCollection {
       BitSetUtil.copy(bsSymmetry == null ? bsSymmetry = new BitSet(atomCount) : bsSymmetry);
     case Token.unitcell:
       bs = new BitSet();
-      UnitCell unitcell = viewer.getCurrentUnitCell();
+      SymmetryInterface unitcell = viewer.getCurrentUnitCell();
       if (unitcell == null)
         return bs;
       Point3f cell = new Point3f(unitcell.getFractionalOffset());
@@ -1802,7 +1800,7 @@ abstract public class ModelCollection extends BondCollection {
       cell.y += 1;
       cell.z += 1;
       for (int i = atomCount; --i >= 0;)
-        if (atoms[i].isInLatticeCell(cell))
+        if (isInLatticeCell(i, cell))
           bs.set(i);
       return bs;
     }
@@ -2641,46 +2639,31 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public String getSpaceGroupInfoText(String spaceGroup) {
-    SpaceGroup sg;
     String strOperations = "";
-    int modelIndex = viewer.getCurrentModelIndex();
+    float[] unitCell = null;
     if (spaceGroup == null) {
+      int modelIndex = viewer.getCurrentModelIndex();
       if (modelIndex < 0)
         return "no single current model";
       if (cellInfos == null)
         return "not applicable";
-      CellInfo cellInfo = cellInfos[modelIndex];
+      CellInfo cellInfo = cellInfos[modelIndex];      
       spaceGroup = cellInfo.spaceGroup;
-      if (spaceGroup.indexOf("[") >= 0)
-        spaceGroup = spaceGroup.substring(0, spaceGroup.indexOf("[")).trim();
-      if (spaceGroup == "spacegroup unspecified")
-        return "no space group identified in file";
-      sg = SpaceGroup.determineSpaceGroup(spaceGroup, cellInfo
-          .getNotionalUnitCell());
+      unitCell = cellInfo.getNotionalUnitCell();
       strOperations = "\nSymmetry operations employed:"
-          + getModelSymmetryList(modelIndex);
-    } else if (spaceGroup.equalsIgnoreCase("ALL")) {
-      return SpaceGroup.dumpAll();
-    } else if (spaceGroup.equalsIgnoreCase("ALLSEITZ")) {
-      return SpaceGroup.dumpAllSeitz();
-    } else {
-      sg = SpaceGroup.determineSpaceGroup(spaceGroup);
-      if (sg == null) {
-        sg = SpaceGroup.createSpaceGroup(spaceGroup, false);
-      } else {
-        StringBuffer sb = new StringBuffer();
-        while (sg != null) {
-          sb.append(sg.dumpInfo());
-          sg = SpaceGroup.determineSpaceGroup(spaceGroup, sg);
-        }
-        return sb.toString();
-      }
+        + getModelSymmetryList(modelIndex);
     }
-    if (sg == null)
-      return "could not identify space group from name: " + spaceGroup 
+    String info = getSymTemp().getSpaceGroupInfo(spaceGroup, unitCell);
+    return (info == null ? "could not identify space group from name: " + spaceGroup 
       + "\nformat: show spacegroup \"2\" or \"P 2c\" " +
-          "or \"C m m m\" or \"x, y, z;-x ,-y, -z\"";
-    return sg.dumpInfo() + strOperations;
+          "or \"C m m m\" or \"x, y, z;-x ,-y, -z\"" : info + strOperations);
+  }
+  
+  SymmetryInterface symTemp;
+  SymmetryInterface getSymTemp() {
+    if (symTemp == null)
+      symTemp = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+    return symTemp;
   }
   
   public void deleteAtoms(int modelIndex, int firstAtomIndex, int nAtoms,

@@ -118,17 +118,9 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 
-public class VolumeData {
+import org.jmol.api.VolumeDataInterface;
 
-  public final Point3f volumetricOrigin = new Point3f();
-  public final float[] origin = new float[3];
-
-  public final Vector3f[] volumetricVectors = new Vector3f[3];
-  public final int[] voxelCounts = new int[3];
-  public float[][][] voxelData;
-
-  public final float[] volumetricVectorLengths = new float[3];
-  public final Vector3f[] unitVolumetricVectors = new Vector3f[3];
+public class VolumeData implements VolumeDataInterface {
 
   public VolumeData() {
     volumetricVectors[0] = new Vector3f();
@@ -139,15 +131,54 @@ public class VolumeData {
     unitVolumetricVectors[2] = new Vector3f();
   }
 
-  public void setVoxelData(float[][][] voxelData) {
-    this.voxelData = voxelData;
+  public final Point3f volumetricOrigin = new Point3f();
+
+  public void setVolumetricOrigin(float x, float y, float z) {
+    volumetricOrigin.set(x, y, z);
   }
+
+  public final float[] origin = new float[3];
+
+  public float[] getOriginFloat() {
+    return origin;
+  }
+
+  public float[] getVolumetricVectorLengths() {
+    return volumetricVectorLengths;
+  }
+  
+  public final Vector3f[] volumetricVectors = new Vector3f[3];
 
   public void setVolumetricVector(int i, float x, float y, float z) {
     volumetricVectors[i].x = x;
     volumetricVectors[i].y = y;
     volumetricVectors[i].z = z;
   }
+
+  public final int[] voxelCounts = new int[3];
+  
+  public int[] getVoxelCounts() {
+    return voxelCounts;
+  }
+  
+  public void setVoxelCounts(int nPointsX, int nPointsY, int nPointsZ) {
+    voxelCounts[0] = nPointsX;
+    voxelCounts[1] = nPointsY;
+    voxelCounts[2] = nPointsZ;
+  }
+
+  public float[][][] voxelData;
+  
+  public float[][][] getVoxelData() {
+    return voxelData;
+  }
+  
+  public void setVoxelData(float[][][] voxelData) {
+    this.voxelData = voxelData;
+  }
+
+  public final float[] volumetricVectorLengths = new float[3];
+  public final Vector3f[] unitVolumetricVectors = new Vector3f[3];
 
   private final Matrix3f volumetricMatrix = new Matrix3f();
 

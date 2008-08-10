@@ -452,22 +452,6 @@ final public class Atom extends Point3fi {
     return atomSymmetry;
   }
 
-  boolean isInLatticeCell(Point3f cell) {
-    return isInLatticeCell(cell, 0.02f);
-   }
-
-   boolean isInLatticeCell(Point3f cell, float slop) {
-     Point3f pt = getFractionalCoord();
-     // {1 1 1} here is the original cell
-     if (pt.x < cell.x - 1f - slop || pt.x > cell.x + slop)
-       return false;
-     if (pt.y < cell.y - 1f - slop || pt.y > cell.y + slop)
-       return false;
-     if (pt.z < cell.z - 1f - slop || pt.z > cell.z + slop)
-       return false;
-     return true;
-   }
-
    void setGroup(Group group) {
      this.group = group;
    }

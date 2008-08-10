@@ -40,6 +40,9 @@ import org.jmol.util.TextFormat;
  * 
  * brute force -- preliminary from BCCE20 meeting 2008
  * 
+ * NEVER ACCESS THESE METHODS DIRECTLY! ONLY THROUGH CLASS Symmetry
+ * 
+ *
  */
 
 public class PointGroup {
@@ -116,18 +119,13 @@ public class PointGroup {
   private Operation[][] axes = new Operation[maxAxis][];
   private int nAtoms;
   private float radius;
-  private int modelIndex;
   private float distanceTolerance = 0.2f;
   private float linearTolerance = 0.99f; // 8 degrees
   private String name = "C_1?";
   private Operation principalAxis = new Operation(null);
   private Operation principalPlane = new Operation(null);
 
-  public int getModelIndex() {
-    return modelIndex;
-  }
-
-  public String getName() {
+  String getName() {
     return name;
   }
 
@@ -137,10 +135,8 @@ public class PointGroup {
   
   final private Point3f center = new Point3f();
 
-  public PointGroup(Atom[] atomset, BitSet bsAtoms,  
-                    boolean haveVibration, int modelIndex, 
+  PointGroup(Atom[] atomset, BitSet bsAtoms, boolean haveVibration,  
                     float distanceTolerance, float linearTolerance) {
-    this.modelIndex = modelIndex;
     this.distanceTolerance = distanceTolerance;
     this.linearTolerance = (float) (Math.cos(linearTolerance / 180 * Math.PI));
     
@@ -801,7 +797,7 @@ public class PointGroup {
       "center of inversion" };
 
   int nOps = 0;
-  public class Operation {
+  private class Operation {
     int type;
     int order;
     int index;
@@ -835,11 +831,7 @@ public class PointGroup {
         Logger.info("new operation -- plane " + normalOrAxis);
     }
 
-    public String toString() {
-      return type + " " + order + " " + normalOrAxis;
-    }
-
-    public String getLabel() {
+    String getLabel() {
       switch (type) {
       case OPERATION_PLANE:
         return "Cs";
@@ -851,7 +843,7 @@ public class PointGroup {
     }
   }
 
-  public String getInfo(boolean asDraw, String type, int index,
+  String getInfo(int modelIndex, boolean asDraw, String type, int index,
                         float scaleFactor) {
     Vector3f v = new Vector3f();
     Operation op;
@@ -988,5 +980,4 @@ public class PointGroup {
     }
     return sb.toString();
   }
-
 }

@@ -96,23 +96,10 @@ abstract class TransformManager {
     setScreenParameters(width, height, true, false, true, true);
   }
 
-  boolean checkedForNavigation = false;
-
   TransformManager getNavigationManager(Viewer viewer, int width, int height) {
-    String className = "org.jmol.viewer.TransformManager11";
-    try {
-      Class tClass = Class.forName(className);
-      TransformManager t = (TransformManager) tClass.newInstance();
-      t.setViewer(viewer, width, height);
-      return t;
-    } catch (Exception e) {
-      if (!checkedForNavigation)
-        Logger
-            .error("Could not instantiate TransformationManager11 navigation manager. Class file is missing "
-                + e.toString());
-      checkedForNavigation = true;
-    }
-    return this;
+    TransformManager t = new TransformManager11();
+    t.setViewer(viewer, width, height);
+    return t;
   }
 
   /* ***************************************************************

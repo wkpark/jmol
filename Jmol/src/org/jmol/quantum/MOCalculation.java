@@ -24,7 +24,7 @@
 package org.jmol.quantum;
 
 import org.jmol.api.MOCalculationInterface;
-import org.jmol.jvxl.data.VolumeData;
+import org.jmol.api.VolumeDataInterface;
 import org.jmol.jvxl.readers.Parameters;
 import org.jmol.util.Logger;
 import javax.vecmath.Point3f;
@@ -82,7 +82,14 @@ import java.util.Arrays;
  C WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
+/*
+ * NOTE -- THIS CLASS IS INSTANTIATED USING Interface.getOptionInterface
+ * NOT DIRECTLY -- FOR MODULARIZATION. NEVER USE THE CONSTRUCTOR DIRECTLY!
+ * 
+ */
+
 public class MOCalculation extends QuantumCalculation implements MOCalculationInterface {
+
 
   private static int MAX_GRID = Parameters.MO_MAX_GRID;
   // slater coefficients in Bohr
@@ -185,7 +192,7 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
   public MOCalculation() {
   }
     
-  public void calculate(VolumeData volumeData, BitSet bsSelected, String calculationType, Point3f[] atomCoordAngstroms,
+  public void calculate(VolumeDataInterface volumeData, BitSet bsSelected, String calculationType, Point3f[] atomCoordAngstroms,
       int firstAtomOffset, Vector shells, float[][] gaussians, Hashtable aoOrdersDF,
       int[][] slaterInfo, float[][] slaterData, float[] moCoefficients) {
     this.calculationType = calculationType;

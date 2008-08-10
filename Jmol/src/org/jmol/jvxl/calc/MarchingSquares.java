@@ -29,10 +29,9 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.util.Logger;
 import org.jmol.util.*;
+import org.jmol.jvxl.api.VertexDataServer;
 import org.jmol.jvxl.data.VolumeData;
-import org.jmol.jvxl.api.*;
 
 
 public class MarchingSquares {

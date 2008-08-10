@@ -30,9 +30,10 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
+import org.jmol.api.Interface;
+import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.AtomData;
 import org.jmol.shape.Shape;
-import org.jmol.symmetry.PointGroup;
 
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -424,19 +425,19 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   public String calculatePointGroup(BitSet bsAtoms) {
-    return calculatePointGroupForFirstModel(bsAtoms, true).getName();
+    return calculatePointGroupForFirstModel(bsAtoms, true, false, false, null, 0, 0);
   }
 
   public String getPointGroupAsString(BitSet bsAtoms, boolean asDraw,
                                       String type, int index, float scale) {
-    PointGroup pg = calculatePointGroupForFirstModel(bsAtoms, false);
-    return (modelCount > 1 ? "frame "
-        + getModelNumberDotted(pg.getModelIndex()) + "; " : "")
-        + pg.getInfo(asDraw, type, index, scale);
+    return calculatePointGroupForFirstModel(bsAtoms, false, true, asDraw, type, index, scale);
   }
 
-  private PointGroup calculatePointGroupForFirstModel(BitSet bsAtoms,
-                                                      boolean forceNew) {
+  private String calculatePointGroupForFirstModel(BitSet bsAtoms,
+                                                  boolean forceNew,
+                                                  boolean doAll,
+                                                  boolean asDraw, String type,
+                                                  int index, float scale) {
     int modelIndex = viewer.getCurrentModelIndex();
     int iAtom = BitSetUtil.firstSetBit(bsAtoms);
     if (modelIndex < 0 && iAtom >= 0)
@@ -459,8 +460,14 @@ abstract public class ModelSet extends ModelCollection {
     Object obj = getShapeProperty(JmolConstants.SHAPE_VECTORS, "mad", iAtom);
     boolean haveVibration = (obj != null && ((Integer) obj).intValue() != 0 || viewer
         .isVibrationOn());
-    return new PointGroup(atoms, bs, haveVibration, modelIndex, 
+    SymmetryInterface symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+    symmetry.setPointGroup(atoms, bs, haveVibration, 
         viewer.getPointGroupTolerance(0), viewer.getPointGroupTolerance(1));
+    if (doAll)
+      return (modelCount > 1 ? "frame " + getModelNumberDotted(modelIndex)
+          + "; " : "")
+          + symmetry.getPointGroupInfo(modelIndex, asDraw, type, index, scale);
+    return symmetry.getPointGroupName();
   }
 
   private BitSet modelsOf(BitSet bsAtoms, BitSet bsAllAtoms) {

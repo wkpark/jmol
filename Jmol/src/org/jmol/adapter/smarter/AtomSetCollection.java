@@ -33,11 +33,10 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
-import org.jmol.jvxl.data.VolumeData;
-import org.jmol.symmetry.SpaceGroup;
-import org.jmol.symmetry.SymmetryOperation;
-import org.jmol.symmetry.UnitCell;
+import org.jmol.api.SymmetryInterface;
+import org.jmol.api.VolumeDataInterface;
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 
@@ -121,9 +120,6 @@ public class AtomSetCollection {
   float[] notionalUnitCell = new float[6]; 
   // expands to 22 for cartesianToFractional matrix as array (PDB)
   
-  SpaceGroup spaceGroup;
-  UnitCell unitCell;
-
   public AtomSetCollection(String fileTypeName) {
     //System.out.println(this + " initialized");
     this.fileTypeName = fileTypeName;
@@ -276,12 +272,11 @@ public class AtomSetCollection {
     currentAtomSetIndex = -1;
     latticeCells = null;
     notionalUnitCell = null;
-    spaceGroup = null;
+    symmetry = null;
     structures = new Structure[16];
     structureCount = 0;
     trajectory = null;
     trajectories = null;
-    unitCell = null;
     vConnect = null;
     vd = null;
   }
@@ -526,13 +521,20 @@ public class AtomSetCollection {
     setApplySymmetryToBonds(applySymmetryToBonds);
   }
   
+  SymmetryInterface symmetry;
+  private SymmetryInterface getSymmetry() {
+    if (symmetry == null)
+      symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+    return symmetry;
+  }
+  
   boolean setNotionalUnitCell(float[] info) {
     notionalUnitCell = new float[info.length];
     for (int i = 0; i < info.length; i++)
       notionalUnitCell[i] = info[i];
     setAtomSetAuxiliaryInfo("notionalUnitcell", notionalUnitCell);
     setGlobalBoolean(GLOBAL_latticeCells);
-    unitCell = new UnitCell(notionalUnitCell);
+    getSymmetry().setUnitCell(notionalUnitCell);
     return true;
   }
 
@@ -540,18 +542,14 @@ public class AtomSetCollection {
     setAtomSetCollectionAuxiliaryInfo(globalBooleans[globalIndex], Boolean.TRUE);
   }
   
-  boolean addSymmetry(String xyz) {
-    if (spaceGroup == null)
-      spaceGroup = new SpaceGroup(doNormalize);
-    if (!spaceGroup.addSymmetry(xyz))
-      return false;
-    return true;
+  boolean addSpaceGroupOperation(String xyz) {
+    getSymmetry().setSpaceGroup(doNormalize);
+    return symmetry.addSpaceGroupOperation(xyz);
   }
   
   public void setLatticeParameter(int latt) {
-    if (spaceGroup == null)
-      spaceGroup = new SpaceGroup(doNormalize);
-    spaceGroup.setLattice(latt);
+    getSymmetry().setSpaceGroup(doNormalize);
+    symmetry.setLattice(latt);
   }
   
 
@@ -560,8 +558,8 @@ public class AtomSetCollection {
      applySymmetry(latticeCells[0], latticeCells[1], latticeCells[2]);
    }
 
-   void applySymmetry(SpaceGroup spaceGroup) throws Exception {
-     this.spaceGroup = spaceGroup;
+   void applySymmetry(SymmetryInterface symmetry) throws Exception {
+     getSymmetry().setSpaceGroup(symmetry);
      //parameters are counts of unit cells as [a b c]
      applySymmetry(latticeCells[0], latticeCells[1], latticeCells[2]);
    }
@@ -570,7 +568,7 @@ public class AtomSetCollection {
    boolean isLatticeRange = false;
    
    void applySymmetry(int maxX, int maxY, int maxZ) throws Exception {
-    if (coordinatesAreFractional && spaceGroup != null)
+    if (coordinatesAreFractional && getSymmetry().haveSpaceGroup())
       applyAllSymmetry(maxX, maxY, maxZ);
    }
 
@@ -602,13 +600,12 @@ public class AtomSetCollection {
     int noSymmetryCount = getLastAtomSetAtomCount();
     int iAtomFirst = getLastAtomSetAtomIndex();
     for (int i = iAtomFirst; i < atomCount; i++) {
-      atoms[i].ellipsoid = unitCell.getEllipsoid(atoms[i].anisoBorU);
+      atoms[i].ellipsoid = symmetry.getEllipsoid(atoms[i].anisoBorU);
     }
     bondCount0 = bondCount;
 
-    SymmetryOperation[] finalOperations = spaceGroup.getFinalOperations(atoms,
-        iAtomFirst, noSymmetryCount, doNormalize);
-    int operationCount = finalOperations.length;
+    symmetry.setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
+    int operationCount = symmetry.getSpaceGroupOperationCount();
     int minX = 0;
     int minY = 0;
     int minZ = 0;
@@ -651,6 +648,7 @@ public class AtomSetCollection {
       rmaxz = -Float.MAX_VALUE;
     }
     //always do the 555 cell first
+    Matrix4f op = symmetry.getSpaceGroupOperation(0);
     for (int tx = minX; tx < maxX; tx++)
       for (int ty = minY; ty < maxY; ty++)
         for (int tz = minZ; tz < maxZ; tz++) {
@@ -659,8 +657,8 @@ public class AtomSetCollection {
             for (pt = 0; pt < noSymmetryCount; pt++) {
               Atom atom = atoms[iAtomFirst + pt];
               Point3f c = new Point3f(atom);
-              finalOperations[0].transform(c);
-              unitCell.toCartesian(c);
+              op.transform(c);
+              symmetry.toCartesian(c);
               atom.bsSymmetry.set(iCell * operationCount);
               atom.bsSymmetry.set(0);
               if (checkSymmetryRange)
@@ -676,7 +674,7 @@ public class AtomSetCollection {
               rmaxy += absRange;
               rmaxz += absRange;
             }
-            cell555Count = pt = symmetryAddAtoms(finalOperations, iAtomFirst,
+            cell555Count = pt = symmetryAddAtoms(iAtomFirst,
                 noSymmetryCount, 0, 0, 0, 0, pt, iCell * operationCount);
           }
         }
@@ -694,25 +692,23 @@ public class AtomSetCollection {
         for (int tz = minZ; tz < maxZ; tz++) {
           iCell++;
           if (tx != 0 || ty != 0 || tz != 0)
-            pt = symmetryAddAtoms(finalOperations, iAtomFirst, noSymmetryCount,
+            pt = symmetryAddAtoms(iAtomFirst, noSymmetryCount,
                 tx, ty, tz, cell555Count, pt, iCell * operationCount);
         }
     if (operationCount > 0) {
       String[] symmetryList = new String[operationCount];
       for (int i = 0; i < operationCount; i++)
-        symmetryList[i] = ""
-            + (doNormalize ? finalOperations[i].getXyz() : finalOperations[i]
-                .getXyzOriginal());
+        symmetryList[i] = "" + symmetry.getSpaceGroupXyz(i, doNormalize);
       setAtomSetAuxiliaryInfo("symmetryOperations", symmetryList);
     }
     setAtomSetAuxiliaryInfo("presymmetryAtomIndex", new Integer(iAtomFirst));
     setAtomSetAuxiliaryInfo("presymmetryAtomCount",
         new Integer(noSymmetryCount));
     setAtomSetAuxiliaryInfo("symmetryCount", new Integer(operationCount));
-    setAtomSetAuxiliaryInfo("latticeDesignation", spaceGroup
+    setAtomSetAuxiliaryInfo("latticeDesignation", symmetry
         .getLatticeDesignation());
     setAtomSetAuxiliaryInfo("unitCellRange", unitCells);
-    spaceGroup = null;
+    symmetry.setSpaceGroup(null);
     notionalUnitCell = new float[6];
     coordinatesAreFractional = false; 
     //turn off global fractional conversion -- this will be model by model
@@ -737,8 +733,7 @@ public class AtomSetCollection {
   private final Point3f ptTemp1 = new Point3f();
   private final Point3f ptTemp2 = new Point3f();
   
-  private int symmetryAddAtoms(SymmetryOperation[] finalOperations,
-                               int iAtomFirst, int noSymmetryCount, int transX,
+  private int symmetryAddAtoms(int iAtomFirst, int noSymmetryCount, int transX,
                                int transY, int transZ, int baseCount, int pt,
                                int iCellOpPt) throws Exception {
     boolean isBaseCell = (baseCount == 0);
@@ -763,11 +758,11 @@ public class AtomSetCollection {
     boolean addCartesian = (checkSpecial || checkSymmetryMinMax);
     if (checkRangeNoSymmetry)
       baseCount = noSymmetryCount;
-    int nOperations = finalOperations.length;
+    int nOperations = symmetry.getSpaceGroupOperationCount();
     int atomMax = iAtomFirst + noSymmetryCount;
     Point3f ptAtom = new Point3f();
     for (int iSym = 0; iSym < nOperations; iSym++) {
-      if (isBaseCell && finalOperations[iSym].getXyz().equals("x,y,z"))
+      if (isBaseCell && symmetry.getSpaceGroupXyz(iSym, true).equals("x,y,z"))
         continue;
 
       /* pt0 sets the range of points cross-checked. 
@@ -782,11 +777,10 @@ public class AtomSetCollection {
 
       int pt0 = (checkSpecial ? pt : checkRange111 ? baseCount : 0);
       for (int i = iAtomFirst; i < atomMax; i++) {
-        finalOperations[iSym]
-            .newPoint(atoms[i], ptAtom, transX, transY, transZ);
+        symmetry.newSpaceGroupPoint(iSym, atoms[i], ptAtom, transX, transY, transZ);
         Atom special = null;
         Point3f cartesian = new Point3f(ptAtom);
-        unitCell.toCartesian(cartesian);
+        symmetry.toCartesian(cartesian);
         if (checkSymmetryMinMax)
           setSymmetryMinMax(cartesian);
         if (checkDistances) {
@@ -835,10 +829,9 @@ public class AtomSetCollection {
                 ptTemp.set(cartesians[i - iAtomFirst]);
               } else {
                 ptTemp.set(atoms[i]);
-                unitCell.toCartesian(ptTemp);
+                symmetry.toCartesian(ptTemp);
               }
-              axes = finalOperations[iSym].rotateEllipsoid(ptTemp,
-                  (Vector3f[]) axes, unitCell, ptTemp1, ptTemp2);
+              axes = symmetry.rotateEllipsoid(iSym, ptTemp, (Vector3f[]) axes, ptTemp1, ptTemp2);
             }
             atom1.ellipsoid = new Object[] { axes, lengths };
           }
@@ -908,7 +901,7 @@ public class AtomSetCollection {
       setAtomSetAuxiliaryInfo("presymmetryAtomCount",
           new Integer(atomMax - iAtomFirst));
       setAtomSetAuxiliaryInfo("biosymmetryCount", new Integer(len));
-      spaceGroup = null;
+      symmetry = null;
       notionalUnitCell = new float[6];
       coordinatesAreFractional = false; 
       setGlobalBoolean(GLOBAL_SYMMETRY);
@@ -1313,16 +1306,14 @@ public class AtomSetCollection {
 
   //// for XmlChem3dReader, but could be for CUBE
   
-  VolumeData vd;
+  VolumeDataInterface vd;
   
   public void newVolumeData() {
-    vd = new VolumeData();
+    vd = (VolumeDataInterface) Interface.getOptionInterface("jvxl.data.VolumeData");
   }
 
   public void setVoxelCounts(int nPointsX, int nPointsY, int nPointsZ) {
-    vd.voxelCounts[0] = nPointsX;
-    vd.voxelCounts[1] = nPointsY;
-    vd.voxelCounts[2] = nPointsZ;
+    vd.setVoxelCounts(nPointsX, nPointsY, nPointsZ);
   }
 
   public void setVolumetricVector(int i, float x, float y, float z) {
@@ -1330,7 +1321,7 @@ public class AtomSetCollection {
   }
 
   public void setVolumetricOrigin(float x, float y, float z) {
-    vd.volumetricOrigin.set(x, y, z);
+    vd.setVolumetricOrigin(x, y, z);
   }
 
   public void setVoxelData(float[][][] voxelData) {
@@ -1338,7 +1329,7 @@ public class AtomSetCollection {
   }
 
   public Object getVolumeData() {
-    VolumeData v = vd;
+    VolumeDataInterface v = vd;
     vd = null; //delete adapter reference
     return v;
   }

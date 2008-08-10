@@ -1345,7 +1345,7 @@ abstract public class AtomCollection {
       int[] info = (int[]) specInfo;
       Point3f cell = new Point3f(info[0] / 1000f, info[1] / 1000f, info[2] / 1000f);
       for (int i = atomCount; --i >= 0;)
-        if (atoms[i].isInLatticeCell(cell))
+        if (isInLatticeCell(i, cell))
           bs.set(i);
       return bs;
     case Token.group:
@@ -1442,6 +1442,19 @@ abstract public class AtomCollection {
     }
     Logger.error("MISSING getAtomBits entry for " + Token.nameOf(tokType));
     return null;
+  }
+
+  protected boolean isInLatticeCell(int i, Point3f cell) {
+    Point3f pt = atoms[i].getFractionalCoord();
+    float slop = 0.02f;
+    // {1 1 1} here is the original cell
+    if (pt.x < cell.x - 1f - slop || pt.x > cell.x + slop)
+      return false;
+    if (pt.y < cell.y - 1f - slop || pt.y > cell.y + slop)
+      return false;
+    if (pt.z < cell.z - 1f - slop || pt.z > cell.z + slop)
+      return false;
+    return true;
   }
 
   public BitSet getModelBitSet(BitSet atomList) {

@@ -26,9 +26,8 @@ package org.jmol.jvxl.readers;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.api.Interface;
 import org.jmol.api.MOCalculationInterface;
 
 class IsoMOReader extends AtomDataReader {
@@ -80,30 +79,22 @@ class IsoMOReader extends AtomDataReader {
   protected void generateCube() {
     volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
     Hashtable moData = params.moData;
-    try {
-      MOCalculationInterface q = (MOCalculationInterface) Class.forName(
-          JmolConstants.CLASSBASE_QUANTUM + "MOCalculation").newInstance();
-      switch (params.qmOrbitalType) {
-      case Parameters.QM_TYPE_GAUSSIAN:
-        q.calculate(volumeData, bsMySelected, (String) moData
-            .get("calculationType"), atomData.atomXyz, atomData.firstAtomIndex,
-            (Vector) moData.get("shells"), (float[][]) moData.get("gaussians"),
-            (Hashtable) moData.get("atomicOrbitalOrder"), 
-            null, null,
-            params.moCoefficients);
-        break;
-      case Parameters.QM_TYPE_SLATER:
-        q.calculate(volumeData, bsMySelected, (String) moData
-            .get("calculationType"), atomData.atomXyz, atomData.firstAtomIndex,
-            null, null, null, 
-            (int[][]) moData.get("slaterInfo"), (float[][]) moData.get("slaterData"),
-            params.moCoefficients);
-        break;
-      default:
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      Logger.error("Error in MO calculation " + e.getMessage());
+    MOCalculationInterface q = (MOCalculationInterface) Interface.getOptionInterface("quantum.MOCalculation");
+    switch (params.qmOrbitalType) {
+    case Parameters.QM_TYPE_GAUSSIAN:
+      q.calculate(volumeData, bsMySelected, (String) moData
+          .get("calculationType"), atomData.atomXyz, atomData.firstAtomIndex,
+          (Vector) moData.get("shells"), (float[][]) moData.get("gaussians"),
+          (Hashtable) moData.get("atomicOrbitalOrder"), null, null,
+          params.moCoefficients);
+      break;
+    case Parameters.QM_TYPE_SLATER:
+      q.calculate(volumeData, bsMySelected, (String) moData
+          .get("calculationType"), atomData.atomXyz, atomData.firstAtomIndex,
+          null, null, null, (int[][]) moData.get("slaterInfo"),
+          (float[][]) moData.get("slaterData"), params.moCoefficients);
+      break;
+    default:
     }
   }
 }

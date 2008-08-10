@@ -124,7 +124,6 @@ final public class JmolConstants {
 }
 
   public final static String CLASSBASE_OPTIONS = "org.jmol.";
-  public final static String CLASSBASE_QUANTUM = "org.jmol.quantum.";
 
   public final static String copyright = "(C) 2007 Jmol Development";
   public final static String version;
@@ -2861,4 +2860,16 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       throw new NullPointerException();
     }
   }
+
+  public final static int INFO_A = 0;
+
+  public final static int INFO_B = 1;
+
+  public final static int INFO_C = 2;
+
+  public final static int INFO_ALPHA = 3;
+
+  public final static int INFO_BETA = 4;
+
+  public final static int INFO_GAMMA = 5;
 }

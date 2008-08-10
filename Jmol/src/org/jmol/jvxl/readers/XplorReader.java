@@ -28,7 +28,8 @@ import java.io.IOException;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.symmetry.UnitCell;
+import org.jmol.api.Interface;
+import org.jmol.api.SymmetryInterface;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
@@ -131,17 +132,18 @@ That is:
     float beta = parseFloat();
     float gamma = parseFloat();
 
-    UnitCell cell = new UnitCell(new float[] {a, b, c, alpha, beta, gamma});
+    SymmetryInterface symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+    symmetry.setUnitCell(new float[] {a, b, c, alpha, beta, gamma});
     Point3f pt;
     //these vectors need not be perpendicular
     pt = new Point3f(0, 0, 1f/nC);
-    cell.toCartesian(pt);
+    symmetry.toCartesian(pt);
     volumetricVectors[0].set(pt);
     pt = new Point3f(0, 1f/nB, 0);
-    cell.toCartesian(pt);
+    symmetry.toCartesian(pt);
     volumetricVectors[1].set(pt);
     pt = new Point3f(1f/nA, 0, 0);
-    cell.toCartesian(pt);
+    symmetry.toCartesian(pt);
     volumetricVectors[2].set(pt);
  
     //ZYX

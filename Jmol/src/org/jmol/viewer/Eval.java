@@ -790,13 +790,14 @@ class Eval {
           } else {
             // identifiers cannot have periods; file names can, though
             s = (String) v;
-            if (isExpression)
-              v = getAtomBitSet(this, viewer, s);
-            else
+            if (isExpression) {
+              fixed[j] = new Token(Token.bitset, getAtomBitSet(this, viewer, s));
+            } else {
               tok = (isClauseDefine ? Token.string : s.indexOf(".") >= 0
                   || s.indexOf("=") >= 0 || s.indexOf("[") >= 0
                   || s.indexOf("{") >= 0 ? Token.string : Token.identifier);
-            fixed[j] = new Token(tok, v);
+              fixed[j] = new Token(tok, v);
+            }
           }
         } else if (v instanceof BitSet) {
           fixed[j] = new Token(Token.bitset, v);

@@ -320,7 +320,7 @@ public interface JmolRendererInterface {
 
   public abstract void renderEllipsoid(int x, int y, int z, int diameter, Matrix3f mToEllipsoidal, double[] coef, Matrix4f mDeriv, int selectedOctant, Point3i[] octantPoints);
 
-  public abstract void drawImage(Image image, int x, int y, int z, int zslab, int width, int height, short bgcolix);
+  public abstract void drawImage(Image image, int x, int y, int z, int zslab, short bgcolix);
 
     
 }

@@ -1191,11 +1191,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case StateManager.OBJ_BACKGROUND:
       g3d.setBackgroundArgb(argb);
       colorManager.setColixBackgroundContrast(argb);
+      global.backgroundImageFileName = null;
       break;
     }
     global.setParameterValue(name + "Color", Escape.escapeColor(argb));
   }
 
+  public void setBackgroundImage(String fileName, Image image) {
+    global.backgroundImageFileName = fileName;
+    g3d.setBackgroundImage(image);
+  }
+  
   int getObjectArgb(int objId) {
     return global.objColors[objId];
   }
@@ -6894,5 +6900,4 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     return image;
   }
-
 }

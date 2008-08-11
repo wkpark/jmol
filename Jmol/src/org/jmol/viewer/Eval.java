@@ -43,6 +43,7 @@ import org.jmol.util.Parser;
 
 import org.jmol.modelset.Bond.BondSet;
 
+import java.awt.Image;
 import java.io.*;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -3572,6 +3573,21 @@ class Eval {
   private void background(int i) throws ScriptException {
     getToken(i);
     int argb;
+    if (theTok == Token.image) {
+      // background IMAGE "xxxx.jpg"
+      checkLength(3);
+      if (isSyntaxCheck)
+        return;
+      Hashtable htParams = new Hashtable();
+      String file = parameterAsString(++i);
+      Object image = (Image) null;
+      if (!file.equalsIgnoreCase("none") && file.length() > 0)
+        image = viewer.getFileAsImage(file, htParams);
+      if (image instanceof String)
+        evalError((String) image);
+      viewer.setBackgroundImage((String) htParams.get("fullPathName"), (Image) image);
+      return;
+    }
     if (isColorParam(i) || theTok == Token.none) {
       argb = getArgbParamLast(i, true);
       if (!isSyntaxCheck)

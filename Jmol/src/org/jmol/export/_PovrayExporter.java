@@ -629,9 +629,9 @@ public class _PovrayExporter extends _Exporter {
     output("// end text " + nText + ": " + text + "\n");
   }
 
-  public void plotImage(int x, int y, int z, Image image, int width, int height, short bgcolix) {
+  public void plotImage(int x, int y, int z, Image image, short bgcolix) {
     output("// start image " + (++nImage) + "\n");
-    g3d.plotImage(x, y, z, image, width, height, jmolRenderer, bgcolix);
+    g3d.plotImage(x, y, z, image, jmolRenderer, bgcolix);
     output("// end image " + nImage + "\n");
   }
   // not needed:

@@ -351,6 +351,8 @@ final public class Graphics3D implements JmolRendererInterface {
     setWidthHeight(antialiasThisFrame);
     //setRectClip(clipX, clipY, clipWidth, clipHeight);
     platform.obtainScreenBuffer();
+    if (backgroundImage != null)
+      plotImage(Integer.MIN_VALUE, 0, Integer.MIN_VALUE, backgroundImage, null, (short) 0);
   }
 
   private void releaseBuffers() {
@@ -490,6 +492,7 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   private int backgroundArgb;
+  private Image backgroundImage;
   public int bgcolor;
   
   /**
@@ -502,7 +505,13 @@ final public class Graphics3D implements JmolRendererInterface {
     bgcolor = argb;
     backgroundArgb = argb + ((argb & 0xFF) == 0xFF ? -1 : 1); 
     platform.setBackground(backgroundArgb);
+    backgroundImage = null;
   }
+
+  public void setBackgroundImage(Image image) {
+    backgroundImage = image;
+  }
+
 
   /**
    * controls greyscale rendering
@@ -1033,22 +1042,20 @@ final public class Graphics3D implements JmolRendererInterface {
         antialiasThisFrame);    
   }
   
-  public void drawImage(Image image, int x, int y, int z, int zSlab, int width, int height, short bgcolix) {
+  public void drawImage(Image image, int x, int y, int z, int zSlab, short bgcolix) {
     if (image == null || width == 0 || height == 0)
       return;
     if (isClippedZ(zSlab))
       return;
-    plotImage(x, y, z, image, width, height, null, bgcolix);
+    plotImage(x, y, z, image, null, bgcolix);
   }
 
-  public void plotImage(int x, int y, int z, Image image, int width,
-                        int height, JmolRendererInterface jmolRenderer,
+  public void plotImage(int x, int y, int z, Image image, JmolRendererInterface jmolRenderer,
                         short bgcolix) {
     setColix(bgcolix);
     if (bgcolix == 0)
       argbCurrent = 0;
-    Text3D.plotImage(x, y, z, image, width, height, this, jmolRenderer,
-        antialiasThisFrame, argbCurrent);
+    Text3D.plotImage(x, y, z, image, this, jmolRenderer, antialiasThisFrame, argbCurrent);
   }
 
   public void setFont(byte fid) {

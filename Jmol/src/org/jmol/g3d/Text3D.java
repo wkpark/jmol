@@ -108,21 +108,33 @@ public class Text3D {
     return textWidth;
   }
 
-  public static void plotImage(int x, int y, int z, Image image, int width,
-                               int height, Graphics3D g3d,
-                               JmolRendererInterface jmolRenderer,
-                               boolean antialias, int argbBackground) {
+  public static void plotImage(int x, int y, int z, Image image, Graphics3D g3d,
+                               JmolRendererInterface jmolRenderer, boolean antialias,
+                               int argbBackground) {
     //System.out.println(x + " " + width + ", " + y + " " + height + " w/h " + g3d.width + " " + g3d.height + " " + g3d.isAntialiased());
-    if (g3d.isAntialiased()) {
+    boolean isBackground = (x == Integer.MIN_VALUE); 
+    int width = image.getWidth(null);
+    int height = image.getHeight(null);
+    if (isBackground) {
+      x = 0;
+      z = Integer.MAX_VALUE - 1;
+      width = g3d.width;
+      height = g3d.height;
+    } else if (x + width < 0 || x > g3d.width || y + height < 0 || y > g3d.height) {
+      return;
+    } else if (g3d.isAntialiased()) {
       width += width;
       height += height;
     }
-    if (x + width < 0 || x > g3d.width || y + height < 0 || y > g3d.height)
-      return;
+    
     g3d.platform.checkOffscreenSize(width, height);
     Graphics g = g3d.platform.gOffscreen;
     g.clearRect(0,0,width,height);
-    if (g3d.isAntialiased()) {
+    if (isBackground) {
+      g.drawImage(image, 0, 0, width, height, 0, 0, image.getWidth(null), image.getHeight(null), null);
+      width = g3d.width;
+      height = g3d.height;
+    } else if (g3d.isAntialiased()) {
       g.drawImage(image, 0, 0, width, height, 0, 0, width >> 1, height >> 1, null);
     } else {
       g.drawImage(image, 0, 0, null);
@@ -136,21 +148,21 @@ public class Text3D {
       return;
     }
     int[] buffer = (int[]) pixelGrabber.getPixels();
+    int bgcolor = (isBackground ? 0 : argbBackground == 0 ? buffer[0] : argbBackground);
     if (jmolRenderer != null
         || (x < 0 || x + width > g3d.width || y < 0 || y + height > g3d.height))
-      plotImageClipped(x, y, z, g3d, jmolRenderer, width, height, buffer, argbBackground);
+      plotImageClipped(x, y, z, g3d, jmolRenderer, width, height, buffer, bgcolor);
     else
-      plotImageUnClipped(x, y, z, g3d, width, height, buffer, argbBackground);
+      plotImageUnClipped(x, y, z, g3d, width, height, buffer, bgcolor);
     return;
   }
 
   private static void plotImageClipped(int x, int y, int z, Graphics3D g3d,
                                        JmolRendererInterface jmolRenderer,
                                        int width, int height,
-                                       int[] buffer, int argbBackground) {
+                                       int[] buffer, int bgcolor) {
     if (jmolRenderer == null)
       jmolRenderer = g3d;
-    int bgcolor = (argbBackground == 0 ? buffer[0] : argbBackground);
     for (int i = 0, offset = 0; i < height; i++) {
       //System.out.println(Integer.toHexString(buffer[offset]));
       for (int j = 0; j < width; j++) {
@@ -163,14 +175,13 @@ public class Text3D {
 
        private static void plotImageUnClipped(int x, int y, int z, Graphics3D g3d,
                                          int textWidth, int textHeight,
-                                         int[] buffer, int argbBackground) {
+                                         int[] buffer, int bgcolor) {
     int[] zbuf = g3d.zbuf;
     int renderWidth = g3d.width;
     int pbufOffset = y * renderWidth + x;
     int i = 0;
     int j = 0;
     int offset = 0;
-    int bgcolor = (argbBackground == 0 ? buffer[0] : argbBackground);
     while (i < textHeight) {
       //System.out.println(Integer.toHexString(buffer[offset]));
       while (j < textWidth) {

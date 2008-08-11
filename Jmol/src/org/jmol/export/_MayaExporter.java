@@ -229,7 +229,7 @@ public class _MayaExporter extends _Exporter {
     
   }
 
-  public void plotImage(int x, int y, int z, Image image, int width, int height, short bgcolix) {
+  public void plotImage(int x, int y, int z, Image image, short bgcolix) {
     // TODO
     
   }

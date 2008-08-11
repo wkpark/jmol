@@ -456,7 +456,7 @@ class Compiler {
         if (lookingAtString()) {
           if (cchToken < 0)
             return error(ERROR_endOfCommandUnexpected);
-          String str = ((tokCommand == Token.load || tokCommand == Token.script)
+          String str = ((tokCommand == Token.load || tokCommand == Token.background || tokCommand == Token.script)
               && !iHaveQuotedString ? script.substring(ichToken + 1, ichToken
               + cchToken - 1) : getUnescapedStringLiteral());
           addTokenToPrefix(new Token(Token.string, str));

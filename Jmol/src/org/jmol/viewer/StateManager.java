@@ -572,7 +572,8 @@ public class StateManager {
     boolean showMeasurements = true;
     boolean zoomLarge = true; //false would be like Chime
     boolean zShade = false;
-
+    String backgroundImageFileName;
+    
     //atoms and bonds
 
     boolean bondModeOr = false;
@@ -676,6 +677,8 @@ public class StateManager {
         if (objColors[i] != 0)
           appendCmd(str, getObjectNameFromId(i) + "Color = \""
               + Escape.escapeColor(objColors[i]) + '"');
+      if (backgroundImageFileName != null)
+        appendCmd(str, "background IMAGE /*file*/" + Escape.escape(backgroundImageFileName));
       str.append(getSpecularState());
       if (stereoState != null)
         appendCmd(str, "stereo" + stereoState);

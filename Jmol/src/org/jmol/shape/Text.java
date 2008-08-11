@@ -221,8 +221,7 @@ public class Text extends Object2d {
       // now set x and y positions for text from (new?) box position
 
       if (image != null) {
-        g3d.drawImage(image, (int) boxX, (int) boxY, z, zSlab, (int) boxWidth,
-            (int) boxHeight, bgcolix);
+        g3d.drawImage(image, (int) boxX, (int) boxY, z, zSlab, bgcolix);
       } else {
         // now write properly aligned text
 

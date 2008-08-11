@@ -492,7 +492,7 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   private int backgroundArgb;
-  private Image backgroundImage;
+  public Image backgroundImage;
   public int bgcolor;
   
   /**
@@ -2930,6 +2930,11 @@ final public class Graphics3D implements JmolRendererInterface {
 
   public Vector3f getNormixVector(short normix) {
     return normix3d.getVector(normix);
+  }
+
+  public void renderBackground(JmolRendererInterface jmolRenderer) {
+    if (backgroundImage != null)
+      plotImage(Integer.MIN_VALUE, 0, Integer.MIN_VALUE, backgroundImage, jmolRenderer, (short) 0);
   }
 
 }

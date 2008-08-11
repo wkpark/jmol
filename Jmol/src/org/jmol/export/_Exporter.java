@@ -257,5 +257,5 @@ public abstract class _Exporter implements JmolExportInterface {
     if (Graphics3D.isColixTranslucent(colix))
       return new StringBuffer().append(translevel / 255f).toString();
     return new StringBuffer().append(0f).toString();
-  }
+  }  
 }

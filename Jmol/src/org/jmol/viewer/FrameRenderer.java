@@ -58,6 +58,7 @@ public class FrameRenderer {
     if (logTime)
       Logger.startTimer();
 
+    g3d.renderBackground(null);
     for (int i = 0; i < JmolConstants.SHAPE_MAX && g3d.currentlyRendering(); ++i) {
       Shape shape = modelSet.getShape(i);
 
@@ -119,6 +120,7 @@ public class FrameRenderer {
     exporter.getHeader();
 
     g3dExport.setg3dExporter(g3d, exporter);
+    exporter.renderBackground();
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = modelSet.getShape(i);
       if (shape == null)

@@ -322,5 +322,4 @@ public interface JmolRendererInterface {
 
   public abstract void drawImage(Image image, int x, int y, int z, int zslab, short bgcolix);
 
-    
 }

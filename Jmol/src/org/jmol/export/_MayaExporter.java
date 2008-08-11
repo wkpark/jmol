@@ -234,4 +234,9 @@ public class _MayaExporter extends _Exporter {
     
   }
 
+  public void renderBackground() {
+    // TODO
+    
+  }
+
 }

@@ -85,6 +85,10 @@ final public class Export3D implements JmolRendererInterface {
  //   this.shapeRenderer = shapeRenderer;
   }
   
+  public void renderBackground() {
+    exporter.renderBackground();
+  }
+
   /**
    * draws a screened circle ... every other dot is turned on
    *

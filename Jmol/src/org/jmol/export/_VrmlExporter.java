@@ -244,5 +244,10 @@ public class _VrmlExporter extends _Exporter {
     // TODO
     
   }
+
+  public void renderBackground() {
+    // TODO
+    
+  }
            
 }

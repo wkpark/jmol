@@ -99,4 +99,5 @@ public interface JmolExportInterface {
   abstract void renderEllipsoid(short colix, int x, int y, int z, int diameter,
                                 double[] coef, Point3i[] selectedPoints);
 
+  abstract void renderBackground();
 }

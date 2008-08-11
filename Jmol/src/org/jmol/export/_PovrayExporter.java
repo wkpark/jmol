@@ -683,4 +683,9 @@ public class _PovrayExporter extends _Exporter {
         + "," + tempP1.x + "," + tempP1.y + "," + tempP1.z + ")\n");
   }
 
+  public void renderBackground() {
+    // VERY inefficient, but it works.
+    g3d.renderBackground(jmolRenderer);
+  }
+
 }

@@ -59,13 +59,21 @@ abstract class WebPanel extends JPanel implements ActionListener {
 
   abstract JPanel appletParamPanel(); //should be defined in the code for the specific case e.g. ScriptButtons.java
 
-  protected String templateName;
-  protected String listLabel;
-  protected String infoFile;
-  protected String appletInfoDivs;
+  protected String panelName; //pop_in or script_button
+
+//  infoFile = "pop_in_instructions";
+//  infoFileLocalized = "pop_in_instructions_" + lang + ".html";
+//  templateName = "pop_in_template.html";
+//  appletTemplateName = "pop_in_template2.html";
+
+  //protected String templateName;
+  //protected String infoFile;
+  //protected String appletTemplateName;
+  //protected String templateImage;
+  
   protected String htmlAppletTemplate;
-  protected String appletTemplateName;
-  protected String templateImage;
+  protected String listLabel;
+  protected String appletInfoDivs;
   protected boolean useAppletJS;
 
   protected JSpinner appletSizeSpinnerW;
@@ -188,52 +196,54 @@ abstract class WebPanel extends JPanel implements ActionListener {
 
     helpButton = new JButton(GT._("Help/Instructions"));
     helpButton.addActionListener(this);
-    
+
+    String templateImage = panelName + ".png";
     URL pageCartoon = WebExport.getResource(this, templateImage);
     ImageIcon pageImage = null;
-    if (pageCartoon != null){
+    if (pageCartoon != null) {
       pageImage = new ImageIcon(pageCartoon, GT._("Cartoon of Page"));
     } else {
-      System.err.println("Error Loading Page Cartoon Image "+templateImage);
+      System.err.println("Error Loading Page Cartoon Image " + templateImage);
     }
     JLabel pageCartoonLabel = new JLabel(pageImage);
-    JPanel pageCartoonPanel =  new JPanel();
+    JPanel pageCartoonPanel = new JPanel();
     pageCartoonPanel.setLayout(new BorderLayout());
-    pageCartoonPanel.setBorder(BorderFactory.createTitledBorder(GT._("Cartoon of Page:")));
+    pageCartoonPanel.setBorder(BorderFactory.createTitledBorder(GT
+        ._("Cartoon of Page:")));
     pageCartoonPanel.add(pageCartoonLabel);
- //   editorScrollPane = getInstructionPane(w, h);
+    //   editorScrollPane = getInstructionPane(w, h);
 
     //Create the save button. 
     saveButton = new JButton(GT._("Save HTML as..."));
     saveButton.addActionListener(this);
     JPanel savePanel = new JPanel();
     savePanel.add(saveButton);
-    
+
     //Path to applet panel
 
     JPanel pathPanel = new JPanel();
     pathPanel.setLayout(new BorderLayout());
-    pathPanel.setBorder(BorderFactory
-        .createTitledBorder(GT._("Relative server path to jar files:")));
+    pathPanel.setBorder(BorderFactory.createTitledBorder(GT
+        ._("Relative server path to jar files:")));
     pathPanel.add(remoteAppletPath, BorderLayout.NORTH);
-   
+
     JPanel pathPanel2 = new JPanel();
     pathPanel2.setLayout(new BorderLayout());
-    pathPanel2.setBorder(BorderFactory
-        .createTitledBorder(GT._("Relative local path to jar files:")));
+    pathPanel2.setBorder(BorderFactory.createTitledBorder(GT
+        ._("Relative local path to jar files:")));
     pathPanel2.add(localAppletPath, BorderLayout.NORTH);
-   
+
     //Page Author Panel
     JPanel authorPanel = new JPanel();
-    authorPanel.setBorder(BorderFactory
-        .createTitledBorder(GT._("Author (your name):")));
+    authorPanel.setBorder(BorderFactory.createTitledBorder(GT
+        ._("Author (your name):")));
     authorPanel.add(pageAuthorName, BorderLayout.NORTH);
-    
+
     //Page Title Panel
     JPanel titlePanel = new JPanel();
     titlePanel.setLayout(new BorderLayout());
-    titlePanel.setBorder(BorderFactory
-        .createTitledBorder(GT._("Browser window title for this web page:")));
+    titlePanel.setBorder(BorderFactory.createTitledBorder(GT
+        ._("Browser window title for this web page:")));
     titlePanel.add(webPageTitle, BorderLayout.NORTH);
     titlePanel.add(savePanel, BorderLayout.SOUTH);
 
@@ -250,7 +260,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     //Combine previous three panels into one
     JPanel leftpanel = new JPanel();
     leftpanel.setLayout(new BorderLayout());
- //   leftpanel.add(editorScrollPane, BorderLayout.CENTER);
+    //   leftpanel.add(editorScrollPane, BorderLayout.CENTER);
     leftpanel.add(helpButton, BorderLayout.NORTH);
     leftpanel.add(pageCartoonPanel, BorderLayout.CENTER);
     leftpanel.add(settingsPanel, BorderLayout.SOUTH);
@@ -412,7 +422,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     }
     if (e.getSource() == helpButton){
       HelpDialog webExportHelp = new HelpDialog(WebExport.getFrame(), 
-          WebExport.getResource(this, infoFile));
+          WebExport.getHtmlResource(this, panelName + "_instructions"));
       webExportHelp.setVisible(true);
       webExportHelp.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
@@ -483,12 +493,12 @@ abstract class WebPanel extends JPanel implements ActionListener {
         LogPanel.log("      ...adding " + javaname + ".spt");
         writeFile(datadirPath + "/" + javaname + ".spt", script);
       }
-      String html = getResourceString(templateName);
+      String html = getResourceString(panelName + "_template");
       html = fixHtml(html);
       appletInfoDivs = "";
       StringBuffer appletDefs = new StringBuffer();
       if (!useAppletJS)
-        htmlAppletTemplate = getResourceString(appletTemplateName);
+        htmlAppletTemplate = getResourceString(panelName + "_template2");
       for (int i = 0; i < listModel.getSize(); i++)
         html = getAppletDefs(i, html, appletDefs, (JmolInstance) listModel
             .getElementAt(i));

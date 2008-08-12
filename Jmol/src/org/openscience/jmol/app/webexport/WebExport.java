@@ -70,15 +70,14 @@ public class WebExport extends JPanel implements WindowListener {
   private static JFrame webFrame;
   private static String windowName;
 
-  
   private WebExport(JmolViewer viewer, HistoryFile hFile) {
     super(new BorderLayout());
 
     historyFile = hFile;
     remoteAppletPath = historyFile.getProperty("webMakerAppletPath", "..");
     localAppletPath = historyFile.getProperty("webMakerLocalAppletPath", "..");
-    pageAuthorName = historyFile.getProperty("webMakerPageAuthorName", "Jmol Web Export");
-
+    pageAuthorName = historyFile.getProperty("webMakerPageAuthorName",
+        "Jmol Web Export");
 
     //Define the tabbed pane
     JTabbedPane mainTabs = new JTabbedPane();
@@ -92,7 +91,7 @@ public class WebExport extends JPanel implements WindowListener {
       //Add tabs to the tabbed pane
 
       JPanel introPanel = new JPanel();
-      URL url = getResource(this, GT._("WebExportIntro.html"));
+      URL url = getHtmlResource(this, "WebExportIntro");
       if (url == null) {
         System.err.println(GT._("Couldn't find file: WebExportIntro.html"));
       }
@@ -106,14 +105,14 @@ public class WebExport extends JPanel implements WindowListener {
       }
       intro.setEditable(false);
       JScrollPane introPane = new JScrollPane(intro);
-      introPane.setMaximumSize(new Dimension(450,350));
-      introPane.setPreferredSize(new Dimension(400,300));
+      introPane.setMaximumSize(new Dimension(450, 350));
+      introPane.setPreferredSize(new Dimension(400, 300));
       introPanel.setLayout(new BorderLayout());
       introPanel.add(introPane);
-      introPanel.setMaximumSize(new Dimension(450,350));
-      introPanel.setPreferredSize(new Dimension(400,300));
+      introPanel.setMaximumSize(new Dimension(450, 350));
+      introPanel.setPreferredSize(new Dimension(400, 300));
 
-      mainTabs.add(GT._("Introduction"),introPanel);
+      mainTabs.add(GT._("Introduction"), introPanel);
 
       webPanels[0] = new PopInJmol(viewer, fc, webPanels, 0);
       webPanels[1] = new ScriptButtons(viewer, fc, webPanels, 1);
@@ -145,15 +144,13 @@ public class WebExport extends JPanel implements WindowListener {
 
     //Add the tabbed pane to this panel
     add(mainTabs);
-    
+
     //Create the small log
 
     add(LogPanel.getMiniPanel(), BorderLayout.SOUTH);
 
-
     //Uncomment the following line to use scrolling tabs.
     //tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-    
 
   }
 
@@ -173,9 +170,9 @@ public class WebExport extends JPanel implements WindowListener {
    * this method should be invoked from the
    * event-dispatching thread.
    */
- 
+
   public static WebExport createAndShowGUI(JmolViewer viewer,
-                                        HistoryFile historyFile, String wName) {
+                                           HistoryFile historyFile, String wName) {
 
     if (viewer == null)
       runStatus = STAND_ALONE;
@@ -204,7 +201,6 @@ public class WebExport extends JPanel implements WindowListener {
     webFrame.setContentPane(webExport);
     webFrame.addWindowListener(webExport);
 
-
     //Display the window.
     webFrame.pack();
     webFrame.setVisible(true);
@@ -219,12 +215,12 @@ public class WebExport extends JPanel implements WindowListener {
 
   public static void saveHistory() {
     historyFile.addWindowInfo(windowName, webFrame, null);
-//    prop.setProperty("webMakerInfoWidth", "" + webPanels[0].getInfoWidth());
-//    prop.setProperty("webMakerInfoHeight", "" + webPanels[0].getInfoHeight());
+    //    prop.setProperty("webMakerInfoWidth", "" + webPanels[0].getInfoWidth());
+    //    prop.setProperty("webMakerInfoHeight", "" + webPanels[0].getInfoHeight());
     prop.setProperty("webMakerAppletPath", remoteAppletPath);
     prop.setProperty("webMakerLocalAppletPath", localAppletPath);
     prop.setProperty("webMakerPageAuthorName", pageAuthorName);
-   historyFile.addProperties(prop);
+    historyFile.addProperties(prop);
   }
 
   static String remoteAppletPath, localAppletPath;
@@ -245,16 +241,16 @@ public class WebExport extends JPanel implements WindowListener {
     } else {
       localAppletPath = path;
       prop.setProperty("webMakerLocalAppletPath", localAppletPath);
-      historyFile.addProperties(prop);      
+      historyFile.addProperties(prop);
     }
   }
-  
+
   static String pageAuthorName;
-  
+
   static String getPageAuthorName() {
     return pageAuthorName;
   }
- 
+
   static void setWebPageAuthor(String pageAuthor) {
     if (pageAuthor == null)
       pageAuthor = "Jmol Web Export";
@@ -262,15 +258,34 @@ public class WebExport extends JPanel implements WindowListener {
     prop.setProperty("webMakerPageAuthorName", pageAuthorName);
     historyFile.addProperties(prop);
   }
-  
-  static JFrame getFrame(){
+
+  static JFrame getFrame() {
     return webFrame;
   }
-  
-  static URL getResource(Object object, String fileName) {
+
+  static URL getResource(Object object, String fileName) { 
+    return getResource(object, fileName, true);
+  }
+
+  static URL getHtmlResource(Object object, String root) {
+    String lang = GT.getLanguage();
+    String fileName = root + "_" + lang + ".html";
+    URL url = getResource(object, fileName, false);
+    if (url == null) {
+      fileName = root + "_" + lang.substring(0, 2) + ".html";
+      url = getResource(object, fileName, false);
+      if (url == null) {
+        fileName = root + ".html";
+        url = getResource(object, fileName, true);
+      }
+    }
+    return url;
+  }
+
+  static URL getResource(Object object, String fileName, boolean flagError) {
     URL url = null;
     try {
-      if ((url = object.getClass().getResource("html/" + fileName)) == null)
+      if ((url = object.getClass().getResource("html/" + fileName)) == null && flagError)
         System.err.println("Couldn't find file: " + fileName);
     } catch (Exception e) {
       System.err.println("Exception " + e.getMessage() + " in getResource "
@@ -279,7 +294,8 @@ public class WebExport extends JPanel implements WindowListener {
     return url;
   }
 
-  static String getResourceString(Object object, String name) throws IOException {
+  static String getResourceString(Object object, String name)
+      throws IOException {
     URL url = WebExport.getResource(object, name);
     if (url == null) {
       throw new FileNotFoundException("Error loading resource " + name);
@@ -304,40 +320,40 @@ public class WebExport extends JPanel implements WindowListener {
     //  + str.length() + " bytes)");
     return str;
   }
-  
+
   /* Window event code for cleanup*/
   public void windowClosing(WindowEvent e) {
-}
+  }
 
-public void windowClosed(WindowEvent e) {
+  public void windowClosed(WindowEvent e) {
     //cleanUp(); Should do this, but then states during a session loose their .png files if window is closed.
-}
+  }
 
-public void windowOpened(WindowEvent e) {
- }
+  public void windowOpened(WindowEvent e) {
+  }
 
-public void windowIconified(WindowEvent e) {
-}
+  public void windowIconified(WindowEvent e) {
+  }
 
-public void windowDeiconified(WindowEvent e) {
-}
+  public void windowDeiconified(WindowEvent e) {
+  }
 
-public void windowActivated(WindowEvent e) {
-}
+  public void windowActivated(WindowEvent e) {
+  }
 
-public void windowDeactivated(WindowEvent e) {
-}
+  public void windowDeactivated(WindowEvent e) {
+  }
 
-public void windowGainedFocus(WindowEvent e) {
-}
+  public void windowGainedFocus(WindowEvent e) {
+  }
 
-public void windowLostFocus(WindowEvent e) {
-}
+  public void windowLostFocus(WindowEvent e) {
+  }
 
-public void windowStateChanged(WindowEvent e) {
-}
+  public void windowStateChanged(WindowEvent e) {
+  }
 
-public static void cleanUp(){
+  public static void cleanUp() {
     //gets rid of scratch files.
     FileSystemView Directories = FileSystemView.getFileSystemView();
     File homedir = Directories.getHomeDirectory();
@@ -347,11 +363,11 @@ public static void cleanUp(){
     if (scratchdir.exists()) {
       File[] dirListing = null;
       dirListing = scratchdir.listFiles();
-      for (int i = 0; i < (dirListing.length);i++){
+      for (int i = 0; i < (dirListing.length); i++) {
         dirListing[i].delete();
-       }
       }
+    }
     saveHistory();//force save of history.
     System.gc();//force garbage collection.
-    }
+  }
 }

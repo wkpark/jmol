@@ -1356,8 +1356,7 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      HelpDialog hd = new HelpDialog(frame);
-      hd.show();
+      (new HelpDialog(frame)).show();
     }
   }
 

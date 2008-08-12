@@ -1363,7 +1363,7 @@ abstract class TransformManager {
     float radiansXStep = radiansPerDegreePerStep * dRot.x;
     float radiansYStep = radiansPerDegreePerStep * dRot.y;
     float radiansZStep = radiansPerDegreePerStep * dRot.z;
-    if (floatSecondsTotal >= 0)
+    if (floatSecondsTotal > 0)
       viewer.setInMotion(true);
     float zoomPercent0 = zoomPercent;
     for (int i = 1; i <= totalSteps; ++i) {
@@ -1399,7 +1399,6 @@ abstract class TransformManager {
         }
       }
     }
-    viewer.requestRepaintAndWait();
     viewer.setInMotion(false);
   }
 
@@ -1482,7 +1481,7 @@ abstract class TransformManager {
 
     int fps = 30;
     int totalSteps = (int) (floatSecondsTotal * fps);
-    if (floatSecondsTotal >= 0)
+    if (floatSecondsTotal > 0)
       viewer.setInMotion(true);
     if (totalSteps > 1) {
       int frameTimeMillis = 1000 / fps;
@@ -1585,10 +1584,7 @@ abstract class TransformManager {
       if (!Float.isNaN(navDepth))
         setNavigationDepthPercent(0, navDepth);
     }
-    if (floatSecondsTotal >= 0) {
-      viewer.requestRepaintAndWait();
-      viewer.setInMotion(false);
-    }
+    viewer.setInMotion(false);
   }
 
   String getRotationText(boolean asQuaternion) {

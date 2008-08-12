@@ -8859,27 +8859,24 @@ class Eval {
       type = "FILE";
       pt++;
       break;
+    case Token.image:
     case Token.identifier:
     case Token.string:
       type = Token.sValue(tokenAt(pt, args)).toLowerCase();
-      if (type.equals("image")) {
+      if (tok == Token.image) {
         pt++;
-        if (tokAt(pt, args) == Token.integer) {
-          width = Token.iValue(tokenAt(pt++, args));
-          height = Token.iValue(tokenAt(pt++, args));
-        }
       } else if (Parser.isOneOf(type, driverList.toLowerCase())) {
         // povray, maya, vrml
         pt++;
         type = type.substring(0, 1).toUpperCase() + type.substring(1);
         isExport = true;
         fileName = "Jmol." + type;
-        if (tokAt(pt, args) == Token.integer) {
-          width = Token.iValue(tokenAt(pt++, args));
-          height = Token.iValue(tokenAt(pt++, args));
-        }
       } else {
         type = "(image)";
+      }
+      if (tokAt(pt, args) == Token.integer) {
+        width = Token.iValue(tokenAt(pt++, args));
+        height = Token.iValue(tokenAt(pt++, args));
       }
       break;
     }

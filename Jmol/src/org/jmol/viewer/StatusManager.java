@@ -258,15 +258,16 @@ class StatusManager {
   }
   
   int minSyncRepeatMs = 100;
-  synchronized void setStatusViewerRefreshed(int isOrientationChange,
-                                             String command, boolean syncMouse,
-                                             boolean syncOrientation) {
+  boolean syncingScripts = false;
+  boolean syncingMouse = false;
+  
+  synchronized void setSync(String mouseCommand) {
     if (!isSynced || !drivingSync || syncDisabled)
       return;
-    if (syncMouse) {
-      if (isOrientationChange == 2) // a mouse movement
-        syncSend(command, null);
-    } else if (syncOrientation) // not syncing scripts or mouse movement
+    if (syncingMouse) {
+      if (mouseCommand != null)
+        syncSend(mouseCommand, null);
+    } else if (!syncingScripts)
       syncSend("!" + viewer.getMoveToText(minSyncRepeatMs / 1000f), null);
   }
 

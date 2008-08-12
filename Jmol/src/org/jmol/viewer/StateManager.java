@@ -619,6 +619,7 @@ public class StateManager {
     boolean fontScaling = false;
     boolean hideNameInPopup = false;
     int hoverDelayMs = 500;
+    boolean imageScaling = false;
     boolean measurementLabels = true;
     boolean messageStyleChime = false;
     int pickingSpinRate = 10;
@@ -750,7 +751,7 @@ public class StateManager {
         + ";axesposition;axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color"
         + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
         + ";debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
-        + ";fontscaling;language;loglevel;measureStyleChime"
+        + ";fontscaling;imagescaling;language;loglevel;measureStyleChime"
         + ";minimizationsteps;minimizationrefresh;minimizationcriterion;navigationmode"
         + ";perspectivedepth;visualrange;perspectivemodel;refreshing;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
@@ -1062,6 +1063,7 @@ public class StateManager {
         //persistent values not reset with the "initialize" command
         debugScript = g.debugScript;
         messageStyleChime = g.messageStyleChime;
+        zShade = g.zShade;
       }
       
       resetParameterStringValue("animFrameCallback", g);
@@ -1147,6 +1149,7 @@ public class StateManager {
       setParameterValue("ellipsoidFill", ellipsoidFill);
       setParameterValue("exportDrivers", JmolConstants.EXPORT_DRIVER_LIST);
       setParameterValue("fontScaling", fontScaling);
+      setParameterValue("imageScaling", imageScaling);
       setParameterValue("forceAutoBond", forceAutoBond);
       setParameterValue("greyscaleRendering", greyscaleRendering);
       setParameterValue("hbondsBackbone", hbondsBackbone);

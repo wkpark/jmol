@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-08-04 20:52+0200\n"
-"PO-Revision-Date: 2007-12-27 08:57+0100\n"
-"Last-Translator: Egon Willighagen <egon.willighagen@gmail.com>\n"
+"PO-Revision-Date: 2008-08-04 21:01+0000\n"
+"Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Nederlands <jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Dutch\n"
+"X-Launchpad-Export-Date: 2008-08-12 00:40+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: Nederlands\n"
+"X-Poedit-Language: Dutch\n"
 "X-Poedit-Basepath: ../../../..\n"
-"X-Generator: KBabel 1.10\n"
 
 #: org/jmol/applet/Console.java:39
 msgid "Jmol Script Console"
@@ -88,9 +89,8 @@ msgid "Czech"
 msgstr "Tsjechisch"
 
 #: org/jmol/i18n/GT.java:118
-#, fuzzy
 msgid "Danish"
-msgstr "Spaans"
+msgstr "Deens"
 
 #: org/jmol/i18n/GT.java:119
 msgid "Dutch"
@@ -114,25 +114,23 @@ msgstr "Duits"
 
 #: org/jmol/i18n/GT.java:124
 msgid "Hungarian"
-msgstr ""
+msgstr "Hongaars"
 
 #: org/jmol/i18n/GT.java:125
-#, fuzzy
 msgid "Italian"
-msgstr "Catalaans"
+msgstr "Italiaans"
 
 #: org/jmol/i18n/GT.java:126
 msgid "Korean"
-msgstr ""
+msgstr "Koreaans"
 
 #: org/jmol/i18n/GT.java:127
 msgid "Norwegian Bokmal"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:128
-#, fuzzy
 msgid "Polish"
-msgstr "Engels"
+msgstr "Pools"
 
 #: org/jmol/i18n/GT.java:129
 msgid "Portuguese - Brazil"
@@ -144,7 +142,7 @@ msgstr "Portugees"
 
 #: org/jmol/i18n/GT.java:131
 msgid "Russian"
-msgstr ""
+msgstr "Russisch"
 
 #: org/jmol/i18n/GT.java:132
 msgid "Spanish"
@@ -152,7 +150,7 @@ msgstr "Spaans"
 
 #: org/jmol/i18n/GT.java:133
 msgid "Swedish"
-msgstr ""
+msgstr "Zweeds"
 
 #: org/jmol/i18n/GT.java:134
 msgid "Turkish"
@@ -958,7 +956,7 @@ msgstr "Afspelen"
 
 #: org/jmol/popup/PopupResourceBundle.java:795
 msgid "Pause"
-msgstr "Pauseren"
+msgstr "Pauzeren"
 
 #: org/jmol/popup/PopupResourceBundle.java:796
 msgid "Resume"
@@ -1315,7 +1313,7 @@ msgstr "onbekend woord: {0}"
 
 #: org/jmol/viewer/Eval.java:308 org/jmol/viewer/Eval.java:5078
 msgid "script ERROR: "
-msgstr "script FOUT:"
+msgstr "script FOUT: "
 
 #: org/jmol/viewer/Eval.java:3509
 #, java-format
@@ -1588,6 +1586,10 @@ msgstr ""
 "FOUT: Kan de waarde van deze variabele niet veranderen naar een booleaans: "
 "{0}"
 
+#, fuzzy
+#~ msgid "commandExpected"
+#~ msgstr "commando verwacht"
+
 #~ msgid "comma or right parenthesis expected"
 #~ msgstr "komma of rechter haakje verwacht"
 
@@ -1609,15 +1611,11 @@ msgstr ""
 #~ msgid "right parenthesis expected"
 #~ msgstr "rechter haakje verwacht"
 
-#~ msgid "too many parentheses"
-#~ msgstr "te veel haakjes"
-
 #~ msgid "rotation points cannot be identical"
 #~ msgstr "rotatiepunten kunnen niet identiek zijn"
 
-#, fuzzy
-#~ msgid "commandExpected"
-#~ msgstr "commando verwacht"
+#~ msgid "too many parentheses"
+#~ msgstr "te veel haakjes"
 
 #~ msgid "bad atom number"
 #~ msgstr "Ongeldig atoomnummer"
@@ -1648,12 +1646,6 @@ msgstr ""
 
 #~ msgid "Invalid {0} command"
 #~ msgstr "Ongeldig {0} commando"
-
-#~ msgid ""
-#~ "ERROR: Cannot set value of a boolean to another type. use \"{0}\" first."
-#~ msgstr ""
-#~ "FOUT: Kan de waarde van een boolean niet veranden naar een ander type. "
-#~ "gebruik eerst \"{0}\"."
 
 #~ msgid "Compatibility"
 #~ msgstr "Compatibiliteit"
@@ -1798,13 +1790,6 @@ msgstr ""
 #~ msgid "or dotted"
 #~ msgstr "Puntjes"
 
-#, fuzzy
-#~ msgid "space group "
-#~ msgstr "Ruimtegroep"
-
-#~ msgid "1.0 Å"
-#~ msgstr "1.0 Å"
-
 #~ msgid "Except Solvent"
 #~ msgstr "Behalve Oplosmiddel"
 
@@ -1816,9 +1801,6 @@ msgstr ""
 
 #~ msgid "Lipid"
 #~ msgstr "Lipide"
-
-#~ msgid "pick "
-#~ msgstr "selecteer"
 
 #~ msgid "Nanometers"
 #~ msgstr "Nanometers"
@@ -1832,9 +1814,6 @@ msgstr ""
 #~ msgid "Open"
 #~ msgstr "Openen"
 
-#~ msgid "Jmol Molecular Visualization http://www.jmol.org"
-#~ msgstr "Jmol Moleculaire Visualisatie http://www.jmol.org"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Draadmodelrotatie"
 
@@ -1844,3 +1823,22 @@ msgstr ""
 #~ msgstr ""
 #~ "Jmol Applet.  Onderdeel van het OpenScience project. Zie http://www.jmol."
 #~ "org voor meer informatie."
+
+#~ msgid "Jmol Molecular Visualization http://www.jmol.org"
+#~ msgstr "Jmol Moleculaire Visualisatie http://www.jmol.org"
+
+#~ msgid ""
+#~ "ERROR: Cannot set value of a boolean to another type. use \"{0}\" first."
+#~ msgstr ""
+#~ "FOUT: Kan de waarde van een boolean niet veranden naar een ander type. "
+#~ "gebruik eerst \"{0}\"."
+
+#, fuzzy
+#~ msgid "space group "
+#~ msgstr "Ruimtegroep "
+
+#~ msgid "pick "
+#~ msgstr "selecteer "
+
+#~ msgid "1.0 Å"
+#~ msgstr "1.0 Å"

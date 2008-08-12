@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-08-04 20:52+0200\n"
-"PO-Revision-Date: 2008-04-12 17:05+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2008-08-12 00:02+0000\n"
+"Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-05-01 17:16+0000\n"
+"X-Launchpad-Export-Date: 2008-08-12 00:40+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
@@ -115,7 +115,7 @@ msgstr "Alemany"
 
 #: org/jmol/i18n/GT.java:124
 msgid "Hungarian"
-msgstr ""
+msgstr "Hongarès"
 
 #: org/jmol/i18n/GT.java:125
 #, fuzzy
@@ -128,7 +128,7 @@ msgstr "Coreà"
 
 #: org/jmol/i18n/GT.java:127
 msgid "Norwegian Bokmal"
-msgstr ""
+msgstr "Noruec Bokmal"
 
 #: org/jmol/i18n/GT.java:128
 #, fuzzy
@@ -145,7 +145,7 @@ msgstr "Portuguès"
 
 #: org/jmol/i18n/GT.java:131
 msgid "Russian"
-msgstr ""
+msgstr "Rus"
 
 #: org/jmol/i18n/GT.java:132
 msgid "Spanish"
@@ -153,7 +153,7 @@ msgstr "Espanyol"
 
 #: org/jmol/i18n/GT.java:133
 msgid "Swedish"
-msgstr ""
+msgstr "Suec"
 
 #: org/jmol/i18n/GT.java:134
 msgid "Turkish"
@@ -759,11 +759,11 @@ msgstr "Càrrega parcial"
 
 #: org/jmol/popup/PopupResourceBundle.java:709
 msgid "Temperature (Relative)"
-msgstr ""
+msgstr "Temperatura (relativa)"
 
 #: org/jmol/popup/PopupResourceBundle.java:710
 msgid "Temperature (Fixed)"
-msgstr ""
+msgstr "Temperatura (fixada)"
 
 #: org/jmol/popup/PopupResourceBundle.java:712
 msgid "Amino Acid"
@@ -779,11 +779,11 @@ msgstr "Cadena"
 
 #: org/jmol/popup/PopupResourceBundle.java:715
 msgid "Group"
-msgstr ""
+msgstr "Grup"
 
 #: org/jmol/popup/PopupResourceBundle.java:716
 msgid "Monomer"
-msgstr ""
+msgstr "Monòmer"
 
 #: org/jmol/popup/PopupResourceBundle.java:717
 msgid "Shapely"
@@ -1039,7 +1039,7 @@ msgstr "Centre"
 
 #: org/jmol/popup/PopupResourceBundle.java:826
 msgid "Identity"
-msgstr ""
+msgstr "Identitat"
 
 #: org/jmol/popup/PopupResourceBundle.java:827
 msgid "Label"
@@ -1593,6 +1593,10 @@ msgstr ""
 "ERROR: No es pot definir el valor d''aquesta variable a un booleà. Utilitzeu "
 "«{0}» primer."
 
+#, fuzzy
+#~ msgid "commandExpected"
+#~ msgstr "s'esperava una ordre"
+
 #~ msgid "comma or right parenthesis expected"
 #~ msgstr "s'esperava una coma o un parèntesis dret"
 
@@ -1615,15 +1619,11 @@ msgstr ""
 #~ msgid "right parenthesis expected"
 #~ msgstr "s'esperava un parèntesis dret"
 
-#~ msgid "too many parentheses"
-#~ msgstr "masses parèntesis"
-
 #~ msgid "rotation points cannot be identical"
 #~ msgstr "els punts de rotació no poden ser idèntics"
 
-#, fuzzy
-#~ msgid "commandExpected"
-#~ msgstr "s'esperava una ordre"
+#~ msgid "too many parentheses"
+#~ msgstr "masses parèntesis"
 
 #~ msgid "bad atom number"
 #~ msgstr "número de l'àtom incorrecte"

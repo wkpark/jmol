@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-07-25 21:31+0200\n"
-"PO-Revision-Date: 2007-12-27 08:57+0100\n"
-"Last-Translator: Egon Willighagen <egon.willighagen@gmail.com>\n"
+"PO-Revision-Date: 2008-08-04 20:46+0000\n"
+"Last-Translator: Egon Willighagen <Unknown>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Dutch\n"
+"X-Launchpad-Export-Date: 2008-08-12 00:40+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: The Netherlands\n"
+"X-Poedit-Language: Dutch\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
 #: org/openscience/jmol/app/GuiMap.java:171
@@ -255,23 +257,23 @@ msgstr "B&ewerken"
 #: org/openscience/jmol/app/GuiMap.java:70
 #: org/openscience/jmol/app/GuiMap.java:76
 msgid "Select All"
-msgstr "Alles Selecteren"
+msgstr "Alles selecteren"
 
 #: org/openscience/jmol/app/GuiMap.java:71
 msgid "Deselect All"
-msgstr "Niets Selecteren"
+msgstr "Alles deselecteren"
 
 #: org/openscience/jmol/app/GuiMap.java:72
 msgid "Copy Image"
-msgstr "Kopieer plaatje"
+msgstr "Afbeelding kopiëren"
 
 #: org/openscience/jmol/app/GuiMap.java:73
 msgid "Copy Script"
-msgstr "Script kopi&euml;ren"
+msgstr "Script kopiëren"
 
 #: org/openscience/jmol/app/GuiMap.java:74
 msgid "&Preferences..."
-msgstr "Eigenscha&ppen..."
+msgstr "&Voorkeuren..."
 
 #: org/openscience/jmol/app/GuiMap.java:75
 msgid "&Paste"
@@ -279,7 +281,7 @@ msgstr "&Plakken"
 
 #: org/openscience/jmol/app/GuiMap.java:78
 msgid "All"
-msgstr "Alle"
+msgstr "Alles"
 
 #: org/openscience/jmol/app/GuiMap.java:79
 #: org/openscience/jmol/app/GuiMap.java:92
@@ -935,7 +937,7 @@ msgstr "Wissen"
 
 #: org/openscience/jmol/app/Jmol.java:753
 msgid "Could not create ConsoleTextArea: "
-msgstr "Kon geen ConsoleTextArea aanmaken:"
+msgstr "Kon geen ConsoleTextArea aanmaken: "
 
 #: org/openscience/jmol/app/Jmol.java:841
 msgid "Closing Jmol..."
@@ -1013,11 +1015,11 @@ msgstr "Weergeven tijdens renderen"
 
 #: org/openscience/jmol/app/PovrayDialog.java:243
 msgid "Should povray attempt to display while rendering?"
-msgstr "Moet povray proberen "
+msgstr "Moet povray proberen"
 
 #: org/openscience/jmol/app/PovrayDialog.java:266
 msgid "Width : "
-msgstr "Breedte :"
+msgstr "Breedte : "
 
 #: org/openscience/jmol/app/PovrayDialog.java:268
 msgid "Image width"
@@ -1025,7 +1027,7 @@ msgstr "Figuurbreedte"
 
 #: org/openscience/jmol/app/PovrayDialog.java:283
 msgid "Height : "
-msgstr "Hoogte :"
+msgstr "Hoogte : "
 
 #: org/openscience/jmol/app/PovrayDialog.java:285
 msgid "Image height"
@@ -1033,7 +1035,7 @@ msgstr "Figuurhoogte"
 
 #: org/openscience/jmol/app/PovrayDialog.java:302
 msgid "Fixed ratio : "
-msgstr "Vaste verhoudingen :"
+msgstr "Vaste verhoudingen : "
 
 #: org/openscience/jmol/app/PovrayDialog.java:304
 msgid "Use a fixed ratio for width:height"
@@ -1081,7 +1083,7 @@ msgstr "Verwerk het plaatje in verschillende stappen"
 
 #: org/openscience/jmol/app/PovrayDialog.java:409
 msgid "Start size : "
-msgstr "Begin grootte :"
+msgstr "Begin grootte : "
 
 #: org/openscience/jmol/app/PovrayDialog.java:411
 msgid "Inital size of the tiles"
@@ -1089,7 +1091,7 @@ msgstr "Eerste grootte van de blokken"
 
 #: org/openscience/jmol/app/PovrayDialog.java:427
 msgid "End size : "
-msgstr "Eind grootte:"
+msgstr "Eind grootte: "
 
 #: org/openscience/jmol/app/PovrayDialog.java:429
 msgid "Final size of the tiles"
@@ -1118,7 +1120,7 @@ msgstr "Afbreken zonder opslaan"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:133
 msgid "Preferences"
-msgstr "Eigenschappen"
+msgstr "Voorkeuren"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:150
 msgid "Display"
@@ -1229,17 +1231,17 @@ msgstr "Wat is nieuw in Jmol"
 #~ msgid "Select Atoms"
 #~ msgstr "Atomen Selecteren"
 
-#~ msgid "Select an atom or region."
-#~ msgstr "Selecteer een atoom of gebied."
-
-#~ msgid "View measurement table."
-#~ msgstr "Laat Metingentabel zien."
-
 #~ msgid "Make crystal..."
 #~ msgstr "Maak kristal..."
 
 #~ msgid "Export view to an image or script file."
 #~ msgstr "Exporteer de weergave of een script naar bestand."
+
+#~ msgid "Select an atom or region."
+#~ msgstr "Selecteer een atoom of gebied."
+
+#~ msgid "View measurement table."
+#~ msgstr "Laat Metingentabel zien."
 
 #~ msgid "Export &PDF..."
 #~ msgstr "&PDF exporteren..."
@@ -1248,7 +1250,7 @@ msgstr "Wat is nieuw in Jmol"
 #~ msgstr "Figuurgrootte"
 
 #~ msgid "Output format : "
-#~ msgstr "Uitvoerformaat:"
+#~ msgstr "Uitvoerformaat: "
 
 #~ msgid "Select the file format of the output file"
 #~ msgstr "Selecteer het bestandsformaat van het uitvoerbestand"

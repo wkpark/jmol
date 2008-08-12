@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-07-25 21:31+0200\n"
-"PO-Revision-Date: 2007-05-17 23:50+0100\n"
-"Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
+"PO-Revision-Date: 2008-08-04 20:53+0000\n"
+"Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: French\n"
+"X-Launchpad-Export-Date: 2008-08-12 00:40+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
+"X-Poedit-Language: French\n"
 "X-Poedit-Basepath: ../../../..\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
@@ -147,7 +149,6 @@ msgid "Error reading from BufferedReader: {0}"
 msgstr "Erreur à la lecture du BufferedReader: {0}"
 
 #: org/openscience/jmol/app/DisplayPanel.java:156
-#, fuzzy
 msgid "Delete atoms"
 msgstr "Effacer les atomes"
 
@@ -196,27 +197,24 @@ msgid "&Export"
 msgstr "&Exporter"
 
 #: org/openscience/jmol/app/GuiMap.java:55
-#, fuzzy
 msgid "Export &Image..."
-msgstr "Exporter une Image ou un Script..."
+msgstr "Exporter une &Image..."
 
 #: org/openscience/jmol/app/GuiMap.java:56
 msgid "Save current view as an image."
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:57
-#, fuzzy
 msgid "Export to &Web Page..."
-msgstr "Exporter en PDF..."
+msgstr "Exporter dans une page &Web"
 
 #: org/openscience/jmol/app/GuiMap.java:58
 msgid "Export one or more views to a web page."
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:59
-#, fuzzy
 msgid "Render in POV-&Ray..."
-msgstr "Rendu dans POV-Ray"
+msgstr "Rendu dans POV-&Ray"
 
 #: org/openscience/jmol/app/GuiMap.java:60
 msgid "Render in pov-ray."
@@ -560,7 +558,7 @@ msgstr "Aller à la trame précédente"
 #: org/openscience/jmol/app/GuiMap.java:163
 #, fuzzy
 msgid "Go to last frame"
-msgstr "Aller à la trame suivante"
+msgstr "Aller à la dernière trame"
 
 #: org/openscience/jmol/app/GuiMap.java:165
 msgid "Start vibration"
@@ -938,7 +936,7 @@ msgstr "Effacer"
 
 #: org/openscience/jmol/app/Jmol.java:753
 msgid "Could not create ConsoleTextArea: "
-msgstr "Impossible de créer la ConsoleTextArea:"
+msgstr "Impossible de créer la ConsoleTextArea: "
 
 #: org/openscience/jmol/app/Jmol.java:841
 msgid "Closing Jmol..."
@@ -981,17 +979,14 @@ msgid "Jmol-to-POV-Ray Conversion"
 msgstr "Conversion de Jmol vers POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:155
-#, fuzzy
 msgid "Filename"
-msgstr "Nom de fichier :"
+msgstr "Nom de fichier"
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
-#, fuzzy
 msgid ""
 "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 msgstr ""
-"Une seule trame: 'caffine' -> 'caffine.pov'; Plusieurs trames: 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
+"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:167
 msgid "Working Directory"
@@ -1010,9 +1005,8 @@ msgid "Run POV-Ray directly"
 msgstr "Lancer POV-Ray directement"
 
 #: org/openscience/jmol/app/PovrayDialog.java:196
-#, fuzzy
 msgid "Launch POV-Ray from within Jmol"
-msgstr "Lancer povray depuis Jmol"
+msgstr "Lancer POV-Ray depuis Jmol"
 
 #: org/openscience/jmol/app/PovrayDialog.java:241
 msgid "Display While Rendering"
@@ -1236,17 +1230,17 @@ msgstr "Les nouveautés de Jmol"
 #~ msgid "Select Atoms"
 #~ msgstr "Sélectionner les atomes"
 
-#~ msgid "Select an atom or region."
-#~ msgstr "Sélectionner un atome ou une région."
-
-#~ msgid "View measurement table."
-#~ msgstr "Voir la table des mesures."
-
 #~ msgid "Make crystal..."
 #~ msgstr "Créer un cristal..."
 
 #~ msgid "Export view to an image or script file."
 #~ msgstr "Exporter la vue dans un fichier image ou script."
+
+#~ msgid "Select an atom or region."
+#~ msgstr "Sélectionner un atome ou une région."
+
+#~ msgid "View measurement table."
+#~ msgstr "Voir la table des mesures."
 
 #, fuzzy
 #~ msgid "Export &PDF..."
@@ -1300,15 +1294,8 @@ msgstr "Les nouveautés de Jmol"
 #~ msgid "File not loaded"
 #~ msgstr "Fichier non chargé"
 
-#, fuzzy
-#~ msgid "CLIP or JPG|PNG|PPM:filename"
-#~ msgstr " JPG|PNG|PPM:nomFichier"
-
 #~ msgid "no display"
 #~ msgstr "sans affichage"
-
-#~ msgid "run script and exit"
-#~ msgstr "exécuter le script et terminer"
 
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Exécution du script par Jmol..."
@@ -1372,3 +1359,10 @@ msgstr "Les nouveautés de Jmol"
 
 #~ msgid "Loading plugins..."
 #~ msgstr "Chargement des plugins..."
+
+#, fuzzy
+#~ msgid "CLIP or JPG|PNG|PPM:filename"
+#~ msgstr "JPG|PNG|PPM:nomFichier"
+
+#~ msgid "run script and exit"
+#~ msgstr "exécuter le script et terminer"

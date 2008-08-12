@@ -9,14 +9,16 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-08-04 20:52+0200\n"
-"PO-Revision-Date: 2007-02-20 20:15+0100\n"
-"Last-Translator: Martin Slavík <martin.slavik@tul.cz>\n"
+"PO-Revision-Date: 2008-08-04 21:10+0000\n"
+"Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Czech\n"
+"X-Launchpad-Export-Date: 2008-08-12 00:40+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
+"X-Poedit-Language: Czech\n"
 
 #: org/jmol/applet/Console.java:39
 msgid "Jmol Script Console"
@@ -79,52 +81,51 @@ msgstr "Nahrávám Jmol aplet..."
 #: org/jmol/appletwrapper/AppletWrapper.java:165
 #, java-format
 msgid "  {0} seconds"
-msgstr "{0} sekund"
+msgstr "  {0} sekund"
 
 #: org/jmol/i18n/GT.java:116
 msgid "Catalan"
-msgstr ""
+msgstr "Katalánština"
 
 #: org/jmol/i18n/GT.java:117
 msgid "Czech"
-msgstr ""
+msgstr "Čeština"
 
 #: org/jmol/i18n/GT.java:118
 msgid "Danish"
-msgstr ""
+msgstr "Dánština"
 
 #: org/jmol/i18n/GT.java:119
 msgid "Dutch"
-msgstr ""
+msgstr "Nizozemština"
 
 #: org/jmol/i18n/GT.java:120
 msgid "English"
-msgstr ""
+msgstr "Angličtina"
 
 #: org/jmol/i18n/GT.java:121
 msgid "Estonian"
-msgstr ""
+msgstr "Estonština"
 
 #: org/jmol/i18n/GT.java:122
 msgid "French"
-msgstr ""
+msgstr "Francouzština"
 
 #: org/jmol/i18n/GT.java:123
-#, fuzzy
 msgid "German"
-msgstr "Šedá"
+msgstr "Němčina"
 
 #: org/jmol/i18n/GT.java:124
 msgid "Hungarian"
-msgstr ""
+msgstr "Maďarština"
 
 #: org/jmol/i18n/GT.java:125
 msgid "Italian"
-msgstr ""
+msgstr "Italština"
 
 #: org/jmol/i18n/GT.java:126
 msgid "Korean"
-msgstr ""
+msgstr "Korejština"
 
 #: org/jmol/i18n/GT.java:127
 msgid "Norwegian Bokmal"
@@ -132,7 +133,7 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:128
 msgid "Polish"
-msgstr ""
+msgstr "Polština"
 
 #: org/jmol/i18n/GT.java:129
 msgid "Portuguese - Brazil"
@@ -140,23 +141,23 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:130
 msgid "Portuguese"
-msgstr ""
+msgstr "Portugalština"
 
 #: org/jmol/i18n/GT.java:131
 msgid "Russian"
-msgstr ""
+msgstr "Ruština"
 
 #: org/jmol/i18n/GT.java:132
 msgid "Spanish"
-msgstr ""
+msgstr "Španělština"
 
 #: org/jmol/i18n/GT.java:133
 msgid "Swedish"
-msgstr ""
+msgstr "Švédština"
 
 #: org/jmol/i18n/GT.java:134
 msgid "Turkish"
-msgstr ""
+msgstr "Turečtina"
 
 #: org/jmol/minimize/Minimizer.java:186
 #, java-format
@@ -168,9 +169,9 @@ msgid "No atoms selected -- nothing to do!"
 msgstr ""
 
 #: org/jmol/minimize/Minimizer.java:258
-#, fuzzy, java-format
+#, java-format
 msgid "{0} atoms will be minimized."
-msgstr "vybrané atomy"
+msgstr ""
 
 #: org/jmol/minimize/Minimizer.java:350
 #, java-format
@@ -1237,9 +1238,9 @@ msgid "bad argument count"
 msgstr "špatně spočítaný argument"
 
 #: org/jmol/viewer/Compiler.java:2449
-#, fuzzy, java-format
+#, java-format
 msgid "invalid context for {0}"
-msgstr "očekáváno platné označení atomu"
+msgstr ""
 
 #: org/jmol/viewer/Compiler.java:2450 org/jmol/viewer/Eval.java:5097
 #, fuzzy
@@ -1272,9 +1273,9 @@ msgid "invalid chain specification"
 msgstr ""
 
 #: org/jmol/viewer/Compiler.java:2457
-#, fuzzy, java-format
+#, java-format
 msgid "invalid expression token: {0}"
-msgstr "očekáváno platné označení atomu"
+msgstr ""
 
 #: org/jmol/viewer/Compiler.java:2458
 msgid "invalid model specification"
@@ -1309,9 +1310,9 @@ msgid "{0} unexpected"
 msgstr "očekávána barva"
 
 #: org/jmol/viewer/Compiler.java:2465
-#, fuzzy, java-format
+#, java-format
 msgid "unrecognized expression token: {0}"
-msgstr "neznámý výraz (označení) v průběhu programu"
+msgstr ""
 
 #: org/jmol/viewer/Compiler.java:2466 org/jmol/viewer/Eval.java:11249
 #, java-format
@@ -1319,9 +1320,9 @@ msgid "unrecognized {0} parameter"
 msgstr "neznámý parametr: {0}"
 
 #: org/jmol/viewer/Compiler.java:2467
-#, fuzzy, java-format
+#, java-format
 msgid "unrecognized token: {0}"
-msgstr "neznámý objekt"
+msgstr ""
 
 #: org/jmol/viewer/Eval.java:308 org/jmol/viewer/Eval.java:5078
 msgid "script ERROR: "
@@ -1342,14 +1343,14 @@ msgid "too many rotation points were specified"
 msgstr "příliš mnoho specifikovaných bodů rotace"
 
 #: org/jmol/viewer/Eval.java:5195 org/jmol/viewer/Eval.java:5435
-#, fuzzy, java-format
+#, java-format
 msgid "{0} atoms deleted"
-msgstr "vybrané atomy"
+msgstr ""
 
 #: org/jmol/viewer/Eval.java:5913
-#, fuzzy, java-format
+#, java-format
 msgid "{0} hydrogen bonds"
-msgstr "Vodíkové můstky"
+msgstr ""
 
 #: org/jmol/viewer/Eval.java:5925
 #, java-format
@@ -1397,12 +1398,11 @@ msgstr ""
 "poskytutí MEP dat."
 
 #: org/jmol/viewer/Eval.java:11144
-#, fuzzy, java-format
+#, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
 "{2}"
 msgstr ""
-"očekávána rovina -- buď tři body nebo vyjádření atomu nebo {0} nebo {1}"
 
 #: org/jmol/viewer/Eval.java:11210
 msgid "x y z axis expected"
@@ -1439,7 +1439,7 @@ msgstr "je nutné zadání barvy nebo sady barev (Jmol, Rasmol)"
 
 #: org/jmol/viewer/Eval.java:11219
 msgid " {x y z} or $name or (atom expression) required"
-msgstr "požadováno {x y z} nebo $název nebo označení atomu"
+msgstr " požadováno {x y z} nebo $název nebo označení atomu"
 
 #: org/jmol/viewer/Eval.java:11220
 msgid "draw object not defined"
@@ -1561,9 +1561,9 @@ msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
 msgstr "neznámý parametr: {0}"
 
 #: org/jmol/viewer/Eval.java:11251
-#, fuzzy, java-format
+#, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
-msgstr "neznámý parametr {0} -- použít {1}"
+msgstr ""
 
 #: org/jmol/viewer/PickingManager.java:209
 msgid "pick one more atom in order to spin the model around an axis"
@@ -1580,9 +1580,9 @@ msgid "{0} atoms hidden"
 msgstr "skryté atomy: {0}"
 
 #: org/jmol/viewer/SelectionManager.java:131
-#, fuzzy, java-format
+#, java-format
 msgid "{0} atoms selected"
-msgstr "vybrané atomy"
+msgstr ""
 
 #: org/jmol/viewer/Viewer.java:4314
 #, java-format
@@ -1598,6 +1598,10 @@ msgstr ""
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
+
+#, fuzzy
+#~ msgid "commandExpected"
+#~ msgstr "očekáván dílčí příkaz"
 
 #, fuzzy
 #~ msgid "comma or right parenthesis expected"
@@ -1627,16 +1631,12 @@ msgstr ""
 #~ msgid "right parenthesis expected"
 #~ msgstr "očekáváno celé číslo"
 
-#, fuzzy
-#~ msgid "too many parentheses"
-#~ msgstr "příliš mnoho úrovní skriptů"
-
 #~ msgid "rotation points cannot be identical"
 #~ msgstr "rotační body nemohou být identické"
 
 #, fuzzy
-#~ msgid "commandExpected"
-#~ msgstr "očekáván dílčí příkaz"
+#~ msgid "too many parentheses"
+#~ msgstr "příliš mnoho úrovní skriptů"
 
 #~ msgid "bad atom number"
 #~ msgstr "špatné protonové číslo"
@@ -1708,11 +1708,15 @@ msgstr ""
 #~ msgid "atom expression compiler error - stack over/underflow"
 #~ msgstr "atom expression compiler error - stack over/underflow"
 
+#~ msgid "Jmol executing script ..."
+#~ msgstr "Jmol provádí skript..."
+
+#, fuzzy
+#~ msgid "interpreter error - setspecial should not be here"
+#~ msgstr "interpreter error - setspecial should not be here"
+
 #~ msgid "Unrecognized {0} parameter"
 #~ msgstr "Neznámý parametr: {0}"
-
-#~ msgid "Currently the {0} command only works for the applet"
-#~ msgstr "tento příkaz {0} je funkční pouze v apletu"
 
 #~ msgid "use {0}"
 #~ msgstr "použít {0}"
@@ -1720,12 +1724,8 @@ msgstr ""
 #~ msgid "unrecognized subcommand"
 #~ msgstr "neznámý dílčí příkaz"
 
-#, fuzzy
-#~ msgid "interpreter error - setspecial should not be here"
-#~ msgstr "interpreter error - setspecial should not be here"
-
 #~ msgid "error loading script"
 #~ msgstr "chyba při nahrávání skriptu"
 
-#~ msgid "Jmol executing script ..."
-#~ msgstr "Jmol provádí skript..."
+#~ msgid "Currently the {0} command only works for the applet"
+#~ msgstr "tento příkaz {0} je funkční pouze v apletu"

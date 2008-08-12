@@ -8,12 +8,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-07-25 21:31+0200\n"
-"PO-Revision-Date: 2007-05-10 16:31+0200\n"
-"Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
+"PO-Revision-Date: 2008-08-04 20:46+0000\n"
+"Last-Translator: Muhammet Kara <Unknown>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2008-08-12 00:40+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Language: Turkish\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
@@ -113,12 +115,12 @@ msgstr "vektör"
 #: org/openscience/jmol/app/AtomSetChooser.java:366
 #, java-format
 msgid "Go to first {0} in the collection"
-msgstr "Koleksiyondaki ilk {0} elemanına git "
+msgstr "Koleksiyondaki ilk {0} elemanına git"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:367
 #, java-format
 msgid "Go to previous {0} in the collection"
-msgstr "Koleksiyondaki önceki {0} elemana git "
+msgstr "Koleksiyondaki önceki {0} elemana git"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:368
 #, java-format
@@ -606,7 +608,7 @@ msgstr "Ölçümler"
 
 #: org/openscience/jmol/app/GuiMap.java:180
 msgid "RasMol/Chime compatible axes orientation/rotations"
-msgstr "RasMol/Chime'e uyumlu eksenlerin yönelme/dönüşleri "
+msgstr "RasMol/Chime'e uyumlu eksenlerin yönelme/dönüşleri"
 
 #: org/openscience/jmol/app/GuiMap.java:181
 msgid "File Preview (needs restarting Jmol)"
@@ -943,7 +945,7 @@ msgstr "Temizle"
 
 #: org/openscience/jmol/app/Jmol.java:753
 msgid "Could not create ConsoleTextArea: "
-msgstr "KonsolMetinAlanı oluşturulamadı:"
+msgstr "KonsolMetinAlanı oluşturulamadı: "
 
 #: org/openscience/jmol/app/Jmol.java:841
 msgid "Closing Jmol..."
@@ -1029,7 +1031,7 @@ msgstr "Poray işleme sırasında görüntülemeyi denesin mi?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:266
 msgid "Width : "
-msgstr "Genişlik :"
+msgstr "Genişlik : "
 
 #: org/openscience/jmol/app/PovrayDialog.java:268
 msgid "Image width"
@@ -1037,7 +1039,7 @@ msgstr "Resim genişliği"
 
 #: org/openscience/jmol/app/PovrayDialog.java:283
 msgid "Height : "
-msgstr "Yükseklik :"
+msgstr "Yükseklik : "
 
 #: org/openscience/jmol/app/PovrayDialog.java:285
 msgid "Image height"
@@ -1045,7 +1047,7 @@ msgstr "Resim yüksekliği"
 
 #: org/openscience/jmol/app/PovrayDialog.java:302
 msgid "Fixed ratio : "
-msgstr "Sabit oran :"
+msgstr "Sabit oran : "
 
 #: org/openscience/jmol/app/PovrayDialog.java:304
 msgid "Use a fixed ratio for width:height"
@@ -1093,7 +1095,7 @@ msgstr "Resmi bir kaç geçişle üret"
 
 #: org/openscience/jmol/app/PovrayDialog.java:409
 msgid "Start size : "
-msgstr "Başlangıç boyutu :"
+msgstr "Başlangıç boyutu : "
 
 #: org/openscience/jmol/app/PovrayDialog.java:411
 msgid "Inital size of the tiles"
@@ -1101,7 +1103,7 @@ msgstr "Ekran bölümlerinin başlangıç boyutları"
 
 #: org/openscience/jmol/app/PovrayDialog.java:427
 msgid "End size : "
-msgstr "Bitiş boyutu :"
+msgstr "Bitiş boyutu : "
 
 #: org/openscience/jmol/app/PovrayDialog.java:429
 msgid "Final size of the tiles"
@@ -1241,17 +1243,17 @@ msgstr "Jmol'da Neler Yeni"
 #~ msgid "Select Atoms"
 #~ msgstr "Atomları Seç"
 
-#~ msgid "Select an atom or region."
-#~ msgstr "Atom veya alan seç."
-
-#~ msgid "View measurement table."
-#~ msgstr "Ölçüm tablosunu görüntüle."
-
 #~ msgid "Make crystal..."
 #~ msgstr "Kristal oluştur..."
 
 #~ msgid "Export view to an image or script file."
 #~ msgstr "Görünümü bir resim ya da betik dosyasına aktar."
+
+#~ msgid "Select an atom or region."
+#~ msgstr "Atom veya alan seç."
+
+#~ msgid "View measurement table."
+#~ msgstr "Ölçüm tablosunu görüntüle."
 
 #, fuzzy
 #~ msgid "Export &PDF..."
@@ -1261,7 +1263,7 @@ msgstr "Jmol'da Neler Yeni"
 #~ msgstr "Resim Boyutu"
 
 #~ msgid "Output format : "
-#~ msgstr "Çıktı tipi :"
+#~ msgstr "Çıktı tipi : "
 
 #~ msgid "Select the file format of the output file"
 #~ msgstr "Çıktı dosyası için dosya tipi seçin"

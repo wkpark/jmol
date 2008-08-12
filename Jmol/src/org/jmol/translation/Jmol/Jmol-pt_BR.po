@@ -7,14 +7,16 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-07-25 21:31+0200\n"
-"PO-Revision-Date: 2008-07-14 18:22-0300\n"
-"Last-Translator: Sérgio Ceroni da Silva <ceroni@cbiot.ufrgs.br>\n"
+"PO-Revision-Date: 2008-08-04 20:46+0000\n"
+"Last-Translator: Sérgio Ceroni da Silva <Unknown>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Portuguese\n"
+"X-Launchpad-Export-Date: 2008-08-12 00:40+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: BRAZIL\n"
+"X-Poedit-Language: Portuguese\n"
 "X-Poedit-Basepath: ../../../..\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
@@ -819,15 +821,15 @@ msgstr "Abrir arquivo selecionado"
 #: org/openscience/jmol/app/Jmol.java:445
 #: org/openscience/jmol/app/PovrayDialog.java:756
 msgid "Save"
-msgstr "Gravar"
+msgstr "Salvar"
 
 #: org/openscience/jmol/app/Jmol.java:444
 msgid "Save selected file"
-msgstr "Gravar arquivo selecionado"
+msgstr "Salvar arquivo selecionado"
 
 #: org/openscience/jmol/app/Jmol.java:446
 msgid "Save In:"
-msgstr "Gravar em:"
+msgstr "Salvar em:"
 
 #: org/openscience/jmol/app/Jmol.java:447
 msgid "Update"
@@ -934,7 +936,7 @@ msgstr "Apagar"
 
 #: org/openscience/jmol/app/Jmol.java:753
 msgid "Could not create ConsoleTextArea: "
-msgstr "Não foi possível criar \"ConsoleTextArea\":"
+msgstr "Não foi possível criar \"ConsoleTextArea\": "
 
 #: org/openscience/jmol/app/Jmol.java:841
 msgid "Closing Jmol..."
@@ -1228,17 +1230,17 @@ msgstr "Novidades no Jmol"
 #~ msgid "Select Atoms"
 #~ msgstr "Selecionar átomos"
 
-#~ msgid "Select an atom or region."
-#~ msgstr "Selecionar um átomo ou região"
-
-#~ msgid "View measurement table."
-#~ msgstr "Ver a tabela de medições"
-
 #~ msgid "Make crystal..."
 #~ msgstr "Construir cristal..."
 
 #~ msgid "Export view to an image or script file."
 #~ msgstr "Exportar visualização para um arquivo de imagem ou de script"
+
+#~ msgid "Select an atom or region."
+#~ msgstr "Selecionar um átomo ou região"
+
+#~ msgid "View measurement table."
+#~ msgstr "Ver a tabela de medições"
 
 #~ msgid "Export &PDF..."
 #~ msgstr "Exportar &PDF..."

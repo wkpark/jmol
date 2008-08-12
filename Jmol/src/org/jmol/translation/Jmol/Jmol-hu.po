@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-07-25 21:31+0200\n"
-"PO-Revision-Date: 2008-04-14 12:26+0000\n"
-"Last-Translator: Zörgő Zoltán <zorgoz@iit.uni-miskolc.hu>\n"
+"PO-Revision-Date: 2008-08-04 20:46+0000\n"
+"Last-Translator: Zörgő Zoltán <Unknown>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Hungarian\n"
+"X-Launchpad-Export-Date: 2008-08-12 00:40+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: HUNGARY\n"
+"X-Poedit-Language: Hungarian\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
 # Zoltán Zörgő <zorgoz@iit.uni-miskolc.hu>, 2008.
@@ -918,7 +920,7 @@ msgstr ""
 #: org/openscience/jmol/app/Jmol.java:524
 #, java-format
 msgid "{0} or {1}:filename"
-msgstr " {0} vagy {1} :fájlnév"
+msgstr "{0} vagy {1} :fájlnév"
 
 #: org/openscience/jmol/app/Jmol.java:546
 msgid "For example:"
@@ -926,7 +928,7 @@ msgstr "Például:"
 
 #: org/openscience/jmol/app/Jmol.java:552
 msgid "The -D options are as follows (defaults in parathesis):"
-msgstr "A -D lehetőségek a következők (alapértelmezés zárójelben) "
+msgstr "A -D lehetőségek a következők (alapértelmezés zárójelben)"
 
 #: org/openscience/jmol/app/Jmol.java:719
 msgid "Executing script..."
@@ -1239,18 +1241,18 @@ msgstr "őjdonságok a Jmol-ban"
 #~ msgid "Select Atoms"
 #~ msgstr "Atomok kiválasztása"
 
-#~ msgid "Select an atom or region."
-#~ msgstr "Atom vagy régió kijelölése"
-
-#~ msgid "View measurement table."
-#~ msgstr "Méretezési táblázat megjelenítése"
-
 #~ msgid "Make crystal..."
 #~ msgstr "Kristály létrehozás..."
 
 #, fuzzy
 #~ msgid "Export view to an image or script file."
 #~ msgstr "Nézet képként vagy paracsfájlként történő mentése"
+
+#~ msgid "Select an atom or region."
+#~ msgstr "Atom vagy régió kijelölése"
+
+#~ msgid "View measurement table."
+#~ msgstr "Méretezési táblázat megjelenítése"
 
 #, fuzzy
 #~ msgid "Export &PDF..."

@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-08-04 20:52+0200\n"
-"PO-Revision-Date: 2008-08-04 10:19+0000\n"
-"Last-Translator: Penegal <Unknown>\n"
+"PO-Revision-Date: 2008-08-04 20:55+0000\n"
+"Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-08-04 17:40+0000\n"
+"X-Launchpad-Export-Date: 2008-08-12 00:40+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -161,7 +161,7 @@ msgstr "Turc"
 #: org/jmol/minimize/Minimizer.java:186
 #, java-format
 msgid "Could not get class for force field {0}"
-msgstr ""
+msgstr "Impossible d''obtenir la classe du champ de force {0}"
 
 #: org/jmol/minimize/Minimizer.java:195
 msgid "No atoms selected -- nothing to do!"
@@ -175,7 +175,7 @@ msgstr "{0} atomes supprimés"
 #: org/jmol/minimize/Minimizer.java:350
 #, java-format
 msgid "could not setup force field {0}"
-msgstr ""
+msgstr "Impossible d''installer le champ de force {0}"
 
 #: org/jmol/popup/JmolPopup.java:452 org/jmol/popup/JmolPopup.java:492
 msgid "all"

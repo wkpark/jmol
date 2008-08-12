@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-07-25 21:31+0200\n"
-"PO-Revision-Date: 2007-05-13 18:40+0200\n"
+"PO-Revision-Date: 2008-08-04 20:45+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Catalan\n"
+"X-Launchpad-Export-Date: 2008-08-12 00:40+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: ANDORRA\n"
+"X-Poedit-Language: Catalan\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
 #: org/openscience/jmol/app/GuiMap.java:171
@@ -119,7 +121,7 @@ msgstr "Vés al primer {0} de la col·lecció"
 #: org/openscience/jmol/app/AtomSetChooser.java:367
 #, java-format
 msgid "Go to previous {0} in the collection"
-msgstr "Vés a l'anterior {0} de la col·lecció"
+msgstr "Vés a l''anterior {0} de la col·lecció"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:368
 #, java-format
@@ -143,7 +145,7 @@ msgstr "Salta al darrer {0} de la col·lecció"
 #: org/openscience/jmol/app/ConsoleTextArea.java:87
 #, java-format
 msgid "Error reading from BufferedReader: {0}"
-msgstr "S'ha produït un error en llegir del «BufferedReader»: {0}"
+msgstr "S''ha produït un error en llegir del «BufferedReader»: {0}"
 
 #: org/openscience/jmol/app/DisplayPanel.java:156
 #, fuzzy
@@ -946,7 +948,7 @@ msgstr "Neteja"
 
 #: org/openscience/jmol/app/Jmol.java:753
 msgid "Could not create ConsoleTextArea: "
-msgstr "No s'ha pogut crear l'àrea de text de la consola:"
+msgstr "No s'ha pogut crear l'àrea de text de la consola: "
 
 #: org/openscience/jmol/app/Jmol.java:841
 msgid "Closing Jmol..."
@@ -1032,7 +1034,7 @@ msgstr "El POV-Ray ha d'intentar visualitzar mentre es renderitza?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:266
 msgid "Width : "
-msgstr "Amplada:"
+msgstr "Amplada: "
 
 #: org/openscience/jmol/app/PovrayDialog.java:268
 msgid "Image width"
@@ -1040,7 +1042,7 @@ msgstr "Amplada de la imatge:"
 
 #: org/openscience/jmol/app/PovrayDialog.java:283
 msgid "Height : "
-msgstr "Alçada:"
+msgstr "Alçada: "
 
 #: org/openscience/jmol/app/PovrayDialog.java:285
 msgid "Image height"
@@ -1048,7 +1050,7 @@ msgstr "Alçada de la imatge:"
 
 #: org/openscience/jmol/app/PovrayDialog.java:302
 msgid "Fixed ratio : "
-msgstr "Raó fixa:"
+msgstr "Raó fixa: "
 
 #: org/openscience/jmol/app/PovrayDialog.java:304
 msgid "Use a fixed ratio for width:height"
@@ -1096,7 +1098,7 @@ msgstr "Renderitza la imatge en diferents passades"
 
 #: org/openscience/jmol/app/PovrayDialog.java:409
 msgid "Start size : "
-msgstr "Mida inicial:"
+msgstr "Mida inicial: "
 
 #: org/openscience/jmol/app/PovrayDialog.java:411
 msgid "Inital size of the tiles"
@@ -1104,7 +1106,7 @@ msgstr "Mida inicial dels mosaics"
 
 #: org/openscience/jmol/app/PovrayDialog.java:427
 msgid "End size : "
-msgstr "Mida final:"
+msgstr "Mida final: "
 
 #: org/openscience/jmol/app/PovrayDialog.java:429
 msgid "Final size of the tiles"
@@ -1244,17 +1246,17 @@ msgstr "Novetats del Jmol"
 #~ msgid "Select Atoms"
 #~ msgstr "Selecciona els àtoms"
 
-#~ msgid "Select an atom or region."
-#~ msgstr "Selecciona un àtom o una regió."
-
-#~ msgid "View measurement table."
-#~ msgstr "Visualitza la taula de mesures."
-
 #~ msgid "Make crystal..."
 #~ msgstr "Fes un cristall..."
 
 #~ msgid "Export view to an image or script file."
 #~ msgstr "Exporta la visualització a un fitxer d'imatge o script."
+
+#~ msgid "Select an atom or region."
+#~ msgstr "Selecciona un àtom o una regió."
+
+#~ msgid "View measurement table."
+#~ msgstr "Visualitza la taula de mesures."
 
 #, fuzzy
 #~ msgid "Export &PDF..."
@@ -1264,7 +1266,7 @@ msgstr "Novetats del Jmol"
 #~ msgstr "Mida de la imatge"
 
 #~ msgid "Output format : "
-#~ msgstr "Format de sortida:"
+#~ msgstr "Format de sortida: "
 
 #~ msgid "Select the file format of the output file"
 #~ msgstr "Selecciona el format de fitxer del fitxer de sortida"

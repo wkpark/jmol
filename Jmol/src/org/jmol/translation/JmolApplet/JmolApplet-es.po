@@ -3,14 +3,16 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-08-04 20:52+0200\n"
-"PO-Revision-Date: 2008-07-26 16:35+0100\n"
+"PO-Revision-Date: 2008-08-04 20:37+0000\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Spanish\n"
+"X-Launchpad-Export-Date: 2008-08-12 00:40+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: SPAIN\n"
+"X-Poedit-Language: Spanish\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
 #: org/jmol/applet/Console.java:39
@@ -1306,7 +1308,7 @@ msgstr "no se reconoce la palabra clave {0}"
 
 #: org/jmol/viewer/Eval.java:308 org/jmol/viewer/Eval.java:5078
 msgid "script ERROR: "
-msgstr "ERROR en guión:"
+msgstr "ERROR en guión: "
 
 #: org/jmol/viewer/Eval.java:3509
 #, java-format
@@ -1419,7 +1421,7 @@ msgstr "se requiere un nombre de color o de paleta (Jmol, Rasmol)"
 
 #: org/jmol/viewer/Eval.java:11219
 msgid " {x y z} or $name or (atom expression) required"
-msgstr "se requiere  {x y z} o $nombre o (expresión atómica)"
+msgstr " se requiere  {x y z} o $nombre o (expresión atómica)"
 
 #: org/jmol/viewer/Eval.java:11220
 msgid "draw object not defined"
@@ -1584,6 +1586,10 @@ msgstr ""
 "ERROR: no es posible ajustar el valor de esta variable a un valor lógico "
 "booleano: {0}"
 
+#, fuzzy
+#~ msgid "commandExpected"
+#~ msgstr "se esperaba una instrucción"
+
 #~ msgid "comma or right parenthesis expected"
 #~ msgstr "se esperaba una coma o un cierre de paréntesis"
 
@@ -1605,15 +1611,11 @@ msgstr ""
 #~ msgid "right parenthesis expected"
 #~ msgstr "se esperaba el cierre de un paréntesis"
 
-#~ msgid "too many parentheses"
-#~ msgstr "demasiados paréntesis"
-
 #~ msgid "rotation points cannot be identical"
 #~ msgstr "los puntos de rotación no pueden coincidir"
 
-#, fuzzy
-#~ msgid "commandExpected"
-#~ msgstr "se esperaba una instrucción"
+#~ msgid "too many parentheses"
+#~ msgstr "demasiados paréntesis"
 
 #~ msgid "bad atom number"
 #~ msgstr "número de átomo incorrecto"
@@ -1650,12 +1652,6 @@ msgstr ""
 #~ msgid "Invalid {0} command"
 #~ msgstr "Instrucción {0} no válida"
 
-#~ msgid ""
-#~ "ERROR: Cannot set value of a boolean to another type. use \"{0}\" first."
-#~ msgstr ""
-#~ "ERROR: no es posible ajustar un valor lógico booleano a otro tipo. "
-#~ "Utilice antes \"{0}\"."
-
 #~ msgid "Compatibility"
 #~ msgstr "Compatibilidad"
 
@@ -1670,12 +1666,6 @@ msgstr ""
 
 #~ msgid "The {0} command is not available for the applet."
 #~ msgstr "La instrucción {0} no está disponible para la miniaplicación"
-
-#~ msgid "the {0} command requires that only one model be displayed"
-#~ msgstr "la instrucción {0} requiere que sólo se esté mostrando un modelo"
-
-#~ msgid "command ignored (not implemented): {0}"
-#~ msgstr "instrucción ignorada (no implementada): {0}"
 
 #~ msgid "nonnegative integer expected"
 #~ msgstr "se esperaba un número entero no negativo"
@@ -1837,6 +1827,55 @@ msgstr ""
 #~ msgid "or dotted"
 #~ msgstr "o punteada"
 
+#~ msgid "Except Solvent"
+#~ msgstr "Excepto disolvente"
+
+#~ msgid "Except Water"
+#~ msgstr "Excepto agua"
+
+#~ msgid "Other"
+#~ msgstr "Otros"
+
+#~ msgid "Lipid"
+#~ msgstr "Lípidos"
+
+#~ msgid "Nanometers"
+#~ msgstr "Nanómetros"
+
+#~ msgid "Angstroms"
+#~ msgstr "Angstroms"
+
+#~ msgid "Picometers"
+#~ msgstr "Picómetros"
+
+#~ msgid "Open"
+#~ msgstr "Abrir"
+
+#~ msgid "Wireframe Rotation"
+#~ msgstr "Rotación como alambres"
+
+#~ msgid ""
+#~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
+#~ "for more information"
+#~ msgstr ""
+#~ "Miniaplicación Jmol, parte del proyecto OpenScience; para más "
+#~ "información, vea http://www.jmol.org"
+
+#~ msgid "Jmol Molecular Visualization http://www.jmol.org"
+#~ msgstr "Jmol, visualización molecular http://www.jmol.org"
+
+#~ msgid ""
+#~ "ERROR: Cannot set value of a boolean to another type. use \"{0}\" first."
+#~ msgstr ""
+#~ "ERROR: no es posible ajustar un valor lógico booleano a otro tipo. "
+#~ "Utilice antes \"{0}\"."
+
+#~ msgid "the {0} command requires that only one model be displayed"
+#~ msgstr "la instrucción {0} requiere que sólo se esté mostrando un modelo"
+
+#~ msgid "command ignored (not implemented): {0}"
+#~ msgstr "instrucción ignorada (no implementada): {0}"
+
 #~ msgid "console ON|OFF"
 #~ msgstr "consola sí/no"
 
@@ -1869,44 +1908,7 @@ msgstr ""
 
 #, fuzzy
 #~ msgid "space group "
-#~ msgstr "Grupo espacial"
-
-#~ msgid "Except Solvent"
-#~ msgstr "Excepto disolvente"
-
-#~ msgid "Except Water"
-#~ msgstr "Excepto agua"
-
-#~ msgid "Other"
-#~ msgstr "Otros"
-
-#~ msgid "Lipid"
-#~ msgstr "Lípidos"
+#~ msgstr "Grupo espacial "
 
 #~ msgid "pick "
-#~ msgstr "elige"
-
-#~ msgid "Nanometers"
-#~ msgstr "Nanómetros"
-
-#~ msgid "Angstroms"
-#~ msgstr "Angstroms"
-
-#~ msgid "Picometers"
-#~ msgstr "Picómetros"
-
-#~ msgid "Open"
-#~ msgstr "Abrir"
-
-#~ msgid "Jmol Molecular Visualization http://www.jmol.org"
-#~ msgstr "Jmol, visualización molecular http://www.jmol.org"
-
-#~ msgid "Wireframe Rotation"
-#~ msgstr "Rotación como alambres"
-
-#~ msgid ""
-#~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
-#~ "for more information"
-#~ msgstr ""
-#~ "Miniaplicación Jmol, parte del proyecto OpenScience; para más "
-#~ "información, vea http://www.jmol.org"
+#~ msgstr "elige "

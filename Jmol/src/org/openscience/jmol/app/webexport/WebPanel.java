@@ -319,7 +319,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       String label = (instanceList.getSelectedIndices().length != 1 ? ""
           : getInstanceName(-1));
       String name = JOptionPane.showInputDialog(
-          GT._("Give the occurance of Jmol a name:"), label);
+          GT._("Give the occurence of Jmol a name:"), label);
       if (name == null)
         return;
       //need to get the script...

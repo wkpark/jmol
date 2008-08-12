@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-12 20:42+0200\n"
+"POT-Creation-Date: 2008-08-13 00:24+0200\n"
 "PO-Revision-Date: 2008-08-04 20:46+0000\n"
 "Last-Translator: Bartosz Kaszubowski <gosimek@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -1349,7 +1349,7 @@ msgid "Browser window title for this web page:"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:322
-msgid "Give the occurance of Jmol a name:"
+msgid "Give the occurence of Jmol a name:"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:352

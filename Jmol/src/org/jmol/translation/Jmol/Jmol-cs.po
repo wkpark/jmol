@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-07-25 21:31+0200\n"
+"POT-Creation-Date: 2008-08-12 20:42+0200\n"
 "PO-Revision-Date: 2008-08-04 20:45+0000\n"
 "Last-Translator: martin.slavik <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
@@ -148,7 +148,7 @@ msgstr "Přejít na poslední  {0} ve sbírce"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Chyba při čtení vyrovnávací paměti: {0}"
 
-#: org/openscience/jmol/app/DisplayPanel.java:156
+#: org/openscience/jmol/app/DisplayPanel.java:167
 #, fuzzy
 msgid "Delete atoms"
 msgstr "Vymazat atomy"
@@ -957,11 +957,11 @@ msgstr "Ukončuji Jmol..."
 msgid "Macros"
 msgstr "Makra"
 
-#: org/openscience/jmol/app/Jmol.java:1462
+#: org/openscience/jmol/app/Jmol.java:1467
 msgid "Open URL"
 msgstr "Otevřít URL"
 
-#: org/openscience/jmol/app/Jmol.java:1463
+#: org/openscience/jmol/app/Jmol.java:1468
 msgid "Enter URL of molecular model"
 msgstr "Zadat URL molekulárního modelu"
 
@@ -1242,6 +1242,180 @@ msgstr "Nahrávám..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Novinky v programu Jmol"
+
+#: org/openscience/jmol/app/webexport/JmolInstance.java:66
+msgid "Attempt to make scratch directory failed."
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/JmolInstance.java:127
+msgid "Failed to delete scratch file "
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/LogPanel.java:52
+msgid "Log and Error Messages:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/LogPanel.java:60
+msgid "Messages (see Log tab for full history):"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/PopInJmol.java:39
+msgid "These names will be used as filenames for the applets"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/PopInJmol.java:40
+msgid "pop_in_instructions.html"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/PopInJmol.java:62
+msgid "Applet width:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/PopInJmol.java:64
+#, fuzzy
+msgid "height:"
+msgstr "Výška: "
+
+#: org/openscience/jmol/app/webexport/ScriptButtons.java:39
+msgid "These names will be used for button labels"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/ScriptButtons.java:40
+msgid "script_button_instructions.html"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/ScriptButtons.java:54
+msgid "% of window for applet width:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebExport.java:95
+msgid "WebExportIntro.html"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebExport.java:97
+msgid "Couldn't find file: WebExportIntro.html"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebExport.java:116
+msgid "Introduction"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebExport.java:144
+msgid "Log"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebExport.java:189
+msgid "Jmol Web Page Maker"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:103
+msgid "A web page containing Jmol applets"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:127
+msgid "double-click and drag to reorder"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:131
+msgid "Add Present Jmol State as Instance..."
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:136
+#, fuzzy
+msgid "Show Selected"
+msgstr "Vybrat"
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:138
+msgid "Delete Selected"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:169
+msgid "Jmol Instances:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:189
+msgid "Help/Instructions"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:195
+msgid "Cartoon of Page"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:202
+msgid "Cartoon of Page:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:207
+#, fuzzy
+msgid "Save HTML as..."
+msgstr "&Uložit jako..."
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:217
+msgid "Relative server path to jar files:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:223
+msgid "Relative local path to jar files:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:229
+msgid "Author (your name):"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:236
+msgid "Browser window title for this web page:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:322
+msgid "Give the occurance of Jmol a name:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:352
+msgid "added Instance "
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:355
+msgid "updated Instance "
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:392
+msgid "Select a directory to create or an HTML file to save"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:410
+msgid "Call to FileWriter unsuccessful."
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:448
+#, fuzzy
+msgid "Using directory "
+msgstr "Pracovní adresář"
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:449
+msgid "  adding JmolPopIn.js"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:458
+msgid "      ...adding "
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:548
+msgid "      ...copying\n"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:548
+msgid ""
+"\n"
+"         to"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:551
+msgid "Could not find or open:\n"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:590
+msgid "      ...Compressing large data file to\n"
+msgstr ""
 
 #~ msgid "Select Atoms"
 #~ msgstr "Vybrat atomy"

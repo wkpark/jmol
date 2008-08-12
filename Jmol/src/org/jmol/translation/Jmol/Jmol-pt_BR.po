@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-07-25 21:31+0200\n"
+"POT-Creation-Date: 2008-08-12 20:42+0200\n"
 "PO-Revision-Date: 2008-08-12 09:32-0300\n"
 "Last-Translator: Sérgio Ceroni da Silva <ceroni@cbiot.ufrgs.br>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
@@ -147,7 +147,7 @@ msgstr "Avançar para o último {0} na coleção"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Erro ao ler de \"BufferedReader\": {0}"
 
-#: org/openscience/jmol/app/DisplayPanel.java:156
+#: org/openscience/jmol/app/DisplayPanel.java:167
 msgid "Delete atoms"
 msgstr "Apagar átomos"
 
@@ -899,8 +899,12 @@ msgid "window width x height, e.g. {0}"
 msgstr "largura x altura da janela, por exemplo {0}"
 
 #: org/openscience/jmol/app/Jmol.java:518
-msgid "JPG image quality (1-100; default 75) or PNG image compression (0-9; default 2, maximum compression 9)"
-msgstr "qualidade da imagem JPG (1-100; padrão=75) ou compressão da imagem PNG (0-9; padrão=2, compressão máxima=9)"
+msgid ""
+"JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
+"2, maximum compression 9)"
+msgstr ""
+"qualidade da imagem JPG (1-100; padrão=75) ou compressão da imagem PNG (0-9; "
+"padrão=2, compressão máxima=9)"
 
 #: org/openscience/jmol/app/Jmol.java:524
 #, java-format
@@ -940,11 +944,11 @@ msgstr "Fechando o Jmol..."
 msgid "Macros"
 msgstr "Macros"
 
-#: org/openscience/jmol/app/Jmol.java:1462
+#: org/openscience/jmol/app/Jmol.java:1467
 msgid "Open URL"
 msgstr "Abrir URL"
 
-#: org/openscience/jmol/app/Jmol.java:1463
+#: org/openscience/jmol/app/Jmol.java:1468
 msgid "Enter URL of molecular model"
 msgstr "Fornecer a URL de um modelo molecular"
 
@@ -977,7 +981,8 @@ msgid "Filename"
 msgstr "Nome do arquivo"
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
-msgid "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
+msgid ""
+"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 msgstr "'cafeína.pov' -> 'cafeína.pov', 'cafeína.pov.ini', 'cafeína.pov.spt'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:167
@@ -1173,7 +1178,8 @@ msgstr "(Angstroms)"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:417
 msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr "Tolerância de Ligação - somatório de dois raios covalentes + este valor"
+msgstr ""
+"Tolerância de Ligação - somatório de dois raios covalentes + este valor"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:468
 msgid "Minimum Bonding Distance"
@@ -1219,47 +1225,241 @@ msgstr "Carregando..."
 msgid "What's New in Jmol"
 msgstr "Novidades no Jmol"
 
+#: org/openscience/jmol/app/webexport/JmolInstance.java:66
+msgid "Attempt to make scratch directory failed."
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/JmolInstance.java:127
+msgid "Failed to delete scratch file "
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/LogPanel.java:52
+msgid "Log and Error Messages:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/LogPanel.java:60
+msgid "Messages (see Log tab for full history):"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/PopInJmol.java:39
+msgid "These names will be used as filenames for the applets"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/PopInJmol.java:40
+msgid "pop_in_instructions.html"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/PopInJmol.java:62
+msgid "Applet width:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/PopInJmol.java:64
+#, fuzzy
+msgid "height:"
+msgstr "Altura : "
+
+#: org/openscience/jmol/app/webexport/ScriptButtons.java:39
+msgid "These names will be used for button labels"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/ScriptButtons.java:40
+msgid "script_button_instructions.html"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/ScriptButtons.java:54
+msgid "% of window for applet width:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebExport.java:95
+msgid "WebExportIntro.html"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebExport.java:97
+msgid "Couldn't find file: WebExportIntro.html"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebExport.java:116
+msgid "Introduction"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebExport.java:144
+msgid "Log"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebExport.java:189
+msgid "Jmol Web Page Maker"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:103
+msgid "A web page containing Jmol applets"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:127
+msgid "double-click and drag to reorder"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:131
+msgid "Add Present Jmol State as Instance..."
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:136
+#, fuzzy
+msgid "Show Selected"
+msgstr "Selecionar"
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:138
+msgid "Delete Selected"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:169
+msgid "Jmol Instances:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:189
+msgid "Help/Instructions"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:195
+msgid "Cartoon of Page"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:202
+msgid "Cartoon of Page:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:207
+#, fuzzy
+msgid "Save HTML as..."
+msgstr "&Gravar como..."
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:217
+msgid "Relative server path to jar files:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:223
+msgid "Relative local path to jar files:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:229
+msgid "Author (your name):"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:236
+msgid "Browser window title for this web page:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:322
+msgid "Give the occurance of Jmol a name:"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:352
+msgid "added Instance "
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:355
+msgid "updated Instance "
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:392
+msgid "Select a directory to create or an HTML file to save"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:410
+msgid "Call to FileWriter unsuccessful."
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:448
+#, fuzzy
+msgid "Using directory "
+msgstr "Diretório de trabalho"
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:449
+msgid "  adding JmolPopIn.js"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:458
+msgid "      ...adding "
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:548
+msgid "      ...copying\n"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:548
+msgid ""
+"\n"
+"         to"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:551
+msgid "Could not find or open:\n"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:590
+msgid "      ...Compressing large data file to\n"
+msgstr ""
+
 #~ msgid "Select Atoms"
 #~ msgstr "Selecionar átomos"
+
 #~ msgid "Make crystal..."
 #~ msgstr "Construir cristal..."
+
 #~ msgid "Export view to an image or script file."
 #~ msgstr "Exportar visualização para um arquivo de imagem ou de script"
+
 #~ msgid "Select an atom or region."
 #~ msgstr "Selecionar um átomo ou região"
+
 #~ msgid "View measurement table."
 #~ msgstr "Ver a tabela de medições"
+
 #~ msgid "Export &PDF..."
 #~ msgstr "Exportar &PDF..."
+
 #~ msgid "Image size"
 #~ msgstr "Tamanho da imagem"
+
 #~ msgid "Output format : "
 #~ msgstr "Formato de saida : "
+
 #~ msgid "Select the file format of the output file"
 #~ msgstr "Selecionar o formato do arquivo de saída"
+
 #~ msgid "Command Line to Execute"
 #~ msgstr "Linha de comando a ser executada"
+
 #~ msgid "The actual command which will be executed"
 #~ msgstr "O comando a ser executado"
+
 #~ msgid "null component string"
 #~ msgstr "\"null component string\""
+
 #~ msgid "Filename Stem"
 #~ msgstr "Nome-base para o arquivo"
+
 #~ msgid "Use .ini file"
 #~ msgstr "Usar arquivo .ini"
+
 #~ msgid "Save options in a .ini file"
 #~ msgstr "Gravar as opções em um arquivo .ini"
+
 #~ msgid "Render all frames"
 #~ msgstr "Renderizar todos os quadros"
+
 #~ msgid "Render each model (not only the currently displayed one)"
 #~ msgstr "Renderizar cada modelo (não somente o que está sendo visualizado)"
+
 #~ msgid "Turn on POV-Ray anti-aliasing"
 #~ msgstr "Ligar filtro anti-serrilhado do POV-Ray"
+
 #~ msgid "Use povray's slower but higher quality anti-aliasing mode"
 #~ msgstr ""
 #~ "Usar o modo anti-serrilhado (mais lento, melhor qualidade) do POV-Ray"
+
 #~ msgid "Render in pov-ray..."
 #~ msgstr "Renderizar no POV-Ray..."
+
 #~ msgid "File not loaded"
 #~ msgstr "Ficheiro não carregado"
 
@@ -1270,76 +1470,111 @@ msgstr "Novidades no Jmol"
 #, fuzzy
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Executando um script..."
+
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "Rotação de FrameLi&gado"
+
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotação de frame"
+
 #~ msgid "Colors"
 #~ msgstr "Cores"
+
 #~ msgid "Background"
 #~ msgstr "Fundo"
+
 #~ msgid "Set the Background Color"
 #~ msgstr "Definir cor de fundo"
+
 #~ msgid "Background Color"
 #~ msgstr "Cores do fundo"
+
 #~ msgid "Picked Atoms"
 #~ msgstr "Átomos escolhidos"
+
 #~ msgid "Set the Color for Picked Atoms"
 #~ msgstr "Definir cor de átomos escolhidos"
+
 #~ msgid "Picked Atom Color"
 #~ msgstr "Cor do átomo escolhido"
+
 #~ msgid "Text"
 #~ msgstr "Texto"
+
 #~ msgid "Set the Color for Text"
 #~ msgstr "Definir cor do texto"
+
 #~ msgid "Text Color"
 #~ msgstr "Cor do texto"
+
 #~ msgid "Set the Color for Bonds"
 #~ msgstr "Definir cor para as ligações"
+
 #~ msgid "Bond Color"
 #~ msgstr "Cor da ligação"
+
 #~ msgid "Vectors"
 #~ msgstr "Vectores"
+
 #~ msgid "Set the Vector Color"
 #~ msgstr "Definir cor do Vector"
+
 #~ msgid "Vector Color"
 #~ msgstr "Cor do vector"
+
 #~ msgid "Color for distance, angle, & torsion measurements"
 #~ msgstr "Cor para a distância, ângulo, e medições de torção"
+
 #~ msgid "Measurements Color"
 #~ msgstr "Cor das meidções"
+
 #~ msgid "Loading plugins..."
 #~ msgstr "Carregamento de plugins..."
+
 #~ msgid "15% vanderWaals"
 #~ msgstr "15% vanderWaals"
+
 #~ msgid "25% vanderWaals"
 #~ msgstr "20% vanderWaals"
+
 #~ msgid "100% vanderWaals"
 #~ msgstr "20% vanderWaals"
+
 #~ msgid "0.10 Å"
 #~ msgstr "0.10 Å"
+
 #~ msgid "0.15 Å"
 #~ msgstr "0.15 Å"
+
 #~ msgid "0.20 Å"
 #~ msgstr "0.15 Å"
+
 #~ msgid "0.05 Å"
 #~ msgstr "0.05 Å"
+
 #~ msgid "Scale 0.5"
 #~ msgstr "Escala 0.5"
+
 #~ msgid "Scale 1"
 #~ msgstr "Escala 1"
+
 #~ msgid "Scale 2"
 #~ msgstr "Escala 2"
+
 #~ msgid "Scale 5"
 #~ msgstr "Escala 5"
+
 #~ msgid "100%"
 #~ msgstr "100%"
+
 #~ msgid "150%"
 #~ msgstr "150%"
+
 #~ msgid "200%"
 #~ msgstr "200%"
+
 #~ msgid "400%"
 #~ msgstr "400%"
+
 #~ msgid "800%"
 #~ msgstr "800%"
-

@@ -38,6 +38,7 @@ import java.util.zip.GZIPOutputStream;
 import javax.swing.*;
 
 import org.jmol.api.JmolViewer;
+import org.jmol.i18n.GT;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
@@ -99,7 +100,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     pageAuthorName.setText(WebExport.getPageAuthorName());
     webPageTitle = new JTextField(20);
     webPageTitle.addActionListener(this);
-    webPageTitle.setText("A web page containing Jmol applets");
+    webPageTitle.setText(GT._("A web page containing Jmol applets"));
   }
 
   //Need the panel maker and the action listener.
@@ -123,18 +124,18 @@ abstract class WebPanel extends JPanel implements ActionListener {
     instanceSet.setLayout(new BorderLayout());
     instanceSet.add(new JLabel(listLabel), BorderLayout.NORTH);
     instanceSet.add(instanceListView, BorderLayout.CENTER);
-    instanceSet.add(new JLabel("double-click and drag to reorder"),
+    instanceSet.add(new JLabel(GT._("double-click and drag to reorder")),
         BorderLayout.SOUTH);
 
     //Create the Instance add button.
-    addInstanceButton = new JButton("Add Present Jmol State as Instance...");
+    addInstanceButton = new JButton(GT._("Add Present Jmol State as Instance..."));
     addInstanceButton.addActionListener(this);
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setMaximumSize(new Dimension(350, 50));
-    showInstanceButton = new JButton("Show Selected");
+    showInstanceButton = new JButton(GT._("Show Selected"));
     showInstanceButton.addActionListener(this);
-    deleteInstanceButton = new JButton("Delete Selected");
+    deleteInstanceButton = new JButton(GT._("Delete Selected"));
     deleteInstanceButton.addActionListener(this);
     buttonPanel.add(showInstanceButton);
     buttonPanel.add(deleteInstanceButton);
@@ -165,7 +166,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     rightPanel.setMaximumSize(new Dimension(350, 1000));
     rightPanel.add(paramPanel, BorderLayout.NORTH);
     rightPanel.add(instancePanel, BorderLayout.CENTER);
-    rightPanel.setBorder(BorderFactory.createTitledBorder("Jmol Instances:"));
+    rightPanel.setBorder(BorderFactory.createTitledBorder(GT._("Jmol Instances:")));
 
     //Create the overall panel
     JPanel panel = new JPanel();
@@ -185,25 +186,25 @@ abstract class WebPanel extends JPanel implements ActionListener {
 
   private JPanel getLeftPanel(int w, int h) {
 
-    helpButton = new JButton("Help/Instructions");
+    helpButton = new JButton(GT._("Help/Instructions"));
     helpButton.addActionListener(this);
     
     URL pageCartoon = WebExport.getResource(this, templateImage);
     ImageIcon pageImage = null;
     if (pageCartoon != null){
-      pageImage = new ImageIcon(pageCartoon, "Cartoon of Page");
+      pageImage = new ImageIcon(pageCartoon, GT._("Cartoon of Page"));
     } else {
       System.err.println("Error Loading Page Cartoon Image "+templateImage);
     }
     JLabel pageCartoonLabel = new JLabel(pageImage);
     JPanel pageCartoonPanel =  new JPanel();
     pageCartoonPanel.setLayout(new BorderLayout());
-    pageCartoonPanel.setBorder(BorderFactory.createTitledBorder("Cartoon of Page:"));
+    pageCartoonPanel.setBorder(BorderFactory.createTitledBorder(GT._("Cartoon of Page:")));
     pageCartoonPanel.add(pageCartoonLabel);
  //   editorScrollPane = getInstructionPane(w, h);
 
     //Create the save button. 
-    saveButton = new JButton("Save HTML as...");
+    saveButton = new JButton(GT._("Save HTML as..."));
     saveButton.addActionListener(this);
     JPanel savePanel = new JPanel();
     savePanel.add(saveButton);
@@ -213,26 +214,26 @@ abstract class WebPanel extends JPanel implements ActionListener {
     JPanel pathPanel = new JPanel();
     pathPanel.setLayout(new BorderLayout());
     pathPanel.setBorder(BorderFactory
-        .createTitledBorder("Relative server path to jar files:"));
+        .createTitledBorder(GT._("Relative server path to jar files:")));
     pathPanel.add(remoteAppletPath, BorderLayout.NORTH);
    
     JPanel pathPanel2 = new JPanel();
     pathPanel2.setLayout(new BorderLayout());
     pathPanel2.setBorder(BorderFactory
-        .createTitledBorder("Relative local path to jar files:"));
+        .createTitledBorder(GT._("Relative local path to jar files:")));
     pathPanel2.add(localAppletPath, BorderLayout.NORTH);
    
     //Page Author Panel
     JPanel authorPanel = new JPanel();
     authorPanel.setBorder(BorderFactory
-        .createTitledBorder("Author (your name):"));
+        .createTitledBorder(GT._("Author (your name):")));
     authorPanel.add(pageAuthorName, BorderLayout.NORTH);
     
     //Page Title Panel
     JPanel titlePanel = new JPanel();
     titlePanel.setLayout(new BorderLayout());
     titlePanel.setBorder(BorderFactory
-        .createTitledBorder("Browser window title for this web page:"));
+        .createTitledBorder(GT._("Browser window title for this web page:")));
     titlePanel.add(webPageTitle, BorderLayout.NORTH);
     titlePanel.add(savePanel, BorderLayout.SOUTH);
 
@@ -318,7 +319,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       String label = (instanceList.getSelectedIndices().length != 1 ? ""
           : getInstanceName(-1));
       String name = JOptionPane.showInputDialog(
-          "Give the occurance of Jmol a name:", label);
+          GT._("Give the occurance of Jmol a name:"), label);
       if (name == null)
         return;
       //need to get the script...
@@ -348,10 +349,10 @@ abstract class WebPanel extends JPanel implements ActionListener {
       if (i < 0) {
         i = listModel.getSize();
         listModel.addElement(instance);
-        LogPanel.log("added Instance " + instance.name);
+        LogPanel.log(GT._("added Instance ") + instance.name);
       } else {
         listModel.setElementAt(instance, i);
-        LogPanel.log("updated Instance " + instance.name);
+        LogPanel.log(GT._("updated Instance ") + instance.name);
       }
       instanceList.setSelectedIndex(i);
       syncLists();
@@ -388,7 +389,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     }
 
     if (e.getSource() == saveButton) {
-      fc.setDialogTitle("Select a directory to create or an HTML file to save");
+      fc.setDialogTitle(GT._("Select a directory to create or an HTML file to save"));
       int returnVal = fc.showSaveDialog(this);
       if (returnVal != JFileChooser.APPROVE_OPTION)
         return;
@@ -406,7 +407,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
         LogPanel.log(IOe.getMessage());
       }
       if (!retVal) {
-        LogPanel.log("Call to FileWriter unsuccessful.");
+        LogPanel.log(GT._("Call to FileWriter unsuccessful."));
       }
     }
     if (e.getSource() == helpButton){
@@ -444,8 +445,8 @@ abstract class WebPanel extends JPanel implements ActionListener {
     DefaultListModel listModel = (DefaultListModel) InstanceList.getModel();
     LogPanel.log("");
     if (made_datadir) {
-      LogPanel.log("Using directory " + datadirPath);
-      LogPanel.log("  adding JmolPopIn.js");
+      LogPanel.log(GT._("Using directory ") + datadirPath);
+      LogPanel.log(GT._("  adding JmolPopIn.js"));
 
       writeFile(datadirPath + "/JmolPopIn.js",
           getResourceString("JmolPopIn.js"));
@@ -454,7 +455,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
         String javaname = thisInstance.javaname;
         String script = thisInstance.script;
         LogPanel.log("  ...jmolApplet" + i);
-        LogPanel.log("      ...adding " + javaname + ".png");
+        LogPanel.log(GT._("      ...adding ") + javaname + ".png");
         try {
           thisInstance.movepict(datadirPath);
         } catch (IOException IOe) {
@@ -544,10 +545,10 @@ abstract class WebPanel extends JPanel implements ActionListener {
     if (gzoutFile.exists())
       return gzname;
     try {
-      LogPanel.log("      ...copying\n" + fullPathName + "\n         to");
+      LogPanel.log(GT._("      ...copying\n") + fullPathName + GT._("\n         to"));
       byte[] data = getFileAsBytes(fullPathName);
       if (data == null)
-        LogPanel.log("Could not find or open:\n" + fullPathName);
+        LogPanel.log(GT._("Could not find or open:\n") + fullPathName);
       else { 
         name = writeFileBytes(name, data); 
         LogPanel.log(name);
@@ -586,7 +587,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
         path = path.concat(".gz");
         GZIPOutputStream gzFile = new GZIPOutputStream(new FileOutputStream(path));
         gzFile.write(data);
-        LogPanel.log("      ...Compressing large data file to\n");
+        LogPanel.log(GT._("      ...Compressing large data file to\n"));
         gzFile.flush();
         gzFile.close();
       } else {

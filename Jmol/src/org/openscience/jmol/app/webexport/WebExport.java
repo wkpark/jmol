@@ -50,6 +50,7 @@ import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileSystemView;
 
 import org.jmol.api.JmolViewer;
+import org.jmol.i18n.GT;
 import org.openscience.jmol.app.HistoryFile;
 
 public class WebExport extends JPanel implements WindowListener {
@@ -91,9 +92,9 @@ public class WebExport extends JPanel implements WindowListener {
       //Add tabs to the tabbed pane
 
       JPanel introPanel = new JPanel();
-      URL url = getResource(this, "WebExportIntro.html");
+      URL url = getResource(this, GT._("WebExportIntro.html"));
       if (url == null) {
-        System.err.println("Couldn't find file: WebExportIntro.html");
+        System.err.println(GT._("Couldn't find file: WebExportIntro.html"));
       }
       JEditorPane intro = new JEditorPane();
       if (url != null) {
@@ -112,7 +113,7 @@ public class WebExport extends JPanel implements WindowListener {
       introPanel.setMaximumSize(new Dimension(450,350));
       introPanel.setPreferredSize(new Dimension(400,300));
 
-      mainTabs.add("Introduction",introPanel);
+      mainTabs.add(GT._("Introduction"),introPanel);
 
       webPanels[0] = new PopInJmol(viewer, fc, webPanels, 0);
       webPanels[1] = new ScriptButtons(viewer, fc, webPanels, 1);
@@ -140,7 +141,7 @@ public class WebExport extends JPanel implements WindowListener {
 
     //The LogPanel should always be the last one
 
-    mainTabs.addTab("Log", LogPanel.getPanel());
+    mainTabs.addTab(GT._("Log"), LogPanel.getPanel());
 
     //Add the tabbed pane to this panel
     add(mainTabs);
@@ -185,7 +186,7 @@ public class WebExport extends JPanel implements WindowListener {
       webFrame.toFront();
       return webExport;
     }
-    webFrame = new JFrame("Jmol Web Page Maker");
+    webFrame = new JFrame(GT._("Jmol Web Page Maker"));
     windowName = wName;
     historyFile.repositionWindow(windowName, webFrame, 700, 400);
     if (runStatus == STAND_ALONE) {

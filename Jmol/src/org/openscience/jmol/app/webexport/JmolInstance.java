@@ -32,6 +32,7 @@ import java.io.IOException;
 import javax.swing.filechooser.FileSystemView;
 
 import org.jmol.api.JmolViewer;
+import org.jmol.i18n.GT;
 import org.jmol.util.TextFormat;
 
 class JmolInstance {
@@ -62,7 +63,7 @@ class JmolInstance {
     if (!(scratchfile.exists())) {//make the directory if necessary. we will delete when done
       boolean made_scratchdir = scratchfile.mkdir();
       if (!(made_scratchdir)) {
-        LogPanel.log("Attempt to make scratch directory failed.");
+        LogPanel.log(GT._("Attempt to make scratch directory failed."));
       }
     }
     String pictfile = scratchpath + "/" + javaname + ".png";
@@ -123,7 +124,7 @@ class JmolInstance {
     if (scratchexists){
       boolean deleteOK = scratchtoerase.delete();
       if (!(deleteOK)) {
-        IOException IOe = (new IOException("Failed to delete scratch file "
+        IOException IOe = (new IOException(GT._("Failed to delete scratch file ")
             + this.pictFile + "."));
         throw IOe;
       }

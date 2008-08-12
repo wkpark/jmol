@@ -27,6 +27,7 @@ package org.openscience.jmol.app.webexport;
 import javax.swing.*;
 
 import org.jmol.api.JmolViewer;
+import org.jmol.i18n.GT;
 import org.jmol.util.TextFormat;
 
 class PopInJmol extends WebPanel {
@@ -35,8 +36,8 @@ class PopInJmol extends WebPanel {
       int panelIndex) {
     super(viewer, fc, webPanels, panelIndex);
     //description = "Create a web page with images that convert to live Jmol applets when a user clicks a link";
-    listLabel = "These names will be used as filenames for the applets";
-    infoFile = "pop_in_instructions.html";
+    listLabel = GT._("These names will be used as filenames for the applets");
+    infoFile = GT._("pop_in_instructions.html");
     templateName = "pop_in_template.html";
     appletTemplateName = "pop_in_template2.html";
     templateImage = "pop_in.png";
@@ -58,9 +59,9 @@ class PopInJmol extends WebPanel {
 
     //panel to hold spinner and label
     JPanel appletSizeWHPanel = new JPanel();
-    appletSizeWHPanel.add(new JLabel("Applet width:"));
+    appletSizeWHPanel.add(new JLabel(GT._("Applet width:")));
     appletSizeWHPanel.add(appletSizeSpinnerW);
-    appletSizeWHPanel.add(new JLabel("height:"));
+    appletSizeWHPanel.add(new JLabel(GT._("height:")));
     appletSizeWHPanel.add(appletSizeSpinnerH);
     return (appletSizeWHPanel);
   }

@@ -28,6 +28,8 @@ import java.awt.*;
 
 import javax.swing.*;
 
+import org.jmol.i18n.GT;
+
 class LogPanel {
 
   private static JTextArea logArea;
@@ -47,7 +49,7 @@ class LogPanel {
     //Create a panel of the log and its label
     JPanel logPanel = new JPanel();
     logPanel.setLayout(new BorderLayout());
-    logPanel.setBorder(BorderFactory.createTitledBorder("Log and Error Messages:"));
+    logPanel.setBorder(BorderFactory.createTitledBorder(GT._("Log and Error Messages:")));
     logPanel.add(logScrollPane);
     return logPanel;
   }
@@ -55,7 +57,7 @@ class LogPanel {
   static JPanel getMiniPanel() {
     JPanel miniPanel = new JPanel();
     miniPanel.setLayout(new BorderLayout());
-    miniPanel.setBorder(BorderFactory.createTitledBorder("Messages (see Log tab for full history):"));
+    miniPanel.setBorder(BorderFactory.createTitledBorder(GT._("Messages (see Log tab for full history):")));
     miniLogArea = new JTextArea(2,20);
     miniLogArea.setEditable(false);
     JScrollPane miniScrollPane = new JScrollPane(miniLogArea);

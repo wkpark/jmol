@@ -27,6 +27,7 @@ package org.openscience.jmol.app.webexport;
 import javax.swing.*;
 
 import org.jmol.api.JmolViewer;
+import org.jmol.i18n.GT;
 import org.jmol.util.TextFormat;
 
 class ScriptButtons extends WebPanel {
@@ -35,8 +36,8 @@ class ScriptButtons extends WebPanel {
       int panelIndex) {
     super(viewer, fc, webPanels, panelIndex);
     //description = "Create a web page containing a text and button pane that scrolls next to a resizable Jmol applet";
-    listLabel = "These names will be used for button labels";
-    infoFile = "script_button_instructions.html";
+    listLabel = GT._("These names will be used for button labels");
+    infoFile = GT._("script_button_instructions.html");
     templateName = "script_button_template.html";
     appletTemplateName = "script_button_template2.html";
     templateImage = "script_button.png";
@@ -50,7 +51,7 @@ class ScriptButtons extends WebPanel {
     appletSizeSpinnerP = new JSpinner(appletSizeModel);
     //panel to hold spinner and label
     JPanel appletSizePPanel = new JPanel();
-    appletSizePPanel.add(new JLabel("% of window for applet width:"));
+    appletSizePPanel.add(new JLabel(GT._("% of window for applet width:")));
     appletSizePPanel.add(appletSizeSpinnerP);
     return (appletSizePPanel);
   }

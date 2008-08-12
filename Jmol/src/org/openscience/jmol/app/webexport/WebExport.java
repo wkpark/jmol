@@ -271,7 +271,7 @@ public class WebExport extends JPanel implements WindowListener {
     String lang = GT.getLanguage();
     String fileName = root + "_" + lang + ".html";
     URL url = getResource(object, fileName, false);
-    if (url == null) {
+    if (url == null && lang.length() == 5) {
       fileName = root + "_" + lang.substring(0, 2) + ".html";
       url = getResource(object, fileName, false);
       if (url == null) {

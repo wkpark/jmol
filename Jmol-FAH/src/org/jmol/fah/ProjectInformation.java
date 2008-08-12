@@ -671,6 +671,8 @@ public class ProjectInformation {
       if (core != null) {
         if ("AMBER".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.AMBER;
+        } else if ("ATI-DEV".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.ATI_DEV;
         } else if ("DC".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.DGROMACSC;
         } else if ("DGROMACS".equalsIgnoreCase(core)) {

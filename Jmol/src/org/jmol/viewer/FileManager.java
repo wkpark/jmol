@@ -37,6 +37,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.MalformedURLException;
 import java.awt.Image;
+import java.awt.MediaTracker;
 import java.awt.Toolkit;
 import java.io.InputStream;
 import java.io.BufferedInputStream;
@@ -340,14 +341,35 @@ public class FileManager {
     Image image = null;
     //try {
     fullPathName = names[0].replace('\\', '/');
+    if (urlTypeIndex(fullPathName) >= 0)
+      try {
+        image = Toolkit.getDefaultToolkit().createImage(new URL(fullPathName));
+      } catch (Exception e) {
+        return "bad URL: " + fullPathName;
+      }
+    else
+      image = Toolkit.getDefaultToolkit().createImage(fullPathName);
     try {
-      if (urlTypeIndex(fullPathName) >= 0)
-        image = Toolkit.getDefaultToolkit().getImage(new URL(fullPathName));
-      else
-        image = Toolkit.getDefaultToolkit().getImage(fullPathName);
-    } catch (MalformedURLException e) {
-      return "cannot create image from " + fullPathName;
+      MediaTracker mediaTracker = new MediaTracker(viewer.getAwtComponent());
+      mediaTracker.addImage(image, 0);
+      mediaTracker.waitForID(0); 
+      /* SUN but here for malformed URL - can't trap
+Uncaught error fetching image:
+java.lang.NullPointerException
+  at sun.net.www.ParseUtil.toURI(Unknown Source)
+  at sun.net.www.protocol.http.HttpURLConnection.plainConnect(Unknown Source)
+  at sun.net.www.protocol.http.HttpURLConnection.connect(Unknown Source)
+  at sun.net.www.protocol.http.HttpURLConnection.getInputStream(Unknown Source)
+  at sun.awt.image.URLImageSource.getDecoder(Unknown Source)
+  at sun.awt.image.InputStreamImageSource.doFetch(Unknown Source)
+  at sun.awt.image.ImageFetcher.fetchloop(Unknown Source)
+  at sun.awt.image.ImageFetcher.run(Unknown Source)
+       */
+    } catch (Exception e) {
+      return e.getMessage() + " opening " + fullPathName;
     }
+    if (image.getWidth(null) < 1)
+      return "invalid or missing image " + fullPathName;
     htParams.put("fullPathName", fullPathName);
     return image;
   }

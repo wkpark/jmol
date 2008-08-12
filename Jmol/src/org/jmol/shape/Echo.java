@@ -106,7 +106,6 @@ public class Echo extends TextShape {
             text.setTranslucent(currentTranslucentLevel, false);
           if (currentBgTranslucentLevel != 0)
             text.setTranslucent(currentBgTranslucentLevel, true);
-          
         }
         currentObject = text;
         return;
@@ -117,17 +116,9 @@ public class Echo extends TextShape {
 
   public String getShapeState() {
     StringBuffer s = new StringBuffer("\n  set echo off;\n");
-    String lastFormat = "";
     Enumeration e = objects.elements();
-    while (e.hasMoreElements()) {
-      Text t = (Text) e.nextElement();
-      s.append(t.getState(true));
-      String format = t.getState(false);
-      if (format.equals(lastFormat))
-        continue;
-      lastFormat = format;
-      s.append(format);
-    }
+    while (e.hasMoreElements())
+      s.append(((Text) e.nextElement()).getState());
     return s.toString();
   }
 }

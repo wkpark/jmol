@@ -64,7 +64,6 @@ public class Text extends Object2d {
       short bgcolix, int x, int y, int z, int zSlab, int textAlign,
       float scalePixelsPerMicron) {
     this.scalePixelsPerMicron = scalePixelsPerMicron;
-    //System.out.println("Text scalePixelsPerMicron=" + scalePixelsPerMicron);
     this.viewer = null;
     this.g3d = g3d;
     isLabelOrHover = true;
@@ -123,7 +122,6 @@ public class Text extends Object2d {
     if (font == null)
       return;
     fid = font.fid;
-    //System.out.println("setFont fontSize/nominal now " + font.fontSize + "/" + font.fontSizeNominal);
     getFontMetrics();
     recalc();
   }
@@ -148,8 +146,8 @@ public class Text extends Object2d {
   protected void recalc() {
     if (image != null) {
       textWidth = textHeight = 0;
-      boxWidth = image.getWidth(null);
-      boxHeight = image.getHeight(null);
+      boxWidth = image.getWidth(null) * fontScale;
+      boxHeight = image.getHeight(null) * fontScale;
       return;
     }
     if (text == null) {
@@ -168,8 +166,6 @@ public class Text extends Object2d {
     textHeight = lines.length * lineHeight;
     boxWidth = textWidth + (fontScale >= 2 ? 16 : 8);
     boxHeight = textHeight + (fontScale >= 2 ? 16 : 8);
-    //System.out.println("Text recalc fontScale,font.fontScale,font.fontScaleNominal=" 
-      //  +fontScale + " "+ font.fontSize + " "+ font.fontSizeNominal);
   }
 
   private void formatText() {
@@ -182,13 +178,11 @@ public class Text extends Object2d {
               float imageFontScaling) {
     if (text == null)
       return;
-    //System.out.println("render scalePixelsPerMicron=" + scalePixelsPerMicron + " imageFontScaling=" + imageFontScaling);
     setWindow(g3d, scalePixelsPerMicron);
     if (scalePixelsPerMicron != 0 && this.scalePixelsPerMicron != 0)
       setFontScale(scalePixelsPerMicron / this.scalePixelsPerMicron);
     else if (fontScale != imageFontScaling)
       setFontScale(imageFontScaling);
-
     if (doFormatText)
       formatText();
 
@@ -208,11 +202,10 @@ public class Text extends Object2d {
     // adjust positions if necessary
 
     if (adjustForWindow)
-      setBoxOffsetsInWindow(image == null ? fontScale : 0, isLabelOrHover ? 16 * fontScale
-          + lineHeight : 0, boxY - textHeight);
+      setBoxOffsetsInWindow(image == null ? fontScale * 5 : 0, isLabelOrHover ? 16
+          * fontScale + lineHeight : 0, boxY - textHeight);
 
     // draw the box if necessary
-
     if (image == null && bgcolix != 0 && g3d.setColix(bgcolix))
       showBox(g3d, colix, bgcolix, (int) boxX, (int) boxY, z + 2, zSlab,
           (int) boxWidth, (int) boxHeight, fontScale, isLabelOrHover);
@@ -221,7 +214,8 @@ public class Text extends Object2d {
       // now set x and y positions for text from (new?) box position
 
       if (image != null) {
-        g3d.drawImage(image, (int) boxX, (int) boxY, z, zSlab, bgcolix);
+        g3d.drawImage(image, (int) boxX, (int) boxY, z, zSlab, bgcolix,
+            (int) boxWidth, (int) boxHeight);
       } else {
         // now write properly aligned text
 
@@ -240,9 +234,6 @@ public class Text extends Object2d {
 
         float x = x0;
         float y = boxY + ascent + adj;
-        //System.out.println("scale=" + fontScale + " boxwidth/height=" + boxWidth
-        //  + "/" + boxHeight + " ascent=" + ascent + " lineheight=" + lineHeight
-        //+ " boxY=" + boxY + " adj=" + adj);
         for (int i = 0; i < lines.length; i++) {
           switch (align) {
           case ALIGN_CENTER:
@@ -251,7 +242,6 @@ public class Text extends Object2d {
           case ALIGN_RIGHT:
             x = x0 - widths[i];
           }
-          //System.out.println(lines[i] + " text render font " + font.fid + " " + font.fontSize);
           g3d.drawString(lines[i], font, (int) x, (int) y, z, zSlab);
           y += lineHeight;
         }
@@ -314,7 +304,7 @@ public class Text extends Object2d {
     }
   }
 
-  public String getState(boolean isDefine) {
+  public String getState() {
     StringBuffer s = new StringBuffer();
     if (text == null || isLabelOrHover || target.equals("error"))
       return "";
@@ -322,7 +312,7 @@ public class Text extends Object2d {
     //set echo myecho x y
     //echo .....
     boolean isImage = (image != null);
-    if (isDefine) {
+//    if (isDefine) {
       String strOff = null;
       switch (valign) {
       case VALIGN_XY:
@@ -363,21 +353,20 @@ public class Text extends Object2d {
       if (modelIndex >= 0)
         s.append("  set echo ").append(target).append(" model ").append(
             viewer.getModelNumberDotted(modelIndex)).append(";\n");
-    }
+//    }
     //isDefine and target==top: do all
     //isDefine and target!=top: just start
     //!isDefine and target==top: do nothing
     //!isDefine and target!=top: do just this
     //fluke because top is defined with default font
     //in initShape(), so we MUST include its font def here
-    if (isDefine != target.equals("top"))
-      return s.toString();
+//    if (isDefine != target.equals("top"))
+//      return s.toString();
     // these may not change much:
     s.append("  " + Shape.getFontCommand("echo", font));
     if (scalePixelsPerMicron > 0)
       s.append(" " + (10000f / scalePixelsPerMicron)); // Angstroms per pixel
-    s.append(";\n");
-    s.append("  color echo");
+    s.append("; color echo");
     if (Graphics3D.isColixTranslucent(colix))
       s.append(" translucent " + Graphics3D.getColixTranslucencyLevel(colix));
     s.append(" [x").append(g3d.getHexColorFromIndex(colix)).append("]");

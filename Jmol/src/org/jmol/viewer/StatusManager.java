@@ -260,10 +260,11 @@ class StatusManager {
   int minSyncRepeatMs = 100;
   boolean syncingScripts = false;
   boolean syncingMouse = false;
+  boolean doSync() {
+    return (isSynced && drivingSync && !syncDisabled);
+  }
   
   synchronized void setSync(String mouseCommand) {
-    if (!isSynced || !drivingSync || syncDisabled)
-      return;
     if (syncingMouse) {
       if (mouseCommand != null)
         syncSend(mouseCommand, null);

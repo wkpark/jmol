@@ -61,7 +61,6 @@ class RepaintManager {
     if (currentModelIndex != modelIndex) {
       if (modelCount > 0) {
         boolean fromDataFrame = viewer.isJmolDataFrame(currentModelIndex);
-        //System.out.println("from state " + currentModelIndex + " to "+ modelIndex);
         if (fromDataFrame)
           viewer.setJmolDataFrame(null, -1, currentModelIndex);
         if (currentModelIndex != -1)
@@ -427,22 +426,7 @@ class RepaintManager {
     int modelIndexNext = currentModelIndex + frameStep;
     boolean isDone = (modelIndexNext > firstModelIndex
         && modelIndexNext > lastModelIndex || modelIndexNext < firstModelIndex
-        && modelIndexNext < lastModelIndex);
-    
-/*
-     System.out.println("setAnimationRelative: " +
-     " firstModelIndex=" + firstModelIndex +
-     " displayModelIndex=" + currentModelIndex +
-     " lastModelIndex=" + lastModelIndex +
-     " currentDirection=" + currentDirection +
-     " animationDirection=" + animationDirection +
-     " direction=" + direction +
-     " isDone="+isDone +
-     " modelIndexNext=" + modelIndexNext +
-     " modelCount=" + viewer.getModelCount() +
-     " animationReplayMode=" + animationReplayMode +
-     " animationDirection=" + animationDirection);     
-*/
+        && modelIndexNext < lastModelIndex);    
     if (isDone) {
       switch (animationReplayMode) {
       case ANIMATION_ONCE:
@@ -516,7 +500,6 @@ class RepaintManager {
             if (sleepTime > 0)
               Thread.sleep(sleepTime);
           }
-          //System.out.println(repaintPending + " frame " + currentModelIndex);
           if (!isFirst && !repaintPending && !setAnimationNext()) {
             Logger.debug("animation thread " + intThread + " exiting");
             setAnimationOff(false);
@@ -526,29 +509,11 @@ class RepaintManager {
           targetTime += (1000 / animationFps);
           sleepTime = targetTime
               - (int) (System.currentTimeMillis() - timeBegin);
-          //boolean autoFps = viewer.getAutoFps();
-          //if (autoFps) {
-            //System.out.println("requesting repaint for " + currentModelIndex);
-            //requestRepaintAndWait();
-          //} else
           refresh();
           sleepTime = targetTime
               - (int) (System.currentTimeMillis() - timeBegin);
           if (sleepTime > 0)  
             Thread.sleep(sleepTime);
-          /*if (false && autoFps) {
-            if (holdTime <= 0)
-              holdTime = 10;
-            int nHold = 0;
-            //optimally we want 2 hold cycles
-            while (repaintPending) {
-              Thread.sleep(holdTime);
-              nHold++;
-            }
-            holdTime *=(nHold - 1);
-            if (nHold == 1)
-              holdTime = holdTime / 2;
-         } */
         }
       } catch (InterruptedException ie) {
         Logger.debug("animation thread interrupted!");

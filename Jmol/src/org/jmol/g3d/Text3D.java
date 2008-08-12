@@ -95,9 +95,11 @@ public class Text3D {
     int textWidth = text3d.width;
     int textHeight = text3d.height;
     int mapWidth = text3d.mapWidth;
-    if (x + textWidth < 0 || x > g3d.width || y + textHeight < 0
-        || y > g3d.height)
+    if (x + textWidth <= 0 || x >= g3d.width || y + textHeight <= 0
+        || y >= g3d.height)
       return textWidth;
+    //TODO: text width/height are calculated 4x correct size here when antialiased.
+    // this is wasteful, as it requires drawing larger than necessary images
     if (jmolRenderer != null || 
         (x < 0 || x + textWidth > g3d.width || y < 0
         || y + textHeight > g3d.height))
@@ -110,35 +112,25 @@ public class Text3D {
 
   public static void plotImage(int x, int y, int z, Image image, Graphics3D g3d,
                                JmolRendererInterface jmolRenderer, boolean antialias,
-                               int argbBackground) {
-    //System.out.println(x + " " + width + ", " + y + " " + height + " w/h " + g3d.width + " " + g3d.height + " " + g3d.isAntialiased());
+                               int argbBackground, int width, int height) {
     boolean isBackground = (x == Integer.MIN_VALUE); 
-    int width = image.getWidth(null);
-    int height = image.getHeight(null);
+    int width0 = image.getWidth(null);
+    int height0 = image.getHeight(null);
     if (isBackground) {
       x = 0;
       z = Integer.MAX_VALUE - 1;
       width = g3d.width;
       height = g3d.height;
-    } else if (x + width < 0 || x > g3d.width || y + height < 0 || y > g3d.height) {
-      return;
     } else if (g3d.isAntialiased()) {
       width += width;
       height += height;
     }
-    
+    if (x + width <= 0 || x >= g3d.width || y + height <= 0 || y >= g3d.height)
+      return;    
     g3d.platform.checkOffscreenSize(width, height);
     Graphics g = g3d.platform.gOffscreen;
     g.clearRect(0,0,width,height);
-    if (isBackground) {
-      g.drawImage(image, 0, 0, width, height, 0, 0, image.getWidth(null), image.getHeight(null), null);
-      width = g3d.width;
-      height = g3d.height;
-    } else if (g3d.isAntialiased()) {
-      g.drawImage(image, 0, 0, width, height, 0, 0, width >> 1, height >> 1, null);
-    } else {
-      g.drawImage(image, 0, 0, null);
-    }
+    g.drawImage(image, 0, 0, width, height, 0, 0, width0, height0, null);
     PixelGrabber pixelGrabber = new PixelGrabber(g3d.platform.imageOffscreen, 0, 0,
         width, height, true);
     try {
@@ -164,7 +156,6 @@ public class Text3D {
     if (jmolRenderer == null)
       jmolRenderer = g3d;
     for (int i = 0, offset = 0; i < height; i++) {
-      //System.out.println(Integer.toHexString(buffer[offset]));
       for (int j = 0; j < width; j++) {
         int argb = buffer[offset++];
         if (argb != bgcolor && (argb & 0xFF000000) == 0xFF000000)
@@ -183,7 +174,6 @@ public class Text3D {
     int j = 0;
     int offset = 0;
     while (i < textHeight) {
-      //System.out.println(Integer.toHexString(buffer[offset]));
       while (j < textWidth) {
         if (z < zbuf[pbufOffset]) {
           int argb = buffer[offset];

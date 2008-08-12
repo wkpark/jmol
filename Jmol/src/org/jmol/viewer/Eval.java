@@ -8274,6 +8274,7 @@ class Eval {
     if (statementLength == len)
       return;
     propertyName = "align";
+    propertyValue = null;
     // set echo name xxx
     if (statementLength == 4) {
       if (isCenterParameter(3)) {

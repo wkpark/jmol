@@ -352,7 +352,7 @@ final public class Graphics3D implements JmolRendererInterface {
     //setRectClip(clipX, clipY, clipWidth, clipHeight);
     platform.obtainScreenBuffer();
     if (backgroundImage != null)
-      plotImage(Integer.MIN_VALUE, 0, Integer.MIN_VALUE, backgroundImage, null, (short) 0);
+      plotImage(Integer.MIN_VALUE, 0, Integer.MIN_VALUE, backgroundImage, null, (short) 0, 0, 0);
   }
 
   private void releaseBuffers() {
@@ -1042,20 +1042,22 @@ final public class Graphics3D implements JmolRendererInterface {
         antialiasThisFrame);    
   }
   
-  public void drawImage(Image image, int x, int y, int z, int zSlab, short bgcolix) {
+  public void drawImage(Image image, int x, int y, int z, int zSlab, 
+                        short bgcolix, int width, int height) {
     if (image == null || width == 0 || height == 0)
       return;
     if (isClippedZ(zSlab))
       return;
-    plotImage(x, y, z, image, null, bgcolix);
+    plotImage(x, y, z, image, null, bgcolix, width, height);
   }
 
   public void plotImage(int x, int y, int z, Image image, JmolRendererInterface jmolRenderer,
-                        short bgcolix) {
+                        short bgcolix, int width, int height) {
     setColix(bgcolix);
     if (bgcolix == 0)
       argbCurrent = 0;
-    Text3D.plotImage(x, y, z, image, this, jmolRenderer, antialiasThisFrame, argbCurrent);
+    Text3D.plotImage(x, y, z, image, this, jmolRenderer, antialiasThisFrame, argbCurrent, 
+        width, height);
   }
 
   public void setFont(byte fid) {
@@ -2934,7 +2936,8 @@ final public class Graphics3D implements JmolRendererInterface {
 
   public void renderBackground(JmolRendererInterface jmolRenderer) {
     if (backgroundImage != null)
-      plotImage(Integer.MIN_VALUE, 0, Integer.MIN_VALUE, backgroundImage, jmolRenderer, (short) 0);
+      plotImage(Integer.MIN_VALUE, 0, Integer.MIN_VALUE, backgroundImage,
+          jmolRenderer, (short) 0, 0, 0);
   }
 
 }

@@ -33,6 +33,7 @@ import java.util.BitSet;
 
 public class HalosRenderer extends ShapeRenderer {
 
+  boolean isAntialiased;
   protected void render() {
     Halos halos = (Halos) shape;
     boolean selectDisplayTrue = viewer.getSelectionHaloEnabled();
@@ -40,6 +41,7 @@ public class HalosRenderer extends ShapeRenderer {
         .getShowHiddenSelectionHalos());
     if (halos.mads == null && !selectDisplayTrue)
       return;
+    isAntialiased = g3d.isAntialiased();
     Atom[] atoms = modelSet.atoms;
     BitSet bsSelected = (selectDisplayTrue ? viewer.getSelectionSet() : null);
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
@@ -75,7 +77,6 @@ public class HalosRenderer extends ShapeRenderer {
   void render1(Atom atom, short mad, short colix) {
     int z = atom.screenZ;
     int diameter = mad;
-    int halowidth = 0;
     if (diameter < 0) { //unsized selection
       diameter = atom.screenDiameter;
       if (diameter == 0) {
@@ -89,15 +90,21 @@ public class HalosRenderer extends ShapeRenderer {
     } else {
       diameter = viewer.scaleToScreen(z, mad);
     }
-    halowidth = (diameter / 4);
-    if (halowidth < 4)
-      halowidth = 4;
-    if (halowidth > 10)
-      halowidth = 10;
-    int haloDiameter = diameter + 2 * halowidth;
-    if (haloDiameter <= 0)
+    float d = diameter;
+    if (isAntialiased)
+      d /= 2;
+    float haloDiameter = (d / 4);
+    if (haloDiameter < 4)
+      haloDiameter = 4;
+    if (haloDiameter > 10)
+      haloDiameter = 10;
+    haloDiameter = d + 2 * haloDiameter;
+    if (isAntialiased)
+      haloDiameter *= 2;
+    int haloWidth = (int) haloDiameter;
+    if (haloWidth <= 0)
       return;
-    g3d.fillScreenedCircleCentered(colix, haloDiameter, atom.screenX,
+    g3d.fillScreenedCircleCentered(colix, haloWidth, atom.screenX,
         atom.screenY, atom.screenZ);
   }  
 }

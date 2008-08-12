@@ -240,7 +240,8 @@ public class _VrmlExporter extends _Exporter {
     
   }
 
-  public void plotImage(int x, int y, int z, Image image, short bgcolix) {
+  public void plotImage(int x, int y, int z, Image image, short bgcolix, 
+                        int width, int height) {
     // TODO
     
   }

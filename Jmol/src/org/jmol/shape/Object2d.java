@@ -355,12 +355,11 @@ public abstract class Object2d {
   
   }
   
-  protected void setBoxOffsetsInWindow(float scale, float vMargin, float vTop) {
+  protected void setBoxOffsetsInWindow(float margin, float vMargin, float vTop) {
     // not labels
 
     // these coordinates are (0,0) in top left
     // (user coordinates are (0,0) in bottom left)
-    float margin = 5 * scale;
     float bw = boxWidth + margin;
     float x = boxX;
     if (x + bw > windowWidth)

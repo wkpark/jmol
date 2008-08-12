@@ -77,7 +77,8 @@ public interface JmolExportInterface {
   
   abstract void plotText(int x, int y, int z, int argb, String text, Font3D font3d);
 
-  abstract void plotImage(int x, int y, int z, Image image, short bgcolix);
+  abstract void plotImage(int x, int y, int z, Image image, short bgcolix, 
+                          int width, int height);
 
   // NOT IMPLEMENTED, but could be if needed:
   

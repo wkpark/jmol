@@ -349,7 +349,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       JmolInstance instance = new JmolInstance(viewer, name, script, width, height);
       if (instance == null) {
         LogPanel
-            .log("Error creating new instance containing script(s) and image.");
+            .log(GT._("Error creating new instance containing script(s) and image."));
       }
 
       int i;
@@ -359,10 +359,10 @@ abstract class WebPanel extends JPanel implements ActionListener {
       if (i < 0) {
         i = listModel.getSize();
         listModel.addElement(instance);
-        LogPanel.log(GT._("added Instance ") + instance.name);
+        LogPanel.log(GT._("added Instance {0}", instance.name));
       } else {
         listModel.setElementAt(instance, i);
-        LogPanel.log(GT._("updated Instance ") + instance.name);
+        LogPanel.log(GT._("updated Instance {0}", instance.name));
       }
       instanceList.setSelectedIndex(i);
       syncLists();
@@ -455,7 +455,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     DefaultListModel listModel = (DefaultListModel) InstanceList.getModel();
     LogPanel.log("");
     if (made_datadir) {
-      LogPanel.log(GT._("Using directory ") + datadirPath);
+      LogPanel.log(GT._("Using directory {0}", datadirPath));
       LogPanel.log(GT._("  adding JmolPopIn.js"));
 
       writeFile(datadirPath + "/JmolPopIn.js",
@@ -465,7 +465,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
         String javaname = thisInstance.javaname;
         String script = thisInstance.script;
         LogPanel.log("  ...jmolApplet" + i);
-        LogPanel.log(GT._("      ...adding ") + javaname + ".png");
+        LogPanel.log(GT._("      ...adding {0}.png", javaname));
         try {
           thisInstance.movepict(datadirPath);
         } catch (IOException IOe) {
@@ -555,10 +555,10 @@ abstract class WebPanel extends JPanel implements ActionListener {
     if (gzoutFile.exists())
       return gzname;
     try {
-      LogPanel.log(GT._("      ...copying\n") + fullPathName + GT._("\n         to"));
+      LogPanel.log(GT._("      ...copying\n{0}\n         to",fullPathName));
       byte[] data = getFileAsBytes(fullPathName);
       if (data == null)
-        LogPanel.log(GT._("Could not find or open:\n") + fullPathName);
+        LogPanel.log(GT._("Could not find or open:\n{0}", fullPathName));
       else { 
         name = writeFileBytes(name, data); 
         LogPanel.log(name);

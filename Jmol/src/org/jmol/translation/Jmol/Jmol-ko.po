@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-13 08:26+0200\n"
+"POT-Creation-Date: 2008-08-13 16:29+0200\n"
 "PO-Revision-Date: 2008-08-04 20:46+0000\n"
 "Last-Translator: Won-kyu Park <Unknown>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -1340,12 +1340,18 @@ msgstr ""
 msgid "Give the occurence of Jmol a name:"
 msgstr ""
 
+#: org/openscience/jmol/app/webexport/WebPanel.java:352
+msgid "Error creating new instance containing script(s) and image."
+msgstr ""
+
 #: org/openscience/jmol/app/webexport/WebPanel.java:362
-msgid "added Instance "
+#, java-format
+msgid "added Instance {0}"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:365
-msgid "updated Instance "
+#, java-format
+msgid "updated Instance {0}"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:402
@@ -1357,8 +1363,8 @@ msgid "Call to FileWriter unsuccessful."
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:458
-#, fuzzy
-msgid "Using directory "
+#, fuzzy, java-format
+msgid "Using directory {0}"
 msgstr "작업 폴더"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:459
@@ -1366,21 +1372,23 @@ msgid "  adding JmolPopIn.js"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:468
-msgid "      ...adding "
+#, java-format
+msgid "      ...adding {0}.png"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:558
-msgid "      ...copying\n"
-msgstr ""
-
-#: org/openscience/jmol/app/webexport/WebPanel.java:558
+#, java-format
 msgid ""
-"\n"
+"      ...copying\n"
+"{0}\n"
 "         to"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:561
-msgid "Could not find or open:\n"
+#, java-format
+msgid ""
+"Could not find or open:\n"
+"{0}"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:600

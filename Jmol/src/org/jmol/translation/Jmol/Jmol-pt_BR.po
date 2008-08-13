@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-13 08:26+0200\n"
+"POT-Creation-Date: 2008-08-13 16:29+0200\n"
 "PO-Revision-Date: 2008-08-12 19:01-0300\n"
 "Last-Translator: Sérgio Ceroni da Silva <ceroni@cbiot.ufrgs.br>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
@@ -1338,12 +1338,18 @@ msgstr "Título da janela do navegador para esta página WWW:"
 msgid "Give the occurence of Jmol a name:"
 msgstr "Nomear esta ocorrência do Jmol:"
 
+#: org/openscience/jmol/app/webexport/WebPanel.java:352
+msgid "Error creating new instance containing script(s) and image."
+msgstr ""
+
 #: org/openscience/jmol/app/webexport/WebPanel.java:362
-msgid "added Instance "
+#, fuzzy, java-format
+msgid "added Instance {0}"
 msgstr "Instância adicionada"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:365
-msgid "updated Instance "
+#, fuzzy, java-format
+msgid "updated Instance {0}"
 msgstr "Instância atualizada"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:402
@@ -1356,7 +1362,8 @@ msgid "Call to FileWriter unsuccessful."
 msgstr "Chamada a \"FileWriter\" foi malsucedida"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:458
-msgid "Using directory "
+#, fuzzy, java-format
+msgid "Using directory {0}"
 msgstr "Usando diretório "
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:459
@@ -1364,28 +1371,35 @@ msgid "  adding JmolPopIn.js"
 msgstr "  adicionando JmolPopIn.js"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:468
-msgid "      ...adding "
+#, fuzzy, java-format
+msgid "      ...adding {0}.png"
 msgstr "      ...adicionando "
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:558
-msgid "      ...copying\n"
+#, fuzzy, java-format
+msgid ""
+"      ...copying\n"
+"{0}\n"
+"         to"
 msgstr "      ...copiando\n"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:558
-msgid ""
-"\n"
-"         to"
-msgstr ""
-"\n"
-"         para"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:561
-msgid "Could not find or open:\n"
+#, fuzzy, java-format
+msgid ""
+"Could not find or open:\n"
+"{0}"
 msgstr "Não foi possível localizar ou abrir:\n"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:600
 msgid "      ...Compressing large data file to\n"
 msgstr "      ...Comprimindo grande arquivo de dados para\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "         to"
+#~ msgstr ""
+#~ "\n"
+#~ "         para"
 
 #~ msgid "Select Atoms"
 #~ msgstr "Selecionar átomos"

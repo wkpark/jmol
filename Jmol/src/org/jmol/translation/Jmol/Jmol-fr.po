@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-08-13 16:29+0200\n"
-"PO-Revision-Date: 2008-08-04 20:53+0000\n"
+"PO-Revision-Date: 2008-08-13 17:25+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-08-12 00:40+0000\n"
+"X-Launchpad-Export-Date: 2008-08-13 20:04+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -1250,12 +1250,12 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:59
 msgid "Applet width:"
-msgstr ""
+msgstr "Largeur de l'applet :"
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:61
 #, fuzzy
 msgid "height:"
-msgstr "Hauteur : "
+msgstr "Hauteur :"
 
 #: org/openscience/jmol/app/webexport/ScriptButtons.java:39
 msgid "These names will be used for button labels"
@@ -1271,7 +1271,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:115
 msgid "Introduction"
-msgstr ""
+msgstr "Introduction"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:143
 msgid "Log"
@@ -1366,9 +1366,9 @@ msgid "Call to FileWriter unsuccessful."
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:458
-#, fuzzy, java-format
+#, java-format
 msgid "Using directory {0}"
-msgstr "Répertoire de travail"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:459
 msgid "  adding JmolPopIn.js"

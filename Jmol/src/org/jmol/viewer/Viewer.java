@@ -716,42 +716,42 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isJmolDataFrame())
       return;
     transformManager.navigate(timeSeconds, path, theta, indexStart, indexEnd);
-    refresh(1, "navigate");
+    moveUpdate(timeSeconds);
   }
 
   void navigate(float timeSeconds, Point3f center) {
     if (isJmolDataFrame())
       return;
     transformManager.navigate(timeSeconds, center);
-    refresh(1, "navigate");
+    moveUpdate(timeSeconds);
   }
 
   void navigate(float timeSeconds, Point3f[][] pathGuide) {
     if (isJmolDataFrame())
       return;
     transformManager.navigate(timeSeconds, pathGuide);
-    refresh(1, "navigate");
+    moveUpdate(timeSeconds);
   }
 
   void navigate(float timeSeconds, Vector3f rotAxis, float degrees) {
     if (isJmolDataFrame())
       return;
     transformManager.navigate(timeSeconds, rotAxis, degrees);
-    refresh(1, "navigate");
+    moveUpdate(timeSeconds);
   }
 
   void navTranslate(float timeSeconds, Point3f center) {
     if (isJmolDataFrame())
       return;
     transformManager.navTranslate(timeSeconds, center);
-    refresh(1, "navigate");
+    moveUpdate(timeSeconds);
   }
 
   void navTranslatePercent(float timeSeconds, float x, float y) {
     if (isJmolDataFrame())
       return;
     transformManager.navTranslatePercent(timeSeconds, x, y);
-    refresh(1, "navigate");
+    moveUpdate(timeSeconds);
   }
 
   void zoomBy(int pixels) {
@@ -3053,8 +3053,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void refresh(int mode, String strWhy) {
     // refresh(2) indicates this is a mouse motion -- not going through Eval script
     // so we bypass Eval and mainline on the other viewer!
-    // refresh(-1) is used in stateManager to force no refresh)
-    // refresh(3) is used by the vibration thread to ONLY do a repaint -- no syncing 
+    // refresh(-1) is used in stateManager to force no repaint)
+    // refresh(3) is used by operations to ONLY do a repaint -- no syncing 
     if (mode > 0)
       repaintManager.refresh();
     if (mode % 3 != 0 && statusManager.doSync())

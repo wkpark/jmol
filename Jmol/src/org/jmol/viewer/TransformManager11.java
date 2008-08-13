@@ -516,7 +516,8 @@ class TransformManager11 extends TransformManager {
     ptMoveToCenter = (center == null ? navigationCenter : center);
     int fps = 30;
     int totalSteps = (int) (floatSecondsTotal * fps);
-    viewer.setInMotion(true);
+    if (floatSecondsTotal > 0)
+      viewer.setInMotion(true);
     if (degrees == 0)
       degrees = Float.NaN;
     if (totalSteps > 1) {
@@ -598,7 +599,7 @@ class TransformManager11 extends TransformManager {
     navigate(seconds, null, path, theta, indexStart, indexEnd);
   }
 
-  void navigate(float seconds, Point3f[][] pathGuide, Point3f[] path,
+  private void navigate(float seconds, Point3f[][] pathGuide, Point3f[] path,
                 float[] theta, int indexStart, int indexEnd) {
     if (seconds <= 0) // PER station
       seconds = 2;
@@ -667,7 +668,7 @@ class TransformManager11 extends TransformManager {
    * @param pt1
    * @param ptVectorWing
    */
-  void alignZX(Point3f pt0, Point3f pt1, Point3f ptVectorWing) {
+  private void alignZX(Point3f pt0, Point3f pt1, Point3f ptVectorWing) {
     Point3f pt0s = new Point3f();
     Point3f pt1s = new Point3f();
     matrixRotate.transform(pt0, pt0s);
@@ -699,10 +700,6 @@ class TransformManager11 extends TransformManager {
     matrixRotate.transform(ptVectorWing, pt2s);
   }
 
-  void setNavigationCenter(Point3f center) {
-    navigate(0, center);
-  }
-
   Point3f getNavigationCenter() {
     return navigationCenter;
   }
@@ -717,7 +714,7 @@ class TransformManager11 extends TransformManager {
     navigationSlabOffset = percent / 50 * modelRadiusPixels;
   }
 
-  float getNavigationSlabOffsetPercent() {
+  private float getNavigationSlabOffsetPercent() {
     calcCameraFactors(); //current
     return 50 * navigationSlabOffset / modelRadiusPixels;
   }
@@ -727,7 +724,7 @@ class TransformManager11 extends TransformManager {
     return navigationOffset;
   }
 
-  void setNavigationDepthPercent(float percent) {
+  private void setNavigationDepthPercent(float percent) {
     // navigation depth 0 # place user at rear plane of the model
     // navigation depth 100 # place user at front plane of the model
 

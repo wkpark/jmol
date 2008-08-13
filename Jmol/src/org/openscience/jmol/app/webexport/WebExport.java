@@ -274,10 +274,10 @@ public class WebExport extends JPanel implements WindowListener {
     if (url == null && lang.length() == 5) {
       fileName = root + "_" + lang.substring(0, 2) + ".html";
       url = getResource(object, fileName, false);
-      if (url == null) {
-        fileName = root + ".html";
-        url = getResource(object, fileName, true);
-      }
+    }
+    if (url == null) {
+      fileName = root + ".html";
+      url = getResource(object, fileName, true);
     }
     return url;
   }

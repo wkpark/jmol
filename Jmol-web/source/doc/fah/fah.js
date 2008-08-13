@@ -276,6 +276,8 @@ function showProjectInfo(value) {
   var code = varArray[8];
   if (code == "A") {
     document.fahForm.infoCode.value = "Amber";
+  } else if (code == "AD") {
+    document.fahForm.infoCode.value = "ATI-DEV";
   } else if (code == "A0") {
     document.fahForm.infoCode.value = "Gromacs 33";
   } else if (code == "DB") {

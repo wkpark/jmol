@@ -511,8 +511,11 @@ public class Jmol implements WrappedApplet {
   }
   
   void consoleMessage(String message) {
-    if (jvm12 != null)
+    if (jvm12 != null) {
       jvm12.consoleMessage(message);
+      if (message == null)
+        jvm12.consoleMessage(GT._("Messages will appear here. Enter commands in the box below. Click the console Help menu item for on-line help, which will appear in a new browser window."));
+    }
     sendJsTextareaStatus(message);
   }
 

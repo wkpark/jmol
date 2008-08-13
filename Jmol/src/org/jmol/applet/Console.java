@@ -131,8 +131,12 @@ class Console implements ActionListener, WindowListener {
   }
   
   protected void addHelpMenuBar(JMenuBar menuBar) {
-    String menuKey = "help";
-    JMenu m0 = createMenu(menuKey);
+    //JMenu m0 = createMenu("Help");
+    JMenu m0 = newJMenu("Help");
+    JMenuItem item = new JMenuItem("Search...");
+    item.addActionListener(this);
+    item.setName("help ?search=?");
+    m0.add(item);
     if (m0 == null)
       return;
     addHelpItems(m0, "commands", "command");
@@ -248,8 +252,8 @@ class Console implements ActionListener, WindowListener {
     
    //menu.addMenuListener(display.getMenuListener());
 
-    JMenuItem mi = createMenuItem("Help");
-    menu.add(mi);
+    //JMenuItem mi = createMenuItem("Help");
+    //menu.add(mi);
 
     return menu;
   }

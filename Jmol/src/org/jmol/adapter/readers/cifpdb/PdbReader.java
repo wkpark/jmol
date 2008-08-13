@@ -236,6 +236,8 @@ public class PdbReader extends AtomSetCollectionReader {
   }
 
   private void header() {
+    if (lineLength < 8)
+      return;
     if (lineLength >= 66)
       atomSetCollection.setCollectionName(line.substring(62, 66));
     if (lineLength > 50)

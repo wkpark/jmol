@@ -572,7 +572,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     } catch (Exception e) {
       Logger.error("Error saving preferences", e);
     }
-    viewer.refresh(0, "PreferencesDialog:save()");
+    viewer.refresh(3, "PreferencesDialog:save()");
   }
 
   void initializeProperties() {
@@ -598,7 +598,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         currentProperties.put(overrides[i], overrides[i+1]);
     }
     initVariables();
-    viewer.refresh(0, "PreferencesDialog:resetDefaults()");
+    viewer.refresh(3, "PreferencesDialog:resetDefaults()");
     updateComponents();
   }
 
@@ -690,12 +690,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       } else if (key.equals("Prefs.showAxes")) {
         showAxes = isSelected;
         viewer.setBooleanProperty("showAxes", isSelected);
-        viewer.refresh(0, "pref.showAxes");
+        viewer.refresh(3, "pref.showAxes");
         currentProperties.put("showAxes", strSelected);
       } else if (key.equals("Prefs.showBoundingBox")) {
         showBoundingBox = isSelected;
         viewer.setBooleanProperty("showBoundBox", isSelected);
-        viewer.refresh(0, "pref.showBoundingBox");
+        viewer.refresh(3, "pref.showBoundingBox");
         currentProperties.put("showBoundingBox", strSelected);
       } else if (key.equals("Prefs.axesOrientationRasmol")) {
         axesOrientationRasmol = isSelected;

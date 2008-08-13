@@ -699,7 +699,7 @@ Token[keyword(0x880001) value=")"]
     viewer.notifyMinimizationStatus();
     if (doRefresh) {
       updateAtomXYZ();
-      viewer.refresh(0, "minimization step " + currentStep);
+      viewer.refresh(3, "minimization step " + currentStep);
     }
     return going;
   }
@@ -714,7 +714,7 @@ Token[keyword(0x880001) value=")"]
     viewer.setFloatProperty("_minimizationEnergy", (float) pFF.getEnergy());
     viewer.setStringProperty("_minimizationStatus", (failed ? "failed" : "done"));
     viewer.notifyMinimizationStatus();
-    viewer.refresh(0, "Minimizer:done" + (failed ? " EXPLODED" : "OK"));
+    viewer.refresh(3, "Minimizer:done" + (failed ? " EXPLODED" : "OK"));
 }
 
   double[][] coordSaved;

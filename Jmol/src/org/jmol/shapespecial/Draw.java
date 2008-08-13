@@ -989,7 +989,7 @@ public class Draw extends MeshCollection {
         mesh.setCenter(i);
     if (Logger.debugging)
       Logger.debug(getDrawCommand(mesh));
-    viewer.refresh(0, "draw");
+    viewer.refresh(3, "draw");
   }
   
   private boolean findPickedObject(int x, int y, boolean isPicking, BitSet bsVisible) {

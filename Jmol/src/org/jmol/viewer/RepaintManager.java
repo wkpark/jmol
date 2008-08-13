@@ -360,7 +360,7 @@ class RepaintManager {
       setAnimationOff(false);
       return;
     }
-    viewer.refresh(0, "Viewer:setAnimationOn");
+    viewer.refresh(3, "Viewer:setAnimationOn");
     setAnimationRange(-1, -1);
     resumeAnimation();
   }
@@ -371,7 +371,7 @@ class RepaintManager {
       animationThread = null;
     }
     animationPaused = isPaused;
-    viewer.refresh(0, "Viewer:setAnimationOff");
+    viewer.refresh(3, "Viewer:setAnimationOff");
     animationOn(false);
     setStatusFrameChanged();
   }

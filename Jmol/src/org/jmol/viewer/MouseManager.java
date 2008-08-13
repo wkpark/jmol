@@ -300,7 +300,7 @@ public abstract class MouseManager implements KeyListener {
     viewer.setCursor(Viewer.CURSOR_DEFAULT);
     if (rubberbandSelectionMode && ((modifiers & BUTTON_MODIFIER_MASK) == SHIFT_LEFT)) {
       viewer.selectRectangle(rectRubber, modifiers);
-      viewer.refresh(0, "mouseReleased");
+      viewer.refresh(3, "mouseReleased");
     } 
     rubberbandSelectionMode = false;
     rectRubber.x = Integer.MAX_VALUE;
@@ -377,7 +377,7 @@ public abstract class MouseManager implements KeyListener {
         return;
       if (nearestPoint != null || measurementPending.getIndexOf(nearestAtomIndex) == 0)
         measurementPending.addPoint(nearestAtomIndex, nearestPoint, false);
-      viewer.refresh(0, "measurementPending");
+      viewer.refresh(3, "measurementPending");
       return;
     case 1:
       // mouse single click
@@ -479,7 +479,7 @@ public abstract class MouseManager implements KeyListener {
           return;
         } else if (rubberbandSelectionMode) {
           calcRectRubberBand();
-          viewer.refresh(0,"mouse-drag selection");
+          viewer.refresh(3,"mouse-drag selection");
           return;
         }
       case MIDDLE:

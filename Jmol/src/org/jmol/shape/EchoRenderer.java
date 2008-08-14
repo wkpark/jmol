@@ -38,7 +38,7 @@ public class EchoRenderer extends ShapeRenderer {
     imageFontScaling = viewer.getImageFontScaling();
     while (e.hasMoreElements()) {
       Text t = (Text)e.nextElement();
-      if (!t.visible)
+      if (!t.visible || t.hidden)
         continue;
       if (t.valign == Object2d.VALIGN_XYZ) {
         viewer.transformPoint(t.xyz, pt);

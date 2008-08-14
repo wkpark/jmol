@@ -2560,7 +2560,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   String getProteinStructureState() {
     return modelSet.getProteinStructureState(selectionManager.bsSelection,
-        false);
+        false, false);
   }
 
   public String getCoordinateState(BitSet bsSelected) {

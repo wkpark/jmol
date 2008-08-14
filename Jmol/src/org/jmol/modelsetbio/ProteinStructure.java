@@ -44,8 +44,7 @@ public abstract class ProteinStructure {
   final Vector3f vectorProjection = new Vector3f();
   Point3f[] segments;
   int uniqueID;
-  //Point3f center;
-
+  
   ProteinStructure(AlphaPolymer apolymer, byte type,
                    int monomerIndex, int monomerCount) {
     uniqueID = ++globalSerialID;

@@ -174,13 +174,19 @@ public final class Model {
     }
   }
 
+  boolean structureTainted;
   void calculateStructures() {
+    structureTainted = modelSet.proteinStructureTainted = true;
     for (int i = bioPolymerCount; --i >= 0; ) {
       bioPolymers[i].clearStructures();
       bioPolymers[i].calculateStructures();
     }
   }
 
+  public boolean isStructureTainted() {
+    return structureTainted;
+  }
+  
   void setConformation(BitSet bsConformation) {
     for (int i = bioPolymerCount; --i >= 0; )
       bioPolymers[i].setConformation(bsConformation, nAltLocs);

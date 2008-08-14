@@ -27,6 +27,7 @@ package org.jmol.shape;
 import org.jmol.util.Logger;
 import org.jmol.g3d.*;
 
+import java.awt.Image;
 import java.util.BitSet;
 import java.util.Enumeration;
 
@@ -69,6 +70,34 @@ public class Echo extends TextShape {
       if (currentObject != null && viewer.getFontScaling())
           currentObject.setScalePixelsPerMicron(viewer.getScalePixelsPerAngstrom() * 10000f);
       // continue on to Object2d setting
+    }
+
+    if ("image" == propertyName) {
+      Image image = (Image) value;
+      if (currentObject == null) {
+        if (isAll) {
+          Enumeration e = objects.elements();
+          while (e.hasMoreElements())
+            ((Text) e.nextElement()).setImage(image);
+        }
+        return;
+      }
+      ((Text) currentObject).setImage(image);
+      return;
+    }
+    
+    if ("hidden" == propertyName) {
+      boolean isHidden = ((Boolean)value).booleanValue();
+      if (currentObject == null) {
+        if (isAll) {
+          Enumeration e = objects.elements();
+          while (e.hasMoreElements())
+            ((Text) e.nextElement()).hidden = isHidden;
+        }
+        return;
+      }
+      ((Text) currentObject).hidden = isHidden;
+      return;
     }
 
     if (Object2d.setProperty(propertyName, value, currentObject))
@@ -117,8 +146,12 @@ public class Echo extends TextShape {
   public String getShapeState() {
     StringBuffer s = new StringBuffer("\n  set echo off;\n");
     Enumeration e = objects.elements();
-    while (e.hasMoreElements())
-      s.append(((Text) e.nextElement()).getState());
+    while (e.hasMoreElements()) {
+      Text t = (Text) e.nextElement();
+      s.append(t.getState());
+      if (t.hidden)
+        s.append("  set echo " + t.target + " hidden;\n");
+    }
     return s.toString();
   }
 }

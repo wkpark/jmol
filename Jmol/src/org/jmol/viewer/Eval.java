@@ -8226,6 +8226,15 @@ class Eval {
       echoShapeActive = false;
       propertyName = "allOff";
       break;
+    case Token.hidden:
+      propertyName = "hidden";
+      propertyValue = Boolean.TRUE;
+      break;
+    case Token.on:
+    case Token.display:
+      propertyName = "hidden";
+      propertyValue = Boolean.FALSE;
+      break;
     case Token.none:
       echoShapeActive = false;
     //fall through
@@ -8284,6 +8293,15 @@ class Eval {
       switch (getToken(3).tok) {
       case Token.off:
         propertyName = "off";
+        break;
+      case Token.display:
+      case Token.on:
+        propertyName = "hidden";
+        propertyValue = Boolean.FALSE;
+        break;
+      case Token.hidden:
+        propertyName = "hidden";
+        propertyValue = Boolean.TRUE;
         break;
       case Token.model:
         int modelIndex = modelNumberParameter(4);

@@ -74,6 +74,7 @@ abstract public class ModelCollection extends BondCollection {
       for (int j = 0; j < m.chainCount; j++)
         m.chains[j].setModelSet(m.modelSet);
       stateScripts = modelSet.stateScripts;
+      proteinStructureTainted = modelSet.proteinStructureTainted;
       thisStateModel = -1;
     }
     super.merge(modelSet);
@@ -541,6 +542,20 @@ abstract public class ModelCollection extends BondCollection {
       propagateSecondaryStructure();
   }
 
+  public void setProteinType(BitSet bs, byte iType) {
+    int monomerIndexCurrent = -1;
+    int iLast = -1;
+    for (int i = 0; i < atomCount; i++)
+      if (bs.get(i)) {
+        if (iLast != i - 1)
+          monomerIndexCurrent = -1;
+        iLast = i;
+        monomerIndexCurrent = atoms[i].group.setProteinStructureType(iType,
+            monomerIndexCurrent);
+        proteinStructureTainted = models[atoms[i].modelIndex].structureTainted = true;
+      }
+  }
+  
   private void freezeModels() {
     for (int iModel = modelCount; --iModel >= 0;) {
       Model m = models[iModel];
@@ -990,7 +1005,7 @@ abstract public class ModelCollection extends BondCollection {
     if (ctype != 'R')
       remark += "  quaternionFrame = \"" + qtype + "\"";
     remark += "\nREMARK   6 Jmol Version " + Viewer.getJmolVersion();
-    remark += "\n\n" + getProteinStructureState(bsAtoms, ctype == 'R');
+    remark += "\n\n" + getProteinStructureState(bsAtoms, false, ctype == 'R');
     return remark + s;
   }
 
@@ -2100,7 +2115,10 @@ abstract public class ModelCollection extends BondCollection {
   
   //////////// state definition ///////////
 
-  public String getProteinStructureState(BitSet bsAtoms, boolean needPhiPsi) {
+  boolean proteinStructureTainted = false;
+  
+  public String getProteinStructureState(BitSet bsAtoms, boolean taintedOnly,
+                                         boolean needPhiPsi) {
     BitSet bs = null;
     StringBuffer cmd = new StringBuffer();
     StringBuffer sbTurn = new StringBuffer();
@@ -2120,8 +2138,20 @@ abstract public class ModelCollection extends BondCollection {
     int nHelix = 0;
     int nTurn = 0;
     int nSheet = 0;
+    BitSet bsTainted = null;
+    if (taintedOnly) {
+      if (!proteinStructureTainted)
+        return "";
+      bsTainted = new BitSet();
+      for (int i = 0; i < atomCount; i++)
+        if (models[atoms[i].modelIndex].isStructureTainted())
+          bsTainted.set(i);
+      bsTainted.set(atomCount);
+    }
     for (int i = 0; i <= atomCount; i++)
       if (i == atomCount || bsAtoms == null || bsAtoms.get(i)) {
+        if (taintedOnly && !bsTainted.get(i))
+          continue;
         id = Integer.MIN_VALUE;
         if (i == atomCount || (id = atoms[i].getProteinStructureID()) != lastId) {
           if (bs != null) {
@@ -2133,11 +2163,9 @@ abstract public class ModelCollection extends BondCollection {
                 int iModel = atoms[iLastAtom].modelIndex;
                 cmd.append("  structure ").append(
                     JmolConstants.getProteinStructureName(itype)).append(" ")
-                    .append(Escape.escape(bs))
-                    .append("    \t# model=")
-                    .append(getModelNumberDotted(iModel))
-                    .append(" & (").append(res1).append(" - ").append(res2)
-                    .append(");\n");
+                    .append(Escape.escape(bs)).append("    \t# model=").append(
+                        getModelNumberDotted(iModel)).append(" & (").append(
+                        res1).append(" - ").append(res2).append(");\n");
               } else {
                 String str;
                 int nx;

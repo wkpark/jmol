@@ -58,8 +58,9 @@ public abstract class Object2d {
   protected boolean adjustForWindow;
   protected float boxWidth, boxHeight, boxX, boxY;
 
-  public int modelIndex = -1;
-  public boolean visible = true;
+  int modelIndex = -1;
+  boolean visible = true;
+  boolean hidden = false;
 
   protected final float[] boxXY = new float[2];
   
@@ -385,7 +386,7 @@ public abstract class Object2d {
   }
 
   public boolean checkObjectClicked(int x, int y, BitSet bsVisible) {
-    if (modelIndex >= 0 && !bsVisible.get(modelIndex))
+    if (modelIndex >= 0 && !bsVisible.get(modelIndex) || hidden)
       return false;
     if (g3d.isAntialiased()) {
       x <<= 1;
@@ -397,6 +398,7 @@ public abstract class Object2d {
   }
 
   public static boolean setProperty(String propertyName, Object value, Object2d currentObject) {
+    
     if ("script" == propertyName) {
       if (currentObject != null)
         currentObject.setScript((String) value);

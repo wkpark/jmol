@@ -28,7 +28,6 @@ import org.jmol.util.Logger;
 
 import org.jmol.g3d.*;
 
-import java.awt.Image;
 import java.util.BitSet;
 import java.util.Enumeration;
 
@@ -41,21 +40,6 @@ public abstract class TextShape extends Object2dShape {
     if (Logger.debugging) {
       Logger.debug("TextShape.setProperty(" + propertyName + "," + value + ")");
     }
-
-    if ("image" == propertyName) {
-      Image image = (Image) value;
-      if (currentObject == null) {
-        if (isAll) {
-          Enumeration e = objects.elements();
-          while (e.hasMoreElements())
-            ((Text) e.nextElement()).setImage(image);
-        }
-        return;
-      }
-      ((Text) currentObject).setImage(image);
-      return;
-    }
-
 
     if ("text" == propertyName) {
       String text = (String) value;

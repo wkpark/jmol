@@ -256,19 +256,6 @@ abstract public class AtomCollection {
       }
   }
   
-  public void setProteinType(BitSet bs, byte iType) {
-    int monomerIndexCurrent = -1;
-    int iLast = -1;
-    for (int i = 0; i < atomCount; i++)
-      if (bs.get(i)) {
-        if (iLast != i - 1)
-          monomerIndexCurrent = -1;
-        iLast = i;
-        monomerIndexCurrent = atoms[i].setProteinStructureType(iType,
-            monomerIndexCurrent);
-      }
-  }
-  
   protected float getRadiusVdwJmol(Atom atom) {
     return JmolConstants.getVanderwaalsMar(atom.getElementNumber(),
         JmolConstants.VDW_JMOL) / 1000f;

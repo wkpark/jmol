@@ -924,10 +924,6 @@ final public class Atom extends Point3fi {
     return group.getProteinStructureID();
   }
 
-  public int setProteinStructureType(byte type, int indexCurrent) {
-    return group.setProteinStructureType(type, indexCurrent);
-  }
-
   public short getGroupID() {
     return group.groupID;
   }

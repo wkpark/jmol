@@ -647,8 +647,9 @@ abstract public class ModelSet extends ModelCollection {
 
     setModelVisibility();
 
-    //unnecessary. Removed in 11.5.35
-    //commands.append(getProteinStructureState(null, false));
+    //unnecessary. Removed in 11.5.35 -- oops!
+    
+    commands.append(getProteinStructureState(null, true, false));
 
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = shapes[i];

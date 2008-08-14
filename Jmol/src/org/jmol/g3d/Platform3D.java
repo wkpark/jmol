@@ -148,6 +148,12 @@ abstract class Platform3D {
       pBuffer[i] = argbBackground;
     }
   }
+
+  void setTransparency() {
+    for (int i = bufferSize; --i >= 0; )
+      if (pBuffer[i] == argbBackground)
+        pBuffer[i] &= 0x00FFFFFF;
+  }
   
   void clearTBuffer() {
     for (int i = bufferSizeT; --i >= 0; ) {
@@ -245,5 +251,8 @@ abstract class Platform3D {
         notifyBufferReady();
       }
     }
+  }
+
+  void setBackgroundTransparent(boolean tf) {
   }
 }

@@ -74,7 +74,6 @@ public class Pmesh extends MeshFileCollection {
   
   private boolean isOnePerLine;
   private boolean isBinary;
-  private int modelIndex;
   private boolean iHaveModelIndex;
   String pmeshError;
   

@@ -2712,6 +2712,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   
     public final static int SHAPE_POLYHEDRA  = 20;  // for restrict, uses setProperty(), not setSize()
 
+  public final static int SHAPE_MIN_HAS_ID          = 21; //////////
   public final static int SHAPE_MIN_MESH_COLLECTION = 21; //////////
   
     public final static int SHAPE_DRAW        = 21;
@@ -2721,16 +2722,19 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
     public final static int SHAPE_ISOSURFACE  = 22;
     public final static int SHAPE_LCAOCARTOON = 23;
-    public final static int SHAPE_MO          = 24;
+    public final static int SHAPE_MO          = 24;  //but no ID for MO
     public final static int SHAPE_PMESH       = 25;
 
-  public final static int SHAPE_MAX_SURFACE = 26; //////////
+  public final static int SHAPE_MAX_SURFACE         = 26; //////////
   public final static int SHAPE_MAX_MESH_COLLECTION = 26; //////////
   
-  public final static int SHAPE_AXES       = 26;
-  public final static int SHAPE_BBCAGE     = 27;
-  public final static int SHAPE_UCCAGE     = 28;
-  public final static int SHAPE_ECHO       = 29;
+    public final static int SHAPE_ECHO       = 26;
+  
+  public final static int SHAPE_MAX_HAS_ID = 27;
+  
+  public final static int SHAPE_AXES       = 27;
+  public final static int SHAPE_BBCAGE     = 28;
+  public final static int SHAPE_UCCAGE     = 29;
   public final static int SHAPE_HOVER      = 30;
   
   // last should be frank:
@@ -2750,7 +2754,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "Backbone", "Trace", "Cartoon", "Strands", "MeshRibbon", "Ribbons", "Rockets", 
     "Dipoles", "Vectors", "GeoSurface", "Ellipsoids", "Polyhedra", 
     "Draw", "Isosurface", "LcaoCartoon", "MolecularOrbital", "Pmesh", 
-    "Axes", "Bbcage", "Uccage", "Echo", "Hover", 
+    "Echo", "Axes", "Bbcage", "Uccage", "Hover", 
     "Frank"
      };
   static {
@@ -2772,8 +2776,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     Token.meshRibbon, Token.ribbon, Token.rocket, 
     Token.dipole, Token.vector, Token.geosurface, Token.ellipsoid, Token.polyhedra, 
     Token.draw, Token.isosurface, Token.lcaocartoon, Token.mo, Token.pmesh,
-    Token.axes, Token.boundbox, Token.unitcell,
-    Token.echo, Token.hover,
+    Token.echo, Token.axes, Token.boundbox, Token.unitcell, Token.hover,
     Token.frank
   };
 

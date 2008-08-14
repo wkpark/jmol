@@ -31,7 +31,6 @@ import javax.vecmath.Vector3f;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.Token;
 
 public class LcaoCartoon extends Isosurface {
 
@@ -119,7 +118,7 @@ public class LcaoCartoon extends Isosurface {
       //pass through
     }
 
-    if (propertyName == "translucentLevel") {
+    if ("translucentLevel" == propertyName) {
       translucentLevel = ((Float) value).floatValue();
       //pass through
     }
@@ -155,16 +154,15 @@ public class LcaoCartoon extends Isosurface {
       deleteLcaoCartoon();
       return;
     }
-
-    if ("token" == propertyName) {
-      switch(((Integer)value).intValue()) {
-      case Token.on:
-        setLcaoOn(true);
-        return;
-      case Token.off:
-        setLcaoOn(false);
-        return;
-      }
+    
+    if ("on" == propertyName) {
+      setLcaoOn(true);
+      return;
+    }
+    
+    if ("off" == propertyName) {
+      setLcaoOn(false);
+      return;
     }
 
     super.setProperty(propertyName, value, bs);
@@ -221,7 +219,7 @@ public class LcaoCartoon extends Isosurface {
         deleteMesh(i);
     super.setProperty("init", null, null);
     super.setProperty("thisID", id, null);
-    System.out.println("lcaocartoon: " + id);
+    //System.out.println("lcaocartoon: " + id);
     if (lcaoScale != null)
       super.setProperty("scale", lcaoScale, null);
     if (lcaoColorNeg != null) {

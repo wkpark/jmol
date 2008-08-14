@@ -2287,15 +2287,6 @@ class Eval {
     return v;
   }
 
-  private int setShapeByNameParameter(int index) throws ScriptException {
-    String objectName = objectNameParameter(index);
-    int shapeType = viewer.getShapeIdFromObjectName(objectName);
-    if (!isSyntaxCheck && shapeType < 0)
-      error(ERROR_objectNameExpected);
-    setShapeProperty(shapeType, "thisID", objectName);
-    return shapeType;
-  }
-
   private boolean booleanParameter(int i) throws ScriptException {
     if (statementLength == i)
       return true;
@@ -3611,6 +3602,41 @@ class Eval {
       viewer.setNewRotationCenter(center);
   }
 
+  
+  private String setObjectProperty() throws ScriptException {
+    String s = "";
+    String id = getShapeNameParameter(2);
+    if (isSyntaxCheck)
+      return "";
+    int iTok = iToken;
+    boolean isWild = TextFormat.isWild(id);
+    for (int iShape = JmolConstants.SHAPE_MAX_HAS_ID; --iShape >= JmolConstants.SHAPE_MIN_HAS_ID;) {
+      if (iShape == JmolConstants.SHAPE_MO
+          || viewer.getShapeProperty(iShape, "checkID:" + id) == null)
+        continue;
+      setShapeProperty(iShape, "thisID", id);
+      int tok = tokAt(0);
+      switch (tok) {
+      case Token.delete:
+        setShapeProperty(iShape, "delete", null);
+        break;
+      case Token.hide:
+      case Token.display:
+        setShapeProperty(iShape, "hidden", tok == Token.display ? Boolean.FALSE
+            : Boolean.TRUE);
+        break;
+      case Token.show:
+        if (iShape == JmolConstants.SHAPE_ISOSURFACE && !isWild)
+          return getIsosurfaceJvxl();
+        s += (String) viewer.getShapeProperty(iShape, "command") + "\n";
+        break;
+      case Token.color:
+        colorShape(iShape, iTok + 1, false);
+        break;
+      }
+    }
+    return s;
+  }
   private void color() throws ScriptException {
     int argb = 0;
     if (isColorParam(1)) {
@@ -3619,8 +3645,7 @@ class Eval {
     }
     switch (getToken(1).tok) {
     case Token.dollarsign:
-      // color $ whatever green
-      colorShape(setShapeByNameParameter(2), 3, false);
+      setObjectProperty();
       return;
     case Token.none:
     case Token.spacefill:
@@ -5222,6 +5247,10 @@ class Eval {
   }
 
   private void display(boolean isDisplay) throws ScriptException {
+    if (tokAt(1) == Token.dollarsign) {
+      setObjectProperty();
+      return;
+    }
     BitSet bs = (statementLength == 1 ? null : expression(1));
     if (isSyntaxCheck)
       return;
@@ -5234,6 +5263,10 @@ class Eval {
   private void delete() throws ScriptException {
     if (statementLength == 1) {
       zap(true);
+      return;
+    }
+    if (tokAt(1) == Token.dollarsign) {
+      setObjectProperty();
       return;
     }
     BitSet bs = expression(statement, 1, 0, true, false, true, false);
@@ -5820,9 +5853,7 @@ class Eval {
     setShapeSize(JmolConstants.SHAPE_ELLIPSOIDS, mad);
   }
   
-  private int setShapeId(int iShape, int i, boolean idSeen) throws ScriptException {
-    if (idSeen)
-      error(ERROR_invalidArgument);
+  private String getShapeNameParameter(int i) throws ScriptException {    
     String id = parameterAsString(i);
     boolean isWild = (id.equals("*"));
     if (id.length() == 0)
@@ -5832,6 +5863,8 @@ class Eval {
       case Token.nada:
       case Token.on:
       case Token.off:
+      case Token.displayed:
+      case Token.hidden:
       case Token.color:
       case Token.delete:
         break;
@@ -5841,8 +5874,15 @@ class Eval {
     }
     if (tokAt(i + 1) == Token.times)
       id += parameterAsString(++i);
+    return id;
+  }
+  
+  private int setShapeId(int iShape, int i, boolean idSeen) throws ScriptException {
+    if (idSeen)
+      error(ERROR_invalidArgument);
+    String id = getShapeNameParameter(i);
     setShapeProperty(iShape, "thisID", id.toLowerCase());
-    return i;
+    return iToken;
   }
 
   private void setAtomShapeSize(int shape, int defOn) throws ScriptException {
@@ -8226,12 +8266,14 @@ class Eval {
       echoShapeActive = false;
       propertyName = "allOff";
       break;
+    case Token.hide:
     case Token.hidden:
       propertyName = "hidden";
       propertyValue = Boolean.TRUE;
       break;
     case Token.on:
     case Token.display:
+    case Token.displayed:
       propertyName = "hidden";
       propertyValue = Boolean.FALSE;
       break;
@@ -8294,14 +8336,14 @@ class Eval {
       case Token.off:
         propertyName = "off";
         break;
-      case Token.display:
-      case Token.on:
-        propertyName = "hidden";
-        propertyValue = Boolean.FALSE;
-        break;
       case Token.hidden:
         propertyName = "hidden";
         propertyValue = Boolean.TRUE;
+        break;
+      case Token.displayed:
+      case Token.on:
+        propertyName = "hidden";
+        propertyValue = Boolean.FALSE;
         break;
       case Token.model:
         int modelIndex = modelNumberParameter(4);
@@ -9317,13 +9359,7 @@ class Eval {
       break;
     case Token.dollarsign:
       len = 3;
-      int shapeType = setShapeByNameParameter(2);
-      if (!isSyntaxCheck) {
-        if (shapeType == JmolConstants.SHAPE_ISOSURFACE)
-          msg = getIsosurfaceJvxl();
-        else
-          msg = (String) viewer.getShapeProperty(shapeType, "command");
-      }
+      msg = setObjectProperty();
       break;
     case Token.boundbox:
       if (!isSyntaxCheck) {
@@ -9923,29 +9959,6 @@ class Eval {
     }
   }
 
-  /*
-   private void drawPoint(String key, Point3f pt, boolean isOn) throws ScriptException {
-   viewer.loadShape(JmolConstants.SHAPE_DRAW);
-   setShapeProperty(JmolConstants.SHAPE_DRAW, "init", null);
-   setShapeProperty(JmolConstants.SHAPE_DRAW, "thisID", key);
-   setShapeProperty(JmolConstants.SHAPE_DRAW, "points", new Integer(0));
-   setShapeProperty(JmolConstants.SHAPE_DRAW, "coord", pt);
-   setShapeProperty(JmolConstants.SHAPE_DRAW, "set", null);
-   if (!isOn)
-   setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, -1, Token.off);
-   }
-
-   private void drawPlane(String key, Point4f plane, boolean isOn) throws ScriptException {
-   viewer.loadShape(JmolConstants.SHAPE_ISOSURFACE);
-   setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "init", null);
-   setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "thisID", key);
-   setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "plane", plane);
-   setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "nomap", new Float(0));
-   if (!isOn)
-   setMeshDisplayProperty(JmolConstants.SHAPE_ISOSURFACE, -1, Token.off);
-   }
-   */
-
   private void polyhedra() throws ScriptException {
     /*
      * needsGenerating:
@@ -10177,9 +10190,13 @@ class Eval {
         propertyValue = rotAxis;
         break;
       case Token.on:
+      case Token.display:
+      case Token.displayed:
         propertyName = "on";
         break;
       case Token.off:
+      case Token.hide:
+      case Token.hidden:
         propertyName = "off";
         break;
       case Token.delete:
@@ -10236,11 +10253,13 @@ class Eval {
         break;
       case Token.identifier:
         String str = parameterAsString(i);
-        if (str.equalsIgnoreCase("MOLECULAR")) {
+        if (str.equalsIgnoreCase("ID")) {
+          str = getShapeNameParameter(++i);
+          i = iToken;
+        } else if (str.equalsIgnoreCase("MOLECULAR")) {
           propertyName = "molecular";
           break;
-        }
-        if (str.equalsIgnoreCase("CREATE")) {
+        } else if (str.equalsIgnoreCase("CREATE")) {
           propertyValue = parameterAsString(++i);
           propertyName = "create";
           if (optParameterAsString(i + 1).equalsIgnoreCase("molecular")) {
@@ -11154,10 +11173,11 @@ class Eval {
     }
 
     if (surfaceObjectSeen && isIsosurface && !isSyntaxCheck) {
-      String s = (String) viewer.getShapeProperty(iShape, "ID");
       float[] dataRange = (float[]) viewer
           .getShapeProperty(iShape, "dataRange");
       Integer n = (Integer) viewer.getShapeProperty(iShape, "count");
+      setShapeProperty(iShape, "finalize", null);
+      String s = (String) viewer.getShapeProperty(iShape, "ID");
       if (s != null) {
         s += " created; number of isosurfaces = " + n;
         if (dataRange != null && dataRange[0] != dataRange[1])
@@ -11165,7 +11185,6 @@ class Eval {
               + "; mapped data range " + dataRange[0] + " to " + dataRange[1];
         showString(s);
       }
-      setShapeProperty(iShape, "finalize", null);
     }
     if (translucency != null)
       setShapeProperty(iShape, "translucency", translucency);
@@ -11189,6 +11208,10 @@ class Eval {
     case Token.delete:
     case Token.on:
     case Token.off:
+    case Token.hide:
+    case Token.hidden:
+    case Token.display:
+    case Token.displayed:
       if (iToken == 1)
         setShapeProperty(shape, "thisID", (String) null);
       if (tok == Token.nada)
@@ -11199,6 +11222,10 @@ class Eval {
         setShapeProperty(shape, "delete", null);
         return true;
       }
+      if (tok == Token.hidden || tok == Token.hide)
+        tok = Token.off;
+      else if (tok == Token.displayed || tok == Token.display)
+        tok = Token.on;
       // fall through for on/off
     case Token.frontlit:
     case Token.backlit:

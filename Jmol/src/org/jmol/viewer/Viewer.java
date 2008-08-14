@@ -283,7 +283,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       appletProxy = str.substring(i + 13);
       str = str.substring(0, i);
     }
-
+    if (str.indexOf("-b") >= 0)
+        g3d.setBackgroundTransparent(true);
     useCommandThread = (str.indexOf("-t") >= 0);
     if (useCommandThread)
       scriptManager.startCommandWatcher(true);
@@ -3642,14 +3643,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setShapeProperty(int shapeID, String propertyName, Object value) {
-    //Eval
-    //many local
-
-    /*
-     * Logger.debug("JmolViewer.setShapeProperty("+
-     * JmolConstants.shapeClassBases[shapeID]+ "," + propertyName + "," + value +
-     * ")");
-     */
+    //Eval, BondCollection, StateManager, local
     if (shapeID < 0)
       return; //not applicable
     modelSet.setShapeProperty(shapeID, propertyName, value,
@@ -4573,6 +4567,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean notFound = false;
     boolean doRepaint = true;
     while (true) {
+      
       //11.5.52
       if (key.equalsIgnoreCase("selectAllModels")) {
         global.selectAllModels = value;

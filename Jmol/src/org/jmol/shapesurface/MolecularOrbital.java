@@ -34,6 +34,7 @@ import javax.vecmath.Point4f;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.viewer.Token;
 import org.jmol.jvxl.readers.Parameters;
 
 public class MolecularOrbital extends Isosurface {
@@ -55,10 +56,10 @@ public class MolecularOrbital extends Isosurface {
   private Integer moColorPos = null;
   private Integer moColorNeg = null;
   private boolean moIsPositiveOnly = false;
-  private boolean moFill = false;
-  private boolean moMesh = true;
-  private boolean moDots = false;
-  private boolean moFrontOnly = true;
+  private int moFill = Token.nofill;
+  private int moMesh = Token.mesh;
+  private int moDots = Token.nodots;
+  private int moFrontOnly = Token.frontonly;
   private String moTitleFormat = null;
   private boolean moDebug;
   private int myColorPt;
@@ -89,8 +90,8 @@ public class MolecularOrbital extends Isosurface {
       if (!htModels.containsKey(strID))
         htModels.put(strID, new Hashtable());
       thisModel = (Hashtable) htModels.get(strID);
-      moNumber = (!thisModel.containsKey("moNumber") ? 0
-          : ((Integer) thisModel.get("moNumber")).intValue());
+      moNumber = (!thisModel.containsKey("moNumber") ? 0 : ((Integer) thisModel
+          .get("moNumber")).intValue());
       return;
     }
 
@@ -163,6 +164,34 @@ public class MolecularOrbital extends Isosurface {
       //pass through
     }
 
+    if ("delete" == propertyName) {
+      htModels.remove(strID);
+      //pass through
+    }
+
+    if ("token" == propertyName) {
+      int tok = ((Integer) value).intValue();
+      switch (tok) {
+      case Token.dots:
+      case Token.nodots:
+        moDots = tok;
+        break;
+      case Token.fill:
+      case Token.nofill:
+        moFill = tok;
+        break;
+      case Token.mesh:
+      case Token.nomesh:
+        moMesh = tok;
+        break;
+      case Token.frontonly:
+      case Token.notfrontonly:
+        moFrontOnly = tok;
+        break;
+      }
+      // pass through  
+    }
+
     if ("translucency" == propertyName) {
       if (thisModel == null) {
         if (currentMesh == null)
@@ -173,49 +202,25 @@ public class MolecularOrbital extends Isosurface {
       //pass through
     }
 
-    if ("dots" == propertyName) {
-      moDots = (value == Boolean.TRUE);
-      //pass through
-    }
-    if ("mesh" == propertyName) {
-      moMesh = (value == Boolean.TRUE);
-      //pass through
-    }
-
-    if ("frontOnly" == propertyName) {
-      moFrontOnly = (value == Boolean.TRUE);
-      //pass through
-    }
-
-    if ("fill" == propertyName) {
-      moFill = (value == Boolean.TRUE);
-      //pass through
-    }
-
-    if ("delete" == propertyName) {
-      htModels.remove(strID);
-      //pass through
-    }
-    
     if (propertyName == "deleteModelAtoms") {
-      int modelIndex = ((int[])((Object[])value)[2])[0];
+      int modelIndex = ((int[]) ((Object[]) value)[2])[0];
       Hashtable htModelsNew = new Hashtable();
       for (int i = meshCount; --i >= 0;) {
         if (meshes[i] == null)
           continue;
         if (meshes[i].modelIndex == modelIndex) {
-           meshCount--;
-            if (meshes[i] == currentMesh) { 
-              currentMesh = null;
-              thisModel = null;
-            }
-            meshes = (IsosurfaceMesh[]) ArrayUtil.deleteElements(meshes, i, 1);
-            continue;
+          meshCount--;
+          if (meshes[i] == currentMesh) {
+            currentMesh = null;
+            thisModel = null;
+          }
+          meshes = (IsosurfaceMesh[]) ArrayUtil.deleteElements(meshes, i, 1);
+          continue;
         }
         Hashtable htModel = (Hashtable) htModels.get(meshes[i].thisID);
         if (meshes[i].modelIndex > modelIndex) {
-           meshes[i].modelIndex--;
-           meshes[i].thisID = getId(meshes[i].modelIndex);
+          meshes[i].modelIndex--;
+          meshes[i].thisID = getId(meshes[i].modelIndex);
         }
         htModelsNew.put(meshes[i].thisID, htModel);
       }
@@ -263,7 +268,7 @@ public class MolecularOrbital extends Isosurface {
         }
       return str.toString();
     }
-    return null;
+    return super.getProperty(propertyName, param);
   }
 
   protected void clearSg() {
@@ -324,11 +329,10 @@ public class MolecularOrbital extends Isosurface {
       super.setProperty("translucenctLevel", moTranslucentLevel, null);
     if (moTranslucency != null)
       super.setProperty("translucency", moTranslucency, null);
-    super.setProperty("fill", moFill ? Boolean.TRUE : Boolean.FALSE, null);
-    super.setProperty("mesh", moMesh ? Boolean.TRUE : Boolean.FALSE, null);
-    super.setProperty("dots", moDots ? Boolean.TRUE : Boolean.FALSE, null);
-    super.setProperty("frontOnly", moFrontOnly ? Boolean.TRUE : Boolean.FALSE,
-        null);
+    super.setProperty("token", new Integer(moFill), null);
+    super.setProperty("token",  new Integer(moMesh), null);
+    super.setProperty("token",  new Integer(moDots), null);
+    super.setProperty("token",  new Integer(moFrontOnly), null);
 
     thisModel.put("mesh", currentMesh);
     return;

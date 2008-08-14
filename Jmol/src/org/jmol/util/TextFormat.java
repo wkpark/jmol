@@ -410,11 +410,18 @@ public class TextFormat {
     int cchs = s.length();
     if (cchs == 0 || cchWildcard == 0)
       return false;
+    boolean isStar0 = (checkStar && allowInitialStar ? strWildcard.charAt(0) == '*' : false);
+    if (isStar0 && strWildcard.charAt(cchWildcard - 1) == '*')
+      return (cchWildcard < 3 || s.indexOf(strWildcard.substring(1,
+          cchWildcard - 1)) >= 0); 
+    String qqq = "????";
+    while (qqq.length() < s.length())
+      qqq += qqq;
     if (checkStar) {
-      if (allowInitialStar && strWildcard.charAt(0) == '*')
-        strWildcard = "??????????" + strWildcard.substring(1);
+      if (allowInitialStar && isStar0)
+        strWildcard = qqq + strWildcard.substring(1);
       if (strWildcard.charAt(ich = strWildcard.length() - 1) == '*')
-        strWildcard = strWildcard.substring(0, ich) + "??????????";
+        strWildcard = strWildcard.substring(0, ich) + qqq;
       cchWildcard = strWildcard.length();
     }
 

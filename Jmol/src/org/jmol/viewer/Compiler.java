@@ -537,6 +537,11 @@ class Compiler {
           addTokenToPrefix(new Token(Token.decimal, new Float(value)));
           continue;
         }
+        if (lookingAtObjectID(nTokens == 1)) {
+          addTokenToPrefix(Token.getTokenFromName("$"));
+          addTokenToPrefix(new Token(Token.identifier, script.substring(ichToken, ichToken + cchToken)));
+          continue;
+        }
         if (lookingAtDecimal()) {
           value =
           // can't use parseFloat with jvm 1.1
@@ -842,10 +847,10 @@ class Compiler {
             }
           }
           break;
-        case Token.restrict:
-        case Token.select:
         case Token.display:
         case Token.hide:
+        case Token.restrict:
+        case Token.select:
         case Token.delete:
         case Token.define:
           if (tok == Token.define) {
@@ -1369,6 +1374,37 @@ class Compiler {
     return bs;
   }
   
+  private boolean lookingAtObjectID(boolean allowWildID) {
+    int ichT = ichToken;
+    if (ichT == cchScript || script.charAt(ichT) != '$')
+      return false;
+    if (++ichT != cchScript && script.charAt(ichT) == '"')
+      return false;
+    while (ichT < cchScript) {
+      char ch;
+      if (Character.isWhitespace(ch = script.charAt(ichT))) {
+        if (ichT == ichToken + 1)
+          return false;
+        break;
+      }
+      if (!Character.isLetterOrDigit(ch)) {
+        switch (ch) {
+        default:
+          return false;
+        case '*':
+          if (!allowWildID)
+            return false;
+        case '~':
+        case '_':
+          break;
+        }
+      }
+      ichT++;
+    }
+    cchToken = ichT - (++ichToken);
+    return true;
+  }
+
   private boolean lookingAtLookupToken() {
     if (ichToken == cchScript)
       return false;
@@ -1483,10 +1519,9 @@ class Compiler {
         && !tokAttrOr(tokCommand, Token.atomExpressionCommand, Token.implicitStringCommand));
     boolean checkExpression = isEmbeddedExpression || (tokAttr(tokCommand, Token.atomExpressionCommand));
 
-      // $ at beginning disallow expression checking for center command
-    if (tokCommand == Token.center && tokAt(1) == Token.dollarsign)
+      // $ at beginning disallow expression checking for center, delete, hide, or display commands
+    if (tokAt(1) == Token.dollarsign && tokAttr(tokCommand, Token.atomExpressionCommand))
       checkExpression = false;
-
     if (checkExpression && !compileExpression())
       return false;
 

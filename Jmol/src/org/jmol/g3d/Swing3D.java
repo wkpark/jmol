@@ -54,13 +54,34 @@ import java.awt.image.SinglePixelPackedSampleModel;
   
 final class Swing3D extends Platform3D {
 
-  final static DirectColorModel rgbColorModel =
+  private final static DirectColorModel rgbColorModel =
     new DirectColorModel(24, 0x00FF0000, 0x0000FF00, 0x000000FF, 0x00000000);
 
-  final static int[] sampleModelBitMasks =
+  private final static int[] sampleModelBitMasks =
   { 0x00FF0000, 0x0000FF00, 0x000000FF };
-  
+
+  private final static DirectColorModel rgbColorModelT =
+    new DirectColorModel(32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+
+  private final static int[] sampleModelBitMasksT =
+  { 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000 };
+
+
+
   Image allocateImage() {
+    if (backgroundTransparent)
+      return new BufferedImage(
+          rgbColorModelT,
+          Raster.createWritableRaster(
+              new SinglePixelPackedSampleModel(
+                  DataBuffer.TYPE_INT,
+                  windowWidth,
+                  windowHeight,
+                  sampleModelBitMasksT), 
+              new DataBufferInt(pBuffer, windowSize),
+              null),
+          false, 
+          null);
     return new BufferedImage(
         rgbColorModel,
         Raster.createWritableRaster(
@@ -75,6 +96,12 @@ final class Swing3D extends Platform3D {
         null);
   }
 
+  private static boolean backgroundTransparent = false;
+  
+  void setBackgroundTransparent(boolean tf) {
+    backgroundTransparent = true;
+  }
+
   Image allocateOffscreenImage(int width, int height) {
     return new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
   }
@@ -85,6 +112,9 @@ final class Swing3D extends Platform3D {
   
   static Graphics getStaticGraphics(Image image) {
     Graphics2D g2d = ((BufferedImage) image).createGraphics();
+    if (backgroundTransparent) {
+      // what here?
+    }
     // miguel 20041122
     // we need to turn off text antialiasing on OSX when
     // running in a web browser

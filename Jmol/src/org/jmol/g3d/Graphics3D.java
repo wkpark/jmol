@@ -257,16 +257,13 @@ final public class Graphics3D implements JmolRendererInterface {
    */
   public Graphics3D(Component awtComponent) {
     platform = Platform3D.createInstance(awtComponent);
-    //    Font3D.initialize(platform);
     this.line3d = new Line3D(this);
     this.circle3d = new Circle3D(this);
     this.sphere3d = new Sphere3D(this);
-    //this.colix3d = new Colix3D();
     this.triangle3d = new Triangle3D(this);
     this.cylinder3d = new Cylinder3D(this);
     this.hermite3d = new Hermite3D(this);
     this.normix3d = new Normix3D();
-    //    setFontOfSize(13);
   }
   
   public void setg3dExporter(Graphics3D g3d, JmolExportInterface exporter) {
@@ -393,6 +390,8 @@ final public class Graphics3D implements JmolRendererInterface {
       if (antialiasThisFrame)
         downsampleFullSceneAntialiasing(false);
     }
+    if (backgroundTransparent && (backgroundArgb & 0xFF000000) == 0)
+      platform.setTransparency();
     platform.notifyEndOfRendering();
     //setWidthHeight(antialiasEnabled);
     currentlyRendering = false;
@@ -493,6 +492,13 @@ final public class Graphics3D implements JmolRendererInterface {
 
   private int backgroundArgb;
   public Image backgroundImage;
+  private boolean backgroundTransparent;
+  
+  public void setBackgroundTransparent(boolean TF) {
+    backgroundTransparent = TF;
+    platform.setBackgroundTransparent(TF);
+  }
+
   public int bgcolor;
   
   /**
@@ -2939,5 +2945,4 @@ final public class Graphics3D implements JmolRendererInterface {
       plotImage(Integer.MIN_VALUE, 0, Integer.MIN_VALUE, backgroundImage,
           jmolRenderer, (short) 0, 0, 0);
   }
-
 }

@@ -39,10 +39,11 @@ public class DisplayPanel extends JPanel
   
   private String displaySpeed;
 
-  Dimension startupDimension;
-  boolean haveDisplay;  
+  private Dimension startupDimension;
+  private boolean haveDisplay;
   
-  public DisplayPanel(StatusBar status, GuiMap guimap, boolean haveDisplay, int startupWidth, int startupHeight) {
+  public DisplayPanel(StatusBar status, GuiMap guimap, boolean haveDisplay,
+      int startupWidth, int startupHeight) {
     startupDimension = new Dimension(startupWidth, startupHeight);
     this.haveDisplay = haveDisplay;
     this.status = status;
@@ -52,7 +53,7 @@ public class DisplayPanel extends JPanel
       showPaintTime = true;
     displaySpeed = System.getProperty("display.speed");
     if (displaySpeed == null) {
-        displaySpeed = "ms";
+      displaySpeed = "ms";
     }
     setDoubleBuffered(false);
   }

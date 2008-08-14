@@ -37,6 +37,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.MouseManager;
 import org.jmol.viewer.Token;
@@ -79,7 +80,6 @@ public class Draw extends MeshCollection {
   private boolean isArrow;
   private boolean isVector;
   private boolean isCircle;
-  private boolean isVisible;
   private boolean isPerpendicular;
   private boolean isCylinder;
   private boolean isVertices;
@@ -115,7 +115,7 @@ public class Draw extends MeshCollection {
       isFixed = isReversed = isRotated45 = isCrossed = noHead = false;
       isCurve = isArc = isArrow = isPlane = isCircle = isCylinder = false;
       isVertices = isPerpendicular = isVector = false;
-      isVisible = isValid = true;
+      isValid = true;
       length = Float.MAX_VALUE;
       diameter = 0;
       width = 0;
@@ -295,10 +295,12 @@ public class Draw extends MeshCollection {
         width = viewer.calcRotationRadius(bs) * 2.0f;
       return;
     }
+
     if ("modelBasedPoints" == propertyName) {
       vData.add(new Object[] { new Integer(PT_MODEL_BASED_POINTS), value });
       return;
     }
+    
     if ("set" == propertyName) {
       if (thisMesh == null) {
         allocMesh(null);
@@ -313,21 +315,13 @@ public class Draw extends MeshCollection {
         thisMesh.initialize(JmolConstants.FULLYLIT);
         setAxes(thisMesh);
         thisMesh.title = title;
-        thisMesh.visible = isVisible;
+        thisMesh.visible = true;
       }
       nPoints = -1; // for later scaling
       vData = null;
       return;
     }
-    if ("off" == propertyName) {
-      isVisible = false;
-      //let pass through
-    }
-
-    if ("translucency" == propertyName) {
-      //let pass through
-    }
-
+    
     if (propertyName == "deleteModelAtoms") {
       int modelIndex = ((int[]) ((Object[]) value)[2])[0];
       //int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
@@ -1036,10 +1030,23 @@ public class Draw extends MeshCollection {
   }
   
   private String getDrawCommand(DrawMesh mesh) {
-    if (mesh == null)
-      return "no current draw object";
     modelCount = viewer.getModelCount();
-    return getDrawCommand(mesh, mesh.modelIndex);
+    if (mesh != null)
+      return getDrawCommand(mesh, mesh.modelIndex);
+    
+    StringBuffer sb = new StringBuffer();
+    String key = (explicitID && previousMeshID != null
+        && TextFormat.isWild(previousMeshID) ? previousMeshID.toUpperCase()
+        : null);
+    if (key != null && key.length() == 0)
+      key = null;
+    for (int i = 0; i < meshCount; i++) {
+      DrawMesh m = (DrawMesh) meshes[i];
+      if (key == null
+          || TextFormat.isMatch(m.thisID.toUpperCase(), key, true, true))
+        sb.append(getDrawCommand(m, m.modelIndex));
+    }
+    return sb.toString();
   }
 
   private String getDrawCommand(DrawMesh mesh, int iModel) {
@@ -1049,7 +1056,7 @@ public class Draw extends MeshCollection {
     StringBuffer str = new StringBuffer();
     if (!mesh.isFixed && iModel >= 0 && modelCount > 1)
       appendCmd(str,"frame " + viewer.getModelNumberDotted(iModel));
-    str.append("  draw ID ").append(mesh.thisID);
+    str.append("  draw ID ").append(Escape.escape(mesh.thisID));
     if (mesh.isFixed)
       str.append(" fixed");
     if (iModel < 0)

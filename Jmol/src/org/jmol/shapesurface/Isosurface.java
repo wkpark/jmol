@@ -98,6 +98,8 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Parser;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.jvxl.readers.JvxlReader;
 
@@ -192,7 +194,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
       if (thisMesh != null) {
         thisMesh.vertexColixes = null;
         thisMesh.isColorSolid = true;
-      } else {
+      } else if (!TextFormat.isWild(previousMeshID)){
         for (int i = meshCount; --i >= 0;) {
           isomeshes[i].vertexColixes = null;
           isomeshes[i].isColorSolid = true;
@@ -396,7 +398,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     if (property == "jvxlSurfaceData")
       return JvxlReader.jvxlGetFile(jvxlData, title, "", false, 1, thisMesh
           .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
-    return null;
+    return super.getProperty(property, index);
   }
 
   private boolean getScriptBitSets(String script, BitSet[] bsCmd) {
@@ -744,7 +746,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     thisMesh.bitsets = null;
     if (script != null) {
       if (script.charAt(0) == ' ') { // lobe only
-        script = myType + " ID " + thisMesh.thisID + script;
+        script = myType + " ID " + Escape.escape(thisMesh.thisID) + script;
       } else if (sg.getIUseBitSets()) {
         thisMesh.bitsets = new BitSet[3];
         thisMesh.bitsets[0] = sg.getBsSelected();
@@ -752,6 +754,9 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
         thisMesh.bitsets[2] = viewer.getBitSetTrajectories();
       }
     }
+    int pt;
+    if (!explicitID && script != null && (pt = script.indexOf("# ID=")) >= 0)
+      thisMesh.thisID = Parser.getNextQuotedString(script, pt);
     thisMesh.scriptCommand = script;
     Vector v = (Vector) sg.getProperty("functionXYinfo", 0);
     if (thisMesh.data1 == null)

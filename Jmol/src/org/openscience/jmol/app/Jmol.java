@@ -176,7 +176,7 @@ public class Jmol extends JPanel {
     }
 
     frame.setTitle("Jmol");
-    frame.setBackground(Color.lightGray);
+    frame.getContentPane().setBackground(Color.lightGray);
     frame.getContentPane().setLayout(new BorderLayout());
 
     this.splash = splash;
@@ -328,8 +328,8 @@ public class Jmol extends JPanel {
       }
       frame.setLocation(location);
     }
-
     frame.getContentPane().add("Center", this);
+    
     frame.addWindowListener(new Jmol.AppCloser());
     frame.pack();
     frame.setSize(startupWidth, startupHeight);
@@ -475,6 +475,7 @@ public class Jmol extends JPanel {
     String scriptFilename = null;
 
     Options options = new Options();
+    options.addOption("b", "backgroundtransparent", false, GT._("transparent background"));
     options.addOption("h", "help", false, GT._("give this help page"));
     options.addOption("n", "nodisplay", false, GT
         ._("no display (and also exit when done)"));
@@ -581,6 +582,11 @@ public class Jmol extends JPanel {
     if (line.hasOption("i")) {
       commandOptions += "-i";
       isSilent = Boolean.TRUE;
+    }
+
+    // transparent background
+    if (line.hasOption("b")) {
+      commandOptions += "-b";
     }
 
     // independent command thread

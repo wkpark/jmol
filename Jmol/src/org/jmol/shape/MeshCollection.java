@@ -175,6 +175,12 @@ public abstract class MeshCollection extends Shape {
       return;
     }
 
+    if ("hidden" == propertyName) {
+      value = new Integer(((Boolean)value).booleanValue() ? Token.off: Token.on);
+      propertyName = "token";
+      //continue
+    }
+
     if ("token" == propertyName) {
       int tok = ((Integer) value).intValue();
       boolean test = true;
@@ -341,6 +347,27 @@ public abstract class MeshCollection extends Shape {
       }
       return sb.toString();
     }
+    if (property == "command") {
+      String key = previousMeshID.toUpperCase();
+      boolean isWild = TextFormat.isWild(key);
+      StringBuffer sb = new StringBuffer();
+      for (int i = meshCount; --i >= 0;) {
+        String id = meshes[i].thisID.toUpperCase();
+        if (id.equals(key) || isWild && TextFormat.isMatch(id, key, true, true))
+            getMeshCommand(sb, i);
+      }
+      return sb.toString();
+    }
+    if (property.startsWith("checkID:")) {
+      // returns FIRST match
+      String key = property.substring(8).toUpperCase();
+      boolean isWild = TextFormat.isWild(key);
+      for (int i = meshCount; --i >= 0;) {
+        String id = meshes[i].thisID.toUpperCase();
+        if (id.equals(key) || isWild && TextFormat.isMatch(id, key, true, true))
+          return id;
+      }
+    }
     return null;
   }
 
@@ -409,59 +436,65 @@ public abstract class MeshCollection extends Shape {
   }
 
  public String getShapeState() {
-    StringBuffer s = new StringBuffer("\n");
-    for (int i = 0; i < meshCount; i++) {
-      Mesh mesh = meshes[i];
-      String cmd = mesh.scriptCommand;
-      if (cmd == null)
-        continue;
-      int pt = cmd.indexOf(";#");
-      //not perfect -- user may have that in a title, I suppose...
-      if (pt >= 0)
-          cmd = cmd.substring(0, pt + 1);
-      if (mesh.bitsets != null)  {
-        cmd += "# "
-            + (mesh.bitsets[0] == null ? "({null})" : Escape.escape(mesh.bitsets[0]))
-            + " " + (mesh.bitsets[1] == null ? "({null})" : Escape.escape(mesh.bitsets[1]))
-            + (mesh.bitsets[2] == null ? "" : "/" + Escape.escape(mesh.bitsets[2]));
-      }
-      if (mesh.modelIndex >= 0)
-        cmd += "# MODEL({" + mesh.modelIndex + "})";
-      if (mesh.linkedMesh != null)
-        cmd += " LINK";
-      if (mesh.data1 != null) {
-        String name = ((String) mesh.data1.elementAt(0)).toLowerCase();
-        if (name.indexOf("data2d_") != 0)
-          name = "data2d_" + name;
-        name = TextFormat.simpleReplace(name, "_xyz", "_");
-        cmd = Escape.encapsulateData(name, mesh.data1.elementAt(5)) 
-            + "  " + cmd + "# DATA=\"" + name + "\"";
-      }
-      if (mesh.data2 != null) {
-        String name = ((String) mesh.data2.elementAt(0)).toLowerCase();
-        if (name.indexOf("data2d_") != 0)
-          name = "data2d_" + name;
-        name = TextFormat.simpleReplace(name, "_xyz", "_");
-        cmd = Escape.encapsulateData(name, mesh.data2.elementAt(5)) 
-            + "  " + cmd + "# DATA2=\"" + name + "\"";
-      }
-      
-      if (mesh.modelIndex >= 0 && modelCount > 1)
-        appendCmd(s, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));
-      appendCmd(s, cmd);
-      if (cmd.charAt(0) != '#') {
-        if (allowMesh)
-        appendCmd(s, mesh.getState(myType));
-        if (mesh.isColorSolid)
-          appendCmd(s, getColorCommand("$" + mesh.thisID, mesh.colix));
-        else if (mesh.colorCommand != null)
-          appendCmd(s, mesh.colorCommand);
-      }
-    }
-    return s.toString();
+    StringBuffer sb = new StringBuffer("\n");
+    for (int i = 0; i < meshCount; i++)
+      getMeshCommand(sb, i);
+    return sb.toString();
   }
-  
- public void setVisibilityFlags(BitSet bs) {
+
+ private void getMeshCommand(StringBuffer sb, int i) {
+   Mesh mesh = meshes[i];
+   String cmd = mesh.scriptCommand;
+   if (cmd == null)
+     return;
+   cmd = cmd.replace('\t',' ');
+   int pt = cmd.indexOf(";#");
+   //not perfect -- user may have that in a title, I suppose...
+   if (pt >= 0)
+       cmd = cmd.substring(0, pt + 1);
+   if (mesh.bitsets != null)  {
+     cmd += "# "
+         + (mesh.bitsets[0] == null ? "({null})" : Escape.escape(mesh.bitsets[0]))
+         + " " + (mesh.bitsets[1] == null ? "({null})" : Escape.escape(mesh.bitsets[1]))
+         + (mesh.bitsets[2] == null ? "" : "/" + Escape.escape(mesh.bitsets[2]));
+   }
+   if (cmd.toLowerCase().indexOf(" ID ") < 0 && !myType.equals("mo"))
+       cmd += "# ID=\"" + mesh.thisID + "\"";
+   if (mesh.modelIndex >= 0)
+     cmd += "# MODEL({" + mesh.modelIndex + "})";
+   if (mesh.linkedMesh != null)
+     cmd += " LINK";
+   if (mesh.data1 != null) {
+     String name = ((String) mesh.data1.elementAt(0)).toLowerCase();
+     if (name.indexOf("data2d_") != 0)
+       name = "data2d_" + name;
+     name = TextFormat.simpleReplace(name, "_xyz", "_");
+     cmd = Escape.encapsulateData(name, mesh.data1.elementAt(5)) 
+         + "  " + cmd + "# DATA=\"" + name + "\"";
+   }
+   if (mesh.data2 != null) {
+     String name = ((String) mesh.data2.elementAt(0)).toLowerCase();
+     if (name.indexOf("data2d_") != 0)
+       name = "data2d_" + name;
+     name = TextFormat.simpleReplace(name, "_xyz", "_");
+     cmd = Escape.encapsulateData(name, mesh.data2.elementAt(5)) 
+         + "  " + cmd + "# DATA2=\"" + name + "\"";
+   }
+   
+   if (mesh.modelIndex >= 0 && modelCount > 1)
+     appendCmd(sb, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));
+   appendCmd(sb, cmd);
+   if (cmd.charAt(0) != '#') {
+     if (allowMesh)
+     appendCmd(sb, mesh.getState(myType));
+     if (mesh.isColorSolid)
+       appendCmd(sb, getColorCommand(myType, mesh.colix));
+     else if (mesh.colorCommand != null)
+       appendCmd(sb, mesh.colorCommand);
+   }
+}
+
+public void setVisibilityFlags(BitSet bs) {
     /*
      * set all fixed objects visible; others based on model being displayed
      * 

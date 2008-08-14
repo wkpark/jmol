@@ -28,6 +28,7 @@ import java.util.BitSet;
 import java.util.Vector;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Escape;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.*;
@@ -197,7 +198,6 @@ public class Mesh {
   }
 
   public void setPolygonCount(int polygonCount) {
-    //Logger.debug("Mesh setPolygonCount" + polygonCount);
     this.polygonCount = polygonCount;
     if (polygonCount < 0)
       return;
@@ -235,29 +235,10 @@ public class Mesh {
     this.colix = colix;
   }
 
-  /*
-   public void checkForDuplicatePoints(float cutoff) {
-   //not implemented
-   float cutoff2 = cutoff * cutoff;
-   for (int i = vertexCount; --i >= 0; )
-   for (int j = i; --j >= 0; ) {
-   float dist2 = vertices[i].distanceSquared(vertices[j]);
-   if ((dist2 < cutoff2) && Logger.debugging) {
-   Logger.debug("Mesh.checkForDuplicates " +
-   vertices[i] + "<->" + vertices[j] +
-   " : " + Math.sqrt(dist2));
-   }
-   }
-   }
-   Hashtable getShapeDetail() {
-   return null;
-   }
-   */
-
   public String getState(String type) {
     StringBuffer s = new StringBuffer(type);
     if (!type.equals("mo"))
-      s.append(" ID ").append(thisID);
+      s.append(" ID ").append(Escape.escape(thisID));
     s.append(fillTriangles ? " fill" : " noFill");
     s.append(drawTriangles ? " mesh" : " noMesh");
     s.append(showPoints ? " dots" : " noDots");
@@ -267,7 +248,7 @@ public class Mesh {
     s.append(lighting == JmolConstants.BACKLIT ? " backlit"
         : lighting == JmolConstants.FULLYLIT ? " fullylit" : " frontlit");
     if (!visible)
-      s.append(" off");
+      s.append(" hidden");
     return s.toString();
   }
 }

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-04 20:52+0200\n"
+"POT-Creation-Date: 2008-08-14 09:16+0200\n"
 "PO-Revision-Date: 2008-08-04 20:45+0000\n"
 "Last-Translator: Won-kyu Park <Unknown>\n"
 "Language-Team: Korean <Jmol-developers@lists.sf.net>\n"
@@ -17,41 +17,48 @@ msgstr ""
 "X-Launchpad-Export-Date: 2008-08-12 00:40+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: org/jmol/applet/Console.java:39
+#: org/jmol/applet/Console.java:40
 msgid "Jmol Script Console"
 msgstr "Jmol 스크립트 콘솔"
 
-#: org/jmol/applet/Console.java:41
+#: org/jmol/applet/Console.java:42
 msgid "Execute"
 msgstr "실행"
 
-#: org/jmol/applet/Console.java:42
+#: org/jmol/applet/Console.java:43
 msgid "Clear Output"
 msgstr "출력 지우기"
 
-#: org/jmol/applet/Console.java:43
+#: org/jmol/applet/Console.java:44
 msgid "Clear Input"
 msgstr "입력 지우기"
 
-#: org/jmol/applet/Console.java:44 org/jmol/popup/PopupResourceBundle.java:840
+#: org/jmol/applet/Console.java:45 org/jmol/popup/PopupResourceBundle.java:840
 msgid "History"
 msgstr "히스토리"
 
-#: org/jmol/applet/Console.java:45
+#: org/jmol/applet/Console.java:46
 msgid "State"
 msgstr "상태"
 
-#: org/jmol/applet/Console.java:46
+#: org/jmol/applet/Console.java:47
 msgid "Load"
 msgstr "불러옴"
 
-#: org/jmol/applet/Console.java:101
+#: org/jmol/applet/Console.java:109
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr ""
 "CTRL-ENTER를 누르면 다음줄로 넘어가며 혹은 모델 데이타를 붙여넣기한 후에 불러"
 "옴을 누르세요"
 
-#: org/jmol/applet/Jmol.java:733
+#: org/jmol/applet/Jmol.java:517
+msgid ""
+"Messages will appear here. Enter commands in the box below. Click the "
+"console Help menu item for on-line help, which will appear in a new browser "
+"window."
+msgstr ""
+
+#: org/jmol/applet/Jmol.java:750
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -66,7 +73,7 @@ msgstr ""
 "\n"
 "더 많은 정보는 http://www.jmol.org를 참조하세요"
 
-#: org/jmol/applet/Jmol.java:971
+#: org/jmol/applet/Jmol.java:988
 msgid "File Error:"
 msgstr "파일 오류:"
 
@@ -177,43 +184,43 @@ msgstr "{0} 원자가 최적화되려 함"
 msgid "could not setup force field {0}"
 msgstr "포스필드 {0}(을)를 설정할 수 없음"
 
-#: org/jmol/popup/JmolPopup.java:452 org/jmol/popup/JmolPopup.java:492
+#: org/jmol/popup/JmolPopup.java:456 org/jmol/popup/JmolPopup.java:496
 msgid "all"
 msgstr "모두"
 
-#: org/jmol/popup/JmolPopup.java:606
+#: org/jmol/popup/JmolPopup.java:610
 msgid "Java memory usage"
 msgstr "자바 메모리 사용량"
 
-#: org/jmol/popup/JmolPopup.java:612
+#: org/jmol/popup/JmolPopup.java:616
 #, java-format
 msgid "{0} MB total"
 msgstr "총 {0} MB"
 
-#: org/jmol/popup/JmolPopup.java:614
+#: org/jmol/popup/JmolPopup.java:618
 #, java-format
 msgid "{0} MB free"
 msgstr "{0} MB 여유"
 
-#: org/jmol/popup/JmolPopup.java:617
+#: org/jmol/popup/JmolPopup.java:621
 #, java-format
 msgid "{0} MB maximum"
 msgstr "{0} MB 최대"
 
-#: org/jmol/popup/JmolPopup.java:620
+#: org/jmol/popup/JmolPopup.java:624
 msgid "unknown maximum"
 msgstr "최대 모름"
 
-#: org/jmol/popup/JmolPopup.java:623
+#: org/jmol/popup/JmolPopup.java:627
 msgid "1 processor"
 msgstr "1 프로세서"
 
-#: org/jmol/popup/JmolPopup.java:624
+#: org/jmol/popup/JmolPopup.java:628
 #, java-format
 msgid "{0} processors"
 msgstr "{0} 프로세서"
 
-#: org/jmol/popup/JmolPopup.java:626
+#: org/jmol/popup/JmolPopup.java:630
 msgid "unknown processor count"
 msgstr "프로세서 개수 모름"
 
@@ -1225,7 +1232,7 @@ msgstr "마우스 설명서"
 msgid "Translations"
 msgstr "번역"
 
-#: org/jmol/viewer/Compiler.java:2448 org/jmol/viewer/Eval.java:11211
+#: org/jmol/viewer/Compiler.java:2448 org/jmol/viewer/Eval.java:11305
 msgid "bad argument count"
 msgstr "인자 개수 오류"
 
@@ -1234,7 +1241,7 @@ msgstr "인자 개수 오류"
 msgid "invalid context for {0}"
 msgstr ""
 
-#: org/jmol/viewer/Compiler.java:2450 org/jmol/viewer/Eval.java:5097
+#: org/jmol/viewer/Compiler.java:2450 org/jmol/viewer/Eval.java:5146
 msgid "command expected"
 msgstr ""
 
@@ -1242,7 +1249,7 @@ msgstr ""
 msgid "{ number number number } expected"
 msgstr "{ 숫자 숫자 숫자 } 필요"
 
-#: org/jmol/viewer/Compiler.java:2452 org/jmol/viewer/Eval.java:11221
+#: org/jmol/viewer/Compiler.java:2452 org/jmol/viewer/Eval.java:11315
 msgid "unexpected end of script command"
 msgstr "예상치않은 스크립트 명령"
 
@@ -1276,7 +1283,7 @@ msgstr "잘못된 모델 지정"
 msgid "missing END for {0}"
 msgstr "{0}에 END가 없습니다"
 
-#: org/jmol/viewer/Compiler.java:2460 org/jmol/viewer/Eval.java:11235
+#: org/jmol/viewer/Compiler.java:2460 org/jmol/viewer/Eval.java:11329
 msgid "number expected"
 msgstr "숫자 필요"
 
@@ -1303,7 +1310,7 @@ msgstr "색상 필요"
 msgid "unrecognized expression token: {0}"
 msgstr "이해할 수 없는 토큰: {0}"
 
-#: org/jmol/viewer/Compiler.java:2466 org/jmol/viewer/Eval.java:11249
+#: org/jmol/viewer/Compiler.java:2466 org/jmol/viewer/Eval.java:11343
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "이해할 수 없는 {0} 파라메터"
@@ -1313,70 +1320,70 @@ msgstr "이해할 수 없는 {0} 파라메터"
 msgid "unrecognized token: {0}"
 msgstr "이해할 수 없는 토큰: {0}"
 
-#: org/jmol/viewer/Eval.java:308 org/jmol/viewer/Eval.java:5078
+#: org/jmol/viewer/Eval.java:315 org/jmol/viewer/Eval.java:5127
 msgid "script ERROR: "
 msgstr "스크립트 오류: "
 
-#: org/jmol/viewer/Eval.java:3509
+#: org/jmol/viewer/Eval.java:3520
 #, java-format
 msgid "{0} connections deleted"
 msgstr "{0} 연결 지움"
 
-#: org/jmol/viewer/Eval.java:3530
+#: org/jmol/viewer/Eval.java:3541
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} 새 결합: {1} 변경됨"
 
-#: org/jmol/viewer/Eval.java:4928
+#: org/jmol/viewer/Eval.java:4977
 msgid "too many rotation points were specified"
 msgstr "너무 많은 회전 포인트가 지정됨"
 
-#: org/jmol/viewer/Eval.java:5195 org/jmol/viewer/Eval.java:5435
+#: org/jmol/viewer/Eval.java:5244 org/jmol/viewer/Eval.java:5481
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} 원자 지움"
 
-#: org/jmol/viewer/Eval.java:5913
+#: org/jmol/viewer/Eval.java:5963
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} 수소 결합"
 
-#: org/jmol/viewer/Eval.java:5925
+#: org/jmol/viewer/Eval.java:5975
 #, java-format
 msgid "{0} not allowed with background model displayed"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:8864
+#: org/jmol/viewer/Eval.java:8983
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr "무엇을 쓰나요? {0} 혹은 {1} \"파일이름\""
 
-#: org/jmol/viewer/Eval.java:8925
+#: org/jmol/viewer/Eval.java:9044
 msgid "No data available"
 msgstr "아무 정보가 없음"
 
-#: org/jmol/viewer/Eval.java:9386 org/jmol/viewer/Eval.java:10323
+#: org/jmol/viewer/Eval.java:9508 org/jmol/viewer/Eval.java:10441
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "현재 프레임에 대한 MO basis/계수 정보가 없음"
 
-#: org/jmol/viewer/Eval.java:10327
+#: org/jmol/viewer/Eval.java:10445
 msgid "no MO coefficient data available"
 msgstr "MO 계수 정보 없음"
 
-#: org/jmol/viewer/Eval.java:10329
+#: org/jmol/viewer/Eval.java:10447
 msgid "Only one molecular orbital is available in this file"
 msgstr "단 하나의 분자궤도가 있습니다"
 
-#: org/jmol/viewer/Eval.java:10339
+#: org/jmol/viewer/Eval.java:10457
 msgid "no MO occupancy data available"
 msgstr "MO 점유값이 없음"
 
-#: org/jmol/viewer/Eval.java:10349
+#: org/jmol/viewer/Eval.java:10467
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr "1에서 {0} 사이의 MO 지정값이 필요함"
 
-#: org/jmol/viewer/Eval.java:10944
+#: org/jmol/viewer/Eval.java:11061
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
@@ -1384,169 +1391,169 @@ msgstr ""
 "부분 전하 정보가 없습니다; Jmol은 MEP 정보를 보여주기 위해 이 정보가필요합니"
 "다."
 
-#: org/jmol/viewer/Eval.java:11144
+#: org/jmol/viewer/Eval.java:11238
 #, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
 "{2}"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:11210
+#: org/jmol/viewer/Eval.java:11304
 msgid "x y z axis expected"
 msgstr "x y z 축 필요"
 
-#: org/jmol/viewer/Eval.java:11212
+#: org/jmol/viewer/Eval.java:11306
 msgid "Miller indices cannot all be zero."
 msgstr "밀러 지수는 모든 값이 0일 수 없음"
 
-#: org/jmol/viewer/Eval.java:11213
+#: org/jmol/viewer/Eval.java:11307
 msgid "bad [R,G,B] color"
 msgstr "잘못된 [R,G,B] 색상"
 
-#: org/jmol/viewer/Eval.java:11214
+#: org/jmol/viewer/Eval.java:11308
 msgid "boolean expected"
 msgstr "부울린값 필요"
 
-#: org/jmol/viewer/Eval.java:11215
+#: org/jmol/viewer/Eval.java:11309
 msgid "boolean or number expected"
 msgstr "부울린 혹은 숫자 필요"
 
-#: org/jmol/viewer/Eval.java:11216
+#: org/jmol/viewer/Eval.java:11310
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr "부울린, 숫자 혹은 {0} 필요"
 
-#: org/jmol/viewer/Eval.java:11217
+#: org/jmol/viewer/Eval.java:11311
 msgid "color expected"
 msgstr "색상 필요"
 
-#: org/jmol/viewer/Eval.java:11218
+#: org/jmol/viewer/Eval.java:11312
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "색상 혹은 팔레트 이름 (Jmol, Rasmol)이 필요"
 
-#: org/jmol/viewer/Eval.java:11219
+#: org/jmol/viewer/Eval.java:11313
 msgid " {x y z} or $name or (atom expression) required"
 msgstr " {x y z} 혹은 $name 혹은 (원자 표현식) 필요"
 
-#: org/jmol/viewer/Eval.java:11220
+#: org/jmol/viewer/Eval.java:11314
 msgid "draw object not defined"
 msgstr "그림 객체가 정의 안됨"
 
-#: org/jmol/viewer/Eval.java:11222
+#: org/jmol/viewer/Eval.java:11316
 msgid "valid (atom expression) expected"
 msgstr "유효한 (원자 표현식) 필요"
 
-#: org/jmol/viewer/Eval.java:11223
+#: org/jmol/viewer/Eval.java:11317
 msgid "(atom expression) or integer expected"
 msgstr "(원자 표현식) 혹은 정수 필요"
 
-#: org/jmol/viewer/Eval.java:11224
+#: org/jmol/viewer/Eval.java:11318
 msgid "filename expected"
 msgstr "파일 이름 필요"
 
-#: org/jmol/viewer/Eval.java:11225
+#: org/jmol/viewer/Eval.java:11319
 msgid "file not found"
 msgstr "파일 없음"
 
-#: org/jmol/viewer/Eval.java:11226
+#: org/jmol/viewer/Eval.java:11320
 msgid "incompatible arguments"
 msgstr "비호환 인자"
 
-#: org/jmol/viewer/Eval.java:11227
+#: org/jmol/viewer/Eval.java:11321
 msgid "insufficient arguments"
 msgstr "부족한 인자"
 
-#: org/jmol/viewer/Eval.java:11228
+#: org/jmol/viewer/Eval.java:11322
 msgid "integer expected"
 msgstr "정수가 필요"
 
-#: org/jmol/viewer/Eval.java:11229
+#: org/jmol/viewer/Eval.java:11323
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr "정수가 범위에 벗어남 ({0} - {1})"
 
-#: org/jmol/viewer/Eval.java:11230
+#: org/jmol/viewer/Eval.java:11324
 msgid "invalid argument"
 msgstr "잘못된 인자"
 
-#: org/jmol/viewer/Eval.java:11231
+#: org/jmol/viewer/Eval.java:11325
 msgid "invalid parameter order"
 msgstr "잘못된 인자 순서"
 
-#: org/jmol/viewer/Eval.java:11232
+#: org/jmol/viewer/Eval.java:11326
 msgid "keyword expected"
 msgstr "키워드 필요"
 
-#: org/jmol/viewer/Eval.java:11233
+#: org/jmol/viewer/Eval.java:11327
 #, java-format
 msgid "{0} require that only one model be displayed"
 msgstr "{0}(은)는 단 하나의 모델만 표시됨"
 
-#: org/jmol/viewer/Eval.java:11234
+#: org/jmol/viewer/Eval.java:11328
 msgid "No unit cell"
 msgstr "단위 cell 없음"
 
-#: org/jmol/viewer/Eval.java:11236
+#: org/jmol/viewer/Eval.java:11330
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr "유효한 숫자는 ({0} 혹은 {1})"
 
-#: org/jmol/viewer/Eval.java:11237
+#: org/jmol/viewer/Eval.java:11331
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr "십진수가 범위에 벗어남 ({0} - {1})"
 
-#: org/jmol/viewer/Eval.java:11238
+#: org/jmol/viewer/Eval.java:11332
 msgid "object name expected after '$'"
 msgstr "'$' 뒤에 객체 이름이 필요"
 
-#: org/jmol/viewer/Eval.java:11239
+#: org/jmol/viewer/Eval.java:11333
 msgid "property name expected"
 msgstr "속성 이름 필요"
 
-#: org/jmol/viewer/Eval.java:11240
+#: org/jmol/viewer/Eval.java:11334
 #, java-format
 msgid "space group {0} was not found."
 msgstr "공간 그룹 {0}(을)를 찾을 수 없음"
 
-#: org/jmol/viewer/Eval.java:11241
+#: org/jmol/viewer/Eval.java:11335
 msgid "quoted string expected"
 msgstr "따옴표로 감싼 문자열 필요"
 
-#: org/jmol/viewer/Eval.java:11242
+#: org/jmol/viewer/Eval.java:11336
 msgid "quoted string or identifier expected"
 msgstr "인용된 문자열 혹은 지정자 필요"
 
-#: org/jmol/viewer/Eval.java:11243
+#: org/jmol/viewer/Eval.java:11337
 msgid "too many script levels"
 msgstr "너무 많은 스크립트 단계"
 
-#: org/jmol/viewer/Eval.java:11244
+#: org/jmol/viewer/Eval.java:11338
 msgid "unrecognized atom property"
 msgstr "모르는 원자 속성"
 
-#: org/jmol/viewer/Eval.java:11245
+#: org/jmol/viewer/Eval.java:11339
 msgid "unrecognized bond property"
 msgstr "모르는 결합 속성"
 
-#: org/jmol/viewer/Eval.java:11246
+#: org/jmol/viewer/Eval.java:11340
 msgid "unrecognized command"
 msgstr "모르는 명령"
 
-#: org/jmol/viewer/Eval.java:11247
+#: org/jmol/viewer/Eval.java:11341
 msgid "runtime unrecognized expression"
 msgstr "런타임시 인식안되는 표현식"
 
-#: org/jmol/viewer/Eval.java:11248
+#: org/jmol/viewer/Eval.java:11342
 msgid "unrecognized object"
 msgstr "모르는 객체"
 
-#: org/jmol/viewer/Eval.java:11250
+#: org/jmol/viewer/Eval.java:11344
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:11251
+#: org/jmol/viewer/Eval.java:11345
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "SHOW 인자가 인식안됨 -- {0} 사용"
@@ -1570,17 +1577,17 @@ msgstr "{0} 원자 숨김"
 msgid "{0} atoms selected"
 msgstr "{0} 원자 선택"
 
-#: org/jmol/viewer/Viewer.java:4314
+#: org/jmol/viewer/Viewer.java:4203
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr "오류: 문자열값에 부울린값을 지정할 수 없음: {0}"
 
-#: org/jmol/viewer/Viewer.java:4477 org/jmol/viewer/Viewer.java:4624
+#: org/jmol/viewer/Viewer.java:4379 org/jmol/viewer/Viewer.java:4545
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr "오류: 숫자에 부울린값을 지정할 수 없음: {0}"
 
-#: org/jmol/viewer/Viewer.java:5083
+#: org/jmol/viewer/Viewer.java:5012
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr "오류: 부울린에 이 값을 넣을 수 없음: {0}"

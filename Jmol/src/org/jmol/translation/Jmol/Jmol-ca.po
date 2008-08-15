@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-13 16:29+0200\n"
+"POT-Creation-Date: 2008-08-15 06:24+0200\n"
 "PO-Revision-Date: 2008-08-13 17:24+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -147,7 +147,7 @@ msgstr "Salta al darrer {0} de la col·lecció"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "S''ha produït un error en llegir del «BufferedReader»: {0}"
 
-#: org/openscience/jmol/app/DisplayPanel.java:167
+#: org/openscience/jmol/app/DisplayPanel.java:168
 #, fuzzy
 msgid "Delete atoms"
 msgstr "Suprimeix els àtoms"
@@ -869,51 +869,55 @@ msgid "Yes"
 msgstr "Sí"
 
 #: org/openscience/jmol/app/Jmol.java:478
+msgid "transparent background"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:479
 msgid "give this help page"
 msgstr "adjunta aquesta pàgina d'ajuda"
 
-#: org/openscience/jmol/app/Jmol.java:480
+#: org/openscience/jmol/app/Jmol.java:481
 msgid "no display (and also exit when done)"
 msgstr "no mostris res (i també surt quan s'acabi)"
 
-#: org/openscience/jmol/app/Jmol.java:481
+#: org/openscience/jmol/app/Jmol.java:482
 msgid "check script syntax only"
 msgstr "comprova només la sintaxi dels scripts"
 
-#: org/openscience/jmol/app/Jmol.java:482
+#: org/openscience/jmol/app/Jmol.java:483
 msgid "silent startup operation"
 msgstr "operació d'inici silenciós"
 
-#: org/openscience/jmol/app/Jmol.java:483
+#: org/openscience/jmol/app/Jmol.java:484
 msgid "list commands during script execution"
 msgstr "llista les ordres durant l'execució de l'script"
 
-#: org/openscience/jmol/app/Jmol.java:485
+#: org/openscience/jmol/app/Jmol.java:486
 msgid "no console -- all output to sysout"
 msgstr "no hi ha consola -- tota lo sortida serà al sistema"
 
-#: org/openscience/jmol/app/Jmol.java:486
+#: org/openscience/jmol/app/Jmol.java:487
 msgid "independent commmand thread"
 msgstr "Fil d'ordre independent"
 
-#: org/openscience/jmol/app/Jmol.java:488
+#: org/openscience/jmol/app/Jmol.java:489
 msgid "exit after script (implicit with -n)"
 msgstr "surt després de l'script (implícit amb -n)"
 
-#: org/openscience/jmol/app/Jmol.java:502
+#: org/openscience/jmol/app/Jmol.java:503
 msgid "property=value"
 msgstr "propietat=valor"
 
-#: org/openscience/jmol/app/Jmol.java:505
+#: org/openscience/jmol/app/Jmol.java:506
 msgid "supported options are given below"
 msgstr "les opcions implementades es descriuen a continuació"
 
-#: org/openscience/jmol/app/Jmol.java:510
+#: org/openscience/jmol/app/Jmol.java:511
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "amplada x altura de la finestra, ex. {0}"
 
-#: org/openscience/jmol/app/Jmol.java:518
+#: org/openscience/jmol/app/Jmol.java:519
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -921,51 +925,51 @@ msgstr ""
 "Qualitat de la imatge JPG (1-100; per defecte 75) o compressió de la imatge "
 "PNG (0-9; per defecte 2, compressió màxima 9)"
 
-#: org/openscience/jmol/app/Jmol.java:524
+#: org/openscience/jmol/app/Jmol.java:525
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} o {1}:nomdelfitxer"
 
-#: org/openscience/jmol/app/Jmol.java:546
+#: org/openscience/jmol/app/Jmol.java:547
 msgid "For example:"
 msgstr "Per exemple:"
 
-#: org/openscience/jmol/app/Jmol.java:552
+#: org/openscience/jmol/app/Jmol.java:553
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr ""
 "Les opcions són -D són com es descriu a continuació (paràmetres per defecte "
 "en parèntesis):"
 
-#: org/openscience/jmol/app/Jmol.java:719
+#: org/openscience/jmol/app/Jmol.java:725
 msgid "Executing script..."
 msgstr "S'està executant l'script..."
 
-#: org/openscience/jmol/app/Jmol.java:731
+#: org/openscience/jmol/app/Jmol.java:737
 msgid "Jmol Java Console"
 msgstr "Consola Java del Jmol"
 
-#: org/openscience/jmol/app/Jmol.java:739
+#: org/openscience/jmol/app/Jmol.java:745
 #: org/openscience/jmol/app/ScriptWindow.java:94
 msgid "Clear"
 msgstr "Neteja"
 
-#: org/openscience/jmol/app/Jmol.java:753
+#: org/openscience/jmol/app/Jmol.java:759
 msgid "Could not create ConsoleTextArea: "
 msgstr "No s'ha pogut crear l'àrea de text de la consola: "
 
-#: org/openscience/jmol/app/Jmol.java:841
+#: org/openscience/jmol/app/Jmol.java:847
 msgid "Closing Jmol..."
 msgstr "S'està tancant el Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:1093
+#: org/openscience/jmol/app/Jmol.java:1099
 msgid "Macros"
 msgstr "Macroinstruccions"
 
-#: org/openscience/jmol/app/Jmol.java:1466
+#: org/openscience/jmol/app/Jmol.java:1472
 msgid "Open URL"
 msgstr "Obre un URL"
 
-#: org/openscience/jmol/app/Jmol.java:1467
+#: org/openscience/jmol/app/Jmol.java:1473
 msgid "Enter URL of molecular model"
 msgstr "Introduïu l'URL d'un model molecular"
 

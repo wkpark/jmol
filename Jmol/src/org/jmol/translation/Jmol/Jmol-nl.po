@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-13 16:29+0200\n"
+"POT-Creation-Date: 2008-08-15 06:24+0200\n"
 "PO-Revision-Date: 2008-08-14 06:21+0000\n"
 "Last-Translator: Egon Willighagen <Unknown>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -147,7 +147,7 @@ msgstr "Ga naar de laatste {0} in de collectie"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Fout tijdens het lezen uit de BufferedReader: {0}"
 
-#: org/openscience/jmol/app/DisplayPanel.java:167
+#: org/openscience/jmol/app/DisplayPanel.java:168
 msgid "Delete atoms"
 msgstr "Wis Atomen"
 
@@ -854,51 +854,55 @@ msgid "Yes"
 msgstr "Ja"
 
 #: org/openscience/jmol/app/Jmol.java:478
+msgid "transparent background"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:479
 msgid "give this help page"
 msgstr "geef deze help pagina"
 
-#: org/openscience/jmol/app/Jmol.java:480
+#: org/openscience/jmol/app/Jmol.java:481
 msgid "no display (and also exit when done)"
 msgstr "geen scherm (en sluit ook af wanneer klaar)"
 
-#: org/openscience/jmol/app/Jmol.java:481
+#: org/openscience/jmol/app/Jmol.java:482
 msgid "check script syntax only"
 msgstr "Alleen de syntax van het script controleren"
 
-#: org/openscience/jmol/app/Jmol.java:482
+#: org/openscience/jmol/app/Jmol.java:483
 msgid "silent startup operation"
 msgstr "stille startup"
 
-#: org/openscience/jmol/app/Jmol.java:483
+#: org/openscience/jmol/app/Jmol.java:484
 msgid "list commands during script execution"
 msgstr "toon commando's tijdens het uitvoeren van het script"
 
-#: org/openscience/jmol/app/Jmol.java:485
+#: org/openscience/jmol/app/Jmol.java:486
 msgid "no console -- all output to sysout"
 msgstr "geen console -- alle uitvoer naar de command line"
 
-#: org/openscience/jmol/app/Jmol.java:486
+#: org/openscience/jmol/app/Jmol.java:487
 msgid "independent commmand thread"
 msgstr "onafhankelijke commando-proces"
 
-#: org/openscience/jmol/app/Jmol.java:488
+#: org/openscience/jmol/app/Jmol.java:489
 msgid "exit after script (implicit with -n)"
 msgstr "afsluiten na einde script (impliciet met -n)"
 
-#: org/openscience/jmol/app/Jmol.java:502
+#: org/openscience/jmol/app/Jmol.java:503
 msgid "property=value"
 msgstr "eigenschap=waarde"
 
-#: org/openscience/jmol/app/Jmol.java:505
+#: org/openscience/jmol/app/Jmol.java:506
 msgid "supported options are given below"
 msgstr "ondersteunde waarde staan hieronder"
 
-#: org/openscience/jmol/app/Jmol.java:510
+#: org/openscience/jmol/app/Jmol.java:511
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "windowhoogte, bv. {0}"
 
-#: org/openscience/jmol/app/Jmol.java:518
+#: org/openscience/jmol/app/Jmol.java:519
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -906,49 +910,49 @@ msgstr ""
 "JPEG-kwaliteit (1-100; normaal 75) of PNG-compressie (0-9; normaal 2; "
 "maximale compressie 9)"
 
-#: org/openscience/jmol/app/Jmol.java:524
+#: org/openscience/jmol/app/Jmol.java:525
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} of {1}: bestandsnaam"
 
-#: org/openscience/jmol/app/Jmol.java:546
+#: org/openscience/jmol/app/Jmol.java:547
 msgid "For example:"
 msgstr "Bijvoorbeeld:"
 
-#: org/openscience/jmol/app/Jmol.java:552
+#: org/openscience/jmol/app/Jmol.java:553
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr "De -D opties zijn (standaard waarden tussen haakjes):"
 
-#: org/openscience/jmol/app/Jmol.java:719
+#: org/openscience/jmol/app/Jmol.java:725
 msgid "Executing script..."
 msgstr "Afspelen van script..."
 
-#: org/openscience/jmol/app/Jmol.java:731
+#: org/openscience/jmol/app/Jmol.java:737
 msgid "Jmol Java Console"
 msgstr "Jmol Java Console"
 
-#: org/openscience/jmol/app/Jmol.java:739
+#: org/openscience/jmol/app/Jmol.java:745
 #: org/openscience/jmol/app/ScriptWindow.java:94
 msgid "Clear"
 msgstr "Wissen"
 
-#: org/openscience/jmol/app/Jmol.java:753
+#: org/openscience/jmol/app/Jmol.java:759
 msgid "Could not create ConsoleTextArea: "
 msgstr "Kon geen ConsoleTextArea aanmaken: "
 
-#: org/openscience/jmol/app/Jmol.java:841
+#: org/openscience/jmol/app/Jmol.java:847
 msgid "Closing Jmol..."
 msgstr "Bezig met afsluiten Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:1093
+#: org/openscience/jmol/app/Jmol.java:1099
 msgid "Macros"
 msgstr "Macro's"
 
-#: org/openscience/jmol/app/Jmol.java:1466
+#: org/openscience/jmol/app/Jmol.java:1472
 msgid "Open URL"
 msgstr "Open URL"
 
-#: org/openscience/jmol/app/Jmol.java:1467
+#: org/openscience/jmol/app/Jmol.java:1473
 msgid "Enter URL of molecular model"
 msgstr "Geef URL van molecuulmodel"
 

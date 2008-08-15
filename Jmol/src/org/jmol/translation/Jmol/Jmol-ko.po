@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-13 16:29+0200\n"
+"POT-Creation-Date: 2008-08-15 06:24+0200\n"
 "PO-Revision-Date: 2008-08-04 20:46+0000\n"
 "Last-Translator: Won-kyu Park <Unknown>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -144,7 +144,7 @@ msgstr "{0} 콜렉션의 맨 마지막으로"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "BufferedReader로 읽기 실패: {0}"
 
-#: org/openscience/jmol/app/DisplayPanel.java:167
+#: org/openscience/jmol/app/DisplayPanel.java:168
 #, fuzzy
 msgid "Delete atoms"
 msgstr "원자 지우기"
@@ -854,51 +854,55 @@ msgid "Yes"
 msgstr "예"
 
 #: org/openscience/jmol/app/Jmol.java:478
+msgid "transparent background"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:479
 msgid "give this help page"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:480
+#: org/openscience/jmol/app/Jmol.java:481
 msgid "no display (and also exit when done)"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:481
+#: org/openscience/jmol/app/Jmol.java:482
 msgid "check script syntax only"
 msgstr "스크립트 문법검사만"
 
-#: org/openscience/jmol/app/Jmol.java:482
+#: org/openscience/jmol/app/Jmol.java:483
 msgid "silent startup operation"
 msgstr "조용히 시작하기"
 
-#: org/openscience/jmol/app/Jmol.java:483
+#: org/openscience/jmol/app/Jmol.java:484
 msgid "list commands during script execution"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:485
+#: org/openscience/jmol/app/Jmol.java:486
 msgid "no console -- all output to sysout"
 msgstr "콘솔 없음 -- 모든 출력은 sysout으로"
 
-#: org/openscience/jmol/app/Jmol.java:486
+#: org/openscience/jmol/app/Jmol.java:487
 msgid "independent commmand thread"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:488
+#: org/openscience/jmol/app/Jmol.java:489
 msgid "exit after script (implicit with -n)"
 msgstr "스크립트 실행후 끝내기 (-n을 내포함)"
 
-#: org/openscience/jmol/app/Jmol.java:502
+#: org/openscience/jmol/app/Jmol.java:503
 msgid "property=value"
 msgstr "속성=값"
 
-#: org/openscience/jmol/app/Jmol.java:505
+#: org/openscience/jmol/app/Jmol.java:506
 msgid "supported options are given below"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:510
+#: org/openscience/jmol/app/Jmol.java:511
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "창 너비 x 높이, 예) . {0}"
 
-#: org/openscience/jmol/app/Jmol.java:518
+#: org/openscience/jmol/app/Jmol.java:519
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -906,49 +910,49 @@ msgstr ""
 "JPG 이미지 화질 (1-100: 기본값 75) 혹은 PNG 이미지 압축률 (0-9: 기본값 2, 최"
 "대 압축률 9)"
 
-#: org/openscience/jmol/app/Jmol.java:524
+#: org/openscience/jmol/app/Jmol.java:525
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:546
+#: org/openscience/jmol/app/Jmol.java:547
 msgid "For example:"
 msgstr "예:"
 
-#: org/openscience/jmol/app/Jmol.java:552
+#: org/openscience/jmol/app/Jmol.java:553
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:719
+#: org/openscience/jmol/app/Jmol.java:725
 msgid "Executing script..."
 msgstr "스크립트 실행..."
 
-#: org/openscience/jmol/app/Jmol.java:731
+#: org/openscience/jmol/app/Jmol.java:737
 msgid "Jmol Java Console"
 msgstr "Jmol 자바 콘솔"
 
-#: org/openscience/jmol/app/Jmol.java:739
+#: org/openscience/jmol/app/Jmol.java:745
 #: org/openscience/jmol/app/ScriptWindow.java:94
 msgid "Clear"
 msgstr "지움"
 
-#: org/openscience/jmol/app/Jmol.java:753
+#: org/openscience/jmol/app/Jmol.java:759
 msgid "Could not create ConsoleTextArea: "
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:841
+#: org/openscience/jmol/app/Jmol.java:847
 msgid "Closing Jmol..."
 msgstr "Jmol 닫기..."
 
-#: org/openscience/jmol/app/Jmol.java:1093
+#: org/openscience/jmol/app/Jmol.java:1099
 msgid "Macros"
 msgstr "매크로"
 
-#: org/openscience/jmol/app/Jmol.java:1466
+#: org/openscience/jmol/app/Jmol.java:1472
 msgid "Open URL"
 msgstr "URL 열기"
 
-#: org/openscience/jmol/app/Jmol.java:1467
+#: org/openscience/jmol/app/Jmol.java:1473
 msgid "Enter URL of molecular model"
 msgstr "분자 모델의 URL을 넣으세요"
 

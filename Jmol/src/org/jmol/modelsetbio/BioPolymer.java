@@ -564,7 +564,7 @@ public abstract class BioPolymer extends Polymer {
       if (bsAtoms == null || bsAtoms.get(monomer.getLeadAtomIndex())) {
         Atom a = monomer.getLeadAtom();
         char cid = monomer.getChainID();
-        String id = "" + monomer.getResno() + (cid == '\0' ? "" : "" + cid);
+        String id = "_" + a.getModelIndex() + "_" + monomer.getResno() + (cid == '\0' ? "" : "" + cid);
         cid = monomer.getLeadAtom().getAlternateLocationID();
         if (cid != '\0')
           id += cid;
@@ -585,18 +585,33 @@ public abstract class BioPolymer extends Polymer {
             // as looked DOWN the bond, with {pt1} in the back, using
             // standard dihedral/Jmol definitions for anticlockwise positive angles
             AminoMonomer aa = (AminoMonomer) monomer;
-            pdbATOM.append("draw phi" + id + " arrow arc scale 0.5 ").append(
+            pdbATOM.append("draw phi" + id + " arrow arc scale 0.25 ").append(
                 Escape.escape(aa.getNitrogenAtomPoint())).append(
                 Escape.escape((Point3f) a)).append(
                 Escape.escape(aa.getCarbonylCarbonAtomPoint())).append(
-                "{" + (-x) + " " + x + " 0.2} \"phi = " + (int) x + "\"")
-                .append(" color ").append(qColor[0]).append('\n');
-            pdbATOM.append("draw psi" + id + " arrow arc scale 0.5 ").append(
+                "{" + (-x) + " " + x + " 0.5} \"phi = " + (int) x + "\"")
+                .append(" color ").append(qColor[2]).append('\n');
+            pdbATOM.append("draw psi" + id + " arrow arc scale 0.25 ").append(
                 Escape.escape((Point3f) a)).append(
                 Escape.escape(aa.getCarbonylCarbonAtomPoint())).append(
                 Escape.escape(aa.getNitrogenAtomPoint())).append(
-                "{0 " + y + " 0.2} \"psi = " + (int) y + "\"")
+                "{0 " + y + " 0.5} \"psi = " + (int) y + "\"")
                 .append(" color ").append(qColor[1]).append('\n');
+            pdbATOM.append("draw planeNCC" + id + " ")
+                .append(Escape.escape(aa.getNitrogenAtomPoint()))
+                .append(Escape.escape(a))
+                .append(Escape.escape(aa.getCarbonylCarbonAtomPoint()))
+                .append(" color ").append(qColor[0]).append('\n');
+            pdbATOM.append("draw planeCNC" + id + " ")
+                .append(Escape.escape(((AminoMonomer) p.monomers[m - 1]).getCarbonylCarbonAtomPoint()))
+                .append(Escape.escape(aa.getNitrogenAtomPoint()))
+                .append(Escape.escape(a))
+                .append(" color ").append(qColor[1]).append('\n');
+            pdbATOM.append("draw planeCCN" + id + " ")
+                .append(Escape.escape(a))
+                .append(Escape.escape(aa.getCarbonylCarbonAtomPoint()))
+                .append(Escape.escape(((AminoMonomer) p.monomers[m + 1]).getNitrogenAtomPoint()))
+                .append(" color ").append(qColor[2]).append('\n');
             continue;
           }
           w = a.getPartialCharge();

@@ -47,7 +47,7 @@ public abstract class MouseManager implements KeyListener {
   boolean drawMode = false;
   boolean measuresEnabled = true;
   MeasurementPending measurementPending;
-  
+
   boolean hoverActive = false;
 
   private boolean rubberbandSelectionMode = false;
@@ -298,10 +298,11 @@ public abstract class MouseManager implements KeyListener {
     yCurrent = y;
     viewer.setInMotion(false);
     viewer.setCursor(Viewer.CURSOR_DEFAULT);
-    if (rubberbandSelectionMode && ((modifiers & BUTTON_MODIFIER_MASK) == SHIFT_LEFT)) {
+    if (rubberbandSelectionMode
+        && ((modifiers & BUTTON_MODIFIER_MASK) == SHIFT_LEFT)) {
       viewer.selectRectangle(rectRubber, modifiers);
       viewer.refresh(3, "mouseReleased");
-    } 
+    }
     rubberbandSelectionMode = false;
     rectRubber.x = Integer.MAX_VALUE;
   }
@@ -359,23 +360,24 @@ public abstract class MouseManager implements KeyListener {
     exitMeasurementMode();
   }
 
-  private void checkPointOrAtomClicked(int x, int y, int modifiers, int clickCount) {
+  private void checkPointOrAtomClicked(int x, int y, int modifiers,
+                                       int clickCount) {
     // points are always picked up first, then atoms
     // so that atom picking can be superceded by draw picking
-    Point3f nearestPoint = (drawMode ? null :
-      viewer.checkObjectClicked(x, y, modifiers));
-    int nearestAtomIndex = (drawMode || nearestPoint != null ? -1 
-        : viewer.findNearestAtomIndex(x, y));
-    if (nearestAtomIndex >= 0 
-        && (clickCount > 0 || measurementPending == null) 
+    Point3f nearestPoint = (drawMode ? null : viewer.checkObjectClicked(x, y,
+        modifiers));
+    int nearestAtomIndex = (drawMode || nearestPoint != null ? -1 : viewer
+        .findNearestAtomIndex(x, y));
+    if (nearestAtomIndex >= 0 && (clickCount > 0 || measurementPending == null)
         && !viewer.isInSelectionSubset(nearestAtomIndex))
       nearestAtomIndex = -1;
-    switch(clickCount) {
+    switch (clickCount) {
     case 0:
       // mouse move
-      if (measurementPending == null) 
+      if (measurementPending == null)
         return;
-      if (nearestPoint != null || measurementPending.getIndexOf(nearestAtomIndex) == 0)
+      if (nearestPoint != null
+          || measurementPending.getIndexOf(nearestAtomIndex) == 0)
         measurementPending.addPoint(nearestAtomIndex, nearestPoint, false);
       viewer.refresh(3, "measurementPending");
       return;
@@ -479,7 +481,7 @@ public abstract class MouseManager implements KeyListener {
           return;
         } else if (rubberbandSelectionMode) {
           calcRectRubberBand();
-          viewer.refresh(3,"mouse-drag selection");
+          viewer.refresh(3, "mouse-drag selection");
           return;
         }
       case MIDDLE:
@@ -532,7 +534,7 @@ public abstract class MouseManager implements KeyListener {
   }
 
   private int addToMeasurement(int atomIndex, Point3f nearestPoint,
-                                boolean dblClick) {
+                               boolean dblClick) {
     if (atomIndex == -1 && nearestPoint == null) {
       exitMeasurementMode();
       return 0;
@@ -544,7 +546,8 @@ public abstract class MouseManager implements KeyListener {
 
   private void enterMeasurementMode() {
     viewer.setCursor(Viewer.CURSOR_CROSSHAIR);
-    viewer.setPendingMeasurement(measurementPending = new MeasurementPending(viewer.getModelSet()));
+    viewer.setPendingMeasurement(measurementPending = new MeasurementPending(
+        viewer.getModelSet()));
   }
 
   private void exitMeasurementMode() {
@@ -559,8 +562,7 @@ public abstract class MouseManager implements KeyListener {
       return;
     int measurementCount = measurementPending.getCount();
     if (measurementCount >= 2 && measurementCount <= 4) {
-      viewer.script("!measure "
-          + measurementPending.getMeasurementScript(" "));
+      viewer.script("!measure " + measurementPending.getMeasurementScript(" "));
     }
     exitMeasurementMode();
   }

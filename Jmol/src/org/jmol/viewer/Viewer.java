@@ -3571,6 +3571,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         new Integer(atomIndex));
     hoverText = null;
     hoverAtomIndex = atomIndex;
+    refresh(3, "hover on atom");
   }
 
   int getHoverDelay() {
@@ -3587,6 +3588,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setShapeProperty(JmolConstants.SHAPE_HOVER, "text", text);
     hoverAtomIndex = -1;
     hoverText = text;
+    refresh(3, "hover on point");
   }
 
   void hoverOff() {
@@ -3598,6 +3600,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setShapeProperty(JmolConstants.SHAPE_HOVER, "text", null);
       hoverText = null;
     }
+    refresh(3, "hover off");
   }
 
   void setLabel(String strLabel) {

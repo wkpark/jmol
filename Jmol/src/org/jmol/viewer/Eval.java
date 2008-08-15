@@ -12159,13 +12159,32 @@ class Eval {
     private boolean evaluateGetProperty(Token[] args) throws ScriptException {
       if (isSyntaxCheck)
         return addX("");
-      int pt = 0; 
-      String propertyName = (args.length > pt ? Token.sValue(args[pt++]).toLowerCase() : "");
-      Object propertyValue = (args.length > pt && args[pt].tok == Token.bitset ? 
-          (Object) Token.bsSelect(args[pt++]) 
-          : args.length > pt && args[pt].tok == Token.string &&
-            PropertyManager.acceptsStringParameter(propertyName) ?
-              args[pt++].value : (Object) "");
+      int pt = 0;
+      String propertyName = (args.length > pt ? Token.sValue(args[pt++])
+          .toLowerCase() : "");
+      if (args.length == 1 && propertyName.indexOf(".") >= 0) {
+        propertyName = propertyName.replace(']', ' ').replace('[', ' ')
+            .replace('.', ' ');
+        propertyName = TextFormat.simpleReplace(propertyName, "  ", " ");
+        String[] names = TextFormat.split(TextFormat.trim(propertyName, " "),
+            " ");
+        if (names.length > 0) {
+          args = new Token[names.length];
+          propertyName = names[0];
+          int n;
+          for (int i = 1; i < names.length; i++) {
+            if ((n = Parser.parseInt(names[i])) != Integer.MIN_VALUE)
+              args[i] = new Token(Token.integer, n);
+            else
+              args[i] = new Token(Token.string, names[i]);
+          }
+        }
+      }
+      Object propertyValue = (args.length > pt && args[pt].tok == Token.bitset ? (Object) Token
+          .bsSelect(args[pt++])
+          : args.length > pt && args[pt].tok == Token.string
+              && PropertyManager.acceptsStringParameter(propertyName) ? args[pt++].value
+              : (Object) "");
       if (propertyName.equalsIgnoreCase("fileContents") && args.length > 2) {
         String s = Token.sValue(args[1]);
         for (int i = 2; i < args.length; i++)
@@ -12184,7 +12203,7 @@ class Eval {
       if (property instanceof Point3f)
         return addX(property);
       if (property instanceof Vector3f)
-        return addX(new Point3f((Vector3f)property));
+        return addX(new Point3f((Vector3f) property));
       if (property instanceof Vector) {
         Vector v = (Vector) property;
         int len = v.size();

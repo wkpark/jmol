@@ -16,7 +16,7 @@ msgstr ""
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit"
+"Content-Transfer-Encoding: 8bit\n"
 
 #: org/jmol/applet/Console.java:40
 msgid "Jmol Script Console"
@@ -34,8 +34,7 @@ msgstr "Ausgabe leeren"
 msgid "Clear Input"
 msgstr "Eingabe leeren"
 
-#: org/jmol/applet/Console.java:45
-#: org/jmol/popup/PopupResourceBundle.java:840
+#: org/jmol/applet/Console.java:45 org/jmol/popup/PopupResourceBundle.java:840
 msgid "History"
 msgstr "Historie"
 
@@ -49,12 +48,20 @@ msgstr "Laden"
 
 #: org/jmol/applet/Console.java:109
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr "CTRL-ENTER für eine neue Zeile drücken oder Modelldaten einfügen und Laden drücken"
+msgstr ""
+"CTRL-ENTER für eine neue Zeile drücken oder Modelldaten einfügen und Laden "
+"drücken"
 
 #: org/jmol/applet/Jmol.java:517
 #, fuzzy
-msgid "Messages will appear here. Enter commands in the box below. Click the console Help menu item for on-line help, which will appear in a new browser window."
-msgstr "Nachrichten werden hier erscheinen. Geben sie Befehle in das Feld unten ein. Klicken Sie Konsolen Hilfe Hilfe Eintrag für die Online Hilfe, welche in einem neuen Browserfenster geöffnet wird."
+msgid ""
+"Messages will appear here. Enter commands in the box below. Click the "
+"console Help menu item for on-line help, which will appear in a new browser "
+"window."
+msgstr ""
+"Nachrichten werden hier erscheinen. Geben sie Befehle in das Feld unten ein. "
+"Klicken Sie Konsolen Hilfe Hilfe Eintrag für die Online Hilfe, welche in "
+"einem neuen Browserfenster geöffnet wird."
 
 #: org/jmol/applet/Jmol.java:750
 #, java-format
@@ -161,8 +168,7 @@ msgid "Turkish"
 msgstr "Türkisch"
 
 #: org/jmol/minimize/Minimizer.java:186
-#, java-format
-#, fuzzy
+#, fuzzy, java-format
 msgid "Could not get class for force field {0}"
 msgstr "Kann keine Klasse für das Kraftfeld {0} bekommen"
 
@@ -176,13 +182,11 @@ msgid "{0} atoms will be minimized."
 msgstr "{0} Atome werden minimiert"
 
 #: org/jmol/minimize/Minimizer.java:350
-#, java-format
-#, fuzzy
+#, fuzzy, java-format
 msgid "could not setup force field {0}"
 msgstr "Kann Kraftfeld {0} nicht erstellen"
 
-#: org/jmol/popup/JmolPopup.java:456
-#: org/jmol/popup/JmolPopup.java:496
+#: org/jmol/popup/JmolPopup.java:456 org/jmol/popup/JmolPopup.java:496
 msgid "all"
 msgstr "Alles"
 
@@ -1234,8 +1238,7 @@ msgstr "Maus-Handbuch"
 msgid "Translations"
 msgstr "Übersetzungen"
 
-#: org/jmol/viewer/Compiler.java:2448
-#: org/jmol/viewer/Eval.java:11305
+#: org/jmol/viewer/Compiler.java:2448 org/jmol/viewer/Eval.java:11305
 msgid "bad argument count"
 msgstr "falsche Argument Anzahl"
 
@@ -1244,8 +1247,7 @@ msgstr "falsche Argument Anzahl"
 msgid "invalid context for {0}"
 msgstr "Unzulässiges Kontrollschlüsselwort {0}."
 
-#: org/jmol/viewer/Compiler.java:2450
-#: org/jmol/viewer/Eval.java:5146
+#: org/jmol/viewer/Compiler.java:2450 org/jmol/viewer/Eval.java:5146
 msgid "command expected"
 msgstr "Befehl erwartet"
 
@@ -1253,8 +1255,7 @@ msgstr "Befehl erwartet"
 msgid "{ number number number } expected"
 msgstr "{ Zahl Zahl Zahl } erwartet"
 
-#: org/jmol/viewer/Compiler.java:2452
-#: org/jmol/viewer/Eval.java:11315
+#: org/jmol/viewer/Compiler.java:2452 org/jmol/viewer/Eval.java:11315
 msgid "unexpected end of script command"
 msgstr "Unerwartetes Ende des Skript Befehls"
 
@@ -1288,8 +1289,7 @@ msgstr "ungültige Modell-Spezifikation"
 msgid "missing END for {0}"
 msgstr "fehlendes END für {0}"
 
-#: org/jmol/viewer/Compiler.java:2460
-#: org/jmol/viewer/Eval.java:11329
+#: org/jmol/viewer/Compiler.java:2460 org/jmol/viewer/Eval.java:11329
 msgid "number expected"
 msgstr "Zahl erwartet"
 
@@ -1316,8 +1316,7 @@ msgstr "Keine Atome geladen."
 msgid "unrecognized expression token: {0}"
 msgstr "unbekanntes Ausdrucks-Token: {0}"
 
-#: org/jmol/viewer/Compiler.java:2466
-#: org/jmol/viewer/Eval.java:11343
+#: org/jmol/viewer/Compiler.java:2466 org/jmol/viewer/Eval.java:11343
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "unbekannter {0} Parameter"
@@ -1327,8 +1326,7 @@ msgstr "unbekannter {0} Parameter"
 msgid "unrecognized token: {0}"
 msgstr "Unbekanntes Token: {0}"
 
-#: org/jmol/viewer/Eval.java:315
-#: org/jmol/viewer/Eval.java:5127
+#: org/jmol/viewer/Eval.java:315 org/jmol/viewer/Eval.java:5127
 msgid "script ERROR: "
 msgstr "Skript FEHLER: "
 
@@ -1346,8 +1344,7 @@ msgstr "{0} neue Bindungen; {1} verändert"
 msgid "too many rotation points were specified"
 msgstr "zu viele Rotationspunkte benannt"
 
-#: org/jmol/viewer/Eval.java:5244
-#: org/jmol/viewer/Eval.java:5481
+#: org/jmol/viewer/Eval.java:5244 org/jmol/viewer/Eval.java:5481
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} Atome gelöscht"
@@ -1371,8 +1368,7 @@ msgstr "Was schreiben? {0} oder {1} \"Dateiname\""
 msgid "No data available"
 msgstr "Keine Daten verfügbar."
 
-#: org/jmol/viewer/Eval.java:9508
-#: org/jmol/viewer/Eval.java:10441
+#: org/jmol/viewer/Eval.java:9508 org/jmol/viewer/Eval.java:10441
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "für diesen Frame sind keine MO Basis/Koeffizient Daten verfügbar"
 
@@ -1394,13 +1390,21 @@ msgid "An MO index from 1 to {0} is required"
 msgstr "Ein MO Index zwischen 1 und {0} wird benötigt"
 
 #: org/jmol/viewer/Eval.java:11061
-msgid "No partial charges were read from the file; Jmol needs these to render the MEP data."
-msgstr "Aus der Datei wurden keine Partialladungen gelesen; Jmol benötigt diese um die MEP Daten darzustellen."
+msgid ""
+"No partial charges were read from the file; Jmol needs these to render the "
+"MEP data."
+msgstr ""
+"Aus der Datei wurden keine Partialladungen gelesen; Jmol benötigt diese um "
+"die MEP Daten darzustellen."
 
 #: org/jmol/viewer/Eval.java:11238
 #, java-format
-msgid "plane expected -- either three points or atom expressions or {0} or {1} or {2}"
-msgstr "Fläche erwartet -- entweder drei Punkte oder Atom-Ausdrücke oder {0} oder {1} oder {2}"
+msgid ""
+"plane expected -- either three points or atom expressions or {0} or {1} or "
+"{2}"
+msgstr ""
+"Fläche erwartet -- entweder drei Punkte oder Atom-Ausdrücke oder {0} oder "
+"{1} oder {2}"
 
 #: org/jmol/viewer/Eval.java:11304
 msgid "x y z axis expected"
@@ -1589,8 +1593,7 @@ msgstr "{0} Atome ausgewählt"
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4379
-#: org/jmol/viewer/Viewer.java:4545
+#: org/jmol/viewer/Viewer.java:4379 org/jmol/viewer/Viewer.java:4545
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr ""
@@ -1602,108 +1605,156 @@ msgstr ""
 
 #~ msgid "Calculate what?"
 #~ msgstr "Was soll berechnet werden?"
+
 #~ msgid "invalid {0} control keyword"
 #~ msgstr "Unzulässiges Kontrollschlüsselwort {0}."
+
 #~ msgid "save what?"
 #~ msgstr "Was soll gespeichert werden?"
+
 #~ msgid "restore what?"
 #~ msgstr "Was soll wiederhergestellt werden?"
+
 #~ msgid "Select"
 #~ msgstr "Auswahl"
+
 #~ msgid "Compatibility"
 #~ msgstr "Kompatibilität"
+
 #~ msgid "RasMol/Chime Settings"
 #~ msgstr "RasMol/Chime Einstellungen"
+
 #~ msgid "Axes RasMol/Chime"
 #~ msgstr "RasMol/Chime Achsen"
+
 #~ msgid "The {0} command is not available for the applet."
 #~ msgstr "Das Kommando {0} ist für das Applet nicht verfügbar."
+
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Jmol führt Skript aus ..."
 
 #, fuzzy
 #~ msgid "use {0}"
 #~ msgstr "Skalierung {0}"
+
 #~ msgid "Animate"
 #~ msgstr "Animieren"
+
 #~ msgid "All Frames"
 #~ msgstr "Alle Frames"
+
 #~ msgid "Set Select Mode"
 #~ msgstr "Auswahlmodus wählen"
+
 #~ msgid "Replace Selection"
 #~ msgstr "Auswahl ersetzen"
+
 #~ msgid "Add to Selection (OR)"
 #~ msgstr "Zur Auswahl hinzufügen (ODER)"
+
 #~ msgid "Narrow Selection (AND)"
 #~ msgstr "Azswahl einschränken (UND)"
+
 #~ msgid "Render"
 #~ msgstr "Rendern"
+
 #~ msgid "Crimson"
 #~ msgstr "Purpur"
+
 #~ msgid "Dark Red"
 #~ msgstr "Dunkelrot"
+
 #~ msgid "Firebrick"
 #~ msgstr "Ziegelrot"
+
 #~ msgid "Indian Red"
 #~ msgstr "India-Rot"
+
 #~ msgid "Light Pink"
 #~ msgstr "Pink hell"
+
 #~ msgid "Goldenrod"
 #~ msgstr "Goldrot"
+
 #~ msgid "Yellow-Green"
 #~ msgstr "Gelb-Grün"
+
 #~ msgid "Seagreen"
 #~ msgstr "Seegrün"
+
 #~ msgid "Green-Blue"
 #~ msgstr "Grün-Blau"
+
 #~ msgid "Spring Green"
 #~ msgstr "Frühlingsgrün"
+
 #~ msgid "Aqua"
 #~ msgstr "Ozeanblau"
+
 #~ msgid "Azure"
 #~ msgstr "Azur"
+
 #~ msgid "Cornflower"
 #~ msgstr "Kornblumenblau"
+
 #~ msgid "Dark Slate Blue"
 #~ msgstr "Dunkles Schieferblau"
+
 #~ msgid "Light Steel Blue"
 #~ msgstr "Stahlblau"
+
 #~ msgid "Charge"
 #~ msgstr "Ladung"
+
 #~ msgid "Crystal"
 #~ msgstr "Kristall"
+
 #~ msgid "Aquamarine"
 #~ msgstr "Aquamarin"
+
 #~ msgid "Forest Green"
 #~ msgstr "Waldgrün"
+
 #~ msgid "Options"
 #~ msgstr "Einstellungen"
+
 #~ msgid "Jmol Colors"
 #~ msgstr "Jmol-Farben"
 
 #, fuzzy
 #~ msgid "or dotted"
 #~ msgstr "Gepunktet"
+
 #~ msgid "Except Solvent"
 #~ msgstr "Außer Lösungsmittel"
+
 #~ msgid "Except Water"
 #~ msgstr "Außer Wasser"
+
 #~ msgid "Other"
 #~ msgstr "Andere"
+
 #~ msgid "Lipid"
 #~ msgstr "Lipid"
+
 #~ msgid "Nanometers"
 #~ msgstr "Nanometer"
+
 #~ msgid "Angstroms"
 #~ msgstr "Ångström"
+
 #~ msgid "Picometers"
 #~ msgstr "Picometer"
+
 #~ msgid "Open"
 #~ msgstr "Öffnen"
+
 #~ msgid "Jmol Molecular Visualization http://www.jmol.org"
 #~ msgstr "Jmol Molekül-Visualisierung, http://www.jmol.org"
+
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Drahtgitter-Rotation"
+
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
 #~ "for more information"

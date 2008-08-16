@@ -9,14 +9,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
-"Report-Msgid-Bugs-To: jmol-developers at lists.sourceforge.net\n"
+"Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-08-15 06:24+0200\n"
 "PO-Revision-Date: 2008-08-15 17:07-0400\n"
 "Last-Translator: Oliver Stueker <revilo2208@users.sourceforge.net>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit"
+"Content-Transfer-Encoding: 8bit\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
 #: org/openscience/jmol/app/GuiMap.java:171
@@ -915,7 +915,9 @@ msgstr "Fenstergröße Breite x Höhe, z.B. {0}"
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
-msgstr "JPG Bildqualität (1-100; Standard 75) oder PNG Bildkompression (0-9; Standard 2, maximale Kompression 9)"
+msgstr ""
+"JPG Bildqualität (1-100; Standard 75) oder PNG Bildkompression (0-9; "
+"Standard 2, maximale Kompression 9)"
 
 #: org/openscience/jmol/app/Jmol.java:525
 #, java-format
@@ -1224,7 +1226,6 @@ msgstr "Historie"
 
 #: org/openscience/jmol/app/ScriptWindow.java:102
 #, fuzzy
-#, fuzzy
 msgid "State"
 msgstr "Zustand"
 
@@ -1376,7 +1377,8 @@ msgstr "Instanz {0} aktualisiert"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:402
 msgid "Select a directory to create or an HTML file to save"
-msgstr "Wähle ein zu erstellendes Verzeichnis oder eine HTML Datei zum speichern"
+msgstr ""
+"Wähle ein zu erstellendes Verzeichnis oder eine HTML Datei zum speichern"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:420
 msgid "Call to FileWriter unsuccessful."
@@ -1417,98 +1419,140 @@ msgstr ""
 "{0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:600
-msgid  "      ...Compressing large data file to\n"
+msgid "      ...Compressing large data file to\n"
 msgstr "      ...Komprimiere große Daten Datei zu\n"
 
 #~ msgid "Select Atoms"
 #~ msgstr "Atome auswählen"
+
 #~ msgid "Select an atom or region."
 #~ msgstr "Ein Atom oder einen Bereich markieren."
+
 #~ msgid "View measurement table."
 #~ msgstr "Messungen-Tabelle anzeigen."
+
 #~ msgid "Make crystal..."
 #~ msgstr "Kristall erzeugen..."
+
 #, fuzzy
 #~ msgid "Export view to an image or script file."
 #~ msgstr "Ansicht in einer Bilddatei exportieren."
+
 #, fuzzy
 #~ msgid "Export &PDF..."
 #~ msgstr "PDF exportieren..."
+
 #~ msgid "Image size"
 #~ msgstr "Bildgröße"
+
 #~ msgid "Output format : "
 #~ msgstr "Ausgabeformat: "
+
 #~ msgid "Select the file format of the output file"
 #~ msgstr "Das Format für die Ausgabedatei auswählen"
+
 #~ msgid "Command Line to Execute"
 #~ msgstr "Auszuführende Kommandozeile"
+
 #~ msgid "The actual command which will be executed"
 #~ msgstr "Kommando, das ausgeführt werden wird"
+
 #~ msgid "null component string"
 #~ msgstr "String ohne Komponenten"
+
 #~ msgid "Filename Stem"
 #~ msgstr "Stamm des Dateinamens"
+
 #~ msgid "Use .ini file"
 #~ msgstr "Eine .ini-Datei erstellen"
+
 #~ msgid "Save options in a .ini file"
 #~ msgstr "Optionen in einer .ini-Datei speichern"
+
 #~ msgid "Render all frames"
 #~ msgstr "Alle Frames rendern"
+
 #~ msgid "Render each model (not only the currently displayed one)"
 #~ msgstr "Jedes Modell rendern (nicht nur das aktuell gezeigte)"
+
 #~ msgid "Turn on POV-Ray anti-aliasing"
 #~ msgstr "Anti-Aliasing für POV-Ray einschalten"
+
 #~ msgid "Use povray's slower but higher quality anti-aliasing mode"
 #~ msgstr ""
 #~ "Den langsameren und qualitativ besseren Anti-Aliasing-Modus von POV-Ray "
 #~ "benutzen"
+
 #~ msgid "Render in pov-ray..."
 #~ msgstr "In POV-Ray rendern..."
+
 #~ msgid "File not loaded"
 #~ msgstr "Datei wurde nicht geladen"
+
 #, fuzzy
 #~ msgid "no display"
 #~ msgstr "Anzeige"
+
 #, fuzzy
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Skript ausführen..."
+
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "&Rotation des Drahtgitter-Modells"
+
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotation des Drahtgitter-Modells"
+
 #~ msgid "Colors"
 #~ msgstr "Farben"
+
 #~ msgid "Background"
 #~ msgstr "Hintergrund"
+
 #~ msgid "Set the Background Color"
 #~ msgstr "Hintergrundfarbe festlegen"
+
 #~ msgid "Background Color"
 #~ msgstr "Hintergrundfarbe"
+
 #~ msgid "Picked Atoms"
 #~ msgstr "Markierte Atome"
+
 #~ msgid "Set the Color for Picked Atoms"
 #~ msgstr "Farbe für markierte Atome festlegen"
+
 #~ msgid "Picked Atom Color"
 #~ msgstr "Farbe der markierten Atome"
+
 #~ msgid "Text"
 #~ msgstr "Text"
+
 #~ msgid "Set the Color for Text"
 #~ msgstr "Textfarbe festlegen"
+
 #~ msgid "Text Color"
 #~ msgstr "Textfarbe"
+
 #~ msgid "Set the Color for Bonds"
 #~ msgstr "Farbe der Bindungen festlegen"
+
 #~ msgid "Bond Color"
 #~ msgstr "Farbe der Bindungen"
+
 #~ msgid "Vectors"
 #~ msgstr "Vektoren"
+
 #~ msgid "Set the Vector Color"
 #~ msgstr "Farbe der Vektoren festlegen"
+
 #~ msgid "Vector Color"
 #~ msgstr "Farbe der Vektoren"
+
 #~ msgid "Color for distance, angle, & torsion measurements"
 #~ msgstr "Farbe der Distanz-, Winkel- und Torsionsmessungen"
+
 #~ msgid "Measurements Color"
 #~ msgstr "Farbe der Messungen"
+
 #~ msgid "Loading plugins..."
 #~ msgstr "Lade Plugins..."

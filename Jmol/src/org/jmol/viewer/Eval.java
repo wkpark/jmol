@@ -491,43 +491,17 @@ class Eval {
     if (filename.toLowerCase().indexOf("javascript:") == 0)
       return loadScript(filename, viewer.eval(filename.substring(11)),
           debugScript);
-    Object t = viewer.getBufferedReaderOrErrorMessageFromName(filename, null, false);
-    if (!(t instanceof BufferedReader))
-      return loadError((String) t);
-    BufferedReader reader = (BufferedReader) t;
-    StringBuffer script = new StringBuffer();
-    try {
-      while (true) {
-        String command = reader.readLine();
-        if (command == null)
-          break;
-        script.append(command);
-        script.append("\n");
-      }
-    } catch (IOException e) {
-      try {
-        reader.close();
-        reader = null;
-      } catch (IOException ioe) {
-      }
-      return ioError(filename);
-    }
-    try {
-      reader.close();
-      reader = null;
-    } catch (IOException ioe) {
-    }
-    return loadScript(filename, script.toString(), debugScript);
+    String[] data = new String[2];
+    data[0] = filename;
+    if (!viewer.getFileAsString(data))
+      return loadError("io error reading " + data[0] + ": " + data[1]);
+    return loadScript(filename, data[1], debugScript);
   }
 
   private boolean loadError(String msg) {
     error = true;
     errorMessage = msg;
     return false;
-  }
-
-  private boolean ioError(String filename) {
-    return loadError("io error reading:" + filename);
   }
 
   public String toString() {
@@ -5103,6 +5077,7 @@ class Eval {
       if (getToken(1).tok != Token.string)
         error(ERROR_filenameExpected);
       filename = theScript;
+      theScript = null;
       if (filename.equalsIgnoreCase("inline")) {
         theScript = parameterExpression(2, 0, "_script", false).toString();
         i = iToken + 1;
@@ -5146,12 +5121,8 @@ class Eval {
     if (isCheck)
       isSyntaxCheck = isScriptCheck = true;
     pushContext(null);
-    boolean isOK;
-    if (theScript != null)
-      isOK = loadScript(null, theScript, false);
-    else
-      isOK = loadScriptFileInternal(filename);
-    if (isOK) {
+    if (theScript == null ? loadScriptFileInternal(filename)
+        : loadScript(null, theScript, false)) {
       this.pcEnd = pcEnd;
       this.lineEnd = lineEnd;
       while (pc < lineNumbers.length && lineNumbers[pc] < lineNumber)

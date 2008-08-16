@@ -308,15 +308,19 @@ public class FileManager {
 
   /**
    * 
-   * @param name
-   * @return file contents; directory listing for a ZIP/JAR file
+   * @param data [0] initially path name, but returned as full path name; [1]file contents (directory listing for a ZIP/JAR file) or error string
+   * @return true if successful; false on error 
    */
-  public String getFileAsString(String name) {
+  boolean getFileDataOrErrorAsString(String[] data) {
+    data[1] = "";
+    String name = data[0];
     if (name == null)
-      return "";
-    Object t = getBufferedReaderOrErrorMessageFromName(name, null, false);
-    if (t instanceof String)
-      return (String) t;
+      return false;
+    Object t = getBufferedReaderOrErrorMessageFromName(name, data, false);
+    if (t instanceof String) {
+      data[1] = (String) t;
+      return false;
+    }
     try {
       BufferedReader br = (BufferedReader) t;
       StringBuffer sb = new StringBuffer(8192);
@@ -326,9 +330,11 @@ public class FileManager {
         sb.append('\n');
       }
       br.close();
-      return sb.toString();
+      data[1] = sb.toString();
+      return true;
     } catch (Exception ioe) {
-      return ioe.getMessage();
+      data[1] = ioe.getMessage();
+      return false;
     }
   }
 

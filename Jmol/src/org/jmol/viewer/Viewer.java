@@ -1809,12 +1809,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String pathName = modelManager.getModelSetPathName();
     if (pathName == null)
       return null;
-    return fileManager.getFileAsString(pathName);
-  }
-
-  public String getFileAsString(String pathName) {
-    return (pathName == null ? getCurrentFileAsString() : fileManager
-        .getFileAsString(pathName));
+    return getFileAsString(pathName);
   }
 
   public String getFullPathName() {
@@ -1825,6 +1820,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return fileManager.getFileName();
   }
 
+  public String getFileAsString(String name) {
+    if (name == null)
+      return getCurrentFileAsString();
+    String[] data = new String[2];
+    data[0] = name;
+    // ignore error completely
+    getFileAsString(data);
+    return data[1];
+  }
+  
+  boolean getFileAsString(String[] data) {
+    return fileManager.getFileDataOrErrorAsString(data);
+  }
+    
   String[] getFileInfo() {
     return fileManager.getFileInfo();
   }
@@ -6420,7 +6429,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (fileOrText.length() == 0)
       fileOrText = null;
     else if (isFile)
-      fileOrText = fileManager.getFileAsString(fileOrText);
+      fileOrText = getFileAsString(fileOrText);
     statusManager.setCallbackFunction("menu", fileOrText);
   }
 

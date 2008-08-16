@@ -517,11 +517,10 @@ public class Token {
 
   final static int load         = 1 | 1 << 9 | mathfunc | command;
   final static int substructure = 2 | 1 << 9 | mathfunc;
-  final static int script       = 3 | 1 << 9 | mathfunc | command;
-  final static int javascript   = 4 | 1 << 9 | mathfunc | implicitStringCommand;
-  final static int sin          = 5 | 1 << 9 | mathfunc;
-  final static int cos          = 6 | 1 << 9 | mathfunc;
-  final static int sqrt         = 7 | 1 << 9 | mathfunc;
+  final static int javascript   = 3 | 1 << 9 | mathfunc | implicitStringCommand;
+  final static int sin          = 4 | 1 << 9 | mathfunc;
+  final static int cos          = 5 | 1 << 9 | mathfunc;
+  final static int sqrt         = 6 | 1 << 9 | mathfunc;
 
   // ___.xxx(a)
   
@@ -543,6 +542,7 @@ public class Token {
   final static int random       = 1 | 2 << 9 | mathfunc;
   final static int data         = 2 | 2 << 9 | mathfunc | command;
   final static int cross        = 3 | 2 << 9 | mathfunc;
+  final static int script       = 4 | 2 << 9 | mathfunc | command;
 
   // ___.xxx(a,b)
 

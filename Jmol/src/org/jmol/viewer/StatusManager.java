@@ -81,6 +81,7 @@ class StatusManager {
   Hashtable messageQueue = new Hashtable();
   int statusPtr = 0;
   static int MAXIMUM_QUEUE_LENGTH = 16;
+  StringBuffer outputBuffer;
   
   StatusManager(Viewer viewer) {
     this.viewer = viewer;
@@ -194,6 +195,8 @@ class StatusManager {
   synchronized void setScriptEcho(String strEcho, boolean isScriptQueued) {
     if (strEcho == null) return; 
     setStatusChanged("scriptEcho", 0, strEcho, false);
+    if (outputBuffer != null)
+      outputBuffer.append(strEcho);
     if (jmolStatusListener != null)
       jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_ECHO, new Object[] { "", strEcho, 
           new Integer(isScriptQueued ? 1 : 0) });
@@ -267,9 +270,9 @@ class StatusManager {
   synchronized void setSync(String mouseCommand) {
     if (syncingMouse) {
       if (mouseCommand != null)
-        syncSend(mouseCommand, null);
+        syncSend(mouseCommand, "*");
     } else if (!syncingScripts)
-      syncSend("!" + viewer.getMoveToText(minSyncRepeatMs / 1000f), null);
+      syncSend("!" + viewer.getMoveToText(minSyncRepeatMs / 1000f), "*");
   }
 
   synchronized void popupMenu(int x, int y) {
@@ -376,7 +379,7 @@ class StatusManager {
     messageQueue.put(statusName, statusRecordSet);
   }
   
-  synchronized Vector getStatusChanged(String statusNameList) {
+  synchronized Object getStatusChanged(String statusNameList) {
     /*
      * returns a Vector of statusRecordSets, one per status type,
      * where each statusRecordSet is itself a vector of vectors:
@@ -387,6 +390,15 @@ class StatusManager {
      * 
      */
     Vector msgList = new Vector();
+    if (statusNameList.equals("output")) {
+      if (outputBuffer == null) {
+        outputBuffer = new StringBuffer();
+        return "";
+      }
+      String s = outputBuffer.toString();
+      outputBuffer = null;
+      return s;
+    }
     if (setStatusList(statusNameList)) return msgList;
     Enumeration e = messageQueue.keys();
     int n = 0;

@@ -3055,7 +3055,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // refresh(2) indicates this is a mouse motion -- not going through Eval script
     // so we bypass Eval and mainline on the other viewer!
     // refresh(-1) is used in stateManager to force no repaint)
-    // refresh(3) is used by operations to ONLY do a repaint -- no syncing 
+    // refresh(3) is used by operations to ONLY do a repaint -- no syncing
+    if (repaintManager == null)
+      return;
     if (mode > 0)
       repaintManager.refresh();
     if (mode % 3 != 0 && statusManager.doSync())
@@ -3393,6 +3395,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   /// direct no-queue use:
 
   public String scriptWait(String strScript) {
+    System.out.println("Viewer scriptWait1 " + htmlName + " " + strScript + " ");
     scriptManager.waitForQueue();
     boolean doTranslateTemp = GT.getDoTranslate();
     GT.setDoTranslate(false);
@@ -3404,6 +3407,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Object scriptWaitStatus(String strScript, String statusList) {
+    System.out.println("Viewer scriptWait2 " + htmlName + " " + strScript);
     scriptManager.waitForQueue();
     boolean doTranslateTemp = GT.getDoTranslate();
     GT.setDoTranslate(false);
@@ -3415,6 +3419,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Object evalStringWaitStatus(String returnType, String strScript,
                                      String statusList) {
+    System.out.println("Viewer scriptWait3 " + htmlName + " " + strScript);
     scriptManager.waitForQueue();
     return evalStringWaitStatus(returnType, strScript, statusList, false,
         false, false);
@@ -3850,7 +3855,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     statusManager.setStatusScriptStarted(iscript, script);
   }
 
-  Vector getStatusChanged(String statusNameList) {
+  Object getStatusChanged(String statusNameList) {
     return statusManager.getStatusChanged(statusNameList);
   }
 
@@ -6317,14 +6322,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void syncScript(String script, String applet) {
-    boolean isAll = ("*".equals(applet));
-    boolean allButMe = (">".equals(applet));
-    boolean disableSend = ("~".equals(applet));
-    boolean justMe = disableSend || (".".equals(applet));
+    // * : all applets
+    // > : all OTHER applets
+    // . : just me
+    // ~ : disable send (just me)
+    boolean disableSend = "~".equals(applet);
     //null same as ">" -- "all others"
-    if (!justMe) {
-      statusManager.syncSend(script, (isAll || allButMe ? null : applet));
-      if (!isAll)
+    if (!disableSend && !".".equals(applet)) {
+      statusManager.syncSend(script, applet);
+      if (!"*".equals(applet))
         return;
     }
     if (script.equalsIgnoreCase("on")) {

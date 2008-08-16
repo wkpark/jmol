@@ -151,23 +151,25 @@ public class JmolAppletRegistry {
     Logger.error("unable to find target:" + targetName);
   }
 
-  synchronized public static Vector findApplets(String appletName, String mySyncId,
-                            String excludeName) {
-    if (appletName != null && appletName.indexOf("__") < 0)
-      appletName += "__" + mySyncId + "__";
+  synchronized public static Vector findApplets(String appletName,
+                                                String mySyncId,
+                                                String excludeName) {
+    String ext = "__" + mySyncId + "__";
     Vector apps = new Vector();
-    if (appletName != null && htRegistry.containsKey(appletName)) {
-      apps.addElement(appletName);
-      return apps;
-    }
-    Enumeration keys = htRegistry.keys();
-    while (keys.hasMoreElements()) {
-      String theApplet = (String) keys.nextElement();
-      if (excludeName != null && theApplet.equals(excludeName))
-        continue;
-      if (appletName == null && theApplet.indexOf("__" + mySyncId + "__") > 0
-          || theApplet.equals(appletName))
-        apps.addElement(theApplet);
+    if (appletName.equals("*") || appletName.equals(">")) {
+      Enumeration keys = htRegistry.keys();
+      while (keys.hasMoreElements()) {
+        appletName = (String) keys.nextElement();
+        if (!appletName.equals(excludeName) && appletName.indexOf(ext) > 0)
+          apps.addElement(appletName);
+      }
+    } else {
+      if (appletName.indexOf("__") < 0)
+        appletName += ext;
+      if (!htRegistry.containsKey(appletName))
+        appletName = "jmolApplet" + appletName;
+      if (!appletName.equals(excludeName) && htRegistry.containsKey(appletName))
+        apps.addElement(appletName);
     }
     return apps;
   }

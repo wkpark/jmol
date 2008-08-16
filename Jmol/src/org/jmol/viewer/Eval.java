@@ -903,7 +903,6 @@ class Eval {
       if (token == null)
         continue;
       switch (token.tok) {
-
       case Token.elseif:
       case Token.ifcmd:
       case Token.whilecmd:
@@ -974,9 +973,9 @@ class Eval {
       case Token.rotate:
         rotate(false, false);
         break;
-      case Token.script:
       case Token.javascript:
-        script(token.tok == Token.javascript);
+      case Token.script:
+        script(token.tok);
         break;
       case Token.function:
         function();
@@ -4463,7 +4462,7 @@ class Eval {
     if (errMsg != null && !isScriptCheck) {
       if (errMsg.indexOf("file recognized as a script file:") >= 0) {
         viewer.addLoadScript("-");
-        script(false);
+        script(Token.script);
         return;
       }
       evalError(errMsg);      
@@ -5070,57 +5069,74 @@ class Eval {
         "getSpinAxis:" + axisID);
   }
 
-  private void script(boolean isJavaScript) throws ScriptException {
-    if (isJavaScript) {
-      checkLength(2);
-      if (!isSyntaxCheck)
-        viewer.eval(parameterAsString(1));
-      return;
-    }
-    if (getToken(1).tok != Token.string)
-      error(ERROR_filenameExpected);
+  private void script(int tok) throws ScriptException {
+    boolean loadCheck = true;
+    boolean isCheck = false;
     int lineNumber = 0;
     int pc = 0;
     int lineEnd = 0;
     int pcEnd = 0;
     int i = 2;
-    String filename = parameterAsString(1);
-    String theScript = null;
-    if (filename.equalsIgnoreCase("inline")) {
-      theScript = parameterExpression(2, 0, "_script", false).toString();
-      i = iToken + 1;
+    String filename = null;
+    String theScript = parameterAsString(1);
+    if (tok == Token.javascript) {
+      checkLength(2);
+      if (!isSyntaxCheck)
+        viewer.eval(theScript);
+      return;
     }
-    boolean loadCheck = true;
-    boolean isCheck = false;
-    String option = optParameterAsString(i);
-    if (option.equalsIgnoreCase("check")) {
-      isCheck = true;
-      option = optParameterAsString(++i);
+    if (theScript.equalsIgnoreCase("applet")) {
+      // script APPLET x "....."
+      String appID = parameterAsString(2);
+      theScript = parameterExpression(3, 0, "_script", false).toString();
+      checkLength(iToken + 1);
+      if (isSyntaxCheck)
+        return;
+      if (appID.length() == 0 || appID.equals("all"))
+        appID = "*";
+      if (!appID.equals(".")) {
+        viewer.eval(appID + "\1" + theScript);
+        if (!appID.equals("*"))
+          return;
+      }
+    } else {
+      if (getToken(1).tok != Token.string)
+        error(ERROR_filenameExpected);
+      filename = theScript;
+      if (filename.equalsIgnoreCase("inline")) {
+        theScript = parameterExpression(2, 0, "_script", false).toString();
+        i = iToken + 1;
+      }
+      String option = optParameterAsString(i);
+      if (option.equalsIgnoreCase("check")) {
+        isCheck = true;
+        option = optParameterAsString(++i);
+      }
+      if (option.equalsIgnoreCase("noload")) {
+        loadCheck = false;
+        option = optParameterAsString(++i);
+      }
+      if (option.equalsIgnoreCase("line") || option.equalsIgnoreCase("lines")) {
+        i++;
+        lineEnd = lineNumber = Math.max(intParameter(i++), 0);
+        if (checkToken(i))
+          if (getToken(i++).tok == Token.minus)
+            lineEnd = (checkToken(i) ? intParameter(i++) : 0);
+          else
+            error(ERROR_invalidArgument);
+      } else if (option.equalsIgnoreCase("command")
+          || option.equalsIgnoreCase("commands")) {
+        i++;
+        pc = Math.max(intParameter(i++) - 1, 0);
+        pcEnd = pc + 1;
+        if (checkToken(i))
+          if (getToken(i++).tok == Token.minus)
+            pcEnd = (checkToken(i) ? intParameter(i++) : 0);
+          else
+            error(ERROR_invalidArgument);
+      }
+      checkLength(i);
     }
-    if (option.equalsIgnoreCase("noload")) {
-      loadCheck = false;
-      option = optParameterAsString(++i);
-    }
-    if (option.equalsIgnoreCase("line") || option.equalsIgnoreCase("lines")) {
-      i++;
-      lineEnd = lineNumber = Math.max(intParameter(i++), 0);
-      if (checkToken(i))
-        if (getToken(i++).tok == Token.minus)
-          lineEnd = (checkToken(i) ? intParameter(i++) : 0);
-        else
-          error(ERROR_invalidArgument);
-    } else if (option.equalsIgnoreCase("command")
-        || option.equalsIgnoreCase("commands")) {
-      i++;
-      pc = Math.max(intParameter(i++) - 1, 0);
-      pcEnd = pc + 1;
-      if (checkToken(i))
-        if (getToken(i++).tok == Token.minus)
-          pcEnd = (checkToken(i) ? intParameter(i++) : 0);
-        else
-          error(ERROR_invalidArgument);
-    }
-    checkLength(i);
     if (isSyntaxCheck && !isScriptCheck)
       return;
     if (isScriptCheck)
@@ -12054,7 +12070,7 @@ class Eval {
         return evaluateWrite(args);
       case Token.script:
       case Token.javascript:
-        return evaluateScript(args, tok == Token.javascript);
+        return evaluateScript(args, tok);
       case Token.within:
         return evaluateWithin(args);
       case Token.getproperty:
@@ -12585,18 +12601,32 @@ class Eval {
       return addX(write(args));
     }
 
-    private boolean evaluateScript(Token[] args, boolean isJavaScript)
+    private boolean evaluateScript(Token[] args, int tok)
         throws ScriptException {
-      if (args.length != 1)
+      if (tok == Token.javascript && args.length != 1 || args.length == 0
+          || args.length > 2)
         return false;
       if (isSyntaxCheck)
         return addX("");
       String s = Token.sValue(args[0]);
-      if (isJavaScript)
-        return addX(viewer.eval(s));
       StringBuffer sb = new StringBuffer();
-      runScript(s, sb);
-      return addX(sb.toString());
+      switch (tok) {
+      case Token.script:
+        String appID = (args.length == 2 ? Token.sValue(args[1]) : ".");
+        //options include  * > . or an appletID with or without "jmolApplet" 
+        if (!appID.equals("."))
+          sb.append(viewer.eval(appID + "\1" + s));
+        if (appID.equals(".") || appID.equals("*"))
+          runScript(s, sb);
+        break;
+      case Token.javascript:
+        sb.append(viewer.eval(s));
+        break;
+      }
+      s = sb.toString();
+      float f;
+      return (Float.isNaN(f = Parser.parseFloatStrict(s)) ? addX(s) : s
+          .indexOf(".") >= 0 ? addX(f) : addX(Parser.parseInt(s)));
     }
 
     private boolean evaluateData(Token[] args) {

@@ -186,7 +186,7 @@ public class Jmol implements WrappedApplet {
 
   String language;
   String menuStructure;
-
+  
   public void init() {
     htmlName = getParameter("name");
     syncId = getParameter("syncId");
@@ -1032,7 +1032,7 @@ public class Jmol implements WrappedApplet {
         showStatusAndConsole(strInfo, toConsole);
         break;
       case JmolConstants.CALLBACK_SYNC:
-        sendSyncScript(doCallback, strInfo, (String) data[2]);
+        sendScript(strInfo, (String) data[2], true, doCallback);
         return;
       }
       if (!doCallback || !mayScript)
@@ -1118,6 +1118,10 @@ public class Jmol implements WrappedApplet {
     }
 
     public String eval(String strEval) {
+      // may be appletName\1script
+      int pt = strEval.indexOf("\1");
+      if (pt >= 0)
+        return sendScript(strEval.substring(pt + 1), strEval.substring(0, pt), false, false);
       if (strEval.startsWith("_GET_MENU"))
         return (jmolpopup == null ? "" : jmolpopup.getMenu("Jmol version " + Viewer.getJmolVersion() + "|" + strEval));
       if(!haveDocumentAccess)
@@ -1241,32 +1245,46 @@ public class Jmol implements WrappedApplet {
         jvm12.showConsole(showConsole);
     }
   
-    private void sendSyncScript(boolean doCallback, String script, String appletName) {
-      Vector apps = JmolAppletRegistry.findApplets(appletName, syncId, fullName);
-      if (doCallback)
+    private String sendScript(String script, String appletName, boolean isSync,
+                              boolean doCallback) {
+      if (doCallback) {
         script = notifySync(script);
-      if (apps == null || apps.size() == 0) {
-        if (!doCallback)
-          Logger.error(fullName + " couldn't find applet " + appletName);
-        return;
+        // if the notified JavaScript function returns "" or 0, then 
+        // we do NOT continue to notify the other applets
+        if (script == null || script.length() == 0 || script.equals("0"))
+          return "";
       }
-      // if the notified JavaScript function returns 0, then 
-      // we do NOT continue to notify the other applet
-      if (script == null || script.length() == 0)
-        return;
-      for (int i = 0; i < apps.size(); i++) {
-        String theApplet = (String)apps.elementAt(i);
-        JmolAppletInterface app = (JmolAppletInterface)JmolAppletRegistry.htRegistry.get(theApplet);
+      Vector apps = JmolAppletRegistry
+          .findApplets(appletName, syncId, fullName);
+      int nApplets = apps.size();
+      if (nApplets == 0) {
+        if (!appletName.equals("*")) {
+          if (!doCallback)
+            Logger.error(fullName + " couldn't find applet " + appletName);
+        }
+        return "";
+      }
+      StringBuffer sb = (isSync ? null : new StringBuffer());
+      for (int i = 0; i < nApplets; i++) {
+        String theApplet = (String) apps.elementAt(i);
+        JmolAppletInterface app = (JmolAppletInterface) JmolAppletRegistry.htRegistry
+            .get(theApplet);
         if (Logger.debugging)
-          Logger.debug(fullName + " sending to " + theApplet + ": "
-              + script);
+          Logger.debug(fullName + " sending to " + theApplet + ": " + script);
         try {
-          app.syncScript(script);
+          if (isSync)
+            app.syncScript(script);
+          else
+            sb.append(app.scriptWait(script, "output")).append("\n");
         } catch (Exception e) {
-          Logger.error(htmlName + " couldn't send to " + theApplet + ": "
-              + script + ": " + e);
-        } 
+          String msg = htmlName + " couldn't send to " + theApplet + ": "
+              + script + ": " + e;
+          Logger.error(msg);
+          if (!isSync)
+            sb.append(msg);
+        }
       }
+      return (isSync ? "" : sb.toString());
     }
     
     public Hashtable getRegistryInfo() {

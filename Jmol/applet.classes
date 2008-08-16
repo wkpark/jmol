@@ -1,5 +1,4 @@
 JmolApplet.java
-JmolAppletControl.java
 org/jmol/adapter/readers/*.java
 org/jmol/adapter/readers/cifpdb/*.java
 org/jmol/adapter/readers/molxyz/*.java
@@ -15,10 +14,7 @@ org/jmol/g3d/*.java
 org/jmol/geodesic/*.java
 org/jmol/i18n/*.java
 
-/////org/jmol/jcamp/*.java
-
 org/jmol/jvxl/*.java
-
 
 org/jmol/minimize/*.java
 org/jmol/minimize/forcefield/*.java
@@ -37,7 +33,6 @@ org/jmol/smiles/*.java
 
 org/jmol/symmetry/*.java
 org/jmol/util/*.java
-org/jmol/vecmath/*.java
 org/jmol/viewer/*.java
 
 

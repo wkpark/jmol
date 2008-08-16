@@ -22,7 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.vecmath;
+package org.jmol.util;
 import javax.vecmath.Point3f;
 
 public class Point3fi extends Point3f {

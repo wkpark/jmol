@@ -24,10 +24,10 @@
 package org.jmol.modelset;
 
 import org.jmol.util.Escape;
+import org.jmol.util.Point3fi;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Measure;
 
-import org.jmol.vecmath.Point3fi;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 

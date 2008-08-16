@@ -193,18 +193,4 @@ public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper implements
       return "" + (wrappedApplet.scriptWait("" + script, "" + statusParams));
     return null;
   }
-
-  /**
-   * @deprecated
-   * @param buttonWindow
-   * @param buttonName
-   * @param script
-   * @param buttonCallback
-   */
-  public void scriptButton(JSObject buttonWindow, String buttonName,
-                           String script, String buttonCallback) {
-    if (wrappedApplet != null)
-      wrappedApplet.scriptButton(buttonWindow, buttonName, script,
-          buttonCallback);
-  }
 }

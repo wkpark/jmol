@@ -25,7 +25,7 @@ package org.jmol.modelset;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.vecmath.Point3fi;
+import org.jmol.util.Point3fi;
 
 public class MeasurementPending extends Measurement {
 

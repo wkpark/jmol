@@ -27,7 +27,7 @@ package org.jmol.shape;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementPending;
-import org.jmol.vecmath.Point3fi;
+import org.jmol.util.Point3fi;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;

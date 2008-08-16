@@ -331,6 +331,10 @@ class Console implements ActionListener, WindowListener {
     output.setCaretPosition(outputDocument.getLength());
   }
 
+  String getText() {
+    return output.getText(); 
+  }
+
   public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
     if (source == runButton) {

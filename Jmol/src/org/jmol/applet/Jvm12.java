@@ -62,8 +62,11 @@ class Jvm12 {
   }
 
   void consoleMessage(String message) {
-    if (console != null)
       console.output(message);
+  }
+  
+  boolean haveConsole() {
+    return (console!= null);
   }
   
   Console getConsole() {
@@ -81,5 +84,9 @@ class Jvm12 {
       }
     }
     return console;
+  }
+
+  String getConsoleMessage() {
+    return console.getText();
   }
 }

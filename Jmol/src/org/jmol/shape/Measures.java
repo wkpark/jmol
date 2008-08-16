@@ -31,7 +31,7 @@ import org.jmol.modelset.MeasurementPending;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
-import org.jmol.vecmath.Point3fi;
+import org.jmol.util.Point3fi;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
 

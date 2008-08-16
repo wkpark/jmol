@@ -1,21 +1,22 @@
 # German translation of the Jmol application
 # Copyright (C) 2005 by the Jmol Development Team
-#
 # This file is distributed under the same license as the Jmol package.
-# Daniel Leidert <daniel.leidert@wgdd.de>, 2005.
+# Daniel Leidert <daniel.leidert at wgdd.de>, 2005.
 # Sebastian Lisken <Sebastian.Lisken at gmx.net>, 2006.
-#
+# Nicolas Vervelle <nicove@users.sourceforge.net>, 2008.
+# 
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
-"Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
+"Report-Msgid-Bugs-To: jmol-developers at lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-08-15 06:24+0200\n"
-"PO-Revision-Date: 2007-05-17 23:50+0100\n"
-"Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2008-08-15 17:07-0400\n"
+"Last-Translator: Oliver Stueker <revilo2208@users.sourceforge.net>\n"
+"Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: 8bit"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
 #: org/openscience/jmol/app/GuiMap.java:171
@@ -39,7 +40,7 @@ msgstr "OK"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:163
 msgid "AtomSetChooser"
-msgstr ""
+msgstr "Atomsatz-Auswahl"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:168
 msgid "No AtomSets"
@@ -156,7 +157,7 @@ msgstr "Vorschau"
 
 #: org/openscience/jmol/app/FilePreview.java:87
 msgid "Append models"
-msgstr ""
+msgstr "Modelle anhängen"
 
 #: org/openscience/jmol/app/GuiMap.java:46
 msgid "&File"
@@ -184,7 +185,7 @@ msgstr "Skrip&t..."
 
 #: org/openscience/jmol/app/GuiMap.java:52
 msgid "AtomSetChooser..."
-msgstr ""
+msgstr "Atomsatz-Auswahl..."
 
 #: org/openscience/jmol/app/GuiMap.java:53
 msgid "&Save As..."
@@ -201,21 +202,21 @@ msgstr "Bild exportieren..."
 
 #: org/openscience/jmol/app/GuiMap.java:56
 msgid "Save current view as an image."
-msgstr ""
+msgstr "Speichere derzeitige Ansicht als Datei"
 
 #: org/openscience/jmol/app/GuiMap.java:57
 #, fuzzy
 msgid "Export to &Web Page..."
-msgstr "PDF exportieren..."
+msgstr "Webseite exportieren..."
 
 #: org/openscience/jmol/app/GuiMap.java:58
 msgid "Export one or more views to a web page."
-msgstr ""
+msgstr "Exportiere eine oder mehrere Ansichten in eine Webseite."
 
 #: org/openscience/jmol/app/GuiMap.java:59
 #, fuzzy
 msgid "Render in POV-&Ray..."
-msgstr "Rendern in POV-Ray"
+msgstr "Rendern in POV-&Ray"
 
 #: org/openscience/jmol/app/GuiMap.java:60
 msgid "Render in pov-ray."
@@ -223,11 +224,11 @@ msgstr "In POV-Ray rendern."
 
 #: org/openscience/jmol/app/GuiMap.java:61
 msgid "Write &State..."
-msgstr ""
+msgstr "Schreibe &Zustand"
 
 #: org/openscience/jmol/app/GuiMap.java:62
 msgid "Save current view as a Jmol state script."
-msgstr ""
+msgstr "Speichere derzeizige Ansicht als Jmol Zutsands Skript."
 
 #: org/openscience/jmol/app/GuiMap.java:63
 msgid "&Print..."
@@ -270,7 +271,7 @@ msgstr "Bild kopieren"
 #: org/openscience/jmol/app/GuiMap.java:73
 #, fuzzy
 msgid "Copy Script"
-msgstr "Rasmol-Skripte"
+msgstr "Kopiere Skript"
 
 #: org/openscience/jmol/app/GuiMap.java:74
 msgid "&Preferences..."
@@ -278,7 +279,7 @@ msgstr "&Einstellungen..."
 
 #: org/openscience/jmol/app/GuiMap.java:75
 msgid "&Paste"
-msgstr ""
+msgstr "E&infügen"
 
 #: org/openscience/jmol/app/GuiMap.java:78
 msgid "All"
@@ -318,7 +319,7 @@ msgstr "Schwefel"
 
 #: org/openscience/jmol/app/GuiMap.java:86
 msgid "Amino"
-msgstr ""
+msgstr "Amino"
 
 #: org/openscience/jmol/app/GuiMap.java:87
 msgid "Nucleic"
@@ -491,7 +492,7 @@ msgstr "Messungen..."
 
 #: org/openscience/jmol/app/GuiMap.java:143
 msgid "Click atoms to measure distances"
-msgstr ""
+msgstr "Klicke auf Atome um die Entfernung zu messen"
 
 #: org/openscience/jmol/app/GuiMap.java:144
 msgid "Distance Units"
@@ -560,7 +561,7 @@ msgstr "Zum vorherigen Frame"
 #: org/openscience/jmol/app/GuiMap.java:163
 #, fuzzy
 msgid "Go to last frame"
-msgstr "Zum nächsten Frame"
+msgstr "Gehe zum letzten Frame"
 
 #: org/openscience/jmol/app/GuiMap.java:165
 msgid "Start vibration"
@@ -631,7 +632,7 @@ msgstr "Molekül drehen."
 
 #: org/openscience/jmol/app/GuiMap.java:186
 msgid "Select a set of atoms using SHIFT-LEFT-  DRAG."
-msgstr ""
+msgstr "Wähle einen Satz von Atomen mittels UMSCHALTEN-LINKS-  ZIEHEN."
 
 #: org/openscience/jmol/app/GuiMap.java:187
 msgid "Return molecule to home position."
@@ -863,7 +864,7 @@ msgstr "Ja"
 
 #: org/openscience/jmol/app/Jmol.java:478
 msgid "transparent background"
-msgstr ""
+msgstr "transparenter Hintergrund"
 
 #: org/openscience/jmol/app/Jmol.java:479
 msgid "give this help page"
@@ -871,31 +872,31 @@ msgstr "zeige diese Hilfeseite an"
 
 #: org/openscience/jmol/app/Jmol.java:481
 msgid "no display (and also exit when done)"
-msgstr ""
+msgstr "keine Anzeige (und Beende wenn fertig)"
 
 #: org/openscience/jmol/app/Jmol.java:482
 msgid "check script syntax only"
-msgstr ""
+msgstr "nur Syntax überprüfen"
 
 #: org/openscience/jmol/app/Jmol.java:483
 msgid "silent startup operation"
-msgstr ""
+msgstr "stille Start Operation"
 
 #: org/openscience/jmol/app/Jmol.java:484
 msgid "list commands during script execution"
-msgstr ""
+msgstr "Liste Befehle während Skript-Ausführung"
 
 #: org/openscience/jmol/app/Jmol.java:486
 msgid "no console -- all output to sysout"
-msgstr ""
+msgstr "keine Konsole -- gesamte Ausgabe nach SYSOUT"
 
 #: org/openscience/jmol/app/Jmol.java:487
 msgid "independent commmand thread"
-msgstr ""
+msgstr "unabhängiger Befehls Prozess"
 
 #: org/openscience/jmol/app/Jmol.java:489
 msgid "exit after script (implicit with -n)"
-msgstr ""
+msgstr "Nach Skript automatisch beenden (wird von -n impliziert)"
 
 #: org/openscience/jmol/app/Jmol.java:503
 msgid "property=value"
@@ -908,22 +909,22 @@ msgstr "unterstützte Optionen sind weiter unten angegeben"
 #: org/openscience/jmol/app/Jmol.java:511
 #, fuzzy, java-format
 msgid "window width x height, e.g. {0}"
-msgstr "Fenstergröße 500x500"
+msgstr "Fenstergröße Breite x Höhe, z.B. {0}"
 
 #: org/openscience/jmol/app/Jmol.java:519
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
-msgstr ""
+msgstr "JPG Bildqualität (1-100; Standard 75) oder PNG Bildkompression (0-9; Standard 2, maximale Kompression 9)"
 
 #: org/openscience/jmol/app/Jmol.java:525
 #, java-format
 msgid "{0} or {1}:filename"
-msgstr ""
+msgstr "{0} oder {1}:Dateiname"
 
 #: org/openscience/jmol/app/Jmol.java:547
 msgid "For example:"
-msgstr ""
+msgstr "Zum Beispiel:"
 
 #: org/openscience/jmol/app/Jmol.java:553
 msgid "The -D options are as follows (defaults in parathesis):"
@@ -1219,20 +1220,21 @@ msgstr "Stoppen"
 
 #: org/openscience/jmol/app/ScriptWindow.java:98
 msgid "History"
-msgstr ""
+msgstr "Historie"
 
 #: org/openscience/jmol/app/ScriptWindow.java:102
 #, fuzzy
+#, fuzzy
 msgid "State"
-msgstr "Speichern"
+msgstr "Zustand"
 
 #: org/openscience/jmol/app/ScriptWindow.java:114
 msgid "Undo"
-msgstr ""
+msgstr "Rückgängig"
 
 #: org/openscience/jmol/app/ScriptWindow.java:119
 msgid "Redo"
-msgstr ""
+msgstr "Wiederholen"
 
 #: org/openscience/jmol/app/Splash.java:45
 msgid "Loading..."
@@ -1253,7 +1255,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/LogPanel.java:52
 msgid "Log and Error Messages:"
-msgstr ""
+msgstr "Log und Fehlermeldungen:"
 
 #: org/openscience/jmol/app/webexport/LogPanel.java:60
 msgid "Messages (see Log tab for full history):"
@@ -1265,7 +1267,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:59
 msgid "Applet width:"
-msgstr ""
+msgstr "Applet Breite:"
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:61
 #, fuzzy
@@ -1278,19 +1280,19 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/ScriptButtons.java:51
 msgid "% of window for applet width:"
-msgstr ""
+msgstr "% des Fensters für Applet Breite:"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:96
 msgid "Couldn't find file: WebExportIntro.html"
-msgstr ""
+msgstr "Kann Datei nicht finden: WebExportIntro.html"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:115
 msgid "Introduction"
-msgstr ""
+msgstr "Einleitung"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:143
 msgid "Log"
-msgstr ""
+msgstr "Log"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:186
 msgid "Jmol Web Page Maker"
@@ -1298,11 +1300,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:111
 msgid "A web page containing Jmol applets"
-msgstr ""
+msgstr "Eine Webseite mit Jmol Applets"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:135
 msgid "double-click and drag to reorder"
-msgstr ""
+msgstr "Doppelklick und ziehen um neu anzuordnen"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:139
 msgid "Add Present Jmol State as Instance..."
@@ -1311,48 +1313,48 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:144
 #, fuzzy
 msgid "Show Selected"
-msgstr "Auswählen"
+msgstr "Zeige Auswahl"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:146
 msgid "Delete Selected"
-msgstr ""
+msgstr "Lösche Auswahl"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:177
 msgid "Jmol Instances:"
-msgstr ""
+msgstr "Jmol Instanzen:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:197
 msgid "Help/Instructions"
-msgstr ""
+msgstr "Hilfe/Anleitung"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:204
 msgid "Cartoon of Page"
-msgstr ""
+msgstr "Symbolische Ansicht der Seite"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:212
 msgid "Cartoon of Page:"
-msgstr ""
+msgstr "Symbolische Ansicht der Seite:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:217
 #, fuzzy
 msgid "Save HTML as..."
-msgstr "&Speichern unter..."
+msgstr "Speichern als &HTML unter..."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:227
 msgid "Relative server path to jar files:"
-msgstr ""
+msgstr "Relativer Server Pfad zu den jar Dateien:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:233
 msgid "Relative local path to jar files:"
-msgstr ""
+msgstr "Relativer lokaler Pfad zu den jar Dateien:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:239
 msgid "Author (your name):"
-msgstr ""
+msgstr "Autor (Ihr Name):"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:246
 msgid "Browser window title for this web page:"
-msgstr ""
+msgstr "Titel des Browserfensters für diese Webseite:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:332
 msgid "Give the occurence of Jmol a name:"
@@ -1365,34 +1367,34 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:362
 #, java-format
 msgid "added Instance {0}"
-msgstr ""
+msgstr "Instanz {0} hinzugefügt"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:365
 #, java-format
 msgid "updated Instance {0}"
-msgstr ""
+msgstr "Instanz {0} aktualisiert"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:402
 msgid "Select a directory to create or an HTML file to save"
-msgstr ""
+msgstr "Wähle ein zu erstellendes Verzeichnis oder eine HTML Datei zum speichern"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:420
 msgid "Call to FileWriter unsuccessful."
-msgstr ""
+msgstr "Aufruf von FileWriter nicht erfolgreich."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:458
 #, fuzzy, java-format
 msgid "Using directory {0}"
-msgstr "Arbeitsverzeichnis"
+msgstr "Arbeitsverzeichnis {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:459
 msgid "  adding JmolPopIn.js"
-msgstr ""
+msgstr "  hinzufügen von JmolPopin.js"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:468
 #, java-format
 msgid "      ...adding {0}.png"
-msgstr ""
+msgstr "      ...hinzufügen {0}.png"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:558
 #, java-format
@@ -1401,6 +1403,9 @@ msgid ""
 "{0}\n"
 "         to"
 msgstr ""
+"      ...kopiere\n"
+"{0}\n"
+"         nach"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:561
 #, java-format
@@ -1408,142 +1413,102 @@ msgid ""
 "Could not find or open:\n"
 "{0}"
 msgstr ""
+"Kann nicht finden oder öffnen:\n"
+"{0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:600
-msgid "      ...Compressing large data file to\n"
-msgstr ""
+msgid  "      ...Compressing large data file to\n"
+msgstr "      ...Komprimiere große Daten Datei zu\n"
 
 #~ msgid "Select Atoms"
 #~ msgstr "Atome auswählen"
-
 #~ msgid "Select an atom or region."
 #~ msgstr "Ein Atom oder einen Bereich markieren."
-
 #~ msgid "View measurement table."
 #~ msgstr "Messungen-Tabelle anzeigen."
-
 #~ msgid "Make crystal..."
 #~ msgstr "Kristall erzeugen..."
-
 #, fuzzy
 #~ msgid "Export view to an image or script file."
 #~ msgstr "Ansicht in einer Bilddatei exportieren."
-
 #, fuzzy
 #~ msgid "Export &PDF..."
 #~ msgstr "PDF exportieren..."
-
 #~ msgid "Image size"
-#~ msgstr "Bildgröße"
-
+#~ msgstr "Bildgröße"
 #~ msgid "Output format : "
 #~ msgstr "Ausgabeformat: "
-
 #~ msgid "Select the file format of the output file"
 #~ msgstr "Das Format für die Ausgabedatei auswählen"
-
 #~ msgid "Command Line to Execute"
 #~ msgstr "Auszuführende Kommandozeile"
-
 #~ msgid "The actual command which will be executed"
 #~ msgstr "Kommando, das ausgeführt werden wird"
-
 #~ msgid "null component string"
 #~ msgstr "String ohne Komponenten"
-
 #~ msgid "Filename Stem"
 #~ msgstr "Stamm des Dateinamens"
-
 #~ msgid "Use .ini file"
 #~ msgstr "Eine .ini-Datei erstellen"
-
 #~ msgid "Save options in a .ini file"
 #~ msgstr "Optionen in einer .ini-Datei speichern"
-
 #~ msgid "Render all frames"
 #~ msgstr "Alle Frames rendern"
-
 #~ msgid "Render each model (not only the currently displayed one)"
 #~ msgstr "Jedes Modell rendern (nicht nur das aktuell gezeigte)"
-
 #~ msgid "Turn on POV-Ray anti-aliasing"
 #~ msgstr "Anti-Aliasing für POV-Ray einschalten"
-
 #~ msgid "Use povray's slower but higher quality anti-aliasing mode"
 #~ msgstr ""
 #~ "Den langsameren und qualitativ besseren Anti-Aliasing-Modus von POV-Ray "
 #~ "benutzen"
-
 #~ msgid "Render in pov-ray..."
 #~ msgstr "In POV-Ray rendern..."
-
 #~ msgid "File not loaded"
 #~ msgstr "Datei wurde nicht geladen"
-
 #, fuzzy
 #~ msgid "no display"
 #~ msgstr "Anzeige"
-
 #, fuzzy
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Skript ausführen..."
-
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "&Rotation des Drahtgitter-Modells"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotation des Drahtgitter-Modells"
-
 #~ msgid "Colors"
 #~ msgstr "Farben"
-
 #~ msgid "Background"
 #~ msgstr "Hintergrund"
-
 #~ msgid "Set the Background Color"
 #~ msgstr "Hintergrundfarbe festlegen"
-
 #~ msgid "Background Color"
 #~ msgstr "Hintergrundfarbe"
-
 #~ msgid "Picked Atoms"
 #~ msgstr "Markierte Atome"
-
 #~ msgid "Set the Color for Picked Atoms"
 #~ msgstr "Farbe für markierte Atome festlegen"
-
 #~ msgid "Picked Atom Color"
 #~ msgstr "Farbe der markierten Atome"
-
 #~ msgid "Text"
 #~ msgstr "Text"
-
 #~ msgid "Set the Color for Text"
 #~ msgstr "Textfarbe festlegen"
-
 #~ msgid "Text Color"
 #~ msgstr "Textfarbe"
-
 #~ msgid "Set the Color for Bonds"
 #~ msgstr "Farbe der Bindungen festlegen"
-
 #~ msgid "Bond Color"
 #~ msgstr "Farbe der Bindungen"
-
 #~ msgid "Vectors"
 #~ msgstr "Vektoren"
-
 #~ msgid "Set the Vector Color"
 #~ msgstr "Farbe der Vektoren festlegen"
-
 #~ msgid "Vector Color"
 #~ msgstr "Farbe der Vektoren"
-
 #~ msgid "Color for distance, angle, & torsion measurements"
 #~ msgstr "Farbe der Distanz-, Winkel- und Torsionsmessungen"
-
 #~ msgid "Measurements Color"
 #~ msgstr "Farbe der Messungen"
-
 #~ msgid "Loading plugins..."
 #~ msgstr "Lade Plugins..."

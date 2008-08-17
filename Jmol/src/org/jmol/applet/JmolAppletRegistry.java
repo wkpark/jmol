@@ -33,6 +33,7 @@ import java.util.Vector;
 
 import netscape.javascript.JSObject;
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 
 final class JmolAppletRegistry {
 
@@ -87,11 +88,16 @@ final class JmolAppletRegistry {
     }
   }
 
-  synchronized public static Vector findApplets(String appletName,
+  synchronized public static void findApplets(String appletName,
                                                 String mySyncId,
-                                                String excludeName) {
+                                                String excludeName, Vector apps) {
+    if (appletName.indexOf(",") >= 0) {
+      String[] names = TextFormat.split(appletName, ",");
+      for (int i = 0; i < names.length; i++)
+        findApplets(names[i], mySyncId, excludeName, apps);
+      return;
+    }
     String ext = "__" + mySyncId + "__";
-    Vector apps = new Vector();
     if (appletName.equals("*") || appletName.equals(">")) {
       Enumeration keys = htRegistry.keys();
       while (keys.hasMoreElements()) {
@@ -107,6 +113,5 @@ final class JmolAppletRegistry {
       if (!appletName.equals(excludeName) && htRegistry.containsKey(appletName))
         apps.addElement(appletName);
     }
-    return apps;
   }
 }

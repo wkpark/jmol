@@ -1160,7 +1160,9 @@ public class Jmol implements WrappedApplet {
         if (script == null || script.length() == 0 || script.equals("0"))
           return "";
       }
-      Vector apps = JmolAppletRegistry.findApplets(appletName, syncId, fullName);
+      
+      Vector apps = new Vector();
+      JmolAppletRegistry.findApplets(appletName, syncId, fullName, apps);
       int nApplets = apps.size();
       if (nApplets == 0) {
         if (!doCallback && !appletName.equals("*"))

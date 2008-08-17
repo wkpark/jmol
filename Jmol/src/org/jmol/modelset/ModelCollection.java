@@ -1032,8 +1032,8 @@ abstract public class ModelCollection extends BondCollection {
       models[modelDataIndex].defaultRotationRadius = (type
           .startsWith("ramachandran") ? 260 : 12);
       model.dataFrames.put(type, new Integer(modelDataIndex));
-    }
-    if (type.indexOf(" ") > 0 && type.indexOf("deriv") < 0) { //generic quaternion
+    }  
+    if (type.startsWith("quaternion") && type.indexOf("deriv") < 0) { //generic quaternion
       type = type.substring(0, type.indexOf(" "));
       model.dataFrames.put(type, new Integer(modelDataIndex));
     }

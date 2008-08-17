@@ -4576,6 +4576,7 @@ class Eval {
       break;
     }
     runScript(script);
+    viewer.setRotationRadius(isQuaternion ? 12.5f : 260f, true);
     viewer.loadShape(JmolConstants.SHAPE_ECHO);
     showString("frame " + viewer.getModelNumberDotted(modelCount - 1) + " created: "
         + type);

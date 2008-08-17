@@ -1029,8 +1029,6 @@ abstract public class ModelCollection extends BondCollection {
         model.dataFrames = new Hashtable();
       models[modelDataIndex].dataSourceFrame = modelIndex;
       models[modelDataIndex].jmolFrameType = type;
-      models[modelDataIndex].defaultRotationRadius = (type
-          .startsWith("ramachandran") ? 260 : 12);
       model.dataFrames.put(type, new Integer(modelDataIndex));
     }  
     if (type.startsWith("quaternion") && type.indexOf("deriv") < 0) { //generic quaternion

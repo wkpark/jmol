@@ -425,25 +425,27 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   public String calculatePointGroup(BitSet bsAtoms) {
-    return calculatePointGroupForFirstModel(bsAtoms, true, false, false, null, 0, 0, null);
+    return (String) calculatePointGroupForFirstModel(bsAtoms, false,
+        false, false, null, 0, 0);
   }
 
   public Hashtable getPointGroupInfo(BitSet bsAtoms) {
-    Hashtable info = new Hashtable();
-    calculatePointGroupForFirstModel(bsAtoms, false, true, false, null, 0, 0, info);
-    return info;
+    return (Hashtable) calculatePointGroupForFirstModel(bsAtoms, false,
+        false, true, null, 0, 0);
   }
   
   public String getPointGroupAsString(BitSet bsAtoms, boolean asDraw,
                                       String type, int index, float scale) {
-    return calculatePointGroupForFirstModel(bsAtoms, false, true, asDraw, type, index, scale, null);
+    return (String) calculatePointGroupForFirstModel(bsAtoms, true,
+        asDraw, false, type, index, scale);
   }
 
-  private String calculatePointGroupForFirstModel(BitSet bsAtoms,
-                                                  boolean forceNew,
+  SymmetryInterface pointGroup;
+  private Object calculatePointGroupForFirstModel(BitSet bsAtoms,
                                                   boolean doAll,
-                                                  boolean asDraw, String type,
-                                                  int index, float scale, Hashtable info) {
+                                                  boolean asDraw,
+                                                  boolean asInfo, String type,
+                                                  int index, float scale) {
     int modelIndex = viewer.getCurrentModelIndex();
     int iAtom = BitSetUtil.firstSetBit(bsAtoms);
     if (modelIndex < 0 && iAtom >= 0)
@@ -466,14 +468,18 @@ abstract public class ModelSet extends ModelCollection {
     Object obj = getShapeProperty(JmolConstants.SHAPE_VECTORS, "mad", iAtom);
     boolean haveVibration = (obj != null && ((Integer) obj).intValue() != 0 || viewer
         .isVibrationOn());
-    SymmetryInterface symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
-    symmetry.setPointGroup(atoms, bs, haveVibration, 
+    SymmetryInterface symmetry = (SymmetryInterface) Interface
+        .getOptionInterface("symmetry.Symmetry");
+    pointGroup = symmetry.setPointGroup(pointGroup, atoms, bs, haveVibration,
         viewer.getPointGroupTolerance(0), viewer.getPointGroupTolerance(1));
-    if (doAll)
-      return (modelCount > 1 ? "frame " + getModelNumberDotted(modelIndex)
-          + "; " : "")
-          + symmetry.getPointGroupInfo(modelIndex, asDraw, type, index, scale, info);
-    return symmetry.getPointGroupName();
+    if (!doAll && !asInfo)
+      return pointGroup.getPointGroupName();
+    Object ret = pointGroup.getPointGroupInfo(modelIndex, asDraw, asInfo, type,
+        index, scale);
+    if (asInfo)
+      return ret;
+    return (modelCount > 1 ? "frame " + getModelNumberDotted(modelIndex) + "; "
+        : "") + ret;
   }
 
   private BitSet modelsOf(BitSet bsAtoms, BitSet bsAllAtoms) {

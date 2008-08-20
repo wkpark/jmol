@@ -11,16 +11,18 @@ import org.jmol.modelset.Atom;
 
 public interface SymmetryInterface {
 
-  public abstract void setPointGroup(Atom[] atomset, BitSet bsAtoms,
+  public abstract SymmetryInterface setPointGroup(
+                                     SymmetryInterface pointGroupPrevious,
+                                     Atom[] atomset, BitSet bsAtoms,
                                      boolean haveVibration,
                                      float distanceTolerance,
                                      float linearTolerance);
 
   public abstract String getPointGroupName();
 
-  public abstract String getPointGroupInfo(int modelIndex, boolean asDraw,
-                                           String type, int index, float scale,
-                                           Hashtable info);
+  public abstract Object getPointGroupInfo(int modelIndex, boolean asDraw,
+                                           boolean asInfo, String type,
+                                           int index, float scale);
 
   public abstract void setSpaceGroup(boolean doNormalize);
 

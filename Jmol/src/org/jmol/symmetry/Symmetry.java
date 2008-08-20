@@ -72,20 +72,32 @@ public class Symmetry implements SymmetryInterface {
     // as that will invalidate the Jar file modularization    
   }
   
-  public void setPointGroup(Atom[] atomset, BitSet bsAtoms,
-                            boolean haveVibration, float distanceTolerance,
-                            float linearTolerance) {
-    pointGroup = new PointGroup(atomset, bsAtoms, haveVibration,
+  public SymmetryInterface setPointGroup(SymmetryInterface siLast,
+                                         Atom[] atomset, BitSet bsAtoms,
+                                         boolean haveVibration,
+                                         float distanceTolerance,
+                                         float linearTolerance) {
+    pointGroup = PointGroup.getPointGroup(siLast == null ? null
+        : ((Symmetry) siLast).pointGroup, atomset, bsAtoms, haveVibration,
         distanceTolerance, linearTolerance);
+    return this;
   }
   
   public String getPointGroupName() {
     return pointGroup.getName();
   }
 
-  public String getPointGroupInfo(int modelIndex, boolean asDraw, String type, 
-                                  int index, float scale, Hashtable info) {
-    return pointGroup.getInfo(modelIndex, asDraw, type, index, scale, info);
+  public Object getPointGroupInfo(int modelIndex, boolean asDraw,
+                                  boolean asInfo, String type, int index,
+                                  float scale) {
+    if (!asDraw && !asInfo && pointGroup.textInfo != null)
+      return pointGroup.textInfo;
+    else if (asDraw && pointGroup.drawInfo != null
+        && pointGroup.drawType.equals(type))
+      return pointGroup.drawInfo;
+    else if (asInfo && pointGroup.info != null)
+      return pointGroup.info;
+    return pointGroup.getInfo(modelIndex, asDraw, asInfo, type, index, scale);
   }
 
   // SpaceGroup methods

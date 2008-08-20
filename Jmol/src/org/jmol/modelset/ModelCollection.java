@@ -1339,8 +1339,10 @@ abstract public class ModelCollection extends BondCollection {
           atoms[i].add(center);          
         } else {
           ptTemp.add(atoms[i]);
+          System.out.println((Point3f)atoms[i]);
           matTemp.transform(atoms[i]);
           ptTemp.sub(atoms[i]);
+          System.out.println((Point3f)atoms[i]);
         }
         taint(i, TAINT_COORD);
         n++;

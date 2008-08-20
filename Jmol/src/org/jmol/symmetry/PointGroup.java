@@ -25,6 +25,9 @@
 package org.jmol.symmetry;
 
 import java.util.BitSet;
+import java.util.Hashtable;
+import java.util.Vector;
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -120,7 +123,8 @@ public class PointGroup {
   private int nAtoms;
   private float radius;
   private float distanceTolerance = 0.2f;
-  private float linearTolerance = 0.99f; // 8 degrees
+  private float linearTolerance = 8f;
+  private float cosTolerance = 0.99f; // 8 degrees
   private String name = "C_1?";
   private Operation principalAxis = new Operation(null);
   private Operation principalPlane = new Operation(null);
@@ -138,7 +142,8 @@ public class PointGroup {
   PointGroup(Atom[] atomset, BitSet bsAtoms, boolean haveVibration,  
                     float distanceTolerance, float linearTolerance) {
     this.distanceTolerance = distanceTolerance;
-    this.linearTolerance = (float) (Math.cos(linearTolerance / 180 * Math.PI));
+    this.linearTolerance = linearTolerance;
+    cosTolerance = (float) (Math.cos(linearTolerance / 180 * Math.PI));
     
     Point3f[] atoms;
     if ((atoms = getAtoms(atomset, bsAtoms)) == null) {
@@ -419,12 +424,12 @@ public class PointGroup {
 
   private boolean isParallel(Vector3f v1, Vector3f v2) {
     // note -- these MUST be unit vectors
-    return (Math.abs(v1.dot(v2)) >= linearTolerance);
+    return (Math.abs(v1.dot(v2)) >= cosTolerance);
   }
 
   private boolean isPerpendicular(Vector3f v1, Vector3f v2) {
     // note -- these MUST be unit vectors
-    return (Math.abs(v1.dot(v2)) <= 1 - linearTolerance);
+    return (Math.abs(v1.dot(v2)) <= 1 - cosTolerance);
   }
 
   int maxElement = 0;
@@ -801,6 +806,7 @@ public class PointGroup {
     int type;
     int order;
     int index;
+    int typeIndex;
     Vector3f normalOrAxis;
 
     Operation() {
@@ -844,7 +850,7 @@ public class PointGroup {
   }
 
   String getInfo(int modelIndex, boolean asDraw, String type, int index,
-                        float scaleFactor) {
+                 float scaleFactor, Hashtable info) {
     Vector3f v = new Vector3f();
     Operation op;
     if (scaleFactor == 0)
@@ -855,7 +861,7 @@ public class PointGroup {
         nType[axes[i][j].type][0]++;
     StringBuffer sb = new StringBuffer("# " + nAtoms + " atoms\n");
     if (asDraw) {
-      boolean haveType = (type.length() > 0);
+      boolean haveType = (type != null && type.length() > 0);
       boolean anyProperAxis = (type.equalsIgnoreCase("Cn"));
       boolean anyImproperAxis = (type.equalsIgnoreCase("Sn"));
       sb.append("set perspectivedepth off;\n");
@@ -931,9 +937,10 @@ public class PointGroup {
       sb.append(", nSn=" + nType[OPERATION_IMPROPER_AXIS][0]);
       sb.append(": ");
       for (int i = maxAxis; --i >= 2;)
-        if (nAxes[i] > 0)
-          sb.append(" n" + (i < firstProper ? "S" : "C") + (i % firstProper)
-              + "=" + nAxes[i]);
+        if (nAxes[i] > 0) {
+          String s = " n" + (i < firstProper ? "S" : "C") + (i % firstProper);
+          sb.append(s + "=" + nAxes[i]);
+        }
       sb.append(";\n");
     } else {
       int n = 0;
@@ -942,19 +949,30 @@ public class PointGroup {
         if (nAxes[i] > 0) {
           n = nUnique[i];
           String label = axes[i][0].getLabel();
+          if (info != null)
+            info.put("n" + label, new Integer(nAxes[i]));
           sb.append("\n\n" + name + "\tn" + label + "\t" + nAxes[i] + "\t" + n);
           n *= nAxes[i];
           nTotal += n;
           nType[axes[i][0].type][1] += n;
+          Vector vinfo = (info == null ? null : new Vector());
           for (int j = 0; j < nAxes[i]; j++) {
+            axes[i][j].typeIndex = j + 1;
+            if (vinfo != null) {
+              vinfo.add(axes[i][j].normalOrAxis);
+            }
             sb.append("\n" + name + "\t" + label + "_" + (j + 1) + "\t"
                 + axes[i][j].normalOrAxis);
           }
+          if (info != null)
+            info.put(label, vinfo);
         }
       }
       if (haveInversionCenter) {
         nTotal++;
         sb.append("\n\n" + name + "\tCi\t" + Escape.escape(center));
+        if (info != null)
+          info.put("Ci", center);
       }
       sb.append("\n");
       sb.append("\n" + name + "\ttype\tnType\tnUnique");
@@ -977,6 +995,25 @@ public class PointGroup {
 
       sb.append(name + "\t\tTOTAL\t");
       TextFormat.rFill(sb, "    ", nTotal + "\n");
+
+      if (info != null) {
+        info.put("name", name);
+        info.put("nAtoms", new Integer(nAtoms));
+        info.put("nTotal", new Integer(nTotal));
+        info.put("nCi", new Integer(haveInversionCenter ? 1 : 0));
+        info.put("nCs", new Integer(nAxes[0]));
+        info.put("nCn", new Integer(nType[OPERATION_PROPER_AXIS][0]));
+        info.put("nSn", new Integer(nType[OPERATION_IMPROPER_AXIS][0]));
+        info.put("distanceTolerance", new Float(distanceTolerance));
+        info.put("linearTolerance", new Float(linearTolerance));
+        info.put("detail", sb.toString().replace('\n', ';'));
+        if (principalAxis.index > 0)
+          info.put("principalAxis", principalAxis.getLabel() + "["
+              + principalAxis.typeIndex + "]");
+        if (principalPlane.index > 0)
+          info.put("principalPlane", principalPlane.getLabel() + "["
+              + principalPlane.typeIndex + "]");
+      }
     }
     return sb.toString();
   }

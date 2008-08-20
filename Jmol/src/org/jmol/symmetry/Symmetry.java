@@ -83,8 +83,9 @@ public class Symmetry implements SymmetryInterface {
     return pointGroup.getName();
   }
 
-  public String getPointGroupInfo(int modelIndex, boolean asDraw, String type, int index, float scale) {
-    return pointGroup.getInfo(modelIndex, asDraw, type, index, scale);
+  public String getPointGroupInfo(int modelIndex, boolean asDraw, String type, 
+                                  int index, float scale, Hashtable info) {
+    return pointGroup.getInfo(modelIndex, asDraw, type, index, scale, info);
   }
 
   // SpaceGroup methods

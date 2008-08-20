@@ -6516,6 +6516,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.calculatePointGroup(selectionManager.bsSelection);
   }
 
+  public Hashtable getPointGroupInfo(Object atomExpression) {
+    return modelSet.getPointGroupInfo(getAtomBitSet(atomExpression));
+  }
+
   public String getPointGroupAsString(boolean asDraw, String type, int index,
                                       float scale) {
     return modelSet.getPointGroupAsString(selectionManager.bsSelection, asDraw,

@@ -19,7 +19,8 @@ public interface SymmetryInterface {
   public abstract String getPointGroupName();
 
   public abstract String getPointGroupInfo(int modelIndex, boolean asDraw,
-                                           String type, int index, float scale);
+                                           String type, int index, float scale,
+                                           Hashtable info);
 
   public abstract void setSpaceGroup(boolean doNormalize);
 

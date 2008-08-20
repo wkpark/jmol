@@ -425,19 +425,25 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   public String calculatePointGroup(BitSet bsAtoms) {
-    return calculatePointGroupForFirstModel(bsAtoms, true, false, false, null, 0, 0);
+    return calculatePointGroupForFirstModel(bsAtoms, true, false, false, null, 0, 0, null);
   }
 
+  public Hashtable getPointGroupInfo(BitSet bsAtoms) {
+    Hashtable info = new Hashtable();
+    calculatePointGroupForFirstModel(bsAtoms, false, true, false, null, 0, 0, info);
+    return info;
+  }
+  
   public String getPointGroupAsString(BitSet bsAtoms, boolean asDraw,
                                       String type, int index, float scale) {
-    return calculatePointGroupForFirstModel(bsAtoms, false, true, asDraw, type, index, scale);
+    return calculatePointGroupForFirstModel(bsAtoms, false, true, asDraw, type, index, scale, null);
   }
 
   private String calculatePointGroupForFirstModel(BitSet bsAtoms,
                                                   boolean forceNew,
                                                   boolean doAll,
                                                   boolean asDraw, String type,
-                                                  int index, float scale) {
+                                                  int index, float scale, Hashtable info) {
     int modelIndex = viewer.getCurrentModelIndex();
     int iAtom = BitSetUtil.firstSetBit(bsAtoms);
     if (modelIndex < 0 && iAtom >= 0)
@@ -466,7 +472,7 @@ abstract public class ModelSet extends ModelCollection {
     if (doAll)
       return (modelCount > 1 ? "frame " + getModelNumberDotted(modelIndex)
           + "; " : "")
-          + symmetry.getPointGroupInfo(modelIndex, asDraw, type, index, scale);
+          + symmetry.getPointGroupInfo(modelIndex, asDraw, type, index, scale, info);
     return symmetry.getPointGroupName();
   }
 
@@ -789,5 +795,6 @@ abstract public class ModelSet extends ModelCollection {
     super.deleteAtoms(-1, 0, 0, null, null);
     return bsDeleted;
   }
+
 }
 

@@ -406,15 +406,17 @@ public abstract class MeshCollection extends Shape {
     if (JmolConstants.PREVIOUS_MESH_ID.equals(thisID))
       return (previousMeshID == null ? meshCount - 1
           : getIndexFromName(previousMeshID));
-    if (TextFormat.isWild(thisID))
+    if (TextFormat.isWild(thisID)) {
+      thisID = thisID.toLowerCase();
       for (int i = meshCount; --i >= 0;) {
         if (meshes[i] != null
             && TextFormat.isMatch(meshes[i].thisID, thisID, true, true))
           return i;
       }
+    }
     else
       for (int i = meshCount; --i >= 0;) {
-        if (meshes[i] != null && thisID.equals(meshes[i].thisID))
+        if (meshes[i] != null && thisID.equalsIgnoreCase(meshes[i].thisID))
           return i;
       }
     return -1;

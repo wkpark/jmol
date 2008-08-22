@@ -2726,6 +2726,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         measurementPending);
   }
 
+  MeasurementPending getPendingMeasurement() {
+    return (MeasurementPending) getShapeProperty(JmolConstants.SHAPE_MEASURES, "pending");
+  }
+
   void clearAllMeasurements() {
     //Eval only
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "clear", null);

@@ -226,6 +226,8 @@ public class Measures extends Shape {
   }
 
   public Object getProperty(String property, int index) {
+    if ("pending".equals(property))
+      return measurementPending;
     if ("count".equals(property))
       return new Integer(measurementCount);
     if ("countPlusIndices".equals(property))

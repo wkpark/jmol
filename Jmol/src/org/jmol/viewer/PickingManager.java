@@ -184,15 +184,14 @@ class PickingManager {
         viewer.script("zoomTo " + Escape.escape(ptClicked));
       return;
     case JmolConstants.PICKING_SPIN:
-      if (viewer.getSpinOn()) {
+      if (viewer.getSpinOn() || viewer.getPendingMeasurement() != null) {
+        resetMeasurement();
         viewer.script("spin off");
         return;
       }
       if (measurementQueued.getCount() >= 2)
         resetMeasurement();
       int queuedAtomCount = measurementQueued.getCount(); 
-      if (queuedAtomCount < 2)
-        return;
       if (queuedAtomCount == 1) {
         if (ptClicked == null) {
           if (measurementQueued.getAtomIndex(1) == atomIndex)

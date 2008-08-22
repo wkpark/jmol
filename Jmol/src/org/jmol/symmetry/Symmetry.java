@@ -92,8 +92,7 @@ public class Symmetry implements SymmetryInterface {
                                   float scale) {
     if (!asDraw && !asInfo && pointGroup.textInfo != null)
       return pointGroup.textInfo;
-    else if (asDraw && pointGroup.drawInfo != null
-        && pointGroup.drawType.equals(type))
+    else if (asDraw && pointGroup.isDrawType(type))
       return pointGroup.drawInfo;
     else if (asInfo && pointGroup.info != null)
       return pointGroup.info;

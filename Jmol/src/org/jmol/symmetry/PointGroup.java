@@ -48,7 +48,7 @@ import org.jmol.util.TextFormat;
  *
  */
 
-public class PointGroup {
+class PointGroup {
 
   private final static int[] axesMaxN = new int[] { 
      15, // used for plane count
@@ -142,7 +142,7 @@ public class PointGroup {
   private Point3f[] atoms;
   private int[] elements;
   
-  public static PointGroup getPointGroup(PointGroup pgLast, Atom[] atomset,
+  static PointGroup getPointGroup(PointGroup pgLast, Atom[] atomset,
                                          BitSet bsAtoms, boolean haveVibration,
                                          float distanceTolerance,
                                          float linearTolerance) {
@@ -154,7 +154,7 @@ public class PointGroup {
   private PointGroup() {
   }
   
-  public boolean isEqual(PointGroup pg) {
+  private boolean isEqual(PointGroup pg) {
     if (pg == null)
       return false;
     if (this.linearTolerance != pg.linearTolerance 
@@ -892,7 +892,7 @@ public class PointGroup {
     StringBuffer sb = new StringBuffer("# " + nAtoms + " atoms\n");
     if (asDraw) {
       boolean haveType = (type != null && type.length() > 0);
-      drawType = (haveType ? type : "");
+      drawType = type = (haveType ? type : "");
       boolean anyProperAxis = (type.equalsIgnoreCase("Cn"));
       boolean anyImproperAxis = (type.equalsIgnoreCase("Sn"));
       sb.append("set perspectivedepth off;\n");
@@ -1050,4 +1050,9 @@ public class PointGroup {
         info.put("principalPlane", principalPlane.normalOrAxis);
     return info;
   }
+
+  boolean isDrawType(String type) {
+    return (drawInfo != null && drawType.equals(type == null ? "" : type));
+  }
+  
 }

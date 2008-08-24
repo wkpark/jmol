@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-08-15 06:24+0200\n"
-"PO-Revision-Date: 2008-08-13 17:25+0000\n"
+"PO-Revision-Date: 2008-08-23 16:21+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-08-13 20:04+0000\n"
+"X-Launchpad-Export-Date: 2008-08-24 07:28+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -556,7 +556,6 @@ msgid "Go to previous frame"
 msgstr "Aller à la trame précédente"
 
 #: org/openscience/jmol/app/GuiMap.java:163
-#, fuzzy
 msgid "Go to last frame"
 msgstr "Aller à la dernière trame"
 
@@ -858,7 +857,7 @@ msgstr "Oui"
 
 #: org/openscience/jmol/app/Jmol.java:478
 msgid "transparent background"
-msgstr ""
+msgstr "arrière-plan transparent"
 
 #: org/openscience/jmol/app/Jmol.java:479
 msgid "give this help page"
@@ -910,6 +909,8 @@ msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
+"qualité d'image JPG (1-100; 75 par défaut) ou compression d'image PNG (0-9; "
+"2 par défaut, compression maximale 9)"
 
 #: org/openscience/jmol/app/Jmol.java:525
 #, java-format
@@ -1257,7 +1258,6 @@ msgid "Applet width:"
 msgstr "Largeur de l'applet :"
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:61
-#, fuzzy
 msgid "height:"
 msgstr "Hauteur :"
 
@@ -1267,7 +1267,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/ScriptButtons.java:51
 msgid "% of window for applet width:"
-msgstr ""
+msgstr "% de la fenêtre pour la largeur de l'applet"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:96
 msgid "Couldn't find file: WebExportIntro.html"
@@ -1337,7 +1337,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:239
 msgid "Author (your name):"
-msgstr ""
+msgstr "Auteur (votre nom) :"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:246
 msgid "Browser window title for this web page:"
@@ -1376,12 +1376,12 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:459
 msgid "  adding JmolPopIn.js"
-msgstr ""
+msgstr "  ajout de JmolPopIn.js"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:468
 #, java-format
 msgid "      ...adding {0}.png"
-msgstr ""
+msgstr "      ...ajout de {0}.png"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:558
 #, java-format
@@ -1390,6 +1390,9 @@ msgid ""
 "{0}\n"
 "         to"
 msgstr ""
+"      ...copie de\n"
+"{0}\n"
+"         vers"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:561
 #, java-format

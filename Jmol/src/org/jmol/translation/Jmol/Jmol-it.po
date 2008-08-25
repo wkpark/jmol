@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-08-15 06:24+0200\n"
-"PO-Revision-Date: 2008-08-24 18:21+0000\n"
+"PO-Revision-Date: 2008-08-25 06:16+0000\n"
 "Last-Translator: Matteo Ferrabone <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-08-24 18:36+0000\n"
+"X-Launchpad-Export-Date: 2008-08-25 21:12+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
@@ -860,7 +860,7 @@ msgstr "sfondo trasparente"
 
 #: org/openscience/jmol/app/Jmol.java:479
 msgid "give this help page"
-msgstr ""
+msgstr "fornisce questa pagina di aiuto"
 
 #: org/openscience/jmol/app/Jmol.java:481
 msgid "no display (and also exit when done)"

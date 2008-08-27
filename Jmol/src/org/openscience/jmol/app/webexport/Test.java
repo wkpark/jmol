@@ -55,7 +55,7 @@ public class Test extends JPanel implements ActionListener {
   }
 
   // Need the panel maker and the action listener.
-  public JComponent Panel() {
+  public JComponent panel() {
 
     // Create the brief discription text
     JLabel Description = new JLabel(

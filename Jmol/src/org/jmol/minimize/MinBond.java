@@ -24,10 +24,8 @@
 
 package org.jmol.minimize;
 
-import org.jmol.modelset.Bond;
-
 public class MinBond {
-  Bond bond;
+  //Bond bond;
   public int[] atomIndexes = new int[3]; //third index is bondOrder
   public boolean isAromatic;
   public boolean isAmide;

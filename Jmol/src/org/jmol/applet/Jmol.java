@@ -243,6 +243,7 @@ public class Jmol implements WrappedApplet {
     String appletProxy = getValue("JmolAppletProxy", null);
     if (appletProxy != null)
       options += "-appletProxy " + appletProxy;
+    System.out.println("setAppletContext: " + options);
     viewer.setAppletContext(fullName, appletWrapper.getDocumentBase(),
         appletWrapper.getCodeBase(), options);
     myStatusListener = new MyStatusListener();

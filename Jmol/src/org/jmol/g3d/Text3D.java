@@ -124,8 +124,8 @@ public class Text3D {
       width = g3d.width;
       height = g3d.height;
     } else if (g3d.isAntialiased()) {
-      width += width;
-      height += height;
+      //width += width;
+      //height += height;
     }
     if (x + width <= 0 || x >= g3d.width || y + height <= 0 || y >= g3d.height)
       return;    

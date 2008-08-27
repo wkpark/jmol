@@ -145,7 +145,7 @@ class Compiler {
    * 
    */
   
-  private class FlowContext {
+  private static class FlowContext {
     Token token;
     int pt0;
     Function function;

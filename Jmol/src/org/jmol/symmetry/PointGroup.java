@@ -126,8 +126,8 @@ class PointGroup {
   private float linearTolerance = 8f;
   private float cosTolerance = 0.99f; // 8 degrees
   private String name = "C_1?";
-  private Operation principalAxis = new Operation(null);
-  private Operation principalPlane = new Operation(null);
+  private Operation principalAxis;
+  private Operation principalPlane;
 
   String getName() {
     return name;
@@ -874,6 +874,7 @@ class PointGroup {
 
   String drawInfo;
   String drawType = "";
+  int drawIndex;
   Hashtable info;
   String textInfo;
   
@@ -893,6 +894,7 @@ class PointGroup {
     if (asDraw) {
       boolean haveType = (type != null && type.length() > 0);
       drawType = type = (haveType ? type : "");
+      drawIndex = index;
       boolean anyProperAxis = (type.equalsIgnoreCase("Cn"));
       boolean anyImproperAxis = (type.equalsIgnoreCase("Sn"));
       sb.append("set perspectivedepth off;\n");
@@ -927,12 +929,11 @@ class PointGroup {
                 j + 1).append(" width 0.05 scale " + scale + " ").append(
                 Escape.escape(v));
             v.scaleAdd(-2, op.normalOrAxis, v);
+            boolean isPA = (principalAxis != null && op.index == principalAxis.index);
             sb.append(Escape.escape(v)).append(
-                "\"" + label + (op.index == principalAxis.index ? "*" : "")
-                    + "\" color ").append(
-                op.index == principalAxis.index ? "red"
-                    : op.type == OPERATION_IMPROPER_AXIS ? "blue" : "yellow")
-                .append(";\n");
+                "\"" + label + (isPA ? "*" : "") + "\" color ").append(
+                isPA ? "red" : op.type == OPERATION_IMPROPER_AXIS ? "blue"
+                    : "yellow").append(";\n");
           }
       }
       if (!haveType || type.equalsIgnoreCase("Cs"))
@@ -1034,25 +1035,25 @@ class PointGroup {
       textInfo = sb.toString();
       return textInfo;
     }
-      info.put("name", name);
-      info.put("nAtoms", new Integer(nAtoms));
-      info.put("nTotal", new Integer(nTotal));
-      info.put("nCi", new Integer(haveInversionCenter ? 1 : 0));
-      info.put("nCs", new Integer(nAxes[0]));
-      info.put("nCn", new Integer(nType[OPERATION_PROPER_AXIS][0]));
-      info.put("nSn", new Integer(nType[OPERATION_IMPROPER_AXIS][0]));
-      info.put("distanceTolerance", new Float(distanceTolerance));
-      info.put("linearTolerance", new Float(linearTolerance));
-      info.put("detail", sb.toString().replace('\n', ';'));
-      if (principalAxis.index > 0)
-        info.put("principalAxis", principalAxis.normalOrAxis);
-      if (principalPlane.index > 0)
-        info.put("principalPlane", principalPlane.normalOrAxis);
+    info.put("name", name);
+    info.put("nAtoms", new Integer(nAtoms));
+    info.put("nTotal", new Integer(nTotal));
+    info.put("nCi", new Integer(haveInversionCenter ? 1 : 0));
+    info.put("nCs", new Integer(nAxes[0]));
+    info.put("nCn", new Integer(nType[OPERATION_PROPER_AXIS][0]));
+    info.put("nSn", new Integer(nType[OPERATION_IMPROPER_AXIS][0]));
+    info.put("distanceTolerance", new Float(distanceTolerance));
+    info.put("linearTolerance", new Float(linearTolerance));
+    info.put("detail", sb.toString().replace('\n', ';'));
+    if (principalAxis != null && principalAxis.index > 0)
+      info.put("principalAxis", principalAxis.normalOrAxis);
+    if (principalPlane != null && principalPlane.index > 0)
+      info.put("principalPlane", principalPlane.normalOrAxis);
     return info;
   }
 
-  boolean isDrawType(String type) {
-    return (drawInfo != null && drawType.equals(type == null ? "" : type));
+  boolean isDrawType(String type, int index) {
+    return (drawInfo != null && drawType.equals(type == null ? "" : type) && drawIndex == index);
   }
   
 }

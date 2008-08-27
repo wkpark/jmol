@@ -29,7 +29,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 //import javax.vecmath.Point3f;
-import javax.vecmath.Vector3d;
+//import javax.vecmath.Vector3d;
 
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
@@ -136,7 +136,7 @@ abstract public class ForceField {
       atoms[i].force[0] = atoms[i].force[1] = atoms[i].force[2] = 0; 
   }
   
-  Vector3d dir = new Vector3d();
+  //Vector3d dir = new Vector3d();
   public boolean steepestDescentTakeNSteps(int n) {
     if (stepMax == 0)
       return false;

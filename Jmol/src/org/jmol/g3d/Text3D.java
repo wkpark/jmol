@@ -78,7 +78,7 @@ public class Text3D {
                          JmolRendererInterface jmolRenderer, boolean antialias) {
     if (text.length() == 0)
       return 0;
-    System.out.println(x + "  " + y + " " + text);
+    //System.out.println(x + "  " + y + " " + text);
     if (text.indexOf("<su") >= 0)
       return plotByCharacter(x, y, z, argb, text, font3d, g3d, jmolRenderer,
           antialias);
@@ -96,7 +96,7 @@ public class Text3D {
     int textWidth = text3d.width;
     int textHeight = text3d.height;
     int mapWidth = text3d.mapWidth;
-    System.out.println ("mapWidth = " + mapWidth);
+    //System.out.println ("mapWidth = " + mapWidth);
     if (x + textWidth <= 0 || x >= g3d.width || y + textHeight <= 0
         || y >= g3d.height)
       return textWidth;
@@ -234,7 +234,7 @@ public class Text3D {
         width >>= 1;
       w += width;
     }
-    System.out.println("w=" + w);
+    //System.out.println("w=" + w);
     return w;
   }
   

@@ -228,11 +228,11 @@ class GuiMap {
     return map.get(key);
   }
 
-  String getKey(Object obj) {
+  static String getKey(Object obj) {
     return (((GetKey)obj).getKey());
   }
 
-  public String getLabelWithoutMnemonic(String label) {
+  private static String getLabelWithoutMnemonic(String label) {
     if (label == null) {
       return null;
     }
@@ -244,7 +244,7 @@ class GuiMap {
       ((index < label.length() - 1) ? label.substring(index + 1) : "");
   }
   
-  public char getMnemonic(String label) {
+  private static char getMnemonic(String label) {
     if (label == null) {
       return ' ';
     }
@@ -258,11 +258,11 @@ class GuiMap {
   void setSelected(String key, boolean b) {
     ((AbstractButton)get(key)).setSelected(b);
   }
-
+/*
   boolean isSelected(String key) {
     return ((AbstractButton)get(key)).isSelected();
   }
-
+*/
 
   interface GetKey {
     public String getKey();

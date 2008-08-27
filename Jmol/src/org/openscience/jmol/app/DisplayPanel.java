@@ -262,7 +262,7 @@ public class DisplayPanel extends JPanel
 
   private MenuListener menuListener = new MenuListener() {
       public void menuSelected(MenuEvent e) {
-        String menuKey = guimap.getKey(e.getSource());
+        String menuKey = GuiMap.getKey(e.getSource());
         if (menuKey.equals("display")) {
           setDisplayMenuState();
         }

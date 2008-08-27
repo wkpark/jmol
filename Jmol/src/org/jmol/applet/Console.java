@@ -50,6 +50,8 @@ class Console implements ActionListener, WindowListener {
 
   private final JmolViewer viewer;
   
+  private GuiMap guimap = new GuiMap();
+
   JmolViewer getViewer() {
     return viewer;
   }
@@ -131,26 +133,24 @@ class Console implements ActionListener, WindowListener {
   }
   
   protected void addHelpMenuBar(JMenuBar menuBar) {
-    //JMenu m0 = createMenu("Help");
-    JMenu m0 = newJMenu("Help");
-    JMenuItem item = new JMenuItem("Search...");
+    JMenu m0 = guimap.newJMenu("help");
+    JMenuItem item = guimap.newJMenuItem("search");
     item.addActionListener(this);
     item.setName("help ?search=?");
     m0.add(item);
     if (m0 == null)
       return;
     addHelpItems(m0, "commands", "command");
-    addHelpItems(m0, "math functions", "mathfunc");
-    addHelpItems(m0, "set parameters", "setparam");
+    addHelpItems(m0, "functions", "mathfunc");
+    addHelpItems(m0, "parameters", "setparam");
     addHelpItems(m0, "more", "misc");
     menuBar.add(m0);
   }
 
   
-  private void addHelpItems(JMenu m0, String label, String attr) {
-
+  private void addHelpItems(JMenu m0, String key, String attr) {
+    JMenu m = guimap.newJMenu(key);
     String[] commands = (String[]) viewer.getProperty(null, "tokenList", attr);
-    JMenu m = new JMenu(label);
     m0.add(m);
     JMenu m2 = null;
     String firstCommand = null;
@@ -184,105 +184,8 @@ class Console implements ActionListener, WindowListener {
     }
   }
 
-  JMenu newJMenu(String key) {
-    String label = "Help";
-    return new KeyJMenu(key, getLabelWithoutMnemonic(label), getMnemonic(label));
-  }
-
-  class KeyJMenu extends JMenu {
-    String key;
-    KeyJMenu(String key, String label, char mnemonic) {
-      super(label);
-      if (mnemonic != ' ') {
-          setMnemonic(mnemonic);
-      }
-      this.key = key;
-      //map.put(key, this);
-    }
-    public String getKey() {
-      return key;
-    }
-  }
-
-
-  private char getMnemonic(String label) {
-    return 'h';
-  }
-
-  private String getLabelWithoutMnemonic(String label) {
-    return label;
-  }
-
-  protected JMenu createMenu(String key) {
-
-    // Get list of items from resource file:
-//    String[] itemKeys = new tokenize(JmolResourceHandler.getStringX(key));
-
-    // Get label associated with this menu:
-    JMenu menu = newJMenu(key);
-    /*
-    ImageIcon f = JmolResourceHandler.getIconX(key + "Image");
-    if (f != null) {
-      menu.setHorizontalTextPosition(SwingConstants.RIGHT);
-      menu.setIcon(f);
-    }
-
-    // Loop over the items in this menu:
-    for (int i = 0; i < itemKeys.length; i++) {
-
-      String item = itemKeys[i];
-      if (item.equals("-")) {
-        menu.addSeparator();
-        continue;
-      }
-      if (item.endsWith("Menu")) {
-        JMenu pm;
-        if ("recentFilesMenu".equals(item)) {
-          recentFilesMenu = pm = createMenu(item);
-        } else {
-          pm = createMenu(item);
-        }
-        menu.add(pm);
-        continue;
-      }
-      JMenuItem mi = createMenuItem(item);
-      menu.add(mi);
-    }
-*/  
-    
-   //menu.addMenuListener(display.getMenuListener());
-
-    //JMenuItem mi = createMenuItem("Help");
-    //menu.add(mi);
-
-    return menu;
-  }
-
   protected JMenuItem createMenuItem(String cmd) {
-
-    JMenuItem mi;
-    mi = newJMenuItem(cmd);
-    return mi;
-  }
-
-  JMenuItem newJMenuItem(String key) {
-    String label = "Help";
-    return new KeyJMenuItem(key, getLabelWithoutMnemonic(label), getMnemonic(label));
-  }
-  
-  class KeyJMenuItem extends JMenuItem {
-    String key;
-    KeyJMenuItem(String key, String label, char mnemonic) {
-      super(label);
-      if (mnemonic != ' ') {
-          setMnemonic(mnemonic);
-      }
-      this.key = key;
-      //map.put(key, this);
-    }
-    public String getKey() {
-      return key;
-    }
+    return guimap.newJMenuItem(cmd);
   }
 
   private void setupInput() {

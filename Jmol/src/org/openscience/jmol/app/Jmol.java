@@ -1096,7 +1096,7 @@ public class Jmol extends JPanel {
 
   protected void addMacrosMenuBar(JMenuBar menuBar) {
     // ok, here needs to be added the funny stuff
-    JMenu macroMenu = new JMenu(GT._("Macros"));
+    JMenu macroMenu = guimap.newJMenu("macros");
     File macroDir = new File(
         System.getProperty("user.home") + System.getProperty("file.separator") +
         ".jmol" + System.getProperty("file.separator") + "macros");

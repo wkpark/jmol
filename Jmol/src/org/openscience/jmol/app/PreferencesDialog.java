@@ -672,7 +672,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     public void itemStateChanged(ItemEvent e) {
 
       JCheckBox cb = (JCheckBox) e.getSource();
-      String key = guimap.getKey(cb);
+      String key = GuiMap.getKey(cb);
       boolean isSelected = cb.isSelected();
       String strSelected = isSelected ? "true" : "false";
       if (key.equals("Prefs.showHydrogens")) {

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-17 23:05+0200\n"
+"POT-Creation-Date: 2008-08-27 22:12+0200\n"
 "PO-Revision-Date: 2007-05-10 19:34+0200\n"
 "Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -44,13 +44,38 @@ msgstr "Durum"
 msgid "Load"
 msgstr "Yükle"
 
-#: org/jmol/applet/Console.java:109
+#: org/jmol/applet/Console.java:111
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr ""
 "Yeni satır için CTRL-ENTER'a basın ya da model veri yapıştırın ve Yükle'ye "
 "basın"
 
-#: org/jmol/applet/Jmol.java:645
+#: org/jmol/applet/GuiMap.java:41
+msgid "&Help"
+msgstr ""
+
+#: org/jmol/applet/GuiMap.java:42
+msgid "&Search..."
+msgstr ""
+
+#: org/jmol/applet/GuiMap.java:43
+msgid "&Commands"
+msgstr ""
+
+#: org/jmol/applet/GuiMap.java:44
+msgid "Math &Functions"
+msgstr ""
+
+#: org/jmol/applet/GuiMap.java:45
+msgid "Set &Parameters"
+msgstr ""
+
+#: org/jmol/applet/GuiMap.java:46
+#, fuzzy
+msgid "&More"
+msgstr "Model"
+
+#: org/jmol/applet/Jmol.java:646
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -65,11 +90,11 @@ msgstr ""
 "\n"
 "Daha fazla bilgi için http://www.jmol.org 'u ziyaret ediniz"
 
-#: org/jmol/applet/Jmol.java:865
+#: org/jmol/applet/Jmol.java:866
 msgid "File Error:"
 msgstr "Dosya Hatası:"
 
-#: org/jmol/applet/Jmol.java:1138
+#: org/jmol/applet/Jmol.java:1139
 msgid ""
 "Messages will appear here. Enter commands in the box below. Click the "
 "console Help menu item for on-line help, which will appear in a new browser "
@@ -1559,11 +1584,11 @@ msgstr "tanınmayan {0} parametre"
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "tanınmayan GÖSTER parametresi --  {0} kullanın"
 
-#: org/jmol/viewer/PickingManager.java:209
+#: org/jmol/viewer/PickingManager.java:208
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "modeli bir eksen etrafında döndürebilmek için bir tane daha atom seçin"
 
-#: org/jmol/viewer/PickingManager.java:210
+#: org/jmol/viewer/PickingManager.java:209
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "modeli bir eksen etrafında döndürebilmek için iki atom seçin"
 
@@ -1578,19 +1603,19 @@ msgstr "{0} atomlar gizli"
 msgid "{0} atoms selected"
 msgstr "{0} atom(lar) seçildi"
 
-#: org/jmol/viewer/Viewer.java:4214
+#: org/jmol/viewer/Viewer.java:4218
 #, fuzzy, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr ""
 "HATA: Bir bool'un değeri başka bir türe ayarlanamaz. önce \"{0}\" kullanın."
 
-#: org/jmol/viewer/Viewer.java:4390 org/jmol/viewer/Viewer.java:4556
+#: org/jmol/viewer/Viewer.java:4394 org/jmol/viewer/Viewer.java:4560
 #, fuzzy, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr ""
 "HATA: Bir bool'un değeri başka bir türe ayarlanamaz. önce \"{0}\" kullanın."
 
-#: org/jmol/viewer/Viewer.java:5024
+#: org/jmol/viewer/Viewer.java:5028
 #, fuzzy, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""

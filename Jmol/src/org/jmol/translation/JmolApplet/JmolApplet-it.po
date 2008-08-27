@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-17 23:05+0200\n"
+"POT-Creation-Date: 2008-08-27 22:12+0200\n"
 "PO-Revision-Date: 2008-08-25 06:13+0000\n"
 "Last-Translator: Matteo Ferrabone <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
@@ -45,13 +45,38 @@ msgstr "Stato"
 msgid "Load"
 msgstr "Carica"
 
-#: org/jmol/applet/Console.java:109
+#: org/jmol/applet/Console.java:111
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr ""
 "premi CTRL-ENTER per una nuova linea o copia il modello di dati e premi "
 "Carica"
 
-#: org/jmol/applet/Jmol.java:645
+#: org/jmol/applet/GuiMap.java:41
+msgid "&Help"
+msgstr ""
+
+#: org/jmol/applet/GuiMap.java:42
+msgid "&Search..."
+msgstr ""
+
+#: org/jmol/applet/GuiMap.java:43
+msgid "&Commands"
+msgstr ""
+
+#: org/jmol/applet/GuiMap.java:44
+msgid "Math &Functions"
+msgstr ""
+
+#: org/jmol/applet/GuiMap.java:45
+msgid "Set &Parameters"
+msgstr ""
+
+#: org/jmol/applet/GuiMap.java:46
+#, fuzzy
+msgid "&More"
+msgstr "Modello"
+
+#: org/jmol/applet/Jmol.java:646
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -66,11 +91,11 @@ msgstr ""
 "\n"
 "Visita http://www.jmol.org f per ulteriori informazioni."
 
-#: org/jmol/applet/Jmol.java:865
+#: org/jmol/applet/Jmol.java:866
 msgid "File Error:"
 msgstr "File Error:"
 
-#: org/jmol/applet/Jmol.java:1138
+#: org/jmol/applet/Jmol.java:1139
 msgid ""
 "Messages will appear here. Enter commands in the box below. Click the "
 "console Help menu item for on-line help, which will appear in a new browser "
@@ -1566,11 +1591,11 @@ msgstr ""
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "parametro SHOW non riconosciuto -- usa {0}"
 
-#: org/jmol/viewer/PickingManager.java:209
+#: org/jmol/viewer/PickingManager.java:208
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr ""
 
-#: org/jmol/viewer/PickingManager.java:210
+#: org/jmol/viewer/PickingManager.java:209
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr ""
 
@@ -1585,17 +1610,17 @@ msgstr "{0} atomi nascosti"
 msgid "{0} atoms selected"
 msgstr "{0} atomi selezionati"
 
-#: org/jmol/viewer/Viewer.java:4214
+#: org/jmol/viewer/Viewer.java:4218
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4390 org/jmol/viewer/Viewer.java:4556
+#: org/jmol/viewer/Viewer.java:4394 org/jmol/viewer/Viewer.java:4560
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:5024
+#: org/jmol/viewer/Viewer.java:5028
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""

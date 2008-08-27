@@ -296,7 +296,7 @@ public class WebExport extends JPanel implements WindowListener {
 
   static String getResourceString(Object object, String name)
       throws IOException {
-    URL url = WebExport.getResource(object, name);
+    URL url = (name.indexOf(".") >= 0 ? getResource(object, name) : getHtmlResource(object, name));
     if (url == null) {
       throw new FileNotFoundException("Error loading resource " + name);
     }

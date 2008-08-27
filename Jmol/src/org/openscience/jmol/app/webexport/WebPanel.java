@@ -275,32 +275,6 @@ abstract class WebPanel extends JPanel implements ActionListener {
     return editorScrollPane.getHeight();
   }
 
-  private String getResourceString(String name) throws IOException {
-    URL url = WebExport.getResource(this, name);
-    if (url == null) {
-      throw new FileNotFoundException("Error loading resource " + name);
-    }
-    StringBuffer sb = new StringBuffer();
-    try {
-      //turns out from the Jar file
-      // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream
-      // and within Eclipse it's a BufferedInputStream
-      //LogPanel.log(name + " : " + url.getContent().toString());
-      BufferedReader br = new BufferedReader(new InputStreamReader(
-          (InputStream) url.getContent()));
-      String line;
-      while ((line = br.readLine()) != null)
-        sb.append(line).append("\n");
-      br.close();
-    } catch (Exception e) {
-      LogPanel.log(e.getMessage());
-    }
-    String str = sb.toString();
-    //LogPanel.log("Loading resource " + name + "("
-    //  + str.length() + " bytes)");
-    return str;
-  }
-
   private void writeFile(String filename, String data) {
     //LogPanel.log("Writing file " + filename + "("
       //  + data.length() + " bytes)");
@@ -459,7 +433,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       LogPanel.log(GT._("  adding JmolPopIn.js"));
 
       writeFile(datadirPath + "/JmolPopIn.js",
-          getResourceString("JmolPopIn.js"));
+          WebExport.getResourceString(this, "JmolPopIn.js"));
       for (int i = 0; i < listModel.getSize(); i++) {
         JmolInstance thisInstance = (JmolInstance) (listModel.getElementAt(i));
         String javaname = thisInstance.javaname;
@@ -493,12 +467,12 @@ abstract class WebPanel extends JPanel implements ActionListener {
         LogPanel.log("      ...adding " + javaname + ".spt");
         writeFile(datadirPath + "/" + javaname + ".spt", script);
       }
-      String html = getResourceString(panelName + "_template");
+      String html = WebExport.getResourceString(this, panelName + "_template");
       html = fixHtml(html);
       appletInfoDivs = "";
       StringBuffer appletDefs = new StringBuffer();
       if (!useAppletJS)
-        htmlAppletTemplate = getResourceString(panelName + "_template2");
+        htmlAppletTemplate = WebExport.getResourceString(this, panelName + "_template2");
       for (int i = 0; i < listModel.getSize(); i++)
         html = getAppletDefs(i, html, appletDefs, (JmolInstance) listModel
             .getElementAt(i));

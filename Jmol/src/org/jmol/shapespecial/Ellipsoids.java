@@ -45,7 +45,7 @@ public class Ellipsoids extends AtomShape {
   Hashtable htEllipsoids = new Hashtable();
   boolean haveEllipsoids;
   
-  class Ellipsoid {
+  static class Ellipsoid {
     
     String id;
     Vector3f[] axes;

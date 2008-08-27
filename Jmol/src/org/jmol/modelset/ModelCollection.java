@@ -452,7 +452,7 @@ abstract public class ModelCollection extends BondCollection {
       stateScripts.addElement(stateScript);
   }
 
-  protected class StateScript {
+  protected static class StateScript {
     int modelIndex;
     BitSet bsBonds;
     BitSet bsAtoms1;

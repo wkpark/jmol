@@ -410,7 +410,7 @@ abstract public class ForceField {
         atoms[i].coord[j] = coordSaved[i][j];
   }
   
-  public boolean DetectExplosion() {
+  public boolean detectExplosion() {
     for (int i = 0; i < atomCount; i++) {
       MinAtom atom = atoms[i];
       for (int j = 0; j < 3; j++)

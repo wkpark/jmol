@@ -707,7 +707,7 @@ Token[keyword(0x880001) value=")"]
   void endMinimization() {
     updateAtomXYZ();
     setMinimizationOn(false);
-    boolean failed = pFF.DetectExplosion();
+    boolean failed = pFF.detectExplosion();
     if (failed)
       restoreCoordinates();
     viewer.setIntProperty("_minimizationStep", pFF.getCurrentStep());

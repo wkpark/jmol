@@ -237,7 +237,7 @@ public class XmlReader extends AtomSetCollectionReader {
      */
   }
 
-  public class DummyResolver implements EntityResolver {
+  public static class DummyResolver implements EntityResolver {
     public InputSource resolveEntity(String publicID, String systemID)
         throws SAXException {
       if (Logger.debugging) {

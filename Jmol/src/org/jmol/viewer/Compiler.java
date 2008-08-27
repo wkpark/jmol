@@ -719,10 +719,10 @@ class Compiler {
           }
           if (tokAttr(tokCommand, Token.command))
             break;
-          if (!tokAttr(tok, Token.identifier) && !tokAttr(tok, Token.setparam))
+          isSetBrace = (tok == Token.leftbrace);
+          if (!isSetBrace && !tokAttr(tok, Token.identifier) && !tokAttr(tok, Token.setparam))
             return commandExpected();
           tokCommand = Token.set;
-          isSetBrace = (tok == Token.leftbrace);
           isNewSet = !isSetBrace;
           braceCount = (isSetBrace ? 1 : 0);
           bracketCount = 0;

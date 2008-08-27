@@ -56,9 +56,8 @@ class VolumeFileReader extends VoxelReader {
     
     // Apbs, Jvxl, or Cube
     
-    LimitedLineReader br = new LimitedLineReader(bufferedReader, 10);
     String line;
-    br = new LimitedLineReader(bufferedReader, 16000);
+    LimitedLineReader br = new LimitedLineReader(bufferedReader, 16000);
     //sure bets, but not REQUIRED:
     if ((line = br.info()).indexOf("#JVXL+") == 0)
       return "Jvxl+";

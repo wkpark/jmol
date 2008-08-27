@@ -228,15 +228,14 @@ public class JmolPopupAwt extends JmolPopup {
     String flags;
     int itemCount = menu.getItemCount();
     for (int i = 0; i < itemCount; i++) {
-      Object mio = menu.getItem(i);
-      if (mio instanceof Menu) {
-        Menu m = (Menu) mio;
+      MenuItem mi = menu.getItem(i);
+      if (mi instanceof Menu) {
+        Menu m = (Menu) mi;
         name = m.getName();
         flags = "enabled:" + m.isEnabled();
         addCurrentItem(sb, 'M', level, name, m.getLabel(), null, flags);
         getMenuCurrent(sb, level + 1, m, name);
-      } else if (mio instanceof MenuItem) {
-        MenuItem mi = (MenuItem) mio;
+      } else {
         String script = fixScript(mi.getName(), mi.getActionCommand());
         String label = mi.getLabel();
         flags = "enabled:" + mi.isEnabled();

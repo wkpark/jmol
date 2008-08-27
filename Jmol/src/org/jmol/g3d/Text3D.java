@@ -78,6 +78,7 @@ public class Text3D {
                          JmolRendererInterface jmolRenderer, boolean antialias) {
     if (text.length() == 0)
       return 0;
+    System.out.println(x + "  " + y + " " + text);
     if (text.indexOf("<su") >= 0)
       return plotByCharacter(x, y, z, argb, text, font3d, g3d, jmolRenderer,
           antialias);
@@ -95,6 +96,7 @@ public class Text3D {
     int textWidth = text3d.width;
     int textHeight = text3d.height;
     int mapWidth = text3d.mapWidth;
+    System.out.println ("mapWidth = " + mapWidth);
     if (x + textWidth <= 0 || x >= g3d.width || y + textHeight <= 0
         || y >= g3d.height)
       return textWidth;
@@ -199,11 +201,11 @@ public class Text3D {
     int len = text.length();
     int suboffset = (int)(font3d.fontMetrics.getHeight() * 0.25);
     int supoffset = -(int)(font3d.fontMetrics.getHeight() * 0.3);
-    if (antialias) {
+/*    if (antialias) {
       suboffset <<= 1;
       supoffset <<= 1;
     }
-    for (int i = 0; i < len; i++) {
+*/    for (int i = 0; i < len; i++) {
       if (text.charAt(i) == '<') {
         if (i + 4 < len && text.substring(i, i + 5).equals("<sub>")) {
           i += 4;
@@ -226,9 +228,13 @@ public class Text3D {
           continue;
         }
       }
-      w += plot(x + w, y, z, argb, text.substring(i, i + 1), font3d, 
+      int width = plot(x + w, y, z, argb, text.substring(i, i + 1), font3d, 
           g3d, jmolRenderer, antialias);
+      if (antialias) // this is a hack
+        width >>= 1;
+      w += width;
     }
+    System.out.println("w=" + w);
     return w;
   }
   

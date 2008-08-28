@@ -304,9 +304,8 @@ public class WebExport extends JPanel implements WindowListener {
     return url;
   }
 
-  static String[] translations;
-  public static void setTranslations() {
-    // called for a language change.
+  private static String[] translations;
+  private static void setTranslations() {
     // for all templates and JmolPopIn.js
     translations = new String[] {
         "GT_JmolPopIn.js_TOGETA3DMODEL", GT._("To get a 3-D model you can manipulate, click {0}here{1}. Download time may be significant the first time the applet is loaded.", new String[] {"<a href=\"HREF\">", "</a>"}),

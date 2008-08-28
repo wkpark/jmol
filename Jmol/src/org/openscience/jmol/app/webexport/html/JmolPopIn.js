@@ -18,9 +18,6 @@
 	
 	-- integration into Jmol application
 
-	Modified 2008.08.29 by Angel Herráez
-	-- variable popInCaption added to allow localization of the pop-in caption and link
-
 */
 
 function addJavaScript(path, file) {
@@ -29,19 +26,10 @@ function addJavaScript(path, file) {
 
 
 function putJmolDiv(molNr, molFileName,imageFileName,appletWidth,appletHeight) {
-	// variable "popInCaption" is a localizable string, defined in pop_in_template.html and in any pop_in_template_xx.html
-	var j1 = popInCaption.indexOf("#_");
-	var j2 = popInCaption.indexOf("_#");
-	var cap1 = popInCaption.substring(0,j1);
-	var cap2 = popInCaption.substring(j1+2,j2);
-	var cap3 = popInCaption.substring(j2+2);
-
-	var tx = '<table cellpadding="10"><tr><td style="color: rgb(255, 255, 51);">';
-	tx += cap1;
-	tx += '<a href="javascript:void(popInJmol(' + molNr + ', \'' + molFileName + '\','+ appletWidth + ','+ appletHeight + '))">' + cap2 + '</a>';
-	tx += cap3 + '</td></tr></table>';
-	
-	document.writeln(tx);
+	var tx = '<table cellpadding="10"><tr><td style="color: rgb(255, 255, 51);">'
+	    + 'GT_JmolPopIn.js_TOGETA3DMODEL'
+		+ '</td></tr></table>';
+	document.writeln(tx.replace(/HREF/,'javascript:void(popInJmol(' + molNr + ', \'' + molFileName + '\','+ appletWidth + ','+ appletHeight + '))'));
 }
 
 function popInJmol(n,fileName,width,height) {

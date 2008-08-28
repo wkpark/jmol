@@ -51,6 +51,7 @@ import javax.swing.filechooser.FileSystemView;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
+import org.jmol.util.TextFormat;
 import org.openscience.jmol.app.HistoryFile;
 
 public class WebExport extends JPanel implements WindowListener {
@@ -66,7 +67,7 @@ public class WebExport extends JPanel implements WindowListener {
   private static HistoryFile historyFile;
 
   private static WebPanel[] webPanels;
-  private static WebExport webExport;
+  static WebExport webExport;
   private static JFrame webFrame;
   private static String windowName;
 
@@ -86,6 +87,8 @@ public class WebExport extends JPanel implements WindowListener {
     JFileChooser fc = new JFileChooser();
 
     webPanels = new WebPanel[2];
+    
+    setTranslations();
 
     if (runStatus != STAND_ALONE) {
       //Add tabs to the tabbed pane
@@ -173,6 +176,11 @@ public class WebExport extends JPanel implements WindowListener {
    * event-dispatching thread.
    */
 
+  public static void dispose() {
+    webFrame.dispose();
+    webFrame = null;
+  }
+  
   public static WebExport createAndShowGUI(JmolViewer viewer,
                                            HistoryFile historyFile, String wName) {
 
@@ -296,6 +304,33 @@ public class WebExport extends JPanel implements WindowListener {
     return url;
   }
 
+  static String[] translations;
+  public static void setTranslations() {
+    // called for a language change.
+    // for all templates and JmolPopIn.js
+    translations = new String[] {
+        "GT_JmolPopIn.js_TOGETA3DMODEL", GT._("To get a 3-D model you can manipulate, click {0}here{1}. Download time may be significant the first time the applet is loaded.", new String[] {"<a href=\"HREF\">", "</a>"}),
+        
+        "GT_pop_in_template.html_INSERTTITLE", GT._("Insert the page TITLE here."), 
+        "GT_pop_in_template.html_INSERTINTRO", GT._("Insert the page INTRODUCTION here."),
+        
+        "GT_pop_in_template2.html_INSERTCAPTION", GT._("Insert a caption for {0} here.","@NAME@"),
+        "GT_pop_in_template2.html_INSERTADDITIONAL", GT._("Insert additonal explanatory text here. Long text will wrap around Jmol model {0}.","@NAME@"),
+        
+        "GT_script_button_template.html_INSERT", GT._("Insert your TITLE and INTRODUCTION here."),
+        
+        "GT_script_button_template2.html_BUTTONINFO", GT._("The button {0} will appear in the box below.  Insert information for {0} here and below.", "@NAME@"),
+        "GT_script_button_template2.html_MORE", GT._("Insert more information for {0} here.", "@NAME@"),
+    };
+  }
+  
+  private static String translate(String str) {
+    for (int i = 0; i < translations.length; i += 2)
+      str = TextFormat.simpleReplace(str, translations[i], translations[i + 1]);
+    return str;
+  }
+  
+  
   static String getResourceString(Object object, String name)
       throws IOException {
     URL url = (name.indexOf(".") >= 0 ? getResource(object, name) : getHtmlResource(object, name));
@@ -317,10 +352,7 @@ public class WebExport extends JPanel implements WindowListener {
     } catch (Exception e) {
       LogPanel.log(e.getMessage());
     }
-    String str = sb.toString();
-    //LogPanel.log("Loading resource " + name + "("
-    //  + str.length() + " bytes)");
-    return str;
+    return translate(sb.toString());
   }
 
   /* Window event code for cleanup*/

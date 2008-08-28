@@ -1018,6 +1018,5 @@ class PopupResourceBundle {
         if (menuText != null && item.indexOf("Text") >= 0)
           menuText.setProperty(item, word);
       }
-
   }
 }

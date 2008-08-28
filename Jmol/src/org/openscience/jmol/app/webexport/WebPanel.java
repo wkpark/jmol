@@ -431,7 +431,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     if (made_datadir) {
       LogPanel.log(GT._("Using directory {0}", datadirPath));
       LogPanel.log("  " + GT._("adding JmolPopIn.js"));
-
+ 
       writeFile(datadirPath + "/JmolPopIn.js",
           WebExport.getResourceString(this, "JmolPopIn.js"));
       for (int i = 0; i < listModel.getSize(); i++) {

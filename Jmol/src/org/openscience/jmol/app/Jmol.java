@@ -1824,6 +1824,12 @@ public class Jmol extends JPanel {
         new GT(callbackFunction);
         language = GT.getLanguage();
         setupUIManager();
+        if (webExport != null) {
+          WebExport.saveHistory();
+          WebExport.dispose();
+          webExport = WebExport.createAndShowGUI(viewer, historyFile,
+              WEB_MAKER_WINDOW_NAME);
+        }
         setupNewFrame(viewer.getStateInfo());
       }
 

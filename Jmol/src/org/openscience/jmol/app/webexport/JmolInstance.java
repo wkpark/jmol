@@ -121,7 +121,7 @@ class JmolInstance {
   boolean delete() throws IOException {
     File scratchToErase = new File(pictFile);
     if (scratchToErase.exists() && !scratchToErase.delete())
-        throw new IOException(GT._("Failed to delete scratch file {0}.", pictFile));
+        throw new IOException("Failed to delete scratch file " + pictFile + ".");
     //delete any other scratch files we create with an instance.
     return true;
   }

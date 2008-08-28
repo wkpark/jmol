@@ -17,11 +17,22 @@
   <meta name ="author" content = "@AUTHOR@"/>
   <meta name ="keywords" content = "generated_by_Jmol_Webexport"/>
   <title>@TITLE@</title>
-  <style type="text/css">
-.JmolDiv { padding:0.3em 0.5ex; font-size:0.9em; background-repeat:no-repeat; background-position:center;}
-.floatRightDiv { padding:0.3em 0.5ex; font-size:0.9em; float:right;}
-.floatLeftDiv { padding:0.3em 0.5ex; font-size:0.9em; float:left;}
+ <style type="text/css">
+/* These are important, don't change: */
+html, body { height:100%; overflow:hidden; margin:0; padding:0; }
+.JmolPanels { position:absolute; overflow:hidden;}
+.textPanels { position:absolute; overflow:auto; }
+#JmolPane {left:@LEFTPERCENT@%; width: @WIDTHPERCENT@%; top:0px; height:100%; }
+#mainPane { left:0px; width:@LEFTPERCENT@%; top:0px; height:100%; }
+#JmolDiv {width:100%; height:100%;}
+#Jmol0 {width:100%; height:100%;}
+/* Don't add margin or padding to textPane; if needed, use an inner div with desired style (like 'contents' below) */
+
+/* These are aesthetic, can be customized: */
+.content { padding:0.5em 1ex; }
+.textPanels { background-color:rgb(102, 255, 255); }
   </style>
+ 
   <script src="JmolPopIn.js" type="text/javascript"></script>
   <script type="text/javascript">
 	var jmoljarpath = "@REMOTEAPPLETPATH@"; // where Jmol.jar is to be found on a server
@@ -31,38 +42,36 @@
     var jmoljarfile = "JmolApplet.jar";  // "JmolApplet.jar" is everything in one file 
  	var dataDir = ".";                // where the model AND .spt files are to be found.
  	changePathIfLocal();
- 	
- 	// This phrase is localizable. The #_ _# signs are needed to mark what will become a hyperlink.
- 	var popInCaption = 'To get a 3-D model you can manipulate, click #_here_#. Download time may be significant the first time the applet is loaded.';
- 	
-  </script>
-  
-  <script type="text/javascript">
-    addJavaScript(jmoljspath, "Jmol.js");
   </script>
 
 <script type="text/javascript">
-	jmolInitialize(jmoljarpath, jmoljarfile);
-	jmolSetDocument(false);
+    addJavaScript(jmoljspath, "Jmol.js");
 </script>
+
+<script type='text/javascript'>
+  jmolInitialize(jmoljarpath, jmoljarfile); 
+  jmolSetDocument(0);
+</script>
+
 </head>
-<body>
-<div id="introdiv" style="text-align: left;">
-<div id="titlediv" style="text-align: center;">
-Insert Your TITLE HERE
+<body style="color: rgb(0, 0, 0); background-color: rgb(102, 255, 255);"
+  onload="scriptbuttonJmol('@APPLETNAME0@.spt')">
+
+<div id="JmolPane" class="JmolPanels">
+  <div id="Jmol0" class="JmolDiv">
+   <img src="@APPLETNAME0@.png" alt="still of jmol image" style="height:100%; width:100%"/>
+  </div>
+</div>
+
+
+<div id="mainPane" class="textPanels">
+<div id="mainContent" class="content">
+Inserta aqu&iacute; el T&Iacute;TULO y la INTRODUCCI&Oacute;N.
 <br />
-</div>
-Insert Your INTRODUCTION HERE
-</div>
 
-@APPLETINFO@
+@APPLETDEFS@ 
 
-<table style  = "width: 100%;" border="0" cellpadding="0" cellspacing="0">
-<tbody>
-@APPLETDEFS@
-</tbody></table>
-
-<div style="margin:0; padding:0;">&nbsp;</div>
+<br />
 
 <div id="authordiv" style="text-align: right;">
 @AUTHORDATA@
@@ -70,9 +79,12 @@ Insert Your INTRODUCTION HERE
 <div id="creationdiv" style="text-align: right;">
 @CREATIONDATA@
 </div>
-<div id="logdiv" style="text-align: right; display:none">
+<div id="logdiv" style="display:none">
 @LOGDATA@
 </div>
+
+</div><!--content-->
+</div><!--mainPane-->
 
 </body>
 </html>

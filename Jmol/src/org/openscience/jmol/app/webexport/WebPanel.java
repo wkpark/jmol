@@ -209,7 +209,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     JPanel pageCartoonPanel = new JPanel();
     pageCartoonPanel.setLayout(new BorderLayout());
     pageCartoonPanel.setBorder(BorderFactory.createTitledBorder(GT
-        ._("Cartoon of Page:")));
+        ._("Cartoon of Page")+":"));
     pageCartoonPanel.add(pageCartoonLabel);
     //   editorScrollPane = getInstructionPane(w, h);
 
@@ -303,7 +303,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       String label = (instanceList.getSelectedIndices().length != 1 ? ""
           : getInstanceName(-1));
       String name = JOptionPane.showInputDialog(
-          GT._("Give the occurence of Jmol a name:"), label);
+          GT._("Give the occurrence of Jmol a name:"), label);
       if (name == null)
         return;
       //need to get the script...
@@ -430,7 +430,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     LogPanel.log("");
     if (made_datadir) {
       LogPanel.log(GT._("Using directory {0}", datadirPath));
-      LogPanel.log(GT._("  adding JmolPopIn.js"));
+      LogPanel.log("  " + GT._("adding JmolPopIn.js"));
 
       writeFile(datadirPath + "/JmolPopIn.js",
           WebExport.getResourceString(this, "JmolPopIn.js"));
@@ -439,7 +439,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
         String javaname = thisInstance.javaname;
         String script = thisInstance.script;
         LogPanel.log("  ...jmolApplet" + i);
-        LogPanel.log(GT._("      ...adding {0}.png", javaname));
+        LogPanel.log("      ..." + GT._("adding {0}.png", javaname));
         try {
           thisInstance.movepict(datadirPath);
         } catch (IOException IOe) {
@@ -464,7 +464,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
               datadirPath);
         }
         script = localizeFileReferences(script, filesToCopy, copiedFileNames);
-        LogPanel.log("      ...adding " + javaname + ".spt");
+        LogPanel.log("      ..." + GT._("adding {0}.spt", javaname));
         writeFile(datadirPath + "/" + javaname + ".spt", script);
       }
       String html = WebExport.getResourceString(this, panelName + "_template");
@@ -495,10 +495,10 @@ abstract class WebPanel extends JPanel implements ActionListener {
       html = TextFormat.simpleReplace(html, "@CREATIONDATA@", WebExport
           .TimeStamp_WebLink());
       html = TextFormat.simpleReplace(html, "@AUTHORDATA@",
-          "Based on template by A. Herr&aacute;ez as modified by J. Gutow");
+          GT._("Based on template by A. Herr&aacute;ez as modified by J. Gutow"));
       html = TextFormat.simpleReplace(html, "@LOGDATA@", "<pre>\n"
           + LogPanel.getText() + "\n</pre>\n");
-      LogPanel.log("      ...creating " + fileName);
+      LogPanel.log("      ..." + GT._("creating {0}", fileName));
       writeFile(datadirPath + "/" + fileName, html);
     } else {
       IOException IOe = new IOException("Error creating directory: "
@@ -529,7 +529,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     if (gzoutFile.exists())
       return gzname;
     try {
-      LogPanel.log(GT._("      ...copying\n{0}\n         to",fullPathName));
+      LogPanel.log("      ..." + GT._("copying\n{0}\n         to",fullPathName));
       byte[] data = getFileAsBytes(fullPathName);
       if (data == null)
         LogPanel.log(GT._("Could not find or open:\n{0}", fullPathName));
@@ -571,7 +571,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
         path = path.concat(".gz");
         GZIPOutputStream gzFile = new GZIPOutputStream(new FileOutputStream(path));
         gzFile.write(data);
-        LogPanel.log(GT._("      ...Compressing large data file to\n"));
+        LogPanel.log("      ..." + GT._("compressing large data file to") + "\n");
         gzFile.flush();
         gzFile.close();
       } else {

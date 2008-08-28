@@ -206,6 +206,7 @@ public class XmlCmlReader extends XmlReader {
         state = SYMMETRY;
         if (atts.containsKey("spaceGroup")) {
           localSpaceGroupName = (String) atts.get("spaceGroup");
+          applySymmetry();
         }
       } else if (name.equals("module")) {
         moduleCount++;      
@@ -674,8 +675,9 @@ public class XmlCmlReader extends XmlReader {
   public void applySymmetry() {
     if (moduleCount > 0 || !haveMolecule)
       return;
-    if (localSpaceGroupName != null)
-      parent.setSpaceGroupName(localSpaceGroupName);
+    if (localSpaceGroupName == null)
+      return;
+    parent.setSpaceGroupName(localSpaceGroupName);
     try {
       parent.applySymmetry();
     } catch (Exception e) {

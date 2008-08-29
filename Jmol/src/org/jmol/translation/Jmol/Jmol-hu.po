@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-28 21:48+0200\n"
+"POT-Creation-Date: 2008-08-29 06:26+0200\n"
 "PO-Revision-Date: 2008-08-04 20:46+0000\n"
 "Last-Translator: Zörgő Zoltán <Unknown>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
@@ -225,8 +225,9 @@ msgid "Render in POV-&Ray..."
 msgstr "Rendern in POV-Ray"
 
 #: org/openscience/jmol/app/GuiMap.java:61
-msgid "Render in pov-ray."
-msgstr "Renderelés POV-Ray-ben."
+#: org/openscience/jmol/app/PovrayDialog.java:113
+msgid "Render in POV-Ray"
+msgstr "Renderelés POV-Ray-ben"
 
 #: org/openscience/jmol/app/GuiMap.java:62
 #, fuzzy
@@ -365,8 +366,8 @@ msgstr "Atom"
 #: org/openscience/jmol/app/GuiMap.java:95
 #: org/openscience/jmol/app/GuiMap.java:96
 #: org/openscience/jmol/app/GuiMap.java:97
-#, java-format
-msgid "{0}% vanderWaals"
+#, fuzzy, java-format
+msgid "{0}% van der Waals"
 msgstr "{0}% van der Waals"
 
 #: org/openscience/jmol/app/GuiMap.java:98
@@ -481,6 +482,7 @@ msgid "V&ectors"
 msgstr "Vektorok"
 
 #: org/openscience/jmol/app/GuiMap.java:133
+#: org/openscience/jmol/app/GuiMap.java:143
 msgid "&Measurements"
 msgstr "&Méretezések"
 
@@ -526,11 +528,6 @@ msgstr "Középpont megadása"
 #: org/openscience/jmol/app/GuiMap.java:142
 msgid "&Tools"
 msgstr "&Eszközök"
-
-#: org/openscience/jmol/app/GuiMap.java:143
-#, fuzzy
-msgid "&Measurements..."
-msgstr "Méretezések..."
 
 #: org/openscience/jmol/app/GuiMap.java:144
 msgid "Click atoms to measure distances"
@@ -665,6 +662,7 @@ msgid "Hydrogens"
 msgstr "Hodrogénatomok"
 
 #: org/openscience/jmol/app/GuiMap.java:177
+#: org/openscience/jmol/app/MeasurementTable.java:65
 msgid "Measurements"
 msgstr "Méretezések"
 
@@ -845,6 +843,7 @@ msgid "Name"
 msgstr "Név"
 
 #: org/openscience/jmol/app/Jmol.java:426
+#: org/openscience/jmol/app/PovrayDialog.java:155
 msgid "File Name:"
 msgstr "Fájlnév::"
 
@@ -1036,10 +1035,6 @@ msgstr "Webcím megnyitása"
 msgid "Enter URL of molecular model"
 msgstr "Adja meg a molekuláris modell webcímét"
 
-#: org/openscience/jmol/app/MeasurementTable.java:65
-msgid "Measurements..."
-msgstr "Méretezések..."
-
 #: org/openscience/jmol/app/MeasurementTable.java:123
 msgid "Delete"
 msgstr "Töröl"
@@ -1056,17 +1051,9 @@ msgstr "Bezár"
 msgid "Value"
 msgstr "őrték"
 
-#: org/openscience/jmol/app/PovrayDialog.java:113
-msgid "Render in POV-Ray"
-msgstr "Renderelés POV-Ray-ben"
-
 #: org/openscience/jmol/app/PovrayDialog.java:151
-msgid "Jmol-to-POV-Ray Conversion"
-msgstr "Jmol-POV-Ray átalakítás"
-
-#: org/openscience/jmol/app/PovrayDialog.java:155
-msgid "Filename"
-msgstr "Fájlnév:"
+msgid "Conversion from Jmol to POV-Ray"
+msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
 msgid ""
@@ -1098,11 +1085,13 @@ msgid "Display While Rendering"
 msgstr "Renderelés közbeni megjelenítés"
 
 #: org/openscience/jmol/app/PovrayDialog.java:243
-msgid "Should povray attempt to display while rendering?"
+#, fuzzy
+msgid "Should POV-Ray attempt to display while rendering?"
 msgstr "Próbáljon a POV-Ray renderelés közben megjeleníteni?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:266
-msgid "Width : "
+#, fuzzy
+msgid "width:"
 msgstr "Szélesség: "
 
 #: org/openscience/jmol/app/PovrayDialog.java:268
@@ -1110,7 +1099,9 @@ msgid "Image width"
 msgstr "Kép szélessége"
 
 #: org/openscience/jmol/app/PovrayDialog.java:283
-msgid "Height : "
+#: org/openscience/jmol/app/webexport/PopInJmol.java:61
+#, fuzzy
+msgid "height:"
 msgstr "Magasság: "
 
 #: org/openscience/jmol/app/PovrayDialog.java:285
@@ -1170,7 +1161,8 @@ msgid "Start size : "
 msgstr "Kezdeti méret: "
 
 #: org/openscience/jmol/app/PovrayDialog.java:411
-msgid "Inital size of the tiles"
+#, fuzzy
+msgid "Initial size of the tiles"
 msgstr "A darabok eredeti mérete"
 
 #: org/openscience/jmol/app/PovrayDialog.java:427
@@ -1182,11 +1174,9 @@ msgid "Final size of the tiles"
 msgstr "A darabok végső mérete"
 
 #: org/openscience/jmol/app/PovrayDialog.java:450
-msgid "POV-Ray Executable Location"
-msgstr "POV-Ray eérési Aotvonala"
-
 #: org/openscience/jmol/app/PovrayDialog.java:452
-msgid "Location of the povray Executable"
+#, fuzzy
+msgid "Location of the POV-Ray Executable"
 msgstr "A POV-Ray renderelő program teljes elérési Aotja a fájlrendszeren"
 
 #: org/openscience/jmol/app/PovrayDialog.java:489
@@ -1195,7 +1185,8 @@ msgid "Go!"
 msgstr "Indíts!"
 
 #: org/openscience/jmol/app/PovrayDialog.java:491
-msgid "Save file and possibly launch povray"
+#, fuzzy
+msgid "Save file and possibly launch POV-Ray"
 msgstr "Fájl mentése és PoV-Ray indításának megkisérlése"
 
 #: org/openscience/jmol/app/PovrayDialog.java:502
@@ -1338,11 +1329,6 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/PopInJmol.java:59
 msgid "Applet width:"
 msgstr ""
-
-#: org/openscience/jmol/app/webexport/PopInJmol.java:61
-#, fuzzy
-msgid "height:"
-msgstr "Magasság: "
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:79
 #: org/openscience/jmol/app/webexport/WebExport.java:316
@@ -1562,6 +1548,28 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:574
 msgid "compressing large data file to"
 msgstr ""
+
+#~ msgid "Render in pov-ray."
+#~ msgstr "Renderelés POV-Ray-ben."
+
+#, fuzzy
+#~ msgid "&Measurements..."
+#~ msgstr "Méretezések..."
+
+#~ msgid "Measurements..."
+#~ msgstr "Méretezések..."
+
+#~ msgid "Jmol-to-POV-Ray Conversion"
+#~ msgstr "Jmol-POV-Ray átalakítás"
+
+#~ msgid "Filename"
+#~ msgstr "Fájlnév:"
+
+#~ msgid "Height : "
+#~ msgstr "Magasság: "
+
+#~ msgid "POV-Ray Executable Location"
+#~ msgstr "POV-Ray eérési Aotvonala"
 
 #~ msgid "Select Atoms"
 #~ msgstr "Atomok kiválasztása"

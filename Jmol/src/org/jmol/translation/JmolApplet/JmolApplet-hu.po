@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-27 22:12+0200\n"
+"POT-Creation-Date: 2008-08-29 06:26+0200\n"
 "PO-Revision-Date: 2008-08-04 20:45+0000\n"
 "Last-Translator: Zörgő Zoltán <Unknown>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
@@ -215,7 +215,11 @@ msgid "could not setup force field {0}"
 msgstr "nem sikerült a {0} erőteret beállítani"
 
 #: org/jmol/popup/JmolPopup.java:456 org/jmol/popup/JmolPopup.java:496
-msgid "all"
+#: org/jmol/popup/PopupResourceBundle.java:559
+#: org/jmol/popup/PopupResourceBundle.java:573
+#: org/jmol/popup/PopupResourceBundle.java:582
+#: org/jmol/popup/PopupResourceBundle.java:599
+msgid "All"
 msgstr "Mind"
 
 #: org/jmol/popup/JmolPopup.java:610
@@ -371,13 +375,6 @@ msgstr ""
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
 msgstr ""
-
-#: org/jmol/popup/PopupResourceBundle.java:559
-#: org/jmol/popup/PopupResourceBundle.java:573
-#: org/jmol/popup/PopupResourceBundle.java:582
-#: org/jmol/popup/PopupResourceBundle.java:599
-msgid "All"
-msgstr "Mind"
 
 #: org/jmol/popup/PopupResourceBundle.java:560
 #: org/jmol/popup/PopupResourceBundle.java:679
@@ -655,6 +652,7 @@ msgid "Set SS-Bonds Backbone"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:653
+#: org/jmol/popup/PopupResourceBundle.java:746
 msgid "Structures"
 msgstr "Struktúrák"
 
@@ -907,17 +905,14 @@ msgstr "Nem áttetsző"
 msgid "Make Translucent"
 msgstr "Áttetsző"
 
-#: org/jmol/popup/PopupResourceBundle.java:746
-msgid "Structure"
-msgstr "Struktúra"
-
 #: org/jmol/popup/PopupResourceBundle.java:754
 msgid "Background"
 msgstr "Háttér"
 
 #: org/jmol/popup/PopupResourceBundle.java:755
-msgid "Surface"
-msgstr "Felület"
+#: org/jmol/popup/PopupResourceBundle.java:852
+msgid "Surfaces"
+msgstr "Felületek"
 
 #: org/jmol/popup/PopupResourceBundle.java:757
 #: org/jmol/popup/PopupResourceBundle.java:871
@@ -927,12 +922,15 @@ msgstr "Tengelyek"
 
 #: org/jmol/popup/PopupResourceBundle.java:758
 #: org/jmol/popup/PopupResourceBundle.java:872
+#: org/jmol/popup/PopupResourceBundle.java:896
 msgid "Boundbox"
 msgstr "Befoglaló doboz"
 
 #: org/jmol/popup/PopupResourceBundle.java:759
+#: org/jmol/popup/PopupResourceBundle.java:849
 #: org/jmol/popup/PopupResourceBundle.java:873
-msgid "Unitcell"
+#: org/jmol/popup/PopupResourceBundle.java:898
+msgid "Unit cell"
 msgstr "Egységcella"
 
 #: org/jmol/popup/PopupResourceBundle.java:761
@@ -1026,7 +1024,9 @@ msgid "Restart"
 msgstr "Újrakezdés"
 
 #: org/jmol/popup/PopupResourceBundle.java:811
-msgid "Measurement"
+#: org/jmol/popup/PopupResourceBundle.java:842
+#, fuzzy
+msgid "Measurements"
 msgstr "Méretezés"
 
 #: org/jmol/popup/PopupResourceBundle.java:812
@@ -1125,10 +1125,6 @@ msgstr "Fájl fejléce"
 msgid "Isosurface JVXL data"
 msgstr "Izofelület JVXL formában"
 
-#: org/jmol/popup/PopupResourceBundle.java:842
-msgid "Measure"
-msgstr "Méretezések"
-
 #: org/jmol/popup/PopupResourceBundle.java:843
 msgid "Molecular orbital JVXL data"
 msgstr "Molekuláris orbitálok JVXL formában"
@@ -1149,17 +1145,9 @@ msgstr "Térbeli csoport"
 msgid "Current state"
 msgstr "Aktuállis állapot"
 
-#: org/jmol/popup/PopupResourceBundle.java:849
-msgid "Unit cell"
-msgstr "Egységcella"
-
 #: org/jmol/popup/PopupResourceBundle.java:850
 msgid "Extract MOL data"
 msgstr "MOL adatok kivonatolása"
-
-#: org/jmol/popup/PopupResourceBundle.java:852
-msgid "Surfaces"
-msgstr "Felületek"
 
 #: org/jmol/popup/PopupResourceBundle.java:853
 msgid "Dot Surface"
@@ -1237,14 +1225,6 @@ msgstr "Méretezések látszanak"
 #: org/jmol/popup/PopupResourceBundle.java:895
 msgid "Perspective Depth"
 msgstr "Perspektívikus mélységszámítás"
-
-#: org/jmol/popup/PopupResourceBundle.java:896
-msgid "Bound Box"
-msgstr "Befoglaló doboz"
-
-#: org/jmol/popup/PopupResourceBundle.java:898
-msgid "Unit Cell"
-msgstr "Egységcella"
 
 #: org/jmol/popup/PopupResourceBundle.java:899
 msgid "RasMol Colors"
@@ -1619,6 +1599,27 @@ msgstr ""
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
+
+#~ msgid "all"
+#~ msgstr "Mind"
+
+#~ msgid "Structure"
+#~ msgstr "Struktúra"
+
+#~ msgid "Surface"
+#~ msgstr "Felület"
+
+#~ msgid "Unitcell"
+#~ msgstr "Egységcella"
+
+#~ msgid "Measure"
+#~ msgstr "Méretezések"
+
+#~ msgid "Bound Box"
+#~ msgstr "Befoglaló doboz"
+
+#~ msgid "Unit Cell"
+#~ msgstr "Egységcella"
 
 #~ msgid "rotation points cannot be identical"
 #~ msgstr "a forgáspontok nem lehetnek azonosak"

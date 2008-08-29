@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-27 22:12+0200\n"
+"POT-Creation-Date: 2008-08-29 06:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -198,7 +198,11 @@ msgid "could not setup force field {0}"
 msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:456 org/jmol/popup/JmolPopup.java:496
-msgid "all"
+#: org/jmol/popup/PopupResourceBundle.java:559
+#: org/jmol/popup/PopupResourceBundle.java:573
+#: org/jmol/popup/PopupResourceBundle.java:582
+#: org/jmol/popup/PopupResourceBundle.java:599
+msgid "All"
 msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:610
@@ -352,13 +356,6 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:555
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
-msgstr ""
-
-#: org/jmol/popup/PopupResourceBundle.java:559
-#: org/jmol/popup/PopupResourceBundle.java:573
-#: org/jmol/popup/PopupResourceBundle.java:582
-#: org/jmol/popup/PopupResourceBundle.java:599
-msgid "All"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:560
@@ -637,6 +634,7 @@ msgid "Set SS-Bonds Backbone"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:653
+#: org/jmol/popup/PopupResourceBundle.java:746
 msgid "Structures"
 msgstr ""
 
@@ -889,16 +887,13 @@ msgstr ""
 msgid "Make Translucent"
 msgstr ""
 
-#: org/jmol/popup/PopupResourceBundle.java:746
-msgid "Structure"
-msgstr ""
-
 #: org/jmol/popup/PopupResourceBundle.java:754
 msgid "Background"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:755
-msgid "Surface"
+#: org/jmol/popup/PopupResourceBundle.java:852
+msgid "Surfaces"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:757
@@ -909,12 +904,15 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:758
 #: org/jmol/popup/PopupResourceBundle.java:872
+#: org/jmol/popup/PopupResourceBundle.java:896
 msgid "Boundbox"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:759
+#: org/jmol/popup/PopupResourceBundle.java:849
 #: org/jmol/popup/PopupResourceBundle.java:873
-msgid "Unitcell"
+#: org/jmol/popup/PopupResourceBundle.java:898
+msgid "Unit cell"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:761
@@ -1008,7 +1006,8 @@ msgid "Restart"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:811
-msgid "Measurement"
+#: org/jmol/popup/PopupResourceBundle.java:842
+msgid "Measurements"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:812
@@ -1107,10 +1106,6 @@ msgstr ""
 msgid "Isosurface JVXL data"
 msgstr ""
 
-#: org/jmol/popup/PopupResourceBundle.java:842
-msgid "Measure"
-msgstr ""
-
 #: org/jmol/popup/PopupResourceBundle.java:843
 msgid "Molecular orbital JVXL data"
 msgstr ""
@@ -1131,16 +1126,8 @@ msgstr ""
 msgid "Current state"
 msgstr ""
 
-#: org/jmol/popup/PopupResourceBundle.java:849
-msgid "Unit cell"
-msgstr ""
-
 #: org/jmol/popup/PopupResourceBundle.java:850
 msgid "Extract MOL data"
-msgstr ""
-
-#: org/jmol/popup/PopupResourceBundle.java:852
-msgid "Surfaces"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:853
@@ -1218,14 +1205,6 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:895
 msgid "Perspective Depth"
-msgstr ""
-
-#: org/jmol/popup/PopupResourceBundle.java:896
-msgid "Bound Box"
-msgstr ""
-
-#: org/jmol/popup/PopupResourceBundle.java:898
-msgid "Unit Cell"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:899

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-27 22:12+0200\n"
+"POT-Creation-Date: 2008-08-29 06:26+0200\n"
 "PO-Revision-Date: 2008-08-04 20:45+0000\n"
 "Last-Translator: Won-kyu Park <Unknown>\n"
 "Language-Team: Korean <Jmol-developers@lists.sf.net>\n"
@@ -210,7 +210,11 @@ msgid "could not setup force field {0}"
 msgstr "포스필드 {0}(을)를 설정할 수 없음"
 
 #: org/jmol/popup/JmolPopup.java:456 org/jmol/popup/JmolPopup.java:496
-msgid "all"
+#: org/jmol/popup/PopupResourceBundle.java:559
+#: org/jmol/popup/PopupResourceBundle.java:573
+#: org/jmol/popup/PopupResourceBundle.java:582
+#: org/jmol/popup/PopupResourceBundle.java:599
+msgid "All"
 msgstr "모두"
 
 #: org/jmol/popup/JmolPopup.java:610
@@ -366,13 +370,6 @@ msgstr ""
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
 msgstr ""
-
-#: org/jmol/popup/PopupResourceBundle.java:559
-#: org/jmol/popup/PopupResourceBundle.java:573
-#: org/jmol/popup/PopupResourceBundle.java:582
-#: org/jmol/popup/PopupResourceBundle.java:599
-msgid "All"
-msgstr "모두"
 
 #: org/jmol/popup/PopupResourceBundle.java:560
 #: org/jmol/popup/PopupResourceBundle.java:679
@@ -650,6 +647,7 @@ msgid "Set SS-Bonds Backbone"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:653
+#: org/jmol/popup/PopupResourceBundle.java:746
 msgid "Structures"
 msgstr "스트럭쳐"
 
@@ -902,16 +900,13 @@ msgstr "반투명으로"
 msgid "Make Translucent"
 msgstr "투명으로"
 
-#: org/jmol/popup/PopupResourceBundle.java:746
-msgid "Structure"
-msgstr "스트럭쳐"
-
 #: org/jmol/popup/PopupResourceBundle.java:754
 msgid "Background"
 msgstr "배경"
 
 #: org/jmol/popup/PopupResourceBundle.java:755
-msgid "Surface"
+#: org/jmol/popup/PopupResourceBundle.java:852
+msgid "Surfaces"
 msgstr "표면"
 
 #: org/jmol/popup/PopupResourceBundle.java:757
@@ -922,13 +917,16 @@ msgstr "축"
 
 #: org/jmol/popup/PopupResourceBundle.java:758
 #: org/jmol/popup/PopupResourceBundle.java:872
+#: org/jmol/popup/PopupResourceBundle.java:896
 msgid "Boundbox"
 msgstr "경계상자"
 
 #: org/jmol/popup/PopupResourceBundle.java:759
+#: org/jmol/popup/PopupResourceBundle.java:849
 #: org/jmol/popup/PopupResourceBundle.java:873
-msgid "Unitcell"
-msgstr "단위세포"
+#: org/jmol/popup/PopupResourceBundle.java:898
+msgid "Unit cell"
+msgstr "단위 cell"
 
 #: org/jmol/popup/PopupResourceBundle.java:761
 msgid "Zoom"
@@ -1021,7 +1019,9 @@ msgid "Restart"
 msgstr "재시작"
 
 #: org/jmol/popup/PopupResourceBundle.java:811
-msgid "Measurement"
+#: org/jmol/popup/PopupResourceBundle.java:842
+#, fuzzy
+msgid "Measurements"
 msgstr "측정"
 
 #: org/jmol/popup/PopupResourceBundle.java:812
@@ -1120,10 +1120,6 @@ msgstr "파일 헤더"
 msgid "Isosurface JVXL data"
 msgstr "Isosurface JVXL 데이터"
 
-#: org/jmol/popup/PopupResourceBundle.java:842
-msgid "Measure"
-msgstr "측정"
-
 #: org/jmol/popup/PopupResourceBundle.java:843
 msgid "Molecular orbital JVXL data"
 msgstr "분자 오비탈 JVXL 데이터"
@@ -1144,17 +1140,9 @@ msgstr "공간 그룹"
 msgid "Current state"
 msgstr "현재 상태"
 
-#: org/jmol/popup/PopupResourceBundle.java:849
-msgid "Unit cell"
-msgstr "단위 cell"
-
 #: org/jmol/popup/PopupResourceBundle.java:850
 msgid "Extract MOL data"
 msgstr "MOL 테이타 추출"
-
-#: org/jmol/popup/PopupResourceBundle.java:852
-msgid "Surfaces"
-msgstr "표면"
 
 #: org/jmol/popup/PopupResourceBundle.java:853
 msgid "Dot Surface"
@@ -1232,14 +1220,6 @@ msgstr "측정 보기"
 #: org/jmol/popup/PopupResourceBundle.java:895
 msgid "Perspective Depth"
 msgstr "원근 깊이"
-
-#: org/jmol/popup/PopupResourceBundle.java:896
-msgid "Bound Box"
-msgstr "경계상자"
-
-#: org/jmol/popup/PopupResourceBundle.java:898
-msgid "Unit Cell"
-msgstr "단위 Cell"
 
 #: org/jmol/popup/PopupResourceBundle.java:899
 msgid "RasMol Colors"
@@ -1616,6 +1596,27 @@ msgstr "오류: 숫자에 부울린값을 지정할 수 없음: {0}"
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr "오류: 부울린에 이 값을 넣을 수 없음: {0}"
+
+#~ msgid "all"
+#~ msgstr "모두"
+
+#~ msgid "Structure"
+#~ msgstr "스트럭쳐"
+
+#~ msgid "Surface"
+#~ msgstr "표면"
+
+#~ msgid "Unitcell"
+#~ msgstr "단위세포"
+
+#~ msgid "Measure"
+#~ msgstr "측정"
+
+#~ msgid "Bound Box"
+#~ msgstr "경계상자"
+
+#~ msgid "Unit Cell"
+#~ msgstr "단위 Cell"
 
 #~ msgid "comma or right parenthesis expected"
 #~ msgstr "콤마 혹은 오른쪽 괄호 필요"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-27 22:12+0200\n"
+"POT-Creation-Date: 2008-08-29 06:26+0200\n"
 "PO-Revision-Date: 2005-12-20 07:44-0000\n"
 "Last-Translator: Metro <portugalfolding@gmail.com>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
@@ -207,8 +207,11 @@ msgid "could not setup force field {0}"
 msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:456 org/jmol/popup/JmolPopup.java:496
-#, fuzzy
-msgid "all"
+#: org/jmol/popup/PopupResourceBundle.java:559
+#: org/jmol/popup/PopupResourceBundle.java:573
+#: org/jmol/popup/PopupResourceBundle.java:582
+#: org/jmol/popup/PopupResourceBundle.java:599
+msgid "All"
 msgstr "Todos"
 
 #: org/jmol/popup/JmolPopup.java:610
@@ -366,13 +369,6 @@ msgstr ""
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
 msgstr ""
-
-#: org/jmol/popup/PopupResourceBundle.java:559
-#: org/jmol/popup/PopupResourceBundle.java:573
-#: org/jmol/popup/PopupResourceBundle.java:582
-#: org/jmol/popup/PopupResourceBundle.java:599
-msgid "All"
-msgstr "Todos"
 
 #: org/jmol/popup/PopupResourceBundle.java:560
 #: org/jmol/popup/PopupResourceBundle.java:679
@@ -659,6 +655,7 @@ msgid "Set SS-Bonds Backbone"
 msgstr "Definir Ligações-SS da cadeia principal"
 
 #: org/jmol/popup/PopupResourceBundle.java:653
+#: org/jmol/popup/PopupResourceBundle.java:746
 msgid "Structures"
 msgstr "Estruturas"
 
@@ -917,18 +914,14 @@ msgstr ""
 msgid "Make Translucent"
 msgstr ""
 
-#: org/jmol/popup/PopupResourceBundle.java:746
-#, fuzzy
-msgid "Structure"
-msgstr "Estruturas"
-
 #: org/jmol/popup/PopupResourceBundle.java:754
 msgid "Background"
 msgstr "Fundo"
 
 #: org/jmol/popup/PopupResourceBundle.java:755
+#: org/jmol/popup/PopupResourceBundle.java:852
 #, fuzzy
-msgid "Surface"
+msgid "Surfaces"
 msgstr "Traçar"
 
 #: org/jmol/popup/PopupResourceBundle.java:757
@@ -939,12 +932,16 @@ msgstr "Eixos"
 
 #: org/jmol/popup/PopupResourceBundle.java:758
 #: org/jmol/popup/PopupResourceBundle.java:872
+#: org/jmol/popup/PopupResourceBundle.java:896
 msgid "Boundbox"
 msgstr "Caixa de ligação"
 
 #: org/jmol/popup/PopupResourceBundle.java:759
+#: org/jmol/popup/PopupResourceBundle.java:849
 #: org/jmol/popup/PopupResourceBundle.java:873
-msgid "Unitcell"
+#: org/jmol/popup/PopupResourceBundle.java:898
+#, fuzzy
+msgid "Unit cell"
 msgstr "Célula unitária"
 
 #: org/jmol/popup/PopupResourceBundle.java:761
@@ -1042,8 +1039,9 @@ msgid "Restart"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:811
+#: org/jmol/popup/PopupResourceBundle.java:842
 #, fuzzy
-msgid "Measurement"
+msgid "Measurements"
 msgstr "Medições"
 
 #: org/jmol/popup/PopupResourceBundle.java:812
@@ -1156,11 +1154,6 @@ msgstr ""
 msgid "Isosurface JVXL data"
 msgstr ""
 
-#: org/jmol/popup/PopupResourceBundle.java:842
-#, fuzzy
-msgid "Measure"
-msgstr "Medições"
-
 #: org/jmol/popup/PopupResourceBundle.java:843
 msgid "Molecular orbital JVXL data"
 msgstr ""
@@ -1183,19 +1176,9 @@ msgstr "Escolher"
 msgid "Current state"
 msgstr ""
 
-#: org/jmol/popup/PopupResourceBundle.java:849
-#, fuzzy
-msgid "Unit cell"
-msgstr "Célula unitária"
-
 #: org/jmol/popup/PopupResourceBundle.java:850
 msgid "Extract MOL data"
 msgstr ""
-
-#: org/jmol/popup/PopupResourceBundle.java:852
-#, fuzzy
-msgid "Surfaces"
-msgstr "Traçar"
 
 #: org/jmol/popup/PopupResourceBundle.java:853
 #, fuzzy
@@ -1277,16 +1260,6 @@ msgstr "Mostrar medições"
 #: org/jmol/popup/PopupResourceBundle.java:895
 msgid "Perspective Depth"
 msgstr "Profundidade da perspectiva"
-
-#: org/jmol/popup/PopupResourceBundle.java:896
-#, fuzzy
-msgid "Bound Box"
-msgstr "Caixa de ligação"
-
-#: org/jmol/popup/PopupResourceBundle.java:898
-#, fuzzy
-msgid "Unit Cell"
-msgstr "Célula unitária"
 
 #: org/jmol/popup/PopupResourceBundle.java:899
 msgid "RasMol Colors"
@@ -1662,6 +1635,33 @@ msgstr ""
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
+
+#, fuzzy
+#~ msgid "all"
+#~ msgstr "Todos"
+
+#, fuzzy
+#~ msgid "Structure"
+#~ msgstr "Estruturas"
+
+#, fuzzy
+#~ msgid "Surface"
+#~ msgstr "Traçar"
+
+#~ msgid "Unitcell"
+#~ msgstr "Célula unitária"
+
+#, fuzzy
+#~ msgid "Measure"
+#~ msgstr "Medições"
+
+#, fuzzy
+#~ msgid "Bound Box"
+#~ msgstr "Caixa de ligação"
+
+#, fuzzy
+#~ msgid "Unit Cell"
+#~ msgstr "Célula unitária"
 
 #, fuzzy
 #~ msgid "bad atom number"

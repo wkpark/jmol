@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-28 21:48+0200\n"
+"POT-Creation-Date: 2008-08-29 06:26+0200\n"
 "PO-Revision-Date: 2008-08-14 06:21+0000\n"
 "Last-Translator: Egon Willighagen <Unknown>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -221,8 +221,9 @@ msgid "Render in POV-&Ray..."
 msgstr "Weergeven in POV-&Ray"
 
 #: org/openscience/jmol/app/GuiMap.java:61
-msgid "Render in pov-ray."
-msgstr "Render in pov-ray."
+#: org/openscience/jmol/app/PovrayDialog.java:113
+msgid "Render in POV-Ray"
+msgstr "Render in POV-Ray"
 
 #: org/openscience/jmol/app/GuiMap.java:62
 msgid "Write &State..."
@@ -358,8 +359,8 @@ msgstr "Atoom"
 #: org/openscience/jmol/app/GuiMap.java:95
 #: org/openscience/jmol/app/GuiMap.java:96
 #: org/openscience/jmol/app/GuiMap.java:97
-#, java-format
-msgid "{0}% vanderWaals"
+#, fuzzy, java-format
+msgid "{0}% van der Waals"
 msgstr "{0}% vanderwaals"
 
 #: org/openscience/jmol/app/GuiMap.java:98
@@ -474,6 +475,7 @@ msgid "V&ectors"
 msgstr "&Vectoren"
 
 #: org/openscience/jmol/app/GuiMap.java:133
+#: org/openscience/jmol/app/GuiMap.java:143
 msgid "&Measurements"
 msgstr "&Metingen"
 
@@ -519,11 +521,6 @@ msgstr "Definieer centrum"
 #: org/openscience/jmol/app/GuiMap.java:142
 msgid "&Tools"
 msgstr "&Tools"
-
-#: org/openscience/jmol/app/GuiMap.java:143
-#, fuzzy
-msgid "&Measurements..."
-msgstr "Metingen..."
 
 #: org/openscience/jmol/app/GuiMap.java:144
 msgid "Click atoms to measure distances"
@@ -657,6 +654,7 @@ msgid "Hydrogens"
 msgstr "Waterstoffen"
 
 #: org/openscience/jmol/app/GuiMap.java:177
+#: org/openscience/jmol/app/MeasurementTable.java:65
 msgid "Measurements"
 msgstr "Metingen"
 
@@ -835,6 +833,7 @@ msgid "Name"
 msgstr "Naam"
 
 #: org/openscience/jmol/app/Jmol.java:426
+#: org/openscience/jmol/app/PovrayDialog.java:155
 msgid "File Name:"
 msgstr "Bestandsnaam:"
 
@@ -1026,10 +1025,6 @@ msgstr "Open URL"
 msgid "Enter URL of molecular model"
 msgstr "Geef URL van molecuulmodel"
 
-#: org/openscience/jmol/app/MeasurementTable.java:65
-msgid "Measurements..."
-msgstr "Metingen..."
-
 #: org/openscience/jmol/app/MeasurementTable.java:123
 msgid "Delete"
 msgstr "Wissen"
@@ -1046,17 +1041,9 @@ msgstr "Afsluiten"
 msgid "Value"
 msgstr "Waarde"
 
-#: org/openscience/jmol/app/PovrayDialog.java:113
-msgid "Render in POV-Ray"
-msgstr "Render in POV-Ray"
-
 #: org/openscience/jmol/app/PovrayDialog.java:151
-msgid "Jmol-to-POV-Ray Conversion"
-msgstr "Jmol-naar-POV-Ray conversie"
-
-#: org/openscience/jmol/app/PovrayDialog.java:155
-msgid "Filename"
-msgstr "Bestandsnaam"
+msgid "Conversion from Jmol to POV-Ray"
+msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
 msgid ""
@@ -1089,11 +1076,13 @@ msgid "Display While Rendering"
 msgstr "Weergeven tijdens renderen"
 
 #: org/openscience/jmol/app/PovrayDialog.java:243
-msgid "Should povray attempt to display while rendering?"
+#, fuzzy
+msgid "Should POV-Ray attempt to display while rendering?"
 msgstr "Moet povray proberen"
 
 #: org/openscience/jmol/app/PovrayDialog.java:266
-msgid "Width : "
+#, fuzzy
+msgid "width:"
 msgstr "Breedte : "
 
 #: org/openscience/jmol/app/PovrayDialog.java:268
@@ -1101,8 +1090,9 @@ msgid "Image width"
 msgstr "Figuurbreedte"
 
 #: org/openscience/jmol/app/PovrayDialog.java:283
-msgid "Height : "
-msgstr "Hoogte : "
+#: org/openscience/jmol/app/webexport/PopInJmol.java:61
+msgid "height:"
+msgstr "hoogte:"
 
 #: org/openscience/jmol/app/PovrayDialog.java:285
 msgid "Image height"
@@ -1161,7 +1151,8 @@ msgid "Start size : "
 msgstr "Begin grootte : "
 
 #: org/openscience/jmol/app/PovrayDialog.java:411
-msgid "Inital size of the tiles"
+#, fuzzy
+msgid "Initial size of the tiles"
 msgstr "Eerste grootte van de blokken"
 
 #: org/openscience/jmol/app/PovrayDialog.java:427
@@ -1173,11 +1164,9 @@ msgid "Final size of the tiles"
 msgstr "Definitieve grootte van de blokken"
 
 #: org/openscience/jmol/app/PovrayDialog.java:450
-msgid "POV-Ray Executable Location"
-msgstr "Locatie POV-Ray executable"
-
 #: org/openscience/jmol/app/PovrayDialog.java:452
-msgid "Location of the povray Executable"
+#, fuzzy
+msgid "Location of the POV-Ray Executable"
 msgstr "Plaats waar het POV-Ray-programma is te vinden"
 
 #: org/openscience/jmol/app/PovrayDialog.java:489
@@ -1186,7 +1175,8 @@ msgid "Go!"
 msgstr "Gaan!"
 
 #: org/openscience/jmol/app/PovrayDialog.java:491
-msgid "Save file and possibly launch povray"
+#, fuzzy
+msgid "Save file and possibly launch POV-Ray"
 msgstr "Bewaar bestand en start povray indien nodig"
 
 #: org/openscience/jmol/app/PovrayDialog.java:502
@@ -1326,10 +1316,6 @@ msgstr "De namen worden gebruikt als bestandsnamen voor de applets."
 #: org/openscience/jmol/app/webexport/PopInJmol.java:59
 msgid "Applet width:"
 msgstr "Applet-breedte:"
-
-#: org/openscience/jmol/app/webexport/PopInJmol.java:61
-msgid "height:"
-msgstr "hoogte:"
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:79
 #: org/openscience/jmol/app/webexport/WebExport.java:316
@@ -1559,6 +1545,28 @@ msgstr ""
 #, fuzzy
 msgid "compressing large data file to"
 msgstr "      ...Comprimeren van groot bestand naar\n"
+
+#~ msgid "Render in pov-ray."
+#~ msgstr "Render in pov-ray."
+
+#, fuzzy
+#~ msgid "&Measurements..."
+#~ msgstr "Metingen..."
+
+#~ msgid "Measurements..."
+#~ msgstr "Metingen..."
+
+#~ msgid "Jmol-to-POV-Ray Conversion"
+#~ msgstr "Jmol-naar-POV-Ray conversie"
+
+#~ msgid "Filename"
+#~ msgstr "Bestandsnaam"
+
+#~ msgid "Height : "
+#~ msgstr "Hoogte : "
+
+#~ msgid "POV-Ray Executable Location"
+#~ msgstr "Locatie POV-Ray executable"
 
 #~ msgid "Failed to delete scratch file {0}."
 #~ msgstr "Het wissen van de werkfolder {0} is mislukt."

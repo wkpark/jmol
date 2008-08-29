@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-27 22:12+0200\n"
+"POT-Creation-Date: 2008-08-29 06:26+0200\n"
 "PO-Revision-Date: 2007-05-10 19:34+0200\n"
 "Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -209,8 +209,12 @@ msgid "could not setup force field {0}"
 msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:456 org/jmol/popup/JmolPopup.java:496
-msgid "all"
-msgstr "tümü"
+#: org/jmol/popup/PopupResourceBundle.java:559
+#: org/jmol/popup/PopupResourceBundle.java:573
+#: org/jmol/popup/PopupResourceBundle.java:582
+#: org/jmol/popup/PopupResourceBundle.java:599
+msgid "All"
+msgstr "Tümü"
 
 #: org/jmol/popup/JmolPopup.java:610
 msgid "Java memory usage"
@@ -365,13 +369,6 @@ msgstr ""
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
 msgstr ""
-
-#: org/jmol/popup/PopupResourceBundle.java:559
-#: org/jmol/popup/PopupResourceBundle.java:573
-#: org/jmol/popup/PopupResourceBundle.java:582
-#: org/jmol/popup/PopupResourceBundle.java:599
-msgid "All"
-msgstr "Tümü"
 
 #: org/jmol/popup/PopupResourceBundle.java:560
 #: org/jmol/popup/PopupResourceBundle.java:679
@@ -649,6 +646,7 @@ msgid "Set SS-Bonds Backbone"
 msgstr "SS-Bağları Omurgasını Ayarla"
 
 #: org/jmol/popup/PopupResourceBundle.java:653
+#: org/jmol/popup/PopupResourceBundle.java:746
 msgid "Structures"
 msgstr "Yapılar"
 
@@ -901,17 +899,14 @@ msgstr "Donuk Yap"
 msgid "Make Translucent"
 msgstr "Yarı Şeffaf Yap"
 
-#: org/jmol/popup/PopupResourceBundle.java:746
-msgid "Structure"
-msgstr "Yapı"
-
 #: org/jmol/popup/PopupResourceBundle.java:754
 msgid "Background"
 msgstr "Arkaplan"
 
 #: org/jmol/popup/PopupResourceBundle.java:755
-msgid "Surface"
-msgstr "Yüzey"
+#: org/jmol/popup/PopupResourceBundle.java:852
+msgid "Surfaces"
+msgstr "Yüzeyler"
 
 #: org/jmol/popup/PopupResourceBundle.java:757
 #: org/jmol/popup/PopupResourceBundle.java:871
@@ -921,13 +916,16 @@ msgstr "Eksenler"
 
 #: org/jmol/popup/PopupResourceBundle.java:758
 #: org/jmol/popup/PopupResourceBundle.java:872
+#: org/jmol/popup/PopupResourceBundle.java:896
 msgid "Boundbox"
 msgstr "Bağlıkutu"
 
 #: org/jmol/popup/PopupResourceBundle.java:759
+#: org/jmol/popup/PopupResourceBundle.java:849
 #: org/jmol/popup/PopupResourceBundle.java:873
-msgid "Unitcell"
-msgstr "Birimhücre"
+#: org/jmol/popup/PopupResourceBundle.java:898
+msgid "Unit cell"
+msgstr "Birim hücre"
 
 #: org/jmol/popup/PopupResourceBundle.java:761
 msgid "Zoom"
@@ -1020,7 +1018,9 @@ msgid "Restart"
 msgstr "Tekrar Başlat"
 
 #: org/jmol/popup/PopupResourceBundle.java:811
-msgid "Measurement"
+#: org/jmol/popup/PopupResourceBundle.java:842
+#, fuzzy
+msgid "Measurements"
 msgstr "Ölçüm"
 
 #: org/jmol/popup/PopupResourceBundle.java:812
@@ -1119,10 +1119,6 @@ msgstr "Dosya Başlığı"
 msgid "Isosurface JVXL data"
 msgstr "Eşyüzey JVXL verisi"
 
-#: org/jmol/popup/PopupResourceBundle.java:842
-msgid "Measure"
-msgstr "Ölç"
-
 #: org/jmol/popup/PopupResourceBundle.java:843
 msgid "Molecular orbital JVXL data"
 msgstr "Moleküler orbital JVXL verisi"
@@ -1143,17 +1139,9 @@ msgstr "Uzay grubu"
 msgid "Current state"
 msgstr "Mevcut durum"
 
-#: org/jmol/popup/PopupResourceBundle.java:849
-msgid "Unit cell"
-msgstr "Birim hücre"
-
 #: org/jmol/popup/PopupResourceBundle.java:850
 msgid "Extract MOL data"
 msgstr "MOL verisini çıkart"
-
-#: org/jmol/popup/PopupResourceBundle.java:852
-msgid "Surfaces"
-msgstr "Yüzeyler"
 
 #: org/jmol/popup/PopupResourceBundle.java:853
 msgid "Dot Surface"
@@ -1231,14 +1219,6 @@ msgstr "Ölçümleri Göster"
 #: org/jmol/popup/PopupResourceBundle.java:895
 msgid "Perspective Depth"
 msgstr "Bakış Açısı Derinliği"
-
-#: org/jmol/popup/PopupResourceBundle.java:896
-msgid "Bound Box"
-msgstr "Bağlantı Kutusu"
-
-#: org/jmol/popup/PopupResourceBundle.java:898
-msgid "Unit Cell"
-msgstr "Birim Hücre"
 
 #: org/jmol/popup/PopupResourceBundle.java:899
 msgid "RasMol Colors"
@@ -1620,6 +1600,27 @@ msgstr ""
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
 "HATA: Bu değişkenin değeri bir bool'a ayarlanamaz. önce \"{0}\" kullanın."
+
+#~ msgid "all"
+#~ msgstr "tümü"
+
+#~ msgid "Structure"
+#~ msgstr "Yapı"
+
+#~ msgid "Surface"
+#~ msgstr "Yüzey"
+
+#~ msgid "Unitcell"
+#~ msgstr "Birimhücre"
+
+#~ msgid "Measure"
+#~ msgstr "Ölç"
+
+#~ msgid "Bound Box"
+#~ msgstr "Bağlantı Kutusu"
+
+#~ msgid "Unit Cell"
+#~ msgstr "Birim Hücre"
 
 #~ msgid "comma or right parenthesis expected"
 #~ msgstr "virgül ya da parantez (sağ) bekleniyor"

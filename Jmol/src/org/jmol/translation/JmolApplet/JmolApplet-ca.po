@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-27 22:12+0200\n"
+"POT-Creation-Date: 2008-08-29 06:26+0200\n"
 "PO-Revision-Date: 2008-08-13 17:23+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
@@ -211,8 +211,12 @@ msgid "could not setup force field {0}"
 msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:456 org/jmol/popup/JmolPopup.java:496
-msgid "all"
-msgstr "tot"
+#: org/jmol/popup/PopupResourceBundle.java:559
+#: org/jmol/popup/PopupResourceBundle.java:573
+#: org/jmol/popup/PopupResourceBundle.java:582
+#: org/jmol/popup/PopupResourceBundle.java:599
+msgid "All"
+msgstr "Tot"
 
 #: org/jmol/popup/JmolPopup.java:610
 msgid "Java memory usage"
@@ -367,13 +371,6 @@ msgstr "biomolècula {0} ({1} àtoms)"
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
 msgstr "carrega una biomolècula {0} ({1} àtoms)"
-
-#: org/jmol/popup/PopupResourceBundle.java:559
-#: org/jmol/popup/PopupResourceBundle.java:573
-#: org/jmol/popup/PopupResourceBundle.java:582
-#: org/jmol/popup/PopupResourceBundle.java:599
-msgid "All"
-msgstr "Tot"
 
 #: org/jmol/popup/PopupResourceBundle.java:560
 #: org/jmol/popup/PopupResourceBundle.java:679
@@ -651,6 +648,7 @@ msgid "Set SS-Bonds Backbone"
 msgstr "Defineix els enllaços disulfur de l'esquelet"
 
 #: org/jmol/popup/PopupResourceBundle.java:653
+#: org/jmol/popup/PopupResourceBundle.java:746
 msgid "Structures"
 msgstr "Estructures"
 
@@ -903,17 +901,14 @@ msgstr "Fes opac"
 msgid "Make Translucent"
 msgstr "Fes translúcid"
 
-#: org/jmol/popup/PopupResourceBundle.java:746
-msgid "Structure"
-msgstr "Estructures"
-
 #: org/jmol/popup/PopupResourceBundle.java:754
 msgid "Background"
 msgstr "Fons"
 
 #: org/jmol/popup/PopupResourceBundle.java:755
-msgid "Surface"
-msgstr "Superfície"
+#: org/jmol/popup/PopupResourceBundle.java:852
+msgid "Surfaces"
+msgstr "Superfícies"
 
 #: org/jmol/popup/PopupResourceBundle.java:757
 #: org/jmol/popup/PopupResourceBundle.java:871
@@ -923,12 +918,15 @@ msgstr "Eixos"
 
 #: org/jmol/popup/PopupResourceBundle.java:758
 #: org/jmol/popup/PopupResourceBundle.java:872
+#: org/jmol/popup/PopupResourceBundle.java:896
 msgid "Boundbox"
 msgstr "Quadre"
 
 #: org/jmol/popup/PopupResourceBundle.java:759
+#: org/jmol/popup/PopupResourceBundle.java:849
 #: org/jmol/popup/PopupResourceBundle.java:873
-msgid "Unitcell"
+#: org/jmol/popup/PopupResourceBundle.java:898
+msgid "Unit cell"
 msgstr "Cel·la unitat"
 
 #: org/jmol/popup/PopupResourceBundle.java:761
@@ -1022,7 +1020,9 @@ msgid "Restart"
 msgstr "Reinicia"
 
 #: org/jmol/popup/PopupResourceBundle.java:811
-msgid "Measurement"
+#: org/jmol/popup/PopupResourceBundle.java:842
+#, fuzzy
+msgid "Measurements"
 msgstr "Mesura"
 
 #: org/jmol/popup/PopupResourceBundle.java:812
@@ -1121,10 +1121,6 @@ msgstr "Capçalera del fitxer"
 msgid "Isosurface JVXL data"
 msgstr "Dades JVXL d'isosuperfície"
 
-#: org/jmol/popup/PopupResourceBundle.java:842
-msgid "Measure"
-msgstr "Mesura"
-
 #: org/jmol/popup/PopupResourceBundle.java:843
 msgid "Molecular orbital JVXL data"
 msgstr "Dades JVXL de l'orbital molecular"
@@ -1145,17 +1141,9 @@ msgstr "Grup espacial"
 msgid "Current state"
 msgstr "Estat actual"
 
-#: org/jmol/popup/PopupResourceBundle.java:849
-msgid "Unit cell"
-msgstr "Cel·la unitat"
-
 #: org/jmol/popup/PopupResourceBundle.java:850
 msgid "Extract MOL data"
 msgstr "Extreu les dades MOL"
-
-#: org/jmol/popup/PopupResourceBundle.java:852
-msgid "Surfaces"
-msgstr "Superfícies"
 
 #: org/jmol/popup/PopupResourceBundle.java:853
 msgid "Dot Surface"
@@ -1233,14 +1221,6 @@ msgstr "Mostra les mesures"
 #: org/jmol/popup/PopupResourceBundle.java:895
 msgid "Perspective Depth"
 msgstr "Perspectiva en profunditat"
-
-#: org/jmol/popup/PopupResourceBundle.java:896
-msgid "Bound Box"
-msgstr "Quadre de lligament"
-
-#: org/jmol/popup/PopupResourceBundle.java:898
-msgid "Unit Cell"
-msgstr "Cel·la unitat"
 
 #: org/jmol/popup/PopupResourceBundle.java:899
 msgid "RasMol Colors"
@@ -1624,6 +1604,27 @@ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
 "ERROR: No es pot definir el valor d''aquesta variable a un booleà. Utilitzeu "
 "«{0}» primer."
+
+#~ msgid "all"
+#~ msgstr "tot"
+
+#~ msgid "Structure"
+#~ msgstr "Estructures"
+
+#~ msgid "Surface"
+#~ msgstr "Superfície"
+
+#~ msgid "Unitcell"
+#~ msgstr "Cel·la unitat"
+
+#~ msgid "Measure"
+#~ msgstr "Mesura"
+
+#~ msgid "Bound Box"
+#~ msgstr "Quadre de lligament"
+
+#~ msgid "Unit Cell"
+#~ msgstr "Cel·la unitat"
 
 #, fuzzy
 #~ msgid "commandExpected"

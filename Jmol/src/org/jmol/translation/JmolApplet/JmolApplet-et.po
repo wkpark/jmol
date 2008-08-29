@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-27 22:12+0200\n"
+"POT-Creation-Date: 2008-08-29 06:26+0200\n"
 "PO-Revision-Date: 2006-03-17 20:19+0100\n"
 "Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -207,8 +207,11 @@ msgid "could not setup force field {0}"
 msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:456 org/jmol/popup/JmolPopup.java:496
-#, fuzzy
-msgid "all"
+#: org/jmol/popup/PopupResourceBundle.java:559
+#: org/jmol/popup/PopupResourceBundle.java:573
+#: org/jmol/popup/PopupResourceBundle.java:582
+#: org/jmol/popup/PopupResourceBundle.java:599
+msgid "All"
 msgstr "Kõik"
 
 #: org/jmol/popup/JmolPopup.java:610
@@ -366,13 +369,6 @@ msgstr ""
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
 msgstr ""
-
-#: org/jmol/popup/PopupResourceBundle.java:559
-#: org/jmol/popup/PopupResourceBundle.java:573
-#: org/jmol/popup/PopupResourceBundle.java:582
-#: org/jmol/popup/PopupResourceBundle.java:599
-msgid "All"
-msgstr "Kõik"
 
 #: org/jmol/popup/PopupResourceBundle.java:560
 #: org/jmol/popup/PopupResourceBundle.java:679
@@ -659,6 +655,7 @@ msgid "Set SS-Bonds Backbone"
 msgstr "Pane SS-Sidemed Selgroogu"
 
 #: org/jmol/popup/PopupResourceBundle.java:653
+#: org/jmol/popup/PopupResourceBundle.java:746
 msgid "Structures"
 msgstr "Struktuurid"
 
@@ -918,18 +915,14 @@ msgstr ""
 msgid "Make Translucent"
 msgstr ""
 
-#: org/jmol/popup/PopupResourceBundle.java:746
-#, fuzzy
-msgid "Structure"
-msgstr "Struktuurid"
-
 #: org/jmol/popup/PopupResourceBundle.java:754
 msgid "Background"
 msgstr "Taust"
 
 #: org/jmol/popup/PopupResourceBundle.java:755
+#: org/jmol/popup/PopupResourceBundle.java:852
 #, fuzzy
-msgid "Surface"
+msgid "Surfaces"
 msgstr "Jälg"
 
 #: org/jmol/popup/PopupResourceBundle.java:757
@@ -940,12 +933,16 @@ msgstr "Teljed"
 
 #: org/jmol/popup/PopupResourceBundle.java:758
 #: org/jmol/popup/PopupResourceBundle.java:872
+#: org/jmol/popup/PopupResourceBundle.java:896
 msgid "Boundbox"
 msgstr "Boundbox"
 
 #: org/jmol/popup/PopupResourceBundle.java:759
+#: org/jmol/popup/PopupResourceBundle.java:849
 #: org/jmol/popup/PopupResourceBundle.java:873
-msgid "Unitcell"
+#: org/jmol/popup/PopupResourceBundle.java:898
+#, fuzzy
+msgid "Unit cell"
 msgstr "Unitcell"
 
 #: org/jmol/popup/PopupResourceBundle.java:761
@@ -1043,8 +1040,9 @@ msgid "Restart"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:811
+#: org/jmol/popup/PopupResourceBundle.java:842
 #, fuzzy
-msgid "Measurement"
+msgid "Measurements"
 msgstr "Mõõted"
 
 #: org/jmol/popup/PopupResourceBundle.java:812
@@ -1157,11 +1155,6 @@ msgstr ""
 msgid "Isosurface JVXL data"
 msgstr ""
 
-#: org/jmol/popup/PopupResourceBundle.java:842
-#, fuzzy
-msgid "Measure"
-msgstr "Mõõted"
-
 #: org/jmol/popup/PopupResourceBundle.java:843
 msgid "Molecular orbital JVXL data"
 msgstr ""
@@ -1184,19 +1177,9 @@ msgstr "Vali"
 msgid "Current state"
 msgstr ""
 
-#: org/jmol/popup/PopupResourceBundle.java:849
-#, fuzzy
-msgid "Unit cell"
-msgstr "Unitcell"
-
 #: org/jmol/popup/PopupResourceBundle.java:850
 msgid "Extract MOL data"
 msgstr ""
-
-#: org/jmol/popup/PopupResourceBundle.java:852
-#, fuzzy
-msgid "Surfaces"
-msgstr "Jälg"
 
 #: org/jmol/popup/PopupResourceBundle.java:853
 #, fuzzy
@@ -1278,16 +1261,6 @@ msgstr "Näita Mõõted"
 #: org/jmol/popup/PopupResourceBundle.java:895
 msgid "Perspective Depth"
 msgstr "Perspetkiivi Sügavus"
-
-#: org/jmol/popup/PopupResourceBundle.java:896
-#, fuzzy
-msgid "Bound Box"
-msgstr "Boundbox"
-
-#: org/jmol/popup/PopupResourceBundle.java:898
-#, fuzzy
-msgid "Unit Cell"
-msgstr "Unitcell"
 
 #: org/jmol/popup/PopupResourceBundle.java:899
 msgid "RasMol Colors"
@@ -1663,6 +1636,33 @@ msgstr ""
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
+
+#, fuzzy
+#~ msgid "all"
+#~ msgstr "Kõik"
+
+#, fuzzy
+#~ msgid "Structure"
+#~ msgstr "Struktuurid"
+
+#, fuzzy
+#~ msgid "Surface"
+#~ msgstr "Jälg"
+
+#~ msgid "Unitcell"
+#~ msgstr "Unitcell"
+
+#, fuzzy
+#~ msgid "Measure"
+#~ msgstr "Mõõted"
+
+#, fuzzy
+#~ msgid "Bound Box"
+#~ msgstr "Boundbox"
+
+#, fuzzy
+#~ msgid "Unit Cell"
+#~ msgstr "Unitcell"
 
 #, fuzzy
 #~ msgid "bad atom number"

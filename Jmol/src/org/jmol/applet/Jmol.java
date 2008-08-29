@@ -77,6 +77,11 @@ import netscape.javascript.JSObject;
  * To disable ALL access to JavaScript (as, for example, in a Wiki) 
  * remove the MAYSCRIPT tag or set MAYSCRIPT="false"
  * 
+ * To set a maximum size for the applet if resizable:
+ *
+ * [param name="maximumSize" value="nnnn" /]
+ * 
+ * 
  * You can specify that the signed or unsign applet or application should
  * use an independent command thread (EXCEPT for scripts containing the "javascript" command)  
  * 
@@ -240,9 +245,12 @@ public class Jmol implements WrappedApplet {
       options += "-signed";
     if (getBooleanValue("useCommandThread", isSigned))
       options += "-threaded";
-    String appletProxy = getValue("JmolAppletProxy", null);
-    if (appletProxy != null)
-      options += "-appletProxy " + appletProxy;
+    String s = getValue("MaximumSize", null);
+    if (s != null)
+      options += "-maximumSize " + s;
+    s = getValue("JmolAppletProxy", null);
+    if (s != null)
+      options += "-appletProxy " + s;
     System.out.println("setAppletContext: " + options);
     viewer.setAppletContext(fullName, appletWrapper.getDocumentBase(),
         appletWrapper.getCodeBase(), options);

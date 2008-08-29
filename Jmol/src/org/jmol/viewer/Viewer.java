@@ -283,6 +283,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       appletProxy = str.substring(i + 13);
       str = str.substring(0, i);
     }
+    if (isApplet && (i = str.indexOf("-maximumSize ")) >= 0) {
+      setMaximumSize(Parser.parseInt(str.substring(i + 13)));
+      str = str.substring(0, i);
+    }
     if (str.indexOf("-b") >= 0)
         g3d.setBackgroundTransparent(true);
     useCommandThread = (str.indexOf("-t") >= 0);
@@ -3108,9 +3112,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   //final Rectangle rectClip = new Rectangle();
 
+  private int maximumSize = Integer.MAX_VALUE;
+  
+  private void setMaximumSize(int x) {
+    maximumSize = Math.max(x, 100);  
+  }
+  
   public void setScreenDimension(Dimension dim) {
     // There is a bug in Netscape 4.7*+MacOS 9 when comparing dimension objects
     // so don't try dim1.equals(dim2)
+    dim.height = Math.min(dim.height, maximumSize);
+    dim.width = Math.min(dim.width, maximumSize);
     int height = dim.height;
     int width = dim.width;
     if (getStereoMode() == JmolConstants.STEREO_DOUBLE)

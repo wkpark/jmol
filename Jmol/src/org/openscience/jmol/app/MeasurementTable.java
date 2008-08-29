@@ -62,7 +62,7 @@ public class MeasurementTable extends JDialog {
    */
   public MeasurementTable(JmolViewer viewer, JFrame parentFrame) {
 
-    super(parentFrame, GT._("Measurements..."), false);
+    super(parentFrame, GT._("Measurements"), false);
     this.viewer = viewer;
 
     JPanel container = new JPanel();

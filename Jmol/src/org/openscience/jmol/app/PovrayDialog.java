@@ -148,11 +148,11 @@ public class PovrayDialog extends JDialog {
     
     //GUI for save name selection
     Box justSavingBox = Box.createVerticalBox();
-    text = GT._("Jmol-to-POV-Ray Conversion");
+    text = GT._("Conversion from Jmol to POV-Ray");
     justSavingBox.setBorder(new TitledBorder(text));
     
     Box saveBox = Box.createHorizontalBox();
-    text = GT._("Filename");
+    text = GT._("File Name:");
     saveBox.setBorder(new TitledBorder(text));
     text = GT._("'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'");
     saveBox.setToolTipText(text);
@@ -240,7 +240,7 @@ public class PovrayDialog extends JDialog {
     Box displayBox = Box.createHorizontalBox();
     text = GT._("Display While Rendering");
     displayWhileRenderingCheck = new JCheckBox(text, true);
-    text = GT._("Should povray attempt to display while rendering?");
+    text = GT._("Should POV-Ray attempt to display while rendering?");
     displayWhileRenderingCheck.setToolTipText(text);
     displayWhileRenderingCheck.addItemListener(updateItemListener);
     displayBox.add(displayWhileRenderingCheck);
@@ -263,7 +263,7 @@ public class PovrayDialog extends JDialog {
     imageBox.add(Box.createHorizontalStrut(10));
     Box imageSizeDetailBox = Box.createVerticalBox();
     Box imageSizeXYBox = Box.createHorizontalBox();
-    text = GT._("Width : ");
+    text = GT._("width:")+" ";
     imageSizeWidth = new JLabel(text);
     text = GT._("Image width");
     imageSizeWidth.setToolTipText(text);
@@ -280,7 +280,7 @@ public class PovrayDialog extends JDialog {
     );
     imageSizeXYBox.add(imageSizeTextWidth);
     imageSizeXYBox.add(Box.createHorizontalStrut(10));
-    text = GT._("Height : ");
+    text = GT._("height:")+" ";
     imageSizeHeight = new JLabel(text);
     text = GT._("Image height");
     imageSizeHeight.setToolTipText(text);
@@ -408,7 +408,7 @@ public class PovrayDialog extends JDialog {
     mosaicBox.add(Box.createHorizontalStrut(10));
     text = GT._("Start size : ");
     mosaicPreviewStart = new JLabel(text);
-    text = GT._("Inital size of the tiles");
+    text = GT._("Initial size of the tiles");
     mosaicPreviewStart.setToolTipText(text);
     mosaicBox.add(mosaicPreviewStart);
     mosaicPreviewComboStart = new JComboBox();
@@ -447,9 +447,9 @@ public class PovrayDialog extends JDialog {
   
     //GUI for povray path selection
     Box povrayPathBox = Box.createHorizontalBox();
-    text = GT._("POV-Ray Executable Location");
+    text = GT._("Location of the POV-Ray Executable");
     povrayPathBox.setBorder(new TitledBorder(text));
-    text = GT._("Location of the povray Executable");
+    text = GT._("Location of the POV-Ray Executable");
     povrayPathBox.setToolTipText(text);
     povrayPathLabel = new JTextField("");
     povrayPathLabel.setEditable(false);
@@ -488,7 +488,7 @@ public class PovrayDialog extends JDialog {
     buttonBox.add(Box.createGlue());
     text = GT._("Go!");
     goButton = new JButton(text);
-    text = GT._("Save file and possibly launch povray");
+    text = GT._("Save file and possibly launch POV-Ray");
     goButton.setToolTipText(text);
     goButton.addActionListener(new ActionListener() {
 

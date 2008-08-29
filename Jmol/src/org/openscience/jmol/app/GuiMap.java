@@ -58,7 +58,7 @@ class GuiMap {
       labels.put("toweb", GT._("Export to &Web Page..."));
       labels.put("towebTip", GT._("Export one or more views to a web page."));
       labels.put("povray", GT._("Render in POV-&Ray..."));
-      labels.put("povrayTip", GT._("Render in pov-ray."));
+      labels.put("povrayTip", GT._("Render in POV-Ray"));
       labels.put("write", GT._("Write &State..."));
       labels.put("writeTip", GT._("Save current view as a Jmol state script."));
       labels.put("print", GT._("&Print..."));
@@ -91,10 +91,10 @@ class GuiMap {
       labels.put("display", GT._("&Display"));
       labels.put("atomMenu", GT._("&Atom"));
       labels.put("atomNoneScript", GT._("&None"));
-      labels.put("atom15Script", GT._("{0}% vanderWaals", "15"));
-      labels.put("atom20Script", GT._("{0}% vanderWaals", "20"));
-      labels.put("atom25Script", GT._("{0}% vanderWaals", "25"));
-      labels.put("atom100Script", GT._("{0}% vanderWaals","100"));
+      labels.put("atom15Script", GT._("{0}% van der Waals", "15"));
+      labels.put("atom20Script", GT._("{0}% van der Waals", "20"));
+      labels.put("atom25Script", GT._("{0}% van der Waals", "25"));
+      labels.put("atom100Script", GT._("{0}% van der Waals","100"));
       labels.put("bondMenu", GT._("&Bond"));
       labels.put("bondNoneScript", GT._("&None"));
       labels.put("bondWireframeScript", GT._("&Wireframe"));
@@ -140,7 +140,7 @@ class GuiMap {
       labels.put("transform", GT._("Tr&ansform..."));
       labels.put("definecenter", GT._("Define &Center"));
       labels.put("tools", GT._("&Tools"));
-      labels.put("viewMeasurementTable", GT._("&Measurements..."));
+      labels.put("viewMeasurementTable", GT._("&Measurements")+"...");
       labels.put("viewMeasurementTableTip", GT._("Click atoms to measure distances"));
       labels.put("distanceUnitsMenu", GT._("Distance &Units"));
       labels.put("distanceNanometersScript", GT._("&Nanometers 1E-9"));

@@ -453,7 +453,7 @@ abstract public class JmolPopup {
     removeAll(menu);
     if (modelCount < 2)
       return;
-    addCheckboxMenuItem(menu, GT._("all", true), "frame 0 ##", null,
+    addCheckboxMenuItem(menu, GT._("All", true), "frame 0 ##", null,
         (modelIndex < 0));
 
     Object subMenu = menu;
@@ -493,7 +493,7 @@ abstract public class JmolPopup {
     setLabel(menu, GT._(getMenuText("configurationMenuText"), nAltLocs, true));
     removeAll(menu);
     String script = "hide none ##CONFIG";
-    addCheckboxMenuItem(menu, GT._("all", true), script, null,
+    addCheckboxMenuItem(menu, GT._("All", true), script, null,
         (updateMode == UPDATE_CONFIG && configurationSelected.equals(script)));
     for (int i = 0; i < nAltLocs; i++) {
       script = "configuration " + (i + 1) + "; hide thisModel and not selected ##CONFIG";

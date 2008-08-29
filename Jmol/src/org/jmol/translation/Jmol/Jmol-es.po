@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-08-29 06:26+0200\n"
-"PO-Revision-Date: 2008-08-28 17:14+0100\n"
+"PO-Revision-Date: 2008-08-29 13:56+0100\n"
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -217,7 +217,7 @@ msgstr "Exportar una o varias vistas a una página web"
 
 #: org/openscience/jmol/app/GuiMap.java:60
 msgid "Render in POV-&Ray..."
-msgstr "Generar en POV-&Ray"
+msgstr "Generar en POV-&Ray..."
 
 #: org/openscience/jmol/app/GuiMap.java:61
 #: org/openscience/jmol/app/PovrayDialog.java:113
@@ -349,7 +349,7 @@ msgstr "&Atomo"
 #: org/openscience/jmol/app/GuiMap.java:95
 #: org/openscience/jmol/app/GuiMap.java:96
 #: org/openscience/jmol/app/GuiMap.java:97
-#, fuzzy, java-format
+#, java-format
 msgid "{0}% van der Waals"
 msgstr "{0}% van der Waals"
 
@@ -642,9 +642,7 @@ msgstr "Rotar molécula"
 
 #: org/openscience/jmol/app/GuiMap.java:187
 msgid "Select a set of atoms using SHIFT-LEFT-  DRAG."
-msgstr ""
-"Selecciona un grupo de átomos pulsando Mayús. y arrastrando con el botón "
-"principal"
+msgstr "Selecciona un grupo de átomos pulsando Mayús. y arrastrando con el botón principal"
 
 #: org/openscience/jmol/app/GuiMap.java:188
 msgid "Return molecule to home position."
@@ -927,12 +925,8 @@ msgid "window width x height, e.g. {0}"
 msgstr "ancho x alto de ventana, p.ej. {0}"
 
 #: org/openscience/jmol/app/Jmol.java:519
-msgid ""
-"JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
-"2, maximum compression 9)"
-msgstr ""
-"Calidad de imagen JPG (de 1 a 100; 75 por defecto) o compresión de imagen "
-"PNG (de 0 a 9; 2 por defecto; 9 es máxima compresión)"
+msgid "JPG image quality (1-100; default 75) or PNG image compression (0-9; default 2, maximum compression 9)"
+msgstr "Calidad de imagen JPG (de 1 a 100; 75 por defecto) o compresión de imagen PNG (de 0 a 9; 2 por defecto; 9 es máxima compresión)"
 
 #: org/openscience/jmol/app/Jmol.java:525
 #, java-format
@@ -994,11 +988,10 @@ msgstr "Valor"
 
 #: org/openscience/jmol/app/PovrayDialog.java:151
 msgid "Conversion from Jmol to POV-Ray"
-msgstr ""
+msgstr "Conversión desde Jmol a POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
-msgid ""
-"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
+msgid "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 msgstr "'cafeina.pov' -> 'cafeina.pov', 'cafeina.pov.ini', 'cafeina.pov.spt'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:167
@@ -1026,15 +1019,12 @@ msgid "Display While Rendering"
 msgstr "Mostrar mientras se está representando"
 
 #: org/openscience/jmol/app/PovrayDialog.java:243
-#, fuzzy
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr ""
-"¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
+msgstr "¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:266
-#, fuzzy
 msgid "width:"
-msgstr "Ancho: "
+msgstr "ancho: "
 
 #: org/openscience/jmol/app/PovrayDialog.java:268
 msgid "Image width"
@@ -1043,7 +1033,7 @@ msgstr "Anchura de la imagen"
 #: org/openscience/jmol/app/PovrayDialog.java:283
 #: org/openscience/jmol/app/webexport/PopInJmol.java:61
 msgid "height:"
-msgstr "Alto:"
+msgstr "alto:"
 
 #: org/openscience/jmol/app/PovrayDialog.java:285
 msgid "Image height"
@@ -1102,7 +1092,6 @@ msgid "Start size : "
 msgstr "Tamaño inicial: "
 
 #: org/openscience/jmol/app/PovrayDialog.java:411
-#, fuzzy
 msgid "Initial size of the tiles"
 msgstr "Tamaño inicial de las teselas"
 
@@ -1116,9 +1105,8 @@ msgstr "Tamaño final de las teselas"
 
 #: org/openscience/jmol/app/PovrayDialog.java:450
 #: org/openscience/jmol/app/PovrayDialog.java:452
-#, fuzzy
 msgid "Location of the POV-Ray Executable"
-msgstr "Ubicación del archivo ejecutable del programa POV-Ray"
+msgstr "Ubicación del programa POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:489
 #: org/openscience/jmol/app/PovrayDialog.java:754
@@ -1126,7 +1114,6 @@ msgid "Go!"
 msgstr "Aceptar"
 
 #: org/openscience/jmol/app/PovrayDialog.java:491
-#, fuzzy
 msgid "Save file and possibly launch POV-Ray"
 msgstr "Guardar archivo y posiblemente iniciar POV-Ray"
 
@@ -1272,12 +1259,12 @@ msgstr "Ancho de Jmol:"
 #: org/openscience/jmol/app/webexport/WebExport.java:316
 #, java-format
 msgid "Insert a caption for {0} here."
-msgstr "Inserta aqu&iacute; la leyenda para {0}"
+msgstr "Inserta aqu&iacute; una leyenda para {0}."
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:82
-#, fuzzy, java-format
+#, java-format
 msgid "Insert a note for {0} here."
-msgstr "inserta aquí la nota para {0}"
+msgstr "Inserta aquí una nota para {0}"
 
 #: org/openscience/jmol/app/webexport/ScriptButtons.java:39
 msgid "These names will be used for button labels"
@@ -1315,9 +1302,7 @@ msgstr "Bitácora"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:163
 msgid "Page skeleton and JavaScript generated by export to web function of"
-msgstr ""
-"Armazón de la página y JavaScript generados por la función exportar a página "
-"web de"
+msgstr "Armazón de la página y JavaScript generados por la función exportar a página web de"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:168
 msgid "on"
@@ -1325,13 +1310,8 @@ msgstr "el"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:311
 #, java-format
-msgid ""
-"To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
-"be significant the first time the applet is loaded."
-msgstr ""
-"Para obtener un modelo tridimensional que puedes manejar, pulsa {0}"
-"aqu&iacute;{1}. El tiempo de descarga puede ser considerable la primera vez "
-"que se carga la miniaplicaci&oacute;n."
+msgid "To get a 3-D model you can manipulate, click {0}here{1}. Download time may be significant the first time the applet is loaded."
+msgstr "Para obtener un modelo tridimensional que puedes manejar, pulsa {0}aqu&iacute;{1}. El tiempo de descarga puede ser considerable la primera vez que se carga la miniaplicaci&oacute;n."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:313
 msgid "Insert the page TITLE here."
@@ -1343,13 +1323,8 @@ msgstr "Inserta aqu&iacute; la INTRODUCCI&Oacute;N."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:317
 #, java-format
-msgid ""
-"Insert additonal explanatory text here. Long text will wrap around Jmol "
-"model {0}."
-msgstr ""
-"Inserta aqu&iacute; cualquier texto adicional, por ejemplo la "
-"explicaci&oacute;n del modelo. Si el texto es largo, fluir&aacute; alrededor "
-"del modelo Jmol {0}."
+msgid "Insert additonal explanatory text here. Long text will wrap around Jmol model {0}."
+msgstr "Inserta aqu&iacute; cualquier texto adicional, por ejemplo la explicaci&oacute;n del modelo. Si el texto es largo, fluir&aacute; alrededor del modelo Jmol {0}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:319
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1357,12 +1332,8 @@ msgstr "Inserta aqu&iacute; el T&Iacute;TULO y la INTRODUCCI&Oacute;N."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:321
 #, java-format
-msgid ""
-"The button {0} will appear in the box below.  Insert information for {0} "
-"here and below."
-msgstr ""
-"El bot&oacute;n {0} se mostrar&aacute; en el recuadro de aqu&iacute; abajo.  "
-"Inserta la informaci&oacute;n de {0} aqu&iacute; y m&aacute;s abajo."
+msgid "The button {0} will appear in the box below.  Insert information for {0} here and below."
+msgstr "El bot&oacute;n {0} se mostrar&aacute; en el recuadro de aqu&iacute; abajo.  Inserta la informaci&oacute;n de {0} aqu&iacute; y m&aacute;s abajo."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:322
 #, java-format
@@ -1500,24 +1471,18 @@ msgstr "comprimiendo archivo de datos grande a"
 
 #~ msgid "Render in pov-ray."
 #~ msgstr "Preparar para POV-Ray"
-
 #~ msgid "&Measurements..."
 #~ msgstr "&Mediciones"
-
 #~ msgid "Measurements..."
 #~ msgstr "Mediciones..."
-
 #~ msgid "Jmol-to-POV-Ray Conversion"
 #~ msgstr "Conversión de Jmol a POV-Ray"
-
 #~ msgid "Filename"
 #~ msgstr "Nombre de archivo"
-
 #~ msgid "Height : "
 #~ msgstr "Alto: "
-
 #~ msgid "POV-Ray Executable Location"
 #~ msgstr "Ubicación del programa POV-Ray"
-
 #~ msgid "insert caption for {0} here"
 #~ msgstr "inserta aquí la leyenda para {0}"
+

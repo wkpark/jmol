@@ -308,7 +308,8 @@ public class DrawRenderer extends MeshRenderer {
           s = s.substring(1);
           if (drawType == JmolConstants.DRAW_ARC)
             pt1f.set(pt2f);
-        } else if (drawType != JmolConstants.DRAW_ARC)
+        } 
+        if (drawType != JmolConstants.DRAW_ARC)
           pt1f.set(vertices[dmesh.polygonIndexes[i][pt]]);
         viewer.transformPoint(pt1f, pt1i);
         int offset = (int) (5 * imageFontScaling);

@@ -959,8 +959,9 @@ class PointGroup {
           v.x += 0.011;
           v.y += 0.012;
           v.z += 0.013;
-          sb.append(Escape.escape(v)).append("{0 360 0.5} color ").append(
-              op.index == principalPlane.index ? "red" : "blue").append(";\n");
+          sb.append(Escape.escape(v)).append("{0 360 0.5} color ")
+              .append(principalPlane != null && op.index == principalPlane.index ? "red"
+                      : "blue").append(";\n");
         }
       sb.append("# name=" + name);
       sb.append(", nCi=" + (haveInversionCenter ? 1 : 0));

@@ -76,10 +76,10 @@ class PopInJmol extends WebPanel {
     int JmolSizeH = instance.height;
     if (useAppletJS) {
       appletInfoDivs += "\n<div id=\"" + javaname + "_caption\">\n" 
-          + GT._("Insert a caption for {0} here.", name)
+          + GT.escapeHTML(GT._("insert a caption for {0} here.", name))
           + "\n</div>";
       appletInfoDivs += "\n<div id=\"" + javaname + "_note\">\n"
-          + GT._("Insert a note for {0} here.", name)
+          + GT.escapeHTML(GT._("insert a note for {0} here.", name))
           + "\n</div>";
       appletDefs.append("\naddJmolDiv(" + i + ",'" + divClass + "','" + javaname
           + "'," + JmolSizeW + "," + JmolSizeH + ")");

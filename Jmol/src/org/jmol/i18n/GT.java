@@ -415,4 +415,13 @@ public class GT {
     return trans;
   }
 
+  public static String escapeHTML(String msg) {
+    char ch;
+    for (int i = msg.length(); --i >= 0;)
+      if ((ch = msg.charAt(i)) > 0x7F) {
+        msg = msg.substring(0, i) 
+            + "&#" + ((int)ch) + ";" + msg.substring(i + 1);
+      }
+    return msg;   
+  }
 }

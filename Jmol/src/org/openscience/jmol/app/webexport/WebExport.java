@@ -308,18 +308,18 @@ public class WebExport extends JPanel implements WindowListener {
   private static void setTranslations() {
     // for all templates and JmolPopIn.js
     translations = new String[] {
-        "GT_JmolPopIn.js_TOGETA3DMODEL", GT._("To get a 3-D model you can manipulate, click {0}here{1}. Download time may be significant the first time the applet is loaded.", new String[] {"<a href=\"HREF\">", "</a>"}),
+        "GT_JmolPopIn.js_TOGETA3DMODEL", GT.escapeHTML(GT._("To get a 3-D model you can manipulate, click {0}here{1}. Download time may be significant the first time the applet is loaded.", new String[] {"<a href=\"HREF\">", "</a>"})),
         
-        "GT_pop_in_template.html_INSERTTITLE", GT._("Insert the page TITLE here."), 
-        "GT_pop_in_template.html_INSERTINTRO", GT._("Insert the page INTRODUCTION here."),
+        "GT_pop_in_template.html_INSERTTITLE", GT.escapeHTML(GT._("Insert the page TITLE here.")), 
+        "GT_pop_in_template.html_INSERTINTRO", GT.escapeHTML(GT._("Insert the page INTRODUCTION here.")),
         
-        "GT_pop_in_template2.html_INSERTCAPTION", GT._("Insert a caption for {0} here.","@NAME@"),
-        "GT_pop_in_template2.html_INSERTADDITIONAL", GT._("Insert additonal explanatory text here. Long text will wrap around Jmol model {0}.","@NAME@"),
+        "GT_pop_in_template2.html_INSERTCAPTION", GT.escapeHTML(GT._("Insert a caption for {0} here.","@NAME@")),
+        "GT_pop_in_template2.html_INSERTADDITIONAL", GT.escapeHTML(GT._("Insert additonal explanatory text here. Long text will wrap around Jmol model {0}.","@NAME@")),
         
-        "GT_script_button_template.html_INSERT", GT._("Insert your TITLE and INTRODUCTION here."),
+        "GT_script_button_template.html_INSERT", GT.escapeHTML(GT._("Insert your TITLE and INTRODUCTION here.")),
         
-        "GT_script_button_template2.html_BUTTONINFO", GT._("The button {0} will appear in the box below.  Insert information for {0} here and below.", "@NAME@"),
-        "GT_script_button_template2.html_MORE", GT._("Insert more information for {0} here.", "@NAME@"),
+        "GT_script_button_template2.html_BUTTONINFO", GT.escapeHTML(GT._("The button {0} will appear in the box below.  Insert information for {0} here and below.", "@NAME@")),
+        "GT_script_button_template2.html_MORE", GT.escapeHTML(GT._("Insert more information for {0} here.", "@NAME@")),
     };
   }
   

@@ -478,7 +478,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
             .getElementAt(i));
       html = TextFormat.simpleReplace(html, "@AUTHOR@", pageAuthorName
           .getText());
-      html = TextFormat.simpleReplace(html, "@TITLE@", webPageTitle.getText());
+      html = TextFormat.simpleReplace(html, "@TITLE@", GT.escapeHTML(webPageTitle.getText()));
       html = TextFormat.simpleReplace(html, "@REMOTEAPPLETPATH@",
           remoteAppletPath.getText());
       html = TextFormat.simpleReplace(html, "@LOCALAPPLETPATH@",

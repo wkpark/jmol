@@ -838,10 +838,10 @@ public class Jmol extends JPanel {
   private void dispose(JFrame f) {
     if (historyFile != null && scriptWindow != null)
       historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, scriptWindow, null);
-    if (historyFile != null && webExport != null){
+    if (historyFile != null && webExport != null) {
       WebExport.saveHistory();
       WebExport.cleanUp();
-      }
+    }
     if (numWindows <= 1) {
       // Close Jmol
       report(GT._("Closing Jmol..."));
@@ -850,9 +850,13 @@ public class Jmol extends JPanel {
     } else {
       numWindows--;
       viewer.setModeMouse(JmolConstants.MOUSE_NONE);
-      f.dispose();
-      if (scriptWindow != null) {
-        scriptWindow.dispose();
+      try {
+        f.dispose();
+        if (scriptWindow != null) {
+          scriptWindow.dispose();
+        }
+      } catch (Exception e) {
+        // ignore
       }
     }
   }
@@ -865,7 +869,7 @@ public class Jmol extends JPanel {
     newFrame.show();
     if (state != null) {
       dispose(f);
-      j.viewer.script(state);
+      j.viewer.evalStringQuiet(state);
     }
   }
   

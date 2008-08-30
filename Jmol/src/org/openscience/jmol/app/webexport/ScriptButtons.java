@@ -75,8 +75,8 @@ class ScriptButtons extends WebPanel {
     } else {
       String s = htmlAppletTemplate;
       s = TextFormat.simpleReplace(s, "@APPLETNAME0@", buttonname);
-      s = TextFormat.simpleReplace(s, "@NAME@", name);
-      s = TextFormat.simpleReplace(s, "@LABEL@", name);
+      s = TextFormat.simpleReplace(s, "@NAME@", GT.escapeHTML(name));
+      s = TextFormat.simpleReplace(s, "@LABEL@", GT.escapeHTML(name));
       appletDefs.append(s);
     }
     return html;

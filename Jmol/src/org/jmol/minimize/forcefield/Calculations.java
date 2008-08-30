@@ -75,7 +75,6 @@ abstract class Calculations {
     bonds = minBonds;
     this.angles = angles;
     this.torsions = torsions;
-    this.partialCharges = partialCharges;
     this.constraints = constraints;
     atomCount = atoms.length;
     bondCount = bonds.length;
@@ -87,6 +86,7 @@ abstract class Calculations {
         }
     if (!havePartialCharges)
       partialCharges = null;
+    this.partialCharges = partialCharges;
   }
 
   boolean haveParams() {

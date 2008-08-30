@@ -711,12 +711,16 @@ class CalculationsUFF extends Calculations {
         switch (elemNo) {
         case 15: // P
           phi *= 84.4339;
+          break;
         case 33: // As
           phi *= 86.9735;
+          break;
         case 51: // Sb
           phi *= 87.7047;
+          break;
         case 83: // Bi     
           phi *= 90.0;
+          break;
         }
         double cosPhi = Math.cos(phi);
         a0 = cosPhi * cosPhi;

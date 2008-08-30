@@ -1323,6 +1323,7 @@ abstract public class AtomCollection {
       for (int i = atomCount; --i >= 0;)
         if (atoms[i].isPurine())
           bs.set(i);
+      return bs;
     case Token.pyrimidine:
       for (int i = atomCount; --i >= 0;)
         if (atoms[i].isPyrimidine())

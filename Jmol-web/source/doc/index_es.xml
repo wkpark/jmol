@@ -128,6 +128,42 @@
 						</ul>
 					</li>
 					<li>
+	  Multi-idioma
+	  				<ul>
+	  					<li>
+	  Traducido a numerosos idiomas: 
+alemán (de),
+catalán (ca),
+checo (cs),
+coreano (ko),
+danés (da),
+español (es),
+estonio (et),
+francés (fr),
+holandés (nl),
+húngaro (hu),
+italiano (it),
+noruego Bokmal (nb),
+polaco (pl),
+portugués (pt),
+portugués de Brasil (pt_BR),
+ruso (ru),
+sueco (sv),
+turco (tr)
+	 (además del inglés nativo, en-US).
+	  					</li>
+	  					<li>
+	  Adopta automáticamente el idioma del sistema operativo del usuario,
+	  si está entre las traducciones disponibles.
+	  Puedes cambiarlo a otro si quieres.
+	  					</li>
+	  					<li>
+	Para información actualizada o instrucciones para añadir tu idioma,
+	visita <a href="http://wiki.jmol.org:81/index.php/Internationalisation">la Wiki</a>.
+	  					</li>
+	  				</ul>
+					</li>
+					<li>
 	  Multiplataforma
 				  <ul>
 							<li>Windows</li>

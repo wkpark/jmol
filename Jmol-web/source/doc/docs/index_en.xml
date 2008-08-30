@@ -16,6 +16,13 @@
 	about how Jmol is built, particularly with respect to graphics rendering.
 			</p>
 		</section>
+		<section title="Translating Jmol">
+			<p>
+			Please, read instructions in
+    <a href="http://wiki.jmol.org:81/index.php/Internationalisation">this Wiki page</a>
+    and, if you need help, contact the developers team.
+			</p>
+		</section>
 		<section title="Scripting for Jmol">
 			<section title="Scripting Documentation">
 				<p>

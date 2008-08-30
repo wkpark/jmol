@@ -5,6 +5,7 @@
 -->
 <!DOCTYPE somethingOrAnything [
 <!ENTITY aboutJmol             SYSTEM "aboutJmol_es.xml" >
+<!ENTITY usingJmol             SYSTEM "usingJmol_es.xml" >
 <!ENTITY appletRequirements    SYSTEM "appletRequirements_es.xml" >
 <!ENTITY hardwareRequirements  SYSTEM "hardwareRequirements_es.xml" >
 <!ENTITY appRequirements       SYSTEM "appRequirements_es.xml" >
@@ -18,6 +19,8 @@
     <title>Preguntas frecuentes sobre Jmol</title>
 
     &aboutJmol;
+
+    &usingJmol;
 
     &hardwareRequirements;
 

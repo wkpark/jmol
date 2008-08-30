@@ -615,6 +615,8 @@ public class StateManager {
     float dipoleScale = 1.0f;
     boolean disablePopupMenu = false;
     boolean drawPicking = false;
+    boolean bondPicking = false;
+    boolean atomPicking = true;
     String helpPath = JmolConstants.DEFAULT_HELP_PATH;
     boolean fontScaling = false;
     boolean hideNameInPopup = false;
@@ -1098,6 +1100,7 @@ public class StateManager {
       setParameterValue("appendNew", appendNew);
       setParameterValue("appletProxy", appletProxy);
       setParameterValue("applySymmetryToBonds", applySymmetryToBonds);
+      setParameterValue("atomPicking", atomPicking);
       setParameterValue("autoBond", autoBond);
       setParameterValue("autoFps", autoFps);
       setParameterValue("axesMode", axesMode);
@@ -1109,6 +1112,7 @@ public class StateManager {
       setParameterValue("axesOrientationRasmol", axesOrientationRasmol);
       setParameterValue("backgroundModel", 0);
       setParameterValue("bondModeOr", bondModeOr);
+      setParameterValue("bondPicking", bondPicking);
       setParameterValue("bondRadiusMilliAngstroms", bondRadiusMilliAngstroms);
       setParameterValue("bondTolerance", bondTolerance);
       setParameterValue("cameraDepth", cameraDepth);

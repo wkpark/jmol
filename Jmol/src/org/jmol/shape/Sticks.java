@@ -33,7 +33,11 @@ import org.jmol.viewer.JmolConstants;
 import java.util.BitSet;
 import java.util.Hashtable;
 
+import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
+
 import org.jmol.g3d.Graphics3D;
+import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.BondIterator;
 
@@ -214,4 +218,55 @@ public class Sticks extends Shape {
         + (haveTainted ? getShapeCommands(temp2, null, -1, "select BONDS") + "\n"
              : "");
   }
+  
+  public Point3f checkObjectClicked(int x, int y, int modifiers,
+                                    BitSet bsVisible) {
+    Point3f pt = new Point3f();
+    Bond bond = findPickedBond(x, y, bsVisible, pt);
+    if (bond == null)
+      return null;
+    viewer.setStatusAtomPicked(-3, "[\"bond\",\"" + bond.getIdentity() + "\"," + pt.x + "," + pt.y + "," + pt.z + "]");
+    return pt;
+  }
+
+  private final static int MAX_BOND_CLICK_DISTANCE_SQUARED = 10 * 10;
+
+  private Bond findPickedBond(int x, int y, BitSet bsVisible, Point3f pt) {
+    int dmin2 = MAX_BOND_CLICK_DISTANCE_SQUARED;
+    if (g3d.isAntialiased()) {
+      x <<= 1;
+      y <<= 1;
+      dmin2 <<= 1;
+    }
+    Bond pickedBond = null;
+    Point3f v = new Point3f();
+    Bond[] bonds = modelSet.getBonds();
+    for (int i = modelSet.getBondCount(); --i >= 0;) {
+      Bond bond = bonds[i];
+      if (bond.getShapeVisibilityFlags() == 0)
+        continue;
+      Atom atom1 = bond.getAtom1();
+      Atom atom2 = bond.getAtom2();
+      if (!atom1.isVisible() || !atom2.isVisible())
+        continue;
+      v.set(atom1);
+      v.add(atom2);
+      v.scale(0.5f);
+      int d2 = coordinateInRange(x, y, v, dmin2);
+      if (d2 >= 0) {
+        dmin2 = d2;
+        pickedBond = bond;
+        pt.set(v);
+      }
+    }
+    return pickedBond;
+  }
+
+  private final Point3i ptXY = new Point3i();
+  private int coordinateInRange(int x, int y, Point3f vertex, int dmin2) {
+    viewer.transformPoint(vertex, ptXY);
+    int d2 = (x - ptXY.x) * (x - ptXY.x) + (y - ptXY.y) * (y - ptXY.y);
+    return (d2 < dmin2 ? d2 : -1);
+  }
+ 
 }

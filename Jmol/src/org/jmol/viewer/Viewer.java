@@ -2331,7 +2331,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   int findNearestAtomIndex(int x, int y) {
-    return (modelSet == null ? -1 : modelSet.findNearestAtomIndex(x, y));
+    return (modelSet == null || !getAtomPicking() ? -1 : modelSet.findNearestAtomIndex(x, y));
   }
 
   void selectRectangle(Rectangle rect, int modifiers) {
@@ -3794,6 +3794,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.drawPicking;
   }
 
+  public boolean getBondPicking() {
+    return global.bondPicking;
+  }
+
+  private boolean getAtomPicking() {
+    return global.atomPicking;
+  }
+
   private void setPickingStyle(String style) {
     int pickingStyle = JmolConstants.getPickingStyle(style);
     if (pickingStyle < 0)
@@ -4600,7 +4608,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean notFound = false;
     boolean doRepaint = true;
     while (true) {
-      
+
+      // 11.6.RC13
+      if (key.equalsIgnoreCase("atomPicking")) {
+        global.atomPicking = value;
+        break;
+      }
+
+      // 11.6.RC13
+      if (key.equalsIgnoreCase("bondPicking")) {
+        global.bondPicking = value;
+        break;
+      }
+
       //11.5.52
       if (key.equalsIgnoreCase("selectAllModels")) {
         global.selectAllModels = value;

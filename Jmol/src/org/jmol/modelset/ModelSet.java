@@ -369,14 +369,20 @@ abstract public class ModelSet extends ModelCollection {
     return shape.checkObjectHovered(x, y, bsVisible);
   }
 
-  public Point3f checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
+  public Point3f checkObjectClicked(int x, int y, int modifiers,
+                                    BitSet bsVisible) {
     Shape shape = shapes[JmolConstants.SHAPE_ECHO];
     Point3f pt = null;
-    if (shape != null && modifiers != 0 
+    if (modifiers != 0 && viewer.getBondPicking()
+        && (pt = shapes[JmolConstants.SHAPE_STICKS].checkObjectClicked(x, y,
+            modifiers, bsVisible)) != null)
+      return pt;
+
+    if (shape != null && modifiers != 0
         && (pt = shape.checkObjectClicked(x, y, modifiers, bsVisible)) != null)
       return pt;
-    return ((shape = shapes[JmolConstants.SHAPE_DRAW]) == null ? null
-        : shape.checkObjectClicked(x, y, modifiers, bsVisible));
+    return ((shape = shapes[JmolConstants.SHAPE_DRAW]) == null ? null : shape
+        .checkObjectClicked(x, y, modifiers, bsVisible));
   }
  
   public void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,

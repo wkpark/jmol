@@ -12150,7 +12150,7 @@ class Eval {
       int pt = 0;
       String propertyName = (args.length > pt ? Token.sValue(args[pt++])
           .toLowerCase() : "");
-      if (args.length == 1 && propertyName.indexOf(".") >= 0) {
+      if (args.length == 1 && propertyName.indexOf(".") >= 0 || propertyName.indexOf("[") >= 0) {
         propertyName = propertyName.replace(']', ' ').replace('[', ' ')
             .replace('.', ' ');
         propertyName = TextFormat.simpleReplace(propertyName, "  ", " ");

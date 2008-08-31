@@ -6,7 +6,7 @@
 <section title="Requisitos de hardware">
   <section title="¿Cuáles son los requisitos mínimos de hardware?">
     <p>
-      Un procesador a 400 MHz y 128 Mb de RAM<br />
+      Un procesador a 400 MHz y 128 MB de RAM<br />
       No hay un mínimo absoluto; éste es un mínimo en la práctica.
       Las prestaciones dependen del tamaño de la molécula,
       el tamaño de la ventana y la complejidad de la imagen.
@@ -15,7 +15,7 @@
   
   <section title="¿Cuál es el hardware recomendado?">
     <p>
-      Un procesador a 750 MHz y 256 Mb de RAM; por supuesto, cuanto más mejor. 
+      Un procesador a 750 MHz y 256 MB de RAM; por supuesto, cuanto más mejor. 
     </p>
   </section>
 

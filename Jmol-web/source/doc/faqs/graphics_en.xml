@@ -18,13 +18,24 @@
       The entire scene is constructed in memory and transferred to the
       screen with one drawImage operation. <br />
       Hey ... aren't you the person who was complaining about speed?
-      <i>(A future release will include Full-Scene-Anti-Aliasing.)</i>
     </p>
+    <p>
+      Recent (v11) versions of Jmol allow to use antialiasing,
+      both for the display and for exported images. Check out 
+      <a href="http://chemapps.stolaf.edu/jmol/docs/#setantialiasing">Jmol
+      Scripting Documentation</a>.
+    </p>
+    
   </section>
   
   <section title="But I need some higher-quality images ...">
     <p>
-      Use the Jmol application and export to PovRay. 
+      Export from the application to POV-Ray, or
+      <br />
+      increase the size of the application window, or
+      <br />
+      learn how to open Jmol in even larger sizes and export images 
+      without display, using the command line.
     </p>
   </section>
   

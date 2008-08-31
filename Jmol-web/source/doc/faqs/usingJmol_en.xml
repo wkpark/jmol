@@ -2,7 +2,7 @@
 
   <section title="How can I learn to use Jmol?">
     <p>
-    See <a href="./#Learn%20to%20use%20Jmol">the 
+    See <a href="../#Learn%20to%20use%20Jmol">the 
     home page</a> for some hints.
     </p>
   </section>
@@ -31,10 +31,11 @@
     	<li>Upon start: visit <a href="http://wiki.jmol.org:81/index.php/Jmol_Application#Forcing_Jmol_to_open_in_a_certain_language">this Wiki page</a>
     	for instructions.
     	</li>
-    	<li>Dynamically after Jmol has started (but don't do many changes, as it may lock):
+    	<li>Dynamically after Jmol has started:
 		using the 'Language' entry near the bottom of the pop-up menu.
-		(You can also do it from the console, using the 'language' command; 
-		see link above for details.)
+		Please, don't change language many times, as Jmol may lock.
+		You can also do it from the console, using the 'language' command; 
+		see link above for details.
 		</li>    	
     </ul>
     <p>

@@ -7,7 +7,8 @@
     </p>
     <p>
       Client machines do not need anything other than a web browser
-      that supports Java. 
+      that supports Java, and a recent version of Java installed and enabled
+      in the browser (best is Java Virtual Machine from Sun). 
       When a client visits a web page containing the JmolApplet, the
       applet gets automatically downloaded from the web server and
       executed.
@@ -25,7 +26,8 @@
 
   <section title="Jmol.js JavaScript Library">
     <p>
-      Use the <a href="../jslibrary/">Jmol.js JavaScript Library</a>
+      It is strongly recommended that you 
+      use the <a href="../jslibrary/">Jmol.js JavaScript Library</a>
       to allocate your applets within your web pages. 
     </p>
   </section>
@@ -33,59 +35,13 @@
   <section
    title="Can the JmolApplet be permanently installed locally,
    like a plug-in?">
-    <p>No</p>
+    <p>No.</p>
     <p>
       Applets get cached in the local browser cache. Subsequent uses of
-      the the applet will pull the applet from the cache
+      the applet will pull the applet from the cache
       (after confirming that the date/time/size have not changed
       on the web server). At least, that's the theory ...
       and it works correctly on the browsers I have seen :-)
-    </p>
-    <p>
-      <i>
-	Note that I am investigating several schemes to address this
-	request. I think it is possible to come up with a scheme
-	that would allow local installation to facilitate offline use.
-	The problem areas are 1) complexity for end-users associated
-	with a local installation, and 2) version control problems
-	when different web sites use different versions of the Jmol
-	applet.
-      </i>
-    </p>
-  </section>
-
-  <section title="Use SQUARE applets">
-    <p>
-      <i>You should probably use the
-      <a href="../jslibrary/">Jmol.js JavaScript Library</a></i>
-    </p>
-    <p>
-      Applets should generally be <i>square</i> ... width == height.
-    </p>
-    <p>
-      This is because the molecule will be automatically scaled so
-      that it fits within the smaller of the two dimensions.
-      The the other pixels will never be used (unless zoom is used).
-      Nevertheless, those pixels must be cleared to the background
-      color each time the window is repainted. This clearing is
-      a relatively expensive operation.
-    </p>
-  </section>
-  
-  <section title="Use FIXED pixel width &amp; height, not percentages">
-    <p>
-      <i>You should probably use the
-      <a href="../jslibrary/">Jmol.js JavaScript Library</a></i>
-    </p>
-    <p>
-      <code>&lt;applet ... width='{n}' height='{n}' ... &gt;</code>
-      where {n} = 300, 400, 600 ... you get the idea. 
-    </p>
-    <p>
-      While most browsers allow you to specify applet width and
-      height in percentages, in practice this causes many problems.
-      It tends to trigger lots of browser bugs during window resize
-      operations.
     </p>
   </section>
   
@@ -108,11 +64,15 @@
 
   <section title="Should I use APPLET, OBJECT or EMBED for my html tag?">
     <p>
-      <i>You should probably use the
-      <a href="../jslibrary/">Jmol.js JavaScript Library</a></i>
+      You are strongly recommended to use the
+      <a href="../jslibrary/">Jmol.js JavaScript Library</a>, 
+      since it will automatically insert the best choice according to the 
+      user's browser.
     </p>
     <p>
-      Always use the <code>APPLET</code> tag.
+      If you insist on doing it yourself,
+      <code>EMBED</code> is not good for applets; <code>APPLET</code> is 
+      better than <code>OBJECT</code>.
     </p>
     <p>
       <i>

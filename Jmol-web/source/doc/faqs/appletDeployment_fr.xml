@@ -44,58 +44,8 @@
       web). Au moins, c'est la th&#x00E9;orie ... et &#x00E7;&#x00E0;
       marche correctement sur les navigateurs que j'ai vu :-)
     </p>
-    <p><i>
-      Il faut noter que je creuse plusieurs pistes pour prendre en
-      compte cette demande. Je pense qu'il est possible d'arriver
-      &#x00E0; une solution qui permettrait une installation en local
-      pour faciliter l'utilisation offline. Les probl&#x00E8;mes sont
-      1) complexit&#x00E9; associ&#x00E9;e &#x00E0; une installation
-      locale pour les utilisateurs finaux, et 2) probl&#x00E8;mes de
-      contr&#x00F4;le de version quand diff&#x00E9;rents sites web
-      utilisent diff&#x00E9;rentes versions de l'applet Jmol.
-    </i></p>
   </section>
 
-  <section title="Utilisez des applets CARREES">
-    <p><i>
-      Vous devriez probablement utiliser la
-      <a href="../jslibrary/">Librairie JavaScript Jmol.js</a>
-    </i></p>
-    <p>
-      Les applets devraient g&#x00E9;n&#x00E9;ralement &#x00EA;tre
-      <i>carr&#x00E9;es</i> ... largeur == hauteur.
-    </p>
-    <p>
-      C'est parce que la mol&#x00E9;cule sera automatiquement zoom&#x00E9;e
-      pour qu'elle tienne dans la plus petite des deux dimensions. Les
-      autres pixels ne seront jamais utilis&#x00E9;s (&#x00E0; moins que
-      le zoom ne soit utilis&#x00E9;). N&#x00E9;anmoins, ces pixels
-      doivent &#x00EA;tre effac&#x00E9; avec la couleur de fond &#x00E0;
-      chaque fois que la fen&#x00EA;tre est redessin&#x00E9;e. Ce
-      nettoyage est une op&#x00E9;ration relativement co&#x00FB;teuse.
-    </p>
-  </section>
-  
-  <section
-    title="Utilisez des largeurs &amp; des hauteurs de pixels FIXES,
-           pas des pourcentages">
-    <p><i>
-      Vous devriez probablement utiliser la
-      <a href="../jslibrary/">Librairie JavaScript Jmol.js</a>
-    </i></p>
-    <p>
-      <code>&lt;applet ... width='{n}' height='{n}' ... &gt;</code>
-      o&#x00F9; {n} = 300, 400, 600 ... vous voyez l'id&#x00E9;e. 
-    </p>
-    <p>
-      Bien que la plupart des navigateurs permettent de sp&#x00E9;cifier
-      la largeur et la hauteur de l'applet en pourcentages, en pratique
-      ceci entra&#x00F4;ne de nombreux probl&#x00E8;mes. Ceci a tendance
-      &#x00E0; d&#x00E9;clencher de nombreuses anomalies du navigateur
-      pendant les op&#x00E9;rations de redimensionnement de fen&#x00EA;tre.
-    </p>
-  </section>
-  
   <section
     title="Quels types MIME doivent &#x00EA;tre install&#x00E9;s
            sur le serveur?">

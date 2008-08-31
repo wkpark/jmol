@@ -7,7 +7,7 @@
 
   <section title="¿Cómo puedo aprender a usar Jmol?">
     <p>
-    Consulta <a href="./#Aprende%20a%20usar%20Jmol">la 
+    Consulta <a href="../#Aprende%20a%20usar%20Jmol">la 
     página principal</a> donde se dan algunas orientaciones.
     </p>
   </section>
@@ -30,19 +30,19 @@
     Si tu idioma está en la lista, Jmol debería abrirse automáticamente
     usando ese idioma. Si no lo hace, puede ser que el idioma que quieres no sea
     el mismo que tiene tu sistema operativo 
-    (éste es el que Jmol adoptará), o bien está fallando algo
-    (pero esto es infrecuente).
+    (éste es el que Jmol adoptará), o bien que esté fallando algo
+    (aunque esto es infrecuente).
     Puedes forzar a que Jmol use uno de los idiomas disponibles de varios modos:
     </p>
     <ul>
     	<li>Al iniciar Jmol: lee las instrucciones en 
     	<a href="http://wiki.jmol.org:81/index.php/Jmol_Application#Forcing_Jmol_to_open_in_a_certain_language">esta página Wiki</a>.
     	</li>
-    	<li>Dinámicamente una vez que Jmol ya se haya iniciado (pero no cambies 
-    	muchas veces, probablemente se bloquee):
+    	<li>Dinámicamente una vez que Jmol ya se haya iniciado:
 		usando la entrada 'Idioma' cerca del final del menú emergente.
-		(También puede hacerse desde la consola, usando la instrucción 'language'; 
-		consulta el enlace anterior para obtener más detalles.)
+		No conviene que cambies de idioma muchas veces, probablemente Jmol se bloquee.
+		También puedes cambiar desde la consola, usando la instrucción 'language'; 
+		consulta el enlace anterior para obtener más detalles.
 		</li>    	
     </ul>
     <p>

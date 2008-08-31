@@ -21,12 +21,22 @@
       La escena completa se construye en memoria y se transfiere a la
       pantalla en una sola operación drawImage. <br/>
       ¿No eras tú quien se quejaba de la velocidad?
-      <i>(En una versión futura se incluirá suavizado de la escena completa.)</i>
 		</p>
+    	<p>
+      Las versiones recientes (v11) de Jmol permiten usar el suavizado
+      tanto en pantalla como para las imágenes exportadas. Consulta la
+      <a href="http://chemapps.stolaf.edu/jmol/docs/#setantialiasing">documentación
+      de guiones de Jmol</a>.
+    	</p>
 	</section>
 	<section title="Necesito algunas imágenes de calidad superior">
 		<p>
-      Utiliza la aplicación Jmol (no la miniaplicación) y exporta a PovRay. 
+      Exporta desde la aplicación a POV-Ray, o
+      <br />
+      aumenta el tamaño de la ventana de la aplicación, o
+      <br />
+      aprende a abrir Jmol en tamaños incluso mayores y exportar imágenes
+      sin mostrarse, usando la línea de comandos.
     </p>
 	</section>
 	<section title="¿Admite Jmol isosuperficies?">

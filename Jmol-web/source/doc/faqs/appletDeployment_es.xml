@@ -12,7 +12,9 @@
     </p>
     <p>
       Los equipos cliente sólo necesitan un navegador web
-      que admita Java. 
+      que admita Java, y una versión reciente de Java instalada y habilitada
+      en el navegador (se recomienda la máquina virtual de Java,
+      o <i>Java Virtual Machine</i>, de Sun). 
       Cuando un cliente visita una página web que contiene el JmolApplet, éste
       se descarga automáticamente desde el servidor web y se ejecuta.
     </p>
@@ -29,7 +31,8 @@
 
   <section title="Biblioteca javascript Jmol.js">
     <p>
-      Utiliza la <a href="../jslibrary/">biblioteca javascript Jmol.js</a>
+      Se recomienda encarecidamente que 
+      utilices la <a href="../jslibrary/">biblioteca javascript Jmol.js</a>
       para colocar las miniaplicaciones en tus páginas web. 
     </p>
   </section>
@@ -44,50 +47,6 @@
       (tras confirmar que no han cambiado la fecha, hora y tamaño
       en el servidor web). Al menos, esa es la teoría ...
       y funciona correctamente en los navegadores que he probado :-)
-    </p>
-    <p>
-      <i>
-	Nótese que estoy investigando varios planteamientos para atender esta petición.
-	Creo que es posible encontrar un modo de permitir la
-	instalación local para facilitar el uso sin conexión a la red.
-	Los problemas en esto son 1) la complejidad que supone a los usuarios finales 
-	una instalación local y 2) problemas de control de versiones cuando
-	distintos sitios web usen versiones diferentes de la miniaplicación Jmol.
-      </i>
-    </p>
-  </section>
-
-  <section title="Utiliza miniaplicaciones de forma CUADRADA">
-    <p>
-      <i>Probablemente debas usar la 
-      <a href="../jslibrary/">biblioteca javascript Jmol.js</a></i>
-    </p>
-    <p>
-      Las miniaplicaciones deberían normalmente ser <i>cuadradas</i> (mismo ancho que alto).
-    </p>
-    <p>
-      Esto se debe a que la molécula se escalará automáticamente 
-      ajustándose a la más pequeña de ambas dimensiones.
-      El resto de píxeles no se utilizarán (a no ser que se amplíe).
-      En cualquier caso, esos píxeles deben borrarse con el color de fondo
-      cada vez que se redibuja la ventana, y esta operación de borrado
-      es relativamente costosa.
-    </p>
-  </section>
-  
-  <section title="Utiliza anchos y altos FIJOS, no porcentajes">
-    <p>
-      <i>Probablemente debas usar la 
-      <a href="../jslibrary/">biblioteca javacript Jmol.js</a></i>
-    </p>
-    <p>
-      <code>&lt;applet ... width='{n}' height='{n}' ... &gt;</code>
-      donde {n} = 300, 400, 600 ... ¿captas la idea?
-    </p>
-    <p>
-      Aunque la mayoría de los navegadores te permiten indicar el ancho y el alto
-      de la miniaplicación en porcentajes, en la práctica esto genera muchos problemas,
-      pues tiende a disparar muchas anomalías del navegador cuando se redimensiona la ventana.
     </p>
   </section>
   
@@ -110,11 +69,15 @@
 
   <section title="¿Qué etiqueta html debo usar: APPLET, OBJECT o EMBED?">
     <p>
-      <i>Probablemente debas usar la 
-      <a href="../jslibrary/">biblioteca javascript Jmol.js</a></i>
+      Se recomienda encarecidamente que utilices la 
+      <a href="../jslibrary/">biblioteca javascript Jmol.js</a>,
+      pues insertará automáticamente la mejor solución según el 
+      navegador del usuario.
     </p>
     <p>
-      Siempre debes usar la etiqueta <code>APPLET</code>.
+      Si insistes en hacerlo tú mismo,
+      <code>EMBED</code> no sirve para las miniaplicaciones; <code>APPLET</code> es 
+      preferible a <code>OBJECT</code>.
     </p>
     <p>
       <i>
@@ -137,7 +100,7 @@
       Con Internet Explorer se recomienda utilizar la etiqueta 
       APPLET para desarrollos en internet.<br/>
       ...<br/>
-      Con Netscape se recomeinda la utilización de la etiqueta 
+      Con Netscape se recomienda la utilización de la etiqueta 
       APPLET para desarrollos en internet.
     </p>
   </section>

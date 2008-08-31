@@ -2458,8 +2458,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getPDBHeader(repaintManager.currentModelIndex);
   }
 
-  public Hashtable getModelInfo() {
-    return modelSet.getModelInfo();
+  public Hashtable getModelInfo(Object atomExpression) {
+    return modelSet.getModelInfo(getModelBitSet(getAtomBitSet(atomExpression)));
   }
 
   public Hashtable getAuxiliaryInfo() {

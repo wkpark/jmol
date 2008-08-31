@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-29 06:26+0200\n"
+"POT-Creation-Date: 2008-08-31 12:48+0200\n"
 "PO-Revision-Date: 2008-08-15 17:07-0400\n"
 "Last-Translator: Oliver Stueker <revilo2208@users.sourceforge.net>\n"
 "Language-Team: German\n"
@@ -1026,11 +1026,11 @@ msgstr "ConsoleTextArea konnte nicht erstellt werden: "
 msgid "Closing Jmol..."
 msgstr "Beende Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:1472
+#: org/openscience/jmol/app/Jmol.java:1476
 msgid "Open URL"
 msgstr "URL öffnen"
 
-#: org/openscience/jmol/app/Jmol.java:1473
+#: org/openscience/jmol/app/Jmol.java:1477
 msgid "Enter URL of molecular model"
 msgstr "URL eines Molekül-Modells eingeben"
 
@@ -1333,14 +1333,13 @@ msgid "Applet width:"
 msgstr "Applet Breite:"
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:79
-#: org/openscience/jmol/app/webexport/WebExport.java:316
 #, java-format
-msgid "Insert a caption for {0} here."
+msgid "insert a caption for {0} here."
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:82
 #, java-format
-msgid "Insert a note for {0} here."
+msgid "insert a note for {0} here."
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/ScriptButtons.java:39
@@ -1401,6 +1400,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:314
 msgid "Insert the page INTRODUCTION here."
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebExport.java:316
+#, java-format
+msgid "Insert a caption for {0} here."
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:317

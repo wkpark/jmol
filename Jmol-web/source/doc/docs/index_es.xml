@@ -23,6 +23,7 @@
 		</section>
 		<section title="Traducción de Jmol">
 			<p>
+	Jmol se puede traducir a tu idioma. 
 	Lee las instrucciones en 
     <a href="http://wiki.jmol.org:81/index.php/Internationalisation">esta página Wiki</a>
     y, si necesitas ayuda, contacta con el equipo de desarrollo.
@@ -33,24 +34,26 @@
 				<p>
 	Esta <a href="http://www.stolaf.edu/academics/chemapps/jmol/docs">documentación interactiva en línea</a>
 	(en inglés)
-	es la guía de referencia para todas las instrucciones que forman el lenguaje de guiones para Jmol. 
+	es <b>la</b> guía de referencia para todas las instrucciones que forman el lenguaje de guiones para Jmol. 
 	Además de una descripción exhaustiva de todas las instrucciones y sus opciones, proporciona excelentes
 	demostraciones y ejemplos.
       </p>
 			</section>
 			<section title="Documentación de la biblioteca javascript">
 				<p>
-	Jmol.js (incluida en la distribución estándar de Jmol) es una biblioteca javascript que 
+	<b>Jmol.js</b> (incluida en la distribución estándar de Jmol) es una biblioteca,
+	escrita en javascript, que 
 	puede usarse para simplificar el desarrollo de páginas web que incluyan la miniaplicación JmolApplet. 
 	Aquí está su <a href="../jslibrary/">descripción y documentación</a>.
 				</p>
 			</section>
 			<section title="Guiones para JmolApplet sin usar la biblioteca javascript">
 				<p>
-	Este <a href="../scripting/">documento</a>
-	explica cómo escribir guiones para interaccionar con la miniaplicación.
-	<i>Ten en cuenta que estos métodos no utilizan la biblioteca javascript, que es el 
-	método actualmente recomendado para comenzar a escribir guiones para Jmol.</i>
+	<i>Ten en cuenta que <b>no</b> es recomendable utilizar 
+	<a href="../scripting/">estos métodos</a>. Sólo debes usarlos si tienes
+	experiencia y sabes exactamente lo que necesitas.
+	En especial, si estás aprendiendo a usar la miniaplicación Jmol y a escribir 
+	guiones para ella, deberías usar sólo la biblioteca javascript.</i>
 				</p>
 			</section>
 			<section title="Documentación de superficies">

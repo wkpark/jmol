@@ -108,7 +108,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     pageAuthorName.setText(WebExport.getPageAuthorName());
     webPageTitle = new JTextField(20);
     webPageTitle.addActionListener(this);
-    webPageTitle.setText(GT._("A web page containing Jmol applets"));
+    webPageTitle.setText(GT.escapeHTML(GT._("A web page containing Jmol applets")));
   }
 
   //Need the panel maker and the action listener.
@@ -495,7 +495,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       html = TextFormat.simpleReplace(html, "@CREATIONDATA@", WebExport
           .TimeStamp_WebLink());
       html = TextFormat.simpleReplace(html, "@AUTHORDATA@",
-          GT._("Based on template by A. Herr&aacute;ez as modified by J. Gutow"));
+          GT.escapeHTML(GT._("Based on template by A. Herr&aacute;ez as modified by J. Gutow")));
       html = TextFormat.simpleReplace(html, "@LOGDATA@", "<pre>\n"
           + LogPanel.getText() + "\n</pre>\n");
       LogPanel.log("      ..." + GT._("creating {0}", fileName));

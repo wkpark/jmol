@@ -165,7 +165,7 @@ public class WebExport extends JPanel implements WindowListener {
     String now_string = DateFormat.getDateInstance().format(now);//Specify medium verbosity on the date and time
     out = out
         + " <a href=\"http://jmol.sourceforge.net\">Jmol " + JmolViewer.getJmolVersion() + "</a> "
-        + GT._("on") + " " + now_string
+        + GT.escapeHTML(GT._("on")) + " " + now_string
         + ".</small><br />";
     return out;
   }
@@ -263,7 +263,7 @@ public class WebExport extends JPanel implements WindowListener {
 
   static void setWebPageAuthor(String pageAuthor) {
     if (pageAuthor == null)
-      pageAuthor = GT._("Jmol Web Page Maker");
+      pageAuthor = GT.escapeHTML(GT._("Jmol Web Page Maker"));
     pageAuthorName = pageAuthor;
     prop.setProperty("webMakerPageAuthorName", pageAuthorName);
     historyFile.addProperties(prop);

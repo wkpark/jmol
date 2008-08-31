@@ -175,8 +175,8 @@ public class MolReader extends AtomSetCollectionReader {
     }
   }
 
-  private final String isotopeMap0 = "H1 H2 ";
-  private final String isotopeMap1 = "D  T  ";
+  private final static String isotopeMap0 = "H1 H2 ";
+  private final static String isotopeMap1 = "D  T  ";
   void readAtoms(int atomCount) throws Exception {
     for (int i = 0; i < atomCount; ++i) {
       readLine();

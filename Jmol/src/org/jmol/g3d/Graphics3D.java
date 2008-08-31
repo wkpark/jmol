@@ -825,6 +825,7 @@ final public class Graphics3D implements JmolRendererInterface {
     switch (diameter) {
     case 1:
       plotPixelClipped(argbCurrent, x, y, z);
+      return;
     case 0:
       return;
     }
@@ -862,6 +863,7 @@ final public class Graphics3D implements JmolRendererInterface {
     switch (diameter) {
     case 1:
       plotPixelClipped(argbCurrent, x, y, z);
+      return;
     case 0:
       return;
     }

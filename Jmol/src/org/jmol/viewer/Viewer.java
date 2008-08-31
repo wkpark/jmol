@@ -2462,8 +2462,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getModelInfo(getModelBitSet(getAtomBitSet(atomExpression)));
   }
 
-  public Hashtable getAuxiliaryInfo() {
-    return modelSet.getAuxiliaryInfo();
+  public Hashtable getAuxiliaryInfo(Object atomExpression) {
+    return modelSet.getAuxiliaryInfo(getModelBitSet(getAtomBitSet(atomExpression)));
   }
 
   public Hashtable getShapeInfo() {

@@ -1127,7 +1127,7 @@ abstract public class ModelCollection extends BondCollection {
     return "no header information found";
   }
 
-  public Hashtable getModelInfo() {
+  public Hashtable getModelInfo(BitSet bsModels) {
     Hashtable info = new Hashtable();
     info.put("modelSetName", modelSetName);
     info.put("modelCount", new Integer(modelCount));
@@ -1135,8 +1135,13 @@ abstract public class ModelCollection extends BondCollection {
         .valueOf(modelSetHasVibrationVectors()));
     if (modelSetProperties != null)
       info.put("modelSetProperties", modelSetProperties);
+    info.put("modelCountSelected", new Integer(BitSetUtil.cardinalityOf(bsModels)));
+    info.put("modelsSelected", bsModels);
     Vector vModels = new Vector();
+    
     for (int i = 0; i < modelCount; ++i) {
+      if (!bsModels.get(i))
+        continue;
       Hashtable model = new Hashtable();
       model.put("_ipt", new Integer(i));
       model.put("num", new Integer(getModelNumber(i)));
@@ -2453,12 +2458,14 @@ abstract public class ModelCollection extends BondCollection {
     return sb.toString();
   }
   
-  public Hashtable getAuxiliaryInfo() {
+  public Hashtable getAuxiliaryInfo(BitSet bsModels) {
     Hashtable info = getModelSetAuxiliaryInfo();
     if (info == null)
       return info;
     Vector models = new Vector();
     for (int i = 0; i < modelCount; ++i) {
+      if (bsModels != null && !bsModels.get(i))
+        continue;
       Hashtable modelinfo = getModelAuxiliaryInfo(i);
       models.addElement(modelinfo);
     }
@@ -2540,9 +2547,10 @@ abstract public class ModelCollection extends BondCollection {
 
   public Vector getAllBondInfo(BitSet bs) {
     Vector V = new Vector();
+    int thisAtom = (BitSetUtil.cardinalityOf(bs) == 1 ? BitSetUtil.firstSetBit(bs) : -1);
     for (int i = 0; i < bondCount; i++)
-      if (bs.get(bonds[i].atom1.atomIndex) 
-          && bs.get(bonds[i].atom2.atomIndex)) 
+      if (thisAtom >= 0? (bonds[i].atom1.atomIndex == thisAtom || bonds[i].atom2.atomIndex == thisAtom) 
+          : bs.get(bonds[i].atom1.atomIndex) && bs.get(bonds[i].atom2.atomIndex)) 
         V.addElement(getBondInfo(i));
     return V;
   }

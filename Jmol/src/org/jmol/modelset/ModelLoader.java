@@ -307,7 +307,7 @@ public final class ModelLoader extends ModelSet {
   private void initializeMerge() {
     merge(mergeModelSet);
     bsSymmetry = mergeModelSet.bsSymmetry;
-    Hashtable info = mergeModelSet.getAuxiliaryInfo();
+    Hashtable info = mergeModelSet.getAuxiliaryInfo(null);
     String[] mergeGroup3Lists = (String[]) info.get("group3Lists");
     int[][] mergeGroup3Counts = (int[][]) info.get("group3Counts");
     if (mergeGroup3Lists != null) {

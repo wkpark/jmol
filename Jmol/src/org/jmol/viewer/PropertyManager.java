@@ -72,7 +72,7 @@ class PropertyManager {
     "jmolStatus"      , "statusNameList", "",
     "jmolViewer"      , "", "",
     "messageQueue"    , "", "",
-    "auxiliaryInfo"   , "", "",
+    "auxiliaryInfo"   , atomExpression, "*",
     
     "boundBoxInfo"    , "", "",  
     "dataInfo"        , "<data type>", "types",
@@ -312,7 +312,7 @@ class PropertyManager {
     case PROP_ATOM_INFO:
       return viewer.getAllAtomInfo(myParam);
     case PROP_AUXILIARY_INFO:
-      return viewer.getAuxiliaryInfo();
+      return viewer.getAuxiliaryInfo(myParam);
     case PROP_BOND_INFO:
       return viewer.getAllBondInfo(myParam);
     case PROP_BOUNDBOX_INFO:

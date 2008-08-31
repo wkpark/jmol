@@ -1,4 +1,4 @@
-﻿/* $RCSfile$
+/* $RCSfile$
  * $Author jonathan gutow$
  * $Date Aug 5, 2007 9:19:06 AM $
  * $Revision$
@@ -495,7 +495,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       html = TextFormat.simpleReplace(html, "@CREATIONDATA@", WebExport
           .TimeStamp_WebLink());
       html = TextFormat.simpleReplace(html, "@AUTHORDATA@",
-          GT.escapeHTML(GT._("Based on template by A. Herráez as modified by J. Gutow")));
+          GT.escapeHTML(GT._("Based on template by A. Herr�ez as modified by J. Gutow")));
       html = TextFormat.simpleReplace(html, "@LOGDATA@", "<pre>\n"
           + LogPanel.getText() + "\n</pre>\n");
       LogPanel.log("      ..." + GT._("creating {0}", fileName));
@@ -560,6 +560,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
         bytes = ArrayUtil.ensureLength(bytes, totalLen * 2);
       System.arraycopy(buf, 0, bytes, totalLen - len, len);
     }
+    bis.close();
     buf = new byte[totalLen];
     System.arraycopy(bytes, 0, buf, 0, totalLen);
     return buf;

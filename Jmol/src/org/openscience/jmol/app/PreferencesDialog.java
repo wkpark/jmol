@@ -582,9 +582,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       jmolDefaultProperties.put(jmolDefaults[i], jmolDefaults[i+1]);
     currentProperties = new Properties(jmolDefaultProperties);
     try {
-      FileInputStream fis2 = new FileInputStream(Jmol.UserPropsFile);
-      currentProperties.load(new BufferedInputStream(fis2, 1024));
-      fis2.close();
+      BufferedInputStream bis = new BufferedInputStream(new FileInputStream(Jmol.UserPropsFile), 1024);
+      currentProperties.load(bis);
+      bis.close();
     } catch (Exception e2) {
     }
     System.setProperties(currentProperties);

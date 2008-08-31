@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-08-29 06:26+0200\n"
-"PO-Revision-Date: 2008-08-13 17:23+0000\n"
+"PO-Revision-Date: 2008-08-30 11:13+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-08-13 20:04+0000\n"
+"X-Launchpad-Export-Date: 2008-08-31 12:04+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
@@ -54,23 +54,23 @@ msgstr ""
 
 #: org/jmol/applet/GuiMap.java:41
 msgid "&Help"
-msgstr ""
+msgstr "A&juda"
 
 #: org/jmol/applet/GuiMap.java:42
 msgid "&Search..."
-msgstr ""
+msgstr "Ce&rca..."
 
 #: org/jmol/applet/GuiMap.java:43
 msgid "&Commands"
-msgstr ""
+msgstr "&Ordres"
 
 #: org/jmol/applet/GuiMap.java:44
 msgid "Math &Functions"
-msgstr ""
+msgstr "&Funcions matemàtiques"
 
 #: org/jmol/applet/GuiMap.java:45
 msgid "Set &Parameters"
-msgstr ""
+msgstr "Defineix els &paràmetres"
 
 #: org/jmol/applet/GuiMap.java:46
 #, fuzzy
@@ -102,6 +102,10 @@ msgid ""
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
 msgstr ""
+"Els missatges apareixeran ací. Introduïu les ordres en el quadre a "
+"continuació. Feu clic a l'element Ajuda del menú de la consola per a "
+"consultar l'ajuda en línia, que es mostrarà en una nova finestra del "
+"navegador."
 
 #: org/jmol/appletwrapper/AppletWrapper.java:92
 msgid "Loading Jmol applet ..."
@@ -817,7 +821,7 @@ msgstr "Monòmer"
 
 #: org/jmol/popup/PopupResourceBundle.java:717
 msgid "Shapely"
-msgstr ""
+msgstr "Amb forma"
 
 #: org/jmol/popup/PopupResourceBundle.java:719
 msgid "Inherit"
@@ -1287,7 +1291,7 @@ msgstr "l'especificació de model no és vàlida"
 #: org/jmol/viewer/Compiler.java:2494
 #, java-format
 msgid "missing END for {0}"
-msgstr ""
+msgstr "Manca END per a {0}"
 
 #: org/jmol/viewer/Compiler.java:2495 org/jmol/viewer/Eval.java:11344
 msgid "number expected"
@@ -1328,7 +1332,7 @@ msgstr "no es reconeix el testimoni: {0}"
 
 #: org/jmol/viewer/Eval.java:315 org/jmol/viewer/Eval.java:5140
 msgid "script ERROR: "
-msgstr ""
+msgstr "Error de l'script: "
 
 #: org/jmol/viewer/Eval.java:3484
 #, java-format

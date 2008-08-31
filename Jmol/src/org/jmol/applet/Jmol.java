@@ -185,10 +185,10 @@ public class Jmol implements WrappedApplet {
     this.appletWrapper = appletWrapper;
   }
 
-  public void finalize() throws Throwable {
-    //System.out.println("Jmol finalize " + this);
-    super.finalize();
-  }
+  //protected void finalize() throws Throwable {
+  //  System.out.println("Jmol finalize " + this);
+  //  super.finalize();
+  //}
 
   public void init() {
     htmlName = getParameter("name");

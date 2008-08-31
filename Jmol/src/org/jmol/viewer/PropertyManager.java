@@ -51,7 +51,7 @@ class PropertyManager {
     "fileContents"    , "<pathname>", "",
     "fileContents"    , "", "",  
     "animationInfo"   , "", "",
-    "modelInfo"       , "", "",
+    "modelInfo"       , atomExpression, "(*)",
     "X -vibrationInfo", "", "",  //not implemented -- see modelInfo
     "shapeInfo"       , "", "",
     "measurementInfo" , "", "",
@@ -345,7 +345,7 @@ class PropertyManager {
     case PROP_MINIMIZATION_INFO:
       return viewer.getMinimizationInfo();
     case PROP_MODEL_INFO:
-      return viewer.getModelInfo();
+      return viewer.getModelInfo(myParam);
     case PROP_MOLECULE_INFO:
       return viewer.getMoleculeInfo(myParam);
     case PROP_ORIENTATION_INFO:

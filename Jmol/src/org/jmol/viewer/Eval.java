@@ -12150,7 +12150,22 @@ class Eval {
       int pt = 0;
       String propertyName = (args.length > pt ? Token.sValue(args[pt++])
           .toLowerCase() : "");
-      if (args.length == 1 && propertyName.indexOf(".") >= 0 || propertyName.indexOf("[") >= 0) {
+      Object propertyValue;
+      if (propertyName.equalsIgnoreCase("fileContents") && args.length > 2) {
+        String s = Token.sValue(args[1]);
+        for (int i = 2; i < args.length; i++)
+          s += "|" + Token.sValue(args[i]);
+        propertyValue = s;
+        pt = args.length;
+      } else {
+        propertyValue = (args.length > pt && args[pt].tok == Token.bitset ? (Object) Token
+            .bsSelect(args[pt++])
+            : args.length > pt && args[pt].tok == Token.string
+                && PropertyManager.acceptsStringParameter(propertyName) ? args[pt++].value
+                : (Object) "");
+      }
+      if (args.length == pt && propertyName.indexOf(".") >= 0
+          || propertyName.indexOf("[") >= 0) {
         propertyName = propertyName.replace(']', ' ').replace('[', ' ')
             .replace('.', ' ');
         propertyName = TextFormat.simpleReplace(propertyName, "  ", " ");
@@ -12166,22 +12181,12 @@ class Eval {
             else
               args[i] = new Token(Token.string, names[i]);
           }
+          pt = 1;
         }
       }
-      Object propertyValue = (args.length > pt && args[pt].tok == Token.bitset ? (Object) Token
-          .bsSelect(args[pt++])
-          : args.length > pt && args[pt].tok == Token.string
-              && PropertyManager.acceptsStringParameter(propertyName) ? args[pt++].value
-              : (Object) "");
-      if (propertyName.equalsIgnoreCase("fileContents") && args.length > 2) {
-        String s = Token.sValue(args[1]);
-        for (int i = 2; i < args.length; i++)
-          s += "|" + Token.sValue(args[i]);
-        propertyValue = s;
-        pt = args.length;
-      }
       Object property = viewer.getProperty(null, propertyName, propertyValue);
-      property = PropertyManager.extractProperty(property, args, pt);
+      if (pt < args.length)
+        property = PropertyManager.extractProperty(property, args, pt);
       if (property instanceof String)
         return addX(property);
       if (property instanceof Integer)

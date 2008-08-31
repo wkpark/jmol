@@ -108,7 +108,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     pageAuthorName.setText(WebExport.getPageAuthorName());
     webPageTitle = new JTextField(20);
     webPageTitle.addActionListener(this);
-    webPageTitle.setText(GT.escapeHTML(GT._("A web page containing Jmol applets")));
+    webPageTitle.setText(GT._("A web page containing Jmol applets"));
   }
 
   //Need the panel maker and the action listener.

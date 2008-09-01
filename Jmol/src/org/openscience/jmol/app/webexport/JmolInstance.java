@@ -33,7 +33,6 @@ import javax.swing.filechooser.FileSystemView;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
-import org.jmol.util.TextFormat;
 
 class JmolInstance {
   String name;

@@ -49,8 +49,7 @@ class JmolInstance {
       int width, int height) {
     this.viewer = viewer;
     this.name = name;
-    this.javaname = TextFormat.replaceAllCharacters(name,
-        "[]/\\#*&^%$?.,%<>' \"", '_'); //escape filename characters
+    this.javaname = name.replaceAll("[^a-zA-Z_0-9-]", "_"); //escape filename characters
     this.script = script;
     this.width = width;
     this.height = height;

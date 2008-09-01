@@ -67,14 +67,14 @@ class ScriptButtons extends WebPanel {
     String name = instance.name;
     String buttonname = instance.javaname;
     if (i == 0)
-      html = TextFormat.simpleReplace(html, "@APPLETNAME0@", buttonname);
+      html = TextFormat.simpleReplace(html, "@APPLETNAME0@", GT.escapeHTML(buttonname));
     if (useAppletJS) {
       String info = "info for " + name;
       appletDefs.append("\naddAppletButton(" + i + ",'" + buttonname + "',\""
           + name + "\",\"" + info + "\");");
     } else {
       String s = htmlAppletTemplate;
-      s = TextFormat.simpleReplace(s, "@APPLETNAME0@", buttonname);
+      s = TextFormat.simpleReplace(s, "@APPLETNAME0@", GT.escapeHTML(buttonname));
       s = TextFormat.simpleReplace(s, "@NAME@", GT.escapeHTML(name));
       s = TextFormat.simpleReplace(s, "@LABEL@", GT.escapeHTML(name));
       appletDefs.append(s);

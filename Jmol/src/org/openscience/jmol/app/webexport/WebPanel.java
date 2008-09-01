@@ -476,8 +476,8 @@ abstract class WebPanel extends JPanel implements ActionListener {
       for (int i = 0; i < listModel.getSize(); i++)
         html = getAppletDefs(i, html, appletDefs, (JmolInstance) listModel
             .getElementAt(i));
-      html = TextFormat.simpleReplace(html, "@AUTHOR@", pageAuthorName
-          .getText());
+      html = TextFormat.simpleReplace(html, "@AUTHOR@", GT.escapeHTML(pageAuthorName
+          .getText()));
       html = TextFormat.simpleReplace(html, "@TITLE@", GT.escapeHTML(webPageTitle.getText()));
       html = TextFormat.simpleReplace(html, "@REMOTEAPPLETPATH@",
           remoteAppletPath.getText());
@@ -492,8 +492,8 @@ abstract class WebPanel extends JPanel implements ActionListener {
         str = "<script type='text/javascript'>\n" + str + "\n</script>";
       html = TextFormat.simpleReplace(html, "@APPLETINFO@", appletInfoDivs);
       html = TextFormat.simpleReplace(html, "@APPLETDEFS@", str);
-      html = TextFormat.simpleReplace(html, "@CREATIONDATA@", WebExport
-          .TimeStamp_WebLink());
+      html = TextFormat.simpleReplace(html, "@CREATIONDATA@", GT.escapeHTML(WebExport
+          .TimeStamp_WebLink()));
       html = TextFormat.simpleReplace(html, "@AUTHORDATA@",
           GT.escapeHTML(GT._("Based on template by A. Herr&#x00E1;ez as modified by J. Gutow")));
       html = TextFormat.simpleReplace(html, "@LOGDATA@", "<pre>\n"

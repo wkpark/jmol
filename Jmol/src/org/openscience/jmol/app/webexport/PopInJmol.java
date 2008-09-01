@@ -90,7 +90,7 @@ class PopInJmol extends WebPanel {
       s = TextFormat.simpleReplace(s, "@WIDTH@", "" + JmolSizeW);
       s = TextFormat.simpleReplace(s, "@HEIGHT@", "" + JmolSizeH);
       s = TextFormat.simpleReplace(s, "@NAME@", GT.escapeHTML(name));
-      s = TextFormat.simpleReplace(s, "@APPLETNAME@", javaname);
+      s = TextFormat.simpleReplace(s, "@APPLETNAME@", GT.escapeHTML(javaname));
       appletDefs.append(s);
     }
     return html;

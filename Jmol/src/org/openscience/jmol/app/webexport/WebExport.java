@@ -258,7 +258,7 @@ public class WebExport extends JPanel implements WindowListener {
 
   static void setWebPageAuthor(String pageAuthor) {
     if (pageAuthor == null)
-      pageAuthor = GT.escapeHTML(GT._("Jmol Web Page Maker"));
+      pageAuthor = GT._("Jmol Web Page Maker");
     pageAuthorName = pageAuthor;
     prop.setProperty("webMakerPageAuthorName", pageAuthorName);
     historyFile.addProperties(prop);

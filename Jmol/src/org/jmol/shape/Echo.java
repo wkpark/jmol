@@ -25,6 +25,7 @@
 package org.jmol.shape;
 
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 import org.jmol.g3d.*;
 
 import java.awt.Image;
@@ -57,7 +58,7 @@ public class Echo extends TextShape {
     if (Logger.debugging) {
       Logger.debug("Echo.setProperty(" + propertyName + "," + value + ")");
     }
-    
+
     if ("scalereference" == propertyName) {
       if (currentObject != null) {
         float val = ((Float) value).floatValue();
@@ -65,10 +66,11 @@ public class Echo extends TextShape {
       }
       return;
     }
-    
+
     if ("xyz" == propertyName) {
       if (currentObject != null && viewer.getFontScaling())
-          currentObject.setScalePixelsPerMicron(viewer.getScalePixelsPerAngstrom() * 10000f);
+        currentObject.setScalePixelsPerMicron(viewer
+            .getScalePixelsPerAngstrom() * 10000f);
       // continue on to Object2d setting
     }
 
@@ -85,25 +87,37 @@ public class Echo extends TextShape {
       ((Text) currentObject).setImage(image);
       return;
     }
-    
+    if ("thisID" == propertyName) {
+      String target = (String) value;
+      currentObject = (Text) objects.get(target);
+      if (currentObject == null && TextFormat.isWild(target))
+        thisID = target.toUpperCase();
+      return;
+    }
+
     if ("hidden" == propertyName) {
-      boolean isHidden = ((Boolean)value).booleanValue();
-      if (currentObject == null) {
-        if (isAll) {
+      boolean isHidden = ((Boolean) value).booleanValue();
+      if (currentObject == null)
+        if (isAll || thisID != null) {
           Enumeration e = objects.elements();
-          while (e.hasMoreElements())
-            ((Text) e.nextElement()).hidden = isHidden;
+          while (e.hasMoreElements()) {
+            Text text = (Text) e.nextElement();
+            if (isAll
+                || TextFormat.isMatch(text.target.toUpperCase(), thisID, true,
+                    true))
+              text.hidden = isHidden;
+          }
+          return;
         }
-        return;
-      }
       ((Text) currentObject).hidden = isHidden;
       return;
     }
 
     if (Object2d.setProperty(propertyName, value, currentObject))
       return;
-    
+
     if ("target" == propertyName) {
+      thisID = null;
       String target = ((String) value).intern().toLowerCase();
       if (target == "none" || target == "all") {
         // process in Object2dShape
@@ -143,6 +157,20 @@ public class Echo extends TextShape {
     super.setProperty(propertyName, value, null);
   }
 
+  public Object getProperty(String property, int index) {
+    if (property.startsWith("checkID:")) {
+      // returns FIRST match
+      String key = property.substring(8).toUpperCase();
+      boolean isWild = TextFormat.isWild(key);
+      Enumeration e = objects.elements();
+      while (e.hasMoreElements()) {
+        String id = ((Text) e.nextElement()).target.toUpperCase(); 
+        if (id.equals(key) || isWild && TextFormat.isMatch(id, key, true, true))
+          return id;
+      }
+    }
+    return null;
+  }
   public String getShapeState() {
     StringBuffer s = new StringBuffer("\n  set echo off;\n");
     Enumeration e = objects.elements();

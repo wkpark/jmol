@@ -8,6 +8,7 @@ import javax.vecmath.Point3f;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.Viewer;
 
 public class Object2dShape extends Shape {
@@ -21,7 +22,8 @@ public class Object2dShape extends Shape {
   Object currentBgColor;
   float currentTranslucentLevel;
   float currentBgTranslucentLevel;
-
+  protected String thisID;
+  
   boolean isHover;
   boolean isAll;
 
@@ -35,6 +37,24 @@ public class Object2dShape extends Shape {
       currentObject = null;
       isAll = true;
       objects = new Hashtable();
+      return;
+    }
+
+    if ("delete" == propertyName) {
+      if (currentObject == null)
+        if (isAll || thisID != null) {
+          Enumeration e = objects.elements();
+          while (e.hasMoreElements()) {
+            Text text = (Text) e.nextElement();
+            if (isAll
+                || TextFormat.isMatch(text.target.toUpperCase(), thisID, true,
+                    true))
+              objects.remove(text.target);
+          }
+          return;
+        }
+      objects.remove(currentObject.target);
+      currentObject = null;
       return;
     }
 
@@ -65,7 +85,7 @@ public class Object2dShape extends Shape {
       currentObject.setModel(modelIndex);
       return;
     }
-    
+
     if ("align" == propertyName) {
       String align = (String) value;
       if (currentObject == null) {
@@ -97,14 +117,18 @@ public class Object2dShape extends Shape {
 
     if ("color" == propertyName) {
       currentColor = value;
-      if (currentObject == null) {
-        if (isAll) {
+      if (currentObject == null)
+        if (isAll || thisID != null) {
           Enumeration e = objects.elements();
-          while (e.hasMoreElements())
-            ((Text) e.nextElement()).setColix(value);
+          while (e.hasMoreElements()) {
+            Text text = (Text) e.nextElement();
+            if (isAll
+                || TextFormat.isMatch(text.target.toUpperCase(), thisID, true,
+                    true))
+              text.setColix(value);
+          }
+          return;
         }
-        return;
-      }
       currentObject.setColix(value);
       return;
     }
@@ -138,9 +162,9 @@ public class Object2dShape extends Shape {
       currentObject.setTranslucent(translucentLevel, isBackground);
       return;
     }
-   
+
     if (propertyName == "deleteModelAtoms") {
-      int modelIndex = ((int[])((Object[])value)[2])[0];
+      int modelIndex = ((int[]) ((Object[]) value)[2])[0];
       Enumeration e = objects.elements();
       while (e.hasMoreElements()) {
         Text text = (Text) e.nextElement();

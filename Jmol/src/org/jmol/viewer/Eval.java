@@ -828,9 +828,6 @@ class Eval {
       viewer.scriptStatus("Eval.instructionDispatchLoop():" + timeBegin);
       viewer.scriptStatus(script);
     }
-    if (!historyDisabled && !isSyntaxCheck
-        && scriptLevel <= commandHistoryLevelMax && !tQuiet)
-      viewer.addCommand(script);
     if (pcEnd == 0)
       pcEnd = Integer.MAX_VALUE;
     if (lineEnd == 0)
@@ -838,15 +835,21 @@ class Eval {
     for (; pc < aatoken.length && pc < pcEnd; pc++) {
       if (!checkContinue())
         break;
+      if (lineNumbers[pc] > lineEnd)
+        break;
       Token token = (aatoken[pc].length == 0 ? null : aatoken[pc][0]);
       //  when checking scripts, we can't check statments 
       //  containing @{...}
+      thisCommand = getCommand(pc);
+      if (!historyDisabled && !isSyntaxCheck
+          && scriptLevel <= commandHistoryLevelMax && !tQuiet) {
+        //System.out.println(scriptLevel + " " + thisCommand);
+        viewer.addCommand(thisCommand);
+      }
       if (!setStatement(pc)) {
         Logger.info(getCommand(pc) + " -- STATEMENT CONTAINING @{} SKIPPED");
         continue;
       }
-      if (lineNumbers[pc] > lineEnd)
-        break;
       thisCommand = getCommand(pc);
       fullCommand = thisCommand + getNextComment();
       iToken = 0;

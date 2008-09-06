@@ -148,6 +148,7 @@ public class Text extends Object2d {
       textWidth = textHeight = 0;
       boxWidth = image.getWidth(null) * fontScale;
       boxHeight = image.getHeight(null) * fontScale;
+      ascent = 0;
       return;
     }
     if (text == null) {
@@ -193,8 +194,6 @@ public class Text extends Object2d {
           * imageFontScaling, boxXY);
     } else {
       setPosition(fontScale);
-      if (xyz != null) //3d echo
-        boxXY[1] -= (align == ALIGN_CENTER ? boxHeight : ascent) / 2;
     }
     boxX = boxXY[0];
     boxY = boxXY[1];
@@ -202,7 +201,7 @@ public class Text extends Object2d {
     // adjust positions if necessary
 
     if (adjustForWindow)
-      setBoxOffsetsInWindow(image == null ? fontScale * 5 : 0, isLabelOrHover ? 16
+      setBoxOffsetsInWindow(/*image == null ? fontScale * 5 :*/ 0, isLabelOrHover ? 16
           * fontScale + lineHeight : 0, boxY - textHeight);
 
     // draw the box if necessary
@@ -250,6 +249,94 @@ public class Text extends Object2d {
     drawPointer(g3d);
   }
 
+  private void setPosition(float scale) {
+    float xLeft, xCenter, xRight;
+    boolean is3dEcho = (xyz != null);
+    if (valign == VALIGN_XY || valign == VALIGN_XYZ) {
+      float x = (movableXPercent != Integer.MAX_VALUE ? movableXPercent
+          * windowWidth / 100 : is3dEcho ? movableX : movableX * scale);
+      float offsetX = this.offsetX * scale;
+      xLeft = xRight = xCenter = x + offsetX;
+      //System.out.print("movableX = " + movableX + " offsetX = " + offsetX);
+    } else {
+      xLeft = 5 * scale;
+      xCenter = windowWidth / 2;
+      xRight = windowWidth - xLeft;
+    }
+
+    // set box X from alignments
+
+    boxXY[0] = xLeft;
+    switch (align) {
+    case ALIGN_CENTER:
+      boxXY[0] = xCenter - boxWidth / 2;
+      break;
+    case ALIGN_RIGHT:
+      boxXY[0] = xRight - boxWidth;
+    }
+
+    // set box Y from alignments
+
+    boxXY[1] = 0;
+    switch (valign) {
+    case VALIGN_TOP:
+      break;
+    case VALIGN_MIDDLE:
+      boxXY[1] = windowHeight / 2;
+      break;
+    case VALIGN_BOTTOM:
+      boxXY[1] = windowHeight;
+      break;
+    default:
+      float y = (movableYPercent != Integer.MAX_VALUE ? movableYPercent
+          * windowHeight / 100 : is3dEcho ? movableY : movableY * scale);
+      boxXY[1] = (is3dEcho ? y : (windowHeight - y)) + offsetY * scale;
+    }
+
+    System.out.print("boxXY[1]=" + boxXY[1]);
+    if (align == ALIGN_CENTER)
+      boxXY[1] -= (image != null ? boxHeight : xyz != null ? boxHeight 
+          : ascent - boxHeight) / 2;
+    else if (image != null)
+      boxXY[1] -= 0;
+    else if (xyz != null)
+      boxXY[1] -= ascent / 2;
+
+    System.out.println(" movableY = " + movableY + " offsetY = " + offsetY
+        + " boxXY[1]=" + boxXY[1] + " boxHeight=" + boxHeight + " ascent="
+        + ascent + " " + text);
+
+  }
+
+  private static void setPosition(float boxWidth, float boxHeight,
+                               float xOffset, float yOffset, float[] boxXY) {
+    float xBoxOffset, yBoxOffset;
+
+    // these are based on a standard |_ grid, so y is reversed.
+    if (xOffset > 0) {
+      xBoxOffset = xOffset;
+    } else {
+      xBoxOffset = -boxWidth;
+      if (xOffset == 0)
+        xBoxOffset /= 2;
+      else
+        xBoxOffset += xOffset;
+    }
+
+    if (yOffset > 0) {
+      yBoxOffset = yOffset;
+    } else {
+      if (yOffset == 0)
+        yBoxOffset = -boxHeight / 2 - 2;
+      else
+        yBoxOffset = -boxHeight + yOffset;
+    }
+
+    boxXY[0] += xBoxOffset;
+    boxXY[1] += yBoxOffset;
+  
+  }
+  
   private static void showBox(JmolRendererInterface g3d, short colix,
                               short bgcolix, int x, int y, int z, int zSlab,
                               int boxWidth, int boxHeight,

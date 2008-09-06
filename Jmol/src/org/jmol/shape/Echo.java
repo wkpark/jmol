@@ -137,7 +137,7 @@ public class Echo extends TextShape {
           }
           text = new Text(viewer, g3d, g3d.getFont3D(FONTFACE, FONTSIZE),
               target, COLOR, valign, halign, 0);
-          text.setAdjustForWindow(true); // when a box is around it
+          text.setAdjustForWindow(true); 
           objects.put(target, text);
           if (currentFont != null)
             text.setFont(currentFont);

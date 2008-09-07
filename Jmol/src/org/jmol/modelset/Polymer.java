@@ -105,7 +105,8 @@ abstract public class Polymer {
   
   public void getPdbData(char ctype, char qtype, int derivType, 
               boolean isDraw, BitSet bsAtoms, StringBuffer pdbATOM, 
-              StringBuffer pdbCONECT, BitSet bsSelected, boolean addHeader) {
+              StringBuffer pdbCONECT, BitSet bsSelected, boolean addHeader, 
+              BitSet bsWritten) {
     return;
   }
 }

@@ -889,7 +889,7 @@ abstract public class ModelCollection extends BondCollection {
       Model model = models[i];
       int nPoly = model.getBioPolymerCount();
       for (int p = 0; p < nPoly; p++)
-        model.bioPolymers[p].getPdbData('s','p', 2, false, null, null, null, null, false);
+        model.bioPolymers[p].getPdbData('s','p', 2, false, null, null, null, null, false, new BitSet());
     }
   }
 
@@ -989,14 +989,15 @@ abstract public class ModelCollection extends BondCollection {
         : type.length() > 13 && type.indexOf("ramachandran ") >= 0 ?
           type.charAt(13) : 'R');
     int derivType = (type.indexOf("diff") < 0 ? 0 : type.indexOf("2") < 0 ? 1 : 2);
-    boolean isDraw = (type.indexOf("draw") >= 0);    
+    boolean isDraw = (type.indexOf("draw") >= 0); 
     BitSet bsAtoms = getModelAtomBitSet(modelIndex, false);
     int nPoly = model.getBioPolymerCount();
     StringBuffer pdbATOM = new StringBuffer();
     StringBuffer pdbCONECT = new StringBuffer();
+    BitSet bsWritten = new BitSet();
     for (int p = 0; p < nPoly; p++)
         model.bioPolymers[p].getPdbData(ctype, qtype, derivType, isDraw,
-            bsAtoms, pdbATOM, pdbCONECT, bsSelected, p == 0);
+            bsAtoms, pdbATOM, pdbCONECT, bsSelected, p == 0, bsWritten);
     pdbATOM.append(pdbCONECT);
     String s = pdbATOM.toString();
     if (isDraw || s.length() == 0)
@@ -1005,7 +1006,8 @@ abstract public class ModelCollection extends BondCollection {
     if (ctype != 'R')
       remark += "  quaternionFrame = \"" + qtype + "\"";
     remark += "\nREMARK   6 Jmol Version " + Viewer.getJmolVersion();
-    remark += "\n\n" + getProteinStructureState(bsAtoms, false, ctype == 'R');
+    bsSelected.and(bsAtoms);
+    remark += "\n\n" + getProteinStructureState(bsWritten, false, ctype == 'R');
     return remark + s;
   }
 

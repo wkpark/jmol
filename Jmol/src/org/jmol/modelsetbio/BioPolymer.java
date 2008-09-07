@@ -472,8 +472,8 @@ public abstract class BioPolymer extends Polymer {
   final public static void getPdbData(BioPolymer p, char ctype, char qtype,
                                       int derivType, boolean isDraw,
                                       BitSet bsAtoms, StringBuffer pdbATOM,
-                                      StringBuffer pdbCONECT,
-                                      BitSet bsSelected, boolean addHeader) {
+                                      StringBuffer pdbCONECT, BitSet bsSelected, 
+                                      boolean addHeader, BitSet bsWritten) {
     int atomno = Integer.MIN_VALUE;
     boolean isRamachandran = (ctype == 'R');
     if (isRamachandran && !p.calcPhiPsiAngles())
@@ -558,7 +558,6 @@ public abstract class BioPolymer extends Polymer {
         pdbATOM.append("  NHX_______ NHY_______ NHZ_______");
       pdbATOM.append("\n\n");
     }
-
     for (int m = 0; m < p.monomerCount; m++) {
       Monomer monomer = p.monomers[m];
       if (bsAtoms == null || bsAtoms.get(monomer.getLeadAtomIndex())) {
@@ -575,8 +574,10 @@ public abstract class BioPolymer extends Polymer {
           if (z < -90)
             z += 360;
           z -= 180; // center on 0
-          if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
+          if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z)) {
+            bsAtoms.clear(a.getAtomIndex());
             continue;
+          }
           if (isDraw) {
             if (bsSelected != null && !bsSelected.get(a.getAtomIndex()))
               continue;
@@ -785,6 +786,7 @@ public abstract class BioPolymer extends Polymer {
           pdbCONECT.append(TextFormat.formatString("%5i", "i", a
               .getAtomNumber()));
           pdbCONECT.append('\n');
+          bsWritten.set(((Monomer)a.getGroup()).getLeadAtomIndex());
         }
         atomno = a.getAtomNumber();
       }

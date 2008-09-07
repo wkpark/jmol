@@ -11975,7 +11975,7 @@ class Eval {
     Token getX() throws ScriptException {
       if (xPt < 0)
         error(ERROR_endOfStatementUnexpected);
-      return xStack[xPt--];
+      return Token.selectItem(xStack[xPt--]);
     }
 
     private boolean evaluateFunction() throws ScriptException {
@@ -11993,7 +11993,7 @@ class Eval {
         return false;
       Token[] args = new Token[nParam];
       for (int i = nParam; --i >= 0;)
-        args[i] = Token.selectItem(getX());
+        args[i] = getX();
       xPt--;
       //no script checking of functions because
       //we cannot know what variables are real
@@ -12925,8 +12925,6 @@ class Eval {
       Token x1 = getX();
       if (isScriptCheck)
         return addX(Token.sValue(x1));
-      if (x1.tok == Token.list)
-        x1 = Token.selectItem(x1);
       switch (op.tok) {
       case Token.opAnd:
         if (x1.tok == Token.bitset && x2.tok == Token.bitset) {

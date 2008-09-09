@@ -148,7 +148,7 @@ class PropertyManager {
   static Object getProperty(Viewer viewer, String returnType, String infoType, Object paramInfo) {
     if (propertyTypes.length != PROP_COUNT * 3)
       Logger.warn("propertyTypes is not the right length: " + propertyTypes.length + " != " + PROP_COUNT * 3);
-    Object info = getPropertyAsObject(viewer, infoType, paramInfo);
+    Object info = getPropertyAsObject(viewer, infoType, paramInfo, returnType);
     if (returnType == null)
       return info;
     boolean requestedReadable = returnType.equalsIgnoreCase("readable");
@@ -292,7 +292,7 @@ class PropertyManager {
     return false;
   }
   
-  private static Object getPropertyAsObject(Viewer viewer, String infoType, Object paramInfo) {
+  private static Object getPropertyAsObject(Viewer viewer, String infoType, Object paramInfo, String returnType) {
     //Logger.debug("getPropertyAsObject(\"" + infoType+"\", \"" + paramInfo + "\")");
     if (infoType.equals("tokenList")) {
       return Token.getTokensLike((String) paramInfo);
@@ -365,7 +365,7 @@ class PropertyManager {
     case PROP_EVALUATE:
       return Eval.evaluateExpression(viewer, myParam.toString());
     case PROP_IMAGE:
-      return viewer.getJpegBase64(100);
+      return viewer.getJpeg(100, returnType != null);
     }
     String info = "getProperty ERROR\n" + infoType + "?\nOptions include:\n";
     for (int i = 0; i < PROP_COUNT; i++) {

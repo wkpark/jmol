@@ -25,6 +25,8 @@ package org.openscience.jmol.app;
 
 import org.jmol.api.*;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
+import org.jmol.export.image.ImageCreator;
+import org.jmol.export.image.ImageTyper;
 import org.jmol.popup.JmolPopup;
 import org.jmol.i18n.GT;
 import org.jmol.util.*;
@@ -57,7 +59,6 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.HelpFormatter;
 
-
 public class Jmol extends JPanel {
 
   /**
@@ -82,17 +83,16 @@ public class Jmol extends JPanel {
   private JFileChooser saveChooser;
   private FileTyper fileTyper;
   JFileChooser exportChooser, writeChooser;
-  
+
   JmolPopup jmolpopup;
   String language;
   static String menuStructure;
   static String menuFile;
 
-  
   // private CDKPluginManager pluginManager;
 
   private GuiMap guimap = new GuiMap();
-  
+
   private static int numWindows = 0;
   private static Dimension screenSize = null;
   int startupWidth, startupHeight;
@@ -106,10 +106,9 @@ public class Jmol extends JPanel {
   private final static String FILE_OPEN_WINDOW_NAME = "FileOpen";
   private final static String WEB_MAKER_WINDOW_NAME = "JmolWebPageMaker";
 
-
   static Point border;
   static Boolean haveBorder = Boolean.FALSE;
-  
+
   /**
    * The current file.
    */
@@ -140,12 +139,11 @@ public class Jmol extends JPanel {
       System.setSecurityManager(null);
     }
     if (System.getProperty("user.home") == null) {
-      System.err.println(
-          GT._("Error starting Jmol: the property 'user.home' is not defined."));
+      System.err.println(GT
+          ._("Error starting Jmol: the property 'user.home' is not defined."));
       System.exit(1);
     }
-    File ujmoldir = new File(new File(System.getProperty("user.home")),
-                      ".jmol");
+    File ujmoldir = new File(new File(System.getProperty("user.home")), ".jmol");
     ujmoldir.mkdirs();
     UserPropsFile = new File(ujmoldir, "properties");
     historyFile = new HistoryFile(new File(ujmoldir, "history"),
@@ -155,11 +153,11 @@ public class Jmol extends JPanel {
   static Boolean isSilent = Boolean.FALSE;
   static Boolean haveConsole = Boolean.TRUE;
   static Boolean haveDisplay = Boolean.TRUE;
-  
-  
+
   Jmol(Splash splash, JFrame frame, Jmol parent, int startupWidth,
       int startupHeight, String commandOptions) {
-    this(splash, frame, parent, startupWidth, startupHeight, commandOptions, null);
+    this(splash, frame, parent, startupWidth, startupHeight, commandOptions,
+        null);
   }
 
   Jmol(Splash splash, JFrame frame, Jmol parent, int startupWidth,
@@ -246,7 +244,6 @@ public class Jmol extends JPanel {
     //     pluginManager.loadPlugins(System.getProperty("plugin.dir"));
     // }
 
-
     if (haveDisplay.booleanValue()) {
 
       // install the command table
@@ -297,15 +294,16 @@ public class Jmol extends JPanel {
       writeChooser = new JFileChooser();
       writeChooser.setCurrentDirectory(currentDir);
 
-      pcs.addPropertyChangeListener(chemFileProperty, exportAction);
-      pcs.addPropertyChangeListener(chemFileProperty, povrayAction);
-      pcs.addPropertyChangeListener(chemFileProperty, writeAction);
-      pcs.addPropertyChangeListener(chemFileProperty, toWebAction);
-      pcs.addPropertyChangeListener(chemFileProperty, printAction);
-      pcs.addPropertyChangeListener(chemFileProperty,
-          viewMeasurementTableAction);
+      /*      pcs.addPropertyChangeListener(chemFileProperty, exportAction);
+       pcs.addPropertyChangeListener(chemFileProperty, povrayAction);
+       pcs.addPropertyChangeListener(chemFileProperty, writeAction);
+       pcs.addPropertyChangeListener(chemFileProperty, toWebAction);
+       pcs.addPropertyChangeListener(chemFileProperty, printAction);
+       pcs.addPropertyChangeListener(chemFileProperty,
+       viewMeasurementTableAction);
+       */
       pcs.addPropertyChangeListener(chemFileProperty, atomSetChooser);
-      
+
       if (menuFile != null) {
         menuStructure = viewer.getFileAsString(menuFile);
       }
@@ -315,8 +313,8 @@ public class Jmol extends JPanel {
 
     // prevent new Jmol from covering old Jmol
     if (loc != null) {
-      frame.setLocation(loc);    
-    }else if (parent != null) {
+      frame.setLocation(loc);
+    } else if (parent != null) {
       Point location = parent.frame.getLocationOnScreen();
       int maxX = screenSize.width - 50;
       int maxY = screenSize.height - 50;
@@ -329,7 +327,7 @@ public class Jmol extends JPanel {
       frame.setLocation(location);
     }
     frame.getContentPane().add("Center", this);
-    
+
     frame.addWindowListener(new Jmol.AppCloser());
     frame.pack();
     frame.setSize(startupWidth, startupHeight);
@@ -370,7 +368,7 @@ public class Jmol extends JPanel {
       return;
     Logger.info(str);
   }
-  
+
   public static Jmol getJmol(JFrame frame, int startupWidth, int startupHeight,
                              String commandOptions) {
 
@@ -413,12 +411,15 @@ public class Jmol extends JPanel {
     // FileChooser strings
     UIManager.put("FileChooser.acceptAllFileFilterText", GT._("All Files"));
     UIManager.put("FileChooser.cancelButtonText", GT._("Cancel"));
-    UIManager.put("FileChooser.cancelButtonToolTipText", GT._("Abort file chooser dialog"));
-    UIManager.put("FileChooser.detailsViewButtonAccessibleName", GT._("Details"));
+    UIManager.put("FileChooser.cancelButtonToolTipText", GT
+        ._("Abort file chooser dialog"));
+    UIManager.put("FileChooser.detailsViewButtonAccessibleName", GT
+        ._("Details"));
     UIManager.put("FileChooser.detailsViewButtonToolTipText", GT._("Details"));
     UIManager.put("FileChooser.directoryDescriptionText", GT._("Directory"));
     UIManager.put("FileChooser.directoryOpenButtonText", GT._("Open"));
-    UIManager.put("FileChooser.directoryOpenButtonToolTipText", GT._("Open selected directory"));
+    UIManager.put("FileChooser.directoryOpenButtonToolTipText", GT
+        ._("Open selected directory"));
     UIManager.put("FileChooser.fileAttrHeaderText", GT._("Attributes"));
     UIManager.put("FileChooser.fileDateHeaderText", GT._("Modified"));
     UIManager.put("FileChooser.fileDescriptionText", GT._("Generic File"));
@@ -428,24 +429,30 @@ public class Jmol extends JPanel {
     UIManager.put("FileChooser.filesOfTypeLabelText", GT._("Files of Type:"));
     UIManager.put("FileChooser.fileTypeHeaderText", GT._("Type"));
     UIManager.put("FileChooser.helpButtonText", GT._("Help"));
-    UIManager.put("FileChooser.helpButtonToolTipText", GT._("FileChooser help"));
+    UIManager
+        .put("FileChooser.helpButtonToolTipText", GT._("FileChooser help"));
     UIManager.put("FileChooser.homeFolderAccessibleName", GT._("Home"));
     UIManager.put("FileChooser.homeFolderToolTipText", GT._("Home"));
     UIManager.put("FileChooser.listViewButtonAccessibleName", GT._("List"));
     UIManager.put("FileChooser.listViewButtonToolTipText", GT._("List"));
     UIManager.put("FileChooser.lookInLabelText", GT._("Look In:"));
-    UIManager.put("FileChooser.newFolderErrorText", GT._("Error creating new folder"));
+    UIManager.put("FileChooser.newFolderErrorText", GT
+        ._("Error creating new folder"));
     UIManager.put("FileChooser.newFolderAccessibleName", GT._("New Folder"));
-    UIManager.put("FileChooser.newFolderToolTipText", GT._("Create New Folder"));
+    UIManager
+        .put("FileChooser.newFolderToolTipText", GT._("Create New Folder"));
     UIManager.put("FileChooser.openButtonText", GT._("Open"));
-    UIManager.put("FileChooser.openButtonToolTipText", GT._("Open selected file"));
+    UIManager.put("FileChooser.openButtonToolTipText", GT
+        ._("Open selected file"));
     UIManager.put("FileChooser.openDialogTitleText", GT._("Open"));
     UIManager.put("FileChooser.saveButtonText", GT._("Save"));
-    UIManager.put("FileChooser.saveButtonToolTipText", GT._("Save selected file"));
+    UIManager.put("FileChooser.saveButtonToolTipText", GT
+        ._("Save selected file"));
     UIManager.put("FileChooser.saveDialogTitleText", GT._("Save"));
     UIManager.put("FileChooser.saveInLabelText", GT._("Save In:"));
     UIManager.put("FileChooser.updateButtonText", GT._("Update"));
-    UIManager.put("FileChooser.updateButtonToolTipText", GT._("Update directory listing"));
+    UIManager.put("FileChooser.updateButtonToolTipText", GT
+        ._("Update directory listing"));
     UIManager.put("FileChooser.upFolderAccessibleName", GT._("Up"));
     UIManager.put("FileChooser.upFolderToolTipText", GT._("Up One Level"));
 
@@ -455,15 +462,16 @@ public class Jmol extends JPanel {
     UIManager.put("OptionPane.okButtonText", GT._("OK"));
     UIManager.put("OptionPane.yesButtonText", GT._("Yes"));
   }
+
   /* Convenient method to get values of UIManager strings
-  private static void analyzeUIManagerString(String name, String value) {
-    System.err.println(name);
-    System.err.println(" en=[" + UIManager.getString(name) + "]");
-    System.err.println(" de=[" + UIManager.getString(name, Locale.GERMAN) + "]");
-    System.err.println(" es=[" + UIManager.getString(name, new Locale("es")) + "]");
-    System.err.println(" fr=[" + UIManager.getString(name, Locale.FRENCH) + "]");
-    UIManager.put(name, value);
-  }*/
+   private static void analyzeUIManagerString(String name, String value) {
+   System.err.println(name);
+   System.err.println(" en=[" + UIManager.getString(name) + "]");
+   System.err.println(" de=[" + UIManager.getString(name, Locale.GERMAN) + "]");
+   System.err.println(" es=[" + UIManager.getString(name, new Locale("es")) + "]");
+   System.err.println(" fr=[" + UIManager.getString(name, Locale.FRENCH) + "]");
+   UIManager.put(name, value);
+   }*/
 
   public static void main(String[] args) {
 
@@ -475,16 +483,19 @@ public class Jmol extends JPanel {
     String scriptFilename = null;
 
     Options options = new Options();
-    options.addOption("b", "backgroundtransparent", false, GT._("transparent background"));
+    options.addOption("b", "backgroundtransparent", false, GT
+        ._("transparent background"));
     options.addOption("h", "help", false, GT._("give this help page"));
     options.addOption("n", "nodisplay", false, GT
         ._("no display (and also exit when done)"));
     options.addOption("c", "check", false, GT._("check script syntax only"));
     options.addOption("i", "silent", false, GT._("silent startup operation"));
-    options.addOption("l", "list", false, GT._("list commands during script execution"));
+    options.addOption("l", "list", false, GT
+        ._("list commands during script execution"));
     options.addOption("o", "noconsole", false, GT
         ._("no console -- all output to sysout"));
-    options.addOption("t", "threaded", false, GT._("independent commmand thread"));
+    options.addOption("t", "threaded", false, GT
+        ._("independent commmand thread"));
     options.addOption("x", "exit", false, GT
         ._("exit after script (implicit with -n)"));
 
@@ -516,14 +527,16 @@ public class Jmol extends JPanel {
 
     OptionBuilder.withLongOpt("quality");
     // OptionBuilder.withDescription(GT._("overall window width x height, e.g. {0}", "-g512x616"));
-    OptionBuilder.withDescription(GT._("JPG image quality (1-100; default 75) or PNG image compression (0-9; default 2, maximum compression 9)"));
+    OptionBuilder
+        .withDescription(GT
+            ._("JPG image quality (1-100; default 75) or PNG image compression (0-9; default 2, maximum compression 9)"));
     OptionBuilder.withValueSeparator();
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("q"));
 
     OptionBuilder.withLongOpt("write");
     OptionBuilder.withDescription(GT._("{0} or {1}:filename", new Object[] {
-        "CLIP", "JPG|JPG64|PNG|PPM" }));
+        "CLIP", "GIF|JPG|JPG64|PNG|PPM" }));
     OptionBuilder.withValueSeparator();
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("w"));
@@ -674,7 +687,7 @@ public class Jmol extends JPanel {
         border = new Point(b.x, b.y);
       //note -- the first time this is run after changes it will not work
       //because there is a bootstrap problem.
-      
+
       int width = -1;
       int height = -1;
       int quality = 75;
@@ -683,8 +696,8 @@ public class Jmol extends JPanel {
         String geometry = line.getOptionValue("g");
         int indexX = geometry.indexOf('x');
         if (indexX > 0) {
-          width = parseInt(geometry.substring(0, indexX));
-          height = parseInt(geometry.substring(indexX + 1));
+          width = Parser.parseInt(geometry.substring(0, indexX));
+          height = Parser.parseInt(geometry.substring(indexX + 1));
           //System.out.println("setting geometry to " + geometry + " " + border + " " + startupWidth + startupHeight);
         }
         if (haveDisplay.booleanValue()) {
@@ -692,12 +705,13 @@ public class Jmol extends JPanel {
           startupHeight = height + border.y;
         }
       }
-      
+
       if (line.hasOption("q"))
-        quality = parseInt(line.getOptionValue("q"));
+        quality = Parser.parseInt(line.getOptionValue("q"));
 
       if (imageType_name != null)
-        commandOptions += "-w\1" + imageType_name + "\t"+width+"\t"+height + "\t" + quality + "\1";
+        commandOptions += "-w\1" + imageType_name + "\t" + width + "\t"
+            + height + "\t" + quality + "\1";
 
       if (startupWidth <= 0 || startupHeight <= 0) {
         startupWidth = 500 + border.x;
@@ -778,23 +792,15 @@ public class Jmol extends JPanel {
     }
   }
 
-  static int parseInt(String str) {
-    try {
-      return Integer.parseInt(str);
-    } catch (NumberFormatException nfe) {
-      return Integer.MIN_VALUE;
-    }
-  }
-
   private void say(String message) {
     if (haveDisplay.booleanValue())
       if (splash == null) {
-          report(message);
+        report(message);
       } else {
-          splash.showStatus(message);
+        splash.showStatus(message);
       }
   }
-  
+
   /**
    * @return A list of Actions that is understood by the upper level
    * application
@@ -816,9 +822,9 @@ public class Jmol extends JPanel {
    */
   protected final class AppCloser extends WindowAdapter {
 
-      public void windowClosing(WindowEvent e) {
-          Jmol.this.doClose();
-      }
+    public void windowClosing(WindowEvent e) {
+      Jmol.this.doClose();
+    }
   }
 
   void doClose() {
@@ -834,7 +840,7 @@ public class Jmol extends JPanel {
     }
     dispose(this.frame);
   }
-  
+
   private void dispose(JFrame f) {
     if (historyFile != null && scriptWindow != null)
       historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, scriptWindow, null);
@@ -860,7 +866,7 @@ public class Jmol extends JPanel {
       }
     }
   }
-  
+
   protected void setupNewFrame(String state) {
     JFrame newFrame = new JFrame();
     JFrame f = this.frame;
@@ -872,7 +878,7 @@ public class Jmol extends JPanel {
       j.viewer.evalStringQuiet(state);
     }
   }
-  
+
   /**
    * @return The hosting frame, for the file-chooser dialog.
    */
@@ -902,14 +908,13 @@ public class Jmol extends JPanel {
     } else {
       mi = guimap.newJMenuItem(cmd);
     }
-    
-    ImageIcon f =
-      JmolResourceHandler.getIconX(cmd + "Image");
+
+    ImageIcon f = JmolResourceHandler.getIconX(cmd + "Image");
     if (f != null) {
       mi.setHorizontalTextPosition(SwingConstants.RIGHT);
       mi.setIcon(f);
     }
-    
+
     if (cmd.endsWith("Script")) {
       mi.setActionCommand(JmolResourceHandler.getStringX(cmd));
       mi.addActionListener(executeScriptAction);
@@ -957,8 +962,7 @@ public class Jmol extends JPanel {
   private Component createToolbar() {
 
     toolbar = new JToolBar();
-    String[] tool1Keys =
-      tokenize(JmolResourceHandler.getStringX("toolbar"));
+    String[] tool1Keys = tokenize(JmolResourceHandler.getStringX("toolbar"));
     for (int i = 0; i < tool1Keys.length; i++) {
       if (tool1Keys[i].equals("-")) {
         toolbar.addSeparator();
@@ -994,11 +998,9 @@ public class Jmol extends JPanel {
    */
   protected AbstractButton createToolbarButton(String key) {
 
-    ImageIcon ii =
-      JmolResourceHandler.getIconX(key + "Image");
+    ImageIcon ii = JmolResourceHandler.getIconX(key + "Image");
     AbstractButton b = new JButton(ii);
-    String isToggleString =
-      JmolResourceHandler.getStringX(key + "Toggle");
+    String isToggleString = JmolResourceHandler.getStringX(key + "Toggle");
     if (isToggleString != null) {
       boolean isToggle = Boolean.valueOf(isToggleString).booleanValue();
       if (isToggle) {
@@ -1006,11 +1008,10 @@ public class Jmol extends JPanel {
         if (key.equals("rotate"))
           buttonRotate = b;
         toolbarButtonGroup.add(b);
-        String isSelectedString =
-          JmolResourceHandler.getStringX(key + "ToggleSelected");
+        String isSelectedString = JmolResourceHandler.getStringX(key
+            + "ToggleSelected");
         if (isSelectedString != null) {
-          boolean isSelected =
-            Boolean.valueOf(isSelectedString).booleanValue();
+          boolean isSelected = Boolean.valueOf(isSelectedString).booleanValue();
           b.setSelected(isSelected);
         }
       }
@@ -1019,7 +1020,7 @@ public class Jmol extends JPanel {
     b.setMargin(new Insets(1, 1, 1, 1));
 
     Action a = null;
-    String actionCommand = null; 
+    String actionCommand = null;
     if (key.endsWith("Script")) {
       actionCommand = JmolResourceHandler.getStringX(key);
       a = executeScriptAction;
@@ -1101,15 +1102,15 @@ public class Jmol extends JPanel {
   protected void addMacrosMenuBar(JMenuBar menuBar) {
     // ok, here needs to be added the funny stuff
     JMenu macroMenu = guimap.newJMenu("macros");
-    File macroDir = new File(
-        System.getProperty("user.home") + System.getProperty("file.separator") +
-        ".jmol" + System.getProperty("file.separator") + "macros");
+    File macroDir = new File(System.getProperty("user.home")
+        + System.getProperty("file.separator") + ".jmol"
+        + System.getProperty("file.separator") + "macros");
     report("User macros dir: " + macroDir);
     report("       exists: " + macroDir.exists());
     report("  isDirectory: " + macroDir.isDirectory());
     if (macroDir.exists() && macroDir.isDirectory()) {
       File[] macros = macroDir.listFiles();
-      for (int i=0; i<macros.length; i++) {
+      for (int i = 0; i < macros.length; i++) {
         // loop over these files and load them
         String macroName = macros[i].getName();
         if (macroName.endsWith(".macro")) {
@@ -1145,29 +1146,28 @@ public class Jmol extends JPanel {
     }
     menuBar.add(macroMenu);
   }
-  
+
   protected void addNormalMenuBar(JMenuBar menuBar) {
-    String[] menuKeys =
-      tokenize(JmolResourceHandler.getStringX("menubar"));
+    String[] menuKeys = tokenize(JmolResourceHandler.getStringX("menubar"));
     for (int i = 0; i < menuKeys.length; i++) {
-        if (menuKeys[i].equals("-")) {
-            menuBar.add(Box.createHorizontalGlue());
-        } else {
-            JMenu m = createMenu(menuKeys[i]);
-            if (m != null)
-                menuBar.add(m);
-        }
-    }
-  }
-  
-  protected void addHelpMenuBar(JMenuBar menuBar) {
-      String menuKey = "help";
-      JMenu m = createMenu(menuKey);
-      if (m != null) {
+      if (menuKeys[i].equals("-")) {
+        menuBar.add(Box.createHorizontalGlue());
+      } else {
+        JMenu m = createMenu(menuKeys[i]);
+        if (m != null)
           menuBar.add(m);
       }
+    }
   }
-      
+
+  protected void addHelpMenuBar(JMenuBar menuBar) {
+    String menuKey = "help";
+    JMenu m = createMenu(menuKey);
+    if (m != null) {
+      menuBar.add(m);
+    }
+  }
+
   /**
    * Create a menu for the app.  By default this pulls the
    * definition of the menu from the associated resource file.
@@ -1242,7 +1242,7 @@ public class Jmol extends JPanel {
   private JToolBar toolbar;
 
   // these correlate with items in GuiMap.java
-  
+
   private static final String newwinAction = "newwin";
   private static final String openAction = "open";
   private static final String openurlAction = "openurl";
@@ -1266,7 +1266,6 @@ public class Jmol extends JPanel {
   private static final String copyScriptActionProperty = "copyScript";
   private static final String pasteClipboardActionProperty = "pasteClipboard";
 
-
   // --- action implementations -----------------------------------
 
   private ExportAction exportAction = new ExportAction();
@@ -1277,36 +1276,30 @@ public class Jmol extends JPanel {
   private CopyImageAction copyImageAction = new CopyImageAction();
   private CopyScriptAction copyScriptAction = new CopyScriptAction();
   private PasteClipboardAction pasteClipboardAction = new PasteClipboardAction();
-  private ViewMeasurementTableAction viewMeasurementTableAction
-    = new ViewMeasurementTableAction();
-
+  private ViewMeasurementTableAction viewMeasurementTableAction = new ViewMeasurementTableAction();
 
   /**
    * Actions defined by the Jmol class
    */
-  private Action[] defaultActions = {
-    new NewAction(), new NewwinAction(), new OpenAction(),
-    new OpenUrlAction(), printAction, exportAction,
-    new CloseAction(), new ExitAction(), copyImageAction, copyScriptAction,
-    pasteClipboardAction,
-    new AboutAction(), new WhatsNewAction(),
-    new UguideAction(), new ConsoleAction(),
-    new RecentFilesAction(), povrayAction, writeAction, toWebAction,
-    new ScriptWindowAction(), new AtomSetChooserAction(),
-    viewMeasurementTableAction
-  };
+  private Action[] defaultActions = { new NewAction(), new NewwinAction(),
+      new OpenAction(), new OpenUrlAction(), printAction, exportAction,
+      new CloseAction(), new ExitAction(), copyImageAction, copyScriptAction,
+      pasteClipboardAction, new AboutAction(), new WhatsNewAction(),
+      new UguideAction(), new ConsoleAction(), new RecentFilesAction(),
+      povrayAction, writeAction, toWebAction, new ScriptWindowAction(),
+      new AtomSetChooserAction(), viewMeasurementTableAction };
 
   class CloseAction extends AbstractAction {
-      CloseAction() {
-          super(closeAction);
-      }
-      
-      public void actionPerformed(ActionEvent e) {
-          Jmol.this.frame.hide();
-          Jmol.this.doClose();
-      }
+    CloseAction() {
+      super(closeAction);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      Jmol.this.frame.hide();
+      Jmol.this.doClose();
+    }
   }
-  
+
   static class ConsoleAction extends AbstractAction {
 
     public ConsoleAction() {
@@ -1344,7 +1337,7 @@ public class Jmol extends JPanel {
       wnd.show();
     }
   }
-  
+
   class NewwinAction extends AbstractAction {
 
     NewwinAction() {
@@ -1371,18 +1364,17 @@ public class Jmol extends JPanel {
   }
 
   class PasteClipboardAction extends AbstractAction {
-  
+
     public PasteClipboardAction() {
       super(pasteClipboardActionProperty);
     }
-  
+
     public void actionPerformed(ActionEvent e) {
-      String str = ImageSelection.getClipboardText();
+      String str = ImageCreator.getClipboardTextStatic();
       if (str != null && str.length() > 0)
         viewer.loadInline(str, false);
     }
   }
- 
 
   /**
    * An Action to copy the current image into the clipboard. 
@@ -1394,7 +1386,7 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      ImageCreator c = new ImageCreator(viewer, status);
+      ImageCreator c = new ImageCreator(viewer);
       c.clipImage(null);
     }
   }
@@ -1406,12 +1398,12 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      ImageCreator c = new ImageCreator(viewer, status);
-      c.clipImage((String) viewer.getProperty("string","stateInfo", null));
+      ImageCreator c = new ImageCreator(viewer);
+      c.clipImage((String) viewer.getProperty("string", "stateInfo", null));
     }
   }
 
-  class PrintAction extends MoleculeDependentAction {
+  class PrintAction extends AbstractAction {
 
     public PrintAction() {
       super(printActionProperty);
@@ -1447,22 +1439,23 @@ public class Jmol extends JPanel {
 
     public void actionPerformed(ActionEvent e) {
 
-      openChooser.setDialogSize(
-        historyFile.getWindowSize(FILE_OPEN_WINDOW_NAME));
-      openChooser.setDialogLocation(
-        historyFile.getWindowPosition(FILE_OPEN_WINDOW_NAME));
+      openChooser.setDialogSize(historyFile
+          .getWindowSize(FILE_OPEN_WINDOW_NAME));
+      openChooser.setDialogLocation(historyFile
+          .getWindowPosition(FILE_OPEN_WINDOW_NAME));
       int retval = openChooser.showOpenDialog(Jmol.this);
       if (retval == 0) {
         File file = openChooser.getSelectedFile();
         if ((openPreview != null) && (openPreview.isAppendSelected())) {
-          viewer.scriptWait("load append " + Escape.escape(file.getAbsolutePath()));
+          viewer.scriptWait("load append "
+              + Escape.escape(file.getAbsolutePath()));
         } else {
           viewer.openFile(file.getAbsolutePath());
         }
         return;
       }
-      historyFile.addWindowInfo(FILE_OPEN_WINDOW_NAME, 
-          openChooser.getDialog(), null);
+      historyFile.addWindowInfo(FILE_OPEN_WINDOW_NAME, openChooser.getDialog(),
+          null);
     }
   }
 
@@ -1478,8 +1471,8 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      String url = JOptionPane.showInputDialog(frame, prompt, title, 
-                                               JOptionPane.PLAIN_MESSAGE);
+      String url = JOptionPane.showInputDialog(frame, prompt, title,
+          JOptionPane.PLAIN_MESSAGE);
       if (url != null) {
         if (url.indexOf("://") == -1)
           url = "http://" + url;
@@ -1515,11 +1508,14 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-        Jmol.this.doClose();
+      Jmol.this.doClose();
     }
   }
 
-  class ExportAction extends MoleculeDependentAction {
+  final static String[] imageChoices = { "JPEG", "PNG", "GIF", "PPM", "PDF" };
+  final static String[] imageExtensions = { "jpg", "png", "gif", "ppm", "pdf" };
+
+  class ExportAction extends AbstractAction {
 
     ExportAction() {
       super(exportActionProperty);
@@ -1527,9 +1523,8 @@ public class Jmol extends JPanel {
 
     public void actionPerformed(ActionEvent e) {
 
-      ImageTyper it = new ImageTyper(exportChooser);
-      exportChooser.setAccessory(it);
-
+      ImageTyper it = new ImageTyper();
+      it.createPanel(exportChooser, imageChoices, imageExtensions, 0);
       String fileName = viewer.getModelSetFileName();
       String pathName = viewer.getModelSetPathName();
       File file = null;
@@ -1548,11 +1543,18 @@ public class Jmol extends JPanel {
         it.memorizeDefaultType();
         file = exportChooser.getSelectedFile();
         if (file != null) {
-          ImageCreator c = new ImageCreator(viewer, status);
-          int iQuality = it.getQuality();
           String sType = it.getType();
+          if (sType == null) {
+            sType = file.getName().toUpperCase();
+            int i = sType.lastIndexOf(".");
+            if (i < 0)
+              sType = "JPG";
+            else
+              sType = sType.substring(i + 1);
+          }
+          int iQuality = it.getQuality(sType);
+          // PDF is application-only
           if (sType.equals("PDF")) {
-
             Document document = new Document();
             try {
               PdfWriter writer = PdfWriter.getInstance(document,
@@ -1578,16 +1580,14 @@ public class Jmol extends JPanel {
               System.err.println(ioe.getMessage());
             }
             document.close();
-
             return;
           }
-          c.createImage(file.getAbsolutePath(), sType, iQuality);
+          createImageStatus(file.getAbsolutePath(), sType, null, iQuality);
         }
       }
     }
   }
 
-  
   class RecentFilesAction extends AbstractAction {
 
     public RecentFilesAction() {
@@ -1613,21 +1613,21 @@ public class Jmol extends JPanel {
 
     public void actionPerformed(ActionEvent e) {
       if (scriptWindow != null)
-      scriptWindow.show();
+        scriptWindow.show();
     }
   }
-  
+
   class AtomSetChooserAction extends AbstractAction {
     public AtomSetChooserAction() {
       super(atomsetchooserAction);
     }
-    
+
     public void actionPerformed(ActionEvent e) {
       atomSetChooser.show();
     }
   }
 
-  class PovrayAction extends MoleculeDependentAction {
+  class PovrayAction extends AbstractAction {
 
     public PovrayAction() {
       super(povrayActionProperty);
@@ -1644,7 +1644,7 @@ public class Jmol extends JPanel {
 
   }
 
-  class WriteAction extends MoleculeDependentAction {
+  class WriteAction extends AbstractAction {
 
     public WriteAction() {
       super(writeActionProperty);
@@ -1655,32 +1655,47 @@ public class Jmol extends JPanel {
       if (retval == JFileChooser.APPROVE_OPTION) {
         File file = writeChooser.getSelectedFile();
         if (file != null) {
-          ImageCreator c = new ImageCreator(viewer, status);
-          c.createImage(file.getAbsolutePath(), viewer.getStateInfo(), Integer.MIN_VALUE);
+          createImageStatus(file.getAbsolutePath(), "SPT", viewer
+              .getStateInfo(), Integer.MIN_VALUE);
         }
       }
-    } 
+    }
   }
 
- WebExport webExport;
- 
- class ToWebAction extends MoleculeDependentAction{
-    
-    public ToWebAction(){
+  String createImageStatus(String file, String type, Object text_or_bytes,
+                           int quality) {
+    ImageCreator c = new ImageCreator(viewer);
+    String msg = c.createImage(file, type, text_or_bytes, quality);
+    if (msg != null) {
+      if (msg.startsWith("OK"))
+        return msg;
+      if (status != null) {
+        status.setStatus(1, GT._("IO Exception:"));
+        status.setStatus(2, msg);
+      }
+    }
+    return msg;
+  }
+
+  WebExport webExport;
+
+  class ToWebAction extends AbstractAction {
+
+    public ToWebAction() {
       super(toWebActionProperty);
     }
-    
-    public void actionPerformed(ActionEvent e){
-    javax.swing.SwingUtilities.invokeLater(new Runnable() {
-    public void run() {
+
+    public void actionPerformed(ActionEvent e) {
+      javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
           webExport = WebExport.createAndShowGUI(viewer, historyFile,
               WEB_MAKER_WINDOW_NAME);
         }
-    });
+      });
     }
   }
- 
-  class ViewMeasurementTableAction extends MoleculeDependentAction {
+
+  class ViewMeasurementTableAction extends AbstractAction {
 
     public ViewMeasurementTableAction() {
       super("viewMeasurementTable");
@@ -1707,29 +1722,8 @@ public class Jmol extends JPanel {
 
   public static final String chemFileProperty = "chemFile";
 
-  private abstract class MoleculeDependentAction extends AbstractAction
-      implements PropertyChangeListener {
-
-    public MoleculeDependentAction(String name) {
-      super(name);
-      //setEnabled(false);
-    }
-
-    public void propertyChange(PropertyChangeEvent event) {
-/*
-      if (event.getPropertyName().equals(chemFileProperty)) {
-        if (event.getNewValue() != null) {
-          setEnabled(true);
-        } else {
-          setEnabled(false);
-        }
-      }
-*/    
-    }
-  }
-
   class MyStatusListener implements JmolStatusListener {
-    
+
     public boolean notifyEnabled(int type) {
       switch (type) {
       case JmolConstants.CALLBACK_ANIMFRAME:
@@ -1739,16 +1733,16 @@ public class Jmol extends JPanel {
       case JmolConstants.CALLBACK_MESSAGE:
       case JmolConstants.CALLBACK_PICK:
       case JmolConstants.CALLBACK_SCRIPT:
-        return true; 
+        return true;
       case JmolConstants.CALLBACK_HOVER:
       case JmolConstants.CALLBACK_MINIMIZATION:
       case JmolConstants.CALLBACK_RESIZE:
-      case JmolConstants.CALLBACK_SYNC:       
-        //applet only
+      case JmolConstants.CALLBACK_SYNC:
+      //applet only
       }
       return false;
     }
-    
+
     public void notifyCallback(int type, Object[] data) {
       String strInfo = (data == null || data[1] == null ? null : data[1]
           .toString());
@@ -1768,7 +1762,7 @@ public class Jmol extends JPanel {
         if (data.length == 3) //picking mode
           notifyAtomPicked(strInfo);
         else if (((String) data[3]).indexOf("Completed") >= 0)
-          sendConsoleEcho(strInfo.substring(strInfo.lastIndexOf(",") + 2, 
+          sendConsoleEcho(strInfo.substring(strInfo.lastIndexOf(",") + 2,
               strInfo.length() - 1));
         measurementTable.updateTables();
         break;
@@ -1807,16 +1801,17 @@ public class Jmol extends JPanel {
 
     public String eval(String strEval) {
       if (strEval.startsWith("_GET_MENU"))
-        return (jmolpopup == null ? "" : jmolpopup.getMenu("Jmol version " + Viewer.getJmolVersion() + "|" + strEval));
+        return (jmolpopup == null ? "" : jmolpopup.getMenu("Jmol version "
+            + Viewer.getJmolVersion() + "|" + strEval));
       sendConsoleMessage("javascript: " + strEval);
       return "# 'eval' is implemented only for the applet.";
     }
-    
-    public void createImage(String file, Object type_or_text_or_bytes, int quality) {
-      ImageCreator c = new ImageCreator(viewer, status);
-      c.createImage(file, type_or_text_or_bytes, quality);
+
+    public String createImage(String file, String type, Object text_or_bytes,
+                              int quality) {
+      return createImageStatus(file, type, text_or_bytes, quality);
     }
-    
+
     public void setCallbackFunction(String callbackType, String callbackFunction) {
       if (callbackType.equalsIgnoreCase("menu")) {
         menuStructure = callbackFunction;
@@ -1845,7 +1840,7 @@ public class Jmol extends JPanel {
         scriptWindow.sendConsoleMessage("\n");
       }
     }
-    
+
     private void notifyFileLoaded(String fullPathName, String fileName,
                                   String modelName, String errorMsg) {
       if (errorMsg != null) {
@@ -1881,7 +1876,7 @@ public class Jmol extends JPanel {
       // Math.max(frameNo, -2 - frameNo)
       // -1 means all frames are now displayed
       boolean isAnimationRunning = (frameNo <= -2);
-      
+
       /*
        * animationDirection is set solely by the "animation direction +1|-1" script command
        * currentDirection is set by operations such as "anim playrev" and coming to the end of 
@@ -1894,7 +1889,6 @@ public class Jmol extends JPanel {
       //int animationDirection = (firstNo < 0 ? -1 : 1);
       //int currentDirection = (lastNo < 0 ? -1 : 1);
       //System.out.println("notifyFrameChange " + frameNo + " " + fileNo + " " + modelNo + " " + firstNo + " " + lastNo + " " + animationDirection + " " + currentDirection);
-      
       if (display != null)
         display.status.setStatus(1, file + "." + model);
       if (jmolpopup == null || isAnimationRunning)
@@ -1921,19 +1915,23 @@ public class Jmol extends JPanel {
     }
 
     public void showUrl(String url) {
-      try {        
+      try {
         Class c = Class.forName("java.awt.Desktop");
-        Method getDesktop = c.getMethod("getDesktop",new Class[] {});
-        Object deskTop = getDesktop.invoke(null,new Class[] {});
-        Method browse = c.getMethod("browse",new Class[] {URI.class});
-        Object arguments[] = {new URI(url)};
+        Method getDesktop = c.getMethod("getDesktop", new Class[] {});
+        Object deskTop = getDesktop.invoke(null, new Class[] {});
+        Method browse = c.getMethod("browse", new Class[] { URI.class });
+        Object arguments[] = { new URI(url) };
         browse.invoke(deskTop, arguments);
       } catch (Exception e) {
         System.out.println(e.getMessage());
         if (scriptWindow != null) {
-          scriptWindow.sendConsoleMessage("Java 6 Desktop.browse() capability unavailable. Could not open " + url);
+          scriptWindow
+              .sendConsoleMessage("Java 6 Desktop.browse() capability unavailable. Could not open "
+                  + url);
         } else {
-          Logger.error("Java 6 Desktop.browse() capability unavailable. Could not open " + url);
+          Logger
+              .error("Java 6 Desktop.browse() capability unavailable. Could not open "
+                  + url);
         }
       }
     }
@@ -1946,21 +1944,22 @@ public class Jmol extends JPanel {
       else
         scriptWindow.hide();
     }
-    
+
     public float[][] functionXY(String functionName, int nX, int nY) {
       nX = Math.abs(nX);
       nY = Math.abs(nY);
       float[][] f = new float[nX][nY];
       boolean isSecond = (functionName.indexOf("2") >= 0);
-      
-      for (int i = nX; --i >= 0; )
-        for (int j = nY; --j >= 0; ) {
-          f[i][j] = (isSecond ? (float) ((i + j - nX) / (2f)) : (float)Math.sqrt(Math.abs(i*i + j*j))/2f);
+
+      for (int i = nX; --i >= 0;)
+        for (int j = nY; --j >= 0;) {
+          f[i][j] = (isSecond ? (float) ((i + j - nX) / (2f)) : (float) Math
+              .sqrt(Math.abs(i * i + j * j)) / 2f);
           //if (i < 10 && j < 10)
-            //System.out.println(" functionXY " + i + " " + j + " " + f[i][j]);
+          //System.out.println(" functionXY " + i + " " + j + " " + f[i][j]);
         }
-      
-      return f;  // for user-defined isosurface functions (testing only -- bob hanson)
+
+      return f; // for user-defined isosurface functions (testing only -- bob hanson)
     }
 
     public Hashtable getRegistryInfo() {
@@ -1978,5 +1977,5 @@ public class Jmol extends JPanel {
       viewer.evalStringQuiet(e.getActionCommand());
     }
   }
-  
+
 }

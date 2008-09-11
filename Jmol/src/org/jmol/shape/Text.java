@@ -293,7 +293,7 @@ public class Text extends Object2d {
       boxXY[1] = (is3dEcho ? y : (windowHeight - y)) + offsetY * scale;
     }
 
-    System.out.print("boxXY[1]=" + boxXY[1]);
+    //System.out.print("boxXY[1]=" + boxXY[1]);
     if (align == ALIGN_CENTER)
       boxXY[1] -= (image != null ? boxHeight : xyz != null ? boxHeight 
           : ascent - boxHeight) / 2;
@@ -302,9 +302,9 @@ public class Text extends Object2d {
     else if (xyz != null)
       boxXY[1] -= ascent / 2;
 
-    System.out.println(" movableY = " + movableY + " offsetY = " + offsetY
-        + " boxXY[1]=" + boxXY[1] + " boxHeight=" + boxHeight + " ascent="
-        + ascent + " " + text);
+    //System.out.println(" movableY = " + movableY + " offsetY = " + offsetY
+      //  + " boxXY[1]=" + boxXY[1] + " boxHeight=" + boxHeight + " ascent="
+        //+ ascent + " " + text);
 
   }
 

@@ -24,7 +24,12 @@
 package org.jmol.applet;
 
 import org.jmol.api.*;
+
 import java.awt.*;
+import java.io.File;
+
+import javax.swing.JFileChooser;
+
 import org.jmol.util.Logger;
 
 class Jvm12 {
@@ -88,5 +93,73 @@ class Jvm12 {
 
   String getConsoleMessage() {
     return console.getText();
+  }
+
+  private JFileChooser exportChooser;
+  final private static String[] imageChoices = { "JPEG", "PNG", "GIF" };
+  final private static String[] imageExtensions = { "jpg", "png", "gif" };
+  
+  String createImage(String fileName, String type, Object text_or_bytes, int quality) {
+    File file = null;
+    String pathName;
+    if (exportChooser == null)
+      exportChooser = new JFileChooser();
+    JmolImageTyperInterface it = (JmolImageTyperInterface) Interface
+        .getOptionInterface("export.image.ImageTyper");
+    if (fileName == null) {
+      fileName = viewer.getModelSetFileName();
+      pathName = viewer.getModelSetPathName();
+      it.createPanel(exportChooser, imageChoices, imageExtensions, 0);
+      if ((fileName != null) && (pathName != null)) {
+        int extensionStart = fileName.lastIndexOf('.');
+        if (extensionStart != -1) {
+          fileName = fileName.substring(0, extensionStart) + "."
+              + it.getExtension();
+        }
+        file = new File(pathName, fileName);
+      }
+    } else {
+      int n;
+      for (n = 0; n < imageExtensions.length; n++)
+        if (fileName.indexOf(imageExtensions[n]) >= 0)
+          break;
+      it.createPanel(exportChooser, imageChoices, imageExtensions, n
+          % imageExtensions.length);
+      file = new File(fileName);
+    }
+
+    exportChooser.setSelectedFile(file);
+    if (exportChooser.showSaveDialog(awtComponent) != 0)
+      return null;
+    it.memorizeDefaultType();
+    file = exportChooser.getSelectedFile();
+    if (file == null)
+      return null;
+    JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
+        .getOptionInterface("export.image.ImageCreator");
+    c.setViewer(viewer);
+    String sType = it.getType();
+    if (sType == null)
+      sType = type.toUpperCase();
+    else {
+      text_or_bytes = null;
+      quality = 75;
+    }
+    int iQuality = it.getQuality(sType);
+    if (iQuality < 0)
+      iQuality = quality;
+    return c.createImage(file.getAbsolutePath(), sType, text_or_bytes, iQuality);
+  }
+
+  void clipImage() {
+    JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface.getOptionInterface("export.image.ImageCreator");
+    c.setViewer(viewer);
+    c.clipImage(null);
+  }
+  
+  String getClipboardText() {
+    JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface.getOptionInterface("export.image.ImageCreator");
+    c.setViewer(viewer);
+    return c.getClipboardText();
   }
 }

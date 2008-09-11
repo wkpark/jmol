@@ -233,6 +233,7 @@ public class Jmol implements WrappedApplet {
   String getParameter(String paramName) {
     return appletWrapper.getParameter(paramName);
   }
+  boolean isSigned;
 
   public void initWindows() {
 
@@ -240,7 +241,7 @@ public class Jmol implements WrappedApplet {
     // viewer = new JmolViewer(this, new CdkJmolAdapter(null));
     viewer = JmolViewer.allocateViewer(appletWrapper, new SmarterJmolAdapter());
     String options = "";
-    boolean isSigned = appletWrapper.isSigned();
+    isSigned = getBooleanValue("signed", false) || appletWrapper.isSigned();
     if (isSigned)
       options += "-signed";
     if (getBooleanValue("useCommandThread", isSigned))
@@ -1041,13 +1042,30 @@ public class Jmol implements WrappedApplet {
       return "";
     }
 
-    public void createImage(String file, Object type_or_text_or_bytes,
-                            int quality) {
-      String type_or_text = (type_or_text_or_bytes instanceof String ? (String) type_or_text_or_bytes
-          : new String((byte[]) type_or_text_or_bytes));
-      if (quality == Integer.MAX_VALUE)
-        consoleMessage(type_or_text);
-      // application-only if not text 
+    public String createImage(String file, String type, Object text_or_bytes,
+                              int quality) {
+      String err = "OK";
+      if (file == null) {
+        if (jvm12 != null)
+          jvm12.clipImage();
+      } else if (file.equalsIgnoreCase("CLIPBOARD")) {
+        if (jvm12 != null)
+          jvm12.clipImage();
+      } else if (isSigned) {
+        if (jvm12 != null) {
+          try {
+            return jvm12.createImage(file, type, text_or_bytes, quality);
+          } catch (Exception e) {
+          }
+          return GT._("File creation failed.");
+        }
+      } else if (quality != Integer.MAX_VALUE) {
+        return GT
+            ._(
+                "File creation by this applet is not allowed. For Base64 JPEG format, use {0}.",
+                "jmolGetPropertyAsString('image')");
+      }
+      return (text_or_bytes instanceof String ? (String) text_or_bytes : err);
     }
 
     public float[][] functionXY(String functionName, int nX, int nY) {

@@ -118,7 +118,8 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public Image getScreenImage();
   abstract public void releaseScreenImage();
   
-  abstract public void createImage(String file, Object type_or_text_or_bytes, int quality,
+  abstract public void writeTextFile(String string, String data);
+  abstract public String createImage(String file, String type, Object text_or_bytes, int quality,
                                    int width, int height);
 
   abstract public boolean handleOldJvm10Event(Event e);
@@ -329,6 +330,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void rotateX(float radians);
   abstract public void rotateY(float radians);
   abstract public void rotateZ(float radians);
+  
 
 
 }

@@ -47,7 +47,7 @@ public interface JmolStatusListener {
   
   public float[][] functionXY(String functionName, int x, int y);
   
-  public void createImage(String file, Object type_or_text_or_bytes, int quality);
+  public String createImage(String file, String type, Object text_or_bytes, int quality);
 
   public Hashtable getRegistryInfo();
 

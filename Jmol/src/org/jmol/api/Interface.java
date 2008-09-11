@@ -33,8 +33,7 @@ public class Interface {
   public static Object getOptionInterface(String name) {
     try {
       name = JmolConstants.CLASSBASE_OPTIONS + name;
-      return Class.forName(name)
-          .newInstance();
+      return Class.forName(name).newInstance();
     } catch (Exception e) {
       Logger.error("Interface.java Error creating instance for " + name + ": \n" + e.getMessage());
       return null;

@@ -8955,7 +8955,7 @@ class Eval {
     //write isosurface t.jvxl 
 
     if (type.equals("(image)")
-        && Parser.isOneOf(val.toUpperCase(), "JPG;JPG64;JPEG;JPEG64;PNG;PPM")) {
+        && Parser.isOneOf(val.toUpperCase(), "GIF;JPG;JPG64;JPEG;JPEG64;PNG;PPM")) {
       type = val.toUpperCase();
       pt++;
     }
@@ -9004,8 +9004,8 @@ class Eval {
       else
         type = "XYZ";
     }
-    boolean isImage = Parser.isOneOf(type, "JPEG;JPG64;JPG;PPM;PNG");
-    if (isImage && (isApplet || isShow))
+    boolean isImage = Parser.isOneOf(type, "GIF;JPEG;JPG64;JPG;PPM;PNG");
+    if (isImage && (isApplet && !viewer.isSignedApplet() || isShow))
       type = "JPG64";
     if (!isImage
         && !isExport
@@ -9017,7 +9017,7 @@ class Eval {
               new Object[] {
                   "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
                       + "|RAMACHANDRAN|STATE|VAR x  CLIPBOARD",
-                  "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB|"
+                  "JPG|JPG64|PNG|GIF|PPM|SPT|JVXL|XYZ|MOL|PDB|"
                       + driverList.toUpperCase().replace(';', '|') }));
     if (isSyntaxCheck)
       return "";
@@ -9034,8 +9034,8 @@ class Eval {
             + ".png");
         if (!isCommand)
           return data;
-        viewer.createImage(fileName + ".ini", data, Integer.MIN_VALUE, 0, 0);
-        scriptStatus("Created " + fileName + ".ini:\n\n" + data);
+        String msg = viewer.createImage(fileName + ".ini", "ini", data, Integer.MIN_VALUE, 0, 0);
+        scriptStatus(msg.startsWith("OK") ? "Created " + fileName + ".ini:\n\n" + data : msg);
         return "";
       }
     } else if (data == "PGRP") {
@@ -9049,8 +9049,10 @@ class Eval {
       if (modelIndex < 0)
         error(ERROR_multipleModelsNotOK, "write " + type2);
       data = viewer.getPdbData(modelIndex, type2);
+      type = "PDB";
     } else if (data == "FUNCS") {
       data = getFunctionCalls("");
+      type= "TXT";
     } else if (data == "FILE") {
       if (isShow)
         data = viewer.getCurrentFileAsString();
@@ -9059,6 +9061,7 @@ class Eval {
       quality = Integer.MIN_VALUE;
     } else if (data == "VAR") {
       data = "" + getParameter(Token.sValue(tokenAt(isCommand ? 2 : 1, args)), false);
+      type= "TXT";
     } else if (data == "SPT") {
       if (isCoord) {
         BitSet tainted = viewer.getTaintedAtoms(AtomCollection.TAINT_COORD);
@@ -9070,11 +9073,14 @@ class Eval {
       }
     } else if (data == "HIS") {
       data = viewer.getSetHistory(Integer.MAX_VALUE);
+      type= "SPT";
     } else if (data == "MO") {
       data = getMoJvxl(Integer.MAX_VALUE);
+      type= "JVXL";
     } else if (data == "ISO") {
       if ((data = getIsosurfaceJvxl()) == null)
         evalError(GT._("No data available"));
+      type= "JVXL";
     } else {
       len = -1;
       if (data == "PNG") {
@@ -9082,8 +9088,11 @@ class Eval {
           quality = 2;
         else if (quality < 0 || quality > 9)
           quality = 0;
-      } else if (quality <= 0)
+      } else if (data == "GIF") {
+        quality = -1;
+      } else if (quality <= 0) {
         quality = 75; //JPG
+      }
     }
     if (data == null)
       data = "";
@@ -9106,10 +9115,9 @@ class Eval {
     } else {
       if (bytes == null)
         bytes = data;
-      viewer.createImage(fileName, bytes, quality, width, height);
-      scriptStatus("type=" + type + "; file="
-          + (fileName == null ? "CLIPBOARD" : fileName)
-          + (len >= 0 ? "; length=" + len : "")
+      String msg = viewer.createImage(fileName, type, bytes, quality, width, height);
+      scriptStatus(!msg.startsWith("OK") ? msg : msg
+//          + (len >= 0 ? "; length=" + len : "")
           + (isImage ? "; width=" + width + "; height=" + height : "")
           + (quality >= 0 ? "; quality=" + quality : ""));
     }

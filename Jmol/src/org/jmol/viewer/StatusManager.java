@@ -419,10 +419,10 @@ class StatusManager {
     return (jmolStatusListener == null ? "" : jmolStatusListener.eval(strEval));
   }
 
-  void createImage(String file, Object type_or_text_or_bytes, int quality) {
+  String createImage(String file, String type, Object text_or_bytes, int quality) {
     if (jmolStatusListener == null)
-      return;
-    jmolStatusListener.createImage(file, type_or_text_or_bytes, quality);
+      return "";
+    return jmolStatusListener.createImage(file, type, text_or_bytes, quality);
   }
 
   public Hashtable getRegistryInfo() {

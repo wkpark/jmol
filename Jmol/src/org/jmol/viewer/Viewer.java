@@ -3134,6 +3134,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void resizeImage(int width, int height, boolean isImageWrite,
                            boolean isGenerator, boolean isReset) {
+    if (!isImageWrite && creatingImage)
+      return;
     if (width > 0) {
       if (isImageWrite && !isReset)
         setImageFontScaling(width, height);
@@ -5574,7 +5576,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean getShowFrank() {
-    return isSignedApplet || getObjectMad(StateManager.OBJ_FRANK) != 0;
+    return (!isApplet || !creatingImage) && (isSignedApplet || getObjectMad(StateManager.OBJ_FRANK) != 0);
   }
 
   public boolean isSignedApplet() {
@@ -6287,6 +6289,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // image export
   // ///////////////////////////////////////////////////////////////
 
+  /**
+   * @param type_name  TYPE:filename\twidth\theight\tquality
+   */
   private void createImage(String type_name) { // or script now
     int quality, width, height;
     if (type_name == null)
@@ -6296,11 +6301,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (type_name.indexOf(":") < 0)
       type_name += ":jmol.jpg";
     int i = type_name.indexOf(":");
-    String type = type_name.substring(0, i);
+    String type = type_name.substring(0, i).toUpperCase();
     String file = type_name.substring(i + 1);
     String swidth = "-1";
     String sheight = "-1";
-    String squality = "75";
+    String squality = (type.equals("PNG") ? "2" : "75");
     i = file.indexOf('\t');
     if (i > 0) {
       swidth = file.substring(i + 1);
@@ -6320,7 +6325,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       width = Integer.parseInt(swidth);
       height = Integer.parseInt(sheight);
       quality = Integer.parseInt(squality);
-      createImage(file, type, quality, width, height);
+      createImage(file, type, null, quality, width, height);
     } catch (Exception e) {
       System.out.println("error processing write request: " + type_name);
     }
@@ -6332,7 +6337,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return imageFontScaling;
   }
 
-  public void createImage(String file, Object type_or_text_or_bytes,
+  public void writeTextFile(String file, String data) {
+    createImage(file, "txt", data, Integer.MIN_VALUE, 0, 0);  
+  }
+  
+  private boolean creatingImage;
+
+  public String createImage(String file, String type, Object text_or_bytes,
                           int quality, int width, int height) {
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
@@ -6340,14 +6351,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       resizeImage(width, height, true, false, false);
       setModelVisibility();
     }
+    creatingImage = true;
+    String err = null;
     try {
-      statusManager.createImage(file, type_or_text_or_bytes, quality);
+      err = statusManager.createImage(file, type, text_or_bytes, quality);
     } catch (Exception e) {
       Logger.error("Error creating image: " + e.getMessage());
     }
+    creatingImage = false;
     if (quality != Integer.MIN_VALUE) {
       resizeImage(saveWidth, saveHeight, true, false, true);
     }
+    return err;
   }
 
   private void setImageFontScaling(int width, int height) {

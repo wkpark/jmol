@@ -7,14 +7,16 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-08-29 06:26+0200\n"
-"PO-Revision-Date: 2005-12-20 07:44-0000\n"
-"Last-Translator: Metro <portugalfolding@gmail.com>\n"
+"PO-Revision-Date: 2008-09-10 14:20+0000\n"
+"Last-Translator: Joel Patrão <joel.patrao@gmail.com>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Portuguese\n"
+"X-Launchpad-Export-Date: 2008-09-11 11:01+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: Portugal\n"
+"X-Poedit-Language: Portuguese\n"
 "X-Poedit-Basepath: ../../../..\n"
 
 #: org/jmol/applet/Console.java:40
@@ -24,7 +26,7 @@ msgstr "Script Jmol completo"
 
 #: org/jmol/applet/Console.java:42
 msgid "Execute"
-msgstr ""
+msgstr "Executar"
 
 #: org/jmol/applet/Console.java:43
 msgid "Clear Output"
@@ -37,7 +39,7 @@ msgstr "Fechar"
 
 #: org/jmol/applet/Console.java:45 org/jmol/popup/PopupResourceBundle.java:840
 msgid "History"
-msgstr ""
+msgstr "Histórico"
 
 #: org/jmol/applet/Console.java:46
 #, fuzzy
@@ -55,7 +57,7 @@ msgstr ""
 
 #: org/jmol/applet/GuiMap.java:41
 msgid "&Help"
-msgstr ""
+msgstr "&Ajuda"
 
 #: org/jmol/applet/GuiMap.java:42
 msgid "&Search..."
@@ -63,7 +65,7 @@ msgstr ""
 
 #: org/jmol/applet/GuiMap.java:43
 msgid "&Commands"
-msgstr ""
+msgstr "&Comandos"
 
 #: org/jmol/applet/GuiMap.java:44
 msgid "Math &Functions"
@@ -79,7 +81,7 @@ msgid "&More"
 msgstr "Modelo"
 
 #: org/jmol/applet/Jmol.java:646
-#, fuzzy, java-format
+#, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
 "\n"
@@ -87,8 +89,6 @@ msgid ""
 "\n"
 "See http://www.jmol.org for more information"
 msgstr ""
-"Jmol Applet. Parte do projecto OpenScience. Visite http://www.jmol.org para "
-"mais informação"
 
 #: org/jmol/applet/Jmol.java:866
 msgid "File Error:"
@@ -112,7 +112,7 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:116
 msgid "Catalan"
-msgstr ""
+msgstr "Catalão"
 
 #: org/jmol/i18n/GT.java:117
 msgid "Czech"
@@ -197,9 +197,9 @@ msgid "No atoms selected -- nothing to do!"
 msgstr ""
 
 #: org/jmol/minimize/Minimizer.java:258
-#, fuzzy, java-format
+#, java-format
 msgid "{0} atoms will be minimized."
-msgstr "Nenhum átomo foi carregado"
+msgstr ""
 
 #: org/jmol/minimize/Minimizer.java:350
 #, java-format
@@ -297,14 +297,14 @@ msgid "Model information"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:541
-#, fuzzy, java-format
+#, java-format
 msgid "Select ({0})"
-msgstr "Escala 0.2"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:542
-#, fuzzy, java-format
+#, java-format
 msgid "All {0} models"
-msgstr "Todos os Modelos"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:543
 #, java-format
@@ -312,9 +312,9 @@ msgid "Configurations ({0})"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:544
-#, fuzzy, java-format
+#, java-format
 msgid "Collection of {0} models"
-msgstr "Todos os Modelos"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:545
 #, java-format
@@ -332,9 +332,9 @@ msgid "groups: {0}"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:548
-#, fuzzy, java-format
+#, java-format
 msgid "chains: {0}"
-msgstr "Escala 0.2"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:549
 #, java-format
@@ -342,14 +342,14 @@ msgid "polymers: {0}"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:550
-#, fuzzy, java-format
+#, java-format
 msgid "model {0}"
-msgstr "Escala 0.2"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:551
-#, fuzzy, java-format
+#, java-format
 msgid "View {0}"
-msgstr "Escala 0.2"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:552
 msgid "Main Menu"
@@ -441,7 +441,7 @@ msgstr "Resíduos apolares"
 
 #: org/jmol/popup/PopupResourceBundle.java:578
 msgid "Basic Residues (+)"
-msgstr " Resíduos básicos (+)"
+msgstr "Resíduos básicos (+)"
 
 #: org/jmol/popup/PopupResourceBundle.java:579
 msgid "Acidic Residues (-)"
@@ -580,9 +580,9 @@ msgstr "Off"
 #: org/jmol/popup/PopupResourceBundle.java:617
 #: org/jmol/popup/PopupResourceBundle.java:618
 #: org/jmol/popup/PopupResourceBundle.java:619
-#, fuzzy, java-format
+#, java-format
 msgid "{0}% van der Waals"
-msgstr "50% vanderWaals"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:621
 #: org/jmol/popup/PopupResourceBundle.java:743
@@ -620,9 +620,9 @@ msgstr "On"
 #: org/jmol/popup/PopupResourceBundle.java:887
 #: org/jmol/popup/PopupResourceBundle.java:888
 #: org/jmol/popup/PopupResourceBundle.java:889
-#, fuzzy, java-format
+#, java-format
 msgid "{0} Å"
-msgstr "1opx"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:630
 #: org/jmol/popup/PopupResourceBundle.java:744
@@ -691,18 +691,18 @@ msgid "Vectors"
 msgstr "Vectores"
 
 #: org/jmol/popup/PopupResourceBundle.java:669
-#, fuzzy, java-format
+#, java-format
 msgid "{0} pixels"
-msgstr "3 pixeis"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:672
 #: org/jmol/popup/PopupResourceBundle.java:673
 #: org/jmol/popup/PopupResourceBundle.java:674
 #: org/jmol/popup/PopupResourceBundle.java:675
 #: org/jmol/popup/PopupResourceBundle.java:676
-#, fuzzy, java-format
+#, java-format
 msgid "Scale {0}"
-msgstr "Escala 0.2"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:678
 msgid "Stereographic"
@@ -845,7 +845,7 @@ msgstr "Branco"
 
 #: org/jmol/popup/PopupResourceBundle.java:722
 msgid "Cyan"
-msgstr "Turquesa"
+msgstr "Ciano"
 
 #: org/jmol/popup/PopupResourceBundle.java:724
 msgid "Red"
@@ -1212,9 +1212,9 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:865
 #: org/jmol/popup/PopupResourceBundle.java:866
 #: org/jmol/popup/PopupResourceBundle.java:867
-#, fuzzy, java-format
+#, java-format
 msgid "Reload {0}"
-msgstr "Escala 0.2"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:868
 msgid "Reload + Polyhedra"
@@ -1236,9 +1236,9 @@ msgstr "Tamanho do pixel"
 #: org/jmol/popup/PopupResourceBundle.java:880
 #: org/jmol/popup/PopupResourceBundle.java:881
 #: org/jmol/popup/PopupResourceBundle.java:882
-#, fuzzy, java-format
+#, java-format
 msgid "{0} px"
-msgstr "1opx"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:884
 msgid "Angstrom Width"
@@ -1384,14 +1384,14 @@ msgid "too many rotation points were specified"
 msgstr ""
 
 #: org/jmol/viewer/Eval.java:5265 org/jmol/viewer/Eval.java:5502
-#, fuzzy, java-format
+#, java-format
 msgid "{0} atoms deleted"
-msgstr "Nenhum átomo foi carregado"
+msgstr ""
 
 #: org/jmol/viewer/Eval.java:5991
-#, fuzzy, java-format
+#, java-format
 msgid "{0} hydrogen bonds"
-msgstr "Ligações de Hidrogénio"
+msgstr ""
 
 #: org/jmol/viewer/Eval.java:6003
 #, java-format
@@ -1612,14 +1612,14 @@ msgstr ""
 
 #: org/jmol/viewer/SelectionManager.java:77
 #: org/jmol/viewer/SelectionManager.java:94
-#, fuzzy, java-format
+#, java-format
 msgid "{0} atoms hidden"
-msgstr "Nome escondido"
+msgstr ""
 
 #: org/jmol/viewer/SelectionManager.java:131
-#, fuzzy, java-format
+#, java-format
 msgid "{0} atoms selected"
-msgstr "Nenhum átomo foi carregado"
+msgstr ""
 
 #: org/jmol/viewer/Viewer.java:4218
 #, java-format

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-08-31 21:06+0200\n"
+"POT-Creation-Date: 2008-09-11 21:57+0200\n"
 "PO-Revision-Date: 2008-08-04 20:45+0000\n"
 "Last-Translator: martin.slavik <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
@@ -34,7 +34,7 @@ msgstr "Nemohu nalézt URL \"{0}\"."
 
 #: org/openscience/jmol/app/AboutDialog.java:95
 #: org/openscience/jmol/app/HelpDialog.java:102
-#: org/openscience/jmol/app/Jmol.java:455
+#: org/openscience/jmol/app/Jmol.java:462
 #: org/openscience/jmol/app/PreferencesDialog.java:173
 #: org/openscience/jmol/app/WhatsNewDialog.java:96
 msgid "OK"
@@ -711,96 +711,84 @@ msgstr "Navrátit molekulu do výchozí polohy."
 msgid "Jmol Help"
 msgstr "Jmol nápověda"
 
-#: org/openscience/jmol/app/ImageCreator.java:110
-msgid "IO Exception:"
-msgstr "IO výjimka:"
-
-#: org/openscience/jmol/app/ImageTyper.java:63
-msgid "Image Type"
-msgstr "Typ obrázku"
-
-#: org/openscience/jmol/app/ImageTyper.java:99
-msgid "JPEG Quality"
-msgstr "JPEG kvalita"
-
-#: org/openscience/jmol/app/Jmol.java:144
+#: org/openscience/jmol/app/Jmol.java:143
 #: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr "Chyba při Jmol spouštění: vlastnost 'user.home' není definována."
 
-#: org/openscience/jmol/app/Jmol.java:189
+#: org/openscience/jmol/app/Jmol.java:187
 msgid "Initializing 3D display..."
 msgstr "Načítám 3D zobrazení..."
 
-#: org/openscience/jmol/app/Jmol.java:214
+#: org/openscience/jmol/app/Jmol.java:212
 msgid "Initializing Preferences..."
 msgstr "Načítám předvolby..."
 
-#: org/openscience/jmol/app/Jmol.java:216
+#: org/openscience/jmol/app/Jmol.java:214
 msgid "Initializing Recent Files..."
 msgstr "Načítám naposledy otevřené soubory..."
 
-#: org/openscience/jmol/app/Jmol.java:219
+#: org/openscience/jmol/app/Jmol.java:217
 msgid "Initializing Script Window..."
 msgstr "Načítám skriptovací okno..."
 
-#: org/openscience/jmol/app/Jmol.java:221
+#: org/openscience/jmol/app/Jmol.java:219
 msgid "Initializing AtomSetChooser Window..."
 msgstr "Načítám nastavení sady atomů..."
 
-#: org/openscience/jmol/app/Jmol.java:229
+#: org/openscience/jmol/app/Jmol.java:227
 msgid "Initializing Measurements..."
 msgstr "Načítám měření..."
 
-#: org/openscience/jmol/app/Jmol.java:253
+#: org/openscience/jmol/app/Jmol.java:250
 msgid "Building Command Hooks..."
 msgstr "Vytvářím příkazy..."
 
-#: org/openscience/jmol/app/Jmol.java:264
+#: org/openscience/jmol/app/Jmol.java:261
 msgid "Building Menubar..."
 msgstr "Vytvářím Menu..."
 
-#: org/openscience/jmol/app/Jmol.java:280
+#: org/openscience/jmol/app/Jmol.java:277
 msgid "Starting display..."
 msgstr "Spouštím zobrazení..."
 
-#: org/openscience/jmol/app/Jmol.java:283
+#: org/openscience/jmol/app/Jmol.java:280
 msgid "Setting up File Choosers..."
 msgstr "Nastavuji nabídku souborů..."
 
-#: org/openscience/jmol/app/Jmol.java:344
+#: org/openscience/jmol/app/Jmol.java:342
 msgid "Setting up Drag-and-Drop..."
 msgstr "Nastavuji 'táhnout a pustit'..."
 
-#: org/openscience/jmol/app/Jmol.java:365
+#: org/openscience/jmol/app/Jmol.java:363
 msgid "Launching main frame..."
 msgstr "Nahrávám hlavní rám..."
 
-#: org/openscience/jmol/app/Jmol.java:383
+#: org/openscience/jmol/app/Jmol.java:381
 msgid "Creating main window..."
 msgstr "Vytvářím hlavní okno..."
 
-#: org/openscience/jmol/app/Jmol.java:384
+#: org/openscience/jmol/app/Jmol.java:382
 msgid "Initializing Swing..."
 msgstr "Inicializuji Swing..."
 
-#: org/openscience/jmol/app/Jmol.java:396
+#: org/openscience/jmol/app/Jmol.java:394
 msgid "Initializing Jmol..."
 msgstr "Inicializuji Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:414
+#: org/openscience/jmol/app/Jmol.java:412
 msgid "All Files"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:415
-#: org/openscience/jmol/app/Jmol.java:453
+#: org/openscience/jmol/app/Jmol.java:413
+#: org/openscience/jmol/app/Jmol.java:460
 #: org/openscience/jmol/app/PovrayDialog.java:500
 #: org/openscience/jmol/app/PreferencesDialog.java:165
 #: org/openscience/jmol/app/RecentFilesDialog.java:69
 msgid "Cancel"
 msgstr "Zrušit"
 
-#: org/openscience/jmol/app/Jmol.java:416
+#: org/openscience/jmol/app/Jmol.java:415
 msgid "Abort file chooser dialog"
 msgstr ""
 
@@ -815,228 +803,232 @@ msgid "Directory"
 msgstr "Pracovní adresář"
 
 #: org/openscience/jmol/app/Jmol.java:420
-#: org/openscience/jmol/app/Jmol.java:440
-#: org/openscience/jmol/app/Jmol.java:442
+#: org/openscience/jmol/app/Jmol.java:444
+#: org/openscience/jmol/app/Jmol.java:447
 #: org/openscience/jmol/app/RecentFilesDialog.java:65
 msgid "Open"
 msgstr "Otevřít"
 
-#: org/openscience/jmol/app/Jmol.java:421
+#: org/openscience/jmol/app/Jmol.java:422
 #, fuzzy
 msgid "Open selected directory"
 msgstr "Nevybrat nic"
 
-#: org/openscience/jmol/app/Jmol.java:422
+#: org/openscience/jmol/app/Jmol.java:423
 msgid "Attributes"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:423
+#: org/openscience/jmol/app/Jmol.java:424
 msgid "Modified"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:424
+#: org/openscience/jmol/app/Jmol.java:425
 msgid "Generic File"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:425
+#: org/openscience/jmol/app/Jmol.java:426
 msgid "Name"
 msgstr "Název"
 
-#: org/openscience/jmol/app/Jmol.java:426
+#: org/openscience/jmol/app/Jmol.java:427
 #: org/openscience/jmol/app/PovrayDialog.java:155
 #, fuzzy
 msgid "File Name:"
 msgstr "základ jména souboru"
 
-#: org/openscience/jmol/app/Jmol.java:427
+#: org/openscience/jmol/app/Jmol.java:428
 msgid "Size"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:428
+#: org/openscience/jmol/app/Jmol.java:429
 msgid "Files of Type:"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:429
+#: org/openscience/jmol/app/Jmol.java:430
 msgid "Type"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:430
+#: org/openscience/jmol/app/Jmol.java:431
 #: org/openscience/jmol/app/ScriptWindow.java:106
 msgid "Help"
 msgstr "Nápověda"
 
-#: org/openscience/jmol/app/Jmol.java:431
-msgid "FileChooser help"
-msgstr ""
-
-#: org/openscience/jmol/app/Jmol.java:432
 #: org/openscience/jmol/app/Jmol.java:433
-msgid "Home"
+msgid "FileChooser help"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:434
 #: org/openscience/jmol/app/Jmol.java:435
-msgid "List"
+msgid "Home"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:436
-msgid "Look In:"
-msgstr ""
-
 #: org/openscience/jmol/app/Jmol.java:437
-msgid "Error creating new folder"
+msgid "List"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:438
-msgid "New Folder"
+msgid "Look In:"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:439
-msgid "Create New Folder"
+#: org/openscience/jmol/app/Jmol.java:440
+msgid "Error creating new folder"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:441
+msgid "New Folder"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:443
+msgid "Create New Folder"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:446
 #, fuzzy
 msgid "Open selected file"
 msgstr "Nevybrat nic"
 
-#: org/openscience/jmol/app/Jmol.java:443
-#: org/openscience/jmol/app/Jmol.java:445
+#: org/openscience/jmol/app/Jmol.java:448
+#: org/openscience/jmol/app/Jmol.java:451
 #: org/openscience/jmol/app/PovrayDialog.java:756
 msgid "Save"
 msgstr "Uložit"
 
-#: org/openscience/jmol/app/Jmol.java:444
+#: org/openscience/jmol/app/Jmol.java:450
 #, fuzzy
 msgid "Save selected file"
 msgstr "Nevybrat nic"
 
-#: org/openscience/jmol/app/Jmol.java:446
+#: org/openscience/jmol/app/Jmol.java:452
 #, fuzzy
 msgid "Save In:"
 msgstr "Uložit"
 
-#: org/openscience/jmol/app/Jmol.java:447
+#: org/openscience/jmol/app/Jmol.java:453
 msgid "Update"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:448
+#: org/openscience/jmol/app/Jmol.java:455
 msgid "Update directory listing"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:449
+#: org/openscience/jmol/app/Jmol.java:456
 msgid "Up"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:450
+#: org/openscience/jmol/app/Jmol.java:457
 msgid "Up One Level"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:454
+#: org/openscience/jmol/app/Jmol.java:461
 #, fuzzy
 msgid "No"
 msgstr "Nic"
 
-#: org/openscience/jmol/app/Jmol.java:456
+#: org/openscience/jmol/app/Jmol.java:463
 msgid "Yes"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:478
+#: org/openscience/jmol/app/Jmol.java:487
 msgid "transparent background"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:479
+#: org/openscience/jmol/app/Jmol.java:488
 msgid "give this help page"
 msgstr "zobrazí tuto stránku nápovědy"
 
-#: org/openscience/jmol/app/Jmol.java:481
+#: org/openscience/jmol/app/Jmol.java:490
 msgid "no display (and also exit when done)"
 msgstr "bez zobrazení (následně skončí po vykonání)"
 
-#: org/openscience/jmol/app/Jmol.java:482
+#: org/openscience/jmol/app/Jmol.java:491
 msgid "check script syntax only"
 msgstr "zkontrolovat pouze syntaxi skriptu"
 
-#: org/openscience/jmol/app/Jmol.java:483
+#: org/openscience/jmol/app/Jmol.java:492
 msgid "silent startup operation"
 msgstr "tichý start"
 
-#: org/openscience/jmol/app/Jmol.java:484
+#: org/openscience/jmol/app/Jmol.java:494
 msgid "list commands during script execution"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:486
+#: org/openscience/jmol/app/Jmol.java:496
 msgid "no console -- all output to sysout"
 msgstr "bez konzole -- všechen výstup na sysout"
 
-#: org/openscience/jmol/app/Jmol.java:487
+#: org/openscience/jmol/app/Jmol.java:498
 msgid "independent commmand thread"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:489
+#: org/openscience/jmol/app/Jmol.java:500
 msgid "exit after script (implicit with -n)"
 msgstr "konec po skriptu (implicitně s -n)"
 
-#: org/openscience/jmol/app/Jmol.java:503
+#: org/openscience/jmol/app/Jmol.java:514
 msgid "property=value"
 msgstr "vlastnost = hodnota"
 
-#: org/openscience/jmol/app/Jmol.java:506
+#: org/openscience/jmol/app/Jmol.java:517
 msgid "supported options are given below"
 msgstr "podporované možnosti: viz níže"
 
-#: org/openscience/jmol/app/Jmol.java:511
+#: org/openscience/jmol/app/Jmol.java:522
 #, fuzzy, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "rozměr okna, např. {0}"
 
-#: org/openscience/jmol/app/Jmol.java:519
+#: org/openscience/jmol/app/Jmol.java:532
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:525
+#: org/openscience/jmol/app/Jmol.java:538
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} nebo {1}: název souboru"
 
-#: org/openscience/jmol/app/Jmol.java:547
+#: org/openscience/jmol/app/Jmol.java:560
 msgid "For example:"
 msgstr "Například:"
 
-#: org/openscience/jmol/app/Jmol.java:553
+#: org/openscience/jmol/app/Jmol.java:566
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr "-D volby jsou následující (standardní v závorkách):"
 
-#: org/openscience/jmol/app/Jmol.java:725
+#: org/openscience/jmol/app/Jmol.java:739
 msgid "Executing script..."
 msgstr "Vykonávám skript..."
 
-#: org/openscience/jmol/app/Jmol.java:737
+#: org/openscience/jmol/app/Jmol.java:751
 msgid "Jmol Java Console"
 msgstr "Jmol Java konzole"
 
-#: org/openscience/jmol/app/Jmol.java:745
+#: org/openscience/jmol/app/Jmol.java:759
 #: org/openscience/jmol/app/ScriptWindow.java:94
 msgid "Clear"
 msgstr "Vyčistit"
 
-#: org/openscience/jmol/app/Jmol.java:759
+#: org/openscience/jmol/app/Jmol.java:773
 msgid "Could not create ConsoleTextArea: "
 msgstr "Nelze vytvořit textové pole pro konzoli: "
 
-#: org/openscience/jmol/app/Jmol.java:847
+#: org/openscience/jmol/app/Jmol.java:853
 msgid "Closing Jmol..."
 msgstr "Ukončuji Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:1476
+#: org/openscience/jmol/app/Jmol.java:1469
 msgid "Open URL"
 msgstr "Otevřít URL"
 
-#: org/openscience/jmol/app/Jmol.java:1477
+#: org/openscience/jmol/app/Jmol.java:1470
 msgid "Enter URL of molecular model"
 msgstr "Zadat URL molekulárního modelu"
+
+#: org/openscience/jmol/app/Jmol.java:1673
+msgid "IO Exception:"
+msgstr "IO výjimka:"
 
 #: org/openscience/jmol/app/MeasurementTable.java:123
 msgid "Delete"
@@ -1314,7 +1306,7 @@ msgstr "Nahrávám..."
 msgid "What's New in Jmol"
 msgstr "Novinky v programu Jmol"
 
-#: org/openscience/jmol/app/webexport/JmolInstance.java:66
+#: org/openscience/jmol/app/webexport/JmolInstance.java:64
 msgid "Attempt to make scratch directory failed."
 msgstr ""
 
@@ -1483,61 +1475,61 @@ msgstr ""
 msgid "Browser window title for this web page:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:306
+#: org/openscience/jmol/app/webexport/WebPanel.java:300
 msgid "Give the occurrence of Jmol a name:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:326
+#: org/openscience/jmol/app/webexport/WebPanel.java:320
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:336
+#: org/openscience/jmol/app/webexport/WebPanel.java:330
 #, java-format
 msgid "added Instance {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:339
+#: org/openscience/jmol/app/webexport/WebPanel.java:333
 #, java-format
 msgid "updated Instance {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:376
+#: org/openscience/jmol/app/webexport/WebPanel.java:370
 msgid "Select a directory to create or an HTML file to save"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:394
+#: org/openscience/jmol/app/webexport/WebPanel.java:388
 msgid "Call to FileWriter unsuccessful."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:432
+#: org/openscience/jmol/app/webexport/WebPanel.java:426
 #, fuzzy, java-format
 msgid "Using directory {0}"
 msgstr "Pracovní adresář"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:433
+#: org/openscience/jmol/app/webexport/WebPanel.java:427
 msgid "adding JmolPopIn.js"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:442
+#: org/openscience/jmol/app/webexport/WebPanel.java:436
 #, java-format
 msgid "adding {0}.png"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:467
+#: org/openscience/jmol/app/webexport/WebPanel.java:461
 #, java-format
 msgid "adding {0}.spt"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:498
+#: org/openscience/jmol/app/webexport/WebPanel.java:492
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:501
+#: org/openscience/jmol/app/webexport/WebPanel.java:495
 #, java-format
 msgid "creating {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:532
+#: org/openscience/jmol/app/webexport/WebPanel.java:526
 #, java-format
 msgid ""
 "copying\n"
@@ -1545,16 +1537,22 @@ msgid ""
 "         to"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:535
+#: org/openscience/jmol/app/webexport/WebPanel.java:529
 #, java-format
 msgid ""
 "Could not find or open:\n"
 "{0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:575
+#: org/openscience/jmol/app/webexport/WebPanel.java:569
 msgid "compressing large data file to"
 msgstr ""
+
+#~ msgid "Image Type"
+#~ msgstr "Typ obrázku"
+
+#~ msgid "JPEG Quality"
+#~ msgstr "JPEG kvalita"
 
 #~ msgid "Render in pov-ray."
 #~ msgstr "POV-ray vykreslení."

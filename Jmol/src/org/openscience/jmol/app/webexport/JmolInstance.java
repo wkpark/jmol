@@ -66,7 +66,7 @@ class JmolInstance {
     }
     String pictfile = scratchpath + "/" + javaname + ".png";
     this.pictFile = pictfile;
-    viewer.createImage(pictfile, "PNG", 2, width, height);
+    viewer.createImage(pictfile, "PNG", null, 2, width, height);
     this.pictIsScratchFile = true;
   }
 

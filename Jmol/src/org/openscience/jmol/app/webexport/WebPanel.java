@@ -275,12 +275,6 @@ abstract class WebPanel extends JPanel implements ActionListener {
     return editorScrollPane.getHeight();
   }
 
-  private void writeFile(String filename, String data) {
-    //LogPanel.log("Writing file " + filename + "("
-      //  + data.length() + " bytes)");
-    viewer.createImage(filename, data, Integer.MIN_VALUE, 0, 0);
-  }
-  
   public void actionPerformed(ActionEvent e) {
 
     if (e.getSource() == remoteAppletPath) {//apparently no events are fired to reach this, maybe "enter" does it
@@ -432,7 +426,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       LogPanel.log(GT._("Using directory {0}", datadirPath));
       LogPanel.log("  " + GT._("adding JmolPopIn.js"));
  
-      writeFile(datadirPath + "/JmolPopIn.js",
+      viewer.writeTextFile(datadirPath + "/JmolPopIn.js",
           WebExport.getResourceString(this, "JmolPopIn.js"));
       for (int i = 0; i < listModel.getSize(); i++) {
         JmolInstance thisInstance = (JmolInstance) (listModel.getElementAt(i));
@@ -465,7 +459,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
         }
         script = localizeFileReferences(script, filesToCopy, copiedFileNames);
         LogPanel.log("      ..." + GT._("adding {0}.spt", javaname));
-        writeFile(datadirPath + "/" + javaname + ".spt", script);
+        viewer.writeTextFile(datadirPath + "/" + javaname + ".spt", script);
       }
       String html = WebExport.getResourceString(this, panelName + "_template");
       html = fixHtml(html);
@@ -499,7 +493,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       html = TextFormat.simpleReplace(html, "@LOGDATA@", "<pre>\n"
           + LogPanel.getText() + "\n</pre>\n");
       LogPanel.log("      ..." + GT._("creating {0}", fileName));
-      writeFile(datadirPath + "/" + fileName, html);
+      viewer.writeTextFile(datadirPath + "/" + fileName, html);
     } else {
       IOException IOe = new IOException("Error creating directory: "
           + datadirPath);

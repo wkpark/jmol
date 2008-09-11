@@ -558,7 +558,7 @@ public class PovrayDialog extends JDialog {
         //}
         
         String data = viewer.generateOutput("Povray", filename + ":::" + getINI(), width, height);          
-        viewer.createImage(filename + ".ini", data, Integer.MIN_VALUE, 0, 0);        
+        viewer.writeTextFile(filename + ".ini", data);        
     }
     
     // Run Povray if needed

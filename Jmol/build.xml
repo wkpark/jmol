@@ -11,7 +11,7 @@
   <!-- for some reason, I can't get ant to use this ${java.version}
        property as the value of the source parameter -->
   <property name="java.version" value="1.4" />
-  <property name="debug" value="off" />
+  <property name="debug" value="on" />
   <property name="deprecation" value="off" />
   <property name="optimization" value="off" />
 
@@ -310,7 +310,7 @@ support for assertions (which were introduced in 1.4).
       <and>
         <uptodate targetfile="${appjars.dir}">
           <srcfiles dir="${lib.dir}" includes="${vecmath.jar}"/>
-          <srcfiles dir="${lib.dir}" includes="Acme.jar"/>
+          <!-- srcfiles dir="${lib.dir}" includes="Acme.jar"/ -->
           <srcfiles dir="${lib.dir}" includes="${itext.jar}"/>
           <srcfiles dir="${lib.dir}" includes="${commons-cli.jar}"/>
         </uptodate>
@@ -341,7 +341,7 @@ support for assertions (which were introduced in 1.4).
     <delete file="build/libjars.timestamp"/>
     <mkdir dir="${appjars.dir}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/${vecmath.jar}"/>
-    <unjar dest="${appjars.dir}" src="${lib.dir}/Acme.jar"/>
+    <!-- unjar dest="${appjars.dir}" src="${lib.dir}/Acme.jar"/ -->
     <unjar dest="${appjars.dir}" src="${lib.dir}/${itext.jar}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/${commons-cli.jar}"/>
     <touch file="build/libjars.timestamp"/>
@@ -494,10 +494,10 @@ support for assertions (which were introduced in 1.4).
         	manifest="manifest/appletMonolithic.txt" index="true" >
 	      <fileset dir="${applet.classes.dir}" >
 	        <include name="**/*" />
+	        <exclude name="org/jmol/export/**/*" />
 	      </fileset>
 	      <fileset dir="${appletjars.dir}" includes="**/*"/>
-	    </jar>
-	
+	    </jar>	
 	    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Main.jar" manifest="manifest/appletMain.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/api/**" />
@@ -634,6 +634,7 @@ support for assertions (which were introduced in 1.4).
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Main.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Core.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Jars.jar" />
+      	<!-- no export here - this is the unsigned applet -->
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Minimize.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Popup.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Quantum.jar" />
@@ -656,11 +657,18 @@ support for assertions (which were introduced in 1.4).
   </target>
 
   <target name="signed-applet" id="signed-applet" depends="applet-jar">
-    <signjar jar="${jmol.applet.build.dir}/JmolApplet.jar"
+    <jar destfile="${jmol.applet.build.dir}/JmolAppletSigned.jar.temp"
+    	manifest="manifest/appletMonolithic.txt" index="true" >
+      <fileset dir="${applet.classes.dir}" >
+        <include name="**/*" />
+      </fileset>
+      <fileset dir="${appletjars.dir}" includes="**/*"/>
+    </jar>
+    <signjar jar="${jmol.applet.build.dir}/JmolAppletSigned.jar.temp"
              signedjar="${jmol.applet.build.dir}/JmolAppletSigned.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
-  	
+    <delete  file="${jmol.applet.build.dir}/JmolAppletSigned.jar.temp" />
     <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Main.jar"
              signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Main.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
@@ -671,6 +679,18 @@ support for assertions (which were introduced in 1.4).
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
+    <jar destfile="${jmol.applet.build.dir}/JmolAppletSigned0_Export.jar.temp" 
+    	manifest="manifest/applet.txt">
+      <fileset dir="${applet.classes.dir}">
+        <include name="org/jmol/export/**/*" />
+      </fileset>
+    </jar>
+    <signjar jar="${jmol.applet.build.dir}/JmolAppletSigned0_Export.jar.temp"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Export.jar"
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+    <delete file="${jmol.applet.build.dir}/JmolAppletSigned0_Export.jar.temp"/>
+  	
     <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Jars.jar"
              signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Jars.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
@@ -770,6 +790,7 @@ support for assertions (which were introduced in 1.4).
       <indexjars>
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Main.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Core.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Export.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Jars.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Minimize.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Popup.jar" />

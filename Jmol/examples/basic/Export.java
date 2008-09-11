@@ -204,10 +204,12 @@ class MyStatusListener implements JmolStatusListener {
     return null;
   }
 
-  public void createImage(String file, Object type_or_text_or_bytes, int quality) {
-  }
 
   public Hashtable getRegistryInfo() {
+    return null;
+  }
+
+  public String createImage(String file, String type, Object text_or_bytes, int quality) {
     return null;
   }
 }

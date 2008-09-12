@@ -190,7 +190,7 @@ public class ImageTyper extends JPanel implements JmolImageTyperInterface {
   }
 
   private boolean doOverWrite(File file) {
-    Object[] options = { GT._("YES"), GT._("NO") };
+    Object[] options = { GT._("Yes"), GT._("No") };
     int opt = JOptionPane.showOptionDialog(fileChooser, GT._("Do you want to overwrite file {0}?", file
         .getAbsolutePath()), GT._("Warning"), JOptionPane.DEFAULT_OPTION,
         JOptionPane.WARNING_MESSAGE, null, options, options[1]);

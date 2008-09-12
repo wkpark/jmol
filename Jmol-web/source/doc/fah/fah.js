@@ -304,8 +304,12 @@ function showProjectInfo(value) {
     document.fahForm.infoCode.value = "Gromacs SimT";
   } else if (code == "GT") {
     document.fahForm.infoCode.value = "Gromacs ST";
+  } else if (code == "ND") {
+    document.fahForm.infoCode.value = "NVIDIA-DEV";
   } else if (code == "Q") {
     document.fahForm.infoCode.value = "QMD";
+  } else if (code == "SP") {
+    document.fahForm.infoCode.value = "Sharpen";
   } else if (code == "T") {
     document.fahForm.infoCode.value = "Tinker";
   } else {

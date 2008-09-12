@@ -6373,6 +6373,12 @@
   <fah_proj number="4045" name="p4045_supervillin_StillGBSA_AM03" public="y"
     server="171.64.122.73" atoms="576" preferred="20" deadline="30"
     credit="1250" frames="100" code="G3" contact="densign"/>
+  <fah_proj number="4046" name="p4046_supervillin_StillGBSA_AM03" public="y"
+    server="171.64.122.73" atoms="576" preferred="20" deadline="30"
+    credit="250" frames="100" code="G3" contact="densign"/>
+  <fah_proj number="4047" name="p4047_supervillin_StillGBSA_AM03" public="y"
+    server="171.64.65.96" atoms="576" preferred="20" deadline="30"
+    credit="250" frames="100" code="G3" contact="densign"/>
 
   <!-- Projects 4100 to 4199 -->
   <fah_proj number="4100" name="p4100_villinwt_folded_Amber03_Native" public="y" file="y"
@@ -7025,8 +7031,8 @@
 
   <!-- Projects 4800 to 4899 -->
   <fah_proj number="4800" name="p4800_" public="y"
-    server="131.215.231.92" preferred="46" deadline="68"
-    credit="0.1" frames="400" code="T" contact="csnow"/>
+    server="131.215.231.92" atoms="1000" preferred="46" deadline="68"
+    credit="0.1" frames="400" code="SP" contact="csnow"/>
 
   <!-- Projects 4900 to 4999 -->
   <fah_proj number="4900" name="p4900_nudix_full" public="y"
@@ -7194,6 +7200,12 @@
   <fah_proj number="5224" name="p5224_p5205_supervillin_e1" public="n"
     server="171.64.122.74" atoms="576" preferred="2" deadline="3"
     credit="779" frames="100" code="GG2" contact="densign"/>
+  <fah_proj number="5227" name="p5227_DEV_ONLY_supervillin_e1" public="n"
+    server="171.64.122.74" atoms="576" preferred="2" deadline="3"
+    credit="480" frames="100" code="ND" contact="densign"/>
+  <fah_proj number="5228" name="p5228_DEV_ONLY_supervillin_e1" public="n"
+    server="171.64.122.74" atoms="576" preferred="2" deadline="3"
+    credit="480" frames="100" code="ND" contact="densign"/>
   <fah_proj number="5229" name="p5229_supervillin_e1" public="y"
     server="171.64.122.74" atoms="576" preferred="2" deadline="3"
     credit="480" frames="100" code="GG2" contact="densign"/>

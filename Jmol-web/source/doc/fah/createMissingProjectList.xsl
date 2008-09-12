@@ -18,11 +18,15 @@
             </xsl:when>
             <xsl:otherwise>
               <xsl:choose>
+                <xsl:when test="@code = 'AD'">
+                </xsl:when>
                 <xsl:when test="@code = 'G3'">
                 </xsl:when>
                 <xsl:when test="@code = 'GG'">
                 </xsl:when>
                 <xsl:when test="@code = 'GG2'">
+                </xsl:when>
+                <xsl:when test="@code = 'ND'">
                 </xsl:when>
                 <xsl:otherwise>
                   <xsl:value-of select="@number" />

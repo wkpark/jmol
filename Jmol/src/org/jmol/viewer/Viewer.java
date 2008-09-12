@@ -3975,6 +3975,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           strError, ptLoad);
   }
 
+  void openFileWithDialog(String fileName) {
+    statusManager.setStatusFileLoaded("\t" + fileName, null, null, null, 0);
+  }
+  
   private void setStatusFileNotLoaded(String fullPathName, String errorMsg) {
     setStatusFileLoaded(-1, fullPathName, null, null, errorMsg);
   }

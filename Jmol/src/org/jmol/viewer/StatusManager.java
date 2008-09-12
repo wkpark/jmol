@@ -169,13 +169,16 @@ class StatusManager {
   }
   
   synchronized void setStatusFileLoaded(String fullPathName, String fileName,
-      String modelName, String errorMsg, int ptLoad) {
-    setStatusChanged("fileLoaded", ptLoad, fullPathName, false);
-    if (errorMsg != null)
-      setStatusChanged("fileLoadError", ptLoad, errorMsg, false);
-    if (jmolStatusListener != null && (ptLoad <=0 || ptLoad == 3))
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_LOADSTRUCT, 
-          new Object[] {"", fullPathName, fileName, modelName, errorMsg} );
+                                        String modelName, String errorMsg,
+                                        int ptLoad) {
+    if (fullPathName == null || !fullPathName.startsWith("\t")) {
+      setStatusChanged("fileLoaded", ptLoad, fullPathName, false);
+      if (errorMsg != null)
+        setStatusChanged("fileLoadError", ptLoad, errorMsg, false);
+    }
+    if (jmolStatusListener != null && (ptLoad <= 0 || ptLoad == 3))
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_LOADSTRUCT,
+          new Object[] { "", fullPathName, fileName, modelName, errorMsg });
   }
 
   synchronized void setStatusFrameChanged(int frameNo, int fileNo, int modelNo, int firstNo, int lastNo) {

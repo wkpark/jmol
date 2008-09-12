@@ -31,6 +31,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 
 import org.jmol.util.Logger;
+import org.jmol.viewer.FileManager;
 
 class Jvm12 {
 
@@ -95,22 +96,40 @@ class Jvm12 {
     return console.getText();
   }
 
-  private JFileChooser exportChooser;
-  final private static String[] imageChoices = { "JPEG", "PNG", "GIF", "PPM", "SPT" };
-  final private static String[] imageExtensions = { "jpg", "png", "gif", "PPM", "spt" };
+  private JFileChooser exportChooser, openChooser;
+  final private static String[] imageChoices = { "JPEG", "PNG", "GIF", "PPM" };
+  final private static String[] imageExtensions = { "jpg", "png", "gif", "PPM" };
+  
+  void openFileWithDialog(String fileName) {
+    if (openChooser == null) {
+      openChooser = new JFileChooser();
+    }
+    if (fileName != null && fileName.length() > 0)
+      openChooser.setSelectedFile(new File(fileName));
+    if (fileName != null && fileName.indexOf(":") < 0)
+      openChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
+    if (openChooser.showOpenDialog(awtComponent) != JFileChooser.APPROVE_OPTION)
+      return;
+    File file = openChooser.getSelectedFile();
+    if (file == null)
+      return;
+    viewer.setStringProperty("currentLocalPath", file.getParent());
+    viewer.openFile("file:///" + file.getAbsolutePath().replace('\\','/'));
+  }
+
   
   String createImage(String fileName, String type, Object text_or_bytes, int quality) {
     File file = null;
-    String pathName;
     if (exportChooser == null)
       exportChooser = new JFileChooser();
+    exportChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
     JmolImageTyperInterface it = (JmolImageTyperInterface) Interface
         .getOptionInterface("export.image.ImageTyper");
     if (fileName == null) {
       fileName = viewer.getModelSetFileName();
-      pathName = viewer.getModelSetPathName();
+      String pathName = exportChooser.getCurrentDirectory().getPath();
       it.createPanel(exportChooser, imageChoices, imageExtensions, type);
-      if ((fileName != null) && (pathName != null)) {
+      if (fileName != null && pathName != null) {
         int extensionStart = fileName.lastIndexOf('.');
         if (extensionStart != -1) {
           fileName = fileName.substring(0, extensionStart) + "."
@@ -129,8 +148,9 @@ class Jvm12 {
       file = new File(fileName);
     }
 
-    if ((file = it.setSelectedFile(awtComponent, file)) == null)
+    if ((file = it.showDialog(awtComponent, file)) == null)
       return null;
+    viewer.setStringProperty("currentLocalPath",file.getParent());
     JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
         .getOptionInterface("export.image.ImageCreator");
     c.setViewer(viewer);

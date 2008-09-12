@@ -197,7 +197,7 @@ public class ImageTyper extends JPanel implements JmolImageTyperInterface {
     return (opt == 0);
   }
   
-  public File setSelectedFile(Component c, File file) {
+  public File showDialog(Component c, File file) {
     while (true) {
       if (fileChooser.showSaveDialog(c) != JFileChooser.APPROVE_OPTION)
         return null;

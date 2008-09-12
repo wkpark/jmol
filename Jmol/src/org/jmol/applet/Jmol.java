@@ -870,6 +870,13 @@ public class Jmol implements WrappedApplet {
       case JmolConstants.CALLBACK_LOADSTRUCT:
         String errorMsg = (String) data[4];
         //data[5] = (String) null; // don't pass reference to clientFile reference
+        if (strInfo != null && strInfo.startsWith("\t")) {
+          if (jvm12 != null && isSigned)
+            jvm12.openFileWithDialog(strInfo.substring(1));
+          else
+            showStatusAndConsole(GT._("This applet cannot open file dialogs."), true);
+          return;
+        }
         if (errorMsg != null) {
           showStatusAndConsole((errorMsg.indexOf("NOTE:") >= 0 ? "" : GT
               ._("File Error:"))
@@ -1060,8 +1067,7 @@ public class Jmol implements WrappedApplet {
           return GT._("File creation failed.");
         }
       } else if (quality != Integer.MAX_VALUE) {
-        return GT
-            ._(
+        return GT._(
                 "File creation by this applet is not allowed. For Base64 JPEG format, use {0}.",
                 "jmolGetPropertyAsString('image')");
       }

@@ -31,6 +31,7 @@ import org.jmol.util.Logger;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolFileReaderInterface;
+import org.jmol.api.JmolViewer;
 
 import java.net.URL;
 import java.net.URLConnection;
@@ -497,8 +498,17 @@ java.lang.NullPointerException
     this.appletProxy = (appletProxy ==  null || appletProxy.length() == 0 ? null : appletProxy);
   }
 
+  private final static int URL_LOCAL = 3;
   private final static String[] urlPrefixes = {"http:", "https:", "ftp:", "file:"};
-
+  private static int urlTypeIndex(String name) {
+    for (int i = 0; i < urlPrefixes.length; ++i) {
+      if (name.startsWith(urlPrefixes[i])) {
+        return i;
+      }
+    }
+    return -1;
+  }
+  
   private void setNames(String[] names) {
     fullPathName = names[0];
     fileName = names[1];
@@ -507,9 +517,12 @@ java.lang.NullPointerException
   private String[] classifyName(String name) {
     if (name == null)
       return null;
-    String[] names = new String[2];
+    File file = null;
+    URL url = null;
+    String[] names = null;
     if (name.indexOf("=") == 0)
-      name = TextFormat.formatString(viewer.getLoadFormat(), "FILE", name.substring(1));
+      name = TextFormat.formatString(viewer.getLoadFormat(), "FILE", name
+          .substring(1));
     String defaultDirectory = viewer.getDefaultDirectory();
     if (name.indexOf(":") < 0)
       name = addDirectory(defaultDirectory, name);
@@ -518,46 +531,44 @@ java.lang.NullPointerException
       try {
         if (name.indexOf(":\\") == 1 || name.indexOf(":/") == 1)
           name = "file:///" + name;
-        //System.out.println("filemanager name " + name);
-        //System.out.println("filemanager adb " + appletDocumentBase);
-        URL url = new URL(appletDocumentBase, name);
-        names[0] = url.toString();
-        // we add one to lastIndexOf(), so don't worry about -1 return value
-        names[1] = names[0].substring(names[0].lastIndexOf('/') + 1,
-                names[0].length());
-        //System.out.println("filemanager 0 " + names[0]);
-        //System.out.println("filemanager 1 " + names[1]);
+        url = new URL(appletDocumentBase, name);
       } catch (MalformedURLException e) {
         openErrorMessage = e.getMessage();
+        return null;
       }
-      return names;
-    }
-    // This code is for the app
-    int i = urlTypeIndex(name);
-    if (i >= 0) {
-      try {
-        URL url = new URL(name);
-        names[0] = url.toString();
-        names[1] = names[0].substring(names[0].lastIndexOf('/') + 1,
-            names[0].length());
-      } catch (MalformedURLException e) {
-        openErrorMessage = e.getMessage();
+    } else {
+      // This code is for the app
+      if (urlTypeIndex(name) >= 0) {
+        try {
+          url = new URL(name);
+        } catch (MalformedURLException e) {
+          openErrorMessage = e.getMessage();
+          return null;
+        }
+      } else {
+        file = new File(name);
+        names = new String[]{file.getAbsolutePath(), file.getName()};
       }
-      return names;
     }
-    File file = new File(name);
-    names[0] = file.getAbsolutePath();
-    names[1] = file.getName();
+    if (url != null) {
+      names = new String[2];
+      names[0] = url.toString();
+      names[1] = names[0].substring(names[0].lastIndexOf('/') + 1);
+    }
+    if (file != null || urlTypeIndex(names[0]) == URL_LOCAL) {
+      String path = (file == null ? TextFormat.trim(names[0].substring(5), "/") : names[0]);
+      path = path.substring(0, path.length() - names[1].length() - 1);
+      viewer.setStringProperty("currentLocalPath", path);
+    }
     return names;
   }
 
-  private static int urlTypeIndex(String name) {
-    for (int i = 0; i < urlPrefixes.length; ++i) {
-      if (name.startsWith(urlPrefixes[i])) {
-        return i;
-      }
-    }
-    return -1;
+  public static File getLocalDirectory(JmolViewer viewer) {
+    String localDir = (String) viewer.getParameter("currentLocalPath");
+    if (localDir.length() == 0)
+      return null;
+    File f = new File(localDir);
+    return f.isDirectory() ? f : f.getParentFile();
   }
   
   private String addDirectory(String defaultDirectory, String name) {

@@ -4254,14 +4254,18 @@ class Eval {
     int i = 1;
     // ignore optional file format
     //    String filename = "";
-    String modelName = "fileset";
+    String modelName = null;
     if (statementLength == 1) {
       i = 0;
     } else {
-      if (tokAt(1) == Token.identifier
-          || parameterAsString(1).equals("fileset")) {
+      modelName = parameterAsString(1);
+      if (modelName.startsWith("?")) {
+        if (!isSyntaxCheck)
+          viewer.openFileWithDialog(modelName.substring(1));
+        return;
+      }
+      if (tokAt(1) == Token.identifier || modelName.equals("fileset")) {
         // 
-        modelName = parameterAsString(1);
         if (modelName.equals("menu")) {
           checkLength(3);
           if (!isSyntaxCheck)
@@ -4273,6 +4277,8 @@ class Eval {
         isAppend = (modelName.equalsIgnoreCase("append"));
         if (modelName.equalsIgnoreCase("trajectory"))
           params[0] = Integer.MIN_VALUE;
+      } else {
+        modelName = "fileset";
       }
       if (getToken(i).tok != Token.string)
         error(ERROR_filenameExpected);
@@ -4293,8 +4299,8 @@ class Eval {
         loadScript.append(" ");
         if (!filename.equals("string") && !filename.equals("string[]"))
           loadScript.append("/*file*/");
-        loadScript.append(
-            Escape.escape(modelName = (String) htParams.get("fullPathName")));
+        loadScript.append(Escape.escape(modelName = (String) htParams
+            .get("fullPathName")));
       }
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.point3f || theTok == Token.integer
@@ -4399,16 +4405,14 @@ class Eval {
         htParams.put("filter", filter);
         sOptions += " FILTER " + Escape.escape(filter);
       }
-      
-      
-      
+
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck) {
         viewer.openFile(filename, htParams, null, isAppend);
         loadScript.append(" ");
         if (!filename.equals("string") && !filename.equals("string[]"))
           loadScript.append("/*file*/");
-        loadScript.append(
-            Escape.escape(modelName = (String) htParams.get("fullPathName")));
+        loadScript.append(Escape.escape(modelName = (String) htParams
+            .get("fullPathName")));
         loadScript.append(sOptions);
       }
     } else {
@@ -4442,7 +4446,7 @@ class Eval {
         script(Token.script);
         return;
       }
-      evalError(errMsg);      
+      evalError(errMsg);
     }
 
     if (isAppend && (appendNew || nFiles > 1)) {

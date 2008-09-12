@@ -32,6 +32,6 @@ public interface JmolImageTyperInterface {
    */
   public abstract int getQuality(String sType);
 
-  public abstract File setSelectedFile(Component awtComponent, File file);
+  public abstract File showDialog(Component awtComponent, File file);
 
 }

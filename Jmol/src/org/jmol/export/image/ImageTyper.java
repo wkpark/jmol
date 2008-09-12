@@ -26,6 +26,7 @@ package org.jmol.export.image;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JSlider;
 import javax.swing.JPanel;
 import javax.swing.JComboBox;
@@ -35,6 +36,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.io.File;
 
@@ -55,30 +57,19 @@ public class ImageTyper extends JPanel implements JmolImageTyperInterface {
   public ImageTyper() {
   }
   
-  /**
-   * A simple panel with a combo box for allowing the user to choose
-   * the input file type.
-   *
-   * @param fc the file chooser
-   * @param defaultChoice
-   * @param extensions 
-   * @param choices 
-   */
-  public ImageTyper(JFileChooser fc, String[] choices, String[] extensions, int defaultChoice) {
-    createPanel(fc, choices, extensions, defaultChoice);
-  }
-
   /* (non-Javadoc)
    * @see org.jmol.export.JmolImageTyperInterface#createPanel(javax.swing.JFileChooser, java.lang.String[], java.lang.String[], int)
    */
-  public void createPanel(JFileChooser fc, String[] choices, String[] extensions, int defaultChoice) {
+  public void createPanel(JFileChooser fc, String[] choices, String[] extensions, String type) {
     fileChooser = fc;
     fc.setAccessory(this);
     setLayout(new BorderLayout());
     choice = null;
+    for (defaultChoice = choices.length; --defaultChoice >= 1; )
+      if (choices[defaultChoice].equals(type))
+        break;
     extension = extensions[defaultChoice];
     this.extensions = extensions;
-    this.defaultChoice = defaultChoice;
     JPanel cbPanel = new JPanel();
     cbPanel.setLayout(new FlowLayout());
     cbPanel.setBorder(new TitledBorder(GT._("Image Type")));
@@ -196,5 +187,26 @@ public class ImageTyper extends JPanel implements JmolImageTyperInterface {
    */
   public int getQuality(String sType) {
     return (sType.equals("JPEG") ? qSliderJPEG.getValue() : sType.equals("PNG") ? qSliderPNG.getValue() : -1);
+  }
+
+  private boolean doOverWrite(File file) {
+    Object[] options = { GT._("YES"), GT._("NO") };
+    int opt = JOptionPane.showOptionDialog(fileChooser, GT._("Do you want to overwrite file {0}?", file
+        .getAbsolutePath()), GT._("Warning"), JOptionPane.DEFAULT_OPTION,
+        JOptionPane.WARNING_MESSAGE, null, options, options[1]);
+    return (opt == 0);
+  }
+  
+  public File setSelectedFile(Component c, File file) {
+    while (true) {
+      if (fileChooser.showSaveDialog(c) != JFileChooser.APPROVE_OPTION)
+        return null;
+      memorizeDefaultType();
+      file = fileChooser.getSelectedFile();
+      if (file == null)
+        return null;
+      if (!file.exists() || doOverWrite(file))
+        return file;
+    }
   }
 }

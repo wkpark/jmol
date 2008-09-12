@@ -4089,6 +4089,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean notFound = false;
     while (true) {
 
+      ///11.6.RC15
+      if (key.equalsIgnoreCase("currentLocalPath"))
+        break;
       ///11.5.42
       // pickLabel
       if (key.equalsIgnoreCase("pickLabel")) {

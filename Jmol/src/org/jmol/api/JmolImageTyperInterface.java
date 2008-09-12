@@ -1,11 +1,14 @@
 package org.jmol.api;
 
+import java.awt.Component;
+import java.io.File;
+
 import javax.swing.JFileChooser;
 
 public interface JmolImageTyperInterface {
 
   public abstract void createPanel(JFileChooser fc, String[] choices,
-                                   String[] extensions, int defaultChoice);
+                                   String[] extensions, String defaultExt);
 
   /**
    * Memorize the default type for the next time.
@@ -28,5 +31,7 @@ public interface JmolImageTyperInterface {
    * image that is to be generated.  Returns -1 if choice was not JPEG.
    */
   public abstract int getQuality(String sType);
+
+  public abstract File setSelectedFile(Component awtComponent, File file);
 
 }

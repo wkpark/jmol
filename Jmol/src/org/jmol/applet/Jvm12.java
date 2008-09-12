@@ -96,8 +96,8 @@ class Jvm12 {
   }
 
   private JFileChooser exportChooser;
-  final private static String[] imageChoices = { "JPEG", "PNG", "GIF" };
-  final private static String[] imageExtensions = { "jpg", "png", "gif" };
+  final private static String[] imageChoices = { "JPEG", "PNG", "GIF", "PPM", "SPT" };
+  final private static String[] imageExtensions = { "jpg", "png", "gif", "PPM", "spt" };
   
   String createImage(String fileName, String type, Object text_or_bytes, int quality) {
     File file = null;
@@ -109,7 +109,7 @@ class Jvm12 {
     if (fileName == null) {
       fileName = viewer.getModelSetFileName();
       pathName = viewer.getModelSetPathName();
-      it.createPanel(exportChooser, imageChoices, imageExtensions, 0);
+      it.createPanel(exportChooser, imageChoices, imageExtensions, type);
       if ((fileName != null) && (pathName != null)) {
         int extensionStart = fileName.lastIndexOf('.');
         if (extensionStart != -1) {
@@ -119,21 +119,17 @@ class Jvm12 {
         file = new File(pathName, fileName);
       }
     } else {
-      int n;
-      for (n = 0; n < imageExtensions.length; n++)
-        if (fileName.indexOf(imageExtensions[n]) >= 0)
+      String sType = fileName.substring(fileName.lastIndexOf(".") + 1);
+      for (int i = 0; i < imageExtensions.length; i++)
+        if (sType.equals(imageChoices[i]) || sType.toLowerCase().equals(imageExtensions[i])) {
+          sType = imageChoices[i];
           break;
-      it.createPanel(exportChooser, imageChoices, imageExtensions, n
-          % imageExtensions.length);
+        }      
+      it.createPanel(exportChooser, imageChoices, imageExtensions, sType);
       file = new File(fileName);
     }
 
-    exportChooser.setSelectedFile(file);
-    if (exportChooser.showSaveDialog(awtComponent) != 0)
-      return null;
-    it.memorizeDefaultType();
-    file = exportChooser.getSelectedFile();
-    if (file == null)
+    if ((file = it.setSelectedFile(awtComponent, file)) == null)
       return null;
     JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
         .getOptionInterface("export.image.ImageCreator");

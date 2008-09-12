@@ -1512,8 +1512,8 @@ public class Jmol extends JPanel {
     }
   }
 
-  final static String[] imageChoices = { "JPEG", "PNG", "GIF", "PPM", "PDF" };
-  final static String[] imageExtensions = { "jpg", "png", "gif", "ppm", "pdf" };
+  final static String[] imageChoices = { "JPEG", "PNG", "GIF", "PPM", "PDF", "SPT" };
+  final static String[] imageExtensions = { "jpg", "png", "gif", "ppm", "pdf", "SPT" };
 
   class ExportAction extends AbstractAction {
 
@@ -1524,7 +1524,7 @@ public class Jmol extends JPanel {
     public void actionPerformed(ActionEvent e) {
 
       ImageTyper it = new ImageTyper();
-      it.createPanel(exportChooser, imageChoices, imageExtensions, 0);
+      it.createPanel(exportChooser, imageChoices, imageExtensions, "JPEG");
       String fileName = viewer.getModelSetFileName();
       String pathName = viewer.getModelSetPathName();
       File file = null;
@@ -1535,59 +1535,54 @@ public class Jmol extends JPanel {
               + it.getExtension();
         }
         file = new File(pathName, fileName);
-        exportChooser.setSelectedFile(file);
       }
-
-      int retval = exportChooser.showSaveDialog(Jmol.this);
-      if (retval == 0) {
-        it.memorizeDefaultType();
-        file = exportChooser.getSelectedFile();
-        if (file != null) {
-          String sType = it.getType();
-          if (sType == null) {
-            sType = file.getName().toUpperCase();
-            int i = sType.lastIndexOf(".");
-            if (i < 0)
-              sType = "JPG";
-            else
-              sType = sType.substring(i + 1);
-          }
-          int iQuality = it.getQuality(sType);
-          // PDF is application-only
-          if (sType.equals("PDF")) {
-            Document document = new Document();
-            try {
-              PdfWriter writer = PdfWriter.getInstance(document,
-                  new FileOutputStream(file));
-
-              document.open();
-
-              int w = display.getWidth();
-              int h = display.getHeight();
-              PdfContentByte cb = writer.getDirectContent();
-              PdfTemplate tp = cb.createTemplate(w, h);
-              Graphics2D g2 = tp.createGraphics(w, h);
-              g2.setStroke(new BasicStroke(0.1f));
-              tp.setWidth(w);
-              tp.setHeight(h);
-
-              display.print(g2);
-              g2.dispose();
-              cb.addTemplate(tp, 72, 720 - h);
-            } catch (DocumentException de) {
-              System.err.println(de.getMessage());
-            } catch (IOException ioe) {
-              System.err.println(ioe.getMessage());
-            }
-            document.close();
-            return;
-          }
-          createImageStatus(file.getAbsolutePath(), sType, null, iQuality);
-        }
+      if ((file = it.setSelectedFile(Jmol.this, file)) == null)
+        return;
+      file = exportChooser.getSelectedFile();
+      String sType = it.getType();
+      if (sType == null) {
+        // file type changer was not touched
+        sType = file.getName();
+        int i = sType.lastIndexOf(".");
+        if (i < 0)
+          return; // make no assumptions - require a type by extension
+        sType = sType.substring(i + 1).toUpperCase();
       }
+      int iQuality = it.getQuality(sType);
+      if (sType.equals("PDF"))
+        createPdfDocument(file);
+      else
+        createImageStatus(file.getAbsolutePath(), sType, null, iQuality);
     }
+ 
+    private void createPdfDocument(File file) {
+      // PDF is application-only
+      Document document = new Document();
+      try {
+        PdfWriter writer = PdfWriter.getInstance(document,
+            new FileOutputStream(file));
+        document.open();
+        int w = display.getWidth();
+        int h = display.getHeight();
+        PdfContentByte cb = writer.getDirectContent();
+        PdfTemplate tp = cb.createTemplate(w, h);
+        Graphics2D g2 = tp.createGraphics(w, h);
+        g2.setStroke(new BasicStroke(0.1f));
+        tp.setWidth(w);
+        tp.setHeight(h);
+        display.print(g2);
+        g2.dispose();
+        cb.addTemplate(tp, 72, 720 - h);
+      } catch (DocumentException de) {
+        System.err.println(de.getMessage());
+      } catch (IOException ioe) {
+        System.err.println(ioe.getMessage());
+      }
+      document.close();
+    }
+    
   }
-
+  
   class RecentFilesAction extends AbstractAction {
 
     public RecentFilesAction() {
@@ -1714,10 +1709,8 @@ public class Jmol extends JPanel {
    * @return  a File to the user directory
    */
   public static File getUserDirectory() {
-    if (System.getProperty("user.dir") == null) {
-      return null;
-    }
-    return new File(System.getProperty("user.dir"));
+    String dir = System.getProperty("user.dir");
+    return dir == null ? null : new File(System.getProperty("user.dir"));
   }
 
   public static final String chemFileProperty = "chemFile";

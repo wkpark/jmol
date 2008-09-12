@@ -761,7 +761,7 @@ public class StateManager {
         + ";unitcellcolor;windowcentered;zerobasedxyzrasmol;zoomenabled;"
         +
         //    saved in the hash table but not considered part of the state:
-        ";scriptqueue;scriptreportinglevel;syncscript;syncmouse"
+        ";scriptqueue;scriptreportinglevel;syncscript;syncmouse;currentlocalpath"
         +
         //    more settable Jmol variables    
         ";ambient;bonds;colorrasmol;diffuse;frank;hetero;hidenotselected"
@@ -1119,6 +1119,7 @@ public class StateManager {
       setParameterValue("cartoonRockets", cartoonRockets);
       setParameterValue("chainCaseSensitive", chainCaseSensitive);
       setParameterValue("colorRasmol", false);
+      setParameterValue("currentLocalPath", "");
       setParameterValue("dataSeparator", dataSeparator);
       setParameterValue("debugScript", debugScript);
       setParameterValue("defaultLattice", "{0 0 0}");

@@ -707,6 +707,8 @@ public class ProjectInformation {
           info._fciCore = CoreType.GROMACS_ST;
         } else if ("GROSIMT".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.GROMACS_SIMT;
+        } else if ("NVIDIA-DEV".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.NVIDIA_DEV;
         } else if ("QMD".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.QMD;
         } else if ("TINKER".equalsIgnoreCase(core)) {

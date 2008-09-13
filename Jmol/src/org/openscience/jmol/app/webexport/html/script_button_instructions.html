@@ -1,34 +1,27 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-  <meta content="text/html; charset=iso-8859-1"
- http-equiv="content-type">
-  <title>ScriptButton Instructions</title>
-  <meta content="J. Gutow" name="author">
-  <meta
- content="Instructions for the script button tab in Jmol_Web_Page_Maker"
- name="description">
-</head>
+<html><head>
+  <meta content="text/html; charset=iso-8859-1" http-equiv="content-type">
+  
+  <title>ScriptButton Instructions</title><meta content="J. Gutow" name="author">
+  <meta content="Instructions for the script button tab in Jmol_Web_Page_Maker" name="description"></head>
+
 <body>
 <hr>
-      <table style="text-align: left; width: 100%;" border="0"
- cellpadding="2" cellspacing="2">
+      <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
         <tbody>
           <tr valign="top">
             <td><small>Page Templates</small></td>
             <td><small>Set Up</small></td>
           </tr>
           <tr valign="top">
-            <td><small>&gt; <a
- href="pop_in_instructions.html">Pop-In</a><br>
+            <td><small>&gt; <a href="pop_in_instructions.html">Pop-In</a><br>
             <br>
 &gt; Scriptbutton<br>
 &gt;&gt;<a href="#Description">Description</a><br>
 &gt;&gt;<a href="#Page_Cartoon">Page Cartoon</a><br>
 &gt;&gt;<a href="#Instructions">Step-by-step</a><br>
             </small></td>
-            <td><small>&gt; <a
- href="Path_to_Applet.html">Path to Jmol</a><br>
+            <td><small>&gt; <a href="Path_to_Applet.html">Path to Jmol</a><br>
 &gt; <a href="Installing_Applet.html">Jmol on your server</a><br>
 &gt; <a href="Testing_Pages_Locally.html">Testing locally (no server)</a><br>
             </small></td>
@@ -41,7 +34,7 @@ ScriptButton Template
       </p>
       <p><a name="Description"></a>This tab is
 designed to produce
-a web page that displays a single resizable Jmol applet alongside a
+a web page that displays a single Jmol applet alongside a
 scrolling pane
 containing Jmol script buttons. The buttons change what is
 displayed in the Jmol applet. What the buttons do is defined by setting
@@ -51,9 +44,7 @@ with the view you want the user to see. You can add explanatory text
 using a standard web editor.&nbsp; This panel can be opened once
 and
 returned to anytime. An example picture of such a page is shown below:<br>
-      <img style="border: 1px solid ; width: 250px; height: 199px;"
- alt="picture of a Resizable web page" src="script_button.png"><a
- name="Page_Cartoon"></a></p>
+      <img style="border: 1px solid ; width: 250px; height: 199px;" alt="picture of a Resizable web page" src="script_button.png"><a name="Page_Cartoon"></a></p>
       <p><a name="Instructions"></a><b><i>Instructions</i></b> </p>
       <p>1) Set the relative path to the Jmol applet on your web site from where
 you
@@ -70,9 +61,15 @@ does not have to be the same as the title you will use for the page.</p>
       <p>4) Set the percentage of the window width that you want Jmol
 to
 occupy.</p>
-      <p>5) If not already done, open the first file you want to appear in your
-page
-using the File..Open.. menu in the Jmol viewer.</p>
+      <p>5)&nbsp;If not already done, open the first file you want to appear
+in your
+page using the File..Open.. menu in the Jmol viewer. If you will be
+using
+more than one model, open the models one at a time (occasionally you
+might need to use "load
+append" or the "append models" checkbox to allow displaying more than
+one model simultaneously), and follow steps (6) &amp; (7) for each
+individual view.</p>
       <p>6) Set the state of the model (zoom, rotate, select, change colors, add
 orbitals, set the molecule spinning, etc.)exactly the way you want it
 to
@@ -92,7 +89,7 @@ new directory for this page or the name of the HTML file (.htm or
 want to create or replace. All necessary files will be created in the
 same
 directory. These include the HTML page itself, the JavaScript file
-JmolPopin.js, and three files for each model: a data file, a Jmol
+JmolPopin.js, and three files for each view: a data file, a Jmol
 script, and
 a PNG image. If a new directory is indicated, the HTML file will be
 created
@@ -107,5 +104,4 @@ the
 page without disrupting the JavaScript that controls the behavior of
 Jmol. </p>
 
-</body>
-</html>
+</body></html>

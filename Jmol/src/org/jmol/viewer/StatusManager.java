@@ -69,19 +69,27 @@ viewerRefreshed
 
 class StatusManager {
 
-  boolean allowStatusReporting = true;
+  private boolean allowStatusReporting = true;
   
   void setAllowStatusReporting(boolean TF){
      allowStatusReporting = TF;
   }
   
-  Viewer viewer;
-  JmolStatusListener jmolStatusListener;
-  String statusList = "";
-  Hashtable messageQueue = new Hashtable();
-  int statusPtr = 0;
-  static int MAXIMUM_QUEUE_LENGTH = 16;
-  StringBuffer outputBuffer;
+  private Viewer viewer;
+  private JmolStatusListener jmolStatusListener;
+  private String statusList = "";
+  String getStatusList() {
+    return statusList;
+  }
+  
+  private Hashtable messageQueue = new Hashtable();
+  Hashtable getMessageQueue() {
+    return messageQueue;
+  }
+  
+  private int statusPtr = 0;
+  private static int MAXIMUM_QUEUE_LENGTH = 16;
+  private StringBuffer outputBuffer;
   
   StatusManager(Viewer viewer) {
     this.viewer = viewer;
@@ -91,7 +99,7 @@ class StatusManager {
     setStatusFileLoaded(null, null, null, null, 0);
   }
   
-  synchronized boolean resetMessageQueue(String statusList) {
+  private synchronized boolean resetMessageQueue(String statusList) {
     boolean isRemove = (statusList.length() > 0 && statusList.charAt(0) == '-');
     boolean isAdd = (statusList.length() > 0 && statusList.charAt(0) == '+');
     String oldList = this.statusList;
@@ -121,11 +129,11 @@ class StatusManager {
     this.jmolStatusListener = jmolStatusListener;
   }
   
-  synchronized boolean setStatusList(String statusList) {
+  private synchronized boolean setStatusList(String statusList) {
     return resetMessageQueue(statusList);
   }
 
-  Hashtable htCallbacks = new Hashtable();
+  private Hashtable htCallbacks = new Hashtable();
   synchronized void setCallbackFunction(String callbackType,
                                         String callbackFunction) {
     if (callbackFunction == null)
@@ -143,9 +151,10 @@ class StatusManager {
     return (String) htCallbacks.get(callbackType);
   }
   
-  boolean notifyEnabled(int type) {
+  private boolean notifyEnabled(int type) {
     return jmolStatusListener != null && jmolStatusListener.notifyEnabled(type);
   }
+  
   synchronized void setStatusAtomPicked(int atomIndex, String strInfo) {
     if (atomIndex == -1)
       return;
@@ -171,11 +180,9 @@ class StatusManager {
   synchronized void setStatusFileLoaded(String fullPathName, String fileName,
                                         String modelName, String errorMsg,
                                         int ptLoad) {
-    if (fullPathName == null || !fullPathName.startsWith("\t")) {
-      setStatusChanged("fileLoaded", ptLoad, fullPathName, false);
-      if (errorMsg != null)
-        setStatusChanged("fileLoadError", ptLoad, errorMsg, false);
-    }
+    setStatusChanged("fileLoaded", ptLoad, fullPathName, false);
+    if (errorMsg != null)
+      setStatusChanged("fileLoadError", ptLoad, errorMsg, false);
     if (jmolStatusListener != null && (ptLoad <= 0 || ptLoad == 3))
       jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_LOADSTRUCT,
           new Object[] { "", fullPathName, fileName, modelName, errorMsg });
@@ -263,7 +270,7 @@ class StatusManager {
     }
   }
   
-  int minSyncRepeatMs = 100;
+  private int minSyncRepeatMs = 100;
   boolean syncingScripts = false;
   boolean syncingMouse = false;
   boolean doSync() {
@@ -425,6 +432,15 @@ class StatusManager {
   String createImage(String file, String type, Object text_or_bytes, int quality) {
     if (jmolStatusListener == null)
       return "";
+    if (file != null && file.startsWith("?")) {
+      file = file.substring(1);
+      if (!viewer.isSignedApplet()) {
+        file = dialogAsk(quality == Integer.MIN_VALUE ? "save" : "saveImage",
+            file.substring(1));
+        if (file == null)
+          return null;
+      }
+    }
     return jmolStatusListener.createImage(file, type, text_or_bytes, quality);
   }
 
@@ -445,6 +461,12 @@ class StatusManager {
         
      */
     return (jmolStatusListener == null ? null : jmolStatusListener.getRegistryInfo());
+  }
+
+  public String dialogAsk(String type, String data) {
+    if (jmolStatusListener != null)
+      return jmolStatusListener.dialogAsk(type, data);
+    return "";
   }
 
 }

@@ -71,7 +71,8 @@ public class ImageCreator implements JmolImageCreatorInterface {
     return ImageSelection.getClipboardText();
   }
 
-  public String createImage(String fileName, String type, Object text_bytes, int quality) {
+  public String createImage(String fileName, String type, Object text_bytes,
+                            int quality) {
     boolean isBytes = (text_bytes instanceof byte[]);
     String text = (isBytes ? null : (String) text_bytes);
     boolean isText = (quality == Integer.MIN_VALUE);
@@ -93,6 +94,8 @@ public class ImageCreator implements JmolImageCreatorInterface {
       } else {
         Image eImage = viewer.getScreenImage();
         if (type.equalsIgnoreCase("JPEG") || type.equalsIgnoreCase("JPG")) {
+          if (quality <= 0)
+            quality = 75;
           (new JpegEncoder(eImage, quality, os)).Compress();
         } else if (type.equalsIgnoreCase("JPG64")) {
           ByteArrayOutputStream osb = new ByteArrayOutputStream();
@@ -102,7 +105,12 @@ public class ImageCreator implements JmolImageCreatorInterface {
           StringBuffer jpg = Base64.getBase64(osb.toByteArray());
           os.write(Base64.toBytes(jpg));
         } else if (type.equalsIgnoreCase("PNG")) {
-          byte[] pngbytes = (new PngEncoder(eImage, false, PngEncoder.FILTER_NONE, quality)).pngEncode();
+            if (quality < 0)
+              quality = 2;
+            else if (quality > 9)
+              quality = 9;
+          byte[] pngbytes = (new PngEncoder(eImage, false,
+              PngEncoder.FILTER_NONE, quality)).pngEncode();
           os.write(pngbytes);
         } else if (type.equalsIgnoreCase("PPM")) {
           (new PpmEncoder(eImage, os)).encode();
@@ -120,6 +128,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
         return exc.toString();
       }
     }
-    return "OK " + type + " " + (new File(fileName)).length() + " " + fileName;
+    return "OK " + type + " " + (new File(fileName)).length() + " " + fileName
+        + (quality == Integer.MIN_VALUE ? "" : "; quality=" + quality);
   }
 }

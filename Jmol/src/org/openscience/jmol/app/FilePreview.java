@@ -135,6 +135,7 @@ class JmolPanel extends JPanel {
   
   JmolPanel(JmolAdapter modelAdapter) {
     viewer = JmolViewer.allocateViewer(this, modelAdapter);
+    viewer.setAppletContext("", null, null, "");
   }
 
   public JmolViewer getViewer() {

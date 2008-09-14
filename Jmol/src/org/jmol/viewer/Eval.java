@@ -4255,15 +4255,11 @@ class Eval {
     // ignore optional file format
     //    String filename = "";
     String modelName = null;
+    String filename;
     if (statementLength == 1) {
       i = 0;
     } else {
       modelName = parameterAsString(1);
-      if (modelName.startsWith("?")) {
-        if (!isSyntaxCheck)
-          viewer.openFileWithDialog(modelName.substring(1));
-        return;
-      }
       if (tokAt(1) == Token.identifier || modelName.equals("fileset")) {
         // 
         if (modelName.equals("menu")) {
@@ -4283,7 +4279,6 @@ class Eval {
       if (getToken(i).tok != Token.string)
         error(ERROR_filenameExpected);
     }
-    String filename;
     // long timeBegin = System.currentTimeMillis();
     if (statementLength == i + 1) {
       if (i == 0 || (filename = parameterAsString(i)).length() == 0)
@@ -9086,17 +9081,10 @@ class Eval {
         evalError(GT._("No data available"));
       type= "JVXL";
     } else {
+      // image
       len = -1;
-      if (data == "PNG") {
-        if (quality == Integer.MIN_VALUE)
-          quality = 2;
-        else if (quality < 0 || quality > 9)
-          quality = 0;
-      } else if (data == "GIF") {
+      if (quality < 0)
         quality = -1;
-      } else if (quality <= 0) {
-        quality = 75; //JPG
-      }
     }
     if (data == null)
       data = "";
@@ -9120,10 +9108,10 @@ class Eval {
       if (bytes == null)
         bytes = data;
       String msg = viewer.createImage(fileName, type, bytes, quality, width, height);
-      scriptStatus(!msg.startsWith("OK") ? msg : msg
+      if (msg != null)
+        scriptStatus(!msg.startsWith("OK") ? msg : msg
 //          + (len >= 0 ? "; length=" + len : "")
-          + (isImage ? "; width=" + width + "; height=" + height : "")
-          + (quality >= 0 ? "; quality=" + quality : ""));
+          + (isImage ? "; width=" + width + "; height=" + height : ""));
     }
     return "";
   }

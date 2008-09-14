@@ -505,7 +505,7 @@ public class Jmol implements WrappedApplet {
     viewer.setScreenDimension(size);
     //Rectangle rectClip = jvm12orGreater ? jvm12.getClipBounds(g) : g.getClipRect();
     ++paintCounter;
-    if (REQUIRE_PROGRESSBAR && !hasProgressBar && paintCounter < 30
+    if (REQUIRE_PROGRESSBAR && !isSigned && !hasProgressBar && paintCounter < 30
         && (paintCounter & 1) == 0) {
       printProgressbarMessage(g);
       viewer.repaintView();
@@ -870,13 +870,6 @@ public class Jmol implements WrappedApplet {
       case JmolConstants.CALLBACK_LOADSTRUCT:
         String errorMsg = (String) data[4];
         //data[5] = (String) null; // don't pass reference to clientFile reference
-        if (strInfo != null && strInfo.startsWith("\t")) {
-          if (jvm12 != null && isSigned)
-            jvm12.openFileWithDialog(strInfo.substring(1));
-          else
-            showStatusAndConsole(GT._("This applet cannot open file dialogs."), true);
-          return;
-        }
         if (errorMsg != null) {
           showStatusAndConsole((errorMsg.indexOf("NOTE:") >= 0 ? "" : GT
               ._("File Error:"))
@@ -1228,6 +1221,12 @@ public class Jmol implements WrappedApplet {
     public Hashtable getRegistryInfo() {
       JmolAppletRegistry.checkIn(null, null); //cleans registry
       return JmolAppletRegistry.htRegistry;
+    }
+
+    public String dialogAsk(String type, String data) {
+      if (!isSigned || jvm12 == null)
+        return null;
+      return jvm12.dialogAsk(null, type, data);
     }
 
   }

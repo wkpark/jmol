@@ -44,7 +44,20 @@ import org.jmol.util.Logger;
  * http://www.iucr.org/iucr-top/cif/cifdic_html/1/cif_core.dic/Ispace_group_symop_operation_xyz.html
  * http://www.iucr.org/iucr-top/cif/cifdic_html/1/cif_core.dic/Isymmetry_equiv_pos_as_xyz.html
  *
- * data table is from Syd Hall, private email, 9/4/2006 
+ * Hall symbols:
+ * 
+ * http://cci.lbl.gov/sginfo/hall_symbols.html
+ * 
+ * and
+ * 
+ * http://cci.lbl.gov/cctbx/explore_symmetry.html
+ * 
+ * (-)L   [N_A^T_1]   [N_A^T_2]   ...  [N_A^T_P]   V(Nx Ny Nz)
+ * 
+ * lattice types S and T are not supported here
+ * 
+ * data table is from Syd Hall, private email, 9/4/2006, 
+ * amended using * ** to indicate nonstandard H-M symbols or full names  
  * 
  * NEVER ACCESS THESE METHODS DIRECTLY! ONLY THROUGH CLASS Symmetry
  * 
@@ -206,7 +219,7 @@ class SpaceGroup {
         return sb.toString();
       }
     }
-    return sg.dumpInfo();
+    return sg == null ? "?" : sg.dumpInfo();
   }
   
   String dumpInfo() {
@@ -684,18 +697,18 @@ class SpaceGroup {
   private final static SpaceGroup[] spaceGroupDefinitions = {
       new SpaceGroup("1 c1^1 p_1 p_1")
     , new SpaceGroup("2 ci^1 p_-1 -p_1")
-    , new SpaceGroup("3:b c2^1 p_1_2_1 p_2y")
+    , new SpaceGroup("3:b c2^1 p_1_2_1 p_2y") //full name
     , new SpaceGroup("3:b c2^1 p_2 p_2y")
     , new SpaceGroup("3:c c2^1 p_1_1_2 p_2")
     , new SpaceGroup("3:a c2^1 p_2_1_1 p_2x")
-    , new SpaceGroup("4:b c2^2 p_1_21_1 p_2yb")
-    , new SpaceGroup("4:b c2^2 p_1_21_1 p_2y1")
+    , new SpaceGroup("4:b c2^2 p_1_21_1 p_2yb") //full name
     , new SpaceGroup("4:b c2^2 p_21 p_2yb")
+    , new SpaceGroup("4:b* c2^2 p_1_21_1* p_2y1") //nonstandard
     , new SpaceGroup("4:c c2^2 p_1_1_21 p_2c")
-    , new SpaceGroup("4:c c2^2 p_1_1_21 p_21")
+    , new SpaceGroup("4:c* c2^2 p_1_1_21* p_21") //nonstandard
     , new SpaceGroup("4:a c2^2 p_21_1_1 p_2xa")
-    , new SpaceGroup("4:a c2^2 p_21_1_1 p_2x1")
-    , new SpaceGroup("5:b1 c2^3 c_1_2_1 c_2y")
+    , new SpaceGroup("4:a* c2^2 p_21_1_1* p_2x1") //nonstandard
+    , new SpaceGroup("5:b1 c2^3 c_1_2_1 c_2y") //full name
     , new SpaceGroup("5:b1 c2^3 c_2 c_2y")
     , new SpaceGroup("5:b2 c2^3 a_1_2_1 a_2y")
     , new SpaceGroup("5:b3 c2^3 i_1_2_1 i_2y")
@@ -705,15 +718,15 @@ class SpaceGroup {
     , new SpaceGroup("5:a1 c2^3 b_2_1_1 b_2x")
     , new SpaceGroup("5:a2 c2^3 c_2_1_1 c_2x")
     , new SpaceGroup("5:a3 c2^3 i_2_1_1 i_2x")
-    , new SpaceGroup("6:b cs^1 p_1_m_1 p_-2y")
+    , new SpaceGroup("6:b cs^1 p_1_m_1 p_-2y") //full name
     , new SpaceGroup("6:b cs^1 p_m p_-2y")
     , new SpaceGroup("6:c cs^1 p_1_1_m p_-2")
     , new SpaceGroup("6:a cs^1 p_m_1_1 p_-2x")
-    , new SpaceGroup("7:b1 cs^2 p_1_c_1 p_-2yc")
+    , new SpaceGroup("7:b1 cs^2 p_1_c_1 p_-2yc") //full name
     , new SpaceGroup("7:b1 cs^2 p_c p_-2yc")
-    , new SpaceGroup("7:b2 cs^2 p_1_n_1 p_-2yac")
+    , new SpaceGroup("7:b2 cs^2 p_1_n_1 p_-2yac") //full name
     , new SpaceGroup("7:b2 cs^2 p_n p_-2yac")
-    , new SpaceGroup("7:b3 cs^2 p_1_a_1 p_-2ya")
+    , new SpaceGroup("7:b3 cs^2 p_1_a_1 p_-2ya") //full name
     , new SpaceGroup("7:b3 cs^2 p_a p_-2ya")
     , new SpaceGroup("7:c1 cs^2 p_1_1_a p_-2a")
     , new SpaceGroup("7:c2 cs^2 p_1_1_n p_-2ab")
@@ -721,10 +734,10 @@ class SpaceGroup {
     , new SpaceGroup("7:a1 cs^2 p_b_1_1 p_-2xb")
     , new SpaceGroup("7:a2 cs^2 p_n_1_1 p_-2xbc")
     , new SpaceGroup("7:a3 cs^2 p_c_1_1 p_-2xc")
-    , new SpaceGroup("8:b1 cs^3 c_1_m_1 c_-2y")
+    , new SpaceGroup("8:b1 cs^3 c_1_m_1 c_-2y") //full name
     , new SpaceGroup("8:b1 cs^3 c_m c_-2y")
     , new SpaceGroup("8:b2 cs^3 a_1_m_1 a_-2y")
-    , new SpaceGroup("8:b3 cs^3 i_1_m_1 i_-2y")
+    , new SpaceGroup("8:b3 cs^3 i_1_m_1 i_-2y") //full name
     , new SpaceGroup("8:b3 cs^3 i_m i_-2y")
     , new SpaceGroup("8:c1 cs^3 a_1_1_m a_-2")
     , new SpaceGroup("8:c2 cs^3 b_1_1_m b_-2")
@@ -732,7 +745,7 @@ class SpaceGroup {
     , new SpaceGroup("8:a1 cs^3 b_m_1_1 b_-2x")
     , new SpaceGroup("8:a2 cs^3 c_m_1_1 c_-2x")
     , new SpaceGroup("8:a3 cs^3 i_m_1_1 i_-2x")
-    , new SpaceGroup("9:b1 cs^4 c_1_c_1 c_-2yc")
+    , new SpaceGroup("9:b1 cs^4 c_1_c_1 c_-2yc") //full name
     , new SpaceGroup("9:b1 cs^4 c_c c_-2yc")
     , new SpaceGroup("9:b2 cs^4 a_1_n_1 a_-2yab")
     , new SpaceGroup("9:b3 cs^4 i_1_a_1 i_-2ya")
@@ -751,21 +764,21 @@ class SpaceGroup {
     , new SpaceGroup("9:-a1 cs^4 c_c_1_1 c_-2xc")
     , new SpaceGroup("9:-a2 cs^4 b_n_1_1 b_-2xab")
     , new SpaceGroup("9:-a3 cs^4 i_b_1_1 i_-2xb")
-    , new SpaceGroup("10:b c2h^1 p_1_2/m_1 -p_2y")
+    , new SpaceGroup("10:b c2h^1 p_1_2/m_1 -p_2y") //full name
     , new SpaceGroup("10:b c2h^1 p_2/m -p_2y")
     , new SpaceGroup("10:c c2h^1 p_1_1_2/m -p_2")
     , new SpaceGroup("10:a c2h^1 p_2/m_1_1 -p_2x")
-    , new SpaceGroup("11:b c2h^2 p_1_21/m_1 -p_2yb")
-    , new SpaceGroup("11:b c2h^2 p_1_21/m_1 -p_2y1")
+    , new SpaceGroup("11:b c2h^2 p_1_21/m_1 -p_2yb") //full name
     , new SpaceGroup("11:b c2h^2 p_21/m -p_2yb")
+    , new SpaceGroup("11:b* c2h^2 p_1_21/m_1* -p_2y1") //nonstandard
     , new SpaceGroup("11:c c2h^2 p_1_1_21/m -p_2c")
-    , new SpaceGroup("11:c c2h^2 p_1_1_21/m -p_21")
+    , new SpaceGroup("11:c* c2h^2 p_1_1_21/m* -p_21") //nonstandard
     , new SpaceGroup("11:a c2h^2 p_21/m_1_1 -p_2xa")
-    , new SpaceGroup("11:a c2h^2 p_21/m_1_1 -p_2x1")
-    , new SpaceGroup("12:b1 c2h^3 c_1_2/m_1 -c_2y")
+    , new SpaceGroup("11:a* c2h^2 p_21/m_1_1* -p_2x1") //nonstandard
+    , new SpaceGroup("12:b1 c2h^3 c_1_2/m_1 -c_2y") //full name
     , new SpaceGroup("12:b1 c2h^3 c_2/m -c_2y")
     , new SpaceGroup("12:b2 c2h^3 a_1_2/m_1 -a_2y")
-    , new SpaceGroup("12:b3 c2h^3 i_1_2/m_1 -i_2y")
+    , new SpaceGroup("12:b3 c2h^3 i_1_2/m_1 -i_2y") //full name
     , new SpaceGroup("12:b3 c2h^3 i_2/m -i_2y")
     , new SpaceGroup("12:c1 c2h^3 a_1_1_2/m -a_2")
     , new SpaceGroup("12:c2 c2h^3 b_1_1_2/m -b_2")
@@ -773,11 +786,11 @@ class SpaceGroup {
     , new SpaceGroup("12:a1 c2h^3 b_2/m_1_1 -b_2x")
     , new SpaceGroup("12:a2 c2h^3 c_2/m_1_1 -c_2x")
     , new SpaceGroup("12:a3 c2h^3 i_2/m_1_1 -i_2x")
-    , new SpaceGroup("13:b1 c2h^4 p_1_2/c_1 -p_2yc")
+    , new SpaceGroup("13:b1 c2h^4 p_1_2/c_1 -p_2yc") //full name
     , new SpaceGroup("13:b1 c2h^4 p_2/c -p_2yc")
-    , new SpaceGroup("13:b2 c2h^4 p_1_2/n_1 -p_2yac")
+    , new SpaceGroup("13:b2 c2h^4 p_1_2/n_1 -p_2yac") //full name
     , new SpaceGroup("13:b2 c2h^4 p_2/n -p_2yac")
-    , new SpaceGroup("13:b3 c2h^4 p_1_2/a_1 -p_2ya")
+    , new SpaceGroup("13:b3 c2h^4 p_1_2/a_1 -p_2ya") //full name
     , new SpaceGroup("13:b3 c2h^4 p_2/a -p_2ya")
     , new SpaceGroup("13:c1 c2h^4 p_1_1_2/a -p_2a")
     , new SpaceGroup("13:c2 c2h^4 p_1_1_2/n -p_2ab")
@@ -785,11 +798,11 @@ class SpaceGroup {
     , new SpaceGroup("13:a1 c2h^4 p_2/b_1_1 -p_2xb")
     , new SpaceGroup("13:a2 c2h^4 p_2/n_1_1 -p_2xbc")
     , new SpaceGroup("13:a3 c2h^4 p_2/c_1_1 -p_2xc")
-    , new SpaceGroup("14:b1 c2h^5 p_1_21/c_1 -p_2ybc")
+    , new SpaceGroup("14:b1 c2h^5 p_1_21/c_1 -p_2ybc") //full name
     , new SpaceGroup("14:b1 c2h^5 p_21/c -p_2ybc")
-    , new SpaceGroup("14:b2 c2h^5 p_1_21/n_1 -p_2yn")
+    , new SpaceGroup("14:b2 c2h^5 p_1_21/n_1 -p_2yn") //full name
     , new SpaceGroup("14:b2 c2h^5 p_21/n -p_2yn")
-    , new SpaceGroup("14:b3 c2h^5 p_1_21/a_1 -p_2yab")
+    , new SpaceGroup("14:b3 c2h^5 p_1_21/a_1 -p_2yab") //full name
     , new SpaceGroup("14:b3 c2h^5 p_21/a -p_2yab")
     , new SpaceGroup("14:c1 c2h^5 p_1_1_21/a -p_2ac")
     , new SpaceGroup("14:c2 c2h^5 p_1_1_21/n -p_2n")
@@ -797,15 +810,15 @@ class SpaceGroup {
     , new SpaceGroup("14:a1 c2h^5 p_21/b_1_1 -p_2xab")
     , new SpaceGroup("14:a2 c2h^5 p_21/n_1_1 -p_2xn")
     , new SpaceGroup("14:a3 c2h^5 p_21/c_1_1 -p_2xac")
-    , new SpaceGroup("15:b1 c2h^6 c_1_2/c_1 -c_2yc")
+    , new SpaceGroup("15:b1 c2h^6 c_1_2/c_1 -c_2yc") //full name
     , new SpaceGroup("15:b1 c2h^6 c_2/c -c_2yc")
     , new SpaceGroup("15:b2 c2h^6 a_1_2/n_1 -a_2yab")
-    , new SpaceGroup("15:b3 c2h^6 i_1_2/a_1 -i_2ya")
+    , new SpaceGroup("15:b3 c2h^6 i_1_2/a_1 -i_2ya") //full name
     , new SpaceGroup("15:b3 c2h^6 i_2/a -i_2ya")
     , new SpaceGroup("15:-b1 c2h^6 a_1_2/a_1 -a_2ya")
-    , new SpaceGroup("15:-b2 c2h^6 c_1_2/n_1 -c_2yac")
+    , new SpaceGroup("15:-b2 c2h^6 c_1_2/n_1 -c_2yac") //full name
     , new SpaceGroup("15:-b2 c2h^6 c_2/n -c_2yac")
-    , new SpaceGroup("15:-b3 c2h^6 i_1_2/c_1 -i_2yc")
+    , new SpaceGroup("15:-b3 c2h^6 i_1_2/c_1 -i_2yc") //full name
     , new SpaceGroup("15:-b3 c2h^6 i_2/c -i_2yc")
     , new SpaceGroup("15:c1 c2h^6 a_1_1_2/a -a_2a")
     , new SpaceGroup("15:c2 c2h^6 b_1_1_2/n -b_2ab")
@@ -821,7 +834,7 @@ class SpaceGroup {
     , new SpaceGroup("15:-a3 c2h^6 i_2/b_1_1 -i_2xb")
     , new SpaceGroup("16 d2^1 p_2_2_2 p_2_2")
     , new SpaceGroup("17 d2^2 p_2_2_21 p_2c_2")
-    , new SpaceGroup("17 d2^2 p_2_2_21 p_21_2")
+    , new SpaceGroup("17* d2^2 p_2_2_21* p_21_2") //nonstandard
     , new SpaceGroup("17:cab d2^2 p_21_2_2 p_2a_2a")
     , new SpaceGroup("17:bca d2^2 p_2_21_2 p_2_2b")
     , new SpaceGroup("18 d2^3 p_21_21_2 p_2_2ab")
@@ -829,9 +842,9 @@ class SpaceGroup {
     , new SpaceGroup("18:bca d2^3 p_21_2_21 p_2ac_2ac")
     , new SpaceGroup("19 d2^4 p_21_21_21 p_2ac_2ab")
     , new SpaceGroup("20 d2^5 c_2_2_21 c_2c_2")
-    , new SpaceGroup("20 d2^5 c_2_2_21 c_21_2")
+    , new SpaceGroup("20* d2^5 c_2_2_21* c_21_2") //nonstandard
     , new SpaceGroup("20:cab d2^5 a_21_2_2 a_2a_2a")
-    , new SpaceGroup("20:cab d2^5 a_21_2_2 a_2a_21")
+    , new SpaceGroup("20:cab* d2^5 a_21_2_2* a_2a_21") //nonstandard
     , new SpaceGroup("20:bca d2^5 b_2_21_2 b_2_2b")
     , new SpaceGroup("21 d2^6 c_2_2_2 c_2_2")
     , new SpaceGroup("21:cab d2^6 a_2_2_2 a_2_2")
@@ -843,9 +856,9 @@ class SpaceGroup {
     , new SpaceGroup("25:cab c2v^1 p_2_m_m p_-2_2")
     , new SpaceGroup("25:bca c2v^1 p_m_2_m p_-2_-2")
     , new SpaceGroup("26 c2v^2 p_m_c_21 p_2c_-2")
-    , new SpaceGroup("26 c2v^2 p_m_c_21 p_21_-2")
+    , new SpaceGroup("26* c2v^2 p_m_c_21* p_21_-2") //nonstandard
     , new SpaceGroup("26:ba-c c2v^2 p_c_m_21 p_2c_-2c")
-    , new SpaceGroup("26:ba-c c2v^2 p_c_m_21 p_21_-2c")
+    , new SpaceGroup("26:ba-c* c2v^2 p_c_m_21* p_21_-2c") //nonstandard
     , new SpaceGroup("26:cab c2v^2 p_21_m_a p_-2a_2a")
     , new SpaceGroup("26:-cba c2v^2 p_21_a_m p_-2_2a")
     , new SpaceGroup("26:bca c2v^2 p_b_21_m p_-2_-2b")
@@ -854,11 +867,11 @@ class SpaceGroup {
     , new SpaceGroup("27:cab c2v^3 p_2_a_a p_-2a_2")
     , new SpaceGroup("27:bca c2v^3 p_b_2_b p_-2b_-2b")
     , new SpaceGroup("28 c2v^4 p_m_a_2 p_2_-2a")
-    , new SpaceGroup("28 c2v^4 p_m_a_2 p_2_-21")
+    , new SpaceGroup("28* c2v^4 p_m_a_2* p_2_-21") //nonstandard
     , new SpaceGroup("28:ba-c c2v^4 p_b_m_2 p_2_-2b")
     , new SpaceGroup("28:cab c2v^4 p_2_m_b p_-2b_2")
     , new SpaceGroup("28:-cba c2v^4 p_2_c_m p_-2c_2")
-    , new SpaceGroup("28:-cba c2v^4 p_2_c_m p_-21_2")
+    , new SpaceGroup("28:-cba* c2v^4 p_2_c_m* p_-21_2") //nonstandard
     , new SpaceGroup("28:bca c2v^4 p_c_2_m p_-2c_-2c")
     , new SpaceGroup("28:a-cb c2v^4 p_m_2_a p_-2a_-2a")
     , new SpaceGroup("29 c2v^5 p_c_a_21 p_2c_-2ac")
@@ -883,13 +896,13 @@ class SpaceGroup {
     , new SpaceGroup("32:cab c2v^8 p_2_c_b p_-2bc_2")
     , new SpaceGroup("32:bca c2v^8 p_c_2_a p_-2ac_-2ac")
     , new SpaceGroup("33 c2v^9 p_n_a_21 p_2c_-2n")
-    , new SpaceGroup("33 c2v^9 p_n_a_21 p_21_-2n")
+    , new SpaceGroup("33* c2v^9 p_n_a_21* p_21_-2n") //nonstandard
     , new SpaceGroup("33:ba-c c2v^9 p_b_n_21 p_2c_-2ab")
-    , new SpaceGroup("33:ba-c c2v^9 p_b_n_21 p_21_-2ab")
+    , new SpaceGroup("33:ba-c* c2v^9 p_b_n_21* p_21_-2ab") //nonstandard
     , new SpaceGroup("33:cab c2v^9 p_21_n_b p_-2bc_2a")
-    , new SpaceGroup("33:cab c2v^9 p_21_n_b p_-2bc_21")
+    , new SpaceGroup("33:cab* c2v^9 p_21_n_b* p_-2bc_21") //nonstandard
     , new SpaceGroup("33:-cba c2v^9 p_21_c_n p_-2n_2a")
-    , new SpaceGroup("33:-cba c2v^9 p_21_c_n p_-2n_21")
+    , new SpaceGroup("33:-cba* c2v^9 p_21_c_n* p_-2n_21") //nonstandard
     , new SpaceGroup("33:bca c2v^9 p_c_21_n p_-2n_-2ac")
     , new SpaceGroup("33:a-cb c2v^9 p_n_21_a p_-2ac_-2n")
     , new SpaceGroup("34 c2v^10 p_n_n_2 p_2_-2n")
@@ -899,13 +912,13 @@ class SpaceGroup {
     , new SpaceGroup("35:cab c2v^11 a_2_m_m a_-2_2")
     , new SpaceGroup("35:bca c2v^11 b_m_2_m b_-2_-2")
     , new SpaceGroup("36 c2v^12 c_m_c_21 c_2c_-2")
-    , new SpaceGroup("36 c2v^12 c_m_c_21 c_21_-2")
+    , new SpaceGroup("36* c2v^12 c_m_c_21* c_21_-2") //nonstandard
     , new SpaceGroup("36:ba-c c2v^12 c_c_m_21 c_2c_-2c")
-    , new SpaceGroup("36:ba-c c2v^12 c_c_m_21 c_21_-2c")
+    , new SpaceGroup("36:ba-c* c2v^12 c_c_m_21* c_21_-2c") //nonstandard
     , new SpaceGroup("36:cab c2v^12 a_21_m_a a_-2a_2a")
-    , new SpaceGroup("36:cab c2v^12 a_21_m_a a_-2a_21")
+    , new SpaceGroup("36:cab* c2v^12 a_21_m_a* a_-2a_21") //nonstandard
     , new SpaceGroup("36:-cba c2v^12 a_21_a_m a_-2_2a")
-    , new SpaceGroup("36:-cba c2v^12 a_21_a_m a_-2_21")
+    , new SpaceGroup("36:-cba* c2v^12 a_21_a_m* a_-2_21") //nonstandard
     , new SpaceGroup("36:bca c2v^12 b_b_21_m b_-2_-2b")
     , new SpaceGroup("36:a-cb c2v^12 b_m_21_b b_-2b_-2")
     , new SpaceGroup("37 c2v^13 c_c_c_2 c_2_-2c")
@@ -1077,18 +1090,18 @@ class SpaceGroup {
     , new SpaceGroup("74:a-cb d2h^28 i_m_a_m -i_2c_2")
     , new SpaceGroup("75 c4^1 p_4 p_4")
     , new SpaceGroup("76 c4^2 p_41 p_4w")
-    , new SpaceGroup("76 c4^2 p_41 p_41")
+    , new SpaceGroup("76* c4^2 p_41* p_41") //nonstandard
     , new SpaceGroup("77 c4^3 p_42 p_4c")
-    , new SpaceGroup("77 c4^3 p_42 p_42")
+    , new SpaceGroup("77* c4^3 p_42* p_42") //nonstandard
     , new SpaceGroup("78 c4^4 p_43 p_4cw")
-    , new SpaceGroup("78 c4^4 p_43 p_43")
+    , new SpaceGroup("78* c4^4 p_43* p_43") //nonstandard
     , new SpaceGroup("79 c4^5 i_4 i_4")
     , new SpaceGroup("80 c4^6 i_41 i_4bw")
     , new SpaceGroup("81 s4^1 p_-4 p_-4")
     , new SpaceGroup("82 s4^2 i_-4 i_-4")
     , new SpaceGroup("83 c4h^1 p_4/m -p_4")
     , new SpaceGroup("84 c4h^2 p_42/m -p_4c")
-    , new SpaceGroup("84 c4h^2 p_42/m -p_42")
+    , new SpaceGroup("84* c4h^2 p_42/m* -p_42") //nonstandard
     , new SpaceGroup("85:1 c4h^3 p_4/n:1 p_4ab_-1ab")
     , new SpaceGroup("85:2 c4h^3 p_4/n:2 -p_4a")
     , new SpaceGroup("86:1 c4h^4 p_42/n:1 p_4n_-1n")
@@ -1099,27 +1112,27 @@ class SpaceGroup {
     , new SpaceGroup("89 d4^1 p_4_2_2 p_4_2")
     , new SpaceGroup("90 d4^2 p_4_21_2 p_4ab_2ab")
     , new SpaceGroup("91 d4^3 p_41_2_2 p_4w_2c")
-    , new SpaceGroup("91 d4^3 p_41_2_2 p_41_2c")
+    , new SpaceGroup("91* d4^3 p_41_2_2* p_41_2c") //nonstandard
     , new SpaceGroup("92 d4^4 p_41_21_2 p_4abw_2nw")
     , new SpaceGroup("93 d4^5 p_42_2_2 p_4c_2")
-    , new SpaceGroup("93 d4^5 p_42_2_2 p_42_2")
+    , new SpaceGroup("93* d4^5 p_42_2_2* p_42_2") //nonstandard
     , new SpaceGroup("94 d4^6 p_42_21_2 p_4n_2n")
     , new SpaceGroup("95 d4^7 p_43_2_2 p_4cw_2c")
-    , new SpaceGroup("95 d4^7 p_43_2_2 p_43_2c")
+    , new SpaceGroup("95* d4^7 p_43_2_2* p_43_2c") //nonstandard
     , new SpaceGroup("96 d4^8 p_43_21_2 p_4nw_2abw")
     , new SpaceGroup("97 d4^9 i_4_2_2 i_4_2")
     , new SpaceGroup("98 d4^10 i_41_2_2 i_4bw_2bw")
     , new SpaceGroup("99 c4v^1 p_4_m_m p_4_-2")
     , new SpaceGroup("100 c4v^2 p_4_b_m p_4_-2ab")
     , new SpaceGroup("101 c4v^3 p_42_c_m p_4c_-2c")
-    , new SpaceGroup("101 c4v^3 p_42_c_m p_42_-2c")
+    , new SpaceGroup("101* c4v^3 p_42_c_m* p_42_-2c") //nonstandard
     , new SpaceGroup("102 c4v^4 p_42_n_m p_4n_-2n")
     , new SpaceGroup("103 c4v^5 p_4_c_c p_4_-2c")
     , new SpaceGroup("104 c4v^6 p_4_n_c p_4_-2n")
     , new SpaceGroup("105 c4v^7 p_42_m_c p_4c_-2")
-    , new SpaceGroup("105 c4v^7 p_42_m_c p_42_-2")
+    , new SpaceGroup("105* c4v^7 p_42_m_c* p_42_-2") //nonstandard
     , new SpaceGroup("106 c4v^8 p_42_b_c p_4c_-2ab")
-    , new SpaceGroup("106 c4v^8 p_42_b_c p_42_-2ab")
+    , new SpaceGroup("106* c4v^8 p_42_b_c* p_42_-2ab") //nonstandard
     , new SpaceGroup("107 c4v^9 i_4_m_m i_4_-2")
     , new SpaceGroup("108 c4v^10 i_4_c_m i_4_-2c")
     , new SpaceGroup("109 c4v^11 i_41_m_d i_4bw_-2")
@@ -1155,7 +1168,7 @@ class SpaceGroup {
     , new SpaceGroup("134:1 d4h^12 p_42/n_n_m:1 p_4n_2_-1n")
     , new SpaceGroup("134:2 d4h^12 p_42/n_n_m:2 -p_4ac_2bc")
     , new SpaceGroup("135 d4h^13 p_42/m_b_c -p_4c_2ab")
-    , new SpaceGroup("135 d4h^13 p_42/m_b_c -p_42_2ab")
+    , new SpaceGroup("135* d4h^13 p_42/m_b_c* -p_42_2ab") //nonstandard
     , new SpaceGroup("136 d4h^14 p_42/m_n_m -p_4n_2n")
     , new SpaceGroup("137:1 d4h^15 p_42/n_m_c:1 p_4n_2n_-1n")
     , new SpaceGroup("137:2 d4h^15 p_42/n_m_c:2 -p_4ac_2a")
@@ -1205,24 +1218,24 @@ class SpaceGroup {
     , new SpaceGroup("171 c6^4 p_62 p_62")
     , new SpaceGroup("172 c6^5 p_64 p_64")
     , new SpaceGroup("173 c6^6 p_63 p_6c")
-    , new SpaceGroup("173 c6^6 p_63 p_63")
+    , new SpaceGroup("173* c6^6 p_63* p_63") //nonstandard
     , new SpaceGroup("174 c3h^1 p_-6 p_-6")
     , new SpaceGroup("175 c6h^1 p_6/m -p_6")
     , new SpaceGroup("176 c6h^2 p_63/m -p_6c")
-    , new SpaceGroup("176 c6h^2 p_63/m -p_63")
+    , new SpaceGroup("176* c6h^2 p_63/m* -p_63") //nonstandard
     , new SpaceGroup("177 d6^1 p_6_2_2 p_6_2")
     , new SpaceGroup("178 d6^2 p_61_2_2 p_61_2_(0_0_5)")
     , new SpaceGroup("179 d6^3 p_65_2_2 p_65_2_(0_0_1)")
     , new SpaceGroup("180 d6^4 p_62_2_2 p_62_2_(0_0_4)")
     , new SpaceGroup("181 d6^5 p_64_2_2 p_64_2_(0_0_2)")
     , new SpaceGroup("182 d6^6 p_63_2_2 p_6c_2c")
-    , new SpaceGroup("182 d6^6 p_63_2_2 p_63_2c")
+    , new SpaceGroup("182* d6^6 p_63_2_2* p_63_2c") //nonstandard
     , new SpaceGroup("183 c6v^1 p_6_m_m p_6_-2")
     , new SpaceGroup("184 c6v^2 p_6_c_c p_6_-2c")
     , new SpaceGroup("185 c6v^3 p_63_c_m p_6c_-2")
-    , new SpaceGroup("185 c6v^3 p_63_c_m p_63_-2")
+    , new SpaceGroup("185* c6v^3 p_63_c_m* p_63_-2") //nonstandard
     , new SpaceGroup("186 c6v^4 p_63_m_c p_6c_-2c")
-    , new SpaceGroup("186 c6v^4 p_63_m_c p_63_-2c")
+    , new SpaceGroup("186* c6v^4 p_63_m_c* p_63_-2c") //nonstandard
     , new SpaceGroup("187 d3h^1 p_-6_m_2 p_-6_2")
     , new SpaceGroup("188 d3h^2 p_-6_c_2 p_-6c_2")
     , new SpaceGroup("189 d3h^3 p_-6_2_m p_-6_-2")
@@ -1230,9 +1243,9 @@ class SpaceGroup {
     , new SpaceGroup("191 d6h^1 p_6/m_m_m -p_6_2")
     , new SpaceGroup("192 d6h^2 p_6/m_c_c -p_6_2c")
     , new SpaceGroup("193 d6h^3 p_63/m_c_m -p_6c_2")
-    , new SpaceGroup("193 d6h^3 p_63/m_c_m -p_63_2")
+    , new SpaceGroup("193* d6h^3 p_63/m_c_m* -p_63_2") //nonstandard
     , new SpaceGroup("194 d6h^4 p_63/m_m_c -p_6c_2c")
-    , new SpaceGroup("194 d6h^4 p_63/m_m_c -p_63_2c")
+    , new SpaceGroup("194* d6h^4 p_63/m_m_c* -p_63_2c") //nonstandard
     , new SpaceGroup("195 t^1 p_2_3 p_2_2_3")
     , new SpaceGroup("196 t^2 f_2_3 f_2_2_3")
     , new SpaceGroup("197 t^3 i_2_3 i_2_2_3")

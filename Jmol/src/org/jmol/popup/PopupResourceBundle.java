@@ -78,7 +78,7 @@ class PopupResourceBundle {
           "modelSetMenu FRAMESbyModelComputedMenu configurationComputedMenu - selectMenuText viewMenu renderMenu colorMenu - surfaceMenu SYMMETRYUNITCELLMenu - "
               + "zoomMenu spinMenu VIBRATIONMenu "
               + "FRAMESanimateMenu - "
-              + "measureMenu pickingMenu - JVM12showConsole JVM12showMenu - "
+              + "measureMenu pickingMenu - JVM12showConsole JVM12showMenu SIGNEDwriteMenu - "
               + "languageComputedMenu aboutComputedMenu" },
               
       {   "selectMenuText",
@@ -210,6 +210,10 @@ class PopupResourceBundle {
           "showHistory showFile showFileHeader - "
               + "showOrient showMeasure - "
               + "showSpacegroup showState SYMMETRYshowSymmetry UNITCELLshow - showIsosurface showMo - extractMOL" },
+
+
+      {   "SIGNEDwriteMenu",
+          "writeFileText writeState writeHistory writeIsosurface - writeJpg writePng - writePovray writeVrml writeMaya" },
 
 
       { "[set_spin_X]Menu", "s0 s5 s10 s20 s30 s40 s50" },
@@ -472,6 +476,15 @@ class PopupResourceBundle {
       { "showOrient", "console on;show orientation" },
       { "showSpacegroup", "console on;show spacegroup" },
       { "showState", "console on;show state" },
+      { "writeFileText", "write file FILE" },      
+      { "writeState", "write state \"?.spt\"" },      
+      { "writeHistory", "write history \"?.his\"" },     
+      { "writeIsosurface", "write isosurface \"?.jvxl\"" },      
+      { "writeJpg", "write image \"?.jpg\"" },      
+      { "writePng", "write iamge \"?.png\"" },      
+      { "writePovray", "write POVRAY ?.pov" },      
+      { "writeVrml", "write VRML ?.vrml" },      
+      { "writeMaya", "write MAYA ?.maya" },       
       { "SYMMETRYshowSymmetry", "console on;show symmetry" },
       { "UNITCELLshow", "console on;show unitcell" },
       { "extractMOL", "console on;getproperty extractModel \"visible\" " },
@@ -846,6 +859,19 @@ class PopupResourceBundle {
         "showSpacegroup", GT._("Space group"),
         "SYMMETRYshowSymmetry", GT._("Symmetry"),
         "showState", GT._("Current state"),
+        
+        "SIGNEDwriteMenu", GT._("Write"),      
+        "writeFileText", GT._("File {0}", "somefilename"),
+        "writeState", GT._("State"),      
+        "writeHistory", GT._("History"),      
+        "writeIsosurface", GT._("Isosurface"),      
+        "writeJpg", GT._("Image - JPG"),      
+        "writePng", GT._("Image - PNG"),      
+        "writePovray", "POV-Ray",      
+        "writeVrml", GT._("VRML"),      
+        "writeMaya", GT._("Maya"),      
+
+        
         "UNITCELLshow", GT._("Unit cell"),
         "extractMOL", GT._("Extract MOL data"),
 
@@ -1008,9 +1034,9 @@ class PopupResourceBundle {
   private void localize(boolean haveUserMenu, Properties menuText) {
     String[] wordContents = getWordContents();
     for (int i = 0; i < wordContents.length;)      
-      if (haveUserMenu && words.getProperty(wordContents[i]) != null)
+      if (haveUserMenu && words.getProperty(wordContents[i]) != null) {
         i += 2;
-      else {
+      } else {
         String item = wordContents[i++];
         String word = wordContents[i++];
         words.setProperty(item, word);

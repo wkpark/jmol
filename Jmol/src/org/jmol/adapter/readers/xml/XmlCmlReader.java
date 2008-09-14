@@ -184,13 +184,13 @@ public class XmlCmlReader extends XmlReader {
                                   HashMap atts) {
     //if (!uri.equals(NAMESPACE_URI))
     //return;
-/*
+/*    
     try {
       System.out.println(name + "::"+atts.get("name"));
     } catch (Exception e) {
       System.out.println(name);
     }
-  */  
+*/
     switch (state) {
     case START:
       if (name.equals("molecule")) {
@@ -204,10 +204,7 @@ public class XmlCmlReader extends XmlReader {
         state = CRYSTAL;
       } else if (name.equals("symmetry")) {
         state = SYMMETRY;
-        if (atts.containsKey("spaceGroup")) {
-          localSpaceGroupName = (String) atts.get("spaceGroup");
-          applySymmetry();
-        }
+        localSpaceGroupName = (atts.containsKey("spaceGroup") ? (String) atts.get("spaceGroup") : "P1");
       } else if (name.equals("module")) {
         moduleCount++;      
       }
@@ -242,11 +239,11 @@ public class XmlCmlReader extends XmlReader {
       }
       break;
     case SYMMETRY:
-      break;
     case CRYSTAL_SCALAR:
     case CRYSTAL_SYMMETRY:
       if (name.equals("transform3")) {
         state = CRYSTAL_SYMMETRY_TRANSFORM3;
+        setKeepChars(true);
       }
       break;
     case CRYSTAL_SYMMETRY_TRANSFORM3:
@@ -422,6 +419,7 @@ public class XmlCmlReader extends XmlReader {
   public void processEndElement(String uri, String name, String qName) {
     //if (!uri.equals(NAMESPACE_URI))
       //return;
+    //System.out.println("END: " + name);
     switch (state) {
     case START:
       if (name.equals("module")) {
@@ -482,19 +480,19 @@ public class XmlCmlReader extends XmlReader {
       scalarTitle = null;
       scalarDictRef = null;
       break;
-    case CRYSTAL_SYMMETRY:
-      if (name.equals("symmetry")) {
-        state = CRYSTAL;
-      }
-      break;
     case CRYSTAL_SYMMETRY_TRANSFORM3:
       if (name.equals("transform3")) {
+        //setSymmetryOperator("xyz matrix: " + chars);
+        // the problem is that these matricies are in CARTESIAN coordinates, not ijk coordinates
+        setKeepChars(false);
         state = CRYSTAL_SYMMETRY;
       }
       break;
+    case CRYSTAL_SYMMETRY:
     case SYMMETRY:
       if (name.equals("symmetry")) {
-        state = START;
+        applySymmetry();
+        state = (state == CRYSTAL_SYMMETRY ? CRYSTAL : START);
       }
       break;
     case MOLECULE:
@@ -678,6 +676,7 @@ public class XmlCmlReader extends XmlReader {
     if (localSpaceGroupName == null)
       return;
     parent.setSpaceGroupName(localSpaceGroupName);
+    parent.iHaveSymmetryOperators = iHaveSymmetryOperators;
     try {
       parent.applySymmetry();
     } catch (Exception e) {

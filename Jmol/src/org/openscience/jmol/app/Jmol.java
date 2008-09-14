@@ -25,8 +25,8 @@ package org.openscience.jmol.app;
 
 import org.jmol.api.*;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
+import org.jmol.export.__SaveDialog;
 import org.jmol.export.image.ImageCreator;
-import org.jmol.export.image.ImageTyper;
 import org.jmol.popup.JmolPopup;
 import org.jmol.i18n.GT;
 import org.jmol.util.*;
@@ -80,7 +80,8 @@ public class Jmol extends JPanel {
   protected JFrame frame;
   FileChooser openChooser;
   FilePreview openPreview;
-  JFileChooser exportChooser, writeChooser;
+  JFileChooser saveChooser;
+  JFileChooser exportChooser;
 
   JmolPopup jmolpopup;
   String language;
@@ -1254,6 +1255,10 @@ public class Jmol extends JPanel {
   private PasteClipboardAction pasteClipboardAction = new PasteClipboardAction();
   private ViewMeasurementTableAction viewMeasurementTableAction = new ViewMeasurementTableAction();
 
+  int qualityJPG = -1;
+  int qualityPNG = -1;
+  String imageType;
+
   /**
    * Actions defined by the Jmol class
    */
@@ -1414,7 +1419,16 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      openFileWithDialog(null);
+      String fileName = getOpenFileNameFromDialog(null);
+      if (fileName == null)
+        return;
+      boolean doAppend = (openPreview != null && openPreview.isAppendSelected());
+      openPreview = null;
+      if (doAppend) {
+        viewer.scriptWait("load append " + Escape.escape(fileName));
+      } else {
+        viewer.openFile(fileName);
+      }
     }
   }
 
@@ -1482,41 +1496,26 @@ public class Jmol extends JPanel {
 
     public void actionPerformed(ActionEvent e) {
 
+      __SaveDialog sd = new __SaveDialog();
       if (exportChooser == null)
         exportChooser = new JFileChooser();
-      exportChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
-      ImageTyper it = new ImageTyper();
-      it.createPanel(exportChooser, imageChoices, imageExtensions, "JPEG");
-      
-      String fileName = viewer.getModelSetFileName();
-      String pathName = exportChooser.getCurrentDirectory().getPath();
-      File file = null;
-      if (fileName != null && pathName != null) {
-        int extensionStart = fileName.lastIndexOf('.');
-        if (extensionStart != -1) {
-          fileName = fileName.substring(0, extensionStart) + "."
-              + it.getExtension();
-        }
-        file = new File(pathName, fileName);
-      }
-      if ((file = it.showDialog(Jmol.this, file)) == null)
-        return;
-      file = exportChooser.getSelectedFile();
-      setLocalDirectory(file);
-      String sType = it.getType();
+      String fileName = sd.getImageFileNameFromDialog(exportChooser, viewer,
+          null, imageType, imageChoices, imageExtensions, qualityJPG, qualityPNG);
+      qualityJPG = sd.getQuality("JPG");
+      qualityPNG = sd.getQuality("PNG");
+      String sType = imageType = sd.getType();
       if (sType == null) {
         // file type changer was not touched
-        sType = file.getName();
+        sType = fileName;
         int i = sType.lastIndexOf(".");
         if (i < 0)
           return; // make no assumptions - require a type by extension
         sType = sType.substring(i + 1).toUpperCase();
       }
-      int iQuality = it.getQuality(sType);
       if (sType.equals("PDF"))
-        createPdfDocument(file);
+        createPdfDocument(new File(fileName));
       else
-        createImageStatus(file.getAbsolutePath(), sType, null, iQuality);
+        createImageStatus(fileName, sType, null, sd.getQuality(sType));
     }
  
     private void createPdfDocument(File file) {
@@ -1605,18 +1604,13 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      if (writeChooser == null)
-        writeChooser = new JFileChooser();
-      writeChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
-      int retval = writeChooser.showSaveDialog(Jmol.this);
-      if (retval == JFileChooser.APPROVE_OPTION) {
-        File file = writeChooser.getSelectedFile();
-        if (file == null)
-          return;
-        setLocalDirectory(file);
-        createImageStatus(file.getAbsolutePath(), "SPT", viewer
-            .getStateInfo(), Integer.MIN_VALUE);
-      }
+      if (saveChooser == null)
+        saveChooser = new JFileChooser();
+      String fileName = (new __SaveDialog()).getSaveFileNameFromDialog(
+          saveChooser, viewer, null, "SPT");
+      if (fileName != null)
+        createImageStatus(fileName, "SPT", viewer.getStateInfo(),
+            Integer.MIN_VALUE);
     }
   }
 
@@ -1676,7 +1670,9 @@ public class Jmol extends JPanel {
     return dir == null ? null : new File(System.getProperty("user.dir"));
   }
 
-  void openFileWithDialog(String fileName) {
+  String getOpenFileNameFromDialog(String fileName) {
+    if (fileName != null && fileName.length() == 0)
+      fileName = null;
     if (openChooser == null) {
       openChooser = new FileChooser();
       String previewProperty = System.getProperty("openFilePreview", "true");
@@ -1692,22 +1688,18 @@ public class Jmol extends JPanel {
         .getWindowSize(FILE_OPEN_WINDOW_NAME));
     openChooser.setDialogLocation(historyFile
         .getWindowPosition(FILE_OPEN_WINDOW_NAME));
+    File file = null;
     if (openChooser.showOpenDialog(Jmol.this) == JFileChooser.APPROVE_OPTION) {
-      File file = openChooser.getSelectedFile();
+      file = openChooser.getSelectedFile();
       if (file == null)
-        return;
+        return null;
       setLocalDirectory(file);
-      if (openPreview != null && openPreview.isAppendSelected()) {
-        viewer.scriptWait("load append "
-            + Escape.escape(file.getAbsolutePath()));
-      } else {
-        viewer.openFile(file.getAbsolutePath());
-      }
     }
     historyFile.addWindowInfo(FILE_OPEN_WINDOW_NAME, openChooser.getDialog(),
         null);
+    return file == null ? null : file.getAbsolutePath();
   }
-  
+
   public static final String chemFileProperty = "chemFile";
 
   class MyStatusListener implements JmolStatusListener {
@@ -1843,10 +1835,6 @@ public class Jmol extends JPanel {
           scriptWindow.undoClear();
         // a 'clear/zap' operation
       } else {
-        if (fullPathName.startsWith("\t")) {
-          openFileWithDialog(fullPathName.substring(1));
-          return;
-        }
         if (modelName != null && fileName != null)
           title = fileName + " - " + modelName;
         else if (fileName != null)
@@ -1958,8 +1946,31 @@ public class Jmol extends JPanel {
       return null;
     }
 
+    public String dialogAsk(String type, String data) {
+      if (type.equals("load"))
+        return getOpenFileNameFromDialog(data);
+      if (type.equals("save")) {
+        if (saveChooser == null)
+          saveChooser = new JFileChooser();
+        return (new __SaveDialog()).getSaveFileNameFromDialog(saveChooser,
+            viewer, data, null);
+      }
+      if (type.equals("saveImage")) {
+        if (exportChooser == null)
+          exportChooser = new JFileChooser();
+        __SaveDialog sd = new __SaveDialog();
+        String fileName = sd.getImageFileNameFromDialog(exportChooser, viewer,
+            data, imageType, imageChoices, imageExtensions, qualityJPG,
+            qualityPNG);
+        imageType = sd.getType();
+        qualityJPG = sd.getQuality("JPG");
+        qualityPNG = sd.getQuality("PNG");
+        return fileName;
+      }
+      return null;
+    }
   }
-
+  
   class ExecuteScriptAction extends AbstractAction {
     public ExecuteScriptAction() {
       super("executeScriptAction");

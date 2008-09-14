@@ -30,6 +30,7 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 
 /*
  * Bob Hanson 4/2006
@@ -118,7 +119,7 @@ class SymmetryOperation extends Matrix4f {
      */
     if (xyz == null)
       return false;
-    this.xyzOriginal = xyz;
+    xyzOriginal = xyz;
     xyz = xyz.toLowerCase();
     float[] temp = new float[16];
     boolean isDenominator = false;
@@ -134,6 +135,41 @@ class SymmetryOperation extends Matrix4f {
     int rowPt = -1;
     temp[15] = 1;
     float decimalMultiplier = 1f;
+    if (xyz.indexOf("xyz matrix: ") == 0) {
+      /* note: these terms must in unit cell fractional coordinates!
+       * CML matrix is in fractional coordinates, but do not take into accout
+       * hexagonal systems. Thus, in wurtzite.cml, for P 6c 2'c:
+       *
+       * xyz matrix: 
+       * 
+       * -5.000000000000e-1  8.660254037844e-1  0.000000000000e0   0.000000000000e0 
+       * -8.660254037844e-1 -5.000000000000e-1  0.000000000000e0   0.000000000000e0 
+       *  0.000000000000e0   0.000000000000e0   1.000000000000e0   0.000000000000e0 
+       *  0.000000000000e0   0.000000000000e0   0.000000000000e0   1.000000000000e0
+       *
+       * I see that these are "fractional coordinates" but they do not take into 
+       * account the real xy transform, which is something like y,-x,z here.
+       * 
+       * I think it's a bug in the CML, actually. -- Bob Hanson 9/2008
+       * 
+       */
+      this.xyz = xyz;
+      Parser.parseFloatArray(xyz, null, temp);
+      for (int i = 0; i < 16; i++) {
+        if (Float.isNaN(temp[i]))
+          return false;
+        float v = temp[i];
+        if (Math.abs(v) < 0.00001f)
+          v = 0;
+        if (i % 4 == 3)
+          v = normalizeTwelfths((v < 0 ? -1 : 1) * (int)(Math.abs(v) * 12.001f));
+        temp[i] = v;
+        System.out.print(v + "       ");
+      }
+      System.out.println();
+      return true;
+    }
+    
     xyz += ",";
     //Logger.debug(xyz.length() + " " + xyz);
     for (int i = 0; i < xyz.length(); i++) {
@@ -173,13 +209,7 @@ class SymmetryOperation extends Matrix4f {
         }
         int tpt = rowPt * 4;
         // put translation into 12ths
-        iValue = iValue * 12f;
-        if (doNormalize) {
-          while (iValue > 6)
-            iValue -= 12;
-          while (iValue <= -6)
-            iValue += 12;
-        }
+        iValue = normalizeTwelfths(iValue);
         temp[tpt++] = x;
         temp[tpt++] = y;
         temp[tpt++] = z;
@@ -231,6 +261,17 @@ class SymmetryOperation extends Matrix4f {
       isDecimal = isDenominator = isNegative = false;
     }
     return false;
+  }
+
+  private float normalizeTwelfths(float iValue) {
+    iValue *= 12f;
+    if (doNormalize) {
+      while (iValue > 6)
+        iValue -= 12;
+      while (iValue <= -6)
+        iValue += 12;
+    }
+    return iValue;
   }
 
   final static String getXYZFromMatrix(Matrix4f mat, boolean allPositive) {

@@ -517,6 +517,9 @@ java.lang.NullPointerException
   private String[] classifyName(String name) {
     if (name == null)
       return null;
+    if (name.startsWith("?")
+        && (name = viewer.dialogAsk("load", name.substring(1))) == null)
+      return null;
     File file = null;
     URL url = null;
     String[] names = null;
@@ -547,7 +550,7 @@ java.lang.NullPointerException
         }
       } else {
         file = new File(name);
-        names = new String[]{file.getAbsolutePath(), file.getName()};
+        names = new String[] { file.getAbsolutePath(), file.getName() };
       }
     }
     if (url != null) {
@@ -556,7 +559,8 @@ java.lang.NullPointerException
       names[1] = names[0].substring(names[0].lastIndexOf('/') + 1);
     }
     if (file != null || urlTypeIndex(names[0]) == URL_LOCAL) {
-      String path = (file == null ? TextFormat.trim(names[0].substring(5), "/") : names[0]);
+      String path = (file == null ? TextFormat.trim(names[0].substring(5), "/")
+          : names[0]);
       path = path.substring(0, path.length() - names[1].length() - 1);
       viewer.setStringProperty("currentLocalPath", path);
     }

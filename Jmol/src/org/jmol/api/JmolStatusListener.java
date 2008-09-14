@@ -56,4 +56,6 @@ public interface JmolStatusListener {
   public void showConsole(boolean showConsole);
   
   public void showUrl(String url);
+
+  public String dialogAsk(String type, String data);
 }

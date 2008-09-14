@@ -72,6 +72,7 @@ abstract public class JmolPopup {
   Vector FramesOnly = new Vector();
   Vector VibrationOnly = new Vector();
   Vector SymmetryOnly = new Vector();
+  Vector SignedOnly = new Vector();
   Vector AppletOnly = new Vector();
   Vector ChargesOnly = new Vector();
   Vector TemperatureOnly = new Vector();
@@ -178,6 +179,7 @@ abstract public class JmolPopup {
     updateMode = UPDATE_ALL;
     getViewerData();
     updateSelectMenu();
+    updateWriteMenu();
     updateElementsComputedMenu(viewer.getElementsPresentBitSet(modelIndex));
     updateHeteroComputedMenu(viewer.getHeteroList(modelIndex));
     updateSurfMoComputedMenu((Hashtable) modelInfo.get("moData"));
@@ -235,6 +237,15 @@ abstract public class JmolPopup {
       return;
     enableMenu(menu, atomCount != 0);
     setLabel(menu, GT._(getMenuText("selectMenuText"), viewer.getSelectionCount(), true));
+  }
+
+  void updateWriteMenu() {
+    Object menu = htMenus.get("SIGNEDWriteMenu");
+    if (menu == null)
+      return;
+    String fname = viewer.getModelSetFileName();
+    updateMenuItem(htMenus.get("writeFileText"), 
+         GT._(getMenuText("writeFileText"), fname, true), "write file \"" + fname + "\"");
   }
 
   void updateElementsComputedMenu(BitSet elementsPresentBitSet) {
@@ -582,6 +593,8 @@ abstract public class JmolPopup {
       enableMenu(VibrationOnly.get(i), isVibration);
     for (int i = 0; i < SymmetryOnly.size(); i++)
       enableMenu(SymmetryOnly.get(i), isSymmetry && isUnitCell);
+    for (int i = 0; i < SignedOnly.size(); i++)
+      enableMenu(SignedOnly.get(i), isSigned || !isApplet);
     for (int i = 0; i < AppletOnly.size(); i++)
       enableMenu(AppletOnly.get(i), isApplet);
     for (int i = 0; i < ChargesOnly.size(); i++)
@@ -737,6 +750,8 @@ abstract public class JmolPopup {
         VibrationOnly.add(newMenu);
       } else if (item.indexOf("SYMMETRY") >= 0) {
         SymmetryOnly.add(newMenu);
+      } else if (item.indexOf("SIGNED") >= 0) {
+        SignedOnly.add(newMenu);
       }
 
       if (dumpList) {

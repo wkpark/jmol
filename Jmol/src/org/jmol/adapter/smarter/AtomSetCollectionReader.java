@@ -201,7 +201,7 @@ public abstract class AtomSetCollectionReader {
   public boolean iHaveUnitCell;
   //boolean iHaveCartesianToFractionalMatrix;
   private boolean iHaveFractionalCoordinates;
-  private boolean iHaveSymmetryOperators;
+  public boolean iHaveSymmetryOperators;
   public boolean needToApplySymmetry;
 
   public abstract AtomSetCollection readAtomSetCollection(BufferedReader reader);
@@ -344,12 +344,12 @@ public abstract class AtomSetCollectionReader {
     spaceGroup = name.trim();
   }
 
-  public void setSymmetryOperator(String jonesFaithful) {
+  public void setSymmetryOperator(String jonesFaithfulOrMatrix) {
     if (ignoreFileSymmetryOperators)
       return;
     atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds);
-    if (!atomSetCollection.addSpaceGroupOperation(jonesFaithful))
-      Logger.warn("Skipping symmetry operation " + jonesFaithful);
+    if (!atomSetCollection.addSpaceGroupOperation(jonesFaithfulOrMatrix))
+      Logger.warn("Skipping symmetry operation " + jonesFaithfulOrMatrix);
     iHaveSymmetryOperators = true;
   }
 

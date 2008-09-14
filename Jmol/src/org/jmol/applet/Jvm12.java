@@ -46,6 +46,7 @@ class Jvm12 {
 
   private final Rectangle rectClip = new Rectangle();
   private final Dimension dimSize = new Dimension();
+
   Rectangle getClipBounds(Graphics g) {
     return g.getClipBounds(rectClip);
   }
@@ -68,13 +69,13 @@ class Jvm12 {
   }
 
   void consoleMessage(String message) {
-      console.output(message);
+    console.output(message);
   }
-  
+
   boolean haveConsole() {
-    return (console!= null);
+    return (console != null);
   }
-  
+
   Console getConsole() {
     if (console == null) {
       try {
@@ -96,86 +97,101 @@ class Jvm12 {
     return console.getText();
   }
 
-  private JFileChooser exportChooser, openChooser;
+  private JFileChooser exportChooser, openChooser, saveChooser;
   final private static String[] imageChoices = { "JPEG", "PNG", "GIF", "PPM" };
   final private static String[] imageExtensions = { "jpg", "png", "gif", "PPM" };
-  
-  void openFileWithDialog(String fileName) {
+
+  public String dialogAsk(JmolSaveDialogInterface sd, String type,
+                          String fileName) {
+    if (type.equals("load"))
+      return getOpenFileNameFromDialog(fileName);
+    if (sd == null)
+      sd = (JmolSaveDialogInterface) Interface
+          .getOptionInterface("export.__SaveDialog");
+    if (type.equals("save")) {
+      if (saveChooser == null)
+        saveChooser = new JFileChooser();
+      return sd.getSaveFileNameFromDialog(saveChooser, viewer, fileName, null);
+    }
+    if (type.startsWith("saveImage")) {
+      if (exportChooser == null)
+        exportChooser = new JFileChooser();
+      return sd.getImageFileNameFromDialog(exportChooser, viewer, fileName,
+          imageType, imageChoices, imageExtensions, qualityJPG, qualityPNG);
+    }
+    return null;
+  }
+
+  public String getOpenFileNameFromDialog(String fileName) {
     if (openChooser == null) {
       openChooser = new JFileChooser();
     }
-    if (fileName != null && fileName.length() > 0)
-      openChooser.setSelectedFile(new File(fileName));
-    if (fileName != null && fileName.indexOf(":") < 0)
-      openChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
-    if (openChooser.showOpenDialog(awtComponent) != JFileChooser.APPROVE_OPTION)
-      return;
+    //    String ext = null;
+    if (fileName != null) {
+      if (fileName.length() > 0)
+        openChooser.setSelectedFile(new File(fileName));
+      if (fileName.indexOf(":") < 0)
+        openChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
+      //      int pt;
+      //      if ((pt = fileName.indexOf(".")) >= 0) {
+      //        ext = fileName.substring(pt + 1);
+      //    }
+    }
+    int ret = openChooser.showOpenDialog(awtComponent);
+    if (ret != JFileChooser.APPROVE_OPTION)
+      return null;
     File file = openChooser.getSelectedFile();
     if (file == null)
-      return;
+      return null;
     viewer.setStringProperty("currentLocalPath", file.getParent());
-    viewer.openFile("file:///" + file.getAbsolutePath().replace('\\','/'));
+    return file.getAbsolutePath();
   }
 
-  
-  String createImage(String fileName, String type, Object text_or_bytes, int quality) {
-    File file = null;
-    if (exportChooser == null)
-      exportChooser = new JFileChooser();
-    exportChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
-    JmolImageTyperInterface it = (JmolImageTyperInterface) Interface
-        .getOptionInterface("export.image.ImageTyper");
-    if (fileName == null) {
-      fileName = viewer.getModelSetFileName();
-      String pathName = exportChooser.getCurrentDirectory().getPath();
-      it.createPanel(exportChooser, imageChoices, imageExtensions, type);
-      if (fileName != null && pathName != null) {
-        int extensionStart = fileName.lastIndexOf('.');
-        if (extensionStart != -1) {
-          fileName = fileName.substring(0, extensionStart) + "."
-              + it.getExtension();
-        }
-        file = new File(pathName, fileName);
-      }
-    } else {
-      String sType = fileName.substring(fileName.lastIndexOf(".") + 1);
-      for (int i = 0; i < imageExtensions.length; i++)
-        if (sType.equals(imageChoices[i]) || sType.toLowerCase().equals(imageExtensions[i])) {
-          sType = imageChoices[i];
-          break;
-        }      
-      it.createPanel(exportChooser, imageChoices, imageExtensions, sType);
-      file = new File(fileName);
-    }
+  int qualityJPG = -1;
+  int qualityPNG = -1;
+  String imageType;
 
-    if ((file = it.showDialog(awtComponent, file)) == null)
+  String createImage(String fileName, String type, Object text_or_bytes,
+                     int quality) {
+    String sType = null;
+    int iQuality = quality;
+    if (quality == Integer.MIN_VALUE) {
+      // text or bytes
+      fileName = dialogAsk(null, "save", fileName);
+    } else {
+      // image
+      JmolSaveDialogInterface sd = (JmolSaveDialogInterface) Interface
+          .getOptionInterface("export.__SaveDialog");
+      fileName = dialogAsk(sd, "saveImage+" + type, fileName);
+      qualityJPG = sd.getQuality("JPG");
+      qualityPNG = sd.getQuality("PNG");
+      sType = imageType = sd.getType();
+      if (sType == null)
+        sType = type.toUpperCase();
+      iQuality = sd.getQuality(sType);
+      if (iQuality < 0)
+        iQuality = quality;
+    }
+    if (fileName == null)
       return null;
-    viewer.setStringProperty("currentLocalPath",file.getParent());
     JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
         .getOptionInterface("export.image.ImageCreator");
     c.setViewer(viewer);
-    String sType = it.getType();
-    if (sType == null)
-      sType = type.toUpperCase();
-    else {
-      text_or_bytes = null;
-      quality = 75;
-    }
-    int iQuality = it.getQuality(sType);
-    if (iQuality < 0)
-      iQuality = quality;
-    return c.createImage(file.getAbsolutePath(), sType, text_or_bytes, iQuality);
+    return c.createImage(fileName, sType, text_or_bytes, iQuality);
   }
 
   void clipImage() {
-    JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface.getOptionInterface("export.image.ImageCreator");
+    JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
+        .getOptionInterface("export.image.ImageCreator");
     c.setViewer(viewer);
     c.clipImage(null);
   }
-  
+
   String getClipboardText() {
-    JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface.getOptionInterface("export.image.ImageCreator");
+    JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
+        .getOptionInterface("export.image.ImageCreator");
     c.setViewer(viewer);
     return c.getClipboardText();
   }
+
 }

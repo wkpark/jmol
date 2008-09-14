@@ -1532,11 +1532,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void openFile(String name) {
     //Jmol app file dropper, main, OpenUrlAction, RecentFilesAction
+    boolean allowScript = (!name.startsWith("\t"));
+    if (!allowScript)
+      name = name.substring(1);
     name = name.replace('\\', '/');
     String type = fileManager.getFileTypeName(name);
     checkHalt("exit");
     // assumes a Jmol script file if no other file type
-    evalString((type == null ? "script " : "load ") + Escape.escape(name));
+    evalString((type == null && allowScript ? "script " : "load ") + Escape.escape(name));
   }
 
   void openFile(String name, Hashtable htParams, String loadScript,
@@ -3473,7 +3476,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //typically request: "+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated"
     //set up first with applet.jmolGetProperty("jmolStatus",statusList)
     //flush list
-    String oldStatusList = statusManager.statusList;
+    String oldStatusList = statusManager.getStatusList();
     getProperty("String", "jmolStatus", statusList);
     if (checkScriptOnly)
       Logger.info("--checking script:\n" + eval.getScript() + "\n----\n");
@@ -3838,7 +3841,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // //////////////status manager dispatch//////////////
 
   public Hashtable getMessageQueue() {
-    return statusManager.messageQueue;
+    return statusManager.getMessageQueue();
   }
 
   /*
@@ -3975,8 +3978,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           strError, ptLoad);
   }
 
-  void openFileWithDialog(String fileName) {
-    statusManager.setStatusFileLoaded("\t" + fileName, null, null, null, 0);
+  String dialogAsk(String type, String data) {
+    return statusManager.dialogAsk(type, data);
   }
   
   private void setStatusFileNotLoaded(String fullPathName, String errorMsg) {

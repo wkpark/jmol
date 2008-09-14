@@ -223,7 +223,7 @@ public class JmolPopupAwt extends JmolPopup {
     return sb.toString();
   }
 
-  private static void getMenuCurrent(StringBuffer sb, int level, Menu menu, String menuName) {
+  private void getMenuCurrent(StringBuffer sb, int level, Menu menu, String menuName) {
     String name = menuName;
     String flags;
     int itemCount = menu.getItemCount();

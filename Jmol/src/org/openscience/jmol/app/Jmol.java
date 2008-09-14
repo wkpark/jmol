@@ -25,12 +25,12 @@ package org.openscience.jmol.app;
 
 import org.jmol.api.*;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
-import org.jmol.export.__SaveDialog;
+import org.jmol.export.dialog.Dialog;
+import org.jmol.export.dialog.HistoryFile;
 import org.jmol.export.image.ImageCreator;
 import org.jmol.popup.JmolPopup;
 import org.jmol.i18n.GT;
 import org.jmol.util.*;
-import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 import org.openscience.jmol.app.webexport.WebExport;
@@ -78,10 +78,6 @@ public class Jmol extends JPanel {
   public AtomSetChooser atomSetChooser;
   private ExecuteScriptAction executeScriptAction;
   protected JFrame frame;
-  FileChooser openChooser;
-  FilePreview openPreview;
-  JFileChooser saveChooser;
-  JFileChooser exportChooser;
 
   JmolPopup jmolpopup;
   String language;
@@ -164,7 +160,7 @@ public class Jmol extends JPanel {
     numWindows++;
 
     try {
-      say("history file is " + historyFile.file.getAbsolutePath());
+      say("history file is " + historyFile.getFile().getAbsolutePath());
     } catch (Exception e) {
     }
 
@@ -376,66 +372,6 @@ public class Jmol extends JPanel {
     return window;
   }
 
-  /**
-   * Setup the UIManager (for i18n) 
-   */
-  static void setupUIManager() {
-
-    // FileChooser strings
-    UIManager.put("FileChooser.acceptAllFileFilterText", GT._("All Files"));
-    UIManager.put("FileChooser.cancelButtonText", GT._("Cancel"));
-    UIManager.put("FileChooser.cancelButtonToolTipText", GT
-        ._("Abort file chooser dialog"));
-    UIManager.put("FileChooser.detailsViewButtonAccessibleName", GT
-        ._("Details"));
-    UIManager.put("FileChooser.detailsViewButtonToolTipText", GT._("Details"));
-    UIManager.put("FileChooser.directoryDescriptionText", GT._("Directory"));
-    UIManager.put("FileChooser.directoryOpenButtonText", GT._("Open"));
-    UIManager.put("FileChooser.directoryOpenButtonToolTipText", GT
-        ._("Open selected directory"));
-    UIManager.put("FileChooser.fileAttrHeaderText", GT._("Attributes"));
-    UIManager.put("FileChooser.fileDateHeaderText", GT._("Modified"));
-    UIManager.put("FileChooser.fileDescriptionText", GT._("Generic File"));
-    UIManager.put("FileChooser.fileNameHeaderText", GT._("Name"));
-    UIManager.put("FileChooser.fileNameLabelText", GT._("File Name:"));
-    UIManager.put("FileChooser.fileSizeHeaderText", GT._("Size"));
-    UIManager.put("FileChooser.filesOfTypeLabelText", GT._("Files of Type:"));
-    UIManager.put("FileChooser.fileTypeHeaderText", GT._("Type"));
-    UIManager.put("FileChooser.helpButtonText", GT._("Help"));
-    UIManager
-        .put("FileChooser.helpButtonToolTipText", GT._("FileChooser help"));
-    UIManager.put("FileChooser.homeFolderAccessibleName", GT._("Home"));
-    UIManager.put("FileChooser.homeFolderToolTipText", GT._("Home"));
-    UIManager.put("FileChooser.listViewButtonAccessibleName", GT._("List"));
-    UIManager.put("FileChooser.listViewButtonToolTipText", GT._("List"));
-    UIManager.put("FileChooser.lookInLabelText", GT._("Look In:"));
-    UIManager.put("FileChooser.newFolderErrorText", GT
-        ._("Error creating new folder"));
-    UIManager.put("FileChooser.newFolderAccessibleName", GT._("New Folder"));
-    UIManager
-        .put("FileChooser.newFolderToolTipText", GT._("Create New Folder"));
-    UIManager.put("FileChooser.openButtonText", GT._("Open"));
-    UIManager.put("FileChooser.openButtonToolTipText", GT
-        ._("Open selected file"));
-    UIManager.put("FileChooser.openDialogTitleText", GT._("Open"));
-    UIManager.put("FileChooser.saveButtonText", GT._("Save"));
-    UIManager.put("FileChooser.saveButtonToolTipText", GT
-        ._("Save selected file"));
-    UIManager.put("FileChooser.saveDialogTitleText", GT._("Save"));
-    UIManager.put("FileChooser.saveInLabelText", GT._("Save In:"));
-    UIManager.put("FileChooser.updateButtonText", GT._("Update"));
-    UIManager.put("FileChooser.updateButtonToolTipText", GT
-        ._("Update directory listing"));
-    UIManager.put("FileChooser.upFolderAccessibleName", GT._("Up"));
-    UIManager.put("FileChooser.upFolderToolTipText", GT._("Up One Level"));
-
-    // OptionPane strings
-    UIManager.put("OptionPane.cancelButtonText", GT._("Cancel"));
-    UIManager.put("OptionPane.noButtonText", GT._("No"));
-    UIManager.put("OptionPane.okButtonText", GT._("OK"));
-    UIManager.put("OptionPane.yesButtonText", GT._("Yes"));
-  }
-
   /* Convenient method to get values of UIManager strings
    private static void analyzeUIManagerString(String name, String value) {
    System.err.println(name);
@@ -448,7 +384,7 @@ public class Jmol extends JPanel {
 
   public static void main(String[] args) {
 
-    setupUIManager();
+    Dialog.setupUIManager();
 
     Jmol jmol = null;
 
@@ -765,10 +701,6 @@ public class Jmol extends JPanel {
     }
   }
 
-  void setLocalDirectory(File f) {
-    viewer.setStringProperty("currentLocalPath",f.getParent());
-  }
-  
   private void say(String message) {
     if (haveDisplay.booleanValue())
       if (splash == null) {
@@ -1422,13 +1354,10 @@ public class Jmol extends JPanel {
       String fileName = getOpenFileNameFromDialog(null);
       if (fileName == null)
         return;
-      boolean doAppend = (openPreview != null && openPreview.isAppendSelected());
-      openPreview = null;
-      if (doAppend) {
-        viewer.scriptWait("load append " + Escape.escape(fileName));
-      } else {
+      if (fileName.startsWith("load append"))
+        viewer.scriptWait(fileName);
+      else
         viewer.openFile(fileName);
-      }
     }
   }
 
@@ -1496,11 +1425,9 @@ public class Jmol extends JPanel {
 
     public void actionPerformed(ActionEvent e) {
 
-      __SaveDialog sd = new __SaveDialog();
-      if (exportChooser == null)
-        exportChooser = new JFileChooser();
-      String fileName = sd.getImageFileNameFromDialog(exportChooser, viewer,
-          null, imageType, imageChoices, imageExtensions, qualityJPG, qualityPNG);
+      Dialog sd = new Dialog();
+      String fileName = sd.getImageFileNameFromDialog(viewer, null, imageType,
+          imageChoices, imageExtensions, qualityJPG, qualityPNG);
       qualityJPG = sd.getQuality("JPG");
       qualityPNG = sd.getQuality("PNG");
       String sType = imageType = sd.getType();
@@ -1517,7 +1444,7 @@ public class Jmol extends JPanel {
       else
         createImageStatus(fileName, sType, null, sd.getQuality(sType));
     }
- 
+
     private void createPdfDocument(File file) {
       // PDF is application-only
       Document document = new Document();
@@ -1543,9 +1470,9 @@ public class Jmol extends JPanel {
       }
       document.close();
     }
-    
+
   }
-  
+
   class RecentFilesAction extends AbstractAction {
 
     public RecentFilesAction() {
@@ -1604,10 +1531,8 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      if (saveChooser == null)
-        saveChooser = new JFileChooser();
-      String fileName = (new __SaveDialog()).getSaveFileNameFromDialog(
-          saveChooser, viewer, null, "SPT");
+      String fileName = (new Dialog()).getSaveFileNameFromDialog(viewer,
+          null, "SPT");
       if (fileName != null)
         createImageStatus(fileName, "SPT", viewer.getStateInfo(),
             Integer.MIN_VALUE);
@@ -1671,33 +1596,8 @@ public class Jmol extends JPanel {
   }
 
   String getOpenFileNameFromDialog(String fileName) {
-    if (fileName != null && fileName.length() == 0)
-      fileName = null;
-    if (openChooser == null) {
-      openChooser = new FileChooser();
-      String previewProperty = System.getProperty("openFilePreview", "true");
-      if (Boolean.valueOf(previewProperty).booleanValue()) {
-        openPreview = new FilePreview(openChooser, modelAdapter);
-      } 
-    }
-    if (fileName != null && fileName.length() > 0)
-      openChooser.setSelectedFile(new File(fileName));
-    if (fileName != null && fileName.indexOf(":") < 0)
-      openChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
-    openChooser.setDialogSize(historyFile
-        .getWindowSize(FILE_OPEN_WINDOW_NAME));
-    openChooser.setDialogLocation(historyFile
-        .getWindowPosition(FILE_OPEN_WINDOW_NAME));
-    File file = null;
-    if (openChooser.showOpenDialog(Jmol.this) == JFileChooser.APPROVE_OPTION) {
-      file = openChooser.getSelectedFile();
-      if (file == null)
-        return null;
-      setLocalDirectory(file);
-    }
-    historyFile.addWindowInfo(FILE_OPEN_WINDOW_NAME, openChooser.getDialog(),
-        null);
-    return file == null ? null : file.getAbsolutePath();
+    return (new Dialog()).getOpenFileNameFromDialog(modelAdapter, viewer,
+        fileName, historyFile, FILE_OPEN_WINDOW_NAME, (fileName == null));
   }
 
   public static final String chemFileProperty = "chemFile";
@@ -1802,7 +1702,7 @@ public class Jmol extends JPanel {
       if (callbackType.equalsIgnoreCase("language")) {
         new GT(callbackFunction);
         language = GT.getLanguage();
-        setupUIManager();
+        Dialog.setupUIManager();
         if (webExport != null) {
           WebExport.saveHistory();
           WebExport.dispose();
@@ -1845,7 +1745,7 @@ public class Jmol extends JPanel {
       }
       frame.setTitle(title);
       if (atomSetChooser == null) {
-        atomSetChooser = new AtomSetChooser(viewer, frame);      
+        atomSetChooser = new AtomSetChooser(viewer, frame);
         pcs.addPropertyChangeListener(chemFileProperty, atomSetChooser);
       }
       pcs.firePropertyChange(chemFileProperty, null, null);
@@ -1950,16 +1850,12 @@ public class Jmol extends JPanel {
       if (type.equals("load"))
         return getOpenFileNameFromDialog(data);
       if (type.equals("save")) {
-        if (saveChooser == null)
-          saveChooser = new JFileChooser();
-        return (new __SaveDialog()).getSaveFileNameFromDialog(saveChooser,
-            viewer, data, null);
+        return (new Dialog()).getSaveFileNameFromDialog(viewer, data,
+            null);
       }
       if (type.equals("saveImage")) {
-        if (exportChooser == null)
-          exportChooser = new JFileChooser();
-        __SaveDialog sd = new __SaveDialog();
-        String fileName = sd.getImageFileNameFromDialog(exportChooser, viewer,
+        Dialog sd = new Dialog();
+        String fileName = sd.getImageFileNameFromDialog(viewer,
             data, imageType, imageChoices, imageExtensions, qualityJPG,
             qualityPNG);
         imageType = sd.getType();
@@ -1970,7 +1866,7 @@ public class Jmol extends JPanel {
       return null;
     }
   }
-  
+
   class ExecuteScriptAction extends AbstractAction {
     public ExecuteScriptAction() {
       super("executeScriptAction");

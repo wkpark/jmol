@@ -233,13 +233,17 @@ public class Jmol implements WrappedApplet {
   String getParameter(String paramName) {
     return appletWrapper.getParameter(paramName);
   }
+
   boolean isSigned;
+
+  JmolAdapter modelAdapter;
 
   public void initWindows() {
 
     // to enable CDK
     // viewer = new JmolViewer(this, new CdkJmolAdapter(null));
-    viewer = JmolViewer.allocateViewer(appletWrapper, new SmarterJmolAdapter());
+    viewer = JmolViewer.allocateViewer(appletWrapper,
+        modelAdapter = new SmarterJmolAdapter());
     String options = "";
     isSigned = getBooleanValue("signed", false) || appletWrapper.isSigned();
     if (isSigned)
@@ -249,12 +253,14 @@ public class Jmol implements WrappedApplet {
     String s = getValue("MaximumSize", null);
     if (s != null)
       options += "-maximumSize " + s;
-    s = getValue("JmolAppletProxy", null);
-    if (s != null)
-      options += "-appletProxy " + s;
-    System.out.println("setAppletContext: " + options);
-    viewer.setAppletContext(fullName, appletWrapper.getDocumentBase(),
-        appletWrapper.getCodeBase(), options);
+    {
+      // note, -appletProxy must be the LAST item added
+      s = getValue("JmolAppletProxy", null);
+      if (s != null)
+        options += "-appletProxy " + s;
+      viewer.setAppletContext(fullName, appletWrapper.getDocumentBase(),
+          appletWrapper.getCodeBase(), options);
+    }
     myStatusListener = new MyStatusListener();
     viewer.setJmolStatusListener(myStatusListener);
     String menuFile = getParameter("menuFile");
@@ -262,7 +268,7 @@ public class Jmol implements WrappedApplet {
       menuStructure = viewer.getFileAsString(menuFile);
     jvm12orGreater = viewer.isJvm12orGreater();
     if (jvm12orGreater)
-      jvm12 = new Jvm12(appletWrapper, viewer);
+      jvm12 = new Jvm12(appletWrapper, viewer, modelAdapter);
     if (Logger.debugging) {
       Logger.debug("checking for jsoWindow mayScript=" + mayScript);
     }
@@ -505,8 +511,8 @@ public class Jmol implements WrappedApplet {
     viewer.setScreenDimension(size);
     //Rectangle rectClip = jvm12orGreater ? jvm12.getClipBounds(g) : g.getClipRect();
     ++paintCounter;
-    if (REQUIRE_PROGRESSBAR && !isSigned && !hasProgressBar && paintCounter < 30
-        && (paintCounter & 1) == 0) {
+    if (REQUIRE_PROGRESSBAR && !isSigned && !hasProgressBar
+        && paintCounter < 30 && (paintCounter & 1) == 0) {
       printProgressbarMessage(g);
       viewer.repaintView();
     } else {
@@ -816,13 +822,15 @@ public class Jmol implements WrappedApplet {
     public void notifyCallback(int type, Object[] data) {
 
       String callback = callbacks[type];
-      boolean doCallback = (callback != null);
+      boolean doCallback = (callback != null && (data == null || data[0] == null));
 
       if (data != null)
         data[0] = htmlName;
       String strInfo = (data == null || data[1] == null ? null : data[1]
           .toString());
 
+      //System.out.println("Jmol.java notifyCallback " + type + " " + callback
+        //  + " " + strInfo);
       switch (type) {
       case JmolConstants.CALLBACK_ANIMFRAME:
         // Note: twos-complement. To get actual frame number, use 
@@ -979,6 +987,8 @@ public class Jmol implements WrappedApplet {
         if (needPopupMenu)
           getPopupMenu(true);
         clearDefaultConsoleMessage();
+        if (jvm12 != null && isSigned)
+          Jvm12.newDialog(true);
         return;
       }
       for (int i = 0; i < JmolConstants.CALLBACK_COUNT; i++)
@@ -1021,8 +1031,8 @@ public class Jmol implements WrappedApplet {
         return "NO EVAL ALLOWED";
       }
       if (callbacks[JmolConstants.CALLBACK_EVAL] != null) {
-        notifyCallback(JmolConstants.CALLBACK_EVAL,
-            new Object[] { "", strEval });
+        notifyCallback(JmolConstants.CALLBACK_EVAL, new Object[] { null,
+            strEval });
         return "";
       }
       try {
@@ -1060,7 +1070,8 @@ public class Jmol implements WrappedApplet {
           return GT._("File creation failed.");
         }
       } else if (quality != Integer.MAX_VALUE) {
-        return GT._(
+        return GT
+            ._(
                 "File creation by this applet is not allowed. For Base64 JPEG format, use {0}.",
                 "jmolGetPropertyAsString('image')");
       }
@@ -1108,9 +1119,9 @@ public class Jmol implements WrappedApplet {
         Logger.error("Exception " + e.getMessage() + " with nX, nY: " + nX
             + " " + nY);
       }
-      for (int i = 0; i < nX; i++)
-        for (int j = 0; j < nY; j++)
-          System.out.println("i j fxy " + i + " " + j + " " + fxy[i][j]);
+     // for (int i = 0; i < nX; i++)
+       // for (int j = 0; j < nY; j++)
+         // System.out.println("i j fxy " + i + " " + j + " " + fxy[i][j]);
       return fxy;
     }
 
@@ -1154,14 +1165,16 @@ public class Jmol implements WrappedApplet {
     }
 
     private String defaultMessage;
+
     private void clearDefaultConsoleMessage() {
       defaultMessage = null;
     }
-    
+
     private void consoleMessage(String message) {
       if (jvm12 != null && jvm12.haveConsole()) {
         if (defaultMessage == null)
-          defaultMessage = GT._("Messages will appear here. Enter commands in the box below. Click the console Help menu item for on-line help, which will appear in a new browser window.");
+          defaultMessage = GT
+              ._("Messages will appear here. Enter commands in the box below. Click the console Help menu item for on-line help, which will appear in a new browser window.");
         if (jvm12.getConsoleMessage().startsWith(defaultMessage))
           jvm12.consoleMessage("");
         jvm12.consoleMessage(message);
@@ -1186,13 +1199,13 @@ public class Jmol implements WrappedApplet {
         if (script == null || script.length() == 0 || script.equals("0"))
           return "";
       }
-      
+
       Vector apps = new Vector();
       JmolAppletRegistry.findApplets(appletName, syncId, fullName, apps);
       int nApplets = apps.size();
       if (nApplets == 0) {
         if (!doCallback && !appletName.equals("*"))
-            Logger.error(fullName + " couldn't find applet " + appletName);
+          Logger.error(fullName + " couldn't find applet " + appletName);
         return "";
       }
       StringBuffer sb = (isSync ? null : new StringBuffer());

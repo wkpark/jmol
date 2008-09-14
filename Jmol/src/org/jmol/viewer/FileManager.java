@@ -164,7 +164,10 @@ public class FileManager {
     fileType = (pt >= 0 ? name.substring(0, pt) : null);
     Logger.info("\nFileManager.openFile(" + nameAsGiven + ") //" + name);
     openErrorMessage = fullPathName = fileName = null;
-    setNames(classifyName(nameAsGiven));
+    String[] names = classifyName(nameAsGiven);
+    if (names == null)
+      return;
+    setNames(names);
     htParams.put("fullPathName", (fileType == null ? "" : fileType + "::")
         + fullPathName.replace('\\', '/'));
     if (openErrorMessage != null) {
@@ -187,7 +190,10 @@ public class FileManager {
       nameAsGiven = (pt >= 0 ? names[i].substring(pt + 2) : names[i]);
       fileType = (pt >= 0 ? names[i].substring(0, pt) : null);
       openErrorMessage = fullPathName = fileName = null;
-      setNames(classifyName(nameAsGiven));
+      String[] thenames = classifyName(nameAsGiven);
+      if (thenames == null)
+        return;
+      setNames(thenames);
       if (openErrorMessage != null) {
         Logger.error("file ERROR: " + openErrorMessage);
         return;
@@ -509,7 +515,21 @@ java.lang.NullPointerException
     return -1;
   }
   
+  public static String getLocalUrl(String path) {
+    // entering a url on a file input box will be accepted,
+    // but cause an error later. We can fix that...
+    // return null if there is no problem, the real url if there is
+    if (urlTypeIndex(path) < 0)
+      for (int i = 0; i < urlPrefixes.length; ++i)
+        if (path.indexOf(urlPrefixes[i]) >= 0)
+          return TextFormat.simpleReplace(path.substring(path.indexOf(urlPrefixes[i]))
+              .replace('\\', '/'), ":", ":/");
+    return null;
+  }
+  
   private void setNames(String[] names) {
+    if (names == null)
+      return;
     fullPathName = names[0];
     fileName = names[1];
   }

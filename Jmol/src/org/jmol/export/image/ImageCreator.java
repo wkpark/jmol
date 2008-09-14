@@ -80,6 +80,8 @@ public class ImageCreator implements JmolImageCreatorInterface {
       clipImage(text);
       return "OK " + text.length();
     }
+    if ((isText || isBytes) && text_bytes == null)
+      return "NO DATA";
     try {
       FileOutputStream os = new FileOutputStream(fileName);
       if (isBytes) {
@@ -87,7 +89,8 @@ public class ImageCreator implements JmolImageCreatorInterface {
         os.flush();
         os.close();
       } else if (isText) {
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os), 8192);
+        OutputStreamWriter osw = new OutputStreamWriter(os);
+        BufferedWriter bw = new BufferedWriter(osw, 8192);
         bw.write(text);
         bw.close();
         os = null;

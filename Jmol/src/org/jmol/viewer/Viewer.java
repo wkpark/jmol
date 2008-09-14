@@ -69,6 +69,7 @@ import javax.vecmath.AxisAngle4f;
 import java.net.URL;
 import java.io.ByteArrayOutputStream;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 
 /*
  * 
@@ -247,6 +248,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private boolean isSilent = false;
   private boolean isApplet = false;
+  private boolean isPreviewOnly = false;
   private boolean autoExit = false;
   private String writeInfo;
   private boolean haveDisplay = true;
@@ -262,64 +264,48 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setAppletContext(String fullName, URL documentBase, URL codeBase,
-                               String appletProxyOrCommandOptions) {
+                               String commandOptions) {
     this.fullName = fullName = (fullName == null ? "" : fullName);
-    this.appletDocumentBase = (documentBase == null ? "" : documentBase
+    appletDocumentBase = (documentBase == null ? "" : documentBase
         .toString());
-    this.appletCodeBase = (codeBase == null ? "" : codeBase.toString());
+    appletCodeBase = (codeBase == null ? "" : codeBase.toString());
     int i = fullName.lastIndexOf("[");
-    this.htmlName = (i < 0 ? fullName : fullName.substring(0, i));
-    this.syncId = (i < 0 ? "" : fullName
+    htmlName = (i < 0 ? fullName : fullName.substring(0, i));
+    syncId = (i < 0 ? "" : fullName
         .substring(i + 1, fullName.length() - 1));
     isApplet = (documentBase != null);
-
-    String str = appletProxyOrCommandOptions;
-    if (str == null)
-      str = "";
-    String mem = (String) getParameter("_memory");
-
-    String appletProxy = null;
-    if (isApplet && (i = str.indexOf("-appletProxy ")) >= 0) {
-      appletProxy = str.substring(i + 13);
-      str = str.substring(0, i);
-    }
-    if (isApplet && (i = str.indexOf("-maximumSize ")) >= 0) {
-      setMaximumSize(Parser.parseInt(str.substring(i + 13)));
-      str = str.substring(0, i);
-    }
-    if (str.indexOf("-b") >= 0)
-        g3d.setBackgroundTransparent(true);
-    useCommandThread = (str.indexOf("-t") >= 0);
-    if (useCommandThread)
-      scriptManager.startCommandWatcher(true);
-    isSignedApplet = (isApplet && str.indexOf("-signed") >= 0);
-    setBooleanProperty("_applet", isApplet);
-    setBooleanProperty("_signedApplet", isSignedApplet);
-    setBooleanProperty("_useCommandThread", useCommandThread);
-    if (!isApplet) {
+    
+    String str = "" + commandOptions;
+    if (isApplet) {
+      Logger.info("applet context: " + commandOptions);
+      String appletProxy = null;
+      // -appletProxy must be the last flag added
+      if ((i = str.indexOf("-appletProxy ")) >= 0) {
+        appletProxy = str.substring(i + 13);
+        str = str.substring(0, i);
+      }
+      fileManager.setAppletContext(documentBase, codeBase, appletProxy);
+      isSignedApplet = (str.indexOf("-signed") >= 0);
+      if ((i = str.indexOf("-maximumSize ")) >= 0)
+        setMaximumSize(Parser.parseInt(str.substring(i + 13)));
+      useCommandThread = (str.indexOf("-threaded") >= 0);
+      if (useCommandThread)
+        scriptManager.startCommandWatcher(true);
+    } else {
       // not an applet -- used to pass along command line options
-      if (str.indexOf("-i") >= 0) {
+      isPreviewOnly = (str.indexOf("#previewOnly") >= 0);
+      g3d.setBackgroundTransparent(str.indexOf("-b") >= 0);
+      isSilent = (str.indexOf("-i") >= 0);
+      if (isSilent)
         Logger.setLogLevel(Logger.LEVEL_WARN); //no info, but warnings and errors
-        isSilent = true;
-      }
-      if (str.indexOf("-c") >= 0) {
-        checkScriptOnly = true;
+      checkScriptOnly = (str.indexOf("-c") >= 0);
+      if (checkScriptOnly)
         fileOpenCheck = true;
-      }
-      if (str.indexOf("-C") >= 0) {
-        checkScriptOnly = true;
-        fileOpenCheck = false;
-      }
-      if (str.indexOf("-l") >= 0) {
-        listCommands = true;
-      }
-      if (str.indexOf("-x") >= 0) {
-        autoExit = true;
-      }
-      if (display == null || str.indexOf("-n") >= 0) {
-        haveDisplay = false;
-        display = null;
-      }
+      listCommands = (str.indexOf("-l") >= 0);
+      autoExit = (str.indexOf("-x") >= 0);
+      haveDisplay = (display != null && str.indexOf("-n") < 0);
+      if (!haveDisplay)
+      display = null;
       writeInfo = null;
       if (str.indexOf("-w") >= 0) {
         i = str.indexOf("\1");
@@ -328,6 +314,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       mustRender = (haveDisplay || writeInfo != null);
     }
+    setBooleanProperty("_applet", isApplet);
+    setBooleanProperty("_signedApplet", isSignedApplet);
+    setBooleanProperty("_useCommandThread", useCommandThread);
 
     /*
      Logger.info("jvm11orGreater=" + jvm11orGreater
@@ -345,15 +334,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           + "\nos.name:"
           + strOSName
           + "\nmemory:"
-          + mem
+          + getParameter("_memory")
           + "\nuseCommandThread: "
           + useCommandThread
           + (!isApplet ? "" : "\nappletId:" + htmlName
               + (isSignedApplet ? " (signed)" : "")));
     }
 
-    if (isApplet)
-      fileManager.setAppletContext(documentBase, codeBase, appletProxy);
     zap(false, false); //here to allow echos
     global.setParameterValue("language", GT.getLanguage());
   }
@@ -1791,8 +1778,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Object getCurrentFileAsBytes() {
     String filename = getFullPathName();
-    if (filename == "string" || filename == "string[]" || filename == "JSNode")
-      return getCurrentFileAsString();
+    if (filename.equals("string") || filename.equals("string[]") || filename.equals("JSNode")) {
+      String str = getCurrentFileAsString();
+      try {
+        return str.getBytes("UTF8");
+      } catch (UnsupportedEncodingException e) {
+        return str;
+      }
+    }
     String pathName = modelManager.getModelSetPathName();
     if (pathName == null)
       return "";
@@ -1822,7 +1815,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public String getFullPathName() {
     return fileManager.getFullPathName();
   }
-
+  
   public String getFileName() {
     return fileManager.getFileName();
   }
@@ -1975,8 +1968,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String s = statusManager.getCallbackScript("minimizationcallback");
     if (s != null)
       evalStringQuiet(s, true, false);
-    else
-      statusManager.notifyMinimizationStatus();
+    statusManager.notifyMinimizationStatus(s);
   }
 
   public String getMinimizationInfo() {
@@ -1997,8 +1989,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     repaintManager.initializePointers(1);
     setCurrentModelIndex(0);
     setBackgroundModelIndex(-1);
-    setFrankOn(getShowFrank());
-    mouseManager.startHoverWatcher(true);
+    setFrankOn(!isPreviewOnly && getShowFrank());
+    mouseManager.startHoverWatcher(!isPreviewOnly);
     setTainted(true);
     finalizeTransformParameters();
   }
@@ -3861,8 +3853,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setParameterValue("_pickinfo", info);
     if (s != null)
       evalStringQuiet(s, true, false);
-    else
-      statusManager.setStatusAtomPicked(atomIndex, info);
+    statusManager.setStatusAtomPicked(s, atomIndex, info);
   }
 
   public void setStatusAtomHovered(int atomIndex, String info) {
@@ -3870,8 +3861,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setParameterValue("_atomhovered", atomIndex);
     if (s != null)
       evalStringQuiet(s, true, false);
-    else
-      statusManager.setStatusAtomHovered(atomIndex, info);
+    statusManager.setStatusAtomHovered(s, atomIndex, info);
   }
 
   public void setStatusMeasurePicked(int iatom, String strMeasure) {
@@ -3888,8 +3878,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String s = statusManager.getCallbackScript("resizecallback");
     if (s != null)
       evalStringQuiet(s, true, false);
-    else
-      statusManager.setStatusResized(width, height);
+    statusManager.setStatusResized(s, width, height);
   }
 
   void setStatusScriptStarted(int iscript, String script) {
@@ -3901,9 +3890,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void popupMenu(int x, int y) {
-    if (global.disablePopupMenu)
+    if (isPreviewOnly || global.disablePopupMenu)
       return;
-    setFrankOn(true);
+    //setFrankOn(true);
     statusManager.popupMenu(x, y);
   }
 
@@ -3951,8 +3940,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     s = statusManager.getCallbackScript("animframecallback");
     if (s != null)
       evalStringQuiet(s, true, false);
-    else
-      statusManager.setStatusFrameChanged(frameNo, fileNo, modelNo,
+    statusManager.setStatusFrameChanged(s, frameNo, fileNo, modelNo,
           (repaintManager.animationDirection < 0 ? -firstNo : firstNo),
           (repaintManager.currentDirection < 0 ? -lastNo : lastNo));
   }
@@ -3967,18 +3955,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet == null ? null : modelSet.getModelFileName(modelIndex);
   }
 
-  private void setStatusFileLoaded(int ptLoad, String fullPathName,
+  void setStatusFileLoaded(int ptLoad, String fullPathName,
                                    String fileName, String modelName,
                                    String strError) {
     String s = statusManager.getCallbackScript("loadstructcallback");
     if (s != null)
       evalStringQuiet(s, true, false);
-    else
-      statusManager.setStatusFileLoaded(fullPathName, fileName, modelName,
+    statusManager.setStatusFileLoaded(s, fullPathName, fileName, modelName,
           strError, ptLoad);
   }
 
-  String dialogAsk(String type, String data) {
+  public String dialogAsk(String type, String data) {
     return statusManager.dialogAsk(type, data);
   }
   
@@ -5581,7 +5568,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   boolean frankOn = true;
 
   public void setFrankOn(boolean TF) {
-    frankOn = TF;
+    frankOn = TF && !isPreviewOnly;
     setObjectMad(JmolConstants.SHAPE_FRANK, "frank", (short) (TF ? 1 : 0));
   }
 

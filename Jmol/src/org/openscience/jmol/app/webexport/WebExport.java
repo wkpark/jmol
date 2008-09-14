@@ -50,9 +50,9 @@ import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileSystemView;
 
 import org.jmol.api.JmolViewer;
+import org.jmol.export.dialog.HistoryFile;
 import org.jmol.i18n.GT;
 import org.jmol.util.TextFormat;
-import org.openscience.jmol.app.HistoryFile;
 
 public class WebExport extends JPanel implements WindowListener {
 

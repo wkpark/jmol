@@ -766,6 +766,10 @@ abstract public class ModelCollection extends BondCollection {
     return models[modelIndex].nInsertions;
   }
 
+  public String getModelFileType(int modelIndex) {
+    return (String) getModelAuxiliaryInfo(modelIndex, "fileType");
+  }
+  
   public static int modelFileNumberFromFloat(float fDotM) {
     //only used in the case of select model = someVariable
     //2.1 and 2.10 will be ambiguous and reduce to 2.1  

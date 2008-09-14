@@ -9027,6 +9027,8 @@ class Eval {
       boolean isPovRay = type.equals("Povray");
       data = viewer.generateOutput(data, isPovRay ? fileName : null, width,
           height);
+      if (data == null)
+        return "";
       if (isPovRay) {
         data = TextFormat.simpleReplace(data, "%FILETYPE%", "N");
         data = TextFormat.simpleReplace(data, "%OUTPUTFILENAME%", fileName
@@ -9057,6 +9059,8 @@ class Eval {
         data = viewer.getCurrentFileAsString();
       else
         bytes = viewer.getCurrentFileAsBytes();
+      if ("?".equals(fileName))
+        fileName = "?Jmol." + viewer.getParameter("_fileType");      
       quality = Integer.MIN_VALUE;
     } else if (data == "VAR") {
       data = "" + getParameter(Token.sValue(tokenAt(isCommand ? 2 : 1, args)), false);

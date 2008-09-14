@@ -212,4 +212,8 @@ class MyStatusListener implements JmolStatusListener {
   public String createImage(String file, String type, Object text_or_bytes, int quality) {
     return null;
   }
+
+  public String dialogAsk(String type, String data) {
+    return null;
+  }
 }

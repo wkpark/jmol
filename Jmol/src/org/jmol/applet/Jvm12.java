@@ -23,25 +23,22 @@
  */
 package org.jmol.applet;
 
-import org.jmol.api.*;
-
 import java.awt.*;
-import java.io.File;
 
-import javax.swing.JFileChooser;
-
+import org.jmol.api.*;
 import org.jmol.util.Logger;
-import org.jmol.viewer.FileManager;
 
 class Jvm12 {
 
   private JmolViewer viewer;
+  JmolAdapter modelAdapter;
   private Component awtComponent;
   Console console;
 
-  Jvm12(Component awtComponent, JmolViewer viewer) {
+  Jvm12(Component awtComponent, JmolViewer viewer, JmolAdapter modelAdapter) {
     this.awtComponent = awtComponent;
     this.viewer = viewer;
+    this.modelAdapter = modelAdapter;
   }
 
   private final Rectangle rectClip = new Rectangle();
@@ -97,54 +94,34 @@ class Jvm12 {
     return console.getText();
   }
 
-  private JFileChooser exportChooser, openChooser, saveChooser;
   final private static String[] imageChoices = { "JPEG", "PNG", "GIF", "PPM" };
   final private static String[] imageExtensions = { "jpg", "png", "gif", "PPM" };
 
-  public String dialogAsk(JmolSaveDialogInterface sd, String type,
+  static JmolDialogInterface newDialog(boolean forceNewTranslation) {
+    JmolDialogInterface sd = (JmolDialogInterface) Interface
+        .getOptionInterface("export.dialog.Dialog");
+    sd.setupUI(forceNewTranslation);
+    return sd;
+  }
+  
+  public String dialogAsk(JmolDialogInterface sd, String type,
                           String fileName) {
     if (type.equals("load"))
       return getOpenFileNameFromDialog(fileName);
     if (sd == null)
-      sd = (JmolSaveDialogInterface) Interface
-          .getOptionInterface("export.__SaveDialog");
+      sd = newDialog(false);
     if (type.equals("save")) {
-      if (saveChooser == null)
-        saveChooser = new JFileChooser();
-      return sd.getSaveFileNameFromDialog(saveChooser, viewer, fileName, null);
+      return sd.getSaveFileNameFromDialog(viewer, fileName, null);
     }
     if (type.startsWith("saveImage")) {
-      if (exportChooser == null)
-        exportChooser = new JFileChooser();
-      return sd.getImageFileNameFromDialog(exportChooser, viewer, fileName,
+      return sd.getImageFileNameFromDialog(viewer, fileName,
           imageType, imageChoices, imageExtensions, qualityJPG, qualityPNG);
     }
     return null;
   }
 
   public String getOpenFileNameFromDialog(String fileName) {
-    if (openChooser == null) {
-      openChooser = new JFileChooser();
-    }
-    //    String ext = null;
-    if (fileName != null) {
-      if (fileName.length() > 0)
-        openChooser.setSelectedFile(new File(fileName));
-      if (fileName.indexOf(":") < 0)
-        openChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
-      //      int pt;
-      //      if ((pt = fileName.indexOf(".")) >= 0) {
-      //        ext = fileName.substring(pt + 1);
-      //    }
-    }
-    int ret = openChooser.showOpenDialog(awtComponent);
-    if (ret != JFileChooser.APPROVE_OPTION)
-      return null;
-    File file = openChooser.getSelectedFile();
-    if (file == null)
-      return null;
-    viewer.setStringProperty("currentLocalPath", file.getParent());
-    return file.getAbsolutePath();
+    return newDialog(false).getOpenFileNameFromDialog(modelAdapter, viewer, fileName, null, null, false);
   }
 
   int qualityJPG = -1;
@@ -160,8 +137,7 @@ class Jvm12 {
       fileName = dialogAsk(null, "save", fileName);
     } else {
       // image
-      JmolSaveDialogInterface sd = (JmolSaveDialogInterface) Interface
-          .getOptionInterface("export.__SaveDialog");
+      JmolDialogInterface sd = newDialog(false);
       fileName = dialogAsk(sd, "saveImage+" + type, fileName);
       qualityJPG = sd.getQuality("JPG");
       qualityPNG = sd.getQuality("PNG");

@@ -65,6 +65,7 @@ abstract public class JmolPopup {
 
   int aboutComputedMenuBaseCount;
   String nullModelSetName, modelSetName;
+  String modelSetFileName, modelSetRoot;
   
   Hashtable modelSetInfo, modelInfo;
   Vector PDBOnly = new Vector();
@@ -134,8 +135,9 @@ abstract public class JmolPopup {
   
   void build(Object popupMenu) {
     htMenus.put("popupMenu", popupMenu);
+    boolean allowSignedFeatures = (!viewer.isApplet() || viewer.getBooleanProperty("_signedApplet"));
     addMenuItems("", "popupMenu", popupMenu, new PopupResourceBundle(menuStructure, menuText), viewer
-        .isJvm12orGreater());
+        .isJvm12orGreater(), allowSignedFeatures);
   }
 
   public String getMenu(String title) {
@@ -178,6 +180,7 @@ abstract public class JmolPopup {
   public void updateComputedMenus() {
     updateMode = UPDATE_ALL;
     getViewerData();
+    //System.out.println("jmolPopup updateComputedMenus " + modelSetFileName + " " + modelSetName + " " + atomCount);
     updateSelectMenu();
     updateWriteMenu();
     updateElementsComputedMenu(viewer.getElementsPresentBitSet(modelIndex));
@@ -194,11 +197,31 @@ abstract public class JmolPopup {
     updateAboutSubmenu();
   }
 
+  private void updateWriteMenu() {
+    Object menu = htMenus.get("SIGNEDwriteMenu");
+    if (menu == null)
+      return;
+    String text = getMenuText("writeFileTextVARIABLE");
+    menu = htMenus.get("writeFileTextVARIABLE");
+    setLabel(menu, GT._(text, modelSetFileName, true));
+    enableMenuItem(menu, !modelSetFileName.equals("zapped"));
+  }
+
   private void getViewerData() {
     isApplet = viewer.isApplet();
     isSigned = (viewer.getBooleanProperty("_signedApplet"));
     modelSetName = viewer.getModelSetName();
-    isZapped = (modelSetName == "zapped");
+    modelSetRoot = (modelSetName == null 
+        || modelSetName.indexOf("<") >= 0 
+        || modelSetName.indexOf("[") >= 0
+        || modelSetName.indexOf(" ") >= 0 ? "Jmol"
+            : modelSetName);
+
+    modelSetFileName = viewer.getModelSetFileName();
+    if ("string".equals(modelSetFileName))
+        modelSetFileName = "";
+                
+    isZapped = ("zapped".equals(modelSetName));
     modelIndex = viewer.getDisplayModelIndex();
     modelCount = viewer.getModelCount();
     atomCount = viewer.getAtomCountInModel(modelIndex);
@@ -237,15 +260,6 @@ abstract public class JmolPopup {
       return;
     enableMenu(menu, atomCount != 0);
     setLabel(menu, GT._(getMenuText("selectMenuText"), viewer.getSelectionCount(), true));
-  }
-
-  void updateWriteMenu() {
-    Object menu = htMenus.get("SIGNEDWriteMenu");
-    if (menu == null)
-      return;
-    String fname = viewer.getModelSetFileName();
-    updateMenuItem(htMenus.get("writeFileText"), 
-         GT._(getMenuText("writeFileText"), fname, true), "write file \"" + fname + "\"");
   }
 
   void updateElementsComputedMenu(BitSet elementsPresentBitSet) {
@@ -537,6 +551,8 @@ abstract public class JmolPopup {
     }
     renameMenu(menu, modelSetName);
     enableMenu(menu, true);
+    if (atomCount < 100)
+      addMenuItem(menu, "Minimize", "minimize", null);
     addMenuSeparator(menu);
     addMenuItem(menu, GT._(getMenuText("atomsText"), atomCount, true));
     addMenuItem(menu, GT._(getMenuText("bondsText"), viewer
@@ -577,8 +593,8 @@ abstract public class JmolPopup {
     if (isApplet && viewer.showModelSetDownload()
         && !viewer.getBooleanProperty("hideNameInPopup")) {
       addMenuSeparator(menu);
-      addMenuItem(menu, GT._(getMenuText("viewMenuText"), viewer
-          .getModelSetFileName(), true), "show url", null);
+      addMenuItem(menu, GT._(getMenuText("viewMenuText"), 
+          modelSetFileName, true), "show url", null);
     }
   }
 
@@ -674,7 +690,7 @@ abstract public class JmolPopup {
 
   private void addMenuItems(String parentId, String key, Object menu,
                             PopupResourceBundle popupResourceBundle,
-                            boolean isJVM12orGreater) {
+                            boolean isJVM12orGreater, boolean allowSignedFeatures) {
     String id = parentId + "." + key;
     String value = popupResourceBundle.getStructure(key);
     //Logger.debug(id + " --- " + value);
@@ -700,11 +716,13 @@ abstract public class JmolPopup {
       boolean isDisabled = (!isJVM12orGreater && item.indexOf("JVM12") >= 0);
       String word = popupResourceBundle.getWord(item);
       if (item.indexOf("Menu") >= 0) {
+        if (!allowSignedFeatures && item.startsWith("SIGNED"))
+          continue;
         Object subMenu = newMenu(word, id + "." + item);        
         addMenuSubMenu(menu, subMenu);
         htMenus.put(item, subMenu);
         if (item.indexOf("Computed") < 0)
-          addMenuItems(id, item, subMenu, popupResourceBundle, isJVM12orGreater);
+          addMenuItems(id, item, subMenu, popupResourceBundle, isJVM12orGreater, allowSignedFeatures);
         // these will need tweaking:
         if ("aboutComputedMenu".equals(item)) {
           aboutComputedMenuBaseCount = getMenuItemCount(subMenu);
@@ -733,6 +751,8 @@ abstract public class JmolPopup {
           enableMenuItem(newMenu, false);
       }
 
+      if (item.indexOf("VARIABLE") >= 0)
+        htMenus.put(item, newMenu);
       // menus or menu items:
       if (item.indexOf("PDB") >= 0) {
         PDBOnly.add(newMenu);
@@ -750,9 +770,9 @@ abstract public class JmolPopup {
         VibrationOnly.add(newMenu);
       } else if (item.indexOf("SYMMETRY") >= 0) {
         SymmetryOnly.add(newMenu);
-      } else if (item.indexOf("SIGNED") >= 0) {
-        SignedOnly.add(newMenu);
       }
+      if (item.startsWith("SIGNED"))
+        SignedOnly.add(newMenu);
 
       if (dumpList) {
         String str = item.endsWith("Menu") ? "----" : id + "." + item + "\t"
@@ -828,7 +848,7 @@ abstract public class JmolPopup {
     }
   }
 
-  static String fixScript(String id, String script) {
+  String fixScript(String id, String script) {
     int pt;
     if (script == "" || id.endsWith("Checkbox"))
       return script;
@@ -846,7 +866,10 @@ abstract public class JmolPopup {
       if (script.indexOf("[]") < 0)
         script = "[] " + script;
       return TextFormat.simpleReplace(script, "[]", id);
-    }
+    } else if (script.indexOf("?FILEROOT?") >= 0)
+      script = TextFormat.simpleReplace(script, "FILEROOT?", modelSetRoot);
+    else if (script.indexOf("?FILE?") >= 0)
+      script = TextFormat.simpleReplace(script, "FILE?", modelSetFileName);
     return script;
   }
 

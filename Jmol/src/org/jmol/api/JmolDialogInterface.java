@@ -1,37 +1,32 @@
 package org.jmol.api;
 
-import javax.swing.JFileChooser;
+public interface JmolDialogInterface {
 
-public interface JmolSaveDialogInterface {
-
-  /**
-   * Memorize the default type for the next time.
-   */
-  public abstract void memorizeDefaultType();
-
+  
+  public abstract void setupUI(boolean forceNewTranslation);
+  
   /**
    * @return The file type which contains the user's choice
    */
   public abstract String getType();
 
   /**
-   * @return The file extension which contains the user's choice
-   */
-  public abstract String getExtension();
-
-  /**
    * @param sType JPG or PNG
-   * @return The quality (on a scale from 0 to 10) of the JPEG
-   * image that is to be generated.  Returns -1 if choice was not JPEG.
+   * @return The quality (on a scale from 0 to 100) of the JPEG. 0 to 9 for PNG
+   *         image that is to be generated.  Returns -1 if choice was not JPEG or PNG.
    */
   public abstract int getQuality(String sType);
 
-  public abstract String getSaveFileNameFromDialog(JFileChooser saveChooser,
+  public abstract String getOpenFileNameFromDialog(JmolAdapter modelAdapter,
                                                    JmolViewer viewer,
+                                                   String fileName,
+                                                   Object historyFile,
+                                                   String windowName, boolean allowAppend);
+
+  public abstract String getSaveFileNameFromDialog(JmolViewer viewer,
                                                    String data, String type);
 
-  public abstract String getImageFileNameFromDialog(JFileChooser chooser,
-                                                    JmolViewer viewer,
+  public abstract String getImageFileNameFromDialog(JmolViewer viewer,
                                                     String fileName,
                                                     String type,
                                                     String[] imageChoices,

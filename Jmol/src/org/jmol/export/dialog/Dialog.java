@@ -21,7 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.export;
+package org.jmol.export.dialog;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -31,6 +31,7 @@ import javax.swing.JSlider;
 import javax.swing.JPanel;
 import javax.swing.JComboBox;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -41,12 +42,14 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.io.File;
 
-import org.jmol.api.JmolSaveDialogInterface;
+import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolDialogInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
+import org.jmol.util.Escape;
 import org.jmol.viewer.FileManager;
 
-public class __SaveDialog extends JPanel implements JmolSaveDialogInterface {
+public class Dialog extends JPanel implements JmolDialogInterface {
 
   String[] extensions = new String[10];
   String choice;
@@ -56,38 +59,93 @@ public class __SaveDialog extends JPanel implements JmolSaveDialogInterface {
   private JComboBox cb;
 
   JPanel qPanelJPEG, qPanelPNG;
-  JFileChooser exportChooser;
-  
-  public __SaveDialog() {
+  static JFileChooser exportChooser;
+  static JFileChooser saveChooser;
+
+  public Dialog() {
   }
 
-  public String getSaveFileNameFromDialog(JFileChooser chooser,
+  private static FileChooser openChooser;
+  private FilePreview openPreview;
+
+  public String getOpenFileNameFromDialog(JmolAdapter modelAdapter,
                                           JmolViewer viewer, String fileName,
-                                          String type) {
-    chooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
+                                          Object historyFileObject,
+                                          String windowName, boolean allowAppend) {
+    
+    HistoryFile historyFile = (HistoryFile) historyFileObject;
+
+    if (openChooser == null) {
+      openChooser = new FileChooser();
+      String previewProperty = System.getProperty("openFilePreview", "true");
+      if (Boolean.valueOf(previewProperty).booleanValue()) {
+        openPreview = new FilePreview(openChooser, modelAdapter, allowAppend);
+      }
+    }
+    
+    if (historyFile != null) {
+      openChooser.setDialogSize(historyFile.getWindowSize(windowName));
+      openChooser.setDialogLocation(historyFile.getWindowPosition(windowName));
+    }
+    
+    if (fileName != null && fileName.length() > 0)
+      openChooser.setSelectedFile(new File(fileName));
+    if (fileName != null && fileName.indexOf(":") < 0)
+      openChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
     File file = null;
-    chooser.resetChoosableFileFilters();
+    if (openChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+      file = openChooser.getSelectedFile();
+    if (file == null)
+      return null;
+        
+    if (historyFile != null)
+      historyFile.addWindowInfo(windowName, openChooser.getDialog(), null);
+
+    String url = FileManager.getLocalUrl(file.getAbsolutePath());
+    if (url != null) {
+      fileName = url;
+    } else {
+      viewer.setStringProperty("currentLocalPath", file.getParent());
+      fileName = file.getAbsolutePath();
+    }
+    boolean doAppend = (openPreview != null && openPreview.isAppendSelected());
+    openPreview = null;
+    return (doAppend ? "load append " + Escape.escape(fileName) : fileName);
+  }
+  
+  public String getSaveFileNameFromDialog(JmolViewer viewer, String fileName,
+                                          String type) {
+    if (saveChooser == null)
+      saveChooser = new JFileChooser();
+    saveChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
+    File file = null;
+    saveChooser.resetChoosableFileFilters();
     if (fileName != null) {
       int pt = fileName.lastIndexOf(".");
       String sType = fileName.substring(pt + 1);
       if (pt >= 0 && sType.length() > 0)
-        chooser.addChoosableFileFilter(new TypeFilter(sType));
+        saveChooser.addChoosableFileFilter(new TypeFilter(sType));
+      if (fileName.indexOf(".") == 0)
+        fileName = "Jmol" + fileName;
       file = new File(fileName);
     }
     if (type != null)
-      chooser.addChoosableFileFilter(new TypeFilter(type));
-    if ((file = showSaveDialog(this, viewer.getAwtComponent(), chooser, file)) == null)
+      saveChooser.addChoosableFileFilter(new TypeFilter(type));
+    saveChooser.setSelectedFile(file);
+    if ((file = showSaveDialog(this, this, saveChooser,
+        file)) == null)
       return null;
     viewer.setStringProperty("currentLocalPath", file.getParent());
     return file.getAbsolutePath();
   }
-  
-  public String getImageFileNameFromDialog(JFileChooser chooser,
+
+  public String getImageFileNameFromDialog(
                                            JmolViewer viewer, String fileName,
                                            String type, String[] imageChoices,
                                            String[] imageExtensions,
                                            int qualityJPG, int qualityPNG) {
-    exportChooser = chooser;
+    if (exportChooser == null)
+      exportChooser = new JFileChooser();
     exportChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
     exportChooser.resetChoosableFileFilters();
     File file = null;
@@ -105,6 +163,8 @@ public class __SaveDialog extends JPanel implements JmolSaveDialogInterface {
         file = new File(pathName, fileName);
       }
     } else {
+      if (fileName.indexOf(".") == 0)
+        fileName = "Jmol" + fileName;
       String sType = fileName.substring(fileName.lastIndexOf(".") + 1);
       for (int i = 0; i < imageExtensions.length; i++)
         if (sType.equals(imageChoices[i])
@@ -116,30 +176,29 @@ public class __SaveDialog extends JPanel implements JmolSaveDialogInterface {
           qualityJPG, qualityPNG);
       file = new File(fileName);
     }
-
-    initialFile = file;
-    if ((file = showSaveDialog(this, viewer.getAwtComponent(), exportChooser,
+    exportChooser.setSelectedFile(initialFile = file);
+    if ((file = showSaveDialog(this, this, exportChooser,
         file)) == null)
       return null;
     viewer.setStringProperty("currentLocalPath", file.getParent());
     return file.getAbsolutePath();
   }
 
-  
   File initialFile;
 
   /* (non-Javadoc)
    * @see org.jmol.export.JmolImageTyperInterface#createPanel(javax.swing.JFileChooser, java.lang.String[], java.lang.String[], int)
    */
-  public void createPanel(JFileChooser fc, String[] choices, 
-                          String[] extensions, String type, int qualityJPEG, int qualityPNG) {
+  public void createPanel(JFileChooser fc, String[] choices,
+                          String[] extensions, String type, int qualityJPEG,
+                          int qualityPNG) {
     exportChooser = fc;
     fc.setAccessory(this);
     setLayout(new BorderLayout());
     choice = null;
     if (type.equals("JPG"))
       type = "JPEG";
-    for (defaultChoice = choices.length; --defaultChoice >= 1; )
+    for (defaultChoice = choices.length; --defaultChoice >= 1;)
       if (choices[defaultChoice].equals(type))
         break;
     extension = extensions[defaultChoice];
@@ -160,17 +219,18 @@ public class __SaveDialog extends JPanel implements JmolSaveDialogInterface {
 
     JPanel qPanel2 = new JPanel();
     qPanel2.setLayout(new BorderLayout());
-    
+
     if (qualityJPEG < 0)
       qualityJPEG = 75;
     if (qualityPNG < 0)
       qualityPNG = 2;
     if (qualityPNG > 9)
       qualityPNG = 9;
-    
+
     qPanelJPEG = new JPanel();
     qPanelJPEG.setLayout(new BorderLayout());
-    qPanelJPEG.setBorder(new TitledBorder(GT._("JPEG Quality ({0})", qualityJPEG)));
+    qPanelJPEG.setBorder(new TitledBorder(GT._("JPEG Quality ({0})",
+        qualityJPEG)));
     qSliderJPEG = new JSlider(SwingConstants.HORIZONTAL, 50, 100, qualityJPEG);
     qSliderJPEG.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     qSliderJPEG.setPaintTicks(true);
@@ -179,10 +239,11 @@ public class __SaveDialog extends JPanel implements JmolSaveDialogInterface {
     qSliderJPEG.addChangeListener(new QualityListener(true, qSliderJPEG));
     qPanelJPEG.add(qSliderJPEG, BorderLayout.SOUTH);
     qPanel2.add(qPanelJPEG, BorderLayout.NORTH);
-    
+
     qPanelPNG = new JPanel();
     qPanelPNG.setLayout(new BorderLayout());
-    qPanelPNG.setBorder(new TitledBorder(GT._("PNG Quality ({0})", qualityPNG)));
+    qPanelPNG
+        .setBorder(new TitledBorder(GT._("PNG Quality ({0})", qualityPNG)));
     qSliderPNG = new JSlider(SwingConstants.HORIZONTAL, 0, 9, qualityPNG);
     qSliderPNG.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     qSliderPNG.setPaintTicks(true);
@@ -198,6 +259,7 @@ public class __SaveDialog extends JPanel implements JmolSaveDialogInterface {
 
     private boolean isJPEG;
     private JSlider slider;
+
     public QualityListener(boolean isJPEG, JSlider slider) {
       this.isJPEG = isJPEG;
       this.slider = slider;
@@ -206,16 +268,17 @@ public class __SaveDialog extends JPanel implements JmolSaveDialogInterface {
     public void stateChanged(ChangeEvent arg0) {
       int value = slider.getValue();
       if (isJPEG) {
-        qPanelJPEG.setBorder(new TitledBorder(GT._("JPEG Quality ({0})", value)));
+        qPanelJPEG
+            .setBorder(new TitledBorder(GT._("JPEG Quality ({0})", value)));
       } else {
-        qPanelPNG.setBorder(new TitledBorder(GT._("PNG Quality ({0})", value)));        
+        qPanelPNG.setBorder(new TitledBorder(GT._("PNG Quality ({0})", value)));
       }
     }
-    
+
   }
-  
+
   public class ChoiceListener implements ItemListener {
-      public void itemStateChanged(ItemEvent e) {
+    public void itemStateChanged(ItemEvent e) {
 
       JComboBox source = (JComboBox) e.getSource();
       choice = (String) source.getSelectedItem();
@@ -261,24 +324,25 @@ public class __SaveDialog extends JPanel implements JmolSaveDialogInterface {
   public String getExtension() {
     return extension;
   }
-  
+
   /* (non-Javadoc)
    * @see org.jmol.export.JmolImageTyperInterface#getQuality(java.lang.String)
    */
   public int getQuality(String sType) {
-    return (sType.equals("JPEG") || sType.equals("JPG") ? 
-        qSliderJPEG.getValue() : sType.equals("PNG") ? qSliderPNG.getValue() : -1);
+    return (sType.equals("JPEG") || sType.equals("JPG") ? qSliderJPEG
+        .getValue() : sType.equals("PNG") ? qSliderPNG.getValue() : -1);
   }
 
   private static boolean doOverWrite(JFileChooser chooser, File file) {
     Object[] options = { GT._("Yes"), GT._("No") };
-    int opt = JOptionPane.showOptionDialog(chooser, GT._("Do you want to overwrite file {0}?", file
-        .getAbsolutePath()), GT._("Warning"), JOptionPane.DEFAULT_OPTION,
-        JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+    int opt = JOptionPane.showOptionDialog(chooser, GT._(
+        "Do you want to overwrite file {0}?", file.getAbsolutePath()), GT
+        ._("Warning"), JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+        null, options, options[0]);
     return (opt == 0);
   }
-  
-  private static File showSaveDialog(__SaveDialog it, Component c,
+
+  private static File showSaveDialog(Dialog it, Component c,
                                      JFileChooser chooser, File file) {
     while (true) {
       if (chooser.showSaveDialog(c) != JFileChooser.APPROVE_OPTION)
@@ -290,27 +354,96 @@ public class __SaveDialog extends JPanel implements JmolSaveDialogInterface {
         return file;
     }
   }
-  
+
   public class TypeFilter extends FileFilter {
-    
+
     String thisType;
-   
+
     TypeFilter(String type) {
       thisType = type.toLowerCase();
     }
-    
+
     public boolean accept(File f) {
       if (f.isDirectory() || thisType == null) {
         return true;
       }
       String ext = f.getName();
       int pt = ext.lastIndexOf(".");
-      return (pt >=0 && ext.substring(pt + 1).toLowerCase().equals(thisType));    
+      return (pt >= 0 && ext.substring(pt + 1).toLowerCase().equals(thisType));
     }
 
     public String getDescription() {
       return thisType.toUpperCase() + " (*." + thisType + ")";
     }
-    
+
+  }
+
+  static boolean haveTranslations = false;
+  
+  public void setupUI(boolean forceNewTranslation) {
+    if (forceNewTranslation || !haveTranslations)
+      setupUIManager();
+    haveTranslations = true;
+  }
+  
+  /**
+   * Setup the UIManager (for i18n) 
+   */
+  
+  public static void setupUIManager() {
+
+    // FileChooser strings
+    UIManager.put("FileChooser.acceptAllFileFilterText", GT._("All Files"));
+    UIManager.put("FileChooser.cancelButtonText", GT._("Cancel"));
+    UIManager.put("FileChooser.cancelButtonToolTipText", GT
+        ._("Abort file chooser dialog"));
+    UIManager.put("FileChooser.detailsViewButtonAccessibleName", GT
+        ._("Details"));
+    UIManager.put("FileChooser.detailsViewButtonToolTipText", GT._("Details"));
+    UIManager.put("FileChooser.directoryDescriptionText", GT._("Directory"));
+    UIManager.put("FileChooser.directoryOpenButtonText", GT._("Open"));
+    UIManager.put("FileChooser.directoryOpenButtonToolTipText", GT
+        ._("Open selected directory"));
+    UIManager.put("FileChooser.fileAttrHeaderText", GT._("Attributes"));
+    UIManager.put("FileChooser.fileDateHeaderText", GT._("Modified"));
+    UIManager.put("FileChooser.fileDescriptionText", GT._("Generic File"));
+    UIManager.put("FileChooser.fileNameHeaderText", GT._("Name"));
+    UIManager.put("FileChooser.fileNameLabelText", GT._("File or URL:"));
+    UIManager.put("FileChooser.fileSizeHeaderText", GT._("Size"));
+    UIManager.put("FileChooser.filesOfTypeLabelText", GT._("Files of Type:"));
+    UIManager.put("FileChooser.fileTypeHeaderText", GT._("Type"));
+    UIManager.put("FileChooser.helpButtonText", GT._("Help"));
+    UIManager
+        .put("FileChooser.helpButtonToolTipText", GT._("FileChooser help"));
+    UIManager.put("FileChooser.homeFolderAccessibleName", GT._("Home"));
+    UIManager.put("FileChooser.homeFolderToolTipText", GT._("Home"));
+    UIManager.put("FileChooser.listViewButtonAccessibleName", GT._("List"));
+    UIManager.put("FileChooser.listViewButtonToolTipText", GT._("List"));
+    UIManager.put("FileChooser.lookInLabelText", GT._("Look In:"));
+    UIManager.put("FileChooser.newFolderErrorText", GT
+        ._("Error creating new folder"));
+    UIManager.put("FileChooser.newFolderAccessibleName", GT._("New Folder"));
+    UIManager
+        .put("FileChooser.newFolderToolTipText", GT._("Create New Folder"));
+    UIManager.put("FileChooser.openButtonText", GT._("Open"));
+    UIManager.put("FileChooser.openButtonToolTipText", GT
+        ._("Open selected file"));
+    UIManager.put("FileChooser.openDialogTitleText", GT._("Open"));
+    UIManager.put("FileChooser.saveButtonText", GT._("Save"));
+    UIManager.put("FileChooser.saveButtonToolTipText", GT
+        ._("Save selected file"));
+    UIManager.put("FileChooser.saveDialogTitleText", GT._("Save"));
+    UIManager.put("FileChooser.saveInLabelText", GT._("Save In:"));
+    UIManager.put("FileChooser.updateButtonText", GT._("Update"));
+    UIManager.put("FileChooser.updateButtonToolTipText", GT
+        ._("Update directory listing"));
+    UIManager.put("FileChooser.upFolderAccessibleName", GT._("Up"));
+    UIManager.put("FileChooser.upFolderToolTipText", GT._("Up One Level"));
+
+    // OptionPane strings
+    UIManager.put("OptionPane.cancelButtonText", GT._("Cancel"));
+    UIManager.put("OptionPane.noButtonText", GT._("No"));
+    UIManager.put("OptionPane.okButtonText", GT._("OK"));
+    UIManager.put("OptionPane.yesButtonText", GT._("Yes"));
   }
 }

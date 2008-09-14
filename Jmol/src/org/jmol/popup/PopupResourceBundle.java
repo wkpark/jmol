@@ -213,7 +213,7 @@ class PopupResourceBundle {
 
 
       {   "SIGNEDwriteMenu",
-          "writeFileText writeState writeHistory writeIsosurface - writeJpg writePng - writePovray writeVrml writeMaya" },
+          "writeFileTextVARIABLE writeState writeHistory writeIsosurface - writeJpg writePng - writePovray writeVrml writeMaya" },
 
 
       { "[set_spin_X]Menu", "s0 s5 s10 s20 s30 s40 s50" },
@@ -476,15 +476,15 @@ class PopupResourceBundle {
       { "showOrient", "console on;show orientation" },
       { "showSpacegroup", "console on;show spacegroup" },
       { "showState", "console on;show state" },
-      { "writeFileText", "write file FILE" },      
-      { "writeState", "write state \"?.spt\"" },      
-      { "writeHistory", "write history \"?.his\"" },     
-      { "writeIsosurface", "write isosurface \"?.jvxl\"" },      
-      { "writeJpg", "write image \"?.jpg\"" },      
-      { "writePng", "write iamge \"?.png\"" },      
-      { "writePovray", "write POVRAY ?.pov" },      
-      { "writeVrml", "write VRML ?.vrml" },      
-      { "writeMaya", "write MAYA ?.maya" },       
+      { "writeFileTextVARIABLE", "write file \"?FILE?\"" },      
+      { "writeState", "write state \"?FILEROOT?.spt\"" },      
+      { "writeHistory", "write history \"?FILEROOT?.his\"" },     
+      { "writeIsosurface", "write isosurface \"?FILEROOT?.jvxl\"" },      
+      { "writeJpg", "write image \"?FILEROOT?.jpg\"" },      
+      { "writePng", "write image \"?FILEROOT?.png\"" },      
+      { "writePovray", "write POVRAY ?FILEROOT?.pov" },      
+      { "writeVrml", "write VRML ?FILEROOT?.vrml" },      
+      { "writeMaya", "write MAYA ?FILEROOT?.maya" },       
       { "SYMMETRYshowSymmetry", "console on;show symmetry" },
       { "UNITCELLshow", "console on;show unitcell" },
       { "extractMOL", "console on;getproperty extractModel \"visible\" " },
@@ -861,7 +861,7 @@ class PopupResourceBundle {
         "showState", GT._("Current state"),
         
         "SIGNEDwriteMenu", GT._("Write"),      
-        "writeFileText", GT._("File {0}", "somefilename"),
+        "writeFileTextVARIABLE", GT._("File {0}"),
         "writeState", GT._("State"),      
         "writeHistory", GT._("History"),      
         "writeIsosurface", GT._("Isosurface"),      

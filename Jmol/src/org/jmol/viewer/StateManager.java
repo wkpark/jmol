@@ -1063,6 +1063,7 @@ public class StateManager {
       if (g != null) {
         //persistent values not reset with the "initialize" command
         debugScript = g.debugScript;
+        disablePopupMenu = g.disablePopupMenu;
         messageStyleChime = g.messageStyleChime;
         zShade = g.zShade;
       }

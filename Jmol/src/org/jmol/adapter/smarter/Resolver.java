@@ -185,8 +185,12 @@ public class Resolver {
   }
 
   static Object finalize(AtomSetCollection atomSetCollection, String filename) {
+    String fileType = atomSetCollection.fileTypeName;
+    if (fileType.indexOf("(") >= 0)
+      fileType = fileType.substring(0, fileType.indexOf("("));
     for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;) {
       atomSetCollection.setAtomSetAuxiliaryInfo("fileName", filename, i);
+      atomSetCollection.setAtomSetAuxiliaryInfo("fileType", fileType, i);
     }
     atomSetCollection.freeze();
     if (atomSetCollection.errorMessage != null)

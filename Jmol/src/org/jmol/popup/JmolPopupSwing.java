@@ -266,7 +266,7 @@ public class JmolPopupSwing extends JmolPopup {
     return sb.toString();
   }
 
-  private static void getMenuCurrent(StringBuffer sb, int level,
+  private void getMenuCurrent(StringBuffer sb, int level,
                                      Object menu, String menuName) {
     String name = menuName;
     Component[] subMenus = 

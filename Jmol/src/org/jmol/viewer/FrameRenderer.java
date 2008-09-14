@@ -104,17 +104,22 @@ public class FrameRenderer {
     JmolRendererInterface g3dExport = null;
     Object output = null;
     try {
-      if (fileName == null)
+      if (fileName == null) {
         output = new StringBuffer();
-      else
+      } else {
+        if (fileName.charAt(0) == '?')
+          fileName = viewer.dialogAsk("save", fileName.substring(1));
+        if (fileName == null)
+          return null;
         output = fileName;
+      }
       Class exporterClass = Class.forName("org.jmol.export._"+type+"Exporter");
       exporter = (JmolExportInterface) exporterClass.newInstance();
       exporterClass = Class.forName("org.jmol.export.Export3D");
       g3dExport = (JmolRendererInterface) exporterClass.newInstance();
     } catch (Exception e) {
       Logger.error("Cannot export " + type);
-      return "";
+      return null;
     }
     if (!exporter.initializeOutput(viewer, g3d, output))
       return null;

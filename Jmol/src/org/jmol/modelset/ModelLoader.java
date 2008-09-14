@@ -75,6 +75,7 @@ public final class ModelLoader extends ModelSet {
     initializeInfo(name, 1, null, null);
     initializeModelSet(null, null);
     modelSetName = "zapped";
+    viewer.setStringProperty("_fileType", "");
   }
 
 
@@ -350,6 +351,7 @@ public final class ModelLoader extends ModelSet {
       Properties modelProperties = adapter.getAtomSetProperties(clientFile, i);
       Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
           clientFile, i);
+      viewer.setStringProperty("_fileType", (String) modelAuxiliaryInfo.get("fileType"));
       if (modelName == null)
         modelName = (jmolData != null ? jmolData.substring(jmolData
             .indexOf(":") + 2, jmolData.indexOf(";"))

@@ -23,11 +23,11 @@
  */
 package org.openscience.jmol.app.webexport;
 
-import org.openscience.jmol.app.HistoryFile;
 
 import java.io.*;
 import javax.swing.*;
 
+import org.jmol.export.dialog.HistoryFile;
 import org.jmol.i18n.GT;
 
 public class WebMaker extends JPanel {

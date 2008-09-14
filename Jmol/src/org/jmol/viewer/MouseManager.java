@@ -68,19 +68,23 @@ public abstract class MouseManager implements KeyListener {
   }
 
   synchronized void startHoverWatcher(boolean isStart) {
-    if (isStart) {
-      if (hoverWatcherThread != null)
-        return;
-      timeCurrent = -1;
-      hoverWatcherThread = new Thread(new HoverWatcher());
-      hoverWatcherThread.setName("HoverWatcher");
-      hoverWatcherThread.start();
-    } else {
-      if (hoverWatcherThread == null)
-        return;
-      timeCurrent = -1;
-      hoverWatcherThread.interrupt();
-      hoverWatcherThread = null;
+    try {
+      if (isStart) {
+        if (hoverWatcherThread != null)
+          return;
+        timeCurrent = -1;
+        hoverWatcherThread = new Thread(new HoverWatcher());
+        hoverWatcherThread.setName("HoverWatcher");
+        hoverWatcherThread.start();
+      } else {
+        if (hoverWatcherThread == null)
+          return;
+        timeCurrent = -1;
+        hoverWatcherThread.interrupt();
+        hoverWatcherThread = null;
+      }
+    } catch (Exception e) {
+      // is possible -- seen once hoverWatcherThread.start() had null pointer.
     }
   }
 

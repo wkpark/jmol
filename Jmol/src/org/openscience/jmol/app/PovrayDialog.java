@@ -557,7 +557,9 @@ public class PovrayDialog extends JDialog {
           int width = Integer.parseInt(imageSizeTextWidth.getValue().toString());
         //}
         
-        String data = viewer.generateOutput("Povray", filename + ":::" + getINI(), width, height);          
+        String data = viewer.generateOutput("Povray", filename + ":::" + getINI(), width, height);
+        if (data == null)
+          return;
         viewer.writeTextFile(filename + ".ini", data);        
     }
     

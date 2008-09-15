@@ -170,13 +170,15 @@ class Jvm12 {
       imageType = type.toUpperCase();
       imageQuality = quality;
       fileName = dialogAsk("saveImage+" + type, fileName);
+      quality = imageQuality;
+      type = imageType;
     }
     if (fileName == null)
       return null;
     JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
         .getOptionInterface("export.image.ImageCreator");
     c.setViewer(viewer);
-    return c.createImage(fileName, imageType, text_or_bytes, imageQuality);
+    return c.createImage(fileName, type, text_or_bytes, quality);
   }
 
   void clipImage() {

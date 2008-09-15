@@ -89,6 +89,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       openChooser.setDialogLocation(historyFile.getWindowPosition(windowName));
     }
 
+    openChooser.resetChoosableFileFilters();
     
     if (fileName != null) {
       int pt = fileName.lastIndexOf(".");

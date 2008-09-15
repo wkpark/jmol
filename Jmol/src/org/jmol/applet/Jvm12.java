@@ -24,13 +24,16 @@
 package org.jmol.applet;
 
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
+
+import javax.swing.SwingUtilities;
 
 import org.jmol.api.*;
 import org.jmol.util.Logger;
 
 class Jvm12 {
 
-  private JmolViewer viewer;
+  protected JmolViewer viewer;
   JmolAdapter modelAdapter;
   private Component awtComponent;
   Console console;
@@ -94,8 +97,8 @@ class Jvm12 {
     return console.getText();
   }
 
-  final private static String[] imageChoices = { "JPEG", "PNG", "GIF", "PPM" };
-  final private static String[] imageExtensions = { "jpg", "png", "gif", "PPM" };
+  final protected static String[] imageChoices = { "JPEG", "PNG", "GIF", "PPM" };
+  final protected static String[] imageExtensions = { "jpg", "png", "gif", "PPM" };
 
   static JmolDialogInterface newDialog(boolean forceNewTranslation) {
     JmolDialogInterface sd = (JmolDialogInterface) Interface
@@ -104,56 +107,74 @@ class Jvm12 {
     return sd;
   }
   
-  public String dialogAsk(JmolDialogInterface sd, String type,
-                          String fileName) {
-    if (type.equals("load"))
-      return getOpenFileNameFromDialog(fileName);
-    if (sd == null)
-      sd = newDialog(false);
-    if (type.equals("save")) {
-      return sd.getSaveFileNameFromDialog(viewer, fileName, null);
+  String inputFileName;
+  String outputFileName;
+  String dialogType;
+  
+  public String dialogAsk(String type, String fileName) {
+    inputFileName = fileName;
+    dialogType = type;
+    System.out.println(Thread.currentThread().getName());
+    try {
+      SwingUtilities.invokeAndWait(new Runnable() {
+        public void run() {
+          if (dialogType.equals("load")) {
+            outputFileName = newDialog(false).getOpenFileNameFromDialog(
+                modelAdapter, viewer, inputFileName, null, null, false);
+            return;
+          }
+          JmolDialogInterface sd = newDialog(false);
+          if (dialogType.equals("save")) {
+            outputFileName = sd.getSaveFileNameFromDialog(viewer,
+                inputFileName, null);
+            return;
+          }
+          if (dialogType.startsWith("saveImage")) {
+            outputFileName = sd.getImageFileNameFromDialog(viewer,
+                inputFileName, imageType, imageChoices, imageExtensions,
+                qualityJPG, qualityPNG);
+            qualityJPG = sd.getQuality("JPG");
+            qualityPNG = sd.getQuality("PNG");
+            String sType = sd.getType();
+            if (sType != null)
+              imageType = sType;
+            int iQuality = sd.getQuality(sType);
+            if (iQuality > 0)
+              imageQuality = iQuality;
+            return;
+          }
+          outputFileName = null;
+        }
+      });
+    } catch (InterruptedException e) {
+      System.out.println(e.getMessage());
+    } catch (InvocationTargetException e) {
+      System.out.println(e.getMessage());
     }
-    if (type.startsWith("saveImage")) {
-      return sd.getImageFileNameFromDialog(viewer, fileName,
-          imageType, imageChoices, imageExtensions, qualityJPG, qualityPNG);
-    }
-    return null;
-  }
-
-  public String getOpenFileNameFromDialog(String fileName) {
-    return newDialog(false).getOpenFileNameFromDialog(modelAdapter, viewer, fileName, null, null, false);
+    return outputFileName;
   }
 
   int qualityJPG = -1;
   int qualityPNG = -1;
   String imageType;
+  int imageQuality;
 
   String createImage(String fileName, String type, Object text_or_bytes,
                      int quality) {
-    String sType = null;
-    int iQuality = quality;
     if (quality == Integer.MIN_VALUE) {
       // text or bytes
-      fileName = dialogAsk(null, "save", fileName);
+      fileName = dialogAsk("save", fileName);
     } else {
-      // image
-      JmolDialogInterface sd = newDialog(false);
-      fileName = dialogAsk(sd, "saveImage+" + type, fileName);
-      qualityJPG = sd.getQuality("JPG");
-      qualityPNG = sd.getQuality("PNG");
-      sType = imageType = sd.getType();
-      if (sType == null)
-        sType = type.toUpperCase();
-      iQuality = sd.getQuality(sType);
-      if (iQuality < 0)
-        iQuality = quality;
+      imageType = type.toUpperCase();
+      imageQuality = quality;
+      fileName = dialogAsk("saveImage+" + type, fileName);
     }
     if (fileName == null)
       return null;
     JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
         .getOptionInterface("export.image.ImageCreator");
     c.setViewer(viewer);
-    return c.createImage(fileName, sType, text_or_bytes, iQuality);
+    return c.createImage(fileName, imageType, text_or_bytes, imageQuality);
   }
 
   void clipImage() {

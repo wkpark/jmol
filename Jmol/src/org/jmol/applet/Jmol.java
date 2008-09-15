@@ -1239,7 +1239,7 @@ public class Jmol implements WrappedApplet {
     public String dialogAsk(String type, String data) {
       if (!isSigned || jvm12 == null)
         return null;
-      return jvm12.dialogAsk(null, type, data);
+      return jvm12.dialogAsk(type, data);
     }
 
   }

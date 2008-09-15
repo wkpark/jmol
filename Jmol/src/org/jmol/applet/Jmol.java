@@ -244,7 +244,7 @@ public class Jmol implements WrappedApplet {
     // viewer = new JmolViewer(this, new CdkJmolAdapter(null));
     viewer = JmolViewer.allocateViewer(appletWrapper,
         modelAdapter = new SmarterJmolAdapter());
-    String options = "";
+    String options = "-applet";
     isSigned = getBooleanValue("signed", false) || appletWrapper.isSigned();
     if (isSigned)
       options += "-signed";

@@ -164,9 +164,9 @@ class SymmetryOperation extends Matrix4f {
         if (i % 4 == 3)
           v = normalizeTwelfths((v < 0 ? -1 : 1) * (int)(Math.abs(v) * 12.001f));
         temp[i] = v;
-        System.out.print(v + "       ");
+        //System.out.print(v + "       ");
       }
-      System.out.println();
+      //System.out.println();
       return true;
     }
     

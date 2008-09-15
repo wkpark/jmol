@@ -126,9 +126,13 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
    */
   void updatePreview(File file) {
     if (file != null) {
+      String fileName = file.getAbsolutePath();
+      String url = Dialog.getLocalUrl(file);
+      if (url != null)
+        fileName = url;
       //doesn't update from use input?
       display.getViewer().evalStringQuiet(
-          "load \"" + file.getAbsolutePath() + "\"");
+          "zap;set echo top left;echo loading...;refresh;load \"" + fileName + "\"");
       display.repaint();
     } else {
       display.getViewer().evalStringQuiet("zap");

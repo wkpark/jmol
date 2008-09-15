@@ -130,7 +130,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       "http://www.", "https:", "https://", "ftp:", "ftp://", "file:",
       "file:///" };
 
-  private static String getLocalUrl(File file) {
+  static String getLocalUrl(File file) {
     // entering a url on a file input box will be accepted,
     // but cause an error later. We can fix that...
     // return null if there is no problem, the real url if there is

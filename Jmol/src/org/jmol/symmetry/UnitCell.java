@@ -280,7 +280,7 @@ and the betaij should be entered as Type 0.
           : 1 );
       // types 6 and 7 not supported
 
-      System.out.println("ortep type " + ortepType + " isFractional=" + isFractional + " D = " + dd + " C=" + cc);
+      //System.out.println("ortep type " + ortepType + " isFractional=" + isFractional + " D = " + dd + " C=" + cc);
       double B11 = parBorU[0] * dd * (isFractional ? a_ * a_ : 1);
       double B22 = parBorU[1] * dd * (isFractional ? b_ * b_ : 1);
       double B33 = parBorU[2] * dd * (isFractional ? c_ * c_ : 1);
@@ -307,7 +307,7 @@ and the betaij should be entered as Type 0.
           * c * cB_ * B13;
       Bcart[5] = 2 * c * c * cA_ * cB_ * B33 + b * c * cB_ * sinGamma * B23;
 
-      System.out.println("UnitCell Bcart="+Bcart[0] + " " + Bcart[1] + " " +  Bcart[2] + " " + Bcart[3] + " " + Bcart[4] + " " + Bcart[5]);
+      //System.out.println("UnitCell Bcart="+Bcart[0] + " " + Bcart[1] + " " +  Bcart[2] + " " + Bcart[3] + " " + Bcart[4] + " " + Bcart[5]);
       Vector3f unitVectors[] = new Vector3f[3];
       for (int i = 0; i < 3; i++)
         unitVectors[i] = new Vector3f();

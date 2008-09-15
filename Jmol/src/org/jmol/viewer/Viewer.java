@@ -273,9 +273,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     htmlName = (i < 0 ? fullName : fullName.substring(0, i));
     syncId = (i < 0 ? "" : fullName
         .substring(i + 1, fullName.length() - 1));
-    isApplet = (documentBase != null);
     
     String str = "" + commandOptions;
+    isApplet = (commandOptions.indexOf("-applet") >= 0);
     if (isApplet) {
       Logger.info("applet context: " + commandOptions);
       String appletProxy = null;
@@ -293,7 +293,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         scriptManager.startCommandWatcher(true);
     } else {
       // not an applet -- used to pass along command line options
-      isPreviewOnly = (str.indexOf("#previewOnly") >= 0);
       g3d.setBackgroundTransparent(str.indexOf("-b") >= 0);
       isSilent = (str.indexOf("-i") >= 0);
       if (isSilent)
@@ -314,6 +313,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       mustRender = (haveDisplay || writeInfo != null);
     }
+    isPreviewOnly = (str.indexOf("#previewOnly") >= 0);
     setBooleanProperty("_applet", isApplet);
     setBooleanProperty("_signedApplet", isSignedApplet);
     setBooleanProperty("_useCommandThread", useCommandThread);
@@ -1989,7 +1989,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     repaintManager.initializePointers(1);
     setCurrentModelIndex(0);
     setBackgroundModelIndex(-1);
-    setFrankOn(!isPreviewOnly && getShowFrank());
+    setFrankOn(getShowFrank());
     mouseManager.startHoverWatcher(!isPreviewOnly);
     setTainted(true);
     finalizeTransformParameters();
@@ -3420,7 +3420,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   /// direct no-queue use:
 
   public String scriptWait(String strScript) {
-    System.out.println("Viewer scriptWait1 " + htmlName + " " + strScript + " ");
+    //System.out.println("Viewer scriptWait1 " + htmlName + " " + strScript + " ");
     scriptManager.waitForQueue();
     boolean doTranslateTemp = GT.getDoTranslate();
     GT.setDoTranslate(false);
@@ -3432,7 +3432,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Object scriptWaitStatus(String strScript, String statusList) {
-    System.out.println("Viewer scriptWait2 " + htmlName + " " + strScript);
+    //System.out.println("Viewer scriptWait2 " + htmlName + " " + strScript);
     scriptManager.waitForQueue();
     boolean doTranslateTemp = GT.getDoTranslate();
     GT.setDoTranslate(false);
@@ -3444,7 +3444,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Object evalStringWaitStatus(String returnType, String strScript,
                                      String statusList) {
-    System.out.println("Viewer scriptWait3 " + htmlName + " " + strScript);
+    //System.out.println("Viewer scriptWait3 " + htmlName + " " + strScript);
     scriptManager.waitForQueue();
     return evalStringWaitStatus(returnType, strScript, statusList, false,
         false, false);
@@ -5568,12 +5568,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   boolean frankOn = true;
 
   public void setFrankOn(boolean TF) {
-    frankOn = TF && !isPreviewOnly;
+    if (isPreviewOnly)
+      TF = false;
+    frankOn = TF;
     setObjectMad(JmolConstants.SHAPE_FRANK, "frank", (short) (TF ? 1 : 0));
   }
 
   public boolean getShowFrank() {
-    return (!isApplet || !creatingImage) && (isSignedApplet || getObjectMad(StateManager.OBJ_FRANK) != 0);
+    if (isPreviewOnly || isApplet && creatingImage)
+      return false;
+    return (isSignedApplet || frankOn);
   }
 
   public boolean isSignedApplet() {

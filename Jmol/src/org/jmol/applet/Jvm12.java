@@ -116,7 +116,7 @@ class Jvm12 {
   public String dialogAsk(String type, String fileName) {
     inputFileName = fileName;
     dialogType = type;
-    System.out.println(Thread.currentThread().getName());
+    System.out.println("Jvm12 thread: " + Thread.currentThread().getName());
     try {
       SwingUtilities.invokeAndWait(new Runnable() {
         public void run() {

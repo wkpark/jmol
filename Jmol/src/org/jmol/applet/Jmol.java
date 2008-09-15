@@ -268,7 +268,7 @@ public class Jmol implements WrappedApplet {
       menuStructure = viewer.getFileAsString(menuFile);
     jvm12orGreater = viewer.isJvm12orGreater();
     if (jvm12orGreater)
-      jvm12 = new Jvm12(appletWrapper, viewer, modelAdapter);
+      jvm12 = new Jvm12(appletWrapper, viewer, modelAdapter, options);
     if (Logger.debugging) {
       Logger.debug("checking for jsoWindow mayScript=" + mayScript);
     }

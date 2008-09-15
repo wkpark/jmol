@@ -2,9 +2,8 @@ package org.jmol.api;
 
 public interface JmolDialogInterface {
 
-  
   public abstract void setupUI(boolean forceNewTranslation);
-  
+
   /**
    * @return The file type which contains the user's choice
    */
@@ -18,10 +17,12 @@ public interface JmolDialogInterface {
   public abstract int getQuality(String sType);
 
   public abstract String getOpenFileNameFromDialog(JmolAdapter modelAdapter,
+                                                   String appletContext,
                                                    JmolViewer viewer,
                                                    String fileName,
                                                    Object historyFile,
-                                                   String windowName, boolean allowAppend);
+                                                   String windowName,
+                                                   boolean allowAppend);
 
   public abstract String getSaveFileNameFromDialog(JmolViewer viewer,
                                                    String data, String type);

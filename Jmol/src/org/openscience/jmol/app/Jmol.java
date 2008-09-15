@@ -144,6 +144,7 @@ public class Jmol extends JPanel {
   static Boolean haveConsole = Boolean.TRUE;
   static Boolean haveDisplay = Boolean.TRUE;
   JmolAdapter modelAdapter;
+  String appletContext;
 
   Jmol(Splash splash, JFrame frame, Jmol parent, int startupWidth,
       int startupHeight, String commandOptions) {
@@ -193,6 +194,7 @@ public class Jmol extends JPanel {
       report("unrecognized model adapter:" + adapter + " -- using Smarter");
       modelAdapter = new SmarterJmolAdapter();
     }
+    appletContext = commandOptions;
     viewer = JmolViewer.allocateViewer(display, modelAdapter);
     viewer.setAppletContext("", null, null, commandOptions);
 
@@ -1596,8 +1598,9 @@ public class Jmol extends JPanel {
   }
 
   String getOpenFileNameFromDialog(String fileName) {
-    return (new Dialog()).getOpenFileNameFromDialog(modelAdapter, viewer,
-        fileName, historyFile, FILE_OPEN_WINDOW_NAME, (fileName == null));
+    return (new Dialog()).getOpenFileNameFromDialog(modelAdapter,
+        appletContext, viewer, fileName, historyFile, FILE_OPEN_WINDOW_NAME,
+        (fileName == null));
   }
 
   public static final String chemFileProperty = "chemFile";

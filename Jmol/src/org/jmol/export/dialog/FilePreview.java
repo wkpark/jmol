@@ -56,8 +56,10 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
    * @param fileChooser File chooser
    * @param modelAdapter Model adapter
    * @param allowAppend 
+   * @param appletContext 
    */
-  public FilePreview(JFileChooser fileChooser, JmolAdapter modelAdapter, boolean allowAppend) {
+  public FilePreview(JFileChooser fileChooser, JmolAdapter modelAdapter,
+      boolean allowAppend, String appletContext) {
     super();
     chooser = fileChooser;
 
@@ -66,20 +68,19 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
 
     // Add a checkbox to activate / deactivate preview
     active = new JCheckBox(GT._("Preview"), false);
-    active.addActionListener(new ActionListener()
-      {
-        public void actionPerformed(ActionEvent e) {
-          if (active.isSelected()) {
-            updatePreview(chooser.getSelectedFile());
-          } else {
-            updatePreview(null);
-          }
+    active.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (active.isSelected()) {
+          updatePreview(chooser.getSelectedFile());
+        } else {
+          updatePreview(null);
         }
-      });
+      }
+    });
     box.add(active);
 
     // Add a preview area
-    display = new JmolPanel(modelAdapter);
+    display = new JmolPanel(modelAdapter, appletContext);
     display.setPreferredSize(new Dimension(80, 80));
     display.setMinimumSize(new Dimension(50, 50));
     box.add(display);
@@ -117,7 +118,7 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
       }
     }
   }
-  
+
   /**
    * Update preview
    * 
@@ -126,20 +127,20 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
   void updatePreview(File file) {
     if (file != null) {
       //doesn't update from use input?
-      display.getViewer().evalStringQuiet("load \"" + file.getAbsolutePath() + "\"");
+      display.getViewer().evalStringQuiet(
+          "load \"" + file.getAbsolutePath() + "\"");
       display.repaint();
     } else {
       display.getViewer().evalStringQuiet("zap");
     }
   }
-  
 
   private class JmolPanel extends JPanel {
     JmolViewer viewer;
-    
-    JmolPanel(JmolAdapter modelAdapter) {
+
+    JmolPanel(JmolAdapter modelAdapter, String appletContext) {
       viewer = JmolViewer.allocateViewer(this, modelAdapter);
-      viewer.setAppletContext("", null, null, "#previewOnly");
+      viewer.setAppletContext("", null, null, "#previewOnly " + appletContext);
     }
 
     public JmolViewer getViewer() {
@@ -156,4 +157,3 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     }
   }
 }
-

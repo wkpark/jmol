@@ -37,11 +37,13 @@ class Jvm12 {
   JmolAdapter modelAdapter;
   private Component awtComponent;
   Console console;
+  protected String appletContext;
 
-  Jvm12(Component awtComponent, JmolViewer viewer, JmolAdapter modelAdapter) {
+  Jvm12(Component awtComponent, JmolViewer viewer, JmolAdapter modelAdapter, String appletContext) {
     this.awtComponent = awtComponent;
     this.viewer = viewer;
     this.modelAdapter = modelAdapter;
+    this.appletContext = appletContext;
   }
 
   private final Rectangle rectClip = new Rectangle();
@@ -120,7 +122,7 @@ class Jvm12 {
         public void run() {
           if (dialogType.equals("load")) {
             outputFileName = newDialog(false).getOpenFileNameFromDialog(
-                modelAdapter, viewer, inputFileName, null, null, false);
+                modelAdapter, appletContext, viewer, inputFileName, null, null, false);
             return;
           }
           JmolDialogInterface sd = newDialog(false);

@@ -108,8 +108,11 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     File file = null;
     if (openChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
       file = openChooser.getSelectedFile();
-    if (file == null)
+    if (file == null) {
+      openChooser.setAccessory(null);
+      openPreview = null;
       return null;
+    }
 
     if (historyFile != null)
       historyFile.addWindowInfo(windowName, openChooser.getDialog(), null);
@@ -122,6 +125,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       fileName = file.getAbsolutePath();
     }
     boolean doAppend = (openPreview != null && openPreview.isAppendSelected());
+    openChooser.setAccessory(null);
     openPreview = null;
     return (doAppend ? "load append " + Escape.escape(fileName) : fileName);
   }

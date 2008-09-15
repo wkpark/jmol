@@ -1543,7 +1543,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // openStringsInline(fileManager.getInlineDataArray(), htParams, false);
       return;
     }
-    if (!isAppend)
+    if (!isAppend && name.charAt(0) != '?')
       zap(false, false);
     Logger.startTimer();
     fileManager.openFile(name, htParams, loadScript, isAppend);
@@ -1744,7 +1744,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (clientFile instanceof String || clientFile == null) {
       String errorMsg = (String) clientFile;
       setStatusFileNotLoaded(fullPathName, errorMsg);
-      if (errorMsg != null && !isAppend)
+      if (errorMsg != null && !isAppend && !errorMsg.equals("#CANCELED#"))
         zap(errorMsg);
       return errorMsg;
     }

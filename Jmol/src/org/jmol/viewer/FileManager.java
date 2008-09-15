@@ -526,8 +526,10 @@ java.lang.NullPointerException
     if (name == null)
       return null;
     if (name.startsWith("?")
-        && (name = viewer.dialogAsk("load", name.substring(1))) == null)
+        && (name = viewer.dialogAsk("load", name.substring(1))) == null) {
+      openErrorMessage = "#CANCELED#";
       return null;
+    }
     File file = null;
     URL url = null;
     String[] names = null;

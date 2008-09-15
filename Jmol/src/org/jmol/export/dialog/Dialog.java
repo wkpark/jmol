@@ -47,6 +47,7 @@ import org.jmol.api.JmolDialogInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.util.Escape;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
 
 public class Dialog extends JPanel implements JmolDialogInterface {
@@ -87,11 +88,20 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       openChooser.setDialogSize(historyFile.getWindowSize(windowName));
       openChooser.setDialogLocation(historyFile.getWindowPosition(windowName));
     }
+
     
-    if (fileName != null && fileName.length() > 0)
-      openChooser.setSelectedFile(new File(fileName));
-    if (fileName != null && fileName.indexOf(":") < 0)
-      openChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
+    if (fileName != null) {
+      int pt = fileName.lastIndexOf(".");
+      String sType = fileName.substring(pt + 1);
+      if (pt >= 0 && sType.length() > 0)
+        openChooser.addChoosableFileFilter(new TypeFilter(sType));
+      if (fileName.indexOf(".") == 0)
+        fileName = "Jmol" + fileName;
+      if (fileName.length() > 0)
+        openChooser.setSelectedFile(new File(fileName));
+      if ( fileName.indexOf(":") < 0)
+        openChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
+    }
     File file = null;
     if (openChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
       file = openChooser.getSelectedFile();
@@ -101,7 +111,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     if (historyFile != null)
       historyFile.addWindowInfo(windowName, openChooser.getDialog(), null);
 
-    String url = FileManager.getLocalUrl(file.getAbsolutePath());
+    String url = getLocalUrl(file);
     if (url != null) {
       fileName = url;
     } else {
@@ -113,6 +123,33 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     return (doAppend ? "load append " + Escape.escape(fileName) : fileName);
   }
   
+  private final static String[] urlPrefixes = {
+    "http:",  "http://", 
+    "www.",   "http://www.",
+    "https:", "https://",
+    "ftp:",   "ftp://",
+    "file:",  "file:///"};
+
+  private static String getLocalUrl(File file) {
+    // entering a url on a file input box will be accepted,
+    // but cause an error later. We can fix that...
+    // return null if there is no problem, the real url if there is
+    if (file.getName().startsWith("="))
+      return file.getName();  
+    String path = file.getAbsolutePath().replace('\\', '/');
+    for (int i = 0; i < urlPrefixes.length; i++)
+      if (path.indexOf(urlPrefixes[i]) == 0)
+        return null;
+    for (int i = 0; i < urlPrefixes.length; i += 2)
+      if (path.indexOf(urlPrefixes[i]) > 0)
+        return urlPrefixes[i + 1]
+            + TextFormat.trim(path.substring(
+                path.indexOf(urlPrefixes[i]) + urlPrefixes[i].length())
+                , "/");
+    return null;
+  }
+  
+
   public String getSaveFileNameFromDialog(JmolViewer viewer, String fileName,
                                           String type) {
     if (saveChooser == null)

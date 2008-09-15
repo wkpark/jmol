@@ -515,18 +515,6 @@ java.lang.NullPointerException
     return -1;
   }
   
-  public static String getLocalUrl(String path) {
-    // entering a url on a file input box will be accepted,
-    // but cause an error later. We can fix that...
-    // return null if there is no problem, the real url if there is
-    if (urlTypeIndex(path) < 0)
-      for (int i = 0; i < urlPrefixes.length; ++i)
-        if (path.indexOf(urlPrefixes[i]) >= 0)
-          return TextFormat.simpleReplace(path.substring(path.indexOf(urlPrefixes[i]))
-              .replace('\\', '/'), ":", ":/");
-    return null;
-  }
-  
   private void setNames(String[] names) {
     if (names == null)
       return;

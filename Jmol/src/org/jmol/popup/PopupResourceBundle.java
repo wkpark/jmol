@@ -75,10 +75,10 @@ class PopupResourceBundle {
       {   "@AXESCOLOR", "gray salmon maroon olive slateblue gold orchid"},
       
       {   "popupMenu",
-          "modelSetMenu FRAMESbyModelComputedMenu configurationComputedMenu - selectMenuText viewMenu renderMenu colorMenu - surfaceMenu SYMMETRYUNITCELLMenu - "
+          "modelSetMenu SIGNEDloadMenu SIGNEDwriteMenu FRAMESbyModelComputedMenu configurationComputedMenu - selectMenuText viewMenu renderMenu colorMenu - surfaceMenu SYMMETRYUNITCELLMenu - "
               + "zoomMenu spinMenu VIBRATIONMenu "
               + "FRAMESanimateMenu - "
-              + "measureMenu pickingMenu - JVM12showConsole JVM12showMenu SIGNEDwriteMenu - "
+              + "measureMenu pickingMenu - JVM12showConsole JVM12showMenu - "
               + "languageComputedMenu aboutComputedMenu" },
               
       {   "selectMenuText",
@@ -212,8 +212,11 @@ class PopupResourceBundle {
               + "showSpacegroup showState SYMMETRYshowSymmetry UNITCELLshow - showIsosurface showMo - extractMOL" },
 
 
+      {   "SIGNEDloadMenu",
+          "loadPdb loadFileOrURL loadFileUnitCell - loadScript" },
+
       {   "SIGNEDwriteMenu",
-          "writeFileTextVARIABLE writeState writeHistory writeIsosurface - writeJpg writePng - writePovray writeVrml writeMaya" },
+          "writeFileTextVARIABLE writeState writeHistory - writeJpg writePng writePovray -  writeIsosurface writeVrml writeMaya" },
 
 
       { "[set_spin_X]Menu", "s0 s5 s10 s20 s30 s40 s50" },
@@ -476,6 +479,12 @@ class PopupResourceBundle {
       { "showOrient", "console on;show orientation" },
       { "showSpacegroup", "console on;show spacegroup" },
       { "showState", "console on;show state" },
+      
+      { "loadPdb", "load ?=1crn" },      
+      { "loadFileOrURL", "load ?" },      
+      { "loadFileUnitCell", "load ? {1 1 1}" },      
+      { "loadScript", "script ?.spt" },      
+
       { "writeFileTextVARIABLE", "write file \"?FILE?\"" },      
       { "writeState", "write state \"?FILEROOT?.spt\"" },      
       { "writeHistory", "write history \"?FILEROOT?.his\"" },     
@@ -860,16 +869,22 @@ class PopupResourceBundle {
         "SYMMETRYshowSymmetry", GT._("Symmetry"),
         "showState", GT._("Current state"),
         
-        "SIGNEDwriteMenu", GT._("Write"),      
+        "SIGNEDloadMenu", GT._("Load"),      
+        "loadPdb", GT._("Load PDB"),      
+        "loadFileOrURL", GT._("Load file or URL"),      
+        "loadFileUnitCell", GT._("Load full unit cell"),      
+        "loadScript", GT._("Script"),      
+
+        "SIGNEDwriteMenu", GT._("Save"),      
         "writeFileTextVARIABLE", GT._("File {0}"),
-        "writeState", GT._("State"),      
-        "writeHistory", GT._("History"),      
-        "writeIsosurface", GT._("Isosurface"),      
-        "writeJpg", GT._("Image - JPG"),      
-        "writePng", GT._("Image - PNG"),      
-        "writePovray", "POV-Ray",      
-        "writeVrml", GT._("VRML"),      
-        "writeMaya", GT._("Maya"),      
+        "writeState", GT._("SPT State"),      
+        "writeHistory", GT._("SPT History"),      
+        "writeJpg", GT._("{0} Image", "JPG"),      
+        "writePng", GT._("{0} Image", "PNG"),      
+        "writePovray", GT._("{0} Image", "POV-Ray"),      
+        "writeIsosurface", GT._("JVXL Isosurface"),      
+        "writeVrml", GT._("{0} 3D Model", "VRML"),      
+        "writeMaya", GT._("{0} 3D Model", "Maya"),      
 
         
         "UNITCELLshow", GT._("Unit cell"),

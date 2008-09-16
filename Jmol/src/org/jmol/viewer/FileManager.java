@@ -537,13 +537,15 @@ java.lang.NullPointerException
       name = TextFormat.formatString(viewer.getLoadFormat(), "FILE", name
           .substring(1));
     String defaultDirectory = viewer.getDefaultDirectory();
-    if (name.indexOf(":") < 0)
+    if (name.indexOf(":") < 0 && name.indexOf("/") != 0)
       name = addDirectory(defaultDirectory, name);
     if (appletDocumentBase != null) {
       // This code is only for the applet
       try {
         if (name.indexOf(":\\") == 1 || name.indexOf(":/") == 1)
-          name = "file:///" + name;
+          name = "file:/" + name;
+        else if (name.indexOf("/") == 0)
+          name = "file:" + name;
         url = new URL(appletDocumentBase, name);
       } catch (MalformedURLException e) {
         openErrorMessage = e.getMessage();

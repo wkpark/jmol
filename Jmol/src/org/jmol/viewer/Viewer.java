@@ -1990,7 +1990,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setCurrentModelIndex(0);
     setBackgroundModelIndex(-1);
     setFrankOn(getShowFrank());
-    mouseManager.startHoverWatcher(!isPreviewOnly);
+    mouseManager.startHoverWatcher(true);
     setTainted(true);
     finalizeTransformParameters();
   }
@@ -3892,6 +3892,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return statusManager.getStatusChanged(statusNameList);
   }
 
+  boolean isPreviewOnly() {
+    return isPreviewOnly;
+  }
+  
   void popupMenu(int x, int y) {
     if (isPreviewOnly || global.disablePopupMenu)
       return;

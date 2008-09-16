@@ -68,6 +68,8 @@ public abstract class MouseManager implements KeyListener {
   }
 
   synchronized void startHoverWatcher(boolean isStart) {
+    if (viewer.isPreviewOnly())
+      return;
     try {
       if (isStart) {
         if (hoverWatcherThread != null)

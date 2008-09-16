@@ -83,13 +83,13 @@ public class Dialog extends JPanel implements JmolDialogInterface {
 
     HistoryFile historyFile = (HistoryFile) historyFileObject;
 
-    if (openChooser == null) {
+    if (openChooser == null)
       openChooser = new FileChooser();
-      String previewProperty = System.getProperty("openFilePreview", "true");
-      if (Boolean.valueOf(previewProperty).booleanValue()) {
-        openPreview = new FilePreview(openChooser, modelAdapter, allowAppend,
-            appletContext);
-      }
+    if (openPreview == null
+        && (viewer.isApplet() || Boolean.valueOf(
+            System.getProperty("openFilePreview", "true")).booleanValue())) {
+      openPreview = new FilePreview(openChooser, modelAdapter, allowAppend,
+          appletContext);
     }
 
     if (historyFile != null) {
@@ -114,12 +114,8 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     File file = null;
     if (openChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
       file = openChooser.getSelectedFile();
-    if (file == null) {
-      openChooser.setAccessory(null);
-      openPreview = null;
-      return null;
-    }
-
+    if (file == null)
+      return closePreview();
     if (historyFile != null)
       historyFile.addWindowInfo(windowName, openChooser.getDialog(), null);
 
@@ -131,11 +127,16 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       fileName = file.getAbsolutePath();
     }
     boolean doAppend = (openPreview != null && openPreview.isAppendSelected());
-    openChooser.setAccessory(null);
-    openPreview = null;
+    closePreview();
     return (doAppend ? "load append " + Escape.escape(fileName) : fileName);
   }
 
+  String closePreview() {
+    if (openPreview != null)
+      openPreview.updatePreview(null);
+    return null;
+  }
+  
   private final static String[] urlPrefixes = { "http:", "http://", "www.",
       "http://www.", "https:", "https://", "ftp:", "ftp://", "file:",
       "file:///" };

@@ -125,21 +125,25 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
    * @param file File selected
    */
   void updatePreview(File file) {
-    if (file != null) {
+    String script;
+    if (file == null) {
+      script = "zap";
+    } else {
       String fileName = file.getAbsolutePath();
       String url = Dialog.getLocalUrl(file);
       System.out.println("updatePreview + " + fileName + " " + url);
       if (url != null)
         fileName = url;
       //doesn't update from use input?
-      display.getViewer().evalStringQuiet(
-          "zap;set echo top left;echo loading...;refresh;"
-          + (fileName.indexOf(".spt") >= 0 ? "script" : "load") 
-          + " \"" + fileName + "\"");
-      display.repaint();
-    } else {
-      display.getViewer().evalStringQuiet("zap");
+      script = " \"" + fileName + "\"";
+      if (fileName.indexOf(".spt") >= 0) 
+        script = "script " + script;
+      else
+        script = "zap;set echo top left;echo loading...;refresh; load " + script
+            + ";if({1}.size);cartoons only;color structure;endif"; 
     }
+    display.getViewer().evalStringQuiet(script);
+    //display.repaint();
   }
 
   private class JmolPanel extends JPanel {

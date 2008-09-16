@@ -3191,6 +3191,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
+    // from paint/update event
+    if (creatingImage)
+      return;
     if (isTainted || getSlabEnabled())
       setModelVisibility();
     isTainted = false;
@@ -6346,6 +6349,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String createImage(String file, String type, Object text_or_bytes,
                           int quality, int width, int height) {
+    //pushHoldRepaint();
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
     if (quality != Integer.MIN_VALUE) {
@@ -6363,6 +6367,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (quality != Integer.MIN_VALUE) {
       resizeImage(saveWidth, saveHeight, true, false, true);
     }
+    //popHoldRepaint();
     return err;
   }
 

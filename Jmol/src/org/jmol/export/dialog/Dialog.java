@@ -55,12 +55,18 @@ public class Dialog extends JPanel implements JmolDialogInterface {
   String[] extensions = new String[10];
   String choice;
   String extension;
-  private int defaultChoice;
+  
+  // static so that they can be shared among instances
+  
+  static private int defaultChoice;
+  static int qualityJPG = 75;
+  static int qualityPNG = 2;
+  
   private JSlider qSliderJPEG, qSliderPNG;
   private JComboBox cb;
 
   JPanel qPanelJPEG, qPanelPNG;
-  static JFileChooser exportChooser;
+  static JFileChooser imageChooser;
   static JFileChooser saveChooser;
 
   public Dialog() {
@@ -177,70 +183,76 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     return file.getAbsolutePath();
   }
 
+  
   public String getImageFileNameFromDialog(JmolViewer viewer, String fileName,
                                            String type, String[] imageChoices,
                                            String[] imageExtensions,
-                                           int qualityJPG, int qualityPNG) {
-    if (exportChooser == null)
-      exportChooser = new JFileChooser();
-    exportChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
-    exportChooser.resetChoosableFileFilters();
+                                           int qualityJPG0, int qualityPNG0) {
+    if (qualityJPG0 < 0 || qualityJPG0 > 100)
+      qualityJPG0 = qualityJPG;
+    if (qualityPNG0 < 0)
+      qualityPNG0 = qualityPNG;
+    if (qualityPNG0 > 9)
+      qualityPNG0 = 2;
+    qualityJPG = qualityJPG0;
+    qualityPNG = qualityPNG0;
+    
+    if (imageChooser == null)
+      imageChooser = new JFileChooser();
+    imageChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
+    imageChooser.resetChoosableFileFilters();
     File file = null;
     if (fileName == null) {
       fileName = viewer.getModelSetFileName();
-      String pathName = exportChooser.getCurrentDirectory().getPath();
-      createPanel(exportChooser, imageChoices, imageExtensions, type,
-          qualityJPG, qualityPNG);
+      String pathName = imageChooser.getCurrentDirectory().getPath();
       if (fileName != null && pathName != null) {
         int extensionStart = fileName.lastIndexOf('.');
         if (extensionStart != -1) {
           fileName = fileName.substring(0, extensionStart) + "."
-              + getExtension();
+              + extension;
         }
         file = new File(pathName, fileName);
       }
     } else {
       if (fileName.indexOf(".") == 0)
         fileName = "Jmol" + fileName;
-      String sType = fileName.substring(fileName.lastIndexOf(".") + 1);
+      file = new File(fileName);
+      type = fileName.substring(fileName.lastIndexOf(".") + 1);
       for (int i = 0; i < imageExtensions.length; i++)
-        if (sType.equals(imageChoices[i])
-            || sType.toLowerCase().equals(imageExtensions[i])) {
-          sType = imageChoices[i];
+        if (type.equals(imageChoices[i])
+            || type.toLowerCase().equals(imageExtensions[i])) {
+          type = imageChoices[i];
           break;
         }
-      createPanel(exportChooser, imageChoices, imageExtensions, sType,
-          qualityJPG, qualityPNG);
-      file = new File(fileName);
     }
-    exportChooser.setSelectedFile(initialFile = file);
-    if ((file = showSaveDialog(this, this, exportChooser, file)) == null)
+    createExportPanel(imageChoices, imageExtensions, type);
+    imageChooser.setSelectedFile(initialFile = file);
+    if ((file = showSaveDialog(this, this, imageChooser, file)) == null)
       return null;
+    qualityJPG = qSliderJPEG.getValue();
+    qualityPNG = qSliderPNG.getValue();
+    if (cb.getSelectedIndex() >= 0)
+      defaultChoice = cb.getSelectedIndex();
     viewer.setStringProperty("currentLocalPath", file.getParent());
     return file.getAbsolutePath();
   }
 
   File initialFile;
 
-  /* (non-Javadoc)
-   * @see org.jmol.export.JmolImageTyperInterface#createPanel(javax.swing.JFileChooser, java.lang.String[], java.lang.String[], int)
-   */
-  public void createPanel(JFileChooser fc, String[] choices,
-                          String[] extensions, String type, int qualityJPEG,
-                          int qualityPNG) {
-    exportChooser = fc;
-    fc.setAccessory(this);
+  private void createExportPanel(String[] choices,
+                          String[] extensions, String type) {
+    imageChooser.setAccessory(this);
     setLayout(new BorderLayout());
-    choice = null;
     if (type.equals("JPG"))
       type = "JPEG";
     for (defaultChoice = choices.length; --defaultChoice >= 1;)
       if (choices[defaultChoice].equals(type))
         break;
     extension = extensions[defaultChoice];
+    choice = choices[defaultChoice];
     this.extensions = extensions;
-    exportChooser.resetChoosableFileFilters();
-    exportChooser.addChoosableFileFilter(new TypeFilter(extension));
+    imageChooser.resetChoosableFileFilters();
+    imageChooser.addChoosableFileFilter(new TypeFilter(extension));
     JPanel cbPanel = new JPanel();
     cbPanel.setLayout(new FlowLayout());
     cbPanel.setBorder(new TitledBorder(GT._("Image Type")));
@@ -250,24 +262,17 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     }
     cbPanel.add(cb);
     cb.setSelectedIndex(defaultChoice);
-    cb.addItemListener(new ChoiceListener());
+    cb.addItemListener(new ExportChoiceListener());
     add(cbPanel, BorderLayout.NORTH);
 
     JPanel qPanel2 = new JPanel();
     qPanel2.setLayout(new BorderLayout());
 
-    if (qualityJPEG < 0)
-      qualityJPEG = 75;
-    if (qualityPNG < 0)
-      qualityPNG = 2;
-    if (qualityPNG > 9)
-      qualityPNG = 9;
-
     qPanelJPEG = new JPanel();
     qPanelJPEG.setLayout(new BorderLayout());
     qPanelJPEG.setBorder(new TitledBorder(GT._("JPEG Quality ({0})",
-        qualityJPEG)));
-    qSliderJPEG = new JSlider(SwingConstants.HORIZONTAL, 50, 100, qualityJPEG);
+        qualityJPG)));
+    qSliderJPEG = new JSlider(SwingConstants.HORIZONTAL, 50, 100, qualityJPG);
     qSliderJPEG.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     qSliderJPEG.setPaintTicks(true);
     qSliderJPEG.setMajorTickSpacing(10);
@@ -279,7 +284,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     qPanelPNG = new JPanel();
     qPanelPNG.setLayout(new BorderLayout());
     qPanelPNG
-        .setBorder(new TitledBorder(GT._("PNG Quality ({0})", qualityPNG)));
+        .setBorder(new TitledBorder(GT._("PNG Compression  ({0})", qualityPNG)));
     qSliderPNG = new JSlider(SwingConstants.HORIZONTAL, 0, 9, qualityPNG);
     qSliderPNG.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     qSliderPNG.setPaintTicks(true);
@@ -304,46 +309,38 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     public void stateChanged(ChangeEvent arg0) {
       int value = slider.getValue();
       if (isJPEG) {
+        qualityJPG = value;
         qPanelJPEG
             .setBorder(new TitledBorder(GT._("JPEG Quality ({0})", value)));
       } else {
+        qualityPNG = value;
         qPanelPNG.setBorder(new TitledBorder(GT._("PNG Quality ({0})", value)));
       }
     }
-
   }
 
-  public class ChoiceListener implements ItemListener {
+  public class ExportChoiceListener implements ItemListener {
     public void itemStateChanged(ItemEvent e) {
 
       JComboBox source = (JComboBox) e.getSource();
-      choice = (String) source.getSelectedItem();
-      String ext = extensions[source.getSelectedIndex()];
-      File selectedFile = exportChooser.getSelectedFile();
+      File selectedFile = imageChooser.getSelectedFile();
       if (selectedFile == null)
         selectedFile = initialFile;
       File newFile = null;
       String name;
+      String newExt = extensions[source.getSelectedIndex()];
       if ((name = selectedFile.getName()) != null
           && name.endsWith("." + extension)) {
         name = name.substring(0, name.length() - extension.length());
-        name += ext;
-        newFile = new File(selectedFile.getPath(), name);
+        name += newExt;
+        initialFile = newFile = new File(selectedFile.getParent(), name);
       }
-      exportChooser.resetChoosableFileFilters();
-      exportChooser.addChoosableFileFilter(new TypeFilter(ext));
+      extension = newExt;
+      imageChooser.resetChoosableFileFilters();
+      imageChooser.addChoosableFileFilter(new TypeFilter(extension));
       if (newFile != null)
-        exportChooser.setSelectedFile(newFile);
-      extension = extensions[source.getSelectedIndex()];
-    }
-  }
-
-  /* (non-Javadoc)
-   * @see org.jmol.export.JmolImageTyperInterface#memorizeDefaultType()
-   */
-  public void memorizeDefaultType() {
-    if ((cb != null) && (cb.getSelectedIndex() >= 0)) {
-      defaultChoice = cb.getSelectedIndex();
+        imageChooser.setSelectedFile(newFile);
+      choice = (String) source.getSelectedItem();
     }
   }
 
@@ -355,18 +352,11 @@ public class Dialog extends JPanel implements JmolDialogInterface {
   }
 
   /* (non-Javadoc)
-   * @see org.jmol.export.JmolImageTyperInterface#getExtension()
-   */
-  public String getExtension() {
-    return extension;
-  }
-
-  /* (non-Javadoc)
    * @see org.jmol.export.JmolImageTyperInterface#getQuality(java.lang.String)
    */
   public int getQuality(String sType) {
-    return (sType.equals("JPEG") || sType.equals("JPG") ? qSliderJPEG
-        .getValue() : sType.equals("PNG") ? qSliderPNG.getValue() : -1);
+    return (sType.equals("JPEG") || sType.equals("JPG") ? qualityJPG : sType
+        .equals("PNG") ? qualityPNG : -1);
   }
 
   private static boolean doOverWrite(JFileChooser chooser, File file) {
@@ -378,13 +368,13 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     return (opt == 0);
   }
 
-  private static File showSaveDialog(Dialog it, Component c,
+  private File showSaveDialog(Dialog sd, Component c,
                                      JFileChooser chooser, File file) {
     while (true) {
       if (chooser.showSaveDialog(c) != JFileChooser.APPROVE_OPTION)
         return null;
-      if (it != null)
-        it.memorizeDefaultType();
+      if (cb != null && cb.getSelectedIndex() >= 0)
+        defaultChoice = cb.getSelectedIndex();
       if ((file = chooser.getSelectedFile()) == null || !file.exists()
           || doOverWrite(chooser, file))
         return file;

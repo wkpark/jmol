@@ -100,7 +100,7 @@ class Jvm12 {
   }
 
   final protected static String[] imageChoices = { "JPEG", "PNG", "GIF", "PPM" };
-  final protected static String[] imageExtensions = { "jpg", "png", "gif", "PPM" };
+  final protected static String[] imageExtensions = { "jpg", "png", "gif", "ppm" };
 
   static JmolDialogInterface newDialog(boolean forceNewTranslation) {
     JmolDialogInterface sd = (JmolDialogInterface) Interface
@@ -141,7 +141,7 @@ class Jvm12 {
             if (sType != null)
               imageType = sType;
             int iQuality = sd.getQuality(sType);
-            if (iQuality > 0)
+            if (iQuality >= 0)
               imageQuality = iQuality;
             return;
           }

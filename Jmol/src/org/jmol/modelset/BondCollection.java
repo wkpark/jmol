@@ -245,41 +245,36 @@ abstract public class BondCollection extends AtomCollection {
   protected short getBondOrder(Atom atomA, float bondingRadiusA, Atom atomB,
                              float bondingRadiusB, float distance2,
                              float minBondDistance2, float bondTolerance) {
-    if (bondingRadiusA == 0 || bondingRadiusB == 0)
+    if (bondingRadiusA == 0 || bondingRadiusB == 0 || distance2 < minBondDistance2)
       return 0;
     float maxAcceptable = bondingRadiusA + bondingRadiusB + bondTolerance;
     float maxAcceptable2 = maxAcceptable * maxAcceptable;
-    if (distance2 < minBondDistance2) {
-      return 0;
-    }
-    if (distance2 <= maxAcceptable2) {
-      return 1;
-    }
-    return 0;
+    return (distance2 > maxAcceptable2 ? (short) 0 : (short) 1);
   }
 
   private boolean haveWarned = false;
 
-  void checkValencesAndBond(Atom atomA, Atom atomB, short order, short mad,
+  boolean checkValencesAndBond(Atom atomA, Atom atomB, short order, short mad,
                             BitSet bsBonds) {
     if (atomA.getCurrentBondCount() > JmolConstants.MAXIMUM_AUTO_BOND_COUNT
         || atomB.getCurrentBondCount() > JmolConstants.MAXIMUM_AUTO_BOND_COUNT) {
       if (!haveWarned)
         Logger.warn("maximum auto bond count reached");
       haveWarned = true;
-      return;
+      return false;
     }
     int formalChargeA = atomA.getFormalCharge();
     if (formalChargeA != 0) {
       int formalChargeB = atomB.getFormalCharge();
       if ((formalChargeA < 0 && formalChargeB < 0)
           || (formalChargeA > 0 && formalChargeB > 0))
-        return;
+        return false;
     }
     if (atomA.alternateLocationID != atomB.alternateLocationID
         && atomA.alternateLocationID != '\0' && atomB.alternateLocationID != '\0')
-      return;
+      return false;
     getOrAddBond(atomA, atomB, order, mad, bsBonds);
+    return true;
   }
 
   protected void deleteAllBonds() {

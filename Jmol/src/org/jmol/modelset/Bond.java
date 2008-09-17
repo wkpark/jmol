@@ -79,9 +79,7 @@ public class Bond {
 
   Bond(Atom atom1, Atom atom2, short order,
               short mad, short colix) {
-    if (atom1 == null)
-      throw new NullPointerException();
-    if (atom2 == null)
+    if (atom1 == null || atom2 == null)
       throw new NullPointerException();
     this.atom1 = atom1;
     this.atom2 = atom2;

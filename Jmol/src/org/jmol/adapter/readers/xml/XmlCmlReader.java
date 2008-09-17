@@ -184,13 +184,13 @@ public class XmlCmlReader extends XmlReader {
                                   HashMap atts) {
     //if (!uri.equals(NAMESPACE_URI))
     //return;
-/*    
+
     try {
-      System.out.println(name + "::"+atts.get("name"));
+      System.out.println(name + "::" + atts.get("name"));
     } catch (Exception e) {
       System.out.println(name);
     }
-*/
+
     switch (state) {
     case START:
       if (name.equals("molecule")) {
@@ -204,9 +204,10 @@ public class XmlCmlReader extends XmlReader {
         state = CRYSTAL;
       } else if (name.equals("symmetry")) {
         state = SYMMETRY;
-        localSpaceGroupName = (atts.containsKey("spaceGroup") ? (String) atts.get("spaceGroup") : "P1");
+        localSpaceGroupName = (atts.containsKey("spaceGroup") ? (String) atts
+            .get("spaceGroup") : "P1");
       } else if (name.equals("module")) {
-        moduleCount++;      
+        moduleCount++;
       }
 
       break;
@@ -220,7 +221,7 @@ public class XmlCmlReader extends XmlReader {
           int iColon = scalarDictRef.indexOf(":");
           scalarDictValue = scalarDictRef.substring(iColon + 1);
           //scalarDictKey = scalarDictRef
-            //  .substring(0, (iColon >= 0 ? iColon : 0));
+          //  .substring(0, (iColon >= 0 ? iColon : 0));
         }
       } else if (name.equals("symmetry")) {
         state = CRYSTAL_SYMMETRY;
@@ -346,8 +347,6 @@ public class XmlCmlReader extends XmlReader {
       if (name.equals("atom")) {
         state = MOLECULE_ATOM;
         atom = new Atom();
-        boolean coords3D = false;
-        boolean coordsFractional = false;
         parent.setFractionalCoordinates(false);
         if (atts.containsKey("label"))
           atom.atomName = (String) atts.get("label");
@@ -355,24 +354,18 @@ public class XmlCmlReader extends XmlReader {
           atom.atomName = (String) atts.get("id");
         if (atts.containsKey("xFract")
             && (parent.iHaveUnitCell || !atts.containsKey("x3"))) {
-          coords3D = coordsFractional = true;
           parent.setFractionalCoordinates(true);
           parent.setAtomCoord(atom, parseFloat((String) atts.get("xFract")),
               parseFloat((String) atts.get("yFract")), parseFloat((String) atts
                   .get("zFract")));
+        } else if (atts.containsKey("x3")) {
+          parent.setAtomCoord(atom, parseFloat((String) atts.get("x3")),
+              parseFloat((String) atts.get("y3")), parseFloat((String) atts
+                  .get("z3")));
+        } else if (atts.containsKey("x2")) {
+          parent.setAtomCoord(atom, parseFloat((String) atts.get("x2")),
+              parseFloat((String) atts.get("y2")), 0);
         }
-        if (atts.containsKey("x3") && !coordsFractional) {
-          coords3D = true;
-          atom.x = parseFloat((String) atts.get("x3"));
-          atom.y = parseFloat((String) atts.get("y3"));
-          atom.z = parseFloat((String) atts.get("z3"));
-        }
-        if (atts.containsKey("x2") && !coords3D ) {
-          atom.x = parseFloat((String) atts.get("x2"));
-          atom.y = parseFloat((String) atts.get("y2"));
-          atom.z = 0;
-        }
-        parent.setAtomCoord(atom);
         if (atts.containsKey("elementType"))
           atom.elementSymbol = (String) atts.get("elementType");
         if (atts.containsKey("formalCharge"))
@@ -384,7 +377,7 @@ public class XmlCmlReader extends XmlReader {
       if (atts.containsKey("builtin")) {
         setKeepChars(true);
         state = MOLECULE_BOND_BUILTIN;
-        scalarDictValue = (String) atts.get("builtin"); 
+        scalarDictValue = (String) atts.get("builtin");
       }
       break;
     case MOLECULE_ATOM:
@@ -397,12 +390,12 @@ public class XmlCmlReader extends XmlReader {
           int iColon = scalarDictRef.indexOf(":");
           scalarDictValue = scalarDictRef.substring(iColon + 1);
           //scalarDictKey = scalarDictRef
-            //  .substring(0, (iColon >= 0 ? iColon : 0));
+          //  .substring(0, (iColon >= 0 ? iColon : 0));
         }
       } else if (atts.containsKey("builtin")) {
         setKeepChars(true);
         state = MOLECULE_ATOM_BUILTIN;
-        scalarDictValue = (String) atts.get("builtin"); 
+        scalarDictValue = (String) atts.get("builtin");
       }
       break;
     case MOLECULE_ATOM_SCALAR:
@@ -424,7 +417,8 @@ public class XmlCmlReader extends XmlReader {
     case START:
       if (name.equals("module")) {
         moduleCount--;
-        applySymmetry();
+        if (iHaveUnitCell)
+          applySymmetry();
       }
       break;
     case CRYSTAL:
@@ -440,14 +434,12 @@ public class XmlCmlReader extends XmlReader {
         setKeepChars(false);
         if (tokens.length != 3 || cellParameterType == null) {
         } else if (cellParameterType.equals("length")) {
-          parent.needToApplySymmetry = true;
           for (int i = 0; i < 3; i++) 
             parent.setUnitCellItem(i, parseFloat(tokens[i]));
           break;
         } else if (cellParameterType.equals("angle")) {
           for (int i = 0; i < 3; i++) 
             parent.setUnitCellItem(i + 3, parseFloat(tokens[i]));
-          applySymmetry();
           break;
         }
         //if here, then something is wrong
@@ -491,14 +483,13 @@ public class XmlCmlReader extends XmlReader {
     case CRYSTAL_SYMMETRY:
     case SYMMETRY:
       if (name.equals("symmetry")) {
-        applySymmetry();
         state = (state == CRYSTAL_SYMMETRY ? CRYSTAL : START);
       }
       break;
     case MOLECULE:
       if (name.equals("molecule")) {
         if (--moleculeNesting == 0) {
-          // if <molecule> is within <module>, then
+          // if <molecule> is within <molecule>, then
           // we have to wait until the end of <module> to
           // apply symmetry.
           applySymmetry();

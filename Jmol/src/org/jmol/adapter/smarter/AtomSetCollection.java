@@ -1026,7 +1026,6 @@ public class AtomSetCollection {
   ////////////////////////////////////////////////////////////////
   
   void addTrajectory() {
-    //System.out.println(atomCount);
     if (trajectory.length == 0 || trajectory.length < atomCount) {
       trajectory = new Point3f[atomCount];      
     }

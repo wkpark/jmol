@@ -130,6 +130,7 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
       script = "zap";
     } else {
       String fileName = file.getAbsolutePath();
+      System.out.println("updatePreview "+ fileName + " " + chooser.getSelectedFile());
       String url = Dialog.getLocalUrl(file);
       System.out.println("updatePreview + " + fileName + " " + url);
       if (url != null)
@@ -139,8 +140,8 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
       if (fileName.indexOf(".spt") >= 0) 
         script = "script " + script;
       else
-        script = "zap;set echo top left;echo loading...;refresh; load " + script
-            + ";if({1}.size);cartoons only;color structure;endif"; 
+        script = "zap;set echo top left;echo loading...;refresh;load " + script
+            + ";if({1-10000}.size);cartoons only;color structure;endif"; 
     }
     display.getViewer().evalStringQuiet(script);
     //display.repaint();

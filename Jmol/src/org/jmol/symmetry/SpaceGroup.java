@@ -453,10 +453,10 @@ class SpaceGroup {
       name = name.substring(0, i).trim();
     }
     
-    // generate spaceless abbreviation "P m m m" --> "Pmmm"
+    // generate spaceless abbreviation "P m m m" --> "Pmmm"  "P 2(1)/c" --> "P21/c"
     String abbr = "";
     for (i = 0; i < name.length(); i++) {
-      if (name.charAt(i) != ' ')
+      if (" ()".indexOf(name.charAt(i)) < 0)
         abbr += name.charAt(i);
     }
     SpaceGroup s;

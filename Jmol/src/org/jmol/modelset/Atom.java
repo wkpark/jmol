@@ -274,7 +274,7 @@ final public class Atom extends Point3fi {
   }
 
   public int getRasMolRadius() {
-    return Math.abs(madAtom / (4 * 2));
+    return Math.abs(madAtom / 8); //  1000r = 1000d / 2; rr = (1000r / 4);
   }
 
   public int getCovalentBondCount() {

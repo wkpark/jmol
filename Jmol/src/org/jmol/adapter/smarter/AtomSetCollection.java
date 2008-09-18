@@ -1333,4 +1333,15 @@ public class AtomSetCollection {
     return v;
   }
 
+  public Properties setAtomNames(Properties atomIdNames) {
+    // for CML reader "a3" --> "N3"
+    if (atomIdNames == null)
+      return null;
+    String s;
+    for (int i = 0; i < atomCount; i++)
+      if ((s = atomIdNames.getProperty(atoms[i].atomName)) != null)
+        atoms[i].atomName = s;
+    return null;
+  }
+
 }

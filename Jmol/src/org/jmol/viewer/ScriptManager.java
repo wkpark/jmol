@@ -87,7 +87,7 @@ class ScriptManager {
     scriptItem.addElement(isQuiet ? Boolean.TRUE : Boolean.FALSE);
     scriptItem.addElement(new Integer(useCommandThread ? -1 : 1));
     scriptQueue.addElement(scriptItem);
-    if (Logger.debugging)
+    if (true || Logger.debugging)
       Logger.info(scriptQueue.size() + " scripts; added: " + strScript);
     startScriptQueue(false);
     return "pending";
@@ -143,9 +143,10 @@ class ScriptManager {
   Vector getScriptItem(boolean watching, boolean isByCommandWatcher) {
     Vector scriptItem = (Vector) scriptQueue.elementAt(0);
     int flag = (((Integer) scriptItem.elementAt(5)).intValue());
-    boolean isOK = (watching ? flag < 0 : isByCommandWatcher ? flag == 0
+    boolean isOK = (watching ? flag < 0 
+        : isByCommandWatcher ? flag == 0
         : flag == 1);
-    //System.out.println("checking queue for thread " + (watching ? 1 : 0) + "watching = " + watching + " flag=" + flag + " isOK = " + isOK + " " + scriptItem.get(0));
+    //System.out.println("checking queue for thread " + (watching ? 1 : 0) + "watching = " + watching + " isbycommandthread=" + isByCommandWatcher + "  flag=" + flag + " isOK = " + isOK + " " + scriptItem.get(0));
     return (isOK ? scriptItem : null);
   }
 
@@ -157,23 +158,34 @@ class ScriptManager {
     public ScriptQueueRunnable(boolean startedByCommandThread, int pt) {
       this.startedByCommandThread = startedByCommandThread;
       this.pt = pt;
+      //System.out.println("scriptqueurunnable " + startedByCommandThread + " " + pt + " " + this);
     }
 
     public void run() {
       while (scriptQueue.size() != 0) {
+      /*  System.out.println("run while size != 0: " + this + " pt=" + this.pt + " size=" + scriptQueue.size());
+        for (int i = 0; i < scriptQueue.size(); i++)
+          System.out.println("queue: " + i + " " + scriptQueue.get(i));
+        System.out.println("running: " + scriptQueueRunning[0] + " "  + queueThreads[0]);
+        System.out.println("running: " + scriptQueueRunning[1] + " "  + queueThreads[1]);
+      */
+        
         if (!runNextScript())
           try {
             Thread.sleep(100); //cycle for the command watcher thread
           } catch (Exception e) {
+            System.out.println(this + " Exception " + e.getMessage());
             break; //-- interrupt? 
           }
       }
-      queueThreads[pt] = null;
+      //System.out.println("scriptquenerunnable " + pt + " done " + this);
+      queueThreads[pt].interrupt();      
       stop();
     }
 
     public void stop() {
       scriptQueueRunning[pt] = false;
+      queueThreads[pt] = null;      
       viewer.setSyncDriver(StatusManager.SYNC_ENABLE);
     }
 
@@ -193,7 +205,9 @@ class ScriptManager {
         Logger.info("Queue[" + pt + "][" + scriptQueue.size()
             + "] scripts; running: " + script);
       }
-      scriptQueue.removeElement(scriptItem);
+      //System.out.println("removing: " + scriptItem);
+      scriptQueue.removeElementAt(0);
+      //System.out.println("removed: " + scriptItem);
       runScript(returnType, script, statusList, isScriptFile, isQuiet);
       if (scriptQueue.size() == 0) {// might have been cleared with an exit
         //Logger.info("SCRIPT QUEUE READY", 0);
@@ -205,8 +219,10 @@ class ScriptManager {
     private void runScript(String returnType, String strScript,
                            String statusList, boolean isScriptFile,
                            boolean isQuiet) {
+      //System.out.println("runScript evalstrngwait " + strScript);
       viewer.evalStringWaitStatus(returnType, strScript, statusList,
           isScriptFile, isQuiet, true);
+      //System.out.println("runScript evalstrngwait DONE");
     }
 
   }
@@ -250,7 +266,7 @@ class ScriptManager {
    * The 5th vector position is an Integer flag.
    * 
    *   -1  -- Owned by CommandWatcher; ready for thread assignment
-   *    0  -- Owned by CommmadWatcher; running
+   *    0  -- Owned by CommandWatcher; running
    *    1  -- Owned by the JavaScript-enabled/browser-limited thread
    * 
    * If the command is to be ignored by the CommandWatcher, the flag is set 
@@ -283,7 +299,7 @@ class ScriptManager {
             }
           }
         } catch (InterruptedException ie) {
-          Logger.info("CommandWatcher InterruptedException!");
+          Logger.info("CommandWatcher InterruptedException! " + this);
           break;
         } catch (Exception ie) {
           String s = "script processing ERROR:\n\n" + ie.toString();

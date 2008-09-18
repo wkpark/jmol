@@ -111,11 +111,18 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       if (fileName.indexOf(":") < 0)
         openChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
     }
+    
+    UIManager.put("FileChooser.fileNameLabelText", GT._("File or URL:"));
+
     File file = null;
     if (openChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
       file = openChooser.getSelectedFile();
+
+    UIManager.put("FileChooser.fileNameLabelText", GT._("File Name:"));
+
     if (file == null)
       return closePreview();
+    
     if (historyFile != null)
       historyFile.addWindowInfo(windowName, openChooser.getDialog(), null);
 
@@ -126,7 +133,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       viewer.setStringProperty("currentLocalPath", file.getParent());
       fileName = file.getAbsolutePath();
     }
-    boolean doAppend = (openPreview != null && openPreview.isAppendSelected());
+    boolean doAppend = (allowAppend && openPreview != null && openPreview.isAppendSelected());
     closePreview();
     return (doAppend ? "load append " + Escape.escape(fileName) : fileName);
   }
@@ -171,6 +178,8 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       String sType = fileName.substring(pt + 1);
       if (pt >= 0 && sType.length() > 0)
         saveChooser.addChoosableFileFilter(new TypeFilter(sType));
+      if (fileName.equals("*"))
+        fileName = viewer.getModelSetFileName();
       if (fileName.indexOf(".") == 0)
         fileName = "Jmol" + fileName;
       file = new File(fileName);
@@ -435,7 +444,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     UIManager.put("FileChooser.fileDateHeaderText", GT._("Modified"));
     UIManager.put("FileChooser.fileDescriptionText", GT._("Generic File"));
     UIManager.put("FileChooser.fileNameHeaderText", GT._("Name"));
-    UIManager.put("FileChooser.fileNameLabelText", GT._("File or URL:"));
+    UIManager.put("FileChooser.fileNameLabelText", GT._("File Name:"));
     UIManager.put("FileChooser.fileSizeHeaderText", GT._("Size"));
     UIManager.put("FileChooser.filesOfTypeLabelText", GT._("Files of Type:"));
     UIManager.put("FileChooser.fileTypeHeaderText", GT._("Type"));

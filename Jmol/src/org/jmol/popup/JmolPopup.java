@@ -856,8 +856,8 @@ abstract public class JmolPopup {
     if (script.indexOf("SELECT") == 0) {
       return "select thisModel and (" + script.substring(6) + ")";
     }
-    
-    if ((pt = id.lastIndexOf("[")) >= 0) { 
+
+    if ((pt = id.lastIndexOf("[")) >= 0) {
       // setSpin
       id = id.substring(pt + 1);
       if ((pt = id.indexOf("]")) >= 0)
@@ -865,11 +865,15 @@ abstract public class JmolPopup {
       id = id.replace('_', ' ');
       if (script.indexOf("[]") < 0)
         script = "[] " + script;
-      return TextFormat.simpleReplace(script, "[]", id);
-    } else if (script.indexOf("?FILEROOT?") >= 0)
+      return TextFormat.simpleReplace(script, "[]", id); 
+    } else if (script.indexOf("?FILEROOT?") >= 0) {
       script = TextFormat.simpleReplace(script, "FILEROOT?", modelSetRoot);
-    else if (script.indexOf("?FILE?") >= 0)
+    } else if (script.indexOf("?FILE?") >= 0) {
       script = TextFormat.simpleReplace(script, "FILE?", modelSetFileName);
+    } else if (script.indexOf("?PdbId?") >= 0) {
+      script = TextFormat.simpleReplace(script, "PdbId?", 
+          "=" + (modelSetRoot.length() == 4 && modelSetRoot.indexOf(".") < 0 ? modelSetRoot : "1crn"));
+    }
     return script;
   }
 

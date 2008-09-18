@@ -29,6 +29,7 @@ import org.jmol.adapter.smarter.*;
 import java.io.BufferedReader;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 import netscape.javascript.JSObject;
@@ -106,9 +107,11 @@ public class XmlCmlReader extends XmlReader {
   int tokenCount;
   String[] tokens = new String[16];
 
-  int moduleCount = 0;
+  int nModules = 0;
+  int moduleNestingLevel = 0;
   boolean haveMolecule = false;
   String localSpaceGroupName;
+  boolean processing = true;
   /**
    * state constants
    */
@@ -179,18 +182,21 @@ public class XmlCmlReader extends XmlReader {
   // parent molecule that exists.
   int moleculeNesting = 0;
   boolean embeddedCrystal = false;
+  Properties atomIdNames;
 
   public void processStartElement(String uri, String name, String qName,
                                   HashMap atts) {
     //if (!uri.equals(NAMESPACE_URI))
     //return;
 
-    try {
+/*    try {
       System.out.println(name + "::" + atts.get("name"));
     } catch (Exception e) {
       System.out.println(name);
     }
-
+*/
+    if (!processing)
+      return;
     switch (state) {
     case START:
       if (name.equals("molecule")) {
@@ -207,7 +213,8 @@ public class XmlCmlReader extends XmlReader {
         localSpaceGroupName = (atts.containsKey("spaceGroup") ? (String) atts
             .get("spaceGroup") : "P1");
       } else if (name.equals("module")) {
-        moduleCount++;
+        moduleNestingLevel++;
+        nModules++;
       }
 
       break;
@@ -216,13 +223,7 @@ public class XmlCmlReader extends XmlReader {
         state = CRYSTAL_SCALAR;
         setKeepChars(true);
         scalarTitle = (String) atts.get("title");
-        scalarDictRef = (String) atts.get("dictRef");
-        if (scalarDictRef != null) {
-          int iColon = scalarDictRef.indexOf(":");
-          scalarDictValue = scalarDictRef.substring(iColon + 1);
-          //scalarDictKey = scalarDictRef
-          //  .substring(0, (iColon >= 0 ? iColon : 0));
-        }
+        getDictRefValue(atts);
       } else if (name.equals("symmetry")) {
         state = CRYSTAL_SYMMETRY;
         if (atts.containsKey("spaceGroup")) {
@@ -385,13 +386,7 @@ public class XmlCmlReader extends XmlReader {
         state = MOLECULE_ATOM_SCALAR;
         setKeepChars(true);
         scalarTitle = (String) atts.get("title");
-        scalarDictRef = (String) atts.get("dictRef");
-        if (scalarDictRef != null) {
-          int iColon = scalarDictRef.indexOf(":");
-          scalarDictValue = scalarDictRef.substring(iColon + 1);
-          //scalarDictKey = scalarDictRef
-          //  .substring(0, (iColon >= 0 ? iColon : 0));
-        }
+        getDictRefValue(atts);
       } else if (atts.containsKey("builtin")) {
         setKeepChars(true);
         state = MOLECULE_ATOM_BUILTIN;
@@ -409,16 +404,28 @@ public class XmlCmlReader extends XmlReader {
     }
   }
 
+  private void getDictRefValue(HashMap atts) {
+    scalarDictRef = (String) atts.get("dictRef");
+    if (scalarDictRef != null) {
+      int iColon = scalarDictRef.indexOf(":");
+      scalarDictValue = scalarDictRef.substring(iColon + 1);
+    }
+  }
+
   public void processEndElement(String uri, String name, String qName) {
     //if (!uri.equals(NAMESPACE_URI))
       //return;
     //System.out.println("END: " + name);
+    if (!processing)
+      return;
     switch (state) {
     case START:
       if (name.equals("module")) {
-        moduleCount--;
-        if (iHaveUnitCell)
-          applySymmetry();
+        if (--moduleNestingLevel == 0) {
+          if (parent.iHaveUnitCell)
+            applySymmetry();
+          atomIdNames = atomSetCollection.setAtomNames(atomIdNames);
+        }
       }
       break;
     case CRYSTAL:
@@ -485,14 +492,17 @@ public class XmlCmlReader extends XmlReader {
       if (name.equals("symmetry")) {
         state = (state == CRYSTAL_SYMMETRY ? CRYSTAL : START);
       }
+      if (moduleNestingLevel == 0 && parent.iHaveUnitCell)
+        applySymmetry();
       break;
     case MOLECULE:
       if (name.equals("molecule")) {
         if (--moleculeNesting == 0) {
           // if <molecule> is within <molecule>, then
-          // we have to wait until the end of <module> to
+          // we have to wait until the end of all <molecule>s to
           // apply symmetry.
-          applySymmetry();
+          applySymmetry();          
+          atomIdNames = atomSetCollection.setAtomNames(atomIdNames);
           state = START;
         } else {
           state = MOLECULE;
@@ -536,6 +546,10 @@ public class XmlCmlReader extends XmlReader {
         state = MOLECULE_ATOM;
         if ("jmol:charge".equals(scalarDictRef)) {
           atom.partialCharge = parseFloat(chars);
+        } else if (scalarDictRef != null && "_atom_site_label".equals(scalarDictValue)) {
+          if (atomIdNames == null)
+            atomIdNames = new Properties();
+          atomIdNames.put(atom.atomName, chars); 
         }
       }
       setKeepChars(false);
@@ -662,7 +676,7 @@ public class XmlCmlReader extends XmlReader {
   }
   
   public void applySymmetry() {
-    if (moduleCount > 0 || !haveMolecule)
+    if (moduleNestingLevel > 0 || !haveMolecule)
       return;
     if (localSpaceGroupName == null)
       return;

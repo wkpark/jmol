@@ -613,7 +613,7 @@ java.lang.NullPointerException
         break;
     boolean isURL = (iurlPrefix >= 0);
     boolean isApplet = (appletDocumentBase != null);
-    InputStream in;
+    InputStream in = null;
     int length;
     try {
       if (isApplet || isURL) {
@@ -635,6 +635,12 @@ java.lang.NullPointerException
       }
       return new MonitorInputStream(in, length);
     } catch (Exception e) {
+      try {
+        if (in != null)
+        in.close();
+      } catch (IOException e1) {
+        // TODO
+      }
       errorMessage = "" + e;
     }
     return errorMessage;

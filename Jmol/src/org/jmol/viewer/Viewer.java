@@ -425,7 +425,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       stateManager.setCrystallographicDefaults();//modelSet.someModelsHavePeriodicOrigin);
     else
       setAxesModeMolecular(false);
-
+    prevFrame = Integer.MIN_VALUE;
     refresh(1, "Viewer:homePosition()");
   }
 
@@ -3423,7 +3423,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   /// direct no-queue use:
 
   public String scriptWait(String strScript) {
-    //System.out.println("Viewer scriptWait1 " + htmlName + " " + strScript + " ");
     scriptManager.waitForQueue();
     boolean doTranslateTemp = GT.getDoTranslate();
     GT.setDoTranslate(false);
@@ -3435,7 +3434,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Object scriptWaitStatus(String strScript, String statusList) {
-    //System.out.println("Viewer scriptWait2 " + htmlName + " " + strScript);
     scriptManager.waitForQueue();
     boolean doTranslateTemp = GT.getDoTranslate();
     GT.setDoTranslate(false);
@@ -3447,7 +3445,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Object evalStringWaitStatus(String returnType, String strScript,
                                      String statusList) {
-    //System.out.println("Viewer scriptWait3 " + htmlName + " " + strScript);
     scriptManager.waitForQueue();
     return evalStringWaitStatus(returnType, strScript, statusList, false,
         false, false);
@@ -3461,6 +3458,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                            boolean isScriptFile,
                                            boolean isQuiet, boolean isQueued) {
     // from the scriptManager or scriptWait()
+    System.out.println("DEBUG: evalStringWaitStatus " + Thread.currentThread().getName() 
+        + " " + Thread.currentThread().getId());
     if (checkResume(strScript))
       return "script processing resumed"; //be very odd if this fired
     if (checkHalt(strScript))
@@ -3907,9 +3906,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     statusManager.setJmolStatusListener(jmolStatusListener);
   }
 
+  int prevFrame = Integer.MIN_VALUE;
+  
   void setStatusFrameChanged(int frameNo) {
     transformManager.setVibrationPeriod(Float.NaN);
     int modelIndex = repaintManager.currentModelIndex;
+    
     int firstIndex = repaintManager.firstModelIndex;
     int lastIndex = repaintManager.lastModelIndex;
 
@@ -3944,6 +3946,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setParameterValue("_modelFile", (modelIndex < 0 ? ""
         : getModelFileName(modelIndex)));
 
+    if (modelIndex == prevFrame) {
+      return;
+    }
+    prevFrame = modelIndex;
+    
     s = statusManager.getCallbackScript("animframecallback");
     if (s != null)
       evalStringQuiet(s, true, false);
@@ -3966,7 +3973,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                    String fileName, String modelName,
                                    String strError) {
     String s = statusManager.getCallbackScript("loadstructcallback");
-    if (s != null)
+    if (s != null && ptLoad >= 0 && strError == null)
       evalStringQuiet(s, true, false);
     statusManager.setStatusFileLoaded(s, fullPathName, fileName, modelName,
           strError, ptLoad);

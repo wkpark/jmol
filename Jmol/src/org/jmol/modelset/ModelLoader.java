@@ -706,11 +706,17 @@ public final class ModelLoader extends ModelSet {
     if (iterBond == null)
       return;
     short mad = viewer.getMadBond();
+    short order;
     defaultCovalentMad = (jmolData == null ? mad : 0);
+    boolean haveMultipleBonds = false;
     while (iterBond.hasNext()) {
-      bondAtoms(iterBond.getAtomUniqueID1(), iterBond.getAtomUniqueID2(),
-          (short) iterBond.getEncodedOrder());
+      order = (short) iterBond.getEncodedOrder();
+      bondAtoms(iterBond.getAtomUniqueID1(), iterBond.getAtomUniqueID2(), order);
+      if (order > 1)
+        haveMultipleBonds = true; 
     }
+    if (haveMultipleBonds && someModelsHaveSymmetry && !viewer.getApplySymmetryToBonds())
+      Logger.info("ModelSet: use \"set appletSymmetryToBonds TRUE \" to apply the file-based multiple bonds to symmetry-generated atoms.");
     defaultCovalentMad = mad;
   }
   

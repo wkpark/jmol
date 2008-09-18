@@ -480,7 +480,7 @@ class PopupResourceBundle {
       { "showSpacegroup", "console on;show spacegroup" },
       { "showState", "console on;show state" },
       
-      { "loadPdb", "load ?=1crn" },      
+      { "loadPdb", "load ?PdbId?" },      
       { "loadFileOrURL", "load ?" },      
       { "loadFileUnitCell", "load ? {1 1 1}" },      
       { "loadScript", "script ?.spt" },      

@@ -27,6 +27,7 @@ import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import org.jmol.api.*;
 import org.jmol.util.Logger;
@@ -44,6 +45,12 @@ class Jvm12 {
     this.viewer = viewer;
     this.modelAdapter = modelAdapter;
     this.appletContext = appletContext;
+    try {
+      UIManager
+          .setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+    } catch (Exception exc) {
+      System.err.println("Error loading L&F: " + exc);
+    }
   }
 
   private final Rectangle rectClip = new Rectangle();

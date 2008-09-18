@@ -1223,7 +1223,19 @@ final public class JmolConstants {
    * At the same time, the table was split into cations and anions for easier
    * retrieval.
    * 
-   *  Bob Hanson is suspicious of Sn(-IV)
+   * O- and N+ removed 9/2008 - BH. The problem is that
+   * the formal charge is used to determine bonding radius. 
+   * But these formal charges are different than the charges used in 
+   * compilation of HCP data (which is crystal ionic radii). 
+   * Specifically, because O- and N+ are very common in organic 
+   * compounds, I have removed their radii from the table FOR OUR PURPOSES HERE.
+   * 
+   * I suppose there are some ionic compounds that have O- and N+ as 
+   * isolated ions, but what they would be I have no clue. Better to 
+   * be safe and go with somewhat more reasonable values.
+   * 
+   *  Argh. Changed for Jmol 11.6.RC15
+   * 
    *  
    ****************************************************************/
 
@@ -1237,7 +1249,7 @@ final public class JmolConstants {
     (5 << 4) + (1 + 4),   350,  // "B+1"
     (5 << 4) + (3 + 4),   230,  // "B+3"
     (6 << 4) + (4 + 4),   160,  // "C+4"
-    (7 << 4) + (1 + 4),   250,  // "N+1"
+    (7 << 4) + (1 + 4),   680,  // "N+1" // covalent radius --  250 way too small for organic charges
     (7 << 4) + (3 + 4),   160,  // "N+3"
     (7 << 4) + (5 + 4),   130,  // "N+5"
     (8 << 4) + (1 + 4),   220,  // "O+1"
@@ -1401,24 +1413,24 @@ final public class JmolConstants {
     (1 << 4) + (-1 + 4),  1540, // "H-1"
     (6 << 4) + (-4 + 4),  2600, // "C-4"
     (7 << 4) + (-3 + 4),  1710, // "N-3"
-    (8 << 4) + (-2 + 4),  1320, // "O-2"
-    (8 << 4) + (-1 + 4),  1000, // "O-1" // this was 1760! But then RC(=0)O-  is rediculously bonded 
+    (8 << 4) + (-2 + 4),  1360, // "O-2" *Shannon (1976)
+    (8 << 4) + (-1 + 4),   680, // "O-1" *necessary for CO2-, NO2, etc.  
     (9 << 4) + (-1 + 4),  1330, // "F-1"
-    (14 << 4) + (-4 + 4), 2710, // "Si-4"
-    (14 << 4) + (-1 + 4), 3840, // "Si-1" // same problem here?
+  //(14 << 4) + (-4 + 4), 2710, // "Si-4" *not in 77th
+  //(14 << 4) + (-1 + 4), 3840, // "Si-1" *not in 77th 
     (15 << 4) + (-3 + 4), 2120, // "P-3"
     (16 << 4) + (-2 + 4), 1840, // "S-2"
     (17 << 4) + (-1 + 4), 1810, // "Cl-1"
     (32 << 4) + (-4 + 4), 2720, // "Ge-4"
     (33 << 4) + (-3 + 4), 2220, // "As-3"
-    (34 << 4) + (-2 + 4), 1910, // "Se-2"
-    (34 << 4) + (-1 + 4), 2320, // "Se-1" // same problem here?
+    (34 << 4) + (-2 + 4), 1980, // "Se-2"  *Shannon (1976)
+  //(34 << 4) + (-1 + 4), 2320, // "Se-1" *not in 77th
     (35 << 4) + (-1 + 4), 1960, // "Br-1"
     (50 << 4) + (-4 + 4), 2940, // "Sn-4"
-    (50 << 4) + (-1 + 4), 3700, // "Sn-1" // same problem here?
+    (50 << 4) + (-1 + 4), 3700, // "Sn-1"
     (51 << 4) + (-3 + 4), 2450, // "Sb-3"
     (52 << 4) + (-2 + 4), 2110, // "Te-2"
-    (52 << 4) + (-1 + 4), 2500, // "Te-1" // same problem here?
+    (52 << 4) + (-1 + 4), 2500, // "Te-1"
     (53 << 4) + (-1 + 4), 2200, // "I-1"
   };
   

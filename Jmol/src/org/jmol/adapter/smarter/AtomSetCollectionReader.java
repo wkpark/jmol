@@ -372,6 +372,7 @@ public abstract class AtomSetCollectionReader {
     if (Logger.debugging) {
       Logger.debug("setunitcellitem " + i + " " + x);
     }
+    System.out.println("atomSetCollection unitcell item " + i + " = " + x);
     if (i < 6)
       iHaveUnitCell = checkUnitCell(6);
     else if(++nMatrixElements == 12)

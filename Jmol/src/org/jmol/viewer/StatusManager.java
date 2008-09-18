@@ -267,7 +267,7 @@ class StatusManager {
           && viewer.getDebugScript()) {
         jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT,
             new Object[] { null, "script <exiting>", statusMessage, new Integer(-1) });
-        strStatus = "Chime script completed.";
+        strStatus = "Jmol script completed.";
       }
       jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT,
           new Object[] { null, strStatus, statusMessage,

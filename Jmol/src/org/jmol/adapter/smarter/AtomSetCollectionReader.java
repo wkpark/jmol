@@ -98,6 +98,7 @@ public abstract class AtomSetCollectionReader {
   private SymmetryInterface symmetry;
   public float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
   public int[] latticeCells = new int[3];
+  public float[][] primitiveLatticeVectors;
   public int desiredSpaceGroupIndex;
 
   public int[] next = new int[1];
@@ -363,17 +364,24 @@ public abstract class AtomSetCollectionReader {
     nMatrixElements = 0;
   }
 
+  public void clearLatticeParameters() {
+    if (ignoreFileUnitCell)
+      return;
+    for (int i = 6; i < notionalUnitCell.length; i++)
+      notionalUnitCell[i] = Float.NaN;
+    checkUnitCell(6);    
+  }
   public void setUnitCellItem(int i, float x) {
     if (ignoreFileUnitCell)
       return;
-    if (i >= 6 && Float.isNaN(notionalUnitCell[6]))
+    if (!Float.isNaN(x) && i >= 6 && Float.isNaN(notionalUnitCell[6]))
       initializeCartesianToFractional();
     notionalUnitCell[i] = x;
     if (Logger.debugging) {
       Logger.debug("setunitcellitem " + i + " " + x);
     }
-    System.out.println("atomSetCollection unitcell item " + i + " = " + x);
-    if (i < 6)
+    //System.out.println("atomSetCollection unitcell item " + i + " = " + x);
+    if (i < 6 || Float.isNaN(x))
       iHaveUnitCell = checkUnitCell(6);
     else if(++nMatrixElements == 12)
       checkUnitCell(22);
@@ -390,6 +398,14 @@ public abstract class AtomSetCollectionReader {
     notionalUnitCell[JmolConstants.INFO_BETA] = beta;
     notionalUnitCell[JmolConstants.INFO_GAMMA] = gamma;
     iHaveUnitCell = checkUnitCell(6);
+  }
+  
+  public void addPrimitiveLatticeVector(int i, float[] xyz) {
+    i = 6 + i * 3;
+    notionalUnitCell[i++] = xyz[0];
+    notionalUnitCell[i++] = xyz[1];
+    notionalUnitCell[i++] = xyz[2];
+    checkUnitCell(15);
   }
 
   private boolean checkUnitCell(int n) {

@@ -78,7 +78,7 @@ public class XmlCmlReader extends XmlReader {
    * 
    */
 
-  String[] cmlImplementedAttributes = { "id", //general
+  private String[] cmlImplementedAttributes = { "id", //general
       "title", //molecule
       "x3", "y3", "z3", "x2", "y2", //atom 
       "elementType", "formalCharge", //atom
@@ -95,23 +95,23 @@ public class XmlCmlReader extends XmlReader {
   // the same atom array gets reused
   // it will grow to the maximum length;
   // atomCount holds the current number of atoms
-  int atomCount;
-  Atom[] atomArray = new Atom[100];
+  private int atomCount;
+  private Atom[] atomArray = new Atom[100];
 
-  int bondCount;
-  Bond[] bondArray = new Bond[100];
+  private int bondCount;
+  private Bond[] bondArray = new Bond[100];
 
   // the same string array gets reused
   // tokenCount holds the current number of tokens
   // see breakOutTokens
-  int tokenCount;
+  private int tokenCount;
   String[] tokens = new String[16];
 
-  int nModules = 0;
-  int moduleNestingLevel = 0;
-  boolean haveMolecule = false;
-  String localSpaceGroupName;
-  boolean processing = true;
+  private int nModules = 0;
+  private int moduleNestingLevel = 0;
+  private boolean haveMolecule = false;
+  private String localSpaceGroupName;
+  private boolean processing = true;
   /**
    * state constants
    */
@@ -131,7 +131,8 @@ public class XmlCmlReader extends XmlReader {
     MOLECULE_ATOM_BUILTIN = 13, 
     MOLECULE_BOND_BUILTIN = 14,
     MODULE = 15,
-    SYMMETRY = 17;
+    SYMMETRY = 17,
+    LATTICE_VECTOR = 18;
 
   /**
    * the current state
@@ -171,30 +172,31 @@ public class XmlCmlReader extends XmlReader {
     ((CmlHandler) (new CmlHandler())).walkDOMTree(DOMNode);
   }
 
-  String scalarDictRef;
+  private String scalarDictRef;
   //String scalarDictKey;
-  String scalarDictValue;
-  String scalarTitle;
-  String cellParameterType;
+  private String scalarDictValue;
+  private String scalarTitle;
+  private String cellParameterType;
 
   // counter that is incremented each time a molecule element is started and 
   // decremented when finished.  Needed so that only 1 atomSet created for each
   // parent molecule that exists.
-  int moleculeNesting = 0;
-  boolean embeddedCrystal = false;
-  Properties atomIdNames;
+  private int moleculeNesting = 0;
+  private int latticeVectorPtr = 0;
+  private boolean embeddedCrystal = false;
+  private Properties atomIdNames;
 
   public void processStartElement(String uri, String name, String qName,
                                   HashMap atts) {
     //if (!uri.equals(NAMESPACE_URI))
     //return;
 
-/*    try {
-      System.out.println(name + "::" + atts.get("name"));
-    } catch (Exception e) {
-      System.out.println(name);
-    }
-*/
+    /*    try {
+     System.out.println(name + "::" + atts.get("name"));
+     } catch (Exception e) {
+     System.out.println(name);
+     }
+     */
     if (!processing)
       return;
     switch (state) {
@@ -210,11 +212,18 @@ public class XmlCmlReader extends XmlReader {
         state = CRYSTAL;
       } else if (name.equals("symmetry")) {
         state = SYMMETRY;
-        localSpaceGroupName = (atts.containsKey("spaceGroup") ? (String) atts
-            .get("spaceGroup") : "P1");
+        if (atts.containsKey("spaceGroup")) {
+          localSpaceGroupName = (String) atts.get("spaceGroup");
+        } else {
+          localSpaceGroupName = "P1";
+          parent.clearLatticeParameters();
+        }
       } else if (name.equals("module")) {
         moduleNestingLevel++;
         nModules++;
+      } else if (name.equals("latticeVector")) {
+        state = LATTICE_VECTOR;
+        setKeepChars(true);
       }
 
       break;
@@ -239,6 +248,16 @@ public class XmlCmlReader extends XmlReader {
           setKeepChars(true);
         }
       }
+      break;
+    case LATTICE_VECTOR:
+      /*
+       <lattice dictRef="castep:latticeVectors">
+       <latticeVector units="castepunits:A" dictRef="cml:latticeVector">1.980499982834e0 3.430000066757e0 0.000000000000e0</latticeVector>
+       <latticeVector units="castepunits:A" dictRef="cml:latticeVector">-1.980499982834e0 3.430000066757e0 0.000000000000e0</latticeVector>
+       <latticeVector units="castepunits:A" dictRef="cml:latticeVector">0.000000000000e0 0.000000000000e0 4.165999889374e0</latticeVector>
+       </lattice>
+       */
+      setKeepChars(true);
       break;
     case SYMMETRY:
     case CRYSTAL_SCALAR:
@@ -486,6 +505,14 @@ public class XmlCmlReader extends XmlReader {
         setKeepChars(false);
         state = CRYSTAL_SYMMETRY;
       }
+      break;
+    case LATTICE_VECTOR:
+      float[] values = new float[3];
+      getTokensFloat(chars, values, 3);
+      parent.addPrimitiveLatticeVector(latticeVectorPtr, values);
+      latticeVectorPtr = (latticeVectorPtr + 1) % 3;
+      setKeepChars(false);
+      state = START;
       break;
     case CRYSTAL_SYMMETRY:
     case SYMMETRY:

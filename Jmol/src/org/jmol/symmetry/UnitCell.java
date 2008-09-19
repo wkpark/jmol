@@ -51,14 +51,14 @@ class UnitCell {
       new Point3f(1, 1, 1), };
 
   float a, b, c, alpha, beta, gamma;
+  boolean isPrimitive;
   float[] notionalUnitcell; //6 parameters + 16 matrix items
-  Matrix4f matrixNotional;
-  Matrix4f matrixCartesianToFractional;
-  Matrix4f matrixFractionalToCartesian;
-  Point3f[] vertices; // eight corners
+  private Matrix4f matrixCartesianToFractional;
+  private Matrix4f matrixFractionalToCartesian;
+  private Point3f[] vertices; // eight corners
 
-  Point3f cartesianOffset = new Point3f();
-  Point3f fractionalOffset = new Point3f();
+  private Point3f cartesianOffset = new Point3f();
+  private Point3f fractionalOffset = new Point3f();
   
   UnitCell(float[] notionalUnitcell) {
     setUnitCell(notionalUnitcell);
@@ -168,7 +168,6 @@ class UnitCell {
     alpha = notionalUnitcell[JmolConstants.INFO_ALPHA];
     beta = notionalUnitcell[JmolConstants.INFO_BETA];
     gamma = notionalUnitcell[JmolConstants.INFO_GAMMA];
-    calcNotionalMatrix();
     constructFractionalMatrices();
     calcUnitcellVertices();
   }
@@ -332,49 +331,52 @@ and the betaij should be entered as Type 0.
     return data.getEllipsoid(parBorU);
   }
 
-  private void calcNotionalMatrix() {
-    // note that these are oriented as columns, not as row
-    // this is because we will later use the transform method,
-    // which operates M * P, where P is a column vector
-    matrixNotional = new Matrix4f();
-
-    if (data == null)
-      data = new Data();
-
-    // 1. align the a axis with x axis
-    matrixNotional.setColumn(0, a, 0, 0, 0);
-    // 2. place the b is in xy plane making a angle gamma with a
-    matrixNotional.setColumn(1, (float) (b * data.cosGamma), 
-        (float) (b * data.sinGamma), 0, 0);
-    // 3. now the c axis,
-    // http://server.ccl.net/cca/documents/molecular-modeling/node4.html
-    matrixNotional.setColumn(2, (float) (c * data.cosBeta), 
-        (float) (c * (data.cosAlpha - data.cosBeta * data.cosGamma) / data.sinGamma), 
-        (float) (data.volume / (a * b * data.sinGamma)), 0);
-    matrixNotional.setColumn(3, 0, 0, 0, 1);
-  }
-
   private void constructFractionalMatrices() {
-    if (notionalUnitcell.length > 6 && !Float.isNaN(notionalUnitcell[6])) {
-        float[] scaleMatrix = new float[16];
+    if (notionalUnitcell.length > 6 && !Float.isNaN(notionalUnitcell[21])) {
+      float[] scaleMatrix = new float[16];
       for (int i = 0; i < 16; i++)
         scaleMatrix[i] = notionalUnitcell[6 + i];
       matrixCartesianToFractional = new Matrix4f(scaleMatrix);
       matrixFractionalToCartesian = new Matrix4f();
       matrixFractionalToCartesian.invert(matrixCartesianToFractional);
-    } else {
-      //System.out.println("notional: "+matrixNotional);
-      matrixFractionalToCartesian = matrixNotional;
+    } else if (notionalUnitcell.length > 6 && !Float.isNaN(notionalUnitcell[14])) {
+      isPrimitive = true;
+      Matrix4f m = matrixFractionalToCartesian = new Matrix4f();
+      float[] n = notionalUnitcell;
+      if (data == null)
+        data = new Data();
+      m.setColumn(0, n[6], n[7], n[8], 0);
+      m.setColumn(1, n[9], n[10], n[11], 0);
+      m.setColumn(2, n[12], n[13], n[14], 0);
+      m.setColumn(3, 0, 0, 0, 1);
       matrixCartesianToFractional = new Matrix4f();
       matrixCartesianToFractional.invert(matrixFractionalToCartesian);
+    } else {
+      Matrix4f m = matrixFractionalToCartesian = new Matrix4f();
+      if (data == null)
+        data = new Data();
+      // 1. align the a axis with x axis
+      m.setColumn(0, a, 0, 0, 0);
+      // 2. place the b is in xy plane making a angle gamma with a
+      m.setColumn(1, (float) (b * data.cosGamma), 
+          (float) (b * data.sinGamma), 0, 0);
+      // 3. now the c axis,
+      // http://server.ccl.net/cca/documents/molecular-modeling/node4.html
+      m.setColumn(2, (float) (c * data.cosBeta), 
+          (float) (c * (data.cosAlpha - data.cosBeta * data.cosGamma) / data.sinGamma), 
+          (float) (data.volume / (a * b * data.sinGamma)), 0);
+      m.setColumn(3, 0, 0, 0, 1);
+      matrixCartesianToFractional = new Matrix4f();
+      matrixCartesianToFractional.invert(matrixFractionalToCartesian);
+
     }
-    
+
     /* 
-    Point3f v = new Point3f(1,2,3);
-    toFractional(v);
-    System.out.println("fractionaltocart:" + matrixFractionalToCartesian);
-    System.out.println("testing mat.transform [1 2 3]" + matrixCartesianToFractional+v);
-    */
+     Point3f v = new Point3f(1,2,3);
+     toFractional(v);
+     System.out.println("fractionaltocart:" + matrixFractionalToCartesian);
+     System.out.println("testing mat.transform [1 2 3]" + matrixCartesianToFractional+v);
+     */
   }
 
   private void calcUnitcellVertices() {

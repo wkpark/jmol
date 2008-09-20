@@ -30,7 +30,7 @@ import java.util.Properties;
 import java.util.Hashtable;
 import java.util.BitSet;
 
-import org.jmol.quantum.MOCalculation;
+import org.jmol.modelset.Group;
 import org.jmol.viewer.JmolConstants;
 
 /****************************************************************
@@ -68,14 +68,14 @@ public abstract class JmolAdapter {
   public final static short ORDER_PARTIAL32       = JmolConstants.BOND_PARTIAL32;
   public final static short ORDER_UNSPECIFIED     = JmolConstants.BOND_ORDER_UNSPECIFIED;
   
-  public final static int        SHELL_S           = MOCalculation.SHELL_S;
-  public final static int        SHELL_P           = MOCalculation.SHELL_P;
-  public final static int        SHELL_SP          = MOCalculation.SHELL_SP;
-  public final static int        SHELL_L           = MOCalculation.SHELL_L;
-  public final static int        SHELL_D_CARTESIAN = MOCalculation.SHELL_D_CARTESIAN;
-  public final static int        SHELL_D_SPHERICAL = MOCalculation.SHELL_D_SPHERICAL;
-  public final static int        SHELL_F_CARTESIAN = MOCalculation.SHELL_F_CARTESIAN;
-  public final static int        SHELL_F_SPHERICAL = MOCalculation.SHELL_F_SPHERICAL;
+  public final static int        SHELL_S           = JmolConstants.SHELL_S;
+  public final static int        SHELL_P           = JmolConstants.SHELL_P;
+  public final static int        SHELL_SP          = JmolConstants.SHELL_SP;
+  public final static int        SHELL_L           = JmolConstants.SHELL_L;
+  public final static int        SHELL_D_CARTESIAN = JmolConstants.SHELL_D_CARTESIAN;
+  public final static int        SHELL_D_SPHERICAL = JmolConstants.SHELL_D_SPHERICAL;
+  public final static int        SHELL_F_CARTESIAN = JmolConstants.SHELL_F_CARTESIAN;
+  public final static int        SHELL_F_SPHERICAL = JmolConstants.SHELL_F_SPHERICAL;
   
   public static String getElementSymbol(int elementNumber) {
     return JmolConstants.elementSymbolFromNumber(elementNumber);
@@ -90,25 +90,30 @@ public abstract class JmolAdapter {
   }
   
   public static int getQuantumShellTagID(String tag) {
-    return MOCalculation.getQuantumShellTagID(tag);
+    return JmolConstants.getQuantumShellTagID(tag);
   }
                                            
   public static int getQuantumShellTagIDSpherical(String tag) {
-    return MOCalculation.getQuantumShellTagIDSpherical(tag);
+    return JmolConstants.getQuantumShellTagIDSpherical(tag);
   }
   
   final public static int getQuantumSubshellTagID(int shell, String tag) {
-    return MOCalculation.getQuantumSubshellTagID(shell, tag);
+    return JmolConstants.getQuantumSubshellTagID(shell, tag);
   }
                                            
   final public static String getQuantumSubshellTag(int shell, int subshell) {
-    return MOCalculation.getQuantumSubshellTag(shell, subshell);
+    return JmolConstants.getQuantumSubshellTag(shell, subshell);
   }
   
   final public static String canonicalizeQuantumSubshellTag(String tag) {
-    return MOCalculation.canonicalizeQuantumSubshellTag(tag);
+    return JmolConstants.canonicalizeQuantumSubshellTag(tag);
   }
-  
+
+  final public static short lookupGroupID(String group3) {
+    return Group.lookupGroupID(group3);
+  }
+
+
   //////////////////////////////////////////////////////////////////
   // file related
   //////////////////////////////////////////////////////////////////

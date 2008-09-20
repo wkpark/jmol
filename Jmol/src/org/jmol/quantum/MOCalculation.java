@@ -27,11 +27,12 @@ import org.jmol.api.MOCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.jvxl.readers.Parameters;
 import org.jmol.util.Logger;
+import org.jmol.viewer.JmolConstants;
+
 import javax.vecmath.Point3f;
 import java.util.Vector;
 import java.util.Hashtable;
 import java.util.BitSet;
-import java.util.Arrays;
 
 /*
  * See J. Computational Chemistry, vol 7, p 359, 1986.
@@ -118,77 +119,6 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
   int gaussianPtr;
   int firstAtomOffset;
   
-  private final static String[][] shellOrder = { 
-    {"S"},
-    {"X", "Y", "Z"},
-    {"S", "X", "Y", "Z"},
-    {"XX", "YY", "ZZ", "XY", "XZ", "YZ"},
-    {"d0", "d1+", "d1-", "d2+", "d2-"},
-    {"XXX", "YYY", "ZZZ", "XYY", "XXY", "XXZ", "XZZ", "YZZ", "YYZ", "XYZ"},
-    {"f0", "f1+", "f1-", "f2+", "f2-", "f3+", "f3-"}
-  };
-
-  final public static int SHELL_S = 0;
-  final public static int SHELL_P = 1;
-  final public static int SHELL_SP = 2;
-  final public static int SHELL_L = 2;
-  
-  // these next in cartesian/spherical pairs:
-  
-  final public static int SHELL_D_CARTESIAN = 3;
-  final public static int SHELL_D_SPHERICAL = 4;
-  final public static int SHELL_F_CARTESIAN = 5;
-  final public static int SHELL_F_SPHERICAL = 6;
-
-  final private static String[] quantumShellTags = {"S", "P", "SP", "L", 
-    "D", "5D", "F", "7F"};
-  
-  final private static int[] quantumShellIDs = {
-    SHELL_S, SHELL_P, SHELL_SP, SHELL_L, 
-    SHELL_D_CARTESIAN, SHELL_D_SPHERICAL,
-    SHELL_F_CARTESIAN, SHELL_F_SPHERICAL
-  };
-  
-  final public static int getQuantumShellTagID(String tag) {
-    for (int i = quantumShellTags.length; --i >= 0;)
-      if (tag.equals(quantumShellTags[i]))
-        return quantumShellIDs[i];
-    return -1;
-  }
-
-  final public static int getQuantumShellTagIDSpherical(String tag) {
-    final int tagID = getQuantumShellTagID(tag);
-    return tagID + (tagID < SHELL_D_CARTESIAN ? 0 : tagID % 2);
-  }
-
-  final public static String getQuantumShellTag(int shell) {
-    for (int i = quantumShellTags.length; --i >= 0;)
-      if (shell == quantumShellIDs[i])
-        return quantumShellTags[i];
-    return "" + shell;
-  }
-  
-  final public static String canonicalizeQuantumSubshellTag(String tag) {
-    char firstChar = tag.charAt(0);
-    if (firstChar == 'X' || firstChar == 'Y' || firstChar == 'Z') {
-      char[] sorted = tag.toCharArray();
-      Arrays.sort(sorted);
-      return new String(sorted);
-    } 
-    return tag;
-  }
-  
-  final public static int getQuantumSubshellTagID(int shell, String tag) {
-    for (int iSubshell = shellOrder[shell].length; --iSubshell >= 0; )
-      if (shellOrder[shell][iSubshell].equals(tag))
-        return iSubshell;
-    return -1;
-  }
-  
-  final public static String getQuantumSubshellTag(int shell, int subshell) {
-    return shellOrder[shell][subshell];
-  }
-
   public MOCalculation() {
   }
     
@@ -273,7 +203,7 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
     
     if (doDebug)
       Logger.debug(  "processShell: " + iShell 
-                   + " type=" + getQuantumShellTag(basisType) 
+                   + " type=" + JmolConstants.getQuantumShellTag(basisType) 
                    + " nGaussians=" + nGaussians 
                    + " atom=" + atomIndex
                    );
@@ -296,25 +226,25 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
       }
     }
     switch(basisType) {
-    case SHELL_S:
+    case JmolConstants.SHELL_S:
       addDataS(nGaussians);
       break;
-    case SHELL_P:
+    case JmolConstants.SHELL_P:
       addDataP(nGaussians);
       break;
-    case SHELL_SP:
+    case JmolConstants.SHELL_SP:
       addDataSP(nGaussians);
       break;
-    case SHELL_D_CARTESIAN:
+    case JmolConstants.SHELL_D_CARTESIAN:
       addData6D(nGaussians);
       break;
-    case SHELL_D_SPHERICAL:
+    case JmolConstants.SHELL_D_SPHERICAL:
       addData5D(nGaussians);
       break;
-    case SHELL_F_CARTESIAN:
+    case JmolConstants.SHELL_F_CARTESIAN:
       addData10F(nGaussians);
       break;
-    case SHELL_F_SPHERICAL:
+    case JmolConstants.SHELL_F_SPHERICAL:
       addData7F(nGaussians);
       break;
     default:
@@ -492,7 +422,7 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
       return;
     }
     if (doDebug)
-      dumpInfo(nGaussians, SHELL_F_CARTESIAN);
+      dumpInfo(nGaussians, JmolConstants.SHELL_F_CARTESIAN);
     setMinMax();
     
     float alpha;
@@ -596,7 +526,7 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
       return;
     }
     if (doDebug)
-      dumpInfo(nGaussians, SHELL_D_SPHERICAL);
+      dumpInfo(nGaussians, JmolConstants.SHELL_D_SPHERICAL);
     
     setMinMax();
     
@@ -678,7 +608,7 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
     }
     
     if (doDebug)
-      dumpInfo(nGaussians, SHELL_F_SPHERICAL);
+      dumpInfo(nGaussians, JmolConstants.SHELL_F_SPHERICAL);
     
     setMinMax();
     
@@ -894,18 +824,14 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
     for (int ig = 0; ig < nGaussians; ig++) {
       float alpha = gaussians[gaussianPtr + ig][0];
       float c1 = gaussians[gaussianPtr + ig][1];
-      if (Logger.debugging) {
-        Logger.debug("Gaussian " + (ig + 1) + " alpha=" + alpha + " c=" + c1);
-      }
+      Logger.debug("Gaussian " + (ig + 1) + " alpha=" + alpha + " c=" + c1);
     }
-    if (shell >= 0 && Logger.debugging){
-      for (int i = 0; i < shellOrder[shell].length; i++) {
-        Logger.debug(
-            "MO coeff " + shellOrder[shell][i] + " " +
-            (moCoeff + i + 1) + " " + moCoefficients[moCoeff + i]);
-      }
+    if (shell >= 0 && Logger.debugging) {
+      String[] so = JmolConstants.getShellOrder(shell);
+      for (int i = 0; i < so.length; i++)
+        Logger.debug("MO coeff " + so[i] + " " + (moCoeff + i + 1) + " "
+            + moCoefficients[moCoeff + i]);
     }
-    
   }
 }
 

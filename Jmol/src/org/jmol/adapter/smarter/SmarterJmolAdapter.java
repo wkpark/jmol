@@ -401,7 +401,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
         .getAtomSetAuxiliaryInfo(atomSetIndex);
   }
 
-
   /* **************************************************************
    * The frame related methods
    * **************************************************************/
@@ -512,6 +511,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     public int getSequenceNumber() { return atom.sequenceNumber; }
     public char getInsertionCode()
     { return canonizeInsertionCode(atom.insertionCode); }
+    
   }
 
   class BondIterator extends JmolAdapter.BondIterator {
@@ -597,6 +597,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       return structure.endInsertionCode;
     }
   }
+
   
   
 }

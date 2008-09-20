@@ -55,6 +55,7 @@ public class Mol2Reader extends AtomSetCollectionReader {
 
   int nAtoms = 0;
   int atomCount = 0;
+  boolean isPDB = false;
   
  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
@@ -97,6 +98,7 @@ public class Mol2Reader extends AtomSetCollectionReader {
 
      */
 
+    isPDB = false;
     String thisDataSetName = readLineTrimmed();
     readLine();
     line += " 0 0 0 0 0 0";
@@ -128,11 +130,15 @@ public class Mol2Reader extends AtomSetCollectionReader {
       readLine();
     }
     nAtoms += atomCount;
+    if (isPDB) {
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB",
+          Boolean.TRUE);
+      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
+    }
     applySymmetry();
   }
 
-  void readAtoms(int atomCount, boolean iHaveCharges)
-      throws Exception {
+  void readAtoms(int atomCount, boolean iHaveCharges) throws Exception {
     //     1 Cs       0.0000   4.1230   0.0000   Cs        1 RES1   0.0000
     //  1 C1          7.0053   11.3096   -1.5429 C.3       1 <0>        -0.1912
     // free format, but no blank lines
@@ -149,12 +155,46 @@ public class Mol2Reader extends AtomSetCollectionReader {
       if (elementSymbol.length() > 2)
         elementSymbol = elementSymbol.substring(0, 2);
       atom.elementSymbol = elementSymbol;
-        // apparently "NO_CHARGES" is not strictly enforced
-        //      if (iHaveCharges)
+      // apparently "NO_CHARGES" is not strictly enforced
+      //      if (iHaveCharges)
+      if (tokens.length > 6)
+        atom.sequenceNumber = parseInt(tokens[6]);
+      if (tokens.length > 7) {
+        atom.group3 = tokens[7];
+        atom.isHetero = JmolAdapter.isHetero(atom.group3);
+        if (atom.group3.length() == 3
+            && JmolAdapter.lookupGroupID(atom.group3) >= 0) {
+          isPDB = true;
+        }      
+        if (isPDB)
+          atom.elementSymbol = deduceElementSymbol(atom.isHetero, tokens[5], atom.group3);
+      }
       if (tokens.length > 8)
         atom.partialCharge = parseFloat(tokens[8]);
     }
   }
+
+  String deduceElementSymbol(boolean isHetero, String XX, String group3) {
+    // short of having an entire table, 
+    if (XX.equalsIgnoreCase(group3)) 
+        return XX; // Cd Mg etc.
+    char ch1 = XX.charAt(0);
+    char ch2 = (XX.length() > 1 ? XX.charAt(1) : ' ');
+    String full = group3 + "." + ch1 + ch2;
+    // Cd Nd Ne are not in complex hetero; Ca is in these:
+    if (("OEC.CA ICA.CA OC1.CA OC2.CA OC4.CA").indexOf(full)>=0)
+      return "Ca";
+    if ("NA NB NC ND NE NF NG NH CA CB CC CD CE CF CG CH OA OB OC OD OE OF OG OH".indexOf(XX) >= 0)
+      return "" + ch1;
+    if (isHetero && Atom.isValidElementSymbolNoCaseSecondChar(ch1, ch2))
+      return (isHetero || ch1 != 'H' ? XX.trim() : "H");
+    if (Atom.isValidElementSymbol(ch1))
+      return "" + ch1;
+    if (Atom.isValidElementSymbol(ch2))
+      return "" + ch2;
+    return "Xx";
+  }
+
 
   void readBonds(int bondCount) throws Exception {
     //     6     1    42    1

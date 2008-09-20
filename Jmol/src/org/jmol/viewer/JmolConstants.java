@@ -29,6 +29,7 @@ import org.jmol.util.Logger;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Properties;
@@ -2882,5 +2883,82 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       Logger.error("argbsChainHetero wrong length");
       throw new NullPointerException();
     }
+  }
+
+  //   quantum MO calculation constants need to be here so quantum class is not opened
+  
+  private final static String[][] shellOrder = { 
+    {"S"},
+    {"X", "Y", "Z"},
+    {"S", "X", "Y", "Z"},
+    {"XX", "YY", "ZZ", "XY", "XZ", "YZ"},
+    {"d0", "d1+", "d1-", "d2+", "d2-"},
+    {"XXX", "YYY", "ZZZ", "XYY", "XXY", "XXZ", "XZZ", "YZZ", "YYZ", "XYZ"},
+    {"f0", "f1+", "f1-", "f2+", "f2-", "f3+", "f3-"}
+  };
+
+  final public static String[] getShellOrder(int i) {
+    return shellOrder[i];
+  }
+  
+  final public static int SHELL_S = 0;
+  final public static int SHELL_P = 1;
+  final public static int SHELL_SP = 2;
+  final public static int SHELL_L = 2;
+  
+  // these next in cartesian/spherical pairs:
+  
+  final public static int SHELL_D_CARTESIAN = 3;
+  final public static int SHELL_D_SPHERICAL = 4;
+  final public static int SHELL_F_CARTESIAN = 5;
+  final public static int SHELL_F_SPHERICAL = 6;
+
+  final private static String[] quantumShellTags = {"S", "P", "SP", "L", 
+    "D", "5D", "F", "7F"};
+  
+  final private static int[] quantumShellIDs = {
+    SHELL_S, SHELL_P, SHELL_SP, SHELL_L, 
+    SHELL_D_CARTESIAN, SHELL_D_SPHERICAL,
+    SHELL_F_CARTESIAN, SHELL_F_SPHERICAL
+  };
+  
+  final public static int getQuantumShellTagID(String tag) {
+    for (int i = quantumShellTags.length; --i >= 0;)
+      if (tag.equals(quantumShellTags[i]))
+        return quantumShellIDs[i];
+    return -1;
+  }
+
+  final public static int getQuantumShellTagIDSpherical(String tag) {
+    final int tagID = getQuantumShellTagID(tag);
+    return tagID + (tagID < SHELL_D_CARTESIAN ? 0 : tagID % 2);
+  }
+
+  final public static String getQuantumShellTag(int shell) {
+    for (int i = quantumShellTags.length; --i >= 0;)
+      if (shell == quantumShellIDs[i])
+        return quantumShellTags[i];
+    return "" + shell;
+  }
+  
+  final public static String canonicalizeQuantumSubshellTag(String tag) {
+    char firstChar = tag.charAt(0);
+    if (firstChar == 'X' || firstChar == 'Y' || firstChar == 'Z') {
+      char[] sorted = tag.toCharArray();
+      Arrays.sort(sorted);
+      return new String(sorted);
+    } 
+    return tag;
+  }
+  
+  final public static int getQuantumSubshellTagID(int shell, String tag) {
+    for (int iSubshell = shellOrder[shell].length; --iSubshell >= 0; )
+      if (shellOrder[shell][iSubshell].equals(tag))
+        return iSubshell;
+    return -1;
+  }
+  
+  final public static String getQuantumSubshellTag(int shell, int subshell) {
+    return shellOrder[shell][subshell];
   }
 }

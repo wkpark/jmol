@@ -50,7 +50,7 @@ class DataManager {
     dataValues.clear();
   }
   
-  void setData(String type, Object[] data, int atomCount,
+  void setData(Viewer viewer, String type, Object[] data, int atomCount,
                       int matchField, int field) {
     //Eval
     /*
@@ -115,6 +115,17 @@ class DataManager {
         bs.or((BitSet)(oldData[2]));
       data[2] = bs;
       data[1] = f;
+      if (type.indexOf("property_") == 0) {
+        int tok = Token.getSettableTokFromString(type.substring(9));
+        if (tok != Token.nada) {
+          int nValues = bs.cardinality();
+          float[] fValues = new float[nValues];
+          for (int n = 0, i = 0; n < nValues; i++)
+            if (bs.get(i))
+              fValues[n++] = f[i];
+          viewer.setAtomProperty(bs, tok, 0, 0, fValues);
+        }
+      }     
     }
     dataValues.put(type, data);
   }

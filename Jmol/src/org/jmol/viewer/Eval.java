@@ -7687,17 +7687,14 @@ class Eval {
     case Token.property:
       break;
     case Token.identifier:
-      s = parameterAsString(i).toLowerCase();
-      if (s.equals("x"))
-        tok = Token.atomX;
-      else if (s.equals("y"))
-        tok = Token.atomY;
-      else if (s.equals("z"))
-        tok = Token.atomZ;
-      else if (s.equals("w"))
-        tok = Token.qw;
-      else
+      switch (Token.getSettableTokFromString(parameterAsString(i))) {
+      case Token.atomX:
+      case Token.atomY:
+      case Token.atomZ:
+        break;
+      default:
         return null;
+      }
       break;
     }
     if (mustBeSettable && !Compiler.tokAttr(tok, Token.settable))

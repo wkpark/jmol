@@ -4003,7 +4003,7 @@ class Eval {
       dataLabel = parameterAsString(1);
       if (dataLabel.equalsIgnoreCase("clear")) {
         if (!isSyntaxCheck)
-          viewer.setData(null, null, 0, 0, 0);
+          viewer.setData(null, null, 0, 0, 0, 0, 0);
         return;
       }
       if ((i = dataLabel.indexOf("@")) >= 0) {
@@ -4039,13 +4039,14 @@ class Eval {
         for (int ie = 1; ie <= n; ie++)
           eArray[ie] = ie;
         data[2] = eArray;
-        viewer.setData("element_vdw", data, n, 0, 0);
+        viewer.setData("element_vdw", data, n, 0, 0, 0, 0);
         return;
-      } else if (dataType.indexOf("data2d_") == 0) {
+      } 
+      if (dataType.indexOf("data2d_") == 0) {
         //data2d someName
         data[0] = dataLabel;
         data[1] = Parser.parseFloatArray2d(dataString);
-        viewer.setData(dataLabel, data, 0, 0, 0);
+        viewer.setData(dataLabel, data, 0, 0, 0, 0, 0);
         return;
       }
       String[] tokens = Parser.getTokens(dataLabel);
@@ -4053,22 +4054,34 @@ class Eval {
           && !(tokens.length == 2 && tokens[1].equals("set"))) {
         BitSet bs = viewer.getSelectionSet();
         data[0] = dataType;
-        int atomNumberField = isOneValue ? 0 : ((Integer) viewer
-            .getParameter("propertyAtomNumberField")).intValue();
-        int propertyField = isOneValue ? Integer.MIN_VALUE : ((Integer) viewer
-            .getParameter("propertyDataField")).intValue();
+        int atomNumberField = (isOneValue ? 0 : ((Integer) viewer
+            .getParameter("propertyAtomNumberField")).intValue());
+        int atomNumberFieldColumnCount = (isOneValue ? 0 : ((Integer) viewer
+            .getParameter("propertyAtomNumberColumnCount")).intValue());
+        int propertyField = (isOneValue ? Integer.MIN_VALUE : ((Integer) viewer
+            .getParameter("propertyDataField")).intValue());
+        int propertyFieldColumnCount = (isOneValue ? 0 : ((Integer) viewer
+            .getParameter("propertyDataColumnCount")).intValue());
         if (!isOneValue && dataLabel.indexOf(" ") >= 0) {
-          // DATA "property_whatever [atomField] [propertyField]"
           if (tokens.length == 3) {
+            // DATA "property_whatever [atomField] [propertyField]"
             dataLabel = tokens[0];
             atomNumberField = Parser.parseInt(tokens[1]);
             propertyField = Parser.parseInt(tokens[2]);
-            if (atomNumberField < 0)
-              atomNumberField = 0;
-            if (propertyField < 0)
-              propertyField = 0;
+          }
+          if (tokens.length == 5) {
+            // DATA "property_whatever [atomField] [atomFieldColumnCount] [propertyField] [propertyDataColumnCount]"
+            dataLabel = tokens[0];
+            atomNumberField = Parser.parseInt(tokens[1]);
+            atomNumberFieldColumnCount = Parser.parseInt(tokens[2]);
+            propertyField = Parser.parseInt(tokens[3]);
+            propertyFieldColumnCount = Parser.parseInt(tokens[4]);
           }
         }
+        if (atomNumberField < 0)
+          atomNumberField = 0;
+        if (propertyField < 0)
+          propertyField = 0;
         int atomCount = viewer.getAtomCount();
         int[] atomMap = null;
         BitSet bsAtoms = new BitSet(atomCount);
@@ -4091,12 +4104,12 @@ class Eval {
         }
         data[1] = dataString;
         viewer.setData(dataType, data, atomCount, atomNumberField,
-            propertyField);
+            atomNumberFieldColumnCount, propertyField, propertyFieldColumnCount);
         userType = Integer.MAX_VALUE; //we're done
       } else {
         data[0] = dataLabel;
         data[1] = dataString;
-        viewer.setData(dataType, data, 0, 0, 0);
+        viewer.setData(dataType, data, 0, 0, 0, 0, 0);
       }
     }
     if (processModel) {
@@ -4771,7 +4784,7 @@ class Eval {
       return;
     }
     if (tokAt(1) == Token.vanderwaals) {
-      viewer.setData("element_vdw", new Object[] {null, ""}, 0, 0, 0);
+      viewer.setData("element_vdw", new Object[] {null, ""}, 0, 0, 0, 0, 0);
       return;
     }
     String var = parameterAsString(1);
@@ -7164,7 +7177,7 @@ class Eval {
       if (propertyName.startsWith("property_")) {
         viewer.setData(propertyName, new Object[] { propertyName,
             Token.sValue(tv), bs }, viewer.getAtomCount(), 0,
-            tv.tok == Token.list ? Integer.MAX_VALUE : Integer.MIN_VALUE);
+            0, tv.tok == Token.list ? Integer.MAX_VALUE : Integer.MIN_VALUE, 0);
         return;
       }
       setBitsetProperty(bs, tokProperty, Token.iValue(tv), Token.fValue(tv), tv);
@@ -7180,7 +7193,7 @@ class Eval {
       int n = viewer.getAtomCount();
       viewer.setData(key,
           new Object[] { key, "" + v, viewer.getSelectionSet() }, n, 0,
-          Integer.MIN_VALUE);
+          0, Integer.MIN_VALUE, 0);
       return;
     }
     if (v == null)
@@ -11420,7 +11433,7 @@ class Eval {
     boolean useBraces = true;//(!Compiler.tokAttr(tok, Token.atomExpressionCommand));
     boolean inBrace = false;
     boolean inClauseDefine = false;
-    boolean setEquals = (tok == Token.set && ((String) statement[0].value) == "");
+    boolean setEquals = (tok == Token.set && ((String) statement[0].value) == "" && tokAt(1) != Token.expressionBegin);
     for (int i = 0; i < statementLength; ++i) {
       if (iToken == i - 1)
         sb.append(" <<");
@@ -11608,9 +11621,10 @@ class Eval {
       else if (message.indexOf("file recognized as a script file:") >= 0)
         isOK = true;
       if (!isOK) {
-        this.message +=  contextTrace();
-        if (!isSyntaxCheck)
+        if (!isSyntaxCheck) {
+          this.message +=  contextTrace();
           Logger.error("eval ERROR: " + toString());
+        }
       }
     }
 
@@ -12611,12 +12625,43 @@ class Eval {
     }
 
     private boolean evaluateData(Token[] args) {
-      if (args.length == 0 || args.length > 2)
+      
+      // x = data("somedataname") # the data
+      // x = data("data2d_xxxx")  # 2D data (x,y paired values)
+      // x = data("data2d_xxxx", iSelected) # selected row of 2D data, with <=0 meaning "relative to the last row" 
+      // x = data("property_x", "property_y")  # array addition of two property sets
+      // x = data({atomno < 10},"xyz") # (or "pdb" or "mol") coordinate data in xyz, pdb, or mol format
+      // x = data(someData,ptrFieldOrColumn,nBytes,firstLine)  # extraction of a column of data based on a field (nBytes = 0) or column range (nBytes > 0) 
+      if (args.length != 1 && args.length != 2 && args.length != 4)
         return false;
       if (isSyntaxCheck)
         return addX("");
       String selected = Token.sValue(args[0]);
       String type = (args.length == 2 ? Token.sValue(args[1]) : "");
+      
+      if (args.length == 4) {
+        int iField = Token.iValue(args[1]);
+        int nBytes = Token.iValue(args[2]);
+        int firstLine = Token.iValue(args[3]);
+        float[] f = Parser.extractData(selected, iField, nBytes, firstLine);
+        return addX(Escape.escape(f));
+      }
+      
+      if (selected.indexOf("data2d_") == 0) {
+        // tab, newline separated data
+        float[][] f1 = viewer.getDataFloat2D(selected);
+        if (f1 == null)
+          return addX("");
+        if (args.length == 2 && args[1].tok == Token.integer) {
+          int pt = args[1].intValue;
+          if (pt < 0)
+            pt += f1.length;
+          if (pt >= 0 && pt < f1.length)
+            return addX(Escape.escape(f1[pt]));
+          return addX("");
+        }
+        return addX(Escape.escape(f1, false));
+      }
 
       // parallel addition of float property data sets
 
@@ -12632,20 +12677,6 @@ class Eval {
             f1[i] += f2[i];
         }
         return addX(Escape.escape(f1));
-      }
-      if (selected.indexOf("data2d_") == 0) {
-        float[][] f1 = viewer.getDataFloat2D(selected);
-        if (f1 == null)
-          return addX("");
-        if (args.length == 2 && args[1].tok == Token.integer) {
-          int pt = args[1].intValue;
-          if (pt < 0)
-            pt += f1.length;
-          if (pt >= 0 && pt < f1.length)
-            return addX(Escape.escape(f1[pt]));
-          return addX("");
-        }
-        return addX(Escape.escape(f1, false));
       }
 
       // some other data type -- just return it

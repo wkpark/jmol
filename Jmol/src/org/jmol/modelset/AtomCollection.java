@@ -656,7 +656,7 @@ abstract public class AtomCollection {
         taint(atomIndex, (byte) type);
       }
       if (type == TAINT_MAX && n > 0)
-        viewer.setData(name, new Object[] {name, fData, bs}, 0, 0, 0);
+        viewer.setData(name, new Object[] {name, fData, bs}, 0, 0, 0, 0, 0);
         
     } catch (Exception e) {
       Logger.error("AtomCollection.loadData error: " + e);

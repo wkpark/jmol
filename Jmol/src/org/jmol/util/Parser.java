@@ -74,55 +74,102 @@ public class Parser {
     }
     return data;
   }
+
+  /**
+   * 
+   * @param f
+   * @param bs
+   * @param data
+   */
+  public static void setSelectedFloats(float f, BitSet bs, float[] data) {
+    for (int i = 0; i < data.length; i++)
+      if (bs == null || bs.get(i))
+        data[i] = f;
+  }
   
-  public static void parseFloatArrayFromMatchAndField(String str, BitSet bs,
-                                                      int fieldMatch,
-                                                      int[] matchData,
-                                                      int field, float[] data) {
+  public static float[] extractData(String data, int field, int nBytes,
+                                    int firstLine) {
+    return parseFloatArrayFromMatchAndField(data, null, 0, 0, null, field,
+        nBytes, null, firstLine);
+  }
+
+  /**
+   * the major lifter here.
+   * 
+   * @param str         string containing the data 
+   * @param bs          selects specific rows of the data 
+   * @param fieldMatch  a free-format field pointer, or a column pointer
+   * @param fieldMatchColumnCount specifies a column count -- not free-format
+   * @param matchData   an array of data to match (atom numbers)
+   * @param field       a free-format field pointer, or a column pointer
+   * @param fieldColumnCount specifies a column count -- not free-format
+   * @param data        float array to modify or null if size unknown
+   * @param firstLine   first line to parse (1 indicates all)
+   * @return            data
+   */
+  public static float[] parseFloatArrayFromMatchAndField(
+                                                         String str,
+                                                         BitSet bs,
+                                                         int fieldMatch,
+                                                         int fieldMatchColumnCount,
+                                                         int[] matchData,
+                                                         int field,
+                                                         int fieldColumnCount,
+                                                         float[] data, int firstLine) {
     float f;
-    if (field == Integer.MIN_VALUE) { //just one value
-      f = parseFloat(str);
-      for (int i = 0; i < data.length; i++) 
-        if (bs == null || bs.get(i))
-          data[i] = f;
-      return; 
-    }
-    if (field <= 0) {
-      parseFloatArray(str, bs, data);
-      return;
-    }
-    int len = data.length;
     int i = -1;
     boolean isMatch = (matchData != null);
     int[] lines = markLines(str, (str.indexOf('\n') >= 0 ? '\n' : ';'));
+    int iLine = (firstLine <= 1 || firstLine >= lines.length ? 0 : firstLine - 1);
+    int pt = (iLine == 0 ? 0 : lines[iLine - 1]);
     int nLines = lines.length;
-    int pt = 0;
-    for (int iLine = 0; iLine < nLines; iLine++) {
-      String[] tokens = getTokens(str.substring(pt, lines[iLine]));
+    if (data == null)
+      data = new float[nLines - iLine];
+    int len = data.length;
+    int minLen = (fieldColumnCount <= 0 ? Math.max(field, fieldMatch) : Math
+        .max(field + fieldColumnCount, fieldMatch + fieldMatchColumnCount) - 1);
+
+    for (; iLine < nLines; iLine++) {
+      String line = str.substring(pt, lines[iLine]).trim();
       pt = lines[iLine];
-      if (tokens.length < field || tokens.length < fieldMatch
-          || Float.isNaN(f = parseFloat(tokens[field - 1])))
-        continue;
+      String[] tokens = (fieldColumnCount <= 0 ? getTokens(line) : null);
+      // check for inappropriate data -- line too short or too few tokens or NaN for data
+      // and parse data
+      if (fieldColumnCount <= 0) {
+        if (tokens.length < minLen
+            || Float.isNaN(f = parseFloat(tokens[field - 1])))
+          continue;
+      } else {
+        if (line.length() < minLen
+            || Float.isNaN(f = parseFloat(line.substring(field - 1, field
+                + fieldColumnCount - 1))))
+          continue;
+      }
       int iData;
       if (isMatch) {
-        iData = parseInt(tokens[fieldMatch - 1]);
-        //in the fieldMatch column we have an integer pointing into matchData
-        //we replace that number then with the corresponding number in matchData
+        iData = parseInt(tokens == null ? line.substring(fieldMatch - 1,
+            fieldMatch + fieldMatchColumnCount - 1) : tokens[fieldMatch - 1]);
+        // in the fieldMatch column we have an integer pointing into matchData
+        // we replace that number then with the corresponding number in matchData
         if (iData == Integer.MIN_VALUE || iData < 0 || iData >= len
             || (iData = matchData[iData]) < 0)
           continue;
+        // and we set bs to indicate we are updating that value
         if (bs != null)
           bs.set(iData);
       } else {
+        // no match data
+        // bs here indicates the specific data elements that need filling
         while (++i < len && bs != null && !bs.get(i)) {
         }
         if (i >= len)
-          return;
+          return data;
         iData = i;
       }
       data[iData] = f;
-      //System.out.println("assigning " + data[iData] + " to " + iData);
+      //System.out.println("data[" + iData + "] = " + data[iData]);
     }
+    return data;
   }
   
   /**

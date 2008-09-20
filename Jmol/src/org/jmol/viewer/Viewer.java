@@ -2597,8 +2597,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setData(String type, Object[] data, int atomCount,
-                      int matchField, int field) {
-    dataManager.setData(this, type, data, atomCount, matchField, field);
+                      int matchField, int matchFieldColumnCount, int field,
+                      int fieldColumnCount) {
+    dataManager.setData(this, type, data, atomCount, matchField, 
+        matchFieldColumnCount, field, fieldColumnCount);
   }
 
   public static Object testData; // for isosurface  
@@ -4453,6 +4455,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setIntProperty(String key, int value, boolean defineNew) {
     boolean notFound = false;
     while (true) {
+
+      //11.6.RC16//
+      if (key.equalsIgnoreCase("propertyDataColumnCount")) {
+        break;
+      }
+
+      if (key.equalsIgnoreCase("propertyAtomNumberColumnCount")) {
+        break;
+      }
 
       //11.6.RC2//
       if (key.equalsIgnoreCase("dotDensity")) {

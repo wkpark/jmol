@@ -540,9 +540,8 @@ public class Token {
   // xxx(a,b)
 
   final static int random       = 1 | 2 << 9 | mathfunc;
-  final static int data         = 2 | 2 << 9 | mathfunc | command;
-  final static int cross        = 3 | 2 << 9 | mathfunc;
-  final static int script       = 4 | 2 << 9 | mathfunc | command;
+  final static int cross        = 2 | 2 << 9 | mathfunc;
+  final static int script       = 3 | 2 << 9 | mathfunc | command;
 
   // ___.xxx(a,b)
 
@@ -562,10 +561,11 @@ public class Token {
   // xxx(a,b,c,d)
   
   final static int angle        = 1 | 4 << 9 | mathfunc;
-  final static int plane        = 2 | 4 << 9 | mathfunc;
-  final static int point        = 3 | 4 << 9 | mathfunc;
-  final static int quaternion   = 4 | 4 << 9 | mathfunc | command;
-  final static int axisangle    = 5 | 4 << 9 | mathfunc;
+  final static int data         = 2 | 4 << 9 | mathfunc | command;
+  final static int plane        = 3 | 4 << 9 | mathfunc;
+  final static int point        = 4 | 4 << 9 | mathfunc;
+  final static int quaternion   = 5 | 4 << 9 | mathfunc | command;
+  final static int axisangle    = 6 | 4 << 9 | mathfunc;
 
   // xxx(a,b,c,d,e)
   

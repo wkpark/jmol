@@ -51,7 +51,8 @@ class DataManager {
   }
   
   void setData(Viewer viewer, String type, Object[] data, int atomCount,
-                      int matchField, int field) {
+               int matchField, int matchFieldColumnCount, int field,
+               int fieldColumnCount) {
     //Eval
     /*
      * data[0] -- label
@@ -78,41 +79,56 @@ class DataManager {
       }
       if (bsUserVdws == null)
         setUserVdw(defaultVdw);
-      Parser.parseFloatArrayFromMatchAndField(stringData, bsUserVdws, 1, (int[]) data[2], 2, userVdws);
-      for (int i = userVdws.length; --i >= 0; )
-         userVdwMars[i] = (int)(userVdws[i] * 1000);
+      Parser.parseFloatArrayFromMatchAndField(stringData, bsUserVdws, 1, 0,
+          (int[]) data[2], 2, 0, userVdws, 1);
+      for (int i = userVdws.length; --i >= 0;)
+        userVdwMars[i] = (int) (userVdws[i] * 1000);
       return;
-    }      
+    }
     if (data[2] != null && atomCount > 0) {
       String stringData = (String) data[1];
-      boolean createNew = (matchField != 0 
-          || field != Integer.MIN_VALUE && field != Integer.MAX_VALUE);
+      boolean createNew = (matchField != 0 || field != Integer.MIN_VALUE
+          && field != Integer.MAX_VALUE);
       Object[] oldData = (Object[]) dataValues.get(type);
       BitSet bs;
-      float[] f = (oldData == null || createNew ? new float[atomCount] 
+      float[] f = (oldData == null || createNew ? new float[atomCount]
           : ArrayUtil.ensureLength(((float[]) oldData[1]), atomCount));
+
+      // check to see if the data COULD be interpreted as a string of float values
+      // and if so, do that. This pre-fetches the tokens in that case.
+
       String[] strData = null;
-      if (field == Integer.MIN_VALUE &&
-          (strData = Parser.getTokens(stringData)).length > 1)
+      if (field == Integer.MIN_VALUE
+          && (strData = Parser.getTokens(stringData)).length > 1)
         field = 0;
-      if (field == 0 || field == Integer.MAX_VALUE) {
+
+      if (field == Integer.MIN_VALUE) {
+        // set the selected data elements to a single value
         bs = (BitSet) data[2];
-        if (strData == null)
-          strData = Parser.getTokens(stringData);
-        Parser.parseFloatArray(strData, bs, f);
-      } else if (matchField == 0) {
+        Parser.setSelectedFloats(Parser.parseFloat(stringData), bs, f);
+      } else if (field == 0 || field == Integer.MAX_VALUE) {
+        // just get the selected token values
         bs = (BitSet) data[2];
-        Parser.parseFloatArrayFromMatchAndField(stringData, bs, 0, null, field, f);
+        Parser.parseFloatArray(strData == null ? Parser.getTokens(stringData)
+            : strData, bs, f);
+      } else if (matchField <= 0) {
+        // get the specified field >= 1 for the selected atoms
+        bs = (BitSet) data[2];
+        Parser.parseFloatArrayFromMatchAndField(stringData, bs, 0, 0, null,
+            field, fieldColumnCount, f, 1);
       } else {
-        int[] iData = (int[]) data[2]; 
+        // get the selected field, with an integer match in a specified field
+        // in this case, bs is created and indicates which data points were set
+        int[] iData = (int[]) data[2];
+        Parser.parseFloatArrayFromMatchAndField(stringData, null, matchField,
+            matchFieldColumnCount, iData, field, fieldColumnCount, f, 1);
         bs = new BitSet();
-        Parser.parseFloatArrayFromMatchAndField(stringData, null, matchField, iData, field, f);
-        for (int i = iData.length; --i >= 0; )
+        for (int i = iData.length; --i >= 0;)
           if (iData[i] >= 0)
             bs.set(iData[i]);
       }
       if (oldData != null && oldData[2] instanceof BitSet && !createNew)
-        bs.or((BitSet)(oldData[2]));
+        bs.or((BitSet) (oldData[2]));
       data[2] = bs;
       data[1] = f;
       if (type.indexOf("property_") == 0) {
@@ -125,7 +141,7 @@ class DataManager {
               fValues[n++] = f[i];
           viewer.setAtomProperty(bs, tok, 0, 0, fValues);
         }
-      }     
+      }
     }
     dataValues.put(type, data);
   }
@@ -281,5 +297,5 @@ class DataManager {
     return (bs == null ? sb.toString() :
       "\n  DATA \"element_vdw\"\n" + sb.append("  end \"element_vdw\";\n\n").toString());
   }
-  
+
 }

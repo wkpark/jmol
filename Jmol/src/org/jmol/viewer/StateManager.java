@@ -1195,8 +1195,10 @@ public class StateManager {
       setParameterValue("pointGroupLinearTolerance", pointGroupLinearTolerance);
       setParameterValue("pointGroupDistanceTolerance", pointGroupDistanceTolerance);
       setParameterValue("propertyColorScheme", propertyColorScheme);
-      setParameterValue("propertyDataField", 0);
+      setParameterValue("propertyAtomNumberColumnCount", 0);
       setParameterValue("propertyAtomNumberField", 0);
+      setParameterValue("propertyDataColumnCount", 0);
+      setParameterValue("propertyDataField", 0);
       setParameterValue("quaternionFrame", quaternionFrame);
       setParameterValue("rangeSelected", rangeSelected);
       setParameterValue("refreshing", true);

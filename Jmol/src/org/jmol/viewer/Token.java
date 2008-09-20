@@ -447,7 +447,7 @@ public class Token {
   
   final public static int atoms     = 1 | mathproperty;
   final public static int bonds     = 2 | mathproperty | setparam;
-  final public static int color            = 3 | mathproperty | command | setparam | settable;
+  final public static int color     = 3 | mathproperty | command | setparam | settable;
   final static int identify         = 4 | mathproperty;
   final static int length           = 5 | mathproperty;
   final static int lines            = 6 | mathproperty;
@@ -1581,6 +1581,23 @@ public class Token {
       a[i] = (String) v.get(i);
     Arrays.sort(a);
     return a;
+  }
+
+  public static int getSettableTokFromString(String s) {
+    Token token = getTokenFromName(s);
+    int tok;
+    if (token != null)
+      return (Compiler.tokAttr((tok = token.tok), settable) 
+          && !Compiler.tokAttr(tok, mathproperty) ? token.tok : nada);
+    if (s.equals("x"))
+      return atomX;
+    else if (s.equals("y"))
+      return atomY;
+    else if (s.equals("z"))
+      return atomZ;
+    else if (s.equals("w"))
+      return qw;
+    return nada;
   }
   
 /*

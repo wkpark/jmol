@@ -2598,7 +2598,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setData(String type, Object[] data, int atomCount,
                       int matchField, int field) {
-    dataManager.setData(type, data, atomCount, matchField, field);
+    dataManager.setData(this, type, data, atomCount, matchField, field);
   }
 
   public static Object testData; // for isosurface  

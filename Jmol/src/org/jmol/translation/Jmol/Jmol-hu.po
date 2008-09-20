@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-09-12 22:54+0200\n"
+"POT-Creation-Date: 2008-09-20 11:08+0200\n"
 "PO-Revision-Date: 2008-08-04 20:46+0000\n"
 "Last-Translator: Zörgő Zoltán <Unknown>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
@@ -35,7 +35,6 @@ msgstr "Nem található a  \"{0}\" webcím."
 
 #: org/openscience/jmol/app/AboutDialog.java:95
 #: org/openscience/jmol/app/HelpDialog.java:102
-#: org/openscience/jmol/app/Jmol.java:434
 #: org/openscience/jmol/app/PreferencesDialog.java:173
 #: org/openscience/jmol/app/WhatsNewDialog.java:96
 msgid "OK"
@@ -68,8 +67,8 @@ msgstr "Információk"
 #: org/openscience/jmol/app/AtomSetChooser.java:238
 #: org/openscience/jmol/app/PovrayDialog.java:175
 #: org/openscience/jmol/app/PovrayDialog.java:458
-#: org/openscience/jmol/app/PovrayDialog.java:605
-#: org/openscience/jmol/app/PovrayDialog.java:626
+#: org/openscience/jmol/app/PovrayDialog.java:607
+#: org/openscience/jmol/app/PovrayDialog.java:628
 msgid "Select"
 msgstr "Kiválasztás"
 
@@ -147,18 +146,10 @@ msgstr "Ugárs az utolsó {0}-ra a gyűjteményben"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Hiba a {0} BufferedReader olvasása közben"
 
-#: org/openscience/jmol/app/DisplayPanel.java:168
+#: org/openscience/jmol/app/DisplayPanel.java:170
 #, fuzzy
 msgid "Delete atoms"
 msgstr "Atomok törlése"
-
-#: org/openscience/jmol/app/FilePreview.java:67
-msgid "Preview"
-msgstr "Előnézet"
-
-#: org/openscience/jmol/app/FilePreview.java:87
-msgid "Append models"
-msgstr "Modell hozzáadása"
 
 #: org/openscience/jmol/app/GuiMap.java:46
 #, fuzzy
@@ -712,260 +703,114 @@ msgstr "Molekula alaphelyzetbe állítása"
 msgid "Jmol Help"
 msgstr "Jmol sAogó"
 
-#: org/openscience/jmol/app/Jmol.java:136
+#: org/openscience/jmol/app/Jmol.java:133
 #: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr ""
 "Hiba a Jmol indítása közben: a 'user.home' tulajdonság nincs definiálva"
 
-#: org/openscience/jmol/app/Jmol.java:181
+#: org/openscience/jmol/app/Jmol.java:179
 msgid "Initializing 3D display..."
 msgstr "3D kijelzés inicializálása..."
 
-#: org/openscience/jmol/app/Jmol.java:205
+#: org/openscience/jmol/app/Jmol.java:204
 msgid "Initializing Preferences..."
 msgstr "Beállítások inicializálása"
 
-#: org/openscience/jmol/app/Jmol.java:207
+#: org/openscience/jmol/app/Jmol.java:206
 msgid "Initializing Recent Files..."
 msgstr "Utóbbi fájlok listájának inicializálása..."
 
-#: org/openscience/jmol/app/Jmol.java:210
+#: org/openscience/jmol/app/Jmol.java:209
 msgid "Initializing Script Window..."
 msgstr "Parancsablak inicializálása..."
 
-#: org/openscience/jmol/app/Jmol.java:218
+#: org/openscience/jmol/app/Jmol.java:217
 msgid "Initializing Measurements..."
 msgstr "Méretezés inicializálása..."
 
-#: org/openscience/jmol/app/Jmol.java:241
+#: org/openscience/jmol/app/Jmol.java:240
 msgid "Building Command Hooks..."
 msgstr "Parancs-hurkok felépítése..."
 
-#: org/openscience/jmol/app/Jmol.java:252
+#: org/openscience/jmol/app/Jmol.java:251
 msgid "Building Menubar..."
 msgstr "MenA1rendszer felépítése..."
 
-#: org/openscience/jmol/app/Jmol.java:268
+#: org/openscience/jmol/app/Jmol.java:267
 msgid "Starting display..."
 msgstr "Kijelző indítása..."
 
-#: org/openscience/jmol/app/Jmol.java:317
+#: org/openscience/jmol/app/Jmol.java:316
 msgid "Setting up Drag-and-Drop..."
 msgstr "HAozd-és-dobd lehetőségek beállítása..."
 
-#: org/openscience/jmol/app/Jmol.java:338
+#: org/openscience/jmol/app/Jmol.java:337
 msgid "Launching main frame..."
 msgstr "Főkeret indítása..."
 
-#: org/openscience/jmol/app/Jmol.java:356
+#: org/openscience/jmol/app/Jmol.java:355
 msgid "Creating main window..."
 msgstr "Főablak létrehozása..."
 
-#: org/openscience/jmol/app/Jmol.java:357
+#: org/openscience/jmol/app/Jmol.java:356
 msgid "Initializing Swing..."
 msgstr "Swing inicializálása..."
 
-#: org/openscience/jmol/app/Jmol.java:369
+#: org/openscience/jmol/app/Jmol.java:368
 msgid "Initializing Jmol..."
 msgstr "Jmol inicializálása..."
 
-#: org/openscience/jmol/app/Jmol.java:384
-msgid "All Files"
-msgstr "Minden fájl"
-
-#: org/openscience/jmol/app/Jmol.java:385
-#: org/openscience/jmol/app/Jmol.java:432
-#: org/openscience/jmol/app/PovrayDialog.java:500
-#: org/openscience/jmol/app/PreferencesDialog.java:165
-#: org/openscience/jmol/app/RecentFilesDialog.java:69
-msgid "Cancel"
-msgstr "Mégsem"
-
-#: org/openscience/jmol/app/Jmol.java:387
-msgid "Abort file chooser dialog"
-msgstr "Tallózó megállítása"
-
-#: org/openscience/jmol/app/Jmol.java:389
-#: org/openscience/jmol/app/Jmol.java:390
-msgid "Details"
-msgstr "Részletek"
-
-#: org/openscience/jmol/app/Jmol.java:391
-msgid "Directory"
-msgstr "Mappa"
-
-#: org/openscience/jmol/app/Jmol.java:392
-#: org/openscience/jmol/app/Jmol.java:416
-#: org/openscience/jmol/app/Jmol.java:419
-#: org/openscience/jmol/app/RecentFilesDialog.java:65
-msgid "Open"
-msgstr "Megnyitás"
-
-#: org/openscience/jmol/app/Jmol.java:394
-msgid "Open selected directory"
-msgstr "Kiválasztott mappa megnyitása"
-
-#: org/openscience/jmol/app/Jmol.java:395
-msgid "Attributes"
-msgstr "Jellemzők"
-
-#: org/openscience/jmol/app/Jmol.java:396
-msgid "Modified"
-msgstr "Módosítva"
-
-#: org/openscience/jmol/app/Jmol.java:397
-msgid "Generic File"
-msgstr "Altalános fájl"
-
 #: org/openscience/jmol/app/Jmol.java:398
-msgid "Name"
-msgstr "Név"
-
-#: org/openscience/jmol/app/Jmol.java:399
-#: org/openscience/jmol/app/PovrayDialog.java:155
-msgid "File Name:"
-msgstr "Fájlnév::"
-
-#: org/openscience/jmol/app/Jmol.java:400
-msgid "Size"
-msgstr "Méret"
-
-#: org/openscience/jmol/app/Jmol.java:401
-msgid "Files of Type:"
-msgstr "Adott típusAo fájlok:"
-
-#: org/openscience/jmol/app/Jmol.java:402
-msgid "Type"
-msgstr "Típus"
-
-#: org/openscience/jmol/app/Jmol.java:403
-#: org/openscience/jmol/app/ScriptWindow.java:106
-msgid "Help"
-msgstr "SAogó"
-
-#: org/openscience/jmol/app/Jmol.java:405
-msgid "FileChooser help"
-msgstr "Tallózó sAogója"
-
-#: org/openscience/jmol/app/Jmol.java:406
-#: org/openscience/jmol/app/Jmol.java:407
-msgid "Home"
-msgstr "Haza"
-
-#: org/openscience/jmol/app/Jmol.java:408
-#: org/openscience/jmol/app/Jmol.java:409
-msgid "List"
-msgstr "Lista"
-
-#: org/openscience/jmol/app/Jmol.java:410
-msgid "Look In:"
-msgstr "Keresés itt:"
-
-#: org/openscience/jmol/app/Jmol.java:412
-msgid "Error creating new folder"
-msgstr "Hiba az Aoj mappa létrehozása közben"
-
-#: org/openscience/jmol/app/Jmol.java:413
-msgid "New Folder"
-msgstr "őj mappa"
-
-#: org/openscience/jmol/app/Jmol.java:415
-msgid "Create New Folder"
-msgstr "őj mappa létrehozása"
-
-#: org/openscience/jmol/app/Jmol.java:418
-msgid "Open selected file"
-msgstr "Kiválasztott fájl megnyitása"
-
-#: org/openscience/jmol/app/Jmol.java:420
-#: org/openscience/jmol/app/Jmol.java:423
-#: org/openscience/jmol/app/PovrayDialog.java:756
-msgid "Save"
-msgstr "Mentés"
-
-#: org/openscience/jmol/app/Jmol.java:422
-msgid "Save selected file"
-msgstr "Kiválasztott fájl mentése"
-
-#: org/openscience/jmol/app/Jmol.java:424
-msgid "Save In:"
-msgstr "Mentés ide:"
-
-#: org/openscience/jmol/app/Jmol.java:425
-msgid "Update"
-msgstr "Frissítés"
-
-#: org/openscience/jmol/app/Jmol.java:427
-msgid "Update directory listing"
-msgstr "MAppalista frissítése"
-
-#: org/openscience/jmol/app/Jmol.java:428
-msgid "Up"
-msgstr "Fel"
-
-#: org/openscience/jmol/app/Jmol.java:429
-msgid "Up One Level"
-msgstr "Egy szinttel feljebb"
-
-#: org/openscience/jmol/app/Jmol.java:433
-msgid "No"
-msgstr "Nem"
-
-#: org/openscience/jmol/app/Jmol.java:435
-msgid "Yes"
-msgstr "Igen"
-
-#: org/openscience/jmol/app/Jmol.java:459
 msgid "transparent background"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:460
+#: org/openscience/jmol/app/Jmol.java:399
 msgid "give this help page"
 msgstr "ezen sAogólap megadása"
 
-#: org/openscience/jmol/app/Jmol.java:462
+#: org/openscience/jmol/app/Jmol.java:401
 msgid "no display (and also exit when done)"
 msgstr "nincs megjelenítés (és kilépés ha vége)"
 
-#: org/openscience/jmol/app/Jmol.java:463
+#: org/openscience/jmol/app/Jmol.java:402
 msgid "check script syntax only"
 msgstr "csak a parancsfájl szintaxisát ellenőrizze"
 
-#: org/openscience/jmol/app/Jmol.java:464
+#: org/openscience/jmol/app/Jmol.java:403
 msgid "silent startup operation"
 msgstr "csendes indítási művelet"
 
-#: org/openscience/jmol/app/Jmol.java:466
+#: org/openscience/jmol/app/Jmol.java:405
 msgid "list commands during script execution"
 msgstr "parancsok listázása végrehajtás közben"
 
-#: org/openscience/jmol/app/Jmol.java:468
+#: org/openscience/jmol/app/Jmol.java:407
 msgid "no console -- all output to sysout"
 msgstr "nincs konzol - mindent a szabványos kimenetre"
 
-#: org/openscience/jmol/app/Jmol.java:470
+#: org/openscience/jmol/app/Jmol.java:409
 msgid "independent commmand thread"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:472
+#: org/openscience/jmol/app/Jmol.java:411
 msgid "exit after script (implicit with -n)"
 msgstr "kilépés végrehajtás után (alapértelmezett -n esetén)"
 
-#: org/openscience/jmol/app/Jmol.java:486
+#: org/openscience/jmol/app/Jmol.java:425
 msgid "property=value"
 msgstr "tulajdonság=érték"
 
-#: org/openscience/jmol/app/Jmol.java:489
+#: org/openscience/jmol/app/Jmol.java:428
 msgid "supported options are given below"
 msgstr "a támogatott lehetőségeket lásd alább"
 
-#: org/openscience/jmol/app/Jmol.java:494
+#: org/openscience/jmol/app/Jmol.java:433
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "ablak szélessés x magasság (pl.: {0})"
 
-#: org/openscience/jmol/app/Jmol.java:504
+#: org/openscience/jmol/app/Jmol.java:443
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -973,49 +818,49 @@ msgstr ""
 "JPG képminőség (1-100, alapértelmezés: 75), vagy PNG tömörítési arány (0-9, "
 "alapértelmezés: 2)"
 
-#: org/openscience/jmol/app/Jmol.java:510
+#: org/openscience/jmol/app/Jmol.java:449
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} vagy {1} :fájlnév"
 
-#: org/openscience/jmol/app/Jmol.java:532
+#: org/openscience/jmol/app/Jmol.java:471
 msgid "For example:"
 msgstr "Például:"
 
-#: org/openscience/jmol/app/Jmol.java:538
+#: org/openscience/jmol/app/Jmol.java:477
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr "A -D lehetőségek a következők (alapértelmezés zárójelben)"
 
-#: org/openscience/jmol/app/Jmol.java:711
+#: org/openscience/jmol/app/Jmol.java:650
 msgid "Executing script..."
 msgstr "Parancsfájl fut..."
 
-#: org/openscience/jmol/app/Jmol.java:723
+#: org/openscience/jmol/app/Jmol.java:662
 msgid "Jmol Java Console"
 msgstr "Jmol Java konzol"
 
-#: org/openscience/jmol/app/Jmol.java:731
+#: org/openscience/jmol/app/Jmol.java:670
 #: org/openscience/jmol/app/ScriptWindow.java:94
 msgid "Clear"
 msgstr "őrít"
 
-#: org/openscience/jmol/app/Jmol.java:745
+#: org/openscience/jmol/app/Jmol.java:684
 msgid "Could not create ConsoleTextArea: "
 msgstr "Konzol szövegterA1lete nem hozható létre: "
 
-#: org/openscience/jmol/app/Jmol.java:829
+#: org/openscience/jmol/app/Jmol.java:764
 msgid "Closing Jmol..."
 msgstr "Jmol bezárása..."
 
-#: org/openscience/jmol/app/Jmol.java:1428
+#: org/openscience/jmol/app/Jmol.java:1373
 msgid "Open URL"
 msgstr "Webcím megnyitása"
 
-#: org/openscience/jmol/app/Jmol.java:1429
+#: org/openscience/jmol/app/Jmol.java:1374
 msgid "Enter URL of molecular model"
 msgstr "Adja meg a molekuláris modell webcímét"
 
-#: org/openscience/jmol/app/Jmol.java:1631
+#: org/openscience/jmol/app/Jmol.java:1552
 msgid "IO Exception:"
 msgstr "IO-hiba:"
 
@@ -1038,6 +883,10 @@ msgstr "őrték"
 #: org/openscience/jmol/app/PovrayDialog.java:151
 msgid "Conversion from Jmol to POV-Ray"
 msgstr ""
+
+#: org/openscience/jmol/app/PovrayDialog.java:155
+msgid "File Name:"
+msgstr "Fájlnév::"
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
 msgid ""
@@ -1164,7 +1013,7 @@ msgid "Location of the POV-Ray Executable"
 msgstr "A POV-Ray renderelő program teljes elérési Aotja a fájlrendszeren"
 
 #: org/openscience/jmol/app/PovrayDialog.java:489
-#: org/openscience/jmol/app/PovrayDialog.java:754
+#: org/openscience/jmol/app/PovrayDialog.java:756
 msgid "Go!"
 msgstr "Indíts!"
 
@@ -1173,9 +1022,19 @@ msgstr "Indíts!"
 msgid "Save file and possibly launch POV-Ray"
 msgstr "Fájl mentése és PoV-Ray indításának megkisérlése"
 
+#: org/openscience/jmol/app/PovrayDialog.java:500
+#: org/openscience/jmol/app/PreferencesDialog.java:165
+#: org/openscience/jmol/app/RecentFilesDialog.java:69
+msgid "Cancel"
+msgstr "Mégsem"
+
 #: org/openscience/jmol/app/PovrayDialog.java:502
 msgid "Cancel this dialog without saving"
 msgstr "A panel mentés nélkA1li bezárása"
+
+#: org/openscience/jmol/app/PovrayDialog.java:758
+msgid "Save"
+msgstr "Mentés"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:133
 msgid "Preferences"
@@ -1251,6 +1110,10 @@ msgstr "Minimális kötési távolság"
 msgid "Recent Files"
 msgstr "Legutóbb használt fájlok"
 
+#: org/openscience/jmol/app/RecentFilesDialog.java:65
+msgid "Open"
+msgstr "Megnyitás"
+
 #: org/openscience/jmol/app/ScriptWindow.java:71
 #, fuzzy
 msgid "Jmol Script Console"
@@ -1273,6 +1136,10 @@ msgstr "Előzmények"
 #, fuzzy
 msgid "State"
 msgstr "Státus"
+
+#: org/openscience/jmol/app/ScriptWindow.java:106
+msgid "Help"
+msgstr "SAogó"
 
 #: org/openscience/jmol/app/ScriptWindow.java:110
 msgid "Close"
@@ -1535,6 +1402,96 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:569
 msgid "compressing large data file to"
 msgstr ""
+
+#~ msgid "Preview"
+#~ msgstr "Előnézet"
+
+#~ msgid "Append models"
+#~ msgstr "Modell hozzáadása"
+
+#~ msgid "All Files"
+#~ msgstr "Minden fájl"
+
+#~ msgid "Abort file chooser dialog"
+#~ msgstr "Tallózó megállítása"
+
+#~ msgid "Details"
+#~ msgstr "Részletek"
+
+#~ msgid "Directory"
+#~ msgstr "Mappa"
+
+#~ msgid "Open selected directory"
+#~ msgstr "Kiválasztott mappa megnyitása"
+
+#~ msgid "Attributes"
+#~ msgstr "Jellemzők"
+
+#~ msgid "Modified"
+#~ msgstr "Módosítva"
+
+#~ msgid "Generic File"
+#~ msgstr "Altalános fájl"
+
+#~ msgid "Name"
+#~ msgstr "Név"
+
+#~ msgid "Size"
+#~ msgstr "Méret"
+
+#~ msgid "Files of Type:"
+#~ msgstr "Adott típusAo fájlok:"
+
+#~ msgid "Type"
+#~ msgstr "Típus"
+
+#~ msgid "FileChooser help"
+#~ msgstr "Tallózó sAogója"
+
+#~ msgid "Home"
+#~ msgstr "Haza"
+
+#~ msgid "List"
+#~ msgstr "Lista"
+
+#~ msgid "Look In:"
+#~ msgstr "Keresés itt:"
+
+#~ msgid "Error creating new folder"
+#~ msgstr "Hiba az Aoj mappa létrehozása közben"
+
+#~ msgid "New Folder"
+#~ msgstr "őj mappa"
+
+#~ msgid "Create New Folder"
+#~ msgstr "őj mappa létrehozása"
+
+#~ msgid "Open selected file"
+#~ msgstr "Kiválasztott fájl megnyitása"
+
+#~ msgid "Save selected file"
+#~ msgstr "Kiválasztott fájl mentése"
+
+#~ msgid "Save In:"
+#~ msgstr "Mentés ide:"
+
+#~ msgid "Update"
+#~ msgstr "Frissítés"
+
+#~ msgid "Update directory listing"
+#~ msgstr "MAppalista frissítése"
+
+#~ msgid "Up"
+#~ msgstr "Fel"
+
+#~ msgid "Up One Level"
+#~ msgstr "Egy szinttel feljebb"
+
+#~ msgid "No"
+#~ msgstr "Nem"
+
+#~ msgid "Yes"
+#~ msgstr "Igen"
 
 #~ msgid "Initializing AtomSetChooser Window..."
 #~ msgstr "AtomCsoportVAlasztó inicializálása..."

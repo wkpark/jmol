@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-09-12 22:54+0200\n"
+"POT-Creation-Date: 2008-09-20 11:08+0200\n"
 "PO-Revision-Date: 2008-08-25 06:16+0000\n"
 "Last-Translator: Matteo Ferrabone <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
@@ -31,7 +31,6 @@ msgstr "Impossibile trovare url \"{0}\"."
 
 #: org/openscience/jmol/app/AboutDialog.java:95
 #: org/openscience/jmol/app/HelpDialog.java:102
-#: org/openscience/jmol/app/Jmol.java:434
 #: org/openscience/jmol/app/PreferencesDialog.java:173
 #: org/openscience/jmol/app/WhatsNewDialog.java:96
 msgid "OK"
@@ -64,8 +63,8 @@ msgstr "Informazioni"
 #: org/openscience/jmol/app/AtomSetChooser.java:238
 #: org/openscience/jmol/app/PovrayDialog.java:175
 #: org/openscience/jmol/app/PovrayDialog.java:458
-#: org/openscience/jmol/app/PovrayDialog.java:605
-#: org/openscience/jmol/app/PovrayDialog.java:626
+#: org/openscience/jmol/app/PovrayDialog.java:607
+#: org/openscience/jmol/app/PovrayDialog.java:628
 msgid "Select"
 msgstr "Seleziona"
 
@@ -143,18 +142,10 @@ msgstr ""
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Errore in lettura da BufferedReader; {0}"
 
-#: org/openscience/jmol/app/DisplayPanel.java:168
+#: org/openscience/jmol/app/DisplayPanel.java:170
 #, fuzzy
 msgid "Delete atoms"
 msgstr "Cancella Atomi"
-
-#: org/openscience/jmol/app/FilePreview.java:67
-msgid "Preview"
-msgstr "Anteprima"
-
-#: org/openscience/jmol/app/FilePreview.java:87
-msgid "Append models"
-msgstr "Accoda modelli"
 
 #: org/openscience/jmol/app/GuiMap.java:46
 #, fuzzy
@@ -702,259 +693,113 @@ msgstr "Riporta la molecola nelle condizioni iniziali."
 msgid "Jmol Help"
 msgstr "Aiuto di Jmol."
 
-#: org/openscience/jmol/app/Jmol.java:136
+#: org/openscience/jmol/app/Jmol.java:133
 #: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr "Errore all'avvio di Jmol: la proprietà 'user.home'  non è definita."
 
-#: org/openscience/jmol/app/Jmol.java:181
+#: org/openscience/jmol/app/Jmol.java:179
 msgid "Initializing 3D display..."
 msgstr "Inizializzazione del display 3D..."
 
-#: org/openscience/jmol/app/Jmol.java:205
+#: org/openscience/jmol/app/Jmol.java:204
 msgid "Initializing Preferences..."
 msgstr "Inizializzazione delle Preferenze..."
 
-#: org/openscience/jmol/app/Jmol.java:207
+#: org/openscience/jmol/app/Jmol.java:206
 msgid "Initializing Recent Files..."
 msgstr "Inizializzazione dei File Recenti..."
 
-#: org/openscience/jmol/app/Jmol.java:210
+#: org/openscience/jmol/app/Jmol.java:209
 msgid "Initializing Script Window..."
 msgstr "Inizializzazione della Finestra degli Script..."
 
-#: org/openscience/jmol/app/Jmol.java:218
+#: org/openscience/jmol/app/Jmol.java:217
 msgid "Initializing Measurements..."
 msgstr "Inizializzazione Misurazioni..."
 
-#: org/openscience/jmol/app/Jmol.java:241
+#: org/openscience/jmol/app/Jmol.java:240
 msgid "Building Command Hooks..."
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:252
+#: org/openscience/jmol/app/Jmol.java:251
 msgid "Building Menubar..."
 msgstr "Barra del menù in costruzione..."
 
-#: org/openscience/jmol/app/Jmol.java:268
+#: org/openscience/jmol/app/Jmol.java:267
 msgid "Starting display..."
 msgstr "Avvio display..."
 
-#: org/openscience/jmol/app/Jmol.java:317
+#: org/openscience/jmol/app/Jmol.java:316
 msgid "Setting up Drag-and-Drop..."
 msgstr "Impostazione Drag-and-Drop..."
 
-#: org/openscience/jmol/app/Jmol.java:338
+#: org/openscience/jmol/app/Jmol.java:337
 msgid "Launching main frame..."
 msgstr "Avvio del frame principale..."
 
-#: org/openscience/jmol/app/Jmol.java:356
+#: org/openscience/jmol/app/Jmol.java:355
 msgid "Creating main window..."
 msgstr "Creazione finestra principale..."
 
-#: org/openscience/jmol/app/Jmol.java:357
+#: org/openscience/jmol/app/Jmol.java:356
 msgid "Initializing Swing..."
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:369
+#: org/openscience/jmol/app/Jmol.java:368
 msgid "Initializing Jmol..."
 msgstr "Inizializzazione Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:384
-msgid "All Files"
-msgstr "Tutti i FIle"
-
-#: org/openscience/jmol/app/Jmol.java:385
-#: org/openscience/jmol/app/Jmol.java:432
-#: org/openscience/jmol/app/PovrayDialog.java:500
-#: org/openscience/jmol/app/PreferencesDialog.java:165
-#: org/openscience/jmol/app/RecentFilesDialog.java:69
-msgid "Cancel"
-msgstr "Annulla"
-
-#: org/openscience/jmol/app/Jmol.java:387
-msgid "Abort file chooser dialog"
-msgstr ""
-
-#: org/openscience/jmol/app/Jmol.java:389
-#: org/openscience/jmol/app/Jmol.java:390
-msgid "Details"
-msgstr "Dettagli"
-
-#: org/openscience/jmol/app/Jmol.java:391
-msgid "Directory"
-msgstr "Cartella"
-
-#: org/openscience/jmol/app/Jmol.java:392
-#: org/openscience/jmol/app/Jmol.java:416
-#: org/openscience/jmol/app/Jmol.java:419
-#: org/openscience/jmol/app/RecentFilesDialog.java:65
-msgid "Open"
-msgstr "Apri"
-
-#: org/openscience/jmol/app/Jmol.java:394
-msgid "Open selected directory"
-msgstr "Apri la cartella selezionata"
-
-#: org/openscience/jmol/app/Jmol.java:395
-msgid "Attributes"
-msgstr "Attributi"
-
-#: org/openscience/jmol/app/Jmol.java:396
-msgid "Modified"
-msgstr "Modificato"
-
-#: org/openscience/jmol/app/Jmol.java:397
-msgid "Generic File"
-msgstr "File Generico"
-
 #: org/openscience/jmol/app/Jmol.java:398
-msgid "Name"
-msgstr "Nome"
-
-#: org/openscience/jmol/app/Jmol.java:399
-#: org/openscience/jmol/app/PovrayDialog.java:155
-msgid "File Name:"
-msgstr "Nome file:"
-
-#: org/openscience/jmol/app/Jmol.java:400
-msgid "Size"
-msgstr "Dimensione"
-
-#: org/openscience/jmol/app/Jmol.java:401
-msgid "Files of Type:"
-msgstr "File di Tipo:"
-
-#: org/openscience/jmol/app/Jmol.java:402
-msgid "Type"
-msgstr "Tipo"
-
-#: org/openscience/jmol/app/Jmol.java:403
-#: org/openscience/jmol/app/ScriptWindow.java:106
-msgid "Help"
-msgstr "Aiuto"
-
-#: org/openscience/jmol/app/Jmol.java:405
-msgid "FileChooser help"
-msgstr "Aiuto di FileChooser"
-
-#: org/openscience/jmol/app/Jmol.java:406
-#: org/openscience/jmol/app/Jmol.java:407
-msgid "Home"
-msgstr "Home"
-
-#: org/openscience/jmol/app/Jmol.java:408
-#: org/openscience/jmol/app/Jmol.java:409
-msgid "List"
-msgstr "Elenco"
-
-#: org/openscience/jmol/app/Jmol.java:410
-msgid "Look In:"
-msgstr "Guarda in:"
-
-#: org/openscience/jmol/app/Jmol.java:412
-msgid "Error creating new folder"
-msgstr "Errore nella creazione della nuova cartella"
-
-#: org/openscience/jmol/app/Jmol.java:413
-msgid "New Folder"
-msgstr "Nuova Cartella"
-
-#: org/openscience/jmol/app/Jmol.java:415
-msgid "Create New Folder"
-msgstr "Crea una Nuova Cartella"
-
-#: org/openscience/jmol/app/Jmol.java:418
-msgid "Open selected file"
-msgstr "Apri il file selezionato"
-
-#: org/openscience/jmol/app/Jmol.java:420
-#: org/openscience/jmol/app/Jmol.java:423
-#: org/openscience/jmol/app/PovrayDialog.java:756
-msgid "Save"
-msgstr "Salva"
-
-#: org/openscience/jmol/app/Jmol.java:422
-msgid "Save selected file"
-msgstr "Salva il file selezionato"
-
-#: org/openscience/jmol/app/Jmol.java:424
-msgid "Save In:"
-msgstr "Salva In:"
-
-#: org/openscience/jmol/app/Jmol.java:425
-msgid "Update"
-msgstr "Aggiorna"
-
-#: org/openscience/jmol/app/Jmol.java:427
-msgid "Update directory listing"
-msgstr "Aggiorna l'elenco delle cartelle"
-
-#: org/openscience/jmol/app/Jmol.java:428
-msgid "Up"
-msgstr "Su"
-
-#: org/openscience/jmol/app/Jmol.java:429
-msgid "Up One Level"
-msgstr "Livello superiore"
-
-#: org/openscience/jmol/app/Jmol.java:433
-msgid "No"
-msgstr "No"
-
-#: org/openscience/jmol/app/Jmol.java:435
-msgid "Yes"
-msgstr "Si"
-
-#: org/openscience/jmol/app/Jmol.java:459
 msgid "transparent background"
 msgstr "sfondo trasparente"
 
-#: org/openscience/jmol/app/Jmol.java:460
+#: org/openscience/jmol/app/Jmol.java:399
 msgid "give this help page"
 msgstr "fornisce questa pagina di aiuto"
 
-#: org/openscience/jmol/app/Jmol.java:462
+#: org/openscience/jmol/app/Jmol.java:401
 msgid "no display (and also exit when done)"
 msgstr "nessun display (ed esci quando hai completato)"
 
-#: org/openscience/jmol/app/Jmol.java:463
+#: org/openscience/jmol/app/Jmol.java:402
 msgid "check script syntax only"
 msgstr "controlla solo la sintassi dello script"
 
-#: org/openscience/jmol/app/Jmol.java:464
+#: org/openscience/jmol/app/Jmol.java:403
 msgid "silent startup operation"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:466
+#: org/openscience/jmol/app/Jmol.java:405
 msgid "list commands during script execution"
 msgstr "elenca i comandi durante l'esecuzione dello script"
 
-#: org/openscience/jmol/app/Jmol.java:468
+#: org/openscience/jmol/app/Jmol.java:407
 msgid "no console -- all output to sysout"
 msgstr "nessuna console -- tutto l'output inviato a sysout"
 
-#: org/openscience/jmol/app/Jmol.java:470
+#: org/openscience/jmol/app/Jmol.java:409
 msgid "independent commmand thread"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:472
+#: org/openscience/jmol/app/Jmol.java:411
 msgid "exit after script (implicit with -n)"
 msgstr "esci dopo l'esecuzione dello script (implicito con -n)"
 
-#: org/openscience/jmol/app/Jmol.java:486
+#: org/openscience/jmol/app/Jmol.java:425
 msgid "property=value"
 msgstr "property=value"
 
-#: org/openscience/jmol/app/Jmol.java:489
+#: org/openscience/jmol/app/Jmol.java:428
 msgid "supported options are given below"
 msgstr "le opzioni supportate sono elencate quì sotto"
 
-#: org/openscience/jmol/app/Jmol.java:494
+#: org/openscience/jmol/app/Jmol.java:433
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "larghezza x altezza della finestra, per esempio {0}"
 
-#: org/openscience/jmol/app/Jmol.java:504
+#: org/openscience/jmol/app/Jmol.java:443
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -962,49 +807,49 @@ msgstr ""
 "Qualità delle immagini JPG (1-100; default 75) o compressione delle "
 "immagini  PNG (0-9; default e, compressione massima 9)"
 
-#: org/openscience/jmol/app/Jmol.java:510
+#: org/openscience/jmol/app/Jmol.java:449
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} o {1}:nome file"
 
-#: org/openscience/jmol/app/Jmol.java:532
+#: org/openscience/jmol/app/Jmol.java:471
 msgid "For example:"
 msgstr "Per esempio:"
 
-#: org/openscience/jmol/app/Jmol.java:538
+#: org/openscience/jmol/app/Jmol.java:477
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr "Le opzioni -D sono come segue (default in parentesi)"
 
-#: org/openscience/jmol/app/Jmol.java:711
+#: org/openscience/jmol/app/Jmol.java:650
 msgid "Executing script..."
 msgstr "Script in esecuzione..."
 
-#: org/openscience/jmol/app/Jmol.java:723
+#: org/openscience/jmol/app/Jmol.java:662
 msgid "Jmol Java Console"
 msgstr "Jmol Java Console"
 
-#: org/openscience/jmol/app/Jmol.java:731
+#: org/openscience/jmol/app/Jmol.java:670
 #: org/openscience/jmol/app/ScriptWindow.java:94
 msgid "Clear"
 msgstr "Pulisci"
 
-#: org/openscience/jmol/app/Jmol.java:745
+#: org/openscience/jmol/app/Jmol.java:684
 msgid "Could not create ConsoleTextArea: "
 msgstr "Impossibile creare ConsoleTextArea: "
 
-#: org/openscience/jmol/app/Jmol.java:829
+#: org/openscience/jmol/app/Jmol.java:764
 msgid "Closing Jmol..."
 msgstr "Chiusura di Jmol"
 
-#: org/openscience/jmol/app/Jmol.java:1428
+#: org/openscience/jmol/app/Jmol.java:1373
 msgid "Open URL"
 msgstr "Apri URL"
 
-#: org/openscience/jmol/app/Jmol.java:1429
+#: org/openscience/jmol/app/Jmol.java:1374
 msgid "Enter URL of molecular model"
 msgstr "Inserisci URL di un modello molecolare"
 
-#: org/openscience/jmol/app/Jmol.java:1631
+#: org/openscience/jmol/app/Jmol.java:1552
 msgid "IO Exception:"
 msgstr "IO Exception:"
 
@@ -1027,6 +872,10 @@ msgstr "Valore"
 #: org/openscience/jmol/app/PovrayDialog.java:151
 msgid "Conversion from Jmol to POV-Ray"
 msgstr ""
+
+#: org/openscience/jmol/app/PovrayDialog.java:155
+msgid "File Name:"
+msgstr "Nome file:"
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
 msgid ""
@@ -1154,7 +1003,7 @@ msgid "Location of the POV-Ray Executable"
 msgstr "Posizione dell'Eseguibile POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:489
-#: org/openscience/jmol/app/PovrayDialog.java:754
+#: org/openscience/jmol/app/PovrayDialog.java:756
 msgid "Go!"
 msgstr "Vai!"
 
@@ -1163,9 +1012,19 @@ msgstr "Vai!"
 msgid "Save file and possibly launch POV-Ray"
 msgstr "Salva il file e lancia POV-Ray se possibile"
 
+#: org/openscience/jmol/app/PovrayDialog.java:500
+#: org/openscience/jmol/app/PreferencesDialog.java:165
+#: org/openscience/jmol/app/RecentFilesDialog.java:69
+msgid "Cancel"
+msgstr "Annulla"
+
 #: org/openscience/jmol/app/PovrayDialog.java:502
 msgid "Cancel this dialog without saving"
 msgstr "Cancella questa finestra di dialogo senza salvare"
+
+#: org/openscience/jmol/app/PovrayDialog.java:758
+msgid "Save"
+msgstr "Salva"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:133
 msgid "Preferences"
@@ -1241,6 +1100,10 @@ msgstr "Distanza Minima di Legame"
 msgid "Recent Files"
 msgstr "File recenti"
 
+#: org/openscience/jmol/app/RecentFilesDialog.java:65
+msgid "Open"
+msgstr "Apri"
+
 #: org/openscience/jmol/app/ScriptWindow.java:71
 msgid "Jmol Script Console"
 msgstr "Jmol Script Console"
@@ -1260,6 +1123,10 @@ msgstr "Cronologia"
 #: org/openscience/jmol/app/ScriptWindow.java:102
 msgid "State"
 msgstr "Stato"
+
+#: org/openscience/jmol/app/ScriptWindow.java:106
+msgid "Help"
+msgstr "Aiuto"
 
 #: org/openscience/jmol/app/ScriptWindow.java:110
 msgid "Close"
@@ -1523,6 +1390,93 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:569
 msgid "compressing large data file to"
 msgstr ""
+
+#~ msgid "Preview"
+#~ msgstr "Anteprima"
+
+#~ msgid "Append models"
+#~ msgstr "Accoda modelli"
+
+#~ msgid "All Files"
+#~ msgstr "Tutti i FIle"
+
+#~ msgid "Details"
+#~ msgstr "Dettagli"
+
+#~ msgid "Directory"
+#~ msgstr "Cartella"
+
+#~ msgid "Open selected directory"
+#~ msgstr "Apri la cartella selezionata"
+
+#~ msgid "Attributes"
+#~ msgstr "Attributi"
+
+#~ msgid "Modified"
+#~ msgstr "Modificato"
+
+#~ msgid "Generic File"
+#~ msgstr "File Generico"
+
+#~ msgid "Name"
+#~ msgstr "Nome"
+
+#~ msgid "Size"
+#~ msgstr "Dimensione"
+
+#~ msgid "Files of Type:"
+#~ msgstr "File di Tipo:"
+
+#~ msgid "Type"
+#~ msgstr "Tipo"
+
+#~ msgid "FileChooser help"
+#~ msgstr "Aiuto di FileChooser"
+
+#~ msgid "Home"
+#~ msgstr "Home"
+
+#~ msgid "List"
+#~ msgstr "Elenco"
+
+#~ msgid "Look In:"
+#~ msgstr "Guarda in:"
+
+#~ msgid "Error creating new folder"
+#~ msgstr "Errore nella creazione della nuova cartella"
+
+#~ msgid "New Folder"
+#~ msgstr "Nuova Cartella"
+
+#~ msgid "Create New Folder"
+#~ msgstr "Crea una Nuova Cartella"
+
+#~ msgid "Open selected file"
+#~ msgstr "Apri il file selezionato"
+
+#~ msgid "Save selected file"
+#~ msgstr "Salva il file selezionato"
+
+#~ msgid "Save In:"
+#~ msgstr "Salva In:"
+
+#~ msgid "Update"
+#~ msgstr "Aggiorna"
+
+#~ msgid "Update directory listing"
+#~ msgstr "Aggiorna l'elenco delle cartelle"
+
+#~ msgid "Up"
+#~ msgstr "Su"
+
+#~ msgid "Up One Level"
+#~ msgstr "Livello superiore"
+
+#~ msgid "No"
+#~ msgstr "No"
+
+#~ msgid "Yes"
+#~ msgstr "Si"
 
 #~ msgid "Initializing AtomSetChooser Window..."
 #~ msgstr "Inizializzazione della finestra  AtomSetChooser..."

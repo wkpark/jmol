@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-09-20 22:19+0200\n"
+"POT-Creation-Date: 2008-09-21 17:38+0200\n"
 "PO-Revision-Date: 2008-08-04 20:45+0000\n"
 "Last-Translator: Won-kyu Park <Unknown>\n"
 "Language-Team: Korean <Jmol-developers@lists.sf.net>\n"
@@ -1356,13 +1356,13 @@ msgid "Current state"
 msgstr "현재 상태"
 
 #: org/jmol/popup/PopupResourceBundle.java:873
-#, fuzzy
-msgid "Load PDB"
-msgstr "불러옴"
+msgid "File from PDB"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:874
-msgid "Load file or URL"
-msgstr ""
+#, fuzzy
+msgid "File or URL"
+msgstr "파일 오류:"
 
 #: org/jmol/popup/PopupResourceBundle.java:875
 #, fuzzy
@@ -1379,14 +1379,12 @@ msgid "File {0}"
 msgstr "뷰 {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:880
-#, fuzzy
-msgid "SPT State"
-msgstr "상태"
+msgid "Script with state"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:881
-#, fuzzy
-msgid "SPT History"
-msgstr "히스토리"
+msgid "Script with history"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:882
 #: org/jmol/popup/PopupResourceBundle.java:883
@@ -1861,6 +1859,18 @@ msgstr "오류: 숫자에 부울린값을 지정할 수 없음: {0}"
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr "오류: 부울린에 이 값을 넣을 수 없음: {0}"
+
+#, fuzzy
+#~ msgid "Load PDB"
+#~ msgstr "불러옴"
+
+#, fuzzy
+#~ msgid "SPT State"
+#~ msgstr "상태"
+
+#, fuzzy
+#~ msgid "SPT History"
+#~ msgstr "히스토리"
 
 #~ msgid "all"
 #~ msgstr "모두"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-09-20 22:19+0200\n"
+"POT-Creation-Date: 2008-09-21 17:38+0200\n"
 "PO-Revision-Date: 2008-08-14 06:08+0000\n"
 "Last-Translator: Egon Willighagen <Unknown>\n"
 "Language-Team: Nederlands <jmol-developers@lists.sourceforge.net>\n"
@@ -1354,13 +1354,13 @@ msgid "Current state"
 msgstr "Huidige toestand"
 
 #: org/jmol/popup/PopupResourceBundle.java:873
-#, fuzzy
-msgid "Load PDB"
-msgstr "Laden"
+msgid "File from PDB"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:874
-msgid "Load file or URL"
-msgstr ""
+#, fuzzy
+msgid "File or URL"
+msgstr "Bestandsfout:"
 
 #: org/jmol/popup/PopupResourceBundle.java:875
 #, fuzzy
@@ -1377,14 +1377,12 @@ msgid "File {0}"
 msgstr "Orientatie {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:880
-#, fuzzy
-msgid "SPT State"
-msgstr "Toestand"
+msgid "Script with state"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:881
-#, fuzzy
-msgid "SPT History"
-msgstr "Geschiedenis"
+msgid "Script with history"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:882
 #: org/jmol/popup/PopupResourceBundle.java:883
@@ -1862,6 +1860,18 @@ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
 "FOUT: Kan de waarde van deze variabele niet veranderen naar een booleaans: "
 "{0}"
+
+#, fuzzy
+#~ msgid "Load PDB"
+#~ msgstr "Laden"
+
+#, fuzzy
+#~ msgid "SPT State"
+#~ msgstr "Toestand"
+
+#, fuzzy
+#~ msgid "SPT History"
+#~ msgstr "Geschiedenis"
 
 #~ msgid "all"
 #~ msgstr "Alles"

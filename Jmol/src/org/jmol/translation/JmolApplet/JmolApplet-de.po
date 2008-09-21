@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-09-20 22:19+0200\n"
+"POT-Creation-Date: 2008-09-21 17:38+0200\n"
 "PO-Revision-Date: 2008-09-17 14:43+0000\n"
 "Last-Translator: mogli <Unknown>\n"
 "Language-Team: none\n"
@@ -1356,13 +1356,13 @@ msgid "Current state"
 msgstr "Aktueller Status"
 
 #: org/jmol/popup/PopupResourceBundle.java:873
-#, fuzzy
-msgid "Load PDB"
-msgstr "Laden"
+msgid "File from PDB"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:874
-msgid "Load file or URL"
-msgstr ""
+#, fuzzy
+msgid "File or URL"
+msgstr "Datei-Fehler:"
 
 #: org/jmol/popup/PopupResourceBundle.java:875
 #, fuzzy
@@ -1379,14 +1379,12 @@ msgid "File {0}"
 msgstr "Ansicht {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:880
-#, fuzzy
-msgid "SPT State"
-msgstr "Status"
+msgid "Script with state"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:881
-#, fuzzy
-msgid "SPT History"
-msgstr "Historie"
+msgid "Script with history"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:882
 #: org/jmol/popup/PopupResourceBundle.java:883
@@ -1863,6 +1861,18 @@ msgstr ""
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Load PDB"
+#~ msgstr "Laden"
+
+#, fuzzy
+#~ msgid "SPT State"
+#~ msgstr "Status"
+
+#, fuzzy
+#~ msgid "SPT History"
+#~ msgstr "Historie"
 
 #~ msgid "all"
 #~ msgstr "Alles"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-09-20 22:19+0200\n"
+"POT-Creation-Date: 2008-09-21 17:38+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1329,11 +1329,11 @@ msgid "Current state"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:873
-msgid "Load PDB"
+msgid "File from PDB"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:874
-msgid "Load file or URL"
+msgid "File or URL"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:875
@@ -1350,11 +1350,11 @@ msgid "File {0}"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:880
-msgid "SPT State"
+msgid "Script with state"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:881
-msgid "SPT History"
+msgid "Script with history"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:882

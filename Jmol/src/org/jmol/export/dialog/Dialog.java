@@ -206,6 +206,8 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       qualityPNG0 = 2;
     qualityJPG = qualityJPG0;
     qualityPNG = qualityPNG0;
+    if (extension == null)
+      extension = "jpg";
     
     if (imageChooser == null)
       imageChooser = new JFileChooser();
@@ -253,7 +255,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
                           String[] extensions, String type) {
     imageChooser.setAccessory(this);
     setLayout(new BorderLayout());
-    if (type.equals("JPG"))
+    if (type == null || type.equals("JPG"))
       type = "JPEG";
     for (defaultChoice = choices.length; --defaultChoice >= 1;)
       if (choices[defaultChoice].equals(type))

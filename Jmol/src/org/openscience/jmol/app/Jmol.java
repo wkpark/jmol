@@ -1430,6 +1430,8 @@ public class Jmol extends JPanel {
       Dialog sd = new Dialog();
       String fileName = sd.getImageFileNameFromDialog(viewer, null, imageType,
           imageChoices, imageExtensions, qualityJPG, qualityPNG);
+      if (fileName == null)
+        return;
       qualityJPG = sd.getQuality("JPG");
       qualityPNG = sd.getQuality("PNG");
       String sType = imageType = sd.getType();
@@ -1441,13 +1443,12 @@ public class Jmol extends JPanel {
           return; // make no assumptions - require a type by extension
         sType = sType.substring(i + 1).toUpperCase();
       }
-      if (sType.equals("PDF"))
-        createPdfDocument(new File(fileName));
-      else
-        createImageStatus(fileName, sType, null, sd.getQuality(sType));
+      String msg = (sType.equals("PDF") ?createPdfDocument(new File(fileName))
+          : createImageStatus(fileName, sType, null, sd.getQuality(sType)));
+      Logger.info(msg);
     }
 
-    private void createPdfDocument(File file) {
+    private String createPdfDocument(File file) {
       // PDF is application-only
       Document document = new Document();
       try {
@@ -1466,11 +1467,12 @@ public class Jmol extends JPanel {
         g2.dispose();
         cb.addTemplate(tp, 72, 720 - h);
       } catch (DocumentException de) {
-        System.err.println(de.getMessage());
+        return de.getMessage();
       } catch (IOException ioe) {
-        System.err.println(ioe.getMessage());
+        return ioe.getMessage();
       }
       document.close();
+      return "OK PDF " + file.length() + " " + file.getAbsolutePath();
     }
 
   }
@@ -1536,8 +1538,8 @@ public class Jmol extends JPanel {
       String fileName = (new Dialog()).getSaveFileNameFromDialog(viewer,
           null, "SPT");
       if (fileName != null)
-        createImageStatus(fileName, "SPT", viewer.getStateInfo(),
-            Integer.MIN_VALUE);
+        Logger.info(createImageStatus(fileName, "SPT", viewer.getStateInfo(),
+            Integer.MIN_VALUE));
     }
   }
 

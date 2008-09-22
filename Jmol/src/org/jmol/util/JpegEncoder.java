@@ -39,6 +39,9 @@ import java.io.*;
 /*
  * JpegEncoder - The JPEG main program which performs a jpeg compression of
  * an image.
+ * 
+ * See org.com.obrador.license.txt
+ * 
  */
 
 public class JpegEncoder extends Frame

@@ -26,7 +26,6 @@ package org.jmol.adapter.readers.more;
 
 import org.jmol.adapter.smarter.*;
 
-
 import java.io.BufferedReader;
 
 import org.jmol.api.JmolAdapter;
@@ -37,6 +36,19 @@ import org.jmol.api.JmolAdapter;
  * <a href='http://www.tripos.com/data/support/mol2.pdf '>
  * http://www.tripos.com/data/support/mol2.pdf 
  * </a>
+ * 
+ * PDB note:
+ * 
+ * Note that mol2 format of PDB files is quite minimal. All we
+ * get is the PDB atom name, coordinates, residue number, and residue name
+ * No chain terminator, not chain designator, no element symbol.
+ * 
+ * Chains based on numbering reset just labeled A B C D .... Z a b c d .... z
+ * Element symbols based on reasoned guess and properties of hetero groups
+ * 
+ * So this is just a hack -- trying to guess at all of these.
+ * 
+ * 
  *<p>
  */
 
@@ -53,11 +65,11 @@ import org.jmol.api.JmolAdapter;
 
 public class Mol2Reader extends AtomSetCollectionReader {
 
-  int nAtoms = 0;
-  int atomCount = 0;
-  boolean isPDB = false;
-  
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+  private int nAtoms = 0;
+  private int atomCount = 0;
+  private boolean isPDB = false;
+
+  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("mol2");
     try {
@@ -81,7 +93,7 @@ public class Mol2Reader extends AtomSetCollectionReader {
     return atomSetCollection;
   }
 
-  void processMolecule() throws Exception {
+  private void processMolecule() throws Exception {
     /* 4-6 lines:
      ZINC02211856
      55    58     0     0     0
@@ -100,6 +112,8 @@ public class Mol2Reader extends AtomSetCollectionReader {
 
     isPDB = false;
     String thisDataSetName = readLineTrimmed();
+    lastSequenceNumber = Integer.MAX_VALUE;
+    chainID = 'A' - 1;
     readLine();
     line += " 0 0 0 0 0 0";
     atomCount = parseInt(line);
@@ -131,14 +145,17 @@ public class Mol2Reader extends AtomSetCollectionReader {
     }
     nAtoms += atomCount;
     if (isPDB) {
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB",
-          Boolean.TRUE);
+      atomSetCollection
+          .setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
       atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     }
     applySymmetry();
   }
 
-  void readAtoms(int atomCount, boolean iHaveCharges) throws Exception {
+  private int lastSequenceNumber = Integer.MAX_VALUE;
+  private char chainID = 'A' - 1;
+
+  private void readAtoms(int atomCount, boolean iHaveCharges) throws Exception {
     //     1 Cs       0.0000   4.1230   0.0000   Cs        1 RES1   0.0000
     //  1 C1          7.0053   11.3096   -1.5429 C.3       1 <0>        -0.1912
     // free format, but no blank lines
@@ -157,37 +174,56 @@ public class Mol2Reader extends AtomSetCollectionReader {
       atom.elementSymbol = elementSymbol;
       // apparently "NO_CHARGES" is not strictly enforced
       //      if (iHaveCharges)
-      if (tokens.length > 6)
+      if (tokens.length > 6) {
         atom.sequenceNumber = parseInt(tokens[6]);
+        if (atom.sequenceNumber < lastSequenceNumber) {
+          if (chainID == 'Z')
+            chainID = 'a' - 1;
+          chainID++;
+        }
+        lastSequenceNumber = atom.sequenceNumber;
+        atom.chainID = chainID;
+      }
       if (tokens.length > 7) {
         atom.group3 = tokens[7];
         atom.isHetero = JmolAdapter.isHetero(atom.group3);
-        if (atom.group3.length() == 3
+        if (!isPDB && atom.group3.length() <= 3
             && JmolAdapter.lookupGroupID(atom.group3) >= 0) {
           isPDB = true;
-        }      
+        }
         if (isPDB)
-          atom.elementSymbol = deduceElementSymbol(atom.isHetero, tokens[5], atom.group3);
+          atom.elementSymbol = deduceElementSymbol(atom.isHetero, tokens[5],
+              atom.group3);
+        //System.out.print(atom.atomName + "/" + atom.elementSymbol + " " );
       }
       if (tokens.length > 8)
         atom.partialCharge = parseFloat(tokens[8]);
     }
   }
 
-  String deduceElementSymbol(boolean isHetero, String XX, String group3) {
+  private static String deduceElementSymbol(boolean isHetero, String XX,
+                                            String group3) {
     // short of having an entire table, 
-    if (XX.equalsIgnoreCase(group3)) 
-        return XX; // Cd Mg etc.
-    char ch1 = XX.charAt(0);
-    char ch2 = (XX.length() > 1 ? XX.charAt(1) : ' ');
+    if (XX.equalsIgnoreCase(group3))
+      return XX; // Cd Mg etc.
+    int i = 0;
+    int len = XX.length();
+    char ch1 = ' ';
+    while (i < len && (ch1 = XX.charAt(i++)) <= '9') {
+      // find first nonnumeric letter
+    }
+
+    char ch2 = (i < len ? XX.charAt(i) : ' ');
     String full = group3 + "." + ch1 + ch2;
     // Cd Nd Ne are not in complex hetero; Ca is in these:
-    if (("OEC.CA ICA.CA OC1.CA OC2.CA OC4.CA").indexOf(full)>=0)
+    if (("OEC.CA ICA.CA OC1.CA OC2.CA OC4.CA").indexOf(full) >= 0)
       return "Ca";
-    if ("NA NB NC ND NE NF NG NH CA CB CC CD CE CF CG CH OA OB OC OD OE OF OG OH".indexOf(XX) >= 0)
+    if (XX.indexOf("'") > 0 || XX.indexOf("*") >= 0 
+        || "NCO".indexOf(ch1) >= 0 && ch2 <= 'H' 
+        || XX.startsWith("CM"))
       return "" + ch1;
     if (isHetero && Atom.isValidElementSymbolNoCaseSecondChar(ch1, ch2))
-      return (isHetero || ch1 != 'H' ? XX.trim() : "H");
+      return (isHetero || ch1 != 'H' ? ("" + ch1 + ch2).trim() : "H");
     if (Atom.isValidElementSymbol(ch1))
       return "" + ch1;
     if (Atom.isValidElementSymbol(ch2))
@@ -195,8 +231,7 @@ public class Mol2Reader extends AtomSetCollectionReader {
     return "Xx";
   }
 
-
-  void readBonds(int bondCount) throws Exception {
+  private void readBonds(int bondCount) throws Exception {
     //     6     1    42    1
     // free format, but no blank lines
     for (int i = 0; i < bondCount; ++i) {
@@ -205,13 +240,14 @@ public class Mol2Reader extends AtomSetCollectionReader {
       int atomIndex2 = parseInt(tokens[2]);
       int order = parseInt(tokens[3]);
       if (order == Integer.MIN_VALUE)
-        order = (tokens[3].equals("ar") ? JmolAdapter.ORDER_AROMATIC : JmolAdapter.ORDER_UNSPECIFIED);
-      atomSetCollection
-          .addBond(new Bond(nAtoms + atomIndex1 - 1, nAtoms + atomIndex2 - 1, order));
+        order = (tokens[3].equals("ar") ? JmolAdapter.ORDER_AROMATIC
+            : JmolAdapter.ORDER_UNSPECIFIED);
+      atomSetCollection.addBond(new Bond(nAtoms + atomIndex1 - 1, nAtoms
+          + atomIndex2 - 1, order));
     }
   }
 
-  void readResInfo(int resCount) throws Exception {
+  private void readResInfo(int resCount) throws Exception {
     // free format, but no blank lines
     for (int i = 0; i < resCount; ++i) {
       readLine();
@@ -219,7 +255,7 @@ public class Mol2Reader extends AtomSetCollectionReader {
     }
   }
 
-  void readCrystalInfo() throws Exception {
+  private void readCrystalInfo() throws Exception {
     //    4.1230    4.1230    4.1230   90.0000   90.0000   90.0000   221     1
     readLine();
     String[] tokens = getTokens();

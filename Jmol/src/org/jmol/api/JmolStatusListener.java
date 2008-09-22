@@ -57,5 +57,5 @@ public interface JmolStatusListener {
   
   public void showUrl(String url);
 
-  public String dialogAsk(String type, String data);
+  public String dialogAsk(String type, String fileName);
 }

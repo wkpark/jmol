@@ -1236,10 +1236,10 @@ public class Jmol implements WrappedApplet {
       return JmolAppletRegistry.htRegistry;
     }
 
-    public String dialogAsk(String type, String data) {
+    public String dialogAsk(String type, String fileName) {
       if (!isSigned || jvm12 == null)
         return null;
-      return jvm12.dialogAsk(type, data);
+      return jvm12.dialogAsk(type, fileName);
     }
 
   }

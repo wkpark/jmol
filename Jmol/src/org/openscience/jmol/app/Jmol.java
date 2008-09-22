@@ -1851,17 +1851,17 @@ public class Jmol extends JPanel {
       return null;
     }
 
-    public String dialogAsk(String type, String data) {
+    public String dialogAsk(String type, String fileName) {
       if (type.equals("load"))
-        return getOpenFileNameFromDialog(data);
+        return getOpenFileNameFromDialog(fileName);
       if (type.equals("save")) {
-        return (new Dialog()).getSaveFileNameFromDialog(viewer, data,
+        return (new Dialog()).getSaveFileNameFromDialog(viewer, fileName,
             null);
       }
       if (type.equals("saveImage")) {
         Dialog sd = new Dialog();
-        String fileName = sd.getImageFileNameFromDialog(viewer,
-            data, imageType, imageChoices, imageExtensions, qualityJPG,
+        fileName = sd.getImageFileNameFromDialog(viewer,
+            fileName, imageType, imageChoices, imageExtensions, qualityJPG,
             qualityPNG);
         imageType = sd.getType();
         qualityJPG = sd.getQuality("JPG");

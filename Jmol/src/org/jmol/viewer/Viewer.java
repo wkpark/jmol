@@ -3981,8 +3981,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           strError, ptLoad);
   }
 
-  public String dialogAsk(String type, String data) {
-    return statusManager.dialogAsk(type, data);
+  public String dialogAsk(String type, String fileName) {
+    return statusManager.dialogAsk(type, fileName);
   }
   
   private void setStatusFileNotLoaded(String fullPathName, String errorMsg) {

@@ -468,9 +468,9 @@ class StatusManager {
     return (jmolStatusListener == null ? null : jmolStatusListener.getRegistryInfo());
   }
 
-  public String dialogAsk(String type, String data) {
+  public String dialogAsk(String type, String fileName) {
     if (jmolStatusListener != null)
-      return jmolStatusListener.dialogAsk(type, data);
+      return jmolStatusListener.dialogAsk(type, fileName);
     return "";
   }
 

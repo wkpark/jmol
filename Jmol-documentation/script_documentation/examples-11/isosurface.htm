@@ -23,8 +23,25 @@ polling = false;
 
 Callbacks=new Array("-atomPicked","-fileLoaded","-fileLoadError","-frameChanged","-measurePending","-measureCompleted","-measurePicked","-scriptStarted","-scriptEcho","-scriptStatus","-scriptError","-scriptMessage", "-scriptTerminated","-userAction","-viewerRefreshed","-newOrientation")
 
+x0 = 0
+y0 = 0
+dx = 1
+dy = 1
+x = 0
+y = 0
+
+function curveXY(app, ix, iy) {
+ setXY(ix, iy)
+ return eval(myfunction);
+}
+
+function setXY(ix, iy) {
+ x = ix * dx + x0
+ y = iy * dy + y0
+}
+
+
 function setFunction(f,isSilent){
-return;
   myfunction = (arguments.length<1?document.getElementById("fOfXY").value:f)
   var x=1
   var y=1
@@ -34,19 +51,12 @@ return;
 	alert("Your function is invalid")
 	myfunction = "(x*x+y*y)"
   }
-  try{eval("curveXY = function(app, x, y){ return 1.000001*("+myfunction+") }")}catch(e){alert(e);return}
-  if (!isSilent)alert(curveXY)
-  
+  try{curveXY("",1,1)}catch(e){alert(e);return}
+  if (!isSilent)alert("The function Jmol will use is now z=" + myfunction)  
 }
 
-myfunction = "(x*x + y*y)/15"
-function curveXY(app, x, y) {
- //note: x and y are integers -- we must multiply by a double to return a double in JavaScript
- return (1.000001*x*x + y*y)/15;
-}
-
-
-//setFunction(myfunction,1)
+myfunction = "(x*x + y*y)/3"
+setFunction(myfunction,1)
 
 
 function curveAsStringXY(app, nX, nY) {
@@ -54,9 +64,9 @@ function curveAsStringXY(app, nX, nY) {
   var i2 = Math.abs(0.0 + parseInt(""+nY));
   var s = ""
   for (var i = 0; i < i1; i++)
-    for (var j = 0; j < i2; j++)
-      s+= "X"+i+" \ty"+j+" \t"+ curveXY("",i, j) + "\n";
-dowritenew("<pre>" + s + "</pre>");
+    for (var j = 0; j < i2; j++) {
+      s+= curveXY("",i, j) + "\n";
+    }
   return s;
 
 }
@@ -120,6 +130,10 @@ function test1() {
  jmolScriptWait("refresh")
 }
 
+function curve1() {
+
+}
+
 Scripts=new Array(" "
 ,' This page can be used to experiment with the 10.x prototype. Files are available in <a href=.>this directory</a>.<br>Comments? Suggestions? <a href=mailto:hansonr@stolaf.edu>Bob Hanson</a>'
 
@@ -127,6 +141,13 @@ Scripts=new Array(" "
 
 
 ,'### see also <a href=new.htm>new.htm</a> and <a href=new.htm>new0.htm</a> ###'
+
+,'### isosurface functionXY for mapping###'
+,'# Jmol 11.5.46 adds functionXY as a mapping source.That is, you can take any object such as a surface, a sphere, a plane, another function -- anything -- and map it with color based on a function f(x,y). See <a href=isosurface.htm>isosurface.htm</a>.'
+	+'A negative value for the number of x values indicates that the function should return a string containing the Z values. '
+,'load ch3cl_map.jvxl;moveto /* time, axisAngle */ 1.0 { -166 934 317 74.27} /* zoom, translation */  27.51 0.0 0.0  /* center, rotationRadius */ {0.0 0.25563017 -0.40577123} 3.0632045 /* navigation center, translation, depth */ {0.0 0.0 0.0} 2.036076 0.35426983 50.0;'
+,'isosurface i2 sphere 2.0 color absolute 5 30 map functionXY "curveAsStringXY" {-5 -5 -5} {-11 1 0 0} {11 0 1 0} {11 0 0 1};'
+,'isosurface i3 plane { 0 1 1 0} color absolute 5 30 map functionXY "curveAsStringXY" {-5 -5 -5} {-11 1 0 0} {11 0 1 0} {11 0 0 1};'
 
 ,'###slices through a molecular surface and new way to define plane <br><img src=img/molslice.jpg width=100 height=100 />###'
 ,'# Jmol uses a unique algorithm to calculate surfaces. Each position in space is given a value that is its distance from the nearest surface point. What this means is that a "surface" is really an "isosurface with cutoff 0". And what that means is that a surface is no different in terms of visualization from a molecular orbital or other atom-based spacial property. Jmol 10.9.71 allows you to generate slices through a surface.'
@@ -149,25 +170,25 @@ Scripts=new Array(" "
 ,'###faster solvent/molecular surfaces and isosurface colorscheme "sets" <br><img src=img/2ptn.jpg width=114 height=100>###'
 ,'# Jmol 10.9.71 has significantly more capability in the area of solvent/molecular surface visualization.'
 ,'load 2ptn.cif;moveto 1.0 245 959 140 66.2;'
-,'isosurface delete ignore(solvent) sasurface'
-,'isosurface delete ignore(solvent) molecular colorscheme "sets"; color isosurface translucent;slab on;slab 70 '
+,'isosurface delete ignore(solvent) sasurface # Solvent-accessible surfaces using "sasurface" are very quick to produce.'
+,'isosurface delete ignore(solvent) molecular colorscheme "sets"; color isosurface translucent;slab on;slab 70 # "molecular" surfaces are significantly more time-consuming to calculate.'
 ,'slab off'
 
 ,'###molecular electrostatic potentials###'
 ,'# Jmol 10.9.63 introduces <b>isosurface MEP</b>, with which you can display molecular electrostatic potentials. These potentials are calculated from partial charge data present in a file; Jmol cannot calculate these charges.'
 ,'# Just the MEP:'
-,'load CH3F.smol;isosurface delete resolution 6 mep'
-,'load C6H6.smol;isosurface delete resolution 6 mep'
+,'load CH3F.smol;isosurface resolution 6 mep'
+,'load C6H6.smol;isosurface resolution 6 mep'
 ,'# MEP mapped onto a surface:'
-,'load CH3F.smol;isosurface delete resolution 6 solvent map mep'
-,'load C6H6.smol;isosurface delete solvent map mep'
-,'load C6H6.smol;isosurface delete resolution 3 solvent map mep'
+,'load CH3F.smol;isosurface delete resolution 6 solvent map mep; moveto /* time, axisAngle */ 1.0 { -956 -277 -95 70.01} /* zoom, translation */  100.0 0.0 0.0  /* center, rotationRadius */ {0.0 0.0 0.0} 3.657167 /* navigation center, translation, depth */ {0.0 0.0 0.0} 0.0 0.0 50.0;'
+,'load C6H6.smol;isosurface delete solvent map mep; moveto /* time, axisAngle */ 1.0 { -956 -277 -95 70.01} /* zoom, translation */  100.0 0.0 0.0  /* center, rotationRadius */ {0.0 0.0 0.0} 3.657167 /* navigation center, translation, depth */ {0.0 0.0 0.0} 0.0 0.0 50.0;'
+,'load C6H6.smol;isosurface delete resolution 3 solvent map mep; moveto /* time, axisAngle */ 1.0 { -956 -277 -95 70.01} /* zoom, translation */  100.0 0.0 0.0  /* center, rotationRadius */ {0.0 0.0 0.0} 3.657167 /* navigation center, translation, depth */ {0.0 0.0 0.0} 0.0 0.0 50.0;'
 ,'# This one may take some time:'
-,'load C6H6.smol;isosurface delete resolution 6 solvent map mep'
+,'load C6H6.smol;isosurface delete resolution 6 solvent map mep;moveto /* time, axisAngle */ 1.0 { -956 -277 -95 70.01} /* zoom, translation */  100.0 0.0 0.0  /* center, rotationRadius */ {0.0 0.0 0.0} 3.657167 /* navigation center, translation, depth */ {0.0 0.0 0.0} 0.0 0.0 50.0;'
 ,'# Though somewhat slow, these can be saved as JVXL files:'
 ,'console on;show isosurface'
 ,'# and then loaded instantly:'
-,'load C6H6-mep.jvxl;isosurface ""'
+,'load C6H6-mep.jvxl;isosurface "";moveto /* time, axisAngle */ 1.0 { -956 -277 -95 70.01} /* zoom, translation */  100.0 0.0 0.0  /* center, rotationRadius */ {0.0 0.0 0.0} 3.657167 /* navigation center, translation, depth */ {0.0 0.0 0.0} 0.0 0.0 50.0;'
 
 
 
@@ -468,18 +489,20 @@ Scripts=new Array(" "
 	+'They are the x and y coordinates of the point in the "voxel cube" defined by the origin and three vector definitions '
 	+'listed after the function name in the command. Each vector definition includes the number of voxels along that direction '
 	+'and the xyz coordinates defining the grid size in that direction. These vectors can be in any direction, '
-	+'but they should be perpendicular if the surface is to be color-mapped. Units are Angstroms. (Go ahead and change that function, '
+	+'but they should be perpendicular if the surface is to be color-mapped. Units are Angstroms. '
+	+'A negative value for the number of x values indicates that the function should return a string containing the Z values. '
+	+'A negative number for both X and Y indicate that the function expects a float[][] array in the fourth parameter and will fill that directly. (Go ahead and change that function, '
 	+'click <a href=javascript:setFunction()>here</a> to "set" the function, and then see what happens when you click the link below again.) '
-,'load d_orbitals.jvxl; restrict none; set axesMolecular; axes on; moveto 1.0 -909 -267 -320 80 70;set echo top left;echo " generating the surface..."; refresh; isosurface functionXY "curveAsArrayXY" {-5 -5 -5} {-11 1 0 0} {11 0 1 0} {11 0 0 1}; echo ""; show isosurface'
+,'zap; set axesMolecular; axes on; moveto 1.0 -909 -267 -320 80 70;set echo top left;echo " generating the surface..."; refresh; javascript "x0=-5;y0=-5;dx=1;dy=1";isosurface functionXY "curveAsStringXY" {-5 -5 -5} {-11 1 0 0} {11 0 1 0} {11 0 0 1}; echo ""; show isosurface'
 ,'# the JVXL equivalent:'
-,'load d_orbitals.jvxl; restrict none; set axesMolecular; axes on; moveto 1.0 -909 -267 -320 80 70;set echo top left;echo " JVXL equivalent"; refresh; isosurface "functionxy.jvxl"'
+,'zap; set axesMolecular; axes on; moveto 1.0 -909 -267 -320 80 70;set echo top left;echo " JVXL equivalent"; refresh; isosurface "fxy.jvxl"'
 ,'# color-mapping a curved surface -- a bit crude looking because mapped functions are not contoured automatically.'
-,'load ch3cl.mol; moveto 1.0 -982 -66 -176 75.9 70;set echo top left;echo " generating the surface..."; refresh; isosurface functionXY "curveAsStringXY" {-2 -2 -2} {-21 .2 0 0} {-21 0 .2 0} {21 0 0 .2} color absolute 0.1 0.5 "ch3cl-esp.cub.gz"; echo ""; show isosurface'
+,'load ch3cl.mol; moveto 1.0 -982 -66 -176 75.9 70;set echo top left;echo " generating the surface..."; refresh; javascript "x0=-2;y0=-2;dx=0.2;dy=0.2"; isosurface functionXY "curveAsArrayXY" {-2 -2 -2} {-21 .2 0 0} {-21 0 .2 0} {21 0 0 .2} color absolute 0.1 0.5 "ch3cl-esp.cub.gz"; echo ""; show isosurface'
 ,'# color-mapping a curved surface with contours is as simple as adding the CONTOUR keyword.'
-,'load ch3cl.mol; moveto 1.0 -982 -66 -176 75.9 70;set echo top left;echo " generating contoured surface..."; refresh; isosurface contour functionXY "curveXY" {-2 -2 -2} {21 .2 0 0} {21 0 .2 0} {21 0 0 .2} color absolute 0.1 0.5 "ch3cl-esp.cub.gz"; echo ""; show isosurface'
+,'load ch3cl.mol; moveto 1.0 -982 -66 -176 75.9 70;set echo top left;echo " generating contoured surface..."; refresh; javascript "x0=-2;y0=-2;dx=0.2;dy=0.2"; isosurface contour functionXY "curveAsStringXY" {-2 -2 -2} {-21 .2 0 0} {21 0 .2 0} {21 0 0 .2} color absolute 0.1 0.5 "ch3cl-esp.cub.gz"; echo ""; show isosurface'
 ,'# and the JVXL equivalent:'
 ,'# color-mapping a curved surface with contours'
-,'load ch3cl.mol; moveto 1.0 -982 -66 -176 75.9 70;isosurface delete "contourf.jvxl"'
+,'load ch3cl.mol; moveto 1.0 -982 -66 -176 75.9 70;isosurface delete "fxycontour.jvxl"'
 ,'# for which the contouring can be adjusted, because the color data itself encodes the original values to within about one part in 8000:'
 ,'isosurface delete contour 1 "contourf.jvxl"'
 ,'isosurface delete contour 20 reverseColor "contourf.jvxl"'
@@ -626,7 +649,7 @@ Scripts=new Array(" "
 
 ,'### isosurface FIXED/MODELBASED and multiple models ###'
 ,'# As in the case of draw objects (points, lines, planes) there may be times when isosurfaces are intended to be displayed for all models ("FIXED") and times when they are model-based. The default assumption is MODELBASED, but one can also specify FIXED. Note that we use the 1001, 2001, 3001,... notation for frames because they come from different files (or so the applet thinks!). Using this technique you can select which orbitals to view based on which frames are currently visible.'
-,'load "fileset" "ch3cl.mol" "ch3cl.mol";moveto 1.0 -507 -831 -230 56.6;'
+,'load files "ch3cl.mol" "ch3cl.mol";moveto 1.0 -507 -831 -230 56.6;'
 ,'frame 1001;isosurface orb1 center (atomno=1) phase atomicOrbital 2 1 1'
 ,'frame 2001;isosurface orb2 center (atomno=2) phase atomicOrbital 2 1 1'
 ,'isosurface orb3 center (atomno=5) FIXED phase atomicOrbital 2 1 1'

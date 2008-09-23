@@ -1,11 +1,12 @@
 <script type="text/javascript" src="Jmol.js"></script>
 <table><tr><td>
 <script type="text/javascript">
+jmolDebugAlert(true)
 jmolSetCallback("animFrameCallback", "myfunc2")
 jmolSetCallback("loadStructCallback", "myfunc3")
 jmolSetCallback("messageCallback", "myfunc4")
 jmolSetCallback("hoverCallback", "myfunc")
-jmolApplet(400,"load data/caffeine.xyz")
+jmolApplet(400,"load data/caffeine.xyz;set hoverdelay 1.0")
 jmolHtml("<br>")
 jmolButton("initialize;load data/caffeine.xyz;","load")
 jmolButton("if(dotsON);dots off;set dotsON false;else;dots on;set dotsON", "dots on/off");
@@ -22,8 +23,8 @@ function myfunc3(a,mess) {
 }
 
 function myfunc4(a,mess) {
- var v = jmolGetPropertyAsJSON("atominfo")
- document.myform.mytextarea.value+="\nmess: "+mess +jmolDecodeJSON(v)
+ //var v = jmolGetPropertyAsJSON("atominfo")
+ document.myform.mytextarea.value+="\nmess: "+mess //+jmolDecodeJSON(v)
 }
 
 function myfunc(a,mess) {

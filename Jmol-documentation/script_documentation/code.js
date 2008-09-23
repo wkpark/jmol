@@ -7,16 +7,16 @@
 //BH 6:51 AM 5/30/2007 refined ?command= and ?search= options
 
 lastupdate = ""
-startmessage ="See an error? Something missing? Please <a href=\"mailto:hansonr@stolaf.edu?subject=Jmol applet documentation\">let us know</a>. For a wide variety of interactive examples, see <a href=examples-11/new0.htm>new0.htm</a>."
-defaultversion = "11.2" //could be 11.0 or 10.2
-versionlist = ",11.2,11.0,10.2,"
+startmessage ="See an error? Something missing? Please <a href=\"mailto:hansonr@stolaf.edu?subject=Jmol applet documentation\">let us know</a>. For a wide variety of interactive examples, see <a href=examples-11/new.htm>new.htm</a>."
+defaultversion = "11.6" //could be 11.0 or 10.2 or 11.2
+versionlist = ";11.6;11.4;11.2;11.0;10.2;" //semis on BOTH SIDES
+removelist = versionlist.substring(0, versionlist.length-1).replace(/\;/g, ";*v-")
 exampledir = "examples/" //will be ignored if the example has a / in the name
 datadir = "examples/"
 jmoljs = "Jmol.js"
 jmolSite = "http://www.stolaf.edu/academics/chemapps/jmol"
 popupscript = "popupscript.js"
 //popup-example display did not work with the multi-file archive path
-
 
 isxhtmltest=0
 
@@ -75,6 +75,10 @@ thisSubversion = "10.2" //could be 10.x
 if(document.location.href.indexOf("#")<0){
  thesearch=(docsearch+"search=").split("search=")[1].split("&")[0]
  thesearch=(thesearch?unescape(thesearch):"")
+ if (thesearch == "?") {
+	thesearch = ""
+	setTimeout("setsearch()",1000)
+ }
 }
 docbase=(document.location.href.split("?")[0]).split("#")[0]
 onlycommand=(docsearch+"command=").split("command=")[1].split("&")[0]
@@ -92,6 +96,7 @@ themodel=(docsearch+"model=").split("model=")[1].split("&")[0]
 
 thisSubversion=(docsearch+"ver="+defaultversion).split("ver=")[1].split("&")[0]
 thisVersion = thisSubversion.substring(0,2);
+thisVrefNew = "*v+"+thisSubversion
 
 icandoxrefincommand=0
 
@@ -183,7 +188,7 @@ function checkfortable(sinfo,isital){
  if(sinfo.indexOf("[||")<0)return sinfo
  sinfo=sinfo.replace(/\[\|\|/g,(isital?"</i>":"")+"<br /><table cellpadding=\"2\" cellspacing=\"2\" border=\"1\" ><tr ><td valign=\"top\" >").replace(/\|\|\]/g,"</td ></tr ></table >"+(isital?"<i>":""))
  sinfo=sinfo.replace(/\|\|/g,"</td ></tr ><tr ><td valign=\"top\" >")
- sinfo=sinfo.replace(/\|/g,"</td ><td >")
+ sinfo=sinfo.replace(/\|/g,"</td ><td valign=\"top\" >")
  sinfo=sinfo.replace(/\>\`/g," ")
  return sinfo
 }
@@ -201,7 +206,7 @@ function newVar(name,type) {
 }
 
 
-function TABLE1(isReserved,isDeprecated) {
+function TABLE1(isReservedOnly,isNotVariableX, isDeprecatedOnly) {
 //for now:
   if(dowritedocbook){
   return mylist
@@ -209,25 +214,42 @@ function TABLE1(isReserved,isDeprecated) {
   return mylist
  }
 
- var s = '<a id="table1'+(isReserved ? "A" : isDeprecated ? "B" : "")+'">&nbsp;</a><table border="0" cellspacing="2"><tr>'
+ var s = '<a id="table1'+(isReservedOnly ? "A" : isNotVariableX ? "B" : isDeprecatedOnly ? "C" : "")+'">&nbsp;</a><table border="0" cellspacing="2"><tr>'
  var n = 0;
- for (var i = 0; i < Vars.length; i++) if(isReserved == (Vars[i].type == "reserved") && isDeprecated == (Vars[i].type.charAt(0) == "_")){
-  if (n > 0 && n % 5 == 0) s+="</tr><tr>"
-  n++;
-  var p = Vars[i].name.toLowerCase()
-  var data = Vars[i].name
+ for (var i = 0; i < Vars.length; i++) {
+  var isOK = false;
   var type = Vars[i].type
-  s+="<td class=\"tbl\">"
-  if (mylist.indexOf(" "+p+" ")>=0 && !isDeprecated)
-    data = "<a href=\"#set_"+p+"\">"+data+"</a>"
-  else if(isDeprecated) {
-    n+=4;
-    if (type.indexOf("_see ")==0)
-      data += "</td><td class=\"tbl\">"+marksearch(type.substring(1),true)+"</a>"
-    else
-      data = "set " + data + "</td><td class=\"tbl\">see <a href=\"#set"+type.toLowerCase()+"\">set "+type.substring(1)+"</a>"
+  var isDeprecated = (type.indexOf("_") == 0)
+  var isReserved = (type == "reserved")
+  var haverefalready = (type.indexOf("#") == 0)
+  if(isReserved) {
+	isOK = isReservedOnly
+  } else if (isDeprecated) {
+        isOK = isDeprecatedOnly
+  } else {
+	isOK = haverefalready || !isReservedOnly && !isDeprecatedOnly && (isNotVariableX== (type.length > 1))
   }
-  s+=data + "</td>"
+  if (isOK) {
+	  if (n > 0 && n % 5 == 0) s+="</tr><tr>"
+	  n++;
+	  var data = Vars[i].name
+	  var p = data.toLowerCase()
+	  s+="<td class=\"tbl\">"
+          if (haverefalready) {
+	    data = "<a href=\""+type+"\">"+data+"</a>"
+	  } else if (mylist.indexOf(" "+p+" ")>=0 && !isDeprecated) {
+            if(isNotVariableX)data = "set " + data
+	    data = "<a href=\"#set_"+p+"\">"+data+"</a>"
+	  } else if(isDeprecated) {
+	    data = "set " + data + "</td><td class=\"tbl\">"
+	    if (type.indexOf("_see ")==0)
+	      data += marksearch(type.substring(1),true)+"</a>"
+	    else
+	      data += "see <a href=\"#set"+type.toLowerCase()+"\">set "+type.substring(1)+"</a>"
+	  }
+	  if (isDeprecatedOnly || isNotVariableX)n+=4;
+	  s+=data + "</td>"
+  }
  }
  s += '</tr></table>'
  return s
@@ -238,28 +260,36 @@ mylist = "</br>"
 
 function newCmd(command,examples,xref,description,nparams,param1,param2,param3,param4){
  var n=0
- // *v+10.2 means added in 10.2 -- highlight if thisSubversion
+ // *v+10.2 means added in 10.2 -- highlight if thisSubversion and remove from previous versions
  // *v-10.2 means do not include in 10.2 list
- // *v+11.0 means added in 11.0
- // *v-11.0 means do not include in 11.0 list
- // *v+11.2 means new to 11.2
- // *v-11   means do not include in 11.0 or 11.2 list
- 
+ // *v-11   means do not include in 11.x list
+ var pt = xref.indexOf("*v-")
+ if (pt >= 0 && pt == xref.lastIndexOf("*v-")) {
+	var ref = removelist.substring(0, removelist.indexOf(xref.substring(pt,pt+7)))//*v-11.3
+	if (ref == "")alert("problem with " + xref)
+	xref += ref
+ }
+ if (xref.substring(0,3)=="*v+") {
+	var ref = (xref.substring(0, 10) + " ").split(" ")[0].split(";")[0].replace(/\+/,"-")
+	var pt = removelist.indexOf(ref)
+	if(pt < 0)alert("missing " + ref + " in removelist for " + xref)
+	xref+=removelist.substring(pt + ref.length)
+ }
+
  if (xref.substring(0,2)=="*v") {
 	if(xref.indexOf("*v-"+thisSubversion)>=0)return
 	if(xref.indexOf("*v-"+thisVersion)>=0 && xref.indexOf("*v-"+thisVersion+".")<0)return
  }
+
  var notimplemented=(xref=="x")
-// description=description.replace(/\<ul\>/,"<ul>").replace(/\<\/ul\>/,"</ul>")
-//	.replace(/\<ol\>/,"</i></p><ol>").replace(/\<\/ol\>/,"</ol><p><i>")
-//	.replace(/\<pre\>/,"</i></p><pre>").replace(/\<\/pre\>/,"</pre><p><i>")
- description=description.replace(/\{\{/g,"@0@").replace(/\}\}/g,"@1@")
+ if(description.indexOf("{{") >= 0)description = description.replace(/\{\{/g,"@0@").replace(/\}\}/g,"@1@")
  var S=description.split("CHIME NOTE:")
  var descr=checkfortable(marksearch(S[0],1),0)
  var chimenote=(S[1]?checkfortable(marksearch(S[1],1),0):0)
  if(!doshowunimplemented && (notimplemented||command.indexOf("unimplemented")>=0))return
  if(command)thiscommand = command
  if (onlycommand != "" && thiscommand.toLowerCase() !="."+onlycommand) return
+ var c0 = command
  if(command){
 	Cmdlist[Cmdlist.length]=command
 	Cmds[command]=new Array()
@@ -290,8 +320,10 @@ function newCmd(command,examples,xref,description,nparams,param1,param2,param3,p
  for (var i=0;i<S.length;i++){
 	xref=S[i]
 	if(xref.indexOf("*v+")==0){
-		Cmds[command].isnew=(xref.indexOf("*v+"+thisSubversion)==0)
-		Cmds[command].version=xref.substring(3,xref.length)
+		Cmds[command].isnew|=(xref.indexOf(thisVrefNew)==0)
+                if (c0) {
+			Cmds[command].version=xref.substring(3,xref.length)
+		}
 	}else if(xref && xref.length > 0 && xref!="x" && xref.indexOf("*v-")<0){
 		if(!Xrefs[xref])Xrefs[xref]=""
 		Xrefs[xref]+=","+command
@@ -340,6 +372,7 @@ function newDef(jsToken,typelist,label,description){
  Defs[jsToken]=new Array()
  Defs[jsToken].typelist=typelist.split(",").join(", ").replace(/  /g," ").replace(/\</g,"&lt;")
  Defs[jsToken].label=(label.indexOf("-")>=0||label.indexOf(" ")>=0&&label.indexOf('"')<0?"["+label+"]":label).replace(/\"/g,"")
+ if(description.indexOf("{{") >= 0)description = description.replace(/\{\{/g,"@0@").replace(/\}\}/g,"@1@")
  Defs[jsToken].description=marksearch(description,1)
  Defs[jsToken].enabled=foundsearch(description)
 }
@@ -398,10 +431,11 @@ function writecmds(){
 		for(var i=0;i<HeadList.length;i++)T[T.length]="<td><xref linkend=\""+idof(HeadList[i])+"\"/></td>"
 		shead="\n<informaltable>"
 	}else{
+		var root = document.location.href.split("#")[0];
 		for(var i=0;i<HeadList.length;i++)T[T.length]="<td xml=headlistdata=xml>"
-			+"<a style=\"text-decoration:none\" href=\"?ver="+thisSubversion+"#"+idof(HeadList[i])+"\"><img class=\"nf\" height=\"10\" width=\"10\" border=\"0\" src="+(Cmds[HeadList[i]].ihavewin?"\"img/ex.jpg\" title=\"includes example page\"":"\"img/ex.gif\" title=\"\"")+" />&nbsp;"
+			+"<a style=\"text-decoration:none\" href=\""+root+"#"+idof(HeadList[i])+"\"><img class=\"nf\" height=\"10\" width=\"10\" border=\"0\" src="+(Cmds[HeadList[i]].ihavewin?"\"img/ex.jpg\" title=\"includes example page\"":"\"img/ex.gif\" title=\"\"")+" />&nbsp;"
 			+"<span"+(Cmds[HeadList[i]].isnew?" class=\"new\"":"")+">"
-			+fixhtml(keyof(HeadList[i],0))
+			+fixhtml(keyof(HeadList[i],0, 0))
 			+(Cmds[HeadList[i]].isnew?"&nbsp;*":"")
 			+"</span></a>"
 			+"</td xml=/headlistdata=xml>"
@@ -419,70 +453,74 @@ function writecmds(){
 	shead+=(dowritedocbook?"\n</informaltable>":"</table xml=/headlist=xml>")
 	s=shead+s
  }
- s = s.replace(/\@0\@/g, "{").replace(/\@1\@/g, "}")
- s = s.replace(/\@TILDE/g, "~")
+ s = s.replace(/\@0\@/g, "{")
+	.replace(/\@1\@/g, "}")
+	.replace(/\@TILDE/g, "~")
+	.replace(/\&PER\;/g,".")
+	.replace(/\&brvbar\;/g,"|")
  if(dowritedocbook){
 	s=fixDocbook(s)
 	s+="\n<section id=\"index\">\n<para>INDEX</para>\n"+theindex+"\n</section>"
 	s=s.replace(/\<blockquote\>/g," ")
-	s=s.replace(/\<\/blockquote\>/g," ")
-	s=s.replace(/\&nbsp;/g," ")
-	s=s.replace(/\&/g,"&amp;")
-	s=s.replace(/\<i\>/g,"")
-	s=s.replace(/\<\/i\>/g,"")
-	s=s.replace(/\<b\>/g,"")
-	s=s.replace(/\<\/b\>/g,"")
-	s=s.replace(/\<br \/\>\<br \/\>/g,"</para><para>")
-	s=s.replace(/\<br \/\>/g,"</para><para>")
-	s=s.replace(/\</g,"&lt;")
-	s=s.replace(/\n+/g,"\n")
-	s=s.replace(/\n/g,"<br />")
-	s=s.replace(/\\>/g,"<para>").replace(/\<\/p\>/g,"</para>")
-	s=s.replace(/\'\'/g,'"')
+	.replace(/\<\/blockquote\>/g," ")
+	.replace(/\&nbsp;/g," ")
+	.replace(/\&/g,"&amp;")
+	.replace(/\<i\>/g,"")
+	.replace(/\<\/i\>/g,"")
+	.replace(/\<b\>/g,"")
+	.replace(/\<\/b\>/g,"")
+	.replace(/\<br \/\>\<br \/\>/g,"</para><para>")
+	.replace(/\<br \/\>/g,"</para><para>")
+	.replace(/\</g,"&lt;")
+	.replace(/\n+/g,"\n")
+	.replace(/\n/g,"<br />")
+	.replace(/\\>/g,"<para>").replace(/\<\/p\>/g,"</para>")
+	.replace(/\'\'/g,'"')
  }else if(dowritexml){
 	s+="<indexlist>"+theindex+"</indexlist>"
 	s=s.replace(/ valign\=\"top\"/g,"")
-	s=s.replace(/\<table\>/g," ")
-	s=s.replace(/\<td\>/g," ")
-	s=s.replace(/\<tr\>/g," ")
-	s=s.replace(/\<blockquote\>/g," ")
-	s=s.replace(/\<\/table\>/g," ")
-	s=s.replace(/\<\/td\>/g," ")
-	s=s.replace(/\<\/tr\>/g," ")
-	s=s.replace(/\<\/blockquote\>/g," ")
-	s=s.replace(/p xml\=/g,"")
-	s=s.replace(/td xml\=/g,"")
-	s=s.replace(/tr xml\=/g,"")
-	s=s.replace(/table xml\=/g,"")
-	s=s.replace(/i xml\=/g,"")
-	s=s.replace(/b xml\=/g,"")
-	s=s.replace(/\<\/\//g,"</")
-	s=s.replace(/\<\=xml\>/g,"")
-	s=s.replace(/\<\/\=xml\>/g,"")
-	s=s.replace(/\&nbsp;/g," ")
-	s=s.replace(/\&/g,"&amp;")
-	s=s.replace(/\</g,"&lt;")
-	s=s.replace(/\&lt\;cmd/g,"<br />&lt;cmd")
-	s=s.replace(/\&lt\;\/cmd/g,"<br />&lt;/cmd")
-	s=s.replace(/\&lt\;def/g,"<br />&lt;def")
-	s=s.replace(/\&lt\;see/g,"<br />&lt;see")
-	s=s.replace(/\&lt\;head/g,"<br />&lt;head")
-	s=s.replace(/\&lt\;\/headlist\=/,"<br />&lt;/headlist\=")
-	s=s.replace(/\&lt\;index/g,"<br />&lt;index")
-	s=s.replace(/\&lt\;\/indexl/g,"<br />&lt;/indexl")
-	s=s.replace(/\&lt\;jmol/g,"<br /><br />&lt;jmol")
-	s=s.replace(/\&lt\;\/jmol/g,"<br />&lt;/jmol")
-	s=s.replace(/\=xml/g,"")
-//	s=s.replace(/\&lt\;/g,"<br    />&lt;")
+	.replace(/\<table\>/g," ")
+	.replace(/\<td\>/g," ")
+	.replace(/\<tr\>/g," ")
+	.replace(/\<blockquote\>/g," ")
+	.replace(/\<\/table\>/g," ")
+	.replace(/\<\/td\>/g," ")
+	.replace(/\<\/tr\>/g," ")
+	.replace(/\<\/blockquote\>/g," ")
+	.replace(/p xml\=/g,"")
+	.replace(/td xml\=/g,"")
+	.replace(/tr xml\=/g,"")
+	.replace(/table xml\=/g,"")
+	.replace(/i xml\=/g,"")
+	.replace(/b xml\=/g,"")
+	.replace(/\<\/\//g,"</")
+	.replace(/\<\=xml\>/g,"")
+	.replace(/\<\/\=xml\>/g,"")
+	.replace(/\&nbsp;/g," ")
+	.replace(/\&/g,"&amp;")
+	.replace(/\</g,"&lt;")
+	.replace(/\&lt\;cmd/g,"<br />&lt;cmd")
+	.replace(/\&lt\;\/cmd/g,"<br />&lt;/cmd")
+	.replace(/\&lt\;def/g,"<br />&lt;def")
+	.replace(/\&lt\;see/g,"<br />&lt;see")
+	.replace(/\&lt\;head/g,"<br />&lt;head")
+	.replace(/\&lt\;\/headlist\=/,"<br />&lt;/headlist\=")
+	.replace(/\&lt\;index/g,"<br />&lt;index")
+	.replace(/\&lt\;\/indexl/g,"<br />&lt;/indexl")
+	.replace(/\&lt\;jmol/g,"<br /><br />&lt;jmol")
+	.replace(/\&lt\;\/jmol/g,"<br />&lt;/jmol")
+	.replace(/\=xml/g,"")
+//	.replace(/\&lt\;/g,"<br    />&lt;")
 
  }else{
 	s=s.replace(/xml\=\S*?\=xml/g,"")
 	s+="<hr />"+theindex+"<hr />"
 	if (lastupdate!="")s+="<p>last updated: "+lastupdate+"</p>"
  }
- s=s.replace(/TABLE1/,TABLE1(false,false))
- s=s.replace(/TABLE2/,TABLE1(false,true))
- s=s.replace(/TABLE3/,TABLE1(true,false))
+ s=s.replace(/TABLE1/,TABLE1(false,false,false))
+ s=s.replace(/TABLE2/,TABLE1(false,true,false))
+ s=s.replace(/TABLE3/,TABLE1(false,false,true))
+ s=s.replace(/TABLE4/,TABLE1(true,false,false))
  docwrite(s)
 }
 
@@ -525,7 +563,7 @@ function getExamplesHTML(){
  s+="</select>"
 
  s+="<select onchange=eval(value)>"
- var List=versionlist.split(",")
+ var List=versionlist.split(";")
  var j=0
  var name=""
  for (var l=1;l<List.length-1;l++)s+="<option "+(List[l]==thisSubversion?" selected=\"1\" ":"")+"value=\"showVersion('"+List[l]+"')\">version "+List[l]+"</option>"
@@ -584,12 +622,12 @@ function gettokhtml(T){
  return s
 }
 
-function keyof(sname,isfull){
+function keyof(sname,isfull, addEquivalents){
  var C=Cmds[sname]
  var subset=sname.split(" (")[1]
  var s=sname.split(" (")[0]
  subset=(subset?" ("+subset:"")
- if(Toks[s])s=Toks[s].Namelist.join(" or ")
+ if(Toks[s] && addEquivalents)s=Toks[s].Namelist.join(" or ")
  if(!isfull && subset)s=s.split(" ")[0]
  s=s.replace(/\./,"")+subset
  var isunimplemented=(!C.isimplemented || s.indexOf("not implemented")>0)
@@ -616,7 +654,7 @@ function getcmdhtml(C){
  var ihavedesc=0
  var isunimplemented=(!C.isimplemented || C.name.indexOf("implemented")>0)
  var shead=""
- var s=keyof(C.name,0)
+ var s=keyof(C.name,0,1)
  var cmdoptionreal=""
  var spreal=""
  if(isunimplemented && (dowritexml||dowritedocbook))return ""
@@ -645,7 +683,7 @@ function getcmdhtml(C){
 
  if(!C.isimplemented){
 	s=shead
-	if(!foundsearch(keyof(C.name,1)+" not implemented"))s=""
+	if(!foundsearch(keyof(C.name,1,0)+" not implemented"))s=""
  }else{
 	if(dowritedocbook){
 		if(!isunimplemented)shead+="\n<para>"+(C.description?C.description:"description will appear here")+"</para>"
@@ -907,12 +945,12 @@ function showModel(swhat_ext,smodel){
 
  //can't write while writing! IE needs defer=defer. But better solution is just to get code and write it.
 	if(useobject && !_jmol.useIEObject)_jmol.useHtml4Object=1 //force object not applet
-	sapp=jmolApplet(400,scrdef+scr,"X")
+	sapp=jmolApplet(["100%","100%"],scrdef+scr,"X")
 	stext+='\n<script type="text/javascript" src="'+jmoljs+'"></script>'
 	+'\n<script type="text/javascript">'
 	+'\nuseGetElement='+useGetElement+';'
 	+'\n//jmolInitialize(".");'
-	+'\njmolApplet(400, defaultloadscript+"'+scr+'","X");'
+	+'\njmolApplet(["100%","100%"], defaultloadscript+"'+scr+'","X");'
 	+'\n</script>'
  }else{
 
@@ -936,7 +974,7 @@ function showModel(swhat_ext,smodel){
   	+"\n</p><pre>"+(shead+stext+"\n</form>\n</body>\n</html>").replace(/\</g,"&lt;")+"</pre>"
 	+'\n</body>'
 	+'\n</html>'
-	var opt="menubar,scrollbars,width=900,height=600,left=100,top=30"
+	var opt="menubar,scrollbars,resizable,width=900,height=600,left=100,top=30"
 	var sm=""+Math.random()
 	sm=sm.substring(3,10)
 	var w=open("","DT_"+sm,opt) //blank? for what?
@@ -973,7 +1011,7 @@ function showModel(swhat_ext,smodel){
 	+"&list="+escape(theList)
 	+"&text="+escape(theText)
 	+"&script="+escape(theScript)
- var opt="menubar,scrollbars,width=900,height=600,left=100,top=30"
+ var opt="menubar,scrollbars,resizable,width=900,height=600,left=100,top=30"
  var sm=""+Math.random()
  sm=sm.substring(3,10)
  open("popupTemplate.htm?"+fields,"DT_"+sm,opt)
@@ -1108,6 +1146,6 @@ function docwrite(s){
 
 function idof(s){
 	s=s.replace(/\(\#\)/,"")
-	return unescape(s).replace(/(\.|\(|\))/g,"").replace(/\s+/g,"")
+	return unescape(s).replace(/(\.|\(|\)|\]|\[)/g,"").replace(/\s+/g,"")
 }
 

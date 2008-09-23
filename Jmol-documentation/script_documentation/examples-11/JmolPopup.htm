@@ -3,21 +3,32 @@
 <title>Jmol Popup Model</title>
 <script type="text/javascript" src="Jmol.js"></script>
 <script type="text/javascript">
+theScript = document.location.search
+if (theScript.indexOf("script=") > 0)
+ theScript = unescape(theScript.split("script=")[1].split("&")[0])
+else
+ theScript = 0
 
 function refreshModelX(){
 	
 }
 
 function getState(){
+	if (theScript) {
+		return theScript
+	}
 	if (!opener) {
 	  alert("The page that opened this pop-up window is not available.")
 	  return ""
 	}
-	return opener.jmolGetPropertyAsString("stateInfo")//.replace(/initialize/,"initialize;zoomLarge = false")
+	return opener.jmolGetPropertyAsString("stateInfo")//.replace(/initialize/,"initialize;zoomLarge = false") 
 }
 
 function doAlert(){
-	alert('Click on "refresh model" at any time to see the model in its current state in this window. You may refresh the model as often as desired, and you may resize this model as often as you like.')
+	if (theScript)
+		alert("just reload this page to reset the model")
+	else
+		alert('Click on "refresh model" at any time to see the model in its current state in this window. You may refresh the model as often as desired, and you may resize this model as often as you like.')
 }
 
 </script>

@@ -66,7 +66,7 @@ show set
  
 show defaultDirectory
 set debugscript true;show debugscript;set debugscript false
-set myvariable true;show myvariable
+myvariable = true;show myvariable
 set dataSeparator "~~~";data "model test"|2|test|C 0 0 1|N 0 1 0|~~~2|test2|Al 0 0 3|Fe 0 4 0|end "model test";moveto 1.0 { -32 -999 23 82.0} 100.0 0.0 0.0 {0.0 2.0 1.5} 4.6;frame 0;labels on
 frame 1001
 frame 2001

@@ -1,5 +1,4 @@
-
-/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 1:34 AM 3/19/2007
+/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 11:49 AM 9/23/2008 Bob Hanson
 
  checkbox heirarchy -- see http://www.stolaf.edu/academics/jmol/docs/examples-11/check.htm
 
@@ -30,6 +29,7 @@
 try{if(typeof(_jmol)!="undefined")exit()
 
 // place "?NOAPPLET" on your command line to check applet control action with a textarea
+// place "?JMOLJAR=xxxxx" to use a specific jar file
 
 // bob hanson -- jmolResize(w,h) -- resizes absolutely or by percent (w or h 0.5 means 50%)
 // bob hanson -- jmolEvaluate -- evaluates molecular math 8:37 AM 2/23/2007
@@ -56,9 +56,37 @@ try{if(typeof(_jmol)!="undefined")exit()
 // bh         -- jmolCommandInput()
 // bh         -- jmolSetTranslation(TF) -- forces translation even if there might be message callback issues
 // bh         -- minor fixes suggested by Angel
+// bh         -- adds jmolSetSyncId() and jmolGetSyncId()
+// bh 3/2008  -- adds jmolAppendInlineScript() and jmolAppendInlineArray()
+// bh 3/2008  -- fixes IE7 bug in relation to jmolLoadInlineArray()
+// bh 6/2008  -- adds jmolSetAppletWindow()
+// Angel H. 6/2008  -- added html <label> tags to checkboxes and radio buttons [in jmolCheckbox() and _jmolRadio() functions]
+// bh 7/2000  -- code fix "for(i..." not "for(var i..."
 	  	
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
+
+
+// Note added 12:41 PM 9/21/2008 by Bob Hanson, hansonr@stolaf.edu:
+
+// JMOLJAR=xxxxx.jar on the URL for this page will override
+// the JAR file specified in the jmolInitialize() call.
+
+// The idea is that it can be very useful to test a web page with different JAR files
+// Or for an expert user to substitute a signed applet for an unsigned one
+// so as to use a broader range of models or to create JPEG files, for example.
+
+// If the JAR file is not in the current directory (has any sort of "/" in its name)
+// then the user is presented with a warning and asked whether it is OK to change Jar files.
+// The default action, if the user just presses "OK" is to NOT allow the change. 
+// The user must type the word "yes" in the prompt box for the change to be approved.
+
+// If you don't want people to be able to switch in their own JAR file on your page,
+// simply set this next line to read "var allowJMOLJAR = false".
+
+
+var allowJMOLJAR = true  
+
 
 var undefined; // for IE 5 ... wherein undefined is undefined
 
@@ -67,23 +95,22 @@ var undefined; // for IE 5 ... wherein undefined is undefined
 ////////////////////////////////////////////////////////////////
 
 function jmolInitialize(codebaseDirectory, fileNameOrUseSignedApplet) {
-  if (_jmol.initialized) {
-    //alert("jmolInitialize() should only be called *ONCE* within a page");
-    return;
+  if(allowJMOLJAR && document.location.search.indexOf("JMOLJAR=")>=0) {
+    var f = document.location.search.split("JMOLJAR=")[1].split("&")[0];
+    if (f.indexOf("/") >= 0) {
+      alert ("This web page URL is requesting that the applet used be " + f + ". This is a possible security risk, particularly if the applet is signed, because signed applets can read and write files on your local machine or network.")
+      var ok = prompt("Do you want to use applet " + f + "? ","yes or no")
+      if (ok == "yes") {
+        codebaseDirectory = f.substring(0, f.lastIndexOf("/"));
+        fileNameOrUseSignedApplet = f.substring(f.lastIndexOf("/") + 1);
+      } else {
+	_jmolGetJarFilename(fileNameOrUseSignedApplet);
+        alert("The web page URL was ignored. Continuing using " + _jmol.archivePath + ' in directory "' + codebaseDirectory + '"');
+      }
+    } else {
+      fileNameOrUseSignedApplet = f;
+    }
   }
-  if (! codebaseDirectory) {
-    alert("codebaseDirectory is a required parameter to jmolInitialize");
-    codebaseDirectory = ".";
-  }
-
-  if (codebaseDirectory.indexOf("http://") == 0 ||
-      codebaseDirectory.indexOf("https://") == 0)
-    alert("In general, an absolute URL is not recommended for codebaseDirectory.\n" +
-	  "A directory- or docroot-relative reference is recommended.\n\n" +
-	  "If you need to use an absolute URL (because, for example, the JAR and data\n" +
-	  "files are on another server), then insert a space before\n" +
-	  "\"http\" in your URL to avoid this warning message.");
-
   _jmolSetCodebase(codebaseDirectory);
   _jmolGetJarFilename(fileNameOrUseSignedApplet);
   _jmolOnloadResetForms();
@@ -97,7 +124,6 @@ function jmolSetTranslation(TF) {
 function _jmolGetJarFilename(fileNameOrFlag) {
   _jmol.archivePath =
     (typeof(fileNameOrFlag) == "string"  ? fileNameOrFlag : (fileNameOrFlag ?  "JmolAppletSigned" : "JmolApplet") + "0.jar");
-//alert(_jmol.archivePath)
 }
 
 function jmolSetDocument(doc) {
@@ -119,6 +145,10 @@ function jmolSetAppletColor(boxbgcolor, boxfgcolor, progresscolor) {
     alert(" boxbgcolor=" + _jmol.params.boxbgcolor +
           " boxfgcolor=" + _jmol.params.boxfgcolor +
           " progresscolor=" + _jmol.params.progresscolor);
+}
+
+function jmolSetAppletWindow(w) {
+  _jmol.appletWindow = w;
 }
 
 function jmolApplet(size, script, nameSuffix) {
@@ -178,7 +208,7 @@ function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
 	t += eospan
 	eospan = "";
   }
-  t += labelHtml +eospan;
+  t += "<label for=\"" + id + "\">" + labelHtml + "</label>" +eospan;
   if (_jmol.debugAlert)
     alert(t);
   return _jmolDocumentWrite(t);
@@ -299,10 +329,16 @@ function jmolMenu(arrayOfMenuItems, size, id, title) {
         script = text = menuItem;
       }
       if (text == undefined || text == null)
-        text = script;
-      var scriptIndex = _jmolAddScript(script);
-      var selectedText = isSelected ? "' selected>" : "'>";
-      t += "<option value='" + scriptIndex + selectedText + text + "</option>";
+        text = script;		
+	  if (script=="#optgroup") {
+        t += "<optgroup label='" + text + "'>";	  
+	  } else if (script=="#optgroupEnd") {
+        t += "</optgroup>";	  
+	  } else {		
+        var scriptIndex = _jmolAddScript(script);
+        var selectedText = isSelected ? "' selected>" : "'>";
+        t += "<option value='" + scriptIndex + selectedText + text + "</option>";
+	  }
     }
     t += "</select></span>";
     if (_jmol.debugAlert)
@@ -358,20 +394,51 @@ function jmolScript(script, targetSuffix) {
 function jmolLoadInline(model, targetSuffix) {
   if (!model)return
   var applet=_jmolGetApplet(targetSuffix);
-  if (applet)applet.loadInline(model);
+  if (!applet)return
+  if (typeof(model) == "string")
+    applet.loadInlineString(model, "", false);
+  else
+    applet.loadInlineArray(model, "", false);
 }
+
 
 function jmolLoadInlineScript(model, script, targetSuffix) {
   if (!model)return
   var applet=_jmolGetApplet(targetSuffix);
-  if (applet)applet.loadInline(model, script);
+  if (applet)applet.loadInlineString(model, script, false);
 }
+
 
 function jmolLoadInlineArray(ModelArray, script, targetSuffix) {
   if (!model)return
   if (!script)script=""
   var applet=_jmolGetApplet(targetSuffix);
-  if (applet)applet.loadInlineArray(ModelArray, script);
+  if (!applet)return
+  try {
+    applet.loadInlineArray(ModelArray, script, false);
+  } catch (err) {
+    //IE 7 bug
+    applet.loadInlineString(ModelArray.join("\n"), script, false);
+  }
+}
+
+function jmolAppendInlineArray(ModelArray, script, targetSuffix) {
+  if (!model)return
+  if (!script)script=""
+  var applet=_jmolGetApplet(targetSuffix);
+  if (!applet)return
+  try {
+    applet.loadInlineArray(ModelArray, script, true);
+  } catch (err) {
+    //IE 7 bug
+    applet.loadInlineString(ModelArray.join("\n"), script, true);
+  }
+}
+
+function jmolAppendInlineScript(model, script, targetSuffix) {
+  if (!model)return
+  var applet=_jmolGetApplet(targetSuffix);
+  if (applet)applet.loadInlineString(model, script, true);
 }
 
 function jmolCheckBrowser(action, urlOrMessage, nowOrLater) {
@@ -451,11 +518,12 @@ var _jmol = {
 
   debugAlert: false,
   
-  codebase: ".",
+  codebase: "",
   modelbase: ".",
   
   appletCount: 0,
   appletSuffixes: [],
+  appletWindow: null,
   
   buttonCount: 0,
   checkboxCount: 0,
@@ -482,6 +550,7 @@ var _jmol = {
   targetText: "",
   scripts: [""],
   params: {
+	syncId: ("" + Math.random()).substring(3),
 	progressbar: "true",
 	progresscolor: "blue",
 	boxbgcolor: "black",
@@ -523,7 +592,6 @@ var _jmol = {
 }
 
 with (_jmol) {
-
   function _jmolTestUA(candidate) {
     var ua = _jmol.ua;
     var index = ua.indexOf(candidate);
@@ -602,8 +670,17 @@ with (_jmol) {
  haveSetTranslate = false;
 }
 
+
 function jmolSetCallback(callbackName,funcName) {
   _jmol.params[callbackName] = funcName
+}
+
+function jmolSetSyncId(n) {
+  return _jmol.params["syncId"] = n
+}
+
+function jmolGetSyncId() {
+  return _jmol.params["syncId"]
 }
 
 function jmolSetLogLevel(n) {
@@ -614,11 +691,11 @@ function jmolSetLogLevel(n) {
 		By (re)setting these variables in the webpage before calling jmolApplet(), 
 		a custom message can be provided (e.g. localized for user's language) when no Java is installed.
 	*/
-var noJavaMsg = 
+if (noJavaMsg==undefined) var noJavaMsg = 
         "You do not have Java applets enabled in your web browser, or your browser is blocking this applet.<br />\n" +
         "Check the warning message from your browser and/or enable Java applets in<br />\n" +
         "your web browser preferences, or install the Java Runtime Environment from <a href='http://www.java.com'>www.java.com</a><br />";
-var noJavaMsg2 = 
+if (noJavaMsg2==undefined) var noJavaMsg2 = 
         "You do not have the<br />\n" +
         "Java Runtime Environment<br />\n" +
         "installed for applet support.<br />\n" +
@@ -638,7 +715,8 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
     var sz = _jmolGetAppletSize(size);
     var widthAndHeight = " width='" + sz[0] + "' height='" + sz[1] + "' ";
     var tHeader, tFooter;
-
+    if (!codebase)
+	jmolInitialize(".");
     if (useIEObject || useHtml4Object) {
       params.name = 'jmolApplet' + nameSuffix;
       params.archive = archivePath;
@@ -679,7 +757,7 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
 		var szY = "height:" + sz[1]
 		if ( szY.indexOf("%")==-1 ) szY+="px" 
       visitJava =
-        "<p style='background-color:yellow;" +
+        "<p style='background-color:yellow; color:black; " +
 		szX + ";" + szY + ";" +
         // why doesn't this vertical-align work?
 	"text-align:center;vertical-align:middle;'>\n" +
@@ -688,9 +766,9 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
     } else {
       visitJava =
         "<table bgcolor='yellow'><tr>" +
-        "<td align='center' valign='middle' " + widthAndHeight + ">\n" +
+        "<td align='center' valign='middle' " + widthAndHeight + "><font color='black'>\n" +
 		noJavaMsg2 +
-        "</td></tr></table>";
+        "</font></td></tr></table>";
     }
     params.loadInline = (inlineModel ? inlineModel : "");
     params.script = (script ? _jmolSterilizeScript(script) : "");
@@ -787,7 +865,12 @@ function _jmolSterilizeInline(model) {
 	/*  AngelH, mar2007:
 		By (re)setting this variable in the webpage before calling jmolApplet(), limits for applet size can be overriden.
 	*/
-var allowedJmolSize = [25, 2000, 300]   // min, max, default (pixels)
+
+	/* hansonr, jun2007:
+		2048 standard for GeoWall (http://geowall.geo.lsa.umich.edu/home.html)
+	*/
+
+if (allowedJmolSize==undefined) var allowedJmolSize = [1, 2048, 300]   // min, max, default (pixels)
 function _jmolGetAppletSize(size) {
 	/*  AngelH, mar2007
 		Accepts single number or 2-value array, each one can be either:
@@ -837,13 +920,14 @@ function _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName, id, 
 	t += eospan
 	eospan = "";
   }
-  t += labelHtml +eospan + separatorHtml;
+  t += "<label for=\"" + id + "\">" + labelHtml + "</label>" +eospan + separatorHtml;
+
   return t;
 }
 
 function _jmolFindApplet(target) {
   // first look for the target in the current window
-  var applet = _jmolFindAppletInWindow(window, target);
+  var applet = _jmolFindAppletInWindow(_jmol.appletWindow != null ? _jmol.appletWindow : window, target);
   // THEN look for the target in child frames
   if (applet == undefined)
     applet = _jmolSearchFrames(window, target);
@@ -866,15 +950,18 @@ function _jmolSearchFrames(win, target) {
   var applet;
   var frames = win.frames;
   if (frames && frames.length) { // look in all the frames below this window
+   try{
     for (var i = 0; i < frames.length; ++i) {
       applet = _jmolSearchFrames(frames[i], target);
       if (applet)
-        break;
+        return applet;
     }
-  } else { // look for the applet in this window
-   applet = _jmolFindAppletInWindow(win, target)
+   }catch(e) {
+	if (_jmol.debugAlert)
+		alert("Jmol.js _jmolSearchFrames cannot access " + win.name + ".frame[" + i + "] consider using jmolSetAppletWindow()") 
+   }
   }
-  return applet;
+  return applet = _jmolFindAppletInWindow(win, target)
 }
 
 function _jmolFindAppletInWindow(win, target) {
@@ -896,7 +983,8 @@ function _jmolAddScript(script) {
   return index;
 }
 
-function _jmolClick(scriptIndex, targetSuffix) {
+function _jmolClick(scriptIndex, targetSuffix, elementClicked) {
+  _jmol.element = elementClicked;
   jmolScript(_jmol.scripts[scriptIndex], targetSuffix);
 }
 
@@ -919,17 +1007,17 @@ function _jmolMenuSelected(menuObject, targetSuffix) {
 }
 
 
-_jmol.checkboxMasters = new Array();
-_jmol.checkboxItems = new Array();
+_jmol.checkboxMasters = {};
+_jmol.checkboxItems = {};
 
 function jmolSetCheckboxGroup(chkMaster,chkBox) {
 	var id = chkMaster;
 	if(typeof(id)=="number")id = "jmolCheckbox" + id;
 	chkMaster = document.getElementById(id);
 	if (!chkMaster)alert("jmolSetCheckboxGroup: master checkbox not found: " + id);
-	var m = _jmol.checkboxMasters[id] = new Array();
+	var m = _jmol.checkboxMasters[id] = {};
 	m.chkMaster = chkMaster;
-	m.chkGroup = new Array();
+	m.chkGroup = {};
 	for (var i = 1; i < arguments.length; i++){
 		var id = arguments[i];
 		if(typeof(id)=="number")id = "jmolCheckbox" + id;
@@ -967,6 +1055,7 @@ function _jmolNotifyGroup(m, isOn){
 }
 
 function _jmolCbClick(ckbox, whenChecked, whenUnchecked, targetSuffix) {
+  _jmol.control = ckbox
   _jmolClick(ckbox.checked ? whenChecked : whenUnchecked, targetSuffix);
   if(_jmol.checkboxMasters[ckbox.id])
 	_jmolNotifyGroup(_jmol.checkboxMasters[ckbox.id], ckbox.checked)
@@ -1034,7 +1123,7 @@ function _jmolEnumerateObject(A,key){
  }else if(!isNaN(A)||A==null){
 	sout+="\n"+key+"="+(A+""==""?"null":A)
  }else if(A.length){
-    sout+=key+"=new Array()"
+    sout+=key+"=[]"
     for(var i=0;i<A.length;i++){
 	sout+="\n"
 	if(typeof(A[i]) == "object"||typeof(A[i]) == "array"){
@@ -1045,7 +1134,7 @@ function _jmolEnumerateObject(A,key){
     }
  }else{
     if(key != ""){
-	sout+=key+"=new Array()"
+	sout+=key+"={}"
 	key+="."
     }
     
@@ -1068,7 +1157,7 @@ function _jmolSortKey0(a,b){
 
 function _jmolSortMessages(A){
  if(!A || typeof(A)!="object")return []
- var B = new Array()
+ var B = []
  for(var i=A.length-1;i>=0;i--)for(var j=0;j<A[i].length;j++)B[B.length]=A[i][j]
  if(B.length == 0) return
  B=B.sort(_jmolSortKey0)
@@ -1161,8 +1250,8 @@ function jmolScriptWait(script, targetSuffix) {
   if(!targetSuffix)targetSuffix="0"
   var Ret=jmolScriptWaitAsArray(script, targetSuffix)
   var s = ""
-  for(i=Ret.length;--i>=0;)
-  for(j=0;j< Ret[i].length;j++)
+  for(var i=Ret.length;--i>=0;)
+  for(var j=0;j< Ret[i].length;j++)
 	s+=Ret[i][j]+"\n"
   return s
 }
@@ -1185,8 +1274,8 @@ function jmolScriptEcho(script, targetSuffix) {
   if(!targetSuffix)targetSuffix="0"
   var Ret=jmolScriptWaitAsArray(script, targetSuffix)
   var s = ""
-  for(i=Ret.length;--i>=0;)
-  for(j=Ret[i].length;--j>=0;)
+  for(var i=Ret.length;--i>=0;)
+  for(var j=Ret[i].length;--j>=0;)
         if (Ret[i][j][1] == "scriptEcho")s+=Ret[i][j][3]+"\n"
   return s.replace(/ \| /g, "\n")
 }
@@ -1197,8 +1286,8 @@ function jmolScriptMessage(script, targetSuffix) {
   if(!targetSuffix)targetSuffix="0"
   var Ret=jmolScriptWaitAsArray(script, targetSuffix)
   var s = ""
-  for(i=Ret.length;--i>=0;)
-  for(j=Ret[i].length;--j>=0;)
+  for(var i=Ret.length;--i>=0;)
+  for(var j=Ret[i].length;--j>=0;)
         if (Ret[i][j][1] == "scriptStatus")s+=Ret[i][j][3]+"\n"
   return s.replace(/ \| /g, "\n")
 }
@@ -1283,9 +1372,8 @@ function jmolLoadAjax_STOLAF_RCSB(fileformat,pdbid,optionalscript,targetSuffix){
  _jmol.thismodel=pdbid
  _jmol.thistargetsuffix=targetSuffix
  _jmol.thisurl=url
- _jmol.modelArray = new Array()
+ _jmol.modelArray = []
  url=_jmol.serverURL+"?returnfunction=_jmolLoadModel&returnArray=_jmol.modelArray&id="+targetSuffix+_jmolExtractPostData(url)
-open(url)
  _jmolDomScriptLoad(url)
  return url
 }
@@ -1301,7 +1389,7 @@ function jmolLoadAjax_STOLAF_ANY(url, userid, optionalscript,targetSuffix){
  if(!optionalscript)optionalscript=""
  _jmol.optionalscript=optionalscript
  _jmol.thistargetsuffix=targetSuffix
- _jmol.modelArray = new Array()
+ _jmol.modelArray = []
  _jmol.thisurl = url
  url=_jmol.serverURL+"?returnfunction=_jmolLoadModel&returnArray=_jmol.modelArray&id="+targetSuffix+_jmolExtractPostData(url)
  _jmolDomScriptLoad(url)
@@ -1328,7 +1416,7 @@ function jmolLoadAjax_MSA(key,value,optionalscript,targetSuffix){
  _jmol.thismodelMSA=value
  _jmol.thistargetsuffix=targetSuffix
  _jmol.thisurl=url
- _jmol.modelArray = new Array()
+ _jmol.modelArray = []
  loadModel=_jmolLoadModel
  _jmolDomScriptLoad(url)
  return url
@@ -1343,7 +1431,7 @@ function jmolLoadAjaxJS(url, userid, optionalscript,targetSuffix){
  _jmol.optionalscript=optionalscript
  _jmol.thismodel=userid
  _jmol.thistargetsuffix=targetSuffix
- _jmol.modelArray = new Array()
+ _jmol.modelArray = []
  _jmol.thisurl = url
  url+="&returnFunction=_jmolLoadModel&returnArray=_jmol.modelArray&id="+targetSuffix
  _jmolDomScriptLoad(url)

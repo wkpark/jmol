@@ -1,7 +1,7 @@
 
 newExam('.animation','','','animation.htm')
 newExam('.atom expressions','select atomno=1;color purple;spacefill 600||select nitrogen;color yellow||select [PRO];color green||select within(5.0,[PRO]62) and not [PRO]62;color white||select within(group,within(5.0,[PRO]));color yellow||select substructure("[Fe][S]");wireframe 1.0||select 95:L^a # selects residue 95 of chain L, insertion code a','1blu.pdb','select.htm,examples-11/altloc.htm')
-newExam('.center','select [CYS]32;center selected','1','')
+newExam('.center','select [CYS]32;center selected;select *;','1','')
 newExam('.cpk','cpk 0.2;spacefill 80%','','atoms.htm')
 newExam('.define','define ~mygroup within(5.0,[FS4]102);select ~mygroup;color atoms white','1blu.pdb','select.htm')
 newExam('.depth','slab 50; depth 0;slab on; # show the back half of the molecule||slab 100;depth 50; slab on;# show the front half of the molecule||slab 75; depth 25;slab on; # show middle 50% of the molecule||slab 50;depth 50;slab on; # show a plane that is 1 pixel deep','1crn.pdb; ribbons on; spacefill off; wireframe off; color ribbons group','')
@@ -37,7 +37,7 @@ newExam('pickt','(cml data in this case);Atom #1:a7 #7;Atom #2:a3 #3;Atom #3:a1 
 newExam('.connect','# two ways to link atom #1 with atom#2|| connect (atomno=1) (atomno=2) DOUBLE || select atomno=1,atomno=2; connect (selected)|| ||# connect all carbons with hydrogens that are within the range 1.0 to 1.2 angstroms and are not already connected||connect 1.0 1.2 (carbon) (hydrogen) PARTIAL CREATE|| ||# change all bonds to single bonds||connect (all) (all) SINGLE MODIFY|| ||# connect every atom with every other atom that is within 1.5 angstroms whether it is connected already or not||connect 1.5 (all) (all) ModifyOrCreate|| ||# delete all bonds WITHIN a selected atom set||connect (selected) (selected) DELETE || ||# delete all bonds TO a selected atom set||connect (selected) (not selected) DELETE','caffeine.xyz','')
 newExam('.mo','','_blank','examples-11/mo.htm')
 newExam('.draw','','_blank','examples-11/draw.htm')
-newExam('.load','','_blank','examples-11/symmetry.htm')
+newExam('.load','','_blank','examples-11/sym.htm')
 newExam('.lcaoCartoon','','_blank','examples-11/lcao.htm')
 newExam('.dipole','','_blank','examples-11/dipole.htm')
 newExam('.fractional coordinates','','_blank','examples-11/fraction.htm')

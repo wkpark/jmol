@@ -27,7 +27,8 @@
 
  function domsg(x,msg) {
 	var a = "" + msg
-	if(a.indexOf("cript completed")>=0)return
+	if(a.indexOf("completed")>=0)return
+	if(a.indexOf("started")>=0)return
 	document.getElementById("txtmodel").value = a
 	var s = "<a href=javascript:showFileContents()>show file contents</a>"
 	document.getElementById("info").innerHTML = s    
@@ -65,6 +66,11 @@
 	
  }
 
+ function picking(a,b,c) {
+  alert(a + " "+ b +" " + c)
+ }
+ 
+ jmolSetCallback("pickCallback", "picking")
  jmolApplet(400,"set messagecallback \"domsg\" ;load \"data/quartz.cif\" {1 1 1};show spacegroup")
  getSelect()
 </script>

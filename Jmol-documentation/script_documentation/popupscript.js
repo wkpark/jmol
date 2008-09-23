@@ -38,11 +38,20 @@ function loadList(list) {
  loadDiv("theList",s)
 }
 
+function sortscript(a,b) {
+ return (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)
+}
+
 function loadScript(n, scr){
  scr = (n < 0 ? scr : List[n])
- var s=jmolScriptWait(scr,"X")
- if (s=="")s = ["<font color=red>Jmol script compiler error</font>"]
- loadDiv("theVersion","<b>"+scr+"</b><br /><br />"+s.join("<br />"))
+ var s=jmolScriptWaitAsArray(scr,"X")
+ if (s=="")s = [[0,"<font color=red>Jmol script compiler error</font>"]]
+ var A = new Array()
+ for (var i = 0; i < s.length; i++)for(var j=0;j < s[i].length;j++)A[A.length] = s[i][j]
+ if (A.length)A = A.sort(sortscript)
+ for (var i =0; i < A.length; i++)A[i] = A[i][3].replace(/\|/g,"<br />")
+ A[0] = "<b>"+A[0]+"</b>"
+ loadDiv("theVersion",A.join("<br />"))
 }
 
 function loadText(theText) {
@@ -65,7 +74,7 @@ function fileLoadedCallback(x,msg) {
         if (appversion == "") {
 	 appversion = jmolDecodeJSON(jmolGetPropertyAsJSON("appletInfo","","X"))
 	 var S = appversion.split("\n")
-	 appversion = "<table width=800 cellpadding=10><tr><td>"+S[1]+"</br>"+S[2]+"</br>"+S[3]+"</td><td>"+S[4]+"</br>"+S[5]+"</br>"+S[6]+"</td></tr></table>"
+	 appversion = "<table width=800 cellpadding=10><tr><td>"+S[1]+"<br />"+S[2]+"<br />"+S[3]+"<br />"+S[4]+"<br />"+S[5]+"<br />"+S[6]+"</td></tr></table>"
 	 loadDiv("theVersion",appversion.replace(/\n/g,"<br />"))
 	}
 }

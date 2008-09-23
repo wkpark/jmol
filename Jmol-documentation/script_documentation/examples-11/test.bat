@@ -1,7 +1,4 @@
 copy c:\jmol-dev\workspace\jmol\build\*.jar .
-del c:\export\light\class\*.jar
-pause
-copy *.jar \export\light\class
 dir *.jar
 
 if %1x == x goto exit

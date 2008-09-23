@@ -94,11 +94,11 @@ thecaption=""
 showappcode=false&&true
 docbase="./index.htm"
 codebase="."
-archive="jmolApplet.jar"
+archive="jmolAppletSigned.jar"
 messagecallback="showmsg"
 thiscommand=""
 animcallback="animFrameCallback"
-pickcallback="showmsg"
+pickcallback="showpick"
 hovercallback="showmsg"
 loadstructcallback="showmsg"
 echoformat="font echo 14"
@@ -113,6 +113,7 @@ loadscript=";"
 docsearch = document.location.search.substring(1)
 iscript = (docsearch.indexOf("scriptno=")>=0 ? parseInt(docsearch.split("scriptno=")[1].split("&")[0]) : 0)
 listScripts = (docsearch.indexOf("LISTONLY")>=0)
+listHeadings = (docsearch.indexOf("HEADINGSONLY")>=0)
 useSigned = (docsearch.indexOf("SIGNED")>=0)
 language = (docsearch.indexOf("language=")>=0 ? docsearch.split("language=")[1].split("&")[0] : 0)
 //alert(docsearch + " "+ language);
@@ -122,10 +123,11 @@ function showref(n){
 
 
 function getapplet(name, model, codebase, height, width, script, msgcallback,animcallback,pickcallback,hovercallback,loadstructcallback) {
-
 //if (!isinitialized && useSigned)jmolInitialize(".", useSigned) //signed
   if(force_useHtml4Object)_jmol.useHtml4Object=1
   if(force_useIEObject)_jmol.useIEObject=1
+
+if (!isinitialized) jmolInitialize(".")
   isinitialized = 1
   jmolSetDocument(0)
 
@@ -133,18 +135,22 @@ function getapplet(name, model, codebase, height, width, script, msgcallback,ani
 
  // jmolSetLogLevel(logLevel);
 
-
-  if (model)script = "set defaultDirectory \""+datadir+"\"; load " + model + ";" + script
+  var s = "set defaultDirectory \""+datadir+"\";" 
+  if (model)s += "load " + model + ";"
+  script = s + script;
 //script = "load " + model;
   script = script.replace(/load \;/,";")
   if (defaultloadscript != "")script = "set defaultLoadScript \""+defaultloadscript+"\";"+script
+  jmolSetCallback("ScriptCallback","scriptCallback")
   if (msgcallback)jmolSetCallback("MessageCallback",msgcallback)
   if (animcallback)jmolSetCallback("AnimFrameCallback",animcallback)
   if (pickcallback)jmolSetCallback("PickCallback",pickcallback)
   if (hovercallback)jmolSetCallback("HoverCallback",hovercallback)
   if (loadstructcallback)jmolSetCallback("LoadStructCallback",loadstructcallback)
 
-//  jmolSetCallback("debug", true)
+//jmolSetCallback("loglevel", "6")
+
+  //jmolSetCallback("debug", true)
   if (language)jmolSetCallback("language",language)
 
   var s = jmolApplet([width,height], script)
@@ -160,7 +166,7 @@ function getinfo(){
 theref = (model.length==8 && model.indexOf(".pdb")==4?"<a target=_blank href=http://www.rcsb.org/pdb/files/"+model+">["+model.substring(0,4)+"]</a>":
 model.indexOf('"')<0?"<a target=_blank href="+model.split(";")[0]+">"+model+"</a>":model)
 
- if(model)s+=" The script run in this case was <b>"+(theref.indexOf(";") == 0 ? "" : "load ")+theref+"</b>."
+ if(model)s+=" The script run in this case was <b>"+(model.indexOf(";") == 0 ? "" : "load ")+theref+"</b>."
  if(defaultloadscript != "")s+=" The default load script used here is \""+defaultloadscript+"\"."
  return "<p>"+s+"</p><table><tr height=1000><td></td></tr></table>"
 }
@@ -169,7 +175,7 @@ function getremark(){
  return (remark?"<blockquote><p>"+remark+"</p></blockquote>":"")
 }
 
-function getscriptlink(i,isul){
+function getscriptlink(i,isul,addNumber){
  if(!Scripts[i])return ""
  var S=Scripts[i].split(" ~~ ")
  var s=(S.length>1?(isul?"</ul>":"")+"<table><tbody><tr>":"")
@@ -178,7 +184,7 @@ function getscriptlink(i,isul){
 	if(S.length>1)s+="\n<td"+(td2width && S.length<=ntd?" width='"+td2width+"'":"")+" valign='top'"+(isNaN(parseInt(S[j]))?">":" colspan='"+parseInt(S[j])+"'")+(isul?"<ul>":"")
 	if(S[j].indexOf("###")>=0){
 		nTopics--;
-		S[j]=S[j].replace(/\#\#\#/,"<h3><span>" + (nTopics < nFirst ? "<a name=\"topic"+nTopics+"\">"+ nTopics + ".</a>" : "")).replace(/\#\#\#/,"</span></h3>")
+		S[j]=S[j].replace(/\#\#\#/,"<h3><span>" + (nTopics <= nFirst ? "<a name=\"topic"+nTopics+"\">"+ nTopics + ".</a> " : "")).replace(/\#\#\#/,"</span></h3>")
 		if(S[j].indexOf("<br>")>=0)
 			S[j]="<table width=450><tr><td>"+S[j].split("<br>")[0]+"</td><td width=210 align=right>"+S[j].split("<br>")[1]+"</td></tr></table>"
 		s+="<br>"
@@ -186,16 +192,20 @@ function getscriptlink(i,isul){
 		s+="<br>"
 	} else {
 		s+=(isul?"\n<li>":"")
+		if (addNumber)s+=i+":"
 	}
 	if(S[j].indexOf("#")==0)
 		S[j]= "<span><i>"+(S[j].length==1?"&nbsp;":S[j])+"</i></span>"
-	s+=(S[j].indexOf("<span")>=0||S[j].indexOf("<a href")>=0?S[j]:"<a href=\"javascript:showscript("+i+","+j+")\">"
-		+(S[j].indexOf("load ")>=0?"<font color=red>":"")
-		+S[j].replace(/\</g,isxhtmltest?"&amp;lt;":"&lt;")
-		+(S[j].indexOf("load")>=0?"</font>":"")
+        var st = S[j]
+	var isLoad = (st.indexOf("load ")>=0 || st.indexOf("zap") >= 0)
+	st=(st.indexOf("<span")>=0||st.indexOf("<a href")>=0?st:"<a href=\"javascript:showscript("+i+","+j+")\">"
+		+(isLoad?"<font color=red>":"")
+		+st.replace(/\</g,isxhtmltest?"&amp;lt;":"&lt;")
+		+(isLoad?"</font>":"")
 		+"</a>")
-	+(isul?"</li>":"")
-
+        if (S[j].indexOf("#")>0)
+		st = st.substring(0, st.indexOf("#")) + "<font color=black>" + st.substring(st.indexOf("#")) + "</font>"
+	s+=st + (isul?"</li>":"")
 	if (S[j].indexOf("<span")<0 && S[j].indexOf("<a href")<0 
 		&& S[j].indexOf("quit")<0 && S[j].indexOf("loop")<0 
 		&& S[j].indexOf("exit")<0 && S[j].indexOf("pause")<0
@@ -211,9 +221,13 @@ nTopics=0;
 nFirst=0;
 nSkip = 2;
 scriptList = ""
-function getscripts(){
+headingList =""
+function getscripts(addNumber){
  nTopics = 1;
- for (var i=1;i<Scripts.length;i++)if(Scripts[i].indexOf("###")>=0)nTopics++;
+ for (var i=1;i<Scripts.length;i++)if(Scripts[i].indexOf("###")>=0){
+	nTopics++;
+	if (listHeadings)headingList += Scripts[i].replace(/\#\#\#/g,"")+"\n"
+ }
  nFirst=nTopics-nSkip;
  
  var s=""
@@ -225,7 +239,7 @@ function getscripts(){
 		if(Scripts[i]=="*NOUL")isul=false
 		if(Scripts[i]=="*UL")isul=true
 	}else{
-		s+=getscriptlink(i,isul)
+		s+=getscriptlink(i,isul,addNumber)
 	}
  }
  s=s.replace(/\<\/tbody\>\<\/table\>\<\/ul\>\<ul\>\<table\>\<tbody\>/g,"")
@@ -245,7 +259,9 @@ function gettitleinfo(){
 
 function showfunction(i){
  if(!i)return
- document.getElementById("msg").value=window[i].toString()
+ var d = document.getElementById("msg");
+ if (!d)return
+ d.value=window[i].toString()
 }
 
 function getfunctions(){
@@ -266,7 +282,9 @@ function gettitle(){
 }
 
 function showcmd(){
- if(document.getElementById("msg").value.length>MAXMSG)document.getElementById("msg").value=document.getElementById("msg").value.substring(0,MAXMSG/2)
+ var d = document.getElementById("msg");
+ if (!d)return
+ if(d.value.length>MAXMSG)document.getElementById("msg").value=document.getElementById("msg").value.substring(0,MAXMSG/2)
  showscript(-1)
 }
 
@@ -289,21 +307,35 @@ isAnimationRunning, animationDirection, currentDirection) {
 
 }
 
-function showmsg(n,objwhat,moreinfo){
- var what=objwhat+(moreinfo?"\n"+moreinfo:"")
+function scriptCallback(n,objwhat,moreinfo, moreinfo2) {
+// this filters out the "script completed" messages and only passes the real messages along
+  if (moreinfo2 == 0) showmsg(n, objwhat, moreinfo, moreinfo2)
+}
+
+function showmsg(n,objwhat,moreinfo,moreinfo2){
+//alert("" + objwhat)
+ var d = document.getElementById("msg");
+ if (!d)return
+ var nmore = parseInt(moreinfo);
+ var what=objwhat+(moreinfo?"\n"+moreinfo:"")+(moreinfo2?"\n"+moreinfo2:"")
  if (what.indexOf("{") == 0) {
    WHAT = what.replace(/\\\"/g,"~")
    //need a new thread here in case of an error
    setTimeout("showjsoninfo()",100)
-   return
+ }
+ msglog+="\n"+what
+ var s=d.value
+ if(s.length>MAXMSG) s=s.substring(0,MAXMSG/2)
+ d.value=what
 }
 
- msglog+="\n"+what
- var s=document.getElementById("msg").value
- if(s.length>MAXMSG) s=s.substring(0,MAXMSG/2)
- if(what.indexOf("Script completed")>=0)return
- document.getElementById("msg").value=what
- if(what.indexOf("executing script")>=0)return
+function showpick(n,objwhat,moreinfo){
+ showmsg(n,objwhat,moreinfo)
+ return
+ var nmore = parseInt(moreinfo);
+ if (nmore == 1)moreinfo="";
+ var what=objwhat+(moreinfo?"\n"+moreinfo:"")
+ alert(what);
 }
 
 function showfile(s){
@@ -367,11 +399,10 @@ function winHeight(){
 }
 
 function getpage(){
-
  var s=gettitle()+getremark()+getinfo()
 
  s+='\n<div id="aframe" style = "position:absolute;top:50px;left:10px;width:530px;overflow:auto;height:'+(winHeight()-75)+'px">'
-+'<table id="atable" style="position:absolute;top:0px;left:10px;width:480px"><tbody><tr><td>'
++'<table id="atable" style="position:absolute;top:0px;left:10px;"><tbody><tr><td>'
 +getscripts()
 +'\n</td></tr></tbody></table></div>'
 +'\n<div id="bframe" style = "position:absolute;top:50px;left:550px;height:500px;width:450px;overflow:auto;height:'+(winHeight()-75)+'px">'
@@ -389,6 +420,8 @@ function getpage(){
 	+'<a href="javascript:jmolScript(\'save state\')">save</a>/<a href="javascript:jmolScript(\'console;show state\')">show</a>/<a href="javascript:jmolScript(\'restore state\')">restore</a> state'
 
 	+' <a href="javascript:newAppletWindow()">new resizable Window</a>'
+	+' antialias <a href="javascript:jmolScript(\'antialiasDisplay = true\')">ON</a> '
+	+'<a href="javascript:jmolScript(\'antialiasDisplay = false\')">OFF</a> '
 	+'<br/>'
 
 	+'\n<center>Java Console Log level: '+jmolGetLogLevelRadios()+'</center>'
@@ -402,6 +435,7 @@ function getpage(){
 	+'\n</div>'
  if(isxhtmltest)s=s.replace(/\</g,"<br />&lt;")
  if(listScripts)s="<pre>#"+document.location+"\n\n"+scriptList+"</pre>"
+ if(listHeadings)s="<pre>#"+document.location+"\n\n"+headingList+"</pre>"
  return s
 }
 
@@ -418,7 +452,7 @@ function showscript(i,j,script){
 	showmsg("user",s+"\n")
 	thiscommand=s
 	usercallback(s)
-	var S=(s+"#").split("#")
+	S=(s+"#").split(s.indexOf("##") >= 0 ? "##" : "#")
 	document.getElementById("cmd").value=s=S[0]
 	jmolScript(s)
 }

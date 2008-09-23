@@ -12,7 +12,7 @@
               // 3 gives errors and warnings; 4 gives errors, warnings and information; 5 adds debug.
 
 //<![CDATA[
-title="ATOMS";model='"";set echo top left;echo loading quartz.cif...;delay 1;load "quartz.cif" {1 1 1};message done'
+title="ATOMS";model=';set echo top left;echo loading quartz.cif...;delay 1;load "quartz.cif" {1 1 1};message done'
 docsearch = document.location.search.substring(1)
 if(docsearch.indexOf("model=")>=0)model=unescape(docsearch.split("model=")[1].split("&")[0])
 
@@ -88,11 +88,11 @@ function getCheckList(){
 
 
 Scripts=new Array(" "
-,' This page lists all new features introduced between <a href=../examples-10.2/new.htm>Jmol 10.2</a> and Jmol 11.0. Another file lists recent "bleeding edge" developments planned for <a href=new.htm>Jmol 11.2</a>'
+,' This page lists all new features introduced between Jmol 10.2 and Jmol 11.0. Other files list features introduced between <a href=new2.htm>Jmol 11.0 and Jmol 11.2</a> and planned for <a href=new.htm>Jmol 11.4</a>. <a target=_blank href=../index.htm>Documentation</a> is also available. There is also a <a href=new.txt>simple list</a> of script modifications. Take a look and see what is new. Comments? Suggestions? <a href=mailto:hansonr@stolaf.edu>Bob Hanson</a>'
 
 ,latestVersion
 
-,'### See also the updated <a target=_blank href=http://www.stolaf.edu/academics/chemapps/jmol/docs>documentation for Jmol 11.0</a>. <br />There is also a <a href=new0.txt>complete list</a> of new script features. <br />Take a look and see what is new. ###'
+,'### See also the updated <a target=_blank href=http://www.stolaf.edu/academics/chemapps/jmol/docs>documentation for Jmol 11.2</a>. There is also a <a href=new0.txt>complete list</a> of new script features. <br />Take a look and see what is new. ###'
 
 ,'### set measures au ###'
 ,'# Jmol 10.9.106 adds option for displaying measurements in atomic units (Bohr)'
@@ -112,7 +112,7 @@ Scripts=new Array(" "
 
 
 ,'###jmolLoadInline([line1, line2, ....]) for array data types###'
-,'# Jmol 10.9.103 introduces the capability to load inline an array of data rather than a long string. Basically, an array of lines can now replace a single string. Because this form involves no new-line characters, it is distinguishable within Jmol from the syntactically identical function that loads multiple models.(<a href=#topic107>topic 107</a>)'
+,'# Jmol 10.9.103 introduces the capability to load inline an array of data rather than a long string. Basically, an array of lines can now replace a single string. Because this form involves no new-line characters, it is distinguishable within Jmol from the syntactically identical function that loads multiple models.(<a href=#topic107>topic 107</a>) <b>and for more recent modifications to this functionality Jmol 11.4 <a href=new.htm#topic69>topic 69</a></b>'
 ,'<a href="javascript:testLoadInlineArray(\'wireframe on\')">test jmolLoadInline([line1,line2,line3...],\'wireframe on\')</a>'
 
 
@@ -170,11 +170,11 @@ Scripts=new Array(" "
 
 ,'###set sheetSmoothing [0 to 1] ###'
 ,' Jmol 10.9.95 adds <b>set sheetSmoothing</b>. In conjunction with <b>set TraceAlpha</b>, a value of 1 here tells Jmol to use midpoints (like Rasmol) rather than alpha carbons for the sheet segments only. Default in 10.9.96 is set to <b>set traceAlpha on; set sheetSmoothing 1;'
-,'load 1crn.pdb;restrict none;select *;cartoons on;color structure;moveto 1.0 { -777 -626 -64 44.0} {10.5935 10.2105 6.079}  17.4;'
-,'set traceAlpha off'
-,'set sheetSmoothing 0'
-,'set sheetSmoothing 1'
-,'set traceAlpha'
+,'load 1crn.pdb;restrict none;select *.CA;spacefill 0.3; select *;cartoons on;color structure;moveto 1.0 { -777 -626 -64 44.0} {10.5935 10.2105 6.079} 17.4;'
+,'set traceAlpha on;set sheetSmoothing 0 # more wavy sheets'
+,'set traceAlpha on;set sheetSmoothing 1 # less wavy sheets'
+,'set traceAlpha off # through midpoints; no sheet smoothing;tighter helixes'
+,'set traceAlpha on # the default'
 
 
 ,'###set hermiteLevel and smoother cartoons; set highResolution ###'
@@ -229,7 +229,7 @@ Scripts=new Array(" "
 
 
 ,'###jmolLoadInline([model1, model2, model3,...]) for multiple file types###'
-,'# Jmol 10.9.86 introduces the capability to load inline multiple files of different type. Basically, an array of model strings can now replace the single model string in <a href=javascript:alert(jmolLoadInline)>jmolLoadInline()</a> and <a href=javascript:alert(jmolLoadInlineScript)>jmolLoadInlineScript()</a>. See also <a href=#topic117>topic 117</a>.'
+,'# Jmol 10.9.86 introduces the capability to load inline multiple files of different type. Basically, an array of model strings can now replace the single model string in <a href=javascript:alert(jmolLoadInline)>jmolLoadInline()</a> and <a href=javascript:alert(jmolLoadInlineScript)>jmolLoadInlineScript()</a>. See also <a href=#topic117>topic 117</a> <b>and for more recent modifications to this functionality Jmol 11.4 <a href=new.htm#topic68>topic 68</a></b>.'
 ,'<a href="javascript:testLoadInlineScript()">test jmolLoadInline()</a>'
 ,'frame 0'
 ,'<a href="javascript:testLoadInlineScript(\'set echo top left; frame 0;echo three models were loaded\')">test jmolLoadInlineScript()</a>'
@@ -573,8 +573,8 @@ Scripts=new Array(" "
 
 ,'### "calculate" ###'
 ,'load 1crn.pdb'
-,'# Jmol 10.9.60 introduces a new "calculate" command that currently has two arguments -- "surface" and "hbonds" (same as "hbonds calculate"; the idea here is that there may be other quantities to calculate in the future). This does no rendering, just the calculation. It takes all the options of the DOTS command (because it uses the dots algorithm; any atom with "dots" is a surface atom. Basically "calculate surface" does a "dots" command but does not display the dots. As such, it responds to "set dotsSelectedOnly" so that, for example, solvent water molecules can be excluded from the surface calculation.'
-,'calculate surface +2.0;select surfacedistance=0;color yellow # custom solvent-accessible surface.'
+,'# Jmol 10.9.60 introduces a new "calculate" command that currently has two arguments -- "surface" and "hbonds" (same as "hbonds calculate"; the idea here is that there may be other quantities to calculate in the future). This does no rendering, just the calculation. <a href="new.htm#topic58">superceded in Jmol 11.4 by <b>calculate surfaceDistance [within|from]</b></a>'
+,'calculate surface;select surfacedistance=0;color yellow # custom solvent-accessible surface.'
 
 
 ,'### halos and selectionHalos ###'
@@ -797,8 +797,7 @@ Scripts=new Array(" "
 ,'select within(site,atomno=1 and visible) # nothing selected, because atomno=1 is not visible'
 ,'select within(site,atomno=1) and visible;color green'
 ,'select site=2 and visible;color yellow'
-,'frame next'
-,'frame previous'
+
 
 ,'### new set picking SITE and set picking ELEMENT ###'
 ,'# Jmol 10.x.40 adds <b>set picking SITE</b> and <b>set picking ELEMENT</b>. In each case, all atoms that match the specified site and element <i>and are visible</i> are selected.'
@@ -845,7 +844,6 @@ Scripts=new Array(" "
 ,'exit'
 ,'quit; color blue;delay 2; color yellow; loop 2 # any previously running script will stop, and this script will be placed at the end of the queue'
 ,'color orange;delay 3; color white; delay 3; exit # start this one and then a few more; # only this one will execute.'
-,'set scriptQueue OFF' 
 
 ,'### super-simple solvent-accessible surface option using "spacefill"; new variable radius <b>dots</b> and new <b>geoSurface</b> command ###<br><img src=img/sasurface.jpg width=100 height=100>'
 ,'# The "solvent-accessible surface" is defined as an extension of the van der Waals radius by a set "solvent probe radius", commonly 1.2 or 1.4 Angstroms. This surface is now displayable simply using the <b>spacefill +1.2</b> command, where the +1.2 indicates "van der Waals radius plus 1.2 Angstroms'
@@ -870,7 +868,7 @@ Scripts=new Array(" "
 
 ,'### new select within("[SEQUENCE]",(atom expression)) ###<br><img src=img/sequence.jpg width=100 height=100>'
 ,'# Jmol 10.x.30 adds the capability to select specific atoms within a specific peptide or nucleic acid sequence. The one-character group codes are used to specify the desired sequence.'
-,'set display selected; load 1crn.pdb;color white;select within("CIII",*.ca);'
+,'load 1crn.pdb;selectionHalos on; color white;select within("CIII",*.ca);color blue;spacefill 0.8'
 ,'set display normal;load 114d.cif;spacefill off;color white;select within("TTAG",*);cartoon on; wireframe off;color red;select selected and *.P;set labelFront;label %n;color labels yellow;moveto 1.0 -301 744 597 142.2;'
 
 ,'### new lcaoCartoon command<p>See <a href=lcao.htm>lcao.htm</a>. ###<br><img src=img/lcao.jpg width=100 height=100>'
@@ -1012,8 +1010,8 @@ Scripts=new Array(" "
 ,'# Jmol10.x introduces several new label format codes, including %A, %N, %S, %X, %Y, %Z.'
 ,'load 5hvp.cif;restrict *%1,*%2;color altloc;label %A  # alternate Location "%A"'
 ,'load "quartz.cif" {1 1 1};label %.2X %.2Y %.2Z # fractional coordinates "%X" "%Y" "%Z"'
-,'load "agFUPMOS.cif" {1 1 1};color molecule;label %N # molecule number "%N"'
-,'load "agFUPMOS.cif" {1 1 1};color molecule;select fluorine;label %S # crystallographic site "%S"'
+,'load "AgFUPMOS.cif" {1 1 1};color molecule;label %N # molecule number "%N"'
+,'load "AgFUPMOS.cif" {1 1 1};color molecule;select fluorine;label %S # crystallographic site "%S"'
 
 ,'### points, lines, and planes; specifying coordinates ###'
 ,'Jmol 10.x can now draw point, line, and triangular or rectangular planes based on single atom positions, group average positions, or specific molecular coordinates. see <a href=draw.htm>draw.htm</a>'
@@ -1103,7 +1101,7 @@ Scripts=new Array(" "
  +getCheckList()
 
 //," JSON data returned:<br><textarea name=outputJSON id=outputJSON rows=5 cols=50></textarea>"
-," <input  type=checkbox name=idecode id=idecode checked=1>Decoded: <a href=javascript:showoutput()>new window</a><br><textarea name=output id=output rows=5 cols=60 wrap=off></textarea>"
+," <input  type=checkbox name=idecode id=idecode checked=1>Decoded: <a href=javascript:showoutput()>new window</a><br><textarea name=output id=output rows=5 cols=50 wrap=off></textarea>"
 )
 remarks=""
 //]]>

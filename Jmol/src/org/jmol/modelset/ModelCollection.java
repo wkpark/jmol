@@ -776,7 +776,7 @@ abstract public class ModelCollection extends BondCollection {
 
     int file = (int) (fDotM);
     int model = (int) ((fDotM - file + 0.00001) * 10000);
-    while (model % 10 == 0)
+    while (model != 0 && model % 10 == 0)
       model /= 10;
     return file * 1000000 + model;
   }

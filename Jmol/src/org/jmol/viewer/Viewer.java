@@ -3460,8 +3460,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                            boolean isScriptFile,
                                            boolean isQuiet, boolean isQueued) {
     // from the scriptManager or scriptWait()
-    System.out.println("DEBUG: evalStringWaitStatus " + Thread.currentThread().getName() 
-        + " " + Thread.currentThread().getId());
+    //System.out.println("DEBUG: evalStringWaitStatus " + Thread.currentThread().getName() 
+      //  + " " + Thread.currentThread().getId());
     if (checkResume(strScript))
       return "script processing resumed"; //be very odd if this fired
     if (checkHalt(strScript))

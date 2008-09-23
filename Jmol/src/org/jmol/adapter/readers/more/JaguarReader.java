@@ -247,8 +247,8 @@ public class JaguarReader extends AtomSetCollectionReader {
    */
   void readBasisNormalized() throws Exception {
     
-    //don't know what this is about yet -- asking Jimmy Stewart 
-    
+    //TODO don't know what this is about yet -- Bob Hanson
+/*    
     if (true)
       return;
     String lastAtom = "";
@@ -271,6 +271,7 @@ public class JaguarReader extends AtomSetCollectionReader {
         rCoef = parseFloat(tokens[5]);
       }
     }
+*/
   }
 
   /*

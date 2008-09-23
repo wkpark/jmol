@@ -669,11 +669,12 @@ public class _PovrayExporter extends _Exporter {
     String s = coef[0] + "," + coef[1] + "," + coef[2] + "," + coef[3] + ","
         + coef[4] + "," + coef[5] + "," + coef[6] + "," + coef[7] + ","
         + coef[8] + "," + coef[9] + "," + color4(colix);
-    if (true || selectedPoints == null) {
+    //if (true || selectedPoints == null) {
       output("q(" + s + ")\n");
-      return;
-    }
+    //  return;
+    //}
     //TODO: The following does not work. 
+    /*
     tempP1.set(ix, iy, iz);
     for (int i = 0; i < 3; i++) {
       tempP1.x += selectedPoints[i].x - ix; 
@@ -682,6 +683,7 @@ public class _PovrayExporter extends _Exporter {
     }
     output("qf(" + s + "," + ix + "," + iy + "," + iz 
         + "," + tempP1.x + "," + tempP1.y + "," + tempP1.z + ")\n");
+    */
   }
 
   public void renderBackground() {

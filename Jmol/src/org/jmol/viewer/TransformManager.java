@@ -32,7 +32,6 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
 import org.jmol.util.Escape;
-import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
 
 import java.util.BitSet;
@@ -1212,9 +1211,8 @@ abstract class TransformManager {
 
     // note that the image is still centered at 0, 0 in the xy plane
 
-    if (false && Logger.debugging)
-      Logger.debug("modelCenterOffset + matrixTransform: " + modelCenterOffset
-          + matrixTransform);
+    //  System.out.println("modelCenterOffset + matrixTransform: " + modelCenterOffset
+    //      + matrixTransform);
 
   }
 
@@ -1300,7 +1298,7 @@ abstract class TransformManager {
 
   void transformPoint(Point3f pointAngstroms, Point3f screen) {
 
-    //used solely by RocketsRenderer
+    //used solely by RocketsRendr
 
     matrixTransform.transform(pointAngstroms, point3fScreenTemp);
     adjustTemporaryScreenPoint();

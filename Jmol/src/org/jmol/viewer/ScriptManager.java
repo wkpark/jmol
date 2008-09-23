@@ -87,7 +87,7 @@ class ScriptManager {
     scriptItem.addElement(isQuiet ? Boolean.TRUE : Boolean.FALSE);
     scriptItem.addElement(new Integer(useCommandThread ? -1 : 1));
     scriptQueue.addElement(scriptItem);
-    if (true || Logger.debugging)
+    if (Logger.debugging)
       Logger.info(scriptQueue.size() + " scripts; added: " + strScript);
     startScriptQueue(false);
     return "pending";

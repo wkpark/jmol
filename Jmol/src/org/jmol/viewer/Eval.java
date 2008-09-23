@@ -159,6 +159,10 @@ class Eval {
   }
 
   private Object getNumericParameter(String var) {
+    if (var.equalsIgnoreCase("_modelNumber")) {
+      int modelIndex = viewer.getCurrentModelIndex();
+      return new Integer(modelIndex < 0 ? 0 : viewer.getModelFileNumber(modelIndex));
+    }
     Token token = getContextVariableAsToken(var);
     if (token == null) {
       Object val = viewer.getParameter(var);
@@ -1375,7 +1379,8 @@ class Eval {
 
   private BitSet expression(Token[] code, int pcStart, int pcStop,
                             boolean allowRefresh, boolean allowUnderflow,
-                            boolean mustBeBitSet, boolean andNotDeleted) throws ScriptException {
+                            boolean mustBeBitSet, boolean andNotDeleted)
+      throws ScriptException {
     //note that this is general -- NOT just statement[]
     //errors reported would improperly access statement/line context
     //there should be no errors anyway, because this is for 
@@ -1528,8 +1533,8 @@ class Eval {
         rpn.addX(getAtomBits(instruction.tok, (String) value));
         break;
       case Token.spec_model:
-        // from select */1002 or */1000002 or */1.2
-        // */1002 is equivalent to 1.2 when more than one file is present
+      // from select */1002 or */1000002 or */1.2
+      // */1002 is equivalent to 1.2 when more than one file is present
       case Token.spec_model2:
         // from just using the number 1.2
         int iModel = instruction.intValue;
@@ -1549,14 +1554,17 @@ class Eval {
         break;
       case Token.spec_resid:
       case Token.spec_chain:
-        rpn.addX(getAtomBits(instruction.tok, new Integer(instruction.intValue)));
+        rpn
+            .addX(getAtomBits(instruction.tok,
+                new Integer(instruction.intValue)));
         break;
       case Token.spec_seqcode:
         if (isInMath) {
           rpn.addX(instruction.intValue);
           break;
         }
-        rpn.addX(getAtomBits(Token.spec_seqcode, new Integer(getSeqCode(instruction))));
+        rpn.addX(getAtomBits(Token.spec_seqcode, new Integer(
+            getSeqCode(instruction))));
         break;
       case Token.spec_seqcode_range:
         if (isInMath) {
@@ -1565,8 +1573,9 @@ class Eval {
           rpn.addX(code[++pc].intValue);
           break;
         }
-        int chainID = (pc + 3 < code.length && code[pc + 2].tok == Token.opAnd 
-            && code[pc + 3].tok == Token.spec_chain ? code[pc + 3].intValue : '\t');
+        int chainID = (pc + 3 < code.length && code[pc + 2].tok == Token.opAnd
+            && code[pc + 3].tok == Token.spec_chain ? code[pc + 3].intValue
+            : '\t');
         rpn.addX(getAtomBits(Token.spec_seqcode_range, new int[] {
             getSeqCode(instruction), getSeqCode(code[++pc]), chainID }));
         if (chainID != '\t')
@@ -1622,15 +1631,15 @@ class Eval {
                 .modelFileNumberFromFloat(((Float) val).floatValue());
         }
         if (val instanceof Integer || tokValue == Token.integer) {
-          comparisonValue *= (Compiler
-              .tokAttr(tokWhat, Token.comparefloatx100) ? 100 : 1);
+          comparisonValue *= (Compiler.tokAttr(tokWhat, Token.comparefloatx100) ? 100
+              : 1);
           comparisonFloat = comparisonValue;
-          if (isModel && viewer.haveFileSet()) {
-            if (comparisonValue >= 1000 && comparisonValue < 1000000) {
+          if (isModel) {
+            tokWhat = -Token.model;
+            if (viewer.haveFileSet() && comparisonValue >= 1000
+                && comparisonValue < 1000000)
               comparisonValue = (comparisonValue / 1000) * 1000000
                   + comparisonValue % 1000;
-              tokWhat = -Token.model;
-            }
           }
         } else if (val instanceof Float) {
           if (isModel) {
@@ -1689,10 +1698,11 @@ class Eval {
       error(ERROR_endOfStatementUnexpected);
     }
     expressionResult = ((Token) expressionResult).value;
-    if (expressionResult instanceof String &&
-        (mustBeBitSet || ((String) expressionResult).startsWith("({"))) {
+    if (expressionResult instanceof String
+        && (mustBeBitSet || ((String) expressionResult).startsWith("({"))) {
       // allow for select @{x} where x is a string that can evaluate to a bitset
-      expressionResult = (isScriptCheck ? new BitSet() : getAtomBitSet(this, viewer, (String) expressionResult));
+      expressionResult = (isScriptCheck ? new BitSet() : getAtomBitSet(this,
+          viewer, (String) expressionResult));
     }
     if (!mustBeBitSet && !(expressionResult instanceof BitSet))
       return null; // because result is in expressionResult in that case

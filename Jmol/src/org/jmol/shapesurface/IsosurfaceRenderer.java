@@ -174,7 +174,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       return;
     for (int i = vertexCount; --i >= 0;) {
       if (vertexValues != null && !Float.isNaN(vertexValues[i]))
-        if (true || (i % 3) == 0) { //investigate vertex normixes
+        //if ((i % 3) == 0) { //investigate vertex normixes
           ptTemp.set(mesh.vertices[i]);
           short n = mesh.normixes[i];
           // -n is an intensity2sided and does not correspond to a true normal index
@@ -184,7 +184,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
             g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 1,
                 screens[i], ptTempi);
           }
-        }
+        //}
     }
   }
 

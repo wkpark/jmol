@@ -4295,7 +4295,7 @@ class Eval {
         loadScript.append(" " + modelName);
         isAppend = (modelName.equalsIgnoreCase("append"));
         if (modelName.equalsIgnoreCase("trajectory"))
-          params[0] = Integer.MIN_VALUE;
+          params[0] = -1;
       } else {
         modelName = "fileset";
       }

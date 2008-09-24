@@ -277,7 +277,7 @@ public abstract class AtomSetCollectionReader {
     //  desiredSpaceGroupIndex,
     //  a*10000, b*10000, c*10000, alpha*10000, beta*10000, gamma*10000]
 
-    isTrajectory = params[0] == Integer.MIN_VALUE;
+    isTrajectory = (params[0] == -1);
     if (!isTrajectory)
       desiredModelNumber = params[0];
     latticeCells[0] = params[1];

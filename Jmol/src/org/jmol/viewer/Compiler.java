@@ -583,11 +583,12 @@ class Compiler {
           addTokenToPrefix(new Token(Token.integer, val, intString));
           continue;
         }
-        if (lastToken.tok == Token.select
+        if (lastToken.tok == Token.select || lastToken.tok == Token.within
             || !tokenAttr(lastToken, Token.mathfunc)) {
           // don't want to mess up x.distance({1 2 3})
           // if you want to use a bitset there, you must use 
           // bitsets properly: x.distance( ({1 2 3}) )
+          // but calculate surfaceDistance WITHIN ({....}) must pass
           boolean isBond = (script.charAt(ichToken) == '[');
           BitSet bs = lookingAtBitset();
           if (bs != null) {

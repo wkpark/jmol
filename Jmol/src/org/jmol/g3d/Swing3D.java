@@ -69,7 +69,8 @@ final class Swing3D extends Platform3D {
 
 
   Image allocateImage() {
-    if (backgroundTransparent)
+    //backgroundTransparent not working with antialiasDisplay. I have no idea why. BH 9/24/08
+    if (false && backgroundTransparent)
       return new BufferedImage(
           rgbColorModelT,
           Raster.createWritableRaster(
@@ -99,7 +100,7 @@ final class Swing3D extends Platform3D {
   private static boolean backgroundTransparent = false;
   
   void setBackgroundTransparent(boolean tf) {
-    backgroundTransparent = true;
+    backgroundTransparent = tf;
   }
 
   Image allocateOffscreenImage(int width, int height) {

@@ -78,6 +78,7 @@ public final class ScriptWindow extends JDialog
   void layoutWindow(Container container) {
     console = new ConsoleTextPane(this);    
     console.setPrompt();
+    console.setDragEnabled(true);
     JScrollPane consolePane = new JScrollPane(console);
         
     JPanel buttonPanel = new JPanel();

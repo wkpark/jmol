@@ -191,6 +191,7 @@ class Console implements ActionListener, WindowListener {
   private void setupInput() {
     input.setLineWrap(true);
     input.setWrapStyleWord(true);
+    input.setDragEnabled(true);
     //input.setText("Input a command in the box below or select a menu item from above.");
 
     Keymap map = input.getKeymap();
@@ -203,6 +204,7 @@ class Console implements ActionListener, WindowListener {
 
   private void setupOutput() {
     output.setEditable(false);
+    output.setDragEnabled(true);
     //    output.setLineWrap(true);
     //    output.setWrapStyleWord(true);
     StyleConstants.setBold(attributesCommand, true);

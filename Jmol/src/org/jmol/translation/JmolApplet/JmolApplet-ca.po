@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-09-21 17:38+0200\n"
-"PO-Revision-Date: 2008-08-31 19:06+0000\n"
+"PO-Revision-Date: 2008-09-26 14:43+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-08-31 19:16+0000\n"
+"X-Launchpad-Export-Date: 2008-09-29 19:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
@@ -97,13 +97,15 @@ msgstr "Error de fitxer:"
 
 #: org/jmol/applet/Jmol.java:1070
 msgid "File creation failed."
-msgstr ""
+msgstr "La creació de fitxer ha falalt"
 
 #: org/jmol/applet/Jmol.java:1075
 #, java-format
 msgid ""
 "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 msgstr ""
+"Aquesta miniaplicació no té permisos per a creació de fitxers. Per al format "
+"JPEG Base64, utilitzeu {0}."
 
 #: org/jmol/applet/Jmol.java:1177
 msgid ""
@@ -126,25 +128,23 @@ msgid "  {0} seconds"
 msgstr "  {0} segons"
 
 #: org/jmol/export/dialog/Dialog.java:115
-#, fuzzy
 msgid "File or URL:"
-msgstr "Error de fitxer:"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:121
 #: org/jmol/export/dialog/Dialog.java:447
-#, fuzzy
 msgid "File Name:"
-msgstr "Capçalera del fitxer"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:268
 msgid "Image Type"
-msgstr ""
+msgstr "Tipus d'imatge"
 
 #: org/jmol/export/dialog/Dialog.java:283
 #: org/jmol/export/dialog/Dialog.java:324
 #, java-format
 msgid "JPEG Quality ({0})"
-msgstr ""
+msgstr "Qualitat del JPEG ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:297
 #, java-format
@@ -154,38 +154,35 @@ msgstr ""
 #: org/jmol/export/dialog/Dialog.java:327
 #, java-format
 msgid "PNG Quality ({0})"
-msgstr ""
+msgstr "Qualitat del PNG ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:373
 #: org/jmol/export/dialog/Dialog.java:483
 msgid "Yes"
-msgstr ""
+msgstr "Sí"
 
 #: org/jmol/export/dialog/Dialog.java:373
 #: org/jmol/export/dialog/Dialog.java:481
-#, fuzzy
 msgid "No"
-msgstr "Cap"
+msgstr "No"
 
 #: org/jmol/export/dialog/Dialog.java:375
 #, java-format
 msgid "Do you want to overwrite file {0}?"
-msgstr ""
+msgstr "Voleu sobreescriure el fitxer {0}?"
 
 #: org/jmol/export/dialog/Dialog.java:376
 msgid "Warning"
-msgstr ""
+msgstr "Avís"
 
 #: org/jmol/export/dialog/Dialog.java:432
-#, fuzzy
 msgid "All Files"
-msgstr "Tots els fotogrames"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:433
 #: org/jmol/export/dialog/Dialog.java:480
-#, fuzzy
 msgid "Cancel"
-msgstr "Cian"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:435
 msgid "Abort file chooser dialog"
@@ -193,14 +190,12 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:437
 #: org/jmol/export/dialog/Dialog.java:438
-#, fuzzy
 msgid "Details"
-msgstr "Danès"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:439
-#, fuzzy
 msgid "Directory"
-msgstr "Historial"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:440
 #: org/jmol/export/dialog/Dialog.java:464
@@ -213,23 +208,20 @@ msgid "Open selected directory"
 msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:443
-#, fuzzy
 msgid "Attributes"
-msgstr "Estructures"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:444
-#, fuzzy
 msgid "Modified"
-msgstr "Model"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:445
 msgid "Generic File"
 msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:446
-#, fuzzy
 msgid "Name"
-msgstr "Fotograma"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:448
 msgid "Size"
@@ -244,9 +236,8 @@ msgid "Type"
 msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:451
-#, fuzzy
 msgid "Help"
-msgstr "A&juda"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:453
 msgid "FileChooser help"
@@ -263,9 +254,8 @@ msgid "List"
 msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:458
-#, fuzzy
 msgid "Look In:"
-msgstr "Amplia"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:460
 msgid "Error creating new folder"
@@ -286,14 +276,12 @@ msgstr ""
 #: org/jmol/export/dialog/Dialog.java:468
 #: org/jmol/export/dialog/Dialog.java:471
 #: org/jmol/popup/PopupResourceBundle.java:878
-#, fuzzy
 msgid "Save"
-msgstr "Estat"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:470
-#, fuzzy
 msgid "Save selected file"
-msgstr "Selecciona un seti"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:472
 msgid "Save In:"
@@ -1360,23 +1348,21 @@ msgid "File from PDB"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:874
-#, fuzzy
 msgid "File or URL"
-msgstr "Error de fitxer:"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:875
-#, fuzzy
 msgid "Load full unit cell"
-msgstr "No hi ha cap cel·la unitat"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:876
 msgid "Script"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:879
-#, fuzzy, java-format
+#, java-format
 msgid "File {0}"
-msgstr "Vista {0}"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:880
 msgid "Script with state"
@@ -1399,9 +1385,9 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:886
 #: org/jmol/popup/PopupResourceBundle.java:887
-#, fuzzy, java-format
+#, java-format
 msgid "{0} 3D Model"
-msgstr "Tots els {0} models"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:891
 msgid "Extract MOL data"
@@ -1564,14 +1550,14 @@ msgid "residue specification (ALA, AL?, A*) expected"
 msgstr "s'esperava una especificació de residu (ALA, AL?, A*)"
 
 #: org/jmol/viewer/Compiler.java:2498
-#, fuzzy, java-format
+#, java-format
 msgid "{0} expected"
-msgstr "s'esperava una subordre"
+msgstr ""
 
 #: org/jmol/viewer/Compiler.java:2499
-#, fuzzy, java-format
+#, java-format
 msgid "{0} unexpected"
-msgstr "s'esperava un color"
+msgstr ""
 
 #: org/jmol/viewer/Compiler.java:2500
 #, java-format
@@ -1867,18 +1853,6 @@ msgstr ""
 "ERROR: No es pot definir el valor d''aquesta variable a un booleà. Utilitzeu "
 "«{0}» primer."
 
-#, fuzzy
-#~ msgid "Load PDB"
-#~ msgstr "Carrega"
-
-#, fuzzy
-#~ msgid "SPT State"
-#~ msgstr "Estat"
-
-#, fuzzy
-#~ msgid "SPT History"
-#~ msgstr "Historial"
-
 #~ msgid "all"
 #~ msgstr "tot"
 
@@ -1900,10 +1874,6 @@ msgstr ""
 #~ msgid "Unit Cell"
 #~ msgstr "Cel·la unitat"
 
-#, fuzzy
-#~ msgid "commandExpected"
-#~ msgstr "s'esperava una ordre"
-
 #~ msgid "comma or right parenthesis expected"
 #~ msgstr "s'esperava una coma o un parèntesis dret"
 
@@ -1912,10 +1882,6 @@ msgstr ""
 
 #~ msgid "equal sign expected"
 #~ msgstr "s'esperava un signe igual"
-
-#, fuzzy
-#~ msgid "left parenthesis expected"
-#~ msgstr "s'esperava un booleà o un percentatge"
 
 #~ msgid "right brace expected"
 #~ msgstr "s'esperava un claudàtor dret"
@@ -1979,10 +1945,6 @@ msgstr ""
 
 #~ msgid "The {0} command is not available for the applet."
 #~ msgstr "L'ordre {0} no està disponible a la miniaplicació."
-
-#, fuzzy
-#~ msgid "nonnegative integer expected"
-#~ msgstr "s'esperava un enter"
 
 #~ msgid "boolean or percent expected"
 #~ msgstr "s'esperava un booleà o un percentatge"

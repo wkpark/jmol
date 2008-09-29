@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-09-21 17:38+0200\n"
-"PO-Revision-Date: 2008-08-14 06:08+0000\n"
+"PO-Revision-Date: 2008-09-29 10:15+0000\n"
 "Last-Translator: Egon Willighagen <Unknown>\n"
 "Language-Team: Nederlands <jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-08-14 07:12+0000\n"
+"X-Launchpad-Export-Date: 2008-09-29 19:24+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: Nederlands\n"
 "X-Poedit-Language: Dutch\n"
@@ -55,28 +55,27 @@ msgstr ""
 
 #: org/jmol/applet/GuiMap.java:41
 msgid "&Help"
-msgstr ""
+msgstr "&Help"
 
 #: org/jmol/applet/GuiMap.java:42
 msgid "&Search..."
-msgstr ""
+msgstr "&Zoeken"
 
 #: org/jmol/applet/GuiMap.java:43
 msgid "&Commands"
-msgstr ""
+msgstr "&Commando's"
 
 #: org/jmol/applet/GuiMap.java:44
 msgid "Math &Functions"
-msgstr ""
+msgstr "Wiskundige &Functies"
 
 #: org/jmol/applet/GuiMap.java:45
 msgid "Set &Parameters"
-msgstr ""
+msgstr "Verander &Parameters"
 
 #: org/jmol/applet/GuiMap.java:46
-#, fuzzy
 msgid "&More"
-msgstr "Model"
+msgstr "&Meer"
 
 #: org/jmol/applet/Jmol.java:661
 #, java-format
@@ -99,13 +98,15 @@ msgstr "Bestandsfout:"
 
 #: org/jmol/applet/Jmol.java:1070
 msgid "File creation failed."
-msgstr ""
+msgstr "Aanmaken bestand mislukt."
 
 #: org/jmol/applet/Jmol.java:1075
 #, java-format
 msgid ""
 "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 msgstr ""
+"Bestand aanmaken niet toegestaan voor deze applet. Voor Base64 JPEG formaat, "
+"gebruik {0}."
 
 #: org/jmol/applet/Jmol.java:1177
 msgid ""
@@ -113,6 +114,9 @@ msgid ""
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
 msgstr ""
+"Berichten verschijnen hier. Voer commando's in via het vak hieronder. Klik "
+"op de console Help menu voor meer informatie, die in een nieuwe browser-"
+"scherm zal verschijnen."
 
 #: org/jmol/appletwrapper/AppletWrapper.java:92
 msgid "Loading Jmol applet ..."
@@ -124,81 +128,74 @@ msgid "  {0} seconds"
 msgstr "  {0} seconden"
 
 #: org/jmol/export/dialog/Dialog.java:115
-#, fuzzy
 msgid "File or URL:"
-msgstr "Bestandsfout:"
+msgstr "Bestand of URL:"
 
 #: org/jmol/export/dialog/Dialog.java:121
 #: org/jmol/export/dialog/Dialog.java:447
-#, fuzzy
 msgid "File Name:"
-msgstr "Kopregels bestand"
+msgstr "Bestandsnaam:"
 
 #: org/jmol/export/dialog/Dialog.java:268
 msgid "Image Type"
-msgstr ""
+msgstr "Afbeeldingstype"
 
 #: org/jmol/export/dialog/Dialog.java:283
 #: org/jmol/export/dialog/Dialog.java:324
 #, java-format
 msgid "JPEG Quality ({0})"
-msgstr ""
+msgstr "JPEG-kwaliteit ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:297
 #, java-format
 msgid "PNG Compression  ({0})"
-msgstr ""
+msgstr "PNG-compressie ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:327
 #, java-format
 msgid "PNG Quality ({0})"
-msgstr ""
+msgstr "PNG-kwaliteit ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:373
 #: org/jmol/export/dialog/Dialog.java:483
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 #: org/jmol/export/dialog/Dialog.java:373
 #: org/jmol/export/dialog/Dialog.java:481
-#, fuzzy
 msgid "No"
-msgstr "Uit"
+msgstr "Nee"
 
 #: org/jmol/export/dialog/Dialog.java:375
 #, java-format
 msgid "Do you want to overwrite file {0}?"
-msgstr ""
+msgstr "Wilt u het bestand {0} overschrijven?"
 
 #: org/jmol/export/dialog/Dialog.java:376
 msgid "Warning"
-msgstr ""
+msgstr "Waarschuwing"
 
 #: org/jmol/export/dialog/Dialog.java:432
-#, fuzzy
 msgid "All Files"
-msgstr "Alle Frames"
+msgstr "Alle bestanden"
 
 #: org/jmol/export/dialog/Dialog.java:433
 #: org/jmol/export/dialog/Dialog.java:480
-#, fuzzy
 msgid "Cancel"
-msgstr "Cyaan"
+msgstr "Annuleren"
 
 #: org/jmol/export/dialog/Dialog.java:435
 msgid "Abort file chooser dialog"
-msgstr ""
+msgstr "Sluit Bestandskeuze"
 
 #: org/jmol/export/dialog/Dialog.java:437
 #: org/jmol/export/dialog/Dialog.java:438
-#, fuzzy
 msgid "Details"
-msgstr "Deens"
+msgstr "Details"
 
 #: org/jmol/export/dialog/Dialog.java:439
-#, fuzzy
 msgid "Directory"
-msgstr "Geschiedenis"
+msgstr "Werkfolder"
 
 #: org/jmol/export/dialog/Dialog.java:440
 #: org/jmol/export/dialog/Dialog.java:464
@@ -208,121 +205,115 @@ msgstr "Openen"
 
 #: org/jmol/export/dialog/Dialog.java:442
 msgid "Open selected directory"
-msgstr ""
+msgstr "Geselecteerde folder openen"
 
 #: org/jmol/export/dialog/Dialog.java:443
-#, fuzzy
 msgid "Attributes"
-msgstr "Structuren"
+msgstr "Eigenschappen"
 
 #: org/jmol/export/dialog/Dialog.java:444
-#, fuzzy
 msgid "Modified"
-msgstr "Model"
+msgstr "Veranderd"
 
 #: org/jmol/export/dialog/Dialog.java:445
 msgid "Generic File"
-msgstr ""
+msgstr "Onbekend formaat"
 
 #: org/jmol/export/dialog/Dialog.java:446
-#, fuzzy
 msgid "Name"
-msgstr "Frame"
+msgstr "Naam"
 
 #: org/jmol/export/dialog/Dialog.java:448
 msgid "Size"
-msgstr ""
+msgstr "Grootte"
 
 #: org/jmol/export/dialog/Dialog.java:449
 msgid "Files of Type:"
-msgstr ""
+msgstr "Bestanden van het type:"
 
 #: org/jmol/export/dialog/Dialog.java:450
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: org/jmol/export/dialog/Dialog.java:451
 msgid "Help"
-msgstr ""
+msgstr "Help"
 
 #: org/jmol/export/dialog/Dialog.java:453
 msgid "FileChooser help"
-msgstr ""
+msgstr "Help Bestandskiezer"
 
 #: org/jmol/export/dialog/Dialog.java:454
 #: org/jmol/export/dialog/Dialog.java:455
 msgid "Home"
-msgstr ""
+msgstr "Persoonlijke map"
 
 #: org/jmol/export/dialog/Dialog.java:456
 #: org/jmol/export/dialog/Dialog.java:457
 msgid "List"
-msgstr ""
+msgstr "Lijst"
 
 #: org/jmol/export/dialog/Dialog.java:458
-#, fuzzy
 msgid "Look In:"
-msgstr "Inzoomen"
+msgstr "Kijken in:"
 
 #: org/jmol/export/dialog/Dialog.java:460
 msgid "Error creating new folder"
-msgstr ""
+msgstr "Fout tijdens maken van nieuwe folder"
 
 #: org/jmol/export/dialog/Dialog.java:461
 msgid "New Folder"
-msgstr ""
+msgstr "Nieuwe folder"
 
 #: org/jmol/export/dialog/Dialog.java:463
 msgid "Create New Folder"
-msgstr ""
+msgstr "Nieuw folder maken"
 
 #: org/jmol/export/dialog/Dialog.java:466
 msgid "Open selected file"
-msgstr ""
+msgstr "Geselecteerd bestand openen"
 
 #: org/jmol/export/dialog/Dialog.java:468
 #: org/jmol/export/dialog/Dialog.java:471
 #: org/jmol/popup/PopupResourceBundle.java:878
-#, fuzzy
 msgid "Save"
-msgstr "Toestand"
+msgstr "Opslaan"
 
 #: org/jmol/export/dialog/Dialog.java:470
-#, fuzzy
 msgid "Save selected file"
-msgstr "Selecteer site"
+msgstr "Geselecteerd bestand opslaan"
 
 #: org/jmol/export/dialog/Dialog.java:472
 msgid "Save In:"
-msgstr ""
+msgstr "Opslaan in:"
 
 #: org/jmol/export/dialog/Dialog.java:473
 msgid "Update"
-msgstr ""
+msgstr "Verversen"
 
 #: org/jmol/export/dialog/Dialog.java:475
 msgid "Update directory listing"
-msgstr ""
+msgstr "Folderinhoud verversen"
 
 #: org/jmol/export/dialog/Dialog.java:476
 msgid "Up"
-msgstr ""
+msgstr "Boven"
 
 #: org/jmol/export/dialog/Dialog.java:477
 msgid "Up One Level"
-msgstr ""
+msgstr "Eén niveau hoger"
 
 #: org/jmol/export/dialog/Dialog.java:482
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: org/jmol/export/dialog/FilePreview.java:70
 msgid "Preview"
-msgstr ""
+msgstr "Voorbeeld"
 
 #: org/jmol/export/dialog/FilePreview.java:90
 msgid "Append models"
-msgstr ""
+msgstr "Modellen toevoegen"
 
 #: org/jmol/i18n/GT.java:116
 msgid "Catalan"
@@ -390,7 +381,7 @@ msgstr "Russisch"
 
 #: org/jmol/i18n/GT.java:132
 msgid "Slovenian"
-msgstr ""
+msgstr "Sloveens"
 
 #: org/jmol/i18n/GT.java:133
 msgid "Spanish"
@@ -1233,7 +1224,6 @@ msgstr "Herstarten"
 
 #: org/jmol/popup/PopupResourceBundle.java:833
 #: org/jmol/popup/PopupResourceBundle.java:864
-#, fuzzy
 msgid "Measurements"
 msgstr "Metingen"
 
@@ -1355,51 +1345,49 @@ msgstr "Huidige toestand"
 
 #: org/jmol/popup/PopupResourceBundle.java:873
 msgid "File from PDB"
-msgstr ""
+msgstr "Bestand uit de PDB"
 
 #: org/jmol/popup/PopupResourceBundle.java:874
-#, fuzzy
 msgid "File or URL"
-msgstr "Bestandsfout:"
+msgstr "Bestand of URL"
 
 #: org/jmol/popup/PopupResourceBundle.java:875
-#, fuzzy
 msgid "Load full unit cell"
-msgstr "Geen eenheidscel"
+msgstr "Hele eenheidscel laden"
 
 #: org/jmol/popup/PopupResourceBundle.java:876
 msgid "Script"
-msgstr ""
+msgstr "Script"
 
 #: org/jmol/popup/PopupResourceBundle.java:879
-#, fuzzy, java-format
+#, java-format
 msgid "File {0}"
-msgstr "Orientatie {0}"
+msgstr "Bestand {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:880
 msgid "Script with state"
-msgstr ""
+msgstr "Script met status"
 
 #: org/jmol/popup/PopupResourceBundle.java:881
 msgid "Script with history"
-msgstr ""
+msgstr "Script met geschiedenis"
 
 #: org/jmol/popup/PopupResourceBundle.java:882
 #: org/jmol/popup/PopupResourceBundle.java:883
 #: org/jmol/popup/PopupResourceBundle.java:884
 #, java-format
 msgid "{0} Image"
-msgstr ""
+msgstr "{0} Plaatje"
 
 #: org/jmol/popup/PopupResourceBundle.java:885
 msgid "JVXL Isosurface"
-msgstr ""
+msgstr "JVXL Isooppervlak"
 
 #: org/jmol/popup/PopupResourceBundle.java:886
 #: org/jmol/popup/PopupResourceBundle.java:887
-#, fuzzy, java-format
+#, java-format
 msgid "{0} 3D Model"
-msgstr "Alle {0} modellen"
+msgstr "{0} 3D model"
 
 #: org/jmol/popup/PopupResourceBundle.java:891
 msgid "Extract MOL data"
@@ -1861,18 +1849,6 @@ msgstr ""
 "FOUT: Kan de waarde van deze variabele niet veranderen naar een booleaans: "
 "{0}"
 
-#, fuzzy
-#~ msgid "Load PDB"
-#~ msgstr "Laden"
-
-#, fuzzy
-#~ msgid "SPT State"
-#~ msgstr "Toestand"
-
-#, fuzzy
-#~ msgid "SPT History"
-#~ msgstr "Geschiedenis"
-
 #~ msgid "all"
 #~ msgstr "Alles"
 
@@ -1893,10 +1869,6 @@ msgstr ""
 
 #~ msgid "Unit Cell"
 #~ msgstr "Eenheidscel"
-
-#, fuzzy
-#~ msgid "commandExpected"
-#~ msgstr "commando verwacht"
 
 #~ msgid "comma or right parenthesis expected"
 #~ msgstr "komma of rechter haakje verwacht"
@@ -1972,10 +1944,6 @@ msgstr ""
 
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Jmol voert script uit ..."
-
-#, fuzzy
-#~ msgid "use {0}"
-#~ msgstr "groepen: {0}"
 
 #~ msgid "Animate"
 #~ msgstr "Animatie"
@@ -2088,10 +2056,6 @@ msgstr ""
 #~ msgid "Jmol Colors"
 #~ msgstr "Jmol-kleuren"
 
-#, fuzzy
-#~ msgid "or dotted"
-#~ msgstr "Puntjes"
-
 #~ msgid "Except Solvent"
 #~ msgstr "Behalve Oplosmiddel"
 
@@ -2131,10 +2095,6 @@ msgstr ""
 #~ msgstr ""
 #~ "FOUT: Kan de waarde van een boolean niet veranden naar een ander type. "
 #~ "gebruik eerst \"{0}\"."
-
-#, fuzzy
-#~ msgid "space group "
-#~ msgstr "Ruimtegroep "
 
 #~ msgid "pick "
 #~ msgstr "selecteer "

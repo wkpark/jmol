@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-09-21 17:38+0200\n"
-"PO-Revision-Date: 2008-08-04 20:45+0000\n"
-"Last-Translator: Won-kyu Park <Unknown>\n"
+"PO-Revision-Date: 2008-09-28 18:29+0000\n"
+"Last-Translator: Won Kyu Park <wkpark@gmail.com>\n"
 "Language-Team: Korean <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-08-12 00:40+0000\n"
+"X-Launchpad-Export-Date: 2008-09-29 19:32+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/Console.java:40
@@ -23,7 +23,7 @@ msgstr "Jmol 스크립트 콘솔"
 
 #: org/jmol/applet/Console.java:42
 msgid "Execute"
-msgstr "실행"
+msgstr "실행 중\\: %s"
 
 #: org/jmol/applet/Console.java:43
 msgid "Clear Output"
@@ -35,7 +35,7 @@ msgstr "입력 지우기"
 
 #: org/jmol/applet/Console.java:45 org/jmol/popup/PopupResourceBundle.java:862
 msgid "History"
-msgstr "히스토리"
+msgstr ""
 
 #: org/jmol/applet/Console.java:46
 msgid "State"
@@ -53,28 +53,27 @@ msgstr ""
 
 #: org/jmol/applet/GuiMap.java:41
 msgid "&Help"
-msgstr ""
+msgstr "도움말(&H)"
 
 #: org/jmol/applet/GuiMap.java:42
 msgid "&Search..."
-msgstr ""
+msgstr "찾기(&S)..."
 
 #: org/jmol/applet/GuiMap.java:43
 msgid "&Commands"
-msgstr ""
+msgstr "명령(&C)"
 
 #: org/jmol/applet/GuiMap.java:44
 msgid "Math &Functions"
-msgstr ""
+msgstr "수학 함수(&F)"
 
 #: org/jmol/applet/GuiMap.java:45
 msgid "Set &Parameters"
-msgstr ""
+msgstr "파라메터 설정(&P)"
 
 #: org/jmol/applet/GuiMap.java:46
-#, fuzzy
 msgid "&More"
-msgstr "모델"
+msgstr ""
 
 #: org/jmol/applet/Jmol.java:661
 #, java-format
@@ -97,13 +96,15 @@ msgstr "파일 오류:"
 
 #: org/jmol/applet/Jmol.java:1070
 msgid "File creation failed."
-msgstr ""
+msgstr "파일 생성 오류."
 
 #: org/jmol/applet/Jmol.java:1075
 #, java-format
 msgid ""
 "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 msgstr ""
+"애플릿이 파일을 만들 수 없습니다. Base64 방식의 JPEG 포맷은 {0}을(를) 사용하"
+"세요."
 
 #: org/jmol/applet/Jmol.java:1177
 msgid ""
@@ -122,30 +123,28 @@ msgid "  {0} seconds"
 msgstr "  {0} 초"
 
 #: org/jmol/export/dialog/Dialog.java:115
-#, fuzzy
 msgid "File or URL:"
-msgstr "파일 오류:"
+msgstr "파일 혹은 URL:"
 
 #: org/jmol/export/dialog/Dialog.java:121
 #: org/jmol/export/dialog/Dialog.java:447
-#, fuzzy
 msgid "File Name:"
-msgstr "파일 헤더"
+msgstr "파일 이름:"
 
 #: org/jmol/export/dialog/Dialog.java:268
 msgid "Image Type"
-msgstr ""
+msgstr "그림 형식"
 
 #: org/jmol/export/dialog/Dialog.java:283
 #: org/jmol/export/dialog/Dialog.java:324
 #, java-format
 msgid "JPEG Quality ({0})"
-msgstr ""
+msgstr "JPEG 화질 ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:297
 #, java-format
 msgid "PNG Compression  ({0})"
-msgstr ""
+msgstr "PNG 압축 ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:327
 #, java-format
@@ -155,33 +154,30 @@ msgstr ""
 #: org/jmol/export/dialog/Dialog.java:373
 #: org/jmol/export/dialog/Dialog.java:483
 msgid "Yes"
-msgstr ""
+msgstr "확인"
 
 #: org/jmol/export/dialog/Dialog.java:373
 #: org/jmol/export/dialog/Dialog.java:481
-#, fuzzy
 msgid "No"
-msgstr "없음"
+msgstr "취소"
 
 #: org/jmol/export/dialog/Dialog.java:375
 #, java-format
 msgid "Do you want to overwrite file {0}?"
-msgstr ""
+msgstr "파일 {0}을(를) 덮어쓸까요?"
 
 #: org/jmol/export/dialog/Dialog.java:376
 msgid "Warning"
 msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:432
-#, fuzzy
 msgid "All Files"
-msgstr "모든 용매"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:433
 #: org/jmol/export/dialog/Dialog.java:480
-#, fuzzy
 msgid "Cancel"
-msgstr "시안"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:435
 msgid "Abort file chooser dialog"
@@ -189,35 +185,30 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:437
 #: org/jmol/export/dialog/Dialog.java:438
-#, fuzzy
 msgid "Details"
-msgstr "스페인"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:439
-#, fuzzy
 msgid "Directory"
-msgstr "히스토리"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:440
 #: org/jmol/export/dialog/Dialog.java:464
 #: org/jmol/export/dialog/Dialog.java:467
-#, fuzzy
 msgid "Open"
-msgstr "켬"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:442
 msgid "Open selected directory"
 msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:443
-#, fuzzy
 msgid "Attributes"
-msgstr "스트럭쳐"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:444
-#, fuzzy
 msgid "Modified"
-msgstr "모델"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:445
 msgid "Generic File"
@@ -258,9 +249,8 @@ msgid "List"
 msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:458
-#, fuzzy
 msgid "Look In:"
-msgstr "확대"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:460
 msgid "Error creating new folder"
@@ -281,14 +271,12 @@ msgstr ""
 #: org/jmol/export/dialog/Dialog.java:468
 #: org/jmol/export/dialog/Dialog.java:471
 #: org/jmol/popup/PopupResourceBundle.java:878
-#, fuzzy
 msgid "Save"
-msgstr "상태"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:470
-#, fuzzy
 msgid "Save selected file"
-msgstr "사이트 선택"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:472
 msgid "Save In:"
@@ -331,9 +319,8 @@ msgid "Czech"
 msgstr "체코어"
 
 #: org/jmol/i18n/GT.java:118
-#, fuzzy
 msgid "Danish"
-msgstr "스페인"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:119
 msgid "Dutch"
@@ -357,12 +344,11 @@ msgstr "독일어"
 
 #: org/jmol/i18n/GT.java:124
 msgid "Hungarian"
-msgstr ""
+msgstr "헝가리어"
 
 #: org/jmol/i18n/GT.java:125
-#, fuzzy
 msgid "Italian"
-msgstr "카탈로니아"
+msgstr "이탈리아어"
 
 #: org/jmol/i18n/GT.java:126
 msgid "Korean"
@@ -373,9 +359,8 @@ msgid "Norwegian Bokmal"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:128
-#, fuzzy
 msgid "Polish"
-msgstr "영어"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:129
 msgid "Portuguese - Brazil"
@@ -572,9 +557,8 @@ msgid "Main Menu"
 msgstr "주 메뉴"
 
 #: org/jmol/popup/PopupResourceBundle.java:575
-#, fuzzy
 msgid "Biomolecules"
-msgstr "분자"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:576
 #, java-format
@@ -1235,7 +1219,6 @@ msgstr "재시작"
 
 #: org/jmol/popup/PopupResourceBundle.java:833
 #: org/jmol/popup/PopupResourceBundle.java:864
-#, fuzzy
 msgid "Measurements"
 msgstr "측정"
 
@@ -1360,23 +1343,21 @@ msgid "File from PDB"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:874
-#, fuzzy
 msgid "File or URL"
-msgstr "파일 오류:"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:875
-#, fuzzy
 msgid "Load full unit cell"
-msgstr "단위 cell 없음"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:876
 msgid "Script"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:879
-#, fuzzy, java-format
+#, java-format
 msgid "File {0}"
-msgstr "뷰 {0}"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:880
 msgid "Script with state"
@@ -1399,9 +1380,9 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:886
 #: org/jmol/popup/PopupResourceBundle.java:887
-#, fuzzy, java-format
+#, java-format
 msgid "{0} 3D Model"
-msgstr "전체 {0} 모델"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:891
 msgid "Extract MOL data"
@@ -1564,14 +1545,14 @@ msgid "residue specification (ALA, AL?, A*) expected"
 msgstr ""
 
 #: org/jmol/viewer/Compiler.java:2498
-#, fuzzy, java-format
+#, java-format
 msgid "{0} expected"
-msgstr "색상 필요"
+msgstr ""
 
 #: org/jmol/viewer/Compiler.java:2499
-#, fuzzy, java-format
+#, java-format
 msgid "{0} unexpected"
-msgstr "색상 필요"
+msgstr ""
 
 #: org/jmol/viewer/Compiler.java:2500
 #, java-format
@@ -1859,18 +1840,6 @@ msgstr "오류: 숫자에 부울린값을 지정할 수 없음: {0}"
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr "오류: 부울린에 이 값을 넣을 수 없음: {0}"
-
-#, fuzzy
-#~ msgid "Load PDB"
-#~ msgstr "불러옴"
-
-#, fuzzy
-#~ msgid "SPT State"
-#~ msgstr "상태"
-
-#, fuzzy
-#~ msgid "SPT History"
-#~ msgstr "히스토리"
 
 #~ msgid "all"
 #~ msgstr "모두"

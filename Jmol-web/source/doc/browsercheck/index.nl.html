@@ -3,8 +3,11 @@
  * $Author$
  * $Date$
  * $Revision$
+ * A few changes by aHerraez 2008-10-01: 
+ *		- fix: no message was being shown for compatible browsers
+ *		- more user-friendly browser name and OS name displayed
  *
- * Copyright (C) 2004  The Jmol Development Team
+ * Copyright (C) 2004-2008  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -180,26 +183,54 @@
 	    { msg = msgLinuxKonqueror331OrLess; state = "red"; break; }
         } while (false); // this 'loop' is here only to allow use of 'break'
 
+	    var osString = os;	/* for a more meaningful display */
+		if (osString=="win") { osString = "Windows" }
+		else if (osString=="linux") { osString = "Linux" }
+		else if (osString=="unix") { osString = "Unix" }
+		else if (osString=="mac") { osString = "MacOS" }
+
+		var browserString;
+		var Ffox = navigator.userAgent.indexOf("Firefox");
+		if ( browser=="mozilla")
+		{	/* Mozillas are always Mozilla/5; the browserVersion=5 is hence irrelevant as version nr. 
+				All details are shown in UA anyway, so I'll put here the most user-friendly string */
+			if (Ffox!=-1)
+			{	browser = "Firefox";
+				browserVersion = navigator.userAgent.substring(Ffox + "Firefox/".length);
+				browserString = browser + " " + browserVersion;
+			}
+			else
+			{	browserVersion = mozillaVersion;
+				browserString = browser + " " + browserVersion;
+			}
+		}
+		else if ( browser=="msie")
+		{	browser = "Internet Explorer";
+			browserString = browser + " " + browserVersion;
+		}
+		else 
+		{	browserString = browser + " " + browserVersion + mozillaVersion; /* default */
+		}
+
         document.writeln("<p><font size='+1'>Your web browser seems to be " +
-	                 "<code>" +
-	                 browser + "/" + browserVersion + mozillaVersion +
-			 "</code>" +
-			 " running on <code>" + os + "</code></font></p>");
-        document.writeln("<table bgcolor='" + state + "' border='1'>" +
-	                 "<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
-			 "</td></tr></table>");
-        if (msg == "")
-	  msg = msgOK;
-	document.writeln(msg);
+             "<code>" + browserString + "</code>" +
+			 " running on <code>" + osString + "</code></font></p>");
+        document.writeln("<table border='1'>" +
+             "<tr><td bgcolor='" + state + "'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+			 "</td><td>");
+        if (msg == "") msg = msgOK;
+		document.writeln(msg);
+        document.writeln("</td></tr></table>");
       }
     </script>
     <hr />
+	Details:
     <table border="1">
       <tr>
 	<td>Besturingssysteem</td>
 	<td>
 	  <script>
-	    document.write(_jmol.os);
+	    document.write(osString);
 	  </script>
 	</td>
       </tr>

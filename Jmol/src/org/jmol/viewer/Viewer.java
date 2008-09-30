@@ -4241,7 +4241,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       if (key.toLowerCase().indexOf("callback") >= 0) {
         statusManager.setCallbackFunction(key,
-            (value.equalsIgnoreCase("none") ? null : value));
+            (value.length() == 0 || value.equalsIgnoreCase("none") ? null : value));
         break;
       }
       notFound = true;

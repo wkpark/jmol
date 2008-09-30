@@ -121,7 +121,7 @@ public class CartoonRenderer extends RocketsRenderer {
             renderHermiteRibbon(true, i, true);
           else
             renderHermiteArrowHead(i);
-        } else {
+        } else if (i != monomerCount - 1) {
           renderHermiteConic(i, true);
         }
       }

@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-09-20 11:08+0200\n"
-"PO-Revision-Date: 2008-08-04 20:46+0000\n"
-"Last-Translator: Won-kyu Park <Unknown>\n"
+"PO-Revision-Date: 2008-10-01 17:06+0000\n"
+"Last-Translator: Won Kyu Park <wkpark@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-08-12 00:40+0000\n"
+"X-Launchpad-Export-Date: 2008-10-01 19:00+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
@@ -142,23 +142,20 @@ msgid "Error reading from BufferedReader: {0}"
 msgstr "BufferedReader로 읽기 실패: {0}"
 
 #: org/openscience/jmol/app/DisplayPanel.java:170
-#, fuzzy
 msgid "Delete atoms"
-msgstr "원자 지우기"
+msgstr "원자 지움"
 
 #: org/openscience/jmol/app/GuiMap.java:46
-#, fuzzy
 msgid "&Macros"
-msgstr "매크로"
+msgstr "매크로(&M)"
 
 #: org/openscience/jmol/app/GuiMap.java:47
 msgid "&File"
 msgstr "파일(&F)"
 
 #: org/openscience/jmol/app/GuiMap.java:48
-#, fuzzy
 msgid "&New"
-msgstr "새파일"
+msgstr "새창(&N)"
 
 #: org/openscience/jmol/app/GuiMap.java:49
 msgid "&Open"
@@ -177,9 +174,8 @@ msgid "Scrip&t..."
 msgstr "스크립트(&t)..."
 
 #: org/openscience/jmol/app/GuiMap.java:53
-#, fuzzy
 msgid "AtomSet&Chooser..."
-msgstr "원자셋 선택..."
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:54
 msgid "&Save As..."
@@ -219,9 +215,8 @@ msgid "Write &State..."
 msgstr "상태 쓰기(&S)..."
 
 #: org/openscience/jmol/app/GuiMap.java:63
-#, fuzzy
 msgid "Save current view as a Jmol state script."
-msgstr "현재 장면 이미지로 저장"
+msgstr "현재 상태를 Jmol 상태 스크립트로 저장"
 
 #: org/openscience/jmol/app/GuiMap.java:64
 msgid "&Print..."
@@ -232,18 +227,16 @@ msgid "Print view."
 msgstr "출력 보기."
 
 #: org/openscience/jmol/app/GuiMap.java:66
-#, fuzzy
 msgid "&Close"
-msgstr "닫기"
+msgstr "닫기(&C)"
 
 #: org/openscience/jmol/app/GuiMap.java:67
 msgid "E&xit"
 msgstr "끝내기(&x)"
 
 #: org/openscience/jmol/app/GuiMap.java:68
-#, fuzzy
 msgid "Recent &Files..."
-msgstr "최근 파일..."
+msgstr "최근 파일(&F)..."
 
 #: org/openscience/jmol/app/GuiMap.java:69
 msgid "&Edit"
@@ -251,50 +244,44 @@ msgstr "편집(&E)"
 
 #: org/openscience/jmol/app/GuiMap.java:71
 #: org/openscience/jmol/app/GuiMap.java:77
-#, fuzzy
 msgid "Select &All"
-msgstr "모두 선택"
+msgstr "모두 선택(&A)"
 
 #: org/openscience/jmol/app/GuiMap.java:72
 msgid "Deselect All"
 msgstr "선택해제"
 
 #: org/openscience/jmol/app/GuiMap.java:73
-#, fuzzy
 msgid "Copy &Image"
-msgstr "이미지 복사"
+msgstr "이미지 복사(&I)"
 
 #: org/openscience/jmol/app/GuiMap.java:74
 msgid "Copy Script"
 msgstr "스크립트 복사"
 
 #: org/openscience/jmol/app/GuiMap.java:75
-#, fuzzy
 msgid "Pr&eferences..."
-msgstr "환경설정(&P)..."
+msgstr "환경설정(&e)"
 
 #: org/openscience/jmol/app/GuiMap.java:76
 msgid "&Paste"
 msgstr "붙이기(&P)"
 
 #: org/openscience/jmol/app/GuiMap.java:78
-#, fuzzy
 msgid "&Select"
-msgstr "선택"
+msgstr "선택(&S)"
 
 #: org/openscience/jmol/app/GuiMap.java:79
-#, fuzzy
 msgid "&All"
-msgstr "모두"
+msgstr "모두(&A)"
 
 #: org/openscience/jmol/app/GuiMap.java:80
 #: org/openscience/jmol/app/GuiMap.java:93
 #: org/openscience/jmol/app/GuiMap.java:99
 #: org/openscience/jmol/app/GuiMap.java:105
 #: org/openscience/jmol/app/GuiMap.java:112
-#, fuzzy
 msgid "&None"
-msgstr "없음"
+msgstr "없음(&N)"
 
 #: org/openscience/jmol/app/GuiMap.java:81
 msgid "Hydrogen"
@@ -341,27 +328,24 @@ msgid "&Display"
 msgstr "보기(&D)"
 
 #: org/openscience/jmol/app/GuiMap.java:92
-#, fuzzy
 msgid "&Atom"
-msgstr "원자"
+msgstr "원자(&A)"
 
 #: org/openscience/jmol/app/GuiMap.java:94
 #: org/openscience/jmol/app/GuiMap.java:95
 #: org/openscience/jmol/app/GuiMap.java:96
 #: org/openscience/jmol/app/GuiMap.java:97
-#, fuzzy, java-format
+#, java-format
 msgid "{0}% van der Waals"
 msgstr "{0}% 반데르발스"
 
 #: org/openscience/jmol/app/GuiMap.java:98
-#, fuzzy
 msgid "&Bond"
-msgstr "결합"
+msgstr "결합(&B)"
 
 #: org/openscience/jmol/app/GuiMap.java:100
-#, fuzzy
 msgid "&Wireframe"
-msgstr "와이어프레임"
+msgstr "뼈대모양(&W)"
 
 #: org/openscience/jmol/app/GuiMap.java:101
 #: org/openscience/jmol/app/GuiMap.java:102
@@ -373,44 +357,36 @@ msgid "{0} Å"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:104
-#, fuzzy
 msgid "&Label"
-msgstr "라벨"
+msgstr "표지(&L)"
 
 #: org/openscience/jmol/app/GuiMap.java:106
-#, fuzzy
 msgid "&Symbol"
-msgstr "심볼"
+msgstr "심볼(&S)"
 
 #: org/openscience/jmol/app/GuiMap.java:107
-#, fuzzy
 msgid "&Name"
-msgstr "이름"
+msgstr "이름(&N)"
 
 #: org/openscience/jmol/app/GuiMap.java:108
-#, fuzzy
 msgid "&Number"
-msgstr "번호"
+msgstr "번호(&N)"
 
 #: org/openscience/jmol/app/GuiMap.java:109
-#, fuzzy
 msgid "&Centered"
-msgstr "가운데정렬"
+msgstr "가운데정렬(&C)"
 
 #: org/openscience/jmol/app/GuiMap.java:110
-#, fuzzy
 msgid "&Upper right"
-msgstr "상단 오른쪽"
+msgstr "우상(&U)"
 
 #: org/openscience/jmol/app/GuiMap.java:111
-#, fuzzy
 msgid "&Vector"
 msgstr "벡터(&V)"
 
 #: org/openscience/jmol/app/GuiMap.java:113
-#, fuzzy
 msgid "&On"
-msgstr "켜기"
+msgstr "켜기(&O)"
 
 #: org/openscience/jmol/app/GuiMap.java:114
 #, java-format
@@ -427,9 +403,8 @@ msgid "Scale {0}"
 msgstr "스케일 {0}"
 
 #: org/openscience/jmol/app/GuiMap.java:122
-#, fuzzy
 msgid "&Zoom"
-msgstr "줌"
+msgstr "확대(&Z)"
 
 #: org/openscience/jmol/app/GuiMap.java:123
 #: org/openscience/jmol/app/GuiMap.java:124
@@ -441,28 +416,24 @@ msgid "{0}%"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:128
-#, fuzzy
 msgid "&Perspective Depth"
-msgstr "원근법"
+msgstr "원근깊이(&P)"
 
 #: org/openscience/jmol/app/GuiMap.java:129
-#, fuzzy
 msgid "A&xes"
-msgstr "축"
+msgstr "축(&x)"
 
 #: org/openscience/jmol/app/GuiMap.java:130
-#, fuzzy
 msgid "B&ounding Box"
-msgstr "경계상자"
+msgstr "경계 상자(&o)"
 
 #: org/openscience/jmol/app/GuiMap.java:131
 msgid "&Hydrogens"
 msgstr "수소(&H)"
 
 #: org/openscience/jmol/app/GuiMap.java:132
-#, fuzzy
 msgid "V&ectors"
-msgstr "벡터(&V)"
+msgstr "벡터(&e)"
 
 #: org/openscience/jmol/app/GuiMap.java:133
 #: org/openscience/jmol/app/GuiMap.java:143
@@ -474,39 +445,32 @@ msgid "&View"
 msgstr "보기(&V)"
 
 #: org/openscience/jmol/app/GuiMap.java:135
-#, fuzzy
 msgid "&Front"
-msgstr "앞쪽"
+msgstr "앞면(&F)"
 
 #: org/openscience/jmol/app/GuiMap.java:136
-#, fuzzy
 msgid "&Top"
-msgstr "위쪽"
+msgstr "윗면(&T)"
 
 #: org/openscience/jmol/app/GuiMap.java:137
-#, fuzzy
 msgid "&Bottom"
-msgstr "바닥"
+msgstr "아랫면(&B)"
 
 #: org/openscience/jmol/app/GuiMap.java:138
-#, fuzzy
 msgid "&Right"
-msgstr "오른쪽"
+msgstr "오른쪽(&R)"
 
 #: org/openscience/jmol/app/GuiMap.java:139
-#, fuzzy
 msgid "&Left"
-msgstr "왼쪽"
+msgstr "왼쪽(&L)"
 
 #: org/openscience/jmol/app/GuiMap.java:140
-#, fuzzy
 msgid "Tr&ansform..."
-msgstr "변환..."
+msgstr "변환(&a)"
 
 #: org/openscience/jmol/app/GuiMap.java:141
-#, fuzzy
 msgid "Define &Center"
-msgstr "가운데 정의"
+msgstr "가운데로(&C)"
 
 #: org/openscience/jmol/app/GuiMap.java:142
 msgid "&Tools"
@@ -514,37 +478,31 @@ msgstr "도구(&T)"
 
 #: org/openscience/jmol/app/GuiMap.java:144
 msgid "Click atoms to measure distances"
-msgstr ""
+msgstr "거리측정을 하려는 원자를 클릭하시오"
 
 #: org/openscience/jmol/app/GuiMap.java:145
-#, fuzzy
 msgid "Distance &Units"
-msgstr "길이 단위"
+msgstr "거리 단위(&U)"
 
 #: org/openscience/jmol/app/GuiMap.java:146
-#, fuzzy
 msgid "&Nanometers 1E-9"
-msgstr "나노미터 1E-9"
+msgstr "나노미터(&N) 1E-9"
 
 #: org/openscience/jmol/app/GuiMap.java:147
-#, fuzzy
 msgid "&Angstroms 1E-10"
-msgstr "옹스트롬 1E-10"
+msgstr "옹스트롬(&A) 1E-10"
 
 #: org/openscience/jmol/app/GuiMap.java:148
-#, fuzzy
 msgid "&Picometers 1E-12"
-msgstr "피코미터 1E-12"
+msgstr "피코미터(&P) 1E-12)"
 
 #: org/openscience/jmol/app/GuiMap.java:149
-#, fuzzy
 msgid "&Animate..."
-msgstr "동영상..."
+msgstr "애니메이션(&A)..."
 
 #: org/openscience/jmol/app/GuiMap.java:150
-#, fuzzy
 msgid "&Vibrate..."
-msgstr "진동..."
+msgstr "진동(&V)..."
 
 #: org/openscience/jmol/app/GuiMap.java:151
 msgid "&Graph..."
@@ -559,69 +517,56 @@ msgid "&Crystal Properties"
 msgstr "단결정 속성(&C)"
 
 #: org/openscience/jmol/app/GuiMap.java:154
-#, fuzzy
 msgid "&Once"
-msgstr "한번"
+msgstr "한번만(&O)"
 
 #: org/openscience/jmol/app/GuiMap.java:155
-#, fuzzy
 msgid "&Loop"
-msgstr "무한반복"
+msgstr "반복(&L)"
 
 #: org/openscience/jmol/app/GuiMap.java:156
-#, fuzzy
 msgid "P&alindrome"
-msgstr "왔다갔다"
+msgstr "왔다갔다(&a)"
 
 #: org/openscience/jmol/app/GuiMap.java:157
-#, fuzzy
 msgid "&Stop animation"
-msgstr "재생 정지"
+msgstr "애니메이션 정지(&S)"
 
 #: org/openscience/jmol/app/GuiMap.java:158
-#, fuzzy
 msgid "&Rewind to first frame"
-msgstr "맨앞으로 되감기"
+msgstr "처음으로 되감기(&R)"
 
 #: org/openscience/jmol/app/GuiMap.java:160
-#, fuzzy
 msgid "Go to &next frame"
-msgstr "다음 장면"
+msgstr "다음 프레임(&n)"
 
 #: org/openscience/jmol/app/GuiMap.java:162
-#, fuzzy
 msgid "Go to &previous frame"
-msgstr "이전 장면"
+msgstr "이전 프레임(&p)"
 
 #: org/openscience/jmol/app/GuiMap.java:164
-#, fuzzy
 msgid "Go to &last frame"
-msgstr "다음 장면"
+msgstr "마지막 프레임(&l)"
 
 #: org/openscience/jmol/app/GuiMap.java:166
-#, fuzzy
 msgid "Start &vibration"
-msgstr "진동 시작"
+msgstr "진동 시작(&v)"
 
 #: org/openscience/jmol/app/GuiMap.java:167
-#, fuzzy
 msgid "&Stop vibration"
-msgstr "진동 끝내기"
+msgstr "진동 멈춤(&S)"
 
 #: org/openscience/jmol/app/GuiMap.java:168
-#, fuzzy
 msgid "&First frequency"
-msgstr "처음 진동수"
+msgstr "처음 진동모드(&F)"
 
 #: org/openscience/jmol/app/GuiMap.java:169
-#, fuzzy
 msgid "&Next frequency"
-msgstr "다음 진동수"
+msgstr "다음 진동모드(&N)"
 
 #: org/openscience/jmol/app/GuiMap.java:170
-#, fuzzy
 msgid "&Previous frequency"
-msgstr "이전 진동수"
+msgstr "이전 진동모드(&N)"
 
 #: org/openscience/jmol/app/GuiMap.java:171
 msgid "&Help"
@@ -752,7 +697,7 @@ msgstr "Jmol 초기화..."
 
 #: org/openscience/jmol/app/Jmol.java:398
 msgid "transparent background"
-msgstr ""
+msgstr "투명한 배경화면"
 
 #: org/openscience/jmol/app/Jmol.java:399
 msgid "give this help page"
@@ -772,7 +717,7 @@ msgstr "조용히 시작하기"
 
 #: org/openscience/jmol/app/Jmol.java:405
 msgid "list commands during script execution"
-msgstr ""
+msgstr "스크립트 실행중 명령 목록"
 
 #: org/openscience/jmol/app/Jmol.java:407
 msgid "no console -- all output to sysout"
@@ -780,7 +725,7 @@ msgstr "콘솔 없음 -- 모든 출력은 sysout으로"
 
 #: org/openscience/jmol/app/Jmol.java:409
 msgid "independent commmand thread"
-msgstr ""
+msgstr "독립적인 명령 쓰레드"
 
 #: org/openscience/jmol/app/Jmol.java:411
 msgid "exit after script (implicit with -n)"
@@ -792,7 +737,7 @@ msgstr "속성=값"
 
 #: org/openscience/jmol/app/Jmol.java:428
 msgid "supported options are given below"
-msgstr ""
+msgstr "지원되는 옵션은 아래에 주어져있음"
 
 #: org/openscience/jmol/app/Jmol.java:433
 #, java-format
@@ -907,14 +852,12 @@ msgid "Display While Rendering"
 msgstr "랜더링중 보여주기"
 
 #: org/openscience/jmol/app/PovrayDialog.java:243
-#, fuzzy
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr "렌더링중에 povray가 보여주기를 할까요?"
+msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:266
-#, fuzzy
 msgid "width:"
-msgstr "너비 : "
+msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:268
 msgid "Image width"
@@ -922,9 +865,8 @@ msgstr "이미지 너비"
 
 #: org/openscience/jmol/app/PovrayDialog.java:283
 #: org/openscience/jmol/app/webexport/PopInJmol.java:61
-#, fuzzy
 msgid "height:"
-msgstr "높이 : "
+msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:285
 msgid "Image height"
@@ -983,9 +925,8 @@ msgid "Start size : "
 msgstr "시작 크기 : "
 
 #: org/openscience/jmol/app/PovrayDialog.java:411
-#, fuzzy
 msgid "Initial size of the tiles"
-msgstr "타일의 초기 크기"
+msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:427
 msgid "End size : "
@@ -997,9 +938,8 @@ msgstr "타일의 마지막 크기"
 
 #: org/openscience/jmol/app/PovrayDialog.java:450
 #: org/openscience/jmol/app/PovrayDialog.java:452
-#, fuzzy
 msgid "Location of the POV-Ray Executable"
-msgstr "Povray 실행파일의 위치"
+msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:489
 #: org/openscience/jmol/app/PovrayDialog.java:756
@@ -1007,9 +947,8 @@ msgid "Go!"
 msgstr "시작!"
 
 #: org/openscience/jmol/app/PovrayDialog.java:491
-#, fuzzy
 msgid "Save file and possibly launch POV-Ray"
-msgstr "이미 실행중인 povray 저장하기"
+msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:500
 #: org/openscience/jmol/app/PreferencesDialog.java:165
@@ -1274,9 +1213,8 @@ msgid "Add Present Jmol State as Instance..."
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:144
-#, fuzzy
 msgid "Show Selected"
-msgstr "선택"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:146
 msgid "Delete Selected"
@@ -1296,9 +1234,8 @@ msgid "Cartoon of Page"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:217
-#, fuzzy
 msgid "Save HTML as..."
-msgstr "다른이름 저장(&S)..."
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:227
 msgid "Relative server path to jar files:"
@@ -1343,9 +1280,9 @@ msgid "Call to FileWriter unsuccessful."
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:426
-#, fuzzy, java-format
+#, java-format
 msgid "Using directory {0}"
-msgstr "작업 폴더"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:427
 msgid "adding JmolPopIn.js"
@@ -1389,11 +1326,44 @@ msgstr ""
 msgid "compressing large data file to"
 msgstr ""
 
+#~ msgid "Select Atoms"
+#~ msgstr "원자 선택"
+
 #~ msgid "Preview"
 #~ msgstr "미리보기"
 
 #~ msgid "Append models"
 #~ msgstr "모델 추가"
+
+#~ msgid "Make crystal..."
+#~ msgstr "결정 만들기..."
+
+#~ msgid "Name"
+#~ msgstr "이름"
+
+#~ msgid "Measurements..."
+#~ msgstr "측정..."
+
+#~ msgid "Render in pov-ray."
+#~ msgstr "pov-ray로 렌더링"
+
+#~ msgid "Select an atom or region."
+#~ msgstr "원자 혹은 영역 선택"
+
+#~ msgid "View measurement table."
+#~ msgstr "측정 테이블 보기"
+
+#~ msgid "Image Type"
+#~ msgstr "그림 형식"
+
+#~ msgid "JPEG Quality"
+#~ msgstr "JPEG 화질"
+
+#~ msgid "Initializing AtomSetChooser Window..."
+#~ msgstr "원자선택 창 초기화..."
+
+#~ msgid "Setting up File Choosers..."
+#~ msgstr "파일 선택기 셋업..."
 
 #~ msgid "All Files"
 #~ msgstr "모든 파일"
@@ -1418,9 +1388,6 @@ msgstr ""
 
 #~ msgid "Generic File"
 #~ msgstr "일반 파일"
-
-#~ msgid "Name"
-#~ msgstr "이름"
 
 #~ msgid "Size"
 #~ msgstr "크기"
@@ -1479,28 +1446,6 @@ msgstr ""
 #~ msgid "Yes"
 #~ msgstr "예"
 
-#~ msgid "Initializing AtomSetChooser Window..."
-#~ msgstr "원자선택 창 초기화..."
-
-#~ msgid "Setting up File Choosers..."
-#~ msgstr "파일 선택기 셋업..."
-
-#~ msgid "Image Type"
-#~ msgstr "그림 형식"
-
-#~ msgid "JPEG Quality"
-#~ msgstr "JPEG 화질"
-
-#~ msgid "Render in pov-ray."
-#~ msgstr "pov-ray로 렌더링"
-
-#, fuzzy
-#~ msgid "&Measurements..."
-#~ msgstr "측정..."
-
-#~ msgid "Measurements..."
-#~ msgstr "측정..."
-
 #~ msgid "Jmol-to-POV-Ray Conversion"
 #~ msgstr "Jmol를 POV-Ray로 변환"
 
@@ -1512,15 +1457,3 @@ msgstr ""
 
 #~ msgid "POV-Ray Executable Location"
 #~ msgstr "POV-Ray 실행파일 위치"
-
-#~ msgid "Select Atoms"
-#~ msgstr "원자 선택"
-
-#~ msgid "Make crystal..."
-#~ msgstr "결정 만들기..."
-
-#~ msgid "Select an atom or region."
-#~ msgstr "원자 혹은 영역 선택"
-
-#~ msgid "View measurement table."
-#~ msgstr "측정 테이블 보기"

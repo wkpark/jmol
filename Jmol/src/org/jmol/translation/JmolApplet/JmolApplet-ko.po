@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-10-01 20:38+0200\n"
-"PO-Revision-Date: 2008-09-28 18:29+0000\n"
+"PO-Revision-Date: 2008-10-01 16:40+0000\n"
 "Last-Translator: Won Kyu Park <wkpark@gmail.com>\n"
 "Language-Team: Korean <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-09-29 19:32+0000\n"
+"X-Launchpad-Export-Date: 2008-10-01 18:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/Console.java:40
@@ -23,7 +23,7 @@ msgstr "Jmol 스크립트 콘솔"
 
 #: org/jmol/applet/Console.java:42
 msgid "Execute"
-msgstr "실행 중\\: %s"
+msgstr "실행"
 
 #: org/jmol/applet/Console.java:43
 msgid "Clear Output"
@@ -35,7 +35,7 @@ msgstr "입력 지우기"
 
 #: org/jmol/applet/Console.java:45 org/jmol/popup/PopupResourceBundle.java:862
 msgid "History"
-msgstr ""
+msgstr "기록"
 
 #: org/jmol/applet/Console.java:46
 msgid "State"
@@ -168,29 +168,29 @@ msgstr "파일 {0}을(를) 덮어쓸까요?"
 
 #: org/jmol/export/dialog/Dialog.java:378
 msgid "Warning"
-msgstr ""
+msgstr "주의"
 
 #: org/jmol/export/dialog/Dialog.java:434
 msgid "All Files"
-msgstr ""
+msgstr "모든 파일"
 
 #: org/jmol/export/dialog/Dialog.java:435
 #: org/jmol/export/dialog/Dialog.java:482
 msgid "Cancel"
-msgstr ""
+msgstr "취소"
 
 #: org/jmol/export/dialog/Dialog.java:437
 msgid "Abort file chooser dialog"
-msgstr ""
+msgstr "파일 선택 대화창 취소"
 
 #: org/jmol/export/dialog/Dialog.java:439
 #: org/jmol/export/dialog/Dialog.java:440
 msgid "Details"
-msgstr ""
+msgstr "자세히"
 
 #: org/jmol/export/dialog/Dialog.java:441
 msgid "Directory"
-msgstr ""
+msgstr "디렉토리"
 
 #: org/jmol/export/dialog/Dialog.java:442
 #: org/jmol/export/dialog/Dialog.java:466
@@ -200,83 +200,83 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:444
 msgid "Open selected directory"
-msgstr ""
+msgstr "선택된 디렉토리 열기"
 
 #: org/jmol/export/dialog/Dialog.java:445
 msgid "Attributes"
-msgstr ""
+msgstr "속성"
 
 #: org/jmol/export/dialog/Dialog.java:446
 msgid "Modified"
-msgstr ""
+msgstr "수정됨"
 
 #: org/jmol/export/dialog/Dialog.java:447
 msgid "Generic File"
-msgstr ""
+msgstr "일반 파일"
 
 #: org/jmol/export/dialog/Dialog.java:448
 msgid "Name"
-msgstr ""
+msgstr "이름"
 
 #: org/jmol/export/dialog/Dialog.java:450
 msgid "Size"
-msgstr ""
+msgstr "크기"
 
 #: org/jmol/export/dialog/Dialog.java:451
 msgid "Files of Type:"
-msgstr ""
+msgstr "파일 형식:"
 
 #: org/jmol/export/dialog/Dialog.java:452
 msgid "Type"
-msgstr ""
+msgstr "종류"
 
 #: org/jmol/export/dialog/Dialog.java:453
 msgid "Help"
-msgstr ""
+msgstr "도움말"
 
 #: org/jmol/export/dialog/Dialog.java:455
 msgid "FileChooser help"
-msgstr ""
+msgstr "파일 선택기 도움말"
 
 #: org/jmol/export/dialog/Dialog.java:456
 #: org/jmol/export/dialog/Dialog.java:457
 msgid "Home"
-msgstr ""
+msgstr "홈"
 
 #: org/jmol/export/dialog/Dialog.java:458
 #: org/jmol/export/dialog/Dialog.java:459
 msgid "List"
-msgstr ""
+msgstr "목록"
 
 #: org/jmol/export/dialog/Dialog.java:460
 msgid "Look In:"
-msgstr ""
+msgstr "보기 방식:"
 
 #: org/jmol/export/dialog/Dialog.java:462
 msgid "Error creating new folder"
-msgstr ""
+msgstr "새 폴더 만들기 실패"
 
 #: org/jmol/export/dialog/Dialog.java:463
 msgid "New Folder"
-msgstr ""
+msgstr "새 폴더"
 
 #: org/jmol/export/dialog/Dialog.java:465
 msgid "Create New Folder"
-msgstr ""
+msgstr "새 폴더 만들기"
 
 #: org/jmol/export/dialog/Dialog.java:468
 msgid "Open selected file"
-msgstr ""
+msgstr "선택한 파일 열기"
 
 #: org/jmol/export/dialog/Dialog.java:470
 #: org/jmol/export/dialog/Dialog.java:473
 #: org/jmol/popup/PopupResourceBundle.java:878
 msgid "Save"
-msgstr ""
+msgstr "저장"
 
 #: org/jmol/export/dialog/Dialog.java:472
 msgid "Save selected file"
-msgstr ""
+msgstr "선택한 파일 저장"
 
 #: org/jmol/export/dialog/Dialog.java:474
 msgid "Save In:"
@@ -284,31 +284,31 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:475
 msgid "Update"
-msgstr ""
+msgstr "갱신"
 
 #: org/jmol/export/dialog/Dialog.java:477
 msgid "Update directory listing"
-msgstr ""
+msgstr "디렉토리 리스트 갱신"
 
 #: org/jmol/export/dialog/Dialog.java:478
 msgid "Up"
-msgstr ""
+msgstr "위로"
 
 #: org/jmol/export/dialog/Dialog.java:479
 msgid "Up One Level"
-msgstr ""
+msgstr "상위 폴더"
 
 #: org/jmol/export/dialog/Dialog.java:484
 msgid "OK"
-msgstr ""
+msgstr "확인"
 
 #: org/jmol/export/dialog/FilePreview.java:70
 msgid "Preview"
-msgstr ""
+msgstr "미리보기"
 
 #: org/jmol/export/dialog/FilePreview.java:90
 msgid "Append models"
-msgstr ""
+msgstr "모델 추가"
 
 #: org/jmol/i18n/GT.java:116
 msgid "Catalan"
@@ -324,7 +324,7 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:119
 msgid "Dutch"
-msgstr "네덜란드어"
+msgstr "네델란드어"
 
 #: org/jmol/i18n/GT.java:120
 msgid "English (United Kingdom"
@@ -364,7 +364,7 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:129
 msgid "Polish"
-msgstr ""
+msgstr "폴란드어"
 
 #: org/jmol/i18n/GT.java:130
 msgid "Portuguese - Brazil"
@@ -372,15 +372,15 @@ msgstr "포루투갈어 - 브라질"
 
 #: org/jmol/i18n/GT.java:131
 msgid "Portuguese"
-msgstr "포르투칼어"
+msgstr "포루투갈어"
 
 #: org/jmol/i18n/GT.java:132
 msgid "Russian"
-msgstr ""
+msgstr "러시아어"
 
 #: org/jmol/i18n/GT.java:133
 msgid "Slovenian"
-msgstr ""
+msgstr "슬로베니아어"
 
 #: org/jmol/i18n/GT.java:134
 msgid "Spanish"
@@ -388,7 +388,7 @@ msgstr "스페인어"
 
 #: org/jmol/i18n/GT.java:135
 msgid "Swedish"
-msgstr ""
+msgstr "스웨덴어"
 
 #: org/jmol/i18n/GT.java:136
 msgid "Turkish"
@@ -406,7 +406,7 @@ msgstr "아무 원자도 선택안됨 -- 실행 안함!"
 #: org/jmol/minimize/Minimizer.java:258
 #, java-format
 msgid "{0} atoms will be minimized."
-msgstr "{0} 원자가 최적화되려 함"
+msgstr "{0} 원자를 최적화하려 함"
 
 #: org/jmol/minimize/Minimizer.java:350
 #, java-format
@@ -562,17 +562,17 @@ msgstr "주 메뉴"
 
 #: org/jmol/popup/PopupResourceBundle.java:575
 msgid "Biomolecules"
-msgstr ""
+msgstr "바이오분자"
 
 #: org/jmol/popup/PopupResourceBundle.java:576
 #, java-format
 msgid "biomolecule {0} ({1} atoms)"
-msgstr ""
+msgstr "바이오분자 {0} ({1}개 원자)"
 
 #: org/jmol/popup/PopupResourceBundle.java:577
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
-msgstr ""
+msgstr "바이오분자 {0} 부르기 ({1}개 원자)"
 
 #: org/jmol/popup/PopupResourceBundle.java:582
 #: org/jmol/popup/PopupResourceBundle.java:701
@@ -665,7 +665,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:608
 msgid "Bases"
-msgstr "베이스"
+msgstr "염기"
 
 #: org/jmol/popup/PopupResourceBundle.java:609
 msgid "AT pairs"
@@ -681,7 +681,7 @@ msgstr "AU 짝"
 
 #: org/jmol/popup/PopupResourceBundle.java:612
 msgid "Hetero"
-msgstr "혼성"
+msgstr "헤테로"
 
 #: org/jmol/popup/PopupResourceBundle.java:613
 msgid "All PDB \"HETATM\""
@@ -693,7 +693,7 @@ msgstr "모든 용매"
 
 #: org/jmol/popup/PopupResourceBundle.java:615
 msgid "All Water"
-msgstr "모든 물"
+msgstr "모든 물분자"
 
 #: org/jmol/popup/PopupResourceBundle.java:617
 msgid "Nonaqueous Solvent"
@@ -1096,7 +1096,7 @@ msgstr "연보라"
 #: org/jmol/popup/PopupResourceBundle.java:762
 #: org/jmol/popup/PopupResourceBundle.java:901
 msgid "Make Opaque"
-msgstr "반투명으로"
+msgstr "불투명으로"
 
 #: org/jmol/popup/PopupResourceBundle.java:763
 #: org/jmol/popup/PopupResourceBundle.java:902
@@ -1348,7 +1348,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:874
 msgid "File or URL"
-msgstr ""
+msgstr "파일 혹은 URL"
 
 #: org/jmol/popup/PopupResourceBundle.java:875
 msgid "Load full unit cell"
@@ -1356,12 +1356,12 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:876
 msgid "Script"
-msgstr ""
+msgstr "스크립트"
 
 #: org/jmol/popup/PopupResourceBundle.java:879
 #, java-format
 msgid "File {0}"
-msgstr ""
+msgstr "파일 {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:880
 msgid "Script with state"
@@ -1376,7 +1376,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:884
 #, java-format
 msgid "{0} Image"
-msgstr ""
+msgstr "{0} 그림"
 
 #: org/jmol/popup/PopupResourceBundle.java:885
 msgid "JVXL Isosurface"
@@ -1386,7 +1386,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:887
 #, java-format
 msgid "{0} 3D Model"
-msgstr ""
+msgstr "{0} 삼차원 모델"
 
 #: org/jmol/popup/PopupResourceBundle.java:891
 msgid "Extract MOL data"
@@ -1455,7 +1455,7 @@ msgstr "옹스트롬 너비"
 
 #: org/jmol/popup/PopupResourceBundle.java:933
 msgid "Selection Halos"
-msgstr "선택된 것 보기"
+msgstr "선택 표시"
 
 #: org/jmol/popup/PopupResourceBundle.java:934
 msgid "Show Hydrogens"
@@ -1492,11 +1492,11 @@ msgstr "인자 개수 오류"
 #: org/jmol/viewer/Compiler.java:2485
 #, java-format
 msgid "invalid context for {0}"
-msgstr ""
+msgstr "{0}에 대한 잘못된 컨텍스트"
 
 #: org/jmol/viewer/Compiler.java:2486 org/jmol/viewer/Eval.java:5184
 msgid "command expected"
-msgstr ""
+msgstr "명령이 필요함"
 
 #: org/jmol/viewer/Compiler.java:2487
 msgid "{ number number number } expected"
@@ -1512,7 +1512,7 @@ msgstr "수식의 끝이 요구됨"
 
 #: org/jmol/viewer/Compiler.java:2490
 msgid "identifier or residue specification expected"
-msgstr ""
+msgstr "식별자 혹은 residue 지정이 필요함"
 
 #: org/jmol/viewer/Compiler.java:2491
 msgid "invalid atom specification"
@@ -1525,7 +1525,7 @@ msgstr "잘못된 체인 지정"
 #: org/jmol/viewer/Compiler.java:2493
 #, java-format
 msgid "invalid expression token: {0}"
-msgstr "잘못된 표현 토큰: {0}"
+msgstr "잘못된 수식 토큰: {0}"
 
 #: org/jmol/viewer/Compiler.java:2494
 msgid "invalid model specification"
@@ -1551,17 +1551,17 @@ msgstr ""
 #: org/jmol/viewer/Compiler.java:2499
 #, java-format
 msgid "{0} expected"
-msgstr ""
+msgstr "{0}이(가) 필요함"
 
 #: org/jmol/viewer/Compiler.java:2500
 #, java-format
 msgid "{0} unexpected"
-msgstr ""
+msgstr "{0}은(는) 불필요함"
 
 #: org/jmol/viewer/Compiler.java:2501
 #, java-format
 msgid "unrecognized expression token: {0}"
-msgstr "이해할 수 없는 토큰: {0}"
+msgstr "이해할  수 없는 수식 토큰: {0}"
 
 #: org/jmol/viewer/Compiler.java:2502 org/jmol/viewer/Eval.java:11385
 #, java-format
@@ -1580,7 +1580,7 @@ msgstr "스크립트 오류: "
 #: org/jmol/viewer/Eval.java:3497
 #, java-format
 msgid "{0} connections deleted"
-msgstr "{0} 연결 지움"
+msgstr "{0} 결함 제거"
 
 #: org/jmol/viewer/Eval.java:3518
 #, java-format
@@ -1649,7 +1649,7 @@ msgstr ""
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
 "{2}"
-msgstr ""
+msgstr "평면이 필요함 -- 세개의 점 혹은 원자 표현식 혹은 {0} 혹은 {1} 혹은 {2}"
 
 #: org/jmol/viewer/Eval.java:11346
 msgid "x y z axis expected"

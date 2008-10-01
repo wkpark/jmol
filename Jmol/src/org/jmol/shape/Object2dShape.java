@@ -41,7 +41,7 @@ public class Object2dShape extends Shape {
     }
 
     if ("delete" == propertyName) {
-      if (currentObject == null)
+      if (currentObject == null) {
         if (isAll || thisID != null) {
           Enumeration e = objects.elements();
           while (e.hasMoreElements()) {
@@ -51,8 +51,9 @@ public class Object2dShape extends Shape {
                     true))
               objects.remove(text.target);
           }
-          return;
         }
+        return;
+      }
       objects.remove(currentObject.target);
       currentObject = null;
       return;
@@ -117,7 +118,7 @@ public class Object2dShape extends Shape {
 
     if ("color" == propertyName) {
       currentColor = value;
-      if (currentObject == null)
+      if (currentObject == null) {
         if (isAll || thisID != null) {
           Enumeration e = objects.elements();
           while (e.hasMoreElements()) {
@@ -127,8 +128,9 @@ public class Object2dShape extends Shape {
                     true))
               text.setColix(value);
           }
-          return;
         }
+        return;
+      }
       currentObject.setColix(value);
       return;
     }

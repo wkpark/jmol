@@ -97,7 +97,7 @@ public class Echo extends TextShape {
 
     if ("hidden" == propertyName) {
       boolean isHidden = ((Boolean) value).booleanValue();
-      if (currentObject == null)
+      if (currentObject == null) {
         if (isAll || thisID != null) {
           Enumeration e = objects.elements();
           while (e.hasMoreElements()) {
@@ -107,8 +107,9 @@ public class Echo extends TextShape {
                     true))
               text.hidden = isHidden;
           }
-          return;
         }
+        return;
+      }
       ((Text) currentObject).hidden = isHidden;
       return;
     }
@@ -137,7 +138,7 @@ public class Echo extends TextShape {
           }
           text = new Text(viewer, g3d, g3d.getFont3D(FONTFACE, FONTSIZE),
               target, COLOR, valign, halign, 0);
-          text.setAdjustForWindow(true); 
+          text.setAdjustForWindow(true);
           objects.put(target, text);
           if (currentFont != null)
             text.setFont(currentFont);

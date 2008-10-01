@@ -154,7 +154,7 @@ class PropertyManager {
     boolean requestedReadable = returnType.equalsIgnoreCase("readable");
     if (requestedReadable)
       returnType = (isReadableAsString(infoType) ? "String" : "JSON");
-    if (returnType.equalsIgnoreCase("String")) return info.toString();
+    if (returnType.equalsIgnoreCase("String")) return (info == null ? "" : info.toString());
     if (requestedReadable)
       return Escape.toReadable(infoType, info);
     else if (returnType.equalsIgnoreCase("JSON"))

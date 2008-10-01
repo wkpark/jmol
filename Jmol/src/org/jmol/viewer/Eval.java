@@ -7710,7 +7710,7 @@ class Eval {
     case Token.property:
       break;
     case Token.identifier:
-      switch (Token.getSettableTokFromString(parameterAsString(i))) {
+      switch (tok = Token.getSettableTokFromString(parameterAsString(i))) {
       case Token.atomX:
       case Token.atomY:
       case Token.atomZ:

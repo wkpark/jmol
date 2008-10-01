@@ -134,6 +134,7 @@ public class FileManager {
   
   void clear() {
     setLoadScript("", false);
+    fullPathName = fileName = nameAsGiven = "zapped";
   }
   
   String getLoadScript() {

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-10-01 20:38+0200\n"
+"POT-Creation-Date: 2008-10-02 22:25+0200\n"
 "PO-Revision-Date: 2008-08-04 20:45+0000\n"
 "Last-Translator: Zörgő Zoltán <Unknown>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
@@ -343,7 +343,7 @@ msgid "Dutch"
 msgstr "Holland"
 
 #: org/jmol/i18n/GT.java:120
-msgid "English (United Kingdom"
+msgid "English - United Kingdom"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:121

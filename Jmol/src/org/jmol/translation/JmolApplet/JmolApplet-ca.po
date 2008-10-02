@@ -6,14 +6,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-10-01 20:38+0200\n"
-"PO-Revision-Date: 2008-09-26 14:43+0000\n"
+"POT-Creation-Date: 2008-10-02 22:25+0200\n"
+"PO-Revision-Date: 2008-10-02 15:47+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-09-29 19:20+0000\n"
+"X-Launchpad-Export-Date: 2008-10-02 20:00+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
@@ -149,7 +149,7 @@ msgstr "Qualitat del JPEG ({0})"
 #: org/jmol/export/dialog/Dialog.java:299
 #, java-format
 msgid "PNG Compression  ({0})"
-msgstr ""
+msgstr "Compressió PNG ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:329
 #, java-format
@@ -217,103 +217,103 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:447
 msgid "Generic File"
-msgstr ""
+msgstr "Fitxer genèric"
 
 #: org/jmol/export/dialog/Dialog.java:448
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 #: org/jmol/export/dialog/Dialog.java:450
 msgid "Size"
-msgstr ""
+msgstr "Mida"
 
 #: org/jmol/export/dialog/Dialog.java:451
 msgid "Files of Type:"
-msgstr ""
+msgstr "Fitxers del tipus:"
 
 #: org/jmol/export/dialog/Dialog.java:452
 msgid "Type"
-msgstr ""
+msgstr "Tipus"
 
 #: org/jmol/export/dialog/Dialog.java:453
 msgid "Help"
-msgstr ""
+msgstr "Ajuda"
 
 #: org/jmol/export/dialog/Dialog.java:455
 msgid "FileChooser help"
-msgstr ""
+msgstr "Ajuda del selector de fitxers"
 
 #: org/jmol/export/dialog/Dialog.java:456
 #: org/jmol/export/dialog/Dialog.java:457
 msgid "Home"
-msgstr ""
+msgstr "Inici"
 
 #: org/jmol/export/dialog/Dialog.java:458
 #: org/jmol/export/dialog/Dialog.java:459
 msgid "List"
-msgstr ""
+msgstr "Llista"
 
 #: org/jmol/export/dialog/Dialog.java:460
 msgid "Look In:"
-msgstr ""
+msgstr "Cerca a:"
 
 #: org/jmol/export/dialog/Dialog.java:462
 msgid "Error creating new folder"
-msgstr ""
+msgstr "S'ha produït un error en crear la carpeta nova"
 
 #: org/jmol/export/dialog/Dialog.java:463
 msgid "New Folder"
-msgstr ""
+msgstr "Carpeta nova"
 
 #: org/jmol/export/dialog/Dialog.java:465
 msgid "Create New Folder"
-msgstr ""
+msgstr "Crea una carpeta nova"
 
 #: org/jmol/export/dialog/Dialog.java:468
 msgid "Open selected file"
-msgstr ""
+msgstr "Obre el fitxer seleccionat"
 
 #: org/jmol/export/dialog/Dialog.java:470
 #: org/jmol/export/dialog/Dialog.java:473
 #: org/jmol/popup/PopupResourceBundle.java:878
 msgid "Save"
-msgstr ""
+msgstr "Desa"
 
 #: org/jmol/export/dialog/Dialog.java:472
 msgid "Save selected file"
-msgstr ""
+msgstr "Desa el fitxer seleccionat"
 
 #: org/jmol/export/dialog/Dialog.java:474
 msgid "Save In:"
-msgstr ""
+msgstr "Desa a:"
 
 #: org/jmol/export/dialog/Dialog.java:475
 msgid "Update"
-msgstr ""
+msgstr "Actualitza"
 
 #: org/jmol/export/dialog/Dialog.java:477
 msgid "Update directory listing"
-msgstr ""
+msgstr "Actualitza la llista de directoris"
 
 #: org/jmol/export/dialog/Dialog.java:478
 msgid "Up"
-msgstr ""
+msgstr "Amunt"
 
 #: org/jmol/export/dialog/Dialog.java:479
 msgid "Up One Level"
-msgstr ""
+msgstr "Un nivell amunt"
 
 #: org/jmol/export/dialog/Dialog.java:484
 msgid "OK"
-msgstr ""
+msgstr "D'acord"
 
 #: org/jmol/export/dialog/FilePreview.java:70
 msgid "Preview"
-msgstr ""
+msgstr "Previsualització"
 
 #: org/jmol/export/dialog/FilePreview.java:90
 msgid "Append models"
-msgstr ""
+msgstr "Afegeix els models"
 
 #: org/jmol/i18n/GT.java:116
 msgid "Catalan"
@@ -332,8 +332,9 @@ msgid "Dutch"
 msgstr "Holandès"
 
 #: org/jmol/i18n/GT.java:120
-msgid "English (United Kingdom"
-msgstr ""
+#, fuzzy
+msgid "English - United Kingdom"
+msgstr "Anglès (Regne Unit)"
 
 #: org/jmol/i18n/GT.java:121
 msgid "English"
@@ -385,7 +386,7 @@ msgstr "Rus"
 
 #: org/jmol/i18n/GT.java:133
 msgid "Slovenian"
-msgstr ""
+msgstr "Eslovè"
 
 #: org/jmol/i18n/GT.java:134
 msgid "Spanish"
@@ -1366,7 +1367,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:879
 #, java-format
 msgid "File {0}"
-msgstr ""
+msgstr "Fitxer {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:880
 msgid "Script with state"
@@ -1391,7 +1392,7 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:887
 #, java-format
 msgid "{0} 3D Model"
-msgstr ""
+msgstr "Model 3D {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:891
 msgid "Extract MOL data"

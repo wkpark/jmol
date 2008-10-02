@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-10-01 20:38+0200\n"
+"POT-Creation-Date: 2008-10-02 22:25+0200\n"
 "PO-Revision-Date: 2008-09-21 17:57+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
@@ -330,7 +330,7 @@ msgid "Dutch"
 msgstr "Olandese"
 
 #: org/jmol/i18n/GT.java:120
-msgid "English (United Kingdom"
+msgid "English - United Kingdom"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:121

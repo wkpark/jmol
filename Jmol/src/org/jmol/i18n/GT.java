@@ -113,27 +113,27 @@ public class GT {
     boolean wasTranslating = doTranslate;
     doTranslate = false;
     languageList = new Language[] {
-      new Language("ca",    GT._("Catalan"),                 true),
-      new Language("cs",    GT._("Czech"),                   true),
-      new Language("da",    GT._("Danish"),                  false),
-      new Language("nl",    GT._("Dutch"),                   true),
+      new Language("ca",    GT._("Catalan"),                  true),
+      new Language("cs",    GT._("Czech"),                    true),
+      new Language("da",    GT._("Danish"),                   false),
+      new Language("nl",    GT._("Dutch"),                    true),
       new Language("en_GB", GT._("English - United Kingdom"), true),
-      new Language("en_US", GT._("English"),                 true),
-      new Language("et",    GT._("Estonian"),                true),
-      new Language("fr",    GT._("French"),                  true),
-      new Language("de",    GT._("German"),                  true),
-      new Language("hu",    GT._("Hungarian"),               true),
-      new Language("it",    GT._("Italian"),                 true),
-      new Language("ko",    GT._("Korean"),                  true),
-      new Language("nb",    GT._("Norwegian Bokmal"),        false),
-      new Language("pl",    GT._("Polish"),                  false),
-      new Language("pt_BR", GT._("Portuguese - Brazil"),     true),
-      new Language("pt",    GT._("Portuguese"),              true),
-      new Language("ru",    GT._("Russian"),                 false),
-      new Language("sl",    GT._("Slovenian"),               false),
-      new Language("es",    GT._("Spanish"),                 true),
-      new Language("sv",    GT._("Swedish"),                 false),
-      new Language("tr",    GT._("Turkish"),                 true),
+      new Language("en_US", GT._("English"),                  true),
+      new Language("et",    GT._("Estonian"),                 true),
+      new Language("fr",    GT._("French"),                   true),
+      new Language("de",    GT._("German"),                   true),
+      new Language("hu",    GT._("Hungarian"),                true),
+      new Language("it",    GT._("Italian"),                  true),
+      new Language("ko",    GT._("Korean"),                   true),
+      new Language("nb",    GT._("Norwegian Bokmal"),         false),
+      new Language("pl",    GT._("Polish"),                   false),
+      new Language("pt_BR", GT._("Portuguese - Brazil"),      true),
+      new Language("pt",    GT._("Portuguese"),               true),
+      new Language("ru",    GT._("Russian"),                  false),
+      new Language("sl",    GT._("Slovenian"),                false),
+      new Language("es",    GT._("Spanish"),                  true),
+      new Language("sv",    GT._("Swedish"),                  false),
+      new Language("tr",    GT._("Turkish"),                  true),
     };
     doTranslate = wasTranslating;
     return languageList;
@@ -242,8 +242,8 @@ public class GT {
       la = language.substring(0, 2);
     }
 
-    if ("en".equals(la)) //no variants on Engish for now
-      return;
+    //if ("en".equals(la)) //no variants on Engish for now
+    //  return;
 
     /*
      * Time to determine exactly what .po files we actually have.

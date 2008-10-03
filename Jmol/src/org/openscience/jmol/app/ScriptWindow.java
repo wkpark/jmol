@@ -50,6 +50,7 @@ import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 import org.jmol.util.CommandHistory;
+import org.jmol.util.TextFormat;
 //import org.jmol.viewer.Token;
 
 public final class ScriptWindow extends JDialog
@@ -523,11 +524,12 @@ class ConsoleTextPane extends JTextPane {
    * 
    * @param up - history up or down
    */
-   void recallCommand(boolean up) {
-     String cmd = viewer.getSetHistory(up ? -1 : 1);
+  void recallCommand(boolean up) {
+    String cmd = viewer.getSetHistory(up ? -1 : 1);
     if (cmd == null) {
       return;
     }
+    cmd = TextFormat.trim(cmd, ";");
     try {
       if (cmd.endsWith(CommandHistory.ERROR_FLAG)) {
         cmd = cmd.substring(0, cmd.indexOf(CommandHistory.ERROR_FLAG));

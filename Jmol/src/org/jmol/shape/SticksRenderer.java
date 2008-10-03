@@ -75,7 +75,6 @@ public class SticksRenderer extends ShapeRenderer {
 
   protected void renderBond() {
     mad = bond.getMad();
-    int order = bond.getOrder();
     atomA = bond.getAtom1();
     atomB = bond.getAtom2();
     if (!atomA.isModelVisible() || !atomB.isModelVisible()
@@ -97,6 +96,7 @@ public class SticksRenderer extends ShapeRenderer {
       colixA = Graphics3D.getColixInherited(colix, colixA);
       colixB = Graphics3D.getColixInherited(colix, colixB);
     }
+    int order = bond.getOrder() & ~JmolConstants.BOND_NEW;
     if (bondsBackbone) {
       if (ssbondsBackbone && (order & JmolConstants.BOND_SULFUR_MASK) != 0) {
         // for ssbonds, always render the sidechain,

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-09-20 11:08+0200\n"
+"POT-Creation-Date: 2008-10-05 16:16+0200\n"
 "PO-Revision-Date: 2008-08-04 20:45+0000\n"
 "Last-Translator: martin.slavik <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
@@ -325,7 +325,8 @@ msgid "Phosphorus"
 msgstr "Fosfor (P)"
 
 #: org/openscience/jmol/app/GuiMap.java:86
-msgid "Sulphur"
+#, fuzzy
+msgid "Sulfur"
 msgstr "Síra (S)"
 
 #: org/openscience/jmol/app/GuiMap.java:87
@@ -836,7 +837,7 @@ msgid "Jmol Java Console"
 msgstr "Jmol Java konzole"
 
 #: org/openscience/jmol/app/Jmol.java:670
-#: org/openscience/jmol/app/ScriptWindow.java:94
+#: org/openscience/jmol/app/ScriptWindow.java:96
 msgid "Clear"
 msgstr "Vyčistit"
 
@@ -856,7 +857,7 @@ msgstr "Otevřít URL"
 msgid "Enter URL of molecular model"
 msgstr "Zadat URL molekulárního modelu"
 
-#: org/openscience/jmol/app/Jmol.java:1552
+#: org/openscience/jmol/app/Jmol.java:1554
 msgid "IO Exception:"
 msgstr "IO výjimka:"
 
@@ -1115,39 +1116,39 @@ msgstr "Naposledy otevřené soubory"
 msgid "Open"
 msgstr "Otevřít"
 
-#: org/openscience/jmol/app/ScriptWindow.java:71
+#: org/openscience/jmol/app/ScriptWindow.java:72
 msgid "Jmol Script Console"
 msgstr "Jmol skriptovací konzole"
 
-#: org/openscience/jmol/app/ScriptWindow.java:85
+#: org/openscience/jmol/app/ScriptWindow.java:87
 msgid "Run"
 msgstr "Spustit"
 
-#: org/openscience/jmol/app/ScriptWindow.java:89
+#: org/openscience/jmol/app/ScriptWindow.java:91
 msgid "Halt"
 msgstr "Zastavit"
 
-#: org/openscience/jmol/app/ScriptWindow.java:98
+#: org/openscience/jmol/app/ScriptWindow.java:100
 msgid "History"
 msgstr "Historie"
 
-#: org/openscience/jmol/app/ScriptWindow.java:102
+#: org/openscience/jmol/app/ScriptWindow.java:104
 msgid "State"
 msgstr "Stav"
 
-#: org/openscience/jmol/app/ScriptWindow.java:106
+#: org/openscience/jmol/app/ScriptWindow.java:108
 msgid "Help"
 msgstr "Nápověda"
 
-#: org/openscience/jmol/app/ScriptWindow.java:110
+#: org/openscience/jmol/app/ScriptWindow.java:112
 msgid "Close"
 msgstr "Zavřít"
 
-#: org/openscience/jmol/app/ScriptWindow.java:114
+#: org/openscience/jmol/app/ScriptWindow.java:116
 msgid "Undo"
 msgstr ""
 
-#: org/openscience/jmol/app/ScriptWindow.java:119
+#: org/openscience/jmol/app/ScriptWindow.java:121
 msgid "Redo"
 msgstr ""
 

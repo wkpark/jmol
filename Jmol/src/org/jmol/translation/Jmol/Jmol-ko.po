@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-09-20 11:08+0200\n"
+"POT-Creation-Date: 2008-10-05 16:16+0200\n"
 "PO-Revision-Date: 2008-10-01 21:54+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -304,7 +304,8 @@ msgid "Phosphorus"
 msgstr "인"
 
 #: org/openscience/jmol/app/GuiMap.java:86
-msgid "Sulphur"
+#, fuzzy
+msgid "Sulfur"
 msgstr "황"
 
 #: org/openscience/jmol/app/GuiMap.java:87
@@ -774,7 +775,7 @@ msgid "Jmol Java Console"
 msgstr "Jmol 자바 콘솔"
 
 #: org/openscience/jmol/app/Jmol.java:670
-#: org/openscience/jmol/app/ScriptWindow.java:94
+#: org/openscience/jmol/app/ScriptWindow.java:96
 msgid "Clear"
 msgstr "지움"
 
@@ -794,7 +795,7 @@ msgstr "URL 열기"
 msgid "Enter URL of molecular model"
 msgstr "분자 모델의 URL을 넣으세요"
 
-#: org/openscience/jmol/app/Jmol.java:1552
+#: org/openscience/jmol/app/Jmol.java:1554
 msgid "IO Exception:"
 msgstr "IO 예외"
 
@@ -1042,39 +1043,39 @@ msgstr "최근 파일"
 msgid "Open"
 msgstr "열기"
 
-#: org/openscience/jmol/app/ScriptWindow.java:71
+#: org/openscience/jmol/app/ScriptWindow.java:72
 msgid "Jmol Script Console"
 msgstr "Jmol 스크립트 콘솔"
 
-#: org/openscience/jmol/app/ScriptWindow.java:85
+#: org/openscience/jmol/app/ScriptWindow.java:87
 msgid "Run"
 msgstr "실행"
 
-#: org/openscience/jmol/app/ScriptWindow.java:89
+#: org/openscience/jmol/app/ScriptWindow.java:91
 msgid "Halt"
 msgstr "끝내기"
 
-#: org/openscience/jmol/app/ScriptWindow.java:98
+#: org/openscience/jmol/app/ScriptWindow.java:100
 msgid "History"
 msgstr "히스토리"
 
-#: org/openscience/jmol/app/ScriptWindow.java:102
+#: org/openscience/jmol/app/ScriptWindow.java:104
 msgid "State"
 msgstr "상태"
 
-#: org/openscience/jmol/app/ScriptWindow.java:106
+#: org/openscience/jmol/app/ScriptWindow.java:108
 msgid "Help"
 msgstr "도움말"
 
-#: org/openscience/jmol/app/ScriptWindow.java:110
+#: org/openscience/jmol/app/ScriptWindow.java:112
 msgid "Close"
 msgstr "닫기"
 
-#: org/openscience/jmol/app/ScriptWindow.java:114
+#: org/openscience/jmol/app/ScriptWindow.java:116
 msgid "Undo"
 msgstr "무르기"
 
-#: org/openscience/jmol/app/ScriptWindow.java:119
+#: org/openscience/jmol/app/ScriptWindow.java:121
 msgid "Redo"
 msgstr "되무르기"
 

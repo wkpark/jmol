@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-09-20 11:08+0200\n"
+"POT-Creation-Date: 2008-10-05 16:16+0200\n"
 "PO-Revision-Date: 2008-08-04 20:46+0000\n"
 "Last-Translator: Zörgő Zoltán <Unknown>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
@@ -324,7 +324,8 @@ msgid "Phosphorus"
 msgstr "Foszfor"
 
 #: org/openscience/jmol/app/GuiMap.java:86
-msgid "Sulphur"
+#, fuzzy
+msgid "Sulfur"
 msgstr "Kén"
 
 #: org/openscience/jmol/app/GuiMap.java:87
@@ -840,7 +841,7 @@ msgid "Jmol Java Console"
 msgstr "Jmol Java konzol"
 
 #: org/openscience/jmol/app/Jmol.java:670
-#: org/openscience/jmol/app/ScriptWindow.java:94
+#: org/openscience/jmol/app/ScriptWindow.java:96
 msgid "Clear"
 msgstr "őrít"
 
@@ -860,7 +861,7 @@ msgstr "Webcím megnyitása"
 msgid "Enter URL of molecular model"
 msgstr "Adja meg a molekuláris modell webcímét"
 
-#: org/openscience/jmol/app/Jmol.java:1552
+#: org/openscience/jmol/app/Jmol.java:1554
 msgid "IO Exception:"
 msgstr "IO-hiba:"
 
@@ -1114,42 +1115,42 @@ msgstr "Legutóbb használt fájlok"
 msgid "Open"
 msgstr "Megnyitás"
 
-#: org/openscience/jmol/app/ScriptWindow.java:71
+#: org/openscience/jmol/app/ScriptWindow.java:72
 #, fuzzy
 msgid "Jmol Script Console"
 msgstr "Jmol parancsnyelvi konzol"
 
-#: org/openscience/jmol/app/ScriptWindow.java:85
+#: org/openscience/jmol/app/ScriptWindow.java:87
 msgid "Run"
 msgstr "Futtat"
 
-#: org/openscience/jmol/app/ScriptWindow.java:89
+#: org/openscience/jmol/app/ScriptWindow.java:91
 msgid "Halt"
 msgstr "Leállít"
 
-#: org/openscience/jmol/app/ScriptWindow.java:98
+#: org/openscience/jmol/app/ScriptWindow.java:100
 #, fuzzy
 msgid "History"
 msgstr "Előzmények"
 
-#: org/openscience/jmol/app/ScriptWindow.java:102
+#: org/openscience/jmol/app/ScriptWindow.java:104
 #, fuzzy
 msgid "State"
 msgstr "Státus"
 
-#: org/openscience/jmol/app/ScriptWindow.java:106
+#: org/openscience/jmol/app/ScriptWindow.java:108
 msgid "Help"
 msgstr "SAogó"
 
-#: org/openscience/jmol/app/ScriptWindow.java:110
+#: org/openscience/jmol/app/ScriptWindow.java:112
 msgid "Close"
 msgstr "Bezár"
 
-#: org/openscience/jmol/app/ScriptWindow.java:114
+#: org/openscience/jmol/app/ScriptWindow.java:116
 msgid "Undo"
 msgstr "Visszavonás"
 
-#: org/openscience/jmol/app/ScriptWindow.java:119
+#: org/openscience/jmol/app/ScriptWindow.java:121
 msgid "Redo"
 msgstr "őjra"
 

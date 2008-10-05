@@ -83,7 +83,7 @@ class GuiMap {
       labels.put("selectNitrogenScript", GT._("Nitrogen"));
       labels.put("selectOxygenScript", GT._("Oxygen"));
       labels.put("selectPhosphorusScript", GT._("Phosphorus"));
-      labels.put("selectSulphurScript", GT._("Sulphur"));
+      labels.put("selectSulfurScript", GT._("Sulfur"));
       labels.put("selectAminoScript", GT._("Amino"));
       labels.put("selectNucleicScript", GT._("Nucleic"));
       labels.put("selectWaterScript", GT._("Water"));

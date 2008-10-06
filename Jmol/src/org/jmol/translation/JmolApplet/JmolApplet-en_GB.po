@@ -1079,7 +1079,7 @@ msgstr "Maroon"
 
 #: org/jmol/popup/PopupResourceBundle.java:757
 msgid "Gray"
-msgstr "Grey"
+msgstr "Gray"
 
 #: org/jmol/popup/PopupResourceBundle.java:758
 msgid "Slate Blue"

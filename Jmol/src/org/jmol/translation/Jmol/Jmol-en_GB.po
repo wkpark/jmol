@@ -306,7 +306,7 @@ msgstr "Phosphorus"
 
 #: org/openscience/jmol/app/GuiMap.java:86
 msgid "Sulfur"
-msgstr "Sulphur"
+msgstr "Sulfur"
 
 #: org/openscience/jmol/app/GuiMap.java:87
 msgid "Amino"

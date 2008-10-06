@@ -29,7 +29,7 @@ import java.io.DataInputStream;
 import javax.vecmath.Point3f;
 //import java.io.RandomAccessFile;
 
-/* a basic binary file reader (extended by CompountDocument). 
+/* a basic binary file reader (extended by CompoundDocument). 
  * 
  * random access file info: 
  * http://java.sun.com/docs/books/tutorial/essential/io/rafs.html

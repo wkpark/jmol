@@ -768,7 +768,7 @@ msgid "For example:"
 msgstr "Par exemple:"
 
 #: org/openscience/jmol/app/Jmol.java:477
-msgid "The -D options are as follows (defaults in parathesis):"
+msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr ""
 "Les options -D sont les suivantes (valeurs par défaut entre parenthèses):"
 

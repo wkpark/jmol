@@ -770,7 +770,7 @@ msgid "For example:"
 msgstr "Por ejemplo:"
 
 #: org/openscience/jmol/app/Jmol.java:477
-msgid "The -D options are as follows (defaults in parathesis):"
+msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr "Las opciones  -D son (valores predeterminados entre paréntesis):"
 
 #: org/openscience/jmol/app/Jmol.java:650

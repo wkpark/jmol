@@ -825,7 +825,7 @@ msgid "For example:"
 msgstr "Například:"
 
 #: org/openscience/jmol/app/Jmol.java:477
-msgid "The -D options are as follows (defaults in parathesis):"
+msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr "-D volby jsou následující (standardní v závorkách):"
 
 #: org/openscience/jmol/app/Jmol.java:650

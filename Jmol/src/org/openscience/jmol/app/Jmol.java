@@ -474,7 +474,7 @@ public class Jmol extends JPanel {
           .println("Jmol -ions myscript.spt -w JPEG:myfile.jpg > output.txt");
       System.out.println();
       System.out.println(GT
-          ._("The -D options are as follows (defaults in parathesis):"));
+          ._("The -D options are as follows (defaults in parenthesis):"));
       System.out.println();
       System.out.println("  cdk.debugging=[true|false] (false)");
       System.out.println("  cdk.debug.stdout=[true|false] (false)");

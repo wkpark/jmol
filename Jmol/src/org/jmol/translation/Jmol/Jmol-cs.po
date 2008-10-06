@@ -674,12 +674,12 @@ msgid "RasMol/Chime compatible axes orientation/rotations"
 msgstr "RasMol/Chime kompatibilní orientace/rotace os"
 
 #: org/openscience/jmol/app/GuiMap.java:182
-msgid "File Preview (needs restarting Jmol)"
+msgid "File Preview (requires restarting Jmol)"
 msgstr "Náhled souboru (vyžaduje restart Jmol)"
 
 #: org/openscience/jmol/app/GuiMap.java:183
 #, fuzzy
-msgid "Clear console button (needs restarting Jmol)"
+msgid "Clear console button (requires restarting Jmol)"
 msgstr "Vyčisti tlačítko konzole (nutný restart Jmolu)"
 
 #: org/openscience/jmol/app/GuiMap.java:184

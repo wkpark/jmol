@@ -670,11 +670,11 @@ msgid "RasMol/Chime compatible axes orientation/rotations"
 msgstr "RasMol/Chime'e uyumlu eksenlerin yönelme/dönüşleri"
 
 #: org/openscience/jmol/app/GuiMap.java:182
-msgid "File Preview (needs restarting Jmol)"
+msgid "File Preview (requires restarting Jmol)"
 msgstr "Dosya önizleme (Jmol'un yeniden başlatılması gerekir)"
 
 #: org/openscience/jmol/app/GuiMap.java:183
-msgid "Clear console button (needs restarting Jmol)"
+msgid "Clear console button (requires restarting Jmol)"
 msgstr "Komut arayüzünü temizle (Jmol'u yeniden başlatmanız gerekir)"
 
 #: org/openscience/jmol/app/GuiMap.java:184

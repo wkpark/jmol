@@ -179,8 +179,8 @@ class GuiMap {
       labels.put("Prefs.showAxes", GT._("Axes"));
       labels.put("Prefs.showBoundingBox", GT._("Bounding Box"));
       labels.put("Prefs.axesOrientationRasmol", GT._("RasMol/Chime compatible axes orientation/rotations"));
-      labels.put("Prefs.openFilePreview", GT._("File Preview (needs restarting Jmol)"));
-      labels.put("Prefs.clearConsoleButton", GT._("Clear console button (needs restarting Jmol)"));
+      labels.put("Prefs.openFilePreview", GT._("File Preview (requires restarting Jmol)"));
+      labels.put("Prefs.clearConsoleButton", GT._("Clear console button (requires restarting Jmol)"));
       labels.put("Prefs.isLabelAtomColor", GT._("Use Atom Color"));
       labels.put("Prefs.isBondAtomColor", GT._("Use Atom Color"));
       labels.put("rotateScriptTip", GT._("Rotate molecule."));

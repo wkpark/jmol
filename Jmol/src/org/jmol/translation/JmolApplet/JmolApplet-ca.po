@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-10-02 22:25+0200\n"
-"PO-Revision-Date: 2008-10-02 15:47+0000\n"
+"PO-Revision-Date: 2008-10-06 13:47+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-10-02 20:00+0000\n"
+"X-Launchpad-Export-Date: 2008-10-06 19:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
@@ -129,12 +129,12 @@ msgstr "  {0} segons"
 
 #: org/jmol/export/dialog/Dialog.java:115
 msgid "File or URL:"
-msgstr ""
+msgstr "Fitxer o URL:"
 
 #: org/jmol/export/dialog/Dialog.java:121
 #: org/jmol/export/dialog/Dialog.java:449
 msgid "File Name:"
-msgstr ""
+msgstr "Nom del fitxer:"
 
 #: org/jmol/export/dialog/Dialog.java:270
 msgid "Image Type"
@@ -177,25 +177,25 @@ msgstr "Avís"
 
 #: org/jmol/export/dialog/Dialog.java:434
 msgid "All Files"
-msgstr ""
+msgstr "Tots els fitxers"
 
 #: org/jmol/export/dialog/Dialog.java:435
 #: org/jmol/export/dialog/Dialog.java:482
 msgid "Cancel"
-msgstr ""
+msgstr "Cancel·la"
 
 #: org/jmol/export/dialog/Dialog.java:437
 msgid "Abort file chooser dialog"
-msgstr ""
+msgstr "Avorta el diàleg de selecció de fitxers"
 
 #: org/jmol/export/dialog/Dialog.java:439
 #: org/jmol/export/dialog/Dialog.java:440
 msgid "Details"
-msgstr ""
+msgstr "Detalls"
 
 #: org/jmol/export/dialog/Dialog.java:441
 msgid "Directory"
-msgstr ""
+msgstr "Directori"
 
 #: org/jmol/export/dialog/Dialog.java:442
 #: org/jmol/export/dialog/Dialog.java:466
@@ -205,15 +205,15 @@ msgstr "Obre"
 
 #: org/jmol/export/dialog/Dialog.java:444
 msgid "Open selected directory"
-msgstr ""
+msgstr "Obre el directori seleccionat"
 
 #: org/jmol/export/dialog/Dialog.java:445
 msgid "Attributes"
-msgstr ""
+msgstr "Atributs"
 
 #: org/jmol/export/dialog/Dialog.java:446
 msgid "Modified"
-msgstr ""
+msgstr "Modificat"
 
 #: org/jmol/export/dialog/Dialog.java:447
 msgid "Generic File"
@@ -332,7 +332,6 @@ msgid "Dutch"
 msgstr "Holandès"
 
 #: org/jmol/i18n/GT.java:120
-#, fuzzy
 msgid "English - United Kingdom"
 msgstr "Anglès (Regne Unit)"
 
@@ -1350,19 +1349,19 @@ msgstr "Estat actual"
 
 #: org/jmol/popup/PopupResourceBundle.java:873
 msgid "File from PDB"
-msgstr ""
+msgstr "Fitxer del PDB"
 
 #: org/jmol/popup/PopupResourceBundle.java:874
 msgid "File or URL"
-msgstr ""
+msgstr "Fitxer o URL"
 
 #: org/jmol/popup/PopupResourceBundle.java:875
 msgid "Load full unit cell"
-msgstr ""
+msgstr "Carrega la cel·la unitat sencera"
 
 #: org/jmol/popup/PopupResourceBundle.java:876
 msgid "Script"
-msgstr ""
+msgstr "Script"
 
 #: org/jmol/popup/PopupResourceBundle.java:879
 #, java-format
@@ -1371,22 +1370,22 @@ msgstr "Fitxer {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:880
 msgid "Script with state"
-msgstr ""
+msgstr "Script amb estat"
 
 #: org/jmol/popup/PopupResourceBundle.java:881
 msgid "Script with history"
-msgstr ""
+msgstr "Script amb historial"
 
 #: org/jmol/popup/PopupResourceBundle.java:882
 #: org/jmol/popup/PopupResourceBundle.java:883
 #: org/jmol/popup/PopupResourceBundle.java:884
 #, java-format
 msgid "{0} Image"
-msgstr ""
+msgstr "Imatge {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:885
 msgid "JVXL Isosurface"
-msgstr ""
+msgstr "Isosuperfície JVXL"
 
 #: org/jmol/popup/PopupResourceBundle.java:886
 #: org/jmol/popup/PopupResourceBundle.java:887

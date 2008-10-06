@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-10-02 22:25+0200\n"
-"PO-Revision-Date: 2008-08-23 16:22+0000\n"
+"PO-Revision-Date: 2008-10-06 13:24+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-08-24 07:24+0000\n"
+"X-Launchpad-Export-Date: 2008-10-06 19:44+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -56,15 +56,15 @@ msgstr ""
 
 #: org/jmol/applet/GuiMap.java:41
 msgid "&Help"
-msgstr ""
+msgstr "&Aide"
 
 #: org/jmol/applet/GuiMap.java:42
 msgid "&Search..."
-msgstr ""
+msgstr "&Recherche"
 
 #: org/jmol/applet/GuiMap.java:43
 msgid "&Commands"
-msgstr ""
+msgstr "&Commandes"
 
 #: org/jmol/applet/GuiMap.java:44
 msgid "Math &Functions"
@@ -75,9 +75,8 @@ msgid "Set &Parameters"
 msgstr ""
 
 #: org/jmol/applet/GuiMap.java:46
-#, fuzzy
 msgid "&More"
-msgstr "Modèle"
+msgstr "&Plus"
 
 #: org/jmol/applet/Jmol.java:661
 #, java-format
@@ -100,7 +99,7 @@ msgstr "Erreur de Fichier:"
 
 #: org/jmol/applet/Jmol.java:1070
 msgid "File creation failed."
-msgstr ""
+msgstr "Création du fichier échoué"
 
 #: org/jmol/applet/Jmol.java:1075
 #, java-format
@@ -125,19 +124,17 @@ msgid "  {0} seconds"
 msgstr "  {0} secondes"
 
 #: org/jmol/export/dialog/Dialog.java:115
-#, fuzzy
 msgid "File or URL:"
-msgstr "Erreur de Fichier:"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:121
 #: org/jmol/export/dialog/Dialog.java:449
-#, fuzzy
 msgid "File Name:"
-msgstr "Entête du fichier"
+msgstr "Nom du Fichier"
 
 #: org/jmol/export/dialog/Dialog.java:270
 msgid "Image Type"
-msgstr ""
+msgstr "Type d'image"
 
 #: org/jmol/export/dialog/Dialog.java:285
 #: org/jmol/export/dialog/Dialog.java:326
@@ -158,13 +155,12 @@ msgstr ""
 #: org/jmol/export/dialog/Dialog.java:375
 #: org/jmol/export/dialog/Dialog.java:485
 msgid "Yes"
-msgstr ""
+msgstr "Oui"
 
 #: org/jmol/export/dialog/Dialog.java:375
 #: org/jmol/export/dialog/Dialog.java:483
-#, fuzzy
 msgid "No"
-msgstr "Aucun"
+msgstr "Non"
 
 #: org/jmol/export/dialog/Dialog.java:377
 #, java-format
@@ -173,18 +169,16 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:378
 msgid "Warning"
-msgstr ""
+msgstr "Avertissement"
 
 #: org/jmol/export/dialog/Dialog.java:434
-#, fuzzy
 msgid "All Files"
-msgstr "Toutes les trames"
+msgstr "Tous les Fichiers"
 
 #: org/jmol/export/dialog/Dialog.java:435
 #: org/jmol/export/dialog/Dialog.java:482
-#, fuzzy
 msgid "Cancel"
-msgstr "Cyan"
+msgstr "Annuler"
 
 #: org/jmol/export/dialog/Dialog.java:437
 msgid "Abort file chooser dialog"
@@ -192,14 +186,12 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:439
 #: org/jmol/export/dialog/Dialog.java:440
-#, fuzzy
 msgid "Details"
-msgstr "Danois"
+msgstr "Détails"
 
 #: org/jmol/export/dialog/Dialog.java:441
-#, fuzzy
 msgid "Directory"
-msgstr "Historique"
+msgstr "répertoire"
 
 #: org/jmol/export/dialog/Dialog.java:442
 #: org/jmol/export/dialog/Dialog.java:466
@@ -209,46 +201,43 @@ msgstr "Ouvrir"
 
 #: org/jmol/export/dialog/Dialog.java:444
 msgid "Open selected directory"
-msgstr ""
+msgstr "Ouvrir le répertoire sélectionné"
 
 #: org/jmol/export/dialog/Dialog.java:445
-#, fuzzy
 msgid "Attributes"
-msgstr "Structures"
+msgstr "Caractéristiques"
 
 #: org/jmol/export/dialog/Dialog.java:446
-#, fuzzy
 msgid "Modified"
-msgstr "Modèle"
+msgstr "Modifié"
 
 #: org/jmol/export/dialog/Dialog.java:447
 msgid "Generic File"
-msgstr ""
+msgstr "Fichier générique"
 
 #: org/jmol/export/dialog/Dialog.java:448
-#, fuzzy
 msgid "Name"
-msgstr "Trame"
+msgstr "Nommer"
 
 #: org/jmol/export/dialog/Dialog.java:450
 msgid "Size"
-msgstr ""
+msgstr "Taille"
 
 #: org/jmol/export/dialog/Dialog.java:451
 msgid "Files of Type:"
-msgstr ""
+msgstr "Fichiers du type :"
 
 #: org/jmol/export/dialog/Dialog.java:452
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: org/jmol/export/dialog/Dialog.java:453
 msgid "Help"
-msgstr ""
+msgstr "Aide"
 
 #: org/jmol/export/dialog/Dialog.java:455
 msgid "FileChooser help"
-msgstr ""
+msgstr "Aide sur le sélecteur de fichiers"
 
 #: org/jmol/export/dialog/Dialog.java:456
 #: org/jmol/export/dialog/Dialog.java:457
@@ -258,48 +247,45 @@ msgstr ""
 #: org/jmol/export/dialog/Dialog.java:458
 #: org/jmol/export/dialog/Dialog.java:459
 msgid "List"
-msgstr ""
+msgstr "Liste"
 
 #: org/jmol/export/dialog/Dialog.java:460
-#, fuzzy
 msgid "Look In:"
-msgstr "Zoom avant"
+msgstr "Rechercher dans :"
 
 #: org/jmol/export/dialog/Dialog.java:462
 msgid "Error creating new folder"
-msgstr ""
+msgstr "Erreur lors de la création du nouveau dossier"
 
 #: org/jmol/export/dialog/Dialog.java:463
 msgid "New Folder"
-msgstr ""
+msgstr "Nouveau dossier"
 
 #: org/jmol/export/dialog/Dialog.java:465
 msgid "Create New Folder"
-msgstr ""
+msgstr "Créer un nouveau dossier"
 
 #: org/jmol/export/dialog/Dialog.java:468
 msgid "Open selected file"
-msgstr ""
+msgstr "Ouvre le fichier sélectionné"
 
 #: org/jmol/export/dialog/Dialog.java:470
 #: org/jmol/export/dialog/Dialog.java:473
 #: org/jmol/popup/PopupResourceBundle.java:878
-#, fuzzy
 msgid "Save"
-msgstr "Etat"
+msgstr "Sauvegarder"
 
 #: org/jmol/export/dialog/Dialog.java:472
-#, fuzzy
 msgid "Save selected file"
-msgstr "Sélectionner site"
+msgstr "Sauvegarder le fichier sélectionné"
 
 #: org/jmol/export/dialog/Dialog.java:474
 msgid "Save In:"
-msgstr ""
+msgstr "Sauver dans:"
 
 #: org/jmol/export/dialog/Dialog.java:475
 msgid "Update"
-msgstr ""
+msgstr "Mise à jour"
 
 #: org/jmol/export/dialog/Dialog.java:477
 msgid "Update directory listing"
@@ -307,23 +293,23 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:478
 msgid "Up"
-msgstr ""
+msgstr "Haut"
 
 #: org/jmol/export/dialog/Dialog.java:479
 msgid "Up One Level"
-msgstr ""
+msgstr "Remonter d'un niveau"
 
 #: org/jmol/export/dialog/Dialog.java:484
 msgid "OK"
-msgstr ""
+msgstr "Ok"
 
 #: org/jmol/export/dialog/FilePreview.java:70
 msgid "Preview"
-msgstr ""
+msgstr "Aperçu"
 
 #: org/jmol/export/dialog/FilePreview.java:90
 msgid "Append models"
-msgstr ""
+msgstr "Ajouter les modèles"
 
 #: org/jmol/i18n/GT.java:116
 msgid "Catalan"
@@ -343,7 +329,7 @@ msgstr "Néerlandais"
 
 #: org/jmol/i18n/GT.java:120
 msgid "English - United Kingdom"
-msgstr ""
+msgstr "Anglais - Royaume Uni"
 
 #: org/jmol/i18n/GT.java:121
 msgid "English"
@@ -395,7 +381,7 @@ msgstr "Russe"
 
 #: org/jmol/i18n/GT.java:133
 msgid "Slovenian"
-msgstr ""
+msgstr "Slovène"
 
 #: org/jmol/i18n/GT.java:134
 msgid "Spanish"
@@ -419,9 +405,9 @@ msgid "No atoms selected -- nothing to do!"
 msgstr "Aucun atome sélectionné -- rien à faire!"
 
 #: org/jmol/minimize/Minimizer.java:258
-#, fuzzy, java-format
+#, java-format
 msgid "{0} atoms will be minimized."
-msgstr "{0} atomes supprimés"
+msgstr ""
 
 #: org/jmol/minimize/Minimizer.java:350
 #, java-format
@@ -576,9 +562,8 @@ msgid "Main Menu"
 msgstr "Menu Principal"
 
 #: org/jmol/popup/PopupResourceBundle.java:575
-#, fuzzy
 msgid "Biomolecules"
-msgstr "Molécule"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:576
 #, java-format
@@ -594,7 +579,7 @@ msgstr "charger la biomolécule {0} ({1} atomes)"
 #: org/jmol/popup/PopupResourceBundle.java:701
 #: org/jmol/popup/PopupResourceBundle.java:710
 msgid "None"
-msgstr "Aucun"
+msgstr "Aucun(e)"
 
 #: org/jmol/popup/PopupResourceBundle.java:583
 msgid "Display Selected Only"
@@ -673,7 +658,7 @@ msgstr "Nucléique"
 
 #: org/jmol/popup/PopupResourceBundle.java:605
 msgid "DNA"
-msgstr "ADM"
+msgstr "ADN"
 
 #: org/jmol/popup/PopupResourceBundle.java:606
 msgid "RNA"
@@ -729,7 +714,7 @@ msgstr "Glucide"
 
 #: org/jmol/popup/PopupResourceBundle.java:623
 msgid "None of the above"
-msgstr "Aucun des précédents"
+msgstr "Aucun ci-dessus"
 
 #: org/jmol/popup/PopupResourceBundle.java:625
 msgid "Style"
@@ -807,7 +792,7 @@ msgstr "Liens"
 #: org/jmol/popup/PopupResourceBundle.java:690
 #: org/jmol/popup/PopupResourceBundle.java:794
 msgid "On"
-msgstr "On"
+msgstr "Activer"
 
 #: org/jmol/popup/PopupResourceBundle.java:646
 #: org/jmol/popup/PopupResourceBundle.java:647
@@ -939,7 +924,7 @@ msgstr "Vision yeux parallèles"
 #: org/jmol/popup/PopupResourceBundle.java:708
 #: org/jmol/popup/PopupResourceBundle.java:775
 msgid "Labels"
-msgstr "Textes"
+msgstr "Étiquettes"
 
 #: org/jmol/popup/PopupResourceBundle.java:711
 msgid "With Element Symbol"
@@ -1239,7 +1224,6 @@ msgstr "Redémarrer"
 
 #: org/jmol/popup/PopupResourceBundle.java:833
 #: org/jmol/popup/PopupResourceBundle.java:864
-#, fuzzy
 msgid "Measurements"
 msgstr "Mesures"
 
@@ -1364,23 +1348,21 @@ msgid "File from PDB"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:874
-#, fuzzy
 msgid "File or URL"
-msgstr "Erreur de Fichier:"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:875
-#, fuzzy
 msgid "Load full unit cell"
-msgstr "Pas de cellule unitaire"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:876
 msgid "Script"
-msgstr ""
+msgstr "Script"
 
 #: org/jmol/popup/PopupResourceBundle.java:879
-#, fuzzy, java-format
+#, java-format
 msgid "File {0}"
-msgstr "Voir {0}"
+msgstr "Fichier {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:880
 msgid "Script with state"
@@ -1403,9 +1385,9 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:886
 #: org/jmol/popup/PopupResourceBundle.java:887
-#, fuzzy, java-format
+#, java-format
 msgid "{0} 3D Model"
-msgstr "Tous les {0} modèles"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:891
 msgid "Extract MOL data"
@@ -1568,14 +1550,14 @@ msgid "residue specification (ALA, AL?, A*) expected"
 msgstr "spécification de résidu (ALA, AL?, A*) attendue"
 
 #: org/jmol/viewer/Compiler.java:2499
-#, fuzzy, java-format
+#, java-format
 msgid "{0} expected"
-msgstr "virgule attendue"
+msgstr ""
 
 #: org/jmol/viewer/Compiler.java:2500
-#, fuzzy, java-format
+#, java-format
 msgid "{0} unexpected"
-msgstr "couleur attendue"
+msgstr ""
 
 #: org/jmol/viewer/Compiler.java:2501
 #, java-format
@@ -1823,9 +1805,9 @@ msgid "unrecognized object"
 msgstr "objet non reconnu"
 
 #: org/jmol/viewer/Eval.java:11386
-#, fuzzy, java-format
+#, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr "Paramètre {0} non reconnu"
+msgstr ""
 
 #: org/jmol/viewer/Eval.java:11387
 #, java-format
@@ -1867,18 +1849,6 @@ msgstr ""
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
 
-#, fuzzy
-#~ msgid "Load PDB"
-#~ msgstr "Charger"
-
-#, fuzzy
-#~ msgid "SPT State"
-#~ msgstr "Etat"
-
-#, fuzzy
-#~ msgid "SPT History"
-#~ msgstr "Historique"
-
 #~ msgid "all"
 #~ msgstr "tout"
 
@@ -1899,10 +1869,6 @@ msgstr ""
 
 #~ msgid "Unit Cell"
 #~ msgstr "Cellule Unitaire"
-
-#, fuzzy
-#~ msgid "commandExpected"
-#~ msgstr "commande attendue"
 
 #~ msgid "comma or right parenthesis expected"
 #~ msgstr "virgule ou parenthèse fermante attendue"
@@ -2128,10 +2094,6 @@ msgstr ""
 
 #~ msgid "Jmol Colors"
 #~ msgstr "Couleurs Jmol"
-
-#, fuzzy
-#~ msgid "or dotted"
-#~ msgstr "Pointillé"
 
 #~ msgid "Except Solvent"
 #~ msgstr "Excepté le solvant"

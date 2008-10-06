@@ -545,7 +545,7 @@ java.lang.NullPointerException
       try {
         if (name.indexOf(":\\") == 1 || name.indexOf(":/") == 1)
           name = "file:/" + name;
-        else if (name.indexOf("/") == 0)
+        else if (name.indexOf("/") == 0 && viewer.getBooleanProperty("_signedApplet"))
           name = "file:" + name;
         url = new URL(appletDocumentBase, name);
       } catch (MalformedURLException e) {

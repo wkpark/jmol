@@ -108,7 +108,7 @@ class Cylinder3D {
     this.endcaps = endcaps;
     shadesA = g3d.getShades(this.colixA = colixA);
     shadesB = g3d.getShades(this.colixB = colixB);
-    calcArgbEndcap(true);
+    calcArgbEndcap(true, false);
 
     generateBaseEllipse();
 
@@ -169,7 +169,7 @@ class Cylinder3D {
     this.shadesA = g3d.getShades(this.colixA = colixA);
     this.shadesB = g3d.getShades(this.colixB = colixB);
     this.endcaps = endcaps;
-    calcArgbEndcap(true);
+    calcArgbEndcap(true, true);
 
     if (diameter > 0)
       generateBaseEllipsePrecisely();
@@ -249,7 +249,7 @@ class Cylinder3D {
     //float r2 = dxB*dxB + dyB*dyB + dzB*dzB;
     //System.out.println(r2);
     this.endcaps = endcap;
-    calcArgbEndcap(false);
+    calcArgbEndcap(false, true);
     generateBaseEllipsePrecisely();
     if (endcaps == Graphics3D.ENDCAPS_FLAT)
       renderFlatEndcap(false);
@@ -624,21 +624,24 @@ class Cylinder3D {
     }
   }
 
-  private void calcArgbEndcap(boolean tCylinder) {
+  private void calcArgbEndcap(boolean tCylinder, boolean isFloat) {
     tEndcapOpen = false;
-    if ((endcaps == Graphics3D.ENDCAPS_SPHERICAL) || (dzB == 0))
+    float dzf = (isFloat ? dzBf : (float) dzB);
+    if (endcaps == Graphics3D.ENDCAPS_SPHERICAL || dzf == 0)
       return;
     xEndcap = xA;
     yEndcap = yA;
     zEndcap = zA;
     int[] shadesEndcap;
-    if (dzB >= 0 || !tCylinder) {
-      intensityEndcap = Shade3D.calcIntensity(-dxB, -dyB, dzB);
+    float dxf = (isFloat ? dxBf : (float) dxB);
+    float dyf = (isFloat ? dyBf : (float) dyB);
+    if (dzf >= 0 || !tCylinder) {
+      intensityEndcap = Shade3D.calcIntensity(-dxf, -dyf, dzf);
       colixEndcap = colixA;
       shadesEndcap = shadesA;
       //Logger.debug("endcap is A");
     } else {
-      intensityEndcap = Shade3D.calcIntensity(dxB, dyB, -dzB);
+      intensityEndcap = Shade3D.calcIntensity(dxf, dyf, -dzf);
       colixEndcap = colixB;
       shadesEndcap = shadesB;
       xEndcap += dxB;

@@ -118,7 +118,7 @@ public class GT {
       new Language("da",    GT._("Danish"),                   false),
       new Language("nl",    GT._("Dutch"),                    true),
       new Language("en_GB", GT._("English - United Kingdom"), true),
-      new Language("en_US", GT._("English"),                  true),
+      new Language("en_US", GT._("English"),                  true), // global default for "en" will be "en_US"
       new Language("et",    GT._("Estonian"),                 true),
       new Language("fr",    GT._("French"),                   true),
       new Language("de",    GT._("German"),                   true),
@@ -188,7 +188,7 @@ public class GT {
       }
     }
     if (language == null)
-      language = "en_US";
+      language = "en";
 
     int i;
     String la = language;
@@ -222,8 +222,8 @@ public class GT {
     if ((language = getSupported(la_co_va, false)) == null
         && (language = getSupported(la_co, false)) == null
         && (language = getSupported(la, false)) == null) {
-      la = language = "en";
-      Logger.debug("English: no need for gettext wrapper");
+      language = "en";
+      Logger.debug(language + " not supported -- using en");
       return;
     }
     la_co_va = null;
@@ -242,9 +242,6 @@ public class GT {
       la = language.substring(0, 2);
     }
 
-    //if ("en".equals(la)) //no variants on Engish for now
-    //  return;
-
     /*
      * Time to determine exactly what .po files we actually have.
      * No need to check a file twice.
@@ -254,11 +251,12 @@ public class GT {
     la_co = getSupported(la_co, false);
     la = getSupported(la, false);
 
-    if (la == la_co)
+    if (la == la_co || "en_US".equals(la))
       la = null;
     if (la_co == la_co_va)
       la_co = null;
-
+    if ("en_US".equals(la_co))
+      return;
     if (Logger.debugging)
       Logger.debug("Instantiating gettext wrapper for " + language
           + " using files for language:" + la + " country:" + la_co
@@ -295,7 +293,7 @@ public class GT {
     Class bundleClass = null;
     try {
       bundleClass = Class.forName(name_lang);
-    } catch (ClassNotFoundException e) {
+    } catch (Exception e) {
       Logger.error("GT could not find the class " + name_lang);
     }
     if ((bundleClass != null)
@@ -377,7 +375,7 @@ public class GT {
   }
 
   private String getString(String string) {
-    if (!doTranslate)
+    if (!doTranslate || translationResourcesCount == 0)
       return string;
     for (int bundle = 0; bundle < translationResourcesCount; bundle++) {
       try {
@@ -387,10 +385,8 @@ public class GT {
         // Normal
       }
     }
-    if (translationResourcesCount > 0) {
-      if (Logger.debugging) {
-        Logger.debug("No trans, using default: " + string);
-      }
+    if (Logger.debugging) {
+      Logger.info("No trans, using default: " + string);
     }
     return string;
   }

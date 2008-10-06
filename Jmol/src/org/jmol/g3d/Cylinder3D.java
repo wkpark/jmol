@@ -252,7 +252,7 @@ class Cylinder3D {
     calcArgbEndcap(false, true);
     generateBaseEllipsePrecisely();
     if (endcaps == Graphics3D.ENDCAPS_FLAT)
-      renderFlatEndcap(false);
+      renderFlatEndcapPrecisely(false);
     g3d.setZMargin(5);
     for (int i = rasterCount; --i >= 0;)
       plotRasterCone(i, doFill);

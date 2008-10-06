@@ -261,34 +261,27 @@ public class GT {
       Logger.debug("Instantiating gettext wrapper for " + language
           + " using files for language:" + la + " country:" + la_co
           + " variant:" + la_co_va);
-    String className;
+    if (!ignoreApplicationBundle)
+      addBundles("Jmol", la_co_va, la_co, la);
+    addBundles("JmolApplet", la_co_va, la_co, la);
+  }
+  
+  private void addBundles(String type, String la_co_va, String la_co, String la) {
     try {
-      if (!ignoreApplicationBundle) {
-        className = "org.jmol.translation.Jmol.Messages_";
+        String className = "org.jmol.translation." + type + ".Messages_";
         if (la_co_va != null)
           addBundle(className + la_co_va);
         if (la_co != null)
           addBundle(className + la_co);
         if (la != null)
           addBundle(className + la);
-      }
     } catch (Exception exception) {
       Logger.error("Some exception occurred!", exception);
       translationResources = null;
-    }
-    try {
-      className = "org.jmol.translation.JmolApplet.Messages_";
-      if (la_co_va != null)
-        addBundle(className + la_co_va);
-      if (la_co != null)
-        addBundle(className + la_co);
-      if (la != null)
-        addBundle(className + la);
-    } catch (Exception exception) {
-      Logger.error("Some exception occurred!", exception);
+      translationResourcesCount = 0;
     }
   }
-  
+
   private void addBundle(String name_lang) {
     Class bundleClass = null;
     try {

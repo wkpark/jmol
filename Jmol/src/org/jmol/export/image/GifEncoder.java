@@ -29,11 +29,18 @@
 // fine Java utilities: http://www.acme.com/java/
 //
 //
-// Adapted by Bob Hanson 10/6/2008:
-//  -- uses simple Hashtable with Integer()
-//  -- uses adaptive color reduction to generate fewer than 256 colors
-// 
 
+
+/* Adapted by Bob Hanson 10/6/2008:
+ * -- uses simple Hashtable with Integer()
+ * -- uses adaptive color reduction to generate 256 colors
+ * 
+ * reduction algorithm simply removes lower bits of red, green, and blue
+ * one at a time until the number of sets is <= 256. Then it creates a
+ * color for the set that is a weighted average of all the colors for that
+ * set. 
+ * 
+ */
 package org.jmol.export.image;
 
 import java.io.*;

@@ -228,7 +228,7 @@ public class GifEncoder extends ImageEncoder {
 //    }
     
     Logger.debug("# colors = " + nTotal);
-    out: while (true) {
+    while (true) {
       nTotal = index;
       colorHash = new Hashtable();
       AdaptiveColorCollection acc;

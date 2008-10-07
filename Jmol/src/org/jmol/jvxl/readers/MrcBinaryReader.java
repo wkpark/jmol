@@ -23,6 +23,8 @@
  */
 package org.jmol.jvxl.readers;
 
+import org.jmol.api.Interface;
+import org.jmol.api.SymmetryInterface;
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.Logger;
 
@@ -90,6 +92,7 @@ class MrcBinaryReader extends VolumeFileReader {
     float rms;
     int nlabel;
     String[] labels = new String[10];
+    SymmetryInterface unitCell;
     
     MrcHeader() {
       try {
@@ -110,6 +113,9 @@ class MrcBinaryReader extends VolumeFileReader {
         alpha = mrcDoc.readFloat();
         beta = mrcDoc.readFloat();
         gamma = mrcDoc.readFloat();
+        
+        unitCell = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+        unitCell.setUnitCell(new float[] {a, b, c, alpha, beta, gamma} );
 
         mapc = mrcDoc.readInt();
         mapr = mrcDoc.readInt();
@@ -154,7 +160,9 @@ class MrcBinaryReader extends VolumeFileReader {
   }
   
   protected void readAtomCountAndOrigin() {
-    atomCount = 0;
+    JvxlReader.jvxlCheckAtomLine(isXLowToHigh, isAngstroms, "0",
+        "0 " + (-mrcHeader.originX) + " " + (-mrcHeader.originY) + " " +  (-mrcHeader.originZ), 
+        jvxlFileHeaderBuffer);
     volumetricOrigin.set(-mrcHeader.originX, -mrcHeader.originY, -mrcHeader.originZ);
   }
 

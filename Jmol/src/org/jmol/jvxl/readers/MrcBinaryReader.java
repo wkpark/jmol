@@ -160,18 +160,19 @@ class MrcBinaryReader extends VolumeFileReader {
 
   protected void readVoxelVector(int voxelVectorIndex) {
     //assuming standard orthogonality here
+    // needs fixing...
     switch (voxelVectorIndex) {
     case 0:
-      voxelCounts[0] = mrcHeader.nx;
-      volumetricVectors[0].set(mrcHeader.a / mrcHeader.mx, 0, 0);
+      voxelCounts[mrcHeader.maps - 1] = mrcHeader.nx;
+      volumetricVectors[mrcHeader.maps - 1].set(mrcHeader.a / mrcHeader.mx, 0, 0);
       break;
     case 1:
-      voxelCounts[1] = mrcHeader.ny;
-      volumetricVectors[1].set(0, mrcHeader.b / mrcHeader.my, 0);
+      voxelCounts[mrcHeader.mapr - 1] = mrcHeader.ny;
+      volumetricVectors[mrcHeader.mapr - 1].set(0, mrcHeader.b / mrcHeader.my, 0);
       break;
     case 2:
-      voxelCounts[2] = mrcHeader.nz;
-      volumetricVectors[2].set(0, 0, mrcHeader.c / mrcHeader.mz);
+      voxelCounts[mrcHeader.mapc - 1] = mrcHeader.nz;
+      volumetricVectors[mrcHeader.mapc - 1].set(0, 0, mrcHeader.c / mrcHeader.mz);
       break;
     }
   }  

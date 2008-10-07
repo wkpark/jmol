@@ -37,6 +37,8 @@
 package org.jmol.export.image;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -87,6 +89,64 @@ public class GifEncoder extends ImageEncoder {
     this.interlace = interlace;
   }
 
+  
+  class ColorItem {
+
+    AdaptiveColorCollection acc;
+    int rgb;
+    int rgb2;
+    int count;
+    int index;
+    boolean isTransparent;
+
+    ColorItem(int rgb, int count, int index, boolean isTransparent) {
+      this.rgb = this.rgb2 = rgb;
+      this.count = count;
+      this.index = index;
+      this.isTransparent = isTransparent;
+    }
+  }
+
+  class ColorVector extends Vector {
+    void sort() {
+      CountComparator comparator = new CountComparator();
+      Arrays.sort(elementData, comparator);
+    }
+    
+    class CountComparator implements Comparator {
+      public int compare(Object arg0, Object arg1) {
+        ColorItem a = (ColorItem)arg0;
+        ColorItem b = (ColorItem)arg1;
+        return (a == null ? 1 : b == null ? -1 : a.count < b.count ? -1 : a.count > b.count ? 1 : 0);
+      }    
+    }
+  }
+  
+  class AdaptiveColorCollection {
+    int rgb;
+    int index;
+    long red;
+    long green;
+    long blue;
+    int count;
+    AdaptiveColorCollection(int rgb) {
+      this.rgb = rgb;
+    }
+    
+    void addRgb(int rgb, int count) {
+      this.count += count;
+      blue += (rgb & 0xFF) * count;
+      green += ((rgb >> 8) & 0xFF) * count;
+      red += ((rgb >> 16) & 0xFF) * count;
+    }  
+    void setRgb(byte[] reds, byte[] grns, byte[] blus) {
+      //System.out.println("setting " + index + " " + red + " " + green + " " + blue + " " + count);
+      reds[index] = (byte) ((red / count) & 0xff);
+      grns[index] = (byte) ((green / count) & 0xff);
+      blus[index] = (byte) ((blue / count) & 0xff);
+    }
+  }
+
   int width, height;
   int[][] rgbPixels;
 
@@ -105,14 +165,14 @@ public class GifEncoder extends ImageEncoder {
   }
 
   Hashtable colorHash;
-  Vector colorVector;
+  ColorVector colorVector;
 
   void encodeDone() throws IOException {
     int transparentIndex = -1;
     int transparentRgb = -1;
     // Put all the pixels into a hash table.
     colorHash = new Hashtable();
-    colorVector = new Vector();
+    colorVector = new ColorVector();
     int index = 0;
     String srgb;
     for (int row = 0; row < height; ++row) {
@@ -131,14 +191,14 @@ public class GifEncoder extends ImageEncoder {
             rgbPixels[row][col] = rgb = transparentRgb;
           }
         }
-        GifEncoderHashitem item = (GifEncoderHashitem) colorHash
-            .get(srgb = Integer.toHexString(rgb));
+        ColorItem item = (ColorItem) colorHash
+            .get(srgb = getKey(rgb));
         if (item == null) {
           if (index < 0)
             throw new IOException("too many colors for a GIF");
           //if (index >= 256)
           //index = 255;
-          item = new GifEncoderHashitem(rgb, 1, index, isTransparent);
+          item = new ColorItem(rgb, 1, index, isTransparent);
           ++index;
           colorHash.put(srgb, item);
           colorVector.add(item);
@@ -146,23 +206,30 @@ public class GifEncoder extends ImageEncoder {
           ++item.count;
       }
     }
-
-    Logger.debug("# colors = " + index);
-    //for (int i = 0; i < index; i++)
-    //System.out.println(i + "\t" + items[i].count + "\t"
-    //  + Integer.toHexString(items[i].rgb));
+    
+    colorVector.sort();
+    
     int mask = 0x010101;
     colorHash = null;
     int nTotal = index;
+  
+    int nMax = Math.max(index - 1, 0); // leave top 1 untouched
+
+//    for (int i = 0; i < index; i++) {
+//      ColorItem item = (ColorItem) colorVector.get(i);
+//      System.out.println(i + "\t" + item.count + "\t" + getKey(item.rgb));
+//    }
+    
+    Logger.debug("# colors = " + nTotal);
     out: while (true) {
       nTotal = index;
       colorHash = new Hashtable();
       AdaptiveColorCollection acc;
-      for (int i = 0; i < index; i++) {
-        GifEncoderHashitem item = (GifEncoderHashitem) colorVector.get(i);
+      for (int i = 0; i < nMax; i++) {
+        ColorItem item = (ColorItem) colorVector.get(i);
         int rgb = (nTotal <= 256 ? item.rgb : item.rgb & ~mask);
         item.rgb2 = rgb;
-        srgb = Integer.toHexString(rgb);
+        srgb = getKey(rgb);
         if ((acc = (AdaptiveColorCollection) colorHash.get(srgb)) == null) {
           colorHash.put(srgb, acc = new AdaptiveColorCollection(rgb));
         } else {
@@ -192,11 +259,14 @@ public class GifEncoder extends ImageEncoder {
     byte[] blus = new byte[mapSize];
     Hashtable ht = new Hashtable();
     for (int i = 0; i < index; i++) {
-      GifEncoderHashitem item = (GifEncoderHashitem) colorVector.get(i);
+      ColorItem item = (ColorItem) colorVector.get(i);
       int rgb = item.rgb;
       int count = item.count;
+      srgb = getKey(rgb);
+      if (item.acc == null)
+        colorHash.put(srgb, item.acc = new AdaptiveColorCollection(rgb));
       item.acc.addRgb(rgb, count);
-      ht.put(Integer.toHexString(rgb), item.acc);
+      ht.put(srgb, item.acc);
     }
     int iindex = 0;
     for (Enumeration e = colorHash.elements(); e.hasMoreElements();) {
@@ -210,12 +280,16 @@ public class GifEncoder extends ImageEncoder {
         logColors, reds, grns, blus);
   }
 
+  private static String getKey(int rgb) {
+    return Integer.toHexString(rgb).substring(2);
+  }
+
   byte GetPixel(int x, int y) {
     // now must shift rgb until it corresponds to a node
     int rgb = rgbPixels[y][x];
     int iindex;
     try{
-      iindex = ((AdaptiveColorCollection) colorHash.get(Integer.toHexString(rgb))).index;
+      iindex = ((AdaptiveColorCollection) colorHash.get(getKey(rgb))).index;
     } catch (Exception e) {
       iindex = 0;
     }
@@ -660,47 +734,5 @@ public class GifEncoder extends ImageEncoder {
       a_count = 0;
     }
   }
-
 }
 
-class GifEncoderHashitem {
-
-  AdaptiveColorCollection acc;
-  int rgb;
-  int rgb2;
-  int count;
-  int index;
-  boolean isTransparent;
-
-  GifEncoderHashitem(int rgb, int count, int index, boolean isTransparent) {
-    this.rgb = this.rgb2 = rgb;
-    this.count = count;
-    this.index = index;
-    this.isTransparent = isTransparent;
-  }
-}
-
-class AdaptiveColorCollection {
-  int rgb;
-  int index;
-  long red;
-  long green;
-  long blue;
-  int count;
-  AdaptiveColorCollection(int rgb) {
-    this.rgb = rgb;
-  }
-  
-  void addRgb(int rgb, int count) {
-    this.count += count;
-    blue += (rgb & 0xFF) * count;
-    green += ((rgb >> 8) & 0xFF) * count;
-    red += ((rgb >> 16) & 0xFF) * count;
-  }  
-  void setRgb(byte[] reds, byte[] grns, byte[] blus) {
-    //System.out.println("setting " + index + " " + red + " " + green + " " + blue + " " + count);
-    reds[index] = (byte) ((red / count) & 0xff);
-    grns[index] = (byte) ((green / count) & 0xff);
-    blus[index] = (byte) ((blue / count) & 0xff);
-  }
-}

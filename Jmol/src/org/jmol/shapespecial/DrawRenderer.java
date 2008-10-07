@@ -75,6 +75,7 @@ public class DrawRenderer extends MeshRenderer {
             || drawType == JmolConstants.DRAW_ARROW
             || drawType == JmolConstants.DRAW_ARC) 
         && vertexCount >= 2);
+    boolean isSegments = (drawType == JmolConstants.DRAW_LINE_SEGMENT);
     if (width > 0 && isCurved) {
       pt1f.set(0, 0, 0);
       int n = (drawType == JmolConstants.DRAW_ARC ? 2 :vertexCount);
@@ -113,6 +114,7 @@ public class DrawRenderer extends MeshRenderer {
             mesh.fillTriangles);
       break;
     case JmolConstants.DRAW_CURVE:
+    case JmolConstants.DRAW_LINE_SEGMENT:
       //unnecessary
       break;
     case JmolConstants.DRAW_ARC:
@@ -195,6 +197,9 @@ public class DrawRenderer extends MeshRenderer {
                 + (i == nPoints - 2 ? 1 : 2)]);
         i0 = i;
       }
+    } else if (isSegments) {
+      for (int i = 0; i < nPoints - 1; i++)
+        drawLine(i, i + 1, true);
     }
     
     if (isDrawPickMode && !isGenerator) {

@@ -1403,7 +1403,7 @@ class Eval {
     if (ignoreSubset)
       pcStart = -pcStart;
     ignoreSubset |= isSyntaxCheck;
-    if (pcStop == 0)
+    if (pcStop == 0 && code.length > pcStart)
       pcStop = pcStart + 1;
     //    if (logMessages)
     //    viewer.scriptStatus("start to evaluate expression");
@@ -4256,6 +4256,7 @@ class Eval {
 
   private void load() throws ScriptException {
     boolean isAppend = false;
+    Vector firstLastSteps = null;
     int modelCount = viewer.getModelCount()
         - (viewer.getFileName().equals("zapped") ? 1 : 0);
     boolean appendNew = viewer.getAppendNew();
@@ -4294,8 +4295,17 @@ class Eval {
         i = 2;
         loadScript.append(" " + modelName);
         isAppend = (modelName.equalsIgnoreCase("append"));
-        if (modelName.equalsIgnoreCase("trajectory"))
+        if (modelName.equalsIgnoreCase("trajectory")) {
           params[0] = -1;
+          if (isPoint3f(i)) {
+            Point3f pt = getPoint3f(i, false);
+            i = iToken;
+            //first last stride
+            params[1] = (int) pt.x;
+            params[2] = (int) pt.y;
+            params[3] = (int) pt.z;
+          }
+        }
       } else {
         modelName = "fileset";
       }
@@ -4322,7 +4332,7 @@ class Eval {
       }
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.point3f || theTok == Token.integer
-        || theTok == Token.identifier) {
+        || theTok == Token.identifier && tokAt(i + 3) != Token.coord) {
       if ((filename = parameterAsString(i++)).length() == 0)
         filename = viewer.getFullPathName();
       if (filename == null) {
@@ -4438,18 +4448,46 @@ class Eval {
         modelName = parameterAsString(i++);
         loadScript.append(" ").append(Escape.escape(modelName));
       }
-      String[] filenames = new String[statementLength - i];
-      int ipt = 0;
+      Point3f pt = null;
+      Vector fNames = new Vector();
       while (i < statementLength) {
-        filename = parameterAsString(i);
-        filenames[ipt++] = filename;
-        i++;
+        switch (tokAt(i)) {
+        case Token.identifier:
+          if (parameterAsString(i).equalsIgnoreCase("filter")) {
+            String filter = stringParameter(++i);
+            htParams.put("filter", filter);
+            loadScript.append(" FILTER ").append(Escape.escape(filter));
+            ++i;
+            continue;
+          }
+          error(ERROR_invalidArgument);
+        case Token.coord:
+          params[0] = Integer.MIN_VALUE; //trajectory
+          if (firstLastSteps == null) {
+            firstLastSteps = new Vector();
+            pt = new Point3f(0, 0, 1);
+          }
+          if (isPoint3f(++i)) {
+            pt = getPoint3f(i, false);
+            i = iToken + 1;
+          }
+        }
+        fNames.add(filename = parameterAsString(i++));
+        if (pt != null) {
+          firstLastSteps.addElement(new int[] { (int) pt.x, (int) pt.y,
+              (int) pt.z });
+          loadScript.append(" coord " + Escape.escape(pt));
+        }
+        loadScript.append(" /*file*/").append(Escape.escape(filename));
       }
-      nFiles = filenames.length;
+      if (firstLastSteps != null)
+        htParams.put("firstLastSteps", firstLastSteps);
+      nFiles = fNames.size();
+      String[] filenames = new String[nFiles];
+      for (int j = 0; j < nFiles; j++)
+        filenames[j] = (String) fNames.get(j);
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck) {
-        viewer.openFiles(modelName, filenames, null, isAppend);
-        for (i = 0; i < nFiles; i++)
-          loadScript.append(" /*file*/").append(Escape.escape(filenames[i]));
+        viewer.openFiles(modelName, filenames, null, isAppend, htParams);
       }
     }
     if (isSyntaxCheck && !(isScriptCheck && fileOpenCheck))
@@ -8834,7 +8872,7 @@ class Eval {
       isCommand = true;
       pt++;
     }
-    int argCount = args.length;
+    int argCount = (isCommand ? statementLength : args.length);
     int tok = (isCommand && args.length == 1 ? Token.clipboard : tokAt(pt, args));
     int len = 0;
     int width = -1;
@@ -8846,6 +8884,7 @@ class Eval {
     boolean isCoord = false;
     boolean isShow = false;
     boolean isExport = false;
+    BitSet bsFrames = null;
     int quality = Integer.MIN_VALUE;
     if (tok == Token.string) {
       Token t = Token.getTokenFromName(Token.sValue(args[pt]));
@@ -8933,9 +8972,15 @@ class Eval {
     case Token.image:
     case Token.identifier:
     case Token.string:
+    case Token.frame:
       type = Token.sValue(tokenAt(pt, args)).toLowerCase();
       if (tok == Token.image) {
         pt++;
+      } else if (tok == Token.frame) {
+        bsFrames = expression(args, ++pt, 0, true, false, true, true);
+        if (!isSyntaxCheck)
+          bsFrames = viewer.getModelBitSet(bsFrames);
+        pt = iToken + 1;
       } else if (Parser.isOneOf(type, driverList.toLowerCase())) {
         // povray, maya, vrml
         pt++;
@@ -9011,7 +9056,7 @@ class Eval {
     default:
       error(ERROR_invalidArgument);
     }
-    if (type.equals("image")) {
+    if (type.equals("image") || type.equals("frame")) {
       if (fileName != null && fileName.indexOf(".") >= 0)
         type = fileName.substring(fileName.lastIndexOf(".") + 1).toUpperCase();
       else
@@ -9131,7 +9176,7 @@ class Eval {
     } else {
       if (bytes == null)
         bytes = data;
-      String msg = viewer.createImage(fileName, type, bytes, quality, width, height);
+      String msg = viewer.createImage(fileName, type, bytes, quality, width, height, bsFrames);
       if (msg != null)
         scriptStatus(!msg.startsWith("OK") ? msg : msg
 //          + (len >= 0 ? "; length=" + len : "")
@@ -9821,6 +9866,11 @@ class Eval {
         String str = parameterAsString(i);
         if (str.equalsIgnoreCase("id")) {
           i = setShapeId(JmolConstants.SHAPE_DRAW, ++i, idSeen);
+          break;
+        }
+        if (str.equalsIgnoreCase("LINE")) {
+          propertyName = "line";          
+          propertyValue = Boolean.TRUE;
           break;
         }
         if (str.equalsIgnoreCase("FIXED")) {
@@ -11156,6 +11206,7 @@ class Eval {
           Logger.info("reading isosurface data from " + fullPathNameReturn[0]);
         setShapeProperty(iShape, "commandOption", "FILE" + (nFiles++) + "="
             + Escape.escape(fullPathNameReturn[0]));
+        setShapeProperty(iShape, "fileName", fullPathNameReturn[0]);
         propertyValue = t;
         break;
       default:
@@ -12505,36 +12556,72 @@ class Eval {
         // quaternion(vector, theta)
         // quaternion(q0, q1, q2, q3)
         // quaternion("{x, y, z, w"})
+        // quaternion(center, X, XY)
+        // quaternion(q, "id", center)  // draw code
         // axisangle(vector, theta)
         // axisangle(x, y, z, theta)
         // axisangle("{x, y, z, theta"})
-        if (args.length != 1 && args.length != 2 && args.length != 4
-            || args.length == 2 && args[0].tok != Token.point3f)
+        switch (args.length) {
+        case 1:
+        case 4:
+          break;
+        case 2:
+          if (args[0].tok != Token.point3f)
+            return false;
+          break;
+        case 3:
+          if (tok != Token.quaternion) 
+            return false;
+          if (args[0].tok == Token.point4f) {
+            if (args[2].tok != Token.point3f && args[2].tok != Token.bitset)
+              return false;
+            break;
+          }
+          for (int i = 0; i < 3; i++)
+            if (args[i].tok != Token.point3f && args[i].tok != Token.bitset)
+              return false;
+          break;
+        default:
           return false;
+        }
         if (isSyntaxCheck)
           return addX(new Point4f(0, 0, 0, 1));
         Quaternion q = null;
         Point4f p4 = null;
         switch (args.length) {
+        case 2:
+          q = new Quaternion((Point3f) args[0].value, Token.fValue(args[1]));
+          break;
+        case 3:
+          if (args[0].tok == Token.point4f) {
+            Point3f pt = (args[2].tok == Token.point3f ? (Point3f) args[2].value
+                : viewer.getAtomSetCenter((BitSet) args[2].value));
+            return addX((new Quaternion((Point4f) args[0].value))
+                .draw("q", Token.sValue(args[1]), pt));
+          }
+          Point3f[] pts = new Point3f[3];
+          for (int i = 0; i < 3; i++)
+            pts[i] = (args[i].tok == Token.point3f ? (Point3f) args[i].value
+                : viewer.getAtomSetCenter((BitSet) args[i].value));
+          q = Quaternion.getQuaternionFrame(pts[0], pts[1], pts[2]);
+          break;
         case 4:
           if (tok == Token.quaternion)
-            p4 = new Point4f(Token.fValue(args[1]), Token
-                .fValue(args[2]), Token.fValue(args[3]), Token.fValue(args[0]));
+            p4 = new Point4f(Token.fValue(args[1]), Token.fValue(args[2]),
+                Token.fValue(args[3]), Token.fValue(args[0]));
           else
             q = new Quaternion(new Point3f(Token.fValue(args[0]), Token
                 .fValue(args[1]), Token.fValue(args[2])), Token.fValue(args[3]));
-          break;
-        case 2:
-          q = new Quaternion((Point3f) args[0].value, Token.fValue(args[1]));
           break;
         default:
           if (args[0].tok == Token.point4f) {
             p4 = (Point4f) args[0].value;
           } else if (args[0].tok == Token.bitset && tok == Token.quaternion) {
-              int i= BitSetUtil.firstSetBit((BitSet) args[0].value);
-              if (i < 0 || (q = viewer.getModelSet().getAtomAt(i).getQuaternion(viewer.getQuaternionFrame()))
-                  == null)
-                return addX(0);
+            int i = BitSetUtil.firstSetBit((BitSet) args[0].value);
+            if (i < 0
+                || (q = viewer.getModelSet().getAtomAt(i).getQuaternion(
+                    viewer.getQuaternionFrame())) == null)
+              return addX(0);
           } else {
             Object v = Escape.unescapePoint(Token.sValue(args[0]));
             if (!(v instanceof Point4f))
@@ -12542,7 +12629,7 @@ class Eval {
             p4 = (Point4f) v;
           }
           if (tok == Token.axisangle)
-            q = new Quaternion(new Point3f(p4.x, p4.y ,p4.z), p4.w);
+            q = new Quaternion(new Point3f(p4.x, p4.y, p4.z), p4.w);
         }
         if (q == null)
           q = new Quaternion(p4);

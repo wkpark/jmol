@@ -1,5 +1,6 @@
 package org.jmol.atomdata;
 
+import java.io.BufferedInputStream;
 import java.util.BitSet;
 
 import org.jmol.modelset.AtomIndexIterator;
@@ -13,4 +14,6 @@ public interface AtomDataServer {
                                                     boolean modelZeroBased);
 
   public void fillAtomData(AtomData atomData, int mode);
+  
+  public BufferedInputStream getBufferedInputStream(String fullPathName);
 }

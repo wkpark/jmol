@@ -654,10 +654,10 @@ abstract public class ModelCollection extends BondCollection {
     return Integer.MIN_VALUE;
   }
 
-  protected Vector trajectories;
+  protected Vector trajectorySteps;
 
   protected int getTrajectoryCount() {
-    return (trajectories == null ? 0 : trajectories.size());
+    return (trajectorySteps == null ? 0 : trajectorySteps.size());
   }
 
   public int getTrajectoryIndex(int modelIndex) {

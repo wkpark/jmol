@@ -25,10 +25,12 @@
 package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
+import java.util.BitSet;
 import java.util.StringTokenizer;
 
 import netscape.javascript.JSObject;
 
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 
 import java.util.Hashtable;
@@ -95,11 +97,12 @@ public class Resolver {
   }
 
   static Object resolve(String name, String type, BufferedReader bufferedReader) throws Exception {
-    return resolve(name, type, bufferedReader, null);
+    return resolve(name, type, bufferedReader, null, -1);
   }
 
-  static Object resolve(String fullName, String type, BufferedReader bufferedReader,
-                        Hashtable htParams) throws Exception {
+  static Object resolve(String fullName, String type,
+                        BufferedReader bufferedReader, Hashtable htParams,
+                        int ptFile) throws Exception {
     AtomSetCollectionReader atomSetCollectionReader = null;
     String atomSetCollectionReaderName;
     if (type != null) {
@@ -119,7 +122,9 @@ public class Resolver {
     }
     if (htParams == null)
       htParams = new Hashtable();
-    htParams.put("readerName", atomSetCollectionReaderName);
+    htParams.put("ptFile", new Integer(ptFile));
+    if (ptFile == 0)
+      htParams.put("readerName", atomSetCollectionReaderName);
     if (atomSetCollectionReaderName.indexOf("(xml)") >= 0)
       atomSetCollectionReaderName = "Xml";
     String className = null;
@@ -138,6 +143,12 @@ public class Resolver {
     atomSetCollectionReader.initialize(htParams);
     AtomSetCollection atomSetCollection = atomSetCollectionReader
         .readAtomSetCollection(bufferedReader);
+    if (!htParams.containsKey("templateAtomCount"))
+      htParams.put("templateAtomCount", new Integer(atomSetCollection
+          .getAtomCount()));
+    if (htParams.containsKey("bsFilter"))
+      htParams.put("filteredAtomCount", new Integer(BitSetUtil
+          .cardinalityOf((BitSet) htParams.get("bsFilter"))));
     bufferedReader.close();
     bufferedReader = null;
     return finalize(atomSetCollection, fullName);
@@ -310,7 +321,9 @@ public class Resolver {
   final public static int SPECIAL_CHEM3D_DOM  = 15;
   final public static int SPECIAL_MOLPRO_DOM  = 16;
   final public static int SPECIAL_ODYSSEY_DOM = 17;
-  
+
+  final static int SPECIAL_MDCRD              = 18;
+
   final public static String[][] specialTags = {
     { "Jme" },
     { "MopacGraphf" },
@@ -331,7 +344,8 @@ public class Resolver {
     { "cml(DOM)" },
     { "chem3d(DOM)" },
     { "molpro(DOM)" },
-    { "odyssey(DOM)" }
+    { "odyssey(DOM)" },
+    { "MdCrd" }
 
   };
 
@@ -567,21 +581,24 @@ public class Resolver {
   { "Jaguar", "  |  Jaguar version", };
 
   final static String[] hinRecords = 
-  { "Hin", "mol "};
+  { "Hin", "mol " };
 
   final static String[] mdlRecords = 
-  { "Mol", "$MDL "};
+  { "Mol", "$MDL " };
 
   final static String[] spartanSmolRecords =
-  { "SpartanSmol", "INPUT="};
+  { "SpartanSmol", "INPUT=" };
 
   final static String[] csfRecords =
-  { "Csf", "local_transform"};
+  { "Csf", "local_transform" };
   
+  final static String[] mdTopRecords =
+  { "MdTop", "%FLAG TITLE" };
   final static String[][] lineStartsWithRecords =
   { cifRecords, pqrRecords, pdbRecords, shelxRecords, 
     ghemicalMMRecords, jaguarRecords, hinRecords, 
-    mdlRecords, spartanSmolRecords, csfRecords, mol2Records};
+    mdlRecords, spartanSmolRecords, csfRecords, 
+    mol2Records, mdTopRecords };
 
   ////////////////////////////////////////////////////////////////
   // contains formats

@@ -113,9 +113,9 @@ public class AtomSetCollection {
   //float wavelength = Float.NaN;
   boolean coordinatesAreFractional;
   boolean isTrajectory;
-  int nTrajectories = 0;
-  Point3f[] trajectory;
-  Vector trajectories;
+  int trajectoryStepCount = 0;
+  Point3f[] trajectoryStep;
+  Vector trajectorySteps;
 
   float[] notionalUnitCell = new float[6]; 
   // expands to 22 for cartesianToFractional matrix as array (PDB)
@@ -177,9 +177,9 @@ public class AtomSetCollection {
     fileTypeName = type;
   }
   
-  boolean setTrajectory() {
+  public boolean setTrajectory() {
     if (!isTrajectory)
-      trajectories = new Vector();
+      trajectorySteps = new Vector();
     return (isTrajectory = true);
   }
   
@@ -275,8 +275,8 @@ public class AtomSetCollection {
     symmetry = null;
     structures = new Structure[16];
     structureCount = 0;
-    trajectory = null;
-    trajectories = null;
+    trajectoryStep = null;
+    trajectorySteps = null;
     vConnect = null;
     vd = null;
   }
@@ -285,7 +285,7 @@ public class AtomSetCollection {
   void freeze() {
     //Logger.debug("AtomSetCollection.freeze; atomCount = " + atomCount);
     if (isTrajectory)
-      finalizeTrajectories();
+      finalizeTrajectory(true);
     getAltLocLists();
     getInsertionLists();
   }
@@ -1025,37 +1025,47 @@ public class AtomSetCollection {
   // atomSet stuff
   ////////////////////////////////////////////////////////////////
   
-  void addTrajectory() {
-    if (trajectory.length == 0 || trajectory.length < atomCount) {
-      trajectory = new Point3f[atomCount];      
+  private void addTrajectoryStep() {
+    if (trajectoryStep.length == 0 || trajectoryStep.length < atomCount) {
+      trajectoryStep = new Point3f[atomCount];      
     }
     for (int i = 0; i < atomCount; i++)
-      trajectory[i] = new Point3f(atoms[i]);
-    trajectories.addElement(trajectory);
-    nTrajectories++;
-    //System.out.println(" nTrajectories:" + nTrajectories + " coord 4: " + trajectory[4]);
+      trajectoryStep[i] = new Point3f(atoms[i]);
+    trajectorySteps.addElement(trajectoryStep);
+    trajectoryStepCount++;
+    //System.out.println(" trajectoryStepCount:" + trajectoryStepCount + " coord 4: " + trajectoryStep[4]);
   }
   
-  void finalizeTrajectories() {
-    if (trajectory == null || trajectory.length == 0 || nTrajectories == 0)
+  void finalizeTrajectory(Vector trajectorySteps) {
+    this.trajectorySteps = trajectorySteps;
+    trajectoryStepCount = trajectorySteps.size();
+    finalizeTrajectory(false);
+  }
+
+  private void finalizeTrajectory(boolean addStep) {
+    if (trajectoryStepCount == 0)
       return;
-    addTrajectory();
+    if (addStep) {
+      if (trajectoryStep == null || trajectoryStep.length == 0)
+        return;
+      addTrajectoryStep();
+    }
     //reset atom positions to original trajectory
-    Point3f[] trajectory = (Point3f[])trajectories.get(0);
+    Point3f[] trajectory = (Point3f[])trajectorySteps.get(0);
     for (int i = 0; i < atomCount; i++)
       atoms[i].set(trajectory[i]);
-    setAtomSetCollectionAuxiliaryInfo("trajectories", trajectories);
+    setAtomSetCollectionAuxiliaryInfo("trajectorySteps", trajectorySteps);
   }
   
   public void newAtomSet() {
     bondIndex0 = bondCount;
     if (isTrajectory) {
-      if (trajectory == null && atomCount > 0)
-        trajectory = new Point3f[0];
-      if (trajectory != null) { // not BEFORE first atom set
-        addTrajectory();
+      if (trajectoryStep == null && atomCount > 0)
+        trajectoryStep = new Point3f[0];
+      if (trajectoryStep != null) { // not BEFORE first atom set
+        addTrajectoryStep();
       }
-      trajectory = new Point3f[atomCount];
+      trajectoryStep = new Point3f[atomCount];
       discardPreviousAtoms();
     }
     currentAtomSetIndex = atomSetCount++;
@@ -1067,11 +1077,11 @@ public class AtomSetCollection {
       atomSetAuxiliaryInfo = (Hashtable[]) ArrayUtil
           .doubleLength(atomSetAuxiliaryInfo);
     }
-    if (atomSetCount + nTrajectories > atomSetNumbers.length) {
+    if (atomSetCount + trajectoryStepCount > atomSetNumbers.length) {
       atomSetNumbers = ArrayUtil.doubleLength(atomSetNumbers);
     }
     if (isTrajectory) {
-      atomSetNumbers[currentAtomSetIndex + nTrajectories] = atomSetCount + nTrajectories;
+      atomSetNumbers[currentAtomSetIndex + trajectoryStepCount] = atomSetCount + trajectoryStepCount;
     }
     else
       atomSetNumbers[currentAtomSetIndex] = atomSetCount;
@@ -1115,7 +1125,7 @@ public class AtomSetCollection {
   */
   public void setAtomSetNumber(int atomSetNumber) {
     if (isTrajectory)
-      atomSetNumbers[currentAtomSetIndex + nTrajectories] = atomSetNumber;
+      atomSetNumbers[currentAtomSetIndex + trajectoryStepCount] = atomSetNumber;
     else
       atomSetNumbers[currentAtomSetIndex] = atomSetNumber;
   }
@@ -1230,7 +1240,7 @@ public class AtomSetCollection {
 */
 
   int getAtomSetNumber(int atomSetIndex) {
-    return atomSetNumbers[atomSetIndex];
+    return atomSetNumbers[atomSetIndex >= atomSetCount ? 0 : atomSetIndex];
   }
 
   String getAtomSetName(int atomSetIndex) {

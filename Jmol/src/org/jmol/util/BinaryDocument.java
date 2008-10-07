@@ -24,6 +24,7 @@
 package org.jmol.util;
 
 
+import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 
 import javax.vecmath.Point3f;
@@ -52,6 +53,13 @@ public class BinaryDocument {
   protected boolean isRandom = false;
   protected boolean isBigEndian = true;
 
+  public void setStream(BufferedInputStream bis, boolean isBigEndian) {
+    if (bis == null)
+      return;
+    stream = new DataInputStream(bis);
+    this.isBigEndian = isBigEndian;
+  }
+  
   public void setStream(DataInputStream stream) {
     this.stream = stream;
   }
@@ -81,6 +89,12 @@ public class BinaryDocument {
 
   public int readInt() throws Exception {
     return (isBigEndian ? stream.readInt() : readLEInt());
+  }
+  
+  public int readUnsignedShort() throws Exception {
+    int a = (((int) stream.readByte()) & 0xff);
+    int b = (((int) stream.readByte()) & 0xff);
+    return (isBigEndian ? (a << 8) + b : (b << 8) + a);
   }
   
   public long readLong() throws Exception {

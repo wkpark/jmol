@@ -912,6 +912,10 @@ public class SurfaceGenerator {
       return new XplorReader(this, br);
     if (fileType.equals("PltFormatted"))
       return new PltFormattedReader(this, br);
+    if (fileType.startsWith("MRC")) {
+      br = null;
+      return new MrcBinaryReader(this, params.fileName, fileType.charAt(3) != '\0');
+    }
     return null;
   }
 

@@ -33,6 +33,7 @@ import org.jmol.viewer.JmolConstants;
 
 import java.io.BufferedReader;
 
+import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -94,6 +95,7 @@ public abstract class AtomSetCollectionReader {
   public boolean getHeader;
   
   public String filter;
+  public BitSet bsFilter;
   public String spaceGroup;
   private SymmetryInterface symmetry;
   public float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
@@ -204,7 +206,11 @@ public abstract class AtomSetCollectionReader {
   private boolean iHaveFractionalCoordinates;
   public boolean iHaveSymmetryOperators;
   public boolean needToApplySymmetry;
-
+  protected int[] firstLastStep;
+  protected int templateAtomCount;
+  protected Hashtable htParams;
+  protected int ptFile;
+  
   public abstract AtomSetCollection readAtomSetCollection(BufferedReader reader);
 
   public AtomSetCollection readAtomSetCollectionFromDOM(Object DOMNode) {
@@ -251,21 +257,38 @@ public abstract class AtomSetCollectionReader {
     initializeSymmetry();
   }
 
+  
   public void initialize(Hashtable htParams) {
-    
+
     initialize();
     int[] params = null;
-    if (htParams != null) {
-      getHeader = htParams.containsKey("getHeader");
-      readerName = (String) htParams.get("readerName");
-      params = (int[]) htParams.get("params");
-      applySymmetryToBonds = htParams.containsKey("applySymmetryToBonds");
-      filter = (String) htParams.get("filter");
-      if (filter != null) {
-        filter = (";" + filter + ";").replace(',',';');
-        Logger.info("filtering atoms using " + filter);
-      }
-      
+    this.htParams = htParams;
+    getHeader = htParams.containsKey("getHeader");
+    readerName = (String) htParams.get("readerName");
+    params = (int[]) htParams.get("params");
+    applySymmetryToBonds = htParams.containsKey("applySymmetryToBonds");
+    filter = (String) htParams.get("filter");
+    // bsFilter is usually null, but it gets set to indicate
+    // which atoms were selected by the filter. This then
+    // gets used by COORD files to load just those coordinates
+    bsFilter = (BitSet) htParams.get("bsFilter");
+    if (bsFilter == null && filter != null) {
+      bsFilter = new BitSet();
+      htParams.put("bsFilter", bsFilter);
+      filter = (";" + filter + ";").replace(',', ';');
+      Logger.info("filtering atoms using " + filter);
+    }
+    // ptFile < 0 indicates just one file being read
+    // ptFile >= 0 indicates multiple files are being loaded
+    // if the file is not the first read in the LOAD command, then
+    // we look to see if it was loaded using LOAD ... "..." COORD ....
+    ptFile = (htParams.containsKey("ptFile") ? ((Integer) htParams
+        .get("ptFile")).intValue() : -1);
+    if (ptFile > 0 && htParams.containsKey("firstLastSteps")) {
+      firstLastStep = (int[]) ((Vector) htParams.get("firstLastSteps"))
+          .elementAt(ptFile - 1);
+      templateAtomCount = ((Integer) htParams.get("templateAtomCount"))
+          .intValue();
     }
     if (params == null)
       return;
@@ -429,34 +452,45 @@ public abstract class AtomSetCollectionReader {
   }
 
   public boolean filterAtom(Atom atom) {
+    return filterAtom(atom, atomSetCollection.atomCount);
+  }
+
+  public boolean filterAtom(Atom atom, int iAtom) {
     String code;
-    if (atom.group3 != null) {
-      code = "[" + atom.group3.toUpperCase() + "]";
-      if (filter.indexOf("![") >= 0) {
-        if (filter.toUpperCase().indexOf(code) >= 0)
-          return false;
-      } else if (filter.indexOf("[") >= 0
-          && filter.toUpperCase().indexOf(code) < 0) {
-        return false;
+    boolean isOK = false;
+    while (true) {
+      if (atom.group3 != null) {
+        code = "[" + atom.group3.toUpperCase() + "]";
+        if (filter.indexOf("![") >= 0) {
+          if (filter.toUpperCase().indexOf(code) >= 0)
+            break;
+        } else if (filter.indexOf("[") >= 0
+            && filter.toUpperCase().indexOf(code) < 0) {
+          break;
+        }
       }
-    }
-    if (atom.atomName != null) {
-      code = "." + atom.atomName.toUpperCase() + ";";
-      if (filter.indexOf("!.") >= 0) {
-        if (filter.toUpperCase().indexOf(code) >= 0)
-          return false;
-      } else if (filter.indexOf("*.") >= 0
-          && filter.toUpperCase().indexOf(code) < 0) {
-        return false;
+      if (atom.atomName != null) {
+        code = "." + atom.atomName.toUpperCase() + ";";
+        if (filter.indexOf("!.") >= 0) {
+          if (filter.toUpperCase().indexOf(code) >= 0)
+            break;
+        } else if (filter.indexOf("*.") >= 0
+            && filter.toUpperCase().indexOf(code) < 0) {
+          break;
+        }
       }
+      if (filter.indexOf("!:") >= 0) {
+        if (filter.indexOf(":" + atom.chainID) >= 0)
+          break;
+      } else if (filter.indexOf(":") >= 0
+          && filter.indexOf(":" + atom.chainID) < 0) {
+        break;
+      }
+      isOK = true;
+      break;
     }
-    if (filter.indexOf("!:") >= 0) {
-      if (filter.indexOf(":" + atom.chainID) >= 0)
-        return false;
-    } else if (filter.indexOf(":") >= 0 
-        && filter.indexOf(":" + atom.chainID) < 0)
-      return false;
-    return true;
+    bsFilter.set(iAtom, isOK);
+    return isOK;
   }
   
   public void setAtomCoord(Atom atom, float x, float y, float z) {
@@ -538,6 +572,35 @@ public abstract class AtomSetCollectionReader {
     return JmolAdapter.getElementSymbol(elementNumber);
   }
   
+  public static String deduceElementSymbol(boolean isHetero, String XX,
+                                           String group3) {
+    // short of having an entire table, 
+    if (XX.equalsIgnoreCase(group3))
+      return XX; // Cd Mg etc.
+    int i = 0;
+    int len = XX.length();
+    char ch1 = ' ';
+    while (i < len && (ch1 = XX.charAt(i++)) <= '9') {
+      // find first nonnumeric letter
+    }
+
+    char ch2 = (i < len ? XX.charAt(i) : ' ');
+    String full = group3 + "." + ch1 + ch2;
+    // Cd Nd Ne are not in complex hetero; Ca is in these:
+    if (("OEC.CA ICA.CA OC1.CA OC2.CA OC4.CA").indexOf(full) >= 0)
+      return "Ca";
+    if (XX.indexOf("'") > 0 || XX.indexOf("*") >= 0 || "HCNO".indexOf(ch1) >= 0
+        && ch2 <= 'H' || XX.startsWith("CM"))
+      return "" + ch1;
+    if (isHetero && Atom.isValidElementSymbolNoCaseSecondChar(ch1, ch2))
+      return (isHetero || ch1 != 'H' ? ("" + ch1 + ch2).trim() : "H");
+    if (Atom.isValidElementSymbol(ch1))
+      return "" + ch1;
+    if (Atom.isValidElementSymbol(ch2))
+      return "" + ch2;
+    return "Xx";
+  }
+
   protected void fillDataBlock(String[][] data) throws Exception {
     int nLines = data.length;
     for (int i = 0; i < nLines; i++)

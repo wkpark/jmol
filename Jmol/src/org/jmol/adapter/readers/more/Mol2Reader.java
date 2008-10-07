@@ -52,17 +52,6 @@ import org.jmol.api.JmolAdapter;
  *<p>
  */
 
-/*
- * symmetry added by Bob Hanson:
- * 
- *  setFractionalCoordinates()
- *  setSpaceGroupName()
- *  setUnitCellItem()
- *  setAtomCoord()
- *  applySymmetry()
- *  
- */
-
 public class Mol2Reader extends AtomSetCollectionReader {
 
   private int nAtoms = 0;
@@ -199,36 +188,6 @@ public class Mol2Reader extends AtomSetCollectionReader {
       if (tokens.length > 8)
         atom.partialCharge = parseFloat(tokens[8]);
     }
-  }
-
-  private static String deduceElementSymbol(boolean isHetero, String XX,
-                                            String group3) {
-    // short of having an entire table, 
-    if (XX.equalsIgnoreCase(group3))
-      return XX; // Cd Mg etc.
-    int i = 0;
-    int len = XX.length();
-    char ch1 = ' ';
-    while (i < len && (ch1 = XX.charAt(i++)) <= '9') {
-      // find first nonnumeric letter
-    }
-
-    char ch2 = (i < len ? XX.charAt(i) : ' ');
-    String full = group3 + "." + ch1 + ch2;
-    // Cd Nd Ne are not in complex hetero; Ca is in these:
-    if (("OEC.CA ICA.CA OC1.CA OC2.CA OC4.CA").indexOf(full) >= 0)
-      return "Ca";
-    if (XX.indexOf("'") > 0 || XX.indexOf("*") >= 0 
-        || "NCO".indexOf(ch1) >= 0 && ch2 <= 'H' 
-        || XX.startsWith("CM"))
-      return "" + ch1;
-    if (isHetero && Atom.isValidElementSymbolNoCaseSecondChar(ch1, ch2))
-      return (isHetero || ch1 != 'H' ? ("" + ch1 + ch2).trim() : "H");
-    if (Atom.isValidElementSymbol(ch1))
-      return "" + ch1;
-    if (Atom.isValidElementSymbol(ch2))
-      return "" + ch2;
-    return "Xx";
   }
 
   private void readBonds(int bondCount) throws Exception {

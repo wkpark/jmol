@@ -737,19 +737,9 @@ public abstract class BioPolymer extends Polymer {
           if (isDraw) {
             if (bsSelected != null && !bsSelected.get(a.getAtomIndex()))
               continue;
-            String strV = " VECTOR " + Escape.escape(ptCenter) + " ";
             int deg = (int) (Math.acos(w) * 360 / Math.PI);
             if (derivType == 0) {
-              pdbATOM.append(
-                  "draw " + prefix + "x" + id + strV
-                      + Escape.escape(q.getVector(0))).append(" color red\n")
-                  .append(
-                      "draw " + prefix + "y" + id + strV
-                          + Escape.escape(q.getVector(1))).append(
-                      " color green\n").append(
-                      "draw " + prefix + "z" + id + strV
-                          + Escape.escape(q.getVector(2))).append(
-                      " color blue\n");
+              pdbATOM.append(q.draw(prefix, id, ptCenter));
               if (qtype == 'n' && isAmino) {
                 Point3f ptH = ((AminoMonomer) monomer)
                     .getNitrogenHydrogenPoint();
@@ -759,7 +749,8 @@ public abstract class BioPolymer extends Polymer {
               }
             }
             pdbATOM.append(
-                "draw " + prefix + "a" + id + strV + " {" + (x * 2) + ","
+                "draw " + prefix + "a" + id + " VECTOR " + Escape.escape(ptCenter) 
+                    + " {" + (x * 2) + ","
                     + (y * 2) + "," + (z * 2) + "}" + " \">" + deg + "\"")
                 .append(" color ").append(qColor[derivType]).append('\n');
             continue;

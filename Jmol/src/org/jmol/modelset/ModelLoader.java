@@ -129,9 +129,9 @@ public final class ModelLoader extends ModelSet {
     isPDB = getModelSetAuxiliaryInfoBoolean("isPDB");
     jmolData = (String) getModelSetAuxiliaryInfo("jmolData");
     fileHeader = (String) getModelSetAuxiliaryInfo("fileHeader");
-    trajectories = (Vector) getModelSetAuxiliaryInfo("trajectories");
-    isTrajectory = (trajectories != null);
-    adapterTrajectoryCount = (trajectories == null ? 0 : trajectories.size()); 
+    trajectorySteps = (Vector) getModelSetAuxiliaryInfo("trajectorySteps");
+    isTrajectory = (trajectorySteps != null);
+    adapterTrajectoryCount = (trajectorySteps == null ? 0 : trajectorySteps.size()); 
     someModelsHaveSymmetry = getModelSetAuxiliaryInfoBoolean("someModelsHaveSymmetry");
     someModelsHaveUnitcells = getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
     someModelsHaveFractionalCoordinates = getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
@@ -262,10 +262,10 @@ public final class ModelLoader extends ModelSet {
     baseTrajectoryCount = mergeModelSet.getTrajectoryCount();
     if (baseTrajectoryCount > 0) {
       if (isTrajectory) {
-        for (int i = 0; i < trajectories.size(); i++)
-          mergeModelSet.trajectories.addElement(trajectories.elementAt(i));
+        for (int i = 0; i < trajectorySteps.size(); i++)
+          mergeModelSet.trajectorySteps.addElement(trajectorySteps.elementAt(i));
       }
-      trajectories = mergeModelSet.trajectories;
+      trajectorySteps = mergeModelSet.trajectorySteps;
     }
     modelFileNumbers = mergeModelSet.modelFileNumbers;  // file * 1000000 + modelInFile (1-based)
     modelNumbersForAtomLabel = mergeModelSet.modelNumbersForAtomLabel;

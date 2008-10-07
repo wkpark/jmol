@@ -78,6 +78,7 @@ public class Draw extends MeshCollection {
   private boolean isCurve;
   private boolean isArc;
   private boolean isArrow;
+  private boolean isLine;
   private boolean isVector;
   private boolean isCircle;
   private boolean isPerpendicular;
@@ -113,7 +114,7 @@ public class Draw extends MeshCollection {
       colix = Graphics3D.ORANGE;
       newScale = 0;
       isFixed = isReversed = isRotated45 = isCrossed = noHead = false;
-      isCurve = isArc = isArrow = isPlane = isCircle = isCylinder = false;
+      isCurve = isArc = isArrow = isPlane = isCircle = isCylinder = isLine = false;
       isVertices = isPerpendicular = isVector = false;
       isValid = true;
       length = Float.MAX_VALUE;
@@ -178,6 +179,12 @@ public class Draw extends MeshCollection {
 
     if ("arrow" == propertyName) {
       isArrow = true;
+      return;
+    }
+
+    if ("line" == propertyName) {
+      isLine = true;
+      isCurve = true;
       return;
     }
 
@@ -633,7 +640,9 @@ public class Draw extends MeshCollection {
       drawType = (isPlane ? JmolConstants.DRAW_CIRCULARPLANE
           : JmolConstants.DRAW_CIRCLE);
     else if ((isCurve || isArrow) && nVertices >= 2 && !isArc)
-      drawType = (isCurve ? JmolConstants.DRAW_CURVE : JmolConstants.DRAW_ARROW);
+      drawType = (isLine ? JmolConstants.DRAW_LINE_SEGMENT 
+          : isCurve ? JmolConstants.DRAW_CURVE 
+          : JmolConstants.DRAW_ARROW);
     if (isVector && !isArc) {
       if (nVertices > 2)
         nVertices = 2;
@@ -1072,6 +1081,9 @@ public class Draw extends MeshCollection {
     int nVertices = mesh.drawVertexCount > 0 ? mesh.drawVertexCount 
       : mesh.drawVertexCounts[iModel >= 0 ? iModel : 0];
     switch (mesh.drawTypes == null ? mesh.drawType : mesh.drawTypes[iModel]) {
+    case JmolConstants.DRAW_LINE_SEGMENT:
+      str.append(" LINE");
+      break;
     case JmolConstants.DRAW_ARC:
       str.append(mesh.isVector ? " ARROW ARC" : " ARC");
       break;

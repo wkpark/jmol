@@ -181,7 +181,8 @@ public class FileManager {
     fileOpenThread.run();
   }
 
-  void openFiles(String modelName, String[] names, String loadScript, boolean isAppend) {
+  void openFiles(String modelName, String[] names, String loadScript,
+                 boolean isAppend, Hashtable htParams) {
     setLoadScript(loadScript, isAppend);
     String[] fullPathNames = new String[names.length];
     String[] namesAsGiven = new String[names.length];
@@ -200,15 +201,16 @@ public class FileManager {
         return;
       }
       fullPathNames[i] = fullPathName;
-      names[i] = fullPathName.replace('\\','/');
+      names[i] = fullPathName.replace('\\', '/');
       fileTypes[i] = fileType;
       namesAsGiven[i] = nameAsGiven;
     }
-    
+
     fullPathName = fileName = nameAsGiven = modelName;
     inlineData = "";
     //inlineDataArray = null;
-    filesOpenThread = new FilesOpenThread(fullPathNames, namesAsGiven, fileTypes, null);
+    filesOpenThread = new FilesOpenThread(fullPathNames, namesAsGiven,
+        fileTypes, null, htParams);
     filesOpenThread.run();
   }
 
@@ -248,7 +250,7 @@ public class FileManager {
       fullPathNames[i] = "string["+i+"]";
       readers[i] = new StringReader(arrayModels[i]);
     }
-    filesOpenThread = new FilesOpenThread(fullPathNames, fullPathNames, null, readers);
+    filesOpenThread = new FilesOpenThread(fullPathNames, fullPathNames, null, readers, null);
     filesOpenThread.run();
   }
 
@@ -828,13 +830,15 @@ java.lang.NullPointerException
     Object clientFile;
     private Reader[] stringReaders;
     private Hashtable[] htParamsSet;
+    private Hashtable htParams;
 
     FilesOpenThread(String[] name, String[] nameAsGiven, String[] types,
-        Reader[] readers) {
+        Reader[] readers, Hashtable htParams) {
       fullPathNamesInThread = name;
       namesAsGivenInThread = nameAsGiven;
       fileTypesInThread = types;
-      this.stringReaders = readers;
+      stringReaders = readers;
+      this.htParams = htParams;
     }
 
     public void run() {
@@ -843,7 +847,8 @@ java.lang.NullPointerException
         stringReaders = null;
       } else {
         htParamsSet = new Hashtable[fullPathNamesInThread.length];
-        htParamsSet[0] = new Hashtable();
+        for (int i = 0; i < htParamsSet.length; i++)
+          htParamsSet[i] = htParams; //for now, just one common parameter set
         Object clientFile = modelAdapter.openBufferedReaders(this,
             fullPathNamesInThread, fileTypesInThread, htParamsSet);
         if (clientFile instanceof String)

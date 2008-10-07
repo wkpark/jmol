@@ -146,7 +146,7 @@ abstract public class ModelSet extends ModelCollection {
 
   public String getTrajectoryInfo() {
     String s = "";
-    if (trajectories == null)
+    if (trajectorySteps == null)
       return "";
     for (int i = modelCount; --i >= 0; )
       if (models[i].selectedTrajectory >= 0) {
@@ -159,7 +159,7 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   public BitSet getBitSetTrajectories() {
-    if (trajectories == null)
+    if (trajectorySteps == null)
       return null;
     BitSet bsModels = new BitSet();
     for (int i = modelCount; --i >= 0;)
@@ -188,7 +188,7 @@ abstract public class ModelSet extends ModelCollection {
       return;
     int baseModel = models[modelIndex].trajectoryBaseIndex;
     models[baseModel].selectedTrajectory = modelIndex;
-    Point3f[] trajectory = (Point3f[]) trajectories.get(modelIndex);
+    Point3f[] trajectory = (Point3f[]) trajectorySteps.get(modelIndex);
     BitSet bs = new BitSet();
     int nAtoms = getAtomCountInModel(modelIndex);
     for (int pt = 0, i = iFirst; i < nAtoms && pt < trajectory.length && trajectory[pt]!= null; i++) {

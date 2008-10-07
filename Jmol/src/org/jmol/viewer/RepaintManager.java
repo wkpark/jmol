@@ -479,7 +479,7 @@ class RepaintManager {
       if (Logger.debugging)
         Logger.debug("animation thread " + intThread + " running");
       requestRepaintAndWait();
-      
+
       try {
         sleepTime = targetTime - (int) (System.currentTimeMillis() - timeBegin);
         if (sleepTime > 0)
@@ -512,12 +512,16 @@ class RepaintManager {
           refresh();
           sleepTime = targetTime
               - (int) (System.currentTimeMillis() - timeBegin);
-          if (sleepTime > 0)  
+          if (sleepTime > 0)
             Thread.sleep(sleepTime);
         }
       } catch (InterruptedException ie) {
         Logger.debug("animation thread interrupted!");
-        setAnimationOn(false);
+        try {
+          setAnimationOn(false);
+        } catch (Exception e) {
+          // null pointer -- don't care;
+        }
       }
     }
   }

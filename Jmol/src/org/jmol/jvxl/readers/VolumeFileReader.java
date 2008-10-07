@@ -67,6 +67,8 @@ class VolumeFileReader extends VoxelReader {
       return "Jaguar";
     if (line.indexOf("!NTITLE") >= 0 || line.indexOf("REMARKS ") >= 0)
       return "Xplor";
+    if (line.indexOf("MAP ") == 208)
+      return "MRC" + line.substring(67,68);
     line = br.readNonCommentLine();
     if (line.indexOf("object 1 class gridpositions counts") == 0)
       return "Apbs";
@@ -166,7 +168,7 @@ class VolumeFileReader extends VoxelReader {
   }
   
   protected void readTitleLines() throws Exception {
-    //implemented in CubeReader, ApbsReader, and JvxlReader  
+    //implemented in CubeReader, ApbsReader, mrcBinaryReader, and JvxlReader  
   }
   
   protected int skipComments(boolean addToHeader) throws Exception {
@@ -369,7 +371,7 @@ class VolumeFileReader extends VoxelReader {
       skipData(nPoints);
   }
 
-  private void skipData(int nPoints) throws Exception {
+  protected void skipData(int nPoints) throws Exception {
     int iV = 0;
     while (iV < nPoints) {
       line = br.readLine();

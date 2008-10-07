@@ -67,6 +67,7 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 import java.net.URL;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
@@ -1502,6 +1503,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.defaultDirectory;
   }
 
+  public BufferedInputStream getBufferedInputStream(String fullPathName) {
+    Object ret = getBufferedReaderOrErrorMessageFromName(fullPathName, new String[2], true);
+    return (ret instanceof BufferedInputStream ? (BufferedInputStream) ret : null);
+  }
+  
   Object getBufferedReaderOrErrorMessageFromName(String name,
                                                  String[] fullPathNameReturn,
                                                  boolean isBinary) {
@@ -1552,18 +1558,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void openFiles(String modelName, String[] names) {
-    openFiles(modelName, names, null, false);
+    openFiles(modelName, names, null, false, null);
   }
 
   void openFiles(String modelName, String[] names, String loadScript,
-                 boolean isAppend) {
+                 boolean isAppend, Hashtable htParams) {
     //Eval -- names will be loaded with full path names
     if (!isAppend)
       zap(false, false);
     // keep old screen image while new file is being loaded
     // forceRefresh();
     long timeBegin = System.currentTimeMillis();
-    fileManager.openFiles(modelName, names, loadScript, isAppend);
+    fileManager.openFiles(modelName, names, loadScript, isAppend, htParams);
     long ms = System.currentTimeMillis() - timeBegin;
     for (int i = 0; i < names.length; i++) {
       setStatusFileLoaded(1, names[i], "", getModelSetName(), null);
@@ -1792,6 +1798,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return fileManager.getFileAsBytes(pathName);
   }
 
+  public Object getFileAsBytes(String pathName) {
+    return fileManager.getFileAsBytes(pathName);
+  }
+  
   public String getCurrentFileAsString() {
     String filename = getFullPathName();
     if (filename == "string") {
@@ -1934,6 +1944,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void clear() {
+    stopAnimationThreads();
     if (modelSet == null)
       return;
     clearMinimization();
@@ -1980,6 +1991,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void initializeModel() {
+    stopAnimationThreads();
     reset();
     selectAll();
     noneSelected = false;
@@ -5376,11 +5388,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.navigationPeriodic;
   }
 
+  private void stopAnimationThreads() {
+    setVibrationOff();
+    setSpinOn(false);
+    setAnimationOn(false);
+  }
+  
   private void setNavigationMode(boolean TF) {
     global.navigationMode = TF;
     if (TF && !transformManager.canNavigate()) {
-      setVibrationOff();
-      setSpinOn(false);
+      stopAnimationThreads();
       transformManager = transformManager.getNavigationManager(this,
           dimScreen.width, dimScreen.height);
       transformManager.homePosition();
@@ -5394,8 +5411,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void setPerspectiveModel(int mode) {
-    setVibrationOff();
-    setSpinOn(false);
+    stopAnimationThreads();
     switch (mode) {
     case 10:
       transformManager = new TransformManager10(this, dimScreen.width,
@@ -6318,7 +6334,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   /**
    * @param type_name  TYPE:filename\twidth\theight\tquality
    */
-  private void createImage(String type_name) { // or script now
+  private void createImage(String type_name) { // or script now    
     int quality, width, height;
     if (type_name == null)
       return;
@@ -6370,8 +6386,65 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean creatingImage;
 
   public String createImage(String file, String type, Object text_or_bytes,
-                          int quality, int width, int height) {
+                            int quality, int width, int height, BitSet bsFrames) {
+    if (bsFrames == null)
+      return createImage(file, type, text_or_bytes, quality, width, height);
+    int modelCount = getModelCount();
+    String info = "";
+    int n = 0;
+    int ptDot = file.indexOf(".");
+    if (ptDot < 0)
+      ptDot = file.length();
+      
+    String froot = file.substring(0, ptDot);
+    String fext = file.substring(ptDot);
+    for (int i = 0; i < modelCount; i++)
+      if (bsFrames.get(i)) {
+        setCurrentModelIndex(i);
+        String fname = "0000" + (++n);
+        fname = froot + fname.substring(fname.length() - 4) + fext; 
+        String msg = createImage(fname, type, text_or_bytes, quality, width, height);
+        Logger.info(msg);  
+        info += msg + "\n";
+        if (!msg.startsWith("OK"))
+          return info;
+      }
+    return info;
+  }
+
+  public String createImage(String file, String type, Object text_or_bytes,
+                            int quality, int width, int height) {
     //pushHoldRepaint();
+    /*
+     * 
+     * org.jmol.export.image.AviCreator
+     * does create AVI animations from Jpegs
+     * but these aren't read by standard readers,
+     * so that's pretty much useless.
+     * 
+     * files must have the designated width and height
+     * 
+     * text_or_bytes: new Object[] { (File[]) files, (String) outputFilename, (int[]) params }
+     * 
+     * where for now we just read param[0] as frames per second
+     * 
+     *  
+    if (text_or_bytes != null && text_or_bytes instanceof Object[]) {
+      Object[] obj = (Object[]) text_or_bytes;
+      String[] files = (String[]) obj[0];
+      String outputFileName = (String) obj[1];
+      int[] params = (int[]) obj[2];
+      int fps = params[0];
+      JmolMovieCreatorInterface ac = (JmolMovieCreatorInterface) Interface
+          .getOptionInterface("export.image.AviCreator");
+      if (ac == null)
+        return "could not initialize org.jmol.export.image.AviCreator";
+      String ret = ac.createMovie(this, files, width, height, fps,
+          outputFileName);
+      return (ret == null ? "OK" : ret);
+    }
+     */
+
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
     if (quality != Integer.MIN_VALUE) {

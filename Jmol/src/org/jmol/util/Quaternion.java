@@ -252,6 +252,14 @@ public class Quaternion {
 
   }
 
+  public static final Quaternion getQuaternionFrame(Point3f center, Point3f x, Point3f xy) {
+    Vector3f vA = new Vector3f(x);
+    vA.sub(center);
+    Vector3f vB = new Vector3f(xy);
+    vB.sub(center);
+    return getQuaternionFrame(vA, vB, null);
+  }
+  
   public static final Quaternion getQuaternionFrame(Vector3f vA, Vector3f vB,
                                                     Vector3f vC) {
     if (vC == null) {
@@ -470,5 +478,15 @@ public class Quaternion {
     return TextFormat.sprintf("%10.6f%10.6f%10.6f%10.6f  %6.2f  %10.5f %10.5f %10.5f",
         new Object[] { new float[] { q0, q1, q2, q3, 
             (float) (axis.angle * 180 / Math.PI), axis.x, axis.y, axis.z } });
+  }
+
+  public String draw(String prefix, String id, Point3f ptCenter) {
+    String strV = " VECTOR " + Escape.escape(ptCenter) + " ";
+    return "draw " + prefix + "x" + id + strV
+        + Escape.escape(getVector(0)) + " color red\n"
+        + "draw " + prefix + "y" + id + strV
+        + Escape.escape(getVector(1)) + " color green\n"
+        + "draw " + prefix + "z" + id + strV
+        + Escape.escape(getVector(2)) + " color blue\n";
   }
 }

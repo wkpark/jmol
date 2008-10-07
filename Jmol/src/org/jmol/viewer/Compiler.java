@@ -514,7 +514,8 @@ class Compiler {
           //write spt filename
           //write jpg filename
           //write filename
-
+          if (nTokens == 2 && lastToken.tok == Token.frame)
+            iHaveQuotedString = true;
           if (nTokens > 2 && !iHaveQuotedString && lookingAtSpecialString()) {
             String str = script.substring(ichToken, ichToken + cchToken).trim();
             if (str.indexOf(" ") < 0) {
@@ -1323,6 +1324,7 @@ class Compiler {
     // EXCEPT if the previous token was a function:
     // {carbon}.distance({3 3 3})
     // Yes, I wish I had used {{...}}, but this will work. 
+    // WITHIN ({....}) unfortunately has two contexts
     
     if (script.indexOf("({null})", ichToken) == ichToken) {
       cchToken = 8;

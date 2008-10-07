@@ -76,7 +76,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     //FileOpenThread, TesetSmarterJmolAdapter
     try {
       Object atomSetCollectionOrErrorMessage =
-        Resolver.resolve(name, type, bufferedReader, htParams);
+        Resolver.resolve(name, type, bufferedReader, htParams, -1);
       if (atomSetCollectionOrErrorMessage instanceof String)
         return atomSetCollectionOrErrorMessage;
       if (atomSetCollectionOrErrorMessage instanceof AtomSetCollection) {
@@ -99,7 +99,11 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return staticOpenBufferedReaders(fileReader, names, types, htParams);
   }
 
-  private static Object staticOpenBufferedReaders(JmolFileReaderInterface fileReader, String[] names, String[] types, Hashtable[] htParams) {
+  private static Object staticOpenBufferedReaders(
+                                                  JmolFileReaderInterface fileReader,
+                                                  String[] names,
+                                                  String[] types,
+                                                  Hashtable[] htParams) {
     //FilesOpenThread
     int size = names.length;
     AtomSetCollection[] atomSetCollections = new AtomSetCollection[size];
@@ -108,14 +112,13 @@ public class SmarterJmolAdapter extends JmolAdapter {
         BufferedReader reader = fileReader.getBufferedReader(i);
         if (reader == null)
           return null;
-        Object atomSetCollectionOrErrorMessage =
-          Resolver.resolve(names[i], (types == null ? null : types[i]), reader, 
-              (htParams == null ? null : htParams[i]));
+        Object atomSetCollectionOrErrorMessage = Resolver.resolve(names[i],
+            (types == null ? null : types[i]), reader, (htParams == null ? null
+                : htParams[i]), i);
         if (atomSetCollectionOrErrorMessage instanceof String)
           return atomSetCollectionOrErrorMessage;
         if (atomSetCollectionOrErrorMessage instanceof AtomSetCollection) {
-          atomSetCollections[i] =
-            (AtomSetCollection)atomSetCollectionOrErrorMessage;
+          atomSetCollections[i] = (AtomSetCollection) atomSetCollectionOrErrorMessage;
           if (atomSetCollections[i].errorMessage != null)
             return atomSetCollections[i].errorMessage;
         } else {
@@ -126,11 +129,18 @@ public class SmarterJmolAdapter extends JmolAdapter {
         return "" + e;
       }
     }
-    AtomSetCollection result = new AtomSetCollection(atomSetCollections);
-    if (result.errorMessage != null) {
-      return result.errorMessage;
+    if (htParams != null && htParams[0].containsKey("trajectorySteps")) {
+      // this is one model with a set of coordinates from a 
+      // molecular dynamics calculation
+      // all the htParams[] entries point to the same Hashtable
+      atomSetCollections[0].finalizeTrajectory((Vector) htParams[0]
+          .get("trajectorySteps"));
+      return atomSetCollections[0];
     }
-    return result; 
+    AtomSetCollection result = new AtomSetCollection(atomSetCollections);
+    if (result.errorMessage != null)
+      return result.errorMessage;
+    return result;
   }
 
   public Object openZipFiles(InputStream is, String fileName, String[] zipDirectory,
@@ -247,7 +257,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
             return reader;
           }
           Object clientFile = Resolver.resolve(fileName + "|" + ze.getName(),
-              null, reader, htParams);
+              null, reader, htParams, -1);
           if (clientFile instanceof AtomSetCollection) {
             if (haveManifest && !exceptFiles)
               htCollections.put(thisEntry, clientFile);

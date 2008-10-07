@@ -524,19 +524,19 @@ class ConsoleTextPane extends JTextPane {
    * 
    * @param up - history up or down
    */
-  void recallCommand(boolean up) {
-    String cmd = viewer.getSetHistory(up ? -1 : 1);
+   void recallCommand(boolean up) {
+     String cmd = viewer.getSetHistory(up ? -1 : 1);
     if (cmd == null) {
       return;
     }
-    cmd = TextFormat.trim(cmd, ";");
+    boolean isError = false;
     try {
       if (cmd.endsWith(CommandHistory.ERROR_FLAG)) {
+        isError = true;
         cmd = cmd.substring(0, cmd.indexOf(CommandHistory.ERROR_FLAG));
-        consoleDoc.replaceCommand(cmd, true);
-      } else {
-        consoleDoc.replaceCommand(cmd, false);
       }
+      cmd = TextFormat.trim(cmd, ";");
+      consoleDoc.replaceCommand(cmd, isError);
     } catch (BadLocationException e) {
       e.printStackTrace();
     }

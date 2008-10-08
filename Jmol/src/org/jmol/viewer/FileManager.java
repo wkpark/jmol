@@ -525,6 +525,11 @@ java.lang.NullPointerException
     fileName = names[1];
   }
   
+  /**
+   * 
+   * @param name
+   * @return [0] full path name, [1] file name without path
+   */
   private String[] classifyName(String name) {
     if (name == null)
       return null;
@@ -582,6 +587,36 @@ java.lang.NullPointerException
     return names;
   }
 
+  String getDefaultDirectory(String name) {
+    String[] names = classifyName(name);
+    if (names == null)
+      return "";
+    name = fixPath(names[0]);
+    return (names == null ? "" : name.substring(0, name.lastIndexOf("/")));
+  }
+
+  private String fixPath(String path) {
+    path = path.replace('\\', '/');
+    path = TextFormat.simpleReplace(path, "/./", "/");
+    int pt = path.lastIndexOf("//") + 1;
+    if (pt < 1)
+      pt = path.indexOf(":/") + 1;
+    if (pt < 1)
+      pt = path.indexOf("/");
+    String protocol = path.substring(0, pt);
+    path = path.substring(pt);
+    
+    while ((pt = path.lastIndexOf("/../")) >= 0) {
+      int pt0 = path.substring(0, pt).lastIndexOf("/");
+      if (pt0 < 0)
+        return TextFormat.simpleReplace(protocol + path, "/../", "/");
+      path = path.substring(0, pt0) + path.substring(pt + 3);
+    }
+    if (path.length() == 0)
+      path = "/";
+    return protocol + path;
+  }
+  
   public static File getLocalDirectory(JmolViewer viewer) {
     String localDir = (String) viewer.getParameter("currentLocalPath");
     if (localDir.length() == 0)
@@ -590,7 +625,7 @@ java.lang.NullPointerException
     return f.isDirectory() ? f : f.getParentFile();
   }
   
-  private String addDirectory(String defaultDirectory, String name) {
+  private static String addDirectory(String defaultDirectory, String name) {
     if (defaultDirectory.length() == 0)
       return name;
     char ch = (name.length() > 0 ? name.charAt(0) : ' ');

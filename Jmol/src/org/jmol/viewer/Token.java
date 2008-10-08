@@ -259,6 +259,7 @@ public class Token {
   final static int bondorder    = command | 5;
   final static int calculate    = command | 6;
   final static int cartoon      = command | 7 | defaultON;
+  final static int cd           = command | 7 | implicitStringCommand;
   final static int centerAt     = command | 8;
 //final static int color        see mathfunc
   final static int configuration = command | 9;
@@ -1088,6 +1089,7 @@ public class Token {
     "depth",             new Token(depth),
     "dipole",            new Token(dipole),
     "dipoles",           null,
+    "cd",                new Token(cd),
     "display",           new Token(display),
     "dots",              new Token(dots),
     "draw",              new Token(draw),

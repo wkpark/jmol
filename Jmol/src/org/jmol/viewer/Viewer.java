@@ -6707,4 +6707,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     return image;
   }
+
+  String cd(String dir) {
+    if (dir == null) {
+      dir = ".";
+    } else if (dir.length() == 0) {
+      setStringProperty("defaultDirectory", "");
+      dir = ".";
+    }
+    dir = fileManager.getDefaultDirectory(dir + (dir.equals("=") || dir.endsWith("/") ? "" : "/X"));
+    if (dir.length() > 0)
+      setStringProperty("defaultDirectory", dir = dir + "/");
+    return dir;
+  }
 }

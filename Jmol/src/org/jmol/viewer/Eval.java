@@ -907,6 +907,9 @@ class Eval {
       case Token.color:
         color();
         break;
+      case Token.cd:
+        cd();
+        break;
       case Token.data:
         data();
         break;
@@ -3996,6 +3999,13 @@ class Eval {
       setShapeProperty(shapeType, prefix + "translucency", translucency);
   }
 
+  private void cd() throws ScriptException {
+    if (isSyntaxCheck)
+      return;
+    String dir = (statementLength == 1 ? null : parameterAsString(1));
+    showString(viewer.cd(dir));
+  }
+  
   private Object[] data;
 
   private void data() throws ScriptException {

@@ -99,13 +99,16 @@ public class MdTopReader extends AtomSetCollectionReader {
       atomSetCollection.discardPreviousAtoms();
       for (int i = 0; i < nAtoms; i++) {
         Atom atom = atoms2[i];
-        setAtomCoord(atom, i, 0, 0);
         atomSetCollection.addAtom(atom);
       }
     }
     Logger.info("Total number of atoms used=" + nAtoms);
+    int j = 0;
     for (int i = 0; i < nAtoms; i++) {
       Atom atom = atoms[i];
+      if (i % 100 == 0)
+        j++;
+      setAtomCoord(atom, (i % 100)*2, j*2, 0);
       atom.isHetero = JmolAdapter.isHetero(atom.group3);
       atom.elementSymbol = deduceElementSymbol(atom.isHetero, atom.atomName,
           atom.group3);
@@ -130,12 +133,11 @@ public class MdTopReader extends AtomSetCollectionReader {
   }
 
   private void getAtomTypes() throws Exception {
-/*    readLine();
+    readLine(); // #FORMAT
     String[] data = getTokens(getDataBlock());
     Atom[] atoms = atomSetCollection.getAtoms();
     for (int i = atomCount; --i >= 0;)  
-      atoms[i].elementSymbol = data[i];
-*/
+      atoms[i].atomName += '\0' + data[i];
   }
 
   private void getCharges() throws Exception {

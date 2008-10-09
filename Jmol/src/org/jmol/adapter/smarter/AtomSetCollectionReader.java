@@ -574,12 +574,20 @@ public abstract class AtomSetCollectionReader {
   
   public static String deduceElementSymbol(boolean isHetero, String XX,
                                            String group3) {
-    // short of having an entire table, 
+    // short of having an entire table,
+    int i = XX.indexOf('\0');
+    String atomType = null;
+    if (i >= 0) {
+      atomType = XX.substring(i + 1);
+      XX = XX.substring(0, i);
+      if (atomType != null && atomType.length() == 1)
+        return atomType;
+    }
     if (XX.equalsIgnoreCase(group3))
       return XX; // Cd Mg etc.
-    int i = 0;
     int len = XX.length();
     char ch1 = ' ';
+    i = 0;
     while (i < len && (ch1 = XX.charAt(i++)) <= '9') {
       // find first nonnumeric letter
     }

@@ -453,7 +453,7 @@ public class Token {
   final static int length           = 5 | mathproperty;
   final static int lines            = 6 | mathproperty;
   final static int size             = 7 | mathproperty;
-  final static int type             = 8 | mathproperty;
+  final public static int type      = 8 | mathproperty;
   final public static int xyz       = 9 | mathproperty | settable;
   final public static int fracXyz   =10 | mathproperty | settable;
   final public static int vibXyz    =11 | mathproperty | settable;

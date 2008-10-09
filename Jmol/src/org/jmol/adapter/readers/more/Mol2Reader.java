@@ -152,10 +152,12 @@ public class Mol2Reader extends AtomSetCollectionReader {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens(readLine());
       //Logger.debug(tokens.length + " -" + tokens[5] + "- " + line);
-      atom.atomName = tokens[1];
+      String atomType = tokens[5];
+      atom.atomName = tokens[1] + '\0' + atomType;
       setAtomCoord(atom, parseFloat(tokens[2]), parseFloat(tokens[3]),
           parseFloat(tokens[4]));
-      String elementSymbol = tokens[5];
+      
+      String elementSymbol = atomType;
       if (elementSymbol.length() > 1 && elementSymbol.charAt(1) == '.')
         elementSymbol = elementSymbol.substring(0, 1);
       if (elementSymbol.length() > 2)
@@ -181,7 +183,7 @@ public class Mol2Reader extends AtomSetCollectionReader {
           isPDB = true;
         }
         if (isPDB)
-          atom.elementSymbol = deduceElementSymbol(atom.isHetero, tokens[5],
+          atom.elementSymbol = deduceElementSymbol(atom.isHetero, atomType,
               atom.group3);
         //System.out.print(atom.atomName + "/" + atom.elementSymbol + " " );
       }

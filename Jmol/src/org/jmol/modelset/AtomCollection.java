@@ -61,6 +61,7 @@ abstract public class AtomCollection {
     tainted = null;
 
     atomNames = null;
+    atomTypes = null;
     atomSerials = null;
     clientAtomReferences = null;
     vibrationVectors = null;
@@ -75,6 +76,7 @@ abstract public class AtomCollection {
   protected void merge(AtomCollection mergeModelSet) {
     tainted = mergeModelSet.tainted;
     atomNames = mergeModelSet.atomNames;
+    atomTypes = mergeModelSet.atomTypes;
     atomSerials = mergeModelSet.atomSerials;
     clientAtomReferences = mergeModelSet.clientAtomReferences;
     vibrationVectors = mergeModelSet.vibrationVectors;
@@ -93,6 +95,7 @@ abstract public class AtomCollection {
   public Atom[] atoms;
   int atomCount;
   String[] atomNames;
+  String[] atomTypes;
 
 
   public Atom[] getAtoms() {
@@ -109,6 +112,10 @@ abstract public class AtomCollection {
   
   public String[] getAtomNames() {
     return atomNames;
+  }
+
+  public String[] getAtomTypes() {
+    return atomTypes;
   }
 
   ////////////////////////////////////////////////////////////////
@@ -1254,7 +1261,7 @@ abstract public class AtomCollection {
    * specific atom sets. They all return a BitSet
    * 
    ********************************************************/
- 
+
   /**
    * general unqualified lookup of atom set type
    * @param tokType
@@ -1268,9 +1275,17 @@ abstract public class AtomCollection {
     switch (tokType) {
     case Token.atomno:
       iSpec = ((Integer) specInfo).intValue();
-      for (int i = atomCount; --i >= 0;) {
+      for (int i = atomCount; --i >= 0;)
         if (atoms[i].getAtomNumber() == iSpec)
           bs.set(i);
+      return bs;
+    case Token.type:
+      String types = "," + specInfo + ",";
+      for (int i = atomCount; --i >= 0;) {
+        String type = atoms[i].getAtomType();
+        if (types.indexOf(type) >= 0)
+          if (types.indexOf("," + type + ",") >= 0)
+            bs.set(i);
       }
       return bs;
     case Token.spec_resid:
@@ -1280,7 +1295,7 @@ abstract public class AtomCollection {
           bs.set(i);
       return bs;
     case Token.spec_chain:
-      return getChainBits((char) ((Integer)specInfo).intValue());
+      return getChainBits((char) ((Integer) specInfo).intValue());
     case Token.spec_seqcode:
       return getSeqcodeBits(((Integer) specInfo).intValue(), true);
     case Token.hetero:
@@ -1289,10 +1304,9 @@ abstract public class AtomCollection {
           bs.set(i);
       return bs;
     case Token.hydrogen:
-      for (int i = atomCount; --i >= 0;) {
+      for (int i = atomCount; --i >= 0;)
         if (atoms[i].getElementNumber() == 1)
           bs.set(i);
-      }
       return bs;
     case Token.protein:
       for (int i = atomCount; --i >= 0;)
@@ -1331,7 +1345,8 @@ abstract public class AtomCollection {
       return bs;
     case Token.cell:
       int[] info = (int[]) specInfo;
-      Point3f cell = new Point3f(info[0] / 1000f, info[1] / 1000f, info[2] / 1000f);
+      Point3f cell = new Point3f(info[0] / 1000f, info[1] / 1000f,
+          info[2] / 1000f);
       for (int i = atomCount; --i >= 0;)
         if (isInLatticeCell(i, cell))
           bs.set(i);
@@ -1677,6 +1692,8 @@ abstract public class AtomCollection {
     //System.out.println("atomcollection deleteAtoms atomslen=" + atoms.length);
 
     atomNames = (String[]) ArrayUtil.deleteElements(atomNames, firstAtomIndex,
+        nAtoms);
+    atomTypes = (String[]) ArrayUtil.deleteElements(atomTypes, firstAtomIndex,
         nAtoms);
     atomSerials = (int[]) ArrayUtil.deleteElements(atomSerials, firstAtomIndex,
         nAtoms);

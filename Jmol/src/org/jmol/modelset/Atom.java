@@ -482,6 +482,12 @@ final public class Atom extends Point3fi {
      return group.chain.modelSet.atomNames[atomIndex];
    }
    
+   String getAtomType() {
+    String[] atomTypes = group.chain.modelSet.atomTypes;
+    String type = (atomTypes == null ? null : atomTypes[atomIndex]);
+    return (type == null ? group.chain.modelSet.atomNames[atomIndex] : type);
+  }
+   
    public int getAtomNumber() {
      int[] atomSerials = group.chain.modelSet.atomSerials;
      return (atomSerials != null ? atomSerials[atomIndex] : atomIndex);
@@ -990,6 +996,7 @@ final public class Atom extends Point3fi {
          case '{': parameter value
          case 'A': alternate location identifier
          case 'a': atom name
+         case 'B': atom type (sorry!)
          case 'b': temperature factor ("b factor")
          case 'C': formal Charge
          case 'c': chain
@@ -1051,6 +1058,9 @@ final public class Atom extends Point3fi {
           break;
 //        case 'b': // see 't'
 //        case 'c': // see 's'
+        case 'B':
+          strT = getAtomType();
+          break;
         case 'C':
           int formalCharge = getFormalCharge();
           if (formalCharge > 0)

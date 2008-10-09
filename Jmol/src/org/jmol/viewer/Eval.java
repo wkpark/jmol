@@ -12816,7 +12816,6 @@ class Eval {
       BitSet bs = new BitSet();
       float distance = 0;
       boolean isSequence = false;
-      boolean isBoundbox = false;
       boolean isWithinModelSet = false;
       boolean isDistance = (tok == Token.decimal || tok == Token.integer);
       if (withinStr.equals("branch")) {
@@ -12829,7 +12828,7 @@ class Eval {
       }
       if (withinSpec instanceof String) {
         isSequence = !Parser.isOneOf(withinStr,
-            "element;site;group;chain;structure;molecule;model;boundbox");
+            "type;element;site;group;chain;structure;molecule;model;boundbox");
       } else if (isDistance) {
         distance = Token.fValue(args[0]);
         if (i < 2)
@@ -12841,22 +12840,25 @@ class Eval {
       } else {
         return false;
       }
-
-      if (i == 3) {
+      switch (i) {
+      case 1:
+        // within (boundbox)
+        return (!withinStr.equals("boundbox") ? false : addX(isSyntaxCheck ? bs
+            : viewer.getAtomBits(Token.boundbox, null)));
+      case 2:
+        // within (type, "XX,YY,ZZZ")
+        if (withinStr.equals("type"))
+          return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.type, Token
+              .sValue(args[1])));
+        break;
+      case 3:
         withinStr = Token.sValue(args[1]);
         if (!Parser.isOneOf(withinStr, "on;off;plane;hkl;coord"))
           return false;
         // within (distance, true|false, [point or atom center] 
         // within (distance, plane|hkl,  [plane definition] )
         // within (distance, coord,  [point or atom center] )
-
-      } else if (i == 1) {
-
-        // within (boundbox)
-
-        if (!withinStr.equals("boundbox"))
-          return false;
-        isBoundbox = true;
+        break;
       }
       Point3f pt = null;
       Point4f plane = null;
@@ -12875,13 +12877,12 @@ class Eval {
         return addX(viewer.getAtomsWithin(distance, plane));
       if (pt != null)
         return addX(viewer.getAtomsWithin(distance, pt));
-      bs = (isBoundbox ? null : Token.bsSelect(args[i]));
+      bs = Token.bsSelect(args[i]);
       if (isDistance)
         return addX(viewer.getAtomsWithin(distance, bs, isWithinModelSet));
       if (isSequence)
         return addX(viewer.getSequenceBits(withinStr, bs));
-      return addX(viewer.getAtomBits(Token.getTokenFromName(withinStr).tok,
-          bs));
+      return addX(viewer.getAtomBits(Token.getTokenFromName(withinStr).tok, bs));
     }
 
     private boolean evaluateConnected(Token[] args) throws ScriptException {

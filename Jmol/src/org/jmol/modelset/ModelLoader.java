@@ -575,6 +575,13 @@ public final class ModelLoader extends ModelSet {
     if (atomName != null) {
       if (atomNames == null)
         atomNames = new String[atoms.length];
+      int i;
+      if ((i = atomName.indexOf('\0')) >= 0) {
+        if (atomTypes == null)
+          atomTypes = new String[atoms.length];
+        atomTypes[atomCount] = atomName.substring(i + 1);
+        atomName = atomName.substring(0, i);
+      }
       atomNames[atomCount] = atomName.intern();
       byte specialAtomID = lookupSpecialAtomID(atomName);
       if (specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON && group3 != null

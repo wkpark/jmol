@@ -117,8 +117,8 @@ public class GT {
       new Language("cs",    GT._("Czech"),                    true),
       new Language("da",    GT._("Danish"),                   false),
       new Language("nl",    GT._("Dutch"),                    true),
-//for 11.7, with incremental loading      new Language("en_GB", GT._("English - United Kingdom"), true),
-      new Language("en_US", GT._("English"),                  true), // global default for "en" will be "en_US"
+//for 11.7, with incremental loading      new Language("en_GB", GT._("British English"), true),
+      new Language("en_US", GT._("American English"),         true), // global default for "en" will be "en_US"
       new Language("et",    GT._("Estonian"),                 true),
       new Language("fr",    GT._("French"),                   true),
       new Language("de",    GT._("German"),                   true),
@@ -127,7 +127,7 @@ public class GT {
       new Language("ko",    GT._("Korean"),                   true),
       new Language("nb",    GT._("Norwegian Bokmal"),         false),
       new Language("pl",    GT._("Polish"),                   false),
-      new Language("pt_BR", GT._("Portuguese - Brazil"),      true),
+      new Language("pt_BR", GT._("Brazilian Portuguese"),     true),
       new Language("pt",    GT._("Portuguese"),               true),
       new Language("ru",    GT._("Russian"),                  false),
       new Language("sl",    GT._("Slovenian"),                false),

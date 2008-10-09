@@ -343,7 +343,7 @@
   <target name="check-uptodate-application-catalog">
     <condition property="uptodate-application-catalog-${Jmol_lang_value}">
       <uptodate srcfile="${Jmol.po.dir}/Jmol-${Jmol_lang_value}.po"
-                targetfile="${classes.dir}/org/jmol/translation/Jmol/Messages_${Jmol_lang_value}.class"/>
+                targetfile="${classes.dir}/org/jmol/translation/Jmol/${Jmol_lang_value}/Messages_${Jmol_lang_value}.class"/>
     </condition>
   </target>
 
@@ -360,7 +360,7 @@
       <arg value="-d"/>
       <arg value="${basedir}/${classes.dir}"/>
       <arg value="-r"/>
-      <arg value="org.jmol.translation.Jmol.Messages"/>
+      <arg value="org.jmol.translation.Jmol.${Jmol_lang_value}.Messages"/>
       <arg value="Jmol-${Jmol_lang_value}.po"/>
     </exec>
   </target>
@@ -382,7 +382,7 @@
   <target name="check-uptodate-applet-catalog">
     <condition property="uptodate-applet-catalog-${JmolApplet_lang_value}">
       <uptodate srcfile="${JmolApplet.po.dir}/JmolApplet-${JmolApplet_lang_value}.po"
-                targetfile="${classes.dir}/org/jmol/translation/JmolApplet/Messages_${JmolApplet_lang_value}.class"/>
+                targetfile="${classes.dir}/org/jmol/translation/JmolApplet/${JmolApplet_lang_value}/Messages_${JmolApplet_lang_value}.class"/>
     </condition>
   </target>
 
@@ -398,7 +398,7 @@
       <arg value="-d"/>
       <arg value="${basedir}/${classes.dir}"/>
       <arg value="-r"/>
-      <arg value="org.jmol.translation.JmolApplet.Messages"/>
+      <arg value="org.jmol.translation.JmolApplet.${JmolApplet_lang_value}.Messages"/>
       <arg value="JmolApplet-${JmolApplet_lang_value}.po"/>
     </exec>
   </target>

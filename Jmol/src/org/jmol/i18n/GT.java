@@ -268,13 +268,13 @@ public class GT {
   
   private void addBundles(String type, String la_co_va, String la_co, String la) {
     try {
-        String className = "org.jmol.translation." + type + ".Messages_";
+        String className = "org.jmol.translation." + type + ".";
         if (la_co_va != null)
-          addBundle(className + la_co_va);
+          addBundle(className + la_co_va + ".Messages_" + la_co_va);
         if (la_co != null)
-          addBundle(className + la_co);
+          addBundle(className + la_co + ".Messages_" + la_co);
         if (la != null)
-          addBundle(className + la);
+          addBundle(className + la + ".Messages_" + la);
     } catch (Exception exception) {
       Logger.error("Some exception occurred!", exception);
       translationResources = null;

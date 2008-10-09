@@ -123,7 +123,7 @@ public class Resolver {
     if (htParams == null)
       htParams = new Hashtable();
     htParams.put("ptFile", new Integer(ptFile));
-    if (ptFile == 0)
+    if (ptFile <= 0)
       htParams.put("readerName", atomSetCollectionReaderName);
     if (atomSetCollectionReaderName.indexOf("(xml)") >= 0)
       atomSetCollectionReaderName = "Xml";

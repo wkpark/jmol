@@ -94,16 +94,17 @@ public class AppletWrapper extends Applet {
     this.preloadClassNames = preloadClassNames;
     needToCompleteInitialization = true;
     isSigned = false;
+    try {
+      String imagePath = "" + (getClass().getClassLoader().getResource(preloadImageName));
+      isSigned = (imagePath.indexOf("Signed") >= 0);
+      int i = imagePath.indexOf("0.jar");
+      GT.setLanguagePath(i >= 0 ? imagePath.substring(4, i + 1) : null); 
+    } catch (Exception e) {
+      Logger.error("isSigned false: " + e);
+    }
   }
 
   public boolean isSigned() {
-    try {
-      URL urlImage =
-        getClass().getClassLoader().getResource(preloadImageName);
-      isSigned = (("" + urlImage).indexOf("Signed") >= 0);
-    } catch (Exception e) {
-      Logger.error("getImage failed: " + e);
-    }
     return isSigned;
   }
   
@@ -191,31 +192,25 @@ public class AppletWrapper extends Applet {
   private boolean isSigned;
   private boolean completeInitialization(Graphics g, Dimension dim) {
     needToCompleteInitialization = false;
-    if (preloadImageName != null) {
-      try {
-        if (Logger.debugging) {
-          Logger.debug("loadImage:" + preloadImageName);
-        }
-        URL urlImage =
-          getClass().getClassLoader().getResource(preloadImageName);
-        Logger.info("urlImage=" + urlImage);
-        isSigned = (("" + urlImage).indexOf("Signed") >= 0);
-        if (urlImage != null) {
-          preloadImage =
-            Toolkit.getDefaultToolkit().getImage(urlImage);
-          if (Logger.debugging) {
-            Logger.debug("successfully loaded " + preloadImageName);
-            Logger.debug("preloadImage=" + preloadImage);
-          }
-          mediaTracker = new MediaTracker(this);
-          mediaTracker.addImage(preloadImage, 0);
-          mediaTracker.checkID(0, true);
-        }
-      } catch (Exception e) {
-        Logger.error("getImage failed: " + e);
+    try {
+      if (Logger.debugging) {
+        Logger.debug("loadImage:" + preloadImageName);
       }
+      URL urlImage = getClass().getClassLoader().getResource(preloadImageName);
+      Logger.info("urlImage=" + urlImage);
+      if (urlImage != null) {
+        preloadImage = Toolkit.getDefaultToolkit().getImage(urlImage);
+        if (Logger.debugging) {
+          Logger.debug("successfully loaded " + preloadImageName);
+          Logger.debug("preloadImage=" + preloadImage);
+        }
+        mediaTracker = new MediaTracker(this);
+        mediaTracker.addImage(preloadImage, 0);
+        mediaTracker.checkID(0, true);
+      }
+    } catch (Exception e) {
+      Logger.error("getImage failed: " + e);
     }
-    
     String bgcolorName = getParameter("boxbgcolor");
     if (bgcolorName == null)
       bgcolorName = getParameter("bgcolor");

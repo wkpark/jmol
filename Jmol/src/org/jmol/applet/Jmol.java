@@ -146,6 +146,7 @@ public class Jmol implements WrappedApplet {
   String htmlName;
   String fullName;
   String syncId;
+  String languagePath;
 
   AppletWrapper appletWrapper;
   private JmolViewer viewer;

@@ -26,6 +26,7 @@ package org.jmol.i18n;
 import java.text.MessageFormat;
 import java.util.*;
 import org.jmol.util.Logger;
+import org.jmol.util.ZipUtil;
 
 public class GT {
 
@@ -60,6 +61,7 @@ public class GT {
   }
 
   private static Language[] languageList;
+  private static String languagePath;
   
   public static Language[] getLanguageList() {
     return (languageList != null ? languageList : getTextWrapper().createLanguageList());
@@ -117,7 +119,7 @@ public class GT {
       new Language("cs",    GT._("Czech"),                    true),
       new Language("da",    GT._("Danish"),                   false),
       new Language("nl",    GT._("Dutch"),                    true),
-//for 11.7, with incremental loading      new Language("en_GB", GT._("British English"), true),
+      new Language("en_GB", GT._("British English"),          true),
       new Language("en_US", GT._("American English"),         true), // global default for "en" will be "en_US"
       new Language("et",    GT._("Estonian"),                 true),
       new Language("fr",    GT._("French"),                   true),
@@ -270,11 +272,11 @@ public class GT {
     try {
         String className = "org.jmol.translation." + type + ".";
         if (la_co_va != null)
-          addBundle(className + la_co_va + ".Messages_" + la_co_va);
+          addBundle(className, la_co_va);
         if (la_co != null)
-          addBundle(className + la_co + ".Messages_" + la_co);
+          addBundle(className, la_co);
         if (la != null)
-          addBundle(className + la + ".Messages_" + la);
+          addBundle(className, la);
     } catch (Exception exception) {
       Logger.error("Some exception occurred!", exception);
       translationResources = null;
@@ -282,31 +284,35 @@ public class GT {
     }
   }
 
-  private void addBundle(String name_lang) {
+  private void addBundle(String className, String name) {
     Class bundleClass = null;
+    className += name + ".Messages_" + name;
+    if (languagePath != null
+        && !ZipUtil.isZipFile(languagePath + "_i18n_" + name + ".jar"))
+      return;
     try {
-      bundleClass = Class.forName(name_lang);
+      bundleClass = Class.forName(className);
     } catch (Exception e) {
-      Logger.error("GT could not find the class " + name_lang);
+      Logger.error("GT could not find the class " + className);
     }
-    if ((bundleClass != null)
-        && ResourceBundle.class.isAssignableFrom(bundleClass)) {
-      try {
-        ResourceBundle myBundle = (ResourceBundle) bundleClass.newInstance();
-        if (myBundle != null) {
-          if (translationResources == null) {
-            translationResources = new ResourceBundle[8];
-            translationResourcesCount = 0;
-          }
-          translationResources[translationResourcesCount] = myBundle;
-          translationResourcesCount++;
-          Logger.debug("GT adding " + name_lang);
+    if (bundleClass == null
+        || !ResourceBundle.class.isAssignableFrom(bundleClass))
+      return;
+    try {
+      ResourceBundle myBundle = (ResourceBundle) bundleClass.newInstance();
+      if (myBundle != null) {
+        if (translationResources == null) {
+          translationResources = new ResourceBundle[8];
+          translationResourcesCount = 0;
         }
-      } catch (IllegalAccessException e) {
-        Logger.warn("Illegal Access Exception: " + e.getMessage());
-      } catch (InstantiationException e) {
-        Logger.warn("Instantiation Excaption: " + e.getMessage());
+        translationResources[translationResourcesCount] = myBundle;
+        translationResourcesCount++;
+        Logger.debug("GT adding " + className);
       }
+    } catch (IllegalAccessException e) {
+      Logger.warn("Illegal Access Exception: " + e.getMessage());
+    } catch (InstantiationException e) {
+      Logger.warn("Instantiation Excaption: " + e.getMessage());
     }
   }
 
@@ -414,5 +420,9 @@ public class GT {
             + "&#" + ((int)ch) + ";" + msg.substring(i + 1);
       }
     return msg;   
+  }
+
+  public static void setLanguagePath(String languagePath) {
+    GT.languagePath = languagePath;
   }
 }

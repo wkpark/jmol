@@ -30,12 +30,28 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringBufferInputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class ZipUtil {
 
+  public static boolean isZipFile(String filePath) {
+    try {
+      URL url = new URL(filePath);
+      URLConnection conn = url.openConnection();
+      BufferedInputStream bis = new BufferedInputStream(conn.getInputStream(), 8192);
+      boolean isOK = isZipFile(bis);
+      bis.close();
+      return isOK;
+    } catch (Exception e) {
+      //
+    }
+    return false;
+  }
+  
   public static boolean isZipFile(InputStream is) throws Exception {
     byte[] abMagic = new byte[4];
     is.mark(5);

@@ -26,7 +26,7 @@ package org.jmol.i18n;
 import java.text.MessageFormat;
 import java.util.*;
 import org.jmol.util.Logger;
-import org.jmol.util.ZipUtil;
+//import org.jmol.util.ZipUtil;
 
 public class GT {
 
@@ -61,7 +61,7 @@ public class GT {
   }
 
   private static Language[] languageList;
-  private static String languagePath;
+  //private static String languagePath;
   
   public static Language[] getLanguageList() {
     return (languageList != null ? languageList : getTextWrapper().createLanguageList());

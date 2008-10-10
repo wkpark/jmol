@@ -701,6 +701,8 @@ public final class ModelLoader extends ModelSet {
     }
     if (atomNames != null)
       atomNames = ArrayUtil.setLength(atomNames, newLength);
+    if (atomTypes != null)
+      atomTypes = ArrayUtil.setLength(atomTypes, newLength);
     if (atomSerials != null)
       atomSerials = ArrayUtil.setLength(atomSerials, newLength);
     if (specialAtomIDs != null)

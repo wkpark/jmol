@@ -287,12 +287,16 @@ public class GT {
   private void addBundle(String className, String name) {
     Class bundleClass = null;
     className += name + ".Messages_" + name;
-    if (languagePath != null
-        && !ZipUtil.isZipFile(languagePath + "_i18n_" + name + ".jar"))
-      return;
+    //    if (languagePath != null
+    //      && !ZipUtil.isZipFile(languagePath + "_i18n_" + name + ".jar"))
+    //  return;
     try {
-      bundleClass = Class.forName(className);
-    } catch (Exception e) {
+      try {
+        bundleClass = Class.forName(className);
+      } catch (Exception ex) {
+        Logger.error("GT could not find the class " + className);
+      }
+    } catch (Error e) {
       Logger.error("GT could not find the class " + className);
     }
     if (bundleClass == null

@@ -427,6 +427,6 @@ public class GT {
   }
 
   public static void setLanguagePath(String languagePath) {
-    GT.languagePath = languagePath;
+    //GT.languagePath = languagePath;
   }
 }

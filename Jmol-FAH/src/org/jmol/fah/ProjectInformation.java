@@ -805,7 +805,7 @@ public class ProjectInformation {
       info._staticName = XMLValue.getString(att, "name", null); //$NON-NLS-1$
       info._staticPreferred = XMLValue.getInteger(att, "preferred", 86400); //$NON-NLS-1$
       info._staticServer = XMLValue.getString(att, "server", null); //$NON-NLS-1$
-      info._staticFile = XMLValue.getYesNo(att, "file"); //$NON-NLS-1$
+      info._staticFile = XMLValue.getString(att, "file", null); //$NON-NLS-1$
       info._staticPublic = XMLValue.getYesNo(att, "public"); //$NON-NLS-1$
     }
   }
@@ -892,7 +892,7 @@ public class ProjectInformation {
     Integer  _staticPreferred;
     String   _staticServer;
     Double   _staticValue;
-    Boolean  _staticFile;
+    String   _staticFile;
     Boolean  _staticPublic;
   }
 
@@ -1231,7 +1231,7 @@ public class ProjectInformation {
       Information info = getInfo(ii);
       if (info != null) {
         if ((info._psName != null) &&
-            (!Boolean.TRUE.equals(info._staticFile))) {
+            ((info._staticFile == null) || (!info._staticFile.contains("xyz")))) {
           if ((info._staticCore == null) || (info._staticCore.hasFile())) {
             if (!separator) {
               outputText("Active missing beta projects: ");
@@ -1252,7 +1252,7 @@ public class ProjectInformation {
       Information info = getInfo(ii);
       if (info != null) {
         if ((info._psName != null) &&
-            (!Boolean.TRUE.equals(info._staticFile)) &&
+            ((info._staticFile == null) || (!info._staticFile.contains("xyz"))) &&
             (Boolean.TRUE.equals(info._staticPublic))) {
           if ((info._staticCore == null) || (info._staticCore.hasFile())) {
             if (!separator) {
@@ -1286,13 +1286,13 @@ public class ProjectInformation {
     File file = new File(filePath.toString());
         
     if (file.exists()) {
-      if ((info == null) || (!Boolean.TRUE.equals(info._staticFile))) {
+      if ((info == null) || ((info._staticFile == null) || (!info._staticFile.contains("xyz")))) {
         System.out.println(
-            "Missing file in XML file for project " + //$NON-NLS-1$
+            "Missing xyz file in XML file for project " + //$NON-NLS-1$
             projectNumber);
       }
     } else {
-      if ((info != null) && (Boolean.TRUE.equals(info._staticFile))) {
+      if ((info != null) && ((info._staticFile != null) && (info._staticFile.contains("xyz")))) {
         System.out.println(
             "Missing current.xyz file for project " + //$NON-NLS-1$
             projectNumber);

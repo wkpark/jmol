@@ -1,0 +1,3 @@
+echo Jmol heeft het downladen gebeëindigd | Nu downloadend inhoud...
+refresh
+script script/promotion1.nl.txt

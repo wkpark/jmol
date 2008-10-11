@@ -1,0 +1,3 @@
+echo Téléchargement de Jmol terminé | Téléchargement du contenu en cours...
+refresh
+script script/promotion1.fr.txt

@@ -1,0 +1,3 @@
+echo Jmol has finished loading | Now loading content...
+refresh
+script script/promotion1.en.txt

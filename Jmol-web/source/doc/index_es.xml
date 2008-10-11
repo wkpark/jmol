@@ -15,7 +15,7 @@
 				{
 					document.getElementById("promoStillCaption").style.display="none"
 					document.getElementById("promoAnimCaption").style.display="block"
-					popInJmol('Promo','script script/promotion1.es.txt')
+					popInJmol('Promo','script script/promotion0.es.txt')
 				}
 				
 				function popInJmol(id,scr)

@@ -38,7 +38,7 @@
               jmolHtml("<i>");
               jmolRadioGroup([
                 ["dots off", "pas de points"],
-                ["set solvent off; dots on", "surface de vanderWaals", "checked"],
+                ["set solvent off; dots on", "surface de van der Waals", "checked"],
                 ["set solvent on; dots on", "surface accessible au solvant"]
               ], "<br />");
               jmolHtml("</i>");
@@ -58,6 +58,7 @@
                 "wireframe .25",
                 ["wireframe .5", null, "checked"]
               ], "<br />");
+		  	  /* command no longer available:
               jmolBr();
 
               var saddles="dots off; set solvent on; dots on;" +
@@ -65,6 +66,7 @@
                 "color dotsConvex yellow";
 	      
               jmolButton(saddles, "afficher les selles et les cavit&#x00E9;s");
+              */
             </script>
           </td>
         </tr>

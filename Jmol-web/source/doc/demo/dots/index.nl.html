@@ -35,7 +35,7 @@
 	      jmolHtml("<i>");
 	      jmolRadioGroup([
 	      ["dots off", "no dots"],
-	      ["set solvent off; dots on", "vanderWaals dots surface", "checked"],
+	      ["set solvent off; dots on", "van der Waals dots surface", "checked"],
 	      ["set solvent on; dots on", "solvent-accessible surface"]
 	      ], "<br />");
 	      jmolHtml("</i>");
@@ -55,6 +55,7 @@
 		"wireframe .25",
 		["wireframe .5", null, "checked"]
 		], "<br />");
+		  /* command no longer available:
 	      jmolBr();
 
 	      var saddles="dots off; set solvent on; dots on;" +
@@ -62,6 +63,7 @@
 	      "color dotsConvex yellow";
 	      
 	      jmolButton(saddles, "Toon 'saddles' en 'cavities'");
+	      */
 	    </script>
 	  </td>
 	</tr>

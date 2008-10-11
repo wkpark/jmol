@@ -6891,9 +6891,9 @@
   <fah_proj number="4611" name="p4611_T0_villin-8_minout" public="y" file="xyz"
     server="169.230.26.30" atoms="140" preferred="8.5" deadline="12.8"
     credit="47" frames="100" code="A" contact="vvoelz" contrib="Flathead74"/>
-  <fah_proj number="4612" name="p4612_T0_POB-16_minout" public="y" file="xyz"
+  <fah_proj number="4612" name="p4612_T0_POB-16_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="271" preferred="21.7" deadline="32.5"
-    credit="119.3" frames="100" code="A" contact="vvoelz" contrib="Smoking2000"/>
+    credit="119.3" frames="100" code="A" contact="vvoelz" contrib="Flathead74,Smoking2000"/>
   <fah_proj number="4613" name="p4613_T0_BBL-8_minout" public="y" file="xyz"
     server="169.230.26.30" atoms="134" preferred="8.5" deadline="12.8"
     credit="47" frames="100" code="A" contact="vvoelz" contrib="Smoking2000"/>

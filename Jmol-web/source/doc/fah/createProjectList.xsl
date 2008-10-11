@@ -103,7 +103,7 @@
         <xsl:if test="@name">
           <!-- Project file name -->
           <xsl:choose>
-            <xsl:when test="@file = 'y'">
+            <xsl:when test="contains(@file, 'xyz')">
             </xsl:when>
             <xsl:otherwise>
               <xsl:choose>

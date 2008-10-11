@@ -4305,6 +4305,10 @@ class Eval {
         i = 2;
         loadScript.append(" " + modelName);
         isAppend = (modelName.equalsIgnoreCase("append"));
+        if (isAppend && optParameterAsString(2).equalsIgnoreCase("trajectory")) {
+          modelName = "trajectory";
+          loadScript.append(" " + modelName);
+        }
         if (modelName.equalsIgnoreCase("trajectory")) {
           params[0] = -1;
           if (isPoint3f(i)) {

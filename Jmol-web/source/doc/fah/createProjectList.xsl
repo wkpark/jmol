@@ -20,7 +20,7 @@
           <xsl:text>',</xsl:text>
           <!-- Project file name -->
           <xsl:choose>
-            <xsl:when test="@file = 'y'">
+            <xsl:when test="contains(@file, 'xyz')">
               <xsl:text>'p</xsl:text>
               <xsl:value-of select="@number" />
               <xsl:text>'</xsl:text>

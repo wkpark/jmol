@@ -16,6 +16,7 @@
   <property name="modif.dir" value="build/modified" />
   <property name="tmp.cache" value="build/cache.properties" />
   <property name="tgz.file"  value="build/upload.tgz" />
+  <property name="web.host"  value="web.sourceforge.net" />
 
   <!-- Copying files to website -->
   <target name="deploy" >
@@ -90,27 +91,35 @@
       <available file="${modif.dir}" type="dir" />
       <then>
         <!-- Make an archive of modified files -->
-        <echo message="Creating archive with modified files" level="info"/>
+        <!--<echo message="Creating archive with modified files" level="info"/>
         <delete file="${tgz.file}"/>
         <tar destfile="${tgz.file}" longfile="fail" compression="gzip">
           <tarfileset dir="${modif.dir}" mode="664" username="${ssh.user}" group="jmol">
             <include name="**/*"/>
           </tarfileset>
-        </tar>
+        </tar>-->
 
         <!-- Do the copy using scp -->
-        <echo message="Copying archive of modified files to Jmol website" level="info"/>
+        <!--<echo message="Copying archive of modified files to Jmol website" level="info"/>
         <scp
-          todir="${ssh.user}:${ssh.password}@shell.sourceforge.net:/home/groups/j/jm/jmol/htdocs"
+          todir="${ssh.user},jmol:${ssh.password}@${web.host}:/home/groups/j/jm/jmol/htdocs"
           trust="yes" failonerror="true" localfile="${tgz.file}"/>
+        <echo message="Copying modified files to Jmol website" level="info"/>-->
+        <scp
+          todir="${ssh.user},jmol:${ssh.password}@${web.host}:/home/groups/j/jm/jmol/htdocs"
+          trust="yes" failonerror="true">
+          <fileset dir="${modif.dir}">
+            <include name="**/*"/>
+          </fileset>
+        </scp>
 
         <!-- Extract modified files -->
-        <echo message="Extracting modified files on Jmol website" level="info"/>
+        <!--<echo message="Extracting modified files on Jmol website" level="info"/>
         <sshexec
-          host="shell.sourceforge.net" username="${ssh.user}" password="${ssh.password}"
+          host="${web.host}" username="${ssh.user},jmol" password="${ssh.password}"
           trust="yes" failonerror="true"
           command="cd /home/groups/j/jm/jmol/htdocs/; tar zxvf upload.tgz; rm upload.tgz">
-        </sshexec>
+        </sshexec>-->
 
         <!-- Recreate cache.properties -->
         <replaceregexp
@@ -130,12 +139,12 @@
 
         <!-- Post-processing for access rights -->
         <sshexec
-          host="shell.sourceforge.net" username="${ssh.user}" password="${ssh.password}"
+          host="${web.host}" username="${ssh.user},jmol" password="${ssh.password}"
           trust="yes" failonerror="false"
           command="chmod -R -f ug+rw,o+r /home/groups/j/jm/jmol/htdocs/">
         </sshexec>
         <sshexec
-          host="shell.sourceforge.net" username="${ssh.user}" password="${ssh.password}"
+          host="${web.host}" username="${ssh.user},jmol" password="${ssh.password}"
           trust="yes" failonerror="false"
           command="chgrp -R -f jmol /home/groups/j/jm/jmol/htdocs/">
         </sshexec>

@@ -128,11 +128,19 @@
           in="${doc.dir}/fah/fah-projects.xml"
           out="${build.html}/fah/missingProjects.txt">
     </xslt>
+    <xslt style="${doc.dir}/fah/createMissingAmberList.xsl"
+          in="${doc.dir}/fah/fah-projects.xml"
+          out="${build.html}/fah/missingAmber.txt">
+    </xslt>
 
     <!-- Create list of available Jmol-fah projects -->
     <xslt style="${doc.dir}/fah/createAvailableProjectList.xsl"
           in="${doc.dir}/fah/fah-projects.xml"
           out="${build.html}/fah/availableProjects.txt">
+    </xslt>
+    <xslt style="${doc.dir}/fah/createAvailableAmberList.xsl"
+          in="${doc.dir}/fah/fah-projects.xml"
+          out="${build.html}/fah/availableAmber.txt">
     </xslt>
 
     <!-- Replace paths -->

@@ -214,8 +214,19 @@ Cada páginaCada página      </p>
 					<code>tamaño</code> puede ser:
 				</p>
 				<ul>
+				  <li>Para una miniaplicación cuadrada, un solo valor.
+				  </li>
+				  <li>Para una miniaplicación rectangular, una matriz de 
+	    dos elementos: ancho y alto.
+	    Normalmente esto es más fácil de hacer usando la notación de 
+	    corchetes de javascript para matrices de constantes, por ej.:
+	    <code>[400, 200]</code>,
+	    <code>["50%", "100%"]</code> o <code>[0.5, 1.0]</code>.
+				  </li>
+				  <li>Cada dimensión (tamaño, ancho, alto) puede indicarse como: 
+				   <ul>				  				
 					<li>un número entero de píxeles (entre 25 y 2000);
-				</li>
+					</li>
 					<li>un valor de porcentaje, acabado en % y rodeado por comillas 
 	(pero lea las notas a continuación);
 	este valor será interpretado por el navegador como un porcentaje de las
@@ -223,22 +234,21 @@ Cada páginaCada página      </p>
 	dependiendo de cuál sea esa capa y de sus propiedades, 
 	esto permite tener una miniaplicación que se redimensiona dinámicamente 
 	cuando cambie el tamaño de la ventana del navegador;
-				</li>
+					</li>
 					<li>un número entre cero y 1 que, multiplicado por 100, 
 	se interpretará como porcentaje.
-				</li>
+					</li>
+				   </ul>
+				  </li>
 				</ul>
 				<blockquote>
 					<i>Nota 1:</i> los tamaños en porcentaje, y los números menores de 1, sólo están 
 	disponibles en Jmol.js que acompaña a la versión 11.0.2 o posterior de la serie 11.0 de Jmol, y a la versión 11.1.28 o posterior.
 	<br/>
-					<i>Nota 2:</i> sé cauto al usar tamaños en porcentaje, pues pueden rendir
+					<i>Nota 2:</i> sea cauto al usar tamaños en porcentaje, pues pueden rendir
 	resultados no deseados en navegadores antiguos.
 	<br/>
-					<i>Nota 3:</i> los tamaños en porcentaje por lo general generarán una miniaplicación
-	 JmolApplet no cuadrada (lee a continuación más detalles acerca de las miniaplicaciones rectangulares).
-	<br/>
-					<i>Nota 4:</i> para conseguir una compatibilidad con diversos navegadores
+					<i>Nota 3:</i> para conseguir una compatibilidad con diversos navegadores
 	al especificar una altura en porcentaje, es preciso que la
 	capa que envuelve la miniaplicación tenga una altura explícita
 	(de no ser así, algunos navegadores generarán una miniaplicación de altura cero).
@@ -270,17 +280,6 @@ Cada páginaCada página      </p>
 	<code>jmolSetTarget</code>, <code>jmolScript</code> o <code>jmolLoadInlineScript</code>, 
 	se apliquen a la miniaplicación adecuada.
 				</p>
-				<blockquote>
-					<i>Avanzado:</i>
-					<br/>
-		Si el diseño requiere una miniaplicación JmolApplet rectangular,
-	    puedes indicar el parámetro <code>tamaño</code> en forma de matriz de 
-	    dos elementos: ancho y alto, en píxeles, en porcentajes o como valores fraccionarios.
-	    Normalmente esto es más fácil de hacer usando la notación de 
-	    corchetes de javascript para matrices de constantes, por ej.:
-	    <code>[400, 200]</code>,
-	    <code>["50%", "100%"]</code> o <code>[0.5, 1.0]</code>.
-				</blockquote>
 				<blockquote>
 					<i>Avanzado (para pruebas y depuración):</i>
 					<br/>

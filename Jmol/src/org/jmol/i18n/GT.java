@@ -291,12 +291,8 @@ public class GT {
     //      && !ZipUtil.isZipFile(languagePath + "_i18n_" + name + ".jar"))
     //  return;
     try {
-      try {
-        bundleClass = Class.forName(className);
-      } catch (Exception ex) {
-        Logger.error("GT could not find the class " + className);
-      }
-    } catch (Error e) {
+      bundleClass = Class.forName(className);
+    } catch (Throwable e) {
       Logger.error("GT could not find the class " + className);
     }
     if (bundleClass == null

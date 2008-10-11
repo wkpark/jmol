@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-10-09 19:44+0200\n"
+"POT-Creation-Date: 2008-10-11 04:42+0200\n"
 "PO-Revision-Date: 2008-09-23 22:36+0000\n"
 "Last-Translator: nanker <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -73,7 +73,7 @@ msgstr ""
 msgid "&More"
 msgstr "&Mer"
 
-#: org/jmol/applet/Jmol.java:661
+#: org/jmol/applet/Jmol.java:662
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -83,21 +83,21 @@ msgid ""
 "See http://www.jmol.org for more information"
 msgstr ""
 
-#: org/jmol/applet/Jmol.java:883
+#: org/jmol/applet/Jmol.java:884
 msgid "File Error:"
 msgstr ""
 
-#: org/jmol/applet/Jmol.java:1070
+#: org/jmol/applet/Jmol.java:1071
 msgid "File creation failed."
 msgstr ""
 
-#: org/jmol/applet/Jmol.java:1075
+#: org/jmol/applet/Jmol.java:1076
 #, java-format
 msgid ""
 "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 msgstr ""
 
-#: org/jmol/applet/Jmol.java:1177
+#: org/jmol/applet/Jmol.java:1178
 msgid ""
 "Messages will appear here. Enter commands in the box below. Click the "
 "console Help menu item for on-line help, which will appear in a new browser "
@@ -108,7 +108,7 @@ msgstr ""
 msgid "Loading Jmol applet ..."
 msgstr ""
 
-#: org/jmol/appletwrapper/AppletWrapper.java:165
+#: org/jmol/appletwrapper/AppletWrapper.java:166
 #, java-format
 msgid "  {0} seconds"
 msgstr ""
@@ -301,83 +301,87 @@ msgstr ""
 msgid "Append models"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:116
+#: org/jmol/i18n/GT.java:118
 msgid "Catalan"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:117
+#: org/jmol/i18n/GT.java:119
 msgid "Czech"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:118
+#: org/jmol/i18n/GT.java:120
 msgid "Danish"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:119
+#: org/jmol/i18n/GT.java:121
 msgid "Dutch"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:121
-msgid "American English"
-msgstr ""
-
 #: org/jmol/i18n/GT.java:122
-msgid "Estonian"
+msgid "British English"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:123
-msgid "French"
+msgid "American English"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:124
-msgid "German"
+msgid "Estonian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:125
-msgid "Hungarian"
+msgid "French"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:126
-msgid "Italian"
+msgid "German"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:127
-msgid "Korean"
+msgid "Hungarian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:128
-msgid "Norwegian Bokmal"
+msgid "Italian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:129
-msgid "Polish"
+msgid "Korean"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:130
-msgid "Brazilian Portuguese"
+msgid "Norwegian Bokmal"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:131
-msgid "Portuguese"
+msgid "Polish"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:132
-msgid "Russian"
+msgid "Brazilian Portuguese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:133
-msgid "Slovenian"
+msgid "Portuguese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:134
-msgid "Spanish"
+msgid "Russian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:135
-msgid "Swedish"
+msgid "Slovenian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:136
+msgid "Spanish"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:137
+msgid "Swedish"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:138
 msgid "Turkish"
 msgstr ""
 

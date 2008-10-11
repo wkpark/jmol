@@ -190,8 +190,8 @@ abstract public class ModelSet extends ModelCollection {
     models[baseModel].selectedTrajectory = modelIndex;
     Point3f[] trajectory = (Point3f[]) trajectorySteps.get(modelIndex);
     BitSet bs = new BitSet();
-    int nAtoms = getAtomCountInModel(modelIndex);
-    for (int pt = 0, i = iFirst; i < nAtoms && pt < trajectory.length && trajectory[pt]!= null; i++) {
+    int iMax = iFirst + getAtomCountInModel(modelIndex);
+    for (int pt = 0, i = iFirst; i < iMax && pt < trajectory.length && trajectory[pt]!= null; i++) {
       atoms[i].set(trajectory[pt++]);
       atoms[i].modelIndex = (short) modelIndex;
       bs.set(i);

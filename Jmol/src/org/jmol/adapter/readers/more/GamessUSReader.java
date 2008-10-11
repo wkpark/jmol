@@ -40,7 +40,7 @@ public class GamessUSReader extends GamessReader {
       while (line != null) {
         if (line.indexOf("COORDINATES (BOHR)") >= 0 || line.indexOf("COORDINATES OF ALL ATOMS ARE (ANGS)") >= 0) {
           if (!doGetModel(++modelNumber)) {
-            if (desiredModelNumber != Integer.MIN_VALUE && iHaveAtoms)
+            if (isLastModel(modelNumber) && iHaveAtoms)
               break;
             iHaveAtoms = false;
             readLine();

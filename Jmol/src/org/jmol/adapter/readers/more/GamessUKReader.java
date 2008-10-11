@@ -41,7 +41,7 @@ public class GamessUKReader extends GamessReader {
       while (line != null) {
         if (line.indexOf("molecular geometry") >= 0) {
           if (!doGetModel(++modelNumber)) {
-            if (desiredModelNumber != Integer.MIN_VALUE && iHaveAtoms)
+            if (isLastModel(modelNumber) && iHaveAtoms)
               break;
             iHaveAtoms = false;
             readLine();

@@ -27,6 +27,7 @@ package org.jmol.adapter.smarter;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.SymmetryInterface;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.viewer.JmolConstants;
@@ -89,12 +90,13 @@ public abstract class AtomSetCollectionReader {
 
   public final static float ANGSTROMS_PER_BOHR = 0.5291772f;
 
-  public int desiredModelNumber;
+  private int desiredModelNumber;
   public int modelNumber;
   public boolean iHaveDesiredModel;
-  public boolean getHeader;
-  
   public BitSet bsModels;
+  public int lastModelNumber = Integer.MAX_VALUE;
+
+  public boolean getHeader;
   public String filter;
   public BitSet bsFilter;
   public String spaceGroup;
@@ -267,6 +269,8 @@ public abstract class AtomSetCollectionReader {
     getHeader = htParams.containsKey("getHeader");
     readerName = (String) htParams.get("readerName");
     params = (int[]) htParams.get("params");
+    if (params != null)
+      desiredModelNumber = params[0];
     applySymmetryToBonds = htParams.containsKey("applySymmetryToBonds");
     filter = (String) htParams.get("filter");
     // bsFilter is usually null, but it gets set to indicate
@@ -289,22 +293,18 @@ public abstract class AtomSetCollectionReader {
       firstLastStep = (int[]) ((Vector) htParams.get("firstLastSteps"))
           .elementAt(ptFile - 1);
       templateAtomCount = ((Integer) htParams.get("templateAtomCount"))
-      .intValue();
-    }
-    if (params != null) {
-      isTrajectory = (params[0] == -1);
-      if (isTrajectory && firstLastStep == null) {
-        firstLastStep = new int[] { params[1], params[2], params[3] };
-        if (firstLastStep[2] == 0)
-          firstLastStep[1] = -1;
-      } else {
-        desiredModelNumber = params[0];
-        latticeCells[0] = params[1];
-        latticeCells[1] = params[2];
-        latticeCells[2] = params[3];
-      }
-    }
-    if (firstLastStep != null) {
+          .intValue();
+    } else if (htParams.containsKey("firstLastStep")) {
+      isTrajectory = (desiredModelNumber == -1);
+      firstLastStep = (int[]) htParams.get("firstLastStep");          
+      if (firstLastStep[2] == 0)
+        firstLastStep[1] = -1;
+    } else if (htParams.containsKey("bsModels")) {
+      isTrajectory = (desiredModelNumber == -1);
+      bsModels = (BitSet) htParams.get("bsModels");
+      desiredModelNumber = Integer.MIN_VALUE;
+    }    
+    if (bsModels == null && firstLastStep != null) {
       if (firstLastStep[0] < 0)
         firstLastStep[0] = 0;
       if (firstLastStep[1] < firstLastStep[0])
@@ -314,14 +314,17 @@ public abstract class AtomSetCollectionReader {
       if (firstLastStep[1] == firstLastStep[0]) {
         desiredModelNumber = firstLastStep[0] + 1;
       } else {
+        desiredModelNumber = Integer.MIN_VALUE;
         bsModels = new BitSet();
         bsModels.set(firstLastStep[0] + 1);
         if (firstLastStep[1] > firstLastStep[0]) {
-          for (int i = firstLastStep[0]; i < firstLastStep[1]; i += firstLastStep[2])
-            bsModels.set(i + 1);
+          for (int i = firstLastStep[0]; i <= firstLastStep[1]; i += firstLastStep[2])
+            bsModels.set(i);
         }
       }
     }
+    if (bsModels != null)
+      lastModelNumber = BitSetUtil.length(bsModels);
     if (params == null)
       return;
     Float distance = (Float) htParams.get("symmetryRange");
@@ -332,6 +335,11 @@ public abstract class AtomSetCollectionReader {
     //  desiredSpaceGroupIndex,
     //  a*10000, b*10000, c*10000, alpha*10000, beta*10000, gamma*10000]
 
+    if (params != null) {
+      latticeCells[0] = params[1];
+      latticeCells[1] = params[2];
+      latticeCells[2] = params[3];
+    }
     doApplySymmetry = (latticeCells[0] > 0 && latticeCells[1] > 0);
     //allows for {1 1 1} or {555 555 0|1}
     if (!doApplySymmetry) {
@@ -366,8 +374,14 @@ public abstract class AtomSetCollectionReader {
     // modelNumber is 1-based, but firstLastStep is 0-based
     
     return (bsModels == null ? desiredModelNumber == Integer.MIN_VALUE || modelNumber == desiredModelNumber
-        : modelNumber > 0 && bsModels.get(modelNumber) || atomSetCollection.atomCount > 0 && firstLastStep[1] < 0
+        : modelNumber > lastModelNumber ? false 
+        : modelNumber > 0 && bsModels.get(modelNumber - 1) || atomSetCollection.atomCount > 0 
+        && firstLastStep != null && firstLastStep[1] < 0
         && (firstLastStep[2] < 2 || (modelNumber - 1 - firstLastStep[1]) % firstLastStep[2] == 0));
+  }
+  
+  public boolean isLastModel(int modelNumber) {
+    return (desiredModelNumber != Integer.MIN_VALUE || modelNumber >= lastModelNumber);
   }
 
   private void initializeSymmetry() {

@@ -69,7 +69,7 @@ public class Mol2Reader extends AtomSetCollectionReader {
         if (line.equals("@<TRIPOS>MOLECULE")) {
           if (doGetModel(++modelNumber)) {
             processMolecule();
-            if (desiredModelNumber != Integer.MIN_VALUE)
+            if (isLastModel(modelNumber))
               break;
             continue;
           }

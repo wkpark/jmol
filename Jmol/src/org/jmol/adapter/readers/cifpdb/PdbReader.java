@@ -121,9 +121,10 @@ public class PdbReader extends AtomSetCollectionReader {
           getHeader = false;
           iHaveModelStatement = true;
           // PDB is different -- targets actual model number
-          int modelNumber = getModelNumber();
+          int modelNo = getModelNumber();
+          modelNumber = (bsModels == null ? modelNo : ++modelNumber);
           if (!doGetModel(modelNumber)) {
-            if (desiredModelNumber != Integer.MIN_VALUE && iHaveModel)
+            if (isLastModel(modelNumber) && iHaveModel)
               break;
             iHaveModel = false;
             continue;
@@ -132,7 +133,7 @@ public class PdbReader extends AtomSetCollectionReader {
           atomSetCollection.connectAll(maxSerial);
           applySymmetry();
           //supposedly MODEL is only for NMR
-          model(modelNumber);
+          model(modelNo);
           continue;
         }
         /*
@@ -644,7 +645,7 @@ TURN     1  T1 GLY    42  TYR    44
       int endModelColumn = 14;
       if (endModelColumn > lineLength)
         endModelColumn = lineLength;
-      return modelNumber = parseInt(line, startModelColumn, endModelColumn);
+      return parseInt(line, startModelColumn, endModelColumn);
     } catch (NumberFormatException e) {
       return 0;
     }

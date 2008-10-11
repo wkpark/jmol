@@ -375,7 +375,7 @@ public final class ModelLoader extends ModelSet {
     }
     if (isTrajectory) {
       // fill in the rest of the data
-      Logger.info((modelCount - ipt) + " trajectory steps read");
+      Logger.info((modelCount - ipt + 1) + " trajectory steps read");
       for (int ia = adapterModelCount, i = ipt; i < modelCount; i++) {
         models[i] = models[baseModelCount];
         modelNumbers[i] = adapter.getAtomSetNumber(clientFile, ia++);

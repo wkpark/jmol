@@ -70,7 +70,7 @@ public class ShelxReader extends AtomSetCollectionReader {
       int lineLength;
       boolean modelRead = false;
       do {
-        if (modelRead && desiredModelNumber != Integer.MAX_VALUE)
+        if (modelRead && isLastModel(modelNumber))
           break;
         boolean readThisModel = doGetModel(++modelNumber);
         if (readThisModel) {

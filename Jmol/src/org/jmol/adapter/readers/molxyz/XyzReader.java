@@ -64,7 +64,7 @@ public class XyzReader extends AtomSetCollectionReader {
           readAtomSetName();
           readAtoms(modelAtomCount);
           applySymmetry();
-          if (desiredModelNumber != Integer.MIN_VALUE)
+          if (isLastModel(modelNumber))
             break;
         } else {
           skipAtomSet(modelAtomCount);

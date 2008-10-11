@@ -25,6 +25,7 @@ package org.jmol.viewer;
 
 import org.jmol.util.Logger;
 import org.jmol.util.CommandHistory;
+import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Group;
@@ -475,8 +476,7 @@ class Compiler {
           if (lookingAtLoadFormat()) {
             String strFormat = script.substring(ichToken, ichToken + cchToken);
             strFormat = strFormat.toLowerCase();
-            if (strFormat.equals("append") || strFormat.equals("files")
-                || strFormat.equals("menu") || strFormat.equals("trajectory"))
+            if (Parser.isOneOf(strFormat, "append;files;menu;trajectory;select"))
               addTokenToPrefix(new Token(Token.identifier, strFormat));
             else if (strFormat.indexOf("=") == 0) {
               addTokenToPrefix(new Token(Token.string, strFormat));
@@ -487,6 +487,13 @@ class Compiler {
             String str = script.substring(ichToken, ichToken + cchToken).trim();
             if (str.indexOf("{") == 0) {
               cchToken = 0;
+            } else if (str.indexOf("({") == 0) {
+                cchToken = 0;
+                BitSet bs = lookingAtBitset();
+                if (bs != null) {
+                    addTokenToPrefix(new Token(Token.bitset, bs));
+                  continue;
+                }
             } else if (parenCount > 0) {
             } else {
               int pt = str.indexOf(" ");
@@ -1172,7 +1179,7 @@ class Compiler {
       return -1;
   }
 
-  static String[] loadFormats = { "append", "files", "trajectory", "menu",
+  static String[] loadFormats = { "append", "files", "trajectory", "menu", "select",
     /*ancient:*/ "alchemy", "mol2", "mopac", "nmrpdb", "charmm", "xyz", "mdl", "pdb" };
 
   private boolean lookingAtLoadFormat() {

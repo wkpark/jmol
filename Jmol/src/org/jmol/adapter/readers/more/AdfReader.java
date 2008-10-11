@@ -71,7 +71,7 @@ public class AdfReader extends AtomSetCollectionReader {
         if (line.indexOf("Coordinates (Cartesian)") >= 0
             || line.indexOf("G E O M E T R Y  ***  3D  Molecule  ***") >= 0) {
           if (!doGetModel(++modelNumber)) {
-            if (desiredModelNumber != Integer.MIN_VALUE && iHaveAtoms)
+            if (isLastModel(modelNumber) && iHaveAtoms)
               break;
             iHaveAtoms = false;
             continue;

@@ -475,7 +475,7 @@ public class Parser {
   }
 
   public static boolean isOneOf(String key, String semiList) {
-    return (';' + semiList + ';').indexOf(';' + key + ';') >= 0;
+    return key.indexOf(";") < 0  && (';' + semiList + ';').indexOf(';' + key + ';') >= 0;
   }
 
 }

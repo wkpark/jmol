@@ -75,7 +75,7 @@ public class WebMOReader extends MopacDataReader {
         } else if (line.indexOf("[MO") == 0) {
           if (doGetModel(++modelNumber)) {
             readMolecularOrbital();
-            if (desiredModelNumber > 0)
+            if (isLastModel(modelNumber))
               break;
           }
           continue;

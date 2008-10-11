@@ -4305,20 +4305,29 @@ class Eval {
         i = 2;
         loadScript.append(" " + modelName);
         isAppend = (modelName.equalsIgnoreCase("append"));
-        if (isAppend && optParameterAsString(2).equalsIgnoreCase("trajectory")) {
-          modelName = "trajectory";
+        if (isAppend
+            && ((filename = optParameterAsString(2))
+                .equalsIgnoreCase("trajectory") || filename
+                .equalsIgnoreCase("select"))) {
+          modelName = filename;
           loadScript.append(" " + modelName);
           i++;
         }
-        if (modelName.equalsIgnoreCase("trajectory")) {
-          params[0] = -1;
+        if (modelName.equalsIgnoreCase("trajectory")
+            || modelName.equalsIgnoreCase("select")) {
+          if (modelName.equalsIgnoreCase("trajectory"))
+            params[0] = -1;
           if (isPoint3f(i)) {
             Point3f pt = getPoint3f(i, false);
             i = iToken + 1;
             //first last stride
-            params[1] = (int) pt.x;
-            params[2] = (int) pt.y;
-            params[3] = (int) pt.z;
+            htParams.put("firstLastStep", new int[] { (int) pt.x, (int) pt.y,
+                (int) pt.z });
+            loadScript.append(" " + Escape.escape(pt));
+          } else if (tokAt(i) == Token.bitset) {
+            htParams.put("bsModels", (BitSet) getToken(i++).value);
+          } else {
+            htParams.put("firstLastStep", new int[] { 0, -1, 1 });
           }
         }
       } else {

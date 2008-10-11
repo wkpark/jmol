@@ -105,7 +105,7 @@ public class CifReader extends AtomSetCollectionReader {
             else
               applySymmetry();
             processDataParameter();
-            iHaveDesiredModel = (desiredModelNumber > 0);
+            iHaveDesiredModel = (isLastModel(modelNumber));
             nAtoms = atomSetCollection.getAtomCount();
           }
           continue;

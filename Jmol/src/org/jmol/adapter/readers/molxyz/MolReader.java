@@ -65,7 +65,7 @@ public class MolReader extends AtomSetCollectionReader {
           if (doGetModel(++modelNumber)) {
             processMolSdHeader();
             processCtab();
-            if (desiredModelNumber != Integer.MIN_VALUE)
+            if (isLastModel(modelNumber))
               break;
           }
         }

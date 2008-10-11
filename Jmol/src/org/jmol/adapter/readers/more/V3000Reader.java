@@ -49,7 +49,7 @@ public class V3000Reader extends AtomSetCollectionReader {
       while (readLine() != null) {
         if (doGetModel(++modelNumber)) {
           processCtab();
-          if (desiredModelNumber != Integer.MIN_VALUE)
+          if (isLastModel(modelNumber))
             break;
         } else {
           flushLines();

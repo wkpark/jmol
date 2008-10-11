@@ -290,30 +290,32 @@ public abstract class AtomSetCollectionReader {
     ptFile = (htParams.containsKey("ptFile") ? ((Integer) htParams
         .get("ptFile")).intValue() : -1);
     if (ptFile > 0 && htParams.containsKey("firstLastSteps")) {
-      firstLastStep = (int[]) ((Vector) htParams.get("firstLastSteps"))
-          .elementAt(ptFile - 1);
+      Object val = ((Vector) htParams.get("firstLastSteps"))        .elementAt(ptFile - 1);
+      if (val instanceof BitSet) {
+        bsModels = (BitSet) val;
+      } else {
+        firstLastStep = (int[]) val;
+      }
       templateAtomCount = ((Integer) htParams.get("templateAtomCount"))
           .intValue();
     } else if (htParams.containsKey("firstLastStep")) {
       isTrajectory = (desiredModelNumber == -1);
       firstLastStep = (int[]) htParams.get("firstLastStep");
-      if (firstLastStep[2] == 0)
-        firstLastStep[1] = -1;
     } else if (htParams.containsKey("bsModels")) {
       isTrajectory = (desiredModelNumber == -1);
       bsModels = (BitSet) htParams.get("bsModels");
-      desiredModelNumber = Integer.MIN_VALUE;
     }
+    if (bsModels != null || firstLastStep != null)
+      desiredModelNumber = Integer.MIN_VALUE;
     if (bsModels == null && firstLastStep != null) {
       if (firstLastStep[0] < 0)
         firstLastStep[0] = 0;
-      if (firstLastStep[1] < firstLastStep[0])
+      if (firstLastStep[2] == 0 || firstLastStep[1] < firstLastStep[0])
         firstLastStep[1] = -1;
       if (firstLastStep[2] < 1)
         firstLastStep[2] = 1;
-      desiredModelNumber = Integer.MIN_VALUE;
       bsModels = new BitSet();
-      bsModels.set(firstLastStep[0] + 1);
+      bsModels.set(firstLastStep[0]);
       if (firstLastStep[1] > firstLastStep[0]) {
         for (int i = firstLastStep[0]; i <= firstLastStep[1]; i += firstLastStep[2])
           bsModels.set(i);
@@ -371,9 +373,9 @@ public abstract class AtomSetCollectionReader {
     
     return (bsModels == null ? desiredModelNumber == Integer.MIN_VALUE || modelNumber == desiredModelNumber
         : modelNumber > lastModelNumber ? false 
-        : modelNumber > 0 && bsModels.get(modelNumber - 1) || atomSetCollection.atomCount > 0 
-        && firstLastStep != null && firstLastStep[1] < 0
-        && (firstLastStep[2] < 2 || (modelNumber - 1 - firstLastStep[1]) % firstLastStep[2] == 0));
+            : modelNumber > 0 && bsModels.get(modelNumber - 1) || atomSetCollection.atomCount > 0 
+            && firstLastStep != null && firstLastStep[1] < 0
+            && (firstLastStep[2] < 2 || (modelNumber - 1 - firstLastStep[0]) % firstLastStep[2] == 0));
   }
   
   public boolean isLastModel(int modelNumber) {

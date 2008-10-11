@@ -62,31 +62,23 @@ public class MdCrdReader extends AtomSetCollectionReader {
   }
 
   void readCoordinates() throws Exception {
+    line = null;
     int atomCount = (bsFilter == null ? templateAtomCount : ((Integer) htParams
         .get("filteredAtomCount")).intValue());
     boolean isPeriodic = htParams.containsKey("isPeriodic");
-    int first = firstLastStep[0];
-    int last = firstLastStep[1];
-    int step = firstLastStep[2];
     int floatCount = templateAtomCount * 3 + (isPeriodic ? 3 : 0);
-    if (last < 0)
-      last = Integer.MAX_VALUE;
-    int ptStep = 0;
-    while (ptStep < first) {
-      if (!skipFloats(floatCount))
-        return;
-      ptStep++;
-    }
-    line = null;
-    for (int i = first; i <= last; i++) {
-      Point3f[] trajectoryStep = new Point3f[atomCount];
-      if (!getTrajectoryStep(trajectoryStep, isPeriodic))
-        return;
-      trajectorySteps.add(trajectoryStep);
-      for (int j = 1; j < step; j++)
+    while (true)
+      if (doGetModel(++modelNumber)) {
+        Point3f[] trajectoryStep = new Point3f[atomCount];
+        if (!getTrajectoryStep(trajectoryStep, isPeriodic))
+          return;
+        trajectorySteps.add(trajectoryStep);
+        if (isLastModel(modelNumber))
+          return;
+      } else {
         if (!skipFloats(floatCount))
           return;
-    }
+      }
   }
 
   private int ptFloat = 0;

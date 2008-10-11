@@ -4473,6 +4473,7 @@ class Eval {
         loadScript.append(" ").append(Escape.escape(modelName));
       }
       Point3f pt = null;
+      BitSet bs = null;
       Vector fNames = new Vector();
       while (i < statementLength) {
         switch (tokAt(i)) {
@@ -4494,13 +4495,20 @@ class Eval {
           if (isPoint3f(++i)) {
             pt = getPoint3f(i, false);
             i = iToken + 1;
+          } else if (tokAt(i) == Token.bitset) {
+            bs = (BitSet) getToken(i).value;
+            pt = null;
+            i = iToken + 1;
           }
         }
         fNames.add(filename = parameterAsString(i++));
         if (pt != null) {
           firstLastSteps.addElement(new int[] { (int) pt.x, (int) pt.y,
               (int) pt.z });
-          loadScript.append(" coord " + Escape.escape(pt));
+          loadScript.append(" COORD " + Escape.escape(pt));
+        } else if (bs != null) {
+          firstLastSteps.addElement(bs);
+          loadScript.append(" COORD " + Escape.escape(bs));
         }
         loadScript.append(" /*file*/").append(Escape.escape(filename));
       }

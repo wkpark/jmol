@@ -476,35 +476,29 @@ class Compiler {
           if (lookingAtLoadFormat()) {
             String strFormat = script.substring(ichToken, ichToken + cchToken);
             strFormat = strFormat.toLowerCase();
-            if (Parser.isOneOf(strFormat, "append;files;menu;trajectory;select"))
+            if (Parser
+                .isOneOf(strFormat, "append;files;menu;trajectory;select"))
               addTokenToPrefix(new Token(Token.identifier, strFormat));
             else if (strFormat.indexOf("=") == 0) {
               addTokenToPrefix(new Token(Token.string, strFormat));
             }
             continue;
           }
-          if (!iHaveQuotedString && lookingAtSpecialString()) {
+          BitSet bs;
+          if (script.charAt(ichToken) == '{' || parenCount > 0) {
+          } else if ((bs = lookingAtBitset()) != null) {
+            addTokenToPrefix(new Token(Token.bitset, bs));
+            continue;
+          } else if (!iHaveQuotedString && lookingAtSpecialString()) {
             String str = script.substring(ichToken, ichToken + cchToken).trim();
-            if (str.indexOf("{") == 0) {
-              cchToken = 0;
-            } else if (str.indexOf("({") == 0) {
-                cchToken = 0;
-                BitSet bs = lookingAtBitset();
-                if (bs != null) {
-                    addTokenToPrefix(new Token(Token.bitset, bs));
-                  continue;
-                }
-            } else if (parenCount > 0) {
-            } else {
-              int pt = str.indexOf(" ");
-              if (pt > 0) {
-                cchToken = pt;
-                str = str.substring(0, pt);
-              }
-              addTokenToPrefix(new Token(Token.string, str));
-              iHaveQuotedString = true;
-              continue;
+            int pt = str.indexOf(" ");
+            if (pt > 0) {
+              cchToken = pt;
+              str = str.substring(0, pt);
             }
+            addTokenToPrefix(new Token(Token.string, str));
+            iHaveQuotedString = true;
+            continue;
           }
         }
         if (tokCommand == Token.script) {

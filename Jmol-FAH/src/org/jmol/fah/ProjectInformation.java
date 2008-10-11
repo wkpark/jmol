@@ -1245,6 +1245,25 @@ public class ProjectInformation {
     if (separator) {
       outputNewLine();
     }
+    separator = false;
+    for (int ii = 0; ii < _projectInfo.size(); ii++) {
+      Information info = getInfo(ii);
+      if (info != null) {
+        if ((info._psName != null) &&
+            ((info._staticFile == null) || (!info._staticFile.contains("top")))) {
+          if (info._staticCore == CoreType.AMBER) {
+            if (!separator) {
+              outputText("Active missing amber beta projects: ");
+            }
+            outputInfo("", "p" + ii, separator);
+            separator = true;
+          }
+        }
+      }
+    }
+    if (separator) {
+      outputNewLine();
+    }
 
     // Public projects
     separator = false;
@@ -1267,6 +1286,26 @@ public class ProjectInformation {
     if (separator) {
       outputNewLine();
     }
+    separator = false;
+    for (int ii = 0; ii < _projectInfo.size(); ii++) {
+      Information info = getInfo(ii);
+      if (info != null) {
+        if ((info._psName != null) &&
+            ((info._staticFile == null) || (!info._staticFile.contains("top"))) &&
+            (Boolean.TRUE.equals(info._staticPublic))) {
+          if (info._staticCore == CoreType.AMBER) {
+            if (!separator) {
+              outputText("Active missing amber public projects: ");
+            }
+            outputInfo("", "p" + ii, separator);
+            separator = true;
+          }
+        }
+      }
+    }
+    if (separator) {
+      outputNewLine();
+    }
   }
   
   /**
@@ -1278,7 +1317,7 @@ public class ProjectInformation {
     // Get project informations
     Information info = getInfo(projectNumber);
 
-    // Check for file
+    // Check for xyz file
     StringBuffer filePath = new StringBuffer();
     filePath.append("./projects/p"); //$NON-NLS-1$
     filePath.append(projectNumber);
@@ -1295,6 +1334,27 @@ public class ProjectInformation {
       if ((info != null) && ((info._staticFile != null) && (info._staticFile.contains("xyz")))) {
         System.out.println(
             "Missing current.xyz file for project " + //$NON-NLS-1$
+            projectNumber);
+      }
+    }
+
+    // Check for amber file
+    filePath.setLength(0);
+    filePath.append("./projects/p"); //$NON-NLS-1$
+    filePath.append(projectNumber);
+    filePath.append(".top.gz"); //$NON-NLS-1$
+    file = new File(filePath.toString());
+        
+    if (file.exists()) {
+      if ((info == null) || ((info._staticFile == null) || (!info._staticFile.contains("top")))) {
+        System.out.println(
+            "Missing top file in XML file for project " + //$NON-NLS-1$
+            projectNumber);
+      }
+    } else {
+      if ((info != null) && ((info._staticFile != null) && (info._staticFile.contains("top")))) {
+        System.out.println(
+            "Missing top file for project " + //$NON-NLS-1$
             projectNumber);
       }
     }

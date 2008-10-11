@@ -4308,12 +4308,13 @@ class Eval {
         if (isAppend && optParameterAsString(2).equalsIgnoreCase("trajectory")) {
           modelName = "trajectory";
           loadScript.append(" " + modelName);
+          i++;
         }
         if (modelName.equalsIgnoreCase("trajectory")) {
           params[0] = -1;
           if (isPoint3f(i)) {
             Point3f pt = getPoint3f(i, false);
-            i = iToken;
+            i = iToken + 1;
             //first last stride
             params[1] = (int) pt.x;
             params[2] = (int) pt.y;
@@ -4476,7 +4477,7 @@ class Eval {
           }
           error(ERROR_invalidArgument);
         case Token.coord:
-          params[0] = Integer.MIN_VALUE; //trajectory
+          params[0] = Integer.MIN_VALUE;
           if (firstLastSteps == null) {
             firstLastSteps = new Vector();
             pt = new Point3f(0, 0, 1);

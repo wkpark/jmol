@@ -456,7 +456,8 @@ class Compiler {
         if (lookingAtString()) {
           if (cchToken < 0)
             return error(ERROR_endOfCommandUnexpected);
-          String str = ((tokCommand == Token.load || tokCommand == Token.background || tokCommand == Token.script)
+          String str = ((tokCommand == Token.load
+              || tokCommand == Token.background || tokCommand == Token.script)
               && !iHaveQuotedString ? script.substring(ichToken + 1, ichToken
               + cchToken - 1) : getUnescapedStringLiteral());
           addTokenToPrefix(new Token(Token.string, str));
@@ -484,14 +485,19 @@ class Compiler {
           }
           if (!iHaveQuotedString && lookingAtSpecialString()) {
             String str = script.substring(ichToken, ichToken + cchToken).trim();
-            int pt = str.indexOf(" ");
-            if (pt > 0) {
-              cchToken = pt;
-              str = str.substring(0, pt);
+            if (str.indexOf("{") == 0) {
+              cchToken = 0;
+            } else if (parenCount > 0) {
+            } else {
+              int pt = str.indexOf(" ");
+              if (pt > 0) {
+                cchToken = pt;
+                str = str.substring(0, pt);
+              }
+              addTokenToPrefix(new Token(Token.string, str));
+              iHaveQuotedString = true;
+              continue;
             }
-            addTokenToPrefix(new Token(Token.string, str));
-            iHaveQuotedString = true;
-            continue;
           }
         }
         if (tokCommand == Token.script) {
@@ -540,7 +546,8 @@ class Compiler {
         }
         if (lookingAtObjectID(nTokens == 1)) {
           addTokenToPrefix(Token.getTokenFromName("$"));
-          addTokenToPrefix(new Token(Token.identifier, script.substring(ichToken, ichToken + cchToken)));
+          addTokenToPrefix(new Token(Token.identifier, script.substring(
+              ichToken, ichToken + cchToken)));
           continue;
         }
         if (lookingAtDecimal()) {
@@ -722,7 +729,8 @@ class Compiler {
           if (tokAttr(tokCommand, Token.command))
             break;
           isSetBrace = (tok == Token.leftbrace);
-          if (!isSetBrace && !tokAttr(tok, Token.identifier) && !tokAttr(tok, Token.setparam))
+          if (!isSetBrace && !tokAttr(tok, Token.identifier)
+              && !tokAttr(tok, Token.setparam))
             return commandExpected();
           tokCommand = Token.set;
           isNewSet = !isSetBrace;
@@ -888,9 +896,9 @@ class Compiler {
               continue;
             }
           }
-          if (bracketCount == 0 && tok != Token.identifier 
-              && !tokAttr(tok, Token.expression)
-              && tok != Token.min && tok != Token.max)
+          if (bracketCount == 0 && tok != Token.identifier
+              && !tokAttr(tok, Token.expression) && tok != Token.min
+              && tok != Token.max)
             return error(ERROR_invalidExpressionToken, ident);
           break;
         case Token.center:

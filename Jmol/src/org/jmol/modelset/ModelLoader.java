@@ -331,7 +331,8 @@ public final class ModelLoader extends ModelSet {
   private void iterateOverAllNewModels(JmolAdapter adapter, Object clientFile) {
 
     if (modelCount > 0) {
-      nullGroup = new Group(new Chain(this, getModel(baseModelIndex), ' '), "", 0, -1, -1);
+      nullGroup = new Group(new Chain(this, getModel(baseModelIndex), ' '), "",
+          0, -1, -1);
     }
 
     group3Lists = new String[modelCount + 1];
@@ -341,23 +342,26 @@ public final class ModelLoader extends ModelSet {
 
     if (merging)
       initializeMerge();
-    
+
     int iTrajectory = (isTrajectory ? baseTrajectoryCount : -1);
     int ipt = baseModelIndex;
-    for (int i = 0; i < adapterModelCount; ++i, ++ipt) {     
+    for (int i = 0; i < adapterModelCount; ++i, ++ipt) {
       int modelNumber = (appendNew ? adapter.getAtomSetNumber(clientFile, i)
           : Integer.MAX_VALUE);
       String modelName = adapter.getAtomSetName(clientFile, i);
       Properties modelProperties = adapter.getAtomSetProperties(clientFile, i);
       Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
           clientFile, i);
-      viewer.setStringProperty("_fileType", (String) modelAuxiliaryInfo.get("fileType"));
+      viewer.setStringProperty("_fileType", (String) modelAuxiliaryInfo
+          .get("fileType"));
       if (modelName == null)
         modelName = (jmolData != null ? jmolData.substring(jmolData
             .indexOf(":") + 2, jmolData.indexOf(";"))
-            : modelNumber == Integer.MAX_VALUE ? "" : "" + (modelNumber % 1000000));
-      boolean isPDBModel = setModelNameNumberProperties(ipt, iTrajectory, modelName,
-          modelNumber, modelProperties, modelAuxiliaryInfo, isPDB, jmolData);
+            : modelNumber == Integer.MAX_VALUE ? "" : ""
+                + (modelNumber % 1000000));
+      boolean isPDBModel = setModelNameNumberProperties(ipt, iTrajectory,
+          modelName, modelNumber, modelProperties, modelAuxiliaryInfo, isPDB,
+          jmolData);
       if (isPDBModel) {
         group3Lists[ipt + 1] = JmolConstants.group3List;
         group3Counts[ipt + 1] = new int[JmolConstants.group3Count + 10];
@@ -371,8 +375,8 @@ public final class ModelLoader extends ModelSet {
     }
     if (isTrajectory) {
       // fill in the rest of the data
-      int ia = adapterModelCount;
-      for (int i = ipt; i < modelCount; i++) {
+      Logger.info((modelCount - ipt) + " trajectory steps read");
+      for (int ia = adapterModelCount, i = ipt; i < modelCount; i++) {
         models[i] = models[baseModelCount];
         modelNumbers[i] = adapter.getAtomSetNumber(clientFile, ia++);
         structuresDefinedInFile.set(i);

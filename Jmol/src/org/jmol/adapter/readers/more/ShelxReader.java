@@ -70,9 +70,9 @@ public class ShelxReader extends AtomSetCollectionReader {
       int lineLength;
       boolean modelRead = false;
       do {
-        if (modelRead && desiredModelNumber > 0)
+        if (modelRead && desiredModelNumber != Integer.MAX_VALUE)
           break;
-        boolean readThisModel = (++modelNumber == desiredModelNumber || desiredModelNumber <= 0);
+        boolean readThisModel = doGetModel(++modelNumber);
         if (readThisModel) {
           modelRead = true;
           sfacElementSymbols = null;

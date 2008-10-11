@@ -55,7 +55,6 @@ public class MolReader extends AtomSetCollectionReader {
  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     atomSetCollection = new AtomSetCollection("mol");
     this.reader = reader;
-    boolean iHaveAtoms = false;
     try {
       while (readLine() != null) {
         if (line.startsWith("$MDL")) {
@@ -63,15 +62,12 @@ public class MolReader extends AtomSetCollectionReader {
           discardLinesUntilStartsWith("$CTAB");
           processCtab();
         } else {
-          if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
-            if (iHaveAtoms)
+          if (doGetModel(++modelNumber)) {
+            processMolSdHeader();
+            processCtab();
+            if (desiredModelNumber != Integer.MIN_VALUE)
               break;
-            flushLines();
-            continue;
           }
-          iHaveAtoms = true;
-          processMolSdHeader();
-          processCtab();
         }
         flushLines();
       }

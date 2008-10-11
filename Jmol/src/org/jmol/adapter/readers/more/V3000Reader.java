@@ -45,17 +45,15 @@ public class V3000Reader extends AtomSetCollectionReader {
  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("v3000");
-    boolean iHaveAtoms = false;
     try {
       while (readLine() != null) {
-        if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
-          if (iHaveAtoms)
+        if (doGetModel(++modelNumber)) {
+          processCtab();
+          if (desiredModelNumber != Integer.MIN_VALUE)
             break;
+        } else {
           flushLines();
-          continue;
         }
-        iHaveAtoms = true;
-        processCtab();
       }
     } catch (Exception e) {
       return setError(e);

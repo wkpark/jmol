@@ -57,21 +57,18 @@ public class XyzReader extends AtomSetCollectionReader {
   public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("xyz");
-    boolean iHaveAtoms = false;
-
     try {
       int modelAtomCount;
       while ((modelAtomCount = readAtomCount()) > 0) {
-        if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
-          if (iHaveAtoms)
+        if (doGetModel(++modelNumber)) {
+          readAtomSetName();
+          readAtoms(modelAtomCount);
+          applySymmetry();
+          if (desiredModelNumber != Integer.MIN_VALUE)
             break;
+        } else {
           skipAtomSet(modelAtomCount);
-          continue;
         }
-        iHaveAtoms = true;
-        readAtomSetName();
-        readAtoms(modelAtomCount);
-        applySymmetry();
       }
     } catch (Exception e) {
       return setError(e);

@@ -133,9 +133,10 @@ public class GaussianReader extends AtomSetCollectionReader {
         } else if (line.indexOf("Input orientation:") >= 0
             || line.indexOf("Z-Matrix orientation:") >= 0
             || line.indexOf("Standard orientation:") >= 0) {
-          if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
-            if (iHaveAtoms)
+          if (!doGetModel(++modelNumber)) {
+            if (desiredModelNumber != Integer.MIN_VALUE && iHaveAtoms)
               break;
+            iHaveAtoms = false;
             continue;
           }
           equivalentAtomSets++;

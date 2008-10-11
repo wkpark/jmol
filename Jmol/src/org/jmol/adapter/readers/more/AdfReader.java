@@ -70,17 +70,18 @@ public class AdfReader extends AtomSetCollectionReader {
       while (readLine() != null) {
         if (line.indexOf("Coordinates (Cartesian)") >= 0
             || line.indexOf("G E O M E T R Y  ***  3D  Molecule  ***") >= 0) {
-          if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
-            if (iHaveAtoms)
+          if (!doGetModel(++modelNumber)) {
+            if (desiredModelNumber != Integer.MIN_VALUE && iHaveAtoms)
               break;
+            iHaveAtoms = false;
             continue;
           }
           iHaveAtoms = true;
           readCoordinates();          
-        } else if (line.indexOf("Energy:") >= 0) {
+        } else if (iHaveAtoms && line.indexOf("Energy:") >= 0) {
           String[] tokens = getTokens();
           energy = tokens[1];
-        } else if (line.indexOf("Vibrations") >= 0) {
+        } else if (iHaveAtoms && line.indexOf("Vibrations") >= 0) {
           readFrequencies();
         }
       }

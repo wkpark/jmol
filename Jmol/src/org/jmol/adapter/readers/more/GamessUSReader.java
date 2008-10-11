@@ -39,9 +39,10 @@ public class GamessUSReader extends GamessReader {
       boolean iHaveAtoms = false;
       while (line != null) {
         if (line.indexOf("COORDINATES (BOHR)") >= 0 || line.indexOf("COORDINATES OF ALL ATOMS ARE (ANGS)") >= 0) {
-          if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
-            if (iHaveAtoms)
+          if (!doGetModel(++modelNumber)) {
+            if (desiredModelNumber != Integer.MIN_VALUE && iHaveAtoms)
               break;
+            iHaveAtoms = false;
             readLine();
             continue;
           }

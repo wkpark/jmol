@@ -92,7 +92,7 @@ public class CifReader extends AtomSetCollectionReader {
         if (key.startsWith("data_")) {
           if (iHaveDesiredModel)
             break;
-          skipping = (++modelNumber != desiredModelNumber && desiredModelNumber > 0);
+          skipping = !doGetModel(++modelNumber);
           if (skipping) {
             tokenizer.getTokenPeeked();
           } else {

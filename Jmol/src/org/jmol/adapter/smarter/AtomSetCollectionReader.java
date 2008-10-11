@@ -94,6 +94,7 @@ public abstract class AtomSetCollectionReader {
   public boolean iHaveDesiredModel;
   public boolean getHeader;
   
+  public BitSet bsModels;
   public String filter;
   public BitSet bsFilter;
   public String spaceGroup;
@@ -288,7 +289,38 @@ public abstract class AtomSetCollectionReader {
       firstLastStep = (int[]) ((Vector) htParams.get("firstLastSteps"))
           .elementAt(ptFile - 1);
       templateAtomCount = ((Integer) htParams.get("templateAtomCount"))
-          .intValue();
+      .intValue();
+    }
+    if (params != null) {
+      isTrajectory = (params[0] == -1);
+      if (isTrajectory && firstLastStep == null) {
+        firstLastStep = new int[] { params[1], params[2], params[3] };
+        if (firstLastStep[2] == 0)
+          firstLastStep[1] = -1;
+      } else {
+        desiredModelNumber = params[0];
+        latticeCells[0] = params[1];
+        latticeCells[1] = params[2];
+        latticeCells[2] = params[3];
+      }
+    }
+    if (firstLastStep != null) {
+      if (firstLastStep[0] < 0)
+        firstLastStep[0] = 0;
+      if (firstLastStep[1] < firstLastStep[0])
+        firstLastStep[1] = -1;
+      if (firstLastStep[2] < 1)
+        firstLastStep[2] = 1;
+      if (firstLastStep[1] == firstLastStep[0]) {
+        desiredModelNumber = firstLastStep[0] + 1;
+      } else {
+        bsModels = new BitSet();
+        bsModels.set(firstLastStep[0] + 1);
+        if (firstLastStep[1] > firstLastStep[0]) {
+          for (int i = firstLastStep[0]; i < firstLastStep[1]; i += firstLastStep[2])
+            bsModels.set(i + 1);
+        }
+      }
     }
     if (params == null)
       return;
@@ -300,12 +332,6 @@ public abstract class AtomSetCollectionReader {
     //  desiredSpaceGroupIndex,
     //  a*10000, b*10000, c*10000, alpha*10000, beta*10000, gamma*10000]
 
-    isTrajectory = (params[0] == -1);
-    if (!isTrajectory)
-      desiredModelNumber = params[0];
-    latticeCells[0] = params[1];
-    latticeCells[1] = params[2];
-    latticeCells[2] = params[3];
     doApplySymmetry = (latticeCells[0] > 0 && latticeCells[1] > 0);
     //allows for {1 1 1} or {555 555 0|1}
     if (!doApplySymmetry) {
@@ -334,6 +360,14 @@ public abstract class AtomSetCollectionReader {
           params[8] / 10000f, params[9] / 10000f, params[10] / 10000f);
       ignoreFileUnitCell = iHaveUnitCell;
     }
+  }
+
+  public boolean doGetModel(int modelNumber) {
+    // modelNumber is 1-based, but firstLastStep is 0-based
+    
+    return (bsModels == null ? desiredModelNumber == Integer.MIN_VALUE || modelNumber == desiredModelNumber
+        : modelNumber > 0 && bsModels.get(modelNumber) || atomSetCollection.atomCount > 0 && firstLastStep[1] < 0
+        && (firstLastStep[2] < 2 || (modelNumber - 1 - firstLastStep[1]) % firstLastStep[2] == 0));
   }
 
   private void initializeSymmetry() {

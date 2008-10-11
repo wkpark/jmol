@@ -6873,7 +6873,7 @@
   <fah_proj number="4605" name="p4605_T0_proA-8_minout" public="y" file="xyz"
     server="169.230.26.30" atoms="140" preferred="8.5" deadline="12.8"
     credit="47" frames="100" code="A" contact="vvoelz" contrib="Smoking2000"/>
-  <fah_proj number="4606" name="p4606_T0_proG-8_minout" public="y" file="xyz"
+  <fah_proj number="4606" name="p4606_T0_proG-8_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="157" preferred="8.5" deadline="12.8"
     credit="47" frames="100" code="A" contact="vvoelz" contrib="Flathead74"/>
   <fah_proj number="4607" name="p4607_T0_PSBD-12_minout" public="y" file="xyz"

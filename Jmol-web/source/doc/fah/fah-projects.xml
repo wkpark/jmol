@@ -6844,13 +6844,13 @@
   <fah_proj number="4596" name="p4596_T0498-12_minout" public="y" file="xyz"
     server="169.230.26.30" atoms="222" preferred="15.4" deadline="23.1"
     credit="84.7" frames="100" code="A" contact="vvoelz"/>
-  <fah_proj number="4597" name="p4597_T0_PSBD-8_minout" public="y" file="xyz"
+  <fah_proj number="4597" name="p4597_T0_PSBD-8_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="150" preferred="8.5" deadline="12.8"
     credit="47" frames="100" code="A" contact="vvoelz" contrib="Smoking2000"/>
   <fah_proj number="4598" name="p4598_T0_proL-12_minout" public="y" file="xyz"
     server="169.230.26.30" atoms="204" preferred="15.4" deadline="23.1"
     credit="84.7" frames="100" code="A" contact="vvoelz" contrib="Flathead74"/>
-  <fah_proj number="4599" name="p4599_T0_proL-16_minout" public="y" file="xyz"
+  <fah_proj number="4599" name="p4599_T0_proL-16_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="253" preferred="21.7" deadline="32.5"
     credit="119.3" frames="100" code="A" contact="vvoelz"/>
 
@@ -6864,7 +6864,7 @@
   <fah_proj number="4602" name="p4602_T0_NTL9-8_minout" public="y" file="xyz"
     server="169.230.26.30" atoms="159" preferred="8.5" deadline="12.8"
     credit="47" frames="100" code="A" contact="vvoelz"/>
-  <fah_proj number="4603" name="p4603_T0_ww-16_minout" public="y" file="xyz"
+  <fah_proj number="4603" name="p4603_T0_ww-16_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="278" preferred="21.7" deadline="32.5"
     credit="119.3" frames="100" code="A" contact="vvoelz" contrib="Flathead74"/>
   <fah_proj number="4604" name="p4604_T0_ww-12_minout" public="y" file="xyz"

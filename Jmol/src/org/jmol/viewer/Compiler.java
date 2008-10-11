@@ -477,7 +477,7 @@ class Compiler {
             String strFormat = script.substring(ichToken, ichToken + cchToken);
             strFormat = strFormat.toLowerCase();
             if (Parser
-                .isOneOf(strFormat, "append;files;menu;trajectory;select"))
+                .isOneOf(strFormat, "append;files;menu;trajectory;models"))
               addTokenToPrefix(new Token(Token.identifier, strFormat));
             else if (strFormat.indexOf("=") == 0) {
               addTokenToPrefix(new Token(Token.string, strFormat));
@@ -1173,7 +1173,7 @@ class Compiler {
       return -1;
   }
 
-  static String[] loadFormats = { "append", "files", "trajectory", "menu", "select",
+  static String[] loadFormats = { "append", "files", "trajectory", "menu", "models",
     /*ancient:*/ "alchemy", "mol2", "mopac", "nmrpdb", "charmm", "xyz", "mdl", "pdb" };
 
   private boolean lookingAtLoadFormat() {

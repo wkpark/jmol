@@ -4308,13 +4308,13 @@ class Eval {
         if (isAppend
             && ((filename = optParameterAsString(2))
                 .equalsIgnoreCase("trajectory") || filename
-                .equalsIgnoreCase("select"))) {
+                .equalsIgnoreCase("models"))) {
           modelName = filename;
           loadScript.append(" " + modelName);
           i++;
         }
         if (modelName.equalsIgnoreCase("trajectory")
-            || modelName.equalsIgnoreCase("select")) {
+            || modelName.equalsIgnoreCase("models")) {
           if (modelName.equalsIgnoreCase("trajectory"))
             params[0] = -1;
           if (isPoint3f(i)) {

@@ -6572,9 +6572,9 @@
   <fah_proj number="4432" name="p4432_Seq41_Amber03" public="y" file="y"
     server="171.64.122.78" atoms="7885" preferred="43" deadline="63"
     credit="225" frames="100" code="G" contact="gbowman" contrib="Bruce"/>
-  <fah_proj number="4433" name="p4433_Seq41_Amber03_Native" public="y"
+  <fah_proj number="4433" name="p4433_Seq41_Amber03_Native" public="y" file="y"
     server="171.64.122.82" atoms="7885" preferred="2" deadline="2"
-    credit="893" frames="100" code="GC" contact="gbowman"/>
+    credit="893" frames="100" code="GC" contact="gbowman" contrib="Smoking2000"/>
 
   <!-- Projects 4500 to 4599 -->
   <fah_proj number="4507" name="p4507_PTL-8_minout" public="n" file="y"

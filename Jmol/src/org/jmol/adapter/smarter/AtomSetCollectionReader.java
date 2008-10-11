@@ -321,7 +321,7 @@ public abstract class AtomSetCollectionReader {
           bsModels.set(i);
       }
     }
-    if (bsModels != null)
+    if (bsModels != null && (firstLastStep == null || firstLastStep[1] != -1))
       lastModelNumber = BitSetUtil.length(bsModels);
     if (params == null)
       return;

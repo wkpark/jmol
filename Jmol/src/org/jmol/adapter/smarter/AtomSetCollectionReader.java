@@ -296,14 +296,14 @@ public abstract class AtomSetCollectionReader {
           .intValue();
     } else if (htParams.containsKey("firstLastStep")) {
       isTrajectory = (desiredModelNumber == -1);
-      firstLastStep = (int[]) htParams.get("firstLastStep");          
+      firstLastStep = (int[]) htParams.get("firstLastStep");
       if (firstLastStep[2] == 0)
         firstLastStep[1] = -1;
     } else if (htParams.containsKey("bsModels")) {
       isTrajectory = (desiredModelNumber == -1);
       bsModels = (BitSet) htParams.get("bsModels");
       desiredModelNumber = Integer.MIN_VALUE;
-    }    
+    }
     if (bsModels == null && firstLastStep != null) {
       if (firstLastStep[0] < 0)
         firstLastStep[0] = 0;
@@ -311,16 +311,12 @@ public abstract class AtomSetCollectionReader {
         firstLastStep[1] = -1;
       if (firstLastStep[2] < 1)
         firstLastStep[2] = 1;
-      if (firstLastStep[1] == firstLastStep[0]) {
-        desiredModelNumber = firstLastStep[0] + 1;
-      } else {
-        desiredModelNumber = Integer.MIN_VALUE;
-        bsModels = new BitSet();
-        bsModels.set(firstLastStep[0] + 1);
-        if (firstLastStep[1] > firstLastStep[0]) {
-          for (int i = firstLastStep[0]; i <= firstLastStep[1]; i += firstLastStep[2])
-            bsModels.set(i);
-        }
+      desiredModelNumber = Integer.MIN_VALUE;
+      bsModels = new BitSet();
+      bsModels.set(firstLastStep[0] + 1);
+      if (firstLastStep[1] > firstLastStep[0]) {
+        for (int i = firstLastStep[0]; i <= firstLastStep[1]; i += firstLastStep[2])
+          bsModels.set(i);
       }
     }
     if (bsModels != null)

@@ -392,6 +392,7 @@ public class Jmol extends JPanel {
 
     String modelFilename = null;
     String scriptFilename = null;
+    String script = null;
 
     Options options = new Options();
     options.addOption("b", "backgroundtransparent", false, GT
@@ -411,10 +412,16 @@ public class Jmol extends JPanel {
         ._("exit after script (implicit with -n)"));
 
     OptionBuilder.withLongOpt("script");
-    OptionBuilder.withDescription("script file to execute");
+    OptionBuilder.withDescription(GT._("script file to execute"));
     OptionBuilder.withValueSeparator('=');
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("s"));
+
+    OptionBuilder.withLongOpt("jmolscript");
+    OptionBuilder.withDescription(GT._("Jmol script to execute"));
+    OptionBuilder.withValueSeparator('=');
+    OptionBuilder.hasArg();
+    options.addOption(OptionBuilder.create("j"));
 
     OptionBuilder.withLongOpt("menu");
     OptionBuilder.withDescription("menu file to use");
@@ -546,6 +553,11 @@ public class Jmol extends JPanel {
       commandOptions += "-s";
       scriptFilename = line.getOptionValue("s");
     }
+    
+    if (line.hasOption("j")) {
+      commandOptions += "-s";
+      script = line.getOptionValue("j");
+    }
 
     //menu file
     if (line.hasOption("m")) {
@@ -644,11 +656,19 @@ public class Jmol extends JPanel {
       }
 
       // OK, by now it is time to execute the script
+      // file first
       if (scriptFilename != null) {
-        report("Executing script: " + scriptFilename);
+        report("Executing script from file: " + scriptFilename);
         if (haveDisplay.booleanValue())
           jmol.splash.showStatus(GT._("Executing script..."));
         jmol.viewer.evalFile(scriptFilename);
+      }
+      // then command script
+      if (script != null) {
+        report("Executing script: " + script);
+        if (haveDisplay.booleanValue())
+          jmol.splash.showStatus(GT._("Executing script..."));
+        jmol.viewer.script(script);
       }
     } catch (Throwable t) {
       System.out.println("uncaught exception: " + t);

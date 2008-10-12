@@ -6915,9 +6915,9 @@
   <fah_proj number="4619" name="p4619_T0_NTL9-16_minout" public="y" file="xyz"
     server="169.230.26.30" atoms="284" preferred="21.7" deadline="32.5"
     credit="119.3" frames="100" code="A" contact="vvoelz" contrib="Smoking2000"/>
-  <fah_proj number="4620" name="p4620_T0_NTL9-12_minout" public="y" file="xyz"
+  <fah_proj number="4620" name="p4620_T0_NTL9-12_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="226" preferred="15.4" deadline="23.1"
-    credit="84.7" frames="100" code="A" contact="vvoelz" contrib="Hyperlife"/>
+    credit="84.7" frames="100" code="A" contact="vvoelz" contrib="Flathead74,Hyperlife"/>
   <fah_proj number="4621" name="p4621_T0_ww-8_minout" public="y" file="xyz"
     server="169.230.26.30" atoms="149" preferred="8.5" deadline="12.8"
     credit="47" frames="100" code="A" contact="vvoelz" contrib="Smoking2000"/>

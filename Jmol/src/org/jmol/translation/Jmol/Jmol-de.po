@@ -11,13 +11,13 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-10-12 10:20+0200\n"
-"PO-Revision-Date: 2008-09-25 21:49+0000\n"
-"Last-Translator: Oliver Stueker <Unknown>\n"
+"PO-Revision-Date: 2008-10-12 11:24+0000\n"
+"Last-Translator: Maximilian Reininghaus <max.reininghaus@gmail.com>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-09-29 19:40+0000\n"
+"X-Launchpad-Export-Date: 2008-10-12 11:36+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
@@ -155,32 +155,31 @@ msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:194
 msgid "Basic"
-msgstr ""
+msgstr "Grundlegend"
 
 #: org/openscience/jmol/app/GaussianDialog.java:196
 msgid "Advanced"
-msgstr ""
+msgstr "Fortgeschritten"
 
 #: org/openscience/jmol/app/GaussianDialog.java:224
-#, fuzzy
 msgid "Checkpoint File: "
-msgstr "Zuletzt geöffnete Dateien"
+msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:229
 msgid "Amount of Memory:"
-msgstr ""
+msgstr "Höhe des Speichers:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:235
 msgid "Number of Processors:"
-msgstr ""
+msgstr "Anzahl der Prozessoren:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:248
 msgid "Route"
-msgstr ""
+msgstr "Route"
 
 #: org/openscience/jmol/app/GaussianDialog.java:254
 msgid "Method: "
-msgstr ""
+msgstr "Methode: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:261
 msgid "Basis Set: "
@@ -195,9 +194,8 @@ msgid "Job Options: "
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:288
-#, fuzzy
 msgid "Molecular Properties"
-msgstr "Eigenschaften"
+msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:294
 msgid "Total Charge: "
@@ -208,18 +206,16 @@ msgid "Multiplicity: "
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:308
-#, fuzzy
 msgid "Selection: "
-msgstr "Auswählen"
+msgstr "Auswahl: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:349
-#, fuzzy
 msgid "File..."
-msgstr "&Datei"
+msgstr "Datei..."
 
 #: org/openscience/jmol/app/GaussianDialog.java:360
 #: org/openscience/jmol/app/PovrayDialog.java:758
@@ -392,9 +388,8 @@ msgid "Phosphorus"
 msgstr "Phosphor"
 
 #: org/openscience/jmol/app/GuiMap.java:86
-#, fuzzy
 msgid "Sulfur"
-msgstr "Schwefel"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:87
 msgid "Amino"
@@ -831,9 +826,8 @@ msgid "script file to execute"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:422
-#, fuzzy
 msgid "Jmol script to execute"
-msgstr "Jmol Skript Konsole"
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:433
 msgid "property=value"

@@ -6099,6 +6099,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       exp = "\"line1\nline2\nline3\n\"+(\"\"+{selected}.size)%-3+(\"\"+{selected}.bonds.size)%-3+\"  0  0  0\n\""
           + "+{selected}.labels(\"%10.4x%10.4y%10.4z %-2e  0  0  0  0  0\").lines"
           + "+{selected}.bonds.labels(\"%3D1%3D2%3ORDER  0  0  0\").lines";
+    else if (type.startsWith("USER:"))
+      exp = "{selected}.label(\"" + type.substring(5) + "\").lines";
     else
       //if(type.equals("XYZ"))
       exp = "\"\" + {selected}.size + \"\n\n\"+{selected}.label(\"%-2e %10.5x %10.5y %10.5z\").lines";

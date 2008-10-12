@@ -70,6 +70,7 @@ public class Jmol extends JPanel {
 
   DisplayPanel display;
   StatusBar status;
+  protected GaussianDialog gaussianDialog;
   private PreferencesDialog preferencesDialog;
   MeasurementTable measurementTable;
   RecentFilesDialog recentFiles;
@@ -1196,6 +1197,7 @@ public class Jmol extends JPanel {
   private static final String copyImageActionProperty = "copyImage";
   private static final String copyScriptActionProperty = "copyScript";
   private static final String pasteClipboardActionProperty = "pasteClipboard";
+  private static final String gaussianAction = "gauss";
 
   // --- action implementations -----------------------------------
 
@@ -1222,7 +1224,8 @@ public class Jmol extends JPanel {
       pasteClipboardAction, new AboutAction(), new WhatsNewAction(),
       new UguideAction(), new ConsoleAction(), new RecentFilesAction(),
       povrayAction, writeAction, toWebAction, new ScriptWindowAction(),
-      new AtomSetChooserAction(), viewMeasurementTableAction };
+      new AtomSetChooserAction(), viewMeasurementTableAction, new GaussianAction() }
+  ;
 
   class CloseAction extends AbstractAction {
     CloseAction() {
@@ -1273,6 +1276,18 @@ public class Jmol extends JPanel {
     }
   }
 
+  class GaussianAction extends AbstractAction {
+    public GaussianAction() {
+      super(gaussianAction);
+    }
+    
+    public void actionPerformed(ActionEvent e) {
+      if (gaussianDialog == null)
+        gaussianDialog = new GaussianDialog(frame, viewer);
+      gaussianDialog.show();
+    }
+  }
+    
   class NewwinAction extends AbstractAction {
 
     NewwinAction() {

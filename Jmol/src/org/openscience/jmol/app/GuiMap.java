@@ -140,6 +140,7 @@ class GuiMap {
       labels.put("transform", GT._("Tr&ansform..."));
       labels.put("definecenter", GT._("Define &Center"));
       labels.put("tools", GT._("&Tools"));
+      labels.put("gauss", GT._("&Gaussian..."));
       labels.put("viewMeasurementTable", GT._("&Measurements")+"...");
       labels.put("viewMeasurementTableTip", GT._("Click atoms to measure distances"));
       labels.put("distanceUnitsMenu", GT._("Distance &Units"));

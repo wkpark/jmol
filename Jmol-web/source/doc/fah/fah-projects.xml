@@ -6882,9 +6882,9 @@
   <fah_proj number="4608" name="p4608_T0_PSBD-16_minout" public="y" file="xyz"
     server="169.230.26.30" atoms="293" preferred="21.7" deadline="32.5"
     credit="119.3" frames="100" code="A" contact="vvoelz" contrib="Smoking2000"/>
-  <fah_proj number="4609" name="p4609_T0_proL-8_minout" public="y" file="xyz"
+  <fah_proj number="4609" name="p4609_T0_proL-8_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="141" preferred="8.5" deadline="12.8"
-    credit="47" frames="100" code="A" contact="vvoelz" contrib="Hyperlife"/>
+    credit="47" frames="100" code="A" contact="vvoelz" contrib="Flathead74,Hyperlife"/>
   <fah_proj number="4610" name="p4610_T0_POB-8_minout" public="y" file="xyz"
     server="169.230.26.30" atoms="128" preferred="8.5" deadline="12.8"
     credit="47" frames="100" code="A" contact="vvoelz" contrib="Hyperlife"/>

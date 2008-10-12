@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-10-05 16:16+0200\n"
+"POT-Creation-Date: 2008-10-12 10:20+0200\n"
 "PO-Revision-Date: 2008-10-01 21:54+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
-#: org/openscience/jmol/app/GuiMap.java:172
+#: org/openscience/jmol/app/GuiMap.java:173
 msgid "About Jmol"
 msgstr "Jmol에 대해"
 
@@ -144,6 +144,90 @@ msgstr "BufferedReader로 읽기 실패: {0}"
 #: org/openscience/jmol/app/DisplayPanel.java:170
 msgid "Delete atoms"
 msgstr "원자 지움"
+
+#: org/openscience/jmol/app/GaussianDialog.java:187
+msgid "Export Gaussian Input File"
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:194
+msgid "Basic"
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:196
+msgid "Advanced"
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:224
+#, fuzzy
+msgid "Checkpoint File: "
+msgstr "최근 파일"
+
+#: org/openscience/jmol/app/GaussianDialog.java:229
+msgid "Amount of Memory:"
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:235
+msgid "Number of Processors:"
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:248
+msgid "Route"
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:254
+msgid "Method: "
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:261
+msgid "Basis Set: "
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:269
+msgid "Density Fitting Basis Set (DFT Only): "
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:275
+msgid "Job Options: "
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:288
+#, fuzzy
+msgid "Molecular Properties"
+msgstr "속성"
+
+#: org/openscience/jmol/app/GaussianDialog.java:294
+msgid "Total Charge: "
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:301
+msgid "Multiplicity: "
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:308
+#, fuzzy
+msgid "Selection: "
+msgstr "선택"
+
+#: org/openscience/jmol/app/GaussianDialog.java:343
+msgid "Gaussian Input File Name"
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:349
+#, fuzzy
+msgid "File..."
+msgstr "파일(&F)"
+
+#: org/openscience/jmol/app/GaussianDialog.java:360
+#: org/openscience/jmol/app/PovrayDialog.java:758
+msgid "Save"
+msgstr "저장"
+
+#: org/openscience/jmol/app/GaussianDialog.java:364
+#: org/openscience/jmol/app/PovrayDialog.java:500
+#: org/openscience/jmol/app/PreferencesDialog.java:165
+#: org/openscience/jmol/app/RecentFilesDialog.java:69
+msgid "Cancel"
+msgstr "취소"
 
 #: org/openscience/jmol/app/GuiMap.java:46
 msgid "&Macros"
@@ -437,7 +521,7 @@ msgid "V&ectors"
 msgstr "벡터(&e)"
 
 #: org/openscience/jmol/app/GuiMap.java:133
-#: org/openscience/jmol/app/GuiMap.java:143
+#: org/openscience/jmol/app/GuiMap.java:144
 msgid "&Measurements"
 msgstr "측정(&M)"
 
@@ -477,161 +561,165 @@ msgstr "가운데로(&C)"
 msgid "&Tools"
 msgstr "도구(&T)"
 
-#: org/openscience/jmol/app/GuiMap.java:144
+#: org/openscience/jmol/app/GuiMap.java:143
+msgid "&Gaussian..."
+msgstr ""
+
+#: org/openscience/jmol/app/GuiMap.java:145
 msgid "Click atoms to measure distances"
 msgstr "거리측정을 하려는 원자를 클릭하시오"
 
-#: org/openscience/jmol/app/GuiMap.java:145
+#: org/openscience/jmol/app/GuiMap.java:146
 msgid "Distance &Units"
 msgstr "거리 단위(&U)"
 
-#: org/openscience/jmol/app/GuiMap.java:146
+#: org/openscience/jmol/app/GuiMap.java:147
 msgid "&Nanometers 1E-9"
 msgstr "나노미터(&N) 1E-9"
 
-#: org/openscience/jmol/app/GuiMap.java:147
+#: org/openscience/jmol/app/GuiMap.java:148
 msgid "&Angstroms 1E-10"
 msgstr "옹스트롬(&A) 1E-10"
 
-#: org/openscience/jmol/app/GuiMap.java:148
+#: org/openscience/jmol/app/GuiMap.java:149
 msgid "&Picometers 1E-12"
 msgstr "피코미터(&P) 1E-12)"
 
-#: org/openscience/jmol/app/GuiMap.java:149
+#: org/openscience/jmol/app/GuiMap.java:150
 msgid "&Animate..."
 msgstr "애니메이션(&A)..."
 
-#: org/openscience/jmol/app/GuiMap.java:150
+#: org/openscience/jmol/app/GuiMap.java:151
 msgid "&Vibrate..."
 msgstr "진동(&V)..."
 
-#: org/openscience/jmol/app/GuiMap.java:151
+#: org/openscience/jmol/app/GuiMap.java:152
 msgid "&Graph..."
 msgstr "그래프(&G)..."
 
-#: org/openscience/jmol/app/GuiMap.java:152
+#: org/openscience/jmol/app/GuiMap.java:153
 msgid "Calculate chemical &shifts..."
 msgstr "화학적 쉬프트(&s) 계산..."
 
-#: org/openscience/jmol/app/GuiMap.java:153
+#: org/openscience/jmol/app/GuiMap.java:154
 msgid "&Crystal Properties"
 msgstr "단결정 속성(&C)"
 
-#: org/openscience/jmol/app/GuiMap.java:154
+#: org/openscience/jmol/app/GuiMap.java:155
 msgid "&Once"
 msgstr "한번만(&O)"
 
-#: org/openscience/jmol/app/GuiMap.java:155
+#: org/openscience/jmol/app/GuiMap.java:156
 msgid "&Loop"
 msgstr "반복(&L)"
 
-#: org/openscience/jmol/app/GuiMap.java:156
+#: org/openscience/jmol/app/GuiMap.java:157
 msgid "P&alindrome"
 msgstr "왔다갔다(&a)"
 
-#: org/openscience/jmol/app/GuiMap.java:157
+#: org/openscience/jmol/app/GuiMap.java:158
 msgid "&Stop animation"
 msgstr "애니메이션 정지(&S)"
 
-#: org/openscience/jmol/app/GuiMap.java:158
+#: org/openscience/jmol/app/GuiMap.java:159
 msgid "&Rewind to first frame"
 msgstr "처음으로 되감기(&R)"
 
-#: org/openscience/jmol/app/GuiMap.java:160
+#: org/openscience/jmol/app/GuiMap.java:161
 msgid "Go to &next frame"
 msgstr "다음 프레임(&n)"
 
-#: org/openscience/jmol/app/GuiMap.java:162
+#: org/openscience/jmol/app/GuiMap.java:163
 msgid "Go to &previous frame"
 msgstr "이전 프레임(&p)"
 
-#: org/openscience/jmol/app/GuiMap.java:164
+#: org/openscience/jmol/app/GuiMap.java:165
 msgid "Go to &last frame"
 msgstr "마지막 프레임(&l)"
 
-#: org/openscience/jmol/app/GuiMap.java:166
+#: org/openscience/jmol/app/GuiMap.java:167
 msgid "Start &vibration"
 msgstr "진동 시작(&v)"
 
-#: org/openscience/jmol/app/GuiMap.java:167
+#: org/openscience/jmol/app/GuiMap.java:168
 msgid "&Stop vibration"
 msgstr "진동 멈춤(&S)"
 
-#: org/openscience/jmol/app/GuiMap.java:168
+#: org/openscience/jmol/app/GuiMap.java:169
 msgid "&First frequency"
 msgstr "처음 진동모드(&F)"
 
-#: org/openscience/jmol/app/GuiMap.java:169
+#: org/openscience/jmol/app/GuiMap.java:170
 msgid "&Next frequency"
 msgstr "다음 진동모드(&N)"
 
-#: org/openscience/jmol/app/GuiMap.java:170
+#: org/openscience/jmol/app/GuiMap.java:171
 msgid "&Previous frequency"
 msgstr "이전 진동모드(&N)"
 
-#: org/openscience/jmol/app/GuiMap.java:171
+#: org/openscience/jmol/app/GuiMap.java:172
 msgid "&Help"
 msgstr "도움말(&H)"
 
-#: org/openscience/jmol/app/GuiMap.java:173
+#: org/openscience/jmol/app/GuiMap.java:174
 msgid "User Guide"
 msgstr "사용자 도움말"
 
-#: org/openscience/jmol/app/GuiMap.java:174
+#: org/openscience/jmol/app/GuiMap.java:175
 msgid "What's New"
 msgstr "새소식"
 
-#: org/openscience/jmol/app/GuiMap.java:175
+#: org/openscience/jmol/app/GuiMap.java:176
 msgid "Jmol Java &Console"
 msgstr "Jmol 자바 콘솔(&C)"
 
-#: org/openscience/jmol/app/GuiMap.java:176
+#: org/openscience/jmol/app/GuiMap.java:177
 msgid "Hydrogens"
 msgstr "수소"
 
-#: org/openscience/jmol/app/GuiMap.java:177
+#: org/openscience/jmol/app/GuiMap.java:178
 #: org/openscience/jmol/app/MeasurementTable.java:65
 msgid "Measurements"
 msgstr "측정"
 
-#: org/openscience/jmol/app/GuiMap.java:178
+#: org/openscience/jmol/app/GuiMap.java:179
 msgid "Perspective Depth"
 msgstr "원근법"
 
-#: org/openscience/jmol/app/GuiMap.java:179
+#: org/openscience/jmol/app/GuiMap.java:180
 msgid "Axes"
 msgstr "축"
 
-#: org/openscience/jmol/app/GuiMap.java:180
+#: org/openscience/jmol/app/GuiMap.java:181
 msgid "Bounding Box"
 msgstr "경계상자"
 
-#: org/openscience/jmol/app/GuiMap.java:181
+#: org/openscience/jmol/app/GuiMap.java:182
 msgid "RasMol/Chime compatible axes orientation/rotations"
 msgstr "RasMol/Chime 호환 축 방향/회전"
 
-#: org/openscience/jmol/app/GuiMap.java:182
+#: org/openscience/jmol/app/GuiMap.java:183
 msgid "File Preview (requires restarting Jmol)"
 msgstr "파일 미리보기 (Jmol 재시작 필요)"
 
-#: org/openscience/jmol/app/GuiMap.java:183
+#: org/openscience/jmol/app/GuiMap.java:184
 msgid "Clear console button (requires restarting Jmol)"
 msgstr "콘솔 버튼 지우기 (Jmol 재시작 필요)"
 
-#: org/openscience/jmol/app/GuiMap.java:184
 #: org/openscience/jmol/app/GuiMap.java:185
+#: org/openscience/jmol/app/GuiMap.java:186
 msgid "Use Atom Color"
 msgstr "원자 색깔 사용"
 
-#: org/openscience/jmol/app/GuiMap.java:186
+#: org/openscience/jmol/app/GuiMap.java:187
 msgid "Rotate molecule."
 msgstr "분자 회전."
 
-#: org/openscience/jmol/app/GuiMap.java:187
+#: org/openscience/jmol/app/GuiMap.java:188
 msgid "Select a set of atoms using SHIFT-LEFT-  DRAG."
 msgstr ""
 
-#: org/openscience/jmol/app/GuiMap.java:188
+#: org/openscience/jmol/app/GuiMap.java:189
 msgid "Return molecule to home position."
 msgstr "처음 위치로 돌아가기"
 
@@ -639,113 +727,122 @@ msgstr "처음 위치로 돌아가기"
 msgid "Jmol Help"
 msgstr "Jmol 도움말"
 
-#: org/openscience/jmol/app/Jmol.java:133
+#: org/openscience/jmol/app/Jmol.java:134
 #: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr "Jmol 시작 오류: 'user.home'이 정의되지 않았습니다."
 
-#: org/openscience/jmol/app/Jmol.java:179
+#: org/openscience/jmol/app/Jmol.java:180
 msgid "Initializing 3D display..."
 msgstr "3D 장면 초기화..."
 
-#: org/openscience/jmol/app/Jmol.java:204
+#: org/openscience/jmol/app/Jmol.java:205
 msgid "Initializing Preferences..."
 msgstr "환경 초기화..."
 
-#: org/openscience/jmol/app/Jmol.java:206
+#: org/openscience/jmol/app/Jmol.java:207
 msgid "Initializing Recent Files..."
 msgstr "최근 파일 초기화..."
 
-#: org/openscience/jmol/app/Jmol.java:209
+#: org/openscience/jmol/app/Jmol.java:210
 msgid "Initializing Script Window..."
 msgstr "스크립트 창 초기화..."
 
-#: org/openscience/jmol/app/Jmol.java:217
+#: org/openscience/jmol/app/Jmol.java:218
 msgid "Initializing Measurements..."
 msgstr "측정 초기화..."
 
-#: org/openscience/jmol/app/Jmol.java:240
+#: org/openscience/jmol/app/Jmol.java:241
 msgid "Building Command Hooks..."
 msgstr "명령 후크 구성..."
 
-#: org/openscience/jmol/app/Jmol.java:251
+#: org/openscience/jmol/app/Jmol.java:252
 msgid "Building Menubar..."
 msgstr "메뉴바 구성..."
 
-#: org/openscience/jmol/app/Jmol.java:267
+#: org/openscience/jmol/app/Jmol.java:268
 msgid "Starting display..."
 msgstr "디스플레이 시작..."
 
-#: org/openscience/jmol/app/Jmol.java:316
+#: org/openscience/jmol/app/Jmol.java:317
 msgid "Setting up Drag-and-Drop..."
 msgstr "드랙-앤-드롭 셋업..."
 
-#: org/openscience/jmol/app/Jmol.java:337
+#: org/openscience/jmol/app/Jmol.java:338
 msgid "Launching main frame..."
 msgstr "기본 프레임 적제..."
 
-#: org/openscience/jmol/app/Jmol.java:355
+#: org/openscience/jmol/app/Jmol.java:356
 msgid "Creating main window..."
 msgstr "기본 창 구성..."
 
-#: org/openscience/jmol/app/Jmol.java:356
+#: org/openscience/jmol/app/Jmol.java:357
 msgid "Initializing Swing..."
 msgstr "Swing 초기화..."
 
-#: org/openscience/jmol/app/Jmol.java:368
+#: org/openscience/jmol/app/Jmol.java:369
 msgid "Initializing Jmol..."
 msgstr "Jmol 초기화..."
 
-#: org/openscience/jmol/app/Jmol.java:398
+#: org/openscience/jmol/app/Jmol.java:400
 msgid "transparent background"
 msgstr "투명한 배경화면"
 
-#: org/openscience/jmol/app/Jmol.java:399
+#: org/openscience/jmol/app/Jmol.java:401
 msgid "give this help page"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:401
+#: org/openscience/jmol/app/Jmol.java:403
 msgid "no display (and also exit when done)"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:402
+#: org/openscience/jmol/app/Jmol.java:404
 msgid "check script syntax only"
 msgstr "스크립트 문법검사만"
 
-#: org/openscience/jmol/app/Jmol.java:403
+#: org/openscience/jmol/app/Jmol.java:405
 msgid "silent startup operation"
 msgstr "조용히 시작하기"
 
-#: org/openscience/jmol/app/Jmol.java:405
+#: org/openscience/jmol/app/Jmol.java:407
 msgid "list commands during script execution"
 msgstr "스크립트 실행중 명령 목록"
 
-#: org/openscience/jmol/app/Jmol.java:407
+#: org/openscience/jmol/app/Jmol.java:409
 msgid "no console -- all output to sysout"
 msgstr "콘솔 없음 -- 모든 출력은 sysout으로"
 
-#: org/openscience/jmol/app/Jmol.java:409
+#: org/openscience/jmol/app/Jmol.java:411
 msgid "independent commmand thread"
 msgstr "독립적인 명령 쓰레드"
 
-#: org/openscience/jmol/app/Jmol.java:411
+#: org/openscience/jmol/app/Jmol.java:413
 msgid "exit after script (implicit with -n)"
 msgstr "스크립트 실행후 끝내기 (-n을 내포함)"
 
-#: org/openscience/jmol/app/Jmol.java:425
+#: org/openscience/jmol/app/Jmol.java:416
+msgid "script file to execute"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:422
+#, fuzzy
+msgid "Jmol script to execute"
+msgstr "Jmol 스크립트 콘솔"
+
+#: org/openscience/jmol/app/Jmol.java:433
 msgid "property=value"
 msgstr "속성=값"
 
-#: org/openscience/jmol/app/Jmol.java:428
+#: org/openscience/jmol/app/Jmol.java:436
 msgid "supported options are given below"
 msgstr "지원되는 옵션은 아래에 주어져있음"
 
-#: org/openscience/jmol/app/Jmol.java:433
+#: org/openscience/jmol/app/Jmol.java:441
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "창 너비 x 높이, 예) . {0}"
 
-#: org/openscience/jmol/app/Jmol.java:443
+#: org/openscience/jmol/app/Jmol.java:451
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -753,49 +850,50 @@ msgstr ""
 "JPG 이미지 화질 (1-100: 기본값 75) 혹은 PNG 이미지 압축률 (0-9: 기본값 2, 최"
 "대 압축률 9)"
 
-#: org/openscience/jmol/app/Jmol.java:449
+#: org/openscience/jmol/app/Jmol.java:457
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:471
+#: org/openscience/jmol/app/Jmol.java:479
 msgid "For example:"
 msgstr "예:"
 
-#: org/openscience/jmol/app/Jmol.java:477
+#: org/openscience/jmol/app/Jmol.java:485
 msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:650
+#: org/openscience/jmol/app/Jmol.java:664
+#: org/openscience/jmol/app/Jmol.java:671
 msgid "Executing script..."
 msgstr "스크립트 실행..."
 
-#: org/openscience/jmol/app/Jmol.java:662
+#: org/openscience/jmol/app/Jmol.java:683
 msgid "Jmol Java Console"
 msgstr "Jmol 자바 콘솔"
 
-#: org/openscience/jmol/app/Jmol.java:670
+#: org/openscience/jmol/app/Jmol.java:691
 #: org/openscience/jmol/app/ScriptWindow.java:96
 msgid "Clear"
 msgstr "지움"
 
-#: org/openscience/jmol/app/Jmol.java:684
+#: org/openscience/jmol/app/Jmol.java:705
 msgid "Could not create ConsoleTextArea: "
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:764
+#: org/openscience/jmol/app/Jmol.java:785
 msgid "Closing Jmol..."
 msgstr "Jmol 닫기..."
 
-#: org/openscience/jmol/app/Jmol.java:1373
+#: org/openscience/jmol/app/Jmol.java:1408
 msgid "Open URL"
 msgstr "URL 열기"
 
-#: org/openscience/jmol/app/Jmol.java:1374
+#: org/openscience/jmol/app/Jmol.java:1409
 msgid "Enter URL of molecular model"
 msgstr "분자 모델의 URL을 넣으세요"
 
-#: org/openscience/jmol/app/Jmol.java:1554
+#: org/openscience/jmol/app/Jmol.java:1589
 msgid "IO Exception:"
 msgstr "IO 예외"
 
@@ -951,19 +1049,9 @@ msgstr "시작!"
 msgid "Save file and possibly launch POV-Ray"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:500
-#: org/openscience/jmol/app/PreferencesDialog.java:165
-#: org/openscience/jmol/app/RecentFilesDialog.java:69
-msgid "Cancel"
-msgstr "취소"
-
 #: org/openscience/jmol/app/PovrayDialog.java:502
 msgid "Cancel this dialog without saving"
 msgstr "저장하지 않고 취소"
-
-#: org/openscience/jmol/app/PovrayDialog.java:758
-msgid "Save"
-msgstr "저장"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:133
 msgid "Preferences"

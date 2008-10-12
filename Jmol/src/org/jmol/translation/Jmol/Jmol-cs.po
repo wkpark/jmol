@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-10-05 16:16+0200\n"
+"POT-Creation-Date: 2008-10-12 10:20+0200\n"
 "PO-Revision-Date: 2008-08-04 20:45+0000\n"
 "Last-Translator: martin.slavik <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "X-Poedit-Language: Czech\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
-#: org/openscience/jmol/app/GuiMap.java:172
+#: org/openscience/jmol/app/GuiMap.java:173
 msgid "About Jmol"
 msgstr "O programu Jmol"
 
@@ -149,6 +149,90 @@ msgstr "Chyba při čtení vyrovnávací paměti: {0}"
 #, fuzzy
 msgid "Delete atoms"
 msgstr "Vymazat atomy"
+
+#: org/openscience/jmol/app/GaussianDialog.java:187
+msgid "Export Gaussian Input File"
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:194
+msgid "Basic"
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:196
+msgid "Advanced"
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:224
+#, fuzzy
+msgid "Checkpoint File: "
+msgstr "Naposledy otevřené soubory"
+
+#: org/openscience/jmol/app/GaussianDialog.java:229
+msgid "Amount of Memory:"
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:235
+msgid "Number of Processors:"
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:248
+msgid "Route"
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:254
+msgid "Method: "
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:261
+msgid "Basis Set: "
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:269
+msgid "Density Fitting Basis Set (DFT Only): "
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:275
+msgid "Job Options: "
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:288
+#, fuzzy
+msgid "Molecular Properties"
+msgstr "Vlastnosti"
+
+#: org/openscience/jmol/app/GaussianDialog.java:294
+msgid "Total Charge: "
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:301
+msgid "Multiplicity: "
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:308
+#, fuzzy
+msgid "Selection: "
+msgstr "Vybrat"
+
+#: org/openscience/jmol/app/GaussianDialog.java:343
+msgid "Gaussian Input File Name"
+msgstr ""
+
+#: org/openscience/jmol/app/GaussianDialog.java:349
+#, fuzzy
+msgid "File..."
+msgstr "&Soubor"
+
+#: org/openscience/jmol/app/GaussianDialog.java:360
+#: org/openscience/jmol/app/PovrayDialog.java:758
+msgid "Save"
+msgstr "Uložit"
+
+#: org/openscience/jmol/app/GaussianDialog.java:364
+#: org/openscience/jmol/app/PovrayDialog.java:500
+#: org/openscience/jmol/app/PreferencesDialog.java:165
+#: org/openscience/jmol/app/RecentFilesDialog.java:69
+msgid "Cancel"
+msgstr "Zrušit"
 
 #: org/openscience/jmol/app/GuiMap.java:46
 #, fuzzy
@@ -474,7 +558,7 @@ msgid "V&ectors"
 msgstr "&Vektory"
 
 #: org/openscience/jmol/app/GuiMap.java:133
-#: org/openscience/jmol/app/GuiMap.java:143
+#: org/openscience/jmol/app/GuiMap.java:144
 msgid "&Measurements"
 msgstr "&Měření"
 
@@ -521,181 +605,185 @@ msgstr "Určit střed"
 msgid "&Tools"
 msgstr "&Nástroje"
 
-#: org/openscience/jmol/app/GuiMap.java:144
-msgid "Click atoms to measure distances"
+#: org/openscience/jmol/app/GuiMap.java:143
+msgid "&Gaussian..."
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:145
+msgid "Click atoms to measure distances"
+msgstr ""
+
+#: org/openscience/jmol/app/GuiMap.java:146
 #, fuzzy
 msgid "Distance &Units"
 msgstr "Jednotky délky"
 
-#: org/openscience/jmol/app/GuiMap.java:146
+#: org/openscience/jmol/app/GuiMap.java:147
 #, fuzzy
 msgid "&Nanometers 1E-9"
 msgstr "nm (1 nm = 1E-9 m)"
 
-#: org/openscience/jmol/app/GuiMap.java:147
+#: org/openscience/jmol/app/GuiMap.java:148
 #, fuzzy
 msgid "&Angstroms 1E-10"
 msgstr "Å (1 Å = 1E-10 m)"
 
-#: org/openscience/jmol/app/GuiMap.java:148
+#: org/openscience/jmol/app/GuiMap.java:149
 #, fuzzy
 msgid "&Picometers 1E-12"
 msgstr "pm (1 pm = 1E-12 m)"
 
-#: org/openscience/jmol/app/GuiMap.java:149
+#: org/openscience/jmol/app/GuiMap.java:150
 #, fuzzy
 msgid "&Animate..."
 msgstr "Animovat..."
 
-#: org/openscience/jmol/app/GuiMap.java:150
+#: org/openscience/jmol/app/GuiMap.java:151
 #, fuzzy
 msgid "&Vibrate..."
 msgstr "Vibrace..."
 
-#: org/openscience/jmol/app/GuiMap.java:151
+#: org/openscience/jmol/app/GuiMap.java:152
 msgid "&Graph..."
 msgstr "&Graf..."
 
-#: org/openscience/jmol/app/GuiMap.java:152
+#: org/openscience/jmol/app/GuiMap.java:153
 msgid "Calculate chemical &shifts..."
 msgstr "Vypočítat chemické &posuny..."
 
-#: org/openscience/jmol/app/GuiMap.java:153
+#: org/openscience/jmol/app/GuiMap.java:154
 msgid "&Crystal Properties"
 msgstr "&Vlastnosti krystalu"
 
-#: org/openscience/jmol/app/GuiMap.java:154
+#: org/openscience/jmol/app/GuiMap.java:155
 #, fuzzy
 msgid "&Once"
 msgstr "Jednou"
 
-#: org/openscience/jmol/app/GuiMap.java:155
+#: org/openscience/jmol/app/GuiMap.java:156
 #, fuzzy
 msgid "&Loop"
 msgstr "Přehrávat dokola"
 
-#: org/openscience/jmol/app/GuiMap.java:156
+#: org/openscience/jmol/app/GuiMap.java:157
 #, fuzzy
 msgid "P&alindrome"
 msgstr "Palindrom"
 
-#: org/openscience/jmol/app/GuiMap.java:157
+#: org/openscience/jmol/app/GuiMap.java:158
 #, fuzzy
 msgid "&Stop animation"
 msgstr "Zastavit animaci"
 
-#: org/openscience/jmol/app/GuiMap.java:158
+#: org/openscience/jmol/app/GuiMap.java:159
 #, fuzzy
 msgid "&Rewind to first frame"
 msgstr "Přetočit na první snímek"
 
-#: org/openscience/jmol/app/GuiMap.java:160
+#: org/openscience/jmol/app/GuiMap.java:161
 #, fuzzy
 msgid "Go to &next frame"
 msgstr "Přejít na další snímek"
 
-#: org/openscience/jmol/app/GuiMap.java:162
+#: org/openscience/jmol/app/GuiMap.java:163
 #, fuzzy
 msgid "Go to &previous frame"
 msgstr "Přejít na předchozí snímek"
 
-#: org/openscience/jmol/app/GuiMap.java:164
+#: org/openscience/jmol/app/GuiMap.java:165
 #, fuzzy
 msgid "Go to &last frame"
 msgstr "Přejít na další snímek"
 
-#: org/openscience/jmol/app/GuiMap.java:166
+#: org/openscience/jmol/app/GuiMap.java:167
 #, fuzzy
 msgid "Start &vibration"
 msgstr "Spustit vibrace"
 
-#: org/openscience/jmol/app/GuiMap.java:167
+#: org/openscience/jmol/app/GuiMap.java:168
 #, fuzzy
 msgid "&Stop vibration"
 msgstr "Ukončit vibrace"
 
-#: org/openscience/jmol/app/GuiMap.java:168
+#: org/openscience/jmol/app/GuiMap.java:169
 #, fuzzy
 msgid "&First frequency"
 msgstr "První frekvence"
 
-#: org/openscience/jmol/app/GuiMap.java:169
+#: org/openscience/jmol/app/GuiMap.java:170
 #, fuzzy
 msgid "&Next frequency"
 msgstr "Další frekvence"
 
-#: org/openscience/jmol/app/GuiMap.java:170
+#: org/openscience/jmol/app/GuiMap.java:171
 #, fuzzy
 msgid "&Previous frequency"
 msgstr "Předchozí frekvence"
 
-#: org/openscience/jmol/app/GuiMap.java:171
+#: org/openscience/jmol/app/GuiMap.java:172
 msgid "&Help"
 msgstr "&Nápověda"
 
-#: org/openscience/jmol/app/GuiMap.java:173
+#: org/openscience/jmol/app/GuiMap.java:174
 msgid "User Guide"
 msgstr "Uživatelská příručka"
 
-#: org/openscience/jmol/app/GuiMap.java:174
+#: org/openscience/jmol/app/GuiMap.java:175
 msgid "What's New"
 msgstr "Co je nového?"
 
-#: org/openscience/jmol/app/GuiMap.java:175
+#: org/openscience/jmol/app/GuiMap.java:176
 msgid "Jmol Java &Console"
 msgstr "Jmol Java &Konzole"
 
-#: org/openscience/jmol/app/GuiMap.java:176
+#: org/openscience/jmol/app/GuiMap.java:177
 msgid "Hydrogens"
 msgstr "Vodíky"
 
-#: org/openscience/jmol/app/GuiMap.java:177
+#: org/openscience/jmol/app/GuiMap.java:178
 #: org/openscience/jmol/app/MeasurementTable.java:65
 msgid "Measurements"
 msgstr "Měření"
 
-#: org/openscience/jmol/app/GuiMap.java:178
+#: org/openscience/jmol/app/GuiMap.java:179
 msgid "Perspective Depth"
 msgstr "Hloubka perspektivy"
 
-#: org/openscience/jmol/app/GuiMap.java:179
+#: org/openscience/jmol/app/GuiMap.java:180
 msgid "Axes"
 msgstr "Osy"
 
-#: org/openscience/jmol/app/GuiMap.java:180
+#: org/openscience/jmol/app/GuiMap.java:181
 msgid "Bounding Box"
 msgstr "Hraniční box"
 
-#: org/openscience/jmol/app/GuiMap.java:181
+#: org/openscience/jmol/app/GuiMap.java:182
 msgid "RasMol/Chime compatible axes orientation/rotations"
 msgstr "RasMol/Chime kompatibilní orientace/rotace os"
 
-#: org/openscience/jmol/app/GuiMap.java:182
+#: org/openscience/jmol/app/GuiMap.java:183
 msgid "File Preview (requires restarting Jmol)"
 msgstr "Náhled souboru (vyžaduje restart Jmol)"
 
-#: org/openscience/jmol/app/GuiMap.java:183
+#: org/openscience/jmol/app/GuiMap.java:184
 #, fuzzy
 msgid "Clear console button (requires restarting Jmol)"
 msgstr "Vyčisti tlačítko konzole (nutný restart Jmolu)"
 
-#: org/openscience/jmol/app/GuiMap.java:184
 #: org/openscience/jmol/app/GuiMap.java:185
+#: org/openscience/jmol/app/GuiMap.java:186
 msgid "Use Atom Color"
 msgstr "Použít barvu atomu"
 
-#: org/openscience/jmol/app/GuiMap.java:186
+#: org/openscience/jmol/app/GuiMap.java:187
 msgid "Rotate molecule."
 msgstr "Rotovat molekulou."
 
-#: org/openscience/jmol/app/GuiMap.java:187
+#: org/openscience/jmol/app/GuiMap.java:188
 msgid "Select a set of atoms using SHIFT-LEFT-  DRAG."
 msgstr ""
 
-#: org/openscience/jmol/app/GuiMap.java:188
+#: org/openscience/jmol/app/GuiMap.java:189
 msgid "Return molecule to home position."
 msgstr "Navrátit molekulu do výchozí polohy."
 
@@ -703,161 +791,171 @@ msgstr "Navrátit molekulu do výchozí polohy."
 msgid "Jmol Help"
 msgstr "Jmol nápověda"
 
-#: org/openscience/jmol/app/Jmol.java:133
+#: org/openscience/jmol/app/Jmol.java:134
 #: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr "Chyba při Jmol spouštění: vlastnost 'user.home' není definována."
 
-#: org/openscience/jmol/app/Jmol.java:179
+#: org/openscience/jmol/app/Jmol.java:180
 msgid "Initializing 3D display..."
 msgstr "Načítám 3D zobrazení..."
 
-#: org/openscience/jmol/app/Jmol.java:204
+#: org/openscience/jmol/app/Jmol.java:205
 msgid "Initializing Preferences..."
 msgstr "Načítám předvolby..."
 
-#: org/openscience/jmol/app/Jmol.java:206
+#: org/openscience/jmol/app/Jmol.java:207
 msgid "Initializing Recent Files..."
 msgstr "Načítám naposledy otevřené soubory..."
 
-#: org/openscience/jmol/app/Jmol.java:209
+#: org/openscience/jmol/app/Jmol.java:210
 msgid "Initializing Script Window..."
 msgstr "Načítám skriptovací okno..."
 
-#: org/openscience/jmol/app/Jmol.java:217
+#: org/openscience/jmol/app/Jmol.java:218
 msgid "Initializing Measurements..."
 msgstr "Načítám měření..."
 
-#: org/openscience/jmol/app/Jmol.java:240
+#: org/openscience/jmol/app/Jmol.java:241
 msgid "Building Command Hooks..."
 msgstr "Vytvářím příkazy..."
 
-#: org/openscience/jmol/app/Jmol.java:251
+#: org/openscience/jmol/app/Jmol.java:252
 msgid "Building Menubar..."
 msgstr "Vytvářím Menu..."
 
-#: org/openscience/jmol/app/Jmol.java:267
+#: org/openscience/jmol/app/Jmol.java:268
 msgid "Starting display..."
 msgstr "Spouštím zobrazení..."
 
-#: org/openscience/jmol/app/Jmol.java:316
+#: org/openscience/jmol/app/Jmol.java:317
 msgid "Setting up Drag-and-Drop..."
 msgstr "Nastavuji 'táhnout a pustit'..."
 
-#: org/openscience/jmol/app/Jmol.java:337
+#: org/openscience/jmol/app/Jmol.java:338
 msgid "Launching main frame..."
 msgstr "Nahrávám hlavní rám..."
 
-#: org/openscience/jmol/app/Jmol.java:355
+#: org/openscience/jmol/app/Jmol.java:356
 msgid "Creating main window..."
 msgstr "Vytvářím hlavní okno..."
 
-#: org/openscience/jmol/app/Jmol.java:356
+#: org/openscience/jmol/app/Jmol.java:357
 msgid "Initializing Swing..."
 msgstr "Inicializuji Swing..."
 
-#: org/openscience/jmol/app/Jmol.java:368
+#: org/openscience/jmol/app/Jmol.java:369
 msgid "Initializing Jmol..."
 msgstr "Inicializuji Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:398
+#: org/openscience/jmol/app/Jmol.java:400
 msgid "transparent background"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:399
+#: org/openscience/jmol/app/Jmol.java:401
 msgid "give this help page"
 msgstr "zobrazí tuto stránku nápovědy"
 
-#: org/openscience/jmol/app/Jmol.java:401
+#: org/openscience/jmol/app/Jmol.java:403
 msgid "no display (and also exit when done)"
 msgstr "bez zobrazení (následně skončí po vykonání)"
 
-#: org/openscience/jmol/app/Jmol.java:402
+#: org/openscience/jmol/app/Jmol.java:404
 msgid "check script syntax only"
 msgstr "zkontrolovat pouze syntaxi skriptu"
 
-#: org/openscience/jmol/app/Jmol.java:403
+#: org/openscience/jmol/app/Jmol.java:405
 msgid "silent startup operation"
 msgstr "tichý start"
 
-#: org/openscience/jmol/app/Jmol.java:405
+#: org/openscience/jmol/app/Jmol.java:407
 msgid "list commands during script execution"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:407
+#: org/openscience/jmol/app/Jmol.java:409
 msgid "no console -- all output to sysout"
 msgstr "bez konzole -- všechen výstup na sysout"
 
-#: org/openscience/jmol/app/Jmol.java:409
+#: org/openscience/jmol/app/Jmol.java:411
 msgid "independent commmand thread"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:411
+#: org/openscience/jmol/app/Jmol.java:413
 msgid "exit after script (implicit with -n)"
 msgstr "konec po skriptu (implicitně s -n)"
 
-#: org/openscience/jmol/app/Jmol.java:425
+#: org/openscience/jmol/app/Jmol.java:416
+msgid "script file to execute"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:422
+#, fuzzy
+msgid "Jmol script to execute"
+msgstr "Jmol skriptovací konzole"
+
+#: org/openscience/jmol/app/Jmol.java:433
 msgid "property=value"
 msgstr "vlastnost = hodnota"
 
-#: org/openscience/jmol/app/Jmol.java:428
+#: org/openscience/jmol/app/Jmol.java:436
 msgid "supported options are given below"
 msgstr "podporované možnosti: viz níže"
 
-#: org/openscience/jmol/app/Jmol.java:433
+#: org/openscience/jmol/app/Jmol.java:441
 #, fuzzy, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "rozměr okna, např. {0}"
 
-#: org/openscience/jmol/app/Jmol.java:443
+#: org/openscience/jmol/app/Jmol.java:451
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:449
+#: org/openscience/jmol/app/Jmol.java:457
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} nebo {1}: název souboru"
 
-#: org/openscience/jmol/app/Jmol.java:471
+#: org/openscience/jmol/app/Jmol.java:479
 msgid "For example:"
 msgstr "Například:"
 
-#: org/openscience/jmol/app/Jmol.java:477
+#: org/openscience/jmol/app/Jmol.java:485
 msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr "-D volby jsou následující (standardní v závorkách):"
 
-#: org/openscience/jmol/app/Jmol.java:650
+#: org/openscience/jmol/app/Jmol.java:664
+#: org/openscience/jmol/app/Jmol.java:671
 msgid "Executing script..."
 msgstr "Vykonávám skript..."
 
-#: org/openscience/jmol/app/Jmol.java:662
+#: org/openscience/jmol/app/Jmol.java:683
 msgid "Jmol Java Console"
 msgstr "Jmol Java konzole"
 
-#: org/openscience/jmol/app/Jmol.java:670
+#: org/openscience/jmol/app/Jmol.java:691
 #: org/openscience/jmol/app/ScriptWindow.java:96
 msgid "Clear"
 msgstr "Vyčistit"
 
-#: org/openscience/jmol/app/Jmol.java:684
+#: org/openscience/jmol/app/Jmol.java:705
 msgid "Could not create ConsoleTextArea: "
 msgstr "Nelze vytvořit textové pole pro konzoli: "
 
-#: org/openscience/jmol/app/Jmol.java:764
+#: org/openscience/jmol/app/Jmol.java:785
 msgid "Closing Jmol..."
 msgstr "Ukončuji Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:1373
+#: org/openscience/jmol/app/Jmol.java:1408
 msgid "Open URL"
 msgstr "Otevřít URL"
 
-#: org/openscience/jmol/app/Jmol.java:1374
+#: org/openscience/jmol/app/Jmol.java:1409
 msgid "Enter URL of molecular model"
 msgstr "Zadat URL molekulárního modelu"
 
-#: org/openscience/jmol/app/Jmol.java:1554
+#: org/openscience/jmol/app/Jmol.java:1589
 msgid "IO Exception:"
 msgstr "IO výjimka:"
 
@@ -1024,19 +1122,9 @@ msgstr "Jdi!"
 msgid "Save file and possibly launch POV-Ray"
 msgstr "Uložit soubor a eventuálně nahrát POV-ray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:500
-#: org/openscience/jmol/app/PreferencesDialog.java:165
-#: org/openscience/jmol/app/RecentFilesDialog.java:69
-msgid "Cancel"
-msgstr "Zrušit"
-
 #: org/openscience/jmol/app/PovrayDialog.java:502
 msgid "Cancel this dialog without saving"
 msgstr "Zrušit dialog bez uložení"
-
-#: org/openscience/jmol/app/PovrayDialog.java:758
-msgid "Save"
-msgstr "Uložit"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:133
 msgid "Preferences"

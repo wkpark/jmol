@@ -290,7 +290,8 @@ public abstract class AtomSetCollectionReader {
     ptFile = (htParams.containsKey("ptFile") ? ((Integer) htParams
         .get("ptFile")).intValue() : -1);
     if (ptFile > 0 && htParams.containsKey("firstLastSteps")) {
-      Object val = ((Vector) htParams.get("firstLastSteps"))        .elementAt(ptFile - 1);
+      Object val = ((Vector) htParams.get("firstLastSteps"))
+          .elementAt(ptFile - 1);
       if (val instanceof BitSet) {
         bsModels = (BitSet) val;
       } else {

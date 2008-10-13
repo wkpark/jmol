@@ -401,7 +401,8 @@ public class Jmol extends JPanel {
     options.addOption("h", "help", false, GT._("give this help page"));
     options.addOption("n", "nodisplay", false, GT
         ._("no display (and also exit when done)"));
-    options.addOption("c", "check", false, GT._("check script syntax only"));
+    options.addOption("c", "check", false, GT._("check script syntax only - no file loading"));
+    options.addOption("C", "checkload", false, GT._("check script syntax only - with file loading"));
     options.addOption("i", "silent", false, GT._("silent startup operation"));
     options.addOption("l", "list", false, GT
         ._("list commands during script execution"));
@@ -544,9 +545,11 @@ public class Jmol extends JPanel {
       haveDisplay = Boolean.FALSE;
     }
 
-    //check script only
+    //check script only -- don't open files
     if (line.hasOption("c")) {
       commandOptions += "-c";
+    } else if (line.hasOption("C")) {
+      commandOptions += "-C";
     }
 
     //run script

@@ -473,7 +473,7 @@ class Compiler {
           continue;
         }
         if (tokCommand == Token.load) {
-          if (lookingAtLoadFormat()) {
+          if (nTokens == 1 && lookingAtLoadFormat()) {
             String strFormat = script.substring(ichToken, ichToken + cchToken);
             strFormat = strFormat.toLowerCase();
             if (Parser
@@ -1173,22 +1173,21 @@ class Compiler {
       return -1;
   }
 
-  static String[] loadFormats = { "append", "files", "trajectory", "menu", "models",
-    /*ancient:*/ "alchemy", "mol2", "mopac", "nmrpdb", "charmm", "xyz", "mdl", "pdb" };
+  //  static String[] loadFormats = { "append", "files", "trajectory", "menu", "models",
+  //  /*ancient:*/ "alchemy", "mol2", "mopac", "nmrpdb", "charmm", "xyz", "mdl", "pdb" };
 
   private boolean lookingAtLoadFormat() {
-    int ichT;
-    String match = script
-        .substring(ichToken, Math.min(cchScript, ichToken + 10)).toLowerCase();
-    for (int i = loadFormats.length; --i >= 0;) {
-      String strFormat = loadFormats[i];
-      int cchFormat = strFormat.length();
-      if (match.indexOf(strFormat) == 0 && (ichT = ichToken + cchFormat) < cchScript && isSpaceOrTab(script.charAt(ichT))) {
-        cchToken = cchFormat;
-        return true;
-      }
-    }
-    return false;
+    // just allow a simple word or =xxxx
+    int ichT = ichToken;
+    char ch = '\0';
+    while (ichT < cchScript
+        && ((ch = script.charAt(ichT)) == '=' && ichT == ichToken 
+            || Character.isLetterOrDigit(ch)))
+      ++ichT;
+    if (ichT == ichToken || !eol(ch) && !isSpaceOrTab(ch))
+      return false;
+    cchToken = ichT - ichToken;
+    return true;
   }
 
   private boolean lookingAtSpecialString() {

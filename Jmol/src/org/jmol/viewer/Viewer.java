@@ -298,9 +298,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       isSilent = (str.indexOf("-i") >= 0);
       if (isSilent)
         Logger.setLogLevel(Logger.LEVEL_WARN); //no info, but warnings and errors
-      checkScriptOnly = (str.indexOf("-c") >= 0);
-      if (checkScriptOnly)
-        fileOpenCheck = true;
+      checkScriptOnly = (str.toLowerCase().indexOf("-c") >= 0);
+      fileOpenCheck = (checkScriptOnly && str.indexOf("-C") >= 0);
       listCommands = (str.indexOf("-l") >= 0);
       autoExit = (str.indexOf("-x") >= 0);
       haveDisplay = (display != null && str.indexOf("-n") < 0);

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-10-12 10:20+0200\n"
+"POT-Creation-Date: 2008-10-13 20:27+0200\n"
 "PO-Revision-Date: 2008-10-01 21:54+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -797,52 +797,58 @@ msgid "no display (and also exit when done)"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:404
-msgid "check script syntax only"
+#, fuzzy
+msgid "check script syntax only - no file loading"
 msgstr "스크립트 문법검사만"
 
 #: org/openscience/jmol/app/Jmol.java:405
+#, fuzzy
+msgid "check script syntax only - with file loading"
+msgstr "스크립트 문법검사만"
+
+#: org/openscience/jmol/app/Jmol.java:406
 msgid "silent startup operation"
 msgstr "조용히 시작하기"
 
-#: org/openscience/jmol/app/Jmol.java:407
+#: org/openscience/jmol/app/Jmol.java:408
 msgid "list commands during script execution"
 msgstr "스크립트 실행중 명령 목록"
 
-#: org/openscience/jmol/app/Jmol.java:409
+#: org/openscience/jmol/app/Jmol.java:410
 msgid "no console -- all output to sysout"
 msgstr "콘솔 없음 -- 모든 출력은 sysout으로"
 
-#: org/openscience/jmol/app/Jmol.java:411
+#: org/openscience/jmol/app/Jmol.java:412
 msgid "independent commmand thread"
 msgstr "독립적인 명령 쓰레드"
 
-#: org/openscience/jmol/app/Jmol.java:413
+#: org/openscience/jmol/app/Jmol.java:414
 msgid "exit after script (implicit with -n)"
 msgstr "스크립트 실행후 끝내기 (-n을 내포함)"
 
-#: org/openscience/jmol/app/Jmol.java:416
+#: org/openscience/jmol/app/Jmol.java:417
 msgid "script file to execute"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:422
+#: org/openscience/jmol/app/Jmol.java:423
 #, fuzzy
 msgid "Jmol script to execute"
 msgstr "Jmol 스크립트 콘솔"
 
-#: org/openscience/jmol/app/Jmol.java:433
+#: org/openscience/jmol/app/Jmol.java:434
 msgid "property=value"
 msgstr "속성=값"
 
-#: org/openscience/jmol/app/Jmol.java:436
+#: org/openscience/jmol/app/Jmol.java:437
 msgid "supported options are given below"
 msgstr "지원되는 옵션은 아래에 주어져있음"
 
-#: org/openscience/jmol/app/Jmol.java:441
+#: org/openscience/jmol/app/Jmol.java:442
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "창 너비 x 높이, 예) . {0}"
 
-#: org/openscience/jmol/app/Jmol.java:451
+#: org/openscience/jmol/app/Jmol.java:452
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -850,50 +856,50 @@ msgstr ""
 "JPG 이미지 화질 (1-100: 기본값 75) 혹은 PNG 이미지 압축률 (0-9: 기본값 2, 최"
 "대 압축률 9)"
 
-#: org/openscience/jmol/app/Jmol.java:457
+#: org/openscience/jmol/app/Jmol.java:458
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:479
+#: org/openscience/jmol/app/Jmol.java:480
 msgid "For example:"
 msgstr "예:"
 
-#: org/openscience/jmol/app/Jmol.java:485
+#: org/openscience/jmol/app/Jmol.java:486
 msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:664
-#: org/openscience/jmol/app/Jmol.java:671
+#: org/openscience/jmol/app/Jmol.java:667
+#: org/openscience/jmol/app/Jmol.java:674
 msgid "Executing script..."
 msgstr "스크립트 실행..."
 
-#: org/openscience/jmol/app/Jmol.java:683
+#: org/openscience/jmol/app/Jmol.java:686
 msgid "Jmol Java Console"
 msgstr "Jmol 자바 콘솔"
 
-#: org/openscience/jmol/app/Jmol.java:691
+#: org/openscience/jmol/app/Jmol.java:694
 #: org/openscience/jmol/app/ScriptWindow.java:96
 msgid "Clear"
 msgstr "지움"
 
-#: org/openscience/jmol/app/Jmol.java:705
+#: org/openscience/jmol/app/Jmol.java:708
 msgid "Could not create ConsoleTextArea: "
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:785
+#: org/openscience/jmol/app/Jmol.java:788
 msgid "Closing Jmol..."
 msgstr "Jmol 닫기..."
 
-#: org/openscience/jmol/app/Jmol.java:1408
+#: org/openscience/jmol/app/Jmol.java:1411
 msgid "Open URL"
 msgstr "URL 열기"
 
-#: org/openscience/jmol/app/Jmol.java:1409
+#: org/openscience/jmol/app/Jmol.java:1412
 msgid "Enter URL of molecular model"
 msgstr "분자 모델의 URL을 넣으세요"
 
-#: org/openscience/jmol/app/Jmol.java:1589
+#: org/openscience/jmol/app/Jmol.java:1592
 msgid "IO Exception:"
 msgstr "IO 예외"
 

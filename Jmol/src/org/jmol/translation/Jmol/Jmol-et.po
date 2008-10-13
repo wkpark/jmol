@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-10-12 10:20+0200\n"
+"POT-Creation-Date: 2008-10-13 20:27+0200\n"
 "PO-Revision-Date: 2008-08-04 20:46+0000\n"
 "Last-Translator: Ivo Sarak <Unknown>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -855,52 +855,58 @@ msgid "no display (and also exit when done)"
 msgstr "puudub ekraan (ja kui valmis, siis lõpeta)"
 
 #: org/openscience/jmol/app/Jmol.java:404
-msgid "check script syntax only"
+#, fuzzy
+msgid "check script syntax only - no file loading"
 msgstr "ainult kontrolli skripti süntaksi"
 
 #: org/openscience/jmol/app/Jmol.java:405
+#, fuzzy
+msgid "check script syntax only - with file loading"
+msgstr "ainult kontrolli skripti süntaksi"
+
+#: org/openscience/jmol/app/Jmol.java:406
 msgid "silent startup operation"
 msgstr "vaikne käivitus"
 
-#: org/openscience/jmol/app/Jmol.java:407
+#: org/openscience/jmol/app/Jmol.java:408
 msgid "list commands during script execution"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:409
+#: org/openscience/jmol/app/Jmol.java:410
 msgid "no console -- all output to sysout"
 msgstr "konsool puudub -- kogu väljastus suunatud sysout'i"
 
-#: org/openscience/jmol/app/Jmol.java:411
+#: org/openscience/jmol/app/Jmol.java:412
 msgid "independent commmand thread"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:413
+#: org/openscience/jmol/app/Jmol.java:414
 msgid "exit after script (implicit with -n)"
 msgstr "välju peale skripti (kaudne -n)"
 
-#: org/openscience/jmol/app/Jmol.java:416
+#: org/openscience/jmol/app/Jmol.java:417
 msgid "script file to execute"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:422
+#: org/openscience/jmol/app/Jmol.java:423
 #, fuzzy
 msgid "Jmol script to execute"
 msgstr "Jmol skripti konsool"
 
-#: org/openscience/jmol/app/Jmol.java:433
+#: org/openscience/jmol/app/Jmol.java:434
 msgid "property=value"
 msgstr "omadus=väärtus"
 
-#: org/openscience/jmol/app/Jmol.java:436
+#: org/openscience/jmol/app/Jmol.java:437
 msgid "supported options are given below"
 msgstr "lubatud valikud on eespool"
 
-#: org/openscience/jmol/app/Jmol.java:441
+#: org/openscience/jmol/app/Jmol.java:442
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "akna laius x kõrgus 500x500 , {0}"
 
-#: org/openscience/jmol/app/Jmol.java:451
+#: org/openscience/jmol/app/Jmol.java:452
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -908,50 +914,50 @@ msgstr ""
 "JPG pildi kvaliteet (1-100; vaikeväärtus 75) või PNG pildi pakkimistihedus "
 "(0-9; vaikeväärtus on 2, suurim pakkimistihedus on  9)"
 
-#: org/openscience/jmol/app/Jmol.java:457
+#: org/openscience/jmol/app/Jmol.java:458
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} või {1}:failinimi"
 
-#: org/openscience/jmol/app/Jmol.java:479
+#: org/openscience/jmol/app/Jmol.java:480
 msgid "For example:"
 msgstr "Näiteks:"
 
-#: org/openscience/jmol/app/Jmol.java:485
+#: org/openscience/jmol/app/Jmol.java:486
 msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr "-D valikud on järgnevad (vaikeväärtus on sulgudes):"
 
-#: org/openscience/jmol/app/Jmol.java:664
-#: org/openscience/jmol/app/Jmol.java:671
+#: org/openscience/jmol/app/Jmol.java:667
+#: org/openscience/jmol/app/Jmol.java:674
 msgid "Executing script..."
 msgstr "Käivitan skripti..."
 
-#: org/openscience/jmol/app/Jmol.java:683
+#: org/openscience/jmol/app/Jmol.java:686
 msgid "Jmol Java Console"
 msgstr "Jmol Java konsool"
 
-#: org/openscience/jmol/app/Jmol.java:691
+#: org/openscience/jmol/app/Jmol.java:694
 #: org/openscience/jmol/app/ScriptWindow.java:96
 msgid "Clear"
 msgstr "Puhasta"
 
-#: org/openscience/jmol/app/Jmol.java:705
+#: org/openscience/jmol/app/Jmol.java:708
 msgid "Could not create ConsoleTextArea: "
 msgstr "Ei saa luua ConsoleTextArea: "
 
-#: org/openscience/jmol/app/Jmol.java:785
+#: org/openscience/jmol/app/Jmol.java:788
 msgid "Closing Jmol..."
 msgstr "Jmol sulgemine..."
 
-#: org/openscience/jmol/app/Jmol.java:1408
+#: org/openscience/jmol/app/Jmol.java:1411
 msgid "Open URL"
 msgstr "Ava URL"
 
-#: org/openscience/jmol/app/Jmol.java:1409
+#: org/openscience/jmol/app/Jmol.java:1412
 msgid "Enter URL of molecular model"
 msgstr "Sisesta molekulaarmudeli URL"
 
-#: org/openscience/jmol/app/Jmol.java:1589
+#: org/openscience/jmol/app/Jmol.java:1592
 msgid "IO Exception:"
 msgstr "IO eriolukord:"
 

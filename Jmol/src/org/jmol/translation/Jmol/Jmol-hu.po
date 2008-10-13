@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-10-12 10:20+0200\n"
+"POT-Creation-Date: 2008-10-13 20:27+0200\n"
 "PO-Revision-Date: 2008-08-04 20:46+0000\n"
 "Last-Translator: Zörgő Zoltán <Unknown>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
@@ -863,52 +863,58 @@ msgid "no display (and also exit when done)"
 msgstr "nincs megjelenítés (és kilépés ha vége)"
 
 #: org/openscience/jmol/app/Jmol.java:404
-msgid "check script syntax only"
+#, fuzzy
+msgid "check script syntax only - no file loading"
 msgstr "csak a parancsfájl szintaxisát ellenőrizze"
 
 #: org/openscience/jmol/app/Jmol.java:405
+#, fuzzy
+msgid "check script syntax only - with file loading"
+msgstr "csak a parancsfájl szintaxisát ellenőrizze"
+
+#: org/openscience/jmol/app/Jmol.java:406
 msgid "silent startup operation"
 msgstr "csendes indítási művelet"
 
-#: org/openscience/jmol/app/Jmol.java:407
+#: org/openscience/jmol/app/Jmol.java:408
 msgid "list commands during script execution"
 msgstr "parancsok listázása végrehajtás közben"
 
-#: org/openscience/jmol/app/Jmol.java:409
+#: org/openscience/jmol/app/Jmol.java:410
 msgid "no console -- all output to sysout"
 msgstr "nincs konzol - mindent a szabványos kimenetre"
 
-#: org/openscience/jmol/app/Jmol.java:411
+#: org/openscience/jmol/app/Jmol.java:412
 msgid "independent commmand thread"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:413
+#: org/openscience/jmol/app/Jmol.java:414
 msgid "exit after script (implicit with -n)"
 msgstr "kilépés végrehajtás után (alapértelmezett -n esetén)"
 
-#: org/openscience/jmol/app/Jmol.java:416
+#: org/openscience/jmol/app/Jmol.java:417
 msgid "script file to execute"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:422
+#: org/openscience/jmol/app/Jmol.java:423
 #, fuzzy
 msgid "Jmol script to execute"
 msgstr "Jmol parancsnyelvi konzol"
 
-#: org/openscience/jmol/app/Jmol.java:433
+#: org/openscience/jmol/app/Jmol.java:434
 msgid "property=value"
 msgstr "tulajdonság=érték"
 
-#: org/openscience/jmol/app/Jmol.java:436
+#: org/openscience/jmol/app/Jmol.java:437
 msgid "supported options are given below"
 msgstr "a támogatott lehetőségeket lásd alább"
 
-#: org/openscience/jmol/app/Jmol.java:441
+#: org/openscience/jmol/app/Jmol.java:442
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "ablak szélessés x magasság (pl.: {0})"
 
-#: org/openscience/jmol/app/Jmol.java:451
+#: org/openscience/jmol/app/Jmol.java:452
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -916,50 +922,50 @@ msgstr ""
 "JPG képminőség (1-100, alapértelmezés: 75), vagy PNG tömörítési arány (0-9, "
 "alapértelmezés: 2)"
 
-#: org/openscience/jmol/app/Jmol.java:457
+#: org/openscience/jmol/app/Jmol.java:458
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} vagy {1} :fájlnév"
 
-#: org/openscience/jmol/app/Jmol.java:479
+#: org/openscience/jmol/app/Jmol.java:480
 msgid "For example:"
 msgstr "Például:"
 
-#: org/openscience/jmol/app/Jmol.java:485
+#: org/openscience/jmol/app/Jmol.java:486
 msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr "A -D lehetőségek a következők (alapértelmezés zárójelben)"
 
-#: org/openscience/jmol/app/Jmol.java:664
-#: org/openscience/jmol/app/Jmol.java:671
+#: org/openscience/jmol/app/Jmol.java:667
+#: org/openscience/jmol/app/Jmol.java:674
 msgid "Executing script..."
 msgstr "Parancsfájl fut..."
 
-#: org/openscience/jmol/app/Jmol.java:683
+#: org/openscience/jmol/app/Jmol.java:686
 msgid "Jmol Java Console"
 msgstr "Jmol Java konzol"
 
-#: org/openscience/jmol/app/Jmol.java:691
+#: org/openscience/jmol/app/Jmol.java:694
 #: org/openscience/jmol/app/ScriptWindow.java:96
 msgid "Clear"
 msgstr "őrít"
 
-#: org/openscience/jmol/app/Jmol.java:705
+#: org/openscience/jmol/app/Jmol.java:708
 msgid "Could not create ConsoleTextArea: "
 msgstr "Konzol szövegterA1lete nem hozható létre: "
 
-#: org/openscience/jmol/app/Jmol.java:785
+#: org/openscience/jmol/app/Jmol.java:788
 msgid "Closing Jmol..."
 msgstr "Jmol bezárása..."
 
-#: org/openscience/jmol/app/Jmol.java:1408
+#: org/openscience/jmol/app/Jmol.java:1411
 msgid "Open URL"
 msgstr "Webcím megnyitása"
 
-#: org/openscience/jmol/app/Jmol.java:1409
+#: org/openscience/jmol/app/Jmol.java:1412
 msgid "Enter URL of molecular model"
 msgstr "Adja meg a molekuláris modell webcímét"
 
-#: org/openscience/jmol/app/Jmol.java:1589
+#: org/openscience/jmol/app/Jmol.java:1592
 msgid "IO Exception:"
 msgstr "IO-hiba:"
 

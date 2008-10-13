@@ -194,7 +194,7 @@ class TestScriptsImpl extends TestCase {
    */
   public void runPerformanceTest() {
     JFrame frame = new JFrame();
-    Jmol jmol = Jmol.getJmol(frame, 500, 500, checkOnly ? "-C " : "");
+    Jmol jmol = Jmol.getJmol(frame, 500, 500, checkOnly ? "-c " : "");
     JmolViewer viewer = jmol.viewer;
     long beginFull = Profiling.getTime();
     for (int i = 0; i < nbExecutions; i++) {
@@ -271,7 +271,7 @@ class TestScriptsImpl extends TestCase {
     SmarterJmolAdapter adapter = new SmarterJmolAdapter();
     JmolViewer viewer = JmolViewer.allocateViewer(null, adapter);
     if (checkOnly) {
-      viewer.setAppletContext("", null, null, "-n -C "); // set no display; checkOnly; no file opening
+      viewer.setAppletContext("", null, null, "-n -c "); // set no display; checkOnly; no file opening
     } else {
       viewer.setAppletContext("", null, null, "-n -l "); // set no display; list commmands as they execute
     }

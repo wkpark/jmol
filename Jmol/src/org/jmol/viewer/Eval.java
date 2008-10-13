@@ -9019,6 +9019,9 @@ class Eval {
         type = type.substring(0, 1).toUpperCase() + type.substring(1);
         isExport = true;
         fileName = "Jmol." + type;
+      } else if (type.equals("menu")) {
+        pt++;
+        type = "MENU";
       } else {
         type = "(image)";
       }
@@ -9093,6 +9096,8 @@ class Eval {
         type = fileName.substring(fileName.lastIndexOf(".") + 1).toUpperCase();
       else
         type = "JPG";
+      if (type.equals("MNU"))
+        type = "MENU";
     }
     if (type.equals("data")) {
       if (fileName != null && fileName.indexOf(".") >= 0)
@@ -9106,12 +9111,12 @@ class Eval {
     if (!isImage
         && !isExport
         && !Parser.isOneOf(type,
-            "SPT;HIS;MO;ISO;VAR;FILE;XYZ;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
+            "SPT;HIS;MO;ISO;VAR;FILE;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
       evalError(GT
           ._(
               "write what? {0} or {1} \"filename\"",
               new Object[] {
-                  "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
+                  "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
                       + "|RAMACHANDRAN|STATE|VAR x  CLIPBOARD",
                   "JPG|JPG64|PNG|GIF|PPM|SPT|JVXL|XYZ|MOL|PDB|"
                       + driverList.toUpperCase().replace(';', '|') }));
@@ -9136,6 +9141,8 @@ class Eval {
         scriptStatus(msg.startsWith("OK") ? "Created " + fileName + ".ini:\n\n" + data : msg);
         return "";
       }
+    } else if (data == "MENU") {
+      data = viewer.getMenu("");
     } else if (data == "PGRP") {
       data = viewer.getPointGroupAsString(type2.equals("draw"), null, 0, 1.0f);
     } else if (data == "PDB") {

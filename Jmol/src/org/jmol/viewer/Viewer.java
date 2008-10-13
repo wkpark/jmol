@@ -1840,6 +1840,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return data[1];
   }
   
+  public String getFullPath(String name) {
+    return fileManager.getFullPath(name);
+  }
+  
   boolean getFileAsString(String[] data) {
     return fileManager.getFileDataOrErrorAsString(data);
   }

@@ -469,7 +469,6 @@ public class Token {
   final public static int cell          = atomproperty | 5;
   final public static int element       = atomproperty | 6;
   final public static int elemno        = atomproperty | 7;
-  final static int file                 = atomproperty | 8 | command;
   final public static int formalCharge  = atomproperty | 9 | setparam | settable;
   final static int groupID              = atomproperty | 10;
   final public static int model         = atomproperty | 13 | command;
@@ -522,6 +521,8 @@ public class Token {
   final static int sin          = 4 | 1 << 9 | mathfunc;
   final static int cos          = 5 | 1 << 9 | mathfunc;
   final static int sqrt         = 6 | 1 << 9 | mathfunc;
+  final static int file         = 7 | 1 << 9 | mathfunc | atomproperty | command;
+
 
   // ___.xxx(a)
   

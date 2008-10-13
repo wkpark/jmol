@@ -12148,7 +12148,8 @@ class Eval {
       case Token.data:
         return evaluateData(args);
       case Token.load:
-        return evaluateLoad(args);
+      case Token.file:
+        return evaluateLoad(args, tok);
       case Token.write:
         return evaluateWrite(args);
       case Token.script:
@@ -12709,12 +12710,13 @@ class Eval {
       return addX(new Point3f(a));
     }
 
-    private boolean evaluateLoad(Token[] args) {
+    private boolean evaluateLoad(Token[] args, int tok) {
       if (args.length != 1)
         return false;
       if (isSyntaxCheck)
         return addX("");
-      return addX(viewer.getFileAsString(Token.sValue(args[0])));
+      String file = Token.sValue(args[0]);
+      return addX(tok == Token.load ? viewer.getFileAsString(file) : viewer.getFullPath(file));
     }
 
     private boolean evaluateWrite(Token[] args) throws ScriptException {

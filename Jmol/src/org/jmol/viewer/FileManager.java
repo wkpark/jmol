@@ -165,7 +165,7 @@ public class FileManager {
     fileType = (pt >= 0 ? name.substring(0, pt) : null);
     Logger.info("\nFileManager.openFile(" + nameAsGiven + ") //" + name);
     openErrorMessage = fullPathName = fileName = null;
-    String[] names = classifyName(nameAsGiven);
+    String[] names = classifyName(nameAsGiven, true);
     if (names == null)
       return;
     setNames(names);
@@ -192,7 +192,7 @@ public class FileManager {
       nameAsGiven = (pt >= 0 ? names[i].substring(pt + 2) : names[i]);
       fileType = (pt >= 0 ? names[i].substring(0, pt) : null);
       openErrorMessage = fullPathName = fileName = null;
-      String[] thenames = classifyName(nameAsGiven);
+      String[] thenames = classifyName(nameAsGiven, true);
       if (thenames == null)
         return;
       setNames(thenames);
@@ -351,7 +351,7 @@ public class FileManager {
   Object getFileAsImage(String name, Hashtable htParams) {
     if (name == null)
       return "";
-    String[] names = classifyName(name);
+    String[] names = classifyName(name, true);
     if (names == null)
       return "cannot read file name: " + name;
     Image image = null;
@@ -525,17 +525,24 @@ java.lang.NullPointerException
     fileName = names[1];
   }
   
+  public String getFullPath(String name) {
+    String[] data = classifyName(name, false);
+    return (data == null ? "" : data[0].replace('\\','/'));
+  }
+  
   /**
    * 
    * @param name
+   * @param isFullLoad
    * @return [0] full path name, [1] file name without path
    */
-  private String[] classifyName(String name) {
+  private String[] classifyName(String name, boolean isFullLoad) {
     if (name == null)
       return null;
     if (name.startsWith("?")
         && (name = viewer.dialogAsk("load", name.substring(1))) == null) {
-      openErrorMessage = "#CANCELED#";
+      if (isFullLoad)
+        openErrorMessage = "#CANCELED#";
       return null;
     }
     File file = null;
@@ -556,7 +563,8 @@ java.lang.NullPointerException
           name = "file:" + name;
         url = new URL(appletDocumentBase, name);
       } catch (MalformedURLException e) {
-        openErrorMessage = e.getMessage();
+        if (isFullLoad)
+          openErrorMessage = e.getMessage();
         return null;
       }
     } else {
@@ -565,7 +573,8 @@ java.lang.NullPointerException
         try {
           url = new URL(name);
         } catch (MalformedURLException e) {
-          openErrorMessage = e.getMessage();
+          if (isFullLoad)
+            openErrorMessage = e.getMessage();
           return null;
         }
       } else {
@@ -578,7 +587,7 @@ java.lang.NullPointerException
       names[0] = url.toString();
       names[1] = names[0].substring(names[0].lastIndexOf('/') + 1);
     }
-    if (file != null || urlTypeIndex(names[0]) == URL_LOCAL) {
+    if (isFullLoad && (file != null || urlTypeIndex(names[0]) == URL_LOCAL)) {
       String path = (file == null ? TextFormat.trim(names[0].substring(5), "/")
           : names[0]);
       path = path.substring(0, path.length() - names[1].length() - 1);
@@ -588,7 +597,7 @@ java.lang.NullPointerException
   }
 
   String getDefaultDirectory(String name) {
-    String[] names = classifyName(name);
+    String[] names = classifyName(name, true);
     if (names == null)
       return "";
     name = fixPath(names[0]);
@@ -691,7 +700,7 @@ java.lang.NullPointerException
   Object getBufferedReaderOrErrorMessageFromName(String name,
                                                  String[] fullPathNameReturn,
                                                  boolean isBinary) {
-    String[] names = classifyName(name);
+    String[] names = classifyName(name, true);
     if (names == null)
       return "cannot read file name: " + name;
     if (fullPathNameReturn != null)

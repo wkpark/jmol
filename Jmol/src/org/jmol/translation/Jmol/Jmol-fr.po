@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-10-13 20:27+0200\n"
-"PO-Revision-Date: 2008-10-01 21:53+0000\n"
+"PO-Revision-Date: 2008-10-13 21:10+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-10-02 20:08+0000\n"
+"X-Launchpad-Export-Date: 2008-10-14 17:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -162,17 +162,16 @@ msgid "Advanced"
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:224
-#, fuzzy
 msgid "Checkpoint File: "
-msgstr "Fichiers récents"
+msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:229
 msgid "Amount of Memory:"
-msgstr ""
+msgstr "Quantité de mémoire:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:235
 msgid "Number of Processors:"
-msgstr ""
+msgstr "Nombre de processeurs:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:248
 msgid "Route"
@@ -180,7 +179,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:254
 msgid "Method: "
-msgstr ""
+msgstr "Méthode : "
 
 #: org/openscience/jmol/app/GaussianDialog.java:261
 msgid "Basis Set: "
@@ -195,9 +194,8 @@ msgid "Job Options: "
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:288
-#, fuzzy
 msgid "Molecular Properties"
-msgstr "Propriétés"
+msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:294
 msgid "Total Charge: "
@@ -208,18 +206,16 @@ msgid "Multiplicity: "
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:308
-#, fuzzy
 msgid "Selection: "
-msgstr "Sélectionner"
+msgstr "Sélection : "
 
 #: org/openscience/jmol/app/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:349
-#, fuzzy
 msgid "File..."
-msgstr "&Fichier"
+msgstr "Fichier..."
 
 #: org/openscience/jmol/app/GaussianDialog.java:360
 #: org/openscience/jmol/app/PovrayDialog.java:758
@@ -235,7 +231,7 @@ msgstr "Annuler"
 
 #: org/openscience/jmol/app/GuiMap.java:46
 msgid "&Macros"
-msgstr ""
+msgstr "&Macros"
 
 #: org/openscience/jmol/app/GuiMap.java:47
 msgid "&File"
@@ -324,7 +320,7 @@ msgstr "&Quitter"
 
 #: org/openscience/jmol/app/GuiMap.java:68
 msgid "Recent &Files..."
-msgstr ""
+msgstr "&Fichiers Récents..."
 
 #: org/openscience/jmol/app/GuiMap.java:69
 msgid "&Edit"
@@ -349,7 +345,7 @@ msgstr "Copier le Script"
 
 #: org/openscience/jmol/app/GuiMap.java:75
 msgid "Pr&eferences..."
-msgstr ""
+msgstr "Pré&férences..."
 
 #: org/openscience/jmol/app/GuiMap.java:76
 msgid "&Paste"
@@ -392,7 +388,6 @@ msgid "Phosphorus"
 msgstr "Phosphore"
 
 #: org/openscience/jmol/app/GuiMap.java:86
-#, fuzzy
 msgid "Sulfur"
 msgstr "Soufre"
 
@@ -451,7 +446,7 @@ msgstr "&Libellé"
 
 #: org/openscience/jmol/app/GuiMap.java:106
 msgid "&Symbol"
-msgstr ""
+msgstr "&Symbole"
 
 #: org/openscience/jmol/app/GuiMap.java:107
 msgid "&Name"
@@ -459,7 +454,7 @@ msgstr "&Nom"
 
 #: org/openscience/jmol/app/GuiMap.java:108
 msgid "&Number"
-msgstr ""
+msgstr "&Nombre"
 
 #: org/openscience/jmol/app/GuiMap.java:109
 msgid "&Centered"
@@ -471,7 +466,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:111
 msgid "&Vector"
-msgstr ""
+msgstr "&Vecteur"
 
 #: org/openscience/jmol/app/GuiMap.java:113
 msgid "&On"
@@ -510,7 +505,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:129
 msgid "A&xes"
-msgstr ""
+msgstr "A&xes"
 
 #: org/openscience/jmol/app/GuiMap.java:130
 msgid "B&ounding Box"
@@ -522,7 +517,7 @@ msgstr "&Hydrogènes"
 
 #: org/openscience/jmol/app/GuiMap.java:132
 msgid "V&ectors"
-msgstr ""
+msgstr "V&ecteurs"
 
 #: org/openscience/jmol/app/GuiMap.java:133
 #: org/openscience/jmol/app/GuiMap.java:144
@@ -579,15 +574,15 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:147
 msgid "&Nanometers 1E-9"
-msgstr ""
+msgstr "&Nanomètres 1E-9"
 
 #: org/openscience/jmol/app/GuiMap.java:148
 msgid "&Angstroms 1E-10"
-msgstr ""
+msgstr "Ån&gström 1E-10"
 
 #: org/openscience/jmol/app/GuiMap.java:149
 msgid "&Picometers 1E-12"
-msgstr ""
+msgstr "&Picomètres 1E-12"
 
 #: org/openscience/jmol/app/GuiMap.java:150
 msgid "&Animate..."
@@ -615,7 +610,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:156
 msgid "&Loop"
-msgstr ""
+msgstr "&Boucle"
 
 #: org/openscience/jmol/app/GuiMap.java:157
 msgid "P&alindrome"
@@ -802,14 +797,12 @@ msgid "no display (and also exit when done)"
 msgstr "pas d'affichage (et quitter quand c'est fini)"
 
 #: org/openscience/jmol/app/Jmol.java:404
-#, fuzzy
 msgid "check script syntax only - no file loading"
-msgstr "vérifier uniquement la syntaxe du script"
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:405
-#, fuzzy
 msgid "check script syntax only - with file loading"
-msgstr "vérifier uniquement la syntaxe du script"
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:406
 msgid "silent startup operation"
@@ -836,9 +829,8 @@ msgid "script file to execute"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:423
-#, fuzzy
 msgid "Jmol script to execute"
-msgstr "Console Script Jmol"
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:434
 msgid "property=value"
@@ -1051,7 +1043,7 @@ msgstr "Taille finale des carreaux"
 #: org/openscience/jmol/app/PovrayDialog.java:450
 #: org/openscience/jmol/app/PovrayDialog.java:452
 msgid "Location of the POV-Ray Executable"
-msgstr ""
+msgstr "Emplacement de l'exécutable POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:489
 #: org/openscience/jmol/app/PovrayDialog.java:756

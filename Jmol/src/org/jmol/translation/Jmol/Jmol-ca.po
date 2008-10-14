@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-10-13 20:27+0200\n"
-"PO-Revision-Date: 2008-10-08 18:46+0000\n"
+"PO-Revision-Date: 2008-10-14 07:51+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-10-08 19:24+0000\n"
+"X-Launchpad-Export-Date: 2008-10-14 19:28+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
@@ -161,9 +161,8 @@ msgid "Advanced"
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:224
-#, fuzzy
 msgid "Checkpoint File: "
-msgstr "Fitxers recents"
+msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:229
 msgid "Amount of Memory:"
@@ -194,9 +193,8 @@ msgid "Job Options: "
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:288
-#, fuzzy
 msgid "Molecular Properties"
-msgstr "Propietats"
+msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:294
 msgid "Total Charge: "
@@ -207,18 +205,16 @@ msgid "Multiplicity: "
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:308
-#, fuzzy
 msgid "Selection: "
-msgstr "Selecció"
+msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:349
-#, fuzzy
 msgid "File..."
-msgstr "&Fitxer"
+msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:360
 #: org/openscience/jmol/app/PovrayDialog.java:758
@@ -258,15 +254,15 @@ msgstr "Obre un &URL"
 
 #: org/openscience/jmol/app/GuiMap.java:52
 msgid "Scrip&t..."
-msgstr "Scrip&t..."
+msgstr "Scrip&t…"
 
 #: org/openscience/jmol/app/GuiMap.java:53
 msgid "AtomSet&Chooser..."
-msgstr ""
+msgstr "&Selector de conjunts d'àtoms…"
 
 #: org/openscience/jmol/app/GuiMap.java:54
 msgid "&Save As..."
-msgstr "Anomena i de&sa..."
+msgstr "Anomena i de&sa…"
 
 #: org/openscience/jmol/app/GuiMap.java:55
 msgid "&Export"
@@ -274,7 +270,7 @@ msgstr "&Exporta"
 
 #: org/openscience/jmol/app/GuiMap.java:56
 msgid "Export &Image..."
-msgstr "Exporta una &imatge..."
+msgstr "Exporta una &imatge…"
 
 #: org/openscience/jmol/app/GuiMap.java:57
 msgid "Save current view as an image."
@@ -282,7 +278,7 @@ msgstr "Desa la visualització actual com una imatge."
 
 #: org/openscience/jmol/app/GuiMap.java:58
 msgid "Export to &Web Page..."
-msgstr "Exporta a una pàgina &web..."
+msgstr "Exporta a una pàgina &web…"
 
 #: org/openscience/jmol/app/GuiMap.java:59
 msgid "Export one or more views to a web page."
@@ -290,7 +286,7 @@ msgstr "Exporta una o més visualitzacions a una pàgina web."
 
 #: org/openscience/jmol/app/GuiMap.java:60
 msgid "Render in POV-&Ray..."
-msgstr ""
+msgstr "Renderitza en el POV-&Ray…"
 
 #: org/openscience/jmol/app/GuiMap.java:61
 #: org/openscience/jmol/app/PovrayDialog.java:113
@@ -299,7 +295,7 @@ msgstr "Renderitza en el POV-Ray"
 
 #: org/openscience/jmol/app/GuiMap.java:62
 msgid "Write &State..."
-msgstr "Escriu l'e&stat..."
+msgstr "Escriu l'e&stat…"
 
 #: org/openscience/jmol/app/GuiMap.java:63
 msgid "Save current view as a Jmol state script."
@@ -307,7 +303,7 @@ msgstr "Desa la visualització actual com un script d'estat del Jmol"
 
 #: org/openscience/jmol/app/GuiMap.java:64
 msgid "&Print..."
-msgstr "Im&primeix..."
+msgstr "Im&primeix…"
 
 #: org/openscience/jmol/app/GuiMap.java:65
 msgid "Print view."
@@ -323,7 +319,7 @@ msgstr "S&urt"
 
 #: org/openscience/jmol/app/GuiMap.java:68
 msgid "Recent &Files..."
-msgstr "&Fitxers recents..."
+msgstr "&Fitxers recents…"
 
 #: org/openscience/jmol/app/GuiMap.java:69
 msgid "&Edit"
@@ -348,7 +344,7 @@ msgstr "Copia l'script"
 
 #: org/openscience/jmol/app/GuiMap.java:75
 msgid "Pr&eferences..."
-msgstr "&Preferències..."
+msgstr "&Preferències…"
 
 #: org/openscience/jmol/app/GuiMap.java:76
 msgid "&Paste"
@@ -424,7 +420,7 @@ msgstr "À&tom"
 #: org/openscience/jmol/app/GuiMap.java:97
 #, java-format
 msgid "{0}% van der Waals"
-msgstr ""
+msgstr "{0}% van der Waals"
 
 #: org/openscience/jmol/app/GuiMap.java:98
 msgid "&Bond"
@@ -465,7 +461,7 @@ msgstr "&Centrat"
 
 #: org/openscience/jmol/app/GuiMap.java:110
 msgid "&Upper right"
-msgstr ""
+msgstr "&Adalt a la dreta"
 
 #: org/openscience/jmol/app/GuiMap.java:111
 msgid "&Vector"
@@ -473,7 +469,7 @@ msgstr "&Vector"
 
 #: org/openscience/jmol/app/GuiMap.java:113
 msgid "&On"
-msgstr ""
+msgstr "&Activat"
 
 #: org/openscience/jmol/app/GuiMap.java:114
 #, java-format
@@ -504,7 +500,7 @@ msgstr "{0}%"
 
 #: org/openscience/jmol/app/GuiMap.java:128
 msgid "&Perspective Depth"
-msgstr ""
+msgstr "&Profunditat de la perspectiva"
 
 #: org/openscience/jmol/app/GuiMap.java:129
 msgid "A&xes"
@@ -512,7 +508,7 @@ msgstr "Ei&xos"
 
 #: org/openscience/jmol/app/GuiMap.java:130
 msgid "B&ounding Box"
-msgstr ""
+msgstr "Caixa d'en&llaçament"
 
 #: org/openscience/jmol/app/GuiMap.java:131
 msgid "&Hydrogens"
@@ -533,15 +529,15 @@ msgstr "Perspe&ctiva"
 
 #: org/openscience/jmol/app/GuiMap.java:135
 msgid "&Front"
-msgstr ""
+msgstr "Da&vant"
 
 #: org/openscience/jmol/app/GuiMap.java:136
 msgid "&Top"
-msgstr ""
+msgstr "A&dalt"
 
 #: org/openscience/jmol/app/GuiMap.java:137
 msgid "&Bottom"
-msgstr ""
+msgstr "A&vall"
 
 #: org/openscience/jmol/app/GuiMap.java:138
 msgid "&Right"
@@ -553,7 +549,7 @@ msgstr "&Esquerra"
 
 #: org/openscience/jmol/app/GuiMap.java:140
 msgid "Tr&ansform..."
-msgstr "Tr&ansforma..."
+msgstr "Tr&ansforma…"
 
 #: org/openscience/jmol/app/GuiMap.java:141
 msgid "Define &Center"
@@ -597,11 +593,11 @@ msgstr "&Vibra…"
 
 #: org/openscience/jmol/app/GuiMap.java:152
 msgid "&Graph..."
-msgstr "&Gràfic..."
+msgstr "&Gràfic…"
 
 #: org/openscience/jmol/app/GuiMap.java:153
 msgid "Calculate chemical &shifts..."
-msgstr "Calcula els de&splaçaments químics..."
+msgstr "Calcula els de&splaçaments químics…"
 
 #: org/openscience/jmol/app/GuiMap.java:154
 msgid "&Crystal Properties"
@@ -613,19 +609,19 @@ msgstr "&Una vegada"
 
 #: org/openscience/jmol/app/GuiMap.java:156
 msgid "&Loop"
-msgstr "&Repetició"
+msgstr "En &bucke"
 
 #: org/openscience/jmol/app/GuiMap.java:157
 msgid "P&alindrome"
-msgstr "&Palíndrom"
+msgstr "P&alíndrom"
 
 #: org/openscience/jmol/app/GuiMap.java:158
 msgid "&Stop animation"
-msgstr "At&ura l'animació"
+msgstr "A&tura l'animació"
 
 #: org/openscience/jmol/app/GuiMap.java:159
 msgid "&Rewind to first frame"
-msgstr "&Rebobina al primer fotograma"
+msgstr "&Rebobina fins al primer fotograma"
 
 #: org/openscience/jmol/app/GuiMap.java:161
 msgid "Go to &next frame"
@@ -633,11 +629,11 @@ msgstr "Vés al fotograma &següent"
 
 #: org/openscience/jmol/app/GuiMap.java:163
 msgid "Go to &previous frame"
-msgstr "Vés al fotograma an&terior"
+msgstr "Vés al fotograma &anterior"
 
 #: org/openscience/jmol/app/GuiMap.java:165
 msgid "Go to &last frame"
-msgstr "&Vés al darrer fotograma"
+msgstr "Vés al &darrer fotograma"
 
 #: org/openscience/jmol/app/GuiMap.java:167
 msgid "Start &vibration"
@@ -645,19 +641,19 @@ msgstr "Inicia la &vibració"
 
 #: org/openscience/jmol/app/GuiMap.java:168
 msgid "&Stop vibration"
-msgstr ""
+msgstr "A&tura la vibració"
 
 #: org/openscience/jmol/app/GuiMap.java:169
 msgid "&First frequency"
-msgstr ""
+msgstr "&Primera freqüència"
 
 #: org/openscience/jmol/app/GuiMap.java:170
 msgid "&Next frequency"
-msgstr ""
+msgstr "Freqüència &següent"
 
 #: org/openscience/jmol/app/GuiMap.java:171
 msgid "&Previous frequency"
-msgstr ""
+msgstr "Freqüència &anterior"
 
 #: org/openscience/jmol/app/GuiMap.java:172
 msgid "&Help"
@@ -739,55 +735,55 @@ msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:180
 msgid "Initializing 3D display..."
-msgstr "S'està iniciant la visualització 3D..."
+msgstr "S'està iniciant la visualització 3D…"
 
 #: org/openscience/jmol/app/Jmol.java:205
 msgid "Initializing Preferences..."
-msgstr "S'estan inicialitzant les preferències..."
+msgstr "S'estan inicialitzant les preferències…"
 
 #: org/openscience/jmol/app/Jmol.java:207
 msgid "Initializing Recent Files..."
-msgstr "S'estan inicialitzant els fitxers recents..."
+msgstr "S'estan inicialitzant els fitxers recents…"
 
 #: org/openscience/jmol/app/Jmol.java:210
 msgid "Initializing Script Window..."
-msgstr "S'està inicialitzant la finestra d'scripts..."
+msgstr "S'està inicialitzant la finestra d'scripts…"
 
 #: org/openscience/jmol/app/Jmol.java:218
 msgid "Initializing Measurements..."
-msgstr "S'estan inicialitzant les mesures..."
+msgstr "S'estan inicialitzant les mesures…"
 
 #: org/openscience/jmol/app/Jmol.java:241
 msgid "Building Command Hooks..."
-msgstr "S'estan construint els lligams de les ordres..."
+msgstr "S'estan construint els lligams de les ordres…"
 
 #: org/openscience/jmol/app/Jmol.java:252
 msgid "Building Menubar..."
-msgstr "S'està construint la barra de menú..."
+msgstr "S'està construint la barra de menú…"
 
 #: org/openscience/jmol/app/Jmol.java:268
 msgid "Starting display..."
-msgstr "S'està iniciant la visualització..."
+msgstr "S'està iniciant la visualització…"
 
 #: org/openscience/jmol/app/Jmol.java:317
 msgid "Setting up Drag-and-Drop..."
-msgstr "Configuració del l'«arrossega i deixa anar»..."
+msgstr "Configuració del l'«arrossega i deixa anar»…"
 
 #: org/openscience/jmol/app/Jmol.java:338
 msgid "Launching main frame..."
-msgstr "S'està executant el fotograma principal..."
+msgstr "S'està executant el fotograma principal…"
 
 #: org/openscience/jmol/app/Jmol.java:356
 msgid "Creating main window..."
-msgstr "S'està creant la finestra principal..."
+msgstr "S'està creant la finestra principal…"
 
 #: org/openscience/jmol/app/Jmol.java:357
 msgid "Initializing Swing..."
-msgstr "S'està inicialitzant el Swing..."
+msgstr "S'està inicialitzant el Swing…"
 
 #: org/openscience/jmol/app/Jmol.java:369
 msgid "Initializing Jmol..."
-msgstr "S'està inicialitzant el Jmol..."
+msgstr "S'està inicialitzant el Jmol…"
 
 #: org/openscience/jmol/app/Jmol.java:400
 msgid "transparent background"
@@ -802,14 +798,12 @@ msgid "no display (and also exit when done)"
 msgstr "no mostris res (i també surt quan s'acabi)"
 
 #: org/openscience/jmol/app/Jmol.java:404
-#, fuzzy
 msgid "check script syntax only - no file loading"
-msgstr "comprova només la sintaxi dels scripts"
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:405
-#, fuzzy
 msgid "check script syntax only - with file loading"
-msgstr "comprova només la sintaxi dels scripts"
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:406
 msgid "silent startup operation"
@@ -836,9 +830,8 @@ msgid "script file to execute"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:423
-#, fuzzy
 msgid "Jmol script to execute"
-msgstr "Consola script del Jmol"
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:434
 msgid "property=value"
@@ -873,11 +866,13 @@ msgstr "Per exemple:"
 #: org/openscience/jmol/app/Jmol.java:486
 msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr ""
+"Les opcions -D són les següents (els paràmetres predeterminats en "
+"parèntesis):"
 
 #: org/openscience/jmol/app/Jmol.java:667
 #: org/openscience/jmol/app/Jmol.java:674
 msgid "Executing script..."
-msgstr "S'està executant l'script..."
+msgstr "S'està executant l'script…"
 
 #: org/openscience/jmol/app/Jmol.java:686
 msgid "Jmol Java Console"
@@ -894,7 +889,7 @@ msgstr "No s'ha pogut crear l'àrea de text de la consola: "
 
 #: org/openscience/jmol/app/Jmol.java:788
 msgid "Closing Jmol..."
-msgstr "S'està tancant el Jmol..."
+msgstr "S'està tancant el Jmol…"
 
 #: org/openscience/jmol/app/Jmol.java:1411
 msgid "Open URL"
@@ -936,6 +931,7 @@ msgstr "Nom del fitxer:"
 msgid ""
 "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 msgstr ""
+"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:167
 msgid "Working Directory"
@@ -964,6 +960,7 @@ msgstr "Visualitza mentre es renderitza"
 #: org/openscience/jmol/app/PovrayDialog.java:243
 msgid "Should POV-Ray attempt to display while rendering?"
 msgstr ""
+"El POV-Ray hauria d'intentar mostrar una visualització mentre renderitza?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:266
 msgid "width:"
@@ -1036,7 +1033,7 @@ msgstr "Mida inicial: "
 
 #: org/openscience/jmol/app/PovrayDialog.java:411
 msgid "Initial size of the tiles"
-msgstr ""
+msgstr "Mida inicial dels mosaics"
 
 #: org/openscience/jmol/app/PovrayDialog.java:427
 msgid "End size : "
@@ -1058,7 +1055,7 @@ msgstr "Vés-hi!"
 
 #: org/openscience/jmol/app/PovrayDialog.java:491
 msgid "Save file and possibly launch POV-Ray"
-msgstr ""
+msgstr "Desa el fitxer i possiblement executa el POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:502
 msgid "Cancel this dialog without saving"
@@ -1180,7 +1177,7 @@ msgstr "Refés"
 
 #: org/openscience/jmol/app/Splash.java:45
 msgid "Loading..."
-msgstr "S'està carregant..."
+msgstr "S'està carregant…"
 
 #: org/openscience/jmol/app/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
@@ -1188,7 +1185,7 @@ msgstr "Novetats del Jmol"
 
 #: org/openscience/jmol/app/webexport/JmolInstance.java:64
 msgid "Attempt to make scratch directory failed."
-msgstr ""
+msgstr "No s'ha pogut crear un directori temporal."
 
 #: org/openscience/jmol/app/webexport/LogPanel.java:52
 msgid "Log and Error Messages:"
@@ -1210,7 +1207,7 @@ msgstr "Amplada de la miniaplicació:"
 #: org/openscience/jmol/app/webexport/PopInJmol.java:79
 #, java-format
 msgid "insert a caption for {0} here."
-msgstr ""
+msgstr "Inseriu una llegenda de {0} ací."
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:82
 #, java-format
@@ -1245,7 +1242,7 @@ msgstr "Emergent del Jmol"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:130
 msgid "ScriptButton Jmol"
-msgstr ""
+msgstr "Pàgina ScriptButton"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:147
 msgid "Log"
@@ -1264,6 +1261,9 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
+"Per a aconseguir un model 3-D que pugueu manipular, feu clic {0}ací{1}. El "
+"temps de baixada pot ser significant la primera vegada que es carrega la "
+"miniaplicació."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:308
 msgid "Insert the page TITLE here."
@@ -1276,7 +1276,7 @@ msgstr "Inseriu-hi la introducció de la pàgina."
 #: org/openscience/jmol/app/webexport/WebExport.java:311
 #, java-format
 msgid "Insert a caption for {0} here."
-msgstr ""
+msgstr "Inseriu una llegenda per a {0} ací."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:312
 #, java-format
@@ -1287,7 +1287,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:314
 msgid "Insert your TITLE and INTRODUCTION here."
-msgstr ""
+msgstr "Inseriu el vostre TÍTOL i INTRODUCCIÓ ací."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:316
 #, java-format
@@ -1309,11 +1309,11 @@ msgstr "Una pàgina web que conté miniaplicacions del Jmol"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:135
 msgid "double-click and drag to reorder"
-msgstr ""
+msgstr "feu doble clic i arrosegueu per a reordenar"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:139
 msgid "Add Present Jmol State as Instance..."
-msgstr ""
+msgstr "Afegeix l'estat del Jmol preenviat com a instància…"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:144
 msgid "Show Selected"
@@ -1334,19 +1334,19 @@ msgstr "Ajuda/Instruccions"
 #: org/openscience/jmol/app/webexport/WebPanel.java:204
 #: org/openscience/jmol/app/webexport/WebPanel.java:212
 msgid "Cartoon of Page"
-msgstr ""
+msgstr "Aspecte de la pàgina"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:217
 msgid "Save HTML as..."
-msgstr "Anomena i desa l'HTML..."
+msgstr "Anomena i desa l'HTML…"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:227
 msgid "Relative server path to jar files:"
-msgstr ""
+msgstr "Camí relatiu al servidor per als fitxers jar:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:233
 msgid "Relative local path to jar files:"
-msgstr ""
+msgstr "Camí relatiu local per als fitxers jar:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:239
 msgid "Author (your name):"
@@ -1358,11 +1358,13 @@ msgstr "Títol de finestra del navegador d'aquesta pàgina:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:300
 msgid "Give the occurrence of Jmol a name:"
-msgstr ""
+msgstr "Anomena la visualització del Jmol:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:320
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
+"S'ha produït un error en crear una instància nova que contenia scripts i una "
+"imatge."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:330
 #, java-format
@@ -1380,7 +1382,7 @@ msgstr "Seleccioneu un directori per crear o un fitxer HTML per desar"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:388
 msgid "Call to FileWriter unsuccessful."
-msgstr ""
+msgstr "La crida a l'escriptura de fitxers ha fallat."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:426
 #, java-format
@@ -1430,7 +1432,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:569
 msgid "compressing large data file to"
-msgstr "s'està comprimint un fitxer amb moltes dades a"
+msgstr "s'està comprimint un fitxer de gran extensió a"
 
 #~ msgid "Select Atoms"
 #~ msgstr "Selecciona els àtoms"
@@ -1442,13 +1444,13 @@ msgstr "s'està comprimint un fitxer amb moltes dades a"
 #~ msgstr "Afegeix els models"
 
 #~ msgid "Make crystal..."
-#~ msgstr "Fes un cristall..."
+#~ msgstr "Fes un cristall…"
 
 #~ msgid "Name"
 #~ msgstr "Nom"
 
 #~ msgid "Measurements..."
-#~ msgstr "Mesures..."
+#~ msgstr "Mesures…"
 
 #~ msgid "Export view to an image or script file."
 #~ msgstr "Exporta la visualització a un fitxer d'imatge o script."
@@ -1469,11 +1471,10 @@ msgstr "s'està comprimint un fitxer amb moltes dades a"
 #~ msgstr "Qualitat de JPEG"
 
 #~ msgid "Initializing AtomSetChooser Window..."
-#~ msgstr ""
-#~ "S'està inicialitzant la finestra del selector de conjunts d'atoms..."
+#~ msgstr "S'està inicialitzant la finestra del selector de conjunts d'atoms…"
 
 #~ msgid "Setting up File Choosers..."
-#~ msgstr "Configuració dels selectors de fitxer..."
+#~ msgstr "Configuració dels selectors de fitxer…"
 
 #~ msgid "All Files"
 #~ msgstr "Tots els fitxers"
@@ -1538,6 +1539,9 @@ msgstr "s'està comprimint un fitxer amb moltes dades a"
 #~ msgid "Yes"
 #~ msgstr "Sí"
 
+#~ msgid "check script syntax only"
+#~ msgstr "comprova només la sintaxi dels scripts"
+
 #~ msgid "Jmol-to-POV-Ray Conversion"
 #~ msgstr "Conversió de Jmol a POV-Ray"
 
@@ -1587,7 +1591,7 @@ msgstr "s'està comprimint un fitxer amb moltes dades a"
 #~ msgstr "Utilitza l'antialiasing del POV-Ray, més lent però millor"
 
 #~ msgid "Render in pov-ray..."
-#~ msgstr "Renderitza en el POV-Ray..."
+#~ msgstr "Renderitza en el POV-Ray…"
 
 #~ msgid "File not loaded"
 #~ msgstr "No s'ha carregat el fitxer"
@@ -1596,7 +1600,7 @@ msgstr "s'està comprimint un fitxer amb moltes dades a"
 #~ msgstr "sense visualització"
 
 #~ msgid "Jmol executing script ..."
-#~ msgstr "El Jmol està executant l'script..."
+#~ msgstr "El Jmol està executant l'script…"
 
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "Rotació en mode filfe&rro"
@@ -1653,4 +1657,7 @@ msgstr "s'està comprimint un fitxer amb moltes dades a"
 #~ msgstr "Color de les mesures"
 
 #~ msgid "Loading plugins..."
-#~ msgstr "S'estan carregant els connectors..."
+#~ msgstr "S'estan carregant els connectors…"
+
+#~ msgid "&Vibrate…"
+#~ msgstr "&Vibra…"

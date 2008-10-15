@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-10-13 20:27+0200\n"
-"PO-Revision-Date: 2008-10-15 20:27+0100\n"
+"PO-Revision-Date: 2008-10-15 21:47+0100\n"
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -184,11 +184,11 @@ msgstr "Método:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:261
 msgid "Basis Set: "
-msgstr "Conjunto básico:"
+msgstr "Conjunto de base:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
-msgstr "Conjunto básico de ajuste de densidad (sólo DFT):"
+msgstr "Conjunto de base para ajuste de densidad (sólo DFT):"
 
 #: org/openscience/jmol/app/GaussianDialog.java:275
 msgid "Job Options: "
@@ -272,7 +272,7 @@ msgstr "&Exportar"
 
 #: org/openscience/jmol/app/GuiMap.java:56
 msgid "Export &Image..."
-msgstr "Exportar &imagen"
+msgstr "Exportar &imagen..."
 
 #: org/openscience/jmol/app/GuiMap.java:57
 msgid "Save current view as an image."
@@ -297,7 +297,7 @@ msgstr "Generar en POV-Ray"
 
 #: org/openscience/jmol/app/GuiMap.java:62
 msgid "Write &State..."
-msgstr "Grabar e&stado"
+msgstr "Grabar e&stado..."
 
 #: org/openscience/jmol/app/GuiMap.java:63
 msgid "Save current view as a Jmol state script."

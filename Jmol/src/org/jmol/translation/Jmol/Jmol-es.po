@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-10-13 20:27+0200\n"
-"PO-Revision-Date: 2008-10-09 17:34+0100\n"
+"PO-Revision-Date: 2008-10-15 20:27+0100\n"
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -152,75 +152,71 @@ msgstr "Borrar átomos"
 
 #: org/openscience/jmol/app/GaussianDialog.java:187
 msgid "Export Gaussian Input File"
-msgstr ""
+msgstr "Exportar archivo de entrada de Gaussian"
 
 #: org/openscience/jmol/app/GaussianDialog.java:194
 msgid "Basic"
-msgstr ""
+msgstr "Básico"
 
 #: org/openscience/jmol/app/GaussianDialog.java:196
 msgid "Advanced"
-msgstr ""
+msgstr "Avanzado"
 
 #: org/openscience/jmol/app/GaussianDialog.java:224
-#, fuzzy
 msgid "Checkpoint File: "
-msgstr "Archivos recientes"
+msgstr "Archivo de punto de control:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:229
 msgid "Amount of Memory:"
-msgstr ""
+msgstr "Cantidad de memoria:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:235
 msgid "Number of Processors:"
-msgstr ""
+msgstr "Número de procesadores:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:248
 msgid "Route"
-msgstr ""
+msgstr "Ruta"
 
 #: org/openscience/jmol/app/GaussianDialog.java:254
 msgid "Method: "
-msgstr ""
+msgstr "Método:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:261
 msgid "Basis Set: "
-msgstr ""
+msgstr "Conjunto básico:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
-msgstr ""
+msgstr "Conjunto básico de ajuste de densidad (sólo DFT):"
 
 #: org/openscience/jmol/app/GaussianDialog.java:275
 msgid "Job Options: "
-msgstr ""
+msgstr "Opciones de la tarea:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:288
-#, fuzzy
 msgid "Molecular Properties"
-msgstr "Propiedades"
+msgstr "Propiedades moleculares"
 
 #: org/openscience/jmol/app/GaussianDialog.java:294
 msgid "Total Charge: "
-msgstr ""
+msgstr "Carga total:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:301
 msgid "Multiplicity: "
-msgstr ""
+msgstr "Multiplicidad:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:308
-#, fuzzy
 msgid "Selection: "
-msgstr "Seleccionar"
+msgstr "Selección:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
-msgstr ""
+msgstr "Nombre del archivo de entrada de Gaussian"
 
 #: org/openscience/jmol/app/GaussianDialog.java:349
-#, fuzzy
 msgid "File..."
-msgstr "&Archivo"
+msgstr "Archivo..."
 
 #: org/openscience/jmol/app/GaussianDialog.java:360
 #: org/openscience/jmol/app/PovrayDialog.java:758
@@ -567,7 +563,7 @@ msgstr "&Herramientas"
 
 #: org/openscience/jmol/app/GuiMap.java:143
 msgid "&Gaussian..."
-msgstr ""
+msgstr "&Gaussian..."
 
 #: org/openscience/jmol/app/GuiMap.java:145
 msgid "Click atoms to measure distances"
@@ -721,9 +717,7 @@ msgstr "Rotar molécula"
 
 #: org/openscience/jmol/app/GuiMap.java:188
 msgid "Select a set of atoms using SHIFT-LEFT-  DRAG."
-msgstr ""
-"Selecciona un grupo de átomos pulsando Mayús. y arrastrando con el botón "
-"principal"
+msgstr "Selecciona un grupo de átomos pulsando Mayús. y arrastrando con el botón principal"
 
 #: org/openscience/jmol/app/GuiMap.java:189
 msgid "Return molecule to home position."
@@ -803,14 +797,12 @@ msgid "no display (and also exit when done)"
 msgstr "sin mostrar (y además salir cuando acabe)"
 
 #: org/openscience/jmol/app/Jmol.java:404
-#, fuzzy
 msgid "check script syntax only - no file loading"
-msgstr "verificar sólo la sintaxis de guiones"
+msgstr "verificar sólo la sintaxis de guiones - sin cargar los archivos"
 
 #: org/openscience/jmol/app/Jmol.java:405
-#, fuzzy
 msgid "check script syntax only - with file loading"
-msgstr "verificar sólo la sintaxis de guiones"
+msgstr "verificar sólo la sintaxis de guiones - cargando los archivos"
 
 #: org/openscience/jmol/app/Jmol.java:406
 msgid "silent startup operation"
@@ -834,12 +826,11 @@ msgstr "salir tras el guión (implícito con -n)"
 
 #: org/openscience/jmol/app/Jmol.java:417
 msgid "script file to execute"
-msgstr ""
+msgstr "archivo de guión a ejecutar"
 
 #: org/openscience/jmol/app/Jmol.java:423
-#, fuzzy
 msgid "Jmol script to execute"
-msgstr "Consola de guiones de Jmol"
+msgstr "Guión de Jmol a ejecutar"
 
 #: org/openscience/jmol/app/Jmol.java:434
 msgid "property=value"
@@ -855,12 +846,8 @@ msgid "window width x height, e.g. {0}"
 msgstr "ancho x alto de ventana, p.ej. {0}"
 
 #: org/openscience/jmol/app/Jmol.java:452
-msgid ""
-"JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
-"2, maximum compression 9)"
-msgstr ""
-"Calidad de imagen JPG (de 1 a 100; 75 por defecto) o compresión de imagen "
-"PNG (de 0 a 9; 2 por defecto; 9 es máxima compresión)"
+msgid "JPG image quality (1-100; default 75) or PNG image compression (0-9; default 2, maximum compression 9)"
+msgstr "Calidad de imagen JPG (de 1 a 100; 75 por defecto) o compresión de imagen PNG (de 0 a 9; 2 por defecto; 9 es máxima compresión)"
 
 #: org/openscience/jmol/app/Jmol.java:458
 #, java-format
@@ -934,8 +921,7 @@ msgid "File Name:"
 msgstr "Nombre de archivo:"
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
-msgid ""
-"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
+msgid "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 msgstr "'cafeina.pov' -> 'cafeina.pov', 'cafeina.pov.ini', 'cafeina.pov.spt'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:167
@@ -964,8 +950,7 @@ msgstr "Mostrar mientras se está representando"
 
 #: org/openscience/jmol/app/PovrayDialog.java:243
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr ""
-"¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
+msgstr "¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:266
 msgid "width:"
@@ -1254,22 +1239,13 @@ msgstr "Bitácora"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:162
 #, java-format
-msgid ""
-"Page skeleton and JavaScript generated by export to web function using {0} "
-"on {1}."
-msgstr ""
-"Armazón de la página y JavaScript generados por la función exportar a página "
-"web de {0} el {1}."
+msgid "Page skeleton and JavaScript generated by export to web function using {0} on {1}."
+msgstr "Armazón de la página y JavaScript generados por la función exportar a página web de {0} el {1}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:306
 #, java-format
-msgid ""
-"To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
-"be significant the first time the applet is loaded."
-msgstr ""
-"Para obtener un modelo tridimensional que puedes manejar, pulsa {0}aquí{1}. "
-"El tiempo de descarga puede ser considerable la primera vez que se carga la "
-"miniaplicación."
+msgid "To get a 3-D model you can manipulate, click {0}here{1}. Download time may be significant the first time the applet is loaded."
+msgstr "Para obtener un modelo tridimensional que puedes manejar, pulsa {0}aquí{1}. El tiempo de descarga puede ser considerable la primera vez que se carga la miniaplicación."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:308
 msgid "Insert the page TITLE here."
@@ -1286,12 +1262,8 @@ msgstr "Inserta aquí una leyenda para {0}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:312
 #, java-format
-msgid ""
-"Insert additonal explanatory text here. Long text will wrap around Jmol "
-"model {0}."
-msgstr ""
-"Inserta aquí cualquier texto adicional, por ejemplo la explicación del "
-"modelo. Si el texto es largo, fluirá alrededor del modelo Jmol {0}."
+msgid "Insert additonal explanatory text here. Long text will wrap around Jmol model {0}."
+msgstr "Inserta aquí cualquier texto adicional, por ejemplo la explicación del modelo. Si el texto es largo, fluirá alrededor del modelo Jmol {0}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:314
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1299,12 +1271,8 @@ msgstr "Inserta aquí el TÍTULO y la INTRODUCCIÓN."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:316
 #, java-format
-msgid ""
-"The button {0} will appear in the box below.  Insert information for {0} "
-"here and below."
-msgstr ""
-"El botón {0} se mostrará en el recuadro de aquí abajo.  Inserta la "
-"información de {0} aquí y también más abajo."
+msgid "The button {0} will appear in the box below.  Insert information for {0} here and below."
+msgstr "El botón {0} se mostrará en el recuadro de aquí abajo.  Inserta la información de {0} aquí y también más abajo."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:317
 #, java-format
@@ -1442,102 +1410,70 @@ msgstr "comprimiendo archivo de datos grande a"
 
 #~ msgid "Preview"
 #~ msgstr "Previsualizar"
-
 #~ msgid "Append models"
 #~ msgstr "Añadir modelos"
-
 #~ msgid "All Files"
 #~ msgstr "Todos los archivos"
-
 #~ msgid "Abort file chooser dialog"
 #~ msgstr "Cuadro de diálogo para cancelar elector de archivo"
-
 #~ msgid "Details"
 #~ msgstr "Detalles"
-
 #~ msgid "Directory"
 #~ msgstr "Directorio"
-
 #~ msgid "Open selected directory"
 #~ msgstr "Abrir directorio seleccionado"
-
 #~ msgid "Attributes"
 #~ msgstr "Atributos"
-
 #~ msgid "Modified"
 #~ msgstr "Modificado"
-
 #~ msgid "Generic File"
 #~ msgstr "Archivo genérico"
-
 #~ msgid "Name"
 #~ msgstr "Nombre"
-
 #~ msgid "Size"
 #~ msgstr "Tamaño"
-
 #~ msgid "Files of Type:"
 #~ msgstr "Archivos de tipo:"
-
 #~ msgid "Type"
 #~ msgstr "Tipo"
-
 #~ msgid "FileChooser help"
 #~ msgstr "Ayuda elector de archivos"
-
 #~ msgid "Home"
 #~ msgstr "Principal"
-
 #~ msgid "List"
 #~ msgstr "Lista"
-
 #~ msgid "Look In:"
 #~ msgstr "Buscar en:"
-
 #~ msgid "Error creating new folder"
 #~ msgstr "Error al crear una nueva carpeta"
-
 #~ msgid "New Folder"
 #~ msgstr "Carpeta nueva"
-
 #~ msgid "Create New Folder"
 #~ msgstr "Crear carpeta nueva"
-
 #~ msgid "Open selected file"
 #~ msgstr "Abrir archivo seleccionado"
-
 #~ msgid "Save selected file"
 #~ msgstr "Guardar archivo seleccionado"
-
 #~ msgid "Save In:"
 #~ msgstr "Guardar en:"
-
 #~ msgid "Update"
 #~ msgstr "Actualizar"
-
 #~ msgid "Update directory listing"
 #~ msgstr "Actualizar lista de directorios"
-
 #~ msgid "Up"
 #~ msgstr "Arriba"
-
 #~ msgid "Up One Level"
 #~ msgstr "Subir un nivel"
-
 #~ msgid "No"
 #~ msgstr "No"
-
 #~ msgid "Yes"
 #~ msgstr "Sí"
-
 #~ msgid "Initializing AtomSetChooser Window..."
 #~ msgstr "Inicializando ventana selector grupos de átomos..."
-
 #~ msgid "Setting up File Choosers..."
 #~ msgstr "Construyendo selector de archivos..."
-
 #~ msgid "Image Type"
 #~ msgstr "Tipo de imagen"
-
 #~ msgid "JPEG Quality"
 #~ msgstr "Calidad de JPEG"
+

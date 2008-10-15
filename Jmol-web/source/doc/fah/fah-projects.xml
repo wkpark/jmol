@@ -6876,7 +6876,7 @@
   <fah_proj number="4606" name="p4606_T0_proG-8_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="157" preferred="8.5" deadline="12.8"
     credit="47" frames="100" code="A" contact="vvoelz" contrib="Flathead74"/>
-  <fah_proj number="4607" name="p4607_T0_PSBD-12_minout" public="y" file="xyz"
+  <fah_proj number="4607" name="p4607_T0_PSBD-12_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="223" preferred="15.4" deadline="23.1"
     credit="84.7" frames="100" code="A" contact="vvoelz"/>
   <fah_proj number="4608" name="p4608_T0_PSBD-16_minout" public="y" file="xyz"
@@ -6906,7 +6906,7 @@
   <fah_proj number="4616" name="p4616_T0_BBL-12_minout" public="y" file="xyz"
     server="169.230.26.30" atoms="189" preferred="15.4" deadline="23.1"
     credit="84.7" frames="100" code="A" contact="vvoelz" contrib="Flathead74"/>
-  <fah_proj number="4617" name="p4617_T0_villin-16_minout" public="y" file="xyz"
+  <fah_proj number="4617" name="p4617_T0_villin-16_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="259" preferred="21.7" deadline="32.5"
     credit="119.3" frames="100" code="A" contact="vvoelz" contrib="Flathead74"/>
   <fah_proj number="4618" name="p4618_T0_villin-12_minout" public="y" file="xyz"
@@ -7379,6 +7379,9 @@
   <fah_proj number="5650" name="p5650_p5600_Calmodulin" public="n"
     server="171.64.65.103" atoms="1133" preferred="2" deadline="3"
     credit="388" frames="100" code="AD" contact="kasson"/>
+  <fah_proj number="5651" name="p5651_p5600_Calmodulin" public="n"
+    server="171.64.65.103" atoms="1133" preferred="2" deadline="3"
+    credit="388" frames="100" code="GG2" contact="kasson"/>
 
   <!-- Projects 5700 to 5799 -->
   <fah_proj number="5700" name="p5700_ACBP_ff03_300K" public="n"

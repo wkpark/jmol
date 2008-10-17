@@ -85,8 +85,8 @@ public class Resolver {
       if (name.indexOf(".spardir.") >= 0)
         return null; // could easily be .spardir.zip -- these MUST be .spardir or .spardir/...
       name = name.replace('\\','/');
-      name = name.substring(0, pt + (name.indexOf("/M") == pt + 8 ? 14 : 8));
-      if (name.indexOf("/M") < 0)
+      //name = name.substring(0, pt + (name.lastIndexOf("/") == pt + 8 ? 14 : 8));
+      if (name.lastIndexOf("/") < pt)
         name += "/M0001";
       return new String[] { "SpartanSmol", "Directory Entry ",
           name + "/input",

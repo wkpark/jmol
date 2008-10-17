@@ -510,8 +510,10 @@ final public class Graphics3D implements JmolRendererInterface {
     // clear alpha channel and make distinct
     bgcolor = argb;
     backgroundArgb = argb + ((argb & 0xFF) == 0xFF ? -1 : 1);
-    // note -- above code instead of argb & 0x00FFFFFF results in
+    // note -- abolve code instead of argb & 0x00FFFFFF results in
     // background of Jmol being transparent in front of certain applications (VLC Player)
+    // turns out this is because backgroundArgb gets set to 1 if it is black. 
+    //backgroundArgb = 2;//argb & 0xFFFFFFFF;
     
     platform.setBackground(backgroundArgb);
     backgroundImage = null;

@@ -3439,7 +3439,7 @@ class Eval {
         isColorOrRadius = true;
         translucency = parameterAsString(i);
         if (theTok == Token.translucent && isFloatParameter(i + 1))
-          translucentLevel = floatParameter(++i);
+          translucentLevel = getTranslucentLevel(++i);
         break;
       case Token.radius:
         radius = floatParameter(++i);
@@ -3520,6 +3520,11 @@ class Eval {
     if (!(tQuiet || scriptLevel > scriptReportingLevel))
       scriptStatus(GT._("{0} new bonds; {1} modified", new Object[] {
           new Integer(nNew), new Integer(nModified) }));
+  }
+
+  private float getTranslucentLevel(int i) throws ScriptException {
+    float f = floatParameter(i);
+    return (theTok == Token.integer  && f > 0 && f < 9 ? f + 1 : f);
   }
 
   private void getProperty() throws ScriptException {
@@ -3822,7 +3827,7 @@ class Eval {
     if (theTok == Token.translucent || theTok == Token.opaque) {
       translucency = parameterAsString(index++);
       if (theTok == Token.translucent && isFloatParameter(index))
-        translucentLevel = floatParameter(index++);
+        translucentLevel = getTranslucentLevel(index++);
     }
     int tok = 0;
     if (index < statementLength && tokAt(index) != Token.on
@@ -3838,7 +3843,7 @@ class Eval {
               && (theTok == Token.translucent || theTok == Token.opaque)) {
             translucency = parameterAsString(index);
             if (theTok == Token.translucent && isFloatParameter(index + 1))
-              translucentLevel = floatParameter(++index);
+              translucentLevel = getTranslucentLevel(++index);
           }
           //checkLength(index + 1);
           //iToken = index;
@@ -3984,19 +3989,24 @@ class Eval {
         viewer.setShapeProperty(shapeType, prefix + "color", colorvalue, bs);
     }
     if (translucency != null)
-      setShapeTranslucency(shapeType, prefix, translucency, translucentLevel);
+      setShapeTranslucency(shapeType, prefix, translucency, translucentLevel, bs);
     if (typeMask != 0)
       viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
           JmolConstants.BOND_COVALENT_MASK));
   }
 
   private void setShapeTranslucency(int shapeType, String prefix,
-                                    String translucency, float translucentLevel) {
+                                    String translucency, float translucentLevel,
+                                    BitSet bs) {
     if (translucentLevel == Float.MAX_VALUE)
       translucentLevel = viewer.getDefaultTranslucent();
     setShapeProperty(shapeType, "translucentLevel", new Float(translucentLevel));
-    if (prefix != null)
+    if (prefix == null)
+      return;
+    if (bs == null)
       setShapeProperty(shapeType, prefix + "translucency", translucency);
+    else if (!isSyntaxCheck)
+       viewer.setShapeProperty(shapeType, prefix + "translucency", translucency, bs);
   }
 
   private void cd() throws ScriptException {
@@ -5904,7 +5914,7 @@ class Eval {
           if ((theTok = tokAt(i)) == Token.translucent) {
             value = "translucent";
             if (isFloatParameter(++i))
-              translucentLevel = floatParameter(i++);
+              translucentLevel = getTranslucentLevel(i++);
             else
               translucentLevel = viewer.getDefaultTranslucent();
           } else if (theTok == Token.opaque) {
@@ -10012,7 +10022,7 @@ class Eval {
         if (tokAt(i) == Token.translucent) {
           isTranslucent = true;
           if (isFloatParameter(++i))
-            translucentLevel = floatParameter(i++);
+            translucentLevel = getTranslucentLevel(i++);
           isColor = true;
         } else if (tokAt(i) == Token.opaque) {
           ++i;
@@ -10052,7 +10062,7 @@ class Eval {
           new Integer(colorArgb));
     if (isTranslucent)
       setShapeTranslucency(JmolConstants.SHAPE_DRAW, "", "translucent",
-          translucentLevel);
+          translucentLevel, null);
     if (intScale != 0) {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "scale", new Integer(intScale));
     }
@@ -10120,7 +10130,7 @@ class Eval {
         if (tokAt(i) == Token.translucent) {
           isTranslucent = true;
           if (isFloatParameter(++i))
-            translucentLevel = floatParameter(i++);
+            translucentLevel = getTranslucentLevel(i++);
           isColor = true;
         } else if (tokAt(i) == Token.opaque) {
           ++i;
@@ -10244,7 +10254,7 @@ class Eval {
           color));
     if (isTranslucent)
       setShapeTranslucency(JmolConstants.SHAPE_POLYHEDRA, "", "translucent",
-          translucentLevel);
+          translucentLevel, null);
   }
 
   private void lcaoCartoon() throws ScriptException {
@@ -10505,7 +10515,7 @@ class Eval {
       if (nAllowed < 0) {
         float value = (isFloatParameter(index + 1) ? floatParameter(++index)
             : Float.MAX_VALUE);
-        setShapeTranslucency(iShape, null, "translucent", value);
+        setShapeTranslucency(iShape, null, "translucent", value, null);
       } else {
         setMeshDisplayProperty(iShape, index, theTok);
       }

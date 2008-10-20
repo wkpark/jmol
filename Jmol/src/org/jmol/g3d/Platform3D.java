@@ -43,7 +43,6 @@ abstract class Platform3D {
   Image imagePixelBuffer;
   int[] pBuffer, pBufferT;
   int[] zBuffer, zBufferT;
-  int argbBackground;
 
   int widthOffscreen, heightOffscreen;
   Image imageOffscreen;
@@ -127,14 +126,6 @@ abstract class Platform3D {
     zBufferT = null;
   }
 
-  void setBackground(int argbBackground) {
-    if (this.argbBackground != argbBackground) {
-      this.argbBackground = argbBackground;
-      if (useClearingThread)
-        clearingThread.notifyBackgroundChange(argbBackground);
-    }
-  }
-
   boolean hasContent() {
     for (int i = bufferSize; --i >= 0; )
       if (zBuffer[i] != Integer.MAX_VALUE)
@@ -142,17 +133,17 @@ abstract class Platform3D {
     return false;
   }
 
-  void clearScreenBuffer(int argbBackground) {
+  void clearScreenBuffer() {
     for (int i = bufferSize; --i >= 0; ) {
       zBuffer[i] = Integer.MAX_VALUE;
-      pBuffer[i] = argbBackground;
+      pBuffer[i] = 0;
     }
   }
 
-  void setTransparency() {
+  void setBackgroundColor(int bgColor) {
     for (int i = bufferSize; --i >= 0; )
-      if (pBuffer[i] == argbBackground)
-        pBuffer[i] &= 0x00FFFFFF;
+      if (pBuffer[i] == 0)
+        pBuffer[i] = bgColor;
   }
   
   void clearTBuffer() {
@@ -166,7 +157,7 @@ abstract class Platform3D {
     if (useClearingThread) {
       clearingThread.obtainBufferForClient();
     } else {
-      clearScreenBuffer(argbBackground);
+      clearScreenBuffer();
     }
   }
 
@@ -243,11 +234,7 @@ abstract class Platform3D {
       */
       while (true) {
         waitForClientRelease();
-        int bg;
-        do {
-          bg = argbBackground;
-          clearScreenBuffer(bg);
-        } while (bg != argbBackground); // color changed underneath us
+        clearScreenBuffer();
         notifyBufferReady();
       }
     }

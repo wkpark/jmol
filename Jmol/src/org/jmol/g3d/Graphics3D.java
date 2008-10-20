@@ -390,8 +390,7 @@ final public class Graphics3D implements JmolRendererInterface {
       if (antialiasThisFrame)
         downsampleFullSceneAntialiasing(false);
     }
-    if (backgroundTransparent && (backgroundArgb & 0xFF000000) == 0)
-      platform.setTransparency();
+    platform.setBackgroundColor(bgcolor);
     platform.notifyEndOfRendering();
     //setWidthHeight(antialiasEnabled);
     currentlyRendering = false;
@@ -490,12 +489,9 @@ final public class Graphics3D implements JmolRendererInterface {
     return depth;
   }
 
-  private int backgroundArgb;
   public Image backgroundImage;
-  private boolean backgroundTransparent;
   
   public void setBackgroundTransparent(boolean TF) {
-    backgroundTransparent = TF;
     platform.setBackgroundTransparent(TF);
   }
 
@@ -509,13 +505,12 @@ final public class Graphics3D implements JmolRendererInterface {
   public void setBackgroundArgb(int argb) {
     // clear alpha channel and make distinct
     bgcolor = argb;
-    backgroundArgb = argb + ((argb & 0xFF) == 0xFF ? -1 : 1);
+    //backgroundArgb = argb + ((argb & 0xFF) == 0xFF ? -1 : 1);
     // note -- abolve code instead of argb & 0x00FFFFFF results in
     // background of Jmol being transparent in front of certain applications (VLC Player)
     // turns out this is because backgroundArgb gets set to 1 if it is black. 
     //backgroundArgb = 2;//argb & 0xFFFFFFFF;
     
-    platform.setBackground(backgroundArgb);
     backgroundImage = null;
   }
 
@@ -611,7 +606,7 @@ final public class Graphics3D implements JmolRendererInterface {
           z = Math.min(z, zbuf[offset4 + width4]);
           if (z != Integer.MAX_VALUE)
             z >>= 1;
-          zbuf[offset1] = (pbuf[offset1] == backgroundArgb ? Integer.MAX_VALUE
+          zbuf[offset1] = (pbuf[offset1] == 0 ? Integer.MAX_VALUE
               : z);
         }
       setWidthHeight(antialiasThisFrame = false);
@@ -621,7 +616,7 @@ final public class Graphics3D implements JmolRendererInterface {
 
   void mergeOpaqueAndTranslucentBuffers() {
     for (int offset = 0; offset < bufferSize; offset++)
-      mergeBufferPixel(pbuf, pbufT[offset], offset);
+      mergeBufferPixel(pbuf, pbufT[offset], offset, bgcolor);
 
   }
   
@@ -635,13 +630,14 @@ final public class Graphics3D implements JmolRendererInterface {
         | (((argbA & 0x0000FF00) + (argbB & 0x0000FF00)) >> 1) & 0x0000FF00;
   }
   
-  static void mergeBufferPixel(int[] pbuf, int argbB, int pt) {
+  static void mergeBufferPixel(int[] pbuf, int argbB, int pt, int bgcolor) {
     if (argbB == 0)
       return;
     int argbA = pbuf[pt];
     if (argbA == argbB)
       return;
-
+    if (argbA == 0)
+      argbA = bgcolor;
     int rbA = (argbA & 0x00FF00FF);
     int gA = (argbA & 0x0000FF00);
     int rbB = (argbB & 0x00FF00FF);
@@ -744,10 +740,10 @@ final public class Graphics3D implements JmolRendererInterface {
   }
   
   void addPixel(int offset, int z, int p) {
-    addPixelT(offset, z, p, zbuf, pbuf, zbufT, pbufT, translucencyMask, isPass2, zMargin);
+    addPixelT(offset, z, p, zbuf, pbuf, zbufT, pbufT, translucencyMask, isPass2, zMargin, bgcolor);
   }
   
-  final static void addPixelT(int offset, int z, int p, int[] zbuf, int[] pbuf, int[] zbufT, int[] pbufT, int translucencyMask, boolean isPass2, int zMargin) {
+  final static void addPixelT(int offset, int z, int p, int[] zbuf, int[] pbuf, int[] zbufT, int[] pbufT, int translucencyMask, boolean isPass2, int zMargin, int bgcolor) {
     if (!isPass2) {
       zbuf[offset] = z;
       pbuf[offset] = p;
@@ -759,14 +755,14 @@ final public class Graphics3D implements JmolRendererInterface {
       //if (zT != Integer.MAX_VALUE)
       int argb = pbufT[offset];
       if (argb != 0 && zT - z > zMargin)
-        mergeBufferPixel(pbuf, argb, offset);
+        mergeBufferPixel(pbuf, argb, offset, bgcolor);
       zbufT[offset] = z;
       pbufT[offset] = p & translucencyMask;
     } else if (z == zT) {
     } else {
       //oops-out of order
       if (z - zT > zMargin)
-        mergeBufferPixel(pbuf, p & translucencyMask, offset);
+        mergeBufferPixel(pbuf, p & translucencyMask, offset, bgcolor);
     }
   }
 

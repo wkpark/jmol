@@ -198,7 +198,7 @@ public class CoreType {
   static public final CoreType DGROMACSB    = new CoreType("DGromacsB", "DB", true); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType DGROMACSC    = new CoreType("DGromacsC", "DC", true); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType GBGROMACS    = new CoreType("GBGromacs", "GB", true); //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType GROCVS       = new CoreType("GroCVS", "GC", false);  //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType GROCVS       = new CoreType("GroCVS", "GC", true);  //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType GROGPU       = new CoreType("GroGPU", "GG", false);  //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType GROGPU2      = new CoreType("GroGPU2", "GG2", false);  //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType GROMACS      = new CoreType("Gromacs", "G", true);  //$NON-NLS-1$ //$NON-NLS-2$

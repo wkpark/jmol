@@ -68,6 +68,8 @@ public class LabelsRenderer extends ShapeRenderer {
         continue;
       short colix = (colixes == null || i >= colixes.length) ? 0 : colixes[i];
       colix = Graphics3D.getColixInherited(colix, atom.getColix());
+      if (Graphics3D.isColixTranslucent(colix))
+        colix = Graphics3D.getColixTranslucent(colix, false, 0);
       if (!g3d.setColix(colix))
         continue;
       short bgcolix = (bgcolixes == null || i >= bgcolixes.length) ? 0

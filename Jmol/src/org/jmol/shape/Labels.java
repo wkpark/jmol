@@ -168,11 +168,11 @@ public class Labels extends AtomShape {
       return;
     }
 
-    if ("translucency" == propertyName) {
-      // no translucency
-      return;
-    }
-    
+    if ("translucency" == propertyName || "bgtranslucency" == propertyName) {
+        // no translucency
+        return;
+      }
+      
     if ("bgcolor" == propertyName) {
       isActive = true;
       if (bsBgColixSet == null)
@@ -289,8 +289,8 @@ public class Labels extends AtomShape {
     if ("toggleLabel" == propertyName) {
       // toggle
       for (int atomIndex = atomCount; --atomIndex >= 0;) {
-        Atom atom = atoms[atomIndex];
         if (bsSelected.get(atomIndex)) {
+          Atom atom = atoms[atomIndex];
           if (formats == null || atomIndex >= formats.length)
             formats = ArrayUtil.ensureLength(formats, atomIndex + 1);
           if (strings != null && strings.length > atomIndex
@@ -304,11 +304,14 @@ public class Labels extends AtomShape {
             strings[atomIndex] = atom.formatLabel(strLabel);
             formats[atomIndex] = strLabel;
             bsSizeSet.set(atomIndex);
+            if ((bsBgColixSet == null || !bsBgColixSet.get(atomIndex))
+                && defaultBgcolix != 0)
+              setBgcolix(atomIndex, defaultBgcolix);
           }
-        } else if (strings != null && atomIndex < strings.length) {
-          strings[atomIndex] = null;          
+          atom.setShapeVisibility(myVisibilityFlag, strings != null && atomIndex < strings.length && strings[atomIndex] != null);
+//        } else if (strings != null && atomIndex < strings.length) {
+  //        strings[atomIndex] = null;          
         }
-        atom.setShapeVisibility(myVisibilityFlag, strings != null && atomIndex < strings.length && strings[atomIndex] != null);
       }
       return;
     }

@@ -4850,9 +4850,9 @@
   <fah_proj number="2494" name="p2494_system" public="y" file="xyz"
     server="171.65.103.160" atoms="97093" preferred="42" deadline="93"
     credit="905" frames="100" code="G" contact="ppetrone" contrib="Smoking2000"/>
-  <fah_proj number="2495" name="p2495_system" public="y"
+  <fah_proj number="2495" name="p2495_system" public="y" file="xyz"
     server="171.65.103.160" atoms="97090" preferred="42" deadline="93"
-    credit="905" frames="100" code="G" contact="ppetrone"/>
+    credit="905" frames="100" code="G" contact="ppetrone" contrib="Smoking2000"/>
 
   <!-- Projects 2500 to 2599 -->
   <fah_proj number="2500" name="p2500_BBA5_pfold" public="y" file="xyz"
@@ -6549,34 +6549,34 @@
     server="171.64.122.72" atoms="7857" preferred="5" deadline="10"
     credit="15" frames="100" code="GST" contact="huangx" contrib="Ursomor"/>
   <fah_proj number="4418" name="p4418_Seq_50_nat_AMBER_Native" public="y" file="xyz"
-    server="171.64.122.72" atoms="7858" preferred="5" deadline="10"
+    server="171.64.122.78" atoms="7858" preferred="5" deadline="10"
     credit="15" frames="100" code="GST" contact="huangx" contrib="John Deas"/>
   <fah_proj number="4419" name="p4419_Seq_50_unf_AMBER" public="y" file="xyz"
-    server="171.64.122.72" atoms="7858" preferred="5" deadline="10"
+    server="171.64.122.78" atoms="7858" preferred="5" deadline="10"
     credit="15" frames="100" code="GST" contact="huangx" contrib="John Deas"/>
   <fah_proj number="4420" name="p4420_Seq_51_nat_AMBER_Native" public="y" file="xyz"
-    server="171.64.122.72" atoms="7858" preferred="5" deadline="10"
+    server="171.64.122.78" atoms="7858" preferred="5" deadline="10"
     credit="15" frames="100" code="GST" contact="huangx" contrib="Ursomor"/>
   <fah_proj number="4421" name="p4421_Seq_51_unf_AMBER" public="y" file="xyz"
-    server="171.64.122.72" atoms="7858" preferred="5" deadline="10"
+    server="171.64.122.78" atoms="7858" preferred="5" deadline="10"
     credit="15" frames="100" code="GST" contact="huangx" contrib="Bruce"/>
   <fah_proj number="4422" name="p4422_Seq_52_nat_AMBER_Native" public="y" file="xyz"
-    server="171.64.122.72" atoms="7847" preferred="5" deadline="10"
+    server="171.64.122.78" atoms="7847" preferred="5" deadline="10"
     credit="15" frames="100" code="GST" contact="huangx" contrib="Ursomor"/>
   <fah_proj number="4423" name="p4423_Seq_52_unf_AMBER" public="y" file="xyz"
-    server="171.64.122.72" atoms="7847" preferred="5" deadline="10"
+    server="171.64.122.78" atoms="7847" preferred="5" deadline="10"
     credit="15" frames="100" code="GST" contact="huangx" contrib="v00d00"/>
   <fah_proj number="4424" name="p4424_Seq_53_nat_AMBER_Native" public="y" file="xyz"
-    server="171.64.122.72" atoms="7870" preferred="5" deadline="10"
+    server="171.64.122.78" atoms="7870" preferred="5" deadline="10"
     credit="15" frames="100" code="GST" contact="huangx" contrib="Matt O Hara"/>
   <fah_proj number="4425" name="p4425_Seq_53_unf_AMBER" public="y" file="xyz"
-    server="171.64.122.72" atoms="7870" preferred="5" deadline="10"
+    server="171.64.122.78" atoms="7870" preferred="5" deadline="10"
     credit="15" frames="100" code="GST" contact="huangx" contrib="SirKiwi"/>
   <fah_proj number="4426" name="p4426_Seq_55_nat_AMBER_Native" public="y" file="xyz"
-    server="171.64.122.72" atoms="7866" preferred="5" deadline="10"
+    server="171.64.122.78" atoms="7866" preferred="5" deadline="10"
     credit="15" frames="100" code="GST" contact="huangx" contrib="Bruce"/>
   <fah_proj number="4427" name="p4427_Seq_55_unf_AMBER" public="y" file="xyz"
-    server="171.64.122.72" atoms="7866" preferred="5" deadline="10"
+    server="171.64.122.78" atoms="7866" preferred="5" deadline="10"
     credit="15" frames="100" code="GST" contact="huangx" contrib="v00d00"/>
   <fah_proj number="4432" name="p4432_Seq41_Amber03" public="y" file="xyz"
     server="171.64.122.78" atoms="7885" preferred="43" deadline="63"
@@ -7384,6 +7384,9 @@
     credit="388" frames="100" code="GG2" contact="kasson"/>
   <fah_proj number="5602" name="p5602_p5600_Calmodulin" public="n"
     server="171.64.122.74" atoms="1133" preferred="2" deadline="3"
+    credit="388" frames="100" code="ND" contact="kasson"/>
+  <fah_proj number="5603" name="p5603_p5600_Calmodulin" public="n"
+    server="171.67.108.11" atoms="1133" preferred="2" deadline="3"
     credit="388" frames="100" code="ND" contact="kasson"/>
   <fah_proj number="5650" name="p5650_p5600_Calmodulin" public="n"
     server="171.64.65.103" atoms="1133" preferred="2" deadline="3"

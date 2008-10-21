@@ -70,12 +70,12 @@ public class LabelsRenderer extends ShapeRenderer {
       colix = Graphics3D.getColixInherited(colix, atom.getColix());
       if (Graphics3D.isColixTranslucent(colix))
         colix = Graphics3D.getColixTranslucent(colix, false, 0);
-      if (!g3d.setColix(colix))
-        continue;
       short bgcolix = (bgcolixes == null || i >= bgcolixes.length) ? 0
           : bgcolixes[i];
       if (bgcolix == 0 && g3d.getColixArgb(colix) == backgroundColor)
         colix = backgroundColixContrast;
+      if (!g3d.setColix(colix))
+        continue;
       byte fid = ((fids == null || i >= fids.length || fids[i] == 0) ? labels.zeroFontId
           : fids[i]);
       int offsetFull = (offsets == null || i >= offsets.length ? 0 : offsets[i]);

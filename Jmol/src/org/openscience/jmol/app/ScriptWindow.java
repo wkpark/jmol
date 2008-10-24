@@ -68,6 +68,13 @@ public final class ScriptWindow extends JDialog
   private JButton redoButton;
   JmolViewer viewer;
   
+  /*
+   * methods sendConsoleEcho, sendConsoleMessage(strStatus), notifyScriptStart(), notifyScriptTermination()
+   * are public in case developers want to use ScriptWindow separate from the Jmol application.
+   * 
+   */
+  
+
   public ScriptWindow(JmolViewer viewer, JFrame frame) {
     super(frame, GT._("Jmol Script Console"), false);
     this.viewer = viewer;
@@ -155,11 +162,11 @@ public final class ScriptWindow extends JDialog
   }
 
   boolean isError = false;
-  void setError(boolean TF) {
+  private void setError(boolean TF) {
     isError = TF;
   }
   
-  void sendConsoleMessage(String strStatus) {
+  public void sendConsoleMessage(String strStatus) {
     if (strStatus == null) {
       console.clearContent();
       console.outputStatus("");
@@ -173,12 +180,12 @@ public final class ScriptWindow extends JDialog
     }
   }
 
-  void notifyScriptStart() {
+  public void notifyScriptStart() {
     runButton.setEnabled(true);
     haltButton.setEnabled(true);
   }
 
-  void notifyScriptTermination() {
+  public void notifyScriptTermination() {
     runButton.setEnabled(true);
     haltButton.setEnabled(false);
   }

@@ -123,8 +123,9 @@ public class Test extends JPanel implements ActionListener {
       if (Str == null) {
         LogPanel
             .log("Something didn't work when selecting the file button in Test module");
+      } else {
+        LogPanel.log(Str);
       }
-      LogPanel.log(Str);
     }
     if (e.getSource() == PathButton) {// Handle getting the path to the file...
       String Str = null;
@@ -132,8 +133,9 @@ public class Test extends JPanel implements ActionListener {
       if (Str == null) {
         LogPanel
             .log("Something didn't work when selecting the Path button in Test module");
+      } else {
+        LogPanel.log(Str);
       }
-      LogPanel.log(Str);
     }
     if (e.getSource() == movetoTime) {// Handle getting the path to the file...
       String statestr = null;

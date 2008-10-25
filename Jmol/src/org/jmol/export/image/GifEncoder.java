@@ -97,7 +97,7 @@ public class GifEncoder extends ImageEncoder {
   }
 
   
-  class ColorItem {
+  static class ColorItem {
 
     AdaptiveColorCollection acc;
     int rgb;
@@ -114,13 +114,13 @@ public class GifEncoder extends ImageEncoder {
     }
   }
 
-  class ColorVector extends Vector {
+  static class ColorVector extends Vector {
     void sort() {
       CountComparator comparator = new CountComparator();
       Arrays.sort(elementData, comparator);
     }
     
-    class CountComparator implements Comparator {
+    static class CountComparator implements Comparator {
       public int compare(Object arg0, Object arg1) {
         ColorItem a = (ColorItem)arg0;
         ColorItem b = (ColorItem)arg1;
@@ -129,7 +129,7 @@ public class GifEncoder extends ImageEncoder {
     }
   }
   
-  class AdaptiveColorCollection {
+  static class AdaptiveColorCollection {
     int rgb;
     int index;
     long red;

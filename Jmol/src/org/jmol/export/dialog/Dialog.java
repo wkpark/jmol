@@ -393,7 +393,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     }
   }
 
-  public class TypeFilter extends FileFilter {
+  public static class TypeFilter extends FileFilter {
 
     String thisType;
 

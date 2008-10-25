@@ -147,7 +147,7 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     //display.repaint();
   }
 
-  private class JmolPanel extends JPanel {
+  private static class JmolPanel extends JPanel {
     JmolViewer viewer;
 
     JmolPanel(JmolAdapter modelAdapter, String appletContext) {

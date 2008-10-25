@@ -29,6 +29,7 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 
 import org.jmol.api.JmolImageCreatorInterface;
@@ -82,8 +83,9 @@ public class ImageCreator implements JmolImageCreatorInterface {
     }
     if ((isText || isBytes) && text_bytes == null)
       return "NO DATA";
+    FileOutputStream os = null;
     try {
-      FileOutputStream os = new FileOutputStream(fileName);
+      os = new FileOutputStream(fileName);
       if (isBytes) {
         os.write((byte[]) text_bytes);
         os.flush();
@@ -124,11 +126,19 @@ public class ImageCreator implements JmolImageCreatorInterface {
         os.close();
         viewer.releaseScreenImage();
       }
-    } catch (Exception exc) {
+    } catch (IOException exc) {
       viewer.releaseScreenImage();
       if (exc != null) {
         Logger.error("IO Exception", exc);
         return exc.toString();
+      }
+    } finally {
+      if (os != null) {
+        try {
+          os.close();
+        } catch (IOException e) {
+          Logger.error("IO Exception", e);
+        }
       }
     }
     return "OK " + type + " " + (new File(fileName)).length() + " " + fileName

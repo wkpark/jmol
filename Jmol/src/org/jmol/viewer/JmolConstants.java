@@ -2842,8 +2842,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     return (4 << shapeID);
   }
 
-  public static int CARTOON_VISIBILITY_FLAG = getShapeVisibilityFlag(SHAPE_CARTOON);
-  public static int ALPHA_CARBON_VISIBILITY_FLAG = CARTOON_VISIBILITY_FLAG 
+  public final static int CARTOON_VISIBILITY_FLAG = getShapeVisibilityFlag(SHAPE_CARTOON);
+  public final static int ALPHA_CARBON_VISIBILITY_FLAG = CARTOON_VISIBILITY_FLAG 
       | getShapeVisibilityFlag(SHAPE_TRACE)
       | getShapeVisibilityFlag(SHAPE_STRANDS)
       | getShapeVisibilityFlag(SHAPE_MESHRIBBON)

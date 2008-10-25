@@ -1,3 +1,4 @@
+package org.jmol;
 /* $RCSfile$
  * $Author: Maria Brandl$
  * $10.10.2005$

@@ -109,6 +109,7 @@ public class ForceFieldUFF extends ForceField {
           case '4': // square planar
           case '5': // trigonal bipyramidal -- not actually in parameterization
           case '6': // octahedral
+            break;
           }
           ffParam.iVal[0] = coord - '0';
         }

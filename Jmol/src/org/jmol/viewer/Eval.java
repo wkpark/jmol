@@ -2301,6 +2301,7 @@ class Eval {
       if (expressionResult instanceof Point3f)
         return (Point3f) expressionResult;
       error(ERROR_invalidArgument);
+      break;
     case Token.leftbrace:
     case Token.point3f:
       return getPoint3f(i, true);
@@ -2610,6 +2611,7 @@ class Eval {
         }
       }
       error(ERROR_badRGBColor);
+      break;
     case Token.point3f:
       pt = (Point3f) theToken.value;
       break;
@@ -3058,6 +3060,7 @@ class Eval {
             break;
           }
           error(ERROR_invalidArgument); // for now
+          break;
         case Token.point3f:
         case Token.leftbrace:
           rotAxis.set(getPoint3f(i, true));
@@ -3745,6 +3748,7 @@ class Eval {
       if (changeElementColor(str, argb))
         return;
       error(ERROR_invalidArgument);
+      break;
     case Token.isosurface:
       setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "thisID", JmolConstants.PREVIOUS_MESH_ID);
       //fall through
@@ -4496,6 +4500,7 @@ class Eval {
             continue;
           }
           error(ERROR_invalidArgument);
+          break;
         case Token.coord:
           params[0] = Integer.MIN_VALUE;
           if (firstLastSteps == null) {
@@ -4715,6 +4720,7 @@ class Eval {
         return;
       }
       error(ERROR_keywordExpected, "ON, OFF, DELETE");
+      break;
     case 3: //measure delete N
       if (getToken(1).tok == Token.delete) {
         if (getToken(2).tok == Token.all) {
@@ -5441,6 +5447,7 @@ class Eval {
           continue;
         }
         error(ERROR_invalidArgument);
+        break;
       case Token.select:
         bsSelected = expression(++i);
         i = iToken;
@@ -7517,6 +7524,7 @@ class Eval {
         break out;
       case Token.rightbrace:
         error(ERROR_invalidArgument);
+        break;
       case Token.comma: //ignore commas
         if (!rpn.addOp(theToken))
           error(ERROR_invalidArgument);
@@ -9910,6 +9918,7 @@ class Eval {
           continue;
         }
         error(ERROR_numberExpected);
+        break;
       case Token.times:
       case Token.identifier:
         String str = parameterAsString(i);

@@ -89,8 +89,13 @@ public class DrawRenderer extends MeshRenderer {
     }    
     if (dmesh.isVector && dmesh.haveXyPoints) {
       int ptXY = 0;
+      // [x y] or [x,y] refers to an xy point on the screen
+      // just a Point3f with z = Float.MAX_VALUE
+      //  [x y %] or [x,y %] refers to an xy point on the screen
+      // as a percent 
+      // just a Point3f with z = -Float.MAX_VALUE
       for (int i = 0; i < 2; i++)
-        if (vertices[i].z == Float.MAX_VALUE || vertices[i].z == Float.MAX_VALUE)
+        if (vertices[i].z == Float.MAX_VALUE || vertices[i].z == -Float.MAX_VALUE)
           ptXY += i + 1;
       if (--ptXY < 2) {
         renderXyArrow(ptXY);

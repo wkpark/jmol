@@ -122,7 +122,7 @@ public class PdbReader extends AtomSetCollectionReader {
           iHaveModelStatement = true;
           // PDB is different -- targets actual model number
           int modelNo = getModelNumber();
-          modelNumber = (bsModels == null ? modelNo : ++modelNumber);
+          modelNumber = (bsModels == null ? modelNo : modelNumber + 1);
           if (!doGetModel(modelNumber)) {
             if (isLastModel(modelNumber) && iHaveModel)
               break;

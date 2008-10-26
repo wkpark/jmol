@@ -5935,7 +5935,7 @@ class Eval {
           }
           if (value == null)
             continue;
-          if (translucentLevel != Float.NaN)
+          if (!Float.isNaN(translucentLevel))
             setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS, 
                 "translucentLevel", new Float(translucentLevel));
           key = "translucency";

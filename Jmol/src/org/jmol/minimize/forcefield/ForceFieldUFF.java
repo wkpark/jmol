@@ -55,8 +55,10 @@ public class ForceFieldUFF extends ForceField {
     String fileName = "UFF.prm";
     BufferedReader br = null;
     try {
-      if ((url = this.getClass().getResource(fileName)) == null)
+      if ((url = this.getClass().getResource(fileName)) == null) {
         System.err.println("Couldn't find file: " + fileName);
+        throw new NullPointerException();
+      }
       //turns out from the Jar file
       // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream
       // and within Eclipse it's a BufferedInputStream
@@ -134,8 +136,10 @@ public class ForceFieldUFF extends ForceField {
     URL url = null;
     String fileName = "UFF.prm";
     try {
-      if ((url = this.getClass().getResource(fileName)) == null)
+      if ((url = this.getClass().getResource(fileName)) == null) {
         System.err.println("Couldn't find file: " + fileName);
+        throw new NullPointerException();
+      }
 
       //turns out from the Jar file
       // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream

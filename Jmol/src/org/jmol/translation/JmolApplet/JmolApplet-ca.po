@@ -1,6 +1,7 @@
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Jmol application.
+# Copyright (C) 1998-2004 The Jmol Development Team
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Toni Hermoso Pulido <toniher@softcatala.org>, YEAR.
 #
 msgid ""
 msgstr ""

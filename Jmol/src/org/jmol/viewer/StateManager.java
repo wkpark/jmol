@@ -525,6 +525,7 @@ public class StateManager {
 
     int[] getDefaultLatticeArray() {
       int[] A = new int[4];
+      A[0] = Integer.MIN_VALUE;
       A[1] = (int) ptDefaultLattice.x;
       A[2] = (int) ptDefaultLattice.y;
       A[3] = (int) ptDefaultLattice.z;

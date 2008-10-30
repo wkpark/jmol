@@ -171,21 +171,21 @@ public class Mol2Reader extends AtomSetCollectionReader {
       setAtomCoord(atom, parseFloat(tokens[2]), parseFloat(tokens[3]),
           parseFloat(tokens[4]));
       String elementSymbol = atomType;
-      boolean deduceSymbol = (elementSymbol.length() > 1);
+      int nChar = elementSymbol.length();
+      boolean deduceSymbol = (nChar > 1);
       if (deduceSymbol) {
         char ch0 = elementSymbol.charAt(0);
         char ch1 = elementSymbol.charAt(1);
-        if (elementSymbol.length() == 2 && Character.isUpperCase(ch0)
-            && Character.isLowerCase(ch1)) {
+        boolean isUpper0 = Character.isUpperCase(ch0);
+        boolean isXx = isUpper0 && Character.isLowerCase(ch1);
+        if (isXx && nChar == 2) {
           // Generic Xx
           deduceSymbol = false;
-        } else if (elementSymbol.length() > 2 && elementSymbol.charAt(2) == '0'
-            && Character.isUpperCase(ch0) && Character.isLowerCase(ch1)) {
+        } else if (isXx && nChar > 2 && elementSymbol.charAt(2) == '0') {
           // ESFF Xx0nn
           elementSymbol = elementSymbol.substring(0, 2);
           deduceSymbol = false;
-        } else if (elementSymbol.length() > 1 && ch1 == '0'
-            && Character.isUpperCase(ch0)) {
+        } else if (isUpper0 && ch1 == '0') {
           // ESFF X0nn
           elementSymbol = elementSymbol.substring(0, 1);
           deduceSymbol = false;
@@ -200,7 +200,7 @@ public class Mol2Reader extends AtomSetCollectionReader {
             deduceSymbol = false;
           }
           if (deduceSymbol) {
-            if (elementSymbol.length() > 2)
+            if (nChar > 2)
               elementSymbol = elementSymbol.substring(0, 2);
           } else {
             if (specialTypes.indexOf(check) >= 0)

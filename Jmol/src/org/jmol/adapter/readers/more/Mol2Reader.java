@@ -144,8 +144,8 @@ public class Mol2Reader extends AtomSetCollectionReader {
   private int lastSequenceNumber = Integer.MAX_VALUE;
   private char chainID = 'A' - 1;
   //private final static String sybylTypes = " Any C.1 C.2 C.3 C.ar C.cat Co.oh Cr.oh Cr.th Cu Du Du.C Fe H.spc H.t3p Hal Het Hev LP N.1 N.2 N.3 N.4 N.am N.ar N.pl3 O.2 O.3 O.co2 O.spc O.t3p P.3 S.2 S.3 S.O S.O2 ";
-  // see http://www.chem.cmu.edu/courses/09-560/docs/msi/ffbsim/B_AtomTypes.html
-  // X and Xx symbols will always be themselves and so are not included in the lists below.
+  // see http://www.chem.cmu.edu/courses/09-560/docs/msi/ffbsim/B_AtomTypes.html last accessed 10/30/2008
+  // x, X, and Xx symbols will always be themselves and so are not included in the lists below.
   private final static String ffTypes = 
       /* AMBER   */ " C* C2 C3 CA CB CC CD CE CF CG CH CI CJ CK CM CN CP CQ CR CT CV CW H2 H3 HC HO HS HW LP N* N2 N3 NA NB NC NT O2 OH OS OW SH AH BH HT HY AC BC CS OA OB OE OT "
     + /* CFF     */ " dw hc hi hn ho hp hs hw h* h+ hscp htip ca cg ci cn co coh cp cr cs ct c1 c2 c3 c5 c3h c3m c4h c4m c' c\" c* c- c+ c= c=1 c=2 na nb nh nho nh+ ni nn np npc nr nt nz n1 n2 n3 n4 n3m n3n n4m n4n n+ n= n=1 n=2 oc oe oh op o3e o4e o' o* o- oscp otip sc sh sp s1 s3e s4e s' s- br cl f i ca+ ar si lp nu sz oz az pz ga ge tioc titd li+ na+ k+ rb+ cs+ mg2+ ca2+ ba2+ cu2+ f- cl- br- i- so4 sy oy ay ayt nac+ mg2c fe2c mn4c mn3c co2c ni2c lic+ pd2+ ti4c sr2c ca2c cly- hocl py vy nh4+ so4y lioh naoh koh foh cloh beoh al "
@@ -180,7 +180,7 @@ public class Mol2Reader extends AtomSetCollectionReader {
           deduceSymbol = false;
         } else if (elementSymbol.length() > 2 && elementSymbol.charAt(2) == '0' 
           && Character.isUpperCase(ch0) && Character.isLowerCase(ch1)) {
-          // ESFF Xx023
+          // ESFF Xx0nn
           elementSymbol = elementSymbol.substring(0, 2);
           deduceSymbol = false;
         } else {
@@ -192,7 +192,10 @@ public class Mol2Reader extends AtomSetCollectionReader {
           } else if (ffTypes.indexOf(check) >= 0) {
             deduceSymbol = false;
           }
-          if (!deduceSymbol) {
+          if (deduceSymbol) {
+            if (elementSymbol.length() > 2)
+              elementSymbol = elementSymbol.substring(0, 2);
+          } else {
             if (specialTypes.indexOf(check) >= 0)
               elementSymbol = (ch0 == 's' ? "Si" : "Al");
             else
@@ -205,8 +208,6 @@ public class Mol2Reader extends AtomSetCollectionReader {
       } else {
         elementSymbol = elementSymbol.toUpperCase();
       }
-      if (elementSymbol.length() > 2)
-        elementSymbol = elementSymbol.substring(0, 2);
       atom.elementSymbol = elementSymbol;
       // apparently "NO_CHARGES" is not strictly enforced
       //      if (iHaveCharges)

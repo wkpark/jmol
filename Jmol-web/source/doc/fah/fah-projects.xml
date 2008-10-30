@@ -4856,9 +4856,9 @@
   <fah_proj number="2495" name="p2495_system" public="y" file="xyz"
     server="171.65.103.160" atoms="97090" preferred="42" deadline="93"
     credit="905" frames="100" code="G" contact="ppetrone" contrib="Smoking2000"/>
-  <fah_proj number="2496" name="p2496_Gln_fragment_in_translocon" public="y"
+  <fah_proj number="2496" name="p2496_Gln_fragment_in_translocon" public="y" file="xyz"
     server="171.65.103.160" atoms="97139" preferred="42" deadline="93"
-    credit="905" frames="100" code="G" contact="ppetrone"/>
+    credit="905" frames="100" code="G" contact="ppetrone" contrib="Steve Pun"/>
 
   <!-- Projects 2500 to 2599 -->
   <fah_proj number="2500" name="p2500_BBA5_pfold" public="y" file="xyz"
@@ -5136,6 +5136,9 @@
   <fah_proj number="2671" name="p2671_IBX in water" public="y" file="xyz"
     server="171.67.108.24" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson" contrib="Smoking2000"/>
+  <fah_proj number="2672" name="p2672_IBX in water" public="y"
+    server="171.64.65.56" atoms="146808" preferred="3" deadline="3"
+    credit="1920" frames="100" code="GC" contact="kasson"/>
 
   <!-- Projects 2700 to 2799 -->
   <fah_proj number="2711" name="p2711_GPUlambda" public="y"
@@ -7326,8 +7329,8 @@
     server="171.64.65.83" atoms="324" preferred="3" deadline="6"
     credit="110" frames="100" code="G3" contact="ed"/>
   <fah_proj number="5311" name="p5311_Fs_peptide" public="y"
-    server="171.64.65.73" atoms="324" preferred="3" deadline="6"
-    credit="330" frames="100" code="G3" contact="ed"/>
+    server="171.64.65.83" atoms="324" preferred="3" deadline="6"
+    credit="110" frames="100" code="G3" contact="ed"/>
   <fah_proj number="5312" name="p5312_A21_ambers" public="y"
     server="171.64.65.73" atoms="222" preferred="4" deadline="6"
     credit="450" frames="100" code="G3" contact="luttmann"/>
@@ -7546,6 +7549,9 @@
   <fah_proj number="5747" name="p5747_proL_ff96_450K" public="y"
     server="171.64.65.102" atoms="973" preferred="2" deadline="3"
     credit="384" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5748" name="p5748_ACBP_ff03_300K" public="n"
+    server="171.67.108.11" atoms="1392" preferred="2" deadline="3"
+    credit="511" frames="100" code="ND" contact="vvoelz"/>
 
   <!-- Projects 5800 to 5899 -->
   <fah_proj number="5800" name="p5800_supervillin_e1" public="y"

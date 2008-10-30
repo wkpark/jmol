@@ -199,8 +199,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
 
   protected void drawLine(int iA, int iB, boolean fill) {
-    byte endCap = (iA != iB && !fill ? Graphics3D.ENDCAPS_NONE 
-        : width < 0 || isTranslucent ? Graphics3D.ENDCAPS_FLAT
+    byte endCap = (iA != iB  && !fill ? Graphics3D.ENDCAPS_NONE 
+        : width < 0 || iA != iB && isTranslucent ? Graphics3D.ENDCAPS_FLAT
         : Graphics3D.ENDCAPS_SPHERICAL);
     if (diameter == 0)
       diameter = (mesh.diameter > 0 ? mesh.diameter : iA == iB ? 6 : 3);

@@ -179,13 +179,13 @@ public class Mol2Reader extends AtomSetCollectionReader {
             && Character.isLowerCase(ch1)) {
           // Generic Xx
           deduceSymbol = false;
-        } else if (elementSymbol.length() > 2 && elementSymbol.charAt(2) == '0' 
-          && Character.isUpperCase(ch0) && Character.isLowerCase(ch1)) {
+        } else if (elementSymbol.length() > 2 && elementSymbol.charAt(2) == '0'
+            && Character.isUpperCase(ch0) && Character.isLowerCase(ch1)) {
           // ESFF Xx0nn
           elementSymbol = elementSymbol.substring(0, 2);
           deduceSymbol = false;
-        } else if (elementSymbol.length() > 1 && elementSymbol.charAt(1) == '0' 
-          && Character.isUpperCase(ch0)) {
+        } else if (elementSymbol.length() > 1 && ch1 == '0'
+            && Character.isUpperCase(ch0)) {
           // ESFF X0nn
           elementSymbol = elementSymbol.substring(0, 1);
           deduceSymbol = false;

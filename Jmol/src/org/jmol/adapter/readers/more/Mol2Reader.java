@@ -143,6 +143,20 @@ public class Mol2Reader extends AtomSetCollectionReader {
 
   private int lastSequenceNumber = Integer.MAX_VALUE;
   private char chainID = 'A' - 1;
+  //private final static String sybylTypes = " Any C.1 C.2 C.3 C.ar C.cat Co.oh Cr.oh Cr.th Cu Du Du.C Fe H.spc H.t3p Hal Het Hev LP N.1 N.2 N.3 N.4 N.am N.ar N.pl3 O.2 O.3 O.co2 O.spc O.t3p P.3 S.2 S.3 S.O S.O2 ";
+  // see http://www.chem.cmu.edu/courses/09-560/docs/msi/ffbsim/B_AtomTypes.html
+  // X and Xx symbols will always be themselves and so are not included in the lists below.
+  private final static String ffTypes = 
+      /* AMBER   */ " C* C2 C3 CA CB CC CD CE CF CG CH CI CJ CK CM CN CP CQ CR CT CV CW H2 H3 HC HO HS HW LP N* N2 N3 NA NB NC NT O2 OH OS OW SH AH BH HT HY AC BC CS OA OB OE OT "
+    + /* CFF     */ " dw hc hi hn ho hp hs hw h* h+ hscp htip ca cg ci cn co coh cp cr cs ct c1 c2 c3 c5 c3h c3m c4h c4m c' c\" c* c- c+ c= c=1 c=2 na nb nh nho nh+ ni nn np npc nr nt nz n1 n2 n3 n4 n3m n3n n4m n4n n+ n= n=1 n=2 oc oe oh op o3e o4e o' o* o- oscp otip sc sh sp s1 s3e s4e s' s- br cl f i ca+ ar si lp nu sz oz az pz ga ge tioc titd li+ na+ k+ rb+ cs+ mg2+ ca2+ ba2+ cu2+ f- cl- br- i- so4 sy oy ay ayt nac+ mg2c fe2c mn4c mn3c co2c ni2c lic+ pd2+ ti4c sr2c ca2c cly- hocl py vy nh4+ so4y lioh naoh koh foh cloh beoh al "
+    + /* CHARMM  */ " C3 C4 C5R C5RE C5RP C5RQ C6R C6RE C6RP C6RQ CE1 CF1 CF2 CF3 CG CD2 CH1E CH2E CH3E CM CP3 CPH1 CPH2 CQ66 CR55 CR56 CR66 CS66 CT CT3 CT4 CUA1 CUA2 CUA3 CUY1 CUY2 HA HC HMU HO HT LP N3 N5R N5RP N6R N6RP NC NC2 NO2 NP NR1 NR2 NR3 NR55 NR56 NR66 NT NX O2M O5R O6R OA OAC OC OE OH2 OK OM OS OSH OSI OT OW P6R PO3 PO4 PT PUA1 PUY1 S5R S6R SE SH1E SK SO1 SO2 SO3 SO4 ST ST2 ST2 "
+    + /* COMPASS */ " h1 h1+ h1h h1n h1o c c1o c2= c2t c3 c3\" c3# c3' c3- c3= c3a c3n c3o c4 c43 c44 c4o c4x n1n n1o n1t n2= n2a n2t n3 n3* n3+ n3a n3h1 n3h2 n3m n3mh n3o n4+ n4o o-2 o1- o12 o1= o1=* o1c o1n o1o o2 o2* o2a o2b o2c o2e o2h o2s o2z o3 o3z s1= s2 s2= s2a s3= s4 s4= s6 p4= br br- br1 cl cl- cl1 cl12 cl13 cl14 cl1p f f- f1 f12 f13 f14 f1p i i- i1 ca+ cu+2 fe+2 mg+2 zn+2 cs+ k+ li+ na+ rb+ al4z si si4 si4c si4z ar he kr ne xe "
+    + /* ESFF    */ " dw hi hw h* h+ ca cg ci co coh cp cr cs ct ct3 c1 c2 c3 c5 c5p c' c- c+ c= na nb nh nho ni no np nt nt2 nz n1 n2 n4 n+ n= oa oc oh op os ot o1 o' o* o- sp s1 s2d s3d s4d s4l s5l s5t s6 s6o s' s- p4d p4l p5l p5t p53 p6 p6o p' bt b' Be+ Be+2 Li+ cl' Mg+ Mg+2 Na+ si4l si5l si5t si6 si6o si' "
+    + /* GAFF    */ " br c1 c2 c3 ca cc cd ce cf cl cp cq cu cv cx cy f h1 h2 h3 h4 h5 ha hc hn ho hp hs n1 n2 n4 na nb nc nd nh oh os p2 p3 p4 p5 pb pc pd pe pf px py s2 s4 s6 sh ss sx sy "
+    + /* PCFF    */ " hn2 ho2 c_0 c_1 c_2 cz o= o_1 o_2 oo oz p= si sio hsi osi ";
+  private final static String twoChar = " LP ca+ br cl ar si lp nu br- br1 cl- cl1 cl12 cl13 cl14 cl1p cu+2 fe+2 mg+2 zn+2 cs+ li+ na+ rb+ al4z si si4 si4c si4z he kr ne xe ga ge tioc titd li+ na+ rb+ cs+ mg2+ ca2+ ba2+ cu2+ nac+ mg2c fe2c mn4c mn3c co2c ni2c lic+ pd2+ ti4c sr2c ca2c cly- lioh naoh cloh beoh al Be+ Be+2 Li+ cl' Mg+ Mg+2 Na+ si4l si5l si5t si6 si6o si' sio ";  
+  private final static String specialTypes = " sz az sy ay ayt ";
+  private final static String secondCharOnly = " AH BH AC BC ";
 
   private void readAtoms(int atomCount, boolean iHaveCharges) throws Exception {
     //     1 Cs       0.0000   4.1230   0.0000   Cs        1 RES1   0.0000
@@ -156,10 +170,41 @@ public class Mol2Reader extends AtomSetCollectionReader {
       atom.atomName = tokens[1] + '\0' + atomType;
       setAtomCoord(atom, parseFloat(tokens[2]), parseFloat(tokens[3]),
           parseFloat(tokens[4]));
-      
       String elementSymbol = atomType;
-      if (elementSymbol.length() > 1 && elementSymbol.charAt(1) == '.')
-        elementSymbol = elementSymbol.substring(0, 1);
+      boolean deduceSymbol = (elementSymbol.length() > 1);
+      if (deduceSymbol) {
+        char ch0 = elementSymbol.charAt(0);
+        char ch1 = elementSymbol.charAt(1);
+        if (elementSymbol.length() == 2 && Character.isUpperCase(ch0)
+            && Character.isLowerCase(ch1)) {
+          deduceSymbol = false;
+        } else if (elementSymbol.length() > 2 && elementSymbol.charAt(2) == '0' 
+          && Character.isUpperCase(ch0) && Character.isLowerCase(ch1)) {
+          // ESFF Xx023
+          elementSymbol = elementSymbol.substring(0, 2);
+          deduceSymbol = false;
+        } else {
+          String check = " " + elementSymbol + " ";
+          if (ch1 == '.') {
+            if (elementSymbol.equals("Du.C"))
+              ch0 = 'C';
+            deduceSymbol = false;
+          } else if (ffTypes.indexOf(check) >= 0) {
+            deduceSymbol = false;
+          }
+          if (!deduceSymbol) {
+            if (specialTypes.indexOf(check) >= 0)
+              elementSymbol = (ch0 == 's' ? "Si" : "Al");
+            else
+              elementSymbol = secondCharOnly.indexOf(check) >= 0 ? 
+                  elementSymbol.substring(1, 2)
+                  : Character.toUpperCase(ch0)
+                      + (twoChar.indexOf(check) >= 0 ? "" + ch1 : "");
+          }
+        }
+      } else {
+        elementSymbol = elementSymbol.toUpperCase();
+      }
       if (elementSymbol.length() > 2)
         elementSymbol = elementSymbol.substring(0, 2);
       atom.elementSymbol = elementSymbol;
@@ -182,7 +227,7 @@ public class Mol2Reader extends AtomSetCollectionReader {
             && JmolAdapter.lookupGroupID(atom.group3) >= 0) {
           isPDB = true;
         }
-        if (isPDB)
+        if (isPDB && deduceSymbol)
           atom.elementSymbol = deduceElementSymbol(atom.isHetero, atomType,
               atom.group3);
         //System.out.print(atom.atomName + "/" + atom.elementSymbol + " " );

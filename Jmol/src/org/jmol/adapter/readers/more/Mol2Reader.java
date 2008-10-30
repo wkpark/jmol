@@ -177,6 +177,7 @@ public class Mol2Reader extends AtomSetCollectionReader {
         char ch1 = elementSymbol.charAt(1);
         if (elementSymbol.length() == 2 && Character.isUpperCase(ch0)
             && Character.isLowerCase(ch1)) {
+          // Generic Xx
           deduceSymbol = false;
         } else if (elementSymbol.length() > 2 && elementSymbol.charAt(2) == '0' 
           && Character.isUpperCase(ch0) && Character.isLowerCase(ch1)) {
@@ -186,6 +187,7 @@ public class Mol2Reader extends AtomSetCollectionReader {
         } else {
           String check = " " + elementSymbol + " ";
           if (ch1 == '.') {
+            // SYBYL
             if (elementSymbol.equals("Du.C"))
               ch0 = 'C';
             deduceSymbol = false;
@@ -198,11 +200,11 @@ public class Mol2Reader extends AtomSetCollectionReader {
           } else {
             if (specialTypes.indexOf(check) >= 0)
               elementSymbol = (ch0 == 's' ? "Si" : "Al");
+            else if (secondCharOnly.indexOf(check) >= 0)
+              elementSymbol = elementSymbol.substring(1, 2);
             else
-              elementSymbol = secondCharOnly.indexOf(check) >= 0 ? 
-                  elementSymbol.substring(1, 2)
-                  : Character.toUpperCase(ch0)
-                      + (twoChar.indexOf(check) >= 0 ? "" + ch1 : "");
+              elementSymbol = Character.toUpperCase(ch0)
+                  + (twoChar.indexOf(check) >= 0 ? "" + ch1 : "");
           }
         }
       } else {

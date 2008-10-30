@@ -184,8 +184,8 @@ public class Mol2Reader extends AtomSetCollectionReader {
           // ESFF Xx0nn
           elementSymbol = elementSymbol.substring(0, 2);
           deduceSymbol = false;
-        } else if (elementSymbol.length() > 1 && (elementSymbol.charAt(1) == '0' 
-          && Character.isUpperCase(ch0) && Character.isUpperCase(ch0) )) {
+        } else if (elementSymbol.length() > 1 && elementSymbol.charAt(1) == '0' 
+          && Character.isUpperCase(ch0)) {
           // ESFF X0nn
           elementSymbol = elementSymbol.substring(0, 1);
           deduceSymbol = false;

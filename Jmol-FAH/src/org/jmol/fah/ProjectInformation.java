@@ -1234,7 +1234,7 @@ public class ProjectInformation {
             ((info._staticFile == null) || (!info._staticFile.contains("xyz")))) {
           if ((info._staticCore == null) || (info._staticCore.hasFile())) {
             if (!separator) {
-              outputText("Active missing beta projects: ");
+              outputText("Active missing beta projects (.xyz): ");
             }
             outputInfo("", "p" + ii, separator);
             separator = true;
@@ -1253,7 +1253,7 @@ public class ProjectInformation {
             ((info._staticFile == null) || (!info._staticFile.contains("top")))) {
           if (info._staticCore == CoreType.AMBER) {
             if (!separator) {
-              outputText("Active missing amber beta projects: ");
+              outputText("Active missing amber beta projects (.top + .trj): ");
             }
             outputInfo("", "p" + ii, separator);
             separator = true;
@@ -1275,7 +1275,7 @@ public class ProjectInformation {
             (Boolean.TRUE.equals(info._staticPublic))) {
           if ((info._staticCore == null) || (info._staticCore.hasFile())) {
             if (!separator) {
-              outputText("Active missing public projects: ");
+              outputText("Active missing public projects (.xyz): ");
             }
             outputInfo("", "p" + ii, separator);
             separator = true;
@@ -1295,7 +1295,7 @@ public class ProjectInformation {
             (Boolean.TRUE.equals(info._staticPublic))) {
           if (info._staticCore == CoreType.AMBER) {
             if (!separator) {
-              outputText("Active missing amber public projects: ");
+              outputText("Active missing amber public projects (.top + .trj): ");
             }
             outputInfo("", "p" + ii, separator);
             separator = true;

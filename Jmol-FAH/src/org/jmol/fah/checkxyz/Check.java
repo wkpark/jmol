@@ -52,20 +52,24 @@ import javax.swing.JOptionPane;
 public class Check implements ActionListener {
 
   private boolean forceConfig = false;
-  private boolean availableFilesDownloaded = false;
+  private boolean availableProjectsDownloaded = false;
+  private boolean availableAmbersDownloaded = false;
   private Configuration configuration = new Configuration();
 
-  private FileFilter fileFilter = null;
+  private FileFilter projectFilter = null;
   private File availableProjects = null;
+  private File availableAmbers = null;
   private Vector existingProjects = new Vector();
+  private Vector existingAmbers = new Vector();
   private boolean showSentProjects = false;
   private Vector sentProjects = new Vector();
+  private Vector sentAmbers = new Vector();
 
   /**
    * Constructor. 
    */
   public Check() {
-    fileFilter = new FileFilter() {
+    projectFilter = new FileFilter() {
       public boolean accept(File file) {
         if (file == null) {
           return false;
@@ -82,10 +86,11 @@ public class Check implements ActionListener {
     File configDirectory = new File(new File(System.getProperty("user.home")), ".jmol");
     configDirectory.mkdirs();
     availableProjects = new File(configDirectory, "availableProjects");
+    availableAmbers = new File(configDirectory, "availableAmbers");
   }
 
   /**
-   * Check for missing XYZ files.
+   * Check for missing files.
    * 
    * @param args Command line arguments
    */
@@ -104,7 +109,7 @@ public class Check implements ActionListener {
   }
 
   /**
-   * Check for missing XYZ files.
+   * Check for missing files.
    */
   private void process() {
     configuration.loadConfiguration();
@@ -124,7 +129,7 @@ public class Check implements ActionListener {
   }
 
   /**
-   * Process all directories for XYZ files. 
+   * Process all directories for files. 
    */
   public void processDirectories() {
     if (configuration.getDirectories() != null) {
@@ -133,21 +138,35 @@ public class Check implements ActionListener {
         processDirectory(iter.next().toString());
       }
     }
-    String message = null;
+    StringBuffer message = new StringBuffer();
     if ((sentProjects != null) && (!sentProjects.isEmpty())) {
-      message = "" + sentProjects.size() + " sent (";
+      message.append(sentProjects.size());
+      message.append(" .xyz files sent (");
       for (int i = 0; i < sentProjects.size(); i++) {
         if (i != 0) {
-          message += ", ";
+          message.append(", ");
         }
-        message += sentProjects.get(i).toString();
+        message.append(sentProjects.get(i).toString());
       }
     } else {
-      message = "No new projets found";
+      message.append("No new .xyz files found");
+    }
+    message.append("\n");
+    if ((sentAmbers != null) && (!sentAmbers.isEmpty())) {
+      message.append(sentAmbers.size());
+      message.append(" .top/.trj files sent (");
+      for (int i = 0; i < sentAmbers.size(); i++) {
+        if (i != 0) {
+          message.append(", ");
+        }
+        message.append(sentAmbers.get(i).toString());
+      }
+    } else {
+      message.append("No new .top/.trj files found");
     }
     if (showSentProjects) {
       JOptionPane.showMessageDialog(
-          null, message, "Result", JOptionPane.INFORMATION_MESSAGE);
+          null, message.toString(), "Result", JOptionPane.INFORMATION_MESSAGE);
       System.exit(0);
     } else {
       System.out.println(message);
@@ -155,7 +174,7 @@ public class Check implements ActionListener {
   }
 
   /**
-   * Process a directory for XYZ files.
+   * Process a directory for files.
    * 
    * @param directory Directory to process.
    */
@@ -169,7 +188,7 @@ public class Check implements ActionListener {
     if ((directory == null) || (!directory.isDirectory())) {
       return;
     }
-    File[] files = directory.listFiles(fileFilter);
+    File[] files = directory.listFiles(projectFilter);
     if (files == null) {
       return;
     }
@@ -334,7 +353,7 @@ public class Check implements ActionListener {
       System.out.print("Already sent by you");
       return;
     }
-    if (!availableProjects.exists()) {
+    if ((!availableProjects.exists()) || (!availableAmbersDownloaded)) {
       downloadAvailableFiles();
     }
     updateExistingProjects();
@@ -342,7 +361,7 @@ public class Check implements ActionListener {
       System.out.print("Project available on Jmol website");
       return;
     }
-    if (!availableFilesDownloaded) {
+    if ((!availableProjectsDownloaded) || (!availableAmbersDownloaded)) {
       downloadAvailableFiles();
       updateExistingProjects();
       if (existingProjects.contains(project)) {
@@ -364,51 +383,73 @@ public class Check implements ActionListener {
    * Update the list of existing projects in memory.
    */
   private void updateExistingProjects() {
-    if ((!availableProjects.exists()) || (!existingProjects.isEmpty())) {
-      return;
-    }
-    BufferedReader reader = null;
-    try {
-      reader = new BufferedReader(new FileReader(availableProjects));
-      String line;
-      while ((line = reader.readLine()) != null) {
-        line = line.trim();
-        existingProjects.add(line);
+    if (availableProjects.exists() && existingProjects.isEmpty()) {
+      BufferedReader reader = null;
+      try {
+        reader = new BufferedReader(new FileReader(availableProjects));
+        String line;
+        while ((line = reader.readLine()) != null) {
+          line = line.trim();
+          existingProjects.add(line);
+        }
+      } catch (FileNotFoundException e) {
+        outputError("Reading local available projects", e);
+      } catch (IOException e) {
+        outputError("Reading local available projects", e);
+      } finally {
+        if (reader != null) {
+          try {
+            reader.close();
+          } catch (IOException e) {
+            // Nothing
+          }
+        }
       }
-    } catch (FileNotFoundException e) {
-      outputError("Reading local available projects", e);
-    } catch (IOException e) {
-      outputError("Reading local available projects", e);
-    } finally {
-      if (reader != null) {
-        try {
-          reader.close();
-        } catch (IOException e) {
-          // Nothing
+    }
+    if (availableAmbers.exists() && existingAmbers.isEmpty()) {
+      BufferedReader reader = null;
+      try {
+        reader = new BufferedReader(new FileReader(availableAmbers));
+        String line;
+        while ((line = reader.readLine()) != null) {
+          line = line.trim();
+          existingAmbers.add(line);
+        }
+      } catch (FileNotFoundException e) {
+        outputError("Reading local available ambers", e);
+      } catch (IOException e) {
+        outputError("Reading local available ambers", e);
+      } finally {
+        if (reader != null) {
+          try {
+            reader.close();
+          } catch (IOException e) {
+            // Nothing
+          }
         }
       }
     }
   }
 
   /**
-   * Download the list of available files from http://www.jmol.org/
+   * Download a file locally.
+   * 
+   * @param inputFile Input file.
+   * @param outputFile Output file.
+   * @return Flag indicating if the download was successful.
    */
-  private void downloadAvailableFiles() {
-    if (availableFilesDownloaded) {
-      return;
-    }
+  private boolean downloadFile(String inputFile, File outputFile) {
     OutputStream os = null;
     InputStream is = null;
     try {
-      os = new BufferedOutputStream(new FileOutputStream(availableProjects, false));
-      URL url = new URL("http://www.jmol.org/fah/availableProjects.txt");
+      os = new BufferedOutputStream(new FileOutputStream(outputFile, false));
+      URL url = new URL(inputFile);
       is = new BufferedInputStream(url.openStream());
       int read = -1;
       while ((read = is.read()) != -1) {
         os.write(read);
       }
-      availableFilesDownloaded = true;
-      existingProjects.clear();
+      return true;
     } catch (MalformedURLException e) {
       outputError("Downloading available files", e);
     } catch (IOException e) {
@@ -427,6 +468,25 @@ public class Check implements ActionListener {
         } catch (IOException e) {
           outputError("Closing InputStream", e);
         }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Download the list of available files from http://www.jmol.org/
+   */
+  private void downloadAvailableFiles() {
+    if (!availableProjectsDownloaded) {
+      availableProjectsDownloaded = downloadFile("http://www.jmol.org/fah/availableProjects.txt", availableProjects);
+      if (availableProjectsDownloaded) {
+        existingProjects.clear();
+      }
+    }
+    if (!availableAmbersDownloaded) {
+      availableAmbersDownloaded = downloadFile("http://www.jmol.org/fah/availableAmber.txt", availableAmbers);
+      if (availableAmbersDownloaded) {
+        existingAmbers.clear();
       }
     }
   }

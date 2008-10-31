@@ -178,18 +178,18 @@ public class Mol2Reader extends AtomSetCollectionReader {
       if (deduceSymbol) {
         char ch0 = elementSymbol.charAt(0);
         char ch1 = elementSymbol.charAt(1);
+        boolean isXx = (Character.isUpperCase(ch0) && Character
+            .isLowerCase(ch1));
         if (specialTypes.indexOf(elementSymbol) >= 0) {
           elementSymbol = (ch0 == 's' ? "Si" : "Al");
-        } else if (nChar == 2 && Character.isUpperCase(ch0) 
-            && Character.isLowerCase(ch1)) {
+        } else if (nChar == 2 && isXx) {
           // Generic Xx
           deduceSymbol = false;
         } else if (Character.isLetter(ch0) && !Character.isLetter(ch1)) {
           // Xn... or xn...
           elementSymbol = "" + Character.toUpperCase(ch0);
           deduceSymbol = false;
-        } else if (nChar > 2 && Character.isUpperCase(ch0)
-            && Character.isLowerCase(ch1)
+        } else if (nChar > 2 && isXx
             && !Character.isLetter(elementSymbol.charAt(2))) {
           // Xxn.... (but not XXn... or xxn....)
           elementSymbol = "" + ch0 + ch1;

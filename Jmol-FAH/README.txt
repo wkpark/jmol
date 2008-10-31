@@ -1,10 +1,14 @@
 This project contains tools related to Jmol working with Folding@Home
 http://folding.stanford.edu
 
-The tools are :
+The tools are described below.
+To run them, you need to have Java installed on your computer.
 
 ==> CheckXYZ <==
 This tools checks if you have "current.xyz" files for projects that are missing on http://www.jmol.org/fah.
+To run it, either :
+- Double-click on JmolFah.jar
+- Execute the command java -jar JmolFah.jar
 
 ==> ProjectInformation <==
 This tools checks the project list in Jmol-web.

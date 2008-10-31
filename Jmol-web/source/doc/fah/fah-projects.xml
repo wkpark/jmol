@@ -2143,7 +2143,7 @@
   <fah_proj number="894" name="p894_p53MDM2_gb" public="y" file="xyz"
     server="130.49.240.81" atoms="1681" preferred="135" deadline="203"
     credit="743" frames="100" code="A" contact="ltchong" contrib="Torstein"/>
-  <fah_proj number="895" name="p895_p53peptides_gb" public="y" file="xyz"
+  <fah_proj number="895" name="p895_p53peptides_gb" public="y" file="top,xyz"
     server="130.49.240.81" atoms="227" preferred="10" deadline="45"
     credit="165" frames="100" code="A" contact="ltchong" contrib="konpas1986"/>
   <fah_proj number="896" name="p896_p53longpeptides_GB" public="y" file="xyz"
@@ -5139,9 +5139,9 @@
   <fah_proj number="2672" name="p2672_IBX in water" public="y"
     server="171.64.65.56" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson"/>
-  <fah_proj number="2673" name="p2673_IBX in water" public="n"
+  <fah_proj number="2673" name="p2673_IBX in water" public="n" file="xyz"
     server="171.67.108.24" atoms="146808" preferred="6" deadline="6"
-    credit="3840" frames="100" code="GC" contact="kasson"/>
+    credit="3840" frames="100" code="GC" contact="kasson" contrib="Ivoshiee"/>
 
   <!-- Projects 2700 to 2799 -->
   <fah_proj number="2711" name="p2711_GPUlambda" public="y"
@@ -6596,9 +6596,9 @@
   <fah_proj number="4433" name="p4433_Seq41_Amber03_Native" public="y" file="xyz"
     server="171.64.122.82" atoms="7885" preferred="2" deadline="2"
     credit="893" frames="100" code="GC" contact="gbowman" contrib="Smoking2000"/>
-  <fah_proj number="4434" name="p4434_Seq42_Amber03" public="n"
+  <fah_proj number="4434" name="p4434_Seq42_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7864" preferred="43" deadline="63"
-    credit="225" frames="100" code="G" contact="gbowman"/>
+    credit="225" frames="100" code="G" contact="gbowman" contrib="John Deas,MstrBlstr"/>
 
   <!-- Projects 4500 to 4599 -->
   <fah_proj number="4507" name="p4507_PTL-8_minout" public="n" file="xyz"

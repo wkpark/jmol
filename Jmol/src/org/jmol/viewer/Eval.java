@@ -4290,11 +4290,7 @@ class Eval {
     int nFiles = 1;
     Point3f unitCells = viewer.getDefaultLattice();
     Hashtable htParams = new Hashtable();
-    if (viewer.getApplySymmetryToBonds())
-      htParams.put("applySymmetryToBonds", Boolean.TRUE);
     htParams.put("params", params);
-    if (viewer.getPdbLoadInfo(2))
-      htParams.put("getHeader", Boolean.TRUE);
     //params[0] will be a designated model number or -1 for a trajectory
     params[1] = (int) unitCells.x;
     params[2] = (int) unitCells.y;

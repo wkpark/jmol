@@ -453,6 +453,7 @@ public class StateManager {
     boolean appendNew = true;
     String appletProxy = "";
     boolean applySymmetryToBonds = false; //new 11.1.29
+    String atomTypes = "";
     boolean autoBond = true;
     short bondRadiusMilliAngstroms = JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS;
     float bondTolerance = JmolConstants.DEFAULT_BOND_TOLERANCE;
@@ -488,6 +489,8 @@ public class StateManager {
       appendCmd(str, "set appendNew " + appendNew);
       appendCmd(str, "set appletProxy " + Escape.escape(appletProxy));
       appendCmd(str, "set applySymmetryToBonds " + applySymmetryToBonds);
+      if (atomTypes.length() > 0)
+        appendCmd(str, "set atomTypes " + Escape.escape(atomTypes));
       if (axesOrientationRasmol)
         appendCmd(str, "set axesOrientationRasmol true");
       appendCmd(str, "set bondRadiusMilliAngstroms " + bondRadiusMilliAngstroms);
@@ -749,7 +752,7 @@ public class StateManager {
     //this is a final static String. MAKE SURE ALL ENTRIES ARE LOWERCASE!
     //
     ";ambientpercent;animationfps"
-        + ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor"
+        + ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;atomtypes;axescolor"
         + ";axesposition;axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color"
         + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
         + ";debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
@@ -1103,6 +1106,7 @@ public class StateManager {
       setParameterValue("appletProxy", appletProxy);
       setParameterValue("applySymmetryToBonds", applySymmetryToBonds);
       setParameterValue("atomPicking", atomPicking);
+      setParameterValue("atomTypes", atomTypes);
       setParameterValue("autoBond", autoBond);
       setParameterValue("autoFps", autoFps);
       setParameterValue("axesMode", axesMode);

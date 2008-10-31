@@ -1522,6 +1522,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     fileManager.addLoadScript(script);
   }
 
+  private Hashtable setLoadParameters(Hashtable htParams) {
+    if (htParams == null)
+      htParams = new Hashtable();
+    if (global.atomTypes.length() > 0)
+      htParams.put("atomTypes", global.atomTypes);
+    if (htParams.get("params") == null)
+      htParams.put("params", global.getDefaultLatticeArray());
+    if (global.applySymmetryToBonds)
+      htParams.put("applySymmetryToBonds", Boolean.TRUE);
+    if (getPdbLoadInfo(2))
+      htParams.put("getHeader", Boolean.TRUE);
+    return htParams;
+  }
+  
   public void openFile(String name) {
     //Jmol app file dropper, main, OpenUrlAction, RecentFilesAction
     boolean allowScript = (!name.startsWith("\t"));
@@ -1551,7 +1565,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!isAppend && name.charAt(0) != '?')
       zap(false, false);
     Logger.startTimer();
-    fileManager.openFile(name, htParams, loadScript, isAppend);
+    fileManager.openFile(name, setLoadParameters(htParams), loadScript, isAppend);
     Logger.checkTimer("openFile(" + name + ")");
     setStatusFileLoaded(1, name, "", getModelSetName(), null);
   }
@@ -1568,7 +1582,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // keep old screen image while new file is being loaded
     // forceRefresh();
     long timeBegin = System.currentTimeMillis();
-    fileManager.openFiles(modelName, names, loadScript, isAppend, htParams);
+    fileManager.openFiles(modelName, names, loadScript, isAppend, 
+        setLoadParameters(htParams));
     long ms = System.currentTimeMillis() - timeBegin;
     for (int i = 0; i < names.length; i++) {
       setStatusFileLoaded(1, names[i], "", getModelSetName(), null);
@@ -1586,7 +1601,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //loadInline, openFile, openStringInline
     if (!isAppend)
       clear();
-    fileManager.openStringInline(strModel, htParams, isAppend);
+    fileManager.openStringInline(strModel, setLoadParameters(htParams), isAppend);
     String errorMsg = getOpenFileError(isAppend);
     if (errorMsg == null)
       setStatusFileLoaded(1, "string", "", getModelSetName(), null);
@@ -1598,7 +1613,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //loadInline, openFile, openStringInline
     if (!isAppend)
       clear();
-    fileManager.openStringsInline(arrayModels, htParams, isAppend);
+    fileManager.openStringsInline(arrayModels, setLoadParameters(htParams), isAppend);
     String errorMsg = getOpenFileError(isAppend);
     if (errorMsg == null)
       setStatusFileLoaded(1, "string[]", "", getModelSetName(), null);
@@ -1626,12 +1641,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (strModel == null)
       return false;
     int i;
-    int[] params = global.getDefaultLatticeArray();
-    Hashtable A = new Hashtable();
-    A.put("params", params);
-    if (global.applySymmetryToBonds)
-      A.put("applySymmetryToBonds", Boolean.TRUE);
-
+    Hashtable htParams = new Hashtable();
     Logger.debug(strModel);
     if (newLine != 0 && newLine != '\n') {
       int len = strModel.length();
@@ -1656,10 +1666,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         strModels[i] = strModel.substring(pt0, pt);
         pt0 = pt + datasep.length();
       }
-      openStringsInline(strModels, A, isAppend);
+      openStringsInline(strModels, htParams, isAppend);
       return true;
     }
-    return openStringInline(strModel, A, isAppend);
+    return openStringInline(strModel, htParams, isAppend);
   }
 
   String getDataSeparator() {
@@ -1673,14 +1683,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void loadInline(String[] arrayModels, boolean isAppend) {
     //Eval data
     //loadInline
-    if (arrayModels == null || arrayModels.length == 0)
-      return;
-    int[] params = global.getDefaultLatticeArray();
-    Hashtable A = new Hashtable();
-    A.put("params", params);
-    if (global.applySymmetryToBonds)
-      A.put("applySymmetryToBonds", Boolean.TRUE);
-    openStringsInline(arrayModels, A, isAppend);
+    if (arrayModels != null && arrayModels.length != 0)
+      openStringsInline(arrayModels, null, isAppend);
   }
 
   public boolean getApplySymmetryToBonds() {
@@ -4114,6 +4118,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean notFound = false;
     while (true) {
 
+      // 11.7.7
+      if (key.equalsIgnoreCase("atomTypes")) {
+        global.atomTypes = value;
+        break;
+      }
+      
       ///11.6.RC15
       if (key.equalsIgnoreCase("currentLocalPath"))
         break;

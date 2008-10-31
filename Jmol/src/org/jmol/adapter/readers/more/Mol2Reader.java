@@ -27,6 +27,7 @@ package org.jmol.adapter.readers.more;
 import org.jmol.adapter.smarter.*;
 
 import java.io.BufferedReader;
+import java.util.Properties;
 
 import org.jmol.api.JmolAdapter;
 
@@ -160,10 +161,17 @@ public class Mol2Reader extends AtomSetCollectionReader {
   private final static String specialTypes = " sz az sy ay ayt ";
   private final static String secondCharOnly = " AH BH AC BC ";
 
+  private String userAtomTypes;
+  // cache atom types
+  private Properties atomTypes = new Properties();
+  
   private void readAtoms(int atomCount, boolean iHaveCharges) throws Exception {
     //     1 Cs       0.0000   4.1230   0.0000   Cs        1 RES1   0.0000
     //  1 C1          7.0053   11.3096   -1.5429 C.3       1 <0>        -0.1912
     // free format, but no blank lines
+    userAtomTypes = (String) htParams.get("atomTypes");
+    if (userAtomTypes != null)
+      userAtomTypes = ";" + userAtomTypes + ";";
     for (int i = 0; i < atomCount; ++i) {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens(readLine());
@@ -172,37 +180,38 @@ public class Mol2Reader extends AtomSetCollectionReader {
       atom.atomName = tokens[1] + '\0' + atomType;
       setAtomCoord(atom, parseFloat(tokens[2]), parseFloat(tokens[3]),
           parseFloat(tokens[4]));
-      String elementSymbol = atomType;
-      int nChar = elementSymbol.length();
+      int nChar = atomType.length();
       boolean deduceSymbol = (nChar > 1);
-      if (deduceSymbol) {
-        char ch0 = elementSymbol.charAt(0);
-        char ch1 = elementSymbol.charAt(1);
+      String elementSymbol = (deduceSymbol ? (String) atomTypes.get(atomType)
+          : atomType.toUpperCase());
+      if (elementSymbol == null) {
+        char ch0 = atomType.charAt(0);
+        char ch1 = atomType.charAt(1);
         boolean isXx = (Character.isUpperCase(ch0) && Character
             .isLowerCase(ch1));
-        if (specialTypes.indexOf(elementSymbol) >= 0) {
+        int ptType;
+        if (userAtomTypes != null
+            && (ptType = userAtomTypes.indexOf(";" + atomType + "=>")) >= 0) {
+          ptType += nChar + 3;
+          elementSymbol = userAtomTypes.substring(ptType, userAtomTypes.indexOf(";", ptType)).trim();
+        } else if (specialTypes.indexOf(atomType) >= 0) {
           // zeolite Si or Al
           elementSymbol = (ch0 == 's' ? "Si" : "Al");
         } else if (nChar == 2 && isXx) {
           // Generic Xx
-          deduceSymbol = false;
         } else if (Character.isLetter(ch0) && !Character.isLetter(ch1)) {
           // Xn... or xn...
           elementSymbol = "" + Character.toUpperCase(ch0);
-          deduceSymbol = false;
         } else if (nChar > 2 && isXx
-            && !Character.isLetter(elementSymbol.charAt(2))) {
+            && !Character.isLetter(atomType.charAt(2))) {
           // Xxn.... (but not XXn... or xxn....)
           elementSymbol = "" + ch0 + ch1;
-          deduceSymbol = false;
         } else {
           // must check list
           ch0 = Character.toUpperCase(ch0);
-          String check = " " + elementSymbol + " ";
-          deduceSymbol = (ffTypes.indexOf(check) < 0);
-          if (deduceSymbol) {
+          String check = " " + atomType + " ";
+          if (ffTypes.indexOf(check) < 0) {
             // not on the list
-            elementSymbol = "" + ch0 + Character.toLowerCase(ch1);
           } else if (secondCharOnly.indexOf(check) >= 0) {
             // AH BH AC BC 
             elementSymbol = "" + ch1;
@@ -214,9 +223,14 @@ public class Mol2Reader extends AtomSetCollectionReader {
             elementSymbol = "" + ch0;
           }
         }
+        if (elementSymbol == null) {
+          elementSymbol = "" + ch0 + Character.toLowerCase(ch1);
+        } else {
+          atomTypes.put(atomType, elementSymbol);
+          deduceSymbol = false;
+        }
       } else {
-        // any single character
-        elementSymbol = elementSymbol.toUpperCase();
+        deduceSymbol = false;
       }
       atom.elementSymbol = elementSymbol;
       // apparently "NO_CHARGES" is not strictly enforced

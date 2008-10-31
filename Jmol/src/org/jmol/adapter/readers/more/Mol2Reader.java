@@ -156,7 +156,7 @@ public class Mol2Reader extends AtomSetCollectionReader {
     + /* ESFF    */ " dw hi hw ca cg ci co coh cp cr cs ct ct3 na nb nh nho ni no np nt nt2 nz oa oc oh op os ot sp bt cl' si4l si5l si5t si6 si6o si' "
     + /* GAFF    */ " br ca cc cd ce cf cl cp cq cu cv cx cy ha hc hn ho hp hs na nb nc nd nh oh os pb pc pd pe pf px py sh ss sx sy "
     + /* PCFF    */ " hn2 ho2 cz oo oz si sio hsi osi ";
-  private final static String twoChar = " LP ca+ br cl ar si lp nu br- br1 cl- cl1 cl12 cl13 cl14 cl1p cu+2 fe+2 mg+2 zn+2 cs+ li+ na+ rb+ al4z si si4 si4c si4z he kr ne xe ga ge tioc titd li+ na+ rb+ cs+ mg2+ ca2+ ba2+ cu2+ nac+ mg2c fe2c mn4c mn3c co2c ni2c lic+ pd2+ ti4c sr2c ca2c cly- lioh naoh cloh beoh al Be+ Be+2 Li+ cl' Mg+ Mg+2 Na+ si4l si5l si5t si6 si6o si' sio ";  
+  private final static String twoChar = " al al4z ar ba2+ beoh br br- br1 ca+ ca2+ ca2c cl cl' cl- cl1 cl12 cl13 cl14 cl1p cloh cly- co2c cs+ cu+2 cu2+ fe+2 fe2c ga ge he kr li+ lic+ lioh lp LP mg+2 mg2+ mg2c mn3c mn4c na+ nac+ naoh ne ni2c nu pd2+ rb+ si si' si4 si4c si4l si4z si5l si5t si6 si6o sio sr2c ti4c tioc titd xe zn+2 ";  
   private final static String specialTypes = " sz az sy ay ayt ";
   private final static String secondCharOnly = " AH BH AC BC ";
 

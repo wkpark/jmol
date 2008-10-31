@@ -178,7 +178,10 @@ public class Mol2Reader extends AtomSetCollectionReader {
       if (deduceSymbol) {
         char ch0 = elementSymbol.charAt(0);
         char ch1 = elementSymbol.charAt(1);
-        if (nChar == 2 && Character.isUpperCase(ch0)
+        String check = " " + elementSymbol + " ";
+        if (specialTypes.indexOf(check) >= 0)
+          elementSymbol = (ch0 == 's' ? "Si" : "Al");
+        else if (nChar == 2 && Character.isUpperCase(ch0)
             && Character.isLowerCase(ch1)) {
           // Generic Xx
           deduceSymbol = false;
@@ -190,30 +193,17 @@ public class Mol2Reader extends AtomSetCollectionReader {
             && Character.isLowerCase(ch1)
             && !Character.isLetter(elementSymbol.charAt(2))) {
           // Xxn.... (but not XXn... or xxn....)
-          elementSymbol = "" + Character.toUpperCase(ch0)
-              + Character.toLowerCase(ch1);
+          elementSymbol = "" + ch0 + ch1;
           deduceSymbol = false;
         } else {
-          String check = " " + elementSymbol + " ";
-          if (ch1 == '.') {
-            // SYBYL
-            if (elementSymbol.equals("Du.C"))
-              ch0 = 'C';
-            deduceSymbol = false;
-          } else if (ffTypes.indexOf(check) >= 0) {
-            deduceSymbol = false;
-          }
+          deduceSymbol = (ffTypes.indexOf(check) < 0);
           ch0 = Character.toUpperCase(ch0);
           if (deduceSymbol) {
-            if (nChar > 2)
-              elementSymbol = "" + ch0 + Character.toLowerCase(ch1);
+            elementSymbol = "" + ch0 + Character.toLowerCase(ch1);
+          } else if (secondCharOnly.indexOf(check) >= 0) {
+            elementSymbol = "" + ch1;
           } else {
-            if (specialTypes.indexOf(check) >= 0)
-              elementSymbol = (ch0 == 'S' ? "Si" : "Al");
-            else if (secondCharOnly.indexOf(check) >= 0)
-              elementSymbol = "" + ch1;
-            else
-              elementSymbol = ch0 + (twoChar.indexOf(check) >= 0 ? "" + ch1 : "");
+            elementSymbol = ch0 + (twoChar.indexOf(check) >= 0 ? "" + ch1 : "");
           }
         }
       } else {

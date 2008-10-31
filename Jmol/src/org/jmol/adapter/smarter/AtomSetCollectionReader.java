@@ -648,7 +648,7 @@ public abstract class AtomSetCollectionReader {
         && ch2 <= 'H' || XX.startsWith("CM"))
       return "" + ch1;
     if (isHetero && Atom.isValidElementSymbolNoCaseSecondChar(ch1, ch2))
-      return (isHetero || ch1 != 'H' ? ("" + ch1 + ch2).trim() : "H");
+      return ("" + ch1 + ch2).trim();
     if (Atom.isValidElementSymbol(ch1))
       return "" + ch1;
     if (Atom.isValidElementSymbol(ch2))

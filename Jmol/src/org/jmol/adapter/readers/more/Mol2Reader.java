@@ -178,8 +178,7 @@ public class Mol2Reader extends AtomSetCollectionReader {
       if (deduceSymbol) {
         char ch0 = elementSymbol.charAt(0);
         char ch1 = elementSymbol.charAt(1);
-        String check = " " + elementSymbol + " ";
-        if (specialTypes.indexOf(check) >= 0) {
+        if (specialTypes.indexOf(elementSymbol) >= 0) {
           elementSymbol = (ch0 == 's' ? "Si" : "Al");
         } else if (nChar == 2 && Character.isUpperCase(ch0) 
             && Character.isLowerCase(ch1)) {
@@ -198,6 +197,7 @@ public class Mol2Reader extends AtomSetCollectionReader {
         } else {
           // must check list
           ch0 = Character.toUpperCase(ch0);
+          String check = " " + elementSymbol + " ";
           deduceSymbol = (ffTypes.indexOf(check) < 0);
           if (deduceSymbol) {
             // not on the list

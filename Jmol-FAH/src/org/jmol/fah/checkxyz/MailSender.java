@@ -38,17 +38,17 @@ public class MailSender {
 
   private Configuration config;
   private String projectNum;
-  private File projectFile;
+  private File[] projectFiles;
   private boolean testing;
 
   public MailSender(
       Configuration configuration,
       String project,
-      File file,
+      File[] files,
       boolean test) {
     config = configuration;
     projectNum = project;
-    projectFile = file;
+    projectFiles = files;
     testing = test;
   }
 
@@ -76,13 +76,13 @@ public class MailSender {
     if (testing) {
       email.addTo(config.getUserMail(), config.getUserName());
     } else {
-      email.addTo("nico@jmol.org", "FoldingAtHome XYZ Files");
+      email.addTo("nico@jmol.org", "FoldingAtHome Files");
       email.addCc(config.getUserMail(), config.getUserName());
     }
     email.setFrom(config.getUserMail(), config.getUserName());
-    email.setSubject("FoldingAtHome XYZ file for project " + projectNum);
+    email.setSubject("FoldingAtHome file(s) for project " + projectNum);
     email.setMsg(
-        "This mail contains the XYZ file for project " + projectNum + ".\n" +
+        "This mail contains file(s) for project " + projectNum + ".\n" +
         "It has been submitted by " + config.getUserName());
     if ((config.getLogin() != null) && (!config.getLogin().equals("")) &&
         (config.getPassword() != null) && (!config.getPassword().equals(""))) {
@@ -92,12 +92,18 @@ public class MailSender {
     }
 
     // Create the attachments
-    EmailAttachment attachment = new EmailAttachment();
-    attachment.setPath(projectFile.getAbsolutePath());
-    attachment.setDisposition(EmailAttachment.ATTACHMENT);
-    attachment.setDescription("FoldingAtHome XYZ file for project " + projectNum);
-    attachment.setName(projectFile.getName());
-    email.attach(attachment);
+    if (projectFiles != null) {
+      for (int i = 0; i < projectFiles.length; i++) {
+        if (projectFiles[i] != null) {
+          EmailAttachment attachment = new EmailAttachment();
+          attachment.setPath(projectFiles[i].getAbsolutePath());
+          attachment.setDisposition(EmailAttachment.ATTACHMENT);
+          attachment.setDescription("FoldingAtHome file for project " + projectNum);
+          attachment.setName(projectFiles[i].getName());
+          email.attach(attachment);
+        }
+      }
+    }
 
     // Send
     email.send();

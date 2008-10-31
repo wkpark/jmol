@@ -148,6 +148,7 @@ public class Check implements ActionListener {
         }
         message.append(sentProjects.get(i).toString());
       }
+      message.append(")");
     } else {
       message.append("No new .xyz files found");
     }
@@ -161,6 +162,7 @@ public class Check implements ActionListener {
         }
         message.append(sentAmbers.get(i).toString());
       }
+      message.append(")");
     } else {
       message.append("No new .top/.trj files found");
     }
@@ -219,7 +221,7 @@ public class Check implements ActionListener {
     if (project == null) {
       System.out.print("Unable to find project number");
     } else {
-      System.out.print("Project n°" + project + " -> ");
+      System.out.print("Project n" + project + " -> ");
       processProjectNumber(file, project);
     }
     System.out.println();
@@ -349,31 +351,112 @@ public class Check implements ActionListener {
    * @param project Project identifier.
    */
   private void processProjectNumber(File file, String project) {
-    if (configuration.hasBeenSent(project)) {
+    if ((file == null) || (project == null)) {
+      return;
+    }
+    
+    // Checking for Amber files
+    File topologyFile = null;
+    File trajectoryFile = null;
+    File logFile = null;
+    boolean pourcentEnough = false;
+    if (file.isFile() && "current.xyz".equalsIgnoreCase(file.getName())) {
+      for (int i = 0; (i < 10) && !pourcentEnough; i++) {
+        Object[] objects = new Object[] { Integer.valueOf(i) };
+        File infoFile = new File(file.getParentFile(), String.format("wuinfo_%1$02d.dat", objects));
+        if (infoFile.exists()) {
+          topologyFile = new File(file.getParentFile(), String.format("wudata_%1$02d.top", objects));
+          trajectoryFile = new File(file.getParentFile(), String.format("wudata_%1$02d.trj", objects));
+          logFile = new File(file.getParentFile(), String.format("logfile_%1$02d.txt", objects));
+          if (topologyFile.exists() && trajectoryFile.exists() && logFile.exists()) {
+            try {
+              BufferedReader reader = new BufferedReader(new FileReader(logFile));
+              try {
+                String line = null;
+                while (!pourcentEnough && (line = reader.readLine()) != null) {
+                  if (line != null) {
+                    if (line.contains("90%") ||
+                        line.contains("91%") ||
+                        line.contains("92%") ||
+                        line.contains("93%") ||
+                        line.contains("94%") ||
+                        line.contains("95%") ||
+                        line.contains("96%") ||
+                        line.contains("97%") ||
+                        line.contains("98%") ||
+                        line.contains("99%")) {
+                      pourcentEnough = true;
+                    }
+                  }
+                }
+              } catch (IOException e) {
+                //
+              } finally {
+                if (reader != null) {
+                  try {
+                    reader.close();
+                  } catch (IOException e) {
+                    //
+                  }
+                }
+              }
+            } catch (FileNotFoundException e) {
+              //
+            }
+          } else {
+            topologyFile = null;
+            trajectoryFile = null;
+            logFile = null;
+          }
+        }
+      }
+    }
+    
+    // Checking if something needs to be sent
+    if (configuration.hasBeenSent(project) &&
+        ((topologyFile == null) || (trajectoryFile == null) || configuration.hasBeenSent("A_" + project))) {
       System.out.print("Already sent by you");
       return;
     }
-    if ((!availableProjects.exists()) || (!availableAmbersDownloaded)) {
+    if ((!availableProjects.exists()) || (!availableAmbers.exists())) {
       downloadAvailableFiles();
     }
     updateExistingProjects();
-    if (existingProjects.contains(project)) {
+    if (existingProjects.contains(project) &&
+        (existingAmbers.contains(project) || (topologyFile == null) || (trajectoryFile == null))) {
       System.out.print("Project available on Jmol website");
       return;
     }
     if ((!availableProjectsDownloaded) || (!availableAmbersDownloaded)) {
       downloadAvailableFiles();
       updateExistingProjects();
-      if (existingProjects.contains(project)) {
+      if (existingProjects.contains(project) &&
+          (existingAmbers.contains(project) || (topologyFile == null) || (trajectoryFile == null))) {
         System.out.print("Project available on Jmol website");
         return;
       }
     }
     try {
       System.out.print("Found new project :)");
-      MailSender sender = new MailSender(configuration, project, file, false);
+      File[] files = new File[4];
+      files[0] = file;
+      if ((topologyFile != null) && (trajectoryFile != null)) {
+        files[1] = topologyFile;
+        files[2] = trajectoryFile;
+        if (logFile != null) {
+          files[3] = logFile;
+        }
+      }
+      MailSender sender = new MailSender(configuration, project, files, false);
       sender.sendMail();
-      configuration.addSentFile(project);
+      if (!existingProjects.contains(project)) {
+        configuration.addSentFile(project);
+        sentProjects.add(project);
+      }
+      if (!existingAmbers.contains(project) && (topologyFile != null) && (trajectoryFile != null)) {
+        configuration.addSentFile("A_" + project);
+        sentAmbers.add(project);
+      }
     } catch (Throwable e) {
       outputError("Sending new file", e);
     }

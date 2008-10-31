@@ -459,7 +459,9 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
           config.setPassword(textUserPassword.getText());
           config.setUserMail(textUserMail.getText());
           config.setUserName(textUser.getText());
-          MailSender sender = new MailSender(config, "XXXX", testFile, true);
+          File[] files = new File[1];
+          files[0] = testFile;
+          MailSender sender = new MailSender(config, "XXXX", files, true);
           try {
             sender.sendMail();
             JOptionPane.showMessageDialog(

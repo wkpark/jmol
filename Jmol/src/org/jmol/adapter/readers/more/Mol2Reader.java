@@ -181,6 +181,7 @@ public class Mol2Reader extends AtomSetCollectionReader {
         boolean isXx = (Character.isUpperCase(ch0) && Character
             .isLowerCase(ch1));
         if (specialTypes.indexOf(elementSymbol) >= 0) {
+          // zeolite Si or Al
           elementSymbol = (ch0 == 's' ? "Si" : "Al");
         } else if (nChar == 2 && isXx) {
           // Generic Xx

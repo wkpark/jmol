@@ -50,9 +50,9 @@ public class ForceFieldUFF extends ForceField {
 
     Hashtable temp = new Hashtable();
 
-    // open data/UFF.prm
+    // open UFF.txt
     URL url = null;
-    String fileName = "UFF.prm";
+    String fileName = "UFF.txt";
     BufferedReader br = null;
     try {
       if ((url = this.getClass().getResource(fileName)) == null) {
@@ -134,7 +134,7 @@ public class ForceFieldUFF extends ForceField {
   public Vector getAtomTypes() {
     Vector types = new Vector(); //!< external atom type rules
     URL url = null;
-    String fileName = "UFF.prm";
+    String fileName = "UFF.txt";
     try {
       if ((url = this.getClass().getResource(fileName)) == null) {
         System.err.println("Couldn't find file: " + fileName);

@@ -94,15 +94,26 @@ public class Escape {
     return sb.toString();
   }
 
+  private final static String escapable = "\\\\\tt\rr\nn\"\""; 
   public static String escape(String str) {
     if (str == null)
       return "\"\"";
-    int pt = -2;
-    while ((pt = str.indexOf("\"", pt + 2)) >= 0)
-      str = str.substring(0, pt) + '\\' + str.substring(pt);
-    str = str.replace('\n', '\1');
-    str = TextFormat.simpleReplace(str, "\1", "\\n");
-    for (int i = str.length(); --i >= 0;)
+    boolean haveEscape = false;
+    int i = 0;
+    for (; i < escapable.length(); i += 2)
+      if (str.indexOf(escapable.charAt(i)) >= 0) {
+        haveEscape = true;
+        break;
+      }
+    if (haveEscape)
+      while (i < escapable.length()) {
+        int pt = -2;
+        char ch = escapable.charAt(i++);
+        char ch2 = escapable.charAt(i++);
+        while ((pt = str.indexOf(ch, pt + 2)) >= 0)
+          str = str.substring(0, pt) + '\\' + ch2 + str.substring(pt + 1);
+      }
+    for (i = str.length(); --i >= 0;)
       if (str.charAt(i) > 0x7F)
         str = str.substring(0, i) + unicode(str.charAt(i))
             + str.substring(i + 1);
@@ -141,6 +152,25 @@ public class Escape {
     if (list == null || list.length == 0)
       return escape("");
     int pt = 0;
+    boolean haveDoubleQuote = false;
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].indexOf("\"") >= 0) {
+        haveDoubleQuote = true;
+        break;
+      }
+    }
+    StringBuffer s = new StringBuffer();
+    if (true || haveDoubleQuote) {
+      s.append("[");
+      for (int i = 0; i < list.length; i++) {
+        if (i > 0)
+          s.append(", ");
+        s.append(escape(list[i]));
+      }
+      s.append("]");
+      return s.toString();  
+    }
+    
     char ch = ESCAPE_SET.charAt(0);
     for (int i = 0; i < list.length; i++) {
       String item = list[i];
@@ -156,7 +186,6 @@ public class Escape {
     if (pt == nEscape)
       sch = "--" + Math.random() + "--";
     int nch = sch.length();
-    StringBuffer s = new StringBuffer();
     for (int i = 0; i < list.length; i++)
       s.append(sch).append(list[i]);
     return escape(s.toString().substring(nch)) + ".split(\"" + sch + "\")";

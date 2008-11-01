@@ -492,7 +492,7 @@ abstract public class ModelCollection extends BondCollection {
       if (script2 != null)
         sb.append(" ").append(script2);
       String s = sb.toString();
-      if (s.charAt(s.length() - 1)!= ';')
+      if (!s.endsWith(";"))
         s += ";";
       return s;
     }

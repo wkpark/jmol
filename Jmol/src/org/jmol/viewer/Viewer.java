@@ -167,10 +167,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean jvm12orGreater = false;
   private boolean jvm14orGreater = false;
 
-  private Hashtable evalVariables;
+  private Hashtable definedAtomSets;
 
-  Hashtable getEvalVariables() {
-    return evalVariables;
+  Hashtable getDefinedAtomSets() {
+    return definedAtomSets;
   }
 
   public Viewer(Component display, JmolAdapter modelAdapter) {
@@ -211,7 +211,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     initialize();
     fileManager = new FileManager(this, modelAdapter);
     compiler = new Compiler(this);
-    evalVariables = new Hashtable();
+    definedAtomSets = new Hashtable();
     eval = new Eval(this);
   }
 
@@ -1391,6 +1391,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getAtomSetCenter(bs);
   }
 
+  private void clearAtomSets() {
+    setSelectionSubset(null);
+    definedAtomSets.clear();
+  }
+  
   public void selectAll() {
     //initializeModel
     selectionManager.selectAll(false);
@@ -1527,8 +1532,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       htParams = new Hashtable();
     if (global.atomTypes.length() > 0)
       htParams.put("atomTypes", global.atomTypes);
-    if (htParams.get("params") == null)
-      htParams.put("params", global.getDefaultLatticeArray());
+    if (!htParams.containsKey("lattice"))
+      htParams.put("lattice", global.getDefaultLattice());
     if (global.applySymmetryToBonds)
       htParams.put("applySymmetryToBonds", Boolean.TRUE);
     if (getPdbLoadInfo(2))
@@ -1759,8 +1764,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (isAppend) {
       modelSet = modelManager.merge(modelAdapter, clientFile);
-      if (eval != null)
-        eval.clearDefinitionsAndLoadPredefined();
+      clearAtomSets();
       selectAll(); // could be an issue here. Do we really want to "select all"?
       setTainted(true);
     } else {
@@ -1968,7 +1972,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.clear();
     tempManager.clear();
     colorManager.clear();
-    evalVariables.clear();
+    definedAtomSets.clear();
     //setRefreshing(true);
     //refresh(0, "Viewer:clear()");
     dataManager.clear();
@@ -2003,8 +2007,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     selectAll();
     noneSelected = false;
     transformManager.setCenter();
-    if (eval != null)
-      eval.clearDefinitionsAndLoadPredefined();
+    clearAtomSets();
     repaintManager.initializePointers(1);
     setCurrentModelIndex(0);
     setBackgroundModelIndex(-1);
@@ -6089,7 +6092,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   Point3f getDefaultLattice() {
-    return global.getDefaultLatticePoint();
+    return global.getDefaultLattice();
   }
 
   BitSet getTaintedAtoms(byte type) {

@@ -95,15 +95,15 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
 
   public Object openBufferedReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
-                                    Hashtable[] htParams) {
-    return staticOpenBufferedReaders(fileReader, names, types, htParams);
+                                    Hashtable[] htparamsSet) {
+    return staticOpenBufferedReaders(fileReader, names, types, htparamsSet);
   }
 
   private static Object staticOpenBufferedReaders(
                                                   JmolFileReaderInterface fileReader,
                                                   String[] names,
                                                   String[] types,
-                                                  Hashtable[] htParams) {
+                                                  Hashtable[] htparamsSet) {
     //FilesOpenThread
     int size = names.length;
     AtomSetCollection[] atomSetCollections = new AtomSetCollection[size];
@@ -113,8 +113,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
         if (reader == null)
           return null;
         Object atomSetCollectionOrErrorMessage = Resolver.resolve(names[i],
-            (types == null ? null : types[i]), reader, (htParams == null ? null
-                : htParams[i]), i);
+            (types == null ? null : types[i]), reader, (htparamsSet == null ? null
+                : htparamsSet[i]), i);
         if (atomSetCollectionOrErrorMessage instanceof String)
           return atomSetCollectionOrErrorMessage;
         if (atomSetCollectionOrErrorMessage instanceof AtomSetCollection) {
@@ -129,11 +129,11 @@ public class SmarterJmolAdapter extends JmolAdapter {
         return "" + e;
       }
     }
-    if (htParams != null && htParams[0].containsKey("trajectorySteps")) {
+    if (htparamsSet != null && htparamsSet[0].containsKey("trajectorySteps")) {
       // this is one model with a set of coordinates from a 
       // molecular dynamics calculation
       // all the htParams[] entries point to the same Hashtable
-      atomSetCollections[0].finalizeTrajectory((Vector) htParams[0]
+      atomSetCollections[0].finalizeTrajectory((Vector) htparamsSet[0]
           .get("trajectorySteps"));
       return atomSetCollections[0];
     }
@@ -193,7 +193,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
     int nFiles = 0;
     StringBuffer data = new StringBuffer();
     if (isSpartan) {
-      data = new StringBuffer();
       data.append("Zip File Directory: ").append("\n").append(
           Escape.escape(zipDirectory)).append("\n");
     }

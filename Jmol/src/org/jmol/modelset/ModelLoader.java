@@ -1102,7 +1102,7 @@ public final class ModelLoader extends ModelSet {
       elementsPresent[i] = new BitSet();
     for (int i = atomCount; --i >= 0;) {
       int n = atoms[i].getAtomicAndIsotopeNumber();
-      if (n >= 128)
+      if (n >= JmolConstants.elementNumberMax)
         n = JmolConstants.elementNumberMax
             + JmolConstants.altElementIndexFromNumber(n);
       elementsPresent[atoms[i].modelIndex].set(n);

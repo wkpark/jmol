@@ -81,7 +81,7 @@ final public class JmolConstants {
 
   public final static String CLASSBASE_OPTIONS = "org.jmol.";
 
-  public final static String DEFAULT_HELP_PATH = "http://www.stolaf.edu/academics/chemapps/jmol/docs/index.htm";
+  public final static String DEFAULT_HELP_PATH = "http://chemapps.stolaf.edu/jmol/docs/index.htm";
 
   public final static String EMBEDDED_SCRIPT_TAG = "**** Jmol Embedded Script ****";
 
@@ -678,7 +678,7 @@ final public class JmolConstants {
     Integer boxedAtomicNumber = (Integer) htElementMap.get(elementSymbol);
     if (boxedAtomicNumber != null)
       return (short) boxedAtomicNumber.intValue();
-    Logger.error("" + elementSymbol + "' is not a recognized symbol");
+    Logger.error("'" + elementSymbol + "' is not a recognized symbol");
     return 0;
   }
   
@@ -1738,10 +1738,10 @@ final public class JmolConstants {
   static {
     // if the length of these tables is all the same then the
     // java compiler should eliminate all of this code.
-    if ((elementSymbols.length != elementNames.length) ||
-        (elementSymbols.length != vanderwaalsMars.length / 4) ||
-        (elementSymbols.length != covalentMars.length) ||
-        (elementSymbols.length != argbsCpk.length)) {
+    if ((elementNames.length != elementNumberMax) ||
+        (vanderwaalsMars.length / 4 != elementNumberMax) ||
+        (covalentMars.length  != elementNumberMax) ||
+        (argbsCpk.length != elementNumberMax)) {
       Logger.error("ERROR!!! Element table length mismatch:" +
                          "\n elementSymbols.length=" + elementSymbols.length +
                          "\n elementNames.length=" + elementNames.length +
@@ -2589,8 +2589,21 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // these must be removed after various script commands so that they stay current
   
   public static String[] predefinedVariable = {
-    "@water _g>="+GROUPID_WATER+" & _g<"+(GROUPID_WATER+3)
-    +", oxygen & connected(2, hydrogen or deuterium or tritium), (hydrogen or deuterium or tritium) & connected(oxygen & connected(2, hydrogen or deuterium or tritium))",
+    //
+    // main isotope (variable because we can do {xxx}.element = n;
+    //
+    "@_1H _H & !(_2H,_3H)",
+    "@_12C _C & !(_13C,_14C)",
+    "@_14N _N & !(_15N)",
+
+    //
+    // solvent
+    //
+    "@water _g>=" + GROUPID_WATER + " & _g<" + (GROUPID_WATER + 3)
+        +", oxygen & connected(2, hydrogen or deuterium or tritium), (hydrogen or deuterium or tritium) & connected(oxygen & connected(2, hydrogen or deuterium or tritium))",
+    "@hoh water",
+    
+    // structure
     "@turn structure=1",
     "@sheet structure=2",
     "@helix structure=3",
@@ -2600,12 +2613,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // these are only updated once per file load or file append
   
   public static String[] predefinedStatic = {
-    //
-    // main isotope
-    //
-    "@_1H _H & !(_2H,_3H)",
-    "@_12C _C & !(_13C,_14C)",
-    "@_14N _N & !(_15N)",
     //
     // protein related
     //
@@ -2658,8 +2665,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // solvent
     //
     "@solvent _g>="+GROUPID_WATER+" & _g<="+GROUPID_SULPHATE, // water or ions
-    "@hoh water",
     "@ions _g>="+(GROUPID_WATER+3)+",_g<="+GROUPID_SULPHATE,
+
     //
     // structure related
     //

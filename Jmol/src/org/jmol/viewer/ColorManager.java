@@ -114,7 +114,7 @@ class ColorManager {
       // Note that CPK colors can be changed based upon user preference
       // therefore, a changable colix is allocated in this case
       id = atom.getAtomicAndIsotopeNumber();
-      if (id < 256)
+      if (id < JmolConstants.elementNumberMax)
         return g3d.getChangeableColix(id, argbsCpk[id]);
       id = (short) JmolConstants.altElementIndexFromNumber(id);
       return g3d.getChangeableColix(
@@ -230,11 +230,11 @@ class ColorManager {
   private static int getJmolOrRasmolArgb(int id, int argb) {
     switch (argb) {
     case Token.jmol:
-      if (id >= 256)
+      if (id >= JmolConstants.elementNumberMax)
         break;
       return ColorEncoder.getArgbFromPalette(id, 0, 0, ColorEncoder.JMOL);
     case Token.rasmol:
-      if (id >= 256)
+      if (id >= JmolConstants.elementNumberMax)
         break;
       return ColorEncoder.getArgbFromPalette(id, 0, 0, ColorEncoder.RASMOL);
     default:
@@ -252,7 +252,7 @@ class ColorManager {
       argbsCpk = ArrayUtil.arrayCopy(JmolConstants.argbsCpk, 0, -1, false);
       altArgbsCpk = ArrayUtil.arrayCopy(JmolConstants.altArgbsCpk, 0, -1, false);
     }
-    if (id < 256) {
+    if (id < JmolConstants.elementNumberMax) {
       argbsCpk[id] = argb;
       g3d.changeColixArgb((short)id, argb);
       return;

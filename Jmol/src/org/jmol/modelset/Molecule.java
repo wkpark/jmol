@@ -65,7 +65,7 @@ class Molecule {
       if (atomList.get(i)) {
         nAtoms++;
         int n = modelSet.atoms[i].getAtomicAndIsotopeNumber();
-        if (n < 128) {
+        if (n < JmolConstants.elementNumberMax) {
           elementCounts[n]++;
           if (elementCounts[n] == 1)
             nElements++;

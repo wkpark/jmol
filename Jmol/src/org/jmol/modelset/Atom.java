@@ -330,6 +330,12 @@ final public class Atom extends Point3fi {
     return atomicAndIsotopeNumber;
   }
 
+  public void setAtomicAndIsotopeNumber(int n) {
+    if (n < 0 || (n % 128) >= JmolConstants.elementNumberMax || n > Short.MAX_VALUE)
+      n = 0;
+    atomicAndIsotopeNumber = (short) n;
+  }
+
   public String getElementSymbol() {
     return JmolConstants.elementSymbolFromNumber(atomicAndIsotopeNumber);
   }

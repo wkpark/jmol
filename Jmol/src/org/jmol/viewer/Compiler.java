@@ -179,7 +179,7 @@ class Compiler {
         aatoken[i] = (Token[]) lltoken.get(cmdpt0 + i);
         if (aatoken[i].length > 0) {
           Token tokenCommand = aatoken[i][0];
-          if (Compiler.tokAttr(tokenCommand.tok, Token.flowCommand))
+          if (Token.tokAttr(tokenCommand.tok, Token.flowCommand))
             tokenCommand.intValue -= (tokenCommand.intValue < 0 ? -cmdpt0 : cmdpt0);
         }
       }
@@ -239,15 +239,6 @@ class Compiler {
     return aatokenCompiled;
   }
 
-  static boolean tokAttr(int a, int b) {
-    return (a & b) == b;
-  }
-  
-  static boolean tokAttrOr(int a, int b1, int b2) {
-    return (a & b1) == b1 || (a & b2) == b2;
-  }
-  
- 
   static int modelValue(String strDecimal) {
     //this will overflow, but it doesn't matter -- it's only for file.model
     //2147483647 is maxvalue, so this allows loading
@@ -392,7 +383,7 @@ class Compiler {
             return error(ERROR_endOfCommandUnexpected);
           if (!compileCommand())
             return false;
-          if (!tokAttr(tokCommand, Token.noeval)
+          if (!Token.tokAttr(tokCommand, Token.noeval)
               || atokenInfix[0].intValue <= 0) {
             if (iCommand == lnLength) {
               short[] lnT = new short[lnLength * 2];
@@ -435,8 +426,8 @@ class Compiler {
       } else {
         if (nTokens == ptNewSetModifier) {
           ch = script.charAt(ichToken);
-          if (tokCommand == Token.set || tokAttr(tokCommand, Token.setparam)) {
-            if (tokAttr(tokCommand, Token.setparam) && ch == '='
+          if (tokCommand == Token.set || Token.tokAttr(tokCommand, Token.setparam)) {
+            if (Token.tokAttr(tokCommand, Token.setparam) && ch == '='
                 || (isNewSet || isSetBrace)
                 && (ch == '=' || ch == '[' || ch == '.')) {
               tokenCommand = (ch == '=' ? Token.tokenSet
@@ -533,7 +524,7 @@ class Compiler {
             cchToken = pt;
           }
         }
-        if (tokAttr(tokCommand, Token.implicitStringCommand)
+        if (Token.tokAttr(tokCommand, Token.implicitStringCommand)
             && !(tokCommand == Token.script && iHaveQuotedString)
             && lookingAtSpecialString()) {
           String str = script.substring(ichToken, ichToken + cchToken);
@@ -665,7 +656,7 @@ class Compiler {
           ichCurrentCommand = ichToken;
           tokenCommand = token;
           tokCommand = tok;
-          if (tokAttr(tokCommand, Token.flowCommand)) {
+          if (Token.tokAttr(tokCommand, Token.flowCommand)) {
             int pt = lltoken.size();
             boolean isEnd = false;
             boolean isNew = true;
@@ -727,11 +718,11 @@ class Compiler {
             }
             break;
           }
-          if (tokAttr(tokCommand, Token.command))
+          if (Token.tokAttr(tokCommand, Token.command))
             break;
           isSetBrace = (tok == Token.leftbrace);
-          if (!isSetBrace && !tokAttr(tok, Token.identifier)
-              && !tokAttr(tok, Token.setparam))
+          if (!isSetBrace && !Token.tokAttr(tok, Token.identifier)
+              && !Token.tokAttr(tok, Token.setparam))
             return commandExpected();
           tokCommand = Token.set;
           isNewSet = !isSetBrace;
@@ -848,7 +839,7 @@ class Compiler {
               tok = Token.leftparen;
               break;
             }
-            if (tok != Token.identifier && (!tokAttr(tok, Token.setparam)))
+            if (tok != Token.identifier && (!Token.tokAttr(tok, Token.setparam)))
               return isNewSet ? commandExpected() : error(
                   ERROR_unrecognizedParameter, "SET", ": " + ident);
             if (isSetArray) {
@@ -870,10 +861,10 @@ class Compiler {
               if (tok == Token.identifier)
                 break;
               if (preDefining) {
-                if (!tokAttr(tok, Token.predefinedset))
+                if (!Token.tokAttr(tok, Token.predefinedset))
                   return error("ERROR IN Token.java or JmolConstants.java -- the following term was used in JmolConstants.java but not listed as predefinedset in Token.java: "
                       + ident);
-              } else if (tokAttr(tok, Token.predefinedset)) {
+              } else if (Token.tokAttr(tok, Token.predefinedset)) {
                 Logger
                     .warn("WARNING: predefined term '"
                         + ident
@@ -898,13 +889,13 @@ class Compiler {
             }
           }
           if (bracketCount == 0 && tok != Token.identifier
-              && !tokAttr(tok, Token.expression) && tok != Token.min
+              && !Token.tokAttr(tok, Token.expression) && tok != Token.min
               && tok != Token.max)
             return error(ERROR_invalidExpressionToken, ident);
           break;
         case Token.center:
           if (tok != Token.identifier && tok != Token.dollarsign
-              && !tokAttr(tok, Token.expression))
+              && !Token.tokAttr(tok, Token.expression))
             return error(ERROR_invalidExpressionToken, ident);
           break;
         }
@@ -1511,11 +1502,11 @@ class Compiler {
     }
     tokenCommand = (Token) ltoken.firstElement();
     tokCommand = tokenCommand.tok;
-    isImplicitExpression = tokAttr(tokCommand, Token.mathExpressionCommand);
+    isImplicitExpression = Token.tokAttr(tokCommand, Token.mathExpressionCommand);
     isSetOrDefine = (tokCommand == Token.set || tokCommand == Token.define);
-    isCommaAsOrAllowed = tokAttr(tokCommand, Token.atomExpressionCommand);
+    isCommaAsOrAllowed = Token.tokAttr(tokCommand, Token.atomExpressionCommand);
     int size = ltoken.size();
-    if (size == 1 && tokAttr(tokCommand, Token.defaultON))
+    if (size == 1 && Token.tokAttr(tokCommand, Token.defaultON))
       addTokenToPrefix(Token.tokenOn);
     atokenInfix = new Token[ltoken.size()];
     ltoken.copyInto(atokenInfix);
@@ -1527,11 +1518,11 @@ class Compiler {
     //compile expressions
 
     isEmbeddedExpression = (tokCommand != Token.function 
-        && !tokAttrOr(tokCommand, Token.atomExpressionCommand, Token.implicitStringCommand));
-    boolean checkExpression = isEmbeddedExpression || (tokAttr(tokCommand, Token.atomExpressionCommand));
+        && !Token.tokAttrOr(tokCommand, Token.atomExpressionCommand, Token.implicitStringCommand));
+    boolean checkExpression = isEmbeddedExpression || (Token.tokAttr(tokCommand, Token.atomExpressionCommand));
 
       // $ at beginning disallow expression checking for center, delete, hide, or display commands
-    if (tokAt(1) == Token.dollarsign && tokAttr(tokCommand, Token.atomExpressionCommand))
+    if (tokAt(1) == Token.dollarsign && Token.tokAttr(tokCommand, Token.atomExpressionCommand))
       checkExpression = false;
     if (checkExpression && !compileExpression())
       return false;
@@ -1556,7 +1547,7 @@ class Compiler {
 
     if ((isNewSet || isSetBrace) && size < ptNewSetModifier + 2)
       return commandExpected();
-    return (size == 1 || !tokAttr(tokCommand, Token.noArgs) ? true 
+    return (size == 1 || !Token.tokAttr(tokCommand, Token.noArgs) ? true 
         : error(ERROR_badArgumentCount));
   }
 
@@ -1806,9 +1797,9 @@ class Compiler {
         return true;
     //fall through for integer and identifier specifically
     default:
-      if (tokAttrOr(tok, Token.property, Token.atomproperty))
+      if (Token.tokAttrOr(tok, Token.property, Token.atomproperty))
         return clauseComparator();
-      if (!tokAttrOr(tok, Token.integer, Token.predefinedset))
+      if (!Token.tokAttrOr(tok, Token.integer, Token.predefinedset))
         break;
       return addNextToken();
 
@@ -2113,7 +2104,7 @@ class Compiler {
       if (tokPeek() != Token.times)
         tokenNext();
       tok = tokPeek();
-      if (tok == Token.rightsquare || !tokAttr(tok, Token.mathop))
+      if (tok == Token.rightsquare || !Token.tokAttr(tok, Token.mathop))
         break;
       if (tok != Token.leftparen)
         addNextToken();

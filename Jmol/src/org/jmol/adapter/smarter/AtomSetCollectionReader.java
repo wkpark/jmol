@@ -39,6 +39,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.vecmath.Point3f;
+
 /*
  * Notes 9/2006 Bob Hanson
  * 
@@ -83,14 +85,10 @@ import java.util.Vector;
 public abstract class AtomSetCollectionReader {
   public AtomSetCollection atomSetCollection;
   public BufferedReader reader;
-  public String line, prevline;
-  
-  protected long ptLine;
-  
 
   public final static float ANGSTROMS_PER_BOHR = 0.5291772f;
 
-  private int desiredModelNumber;
+  private int desiredModelNumber = Integer.MIN_VALUE;
   public int modelNumber;
   public boolean iHaveDesiredModel;
   public BitSet bsModels;
@@ -102,11 +100,36 @@ public abstract class AtomSetCollectionReader {
   public String spaceGroup;
   private SymmetryInterface symmetry;
   public float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
-  public int[] latticeCells = new int[3];
+  public int[] latticeCells;
   public float[][] primitiveLatticeVectors;
-  public int desiredSpaceGroupIndex;
+  public int desiredSpaceGroupIndex = -1;
 
-  public int[] next = new int[1];
+  protected String readerName;
+  protected boolean doApplySymmetry;
+  boolean doConvertToFractional;
+  boolean fileCoordinatesAreFractional;
+  boolean ignoreFileUnitCell;
+  protected boolean ignoreFileSymmetryOperators;
+  boolean ignoreFileSpaceGroupName;
+  boolean isTrajectory;
+  protected boolean applySymmetryToBonds;
+  float symmetryRange;  
+
+  // state variables
+  public boolean iHaveUnitCell;
+  //boolean iHaveCartesianToFractionalMatrix;
+  private boolean iHaveFractionalCoordinates;
+  public boolean iHaveSymmetryOperators;
+  public boolean needToApplySymmetry;
+  protected int[] firstLastStep;
+  protected int templateAtomCount;
+  protected Hashtable htParams;
+  protected int ptFile;
+  public String line, prevline; 
+  protected long ptLine;
+ 
+public int[] next = new int[1];
+  
   
   // parser functions are static, so they need notstatic counterparts
    
@@ -190,30 +213,6 @@ public abstract class AtomSetCollectionReader {
     return Parser.parseTrimmed(s, iStart, iEnd);
   }
   
-  // load options:
-
-  protected String readerName;
-  protected boolean doApplySymmetry;
-  boolean doConvertToFractional;
-  boolean fileCoordinatesAreFractional;
-  boolean ignoreFileUnitCell;
-  protected boolean ignoreFileSymmetryOperators;
-  boolean ignoreFileSpaceGroupName;
-  boolean isTrajectory;
-  protected boolean applySymmetryToBonds;
-  float symmetryRange;  
-
-  // state variables
-  public boolean iHaveUnitCell;
-  //boolean iHaveCartesianToFractionalMatrix;
-  private boolean iHaveFractionalCoordinates;
-  public boolean iHaveSymmetryOperators;
-  public boolean needToApplySymmetry;
-  protected int[] firstLastStep;
-  protected int templateAtomCount;
-  protected Hashtable htParams;
-  protected int ptFile;
-  
   public abstract AtomSetCollection readAtomSetCollection(BufferedReader reader);
 
   public AtomSetCollection readAtomSetCollectionFromDOM(Object DOMNode) {
@@ -233,44 +232,71 @@ public abstract class AtomSetCollectionReader {
   
   public void initialize() {
     // called by the resolver
-    modelNumber = 0;
-    desiredModelNumber = Integer.MIN_VALUE;
-    iHaveDesiredModel = false;
-    getHeader = false;
-    latticeCells[0] = latticeCells[1] = latticeCells[2] = 0;
-
-    desiredSpaceGroupIndex = -1;
-
-    isTrajectory = false;
-
-    ignoreFileUnitCell = false;
-    ignoreFileSpaceGroupName = false;
-    ignoreFileSymmetryOperators = false;
-    doConvertToFractional = false;
-    doApplySymmetry = false;
-    applySymmetryToBonds = false;
-
-    fileCoordinatesAreFractional = false;
-
-    iHaveUnitCell = false;
-    //iHaveCartesianToFractionalMatrix = false;
-    iHaveFractionalCoordinates = false;
-    iHaveSymmetryOperators = false;
-
     initializeSymmetry();
   }
 
+
+  /*
+   * htParams is used for passing information to the readers
+   * and for returning information from the readers
+   * 
+   * It won't be null at this stage.
+   * 
+   * from Eval or Viewer:
+   * 
+   *  applySymmetryToBonds
+   *  atomTypes (for Mol2Reader)
+   *  bsModels
+   *  filter
+   *  firstLastStep
+   *  firstLastSteps
+   *  getHeader
+   *  isTrajectory
+   *  lattice
+   *  manifest (for SmarterJmolAdapter)
+   *  modelNumber
+   *  spaceGroupIndex
+   *  symmetryRange
+   *  unitcell
+   *  
+   * from FileManager:
+   * 
+   *  fullPathName
+   *  subFileList (for SmarterJmolAdapter)
+   * 
+   * from MdTopReader:
+   *   
+   *  isPeriodic
+   *  templateAtomCount
+   *  
+   * from MdCrdReader:   
+   * 
+   *  trajectorySteps
+   *  
+   * from Resolver:
+   * 
+   *  filteredAtomCount
+   *  ptFile
+   *  readerName
+   *  templateAtomCount
+   *  
+   *  
+   * from AtomSetCollectionReader:
+   *  
+   *  bsFilter
+   *  
+   *  
+   */
+  
   
   public void initialize(Hashtable htParams) {
 
     initialize();
-    int[] params = null;
     this.htParams = htParams;
     getHeader = htParams.containsKey("getHeader");
     readerName = (String) htParams.get("readerName");
-    params = (int[]) htParams.get("params");
-    if (params != null)
-      desiredModelNumber = params[0];
+    if (htParams.containsKey("modelNumber"))
+      desiredModelNumber = ((Integer) htParams.get("modelNumber")).intValue();
     applySymmetryToBonds = htParams.containsKey("applySymmetryToBonds");
     filter = (String) htParams.get("filter");
     // bsFilter is usually null, but it gets set to indicate
@@ -300,10 +326,10 @@ public abstract class AtomSetCollectionReader {
       templateAtomCount = ((Integer) htParams.get("templateAtomCount"))
           .intValue();
     } else if (htParams.containsKey("firstLastStep")) {
-      isTrajectory = (desiredModelNumber == -1);
+      isTrajectory = htParams.containsKey("isTrajectory");
       firstLastStep = (int[]) htParams.get("firstLastStep");
     } else if (htParams.containsKey("bsModels")) {
-      isTrajectory = (desiredModelNumber == -1);
+      isTrajectory = htParams.containsKey("isTrajectory");
       bsModels = (BitSet) htParams.get("bsModels");
     }
     if (bsModels != null || firstLastStep != null)
@@ -324,20 +350,15 @@ public abstract class AtomSetCollectionReader {
     }
     if (bsModels != null && (firstLastStep == null || firstLastStep[1] != -1))
       lastModelNumber = BitSetUtil.length(bsModels);
-    if (params == null)
-      return;
-    Float distance = (Float) htParams.get("symmetryRange");
-    symmetryRange = (distance == null ? 0 : distance.floatValue());
+    symmetryRange = (htParams.containsKey("symmetryRange") ? ((Float) htParams
+        .get("symmetryRange")).floatValue() : 0);
 
-    // params is of variable length: 4, 5, or 11
-    // [desiredModelNumber, i, j, k, 
-    //  desiredSpaceGroupIndex,
-    //  a*10000, b*10000, c*10000, alpha*10000, beta*10000, gamma*10000]
-
-    if (params != null) {
-      latticeCells[0] = params[1];
-      latticeCells[1] = params[2];
-      latticeCells[2] = params[3];
+    latticeCells = new int[3];
+    if (htParams.containsKey("lattice")) {
+      Point3f pt = ((Point3f) htParams.get("lattice"));
+      latticeCells[0] = (int) pt.x;
+      latticeCells[1] = (int) pt.y;
+      latticeCells[2] = (int) pt.z;
     }
     doApplySymmetry = (latticeCells[0] > 0 && latticeCells[1] > 0);
     //allows for {1 1 1} or {555 555 0|1}
@@ -352,19 +373,21 @@ public abstract class AtomSetCollectionReader {
     //with this flag, we convert any nonfractional coordinates to fractional
     //if a unit cell is available.
 
-    if (params.length >= 5) {
+    if (htParams.containsKey("spaceGroupIndex")) {
       // three options include:
       // = -1: normal -- use operators if present or name if not
       // >=0: spacegroup fully determined
-      // = -999: ignore just the operators
+      // = -999: ignore -- just the operators
 
-      desiredSpaceGroupIndex = params[4];
+      desiredSpaceGroupIndex = ((Integer) htParams.get("spaceGroupIndex"))
+          .intValue();
       ignoreFileSpaceGroupName = (desiredSpaceGroupIndex >= 0);
       ignoreFileSymmetryOperators = (desiredSpaceGroupIndex != -1);
     }
-    if (params.length >= 11) {
-      setUnitCell(params[5] / 10000f, params[6] / 10000f, params[7] / 10000f,
-          params[8] / 10000f, params[9] / 10000f, params[10] / 10000f);
+    if (htParams.containsKey("unitcell")) {
+      float[] fParams = (float[]) htParams.get("unitcell");
+      setUnitCell(fParams[0], fParams[1], fParams[2], fParams[3], fParams[4],
+          fParams[5]);
       ignoreFileUnitCell = iHaveUnitCell;
     }
   }

@@ -498,6 +498,12 @@ abstract public class AtomCollection {
         atom.setFractionalCoord(tok, fValue);
         taint(i, TAINT_COORD);
         break;
+      case Token.element:
+        taint(i, TAINT_ELEMENT);
+        atom.setAtomicAndIsotopeNumber(iValue);
+        atom.setPaletteID(JmolConstants.PALETTE_CPK);
+        atom.setColixAtom(viewer.getColixAtomPalette(atom, JmolConstants.PALETTE_CPK));
+        break;
       case Token.formalCharge:
         atom.setFormalCharge(iValue);
         taint(i, TAINT_FORMALCHARGE);
@@ -637,6 +643,7 @@ abstract public class AtomCollection {
         int atomIndex = Parser.parseInt(tokens[0]) - 1;
         if (atomIndex < 0 || atomIndex >= atomCount)
           continue;
+        Atom atom = atoms[atomIndex];
         n++;
         float x = Parser.parseFloat(tokens[tokens.length - 1]);
         switch (type) {
@@ -644,8 +651,13 @@ abstract public class AtomCollection {
           fData[atomIndex] = x;
           bs.set(atomIndex);
           continue;
+        case TAINT_ELEMENT:
+          atom.setAtomicAndIsotopeNumber((int)x);
+          atom.setPaletteID(JmolConstants.PALETTE_CPK);
+          atom.setColixAtom(viewer.getColixAtomPalette(atom, JmolConstants.PALETTE_CPK));
+          break;
         case TAINT_FORMALCHARGE:
-          atoms[atomIndex].setFormalCharge((int)x);          
+          atom.setFormalCharge((int)x);          
           break;
         case TAINT_PARTIALCHARGE:
           setPartialCharge(atomIndex, x);          
@@ -654,10 +666,10 @@ abstract public class AtomCollection {
           setBFactor(atomIndex, x);
           break;
         case TAINT_VALENCE:
-          atoms[atomIndex].setValency((int)x);          
+          atom.setValency((int)x);          
           break;
         case TAINT_VANDERWAALS:
-          atoms[atomIndex].setRadius(x);          
+          atom.setRadius(x);          
           break;
         }
         taint(atomIndex, (byte) type);
@@ -704,17 +716,19 @@ abstract public class AtomCollection {
   ////  atom coordinate and property changing  //////////
   
   final public static byte TAINT_COORD = 0;
-  final private static byte TAINT_FORMALCHARGE = 1;
-  final private static byte TAINT_OCCUPANCY = 2;
-  final private static byte TAINT_PARTIALCHARGE = 3;
-  final private static byte TAINT_TEMPERATURE = 4;
-  final private static byte TAINT_VALENCE = 5;
-  final private static byte TAINT_VANDERWAALS = 6;
-  final private static byte TAINT_VIBRATION = 7;
-  final public static byte TAINT_MAX = 8;
+  final private static byte TAINT_ELEMENT = 1;
+  final private static byte TAINT_FORMALCHARGE = 2;
+  final private static byte TAINT_OCCUPANCY = 3;
+  final private static byte TAINT_PARTIALCHARGE = 4;
+  final private static byte TAINT_TEMPERATURE = 5;
+  final private static byte TAINT_VALENCE = 6;
+  final private static byte TAINT_VANDERWAALS = 7;
+  final private static byte TAINT_VIBRATION = 8;
+  final public static byte TAINT_MAX = 9; // 1 more than last number, above
 
   final private static String[] userSettableValues = {
     "coord",
+    "element",
     "formalCharge",
     "occupany",
     "partialCharge",
@@ -794,6 +808,9 @@ abstract public class AtomCollection {
         case TAINT_COORD:
           s.append(" ").append(atoms[i].x).append(" ").append(atoms[i].y)
               .append(" ").append(atoms[i].z);
+          break;
+        case TAINT_ELEMENT:
+          s.append(atoms[i].getAtomicAndIsotopeNumber());
           break;
         case TAINT_FORMALCHARGE:
           s.append(atoms[i].getFormalCharge());

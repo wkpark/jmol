@@ -532,7 +532,8 @@ abstract public class ModelSet extends ModelCollection {
   public int[] makeConnections(float minDistance, float maxDistance, short order,
                              int connectOperation, BitSet bsA, BitSet bsB,
                              BitSet bsBonds, boolean isBonds) {
-    if (connectOperation == JmolConstants.CONNECT_DELETE_BONDS) {
+    if (connectOperation == JmolConstants.CONNECT_DELETE_BONDS 
+        || connectOperation == JmolConstants.CONNECT_AUTO_BOND) {
       String stateScript = "connect ";
       if (minDistance != JmolConstants.DEFAULT_MIN_CONNECT_DISTANCE)
         stateScript += minDistance + " ";
@@ -540,7 +541,8 @@ abstract public class ModelSet extends ModelCollection {
         stateScript += maxDistance + " ";
       addStateScript(stateScript, (isBonds? bsA : null), 
           (isBonds? null : bsA), (isBonds ? null : bsB),  
-          " delete;", false, true);
+          (connectOperation == JmolConstants.CONNECT_DELETE_BONDS ? " delete" : " auto"), 
+          false, true);
     }
     return super.makeConnections(minDistance, maxDistance, order,
         connectOperation, bsA, bsB, bsBonds, isBonds);

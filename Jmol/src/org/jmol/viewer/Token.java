@@ -106,6 +106,15 @@ public class Token {
     "seqcode", "list", "point", "plane", "keyword"
   };
 
+  public static boolean tokAttr(int a, int b) {
+    return (a & b) == b;
+  }
+  
+  public static boolean tokAttrOr(int a, int b1, int b2) {
+    return (a & b1) == b1 || (a & b2) == b2;
+  }
+  
+ 
 
   // TOKEN BIT FIELDS
   
@@ -467,7 +476,7 @@ public class Token {
   final static int bondcount            = atomproperty | 3;
   final static int atomIndex            = atomproperty | 4;
   final public static int cell          = atomproperty | 5;
-  final public static int element       = atomproperty | 6;
+  final public static int element       = atomproperty | 6 | settable;
   final public static int elemno        = atomproperty | 7;
   final public static int formalCharge  = atomproperty | 9 | setparam | settable;
   final static int groupID              = atomproperty | 10;
@@ -1045,6 +1054,7 @@ public class Token {
 
   final public static Token tokenLeftParen = new Token(leftparen, "(");
   final public static Token tokenRightParen = new Token(rightparen, ")");
+  final static Token tokenArray = new Token(array, "[");
   final static Token tokenArraySelector = new Token(leftsquare, "[");
  
   final public static Token tokenExpressionBegin = new Token(expressionBegin, "expressionBegin");
@@ -1576,7 +1586,7 @@ public class Token {
     while (e.hasMoreElements()) {
       String name = (String) e.nextElement();
       Token token = (Token) map.get(name);
-      if (Compiler.tokAttr(token.tok, attr))
+      if (tokAttr(token.tok, attr))
         v.add(name);
     }
     String[] a = new String[v.size()];
@@ -1590,8 +1600,8 @@ public class Token {
     Token token = getTokenFromName(s);
     int tok;
     if (token != null)
-      return (Compiler.tokAttr((tok = token.tok), settable) 
-          && !Compiler.tokAttr(tok, mathproperty) ? token.tok : nada);
+      return (tokAttr((tok = token.tok), settable) 
+          && !tokAttr(tok, mathproperty) ? token.tok : nada);
     if (s.equals("x"))
       return atomX;
     else if (s.equals("y"))

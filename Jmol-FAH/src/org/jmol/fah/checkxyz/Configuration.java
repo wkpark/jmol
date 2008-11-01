@@ -41,6 +41,7 @@ public class Configuration implements Serializable {
 
   private String userName;
   private String mailServer;
+  private int mailPort;
   private String userMail;
   private String login;
   private String password;
@@ -55,6 +56,7 @@ public class Configuration implements Serializable {
   public Configuration() {
     userName = "";
     mailServer = "";
+    mailPort = 25;
     userMail = "";
     login = "";
     password = "";
@@ -76,6 +78,12 @@ public class Configuration implements Serializable {
       
       userName = props.getProperty("userName", userName);
       mailServer = props.getProperty("mailServer", mailServer);
+      String txtPort = props.getProperty("mailPort", Integer.toString(mailPort));
+      try {
+        mailPort = Integer.parseInt(txtPort);
+      } catch (NumberFormatException e) {
+        mailPort = 25;
+      }
       userMail = props.getProperty("userMail", userMail);
       login = props.getProperty("login", login);
       password = props.getProperty("password", password);
@@ -105,6 +113,7 @@ public class Configuration implements Serializable {
       Properties props = new Properties();
       props.setProperty("userName", userName);
       props.setProperty("mailServer", mailServer);
+      props.setProperty("mailPort", Integer.toString(mailPort));
       props.setProperty("userMail", userMail);
       props.setProperty("login", login);
       props.setProperty("password", password);
@@ -168,6 +177,16 @@ public class Configuration implements Serializable {
   }
   public String getMailServer() {
     return mailServer;
+  }
+
+  /**
+   * @param port Mail port.
+   */
+  public void setMailPort(int port) {
+    mailPort = port;
+  }
+  public int getMailPort() {
+    return mailPort;
   }
 
   /**

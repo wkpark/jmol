@@ -73,6 +73,7 @@ public class MailSender {
     // Create the mail
     MultiPartEmail email = new MultiPartEmail();
     email.setHostName(config.getMailServer());
+    email.setSmtpPort(config.getMailPort());
     if (testing) {
       email.addTo(config.getUserMail(), config.getUserName());
     } else {

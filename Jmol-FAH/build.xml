@@ -17,7 +17,7 @@
   <property name="activation.jar"    value="activation.jar" />
   <property name="activation.lic"    value="LICENSE_activation.txt" />
   <property name="commons-email.dir" value="jars/commons-email" />
-  <property name="commons-email.jar" value="commons-email-1.0.jar" />
+  <property name="commons-email.jar" value="commons-email-1.1.jar" />
   <property name="commons-email.lic" value="LICENSE_commonsemail.txt" />
   <property name="mail.dir"          value="jars/mail" />
   <property name="mail.jar"          value="mail.jar" />

@@ -33,6 +33,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -41,6 +43,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -66,6 +69,7 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
 
   private JTextField textUser = null;
   private JTextField textMailServer = null;
+  private JFormattedTextField textMailPort = null;
   private JTextField textUserMail = null;
   private JTextField textUserLogin = null;
   private JTextField textUserPassword = null;
@@ -218,6 +222,26 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
 
     constraints.gridy++;
 
+    // Mail port
+    JLabel labelMailPort = new JLabel("Mail port : ", SwingConstants.RIGHT);
+    constraints.gridx = 0;
+    constraints.weightx = 0;
+    constraints.anchor = GridBagConstraints.EAST;
+    panel.add(labelMailPort, constraints);
+    
+    NumberFormat portFormat = NumberFormat.getIntegerInstance();
+    portFormat.setMaximumFractionDigits(0);
+    portFormat.setMaximumIntegerDigits(5);
+    textMailPort = new JFormattedTextField(portFormat);
+    textMailPort.setColumns(15);
+    textMailPort.setToolTipText("Your mail server port, usually 25");
+    textMailPort.setValue(Integer.valueOf(configuration.getMailPort()));
+    constraints.gridx++;
+    constraints.weightx = 1;
+    constraints.anchor = GridBagConstraints.WEST;
+    panel.add(textMailPort, constraints);
+    
+    constraints.gridy++;
     // User mail
     JLabel labelUserMail = new JLabel("Mail address :", SwingConstants.RIGHT);
     constraints.gridx = 0;
@@ -380,9 +404,22 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
   public void actionPerformed(ActionEvent e) {
     if (actionOk.equals(e.getActionCommand())) {
 
+      // Check Port value
+      try {
+        textMailPort.commitEdit();
+      } catch (ParseException ex) {
+        JOptionPane.showMessageDialog(
+            this, "The mail port value is incorrect.", "Incorrect value", JOptionPane.ERROR_MESSAGE);
+        return;
+      }
       // Validate configuration
       configuration.setUserName(textUser.getText());
       configuration.setMailServer(textMailServer.getText());
+      Object portValue = textMailPort.getValue();
+      if (portValue instanceof Integer) {
+        Integer port = (Integer) portValue;
+        configuration.setMailPort(port.intValue());
+      }
       configuration.setUserMail(textUserMail.getText());
       configuration.setLogin(textUserLogin.getText());
       configuration.setPassword(textUserPassword.getText());
@@ -443,6 +480,15 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
 
     } else if (actionTestMail.equals(e.getActionCommand())) {
 
+      // Check Port value
+      try {
+        textMailPort.commitEdit();
+      } catch (ParseException ex) {
+        JOptionPane.showMessageDialog(
+            this, "The mail port value is incorrect.", "Incorrect value", JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+      
       // Test mail configuration
       JFileChooser fileChooser = new JFileChooser();
       fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -456,12 +502,18 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
           Configuration config = new Configuration();
           config.setLogin(textUserLogin.getText());
           config.setMailServer(textMailServer.getText());
+          Object portValue = textMailPort.getValue();
+          if (portValue instanceof Long) {
+            Long port = (Long) portValue;
+            config.setMailPort(port.intValue());
+          }
           config.setPassword(textUserPassword.getText());
           config.setUserMail(textUserMail.getText());
           config.setUserName(textUser.getText());
           File[] files = new File[1];
           files[0] = testFile;
           MailSender sender = new MailSender(config, "XXXX", files, true);
+          setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
           try {
             sender.sendMail();
             JOptionPane.showMessageDialog(
@@ -475,6 +527,7 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
                 "Error while sending mail",
                 JOptionPane.ERROR_MESSAGE);
           }
+          setCursor(Cursor.getDefaultCursor());
         }
       }
 

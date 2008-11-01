@@ -8212,6 +8212,8 @@ class Eval {
         for (int i = nValues; --i >= 0;)
           fvalues[i] = Parser.parseFloat(list[i]);
       }
+      if (tok == Token.element)
+        clearDefinedVariableAtomSets();
       viewer.setAtomProperty(bs, tok, iValue, fValue, fvalues);
     }
   }

@@ -148,7 +148,6 @@ class Eval {
   Eval(Viewer viewer) {
     this.viewer = viewer;
     compiler = viewer.getCompiler();
-    //System.out.println("new eval: " + this.hashCode());
     definedAtomSets = viewer.getDefinedAtomSets();
   }
 

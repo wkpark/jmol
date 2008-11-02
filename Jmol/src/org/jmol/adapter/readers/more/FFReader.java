@@ -62,66 +62,64 @@ abstract class FFReader extends AtomSetCollectionReader {
   private Properties atomTypes = new Properties();
   
   protected boolean getElementSymbol(Atom atom, String atomType) {
-    int nChar = atomType.length();
-    boolean deduceSymbol = (nChar > 1);
     String elementSymbol = (String) atomTypes.get(atomType);
-    if (elementSymbol == null) {
-      int ptType;
-      if (userAtomTypes != null
-          && (ptType = userAtomTypes.indexOf(";" + atomType + "=>")) >= 0) {
-        ptType += nChar + 3;
-        elementSymbol = userAtomTypes.substring(ptType,
-            userAtomTypes.indexOf(";", ptType)).trim();
-        deduceSymbol = false;
-      } else if (nChar == 1){
-        elementSymbol = atomType.toUpperCase();
-        deduceSymbol = false;
+    if (elementSymbol != null) {
+      atom.elementSymbol = elementSymbol;
+      return true;
+    }
+    int nChar = atomType.length();
+    boolean haveSymbol = (nChar < 2);
+    int ptType;
+    if (userAtomTypes != null
+        && (ptType = userAtomTypes.indexOf(";" + atomType + "=>")) >= 0) {
+      ptType += nChar + 3;
+      elementSymbol = userAtomTypes.substring(ptType,
+          userAtomTypes.indexOf(";", ptType)).trim();
+      haveSymbol = true;
+    } else if (nChar == 1) {
+      elementSymbol = atomType.toUpperCase();
+      haveSymbol = true;
+    } else {
+      char ch0 = atomType.charAt(0);
+      char ch1 = atomType.charAt(1);
+      boolean isXx = (Character.isUpperCase(ch0) && Character.isLowerCase(ch1));
+      if (specialTypes.indexOf(atomType) >= 0) {
+        // zeolite Si or Al
+        elementSymbol = (ch0 == 's' ? "Si" : "Al");
+      } else if (nChar == 2 && isXx) {
+        // Generic Xx
+      } else if (Character.isLetter(ch0) && !Character.isLetter(ch1)) {
+        // Xn... or xn...
+        elementSymbol = "" + Character.toUpperCase(ch0);
+      } else if (nChar > 2 && isXx && !Character.isLetter(atomType.charAt(2))) {
+        // Xxn.... (but not XXn... or xxn....)
+        elementSymbol = "" + ch0 + ch1;
       } else {
-        char ch0 = atomType.charAt(0);
-        char ch1 = atomType.charAt(1);
-        boolean isXx = (Character.isUpperCase(ch0) && Character
-            .isLowerCase(ch1));
-        if (specialTypes.indexOf(atomType) >= 0) {
-          // zeolite Si or Al
-          elementSymbol = (ch0 == 's' ? "Si" : "Al");
-        } else if (nChar == 2 && isXx) {
-          // Generic Xx
-        } else if (Character.isLetter(ch0) && !Character.isLetter(ch1)) {
-          // Xn... or xn...
-          elementSymbol = "" + Character.toUpperCase(ch0);
-        } else if (nChar > 2 && isXx
-            && !Character.isLetter(atomType.charAt(2))) {
-          // Xxn.... (but not XXn... or xxn....)
+        // must check list
+        ch0 = Character.toUpperCase(ch0);
+        String check = " " + atomType + " ";
+        if (ffTypes.indexOf(check) < 0) {
+          // not on the list
+        } else if (secondCharOnly.indexOf(check) >= 0) {
+          // AH BH AC BC 
+          elementSymbol = "" + ch1;
+        } else if (twoChar.indexOf(check) >= 0) {
+          // LP lp al cl12 etc.
           elementSymbol = "" + ch0 + ch1;
         } else {
-          // must check list
-          ch0 = Character.toUpperCase(ch0);
-          String check = " " + atomType + " ";
-          if (ffTypes.indexOf(check) < 0) {
-            // not on the list
-          } else if (secondCharOnly.indexOf(check) >= 0) {
-            // AH BH AC BC 
-            elementSymbol = "" + ch1;
-          } else if (twoChar.indexOf(check) >= 0) {
-            // LP lp al cl12 etc.
-            elementSymbol = "" + ch0 + ch1;
-          } else {
-            // all others 
-            elementSymbol = "" + ch0;
-          }
-        }
-        if (elementSymbol == null) {
-          elementSymbol = "" + ch0 + Character.toLowerCase(ch1);
-        } else {
-          deduceSymbol = false;
+          // all others 
+          elementSymbol = "" + ch0;
         }
       }
-      if (!deduceSymbol)
-        atomTypes.put(atomType, elementSymbol);
-    } else {
-      deduceSymbol = false;
+      if (elementSymbol == null) {
+        elementSymbol = "" + ch0 + Character.toLowerCase(ch1);
+      } else {
+        haveSymbol = true;
+      }
     }
     atom.elementSymbol = elementSymbol;
-    return !deduceSymbol;
+    if (haveSymbol)
+      atomTypes.put(atomType, elementSymbol);
+    return haveSymbol;
   }
 }

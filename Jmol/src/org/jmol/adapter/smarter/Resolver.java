@@ -173,7 +173,7 @@ public class Resolver {
       Logger.error(err, e);
       return err;
     }
-    atomSetCollectionReader.initialize();
+    atomSetCollectionReader.initialize(htParams);
     AtomSetCollection atomSetCollection =
       atomSetCollectionReader.readAtomSetCollectionFromDOM(DOMNode);
     return finalize(atomSetCollection, "DOM node");

@@ -230,12 +230,6 @@ public int[] next = new int[1];
     return atomSetCollection;
   }
   
-  public void initialize() {
-    // called by the resolver
-    initializeSymmetry();
-  }
-
-
   /*
    * htParams is used for passing information to the readers
    * and for returning information from the readers
@@ -291,7 +285,7 @@ public int[] next = new int[1];
   
   public void initialize(Hashtable htParams) {
 
-    initialize();
+    initializeSymmetry();
     this.htParams = htParams;
     getHeader = htParams.containsKey("getHeader");
     readerName = (String) htParams.get("readerName");

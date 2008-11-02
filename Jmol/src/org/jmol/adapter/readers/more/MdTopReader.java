@@ -53,7 +53,7 @@ import org.jmol.util.Logger;
  *<p>
  */
 
-public class MdTopReader extends AtomSetCollectionReader {
+public class MdTopReader extends FFReader {
 
   private int nAtoms = 0;
   private int atomCount = 0;
@@ -62,6 +62,7 @@ public class MdTopReader extends AtomSetCollectionReader {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("mdtop");
     try {
+      setUserAtomTypes();
       readLine();
       while (line != null) {
         if (line.indexOf("%FLAG ") != 0) {
@@ -110,8 +111,11 @@ public class MdTopReader extends AtomSetCollectionReader {
         j++;
       setAtomCoord(atom, (i % 100)*2, j*2, 0);
       atom.isHetero = JmolAdapter.isHetero(atom.group3);
-      atom.elementSymbol = deduceElementSymbol(atom.isHetero, atom.atomName,
-          atom.group3);
+      String atomType = atom.atomName;
+      atomType = atomType.substring(atomType.indexOf('\0') + 1);
+      if (!getElementSymbol(atom, atomType))
+        atom.elementSymbol = deduceElementSymbol(atom.isHetero, atom.atomName,
+            atom.group3);
     }
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
     atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);

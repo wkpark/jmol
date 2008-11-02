@@ -1700,8 +1700,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.applySymmetryToBonds = TF;
   }
 
-  void loadData(int type, String name, String coordinateData) {
-    modelSet.loadData(type, name, coordinateData);
+  void setAtomData(int type, String name, String coordinateData) {
+    modelSet.setAtomData(type, name, coordinateData);
   }
 
   public void openDOM(Object DOMNode) {

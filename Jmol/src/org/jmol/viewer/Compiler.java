@@ -1955,6 +1955,8 @@ class Compiler {
     case Token.string:
     case Token.structure:
     case Token.type:
+    case Token.atomType:
+    case Token.atomName:
       key = (String) theValue;
       break;
     case Token.identifier:

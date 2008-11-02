@@ -139,7 +139,8 @@ class DataManager {
           for (int n = 0, i = 0; n < nValues; i++)
             if (bs.get(i))
               fValues[n++] = f[i];
-          viewer.setAtomProperty(bs, tok, 0, 0, fValues);
+          viewer.setAtomProperty(bs, tok, 0, 0, null, fValues, null);
+          return;
         }
       }
     }

@@ -476,20 +476,21 @@ public class Token {
   final static int atomID               = atomproperty | 3;
   final static int bondcount            = atomproperty | 4;
   final static int atomIndex            = atomproperty | 5;
-  final public static int cell          = atomproperty | 6;
-  final public static int element       = atomproperty | 7 | settable;
-  final public static int elemno        = atomproperty | 8;
-  final public static int formalCharge  = atomproperty | 9 | setparam | settable;
-  final static int groupID              = atomproperty | 10;
-  final public static int model         = atomproperty | 11 | command;
-  final public static int molecule      = atomproperty | 12;
-  final public static int occupancy     = atomproperty | 13 | settable;
-  final static int polymerLength        = atomproperty | 14;
-  final static int radius               = atomproperty | 15 | setparam;
-  final static int resno                = atomproperty | 16;
-  final public static int site          = atomproperty | 17;
-  final public static int structure     = atomproperty | 18 | command;
-  final static int symop                = atomproperty | 19;
+  final public static int atomName      = atomproperty | 6 | settable;
+  final public static int cell          = atomproperty | 7;
+  final public static int element       = atomproperty | 8 | settable;
+  final public static int elemno        = atomproperty | 9;
+  final public static int formalCharge  = atomproperty | 10 | setparam | settable;
+  final static int groupID              = atomproperty | 11;
+  final public static int model         = atomproperty | 12 | command;
+  final public static int molecule      = atomproperty | 13;
+  final public static int occupancy     = atomproperty | 14 | settable;
+  final static int polymerLength        = atomproperty | 15;
+  final static int radius               = atomproperty | 16 | setparam;
+  final static int resno                = atomproperty | 17;
+  final public static int site          = atomproperty | 18;
+  final public static int structure     = atomproperty | 19 | command;
+  final static int symop                = atomproperty | 20;
   final public static int vanderwaals   = atomproperty | 20 | settable;
   final public static int valence       = atomproperty | 21 | settable;
 
@@ -1326,6 +1327,7 @@ public class Token {
     "_atomID",          null,
     "_a",               null, 
     "atomIndex",        new Token(atomIndex),
+    "atomName",         new Token(atomName),
     "atomno",           new Token(atomno),
     "atomType",         new Token(atomType),
     "atomx",            new Token(atomX),

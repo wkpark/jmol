@@ -4066,106 +4066,103 @@ class Eval {
     if ((isModel || isAppend) && dataString == null)
       error(ERROR_invalidArgument);
     int userType = -1;
-    if (!isSyntaxCheck || processModel) {
-      data = new Object[3];
-      if (dataType.equals("element_vdw")) {
-        //vdw for now
-        data[0] = dataType;
-        data[1] = dataString.replace(';', '\n');
-        int n = JmolConstants.elementNumberMax;
-        int[] eArray = new int[n + 1];
-        for (int ie = 1; ie <= n; ie++)
-          eArray[ie] = ie;
-        data[2] = eArray;
-        viewer.setData("element_vdw", data, n, 0, 0, 0, 0);
-        return;
-      }
-      if (dataType.indexOf("data2d_") == 0) {
-        //data2d someName
-        data[0] = dataLabel;
-        data[1] = Parser.parseFloatArray2d(dataString);
-        viewer.setData(dataLabel, data, 0, 0, 0, 0, 0);
-        return;
-      }
-      String[] tokens = Parser.getTokens(dataLabel);
-      if (dataType.indexOf("property_") == 0
-          && !(tokens.length == 2 && tokens[1].equals("set"))) {
-        BitSet bs = viewer.getSelectionSet();
-        data[0] = dataType;
-        int atomNumberField = (isOneValue ? 0 : ((Integer) viewer
-            .getParameter("propertyAtomNumberField")).intValue());
-        int atomNumberFieldColumnCount = (isOneValue ? 0 : ((Integer) viewer
-            .getParameter("propertyAtomNumberColumnCount")).intValue());
-        int propertyField = (isOneValue ? Integer.MIN_VALUE : ((Integer) viewer
-            .getParameter("propertyDataField")).intValue());
-        int propertyFieldColumnCount = (isOneValue ? 0 : ((Integer) viewer
-            .getParameter("propertyDataColumnCount")).intValue());
-        if (!isOneValue && dataLabel.indexOf(" ") >= 0) {
-          if (tokens.length == 3) {
-            // DATA "property_whatever [atomField] [propertyField]"
-            dataLabel = tokens[0];
-            atomNumberField = Parser.parseInt(tokens[1]);
-            propertyField = Parser.parseInt(tokens[2]);
-          }
-          if (tokens.length == 5) {
-            // DATA "property_whatever [atomField] [atomFieldColumnCount] [propertyField] [propertyDataColumnCount]"
-            dataLabel = tokens[0];
-            atomNumberField = Parser.parseInt(tokens[1]);
-            atomNumberFieldColumnCount = Parser.parseInt(tokens[2]);
-            propertyField = Parser.parseInt(tokens[3]);
-            propertyFieldColumnCount = Parser.parseInt(tokens[4]);
-          }
-        }
-        if (atomNumberField < 0)
-          atomNumberField = 0;
-        if (propertyField < 0)
-          propertyField = 0;
-        int atomCount = viewer.getAtomCount();
-        int[] atomMap = null;
-        BitSet bsAtoms = new BitSet(atomCount);
-        if (atomNumberField > 0) {
-          atomMap = new int[atomCount + 2];
-          for (int j = 0; j <= atomCount; j++)
-            atomMap[j] = -1;
-          for (int j = 0; j < atomCount; j++) {
-            if (!bs.get(j))
-              continue;
-            int atomNo = viewer.getAtomNumber(j);
-            if (atomNo > atomCount + 1 || atomNo < 0 || bsAtoms.get(atomNo))
-              continue;
-            bsAtoms.set(atomNo);
-            atomMap[atomNo] = j;
-          }
-          data[2] = atomMap;
-        } else {
-          data[2] = bs;
-        }
-        data[1] = dataString;
-        viewer
-            .setData(dataType, data, atomCount, atomNumberField,
-                atomNumberFieldColumnCount, propertyField,
-                propertyFieldColumnCount);
-        userType = Integer.MAX_VALUE; //we're done
-      } else {
-        data[0] = dataLabel;
-        data[1] = dataString;
-        viewer.setData(dataType, data, 0, 0, 0, 0, 0);
-      }
-    }
     if (processModel) {
       // only if first character is "|" do we consider "|" to be new line
       char newLine = viewer.getInlineChar();
       if (dataString.length() > 0 && dataString.charAt(0) != newLine)
         newLine = '\0';
       viewer.loadInline(dataString, newLine, isAppend);
+    }
+    if (isSyntaxCheck && !processModel)
+      return;
+    data = new Object[3];
+    if (dataType.equals("element_vdw")) {
+      //vdw for now
+      data[0] = dataType;
+      data[1] = dataString.replace(';', '\n');
+      int n = JmolConstants.elementNumberMax;
+      int[] eArray = new int[n + 1];
+      for (int ie = 1; ie <= n; ie++)
+        eArray[ie] = ie;
+      data[2] = eArray;
+      viewer.setData("element_vdw", data, n, 0, 0, 0, 0);
       return;
     }
-    if (isSyntaxCheck)
+    if (dataType.indexOf("data2d_") == 0) {
+      //data2d someName
+      data[0] = dataLabel;
+      data[1] = Parser.parseFloatArray2d(dataString);
+      viewer.setData(dataLabel, data, 0, 0, 0, 0, 0);
       return;
-    if (userType < 0)
-      userType = AtomCollection.getUserSettableType(dataType);
-    if (userType >= 0 && userType <= AtomCollection.TAINT_MAX)
-      viewer.loadData(userType, dataType, dataString);
+    }
+    String[] tokens = Parser.getTokens(dataLabel);
+    if (dataType.indexOf("property_") == 0
+        && !(tokens.length == 2 && tokens[1].equals("set"))) {
+      BitSet bs = viewer.getSelectionSet();
+      data[0] = dataType;
+      int atomNumberField = (isOneValue ? 0 : ((Integer) viewer
+          .getParameter("propertyAtomNumberField")).intValue());
+      int atomNumberFieldColumnCount = (isOneValue ? 0 : ((Integer) viewer
+          .getParameter("propertyAtomNumberColumnCount")).intValue());
+      int propertyField = (isOneValue ? Integer.MIN_VALUE : ((Integer) viewer
+          .getParameter("propertyDataField")).intValue());
+      int propertyFieldColumnCount = (isOneValue ? 0 : ((Integer) viewer
+          .getParameter("propertyDataColumnCount")).intValue());
+      if (!isOneValue && dataLabel.indexOf(" ") >= 0) {
+        if (tokens.length == 3) {
+          // DATA "property_whatever [atomField] [propertyField]"
+          dataLabel = tokens[0];
+          atomNumberField = Parser.parseInt(tokens[1]);
+          propertyField = Parser.parseInt(tokens[2]);
+        }
+        if (tokens.length == 5) {
+          // DATA "property_whatever [atomField] [atomFieldColumnCount] [propertyField] [propertyDataColumnCount]"
+          dataLabel = tokens[0];
+          atomNumberField = Parser.parseInt(tokens[1]);
+          atomNumberFieldColumnCount = Parser.parseInt(tokens[2]);
+          propertyField = Parser.parseInt(tokens[3]);
+          propertyFieldColumnCount = Parser.parseInt(tokens[4]);
+        }
+      }
+      if (atomNumberField < 0)
+        atomNumberField = 0;
+      if (propertyField < 0)
+        propertyField = 0;
+      int atomCount = viewer.getAtomCount();
+      int[] atomMap = null;
+      BitSet bsAtoms = new BitSet(atomCount);
+      if (atomNumberField > 0) {
+        atomMap = new int[atomCount + 2];
+        for (int j = 0; j <= atomCount; j++)
+          atomMap[j] = -1;
+        for (int j = 0; j < atomCount; j++) {
+          if (!bs.get(j))
+            continue;
+          int atomNo = viewer.getAtomNumber(j);
+          if (atomNo > atomCount + 1 || atomNo < 0 || bsAtoms.get(atomNo))
+            continue;
+          bsAtoms.set(atomNo);
+          atomMap[atomNo] = j;
+        }
+        data[2] = atomMap;
+      } else {
+        data[2] = bs;
+      }
+      data[1] = dataString;
+      viewer.setData(dataType, data, atomCount, atomNumberField,
+          atomNumberFieldColumnCount, propertyField, propertyFieldColumnCount);
+      return;
+    }
+    userType = AtomCollection.getUserSettableType(dataType);
+    if (userType >= 0) {
+      // this is a known settable type or "property_xxxx"
+      viewer.setAtomData(userType, dataType, dataString);
+      return;
+    }
+    // this is just information to be stored.
+    data[0] = dataLabel;
+    data[1] = dataString;
+    viewer.setData(dataType, data, 0, 0, 0, 0, 0);
   }
 
   private void define() throws ScriptException {
@@ -8141,7 +8138,7 @@ class Eval {
           list1[j++] = list[i];
       if (opValue == null) //not operating -- I don't think this is possible, because opValue is not ever null when minmax is set
         return list1;
-      return Escape.escape(list1);
+      return Escape.escape(list1, false);
     }
     if (isInt && (ivAvg / n) * n == ivAvg)
       return new Integer(ivAvg / n);
@@ -9485,7 +9482,7 @@ class Eval {
         msg = (data == null ? "no data" : "data \""
             + data[0]
             + "\"\n"
-            + (data[1] instanceof float[] ? Escape.escape((float[]) data[1])
+            + (data[1] instanceof float[] ? Escape.escape((float[]) data[1], true)
                 : data[1] instanceof float[][] ? Escape.escape(
                     (float[][]) data[1], false) : "" + data[1]))
             + "\nend \"" + data[0] + "\";";
@@ -12848,7 +12845,7 @@ class Eval {
         int nBytes = Token.iValue(args[2]);
         int firstLine = Token.iValue(args[3]);
         float[] f = Parser.extractData(selected, iField, nBytes, firstLine);
-        return addX(Escape.escape(f));
+        return addX(Escape.escape(f, false));
       }
 
       if (selected.indexOf("data2d_") == 0) {
@@ -12861,7 +12858,7 @@ class Eval {
           if (pt < 0)
             pt += f1.length;
           if (pt >= 0 && pt < f1.length)
-            return addX(Escape.escape(f1[pt]));
+            return addX(Escape.escape(f1[pt], false));
           return addX("");
         }
         return addX(Escape.escape(f1, false));
@@ -12880,7 +12877,7 @@ class Eval {
           for (int i = Math.min(f1.length, f2.length); --i >= 0;)
             f1[i] += f2[i];
         }
-        return addX(Escape.escape(f1));
+        return addX(Escape.escape(f1, false));
       }
 
       // some other data type -- just return it
@@ -12924,8 +12921,8 @@ class Eval {
             .firstSetBit((BitSet) args[1].value)));
       }
       if (withinSpec instanceof String) {
-        isSequence = !Parser.isOneOf(withinStr,
-            "type;element;site;group;chain;structure;molecule;model;boundbox");
+        isSequence = !Parser.isOneOf(withinStr.toLowerCase(),
+            "atomname;type;atomtype;element;site;group;chain;structure;molecule;model;boundbox");
       } else if (isDistance) {
         distance = Token.fValue(args[0]);
         if (i < 2)
@@ -12940,17 +12937,21 @@ class Eval {
       switch (i) {
       case 1:
         // within (boundbox)
-        return (!withinStr.equals("boundbox") ? false : addX(isSyntaxCheck ? bs
+        return (!withinStr.equalsIgnoreCase("boundbox") ? false : addX(isSyntaxCheck ? bs
             : viewer.getAtomBits(Token.boundbox, null)));
       case 2:
-        // within (type, "XX,YY,ZZZ")
-        if (withinStr.equals("type"))
-          return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.type, Token
+        // within (atomName, "XX,YY,ZZZ")
+        if (withinStr.equalsIgnoreCase("atomName"))
+          return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.atomName, Token
+              .sValue(args[1])));
+        // within (atomType, "XX,YY,ZZZ")
+        if (withinStr.equalsIgnoreCase("atomType") || withinStr.equalsIgnoreCase("type"))
+          return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.atomType, Token
               .sValue(args[1])));
         break;
       case 3:
         withinStr = Token.sValue(args[1]);
-        if (!Parser.isOneOf(withinStr, "on;off;plane;hkl;coord"))
+        if (!Parser.isOneOf(withinStr.toLowerCase(), "on;off;plane;hkl;coord"))
           return false;
         // within (distance, true|false, [point or atom center] 
         // within (distance, plane|hkl,  [plane definition] )

@@ -94,8 +94,6 @@ abstract public class AtomCollection {
 
   public Atom[] atoms;
   int atomCount;
-  String[] atomNames;
-  String[] atomTypes;
 
 
   public Atom[] getAtoms() {
@@ -107,7 +105,31 @@ abstract public class AtomCollection {
   }
 
   public int getAtomCount() {
+    // not established until AFTER model loading
     return atomCount;
+  }
+  
+  ////////////////////////////////////////////////////////////////
+  // these may or may not be allocated
+  // depending upon the AtomSetCollection characteristics
+  //
+  // used by Atom:
+  //
+  String[] atomNames;
+  String[] atomTypes;
+  int[] atomSerials;
+  byte[] specialAtomIDs;
+  Object[] clientAtomReferences;
+  Vector3f[] vibrationVectors;
+  byte[] occupancies;
+  short[] bfactor100s;
+  float[] partialCharges;
+  Object[][] ellipsoids;
+  protected int[] surfaceDistance100s;
+
+
+  public boolean modelSetHasVibrationVectors(){
+    return (vibrationVectors != null);
   }
   
   public String[] getAtomNames() {
@@ -118,25 +140,6 @@ abstract public class AtomCollection {
     return atomTypes;
   }
 
-  ////////////////////////////////////////////////////////////////
-  // these may or may not be allocated
-  // depending upon the AtomSetCollection characteristics
-  //
-  // used by Atom:
-  //
-  int[] atomSerials;
-  byte[] specialAtomIDs;
-  Object[] clientAtomReferences;
-  Vector3f[] vibrationVectors;
-
-  public boolean modelSetHasVibrationVectors(){
-    return (vibrationVectors != null);
-  }
-  
-  byte[] occupancies;
-  short[] bfactor100s;
-  float[] partialCharges;
-  Object[][] ellipsoids;
   
   public float[] getPartialCharges() {
     return partialCharges;
@@ -145,8 +148,6 @@ abstract public class AtomCollection {
   public short[] getBFactors() {
     return bfactor100s;
   }
-
-  protected int[] surfaceDistance100s;
 
   private BitSet bsHidden = new BitSet();
 
@@ -483,7 +484,12 @@ abstract public class AtomCollection {
       }
       Atom atom = atoms[i];
       switch (tok) {
+      case Token.atomName:
+        taint(i, TAINT_ATOMNAME);
+        setAtomName(i, sValue);
+        break;
       case Token.atomType:
+        taint(i, TAINT_ATOMTYPE);
         setAtomType(i, sValue);
         break;
       case Token.atomX:
@@ -590,6 +596,12 @@ abstract public class AtomCollection {
     setAtomVibrationVector(atomIndex, v.x, v.y, v.z);
   }
 
+  protected void setAtomName(int atomIndex, String name) {
+    if (atomNames == null)
+      atomNames = new String[atoms.length];
+    atomNames[atomIndex] = name;
+  }
+
   protected void setAtomType(int atomIndex, String type) {
       if (atomTypes == null)
         atomTypes = new String[atoms.length];
@@ -632,7 +644,7 @@ abstract public class AtomCollection {
 
   // loading data
   
-  public void loadData(int type, String name, String dataString) {
+  public void setAtomData(int type, String name, String dataString) {
     float[] fData = null;
     BitSet bs = null;
     switch (type) {
@@ -644,7 +656,8 @@ abstract public class AtomCollection {
       return;
     case TAINT_MAX:
       fData = new float[atomCount];
-      bs = new BitSet(atomCount);break;
+      bs = new BitSet(atomCount);
+      break;
     }
     int[] lines = Parser.markLines(dataString, ';');
     int n = 0;
@@ -658,12 +671,19 @@ abstract public class AtomCollection {
           continue;
         Atom atom = atoms[atomIndex];
         n++;
-        float x = Parser.parseFloat(tokens[tokens.length - 1]);
+        int pt = tokens.length - 1;
+        float x = Parser.parseFloat(tokens[pt]);
         switch (type) {
         case TAINT_MAX:
           fData[atomIndex] = x;
           bs.set(atomIndex);
           continue;
+        case TAINT_ATOMNAME:
+          setAtomName(atomIndex, tokens[pt]);
+          break;
+        case TAINT_ATOMTYPE:
+          setAtomType(atomIndex, tokens[pt]);
+          break;
         case TAINT_ELEMENT:
           atom.setAtomicAndIsotopeNumber((int)x);
           atom.setPaletteID(JmolConstants.PALETTE_CPK);
@@ -728,19 +748,23 @@ abstract public class AtomCollection {
   
   ////  atom coordinate and property changing  //////////
   
-  final public static byte TAINT_ATOMTYPE = 0;
-  final public static byte TAINT_COORD = 1;
-  final private static byte TAINT_ELEMENT = 2;
-  final private static byte TAINT_FORMALCHARGE = 3;
-  final private static byte TAINT_OCCUPANCY = 4;
-  final private static byte TAINT_PARTIALCHARGE = 5;
-  final private static byte TAINT_TEMPERATURE = 6;
-  final private static byte TAINT_VALENCE = 7;
-  final private static byte TAINT_VANDERWAALS = 8;
-  final private static byte TAINT_VIBRATION = 9;
-  final public static byte TAINT_MAX = 10; // 1 more than last number, above
-
+  // be sure to add the name to the list below as well!
+  final public static byte TAINT_ATOMNAME = 0;
+  final public static byte TAINT_ATOMTYPE = 1;
+  final public static byte TAINT_COORD = 2;
+  final private static byte TAINT_ELEMENT = 3;
+  final private static byte TAINT_FORMALCHARGE = 4;
+  final private static byte TAINT_OCCUPANCY = 5;
+  final private static byte TAINT_PARTIALCHARGE = 6;
+  final private static byte TAINT_TEMPERATURE = 7;
+  final private static byte TAINT_VALENCE = 8;
+  final private static byte TAINT_VANDERWAALS = 9;
+  final private static byte TAINT_VIBRATION = 10;
+  final public static byte TAINT_MAX = 11; // 1 more than last number, above
+  
   final private static String[] userSettableValues = {
+    "atomName",
+    "atomType",
     "coord",
     "element",
     "formalCharge",
@@ -752,13 +776,20 @@ abstract public class AtomCollection {
     "vibrationVector"
   };
   
+  static {
+   if (userSettableValues.length != TAINT_MAX)
+     Logger.error("AtomCollection.java userSettableValues is not length TAINT_MAX!");
+  }
+  
   protected BitSet[] tainted;  // not final -- can be set to null
 
   public static int getUserSettableType(String dataType) {
-    for (int i = 0; i < userSettableValues.length; i++)
-      if (userSettableValues[i].equalsIgnoreCase(dataType))
+    boolean isExplicit = (dataType.indexOf("property_") == 0);
+    String check = (isExplicit ? dataType.substring(9) : dataType);
+    for (int i = 0; i < TAINT_MAX; i++)
+      if (userSettableValues[i].equalsIgnoreCase(check))
         return i;
-    return dataType.toLowerCase().indexOf("property_") == 0 ? TAINT_MAX : -1;
+    return (isExplicit ? TAINT_MAX : -1);
   }
 
   public BitSet getTaintedAtoms(byte type) {
@@ -807,6 +838,7 @@ abstract public class AtomCollection {
                                             Atom[] atoms, int atomCount,
                                             byte type, BitSet bs, String label,
                                             float[] fData) {
+    //see setAtomData()
     StringBuffer s = new StringBuffer();
     int n = 0;
     String dataLabel = (label == null ? userSettableValues[type] : label)
@@ -817,12 +849,23 @@ abstract public class AtomCollection {
             " ").append(atoms[i].getInfo().replace(' ', '_')).append(" ");
         switch (type) {
         case TAINT_MAX:
-          s.append(" ").append(fData[i]);
+          s.append(fData[i]);
+          break;
+        case TAINT_ATOMNAME:
+          s.append(atoms[i].getAtomName());
+          break;
+        case TAINT_ATOMTYPE:
+          s.append(atoms[i].getAtomType());
           break;
         case TAINT_COORD:
-          s.append(" ").append(atoms[i].x).append(" ").append(atoms[i].y)
-              .append(" ").append(atoms[i].z);
+          s.append(atoms[i].x).append(" ").append(atoms[i].y).append(" ")
+              .append(atoms[i].z);
           break;
+        case TAINT_VIBRATION:
+          Vector3f v = atoms[i].getVibrationVector();
+          if (v == null)
+            v = new Vector3f();
+          s.append(v.x).append(" ").append(v.y).append(" ").append(v.z);
         case TAINT_ELEMENT:
           s.append(atoms[i].getAtomicAndIsotopeNumber());
           break;
@@ -844,12 +887,6 @@ abstract public class AtomCollection {
         case TAINT_VANDERWAALS:
           s.append(atoms[i].getVanderwaalsRadiusFloat());
           break;
-        case TAINT_VIBRATION:
-          Vector3f v = atoms[i].getVibrationVector();
-          if (v == null)
-            v = new Vector3f();
-          s.append(" ").append(v.x).append(" ").append(v.y).append(" ").append(
-              v.z);
         }
         s.append(" ;\n");
         ++n;
@@ -1310,7 +1347,16 @@ abstract public class AtomCollection {
         if (atoms[i].getAtomNumber() == iSpec)
           bs.set(i);
       return bs;
-    case Token.type:
+    case Token.atomName:
+      String names = "," + specInfo + ",";
+      for (int i = atomCount; --i >= 0;) {
+        String name = atoms[i].getAtomName();
+        if (names.indexOf(name) >= 0)
+          if (names.indexOf("," + name + ",") >= 0)
+            bs.set(i);
+      }
+      return bs;
+    case Token.atomType:
       String types = "," + specInfo + ",";
       for (int i = atomCount; --i >= 0;) {
         String type = atoms[i].getAtomType();

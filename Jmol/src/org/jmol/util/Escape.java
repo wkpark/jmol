@@ -61,7 +61,7 @@ public class Escape {
     return "{" + xyz.x + " " + xyz.y + " " + xyz.z + "}";
   }
 
-  public static String escape(float[] f) {
+  public static String escape(float[] f, boolean asArray) {
     StringBuffer sb = new StringBuffer();
     for (int i = 0; i < f.length; i++) {
       if (i > 0)

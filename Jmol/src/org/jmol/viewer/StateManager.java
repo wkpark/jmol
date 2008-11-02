@@ -743,7 +743,7 @@ public class StateManager {
     //this is a final static String. MAKE SURE ALL ENTRIES ARE LOWERCASE!
     //
     ";ambientpercent;animationfps"
-        + ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;atomtypes;axescolor"
+        + ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor"
         + ";axesposition;axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color"
         + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
         + ";debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"

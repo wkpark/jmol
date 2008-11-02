@@ -84,7 +84,10 @@ public class Check implements ActionListener {
       }
     };
     File configDirectory = new File(new File(System.getProperty("user.home")), ".jmol");
-    configDirectory.mkdirs();
+    if (!configDirectory.mkdirs() &&
+        (!configDirectory.exists() || !configDirectory.isDirectory())) {
+      System.out.println("Error creating directory " + configDirectory.toString());
+    }
     availableProjects = new File(configDirectory, "availableProjects");
     availableAmbers = new File(configDirectory, "availableAmbers");
   }

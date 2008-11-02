@@ -281,8 +281,12 @@ public class ProjectInformation {
       output.close();
 
       // Manage local file
-      file.delete();
-      tmpFile.renameTo(file);
+      if (!file.delete()) {
+        System.out.println("Error deleting file " + file.toString());
+      }
+      if (!tmpFile.renameTo(file)) {
+        System.out.println("Error renaming file " + tmpFile.toString() + " to " + file.toString());
+      }
       System.out.println("File updated");
     } catch (IOException e) {
       System.out.println("Error " + e.getMessage());
@@ -407,6 +411,7 @@ public class ProjectInformation {
    * Add information from psummaryC.html
    */
   private void addPSCInformation() {
+    Reader reader = null;
     try {
       //Check file existence and time
       long psDate = System.currentTimeMillis();
@@ -439,7 +444,6 @@ public class ProjectInformation {
         }
 
         //Load new information
-        Reader reader = null;
         if (_local == true) {
           reader = new FileReader("psummary.html"); //$NON-NLS-1$
         } else {
@@ -464,6 +468,14 @@ public class ProjectInformation {
       //Empty
     } catch (BadLocationException e) {
       //Empty
+    } finally {
+      if (reader != null) {
+        try {
+          reader.close();
+        } catch (IOException e) {
+          //
+        }
+      }
     }
   }
 
@@ -471,6 +483,7 @@ public class ProjectInformation {
    * Add information from psummary.html
    */
   private void addPSInformation() {
+    Reader reader = null;
     try {
       //Check file existence and time
       //long psDate = System.currentTimeMillis();
@@ -479,7 +492,6 @@ public class ProjectInformation {
       }
 
       //Load new information
-      Reader reader = null;
       if (_local == true) {
         reader = new FileReader("psummary.html"); //$NON-NLS-1$
       } else {
@@ -503,6 +515,14 @@ public class ProjectInformation {
       //Empty
     } catch (BadLocationException e) {
       //Empty
+    } finally {
+      if (reader != null) {
+        try {
+          reader.close();
+        } catch (IOException e) {
+          //
+        }
+      }
     }
   }
 
@@ -607,6 +627,7 @@ public class ProjectInformation {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     factory.setNamespaceAware(true);
 
+    InputStream stream = null;
     try {
       // Retrieve distant file
       File localFile = new File("fci-data.xml");
@@ -616,7 +637,7 @@ public class ProjectInformation {
       }
 
       //Load document
-      InputStream stream = new FileInputStream(localFile);
+      stream = new FileInputStream(localFile);
       DocumentBuilder builder = factory.newDocumentBuilder();
       Document document = builder.parse(stream);
 
@@ -643,6 +664,14 @@ public class ProjectInformation {
       //Empty
     } catch (IOException e) {
       //Empty
+    } finally {
+      if (stream != null) {
+        try {
+          stream.close();
+        } catch (IOException e) {
+          //
+        }
+      }
     }
   }
 

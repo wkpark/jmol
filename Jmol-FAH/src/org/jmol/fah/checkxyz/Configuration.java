@@ -74,11 +74,13 @@ public class Configuration implements Serializable {
    * Load configuration from file. 
    */
   public void loadConfiguration() {
+    FileInputStream fis = null;
     try {
-      FileInputStream fis = new FileInputStream(configFile);
+      fis = new FileInputStream(configFile);
       Properties props = new Properties();
       props.load(fis);
       fis.close();
+      fis = null;
       
       userName = props.getProperty("userName", userName);
       mailServer = props.getProperty("mailServer", mailServer);
@@ -113,6 +115,14 @@ public class Configuration implements Serializable {
       }
     } catch (IOException e) {
       //
+    } finally {
+      if (fis != null) {
+        try {
+          fis.close();
+        } catch (IOException e) {
+          //
+        }
+      }
     }
   }
 
@@ -121,6 +131,7 @@ public class Configuration implements Serializable {
    * Save configuration in file.
    */
   public void saveConfiguration() {
+    FileOutputStream fos = null;
     try {
       Properties props = new Properties();
       props.setProperty("userName", userName);
@@ -143,11 +154,18 @@ public class Configuration implements Serializable {
         props.setProperty("sent_" + num, iter.next().toString());
         num++;
       }
-      FileOutputStream fos = new FileOutputStream(configFile);
+      fos = new FileOutputStream(configFile);
       props.store(fos, "Jmol FAH");
-      fos.close();
     } catch (IOException e) {
       //
+    } finally {
+      if (fos != null) {
+        try {
+          fos.close();
+        } catch (IOException e) {
+          //
+        }
+      }
     }
   }
 

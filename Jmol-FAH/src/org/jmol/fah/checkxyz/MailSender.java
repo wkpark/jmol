@@ -79,7 +79,7 @@ public class MailSender {
     if (testing) {
       email.addTo(config.getUserMail(), config.getUserName());
     } else {
-      email.addTo("nico@jmol.org", "FoldingAtHome Files");
+      email.addTo("nvervelle@gmail.com", "FoldingAtHome Files");
       email.addCc(config.getUserMail(), config.getUserName());
     }
     email.setFrom(config.getUserMail(), config.getUserName());

@@ -463,7 +463,8 @@ abstract public class AtomCollection {
         setAtomCoordRelative(i, x, y, z);
   }
 
-  public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue, float[] values) {
+  public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue,
+                              String sValue, float[] values, String[] list) {
     int n = 0;
     if (values != null && values.length == 0)
       return;
@@ -475,9 +476,16 @@ abstract public class AtomCollection {
           return;
         fValue = values[n++];
         iValue = (int) fValue;
+      } else if (list != null) {
+        if (n >= values.length)
+          return;
+        sValue = list[n++];
       }
       Atom atom = atoms[i];
       switch (tok) {
+      case Token.atomType:
+        setAtomType(i, sValue);
+        break;
       case Token.atomX:
         setAtomCoord(i, fValue, atom.y, atom.z);
         break;
@@ -502,7 +510,8 @@ abstract public class AtomCollection {
         taint(i, TAINT_ELEMENT);
         atom.setAtomicAndIsotopeNumber(iValue);
         atom.setPaletteID(JmolConstants.PALETTE_CPK);
-        atom.setColixAtom(viewer.getColixAtomPalette(atom, JmolConstants.PALETTE_CPK));
+        atom.setColixAtom(viewer.getColixAtomPalette(atom,
+            JmolConstants.PALETTE_CPK));
         break;
       case Token.formalCharge:
         atom.setFormalCharge(iValue);
@@ -525,14 +534,14 @@ abstract public class AtomCollection {
         taint(i, TAINT_VALENCE);
         break;
       case Token.vanderwaals:
-        if (atom.setRadius(fValue))        
-            taint(i, TAINT_VANDERWAALS);
+        if (atom.setRadius(fValue))
+          taint(i, TAINT_VANDERWAALS);
         else
-            untaint(i, TAINT_VANDERWAALS);
+          untaint(i, TAINT_VANDERWAALS);
         break;
       default:
         Logger.error("unsettable atom property: " + Token.nameOf(tok));
-        break;        
+        break;
       }
     }
   }
@@ -581,16 +590,20 @@ abstract public class AtomCollection {
     setAtomVibrationVector(atomIndex, v.x, v.y, v.z);
   }
 
+  protected void setAtomType(int atomIndex, String type) {
+      if (atomTypes == null)
+        atomTypes = new String[atoms.length];
+      atomTypes[atomIndex] = type;
+  }
+  
   protected void setOccupancy(int atomIndex, int occupancy) {
     if (occupancy < 0)
       occupancy = 0;
     else if (occupancy > 100)
       occupancy = 100;
-    if (occupancy != 100) {
       if (occupancies == null)
         occupancies = new byte[atoms.length];
       occupancies[atomIndex] = (byte)occupancy;
-    }
   }
   
   protected void setPartialCharge(int atomIndex, float partialCharge) {
@@ -715,16 +728,17 @@ abstract public class AtomCollection {
   
   ////  atom coordinate and property changing  //////////
   
-  final public static byte TAINT_COORD = 0;
-  final private static byte TAINT_ELEMENT = 1;
-  final private static byte TAINT_FORMALCHARGE = 2;
-  final private static byte TAINT_OCCUPANCY = 3;
-  final private static byte TAINT_PARTIALCHARGE = 4;
-  final private static byte TAINT_TEMPERATURE = 5;
-  final private static byte TAINT_VALENCE = 6;
-  final private static byte TAINT_VANDERWAALS = 7;
-  final private static byte TAINT_VIBRATION = 8;
-  final public static byte TAINT_MAX = 9; // 1 more than last number, above
+  final public static byte TAINT_ATOMTYPE = 0;
+  final public static byte TAINT_COORD = 1;
+  final private static byte TAINT_ELEMENT = 2;
+  final private static byte TAINT_FORMALCHARGE = 3;
+  final private static byte TAINT_OCCUPANCY = 4;
+  final private static byte TAINT_PARTIALCHARGE = 5;
+  final private static byte TAINT_TEMPERATURE = 6;
+  final private static byte TAINT_VALENCE = 7;
+  final private static byte TAINT_VANDERWAALS = 8;
+  final private static byte TAINT_VIBRATION = 9;
+  final public static byte TAINT_MAX = 10; // 1 more than last number, above
 
   final private static String[] userSettableValues = {
     "coord",

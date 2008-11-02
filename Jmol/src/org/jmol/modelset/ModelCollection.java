@@ -414,8 +414,9 @@ abstract public class ModelCollection extends BondCollection {
     return ptCenter;
   }
 
-  public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue, float[] values) {
-    super.setAtomProperty(bs, tok, iValue, fValue, values);
+  public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue,
+                              String sValue, float[] values, String[] list) {
+    super.setAtomProperty(bs, tok, iValue, fValue, sValue, values, list);
     if ((tok == Token.valence || tok == Token.formalCharge)
         && viewer.getSmartAromatic())
       assignAromaticBonds();

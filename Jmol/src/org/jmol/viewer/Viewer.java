@@ -3255,6 +3255,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (g3d.setPass2(antialias2)) {
       transformManager.setAntialias(antialias2);
       repaintManager.render(g3d, modelSet);
+      transformManager.setAntialias(antialiasDisplay);
     }
   }
 
@@ -6174,8 +6175,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void setAtomProperty(BitSet bs, int tok, int iValue, float fValue,
-                       float[] values) {
-    modelSet.setAtomProperty(bs, tok, iValue, fValue, values);
+                       String sValue, float[] values, String[] list) {
+    modelSet.setAtomProperty(bs, tok, iValue, fValue, sValue, values, list);
     switch (tok) {
     case Token.atomX:
     case Token.atomY:

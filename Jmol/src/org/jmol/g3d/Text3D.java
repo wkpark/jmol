@@ -102,6 +102,11 @@ public class Text3D {
       return textWidth;
     //TODO: text width/height are calculated 4x correct size here when antialiased.
     // this is wasteful, as it requires drawing larger than necessary images
+    if (antialias && (argb & 0xC0C0C0) == 0) {
+      // an interesting problem with antialiasing occurs if 
+      // the label is black or almost black.
+      argb = argb | 0x040404;
+    }
     if (jmolRenderer != null || 
         (x < 0 || x + textWidth > g3d.width || y < 0
         || y + textHeight > g3d.height))

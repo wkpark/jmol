@@ -8152,7 +8152,7 @@ class Eval {
                                  Token tokenValue) throws ScriptException {
     if (isSyntaxCheck || BitSetUtil.cardinalityOf(bs) == 0)
       return;
-    String[] list;
+    String[] list = null;
     int nValues;
     switch (tok) {
     case Token.xyz:
@@ -8173,7 +8173,7 @@ class Eval {
         }
         viewer.setAtomCoord(bs, tok, values);
       }
-      break;
+      return;
     case Token.color:
       if (tokenValue.tok == Token.point3f)
         iValue = colorPtToInt((Point3f) tokenValue.value);
@@ -8199,22 +8199,30 @@ class Eval {
       viewer.setShapeProperty(JmolConstants.SHAPE_BALLS, "color",
           tokenValue.tok == Token.string ? tokenValue.value : new Integer(
               iValue), bs);
-      break;
-    default:
-      float[] fvalues = null;
-      if (tokenValue.tok == Token.list || tokenValue.tok == Token.string) {
-        list = (tokenValue.tok == Token.list ? (String[]) tokenValue.value
-            : Parser.getTokens(Token.sValue(tokenValue)));
-        if ((nValues = list.length) == 0)
-          return;
-        fvalues = new float[nValues];
-        for (int i = nValues; --i >= 0;)
-          fvalues[i] = Parser.parseFloat(list[i]);
-      }
-      if (tok == Token.element)
-        clearDefinedVariableAtomSets();
-      viewer.setAtomProperty(bs, tok, iValue, fValue, fvalues);
+      return;
     }
+    String sValue = null;
+    float[] fvalues = null;
+    if (tokenValue.tok == Token.list || tokenValue.tok == Token.string) {
+      list = (tokenValue.tok == Token.list ? (String[]) tokenValue.value
+          : Parser.getTokens(Token.sValue(tokenValue)));
+      if ((nValues = list.length) == 0)
+        return;
+      fvalues = new float[nValues];
+      for (int i = nValues; --i >= 0;)
+        fvalues[i] = (tok == Token.element ? JmolConstants
+            .elementNumberFromSymbol(list[i]) : Parser.parseFloat(list[i]));
+      if (tokenValue.tok == Token.string && nValues == 1) {
+        fValue = fvalues[0];
+        iValue = (int) fValue;
+        sValue = list[0];
+        list = null;
+        fvalues = null;
+      }
+    }
+    if (tok == Token.element)
+      clearDefinedVariableAtomSets();
+    viewer.setAtomProperty(bs, tok, iValue, fValue, sValue, fvalues, list);
   }
 
   private void axes(int index) throws ScriptException {

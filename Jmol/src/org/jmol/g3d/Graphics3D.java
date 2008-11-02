@@ -319,6 +319,8 @@ final public class Graphics3D implements JmolRendererInterface {
   }
   
   public void beginRendering(Matrix3f rotationMatrix) {
+    //System.out.println("beginrendering" + windowWidth + " "+ newWindowWidth);
+
     if (currentlyRendering)
       endRendering();
     if (windowWidth != newWindowWidth || windowHeight != newWindowHeight
@@ -328,13 +330,14 @@ final public class Graphics3D implements JmolRendererInterface {
       isFullSceneAntialiasingEnabled = newAntialiasing;
       releaseBuffers();
     }
+    //System.out.println("windowwithheith" + windowWidth + " " + windowHeight);
     normix3d.setRotationMatrix(rotationMatrix);
     antialiasEnabled = antialiasThisFrame = newAntialiasing;
     currentlyRendering = true;
     twoPass = true; //only for testing -- set false to disallow second pass
     isPass2 = false;
     //System.out.println("Graphics3D beginRendering width=" + width + " height=" + height 
-    //    + " window width,height: " + windowWidth + "," + windowHeight);
+      //  + " window width,height: " + windowWidth + "," + windowHeight);
     //System.out.println("pass1 antialiasEnabled=" + antialiasEnabled);
     colixCurrent = 0;
     haveTranslucentObjects = false;
@@ -346,6 +349,9 @@ final public class Graphics3D implements JmolRendererInterface {
       zbuf = platform.zBuffer;
     }
     setWidthHeight(antialiasThisFrame);
+    //System.out.println("Graphics3D beginRendering width=" + width + " height=" + height 
+      //  + " window width,height: " + windowWidth + "," + windowHeight);
+    //System.out.println("pass1 antialiasEnabled=" + antialiasEnabled);
     //setRectClip(clipX, clipY, clipWidth, clipHeight);
     platform.obtainScreenBuffer();
     if (backgroundImage != null)
@@ -364,7 +370,7 @@ final public class Graphics3D implements JmolRendererInterface {
     if (!haveTranslucentObjects || !currentlyRendering)
       return false;
     isPass2 = true;
-    //System.out.println("pass2");
+    //System.out.println("pass2 " + pbuf.length);
     colixCurrent = 0;
     addAllPixels = true;
     if (pbufT == null || antialias2 != antialiasTranslucent) {
@@ -564,9 +570,28 @@ final public class Graphics3D implements JmolRendererInterface {
   }
   
   private void downsampleFullSceneAntialiasing(boolean downsampleZBuffer) {
+    //System.out.println("downsample " + antialiasThisFrame + " " + downsampleZBuffer + " " + pbuf.length + " " + width);
     int width4 = width;
     int offset1 = 0;
     int offset4 = 0;
+    int bgcheck = bgcolor;
+    // now is the time we have to put in the correct backgroudn color
+    // this was a bug in 11.6.0-11.6.2. 
+    
+    // we must downsample the Z Buffer if there are translucent
+    // objects left to draw and antialiasTranslucent is set false
+    // in that case we must fudge the background color, because
+    // otherwise a match of the background color with an object
+    // will put it in the back -- the "blue tie on a blue screen"
+    // television effect. We want to avoid that. Here we can do that
+    // because the colors will be blurred anyway.
+    
+    if (downsampleZBuffer)
+      bgcheck += ((bgcheck & 0xFF) == 0xFF ? -1 : 1); 
+    for (int i =0; i < pbuf.length; i++)
+      if (pbuf[i] == 0)
+        pbuf[i] = bgcheck;
+    bgcheck &= 0xFFFFFF;
     //System.out.println("downsample " + downsampleZBuffer);
     for (int i = windowHeight; --i >= 0; offset4 += width4)
       for (int j = windowWidth; --j >= 0; ++offset1) {
@@ -601,12 +626,12 @@ final public class Graphics3D implements JmolRendererInterface {
           z = Math.min(z, zbuf[offset4 + width4]);
           if (z != Integer.MAX_VALUE)
             z >>= 1;
-          zbuf[offset1] = (pbuf[offset1] == 0 ? Integer.MAX_VALUE
+          zbuf[offset1] = (pbuf[offset1] == bgcheck ? Integer.MAX_VALUE
               : z);
         }
-      setWidthHeight(antialiasThisFrame = false);
-    }
-    
+      antialiasThisFrame = false;
+      setWidthHeight(false);
+    }    
   }
 
   void mergeOpaqueAndTranslucentBuffers() {

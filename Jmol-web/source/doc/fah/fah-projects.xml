@@ -4823,7 +4823,7 @@
   <fah_proj number="2483" name="p2483_system" public="y" file="xyz"
     server="171.65.103.162" atoms="97078" preferred="42" deadline="93"
     credit="905" frames="100" code="G" contact="ppetrone" contrib="Smoking2000"/>
-  <fah_proj number="2484" name="p2484_Lysine_Fragment" public="n" file="xyz"
+  <fah_proj number="2484" name="p2484_Lysine_Fragment" public="y" file="xyz"
     server="171.65.103.162" atoms="97157" preferred="42" deadline="93"
     credit="905" frames="100" code="G" contact="ppetrone" contrib="Smoking2000"/>
   <fah_proj number="2485" name="p2485_Arginine_Fragment" public="y" file="xyz"
@@ -5139,9 +5139,12 @@
   <fah_proj number="2672" name="p2672_IBX in water" public="y"
     server="171.64.65.56" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson"/>
-  <fah_proj number="2673" name="p2673_IBX in water" public="n" file="xyz"
+  <fah_proj number="2673" name="p2673_IBX in water" public="y" file="xyz"
     server="171.67.108.24" atoms="146808" preferred="6" deadline="6"
     credit="3840" frames="100" code="GC" contact="kasson" contrib="Ivoshiee"/>
+  <fah_proj number="2674" name="p2674_IBX in water" public="y" file="xyz"
+    server="171.67.108.24" atoms="146808" preferred="3" deadline="3"
+    credit="1920" frames="100" code="GC" contact="kasson" contrib="Smoking2000"/>
 
   <!-- Projects 2700 to 2799 -->
   <fah_proj number="2711" name="p2711_GPUlambda" public="y"
@@ -7199,10 +7202,10 @@
     server="171.64.65.64" atoms="42813" preferred="6" deadline="6"
     credit="1" frames="100" code="GC" contact="kasson"/>
   <fah_proj number="5113" name="p5113_Calmodulin" public="y" file="xyz"
-    server="171.64.122.42" atoms="42727" preferred="25" deadline="50"
+    server="171.67.108.12" atoms="42727" preferred="25" deadline="50"
     credit="749" frames="100" code="A0" contact="kasson" contrib="John Deas"/>
   <fah_proj number="5114" name="p5114_Calmodulin" public="y" file="xyz"
-    server="171.64.122.42" atoms="42727" preferred="25" deadline="50"
+    server="171.67.108.12" atoms="42727" preferred="25" deadline="50"
     credit="749" frames="100" code="A0" contact="kasson" contrib="Hyperlife"/>
 
   <!-- Projects 5200 to 5299 -->

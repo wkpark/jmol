@@ -11980,6 +11980,10 @@ class Eval {
         return true;
       case Token.leftsquare: // {....}[n][m]
         isLeftOp = true;
+        if (!wasX) {
+          squareCount++;
+          op = newOp = Token.tokenArray;
+        }
         break;
       case Token.minus:
         if (wasX)
@@ -12029,13 +12033,6 @@ class Eval {
           // (x[2]) finalizes the selection
           if (xPt >= 0)
             xStack[xPt] = Token.selectItem(xStack[xPt]);
-          break;
-        }
-        if (op.tok == Token.comma && oStack[oPt].tok == Token.leftsquare) {
-          // [x,y,z]
-          oStack[oPt] = Token.tokenArray;
-          newOp = xStack[xPt];
-          xStack[xPt] = Token.tokenArray;
           break;
         }
         if (op.tok == Token.rightsquare && oStack[oPt].tok == Token.array) {

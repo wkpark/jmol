@@ -74,6 +74,8 @@ public class MailSender {
     MultiPartEmail email = new MultiPartEmail();
     email.setHostName(config.getMailServer());
     email.setSmtpPort(config.getMailPort());
+    email.setSslSmtpPort("" + config.getMailSslPort());
+    email.setSSL(config.getUseSsl());
     if (testing) {
       email.addTo(config.getUserMail(), config.getUserName());
     } else {

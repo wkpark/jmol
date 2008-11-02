@@ -42,6 +42,8 @@ public class Configuration implements Serializable {
   private String userName;
   private String mailServer;
   private int mailPort;
+  private int mailSslPort;
+  private boolean useSsl;
   private String userMail;
   private String login;
   private String password;
@@ -57,6 +59,8 @@ public class Configuration implements Serializable {
     userName = "";
     mailServer = "";
     mailPort = 25;
+    mailSslPort = 465;
+    useSsl = false;
     userMail = "";
     login = "";
     password = "";
@@ -84,6 +88,14 @@ public class Configuration implements Serializable {
       } catch (NumberFormatException e) {
         mailPort = 25;
       }
+      String txtSslPort = props.getProperty("mailSslPort", Integer.toString(mailSslPort));
+      try {
+        mailSslPort = Integer.parseInt(txtSslPort);
+      } catch (NumberFormatException e) {
+        mailSslPort = 465;
+      }
+      Boolean tmpSsl = Boolean.valueOf(props.getProperty("useSsl", Boolean.toString(useSsl)));
+      useSsl = (tmpSsl != null) ? tmpSsl.booleanValue() : false;
       userMail = props.getProperty("userMail", userMail);
       login = props.getProperty("login", login);
       password = props.getProperty("password", password);
@@ -114,6 +126,8 @@ public class Configuration implements Serializable {
       props.setProperty("userName", userName);
       props.setProperty("mailServer", mailServer);
       props.setProperty("mailPort", Integer.toString(mailPort));
+      props.setProperty("mailSslPort", Integer.toString(mailSslPort));
+      props.setProperty("useSsl", Boolean.toString(useSsl));
       props.setProperty("userMail", userMail);
       props.setProperty("login", login);
       props.setProperty("password", password);
@@ -187,6 +201,26 @@ public class Configuration implements Serializable {
   }
   public int getMailPort() {
     return mailPort;
+  }
+
+  /**
+   * @param port Mail SSL port.
+   */
+  public void setMailSslPort(int port) {
+    mailSslPort = port;
+  }
+  public int getMailSslPort() {
+    return mailSslPort;
+  }
+
+  /**
+   * @param use Use SSL port.
+   */
+  public void setUseSsl(boolean use) {
+    useSsl = use;
+  }
+  public boolean getUseSsl() {
+    return useSsl;
   }
 
   /**

@@ -41,6 +41,7 @@ import java.util.Vector;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
@@ -70,6 +71,8 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
   private JTextField textUser = null;
   private JTextField textMailServer = null;
   private JFormattedTextField textMailPort = null;
+  private JFormattedTextField textMailSslPort = null;
+  private JCheckBox chkUseSsl = null;
   private JTextField textUserMail = null;
   private JTextField textUserLogin = null;
   private JTextField textUserPassword = null;
@@ -242,6 +245,39 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
     panel.add(textMailPort, constraints);
     
     constraints.gridy++;
+
+    // Mail SSL port
+    JLabel labelMailSslPort = new JLabel("Mail SSL port : ", SwingConstants.RIGHT);
+    constraints.gridx = 0;
+    constraints.weightx = 0;
+    constraints.anchor = GridBagConstraints.EAST;
+    panel.add(labelMailSslPort, constraints);
+    
+    NumberFormat portSslFormat = NumberFormat.getIntegerInstance();
+    portSslFormat.setMaximumFractionDigits(0);
+    portSslFormat.setMaximumIntegerDigits(5);
+    textMailSslPort = new JFormattedTextField(portSslFormat);
+    textMailSslPort.setColumns(15);
+    textMailSslPort.setToolTipText("Your mail server SSL port, usually 465");
+    textMailSslPort.setValue(Integer.valueOf(configuration.getMailSslPort()));
+    constraints.gridx++;
+    constraints.weightx = 1;
+    constraints.anchor = GridBagConstraints.WEST;
+    panel.add(textMailSslPort, constraints);
+    
+    constraints.gridy++;
+
+    // Use SSL
+    chkUseSsl = new JCheckBox("Use SSL", configuration.getUseSsl());
+    constraints.gridx = 0;
+    constraints.gridwidth = 2;
+    constraints.weightx = 1;
+    constraints.anchor = GridBagConstraints.CENTER;
+    panel.add(chkUseSsl, constraints);
+    constraints.gridwidth = 1;
+    
+    constraints.gridy++;
+    
     // User mail
     JLabel labelUserMail = new JLabel("Mail address :", SwingConstants.RIGHT);
     constraints.gridx = 0;
@@ -412,6 +448,14 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
             this, "The mail port value is incorrect.", "Incorrect value", JOptionPane.ERROR_MESSAGE);
         return;
       }
+      try {
+        textMailSslPort.commitEdit();
+      } catch (ParseException ex) {
+        JOptionPane.showMessageDialog(
+            this, "The mail SSL port value is incorrect.", "Incorrect value", JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+      
       // Validate configuration
       configuration.setUserName(textUser.getText());
       configuration.setMailServer(textMailServer.getText());
@@ -420,6 +464,12 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
         Integer port = (Integer) portValue;
         configuration.setMailPort(port.intValue());
       }
+      Object portSslValue = textMailSslPort.getValue();
+      if (portSslValue instanceof Integer) {
+        Integer port = (Integer) portSslValue;
+        configuration.setMailSslPort(port.intValue());
+      }
+      configuration.setUseSsl(chkUseSsl.isSelected());
       configuration.setUserMail(textUserMail.getText());
       configuration.setLogin(textUserLogin.getText());
       configuration.setPassword(textUserPassword.getText());
@@ -488,6 +538,13 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
             this, "The mail port value is incorrect.", "Incorrect value", JOptionPane.ERROR_MESSAGE);
         return;
       }
+      try {
+        textMailSslPort.commitEdit();
+      } catch (ParseException ex) {
+        JOptionPane.showMessageDialog(
+            this, "The mail SSL port value is incorrect.", "Incorrect value", JOptionPane.ERROR_MESSAGE);
+        return;
+      }
       
       // Test mail configuration
       JFileChooser fileChooser = new JFileChooser();
@@ -507,6 +564,12 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
             Long port = (Long) portValue;
             config.setMailPort(port.intValue());
           }
+          Object portSslValue = textMailSslPort.getValue();
+          if (portSslValue instanceof Long) {
+            Long port = (Long) portSslValue;
+            config.setMailSslPort(port.intValue());
+          }
+          config.setUseSsl(chkUseSsl.isSelected());
           config.setPassword(textUserPassword.getText());
           config.setUserMail(textUserMail.getText());
           config.setUserName(textUser.getText());
@@ -523,14 +586,14 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
             JOptionPane.showMessageDialog(
                 this,
                 "The following error was encountered when sending the mail:\n" +
-                ex.getClass().getName() + ": " + ex.getMessage(),
+                ex.getClass().getName() + ": " + ex.getMessage() +
+                ((ex.getCause() != null) ? "\n" + ex.getCause().getMessage() : ""),
                 "Error while sending mail",
                 JOptionPane.ERROR_MESSAGE);
           }
           setCursor(Cursor.getDefaultCursor());
         }
       }
-
     }
   }
 }

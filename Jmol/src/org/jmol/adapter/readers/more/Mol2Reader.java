@@ -178,7 +178,7 @@ public class Mol2Reader extends FFReader {
           isPDB = true;
         }
         if (isPDB && deduceSymbol)
-          atom.elementSymbol = deduceElementSymbol(atom.isHetero, atomType,
+          atom.elementSymbol = deducePdbElementSymbol(atom.isHetero, atomType,
               atom.group3);
         //System.out.print(atom.atomName + "/" + atom.elementSymbol + " " );
       }

@@ -30,14 +30,27 @@ import org.jmol.adapter.smarter.*;
 
 /*
  * MdTopReader and Mol2Reader must determine element from force-field atom type, if possible.
+ * see http://www.chem.cmu.edu/courses/09-560/docs/msi/ffbsim/B_AtomTypes.html last accessed 10/30/2008
+ * with additions from 
  * 
+ * J. Am. Chem. SOC. 1995, 117, 5179-5197
+ * 
+ * A Second Generation Force Field for the Simulation of
+ * Proteins, Nucleic Acids, and Organic Molecules
+ * 
+ * Wendy D. Cornell, Piotr Cieplak, Christopher I. Bayly, Ian R. Gould,
+ * Kenneth M. Merz, Jr., David M. Ferguson, David C. Spellmeyer, Thomas Fox,
+ * James W. Caldwell, and Peter A. Kollman
+ * 
+ * Bob Hanson hansonr@stolaf.edu 10/31/2008
+ * contributions from Francois-Yves Dupradeau
+ * 
+ * x, X, and Xx symbols will always be themselves and so are not included in the lists below.
+ * xn... Xn... or Xxn... where n is not a letter will likewise be handled without the list 
  */
 
 abstract class FFReader extends AtomSetCollectionReader {
   //private final static String sybylTypes = " Any C.1 C.2 C.3 C.ar C.cat Co.oh Cr.oh Cr.th Cu Du Du.C Fe H.spc H.t3p Hal Het Hev LP N.1 N.2 N.3 N.4 N.am N.ar N.pl3 O.2 O.3 O.co2 O.spc O.t3p P.3 S.2 S.3 S.O S.O2 ";
-  // see http://www.chem.cmu.edu/courses/09-560/docs/msi/ffbsim/B_AtomTypes.html last accessed 10/30/2008
-  // x, X, and Xx symbols will always be themselves and so are not included in the lists below.
-  // xn... Xn... or Xxn... where n is not a letter will likewise be handled without the list 
   // some duplication below...
   private final static String ffTypes = 
       /* AMBER   */ " CA CB CC CD CE CF CG CH CI CJ CK CM CN CP CQ CR CT CV CW HA HP HC HO HS HW LP NA NB NC NT OH OS OW SH AH BH HT HY AC BC CS OA OB OE OT "

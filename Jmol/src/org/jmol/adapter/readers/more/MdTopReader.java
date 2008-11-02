@@ -114,7 +114,7 @@ public class MdTopReader extends FFReader {
       String atomType = atom.atomName;
       atomType = atomType.substring(atomType.indexOf('\0') + 1);
       if (!getElementSymbol(atom, atomType))
-        atom.elementSymbol = deduceElementSymbol(atom.isHetero, atom.atomName,
+        atom.elementSymbol = deducePdbElementSymbol(atom.isHetero, atom.atomName,
             atom.group3);
     }
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);

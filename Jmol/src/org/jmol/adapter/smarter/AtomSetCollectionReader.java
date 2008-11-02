@@ -642,7 +642,7 @@ public int[] next = new int[1];
     return JmolAdapter.getElementSymbol(elementNumber);
   }
   
-  public static String deduceElementSymbol(boolean isHetero, String XX,
+  public static String deducePdbElementSymbol(boolean isHetero, String XX,
                                            String group3) {
     // short of having an entire table,
     int i = XX.indexOf('\0');

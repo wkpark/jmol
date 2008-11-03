@@ -771,7 +771,7 @@ abstract public class AtomCollection {
     "occupany",
     "partialCharge",
     "temperature",
-    "valency",
+    "valence",
     "vanderWaals",
     "vibrationVector"
   };

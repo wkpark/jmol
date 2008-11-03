@@ -5145,6 +5145,9 @@
   <fah_proj number="2674" name="p2674_IBX in water" public="y" file="xyz"
     server="171.67.108.24" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson" contrib="Smoking2000"/>
+  <fah_proj number="2675" name="p2675_IBX in water" public="y"
+    server="171.64.65.56" atoms="146808" preferred="3" deadline="3"
+    credit="1920" frames="100" code="GC" contact="kasson"/>
 
   <!-- Projects 2700 to 2799 -->
   <fah_proj number="2711" name="p2711_GPUlambda" public="y"
@@ -6885,9 +6888,9 @@
   <fah_proj number="4600" name="p4600_T0_proA-16_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="269" preferred="21.7" deadline="32.5"
     credit="119.3" frames="100" code="A" contact="vvoelz" contrib="Hyperlife"/>
-  <fah_proj number="4601" name="p4601_T0_proA-12_minout" public="y" file="xyz"
+  <fah_proj number="4601" name="p4601_T0_proA-12_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="203" preferred="15.4" deadline="23.1"
-    credit="84.7" frames="100" code="A" contact="vvoelz"/>
+    credit="84.7" frames="100" code="A" contact="vvoelz" contrib="Flathead74"/>
   <fah_proj number="4602" name="p4602_T0_NTL9-8_minout" public="y" file="xyz"
     server="169.230.26.30" atoms="159" preferred="8.5" deadline="12.8"
     credit="47" frames="100" code="A" contact="vvoelz"/>
@@ -6930,9 +6933,9 @@
   <fah_proj number="4615" name="p4615_T0_BBL-16_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="243" preferred="21.7" deadline="32.5"
     credit="119.3" frames="100" code="A" contact="vvoelz" contrib="Flathead74"/>
-  <fah_proj number="4616" name="p4616_T0_BBL-12_minout" public="y" file="xyz"
+  <fah_proj number="4616" name="p4616_T0_BBL-12_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="189" preferred="15.4" deadline="23.1"
-    credit="84.7" frames="100" code="A" contact="vvoelz" contrib="Flathead74"/>
+    credit="84.7" frames="100" code="A" contact="vvoelz" contrib="MstrBlstr,Flathead74"/>
   <fah_proj number="4617" name="p4617_T0_villin-16_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="259" preferred="21.7" deadline="32.5"
     credit="119.3" frames="100" code="A" contact="vvoelz" contrib="Flathead74"/>

@@ -378,15 +378,7 @@ public class Check implements ActionListener {
                 String line = null;
                 while (!pourcentEnough && (line = reader.readLine()) != null) {
                   if (line != null) {
-                    if (line.contains("90%") ||
-                        line.contains("91%") ||
-                        line.contains("92%") ||
-                        line.contains("93%") ||
-                        line.contains("94%") ||
-                        line.contains("95%") ||
-                        line.contains("96%") ||
-                        line.contains("97%") ||
-                        line.contains("98%") ||
+                    if (line.contains("98%") ||
                         line.contains("99%")) {
                       pourcentEnough = true;
                     }
@@ -402,6 +394,11 @@ public class Check implements ActionListener {
                     //
                   }
                 }
+              }
+              if (!pourcentEnough) {
+                topologyFile = null;
+                trajectoryFile = null;
+                logFile = null;
               }
             } catch (FileNotFoundException e) {
               //
@@ -453,11 +450,15 @@ public class Check implements ActionListener {
       MailSender sender = new MailSender(configuration, project, files, false);
       sender.sendMail();
       if (!existingProjects.contains(project)) {
-        configuration.addSentFile(project);
+        if (!configuration.hasBeenSent(project)) {
+          configuration.addSentFile(project);
+        }
         sentProjects.add(project);
       }
       if (!existingAmbers.contains(project) && (topologyFile != null) && (trajectoryFile != null)) {
-        configuration.addSentFile("A_" + project);
+        if (!configuration.hasBeenSent("A_" + project)) {
+          configuration.addSentFile("A_" + project);
+        }
         sentAmbers.add(project);
       }
     } catch (Throwable e) {

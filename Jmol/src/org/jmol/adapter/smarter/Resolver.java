@@ -496,7 +496,7 @@ public class Resolver {
    */
   
   private static boolean checkMopacGraphf(String[] lines) {
-    return (lines[0].indexOf("MOPAC-Graphical data") == 6);
+    return (lines[0].indexOf("MOPAC-Graphical data") > 2); //nAtoms MOPAC-Graphical data
   }
 
   private static boolean checkCube(String[] lines) {

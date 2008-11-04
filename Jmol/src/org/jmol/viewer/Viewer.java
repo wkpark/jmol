@@ -982,8 +982,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.unTransformPoint(pointScreen, pointAngstroms);
   }
 
-  public float getScalePixelsPerAngstrom() {
-    return transformManager.scalePixelsPerAngstrom;
+  public float getScalePixelsPerAngstrom(boolean asAntialiased) {
+    return transformManager.scalePixelsPerAngstrom 
+     * (asAntialiased || !global.antialiasDisplay ? 1f : 0.5f);
   }
 
   public short scaleToScreen(int z, int milliAngstroms) {

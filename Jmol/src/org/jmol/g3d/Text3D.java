@@ -84,8 +84,8 @@ public class Text3D {
       return plotByCharacter(x, y, z, argb, text, font3d, g3d, jmolRenderer,
           antialias);
     int offset = font3d.fontMetrics.getAscent();
-    if (antialias)
-      offset += offset;
+    //if (antialias)
+      //offset += offset;
     y -= offset;
 
     //setColix has presumably been carried out for argb, and the two 
@@ -121,9 +121,6 @@ public class Text3D {
       z = Integer.MAX_VALUE - 1;
       width = g3d.width;
       height = g3d.height;
-    } else if (g3d.isAntialiased()) {
-      //width += width;
-      //height += height;
     }
     if (x + width <= 0 || x >= g3d.width || y + height <= 0 || y >= g3d.height)
       return;    
@@ -199,11 +196,7 @@ public class Text3D {
     int len = text.length();
     int suboffset = (int)(font3d.fontMetrics.getHeight() * 0.25);
     int supoffset = -(int)(font3d.fontMetrics.getHeight() * 0.3);
-/*    if (antialias) {
-      suboffset <<= 1;
-      supoffset <<= 1;
-    }
-*/    for (int i = 0; i < len; i++) {
+    for (int i = 0; i < len; i++) {
       if (text.charAt(i) == '<') {
         if (i + 4 < len && text.substring(i, i + 5).equals("<sub>")) {
           i += 4;
@@ -228,8 +221,6 @@ public class Text3D {
       }
       int width = plot(x + w, y, z, argb, text.substring(i, i + 1), font3d, 
           g3d, jmolRenderer, antialias);
-      if (antialias) // this is a hack
-        width >>= 1;
       w += width;
     }
     //System.out.println("w=" + w);
@@ -311,14 +302,8 @@ public class Text3D {
     width = fontMetrics.stringWidth(text);
     if (width == 0)
       return;
-    if (antialias) {
-      ascent <<= 1;
-      height <<= 1;
-      width <<= 1;
-      mapWidth = (int)(width * 2); //an estimate only
-    } else {
-      mapWidth = width;
-    }
+    //System.out.println(text + " " + antialias + " "  + ascent + " " + height + " " + width );
+    mapWidth = width;
     size = mapWidth * height;
   }
 

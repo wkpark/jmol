@@ -83,7 +83,7 @@ public class Labels extends AtomShape {
       setDefaults = ((Boolean) value).booleanValue();
       return;
     }
-    
+
     if ("color" == propertyName) {
       isActive = true;
       byte pid = JmolConstants.pidOf(value);
@@ -110,8 +110,8 @@ public class Labels extends AtomShape {
             continue;
           text = getLabel(i);
           if (text == null) {
-            text = new Text(g3d, null, strings[i], 
-                (short) 0, (short)0, 0, 0, 0, 0, 0, scalePixelsPerMicron);
+            text = new Text(g3d, null, strings[i], (short) 0, (short) 0, 0, 0,
+                0, 0, 0, scalePixelsPerMicron);
             putLabel(i, text);
           } else {
             text.setScalePixelsPerMicron(scalePixelsPerMicron);
@@ -119,14 +119,15 @@ public class Labels extends AtomShape {
         }
       return;
     }
-    
+
     if ("label" == propertyName) {
       isActive = true;
       if (bsSizeSet == null)
         bsSizeSet = new BitSet();
       String strLabel = (String) value;
       boolean isScaled = viewer.getFontScaling();
-      float scalePixelsPerMicron = (isScaled ? viewer.getScalePixelsPerAngstrom() * 10000f : 0);
+      float scalePixelsPerMicron = (isScaled ? viewer
+          .getScalePixelsPerAngstrom(false) * 10000f : 0);
       //System.out.println("labels scalePixelsPerMicron=" + scalePixelsPerMicron);
       for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i)) {
@@ -142,8 +143,8 @@ public class Labels extends AtomShape {
           bsSizeSet.set(i, (strLabel != null));
           text = getLabel(i);
           if (text == null && isScaled) {
-            text = new Text(g3d, null, label, 
-                (short) 0, (short)0, 0, 0, 0, 0, 0, scalePixelsPerMicron);
+            text = new Text(g3d, null, label, (short) 0, (short) 0, 0, 0, 0, 0,
+                0, scalePixelsPerMicron);
             putLabel(i, text);
           } else if (text != null) {
             text.setText(label);
@@ -169,10 +170,10 @@ public class Labels extends AtomShape {
     }
 
     if ("translucency" == propertyName || "bgtranslucency" == propertyName) {
-        // no translucency
-        return;
-      }
-      
+      // no translucency
+      return;
+    }
+
     if ("bgcolor" == propertyName) {
       isActive = true;
       if (bsBgColixSet == null)
@@ -308,27 +309,33 @@ public class Labels extends AtomShape {
                 && defaultBgcolix != 0)
               setBgcolix(atomIndex, defaultBgcolix);
           }
-          atom.setShapeVisibility(myVisibilityFlag, strings != null && atomIndex < strings.length && strings[atomIndex] != null);
-//        } else if (strings != null && atomIndex < strings.length) {
-  //        strings[atomIndex] = null;          
+          atom.setShapeVisibility(myVisibilityFlag, strings != null
+              && atomIndex < strings.length && strings[atomIndex] != null);
+          //        } else if (strings != null && atomIndex < strings.length) {
+          //        strings[atomIndex] = null;          
         }
       }
       return;
     }
-    
+
     if (propertyName == "deleteModelAtoms") {
-      int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
-      int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
-      fids = (byte[]) ArrayUtil.deleteElements(fids, firstAtomDeleted, nAtomsDeleted);
-      bgcolixes = (short[]) ArrayUtil.deleteElements(bgcolixes, firstAtomDeleted, nAtomsDeleted);
-      offsets = (int[]) ArrayUtil.deleteElements(offsets, firstAtomDeleted, nAtomsDeleted);
-      formats = (String[]) ArrayUtil.deleteElements(formats, firstAtomDeleted, nAtomsDeleted);
-      strings = (String[]) ArrayUtil.deleteElements(strings, firstAtomDeleted, nAtomsDeleted);
+      int firstAtomDeleted = ((int[]) ((Object[]) value)[2])[1];
+      int nAtomsDeleted = ((int[]) ((Object[]) value)[2])[2];
+      fids = (byte[]) ArrayUtil.deleteElements(fids, firstAtomDeleted,
+          nAtomsDeleted);
+      bgcolixes = (short[]) ArrayUtil.deleteElements(bgcolixes,
+          firstAtomDeleted, nAtomsDeleted);
+      offsets = (int[]) ArrayUtil.deleteElements(offsets, firstAtomDeleted,
+          nAtomsDeleted);
+      formats = (String[]) ArrayUtil.deleteElements(formats, firstAtomDeleted,
+          nAtomsDeleted);
+      strings = (String[]) ArrayUtil.deleteElements(strings, firstAtomDeleted,
+          nAtomsDeleted);
       BitSetUtil.deleteBits(bsFontSet, bsSelected);
       BitSetUtil.deleteBits(bsBgColixSet, bsSelected);
       // pass to super
     }
-    
+
     super.setProperty(propertyName, value, bsSelected);
 
   }

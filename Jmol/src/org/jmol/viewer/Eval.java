@@ -6844,7 +6844,7 @@ class Eval {
       scaleAngstromsPerPixel = floatParameter(5);
       if (scaleAngstromsPerPixel >= 5) // actually a zoom value
         scaleAngstromsPerPixel = viewer.getZoomSetting()
-            / scaleAngstromsPerPixel / viewer.getScalePixelsPerAngstrom();
+            / scaleAngstromsPerPixel / viewer.getScalePixelsPerAngstrom(false);
     //fall through
     case 5:
       if (getToken(4).tok != Token.identifier)
@@ -8545,7 +8545,7 @@ class Eval {
         float scaleAngstromsPerPixel = floatParameter(2);
         if (scaleAngstromsPerPixel >= 5) // actually a zoom value
           scaleAngstromsPerPixel = viewer.getZoomSetting()
-              / scaleAngstromsPerPixel / viewer.getScalePixelsPerAngstrom();
+              / scaleAngstromsPerPixel / viewer.getScalePixelsPerAngstrom(false);
         propertyValue = new Float(scaleAngstromsPerPixel);
         break;
       }

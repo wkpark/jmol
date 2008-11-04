@@ -34,7 +34,7 @@ public class EchoRenderer extends ShapeRenderer {
     Echo echo = (Echo)shape;
     Point3i pt = new Point3i();
     Enumeration e = echo.objects.elements();
-    float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer.getScalePixelsPerAngstrom() * 10000 : 0);
+    float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer.getScalePixelsPerAngstrom(true) * 10000 : 0);
     imageFontScaling = viewer.getImageFontScaling();
     while (e.hasMoreElements()) {
       Text t = (Text)e.nextElement();

@@ -190,7 +190,7 @@ public class Text extends Object2d {
     if (isLabelOrHover) {
       boxXY[0] = movableX;
       boxXY[1] = movableY;
-      setPosition(boxWidth, boxHeight, offsetX * imageFontScaling, offsetY
+      setBoxXY(boxWidth, boxHeight, offsetX * imageFontScaling, offsetY
           * imageFontScaling, boxXY);
     } else {
       setPosition(fontScale);
@@ -308,7 +308,7 @@ public class Text extends Object2d {
 
   }
 
-  private static void setPosition(float boxWidth, float boxHeight,
+  private static void setBoxXY(float boxWidth, float boxHeight,
                                float xOffset, float yOffset, float[] boxXY) {
     float xBoxOffset, yBoxOffset;
 
@@ -369,7 +369,7 @@ public class Text extends Object2d {
     int x0 = (int) boxXY[0];
     int y0 = (int) boxXY[1];
     
-    setPosition(boxWidth, boxHeight, xOffset, yOffset, boxXY);
+    setBoxXY(boxWidth, boxHeight, xOffset, yOffset, boxXY);
 
     float x = boxXY[0];
     float y = boxXY[1];

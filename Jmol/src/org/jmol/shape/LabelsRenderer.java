@@ -55,7 +55,7 @@ public class LabelsRenderer extends ShapeRenderer {
     Atom[] atoms = modelSet.atoms;
     short backgroundColixContrast = viewer.getColixBackgroundContrast();
     int backgroundColor = viewer.getBackgroundArgb();
-    float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer.getScalePixelsPerAngstrom() * 10000f : 0);
+    float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer.getScalePixelsPerAngstrom(true) * 10000f : 0);
     //System.out.println("labelsRenderer scalePixelsPerMicron=" + scalePixelsPerMicron);
     float imageFontScaling = viewer.getImageFontScaling();
          

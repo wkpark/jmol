@@ -70,7 +70,7 @@ public class Echo extends TextShape {
     if ("xyz" == propertyName) {
       if (currentObject != null && viewer.getFontScaling())
         currentObject.setScalePixelsPerMicron(viewer
-            .getScalePixelsPerAngstrom() * 10000f);
+            .getScalePixelsPerAngstrom(false) * 10000f);
       // continue on to Object2d setting
     }
 

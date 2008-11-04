@@ -5145,9 +5145,9 @@
   <fah_proj number="2674" name="p2674_IBX in water" public="y" file="xyz"
     server="171.67.108.24" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson" contrib="Smoking2000"/>
-  <fah_proj number="2675" name="p2675_IBX in water" public="y"
+  <fah_proj number="2675" name="p2675_IBX in water" public="y" file="xyz"
     server="171.64.65.56" atoms="146808" preferred="3" deadline="3"
-    credit="1920" frames="100" code="GC" contact="kasson"/>
+    credit="1920" frames="100" code="GC" contact="kasson" contrib="Smoking2000"/>
 
   <!-- Projects 2700 to 2799 -->
   <fah_proj number="2711" name="p2711_GPUlambda" public="y"

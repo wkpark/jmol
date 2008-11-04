@@ -61,7 +61,7 @@ abstract class FFReader extends AtomSetCollectionReader {
     + /* GAFF    */ " br ca cc cd ce cf cl cp cq cu cv cx cy ha hc hn ho hp hs na nb nc nd nh oh os pb pc pd pe pf px py sh ss sx sy "
     + /* PCFF    */ " hn2 ho2 cz oo oz si sio hsi osi ";
   private final static String twoChar = " al al4z ar ba2+ beoh br br- br1 ca+ ca2+ ca2c cl cl' cl- cl1 cl12 cl13 cl14 cl1p cloh cly- co2c cs+ cu+2 cu2+ fe+2 fe2c ga ge he kr li+ lic+ lioh lp LP mg+2 mg2+ mg2c mn3c mn4c na+ nac+ naoh ne ni2c nu pd2+ rb+ si si' si4 si4c si4l si4z si5l si5t si6 si6o sio sr2c ti4c tioc titd xe zn+2 ";  
-  private final static String specialTypes = " sz az sy ay ayt ";
+  private final static String specialTypes = " IM IP sz az sy ay ayt ";
   private final static String secondCharOnly = " AH BH AC BC ";
 
   private String userAtomTypes;
@@ -97,8 +97,14 @@ abstract class FFReader extends AtomSetCollectionReader {
       char ch1 = atomType.charAt(1);
       boolean isXx = (Character.isUpperCase(ch0) && Character.isLowerCase(ch1));
       if (specialTypes.indexOf(atomType) >= 0) {
-        // zeolite Si or Al
-        elementSymbol = (ch0 == 's' ? "Si" : "Al");
+        // zeolite Si or Al, ions IM, IP
+        if (ch0 == 'I') {
+          elementSymbol = atom.atomName.substring(0,2);
+          if (!Character.isLowerCase(elementSymbol.charAt(1)))
+            elementSymbol = elementSymbol.substring(0,1);
+        } else {
+          elementSymbol = (ch0 == 's' ? "Si" : "Al");
+        }
       } else if (nChar == 2 && isXx) {
         // Generic Xx
       } else if (Character.isLetter(ch0) && !Character.isLetter(ch1)) {

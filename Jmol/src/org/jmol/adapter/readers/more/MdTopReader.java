@@ -245,17 +245,20 @@ FORMAT(12i6)  NATOM,  NTYPES, NBONH,  MBONA,  NTHETH, MTHETA,
    */
   private void getPointers() throws Exception {
     readLine(); // #FORMAT
-    readLine();
-    atomCount = parseInt(line.substring(0, 8));
+    String data = "";
+    int pt = 0;
+    while (pt++ < 3 && (line = readLine()) != null && !line.startsWith("#"))
+        data += line;
+    String[] tokens = getTokens(data); 
+    atomCount = parseInt(tokens[0]);
+    boolean isPeriodic = (tokens[27].charAt(0) != '0');
+    if (isPeriodic) {
+      Logger.info("Periodic type: " + tokens[27]);
+      htParams.put("isPeriodic", Boolean.TRUE);
+    }
     Logger.info("Total number of atoms read=" + atomCount);
     htParams.put("templateAtomCount", new Integer(atomCount));
     for (int i = 0; i < atomCount; i++) 
       atomSetCollection.addAtom(new Atom());
-    readLine();
-    readLine();
-    boolean isPeriodic = (line.charAt(63) == '1');
-    if (isPeriodic)
-      htParams.put("isPeriodic", Boolean.TRUE);
   }
-
 }

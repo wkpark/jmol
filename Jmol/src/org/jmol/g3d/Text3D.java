@@ -68,6 +68,7 @@ public class Text3D {
   private int mapWidth;
   private int size;
   private int[] bitmap;
+  private boolean isInvalid;
   
   public int getWidth() {
     return width;
@@ -89,17 +90,9 @@ public class Text3D {
 
     //setColix has presumably been carried out for argb, and the two 
     //are assumed to be both the same -- translucent or not. 
-    Text3D text3d = getText3D(text, font3d, g3d.platform, antialias);
-    if (text3d.width == 0)
-      return 0;
-    int[] bitmap = text3d.bitmap;
-    int textWidth = text3d.width;
-    int textHeight = text3d.height;
-    int mapWidth = text3d.mapWidth;
-    //System.out.println ("mapWidth = " + mapWidth);
-    if (x + textWidth <= 0 || x >= g3d.width || y + textHeight <= 0
-        || y >= g3d.height)
-      return textWidth;
+    Text3D text3d = getText3D(x, y, g3d, text, font3d, antialias);
+    if (text3d.isInvalid)
+      return text3d.width;
     //TODO: text width/height are calculated 4x correct size here when antialiased.
     // this is wasteful, as it requires drawing larger than necessary images
     if (antialias && (argb & 0xC0C0C0) == 0) {
@@ -107,14 +100,14 @@ public class Text3D {
       // the label is black or almost black.
       argb = argb | 0x040404;
     }
-    if (jmolRenderer != null || 
-        (x < 0 || x + textWidth > g3d.width || y < 0
-        || y + textHeight > g3d.height))
-      plotClipped(x, y, z, argb, g3d, jmolRenderer, mapWidth, textHeight,
-          bitmap);
+    if (jmolRenderer != null
+        || (x < 0 || x + text3d.width > g3d.width || y < 0 || y + text3d.height > g3d.height))
+      plotClipped(x, y, z, argb, g3d, jmolRenderer, text3d.mapWidth,
+          text3d.height, text3d.bitmap);
     else
-      plotUnclipped(x, y, z, argb, g3d, mapWidth, textHeight, bitmap);
-    return textWidth;
+      plotUnclipped(x, y, z, argb, g3d, text3d.mapWidth, text3d.height,
+          text3d.bitmap);
+    return text3d.width;
   }
 
   public static void plotImage(int x, int y, int z, Image image, Graphics3D g3d,
@@ -310,32 +303,23 @@ public class Text3D {
     }
   }
 
-  private Text3D(String text, Font3D font3d, Platform3D platform,
+  private Text3D(String text, Font3D font3d,
                  boolean antialias) {
-    if (!calcMetrics(text, font3d, antialias))
-      return;
-    platform.checkOffscreenSize(mapWidth, height);
-    renderOffscreen(text, font3d, platform, antialias);
-    rasterize(platform, antialias);
-  }
-
-  private boolean calcMetrics(String text, Font3D font3d, boolean antialias) {
     FontMetrics fontMetrics = font3d.fontMetrics;
     ascent = fontMetrics.getAscent();
     height = ascent + fontMetrics.getDescent();
     width = fontMetrics.stringWidth(text);
     if (width == 0)
-      return false;
+      return;
     if (antialias) {
       ascent <<= 1;
       height <<= 1;
       width <<= 1;
-      mapWidth = width * 2; //an estimate only
+      mapWidth = (int)(width * 2); //an estimate only
     } else {
       mapWidth = width;
     }
     size = mapWidth * height;
-    return true;
   }
 
   private void renderOffscreen(String text, Font3D font3d, Platform3D platform,
@@ -406,22 +390,46 @@ public class Text3D {
   // we have a synchronization issue/race condition  here with multiple
   // so only one Text3D can be generated at a time
 
-  private synchronized static Text3D getText3D(String text, Font3D font3d,
-                                         Platform3D platform, boolean antialias) {
+  // Jmol 11.7.8: caching and rasterization only carried out if the font is
+  // valid -- that is in the rectangle to be plotted.
+  
+  private synchronized static Text3D getText3D(int x, int y, Graphics3D g3d,
+                                               String text, Font3D font3d,
+                                               boolean antialias) {
     Hashtable ht = (antialias ? htFont3dAntialias : htFont3d);
-    Hashtable htForThisFont = (Hashtable)ht.get(font3d);
+    Hashtable htForThisFont = (Hashtable) ht.get(font3d);
+    Text3D text3d = null;
+    boolean newFont = false;
+    boolean newText = false;
     if (htForThisFont != null) {
-      Text3D text3d = (Text3D)htForThisFont.get(text);
-      if (text3d != null)
-        return text3d;
+      text3d = (Text3D) htForThisFont.get(text);
     } else {
       htForThisFont = new Hashtable();
-      ht.put(font3d, htForThisFont);
+      newFont = true;
     }
-    Text3D text3d = new Text3D(text, font3d, platform, antialias);
-    if (text3d != null)
+    if (text3d == null) {
+      text3d = new Text3D(text, font3d, antialias);
+      newText = true;
+    }
+    text3d.isInvalid = (text3d.width == 0 || x + text3d.width <= 0
+        || x >= g3d.width || y + text3d.height <= 0 || y >= g3d.height);
+    if (text3d.isInvalid)
+      return text3d;
+    if (newFont)
+      ht.put(font3d, htForThisFont);
+    if (newText) {
+      //System.out.println(text + " " + x + " " + text3d.width + " " + g3d.width + " " + y + " " + g3d.height);
+      text3d.setBitmap(text, font3d, g3d.platform, antialias);
       htForThisFont.put(text, text3d);
+    }
     return text3d;
+  }
+
+  private void setBitmap(String text, Font3D font3d, Platform3D platform, boolean antialias) {
+    //System.out.println(text + " height=" + height + " setBitmap width= " + width);
+    platform.checkOffscreenSize(mapWidth, height);
+    renderOffscreen(text, font3d, platform, antialias);
+    rasterize(platform, antialias);
   }
 
 }

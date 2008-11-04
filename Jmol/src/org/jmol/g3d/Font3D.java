@@ -85,13 +85,9 @@ final public class Font3D {
                           float fontsizeNominal, Platform3D platform) {
     if (graphicsOffscreen == null)
       initialize(platform);
-    /*
-    Logger.debug("Font3D.getFont3D("  + fontFaces[fontface] + "," +
-                       fontStyles[fontstyle] + "," + fontsize + ")");
-    */
-    if (fontsize > 0xFFF)
-      fontsize = 0xFFF;
-    int fontsizeX16 = (int)(fontsize * 16f);
+    if (fontsize > 0xFF)
+      fontsize = 0xFF;
+    int fontsizeX16 = ((int)fontsize) << 4;
     int fontkey =
       ((fontface & 3) | ((fontstyle & 3) << 2) | (fontsizeX16 << 4));
     // watch out for race condition here!
@@ -100,15 +96,7 @@ final public class Font3D {
         return font3ds[i];
     return allocFont3D(fontkey, fontface, fontstyle, fontsize, fontsizeNominal);
   }
-  
-  /*
-  FontMetrics getFontMetrics(Font font) {
-    if (gOffscreen == null)
-      checkOffscreenSize(16, 64);
-    return gOffscreen.getFontMetrics(font);
-  }
-  */
-  
+
   private static synchronized Font3D allocFont3D(int fontkey, int fontface,
                                                 int fontstyle, float fontsize, float fontsizeNominal) {
     // recheck in case another process just allocated one

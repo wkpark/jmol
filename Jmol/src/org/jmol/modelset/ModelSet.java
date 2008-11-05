@@ -198,6 +198,7 @@ abstract public class ModelSet extends ModelCollection {
     }
     // Clear the Binary Search so that select within(),
     // isosurface, and dots will work properly
+    initializeBspf();
     bspf.clearBspt(baseModel);
     // Recalculate critical points for cartoons and such
     // note that models[baseModel] and models[modelIndex]

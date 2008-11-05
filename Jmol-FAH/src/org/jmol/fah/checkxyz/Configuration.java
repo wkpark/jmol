@@ -47,6 +47,11 @@ public class Configuration implements Serializable {
   private String userMail;
   private String login;
   private String password;
+  private boolean loop;
+  private int basicInterval;
+  private int threshold;
+  private int specialInterval;
+  private boolean detailedOutput;
   private Vector directories;
   private Vector sent;
 
@@ -64,6 +69,11 @@ public class Configuration implements Serializable {
     userMail = "";
     login = "";
     password = "";
+    loop = false;
+    basicInterval = 30;
+    threshold = 90;
+    specialInterval = 5;
+    detailedOutput = false;
     directories = new Vector();
     sent = new Vector();
 
@@ -75,6 +85,8 @@ public class Configuration implements Serializable {
    */
   public void loadConfiguration() {
     FileInputStream fis = null;
+    Boolean tmpBoolean = null;
+    String tmpString = null;
     try {
       fis = new FileInputStream(configFile);
       Properties props = new Properties();
@@ -84,23 +96,45 @@ public class Configuration implements Serializable {
       
       userName = props.getProperty("userName", userName);
       mailServer = props.getProperty("mailServer", mailServer);
-      String txtPort = props.getProperty("mailPort", Integer.toString(mailPort));
+      tmpString = props.getProperty("mailPort", Integer.toString(mailPort));
       try {
-        mailPort = Integer.parseInt(txtPort);
+        mailPort = Integer.parseInt(tmpString);
       } catch (NumberFormatException e) {
         mailPort = 25;
       }
-      String txtSslPort = props.getProperty("mailSslPort", Integer.toString(mailSslPort));
+      tmpString = props.getProperty("mailSslPort", Integer.toString(mailSslPort));
       try {
-        mailSslPort = Integer.parseInt(txtSslPort);
+        mailSslPort = Integer.parseInt(tmpString);
       } catch (NumberFormatException e) {
         mailSslPort = 465;
       }
-      Boolean tmpSsl = Boolean.valueOf(props.getProperty("useSsl", Boolean.toString(useSsl)));
-      useSsl = (tmpSsl != null) ? tmpSsl.booleanValue() : false;
+      tmpBoolean = Boolean.valueOf(props.getProperty("useSsl", Boolean.toString(useSsl)));
+      useSsl = (tmpBoolean != null) ? tmpBoolean.booleanValue() : false;
       userMail = props.getProperty("userMail", userMail);
       login = props.getProperty("login", login);
       password = props.getProperty("password", password);
+      tmpBoolean = Boolean.valueOf(props.getProperty("loop", Boolean.toString(loop)));
+      loop = (tmpBoolean != null) ? tmpBoolean.booleanValue() : false;
+      tmpString = props.getProperty("basicInterval", Integer.toString(basicInterval));
+      try {
+        basicInterval = Integer.parseInt(tmpString);
+      } catch (NumberFormatException e) {
+        basicInterval = 30;
+      }
+      tmpString = props.getProperty("threshold", Integer.toString(threshold));
+      try {
+        threshold = Integer.parseInt(tmpString);
+      } catch (NumberFormatException e) {
+        threshold = 90;
+      }
+      tmpString = props.getProperty("specialInterval", Integer.toString(specialInterval));
+      try {
+        specialInterval = Integer.parseInt(tmpString);
+      } catch (NumberFormatException e) {
+        specialInterval = 5;
+      }
+      tmpBoolean = Boolean.valueOf(props.getProperty("detailedOutput", Boolean.toString(detailedOutput)));
+      detailedOutput = (tmpBoolean != null) ? tmpBoolean.booleanValue() : false;
       directories = new Vector();
       int num = 0;
       while (props.containsKey("directory_" + num)) {
@@ -142,6 +176,11 @@ public class Configuration implements Serializable {
       props.setProperty("userMail", userMail);
       props.setProperty("login", login);
       props.setProperty("password", password);
+      props.setProperty("loop", Boolean.toString(loop));
+      props.setProperty("basicInterval", Integer.toString(basicInterval));
+      props.setProperty("threshold", Integer.toString(threshold));
+      props.setProperty("specialInterval", Integer.toString(specialInterval));
+      props.setProperty("detailedOutput", Boolean.toString(detailedOutput));
       Iterator iter = directories.iterator();
       int num = 0;
       while (iter.hasNext()) {
@@ -281,6 +320,56 @@ public class Configuration implements Serializable {
   }
   public String getPassword() {
     return password;
+  }
+
+  /**
+   * @param loop Loop.
+   */
+  public void setLoop(boolean loop) {
+    this.loop = loop;
+  }
+  public boolean getLoop() {
+    return loop;
+  }
+
+  /**
+   * @param interval Basic interval.
+   */
+  public void setBasicInterval(int interval) {
+    basicInterval = interval;
+  }
+  public int getBasicInterval() {
+    return basicInterval;
+  }
+
+  /**
+   * @param threshold Threshold.
+   */
+  public void setThreshold(int threshold) {
+    this.threshold = threshold;
+  }
+  public int getThreshold() {
+    return threshold;
+  }
+
+  /**
+   * @param interval Special interval.
+   */
+  public void setSpecialInterval(int interval) {
+    specialInterval = interval;
+  }
+  public int getSpecialInterval() {
+    return specialInterval;
+  }
+
+  /**
+   * @param output Detailed output.
+   */
+  public void setDetailedOutput(boolean output) {
+    detailedOutput = output;
+  }
+  public boolean getDetailedOutput() {
+    return detailedOutput;
   }
 
   /**

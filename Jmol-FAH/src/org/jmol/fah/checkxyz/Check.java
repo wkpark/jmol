@@ -40,6 +40,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -135,10 +137,44 @@ public class Check implements ActionListener {
    * Process all directories for files. 
    */
   public void processDirectories() {
+    if (!configuration.getLoop()) {
+      processDirectoriesOnce();
+      System.exit(0);
+    } else {
+      do {
+        availableProjectsDownloaded = false;
+        availableAmbersDownloaded = false;
+        System.out.println("==> Starting processing: " + DateFormat.getDateTimeInstance().format(new Date()));
+        boolean specialInterval = processDirectoriesOnce();
+        System.out.println("==> Processing done: " + DateFormat.getDateTimeInstance().format(new Date()));
+        System.out.println("");
+        int interval = (specialInterval ? configuration.getSpecialInterval() : configuration.getBasicInterval());
+        try {
+          Thread.sleep(interval * 60 * 1000);
+        } catch (InterruptedException e) {
+          //
+        }
+      } while (true);
+    }
+  }
+  
+  /**
+   * Process all directories for files.
+   * 
+   * @return Flag indicating if the special interval should be used
+   */
+  public boolean processDirectoriesOnce() {
+    boolean specialInterval = false;
+    if (sentProjects != null) {
+      sentProjects.clear();
+    }
+    if (sentAmbers != null) {
+      sentAmbers.clear();
+    }
     if (configuration.getDirectories() != null) {
       Iterator iter = configuration.getDirectories().iterator();
       while (iter.hasNext()) {
-        processDirectory(iter.next().toString());
+        specialInterval |= processDirectory(iter.next().toString());
       }
     }
     StringBuffer message = new StringBuffer();
@@ -172,62 +208,81 @@ public class Check implements ActionListener {
     if (showSentProjects) {
       JOptionPane.showMessageDialog(
           null, message.toString(), "Result", JOptionPane.INFORMATION_MESSAGE);
-      System.exit(0);
+      showSentProjects = false;
     } else {
-      System.out.println(message);
+      if (configuration.getDetailedOutput()) {
+        System.out.println(message);
+      }
     }
+    return specialInterval;
   }
 
   /**
    * Process a directory for files.
    * 
    * @param directory Directory to process.
+   * @return Flag indicating if the special interval should be used
    */
-  private void processDirectory(String directory) {
+  private boolean processDirectory(String directory) {
     if (directory == null) {
-      return;
+      return false;
     }
-    processDirectory(new File(directory));
+    return processDirectory(new File(directory));
   }
-  private void processDirectory(File directory) {
+  private boolean processDirectory(File directory) {
     if ((directory == null) || (!directory.isDirectory())) {
-      return;
+      return false;
     }
     File[] files = directory.listFiles(projectFilter);
     if (files == null) {
-      return;
+      return false;
     }
-    System.out.println("Checking directory " + directory.getAbsolutePath());
+    boolean specialInterval = false;
+    if (configuration.getDetailedOutput()) {
+      System.out.println("Checking directory " + directory.getAbsolutePath());
+    }
     for (int i = 0; i < files.length; i++) {
       if (files[i].isFile()) {
-        processFile(files[i]);
+        specialInterval |= processFile(files[i]);
       }
     }
     for (int i = 0; i < files.length; i++) {
       if (files[i].isDirectory()) {
-        processDirectory(files[i]);
+        specialInterval |= processDirectory(files[i]);
       }
     }
+    return specialInterval;
   }
 
   /**
    * Check a XYZ file.
    * 
    * @param file XYZ file.
+   * @return Flag indicating if the special interval should be used
    */
-  private void processFile(File file) {
+  private boolean processFile(File file) {
     if ((file == null) || (!file.isFile())) {
-      return;
+      return false;
     }
-    System.out.print("    File " + file.getName() + " : ");
+    boolean specialInterval = false;
+    if (configuration.getDetailedOutput()) {
+      System.out.print("    File " + file.getName() + " : ");
+    }
     String project = extractProjectNumber(file);
     if (project == null) {
-      System.out.print("Unable to find project number");
+      if (configuration.getDetailedOutput()) {
+        System.out.print("Unable to find project number");
+      }
     } else {
-      System.out.print("Project n" + project + " -> ");
-      processProjectNumber(file, project);
+      if (configuration.getDetailedOutput()) {
+        System.out.print("Project n" + project + " -> ");
+      }
+      specialInterval = processProjectNumber(file, project);
     }
-    System.out.println();
+    if (configuration.getDetailedOutput()) {
+      System.out.println();
+    }
+    return specialInterval;
   }
 
   /**
@@ -352,10 +407,11 @@ public class Check implements ActionListener {
    * 
    * @param file XYZ file.
    * @param project Project identifier.
+   * @return Flag indicating if the special interval should be used
    */
-  private void processProjectNumber(File file, String project) {
+  private boolean processProjectNumber(File file, String project) {
     if ((file == null) || (project == null)) {
-      return;
+      return false;
     }
     
     // Checking for Amber files
@@ -363,6 +419,7 @@ public class Check implements ActionListener {
     File trajectoryFile = null;
     File logFile = null;
     boolean pourcentEnough = false;
+    boolean specialInterval = false;
     if (file.isFile() && "current.xyz".equalsIgnoreCase(file.getName())) {
       for (int i = 0; (i < 10) && !pourcentEnough; i++) {
         Object[] objects = new Object[] { Integer.valueOf(i) };
@@ -378,15 +435,12 @@ public class Check implements ActionListener {
                 String line = null;
                 while (!pourcentEnough && (line = reader.readLine()) != null) {
                   if (line != null) {
-                    if (line.contains("90%") ||
-                        line.contains("91%") ||
-                        line.contains("92%") ||
-                        line.contains("93%") ||
-                        line.contains("94%") ||
-                        line.contains("95%") ||
-                        line.contains("96%") ||
-                        line.contains("97%") ||
-                        line.contains("98%") ||
+                    for (int percent = configuration.getThreshold(); percent <= 100; percent++) {
+                      if (line.contains(Integer.toString(percent) + "%")) {
+                        specialInterval = true;
+                      }
+                    }
+                    if (line.contains("98%") ||
                         line.contains("99%")) {
                       pourcentEnough = true;
                     }
@@ -420,32 +474,44 @@ public class Check implements ActionListener {
       }
     }
     
-    // Checking if something needs to be sent
-    if (configuration.hasBeenSent(project) &&
-        ((topologyFile == null) || (trajectoryFile == null) || configuration.hasBeenSent("A_" + project))) {
-      System.out.print("Already sent by you");
-      return;
-    }
+    // Update existing projects
     if ((!availableProjects.exists()) || (!availableAmbers.exists())) {
       downloadAvailableFiles();
     }
     updateExistingProjects();
+
+    // Check if something needs to be sent
     if (existingProjects.contains(project) &&
         (existingAmbers.contains(project) || (topologyFile == null) || (trajectoryFile == null))) {
-      System.out.print("Project available on Jmol website");
-      return;
+      if (configuration.getDetailedOutput()) {
+        System.out.print("Project available on Jmol website");
+      }
+      return (specialInterval && !existingAmbers.contains(project) && !configuration.hasBeenSent("A_" + project));
     }
+    if (configuration.hasBeenSent(project) &&
+        ((topologyFile == null) || (trajectoryFile == null) || configuration.hasBeenSent("A_" + project))) {
+      if (configuration.getDetailedOutput()) {
+        System.out.print("Already sent by you");
+      }
+      return false;
+    }
+    
+    // Check again after updating files
     if ((!availableProjectsDownloaded) || (!availableAmbersDownloaded)) {
       downloadAvailableFiles();
       updateExistingProjects();
       if (existingProjects.contains(project) &&
           (existingAmbers.contains(project) || (topologyFile == null) || (trajectoryFile == null))) {
-        System.out.print("Project available on Jmol website");
-        return;
+        if (configuration.getDetailedOutput()) {
+          System.out.print("Project available on Jmol website");
+        }
+        return (specialInterval && !existingAmbers.contains(project));
       }
     }
     try {
-      System.out.print("Found new project :)");
+      if (configuration.getDetailedOutput()) {
+        System.out.print("Found new project :)");
+      }
       File[] files = new File[4];
       files[0] = file;
       if ((topologyFile != null) && (trajectoryFile != null)) {
@@ -472,6 +538,7 @@ public class Check implements ActionListener {
     } catch (Throwable e) {
       outputError("Sending new file", e);
     }
+    return false;
   }
 
   /**

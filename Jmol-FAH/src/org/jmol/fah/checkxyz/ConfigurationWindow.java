@@ -76,6 +76,10 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
   private JTextField textUserMail = null;
   private JTextField textUserLogin = null;
   private JTextField textUserPassword = null;
+  private JCheckBox chkLoop = null;
+  private JFormattedTextField textBasicInterval = null;
+  private JFormattedTextField textThreshold = null;
+  private JFormattedTextField textSpecialInterval = null;
   private JList listDirectories = null;
   private DefaultListModel listModel = null;
   private JButton buttonAddDirectories = null;
@@ -107,7 +111,7 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
   private void createWindowContent() {
 
     // Various settings
-    setDefaultCloseOperation(EXIT_ON_CLOSE);
+    setDefaultCloseOperation(HIDE_ON_CLOSE);
     setTitle("Current.xyz files for Jmol");
 
     // Layout
@@ -269,6 +273,7 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
 
     // Use SSL
     chkUseSsl = new JCheckBox("Use SSL", configuration.getUseSsl());
+    chkUseSsl.setToolTipText("Check this if you want to connect to your mail server on a secured connection using SSL");
     constraints.gridx = 0;
     constraints.gridwidth = 2;
     constraints.weightx = 1;
@@ -335,7 +340,83 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
     constraints.gridwidth = 2;
     constraints.anchor = GridBagConstraints.CENTER;
     panel.add(buttonTestMail, constraints);
+    constraints.gridwidth = 1;
 
+    constraints.gridy++;
+
+    // Loop
+    chkLoop = new JCheckBox("Loop", configuration.getLoop());
+    chkLoop.setToolTipText("Check this if you want the tool to check regularly for missing files");
+    constraints.gridx = 0;
+    constraints.gridwidth = 2;
+    constraints.weightx = 1;
+    constraints.anchor = GridBagConstraints.CENTER;
+    panel.add(chkLoop, constraints);
+    constraints.gridwidth = 1;
+    
+    constraints.gridy++;
+    
+    // Basic interval
+    JLabel labelBasicInterval = new JLabel("Default interval : ", SwingConstants.RIGHT);
+    constraints.gridx = 0;
+    constraints.weightx = 0;
+    constraints.anchor = GridBagConstraints.EAST;
+    panel.add(labelBasicInterval, constraints);
+    
+    NumberFormat basicIntervalFormat = NumberFormat.getIntegerInstance();
+    basicIntervalFormat.setMaximumFractionDigits(0);
+    basicIntervalFormat.setMaximumIntegerDigits(4);
+    textBasicInterval = new JFormattedTextField(basicIntervalFormat);
+    textBasicInterval.setColumns(15);
+    textBasicInterval.setToolTipText("The interval in minutes between two checks when 'Loop' is checked");
+    textBasicInterval.setValue(Integer.valueOf(configuration.getBasicInterval()));
+    constraints.gridx++;
+    constraints.weightx = 1;
+    constraints.anchor = GridBagConstraints.WEST;
+    panel.add(textBasicInterval, constraints);
+    
+    constraints.gridy++;
+
+    // Threshold
+    JLabel labelThreshold = new JLabel("Threshold : ", SwingConstants.RIGHT);
+    constraints.gridx = 0;
+    constraints.weightx = 0;
+    constraints.anchor = GridBagConstraints.EAST;
+    panel.add(labelThreshold, constraints);
+    
+    NumberFormat thresholdFormat = NumberFormat.getIntegerInstance();
+    thresholdFormat.setMaximumFractionDigits(0);
+    thresholdFormat.setMaximumIntegerDigits(2);
+    textThreshold = new JFormattedTextField(thresholdFormat);
+    textThreshold.setColumns(15);
+    textThreshold.setToolTipText("The threshold in % after which the interval is reduced");
+    textThreshold.setValue(Integer.valueOf(configuration.getThreshold()));
+    constraints.gridx++;
+    constraints.weightx = 1;
+    constraints.anchor = GridBagConstraints.WEST;
+    panel.add(textThreshold, constraints);
+    
+    constraints.gridy++;
+
+    // Special interval
+    JLabel labelSpecialInterval = new JLabel("Interval after threshold : ", SwingConstants.RIGHT);
+    constraints.gridx = 0;
+    constraints.weightx = 0;
+    constraints.anchor = GridBagConstraints.EAST;
+    panel.add(labelSpecialInterval, constraints);
+    
+    NumberFormat specialIntervalFormat = NumberFormat.getIntegerInstance();
+    specialIntervalFormat.setMaximumFractionDigits(0);
+    specialIntervalFormat.setMaximumIntegerDigits(2);
+    textSpecialInterval = new JFormattedTextField(specialIntervalFormat);
+    textSpecialInterval.setColumns(15);
+    textSpecialInterval.setToolTipText("The interval in minutes between two checks when 'Loop' is checked and the 'Threshold' is reached");
+    textSpecialInterval.setValue(Integer.valueOf(configuration.getSpecialInterval()));
+    constraints.gridx++;
+    constraints.weightx = 1;
+    constraints.anchor = GridBagConstraints.WEST;
+    panel.add(textSpecialInterval, constraints);
+    
     constraints.gridy++;
 
     // Filler
@@ -440,7 +521,7 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
   public void actionPerformed(ActionEvent e) {
     if (actionOk.equals(e.getActionCommand())) {
 
-      // Check Port value
+      // Check values
       try {
         textMailPort.commitEdit();
       } catch (ParseException ex) {
@@ -455,24 +536,62 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
             this, "The mail SSL port value is incorrect.", "Incorrect value", JOptionPane.ERROR_MESSAGE);
         return;
       }
+      try {
+        textBasicInterval.commitEdit();
+      } catch (ParseException ex) {
+        JOptionPane.showMessageDialog(
+            this, "The default interval value is incorrect.", "Incorrect value", JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+      try {
+        textThreshold.commitEdit();
+      } catch (ParseException ex) {
+        JOptionPane.showMessageDialog(
+            this, "The threshold value is incorrect.", "Incorrect value", JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+      try {
+        textSpecialInterval.commitEdit();
+      } catch (ParseException ex) {
+        JOptionPane.showMessageDialog(
+            this, "The second interval value is incorrect.", "Incorrect value", JOptionPane.ERROR_MESSAGE);
+        return;
+      }
       
       // Validate configuration
+      Object tmpValue = null;
       configuration.setUserName(textUser.getText());
       configuration.setMailServer(textMailServer.getText());
-      Object portValue = textMailPort.getValue();
-      if (portValue instanceof Integer) {
-        Integer port = (Integer) portValue;
+      tmpValue = textMailPort.getValue();
+      if (tmpValue instanceof Long) {
+        Long port = (Long) tmpValue;
         configuration.setMailPort(port.intValue());
       }
-      Object portSslValue = textMailSslPort.getValue();
-      if (portSslValue instanceof Integer) {
-        Integer port = (Integer) portSslValue;
+      tmpValue = textMailSslPort.getValue();
+      if (tmpValue instanceof Long) {
+        Long port = (Long) tmpValue;
         configuration.setMailSslPort(port.intValue());
       }
       configuration.setUseSsl(chkUseSsl.isSelected());
       configuration.setUserMail(textUserMail.getText());
       configuration.setLogin(textUserLogin.getText());
       configuration.setPassword(textUserPassword.getText());
+      configuration.setLoop(chkLoop.isSelected());
+      tmpValue = textBasicInterval.getValue();
+      if (tmpValue instanceof Long) {
+        Long interval = (Long) tmpValue;
+        configuration.setBasicInterval(interval.intValue());
+      }
+      tmpValue = textThreshold.getValue();
+      if (tmpValue instanceof Long) {
+        Long threshold = (Long) tmpValue;
+        configuration.setThreshold(threshold.intValue());
+      }
+      tmpValue = textSpecialInterval.getValue();
+      if (tmpValue instanceof Long) {
+        Long interval = (Long) tmpValue;
+        configuration.setSpecialInterval(interval.intValue());
+      }
       Vector directories = new Vector(listModel.size());
       for (int i = 0; i < listModel.size(); i++) {
         directories.add(listModel.get(i));
@@ -480,13 +599,13 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
       configuration.setDirectories(directories);
       configuration.saveConfiguration();
 
+      this.setVisible(false);
+
       if (actionValidate != null) {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         actionValidate.actionPerformed(e);
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
       }
-
-      this.dispose();
 
     } else if (actionCancel.equals(e.getActionCommand())) {
 

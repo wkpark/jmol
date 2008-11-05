@@ -574,6 +574,7 @@ public class StateManager {
     boolean bondModeOr = false;
     boolean hbondsBackbone = false;
     float hbondsAngleMinimum = 90f;
+    float hbondsDistanceMaximum = 3.25f;
     boolean hbondsSolid = false;
     byte modeMultipleBond = JmolConstants.MULTIBOND_NOTSMALL;
     boolean showHydrogens = true;
@@ -1154,6 +1155,7 @@ public class StateManager {
       setParameterValue("forceAutoBond", forceAutoBond);
       setParameterValue("greyscaleRendering", greyscaleRendering);
       setParameterValue("hbondsAngleMinimum", hbondsAngleMinimum);
+      setParameterValue("hbondsDistanceMaximum", hbondsDistanceMaximum);
       setParameterValue("hbondsBackbone", hbondsBackbone);
       setParameterValue("hbondsSolid", hbondsSolid);
       setParameterValue("helpPath", helpPath);

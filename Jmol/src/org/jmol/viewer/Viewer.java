@@ -2667,15 +2667,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //   modelSet.addStateScript("select", null, selectionManager.bsSelection, null,
     //     "; calculate hbonds;", false);
     return autoHbond(selectionManager.bsSelection,
-        selectionManager.bsSelection, bsBonds, 0);
+        selectionManager.bsSelection, bsBonds, 0, 0);
   }
 
-  int autoHbond(BitSet bsFrom, BitSet bsTo, BitSet bsBonds, float minAttachedAngle) {
+  int autoHbond(BitSet bsFrom, BitSet bsTo, BitSet bsBonds, float maxXYDistance, float minAttachedAngle) {
     //Eval
+    if (maxXYDistance < 0)
+      maxXYDistance = global.hbondsDistanceMaximum;
     if (minAttachedAngle < 0)
       minAttachedAngle = global.hbondsAngleMinimum;
     minAttachedAngle *= (float) (Math.PI / 180);
-    return modelSet.autoHbond(bsFrom, bsTo, bsBonds, minAttachedAngle);
+    return modelSet.autoHbond(bsFrom, bsTo, bsBonds, minAttachedAngle, 0);
   }
 
   public boolean hasCalculatedHBonds(BitSet bsAtoms) {
@@ -4326,6 +4328,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       //11.7.9
       if (key.equalsIgnoreCase("hbondsAngleMinimum")) {
         global.hbondsAngleMinimum = value;
+        break;
+      }
+
+      //11.7.9
+      if (key.equalsIgnoreCase("hbondsDistanceMaximum")) {
+        global.hbondsDistanceMaximum = value;
         break;
       }
 

@@ -2120,7 +2120,7 @@ abstract public class ModelCollection extends BondCollection {
       }
       if (matchHbond) {
         initializeBspf();
-        return new int[] {autoHbond(bsA, bsB, bsBonds, 0), 0};
+        return new int[] {autoHbond(bsA, bsB, bsBonds, 0, 0), 0};
       }
       return new int[] {autoBond(bsA, bsB, null, bsBonds), 0};
     }

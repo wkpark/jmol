@@ -6115,7 +6115,7 @@ class Eval {
         JmolConstants.BOND_HYDROGEN_MASK));
     viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 0, bsConfigurations);
     if (addHbonds)
-      viewer.autoHbond(bsConfigurations, bsConfigurations, null, 0);
+      viewer.autoHbond(bsConfigurations, bsConfigurations, null, 0, 0);
     viewer.select(bsConfigurations, tQuiet);
   }
 
@@ -6418,7 +6418,7 @@ class Eval {
         BitSet bs1 = expression(2);
         BitSet bs2 = expression(iToken + 1);
         if (!isSyntaxCheck) {
-          int nBonds = viewer.autoHbond(bs1, bs2, null, -1);
+          int nBonds = viewer.autoHbond(bs1, bs2, null, -1, -1);
           showString(nBonds + " hydrogen bonds created");
         }
         return;

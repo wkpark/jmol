@@ -355,17 +355,20 @@ abstract public class BondCollection extends AtomCollection {
     BitSetUtil.deleteBits(bsAromatic, bs);
   }
 
-  private static float hbondMax = 3.25f;
+  private static float defaultHbondMax = 3.25f;
   private static float hbondMin = 2.5f;
 
-  protected int autoHbond(BitSet bsA, BitSet bsB, BitSet bsBonds, float minAttachedAngle) {
-    float hbondMax2 = hbondMax * hbondMax;
+  protected int autoHbond(BitSet bsA, BitSet bsB, BitSet bsBonds,
+                          float minAttachedAngle, float maxXYDistance) {
+    if (maxXYDistance <= 0)
+      maxXYDistance = defaultHbondMax;
+    float hbondMax2 = maxXYDistance * maxXYDistance;
     float hbondMin2 = hbondMin * hbondMin;
     int nNew = 0;
     Vector3f v1 = new Vector3f();
     Vector3f v2 = new Vector3f();
     if (showRebondTimes && Logger.debugging)
-      Logger.startTimer();      
+      Logger.startTimer();
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
       int elementNumber = atom.getElementNumber();
@@ -373,25 +376,25 @@ abstract public class BondCollection extends AtomCollection {
         continue;
       //float searchRadius = hbondMax;
       CubeIterator iter = bspf.getCubeIterator(atom.modelIndex);
-      iter.initializeHemisphere(atom, hbondMax);
+      iter.initializeHemisphere(atom, maxXYDistance);
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom) iter.nextElement();
         int elementNumberNear = atomNear.getElementNumber();
         if (elementNumberNear != 7 && elementNumberNear != 8
-            || atomNear == atom
-            || iter.foundDistance2() < hbondMin2
-            || iter.foundDistance2() > hbondMax2
-            || atom.isBonded(atomNear))
+            || atomNear == atom || iter.foundDistance2() < hbondMin2
+            || iter.foundDistance2() > hbondMax2 || atom.isBonded(atomNear))
           continue;
-        if (minAttachedAngle > 0 && !checkMinAttachedAngle(atom, atomNear, minAttachedAngle, v1, v2))
+        if (minAttachedAngle > 0
+            && !checkMinAttachedAngle(atom, atomNear, minAttachedAngle, v1, v2))
           continue;
-        getOrAddBond(atom, atomNear, JmolConstants.BOND_H_REGULAR, 
-            (short) 1, bsPseudoHBonds);
+        getOrAddBond(atom, atomNear, JmolConstants.BOND_H_REGULAR, (short) 1,
+            bsPseudoHBonds);
         nNew++;
       }
       iter.release();
     }
-    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, bsPseudoHBonds);
+    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE,
+        bsPseudoHBonds);
     if (showRebondTimes && Logger.debugging)
       Logger.checkTimer("Time to hbond");
     return nNew;
@@ -404,12 +407,15 @@ abstract public class BondCollection extends AtomCollection {
         && checkMinAttachedAngle(atom2, atom2.getBonds(), atom1, minAngle, v1, v2));
   }
 
-  private boolean checkMinAttachedAngle(Atom atom1, Bond[] bonds1, Atom atom2, float minAngle, Vector3f v1, Vector3f v2) {
-    for (int i = bonds1.length; --i >= 0;) {
-      v2.sub(atom1, bonds1[i].getOtherAtom(atom1));
-      if (v2.angle(v1) < minAngle) 
-        return false;
-    }
+  private boolean checkMinAttachedAngle(Atom atom1, Bond[] bonds1, Atom atom2,
+                                        float minAngle, Vector3f v1, Vector3f v2) {
+    if (bonds1 != null)
+      for (int i = bonds1.length; --i >= 0;)
+        if (bonds1[i].isCovalent()) {
+          v2.sub(atom1, bonds1[i].getOtherAtom(atom1));
+          if (v2.angle(v1) < minAngle)
+            return false;
+        }
     v1.scale(-1); // set for second check
     return true;
   }

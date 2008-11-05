@@ -5136,9 +5136,9 @@
   <fah_proj number="2671" name="p2671_IBX in water" public="y" file="xyz"
     server="171.67.108.24" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson" contrib="Smoking2000"/>
-  <fah_proj number="2672" name="p2672_IBX in water" public="y"
+  <fah_proj number="2672" name="p2672_IBX in water" public="y" file="xyz"
     server="171.64.65.56" atoms="146808" preferred="3" deadline="3"
-    credit="1920" frames="100" code="GC" contact="kasson"/>
+    credit="1920" frames="100" code="GC" contact="kasson" contrib="Smoking2000"/>
   <fah_proj number="2673" name="p2673_IBX in water" public="y" file="xyz"
     server="171.67.108.24" atoms="146808" preferred="6" deadline="6"
     credit="3840" frames="100" code="GC" contact="kasson" contrib="Ivoshiee"/>
@@ -6600,7 +6600,7 @@
     server="171.64.122.78" atoms="7885" preferred="43" deadline="63"
     credit="225" frames="100" code="G" contact="gbowman" contrib="Bruce"/>
   <fah_proj number="4433" name="p4433_Seq41_Amber03_Native" public="y" file="xyz"
-    server="171.64.122.82" atoms="7885" preferred="2" deadline="2"
+    server="171.67.108.19" atoms="7885" preferred="2" deadline="2"
     credit="893" frames="100" code="GC" contact="gbowman" contrib="Smoking2000"/>
   <fah_proj number="4434" name="p4434_Seq42_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7864" preferred="43" deadline="63"
@@ -6927,7 +6927,7 @@
   <fah_proj number="4613" name="p4613_T0_BBL-8_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="134" preferred="8.5" deadline="12.8"
     credit="47" frames="100" code="A" contact="vvoelz" contrib="Smoking2000"/>
-  <fah_proj number="4614" name="p4614_T0_POB-12_minout" public="y" file="xyz"
+  <fah_proj number="4614" name="p4614_T0_POB-12_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="205" preferred="15.4" deadline="23.1"
     credit="84.7" frames="100" code="A" contact="vvoelz" contrib="Smoking2000"/>
   <fah_proj number="4615" name="p4615_T0_BBL-16_minout" public="y" file="top,xyz"

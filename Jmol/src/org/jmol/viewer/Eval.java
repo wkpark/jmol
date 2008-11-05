@@ -6115,7 +6115,7 @@ class Eval {
         JmolConstants.BOND_HYDROGEN_MASK));
     viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 0, bsConfigurations);
     if (addHbonds)
-      viewer.autoHbond(bsConfigurations, bsConfigurations, null);
+      viewer.autoHbond(bsConfigurations, bsConfigurations, null, 0);
     viewer.select(bsConfigurations, tQuiet);
   }
 
@@ -6410,10 +6410,15 @@ class Eval {
         }
         break;
       case Token.hbond:
-        checkLength(2);
-        if (isSyntaxCheck)
+        if (statementLength == 2) {
+          if (!isSyntaxCheck)
+            viewer.autoHbond(null);
           return;
-        viewer.autoHbond(null);
+        }
+        BitSet bs1 = expression(2);
+        BitSet bs2 = expression(iToken + 1);
+        if (!isSyntaxCheck)
+          viewer.autoHbond(bs1, bs2, null, -1);
         return;
       case Token.structure:
         bs = (statementLength == 2 ? null : expression(2));

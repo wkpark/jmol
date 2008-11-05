@@ -27,6 +27,8 @@ package org.jmol.modelset;
 
 import java.util.BitSet;
 
+import javax.vecmath.Vector3f;
+
 import org.jmol.bspt.CubeIterator;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
@@ -357,8 +359,10 @@ abstract public class BondCollection extends AtomCollection {
   private float hbondMin = 2.5f;
   private float hbondMin2 = hbondMin * hbondMin;
 
-  protected int autoHbond(BitSet bsA, BitSet bsB, BitSet bsBonds) {
+  protected int autoHbond(BitSet bsA, BitSet bsB, BitSet bsBonds, float minAttachedAngle) {
     int nNew = 0;
+    Vector3f v1 = new Vector3f();
+    Vector3f v2 = new Vector3f();
     if (showRebondTimes && Logger.debugging)
       Logger.startTimer();      
     for (int i = atomCount; --i >= 0;) {
@@ -377,6 +381,8 @@ abstract public class BondCollection extends AtomCollection {
             || iter.foundDistance2() < hbondMin2
             || atom.isBonded(atomNear))
           continue;
+        if (minAttachedAngle > 0 && !checkMinAttachedAngle(atom, atomNear, minAttachedAngle, v1, v2))
+          continue;
         getOrAddBond(atom, atomNear, JmolConstants.BOND_H_REGULAR, 
             (short) 1, bsPseudoHBonds);
         nNew++;
@@ -389,6 +395,21 @@ abstract public class BondCollection extends AtomCollection {
     return nNew;
   }
 
+
+  private boolean checkMinAttachedAngle(Atom atom1, Atom atom2, float minAngle, Vector3f v1, Vector3f v2) {
+    v1.sub(atom1, atom2);
+    return (checkMinAttachedAngle(atom1, atom1.getBonds(), atom2, minAngle, v1, v2)
+        && checkMinAttachedAngle(atom2, atom2.getBonds(), atom1, minAngle, v1, v2));
+  }
+
+  private boolean checkMinAttachedAngle(Atom atom1, Bond[] bonds1, Atom atom2, float minAngle, Vector3f v1, Vector3f v2) {
+    for (int i = bonds1.length; --i >= 0;) {
+      v2.sub(atom1, bonds1[i].getOtherAtom(atom1));
+      if (v2.angle(v1) < minAngle)
+        return false;
+    }
+    return true;
+  }
 
   /*
    * aromatic single/double bond assignment 

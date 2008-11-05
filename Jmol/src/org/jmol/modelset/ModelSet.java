@@ -507,7 +507,7 @@ abstract public class ModelSet extends ModelCollection {
   
   private final static boolean useRasMolHbondsCalculation = true;
 
-  public int autoHbond(BitSet bsA, BitSet bsB, BitSet bsBonds) {
+  public int autoHbond(BitSet bsA, BitSet bsB, BitSet bsBonds, float minAttachedAngle) {
     bsPseudoHBonds = new BitSet();
     if (useRasMolHbondsCalculation && bondCount > 0) {
       calcHydrogenBonds(bsA, bsB);
@@ -515,7 +515,7 @@ abstract public class ModelSet extends ModelCollection {
       return BitSetUtil.cardinalityOf(bsBonds);
     }
     initializeBspf();
-    return super.autoHbond(bsA, bsB, bsBonds);
+    return super.autoHbond(bsA, bsB, bsBonds, minAttachedAngle);
   }
   
   protected void assignAromaticBonds(boolean isUserCalculation) {

@@ -1159,7 +1159,7 @@ class Eval {
         stereo();
         break;
       case Token.connect:
-        connect();
+        connect(1);
         break;
       case Token.getproperty:
         getProperty();
@@ -3308,7 +3308,7 @@ class Eval {
     }
   }
 
-  private void connect() throws ScriptException {
+  private void connect(int index) throws ScriptException {
 
     final float[] distances = new float[2];
     BitSet[] atomSets = new BitSet[2];
@@ -3341,7 +3341,7 @@ class Eval {
       return;
     }
 
-    for (int i = 1; i < statementLength; ++i) {
+    for (int i = index; i < statementLength; ++i) {
       if (isColorParam(i)) {
         color = getArgbParam(i);
         i = iToken;
@@ -6082,6 +6082,12 @@ class Eval {
         return;
       int n = viewer.autoHbond(null);
       scriptStatus(GT._("{0} hydrogen bonds", n));
+      return;
+    }
+    if (statementLength == 2 && getToken(1).tok == Token.delete) {
+      if (isSyntaxCheck)
+        return;
+      connect(0);
       return;
     }
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(

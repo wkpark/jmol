@@ -359,7 +359,7 @@ abstract public class BondCollection extends AtomCollection {
   private static float hbondMin = 2.5f;
 
   protected int autoHbond(BitSet bsA, BitSet bsB, BitSet bsBonds,
-                          float minAttachedAngle, float maxXYDistance) {
+                          float maxXYDistance, float minAttachedAngle) {
     if (maxXYDistance <= 0)
       maxXYDistance = defaultHbondMax;
     float hbondMax2 = maxXYDistance * maxXYDistance;

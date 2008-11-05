@@ -2677,7 +2677,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (minAttachedAngle < 0)
       minAttachedAngle = global.hbondsAngleMinimum;
     minAttachedAngle *= (float) (Math.PI / 180);
-    return modelSet.autoHbond(bsFrom, bsTo, bsBonds, minAttachedAngle, 0);
+    return modelSet.autoHbond(bsFrom, bsTo, bsBonds, maxXYDistance, minAttachedAngle);
   }
 
   public boolean hasCalculatedHBonds(BitSet bsAtoms) {

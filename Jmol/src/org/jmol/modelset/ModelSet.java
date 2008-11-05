@@ -509,7 +509,7 @@ abstract public class ModelSet extends ModelCollection {
 
   public int autoHbond(BitSet bsA, BitSet bsB, BitSet bsBonds, float minAttachedAngle) {
     bsPseudoHBonds = new BitSet();
-    if (useRasMolHbondsCalculation && bondCount > 0) {
+    if (minAttachedAngle == 0 && useRasMolHbondsCalculation && bondCount > 0) {
       calcHydrogenBonds(bsA, bsB);
       bsBonds = bsPseudoHBonds;
       return BitSetUtil.cardinalityOf(bsBonds);

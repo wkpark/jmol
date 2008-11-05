@@ -6417,8 +6417,10 @@ class Eval {
         }
         BitSet bs1 = expression(2);
         BitSet bs2 = expression(iToken + 1);
-        if (!isSyntaxCheck)
-          viewer.autoHbond(bs1, bs2, null, -1);
+        if (!isSyntaxCheck) {
+          int nBonds = viewer.autoHbond(bs1, bs2, null, -1);
+          showString(nBonds + " hydrogen bonds created");
+        }
         return;
       case Token.structure:
         bs = (statementLength == 2 ? null : expression(2));

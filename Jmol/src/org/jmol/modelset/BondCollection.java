@@ -355,11 +355,12 @@ abstract public class BondCollection extends AtomCollection {
     BitSetUtil.deleteBits(bsAromatic, bs);
   }
 
-  private float hbondMax = 3.25f;
-  private float hbondMin = 2.5f;
-  private float hbondMin2 = hbondMin * hbondMin;
+  private static float hbondMax = 3.25f;
+  private static float hbondMin = 2.5f;
 
   protected int autoHbond(BitSet bsA, BitSet bsB, BitSet bsBonds, float minAttachedAngle) {
+    float hbondMax2 = hbondMax * hbondMax;
+    float hbondMin2 = hbondMin * hbondMin;
     int nNew = 0;
     Vector3f v1 = new Vector3f();
     Vector3f v2 = new Vector3f();
@@ -379,6 +380,7 @@ abstract public class BondCollection extends AtomCollection {
         if (elementNumberNear != 7 && elementNumberNear != 8
             || atomNear == atom
             || iter.foundDistance2() < hbondMin2
+            || iter.foundDistance2() > hbondMax2
             || atom.isBonded(atomNear))
           continue;
         if (minAttachedAngle > 0 && !checkMinAttachedAngle(atom, atomNear, minAttachedAngle, v1, v2))
@@ -405,9 +407,10 @@ abstract public class BondCollection extends AtomCollection {
   private boolean checkMinAttachedAngle(Atom atom1, Bond[] bonds1, Atom atom2, float minAngle, Vector3f v1, Vector3f v2) {
     for (int i = bonds1.length; --i >= 0;) {
       v2.sub(atom1, bonds1[i].getOtherAtom(atom1));
-      if (v2.angle(v1) < minAngle)
+      if (v2.angle(v1) < minAngle) 
         return false;
     }
+    v1.scale(-1); // set for second check
     return true;
   }
 

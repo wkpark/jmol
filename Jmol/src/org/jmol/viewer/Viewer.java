@@ -2673,7 +2673,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   int autoHbond(BitSet bsFrom, BitSet bsTo, BitSet bsBonds, float minAttachedAngle) {
     //Eval
     if (minAttachedAngle < 0)
-      minAttachedAngle = global.hbondsAngle;
+      minAttachedAngle = global.hbondsAngleMinimum;
     minAttachedAngle *= (float) (Math.PI / 180);
     return modelSet.autoHbond(bsFrom, bsTo, bsBonds, minAttachedAngle);
   }
@@ -4324,8 +4324,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       
       
       //11.7.9
-      if (key.equalsIgnoreCase("hbondsAngle")) {
-        global.hbondsAngle = value;
+      if (key.equalsIgnoreCase("hbondsAngleMinimum")) {
+        global.hbondsAngleMinimum = value;
         break;
       }
 

@@ -1649,13 +1649,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int i;
     Hashtable htParams = new Hashtable();
     Logger.debug(strModel);
+    String rep = (strModel.indexOf('\n') >= 0 ? "" : "\n");
     if (newLine != 0 && newLine != '\n') {
       int len = strModel.length();
       for (i = 0; i < len && strModel.charAt(i) == ' '; ++i) {
       }
       if (i < len && strModel.charAt(i) == newLine)
         strModel = strModel.substring(i + 1);
-      strModel = TextFormat.simpleReplace(strModel, "" + newLine, "\n");
+      strModel = TextFormat.simpleReplace(strModel, "" + newLine, rep);
     }
     String datasep = getDataSeparator();
     if (datasep != null && datasep != ""

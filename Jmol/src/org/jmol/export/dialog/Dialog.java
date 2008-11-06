@@ -47,7 +47,6 @@ import org.jmol.api.JmolDialogInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.util.Escape;
-import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
 
 public class Dialog extends JPanel implements JmolDialogInterface {
@@ -109,7 +108,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       if (fileName.length() > 0)
         openChooser.setSelectedFile(new File(fileName));
       if (fileName.indexOf(":") < 0)
-        openChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
+        openChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer, true, true));
     }
     
     UIManager.put("FileChooser.fileNameLabelText", GT._("File or URL:"));
@@ -126,11 +125,11 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     if (historyFile != null)
       historyFile.addWindowInfo(windowName, openChooser.getDialog(), null);
 
-    String url = getLocalUrl(file);
+    String url = FileManager.getLocalUrl(file);
     if (url != null) {
       fileName = url;
     } else {
-      viewer.setStringProperty("currentLocalPath", file.getParent());
+      FileManager.setLocalPath(viewer, file.getParent(), true);
       fileName = file.getAbsolutePath();
     }
     boolean doAppend = (allowAppend && openPreview != null && openPreview.isAppendSelected());
@@ -144,33 +143,11 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     return null;
   }
   
-  private final static String[] urlPrefixes = { "http:", "http://", "www.",
-      "http://www.", "https:", "https://", "ftp:", "ftp://", "file:",
-      "file:///" };
-
-  static String getLocalUrl(File file) {
-    // entering a url on a file input box will be accepted,
-    // but cause an error later. We can fix that...
-    // return null if there is no problem, the real url if there is
-    if (file.getName().startsWith("="))
-      return file.getName();
-    String path = file.getAbsolutePath().replace('\\', '/');
-    for (int i = 0; i < urlPrefixes.length; i++)
-      if (path.indexOf(urlPrefixes[i]) == 0)
-        return null;
-    for (int i = 0; i < urlPrefixes.length; i += 2)
-      if (path.indexOf(urlPrefixes[i]) > 0)
-        return urlPrefixes[i + 1]
-            + TextFormat.trim(path.substring(path.indexOf(urlPrefixes[i])
-                + urlPrefixes[i].length()), "/");
-    return null;
-  }
-
   public String getSaveFileNameFromDialog(JmolViewer viewer, String fileName,
                                           String type) {
     if (saveChooser == null)
       saveChooser = new JFileChooser();
-    saveChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
+    saveChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer, true, false));
     File file = null;
     saveChooser.resetChoosableFileFilters();
     if (fileName != null) {
@@ -189,7 +166,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     saveChooser.setSelectedFile(file);
     if ((file = showSaveDialog(this, this, saveChooser, file)) == null)
       return null;
-    viewer.setStringProperty("currentLocalPath", file.getParent());
+    FileManager.setLocalPath(viewer, file.getParent(), true);
     return file.getAbsolutePath();
   }
 
@@ -211,7 +188,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     
     if (imageChooser == null)
       imageChooser = new JFileChooser();
-    imageChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer));
+    imageChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer, true, false));
     imageChooser.resetChoosableFileFilters();
     File file = null;
     if (fileName == null) {
@@ -245,7 +222,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     qualityPNG = qSliderPNG.getValue();
     if (cb.getSelectedIndex() >= 0)
       defaultChoice = cb.getSelectedIndex();
-    viewer.setStringProperty("currentLocalPath", file.getParent());
+    FileManager.setLocalPath(viewer, file.getParent(), true);
     return file.getAbsolutePath();
   }
 

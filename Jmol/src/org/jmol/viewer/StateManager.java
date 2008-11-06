@@ -755,10 +755,10 @@ public class StateManager {
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
         + ";slabenabled;specular;specularexponent;specularpercent;specularpower;stateversion"
         + ";statusreporting;stereo;stereostate"
-        + ";unitcellcolor;windowcentered;zerobasedxyzrasmol;zoomenabled;"
+        + ";unitcellcolor;windowcentered;zerobasedxyzrasmol;zoomenabled"
         +
         //    saved in the hash table but not considered part of the state:
-        ";scriptqueue;scriptreportinglevel;syncscript;syncmouse;currentlocalpath"
+        ";scriptqueue;scriptreportinglevel;syncscript;syncmouse;currentlocalpath;defaultdirectorylocal"
         +
         //    more settable Jmol variables    
         ";ambient;bonds;colorrasmol;diffuse;frank;hetero;hidenotselected"
@@ -1126,6 +1126,7 @@ public class StateManager {
       setParameterValue("defaultColorScheme", "Jmol");
       setParameterValue("defaultDrawArrowScale", defaultDrawArrowScale);
       setParameterValue("defaultDirectory", defaultDirectory);
+      setParameterValue("defaultDirectoryLocal", "");
       setParameterValue("defaultDistanceLabel", defaultDistanceLabel);
       setParameterValue("defaultLoadScript", defaultLoadScript);
       setParameterValue("defaults", "Jmol");

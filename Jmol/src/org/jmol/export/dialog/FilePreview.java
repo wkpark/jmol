@@ -40,6 +40,7 @@ import javax.swing.JPanel;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
+import org.jmol.viewer.FileManager;
 
 /**
  * File previsualisation before opening
@@ -130,9 +131,9 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
       script = "zap";
     } else {
       String fileName = file.getAbsolutePath();
-      System.out.println("updatePreview "+ fileName + " " + chooser.getSelectedFile());
-      String url = Dialog.getLocalUrl(file);
-      System.out.println("updatePreview + " + fileName + " " + url);
+      //System.out.println("updatePreview "+ fileName + " " + chooser.getSelectedFile());
+      String url = FileManager.getLocalUrl(file);
+      //System.out.println("updatePreview + " + fileName + " " + url);
       if (url != null)
         fileName = url;
       //doesn't update from use input?

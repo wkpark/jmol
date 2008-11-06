@@ -525,16 +525,11 @@ java.lang.NullPointerException
     fileName = names[1];
   }
   
-  public String getFullPath(String name) {
-    String[] data = classifyName(name, false);
-    return (data == null ? "" : data[0].replace('\\','/'));
-  }
-  
   /**
    * 
    * @param name
    * @param isFullLoad
-   * @return [0] full path name, [1] file name without path
+   * @return [0] full path name, [1] file name without path, [2] full URL
    */
   private String[] classifyName(String name, boolean isFullLoad) {
     if (name == null)
@@ -551,15 +546,15 @@ java.lang.NullPointerException
     if (name.indexOf("=") == 0)
       name = TextFormat.formatString(viewer.getLoadFormat(), "FILE", name
           .substring(1));
-    String defaultDirectory = viewer.getDefaultDirectory();
     if (name.indexOf(":") < 0 && name.indexOf("/") != 0)
-      name = addDirectory(defaultDirectory, name);
+      name = addDirectory(viewer.getDefaultDirectory(), name);
     if (appletDocumentBase != null) {
       // This code is only for the applet
       try {
         if (name.indexOf(":\\") == 1 || name.indexOf(":/") == 1)
           name = "file:/" + name;
-        else if (name.indexOf("/") == 0 && viewer.getBooleanProperty("_signedApplet"))
+        else if (name.indexOf("/") == 0
+            && viewer.getBooleanProperty("_signedApplet"))
           name = "file:" + name;
         url = new URL(appletDocumentBase, name);
       } catch (MalformedURLException e) {
@@ -579,19 +574,20 @@ java.lang.NullPointerException
         }
       } else {
         file = new File(name);
-        names = new String[] { file.getAbsolutePath(), file.getName() };
+        names = new String[] { file.getAbsolutePath(), file.getName(),
+            "file:/" + file.getAbsolutePath().replace('\\', '/') };
       }
     }
     if (url != null) {
-      names = new String[2];
-      names[0] = url.toString();
+      names = new String[3];
+      names[0] = names[2] = url.toString();
       names[1] = names[0].substring(names[0].lastIndexOf('/') + 1);
     }
     if (isFullLoad && (file != null || urlTypeIndex(names[0]) == URL_LOCAL)) {
       String path = (file == null ? TextFormat.trim(names[0].substring(5), "/")
           : names[0]);
       path = path.substring(0, path.length() - names[1].length() - 1);
-      viewer.setStringProperty("currentLocalPath", path);
+      setLocalPath(viewer, path, true);
     }
     return names;
   }
@@ -626,14 +622,65 @@ java.lang.NullPointerException
     return protocol + path;
   }
   
-  public static File getLocalDirectory(JmolViewer viewer) {
-    String localDir = (String) viewer.getParameter("currentLocalPath");
+  public String getFullPath(String name, boolean addUrlPrefix) {
+    String[] names = classifyName(name, false);
+    return (names == null ? "" : addUrlPrefix ? names[2] : names[0].replace('\\','/'));
+  }
+  
+  private final static String[] urlPrefixPairs = { 
+    "http:", "http://", 
+    "www.", "http://www.", 
+    "https:", "https://", 
+    "ftp:", "ftp://", 
+    "file:", "file:///" };
+
+  public static String getLocalUrl(File file) {
+    // entering a url on a file input box will be accepted,
+    // but cause an error later. We can fix that...
+    // return null if there is no problem, the real url if there is
+    if (file.getName().startsWith("="))
+      return file.getName();
+    String path = file.getAbsolutePath().replace('\\', '/');
+    for (int i = 0; i < urlPrefixPairs.length; i++)
+      if (path.indexOf(urlPrefixPairs[i]) == 0)
+        return null;
+    // looking for /xxx/xxxx/file://...
+    for (int i = 0; i < urlPrefixPairs.length; i += 2)
+      if (path.indexOf(urlPrefixPairs[i]) > 0)
+        return urlPrefixPairs[i + 1]
+            + TextFormat.trim(path.substring(path.indexOf(urlPrefixPairs[i])
+                + urlPrefixPairs[i].length()), "/");
+    return null;
+  }
+
+  public static File getLocalDirectory(JmolViewer viewer, boolean forDialog, boolean readOnly) {
+    String localDir = (String) viewer.getParameter(
+        forDialog ? "currentLocalPath" : "defaultDirectoryLocal");
+    if (localDir.length() == 0 && forDialog)
+      localDir = (String) viewer.getParameter("defaultDirectoryLocal");
     if (localDir.length() == 0)
       return null;
     File f = new File(localDir);
     return f.isDirectory() ? f : f.getParentFile();
   }
   
+  public static void setLocalPath(JmolViewer viewer, String path, boolean forDialog) {
+    while (path.endsWith("/") || path.endsWith("\\"))
+      path = path.substring(0, path.length() - 1);
+    viewer.setStringProperty("currentLocalPath", path);
+    if (!forDialog)
+      viewer.setStringProperty("defaultDirectoryLocal", path);
+  }
+
+  public static String setLocalPathForWritingFile(JmolViewer viewer, String file) {  
+    if (file.indexOf("file:/") == 0)
+      return file.substring(6);
+    if (file.indexOf("/") == 0 || file.indexOf(":") >= 0)
+      return file;
+    File dir = getLocalDirectory(viewer, false, true);
+    return (dir == null ? file : dir.toString().replace('\\','/') + "/" + file);
+  }
+
   private static String addDirectory(String defaultDirectory, String name) {
     if (defaultDirectory.length() == 0)
       return name;

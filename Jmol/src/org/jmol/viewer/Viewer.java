@@ -312,6 +312,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         writeInfo = str.substring(i + 1, j);
       }
       mustRender = (haveDisplay || writeInfo != null);
+      cd(".");
     }
     isPreviewOnly = (str.indexOf("#previewOnly") >= 0);
     setBooleanProperty("_applet", isApplet);
@@ -1850,7 +1851,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
   
   public String getFullPath(String name) {
-    return fileManager.getFullPath(name);
+    return fileManager.getFullPath(name, false);
   }
   
   boolean getFileAsString(String[] data) {
@@ -4247,8 +4248,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       }
       if (key.equalsIgnoreCase("defaultDirectory")) {
-        global.defaultDirectory = (value == null ? "" : value
-            .replace('\\', '/'));
+        if (value == null)
+          value = "";
+        value = value.replace('\\', '/');
+        global.defaultDirectory = value;
         break;
       }
       if (key.equalsIgnoreCase("helpPath")) {
@@ -6493,6 +6496,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     creatingImage = true;
     String err = null;
+    file = FileManager.setLocalPathForWritingFile(this, file);
     try {
       err = statusManager.createImage(file, type, text_or_bytes, quality);
     } catch (Exception e) {
@@ -6757,7 +6761,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     dir = fileManager.getDefaultDirectory(dir + (dir.equals("=") || dir.endsWith("/") ? "" : "/X"));
     if (dir.length() > 0)
-      setStringProperty("defaultDirectory", dir = dir + "/");
+      setStringProperty("defaultDirectory", dir);
+    String path = fileManager.getFullPath(dir + "/", true);
+    if (path.startsWith("file:/"))
+      FileManager.setLocalPath(this, dir, false);
     return dir;
   }
 }

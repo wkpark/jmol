@@ -370,6 +370,14 @@ public class Text3D {
 
   private final static Hashtable htFont3d = new Hashtable();
   private final static Hashtable htFont3dAntialias = new Hashtable();
+  private static boolean working;
+  
+  public synchronized static void clearFontCache() {
+    if (working)
+      return;
+    htFont3d.clear();
+    htFont3dAntialias.clear();
+  }
   
   // FIXME mth
   // we have a synchronization issue/race condition  here with multiple
@@ -381,6 +389,7 @@ public class Text3D {
   private synchronized static Text3D getText3D(int x, int y, Graphics3D g3d,
                                                String text, Font3D font3d,
                                                boolean antialias) {
+    working = true;
     Hashtable ht = (antialias ? htFont3dAntialias : htFont3d);
     Hashtable htForThisFont = (Hashtable) ht.get(font3d);
     Text3D text3d = null;
@@ -407,6 +416,7 @@ public class Text3D {
       text3d.setBitmap(text, font3d, g3d.platform, antialias);
       htForThisFont.put(text, text3d);
     }
+    working = false;
     return text3d;
   }
 

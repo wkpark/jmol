@@ -4689,6 +4689,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean doRepaint = true;
     while (true) {
 
+      //11.7.10
+      if (key.equalsIgnoreCase("fontCaching")) {
+        global.fontCaching = value;
+        break;
+      }
+
       // 11.6.RC13
       if (key.equalsIgnoreCase("atomPicking")) {
         global.atomPicking = value;
@@ -5170,6 +5176,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   boolean getMessageStyleChime() {
     return global.messageStyleChime;
+  }
+
+  public boolean getFontCaching() {
+    return global.fontCaching;
   }
 
   public boolean getFontScaling() {

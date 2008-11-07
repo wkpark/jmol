@@ -31,6 +31,7 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
+import org.jmol.g3d.Text3D;
 import org.jmol.util.Escape;
 import org.jmol.util.Quaternion;
 
@@ -1141,7 +1142,12 @@ abstract class TransformManager {
     haveNotifiedNaN = false;
     fixedRotationOffset.set(fixedTranslation);
     internalSlab = slabEnabled && (slabPlane != null || depthPlane != null);
-    zoomPercent = getZoomSetting();
+    float newZoom = getZoomSetting();
+    if (zoomPercent != newZoom) {
+      zoomPercent = newZoom;
+      if (!viewer.getFontCaching())
+        Text3D.clearFontCache();
+    }
     calcCameraFactors();
     calcTransformMatrix();
     if (isNavigationMode)

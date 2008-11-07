@@ -616,6 +616,7 @@ public class StateManager {
     boolean atomPicking = true;
     String helpPath = JmolConstants.DEFAULT_HELP_PATH;
     boolean fontScaling = false;
+    boolean fontCaching = true;
     boolean hideNameInPopup = false;
     int hoverDelayMs = 500;
     boolean measurementLabels = true;
@@ -1153,6 +1154,7 @@ public class StateManager {
       setParameterValue("ellipsoidFill", ellipsoidFill);
       setParameterValue("exportDrivers", JmolConstants.EXPORT_DRIVER_LIST);
       setParameterValue("fontScaling", fontScaling);
+      setParameterValue("fontCaching", fontCaching);
       setParameterValue("forceAutoBond", forceAutoBond);
       setParameterValue("greyscaleRendering", greyscaleRendering);
       setParameterValue("hbondsAngleMinimum", hbondsAngleMinimum);

@@ -2149,8 +2149,8 @@
   <fah_proj number="896" name="p896_p53longpeptides_GB" public="y" file="xyz"
     server="130.49.240.81" atoms="260" preferred="11" deadline="47"
     credit="171" frames="100" code="A" contact="ltchong" contrib="DKman,konpas1986"/>
-  <fah_proj number="897" name="p897_NIFK_flip_p897" public="y" file="xyz"
-    server="130.49.240.81" atoms="18420" preferred="60" deadline="90"
+  <fah_proj number="897" name="p897_NIFKcomplex_p897" public="y" file="xyz"
+    server="130.49.240.81" atoms="18542" preferred="60" deadline="90"
     credit="326" frames="100" code="A" contact="ltchong" contrib="Hyperlife"/>
 
   <!-- Projects 900 to 999 -->
@@ -6268,6 +6268,8 @@
   <fah_proj number="3766" name="p3766_Seq37_Amber03_Extended" public="y" file="xyz"
     server="171.64.122.72" atoms="21353" preferred="83" deadline="124"
     credit="446" frames="100" code="GT" contact="gbowman" contrib="Ursomor"/>
+  <fah_proj number="3799" name="p3799" public="n" file="xyz"
+    contrib="John Deas"/>
 
   <!-- Projects 3800 to 3899 -->
   <fah_proj number="3850" name="p3850_fkbprelative_ligand" public="y" file="xyz"
@@ -6877,9 +6879,9 @@
   <fah_proj number="4597" name="p4597_T0_PSBD-8_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="150" preferred="8.5" deadline="12.8"
     credit="47" frames="100" code="A" contact="vvoelz" contrib="Smoking2000"/>
-  <fah_proj number="4598" name="p4598_T0_proL-12_minout" public="y" file="xyz"
+  <fah_proj number="4598" name="p4598_T0_proL-12_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="204" preferred="15.4" deadline="23.1"
-    credit="84.7" frames="100" code="A" contact="vvoelz" contrib="Flathead74"/>
+    credit="84.7" frames="100" code="A" contact="vvoelz" contrib="MstrBlstr,Flathead74"/>
   <fah_proj number="4599" name="p4599_T0_proL-16_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="253" preferred="21.7" deadline="32.5"
     credit="119.3" frames="100" code="A" contact="vvoelz"/>
@@ -6918,9 +6920,9 @@
   <fah_proj number="4610" name="p4610_T0_POB-8_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="128" preferred="8.5" deadline="12.8"
     credit="47" frames="100" code="A" contact="vvoelz" contrib="Hyperlife"/>
-  <fah_proj number="4611" name="p4611_T0_villin-8_minout" public="y" file="xyz"
+  <fah_proj number="4611" name="p4611_T0_villin-8_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="140" preferred="8.5" deadline="12.8"
-    credit="47" frames="100" code="A" contact="vvoelz" contrib="Flathead74"/>
+    credit="47" frames="100" code="A" contact="vvoelz" contrib="MstrBlstr,Flathead74"/>
   <fah_proj number="4612" name="p4612_T0_POB-16_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="271" preferred="21.7" deadline="32.5"
     credit="119.3" frames="100" code="A" contact="vvoelz" contrib="Flathead74,Smoking2000"/>
@@ -6939,7 +6941,7 @@
   <fah_proj number="4617" name="p4617_T0_villin-16_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="259" preferred="21.7" deadline="32.5"
     credit="119.3" frames="100" code="A" contact="vvoelz" contrib="Flathead74"/>
-  <fah_proj number="4618" name="p4618_T0_villin-12_minout" public="y" file="xyz"
+  <fah_proj number="4618" name="p4618_T0_villin-12_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="193" preferred="15.4" deadline="23.1"
     credit="84.7" frames="100" code="A" contact="vvoelz" contrib="Flathead74"/>
   <fah_proj number="4619" name="p4619_T0_NTL9-16_minout" public="y" file="xyz"

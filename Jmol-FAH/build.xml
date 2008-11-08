@@ -19,6 +19,9 @@
   <property name="commons-email.dir" value="jars/commons-email" />
   <property name="commons-email.jar" value="commons-email-1.1.jar" />
   <property name="commons-email.lic" value="LICENSE_commonsemail.txt" />
+  <property name="commons-io.dir"    value="jars/commons-io" />
+  <property name="commons-io.jar"    value="commons-io-1.4.jar" />
+  <property name="commons-io.lic"    value="LICENSE_commonsio.txt" />
   <property name="mail.dir"          value="jars/mail" />
   <property name="mail.jar"          value="mail.jar" />
   <property name="mail.lic"          value="LICENSE_mail.txt" />
@@ -60,6 +63,10 @@
       <fileset dir="${commons-email.dir}">
         <include name="${commons-email.jar}" />
         <include name="${commons-email.lic}" />
+      </fileset>
+      <fileset dir="${commons-io.dir}">
+        <include name="${commons-io.jar}" />
+        <include name="${commons-io.lic}" />
       </fileset>
     </zip>
   </target>

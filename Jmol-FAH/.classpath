@@ -5,5 +5,6 @@
 	<classpathentry kind="lib" path="jars/mail/mail.jar"/>
 	<classpathentry kind="lib" path="jars/activation/activation.jar"/>
 	<classpathentry kind="lib" path="jars/commons-email/commons-email-1.1.jar"/>
+	<classpathentry kind="lib" path="jars/commons-io/commons-io-1.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

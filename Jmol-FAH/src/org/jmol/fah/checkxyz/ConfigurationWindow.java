@@ -76,6 +76,7 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
   private JTextField textUserMail = null;
   private JTextField textUserLogin = null;
   private JTextField textUserPassword = null;
+  private JTextField textSaveDir = null;
   private JCheckBox chkLoop = null;
   private JFormattedTextField textBasicInterval = null;
   private JFormattedTextField textThreshold = null;
@@ -344,6 +345,22 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
 
     constraints.gridy++;
 
+    // Save directory
+    JLabel labelSaveDir = new JLabel("Save directory :", SwingConstants.RIGHT);
+    constraints.gridx = 0;
+    constraints.weightx = 0;
+    constraints.anchor = GridBagConstraints.EAST;
+    panel.add(labelSaveDir, constraints);
+
+    textSaveDir = new JTextField(configuration.getSaveDirectory(), 15);
+    textSaveDir.setToolTipText("The directory in which sent files are also copied locally.");
+    constraints.gridx++;
+    constraints.weightx = 1;
+    constraints.anchor = GridBagConstraints.WEST;
+    panel.add(textSaveDir, constraints);
+
+    constraints.gridy++;
+
     // Loop
     chkLoop = new JCheckBox("Loop", configuration.getLoop());
     chkLoop.setToolTipText("Check this if you want the tool to check regularly for missing files");
@@ -576,6 +593,7 @@ public class ConfigurationWindow extends JFrame implements ActionListener {
       configuration.setUserMail(textUserMail.getText());
       configuration.setLogin(textUserLogin.getText());
       configuration.setPassword(textUserPassword.getText());
+      configuration.setSaveDirectory(textSaveDir.getText());
       configuration.setLoop(chkLoop.isSelected());
       tmpValue = textBasicInterval.getValue();
       if (tmpValue instanceof Long) {

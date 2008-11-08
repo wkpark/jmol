@@ -27,17 +27,12 @@ package org.jmol.fah.checkxyz;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
@@ -46,6 +41,8 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
+
+import org.apache.commons.io.FileUtils;
 
 /**
  * Checking for missing XYZ files for http://www.jmol.org/fah
@@ -86,8 +83,9 @@ public class Check implements ActionListener {
       }
     };
     File configDirectory = new File(new File(System.getProperty("user.home")), ".jmol");
-    if (!configDirectory.mkdirs() &&
-        (!configDirectory.exists() || !configDirectory.isDirectory())) {
+    try {
+      FileUtils.forceMkdir(configDirectory);
+    } catch (IOException e) {
       System.out.println("Error creating directory " + configDirectory.toString());
     }
     availableProjects = new File(configDirectory, "availableProjects");
@@ -509,9 +507,7 @@ public class Check implements ActionListener {
       }
     }
     try {
-      if (configuration.getDetailedOutput()) {
-        System.out.print("Found new project :)");
-      }
+      System.out.println("Found new project :) " + project);
       File[] files = new File[4];
       files[0] = file;
       if ((topologyFile != null) && (trajectoryFile != null)) {
@@ -521,8 +517,35 @@ public class Check implements ActionListener {
           files[3] = logFile;
         }
       }
-      MailSender sender = new MailSender(configuration, project, files, false);
-      sender.sendMail();
+      if ((configuration.getMailServer() != null) &&
+          (!"".equals(configuration.getMailServer())) &&
+          (configuration.getUserMail() != null) &&
+          (!"".equals(configuration.getUserMail())) &&
+          (configuration.getUserName() != null) &&
+          (!"".equals(configuration.getUserName()))) {
+        MailSender sender = new MailSender(configuration, project, files, false);
+        sender.sendMail();
+      }
+      if ((configuration.getSaveDirectory() != null) &&
+          (!"".equals(configuration.getSaveDirectory()))) {
+        File saveDir = new File(configuration.getSaveDirectory());
+        try {
+          FileUtils.forceMkdir(saveDir);
+        } catch (IOException e) {
+          System.out.println("Error creating directory " + saveDir.getAbsolutePath());
+        }
+        for (int i = 0; i < files.length; i++) {
+          File saveProjectDir = new File(saveDir, "p" + project);
+          if (files[i] != null) {
+            File destFile = new File(saveProjectDir, files[i].getName());
+            try {
+              FileUtils.copyFile(files[i], destFile);
+            } catch (IOException e) {
+              System.out.println("Error saving file " + files[i]);
+            }
+          }
+        }
+      }
       if (!existingProjects.contains(project)) {
         if (!configuration.hasBeenSent(project)) {
           configuration.addSentFile(project);
@@ -594,62 +617,26 @@ public class Check implements ActionListener {
   }
 
   /**
-   * Download a file locally.
-   * 
-   * @param inputFile Input file.
-   * @param outputFile Output file.
-   * @return Flag indicating if the download was successful.
-   */
-  private boolean downloadFile(String inputFile, File outputFile) {
-    OutputStream os = null;
-    InputStream is = null;
-    try {
-      os = new BufferedOutputStream(new FileOutputStream(outputFile, false));
-      URL url = new URL(inputFile);
-      is = new BufferedInputStream(url.openStream());
-      int read = -1;
-      while ((read = is.read()) != -1) {
-        os.write(read);
-      }
-      return true;
-    } catch (MalformedURLException e) {
-      outputError("Downloading available files", e);
-    } catch (IOException e) {
-      outputError("Downloading available files", e);
-    } finally {
-      if (os != null) {
-        try {
-          os.close();
-        } catch (IOException e) {
-          outputError("Closing OutputStream", e);
-        }
-      }
-      if (is != null) {
-        try {
-          is.close();
-        } catch (IOException e) {
-          outputError("Closing InputStream", e);
-        }
-      }
-    }
-    return false;
-  }
-
-  /**
    * Download the list of available files from http://www.jmol.org/
    */
   private void downloadAvailableFiles() {
-    if (!availableProjectsDownloaded) {
-      availableProjectsDownloaded = downloadFile("http://www.jmol.org/fah/availableProjects.txt", availableProjects);
-      if (availableProjectsDownloaded) {
-        existingProjects.clear();
-      }
+    try {
+      FileUtils.copyURLToFile(
+          new URL("http://www.jmol.org/fah/availableProjects.txt"),
+          availableProjects);
+    } catch (MalformedURLException e) {
+      //
+    } catch (IOException e) {
+      System.out.println("Error retrieving availableProjects.txt from Jmol website");
     }
-    if (!availableAmbersDownloaded) {
-      availableAmbersDownloaded = downloadFile("http://www.jmol.org/fah/availableAmber.txt", availableAmbers);
-      if (availableAmbersDownloaded) {
-        existingAmbers.clear();
-      }
+    try {
+      FileUtils.copyURLToFile(
+          new URL("http://www.jmol.org/fah/availableAmber.txt"),
+          availableAmbers);
+    } catch (MalformedURLException e) {
+      //
+    } catch (IOException e) {
+      System.out.println("Error retrieving availableAmber.txt from Jmol website");
     }
   }
 

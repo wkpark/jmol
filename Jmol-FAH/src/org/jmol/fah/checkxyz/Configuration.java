@@ -47,6 +47,7 @@ public class Configuration implements Serializable {
   private String userMail;
   private String login;
   private String password;
+  private String saveDir;
   private boolean loop;
   private int basicInterval;
   private int threshold;
@@ -69,6 +70,7 @@ public class Configuration implements Serializable {
     userMail = "";
     login = "";
     password = "";
+    saveDir = "";
     loop = false;
     basicInterval = 30;
     threshold = 90;
@@ -113,6 +115,7 @@ public class Configuration implements Serializable {
       userMail = props.getProperty("userMail", userMail);
       login = props.getProperty("login", login);
       password = props.getProperty("password", password);
+      saveDir = props.getProperty("saveDir", saveDir);
       tmpBoolean = Boolean.valueOf(props.getProperty("loop", Boolean.toString(loop)));
       loop = (tmpBoolean != null) ? tmpBoolean.booleanValue() : false;
       tmpString = props.getProperty("basicInterval", Integer.toString(basicInterval));
@@ -176,6 +179,7 @@ public class Configuration implements Serializable {
       props.setProperty("userMail", userMail);
       props.setProperty("login", login);
       props.setProperty("password", password);
+      props.setProperty("saveDir", saveDir);
       props.setProperty("loop", Boolean.toString(loop));
       props.setProperty("basicInterval", Integer.toString(basicInterval));
       props.setProperty("threshold", Integer.toString(threshold));
@@ -212,11 +216,17 @@ public class Configuration implements Serializable {
    * @return Indicates if the configuration is done.
    */
   public boolean isConfigured() {
+    boolean mailConfigured = true;
+    mailConfigured &= ((mailServer != null) && !mailServer.isEmpty());
+    mailConfigured &= ((userMail != null) && !userMail.isEmpty());
+    mailConfigured &= ((userName != null) && !userName.isEmpty());
+
+    boolean saveConfigured = true;
+    saveConfigured &= ((saveDir != null) && !saveDir.isEmpty());
+
     boolean configured = true;
-    configured &= ((userName != null) && !userName.equals(""));
-    configured &= ((mailServer != null) && !mailServer.equals(""));
-    configured &= ((userMail != null) && !userMail.equals(""));
     configured &= ((directories != null) && !directories.isEmpty());
+    configured &= (mailConfigured || saveConfigured);
     return configured;
   }
 
@@ -320,6 +330,20 @@ public class Configuration implements Serializable {
   }
   public String getPassword() {
     return password;
+  }
+
+  /**
+   * @param dir Save directory.
+   */
+  public void setSaveDirectory(String dir) {
+    if (dir != null) {
+      saveDir = dir.trim();
+    } else {
+      saveDir = "";
+    }
+  }
+  public String getSaveDirectory() {
+    return saveDir;
   }
 
   /**

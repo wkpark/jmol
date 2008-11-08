@@ -80,6 +80,9 @@
         <fileset dir="${commons-email.dir}">
           <include name="${commons-email.jar}" />
         </fileset>
+        <fileset dir="${commons-io.dir}">
+          <include name="${commons-io.jar}" />
+        </fileset>
         <fileset dir="${activation.dir}">
           <include name="${activation.jar}" />
         </fileset>

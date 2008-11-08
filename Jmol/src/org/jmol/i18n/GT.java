@@ -124,6 +124,7 @@ public class GT {
       new Language("et",    GT._("Estonian"),                 true),
       new Language("fr",    GT._("French"),                   true),
       new Language("de",    GT._("German"),                   true),
+      new Language("el",    GT._("Greek"),                    false),
       new Language("hu",    GT._("Hungarian"),                true),
       new Language("it",    GT._("Italian"),                  true),
       new Language("ko",    GT._("Korean"),                   true),

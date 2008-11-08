@@ -90,7 +90,7 @@ class Eval {
 
   private final static int scriptLevelMax = 10;
 
-  private Compiler compiler;
+  protected Compiler compiler;
   private int scriptLevel;
   private int scriptReportingLevel = 0;
   private Context[] stack = new Context[scriptLevelMax];
@@ -407,16 +407,8 @@ class Eval {
     return true;
   }
 
-  private Function getFunction(String name) {
-    if (name == null)
-      return null;
-    Function function = (Function) (name.indexOf("_") == 0 ? compiler.localFunctions
-        : Compiler.globalFunctions).get(name);
-    return (function == null || function.aatoken == null ? null : function);
-  }
-
   private boolean loadFunction(String name, Vector params) {
-    Function function = getFunction(name);
+    Function function = compiler.getFunction(name);
     if (function == null)
       return false;
     aatoken = function.aatoken;
@@ -432,9 +424,11 @@ class Eval {
     return true;
   }
 
-  Token getFunctionReturn(String name, Vector params) throws ScriptException {
+  Token getFunctionReturn(String name, Vector params, Token tokenAtom) throws ScriptException {
     pushContext(null);
     loadFunction(name, params);
+    if (tokenAtom != null)
+      contextVariables.put("_atom", tokenAtom);
     instructionDispatchLoop(false);
     Token token = getContextVariableAsToken("_retval");
     popContext();
@@ -5251,7 +5245,7 @@ class Eval {
     if (isSyntaxCheck && !isScriptCheck)
       return;
     String name = (String) getToken(0).value;
-    if (getFunction(name) == null)
+    if (compiler.getFunction(name) == null)
       evalError(GT._("command expected"));
     Vector params = (statementLength == 1 || statementLength == 3
         && tokAt(1) == Token.leftparen && tokAt(2) == Token.rightparen ? null
@@ -7556,9 +7550,9 @@ class Eval {
           if (tokAt(iToken + 2) == Token.all) {
             token.intValue |= Token.minmaxmask;
             getToken(iToken + 2);
-          }
-          if (Token.tokAttrOr(tokAt(iToken + 2), Token.min, Token.max))
+          } else if (Token.tokAttrOr(tokAt(iToken + 2), Token.min, Token.max)) {
             token.intValue |= getToken(iToken + 2).tok;
+          }
         }
         if (!rpn.addOp(token))
           error(ERROR_invalidArgument);
@@ -7811,12 +7805,17 @@ class Eval {
     case Token.property:
       break;
     case Token.identifier:
-      switch (tok = Token.getSettableTokFromString(parameterAsString(i))) {
+      String name = parameterAsString(i);
+      switch (tok = Token.getSettableTokFromString(name)) {
       case Token.atomX:
       case Token.atomY:
       case Token.atomZ:
         break;
       default:
+        if (!mustBeSettable && compiler.isFunction(name)) {
+          tok = Token.function;
+          break;
+        }
         return null;
       }
       break;
@@ -7871,6 +7870,16 @@ class Eval {
     if (tok == Token.identify)
       return (isMin || isMax ? "" : getBitsetIdent(bs, null, tokenValue,
           useAtomMap));
+    String userFunction = null;
+    Vector params = null;
+    BitSet bsAtom = null;
+    Token tokenAtom = null;
+    if (tok == Token.function) {
+      userFunction = (String) ((Object[]) opValue)[0];
+      params = (Vector) ((Object[]) opValue)[1];
+      bsAtom = new BitSet();
+      tokenAtom = new Token(Token.bitset, bsAtom);
+    }
 
     int n = 0;
     int ivAvg = 0, ivMax = Integer.MIN_VALUE, ivMin = Integer.MAX_VALUE;
@@ -7998,6 +8007,11 @@ class Eval {
           float fv = Float.MAX_VALUE;
 
           switch (tok) {
+          case Token.function:
+            bsAtom.set(i);
+            fv = Token.fValue(getFunctionReturn(userFunction, params, tokenAtom));
+            bsAtom.clear(i);
+            break;
           case Token.property:
             fv = (data == null ? 0 : data[i]);
             break;
@@ -12135,9 +12149,13 @@ class Eval {
       if (++oPt >= maxLevel)
         stackOverflow();
       oStack[oPt] = op;
+
+      if (op.tok == Token.propselector && (op.intValue & ~Token.minmaxmask) == Token.function && op.intValue != Token.function) {
+        return evaluateFunction();
+      }
       return true;
     }
-
+    
     private boolean doBitsetSelect() {
       if (xPt < 0 || xPt == 0 && !isAssignment) {
         return false;
@@ -12174,7 +12192,8 @@ class Eval {
 
     private boolean evaluateFunction() throws ScriptException {
       Token op = oStack[oPt--];
-      int tok = (op.tok == Token.propselector ? op.intValue : op.tok);
+      int tok = (op.tok == Token.propselector ? op.intValue & ~Token.minmaxmask
+          : op.tok);
       // for .xxx or .xxx() functions
       // we store the token inthe intValue field of the propselector token
       int nParamMax = Token.getMaxMathParams(tok); // note - this is NINE for dot-operators
@@ -12202,7 +12221,8 @@ class Eval {
       case Token.angle:
         return evaluateMeasure(args, op.tok == Token.angle);
       case Token.function:
-        return evaluateUserFunction((String) op.value, args);
+        return evaluateUserFunction((String) op.value, args, op.intValue,
+            op.tok == Token.propselector);
       case Token.find:
         return evaluateFind(args);
       case Token.replace:
@@ -12299,15 +12319,25 @@ class Eval {
       return false;
     }
 
-    private boolean evaluateUserFunction(String name, Token[] args)
+    private boolean evaluateUserFunction(String name, Token[] args, int tok, boolean isSelector)
         throws ScriptException {
+      Token x1 = null;
+      if (isSelector) {
+        x1 = getX();
+        if (x1.tok != Token.bitset)
+          return false;
+      }
+      wasX = false;
       if (isSyntaxCheck)
         return addX((int) 1);
       Vector params = new Vector();
       for (int i = 0; i < args.length; i++)
         params.addElement(args[i]);
-      Token token = getFunctionReturn(name, params);
-      wasX = false;
+      if (isSelector) {
+        return addX(getBitsetProperty(Token.bsSelect(x1), tok, null,
+              null, x1.value, new Object[] {name, params}, false, Token.Token2.bsItem2(x1)));
+      }
+      Token token = getFunctionReturn(name, params, null);
       return (token == null ? false : addX(token));
     }
 

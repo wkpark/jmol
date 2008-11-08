@@ -49,7 +49,15 @@ class Compiler {
     (function.name.indexOf("_") == 0 ? localFunctions
         : globalFunctions).put(function.name, function);
   }
-  
+
+  Function getFunction(String name) {
+    if (name == null)
+      return null;
+    Function function = (Function) (name.indexOf("_") == 0 ? localFunctions
+        : globalFunctions).get(name);
+    return (function == null || function.aatoken == null ? null : function);
+  }
+
   private Function thisFunction;
   private Viewer viewer;
   private String filename;

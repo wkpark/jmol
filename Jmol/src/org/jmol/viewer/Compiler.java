@@ -44,6 +44,11 @@ class Compiler {
   boolean isFunction(String name) {
     return (name.indexOf("_") == 0 ? localFunctions : globalFunctions).containsKey(name);
   }
+
+  void addFunction(Function function) {
+    (function.name.indexOf("_") == 0 ? localFunctions
+        : globalFunctions).put(function.name, function);
+  }
   
   private Function thisFunction;
   private Viewer viewer;
@@ -786,12 +791,11 @@ class Compiler {
             break;
           case Token.function:
             if (!isCheckOnly)
-              (thisFunction.name.indexOf("_") == 0 ? localFunctions
-                  : globalFunctions).put(thisFunction.name, thisFunction);
+              addTokenToPrefix(new Token(Token.function, thisFunction));
             flowContext.setFunction(script, ichCurrentCommand, lltoken.size(),
                 lineNumbers, lineIndices, lltoken);
             thisFunction = null;
-            tokenCommand.intValue = Integer.MAX_VALUE; // don't include this one
+            tokenCommand.intValue = 0;
             flowContext = flowContext.parent;
             continue;
           default:

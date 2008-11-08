@@ -529,9 +529,9 @@ class Eval {
   }
 
   private void clearDefinedVariableAtomSets() {
-    definedAtomSets.remove("# variable");  
+    definedAtomSets.remove("# variable");
   }
-  
+
   private void defineSets() {
     if (!definedAtomSets.containsKey("# static")) {
       for (int i = 0; i < JmolConstants.predefinedStatic.length; i++)
@@ -752,7 +752,8 @@ class Eval {
         if (v instanceof Token) {
           fixed[j] = (Token) v;
           if (isExpression && fixed[j].tok == Token.list)
-            fixed[j] = new Token(Token.bitset, getAtomBitSet(this, Token.sValue(fixed[j])));
+            fixed[j] = new Token(Token.bitset, getAtomBitSet(this, Token
+                .sValue(fixed[j])));
         } else if (v instanceof Boolean) {
           fixed[j] = (((Boolean) v).booleanValue() ? Token.tokenOn
               : Token.tokenOff);
@@ -775,9 +776,11 @@ class Eval {
             if (isExpression) {
               fixed[j] = new Token(Token.bitset, getAtomBitSet(this, s));
             } else {
-              tok = (isClauseDefine ? Token.string : s.indexOf(".") >= 0
-                  || s.indexOf("=") >= 0 || s.indexOf("[") >= 0
-                  || s.indexOf("{") >= 0 ? Token.string : Token.identifier);
+              tok = (isClauseDefine 
+                  || s.indexOf(".") >= 0 || s.indexOf(" ") >= 0
+                  || s.indexOf("=") >= 0 || s.indexOf(";") >= 0 
+                  || s.indexOf("[") >= 0 || s.indexOf("{") >= 0 
+                  ? Token.string : Token.identifier);
               fixed[j] = new Token(tok, v);
             }
           }
@@ -1235,10 +1238,14 @@ class Eval {
     case Token.endifcmd:
       checkLength(1);
       break;
-    case Token.end: //if, for, while
+    case Token.end: //function, if, for, while
       checkLength(2);
-      isForCheck = (tokAt(1) == Token.forcmd);
-      isOK = (tokAt(1) == Token.ifcmd);
+      if (getToken(1).tok == Token.function) {
+        compiler.addFunction((Function) theToken.value);
+        return;
+      }
+      isForCheck = (theTok == Token.forcmd);
+      isOK = (theTok == Token.ifcmd);
       break;
     case Token.whilecmd:
       isForCheck = false;
@@ -1558,14 +1565,14 @@ class Eval {
       case Token.spec_resid:
       case Token.spec_chain:
         rpn.addX(getAtomBits(instruction.tok,
-                new Integer(instruction.intValue)));
+             new Integer(instruction.intValue)));
         break;
       case Token.spec_seqcode:
         if (isInMath)
           rpn.addX(instruction.intValue);
         else
           rpn.addX(getAtomBits(Token.spec_seqcode, new Integer(
-            getSeqCode(instruction))));
+              getSeqCode(instruction))));
         break;
       case Token.spec_seqcode_range:
         if (isInMath) {
@@ -4388,7 +4395,8 @@ class Eval {
         Point3f lattice = getPoint3f(i, false);
         i = iToken + 1;
         htParams.put("lattice", lattice);
-        sOptions += " {" + (int)lattice.x + " " + (int)lattice.y + " " + (int)lattice.z + "}";
+        sOptions += " {" + (int) lattice.x + " " + (int) lattice.y + " "
+            + (int) lattice.z + "}";
         int iGroup = -1;
         float distance = 0;
         /*
@@ -8556,7 +8564,8 @@ class Eval {
         float scaleAngstromsPerPixel = floatParameter(2);
         if (scaleAngstromsPerPixel >= 5) // actually a zoom value
           scaleAngstromsPerPixel = viewer.getZoomSetting()
-              / scaleAngstromsPerPixel / viewer.getScalePixelsPerAngstrom(false);
+              / scaleAngstromsPerPixel
+              / viewer.getScalePixelsPerAngstrom(false);
         propertyValue = new Float(scaleAngstromsPerPixel);
         break;
       }
@@ -9493,9 +9502,9 @@ class Eval {
         msg = (data == null ? "no data" : "data \""
             + data[0]
             + "\"\n"
-            + (data[1] instanceof float[] ? Escape.escape((float[]) data[1], true)
-                : data[1] instanceof float[][] ? Escape.escape(
-                    (float[][]) data[1], false) : "" + data[1]))
+            + (data[1] instanceof float[] ? Escape.escape((float[]) data[1],
+                true) : data[1] instanceof float[][] ? Escape.escape(
+                (float[][]) data[1], false) : "" + data[1]))
             + "\nend \"" + data[0] + "\";";
       }
       break;
@@ -11744,10 +11753,9 @@ class Eval {
   String contextTrace() {
     StringBuffer sb = new StringBuffer();
     for (;;) {
-      String s = (functionName == null ? "" : " function " + functionName)
-          + " file " + filename;
-      sb
-          .append(setErrorLineMessage(s, getLinenumber(), pc,
+      String s = (functionName == null ? "" : "function " + functionName)
+          + "file " + filename;
+      sb.append(setErrorLineMessage(s, getLinenumber(), pc,
               statementAsString()));
       if (scriptLevel > 0)
         popContext();
@@ -11761,8 +11769,8 @@ class Eval {
                                     int pcCurrent, String lineInfo) {
     String err = "\n----";
     if (filename != null)
-      err += "line " + lineCurrent + " command " + (pcCurrent + 1) + " of "
-          + filename + ":";
+      err += "line " + lineCurrent + " command " + (pcCurrent + 1)
+          + (filename.equals("file null") ? "" : " of " + filename) + ":";
     err += "\n         " + lineInfo;
     return err;
   }
@@ -12932,8 +12940,10 @@ class Eval {
             .firstSetBit((BitSet) args[1].value)));
       }
       if (withinSpec instanceof String) {
-        isSequence = !Parser.isOneOf(withinStr.toLowerCase(),
-            "atomname;type;atomtype;element;site;group;chain;structure;molecule;model;boundbox");
+        isSequence = !Parser
+            .isOneOf(
+                withinStr.toLowerCase(),
+                "atomname;type;atomtype;element;site;group;chain;structure;molecule;model;boundbox");
       } else if (isDistance) {
         distance = Token.fValue(args[0]);
         if (i < 2)
@@ -12948,17 +12958,19 @@ class Eval {
       switch (i) {
       case 1:
         // within (boundbox)
-        return (!withinStr.equalsIgnoreCase("boundbox") ? false : addX(isSyntaxCheck ? bs
-            : viewer.getAtomBits(Token.boundbox, null)));
+        return (!withinStr.equalsIgnoreCase("boundbox") ? false
+            : addX(isSyntaxCheck ? bs : viewer
+                .getAtomBits(Token.boundbox, null)));
       case 2:
         // within (atomName, "XX,YY,ZZZ")
         if (withinStr.equalsIgnoreCase("atomName"))
-          return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.atomName, Token
-              .sValue(args[1])));
+          return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.atomName,
+              Token.sValue(args[1])));
         // within (atomType, "XX,YY,ZZZ")
-        if (withinStr.equalsIgnoreCase("atomType") || withinStr.equalsIgnoreCase("type"))
-          return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.atomType, Token
-              .sValue(args[1])));
+        if (withinStr.equalsIgnoreCase("atomType")
+            || withinStr.equalsIgnoreCase("type"))
+          return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.atomType,
+              Token.sValue(args[1])));
         break;
       case 3:
         withinStr = Token.sValue(args[1]);

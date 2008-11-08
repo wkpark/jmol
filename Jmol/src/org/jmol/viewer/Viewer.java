@@ -113,11 +113,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private CommandHistory commandHistory = new CommandHistory();
   private ColorManager colorManager;
-  private Compiler compiler;
 
-  Compiler getCompiler() {
-    return compiler;
-  }
+  Compiler compiler;
+  Hashtable definedAtomSets;
 
   private MinimizerInterface minimizer;
 
@@ -133,7 +131,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return minimizer;
   }
 
-  private Eval eval;
+  Eval eval;
   private DataManager dataManager;
   private FileManager fileManager;
   private ModelManager modelManager;
@@ -166,12 +164,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean jvm11orGreater = false;
   private boolean jvm12orGreater = false;
   private boolean jvm14orGreater = false;
-
-  private Hashtable definedAtomSets;
-
-  Hashtable getDefinedAtomSets() {
-    return definedAtomSets;
-  }
 
   public Viewer(Component display, JmolAdapter modelAdapter) {
     if (Logger.debugging) {
@@ -1463,11 +1455,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   BitSet getAtomBitSet(Object atomExpression) {
     // typically a string such as "(atomno < 3)"
-    return Eval.getAtomBitSet(eval, this, atomExpression);
+    return Eval.getAtomBitSet(eval, atomExpression);
   }
 
   Vector getAtomBitSetVector(Object atomExpression) {
-    return Eval.getAtomBitSetVector(eval, this, atomExpression);
+    return Eval.getAtomBitSetVector(eval, getAtomCount(), atomExpression);
   }
 
   // ///////////////////////////////////////////////////////////////

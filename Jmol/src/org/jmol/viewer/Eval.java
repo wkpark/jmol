@@ -147,8 +147,8 @@ class Eval {
 
   Eval(Viewer viewer) {
     this.viewer = viewer;
-    compiler = viewer.getCompiler();
-    definedAtomSets = viewer.getDefinedAtomSets();
+    compiler = viewer.compiler;
+    definedAtomSets = viewer.definedAtomSets;
   }
 
   private Object getParameter(String var, boolean asToken) {
@@ -211,10 +211,12 @@ class Eval {
     try {
       if (expr instanceof String) {
         if (e.loadScript(null, EXPRESSION_KEY + " = " + expr, false)) {
+          e.contextVariables = viewer.eval.contextVariables;
           e.setStatement(0);
           return e.parameterExpression(2, 0, "", false);
         }
       } else if (expr instanceof Token[]) {
+        e.contextVariables = viewer.eval.contextVariables;
         return e.expression((Token[]) expr, 0, 0, true, false, true, false);
       }
     } catch (Exception ex) {
@@ -223,11 +225,9 @@ class Eval {
     return "ERROR";
   }
 
-  static BitSet getAtomBitSet(Eval e, Viewer viewer, Object atomExpression) {
+  static BitSet getAtomBitSet(Eval e, Object atomExpression) {
     if (atomExpression instanceof BitSet)
       return (BitSet) atomExpression;
-    if (e == null)
-      e = new Eval(viewer);
     BitSet bs = new BitSet();
     try {
       e.pushContext(null);
@@ -245,10 +245,9 @@ class Eval {
     return bs;
   }
 
-  static Vector getAtomBitSetVector(Eval e, Viewer viewer, Object atomExpression) {
+  static Vector getAtomBitSetVector(Eval e, int atomCount, Object atomExpression) {
     Vector V = new Vector();
-    BitSet bs = getAtomBitSet(e, viewer, atomExpression);
-    int atomCount = viewer.getAtomCount();
+    BitSet bs = getAtomBitSet(e, atomExpression);
     for (int i = 0; i < atomCount; i++)
       if (bs.get(i))
         V.addElement(new Integer(i));
@@ -753,8 +752,7 @@ class Eval {
         if (v instanceof Token) {
           fixed[j] = (Token) v;
           if (isExpression && fixed[j].tok == Token.list)
-            fixed[j] = new Token(Token.bitset, getAtomBitSet(this, viewer,
-                Token.sValue(fixed[j])));
+            fixed[j] = new Token(Token.bitset, getAtomBitSet(this, Token.sValue(fixed[j])));
         } else if (v instanceof Boolean) {
           fixed[j] = (((Boolean) v).booleanValue() ? Token.tokenOn
               : Token.tokenOff);
@@ -775,7 +773,7 @@ class Eval {
             // identifiers cannot have periods; file names can, though
             s = (String) v;
             if (isExpression) {
-              fixed[j] = new Token(Token.bitset, getAtomBitSet(this, viewer, s));
+              fixed[j] = new Token(Token.bitset, getAtomBitSet(this, s));
             } else {
               tok = (isClauseDefine ? Token.string : s.indexOf(".") >= 0
                   || s.indexOf("=") >= 0 || s.indexOf("[") >= 0
@@ -1459,7 +1457,7 @@ class Eval {
         rpn.addX(val);
         break;
       case Token.define:
-        rpn.addX(getAtomBitSet(this, viewer, (String) value));
+        rpn.addX(getAtomBitSet(this, (String) value));
         break;
       case Token.plane:
         rpn.addX(instruction);
@@ -1706,7 +1704,7 @@ class Eval {
         && (mustBeBitSet || ((String) expressionResult).startsWith("({"))) {
       // allow for select @{x} where x is a string that can evaluate to a bitset
       expressionResult = (isScriptCheck ? new BitSet() : getAtomBitSet(this,
-          viewer, (String) expressionResult));
+          (String) expressionResult));
     }
     if (!mustBeBitSet && !(expressionResult instanceof BitSet))
       return null; // because result is in expressionResult in that case

@@ -203,7 +203,7 @@ class Compiler {
     this.filename = filename;
     this.isSilent = isSilent;
     this.script = cleanScriptComments(script);
-    this.contextVariables = null;
+    contextVariables = null;
     logMessages = (!isSilent && !isPredefining && debugScript);
     preDefining = (filename == "#predefine");
     return (compile0() || handleError());

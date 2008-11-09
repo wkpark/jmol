@@ -205,7 +205,6 @@
         <include name="**/*.jpg" />
         <include name="**/*.gif" />
       	<include name="**/*.png" />
-      	<include name="**/*.prm" />
         <include name="**/*.html" />
         <include name="**/*.js" />
         <include name="**/*.dtd" />
@@ -251,7 +250,7 @@ support for assertions (which were introduced in 1.4).
 
     <copy todir="${applet.classes.dir}" >
       <fileset dir="src">
-        <include name="org/jmol/minimize/forcefield/*.prm" />
+        <include name="org/jmol/minimize/forcefield/*.txt" />
         <include name="jmol75x29x8.gif" />
       </fileset>
     </copy>

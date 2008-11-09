@@ -36,7 +36,7 @@
       </fileset>
       <manifest>
         <attribute name="Main-Class" value="org.jmol.fah.checkxyz.Check" />
-        <attribute name="Class-Path" value="${activation.jar} ${mail.jar} ${commons-email.jar}" />
+        <attribute name="Class-Path" value="${activation.jar} ${mail.jar} ${commons-email.jar} ${commons-io.jar}" />
       </manifest>
     </jar>
   </target>

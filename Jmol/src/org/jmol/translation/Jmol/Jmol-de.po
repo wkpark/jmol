@@ -11,13 +11,13 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-10-13 20:27+0200\n"
-"PO-Revision-Date: 2008-10-12 11:24+0000\n"
-"Last-Translator: Maximilian Reininghaus <max.reininghaus@gmail.com>\n"
+"PO-Revision-Date: 2008-11-09 12:16+0000\n"
+"Last-Translator: Keruskerfuerst <Unknown>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-10-12 11:36+0000\n"
+"X-Launchpad-Export-Date: 2008-11-09 17:04+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
@@ -151,7 +151,7 @@ msgstr "Lösche Atome"
 
 #: org/openscience/jmol/app/GaussianDialog.java:187
 msgid "Export Gaussian Input File"
-msgstr ""
+msgstr "gaussche Eingangsdatei exportieren"
 
 #: org/openscience/jmol/app/GaussianDialog.java:194
 msgid "Basic"
@@ -163,7 +163,7 @@ msgstr "Fortgeschritten"
 
 #: org/openscience/jmol/app/GaussianDialog.java:224
 msgid "Checkpoint File: "
-msgstr ""
+msgstr "Fixpunkt-Datei: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:229
 msgid "Amount of Memory:"
@@ -183,27 +183,27 @@ msgstr "Methode: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:261
 msgid "Basis Set: "
-msgstr ""
+msgstr "Basissatz "
 
 #: org/openscience/jmol/app/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
-msgstr ""
+msgstr "passendes Dichte-Basis-Set (nur DFT): "
 
 #: org/openscience/jmol/app/GaussianDialog.java:275
 msgid "Job Options: "
-msgstr ""
+msgstr "Arbeitsoptionen: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:288
 msgid "Molecular Properties"
-msgstr ""
+msgstr "Molekular-Eigenschaft"
 
 #: org/openscience/jmol/app/GaussianDialog.java:294
 msgid "Total Charge: "
-msgstr ""
+msgstr "totale Füllung: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:301
 msgid "Multiplicity: "
-msgstr ""
+msgstr "Vielfachheit: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:308
 msgid "Selection: "
@@ -211,7 +211,7 @@ msgstr "Auswahl: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
-msgstr ""
+msgstr "Name der gaussches Eingabe-Datei"
 
 #: org/openscience/jmol/app/GaussianDialog.java:349
 msgid "File..."
@@ -389,7 +389,7 @@ msgstr "Phosphor"
 
 #: org/openscience/jmol/app/GuiMap.java:86
 msgid "Sulfur"
-msgstr ""
+msgstr "Schwefel"
 
 #: org/openscience/jmol/app/GuiMap.java:87
 msgid "Amino"
@@ -562,7 +562,7 @@ msgstr "&Werkzeuge"
 
 #: org/openscience/jmol/app/GuiMap.java:143
 msgid "&Gaussian..."
-msgstr ""
+msgstr "&Gaussches..."
 
 #: org/openscience/jmol/app/GuiMap.java:145
 msgid "Click atoms to measure distances"
@@ -798,14 +798,12 @@ msgid "no display (and also exit when done)"
 msgstr "keine Anzeige (und Beende wenn fertig)"
 
 #: org/openscience/jmol/app/Jmol.java:404
-#, fuzzy
 msgid "check script syntax only - no file loading"
-msgstr "nur Syntax überprüfen"
+msgstr "nur die Syntax der Skripte überprüfen - kein Laden der Datei"
 
 #: org/openscience/jmol/app/Jmol.java:405
-#, fuzzy
 msgid "check script syntax only - with file loading"
-msgstr "nur Syntax überprüfen"
+msgstr "nur die Syntax der Skripte überprüfen - mit Laden der Datei"
 
 #: org/openscience/jmol/app/Jmol.java:406
 msgid "silent startup operation"
@@ -829,11 +827,11 @@ msgstr "Nach Skript automatisch beenden (wird von -n impliziert)"
 
 #: org/openscience/jmol/app/Jmol.java:417
 msgid "script file to execute"
-msgstr ""
+msgstr "Skriptdatei, das geladen werden soll"
 
 #: org/openscience/jmol/app/Jmol.java:423
 msgid "Jmol script to execute"
-msgstr ""
+msgstr "Jmol Skript, das ausgeführt werden soll"
 
 #: org/openscience/jmol/app/Jmol.java:434
 msgid "property=value"
@@ -931,6 +929,7 @@ msgstr "Dateiname:"
 msgid ""
 "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 msgstr ""
+"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:167
 msgid "Working Directory"
@@ -1031,7 +1030,7 @@ msgstr "Startgröße: "
 
 #: org/openscience/jmol/app/PovrayDialog.java:411
 msgid "Initial size of the tiles"
-msgstr ""
+msgstr "ursprüngliche Größe der Kacheln"
 
 #: org/openscience/jmol/app/PovrayDialog.java:427
 msgid "End size : "

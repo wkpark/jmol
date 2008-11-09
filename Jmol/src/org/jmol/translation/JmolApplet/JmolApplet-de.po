@@ -11,13 +11,13 @@ msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-11-08 10:52+0100\n"
-"PO-Revision-Date: 2008-09-26 15:03+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2008-11-09 12:05+0000\n"
+"Last-Translator: Keruskerfuerst <Unknown>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-09-29 19:28+0000\n"
+"X-Launchpad-Export-Date: 2008-11-09 17:01+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/Console.java:40
@@ -333,14 +333,12 @@ msgid "Dutch"
 msgstr "Holländisch"
 
 #: org/jmol/i18n/GT.java:122
-#, fuzzy
 msgid "British English"
-msgstr "Englisch"
+msgstr "britisches Englisch"
 
 #: org/jmol/i18n/GT.java:123
-#, fuzzy
 msgid "American English"
-msgstr "Englisch"
+msgstr "amerikanisches Englisch"
 
 #: org/jmol/i18n/GT.java:124
 msgid "Estonian"
@@ -380,9 +378,8 @@ msgid "Polish"
 msgstr "Polnisch"
 
 #: org/jmol/i18n/GT.java:133
-#, fuzzy
 msgid "Brazilian Portuguese"
-msgstr "Portugiesisch"
+msgstr "brasilianisches Portugiesisch"
 
 #: org/jmol/i18n/GT.java:134
 msgid "Portuguese"
@@ -411,7 +408,7 @@ msgstr "Türkisch"
 #: org/jmol/minimize/Minimizer.java:186
 #, java-format
 msgid "Could not get class for force field {0}"
-msgstr ""
+msgstr "kann keine Güteklasse für Karftfeld {0} feststellen"
 
 #: org/jmol/minimize/Minimizer.java:195
 msgid "No atoms selected -- nothing to do!"
@@ -425,7 +422,7 @@ msgstr "{0} Atome werden minimiert"
 #: org/jmol/minimize/Minimizer.java:350
 #, java-format
 msgid "could not setup force field {0}"
-msgstr ""
+msgstr "kann Kraftfeld {0} nicht einrichten."
 
 #: org/jmol/popup/JmolPopup.java:481 org/jmol/popup/JmolPopup.java:521
 #: org/jmol/popup/PopupResourceBundle.java:581
@@ -1037,7 +1034,7 @@ msgstr "Monomer"
 
 #: org/jmol/popup/PopupResourceBundle.java:739
 msgid "Shapely"
-msgstr ""
+msgstr "Schattenhaft"
 
 #: org/jmol/popup/PopupResourceBundle.java:741
 msgid "Inherit"
@@ -1430,7 +1427,7 @@ msgstr "Lösungsmittel Oberfläche ({0}-Angström Sonde)"
 #: org/jmol/popup/PopupResourceBundle.java:899
 #, java-format
 msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
-msgstr ""
+msgstr "flüssig-zugängliche Oberfläche (VDW + {0} Å)"
 
 #: org/jmol/popup/PopupResourceBundle.java:900
 msgid "Molecular Electrostatic Potential"
@@ -1803,15 +1800,15 @@ msgstr "zu viele Skript-Ebenen"
 
 #: org/jmol/viewer/Eval.java:11529
 msgid "unrecognized atom property"
-msgstr ""
+msgstr "nicht erkannte Atom-Eigenschaft"
 
 #: org/jmol/viewer/Eval.java:11530
 msgid "unrecognized bond property"
-msgstr ""
+msgstr "nicht erkannte Bindungs-Eigenschaft"
 
 #: org/jmol/viewer/Eval.java:11531
 msgid "unrecognized command"
-msgstr ""
+msgstr "nicht erkannter Befehl"
 
 #: org/jmol/viewer/Eval.java:11532
 msgid "runtime unrecognized expression"
@@ -1854,6 +1851,7 @@ msgstr "{0} Atome ausgewählt"
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr ""
+"Fehler: kann kein boolsches Kennzeichen zu einem variablen Wert setzen:{0}"
 
 #: org/jmol/viewer/Viewer.java:4485 org/jmol/viewer/Viewer.java:4660
 #, java-format

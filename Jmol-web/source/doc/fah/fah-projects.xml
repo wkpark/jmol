@@ -6911,7 +6911,7 @@
   <fah_proj number="4607" name="p4607_T0_PSBD-12_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="223" preferred="15.4" deadline="23.1"
     credit="84.7" frames="100" code="A" contact="vvoelz"/>
-  <fah_proj number="4608" name="p4608_T0_PSBD-16_minout" public="y" file="xyz"
+  <fah_proj number="4608" name="p4608_T0_PSBD-16_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="293" preferred="21.7" deadline="32.5"
     credit="119.3" frames="100" code="A" contact="vvoelz" contrib="Smoking2000"/>
   <fah_proj number="4609" name="p4609_T0_proL-8_minout" public="y" file="top,xyz"

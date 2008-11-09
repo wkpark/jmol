@@ -428,7 +428,7 @@ class Eval {
     pushContext(null);
     loadFunction(name, params);
     if (tokenAtom != null)
-      contextVariables.put("_atom", tokenAtom);
+      contextVariables.put("_x", tokenAtom);
     instructionDispatchLoop(false);
     Token token = getContextVariableAsToken("_retval");
     popContext();
@@ -7451,14 +7451,40 @@ class Eval {
       v = null;
       int tok = getToken(i).tok;
       if (isImplicitAtomProperty && tokAt(i + 1) != Token.dot) {
-        if (Token.tokAttr(tok, Token.atomproperty)) {
+
+
+        Token token = getBitsetPropertySelector(i, false);
+        if (token == null) {
+          getToken(i);
+        } else {
           rpn.addX((Token) localVars.get(localVar));
-          if (!rpn.addOp(new Token(Token.propselector, tok,
+          if (!rpn.addOp(token)) {
+            error(ERROR_invalidArgument);
+          }          
+          if (token.intValue == Token.function && tokAt(iToken + 1) != Token.leftparen) {
+            rpn.addOp(Token.tokenLeftParen);
+            rpn.addOp(Token.tokenRightParen);
+          }
+
+          i = iToken;
+          
+          continue;
+        }
+/*        if (theTok == Token.identifier
+            && compiler.isFunction((String) theToken.value)) {
+          rpn.addX((Token) localVars.get(localVar));
+          if (!rpn.addOp(new Token(Token.function, theToken.value))) {
+            //iToken--;
+            error(ERROR_invalidArgument);
+          }
+        } else if (Token.tokAttr(theTok, Token.atomproperty)) {
+          rpn.addX((Token) localVars.get(localVar));
+          if (!rpn.addOp(new Token(Token.propselector, theTok,
               parameterAsString(i).toLowerCase())))
             error(ERROR_invalidArgument);
           continue;
         }
-      }
+*/      }
       switch (tok) {
       case Token.select:
         String dummy = "_x";
@@ -7555,8 +7581,12 @@ class Eval {
           }
         }
         if (!rpn.addOp(token))
-          error(ERROR_invalidArgument);
+          error(ERROR_invalidArgument);        
         i = iToken;
+        if (tokAt(i + 1) != Token.leftparen) {
+          rpn.addOp(Token.tokenLeftParen);
+          rpn.addOp(Token.tokenRightParen);
+        }
         break;
       default:
         if (theTok == Token.identifier
@@ -7564,6 +7594,10 @@ class Eval {
           if (!rpn.addOp(new Token(Token.function, theToken.value))) {
             //iToken--;
             error(ERROR_invalidArgument);
+          }
+          if (tokAt(i + 1) != Token.leftparen) {
+            rpn.addOp(Token.tokenLeftParen);
+            rpn.addOp(Token.tokenRightParen);
           }
         } else if (Token.tokAttr(theTok, Token.mathop)
             || Token.tokAttr(theTok, Token.mathfunc)) {
@@ -12063,7 +12097,7 @@ class Eval {
           Logger.info("\noperating, oPt=" + oPt + " isLeftOp=" + isLeftOp
               + " oStack[oPt]=" + Token.nameOf(oStack[oPt].tok)
               + "        prec=" + Token.getPrecedence(oStack[oPt].tok)
-              + " pending op=" + Token.nameOf(op.tok) + " prec="
+              + " pending op=\"" + Token.nameOf(op.tok) + "\" prec="
               + Token.getPrecedence(op.tok));
         }
         // ) and ] must wait until matching ( or [ is found

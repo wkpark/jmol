@@ -551,8 +551,8 @@ abstract public class JmolPopup {
     }
     renameMenu(menu, modelSetName);
     enableMenu(menu, true);
-    if (atomCount < 100)
-      addMenuItem(menu, "Minimize", "minimize", null);
+    // 100 here is totally arbitrary. You can do a minimization on any number of atoms
+    enableMenuItem(addMenuItem(menu, GT._("Minimize"), "minimize", null), atomCount <= 100);
     addMenuSeparator(menu);
     addMenuItem(menu, GT._(getMenuText("atomsText"), atomCount, true));
     addMenuItem(menu, GT._(getMenuText("bondsText"), viewer

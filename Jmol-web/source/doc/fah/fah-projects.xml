@@ -4802,6 +4802,9 @@
   <fah_proj number="2427" name="p2427_Ribo_Cl_aux" public="y" file="xyz"
     server="171.65.103.162" atoms="87974" preferred="30" deadline="82"
     credit="500" frames="100" code="G" contact="ppetrone" contrib="daveb"/>
+  <fah_proj number="2443" name="p2443_" public="y"
+    server="171.65.103.160" preferred="42" deadline="93"
+    credit="2435" frames="100" code="G" contact="ppetrone"/>
   <fah_proj number="2450" name="p2450_GROtesk MACabre and Siniste drgpmfr" public="y"
     server="171.65.103.162" atoms="54992" preferred="30" deadline="82"
     credit="500" frames="100" code="G" contact="ppetrone"/>
@@ -4814,6 +4817,9 @@
   <fah_proj number="2453" name="p2453_Fragment-Receptor HDU" public="y" file="xyz"
     server="171.65.103.162" atoms="54765" preferred="46" deadline="68"
     credit="243" frames="100" code="G" contact="ppetrone" contrib="daveb"/>
+  <fah_proj number="2463" name="p2463_" public="y"
+    server="171.65.103.160" preferred="45" deadline="66"
+    credit="905" frames="100" code="G" contact="ppetrone"/>
   <fah_proj number="2481" name="p2481_system" public="y"
     server="171.65.103.162" atoms="97177" preferred="202" deadline="303"
     credit="905" code="G" contact="ppetrone"/>
@@ -4859,6 +4865,9 @@
   <fah_proj number="2496" name="p2496_Gln_fragment_in_translocon" public="y" file="xyz"
     server="171.65.103.160" atoms="97139" preferred="42" deadline="93"
     credit="905" frames="100" code="G" contact="ppetrone" contrib="Steve Pun"/>
+  <fah_proj number="2497" name="p2497_" public="y"
+    server="171.65.103.160" preferred="42" deadline="93"
+    credit="905" frames="100" code="G" contact="ppetrone"/>
 
   <!-- Projects 2500 to 2599 -->
   <fah_proj number="2500" name="p2500_BBA5_pfold" public="y" file="xyz"
@@ -6965,9 +6974,9 @@
   <fah_proj number="4625" name="p4625_T0499-8_minout" public="y" file="xyz"
     server="169.230.26.30" atoms="154" preferred="8.5" deadline="12.8"
     credit="47" frames="100" code="A" contact="vvoelz" contrib="Hyperlife"/>
-  <fah_proj number="4626" name="p4626_T0499-16_minout" public="y" file="xyz"
+  <fah_proj number="4626" name="p4626_T0499-16_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="284" preferred="21.7" deadline="32.5"
-    credit="119.3" frames="100" code="A" contact="vvoelz" contrib="Flathead74"/>
+    credit="119.3" frames="100" code="A" contact="vvoelz" contrib="MstrBlstr,Flathead74"/>
 
   <!-- Projects 4700 to 4799 -->
   <fah_proj number="4700" name="p4700_N68H_AM03" public="y"
@@ -7565,7 +7574,7 @@
     credit="384" frames="100" code="GG2" contact="vvoelz"/>
   <fah_proj number="5748" name="p5748_ACBP_ff03_300K" public="y"
     server="171.67.108.11" atoms="1392" preferred="2" deadline="3"
-    credit="511" frames="100" code="ND" contact="vvoelz"/>
+    credit="511" frames="100" code="GG2" contact="vvoelz"/>
 
   <!-- Projects 5800 to 5899 -->
   <fah_proj number="5800" name="p5800_supervillin_e1" public="y"

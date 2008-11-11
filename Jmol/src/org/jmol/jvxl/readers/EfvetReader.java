@@ -104,11 +104,19 @@ class EfvetReader extends SurfaceFileReader {
     float value = 0;
     skipTo("<vertices", "count");
     jvxlData.vertexCount = nVertices = parseInt(); 
+    skipTo("property=", null);
+    line = line.replace('"',' ');
+    String[] tokens = getTokens();
+    int dataIndex = params.fileIndex;
+    if (dataIndex > 0 && dataIndex < tokens.length)
+      Logger.info("property " + tokens[dataIndex]);
+    else
+      Logger.info(line);
     for (int i = 0; i < nVertices; i++) {
       skipTo("<vertex", "image");
       pt.set(parseFloat(), parseFloat(), parseFloat());
       lineTo("property");
-      for(int j = 0; j <= dataIndex; j++)
+      for(int j = 0; j < dataIndex; j++)
         value = parseFloat();
       meshDataServer.addVertexCopy(pt, value, i);
     }

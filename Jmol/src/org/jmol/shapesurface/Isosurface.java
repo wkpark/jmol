@@ -137,8 +137,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   public void initShape() {
     super.initShape();
     myType = "isosurface";
-    jvxlData = new JvxlData();
-    sg = new SurfaceGenerator(viewer, this, colorEncoder, null, jvxlData);
+    sg = new SurfaceGenerator(viewer, this, colorEncoder, null, jvxlData = new JvxlData());
   }
 
   protected void clearSg() {
@@ -286,6 +285,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     }
 
     if ("finalize" == propertyName) {
+      sg.finalizeIsosurface();
       setScriptInfo();
       setJvxlInfo();
       clearSg();
@@ -374,7 +374,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     currentMesh = thisMesh;
     super.setProperty(propertyName, value, bs);
     thisMesh = (IsosurfaceMesh) currentMesh;
-    jvxlData = (thisMesh == null ? null : thisMesh.jvxlData);
+    sg.setJvxlData(jvxlData = (thisMesh == null ? null : thisMesh.jvxlData));
   }
 
   public Object getProperty(String property, int index) {
@@ -772,7 +772,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   }
 
   private void setJvxlInfo() {
-    if (sg.getJvxlData() != jvxlData)
+    if (sg.getJvxlData() != jvxlData || sg.getJvxlData() != thisMesh.jvxlData)
       jvxlData = thisMesh.jvxlData = sg.getJvxlData();
     jvxlData.jvxlDefinitionLine = JvxlReader.jvxlGetDefinitionLine(jvxlData,
         false);

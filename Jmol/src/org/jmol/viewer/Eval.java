@@ -11392,10 +11392,10 @@ class Eval {
     }
 
     if (surfaceObjectSeen && isIsosurface && !isSyntaxCheck) {
-      float[] dataRange = (float[]) viewer
-          .getShapeProperty(iShape, "dataRange");
-      Integer n = (Integer) viewer.getShapeProperty(iShape, "count");
       setShapeProperty(iShape, "finalize", null);
+      Integer n = (Integer) viewer.getShapeProperty(iShape, "count");
+      float[] dataRange = (float[]) viewer
+      .getShapeProperty(iShape, "dataRange");
       String s = (String) viewer.getShapeProperty(iShape, "ID");
       if (s != null) {
         s += " created; number of isosurfaces = " + n;

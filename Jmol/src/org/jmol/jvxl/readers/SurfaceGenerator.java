@@ -771,6 +771,12 @@ public class SurfaceGenerator {
       generateSurface();
     }
   }
+  
+  public void finalizeIsosurface() {
+    if (surfaceReader != null && surfaceReader.hasColorData && params.rangeDefined)
+      colorIsosurface();
+  }
+  
   private boolean setReader(boolean isMap) {
     if (surfaceReader != null)
       return !surfaceReader.vertexDataOnly;
@@ -825,10 +831,7 @@ public class SurfaceGenerator {
     if (haveMeshDataServer)
       meshDataServer.notifySurfaceGenerationCompleted();
     
-    if (surfaceReader.hasColorData) {
-      colorIsosurface();
-      params.state = Parameters.STATE_DATA_COLORED;
-    } else if (jvxlData.jvxlDataIs2dContour) {
+    if (jvxlData.jvxlDataIs2dContour) {
       surfaceReader.colorIsosurface();
       params.state = Parameters.STATE_DATA_COLORED;
     }
@@ -839,7 +842,10 @@ public class SurfaceGenerator {
     surfaceReader.jvxlUpdateInfo();
     setMarchingSquares(surfaceReader.marchingSquares);
     surfaceReader.discardTempData(false);
-    surfaceReader = null; // resets voxel reader for mapping
+    if (surfaceReader.hasColorData)
+      params.state = Parameters.STATE_DATA_COLORED;
+    else
+      surfaceReader = null; // resets voxel reader for mapping
     params.mappedDataMin = Float.MAX_VALUE;
   }
 

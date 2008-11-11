@@ -181,6 +181,9 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected boolean isXLowToHigh = false; //can be overridden in some readers by --progressive
   private float assocCutoff = 0.3f;
 
+  boolean vertexDataOnly;
+  boolean hasColorData;
+
   SurfaceReader(SurfaceGenerator sg) {
     this.sg = sg;
     this.colorEncoder = sg.getColorEncoder();
@@ -419,8 +422,6 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected final Point3f ptTemp = new Point3f();
 
   final float[] fReturn = new float[1];
-  boolean vertexDataOnly;
-  boolean hasColorData;
 
   public int getSurfacePointIndex(float cutoff, boolean isCutoffAbsolute,
                                   int x, int y, int z, Point3i offset, int vA,

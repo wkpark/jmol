@@ -30,7 +30,6 @@ import org.jmol.util.Parser;
 abstract class SurfaceFileReader extends SurfaceReader {
 
   protected BufferedReader br;
-  protected int dataIndex;
  
   SurfaceFileReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg);
@@ -61,10 +60,6 @@ abstract class SurfaceFileReader extends SurfaceReader {
     // required by SurfaceReader
   }
 
-  protected void gotoData(int n, int nPoints) throws Exception {
-    dataIndex = n;
-  }
-  
   abstract void getSurfaceData() throws Exception;
 
   ///////////file reading //////////

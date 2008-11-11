@@ -50,7 +50,7 @@ public class MarchingSquares {
 
   private boolean logMessages = false;
   
-  private VertexDataServer voxelReader;
+  private VertexDataServer surfaceReader;
   private VolumeData volumeData;
 
   private final static int nContourMax = 100;
@@ -84,9 +84,9 @@ public class MarchingSquares {
 
   private boolean contourFromZero = true;
    
-  public MarchingSquares(VertexDataServer voxelReader, VolumeData volumeData,
+  public MarchingSquares(VertexDataServer surfaceReader, VolumeData volumeData,
       Point4f thePlane, int nContours, int thisContour, boolean contourFromZero) {
-    this.voxelReader = voxelReader;
+    this.surfaceReader = surfaceReader;
     this.volumeData = volumeData;
     this.thePlane = thePlane;
     this.thisContour = thisContour;
@@ -331,7 +331,7 @@ public class MarchingSquares {
     x += offsets.x;
     y += offsets.y;
     z += offsets.z;
-    int vPt = voxelReader.addVertexCopy(vertexXYZ, value, VERTEX_POINT);
+    int vPt = surfaceReader.addVertexCopy(vertexXYZ, value, VERTEX_POINT);
     contourVertexes[contourVertexCount++] = new ContourVertex(x, y, z,
         vertexXYZ, vPt);
     //System.out.println("vertex xyz " + x + " " + y + " " + z + " " + vPt + " coord:" + vertexXYZ);
@@ -668,7 +668,7 @@ public class MarchingSquares {
       squareFractions[iEdge] = calcContourPoint(cutoff, valueA, valueB, contourPoints[iEdge]);
       //System.out.println("x y iEdge cutoff A B f " + x + " " + y + " " + iEdge + " :: " + cutoff + " " + valueA + " " + valueB + " " + squareFractions[iEdge]);
       //System.out.println(pointA+ " pta/b " + pointB);
-      pixelPointIndexes[iEdge] = voxelReader.addVertexCopy(contourPoints[iEdge], cutoff, CONTOUR_POINT);
+      pixelPointIndexes[iEdge] = surfaceReader.addVertexCopy(contourPoints[iEdge], cutoff, CONTOUR_POINT);
     }
     //this must be a square that is involved in this particular contour
     planarSquares[x * squareCountY + y].setIntersectionPoints(contourIndex,
@@ -946,7 +946,7 @@ public class MarchingSquares {
           : iB == mesh1 && iC == mesh2 || iC == mesh1 && iB == mesh2 ? 2
               : iA == mesh1 && iC == mesh2 || iC == mesh1 && iA == mesh2 ? 4
                   : 0);
-      voxelReader.addTriangleCheck(iA, iB, iC, check, false);
+      surfaceReader.addTriangleCheck(iA, iB, iC, check, false);
       k = triangleVertexList[i];
     }
   }

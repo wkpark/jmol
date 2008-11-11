@@ -670,6 +670,14 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
       thisMesh.nSets = meshData.nSets;
       //thisMesh.setColorSchemeSets();
       return;
+    case MeshData.MODE_PUT_VERTICES:
+      thisMesh.vertices = meshData.vertices;
+      thisMesh.vertexValues = meshData.vertexValues;
+      thisMesh.vertexCount = meshData.vertexCount;
+      thisMesh.vertexIncrement = meshData.vertexIncrement;
+      thisMesh.polygonCount = meshData.polygonCount;
+      thisMesh.polygonIndexes = meshData.polygonIndexes;
+      return;
     }
   }
 

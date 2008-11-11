@@ -9,12 +9,12 @@ public interface VertexDataServer {
   /*
    * An interface for interacting with 
    * the MarchingCubes and MarchingSquares classes 
-   * as well as the SurfaceGenerator/VoxelReader classes
+   * as well as the SurfaceGenerator/SurfaceReader classes
    * during and after surface generation
    * 
-   * VoxelReader and Isosurface are examples.
+   * SurfaceReader and Isosurface are examples.
    * 
-   * VoxelReader accepts vertexes from MarchingCubes/MarchingSquares
+   * SurfaceReader accepts vertexes from MarchingCubes/MarchingSquares
    * and then either consumes them or passes them on to Isosurface.
    * 
    * In addition, MeshData information is passed back and forth

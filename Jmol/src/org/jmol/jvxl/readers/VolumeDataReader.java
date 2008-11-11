@@ -29,7 +29,7 @@ import javax.vecmath.Matrix3f;
 import org.jmol.util.Logger;
 //import org.jmol.viewer.Viewer;
 
-class VolumeDataReader extends VoxelReader {
+class VolumeDataReader extends SurfaceReader {
 
   /*        (requires AtomDataServer)
    *                |-- IsoSolventReader
@@ -43,7 +43,7 @@ class VolumeDataReader extends VoxelReader {
    *                |         |         
    *            VolumeDataReader (precalculated data)       
    *                   |
-   *                VoxelReader
+   *                SurfaceReader
    * 
    * 
    */
@@ -93,7 +93,7 @@ class VolumeDataReader extends VoxelReader {
 
   void readVolumeData(boolean isMapData) {
     try {
-      readVoxelData(isMapData);
+      readSurfaceData(isMapData);
     } catch (Exception e) {
       e.printStackTrace();
       return;
@@ -193,7 +193,7 @@ class VolumeDataReader extends VoxelReader {
     return voxelCounts[index];
   }
 
-  protected void readVoxelData(boolean isMapData) throws Exception {
+  protected void readSurfaceData(boolean isMapData) throws Exception {
     //precalculated -- just creating the JVXL equivalent
     if (!precalculateVoxelData) {
       readVoxelDataIndividually(isMapData);

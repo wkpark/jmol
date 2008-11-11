@@ -141,14 +141,16 @@ public class SurfaceGenerator {
   private AtomDataServer atomDataServer;
   private MarchingSquares marchingSquares;
   
-  VoxelReader voxelReader;
+  SurfaceReader surfaceReader;
 
   public SurfaceGenerator() {
+    // for Jvxl.java
     setup(null, null, null, null, null);
   }
 
   public SurfaceGenerator(AtomDataServer atomDataServer, MeshDataServer meshDataServer,
                           ColorEncoder colorEncoder, MeshData meshData, JvxlData jvxlData) {
+    // for Jmol.java
     setup(atomDataServer, meshDataServer, colorEncoder, meshData, jvxlData);
   }
 
@@ -327,8 +329,8 @@ public class SurfaceGenerator {
     }
 
     if ("clear" == propertyName) {
-      if (voxelReader != null)
-        voxelReader.discardTempData(true);
+      if (surfaceReader != null)
+        surfaceReader.discardTempData(true);
       return false;
     }
 
@@ -504,7 +506,7 @@ public class SurfaceGenerator {
       } else {
         colorEncoder.setColorScheme(colorScheme);
         if (params.state == Parameters.STATE_DATA_COLORED)
-          voxelReader.applyColorScale();
+          surfaceReader.applyColorScale();
         return true;
       }
     }
@@ -534,7 +536,7 @@ public class SurfaceGenerator {
       params.isCutoffAbsolute = true;
       params.colorBySign = true;
       params.colorByPhase = true;
-      params.colorPhase = VoxelReader.getColorPhaseIndex(color);
+      params.colorPhase = SurfaceReader.getColorPhaseIndex(color);
       if (params.colorPhase < 0) {
         Logger.warn(" invalid color phase: " + color);
         params.colorPhase = 0;
@@ -544,7 +546,7 @@ public class SurfaceGenerator {
         params.dataType = params.surfaceType;
         params.state = Parameters.STATE_DATA_COLORED;
         params.isBicolorMap = true;
-        voxelReader.applyColorScale();
+        surfaceReader.applyColorScale();
       }
 
       return true;
@@ -631,7 +633,7 @@ public class SurfaceGenerator {
     //these next four set the reader themselves.
     if ("sphere" == propertyName) {
       params.setSphere(((Float) value).floatValue());
-      voxelReader = new IsoShapeReader(this, params.distance);
+      surfaceReader = new IsoShapeReader(this, params.distance);
       generateSurface();
       return true;
     }
@@ -643,21 +645,21 @@ public class SurfaceGenerator {
         params.setEllipsoid((float[]) value);
       else
         return true;
-      voxelReader = new IsoShapeReader(this, params.distance);
+      surfaceReader = new IsoShapeReader(this, params.distance);
       generateSurface();
       return true;
     }
 
     if ("ellipsoid3" == propertyName) {
       params.setEllipsoid((float[]) value);
-      voxelReader = new IsoShapeReader(this, params.distance);
+      surfaceReader = new IsoShapeReader(this, params.distance);
       generateSurface();
       return true;
     }
 
     if ("lobe" == propertyName) {
       params.setLobe((Point4f) value);
-      voxelReader = new IsoShapeReader(this, 3, 2, 0, 15);
+      surfaceReader = new IsoShapeReader(this, 3, 2, 0, 15);
       generateSurface();
       return true;
     }
@@ -665,7 +667,7 @@ public class SurfaceGenerator {
     if ("hydrogenOrbital" == propertyName) {
       if (!params.setAtomicOrbital((float[]) value))
         return true;
-      voxelReader = new IsoShapeReader(this, params.psi_n, params.psi_l,
+      surfaceReader = new IsoShapeReader(this, params.psi_n, params.psi_l,
           params.psi_m, params.psi_Znuc);
       processState();
       return true;
@@ -728,7 +730,7 @@ public class SurfaceGenerator {
     }
 
     if ("readFile" == propertyName) {
-      if ((voxelReader = setFileData(value)) == null) {
+      if ((surfaceReader = setFileData(value)) == null) {
         Logger.error("Could not set the data");
         return true;
       }
@@ -747,7 +749,7 @@ public class SurfaceGenerator {
         }
         params.colorBySets = true;
       } else {
-        if ((voxelReader = setFileData(value)) == null) {
+        if ((surfaceReader = setFileData(value)) == null) {
           Logger.error("Could not set the mapping data");
           return true;
         }
@@ -769,71 +771,72 @@ public class SurfaceGenerator {
       generateSurface();
     }
   }
-  private void setReader() {
-    if (voxelReader != null)
-      return;
+  private boolean setReader(boolean isMap) {
+    if (surfaceReader != null)
+      return !surfaceReader.vertexDataOnly;
     switch (params.dataType) {
     case Parameters.SURFACE_NOMAP:
-      voxelReader = new IsoPlaneReader(this);
+      surfaceReader = new IsoPlaneReader(this);
       break;
     case Parameters.SURFACE_SOLVENT:
     case Parameters.SURFACE_MOLECULAR:
     case Parameters.SURFACE_SASURFACE:
     case Parameters.SURFACE_PROPERTY:
-      voxelReader = new IsoSolventReader(this);
+      surfaceReader = new IsoSolventReader(this);
       break;
     case Parameters.SURFACE_MOLECULARORBITAL:
-      voxelReader = new IsoMOReader(this);
+      surfaceReader = new IsoMOReader(this);
       break;
     case Parameters.SURFACE_FUNCTIONXY:
-      voxelReader = new IsoFxyReader(this);
+      surfaceReader = new IsoFxyReader(this);
       break;
     case Parameters.SURFACE_MEP:
-      voxelReader = new IsoMepReader(this);
+      surfaceReader = new IsoMepReader(this);
       break;
     }
+    return true;
   }
   
   private void generateSurface() {       
     if (++params.state != Parameters.STATE_DATA_READ)
       return;
-    setReader();    
+    setReader(false);    
     boolean haveMeshDataServer = (meshDataServer != null);
     if (params.colorBySign)
       params.isBicolorMap = true;
-    if (voxelReader == null) {
-      Logger.error("voxelReader is null for " + params.dataType);
+    if (surfaceReader == null) {
+      Logger.error("surfaceReader is null for " + params.dataType);
       return;
     }
-    if (!voxelReader.createIsosurface(false)) {
+    if (!surfaceReader.createIsosurface(false)) {
       Logger.error("Could not create isosurface");
       return;
     }
     
     if (params.pocket != null && haveMeshDataServer)
-      voxelReader.selectPocket(!params.pocket.booleanValue());
+      surfaceReader.selectPocket(!params.pocket.booleanValue());
 
     if (params.minSet > 0)
-      voxelReader.excludeMinimumSet();
+      surfaceReader.excludeMinimumSet();
 
     if (params.maxSet > 0)
-      voxelReader.excludeMaximumSet();
+      surfaceReader.excludeMaximumSet();
 
     if (haveMeshDataServer)
       meshDataServer.notifySurfaceGenerationCompleted();
     
     if (jvxlData.jvxlDataIs2dContour) {
-      voxelReader.colorIsosurface();
+      surfaceReader.colorIsosurface();
       params.state = Parameters.STATE_DATA_COLORED;
     }
     if (params.colorBySign || params.isBicolorMap) {
       params.state = Parameters.STATE_DATA_COLORED;
-      voxelReader.applyColorScale();
+      surfaceReader.applyColorScale();
     }
-    voxelReader.jvxlUpdateInfo();
-    setMarchingSquares(voxelReader.marchingSquares);
-    voxelReader.discardTempData(false);
-    voxelReader = null; // resets voxel reader for mapping
+    surfaceReader.jvxlUpdateInfo();
+    setMarchingSquares(surfaceReader.marchingSquares);
+    surfaceReader.discardTempData(false);
+    surfaceReader = null; // resets voxel reader for mapping
     params.mappedDataMin = Float.MAX_VALUE;
   }
 
@@ -842,26 +845,27 @@ public class SurfaceGenerator {
       params.state++;
     if (++params.state != Parameters.STATE_DATA_COLORED)
       return;
-    setReader();    
+    if (!setReader(true))
+      return;    
     params.doCapIsosurface = false;
     //if (params.dataType == Parameters.SURFACE_FUNCTIONXY)
       //params.thePlane = new Point4f(0, 0, 1, 0);
     if (params.thePlane != null) {
       params.cutoff = 0;
-      voxelReader.createIsosurface(true);//but don't read volume data yet
+      surfaceReader.createIsosurface(true);//but don't read volume data yet
       if (meshDataServer != null)
         meshDataServer.notifySurfaceGenerationCompleted();
       params.mappedDataMin = Float.MAX_VALUE;
-      voxelReader.readVolumeData(true);
+      surfaceReader.readVolumeData(true);
     } else if (!params.colorBySets) {
-      voxelReader.readVolumeParameters();
+      surfaceReader.readVolumeParameters();
       params.mappedDataMin = Float.MAX_VALUE;
-      voxelReader.readVolumeData(true);
+      surfaceReader.readVolumeData(true);
     }
-    voxelReader.colorIsosurface();
-    voxelReader.jvxlUpdateInfo();
-    voxelReader.updateTriangles();
-    voxelReader.discardTempData(true);
+    surfaceReader.colorIsosurface();
+    surfaceReader.jvxlUpdateInfo();
+    surfaceReader.updateTriangles();
+    surfaceReader.discardTempData(true);
     if (meshDataServer != null)
       meshDataServer.notifySurfaceMappingCompleted();
   }
@@ -886,7 +890,7 @@ public class SurfaceGenerator {
     return null;
   }
 
-  VoxelReader setFileData(Object value) {
+  SurfaceReader setFileData(Object value) {
     if (value instanceof VolumeData) {
       volumeData = (VolumeData)value;
       return new VolumeDataReader(this);
@@ -916,13 +920,15 @@ public class SurfaceGenerator {
       br = null;
       return new MrcBinaryReader(this, params.fileName, fileType.charAt(3) != '\0');
     }
+    if (fileType.equals("Efvet"))
+      return new EfvetReader(this,br);
     return null;
   }
 
   void initializeIsosurface() {
     params.initialize();
     colorPtr = 0;
-    voxelReader = null;
+    surfaceReader = null;
     marchingSquares = null;
     initState();
   }

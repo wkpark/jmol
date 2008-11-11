@@ -36,7 +36,7 @@ import org.jmol.util.TextFormat;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 
-class AtomDataReader extends VolumeDataReader {
+abstract class AtomDataReader extends VolumeDataReader {
 
   protected AtomDataServer atomDataServer;
 

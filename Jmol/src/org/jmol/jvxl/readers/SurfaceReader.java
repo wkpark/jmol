@@ -35,14 +35,14 @@ import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.api.VertexDataServer;
 import org.jmol.jvxl.calc.*;
 
-public abstract class VoxelReader implements VertexDataServer {
+public abstract class SurfaceReader implements VertexDataServer {
 
   /*
-   * JVXL VoxelReader Class
+   * JVXL SurfaceReader Class
    * ----------------------
    * Bob Hanson, hansonr@stolaf.edu, 20 Apr 2007
    * 
-   * VoxelReader performs four functions:
+   * SurfaceReader performs four functions:
    * 
    * 1) reading/creating volume scalar data ("voxels")
    * 2) generating a surface (vertices and triangles) from this set
@@ -50,10 +50,13 @@ public abstract class VoxelReader implements VertexDataServer {
    * 3) color-mapping this surface with other data
    * 4) creating JVXL format file data for this surface
    * 
-   * VoxelReader is an ABSTRACT class, instantiated as one of the 
+   * In the case that the surface type does not include voxel data (EfvetReader), 
+   * only steps 2 and 3 are involved, and no cutoff value is used.
+   * 
+   * SurfaceReader is an ABSTRACT class, instantiated as one of the 
    * following to perform specific functions:
    * 
-   *     VoxelReader (abstract MarchingReader)
+   *     SurfaceReader (abstract MarchingReader)
    *          |
    *          |_______VolumeDataReader (uses provided predefined data)
    *          |          |
@@ -97,7 +100,7 @@ public abstract class VoxelReader implements VertexDataServer {
    *   
    *   public short[] vertexColixes; 
    * 
-   * Finally -- actually, throughout the process -- VoxelReader
+   * Finally -- actually, throughout the process -- SurfaceReader
    * creates a JvxlData structure containing the critical information
    * that is necessary for creating Jvxl surface data files. For that,
    * we have the JvxlData structure. 
@@ -114,7 +117,7 @@ public abstract class VoxelReader implements VertexDataServer {
    * return for a vertex index number that can later be used for defining
    * a set of triangles.
    * 
-   * VoxelReader implements this interface.
+   * SurfaceReader implements this interface.
    * 
    * 
    * MeshDataServer extends VertexDataServer
@@ -178,7 +181,7 @@ public abstract class VoxelReader implements VertexDataServer {
   protected boolean isXLowToHigh = false; //can be overridden in some readers by --progressive
   private float assocCutoff = 0.3f;
 
-  VoxelReader(SurfaceGenerator sg) {
+  SurfaceReader(SurfaceGenerator sg) {
     this.sg = sg;
     this.colorEncoder = sg.getColorEncoder();
     this.params = sg.getParams();
@@ -341,7 +344,7 @@ public abstract class VoxelReader implements VertexDataServer {
   }
 
   // this needs to be specific for each reader
-  abstract protected void readVoxelData(boolean isMapData) throws Exception;
+  abstract protected void readSurfaceData(boolean isMapData) throws Exception;
 
   protected void gotoAndReadVoxelData(boolean isMapData) {
     initializeVolumetricData();
@@ -349,7 +352,7 @@ public abstract class VoxelReader implements VertexDataServer {
       return;
     try {
       gotoData(params.fileIndex - 1, nPointsX * nPointsY * nPointsZ);
-      readVoxelData(isMapData);
+      readSurfaceData(isMapData);
     } catch (Exception e) {
       Logger.error(e.toString());
       throw new NullPointerException();
@@ -374,6 +377,14 @@ public abstract class VoxelReader implements VertexDataServer {
 
   private void generateSurfaceData() {
     fractionData = new StringBuffer();
+    if (vertexDataOnly) {
+      try {
+        readSurfaceData(false);
+      } catch (Exception e) {
+        // TODO
+      }
+      return;
+    }
     contourVertexCount = 0;
     int contourType = -1;
     marchingSquares = null;
@@ -407,6 +418,7 @@ public abstract class VoxelReader implements VertexDataServer {
   protected final Point3f ptTemp = new Point3f();
 
   final float[] fReturn = new float[1];
+  boolean vertexDataOnly;
 
   public int getSurfacePointIndex(float cutoff, boolean isCutoffAbsolute,
                                   int x, int y, int z, Point3i offset, int vA,
@@ -416,6 +428,8 @@ public abstract class VoxelReader implements VertexDataServer {
     float thisValue = readSurfacePoint(cutoff, isCutoffAbsolute, valueA,
         valueB, pointA, edgeVector, fReturn, ptTemp);
     /* 
+     * from MarchingCubes
+     * 
      * In the case of a setup for a Marching Squares calculation,
      * we are collecting just the desired type of intersection for the 2D marching
      * square contouring -- x, y, or z. In the case of a contoured f(x,y) surface, 
@@ -466,7 +480,7 @@ public abstract class VoxelReader implements VertexDataServer {
           edgeFractionBase, edgeFractionRange));
 
     ptReturn.scaleAdd(fraction, edgeVector, pointA);
-    //System.out.println("VoxelReader " + ptReturn + " " + (valueA + fraction * diff));
+    //System.out.println("SurfaceReader " + ptReturn + " " + (valueA + fraction * diff));
     return valueA + fraction * diff;
   }
 
@@ -763,5 +777,5 @@ public abstract class VoxelReader implements VertexDataServer {
   
   public void getCalcPoint(Point3f pt) {
     // for VertexDataServer - isoShapeReader only
-  }
+  }  
 }

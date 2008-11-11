@@ -75,7 +75,7 @@ public class JvxlReader extends VolumeFileReader {
       return;
     try {
       gotoData(params.fileIndex - 1, nPointsX * nPointsY * nPointsZ);
-      readVoxelData(isMapData);
+      readSurfaceData(isMapData);
       if (edgeDataCount > 0)
         jvxlEdgeDataRead = jvxlReadData("edge", edgeDataCount);
       if (colorDataCount > 0)
@@ -94,11 +94,11 @@ public class JvxlReader extends VolumeFileReader {
     nThisValue = 0;
   }
   
-  protected void readVoxelData(boolean isMapDataIgnored) throws Exception {
+  protected void readSurfaceData(boolean isMapDataIgnored) throws Exception {
     initializeVoxelData();
     //calls VolumeFileReader.readVoxelData; no mapping allowed
     if (params.thePlane == null) {
-      super.readVoxelData(false);
+      super.readSurfaceData(false);
       return;
     }
     volumeData.setDataDistanceToPlane(params.thePlane);
@@ -476,7 +476,7 @@ public class JvxlReader extends VolumeFileReader {
   }
 
   protected String readColorData() {
-    // overloads VoxelReader
+    // overloads SurfaceReader
     // standard jvxl file read for color 
 
     fractionPtr = 0;

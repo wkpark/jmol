@@ -33,7 +33,7 @@ import org.jmol.util.Logger;
 //import org.jmol.viewer.Viewer;
 
 
-class VolumeFileReader extends VoxelReader {
+abstract class VolumeFileReader extends SurfaceReader {
 
   protected BufferedReader br;
   protected boolean endOfData;
@@ -54,7 +54,7 @@ class VolumeFileReader extends VoxelReader {
     // JVXL should be on the FIRST line of the file, but it may be 
     // after comments or missing.
     
-    // Apbs, Jvxl, or Cube
+    // Apbs, Jvxl, or Cube, also efvet
     
     String line;
     LimitedLineReader br = new LimitedLineReader(bufferedReader, 16000);
@@ -69,6 +69,8 @@ class VolumeFileReader extends VoxelReader {
       return "Xplor";
     if (line.indexOf("MAP ") == 208)
       return "MRC" + line.substring(67,68);
+    if (line.indexOf("<efvet ") >= 0)
+      return "Efvet";
     line = br.readNonCommentLine();
     if (line.indexOf("object 1 class gridpositions counts") == 0)
       return "Apbs";
@@ -202,7 +204,7 @@ class VolumeFileReader extends VoxelReader {
     return parseInt(line);
   }
 
-  protected void readVoxelData(boolean isMapData) throws Exception {
+  protected void readSurfaceData(boolean isMapData) throws Exception {
     /*
      * possibilities:
      * 
@@ -412,11 +414,11 @@ class VolumeFileReader extends VoxelReader {
     next[0] = 0;
     return Parser.parseFloat(s, next);
   }
-
+/*
   float parseFloatNext(String s) {
     return Parser.parseFloat(s, next);
   }
-
+*/
   int parseInt() {
     return Parser.parseInt(line, next);
   }
@@ -429,11 +431,13 @@ class VolumeFileReader extends VoxelReader {
   int parseIntNext(String s) {
     return Parser.parseInt(s, next);
   }
-  
+/*  
   int parseInt(String s, int iStart) {
     next[0] = iStart;
     return Parser.parseInt(s, next);
   }
+*/
+  
 }
 
 class LimitedLineReader {

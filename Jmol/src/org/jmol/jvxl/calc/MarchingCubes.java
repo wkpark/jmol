@@ -34,7 +34,7 @@ public class MarchingCubes {
 
   /*
    * An adaptation of Marching Cubes to include data slicing and the option
-   * for progressive reading of the data. Associated VoxelReader and VoxelData
+   * for progressive reading of the data. Associated SurfaceReader and VoxelData
    * structures are required to store the sequential values in the case of a plane
    * and to deliver the sequential vertex numbers in any case.
    * 
@@ -42,7 +42,7 @@ public class MarchingCubes {
    *  
    */
 
-  private VertexDataServer voxelReader;
+  private VertexDataServer surfaceReader;
   private VolumeData volumeData;
   private int contourType;
   private boolean isContoured;
@@ -51,10 +51,10 @@ public class MarchingCubes {
 
   private int cubeCountX, cubeCountY, cubeCountZ;
 
-  public MarchingCubes(VertexDataServer voxelReader, VolumeData volumeData,
+  public MarchingCubes(VertexDataServer surfaceReader, VolumeData volumeData,
       boolean isContoured, int contourType, float cutoff,
       boolean isCutoffAbsolute) {
-    this.voxelReader = voxelReader;
+    this.surfaceReader = surfaceReader;
     this.volumeData = volumeData;
     this.isContoured = isContoured;
     this.cutoff = cutoff;
@@ -144,7 +144,7 @@ public class MarchingCubes {
 
           byte[] triangles = triangleTable2[insideMask];
           for (int i = triangles.length; (i -= 4) >= 0;)
-            voxelReader.addTriangleCheck(voxelPointIndexes[triangles[i]],
+            surfaceReader.addTriangleCheck(voxelPointIndexes[triangles[i]],
                 voxelPointIndexes[triangles[i + 1]],
                 voxelPointIndexes[triangles[i + 2]], triangles[i + 3], isCutoffAbsolute);
         }
@@ -333,7 +333,7 @@ public class MarchingCubes {
         isNaN = true;
       volumeData.voxelPtToXYZ(x, y, z, pt0);
       pointA.add(pt0, voxelVertexVectors[vertexA]);
-      voxelPointIndexes[iEdge] = voxelReader.getSurfacePointIndex(
+      voxelPointIndexes[iEdge] = surfaceReader.getSurfacePointIndex(
           cutoff, isCutoffAbsolute, x, y, z, cubeVertexOffsets[vertexA], 
           vertexA, vertexB, valueA, valueB, pointA, edgeVectors[iEdge], 
           edgeTypeTable[iEdge] == contourType);

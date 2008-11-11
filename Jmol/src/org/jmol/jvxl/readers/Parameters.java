@@ -664,14 +664,14 @@ public class Parameters {
   int downsampleFactor;
   int maxSet;
 
-  void setMapRanges(VoxelReader voxelReader) {
+  void setMapRanges(SurfaceReader surfaceReader) {
     if (colorByPhase || colorBySign || (thePlane != null || isBicolorMap) && !isContoured) {
       mappedDataMin = -1;
       mappedDataMax = 1;
     }
     if (mappedDataMin == Float.MAX_VALUE || mappedDataMin == mappedDataMax) {
-      mappedDataMin = voxelReader.getMinMappedValue();
-      mappedDataMax = voxelReader.getMaxMappedValue();
+      mappedDataMin = surfaceReader.getMinMappedValue();
+      mappedDataMax = surfaceReader.getMaxMappedValue();
     }
     if (mappedDataMin == 0 && mappedDataMax == 0) {
       //just set default -1/1 if there is no obvious data

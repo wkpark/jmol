@@ -66,7 +66,7 @@ class ApbsReader extends VolumeFileReader {
        object 3 class array type double rank 0 times n data follows
        * 
        */
-      for (int i = 0; i < 2; i++)
+      for (int i = 0; i < 3; i++)
         voxelCounts[i] = parseInt(tokens[i + 5]);
       br.readLine();
     }

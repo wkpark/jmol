@@ -25,9 +25,7 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
-import javax.vecmath.Vector3f;
 import org.jmol.util.Parser;
-import org.jmol.util.Logger;
 
 abstract class SurfaceFileReader extends SurfaceReader {
 

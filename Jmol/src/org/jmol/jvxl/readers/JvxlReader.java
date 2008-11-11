@@ -179,6 +179,11 @@ public class JvxlReader extends VolumeFileReader {
   protected void readAtomCountAndOrigin() throws Exception {
       skipComments(true);
       String atomLine = line;
+      if (line.indexOf("Jmol voxel format") >= 0) {
+        // no data
+        atomCount = Integer.MIN_VALUE;
+        return;
+      }
       String[] tokens = Parser.getTokens(atomLine, 0);
       isXLowToHigh = false;
       negativeAtomCount = true;
@@ -190,6 +195,8 @@ public class JvxlReader extends VolumeFileReader {
       } else {
         atomCount = -parseInt(tokens[0]);
       }
+      if (atomCount == Integer.MIN_VALUE)
+        return;
       volumetricOrigin.set(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
       isAngstroms = jvxlCheckAtomLine(isXLowToHigh, isAngstroms, null, atomLine, jvxlFileHeaderBuffer);
       if (!isAngstroms)

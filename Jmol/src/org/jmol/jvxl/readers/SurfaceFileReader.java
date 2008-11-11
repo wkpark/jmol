@@ -47,9 +47,9 @@ abstract class SurfaceFileReader extends SurfaceReader {
     super.discardTempData(discardAll);
   }
      
-  void readVolumeParameters() {
+  boolean readVolumeParameters() {
     // required by SurfaceReader
-    return;
+    return true;
   }
   
   void readVolumeData(boolean isMapData) {

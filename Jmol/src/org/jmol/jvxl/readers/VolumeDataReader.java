@@ -86,9 +86,10 @@ class VolumeDataReader extends SurfaceReader {
     JvxlReader.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
   }
   
-  void readVolumeParameters() {
+  boolean readVolumeParameters() {
     setup();
     initializeVolumetricData();
+    return true;
   }
 
   void readVolumeData(boolean isMapData) {

@@ -86,11 +86,19 @@ class EfvetReader extends SurfaceFileReader {
    */
 
   void getSurfaceData() throws Exception{
+    getHeader();
     getVertices();
     getTriangles();
     Logger.info("efvet file contains " + nVertices + " vertices and " + nTriangles + " triangles");
   }
 
+  private void getHeader() throws Exception {
+    skipTo("<efvet", null);
+    while((line = br.readLine()).length() > 0 && line.indexOf(">") < 0)
+      jvxlFileHeaderBuffer.append("# " + line + "\n");
+    Logger.info(jvxlFileHeaderBuffer.toString());
+  }
+  
   private void getVertices() throws Exception {
     Point3f pt = new Point3f();
     float value = 0;
@@ -122,7 +130,8 @@ class EfvetReader extends SurfaceFileReader {
   private void skipTo(String info, String what) throws Exception {
     while ((line = br.readLine()).indexOf(info) < 0) {
     }
-    lineTo(what);
+    if (what != null)
+      lineTo(what);
   }
 
 }

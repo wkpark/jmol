@@ -115,14 +115,17 @@ abstract class VolumeFileReader extends SurfaceReader {
     super.discardTempData(discardAll);
   }
      
-  void readVolumeParameters() {
+  boolean readVolumeParameters() {
     endOfData = false;
     nSurfaces = readVolumetricHeader();
+    if (nSurfaces == 0)
+      return false;
     if (nSurfaces < params.fileIndex) {
       Logger.warn("not enough surfaces in file -- resetting params.fileIndex to "
           + nSurfaces);
       params.fileIndex = nSurfaces;
     }
+    return true;
   }
   
   void readVolumeData(boolean isMapData) {
@@ -136,6 +139,8 @@ abstract class VolumeFileReader extends SurfaceReader {
       readTitleLines();
       Logger.info(jvxlFileHeaderBuffer.toString());
       readAtomCountAndOrigin();
+      if (atomCount == Integer.MIN_VALUE)
+        return 0;
       Logger.info("voxel grid origin:" + volumetricOrigin);
       int downsampleFactor = params.downsampleFactor;
       boolean downsampling = (canDownsample && downsampleFactor > 0);
@@ -165,7 +170,7 @@ abstract class VolumeFileReader extends SurfaceReader {
       return readExtraLine();
     } catch (Exception e) {
       Logger.error(e.toString());
-      throw new NullPointerException();
+      return 0;
     }
   }
   

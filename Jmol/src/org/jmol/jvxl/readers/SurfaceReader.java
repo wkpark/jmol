@@ -224,7 +224,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       v.setDataSource(this);
 */  }
 
-  abstract void readVolumeParameters();
+  abstract boolean readVolumeParameters();
 
   abstract void readVolumeData(boolean isMapData);
 
@@ -262,7 +262,8 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   boolean createIsosurface(boolean justForPlane) {
     resetIsosurface();
-    readVolumeParameters();
+    if (!readVolumeParameters())
+      return false;
     jvxlData.insideOut = params.insideOut;
     if (justForPlane) {
       float[][][] voxelDataTemp =  volumeData.voxelData;
@@ -553,8 +554,8 @@ public abstract class SurfaceReader implements VertexDataServer {
     params.setMapRanges(this);
     //colorBySign is true when colorByPhase is true, but not vice-versa
     //old: boolean saveColorData = !(params.colorByPhase && !params.isBicolorMap && !params.colorBySign); //sorry!
-    boolean saveColorData = params.isBicolorMap || params.colorBySign
-        || !params.colorByPhase;
+    boolean saveColorData = (!vertexDataOnly && 
+        (params.isBicolorMap || params.colorBySign || !params.colorByPhase));
     jvxlData.isJvxlPrecisionColor = (jvxlDataIsPrecisionColor
         || params.isContoured || params.remappable);
     jvxlData.valueMappedToRed = params.valueMappedToRed;

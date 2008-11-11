@@ -825,7 +825,10 @@ public class SurfaceGenerator {
     if (haveMeshDataServer)
       meshDataServer.notifySurfaceGenerationCompleted();
     
-    if (jvxlData.jvxlDataIs2dContour) {
+    if (surfaceReader.hasColorData) {
+      colorIsosurface();
+      params.state = Parameters.STATE_DATA_COLORED;
+    } else if (jvxlData.jvxlDataIs2dContour) {
       surfaceReader.colorIsosurface();
       params.state = Parameters.STATE_DATA_COLORED;
     }
@@ -862,6 +865,10 @@ public class SurfaceGenerator {
       params.mappedDataMin = Float.MAX_VALUE;
       surfaceReader.readVolumeData(true);
     }
+    colorIsosurface();
+  }
+
+  void colorIsosurface() {
     surfaceReader.colorIsosurface();
     surfaceReader.jvxlUpdateInfo();
     surfaceReader.updateTriangles();
@@ -869,7 +876,7 @@ public class SurfaceGenerator {
     if (meshDataServer != null)
       meshDataServer.notifySurfaceMappingCompleted();
   }
-
+  
   public Object getProperty(String property, int index) {
     //StringBuffer bs = new StringBuffer();
     //JvxlReader.jvxlCreateHeader("line1", "line2", volumeData, bs);

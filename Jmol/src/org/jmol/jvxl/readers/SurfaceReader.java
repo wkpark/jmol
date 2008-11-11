@@ -419,6 +419,7 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   final float[] fReturn = new float[1];
   boolean vertexDataOnly;
+  boolean hasColorData;
 
   public int getSurfacePointIndex(float cutoff, boolean isCutoffAbsolute,
                                   int x, int y, int z, Point3i offset, int vA,
@@ -586,7 +587,7 @@ public abstract class SurfaceReader implements VertexDataServer {
         value = meshData.vertexSets[i];
       else if (params.colorByPhase)
         value = getPhase(meshData.vertices[i]);
-      else if (params.isBicolorMap && !params.isContoured) // will be current mesh only
+      else if (vertexDataOnly || params.isBicolorMap && !params.isContoured) // will be current mesh only
         value = meshData.vertexValues[i];
       else if (jvxlDataIs2dContour)
         value = marchingSquares.getInterpolatedPixelValue(meshData.vertices[i]);
@@ -677,7 +678,9 @@ public abstract class SurfaceReader implements VertexDataServer {
     float min = Float.MAX_VALUE;
     for (int i = 0; i < vertexCount; i++) {
       float challenger;
-      if (jvxlDataIs2dContour)
+      if (vertexDataOnly)
+        challenger = meshData.vertexValues[i];
+      else if (jvxlDataIs2dContour)
         challenger = marchingSquares.getInterpolatedPixelValue(vertexes[i]);
       else
         challenger = volumeData.lookupInterpolatedVoxelValue(vertexes[i]);
@@ -697,7 +700,9 @@ public abstract class SurfaceReader implements VertexDataServer {
     int incr = 1;
     for (int i = 0; i < vertexCount; i += incr) {
       float challenger;
-      if (jvxlDataIs2dContour)
+      if (vertexDataOnly)
+        challenger = meshData.vertexValues[i];
+      else if (jvxlDataIs2dContour)
         challenger = marchingSquares.getInterpolatedPixelValue(vertexes[i]);
       else
         challenger = volumeData.lookupInterpolatedVoxelValue(vertexes[i]);

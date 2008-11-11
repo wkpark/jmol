@@ -42,6 +42,7 @@ class EfvetReader extends SurfaceFileReader {
     super(sg, br);
     jvxlFileHeaderBuffer = new StringBuffer();
     jvxlFileHeaderBuffer.append("efvet file format -- vertices and triangles only -- NO JVXL DATA\n");
+    hasColorData = true;
   }
 
   /*
@@ -94,7 +95,7 @@ class EfvetReader extends SurfaceFileReader {
     Point3f pt = new Point3f();
     float value = 0;
     skipTo("<vertices", "count");
-    nVertices = parseInt(); 
+    jvxlData.vertexCount = nVertices = parseInt(); 
     for (int i = 0; i < nVertices; i++) {
       skipTo("<vertex", "image");
       pt.set(parseFloat(), parseFloat(), parseFloat());

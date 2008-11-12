@@ -1124,7 +1124,8 @@ public class JvxlReader extends VolumeFileReader {
     char ch;
     int[] vertexMapRev = new int[vertexCount];
     for (int i = 0; i < vertexCount; i++)
-      vertexMapRev[vertexMap[i] - 1] = i;
+      if (vertexMap[i] > 0)
+        vertexMapRev[vertexMap[i] - 1] = i;
     for (int i = 0; i < vertexCount; i++) {
       p = vertices[vertexMapRev[i]];
       //if (i < 10 || i + 10 > vertexCount)System.out.println(vertexMapRev[i] + " " + p);

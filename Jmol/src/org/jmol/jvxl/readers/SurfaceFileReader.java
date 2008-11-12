@@ -67,15 +67,23 @@ abstract class SurfaceFileReader extends SurfaceReader {
   String line;
   int[] next = new int[1];
 
-  String[] getTokens() {
+  protected void skipTo(String info, String what) throws Exception {
+    if (info != null)
+      while ((line = br.readLine()).indexOf(info) < 0) {
+      }
+    if (what != null)
+      next[0] = line.indexOf(what) + what.length() + 2;
+  }
+
+  protected String[] getTokens() {
     return Parser.getTokens(line, 0);
   }
 
-  float parseFloat() {
+  protected float parseFloat() {
     return Parser.parseFloat(line, next);
   }
 
-  int parseInt() {
+  protected int parseInt() {
     return Parser.parseInt(line, next);
   }
   

@@ -195,14 +195,10 @@ public abstract class SurfaceReader implements VertexDataServer {
     this.jvxlData = sg.getJvxlData();
     setVolumeData(sg.getVolumeData());
     this.meshDataServer = sg.getMeshDataServer();
-    cJvxlEdgeNaN = (char) (defaultEdgeFractionBase + defaultEdgeFractionRange);
+    cJvxlEdgeNaN = (char) (JvxlReader.defaultEdgeFractionBase + JvxlReader.defaultEdgeFractionRange);
   }
 
   final static float ANGSTROMS_PER_BOHR = 0.5291772f;
-  final static int defaultEdgeFractionBase = 35; //#$%.......
-  final static int defaultEdgeFractionRange = 90;
-  final static int defaultColorFractionBase = 35;
-  final static int defaultColorFractionRange = 90;
   final static float defaultMappedDataMin = 0f;
   final static float defaultMappedDataMax = 1.0f;
   final static float defaultCutoff = 0.02f;
@@ -301,6 +297,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.nPointsX = nPointsX;
     jvxlData.nPointsY = nPointsY;
     jvxlData.nPointsZ = nPointsZ;
+    jvxlData.vertexDataOnly = vertexDataOnly;
 
     if (jvxlDataIsColorMapped) {
       if (meshDataServer != null) {
@@ -324,10 +321,10 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.jvxlEdgeData = "";
     jvxlData.jvxlColorData = "";
     edgeCount = 0;
-    edgeFractionBase = defaultEdgeFractionBase;
-    edgeFractionRange = defaultEdgeFractionRange;
-    colorFractionBase = defaultColorFractionBase;
-    colorFractionRange = defaultColorFractionRange;
+    edgeFractionBase = JvxlReader.defaultEdgeFractionBase;
+    edgeFractionRange = JvxlReader.defaultEdgeFractionRange;
+    colorFractionBase = JvxlReader.defaultColorFractionBase;
+    colorFractionRange = JvxlReader.defaultColorFractionRange;
     params.mappedDataMin = Float.MAX_VALUE;
   }
 
@@ -385,7 +382,8 @@ public abstract class SurfaceReader implements VertexDataServer {
       try {
         readSurfaceData(false);
       } catch (Exception e) {
-        // TODO
+        e.printStackTrace();
+        Logger.error("Exception in SurfaceReader::readSurfaceData: " + e.getMessage());
       }
       return;
     }
@@ -542,8 +540,8 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
 
   void applyColorScale() {
-    colorFractionBase = jvxlData.colorFractionBase = defaultColorFractionBase;
-    colorFractionRange = jvxlData.colorFractionRange = defaultColorFractionRange;
+    colorFractionBase = jvxlData.colorFractionBase = JvxlReader.defaultColorFractionBase;
+    colorFractionRange = jvxlData.colorFractionRange = JvxlReader.defaultColorFractionRange;
     if (params.colorPhase == 0)
       params.colorPhase = 1;
     if (meshDataServer == null) {
@@ -555,8 +553,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     params.setMapRanges(this);
     //colorBySign is true when colorByPhase is true, but not vice-versa
     //old: boolean saveColorData = !(params.colorByPhase && !params.isBicolorMap && !params.colorBySign); //sorry!
-    boolean saveColorData = (!vertexDataOnly && 
-        (params.isBicolorMap || params.colorBySign || !params.colorByPhase));
+    boolean saveColorData = (params.isBicolorMap || params.colorBySign || !params.colorByPhase);
     jvxlData.isJvxlPrecisionColor = (jvxlDataIsPrecisionColor
         || params.isContoured || params.remappable);
     jvxlData.valueMappedToRed = params.valueMappedToRed;

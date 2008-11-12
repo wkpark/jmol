@@ -115,6 +115,8 @@ package org.jmol.jvxl.data;
 
 import javax.vecmath.Point4f;
 
+import org.jmol.jvxl.readers.JvxlReader;
+
 public class JvxlData {
   public JvxlData() {    
   }
@@ -141,16 +143,17 @@ public class JvxlData {
   public boolean jvxlDataIs2dContour;
   public boolean isColorReversed;
   
-  public int edgeFractionBase;
-  public int edgeFractionRange;
-  public int colorFractionBase;
-  public int colorFractionRange;
+  public int edgeFractionBase = JvxlReader.defaultEdgeFractionBase;
+  public int edgeFractionRange = JvxlReader.defaultEdgeFractionRange;
+  public int colorFractionBase = JvxlReader.defaultColorFractionBase;
+  public int colorFractionRange = JvxlReader.defaultColorFractionRange;
 
   public boolean insideOut;
   public boolean isXLowToHigh;
   public boolean isContoured;
   public boolean isBicolorMap;
   public boolean isTruncated;
+  public boolean vertexDataOnly;
   public float mappedDataMin;
   public float mappedDataMax;
   public float valueMappedToRed;

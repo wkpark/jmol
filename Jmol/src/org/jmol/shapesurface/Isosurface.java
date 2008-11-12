@@ -374,7 +374,9 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     currentMesh = thisMesh;
     super.setProperty(propertyName, value, bs);
     thisMesh = (IsosurfaceMesh) currentMesh;
-    sg.setJvxlData(jvxlData = (thisMesh == null ? null : thisMesh.jvxlData));
+    jvxlData = (thisMesh == null ? null : thisMesh.jvxlData);
+    if (sg != null)
+      sg.setJvxlData(jvxlData);
   }
 
   public Object getProperty(String property, int index) {
@@ -392,12 +394,18 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
       return "no current isosurface";
     if (property == "plane")
       return jvxlData.jvxlPlane;
-    if (property == "jvxlFileData")
-      return JvxlReader.jvxlGetFile(jvxlData, title, "", true, index, thisMesh
-          .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
-    if (property == "jvxlSurfaceData")
-      return JvxlReader.jvxlGetFile(jvxlData, title, "", false, 1, thisMesh
-          .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
+    if (property == "jvxlFileData") {
+      MeshData meshData = null;
+      if (jvxlData.vertexDataOnly) {
+        meshData = new MeshData();
+        fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
+      }
+      return JvxlReader.jvxlGetFile(jvxlData, meshData, title, "", true, index, thisMesh
+              .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
+    }
+    if (property == "jvxlSurfaceData") // MO only
+      return JvxlReader.jvxlGetFile(jvxlData, null, title, "", false, 1, thisMesh
+              .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     return super.getProperty(property, index);
   }
 
@@ -764,7 +772,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     if (!explicitID && script != null && (pt = script.indexOf("# ID=")) >= 0)
       thisMesh.thisID = Parser.getNextQuotedString(script, pt);
     thisMesh.scriptCommand = script;
-    Vector v = (Vector) sg.getProperty("functionXYinfo", 0);
+    Vector v = (Vector) sg.getFunctionXYinfo();
     if (thisMesh.data1 == null)
       thisMesh.data1 = v;
     else

@@ -41,7 +41,8 @@ class EfvetReader extends SurfaceFileReader {
   EfvetReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
     jvxlFileHeaderBuffer = new StringBuffer();
-    jvxlFileHeaderBuffer.append("efvet file format -- vertices and triangles only -- NO JVXL DATA\n");
+    jvxlFileHeaderBuffer.append("efvet file format\nvertices and triangles only\n");
+    JvxlReader.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
     hasColorData = true;
   }
 
@@ -115,10 +116,10 @@ class EfvetReader extends SurfaceFileReader {
     for (int i = 0; i < nVertices; i++) {
       skipTo("<vertex", "image");
       pt.set(parseFloat(), parseFloat(), parseFloat());
-      lineTo("property");
+      skipTo(null, "property");
       for(int j = 0; j < dataIndex; j++)
         value = parseFloat();
-      meshDataServer.addVertexCopy(pt, value, i);
+      addVertexCopy(pt, value, i);
     }
   }
   
@@ -127,19 +128,8 @@ class EfvetReader extends SurfaceFileReader {
     nTriangles = parseInt();
     for (int i = 0; i < nTriangles; i++) {
       skipTo("<triangle", "vertex");
-      meshDataServer.addTriangleCheck(parseInt() - 1, parseInt() - 1, parseInt() - 1, 7, false);
+      addTriangleCheck(parseInt() - 1, parseInt() - 1, parseInt() - 1, 7, false);
     }
-  }
-
-  private void lineTo(String info) {
-    next[0] = line.indexOf(info) + info.length() + 2;
-  }
-
-  private void skipTo(String info, String what) throws Exception {
-    while ((line = br.readLine()).indexOf(info) < 0) {
-    }
-    if (what != null)
-      lineTo(what);
   }
 
 }

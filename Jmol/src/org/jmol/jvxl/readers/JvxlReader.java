@@ -28,17 +28,25 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Point4f;
 import java.io.BufferedReader;
 
-import org.jmol.util.Logger;
 import org.jmol.util.*;
 import org.jmol.jvxl.data.JvxlData;
+import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.data.VolumeData;
 
 public class JvxlReader extends VolumeFileReader {
 
-  private final static String JVXL_VERSION = "1.4";
+  private final static String JVXL_VERSION = "2.0";
   
   // 1.4 adds -nContours to indicate contourFromZero for MEP data mapped onto planes
+  // 2.0 adds vertex/triangle compression when no grid is present 
+
+  // NEVER change the numbers for these next defaults
   
+  final public static int defaultEdgeFractionBase = 35; //#$%.......
+  final public static int defaultEdgeFractionRange = 90;
+  final public static int defaultColorFractionBase = 35;
+  final public static int defaultColorFractionRange = 90;
+
   JvxlReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
     jvxlData.wasJvxl = isJvxl = true;
@@ -71,10 +79,12 @@ public class JvxlReader extends VolumeFileReader {
 
   protected void gotoAndReadVoxelData(boolean isMapData) {
     initializeVolumetricData();
-    if (nPointsX <= 0 || nPointsY <= 0 || nPointsZ <= 0)
+    if (nPointsX < 0 || nPointsY < 0 || nPointsZ < 0) 
       return;
     try {
       gotoData(params.fileIndex - 1, nPointsX * nPointsY * nPointsZ);
+      if (vertexDataOnly)
+        return;
       readSurfaceData(isMapData);
       if (edgeDataCount > 0)
         jvxlEdgeDataRead = jvxlReadData("edge", edgeDataCount);
@@ -97,6 +107,10 @@ public class JvxlReader extends VolumeFileReader {
   protected void readSurfaceData(boolean isMapDataIgnored) throws Exception {
     initializeVoxelData();
     //calls VolumeFileReader.readVoxelData; no mapping allowed
+    if (vertexDataOnly) {
+      getEncodedVertexData();
+      return;
+    }
     if (params.thePlane == null) {
       super.readSurfaceData(false);
       return;
@@ -179,11 +193,6 @@ public class JvxlReader extends VolumeFileReader {
   protected void readAtomCountAndOrigin() throws Exception {
       skipComments(true);
       String atomLine = line;
-      if (line.indexOf("Jmol voxel format") >= 0) {
-        // no data
-        atomCount = Integer.MIN_VALUE;
-        return;
-      }
       String[] tokens = Parser.getTokens(atomLine, 0);
       isXLowToHigh = false;
       negativeAtomCount = true;
@@ -213,7 +222,7 @@ public class JvxlReader extends VolumeFileReader {
   }
 
   protected int readExtraLine() throws Exception {
-    line = br.readLine();
+    skipComments(false);
     Logger.info("Reading extra JVXL information line: " + line);
     int nSurfaces = parseInt(line);
     if (!(isJvxl = (nSurfaces < 0)))
@@ -385,10 +394,46 @@ public class JvxlReader extends VolumeFileReader {
     return str;
   }
 
+  static String jvxlCompressString(String data) {
+    /* just a simple compression, but allows 2000-6000:1 CUBE:JVXL for planes!
+     * 
+     *   "X~nnn " means "nnn copies of character X" 
+     *   
+     *   ########## becomes "#~10 " 
+     *   ~ becomes "~~" 
+     *
+     */
+    StringBuffer dataOut = new StringBuffer();
+    char chLast = '\0';
+    data += '\0';
+    int nLast = 0;
+    for (int i = 0; i < data.length(); i++) {
+      char ch = data.charAt(i);
+      if (ch == chLast) {
+        ++nLast;
+        if (ch != '~')
+          ch = '\0';
+      } else if (nLast > 0) {
+        if (nLast < 4 || chLast == '~' || chLast == ' '
+            || chLast == '\t')
+          while (--nLast >= 0)
+            dataOut.append(chLast);
+        else 
+          dataOut.append("~" + nLast + " ");
+        nLast = 0;
+      }
+      if (ch != '\0') {
+        dataOut.append(ch);
+        chLast = ch;
+      }
+    }
+    return dataOut.toString();
+  }
+
   private static String jvxlUncompressString(String data) {
     if (data.indexOf("~") < 0)
       return data;
-    String dataOut = "";
+    StringBuffer dataOut = new StringBuffer();
     char chLast = '\0';
     int[] next = new int[1];
     for (int i = 0; i < data.length(); i++) {
@@ -398,24 +443,24 @@ public class JvxlReader extends VolumeFileReader {
         int nChar = Parser.parseInt(data, next);
         if (nChar == Integer.MIN_VALUE) {
           if (chLast == '~') {
-            dataOut += '~';
+            dataOut.append('~');
             while ((ch = data.charAt(++i)) == '~')
-              dataOut += '~';
+              dataOut.append('~');
           } else {
             Logger.error("Error uncompressing string " + data.substring(0, i)
                 + "?");
           }
         } else {
           for (int c = 0; c < nChar; c++)
-            dataOut += chLast;
+            dataOut.append(chLast);
           i = next[0];
         }
       } else {
-        dataOut += ch;
+        dataOut.append(ch);
         chLast = ch;
       }
     }
-    return dataOut;
+    return dataOut.toString();
   }
 
   protected float getNextVoxelValue(StringBuffer sb) throws Exception {
@@ -518,6 +563,7 @@ public class JvxlReader extends VolumeFileReader {
       meshData.vertexColixes = colixes = new short[vertexCount];
     jvxlData.vertexCount = vertexCount;
     String data = jvxlColorDataRead;
+    hasColorData = true;
     int cpt = 0;
     short colixNeg = 0, colixPos = 0;
     if (params.colorBySign) {
@@ -580,6 +626,7 @@ public class JvxlReader extends VolumeFileReader {
 
     if (n > 0)
       Logger.info("skipping " + n + " data sets, " + nPoints + " points each");
+    vertexDataOnly = jvxlData.vertexDataOnly = (nPoints == 0);
     for (int i = 0; i < n; i++) {
       jvxlReadDefinitionLine(true);
       Logger.info("JVXL skipping: jvxlSurfaceDataCount=" + surfaceDataCount
@@ -708,7 +755,7 @@ public class JvxlReader extends VolumeFileReader {
     if (jvxlData.jvxlSurfaceData == null)
       return "";
     int nSurfaceInts = jvxlData.nSurfaceInts;//jvxlData.jvxlSurfaceData.length();
-    int bytesUncompressedEdgeData = (jvxlData.jvxlEdgeData.length() - 1);
+    int bytesUncompressedEdgeData = (jvxlData.vertexDataOnly ? 0 : jvxlData.jvxlEdgeData.length() - 1);
     int nColorData = (jvxlData.jvxlColorData.length() - 1);
     String info = "# cutoff = " + jvxlData.cutoff 
         + "; pointsPerAngstrom = " + jvxlData.pointsPerAngstrom
@@ -778,19 +825,18 @@ public class JvxlReader extends VolumeFileReader {
     //0.9e adds color contours for planes and min/max range, contour settings
   }
 
-  public static String jvxlGetFile(JvxlData jvxlData, String[] title,
-                                   String msg, boolean includeHeader,
-                                   int nSurfaces, String state, String comment) {
+  public static String jvxlGetFile(JvxlData jvxlData, MeshData meshData,
+                                   String[] title, String msg,
+                                   boolean includeHeader, int nSurfaces,
+                                   String state, String comment) {
     StringBuffer data = new StringBuffer();
     if (includeHeader) {
       String s = jvxlData.jvxlFileHeader
           + (nSurfaces > 0 ? (-nSurfaces) + jvxlData.jvxlExtraLine.substring(2)
               : jvxlData.jvxlExtraLine);
-      if (s.indexOf("#JVXL") != 0) {
-        data.append("#JVXL").append(jvxlData.isXLowToHigh ? "+" : "");
-        data.append(" VERSION ").append(JVXL_VERSION);
-        data.append("\n");
-      }
+      if (s.indexOf("#JVXL") != 0)
+        data.append("#JVXL").append(jvxlData.isXLowToHigh ? "+" : "")
+            .append(" VERSION ").append(JVXL_VERSION).append("\n");
       data.append(s);
     }
     data.append("# ").append(msg).append('\n');
@@ -800,15 +846,27 @@ public class JvxlReader extends VolumeFileReader {
     data.append(jvxlData.jvxlDefinitionLine + " rendering:" + state).append(
         '\n');
 
-    String compressedData = (jvxlData.jvxlPlane == null ? jvxlData.jvxlSurfaceData
-        : "");
-    if (jvxlData.jvxlPlane == null) {
-      //no real point in compressing this unless it's a sign-based coloring 
-      compressedData += jvxlCompressString(jvxlData.jvxlEdgeData
-          + jvxlData.jvxlColorData);
+    StringBuffer sb = new StringBuffer();
+    if (jvxlData.vertexDataOnly && meshData != null) {
+      int[] vertexMap = new int[meshData.vertexCount];
+      sb.append("<jvxlSurfaceData>\n");
+      sb.append(JvxlReader.jvxlEncodeTriangleData(meshData.polygonIndexes,
+          meshData.polygonCount, vertexMap));
+      sb.append(JvxlReader.jvxlEncodeVertexData(jvxlData, vertexMap,
+          meshData.vertices, meshData.vertexValues, jvxlData.jvxlColorData
+              .length() > 0));
+      sb.append("</jvxlSurfaceData>\n");
+      //JvxlReader.jvxlDecodeVertexData(jvxlData, vdata, true);
+      //JvxlReader.jvxlDecodeTriangleData(tdata, true);
+    } else if (jvxlData.jvxlPlane == null) {
+      //no real point in compressing this unless it's a sign-based coloring
+      sb.append(jvxlData.jvxlSurfaceData);
+      sb.append(jvxlCompressString(jvxlData.jvxlEdgeData
+          + jvxlData.jvxlColorData));
     } else {
-      compressedData += jvxlCompressString(jvxlData.jvxlColorData);
+      sb.append(jvxlCompressString(jvxlData.jvxlColorData));
     }
+    String compressedData = sb.toString();
     int r = 0;
     if (compressedData.length() > 0) {
       if (jvxlData.wasCubic && jvxlData.nBytes > 0)
@@ -819,7 +877,7 @@ public class JvxlReader extends VolumeFileReader {
             * jvxlData.nPointsY * jvxlData.nPointsZ * 13)) / compressedData
             .length());
     }
-    
+
     data.append(compressedData);
     if (msg != null)
       data.append("#-------end of jvxl file data-------\n");
@@ -836,41 +894,6 @@ public class JvxlReader extends VolumeFileReader {
     }
 
     return data.toString();
-  }
-
-  private static String jvxlCompressString(String data) {
-    /* just a simple compression, but allows 2000-6000:1 CUBE:JVXL for planes!
-     * 
-     *   "X~nnn " means "nnn copies of character X" 
-     *   
-     *   ########## becomes "#~10 " 
-     *   ~ becomes "~~" 
-     *
-     */
-    String dataOut = "";
-    String dataBuffer = "";
-    char chLast = '\0';
-    data += '\0';
-    int nLast = 0;
-    for (int i = 0; i < data.length(); i++) {
-      char ch = data.charAt(i);
-      if (ch == chLast) {
-        ++nLast;
-        dataBuffer += ch;
-        if (ch != '~')
-          ch = '\0';
-      } else if (nLast > 0) {
-        dataOut += (nLast < 4 || chLast == '~' || chLast == ' '
-            || chLast == '\t' ? dataBuffer : "~" + nLast + " ");
-        dataBuffer = "";
-        nLast = 0;
-      }
-      if (ch != '\0') {
-        dataOut += ch;
-        chLast = ch;
-      }
-    }
-    return dataOut;
   }
 
   //  to/from ascii-encoded data
@@ -972,20 +995,266 @@ public class JvxlReader extends VolumeFileReader {
       float value = vertexValues[i];
       if (doTruncate)
         value = (value > 0 ? 0.999f : -0.999f);
-        char ch;
-        if (writePrecisionColor) {
-          ch = jvxlValueAsCharacter2(value, min, max,
-              colorFractionBase, colorFractionRange, remainder);
-          list1.append(remainder[0]);
-        } else {
-          //isColorReversed
-          ch = jvxlValueAsCharacter(value, valueRed,
-              valueBlue, colorFractionBase, colorFractionRange);
-        }
-        list.append(ch);
+      char ch;
+      if (writePrecisionColor) {
+        ch = jvxlValueAsCharacter2(value, min, max, colorFractionBase,
+            colorFractionRange, remainder);
+        list1.append(remainder[0]);
+      } else {
+        //isColorReversed
+        ch = jvxlValueAsCharacter(value, valueRed, valueBlue,
+            colorFractionBase, colorFractionRange);
+      }
+      list.append(ch);
     }
     jvxlData.jvxlColorData = list.append(list1).append('\n').toString();
     jvxlUpdateInfoLines(jvxlData);
+  }
+
+  public static String jvxlEncodeTriangleData(int[][] triangles, int nData, int[] vertexMap) {
+    StringBuffer list = new StringBuffer();
+    StringBuffer list1 = new StringBuffer();
+    int ilast = 1;
+    int p = 0;
+    int inew = 0;
+    for (int i = 0; i < nData;) {
+      int idata = triangles[i][p];
+      if (vertexMap[idata] > 0) {
+        idata = vertexMap[idata];
+      } else {
+        idata = vertexMap[idata] = ++inew;
+      }
+      
+      //if (i < 10 || i + 10 > nData) System.out.println(triangles[i][p]);
+      if (++p % 3 == 0) {
+        i++;
+        p = 0;
+      }
+      int diff = idata - ilast;
+      ilast = idata;
+      if (diff == 0) {
+        list1.append('!');
+      } else if (diff > 32 || diff < -32) {
+        list1.append('.').append(diff).append(',');
+      } else {
+        list1.append((char)('\\' + diff));
+      }
+    }
+    return list.append("  <jvxlTriangleData len=\"" + list1.length() + "\" count=\"" + nData + "\">\n    ")
+       .append(list1).append("\n  </jvxlTriangleData>\n").toString();
+  }
+
+  int[][] jvxlDecodeTriangleData(String data, boolean asArray) {
+    int[] next = new int[1];
+    setNext(data, "count", next, 2);
+    int nData = Parser.parseInt(data, next);
+    if (!asArray)
+      Logger.info("Reading " + nData + " triangles");
+    int[][] triangles = (asArray ? new int[nData][3] : null);
+    int[] triangle = (asArray ? triangles[0] : new int[3]);
+    int ilast = 0;
+    int p = 0;
+    int b0 = (int)'\\';
+    setNext(data, ">", next, 1);
+    int pt = next[0];
+    while (Character.isWhitespace(data.charAt(pt)))
+      pt++;
+    pt--;
+    for (int i = 0; i < nData;) {
+      char ch = data.charAt(++pt);
+      int idiff;
+      switch(ch) {
+      case '!':
+        idiff = 0;
+        break;
+      case '.':
+        next[0] = ++pt;
+        idiff = Parser.parseInt(data, next);
+        pt = next[0];
+        break;
+      default:
+        idiff = (int)ch - b0; 
+      }
+      ilast += idiff;
+      if (asArray)
+        triangles[i][p] = ilast;
+      else
+        triangle[p] = ilast;
+      //if (i < 10 || i + 10 > nData) System.out.print(triangle[p] + " ");
+      if (++p % 3 == 0) {
+        //if (i < 10 || i + 10 > nData) System.out.println();
+        i++;
+        //if (asArray)triangle = triangles[i];
+        p = 0;
+        if (!asArray)
+          addTriangleCheck(triangle[0], triangle[1], triangle[2], 7, false);
+      }
+    }
+    return triangles;
+  }
+
+  public static String jvxlEncodeVertexData(JvxlData jvxlData, int[] vertexMap,
+                                            Point3f[] vertices, float[] vertexValues, 
+                                            boolean addColorData) {
+    Point3f min = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+    Point3f max = new Point3f(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
+    int vertexCount = jvxlData.vertexCount;
+    int colorFractionBase = jvxlData.colorFractionBase;
+    int colorFractionRange = jvxlData.colorFractionRange;
+    Point3f p;
+    for (int i = 0; i < vertexCount; i++) {
+      p = vertices[i];
+      if (p.x < min.x)
+        min.x = p.x;
+      if (p.y < min.y)
+        min.y = p.y;
+      if (p.z < min.z)
+        min.z = p.z;
+      if (p.x > max.x)
+        max.x = p.x;
+      if (p.y > max.y)
+        max.y = p.y;
+      if (p.z > max.z)
+        max.z = p.z;
+    }
+    StringBuffer list = new StringBuffer();
+    StringBuffer list1 = new StringBuffer();
+    StringBuffer list2 = new StringBuffer();
+    char[] remainder = new char[1];
+    char ch;
+    int[] vertexMapRev = new int[vertexCount];
+    for (int i = 0; i < vertexCount; i++)
+      vertexMapRev[vertexMap[i] - 1] = i;
+    for (int i = 0; i < vertexCount; i++) {
+      p = vertices[vertexMapRev[i]];
+      //if (i < 10 || i + 10 > vertexCount)System.out.println(vertexMapRev[i] + " " + p);
+      ch = jvxlValueAsCharacter2(p.x, min.x, max.x, colorFractionBase,
+          colorFractionRange, remainder);
+      list2.append(remainder[0]);
+      list1.append(ch);
+      ch = jvxlValueAsCharacter2(p.y, min.y, max.y, colorFractionBase,
+          colorFractionRange, remainder);
+      list2.append(remainder[0]);
+      list1.append(ch);
+      ch = jvxlValueAsCharacter2(p.z, min.z, max.z, colorFractionBase,
+          colorFractionRange, remainder);
+      list2.append(remainder[0]);
+      list1.append(ch);
+    }
+    list1.append(list2);
+    list.append("  <jvxlVertexData len=\"" + list1.length() + "\" count=\"" + vertexCount + "\" min=\"" + min + "\" max=\"" + max + "\">\n    ");
+    list.append(list1).append("\n  </jvxlVertexData>\n");
+    if (!addColorData)
+      return list.toString();
+    list1 = new StringBuffer();
+    list2 = new StringBuffer();
+    boolean writePrecisionColor = jvxlData.isJvxlPrecisionColor;
+    for (int i = 0; i < vertexCount; i++) {
+      float value = vertexValues[vertexMapRev[i]]; 
+      if (writePrecisionColor) {
+        ch = jvxlValueAsCharacter2(value, jvxlData.mappedDataMin, jvxlData.mappedDataMax, colorFractionBase,
+            colorFractionRange, remainder);
+        list1.append(remainder[0]);
+      } else {
+        //isColorReversed
+        ch = jvxlValueAsCharacter(value, jvxlData.mappedDataMin, jvxlData.mappedDataMax,
+            colorFractionBase, colorFractionRange);
+      }      
+      list2.append(ch);
+    }
+    String s = jvxlCompressString(list2.append(list1).toString());
+    return list.append("  <jvxlColorData len=\"" + s.length() + "\" count=\"" + vertexCount + "\" compressed=\"1\">\n    ")
+        .append(s).append("\n  </jvxlColorData>\n").toString();
+  }
+
+  private static void setNext(String data, String what, int[] next, int offset) {
+    next[0] = data.indexOf(what, next[0]) + what.length() + offset;
+  }
+  
+  public Point3f[] jvxlDecodeVertexData(String data, boolean asArray) {
+    next[0] = 0;
+    setNext(data, "count", next, 2);
+    int vertexCount = Parser.parseInt(data, next);
+    if (!asArray)
+      Logger.info("Reading " + vertexCount + " vertices");
+    next[0]++;
+    Point3f min = new Point3f();
+    Point3f range = new Point3f();
+    setNext(data, "min", next, 3);
+    min.x = Parser.parseFloat(data, next);
+    next[0]++;
+    min.y = Parser.parseFloat(data, next);
+    next[0]++;
+    min.z = Parser.parseFloat(data, next);
+    setNext(data, "max", next, 3);
+    range.x = Parser.parseFloat(data, next) - min.x;
+    next[0]++;
+    range.y = Parser.parseFloat(data, next) - min.y;
+    next[0]++;
+    range.z = Parser.parseFloat(data, next) - min.z;
+    int colorFractionBase = jvxlData.colorFractionBase;
+    int colorFractionRange = jvxlData.colorFractionRange;
+    int ptCount = vertexCount * 3;
+    Point3f[] vertices = (asArray ? new Point3f[vertexCount] : null);
+    Point3f p = (asArray ? null : new Point3f());
+    float fraction;
+    setNext(data, ">", next, 1);
+    int pt = next[0];
+    while (Character.isWhitespace(data.charAt(pt)))
+      pt++;
+    pt--;
+    for (int i = 0; i < vertexCount; i++) {
+      if (asArray)
+        p = vertices[i] = new Point3f();
+      fraction = jvxlFractionFromCharacter2(data.charAt(++pt), data.charAt(pt
+          + ptCount), colorFractionBase, colorFractionRange);
+      p.x = min.x + fraction * range.x;
+      fraction = jvxlFractionFromCharacter2(data.charAt(++pt), data.charAt(pt
+          + ptCount), colorFractionBase, colorFractionRange);
+      p.y = min.y + fraction * range.y;
+      fraction = jvxlFractionFromCharacter2(data.charAt(++pt), data.charAt(pt
+          + ptCount), colorFractionBase, colorFractionRange);
+      p.z = min.z + fraction * range.z;
+      if (!asArray)
+        addVertexCopy(p, 0, i);
+      //if (i < 10 || i + 10 > vertexCount)System.out.println(p);
+    }
+    return vertices;
+  }
+  
+  private void getEncodedVertexData() throws Exception {
+    String data = getXmlData("jvxlSurfaceData", null, true);
+    jvxlDecodeVertexData(getXmlData("jvxlVertexData", data, true), false);
+    jvxlDecodeTriangleData(getXmlData("jvxlTriangleData", data, true), false);
+    Logger.info("Checking for vertex values");
+    jvxlColorDataRead = jvxlUncompressString(getXmlData("jvxlColorData", data, false));
+    jvxlDataIsColorMapped = (jvxlColorDataRead.length() > 0);
+    Logger.info("Done");
+  }
+
+  private String getXmlData(String name, String data, boolean withTag) throws Exception {
+    //crude
+    String closer = "</" + name + ">";
+    String tag = "<" + name;
+    if (data == null) {
+      StringBuffer sb = new StringBuffer();
+      while (line.indexOf(tag) < 0)
+        line = br.readLine();
+      sb.append(line);
+      while (line.indexOf(closer) < 0)
+        sb.append(line = br.readLine());
+      data = sb.toString();
+    }
+    int pt1 = data.indexOf(tag);
+    int pt2 = data.indexOf(closer);
+    if (pt1 >= 0 && !withTag) {
+      pt1 = data.indexOf(">", pt1) + 1;
+      while (Character.isWhitespace(data.charAt(pt1)))
+        pt1++;
+    }
+    if (pt1 < 0 || pt1 > pt2)
+      return "";
+    return data.substring(pt1, pt2);
   }
 
 }

@@ -489,7 +489,7 @@ public class Parameters {
     }
   }
   
-  Vector functionXYinfo;
+  public Vector functionXYinfo;
   
   void setFunctionXY(Vector value) {
     dataType = SURFACE_FUNCTIONXY;

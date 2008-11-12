@@ -208,7 +208,7 @@ public class SurfaceGenerator {
     return marchingSquares;
   }
   
-  Parameters getParams() {
+  public Parameters getParams() {
     return params;
   }
 
@@ -228,6 +228,10 @@ public class SurfaceGenerator {
     return params.bsIgnore;
   }
   
+  public Vector getFunctionXYinfo() {
+    return params.functionXYinfo;
+  }
+
   VolumeData getVolumeData() {
     return volumeData;
   }
@@ -773,11 +777,12 @@ public class SurfaceGenerator {
   }
   
   public void finalizeIsosurface() {
-    if (surfaceReader != null && surfaceReader.hasColorData && params.rangeDefined)
+    if (surfaceReader != null && surfaceReader.hasColorData && params.rangeDefined
+        && params.state != Parameters.STATE_DATA_COLORED)
       colorIsosurface();
   }
   
-  private boolean setReader(boolean isMap) {
+  private boolean setReader() {
     if (surfaceReader != null)
       return !surfaceReader.vertexDataOnly;
     switch (params.dataType) {
@@ -806,7 +811,7 @@ public class SurfaceGenerator {
   private void generateSurface() {       
     if (++params.state != Parameters.STATE_DATA_READ)
       return;
-    setReader(false);    
+    setReader();    
     boolean haveMeshDataServer = (meshDataServer != null);
     if (params.colorBySign)
       params.isBicolorMap = true;
@@ -854,7 +859,7 @@ public class SurfaceGenerator {
       params.state++;
     if (++params.state != Parameters.STATE_DATA_COLORED)
       return;
-    if (!setReader(true))
+    if (!setReader())
       return;    
     params.doCapIsosurface = false;
     //if (params.dataType == Parameters.SURFACE_FUNCTIONXY)
@@ -884,22 +889,11 @@ public class SurfaceGenerator {
   }
   
   public Object getProperty(String property, int index) {
-    //StringBuffer bs = new StringBuffer();
-    //JvxlReader.jvxlCreateHeader("line1", "line2", volumeData, bs);
-    //System.out.println(bs);
-
-    if (property == "functionXYinfo")
-      return params.functionXYinfo;
-    if (property == "plane")
-      return (jvxlData.jvxlPlane);
     if (property == "jvxlFileData")
-      return JvxlReader.jvxlGetFile(jvxlData, params.title, "", true, index,
-          null, null);
+      return JvxlReader.jvxlGetFile(jvxlData, null, params.title, "", true,
+          index, null, null);
     if (property == "jvxlFileInfo")
-      return jvxlData.jvxlInfoLine;
-    if (property == "jvxlSurfaceData")
-      return JvxlReader.jvxlGetFile(jvxlData, params.title, "", false, 1, null,
-          null);
+      return jvxlData.jvxlInfoLine; // for Jvxl.java
     return null;
   }
 

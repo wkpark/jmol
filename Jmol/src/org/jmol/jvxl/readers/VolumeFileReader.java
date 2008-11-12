@@ -130,8 +130,9 @@ abstract class VolumeFileReader extends SurfaceReader {
   
   void readVolumeData(boolean isMapData) {
     gotoAndReadVoxelData(isMapData);
-    Logger.info("Read " + nPointsX + " x " + nPointsY + " x " + nPointsZ
-        + " data points");
+    if (!vertexDataOnly)
+      Logger.info("Read " + nPointsX + " x " + nPointsY + " x " + nPointsZ
+          + " data points");
   }
 
   protected int readVolumetricHeader() {

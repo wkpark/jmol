@@ -786,10 +786,18 @@ public abstract class BioPolymer extends Polymer {
   
   private static float getStraightness(String id, Quaternion dqprev, Quaternion dq) {
     //System.out.println(id + " " + dqprev.getTheta() + " " + dq.getTheta());
-    float f = (float) (Math.acos(dqprev.getNormal().dot(dq.getNormal()))/ Math.PI);
-    
-    //f = (float) (Math.acos(dqprev.dot(dq))/ Math.PI);
-
+    //float f = (float) (Math.acos(dqprev.getNormal().dot(dq.getNormal()))/ Math.PI);
+    //return 1 - 2 * f;
+    // absolute value added, because we are dotting the vector normals. Two vector normals
+    // that are colinear, despite their angle of rotation, should give the same straightness
+    // 
+    // straightness = 1 - acos(|n1.n2|)/(PI/2)
+    //
+    // alignment = near 0 or near 180 --> same - just different rotations. 
+    // It's a 90-degree change in direction that corresponds to 0.
+    //
+    float f = (float) (Math.acos(Math.abs(dqprev.getNormal().dot(dq.getNormal())))/ Math.PI);
     return 1 - 2 * f;
+
   }
 }

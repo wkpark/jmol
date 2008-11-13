@@ -809,7 +809,7 @@ public class JvxlReader extends VolumeFileReader {
           + ":1";
     if (jvxlData.isXLowToHigh)
       info += "\n# progressive JVXL+ -- X values read from low(0) to high(" + (jvxlData.nPointsX - 1) + ")";
-    info += "\n# created using Jvxl.java\n#";
+    info += "\n# created using " + jvxlData.version+ "\n#";
     if (jvxlData.insideOut) {
       info += " insideOut";
       definitionLine += " insideOut";

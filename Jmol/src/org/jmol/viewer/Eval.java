@@ -9288,6 +9288,9 @@ class Eval {
     } else if (data == "ISO") {
       if ((data = getIsosurfaceJvxl()) == null)
         evalError(GT._("No data available"));
+      if (!isShow)
+        showString((String) viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
+      "jvxlFileInfo"));
       type = "JVXL";
     } else {
       // image

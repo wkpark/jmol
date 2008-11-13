@@ -140,6 +140,11 @@ public class SurfaceGenerator {
   private MeshDataServer meshDataServer;
   private AtomDataServer atomDataServer;
   private MarchingSquares marchingSquares;
+  private String version;
+  
+  public void setVersion(String version) {
+    this.version = version;
+  }
   
   SurfaceReader surfaceReader;
 
@@ -186,6 +191,7 @@ public class SurfaceGenerator {
 
   public void setJvxlData(JvxlData jvxlData) {
     this.jvxlData = jvxlData;
+    jvxlData.version = version;
   }
 
   public JvxlData getJvxlData() {

@@ -101,6 +101,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Viewer;
 import org.jmol.jvxl.readers.JvxlReader;
 
 import java.util.BitSet;
@@ -137,9 +138,14 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   public void initShape() {
     super.initShape();
     myType = "isosurface";
-    sg = new SurfaceGenerator(viewer, this, colorEncoder, null, jvxlData = new JvxlData());
+    newSg();
   }
 
+  private void newSg() {
+    sg = new SurfaceGenerator(viewer, this, colorEncoder, null, jvxlData = new JvxlData());
+    sg.setVersion("Jmol " + Viewer.getJmolVersion());
+  }
+  
   protected void clearSg() {
     sg = null; // not Molecular Orbitals
   }
@@ -292,7 +298,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     }
     
     if ("init" == propertyName) {
-      sg = new SurfaceGenerator(viewer, this, colorEncoder, null, jvxlData = new JvxlData());
+      newSg();
     }
     
     //surface generator only (return TRUE) or shared (return FALSE)
@@ -405,6 +411,8 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     if (property == "jvxlSurfaceData") // MO only
       return JvxlReader.jvxlGetFile(jvxlData, null, title, "", false, 1, thisMesh
               .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
+    if (property == "jvxlFileInfo")
+      return jvxlData.jvxlInfoLine;
     return super.getProperty(property, index);
   }
 

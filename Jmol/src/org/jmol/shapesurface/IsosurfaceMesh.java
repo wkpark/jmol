@@ -33,6 +33,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.ArrayUtil;
+import org.jmol.viewer.Viewer;
 import org.jmol.jvxl.data.JvxlData;
 
 import org.jmol.jvxl.calc.MarchingSquares;
@@ -40,7 +41,6 @@ import org.jmol.shape.Mesh;
 
 public class IsosurfaceMesh extends Mesh {
   JvxlData jvxlData = new JvxlData();
-
   public boolean hideBackground;
   public int realVertexCount;
   public int vertexIncrement = 1;
@@ -53,6 +53,7 @@ public class IsosurfaceMesh extends Mesh {
   IsosurfaceMesh(String thisID, Graphics3D g3d, short colix) {
     super(thisID, g3d, colix);
     haveCheckByte = true;
+    jvxlData.version = Viewer.getJmolVersion();
   }
 
   void clear(String meshType, boolean iAddGridPoints, boolean showTriangles) {

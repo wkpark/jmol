@@ -171,6 +171,7 @@ public class JvxlData {
   public short maxColorIndex = 0;
 
   public String[] title;
+  public String version;
   
 }
 

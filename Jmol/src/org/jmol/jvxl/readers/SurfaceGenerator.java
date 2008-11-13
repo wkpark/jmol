@@ -515,7 +515,7 @@ public class SurfaceGenerator {
         propertyName = "mapColor";
       } else {
         colorEncoder.setColorScheme(colorScheme);
-        if (params.state == Parameters.STATE_DATA_COLORED)
+        if (surfaceReader != null && params.state == Parameters.STATE_DATA_COLORED)
           surfaceReader.applyColorScale();
         return true;
       }

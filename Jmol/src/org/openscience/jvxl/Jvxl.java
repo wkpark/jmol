@@ -50,6 +50,7 @@ import org.jmol.util.*;
 
 public class Jvxl {
 
+  private final static String VERSION = "JVXL.java Version 1.0";
   public static void main(String[] args) {
 
     boolean blockData = false;
@@ -268,6 +269,7 @@ public class Jvxl {
 
     // input file
 
+    sg.setVersion(VERSION);
     if (blockData)
       sg.setParameter("blockData", Boolean.TRUE);
     if (!Float.isNaN(cutoff))

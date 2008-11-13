@@ -776,12 +776,6 @@ public class SurfaceGenerator {
     }
   }
   
-  public void finalizeIsosurface() {
-    if (surfaceReader != null && surfaceReader.hasColorData && params.rangeDefined
-        && params.state != Parameters.STATE_DATA_COLORED)
-      colorIsosurface();
-  }
-  
   private boolean setReader() {
     if (surfaceReader != null)
       return !surfaceReader.vertexDataOnly;
@@ -848,10 +842,9 @@ public class SurfaceGenerator {
     setMarchingSquares(surfaceReader.marchingSquares);
     surfaceReader.discardTempData(false);
     if (surfaceReader.hasColorData)
-      params.state = Parameters.STATE_DATA_COLORED;
-    else
-      surfaceReader = null; // resets voxel reader for mapping
+      surfaceReader.colorIsosurface();
     params.mappedDataMin = Float.MAX_VALUE;
+    surfaceReader = null; // resets voxel reader for mapping
   }
 
   private void mapSurface(Object value) {

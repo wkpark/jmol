@@ -285,7 +285,6 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     }
 
     if ("finalize" == propertyName) {
-      sg.finalizeIsosurface();
       setScriptInfo();
       setJvxlInfo();
       clearSg();

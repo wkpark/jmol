@@ -645,7 +645,7 @@ public class Parameters {
   boolean isPositiveOnly;
   
   boolean rangeAll;
-  boolean rangeDefined;
+  public boolean rangeDefined;
   float valueMappedToRed, valueMappedToBlue;
   float mappedDataMin;
   float mappedDataMax;

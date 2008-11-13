@@ -563,7 +563,7 @@ public class JvxlReader extends VolumeFileReader {
       meshData.vertexColixes = colixes = new short[vertexCount];
     jvxlData.vertexCount = vertexCount;
     String data = jvxlColorDataRead;
-    hasColorData = true;
+    //hasColorData = true;
     int cpt = 0;
     short colixNeg = 0, colixPos = 0;
     if (params.colorBySign) {
@@ -580,7 +580,7 @@ public class JvxlReader extends VolumeFileReader {
       float fraction, value;
       if (jvxlDataIsPrecisionColor) {
         // this COULD be an option for mapped surfaces; 
-        // necessary for planes.
+        // necessary for planes; used for vertex/triangle 2.0 style
         // precision is used for FULL-data range encoding, allowing full
         // treatment of JVXL files as though they were CUBE files.
         // the two parts of the "double-character-precision" value
@@ -856,8 +856,6 @@ public class JvxlReader extends VolumeFileReader {
           meshData.vertices, meshData.vertexValues, jvxlData.jvxlColorData
               .length() > 0));
       sb.append("</jvxlSurfaceData>\n");
-      //JvxlReader.jvxlDecodeVertexData(jvxlData, vdata, true);
-      //JvxlReader.jvxlDecodeTriangleData(tdata, true);
     } else if (jvxlData.jvxlPlane == null) {
       //no real point in compressing this unless it's a sign-based coloring
       sb.append(jvxlData.jvxlSurfaceData);
@@ -1196,22 +1194,17 @@ public class JvxlReader extends VolumeFileReader {
 
     list1 = new StringBuffer();
     list2 = new StringBuffer();
-    boolean writePrecisionColor = jvxlData.isJvxlPrecisionColor;
     for (int i = 0; i < vertexCount; i++) {
       float value = vertexValues[vertexIdOld[i]];
-      if (writePrecisionColor)
-        jvxlAppendCharacter2(value, jvxlData.mappedDataMin,
-            jvxlData.mappedDataMax, colorFractionBase, colorFractionRange,
-            list1, list2);
-      else
-        list1.append(jvxlValueAsCharacter(value, jvxlData.mappedDataMin,
-            jvxlData.mappedDataMax, colorFractionBase, colorFractionRange));
+      jvxlAppendCharacter2(value, jvxlData.mappedDataMin,
+          jvxlData.mappedDataMax, colorFractionBase, colorFractionRange, list1,
+          list2);
     }
     String s = jvxlCompressString(list1.append(list2).toString());
     return list.append(
         "  <jvxlColorData len=\"" + s.length() + "\" count=\"" + vertexCount
-            + "\" compressed=\"1\">\n    ").append(s).append(
-        "\n  </jvxlColorData>\n").toString();
+            + "\" compressed=\"1\" precision=\"true\">\n    ").append(s)
+        .append("\n  </jvxlColorData>\n").toString();
   }
 
   /**
@@ -1227,6 +1220,7 @@ public class JvxlReader extends VolumeFileReader {
     Logger.info("Checking for vertex values");
     jvxlColorDataRead = jvxlUncompressString(getXmlData("jvxlColorData", data, false));
     jvxlDataIsColorMapped = (jvxlColorDataRead.length() > 0);
+    jvxlDataIsPrecisionColor = (data.indexOf("precision=\"true\"") >= 0);
     Logger.info("Done");
   }
 

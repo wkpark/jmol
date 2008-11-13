@@ -305,6 +305,8 @@ public abstract class SurfaceReader implements VertexDataServer {
         meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_COLOR_INDEXES);
       }
       jvxlData.jvxlColorData = readColorData();
+      if (meshDataServer != null)
+        meshDataServer.notifySurfaceMappingCompleted();
     }
     jvxlData.jvxlExtraLine = JvxlReader.jvxlExtraLine(jvxlData, 1);
     return true;
@@ -554,8 +556,8 @@ public abstract class SurfaceReader implements VertexDataServer {
     //colorBySign is true when colorByPhase is true, but not vice-versa
     //old: boolean saveColorData = !(params.colorByPhase && !params.isBicolorMap && !params.colorBySign); //sorry!
     boolean saveColorData = (params.isBicolorMap || params.colorBySign || !params.colorByPhase);
-    jvxlData.isJvxlPrecisionColor = (jvxlDataIsPrecisionColor
-        || params.isContoured || params.remappable);
+    // colors mappable always now
+    jvxlData.isJvxlPrecisionColor = true;//(jvxlDataIsPrecisionColor || params.isContoured || params.remappable);
     jvxlData.valueMappedToRed = params.valueMappedToRed;
     jvxlData.valueMappedToBlue = params.valueMappedToBlue;
     jvxlData.mappedDataMin = params.mappedDataMin;

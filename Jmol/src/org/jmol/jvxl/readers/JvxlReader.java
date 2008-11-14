@@ -532,7 +532,7 @@ public class JvxlReader extends VolumeFileReader {
     // standard jvxl file read for color 
 
     fractionPtr = 0;
-    int vertexCount = meshData.vertexCount;
+    int vertexCount = jvxlData.vertexCount = meshData.vertexCount;
     short[] colixes = meshData.vertexColixes;
     float[] vertexValues = meshData.vertexValues;
     fractionData = new StringBuffer();
@@ -561,7 +561,6 @@ public class JvxlReader extends VolumeFileReader {
     float contourPlaneMaximumValue = -Float.MAX_VALUE;
     if (colixes == null || colixes.length < vertexCount)
       meshData.vertexColixes = colixes = new short[vertexCount];
-    jvxlData.vertexCount = vertexCount;
     String data = jvxlColorDataRead;
     //hasColorData = true;
     int cpt = 0;
@@ -680,7 +679,8 @@ public class JvxlReader extends VolumeFileReader {
     // that do not start with # already present.
     if (sb.length() == 0)
       sb.append("Line 1\nLine 2\n");
-    sb.append(nAtoms == Integer.MAX_VALUE ? -2 : -nAtoms).append(' ')
+    sb.append('\0'); //mark end of title lines; will be changed to "-" in createIsosurface
+    sb.append(nAtoms == Integer.MAX_VALUE ? 2 : nAtoms).append(' ')
       .append(v.volumetricOrigin.x).append(' ')
       .append(v.volumetricOrigin.y).append(' ')
       .append(v.volumetricOrigin.z).append(" ANGSTROMS\n");
@@ -754,68 +754,96 @@ public class JvxlReader extends VolumeFileReader {
 
     if (jvxlData.jvxlSurfaceData == null)
       return "";
+    StringBuffer info = new StringBuffer();
     int nSurfaceInts = jvxlData.nSurfaceInts;//jvxlData.jvxlSurfaceData.length();
-    int bytesUncompressedEdgeData = (jvxlData.vertexDataOnly ? 0 : jvxlData.jvxlEdgeData.length() - 1);
+    int bytesUncompressedEdgeData = (jvxlData.vertexDataOnly ? 0
+        : jvxlData.jvxlEdgeData.length() - 1);
     int nColorData = (jvxlData.jvxlColorData.length() - 1);
-    String info = "# cutoff = " + jvxlData.cutoff 
-        + "; pointsPerAngstrom = " + jvxlData.pointsPerAngstrom
-        + "; nSurfaceInts = " + nSurfaceInts
-        + "; nBytesData = " + (jvxlData.jvxlSurfaceData.length() 
-            + bytesUncompressedEdgeData + (jvxlData.jvxlColorData.length()));
+    if (isInfo && !jvxlData.vertexDataOnly) {
+      info.append("\n  cutoff=\"" + jvxlData.cutoff + "\"");
+      info.append("\n  pointsPerAngstrom=\"" + jvxlData.pointsPerAngstrom
+          + "\"");
+      info.append("\n  nSurfaceInts=\"" + nSurfaceInts + "\"");
+      info
+          .append("\n  nBytesData=\""
+              + (jvxlData.jvxlSurfaceData.length() + bytesUncompressedEdgeData + jvxlData.jvxlColorData
+                  .length()) + "\"");
+    }
     if (jvxlData.jvxlPlane == null) {
       if (jvxlData.isContoured) {
-        definitionLine += (-1 - nSurfaceInts) + " " + bytesUncompressedEdgeData;
-        info += "; contoured";
+        if (isInfo)
+          info.append("\n  contoured=\"true\"");
+        else
+          definitionLine += (-1 - nSurfaceInts) + " "
+              + bytesUncompressedEdgeData;
       } else if (jvxlData.isBicolorMap) {
-        definitionLine += (nSurfaceInts) + " " + (-bytesUncompressedEdgeData);
-        info += "; bicolor map";
+        if (isInfo)
+          info.append("\n  bicolorMap=\"true\"");
+        else
+          definitionLine += (nSurfaceInts) + " " + (-bytesUncompressedEdgeData);
+
       } else {
-        definitionLine += nSurfaceInts + " " + bytesUncompressedEdgeData;
-        if (nColorData > 0)
-          info += "; colormapped";
+        if (!isInfo)
+          definitionLine += nSurfaceInts + " " + bytesUncompressedEdgeData;
+        else if (nColorData > 0)
+          info.append("\n  colorMapped=\"true\"");
       }
-      definitionLine += " "
-          + (jvxlData.isJvxlPrecisionColor && nColorData != -1 ? -nColorData
-              : nColorData);
-      if (jvxlData.isJvxlPrecisionColor && nColorData != -1)
-        info += "; precision colored";
+      if (!isInfo)
+        definitionLine += " "
+            + (jvxlData.isJvxlPrecisionColor && nColorData != -1 ? -nColorData
+                : nColorData);
     } else {
 
       String s = " " + jvxlData.jvxlPlane.x + " " + jvxlData.jvxlPlane.y + " "
           + jvxlData.jvxlPlane.z + " " + jvxlData.jvxlPlane.w;
-      definitionLine += (jvxlData.isContoured ? "-1 -2 " + (-nColorData): "-1 -1 " + nColorData) 
-      + s;
-      info += "; " + (nColorData > 0 ? "color mapped " : "") + "plane: {" + s
-          + " }";
+      if (!isInfo)
+        definitionLine += (jvxlData.isContoured ? "-1 -2 " + (-nColorData)
+            : "-1 -1 " + nColorData)
+            + s;
+      else if (nColorData > 0)
+        info.append("\n  colorMapped=\"true\"");
+      if (isInfo)
+        info.append("\n  plane=\"{ " + s + " }\"");
     }
     if (jvxlData.isContoured) {
-      definitionLine += " " + jvxlData.nContours;
-      info += "; " + Math.abs(jvxlData.nContours) + " contours";
+      if (isInfo)
+        info.append("\n  nContours=\"" + Math.abs(jvxlData.nContours) + "\"");
+      else
+        definitionLine += " " + jvxlData.nContours;
     }
     // ...  mappedDataMin  mappedDataMax  valueMappedToRed  valueMappedToBlue ...
-    float min = (jvxlData.mappedDataMin == Float.MAX_VALUE ? 0f : jvxlData.mappedDataMin);
-    definitionLine += " " 
-        + min + " "
-        + jvxlData.mappedDataMax + " " + jvxlData.valueMappedToRed + " "
-        + jvxlData.valueMappedToBlue;
+    float min = (jvxlData.mappedDataMin == Float.MAX_VALUE ? 0f
+        : jvxlData.mappedDataMin);
+    if (!isInfo)
+      definitionLine += " " + min + " " + jvxlData.mappedDataMax + " "
+          + jvxlData.valueMappedToRed + " " + jvxlData.valueMappedToBlue;
 
-    if (jvxlData.jvxlColorData.length() > 0 && !jvxlData.isBicolorMap)
-      info += "\n# data minimum = " + min
-        + "; data maximum = " + jvxlData.mappedDataMax + " "
-        + "\n# value mapped to red = " + jvxlData.valueMappedToRed
-        + "; value mapped to blue = " + jvxlData.valueMappedToBlue;
-    if (jvxlData.jvxlCompressionRatio > 0)
-      info += "; approximate compressionRatio=" + jvxlData.jvxlCompressionRatio
-          + ":1";
-    if (jvxlData.isXLowToHigh)
-      info += "\n# progressive JVXL+ -- X values read from low(0) to high(" + (jvxlData.nPointsX - 1) + ")";
-    info += "\n# created using " + jvxlData.version+ "\n#";
-    if (jvxlData.insideOut) {
-      info += " insideOut";
-      definitionLine += " insideOut";
+    if (isInfo && jvxlData.jvxlColorData.length() > 0 && !jvxlData.isBicolorMap) {
+      info.append("\n  dataMinimum=\"" + min + "\"");
+      info.append("\n  dataMaximum=\"" + jvxlData.mappedDataMax + "\"");
+      info.append("\n  valueMappedToRed=\"" + jvxlData.valueMappedToRed + "\"");
+      info.append("\n  valueMappedToBlue=\"" + jvxlData.valueMappedToBlue
+          + "\"");
     }
-    info += " precision: " + jvxlData.isJvxlPrecisionColor + " nColorData " + nColorData; 
-    return (isInfo ? info : definitionLine);
+    if (isInfo && jvxlData.jvxlCompressionRatio > 0)
+      info.append("\n  approximateCompressionRatio=\""
+          + jvxlData.jvxlCompressionRatio + ":1\"");
+    if (isInfo && jvxlData.isXLowToHigh)
+      info
+          .append("\n  note=\"progressive JVXL+ -- X values read from low(0) to high("
+              + (jvxlData.nPointsX - 1) + ")\"");
+    if (jvxlData.insideOut) {
+      if (isInfo)
+        info.append("\n  insideOut=\"true\"");
+      else
+        definitionLine += " insideOut";
+    }
+    if (!isInfo)
+      return definitionLine;
+    info.append("\n  precisionColor=\"" + jvxlData.isJvxlPrecisionColor + "\"");
+    info.append("\n  nColorData=\"" + nColorData + "\"");
+    info.append("\n  version=\"" + jvxlData.version + "\"");
+    return "<jvxlSurfaceInfo>" + info.toString() + "\n</jvxlSurfaceInfo>";
   }
 
   protected static String jvxlExtraLine(JvxlData jvxlData, int n) {
@@ -835,8 +863,8 @@ public class JvxlReader extends VolumeFileReader {
           + (nSurfaces > 0 ? (-nSurfaces) + jvxlData.jvxlExtraLine.substring(2)
               : jvxlData.jvxlExtraLine);
       if (s.indexOf("#JVXL") != 0)
-        data.append("#JVXL").append(jvxlData.isXLowToHigh ? "+" : "")
-            .append(" VERSION ").append(JVXL_VERSION).append("\n");
+        data.append("#JVXL").append(jvxlData.isXLowToHigh ? "+" : "").append(
+            " VERSION ").append(JVXL_VERSION).append("\n");
       data.append(s);
     }
     data.append("# ").append(msg).append('\n');
@@ -850,10 +878,10 @@ public class JvxlReader extends VolumeFileReader {
     if (jvxlData.vertexDataOnly && meshData != null) {
       int[] vertexIdNew = new int[meshData.vertexCount];
       sb.append("<jvxlSurfaceData>\n");
-      sb.append(JvxlReader.jvxlEncodeTriangleData(meshData.polygonIndexes,
+      sb.append(jvxlEncodeTriangleData(meshData.polygonIndexes,
           meshData.polygonCount, vertexIdNew));
-      sb.append(JvxlReader.jvxlEncodeVertexData(jvxlData, vertexIdNew,
-          meshData.vertices, meshData.vertexValues, jvxlData.jvxlColorData
+      sb.append(jvxlEncodeVertexData(jvxlData, vertexIdNew, meshData.vertices,
+          meshData.vertexValues, meshData.vertexCount, jvxlData.jvxlColorData
               .length() > 0));
       sb.append("</jvxlSurfaceData>\n");
     } else if (jvxlData.jvxlPlane == null) {
@@ -877,20 +905,18 @@ public class JvxlReader extends VolumeFileReader {
     }
 
     data.append(compressedData);
-    if (msg != null)
+
+    if (msg != null && !jvxlData.vertexDataOnly)
       data.append("#-------end of jvxl file data-------\n");
     data.append(jvxlData.jvxlInfoLine).append('\n');
     if (comment != null)
-      data.append("# ").append(comment).append('\n');
+        data.append("<jvxlSurfaceCommand>\n  ").append(comment).append(
+            "\n</jvxlSurfaceCommand>\n");
     if (state != null)
-      data.append("# ").append(state).append('\n');
-    if (r > 0) {
-      String s = "bytes read: " + jvxlData.nBytes
-          + "; approximate voxel-only input/output byte ratio: " + r + ":1\n";
-      data.append("# ").append(s);
-      Logger.info("\n" + s);
-    }
-
+        data.append("<jvxlSurfaceState>\n  ").append(state).append(
+            "\n</jvxlSurfaceState>\n");
+    if (includeHeader)
+      data.append("<jvxlFileTitle>\n").append(jvxlData.jvxlFileTitle).append("</jvxlFileTitle>\n");
     return data.toString();
   }
 
@@ -1022,8 +1048,7 @@ public class JvxlReader extends VolumeFileReader {
    * 
    * 
    **********************************************************/
-  
-  
+
   /**
    * encode triangle data -- [ia ib ic]  [ia ib ic]  [ia ib ic] ...
    * algorithm written by Bob Hanson, 11/2008. The principle is that
@@ -1054,10 +1079,10 @@ public class JvxlReader extends VolumeFileReader {
    *    
    *      !]^Z_[
    *
-   *    When the range falls outside of +/-32, we simply use a period, number,
-   *    and comma and keep on going:
+   *    When the range falls outside of +/-32, we simply use a number.
+   *    When a positive number follows another number, we add a "+" to it.
    *    
-   *      +nnn, or -nnn,
+   *      !]^Z_[-33+250]230-210]]
    *      
    *    Preliminary trials indicated that on average a triangle
    *    can be encoded in about 7 bytes, or roughly half the 12 bytes
@@ -1069,12 +1094,14 @@ public class JvxlReader extends VolumeFileReader {
    * @param vertexIdNew
    * @return            encoded data string
    */
-  public static String jvxlEncodeTriangleData(int[][] triangles, int nData, int[] vertexIdNew) {
+  public static String jvxlEncodeTriangleData(int[][] triangles, int nData,
+                                              int[] vertexIdNew) {
     StringBuffer list = new StringBuffer();
     StringBuffer list1 = new StringBuffer();
     int ilast = 1;
     int p = 0;
     int inew = 0;
+    boolean addPlus = false;
     for (int i = 0; i < nData;) {
       int idata = triangles[i][p];
       if (vertexIdNew[idata] > 0) {
@@ -1082,7 +1109,7 @@ public class JvxlReader extends VolumeFileReader {
       } else {
         idata = vertexIdNew[idata] = ++inew;
       }
-      
+
       //if (i < 10 || i + 10 > nData) System.out.println(triangles[i][p]);
       if (++p % 3 == 0) {
         i++;
@@ -1090,17 +1117,26 @@ public class JvxlReader extends VolumeFileReader {
       }
       int diff = idata - ilast;
       ilast = idata;
-      if (diff == 0)
+      if (diff == 0) {
         list1.append('!');
-      else if (diff > 32)
-        list1.append('+').append(diff).append(',');
-      else if (diff < -32)
-        list1.append(diff).append(',');
-      else
-        list1.append((char)('\\' + diff));
+        addPlus = false;
+      } else if (diff > 32) {
+        if (addPlus)
+          list1.append('+');
+        list1.append(diff);
+        addPlus = true;
+      } else if (diff < -32) {
+        list1.append(diff);
+        addPlus = true;
+      } else {
+        list1.append((char) ('\\' + diff));
+        addPlus = false;
+      }
     }
-    return list.append("  <jvxlTriangleData len=\"" + list1.length() + "\" count=\"" + nData + "\">\n    ")
-       .append(list1).append("\n  </jvxlTriangleData>\n").toString();
+    return list.append(
+        "  <jvxlTriangleData len=\"" + list1.length() + "\" count=\"" + nData
+            + "\">\n    ").append(list1).append("\n  </jvxlTriangleData>\n")
+        .toString();
   }
 
   /**
@@ -1137,6 +1173,7 @@ public class JvxlReader extends VolumeFileReader {
    * @param vertexIdNew
    * @param vertices
    * @param vertexValues
+   * @param vertexCount
    * @param addColorData
    * @return              string of encoded data
    */
@@ -1144,10 +1181,10 @@ public class JvxlReader extends VolumeFileReader {
                                             int[] vertexIdNew,
                                             Point3f[] vertices,
                                             float[] vertexValues,
+                                            int vertexCount,
                                             boolean addColorData) {
     Point3f min = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     Point3f max = new Point3f(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
-    int vertexCount = jvxlData.vertexCount;
     int colorFractionBase = jvxlData.colorFractionBase;
     int colorFractionRange = jvxlData.colorFractionRange;
     Point3f p;
@@ -1337,11 +1374,8 @@ public class JvxlReader extends VolumeFileReader {
     int ilast = 0;
     int p = 0;
     int b0 = (int)'\\';
-    setNext(data, ">", next, 1);
+    setNext(data, ">", next, -1);
     int pt = next[0];
-    while (Character.isWhitespace(data.charAt(pt)))
-      pt++;
-    pt--;
     for (int i = 0; i < nData;) {
       char ch = data.charAt(++pt);
       int idiff;
@@ -1349,12 +1383,28 @@ public class JvxlReader extends VolumeFileReader {
       case '!':
         idiff = 0;
         break;
-      case '.':
       case '+':
+      case '.':
+      case ' ':
+      case '\n':
+      case '\r':
+      case '\t':
+      case ',':
+        continue;
       case '-':
-        next[0] = (ch == '-' ? pt : ++pt);
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+        next[0] = pt;
         idiff = Parser.parseInt(data, next);
-        pt = next[0];
+        pt = next[0] - 1;
         break;
       default:
         idiff = (int)ch - b0; 

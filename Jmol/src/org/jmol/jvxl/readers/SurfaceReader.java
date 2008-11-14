@@ -276,7 +276,9 @@ public abstract class SurfaceReader implements VertexDataServer {
       readVolumeData(false);
       generateSurfaceData();
     }
-    jvxlData.jvxlFileHeader = jvxlFileHeaderBuffer.toString();
+    String s = jvxlFileHeaderBuffer.toString();
+    jvxlData.jvxlFileTitle = s.substring(0, s.indexOf('\0'));
+    jvxlData.jvxlFileHeader = s.replace('\0', '-'); // set negative atom count
     jvxlData.cutoff = (isJvxl ? jvxlCutoff : params.cutoff);
     jvxlData.pointsPerAngstrom = 1f/volumeData.volumetricVectorLengths[0];
     jvxlData.jvxlColorData = "";

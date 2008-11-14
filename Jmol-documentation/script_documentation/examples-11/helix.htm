@@ -1,0 +1,296 @@
+<html>
+<head>
+<title>Jmol Helix Builder</title>
+<script type="text/javascript" src=Jmol.js></script>
+<script type="text/javascript">
+
+function loadFunctions(trigger) {
+	if (!trigger) {
+		setTimeout("loadFunctions(1)",100)
+		return
+	}	
+	jmolScript(document.body.innerHTML)
+	jmolScript("set echo top left; echo function createHelix(nResidues,phi,psi)|has been loaded")
+}
+
+theScript = ""
+function makeHelix() {
+	var script = "createHelix(XX,XX,XX)"
+		.replace("XX",document.getElementById("nResidues").value)
+		.replace("XX",document.getElementById("phi").value)
+		.replace("XX",document.getElementById("psi").value)
+	theScript = script
+alert(script)
+	jmolScript(script + ";calculate hbonds;javascript getResults();")
+	
+}
+
+function getResults(trigger) {
+	if (!trigger) {
+		setTimeout("getResults(1)",100)
+		return
+	}	
+	var s = jmolScriptEcho("select */1.1;write pdb");
+	document.getElementById("results").innerHTML = "<pre>REMARK   6 " + theScript + " " + document.location.href + "\n" + s + "</pre>"
+}
+
+function setStandard(value) {
+	if (!value)return
+	var S = value.split(",");
+	document.getElementById("phi").value = S[0];
+	document.getElementById("psi").value = S[1];
+	jmolScript("zap")
+}
+
+</script>
+</head>
+<body>
+<!--
+/** **** Jmol Embedded Script ****
+
+/*
+ qphi.spt
+
+ Bob Hanson 5:12 AM 7/1/2008
+
+*/
+
+
+
+
+function createHelix(nResidues, phi, psi)
+
+print "createHelix(" + nResidues + "," + phi + "," + psi + ") # nResidues, phi, psi"
+
+
+zap
+
+set echo top left
+echo working...
+refresh
+
+
+#set loglevel 5
+set appendnew false
+set pdbSequential true
+set drawpicking true
+set perspectivedepth off
+
+dowrite = (getProperty("appletInfo","htmlName") == "");
+
+data "mydata"
+ATOM   0001 N    ALA     0      -0.499   1.322  -0.043  1.00 13.99           N  
+ATOM   0002 CA   ALA     0       0.000   0.000   0.000  1.00 20.10           C  
+ATOM   0003 C    ALA     0       1.461   0.000   0.000  1.00 17.07           C  
+ATOM   0004 O    ALA     0       2.044  -1.157   0.037  1.00 17.78           O  
+ATOM   0005 CB   ALA     0      -0.582  -0.739  -1.268  1.00 13.05           C  
+end "mydata"
+
+
+# loop through and build structure having all phi = 180 and all psi = 0
+
+for (var i = 0; i < nResidues; i = i + 1);
+
+	var a = {*}
+	select @a;
+	#label %D;color labels yellow;
+
+ # q(Z,-70) -- rotate what we have now
+
+	rotateselected z -69
+
+ # prepare for connection C to N'
+
+	var C = a[-2]
+	translateselected @{-C.xyz}
+	rotateselected molecular {0 0 0} {0 0 1} -9
+	translateselected {-1.461 0 0}
+	rotateselected molecular {0 0 0} {0 0 1} 9
+
+ # add the new coordinates
+
+	var sdata = data("mydata")
+	sdata = sdata.replace("  0   ",("  "+(i + 1))[-2][0] + "   ")
+	var n = a.size
+	sdata = sdata.replace("0001",("   "+(n+1))[-3][0])
+	sdata = sdata.replace("0002",("   "+(n+2))[-3][0])
+	sdata = sdata.replace("0003",("   "+(n+3))[-3][0])
+	sdata = sdata.replace("0004",("   "+(n+4))[-3][0])
+	sdata = sdata.replace("0005",("   "+(n+5))[-3][0])
+	data "append @sdata"
+
+ # translate to fit
+
+	var N  = {*}[-4]
+
+	select @{!a}
+	translateselected @{-N.xyz}
+	connect @N @C
+
+ # set psi
+
+	var CA = {*}[-3]
+	var C  = {*}[-2]
+
+	select @{within("branch",C,CA)}
+	rotateSelected @CA @C @psi
+
+ # set phi
+
+	select @{within("branch",CA,N)}
+	rotateSelected @N @CA @{180 + phi}
+
+ # iterate
+
+end for
+
+# save the structure and reload it to create the polymers
+
+
+	var pdbdata = data({*}, "PDB");
+	print pdbdata
+
+	select *
+	if (dowrite);
+		fname = "ala_"+nResidues+"_" + phi+"_"+psi+".pdb"
+		var s = "write pdb \"" + fname + "\""
+		print s
+		script inline @s
+		load @fname
+	else
+		data "model @pdbdata"
+	end if;
+
+# set the view
+
+	wireframe 0.2
+	spacefill off
+
+	var v = {*}[0].xyz - {*}[1].xyz
+	var vrot = cross(v, {0 1 0})
+	select *
+	rotateselected molecular {0 0 0} @vrot @{-angle(v, {0 0 0}, {0 1 0})}
+	translateSelected @{-{*}.xyz}
+	center {*}
+
+# make the quaternion
+
+	quaternion
+	draw axisx {-10 0 0} {10 0 0} color red
+	draw axisy {0 -10 0} {0 10 0} color green
+	draw axisz {0 0 -10} {0 0 10} color blue
+	draw pt0 {0 0 0}  color yellow
+
+	quaternion difference
+
+	draw axisx2 {-10 0 0} {10 0 0} color red
+	draw axisy2 {0 -10 0} {0 10 0} color green
+	draw axisz2 {0 0 -10} {0 0 10} color blue
+	draw pt02 {0 0 0}  color yellow
+
+# go to the model
+
+	model
+	axes on;axes position [450, 75];
+
+# add the comment at the top
+
+	set echo top left
+	var s = " " + nResidues + " residues | phi = "+phi + "| psi = " + psi;
+	echo @s
+
+
+	select 1.1
+
+# make buttons
+
+set refreshing false
+
+set echo model2 0 70
+set echo model2 script "quaternion"
+set echo model2 model 1.1
+echo [to quaternion]
+
+set echo model3 0 40
+set echo model3 script "quaternion difference"
+set echo model3 model 1.1
+echo [to quat. diff.]
+
+set echo model6 0 70
+set echo model6 script "quaternion difference"
+set echo model6 model 2.1
+echo [to quat. diff.]
+
+set echo model1 0 40
+set echo model1 script "model"
+set echo model1 model 2.1
+echo [to model]
+
+set echo model4 0 70
+set echo model4 script "model"
+set echo model4 model 3.1
+echo [to model]
+
+set echo model5 0 40
+set echo model5 script "quaternion"
+set echo model5 model 3.1
+echo [to quaternion]
+
+set refreshing true
+
+end function
+
+**/
+-->
+
+
+<table border = 1 cellpadding=10>
+<tr><td valign='top'>
+<script type="text/javascript">
+jmolApplet(500,"javascript loadFunctions()")
+</script>
+<br /><input type='button' value='console' onclick='jmolScript("console")' />
+</td>
+<td valign='top'>
+<h3>Jmol Helix Builder</h3>
+This web page demonstrates advanced capabilities of <a target='_blank'href='http://chemapps.stolaf.edu/jmol/docs/examples-11/new.htm'>Jmol 11.5.45</a>. The script being run is embedded in the HTML page as an HTML comment. View the source to see how it works. 
+<br /><br />
+Enter values for the number of alanine residues you want in the chain along with the phi and psi angles for the helix. 
+A model will be created and displayed in the Jmol applet on the left. PDB file data for the model will be shown
+below this table.
+<br /><br /><br />
+<table>
+<tr><td align='right'>number of residues</td><td><input type='text' value='12' size='5' id='nResidues' /></td></tr>
+<tr><td></td><td>
+<select id='standards' onclick='setStandard(this.options[this.selectedIndex].value)'>
+<option value='' selected>select a type</option>
+<option value='-65,-40.0'>alpha helix</option>
+<option value='-74.0,-4.0'>3-10 helix</option>
+<option value='-57.1,-69.7'>pi helix</option>
+<option value='57.1,4.0'>alpha-L helix</option>
+<option value='-79,150'>Type II helices</option>
+<option value='-51,153'>collagen</option>
+<option value='-120,120'>beta-strand (120)</option>
+<option value='-135,135'>beta-strand (135)</option>
+<option value='180,180'>extended (180)</option>
+</select>
+<br />
+refs: <a target='_blank' href='http://www.imb-jena.de/ImgLibDoc/prot_struc/IMAGE_PROT_ELEMENTS.html'>JenaLib</a>
+<a target='_blank' href='http://www.bmb.uga.edu/wampler/tutorial/prot2.html'>uga</a>
+</td></tr>
+<tr><td align='right'>phi</td><td><input type='text' value='-65.0' size='5' id='phi' /></td></tr>
+<tr><td align='right'>psi</td><td><input type='text' value='-40.0' size='5' id='psi' /></td></tr>
+<tr><td></td><td><input type='button' value='Go' onclick='makeHelix()' /></tr>
+</table>
+
+<br /><br /><br />
+<a target='_blank' href='http://www.stolaf.edu/people/hansonr'>Bob Hanson</a> 7/1/2008
+
+</td></tr>
+<tr> <td colspan='2'><span id='results'>PDB data will appear here. 
+
+</pre>
+</span></td></tr>
+</table>
+</body>
+</html>

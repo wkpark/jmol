@@ -1,4 +1,4 @@
-//Jmol Documentation JavaScript 11.0
+//Jmol Documentation JavaScript 11.6
 //BH 8:26 PM 9/28/2005 HTML 4.0 STRICT compatibility; fix for popup under Opera--NO! Breaks Mac!
 //BH 2:45 PM 12/2/2005 added ?docbook 3:19 PM 12/09/2005
 //BH 8:14 AM 1/30/2006 minor improvements
@@ -8,8 +8,8 @@
 
 lastupdate = ""
 startmessage ="See an error? Something missing? Please <a href=\"mailto:hansonr@stolaf.edu?subject=Jmol applet documentation\">let us know</a>. For a wide variety of interactive examples, see <a href=examples-11/new.htm>new.htm</a>."
-defaultversion = "11.6" //could be 11.0 or 10.2 or 11.2
-versionlist = ";11.6;11.4;11.2;11.0;10.2;" //semis on BOTH SIDES
+defaultversion = "11.8" //could be 11.0 or 10.2 or 11.2
+versionlist = ";11.8;11.6;11.4;11.2;11.0;10.2;" //semis on BOTH SIDES
 removelist = versionlist.substring(0, versionlist.length-1).replace(/\;/g, ";*v-")
 exampledir = "examples/" //will be ignored if the example has a / in the name
 datadir = "examples/"
@@ -53,14 +53,14 @@ just a model with added commands
 	jmolSetDocument(false)
 //	_jmol.archivePath="JmolApplet.jar"
 
-Cmds=new Array()
-Cmdlist=new Array()
-CmdExamples=new Array()
-Defs=new Array()
-Toks=new Array()
-Xrefs=new Array()
-Examples=new Array()
-IndexKeyList=new Array()
+Cmdlist=[]
+Cmds={}
+CmdExamples={}
+Defs={}
+Toks={}
+Xrefs={}
+Examples={}
+IndexKeyList={}
 nindexkey=0
 
 theindex=""
@@ -101,7 +101,7 @@ thisVrefNew = "*v+"+thisSubversion
 icandoxrefincommand=0
 
 function fixDocbook(s){
-	var S=new Array()
+	var S=[]
 	//remove all a tags
 	if(s.indexOf("<a")>=0){
 		S=s.replace(/\<\/a\>/g,"<a>").split("<a")
@@ -158,7 +158,7 @@ function thesep(ikey, isSet){
 
 
 
-HeadList=new Array()
+HeadList=[]
 
 function fixlinks(){
  if(!document.getElementsByTagName) return;
@@ -197,69 +197,19 @@ function newType(code,descr) {}
 
 thevars = " undefined "
 
-Vars = new Array()
-function newVar(name,type) {
- var v = Vars[Vars.length] = new Array()
+Vars = []
+function newVar(name,vtype) {
+ var v = Vars[Vars.length] = {}
  v.name = name
- v.type = type
+ v.vtype = vtype
  thevars +=" " + name.toLowerCase() + " "
 }
 
-
-function TABLE1(isReservedOnly,isNotVariableX, isDeprecatedOnly) {
-//for now:
-  if(dowritedocbook){
-  return mylist
- }else if(dowritexml){
-  return mylist
- }
-
- var s = '<a id="table1'+(isReservedOnly ? "A" : isNotVariableX ? "B" : isDeprecatedOnly ? "C" : "")+'">&nbsp;</a><table border="0" cellspacing="2"><tr>'
- var n = 0;
- for (var i = 0; i < Vars.length; i++) {
-  var isOK = false;
-  var type = Vars[i].type
-  var isDeprecated = (type.indexOf("_") == 0)
-  var isReserved = (type == "reserved")
-  var haverefalready = (type.indexOf("#") == 0)
-  if(isReserved) {
-	isOK = isReservedOnly
-  } else if (isDeprecated) {
-        isOK = isDeprecatedOnly
-  } else {
-	isOK = haverefalready || !isReservedOnly && !isDeprecatedOnly && (isNotVariableX== (type.length > 1))
-  }
-  if (isOK) {
-	  if (n > 0 && n % 5 == 0) s+="</tr><tr>"
-	  n++;
-	  var data = Vars[i].name
-	  var p = data.toLowerCase()
-	  s+="<td class=\"tbl\">"
-          if (haverefalready) {
-	    data = "<a href=\""+type+"\">"+data+"</a>"
-	  } else if (mylist.indexOf(" "+p+" ")>=0 && !isDeprecated) {
-            if(isNotVariableX)data = "set " + data
-	    data = "<a href=\"#set_"+p+"\">"+data+"</a>"
-	  } else if(isDeprecated) {
-	    data = "set " + data + "</td><td class=\"tbl\">"
-	    if (type.indexOf("_see ")==0)
-	      data += marksearch(type.substring(1),true)+"</a>"
-	    else
-	      data += "see <a href=\"#set"+type.toLowerCase()+"\">set "+type.substring(1)+"</a>"
-	  }
-	  if (isDeprecatedOnly || isNotVariableX)n+=4;
-	  s+=data + "</td>"
-  }
- }
- s += '</tr></table>'
- return s
-}
-
-
 mylist = "</br>"
+textParamCount = 0
+tpc0 = 0
 
 function newCmd(command,examples,xref,description,nparams,param1,param2,param3,param4){
- var n=0
  // *v+10.2 means added in 10.2 -- highlight if thisSubversion and remove from previous versions
  // *v-10.2 means do not include in 10.2 list
  // *v-11   means do not include in 11.x list
@@ -290,60 +240,61 @@ function newCmd(command,examples,xref,description,nparams,param1,param2,param3,p
  if(command)thiscommand = command
  if (onlycommand != "" && thiscommand.toLowerCase() !="."+onlycommand) return
  var c0 = command
+ var Cmd
  if(command){
-	Cmdlist[Cmdlist.length]=command
-	Cmds[command]=new Array()
-	Cmds[command].isimplemented=!notimplemented
-	Cmds[command].description=descr
-	Cmds[command].chimenote=chimenote
-	Cmds[command].enabled=foundsearch(description)
-	Cmds[command].version=""
-	Cmds[command].isnew=false
-	Cmds[command].xrefs=""
-	Cmds[command].examples=examples.replace(/\~/,"")
-	Cmds[command].list=new Array()
-	Cmds[command].key = ""
+	Cmd = Cmds[command]={}
+	Cmd.isimplemented=!notimplemented
+	Cmd.description=descr
+	Cmd.chimenote=chimenote
+	Cmd.enabled=foundsearch(description)
+	Cmd.version=""
+	Cmd.isnew=false
+	Cmd.xrefs=""
+	Cmd.examples=examples.replace(/\~/,"")
+	Cmd.list=[]
+	Cmd.textParams = []
+	Cmd.key = ""
 	description=""
 	descr=""
+	thiscommand=Cmdlist[Cmdlist.length]=Cmd.name =command
  }else{
-	command=thiscommand
+	Cmd = Cmds[command=thiscommand]
  }
-
  if(nparams == "TEXT"){
-	Cmds[command].description+="<br /><br /><b>"+param1+"</b> "+descr
+	textParamCount++;
+	Cmd.description+="<br /><br /><b><a name=\"text"+textParamCount+"\">"+param1+"</a></b>&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"#" + idof(Cmd.name) +"\">back</a><br /><br /> "+descr
+	Cmd.textParams[Cmd.textParams.length] = "&nbsp;&nbsp;&nbsp;<a class=\"textParam\" href=\"#text" + textParamCount + "\">" + param1 + "</a><br />"
 	return	
  }
- thiscommand=command
  if(examples)addCmdExample(command,examples.replace(/\~/,""))
 
  var S=xref.split(";")
  for (var i=0;i<S.length;i++){
 	xref=S[i]
 	if(xref.indexOf("*v+")==0){
-		Cmds[command].isnew|=(xref.indexOf(thisVrefNew)==0)
+		Cmd.isnew|=(xref.indexOf(thisVrefNew)==0)
                 if (c0) {
-			Cmds[command].version=xref.substring(3,xref.length)
+			Cmd.version=xref.substring(3,xref.length)
 		}
 	}else if(xref && xref.length > 0 && xref!="x" && xref.indexOf("*v-")<0){
 		if(!Xrefs[xref])Xrefs[xref]=""
 		Xrefs[xref]+=","+command
-		if(Cmds[command].xrefs.indexOf(xref)<0)Cmds[command].xrefs+=","+xref
+		if(Cmd.xrefs.indexOf(xref)<0)Cmd.xrefs+=","+xref
 	}
  }
 
- n=Cmds[command].list.length
- Cmds[command].name=command
- Cmds[command].list[n]=new Array()
  if (command.indexOf(".set")==0) {
    var p = (command.indexOf("(")>=0 ? param1 : command.split(" ")[1]+"").toLowerCase()
    if (mylist.indexOf(" "+p+" ")<0) {
      //if(thevars.indexOf(" " +p+" ")<0)alert(p)
      s = "<a id=\"set_"+p+"\">&nbsp;</a>"
      mylist+= " "+p+" "
-     Cmds[command].key +=s
+     Cmd.key +=s
    }
  }
- var C=Cmds[command].list[n]
+ var n=Cmd.list.length
+ var C=Cmd.list[n]={}
+
  if(examples.charAt(0)!="~")C.examples=examples
  C.xref=xref
  C.isimplemented=!notimplemented
@@ -351,12 +302,12 @@ function newCmd(command,examples,xref,description,nparams,param1,param2,param3,p
  C.chimenote=chimenote
  C.enabled=foundsearch(description)
  C.Nparams=nparams.split("|")
- C.Param=new Array()
+ C.Param=[]
  C.Param[1]=param1
  C.Param[2]=param2
  C.Param[3]=param3
  if(C.Nparams[0]!="0" && !C.Param[1] && n){
-	C.Param[1]=Cmds[command].list[n-1].Param[1]
+	C.Param[1]=Cmd.list[n-1].Param[1]
  }
  if(param4){
 	S=param4.split(";+")
@@ -369,7 +320,7 @@ function newCmd(command,examples,xref,description,nparams,param1,param2,param3,p
 }
 
 function newDef(jsToken,typelist,label,description){
- Defs[jsToken]=new Array()
+ Defs[jsToken]={}
  Defs[jsToken].typelist=typelist.split(",").join(", ").replace(/  /g," ").replace(/\</g,"&lt;")
  Defs[jsToken].label=(label.indexOf("-")>=0||label.indexOf(" ")>=0&&label.indexOf('"')<0?"["+label+"]":label).replace(/\"/g,"")
  if(description.indexOf("{{") >= 0)description = description.replace(/\{\{/g,"@0@").replace(/\}\}/g,"@1@")
@@ -378,7 +329,7 @@ function newDef(jsToken,typelist,label,description){
 }
 
 function newExam(name,script,model,html){
- var E = Examples[name]=new Array()
+ var E = Examples[name]={}
  E.script=script
  if(model=="_blank")
    E.target = model
@@ -399,8 +350,8 @@ function newToken(text,isnull,description){
  if(isnull){
  }else{
  	thistoken="."+text
-	Toks[thistoken]=new Array()
-	Toks[thistoken].Namelist=new Array()
+	Toks[thistoken]={}
+	Toks[thistoken].Namelist=[]
  }
  Toks[thistoken].Namelist[Toks[thistoken].Namelist.length]=text
 }
@@ -423,7 +374,7 @@ function writecmds(){
    s+=getcmdhtml(Cmds[Cmdlist[i]])
  }
  if(!dowritedocbook)s+="</table xml=/cmdlist=xml>"
- var T=new Array()
+ var T=[]
  var nrows=0
  if(HeadList && onlycommand == ""){
 	HeadList=HeadList.sort()
@@ -517,13 +468,62 @@ function writecmds(){
 	s+="<hr />"+theindex+"<hr />"
 	if (lastupdate!="")s+="<p>last updated: "+lastupdate+"</p>"
  }
- s=s.replace(/TABLE1/,TABLE1(false,false,false))
- s=s.replace(/TABLE2/,TABLE1(false,true,false))
- s=s.replace(/TABLE3/,TABLE1(false,false,true))
- s=s.replace(/TABLE4/,TABLE1(true,false,false))
+ s=s.replace(/TABLE1/,TABLE1(false,false,false, "The following parameters may be SET and also checked using Jmol math. Items without a link are either undocumented at this time or for later versions of Jmol than the one you have selected for this documentation display."))
+ s=s.replace(/TABLE2/,TABLE1(false,true,false, "The following parameters may be SET but because of their complexity or context cannot be checked using Jmol math."))
+ s=s.replace(/TABLE3/,TABLE1(false,false,true, "The following parameters have been deprecated."))
+ s=s.replace(/TABLE4/,TABLE1(true,false,false, "In addition to all command names, the following names are reserved and should be avoided."))
  docwrite(s)
 }
 
+
+function TABLE1(isReservedOnly,isNotVariableX, isDeprecatedOnly, caption) {
+//for now:
+  if(dowritedocbook){
+  return (isReservedOnly || isNotVariableX || isDeprecatedOnly ? "" : mylist)
+ }else if(dowritexml){
+  return (isReservedOnly || isNotVariableX || isDeprecatedOnly ? "" : mylist)
+ }
+
+ var s = '<a id="table1'+(isReservedOnly ? "A" : isNotVariableX ? "B" : isDeprecatedOnly ? "C" : "")+'">&nbsp;</a>' + caption + '<br /><br /><table border="0" cellspacing="2"><tr>'
+ var n = 0;
+ for (var i = 0; i < Vars.length; i++) {
+  var isOK = false;
+  var vtype = Vars[i].vtype
+  var isDeprecated = (vtype.indexOf("_") == 0)
+  var isReserved = (vtype == "reserved")
+  var haverefalready = (vtype.indexOf("#") == 0)
+  if(isReserved) {
+	isOK = isReservedOnly
+  } else if (isDeprecated) {
+        isOK = isDeprecatedOnly
+  } else if (!isReservedOnly && !isDeprecatedOnly) {
+	isOK = (haverefalready && !isNotVariableX || isNotVariableX==(vtype.length > 1 && !haverefalready))
+  }
+  if (isOK) {
+	  if (n > 0 && n % 5 == 0) s+="</tr><tr>"
+	  n++;
+	  var data = Vars[i].name
+	  var p = data.toLowerCase()
+	  s+="<td class=\"tbl\">"
+          if (haverefalready) {
+	    data = "<a href=\""+vtype+"\">"+data+"</a>"
+	  } else if (mylist.indexOf(" "+p+" ")>=0 && !isDeprecated) {
+            if(isNotVariableX)data = "set " + data
+	    data = "<a href=\"#set_"+p+"\">"+data+"</a>"
+	  } else if(isDeprecated) {
+	    data = "set " + data + "</td><td class=\"tbl\">"
+	    if (vtype.indexOf("_see ")==0)
+	      data += marksearch(vtype.substring(1),true)+"</a>"
+	    else
+	      data += "see <a href=\"#set"+vtype.toLowerCase()+"\">set "+vtype.substring(1)+"</a>"
+	  }
+	  if (isDeprecatedOnly || isNotVariableX || isReservedOnly)n+=4;
+	  s+=data + "</td>"
+  }
+ }
+ s += '</tr></table>'
+ return s
+}
 
 function writedefs(){
  var s=""
@@ -540,8 +540,8 @@ function sorton0(A,B){
 function getExamplesHTML(){
  var cmd=""
  var s="<select onchange=eval(value)><option value=\"0\">Examples</option>"
- var S=new Array()
- var List=new Array()
+ var S=[]
+ var List=[]
  var j=0
  var name=""
  for(var i in CmdExamples){
@@ -642,7 +642,7 @@ function getcmdhtml(C){
  var theseexamples=""
  var sdefault=""
  var sname=C.name.split(" (")[0]
- var LineList=new Array()
+ var LineList=[]
  var deflist="" 
  var newdefs=""
  var definfo=""
@@ -830,10 +830,16 @@ function getcmdhtml(C){
 		theindex+="<p xml=indexlistset=xml>"+sindextemp+"</p xml=/indexlistset=xml>"
 	}
  }
- s=fixhtml(s.replace(/ id\=\>/," id=\""+idof(C.name)+"\">"))
+ s=fixhtml(s.replace(/ id\=\>/," id=\""+idof(C.name)+"\" name=\"" + idof(C.name)+"\">"))
  if(dowritexml)s+="</jmolcmd>"
  if(dowritedocbook)s+="\n</section>"
+ if(!dowritexml && !dowritedocbook && C.textParams.length)s = addTextParams(C, s)
  return s
+}
+
+
+function addTextParams(C, s) {
+ return s.replace(/\/h3\>/,"/h3>" + C.textParams.join("") + "<br />");
 }
 
 function indexkeytag(skey,sinfo){
@@ -863,7 +869,7 @@ function getexamples(slist,iusenoheader){
 }
 
 function getexample(swhat,iusenoheader){
- var S=new Array()
+ var S=[]
  var s=""
  if(!Examples[swhat])return ""
  if(dowritedocbook){
@@ -1044,8 +1050,8 @@ function getlinkhtml(C){
 
  }
  var s=""
- var S=new Array()
- var L=new Array()
+ var S=[]
+ var L=[]
  if(C.chimenote){
 	sout+=getchimenote(C.chimenote)
  }

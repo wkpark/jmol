@@ -884,6 +884,8 @@ class Eval {
       if (token == null)
         continue;
       switch (token.tok) {
+      case Token.nada:
+        break;
       case Token.elseif:
       case Token.ifcmd:
       case Token.whilecmd:
@@ -5721,8 +5723,8 @@ class Eval {
     int pcTo = -1;
     for (int i = 0; i < aatoken.length; i++) {
       Token[] tokens = aatoken[i];
-      if (tokens[0].tok == Token.message)
-        if (tokens[1].value.toString().equalsIgnoreCase(strTo)) {
+      if (tokens[0].tok == Token.message || tokens[0].tok == Token.nada)
+        if (tokens[tokens.length - 1].value.toString().equalsIgnoreCase(strTo)) {
           pcTo = i;
           break;
         }
@@ -11647,6 +11649,13 @@ class Eval {
       return "";
     StringBuffer sb = new StringBuffer();
     int tok = statement[0].tok;
+    switch(tok) {
+    case Token.nada:
+      return "#" + statement[0].value;
+    case Token.end:
+      if (statement.length == 2 && statement[1].tok == Token.function)
+        return ((Function)(statement[1].value)).toString();
+    }
     boolean useBraces = true;//(!Token.tokAttr(tok, Token.atomExpressionCommand));
     boolean inBrace = false;
     boolean inClauseDefine = false;

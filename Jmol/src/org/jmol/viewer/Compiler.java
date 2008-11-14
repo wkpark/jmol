@@ -295,7 +295,7 @@ class Compiler {
       pt1 = script.indexOf("\n", pt) + 1;
       if (pt1 == 0)
         pt1 = script.length();
-      script = script.substring(0, pt) + script.substring(pt1);
+      script = script.substring(0, pt--) + script.substring(pt1);
     }
     while ((pt = script.indexOf("/**")) >= 0) {
       pt1 = script.indexOf("**/", pt + 3);
@@ -374,7 +374,7 @@ class Compiler {
       if (lookingAtComment()) {
         if (nTokens > 0)
           continue;
-        comment = script.substring(ichToken, ichToken + cchToken);
+        comment = script.substring(ichToken, ichToken + cchToken).trim();
         int nChar = cchToken;
         ichCurrentCommand = ichToken;
         ichToken += cchToken;
@@ -386,8 +386,12 @@ class Compiler {
       }
       if (comment != null || endOfLine || lookingAtEndOfStatement()) {
         if (nTokens > 0 || comment != null) {
-          if (nTokens == 0)
+          if (nTokens == 0) {
             ichCurrentCommand = ichToken;
+            if (comment != null)
+              addTokenToPrefix(new Token(Token.nada, 
+                  (comment.length() == 1 ? comment : comment.substring(1))));
+          }
           iCommand = lltoken.size();
           if (thisFunction != null && thisFunction.cmdpt0 < 0) {
             thisFunction.cmdpt0 = iCommand;
@@ -416,9 +420,7 @@ class Compiler {
           tokCommand = Token.nada;
           tokenCommand = null;
           iHaveQuotedString = false;
-          if (comment != null) {
-            comment = null;
-          }
+          comment = null;
         }
         if (ichToken < cchScript) {
           if (endOfLine)
@@ -494,7 +496,7 @@ class Compiler {
             addTokenToPrefix(new Token(Token.bitset, bs));
             continue;
           } else if (!iHaveQuotedString && lookingAtSpecialString()) {
-            String str = script.substring(ichToken, ichToken + cchToken).trim();
+            String str = script.substring(ichToken, ichToken + cchToken);
             int pt = str.indexOf(" ");
             if (pt > 0) {
               cchToken = pt;
@@ -507,7 +509,7 @@ class Compiler {
         }
         if (tokCommand == Token.script) {
           if (!iHaveQuotedString && lookingAtSpecialString()) {
-            String str = script.substring(ichToken, ichToken + cchToken).trim();
+            String str = script.substring(ichToken, ichToken + cchToken);
             int pt = str.indexOf(" ");
             if (pt > 0) {
               cchToken = pt;
@@ -528,7 +530,7 @@ class Compiler {
           if (nTokens == 2 && lastToken.tok == Token.frame)
             iHaveQuotedString = true;
           if (nTokens > 2 && !iHaveQuotedString && lookingAtSpecialString()) {
-            String str = script.substring(ichToken, ichToken + cchToken).trim();
+            String str = script.substring(ichToken, ichToken + cchToken);
             if (str.indexOf(" ") < 0) {
               addTokenToPrefix(new Token(Token.string, str));
               iHaveQuotedString = true;
@@ -1200,7 +1202,9 @@ class Compiler {
     if (ichT > ichToken && script.charAt(ichToken) == '@'
         && (ichT <= ichToken + 1 || script.charAt(ichToken + 1) != '{'))
       return false;
-    cchToken = ichT - ichToken;
+    while (--ichT > ichToken && Character.isWhitespace(script.charAt(ichT))) {
+    }
+    cchToken = ++ichT - ichToken;
     if (logMessages)
       Logger.debug("lookingAtSpecialString cchToken=" + cchToken);
     return cchToken > 0;
@@ -1529,7 +1533,7 @@ class Compiler {
 
     //compile expressions
 
-    isEmbeddedExpression = (tokCommand != Token.function 
+    isEmbeddedExpression = (tokCommand != Token.nada && tokCommand != Token.function 
         && !Token.tokAttrOr(tokCommand, Token.atomExpressionCommand, Token.implicitStringCommand));
     boolean checkExpression = isEmbeddedExpression || (Token.tokAttr(tokCommand, Token.atomExpressionCommand));
 

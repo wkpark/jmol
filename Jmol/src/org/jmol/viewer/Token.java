@@ -287,7 +287,7 @@ public class Token {
   final static int frame        = command | 20;
   final static int frank        = command | 21 | setparam | defaultON;
   final static int geosurface   = command | 22 | defaultON;
-  final static int gotocmd      = command | 23;
+  final static int gotocmd      = command | 23 | implicitStringCommand;
   final static int halo         = command | 24 | defaultON;
   final static int hbond        = command | 25 | setparam | expression | defaultON;
   final static int history      = command | 26 | setparam;

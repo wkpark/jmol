@@ -59,9 +59,9 @@ abstract class VolumeFileReader extends SurfaceReader {
     String line;
     LimitedLineReader br = new LimitedLineReader(bufferedReader, 16000);
     //sure bets, but not REQUIRED:
-    if ((line = br.info()).indexOf("#JVXL+") == 0)
+    if ((line = br.info()).indexOf("#JVXL+") >= 0)
       return "Jvxl+";
-    if (line.indexOf("#JVXL") == 0)
+    if (line.indexOf("#JVXL") >= 0)
       return "Jvxl";
     if (line.indexOf("&plot") == 0)
       return "Jaguar";

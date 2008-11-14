@@ -1,0 +1,88 @@
+
+---------- 1A3N.PDB
+REMARK 200  X-RAY GENERATOR MODEL          : NULL                               
+REMARK 500 THAN 4*RMSD AND BY MORE THAN 0.150 ANGSTROMS (M=MODEL                
+
+---------- 1ABE.PDB
+
+---------- 1AL4.PDB
+REMARK 200  X-RAY GENERATOR MODEL          : RU200HP                            
+
+---------- 1BKX.PDB
+REMARK 200  X-RAY GENERATOR MODEL          : RIGAKU RU200 ROTATING              
+
+---------- 1BLU.PDB
+REMARK 200  X-RAY GENERATOR MODEL          : NULL                               
+
+---------- 1BNA.PDB
+
+---------- 1CDR.PDB
+REMARK  10 MODEL       E(TOTAL)   E(VDW)   E(DIHEDRAL)   E(DISTANCE)    1CDR 147
+MODEL        1                                                          1CDR 211
+MODEL        2                                                          1CDR1483
+MODEL        3                                                          1CDR2755
+
+---------- 1CRN.PDB
+REMARK   4 RESOLUTION REFINEMENT.  THE R-FACTOR FOR THE COMPLETE MODEL  1CRN  40
+
+---------- 1CRNTEST.PDB
+REMARK   4 RESOLUTION REFINEMENT.  THE R-FACTOR FOR THE COMPLETE MODEL  1CRN  40
+
+---------- 1CRNTOUR.PDB
+REMARK   4 RESOLUTION REFINEMENT.  THE R-FACTOR FOR THE COMPLETE MODEL  1CRN  40
+
+---------- 1D01.PDB
+REMARK 200  X-RAY GENERATOR MODEL          : NULL                               
+REMARK 525 ASSOCIATED WITH A SYMMETRY RELATED MOLECULE (M=MODEL                 
+
+---------- 1D66.PDB
+
+---------- 1DEH_RH.PDB
+REMARK 200  X-RAY GENERATOR MODEL          : NULL                               
+MODEL        1
+MODEL        2
+MODEL        3
+MODEL        4
+MODEL        5
+
+---------- 1DRY.PDB
+
+---------- 1GZX.PDB
+REMARK 200  X-RAY GENERATOR MODEL          : RIGAKU RU200                       
+
+---------- 1HJE.PDB
+REMARK 200  X-RAY GENERATOR MODEL          : NULL                               
+
+---------- 1JGQ.PDB
+REMARK 200  X-RAY GENERATOR MODEL          : NULL                               
+REMARK 400 NO PUBLIC COORDINATES FOR THE MODEL                                  
+
+---------- 1QYS.PDB
+
+---------- 1SVA.PDB
+REMARK 200  X-RAY GENERATOR MODEL          : NULL                               
+
+---------- 2BRD.PDB
+REMARK 200  X-RAY GENERATOR MODEL          : NULL                               
+
+---------- 2BY9.PDB
+REMARK 200  X-RAY GENERATOR MODEL          : NULL                               
+REMARK 500 THAN 6*RMSD AND BY MORE THAN 0.150 ANGSTROMS (M=MODEL                
+REMARK 900  -METHYLPYRIDINE (ZK-805623), BINDING MODEL                          
+REMARK 900  -METHYLPYRIDINE (ZK-805623), BINDING MODEL                          
+
+---------- 540CELLULOSE.PDB
+
+---------- ALA_5_180_0.PDB
+MODEL     1
+
+---------- DEMOANIMS.PDB
+
+---------- DIFFGEAR.PDB
+
+---------- ETHENE-MO.PDB
+
+---------- FULLERENE.PDB
+
+---------- HEME.PDB
+REMARK 200  X-RAY GENERATOR MODEL          : RIGAKU RU200                       

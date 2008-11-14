@@ -1,6 +1,12 @@
 <html>
 <head>
 <script type="text/javascript" src="Jmol.js"></script>
+<script type="text/javascript">
+function myCallback(a, b, c, d) {
+ alert("myCallback a="+a+" b="+b+" c="+c+" d="+d)
+}
+
+</script>
 </head>
 <body>
 
@@ -11,7 +17,7 @@
 
 <script type="text/javascript">
 //jmolInitialize(".","http://chemapps.stolaf.edu/pe/protexpl/molview/JmolAppletSigned.jar")
-jmolInitialize(".","JmolAppletSigned.jar")
+jmolInitialize(".","JmolAppletSigned0.jar")
 
 
 var xxxx = (document.location.search + "?1crn").substring(1,5)
@@ -20,7 +26,7 @@ script = 'set animframecallback "jmolscript:select model=_modelNumber";'
 	+'load "http://www.rcsb.org/pdb/files/XXXX.pdb";set echo top center;echo XXXX;'
 	+'spacefill off;wireframe off;cartoons on;color structure;'
 script = script.replace(/XXXX/g, xxxx)
-jmolApplet(["450","450"],script).replace(/\</g,"<br>&lt;")
+jmolApplet(["450","450"],script)
 
 </script>
 </td><td>

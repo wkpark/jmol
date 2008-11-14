@@ -7585,7 +7585,7 @@ class Eval {
         if (!rpn.addOp(token))
           error(ERROR_invalidArgument);        
         i = iToken;
-        if (tokAt(i + 1) != Token.leftparen) {
+        if (token.intValue == Token.function && tokAt(i + 1) != Token.leftparen) {
           rpn.addOp(Token.tokenLeftParen);
           rpn.addOp(Token.tokenRightParen);
         }

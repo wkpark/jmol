@@ -40,38 +40,37 @@ import java.util.Vector;
 import java.util.Hashtable;
 
 /**
- * After code reorganization of 11/2006 (BH) Shape now encompasses:
+ * Shape now encompasses:
  * 
- * AtomShape
+ * AtomShape (abstract)
  *     |
- *   Balls, Dots, Halos, Labels, Polyhedra, Stars, Vectors
+ *   Balls, Dots, Ellipsoids, Halos, Labels, Polyhedra, Stars, Vectors
  *           |
  *         GeoSurface  
  * 
- * Dipoles, Measures
+ * BioShapeCollection (abstract)
+ *     |
+ *   Backbone, Cartoon, MeshRibbon, Ribbons, Rockets, Strands, Trace
  * 
- * FontLineShape
+ * Dipoles
+ * 
+ * FontLineShape (abstract)
  *     |
  *   Axes, Bbcage, Frank, Uccage
  * 
- * MeshCollection
- *   |       |
- * Draw    MeshFileCollection  (adds parser code)
- *             |        |
- *            Pmesh   IsosurfaceMeshCollection (adds JVXL code)
- *                      |
- *                  Isosurface
- *                      |________ LcaoCartoon, MolecularOrbital
+ * Measures
  * 
- * BioShapeCollection
- *   |
- *   Backbone, Cartoon, MeshRibbon, Ribbons, Rockets, Strands, Trace
+ * MeshCollection (abstract)
+ *   |       |
+ * Draw   Isosurface
+ *           |
+ *        LcaoCartoon, MolecularOrbital, Pmesh
  * 
  * Sticks
  *     |
  *    Hsticks, Sssticks
  * 
- * TextShape
+ * TextShape (abstract)
  *     |
  *    Echo, Hover
  *    

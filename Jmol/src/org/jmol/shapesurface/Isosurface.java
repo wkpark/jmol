@@ -93,6 +93,7 @@
 package org.jmol.shapesurface;
 
 import org.jmol.shape.Mesh;
+import org.jmol.shape.MeshCollection;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -121,7 +122,7 @@ import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.readers.SurfaceGenerator;
 
-public class Isosurface extends MeshFileCollection implements MeshDataServer {
+public class Isosurface extends MeshCollection implements MeshDataServer {
 
   private IsosurfaceMesh[] isomeshes = new IsosurfaceMesh[4];
   private IsosurfaceMesh thisMesh;

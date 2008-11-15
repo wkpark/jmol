@@ -31,7 +31,6 @@ import org.jmol.api.JmolRendererInterface;
 import org.jmol.modelset.ModelSet;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
-//import java.awt.Rectangle;
 
 public abstract class ShapeRenderer {
 
@@ -41,7 +40,6 @@ public abstract class ShapeRenderer {
   
   protected Viewer viewer;
   protected JmolRendererInterface g3d;
-  //Rectangle rectClip; //not implemented
   protected ModelSet modelSet;
   protected Shape shape;
 
@@ -61,7 +59,7 @@ public abstract class ShapeRenderer {
     this.isGenerator = isGenerator;
   }
 
-    public short getMad(int which) {
+  public short getMad(int which) {
     switch (which) {
     case 1:
       return madBeg;
@@ -84,9 +82,8 @@ public abstract class ShapeRenderer {
   protected void initRenderer() {
   }
 
-  public void render(JmolRendererInterface g3d, ModelSet modelSet, Shape shape) { //, Rectangle rectClip
+  public void render(JmolRendererInterface g3d, ModelSet modelSet, Shape shape) {
     this.g3d = g3d;
-    //this.rectClip = rectClip; //not implemented -- could be a place for optimization
     this.modelSet = modelSet;
     this.shape = shape;
     render();

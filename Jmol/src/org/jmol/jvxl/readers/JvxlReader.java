@@ -679,8 +679,7 @@ public class JvxlReader extends VolumeFileReader {
     // that do not start with # already present.
     if (sb.length() == 0)
       sb.append("Line 1\nLine 2\n");
-    sb.append('\0'); //mark end of title lines; will be changed to "-" in createIsosurface
-    sb.append(nAtoms == Integer.MAX_VALUE ? 2 : nAtoms).append(' ')
+    sb.append(nAtoms == Integer.MAX_VALUE ? -2 : -nAtoms).append(' ')
       .append(v.volumetricOrigin.x).append(' ')
       .append(v.volumetricOrigin.y).append(' ')
       .append(v.volumetricOrigin.z).append(" ANGSTROMS\n");
@@ -892,19 +891,16 @@ public class JvxlReader extends VolumeFileReader {
     } else {
       sb.append(jvxlCompressString(jvxlData.jvxlColorData));
     }
-    String compressedData = sb.toString();
-    int r = 0;
-    if (compressedData.length() > 0) {
+    int len = sb.length();
+    if (len > 0) {
       if (jvxlData.wasCubic && jvxlData.nBytes > 0)
-        jvxlData.jvxlCompressionRatio = r = (int) (((float) jvxlData.nBytes) / compressedData
-            .length());
+        jvxlData.jvxlCompressionRatio = (int) (((float) jvxlData.nBytes) / len);
       else
-        jvxlData.jvxlCompressionRatio = r = (int) (((float) (jvxlData.nPointsX
-            * jvxlData.nPointsY * jvxlData.nPointsZ * 13)) / compressedData
-            .length());
+        jvxlData.jvxlCompressionRatio = (int) (((float) (jvxlData.nPointsX
+            * jvxlData.nPointsY * jvxlData.nPointsZ * 13)) / len);
     }
 
-    data.append(compressedData);
+    data.append(sb);
 
     if (msg != null && !jvxlData.vertexDataOnly)
       data.append("#-------end of jvxl file data-------\n");

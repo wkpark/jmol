@@ -44,7 +44,6 @@ import org.jmol.util.Parser;
 import org.jmol.modelset.Bond.BondSet;
 
 import java.awt.Image;
-import java.io.*;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Enumeration;
@@ -1129,7 +1128,7 @@ class Eval {
         console();
         break;
       case Token.pmesh:
-        pmesh();
+        isosurface(JmolConstants.SHAPE_PMESH);
         break;
       case Token.draw:
         draw();
@@ -9767,131 +9766,6 @@ class Eval {
    * ==============================================================
    */
 
-  private void pmesh() throws ScriptException {
-    viewer.loadShape(JmolConstants.SHAPE_PMESH);
-    if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_PMESH))
-      return;
-    Object t;
-    boolean idSeen = false;
-    boolean isBinary = false;
-    String translucency = null;
-    initIsosurface(JmolConstants.SHAPE_PMESH);
-    for (int i = iToken; i < statementLength; ++i) {
-      String propertyName = null;
-      Object propertyValue = null;
-      int tok = getToken(i).tok;
-      switch (tok) {
-      case Token.identifier:
-        String str = parameterAsString(i);
-        if (str.equalsIgnoreCase("id")) {
-          i = setShapeId(JmolConstants.SHAPE_PMESH, ++i, idSeen);
-          break;
-        }
-        if (str.equalsIgnoreCase("FIXED")) {
-          propertyName = "fixed";
-          propertyValue = Boolean.TRUE;
-          break;
-        }
-        if (str.equalsIgnoreCase("BINARY")) {
-          isBinary = true;
-          continue;
-        }
-        if (str.equalsIgnoreCase("MODELBASED")) {
-          propertyName = "fixed";
-          propertyValue = Boolean.FALSE;
-          break;
-        }
-        i = setShapeId(JmolConstants.SHAPE_PMESH, i, idSeen);
-        break;
-      case Token.model:
-        int modelIndex = modelNumberParameter(++i);
-        if (modelIndex < 0) {
-          propertyName = "fixed";
-          propertyValue = Boolean.TRUE;
-          break;
-        }
-        propertyName = "modelIndex";
-        propertyValue = new Integer(modelIndex);
-        break;
-      case Token.color:
-        translucency = setColorOptions(i + 1, JmolConstants.SHAPE_PMESH, -1);
-        i = iToken;
-        idSeen = true;
-        continue;
-      case Token.string:
-        String filename = stringParameter(i);
-        propertyName = "fileData";
-        if (filename.equalsIgnoreCase("inline")) {
-          if (i + 1 < statementLength && tokAt(i + 1) == Token.string) {
-            String data = parameterAsString(++i);
-            if (data.indexOf("|") < 0 && data.indexOf("\n") < 0) {
-              // space separates -- so set isOnePerLine
-              data = data.replace(' ', '\n');
-              propertyName = "bufferedReaderOnePerLine";
-            }
-            data = data.replace('{', ' ').replace(',', ' ').replace('}', ' ')
-                .replace('|', '\n');
-            data = TextFormat.simpleReplace(data, "\n\n", "\n");
-            if (logMessages)
-              Logger.debug("pmesh inline data:\n" + data);
-            t = viewer.getBufferedReaderForString(data);
-          } else {
-            error(ERROR_stringOrIdentifierExpected);
-            break;
-          }
-        } else {
-          if (isSyntaxCheck)
-            return;
-          if (thisCommand.indexOf("# FILE0=") >= 0)
-            filename = extractCommandOption("# FILE0");
-          String[] fullPathNameReturn = new String[1];
-          t = viewer.getBufferedReaderOrErrorMessageFromName(filename,
-              fullPathNameReturn, isBinary);
-          if (t instanceof BufferedReader) {
-            BufferedReader br = (BufferedReader) t;
-            try {
-              br.mark(4);
-              char[] buf = new char[4];
-              br.read(buf);
-              if (((Boolean) viewer.getShapeProperty(JmolConstants.SHAPE_PMESH,
-                  "checkMagicNumber:" + new String(buf))).booleanValue()) {
-                br.close();
-                t = viewer.getBufferedReaderOrErrorMessageFromName(filename,
-                    fullPathNameReturn, true);
-              } else {
-                br.reset();
-              }
-            } catch (Exception e) {
-              //
-            }
-          }
-          if (t instanceof String)
-            error(ERROR_fileNotFoundException, filename + ":" + t);
-          setShapeProperty(JmolConstants.SHAPE_PMESH, "commandOption", "FILE0="
-              + Escape.escape(fullPathNameReturn[0]));
-          Logger.info("reading pmesh data from " + fullPathNameReturn[0]);
-        }
-        propertyValue = t;
-        break;
-      default:
-        if (!setMeshDisplayProperty(JmolConstants.SHAPE_PMESH, i, theTok))
-          error(ERROR_invalidArgument);
-        i = iToken;
-      }
-      idSeen = (theTok != Token.delete);
-      if (propertyName != null)
-        setShapeProperty(JmolConstants.SHAPE_PMESH, propertyName, propertyValue);
-    }
-    if (!isSyntaxCheck) {
-      String pmeshError = (String) viewer.getShapeProperty(
-          JmolConstants.SHAPE_PMESH, "pmeshError");
-      if (pmeshError != null)
-        evalError(pmeshError);
-    }
-    if (translucency != null)
-      setShapeProperty(JmolConstants.SHAPE_PMESH, "translucency", translucency);
-  }
-
   private String extractCommandOption(String name) {
     int i = fullCommand.indexOf(name + "=");
     return (i < 0 ? null : Parser.getNextQuotedString(fullCommand, i));
@@ -10752,12 +10626,14 @@ class Eval {
   }
 
   private void isosurface(int iShape) throws ScriptException {
+
     viewer.loadShape(iShape);
     if (tokAt(1) == Token.list && listIsosurface(iShape))
       return;
     int colorRangeStage = 0;
     int signPt = 0;
     boolean isIsosurface = (iShape == JmolConstants.SHAPE_ISOSURFACE);
+    boolean isPmesh = (iShape == JmolConstants.SHAPE_PMESH);
     boolean surfaceObjectSeen = false;
     boolean planeSeen = false;
     boolean isCavity = false;
@@ -10766,13 +10642,15 @@ class Eval {
     float[] data = null;
     int nFiles = 0;
     BitSet bs;
-    String str;
+    String str = null;
     int modelIndex = (isSyntaxCheck ? 0 : viewer.getDisplayModelIndex());
     if (!isSyntaxCheck)
       viewer.setCursor(Viewer.CURSOR_WAIT);
     boolean idSeen = false;
     String translucency = null;
     initIsosurface(iShape);
+    if (isPmesh)
+      setShapeProperty(iShape, "fileType", "Pmesh");
     for (int i = iToken; i < statementLength; ++i) {
       if (isColorParam(i)) {
         if (i != signPt)
@@ -10786,6 +10664,9 @@ class Eval {
       String propertyName = null;
       Object propertyValue = null;
       int tok = getToken(i).tok;
+      if (tok == Token.identifier
+          && (str = parameterAsString(i)).equalsIgnoreCase("inline"))
+        tok = Token.string;
       switch (tok) {
       case Token.within:
         float distance = floatParameter(++i);
@@ -10917,296 +10798,6 @@ class Eval {
         propertyName = "scale";
         propertyValue = new Float(floatParameter(++i));
         break;
-      case Token.identifier:
-        str = parameterAsString(i);
-        if (str.equalsIgnoreCase("id")) {
-          i = setShapeId(iShape, ++i, idSeen);
-          break;
-        }
-        if (str.equalsIgnoreCase("REMAPPABLE")) { // testing only
-          propertyName = "remappable";
-          break;
-        }
-        if (str.equalsIgnoreCase("DOWNSAMPLE")) {
-          propertyName = "downsample";
-          propertyValue = new Integer(intParameter(++i));
-          break;
-        }
-        if (str.equalsIgnoreCase("LINK")) { // for state of lcaoCartoon
-          propertyName = "link";
-          break;
-        }
-        if (str.equalsIgnoreCase("SQUARED")) {
-          propertyName = "squareData";
-          propertyValue = Boolean.TRUE;
-          break;
-        }
-        if (str.equalsIgnoreCase("CAP")) {
-          propertyName = "cappingPlane";
-          propertyValue = planeParameter(++i);
-          i = iToken;
-          break;
-        }
-        if (str.equalsIgnoreCase("IGNORE")) {
-          propertyName = "ignore";
-          propertyValue = expression(++i);
-          i = iToken;
-          break;
-        }
-        if (str.equalsIgnoreCase("CUTOFF")) {
-          if (++i < statementLength && getToken(i).tok == Token.plus) {
-            propertyName = "cutoffPositive";
-            propertyValue = new Float(floatParameter(++i));
-          } else {
-            propertyName = "cutoff";
-            propertyValue = new Float(floatParameter(i));
-          }
-          break;
-        }
-        if (str.equalsIgnoreCase("CAVITY")) {
-          if (!isIsosurface)
-            error(ERROR_invalidArgument);
-          isCavity = true;
-          if (isSyntaxCheck)
-            continue;
-          float cavityRadius = (isFloatParameter(i + 1) ? floatParameter(++i)
-              : 1.2f);
-          float envelopeRadius = (isFloatParameter(i + 1) ? floatParameter(++i)
-              : 10f);
-          if (envelopeRadius > 10f)
-            integerOutOfRange(0, 10);
-          setShapeProperty(iShape, "envelopeRadius", new Float(envelopeRadius));
-          setShapeProperty(iShape, "cavityRadius", new Float(cavityRadius));
-          propertyName = "cavity";
-          break;
-        }
-        if (str.equalsIgnoreCase("POCKET")) {
-          propertyName = "pocket";
-          propertyValue = Boolean.TRUE;
-          break;
-        }
-        if (str.equalsIgnoreCase("INTERIOR")) {
-          propertyName = "pocket";
-          propertyValue = Boolean.FALSE;
-          break;
-        }
-        if (str.equalsIgnoreCase("MINSET")) {
-          propertyName = "minset";
-          propertyValue = new Integer(intParameter(++i));
-          break;
-        }
-        if (str.equalsIgnoreCase("MAXSET")) {
-          propertyName = "maxset";
-          propertyValue = new Integer(intParameter(++i));
-          break;
-        }
-        if (str.equalsIgnoreCase("ANGSTROMS")) {
-          propertyName = "angstroms";
-          break;
-        }
-        if (str.equalsIgnoreCase("RESOLUTION")
-            || str.equalsIgnoreCase("POINTSPERANGSTROM")) {
-          propertyName = "resolution";
-          propertyValue = new Float(floatParameter(++i));
-          break;
-        }
-        if (str.equalsIgnoreCase("ANISOTROPY")) {
-          propertyName = "anisotropy";
-          propertyValue = getPoint3f(++i, false);
-          i = iToken;
-          break;
-        }
-        if (str.equalsIgnoreCase("ECCENTRICITY")) {
-          propertyName = "eccentricity";
-          propertyValue = getPoint4f(++i);
-          i = iToken;
-          break;
-        }
-        if (str.equalsIgnoreCase("FIXED")) {
-          propertyName = "fixed";
-          propertyValue = Boolean.TRUE;
-          break;
-        }
-        if (str.equalsIgnoreCase("BLOCKDATA")) {
-          propertyName = "blockData";
-          propertyValue = Boolean.TRUE;
-          break;
-        }
-        if (str.equalsIgnoreCase("MODELBASED")) {
-          propertyName = "fixed";
-          propertyValue = Boolean.FALSE;
-          break;
-        }
-        if (str.equalsIgnoreCase("SIGN")) {
-          signPt = i + 1;
-          propertyName = "sign";
-          propertyValue = Boolean.TRUE;
-          colorRangeStage = 1;
-          break;
-        }
-        if (str.equalsIgnoreCase("REVERSECOLOR")) {
-          propertyName = "reverseColor";
-          propertyValue = Boolean.TRUE;
-          break;
-        }
-        if (str.equalsIgnoreCase("ADDHYDROGENS")) {
-          propertyName = "addHydrogens";
-          propertyValue = Boolean.TRUE;
-          break;
-        }
-        if (str.equalsIgnoreCase("COLORSCHEME")) {
-          propertyName = "setColorScheme";
-          propertyValue = parameterAsString(++i);
-          break;
-        }
-        if (str.equalsIgnoreCase("DEBUG") || str.equalsIgnoreCase("NODEBUG")) {
-          propertyName = "debug";
-          propertyValue = (str.equalsIgnoreCase("DEBUG") ? Boolean.TRUE
-              : Boolean.FALSE);
-          break;
-        }
-        if (str.equalsIgnoreCase("GRIDPOINTS")) {
-          propertyName = "gridPoints";
-          break;
-        }
-        if (str.equalsIgnoreCase("CONTOUR")) {
-          propertyName = "contour";
-          propertyValue = new Integer(
-              tokAt(i + 1) == Token.integer ? intParameter(++i) : 0);
-          break;
-        }
-        if (str.equalsIgnoreCase("PHASE")) {
-          propertyName = "phase";
-          propertyValue = (tokAt(i + 1) == Token.string ? stringParameter(++i)
-              : "_orb");
-          break;
-        }
-        if (str.equalsIgnoreCase("INSIDEOUT")) {
-          propertyName = "insideOut";
-          break;
-        }
-        // surface objects
-        if (str.equalsIgnoreCase("MAP")) { // "use current"
-          surfaceObjectSeen = !isCavity;
-          propertyName = "map";
-          break;
-        }
-        if (str.equalsIgnoreCase("hkl")) {
-          // miller indices hkl 
-          planeSeen = true;
-          propertyName = "plane";
-          propertyValue = hklParameter(++i);
-          i = iToken;
-          break;
-        }
-        if (str.equalsIgnoreCase("sphere")) {
-          //sphere [radius] 
-          surfaceObjectSeen = true;
-          propertyName = "sphere";
-          propertyValue = new Float(floatParameter(++i));
-          break;
-        }
-        if (str.equalsIgnoreCase("lobe")) {
-          //lobe {eccentricity} 
-          surfaceObjectSeen = true;
-          propertyName = "lobe";
-          propertyValue = getPoint4f(++i);
-          i = iToken;
-          break;
-        }
-        if (str.equalsIgnoreCase("AtomicOrbital")
-            || str.equalsIgnoreCase("orbital")) {
-          surfaceObjectSeen = true;
-          nlmZ[0] = intParameter(++i);
-          nlmZ[1] = intParameter(++i);
-          nlmZ[2] = intParameter(++i);
-          nlmZ[3] = (isFloatParameter(i + 1) ? floatParameter(++i) : 6f);
-          propertyName = "hydrogenOrbital";
-          propertyValue = nlmZ;
-          break;
-        }
-        if (str.equalsIgnoreCase("functionXY")) {
-          // isosurface functionXY "functionName"|"data2d_xxxxx"
-          //     {origin} {ni ix iy iz} {nj jx jy jz} {nk kx ky kz}
-          Vector v = new Vector();
-          if (getToken(++i).tok != Token.string)
-            error(ERROR_what,
-                "functionXY must be followed by a function name in quotes.");
-          String fName = parameterAsString(i++);
-          //override of function or data name when saved as a state
-          String dataName = extractCommandOption("# DATA" + (isFxy ? "2" : ""));
-          if (dataName != null)
-            fName = dataName;
-          boolean isXYZ = (fName.indexOf("data2d_xyz") == 0);
-          v.addElement(fName); //(0) = name
-          v.addElement(getPoint3f(i, false)); //(1) = {origin}
-          Point4f pt;
-          int nX, nY;
-          int ptX = ++iToken;
-          v.addElement(pt = getPoint4f(ptX)); //(2) = {ni ix iy iz}
-          nX = (int) pt.x;
-          int ptY = ++iToken;
-          v.addElement(pt = getPoint4f(ptY)); //(3) = {nj jx jy jz}
-          nY = (int) pt.x;
-          v.addElement(getPoint4f(++iToken)); //(4) = {nk kx ky kz}
-          if (nX == 0 || nY == 0)
-            error(ERROR_invalidArgument);
-          if (!isSyntaxCheck) {
-            float[][] fdata = (isXYZ ? viewer.getDataFloat2D(fName) : viewer
-                .functionXY(fName, nX, nY));
-            if (isXYZ) {
-              nX = (fdata == null ? 0 : fdata.length);
-              nY = 3;
-            } else {
-              nX = Math.abs(nX);
-              nY = Math.abs(nY);
-            }
-            if (fdata == null) {
-              iToken = ptX;
-              error(ERROR_what, "fdata is null.");
-            }
-            if (fdata.length != nX && !isXYZ) {
-              iToken = ptX;
-              error(ERROR_what, "fdata length is not correct: " + fdata.length
-                  + " " + nX + ".");
-            }
-            for (int j = 0; j < nX; j++) {
-              if (fdata[j] == null) {
-                iToken = ptY;
-                error(ERROR_what, "fdata[" + j + "] is null.");
-              }
-              if (fdata[j].length != nY) {
-                iToken = ptY;
-                error(ERROR_what, "fdata[" + j + "] is not the right length: "
-                    + fdata[j].length + " " + nY + ".");
-              }
-            }
-            v.addElement(fdata); //(5) = float[][] data                 
-          }
-          i = iToken;
-          propertyName = "functionXY";
-          propertyValue = v;
-          isFxy = surfaceObjectSeen = true;
-          break;
-        }
-        if (str.equalsIgnoreCase("molecular")) {
-          surfaceObjectSeen = true;
-          propertyName = "molecular";
-          propertyValue = new Float(1.4);
-          break;
-        }
-        if (str.equalsIgnoreCase("VARIABLE")) {
-          propertyName = "property";
-          data = new float[viewer.getAtomCount()];
-          if (!isSyntaxCheck) {
-            Parser.parseFloatArray(""
-                + getParameter(parameterAsString(++i), false), null, data);
-          }
-          propertyValue = data;
-          break;
-        }
-        i = setShapeId(iShape, i, idSeen);
-        break;
       case Token.all:
         if (idSeen)
           error(ERROR_invalidArgument);
@@ -11314,6 +10905,301 @@ class Eval {
             .getSolventProbeRadius());
         propertyValue = new Float(radius);
         break;
+      case Token.identifier:
+        if (str.equalsIgnoreCase("ADDHYDROGENS")) {
+          propertyName = "addHydrogens";
+          propertyValue = Boolean.TRUE;
+          break;
+        }
+        if (str.equalsIgnoreCase("ANGSTROMS")) {
+          propertyName = "angstroms";
+          break;
+        }
+        if (str.equalsIgnoreCase("ANISOTROPY")) {
+          propertyName = "anisotropy";
+          propertyValue = getPoint3f(++i, false);
+          i = iToken;
+          break;
+        }
+        if (str.equalsIgnoreCase("ATOMICORBITAL")
+            || str.equalsIgnoreCase("ORBITAL")) {
+          surfaceObjectSeen = true;
+          nlmZ[0] = intParameter(++i);
+          nlmZ[1] = intParameter(++i);
+          nlmZ[2] = intParameter(++i);
+          nlmZ[3] = (isFloatParameter(i + 1) ? floatParameter(++i) : 6f);
+          propertyName = "hydrogenOrbital";
+          propertyValue = nlmZ;
+          break;
+        }
+        if (str.equalsIgnoreCase("BINARY")) {
+          //if (!isPmesh)
+          //  error(ERROR_invalidArgument);
+          // for PMESH, specifically
+          // ignore for now
+          continue;
+        }
+        if (str.equalsIgnoreCase("BLOCKDATA")) {
+          propertyName = "blockData";
+          propertyValue = Boolean.TRUE;
+          break;
+        }
+        if (str.equalsIgnoreCase("CAP")) {
+          propertyName = "cappingPlane";
+          propertyValue = planeParameter(++i);
+          i = iToken;
+          break;
+        }
+        if (str.equalsIgnoreCase("CAVITY")) {
+          if (!isIsosurface)
+            error(ERROR_invalidArgument);
+          isCavity = true;
+          if (isSyntaxCheck)
+            continue;
+          float cavityRadius = (isFloatParameter(i + 1) ? floatParameter(++i)
+              : 1.2f);
+          float envelopeRadius = (isFloatParameter(i + 1) ? floatParameter(++i)
+              : 10f);
+          if (envelopeRadius > 10f)
+            integerOutOfRange(0, 10);
+          setShapeProperty(iShape, "envelopeRadius", new Float(envelopeRadius));
+          setShapeProperty(iShape, "cavityRadius", new Float(cavityRadius));
+          propertyName = "cavity";
+          break;
+        }
+        if (str.equalsIgnoreCase("COLORSCHEME")) {
+          propertyName = "setColorScheme";
+          propertyValue = parameterAsString(++i);
+          break;
+        }
+        if (str.equalsIgnoreCase("CONTOUR")) {
+          propertyName = "contour";
+          propertyValue = new Integer(
+              tokAt(i + 1) == Token.integer ? intParameter(++i) : 0);
+          break;
+        }
+        if (str.equalsIgnoreCase("CUTOFF")) {
+          if (++i < statementLength && getToken(i).tok == Token.plus) {
+            propertyName = "cutoffPositive";
+            propertyValue = new Float(floatParameter(++i));
+          } else {
+            propertyName = "cutoff";
+            propertyValue = new Float(floatParameter(i));
+          }
+          break;
+        }
+        if (str.equalsIgnoreCase("DOWNSAMPLE")) {
+          propertyName = "downsample";
+          propertyValue = new Integer(intParameter(++i));
+          break;
+        }
+        if (str.equalsIgnoreCase("ECCENTRICITY")) {
+          propertyName = "eccentricity";
+          propertyValue = getPoint4f(++i);
+          i = iToken;
+          break;
+        }
+        if (str.equalsIgnoreCase("DEBUG") || str.equalsIgnoreCase("NODEBUG")) {
+          propertyName = "debug";
+          propertyValue = (str.equalsIgnoreCase("DEBUG") ? Boolean.TRUE
+              : Boolean.FALSE);
+          break;
+        }
+        if (str.equalsIgnoreCase("FIXED")) {
+          propertyName = "fixed";
+          propertyValue = Boolean.TRUE;
+          break;
+        }
+        if (str.equalsIgnoreCase("FUNCTIONXY")) {
+          // isosurface functionXY "functionName"|"data2d_xxxxx"
+          //     {origin} {ni ix iy iz} {nj jx jy jz} {nk kx ky kz}
+          Vector v = new Vector();
+          if (getToken(++i).tok != Token.string)
+            error(ERROR_what,
+                "functionXY must be followed by a function name in quotes.");
+          String fName = parameterAsString(i++);
+          //override of function or data name when saved as a state
+          String dataName = extractCommandOption("# DATA" + (isFxy ? "2" : ""));
+          if (dataName != null)
+            fName = dataName;
+          boolean isXYZ = (fName.indexOf("data2d_xyz") == 0);
+          v.addElement(fName); //(0) = name
+          v.addElement(getPoint3f(i, false)); //(1) = {origin}
+          Point4f pt;
+          int nX, nY;
+          int ptX = ++iToken;
+          v.addElement(pt = getPoint4f(ptX)); //(2) = {ni ix iy iz}
+          nX = (int) pt.x;
+          int ptY = ++iToken;
+          v.addElement(pt = getPoint4f(ptY)); //(3) = {nj jx jy jz}
+          nY = (int) pt.x;
+          v.addElement(getPoint4f(++iToken)); //(4) = {nk kx ky kz}
+          if (nX == 0 || nY == 0)
+            error(ERROR_invalidArgument);
+          if (!isSyntaxCheck) {
+            float[][] fdata = (isXYZ ? viewer.getDataFloat2D(fName) : viewer
+                .functionXY(fName, nX, nY));
+            if (isXYZ) {
+              nX = (fdata == null ? 0 : fdata.length);
+              nY = 3;
+            } else {
+              nX = Math.abs(nX);
+              nY = Math.abs(nY);
+            }
+            if (fdata == null) {
+              iToken = ptX;
+              error(ERROR_what, "fdata is null.");
+            }
+            if (fdata.length != nX && !isXYZ) {
+              iToken = ptX;
+              error(ERROR_what, "fdata length is not correct: " + fdata.length
+                  + " " + nX + ".");
+            }
+            for (int j = 0; j < nX; j++) {
+              if (fdata[j] == null) {
+                iToken = ptY;
+                error(ERROR_what, "fdata[" + j + "] is null.");
+              }
+              if (fdata[j].length != nY) {
+                iToken = ptY;
+                error(ERROR_what, "fdata[" + j + "] is not the right length: "
+                    + fdata[j].length + " " + nY + ".");
+              }
+            }
+            v.addElement(fdata); //(5) = float[][] data                 
+          }
+          i = iToken;
+          propertyName = "functionXY";
+          propertyValue = v;
+          isFxy = surfaceObjectSeen = true;
+          break;
+        }
+        if (str.equalsIgnoreCase("GRIDPOINTS")) {
+          propertyName = "gridPoints";
+          break;
+        }
+        if (str.equalsIgnoreCase("HKL")) {
+          // miller indices hkl 
+          planeSeen = true;
+          propertyName = "plane";
+          propertyValue = hklParameter(++i);
+          i = iToken;
+          break;
+        }
+        if (str.equalsIgnoreCase("ID")) {
+          i = setShapeId(iShape, ++i, idSeen);
+          break;
+        }
+        if (str.equalsIgnoreCase("IGNORE")) {
+          propertyName = "ignore";
+          propertyValue = expression(++i);
+          i = iToken;
+          break;
+        }
+        if (str.equalsIgnoreCase("INSIDEOUT")) {
+          propertyName = "insideOut";
+          break;
+        }
+        if (str.equalsIgnoreCase("INTERIOR")) {
+          propertyName = "pocket";
+          propertyValue = Boolean.FALSE;
+          break;
+        }
+        if (str.equalsIgnoreCase("LINK")) { // for state of lcaoCartoon
+          propertyName = "link";
+          break;
+        }
+        if (str.equalsIgnoreCase("LOBE")) {
+          //lobe {eccentricity} 
+          surfaceObjectSeen = true;
+          propertyName = "lobe";
+          propertyValue = getPoint4f(++i);
+          i = iToken;
+          break;
+        }
+        if (str.equalsIgnoreCase("MAP")) { // "use current"
+          surfaceObjectSeen = !isCavity;
+          propertyName = "map";
+          break;
+        }
+        if (str.equalsIgnoreCase("MAXSET")) {
+          propertyName = "maxset";
+          propertyValue = new Integer(intParameter(++i));
+          break;
+        }
+        if (str.equalsIgnoreCase("MINSET")) {
+          propertyName = "minset";
+          propertyValue = new Integer(intParameter(++i));
+          break;
+        }
+        if (str.equalsIgnoreCase("MODELBASED")) {
+          propertyName = "fixed";
+          propertyValue = Boolean.FALSE;
+          break;
+        }
+        if (str.equalsIgnoreCase("MOLECULAR")) {
+          surfaceObjectSeen = true;
+          propertyName = "molecular";
+          propertyValue = new Float(1.4);
+          break;
+        }
+        if (str.equalsIgnoreCase("PHASE")) {
+          propertyName = "phase";
+          propertyValue = (tokAt(i + 1) == Token.string ? stringParameter(++i)
+              : "_orb");
+          break;
+        }
+        if (str.equalsIgnoreCase("POCKET")) {
+          propertyName = "pocket";
+          propertyValue = Boolean.TRUE;
+          break;
+        }
+        if (str.equalsIgnoreCase("REMAPPABLE")) { // testing only
+          propertyName = "remappable";
+          break;
+        }
+        if (str.equalsIgnoreCase("RESOLUTION")
+            || str.equalsIgnoreCase("POINTSPERANGSTROM")) {
+          propertyName = "resolution";
+          propertyValue = new Float(floatParameter(++i));
+          break;
+        }
+        if (str.equalsIgnoreCase("REVERSECOLOR")) {
+          propertyName = "reverseColor";
+          propertyValue = Boolean.TRUE;
+          break;
+        }
+        if (str.equalsIgnoreCase("SIGN")) {
+          signPt = i + 1;
+          propertyName = "sign";
+          propertyValue = Boolean.TRUE;
+          colorRangeStage = 1;
+          break;
+        }
+        if (str.equalsIgnoreCase("SPHERE")) {
+          //sphere [radius] 
+          surfaceObjectSeen = true;
+          propertyName = "sphere";
+          propertyValue = new Float(floatParameter(++i));
+          break;
+        }
+        if (str.equalsIgnoreCase("SQUARED")) {
+          propertyName = "squareData";
+          propertyValue = Boolean.TRUE;
+          break;
+        }
+        if (str.equalsIgnoreCase("VARIABLE")) {
+          propertyName = "property";
+          data = new float[viewer.getAtomCount()];
+          if (!isSyntaxCheck) {
+            Parser.parseFloatArray(""
+                + getParameter(parameterAsString(++i), false), null, data);
+          }
+          propertyValue = data;
+          break;
+        }
+        i = setShapeId(iShape, i, idSeen);
+        break;
       case Token.string:
         propertyName = surfaceObjectSeen || planeSeen ? "mapColor" : "readFile";
         /*
@@ -11352,19 +11238,33 @@ class Eval {
         surfaceObjectSeen = true;
         if (tokAt(i + 1) == Token.integer)
           setShapeProperty(iShape, "fileIndex", new Integer(intParameter(++i)));
-        if (thisCommand.indexOf("# FILE" + nFiles + "=") >= 0)
-          filename = extractCommandOption("# FILE" + nFiles);
         String[] fullPathNameReturn = new String[1];
-        Object t = (isSyntaxCheck ? null : viewer
-            .getBufferedReaderOrErrorMessageFromName(filename,
-                fullPathNameReturn, false));
-        if (t instanceof String)
-          error(ERROR_fileNotFoundException, filename + ":" + t);
-        if (!isSyntaxCheck)
-          Logger.info("reading isosurface data from " + fullPathNameReturn[0]);
-        setShapeProperty(iShape, "commandOption", "FILE" + (nFiles++) + "="
-            + Escape.escape(fullPathNameReturn[0]));
-        setShapeProperty(iShape, "fileName", fullPathNameReturn[0]);
+        Object t;
+        if (filename.equalsIgnoreCase("INLINE")) {
+          // inline PMESH data
+          if (tokAt(i + 1) != Token.string)
+            error(ERROR_stringExpected);
+          setShapeProperty(iShape, "fileType", "Pmesh");
+          String sdata = parameterAsString(++i);
+          sdata = TextFormat.replaceAllCharacters(sdata, "{,}|", ' ');
+          if (logMessages)
+            Logger.debug("pmesh inline data:\n" + sdata);
+          t = (isSyntaxCheck ? null : FileManager
+              .getBufferedReaderForString(sdata));
+        } else {
+          if (thisCommand.indexOf("# FILE" + nFiles + "=") >= 0)
+            filename = extractCommandOption("# FILE" + nFiles);
+          t = (isSyntaxCheck ? null : viewer
+              .getBufferedReaderOrErrorMessageFromName(filename,
+                  fullPathNameReturn, false));
+          if (t instanceof String)
+            error(ERROR_fileNotFoundException, filename + ":" + t);
+          if (!isSyntaxCheck)
+            Logger.info("reading isosurface data from " + fullPathNameReturn[0]);
+          setShapeProperty(iShape, "commandOption", "FILE" + (nFiles++) + "="
+              + Escape.escape(fullPathNameReturn[0]));
+          setShapeProperty(iShape, "fileName", fullPathNameReturn[0]);
+        }
         propertyValue = t;
         break;
       default:
@@ -11400,7 +11300,7 @@ class Eval {
       setShapeProperty(iShape, "finalize", null);
       Integer n = (Integer) viewer.getShapeProperty(iShape, "count");
       float[] dataRange = (float[]) viewer
-      .getShapeProperty(iShape, "dataRange");
+          .getShapeProperty(iShape, "dataRange");
       String s = (String) viewer.getShapeProperty(iShape, "ID");
       if (s != null) {
         s += " created; number of isosurfaces = " + n;

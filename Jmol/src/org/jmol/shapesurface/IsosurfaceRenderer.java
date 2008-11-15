@@ -157,6 +157,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         int check = vertexIndexes[3];
         if (check == 0)
           continue;
+        // check: 1 (ab) | 2(bc) | 4(ac)
         if (vertexColixes == null)
           g3d.drawTriangle(screens[iA], screens[iB], screens[iC], check);
         else

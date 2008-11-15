@@ -33,10 +33,7 @@ import org.jmol.util.Logger;
  * A simple EFVET file reader -- vertices and triangles only
  * 
  */
-class EfvetReader extends SurfaceFileReader {
-
-  private int nVertices;
-  private int nTriangles;
+class EfvetReader extends PolygonFileReader {
 
   EfvetReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);

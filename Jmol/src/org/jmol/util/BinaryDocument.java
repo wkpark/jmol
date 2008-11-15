@@ -26,8 +26,8 @@ package org.jmol.util;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
+import java.io.IOException;
 
-import javax.vecmath.Point3f;
 //import java.io.RandomAccessFile;
 
 /* a basic binary file reader (extended by CompoundDocument). 
@@ -53,6 +53,14 @@ public class BinaryDocument {
   protected boolean isRandom = false;
   protected boolean isBigEndian = true;
 
+  public void close() {
+    try {
+      stream.close();
+    } catch (IOException e) {
+      //ignore
+    }
+  }
+  
   public void setStream(BufferedInputStream bis, boolean isBigEndian) {
     if (bis == null)
       return;
@@ -114,11 +122,6 @@ public class BinaryDocument {
         : Float.intBitsToFloat(readLEInt()));
   }
   
-  public void readPoint3fArray(Point3f[] data) throws Exception {
-    for (int i = 0; i < data.length; i++)
-      data[i] = new Point3f(readFloat(), readFloat(), readFloat());
-  }
-
   private int readLEInt() throws Exception {
     return ((((int) stream.readByte()) & 0xff)
           | (((int) stream.readByte()) & 0xff) << 8

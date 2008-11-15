@@ -1513,10 +1513,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         fullPathNameReturn, isBinary);
   }
 
-  Object getBufferedReaderForString(String string) {
-    return fileManager.getBufferedReaderForString(string);
-  }
-
   void addLoadScript(String script) {
     fileManager.addLoadScript(script);
   }

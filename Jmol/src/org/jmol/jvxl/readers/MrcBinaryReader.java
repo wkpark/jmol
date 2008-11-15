@@ -30,12 +30,11 @@ import org.jmol.util.Logger;
 
 class MrcBinaryReader extends VolumeFileReader {
 
-  BinaryDocument mrcDoc;
   MrcHeader mrcHeader;
   MrcBinaryReader(SurfaceGenerator sg, String fileName, boolean isBigEndian) {
     super(sg, null);
-    mrcDoc = new BinaryDocument();
-    mrcDoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), isBigEndian);
+    binarydoc = new BinaryDocument();
+    binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), isBigEndian);
     jvxlData.wasCubic = true; //sets colix to default setting
     mrcHeader = new MrcHeader();
     canDownsample = true;
@@ -96,50 +95,50 @@ class MrcBinaryReader extends VolumeFileReader {
     
     MrcHeader() {
       try {
-        nx = mrcDoc.readInt();
-        ny = mrcDoc.readInt();
-        nz = mrcDoc.readInt();
-        mode = mrcDoc.readInt();
-        nxStart = mrcDoc.readInt();
-        nyStart = mrcDoc.readInt();
-        nzStart = mrcDoc.readInt();
-        mx = mrcDoc.readInt();
-        my = mrcDoc.readInt();
-        mz = mrcDoc.readInt();
+        nx = binarydoc.readInt();
+        ny = binarydoc.readInt();
+        nz = binarydoc.readInt();
+        mode = binarydoc.readInt();
+        nxStart = binarydoc.readInt();
+        nyStart = binarydoc.readInt();
+        nzStart = binarydoc.readInt();
+        mx = binarydoc.readInt();
+        my = binarydoc.readInt();
+        mz = binarydoc.readInt();
         
-        a = mrcDoc.readFloat();
-        b = mrcDoc.readFloat();
-        c = mrcDoc.readFloat();
-        alpha = mrcDoc.readFloat();
-        beta = mrcDoc.readFloat();
-        gamma = mrcDoc.readFloat();
+        a = binarydoc.readFloat();
+        b = binarydoc.readFloat();
+        c = binarydoc.readFloat();
+        alpha = binarydoc.readFloat();
+        beta = binarydoc.readFloat();
+        gamma = binarydoc.readFloat();
         
         unitCell = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
         unitCell.setUnitCell(new float[] {a, b, c, alpha, beta, gamma} );
 
-        mapc = mrcDoc.readInt();
-        mapr = mrcDoc.readInt();
-        maps = mrcDoc.readInt();
+        mapc = binarydoc.readInt();
+        mapr = binarydoc.readInt();
+        maps = binarydoc.readInt();
         
-        dmin = mrcDoc.readFloat();
-        dmax = mrcDoc.readFloat();
-        dmean = mrcDoc.readFloat();
+        dmin = binarydoc.readFloat();
+        dmax = binarydoc.readFloat();
+        dmean = binarydoc.readFloat();
         
-        ispg = mrcDoc.readInt();
-        nsymbt = mrcDoc.readInt();
-        mrcDoc.readByteArray(extra);
+        ispg = binarydoc.readInt();
+        nsymbt = binarydoc.readInt();
+        binarydoc.readByteArray(extra);
 
-        originX = mrcDoc.readFloat();
-        originY = mrcDoc.readFloat();
-        originZ = mrcDoc.readFloat();
-        mrcDoc.readByteArray(map);
-        mrcDoc.readByteArray(machst);
+        originX = binarydoc.readFloat();
+        originY = binarydoc.readFloat();
+        originZ = binarydoc.readFloat();
+        binarydoc.readByteArray(map);
+        binarydoc.readByteArray(machst);
         
-        rms = mrcDoc.readFloat();
-        nlabel = mrcDoc.readInt();
+        rms = binarydoc.readFloat();
+        nlabel = binarydoc.readInt();
         byte[] temp = new byte[80];
         for (int i = 0; i < 10; i++) {
-          mrcDoc.readByteArray(temp);
+          binarydoc.readByteArray(temp);
           StringBuffer s = new StringBuffer();
           for (int j = 0; j < 80; j++)
             s.append((char)temp[j]);
@@ -199,31 +198,31 @@ class MrcBinaryReader extends VolumeFileReader {
      */
     switch(mrcHeader.mode) {
     case 0:
-      voxelValue = mrcDoc.readByte();
+      voxelValue = binarydoc.readByte();
       nBytes++;
       break;
     case 1:
-      voxelValue = mrcDoc.readShort();
+      voxelValue = binarydoc.readShort();
       nBytes += 2;
       break;
     case 3:
       //read first component only
-      voxelValue = mrcDoc.readShort();
-      mrcDoc.readShort();
+      voxelValue = binarydoc.readShort();
+      binarydoc.readShort();
       nBytes += 4;
       break;
     case 4:
       //read first component only
-      voxelValue = mrcDoc.readFloat();
-      mrcDoc.readFloat();
+      voxelValue = binarydoc.readFloat();
+      binarydoc.readFloat();
       nBytes += 8;
       break;
     case 6:
-      voxelValue = mrcDoc.readUnsignedShort();
+      voxelValue = binarydoc.readUnsignedShort();
       nBytes += 2;
       break;
     default:
-      voxelValue = mrcDoc.readFloat();
+      voxelValue = binarydoc.readFloat();
       nBytes += 4;
     }
     return voxelValue;
@@ -235,18 +234,18 @@ class MrcBinaryReader extends VolumeFileReader {
     for (int i = 0; i < nPoints; i++)
       switch(mrcHeader.mode) {
       case 0:
-        mrcDoc.readByte();
+        binarydoc.readByte();
         break;
       case 1:
       case 6:
-        mrcDoc.readByteArray(b2);
+        binarydoc.readByteArray(b2);
         break;
       case 4:
-        mrcDoc.readByteArray(b4);
-        mrcDoc.readByteArray(b4);
+        binarydoc.readByteArray(b4);
+        binarydoc.readByteArray(b4);
         break;
       default:
-        mrcDoc.readByteArray(b4);
+        binarydoc.readByteArray(b4);
       }
   }
 }

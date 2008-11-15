@@ -740,7 +740,7 @@ java.lang.NullPointerException
     return errorMessage;
   }
 
-  BufferedReader getBufferedReaderForString(String string) {
+  public static BufferedReader getBufferedReaderForString(String string) {
     return new BufferedReader(new StringReader(string));
   }
 

@@ -25,15 +25,13 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
-import org.jmol.util.Parser;
+abstract class PolygonFileReader extends SurfaceFileReader {
 
-abstract class SurfaceFileReader extends SurfaceReader {
+  protected int nVertices;
+  protected int nTriangles;
 
-  protected BufferedReader br;
- 
-  SurfaceFileReader(SurfaceGenerator sg, BufferedReader br) {
-    super(sg);
-    this.br = br;
+  PolygonFileReader(SurfaceGenerator sg, BufferedReader br) {
+    super(sg, br);
     vertexDataOnly = true;
   }
 
@@ -61,55 +59,4 @@ abstract class SurfaceFileReader extends SurfaceReader {
   }
 
   abstract void getSurfaceData() throws Exception;
-
-  ///////////file reading //////////
-  
-  String line;
-  int[] next = new int[1];
-
-  protected void skipTo(String info, String what) throws Exception {
-    if (info != null)
-      while ((line = br.readLine()).indexOf(info) < 0) {
-      }
-    if (what != null)
-      next[0] = line.indexOf(what) + what.length() + 2;
-  }
-
-  protected String[] getTokens() {
-    return Parser.getTokens(line, 0);
-  }
-
-  protected float parseFloat() {
-    return Parser.parseFloat(line, next);
-  }
-
-  protected int parseInt() {
-    return Parser.parseInt(line, next);
-  }
-  
-  /*  
-  float parseFloat(String s) {
-    next[0] = 0;
-    return Parser.parseFloat(s, next);
-  }
-
-  float parseFloatNext(String s) {
-    return Parser.parseFloat(s, next);
-  }
-
-  int parseInt(String s) {
-    next[0] = 0;
-    return Parser.parseInt(s, next);
-  }
-  
-  int parseIntNext(String s) {
-    return Parser.parseInt(s, next);
-  }
-  
-  int parseInt(String s, int iStart) {
-    next[0] = iStart;
-    return Parser.parseInt(s, next);
-  }
-  
-  */
 }

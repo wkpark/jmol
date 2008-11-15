@@ -136,6 +136,7 @@ public class CompoundDocument extends BinaryDocument {
         data.append("END Compound Document Entry: ").append(thisEntry.entryName).append("\n");            
       }
     }
+    close();
     return data;
   }
 

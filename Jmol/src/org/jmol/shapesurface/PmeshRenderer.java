@@ -23,7 +23,5 @@
  */
 package org.jmol.shapesurface;
 
-import org.jmol.shape.MeshRenderer;
-
-public class PmeshRenderer extends MeshRenderer {
+public class PmeshRenderer extends IsosurfaceRenderer {
 }

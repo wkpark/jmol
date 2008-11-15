@@ -67,14 +67,21 @@ public abstract class SurfaceReader implements VertexDataServer {
    *          |          |_____IsoSolventReader (creates predefined data)
    *          |                    |___IsoPlaneReader (predefines data)
    *          |          
-   *          |
-   *          |_______VolumeFileReader (abstract)
-   *                      |
-   *                      |______ApbsReader
-   *                      |______CubeReader
-   *                      |______JvxlReader
-   *                                  |______JvxlPReader (progressive order -- X low to high)
-   * 
+   *          |_______SurfaceFileReader (abstract)
+   *                    |
+   *                    |_______VolumeFileReader (abstract)
+   *                    |           |
+   *                    |           |______ApbsReader
+   *                    |           |______CubeReader
+   *                    |           |______JvxlReader
+   *                    |                       |______JvxlPReader (progressive order -- X low to high)
+   *                    |
+   *                    |
+   *                    |_______PolygonFileReader (abstract)
+   *                                |
+   *                                |______EfvetReader
+   *                                |______PmeshReader
+   *
    * The first step is to create a VolumeData structure:
    * 
    *   public final Point3f volumetricOrigin = new Point3f();
@@ -277,8 +284,9 @@ public abstract class SurfaceReader implements VertexDataServer {
       generateSurfaceData();
     }
     String s = jvxlFileHeaderBuffer.toString();
-    jvxlData.jvxlFileTitle = s.substring(0, s.indexOf('\0'));
-    jvxlData.jvxlFileHeader = s.replace('\0', '-'); // set negative atom count
+    int i = s.indexOf('\n', s.indexOf('\n',s.indexOf('\n') + 1) + 1) + 1;
+    jvxlData.jvxlFileTitle = s.substring(0, i);
+    jvxlData.jvxlFileHeader = s;
     jvxlData.cutoff = (isJvxl ? jvxlCutoff : params.cutoff);
     jvxlData.pointsPerAngstrom = 1f/volumeData.volumetricVectorLengths[0];
     jvxlData.jvxlColorData = "";

@@ -141,7 +141,8 @@ public class SurfaceGenerator {
   private AtomDataServer atomDataServer;
   private MarchingSquares marchingSquares;
   private String version;
-  
+  private String fileType;
+    
   public void setVersion(String version) {
     this.version = version;
   }
@@ -191,7 +192,8 @@ public class SurfaceGenerator {
 
   public void setJvxlData(JvxlData jvxlData) {
     this.jvxlData = jvxlData;
-    jvxlData.version = version;
+    if (jvxlData != null)
+      jvxlData.version = version;
   }
 
   public JvxlData getJvxlData() {
@@ -735,6 +737,11 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("fileType" == propertyName) {
+      fileType = (String) value;
+      return true;
+    }
+
     if ("fileName" == propertyName) {
       params.fileName = (String) value;
       return true;
@@ -897,7 +904,9 @@ public class SurfaceGenerator {
     return null;
   }
 
-  SurfaceReader setFileData(Object value) {
+  private SurfaceReader setFileData(Object value) {
+    String fileType = this.fileType;
+    this.fileType = null;
     if (value instanceof VolumeData) {
       volumeData = (VolumeData)value;
       return new VolumeDataReader(this);
@@ -907,7 +916,8 @@ public class SurfaceGenerator {
       return new VolumeDataReader(this);
     }
     BufferedReader br = (BufferedReader) value;
-    String fileType = VolumeFileReader.determineFileType(br);
+    if (fileType == null)
+      fileType = SurfaceFileReader.determineFileType(br);
     Logger.info("data file type was determined to be " + fileType);
     if (fileType.equals("Jvxl+"))
       return new JvxlReader(this, br);
@@ -929,6 +939,8 @@ public class SurfaceGenerator {
     }
     if (fileType.equals("Efvet"))
       return new EfvetReader(this,br);
+    if (fileType.equals("Pmesh"))
+      return new PmeshReader(this, params.fileName, br);
     return null;
   }
 

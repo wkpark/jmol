@@ -10668,6 +10668,9 @@ class Eval {
           && (str = parameterAsString(i)).equalsIgnoreCase("inline"))
         tok = Token.string;
       switch (tok) {
+      case Token.pmesh:
+        setShapeProperty(iShape, "fileType", "Pmesh");
+        continue;
       case Token.within:
         float distance = floatParameter(++i);
         propertyValue = centerParameter(++i);

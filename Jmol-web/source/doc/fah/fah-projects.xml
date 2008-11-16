@@ -4802,9 +4802,9 @@
   <fah_proj number="2427" name="p2427_Ribo_Cl_aux" public="y" file="xyz"
     server="171.65.103.162" atoms="87974" preferred="30" deadline="82"
     credit="500" frames="100" code="G" contact="ppetrone" contrib="daveb"/>
-  <fah_proj number="2443" name="p2443_" public="y"
+  <fah_proj number="2443" name="p2443_Protein" public="y" file="xyz"
     server="171.65.103.160" preferred="42" deadline="93"
-    credit="2435" frames="100" code="G" contact="ppetrone"/>
+    credit="2435" frames="100" code="G" contact="ppetrone" contrib="Jon Gould"/>
   <fah_proj number="2450" name="p2450_GROtesk MACabre and Siniste drgpmfr" public="y"
     server="171.65.103.162" atoms="54992" preferred="30" deadline="82"
     credit="500" frames="100" code="G" contact="ppetrone"/>
@@ -6965,15 +6965,15 @@
   <fah_proj number="4622" name="p4622_T0_proG-16_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="277" preferred="21.7" deadline="32.5"
     credit="119.3" frames="100" code="A" contact="vvoelz" contrib="MstrBlstr,Hyperlife"/>
-  <fah_proj number="4623" name="p4623_T0_proG-12_minout" public="y" file="xyz"
+  <fah_proj number="4623" name="p4623_T0_proG-12_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="219" preferred="15.4" deadline="23.1"
     credit="84.7" frames="100" code="A" contact="vvoelz" contrib="Smoking2000"/>
   <fah_proj number="4624" name="p4624_T0499-12_minout" public="y" file="xyz"
     server="169.230.26.30" atoms="222" preferred="15.4" deadline="23.1"
     credit="84.7" frames="100" code="A" contact="vvoelz" contrib="Hyperlife"/>
-  <fah_proj number="4625" name="p4625_T0499-8_minout" public="y" file="xyz"
+  <fah_proj number="4625" name="p4625_T0499-8_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="154" preferred="8.5" deadline="12.8"
-    credit="47" frames="100" code="A" contact="vvoelz" contrib="Hyperlife"/>
+    credit="47" frames="100" code="A" contact="vvoelz" contrib="MstrBlstr,Hyperlife"/>
   <fah_proj number="4626" name="p4626_T0499-16_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="284" preferred="21.7" deadline="32.5"
     credit="119.3" frames="100" code="A" contact="vvoelz" contrib="MstrBlstr,Flathead74"/>
@@ -7404,6 +7404,24 @@
     server="171.64.65.106" atoms="1254" preferred="2" deadline="3"
     credit="430" frames="100" code="GG2" contact="densign"/>
   <fah_proj number="5513" name="p5513_lam5w_300K" public="y"
+    server="171.64.65.106" atoms="1254" preferred="2" deadline="3"
+    credit="430" frames="100" code="GG2" contact="densign"/>
+  <fah_proj number="5514" name="p5514_lam5w_300K" public="n"
+    server="171.64.65.106" atoms="1254" preferred="2" deadline="3"
+    credit="430" frames="100" code="GG2" contact="densign"/>
+  <fah_proj number="5515" name="p5515_lam5w_300K" public="n"
+    server="171.64.65.106" atoms="1254" preferred="2" deadline="3"
+    credit="430" frames="100" code="GG2" contact="densign"/>
+  <fah_proj number="5516" name="p5516_lam5w_300K" public="n"
+    server="171.64.65.106" atoms="1254" preferred="2" deadline="3"
+    credit="430" frames="100" code="GG2" contact="densign"/>
+  <fah_proj number="5517" name="p5517_lam5w_300K" public="n"
+    server="171.64.65.106" atoms="1254" preferred="2" deadline="3"
+    credit="430" frames="100" code="GG2" contact="densign"/>
+  <fah_proj number="5518" name="p5518_lam5w_300K" public="n"
+    server="171.64.65.106" atoms="1254" preferred="2" deadline="3"
+    credit="430" frames="100" code="GG2" contact="densign"/>
+  <fah_proj number="5519" name="p5519_lam5w_300K" public="n"
     server="171.64.65.106" atoms="1254" preferred="2" deadline="3"
     credit="430" frames="100" code="GG2" contact="densign"/>
 

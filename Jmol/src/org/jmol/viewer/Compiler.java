@@ -577,6 +577,10 @@ class Compiler {
             char insertionCode = script.charAt(ichToken + cchToken - 1);
             if (insertionCode == '^')
               insertionCode = ' ';
+            if (seqNum < 0) {
+              seqNum = -seqNum;
+              addTokenToPrefix(Token.tokenMinus);
+            }
             int seqcode = Group.getSeqcode(seqNum, insertionCode);
             addTokenToPrefix(new Token(Token.seqcode, seqcode, "seqcode"));
             continue;
@@ -1302,6 +1306,8 @@ class Compiler {
       ch = '^';
       ++ichT;
     } else {
+      if (script.charAt(ichT) == '-')
+        ++ichT;
       while (ichT < cchScript && Character.isDigit(ch = script.charAt(ichT)))
         ++ichT;
     }

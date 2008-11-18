@@ -94,9 +94,11 @@ useobject=(docsearch.indexOf("useobject")>=0)
 theexample=(docsearch+"example=").split("example=")[1].split("&")[0]
 themodel=(docsearch+"model=").split("model=")[1].split("&")[0]
 
-thisSubversion=(docsearch+"ver="+defaultversion).split("ver=")[1].split("&")[0]
-thisVersion = thisSubversion.substring(0,2);
-thisVrefNew = "*v+"+thisSubversion
+function setVersion(ver) {
+ thisSubversion=(docsearch+"ver="+(ver ? ver : defaultversion)).split("ver=")[1].split("&")[0]
+ thisVersion = thisSubversion.substring(0,2);
+ thisVrefNew = "*v+"+thisSubversion
+}setVersion();
 
 icandoxrefincommand=0
 

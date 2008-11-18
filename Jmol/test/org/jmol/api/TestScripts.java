@@ -268,13 +268,10 @@ class TestScriptsImpl extends TestCase {
   public void runSimpleTest() {
     JUnitLogger.setInformation(file.getPath());
 
-    SmarterJmolAdapter adapter = new SmarterJmolAdapter();
-    JmolViewer viewer = JmolViewer.allocateViewer(null, adapter);
-    if (checkOnly) {
-      viewer.setAppletContext("", null, null, "-n -c "); // set no display; checkOnly; no file opening
-    } else {
-      viewer.setAppletContext("", null, null, "-n -l "); // set no display; list commmands as they execute
-    }
+    JmolViewer viewer = JmolViewer.allocateViewer(null, new SmarterJmolAdapter(),
+        null, null, null, checkOnly ? "-n -c " : "-n -l ", null);
+        //"-n -c " // set no display; checkOnly; no file opening
+        //"-n -l " // set no display; list commmands as they execute
     String s = viewer.evalFile(file.getPath() + " -noqueue");
     assertNull("Error in script [" + file.getPath() + ":\n" + s, s);
   }

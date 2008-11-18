@@ -217,22 +217,36 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * in order to remove references to display window in listeners and hoverWatcher
    * 
    *  This is the main access point for creating an application
-   *  or applet viewer. After allocation it is MANDATORY that one of 
-   *  the next commands is either 
-   *  
-   *      viewer.evalString("ZAP");
+   *  or applet viewer. 
    *    
-   *    or at least:
-   *    
-   *      viewer.setAppletContext("",null,null,"")
-   *    
-   *    One or the other of these is necessary to establish the 
-   *    first modelset, which might be required by one or more
-   *    later evaluated commands or file loadings.
-   *    
-   * @param display       either DisplayPanel or WrappedApplet
-   * @param modelAdapter  the model reader
+   * @param display        either DisplayPanel or WrappedApplet
+   * @param modelAdapter   the model reader
+   * @param fullName       or null
+   * @param documentBase   or null
+   * @param codeBase       or null
+   * @param commandOptions or null
+   * @param statusListener or null
    * @return              a viewer instance 
+   */
+
+  public static JmolViewer allocateViewer(Component display,
+                                          JmolAdapter modelAdapter,
+                                          String fullName, URL documentBase,
+                                          URL codeBase, String commandOptions,
+                                          JmolStatusListener statusListener) {
+    JmolViewer viewer = new Viewer(display, modelAdapter);
+    viewer.setAppletContext(fullName, documentBase, codeBase, commandOptions);
+    viewer.setJmolStatusListener(statusListener);
+    return viewer;
+  }
+  
+  /**
+   * deprecated because setAppletContext needs to be invoked as well.
+   * 
+   * @deprecated
+   * @param display
+   * @param modelAdapter
+   * @return              a viewer instance
    */
   public static JmolViewer allocateViewer(Component display,
                                           JmolAdapter modelAdapter) {

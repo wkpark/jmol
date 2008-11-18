@@ -38,14 +38,7 @@ abstract public class JmolSimpleViewer {
 
   /**
    *  This is the main access point for creating an application
-   *  or applet viewer. After allocation it is MANDATORY that one of 
-   *  the next commands is either 
-   *  
-   *    viewer.evalString("ZAP");
-   *    
-   *    This command is necessary to establish the 
-   *    first modelset, which might be required by one or more
-   *    later evaluated commands or file loadings.
+   *  or applet viewer. 
    *    
    * @param awtComponent
    * @param jmolAdapter
@@ -53,9 +46,8 @@ abstract public class JmolSimpleViewer {
    */
   static public JmolSimpleViewer
     allocateSimpleViewer(Component awtComponent, JmolAdapter jmolAdapter) {
-    JmolViewer viewer = Viewer.allocateViewer(awtComponent, jmolAdapter);
-    viewer.setAppletContext("", null, null, "");
-    return viewer;
+    return Viewer.allocateViewer(awtComponent, jmolAdapter, 
+        null, null, null, null, null);
   }
 
   abstract public void renderScreenImage(Graphics g, Dimension size,

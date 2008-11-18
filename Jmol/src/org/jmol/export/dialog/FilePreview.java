@@ -152,8 +152,8 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     JmolViewer viewer;
 
     JmolPanel(JmolAdapter modelAdapter, String appletContext) {
-      viewer = JmolViewer.allocateViewer(this, modelAdapter);
-      viewer.setAppletContext("", null, null, "#previewOnly " + appletContext);
+      viewer = JmolViewer.allocateViewer(this, modelAdapter,
+          "", null, null, "#previewOnly " + appletContext, null);
     }
 
     public JmolViewer getViewer() {

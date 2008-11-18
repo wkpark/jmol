@@ -195,10 +195,9 @@ public class Jmol extends JPanel {
       report("unrecognized model adapter:" + adapter + " -- using Smarter");
       modelAdapter = new SmarterJmolAdapter();
     }
-    appletContext = commandOptions;
-    viewer = JmolViewer.allocateViewer(display, modelAdapter);
-    viewer.setAppletContext("", null, null, commandOptions);
-
+    viewer = JmolViewer.allocateViewer(display, modelAdapter, 
+        null, null, null, appletContext = commandOptions, 
+        new MyStatusListener());
     if (display != null)
       display.setViewer(viewer);
 
@@ -210,10 +209,6 @@ public class Jmol extends JPanel {
       say(GT._("Initializing Script Window..."));
       scriptWindow = new ScriptWindow(viewer, frame);
     }
-
-    MyStatusListener myStatusListener;
-    myStatusListener = new MyStatusListener();
-    viewer.setJmolStatusListener(myStatusListener);
 
     say(GT._("Initializing Measurements..."));
     measurementTable = new MeasurementTable(viewer, frame);

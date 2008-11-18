@@ -35,7 +35,6 @@ import java.util.Hashtable;
 import java.io.Reader;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
-
 import org.jmol.viewer.Viewer;
 
 /**
@@ -66,14 +65,36 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    * 
    * @param awtComponent
    * @param jmolAdapter
+   * @param htmlName 
+   * @param documentBase 
+   * @param codeBase 
+   * @param commandOptions 
+   * @param statusListener 
    * @return              a JmolViewer object
    */
   static public JmolViewer allocateViewer(Component awtComponent,
-                                          JmolAdapter jmolAdapter) {
+                                          JmolAdapter jmolAdapter,
+                                          String htmlName, URL documentBase, 
+                                          URL codeBase,
+                                          String commandOptions, 
+                                          JmolStatusListener statusListener) {
     
-    return Viewer.allocateViewer(awtComponent, jmolAdapter);
+    return Viewer.allocateViewer(awtComponent, jmolAdapter,
+        htmlName, documentBase, codeBase, commandOptions, statusListener);
   }
 
+  /**
+   * OK, but safer to assign htmlName, URL bases, comandOptions, and statusListener now.
+   * 
+   * @deprecated
+   * @param awtComponent
+   * @param jmolAdapter
+   * @return             a viewer
+   */
+  public static JmolViewer allocateViewer(Component awtComponent, JmolAdapter jmolAdapter) {
+    return Viewer.allocateViewer(awtComponent, jmolAdapter, null, null, null, null, null);
+  }
+  
   static public String getJmolVersion() {
     return Viewer.getJmolVersion();
   }
@@ -91,7 +112,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void setJmolStatusListener(JmolStatusListener jmolStatusListener);
 
   abstract public void setAppletContext(String htmlName, URL documentBase, URL codeBase,
-                               String commandOptions);
+                                        String commandOptions);
 
   abstract public boolean checkHalt(String strCommand);
   abstract public void haltScriptExecution();
@@ -330,8 +351,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void rotateX(float radians);
   abstract public void rotateY(float radians);
   abstract public void rotateZ(float radians);
-  
-
 
 }
 

@@ -31,6 +31,7 @@ import org.jmol.util.Logger;
 
 /*
  * A simple EFVET file reader -- vertices and triangles only
+ * http://ef-site.hgc.jp/eF-site/about.html
  * 
  */
 class EfvetReader extends PolygonFileReader {

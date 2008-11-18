@@ -150,7 +150,6 @@ public class Jmol implements WrappedApplet {
 
   AppletWrapper appletWrapper;
   private JmolViewer viewer;
-  private MyStatusListener myStatusListener;
 
   private final static boolean REQUIRE_PROGRESSBAR = true;
   private boolean jvm12orGreater;
@@ -241,10 +240,6 @@ public class Jmol implements WrappedApplet {
 
   public void initWindows() {
 
-    // to enable CDK
-    // viewer = new JmolViewer(this, new CdkJmolAdapter(null));
-    viewer = JmolViewer.allocateViewer(appletWrapper,
-        modelAdapter = new SmarterJmolAdapter());
     String options = "-applet";
     isSigned = getBooleanValue("signed", false) || appletWrapper.isSigned();
     if (isSigned)
@@ -254,16 +249,13 @@ public class Jmol implements WrappedApplet {
     String s = getValue("MaximumSize", null);
     if (s != null)
       options += "-maximumSize " + s;
-    {
-      // note, -appletProxy must be the LAST item added
-      s = getValue("JmolAppletProxy", null);
-      if (s != null)
-        options += "-appletProxy " + s;
-      viewer.setAppletContext(fullName, appletWrapper.getDocumentBase(),
-          appletWrapper.getCodeBase(), options);
-    }
-    myStatusListener = new MyStatusListener();
-    viewer.setJmolStatusListener(myStatusListener);
+    // note, -appletProxy must be the LAST item added
+    s = getValue("JmolAppletProxy", null);
+    if (s != null)
+      options += "-appletProxy " + s;
+    viewer = JmolViewer.allocateViewer(appletWrapper,
+        modelAdapter = new SmarterJmolAdapter(), fullName, appletWrapper.getDocumentBase(),
+        appletWrapper.getCodeBase(), options, new MyStatusListener());
     String menuFile = getParameter("menuFile");
     if (menuFile != null)
       menuStructure = viewer.getFileAsString(menuFile);

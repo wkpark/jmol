@@ -521,12 +521,16 @@ public abstract class BioPolymer extends Polymer {
     float factor = (ctype == 'R' ? 1f : 10f);
     float x = 0, y = 0, z = 0, w = 0;
     String strExtra = "";
+    float val1 = Float.NaN;
+    float val2 = Float.NaN;
     boolean isAmino = (p instanceof AminoPolymer);
     boolean isRelativeAlias = (ctype == 'r');
+    boolean straightness = (ctype == 's' || ctype== 'S');
     if (derivType == 2 && isRelativeAlias)
       ctype = 'w';
-    if (ctype == 's')
+    if (straightness) 
       derivType = 2;
+    boolean useQuaternionStraightness = (ctype == 'S');
     String prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
     float psiLast = Float.NaN;
     Quaternion q;
@@ -627,8 +631,9 @@ public abstract class BioPolymer extends Polymer {
           } else {
             q = new Quaternion(new Point3f(1, 0, 0), angle);
             strExtra = q.getInfo();
-            if (qtype == 'r')
+            if (qtype == 'r') {
               z = angle;
+            }
           }
         } else {
           // quaternion
@@ -692,8 +697,9 @@ public abstract class BioPolymer extends Polymer {
                  
                  */
                 q = dq.rightDifference(dqprev); //q = dq.mul(dqprev.inv());
-                if (ctype == 's')
-                  a.getGroup().setStraightness(getStraightness(id, dqprev, dq));
+                val1 = getQuaternionStraightness(id, dqprev, dq);
+                val2 = getStraightness(id, dqprev, dq);
+                a.getGroup().setStraightness(useQuaternionStraightness ? val1 : val2);
               }
               dqprev = dq;
             }
@@ -762,6 +768,8 @@ public abstract class BioPolymer extends Polymer {
             strExtra += TextFormat.sprintf("  %10.5p %10.5p %10.5p",
                 new Object[] { new Point3f[] { ((AminoMonomer) monomer)
                     .getNitrogenHydrogenPoint() } });
+          } else if (derivType == 2 && !Float.isNaN(val1)){
+            strExtra += TextFormat.sprintf(" %10.5f %10.5f", new Object[] {new float[] {val1, val2}});              
           }
         }
         if (pdbATOM == null)
@@ -785,19 +793,25 @@ public abstract class BioPolymer extends Polymer {
   }
   
   private static float getStraightness(String id, Quaternion dqprev, Quaternion dq) {
-    //System.out.println(id + " " + dqprev.getTheta() + " " + dq.getTheta());
-    //float f = (float) (Math.acos(dqprev.getNormal().dot(dq.getNormal()))/ Math.PI);
-    //return 1 - 2 * f;
-    // absolute value added, because we are dotting the vector normals. Two vector normals
-    // that are colinear, despite their angle of rotation, should give the same straightness
     // 
+    // Bob Hanson's earlier definition, with added absolute value
+    //
     // straightness = 1 - acos(|n1.n2|)/(PI/2)
     //
     // alignment = near 0 or near 180 --> same - just different rotations. 
     // It's a 90-degree change in direction that corresponds to 0.
     //
-    float f = (float) (Math.acos(Math.abs(dqprev.getNormal().dot(dq.getNormal())))/ Math.PI);
-    return 1 - 2 * f;
-
+    return (float) (1 - 2 * Math.acos(Math.abs(dqprev.getNormal().dot(dq.getNormal()))) / Math.PI);
   }
+
+  private static float getQuaternionStraightness(String id, Quaternion dqprev, Quaternion dq) {
+    // 
+    // Dan Kohler's quaternion straightness = 1 - acos(|dq1.dq2|)/(PI/2)
+    //
+    // alignment = near 0 or near 180 --> same - just different rotations. 
+    // It's a 90-degree change in direction that corresponds to 0.
+    //
+    return (float) (1 - 2 * Math.acos(Math.abs(dqprev.dot(dq))) / Math.PI);
+  }
+
 }

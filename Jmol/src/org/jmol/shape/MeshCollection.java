@@ -489,10 +489,13 @@ public abstract class MeshCollection extends Shape {
    if (cmd.charAt(0) != '#') {
      if (allowMesh)
      appendCmd(sb, mesh.getState(myType));
+     if (mesh.colorCommand != null) {
+       if (!mesh.isColorSolid && Graphics3D.isColixTranslucent(mesh.colix))
+         appendCmd(sb, getColorCommand(myType, mesh.colix));
+       appendCmd(sb, mesh.colorCommand);
+     }
      if (mesh.isColorSolid)
        appendCmd(sb, getColorCommand(myType, mesh.colix));
-     else if (mesh.colorCommand != null)
-       appendCmd(sb, mesh.colorCommand);
    }
 }
 

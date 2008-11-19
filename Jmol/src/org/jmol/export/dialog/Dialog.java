@@ -30,8 +30,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JSlider;
 import javax.swing.JPanel;
 import javax.swing.JComboBox;
+import javax.swing.LookAndFeel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -82,8 +84,13 @@ public class Dialog extends JPanel implements JmolDialogInterface {
 
     HistoryFile historyFile = (HistoryFile) historyFileObject;
 
-    if (openChooser == null)
+    if (openChooser == null) {
       openChooser = new FileChooser();
+      Object temp = UIManager.get("FileChooser.fileNameLabelText");
+      UIManager.put("FileChooser.fileNameLabelText", GT._("File or URL:"));
+      getXPlatformLook(openChooser);
+      UIManager.put("FileChooser.fileNameLabelText", temp);
+    }
     if (openPreview == null
         && (viewer.isApplet() || Boolean.valueOf(
             System.getProperty("openFilePreview", "true")).booleanValue())) {
@@ -111,13 +118,10 @@ public class Dialog extends JPanel implements JmolDialogInterface {
         openChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer, true, true));
     }
     
-    UIManager.put("FileChooser.fileNameLabelText", GT._("File or URL:"));
-
     File file = null;
     if (openChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
       file = openChooser.getSelectedFile();
 
-    UIManager.put("FileChooser.fileNameLabelText", GT._("File Name:"));
 
     if (file == null)
       return closePreview();
@@ -145,8 +149,10 @@ public class Dialog extends JPanel implements JmolDialogInterface {
   
   public String getSaveFileNameFromDialog(JmolViewer viewer, String fileName,
                                           String type) {
-    if (saveChooser == null)
+    if (saveChooser == null) {
       saveChooser = new JFileChooser();
+      getXPlatformLook(saveChooser);
+    }
     saveChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer, true, false));
     File file = null;
     saveChooser.resetChoosableFileFilters();
@@ -186,8 +192,10 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     if (extension == null)
       extension = "jpg";
     
-    if (imageChooser == null)
+    if (imageChooser == null) {
       imageChooser = new JFileChooser();
+      getXPlatformLook(imageChooser);
+    }
     imageChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer, true, false));
     imageChooser.resetChoosableFileFilters();
     File file = null;
@@ -460,5 +468,31 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     UIManager.put("OptionPane.noButtonText", GT._("No"));
     UIManager.put("OptionPane.okButtonText", GT._("OK"));
     UIManager.put("OptionPane.yesButtonText", GT._("Yes"));
+  }
+  
+  private static boolean isMac = System.getProperty("os.name").startsWith("Mac");
+  
+  private static void getXPlatformLook(JFileChooser fc) {
+    if (isMac) {
+      LookAndFeel lnf = UIManager.getLookAndFeel();
+      // JFileChooser on Mac OS X with the native L&F doesn't work well.
+      // If the native L&F of Mac is selected, disable it for the file chooser
+      if (lnf.isNativeLookAndFeel()) {
+        try {
+          UIManager.setLookAndFeel(UIManager
+              .getCrossPlatformLookAndFeelClassName());
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        fc.updateUI();
+        try {
+          UIManager.setLookAndFeel(lnf);
+        } catch (UnsupportedLookAndFeelException e) {
+          e.printStackTrace();
+        }
+      }
+    } else {
+      fc.updateUI();
+    }
   }
 }

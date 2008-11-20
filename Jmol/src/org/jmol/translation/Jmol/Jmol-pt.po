@@ -7,14 +7,16 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-10-13 20:27+0200\n"
-"PO-Revision-Date: 2005-12-20 07:33-0000\n"
-"Last-Translator: Metro <portugalfolding@gmail.com>\n"
+"PO-Revision-Date: 2008-11-18 15:28+0000\n"
+"Last-Translator: Tiago Silva <Unknown>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Portuguese\n"
+"X-Launchpad-Export-Date: 2008-11-19 23:36+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: Portugal\n"
+"X-Poedit-Language: Portuguese\n"
 "X-Poedit-Basepath: ../../../..\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
@@ -143,9 +145,8 @@ msgid "Error reading from BufferedReader: {0}"
 msgstr "Erro de leitura em \"BufferedReader\": {0}"
 
 #: org/openscience/jmol/app/DisplayPanel.java:170
-#, fuzzy
 msgid "Delete atoms"
-msgstr "Eliminar átomos"
+msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:187
 msgid "Export Gaussian Input File"
@@ -160,9 +161,8 @@ msgid "Advanced"
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:224
-#, fuzzy
 msgid "Checkpoint File: "
-msgstr "Ficheiros recentes"
+msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:229
 msgid "Amount of Memory:"
@@ -178,7 +178,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:254
 msgid "Method: "
-msgstr ""
+msgstr "Método: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:261
 msgid "Basis Set: "
@@ -193,9 +193,8 @@ msgid "Job Options: "
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:288
-#, fuzzy
 msgid "Molecular Properties"
-msgstr "Propriedades"
+msgstr "Propriedades Moleculares"
 
 #: org/openscience/jmol/app/GaussianDialog.java:294
 msgid "Total Charge: "
@@ -206,18 +205,16 @@ msgid "Multiplicity: "
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:308
-#, fuzzy
 msgid "Selection: "
-msgstr "Seleccionar"
+msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:349
-#, fuzzy
 msgid "File..."
-msgstr "&Ficheiro"
+msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:360
 #: org/openscience/jmol/app/PovrayDialog.java:758
@@ -232,18 +229,16 @@ msgid "Cancel"
 msgstr "Cancelar"
 
 #: org/openscience/jmol/app/GuiMap.java:46
-#, fuzzy
 msgid "&Macros"
-msgstr "Macros"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:47
 msgid "&File"
 msgstr "&Ficheiro"
 
 #: org/openscience/jmol/app/GuiMap.java:48
-#, fuzzy
 msgid "&New"
-msgstr "Novo"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:49
 msgid "&Open"
@@ -262,9 +257,8 @@ msgid "Scrip&t..."
 msgstr "Scrip&t..."
 
 #: org/openscience/jmol/app/GuiMap.java:53
-#, fuzzy
 msgid "AtomSet&Chooser..."
-msgstr "Selector do conjunto de átomos..."
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:54
 msgid "&Save As..."
@@ -275,27 +269,24 @@ msgid "&Export"
 msgstr "&Exportar"
 
 #: org/openscience/jmol/app/GuiMap.java:56
-#, fuzzy
 msgid "Export &Image..."
-msgstr "Exportar Imagem"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:57
 msgid "Save current view as an image."
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:58
-#, fuzzy
 msgid "Export to &Web Page..."
-msgstr "Exportar PDF..."
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:59
 msgid "Export one or more views to a web page."
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:60
-#, fuzzy
 msgid "Render in POV-&Ray..."
-msgstr "Renderizar em 'POV-Ray'"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:61
 #: org/openscience/jmol/app/PovrayDialog.java:113
@@ -319,18 +310,16 @@ msgid "Print view."
 msgstr "Visualização de impressão"
 
 #: org/openscience/jmol/app/GuiMap.java:66
-#, fuzzy
 msgid "&Close"
-msgstr "Fechar"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:67
 msgid "E&xit"
 msgstr "E&xit"
 
 #: org/openscience/jmol/app/GuiMap.java:68
-#, fuzzy
 msgid "Recent &Files..."
-msgstr "Ficheiros recentes..."
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:69
 msgid "&Edit"
@@ -338,9 +327,8 @@ msgstr "&Editar"
 
 #: org/openscience/jmol/app/GuiMap.java:71
 #: org/openscience/jmol/app/GuiMap.java:77
-#, fuzzy
 msgid "Select &All"
-msgstr "Seleccionar todos"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:72
 msgid "Deselect All"
@@ -351,37 +339,32 @@ msgid "Copy &Image"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:74
-#, fuzzy
 msgid "Copy Script"
-msgstr "Rasmol Scripts"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:75
-#, fuzzy
 msgid "Pr&eferences..."
-msgstr "&Preferências..."
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:76
 msgid "&Paste"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:78
-#, fuzzy
 msgid "&Select"
-msgstr "Seleccionar"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:79
-#, fuzzy
 msgid "&All"
-msgstr "Todos"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:80
 #: org/openscience/jmol/app/GuiMap.java:93
 #: org/openscience/jmol/app/GuiMap.java:99
 #: org/openscience/jmol/app/GuiMap.java:105
 #: org/openscience/jmol/app/GuiMap.java:112
-#, fuzzy
 msgid "&None"
-msgstr "Nenhum"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:81
 msgid "Hydrogen"
@@ -404,9 +387,8 @@ msgid "Phosphorus"
 msgstr "Fósforo"
 
 #: org/openscience/jmol/app/GuiMap.java:86
-#, fuzzy
 msgid "Sulfur"
-msgstr "Enxofre"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:87
 msgid "Amino"
@@ -429,95 +411,83 @@ msgid "&Display"
 msgstr "&Display"
 
 #: org/openscience/jmol/app/GuiMap.java:92
-#, fuzzy
 msgid "&Atom"
-msgstr "Átomo"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:94
 #: org/openscience/jmol/app/GuiMap.java:95
 #: org/openscience/jmol/app/GuiMap.java:96
 #: org/openscience/jmol/app/GuiMap.java:97
-#, fuzzy, java-format
+#, java-format
 msgid "{0}% van der Waals"
-msgstr "20% vanderWaals"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:98
-#, fuzzy
 msgid "&Bond"
-msgstr "Ligação"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:100
-#, fuzzy
 msgid "&Wireframe"
-msgstr "LigarFrame"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:101
 #: org/openscience/jmol/app/GuiMap.java:102
 #: org/openscience/jmol/app/GuiMap.java:103
 #: org/openscience/jmol/app/GuiMap.java:115
 #: org/openscience/jmol/app/GuiMap.java:116
-#, fuzzy, java-format
+#, java-format
 msgid "{0} Å"
-msgstr "0.1 Å"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:104
-#, fuzzy
 msgid "&Label"
-msgstr "Etiqueta"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:106
-#, fuzzy
 msgid "&Symbol"
-msgstr "Simbolo"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:107
-#, fuzzy
 msgid "&Name"
-msgstr "Nome"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:108
-#, fuzzy
 msgid "&Number"
-msgstr "Número"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:109
-#, fuzzy
 msgid "&Centered"
-msgstr "Centrado"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:110
-#, fuzzy
 msgid "&Upper right"
-msgstr "Superior direito"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:111
-#, fuzzy
 msgid "&Vector"
-msgstr "&Vectores"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:113
-#, fuzzy
 msgid "&On"
-msgstr "On/Ligado"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:114
-#, fuzzy, java-format
+#, java-format
 msgid "{0} pixels"
-msgstr "3 pixeis"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:117
 #: org/openscience/jmol/app/GuiMap.java:118
 #: org/openscience/jmol/app/GuiMap.java:119
 #: org/openscience/jmol/app/GuiMap.java:120
 #: org/openscience/jmol/app/GuiMap.java:121
-#, fuzzy, java-format
+#, java-format
 msgid "Scale {0}"
-msgstr "Escala 0.2"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:122
-#, fuzzy
 msgid "&Zoom"
-msgstr "Zoom"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:123
 #: org/openscience/jmol/app/GuiMap.java:124
@@ -529,28 +499,24 @@ msgid "{0}%"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:128
-#, fuzzy
 msgid "&Perspective Depth"
-msgstr "Profundidade da perpectiva"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:129
-#, fuzzy
 msgid "A&xes"
-msgstr "Eixos"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:130
-#, fuzzy
 msgid "B&ounding Box"
-msgstr "Caixa de ligação"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:131
 msgid "&Hydrogens"
 msgstr "&Hidrogénios"
 
 #: org/openscience/jmol/app/GuiMap.java:132
-#, fuzzy
 msgid "V&ectors"
-msgstr "Vectores"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:133
 #: org/openscience/jmol/app/GuiMap.java:144
@@ -562,39 +528,32 @@ msgid "&View"
 msgstr "&Ver"
 
 #: org/openscience/jmol/app/GuiMap.java:135
-#, fuzzy
 msgid "&Front"
-msgstr "Frente"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:136
-#, fuzzy
 msgid "&Top"
-msgstr "Topo"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:137
-#, fuzzy
 msgid "&Bottom"
-msgstr "Fundo"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:138
-#, fuzzy
 msgid "&Right"
-msgstr "Direita"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:139
-#, fuzzy
 msgid "&Left"
-msgstr "Esquerda"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:140
-#, fuzzy
 msgid "Tr&ansform..."
-msgstr "Transformar..."
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:141
-#, fuzzy
 msgid "Define &Center"
-msgstr "Definir centro"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:142
 msgid "&Tools"
@@ -609,34 +568,28 @@ msgid "Click atoms to measure distances"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:146
-#, fuzzy
 msgid "Distance &Units"
-msgstr "Unidades de distância"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:147
-#, fuzzy
 msgid "&Nanometers 1E-9"
-msgstr "Nanometros 1E-9"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:148
-#, fuzzy
 msgid "&Angstroms 1E-10"
-msgstr "Angstroms 1E-10"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:149
-#, fuzzy
 msgid "&Picometers 1E-12"
-msgstr "Picometros 1E-12"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:150
-#, fuzzy
 msgid "&Animate..."
-msgstr "Animar..."
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:151
-#, fuzzy
 msgid "&Vibrate..."
-msgstr "Vibrar..."
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:152
 msgid "&Graph..."
@@ -651,69 +604,56 @@ msgid "&Crystal Properties"
 msgstr "&Propriedades do Cristal"
 
 #: org/openscience/jmol/app/GuiMap.java:155
-#, fuzzy
 msgid "&Once"
-msgstr "Uma vez"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:156
-#, fuzzy
 msgid "&Loop"
-msgstr "Curva"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:157
-#, fuzzy
 msgid "P&alindrome"
-msgstr "Palindroma"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:158
-#, fuzzy
 msgid "&Stop animation"
-msgstr "Parar a animação"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:159
-#, fuzzy
 msgid "&Rewind to first frame"
-msgstr "Rebobinar para o primeiro frame"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:161
-#, fuzzy
 msgid "Go to &next frame"
-msgstr "Ir para o próximo frame"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:163
-#, fuzzy
 msgid "Go to &previous frame"
-msgstr "Ir para o frame anterior"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:165
-#, fuzzy
 msgid "Go to &last frame"
-msgstr "Ir para o próximo frame"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:167
-#, fuzzy
 msgid "Start &vibration"
-msgstr "Iniciar a vibração"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:168
-#, fuzzy
 msgid "&Stop vibration"
-msgstr "Parar a vibração"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:169
-#, fuzzy
 msgid "&First frequency"
-msgstr "Primeira frequência"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:170
-#, fuzzy
 msgid "&Next frequency"
-msgstr "Próxima freqência"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:171
-#, fuzzy
 msgid "&Previous frequency"
-msgstr "Frequência anterior"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:172
 msgid "&Help"
@@ -728,9 +668,8 @@ msgid "What's New"
 msgstr "O que há de novo"
 
 #: org/openscience/jmol/app/GuiMap.java:176
-#, fuzzy
 msgid "Jmol Java &Console"
-msgstr "Consola Jmol"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:177
 msgid "Hydrogens"
@@ -762,9 +701,8 @@ msgid "File Preview (requires restarting Jmol)"
 msgstr "Pré-visualização do ficheiro (requer reiniciação do Jmol)"
 
 #: org/openscience/jmol/app/GuiMap.java:184
-#, fuzzy
 msgid "Clear console button (requires restarting Jmol)"
-msgstr "Pré-visualização do ficheiro (requer reiniciação do Jmol)"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:185
 #: org/openscience/jmol/app/GuiMap.java:186
@@ -889,9 +827,8 @@ msgid "script file to execute"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:423
-#, fuzzy
 msgid "Jmol script to execute"
-msgstr "Consola Jmol"
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:434
 msgid "property=value"
@@ -902,9 +839,9 @@ msgid "supported options are given below"
 msgstr "opções suportadas são referidas em baixo"
 
 #: org/openscience/jmol/app/Jmol.java:442
-#, fuzzy, java-format
+#, java-format
 msgid "window width x height, e.g. {0}"
-msgstr "tamanho da janela 500x500"
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:452
 msgid ""
@@ -931,9 +868,8 @@ msgid "Executing script..."
 msgstr "Executando um script..."
 
 #: org/openscience/jmol/app/Jmol.java:686
-#, fuzzy
 msgid "Jmol Java Console"
-msgstr "Consola Jmol"
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:694
 #: org/openscience/jmol/app/ScriptWindow.java:96
@@ -942,7 +878,7 @@ msgstr "Limpar"
 
 #: org/openscience/jmol/app/Jmol.java:708
 msgid "Could not create ConsoleTextArea: "
-msgstr "Não foi possível criar 'ConsoleTextArea':"
+msgstr "Não foi possível criar 'ConsoleTextArea': "
 
 #: org/openscience/jmol/app/Jmol.java:788
 msgid "Closing Jmol..."
@@ -981,17 +917,13 @@ msgid "Conversion from Jmol to POV-Ray"
 msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:155
-#, fuzzy
 msgid "File Name:"
-msgstr "Filename Stem"
+msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
-#, fuzzy
 msgid ""
 "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 msgstr ""
-"Frame único: eg 'caffine' -> 'caffine.pov';  frame múltiplo: eg 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:167
 msgid "Working Directory"
@@ -1010,23 +942,20 @@ msgid "Run POV-Ray directly"
 msgstr "Executar POV-Ray directamente"
 
 #: org/openscience/jmol/app/PovrayDialog.java:196
-#, fuzzy
 msgid "Launch POV-Ray from within Jmol"
-msgstr "Lançar povray dentro do Jmol"
+msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:241
 msgid "Display While Rendering"
 msgstr "Visualizar enquanto renderiza"
 
 #: org/openscience/jmol/app/PovrayDialog.java:243
-#, fuzzy
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr "O povray pode tentar exibir enquanto renderiza?"
+msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:266
-#, fuzzy
 msgid "width:"
-msgstr "Largura:"
+msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:268
 msgid "Image width"
@@ -1034,9 +963,8 @@ msgstr "Largura da imagem"
 
 #: org/openscience/jmol/app/PovrayDialog.java:283
 #: org/openscience/jmol/app/webexport/PopInJmol.java:61
-#, fuzzy
 msgid "height:"
-msgstr "Altura"
+msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:285
 msgid "Image height"
@@ -1044,7 +972,7 @@ msgstr "Altura da imagem"
 
 #: org/openscience/jmol/app/PovrayDialog.java:302
 msgid "Fixed ratio : "
-msgstr "Razão fixa:"
+msgstr "Razão fixa: "
 
 #: org/openscience/jmol/app/PovrayDialog.java:304
 msgid "Use a fixed ratio for width:height"
@@ -1092,16 +1020,15 @@ msgstr "Renderizar imagem em vários passos"
 
 #: org/openscience/jmol/app/PovrayDialog.java:409
 msgid "Start size : "
-msgstr "Tamanho inicial:"
+msgstr "Tamanho inicial: "
 
 #: org/openscience/jmol/app/PovrayDialog.java:411
-#, fuzzy
 msgid "Initial size of the tiles"
-msgstr "Tamanho inicial dos mosaicos"
+msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:427
 msgid "End size : "
-msgstr "Tamanho final:"
+msgstr "Tamanho final: "
 
 #: org/openscience/jmol/app/PovrayDialog.java:429
 msgid "Final size of the tiles"
@@ -1109,9 +1036,8 @@ msgstr "Tamanho final dos mosaicos"
 
 #: org/openscience/jmol/app/PovrayDialog.java:450
 #: org/openscience/jmol/app/PovrayDialog.java:452
-#, fuzzy
 msgid "Location of the POV-Ray Executable"
-msgstr "Localização do executável povray"
+msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:489
 #: org/openscience/jmol/app/PovrayDialog.java:756
@@ -1119,9 +1045,8 @@ msgid "Go!"
 msgstr "Avançar"
 
 #: org/openscience/jmol/app/PovrayDialog.java:491
-#, fuzzy
 msgid "Save file and possibly launch POV-Ray"
-msgstr "Gravar ficheiro e possivelmente lançar povray"
+msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:502
 msgid "Cancel this dialog without saving"
@@ -1191,7 +1116,8 @@ msgstr "(Angstroms)"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:417
 msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr "Tolerância da ligação- somatório de dois raios covalentes+ este valor"
+msgstr ""
+"Tolerância da ligação- somatório de dois raios covalentes+ este valor"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:468
 msgid "Minimum Bonding Distance"
@@ -1206,9 +1132,8 @@ msgid "Open"
 msgstr "Abrir"
 
 #: org/openscience/jmol/app/ScriptWindow.java:72
-#, fuzzy
 msgid "Jmol Script Console"
-msgstr "Consola Jmol"
+msgstr ""
 
 #: org/openscience/jmol/app/ScriptWindow.java:87
 msgid "Run"
@@ -1223,9 +1148,8 @@ msgid "History"
 msgstr ""
 
 #: org/openscience/jmol/app/ScriptWindow.java:104
-#, fuzzy
 msgid "State"
-msgstr "Gravar"
+msgstr ""
 
 #: org/openscience/jmol/app/ScriptWindow.java:108
 msgid "Help"
@@ -1378,9 +1302,8 @@ msgid "Add Present Jmol State as Instance..."
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:144
-#, fuzzy
 msgid "Show Selected"
-msgstr "Seleccionar"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:146
 msgid "Delete Selected"
@@ -1400,9 +1323,8 @@ msgid "Cartoon of Page"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:217
-#, fuzzy
 msgid "Save HTML as..."
-msgstr "&Gravar como..."
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:227
 msgid "Relative server path to jar files:"
@@ -1447,9 +1369,9 @@ msgid "Call to FileWriter unsuccessful."
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:426
-#, fuzzy, java-format
+#, java-format
 msgid "Using directory {0}"
-msgstr "Directoria de trabalho"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:427
 msgid "adding JmolPopIn.js"
@@ -1493,73 +1415,23 @@ msgstr ""
 msgid "compressing large data file to"
 msgstr ""
 
+#~ msgid "Select Atoms"
+#~ msgstr "Escolha de átomos"
+
 #~ msgid "Preview"
 #~ msgstr "Prever"
 
-#, fuzzy
-#~ msgid "Directory"
-#~ msgstr "Directoria de trabalho"
-
-#, fuzzy
-#~ msgid "Open selected directory"
-#~ msgstr "Grupo de átomos"
+#~ msgid "Make crystal..."
+#~ msgstr "Fazer cristal..."
 
 #~ msgid "Name"
 #~ msgstr "Nome"
 
-#, fuzzy
-#~ msgid "Open selected file"
-#~ msgstr "Grupo de átomos"
-
-#, fuzzy
-#~ msgid "Save selected file"
-#~ msgstr "Grupo de átomos"
-
-#, fuzzy
-#~ msgid "Save In:"
-#~ msgstr "Gravar"
-
-#, fuzzy
-#~ msgid "No"
-#~ msgstr "Nenhum"
-
-#~ msgid "Initializing AtomSetChooser Window..."
-#~ msgstr "Inicializando a Janeal 'AtomSetChooser'..."
-
-#~ msgid "Setting up File Choosers..."
-#~ msgstr "Definir 'File Choosers'..."
-
-#~ msgid "Image Type"
-#~ msgstr "Tipo de imagem"
-
-#~ msgid "JPEG Quality"
-#~ msgstr "Qualidade JPEG"
-
-#~ msgid "Render in pov-ray."
-#~ msgstr "Renderizar em \"pov-ray\""
-
-#, fuzzy
-#~ msgid "&Measurements..."
-#~ msgstr "Medições..."
-
 #~ msgid "Measurements..."
 #~ msgstr "Medições..."
 
-#~ msgid "Jmol-to-POV-Ray Conversion"
-#~ msgstr "Conversão Jmol para POV-Ray"
-
-#, fuzzy
-#~ msgid "Filename"
-#~ msgstr "Filename Stem"
-
-#~ msgid "Height : "
-#~ msgstr "Altura"
-
-#~ msgid "POV-Ray Executable Location"
-#~ msgstr "Localização do executável Pov-Ray"
-
-#~ msgid "Select Atoms"
-#~ msgstr "Escolha de átomos"
+#~ msgid "Render in pov-ray."
+#~ msgstr "Renderizar em \"pov-ray\""
 
 #~ msgid "Select an atom or region."
 #~ msgstr "Escolher átomo ou região"
@@ -1567,28 +1439,38 @@ msgstr ""
 #~ msgid "View measurement table."
 #~ msgstr "Ver tabela de medições"
 
-#~ msgid "Make crystal..."
-#~ msgstr "Fazer cristal..."
+#~ msgid "Image Type"
+#~ msgstr "Tipo de imagem"
 
-#, fuzzy
-#~ msgid "Export view to an image or script file."
-#~ msgstr "Exportar para um ficheiro de imagem"
+#~ msgid "JPEG Quality"
+#~ msgstr "Qualidade JPEG"
 
-#, fuzzy
-#~ msgid "Export &PDF..."
-#~ msgstr "Exportar PDF..."
+#~ msgid "Initializing AtomSetChooser Window..."
+#~ msgstr "Inicializando a Janeal 'AtomSetChooser'..."
+
+#~ msgid "Setting up File Choosers..."
+#~ msgstr "Definir 'File Choosers'..."
+
+#~ msgid "Jmol-to-POV-Ray Conversion"
+#~ msgstr "Conversão Jmol para POV-Ray"
+
+#~ msgid "Height : "
+#~ msgstr "Altura "
+
+#~ msgid "POV-Ray Executable Location"
+#~ msgstr "Localização do executável Pov-Ray"
 
 #~ msgid "Image size"
 #~ msgstr "Tamanho da imagem"
 
 #~ msgid "Output format : "
-#~ msgstr "Formato de saida"
+#~ msgstr "Formato de saida "
 
 #~ msgid "Select the file format of the output file"
 #~ msgstr "Seleccionar o formato do ficheiro"
 
 #~ msgid "Command Line to Execute"
-#~ msgstr " linha de comandos para executar"
+#~ msgstr "linha de comandos para executar"
 
 #~ msgid "The actual command which will be executed"
 #~ msgstr "O comando actual irá ser executado"
@@ -1623,14 +1505,6 @@ msgstr ""
 
 #~ msgid "File not loaded"
 #~ msgstr "Ficheiro não carregado"
-
-#, fuzzy
-#~ msgid "no display"
-#~ msgstr "Mostrar"
-
-#, fuzzy
-#~ msgid "Jmol executing script ..."
-#~ msgstr "Executando um script..."
 
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "Rotação de FrameLi&gado"

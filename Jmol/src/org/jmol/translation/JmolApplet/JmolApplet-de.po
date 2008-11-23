@@ -11,13 +11,13 @@ msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-11-20 07:25+0100\n"
-"PO-Revision-Date: 2008-11-09 12:05+0000\n"
+"PO-Revision-Date: 2008-11-23 16:25+0000\n"
 "Last-Translator: Keruskerfuerst <Unknown>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-11-19 23:28+0000\n"
+"X-Launchpad-Export-Date: 2008-11-23 20:21+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/Console.java:40
@@ -209,7 +209,7 @@ msgstr "Attribute"
 
 #: org/jmol/export/dialog/Dialog.java:431
 msgid "Modified"
-msgstr "Geändert am"
+msgstr "Verändert"
 
 #: org/jmol/export/dialog/Dialog.java:432
 msgid "Generic File"
@@ -352,9 +352,8 @@ msgid "German"
 msgstr "Deutsch"
 
 #: org/jmol/i18n/GT.java:127
-#, fuzzy
 msgid "Greek"
-msgstr "Grün"
+msgstr "Griechisch"
 
 #: org/jmol/i18n/GT.java:128
 msgid "Hungarian"
@@ -433,7 +432,7 @@ msgstr "Alle(s)"
 
 #: org/jmol/popup/JmolPopup.java:555
 msgid "Minimize"
-msgstr ""
+msgstr "Minimieren"
 
 #: org/jmol/popup/JmolPopup.java:639
 msgid "Java memory usage"
@@ -2026,8 +2025,8 @@ msgstr "FEHLER: Kann der Variable keinen Boolschen Wert zuweisen: {0}"
 #~ msgstr "Drahtgitter-Rotation"
 
 #~ msgid ""
-#~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
-#~ "for more information"
+#~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org for "
+#~ "more information"
 #~ msgstr ""
 #~ "Jmol-Applet - Teil des OpenScience-Projekts. Mehr Informationen unter "
 #~ "http://www.jmol.org."

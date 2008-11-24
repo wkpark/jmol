@@ -4811,9 +4811,9 @@
   <fah_proj number="2445" name="p2445_" public="n"
     server="171.65.103.160" preferred="42" deadline="93"
     credit="2435" frames="100" code="G" contact="ppetrone"/>
-  <fah_proj number="2446" name="p2446_" public="n"
+  <fah_proj number="2446" name="p2446_Protein" public="n" file="xyz"
     server="171.65.103.160" preferred="42" deadline="93"
-    credit="2435" frames="100" code="G" contact="ppetrone"/>
+    credit="2435" frames="100" code="G" contact="ppetrone" contrib="Hyperlife"/>
   <fah_proj number="2450" name="p2450_GROtesk MACabre and Siniste drgpmfr" public="y"
     server="171.65.103.162" atoms="54992" preferred="30" deadline="82"
     credit="500" frames="100" code="G" contact="ppetrone"/>

@@ -3239,73 +3239,53 @@ class Eval {
     // stereo color1 color2 6 
     // stereo redgreen 5
 
-    float degrees = -5;
+    float degrees = TransformManager.DEFAULT_STEREO_DEGREES;
     boolean degreesSeen = false;
-    int[] colors = new int[2];
+    int[] colors = null;
     int colorpt = 0;
-    String state = "";
     for (int i = 1; i < statementLength; ++i) {
       if (isColorParam(i)) {
         if (colorpt > 1)
           error(ERROR_badArgumentCount);
+        if (colorpt == 0)
+          colors = new int[2];
         if (!degreesSeen)
           degrees = 3;
-        colors[colorpt++] = getArgbParam(i);
+        colors[colorpt] = getArgbParam(i);
+        if (colorpt++ == 0)
+          colors[1] = ~colors[0];
         i = iToken;
-        if (colorpt == 1)
-          colors[colorpt] = ~colors[0];
-        state += " " + Escape.escapeColor(colors[colorpt - 1]);
         continue;
       }
       switch (getToken(i).tok) {
       case Token.on:
         checkLength(2);
         iToken = 1;
-        state = " on";
         break;
       case Token.off:
         checkLength(2);
         iToken = 1;
         stereoMode = JmolConstants.STEREO_NONE;
-        state = " off";
         break;
       case Token.integer:
       case Token.decimal:
         degrees = floatParameter(i);
         degreesSeen = true;
-        state += " " + degrees;
         break;
       case Token.identifier:
-        String id = parameterAsString(i);
-        state += " " + id;
         if (!degreesSeen)
           degrees = 3;
-        if (id.equalsIgnoreCase("redblue")) {
-          stereoMode = JmolConstants.STEREO_REDBLUE;
+        stereoMode = JmolConstants.getStereoMode(parameterAsString(i));
+        if (stereoMode != JmolConstants.STEREO_UNKNOWN)
           break;
-        }
-        if (id.equalsIgnoreCase("redcyan")) {
-          stereoMode = JmolConstants.STEREO_REDCYAN;
-          break;
-        }
-        if (id.equalsIgnoreCase("redgreen")) {
-          stereoMode = JmolConstants.STEREO_REDGREEN;
-          break;
-        }
       // fall into
       default:
         error(ERROR_invalidArgument);
       }
     }
-    setFloatProperty("stereoDegrees", degrees);
-    checkLength(iToken + 1);
     if (isSyntaxCheck)
       return;
-    if (colorpt > 0) {
-      viewer.setStereoMode(colors, state);
-    } else {
-      viewer.setStereoMode(stereoMode, state);
-    }
+    viewer.setStereoMode(colors, stereoMode, degrees);
   }
 
   private void connect(int index) throws ScriptException {

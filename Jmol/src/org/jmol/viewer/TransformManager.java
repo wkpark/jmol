@@ -163,6 +163,13 @@ abstract class TransformManager {
     StateManager.appendCmd(commands, "center "
         + Escape.escape(fixedRotationCenter));
     StateManager.appendCmd(commands, getMoveToText(0, false));
+    if (stereoMode != JmolConstants.STEREO_NONE)
+      StateManager.appendCmd(commands, "stereo "
+          + (stereoColors == null ? 
+              JmolConstants.getStereoModeName(stereoMode)
+              : Escape.escapeColor(stereoColors[0])
+                  + " " + Escape.escapeColor(stereoColors[1]))
+          + " " + viewer.getStereoDegrees());
     if (!isNavigationMode && !zoomEnabled)
       StateManager.appendCmd(commands, "zoom off");
     commands.append("  slab ").append(slabPercentSetting).append(";depth ")
@@ -2005,6 +2012,7 @@ abstract class TransformManager {
   // stereo support
   ////////////////////////////////////////////////////////////////
 
+  final static int DEFAULT_STEREO_DEGREES = -5;
   int stereoMode;
   int[] stereoColors;
 

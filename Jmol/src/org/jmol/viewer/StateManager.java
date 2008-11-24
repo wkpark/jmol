@@ -530,7 +530,6 @@ public class StateManager {
 
     boolean allowRotateSelected = false;
     boolean perspectiveDepth = true;
-    int stereoDegrees = 5;
     float visualRange = 5f;
 
     //solvent
@@ -680,8 +679,6 @@ public class StateManager {
       if (backgroundImageFileName != null)
         appendCmd(str, "background IMAGE /*file*/" + Escape.escape(backgroundImageFileName));
       str.append(getSpecularState());
-      if (stereoState != null)
-        appendCmd(str, "stereo" + stereoState);
       appendCmd(str, "statusReporting  = " + statusReporting);
       if (sfunc != null)
         str.append("end function;\n\n");
@@ -1238,7 +1235,7 @@ public class StateManager {
       setParameterValue("spinZ", 0);
       setParameterValue("spinFps", 30);
       setParameterValue("ssbondsBackbone", ssbondsBackbone);
-      setParameterValue("stereoDegrees", stereoDegrees);
+      setParameterValue("stereoDegrees", TransformManager.DEFAULT_STEREO_DEGREES);
       setParameterValue("statusReporting", statusReporting);
       setParameterValue("strandCount", strandCountForStrands);
       setParameterValue("strandCountForStrands", strandCountForStrands);

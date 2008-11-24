@@ -891,13 +891,14 @@ abstract public class ModelCollection extends BondCollection {
 
   public void calculateStraightness() {
     char ctype = (viewer.getTestFlag3() ? 's' : 'S');
+    char qtype = (viewer.getTestFlag4() ? 'p' : 'c');
     // testflag3 ON  --> Hanson's original normal-based straightness
     // testflag3 OFF --> Kohler's new quaternion-based straightness
     for (int i = modelCount; --i >= 0;) {
       Model model = models[i];
       int nPoly = model.getBioPolymerCount();
       for (int p = 0; p < nPoly; p++)
-        model.bioPolymers[p].getPdbData(ctype,'p', 2, false, null, null, null, null, false, new BitSet());
+        model.bioPolymers[p].getPdbData(ctype, qtype, 2, false, null, null, null, null, false, new BitSet());
     }
   }
 

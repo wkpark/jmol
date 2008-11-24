@@ -89,17 +89,19 @@ public class BallsRenderer extends ShapeRenderer {
         renderBall(atom);
     }
 
-    if (modelSet.getAtomCount() > 0 && viewer.getShowNavigationPoint() && !isGenerator) {
-      //testing here
+    if (modelSet.getAtomCount() > 0
+        && viewer.getShowNavigationPoint()
+        && !isGenerator
+        && g3d.setColix(viewer.getNavigationCentered() ? Graphics3D.GOLD
+            : Graphics3D.RED)) {
       Point3f T = new Point3f(viewer.getNavigationOffset());
-      int x = Math.max(Math.min(viewer.getScreenWidth(),(int) T.x),0);
-      int y = Math.max(Math.min(viewer.getScreenHeight(),(int) T.y),0);
+      int x = Math.max(Math.min(viewer.getScreenWidth(), (int) T.x), 0);
+      int y = Math.max(Math.min(viewer.getScreenHeight(), (int) T.y), 0);
       int z = (int) T.z + 1;
-      if (!g3d.setColix(viewer.getNavigationCentered() ? Graphics3D.GOLD : Graphics3D.RED))
-        return;
+      //TODO: fix for antialiasDisplay
       g3d.drawRect(x - 10, y, z, 0, 20, 1);
       g3d.drawRect(x, y - 10, z, 0, 1, 20);
-      g3d.drawRect(x - 4, y -4, z, 0, 10, 10);
+      g3d.drawRect(x - 4, y - 4, z, 0, 10, 10);
     }
   }
 

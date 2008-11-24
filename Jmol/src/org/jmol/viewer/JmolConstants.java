@@ -2860,14 +2860,28 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   ////////////////////////////////////////////////////////////////
   // Stereo modes
   ////////////////////////////////////////////////////////////////
-  public final static int STEREO_NONE     = 0;
-  public final static int STEREO_DOUBLE   = 1;
-  public final static int STEREO_REDCYAN  = 2;
-  public final static int STEREO_REDBLUE  = 3;
-  public final static int STEREO_REDGREEN = 4;
-  public final static int STEREO_CUSTOM   = 5;
+  final static int STEREO_UNKNOWN  = -1;
+  final static int STEREO_NONE     = 0;
+  final static int STEREO_DOUBLE   = 1;
+  final static int STEREO_REDCYAN  = 2;
+  final static int STEREO_REDBLUE  = 3;
+  final static int STEREO_REDGREEN = 4;
+  final static int STEREO_CUSTOM   = 5;
+  
+  private final static String[] stereoModes = 
+     { "OFF", "", "REDCYAN", "REDBLUE", "REDGREEN" };
 
+  static int getStereoMode(String id) {
+    for (int i = 0; i < STEREO_CUSTOM; i++)
+      if (id.equalsIgnoreCase(stereoModes[i]))
+        return i;
+    return STEREO_UNKNOWN;
+  }
 
+  static String getStereoModeName(int mode) {
+    return stereoModes[mode];
+  }
+  
   // all of these things are compile-time constants
   // if they are false then the compiler should take them away
   static {

@@ -3518,10 +3518,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String strErrorMessage = eval.getErrorMessage();
     if (isOK) {
       isScriptQueued = isQueued;
-      statusManager.setStatusScriptStarted(++scriptIndex, strScript);
+      if (!isQuiet)
+        statusManager.setStatusScriptStarted(++scriptIndex, strScript);
       eval.runEval(checkScriptOnly, !checkScriptOnly || fileOpenCheck,
           historyDisabled, listCommands);
-      statusManager.setScriptStatus("Jmol script terminated", eval
+      if (!isQuiet)
+        statusManager.setScriptStatus("Jmol script terminated", eval
           .getErrorMessage(), 1 + eval.getExecutionWalltime());
       if (isScriptFile && writeInfo != null)
         createImage(writeInfo);
@@ -4436,7 +4438,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       if (key.equalsIgnoreCase("stereoDegrees")) {
         transformManager.setStereoDegrees(value);
-        return true;
+        break;
       }
       if (key.equalsIgnoreCase("vectorScale")) {
         //public -- no need to set
@@ -5481,7 +5483,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setTransformManagerDefaults() {
     transformManager.setCameraDepthPercent(global.cameraDepth);
     transformManager.setPerspectiveDepth(global.perspectiveDepth);
-    transformManager.setStereoDegrees(global.stereoDegrees);
+    transformManager.setStereoDegrees(TransformManager.DEFAULT_STEREO_DEGREES);
     transformManager.setVisualRange(global.visualRange);
     transformManager.setSpinOn(false);
     transformManager.setVibrationPeriod(0);
@@ -5950,19 +5952,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // stereo support
   // //////////////////////////////////////////////////////////////
 
-  void setStereoMode(int stereoMode, String state) {
-    //Eval -- ok; this is set specially
-    global.stereoState = state;
-    transformManager.setStereoMode(stereoMode);
+  void setStereoMode(int[] twoColors, int stereoMode, float degrees) {
+    setFloatProperty("stereoDegrees", degrees);
     setBooleanProperty("greyscaleRendering",
         stereoMode > JmolConstants.STEREO_DOUBLE);
-  }
-
-  void setStereoMode(int[] twoColors, String state) {
-    //Eval -- also set specially
-    global.stereoState = state;
-    transformManager.setStereoMode(twoColors);
-    setBooleanProperty("greyscaleRendering", true);
+    if (twoColors != null)
+      transformManager.setStereoMode(twoColors);
+    else
+      transformManager.setStereoMode(stereoMode);
   }
 
   int getStereoMode() {

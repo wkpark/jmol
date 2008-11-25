@@ -8904,7 +8904,7 @@ class Eval {
       }
     }
     error(ERROR_what, "SAVE",
-        "bonds? coords? orientation? selection? state? structure?");
+        "bonds? coordinates? orientation? selection? state? structure?");
   }
 
   private void restore() throws ScriptException {

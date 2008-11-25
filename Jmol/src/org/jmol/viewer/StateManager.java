@@ -169,7 +169,22 @@ public class StateManager {
     return names;
   }
 
+  private void deleteSaved(String type) {
+    Enumeration e = saved.keys();
+    while (e.hasMoreElements()) {
+      String name = (String) e.nextElement();
+      if (name.startsWith(type)) {
+        saved.remove(name);
+        Logger.debug("deleted " + name);
+      }
+    }
+  }
+
   void saveSelection(String saveName, BitSet bsSelected) {
+    if (saveName.equalsIgnoreCase("DELETE")) {
+      deleteSaved("Selected_");
+      return;
+    }
     saveName = lastSelected = "Selected_" + saveName;
     saved.put(saveName, BitSetUtil.copy(bsSelected));
   }
@@ -187,6 +202,10 @@ public class StateManager {
   }
 
   void saveState(String saveName) {
+    if (saveName.equalsIgnoreCase("DELETE")) {
+      deleteSaved("State_");
+      return;
+    }
     saveName = lastState = "State_" + saveName;
     saved.put(saveName, viewer.getStateInfo());
   }
@@ -210,6 +229,10 @@ public class StateManager {
    }
    */
   void saveStructure(String saveName) {
+    if (saveName.equalsIgnoreCase("DELETE")) {
+      deleteSaved("Shape_");
+      return;
+    }
     saveName = lastShape = "Shape_" + saveName;
     saved.put(saveName, viewer.getStructureState());
   }
@@ -221,6 +244,10 @@ public class StateManager {
   }
 
   void saveCoordinates(String saveName, BitSet bsSelected) {
+    if (saveName.equalsIgnoreCase("DELETE")) {
+      deleteSaved("Coordinates_");
+      return;
+    }
     saveName = lastCoordinates = "Coordinates_" + saveName;
     saved.put(saveName, viewer.getCoordinateState(bsSelected));
   }
@@ -237,6 +264,10 @@ public class StateManager {
   }
 
   void saveOrientation(String saveName) {
+    if (saveName.equalsIgnoreCase("DELETE")) {
+      deleteSaved("Orientation_");
+      return;
+    }
     Orientation o = new Orientation();
     o.saveName = lastOrientation = "Orientation_" + saveName;
     saved.put(o.saveName, o);
@@ -307,6 +338,10 @@ public class StateManager {
   }
 
   void saveBonds(String saveName) {
+    if (saveName.equalsIgnoreCase("DELETE")) {
+      deleteSaved("Bonds_");
+      return;
+    }
     Connections b = new Connections();
     b.saveName = lastConnections = "Bonds_" + saveName;
     saved.put(b.saveName, b);

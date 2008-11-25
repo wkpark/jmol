@@ -298,12 +298,14 @@ class StatusManager {
   boolean drivingSync = false;
   boolean isSynced = false;
   boolean syncDisabled = false;
+  boolean stereoSync = false;
   
   final static int SYNC_OFF = 0;
   final static int SYNC_DRIVER = 1;
   final static int SYNC_SLAVE = 2;
   final static int SYNC_DISABLE = 3;
   final static int SYNC_ENABLE = 4;
+  final static int SYNC_STEREO = 5;
   
   void setSyncDriver(int syncMode) {
  
@@ -311,7 +313,12 @@ class StatusManager {
     //  0 off
     //  1 driving on as driver
     //  2 sync    turn on, but set as slave
+    //  5 stereo
     //System.out.println(viewer.getHtmlName() +" setting mode=" + syncMode);
+    if (stereoSync && syncMode != SYNC_ENABLE) {
+      syncSend(Viewer.SYNC_NO_GRAPHICS_MESSAGE, "*");
+      stereoSync = false;
+    }
     switch (syncMode) {
     case SYNC_ENABLE:
       if (!syncDisabled)
@@ -320,6 +327,11 @@ class StatusManager {
       break;
     case SYNC_DISABLE:
       syncDisabled = true;
+      break;
+    case SYNC_STEREO:
+      drivingSync = true;
+      isSynced = true;
+      stereoSync = true;
       break;
     case SYNC_DRIVER:
       drivingSync = true;

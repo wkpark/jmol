@@ -5263,7 +5263,7 @@ class Eval {
       break;
     case 3:
       applet = parameterAsString(1);
-      text = parameterAsString(2);
+      text = (tokAt(2) == Token.stereo ? Viewer.SYNC_GRAPHICS_MESSAGE : parameterAsString(2));
       break;
     }
     if (isSyntaxCheck)

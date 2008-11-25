@@ -169,7 +169,7 @@ abstract class TransformManager {
               JmolConstants.getStereoModeName(stereoMode)
               : Escape.escapeColor(stereoColors[0])
                   + " " + Escape.escapeColor(stereoColors[1]))
-          + " " + viewer.getStereoDegrees());
+          + " " + stereoDegrees);
     if (!isNavigationMode && !zoomEnabled)
       StateManager.appendCmd(commands, "zoom off");
     commands.append("  slab ").append(slabPercentSetting).append(";depth ")
@@ -2026,12 +2026,12 @@ abstract class TransformManager {
     this.stereoMode = stereoMode;
   }
 
-  float stereoDegrees; // set in state manager
-  float stereoRadians = 5 * radiansPerDegree;
+  float stereoDegrees = Float.NaN; // set in state manager
+  float stereoRadians;
 
   void setStereoDegrees(float stereoDegrees) {
     this.stereoDegrees = stereoDegrees;
-    this.stereoRadians = stereoDegrees * radiansPerDegree;
+    stereoRadians = stereoDegrees * radiansPerDegree;
   }
 
   boolean stereoFrame;
@@ -2040,12 +2040,10 @@ abstract class TransformManager {
 
   synchronized Matrix3f getStereoRotationMatrix(boolean stereoFrame) {
     this.stereoFrame = stereoFrame;
-    if (stereoFrame) {
-      matrixTemp3.rotY(-stereoRadians);
-      matrixStereo.mul(matrixTemp3, matrixRotate);
-    } else {
-      matrixStereo.set(matrixRotate);
-    }
+    if (!stereoFrame)
+      return matrixRotate;
+    matrixTemp3.rotY(-stereoRadians);
+    matrixStereo.mul(matrixTemp3, matrixRotate);
     return matrixStereo;
   }
 

@@ -3154,7 +3154,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     dim.width = Math.min(dim.width, maximumSize);
     int height = dim.height;
     int width = dim.width;
-    if (getStereoMode() == JmolConstants.STEREO_DOUBLE)
+    if (transformManager.stereoMode == JmolConstants.STEREO_DOUBLE)
       width = (width + 1) / 2;
     if (dimScreen.width == width && dimScreen.height == height)
       return;
@@ -3224,8 +3224,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return data;
   }
 
-  public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
+  public void renderScreenImage(Graphics gLeft, Graphics gRight,
+                                Dimension size, Rectangle clip) {
     // from paint/update event
+    // gRight is for second stereo applet
+    // when this is the stereoSlave, no rendering occurs through this applet
+    // directly, only from the other applet.
+    // this is for relatively specialized geoWall-type installations
+    
     if (creatingImage)
       return;
     if (isTainted || getSlabEnabled())
@@ -3233,22 +3239,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     isTainted = false;
     if (size != null)
       setScreenDimension(size);
-    int stereoMode = getStereoMode();
-    switch (stereoMode) {
-    case JmolConstants.STEREO_DOUBLE:
-      render1(g, getImage(true), dimScreen.width, 0);
-    case JmolConstants.STEREO_NONE:
-      render1(g, getImage(false), 0, 0);
-      break;
-    case JmolConstants.STEREO_REDCYAN:
-    case JmolConstants.STEREO_REDBLUE:
-    case JmolConstants.STEREO_REDGREEN:
-    case JmolConstants.STEREO_CUSTOM:
-      render1(g, getStereoImage(stereoMode), 0, 0);
-      break;
+    if (gRight == null) {
+      Image image = getScreenImage();
+      if (transformManager.stereoMode == JmolConstants.STEREO_DOUBLE) {
+        render1(gLeft, image, dimScreen.width, 0);
+        image = getImage(false);
+      }
+      render1(gLeft, image, 0, 0);
+    } else {
+      render1(gRight, getImage(true), 0, 0);
+      render1(gLeft, getImage(false), 0, 0);
     }
     repaintView();
   }
+
+  public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
+    renderScreenImage(g, null, size, clip);
+   }
 
   private Image getImage(boolean isDouble) {
     g3d.beginRendering(transformManager.getStereoRotationMatrix(isDouble));
@@ -3305,22 +3312,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Image getScreenImage() {
-    boolean isStereo = false;
-    //setRectClip(null);
-    int stereoMode = getStereoMode();
-    switch (stereoMode) {
-    case JmolConstants.STEREO_DOUBLE:
-      // this allows for getting both eye views in two images
-      // because you can adjust using "stereo -2.5", then "stereo +2.5"
-      isStereo = true;
-      break;
-    case JmolConstants.STEREO_REDCYAN:
-    case JmolConstants.STEREO_REDBLUE:
-    case JmolConstants.STEREO_REDGREEN:
-    case JmolConstants.STEREO_CUSTOM:
-      return getStereoImage(stereoMode);
-    }
-    return getImage(isStereo);
+    return (transformManager.stereoMode <= JmolConstants.STEREO_DOUBLE ?
+      getImage(transformManager.stereoMode == JmolConstants.STEREO_DOUBLE)
+      : getStereoImage(transformManager.stereoMode));
   }
 
   /**
@@ -5962,14 +5956,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       transformManager.setStereoMode(stereoMode);
   }
 
-  int getStereoMode() {
-    return transformManager.stereoMode;
-  }
-
-  float getStereoDegrees() {
-    return transformManager.stereoDegrees;
-  }
-
   // //////////////////////////////////////////////////////////////
   //
   // //////////////////////////////////////////////////////////////
@@ -6532,13 +6518,32 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case 1:
       statusManager.syncingScripts = TF;
       break;
+    case 2:
+      statusManager.syncSend(TF ? SYNC_GRAPHICS_MESSAGE : SYNC_NO_GRAPHICS_MESSAGE, "*");
+      if (Float.isNaN(transformManager.stereoDegrees))
+        setFloatProperty("stereoDegrees", TransformManager.DEFAULT_STEREO_DEGREES);
+      if (TF) {
+        setBooleanProperty("syncMouse", false);
+        setBooleanProperty("syncScript", false);
+      }
+      return;
     }
     // if turning both off, sync the orientation now
     if (!statusManager.syncingScripts && !statusManager.syncingMouse)
       refresh(-1, "set sync");
   }
 
+  public final static String SYNC_GRAPHICS_MESSAGE = "GET_GRAPHICS";
+  public final static String SYNC_NO_GRAPHICS_MESSAGE = "SET_GRAPHICS_OFF";
+
   public void syncScript(String script, String applet) {
+    if (script.equalsIgnoreCase(SYNC_GRAPHICS_MESSAGE)) {
+      statusManager.setSyncDriver(StatusManager.SYNC_STEREO);
+      statusManager.syncSend(script, applet);
+      setBooleanProperty("syncMouse", false);
+      setBooleanProperty("syncScript", false);
+      return;
+    }
     // * : all applets
     // > : all OTHER applets
     // . : just me
@@ -6551,7 +6556,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         return;
     }
     if (script.equalsIgnoreCase("on")) {
-      statusManager.setSyncDriver(StatusManager.SYNC_DRIVER);
+      statusManager.setSyncDriver(StatusManager.SYNC_DRIVER);      
       return;
     }
     if (script.equalsIgnoreCase("off")) {

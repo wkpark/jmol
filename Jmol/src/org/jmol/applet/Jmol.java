@@ -220,6 +220,7 @@ public class Jmol implements WrappedApplet {
   }
 
   public void destroy() {
+    gRight = null;
     JmolAppletRegistry.checkOut(fullName);
     viewer.setModeMouse(JmolConstants.MOUSE_NONE);
     viewer = null;
@@ -232,6 +233,11 @@ public class Jmol implements WrappedApplet {
 
   String getParameter(String paramName) {
     return appletWrapper.getParameter(paramName);
+  }
+
+  public Graphics setStereoGraphics(boolean isStereo) {
+    isStereoSlave = isStereo;
+    return (isStereo ? appletWrapper.getGraphics() : null);
   }
 
   boolean isSigned;
@@ -471,21 +477,22 @@ public class Jmol implements WrappedApplet {
   }
 
   public boolean showPaintTime = false;
-
   public void paint(Graphics g) {
     //paint is invoked for system-based updates (obscurring, for example)
     //Opera has a bug in relation to displaying the Java Console. 
-
     update(g, "paint ");
   }
 
   private boolean isUpdating;
 
   public void update(Graphics g) {
-    //update is called in response to repaintManager's repaint() request. 
+    //update is called in response to repaintManager's repaint() request.
     update(g, "update");
   }
 
+  protected Graphics gRight;
+  protected boolean isStereoSlave;
+  
   private void update(Graphics g, String source) {
     if (viewer == null) // it seems that this can happen at startup sometimes
       return;
@@ -510,7 +517,9 @@ public class Jmol implements WrappedApplet {
       viewer.repaintView();
     } else {
       //System.out.println("UPDATE1: " + source + " " + Thread.currentThread());
-      viewer.renderScreenImage(g, size, null);//rectClip);
+      //System.out.println(fullName + " update gRight = " + gRight);
+      if (!isStereoSlave)
+        viewer.renderScreenImage(g, gRight, size, null);//rectClip);
       //System.out.println("UPDATE2: " + source + " " + Thread.currentThread());
     }
 
@@ -1203,6 +1212,10 @@ public class Jmol implements WrappedApplet {
         return "";
       }
       StringBuffer sb = (isSync ? null : new StringBuffer());
+      boolean getGraphics = (isSync && script.equals(Viewer.SYNC_GRAPHICS_MESSAGE));
+      boolean setNoGraphics = (isSync && script.equals(Viewer.SYNC_NO_GRAPHICS_MESSAGE));
+      if (getGraphics)
+        gRight = null;
       for (int i = 0; i < nApplets; i++) {
         String theApplet = (String) apps.elementAt(i);
         JmolAppletInterface app = (JmolAppletInterface) JmolAppletRegistry.htRegistry
@@ -1210,6 +1223,10 @@ public class Jmol implements WrappedApplet {
         if (Logger.debugging)
           Logger.debug(fullName + " sending to " + theApplet + ": " + script);
         try {
+          if (getGraphics || setNoGraphics) {
+            gRight = app.setStereoGraphics(getGraphics);
+            return "";
+          }
           if (isSync)
             app.syncScript(script);
           else

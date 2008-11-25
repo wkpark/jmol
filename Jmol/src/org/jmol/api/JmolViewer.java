@@ -27,7 +27,9 @@ package org.jmol.api;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Event;
+import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.net.URL;
 import java.util.BitSet;
 import java.util.Properties;
@@ -82,6 +84,17 @@ abstract public class JmolViewer extends JmolSimpleViewer {
     return Viewer.allocateViewer(awtComponent, jmolAdapter,
         htmlName, documentBase, codeBase, commandOptions, statusListener);
   }
+
+  /**
+   * an added class for rendering stereo in two independent applets
+   * 
+   * @param gLeft
+   * @param gRight
+   * @param size
+   * @param clip
+   */
+  abstract public void renderScreenImage(Graphics gLeft, Graphics gRight, Dimension size,
+                                         Rectangle clip);
 
   /**
    * OK, but safer to assign htmlName, URL bases, comandOptions, and statusListener now.

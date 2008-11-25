@@ -59,7 +59,6 @@ public class AppletWrapper extends Applet {
   private int clockBaseline;
   private int clockWidth;
 
-
   private static int MINIMUM_ELAPSED_SECONDS = 1;
 
   private static String fontFace = "sansserif";

@@ -756,7 +756,7 @@ public class StateManager {
         + ";unitcellcolor;windowcentered;zerobasedxyzrasmol;zoomenabled"
         +
         //    saved in the hash table but not considered part of the state:
-        ";scriptqueue;scriptreportinglevel;syncscript;syncmouse;currentlocalpath;defaultdirectorylocal"
+        ";scriptqueue;scriptreportinglevel;syncscript;syncmouse;syncstereo;currentlocalpath;defaultdirectorylocal"
         +
         //    more settable Jmol variables    
         ";ambient;bonds;colorrasmol;diffuse;frank;hetero;hidenotselected"
@@ -1242,6 +1242,7 @@ public class StateManager {
       setParameterValue("strandCountForMeshRibbon", strandCountForMeshRibbon);
       setParameterValue("syncMouse", false);
       setParameterValue("syncScript", false);
+      setParameterValue("syncStereo", false);
       setParameterValue("testFlag1", testFlag1);
       setParameterValue("testFlag2", testFlag2);
       setParameterValue("testFlag3", testFlag3);

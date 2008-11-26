@@ -585,9 +585,9 @@ public abstract class MouseManager implements KeyListener {
     public void run() {
       Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
       int hoverDelay;
-      while (hoverWatcherThread != null
-          && (hoverDelay = viewer.getHoverDelay()) > 0) {
-        try {
+      try {
+        while (hoverWatcherThread != null
+            && (hoverDelay = viewer.getHoverDelay()) > 0) {
           Thread.sleep(hoverDelay);
           if (xCurrent == mouseMovedX && yCurrent == mouseMovedY
               && timeCurrent == mouseMovedTime) { // the last event was mouse move
@@ -603,13 +603,11 @@ public abstract class MouseManager implements KeyListener {
               }
             }
           }
-        } catch (InterruptedException ie) {
-          Logger.debug("Hover InterruptedException!");
-          break;
-        } catch (Exception ie) {
-          Logger.debug("Hover Exception: " + ie);
-          break;
         }
+      } catch (InterruptedException ie) {
+        Logger.debug("Hover InterruptedException!");
+      } catch (Exception ie) {
+        Logger.debug("Hover Exception: " + ie);
       }
       hoverWatcherThread = null;
     }

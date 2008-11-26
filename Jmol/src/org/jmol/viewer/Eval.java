@@ -11696,9 +11696,7 @@ class Eval {
   String contextTrace() {
     StringBuffer sb = new StringBuffer();
     for (;;) {
-      String s = (functionName == null ? "" : "function " + functionName)
-          + "file " + filename;
-      sb.append(setErrorLineMessage(s, getLinenumber(), pc,
+      sb.append(setErrorLineMessage(functionName, filename, getLinenumber(), pc,
               statementAsString()));
       if (scriptLevel > 0)
         popContext();
@@ -11708,12 +11706,15 @@ class Eval {
     return sb.toString();
   }
 
-  static String setErrorLineMessage(String filename, int lineCurrent,
+  static String setErrorLineMessage(String functionName, String filename, int lineCurrent,
                                     int pcCurrent, String lineInfo) {
     String err = "\n----";
+    if (functionName != null)
+      err += "function " + functionName + " ";
     if (filename != null)
-      err += "line " + lineCurrent + " command " + (pcCurrent + 1)
-          + (filename.equals("file null") ? "" : " of " + filename) + ":";
+      err += "line " + lineCurrent 
+          + " command " + (pcCurrent + 1)
+          + " of " + filename + ":";
     err += "\n         " + lineInfo;
     return err;
   }

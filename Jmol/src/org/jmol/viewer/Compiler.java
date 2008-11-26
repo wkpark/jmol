@@ -389,7 +389,7 @@ class Compiler {
           if (nTokens == 0) {
             ichCurrentCommand = ichToken;
             if (comment != null)
-              addTokenToPrefix(new Token(Token.nada, 
+              addTokenToPrefix(new Token(Token.nada,
                   (comment.length() == 1 ? comment : comment.substring(1))));
           }
           iCommand = lltoken.size();
@@ -441,7 +441,8 @@ class Compiler {
       } else {
         if (nTokens == ptNewSetModifier) {
           ch = script.charAt(ichToken);
-          if (tokCommand == Token.set || Token.tokAttr(tokCommand, Token.setparam)) {
+          if (tokCommand == Token.set
+              || Token.tokAttr(tokCommand, Token.setparam)) {
             if (Token.tokAttr(tokCommand, Token.setparam) && ch == '='
                 || (isNewSet || isSetBrace)
                 && (ch == '=' || ch == '[' || ch == '.')) {
@@ -602,12 +603,17 @@ class Compiler {
           addTokenToPrefix(new Token(Token.integer, val, intString));
           continue;
         }
-        if (lastToken.tok == Token.select || lastToken.tok == Token.within
-            || !tokenAttr(lastToken, Token.mathfunc)) {
-          // don't want to mess up x.distance({1 2 3})
+        if (lastToken.tok == Token.select
+            || lastToken.tok == Token.within
+            || lastToken.tok != Token.identifier 
+               && !tokenAttr(lastToken, Token.mathfunc)) {
+          // here if:
+          // select ({...})
+          // within({...})
+          // NOT myfunc({...})
+          // NOT mathFunc({...})
           // if you want to use a bitset there, you must use 
           // bitsets properly: x.distance( ({1 2 3}) )
-          // but calculate surfaceDistance WITHIN ({....}) must pass
           boolean isBond = (script.charAt(ichToken) == '[');
           BitSet bs = lookingAtBitset();
           if (bs != null) {
@@ -857,7 +863,8 @@ class Compiler {
               tok = Token.leftparen;
               break;
             }
-            if (tok != Token.identifier && (!Token.tokAttr(tok, Token.setparam)))
+            if (tok != Token.identifier
+                && (!Token.tokAttr(tok, Token.setparam)))
               return isNewSet ? commandExpected() : error(
                   ERROR_unrecognizedParameter, "SET", ": " + ident);
             if (isSetArray) {
@@ -2571,7 +2578,7 @@ class Compiler {
         + " >>>> " + errorLine.substring(ichToken - ichCurrentCommand) : errorLine)
         + " <<<<";
     errorMessage = "script compiler ERROR: " + errorMessage
-         + Eval.setErrorLineMessage(filename, lineCurrent, iCommand, lineInfo);
+         + Eval.setErrorLineMessage(null, filename, lineCurrent, iCommand, lineInfo);
     if (!isSilent) {
       viewer.addCommand(errorLine + CommandHistory.ERROR_FLAG);
       Logger.error(errorMessage);

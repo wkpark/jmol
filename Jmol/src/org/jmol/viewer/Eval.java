@@ -287,13 +287,15 @@ class Eval {
     timeBeginExecution = System.currentTimeMillis();
     this.historyDisabled = historyDisabled;
     try {
+      try {
       instructionDispatchLoop(listCommands);
       String script = viewer.getInterruptScript();
       if (script != "")
         runScript(script, null);
+      } catch (Error er) {
+        evalError(er.getMessage());
+      }
     } catch (ScriptException e) {
-      if (error)
-        error = true;
       setErrorMessage(e.toString());
       scriptStatus(errorMessage);
     }
@@ -490,15 +492,12 @@ class Eval {
           debugScript);
     String[] data = new String[2];
     data[0] = filename;
-    if (!viewer.getFileAsString(data))
-      return loadError("io error reading " + data[0] + ": " + data[1]);
+    if (!viewer.getFileAsString(data)) {
+      error = true;
+      errorMessage = "io error reading " + data[0] + ": " + data[1];
+      return false;
+    }
     return loadScript(filename, data[1], debugScript);
-  }
-
-  private boolean loadError(String msg) {
-    error = true;
-    errorMessage = msg;
-    return false;
   }
 
   public String toString() {
@@ -689,6 +688,9 @@ class Eval {
             } catch (Exception e) {
               error = true;
               errorMessage = e.toString();
+            } catch (Error er) {
+              error = true;
+              errorMessage = er.toString();
             }
             pc++;
             if (error)

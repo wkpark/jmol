@@ -162,24 +162,23 @@ class ScriptManager {
     }
 
     public void run() {
-      while (scriptQueue.size() != 0) {
-      /*  System.out.println("run while size != 0: " + this + " pt=" + this.pt + " size=" + scriptQueue.size());
-        for (int i = 0; i < scriptQueue.size(); i++)
-          System.out.println("queue: " + i + " " + scriptQueue.get(i));
-        System.out.println("running: " + scriptQueueRunning[0] + " "  + queueThreads[0]);
-        System.out.println("running: " + scriptQueueRunning[1] + " "  + queueThreads[1]);
-      */
-        
-        if (!runNextScript())
-          try {
-            Thread.sleep(100); //cycle for the command watcher thread
-          } catch (Exception e) {
-            System.out.println(this + " Exception " + e.getMessage());
-            break; //-- interrupt? 
-          }
-      }
+        while (scriptQueue.size() != 0) {
+          /*  System.out.println("run while size != 0: " + this + " pt=" + this.pt + " size=" + scriptQueue.size());
+           for (int i = 0; i < scriptQueue.size(); i++)
+           System.out.println("queue: " + i + " " + scriptQueue.get(i));
+           System.out.println("running: " + scriptQueueRunning[0] + " "  + queueThreads[0]);
+           System.out.println("running: " + scriptQueueRunning[1] + " "  + queueThreads[1]);
+           */
+          if (!runNextScript())
+            try {
+              Thread.sleep(100); //cycle for the command watcher thread
+            } catch (Exception e) {
+              System.out.println(this + " Exception " + e.getMessage());
+              break; //-- interrupt? 
+            }
+        }
       //System.out.println("scriptquenerunnable " + pt + " done " + this);
-      queueThreads[pt].interrupt();      
+      queueThreads[pt].interrupt();
       stop();
     }
 

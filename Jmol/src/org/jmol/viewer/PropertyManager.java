@@ -81,6 +81,7 @@ class PropertyManager {
     "menu"            , "<type>", "current",
     "minimizationInfo", "", "",
     "PointGroupInfo"  , atomExpression, "(visible)",
+    "errorMessage", "", "",
   };
 
   private final static int PROP_APPLET_INFO = 0;
@@ -120,7 +121,8 @@ class PropertyManager {
   private final static int PROP_MENU = 29;
   private final static int PROP_MINIMIZATION_INFO = 30;
   private final static int PROP_POINTGROUP_INFO = 31;
-  private final static int PROP_COUNT = 32;
+  private final static int PROP_ERROR_MESSAGE = 32;
+  private final static int PROP_COUNT = 33;
 
   //// static methods used by Eval and Viewer ////
   
@@ -358,6 +360,8 @@ class PropertyManager {
       return viewer.getStateInfo(myParam.toString());
     case PROP_POINTGROUP_INFO:
       return viewer.getPointGroupInfo(myParam);
+    case PROP_ERROR_MESSAGE:
+      return viewer.getErrorMessage();
     case PROP_TRANSFORM_INFO:
       return viewer.getMatrixRotate();
     case PROP_DATA_INFO:

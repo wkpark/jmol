@@ -497,6 +497,8 @@ support for assertions (which were introduced in 1.4).
         <include name="**/Tuple2d.class"/>
         <include name="**/Point2d.class"/>
         <include name="**/Matrix3d.class"/>
+        <include name="**/Matrix4d.class"/>
+        <include name="**/AxisAngle4d.class"/>
         <include name="**/SingularMatrixException.class"/>
       </patternset>
     </unjar>

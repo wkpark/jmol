@@ -3507,18 +3507,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (historyDisabled)
       strScript = strScript.substring(1);
     historyDisabled = historyDisabled || !isQueued; //no history for scriptWait 11.5.45
+    setErrorMessage(null);
     boolean isOK = (isScriptFile ? eval.loadScriptFile(strScript, isQuiet)
         : eval.loadScriptString(strScript, isQuiet));
     String strErrorMessage = eval.getErrorMessage();
+    setErrorMessage(strErrorMessage);
     if (isOK) {
       isScriptQueued = isQueued;
       if (!isQuiet)
         statusManager.setStatusScriptStarted(++scriptIndex, strScript);
       eval.runEval(checkScriptOnly, !checkScriptOnly || fileOpenCheck,
           historyDisabled, listCommands);
+      setErrorMessage(strErrorMessage = eval.getErrorMessage());
       if (!isQuiet)
-        statusManager.setScriptStatus("Jmol script terminated", eval
-          .getErrorMessage(), 1 + eval.getExecutionWalltime());
+        statusManager.setScriptStatus("Jmol script terminated", 
+            strErrorMessage, 1 + eval.getExecutionWalltime());
       if (isScriptFile && writeInfo != null)
         createImage(writeInfo);
     } else {
@@ -3537,7 +3540,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       Logger.info("(use 'exit' to stop checking)");
     isScriptQueued = true;
     if (returnType.equalsIgnoreCase("String"))
-      return eval.getErrorMessage();
+      return strErrorMessage;
     // get  Vector of Vectors of Vectors info
     Object info = getProperty(returnType, "jmolStatus", statusList);
     // reset to previous status list
@@ -6407,7 +6410,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       quality = Integer.parseInt(squality);
       createImage(file, type, null, quality, width, height);
     } catch (Exception e) {
-      System.out.println("error processing write request: " + type_name);
+      Logger.error(setErrorMessage("error processing write request: " + type_name + " "+ e.getMessage()));
+    } catch (Error er) {
+      Logger.error(setErrorMessage("error processing write request: " + type_name + " "+ er.getMessage()));
     }
   }
 
@@ -6495,8 +6500,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     try {
       err = statusManager.createImage(file, type, text_or_bytes, quality);
     } catch (Exception e) {
-      Logger.error("Error creating image: " + e.getMessage());
+      Logger.error(setErrorMessage("Error creating image: " + e.getMessage()));
+    } catch (Error er) {
+      Logger.error(setErrorMessage("error creating image: "+ er.getMessage()));
     }
+
     creatingImage = false;
     if (quality != Integer.MIN_VALUE) {
       resizeImage(saveWidth, saveHeight, true, false, true);
@@ -6781,4 +6789,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       FileManager.setLocalPath(this, dir, false);
     return dir;
   }
+
+  private String errMsg;
+  private String setErrorMessage(String errMsg) {
+    return (this.errMsg = errMsg);
+  }
+  
+  public String getErrorMessage() {
+    return errMsg;
+  }
+  
 }

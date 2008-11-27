@@ -168,20 +168,30 @@ class Jvm12 {
   String imageType;
   int imageQuality;
 
+  /**
+   * 
+   * @param fileName
+   * @param type
+   * @param text_or_bytes
+   * @param quality
+   * @return          null (canceled) or a message starting with OK or an error message
+   */
   String createImage(String fileName, String type, Object text_or_bytes,
                      int quality) {
-    if (quality == Integer.MIN_VALUE) {
-      // text or bytes
-      fileName = dialogAsk("save", fileName);
-    } else {
-      imageType = type.toUpperCase();
-      imageQuality = quality;
-      fileName = dialogAsk("saveImage+" + type, fileName);
-      quality = imageQuality;
-      type = imageType;
+    if (fileName != null) {
+      if (quality == Integer.MIN_VALUE) {
+        // text or bytes
+        fileName = dialogAsk("save", fileName);
+      } else {
+        imageType = type.toUpperCase();
+        imageQuality = quality;
+        fileName = dialogAsk("saveImage+" + type, fileName);
+        quality = imageQuality;
+        type = imageType;
+      }
+      if (fileName == null)
+        return null;
     }
-    if (fileName == null)
-      return null;
     JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
         .getOptionInterface("export.image.ImageCreator");
     c.setViewer(viewer);

@@ -1055,30 +1055,35 @@ public class Jmol implements WrappedApplet {
       return "";
     }
 
-    public String createImage(String file, String type, Object text_or_bytes,
+    /**
+     * 
+     * @param fileName
+     * @param type
+     * @param text_or_bytes
+     * @param quality
+     * @return          null (canceled) or a message starting with OK or an error message
+     */
+    public String createImage(String fileName, String type, Object text_or_bytes,
                               int quality) {
-      String err = "OK";
-      if (file == null) {
-        if (jvm12 != null)
-          jvm12.clipImage();
-      } else if (file.equalsIgnoreCase("CLIPBOARD")) {
-        if (jvm12 != null)
-          jvm12.clipImage();
-      } else if (isSigned) {
+      boolean isImage = (quality != Integer.MIN_VALUE); 
+      if (isSigned) {
         if (jvm12 != null) {
+          if (isImage && (fileName == null || fileName.equalsIgnoreCase("CLIPBOARD"))) {
+            jvm12.clipImage();
+            return "OK";
+          }
           try {
-            return jvm12.createImage(file, type, text_or_bytes, quality);
+            return jvm12.createImage(fileName, type, text_or_bytes, quality);
           } catch (Exception e) {
           }
-          return GT._("File creation failed.");
         }
-      } else if (quality != Integer.MAX_VALUE) {
+      } else if (isImage) {
         return GT
             ._(
                 "File creation by this applet is not allowed. For Base64 JPEG format, use {0}.",
                 "jmolGetPropertyAsString('image')");
       }
-      return (text_or_bytes instanceof String ? (String) text_or_bytes : err);
+      return GT._("File creation failed.");
     }
 
     public float[][] functionXY(String functionName, int nX, int nY) {

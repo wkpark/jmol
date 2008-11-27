@@ -153,7 +153,18 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void releaseScreenImage();
   
   abstract public void writeTextFile(String string, String data);
-  abstract public String createImage(String file, String type, Object text_or_bytes, int quality,
+  
+  /**
+   * 
+   * @param fileName
+   * @param type
+   * @param text_or_bytes
+   * @param quality
+   * @param width 
+   * @param height 
+   * @return          null (canceled) or a message starting with OK or an error message
+   */
+  abstract public String createImage(String fileName, String type, Object text_or_bytes, int quality,
                                    int width, int height);
 
   abstract public boolean handleOldJvm10Event(Event e);

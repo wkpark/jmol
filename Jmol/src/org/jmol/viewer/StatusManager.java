@@ -31,6 +31,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import org.jmol.api.*;
+import org.jmol.i18n.GT;
 /**
  * 
  * The StatusManager class handles all details of status reporting, including:
@@ -446,19 +447,27 @@ class StatusManager {
     return (jmolStatusListener == null ? "" : jmolStatusListener.eval(strEval));
   }
 
-  String createImage(String file, String type, Object text_or_bytes, int quality) {
+  /**
+   * 
+   * @param fileName
+   * @param type
+   * @param text_or_bytes
+   * @param quality
+   * @return          null (canceled) or a message starting with OK or an error message
+   */
+  String createImage(String fileName, String type, Object text_or_bytes, int quality) {
     if (jmolStatusListener == null)
-      return "";
-    if (file != null && file.startsWith("?")) {
-      file = file.substring(1);
+      return GT._("File creation failed.");
+    if (fileName != null && fileName.startsWith("?")) {
+      fileName = fileName.substring(1);
       if (!viewer.isSignedApplet()) {
-        file = dialogAsk(quality == Integer.MIN_VALUE ? "save" : "saveImage",
-            file);
-        if (file == null)
+        fileName = dialogAsk(quality == Integer.MIN_VALUE ? "save" : "saveImage",
+            fileName);
+        if (fileName == null)
           return null;
       }
     }
-    return jmolStatusListener.createImage(file, type, text_or_bytes, quality);
+    return jmolStatusListener.createImage(fileName, type, text_or_bytes, quality);
   }
 
   public Hashtable getRegistryInfo() {

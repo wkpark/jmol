@@ -9209,9 +9209,12 @@ class Eval {
         if (!isCommand)
           return data;
         String msg = viewer.createImage(fileName + ".ini", "ini", data,
-            Integer.MIN_VALUE, 0, 0);
-        scriptStatus(msg.startsWith("OK") ? "Created " + fileName + ".ini:\n\n"
-            + data : msg);
+            Integer.MIN_VALUE, 0, 0, null);
+        if (msg != null) {
+          if (!msg.startsWith("OK"))
+            evalError(msg);
+          scriptStatus("Created " + fileName + ".ini:\n\n" + data);
+        }
         return "";
       }
     } else if (data == "MENU") {
@@ -9262,8 +9265,8 @@ class Eval {
       if ((data = getIsosurfaceJvxl()) == null)
         evalError(GT._("No data available"));
       if (!isShow)
-        showString((String) viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
-      "jvxlFileInfo"));
+        showString((String) viewer.getShapeProperty(
+            JmolConstants.SHAPE_ISOSURFACE, "jvxlFileInfo"));
       type = "JVXL";
     } else {
       // image
@@ -9295,10 +9298,12 @@ class Eval {
         bytes = data;
       String msg = viewer.createImage(fileName, type, bytes, quality, width,
           height, bsFrames);
-      if (msg != null)
-        scriptStatus(!msg.startsWith("OK") ? msg : msg
-        //          + (len >= 0 ? "; length=" + len : "")
+      if (msg != null) {
+        if (!msg.startsWith("OK"))
+          evalError(msg);
+        scriptStatus(msg
             + (isImage ? "; width=" + width + "; height=" + height : ""));
+      }
     }
     return "";
   }

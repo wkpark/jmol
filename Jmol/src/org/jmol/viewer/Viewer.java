@@ -3161,6 +3161,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     resizeImage(width, height, false, false, true);
   }
 
+  private float imageFontScaling = 1;
+
+  public float getImageFontScaling() {
+    return imageFontScaling;
+  }
+
   private void resizeImage(int width, int height, boolean isImageWrite,
                            boolean isGenerator, boolean isReset) {
     if (!isImageWrite && creatingImage)
@@ -3523,7 +3529,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         statusManager.setScriptStatus("Jmol script terminated", 
             strErrorMessage, 1 + eval.getExecutionWalltime());
       if (isScriptFile && writeInfo != null)
-        createImage(writeInfo);
+        writeImage(writeInfo);
     } else {
       statusManager.setScriptStatus("Jmol script terminated", 
           strErrorMessage, 1);
@@ -6370,13 +6376,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   // ///////////////////////////////////////////////////////////////
-  // image export
+  // image and file export
   // ///////////////////////////////////////////////////////////////
 
   /**
+   * only from application with -w flag
+   *  
    * @param type_name  TYPE:filename\twidth\theight\tquality
    */
-  private void createImage(String type_name) { // or script now    
+  private void writeImage(String type_name) {
+    
     int quality, width, height;
     if (type_name == null)
       return;
@@ -6386,14 +6395,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       type_name += ":jmol.jpg";
     int i = type_name.indexOf(":");
     String type = type_name.substring(0, i).toUpperCase();
-    String file = type_name.substring(i + 1);
+    String fileName = type_name.substring(i + 1);
     String swidth = "-1";
     String sheight = "-1";
     String squality = (type.equals("PNG") ? "2" : "75");
-    i = file.indexOf('\t');
+    i = fileName.indexOf('\t');
     if (i > 0) {
-      swidth = file.substring(i + 1);
-      file = file.substring(0, i);
+      swidth = fileName.substring(i + 1);
+      fileName = fileName.substring(0, i);
     }
     i = swidth.indexOf('\t');
     if (i > 0) {
@@ -6409,7 +6418,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       width = Integer.parseInt(swidth);
       height = Integer.parseInt(sheight);
       quality = Integer.parseInt(squality);
-      createImage(file, type, null, quality, width, height);
+      createImage(fileName, type, null, quality, width, height);
     } catch (Exception e) {
       Logger.error(setErrorMessage("error processing write request: " + type_name + " "+ e.getMessage()));
     } catch (Error er) {
@@ -6417,48 +6426,72 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
   }
 
-  private float imageFontScaling = 1;
-
-  public float getImageFontScaling() {
-    return imageFontScaling;
-  }
-
-  public void writeTextFile(String file, String data) {
-    createImage(file, "txt", data, Integer.MIN_VALUE, 0, 0);  
+  public void writeTextFile(String fileName, String data) {
+    createImage(fileName, "txt", data, Integer.MIN_VALUE, 0, 0);
   }
   
-  private boolean creatingImage;
-
-  public String createImage(String file, String type, Object text_or_bytes,
+  /**
+   * 
+   * from eval write command only
+   * includes option to write set of files
+   * 
+   * @param fileName
+   * @param type
+   * @param text_or_bytes
+   * @param quality
+   * @param width
+   * @param height
+   * @param bsFrames
+   * @return          message starting with "OK" or an error message
+   */
+  String createImage(String fileName, String type, Object text_or_bytes,
                             int quality, int width, int height, BitSet bsFrames) {
     if (bsFrames == null)
-      return createImage(file, type, text_or_bytes, quality, width, height);
+      return createImage(fileName, type, text_or_bytes, quality, width, height);
     int modelCount = getModelCount();
     String info = "";
     int n = 0;
-    int ptDot = file.indexOf(".");
+    int ptDot = fileName.indexOf(".");
     if (ptDot < 0)
-      ptDot = file.length();
+      ptDot = fileName.length();
       
-    String froot = file.substring(0, ptDot);
-    String fext = file.substring(ptDot);
+    String froot = fileName.substring(0, ptDot);
+    String fext = fileName.substring(ptDot);
     for (int i = 0; i < modelCount; i++)
       if (bsFrames.get(i)) {
         setCurrentModelIndex(i);
-        String fname = "0000" + (++n);
-        fname = froot + fname.substring(fname.length() - 4) + fext; 
-        String msg = createImage(fname, type, text_or_bytes, quality, width, height);
+        fileName = "0000" + (++n);
+        fileName = froot + fileName.substring(fileName.length() - 4) + fext; 
+        String msg = createImage(fileName, type, text_or_bytes, quality, width, height);
         Logger.info(msg);  
         info += msg + "\n";
         if (!msg.startsWith("OK"))
-          return info;
+          return "ERROR WRITING FILE SET: \n" + info;
       }
-    return info;
+    if (info.length() == 0)
+      info = "OK\n";
+    return info + "\n" + n + " files created";
   }
 
-  public String createImage(String file, String type, Object text_or_bytes,
+  private boolean creatingImage;
+
+  /**
+   * general routine for creating an image 
+   * or writing data to a file
+   * 
+   * passes request to statusManager to pass along 
+   * to app or applet jmolStatusListener interface
+   * 
+   * @param fileName         starts with ? --> use file dialog; null --> to clipboard
+   * @param type             PNG, JPG, etc.
+   * @param text_or_bytes    String or byte[] or null if an image
+   * @param quality          Integer.MIN_VALUE --> not an image
+   * @param width            image width
+   * @param height           image height
+   * @return                 null (canceled) or a message starting with OK or an error message
+   */
+  public String createImage(String fileName, String type, Object text_or_bytes,
                             int quality, int width, int height) {
-    //pushHoldRepaint();
     /*
      * 
      * org.jmol.export.image.AviCreator
@@ -6497,20 +6530,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     creatingImage = true;
     String err = null;
-    file = FileManager.setLocalPathForWritingFile(this, file);
+    if (fileName != null)
+      fileName = FileManager.setLocalPathForWritingFile(this, fileName);
     try {
-      err = statusManager.createImage(file, type, text_or_bytes, quality);
+      err = statusManager.createImage(fileName, type, text_or_bytes, quality);
+      // err may be null if user cancels operation involving dialog and "?" 
     } catch (Exception e) {
-      Logger.error(setErrorMessage("ERROR creating image: " + e.getMessage()));
+      Logger.error(setErrorMessage(err = "ERROR creating image: " + e.getMessage()));
     } catch (Error er) {
-      Logger.error(setErrorMessage("ERROR creating image: "+ er.getMessage()));
+      Logger.error(setErrorMessage(err = "ERROR creating image: "+ er.getMessage()));
     }
-
     creatingImage = false;
     if (quality != Integer.MIN_VALUE) {
       resizeImage(saveWidth, saveHeight, true, false, true);
     }
-    //popHoldRepaint();
     return err;
   }
 

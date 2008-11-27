@@ -72,22 +72,31 @@ public class ImageCreator implements JmolImageCreatorInterface {
     return ImageSelection.getClipboardText();
   }
 
-  public String createImage(String fileName, String type, Object text_bytes,
-                            int quality) {
-    boolean isBytes = (text_bytes instanceof byte[]);
-    String text = (isBytes ? null : (String) text_bytes);
+  /**
+   * 
+   * @param fileName
+   * @param type
+   * @param text_or_bytes
+   * @param quality
+   * @return          null (canceled) or a message starting with OK or an error message
+   */
+  public String createImage(String fileName, String type, 
+                            Object text_or_bytes, int quality) {
+    // returns message starting with OK or an error message
+    boolean isBytes = (text_or_bytes instanceof byte[]);
+    String text = (isBytes ? null : (String) text_or_bytes);
     boolean isText = (quality == Integer.MIN_VALUE);
     if (fileName == null) {
       clipImage(text);
       return "OK " + text.length();
     }
-    if ((isText || isBytes) && text_bytes == null)
+    if ((isText || isBytes) && text_or_bytes == null)
       return "NO DATA";
     FileOutputStream os = null;
     try {
       os = new FileOutputStream(fileName);
       if (isBytes) {
-        os.write((byte[]) text_bytes);
+        os.write((byte[]) text_or_bytes);
         os.flush();
         os.close();
       } else if (isText) {
@@ -137,7 +146,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
         try {
           os.close();
         } catch (IOException e) {
-          Logger.error("IO Exception", e);
+          // ignore
         }
       }
     }

@@ -8,6 +8,14 @@ public interface JmolImageCreatorInterface {
   
   abstract public String getClipboardText();
   
-  abstract public String createImage(String fileName, String type, Object text_bytes, int quality);
+  /**
+   * 
+   * @param fileName
+   * @param type
+   * @param text_or_bytes
+   * @param quality
+   * @return          null (canceled) or a message starting with OK or an error message
+   */
+  abstract public String createImage(String fileName, String type, Object text_or_bytes, int quality);
 
 }

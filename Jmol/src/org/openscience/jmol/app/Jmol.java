@@ -1576,17 +1576,28 @@ public class Jmol extends JPanel {
     }
   }
 
-  String createImageStatus(String file, String type, Object text_or_bytes,
+  /**
+   * 
+   * @param fileName
+   * @param type
+   * @param text_or_bytes
+   * @param quality
+   * @return          null (canceled) or a message starting with OK or an error message
+   */
+  String createImageStatus(String fileName, String type, Object text_or_bytes,
                            int quality) {
     ImageCreator c = new ImageCreator(viewer);
-    String msg = c.createImage(file, type, text_or_bytes, quality);
-    if (msg != null) {
-      if (msg.startsWith("OK"))
-        return msg;
-      if (status != null) {
-        status.setStatus(1, GT._("IO Exception:"));
-        status.setStatus(2, msg);
-      }
+    if (quality != Integer.MIN_VALUE
+        && (fileName == null || fileName.equalsIgnoreCase("CLIPBOARD"))) {
+      c.clipImage(null);
+      return "OK";
+    }
+    String msg = c.createImage(fileName, type, text_or_bytes, quality);
+    if (msg == null || msg.startsWith("OK"))
+      return msg;
+    if (status != null) {
+      status.setStatus(1, GT._("IO Exception:"));
+      status.setStatus(2, msg);
     }
     return msg;
   }
@@ -1725,9 +1736,17 @@ public class Jmol extends JPanel {
       return "# 'eval' is implemented only for the applet.";
     }
 
-    public String createImage(String file, String type, Object text_or_bytes,
+    /**
+     * 
+     * @param fileName
+     * @param type
+     * @param text_or_bytes
+     * @param quality
+     * @return          null (canceled) or a message starting with OK or an error message
+     */
+    public String createImage(String fileName, String type, Object text_or_bytes,
                               int quality) {
-      return createImageStatus(file, type, text_or_bytes, quality);
+      return createImageStatus(fileName, type, text_or_bytes, quality);
     }
 
     public void setCallbackFunction(String callbackType, String callbackFunction) {

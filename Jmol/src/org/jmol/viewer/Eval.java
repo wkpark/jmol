@@ -7420,9 +7420,8 @@ class Eval {
                                      Hashtable localVars, String localVar)
       throws ScriptException {
     Object v;
-    boolean isSelectX = (pt == 0);
-    boolean isOneExpressionOnly = (pt < 0);
     boolean isImplicitAtomProperty = (localVar != null);
+    boolean isOneExpressionOnly = (pt < 0);
     if (isOneExpressionOnly)
       pt = -pt;
     int nParen = 0;
@@ -7434,8 +7433,6 @@ class Eval {
       v = null;
       int tok = getToken(i).tok;
       if (isImplicitAtomProperty && tokAt(i + 1) != Token.dot) {
-
-
         Token token = getBitsetPropertySelector(i, false);
         if (token == null) {
           getToken(i);
@@ -7448,43 +7445,34 @@ class Eval {
             rpn.addOp(Token.tokenLeftParen);
             rpn.addOp(Token.tokenRightParen);
           }
-
           i = iToken;
-          
           continue;
         }
-/*        if (theTok == Token.identifier
-            && compiler.isFunction((String) theToken.value)) {
-          rpn.addX((Token) localVars.get(localVar));
-          if (!rpn.addOp(new Token(Token.function, theToken.value))) {
-            //iToken--;
-            error(ERROR_invalidArgument);
-          }
-        } else if (Token.tokAttr(theTok, Token.atomproperty)) {
-          rpn.addX((Token) localVars.get(localVar));
-          if (!rpn.addOp(new Token(Token.propselector, theTok,
-              parameterAsString(i).toLowerCase())))
-            error(ERROR_invalidArgument);
-          continue;
-        }
-*/      }
+      }
       switch (tok) {
       case Token.select:
-        String dummy = "_x";
-        if (!isSelectX) {
+        boolean isSelectFunction = (pt > 0);
+        // it is important to distinguish between the select command:
+        //   select {atomExpression} (mathExpression)
+        // and the select(dummy;{atomExpression};mathExpression) function:
+        //   select {*.ca} (phi < select(y; {*.ca}; y.resno = _x.resno + 1).phi)
+        String dummy;
+        if (isSelectFunction) {
           if (getToken(++i).tok != Token.leftparen
               || getToken(++i).tok != Token.identifier)
             error(ERROR_invalidArgument);
           dummy = parameterAsString(i);
           if (getToken(++i).tok != Token.semicolon)
             error(ERROR_invalidArgument);
+        } else {
+          dummy = "_x";
         }
         v = tokenSetting(-(++i)).value;
         if (!(v instanceof BitSet))
           error(ERROR_invalidArgument);
         BitSet bsAtoms = (BitSet) v;
         i = iToken;
-        if (!isSelectX && getToken(i++).tok != Token.semicolon)
+        if (isSelectFunction && getToken(i++).tok != Token.semicolon)
           error(ERROR_invalidArgument);
         BitSet bsSelect = new BitSet();
         BitSet bsX = new BitSet();
@@ -7493,18 +7481,20 @@ class Eval {
         if (localVars == null)
           localVars = new Hashtable();
         localVars.put(dummy, t = new Token.Token2(Token.bitset, 0, bsX));
+        // one test just to check for errors and get iToken
+        parameterExpression(i, -1, null, false, 0, localVars, isSelectFunction ? null : dummy);
+        if (isSelectFunction && tokAt(iToken) != Token.rightparen)
+          error(ERROR_invalidArgument);
         for (int j = 0; j < atomCount; j++)
           if (bsAtoms.get(j)) {
             bsX.clear();
             bsX.set(j);
             t.intValue2 = j;
             if (((Boolean) parameterExpression(i, -1, null, false, j,
-                localVars, isSelectX ? dummy : null)).booleanValue())
+                localVars, isSelectFunction ? null : dummy)).booleanValue())
               bsSelect.set(j);
-            if (!isSelectX && tokAt(iToken) != Token.rightparen)
-              error(ERROR_invalidArgument);
           }
-        if (isSelectX)
+        if (!isSelectFunction)
           return bitsetTokenVector(bsSelect);
         i = iToken;
         v = bsSelect;

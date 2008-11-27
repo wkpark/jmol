@@ -3525,7 +3525,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (isScriptFile && writeInfo != null)
         createImage(writeInfo);
     } else {
-      scriptStatus(strErrorMessage);
+      statusManager.setScriptStatus("Jmol script terminated", 
+          strErrorMessage, 1);
     }
     if (checkScriptOnly) {
       if (strErrorMessage == null)
@@ -6500,9 +6501,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     try {
       err = statusManager.createImage(file, type, text_or_bytes, quality);
     } catch (Exception e) {
-      Logger.error(setErrorMessage("Error creating image: " + e.getMessage()));
+      Logger.error(setErrorMessage("ERROR creating image: " + e.getMessage()));
     } catch (Error er) {
-      Logger.error(setErrorMessage("error creating image: "+ er.getMessage()));
+      Logger.error(setErrorMessage("ERROR creating image: "+ er.getMessage()));
     }
 
     creatingImage = false;

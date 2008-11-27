@@ -532,7 +532,9 @@ class Compiler {
             iHaveQuotedString = true;
           if (nTokens > 2 && !iHaveQuotedString && lookingAtSpecialString()) {
             String str = script.substring(ichToken, ichToken + cchToken);
-            if (str.indexOf(" ") < 0) {
+            if (str.startsWith("@{")) {
+              iHaveQuotedString = true;
+            } else if (str.indexOf(" ") < 0) {
               addTokenToPrefix(new Token(Token.string, str));
               iHaveQuotedString = true;
               continue;

@@ -7605,52 +7605,52 @@
   <fah_proj number="5748" name="p5748_ACBP_ff03_300K" public="y"
     server="171.67.108.11" atoms="1392" preferred="2" deadline="3"
     credit="511" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5749" name="p5749_ACBP_ff03_330K" public="n"
+  <fah_proj number="5749" name="p5749_ACBP_ff03_330K" public="y"
     server="171.67.108.11" atoms="1392" preferred="2" deadline="3"
     credit="511" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5750" name="p5750_ACBP_ff03_370K" public="n"
+  <fah_proj number="5750" name="p5750_ACBP_ff03_370K" public="y"
     server="171.67.108.11" atoms="1392" preferred="2" deadline="3"
     credit="511" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5751" name="p5751_ACBP_ff03_450K" public="n"
+  <fah_proj number="5751" name="p5751_ACBP_ff03_450K" public="y"
     server="171.67.108.11" atoms="1392" preferred="2" deadline="3"
     credit="511" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5752" name="p5752_ACBP_ff96_300K" public="n"
+  <fah_proj number="5752" name="p5752_ACBP_ff96_300K" public="y"
     server="171.67.108.11" atoms="1392" preferred="2" deadline="3"
     credit="511" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5753" name="p5753_ACBP_ff96_330K" public="n"
+  <fah_proj number="5753" name="p5753_ACBP_ff96_330K" public="y"
     server="171.67.108.11" atoms="1392" preferred="2" deadline="3"
     credit="511" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5754" name="p5754_ACBP_ff96_370K" public="n"
+  <fah_proj number="5754" name="p5754_ACBP_ff96_370K" public="y"
     server="171.67.108.11" atoms="1392" preferred="2" deadline="3"
     credit="511" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5755" name="p5755_ACBP_ff96_450K" public="n"
+  <fah_proj number="5755" name="p5755_ACBP_ff96_450K" public="y"
     server="171.67.108.11" atoms="1392" preferred="2" deadline="3"
     credit="511" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5756" name="p5756_ACBP_ff03_300K" public="n"
+  <fah_proj number="5756" name="p5756_ACBP_ff03_300K" public="y"
     server="171.67.108.11" atoms="1392" preferred="2" deadline="3"
     credit="511" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5757" name="p5757_proL_ff03_330K" public="n"
+  <fah_proj number="5757" name="p5757_proL_ff03_330K" public="y"
     server="171.64.65.106" atoms="973" preferred="2" deadline="3"
     credit="384" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5758" name="p5758_proL_ff03_370K" public="n"
+  <fah_proj number="5758" name="p5758_proL_ff03_370K" public="y"
     server="171.64.65.106" atoms="973" preferred="2" deadline="3"
     credit="384" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5759" name="p5759_proL_ff03_450K" public="n"
+  <fah_proj number="5759" name="p5759_proL_ff03_450K" public="y"
     server="171.64.65.106" atoms="973" preferred="2" deadline="3"
     credit="384" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5760" name="p5760_proL_ff96_300K" public="n"
+  <fah_proj number="5760" name="p5760_proL_ff96_300K" public="y"
     server="171.64.65.106" atoms="973" preferred="2" deadline="3"
     credit="384" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5761" name="p5761_proL_ff96_330K" public="n"
+  <fah_proj number="5761" name="p5761_proL_ff96_330K" public="y"
     server="171.64.65.106" atoms="973" preferred="2" deadline="3"
     credit="384" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5762" name="p5762_proL_ff96_370K" public="n"
+  <fah_proj number="5762" name="p5762_proL_ff96_370K" public="y"
     server="171.64.65.106" atoms="973" preferred="2" deadline="3"
     credit="384" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5763" name="p5763_proL_ff96_450K" public="n"
+  <fah_proj number="5763" name="p5763_proL_ff96_450K" public="y"
     server="171.64.65.106" atoms="973" preferred="2" deadline="3"
     credit="384" frames="100" code="GG2" contact="vvoelz"/>
-  <fah_proj number="5764" name="p5764_proL_ff03_300K" public="n"
+  <fah_proj number="5764" name="p5764_proL_ff03_300K" public="y"
     server="171.64.65.106" atoms="973" preferred="2" deadline="3"
     credit="384" frames="100" code="GG2" contact="vvoelz"/>
 

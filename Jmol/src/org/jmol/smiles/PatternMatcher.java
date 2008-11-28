@@ -31,7 +31,6 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.Viewer;
 
 /**
  * A class to match a SMILES pattern with a Jmol molecule.
@@ -41,7 +40,7 @@ import org.jmol.viewer.Viewer;
  * <p>
  * An example on how to use it:
  * <pre><code>
- * PatternMatcher matcher = new PatternMatcher(jmolViewer);
+ * PatternMatcher matcher = new PatternMatcher(modelSet);
  * try {
  *   BitSet bitSet = matcher.getSubstructureSet(smilesString);
  *   // Use bitSet...
@@ -55,8 +54,8 @@ import org.jmol.viewer.Viewer;
  */
 public class PatternMatcher implements SmilesMatcherInterface {
 
-  private int atomCount = 0;
-  private ModelSet modelSet = null;
+  private int atomCount;
+  private ModelSet modelSet;
 
   /**
    * Constructs a <code>PatternMatcher</code>.
@@ -64,9 +63,9 @@ public class PatternMatcher implements SmilesMatcherInterface {
    */
   public PatternMatcher() {
   }
-  public void setViewer(Viewer viewer) {
-    this.modelSet = viewer.getModelSet();
-    this.atomCount = viewer.getAtomCount();     
+  public void setModelSet(ModelSet modelSet) {
+    this.modelSet = modelSet;
+    atomCount = (modelSet == null ? 0 : modelSet.getAtomCount());     
   }
   /**
    * Returns a vector of bits indicating which atoms match the pattern.

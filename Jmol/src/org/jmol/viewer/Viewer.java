@@ -118,17 +118,48 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   Hashtable definedAtomSets;
 
   private MinimizerInterface minimizer;
-
-  public void setMinimizer(MinimizerInterface minimizer) {
-    this.minimizer = minimizer;
-    if (minimizer != null)
+  
+  MinimizerInterface getMinimizer(boolean createNew) {
+    if (minimizer == null && createNew) {
+      minimizer = (MinimizerInterface) Interface
+          .getOptionInterface("minimize.Minimizer");
       minimizer.setProperty("viewer", this);
+    }
+    return minimizer;
   }
 
-  public MinimizerInterface getMinimizer() {
-    if (minimizer != null)
-      minimizer.setProperty("viewer", this);
-    return minimizer;
+  private SmilesMatcherInterface smilesMatcher;
+  
+  SmilesMatcherInterface getSmilesMatcher() {
+    if (smilesMatcher == null) {
+      smilesMatcher = (SmilesMatcherInterface) Interface
+          .getOptionInterface("smiles.PatternMatcher");
+    }
+    smilesMatcher.setModelSet(modelSet);
+    return smilesMatcher;
+  }
+
+  private SymmetryInterface symmetry;
+
+  SymmetryInterface getSymmetry() {
+    if (symmetry == null)
+      symmetry = (SymmetryInterface) Interface
+          .getOptionInterface("symmetry.Symmetry");
+    return symmetry;
+  }
+
+  private void clearModelDependentObjects() {
+    if (minimizer != null) {
+      minimizer.setProperty("clear", null);
+      minimizer = null;
+    }
+    if (smilesMatcher != null) {
+      smilesMatcher.setModelSet(null);
+      smilesMatcher = null;
+    }
+    if (symmetry != null) {
+      symmetry = null;
+    }
   }
 
   Eval eval;
@@ -542,7 +573,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   boolean restoreBonds(String saveName) {
     //from Eval
-    clearMinimization();
+    clearModelDependentObjects();
     return stateManager.restoreBonds(saveName);
   }
 
@@ -1786,12 +1817,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // or something like that here
     // for when CdkEditBus calls this directly
     setStatusFileLoaded(2, fullPathName, fileName, null, null);
-    pushHoldRepaint();
-    modelSet = modelManager.setClientFile(fullPathName, fileName, modelAdapter,
-        clientFile);
-    initializeModel();
-    popHoldRepaint();
-    setStatusFileLoaded(3, fullPathName, fileName, getModelSetName(), null);
+    pushHoldRepaint("openClientFile");
+    String strError = null;
+    try {
+      modelSet = modelManager.setClientFile(fullPathName, fileName,
+          modelAdapter, clientFile);
+      initializeModel();
+    } catch (Error er) {
+      strError = "ERROR creating model: " + er.getMessage();
+    }
+    popHoldRepaint("openClientFile");
+    setStatusFileLoaded(3, fullPathName, fileName, getModelSetName(), strError);
   }
 
   public Object getCurrentFileAsBytes() {
@@ -1963,7 +1999,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     stopAnimationThreads();
     if (modelSet == null)
       return;
-    clearMinimization();
+    clearModelDependentObjects();
     fileManager.clear();
     repaintManager.clear();
     transformManager.clear();
@@ -1982,13 +2018,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //refresh(0, "Viewer:clear()");
     dataManager.clear();
     System.gc();
-  }
-
-  private void clearMinimization() {
-    if (minimizer == null)
-      return;
-    minimizer.setProperty("clear", null);
-    minimizer = null;
   }
 
   public void notifyMinimizationStatus() {
@@ -3053,10 +3082,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void pushHoldRepaint() {
+    pushHoldRepaint(null);
+  }
+
+  void pushHoldRepaint(String why) {
+    //System.out.println("Viewer pushHoldRepaint " + why);
     repaintManager.pushHoldRepaint();
   }
 
   public void popHoldRepaint() {
+    repaintManager.popHoldRepaint();
+  }
+
+  void popHoldRepaint(String why) {
+    //System.out.println("Viewer popHoldRepaint " + why);
     repaintManager.popHoldRepaint();
   }
 
@@ -4018,6 +4057,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       evalStringQuiet(s, true, false);
     statusManager.setStatusFileLoaded(s, fullPathName, fileName, modelName,
           strError, ptLoad);
+    setErrorMessage(strError);
   }
 
   public String dialogAsk(String type, String fileName) {
@@ -5530,7 +5570,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                         int connectOperation, BitSet bsA, BitSet bsB,
                         BitSet bsBonds, boolean isBonds) {
     //eval
-    clearMinimization();
+    clearModelDependentObjects();
     clearAllMeasurements(); // necessary for serialization
     return modelSet.makeConnections(minDistance, maxDistance, order,
         connectOperation, bsA, bsB, bsBonds, isBonds);
@@ -5538,7 +5578,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void rebond() {
     //Eval, PreferencesDialog
-    clearMinimization();
+    clearModelDependentObjects();
     modelSet.deleteAllBonds();
     modelSet.autoBond(null, null, null, null);
     addStateScript("connect;", false, true);
@@ -5547,7 +5587,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void setPdbConectBonding(boolean isAuto) {
     // from eval
-    clearMinimization();
+    clearModelDependentObjects();
     modelSet.deleteAllBonds();
     BitSet bsExclude = new BitSet();
     modelSet.setPdbConectBonding(0, 0, bsExclude);
@@ -6740,7 +6780,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int deleteAtoms(BitSet bs, boolean fullModels) {
-    clearMinimization();
+    clearModelDependentObjects();
     if (!fullModels)
       return selectionManager.deleteAtoms(bs);
     fileManager.addLoadScript("zap " + Escape.escape(bs));

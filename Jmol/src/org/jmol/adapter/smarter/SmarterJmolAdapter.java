@@ -91,6 +91,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
       Logger.error(null, e);
       bufferedReader = null;
       return "" + e;
+    } catch (Error er) {
+      Logger.error(null, er);
+      bufferedReader = null;
+      return "" + er;
     }
   }
 
@@ -127,6 +131,9 @@ public class SmarterJmolAdapter extends JmolAdapter {
       } catch (Exception e) {
         Logger.error(null, e);
         return "" + e;
+      } catch (Error er) {
+        Logger.error(null, er);
+        return "" + er;
       }
     }
     if (htparamsSet != null && htparamsSet[0].containsKey("trajectorySteps")) {
@@ -336,6 +343,9 @@ public class SmarterJmolAdapter extends JmolAdapter {
         return null;
       Logger.error(null, e);
       return "" + e;
+    } catch (Error er) {
+      Logger.error(null, er);
+      return "" + er;
     }
   }
 
@@ -360,6 +370,9 @@ public class SmarterJmolAdapter extends JmolAdapter {
     } catch (Exception e) {
       Logger.error(null, e);
       return "" + e;
+    } catch (Error er) {
+      Logger.error(null, er);
+      return "" + er;
     }
   }
 

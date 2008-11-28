@@ -23,10 +23,7 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.api.Interface;
 import org.jmol.api.MinimizerInterface;
-import org.jmol.api.SmilesMatcherInterface;
-import org.jmol.api.SymmetryInterface;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Font3D;
 import org.jmol.shape.Object2d;
@@ -89,60 +86,62 @@ class Eval {
 
   private final static int scriptLevelMax = 10;
 
+  private Thread currentThread;
+  protected Viewer viewer;
   protected Compiler compiler;
+  private Hashtable definedAtomSets;
+  private StringBuffer outputBuffer;
+
+  private String filename;
+  private String functionName;
+  private boolean isStateScript;
   private int scriptLevel;
   private int scriptReportingLevel = 0;
   private Context[] stack = new Context[scriptLevelMax];
-  private String filename;
-  private String functionName;
-  private String script;
+
+  private boolean error;
+  private String errorMessage;
+  
+  private boolean interruptExecution;
+  private boolean executionPaused;
+  private boolean isExecuting;
+
+  private long timeBeginExecution;
+  private long timeEndExecution;
+
+  int getExecutionWalltime() {
+    return (int) (timeEndExecution - timeBeginExecution);
+  }
+
+  private boolean tQuiet;
+  private boolean debugScript;
+  private boolean fileOpenCheck = true;
+  private boolean historyDisabled;
+
+  protected boolean logMessages;
+  protected boolean isSyntaxCheck;
+  protected boolean isScriptCheck;
+
+  //created by Compiler:
+  private Token[][] aatoken; 
+  private short[] lineNumbers;
+  private int[] lineIndices;
   private Hashtable contextVariables;
-  private boolean isStateScript;
+  private String script;
 
   String getScript() {
     return script;
   }
 
+  //specific to current statement
+  private int pc; // program counter
   private String thisCommand;
   private String fullCommand;
-  private short[] lineNumbers;
-  private int[] lineIndices;
-  private Token[][] aatoken;
-  private int pc; // program counter
-  private int lineEnd;
-  private int pcEnd;
-  private long timeBeginExecution;
-  private long timeEndExecution;
-  private boolean error;
-  private String errorMessage;
   private Token[] statement;
   private int statementLength;
-  boolean isScriptCheck;
-
-  private boolean historyDisabled;
-
-  //Thread myThread;
-
-  private boolean tQuiet;
-  private boolean debugScript = false;
-  private boolean fileOpenCheck = true;
-
-  boolean logMessages;
-  boolean isSyntaxCheck;
-  Viewer viewer;
-  int iToken;
-  private Hashtable definedAtomSets;
-
-  private StringBuffer outputBuffer;
-
-  private SymmetryInterface symmetry;
-
-  private SymmetryInterface getSymmetry() {
-    if (symmetry == null)
-      symmetry = (SymmetryInterface) Interface
-          .getOptionInterface("symmetry.Symmetry");
-    return symmetry;
-  }
+  private int iToken;
+  private int lineEnd;
+  private int pcEnd;
 
   Eval(Viewer viewer) {
     this.viewer = viewer;
@@ -152,15 +151,15 @@ class Eval {
 
   private Object getParameter(String var, boolean asToken) {
     Token token = getContextVariableAsToken(var);
-    return (token == null ? viewer.getParameter(var) : asToken ? token : Token
-        .oValue(token));
+    return (token == null ? viewer.getParameter(var) 
+        : asToken ? token : Token.oValue(token));
   }
 
   private Object getNumericParameter(String var) {
     if (var.equalsIgnoreCase("_modelNumber")) {
       int modelIndex = viewer.getCurrentModelIndex();
-      return new Integer(modelIndex < 0 ? 0 : viewer
-          .getModelFileNumber(modelIndex));
+      return new Integer(modelIndex < 0 ? 0 
+          : viewer.getModelFileNumber(modelIndex));
     }
     Token token = getContextVariableAsToken(var);
     if (token == null) {
@@ -255,32 +254,20 @@ class Eval {
 
   void haltExecution() {
     resumePausedExecution();
-    interruptExecution = Boolean.TRUE;
+    interruptExecution = true;
   }
 
   boolean isScriptExecuting() {
-    return isExecuting && !interruptExecution.booleanValue();
+    return isExecuting && !interruptExecution;
   }
-
-  //FindBugs suggest these should not be static -- sounds right to me;
-  // otherwise "halt" would halt script execution on ALL open applets -- not
-  // the desired idea here, I think. In addition, I think it would then 
-  // operate from any instance of eval. 
-
-  private Boolean interruptExecution = Boolean.FALSE;
-  private Boolean executionPaused = Boolean.FALSE;
-  private boolean isExecuting = false;
-
-  private Thread currentThread = null;
 
   void runEval(boolean checkScriptOnly, boolean openFiles,
                boolean historyDisabled, boolean listCommands) {
     // only one reference now -- in Viewer
     boolean tempOpen = fileOpenCheck;
     fileOpenCheck = openFiles;
-    viewer.pushHoldRepaint();
-    interruptExecution = Boolean.FALSE;
-    executionPaused = Boolean.FALSE;
+    viewer.pushHoldRepaint("runEval");
+    interruptExecution = executionPaused = false;
     isExecuting = true;
     currentThread = Thread.currentThread();
     isSyntaxCheck = isScriptCheck = checkScriptOnly;
@@ -293,7 +280,9 @@ class Eval {
       if (script != "")
         runScript(script, null);
       } catch (Error er) {
-        evalError(er.getMessage());
+        System.out.println("Eval caught error " + er.getMessage());
+        setErrorMessage("" + er);
+        scriptStatus(errorMessage);
       }
     } catch (ScriptException e) {
       setErrorMessage(e.toString());
@@ -301,14 +290,13 @@ class Eval {
     }
     timeEndExecution = System.currentTimeMillis();
     fileOpenCheck = tempOpen;
-    if (errorMessage == null && interruptExecution.booleanValue())
-      errorMessage = "execution interrupted";
+    if (errorMessage == null && interruptExecution)
+      setErrorMessage("execution interrupted");
     else if (!tQuiet && !isSyntaxCheck)
       viewer.scriptStatus(SCRIPT_COMPLETED);
     isExecuting = isSyntaxCheck = isScriptCheck = historyDisabled = false;
     viewer.setTainted(true);
-    viewer.popHoldRepaint();
-
+    viewer.popHoldRepaint("runEval");
   }
 
   String getErrorMessage() {
@@ -316,25 +304,30 @@ class Eval {
   }
 
   private void setErrorMessage(String err) {
+    if (err == null) {
+      error = false;
+      errorMessage = null;
+      return;
+    }
+    error = true;
+    if (err.length() == 0) {
+      errorMessage = compiler.getErrorMessage();
+      return;
+    }
     if (errorMessage == null) //there could be a compiler error from a script command
       errorMessage = GT._("script ERROR: ");
     errorMessage += err;
   }
 
-  int getExecutionWalltime() {
-    return (int) (timeEndExecution - timeBeginExecution);
-  }
-
   private void runScript(String script) throws ScriptException {
-    runScript(script, null);
+    runScript(script, outputBuffer);
   }
 
   void runScript(String script, StringBuffer outputBuffer)
       throws ScriptException {
     //a = script("xxxx")
     pushContext(null);
-    if (outputBuffer != null)
-      this.outputBuffer = outputBuffer;
+    this.outputBuffer = outputBuffer;
     if (loadScript(null, script, false))
       instructionDispatchLoop(false);
     popContext();
@@ -389,22 +382,20 @@ class Eval {
 
   }
 
-  private boolean loadScript(String filename, String script,
+  private boolean loadScript(String filename, String strScript,
                              boolean debugCompiler) {
-    //use runScript, not loadScript from within Eval
     this.filename = filename;
-    if (!compiler.compile(filename, script, false, false, debugCompiler, false)) {
-      error = true;
-      errorMessage = compiler.getErrorMessage();
+    if (!compiler.compile(filename, strScript, false, false, debugCompiler, false)) {
+      setErrorMessage("");
       return false;
     }
-    this.script = compiler.getScript();
-    pc = 0;
     aatoken = compiler.getAatokenCompiled();
     lineNumbers = compiler.getLineNumbers();
     lineIndices = compiler.getLineIndices();
     contextVariables = compiler.getContextVariables();
+    script = compiler.getScript();
     isStateScript = (script.indexOf(Viewer.STATE_VERSION_STAMP) >= 0);
+    pc = 0;
     return true;
   }
 
@@ -441,7 +432,7 @@ class Eval {
       return compiler.getErrorMessage();
     isSyntaxCheck = true;
     isScriptCheck = false;
-    errorMessage = null;
+    setErrorMessage(null);
     this.script = compiler.getScript();
     pc = 0;
     aatoken = compiler.getAatokenCompiled();
@@ -468,8 +459,7 @@ class Eval {
     for (int i = scriptLevelMax; --i >= 0;)
       stack[i] = null;
     scriptLevel = 0;
-    error = false;
-    errorMessage = null;
+    setErrorMessage(null);
     this.tQuiet = tQuiet;
   }
 
@@ -493,8 +483,7 @@ class Eval {
     String[] data = new String[2];
     data[0] = filename;
     if (!viewer.getFileAsString(data)) {
-      error = true;
-      errorMessage = "io error reading " + data[0] + ": " + data[1];
+      setErrorMessage("io error reading " + data[0] + ": " + data[1]);
       return false;
     }
     return loadScript(filename, data[1], debugScript);
@@ -656,41 +645,39 @@ class Eval {
     if (isSyntaxCheck)
       return;
     delay(-100);
-    viewer.popHoldRepaint();
-    executionPaused = Boolean.TRUE;
+    viewer.popHoldRepaint("pauseExecution");
+    executionPaused = true;
   }
 
   boolean isExecutionPaused() {
-    return executionPaused.booleanValue();
+    return executionPaused;
   }
 
   void resumePausedExecution() {
-    executionPaused = Boolean.FALSE;
+    executionPaused = false;
   }
 
   private boolean checkContinue() {
-    if (!interruptExecution.booleanValue()) {
-      if (!executionPaused.booleanValue())
+    if (!interruptExecution) {
+      if (!executionPaused)
         return true;
       if (Logger.debugging) {
         Logger.debug("script execution paused at this command: " + thisCommand);
       }
       try {
-        while (executionPaused.booleanValue()) {
+        while (executionPaused) {
           Thread.sleep(100);
           String script = viewer.getInterruptScript();
           if (script != "") {
             resumePausedExecution();
-            error = false;
+            setErrorMessage(null);
             pc--; // in case there is an error, we point to the PAUSE command
             try {
               runScript(script);
             } catch (Exception e) {
-              error = true;
-              errorMessage = e.toString();
+              setErrorMessage("" + e);
             } catch (Error er) {
-              error = true;
-              errorMessage = er.toString();
+              setErrorMessage("" + er);
             }
             pc++;
             if (error)
@@ -704,7 +691,7 @@ class Eval {
       Logger.debug("script execution resumed");
     }
     //once more to trap quit during pause
-    return !interruptExecution.booleanValue();
+    return !interruptExecution;
   }
 
   private int commandHistoryLevelMax = 0;
@@ -933,8 +920,7 @@ class Eval {
           viewer.clearScriptQueue();
       case Token.quit: // quit this only if it isn't the first command
         if (!isSyntaxCheck)
-          interruptExecution = ((pc > 0 || !viewer.usingScriptQueue()) ? Boolean.TRUE
-              : Boolean.FALSE);
+          interruptExecution = (pc > 0 || !viewer.usingScriptQueue());
         break;
       case Token.label:
         label(1);
@@ -4409,7 +4395,7 @@ class Eval {
             if (spacegroup.indexOf(",") >= 0) //Jones Faithful
               if ((lattice.x < 9 && lattice.y < 9 && lattice.z == 0))
                 spacegroup += "#doNormalize=0";
-            iGroup = getSymmetry().determineSpaceGroupIndex(spacegroup);
+            iGroup = viewer.getSymmetry().determineSpaceGroupIndex(spacegroup);
             if (iGroup == -1)
               error(ERROR_spaceGroupNotFound, spacegroup);
           }
@@ -5213,8 +5199,7 @@ class Eval {
       Logger.error(GT._("script ERROR: ") + errorMessage);
       popContext();
       if (wasScriptCheck) {
-        error = false;
-        errorMessage = null;
+        setErrorMessage(null);
       } else {
         evalError(null);
       }
@@ -5342,9 +5327,8 @@ class Eval {
     BitSet bsSelected = null;
     int steps = Integer.MAX_VALUE;
     float crit = 0;
-    MinimizerInterface minimizer = viewer.getMinimizer();
+    MinimizerInterface minimizer = viewer.getMinimizer(false);
     // may be null 
-
     for (int i = 1; i < statementLength; i++)
       switch (tokAt(i)) {
       case Token.clear:
@@ -5372,7 +5356,7 @@ class Eval {
           checkLength(i);
         }
         if (!isSyntaxCheck)
-          getMinimizer().setProperty("constraint",
+          viewer.getMinimizer(true).setProperty("constraint",
               new Object[] { aList, new int[n], new Float(targetValue) });
         return;
       case Token.string:
@@ -5393,7 +5377,7 @@ class Eval {
             bsFixed = null;
           checkLength(iToken + 1, 1);
           if (!isSyntaxCheck)
-            getMinimizer().setProperty("fixed", bsFixed);
+            viewer.getMinimizer(true).setProperty("fixed", bsFixed);
           return;
         }
         if (cmd.equals("energy")) {
@@ -5421,22 +5405,11 @@ class Eval {
       int i = BitSetUtil.firstSetBit(viewer.getVisibleFramesBitSet());
       bsSelected = viewer.getModelAtomBitSet(i, false);
     }
-    minimizer = getMinimizer();
     try {
-      minimizer.minimize(steps, crit, bsSelected);
+      viewer.getMinimizer(true).minimize(steps, crit, bsSelected);
     } catch (Exception e) {
       evalError(e.getMessage());
     }
-  }
-
-  private MinimizerInterface getMinimizer() {
-    MinimizerInterface minimizer = viewer.getMinimizer();
-    if (minimizer == null) {
-      minimizer = (MinimizerInterface) Interface
-          .getOptionInterface("minimize.Minimizer");
-      viewer.setMinimizer(minimizer);
-    }
-    return minimizer;
   }
 
   private void select() throws ScriptException {
@@ -5748,14 +5721,14 @@ class Eval {
     millis -= seconds * 1000;
     if (millis <= 0)
       millis = 1;
-    while (seconds >= 0 && millis > 0 && !interruptExecution.booleanValue()
+    while (seconds >= 0 && millis > 0 && !interruptExecution
         && currentThread == Thread.currentThread()) {
-      viewer.popHoldRepaint();
+      viewer.popHoldRepaint("delay");
       try {
         Thread.sleep((seconds--) > 0 ? 1000 : millis);
       } catch (InterruptedException e) {
       }
-      viewer.pushHoldRepaint();
+      viewer.pushHoldRepaint("delay");
     }
   }
 
@@ -7088,7 +7061,7 @@ class Eval {
           if (ijk < 555)
             pt = new Point3f();
           else
-            pt = getSymmetry().ijkToPoint3f(ijk + 111);
+            pt = viewer.getSymmetry().ijkToPoint3f(ijk + 111);
         }
         if (!isSyntaxCheck)
           viewer.setDefaultLattice(pt);
@@ -9320,7 +9293,7 @@ class Eval {
     Token t = getContextVariableAsToken("_retval");
     if (t == null) {
       if (!isSyntaxCheck)
-        interruptExecution = Boolean.TRUE;
+        interruptExecution = true;
       return;
     }
     Vector v = (statementLength == 1 ? null : (Vector) parameterExpression(1,
@@ -13058,19 +13031,13 @@ class Eval {
       if (args.length != 1)
         return false;
       BitSet bs = new BitSet();
-      if (isSyntaxCheck)
-        return addX(bs);
-      String smiles = Token.sValue(args[0]);
-      if (smiles.length() == 0)
-        return false;
-      SmilesMatcherInterface matcher = (SmilesMatcherInterface) Interface
-          .getOptionInterface("smiles.PatternMatcher");
-      matcher.setViewer(viewer);
-      try {
-        bs = matcher.getSubstructureSet(smiles);
-      } catch (Exception e) {
-        evalError(e.getMessage());
-      }
+      String smiles = (isSyntaxCheck ? "" : Token.sValue(args[0]));
+      if (smiles.length() > 0)
+        try {
+          bs = viewer.getSmilesMatcher().getSubstructureSet(smiles);
+        } catch (Exception e) {
+          evalError(e.getMessage());
+        }
       return addX(bs);
     }
 

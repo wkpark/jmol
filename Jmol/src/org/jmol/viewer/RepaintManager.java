@@ -155,9 +155,11 @@ class RepaintManager {
   boolean repaintPending;
   void pushHoldRepaint() {
     ++holdRepaint;
+    //System.out.println("Repaintmanager pushHold  " + holdRepaint + " " + repaintPending + " " + Thread.currentThread());
   }
 
   void popHoldRepaint() {
+    //System.out.println("Repaintmanager popHold  " + holdRepaint + " " + repaintPending + " " + Thread.currentThread());
     --holdRepaint;
     if (holdRepaint <= 0) {
       holdRepaint = 0;
@@ -167,6 +169,7 @@ class RepaintManager {
   }
 
   boolean refresh() {
+    //System.out.println("Repaintmanager refresh  " + holdRepaint + " " + repaintPending + " " + Thread.currentThread());
     if (repaintPending)
       return false;
     repaintPending = true;
@@ -178,6 +181,7 @@ class RepaintManager {
 
 
   synchronized void requestRepaintAndWait() {
+    //System.out.println("Repaintmanager requestRepaintAndWait  " + holdRepaint + " " + repaintPending + " " + Thread.currentThread());
     viewer.repaint();
     try {
       wait();
@@ -186,6 +190,7 @@ class RepaintManager {
   }
 
   synchronized void repaintDone() {
+    //System.out.println("Repaintmanager repaintDone  " + holdRepaint + " " + repaintPending + " " + Thread.currentThread());
     repaintPending = false;
     notify(); // to cancel any wait in requestRepaintAndWait()
   }

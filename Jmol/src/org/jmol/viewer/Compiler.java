@@ -106,7 +106,7 @@ class Compiler {
    * languages.
    * 
    * The syntactic model is related most closely to JavaScript. But there is no
-   * exact model, because we are already useing { } for too many things (select
+   * exact model, because we are already using { } for too many things (select
    * criteria, points, planes, and bitsets). So this syntax uses no braces. 
    * 
    * Instead, the syntax uses the Visual Basic-like "end" syntax. So we have;
@@ -2579,7 +2579,7 @@ class Compiler {
         ichToken - ichCurrentCommand)
         + " >>>> " + errorLine.substring(ichToken - ichCurrentCommand) : errorLine)
         + " <<<<";
-    errorMessage = "script compiler ERROR: " + errorMessage
+    errorMessage = GT._("script compiler ERROR: ") + errorMessage
          + Eval.setErrorLineMessage(null, filename, lineCurrent, iCommand, lineInfo);
     if (!isSilent) {
       viewer.addCommand(errorLine + CommandHistory.ERROR_FLAG);

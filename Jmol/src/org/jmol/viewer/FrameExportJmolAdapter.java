@@ -24,7 +24,13 @@
 
 package org.jmol.viewer;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.util.Hashtable;
+import java.util.Properties;
+
 import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolFileReaderInterface;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;
@@ -63,6 +69,10 @@ final public class FrameExportJmolAdapter extends JmolAdapter {
     return new BondIterator();
   }
 
+  public StructureIterator getStructureIterator(Object atomSetCollection) {
+    // TODO
+    return null;
+  }
   class AtomIterator extends JmolAdapter.AtomIterator {
     int iatom;
     Atom atom;
@@ -101,4 +111,85 @@ final public class FrameExportJmolAdapter extends JmolAdapter {
     }
     public int getEncodedOrder() { return bond.getOrder(); }
   }
+
+  public Object getAtomSetCollectionFromReader(String name, String type, BufferedReader bufferedReader, Hashtable htParams) {
+    // TODO
+    return null;
+  }
+
+  public Object getAtomSetCollectionFromReaders(JmolFileReaderInterface fileReader, String[] names, String[] types, Hashtable[] htParams) {
+    // TODO
+    return null;
+  }
+
+  public Object getAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory, Hashtable htParams, boolean asBufferedReader) {
+    // TODO
+    return null;
+  }
+
+  public Object getAtomSetCollectionFromDOM(Object DOMNode) {
+    // TODO
+    return null;
+  }
+
+  public String getFileTypeName(Object atomSetCollection) {
+    // TODO
+    return null;
+  }
+
+  public Properties getAtomSetCollectionProperties(Object atomSetCollection) {
+    // TODO
+    return null;
+  }
+
+  public Hashtable getAtomSetCollectionAuxiliaryInfo(Object atomSetCollection) {
+    // TODO
+    return null;
+  }
+
+  public int getAtomSetCount(Object atomSetCollection) {
+    // TODO
+    return 0;
+  }
+
+  public int getAtomSetNumber(Object atomSetCollection, int atomSetIndex) {
+    // TODO
+    return 0;
+  }
+
+  public String getAtomSetName(Object atomSetCollection, int atomSetIndex) {
+    // TODO
+    return null;
+  }
+
+  public Properties getAtomSetProperties(Object atomSetCollection, int atomSetIndex) {
+    // TODO
+    return null;
+  }
+
+  public Hashtable getAtomSetAuxiliaryInfo(Object atomSetCollection, int atomSetIndex) {
+    // TODO
+    return null;
+  }
+
+  public boolean coordinatesAreFractional(Object atomSetCollection) {
+    // TODO
+    return false;
+  }
+
+  public float[] getPdbScaleMatrix(Object atomSetCollection) {
+    // TODO
+    return null;
+  }
+
+  public float[] getPdbScaleTranslate(Object atomSetCollection) {
+    // TODO
+    return null;
+  }
+
+  public String getClientAtomStringProperty(Object clientAtom, String propertyName) {
+    // TODO
+    return null;
+  }
+
 }

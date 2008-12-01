@@ -96,29 +96,32 @@ public class Resolver {
     return null;
   }
 
-  static Object resolve(String name, String type, BufferedReader bufferedReader) throws Exception {
-    return resolve(name, type, bufferedReader, null, -1);
-  }
-
-  static Object resolve(String fullName, String type,
+  static Object getAtomCollectionAndCloseReader(String fullName, String type,
                         BufferedReader bufferedReader, Hashtable htParams,
                         int ptFile) throws Exception {
     AtomSetCollectionReader atomSetCollectionReader = null;
     String atomSetCollectionReaderName;
+    String errMsg = null;
     if (type != null) {
       atomSetCollectionReaderName = getReaderFromType(type);
       if (atomSetCollectionReaderName == null)
-        return "unrecognized file format type " + type;
-      Logger.info("The Resolver assumes " + atomSetCollectionReaderName);
+        errMsg =  "unrecognized file format type " + type;
+      else 
+        Logger.info("The Resolver assumes " + atomSetCollectionReaderName);
     } else {
       atomSetCollectionReaderName = determineAtomSetCollectionReader(
           bufferedReader, true);
       if (atomSetCollectionReaderName.indexOf("\n") >= 0)
-        return "unrecognized file format for file " + fullName + "\n"
+        errMsg = "unrecognized file format for file " + fullName + "\n"
             + atomSetCollectionReaderName;
-      if (atomSetCollectionReaderName.equals("spt"))
-        return "NOTE: file recognized as a script file: " + fullName + "\n";
-      Logger.info("The Resolver thinks " + atomSetCollectionReaderName);
+      else if (atomSetCollectionReaderName.equals("spt"))
+        errMsg = "NOTE: file recognized as a script file: " + fullName + "\n";
+      else
+        Logger.info("The Resolver thinks " + atomSetCollectionReaderName);
+    }
+    if (errMsg != null) {
+      bufferedReader.close();
+      return errMsg;
     }
     if (htParams == null)
       htParams = new Hashtable();

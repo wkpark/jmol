@@ -44,7 +44,6 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.io.File;
 
-import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolDialogInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
@@ -76,11 +75,11 @@ public class Dialog extends JPanel implements JmolDialogInterface {
   private static FileChooser openChooser;
   private FilePreview openPreview;
 
-  public String getOpenFileNameFromDialog(JmolAdapter modelAdapter,
-                                          String appletContext,
-                                          JmolViewer viewer, String fileName,
-                                          Object historyFileObject,
-                                          String windowName, boolean allowAppend) {
+  public String getOpenFileNameFromDialog(String appletContext,
+                                          JmolViewer viewer,
+                                          String fileName, Object historyFileObject,
+                                          String windowName,
+                                          boolean allowAppend) {
 
     HistoryFile historyFile = (HistoryFile) historyFileObject;
 
@@ -94,7 +93,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     if (openPreview == null
         && (viewer.isApplet() || Boolean.valueOf(
             System.getProperty("openFilePreview", "true")).booleanValue())) {
-      openPreview = new FilePreview(openChooser, modelAdapter, allowAppend,
+      openPreview = new FilePreview(openChooser, viewer.getModelAdapter(), allowAppend,
           appletContext);
     }
 

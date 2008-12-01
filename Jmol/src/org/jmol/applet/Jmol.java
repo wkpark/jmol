@@ -26,7 +26,6 @@ package org.jmol.applet;
 
 import org.jmol.api.*;
 import org.jmol.appletwrapper.*;
-import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.popup.JmolPopup;
 import org.jmol.i18n.GT;
 import org.jmol.viewer.JmolConstants;
@@ -242,8 +241,6 @@ public class Jmol implements WrappedApplet {
 
   boolean isSigned;
 
-  JmolAdapter modelAdapter;
-
   public void initWindows() {
 
     String options = "-applet";
@@ -260,14 +257,14 @@ public class Jmol implements WrappedApplet {
     if (s != null)
       options += "-appletProxy " + s;
     viewer = JmolViewer.allocateViewer(appletWrapper,
-        modelAdapter = new SmarterJmolAdapter(), fullName, appletWrapper.getDocumentBase(),
+        null, fullName, appletWrapper.getDocumentBase(),
         appletWrapper.getCodeBase(), options, new MyStatusListener());
     String menuFile = getParameter("menuFile");
     if (menuFile != null)
       menuStructure = viewer.getFileAsString(menuFile);
     jvm12orGreater = viewer.isJvm12orGreater();
     if (jvm12orGreater)
-      jvm12 = new Jvm12(appletWrapper, viewer, modelAdapter, options);
+      jvm12 = new Jvm12(appletWrapper, viewer, options);
     if (Logger.debugging) {
       Logger.debug("checking for jsoWindow mayScript=" + mayScript);
     }
@@ -696,106 +693,115 @@ public class Jmol implements WrappedApplet {
     return viewer.getProperty("JSON", infoType, paramInfo).toString();
   }
 
-  public void loadInlineString(String strModel, String script, boolean isAppend) {
-    viewer.loadInline(strModel, isAppend);
-    script(script);
+  public String loadInlineString(String strModel, String script, boolean isAppend) {
+    String errMsg = viewer.loadInline(strModel, isAppend);
+    if (errMsg == null)
+      script(script);
+    return errMsg;
   }
 
-  public void loadInlineArray(String[] strModels, String script,
+  public String loadInlineArray(String[] strModels, String script,
                               boolean isAppend) {
     if (strModels == null || strModels.length == 0)
-      return;
-    viewer.loadInline(strModels, isAppend);
-    script(script);
+      return null;
+    String errMsg = viewer.loadInline(strModels, isAppend);
+    if (errMsg != null)
+      script(script);
+    return errMsg;
   }
 
   /**
    * @deprecated
    * @param strModel
+   * @return         error or null
    */
-  public void loadInline(String strModel) {
-    loadInlineString(strModel, "", false);
+  public String loadInline(String strModel) {
+    return loadInlineString(strModel, "", false);
   }
 
   /**
    * @deprecated
    * @param strModel
    * @param script
+   * @return         error or null
    */
-  public void loadInline(String strModel, String script) {
-    loadInlineString(strModel, script, false);
+  public String loadInline(String strModel, String script) {
+    return loadInlineString(strModel, script, false);
   }
 
   /**
    * @deprecated
    * @param strModels
+   * @return         error or null
    */
-  public void loadInline(String[] strModels) {
-    loadInlineArray(strModels, "", false);
+  public String loadInline(String[] strModels) {
+    return loadInlineArray(strModels, "", false);
   }
 
   /**
    * @deprecated
    * @param strModels
    * @param script
+   * @return       error or null
    */
-  public void loadInline(String[] strModels, String script) {
-    loadInlineArray(strModels, script, false);
+  public String loadInline(String[] strModels, String script) {
+    return loadInlineArray(strModels, script, false);
   }
 
-  private void loadInlineSeparated(String strModel, String script) {
+  private String loadInlineSeparated(String strModel, String script) {
     // from an applet PARAM only -- because it converts | into \n
     if (strModel == null)
-      return;
-    viewer.loadInline(strModel);
-    script(script);
+      return null;
+    String errMsg = viewer.loadInline(strModel);
+    if (errMsg != null)
+      script(script);
+    return errMsg;
   }
 
-  public void loadDOMNode(JSObject DOMNode) {
+  public String loadDOMNode(JSObject DOMNode) {
     // This should provide a route to pass in a browser DOM node
     // directly as a JSObject. Unfortunately does not seem to work with
     // current browsers
-    viewer.openDOM(DOMNode);
+    return viewer.openDOM(DOMNode);
   }
 
-  public void loadNodeId(String nodeId) {
+  public String loadNodeId(String nodeId) {
     if (!haveDocumentAccess)
-      return;
-    if (nodeId != null) {
-      // Retrieve Node ...
-      // First try to find by ID
-      Object[] idArgs = { nodeId };
-      JSObject tryNode = null;
-      try {
-        JSObject jsoWindow = JSObject.getWindow(appletWrapper);
-        JSObject jsoDocument = (JSObject) jsoWindow.getMember("document");
-        tryNode = (JSObject) jsoDocument.call("getElementById", idArgs);
+      return "ERROR: NO DOCUMENT ACCESS";
+    if (nodeId == null)
+      return null;
+    // Retrieve Node ...
+    // First try to find by ID
+    Object[] idArgs = { nodeId };
+    JSObject tryNode = null;
+    try {
+      JSObject jsoWindow = JSObject.getWindow(appletWrapper);
+      JSObject jsoDocument = (JSObject) jsoWindow.getMember("document");
+      tryNode = (JSObject) jsoDocument.call("getElementById", idArgs);
 
-        // But that relies on a well-formed CML DTD specifying ID search.
-        // Otherwise, search all cml:cml nodes.
-        if (tryNode == null) {
-          Object[] searchArgs = { "http://www.xml-cml.org/schema/cml2/core",
-              "cml" };
-          JSObject tryNodeList = (JSObject) jsoDocument.call(
-              "getElementsByTagNameNS", searchArgs);
-          if (tryNodeList != null) {
-            for (int i = 0; i < ((Number) tryNodeList.getMember("length"))
-                .intValue(); i++) {
-              tryNode = (JSObject) tryNodeList.getSlot(i);
-              Object[] idArg = { "id" };
-              String idValue = (String) tryNode.call("getAttribute", idArg);
-              if (nodeId.equals(idValue))
-                break;
-              tryNode = null;
-            }
+      // But that relies on a well-formed CML DTD specifying ID search.
+      // Otherwise, search all cml:cml nodes.
+      if (tryNode == null) {
+        Object[] searchArgs = { "http://www.xml-cml.org/schema/cml2/core",
+            "cml" };
+        JSObject tryNodeList = (JSObject) jsoDocument.call(
+            "getElementsByTagNameNS", searchArgs);
+        if (tryNodeList != null) {
+          for (int i = 0; i < ((Number) tryNodeList.getMember("length"))
+              .intValue(); i++) {
+            tryNode = (JSObject) tryNodeList.getSlot(i);
+            Object[] idArg = { "id" };
+            String idValue = (String) tryNode.call("getAttribute", idArg);
+            if (nodeId.equals(idValue))
+              break;
+            tryNode = null;
           }
         }
-      } catch (Exception e) {
-        tryNode = null;
       }
-      if (tryNode != null)
-        loadDOMNode(tryNode);
+    } catch (Exception e) {
+      return "" + e;
     }
+    return (tryNode == null ? "ERROR: No CML node" : loadDOMNode(tryNode));
   }
 
   class MyStatusListener implements JmolStatusListener {

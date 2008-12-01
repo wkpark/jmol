@@ -26,7 +26,6 @@ package org.jmol.viewer;
 
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
-import org.jmol.api.JmolAdapter;
 
 class ModelManager {
 
@@ -63,9 +62,9 @@ class ModelManager {
     return fullPathName;
   }
 
-  ModelSet merge(JmolAdapter adapter, Object clientFile ) {
+  ModelSet merge(Object atomSetCollection ) {
     //System.out.println(modelLoader + " merging a");
-    modelLoader = new ModelLoader(viewer, adapter, clientFile,
+    modelLoader = new ModelLoader(viewer, atomSetCollection,
         modelLoader, "merge");
     if (modelLoader.getAtomCount() == 0)
       zap();
@@ -73,14 +72,16 @@ class ModelManager {
     return (ModelSet) modelLoader;
   }
   
-  ModelSet setClientFile(String fullPathName, String fileName, JmolAdapter adapter, Object clientFile) {
-    if (clientFile == null) {
+  ModelSet createModelSet(String fullPathName, String fileName, Object atomSetCollection, boolean isAppend) {
+    if (atomSetCollection == null) {
       clear();
       return null;
     }
+    if (isAppend)
+      return merge(atomSetCollection);
     this.fullPathName = fullPathName;
     this.fileName = fileName;
-    String modelSetName = adapter.getAtomSetCollectionName(clientFile);
+    String modelSetName = viewer.getModelAdapter().getAtomSetCollectionName(atomSetCollection);
     if (modelSetName != null) {
       modelSetName = modelSetName.trim();
       if (modelSetName.length() == 0)
@@ -89,7 +90,7 @@ class ModelManager {
     if (modelSetName == null)
       modelSetName = reduceFilename(fileName);
     //System.out.println(modelLoader + " setclient a");
-    modelLoader = new ModelLoader(viewer, adapter, clientFile, null, modelSetName);
+    modelLoader = new ModelLoader(viewer, atomSetCollection, null, modelSetName);
     //haveFile = true;
     //System.out.println(modelLoader + " setclient b");
     if (modelLoader.getAtomCount() == 0)

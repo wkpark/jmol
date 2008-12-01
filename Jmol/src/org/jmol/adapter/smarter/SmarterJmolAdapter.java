@@ -58,8 +58,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
   public final static String PATH_SEPARATOR =
     System.getProperty("path.separator");
   
-  public void finish(Object clientFile) {
-    ((AtomSetCollection)clientFile).finish();
+  public void finish(Object atomSetCollection) {
+    ((AtomSetCollection)atomSetCollection).finish();
   }
 
   public String[] specialLoad(String name, String type) {
@@ -67,43 +67,42 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
   
 
-  public Object openBufferedReader(String name, String type,
+  public Object getAtomSetCollectionFromReader(String name, String type,
                                    BufferedReader bufferedReader, Hashtable htParams) {
-    return staticOpenBufferedReader(name, type, bufferedReader, htParams);
+    return staticGetAtomSetCollectionFromReader(name, type, bufferedReader, htParams);
   }
 
-  private static Object staticOpenBufferedReader(String name, String type, BufferedReader bufferedReader, Hashtable htParams) {
+  private static Object staticGetAtomSetCollectionFromReader(String name, String type,
+                                                 BufferedReader bufferedReader,
+                                                 Hashtable htParams) {
     //FileOpenThread, TesetSmarterJmolAdapter
     try {
-      Object atomSetCollectionOrErrorMessage =
-        Resolver.resolve(name, type, bufferedReader, htParams, -1);
+      Object atomSetCollectionOrErrorMessage = Resolver.getAtomCollectionAndCloseReader(name, type,
+          bufferedReader, htParams, -1);
       if (atomSetCollectionOrErrorMessage instanceof String)
         return atomSetCollectionOrErrorMessage;
-      if (atomSetCollectionOrErrorMessage instanceof AtomSetCollection) {
-        AtomSetCollection atomSetCollection =
-          (AtomSetCollection)atomSetCollectionOrErrorMessage;
-        if (atomSetCollection.errorMessage != null)
-          return atomSetCollection.errorMessage;
-        return atomSetCollection;
+      AtomSetCollection atomSetCollection = (AtomSetCollection) atomSetCollectionOrErrorMessage;
+      if (atomSetCollection.errorMessage != null)
+        return atomSetCollection.errorMessage;
+      return atomSetCollection;
+    } catch (Throwable e) {
+      try {
+        bufferedReader.close();
+      } catch (Exception ex) {
+        //
       }
-      return "unknown reader error";
-    } catch (Exception e) {
+      bufferedReader = null;
       Logger.error(null, e);
-      bufferedReader = null;
       return "" + e;
-    } catch (Error er) {
-      Logger.error(null, er);
-      bufferedReader = null;
-      return "" + er;
     }
   }
 
-  public Object openBufferedReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
+  public Object getAtomSetCollectionFromReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
                                     Hashtable[] htparamsSet) {
-    return staticOpenBufferedReaders(fileReader, names, types, htparamsSet);
+    return staticGetAtomSetCollectionFromReaders(fileReader, names, types, htparamsSet);
   }
 
-  private static Object staticOpenBufferedReaders(
+  private static Object staticGetAtomSetCollectionFromReaders(
                                                   JmolFileReaderInterface fileReader,
                                                   String[] names,
                                                   String[] types,
@@ -116,7 +115,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
         BufferedReader reader = fileReader.getBufferedReader(i);
         if (reader == null)
           return null;
-        Object atomSetCollectionOrErrorMessage = Resolver.resolve(names[i],
+        Object atomSetCollectionOrErrorMessage = Resolver.getAtomCollectionAndCloseReader(names[i],
             (types == null ? null : types[i]), reader, (htparamsSet == null ? null
                 : htparamsSet[i]), i);
         if (atomSetCollectionOrErrorMessage instanceof String)
@@ -150,12 +149,12 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return result;
   }
 
-  public Object openZipFiles(InputStream is, String fileName, String[] zipDirectory,
+  public Object getAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory,
                              Hashtable htParams, boolean asBufferedReader) {
-    return staticOpenZipFiles(is, fileName, zipDirectory, htParams, 1, asBufferedReader);
+    return staticGetAtomSetCollectionOrBufferedReaderFromZip(is, fileName, zipDirectory, htParams, 1, asBufferedReader);
   }
 
-  private static Object staticOpenZipFiles(InputStream is, String fileName, String[] zipDirectory,
+  private static Object staticGetAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory,
                              Hashtable htParams, int subFilePtr, boolean asBufferedReader) {
 
     boolean doCombine = (subFilePtr == 1);
@@ -229,22 +228,22 @@ public class SmarterJmolAdapter extends JmolAdapter {
               new ByteArrayInputStream(bytes));
           String[] zipDir2 = ZipUtil.getZipDirectoryAndClose(bis, true);
           bis = new BufferedInputStream(new ByteArrayInputStream(bytes));
-          Object clientFiles = staticOpenZipFiles(bis, fileName
+          Object atomSetCollections = staticGetAtomSetCollectionOrBufferedReaderFromZip(bis, fileName
               + "|" + thisEntry, zipDir2, htParams, ++subFilePtr, asBufferedReader);
-          if (clientFiles instanceof String) {
+          if (atomSetCollections instanceof String) {
             if (ignoreErrors)
               continue;
-            return clientFiles;
-          } else if (clientFiles instanceof AtomSetCollection
-              || clientFiles instanceof Vector) {
+            return atomSetCollections;
+          } else if (atomSetCollections instanceof AtomSetCollection
+              || atomSetCollections instanceof Vector) {
             if (haveManifest && !exceptFiles)
-              htCollections.put(thisEntry, clientFiles);
+              htCollections.put(thisEntry, atomSetCollections);
             else
-              vCollections.addElement(clientFiles);
-          } else if (clientFiles instanceof BufferedReader) {
+              vCollections.addElement(atomSetCollections);
+          } else if (atomSetCollections instanceof BufferedReader) {
             if (doCombine)
               zis.close();
-            return clientFiles; // FileReader has requested a zip file BufferedReader
+            return atomSetCollections; // FileReader has requested a zip file BufferedReader
           } else {
             if (ignoreErrors)
               continue;
@@ -262,14 +261,14 @@ public class SmarterJmolAdapter extends JmolAdapter {
               zis.close();
             return reader;
           }
-          Object clientFile = Resolver.resolve(fileName + "|" + ze.getName(),
+          Object atomSetCollection = Resolver.getAtomCollectionAndCloseReader(fileName + "|" + ze.getName(),
               null, reader, htParams, -1);
-          if (clientFile instanceof AtomSetCollection) {
+          if (atomSetCollection instanceof AtomSetCollection) {
             if (haveManifest && !exceptFiles)
-              htCollections.put(thisEntry, clientFile);
+              htCollections.put(thisEntry, atomSetCollection);
             else
-              vCollections.addElement(clientFile);
-            AtomSetCollection a = (AtomSetCollection) clientFile;
+              vCollections.addElement(atomSetCollection);
+            AtomSetCollection a = (AtomSetCollection) atomSetCollection;
             if (a.errorMessage != null) {
               if (ignoreErrors)
                 continue;
@@ -280,7 +279,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
             if (ignoreErrors)
               continue;
             zis.close();
-            return "unknown reader error";
+            return "" + atomSetCollection;
           }
         }
       }
@@ -291,11 +290,11 @@ public class SmarterJmolAdapter extends JmolAdapter {
         if (asBufferedReader) {
           return reader;
         }
-        Object clientFile = Resolver.resolve(fileName, null, reader);
-        if (clientFile instanceof String)
-          return clientFile;
-        if (clientFile instanceof AtomSetCollection) {
-          AtomSetCollection atomSetCollection = (AtomSetCollection) clientFile;
+        Object atomSetCollectionOrError = Resolver.getAtomCollectionAndCloseReader(fileName, null, reader, null, -1);
+        if (atomSetCollectionOrError instanceof String)
+          return atomSetCollectionOrError;
+        if (atomSetCollectionOrError instanceof AtomSetCollection) {
+          AtomSetCollection atomSetCollection = (AtomSetCollection) atomSetCollectionOrError;
           if (atomSetCollection.errorMessage != null) {
             if (ignoreErrors)
               return null;
@@ -349,11 +348,11 @@ public class SmarterJmolAdapter extends JmolAdapter {
     }
   }
 
-  public Object openDOMReader(Object DOMNode) {
-    return staticOpenDOMReader(DOMNode);
+  public Object getAtomSetCollectionFromDOM(Object DOMNode) {
+    return staticGetAtomSetCollectionFromDOM(DOMNode);
   }
 
-  private static Object staticOpenDOMReader(Object DOMNode) {
+  private static Object staticGetAtomSetCollectionFromDOM(Object DOMNode) {
     try {
       Object atomSetCollectionOrErrorMessage = 
         Resolver.DOMResolve(DOMNode);
@@ -376,50 +375,50 @@ public class SmarterJmolAdapter extends JmolAdapter {
     }
   }
 
-  public String getFileTypeName(Object clientFile) {
-    return staticGetFileTypeName(clientFile);
+  public String getFileTypeName(Object atomSetCollectionOrReader) {
+    return staticGetFileTypeName(atomSetCollectionOrReader);
   }
 
-  private static String staticGetFileTypeName(Object clientFile) {
-    if (clientFile == null)
+  private static String staticGetFileTypeName(Object atomSetCollectionOrReader) {
+    if (atomSetCollectionOrReader == null)
       return null;
-    if (clientFile instanceof BufferedReader)
-      return Resolver.getFileType((BufferedReader)clientFile);
-    if (clientFile instanceof AtomSetCollection)
-      return ((AtomSetCollection)clientFile).fileTypeName;
+    if (atomSetCollectionOrReader instanceof BufferedReader)
+      return Resolver.getFileType((BufferedReader)atomSetCollectionOrReader);
+    if (atomSetCollectionOrReader instanceof AtomSetCollection)
+      return ((AtomSetCollection)atomSetCollectionOrReader).fileTypeName;
     return null;
   }
 
-  public String getAtomSetCollectionName(Object clientFile) {
-    return ((AtomSetCollection)clientFile).collectionName;
+  public String getAtomSetCollectionName(Object atomSetCollection) {
+    return ((AtomSetCollection)atomSetCollection).collectionName;
   }
   
-  public Properties getAtomSetCollectionProperties(Object clientFile) {
-    return ((AtomSetCollection)clientFile).atomSetCollectionProperties;
+  public Properties getAtomSetCollectionProperties(Object atomSetCollection) {
+    return ((AtomSetCollection)atomSetCollection).atomSetCollectionProperties;
   }
 
-  public Hashtable getAtomSetCollectionAuxiliaryInfo(Object clientFile) {
-    return ((AtomSetCollection)clientFile).atomSetCollectionAuxiliaryInfo;
+  public Hashtable getAtomSetCollectionAuxiliaryInfo(Object atomSetCollection) {
+    return ((AtomSetCollection)atomSetCollection).atomSetCollectionAuxiliaryInfo;
   }
 
-  public int getAtomSetCount(Object clientFile) {
-    return ((AtomSetCollection)clientFile).atomSetCount;
+  public int getAtomSetCount(Object atomSetCollection) {
+    return ((AtomSetCollection)atomSetCollection).atomSetCount;
   }
 
-  public int getAtomSetNumber(Object clientFile, int atomSetIndex) {
-    return ((AtomSetCollection)clientFile).getAtomSetNumber(atomSetIndex);
+  public int getAtomSetNumber(Object atomSetCollection, int atomSetIndex) {
+    return ((AtomSetCollection)atomSetCollection).getAtomSetNumber(atomSetIndex);
   }
 
-  public String getAtomSetName(Object clientFile, int atomSetIndex) {
-    return ((AtomSetCollection)clientFile).getAtomSetName(atomSetIndex);
+  public String getAtomSetName(Object atomSetCollection, int atomSetIndex) {
+    return ((AtomSetCollection)atomSetCollection).getAtomSetName(atomSetIndex);
   }
   
-  public Properties getAtomSetProperties(Object clientFile, int atomSetIndex) {
-    return ((AtomSetCollection)clientFile).getAtomSetProperties(atomSetIndex);
+  public Properties getAtomSetProperties(Object atomSetCollection, int atomSetIndex) {
+    return ((AtomSetCollection)atomSetCollection).getAtomSetProperties(atomSetIndex);
   }
   
-  public Hashtable getAtomSetAuxiliaryInfo(Object clientFile, int atomSetIndex) {
-    return ((AtomSetCollection) clientFile)
+  public Hashtable getAtomSetAuxiliaryInfo(Object atomSetCollection, int atomSetIndex) {
+    return ((AtomSetCollection) atomSetCollection)
         .getAtomSetAuxiliaryInfo(atomSetIndex);
   }
 
@@ -427,20 +426,20 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * The frame related methods
    * **************************************************************/
 
-  public int getEstimatedAtomCount(Object clientFile) {
-    return ((AtomSetCollection)clientFile).getAtomCount();
+  public int getEstimatedAtomCount(Object atomSetCollection) {
+    return ((AtomSetCollection)atomSetCollection).getAtomCount();
   }
 
-  public boolean coordinatesAreFractional(Object clientFile) {
-    return ((AtomSetCollection)clientFile).coordinatesAreFractional;
+  public boolean coordinatesAreFractional(Object atomSetCollection) {
+    return ((AtomSetCollection)atomSetCollection).coordinatesAreFractional;
   }
 
-  public float[] getNotionalUnitcell(Object clientFile) {
-    return ((AtomSetCollection)clientFile).notionalUnitCell;
+  public float[] getNotionalUnitcell(Object atomSetCollection) {
+    return ((AtomSetCollection)atomSetCollection).notionalUnitCell;
   }
 
-  public float[] getPdbScaleMatrix(Object clientFile) {
-    float[] a = ((AtomSetCollection)clientFile).notionalUnitCell;
+  public float[] getPdbScaleMatrix(Object atomSetCollection) {
+    float[] a = ((AtomSetCollection)atomSetCollection).notionalUnitCell;
     if (a.length < 22)
       return null;
     float[] b = new float[16];
@@ -449,8 +448,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return b;
   }
 
-  public float[] getPdbScaleTranslate(Object clientFile) {
-    float[] a = ((AtomSetCollection)clientFile).notionalUnitCell;
+  public float[] getPdbScaleTranslate(Object atomSetCollection) {
+    float[] a = ((AtomSetCollection)atomSetCollection).notionalUnitCell;
     if (a.length < 22)
       return null;
     float[] b = new float[3];
@@ -460,22 +459,26 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return b;
   }
   
+  public String getClientAtomStringProperty(Object clientAtom, String propertyName) {
+    return null;
+  }
+
   ////////////////////////////////////////////////////////////////
 
   public JmolAdapter.AtomIterator
-    getAtomIterator(Object clientFile) {
-    return new AtomIterator((AtomSetCollection)clientFile);
+    getAtomIterator(Object atomSetCollection) {
+    return new AtomIterator((AtomSetCollection)atomSetCollection);
   }
 
   public JmolAdapter.BondIterator
-    getBondIterator(Object clientFile) {
-    return new BondIterator((AtomSetCollection)clientFile);
+    getBondIterator(Object atomSetCollection) {
+    return new BondIterator((AtomSetCollection)atomSetCollection);
   }
 
   public JmolAdapter.StructureIterator
-    getStructureIterator(Object clientFile) {
-    AtomSetCollection atomSetCollection = (AtomSetCollection)clientFile;
-    return atomSetCollection.structureCount == 0 ? null : new StructureIterator(atomSetCollection);
+    getStructureIterator(Object atomSetCollection) {
+    return ((AtomSetCollection)atomSetCollection).structureCount == 0 ? 
+        null : new StructureIterator((AtomSetCollection)atomSetCollection);
   }
 
   /* **************************************************************
@@ -619,7 +622,4 @@ public class SmarterJmolAdapter extends JmolAdapter {
       return structure.endInsertionCode;
     }
   }
-
-  
-  
 }

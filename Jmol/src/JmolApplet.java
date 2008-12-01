@@ -87,26 +87,25 @@ public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper implements
         + infoType, "" + paramInfo));
   }
 
-  public void loadInlineArray(String[] strModels, String script, boolean isAppend) {
+  public String loadInlineArray(String[] strModels, String script, boolean isAppend) {
     if (wrappedApplet == null || strModels == null || strModels.length == 0)
-        return;
+        return null;
       String s = "" + strModels[0];
       if (s.indexOf('\n') >= 0 || s.indexOf('\r') >= 0) {
         String[] converted = new String[strModels.length];
         for (int i = 0; i < strModels.length; ++i)
           converted[i] = "" + strModels[i];
-        wrappedApplet.loadInlineArray(converted, "" + script, isAppend);
-        return;
+        return wrappedApplet.loadInlineArray(converted, "" + script, isAppend);
       }
       StringBuffer sb = new StringBuffer();
       for (int i = 0; i < strModels.length; ++i)
         sb.append(strModels[i]).append('\n');
-      wrappedApplet.loadInlineString(sb.toString(), "" + script, isAppend);
+      return wrappedApplet.loadInlineString(sb.toString(), "" + script, isAppend);
   }
 
-  public void loadInlineString(String strModel, String script, boolean isAppend) {
-    if (wrappedApplet != null)
-      wrappedApplet.loadInlineString("" + strModel, "" + script, isAppend);
+  public String loadInlineString(String strModel, String script, boolean isAppend) {
+    return (wrappedApplet == null ? null :
+      wrappedApplet.loadInlineString("" + strModel, "" + script, isAppend));
   }
 
   // bizarre Mac OS X / Java bug:
@@ -116,49 +115,52 @@ public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper implements
   /**
    * @deprecated
    * @param strModel
+   * @return         error or null
    */
-  public void loadInline(String strModel) {
-    if (wrappedApplet != null)
-      wrappedApplet.loadInline("" + strModel);
+  public String loadInline(String strModel) {
+    return (wrappedApplet == null ? null :
+      wrappedApplet.loadInline("" + strModel));
   }
 
   /**
    * @deprecated
    * @param strModel
    * @param script
+   * @return         error or null
    */
-  public void loadInline(String strModel, String script) {
-    if (wrappedApplet != null)
-      wrappedApplet.loadInline("" + strModel, "" + script);
+  public String loadInline(String strModel, String script) {
+    return (wrappedApplet == null ? null :
+      wrappedApplet.loadInline("" + strModel, "" + script));
   }
 
   /**
    * @deprecated
    * @param strModels
+   * @return         error or null
    */
-  public void loadInline(String[] strModels) {
-    if (wrappedApplet != null)
-      wrappedApplet.loadInline(strModels);
+  public String loadInline(String[] strModels) {
+    return (wrappedApplet == null ? null :
+      wrappedApplet.loadInline(strModels));
   }
 
   /**
    * @deprecated
    * @param strModels
    * @param script
+   * @return         error or null
    */
-  public void loadInline(String[] strModels, String script) {
-    if (wrappedApplet != null)
-      wrappedApplet.loadInline(strModels, script);
+  public String loadInline(String[] strModels, String script) {
+    return (wrappedApplet == null ? null :
+      wrappedApplet.loadInline(strModels, script));
   }
 
-  public void loadNodeId(String nodeId) {
-    if (wrappedApplet != null)
-      wrappedApplet.loadNodeId("" + nodeId);
+  public String loadNodeId(String nodeId) {
+    return (wrappedApplet == null ? null :
+      wrappedApplet.loadNodeId("" + nodeId));
   }
 
-  public void loadDOMNode(JSObject DOMNode) {
-    if (wrappedApplet != null)
-      wrappedApplet.loadDOMNode(DOMNode);
+  public String loadDOMNode(JSObject DOMNode) {
+    return (wrappedApplet == null ? null : wrappedApplet.loadDOMNode(DOMNode));
   }
 
   public void script(String script) {

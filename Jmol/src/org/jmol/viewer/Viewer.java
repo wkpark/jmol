@@ -32,6 +32,7 @@ import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.modelset.ModelSet;
 
+import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.*;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
@@ -70,6 +71,7 @@ import java.net.URL;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Reader;
+//import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 
 /*
@@ -110,6 +112,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private Component display;
   private Graphics3D g3d;
   private JmolAdapter modelAdapter;
+  
+  public JmolAdapter getModelAdapter() {
+    if (modelAdapter == null)
+      modelAdapter = new SmarterJmolAdapter();
+    return modelAdapter;
+  }
 
   private CommandHistory commandHistory = new CommandHistory();
   private ColorManager colorManager;
@@ -232,7 +240,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     dataManager = new DataManager();
     repaintManager = new RepaintManager(this);
     initialize();
-    fileManager = new FileManager(this, modelAdapter);
+    fileManager = new FileManager(this);
     compiler = new Compiler(this);
     definedAtomSets = new Hashtable();
     eval = new Eval(this);
@@ -1575,111 +1583,136 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       htParams.put("getHeader", Boolean.TRUE);
     return htParams;
   }
-  
-  public void openFile(String name) {
-    //Jmol app file dropper, main, OpenUrlAction, RecentFilesAction
-    boolean allowScript = (!name.startsWith("\t"));
-    if (!allowScript)
-      name = name.substring(1);
-    name = name.replace('\\', '/');
-    String type = fileManager.getFileTypeName(name);
-    checkHalt("exit");
-    // assumes a Jmol script file if no other file type
-    evalString((type == null && allowScript ? "script " : "load ") + Escape.escape(name));
+
+  /**
+   * for JmolSimpleViewer -- external applications only
+   * 
+   * @param fileName 
+   * @return      null or error
+   */
+  public String openFile(String fileName) {
+    zap(false, false);
+    fileManager.createAtomSetCollectionFromFile(fileName, null, null, false);
+    String errMsg = createModelSetAndReturnError(false);
+    if (errMsg == null)
+      setStatusFileLoaded(1, fileName, "", getModelSetName(), errMsg);
+    return errMsg;
   }
 
-  void openFile(String name, Hashtable htParams, String loadScript,
+  public void openFileAsynchronously(String fileName) {
+    //Jmol app file dropper, main, OpenUrlAction, RecentFilesAction
+    boolean allowScript = (!fileName.startsWith("\t"));
+    if (!allowScript)
+      fileName = fileName.substring(1);
+    fileName = fileName.replace('\\', '/');
+    String type = fileManager.getFileTypeName(fileName);
+    checkHalt("exit");
+    // assumes a Jmol script file if no other file type
+    evalString((type == null && allowScript ? "script " : "load ") + Escape.escape(fileName));
+  }
+
+  void openFile(String fileName, Hashtable htParams, String loadScript,
                 boolean isAppend) {
-    //Eval
-    if (name == null)
+    //Eval only - does NOT create the model set yet
+    if (fileName == null)
       return;
-    if (name.equalsIgnoreCase("string")) {
-      openStringInline(fileManager.getInlineData(-1), htParams, isAppend);
-      return;
-    }
-    if (name.equalsIgnoreCase("string[]")) {
+    if (fileName.equalsIgnoreCase("string[]")) {
       // no reloading of string[] data -- just too complicated
       // openStringsInline(fileManager.getInlineDataArray(), htParams, false);
       return;
     }
-    if (!isAppend && name.charAt(0) != '?')
+    if (!isAppend && fileName.charAt(0) != '?')
       zap(false, false);
     Logger.startTimer();
-    fileManager.openFile(name, setLoadParameters(htParams), loadScript, isAppend);
-    Logger.checkTimer("openFile(" + name + ")");
-    setStatusFileLoaded(1, name, "", getModelSetName(), null);
+    if (fileName.equalsIgnoreCase("string"))
+      createModelSetInline(fileManager.getInlineData(-1), htParams, isAppend, false);
+    else
+      fileManager.createAtomSetCollectionFromFile(fileName, setLoadParameters(htParams), loadScript, isAppend);
+    Logger.checkTimer("openFile(" + fileName + ")");
+    setStatusFileLoaded(1, fileName, "", getModelSetName(), null);
   }
 
-  public void openFiles(String modelName, String[] names) {
-    openFiles(modelName, names, null, false, null);
+  public String openFiles(String modelName, String[] fileNames) {
+    String msg = openFiles(modelName, fileNames, null, false, null);
+    String errMsg = createModelSetAndReturnError(false);
+    if (errMsg == null)
+      setStatusFileLoaded(1, msg, "", getModelSetName(), errMsg);
+    return errMsg;
   }
 
-  void openFiles(String modelName, String[] names, String loadScript,
+  String openFiles(String modelName, String[] fileNames, String loadScript,
                  boolean isAppend, Hashtable htParams) {
     //Eval -- names will be loaded with full path names
+    // does not create model set
     if (!isAppend)
       zap(false, false);
     // keep old screen image while new file is being loaded
     // forceRefresh();
     long timeBegin = System.currentTimeMillis();
-    fileManager.openFiles(modelName, names, loadScript, isAppend, 
+    fileManager.createAtomSetCollectionFromFiles(modelName, fileNames, loadScript, isAppend, 
         setLoadParameters(htParams));
     long ms = System.currentTimeMillis() - timeBegin;
-    for (int i = 0; i < names.length; i++) {
-      setStatusFileLoaded(1, names[i], "", getModelSetName(), null);
+    String msg = "";
+    for (int i = 0; i < fileNames.length; i++) {
+      msg += (i == 0 ? "" : ",") + fileNames[i];
+      setStatusFileLoaded(1, fileNames[i], "", getModelSetName(), null);
     }
-    Logger.info("openFiles(" + names.length + ") " + ms + " ms");
+    Logger.info("openFiles(" + fileNames.length + ") " + ms + " ms");
+    return msg;
   }
 
-  public void openStringInline(String strModel) {
+  public String openStringInline(String strModel) {
     //Jmol app file dropper
-    openStringInline(strModel, null, false);
+    return createModelSetInline(strModel, null, false, true);
   }
 
-  private boolean openStringInline(String strModel, Hashtable htParams,
-                                   boolean isAppend) {
+  private String createModelSetInline(String strModel, Hashtable htParams,
+                                   boolean isAppend, boolean createModelSet) {
     //loadInline, openFile, openStringInline
     if (!isAppend)
       clear();
-    fileManager.openStringInline(strModel, setLoadParameters(htParams), isAppend);
-    String errorMsg = getOpenFileError(isAppend);
-    if (errorMsg == null)
+    fileManager.createAtomSetCollectionFromString(strModel, setLoadParameters(htParams), isAppend);
+    if (!createModelSet)
+      return null;
+    String errMsg = createModelSetAndReturnError(isAppend);
+    if (errMsg == null)
       setStatusFileLoaded(1, "string", "", getModelSetName(), null);
-    return (errorMsg == null);
+    return errMsg;
   }
 
-  private void openStringsInline(String[] arrayModels, Hashtable htParams,
+  private String openStringsInline(String[] arrayModels, Hashtable htParams,
                                  boolean isAppend) {
     //loadInline, openFile, openStringInline
     if (!isAppend)
       clear();
-    fileManager.openStringsInline(arrayModels, setLoadParameters(htParams), isAppend);
-    String errorMsg = getOpenFileError(isAppend);
-    if (errorMsg == null)
+    fileManager.createAtomSeCollectionFromStrings(arrayModels, setLoadParameters(htParams), isAppend);
+    String errMsg = createModelSetAndReturnError(isAppend);
+    if (errMsg == null)
       setStatusFileLoaded(1, "string[]", "", getModelSetName(), null);
+    return errMsg;
   }
 
   public char getInlineChar() {
     return global.inlineNewlineChar;
   }
 
-  public void loadInline(String strModel) {
+  public String loadInline(String strModel) {
     //loadInline PARAMETER for APPLET ONLY
-    loadInline(strModel, global.inlineNewlineChar);
+    return loadInline(strModel, global.inlineNewlineChar, false);
   }
 
-  public void loadInline(String strModel, boolean isAppend) {
+  public String loadInline(String strModel, boolean isAppend) {
     //applet Console, loadInline functions, app PasteClipboard
-    loadInline(strModel, (char) 0, isAppend);
+    return loadInline(strModel, (char) 0, isAppend);
   }
 
-  public void loadInline(String strModel, char newLine) {
-    loadInline(strModel, newLine, false);
+  public String loadInline(String strModel, char newLine) {
+    return loadInline(strModel, newLine, false);
   }
 
-  boolean loadInline(String strModel, char newLine, boolean isAppend) {
+  String loadInline(String strModel, char newLine, boolean isAppend) {
     if (strModel == null)
-      return false;
+      return null;
     int i;
     Hashtable htParams = new Hashtable();
     Logger.debug(strModel);
@@ -1707,25 +1740,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         strModels[i] = strModel.substring(pt0, pt);
         pt0 = pt + datasep.length();
       }
-      openStringsInline(strModels, htParams, isAppend);
-      return true;
+      return openStringsInline(strModels, htParams, isAppend);
     }
-    return openStringInline(strModel, htParams, isAppend);
+    return createModelSetInline(strModel, htParams, isAppend, true);
   }
 
   String getDataSeparator() {
     return (String) global.getParameter("dataseparator");
   }
 
-  public void loadInline(String[] arrayModels) {
-    loadInline(arrayModels, false);
+  public String loadInline(String[] arrayModels) {
+    return loadInline(arrayModels, false);
   }
 
-  public void loadInline(String[] arrayModels, boolean isAppend) {
+  public String loadInline(String[] arrayModels, boolean isAppend) {
     //Eval data
     //loadInline
-    if (arrayModels != null && arrayModels.length != 0)
-      openStringsInline(arrayModels, null, isAppend);
+    return (arrayModels == null || arrayModels.length == 0
+        ? null : openStringsInline(arrayModels, null, isAppend));
   }
 
   public boolean getApplySymmetryToBonds() {
@@ -1740,14 +1772,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.setAtomData(type, name, coordinateData);
   }
 
-  public void openDOM(Object DOMNode) {
+  public String openDOM(Object DOMNode) {
     //applet.loadDOMNode
     clear();
     long timeBegin = System.currentTimeMillis();
-    fileManager.openDOM(DOMNode);
+    fileManager.createAtomSetCollectionFromDOM(DOMNode);
     long ms = System.currentTimeMillis() - timeBegin;
     Logger.info("openDOM " + ms + " ms");
-    setStatusFileLoaded(1, "JSNode", "", getModelSetName(), getOpenFileError());
+    String errMsg = createModelSetAndReturnError(false);
+    if (errMsg == null)
+      setStatusFileLoaded(1, "JSNode", "", getModelSetName(), errMsg);
+    return errMsg;
   }
 
   /**
@@ -1758,76 +1793,101 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * it
    * 
    * DO NOT USE IN JMOL -- THIS METHOD IS ONLY HERE BECAUSE IT IS
-   * PART OF THE LEGACY INTERFACE
-   * IF USED BY ANOTHER APPLICATION, YOU ARE RESPONSIBLE FOR CLOSING THE READER
+   * PART OF THE LEGACY INTERFACE -- will close the reader
    * 
    * @param fullPathName
-   * @param name
+   * @param fileName
    * @param reader
+   * @return       null or error message
    */
-  public void openReader(String fullPathName, String name, Reader reader) {
+   
+  public String openReader(String fullPathName, String fileName, Reader reader) {
     clear();
-    fileManager.openReader(fullPathName, name, reader);
-    getOpenFileError();
+    fileManager.createAtomSetCollectionFromReader(fullPathName, fileName, reader);
+    String errMsg = createModelSetAndReturnError(false);
     System.gc();
+    return errMsg;
   }
 
   /**
-   * misnamed -- really this opens the file, gets the data, and returns error or null
-   * 
-   * @return errorMsg
-   */
-  public String getOpenFileError() {
-    return getOpenFileError(false);
-  }
-
-  /**
-   * the opener for Jmol
    * 
    * @param isAppend
-   * @return errorMsg
+   * @return errMsg
    */
-  String getOpenFileError(boolean isAppend) {
+  String createModelSetAndReturnError(boolean isAppend) {
     String fullPathName = getFullPathName();
     String fileName = getFileName();
-    Object clientFile = fileManager.waitForClientFileOrErrorMessage();
-    if (clientFile instanceof String || clientFile == null) {
-      String errorMsg = (String) clientFile;
-      setStatusFileNotLoaded(fullPathName, errorMsg);
-      if (errorMsg != null && !isAppend && !errorMsg.equals("#CANCELED#"))
-        zap(errorMsg);
-      return errorMsg;
+    Object atomSetCollection = fileManager.getAtomSetCollectionOrError();
+    fileManager.deallocateReaderThreads();
+    if (atomSetCollection instanceof String || atomSetCollection == null) {
+      String errMsg = (String) atomSetCollection;
+      setStatusFileNotLoaded(fullPathName, errMsg);
+      if (errMsg != null && !isAppend && !errMsg.equals("#CANCELED#"))
+        zap(errMsg);
+      return errMsg;
     }
-    if (isAppend) {
-      modelSet = modelManager.merge(modelAdapter, clientFile);
+    if (isAppend)
       clearAtomSets();
+    String errMsg = createModelSet(fullPathName, fileName, atomSetCollection,
+        isAppend);
+    if (isAppend) {
       selectAll(); // could be an issue here. Do we really want to "select all"?
       setTainted(true);
-    } else {
-      openClientFile(fullPathName, fileName, clientFile);
     }
-    clientFile = null;
+    atomSetCollection = null;
     System.gc();
-    return null;
+    return errMsg;
+  }
+  
+  void deallocateReaderThreads() {
+    fileManager.deallocateReaderThreads();
+  }
+  
+  /**
+   * deprecated -- this method does not actually open the file
+   * 
+   * @param fullPathName
+   * @param fileName
+   * @param clientFile
+   * @deprecated
+   */
+  public void openClientFile(String fullPathName, String fileName,
+                                      Object clientFile) {
+    createModelSet(fullPathName, fileName, clientFile, false);
   }
 
-  public void openClientFile(String fullPathName, String fileName,
-                             Object clientFile) {
+
+  /**
+   * 
+   * @param fullPathName
+   * @param fileName
+   * @param atomSetCollection
+   * @param isAppend
+   * @return                   null or error message
+   */
+  private String createModelSet(String fullPathName, String fileName,
+                                       Object atomSetCollection,
+                                       boolean isAppend) {
     // maybe there needs to be a call to clear()
     // or something like that here
     // for when CdkEditBus calls this directly
+    // null fullPathName implies we are doing a merge
     setStatusFileLoaded(2, fullPathName, fileName, null, null);
-    pushHoldRepaint("openClientFile");
-    String strError = null;
+    pushHoldRepaint("createModelSet");
+    setErrorMessage(null);
     try {
-      modelSet = modelManager.setClientFile(fullPathName, fileName,
-          modelAdapter, clientFile);
-      initializeModel();
+      modelSet = modelManager.createModelSet(fullPathName, fileName,
+          atomSetCollection, isAppend);
+      if (!isAppend)
+        initializeModel();
     } catch (Error er) {
-      strError = "ERROR creating model: " + er.getMessage();
+      zap("ERROR creating model: " + er);
+      setErrorMessage("ERROR creating model: " + er);
     }
-    popHoldRepaint("openClientFile");
-    setStatusFileLoaded(3, fullPathName, fileName, getModelSetName(), strError);
+    popHoldRepaint("createModelSet");
+    String errMsg = getErrorMessage();
+    setStatusFileLoaded(3, fullPathName, fileName, getModelSetName(), errMsg);
+    return errMsg;
   }
 
   public Object getCurrentFileAsBytes() {
@@ -2136,10 +2196,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String getClientAtomStringProperty(Object clientAtom,
                                             String propertyName) {
-    if (modelAdapter == null || propertyName == null
-        || propertyName.length() == 0)
-      return null;
-    return modelAdapter.getClientAtomStringProperty(clientAtom, propertyName);
+    return (modelAdapter == null || propertyName == null
+        || propertyName.length() == 0 ? null 
+        : modelAdapter.getClientAtomStringProperty(clientAtom, propertyName));
   }
 
   /*****************************************************************************
@@ -4064,8 +4123,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return statusManager.dialogAsk(type, fileName);
   }
   
-  private void setStatusFileNotLoaded(String fullPathName, String errorMsg) {
-    setStatusFileLoaded(-1, fullPathName, null, null, errorMsg);
+  private void setStatusFileNotLoaded(String fullPathName, String errMsg) {
+    setStatusFileLoaded(-1, fullPathName, null, null, errMsg);
   }
 
   public void scriptEcho(String strEcho) {
@@ -6864,13 +6923,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return dir;
   }
 
-  private String errMsg;
+  private String errorMessage;
   private String setErrorMessage(String errMsg) {
-    return (this.errMsg = errMsg);
+    return (errorMessage = errMsg);
   }
   
   public String getErrorMessage() {
-    return errMsg;
+    return errorMessage;
   }
-  
 }

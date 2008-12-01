@@ -30,11 +30,12 @@ import java.awt.Event;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.io.Reader;
 import java.net.URL;
 import java.util.BitSet;
 import java.util.Properties;
 import java.util.Hashtable;
-import java.io.Reader;
+//import java.io.Reader;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import org.jmol.viewer.Viewer;
@@ -171,7 +172,33 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public int getMotionEventNumber();
 
-  abstract public void openReader(String fullPathName, String name, Reader reader);
+  /**
+   * Opens the file and creates the model set, given the reader.
+   * 
+   * name is a text name of the file ... to be displayed in the window no need
+   * to pass a BufferedReader ... ... the FileManager will wrap a buffer around
+   * it
+   * 
+   * DO NOT USE IN JMOL -- THIS METHOD IS ONLY HERE BECAUSE IT IS
+   * PART OF THE LEGACY INTERFACE
+   * IF USED BY ANOTHER APPLICATION, YOU ARE RESPONSIBLE FOR CLOSING THE READER
+   * 
+   * @param fullPathName
+   * @param fileName
+   * @param reader
+   * @return       null or error message
+   */
+   
+  abstract public String openReader(String fullPathName, String fileName, Reader reader);
+  
+  /**
+   * deprecated -- this method does not actually open the file
+   * 
+   * @param fullPathName
+   * @param fileName
+   * @param clientFile
+   * @deprecated
+   */
   abstract public void openClientFile(String fullPathName, String fileName,
                              Object clientFile);
 
@@ -192,11 +219,11 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public String scriptCheck(String script);
   abstract public String scriptWait(String script);
   abstract public Object scriptWaitStatus(String script, String statusList);
-  abstract public void loadInline(String strModel);
-  abstract public void loadInline(String strModel, boolean isMerge);
-  abstract public void loadInline(String strModel, char newLine);
-  abstract public void loadInline(String[] arrayModels);
-  abstract public void loadInline(String[] arrayModels, boolean isMerge);
+  abstract public String loadInline(String strModel);
+  abstract public String loadInline(String strModel, boolean isMerge);
+  abstract public String loadInline(String strModel, char newLine);
+  abstract public String loadInline(String[] arrayModels);
+  abstract public String loadInline(String[] arrayModels, boolean isMerge);
 
   abstract public String evalStringQuiet(String script);
   abstract public boolean isScriptExecuting();
@@ -294,7 +321,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public boolean getBooleanProperty(String propertyName);
   abstract public boolean getBooleanProperty(String key, boolean doICare);
   abstract public Object getParameter(String name);
-  abstract public Object getProperty(String returnType, String infoType, String paramInfo);
 
   abstract public String getSetHistory(int howFarBack);
   
@@ -375,6 +401,10 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void rotateX(float radians);
   abstract public void rotateY(float radians);
   abstract public void rotateZ(float radians);
+
+  abstract public JmolAdapter getModelAdapter();
+
+  abstract public void openFileAsynchronously(String fileName);
 
 }
 

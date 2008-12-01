@@ -35,15 +35,13 @@ import org.jmol.util.Logger;
 class Jvm12 {
 
   protected JmolViewer viewer;
-  JmolAdapter modelAdapter;
   private Component awtComponent;
   Console console;
   protected String appletContext;
 
-  Jvm12(Component awtComponent, JmolViewer viewer, JmolAdapter modelAdapter, String appletContext) {
+  Jvm12(Component awtComponent, JmolViewer viewer, String appletContext) {
     this.awtComponent = awtComponent;
     this.viewer = viewer;
-    this.modelAdapter = modelAdapter;
     this.appletContext = appletContext;
     try {
       UIManager
@@ -129,7 +127,7 @@ class Jvm12 {
         public void run() {
           if (dialogType.equals("load")) {
             outputFileName = newDialog(false).getOpenFileNameFromDialog(
-                modelAdapter, appletContext, viewer, inputFileName, null, null, false);
+                appletContext, viewer, inputFileName, null, null, false);
             return;
           }
           JmolDialogInterface sd = newDialog(false);

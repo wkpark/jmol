@@ -44,10 +44,10 @@ public interface JmolAppletInterface {
   public String getPropertyAsJSON(String infoType, String paramInfo);
   public Object getProperty(String infoType);
   public Object getProperty(String infoType, String paramInfo);
-  public void loadInlineString(String strModel, String script, boolean isAppend);
-  public void loadInlineArray(String[] strModels, String script, boolean isAppend);
-  public void loadNodeId(String nodeId);
-  public void loadDOMNode(JSObject DOMNode);
+  public String loadInlineString(String strModel, String script, boolean isAppend);
+  public String loadInlineArray(String[] strModels, String script, boolean isAppend);
+  public String loadNodeId(String nodeId);
+  public String loadDOMNode(JSObject DOMNode);
   public void script(String script);
   public String scriptNoWait(String script);
   public String scriptCheck(String script);
@@ -55,29 +55,37 @@ public interface JmolAppletInterface {
   public String scriptWait(String script, String statusParams);
   public void syncScript(String script);
 
+  // Note -- some Macintosh-based browsers cannot distinguish methods
+  // with the same name but with different method signatures
+  // so the following are not reliable and are thus deprecated
+  
   /**
    * @deprecated
    * @param strModel
+   * @return         error or null
    */
-  public void loadInline(String strModel);
+  public String loadInline(String strModel);
 
   /**
    * @deprecated
    * @param strModels
+   * @return         error or null
    */ 
-  public void loadInline(String[] strModels);
+  public String loadInline(String[] strModels);
 
   /**
    * @deprecated
    * @param strModel
    * @param script
+   * @return         error or null
    */
-  public void loadInline(String strModel, String script);
+  public String loadInline(String strModel, String script);
 
   /**
    * @deprecated
    * @param strModels
    * @param script
+   * @return         error or null
    */
-  public void loadInline(String[] strModels, String script);
+  public String loadInline(String[] strModels, String script);
 }

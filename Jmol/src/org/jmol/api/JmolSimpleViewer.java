@@ -56,8 +56,12 @@ abstract public class JmolSimpleViewer {
   abstract public String evalFile(String strFilename);
   abstract public String evalString(String strScript);
 
-  abstract public void openStringInline(String strModel);
-  abstract public void openDOM(Object DOMNode);
-  abstract public void openFile(String name);
-  abstract public String getOpenFileError();
+  abstract public String openStringInline(String strModel);
+  abstract public String openDOM(Object DOMNode);
+  abstract public String openFile(String fileName);
+  //File reading is ASYNCHRONOUS
+  //NOT what you think it was....  abstract public String getOpenFileError();
+  //Use jmolStatusListener to trap script termination errors for openFile
+  //Use (String) getProperty(null, "ErrorMessage", null) for openStringInline or openDOM
+  abstract public Object getProperty(String returnType, String infoType, String paramInfo);
 }

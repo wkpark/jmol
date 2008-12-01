@@ -29,7 +29,6 @@ import org.jmol.util.ZipUtil;
 
 import org.jmol.util.Logger;
 
-import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolFileReaderInterface;
 import org.jmol.api.JmolViewer;
 
@@ -56,19 +55,17 @@ import java.util.Hashtable;
 
 /* ***************************************************************
  * will not work with applet
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Enumeration;
-import org.openscience.jmol.io.ChemFileReader;
-import org.openscience.jmol.io.ReaderFactory;
-*/
+ import java.net.URI;
+ import java.net.URISyntaxException;
+ import java.util.Enumeration;
+ import org.openscience.jmol.io.ChemFileReader;
+ import org.openscience.jmol.io.ReaderFactory;
+ */
 
 public class FileManager {
 
-  private Viewer viewer;
+  protected Viewer viewer;
   private String openErrorMessage;
- 
-  JmolAdapter modelAdapter;
 
   // for applet proxy
   private URL appletDocumentBase = null;
@@ -83,21 +80,19 @@ public class FileManager {
   private String fileType;
 
   private String inlineData;
-  
+
   String getInlineData(int iData) {
     return (iData < 0 ? inlineData : "");//iData < inlineDataArray.length ? inlineDataArray[iData] : "");  
   }
 
-  private String loadScript; 
+  private String loadScript;
 
-  FileOpenThread fileOpenThread;
-  FilesOpenThread filesOpenThread;
-  private DOMOpenThread aDOMOpenThread;
+  FileReaderThread fileReaderThread;
+  FilesReaderThread filesReaderThread;
+  private DOMReaderThread aDOMReaderThread;
 
-
-  FileManager(Viewer viewer, JmolAdapter modelAdapter) {
+  FileManager(Viewer viewer) {
     this.viewer = viewer;
-    this.modelAdapter = modelAdapter;
     clear();
   }
 
@@ -119,28 +114,30 @@ public class FileManager {
     int pt = fileName.indexOf("::");
     if (pt >= 0)
       return fileName.substring(0, pt);
-    Object br = getUnzippedBufferedReaderOrErrorMessageFromName(fileName, true, false, true);
+    Object br = getUnzippedBufferedReaderOrErrorMessageFromName(fileName, true,
+        false, true);
     if (br instanceof BufferedReader)
-      return modelAdapter.getFileTypeName((BufferedReader) br);
+      return viewer.getModelAdapter().getFileTypeName((BufferedReader) br);
     if (br instanceof ZipInputStream) {
       String zipDirectory = getZipDirectoryAsString(fileName);
-      return modelAdapter.getFileTypeName(getBufferedReaderForString(zipDirectory));      
+      return viewer.getModelAdapter().getFileTypeName(
+          getBufferedReaderForString(zipDirectory));
     }
     if (br instanceof String[]) {
-      return ((String[])br)[0];
+      return ((String[]) br)[0];
     }
     return null;
   }
-  
+
   void clear() {
     setLoadScript("", false);
     fullPathName = fileName = nameAsGiven = "zapped";
   }
-  
+
   String getLoadScript() {
     return loadScript;
   }
-  
+
   private void setLoadScript(String script, boolean isAppend) {
     if (loadScript == null || !isAppend)
       loadScript = "";
@@ -155,15 +152,39 @@ public class FileManager {
       loadScript = "";
       return;
     }
-    loadScript += "  " + script + ";\n";  
+    loadScript += "  " + script + ";\n";
   }
+
   
-  void openFile(String name, Hashtable htParams, String loadScript, boolean isAppend) {
+  /*
+   * note -- getAtomSetCollectionFromXXX methods
+   * were "openXXX" before refactoring 11/29/2008 -- BH
+   * 
+   * The problem was that while they did open the file, they
+   * (mostly) also closed them, and this was confusing.
+   * 
+   * The term "clientFile" was replaced by "atomSetCollection"
+   * here because that's what it is --- an AtomSetCollection,
+   * not a file. The file is closed at this point. What is
+   * returned is the atomSetCollection object.
+   * 
+   * One could say this is just semantics, but there were
+   * subtle bugs here, where readers were not always being 
+   * closed explicitly. In the process of identifying Out of
+   * Memory Errors, I felt it was necessary to clarify all this.
+   * 
+   * Apologies to those who feel the original clientFile notation
+   * was more generalizable or understandable. 
+   * 
+   */
+  void createAtomSetCollectionFromFile(String name, Hashtable htParams,
+                                    String loadScript, boolean isAppend) {
     setLoadScript(loadScript, isAppend);
     int pt = name.indexOf("::");
     nameAsGiven = (pt >= 0 ? name.substring(pt + 2) : name);
     fileType = (pt >= 0 ? name.substring(0, pt) : null);
-    Logger.info("\nFileManager.openFile(" + nameAsGiven + ") //" + name);
+    Logger.info("\nFileManager.getAtomSetCollectionFromFile(" + nameAsGiven
+        + ") //" + name);
     openErrorMessage = fullPathName = fileName = null;
     String[] names = classifyName(nameAsGiven, true);
     if (names == null)
@@ -177,20 +198,22 @@ public class FileManager {
     }
     if (viewer.getMessageStyleChime() && viewer.getDebugScript())
       viewer.scriptStatus("Requesting " + fullPathName);
-    fileOpenThread = new FileOpenThread(fullPathName, nameAsGiven, fileType, null, htParams);
-    fileOpenThread.run();
+    fileReaderThread = new FileReaderThread(fullPathName, nameAsGiven,
+        fileType, null, htParams);
+    fileReaderThread.run();
   }
 
-  void openFiles(String modelName, String[] names, String loadScript,
-                 boolean isAppend, Hashtable htParams) {
+  void createAtomSetCollectionFromFiles(String modelName, String[] fileNames,
+                                     String loadScript, boolean isAppend,
+                                     Hashtable htParams) {
     setLoadScript(loadScript, isAppend);
-    String[] fullPathNames = new String[names.length];
-    String[] namesAsGiven = new String[names.length];
-    String[] fileTypes = new String[names.length];
-    for (int i = 0; i < names.length; i++) {
-      int pt = names[i].indexOf("::");
-      nameAsGiven = (pt >= 0 ? names[i].substring(pt + 2) : names[i]);
-      fileType = (pt >= 0 ? names[i].substring(0, pt) : null);
+    String[] fullPathNames = new String[fileNames.length];
+    String[] namesAsGiven = new String[fileNames.length];
+    String[] fileTypes = new String[fileNames.length];
+    for (int i = 0; i < fileNames.length; i++) {
+      int pt = fileNames[i].indexOf("::");
+      nameAsGiven = (pt >= 0 ? fileNames[i].substring(pt + 2) : fileNames[i]);
+      fileType = (pt >= 0 ? fileNames[i].substring(0, pt) : null);
       openErrorMessage = fullPathName = fileName = null;
       String[] thenames = classifyName(nameAsGiven, true);
       if (thenames == null)
@@ -201,7 +224,7 @@ public class FileManager {
         return;
       }
       fullPathNames[i] = fullPathName;
-      names[i] = fullPathName.replace('\\', '/');
+      fileNames[i] = fullPathName.replace('\\', '/');
       fileTypes[i] = fileType;
       namesAsGiven[i] = nameAsGiven;
     }
@@ -209,26 +232,29 @@ public class FileManager {
     fullPathName = fileName = nameAsGiven = modelName;
     inlineData = "";
     //inlineDataArray = null;
-    filesOpenThread = new FilesOpenThread(fullPathNames, namesAsGiven,
+    filesReaderThread = new FilesReaderThread(fullPathNames, namesAsGiven,
         fileTypes, null, htParams);
-    filesOpenThread.run();
+    filesReaderThread.run();
   }
 
-  void openStringInline(String strModel, Hashtable htParams, boolean isAppend) {
+  void createAtomSetCollectionFromString(String strModel, Hashtable htParams,
+                                      boolean isAppend) {
     String tag = (isAppend ? "append" : "model");
-    String script = "data \""+tag+" inline\"\n" + strModel + "end \""+tag+" inline\";";
+    String script = "data \"" + tag + " inline\"\n" + strModel + "end \"" + tag
+        + " inline\";";
     setLoadScript(script, isAppend);
-    Logger.info("FileManager.openStringInline()");
+    Logger.info("FileManager.getAtomSetCollectionFromString()");
     openErrorMessage = null;
     fullPathName = fileName = "string";
     inlineData = strModel;
     //inlineDataArray = null;
-    fileOpenThread = new FileOpenThread("string", "string", null, 
+    fileReaderThread = new FileReaderThread("string", "string", null,
         getBufferedReaderForString(strModel), htParams);
-    fileOpenThread.run();
+    fileReaderThread.run();
   }
 
-  void openStringsInline(String[] arrayModels, Hashtable htParams, boolean isAppend) {
+  void createAtomSeCollectionFromStrings(String[] arrayModels, Hashtable htParams,
+                                      boolean isAppend) {
     String oldSep = "\"" + viewer.getDataSeparator() + "\"";
     String tag = "\"" + (isAppend ? "append" : "model") + " inline\"";
     String script = "set dataSeparator \"~~~next file~~~\";\ndata " + tag;
@@ -239,7 +265,7 @@ public class FileManager {
     }
     script += "end " + tag + ";set dataSeparator " + oldSep;
     setLoadScript(script, isAppend);
-    Logger.info("FileManager.openStringsInline(string[])");
+    Logger.info("FileManager.getAtomSetCollectionFromStrings(string[])");
     openErrorMessage = null;
     fullPathName = fileName = "string[]";
     inlineData = "";
@@ -247,40 +273,39 @@ public class FileManager {
     String[] fullPathNames = new String[arrayModels.length];
     StringReader[] readers = new StringReader[arrayModels.length];
     for (int i = 0; i < arrayModels.length; i++) {
-      fullPathNames[i] = "string["+i+"]";
+      fullPathNames[i] = "string[" + i + "]";
       readers[i] = new StringReader(arrayModels[i]);
     }
-    filesOpenThread = new FilesOpenThread(fullPathNames, fullPathNames, null, readers, null);
-    filesOpenThread.run();
+    filesReaderThread = new FilesReaderThread(fullPathNames, fullPathNames,
+        null, readers, null);
+    filesReaderThread.run();
   }
 
-  void openDOM(Object DOMNode) {
+  void createAtomSetCollectionFromDOM(Object DOMNode) {
     openErrorMessage = null;
     fullPathName = fileName = "JSNode";
     inlineData = "";
     //inlineDataArray = null;
-    aDOMOpenThread = new DOMOpenThread(DOMNode);
-    aDOMOpenThread.run();
+    aDOMReaderThread = new DOMReaderThread(DOMNode);
+    aDOMReaderThread.run();
   }
 
   /**
-   * not used in Jmol project
+   * not used in Jmol project -- will close reader
    * 
    * @param fullPathName
    * @param name
    * @param reader
    */
-  void openReader(String fullPathName, String name, Reader reader) {
-    openBufferedReader(fullPathName, name, new BufferedReader(reader));
-  }
-
-  private void openBufferedReader(String fullPathName, String name, BufferedReader reader) {
+  void createAtomSetCollectionFromReader(String fullPathName, String name,
+                                      Reader reader) {
     openErrorMessage = null;
     this.fullPathName = fullPathName;
     fileName = name;
     fileType = null;
-    fileOpenThread = new FileOpenThread(fullPathName, fullPathName, fileType, reader, null);
-    fileOpenThread.run();
+    fileReaderThread = new FileReaderThread(fullPathName, fullPathName,
+        fileType, new BufferedReader(reader), null);
+    fileReaderThread.run();
   }
 
   static boolean isGzip(InputStream is) throws Exception {
@@ -297,7 +322,7 @@ public class FileManager {
     if (name == null)
       return null;
     String[] subFileList = null;
-    if (name.indexOf("|") >= 0) 
+    if (name.indexOf("|") >= 0)
       name = (subFileList = TextFormat.split(name, "|"))[0];
     //System.out.println("FileManager.getFileAsString(" + name + ")");
     Object t = getInputStreamOrErrorMessageFromName(name, false);
@@ -306,9 +331,9 @@ public class FileManager {
     try {
       BufferedInputStream bis = new BufferedInputStream((InputStream) t, 8192);
       InputStream is = bis;
-      Object bytes = (ZipUtil.isZipFile(is) && subFileList != null && 1 < subFileList.length
-          ? ZipUtil.getZipFileContentsAsBytes(is, subFileList, 1)
-              : ZipUtil.getStreamAsBytes(bis));
+      Object bytes = (ZipUtil.isZipFile(is) && subFileList != null
+          && 1 < subFileList.length ? ZipUtil.getZipFileContentsAsBytes(is,
+          subFileList, 1) : ZipUtil.getStreamAsBytes(bis));
       is.close();
       return bytes;
     } catch (Exception ioe) {
@@ -368,18 +393,18 @@ public class FileManager {
     try {
       MediaTracker mediaTracker = new MediaTracker(viewer.getAwtComponent());
       mediaTracker.addImage(image, 0);
-      mediaTracker.waitForID(0); 
+      mediaTracker.waitForID(0);
       /* SUN but here for malformed URL - can't trap
-Uncaught error fetching image:
-java.lang.NullPointerException
-  at sun.net.www.ParseUtil.toURI(Unknown Source)
-  at sun.net.www.protocol.http.HttpURLConnection.plainConnect(Unknown Source)
-  at sun.net.www.protocol.http.HttpURLConnection.connect(Unknown Source)
-  at sun.net.www.protocol.http.HttpURLConnection.getInputStream(Unknown Source)
-  at sun.awt.image.URLImageSource.getDecoder(Unknown Source)
-  at sun.awt.image.InputStreamImageSource.doFetch(Unknown Source)
-  at sun.awt.image.ImageFetcher.fetchloop(Unknown Source)
-  at sun.awt.image.ImageFetcher.run(Unknown Source)
+       Uncaught error fetching image:
+       java.lang.NullPointerException
+       at sun.net.www.ParseUtil.toURI(Unknown Source)
+       at sun.net.www.protocol.http.HttpURLConnection.plainConnect(Unknown Source)
+       at sun.net.www.protocol.http.HttpURLConnection.connect(Unknown Source)
+       at sun.net.www.protocol.http.HttpURLConnection.getInputStream(Unknown Source)
+       at sun.awt.image.URLImageSource.getDecoder(Unknown Source)
+       at sun.awt.image.InputStreamImageSource.doFetch(Unknown Source)
+       at sun.awt.image.ImageFetcher.fetchloop(Unknown Source)
+       at sun.awt.image.ImageFetcher.run(Unknown Source)
        */
     } catch (Exception e) {
       return e.getMessage() + " opening " + fullPathName;
@@ -389,8 +414,7 @@ java.lang.NullPointerException
     htParams.put("fullPathName", fullPathName);
     return image;
   }
-  
-  
+
   /**
    * 
    * @param name
@@ -400,7 +424,7 @@ java.lang.NullPointerException
     if (name == null)
       return "";
     String[] subFileList = null;
-    if (name.indexOf("|") >= 0) 
+    if (name.indexOf("|") >= 0)
       name = (subFileList = TextFormat.split(name, "|"))[0];
     //System.out.println("FileManager.getFileAsString(" + name + ")");
     Object t = getInputStreamOrErrorMessageFromName(name, false);
@@ -432,58 +456,61 @@ java.lang.NullPointerException
   }
 
   /**
-   * the real entry point 
+   * after a file or other object has been opened and
+   * the atom set collection has been created, this
+   * method returns that atom set collection or an error message
+   * and closes the file. 
    * 
    * @return string error or an AtomSetCollection
    */
-  Object waitForClientFileOrErrorMessage() {
-    Object clientFile = null;
-    if (fileOpenThread != null) {
-      clientFile = fileOpenThread.clientFile;
-      if (fileOpenThread.errorMessage != null)
-        openErrorMessage = fileOpenThread.errorMessage;
-      else if (clientFile == null)
-        openErrorMessage = "Client file is null loading:" + nameAsGiven;
-      fileOpenThread = null;
-    } else if (filesOpenThread != null) {
-      clientFile = filesOpenThread.clientFile;
-      if (filesOpenThread.errorMessage != null)
-        openErrorMessage = filesOpenThread.errorMessage;
-      else if (clientFile == null)
-        openErrorMessage = "Client file is null loading:" + nameAsGiven;
-      filesOpenThread = null;
-    } else if (aDOMOpenThread != null) {
-      clientFile = aDOMOpenThread.clientFile;
-      if (aDOMOpenThread.errorMessage != null)
-        openErrorMessage = aDOMOpenThread.errorMessage;
-      else if (clientFile == null)
-        openErrorMessage = "Client file is null loading:" + nameAsGiven;
-      aDOMOpenThread = null;
+  Object getAtomSetCollectionOrError() {
+    Object atomSetCollection = null;
+    if (fileReaderThread != null) {
+      atomSetCollection = fileReaderThread.atomSetCollection;
+      if (fileReaderThread.errorMessage != null)
+        openErrorMessage = fileReaderThread.errorMessage;
+    } else if (filesReaderThread != null) {
+      atomSetCollection = filesReaderThread.atomSetCollection;
+      if (filesReaderThread.errorMessage != null)
+        openErrorMessage = filesReaderThread.errorMessage;
+    } else if (aDOMReaderThread != null) {
+      atomSetCollection = aDOMReaderThread.atomSetCollection;
+      if (aDOMReaderThread.errorMessage != null)
+        openErrorMessage = aDOMReaderThread.errorMessage;
     }
     if (openErrorMessage != null)
       return openErrorMessage;
-    return clientFile;
+    if (atomSetCollection == null)
+      return "Client file is null loading:" + nameAsGiven;
+    return atomSetCollection;
+  }
+
+  void deallocateReaderThreads() {
+    fileReaderThread = null;
+    filesReaderThread = null;
+    aDOMReaderThread = null;
+    openErrorMessage = null;
   }
 
   String getFullPathName() {
     return fullPathName != null ? fullPathName : nameAsGiven;
   }
-  
+
   void setFileInfo(String[] fileInfo) {
     try {
-    fullPathName = fileInfo[0];
-    fileName = fileInfo[1];
-    inlineData = fileInfo[2];
-    loadScript = fileInfo[3];
+      fullPathName = fileInfo[0];
+      fileName = fileInfo[1];
+      inlineData = fileInfo[2];
+      loadScript = fileInfo[3];
     } catch (Exception e) {
       Logger.error("Exception saving file info: " + e.getMessage());
     }
   }
 
   String[] getFileInfo() {
-    return new String[]{fullPathName, fileName, inlineData, loadScript};
+    return new String[] { fullPathName, fileName, inlineData, loadScript };
   }
-  
+
   String getFileName() {
     return fileName != null ? fileName : nameAsGiven;
   }
@@ -491,24 +518,27 @@ java.lang.NullPointerException
   String getAppletDocumentBase() {
     if (appletDocumentBase == null)
       return "";
-    return appletDocumentBase.toString();    
+    return appletDocumentBase.toString();
   }
-  
-  void setAppletContext(URL documentBase, URL codeBase,
-                               String jmolAppletProxy) {
+
+  void setAppletContext(URL documentBase, URL codeBase, String jmolAppletProxy) {
     appletDocumentBase = documentBase;
     appletCodeBase = codeBase;
-    Logger.info("appletDocumentBase=" + appletDocumentBase + "\nappletCodeBase=" + appletCodeBase);
+    Logger.info("appletDocumentBase=" + appletDocumentBase
+        + "\nappletCodeBase=" + appletCodeBase);
     //    dumpDocumentBase("" + documentBase);
     appletProxy = jmolAppletProxy;
   }
 
   void setAppletProxy(String appletProxy) {
-    this.appletProxy = (appletProxy ==  null || appletProxy.length() == 0 ? null : appletProxy);
+    this.appletProxy = (appletProxy == null || appletProxy.length() == 0 ? null
+        : appletProxy);
   }
 
   private final static int URL_LOCAL = 3;
-  private final static String[] urlPrefixes = {"http:", "https:", "ftp:", "file:"};
+  private final static String[] urlPrefixes = { "http:", "https:", "ftp:",
+      "file:" };
+
   private static int urlTypeIndex(String name) {
     for (int i = 0; i < urlPrefixes.length; ++i) {
       if (name.startsWith(urlPrefixes[i])) {
@@ -517,14 +547,14 @@ java.lang.NullPointerException
     }
     return -1;
   }
-  
+
   private void setNames(String[] names) {
     if (names == null)
       return;
     fullPathName = names[0];
     fileName = names[1];
   }
-  
+
   /**
    * 
    * @param name
@@ -610,7 +640,7 @@ java.lang.NullPointerException
       pt = path.indexOf("/");
     String protocol = path.substring(0, pt);
     path = path.substring(pt);
-    
+
     while ((pt = path.lastIndexOf("/../")) >= 0) {
       int pt0 = path.substring(0, pt).lastIndexOf("/");
       if (pt0 < 0)
@@ -621,18 +651,16 @@ java.lang.NullPointerException
       path = "/";
     return protocol + path;
   }
-  
+
   public String getFullPath(String name, boolean addUrlPrefix) {
     String[] names = classifyName(name, false);
-    return (names == null ? "" : addUrlPrefix ? names[2] : names[0].replace('\\','/'));
+    return (names == null ? "" : addUrlPrefix ? names[2] : names[0].replace(
+        '\\', '/'));
   }
-  
-  private final static String[] urlPrefixPairs = { 
-    "http:", "http://", 
-    "www.", "http://www.", 
-    "https:", "https://", 
-    "ftp:", "ftp://", 
-    "file:", "file:///" };
+
+  private final static String[] urlPrefixPairs = { "http:", "http://", "www.",
+      "http://www.", "https:", "https://", "ftp:", "ftp://", "file:",
+      "file:///" };
 
   public static String getLocalUrl(File file) {
     // entering a url on a file input box will be accepted,
@@ -653,9 +681,10 @@ java.lang.NullPointerException
     return null;
   }
 
-  public static File getLocalDirectory(JmolViewer viewer, boolean forDialog, boolean readOnly) {
-    String localDir = (String) viewer.getParameter(
-        forDialog ? "currentLocalPath" : "defaultDirectoryLocal");
+  public static File getLocalDirectory(JmolViewer viewer, boolean forDialog,
+                                       boolean readOnly) {
+    String localDir = (String) viewer
+        .getParameter(forDialog ? "currentLocalPath" : "defaultDirectoryLocal");
     if (localDir.length() == 0 && forDialog)
       localDir = (String) viewer.getParameter("defaultDirectoryLocal");
     if (localDir.length() == 0)
@@ -663,8 +692,9 @@ java.lang.NullPointerException
     File f = new File(localDir);
     return f.isDirectory() ? f : f.getParentFile();
   }
-  
-  public static void setLocalPath(JmolViewer viewer, String path, boolean forDialog) {
+
+  public static void setLocalPath(JmolViewer viewer, String path,
+                                  boolean forDialog) {
     while (path.endsWith("/") || path.endsWith("\\"))
       path = path.substring(0, path.length() - 1);
     viewer.setStringProperty("currentLocalPath", path);
@@ -672,13 +702,13 @@ java.lang.NullPointerException
       viewer.setStringProperty("defaultDirectoryLocal", path);
   }
 
-  public static String setLocalPathForWritingFile(JmolViewer viewer, String file) {  
+  public static String setLocalPathForWritingFile(JmolViewer viewer, String file) {
     if (file.indexOf("file:/") == 0)
       return file.substring(6);
     if (file.indexOf("/") == 0 || file.indexOf(":") >= 0)
       return file;
     File dir = getLocalDirectory(viewer, false, true);
-    return (dir == null ? file : dir.toString().replace('\\','/') + "/" + file);
+    return (dir == null ? file : dir.toString().replace('\\', '/') + "/" + file);
   }
 
   private static String addDirectory(String defaultDirectory, String name) {
@@ -688,17 +718,19 @@ java.lang.NullPointerException
     String s = defaultDirectory.toLowerCase();
     if ((s.endsWith(".zip") || s.endsWith(".tar")) && ch != '|' && ch != '/')
       defaultDirectory += "|";
-    return defaultDirectory 
-        + (ch == '/' || ch == '/'
-        || (ch = defaultDirectory.charAt(defaultDirectory.length() - 1)) == '|' || ch == '/' ? "" : "/") 
-        + name;
+    return defaultDirectory
+        + (ch == '/'
+            || ch == '/'
+            || (ch = defaultDirectory.charAt(defaultDirectory.length() - 1)) == '|'
+            || ch == '/' ? "" : "/") + name;
   }
-  
+
   Object getInputStreamOrErrorMessageFromName(String name, boolean showMsg) {
-    return getInputStream(name, showMsg, appletDocumentBase, appletProxy);    
+    return getInputStream(name, showMsg, appletDocumentBase, appletProxy);
   }
-  
-  public static Object getInputStream(String name, boolean showMsg, URL appletDocumentBase, String appletProxy) {
+
+  public static Object getInputStream(String name, boolean showMsg,
+                                      URL appletDocumentBase, String appletProxy) {
     //System.out.println("inputstream for " + name);
     String errorMessage = null;
     int iurlPrefix;
@@ -731,7 +763,7 @@ java.lang.NullPointerException
     } catch (Exception e) {
       try {
         if (in != null)
-        in.close();
+          in.close();
       } catch (IOException e1) {
         // TODO
       }
@@ -756,14 +788,15 @@ java.lang.NullPointerException
         isBinary, false);
   }
 
-  Object getUnzippedBufferedReaderOrErrorMessageFromName(String name,
+  Object getUnzippedBufferedReaderOrErrorMessageFromName(
+                                                         String name,
                                                          boolean allowZipStream,
                                                          boolean asInputStream,
                                                          boolean isTypeCheckOnly) {
     String[] subFileList = null;
-    if (name.indexOf("|") >= 0) 
+    if (name.indexOf("|") >= 0)
       name = (subFileList = TextFormat.split(name, "|"))[0];
-    String[] fileSet = modelAdapter.specialLoad(name, null);
+    String[] fileSet = viewer.getModelAdapter().specialLoad(name, null);
     if (fileSet != null) {
       if (isTypeCheckOnly)
         return fileSet;
@@ -789,7 +822,7 @@ java.lang.NullPointerException
     if (t instanceof String)
       return t;
     try {
-      BufferedInputStream bis = new BufferedInputStream((InputStream)t, 8192);
+      BufferedInputStream bis = new BufferedInputStream((InputStream) t, 8192);
       InputStream is = bis;
       if (CompoundDocument.isCompoundDocument(is)) {
         CompoundDocument doc = new CompoundDocument(bis);
@@ -800,10 +833,12 @@ java.lang.NullPointerException
         if (allowZipStream)
           return new ZipInputStream(bis);
         if (asInputStream)
-          return (InputStream) ZipUtil.getZipFileContents(is, subFileList, 1, true);
+          return (InputStream) ZipUtil.getZipFileContents(is, subFileList, 1,
+              true);
         //danger -- converting bytes to String here. 
         //we lose 128-156 or so.
-        String s = (String) ZipUtil.getZipFileContents(is, subFileList, 1, false);
+        String s = (String) ZipUtil.getZipFileContents(is, subFileList, 1,
+            false);
         is.close();
         return getBufferedReaderForString(s);
       }
@@ -816,42 +851,47 @@ java.lang.NullPointerException
   }
 
   String[] getZipDirectory(String fileName, boolean addManifest) {
-    return ZipUtil.getZipDirectoryAndClose((InputStream)getInputStreamOrErrorMessageFromName(fileName, false), addManifest);
+    return ZipUtil.getZipDirectoryAndClose(
+        (InputStream) getInputStreamOrErrorMessageFromName(fileName, false),
+        addManifest);
   }
-  
+
   String getZipDirectoryAsString(String fileName) {
-    return ZipUtil.getZipDirectoryAsStringAndClose((InputStream)getInputStreamOrErrorMessageFromName(fileName, false));
+    return ZipUtil
+        .getZipDirectoryAsStringAndClose((InputStream) getInputStreamOrErrorMessageFromName(
+            fileName, false));
   }
-  
-  class DOMOpenThread implements Runnable {
+
+  class DOMReaderThread implements Runnable {
     //boolean terminated;
     String errorMessage;
     Object aDOMNode;
-    Object clientFile;
-	        
-    DOMOpenThread(Object DOMNode) {
+    Object atomSetCollection;
+
+    DOMReaderThread(Object DOMNode) {
       this.aDOMNode = DOMNode;
     }
 
     public void run() {
-      clientFile = modelAdapter.openDOMReader(aDOMNode);
+      atomSetCollection = viewer.getModelAdapter().getAtomSetCollectionFromDOM(
+          aDOMNode);
       errorMessage = null;
       //terminated = true;
     }
   }
 
-  class FileOpenThread implements Runnable {
+  class FileReaderThread implements Runnable {
     //boolean terminated;
     String errorMessage;
     String fullPathNameInThread;
     String nameAsGivenInThread;
     String fileTypeInThread;
-    Object clientFile;
+    Object atomSetCollection;
     BufferedReader reader;
     Hashtable htParams;
-    
 
-    FileOpenThread(String name, String nameAsGiven, String type, BufferedReader reader, Hashtable htParams) {
+    FileReaderThread(String name, String nameAsGiven, String type,
+        BufferedReader reader, Hashtable htParams) {
       fullPathNameInThread = name;
       nameAsGivenInThread = nameAsGiven;
       fileTypeInThread = type;
@@ -861,69 +901,72 @@ java.lang.NullPointerException
 
     public void run() {
       if (reader != null) {
-        openBufferedReader();
+        createAtomSetCollection();
       } else {
         String name = fullPathNameInThread;
         String[] subFileList = null;
-        if (name.indexOf("|") >= 0) 
+        if (name.indexOf("|") >= 0)
           name = (subFileList = TextFormat.split(name, "|"))[0];
-        Object t = getUnzippedBufferedReaderOrErrorMessageFromName(name, true, false, false);
+        Object t = getUnzippedBufferedReaderOrErrorMessageFromName(name, true,
+            false, false);
         if (t instanceof BufferedReader) {
           reader = (BufferedReader) t;
-          openBufferedReader();
+          createAtomSetCollection();
         } else if (t instanceof ZipInputStream) {
           if (subFileList != null)
             htParams.put("subFileList", subFileList);
-          openZipStream(name, (ZipInputStream) t);
+          createAtomSetCollection(name, (ZipInputStream) t);
         } else {
-          errorMessage = (t == null
-                          ? "error opening:" + nameAsGivenInThread
-                          : (String)t);
+          errorMessage = (t == null ? "error opening:" + nameAsGivenInThread
+              : (String) t);
         }
       }
       if (errorMessage != null) {
-        Logger.error("file ERROR: " + fullPathNameInThread + "\n" + errorMessage);
+        Logger.error("file ERROR: " + fullPathNameInThread + "\n"
+            + errorMessage);
       }
       //terminated = true;
     }
 
-    private void openZipStream(String fileName, ZipInputStream zis) {
+    private void createAtomSetCollection(String fileName, ZipInputStream zis) {
       String[] zipDirectory = getZipDirectory(fileName, true);
-      Object clientFile = modelAdapter.openZipFiles(zis, fileName, zipDirectory,
-          htParams, false);
-      if (clientFile instanceof String)
-        errorMessage = (String) clientFile;
+      Object atomSetCollectionOrError = viewer.getModelAdapter()
+          .getAtomSetCollectionOrBufferedReaderFromZip(zis, fileName,
+              zipDirectory, htParams, false);
+      if (atomSetCollectionOrError instanceof String)
+        errorMessage = (String) atomSetCollectionOrError;
       else
-        this.clientFile = clientFile;
+        atomSetCollection = atomSetCollectionOrError;
       try {
         zis.close();
       } catch (Exception e) {
         //
       }
     }
-    
-    private void openBufferedReader() {
-      Object clientFile = modelAdapter.openBufferedReader(fullPathNameInThread, fileTypeInThread,
-          reader, htParams);
-      if (clientFile instanceof String)
-        errorMessage = (String) clientFile;
+
+    private void createAtomSetCollection() {
+      Object atomSetCollectionOrError = viewer.getModelAdapter()
+          .getAtomSetCollectionFromReader(fullPathNameInThread,
+              fileTypeInThread, reader, htParams);
+      if (atomSetCollectionOrError instanceof String)
+        errorMessage = (String) atomSetCollectionOrError;
       else
-        this.clientFile = clientFile;
+        atomSetCollection = atomSetCollectionOrError;
     }
   }
-  
-  class FilesOpenThread implements Runnable, JmolFileReaderInterface {
+
+  class FilesReaderThread implements Runnable, JmolFileReaderInterface {
     //boolean terminated;
     String errorMessage;
     private String[] fullPathNamesInThread;
     private String[] namesAsGivenInThread;
     private String[] fileTypesInThread;
-    Object clientFile;
+    Object atomSetCollection;
     private Reader[] stringReaders;
     private Hashtable[] htParamsSet;
     private Hashtable htParams;
 
-    FilesOpenThread(String[] name, String[] nameAsGiven, String[] types,
+    FilesReaderThread(String[] name, String[] nameAsGiven, String[] types,
         Reader[] readers, Hashtable htParams) {
       fullPathNamesInThread = name;
       namesAsGivenInThread = nameAsGiven;
@@ -934,32 +977,34 @@ java.lang.NullPointerException
 
     public void run() {
       if (stringReaders != null) {
-        openStringReaders();
+        createAtomSetCollection();
         stringReaders = null;
       } else {
         htParamsSet = new Hashtable[fullPathNamesInThread.length];
         for (int i = 0; i < htParamsSet.length; i++)
           htParamsSet[i] = htParams; //for now, just one common parameter set
-        Object clientFile = modelAdapter.openBufferedReaders(this,
-            fullPathNamesInThread, fileTypesInThread, htParamsSet);
-        if (clientFile instanceof String)
-          errorMessage = (String) clientFile;
+        Object atomSetCollectionOrError = viewer.getModelAdapter()
+            .getAtomSetCollectionFromReaders(this, fullPathNamesInThread,
+                fileTypesInThread, htParamsSet);
+        if (atomSetCollectionOrError instanceof String)
+          errorMessage = (String) atomSetCollectionOrError;
         else
-          this.clientFile = clientFile;
+          atomSetCollection = atomSetCollectionOrError;
         if (errorMessage != null)
           Logger.error("file ERROR: " + errorMessage);
       }
     }
-    
-    private void openStringReaders() {
-      Object clientFile = modelAdapter.openBufferedReaders(this,
-          fullPathNamesInThread, fileTypesInThread, null);
-      if (clientFile == null)
+
+    private void createAtomSetCollection() {
+      Object atomSetCollectionOrError = viewer.getModelAdapter()
+          .getAtomSetCollectionFromReaders(this, fullPathNamesInThread,
+              fileTypesInThread, null);
+      if (atomSetCollectionOrError == null)
         return; // errorMessage has been set in getBufferedReader(int i);
-      if (clientFile instanceof String)
-        errorMessage = (String) clientFile;
+      if (atomSetCollectionOrError instanceof String)
+        errorMessage = (String) atomSetCollectionOrError;
       else
-        this.clientFile = clientFile;
+        atomSetCollection = atomSetCollectionOrError;
     }
 
     /**
@@ -988,7 +1033,9 @@ java.lang.NullPointerException
         InputStream is = new BufferedInputStream(
             (InputStream) getInputStreamOrErrorMessageFromName(name, false),
             8192);
-        t = modelAdapter.openZipFiles(is, name, zipDirectory, htParams, true);
+        t = viewer.getModelAdapter()
+            .getAtomSetCollectionOrBufferedReaderFromZip(is, name,
+                zipDirectory, htParams, true);
       }
       if (t instanceof BufferedReader)
         return (BufferedReader) t;
@@ -1011,7 +1058,7 @@ class MonitorInputStream extends FilterInputStream {
     this.position = 0;
   }
 
-  public int read() throws IOException{
+  public int read() throws IOException {
     ++readEventCount;
     int nextByte = super.read();
     if (nextByte >= 0)
@@ -1038,7 +1085,7 @@ class MonitorInputStream extends FilterInputStream {
   public long skip(long n) throws IOException {
     long cb = super.skip(n);
     // this will only work in relatively small files ... 2Gb
-    position = (int)(position + cb);
+    position = (int) (position + cb);
     return cb;
   }
 

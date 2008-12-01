@@ -73,32 +73,33 @@ public final class ModelLoader extends ModelSet {
   public ModelLoader(Viewer viewer, String name) {
     this.viewer = viewer;
     initializeInfo(name, 1, null, null);
-    initializeModelSet(null, null);
+    createModelSet(null, null);
     modelSetName = "zapped";
     viewer.setStringProperty("_fileType", "");
   }
 
 
-  public ModelLoader(Viewer viewer, JmolAdapter adapter, Object clientFile, 
+  public ModelLoader(Viewer viewer, Object atomSetCollection, 
       ModelLoader mergeModelSet, String modelSetName) {
     
     //System.out.println("ModelLoader " + this + " constructed");
 
+    JmolAdapter adapter = viewer.getModelAdapter();
     this.modelSetName = modelSetName;
     this.mergeModelSet = mergeModelSet;
     merging = (mergeModelSet != null && mergeModelSet.atomCount > 0);
     this.viewer = viewer;
-    initializeInfo(adapter.getFileTypeName(clientFile).toLowerCase().intern(),
-        adapter.getEstimatedAtomCount(clientFile), adapter
-            .getAtomSetCollectionProperties(clientFile), adapter
-            .getAtomSetCollectionAuxiliaryInfo(clientFile));
-    initializeModelSet(adapter, clientFile);
-    // dumpAtomSetNameDiagnostics(adapter, clientFile);
+    initializeInfo(adapter.getFileTypeName(atomSetCollection).toLowerCase().intern(),
+        adapter.getEstimatedAtomCount(atomSetCollection), adapter
+            .getAtomSetCollectionProperties(atomSetCollection), adapter
+            .getAtomSetCollectionAuxiliaryInfo(atomSetCollection));
+    createModelSet(adapter, atomSetCollection);
+    // dumpAtomSetNameDiagnostics(adapter, atomSetCollection);
   }
 /*
-  private void dumpAtomSetNameDiagnostics(JmolAdapter adapter, Object clientFile) {
+  private void dumpAtomSetNameDiagnostics(JmolAdapter adapter, Object atomSetCollection) {
     int frameModelCount = modelCount;
-    int adapterAtomSetCount = adapter.getAtomSetCount(clientFile);
+    int adapterAtomSetCount = adapter.getAtomSetCount(atomSetCollection);
     if (Logger.debugging) {
       Logger.debug(
           "----------------\n" + "debugging of AtomSetName stuff\n" +
@@ -106,8 +107,8 @@ public final class ModelLoader extends ModelSet {
           "\nadapterAtomSetCount=" + adapterAtomSetCount + "\n -- \n");
       for (int i = 0; i < adapterAtomSetCount; ++i) {
         Logger.debug(
-            "atomSetName[" + i + "]=" + adapter.getAtomSetName(clientFile, i) +
-            " atomSetNumber[" + i + "]=" + adapter.getAtomSetNumber(clientFile, i));
+            "atomSetName[" + i + "]=" + adapter.getAtomSetName(atomSetCollection, i) +
+            " atomSetNumber[" + i + "]=" + adapter.getAtomSetNumber(atomSetCollection, i));
       }
     }
   }
@@ -203,9 +204,9 @@ public final class ModelLoader extends ModelSet {
   private int adapterModelCount = 0;
   private int adapterTrajectoryCount = 0;
   
-  private void initializeModelSet(JmolAdapter adapter, Object clientFile) {
+  private void createModelSet(JmolAdapter adapter, Object atomSetCollection) {
     adapterModelCount = (adapter == null ? 1 : adapter
-        .getAtomSetCount(clientFile));
+        .getAtomSetCount(atomSetCollection));
     //cannot append a trajectory into a previous model
     appendNew = (!merging || adapter == null || adapterModelCount > 1 
         || isTrajectory || viewer.getAppendNew());
@@ -227,12 +228,12 @@ public final class ModelLoader extends ModelSet {
                 + " getProperty \"auxiliaryInfo\" to inspect them.");
       }
 
-      iterateOverAllNewModels(adapter, clientFile);
-      iterateOverAllNewAtoms(adapter, clientFile);
-      iterateOverAllNewBonds(adapter, clientFile);
-      iterateOverAllNewStructures(adapter, clientFile);
+      iterateOverAllNewModels(adapter, atomSetCollection);
+      iterateOverAllNewAtoms(adapter, atomSetCollection);
+      iterateOverAllNewBonds(adapter, atomSetCollection);
+      iterateOverAllNewStructures(adapter, atomSetCollection);
       if (adapter != null)
-        adapter.finish(clientFile);
+        adapter.finish(atomSetCollection);
       initializeUnitCellAndSymmetry();
       initializeBonding();
     }
@@ -328,7 +329,7 @@ public final class ModelLoader extends ModelSet {
     surfaceDistance100s = null;
   }
 
-  private void iterateOverAllNewModels(JmolAdapter adapter, Object clientFile) {
+  private void iterateOverAllNewModels(JmolAdapter adapter, Object atomSetCollection) {
 
     if (modelCount > 0) {
       nullGroup = new Group(new Chain(this, getModel(baseModelIndex), ' '), "",
@@ -346,12 +347,12 @@ public final class ModelLoader extends ModelSet {
     int iTrajectory = (isTrajectory ? baseTrajectoryCount : -1);
     int ipt = baseModelIndex;
     for (int i = 0; i < adapterModelCount; ++i, ++ipt) {
-      int modelNumber = (appendNew ? adapter.getAtomSetNumber(clientFile, i)
+      int modelNumber = (appendNew ? adapter.getAtomSetNumber(atomSetCollection, i)
           : Integer.MAX_VALUE);
-      String modelName = adapter.getAtomSetName(clientFile, i);
-      Properties modelProperties = adapter.getAtomSetProperties(clientFile, i);
+      String modelName = adapter.getAtomSetName(atomSetCollection, i);
+      Properties modelProperties = adapter.getAtomSetProperties(atomSetCollection, i);
       Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
-          clientFile, i);
+          atomSetCollection, i);
       viewer.setStringProperty("_fileType", (String) modelAuxiliaryInfo
           .get("fileType"));
       if (modelName == null)
@@ -378,7 +379,7 @@ public final class ModelLoader extends ModelSet {
       Logger.info((modelCount - ipt + 1) + " trajectory steps read");
       for (int ia = adapterModelCount, i = ipt; i < modelCount; i++) {
         models[i] = models[baseModelCount];
-        modelNumbers[i] = adapter.getAtomSetNumber(clientFile, ia++);
+        modelNumbers[i] = adapter.getAtomSetNumber(atomSetCollection, ia++);
         structuresDefinedInFile.set(i);
       }
     }
@@ -517,13 +518,13 @@ public final class ModelLoader extends ModelSet {
     }
   }
 
-  private void iterateOverAllNewAtoms(JmolAdapter adapter, Object clientFile) {
+  private void iterateOverAllNewAtoms(JmolAdapter adapter, Object atomSetCollection) {
     // atom is created, but not all methods are safe, because it
     // has no group -- this is only an issue for debugging
 
     int size = viewer.getDefaultMadAtom();
     for (JmolAdapter.AtomIterator iterAtom = adapter
-        .getAtomIterator(clientFile); iterAtom.hasNext();) {
+        .getAtomIterator(atomSetCollection); iterAtom.hasNext();) {
       short elementNumber = (short) iterAtom.getElementNumber();
       if (elementNumber <= 0)
         elementNumber = JmolConstants.elementNumberFromSymbol(iterAtom
@@ -714,8 +715,8 @@ public final class ModelLoader extends ModelSet {
   }
 
 
-  private void iterateOverAllNewBonds(JmolAdapter adapter, Object clientFile) {
-    JmolAdapter.BondIterator iterBond = adapter.getBondIterator(clientFile);
+  private void iterateOverAllNewBonds(JmolAdapter adapter, Object atomSetCollection) {
+    JmolAdapter.BondIterator iterBond = adapter.getBondIterator(atomSetCollection);
     if (iterBond == null)
       return;
     short mad = viewer.getMadBond();
@@ -767,12 +768,12 @@ public final class ModelLoader extends ModelSet {
    * if it is both one of those and turn.
    * 
    * @param adapter
-   * @param clientFile
+   * @param atomSetCollection
    */
   private void iterateOverAllNewStructures(JmolAdapter adapter,
-                                           Object clientFile) {
+                                           Object atomSetCollection) {
     JmolAdapter.StructureIterator iterStructure = adapter
-        .getStructureIterator(clientFile);
+        .getStructureIterator(atomSetCollection);
     if (iterStructure != null)
       while (iterStructure.hasNext()) {
         //System.out.println(iterStructure.getStructureType() + iterStructure
@@ -791,7 +792,7 @@ public final class ModelLoader extends ModelSet {
     // define turns LAST. (pulled by the iterator first)
     // so that if they overlap they get overwritten:
 
-    iterStructure = adapter.getStructureIterator(clientFile);
+    iterStructure = adapter.getStructureIterator(atomSetCollection);
     if (iterStructure != null)
       while (iterStructure.hasNext()) {
         if (iterStructure.getStructureType().equals("turn"))

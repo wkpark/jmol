@@ -4485,10 +4485,12 @@ class Eval {
         viewer.openFiles(modelName, filenames, null, isAppend, htParams);
       }
     }
-    if (isSyntaxCheck && !(isScriptCheck && fileOpenCheck))
+    if (isSyntaxCheck && !(isScriptCheck && fileOpenCheck)) {
+      viewer.deallocateReaderThreads();
       return;
+    }
     viewer.addLoadScript(loadScript.toString());
-    String errMsg = viewer.getOpenFileError(isAppend);
+    String errMsg = viewer.createModelSetAndReturnError(isAppend);
     // int millis = (int)(System.currentTimeMillis() - timeBegin);
     // Logger.debug("!!!!!!!!! took " + millis + " ms");
     if (errMsg != null && !isScriptCheck) {
@@ -4600,7 +4602,7 @@ class Eval {
     boolean oldAppendNew = viewer.getAppendNew();
     viewer.setAppendNew(true);
     String data = viewer.getPdbData(modelIndex, type);
-    boolean isOK = (data != null && viewer.loadInline(data, '\n', true));
+    boolean isOK = (data != null && viewer.loadInline(data, '\n', true) == null);
     viewer.setAppendNew(oldAppendNew);
     viewer.setFileInfo(savedFileInfo);
     if (!isOK)

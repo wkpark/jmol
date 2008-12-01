@@ -318,7 +318,7 @@ public class Jmol extends JPanel {
         f.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         if (evt.getPropertyName().equals(FileDropper.FD_PROPERTY_FILENAME)) {
           final String filename = evt.getNewValue().toString();
-          viewer.openFile(filename);
+          viewer.openFileAsynchronously(filename);
         } else if (evt.getPropertyName().equals(FileDropper.FD_PROPERTY_INLINE)) {
           final String inline = evt.getNewValue().toString();
           viewer.openStringInline(inline);
@@ -650,8 +650,7 @@ public class Jmol extends JPanel {
 
       // Open a file if one is given as an argument -- note, this CAN be a script file
       if (modelFilename != null) {
-        jmol.viewer.openFile(modelFilename);
-        jmol.viewer.getOpenFileError();
+        jmol.viewer.openFileAsynchronously(modelFilename);
       }
 
       // OK, by now it is time to execute the script
@@ -1392,7 +1391,7 @@ public class Jmol extends JPanel {
       if (fileName.startsWith("load append"))
         viewer.scriptWait(fileName);
       else
-        viewer.openFile(fileName);
+        viewer.openFileAsynchronously(fileName);
     }
   }
 
@@ -1413,8 +1412,7 @@ public class Jmol extends JPanel {
       if (url != null) {
         if (url.indexOf("://") == -1)
           url = "http://" + url;
-        viewer.openFile(url);
-        viewer.getOpenFileError();
+        viewer.openFileAsynchronously(url);
       }
       return;
     }
@@ -1520,10 +1518,8 @@ public class Jmol extends JPanel {
 
       recentFiles.show();
       String selection = recentFiles.getFile();
-      if (selection != null) {
-        viewer.openFile(selection);
-        viewer.getOpenFileError();
-      }
+      if (selection != null)
+        viewer.openFileAsynchronously(selection);
     }
   }
 
@@ -1644,9 +1640,8 @@ public class Jmol extends JPanel {
   }
 
   String getOpenFileNameFromDialog(String fileName) {
-    return (new Dialog()).getOpenFileNameFromDialog(modelAdapter,
-        appletContext, viewer, fileName, historyFile, FILE_OPEN_WINDOW_NAME,
-        (fileName == null));
+    return (new Dialog()).getOpenFileNameFromDialog(appletContext,
+        viewer, fileName, historyFile, FILE_OPEN_WINDOW_NAME, (fileName == null));
   }
 
   public static final String chemFileProperty = "chemFile";

@@ -16,8 +16,7 @@ public interface JmolDialogInterface {
    */
   public abstract int getQuality(String sType);
 
-  public abstract String getOpenFileNameFromDialog(JmolAdapter modelAdapter,
-                                                   String appletContext,
+  public abstract String getOpenFileNameFromDialog(String appletContext,
                                                    JmolViewer viewer,
                                                    String fileName,
                                                    Object historyFile,

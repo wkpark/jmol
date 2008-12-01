@@ -66,25 +66,23 @@ public class JmolTable {
 
     public static void main(String[] args) {
 
-        int nobject = args.length;
-        int ncol = 2;
+    int nobject = args.length;
+    int ncol = 2;
 
-        Object[][] data = new Object[nobject][ncol];
-        for (int i = 0; i < nobject; i++) {
-            data[i][0] = new JmolPanel();
-            JmolViewer v = (JmolViewer)((JmolPanel)data[i][0]).getViewer();
-            v.openFile(args[i]);
-            String strError = v.getOpenFileError();
-            if (strError != null) {
-              Logger.error(strError);
-            }
-
-            data[i][1] = args[i];
-        }
-        String[] colNames = { "Structure", "Filename" };
-        
-        showMolecules(colNames, data, nobject);
+    Object[][] data = new Object[nobject][ncol];
+    for (int i = 0; i < nobject; i++) {
+      data[i][0] = new JmolPanel();
+      JmolViewer v = (JmolViewer) ((JmolPanel) data[i][0]).getViewer();
+      String strError = v.openFile(args[i]);
+      if (strError != null) {
+        Logger.error(strError);
+      }
+      data[i][1] = args[i];
     }
+    String[] colNames = { "Structure", "Filename" };
+
+    showMolecules(colNames, data, nobject);
+  }
 
     public static void showMolecules(String[] colNames, Object[][] data, int nmol) {
 

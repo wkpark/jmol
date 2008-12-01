@@ -59,9 +59,25 @@ abstract public class JmolSimpleViewer {
   abstract public String openStringInline(String strModel);
   abstract public String openDOM(Object DOMNode);
   abstract public String openFile(String fileName);
-  //File reading is ASYNCHRONOUS
-  //NOT what you think it was....  abstract public String getOpenFileError();
-  //Use jmolStatusListener to trap script termination errors for openFile
-  //Use (String) getProperty(null, "ErrorMessage", null) for openStringInline or openDOM
+  // File reading now returns the error directly.
+  // The following was NOT what you think it was:
+  //   abstract public String getOpenFileError();
+  // Somewhere way back when, "openFile" became a method that did not create
+  // the model set, but just an intermediary AtomSetCollection called the "clientFile"
+  // (and did not necessarily closed the file)
+  // then "getOpenFileError()" actually created the model set, deallocated the file open thread,
+  // and closed the file.
+  //
+  // For Jmol 11.7.14, the openXXX methods in this interface do everything --
+  // open the file, creat the intermediary atomSetCollection, close the file,
+  // deallocate the file open thread, create the ModelSet, and return any error message.
+  // so there is no longer any need for getOpenFileError().
+  
+  /**
+   * @param returnType "JSON", "string", "readable", and anything else returns the Java object.
+   * @param infoType 
+   * @param paramInfo  
+   * @return            property data -- see org.jmol.viewer.PropertyManager.java
+   */
   abstract public Object getProperty(String returnType, String infoType, String paramInfo);
 }

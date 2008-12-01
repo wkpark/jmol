@@ -66,11 +66,12 @@ public class Integration {
     // this initial ZAP command is REQUIRED in Jmol 11.4.
     viewer.evalString("zap");
     //    viewer.openFile("../samples/caffeine.xyz");
-    viewer.openFile("http://chemapps.stolaf.edu/jmol/docs/examples-11/data/caffeine.xyz");
+    
+    String strError = viewer.openFile("http://chemapps.stolaf.edu/jmol/docs/examples-11/data/caffeine.xyz");
     //viewer.openStringInline(strXyzHOH);
-    viewer.evalString(strScript);
-    String strError = viewer.getOpenFileError();
-    if (strError != null)
+    if (strError == null)
+      viewer.evalString(strScript);
+    else
       Logger.error(strError);
   }
 

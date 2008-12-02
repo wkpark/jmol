@@ -64,12 +64,12 @@ abstract public class JmolSimpleViewer {
   //   abstract public String getOpenFileError();
   // Somewhere way back when, "openFile" became a method that did not create
   // the model set, but just an intermediary AtomSetCollection called the "clientFile"
-  // (and did not necessarily closed the file)
+  // (and did not necessarily close the file)
   // then "getOpenFileError()" actually created the model set, deallocated the file open thread,
   // and closed the file.
   //
   // For Jmol 11.7.14, the openXXX methods in this interface do everything --
-  // open the file, creat the intermediary atomSetCollection, close the file,
+  // open the file, create the intermediary atomSetCollection, close the file,
   // deallocate the file open thread, create the ModelSet, and return any error message.
   // so there is no longer any need for getOpenFileError().
   

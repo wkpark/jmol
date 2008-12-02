@@ -6605,16 +6605,16 @@
     server="171.64.122.78" atoms="7847" preferred="5" deadline="10"
     credit="15" frames="100" code="GST" contact="huangx" contrib="v00d00"/>
   <fah_proj number="4424" name="p4424_Seq_53_nat_AMBER_Native" public="y" file="xyz"
-    server="171.64.122.78" atoms="7870" preferred="5" deadline="10"
+    server="171.64.122.72" atoms="7870" preferred="5" deadline="10"
     credit="15" frames="100" code="GST" contact="huangx" contrib="Matt O Hara"/>
   <fah_proj number="4425" name="p4425_Seq_53_unf_AMBER" public="y" file="xyz"
-    server="171.64.122.78" atoms="7870" preferred="5" deadline="10"
+    server="171.64.122.72" atoms="7870" preferred="5" deadline="10"
     credit="15" frames="100" code="GST" contact="huangx" contrib="SirKiwi"/>
   <fah_proj number="4426" name="p4426_Seq_55_nat_AMBER_Native" public="y" file="xyz"
-    server="171.64.122.78" atoms="7866" preferred="5" deadline="10"
+    server="171.64.122.72" atoms="7866" preferred="5" deadline="10"
     credit="15" frames="100" code="GST" contact="huangx" contrib="Bruce"/>
   <fah_proj number="4427" name="p4427_Seq_55_unf_AMBER" public="y" file="xyz"
-    server="171.64.122.78" atoms="7866" preferred="5" deadline="10"
+    server="171.64.122.72" atoms="7866" preferred="5" deadline="10"
     credit="15" frames="100" code="GST" contact="huangx" contrib="v00d00"/>
   <fah_proj number="4432" name="p4432_Seq41_Amber03" public="y" file="xyz"
     server="171.64.122.78" atoms="7885" preferred="43" deadline="63"
@@ -6971,7 +6971,7 @@
   <fah_proj number="4620" name="p4620_T0_NTL9-12_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="226" preferred="15.4" deadline="23.1"
     credit="84.7" frames="100" code="A" contact="vvoelz" contrib="Flathead74,Hyperlife"/>
-  <fah_proj number="4621" name="p4621_T0_ww-8_minout" public="y" file="xyz"
+  <fah_proj number="4621" name="p4621_T0_ww-8_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="149" preferred="8.5" deadline="12.8"
     credit="47" frames="100" code="A" contact="vvoelz" contrib="Smoking2000"/>
   <fah_proj number="4622" name="p4622_T0_proG-16_minout" public="y" file="top,xyz"

@@ -469,12 +469,10 @@ public class Measures extends Shape {
       int atomIndex = m.getAtomIndex(i);
       if (atomIndex < 0)
         continue;
-      if (atomIndexLast < 0) {
-        atomIndexLast = atomIndex;
-        continue;
-      }
-      if (!atoms[atomIndex].isBonded(atoms[atomIndexLast]))
+      if (atomIndexLast >= 0
+          && !atoms[atomIndex].isBonded(atoms[atomIndexLast]))
         return false;
+      atomIndexLast = atomIndex;
     }
     return true;
   }

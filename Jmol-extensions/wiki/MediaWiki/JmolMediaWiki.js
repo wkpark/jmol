@@ -27,14 +27,14 @@ function jmolWikiPopupWindow(extensionPath, windowTitle, windowSize, windowLeft,
             "left=" + windowLeft + ",top=" + windowTop ;
   var s =
     "<html><head>\n" +
-    "<script language='Javascript' type='text/javascript' src='" + extensionPath + "/Jmol.js'></script>\n" +
-    "<script language='Javascript' type='text/javascript'>jmolInitialize('" + extensionPath + "', false);</script>\n" +
+    "<script type='text/javascript' src='" + extensionPath + "/Jmol.js'><" + "/script>\n" +
     "<title>" + windowTitle + "</title>\n" +
     "</head><body>" +
-    "<script language='Javascript' type='text/javascript'>\n" + windowCode + "\n</script>\n" +
+    "<script type='text/javascript'>jmolInitialize('" + extensionPath + "', false);\n" +
+    windowCode + "\n<" + "/script>\n" +
     "</body></html>";
 
-  var w = open("", windowTitle, opt);
+  var w = open("", "Jmol_popup", opt);	// window name in IE cannot contain spaces or parentheses (and windowTitle may have them)
   w.document.open();
   w.document.write(s);
   w.document.close();

@@ -280,8 +280,8 @@ class Eval {
       if (script != "")
         runScript(script, null);
       } catch (Error er) {
-        System.out.println("Eval caught error " + er.getMessage());
-        setErrorMessage("" + er);
+        viewer.handleError(er, false);
+        setErrorMessage("" + er + " " + viewer.getShapeErrorState());
         scriptStatus(errorMessage);
       }
     } catch (ScriptException e) {

@@ -269,7 +269,8 @@ class Compiler {
       } catch(NumberFormatException e) {
         // not a problem
       }
-    return i * 1000000 + j;
+    i = i * 1000000 + j;
+    return (i < 0 ? Integer.MAX_VALUE : i);
   }
   
  /**

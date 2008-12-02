@@ -141,6 +141,8 @@ abstract class Platform3D {
   }
 
   void setBackgroundColor(int bgColor) {
+    if (pBuffer == null)
+      return;
     for (int i = bufferSize; --i >= 0; )
       if (pBuffer[i] == 0)
         pBuffer[i] = bgColor;

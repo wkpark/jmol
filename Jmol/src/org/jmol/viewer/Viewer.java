@@ -1881,8 +1881,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (!isAppend)
         initializeModel();
     } catch (Error er) {
-      zap("ERROR creating model: " + er);
-      setErrorMessage("ERROR creating model: " + er);
+      handleError(er, true);
+      String errMsg = getShapeErrorState();
+      errMsg = ("ERROR creating model: " + er + (errMsg.length() == 0 ? "" : "|" + errMsg));
+      zap(errMsg);
+      setErrorMessage(errMsg);
     }
     popHoldRepaint("createModelSet");
     String errMsg = getErrorMessage();
@@ -3362,10 +3365,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    }
 
   private Image getImage(boolean isDouble) {
-    g3d.beginRendering(transformManager.getStereoRotationMatrix(isDouble));
-    render();
-    g3d.endRendering();
-    return g3d.getScreenImage();
+    Image image = null;
+    try {
+      g3d.beginRendering(transformManager.getStereoRotationMatrix(isDouble));
+      render();
+      g3d.endRendering();
+      image = g3d.getScreenImage();
+    } catch (Error er) {
+      handleError(er, false);
+      setErrorMessage("Error during rendering: " + er);
+    }
+    return image;
   }
 
   private boolean antialiasDisplay;
@@ -3405,7 +3415,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void render1(Graphics g, Image img, int x, int y) {
-    if (g != null) {
+    if (g != null && img != null) {
       try {
         g.drawImage(img, x, y, null);
       } catch (NullPointerException npe) {
@@ -6635,9 +6645,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       err = statusManager.createImage(fileName, type, text_or_bytes, quality);
       // err may be null if user cancels operation involving dialog and "?" 
     } catch (Exception e) {
-      Logger.error(setErrorMessage(err = "ERROR creating image: " + e.getMessage()));
+      Logger.error(setErrorMessage(err = "ERROR creating image: " + e));
     } catch (Error er) {
-      Logger.error(setErrorMessage(err = "ERROR creating image: "+ er.getMessage()));
+      Logger.error(setErrorMessage(err = "ERROR creating image: "+ er));
     }
     creatingImage = false;
     if (quality != Integer.MIN_VALUE) {
@@ -6923,12 +6933,39 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return dir;
   }
 
+  ////// Error handling
+  
   private String errorMessage;
   private String setErrorMessage(String errMsg) {
+    if (errMsg != null)
+      System.out.println(errMsg);
     return (errorMessage = errMsg);
   }
   
   public String getErrorMessage() {
     return errorMessage;
   }
+
+  int currentShapeID = -1;
+  String currentShapeState;
+  public void setShapeErrorState(int shapeID, String state) {
+    currentShapeID = shapeID;
+    currentShapeState = state; 
+  }
+  
+  public String getShapeErrorState() {
+    if (currentShapeID < 0)
+      return "";
+    if(modelSet != null)
+      modelSet.releaseShape(currentShapeID);
+    return JmolConstants.getShapeClassName(currentShapeID) + " " + currentShapeState;    
+  }
+
+  public void handleError(Error er, boolean doClear) {
+    // almost certainly out of memory; could be missing Jar file
+    if (doClear)
+      zap("" + er); // get some breathing room
+    Logger.error("viewer handling error condition: " + er);
+  }
+  
 }

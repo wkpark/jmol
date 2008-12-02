@@ -80,8 +80,8 @@ public class ImageCreator implements JmolImageCreatorInterface {
    * @param quality
    * @return          null (canceled) or a message starting with OK or an error message
    */
-  public String createImage(String fileName, String type, 
-                            Object text_or_bytes, int quality) {
+  public String createImage(String fileName, String type, Object text_or_bytes,
+                            int quality) {
     // returns message starting with OK or an error message
     boolean isBytes = (text_or_bytes instanceof byte[]);
     String text = (isBytes ? null : (String) text_or_bytes);
@@ -93,46 +93,55 @@ public class ImageCreator implements JmolImageCreatorInterface {
     if ((isText || isBytes) && text_or_bytes == null)
       return "NO DATA";
     FileOutputStream os = null;
+    long len = -1;
     try {
-      os = new FileOutputStream(fileName);
       if (isBytes) {
+        len = ((byte[]) text_or_bytes).length;
+        os = new FileOutputStream(fileName);
         os.write((byte[]) text_or_bytes);
         os.flush();
         os.close();
       } else if (isText) {
+        os = new FileOutputStream(fileName);
         OutputStreamWriter osw = new OutputStreamWriter(os);
         BufferedWriter bw = new BufferedWriter(osw, 8192);
+        len = text.length();
         bw.write(text);
         bw.close();
         os = null;
       } else {
         Image eImage = viewer.getScreenImage();
-        if (type.equalsIgnoreCase("JPEG") || type.equalsIgnoreCase("JPG")) {
-          if (quality <= 0)
-            quality = 75;
-          (new JpegEncoder(eImage, quality, os)).Compress();
-        } else if (type.equalsIgnoreCase("JPG64")) {
-          ByteArrayOutputStream osb = new ByteArrayOutputStream();
-          (new JpegEncoder(eImage, quality, osb)).Compress();
-          osb.flush();
-          osb.close();
-          StringBuffer jpg = Base64.getBase64(osb.toByteArray());
-          os.write(Base64.toBytes(jpg));
-        } else if (type.equalsIgnoreCase("PNG")) {
+        if (eImage != null) {
+          len = 1;
+          os = new FileOutputStream(fileName);
+          if (type.equalsIgnoreCase("JPEG") || type.equalsIgnoreCase("JPG")) {
+            if (quality <= 0)
+              quality = 75;
+            (new JpegEncoder(eImage, quality, os)).Compress();
+          } else if (type.equalsIgnoreCase("JPG64")) {
+            ByteArrayOutputStream osb = new ByteArrayOutputStream();
+            (new JpegEncoder(eImage, quality, osb)).Compress();
+            osb.flush();
+            osb.close();
+            StringBuffer jpg = Base64.getBase64(osb.toByteArray());
+            os.write(Base64.toBytes(jpg));
+          } else if (type.equalsIgnoreCase("PNG")) {
             if (quality < 0)
               quality = 2;
             else if (quality > 9)
               quality = 9;
-          byte[] pngbytes = (new PngEncoder(eImage, false,
-              PngEncoder.FILTER_NONE, quality)).pngEncode();
-          os.write(pngbytes);
-        } else if (type.equalsIgnoreCase("PPM")) {
-          (new PpmEncoder(eImage, os)).encode();
-        } else if (type.equalsIgnoreCase("GIF")) {
-          (new GifEncoder(eImage, os)).encode();
+            byte[] pngbytes = (new PngEncoder(eImage, false,
+                PngEncoder.FILTER_NONE, quality)).pngEncode();
+            os.write(pngbytes);
+          } else if (type.equalsIgnoreCase("PPM")) {
+            (new PpmEncoder(eImage, os)).encode();
+          } else if (type.equalsIgnoreCase("GIF")) {
+            (new GifEncoder(eImage, os)).encode();
+          }
+          os.flush();
+          os.close();
+          len = (new File(fileName)).length();
         }
-        os.flush();
-        os.close();
         viewer.releaseScreenImage();
       }
     } catch (IOException exc) {
@@ -150,7 +159,8 @@ public class ImageCreator implements JmolImageCreatorInterface {
         }
       }
     }
-    return "OK " + type + " " + (new File(fileName)).length() + " " + fileName
-        + (quality == Integer.MIN_VALUE ? "" : "; quality=" + quality);
+    return (len < 0 ? "Creation of " + fileName + " failed: " + viewer.getErrorMessage() : "OK " + type
+        + " " + len + " " + fileName
+        + (quality == Integer.MIN_VALUE ? "" : "; quality=" + quality));
   }
 }

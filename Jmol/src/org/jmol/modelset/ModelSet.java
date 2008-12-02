@@ -113,7 +113,9 @@ abstract public class ModelSet extends ModelCollection {
     try {
       Class shapeClass = Class.forName(className);
       Shape shape = (Shape) shapeClass.newInstance();
+      viewer.setShapeErrorState(shapeID, "allocate");
       shape.initializeShape(viewer, g3d, this, shapeID);
+      viewer.setShapeErrorState(-1, null);
       return shape;
     } catch (Exception e) {
       Logger.error("Could not instantiate shape:" + className, e);
@@ -261,10 +263,12 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   public void setShapeSize(int shapeID, int size, BitSet bsSelected) {
+    viewer.setShapeErrorState(shapeID, "set size");
     if (size != 0)
       loadShape(shapeID);
     if (shapes[shapeID] != null)
       shapes[shapeID].setSize(size, bsSelected);
+    viewer.setShapeErrorState(-1, null);
   }
 
   public Shape loadShape(int shapeID) {
@@ -274,14 +278,26 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   public void setShapeProperty(int shapeID, String propertyName, Object value,
-                        BitSet bsSelected) {
-    if (shapes[shapeID] != null)
-      shapes[shapeID].setProperty(propertyName.intern(), value, bsSelected);
+                               BitSet bsSelected) {
+    if (shapes[shapeID] == null)
+      return;
+    viewer.setShapeErrorState(shapeID, "set " + propertyName);
+    shapes[shapeID].setProperty(
+        propertyName.intern(), value, bsSelected);
+    viewer.setShapeErrorState(-1, null);
   }
 
+  public void releaseShape(int shapeID) {
+    shapes[shapeID] = null;  
+  }
+  
   public Object getShapeProperty(int shapeID, String propertyName, int index) {
-    return (shapes[shapeID] == null ? null 
-        : shapes[shapeID].getProperty(propertyName, index));
+    if (shapes[shapeID] == null)
+      return null;
+    viewer.setShapeErrorState(shapeID, "get " + propertyName);
+    Object result = shapes[shapeID].getProperty(propertyName, index);
+    viewer.setShapeErrorState(-1, null);
+    return result;
   }
 
   public int getShapeIdFromObjectName(String objectName) {

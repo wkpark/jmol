@@ -22,6 +22,12 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+
+/*
+ * US modifications by Albert DeFusco - adefusco and Bob Hanson 12/2/2008
+ * 
+ */
+
 package org.jmol.adapter.readers.more;
 
 import org.jmol.adapter.smarter.*;
@@ -31,7 +37,9 @@ import java.util.Hashtable;
 
 public class GamessUSReader extends GamessReader {
 
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+  private int headerType;
+  
+  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("gamess");
     try {
@@ -56,9 +64,32 @@ public class GamessUSReader extends GamessReader {
         } else if (iHaveAtoms && line.indexOf("ATOMIC BASIS SET") >= 0) {
           readGaussianBasis("SHELL TYPE", "TOTAL");
           continue;
-        } else if (iHaveAtoms && (line.indexOf("  EIGENVECTORS") >= 0  
-            || line.indexOf("  MOLECULAR ORBITALS") >= 0)) {
-          readMolecularOrbitals();
+        } else if (iHaveAtoms
+            && line.indexOf("SUMMARY OF THE EFFECTIVE FRAGMENT") >= 0) {
+          // We have EFP and we're not afraid to use it!!
+          //it would be nice is this information was closer to the ab initio molecule
+          readEFPInBohrCoordinates();
+          continue;
+        } else if (iHaveAtoms
+            && (line.indexOf("  EIGENVECTORS") >= 0
+                || line.indexOf("  INITIAL GUESS ORBITALS") >= 0 
+                || line.indexOf("  MCSCF OPTIMIZED ORBITALS") >= 0
+                || line.indexOf("  MOLECULAR ORBITALS") >= 0 && 
+                line.indexOf("  MOLECULAR ORBITALS LOCALIZED BY THE POPULATION METHOD") < 0)) {
+            headerType = 1; // energies and symmetries
+            readMolecularOrbitals(); //1,1
+            continue;
+        } else if (line.indexOf("EDMISTON-RUEDENBERG ENERGY LOCALIZED ORBITALS") >= 0
+            || line.indexOf("  THE PIPEK-MEZEY POPULATION LOCALIZED ORBITALS ARE") >= 0) {
+          headerType = 0;  // no header
+          continue;
+        }
+        else if (line.indexOf("  NATURAL ORBITALS IN ATOMIC ORBITAL BASIS") >= 0
+            || line.indexOf("   MCSCF NATURAL ORBITALS") >= 0) {
+          //the format of the next orbitals can change depending on the
+          //cistep used.  This works for ALDET and GUGA
+          headerType = 2; // occupancies and
+          readMolecularOrbitals(); //1,2
           continue;
         }
         readLine();
@@ -67,6 +98,68 @@ public class GamessUSReader extends GamessReader {
       return setError(e);
     }
     return atomSetCollection;
+  }
+
+  /*
+
+   for H2ORHF, the Z entries are nuclear positions
+
+   MULTIPOLE COORDINATES, ELECTRONIC AND NUCLEAR CHARGES
+
+   X              Y              Z           ELEC.   NUC.
+   ZO1       -7.7339870636   0.7855024013   0.0607735878    8.00000    0.0
+   ZH2       -6.3592068574   1.8865489098  -0.2204029069    1.00000    0.0
+   ZH3       -8.0979273324   0.8550163890   1.8055083920    1.00000    0.0
+   O1        -7.7339870636   0.7855024013   0.0607735878   -8.21083    0.0
+   H2        -6.3592068574   1.8865489098  -0.2204029069   -0.55665    0.0
+   H3        -8.0979273324   0.8550163890   1.8055083920   -0.55665    0.0
+   B12       -7.0465971979   1.3360253807  -0.0798150033   -0.33793    0.0
+   B13       -7.9159574354   0.8202591203   0.9331406462   -0.33793    0.0
+
+   for H2ODFT
+   MULTIPOLE COORDINATES, ELECTRONIC AND NUCLEAR CHARGES
+
+   X              Y              Z           ELEC.   NUC.
+   O1         6.7090100309  -3.9975560003  -0.0215951332   -8.22458    8.0
+   H2         7.4569069150  -4.5350351179  -1.5490605828   -0.57906    1.0
+   H3         7.1548619721  -2.2838340456   0.1923145656   -0.57906    1.0
+   B12        7.0829581926  -4.2662958353  -0.7853275496   -0.30866    0.0
+   B13        6.9319357212  -3.1406952991   0.0853600246   -0.30866    0.0
+   
+   */
+
+  protected void readEFPInBohrCoordinates() throws Exception {
+    //it's really too bad that the EFP information is nowhere near
+    //the ab initio molecule for single-point runs.
+
+    int atomCountInFirstModel = atomSetCollection.getAtomCount();
+    //should only contain the $DATA card
+    discardLinesUntilContains("MULTIPOLE COORDINATES");
+
+    readLine(); // blank line
+    readLine(); // X              Y              Z           ELEC.   NUC.
+    //at least for FRAGNAME=H2ORHF, the atoms come out as ZO1, ZH2, ZH3
+    //Z stands for nuclear position.
+    while (readLine() != null && line.length() >= 72) {
+      String atomName = line.substring(1, 2);
+      //Z is perhaps not officially deprecated, but the newer
+      //H2ODFT potential doesn't use it.
+      //It does however put the nuclear charge in the last column
+      if (atomName.charAt(0) == 'Z')
+        atomName = line.substring(2, 3);
+      else if (parseFloat(line, 67, 73) == 0)
+        continue;
+      float x = parseFloat(line, 8, 25);
+      float y = parseFloat(line, 25, 40);
+      float z = parseFloat(line, 40, 56);
+      if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
+        break;
+      Atom atom = atomSetCollection.addNewAtom();
+      atom.atomName = atomName + (++atomCountInFirstModel);
+      atom.set(x, y, z);
+      atom.scale(ANGSTROMS_PER_BOHR);
+      atomNames.addElement(atomName);
+    }
   }
   
   protected void readAtomsInBohrCoordinates() throws Exception {
@@ -127,6 +220,58 @@ public class GamessUSReader extends GamessReader {
       atom.set(x, y, z);
       atomNames.addElement(atomName);
     }
+    
+    /*
+    During optimization, this will immediately appear after the
+    ab initio molecule
+    
+    COORDINATES OF FRAGMENT MULTIPOLE CENTERS (ANGS)
+    MULTIPOLE NAME        X              Y              Z
+    ------------------------------------------------------------
+    FRAGNAME=H2ORHF
+    ZO1              -4.1459482636   0.4271933699   0.0417242924
+    ZH2              -3.4514529072   1.0596960013  -0.0504444399
+    ZH3              -4.5252917848   0.5632659571   0.8952236761
+    
+    or for H2ODFT
+    
+    COORDINATES OF FRAGMENT MULTIPOLE CENTERS (ANGS)
+    MULTIPOLE NAME        X              Y              Z
+    ------------------------------------------------------------
+    FRAGNAME=H2ODFT
+    O1                3.5571448937  -2.1158335714  -0.0044768463
+    H2                3.9520351868  -2.4002052098  -0.8132245708
+    H3                3.7885802785  -1.2074436330   0.1057222304
+    
+    */
+    
+    // Now is the time to read Effective Fragments (EFP)
+    if (line.indexOf("COORDINATES OF FRAGMENT MULTIPOLE CENTERS (ANGS)") >= 0) {
+         readLine(); // MULTIPONE NAME         X ...
+        readLine(); // ------------------------ ...
+        readLine(); // FRAGNAME=
+        
+        //at least for FRAGNAME=H2ORHF, the atoms come out as ZO1, ZH2, ZH3
+        while (readLine() != null
+        && (atomName = parseToken(line, 1, 2)) != null) {
+              if (parseToken(line,1,2).equals("Z")) //Z means nuclear position
+                    atomName = parseToken(line, 2, 3);
+              else if (parseToken(line,1,9).equals("FRAGNAME"))//Z is a deprecated requirement
+                  continue;
+              else
+                    atomName = parseToken(line, 1, 2); 
+              float x = parseFloat(line, 16, 31);
+              float y = parseFloat(line, 31, 46);
+              float z = parseFloat(line, 46, 61);
+              if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
+                    break;
+              Atom atom = atomSetCollection.addNewAtom();
+              atom.atomName = atomName + (++n);
+              atom.set(x, y, z);
+              atomNames.addElement(atomName);
+        } 
+          
+    }
   }
   /*
    * 
@@ -172,43 +317,67 @@ public class GamessUSReader extends GamessReader {
    MOLECULAR ORBITALS
    ------------------
 
-          ------------
-          EIGENVECTORS
-          ------------
+   ------------
+   EIGENVECTORS
+   ------------
 
-                      1          2          3          4          5
-                  -79.9156   -20.4669   -20.4579   -20.4496   -20.4419
-                     A          A          A          A          A   
-    1  C  1  S   -0.000003  -0.000029  -0.000004   0.000011   0.000016
-    2  C  1  S   -0.000009   0.000140   0.000001   0.000057   0.000065
-    3  C  1  X    0.000007  -0.000241  -0.000022  -0.000010  -0.000061
-    4  C  1  Y   -0.000008   0.000017  -0.000027  -0.000010   0.000024
-    5  C  1  Z    0.000007   0.000313   0.000009  -0.000002  -0.000001
-    6  C  1  S    0.000049   0.000875  -0.000164  -0.000521  -0.000440
-    7  C  1  X   -0.000066   0.000161   0.000125   0.000034   0.000406
-    8  C  1  Y    0.000042   0.000195  -0.000165  -0.000254  -0.000573
-    9  C  1  Z    0.000003   0.000045   0.000052   0.000112  -0.000129
+   1          2          3          4          5
+   -79.9156   -20.4669   -20.4579   -20.4496   -20.4419
+   A          A          A          A          A   
+   1  C  1  S   -0.000003  -0.000029  -0.000004   0.000011   0.000016
+   2  C  1  S   -0.000009   0.000140   0.000001   0.000057   0.000065
+   3  C  1  X    0.000007  -0.000241  -0.000022  -0.000010  -0.000061
+   4  C  1  Y   -0.000008   0.000017  -0.000027  -0.000010   0.000024
+   5  C  1  Z    0.000007   0.000313   0.000009  -0.000002  -0.000001
+   6  C  1  S    0.000049   0.000875  -0.000164  -0.000521  -0.000440
+   7  C  1  X   -0.000066   0.000161   0.000125   0.000034   0.000406
+   8  C  1  Y    0.000042   0.000195  -0.000165  -0.000254  -0.000573
+   9  C  1  Z    0.000003   0.000045   0.000052   0.000112  -0.000129
    10  C  1 XX   -0.000010   0.000010  -0.000040   0.000019   0.000045
    11  C  1 YY   -0.000010  -0.000031   0.000000  -0.000003   0.000019
-...
+   ...
 
-                      6          7          8          9         10
-                  -20.4354   -20.4324   -20.3459   -20.3360   -11.2242
-                     A          A          A          A          A   
-    1  C  1  S    0.000000  -0.000001   0.000001   0.000000   0.008876
-    2  C  1  S   -0.000003   0.000002   0.000003   0.000002   0.000370
+   6          7          8          9         10
+   -20.4354   -20.4324   -20.3459   -20.3360   -11.2242
+   A          A          A          A          A   
+   1  C  1  S    0.000000  -0.000001   0.000001   0.000000   0.008876
+   2  C  1  S   -0.000003   0.000002   0.000003   0.000002   0.000370
 
-...
- TOTAL NUMBER OF BASIS SET SHELLS             =  101
+   ...
+   TOTAL NUMBER OF BASIS SET SHELLS             =  101
 
    */
 
-  protected void getMOHeader(String[] tokens, Hashtable[] mos, int nThisLine) throws Exception {
-    tokens = getTokens(readLine());
-    for (int i = 0; i < nThisLine; i++)
-      mos[i].put("energy", new Float(tokens[i]));
-    tokens = getTokens(readLine());
+  protected void getMOHeader(String[] tokens, Hashtable[] mos, int nThisLine)
+      throws Exception {
+    readLine();
+    switch (headerType) {
+    default:
+      //this means there are no energies, occupancies or symmetries
+      return;
+    case 1:
+      //this is the original functionality
+      tokens = getTokens();
+      for (int i = 0; i < nThisLine; i++) {
+        mos[i].put("energy", new Float(tokens[i]));
+      }
+      readLine();
+      break;
+    case 2:
+      //MCSCF NATURAL ORBITALS only have occupancy
+      boolean haveSymmetry = (line.length() > 0 || readLine() != null);
+      tokens = getTokens();
+      for (int i = 0; i < nThisLine; i++)
+        mos[i].put("occupancy", new Float(tokens[i].charAt(0) == '-' ? 2.0f
+            : parseFloat(tokens[i])));
+      readLine(); //blank or symmetry
+      if (!haveSymmetry)
+        return;
+      //MCSCF NATURAL ORBITALS (from GUGA) using CSF configurations have occupancy and symmetry
+    }
+    tokens = getTokens();
     for (int i = 0; i < nThisLine; i++)
       mos[i].put("symmetry", tokens[i]);
   }
+
 }

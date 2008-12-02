@@ -176,13 +176,16 @@ abstract public class GamessReader extends AtomSetCollectionReader {
  TOTAL NUMBER OF BASIS SET SHELLS             =  101
 
    */
-
   protected void readMolecularOrbitals() throws Exception {
     Hashtable[] mos = null;
     Vector[] data = null;
     Vector coeffLabels = null;
-    readLine(); // -------
+    //rSwitch changes the reading (r) of a blank line after
+    //the announcement of the localized orbitals
     int nThisLine = 0;
+    readLine();
+    if (line.indexOf("---") >= 0)
+      readLine();
     while (readLine() != null) {
       String[] tokens = getTokens();
       if (Logger.debugging) {
@@ -190,7 +193,10 @@ abstract public class GamessReader extends AtomSetCollectionReader {
       }
       if (line.indexOf("end") >= 0)
         break;
-      if (line.length() == 0 || line.indexOf("--") >= 0 || line.indexOf(".....") >=0) {
+        //not everyone has followed the conventions for ending a section of output
+      if (line.length() == 0 || line.indexOf("--") >= 0 || line.indexOf(".....") >=0 
+           || line.indexOf("CI EIGENVECTORS WILL BE LABELED") >=0 //this happens when doing MCSCF optimizations
+           || line.indexOf("   THIS LOCALIZATION HAD") >=0) { //this happens with certain localization methods
         for (int iMo = 0; iMo < nThisLine; iMo++) {
           float[] coefs = new float[data[iMo].size()];
           int iCoeff = 0;
@@ -241,7 +247,8 @@ abstract public class GamessReader extends AtomSetCollectionReader {
       line = "";
     }
     moData.put("mos", orbitals);
-    setMOData(moData);
+    moData.put("energyUnits", "a.u.");
+    setMOData(moData);    
   }
 
   abstract protected void getMOHeader(String[] tokens, Hashtable[] mos, int nThisLine) throws Exception;

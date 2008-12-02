@@ -3639,6 +3639,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (isScriptFile && writeInfo != null)
         writeImage(writeInfo);
     } else {
+      scriptStatus(strErrorMessage);
       statusManager.setScriptStatus("Jmol script terminated", 
           strErrorMessage, 1);
     }

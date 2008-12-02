@@ -1708,6 +1708,8 @@ public class Jmol extends JPanel {
         if (msWalltime > 0) {
           // termination -- button legacy
           scriptWindow.notifyScriptTermination();
+          if (data[2] != null)
+            scriptWindow.sendConsoleMessage((String)data[2]);            
         } else if (msWalltime < 0) {
           if (msWalltime == -2)
             scriptWindow.notifyScriptStart();

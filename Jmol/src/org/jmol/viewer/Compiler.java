@@ -385,6 +385,13 @@ class Compiler {
       } else {
         endOfLine = lookingAtEndOfLine();
       }
+      if (nTokens == 0) {
+        isNewSet = isSetBrace = false;
+        ptNewSetModifier = 1;
+        nSemiSkip = 0;
+        braceCount = 0;
+        bracketCount = 0;
+      }
       if (comment != null || endOfLine || lookingAtEndOfStatement()) {
         if (nTokens > 0 || comment != null) {
           if (nTokens == 0) {
@@ -433,13 +440,7 @@ class Compiler {
         break;
       }
       char ch;
-      if (nTokens == 0) {
-        isNewSet = isSetBrace = false;
-        ptNewSetModifier = 1;
-        nSemiSkip = 0;
-        braceCount = 0;
-        bracketCount = 0;
-      } else {
+      if (nTokens > 0) {
         if (nTokens == ptNewSetModifier) {
           ch = script.charAt(ichToken);
           if (tokCommand == Token.set
@@ -457,7 +458,10 @@ class Compiler {
                 bracketCount++;
               } else if (ch == '.') {
                 addTokenToPrefix(new Token(Token.dot, "."));
+              } else {
+                lastToken = Token.tokenMinus; // just to allow for {(....)}
               }
+
               continue;
             }
           }
@@ -606,10 +610,9 @@ class Compiler {
           addTokenToPrefix(new Token(Token.integer, val, intString));
           continue;
         }
-        if (lastToken.tok == Token.select
-            || lastToken.tok == Token.within
-            || lastToken.tok != Token.identifier 
-               && !tokenAttr(lastToken, Token.mathfunc)) {
+        if (lastToken.tok == Token.select || lastToken.tok == Token.within
+            || lastToken.tok != Token.identifier
+            && !tokenAttr(lastToken, Token.mathfunc)) {
           // here if:
           // select ({...})
           // within({...})
@@ -883,37 +886,41 @@ class Compiler {
         case Token.select:
         case Token.delete:
         case Token.define:
-          if (tok == Token.define) {
+          if (tokCommand == Token.define) {
             if (nTokens == 1) {
               // we are looking at the variable name
-              if (tok == Token.identifier)
-                break;
-              if (preDefining) {
-                if (!Token.tokAttr(tok, Token.predefinedset))
-                  return error("ERROR IN Token.java or JmolConstants.java -- the following term was used in JmolConstants.java but not listed as predefinedset in Token.java: "
-                      + ident);
-              } else if (Token.tokAttr(tok, Token.predefinedset)) {
-                Logger
-                    .warn("WARNING: predefined term '"
-                        + ident
-                        + "' has been redefined by the user until the next file load.");
-              } else if (!isCheckOnly && ident.length() > 1) {
-                Logger
-                    .warn("WARNING: redefining "
-                        + ident
-                        + "; was "
-                        + token
-                        + "not all commands may continue to be functional for the life of the applet!");
-                tok = token.tok = Token.identifier;
-                Token.addToken(ident, token);
+              if (tok != Token.identifier) {
+                if (preDefining) {
+                  if (!Token.tokAttr(tok, Token.predefinedset))
+                    return error("ERROR IN Token.java or JmolConstants.java -- the following term was used in JmolConstants.java but not listed as predefinedset in Token.java: "
+                        + ident);
+                } else if (Token.tokAttr(tok, Token.predefinedset)) {
+                  Logger
+                      .warn("WARNING: predefined term '"
+                          + ident
+                          + "' has been redefined by the user until the next file load.");
+                } else if (!isCheckOnly && ident.length() > 1) {
+                  Logger
+                      .warn("WARNING: redefining "
+                          + ident
+                          + "; was "
+                          + token
+                          + "not all commands may continue to be functional for the life of the applet!");
+                  tok = token.tok = Token.identifier;
+                  Token.addToken(ident, token);
+                }
               }
-              break;
-            }
-            if (nTokens == 2 && tok == Token.opEQ) {
-              // we are looking at @x =.... just insert a SET command
-              // and ignore the =. It's the same as set @x ... 
-              ltoken.insertElementAt(Token.tokenSet, 0);
+              addTokenToPrefix(token);
+              lastToken = Token.tokenComma;
               continue;
+            }
+            if (nTokens == 2) {
+              if (tok == Token.opEQ) {
+                // we are looking at @x =.... just insert a SET command
+                // and ignore the =. It's the same as set @x ... 
+                ltoken.insertElementAt(Token.tokenSet, 0);
+                continue;
+              }
             }
           }
           if (bracketCount == 0 && tok != Token.identifier

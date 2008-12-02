@@ -6958,6 +6958,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return "";
     if(modelSet != null)
       modelSet.releaseShape(currentShapeID);
+    repaintManager.releaseRenderer(currentShapeID);
     return JmolConstants.getShapeClassName(currentShapeID) + " " + currentShapeState;    
   }
 

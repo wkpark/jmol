@@ -72,9 +72,12 @@ public class FrameRenderer {
       Logger.checkTimer("render time");
   }
 
-  public void clear() {
-    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i)
-      renderers[i] = null;
+  public void clear(int iShape) {
+    if (iShape >= 0)
+      renderers[iShape] = null;
+    else
+      for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i)
+        renderers[i] = null;
   }
 
   ShapeRenderer getRenderer(int shapeID, Graphics3D g3d) {

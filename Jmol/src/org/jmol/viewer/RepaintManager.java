@@ -205,6 +205,10 @@ class RepaintManager {
   }
   */
 
+  void releaseRenderer(int shapeID) {
+    frameRenderer.clear(shapeID);
+  }
+  
   void render(Graphics3D g3d, ModelSet modelSet) {//, Rectangle rectClip
     frameRenderer.render(g3d, modelSet); //, rectClip
     Rectangle band = viewer.getRubberBandSelection();
@@ -236,7 +240,7 @@ class RepaintManager {
 
   void clear() {
     clearAnimation();
-    frameRenderer.clear();
+    frameRenderer.clear(-1);
   }
   
   void clearAnimation() {

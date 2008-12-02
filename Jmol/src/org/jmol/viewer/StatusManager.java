@@ -255,14 +255,22 @@ class StatusManager {
   synchronized void setScriptStatus(String strStatus, String statusMessage, int msWalltime) {
     if (strStatus == null)
       return;
+    boolean isScriptCompletion = (strStatus == Eval.SCRIPT_COMPLETED);
+    
+    // --------------------------
+    // This is for the older status logging business, which isn't recommended.
+    
+    // note: this next bit is not reliable, because translations can change the text.
     boolean isError = strStatus.indexOf("ERROR:") >= 0;
     setStatusChanged((isError ? "scriptError" : "scriptStatus"), 0, strStatus,
         false);
-    boolean isScriptCompletion = (strStatus == Eval.SCRIPT_COMPLETED);
     if (isError || isScriptCompletion)
       setStatusChanged("scriptTerminated", 1, "Jmol script terminated"
           + (isError ? " unsuccessfully: " + strStatus : " successfully"),
           false);
+    
+    // ---------------------------
+    
    if (jmolStatusListener != null) {
       if (isScriptCompletion && viewer.getMessageStyleChime()
           && viewer.getDebugScript()) {

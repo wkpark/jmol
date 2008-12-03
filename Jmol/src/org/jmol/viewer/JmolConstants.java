@@ -103,6 +103,7 @@ final public class JmolConstants {
   private final static String[] callbackNames = {
     "animFrameCallback",
     "echoCallback",
+    "errorCallback",
     "evalCallback",
     "hoverCallback", 
     "loadStructCallback", 

@@ -239,7 +239,7 @@ class StatusManager {
             .notifyEnabled(JmolConstants.CALLBACK_ERROR))
       return;
     jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_ERROR,
-        new Object[] { errType, errMsg, viewer.getShapeErrorState() });
+        new Object[] {null, errType, errMsg, viewer.getShapeErrorState() });
   }
   
   synchronized void notifyMinimizationStatus(String sJmol) {

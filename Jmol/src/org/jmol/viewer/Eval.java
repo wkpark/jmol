@@ -275,10 +275,10 @@ class Eval {
     this.historyDisabled = historyDisabled;
     try {
       try {
-      instructionDispatchLoop(listCommands);
-      String script = viewer.getInterruptScript();
-      if (script != "")
-        runScript(script, null);
+        instructionDispatchLoop(listCommands);
+        String script = viewer.getInterruptScript();
+        if (script != "")
+          runScript(script, null);
       } catch (Error er) {
         viewer.handleError(er, false);
         setErrorMessage("" + er + " " + viewer.getShapeErrorState());
@@ -287,7 +287,9 @@ class Eval {
     } catch (ScriptException e) {
       setErrorMessage(e.toString());
       scriptStatus(errorMessage);
-      viewer.notifyError("ScriptException", errorMessage);
+      viewer.notifyError(
+          (errorMessage.indexOf("java.lang.OutOfMemoryError") >= 0 ? "Error"
+              : "ScriptException"), errorMessage);
     }
     timeEndExecution = System.currentTimeMillis();
     fileOpenCheck = tempOpen;

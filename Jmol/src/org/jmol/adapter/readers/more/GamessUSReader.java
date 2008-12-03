@@ -31,6 +31,7 @@
 package org.jmol.adapter.readers.more;
 
 import org.jmol.adapter.smarter.*;
+import org.jmol.util.Logger;
 
 import java.io.BufferedReader;
 import java.util.Hashtable;
@@ -46,55 +47,64 @@ public class GamessUSReader extends GamessReader {
       readLine();
       boolean iHaveAtoms = false;
       while (line != null) {
-        if (line.indexOf("COORDINATES (BOHR)") >= 0 || line.indexOf("COORDINATES OF ALL ATOMS ARE (ANGS)") >= 0) {
-          if (!doGetModel(++modelNumber)) {
-            if (isLastModel(modelNumber) && iHaveAtoms)
-              break;
-            iHaveAtoms = false;
+        boolean isBohr;
+        if ((isBohr = line.indexOf("COORDINATES (BOHR)") >= 0)
+            || line.indexOf("COORDINATES OF ALL ATOMS ARE (ANGS)") >= 0) {
+          if (doGetModel(++modelNumber)) {
+            if (isBohr)
+              readAtomsInBohrCoordinates();
+            else
+              readAtomsInAngstromCoordinates();
+            iHaveAtoms = true;
             readLine();
             continue;
           }
-          if (line.indexOf("COORDINATES (BOHR)") >= 0)
-            readAtomsInBohrCoordinates();
-          else
-            readAtomsInAngstromCoordinates();
-          iHaveAtoms = true;
-        } else if (iHaveAtoms && line.indexOf("FREQUENCIES IN CM") >= 0) {
-          readFrequencies();
-        } else if (iHaveAtoms && line.indexOf("ATOMIC BASIS SET") >= 0) {
-          readGaussianBasis("SHELL TYPE", "TOTAL");
-          continue;
-        } else if (iHaveAtoms
-            && line.indexOf("SUMMARY OF THE EFFECTIVE FRAGMENT") >= 0) {
-          // We have EFP and we're not afraid to use it!!
-          //it would be nice is this information was closer to the ab initio molecule
-          readEFPInBohrCoordinates();
-          continue;
-        } else if (iHaveAtoms
-            && (line.indexOf("  EIGENVECTORS") >= 0
-                || line.indexOf("  INITIAL GUESS ORBITALS") >= 0 
-                || line.indexOf("  MCSCF OPTIMIZED ORBITALS") >= 0
-                || line.indexOf("  MCSCF NATURAL ORBITALS") >= 0
-                || line.indexOf("  MOLECULAR ORBITALS") >= 0 && 
-                line.indexOf("  MOLECULAR ORBITALS LOCALIZED BY THE POPULATION METHOD") < 0)) {
-            headerType = 1; // energies and possibly symmetries
-            readMolecularOrbitals(); //1,1
-            continue;
-        } else if (line.indexOf("EDMISTON-RUEDENBERG ENERGY LOCALIZED ORBITALS") >= 0
-            || line.indexOf("  THE PIPEK-MEZEY POPULATION LOCALIZED ORBITALS ARE") >= 0) {
-          headerType = 0;  // no header
-          readMolecularOrbitals(); //0,3
-          continue;
+          if (isLastModel(modelNumber) && iHaveAtoms)
+            break;
+          iHaveAtoms = false;
         }
-        else if (line.indexOf("  NATURAL ORBITALS IN ATOMIC ORBITAL BASIS") >= 0) {
-          //the for mat of the next orbitals can change depending on the
-          //cistep used.  This works for ALDET and GUGA
-          
-          // BH to AD: but the GUGA file delivered has only energies?
-          
-          headerType = 2; // occupancies and possibly symmetries
-          readMolecularOrbitals(); //1,2
-          continue;
+        if (iHaveAtoms) {
+          if (line.indexOf("FREQUENCIES IN CM") >= 0) {
+            readFrequencies();
+          } else if (line.indexOf("ATOMIC BASIS SET") >= 0) {
+            readGaussianBasis("SHELL TYPE", "TOTAL");
+            continue;
+          } else if (line.indexOf("SUMMARY OF THE EFFECTIVE FRAGMENT") >= 0) {
+            // We have EFP and we're not afraid to use it!!
+            //it would be nice is this information was closer to the ab initio molecule
+            readEFPInBohrCoordinates();
+            continue;
+          } else if (line.indexOf("  EIGENVECTORS") >= 0
+              || line.indexOf("  INITIAL GUESS ORBITALS") >= 0
+              || line.indexOf("  MCSCF OPTIMIZED ORBITALS") >= 0
+              || line.indexOf("  MCSCF NATURAL ORBITALS") >= 0
+              || line.indexOf("  MOLECULAR ORBITALS") >= 0
+              && line.indexOf("  MOLECULAR ORBITALS LOCALIZED BY THE POPULATION METHOD") < 0) {
+            if (filterMO()) {
+              headerType = 1; // energies and possibly symmetries
+              readMolecularOrbitals(); //1,1
+              continue;
+            }
+          } else if (line
+              .indexOf("EDMISTON-RUEDENBERG ENERGY LOCALIZED ORBITALS") >= 0
+              || line
+                  .indexOf("  THE PIPEK-MEZEY POPULATION LOCALIZED ORBITALS ARE") >= 0) {
+            if (filterMO()) {
+              headerType = 0; // no header
+              readMolecularOrbitals(); //0,3
+              continue;
+            }
+          } else if (line.indexOf("  NATURAL ORBITALS IN ATOMIC ORBITAL BASIS") >= 0) {
+            //the for mat of the next orbitals can change depending on the
+            //cistep used.  This works for ALDET and GUGA
+
+            // BH to AD: but the GUGA file delivered has only energies?
+            if (filterMO()) {
+              headerType = 2; // occupancies and possibly symmetries
+              readMolecularOrbitals(); //1,2
+              continue;
+            }
+          }
         }
         readLine();
       }
@@ -104,6 +114,33 @@ public class GamessUSReader extends GamessReader {
     return atomSetCollection;
   }
 
+  private String[] filterTokens;
+  private boolean filterIsNot; 
+  private boolean filterMO() {
+    boolean isOK = true;
+    int nOK = 0;
+    if (filter != null) {
+      line = line.toLowerCase();
+      if (filterTokens == null) {
+        filterIsNot = (filter.indexOf("!") >= 0);
+        filterTokens = getTokens(filter.replace('!', ' ').replace(',', ' ')
+            .replace(';', ' ').toLowerCase());
+      }
+      for (int i = 0; i < filterTokens.length; i++)
+        if (line.indexOf(filterTokens[i]) >= 0) {
+          if (!filterIsNot) {
+            nOK = filterTokens.length;
+            break;
+          }
+        } else if (filterIsNot) {
+          nOK++;
+        }
+      isOK = (nOK == filterTokens.length);
+    }
+    Logger.info("filter MOs: " + isOK + " " + line);
+    return isOK;
+  }
+  
   /*
 
    for H2ORHF, the Z entries are nuclear positions

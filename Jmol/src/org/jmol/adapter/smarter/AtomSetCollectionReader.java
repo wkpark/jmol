@@ -301,7 +301,7 @@ public int[] next = new int[1];
       bsFilter = new BitSet();
       htParams.put("bsFilter", bsFilter);
       filter = (";" + filter + ";").replace(',', ';');
-      Logger.info("filtering atoms using " + filter);
+      Logger.info("filtering with " + filter);
     }
     // ptFile < 0 indicates just one file being read
     // ptFile >= 0 indicates multiple files are being loaded
@@ -516,10 +516,12 @@ public int[] next = new int[1];
   }
 
   public boolean filterAtom(Atom atom) {
+    //cif, pdb readers
     return filterAtom(atom, atomSetCollection.atomCount);
   }
 
   public boolean filterAtom(Atom atom, int iAtom) {
+    //mdtop, cif, pdb
     String code;
     boolean isOK = false;
     while (true) {

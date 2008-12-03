@@ -810,6 +810,7 @@ public class Jmol implements WrappedApplet {
       switch (type) {
       case JmolConstants.CALLBACK_ANIMFRAME:
       case JmolConstants.CALLBACK_ECHO:
+      case JmolConstants.CALLBACK_ERROR:
       case JmolConstants.CALLBACK_EVAL:
       case JmolConstants.CALLBACK_LOADSTRUCT:
       case JmolConstants.CALLBACK_MEASURE:
@@ -883,6 +884,7 @@ public class Jmol implements WrappedApplet {
         break;
       case JmolConstants.CALLBACK_EVAL:
       case JmolConstants.CALLBACK_HOVER:
+      case JmolConstants.CALLBACK_ERROR:
         break;
       case JmolConstants.CALLBACK_LOADSTRUCT:
         String errorMsg = (String) data[4];

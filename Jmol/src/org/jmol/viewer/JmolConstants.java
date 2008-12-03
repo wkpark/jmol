@@ -87,17 +87,18 @@ final public class JmolConstants {
 
   public final static int CALLBACK_ANIMFRAME = 0;
   public final static int CALLBACK_ECHO = 1;
-  public final static int CALLBACK_EVAL = 2;
-  public final static int CALLBACK_HOVER = 3;
-  public final static int CALLBACK_LOADSTRUCT = 4;
-  public final static int CALLBACK_MEASURE = 5;
-  public final static int CALLBACK_MESSAGE = 6;
-  public final static int CALLBACK_MINIMIZATION = 7;
-  public final static int CALLBACK_PICK = 8;
-  public final static int CALLBACK_RESIZE = 9;
-  public final static int CALLBACK_SCRIPT = 10;
-  public final static int CALLBACK_SYNC = 11;
-  public final static int CALLBACK_COUNT = 12;
+  public final static int CALLBACK_ERROR = 2;
+  public final static int CALLBACK_EVAL = 3;
+  public final static int CALLBACK_HOVER = 4;
+  public final static int CALLBACK_LOADSTRUCT = 5;
+  public final static int CALLBACK_MEASURE = 6;
+  public final static int CALLBACK_MESSAGE = 7;
+  public final static int CALLBACK_MINIMIZATION = 8;
+  public final static int CALLBACK_PICK = 9;
+  public final static int CALLBACK_RESIZE = 10;
+  public final static int CALLBACK_SCRIPT = 11;
+  public final static int CALLBACK_SYNC = 12;
+  public final static int CALLBACK_COUNT = 13;
   
   private final static String[] callbackNames = {
     "animFrameCallback",

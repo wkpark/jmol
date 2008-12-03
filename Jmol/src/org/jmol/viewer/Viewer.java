@@ -6533,9 +6533,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       quality = Integer.parseInt(squality);
       createImage(fileName, type, null, quality, width, height);
     } catch (Exception e) {
-      Logger.error(setErrorMessage("error processing write request: " + type_name + " "+ e.getMessage()));
+      Logger.error(setErrorMessage("error processing write request: " + type_name + " "+ e));
     } catch (Error er) {
-      Logger.error(setErrorMessage("error processing write request: " + type_name + " "+ er.getMessage()));
+      Logger.error(setErrorMessage("error processing write request: " + type_name + " "+ er));
     }
   }
 
@@ -6966,11 +6966,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return JmolConstants.getShapeClassName(currentShapeID) + " " + currentShapeState;    
   }
 
+  void notifyError(String errType, String errMsg) {
+    statusManager.notifyError(errType, errMsg);
+  }
   public void handleError(Error er, boolean doClear) {
     // almost certainly out of memory; could be missing Jar file
-    if (doClear)
-      zap("" + er); // get some breathing room
-    Logger.error("viewer handling error condition: " + er);
+    try {
+      if (doClear)
+        zap("" + er); // get some breathing room
+      Logger.error("viewer handling error condition: " + er);
+      notifyError("Error", "doClear=" + doClear + "; " + er);
+    } catch (Throwable e1) {
+      try {
+        Logger.error("Could not notify error " + er + ": due to " + e1);
+      } catch (Throwable er2) {
+        // tough luck.
+      }
+    }
   }
   
 }

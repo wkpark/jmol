@@ -233,6 +233,15 @@ class StatusManager {
       jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_MEASURE, new Object[] { null, strMeasure,  new Integer(count), status });
   }
   
+  synchronized void notifyError(String errType, String errMsg) {
+    if (jmolStatusListener == null
+        || !jmolStatusListener
+            .notifyEnabled(JmolConstants.CALLBACK_ERROR))
+      return;
+    jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_ERROR,
+        new Object[] { errType, errMsg, viewer.getShapeErrorState() });
+  }
+  
   synchronized void notifyMinimizationStatus(String sJmol) {
     if (jmolStatusListener == null
         || !jmolStatusListener

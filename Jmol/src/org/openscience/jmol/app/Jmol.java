@@ -1658,11 +1658,12 @@ public class Jmol extends JPanel {
       case JmolConstants.CALLBACK_PICK:
       case JmolConstants.CALLBACK_SCRIPT:
         return true;
+      case JmolConstants.CALLBACK_ERROR:
       case JmolConstants.CALLBACK_HOVER:
       case JmolConstants.CALLBACK_MINIMIZATION:
       case JmolConstants.CALLBACK_RESIZE:
       case JmolConstants.CALLBACK_SYNC:
-      //applet only
+      //applet only (but you could change this for your listener)
       }
       return false;
     }

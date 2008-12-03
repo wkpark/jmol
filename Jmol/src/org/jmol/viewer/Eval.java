@@ -287,6 +287,7 @@ class Eval {
     } catch (ScriptException e) {
       setErrorMessage(e.toString());
       scriptStatus(errorMessage);
+      viewer.notifyError("ScriptException", errorMessage);
     }
     timeEndExecution = System.currentTimeMillis();
     fileOpenCheck = tempOpen;

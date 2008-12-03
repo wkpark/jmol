@@ -102,7 +102,7 @@ public class MolecularOrbital extends Isosurface {
     }
 
     if ("scale" == propertyName) {
-      thisModel.put("moScale", moScale);
+      thisModel.put("moScale", value);
       return;
     }
 

@@ -74,21 +74,25 @@ public class GamessUSReader extends GamessReader {
             && (line.indexOf("  EIGENVECTORS") >= 0
                 || line.indexOf("  INITIAL GUESS ORBITALS") >= 0 
                 || line.indexOf("  MCSCF OPTIMIZED ORBITALS") >= 0
+                || line.indexOf("  MCSCF NATURAL ORBITALS") >= 0
                 || line.indexOf("  MOLECULAR ORBITALS") >= 0 && 
                 line.indexOf("  MOLECULAR ORBITALS LOCALIZED BY THE POPULATION METHOD") < 0)) {
-            headerType = 1; // energies and symmetries
+            headerType = 1; // energies and possibly symmetries
             readMolecularOrbitals(); //1,1
             continue;
         } else if (line.indexOf("EDMISTON-RUEDENBERG ENERGY LOCALIZED ORBITALS") >= 0
             || line.indexOf("  THE PIPEK-MEZEY POPULATION LOCALIZED ORBITALS ARE") >= 0) {
           headerType = 0;  // no header
+          readMolecularOrbitals(); //0,3
           continue;
         }
-        else if (line.indexOf("  NATURAL ORBITALS IN ATOMIC ORBITAL BASIS") >= 0
-            || line.indexOf("   MCSCF NATURAL ORBITALS") >= 0) {
-          //the format of the next orbitals can change depending on the
+        else if (line.indexOf("  NATURAL ORBITALS IN ATOMIC ORBITAL BASIS") >= 0) {
+          //the for mat of the next orbitals can change depending on the
           //cistep used.  This works for ALDET and GUGA
-          headerType = 2; // occupancies and
+          
+          // BH to AD: but the GUGA file delivered has only energies?
+          
+          headerType = 2; // occupancies and possibly symmetries
           readMolecularOrbitals(); //1,2
           continue;
         }
@@ -358,6 +362,8 @@ public class GamessUSReader extends GamessReader {
     case 1:
       //this is the original functionality
       tokens = getTokens();
+      if (tokens.length == 0)
+        tokens = getTokens(readLine());
       for (int i = 0; i < nThisLine; i++) {
         mos[i].put("energy", new Float(tokens[i]));
       }
@@ -373,11 +379,13 @@ public class GamessUSReader extends GamessReader {
       readLine(); //blank or symmetry
       if (!haveSymmetry)
         return;
-      //MCSCF NATURAL ORBITALS (from GUGA) using CSF configurations have occupancy and symmetry
+    //MCSCF NATURAL ORBITALS (from GUGA) using CSF configurations have occupancy and symmetry
     }
-    tokens = getTokens();
-    for (int i = 0; i < nThisLine; i++)
-      mos[i].put("symmetry", tokens[i]);
+    if (line.length() > 0) {
+      tokens = getTokens();
+      for (int i = 0; i < nThisLine; i++)
+        mos[i].put("symmetry", tokens[i]);
+    }
   }
 
 }

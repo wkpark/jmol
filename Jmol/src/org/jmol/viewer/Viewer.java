@@ -3437,11 +3437,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @return base64-encoded or binary version of the image
    */
   public Object getJpeg(int quality, boolean asString) {
+    byte[] jpeg = null;
     Image eImage = getScreenImage();
-    ByteArrayOutputStream os = new ByteArrayOutputStream();
-    JpegEncoder jc = new JpegEncoder(eImage, quality, os);
-    jc.Compress();
-    byte[] jpeg = os.toByteArray();
+    if (eImage != null) {
+      ByteArrayOutputStream os = new ByteArrayOutputStream();
+      JpegEncoder jc = new JpegEncoder(eImage, quality, os);
+      jc.Compress();
+      jpeg = os.toByteArray();
+    }
     releaseScreenImage();
     if (asString)
       return Base64.getBase64(jpeg).toString();

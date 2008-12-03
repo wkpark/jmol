@@ -23,19 +23,19 @@ public class MoldenReader extends MopacDataReader {
   protected AtomSetCollection freqAtomSet = null;
   
 	public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
-		this.reader = reader;
-		atomSetCollection = new AtomSetCollection("molden");
-		modelNumber = 0;
-		try {
-			readLine();
-			while (line != null) {
-        if (line.startsWith("[Atoms]") ) {
+    this.reader = reader;
+    atomSetCollection = new AtomSetCollection("molden");
+    modelNumber = 0;
+    try {
+      readLine();
+      while (line != null) {
+        if (line.indexOf("[Atoms]") >= 0 || line.indexOf("[ATOMS]") >= 0) {
           readAtoms();
           continue;
-        } else if (line.equals("[GTO]")) {
+        } else if (line.indexOf("[GTO]") >= 0) {
           readGaussianBasis();
           continue;
-        } else if (line.equals("[MO]")) {
+        } else if (line.indexOf("[MO]") >= 0) {
           readMolecularOrbitals();
           continue;
         } else if (line.indexOf("[FREQ]") >= 0) {
@@ -43,12 +43,12 @@ public class MoldenReader extends MopacDataReader {
           continue;
         }
         readLine();
-			}			
-		} catch (Exception e) {
-		 	return setError(e);
-		}
-		return atomSetCollection;
-	}
+      }
+    } catch (Exception e) {
+      return setError(e);
+    }
+    return atomSetCollection;
+  }
   
   void readAtoms() throws Exception {
     /* 
@@ -61,16 +61,17 @@ public class MoldenReader extends MopacDataReader {
      H     6    1        -0.4338802400       -0.3282176500        0.9384614500
      */
     
-    String coordUnit = line.substring(7).trim();
+    String coordUnit = getTokens()[1];
     
     int nPrevAtom = 0, nCurAtom = 0;
    
-    if ( ! (coordUnit.equals("Angs") || coordUnit.equals("AU"))) {
+    boolean isAU = (coordUnit.indexOf("Angs") < 0); 
+    if (isAU && coordUnit.indexOf("AU") < 0) {
       throw new Exception("invalid coordinate unit " + coordUnit + " in [Atoms]"); 
     }
     
     readLine();
-    while (line != null && line.charAt(0) != '[') {    
+    while (line != null && line.indexOf('[') < 0) {    
       Atom atom = atomSetCollection.addNewAtom();
       String [] tokens = getTokens();
       atom.atomName = tokens[0];
@@ -86,7 +87,7 @@ public class MoldenReader extends MopacDataReader {
       readLine();
     }
     
-    if (coordUnit.equals("AU"))
+    if (isAU)
       for (int i = atomSetCollection.getAtomCount(); --i >= 0;)
         atomSetCollection.getAtom(i).scale(ANGSTROMS_PER_BOHR);
   }

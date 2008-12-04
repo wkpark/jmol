@@ -2550,7 +2550,8 @@ class Compiler {
   }
   
   static {
-    setErrorMessages();
+    if (errors == null)
+      setErrorMessages();
   }
   
   private boolean commandExpected() {

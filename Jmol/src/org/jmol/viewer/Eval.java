@@ -11461,7 +11461,8 @@ class Eval {
   }
 
   static {
-    setErrorMessages();
+    if (errors == null)
+      setErrorMessages();
   }
 
   static final String SCRIPT_COMPLETED = "Script completed";

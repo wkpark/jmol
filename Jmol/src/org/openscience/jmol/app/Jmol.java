@@ -415,9 +415,7 @@ public class Jmol extends JPanel {
     options.addOption(OptionBuilder.create("s"));
 
     OptionBuilder.withLongOpt("jmolscript");
-    OptionBuilder.withDescription(GT._("Jmol script to execute"));
-    OptionBuilder.withValueSeparator('=');
-    OptionBuilder.hasArg();
+    OptionBuilder.withDescription(GT._("quoted argument is Jmol script to execute"));
     options.addOption(OptionBuilder.create("j"));
 
     OptionBuilder.withLongOpt("menu");
@@ -497,7 +495,7 @@ public class Jmol extends JPanel {
     }
 
     args = line.getArgs();
-    if (args.length > 0) {
+    if (args.length > 0 && !line.hasOption("j")) {
       modelFilename = args[0];
     }
 
@@ -555,7 +553,7 @@ public class Jmol extends JPanel {
     
     if (line.hasOption("j")) {
       commandOptions += "-s";
-      script = line.getOptionValue("j");
+      script = (args.length > 0 ? args[0] : GT._("{0} quoted argument missing", "echo -j"));
     }
 
     //menu file

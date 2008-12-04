@@ -37,14 +37,9 @@ class Console implements ActionListener, WindowListener {
   private final JTextArea input = new ControlEnterTextArea();
   private final JTextPane output = new JTextPane();
   private final Document outputDocument = output.getDocument();
-  private final JFrame jf = new JFrame(GT._("Jmol Script Console"));
-
-  private final JButton runButton = new JButton(GT._("Execute"));
-  private final JButton clearOutButton = new JButton(GT._("Clear Output"));
-  private final JButton clearInButton = new JButton(GT._("Clear Input"));
-  private final JButton historyButton = new JButton(GT._("History"));
-  private final JButton stateButton = new JButton(GT._("State"));
-  private final JButton loadButton = new JButton(GT._("Load"));
+  
+  private JFrame jf;
+  private JButton runButton, clearOutButton, clearInButton, historyButton, stateButton, loadButton;
 
   private final SimpleAttributeSet attributesCommand = new SimpleAttributeSet();
 
@@ -68,10 +63,22 @@ class Console implements ActionListener, WindowListener {
   }
 
   Console(Component componentParent, JmolViewer viewer, Jvm12 jvm12) {
+    //Logger.debug("Console constructor");
+    //System.out.println("Console " + this + " constructed");
+
     this.viewer = viewer;
     this.jvm12 = jvm12;
-    Logger.debug("Console constructor");
-    //System.out.println("Console " + this + " constructed");
+    boolean doTranslate = GT.getDoTranslate();
+    GT.setDoTranslate(true);
+
+    jf = new JFrame(GT._("Jmol Script Console"));
+    jf.setSize(600, 400);
+    runButton = new JButton(GT._("Execute"));
+    clearOutButton = new JButton(GT._("Clear Output"));
+    clearInButton = new JButton(GT._("Clear Input"));
+    historyButton = new JButton(GT._("History"));
+    stateButton = new JButton(GT._("State"));
+    loadButton = new JButton(GT._("Load"));
 
     setupInput();
     setupOutput();
@@ -120,8 +127,8 @@ class Console implements ActionListener, WindowListener {
     stateButton.addActionListener(this);
     loadButton.addActionListener(this);
 
-    jf.setSize(550, 400);
     jf.addWindowListener(this);
+    GT.setDoTranslate(doTranslate);
   }
 
   protected JMenuBar createMenubar() {

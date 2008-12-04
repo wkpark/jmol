@@ -4284,7 +4284,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         //fr cs en none, etc.
         statusManager.setCallbackFunction("language", value);
         value = GT.getLanguage();
-        Compiler.setErrorMessages();
         Eval.setErrorMessages();
         break;
       }

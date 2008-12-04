@@ -2549,11 +2549,6 @@ class Compiler {
     };
   }
   
-  static {
-    if (errors == null)
-      setErrorMessages();
-  }
-  
   private boolean commandExpected() {
     ichToken = ichCurrentCommand;
     return error(errors[ERROR_commandExpected]);

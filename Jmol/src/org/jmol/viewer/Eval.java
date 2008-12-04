@@ -11412,7 +11412,8 @@ class Eval {
 
   
   static String[] errors;
-  static void setErrorMessages() {
+  static synchronized void setErrorMessages() {
+    Compiler.setErrorMessages();
     errors = new String[] { 
         GT._("x y z axis expected"), // 0
         GT._("bad argument count"), // 1

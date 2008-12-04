@@ -117,6 +117,7 @@ abstract public class JmolPopup {
           : (JmolPopup) new JmolPopupSwing(viewer, asPopup));
     } catch (Exception e) {
       Logger.error("JmolPopup not loaded");
+      GT.setDoTranslate(doTranslate);
       return null;
     }
     // long runTime = System.currentTimeMillis() - beginTime;

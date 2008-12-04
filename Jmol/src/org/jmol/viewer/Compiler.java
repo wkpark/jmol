@@ -40,7 +40,7 @@ import javax.vecmath.Point3f;
 class Compiler {
 
   Hashtable localFunctions = new Hashtable();
-  static Hashtable globalFunctions = new Hashtable();
+  final static Hashtable globalFunctions = new Hashtable();
   boolean isFunction(String name) {
     return (name.indexOf("_") == 0 ? localFunctions : globalFunctions).containsKey(name);
   }
@@ -2522,30 +2522,37 @@ class Compiler {
   private final static int ERROR_unrecognizedParameter  = 18;
   private final static int ERROR_unrecognizedToken  = 19;
 
-
-  private final static String[] errors = {
-    GT._("bad argument count"), // 0
-    GT._("invalid context for {0}"), // 1
-    GT._("command expected"), // 2
-    GT._("{ number number number } expected"), // 3
-    GT._("unexpected end of script command"), // 4
-    GT._("end of expression expected"), // 5
-    GT._("identifier or residue specification expected"), // 6
-    GT._("invalid atom specification"), // 7
-    GT._("invalid chain specification"), // 8
-    GT._("invalid expression token: {0}"), // 9
-    GT._("invalid model specification"), // 10
-    GT._("missing END for {0}"), // 11
-    GT._("number expected"), // 12
-    GT._("number or variable name expected"), // 13
-    GT._("residue specification (ALA, AL?, A*) expected"), // 14
-    GT._("{0} expected"), // 15
-    GT._("{0} unexpected"), // 16
-    GT._("unrecognized expression token: {0}"), // 17
-    GT._("unrecognized {0} parameter"), // 18
-    GT._("unrecognized token: {0}"), // 19
-  };
-
+  private static String[] errors;
+  
+  static void setErrorMessages() {
+    errors = new String[] {
+      GT._("bad argument count"), // 0
+      GT._("invalid context for {0}"), // 1
+      GT._("command expected"), // 2
+      GT._("{ number number number } expected"), // 3
+      GT._("unexpected end of script command"), // 4
+      GT._("end of expression expected"), // 5
+      GT._("identifier or residue specification expected"), // 6
+      GT._("invalid atom specification"), // 7
+      GT._("invalid chain specification"), // 8
+      GT._("invalid expression token: {0}"), // 9
+      GT._("invalid model specification"), // 10
+      GT._("missing END for {0}"), // 11
+      GT._("number expected"), // 12
+      GT._("number or variable name expected"), // 13
+      GT._("residue specification (ALA, AL?, A*) expected"), // 14
+      GT._("{0} expected"), // 15
+      GT._("{0} unexpected"), // 16
+      GT._("unrecognized expression token: {0}"), // 17
+      GT._("unrecognized {0} parameter"), // 18
+      GT._("unrecognized token: {0}"), // 19
+    };
+  }
+  
+  static {
+    setErrorMessages();
+  }
+  
   private boolean commandExpected() {
     ichToken = ichCurrentCommand;
     return error(errors[ERROR_commandExpected]);

@@ -11410,50 +11410,59 @@ class Eval {
   final static int ERROR_unrecognizedShowParameter = 41;
   final static int ERROR_what = 42;
 
-  final static String[] errors = { GT._("x y z axis expected"), // 0
-      GT._("bad argument count"), // 1
-      GT._("Miller indices cannot all be zero."), // 2
-      GT._("bad [R,G,B] color"), // 3
-      GT._("boolean expected"), // 4
-      GT._("boolean or number expected"), // 5
-      GT._("boolean, number, or {0} expected"), // 6
-      GT._("color expected"), // 7
-      GT._("a color or palette name (Jmol, Rasmol) is required"), // 8
-      GT._(" {x y z} or $name or (atom expression) required"), // 9
-      GT._("draw object not defined"), // 10
-      GT._("unexpected end of script command"), // 11
-      GT._("valid (atom expression) expected"), // 12
-      GT._("(atom expression) or integer expected"), // 13
-      GT._("filename expected"), // 14
-      GT._("file not found"), // 15
-      GT._("incompatible arguments"), // 16
-      GT._("insufficient arguments"), // 17
-      GT._("integer expected"), // 18
-      GT._("integer out of range ({0} - {1})"), // 19
-      GT._("invalid argument"), // 20
-      GT._("invalid parameter order"), // 21
-      GT._("keyword expected"), // 22
-      GT._("{0} require that only one model be displayed"), // 23
-      GT._("No unit cell"), // 24
-      GT._("number expected"), // 25
-      GT._("number must be ({0} or {1})"), // 26
-      GT._("decimal number out of range ({0} - {1})"), // 27
-      GT._("object name expected after '$'"), // 28
-      GT._("property name expected"), // 29
-      GT._("space group {0} was not found."), // 30
-      GT._("quoted string expected"), // 31
-      GT._("quoted string or identifier expected"), // 32
-      GT._("too many script levels"), // 33
-      GT._("unrecognized atom property"), // 34
-      GT._("unrecognized bond property"), // 35
-      GT._("unrecognized command"), // 36
-      GT._("runtime unrecognized expression"), // 37
-      GT._("unrecognized object"), // 38
-      GT._("unrecognized {0} parameter"), // 39
-      GT._("unrecognized {0} parameter in Jmol state script (set anyway)"), // 40
-      GT._("unrecognized SHOW parameter --  use {0}"), // 41
-      "{0}", // 42
-  };
+  
+  static String[] errors;
+  static void setErrorMessages() {
+    errors = new String[] { 
+        GT._("x y z axis expected"), // 0
+        GT._("bad argument count"), // 1
+        GT._("Miller indices cannot all be zero."), // 2
+        GT._("bad [R,G,B] color"), // 3
+        GT._("boolean expected"), // 4
+        GT._("boolean or number expected"), // 5
+        GT._("boolean, number, or {0} expected"), // 6
+        GT._("color expected"), // 7
+        GT._("a color or palette name (Jmol, Rasmol) is required"), // 8
+        GT._(" {x y z} or $name or (atom expression) required"), // 9
+        GT._("draw object not defined"), // 10
+        GT._("unexpected end of script command"), // 11
+        GT._("valid (atom expression) expected"), // 12
+        GT._("(atom expression) or integer expected"), // 13
+        GT._("filename expected"), // 14
+        GT._("file not found"), // 15
+        GT._("incompatible arguments"), // 16
+        GT._("insufficient arguments"), // 17
+        GT._("integer expected"), // 18
+        GT._("integer out of range ({0} - {1})"), // 19
+        GT._("invalid argument"), // 20
+        GT._("invalid parameter order"), // 21
+        GT._("keyword expected"), // 22
+        GT._("{0} require that only one model be displayed"), // 23
+        GT._("No unit cell"), // 24
+        GT._("number expected"), // 25
+        GT._("number must be ({0} or {1})"), // 26
+        GT._("decimal number out of range ({0} - {1})"), // 27
+        GT._("object name expected after '$'"), // 28
+        GT._("property name expected"), // 29
+        GT._("space group {0} was not found."), // 30
+        GT._("quoted string expected"), // 31
+        GT._("quoted string or identifier expected"), // 32
+        GT._("too many script levels"), // 33
+        GT._("unrecognized atom property"), // 34
+        GT._("unrecognized bond property"), // 35
+        GT._("unrecognized command"), // 36
+        GT._("runtime unrecognized expression"), // 37
+        GT._("unrecognized object"), // 38
+        GT._("unrecognized {0} parameter"), // 39
+        GT._("unrecognized {0} parameter in Jmol state script (set anyway)"), // 40
+        GT._("unrecognized SHOW parameter --  use {0}"), // 41
+        "{0}", // 42
+    };
+  }
+
+  static {
+    setErrorMessages();
+  }
 
   static final String SCRIPT_COMPLETED = "Script completed";
 

@@ -361,7 +361,7 @@ class PropertyManager {
     case PROP_POINTGROUP_INFO:
       return viewer.getPointGroupInfo(myParam);
     case PROP_ERROR_MESSAGE:
-      return viewer.getErrorMessage();
+      return viewer.getErrorMessageUntranslated();
     case PROP_TRANSFORM_INFO:
       return viewer.getMatrixRotate();
     case PROP_DATA_INFO:

@@ -68,6 +68,7 @@ class Compiler {
   private Token[][] aatokenCompiled;
 
   private String errorMessage;
+  private String errorMessageUntranslated;
   private String errorLine;
   private boolean preDefining;
   private boolean isSilent;
@@ -343,7 +344,9 @@ class Compiler {
     lineNumbers = null;
     lineIndices = null;
     aatokenCompiled = null;
-    errorMessage = errorLine = null;
+    errorMessage = null;
+    errorMessageUntranslated = null;
+    errorLine = null;
     flowContext = null;
     nSemiSkip = 0;
     cchScript = script.length();
@@ -893,7 +896,7 @@ class Compiler {
                 if (preDefining) {
                   if (!Token.tokAttr(tok, Token.predefinedset))
                     return error("ERROR IN Token.java or JmolConstants.java -- the following term was used in JmolConstants.java but not listed as predefinedset in Token.java: "
-                        + ident);
+                        + ident, null);
                 } else if (Token.tokAttr(tok, Token.predefinedset)) {
                   Logger
                       .warn("WARNING: predefined term '"
@@ -2522,36 +2525,95 @@ class Compiler {
   private final static int ERROR_unrecognizedParameter  = 18;
   private final static int ERROR_unrecognizedToken  = 19;
 
-  private static String[] errors;
-  
-  static void setErrorMessages() {
-    errors = new String[] {
-      GT._("bad argument count"), // 0
-      GT._("invalid context for {0}"), // 1
-      GT._("command expected"), // 2
-      GT._("{ number number number } expected"), // 3
-      GT._("unexpected end of script command"), // 4
-      GT._("end of expression expected"), // 5
-      GT._("identifier or residue specification expected"), // 6
-      GT._("invalid atom specification"), // 7
-      GT._("invalid chain specification"), // 8
-      GT._("invalid expression token: {0}"), // 9
-      GT._("invalid model specification"), // 10
-      GT._("missing END for {0}"), // 11
-      GT._("number expected"), // 12
-      GT._("number or variable name expected"), // 13
-      GT._("residue specification (ALA, AL?, A*) expected"), // 14
-      GT._("{0} expected"), // 15
-      GT._("{0} unexpected"), // 16
-      GT._("unrecognized expression token: {0}"), // 17
-      GT._("unrecognized {0} parameter"), // 18
-      GT._("unrecognized token: {0}"), // 19
-    };
+  static String errorString(int iError, String value, String more,
+                            boolean translated) {
+    boolean doTranslate = false;
+    if (!translated && (doTranslate = GT.getDoTranslate()) == true)
+      GT.setDoTranslate(false);
+    String msg;
+    switch (iError) {
+    default:
+      msg = "Unknown compiler error message number: " + iError;
+      break;
+    case ERROR_badArgumentCount: // 0;
+      msg = GT._("bad argument count"); // 0
+      break;
+    case ERROR_badContext: // 1;
+      msg = GT._("invalid context for {0}"); // 1
+      break;
+    case ERROR_commandExpected: // 2;
+      msg = GT._("command expected"); // 2
+      break;
+    case ERROR_coordinateExpected: // 3;
+      msg = GT._("{ number number number } expected"); // 3
+      break;
+    case ERROR_endOfCommandUnexpected: // 4;
+      msg = GT._("unexpected end of script command"); // 4
+      break;
+    case ERROR_endOfExpressionExpected: // 5;
+      msg = GT._("end of expression expected"); // 5
+      break;
+    case ERROR_identifierOrResidueSpecificationExpected: // 6;
+      msg = GT._("identifier or residue specification expected"); // 6
+      break;
+    case ERROR_invalidAtomSpecification: // 7;
+      msg = GT._("invalid atom specification"); // 7
+      break;
+    case ERROR_invalidChainSpecification: // 8;
+      msg = GT._("invalid chain specification"); // 8
+      break;
+    case ERROR_invalidExpressionToken: // 9;
+      msg = GT._("invalid expression token: {0}"); // 9
+      break;
+    case ERROR_invalidModelSpecification: // 10;
+      msg = GT._("invalid model specification"); // 10
+      break;
+    case ERROR_missingEnd: // 11;
+      msg = GT._("missing END for {0}"); // 11
+      break;
+    case ERROR_numberExpected: // 12;
+      msg = GT._("number expected"); // 12
+      break;
+    case ERROR_numberOrVariableNameExpected: // 13;
+      msg = GT._("number or variable name expected"); // 13
+      break;
+    case ERROR_residueSpecificationExpected: // 14;
+      msg = GT._("residue specification (ALA, AL?, A*) expected"); // 14
+      break;
+    case ERROR_tokenExpected: // 15;
+      msg = GT._("{0} expected"); // 15
+      break;
+    case ERROR_tokenUnexpected: // 16;
+      msg = GT._("{0} unexpected"); // 16
+      break;
+    case ERROR_unrecognizedExpressionToken: // 17;
+      msg = GT._("unrecognized expression token: {0}"); // 17
+      break;
+    case ERROR_unrecognizedParameter: // 18;
+      msg = GT._("unrecognized {0} parameter"); // 18
+      break;
+    case ERROR_unrecognizedToken: // 19;
+      msg = GT._("unrecognized token: {0}"); // 19
+      break;
+    }
+    if (msg.indexOf("{0}") < 0) {
+      if (value != null)
+        msg += ": " + value;
+    } else {
+      msg = TextFormat.simpleReplace(msg, "{0}", value);
+      if (msg.indexOf("{1}") >= 0)
+        msg = TextFormat.simpleReplace(msg, "{1}", more);
+      else if (more != null)
+        msg += ": " + more;
+    }
+    if (!translated)
+      GT.setDoTranslate(doTranslate);
+    return msg;
   }
   
   private boolean commandExpected() {
     ichToken = ichCurrentCommand;
-    return error(errors[ERROR_commandExpected]);
+    return error(ERROR_commandExpected);
   }
 
   private boolean error(int error) {
@@ -2562,22 +2624,24 @@ class Compiler {
     return error(error, value, null);
   }
   
-  private boolean error(int error, String value, String more) {
-    String strError = errors[error];
-    if (value != null)
-      strError = TextFormat.simpleReplace(strError, "{0}", value);
-    if (more != null)
-      strError += more;
-    return error(strError);
+  private boolean error(int iError, String value, String more) {
+    String strError = errorString(iError, value, more, true);
+    String strUntranslated = (GT.getDoTranslate() ? errorString(iError, value, more, false) : null);
+    return error(strError, strUntranslated);
   }
   
-  private boolean error(String errorMessage) {
+  private boolean error(String errorMessage, String strUntranslated) {
     this.errorMessage = errorMessage;
+    errorMessageUntranslated = strUntranslated;
     return false;
   }
 
   String getErrorMessage() {
     return errorMessage;
+  }
+  
+  String getErrorMessageUntranslated() {
+    return errorMessageUntranslated == null ? errorMessage : errorMessageUntranslated;
   }
   
   private boolean handleError() {

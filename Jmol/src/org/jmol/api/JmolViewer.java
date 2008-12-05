@@ -407,6 +407,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void openFileAsynchronously(String fileName);
 
   abstract public String getErrorMessage();
+  abstract public String getErrorMessageUntranslated();
 
 }
 

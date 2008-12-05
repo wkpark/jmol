@@ -233,13 +233,15 @@ class StatusManager {
       jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_MEASURE, new Object[] { null, strMeasure,  new Integer(count), status });
   }
   
-  synchronized void notifyError(String errType, String errMsg) {
+  synchronized void notifyError(String errType, String errMsg,
+                                String errMsgUntranslated) {
     if (jmolStatusListener == null
-        || !jmolStatusListener
-            .notifyEnabled(JmolConstants.CALLBACK_ERROR))
+        || !jmolStatusListener.notifyEnabled(JmolConstants.CALLBACK_ERROR))
       return;
     jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_ERROR,
-        new Object[] {null, errType, errMsg, viewer.getShapeErrorState() });
+        new Object[] { null, errType, errMsg,
+            errMsgUntranslated,
+            viewer.getShapeErrorState() });
   }
   
   synchronized void notifyMinimizationStatus(String sJmol) {
@@ -258,10 +260,11 @@ class StatusManager {
     setStatusChanged("scriptStarted", iscript, script, false);
     if (jmolStatusListener != null)
       jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT, new Object[] { null, 
-          "script " + iscript + " started", script, new Integer(-2) });
+          "script " + iscript + " started", script, new Integer(-2), (String) null });
   }
 
-  synchronized void setScriptStatus(String strStatus, String statusMessage, int msWalltime) {
+  synchronized void setScriptStatus(String strStatus, String statusMessage, int msWalltime, 
+                                    String strErrorMessageUntranslated) {
     if (strStatus == null)
       return;
     boolean isScriptCompletion = (strStatus == Eval.SCRIPT_COMPLETED);
@@ -284,12 +287,14 @@ class StatusManager {
       if (isScriptCompletion && viewer.getMessageStyleChime()
           && viewer.getDebugScript()) {
         jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT,
-            new Object[] { null, "script <exiting>", statusMessage, new Integer(-1) });
+            new Object[] { null, "script <exiting>", statusMessage, new Integer(-1), 
+            strErrorMessageUntranslated });
         strStatus = "Jmol script completed.";
       }
       jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT,
           new Object[] { null, strStatus, statusMessage,
-              new Integer(isScriptCompletion ? -1 : msWalltime) });
+              new Integer(isScriptCompletion ? -1 : msWalltime), 
+              strErrorMessageUntranslated });
     }
   }
   

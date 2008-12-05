@@ -120,6 +120,13 @@ final public class JmolConstants {
     return callbackNames[i];
   }
  
+  public static int getCallbackId(String callbackName) {
+    for (int i = 0; i < CALLBACK_COUNT; i++)
+      if (getCallbackName(i).equalsIgnoreCase(callbackName)) 
+        return i;
+    return -1;
+  }
+
   // unit cell parameters
   
   public final static int INFO_A = 0;

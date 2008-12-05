@@ -261,6 +261,8 @@ class Eval {
     return isExecuting && !interruptExecution;
   }
 
+  static final String SCRIPT_COMPLETED = "Script completed";
+
   void runEval(boolean checkScriptOnly, boolean openFiles,
                boolean historyDisabled, boolean listCommands) {
     // only one reference now -- in Viewer
@@ -273,6 +275,7 @@ class Eval {
     isSyntaxCheck = isScriptCheck = checkScriptOnly;
     timeBeginExecution = System.currentTimeMillis();
     this.historyDisabled = historyDisabled;
+    setErrorMessage(null);
     try {
       try {
         instructionDispatchLoop(listCommands);
@@ -282,14 +285,17 @@ class Eval {
       } catch (Error er) {
         viewer.handleError(er, false);
         setErrorMessage("" + er + " " + viewer.getShapeErrorState());
+        errorMessageUntranslated = "" + er;
         scriptStatus(errorMessage);
       }
     } catch (ScriptException e) {
       setErrorMessage(e.toString());
+      errorMessageUntranslated = e.getErrorMessageUntranslated();
+      System.out.println("eval e, untrans" + e + " "+ errorMessageUntranslated);
       scriptStatus(errorMessage);
       viewer.notifyError(
           (errorMessage.indexOf("java.lang.OutOfMemoryError") >= 0 ? "Error"
-              : "ScriptException"), errorMessage);
+              : "ScriptException"), errorMessage, errorMessageUntranslated);
     }
     timeEndExecution = System.currentTimeMillis();
     fileOpenCheck = tempOpen;
@@ -306,7 +312,12 @@ class Eval {
     return errorMessage;
   }
 
+  String getErrorMessageUntranslated() {
+    return errorMessageUntranslated == null ? errorMessage : errorMessageUntranslated;
+  }
+
   private void setErrorMessage(String err) {
+    errorMessageUntranslated = null;
     if (err == null) {
       error = false;
       errorMessage = null;
@@ -315,6 +326,7 @@ class Eval {
     error = true;
     if (err.length() == 0) {
       errorMessage = compiler.getErrorMessage();
+      errorMessageUntranslated = compiler.getErrorMessageUntranslated();
       return;
     }
     if (errorMessage == null) //there could be a compiler error from a script command
@@ -431,8 +443,10 @@ class Eval {
   }
 
   Object checkScriptSilent(String script) {
-    if (!compiler.compile(null, script, false, true, false, true))
+    if (!compiler.compile(null, script, false, true, false, true)) {
+      errorMessageUntranslated = compiler.getErrorMessageUntranslated();
       return compiler.getErrorMessage();
+    }
     isSyntaxCheck = true;
     isScriptCheck = false;
     setErrorMessage(null);
@@ -573,7 +587,7 @@ class Eval {
     if (!compiler.compile("#predefine", script, true, false, false, false)) {
       viewer
           .scriptStatus("JmolConstants.java ERROR: predefined set compile error:"
-              + script + "\ncompile error:" + compiler.getErrorMessage());
+              + script + "\ncompile error:" + compiler.getErrorMessageUntranslated());
       return;
     }
 
@@ -2384,18 +2398,18 @@ class Eval {
         iToken += 2;
         if (str.equalsIgnoreCase("x")) {
           if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
-            evalError("x=?");
+            evalError("x=?", null);
           return new Point4f(1, 0, 0, -floatParameter(i));
         }
 
         if (str.equalsIgnoreCase("y")) {
           if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
-            evalError("y=?");
+            evalError("y=?", null);
           return new Point4f(0, 1, 0, -floatParameter(i));
         }
         if (str.equalsIgnoreCase("z")) {
           if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
-            evalError("z=?");
+            evalError("z=?", null);
           return new Point4f(0, 0, 1, -floatParameter(i));
         }
         break;
@@ -3543,7 +3557,7 @@ class Eval {
       if (!file.equalsIgnoreCase("none") && file.length() > 0)
         image = viewer.getFileAsImage(file, htParams);
       if (image instanceof String)
-        evalError((String) image);
+        evalError((String) image, null);
       viewer.setBackgroundImage((String) htParams.get("fullPathName"),
           (Image) image);
       return;
@@ -4502,7 +4516,7 @@ class Eval {
         script(Token.script);
         return;
       }
-      evalError(errMsg);
+      evalError(errMsg, null);
     }
 
     if (isAppend && (appendNew || nFiles > 1)) {
@@ -4572,7 +4586,7 @@ class Eval {
       if (type == "a" || type == "r")
         isDerivative = true;
       if (!Parser.isOneOf(type, "w;x;y;z;r;a")) // a absolute; r relative
-        evalError("QUATERNION [w,x,y,z,a,r] [difference][2]");
+        evalError("QUATERNION [w,x,y,z,a,r] [difference][2]", null);
       type = "quaternion " + type + (isDerivative ? " difference" : "")
           + (isSecondDerivative ? "2" : "") + (isDraw ? " draw" : "");
       break;
@@ -5037,7 +5051,7 @@ class Eval {
       case Token.point3f:
       case Token.dollarsign:
         if (nPoints == 2) //only 2 allowed for rotation -- for now
-          evalError(GT._("too many rotation points were specified"));
+          error(ERROR_tooManyPoints);
         // {X, Y, Z}
         // $drawObject[n]
         Point3f pt1 = centerParameter(i);
@@ -5206,7 +5220,7 @@ class Eval {
       if (wasScriptCheck) {
         setErrorMessage(null);
       } else {
-        evalError(null);
+        evalError(null, null);
       }
     }
 
@@ -5219,7 +5233,7 @@ class Eval {
       return;
     String name = (String) getToken(0).value;
     if (compiler.getFunction(name) == null)
-      evalError(GT._("command expected"));
+      error(ERROR_commandExpected);    
     Vector params = (statementLength == 1 || statementLength == 3
         && tokAt(1) == Token.leftparen && tokAt(2) == Token.rightparen ? null
         : (Vector) parameterExpression(1, 0, null, true));
@@ -5413,7 +5427,7 @@ class Eval {
     try {
       viewer.getMinimizer(true).minimize(steps, crit, bsSelected);
     } catch (Exception e) {
-      evalError(e.getMessage());
+      evalError(e.getMessage(), null);
     }
   }
 
@@ -6060,8 +6074,7 @@ class Eval {
 
   private void configuration() throws ScriptException {
     if (!isSyntaxCheck && viewer.getDisplayModelIndex() <= -2)
-      evalError(GT._("{0} not allowed with background model displayed",
-          "\"CONFIGURATION\""));
+      error(ERROR_backgroundModelError, "\"CONFIGURATION\"");
     BitSet bsConfigurations;
     if (statementLength == 1) {
       bsConfigurations = viewer.setConformation();
@@ -9161,14 +9174,11 @@ class Eval {
         && !isExport
         && !Parser.isOneOf(type,
             "SPT;HIS;MO;ISO;VAR;FILE;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
-      evalError(GT
-          ._(
-              "write what? {0} or {1} \"filename\"",
-              new Object[] {
-                  "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
-                      + "|RAMACHANDRAN|STATE|VAR x  CLIPBOARD",
-                  "JPG|JPG64|PNG|GIF|PPM|SPT|JVXL|XYZ|MOL|PDB|"
-                      + driverList.toUpperCase().replace(';', '|') }));
+      error(ERROR_writeWhat,
+          "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
+              + "|RAMACHANDRAN|STATE|VAR x  CLIPBOARD",
+          "JPG|JPG64|PNG|GIF|PPM|SPT|JVXL|XYZ|MOL|PDB|"
+              + driverList.toUpperCase().replace(';', '|'));
     if (isSyntaxCheck)
       return "";
     data = type.intern();
@@ -9190,7 +9200,7 @@ class Eval {
             Integer.MIN_VALUE, 0, 0, null);
         if (msg != null) {
           if (!msg.startsWith("OK"))
-            evalError(msg);
+            evalError(msg, null);
           scriptStatus("Created " + fileName + ".ini:\n\n" + data);
         }
         return "";
@@ -9241,7 +9251,7 @@ class Eval {
       type = "JVXL";
     } else if (data == "ISO") {
       if ((data = getIsosurfaceJvxl()) == null)
-        evalError(GT._("No data available"));
+        error(ERROR_noData);
       if (!isShow)
         showString((String) viewer.getShapeProperty(
             JmolConstants.SHAPE_ISOSURFACE, "jvxlFileInfo"));
@@ -9278,7 +9288,7 @@ class Eval {
           height, bsFrames);
       if (msg != null) {
         if (!msg.startsWith("OK"))
-          evalError(msg);
+          evalError(msg, null);
         scriptStatus(msg
             + (isImage ? "; width=" + width + "; height=" + height : ""));
       }
@@ -9709,7 +9719,7 @@ class Eval {
     Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
         "moData");
     if (moData == null)
-      evalError(GT._("no MO basis/coefficient data available for this frame"));
+      error(ERROR_moModelError); 
     setShapeProperty(JmolConstants.SHAPE_MO, "moData", moData);
     return (String) viewer.getShapeProperty(JmolConstants.SHAPE_MO, "showMO",
         ptMO);
@@ -10506,13 +10516,13 @@ class Eval {
     } else {
       moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex, "moData");
       if (moData == null)
-        evalError(GT._("no MO basis/coefficient data available for this frame"));
+        error(ERROR_moModelError);
       Vector mos = (Vector) (moData.get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
       if (nOrb == 0)
-        evalError(GT._("no MO coefficient data available"));
+        error(ERROR_moCoefficients);
       if (nOrb == 1 && moNumber > 1)
-        evalError(GT._("Only one molecular orbital is available in this file"));
+        error(ERROR_moOnlyOne);
       if (offset != Integer.MAX_VALUE) {
         // 0: HOMO;
         if (moData.containsKey("HOMO")) {
@@ -10522,7 +10532,7 @@ class Eval {
           for (int i = 0; i < nOrb; i++) {
             Hashtable mo = (Hashtable) mos.get(i);
             if (!mo.containsKey("occupancy"))
-              evalError(GT._("no MO occupancy data available"));
+              error(ERROR_moOccupancy); 
             if (((Float) mo.get("occupancy")).floatValue() == 0) {
               lastMoNumber = moNumber = i + offset;
               break;
@@ -10532,7 +10542,7 @@ class Eval {
         Logger.info("MO " + moNumber);
       }
       if (moNumber < 1 || moNumber > nOrb)
-        evalError(GT._("An MO index from 1 to {0} is required", nOrb));
+        error(ERROR_moIndex, "" + nOrb);
     }
     lastMoNumber = moNumber;
     setShapeProperty(shape, "moData", moData);
@@ -10848,8 +10858,7 @@ class Eval {
         } catch (Exception e) {
         }
         if (!isSyntaxCheck && partialCharges == null)
-          evalError(GT
-              ._("No partial charges were read from the file; Jmol needs these to render the MEP data."));
+          error(ERROR_noPartialCharges);
         surfaceObjectSeen = true;
         propertyName = "mep";
         propertyValue = partialCharges;
@@ -11343,130 +11352,9 @@ class Eval {
   private boolean ignoreError;
 
   private void planeExpected() throws ScriptException {
-    evalError(GT
-        ._(
-            "plane expected -- either three points or atom expressions or {0} or {1} or {2}",
-            new Object[] { "{a b c d}",
-                "\"xy\" \"xz\" \"yz\" \"x=...\" \"y=...\" \"z=...\"", "$xxxxx" }));
+    error(ERROR_planeExpected, "{a b c d}",
+                "\"xy\" \"xz\" \"yz\" \"x=...\" \"y=...\" \"z=...\"", "$xxxxx");
   }
-
-  void evalError(String message) throws ScriptException {
-    if (ignoreError)
-      throw new NullPointerException();
-    if (!isSyntaxCheck) {
-      String s = viewer.removeCommand();
-      viewer.addCommand(s + CommandHistory.ERROR_FLAG);
-      viewer.setCursor(Viewer.CURSOR_DEFAULT);
-      viewer.setRefreshing(true);
-    }
-    throw new ScriptException(message);
-  }
-
-  //  private void evalWarning(String message) {
-  //    new ScriptException(message);
-  //  }
-
-  final static int ERROR_axisExpected = 0;
-  final static int ERROR_badArgumentCount = 1;
-  final static int ERROR_badMillerIndices = 2;
-  final static int ERROR_badRGBColor = 3;
-  final static int ERROR_booleanExpected = 4;
-  final static int ERROR_booleanOrNumberExpected = 5;
-  final static int ERROR_booleanOrWhateverExpected = 6;
-  final static int ERROR_colorExpected = 7;
-  final static int ERROR_colorOrPaletteRequired = 8;
-  final static int ERROR_coordinateOrNameOrExpressionRequired = 9;
-  final static int ERROR_drawObjectNotDefined = 10;
-  final static int ERROR_endOfStatementUnexpected = 11;
-  final static int ERROR_expressionExpected = 12;
-  final static int ERROR_expressionOrIntegerExpected = 13;
-  final static int ERROR_filenameExpected = 14;
-  final static int ERROR_fileNotFoundException = 15;
-  final static int ERROR_incompatibleArguments = 16;
-  final static int ERROR_insufficientArguments = 17;
-  final static int ERROR_integerExpected = 18;
-  final static int ERROR_integerOutOfRange = 19;
-  final static int ERROR_invalidArgument = 20;
-  final static int ERROR_invalidParameterOrder = 21;
-  final static int ERROR_keywordExpected = 22;
-  final static int ERROR_multipleModelsNotOK = 23;
-  final static int ERROR_noUnitCell = 24;
-  final static int ERROR_numberExpected = 25;
-  final static int ERROR_numberMustBe = 26;
-  final static int ERROR_numberOutOfRange = 27;
-  final static int ERROR_objectNameExpected = 28;
-  final static int ERROR_propertyNameExpected = 29;
-  final static int ERROR_spaceGroupNotFound = 30;
-  final static int ERROR_stringExpected = 31;
-  final static int ERROR_stringOrIdentifierExpected = 32;
-  final static int ERROR_tooManyScriptLevels = 33;
-  final static int ERROR_unrecognizedAtomProperty = 34;
-  final static int ERROR_unrecognizedBondProperty = 35;
-  final static int ERROR_unrecognizedCommand = 36;
-  final static int ERROR_unrecognizedExpression = 37;
-  final static int ERROR_unrecognizedObject = 38;
-  final static int ERROR_unrecognizedParameter = 39;
-  final static int ERROR_unrecognizedParameterWarning = 40;
-  final static int ERROR_unrecognizedShowParameter = 41;
-  final static int ERROR_what = 42;
-
-  
-  static String[] errors;
-  static synchronized void setErrorMessages() {
-    Compiler.setErrorMessages();
-    errors = new String[] { 
-        GT._("x y z axis expected"), // 0
-        GT._("bad argument count"), // 1
-        GT._("Miller indices cannot all be zero."), // 2
-        GT._("bad [R,G,B] color"), // 3
-        GT._("boolean expected"), // 4
-        GT._("boolean or number expected"), // 5
-        GT._("boolean, number, or {0} expected"), // 6
-        GT._("color expected"), // 7
-        GT._("a color or palette name (Jmol, Rasmol) is required"), // 8
-        GT._(" {x y z} or $name or (atom expression) required"), // 9
-        GT._("draw object not defined"), // 10
-        GT._("unexpected end of script command"), // 11
-        GT._("valid (atom expression) expected"), // 12
-        GT._("(atom expression) or integer expected"), // 13
-        GT._("filename expected"), // 14
-        GT._("file not found"), // 15
-        GT._("incompatible arguments"), // 16
-        GT._("insufficient arguments"), // 17
-        GT._("integer expected"), // 18
-        GT._("integer out of range ({0} - {1})"), // 19
-        GT._("invalid argument"), // 20
-        GT._("invalid parameter order"), // 21
-        GT._("keyword expected"), // 22
-        GT._("{0} require that only one model be displayed"), // 23
-        GT._("No unit cell"), // 24
-        GT._("number expected"), // 25
-        GT._("number must be ({0} or {1})"), // 26
-        GT._("decimal number out of range ({0} - {1})"), // 27
-        GT._("object name expected after '$'"), // 28
-        GT._("property name expected"), // 29
-        GT._("space group {0} was not found."), // 30
-        GT._("quoted string expected"), // 31
-        GT._("quoted string or identifier expected"), // 32
-        GT._("too many script levels"), // 33
-        GT._("unrecognized atom property"), // 34
-        GT._("unrecognized bond property"), // 35
-        GT._("unrecognized command"), // 36
-        GT._("runtime unrecognized expression"), // 37
-        GT._("unrecognized object"), // 38
-        GT._("unrecognized {0} parameter"), // 39
-        GT._("unrecognized {0} parameter in Jmol state script (set anyway)"), // 40
-        GT._("unrecognized SHOW parameter --  use {0}"), // 41
-        "{0}", // 42
-    };
-  }
-
-  static {
-    if (errors == null)
-      setErrorMessages();
-  }
-
-  static final String SCRIPT_COMPLETED = "Script completed";
 
   private void integerOutOfRange(int min, int max) throws ScriptException {
     error(ERROR_integerOutOfRange, "" + min, "" + max);
@@ -11476,43 +11364,300 @@ class Eval {
     error(ERROR_numberOutOfRange, "" + min, "" + max);
   }
 
-  void error(int error) throws ScriptException {
-    error(error, null, null, false);
+  void error(int iError) throws ScriptException {
+    error(iError, null, null, null, false);
   }
 
-  void error(int error, String value) throws ScriptException {
-    error(error, value, null, false);
+  void error(int iError, String value) throws ScriptException {
+    error(iError, value, null, null, false);
   }
 
-  void error(int error, String value, String more) throws ScriptException {
-    error(error, value, more, false);
+  void error(int iError, String value, String more) throws ScriptException {
+    error(iError, value, more, null, false);
   }
 
-  private boolean warning(int error, String value, String more)
+  void error(int iError, String value, String more, String more2) throws ScriptException {
+    error(iError, value, more, more2, false);
+  }
+
+  private void warning(int iError, String value, String more)
       throws ScriptException {
-    return error(error, value, more, true);
+    error(iError, value, more, null, true);
   }
 
-  boolean error(int error, String value, String more, boolean warningOnly)
+  void error(int iError, String value, String more, String more2, boolean warningOnly)
       throws ScriptException {
-    String strError = errors[error];
-    if (strError.indexOf("{0}") < 0) {
-      if (value != null)
-        strError += ": " + value;
-    } else {
-      strError = TextFormat.simpleReplace(strError, "{0}", value);
-      if (strError.indexOf("{1}") >= 0)
-        strError = TextFormat.simpleReplace(strError, "{1}", more);
-      else if (more != null)
-        strError += ": " + more;
-    }
-
+    String strError = errorString(iError, value, more, more2, true);
+    String strUntranslated = (GT.getDoTranslate() ? errorString(iError, value, more, more2, false) : null);
     if (!warningOnly)
-      evalError(strError);
+      evalError(strError, strUntranslated);
     showString(strError);
-    return false;
   }
 
+  void evalError(String message, String strUntranslated) throws ScriptException {
+    if (ignoreError)
+      throw new NullPointerException();
+    if (!isSyntaxCheck) {
+      String s = viewer.removeCommand();
+      viewer.addCommand(s + CommandHistory.ERROR_FLAG);
+      viewer.setCursor(Viewer.CURSOR_DEFAULT);
+      viewer.setRefreshing(true);
+    }
+    throw new ScriptException(message, strUntranslated);
+  }
+
+  final static int ERROR_axisExpected = 0;
+  final static int ERROR_backgroundModelError = 1;
+  final static int ERROR_badArgumentCount = 2;
+  final static int ERROR_badMillerIndices = 3;
+  final static int ERROR_badRGBColor = 4;
+  final static int ERROR_booleanExpected = 5;
+  final static int ERROR_booleanOrNumberExpected = 6;
+  final static int ERROR_booleanOrWhateverExpected = 7;
+  final static int ERROR_colorExpected = 8;
+  final static int ERROR_colorOrPaletteRequired = 9;
+  final static int ERROR_commandExpected = 10;
+  final static int ERROR_coordinateOrNameOrExpressionRequired = 11;
+  final static int ERROR_drawObjectNotDefined = 12;
+  final static int ERROR_endOfStatementUnexpected = 13;
+  final static int ERROR_expressionExpected = 14;
+  final static int ERROR_expressionOrIntegerExpected = 15;
+  final static int ERROR_filenameExpected = 16;
+  final static int ERROR_fileNotFoundException = 17;
+  final static int ERROR_incompatibleArguments = 18;
+  final static int ERROR_insufficientArguments = 19;
+  final static int ERROR_integerExpected = 20;
+  final static int ERROR_integerOutOfRange = 21;
+  final static int ERROR_invalidArgument = 22;
+  final static int ERROR_invalidParameterOrder = 23;
+  final static int ERROR_keywordExpected = 24;
+  final static int ERROR_moCoefficients = 25;
+  final static int ERROR_moIndex = 26;
+  final static int ERROR_moModelError = 27;
+  final static int ERROR_moOccupancy = 28;
+  final static int ERROR_moOnlyOne = 29;
+  final static int ERROR_multipleModelsNotOK = 30;
+  final static int ERROR_noData = 31;
+  final static int ERROR_noPartialCharges = 32;
+  final static int ERROR_noUnitCell = 33;
+  final static int ERROR_numberExpected = 34;
+  final static int ERROR_numberMustBe = 35;
+  final static int ERROR_numberOutOfRange =36;
+  final static int ERROR_objectNameExpected = 37;
+  final static int ERROR_planeExpected = 38;
+  final static int ERROR_propertyNameExpected = 39;
+  final static int ERROR_spaceGroupNotFound = 40;
+  final static int ERROR_stringExpected = 41;
+  final static int ERROR_stringOrIdentifierExpected = 42;
+  final static int ERROR_tooManyPoints = 43;
+  final static int ERROR_tooManyScriptLevels = 44;
+  final static int ERROR_unrecognizedAtomProperty = 45;
+  final static int ERROR_unrecognizedBondProperty = 46;
+  final static int ERROR_unrecognizedCommand = 47;
+  final static int ERROR_unrecognizedExpression = 48;
+  final static int ERROR_unrecognizedObject = 49;
+  final static int ERROR_unrecognizedParameter = 50;
+  final static int ERROR_unrecognizedParameterWarning = 51;
+  final static int ERROR_unrecognizedShowParameter = 52;
+  final static int ERROR_what = 53;
+  final static int ERROR_writeWhat = 54;
+  
+  static String errorString(int iError, String value, String more,
+                            String more2, boolean translated) {
+    boolean doTranslate = false;
+    if (!translated && (doTranslate = GT.getDoTranslate()) == true)
+      GT.setDoTranslate(false);
+    String msg;
+    switch (iError) {
+    default:
+      msg = "Unknown error message number: " + iError;
+      break;
+    case ERROR_axisExpected:
+      msg = GT._("x y z axis expected");
+      break;
+    case ERROR_backgroundModelError:
+      msg = GT._("{0} not allowed with background model displayed");
+      break;
+    case ERROR_badArgumentCount:
+      msg = GT._("bad argument count");
+      break;
+    case ERROR_badMillerIndices:
+      msg = GT._("Miller indices cannot all be zero.");
+      break;
+    case ERROR_badRGBColor:
+      msg = GT._("bad [R,G,B] color");
+      break;
+    case ERROR_booleanExpected:
+      msg = GT._("boolean expected");
+      break;
+    case ERROR_booleanOrNumberExpected:
+      msg = GT._("boolean or number expected");
+      break;
+    case ERROR_booleanOrWhateverExpected:
+      msg = GT._("boolean, number, or {0} expected");
+      break;
+    case ERROR_colorExpected:
+      msg = GT._("color expected");
+      break;
+    case ERROR_colorOrPaletteRequired:
+      msg = GT._("a color or palette name (Jmol, Rasmol) is required");
+      break;
+    case ERROR_commandExpected:
+      msg = GT._("command expected");
+      break;
+    case ERROR_coordinateOrNameOrExpressionRequired:
+      msg = GT._("{x y z} or $name or (atom expression) required");
+      break;
+    case ERROR_drawObjectNotDefined:
+      msg = GT._("draw object not defined");
+      break;
+    case ERROR_endOfStatementUnexpected:
+      msg = GT._("unexpected end of script command");
+      break;
+    case ERROR_expressionExpected:
+      msg = GT._("valid (atom expression) expected");
+      break;
+    case ERROR_expressionOrIntegerExpected:
+      msg = GT._("(atom expression) or integer expected");
+      break;
+    case ERROR_filenameExpected:
+      msg = GT._("filename expected");
+      break;
+    case ERROR_fileNotFoundException:
+      msg = GT._("file not found");
+      break;
+    case ERROR_incompatibleArguments:
+      msg = GT._("incompatible arguments");
+      break;
+    case ERROR_insufficientArguments:
+      msg = GT._("insufficient arguments");
+      break;
+    case ERROR_integerExpected:
+      msg = GT._("integer expected");
+      break;
+    case ERROR_integerOutOfRange:
+      msg = GT._("integer out of range ({0} - {1})");
+      break;
+    case ERROR_invalidArgument:
+      msg = GT._("invalid argument");
+      break;
+    case ERROR_invalidParameterOrder:
+      msg = GT._("invalid parameter order");
+      break;
+    case ERROR_keywordExpected:
+      msg = GT._("keyword expected");
+      break;
+    case ERROR_moCoefficients:
+      msg = GT._("no MO coefficient data available");
+      break;
+    case ERROR_moIndex:
+      msg = GT._("An MO index from 1 to {0} is required");
+      break;
+    case ERROR_moModelError:
+      msg = GT._("no MO basis/coefficient data available for this frame");
+      break;
+    case ERROR_moOccupancy:
+      msg = GT._("no MO occupancy data available");
+      break;
+    case ERROR_moOnlyOne:
+      msg = GT._("Only one molecular orbital is available in this file");
+      break;
+    case ERROR_multipleModelsNotOK:
+      msg = GT._("{0} require that only one model be displayed");
+      break;
+    case ERROR_noData:
+      msg = GT._("No data available");
+      break;
+    case ERROR_noPartialCharges:
+      msg = GT
+          ._("No partial charges were read from the file; Jmol needs these to render the MEP data.");
+      break;
+    case ERROR_noUnitCell:
+      msg = GT._("No unit cell");
+      break;
+    case ERROR_numberExpected:
+      msg = GT._("number expected");
+      break;
+    case ERROR_numberMustBe:
+      msg = GT._("number must be ({0} or {1})");
+      break;
+    case ERROR_numberOutOfRange:
+      msg = GT._("decimal number out of range ({0} - {1})");
+      break;
+    case ERROR_objectNameExpected:
+      msg = GT._("object name expected after '$'");
+      break;
+    case ERROR_planeExpected:
+      msg = GT
+          ._("plane expected -- either three points or atom expressions or {0} or {1} or {2}");
+      break;
+    case ERROR_propertyNameExpected:
+      msg = GT._("property name expected");
+      break;
+    case ERROR_spaceGroupNotFound:
+      msg = GT._("space group {0} was not found.");
+      break;
+    case ERROR_stringExpected:
+      msg = GT._("quoted string expected");
+      break;
+    case ERROR_stringOrIdentifierExpected:
+      msg = GT._("quoted string or identifier expected");
+      break;
+    case ERROR_tooManyPoints:
+      msg = GT._("too many rotation points were specified");
+      break;
+    case ERROR_tooManyScriptLevels:
+      msg = GT._("too many script levels");
+      break;
+    case ERROR_unrecognizedAtomProperty:
+      msg = GT._("unrecognized atom property");
+      break;
+    case ERROR_unrecognizedBondProperty:
+      msg = GT._("unrecognized bond property");
+      break;
+    case ERROR_unrecognizedCommand:
+      msg = GT._("unrecognized command");
+      break;
+    case ERROR_unrecognizedExpression:
+      msg = GT._("runtime unrecognized expression");
+      break;
+    case ERROR_unrecognizedObject:
+      msg = GT._("unrecognized object");
+      break;
+    case ERROR_unrecognizedParameter:
+      msg = GT._("unrecognized {0} parameter");
+      break;
+    case ERROR_unrecognizedParameterWarning:
+      msg = GT
+          ._("unrecognized {0} parameter in Jmol state script (set anyway)");
+      break;
+    case ERROR_unrecognizedShowParameter:
+      msg = GT._("unrecognized SHOW parameter --  use {0}");
+      break;
+    case ERROR_what:
+      msg = "{0}";
+      break;
+    case ERROR_writeWhat:
+      msg = GT._("write what? {0} or {1} \"filename\"");
+      break;
+    }
+    if (msg.indexOf("{0}") < 0) {
+      if (value != null)
+        msg += ": " + value;
+    } else {
+      msg = TextFormat.simpleReplace(msg, "{0}", value);
+      if (msg.indexOf("{1}") >= 0)
+        msg = TextFormat.simpleReplace(msg, "{1}", more);
+      else if (more != null)
+        msg += ": " + more;
+      if (msg.indexOf("{2}") >= 0)
+        msg = TextFormat.simpleReplace(msg, "{2}", more);
+    }
+    if (doTranslate)
+      GT.setDoTranslate(true);
+    return msg;
+  }
+  
   private String statementAsString() {
     if (statement.length == 0)
       return "";
@@ -11705,23 +11850,29 @@ class Eval {
     return err;
   }
 
+  protected String errorMessageUntranslated;
+
   class ScriptException extends Exception {
 
     private String message;
-
-    ScriptException(String message) {
-      boolean isOK = false;
-      this.message = message;
-      if (message == null)
-        this.message = "";
-      else if (message.indexOf("file recognized as a script file:") >= 0)
-        isOK = true;
-      if (!isOK) {
-        if (!isSyntaxCheck) {
-          this.message += contextTrace();
-          Logger.error("eval ERROR: " + toString());
-        }
+    private String untranslated;
+    
+    ScriptException(String msg, String untranslated) {
+      message = msg;
+      this.untranslated = (untranslated == null ? msg : untranslated);
+      if (message == null) {
+        message = "";
+        return;
       }
+      if (isSyntaxCheck
+          || msg.indexOf("file recognized as a script file:") >= 0)
+        return;
+      message += contextTrace();
+      Logger.error("eval ERROR: " + toString());
+    }
+
+    public String getErrorMessageUntranslated() {
+      return untranslated;
     }
 
     public String toString() {
@@ -13052,7 +13203,7 @@ class Eval {
         try {
           bs = viewer.getSmilesMatcher().getSubstructureSet(smiles);
         } catch (Exception e) {
-          evalError(e.getMessage());
+          evalError(e.getMessage(), null);
         }
       return addX(bs);
     }

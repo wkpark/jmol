@@ -3628,29 +3628,31 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean isOK = (isScriptFile ? eval.loadScriptFile(strScript, isQuiet)
         : eval.loadScriptString(strScript, isQuiet));
     String strErrorMessage = eval.getErrorMessage();
-    setErrorMessage(strErrorMessage);
+    String strErrorMessageUntranslated = eval.getErrorMessageUntranslated();
+    setErrorMessage(strErrorMessage, strErrorMessageUntranslated);
     if (isOK) {
       isScriptQueued = isQueued;
       if (!isQuiet)
         statusManager.setStatusScriptStarted(++scriptIndex, strScript);
       eval.runEval(checkScriptOnly, !checkScriptOnly || fileOpenCheck,
           historyDisabled, listCommands);
-      setErrorMessage(strErrorMessage = eval.getErrorMessage());
+      setErrorMessage(strErrorMessage = eval.getErrorMessage(),
+          strErrorMessageUntranslated = eval.getErrorMessageUntranslated());
       if (!isQuiet)
         statusManager.setScriptStatus("Jmol script terminated", 
-            strErrorMessage, 1 + eval.getExecutionWalltime());
+            strErrorMessage, 1 + eval.getExecutionWalltime(), strErrorMessageUntranslated);
       if (isScriptFile && writeInfo != null)
         writeImage(writeInfo);
     } else {
       scriptStatus(strErrorMessage);
       statusManager.setScriptStatus("Jmol script terminated", 
-          strErrorMessage, 1);
+          strErrorMessage, 1, strErrorMessageUntranslated);
     }
     if (checkScriptOnly) {
       if (strErrorMessage == null)
         Logger.info("--script check ok");
       else
-        Logger.error("--script check error\n" + strErrorMessage);
+        Logger.error("--script check error\n" + strErrorMessageUntranslated);
     }
     if (isScriptFile && autoExit) {
       System.out.flush();
@@ -3659,7 +3661,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       Logger.info("(use 'exit' to stop checking)");
     isScriptQueued = true;
     if (returnType.equalsIgnoreCase("String"))
-      return strErrorMessage;
+      return strErrorMessageUntranslated;
     // get  Vector of Vectors of Vectors info
     Object info = getProperty(returnType, "jmolStatus", statusList);
     // reset to previous status list
@@ -4153,7 +4155,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void scriptStatus(String strStatus) {
-    statusManager.setScriptStatus(strStatus, "", 0);
+    statusManager.setScriptStatus(strStatus, "", 0, null);
   }
 
   int getScriptDelay() {
@@ -4284,7 +4286,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         //fr cs en none, etc.
         statusManager.setCallbackFunction("language", value);
         value = GT.getLanguage();
-        Eval.setErrorMessages();
         break;
       }
 
@@ -6941,14 +6942,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   ////// Error handling
   
   private String errorMessage;
+  private String errorMessageUntranslated;
+  
   private String setErrorMessage(String errMsg) {
-    if (errMsg != null)
-      System.out.println(errMsg);
+    return setErrorMessage(errMsg, null);
+  }
+  private String setErrorMessage(String errMsg, String errMsgUntranslated) {
+    errorMessageUntranslated = errMsgUntranslated;
+    //System.out.println("viewer setErrorMessage " + errMsg + " " + errMsgUntranslated);
     return (errorMessage = errMsg);
   }
   
   public String getErrorMessage() {
     return errorMessage;
+  }
+
+  public String getErrorMessageUntranslated() {
+    //System.out.println("viewer getErrorMessage " + errorMessage + " " + errorMessageUntranslated);
+    return errorMessageUntranslated == null ? errorMessage : errorMessageUntranslated;
   }
 
   int currentShapeID = -1;
@@ -6967,8 +6978,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return JmolConstants.getShapeClassName(currentShapeID) + " " + currentShapeState;    
   }
 
-  void notifyError(String errType, String errMsg) {
-    statusManager.notifyError(errType, errMsg);
+  void notifyError(String errType, String errMsg, String errMsgUntranslated) {
+    statusManager.notifyError(errType, errMsg, errMsgUntranslated);
   }
   public void handleError(Error er, boolean doClear) {
     // almost certainly out of memory; could be missing Jar file
@@ -6976,7 +6987,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (doClear)
         zap("" + er); // get some breathing room
       Logger.error("viewer handling error condition: " + er);
-      notifyError("Error", "doClear=" + doClear + "; " + er);
+      notifyError("Error", "doClear=" + doClear + "; " + er, "" + er);
     } catch (Throwable e1) {
       try {
         Logger.error("Could not notify error " + er + ": due to " + e1);

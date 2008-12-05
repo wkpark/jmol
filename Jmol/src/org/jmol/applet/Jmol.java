@@ -343,7 +343,8 @@ public class Jmol implements WrappedApplet {
         System.out.print("requested language=" + language + "; ");
         new GT(language);
       }
-      doTranslate = (!"none".equals(language) && getBooleanValue("doTranslate", true));
+      doTranslate = (!"none".equals(language) && getBooleanValue("doTranslate",
+          true));
       language = GT.getLanguage();
       System.out.println("language=" + language);
 
@@ -356,21 +357,21 @@ public class Jmol implements WrappedApplet {
           Logger
               .warn("MAYSCRIPT missing -- all applet JavaScript calls disabled");
       }
-      if (callbacks[JmolConstants.CALLBACK_MESSAGE] != null
-          || statusForm != null || statusText != null) {
-        if (doTranslate && (getValue("doTranslate", null) == null)) {
-          doTranslate = false;
-          Logger
-              .warn("Note -- Presence of message callback will disable translation;"
-                  + " to enable message translation"
-                  + " use jmolSetTranslation(true) prior to jmolApplet()");
+      if (callbacks[JmolConstants.CALLBACK_SCRIPT] == null
+          && callbacks[JmolConstants.CALLBACK_ERROR] == null)
+        if (callbacks[JmolConstants.CALLBACK_MESSAGE] != null
+            || statusForm != null || statusText != null) {
+          if (doTranslate && (getValue("doTranslate", null) == null)) {
+            doTranslate = false;
+            Logger
+                .warn("Note -- Presence of message callback disables disable translation;"
+                    + " to enable message translation use jmolSetTranslation(true) prior to jmolApplet()");
+          }
+          if (doTranslate)
+            Logger
+                .warn("Note -- Automatic language translation may affect parsing of message callbacks"
+                    + " messages; use scriptCallback or errorCallback to process errors");
         }
-        if (doTranslate)
-          Logger
-              .warn("Note -- Automatic language translation may affect parsing of callback"
-                  + " messages; to disable language translation of callback messages,"
-                  + " use jmolSetTranslation(false) prior to jmolApplet()");
-      }
 
       if (!doTranslate) {
         GT.setDoTranslate(false);
@@ -819,14 +820,13 @@ public class Jmol implements WrappedApplet {
 
       String callback = callbacks[type];
       boolean doCallback = (callback != null && (data == null || data[0] == null));
-
       if (data != null)
         data[0] = htmlName;
       String strInfo = (data == null || data[1] == null ? null : data[1]
           .toString());
 
       //System.out.println("Jmol.java notifyCallback " + type + " " + callback
-        //  + " " + strInfo);
+      //  + " " + strInfo);
       switch (type) {
       case JmolConstants.CALLBACK_ANIMFRAME:
         // Note: twos-complement. To get actual frame number, use 
@@ -989,12 +989,11 @@ public class Jmol implements WrappedApplet {
           Jvm12.newDialog(true);
         return;
       }
-      for (int i = 0; i < JmolConstants.CALLBACK_COUNT; i++)
-        if (JmolConstants.getCallbackName(i).equalsIgnoreCase(callbackName)) {
-          if (loading || i != JmolConstants.CALLBACK_EVAL)
-            callbacks[i] = callbackFunction;
-          return;
-        }
+      int id = JmolConstants.getCallbackId(callbackName);
+      if (id >= 0 && (loading || id != JmolConstants.CALLBACK_EVAL)) {
+        callbacks[id] = callbackFunction;
+        return;
+      }
       String s = "";
       for (int i = 0; i < JmolConstants.CALLBACK_COUNT; i++)
         s += " " + JmolConstants.getCallbackName(i);

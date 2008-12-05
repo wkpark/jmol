@@ -1,9 +1,12 @@
 # German translation of the Jmol application
-# Copyright (C) 2005 by the Jmol Development Team
+# Copyright (C) 2005-2008 by the Jmol Development Team
 # This file is distributed under the same license as the Jmol package.
-# Daniel Leidert <daniel.leidert at wgdd.de>, 2005.
+# Daniel Leidert <daniel.leidert@wgdd.de>, 2005,2008.
 # Sebastian Lisken <Sebastian.Lisken at gmx.net>, 2006.
 # Nicolas Vervelle <nicove@users.sourceforge.net>, 2008.
+#
+# Bitte denkte daran, dass *Fachbegriffe* der Chemie und
+# verwandter Fachbereiche benötigt und benutzt werden!
 #
 #
 msgid ""
@@ -11,8 +14,8 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-12-04 21:19+0100\n"
-"PO-Revision-Date: 2008-11-09 12:16+0000\n"
-"Last-Translator: Keruskerfuerst <Unknown>\n"
+"PO-Revision-Date: 2008-12-05 14:31+0100\n"
+"Last-Translator: Daniel Leidert <daniel.leidert@wgdd.de>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -149,13 +152,14 @@ msgstr "Fehler beim Lesen von BufferedReader: {0}"
 msgid "Delete atoms"
 msgstr "Lösche Atome"
 
+# "Gaussian" ist ein Programm, daher nicht übersetzen!
 #: org/openscience/jmol/app/GaussianDialog.java:187
 msgid "Export Gaussian Input File"
-msgstr "gaussche Eingangsdatei exportieren"
+msgstr "Gaussian Eingabe-Datei exportieren"
 
 #: org/openscience/jmol/app/GaussianDialog.java:194
 msgid "Basic"
-msgstr "Grundlegend"
+msgstr "Einfach"
 
 #: org/openscience/jmol/app/GaussianDialog.java:196
 msgid "Advanced"
@@ -163,11 +167,11 @@ msgstr "Fortgeschritten"
 
 #: org/openscience/jmol/app/GaussianDialog.java:224
 msgid "Checkpoint File: "
-msgstr "Fixpunkt-Datei: "
+msgstr "Checkpoint-Datei: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:229
 msgid "Amount of Memory:"
-msgstr "Höhe des Speichers:"
+msgstr "Speichermenge:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:235
 msgid "Number of Processors:"
@@ -183,27 +187,30 @@ msgstr "Methode: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:261
 msgid "Basis Set: "
-msgstr "Basissatz "
+msgstr "Basissatz: "
 
+# verbesserungswürdig
 #: org/openscience/jmol/app/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
-msgstr "passendes Dichte-Basis-Set (nur DFT): "
+msgstr "DF (Density Fitting) Basissatz (nur DFT): "
 
 #: org/openscience/jmol/app/GaussianDialog.java:275
 msgid "Job Options: "
-msgstr "Arbeitsoptionen: "
+msgstr "Job-Optionen: "
 
+# hm, irgendeine bessere Übersetzung?
 #: org/openscience/jmol/app/GaussianDialog.java:288
+#, fuzzy
 msgid "Molecular Properties"
 msgstr "Molekular-Eigenschaft"
 
 #: org/openscience/jmol/app/GaussianDialog.java:294
 msgid "Total Charge: "
-msgstr "totale Füllung: "
+msgstr "Gesamtladung: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:301
 msgid "Multiplicity: "
-msgstr "Vielfachheit: "
+msgstr "Multiplizität: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:308
 msgid "Selection: "
@@ -211,7 +218,7 @@ msgstr "Auswahl: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
-msgstr "Name der gaussches Eingabe-Datei"
+msgstr "Name der Gaussian Eingabe-Datei"
 
 #: org/openscience/jmol/app/GaussianDialog.java:349
 msgid "File..."
@@ -811,7 +818,7 @@ msgstr "stille Start Operation"
 
 #: org/openscience/jmol/app/Jmol.java:403
 msgid "list commands during script execution"
-msgstr "Liste Befehle während Skript-Ausführung"
+msgstr "Befehle während Skript-Ausführung auflisten"
 
 #: org/openscience/jmol/app/Jmol.java:405
 msgid "no console -- all output to sysout"
@@ -823,16 +830,15 @@ msgstr "unabhängiger Befehls Prozess"
 
 #: org/openscience/jmol/app/Jmol.java:409
 msgid "exit after script (implicit with -n)"
-msgstr "Nach Skript automatisch beenden (wird von -n impliziert)"
+msgstr "nach Skript automatisch beenden (wird von -n impliziert)"
 
 #: org/openscience/jmol/app/Jmol.java:412
 msgid "script file to execute"
-msgstr "Skriptdatei, das geladen werden soll"
+msgstr "Skript, das geladen werden soll"
 
 #: org/openscience/jmol/app/Jmol.java:418
-#, fuzzy
 msgid "quoted argument is Jmol script to execute"
-msgstr "Jmol Skript, das ausgeführt werden soll"
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:427
 msgid "property=value"

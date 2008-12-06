@@ -298,15 +298,14 @@ class ScriptManager {
             }
           }
         } catch (InterruptedException ie) {
-          Logger.info("CommandWatcher InterruptedException! " + this);
+          Logger.warn("CommandWatcher InterruptedException! " + this);
           break;
         } catch (Exception ie) {
           String s = "script processing ERROR:\n\n" + ie.toString();
           for (int i = 0; i < ie.getStackTrace().length; i++) {
             s += "\n" + ie.getStackTrace()[i].toString();
           }
-          Logger.info("CommandWatcher Exception! " + s);
-          viewer.showString(s);
+          Logger.warn("CommandWatcher Exception! " + s);
           break;
         }
       }

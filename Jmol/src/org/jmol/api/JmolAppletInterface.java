@@ -53,6 +53,7 @@ public interface JmolAppletInterface {
   public String scriptCheck(String script);
   public String scriptWait(String script);
   public String scriptWait(String script, String statusParams);
+  public String scriptWaitOutput(String script);
   public void syncScript(String script);
 
   // Note -- some Macintosh-based browsers cannot distinguish methods

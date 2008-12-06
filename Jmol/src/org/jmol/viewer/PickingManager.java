@@ -139,8 +139,6 @@ class PickingManager {
       if (pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_PFAAT 
           && !shiftKey && !alternateKey)
         viewer.script("select none");
-      //if (pickingMode == JmolConstants.PICKING_MEASURE
-      //    || pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON)
       resetMeasurement();
       if (pickingMode != JmolConstants.PICKING_SPIN)
         return;
@@ -161,19 +159,9 @@ class PickingManager {
         resetMeasurement();
       if (queueAtom(atomIndex, ptClicked) < n)
         return;
-      viewer.setStatusMeasurePicked(n, measurementQueued.getStringDetail());
+      viewer.setStatusMeasuring("measurePicked", n, measurementQueued.getStringDetail());
       if (pickingMode == JmolConstants.PICKING_MEASURE
           || pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON) {
-/*        int iLast = -1;
-        int iThis;
-        for (int i = 1; i <= n; i++) {
-          if (iLast == (iThis = measurementQueued.getIndex(i))) {
-            queuedAtomCount = i - 1;
-            return;
-          }
-          iLast = iThis;
-        }
-*/
         viewer.script("measure " + measurementQueued.getMeasurementScript(" "));
       }
       return;

@@ -452,8 +452,12 @@ public class Jmol implements WrappedApplet {
       JSObject jsoForm = (JSObject) jsoDocument.getMember(statusForm);
       if (statusTextarea != null) {
         JSObject jsoTextarea = (JSObject) jsoForm.getMember(statusTextarea);
-        String info = (String) jsoTextarea.getMember("value");
-        jsoTextarea.setMember("value", info + "\n" + message);
+        if (message == null) {
+          jsoTextarea.setMember("value", "");
+        } else {
+          String info = (String) jsoTextarea.getMember("value");
+          jsoTextarea.setMember("value", info + "\n" + message);
+        }
       }
     } catch (Exception e) {
       Logger.error("error indicating status at document." + statusForm + "."
@@ -629,13 +633,27 @@ public class Jmol implements WrappedApplet {
   public String scriptWait(String script) {
     if (script == null || script.length() == 0)
       return "";
+    outputBuffer = null;
     return scriptProcessor(script, null, SCRIPT_WAIT);
   }
 
+  StringBuffer outputBuffer;
+  
   public String scriptWait(String script, String statusParams) {
     if (script == null || script.length() == 0)
       return "";
+    outputBuffer = null;
     return scriptProcessor(script, statusParams, SCRIPT_WAIT);
+  }
+
+  public String scriptWaitOutput(String script) {
+    if (script == null || script.length() == 0)
+      return "";
+    outputBuffer = new StringBuffer();
+    viewer.scriptWaitStatus(script, "");
+    String str = (outputBuffer == null ? "" : outputBuffer.toString());
+    outputBuffer = null;
+    return str;
   }
 
   synchronized public void syncScript(String script) {
@@ -864,10 +882,16 @@ public class Jmol implements WrappedApplet {
         break;
       case JmolConstants.CALLBACK_ECHO:
         boolean isScriptQueued = (((Integer) data[2]).intValue() == 1);
-        if (isScriptQueued && !doCallback)
-          consoleMessage(strInfo);
-        if (!doCallback)
+        boolean doOutput = true;
+        if (!doCallback) {
+          if (isScriptQueued) {
+            consoleMessage(strInfo);
+            doOutput = false;
+          }
           doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
+        }
+        if (doOutput)
+          output(strInfo);
         break;
       case JmolConstants.CALLBACK_EVAL:
       case JmolConstants.CALLBACK_HOVER:
@@ -875,7 +899,6 @@ public class Jmol implements WrappedApplet {
         break;
       case JmolConstants.CALLBACK_LOADSTRUCT:
         String errorMsg = (String) data[4];
-        //data[5] = (String) null; // don't pass reference to clientFile reference
         if (errorMsg != null) {
           showStatusAndConsole((errorMsg.indexOf("NOTE:") >= 0 ? "" : GT
               ._("File Error:"))
@@ -887,13 +910,18 @@ public class Jmol implements WrappedApplet {
         //pending, deleted, or completed
         if (!doCallback)
           doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
-        if (data.length == 3)
+        String status = (String) data[3]; 
+        if (status.indexOf("Picked") >= 0) {//picking mode
           showStatusAndConsole(strInfo, true); // set picking measure distance
-        else
-          consoleMessage((String) data[3] + ": " + strInfo);
+        } else if (status.indexOf("Completed") >= 0) {
+          strInfo = status + ": " + strInfo;
+          consoleMessage(strInfo);
+        }
         break;
       case JmolConstants.CALLBACK_MESSAGE:
-        if (!doCallback)
+        if (doCallback)
+          output(strInfo);
+        else
           consoleMessage(strInfo);
         if (strInfo == null)
           return;
@@ -947,19 +975,24 @@ public class Jmol implements WrappedApplet {
       }
     }
 
+    private void output(String s) {
+      if (outputBuffer != null && s != null)
+        outputBuffer.append(s).append('\n');
+    }
+
     private void notifyScriptTermination() {
       // this had to do with button callbacks
     }
 
-    private String notifySync(String info) {
+    private String notifySync(String info, String appletName) {
       String syncCallback = callbacks[JmolConstants.CALLBACK_SYNC];
       if (!mayScript || syncCallback == null)
         return info;
       try {
         JSObject jsoWindow = JSObject.getWindow(appletWrapper);
         if (syncCallback.length() > 0)
-          return (String) jsoWindow.call(syncCallback, new Object[] { htmlName,
-              info });
+          return "" + jsoWindow.call(syncCallback, new Object[] { htmlName,
+              info, appletName });
       } catch (Exception e) {
         if (!haveNotifiedError)
           if (Logger.debugging) {
@@ -1161,6 +1194,8 @@ public class Jmol implements WrappedApplet {
         sendJsTextStatus(message);
         if (toConsole)
           consoleMessage(message);
+        else
+          output(message);
       } catch (Exception e) {
         //ignore if page is closing
       }
@@ -1183,9 +1218,11 @@ public class Jmol implements WrappedApplet {
         if (jvm12.getConsoleMessage().startsWith(defaultMessage))
           jvm12.consoleMessage("");
         jvm12.consoleMessage(message);
-        if (message == null)
+        if (message == null) {
           jvm12.consoleMessage(defaultMessage);
+        }
       }
+      output(message);
       sendJsTextareaStatus(message);
     }
 
@@ -1198,7 +1235,7 @@ public class Jmol implements WrappedApplet {
     private String sendScript(String script, String appletName, boolean isSync,
                               boolean doCallback) {
       if (doCallback) {
-        script = notifySync(script);
+        script = notifySync(script, appletName);
         // if the notified JavaScript function returns "" or 0, then 
         // we do NOT continue to notify the other applets
         if (script == null || script.length() == 0 || script.equals("0"))

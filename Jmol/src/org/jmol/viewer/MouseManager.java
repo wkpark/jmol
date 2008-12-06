@@ -385,6 +385,8 @@ public abstract class MouseManager implements KeyListener {
       if (nearestPoint != null
           || measurementPending.getIndexOf(nearestAtomIndex) == 0)
         measurementPending.addPoint(nearestAtomIndex, nearestPoint, false);
+      if (measurementPending.haveModified())
+        viewer.setPendingMeasurement(measurementPending);
       viewer.refresh(3, "measurementPending");
       return;
     case 1:

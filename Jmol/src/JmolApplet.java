@@ -200,7 +200,14 @@ public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper implements
     if (statusParams == null)
       statusParams = "";
     if (wrappedApplet != null)
-      return "" + (wrappedApplet.scriptWait("" + script, "" + statusParams));
+      return "" + (wrappedApplet.scriptWait("" + script, statusParams));
     return null;
   }
+  
+  public String scriptWaitOutput(String script) {
+    if (wrappedApplet != null)
+      return "" + (wrappedApplet.scriptWaitOutput("" + script));
+    return null;
+  }
+
 }

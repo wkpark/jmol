@@ -286,13 +286,13 @@ class Eval {
         viewer.handleError(er, false);
         setErrorMessage("" + er + " " + viewer.getShapeErrorState());
         errorMessageUntranslated = "" + er;
-        scriptStatus(errorMessage);
+        scriptStatusOrBuffer(errorMessage);
       }
     } catch (ScriptException e) {
       setErrorMessage(e.toString());
       errorMessageUntranslated = e.getErrorMessageUntranslated();
       System.out.println("eval e, untrans" + e + " "+ errorMessageUntranslated);
-      scriptStatus(errorMessage);
+      scriptStatusOrBuffer(errorMessage);
       viewer.notifyError(
           (errorMessage.indexOf("java.lang.OutOfMemoryError") >= 0 ? "Error"
               : "ScriptException"), errorMessage, errorMessageUntranslated);
@@ -495,7 +495,7 @@ class Eval {
   private boolean loadScriptFileInternal(String filename) {
     //from "script" command, with push/pop surrounding or viewer
     if (filename.toLowerCase().indexOf("javascript:") == 0)
-      return loadScript(filename, viewer.eval(filename.substring(11)),
+      return loadScript(filename, viewer.jsEval(filename.substring(11)),
           debugScript);
     String[] data = new String[2];
     data[0] = filename;
@@ -698,7 +698,7 @@ class Eval {
             }
             pc++;
             if (error)
-              scriptStatus(errorMessage);
+              scriptStatusOrBuffer(errorMessage);
             pauseExecution();
           }
         }
@@ -827,11 +827,17 @@ class Eval {
 
   boolean isForCheck = false;
 
+  void setDebugging() {
+    debugScript = viewer.getDebugScript();
+    logMessages = (debugScript && Logger.debugging);
+  }
+  
   private void instructionDispatchLoop(boolean doList) throws ScriptException {
     long timeBegin = 0;
     isForCheck = false;
-    debugScript = (!isSyntaxCheck && viewer.getDebugScript());
-    logMessages = (debugScript && Logger.debugging);
+    debugScript = logMessages = false;
+    if (!isSyntaxCheck)
+      setDebugging();
     if (logMessages) {
       timeBegin = System.currentTimeMillis();
       viewer.scriptStatus("Eval.instructionDispatchLoop():" + timeBegin);
@@ -3485,7 +3491,7 @@ class Eval {
     }
     if (isDelete) {
       if (!(tQuiet || scriptLevel > scriptReportingLevel))
-        scriptStatus(GT._("{0} connections deleted", nModified));
+        scriptStatusOrBuffer(GT._("{0} connections deleted", nModified));
       return;
     }
     if (isColorOrRadius) {
@@ -3506,7 +3512,7 @@ class Eval {
       }
     }
     if (!(tQuiet || scriptLevel > scriptReportingLevel))
-      scriptStatus(GT._("{0} new bonds; {1} modified", new Object[] {
+      scriptStatusOrBuffer(GT._("{0} new bonds; {1} modified", new Object[] {
           new Integer(nNew), new Integer(nModified) }));
   }
 
@@ -4219,10 +4225,10 @@ class Eval {
     if (outputBuffer == null)
       Logger.warn(s);
     if (!s.startsWith("_"))
-      scriptStatus(s);
+      scriptStatusOrBuffer(s);
   }
 
-  private void scriptStatus(String s) {
+  private void scriptStatusOrBuffer(String s) {
     if (outputBuffer != null) {
       outputBuffer.append(s).append('\n');
       return;
@@ -4495,9 +4501,12 @@ class Eval {
       if (firstLastSteps != null)
         htParams.put("firstLastSteps", firstLastSteps);
       nFiles = fNames.size();
+      filename = "";
       String[] filenames = new String[nFiles];
-      for (int j = 0; j < nFiles; j++)
+      for (int j = 0; j < nFiles; j++) {
         filenames[j] = (String) fNames.get(j);
+        filename += (j == 0 ? "" : "; ") + filenames[j];
+      }
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck) {
         viewer.openFiles(modelName, filenames, null, isAppend, htParams);
       }
@@ -4524,7 +4533,7 @@ class Eval {
       viewer.setCurrentModelIndex(modelCount);
     }
     if (logMessages)
-      scriptStatus("Successfully loaded:" + modelName);
+      scriptStatusOrBuffer("Successfully loaded:" + modelName);
     String defaultScript = viewer.getDefaultLoadScript();
     String msg = "";
     if (defaultScript.length() > 0)
@@ -5135,7 +5144,7 @@ class Eval {
     if (tok == Token.javascript) {
       checkLength(2);
       if (!isSyntaxCheck)
-        viewer.eval(theScript);
+        viewer.jsEval(theScript);
       return;
     }
     if (theScript.equalsIgnoreCase("applet")) {
@@ -5148,7 +5157,7 @@ class Eval {
       if (appID.length() == 0 || appID.equals("all"))
         appID = "*";
       if (!appID.equals(".")) {
-        viewer.eval(appID + "\1" + theScript);
+        viewer.jsEval(appID + "\1" + theScript);
         if (!appID.equals("*"))
           return;
       }
@@ -5339,7 +5348,7 @@ class Eval {
       return;
     int nDeleted = viewer.deleteAtoms(bs, false);
     if (!(tQuiet || scriptLevel > scriptReportingLevel))
-      scriptStatus(GT._("{0} atoms deleted", nDeleted));
+      scriptStatusOrBuffer(GT._("{0} atoms deleted", nDeleted));
   }
 
   private void minimize() throws ScriptException {
@@ -5566,7 +5575,7 @@ class Eval {
     int nDeleted = viewer.deleteAtoms(bs, true);
     boolean isQuiet = (tQuiet || scriptLevel > scriptReportingLevel);
     if (!isQuiet)
-      scriptStatus(GT._("{0} atoms deleted", nDeleted));
+      scriptStatusOrBuffer(GT._("{0} atoms deleted", nDeleted));
     viewer.select(null, isQuiet);
   }
 
@@ -6056,7 +6065,7 @@ class Eval {
       if (isSyntaxCheck)
         return;
       int n = viewer.autoHbond(null);
-      scriptStatus(GT._("{0} hydrogen bonds", n));
+      scriptStatusOrBuffer(GT._("{0} hydrogen bonds", n));
       return;
     }
     if (statementLength == 2 && getToken(1).tok == Token.delete) {
@@ -9201,7 +9210,7 @@ class Eval {
         if (msg != null) {
           if (!msg.startsWith("OK"))
             evalError(msg, null);
-          scriptStatus("Created " + fileName + ".ini:\n\n" + data);
+          scriptStatusOrBuffer("Created " + fileName + ".ini:\n\n" + data);
         }
         return "";
       }
@@ -9280,7 +9289,8 @@ class Eval {
     if (isShow) {
       showString(data);
     } else if (bytes != null && bytes instanceof String) {
-      scriptStatus((String) bytes);
+      // load error here
+      scriptStatusOrBuffer((String) bytes);
     } else {
       if (bytes == null)
         bytes = data;
@@ -9289,7 +9299,7 @@ class Eval {
       if (msg != null) {
         if (!msg.startsWith("OK"))
           evalError(msg, null);
-        scriptStatus(msg
+        scriptStatusOrBuffer(msg
             + (isImage ? "; width=" + width + "; height=" + height : ""));
       }
     }
@@ -12927,12 +12937,12 @@ class Eval {
         String appID = (args.length == 2 ? Token.sValue(args[1]) : ".");
         //options include  * > . or an appletID with or without "jmolApplet" 
         if (!appID.equals("."))
-          sb.append(viewer.eval(appID + "\1" + s));
+          sb.append(viewer.jsEval(appID + "\1" + s));
         if (appID.equals(".") || appID.equals("*"))
           runScript(s, sb);
         break;
       case Token.javascript:
-        sb.append(viewer.eval(s));
+        sb.append(viewer.jsEval(s));
         break;
       }
       s = sb.toString();

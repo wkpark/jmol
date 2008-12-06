@@ -70,7 +70,11 @@ viewerRefreshed
 
 class StatusManager {
 
-  private boolean allowStatusReporting = true;
+  StatusManager(Viewer viewer) {
+    this.viewer = viewer;
+  }
+
+  private boolean allowStatusReporting; // set in StateManager.global
   
   void setAllowStatusReporting(boolean TF){
      allowStatusReporting = TF;
@@ -79,9 +83,91 @@ class StatusManager {
   private Viewer viewer;
   private JmolStatusListener jmolStatusListener;
   private String statusList = "";
+
   String getStatusList() {
     return statusList;
   }
+  
+  /*
+   * the messageQueue provided a mechanism for saving and recalling
+   * information about the running of a script. The idea was to poll
+   * the applet instead of using callbacks. 
+   * 
+   * As it turns out, polling of applets is fraught with problems, 
+   * not the least of which is the most odd behavior of some 
+   * versions of Firefox that makes text entry into the URL line 
+   * enter in reverse order of characters during applet polling. 
+   * This bug may or may not have been resolved, but in any case,
+   * callbacks have proven far more efficient than polling anyway,
+   * so this mechanism is probably not particularly generally useful. 
+   * 
+   * Still, the mechanism is here because in addition to applet polling,
+   * it provides a way to get selective information back from the applet
+   * to the calling page after a script has run synchronously (using applet.scriptWait). 
+   * 
+   * The basic idea involves:
+   * 
+   * 1) Setting what types of messages should be saved
+   * 2) Executing the scriptWait(script) call
+   * 3) Decoding the return value of that function
+   * 
+   * Note that this is not meant to be a complete record of the script.
+   * Rather, each messsage type is saved in its own Vector, and 
+   * only most recent MAX_QUEUE_LENGTH (16) entries are saved at any time.
+   * 
+   * For example:
+   * 
+   * 1) jmolGetStatus("scriptEcho,scriptMessage,scriptStatus,scriptError",targetSuffix)
+   * 
+   * Here we flush the message queue and identify the status types we want to maintain.
+   *
+   * 2) var ret = "" + applet.scriptWait("background red;echo ok;echo hello;")
+   * 
+   * The ret variable contains the array of messages in JSON format, which
+   * can then be reconstructed as a JavaScript array object. In this case the return is:
+   * 
+   * 
+   * {"jmolStatus": [ 
+   *  [ 
+   *    [ 3,"scriptEcho",0,"ok" ],
+   *    [ 4,"scriptEcho",0,"hello" ] 
+   *  ],[ 
+   *    [ 1,"scriptStarted",6,"background red;echo ok;echo hello;" ] 
+   *  ],[ 
+   *    [ 6,"scriptTerminated",1,"Jmol script terminated successfully" ] 
+   *  ],[ 
+   *    [ 2,"scriptStatus",0,"script 6 started" ],
+   *    [ 5,"scriptStatus",0,"Script completed" ],
+   *    [ 7,"scriptStatus",0,"Jmol script terminated" ] 
+   *  ] 
+   *  ]}
+   * 
+   * Decoded, what we have is a "jmolStatus" JavaScript Array. This array has 4 elements, 
+   * our scriptEcho, scriptStarted, scriptTerminated, and scriptStatus messages.
+   * 
+   * Within each of those elements we have the most recent 16 status messages.
+   * Each status record consists of four entries:
+   * 
+   *   [ statusPtr, statusName, intInfo, strInfo ]
+   *  
+   * The first entry in each record is the sequential number when that record
+   * was recorded, so to reconstruct the sequence of events, simply order the arrays:
+   * 
+   *    [ 1,"scriptStarted",6,"background red;echo ok;echo hello;" ] 
+   *    [ 2,"scriptStatus",0,"script 6 started" ],
+   *    [ 3,"scriptEcho",0,"ok" ],
+   *    [ 4,"scriptEcho",0,"hello" ] 
+   *    [ 5,"scriptStatus",0,"Script completed" ],
+   *    [ 6,"scriptTerminated",1,"Jmol script terminated successfully" ] 
+   *    [ 7,"scriptStatus",0,"Jmol script terminated" ] 
+   *
+   * While it could be argued that the presence of the statusName in each record is
+   * redundant, and a better structure would be a Hashtable, this is the way it is 
+   * implemented here and required for Jmol.js. 
+   * 
+   * Note that Jmol.js has a set of functions that manipulate this data. 
+   * 
+   */
   
   private Hashtable messageQueue = new Hashtable();
   Hashtable getMessageQueue() {
@@ -90,16 +176,76 @@ class StatusManager {
   
   private int statusPtr = 0;
   private static int MAXIMUM_QUEUE_LENGTH = 16;
-  private StringBuffer outputBuffer;
   
-  StatusManager(Viewer viewer) {
-    this.viewer = viewer;
+////////////////////Jmol status //////////////
+
+  private boolean recordStatus(String statusName) {
+    return (allowStatusReporting && statusList.length() > 0 
+        && (statusList.equals("all") || statusList.indexOf(statusName) >= 0));
+  }
+  
+  synchronized private void setStatusChanged(String statusName,
+      int intInfo, Object statusInfo, boolean isReplace) {
+    if (!recordStatus(statusName))
+      return;
+    statusPtr++;
+    Vector statusRecordSet;
+    Vector msgRecord = new Vector();
+    msgRecord.addElement(new Integer(statusPtr));
+    msgRecord.addElement(statusName);
+    msgRecord.addElement(new Integer(intInfo));
+    msgRecord.addElement(statusInfo);
+    if (isReplace && messageQueue.containsKey(statusName)) {
+      messageQueue.remove(statusName);
+    }
+    if (messageQueue.containsKey(statusName)) {
+      statusRecordSet = (Vector)messageQueue.remove(statusName);
+    } else {
+      statusRecordSet = new Vector();
+    }
+    if (statusRecordSet.size() == MAXIMUM_QUEUE_LENGTH)
+      statusRecordSet.removeElementAt(0);
+    
+    statusRecordSet.addElement(msgRecord);
+    messageQueue.put(statusName, statusRecordSet);
+  }
+  
+  private boolean asVector = true;
+
+  synchronized Object getStatusChanged(String statusNameList) {
+    /*
+     * returns a Vector of statusRecordSets, one per status type,
+     * where each statusRecordSet is itself a vector of vectors:
+     * [int statusPtr,String statusName,int intInfo, String statusInfo]
+     * 
+     * This allows selection of just the type desired as well as sorting
+     * by time overall.
+     * 
+     */
+    
+    if (statusNameList.indexOf("AS_") == 0) {
+      asVector = (statusNameList.indexOf("VECTOR") == 3);
+      return statusNameList;
+    }
+    Object msgList;
+    if (asVector)
+      msgList = new Vector();
+    else
+      msgList = new Hashtable();
+    if (resetMessageQueue(statusNameList))
+      return msgList;
+    Enumeration e = messageQueue.keys();
+    while (e.hasMoreElements()) {
+      String statusName = (String)e.nextElement();
+      Object record = messageQueue.remove(statusName);
+      if (asVector)
+        ((Vector) msgList).addElement(record);
+      else
+        ((Hashtable)msgList).put(statusName, record);
+    }
+    return msgList;
   }
 
-  void clear() {
-    viewer.setStatusFileLoaded(0, null, null, null, null);
-  }
-  
   private synchronized boolean resetMessageQueue(String statusList) {
     boolean isRemove = (statusList.length() > 0 && statusList.charAt(0) == '-');
     boolean isAdd = (statusList.length() > 0 && statusList.charAt(0) == '+');
@@ -130,66 +276,76 @@ class StatusManager {
     this.jmolStatusListener = jmolStatusListener;
   }
   
-  private synchronized boolean setStatusList(String statusList) {
-    return resetMessageQueue(statusList);
-  }
-
-  private Hashtable htCallbacks = new Hashtable();
-  synchronized void setCallbackFunction(String callbackType,
-                                        String callbackFunction) {
-    if (callbackFunction == null)
-      htCallbacks.remove(callbackType.toLowerCase());
-    else if (callbackFunction.toLowerCase().indexOf("script:") == 0)
-      htCallbacks.put(callbackType.toLowerCase(), callbackFunction.substring(7));
-    // either format is ok; jmolscript: preferred, because that is the same as embedded scripts.
-    else if (callbackFunction.toLowerCase().indexOf("jmolscript:") == 0)
-      htCallbacks.put(callbackType.toLowerCase(), callbackFunction.substring(11));
-    if (jmolStatusListener != null)
-      jmolStatusListener.setCallbackFunction(callbackType, callbackFunction);
+  private String[] jmolScriptCallbacks = new String[JmolConstants.CALLBACK_COUNT];
+  
+  private String jmolScriptCallback(int iCallback) {
+    String s = jmolScriptCallbacks[iCallback];
+    if (s != null)
+      viewer.evalStringQuiet(s, true, false);
+    return s;
   }
   
-  String getCallbackScript(String callbackType) {
-    return (String) htCallbacks.get(callbackType);
+  synchronized void setCallbackFunction(String callbackType,
+                                        String callbackFunction) {
+    // menu and language setting also use this route
+    int iCallback = JmolConstants.getCallbackId(callbackType);
+    if (iCallback >= 0) {
+      int pt = (callbackFunction == null ? 0
+          : callbackFunction.length() > 7
+              && callbackFunction.toLowerCase().indexOf("script:") == 0 ? 7
+              : callbackFunction.length() > 11
+                  && callbackFunction.toLowerCase().indexOf("jmolscript:") == 0 ? 11
+                  : 0);
+      jmolScriptCallbacks[iCallback] = (pt == 0 ? null : callbackFunction
+          .substring(pt).trim());
+    }
+    if (jmolStatusListener != null)
+      jmolStatusListener.setCallbackFunction(callbackType, callbackFunction);
   }
   
   private boolean notifyEnabled(int type) {
     return jmolStatusListener != null && jmolStatusListener.notifyEnabled(type);
   }
-  
-  synchronized void setStatusAtomPicked(String sJmol, int atomIndex, String strInfo) {
-    if (atomIndex == -1)
-      return;
+
+  synchronized void setStatusAtomPicked(int atomIndex, String strInfo) {
+    String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_PICK);
     Logger.info("setStatusAtomPicked(" + atomIndex + "," + strInfo + ")");
     setStatusChanged("atomPicked", atomIndex, strInfo, false);
-    if (jmolStatusListener != null)
+    if (notifyEnabled(JmolConstants.CALLBACK_PICK))
       jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_PICK,
           new Object[] { sJmol, strInfo, new Integer(atomIndex) });
   }
 
-  synchronized void setStatusResized(String sJmol, int width, int height){
-    if (jmolStatusListener != null && jmolStatusListener.notifyEnabled(JmolConstants.CALLBACK_RESIZE))
+  synchronized void setStatusResized(int width, int height){
+    String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_RESIZE);
+    if (notifyEnabled(JmolConstants.CALLBACK_RESIZE))
       jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_RESIZE,
           new Object[] { sJmol, new Integer(width), new Integer(height) }); 
   }
 
-  synchronized void setStatusAtomHovered(String sJmol, int iatom, String strInfo) {
+  synchronized void setStatusAtomHovered(int iatom, String strInfo) {
+    String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_HOVER);
     if (notifyEnabled(JmolConstants.CALLBACK_HOVER))
       jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_HOVER, 
           new Object[] {sJmol, strInfo, new Integer(iatom) });
   }
   
-  synchronized void setStatusFileLoaded(String sJmol, String fullPathName, String fileName,
+  synchronized void setFileLoadStatus(String fullPathName, String fileName,
                                         String modelName, String errorMsg,
-                                        int ptLoad) {
+                                        int ptLoad, boolean doCallback) {
+    
     setStatusChanged("fileLoaded", ptLoad, fullPathName, false);
     if (errorMsg != null)
       setStatusChanged("fileLoadError", ptLoad, errorMsg, false);
-    if (jmolStatusListener != null && (ptLoad <= 0 || ptLoad == 3))
+    String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_LOADSTRUCT);
+    if (doCallback && notifyEnabled(JmolConstants.CALLBACK_LOADSTRUCT)) 
       jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_LOADSTRUCT,
-          new Object[] { sJmol, fullPathName, fileName, modelName, errorMsg });
+          new Object[] { sJmol, 
+              fullPathName, fileName, modelName, errorMsg, new Integer(ptLoad) });
   }
 
-  synchronized void setStatusFrameChanged(String sJmol, int frameNo, int fileNo, int modelNo, int firstNo, int lastNo) {
+  synchronized void setStatusFrameChanged(int frameNo, int fileNo, int modelNo,
+                                          int firstNo, int lastNo) {
     //System.out.println("setStatusFrameChanged modelSet=" + viewer.getModelSet());
     if (viewer.getModelSet() == null)
       return;
@@ -199,9 +355,12 @@ class StatusManager {
       f = -2 - f;
     setStatusChanged("frameChanged", frameNo, (f >= 0 ? viewer
         .getModelNumberDotted(f) : ""), false);
-    if (jmolStatusListener != null)
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_ANIMFRAME, 
-          new Object[] {sJmol, new int[] {frameNo, fileNo, modelNo, firstNo, lastNo}} );
+    String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_ANIMFRAME);
+    if (notifyEnabled(JmolConstants.CALLBACK_ANIMFRAME)) {
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_ANIMFRAME,
+          new Object[] { sJmol,
+              new int[] { frameNo, fileNo, modelNo, firstNo, lastNo } });
+    }
   }
 
   synchronized void setScriptEcho(String strEcho,
@@ -209,90 +368,81 @@ class StatusManager {
     if (strEcho == null)
       return;
     setStatusChanged("scriptEcho", 0, strEcho, false);
-    if (outputBuffer != null)
-      outputBuffer.append(strEcho);
-    if (jmolStatusListener != null)
+    String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_ECHO);
+    if (notifyEnabled(JmolConstants.CALLBACK_ECHO))
       jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_ECHO,
-          new Object[] { null, strEcho, new Integer(isScriptQueued ? 1 : 0) });
+          new Object[] { sJmol, strEcho, new Integer(isScriptQueued ? 1 : 0) });
   }
 
-  synchronized void setStatusMeasurePicked(int iatom,
-                                           String strMeasure) {
-    setStatusChanged("measurePicked", iatom, strMeasure, false);
-    Logger.info("measurePicked " + iatom + " " + strMeasure);
-    if (jmolStatusListener != null)
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_MEASURE,
-          new Object[] { null, strMeasure, new Integer(iatom) });
-  }
-  
-  synchronized void setStatusMeasuring(String status, int count, String strMeasure) {
-    setStatusChanged(status, count, strMeasure, false);
-    if(status.equals("measureCompleted")) 
-      Logger.info("measurement["+count+"] = "+strMeasure);
-    if (jmolStatusListener != null)
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_MEASURE, new Object[] { null, strMeasure,  new Integer(count), status });
+  synchronized void setStatusMeasuring(String status, int intInfo, String strMeasure) {
+    setStatusChanged(status, intInfo, strMeasure, false);
+    String sJmol = null;
+    if(status.equals("measureCompleted")) { 
+      Logger.info("measurement["+intInfo+"] = "+strMeasure);
+      sJmol = jmolScriptCallback(JmolConstants.CALLBACK_MEASURE);
+    } else if (status.equals("measurePicked")) {
+        setStatusChanged("measurePicked", intInfo, strMeasure, false);
+        Logger.info("measurePicked " + intInfo + " " + strMeasure);
+    }
+        
+    if (notifyEnabled(JmolConstants.CALLBACK_MEASURE))
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_MEASURE, 
+          new Object[] { sJmol, strMeasure,  new Integer(intInfo), status });
   }
   
   synchronized void notifyError(String errType, String errMsg,
                                 String errMsgUntranslated) {
-    if (jmolStatusListener == null
-        || !jmolStatusListener.notifyEnabled(JmolConstants.CALLBACK_ERROR))
-      return;
-    jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_ERROR,
-        new Object[] { null, errType, errMsg,
-        viewer.getShapeErrorState(), errMsgUntranslated });
+    String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_ERROR);
+    if (notifyEnabled(JmolConstants.CALLBACK_ERROR))
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_ERROR,
+          new Object[] { sJmol, errType, errMsg, viewer.getShapeErrorState(),
+              errMsgUntranslated });
   }
   
-  synchronized void notifyMinimizationStatus(String sJmol) {
-    if (jmolStatusListener == null
-        || !jmolStatusListener
-            .notifyEnabled(JmolConstants.CALLBACK_MINIMIZATION))
-      return;
-    jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_MINIMIZATION,
-        new Object[] { sJmol, viewer.getParameter("_minimizationStatus"),
-            viewer.getParameter("_minimizationSteps"),
-            viewer.getParameter("_minimizationEnergy"),
-            viewer.getParameter("_minimizationEnergyDiff"), });
+  synchronized void notifyMinimizationStatus(String minStatus, Integer minSteps, 
+                                             Float minEnergy, Float minEnergyDiff) {
+    String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_MINIMIZATION);
+    if (notifyEnabled(JmolConstants.CALLBACK_MINIMIZATION))
+      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_MINIMIZATION,
+          new Object[] { sJmol, minStatus, minSteps, minEnergy, minEnergyDiff });
   }
   
-  synchronized void setStatusScriptStarted(int iscript, String script) {
-    setStatusChanged("scriptStarted", iscript, script, false);
-    if (jmolStatusListener != null)
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT, new Object[] { null, 
-          "script " + iscript + " started", script, new Integer(-2), (String) null });
-  }
-
-  synchronized void setScriptStatus(String strStatus, String statusMessage, int msWalltime, 
+  synchronized void setScriptStatus(String strStatus, String statusMessage,
+                                    int msWalltime,
                                     String strErrorMessageUntranslated) {
-    if (strStatus == null)
+    // only allow trapping of script information of type 0 
+    if (msWalltime < -1) {
+      int iscript = -2 - msWalltime;
+      setStatusChanged("scriptStarted", iscript, statusMessage, false);
+      strStatus = "script " + iscript + " started";
+    } else if (strStatus == null) {
       return;
+    }
+    String sJmol = (msWalltime == 0 ? jmolScriptCallback(JmolConstants.CALLBACK_SCRIPT)
+        : null);
     boolean isScriptCompletion = (strStatus == Eval.SCRIPT_COMPLETED);
-    
-    // --------------------------
-    // This is for the older status logging business, which isn't recommended.
-    
-    // note: this next bit is not reliable, because translations can change the text.
-    boolean isError = strStatus.indexOf("ERROR:") >= 0;
-    setStatusChanged((isError ? "scriptError" : "scriptStatus"), 0, strStatus,
-        false);
-    if (isError || isScriptCompletion)
-      setStatusChanged("scriptTerminated", 1, "Jmol script terminated"
-          + (isError ? " unsuccessfully: " + strStatus : " successfully"),
-          false);
-    
-    // ---------------------------
-    
-   if (jmolStatusListener != null) {
+
+    if (recordStatus("script")) {
+      boolean isError = (strErrorMessageUntranslated != null);
+      setStatusChanged((isError ? "scriptError" : "scriptStatus"), 0,
+          strStatus, false);
+      if (isError || isScriptCompletion)
+        setStatusChanged("scriptTerminated", 1, "Jmol script terminated"
+            + (isError ? " unsuccessfully: " + strStatus : " successfully"),
+            false);
+    }
+
+    if (jmolStatusListener != null) {
       if (isScriptCompletion && viewer.getMessageStyleChime()
           && viewer.getDebugScript()) {
         jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT,
-            new Object[] { null, "script <exiting>", statusMessage, new Integer(-1), 
-            strErrorMessageUntranslated });
+            new Object[] { null, "script <exiting>", statusMessage,
+                new Integer(-1), strErrorMessageUntranslated });
         strStatus = "Jmol script completed.";
       }
       jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT,
-          new Object[] { null, strStatus, statusMessage,
-              new Integer(isScriptCompletion ? -1 : msWalltime), 
+          new Object[] { sJmol, strStatus, statusMessage,
+              new Integer(isScriptCompletion ? -1 : msWalltime),
               strErrorMessageUntranslated });
     }
   }
@@ -375,6 +525,7 @@ class StatusManager {
   }
 
   void syncSend(String script, String appletName) {
+    // no jmolscript option for syncSend
     if (jmolStatusListener != null)
       jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SYNC,
           new Object[] { null, script, appletName });
@@ -398,73 +549,13 @@ class StatusManager {
     if (jmolStatusListener != null)
       jmolStatusListener.showConsole(showConsole);
   }
-
-////////////////////Jmol status //////////////
-
-  synchronized void setStatusChanged(String statusName,
-      int intInfo, Object statusInfo, boolean isReplace) {
-    if (!allowStatusReporting || statusList.length() == 0 
-        || statusList != "all" && statusList.indexOf(statusName) < 0)
-      return;
-    statusPtr++;
-    Vector statusRecordSet;
-    Vector msgRecord = new Vector();
-    msgRecord.addElement(new Integer(statusPtr));
-    msgRecord.addElement(statusName);
-    msgRecord.addElement(new Integer(intInfo));
-    msgRecord.addElement(statusInfo);
-    if (isReplace && messageQueue.containsKey(statusName)) {
-      messageQueue.remove(statusName);
-    }
-    if (messageQueue.containsKey(statusName)) {
-      statusRecordSet = (Vector)messageQueue.remove(statusName);
-    } else {
-      statusRecordSet = new Vector();
-    }
-    if (statusRecordSet.size() == MAXIMUM_QUEUE_LENGTH)
-      statusRecordSet.removeElementAt(0);
-    
-    statusRecordSet.addElement(msgRecord);
-    messageQueue.put(statusName, statusRecordSet);
-  }
-  
-  synchronized Object getStatusChanged(String statusNameList) {
-    /*
-     * returns a Vector of statusRecordSets, one per status type,
-     * where each statusRecordSet is itself a vector of vectors:
-     * [int statusPtr,String statusName,int intInfo, String statusInfo]
-     * 
-     * This allows selection of just the type desired as well as sorting
-     * by time overall.
-     * 
-     */
-    Vector msgList = new Vector();
-    if (statusNameList.equals("output")) {
-      if (outputBuffer == null) {
-        outputBuffer = new StringBuffer();
-        return "";
-      }
-      String s = outputBuffer.toString();
-      outputBuffer = null;
-      return s;
-    }
-    if (setStatusList(statusNameList)) return msgList;
-    Enumeration e = messageQueue.keys();
-    int n = 0;
-    while (e.hasMoreElements()) {
-      String statusName = (String)e.nextElement();
-      msgList.addElement(messageQueue.remove(statusName));
-      n++;
-    }
-    return msgList;
-  }
   
   float[][] functionXY(String functionName, int nX, int nY) {
     return (jmolStatusListener == null ? new float[Math.abs(nX)][Math.abs(nY)] :
       jmolStatusListener.functionXY(functionName, nX, nY));
   }
   
-  String eval(String strEval) {
+  String jsEval(String strEval) {
     return (jmolStatusListener == null ? "" : jmolStatusListener.eval(strEval));
   }
 
@@ -491,7 +582,7 @@ class StatusManager {
     return jmolStatusListener.createImage(fileName, type, text_or_bytes, quality);
   }
 
-  public Hashtable getRegistryInfo() {
+  Hashtable getRegistryInfo() {
     /* 
 
      //note that the following JavaScript retrieves the registry:
@@ -510,10 +601,15 @@ class StatusManager {
     return (jmolStatusListener == null ? null : jmolStatusListener.getRegistryInfo());
   }
 
-  public String dialogAsk(String type, String fileName) {
+  String dialogAsk(String type, String fileName) {
     if (jmolStatusListener != null)
       return jmolStatusListener.dialogAsk(type, fileName);
     return "";
+  }
+
+  String getMenu(String type) {
+    return (jmolStatusListener == null ? "" : jmolStatusListener
+        .eval("_GET_MENU|" + type));
   }
 
 }

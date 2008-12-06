@@ -1682,12 +1682,14 @@ public class Jmol extends JPanel {
         sendConsoleEcho(strInfo);
         break;
       case JmolConstants.CALLBACK_MEASURE:
-        if (data.length == 3) //picking mode
+        String status = (String) data[3]; 
+        if (status.indexOf("Picked") >= 0) //picking mode
           notifyAtomPicked(strInfo);
-        else if (((String) data[3]).indexOf("Completed") >= 0)
+        else if (status.indexOf("Completed") >= 0)
           sendConsoleEcho(strInfo.substring(strInfo.lastIndexOf(",") + 2,
               strInfo.length() - 1));
-        measurementTable.updateTables();
+        if (status.indexOf("Pending") < 0)
+          measurementTable.updateTables();
         break;
       case JmolConstants.CALLBACK_MESSAGE:
         sendConsoleMessage(data == null ? null : strInfo);
@@ -1779,6 +1781,9 @@ public class Jmol extends JPanel {
       }
       if (display == null)
         return;
+      
+      // this code presumes only ptLoad = -1 (error), 0 (zap), or 3 (completed)
+      
       //      jmolpopup.updateComputedMenus();
       String title = "Jmol";
       if (fullPathName == null) {

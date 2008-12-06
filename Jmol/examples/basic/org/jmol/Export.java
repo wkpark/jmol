@@ -76,6 +76,7 @@ class MyStatusListener implements JmolStatusListener {
     switch (type) {
     case JmolConstants.CALLBACK_ANIMFRAME:
     case JmolConstants.CALLBACK_ECHO:
+    case JmolConstants.CALLBACK_ERROR:
     case JmolConstants.CALLBACK_LOADSTRUCT:
     case JmolConstants.CALLBACK_MEASURE:
     case JmolConstants.CALLBACK_MESSAGE:
@@ -108,6 +109,8 @@ class MyStatusListener implements JmolStatusListener {
       break;
     case JmolConstants.CALLBACK_ECHO:
       sendConsoleEcho((String) data[1]);
+      break;
+    case JmolConstants.CALLBACK_ERROR:
       break;
     case JmolConstants.CALLBACK_HOVER:
       break;

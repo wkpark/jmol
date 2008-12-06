@@ -30,9 +30,14 @@ import org.jmol.util.Point3fi;
 public class MeasurementPending extends Measurement {
 
   private boolean haveTarget = false;
+  private boolean haveModified = false;
   
   public boolean haveTarget() {
     return haveTarget;
+  }
+  
+  public boolean haveModified() {
+    return haveModified;
   }
   
   int numSet = 0;
@@ -59,7 +64,10 @@ public class MeasurementPending extends Measurement {
     return 0;
   }
 
+  int lastIndex = -1;
   public int addPoint(int atomIndex, Point3f ptClicked, boolean doSet) {
+    haveModified = (atomIndex != lastIndex);
+    lastIndex = atomIndex;
     if (ptClicked == null) {
       if (getIndexOf(atomIndex) > 0) {
         if (doSet)
@@ -78,7 +86,7 @@ public class MeasurementPending extends Measurement {
         return count;
       }
       int pt = numSet;
-      haveTarget = true;
+      haveModified = haveTarget = true;
       count = numSet + 1;
       if (points[pt] == null)
         points[pt] = new Point3fi();

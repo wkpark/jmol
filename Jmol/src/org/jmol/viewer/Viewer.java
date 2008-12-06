@@ -195,6 +195,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private String strJavaVersion;
   private String strOSName;
   private String htmlName = "";
+
+  public boolean isApplet() {
+    return (htmlName.length() > 0);
+  }
+
   private String fullName = "";
   private String syncId = "";
   private String appletDocumentBase = "";
@@ -295,8 +300,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean isSilent = false;
   private boolean isApplet = false;
   private boolean isPreviewOnly = false;
-  private boolean autoExit = false;
+  
+  boolean isPreviewOnly() {
+    return isPreviewOnly;
+  }
+  
   private String writeInfo;
+  private boolean autoExit = false;
   private boolean haveDisplay = true;
   private boolean mustRender = true;
   private boolean checkScriptOnly = false;
@@ -304,10 +314,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean fileOpenCheck = true;
   private boolean useCommandThread = false;
   private boolean isSignedApplet = false;
-
-  public boolean isApplet() {
-    return (htmlName.length() > 0);
-  }
 
   public void setAppletContext(String fullName, URL documentBase, URL codeBase,
                                String commandOptions) {
@@ -1430,7 +1436,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void reportSelection(String msg) {
     if (modelSet.getSelectionHaloEnabled())
       setTainted(true);
-    if (isScriptQueued)
+    if (isScriptQueued || global.debugScript)
       scriptStatus(msg);
   }
 
@@ -1593,10 +1599,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public String openFile(String fileName) {
     zap(false, false);
     fileManager.createAtomSetCollectionFromFile(fileName, null, null, false);
-    String errMsg = createModelSetAndReturnError(false);
-    if (errMsg == null)
-      setStatusFileLoaded(1, fileName, "", getModelSetName(), errMsg);
-    return errMsg;
+    return createModelSetAndReturnError(false);
   }
 
   public void openFileAsynchronously(String fileName) {
@@ -1611,9 +1614,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     evalString((type == null && allowScript ? "script " : "load ") + Escape.escape(fileName));
   }
 
+  private final static int FILE_STATUS_NOT_LOADED = -1;
+  private final static int FILE_STATUS_ZAPPED = 0;
+  private final static int FILE_STATUS_CREATING_MODELSET = 2;
+  private final static int FILE_STATUS_MODELSET_CREATED = 3;
+  private final static int FILE_STATUS_MODELS_DELETED = 5;
+  
   void openFile(String fileName, Hashtable htParams, String loadScript,
                 boolean isAppend) {
     //Eval only - does NOT create the model set yet
+    //errors encountered will be passed up to Eval.runEval()
     if (fileName == null)
       return;
     if (fileName.equalsIgnoreCase("string[]")) {
@@ -1621,23 +1631,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // openStringsInline(fileManager.getInlineDataArray(), htParams, false);
       return;
     }
-    if (!isAppend && fileName.charAt(0) != '?')
-      zap(false, false);
     Logger.startTimer();
-    if (fileName.equalsIgnoreCase("string"))
+    if (fileName.equalsIgnoreCase("string")) {
       createModelSetInline(fileManager.getInlineData(-1), htParams, isAppend, false);
-    else
+    } else {
+      if (!isAppend && fileName.charAt(0) != '?')
+        zap(false, false);
       fileManager.createAtomSetCollectionFromFile(fileName, setLoadParameters(htParams), loadScript, isAppend);
+    }
     Logger.checkTimer("openFile(" + fileName + ")");
-    setStatusFileLoaded(1, fileName, "", getModelSetName(), null);
   }
 
   public String openFiles(String modelName, String[] fileNames) {
-    String msg = openFiles(modelName, fileNames, null, false, null);
-    String errMsg = createModelSetAndReturnError(false);
-    if (errMsg == null)
-      setStatusFileLoaded(1, msg, "", getModelSetName(), errMsg);
-    return errMsg;
+    openFiles(modelName, fileNames, null, false, null);
+    return createModelSetAndReturnError(false);
   }
 
   String openFiles(String modelName, String[] fileNames, String loadScript,
@@ -1653,10 +1660,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         setLoadParameters(htParams));
     long ms = System.currentTimeMillis() - timeBegin;
     String msg = "";
-    for (int i = 0; i < fileNames.length; i++) {
+    for (int i = 0; i < fileNames.length; i++)
       msg += (i == 0 ? "" : ",") + fileNames[i];
-      setStatusFileLoaded(1, fileNames[i], "", getModelSetName(), null);
-    }
     Logger.info("openFiles(" + fileNames.length + ") " + ms + " ms");
     return msg;
   }
@@ -1670,26 +1675,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                    boolean isAppend, boolean createModelSet) {
     //loadInline, openFile, openStringInline
     if (!isAppend)
-      clear();
+      zap(true, false);
     fileManager.createAtomSetCollectionFromString(strModel, setLoadParameters(htParams), isAppend);
-    if (!createModelSet)
-      return null;
-    String errMsg = createModelSetAndReturnError(isAppend);
-    if (errMsg == null)
-      setStatusFileLoaded(1, "string", "", getModelSetName(), null);
-    return errMsg;
+   return (createModelSet ? createModelSetAndReturnError(isAppend) : null);
   }
 
   private String openStringsInline(String[] arrayModels, Hashtable htParams,
                                  boolean isAppend) {
     //loadInline, openFile, openStringInline
     if (!isAppend)
-      clear();
+      zap(true, false);
     fileManager.createAtomSeCollectionFromStrings(arrayModels, setLoadParameters(htParams), isAppend);
-    String errMsg = createModelSetAndReturnError(isAppend);
-    if (errMsg == null)
-      setStatusFileLoaded(1, "string[]", "", getModelSetName(), null);
-    return errMsg;
+    return createModelSetAndReturnError(isAppend);
   }
 
   public char getInlineChar() {
@@ -1774,15 +1771,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String openDOM(Object DOMNode) {
     //applet.loadDOMNode
-    clear();
+    zap(true, false);
     long timeBegin = System.currentTimeMillis();
     fileManager.createAtomSetCollectionFromDOM(DOMNode);
     long ms = System.currentTimeMillis() - timeBegin;
     Logger.info("openDOM " + ms + " ms");
-    String errMsg = createModelSetAndReturnError(false);
-    if (errMsg == null)
-      setStatusFileLoaded(1, "JSNode", "", getModelSetName(), errMsg);
-    return errMsg;
+    return createModelSetAndReturnError(false);
   }
 
   /**
@@ -1802,11 +1796,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
    
   public String openReader(String fullPathName, String fileName, Reader reader) {
-    clear();
+    zap(true, false);
     fileManager.createAtomSetCollectionFromReader(fullPathName, fileName, reader);
-    String errMsg = createModelSetAndReturnError(false);
-    System.gc();
-    return errMsg;
+    return createModelSetAndReturnError(false);
   }
 
   /**
@@ -1819,23 +1811,26 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String fileName = getFileName();
     Object atomSetCollection = fileManager.getAtomSetCollectionOrError();
     fileManager.deallocateReaderThreads();
+    String errMsg;
     if (atomSetCollection instanceof String || atomSetCollection == null) {
-      String errMsg = (String) atomSetCollection;
-      setStatusFileNotLoaded(fullPathName, errMsg);
+      errMsg = (String) atomSetCollection;
+      setFileLoadStatus(FILE_STATUS_NOT_LOADED, fullPathName, null, null, errMsg);
       if (errMsg != null && !isAppend && !errMsg.equals("#CANCELED#"))
         zap(errMsg);
-      return errMsg;
+    } else {
+      if (isAppend)
+        clearAtomSets();
+      setFileLoadStatus(FILE_STATUS_CREATING_MODELSET, fullPathName, fileName, null, null);
+      errMsg = createModelSet(fullPathName, fileName, atomSetCollection,
+          isAppend);
+      setFileLoadStatus(FILE_STATUS_MODELSET_CREATED, fullPathName, fileName, getModelSetName(), errMsg);
+      if (isAppend) {
+        selectAll(); // could be an issue here. Do we really want to "select all"?
+        setTainted(true);
+      }
+      atomSetCollection = null;
+      System.gc();
     }
-    if (isAppend)
-      clearAtomSets();
-    String errMsg = createModelSet(fullPathName, fileName, atomSetCollection,
-        isAppend);
-    if (isAppend) {
-      selectAll(); // could be an issue here. Do we really want to "select all"?
-      setTainted(true);
-    }
-    atomSetCollection = null;
-    System.gc();
     return errMsg;
   }
   
@@ -1872,7 +1867,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // or something like that here
     // for when CdkEditBus calls this directly
     // null fullPathName implies we are doing a merge
-    setStatusFileLoaded(2, fullPathName, fileName, null, null);
     pushHoldRepaint("createModelSet");
     setErrorMessage(null);
     try {
@@ -1888,9 +1882,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setErrorMessage(errMsg);
     }
     popHoldRepaint("createModelSet");
-    String errMsg = getErrorMessage();
-    setStatusFileLoaded(3, fullPathName, fileName, getModelSetName(), errMsg);
-    return errMsg;
+    return getErrorMessage();
   }
 
   public Object getCurrentFileAsBytes() {
@@ -2025,11 +2017,33 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void zap(boolean notify, boolean resetUndo) {
-    //Eval
-    //setAppletContext
-    clear();
+    stopAnimationThreads();
+    if (modelSet != null) {
+      clearModelDependentObjects();
+      fileManager.clear();
+      repaintManager.clear();
+      transformManager.clear();
+      pickingManager.clear();
+      selectionManager.clear();
+      clearAllMeasurements();
+      modelSet = modelManager.clear();
+      mouseManager.clear();
+      stateManager.clear();
+      global.clear();
+      tempManager.clear();
+      colorManager.clear();
+      definedAtomSets.clear();
+      //setRefreshing(true);
+      //refresh(0, "Viewer:clear()");
+      dataManager.clear();
+      System.gc();
+    }
     modelSet = modelManager.zap();
     initializeModel();
+    if (notify)
+      setFileLoadStatus(FILE_STATUS_ZAPPED, null, (resetUndo ? "resetUndo"
+          : null), null, null);
+
     Runtime runtime = Runtime.getRuntime();
     runtime.gc();
     long bTotal = runtime.totalMemory();
@@ -2041,8 +2055,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     Logger.debug("ZAP memory inuse, total, free, max: " + (bTotal - bFree)
         + " " + bTotal + " " + bFree + " " + bMax);
-    if (notify)
-      setStatusFileLoaded(0, null, (resetUndo ? "resetUndo" : null), null, null);
   }
 
   private void zap(String msg) {
@@ -2056,38 +2068,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setShapeProperty(iShape, "font", getFont3D("SansSerif", "Plain", 9));
     setShapeProperty(iShape, "target", "error");
     setShapeProperty(iShape, "text", msg);
-  }
-
-  private void clear() {
-    stopAnimationThreads();
-    if (modelSet == null)
-      return;
-    clearModelDependentObjects();
-    fileManager.clear();
-    repaintManager.clear();
-    transformManager.clear();
-    pickingManager.clear();
-    selectionManager.clear();
-    clearAllMeasurements();
-    modelSet = modelManager.clear();
-    mouseManager.clear();
-    statusManager.clear();
-    stateManager.clear();
-    global.clear();
-    tempManager.clear();
-    colorManager.clear();
-    definedAtomSets.clear();
-    //setRefreshing(true);
-    //refresh(0, "Viewer:clear()");
-    dataManager.clear();
-    System.gc();
-  }
-
-  public void notifyMinimizationStatus() {
-    String s = statusManager.getCallbackScript("minimizationcallback");
-    if (s != null)
-      evalStringQuiet(s, true, false);
-    statusManager.notifyMinimizationStatus(s);
   }
 
   public String getMinimizationInfo() {
@@ -2846,6 +2826,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void setPendingMeasurement(MeasurementPending measurementPending) {
+    // from MouseManager
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "pending",
         measurementPending);
   }
@@ -3495,7 +3476,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return evalStringQuiet(strScript, true, true);
   }
 
-  private String evalStringQuiet(String strScript, boolean isQuiet,
+  String evalStringQuiet(String strScript, boolean isQuiet,
                                  boolean allowSyncScript) {
     // central point for all incoming script processing
     // all menu items, all mouse movement -- everything goes through this method
@@ -3633,19 +3614,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isOK) {
       isScriptQueued = isQueued;
       if (!isQuiet)
-        statusManager.setStatusScriptStarted(++scriptIndex, strScript);
+        scriptStatus(null, strScript, -2 - (++scriptIndex), null);
       eval.runEval(checkScriptOnly, !checkScriptOnly || fileOpenCheck,
           historyDisabled, listCommands);
       setErrorMessage(strErrorMessage = eval.getErrorMessage(),
           strErrorMessageUntranslated = eval.getErrorMessageUntranslated());
       if (!isQuiet)
-        statusManager.setScriptStatus("Jmol script terminated", 
+        scriptStatus("Jmol script terminated", 
             strErrorMessage, 1 + eval.getExecutionWalltime(), strErrorMessageUntranslated);
       if (isScriptFile && writeInfo != null)
         writeImage(writeInfo);
     } else {
       scriptStatus(strErrorMessage);
-      statusManager.setScriptStatus("Jmol script terminated", 
+      scriptStatus("Jmol script terminated", 
           strErrorMessage, 1, strErrorMessageUntranslated);
     }
     if (checkScriptOnly) {
@@ -3890,6 +3871,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setDebugScript(boolean debugScript) {
     global.debugScript = debugScript;
     global.setParameterValue("debugScript", debugScript);
+    eval.setDebugging();
   }
 
   void atomPicked(int atomIndex, Point3f ptClicked, int modifiers) {
@@ -3989,67 +3971,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   // //////////////status manager dispatch//////////////
 
+  public void setJmolStatusListener(JmolStatusListener jmolStatusListener) {
+    statusManager.setJmolStatusListener(jmolStatusListener);
+  }
+
   public Hashtable getMessageQueue() {
+    // called by PropertyManager.getPropertyAsObject for "messageQueue"
     return statusManager.getMessageQueue();
-  }
-
-  /*
-   no local version of MessageCallback
-   */
-
-  public void setStatusAtomPicked(int atomIndex, String info) {
-    if (info == null) {
-      info = global.pickLabel;
-      if (info.length() == 0)
-        info = getAtomInfoXYZ(atomIndex, getMessageStyleChime());
-      else
-        info = modelSet.getAtomInfo(atomIndex, info);
-    }
-    String s = statusManager.getCallbackScript("pickcallback");
-    global.setParameterValue("_atompicked", atomIndex);
-    global.setParameterValue("_pickinfo", info);
-    if (s != null)
-      evalStringQuiet(s, true, false);
-    statusManager.setStatusAtomPicked(s, atomIndex, info);
-  }
-
-  public void setStatusAtomHovered(int atomIndex, String info) {
-    String s = statusManager.getCallbackScript("hovercallback");
-    global.setParameterValue("_atomhovered", atomIndex);
-    if (s != null)
-      evalStringQuiet(s, true, false);
-    statusManager.setStatusAtomHovered(s, atomIndex, info);
-  }
-
-  public void setStatusMeasurePicked(int iatom, String strMeasure) {
-    //for pending measurements or "set picking measure"
-    statusManager.setStatusMeasurePicked(iatom, strMeasure);
-  }
-
-  public void setStatusMeasuring(String status, int count, String strMeasure) {
-    //measurement completed
-    statusManager.setStatusMeasuring(status, count, strMeasure);
-  }
-
-  public void setStatusResized(int width, int height) {
-    String s = statusManager.getCallbackScript("resizecallback");
-    if (s != null)
-      evalStringQuiet(s, true, false);
-    statusManager.setStatusResized(s, width, height);
-  }
-
-  void setStatusScriptStarted(int iscript, String script) {
-    statusManager.setStatusScriptStarted(iscript, script);
   }
 
   Object getStatusChanged(String statusNameList) {
     return statusManager.getStatusChanged(statusNameList);
   }
 
-  boolean isPreviewOnly() {
-    return isPreviewOnly;
-  }
-  
   void popupMenu(int x, int y) {
     if (isPreviewOnly || global.disablePopupMenu)
       return;
@@ -4057,9 +3991,78 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     statusManager.popupMenu(x, y);
   }
 
-  public void setJmolStatusListener(JmolStatusListener jmolStatusListener) {
-    statusManager.setJmolStatusListener(jmolStatusListener);
+  String getMenu(String type) {
+    return statusManager.getMenu(type);
   }
+
+  void setMenu(String fileOrText, boolean isFile) {
+    if (isFile)
+      Logger.info("Setting menu "
+          + (fileOrText.length() == 0 ? "to Jmol defaults" : "from file "
+              + fileOrText));
+    if (fileOrText.length() == 0)
+      fileOrText = null;
+    else if (isFile)
+      fileOrText = getFileAsString(fileOrText);
+    statusManager.setCallbackFunction("menu", fileOrText);
+  }
+
+  //// JavaScript callback methods for the applet
+  
+  /*
+   * 
+    animFrameCallback   
+    echoCallback         (defaults to messageCallback)
+    errorCallback   
+    evalCallback   
+    hoverCallback    
+    loadStructCallback    
+    measureCallback      (defaults to messageCallback) 
+    messageCallback      (no local version)
+    minimizationCallback    
+    pickCallback    
+    resizeCallback    
+    scriptCallback       (defaults to messageCallback)
+    syncCallback    
+
+   */
+  
+
+  /*
+   * animFrameCallback is called:
+   * 
+   *    -- each time a frame is changed
+   *    -- whenever the animation state is changed
+   *    -- whenever the visible frame range is changed
+   * 
+   * jmolSetCallback("animFrameCallback", "myAnimFrameCallback")
+   * function myAnimFrameCallback(frameNo, fileNo, modelNo, firstNo, lastNo) {}
+   * 
+   * frameNo == the current frame in 
+   * fileNo  == the current file number, starting at 1
+   * modelNo == the current model number in the current file, starting at 1
+   * firstNo == flag1 * (the first frame of the set, in file * 1000000 + model notation)
+   * lastNo  == flag2 * (the last frame of the set, in file * 1000000 + model notation)
+   * 
+   * where flag1 = 1 if animationDirection > 1 or -1 otherwise
+   * where flag2 = 1 if currentDirection > 1 or -1 otherwise
+   *
+   *   RepaintManager.setStatusFrameChanged
+   *     RepaintManager.setAnimationOff
+   *     RepaintManager.setCurrentModelIndex
+   *       RepaintManager.clearAnimation
+   *       RepaintManager.rewindAnimation
+   *       RepaintManager.setAnimationLast
+   *       RepaintManager.setAnimationRelative
+   *       RepaintManager.setFrameRangeVisible
+   *       Viewer.setCurrentModelIndex
+   *         Eval.file
+   *         Eval.frame
+   *         Eval.load
+   *         Viewer.createImage (when creating movie frames with the WRITE FRAMES command)
+   *         Viewer.initializeModel
+   *         
+   */
 
   int prevFrame = Integer.MIN_VALUE;
   
@@ -4077,15 +4080,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int modelNo = frameID % 1000000;
     int firstNo = getModelFileNumber(firstIndex);
     int lastNo = getModelFileNumber(lastIndex);
-    String s;
+    String strModelNo;
     if (fileNo == 0) {
-      s = getModelNumberDotted(firstIndex);
+      strModelNo = getModelNumberDotted(firstIndex);
       if (firstIndex != lastIndex)
-        s += " - " + getModelNumberDotted(lastIndex);
+        strModelNo += " - " + getModelNumberDotted(lastIndex);
       if (firstNo / 1000000 == lastNo / 1000000)
         fileNo = firstNo;
     } else {
-      s = getModelNumberDotted(modelIndex);
+      strModelNo = getModelNumberDotted(modelIndex);
     }
     if (fileNo != 0)
       fileNo = (fileNo < 1000000 ? 1 : fileNo / 1000000);
@@ -4093,7 +4096,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setParameterValue("_currentFileNumber", fileNo);
     global.setParameterValue("_currentModelNumberInFile", modelNo);
     global.setParameterValue("_frameID", frameID);
-    global.setParameterValue("_modelNumber", s);
+    global.setParameterValue("_modelNumber", strModelNo);
     global.setParameterValue("_modelName", (modelIndex < 0 ? ""
         : getModelName(modelIndex)));
     global.setParameterValue("_modelTitle", (modelIndex < 0 ? ""
@@ -4106,13 +4109,346 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     prevFrame = modelIndex;
     
-    s = statusManager.getCallbackScript("animframecallback");
-    if (s != null)
-      evalStringQuiet(s, true, false);
-    statusManager.setStatusFrameChanged(s, frameNo, fileNo, modelNo,
+    statusManager.setStatusFrameChanged(frameNo, fileNo, modelNo,
           (repaintManager.animationDirection < 0 ? -firstNo : firstNo),
           (repaintManager.currentDirection < 0 ? -lastNo : lastNo));
   }
+
+  /*
+   * echoCallback is one of the two main status reporting mechanisms.
+   * Along with scriptCallback, it outputs to the console. Unlike scriptCallback,
+   * it does not output to the status bar of the application or applet.
+   * If messageCallback is enabled but not echoCallback, these messages 
+   * go to the messageCallback function instead.
+   *  
+   * jmolSetCallback("echoCallback", "myEchoCallback")
+   * function myEchoCallback(app, message, queueState) {}
+   *  
+   *  queueState = 1 -- queued
+   *  queueState = 0 -- not queued
+   *  
+   *  serves:
+   *  
+   *    Eval.instructionDispatchLoop when app has -l flag
+   *    ForceField.steepestDescenTakeNSteps for minimization done
+   *    Viewer.setPropertyError
+   *        Viewer.setBooleanProperty error
+   *        Viewer.setFloatProperty error
+   *        Viewer.setIntProperty error
+   *        Viewer.setStringProperty error
+   *    Viewer.showString adds a Logger.warn() message
+   *        Eval.showString
+   *           calculate, cd, dataFrame, echo, error, getProperty,
+   *           history, isosurface, listIsosurface, pointGroup, 
+   *           print, set, show, write
+   *        ForceField.steepestDescentInitialize for initial energy
+   *        ForceField.steepestDescentTakeNSteps for minimization update
+   *        Viewer.showParameter
+   *   
+   */
+  
+  public void scriptEcho(String strEcho) {
+    statusManager.setScriptEcho(strEcho, isScriptQueued);
+    if (listCommands && strEcho != null && strEcho.indexOf("$[") == 0)
+      Logger.info(strEcho);
+  }
+
+  /*
+   * errorCallback is a special callback that can be used to identify errors 
+   * during scripting and file i/o, and also indicate out of memory conditions
+   * 
+   * jmolSetCallback("errorCallback", "myErrorCallback")
+   * function myErrorCallback(app, errType, errMsg, objectInfo, errMsgUntranslated) {}
+   * 
+   *   errType == "Error" or "ScriptException"
+   *   errMsg == error message, possibly translated, with added information
+   *   objectInfo == which object (such as an isosurface) was involved
+   *   errMsgUntranslated == just the basic message
+   * 
+   * Viewer.notifyError
+   *     Eval.runEval  on Error and file loading Exceptions
+   *     Viewer.handleError
+   *         Eval.runEval on OOM Error
+   *         Viewer.createModelSet on OOM model initialization Error
+   *         Viewer.getImage on OOM rendering Error
+   *     
+   */
+  void notifyError(String errType, String errMsg, String errMsgUntranslated) {
+    statusManager.notifyError(errType, errMsg, errMsgUntranslated);
+  }
+
+  /*
+   * evalCallback is a special callback that evaluates expressions
+   * in JavaScript rather than in Jmol.
+   * 
+   *   Viewer.jsEval
+   *       Eval.loadScriptFileInternal
+   *       Eval.Rpn.evaluateScript
+   *       Eval.script
+   * 
+   */
+  
+  String jsEval(String strEval) {
+    return statusManager.jsEval(strEval);
+  }
+
+  /*
+   * hoverCallback reports information about the atom 
+   * being hovered over.
+   * 
+   * jmolSetCallback("hoverCallback", "myHoverCallback")
+   * function myHoverCallback(strInfo, iAtom) {}
+   * 
+   *  strInfo == the atom's identity, including x, y, and z coordinates
+   *  iAtom == the index of the atom being hovered over
+   * 
+   *   Viewer.setStatusAtomHovered
+   *       Hover.setProperty("target")
+   *           Viewer.hoverOff
+   *           Viewer.hoverOn
+   *  
+   */
+
+  public void setStatusAtomHovered(int atomIndex, String info) {
+    global.setParameterValue("_atomhovered", atomIndex);
+    statusManager.setStatusAtomHovered(atomIndex, info);
+  }
+
+  /*
+   * loadStructCallback indicates file load status. 
+   * 
+   * jmolSetCallback("loadStructCallback", "myLoadStructCallback")
+   * function myLoadStructCallback(fullPathName, fileName, modelName, errorMsg, ptLoad) {}
+   * 
+   * ptLoad == FILE_STATUS_NOT_LOADED == -1
+   * ptLoad == FILE_STATUS_ZAPPED == 0
+   * ptLoad == FILE_STATUS_CREATING_MODELSET == 2
+   * ptLoad == FILE_STATUS_MODELSET_CREATED == 3
+   * ptLoad == FILE_STATUS_MODELS_DELETED == 5
+   * 
+   * Only -1 (error loading), 0 (zapped), and 3 (model set created) messages
+   * are passed on to the callback function. The others can be detected using
+   * 
+   *   set loadStructCallback "jmolscript:someFunctionName"
+   *   
+   * At the time of calling of that method, the jmolVariable _loadPoint
+   * gives the value of ptLoad. These load points are also recorded
+   * in the status queue under types "fileLoaded" and "fileLoadError".
+   *         
+   * Viewer.setFileLoadStatus
+   *     Viewer.createModelSet (2, 3)
+   *     Viewer.createModelSetAndReturnError (-1, 1, 4)
+   *     Viewer.deleteAtoms (5)
+   *     Viewer.zap (0)
+   * 
+   */
+  private void setFileLoadStatus(int ptLoad, String fullPathName,
+                                 String fileName, String modelName,
+                                 String strError) {
+    setErrorMessage(strError);
+    global.setParameterValue("_loadPoint", ptLoad);
+    boolean doCallback = (ptLoad == FILE_STATUS_MODELSET_CREATED
+        || ptLoad == FILE_STATUS_ZAPPED || ptLoad == FILE_STATUS_NOT_LOADED);
+    statusManager.setFileLoadStatus(fullPathName, fileName, modelName,
+        strError, ptLoad, doCallback);
+  }
+
+  /*
+   * measureCallback reports completed or pending measurements. 
+   * Pending measurements are measurements that the user has started
+   * but has not completed -- this call comes when the user hesitates
+   * with the mouse over an atom and the "rubber band" is showing
+   * 
+   * jmolSetCallback("measureCallback", "myMeasureCallback")
+   * function myMeasureCallback(strMeasure, intInfo, status) {}
+   * 
+   * intInfo == (see below)
+   * status == "measurePicked" (intInfo == the number of atoms in the measurement) 
+   *           "measureComplete" (intInfo == the current number measurements)
+   *           "measureDeleted" (intInfo == the index of the measurement deleted or -1 for all)
+   *           "measurePending" (intInfo == number of atoms picked so far)
+   *           
+   * strMeasure:
+   * 
+   *  For "set picking MEASURE ..." each time the user clicks an atom, a 
+   *  message is sent to the pickCallback function (see below), and if
+   *  the picking is set to measure distance, angle, or torsion, then
+   *  after the requisite number of atoms is picked and the pick callback
+   *  message is sent, a call is also made to measureCallback with a 
+   *  string that indicates the measurement, such as:
+   *  
+   *    Angle O #9 - Si #7 - O #2 : 110.51877
+   *    
+   *  Under default conditions, when picking is not set to MEASURE, 
+   *  then measurement reports are sent when the measure is completed,
+   *  deleted, or pending. These reports are in a psuedo array form 
+   *  that can be parsed more easily, involving the atoms and measurement
+   *  with units, for example: 
+   *  
+   *    [Si #3, O #8, Si #7, 60.1 °]
+   *   
+   *   Viewer.setStatusMeasuring
+   *       Measures.clear
+   *       Measures.define
+   *       Measures.deleteMeasurement
+   *       Measures.pending
+   *       PickingManager.atomPicked
+   * 
+   */
+
+  public void setStatusMeasuring(String status, int intInfo, String strMeasure) {
+    //measurement completed or pending or picked
+    statusManager.setStatusMeasuring(status, intInfo, strMeasure);
+  }
+  
+  /*
+   * minimizationCallback reports the status of a currently
+   * running minimization.
+   * 
+   * jmolSetCallback("minimizationCallback", "myMinimizationCallback")
+   * function myMinimizationCallback(app, minStatus, minSteps, minEnergy, minEnergyDiff) {}
+   * 
+   *   minStatus is one of "starting", "calculate", "running", "failed", or "done"
+   *   
+   *   Viewer.notifyMinimizationStatus
+   *       Minimizer.endMinimization
+   *       Minimizer.getEnergyonly
+   *       Minimizer.startMinimization
+   *       Minimizer.stepMinimization
+   * 
+   */
+
+  public void notifyMinimizationStatus() {
+    statusManager.notifyMinimizationStatus(
+        (String) getParameter("_minimizationStatus"),
+        (Integer) getParameter("_minimizationSteps"),
+        (Float) getParameter("_minimizationEnergy"),
+        (Float) getParameter("_minimizationEnergyDiff"));
+  }
+
+  /*
+   * pickCallback returns information about an atom, bond, or DRAW 
+   * object that has been picked by the user. 
+   * 
+   * jmolSetCallback("pickCallback", "myPickCallback")
+   * function myPickCallback(strInfo, iAtom) {}
+   * 
+   *  iAtom == the index of the atom picked
+   *           or -2 for a draw object
+   *           or -3 for a bond
+   *
+   *  strInfo depends upon the type of object picked:
+   *  
+   *    atom: a string determinied by the PICKLABEL parameter, 
+   *          which if "" delivers the atom identity along with 
+   *          its coordinates
+   *           
+   *    bond: ["bond", bondIdentityString (quoted), x, y, z]
+   *          where the coordinates are of the midpoint of the bond
+   *    
+   *    draw: ["draw", drawID(quoted), pickedModel, pickedVertex, x, y, z, 
+   *           drawTitle(quoted)]
+   * 
+   *   Viewer.setStatusAtomPicked
+   *       Draw.checkObjectClicked (set picking DRAW)
+   *       Sticks.checkObjectClicked (set bondPicking TRUE; set picking IDENTIFY)
+   *       PickingManager.atomPicked (set atomPicking TRUE; set picking IDENTIFY)
+   *       PickingManager.queueAtom (during measurements)
+   */
+
+  public void setStatusAtomPicked(int atomIndex, String info) {
+    if (info == null) {
+      info = global.pickLabel;
+      if (info.length() == 0)
+        info = getAtomInfoXYZ(atomIndex, getMessageStyleChime());
+      else
+        info = modelSet.getAtomInfo(atomIndex, info);
+    }
+    global.setParameterValue("_atompicked", atomIndex);
+    global.setParameterValue("_pickinfo", info);
+    statusManager.setStatusAtomPicked(atomIndex, info);
+  }
+
+  /*
+   * resizeCallback is called whenever the applet gets a resize notification
+   * from the browser
+   * 
+   * jmolSetCallback("resizeCallback", "myResizeCallback")
+   * function myResizeCallback(width, height) {}
+   * 
+   */
+
+  public void setStatusResized(int width, int height) {
+    statusManager.setStatusResized(width, height);
+  }
+
+  /*   
+   * scriptCallback is the primary way to monitor script status.
+   * In addition, it serves to for passing information to the user 
+   * over the status line of the browser as well as to the console.
+   * Note that console messages are also sent by echoCallback.
+   * If messageCallback is enabled but not scriptCallback, these messages 
+   * go to the messageCallback function instead.
+   *    
+   * jmolSetCallback("scriptCallback", "myScriptCallback")
+   * function myScriptCallback(app, status, message, intStatus, errorMessageUntranslated) {}  
+   *      
+   *    intStatus == -2  script start -- message is the script itself
+   *    intStatus ==  0  general messages during script execution; translated error message may be present
+   *    intStatus >=  1  script termination message; translated and untranslated message may be present
+   *                     value is time for execution in milliseconds
+   *
+   *    Eval.defineAtomSet  -- compilation bug indicates problem in JmolConstants array
+   *    Eval.instructionDispatchLoop -- debugScript messages
+   *    Eval.logDebugScript  -- debugScript messages
+   *    Eval.pause -- script execution paused message
+   *    Eval.runEval -- "Script completed" message 
+   *    Eval.script  -- Chime "script <exiting>" message
+   *    Eval.scriptStatusOrBuffer -- various messages for 
+   *        Eval.checkContinue  (error message)
+   *        Eval.connect
+   *        Eval.delete
+   *        Eval.hbond
+   *        Eval.load (logMessages message)
+   *        Eval.message
+   *        Eval.runEval (error message)
+   *        Eval.write (error reading file)
+   *        Eval.zap (error message)
+   *    FileManager.createAtomSetCollectionFromFile "requesting..." for Chime-like compatibility
+   *    PickingManager.atomPicked "pick one more atom in order to spin..." for example
+   *    Viewer.evalStringWaitStatus  -- see above -2, 0 only if error, >=1 at termination
+   *    Viewer.reportSelection "xxx atoms selected"
+   *   
+   */
+
+  void scriptStatus(String strStatus) {
+    scriptStatus(strStatus, "", 0, null);
+  }
+
+  private void scriptStatus(String strStatus, String statusMessage, int msWalltime, 
+                       String strErrorMessageUntranslated) {
+    statusManager.setScriptStatus(strStatus, statusMessage, msWalltime, 
+       strErrorMessageUntranslated);
+  }
+
+  /*
+   * syncCallback traps script synchronization messages and allows 
+   * for cancellation (by returning "") or modification
+   * 
+   * jmolSetCallback("syncCallback", "mySyncCallback")
+   * function mySyncCallback(app, script, appletName) {
+   *    ...[modify script here]...
+   *    return newScript
+   * }
+   * 
+   *   StatusManager.syncSend
+   *       Viewer.setSyncTarget
+   *       Viewer.syncScript
+   *   
+   */
+  
+////////////
+
 
   private String getModelTitle(int modelIndex) {
     //necessary for status manager frame change?
@@ -4124,40 +4460,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet == null ? null : modelSet.getModelFileName(modelIndex);
   }
 
-  void setStatusFileLoaded(int ptLoad, String fullPathName,
-                                   String fileName, String modelName,
-                                   String strError) {
-    String s = statusManager.getCallbackScript("loadstructcallback");
-    if (s != null && ptLoad >= 0 && strError == null)
-      evalStringQuiet(s, true, false);
-    statusManager.setStatusFileLoaded(s, fullPathName, fileName, modelName,
-          strError, ptLoad);
-    setErrorMessage(strError);
-  }
-
   public String dialogAsk(String type, String fileName) {
     return statusManager.dialogAsk(type, fileName);
   }
   
-  private void setStatusFileNotLoaded(String fullPathName, String errMsg) {
-    setStatusFileLoaded(-1, fullPathName, null, null, errMsg);
-  }
-
-  public void scriptEcho(String strEcho) {
-    statusManager.setScriptEcho(strEcho, isScriptQueued);
-    if (listCommands && strEcho != null && strEcho.indexOf("$[") == 0)
-      Logger.info(strEcho);
-  }
-
-  private void scriptError(String msg) {
-    Logger.error(msg);
-    scriptEcho(msg);
-  }
-
-  void scriptStatus(String strStatus) {
-    statusManager.setScriptStatus(strStatus, "", 0, null);
-  }
-
   int getScriptDelay() {
     return global.scriptDelay;
   }
@@ -4415,7 +4721,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       //not found -- @ is a silent mode indicator
       if (global.htPropertyFlags.containsKey(key)
           || global.htPropertyFlagsRemoved.containsKey(key)) {
-        scriptError(GT._("ERROR: cannot set boolean flag to string value: {0}",
+        setPropertyError(GT._("ERROR: cannot set boolean flag to string value: {0}",
             key));
         return;
       }
@@ -4426,6 +4732,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.setParameterValue(key, value);
     else
       global.setUserVariable(key, new Token(Token.string, value));
+  }
+
+  private void setPropertyError(String msg) {
+    Logger.error(msg);
+    scriptEcho(msg);
   }
 
   void removeUserVariable(String key) {
@@ -4604,7 +4915,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean isJmol = global.htParameterValues.containsKey(key);
     if (!isJmol && notFound) {
       if (global.htPropertyFlags.containsKey(key)) {
-        scriptError(GT._(
+        setPropertyError(GT._(
             "ERROR: cannot set boolean flag to numeric value: {0}", key));
         return true;
       }
@@ -4663,6 +4974,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         Logger.setLogLevel(value);
         Logger.info("logging level set to " + value);
         global.setParameterValue("logLevel", value);
+        eval.setDebugging();
         return;
       }
 
@@ -4779,7 +5091,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean isJmol = global.htParameterValues.containsKey(key);
     if (!isJmol && notFound) {
       if (global.htPropertyFlags.containsKey(key)) {
-        scriptError(GT._(
+        setPropertyError(GT._(
             "ERROR: cannot set boolean flag to numeric value: {0}", key));
         return;
       }
@@ -5265,7 +5577,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean isJmol = global.htPropertyFlags.containsKey(key);
     if (!isJmol && notFound) {
       if (global.htParameterValues.containsKey(key)) {
-        scriptError(GT._(
+        setPropertyError(GT._(
             "ERROR: Cannot set value of this variable to a boolean: {0}", key));
         return true;
       }
@@ -6432,10 +6744,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return fdata;
   }
 
-  String eval(String strEval) {
-    return statusManager.eval(strEval);
-  }
-
   void getHelp(String what) {
     if (what.length() > 0 && what.indexOf("?") != 0
         && global.helpPath.indexOf("?") < 0)
@@ -6791,22 +7099,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    }
    */
 
-  void setMenu(String fileOrText, boolean isFile) {
-    if (isFile)
-      Logger.info("Setting menu "
-          + (fileOrText.length() == 0 ? "to Jmol defaults" : "from file "
-              + fileOrText));
-    if (fileOrText.length() == 0)
-      fileOrText = null;
-    else if (isFile)
-      fileOrText = getFileAsString(fileOrText);
-    statusManager.setCallbackFunction("menu", fileOrText);
-  }
-
-  String getMenu(String type) {
-    return statusManager.eval("_GET_MENU|" + type);
-  }
-
   void setListVariable(String name, Token value) {
     global.setListVariable(name, value);
   }
@@ -6869,7 +7161,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (getModelCount() > 1)
       setCurrentModelIndex(-1, true);
     hoverAtomIndex = -1;
-    setStatusFileLoaded(0, null, null, null, null);
+    setFileLoadStatus(FILE_STATUS_MODELS_DELETED, null, null, null, null);
     refreshMeasures();
     return BitSetUtil.cardinalityOf(bsDeleted);
   }
@@ -6978,9 +7270,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return JmolConstants.getShapeClassName(currentShapeID) + " " + currentShapeState;    
   }
 
-  void notifyError(String errType, String errMsg, String errMsgUntranslated) {
-    statusManager.notifyError(errType, errMsg, errMsgUntranslated);
-  }
   public void handleError(Error er, boolean doClear) {
     // almost certainly out of memory; could be missing Jar file
     try {
@@ -6998,3 +7287,4 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
 }
+  

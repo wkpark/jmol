@@ -1,4 +1,4 @@
-/* Jmol 11.6 script library Jmol.js 11:06 AM 10/10/2008 Bob Hanson
+/* Jmol 11.7 script library Jmol.js  15:32 06.12.2008 Bob Hanson
 
  checkbox heirarchy -- see http://chemapps.stolaf.edu/jmol/docs/examples-11/check.htm
 
@@ -61,8 +61,10 @@ try{if(typeof(_jmol)!="undefined")exit()
 // bh 3/2008  -- fixes IE7 bug in relation to jmolLoadInlineArray()
 // bh 6/2008  -- adds jmolSetAppletWindow()
 // Angel H. 6/2008  -- added html <label> tags to checkboxes and radio buttons [in jmolCheckbox() and _jmolRadio() functions]
-// bh 7/2000  -- code fix "for(i..." not "for(var i..."
-	  	
+// bh 7/2008  -- code fix "for(i..." not "for(var i..."
+// bh 12/2008 -- jmolLoadInline, jmolLoadInlineArray, jmolLoadInlineScript, jmolAppendInlineScript, jmolAppendInlineArray all return error message or null (Jmol 11.7.16)
+// bh 12/2008 -- jmolScriptWaitOutput() -- waits for script to complete and delivers output normally sent to console
+
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
 
@@ -392,53 +394,55 @@ function jmolScript(script, targetSuffix) {
 }
 
 function jmolLoadInline(model, targetSuffix) {
-  if (!model)return
+  if (!model)return "ERROR: NO MODEL"
   var applet=_jmolGetApplet(targetSuffix);
-  if (!applet)return
+  if (!applet)return "ERROR: NO APPLET"
   if (typeof(model) == "string")
-    applet.loadInlineString(model, "", false);
+    return applet.loadInlineString(model, "", false);
   else
-    applet.loadInlineArray(model, "", false);
+    return applet.loadInlineArray(model, "", false);
 }
 
 
 function jmolLoadInlineScript(model, script, targetSuffix) {
-  if (!model)return
+  if (!model)return "ERROR: NO MODEL"
   var applet=_jmolGetApplet(targetSuffix);
-  if (applet)applet.loadInlineString(model, script, false);
+  if (!applet)return "ERROR: NO APPLET"
+  return applet.loadInlineString(model, script, false);
 }
 
 
 function jmolLoadInlineArray(ModelArray, script, targetSuffix) {
-  if (!model)return
+  if (!model)return "ERROR: NO MODEL"
   if (!script)script=""
   var applet=_jmolGetApplet(targetSuffix);
-  if (!applet)return
+  if (!applet)return "ERROR: NO APPLET"
   try {
-    applet.loadInlineArray(ModelArray, script, false);
+    return applet.loadInlineArray(ModelArray, script, false);
   } catch (err) {
     //IE 7 bug
-    applet.loadInlineString(ModelArray.join("\n"), script, false);
+    return applet.loadInlineString(ModelArray.join("\n"), script, false);
   }
 }
 
 function jmolAppendInlineArray(ModelArray, script, targetSuffix) {
-  if (!model)return
+  if (!model)return "ERROR: NO MODEL"
   if (!script)script=""
   var applet=_jmolGetApplet(targetSuffix);
-  if (!applet)return
+  if (!applet)return "ERROR: NO APPLET"
   try {
-    applet.loadInlineArray(ModelArray, script, true);
+    return applet.loadInlineArray(ModelArray, script, true);
   } catch (err) {
     //IE 7 bug
-    applet.loadInlineString(ModelArray.join("\n"), script, true);
+    return applet.loadInlineString(ModelArray.join("\n"), script, true);
   }
 }
 
 function jmolAppendInlineScript(model, script, targetSuffix) {
-  if (!model)return
+  if (!model)return "ERROR: NO MODEL"
   var applet=_jmolGetApplet(targetSuffix);
-  if (applet)applet.loadInlineString(model, script, true);
+  if (!applet)return "ERROR: NO APPLET"
+  return applet.loadInlineString(model, script, true);
 }
 
 function jmolCheckBrowser(action, urlOrMessage, nowOrLater) {
@@ -1254,6 +1258,20 @@ function jmolScriptWait(script, targetSuffix) {
   for(var j=0;j< Ret[i].length;j++)
 	s+=Ret[i][j]+"\n"
   return s
+}
+
+function jmolScriptWaitOutput(script, targetSuffix) {
+  if(!targetSuffix)targetSuffix="0"
+  var ret = ""
+  try{
+   if (script) {
+    _jmolCheckBrowser();
+    var applet=_jmolGetApplet(targetSuffix);
+    if (applet) ret += applet.scriptWaitOutput(script);
+   }
+  }catch(e){
+  }
+ return ret;
 }
 
 function jmolEvaluate(molecularMath, targetSuffix) {

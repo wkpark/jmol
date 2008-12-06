@@ -4,6 +4,27 @@ isinitialized=0
 MAXMSG=100000
 msglog=""
 
+loadstructcallback="loadStructCallback"
+animcallback="animFrameCallback"
+pickcallback="showpick"
+hovercallback="showmsg"
+msgcallback="showmsg"
+//msgcallback="ignoreit"
+errorcallback = "errorCallback"
+measurecallback = "measureCallback"
+
+function measureCallback(app, strMeasure,intInfo, strStatus) {
+showmsg(app, strStatus + ":" + strMeasure, "", 0)
+}
+
+function loadStructCallback(fullPathName, fileName, modelName, errorMsg, ptLoad) {
+ alert([fullPathName, fileName, modelName, errorMsg, ptLoad])
+}
+
+function errorCallback(app,errorType,errorMessage, errorMessageUntranslated, errorObject) {
+ alert("Applet " + app + " reports an error of type " + errorType + ":\n\n" + errorMessageUntranslated + "\n\nobject:\n\n" + errorObject)
+}
+
 datadir = "data"
 height=350
 width=350
@@ -27,6 +48,7 @@ function newAppletWindow() {
  sm=sm.substring(2,10)
  var newwin=open("JmolPopup.htm","jmol_"+sm,woptions)
 }
+
 
 /// this next code is all you need in 11.1.17 to open a new resizable applet window
 
@@ -95,12 +117,10 @@ showappcode=false&&true
 docbase="./index.htm"
 codebase="."
 archive="jmolAppletSigned.jar"
-messagecallback="showmsg"
 thiscommand=""
-animcallback="animFrameCallback"
-pickcallback="showpick"
-hovercallback="showmsg"
-loadstructcallback="showmsg"
+
+function ignoreit() {}
+
 echoformat="font echo 14"
 echoformat2="font echo 16"
 title="example form"
@@ -116,18 +136,41 @@ listScripts = (docsearch.indexOf("LISTONLY")>=0)
 listHeadings = (docsearch.indexOf("HEADINGSONLY")>=0)
 useSigned = (docsearch.indexOf("SIGNED")>=0)
 language = (docsearch.indexOf("language=")>=0 ? docsearch.split("language=")[1].split("&")[0] : 0)
-//alert(docsearch + " "+ language);
+thistopic = (docsearch.indexOf("topic=")>=0 ? docsearch.split("topic=")[1].split("&")[0] : 0)
+
+function checkScroll() {
+ if (thistopic == 0)return
+ divScrollTo("aframe","topic" + thistopic)
+}
+
+function divScrollTo(fname, name){
+	var d=document.getElementById(fname)
+	if(!d)return
+	var pos=0
+	if(name!="top"){
+		var d2=document.getElementById(name)
+		if(!d2) {
+			return
+		}
+		pos=d2.offsetTop
+	}
+	d.scrollTop=pos
+}
+
 function showref(n){
  if(n==250)alert("Integer distances in Jmol indicate Rasmol units (0.004 Angstrom), now deprecated.")
 }
 
 
-function getapplet(name, model, codebase, height, width, script, msgcallback,animcallback,pickcallback,hovercallback,loadstructcallback) {
-//if (!isinitialized && useSigned)jmolInitialize(".", useSigned) //signed
+function getapplet(name, model, codebase, height, width, script) {
+  if (!isinitialized && useSigned) {
+	jmolInitialize(".", useSigned) //signed
+	isinitialized = true
+  }
   if(force_useHtml4Object)_jmol.useHtml4Object=1
   if(force_useIEObject)_jmol.useIEObject=1
 
-if (!isinitialized) jmolInitialize(".")
+  if (!isinitialized) jmolInitialize(".")
   isinitialized = 1
   jmolSetDocument(0)
 
@@ -143,6 +186,8 @@ if (!isinitialized) jmolInitialize(".")
   if (defaultloadscript != "")script = "set defaultLoadScript \""+defaultloadscript+"\";"+script
   jmolSetCallback("ScriptCallback","scriptCallback")
   if (msgcallback)jmolSetCallback("MessageCallback",msgcallback)
+  if (measurecallback)jmolSetCallback("MeasureCallback",measurecallback)
+  if (errorcallback)jmolSetCallback("ErrorCallback",errorcallback)
   if (animcallback)jmolSetCallback("AnimFrameCallback",animcallback)
   if (pickcallback)jmolSetCallback("PickCallback",pickcallback)
   if (hovercallback)jmolSetCallback("HoverCallback",hovercallback)
@@ -155,7 +200,7 @@ if (!isinitialized) jmolInitialize(".")
 
   var s = jmolApplet([width,height], script)
  //s=s.replace(/mayscript/,"maynotscript")
-  //alert(s)
+ //alert(s)
   return s
 }
 
@@ -184,7 +229,7 @@ function getscriptlink(i,isul,addNumber){
 	if(S.length>1)s+="\n<td"+(td2width && S.length<=ntd?" width='"+td2width+"'":"")+" valign='top'"+(isNaN(parseInt(S[j]))?">":" colspan='"+parseInt(S[j])+"'")+(isul?"<ul>":"")
 	if(S[j].indexOf("###")>=0){
 		nTopics--;
-		S[j]=S[j].replace(/\#\#\#/,"<h3><span>" + (nTopics <= nFirst ? "<a name=\"topic"+nTopics+"\">"+ nTopics + ".</a> " : "")).replace(/\#\#\#/,"</span></h3>")
+		S[j]=S[j].replace(/\#\#\#/,"<h3><span>" + (nTopics <= nFirst ? "<a name=\"topic"+nTopics+"\" id=\"topic"+nTopics+"\">"+ nTopics + ".</a> " : "")).replace(/\#\#\#/,"</span></h3>")
 		if(S[j].indexOf("<br>")>=0)
 			S[j]="<table width=450><tr><td>"+S[j].split("<br>")[0]+"</td><td width=210 align=right>"+S[j].split("<br>")[1]+"</td></tr></table>"
 		s+="<br>"
@@ -214,6 +259,7 @@ function getscriptlink(i,isul,addNumber){
 	if(S.length>1)s+=(isul?"\n</ul>":"")+"\n</td>"
  }
  if(S.length>1)s+="\n</tr></tbody></table>"+(isul?"\n<ul>":"")
+ //if (s.indexOf("id=")>=0)alert(s)
  return s
 }
 
@@ -307,17 +353,21 @@ isAnimationRunning, animationDirection, currentDirection) {
 
 }
 
-function scriptCallback(n,objwhat,moreinfo, moreinfo2) {
-// this filters out the "script completed" messages and only passes the real messages along
-  if (moreinfo2 == 0) showmsg(n, objwhat, moreinfo, moreinfo2)
+function scriptCallback(app, status, message, millisec, errorUntranslated) {
+  // this filters out the "script completed" messages and only passes the real messages along
+  millisec = parseInt("" + millisec)
+  if ("" + errorUntranslated != "null")alert(errorUntranslated + "\n\n" + message)
+  if (millisec == 0) showmsg(app, status, message, 0)
 }
 
+ttest2=""
 function showmsg(n,objwhat,moreinfo,moreinfo2){
-//alert("" + objwhat)
+ttest2 += "<br>showmsg:" + objwhat
+//alert("showmsg" + objwhat)
  var d = document.getElementById("msg");
  if (!d)return
  var nmore = parseInt(moreinfo);
- var what=objwhat+(moreinfo?"\n"+moreinfo:"")+(moreinfo2?"\n"+moreinfo2:"")
+ var what="" + objwhat//+(moreinfo?"\n"+moreinfo:"")+(moreinfo2?"\n"+moreinfo2:"")
  if (what.indexOf("{") == 0) {
    WHAT = what.replace(/\\\"/g,"~")
    //need a new thread here in case of an error
@@ -407,7 +457,7 @@ function getpage(){
 +'\n</td></tr></tbody></table></div>'
 +'\n<div id="bframe" style = "position:absolute;top:50px;left:550px;height:500px;width:450px;overflow:auto;height:'+(winHeight()-75)+'px">'
 	+'\n<span id="jmolApplet">'
-	+getapplet("jmol",model,codebase,height,width,(iscript>0?Scripts[iscript]:loadscript+";"+Scripts[0]),messagecallback,animcallback,pickcallback,hovercallback,loadstructcallback)
+	+getapplet("jmol",model,codebase,height,width,(iscript>0?Scripts[iscript]:loadscript+";"+Scripts[0]))
 	+'\n</span>'
 	+'\n<p><a target=_blank href=http://en.wikipedia.org/wiki/Ajax_%28programming%29>AJAX</a>: '
 	+'<a href=javascript:getRCSBfile() title="any CIF from RCSB via St. Olaf AJAX server"><u>STOLAF-RCSB/CIF</u></a> &nbsp;&nbsp;&nbsp; '

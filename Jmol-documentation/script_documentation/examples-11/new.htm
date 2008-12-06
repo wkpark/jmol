@@ -10,7 +10,6 @@
 function callback(a, b, c, d, e, f, g, h, i, j){
 alert("a = " + a + " b = " + b + " c = " + c + " d = " + d + " e =" + e + " f = " + f + " g = " + g + " h = " + h + " i = " + i + " j = " + j)
 }
-messagecallback="showmsg"
 animcallback=""
 loadstructcallback=""
 
@@ -31,7 +30,7 @@ model=';load quartz.cif {1 1 1}; zoom 150;wireframe on; spacefill off; ellipsoid
 docsearch = document.location.search.substring(1)
 if(docsearch.indexOf("model=")>=0)model=unescape(docsearch.split("model=")[1].split("&")[0])
 
-latestVersion = '### Be sure you have the <a href=http://jmol.sourceforge.net/files>Latest version</a>. Very latest may appear here: <a href=http://www.stolaf.edu/academics/chemapps/jmol/docs/examples-11/Jmol-11.zip>Jmol-11.zip</a>###'
+latestVersion = '### Be sure you have the <a href=http://jmol.sourceforge.net/files>Latest version</a>. Very latest may appear here: <a href=http://chemapps.stolaf.edu/jmol/docs/examples-11/Jmol-11.zip>Jmol-11.zip</a>###'
 
 Scripts=new Array(" "
 
@@ -45,10 +44,64 @@ Scripts=new Array(" "
 +' Comments? Suggestions? <a href=mailto:hansonr@stolaf.edu>Bob Hanson</a>'
 
 
+/*
+
+
+*/
+
 ,latestVersion
 
-,'### set hbondsAngleMinimum, set hbondsDistanceMaximum, and calculate hbonds {atomset1} {atomset2} ###'
+,'### error message returned in JavaScript inline loading methods ###'
+,'# A new <a href=Jmol.js>Jmol.js</a> file associated with Jmol 11.7.16 returns file loading error messages with jmolLoadInline, jmolLoadInlineArray, jmolLoadInlineScript, jmolAppendInlineScript, and jmolAppendInlineArray.'
+,'# <A href="javascript:alert(jmolLoadInline(\'6\\na structure\\nC 0 0 0\'))">bad structure</a>'
+,'# <A href="javascript:alert(jmolLoadInline(\'6\\na structure\\nC 0 0 0\\nC 1 0 0\\nC 2 0 0\\nC 0 1 0\\nC 0 2 0\\nC 0 3 0\'))">no error</a>'
 
+,'### load "xxxx.gamess" FILTER "[mo filters]" ###'
+,'# Jmol 11.7.16 allows filtering of molecular orbitals in GAMESS files, where there may be more than one type. The filter uses ! as NOT and simply looks for lead-in lines that include or exclude the specified words separated by whitespace, commas, or semicolons. With NOT, the words are ANDed:!optimized,natural -- not optimized and not natural; otherwise they are ORed: initial,natural -- initial or natural.'
+,'load guga.gamess.gz FILTER "natural";mo 20'
+,'load guga.gamess.gz FILTER "!initial,natural";mo 100'
+
+,'### Out Of Memory Error handling and jmolGetPropertyAsString("errorMessage") ###'
+,'# Jmol 11.7.16 traps out-of-memory errors along with other compilation and scripting errors and saves the message in a property that can be checked. In this example we attempt to load a huge biomolecule that with previous versions of Jmol would crash the applet. After getting an error, click <a href="javascript:alert(jmolGetPropertyAsString(\'ErrorMessage\'))">here</a>. Still, it is possible to lose the applet or LiveConnect if this is done multiple times.'
+,'load 1sva.pdb;restrict none;select *;cartoon;color chain #this is 1/60 of the viral coat'
+,'load 1sva.pdb FILTER "biomolecule 1" # the entire virus -- at least on my machine, I get a "Java heap space" error.'
+,'load 1crn.pdb # still possible to continue'
+,'load quartz.cif {100 100 100} # too many unit cells'
+,'load 1sva.pdb FILTER "*.CA, biomolecule 1";draw sphere diameter 400.0 {0 0 0} # better -- the entire virus, but alpha carbons only.'
+,'isosurface resolution 100 molecular # WAY too high a resolution'
+
+,'### save ... DELETE ###'
+,'# Jmol 11.7.14 adds the capability to flush saved information from memory. All of the <b>save</b> command options may be deleted, including bonds, coordinates, orientation, selected, state, and structure.'
+
+,'### sync * stereo ###'
+,'# Jmol 11.7.13 introduces the capability to split the left and right eye images for stereo rendering into two different applets. This may be useful when the stereo image is to be displayed using a single monitor split between two cross-polarized projectors using the method of GeoWall. The command to initiate this is simply <b>sync * stereo</b> or <b>sync "X" stereo</b>, where X is the extension of an applet -- 0 for "JmolApplet0". All scripting and control is then carried out on the applet for which the command was issued (generally the applet on the left). The right-eye stereo image is then sent directly to the right-side applets\'s Graphics object. See <a href=syncstereo.htm>syncstereo.htm</a>.'
+
+,'### # comments as targets of GOTO ###'
+,'# Jmol 11.7.12 allows comments starting with # to act as targets of GOTO commands.'
+
+,'### efvet file reading and JVXL 2.0 ###'
+,'# Jmol 11.7.12 adds efvet (<a href="http://ef-site.hgc.jp/eF-site">ef-site.hgc.jp/eF-site</a>) surface file reading. These surface files contain vertex and triangle information but no "cube data". They are more similar therefore to pmesh files than isosurface files. However, they are particularly useful because they contain mapped data property information. This information is accessible using an integer after the filename. An XML comment in these files may identify the order of properties. In the example given here, the order is: (1) electrostatic_potential, (2) hydrophobicity, (3) temperature_factor, (4) minimum_curvature, and (5) maximum_curvature. In order to accomodate this type of file, a new JVXL file format was required. While Jmol 11.7.12 will still read JVXL 1.0 files, the new JVXL 2.0 files produced from vertex/triangle-only formats (pmesh and efvet) cannot be read by previous versions of Jmol.'
+,'load 1lmb.pdb'
+,'isosurface "1lmb.efvet.gz" # the first property (electrostatic potential)'
+,'isosurface color "rwb" range -0.1 0.1 "1lmb.efvet.gz" 1 # same but colored differently'
+,'isosurface "1lmb.efvet.gz" 2 # hydrophobicity'
+,'isosurface "1lmb.efvet.gz" 3 # temperature_factor'
+,'isosurface "1lmb.efvet.gz" 4 # minimum_curvature'
+,'isosurface "1lmb.efvet.gz" 5 # maximum_curvature'
+
+,'### PMESH command deprecated ###'
+,'# Jmol 11.7.12 deprecates the PMESH command. This functionality has been merged with ISOSURFACE. You can still use the PMESH command, but it executes the ISOSURFACE command the same as any other ISOSURFACE command except for one property: files containing pure numbers are assumed to be pmesh files rather than cube files. The keyword PMESH can be added to any isosurface command to indicate that the next file read is in PMESH data format.'
+
+,'### user-definable atom selector functions ###'
+,'# Jmol 11.7.11 allows the definition of functions in Jmol that work with atom sets. For example:<pre>\n   function myFunc()\n     return _x.x + _x.y + _x.z\n   end function\n\n   print {*}.myFunc\n   print {*}.myFunc.min\n   print {*}.myFunc.max\n   print {*}.myFunc.all</pre>These functions may have parameters provided .min, .max, or .all are not used.'
+,'load 1crn.pdb;draw sphere diameter 20.0 {0 0 0} translucent'
+,'function myfunc;return sqrt(_x.x*_x.x + _x.y*_x.y + _x.z*_x.z);end function;select {*.ca} (myfunc < 10.0);spacefill on'
+,'function dotpt(pt);return sqrt(_x.x*pt.x + _x.y*pt.y + _x.z*pt.z);end function;print {atomindex=3}.dotpt({1 2 3})'
+
+,'### #comments now can be targets of GOTO ###'
+,'# Starting with Jmol 11.7.11, both MESSAGE and comments starting with # can act as the target of a GOTO command. '
+
+,'### set hbondsAngleMinimum, set hbondsDistanceMaximum, and calculate hbonds {atomset1} {atomset2} ###'
 ,'# Jmol 11.7.9 includes the option to calculate hydrogen bonds betweens any set of pairs of oxygen or nitrogen atoms that do not have H atoms attached. <b>hbondsDistanceMaximum</b> sets a maximum distance in Angstroms between the two heavy atoms (default 3.25). <b>hbondsAngleMinimum</b> (default 90) sets a minimum angle between the two heavy atoms and any atom attached to one or the other of those atoms. Note that some thought might be given to which oxygens are to be connected. The default will connect carbonyl groups. It is important to understand that these calculated hydrogen bonds are only where hydrogen bonds <em>might</em> be, not necessarily where hydrogen bonds actually exist.'
 ,'load 1crn.pdb;set hbondsAngleMinimum 90 # default'
 ,'calculate hbonds {*} {*};color hbonds yellow;hbonds 0.1'

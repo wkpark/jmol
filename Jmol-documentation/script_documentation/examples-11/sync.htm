@@ -17,9 +17,9 @@ function sync() {
 function sync() {
  var syncing = document.getElementById("drive").checked
  if(syncing)
-   jmolScript('sync * OFF','A')
- else
    jmolScript('sync * ON; sync * "set syncMouse on;set syncScript off"','A')
+ else
+   jmolScript('sync * OFF','A')
 }
 
 function encode(cmd, addJS) {
@@ -64,9 +64,9 @@ The command used here is simply:
 function sync() {
  var syncing = document.getElementById("drive").checked
  if(syncing)
-   <script>encode("sync * OFF", 1)</script>
- else
    <script>encode("sync * ON; sync * \"set syncMouse on;set syncScript off\"", 1)</script>
+ else
+   <script>encode("sync * OFF", 1)</script>
 }
 </pre>
 

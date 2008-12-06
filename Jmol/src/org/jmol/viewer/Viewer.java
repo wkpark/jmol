@@ -3299,6 +3299,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String generateOutput(String type, String fileName, int width,
                                int height) {
+    mustRender = true;
     saveState("_Export");
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
@@ -3622,8 +3623,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (!isQuiet)
         scriptStatus("Jmol script terminated", 
             strErrorMessage, 1 + eval.getExecutionWalltime(), strErrorMessageUntranslated);
-      if (isScriptFile && writeInfo != null)
+      if (writeInfo != null) {
         writeImage(writeInfo);
+        writeInfo = null;
+      }
     } else {
       scriptStatus(strErrorMessage);
       scriptStatus("Jmol script terminated", 
@@ -3635,7 +3638,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       else
         Logger.error("--script check error\n" + strErrorMessageUntranslated);
     }
-    if (isScriptFile && autoExit) {
+    if (autoExit) {
       System.out.flush();
       System.exit(0);
     } else if (checkScriptOnly)
@@ -6948,6 +6951,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
     if (quality != Integer.MIN_VALUE) {
+      mustRender = true;
       resizeImage(width, height, true, false, false);
       setModelVisibility();
     }

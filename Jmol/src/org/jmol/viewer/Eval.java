@@ -11407,8 +11407,7 @@ class Eval {
     if (ignoreError)
       throw new NullPointerException();
     if (!isSyntaxCheck) {
-      String s = viewer.removeCommand();
-      viewer.addCommand(s + CommandHistory.ERROR_FLAG);
+      viewer.addCommand(viewer.removeCommand() + CommandHistory.ERROR_FLAG);
       viewer.setCursor(Viewer.CURSOR_DEFAULT);
       viewer.setRefreshing(true);
     }

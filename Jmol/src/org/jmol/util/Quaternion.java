@@ -113,62 +113,62 @@ public class Quaternion {
 
   public Quaternion(Matrix3f mat) {
 
-   /*
-    * Changed 7/16/2008 to double precision for 11.5.48.
-    * 
-    * <quote>
-    *  
-    * RayTrace Software Package, release 3.0.  May 3, 2006.
-    *
-    * Mathematics Subpackage (VrMath)
-    *
-    * Author: Samuel R. Buss
-    *
-    * Software is "as-is" and carries no warranty.  It may be used without
-    *   restriction, but if you modify it, please change the filenames to
-    *   prevent confusion between different versions.  Please acknowledge
-    *   all use of the software in any publications or products based on it.
-    *
-    * Bug reports: Sam Buss, sbuss@ucsd.edu.
-    * Web page: http://math.ucsd.edu/~sbuss/MathCG
-    
-    // Use Shepperd's algorithm, which is stable, does not lose
-    //    significant precision and uses only one sqrt.
-    //   J. Guidance and Control, 1 (1978) 223-224.
+    /*
+     * Changed 7/16/2008 to double precision for 11.5.48.
+     * 
+     * <quote>
+     *  
+     * RayTrace Software Package, release 3.0.  May 3, 2006.
+     *
+     * Mathematics Subpackage (VrMath)
+     *
+     * Author: Samuel R. Buss
+     *
+     * Software is "as-is" and carries no warranty.  It may be used without
+     *   restriction, but if you modify it, please change the filenames to
+     *   prevent confusion between different versions.  Please acknowledge
+     *   all use of the software in any publications or products based on it.
+     *
+     * Bug reports: Sam Buss, sbuss@ucsd.edu.
+     * Web page: http://math.ucsd.edu/~sbuss/MathCG
+     
+     // Use Shepperd's algorithm, which is stable, does not lose
+     //    significant precision and uses only one sqrt.
+     //   J. Guidance and Control, 1 (1978) 223-224.
 
-    * </quote>
-    * 
-    * Except, that code has errors.
-    * 
-    * CORRECTIONS (as noted below) of Quaternion.cpp. I have reported the bug.
-    *  
-    * -- Bob Hanson
-    * 
-    *  theory:    
-    *         cos(theta/2)^2 = (cos(theta) + 1)/2
-    *  and      
-    *         trace = (1-x^2)ct + (1-y^2)ct + (1-z^2)ct + 1 = 2cos(theta) + 1
-    *  or
-    *         cos(theta) = (trace - 1)/2 
-    *         
-    *  so in general,       
-    *       
-    *       w = cos(theta/2) 
-    *         = sqrt((cos(theta)+1)/2) 
-    *         = sqrt((trace-1)/4+1/2)
-    *         = sqrt((trace+1)/4)
-    *         = sqrt(trace+1)/2
-    *     
-    *  but there are precision issues, so we allow for other situations.
-    *  note -- trace >= 0.5 when cos(theta) >= -0.25 (-104.48 <= theta <= 104.48).
-    *  this code cleverly matches the precision in all four options.
-    *
-    */
-    
+     * </quote>
+     * 
+     * Except, that code has errors.
+     * 
+     * CORRECTIONS (as noted below) of Quaternion.cpp. I have reported the bug.
+     *  
+     * -- Bob Hanson
+     * 
+     *  theory:    
+     *         cos(theta/2)^2 = (cos(theta) + 1)/2
+     *  and      
+     *         trace = (1-x^2)ct + (1-y^2)ct + (1-z^2)ct + 1 = 2cos(theta) + 1
+     *  or
+     *         cos(theta) = (trace - 1)/2 
+     *         
+     *  so in general,       
+     *       
+     *       w = cos(theta/2) 
+     *         = sqrt((cos(theta)+1)/2) 
+     *         = sqrt((trace-1)/4+1/2)
+     *         = sqrt((trace+1)/4)
+     *         = sqrt(trace+1)/2
+     *     
+     *  but there are precision issues, so we allow for other situations.
+     *  note -- trace >= 0.5 when cos(theta) >= -0.25 (-104.48 <= theta <= 104.48).
+     *  this code cleverly matches the precision in all four options.
+     *
+     */
+
     double trace = mat.m00 + mat.m11 + mat.m22;
     double temp;
     double w, x, y, z;
-    if (trace >= 0.5) {  
+    if (trace >= 0.5) {
       w = Math.sqrt(1.0 + trace);
       x = (mat.m21 - mat.m12) / w;
       y = (mat.m02 - mat.m20) / w;
@@ -178,14 +178,15 @@ public class Quaternion {
       w = (mat.m21 - mat.m12) / x;
       y = (mat.m10 + mat.m01) / x;
       z = (mat.m20 + mat.m02) / x;
-    } else if ((temp = mat.m11 + mat.m11 - trace) >= 0.5) {
+    } else if ((temp = mat.m11 + mat.m11 - trace) >= 0.5 
+        || mat.m11 > mat.m22) {
       y = Math.sqrt(1.0 + temp);
       w = (mat.m02 - mat.m20) / y;
       x = (mat.m10 + mat.m01) / y;
       z = (mat.m21 + mat.m12) / y;
     } else {
       z = Math.sqrt(1.0 + mat.m22 + mat.m22 - trace);
-      w = (mat.m10 - mat.m01) / z;  
+      w = (mat.m10 - mat.m01) / z;
       x = (mat.m20 + mat.m02) / z; // was -
       y = (mat.m21 + mat.m12) / z; // was -
     }
@@ -194,7 +195,7 @@ public class Quaternion {
     q1 = (float) (x * 0.5);
     q2 = (float) (y * 0.5);
     q3 = (float) (z * 0.5);
-     
+
     /*
      *  Originally from http://www.gamedev.net/community/forums/topic.asp?topic_id=448380
      *  later algorithm was adapted from Visualizing Quaternions, by Andrew J. Hanson
@@ -207,48 +208,47 @@ public class Quaternion {
      *
      *  former algorithm used:     
      * /
-    
-    double tr = mat.m00 + mat.m11 + mat.m22; //Matrix trace 
-    double s;
-    double[] q = new double[4];
-    if (tr > 0) {
-      s = Math.sqrt(tr + 1);
-      q0 = (float) (0.5 * s);
-      s = 0.5 / s; // = 1/q0
-      q1 = (float) ((mat.m21 - mat.m12) * s);
-      q2 = (float) ((mat.m02 - mat.m20) * s);
-      q3 = (float) ((mat.m10 - mat.m01) * s);
-    } else {
-      float[][] m = new float[][] { new float[3], new float[3], new float[3] };
-      mat.getRow(0, m[0]);
-      mat.getRow(1, m[1]);
-      mat.getRow(2, m[2]);
+     
+     double tr = mat.m00 + mat.m11 + mat.m22; //Matrix trace 
+     double s;
+     double[] q = new double[4];
+     if (tr > 0) {
+     s = Math.sqrt(tr + 1);
+     q0 = (float) (0.5 * s);
+     s = 0.5 / s; // = 1/q0
+     q1 = (float) ((mat.m21 - mat.m12) * s);
+     q2 = (float) ((mat.m02 - mat.m20) * s);
+     q3 = (float) ((mat.m10 - mat.m01) * s);
+     } else {
+     float[][] m = new float[][] { new float[3], new float[3], new float[3] };
+     mat.getRow(0, m[0]);
+     mat.getRow(1, m[1]);
+     mat.getRow(2, m[2]);
 
-      //Find out the biggest element along the diagonal 
-      float max = Math.max(mat.m11, mat.m00);
-      int i = (mat.m22 > max ? 2 : max == mat.m11 ? 1 : 0);
-      int j = (i + 1) % 3;
-      int k = (j + 1) % 3;
-      s = -Math.sqrt(1 + m[i][i] - m[j][j] - m[k][k]);
-      // 0 = 1 + (1-x^2)ct + x^2 -(1-y^2)ct - y^2 - (1-z^2)ct - z^2
-      // 0 = 1 - ct + (x^2 - y^2 - z^2) - (x^2 - y^2 - z^2)ct
-      // 0 = 1 - ct + 2x^2 - 1 - (2x^2)ct + ct
-      // 0 = 2x^2(1 - ct)
-      // theta = 0 (but then trace = 1 + 1 + 1 = 3)
-      // or x = 0. 
-      q[i] = s * 0.5;
-      if (s != 0)
-        s = 0.5 / s; // = 1/q[i]
-      q[j] = (m[i][j] + m[j][i]) * s;
-      q[k] = (m[i][k] + m[k][i]) * s;
-      q0 = (float) ((m[k][j] - m[j][k]) * s);
-      q1 = (float) q[0]; // x
-      q2 = (float) q[1]; // y
-      q3 = (float) q[2]; // z 
-    }
+     //Find out the biggest element along the diagonal 
+     float max = Math.max(mat.m11, mat.m00);
+     int i = (mat.m22 > max ? 2 : max == mat.m11 ? 1 : 0);
+     int j = (i + 1) % 3;
+     int k = (j + 1) % 3;
+     s = -Math.sqrt(1 + m[i][i] - m[j][j] - m[k][k]);
+     // 0 = 1 + (1-x^2)ct + x^2 -(1-y^2)ct - y^2 - (1-z^2)ct - z^2
+     // 0 = 1 - ct + (x^2 - y^2 - z^2) - (x^2 - y^2 - z^2)ct
+     // 0 = 1 - ct + 2x^2 - 1 - (2x^2)ct + ct
+     // 0 = 2x^2(1 - ct)
+     // theta = 0 (but then trace = 1 + 1 + 1 = 3)
+     // or x = 0. 
+     q[i] = s * 0.5;
+     if (s != 0)
+     s = 0.5 / s; // = 1/q[i]
+     q[j] = (m[i][j] + m[j][i]) * s;
+     q[k] = (m[i][k] + m[k][i]) * s;
+     q0 = (float) ((m[k][j] - m[j][k]) * s);
+     q1 = (float) q[0]; // x
+     q2 = (float) q[1]; // y
+     q3 = (float) q[2]; // z 
+     }
 
      */
-      
 
   }
 

@@ -291,7 +291,6 @@ class Eval {
     } catch (ScriptException e) {
       setErrorMessage(e.toString());
       errorMessageUntranslated = e.getErrorMessageUntranslated();
-      System.out.println("eval e, untrans" + e + " "+ errorMessageUntranslated);
       scriptStatusOrBuffer(errorMessage);
       viewer.notifyError(
           (errorMessage.indexOf("java.lang.OutOfMemoryError") >= 0 ? "Error"
@@ -12785,6 +12784,7 @@ class Eval {
         // quaternion(q0, q1, q2, q3)
         // quaternion("{x, y, z, w"})
         // quaternion(center, X, XY)
+        // quaternion(mcol1, mcol2)
         // quaternion(q, "id", center)  // draw code
         // axisangle(vector, theta)
         // axisangle(x, y, z, theta)
@@ -12794,7 +12794,8 @@ class Eval {
         case 4:
           break;
         case 2:
-          if (args[0].tok != Token.point3f)
+          if (args[0].tok != Token.point3f || tok != Token.quaternion
+              && args[1].tok == Token.point3f)
             return false;
           break;
         case 3:
@@ -12818,7 +12819,10 @@ class Eval {
         Point4f p4 = null;
         switch (args.length) {
         case 2:
-          q = new Quaternion((Point3f) args[0].value, Token.fValue(args[1]));
+          if (args[1].tok == Token.point3f)
+            q = Quaternion.getQuaternionFrame(new Point3f(0,0,0), (Point3f) args[0].value, (Point3f) args[1].value);
+          else
+            q = new Quaternion((Point3f) args[0].value, Token.fValue(args[1]));
           break;
         case 3:
           if (args[0].tok == Token.point4f) {
@@ -13542,6 +13546,16 @@ class Eval {
             return addX(v4);
           }
           switch (n) {
+          // q%0 w
+          // q%1 x
+          // q%2 y
+          // q%3 z
+          // q%4 normal
+          // q%-1 vector(1)
+          // q%-2 theta
+          // q%-3 Matrix column 0
+          // q%-4 Matrix column 1
+          // q%-5 Matrix column 2
           case 0:
             return addX(q.w);
           case 1:

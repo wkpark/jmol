@@ -4288,7 +4288,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    *  that can be parsed more easily, involving the atoms and measurement
    *  with units, for example: 
    *  
-   *    [Si #3, O #8, Si #7, 60.1 °]
+   *    [Si #3, O #8, Si #7, 60.1 ]
    *   
    *   Viewer.setStatusMeasuring
    *       Measures.clear

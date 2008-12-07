@@ -3623,7 +3623,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (!isQuiet)
         scriptStatus("Jmol script terminated", 
             strErrorMessage, 1 + eval.getExecutionWalltime(), strErrorMessageUntranslated);
-      if (writeInfo != null) {
+      if (writeInfo != null) { // had "isScriptFile"
         writeImage(writeInfo);
         writeInfo = null;
       }
@@ -3638,7 +3638,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       else
         Logger.error("--script check error\n" + strErrorMessageUntranslated);
     }
-    if (autoExit) {
+    if (autoExit) { // had "isScriptFile"
       System.out.flush();
       System.exit(0);
     } else if (checkScriptOnly)

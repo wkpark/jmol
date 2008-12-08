@@ -8,7 +8,7 @@ $wgExtensionCredits['parserhook'][] = array(
   'author'      => 'Nicolas Vervelle, Jmol Development Team',
   'description' => 'adds the possibility to include [http://www.jmol.org Jmol] applets in MediaWiki.',
   'name'        => 'Jmol Extension for MediaWiki',
-  'update'      => '11-29-2008',
+  'update'      => '12-08-2008',
   'url'         => 'http://wiki.jmol.org/index.php/MediaWiki',
   'status'      => 'development',
   'type'        => 'hook',
@@ -26,9 +26,9 @@ global $wgJmolForceNameSpace;
 global $wgJmolShowWarnings;
 global $wgJmolUsingSignedAppletByDefault;
 
-$wgJmolAuthorizeChoosingSignedApplet = false;
+$wgJmolAuthorizeChoosingSignedApplet = true;
 $wgJmolAuthorizeUploadedFile = true;
-$wgJmolAuthorizeUrl = false;
+$wgJmolAuthorizeUrl = true;
 $wgJmolDefaultAppletSize = "400";
 $wgJmolDefaultScript = "";
 $wgJmolExtensionPath = $wgScriptPath."/extensions/Jmol";

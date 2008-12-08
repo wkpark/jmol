@@ -85,7 +85,7 @@ class Jmol {
 
     $this->mValInlineContents = trim($this->mValInlineContents);
     $this->mValInlineContents = preg_replace("/\t/", " ", $this->mValInlineContents);
-    $this->mValInlineContents = preg_replace("/\n/", "\\n'+\n'", $this->mValInlineContents);
+    // $this->mValInlineContents = preg_replace("/\n/", "\\n'+\n'", $this->mValInlineContents);
     $prefix .= "<script language='Javascript' type='text/javascript'>";
     $postfix .= "</script>\n";
     $this->mOutput .= $this->renderInternalJmolApplet($prefix, $postfix, "'");
@@ -118,7 +118,7 @@ class Jmol {
     $this->mOutput .= $this->renderInternalJmolApplet($prefix, $postfix, "\\'");
   }
 
-  // Renders a button in the Wiki page that will open a new window containing a Jmol applet
+  // Renders a link in the Wiki page that will open a new window containing a Jmol applet
   private function renderJmolAppletLink() {
     global $wgJmolExtensionPath;
     $prefix = "";
@@ -173,7 +173,7 @@ class Jmol {
       "'".$this->escapeScript($this->mValScriptWhenChecked)."',".
       "'".$this->escapeScript($this->mValScriptWhenUnchecked)."',".
       "'".$this->escapeScript($this->mValText)."'";
-    if ($this->mValChecked) {
+    if ($this->mValChecked == "true") {
       $this->mOutput .= ",true";
     } else {
       $this->mOutput .= ",false";
@@ -224,7 +224,7 @@ class Jmol {
       $this->mOutput .= "jmolSetTarget('".$this->escapeScript($this->mValTarget)."');\n";
     }
     $this->mOutput .= "jmolRadioGroup([".$this->mValItems."]";
-    if ($this->mValVertical) {
+    if ($this->mValVertical == "true") {
       $this->mOutput .= ",jmolBr()";
     } else {
       $this->mOutput .= ",'&nbsp;'";
@@ -241,6 +241,15 @@ class Jmol {
     global $wgJmolAuthorizeUrl, $wgJmolAuthorizeUploadedFile;
     global $wgJmolForceNameSpace, $wgJmolExtensionPath;
     $output = $prefix;
+		// initialize now goes in the body, thus allowing signed applet:
+    $output .= 
+	  "jmolInitialize(".$sep.$wgJmolExtensionPath.$sep.", ";
+			if ($this->mValSigned == "true") { 	
+				$output .= "true";
+			} else { 
+				$output .= "false";
+			}
+			$output .= "); ";
 
     $output .=
       "jmolCheckBrowser(".$sep."popup".$sep.", ".
@@ -377,7 +386,7 @@ class Jmol {
         }
         $this->mValItems .= "['".$this->escapeScript($this->mValScript)."'";
         $this->mValItems .= ",'".$this->escapeScript($this->mValText)."'";
-        if ($this->mValChecked) {
+        if ($this->mValChecked == "true") {
           $this->mValItems .= ",true]";
         } else {
           $this->mValItems .= ",false]";
@@ -527,7 +536,20 @@ class Jmol {
     return Xml::escapeJsString($value);
   }
   private function escapeScript($value) {
+	// to prevent javascript injection
+	// Simplest option: remove the whole script:
+	if ( stristr($value, "javascript") ) {
+		return "";
+	}  
     return Xml::escapeJsString($value);
+    
+    /* Other possibilities:
+	preg_replace("/javascript[^;]+/", "", $this->mValInlineContents);
+		/* removes everything from "javascript" up to the first semicolon.
+		  Not perfect though, since the javascript may have semicolons itself.
+		  Shall we look for the double quote? (May be either 'javascript "' or 'javascript"')
+		  Alternative: destroy the whole script if there is "javascript" in it. Doing that for now.
+		*/
   }
 
   // Add a link to Javascript file in the HTML header
@@ -557,33 +579,20 @@ class Jmol {
     return $this->renderJmol($text);
   }
 
-  private function beforeHMTLOutput(&$outputPage, &$text) {
-    global $wgJmolExtensionPath;
-    //if (preg_match_all('/<!-- Jmol -->/m', $text, $matches) === false) {
-    //  return true;
-    //}
-    $this->includeScript($outputPage, $wgJmolExtensionPath."/Jmol.js");
-    $this->includeScript($outputPage, $wgJmolExtensionPath."/JmolMediaWiki.js");
-    if ($this->mValSigned) {
-      $this->addScript($outputPage, "jmolInitialize('".$wgJmolExtensionPath."', true);");
-    } else {
-      $this->addScript($outputPage, "jmolInitialize('".$wgJmolExtensionPath."', false);");
-    }
-    return true;
-  }
-
-  private function toto(&$outputPage, &$text) {
+  private function beforeHTMLOutput(&$outputPage, &$text) {
     global $wgJmolExtensionPath;
     if (preg_match_all('/<!-- Jmol -->/m', $text, $matches) === false) {
       return true;
     }
     $this->includeScript($outputPage, $wgJmolExtensionPath."/Jmol.js");
     $this->includeScript($outputPage, $wgJmolExtensionPath."/JmolMediaWiki.js");
-    if ($this->mValSigned) {
+    /*  initialize now goes in the body, thus allowing signed applet
+    if ($this->mValSigned == "true") {
       $this->addScript($outputPage, "jmolInitialize('".$wgJmolExtensionPath."', true);");
     } else {
       $this->addScript($outputPage, "jmolInitialize('".$wgJmolExtensionPath."', false);");
     }
+    */
     return true;
   }
 
@@ -602,7 +611,7 @@ class Jmol {
 
   // OutputPageBeforeHTML
   function hOutputPageBeforeHTML(&$out, &$text) {
-    return $this->toto($out, $text); //$this->beforeHTMLOutput($out, $text);
+    return $this->beforeHTMLOutput($out, $text);
   }
 
   // ParserBeforeStrip hook

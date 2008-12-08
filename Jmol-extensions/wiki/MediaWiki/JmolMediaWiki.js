@@ -30,9 +30,9 @@ function jmolWikiPopupWindow(extensionPath, windowTitle, windowSize, windowLeft,
   var s =
     "<html><head>\n" +
     "<title>" + windowTitle + "</title>\n" +
-    "</head><body>\n" +
+    "</head><body>\n";
 	
-  var t1,t2,j1,j2
+  var t1,t2,j1,j2;
   var j1 = windowCode.indexOf("jmolApplet");
   eval(windowCode.substring(0,j1));	// execute the windowCode before "jmolApplet" (jmolInitialize, jmolSetAppletColor etc.)
   jmolSetDocument(false);			// execute this

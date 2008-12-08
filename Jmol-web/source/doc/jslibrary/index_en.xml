@@ -150,8 +150,10 @@
 				</p>
 				<p>
 	Initializes the Jmol.js JavaScript library. The call to
-	<code>jmolInitialize()</code> must be within the
-	<code>&lt;body&gt;</code> of the HTML page. 
+	<code>jmolInitialize()</code> may be within the
+	<code>&lt;head&gt;</code> or the 
+	<code>&lt;body&gt;</code> of the HTML page,
+	but must be located before any other calls belonging to Jmol.js. 
 	The first parameter, <code>JmolFolder</code>, is compulsory and specifies
 	(between quotes)
 	the relative path of the directory (folder) containing  

@@ -159,8 +159,10 @@ Cada páginaCada página      </p>
 				</p>
 				<p>
 	Inicializa la biblioteca JavaScript Jmol.js. La llamada a
-	<code>jmolInitialize()</code> debe estar dentro del cuerpo  
-	(<code>&lt;body&gt;</code>) de la página web. 
+	<code>jmolInitialize()</code> puede estar dentro de 
+	la cabecera (<code>&lt;head&gt;</code>) o del
+	cuerpo (<code>&lt;body&gt;</code>) de la página web,
+	pero debe estar situada antes que ninguna otra llamada de Jmol.js. 
 	El primer parámetro, <code>CarpetaJmol</code>, es indispensable e indica 
 	(entre comillas) la 
 	ruta relativa a la carpeta que contiene 

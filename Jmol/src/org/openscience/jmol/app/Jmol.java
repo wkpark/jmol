@@ -548,12 +548,37 @@ public class Jmol extends JPanel {
       haveConsole = false;
     }
 
+    //run pre Jmol script
+    if (line.hasOption("J")) {
+      commandOptions += "-J";
+      script1 = line.getOptionValue("J");
+    }
+
+    //run script from file
+    if (line.hasOption("s")) {
+      commandOptions += "-s";
+      scriptFilename = line.getOptionValue("s");
+    }
+    
+    //run post Jmol script
+    if (line.hasOption("j")) {
+      commandOptions += "-j";
+      script2 = line.getOptionValue("j");
+    }
+
     //no display (and exit)
     if (line.hasOption("n")) {
       // this ensures that noDisplay also exits
       commandOptions += "-n-x";
       haveDisplay = false;
-      script2 = "#exitJmol";
+      script2 += ";exitJmol";
+    }
+
+    //exit when script completes (or file is read)
+    if (line.hasOption("x")) {
+      commandOptions += "-x";
+      if (haveDisplay)
+        script2 += ";exitJmol";
     }
 
     //check script only -- don't open files
@@ -561,27 +586,6 @@ public class Jmol extends JPanel {
       commandOptions += "-c";
     } else if (line.hasOption("C")) {
       commandOptions += "-C";
-    }
-
-    //run script
-    if (line.hasOption("s")) {
-      commandOptions += "-s";
-      scriptFilename = line.getOptionValue("s");
-      if (!haveDisplay)
-        script2 = "#exitJmol";
-    }
-    
-    if (line.hasOption("j")) {
-      commandOptions += "-j";
-      script1 = line.getOptionValue("j");
-      if (!haveDisplay)
-        script2 += ";#exitJmol";
-    }
-
-    //exit when script completes (or file is read)
-    if (line.hasOption("x")) {
-      commandOptions += "-x";
-      script2 += ";#exitJmol";
     }
 
     //menu file

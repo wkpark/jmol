@@ -895,12 +895,6 @@ class Eval {
         continue;
       switch (token.tok) {
       case Token.nada:
-        if (!isSyntaxCheck && !viewer.isApplet()
-            && parameterAsString(0).equalsIgnoreCase("exitjmol")) {
-          Logger.debug("#exitJmol -- exiting");
-          System.out.flush();
-          System.exit(0);
-        }
         break;
       case Token.elseif:
       case Token.ifcmd:
@@ -5246,8 +5240,15 @@ class Eval {
     if (isSyntaxCheck && !isScriptCheck)
       return;
     String name = (String) getToken(0).value;
-    if (compiler.getFunction(name) == null)
+    if (compiler.getFunction(name) == null) {
+      if (!isSyntaxCheck && !viewer.isApplet()
+          && name.equalsIgnoreCase("exitjmol")) {
+        Logger.debug("#exitJmol -- exiting");
+        System.out.flush();
+        System.exit(0);
+      }
       error(ERROR_commandExpected);    
+    }
     Vector params = (statementLength == 1 || statementLength == 3
         && tokAt(1) == Token.leftparen && tokAt(2) == Token.rightparen ? null
         : (Vector) parameterExpression(1, 0, null, true));

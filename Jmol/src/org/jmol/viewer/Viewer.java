@@ -198,10 +198,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private String strOSName;
   private String htmlName = "";
 
-  public boolean isApplet() {
-    return (htmlName.length() > 0);
-  }
-
   private String fullName = "";
   private String syncId = "";
   private String appletDocumentBase = "";
@@ -301,6 +297,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private boolean isSilent = false;
   private boolean isApplet = false;
+
+  public boolean isApplet() {
+    return isApplet;
+  }
+
   private boolean isPreviewOnly = false;
   
   boolean isPreviewOnly() {
@@ -3573,10 +3574,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (str.equals("pause")) {
       pauseScriptExecution();
       return true;
-    }
-    if (!isApplet() && str.startsWith("exitJmol")) {
-      System.out.flush();
-      System.exit(0);
     }
     if (str.startsWith("exit")) {
       haltScriptExecution();

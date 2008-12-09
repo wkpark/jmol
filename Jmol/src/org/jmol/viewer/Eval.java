@@ -5241,8 +5241,9 @@ class Eval {
       return;
     String name = (String) getToken(0).value;
     if (compiler.getFunction(name) == null) {
-      if (!isSyntaxCheck && !viewer.isApplet()
-          && name.equalsIgnoreCase("exitjmol")) {
+      if (name.equalsIgnoreCase("exitjmol")) {
+        if (isSyntaxCheck || viewer.isApplet())
+          return;
         Logger.debug("exitJmol -- exiting");
         System.out.flush();
         System.exit(0);

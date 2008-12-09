@@ -201,6 +201,9 @@ public class ImageCreator implements JmolImageCreatorInterface {
     } catch (IOException e) {
       viewer.releaseScreenImage();
       throw new IOException(e);
+    } catch (Error er) {
+      viewer.releaseScreenImage();
+      throw new Error(er);
     }
     viewer.releaseScreenImage();
     if (errMsg != null)

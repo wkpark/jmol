@@ -677,7 +677,10 @@ public class Jmol extends JPanel {
       }
 
       //jmol.viewer.scriptWait("load 1crn.pdb;cartoons on;set antialiasdisplay");
-      //jmol.viewer.getImageAs("JPG", -1, "t75n.jpg", null);
+      //System.out.println("" + jmol.viewer.getImageAs("JPG", -1, 300, 300, "t75n.jpg", null));
+      //System.out.println("" + jmol.viewer.getImageAs("JPG", -1, 3000, 3000, "t75n.jpg", null));
+      //System.out.println("" + jmol.viewer.getImageAs("JPG", -1, 300, 300, null, null));
+      //System.out.println("" + jmol.viewer.getImageAs("JPG", -1, 3000, 3000, null, null));
       
       // OK, by now it is time to execute the script
 

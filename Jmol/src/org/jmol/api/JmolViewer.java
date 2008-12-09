@@ -179,11 +179,13 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   /**
    * @param type      "PNG", "JPG", "JPEG", "JPG64", "PPM", "GIF"
    * @param quality
+   * @param width 
+   * @param height 
    * @param fileName 
    * @param os 
    * @return base64-encoded or binary version of the image
    */
-  abstract public Object getImageAs(String type, int quality, String fileName, OutputStream os);
+  abstract public Object getImageAs(String type, int quality, int width, int height, String fileName, OutputStream os);
 
   abstract public boolean handleOldJvm10Event(Event e);
 

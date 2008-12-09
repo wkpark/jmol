@@ -3418,14 +3418,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   /**
    * @param type      "PNG", "JPG", "JPEG", "JPG64", "PPM", "GIF"
    * @param quality
+   * @param width 
+   * @param height 
    * @param fileName 
    * @param os 
    * @return base64-encoded or binary version of the image
    */
-  public Object getImageAs(String type, int quality, String fileName,
-                           OutputStream os) {
+  public Object getImageAs(String type, int quality, int width, int height,
+                           String fileName, OutputStream os) {
+    int saveWidth = dimScreen.width;
+    int saveHeight = dimScreen.height;
     mustRender = true;
+    resizeImage(width, height, true, false, false);
     setModelVisibility();
+    creatingImage = true;
     JmolImageCreatorInterface c = null;
     Object bytes = null;
     try {
@@ -3434,28 +3440,40 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } catch (Error er) {
       // unsigned applet will not have this interface
       // and thus will not use os or filename
+    }
+    if (c == null) {
       if (Parser.isOneOf(type.toLowerCase(), "jpg;jpeg;jpg64")) {
         Image eImage = getScreenImage();
         if (eImage != null) {
           try {
             bytes = JpegEncoder.getBytes(eImage, quality);
-          } catch (Throwable e) {
-            //
+            releaseScreenImage();
+            if (type.toLowerCase().equals("jpg64"))
+              bytes = (bytes == null ? "" : Base64.getBase64((byte[]) bytes)
+                  .toString());
+          } catch (Error er) {
+            releaseScreenImage();
+            handleError(er, false);
+            setErrorMessage("Error creating image: " + er);
+            bytes = getErrorMessage();
           }
         }
-        releaseScreenImage();
-        if (type.toLowerCase().equals("jpg64"))
-          return (bytes == null ? "" : Base64.getBase64((byte[]) bytes)
-              .toString());
-        return bytes;
+      }
+    } else {
+      c.setViewer(this);
+      try {
+        bytes = c.getImageBytes(type, quality, fileName, os);
+      } catch (IOException e) {
+        bytes = e;
+        setErrorMessage("Error creating image: " + e);
+      } catch (Error er) {
+        handleError(er, false);
+        setErrorMessage("Error creating image: " + er);
+        bytes = getErrorMessage();
       }
     }
-    c.setViewer(this);
-    try {
-      bytes = c.getImageBytes(type, quality, fileName, os);
-    } catch (IOException e) {
-      //not possible here?
-    }
+    creatingImage = false;
+    resizeImage(saveWidth, saveHeight, true, false, true);
     return bytes;
   }
 
@@ -7010,9 +7028,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         err = statusManager.createImage(fileName, type, text_or_bytes, quality);
       }
       // err may be null if user cancels operation involving dialog and "?" 
-    } catch (Exception e) {
-      Logger.error(setErrorMessage(err = "ERROR creating image: " + e));
-    } catch (Error er) {
+    } catch (Throwable er) {
       Logger.error(setErrorMessage(err = "ERROR creating image: "+ er));
     }
     creatingImage = false;

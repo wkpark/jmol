@@ -108,7 +108,7 @@ import netscape.javascript.JSObject;
  * 
  *  script javascript:...
  *  javascript ...
- *  x = eval(...) 
+ *  x = javascript(...) 
  *  
  * However, this can be overridden by adding an evalCallback function 
  * This MUST be defined along with applet loading using a <param> tag

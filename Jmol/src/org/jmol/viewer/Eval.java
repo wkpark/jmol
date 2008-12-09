@@ -5243,7 +5243,7 @@ class Eval {
     if (compiler.getFunction(name) == null) {
       if (!isSyntaxCheck && !viewer.isApplet()
           && name.equalsIgnoreCase("exitjmol")) {
-        Logger.debug("#exitJmol -- exiting");
+        Logger.debug("exitJmol -- exiting");
         System.out.flush();
         System.exit(0);
       }

@@ -308,7 +308,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
   
   private String writeInfo;
-  private boolean autoExit = false;
+  boolean autoExit = false;
   private boolean haveDisplay = true;
   private boolean mustRender = true;
   private boolean checkScriptOnly = false;
@@ -3424,6 +3424,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   public Object getImageAs(String type, int quality, String fileName,
                            OutputStream os) {
+    mustRender = true;
+    setModelVisibility();
     JmolImageCreatorInterface c = null;
     Object bytes = null;
     try {
@@ -3554,6 +3556,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       pauseScriptExecution();
       return true;
     }
+    if (!isApplet() && str.startsWith("exitJmol")) {
+      System.out.flush();
+      System.exit(0);
+    }
     if (str.startsWith("exit")) {
       haltScriptExecution();
       clearScriptQueue();
@@ -3662,10 +3668,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       else
         Logger.error("--script check error\n" + strErrorMessageUntranslated);
     }
-    if (autoExit) { // had "isScriptFile"
-      System.out.flush();
-      System.exit(0);
-    } else if (checkScriptOnly)
+    if (checkScriptOnly)
       Logger.info("(use 'exit' to stop checking)");
     isScriptQueued = true;
     if (returnType.equalsIgnoreCase("String"))

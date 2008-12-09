@@ -895,6 +895,12 @@ class Eval {
         continue;
       switch (token.tok) {
       case Token.nada:
+        if (!isSyntaxCheck && !viewer.isApplet()
+            && parameterAsString(0).equalsIgnoreCase("exitjmol")) {
+          Logger.debug("#exitJmol -- exiting");
+          System.out.flush();
+          System.exit(0);
+        }
         break;
       case Token.elseif:
       case Token.ifcmd:

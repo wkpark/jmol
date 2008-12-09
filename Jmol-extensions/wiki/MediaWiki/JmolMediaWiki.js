@@ -45,16 +45,18 @@ function jmolWikiPopupWindow(extensionPath, windowTitle, windowSize, windowLeft,
   j2 = t2.indexOf("\);");			// end of jmolApplet part
   var ap3 = t2.substring(j1+2,j2);	// script
   ap3 = ap3.replace(/\n/g, "|");	// protect newlines in inline data
-  var ap4 = t2.substring(j2+2);		// whatever is after jmolApplet (only jmolBr ? )
+  var ap4 = t2.substring(j2+2);		// whatever is after jmolApplet (was only jmolBr, now empty)
 
   // make the popup applet resizable:
   ap2 = '"100%"';	// overwrites the former size
   ap3 = ap3.charAt(0) + "set zoomLarge off; " + ap3.substring(1);	// skips the quote and inserts command
   
   s += eval( ap1 + "(" + ap2 + ", " + ap3 + ")" );	// put into page the code resulting from jmolApplet
-  s += eval(ap4);	// put into page the code resulting from whatever is after jmolApplet (jmolBr)
-  
-    "</body></html>";
+  if (ap4) {
+    s += eval(ap4);	// put into page the code resulting from whatever is after jmolApplet (was jmolBr)
+  }
+
+  s += "\n</body></html>";
   
 	// window name in IE cannot contain spaces or parentheses (and windowTitle may have anything)
 	// Therefore, avoid "non-word" characters (i.e. other than A-Z, numbers and underscore)

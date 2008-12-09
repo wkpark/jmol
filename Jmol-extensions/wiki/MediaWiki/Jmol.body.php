@@ -86,7 +86,7 @@ class Jmol {
     $this->mValInlineContents = trim($this->mValInlineContents);
     $this->mValInlineContents = preg_replace("/\t/", " ", $this->mValInlineContents);
     // $this->mValInlineContents = preg_replace("/\n/", "\\n'+\n'", $this->mValInlineContents);
-    $prefix .= "<script language='Javascript' type='text/javascript'>";
+    $prefix .= "<script type='text/javascript'>";
     $postfix .= "</script>\n";
     $this->mOutput .= $this->renderInternalJmolApplet($prefix, $postfix, "'");
   }
@@ -149,7 +149,7 @@ class Jmol {
 
   // Renders a button to control a Jmol applet
   private function renderJmolButton() {
-    $this->mOutput .= "<script language='Javascript' type='text/javascript'>\n";
+    $this->mOutput .= "<script type='text/javascript'>\n";
     if ($this->mValTarget != "") {
       $this->mOutput .= "jmolSetTarget('".$this->escapeScript($this->mValTarget)."');\n";
     }
@@ -165,7 +165,7 @@ class Jmol {
 
   // Renders a checkbox to control a Jmol applet
   private function renderJmolCheckbox() {
-    $this->mOutput .= "<script language='Javascript' type='text/javascript'>\n";
+    $this->mOutput .= "<script type='text/javascript'>\n";
     if ($this->mValTarget != "") {
       $this->mOutput .= "jmolSetTarget('".$this->escapeScript($this->mValTarget)."');\n";
     }
@@ -187,7 +187,7 @@ class Jmol {
 
   // Renders a link to control a Jmol applet
   private function renderJmolLink() {
-    $this->mOutput .= "<script language='Javascript' type='text/javascript'>\n";
+    $this->mOutput .= "<script type='text/javascript'>\n";
     if ($this->mValTarget != "") {
       $this->mOutput .= "jmolSetTarget('".$this->escapeScript($this->mValTarget)."');\n";
     }
@@ -203,7 +203,7 @@ class Jmol {
 
   // Renders a menu to control a Jmol applet
   private function renderJmolMenu() {
-    $this->mOutput .= "<script language='Javascript' type='text/javascript'>\n";
+    $this->mOutput .= "<script type='text/javascript'>\n";
     if ($this->mValTarget != "") {
       $this->mOutput .= "jmolSetTarget('".$this->escapeScript($this->mValTarget)."');\n";
     }
@@ -219,7 +219,7 @@ class Jmol {
 
   // Renders a radio group to control a Jmol applet
   private function renderJmolRadioGroup() {
-    $this->mOutput .= "<script language='Javascript' type='text/javascript'>\n";
+    $this->mOutput .= "<script type='text/javascript'>\n";
     if ($this->mValTarget != "") {
       $this->mOutput .= "jmolSetTarget('".$this->escapeScript($this->mValTarget)."');\n";
     }
@@ -249,7 +249,8 @@ class Jmol {
 			} else { 
 				$output .= "false";
 			}
-			$output .= "); ";
+			$output .= "); ".
+	  "_jmol.noEval = true; ";
 
     $output .=
       "jmolCheckBrowser(".$sep."popup".$sep.", ".
@@ -294,8 +295,7 @@ class Jmol {
       $output .= ",".$sep.$this->escapeScript($this->mValName).$sep;
     }
     $output .=
-      ");".
-      "jmolBr();";
+      ");";
     $output .= $postfix;
 
     return $output;
@@ -536,26 +536,12 @@ class Jmol {
     return Xml::escapeJsString($value);
   }
   private function escapeScript($value) {
-	// to prevent javascript injection
-	// Simplest option: remove the whole script:
-	if ( stristr($value, "javascript") ) {
-		return "";
-	}  
     return Xml::escapeJsString($value);
-    
-    /* Other possibilities:
-	preg_replace("/javascript[^;]+/", "", $this->mValInlineContents);
-		/* removes everything from "javascript" up to the first semicolon.
-		  Not perfect though, since the javascript may have semicolons itself.
-		  Shall we look for the double quote? (May be either 'javascript "' or 'javascript"')
-		  Alternative: destroy the whole script if there is "javascript" in it. Doing that for now.
-		*/
   }
 
   // Add a link to Javascript file in the HTML header
   private function includeScript(&$outputPage, $scriptFile) {
-    $script = "<script language='Javascript' ".
-                      "type='text/javascript' ".
+    $script = "<script type='text/javascript' ".
                       "src='".$scriptFile."'>".
               "</script>\n";
     $outputPage->addScript($script);
@@ -563,8 +549,7 @@ class Jmol {
 
   // Add a Javascript script in the HTML header
   private function addScript(&$outputPage, $scriptContents) {
-    $script = "<script language='Javascript' ".
-                      "type='text/javascript'>".
+    $script = "<script type='text/javascript'>".
                       $scriptContents.
               "</script>\n";
     $outputPage->addScript($script);

@@ -194,14 +194,6 @@ class Jvm12 {
     return (String) c.createImage(fileName, type, text_or_bytes, quality);
   }
 
-  String clipImage(String text) {
-    JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
-        .getOptionInterface("export.image.ImageCreator");
-    c.setViewer(viewer);
-    c.clipImage(text);
-    return (text == null ? "OK" : "OK " + text.length());
-  }
-
   String getClipboardText() {
     JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
         .getOptionInterface("export.image.ImageCreator");

@@ -7,7 +7,7 @@ public interface JmolImageCreatorInterface {
 
   abstract public void setViewer(JmolViewer viewer);
   
-  abstract public void clipImage(String text);
+  abstract public String clipImage(String text);
   
   abstract public String getClipboardText();
   

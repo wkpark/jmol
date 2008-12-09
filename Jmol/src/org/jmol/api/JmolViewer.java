@@ -158,6 +158,13 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   
   /**
    * 
+   * @param text   null here clips image; String clips text
+   * @return "OK" for image or "OK [number of bytes]"
+   */
+  abstract public String clipImage(String text);
+
+  /**
+   * 
    * @param fileName
    * @param type
    * @param text_or_bytes

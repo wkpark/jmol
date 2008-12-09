@@ -9297,7 +9297,7 @@ class Eval {
       // load error here
       scriptStatusOrBuffer((String) bytes);
     } else {
-      if (bytes == null)
+      if (bytes == null && (!isImage || fileName != null))
         bytes = data;
       String msg = viewer.createImage(fileName, type, bytes, quality, width,
           height, bsFrames);

@@ -55,13 +55,24 @@ public class ImageCreator implements JmolImageCreatorInterface {
     this.viewer = viewer;
   }
   
-  public void clipImage(String text) {
-    if (text == null) {
-      ImageSelection.setClipboard(viewer.getScreenImage());
-      viewer.releaseScreenImage();
-      return;
+  public String clipImage(String text) {
+    String msg;
+    try {
+      if (text == null) {
+        Image image = viewer.getScreenImage();
+        ImageSelection.setClipboard(image);
+        msg = "OK " + (image.getWidth(null) * image.getHeight(null));
+      } else {
+        ImageSelection.setClipboard(text);
+        msg = "OK " + text.length();
+      }
+    } catch (Error er) {
+      msg = viewer.getErrorMessage();
+    } finally {
+      if (text == null)
+        viewer.releaseScreenImage();
     }
-    ImageSelection.setClipboard(text);
+    return msg;
   }
 
   public String getClipboardText() {

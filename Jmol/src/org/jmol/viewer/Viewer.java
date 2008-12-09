@@ -6882,7 +6882,25 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void writeTextFile(String fileName, String data) {
     createImage(fileName, "txt", data, Integer.MIN_VALUE, 0, 0);
   }
-  
+
+  /**
+   * 
+   * @param text   null here clips image; String clips text
+   * @return "OK" for image or "OK [number of bytes]"
+   */
+  public String clipImage(String text) {
+    JmolImageCreatorInterface c;
+    try {
+      c = (JmolImageCreatorInterface) Interface
+      .getOptionInterface("export.image.ImageCreator");
+    } catch (Error er) {
+      // unsigned applet will not have this interface
+      return GT._("clipboard is not accessible -- use signed applet");
+    }
+    c.setViewer(this);
+    return c.clipImage(text);
+  }
+
   /**
    * 
    * from eval write command only
@@ -6984,10 +7002,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     creatingImage = true;
     String err = null;
-    if (fileName != null)
-      fileName = FileManager.setLocalPathForWritingFile(this, fileName);
     try {
-      err = statusManager.createImage(fileName, type, text_or_bytes, quality);
+      if (fileName == null) {
+        err = clipImage((String) text_or_bytes);
+      } else {
+        fileName = FileManager.setLocalPathForWritingFile(this, fileName);
+        err = statusManager.createImage(fileName, type, text_or_bytes, quality);
+      }
       // err may be null if user cancels operation involving dialog and "?" 
     } catch (Exception e) {
       Logger.error(setErrorMessage(err = "ERROR creating image: " + e));

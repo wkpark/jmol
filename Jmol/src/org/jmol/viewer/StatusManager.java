@@ -575,10 +575,10 @@ class StatusManager {
       if (!viewer.isSignedApplet()) {
         fileName = dialogAsk(quality == Integer.MIN_VALUE ? "save" : "saveImage",
             fileName);
-        if (fileName == null)
-          return null;
       }
     }
+    if (fileName == null)
+      return null;
     return jmolStatusListener.createImage(fileName, type, text_or_bytes, quality);
   }
 

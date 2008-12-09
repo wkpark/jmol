@@ -1369,8 +1369,7 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      ImageCreator c = new ImageCreator(viewer);
-      c.clipImage(null);
+      (new ImageCreator(viewer)).clipImage(null);
     }
   }
 
@@ -1381,8 +1380,8 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      ImageCreator c = new ImageCreator(viewer);
-      c.clipImage((String) viewer.getProperty("string", "stateInfo", null));
+      (new ImageCreator(viewer)).clipImage((String) viewer.getProperty(
+          "string", "stateInfo", null));
     }
   }
 
@@ -1618,13 +1617,8 @@ public class Jmol extends JPanel {
    */
   String createImageStatus(String fileName, String type, Object text_or_bytes,
                            int quality) {
-    ImageCreator c = new ImageCreator(viewer);
-    if (fileName == null || fileName.equalsIgnoreCase("CLIPBOARD")) {
-      String text = (String) text_or_bytes; 
-      c.clipImage(text);
-      return (text == null ? "OK" : "OK " + text.length());
-    }
-    String msg = (String) c.createImage(fileName, type, text_or_bytes, quality);
+    String msg = (String) (new ImageCreator(viewer)).createImage(fileName,
+        type, text_or_bytes, quality);
     if (msg == null || msg.startsWith("OK"))
       return msg;
     if (status != null) {

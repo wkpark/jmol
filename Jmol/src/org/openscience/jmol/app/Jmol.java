@@ -414,25 +414,21 @@ public class Jmol extends JPanel {
 
     OptionBuilder.withLongOpt("script");
     OptionBuilder.withDescription(GT._("script file to execute"));
-    OptionBuilder.withValueSeparator('=');
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("s"));
 
-    OptionBuilder.withLongOpt("jmolscript2");
-    OptionBuilder.withDescription(GT._("Jmol script to execute AFTER -s option"));
-    OptionBuilder.withValueSeparator('=');
-    OptionBuilder.hasArg();
-    options.addOption(OptionBuilder.create("j"));
-
     OptionBuilder.withLongOpt("jmolscript1");
     OptionBuilder.withDescription(GT._("Jmol script to execute BEFORE -s option"));
-    OptionBuilder.withValueSeparator('=');
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("J"));
 
+    OptionBuilder.withLongOpt("jmolscript2");
+    OptionBuilder.withDescription(GT._("Jmol script to execute AFTER -s option"));
+    OptionBuilder.hasArg();
+    options.addOption(OptionBuilder.create("j"));
+
     OptionBuilder.withLongOpt("menu");
     OptionBuilder.withDescription("menu file to use");
-    OptionBuilder.withValueSeparator('=');
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("m"));
 

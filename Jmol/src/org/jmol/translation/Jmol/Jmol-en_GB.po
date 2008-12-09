@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-12-04 21:19+0100\n"
+"POT-Creation-Date: 2008-12-09 20:54+0100\n"
 "PO-Revision-Date: 2008-09-30 16:01+0000\n"
 "Last-Translator: Andrew Schofield <andrew_s@fahmon.net>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
@@ -727,128 +727,135 @@ msgstr "Return molecule to home position."
 msgid "Jmol Help"
 msgstr "Jmol Help"
 
-#: org/openscience/jmol/app/Jmol.java:134
+#: org/openscience/jmol/app/Jmol.java:136
 #: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr "Error starting Jmol: the property 'user.home' is not defined."
 
-#: org/openscience/jmol/app/Jmol.java:180
+#: org/openscience/jmol/app/Jmol.java:182
 msgid "Initializing 3D display..."
 msgstr "Initialising 3D display..."
 
-#: org/openscience/jmol/app/Jmol.java:204
+#: org/openscience/jmol/app/Jmol.java:206
 msgid "Initializing Preferences..."
 msgstr "Initialising Preferences..."
 
-#: org/openscience/jmol/app/Jmol.java:206
+#: org/openscience/jmol/app/Jmol.java:208
 msgid "Initializing Recent Files..."
 msgstr "Initialising Recent Files..."
 
-#: org/openscience/jmol/app/Jmol.java:209
+#: org/openscience/jmol/app/Jmol.java:211
 msgid "Initializing Script Window..."
 msgstr "Initialising Script Window..."
 
-#: org/openscience/jmol/app/Jmol.java:213
+#: org/openscience/jmol/app/Jmol.java:215
 msgid "Initializing Measurements..."
 msgstr "Initialising Measurements..."
 
-#: org/openscience/jmol/app/Jmol.java:236
+#: org/openscience/jmol/app/Jmol.java:238
 msgid "Building Command Hooks..."
 msgstr "Building Command Hooks..."
 
-#: org/openscience/jmol/app/Jmol.java:247
+#: org/openscience/jmol/app/Jmol.java:249
 msgid "Building Menubar..."
 msgstr "Building Menubar..."
 
-#: org/openscience/jmol/app/Jmol.java:263
+#: org/openscience/jmol/app/Jmol.java:265
 msgid "Starting display..."
 msgstr "Starting display..."
 
-#: org/openscience/jmol/app/Jmol.java:312
+#: org/openscience/jmol/app/Jmol.java:314
 msgid "Setting up Drag-and-Drop..."
 msgstr "Setting up Drag-and-Drop..."
 
-#: org/openscience/jmol/app/Jmol.java:333
+#: org/openscience/jmol/app/Jmol.java:335
 msgid "Launching main frame..."
 msgstr "Launching main frame..."
 
-#: org/openscience/jmol/app/Jmol.java:351
+#: org/openscience/jmol/app/Jmol.java:353
 msgid "Creating main window..."
 msgstr "Creating main window..."
 
-#: org/openscience/jmol/app/Jmol.java:352
+#: org/openscience/jmol/app/Jmol.java:354
 msgid "Initializing Swing..."
 msgstr "Initializing Swing..."
 
-#: org/openscience/jmol/app/Jmol.java:364
+#: org/openscience/jmol/app/Jmol.java:366
 msgid "Initializing Jmol..."
 msgstr "Initializing Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:395
+#: org/openscience/jmol/app/Jmol.java:398
 msgid "transparent background"
 msgstr "transparent background"
 
-#: org/openscience/jmol/app/Jmol.java:396
+#: org/openscience/jmol/app/Jmol.java:399
 msgid "give this help page"
 msgstr "give this help page"
 
-#: org/openscience/jmol/app/Jmol.java:398
+#: org/openscience/jmol/app/Jmol.java:401
 msgid "no display (and also exit when done)"
 msgstr "no display (and also exit when done)"
 
-#: org/openscience/jmol/app/Jmol.java:399
+#: org/openscience/jmol/app/Jmol.java:402
 #, fuzzy
 msgid "check script syntax only - no file loading"
 msgstr "check script syntax only"
 
-#: org/openscience/jmol/app/Jmol.java:400
+#: org/openscience/jmol/app/Jmol.java:403
 #, fuzzy
 msgid "check script syntax only - with file loading"
 msgstr "check script syntax only"
 
-#: org/openscience/jmol/app/Jmol.java:401
+#: org/openscience/jmol/app/Jmol.java:404
+msgid "debug"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:405
 msgid "silent startup operation"
 msgstr "silent startup operation"
 
-#: org/openscience/jmol/app/Jmol.java:403
+#: org/openscience/jmol/app/Jmol.java:407
 msgid "list commands during script execution"
 msgstr "list commands during script execution"
 
-#: org/openscience/jmol/app/Jmol.java:405
+#: org/openscience/jmol/app/Jmol.java:409
 msgid "no console -- all output to sysout"
 msgstr "no console -- all output to sysout"
 
-#: org/openscience/jmol/app/Jmol.java:407
+#: org/openscience/jmol/app/Jmol.java:411
 msgid "independent commmand thread"
 msgstr "independent commmand thread"
 
-#: org/openscience/jmol/app/Jmol.java:409
+#: org/openscience/jmol/app/Jmol.java:413
 msgid "exit after script (implicit with -n)"
 msgstr "exit after script (implicit with -n)"
 
-#: org/openscience/jmol/app/Jmol.java:412
+#: org/openscience/jmol/app/Jmol.java:416
 msgid "script file to execute"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:418
-#, fuzzy
-msgid "quoted argument is Jmol script to execute"
-msgstr "Jmol Script Console"
+#: org/openscience/jmol/app/Jmol.java:421
+msgid "Jmol script to execute BEFORE -s option"
+msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:427
+#: org/openscience/jmol/app/Jmol.java:426
+msgid "Jmol script to execute AFTER -s option"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:435
 msgid "property=value"
 msgstr "property=value"
 
-#: org/openscience/jmol/app/Jmol.java:430
+#: org/openscience/jmol/app/Jmol.java:438
 msgid "supported options are given below"
 msgstr "supported options are given below"
 
-#: org/openscience/jmol/app/Jmol.java:435
+#: org/openscience/jmol/app/Jmol.java:443
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "window width x height, e.g. {0}"
 
-#: org/openscience/jmol/app/Jmol.java:445
+#: org/openscience/jmol/app/Jmol.java:453
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -856,55 +863,60 @@ msgstr ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 
-#: org/openscience/jmol/app/Jmol.java:451
+#: org/openscience/jmol/app/Jmol.java:459
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} or {1}:filename"
 
-#: org/openscience/jmol/app/Jmol.java:473
+#: org/openscience/jmol/app/Jmol.java:481
 msgid "For example:"
 msgstr "For example:"
 
-#: org/openscience/jmol/app/Jmol.java:479
+#: org/openscience/jmol/app/Jmol.java:487
 msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr "The -D options are as follows (defaults in parenthesis):"
 
-#: org/openscience/jmol/app/Jmol.java:556
-#, java-format
-msgid "{0} quoted argument missing"
-msgstr ""
-
-#: org/openscience/jmol/app/Jmol.java:659
-#: org/openscience/jmol/app/Jmol.java:666
-msgid "Executing script..."
+#: org/openscience/jmol/app/Jmol.java:691
+#, fuzzy
+msgid "Executing script 1..."
 msgstr "Executing script..."
 
-#: org/openscience/jmol/app/Jmol.java:678
+#: org/openscience/jmol/app/Jmol.java:700
+#, fuzzy
+msgid "Executing script file..."
+msgstr "Executing script..."
+
+#: org/openscience/jmol/app/Jmol.java:707
+#, fuzzy
+msgid "Executing script 2..."
+msgstr "Executing script..."
+
+#: org/openscience/jmol/app/Jmol.java:719
 msgid "Jmol Java Console"
 msgstr "Jmol Java Console"
 
-#: org/openscience/jmol/app/Jmol.java:686
+#: org/openscience/jmol/app/Jmol.java:727
 #: org/openscience/jmol/app/ScriptWindow.java:103
 msgid "Clear"
 msgstr "Clear"
 
-#: org/openscience/jmol/app/Jmol.java:700
+#: org/openscience/jmol/app/Jmol.java:741
 msgid "Could not create ConsoleTextArea: "
 msgstr "Could not create ConsoleTextArea: "
 
-#: org/openscience/jmol/app/Jmol.java:780
+#: org/openscience/jmol/app/Jmol.java:821
 msgid "Closing Jmol..."
 msgstr "Closing Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:1403
+#: org/openscience/jmol/app/Jmol.java:1443
 msgid "Open URL"
 msgstr "Open URL"
 
-#: org/openscience/jmol/app/Jmol.java:1404
+#: org/openscience/jmol/app/Jmol.java:1444
 msgid "Enter URL of molecular model"
 msgstr "Enter URL of molecular model"
 
-#: org/openscience/jmol/app/Jmol.java:1593
+#: org/openscience/jmol/app/Jmol.java:1628
 msgid "IO Exception:"
 msgstr "IO Exception:"
 
@@ -1439,3 +1451,7 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:569
 msgid "compressing large data file to"
 msgstr "compressing large data file to"
+
+#, fuzzy
+#~ msgid "quoted argument is Jmol script to execute"
+#~ msgstr "Jmol Script Console"

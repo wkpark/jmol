@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-12-04 21:19+0100\n"
+"POT-Creation-Date: 2008-12-09 20:54+0100\n"
 "PO-Revision-Date: 2008-10-13 21:10+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
@@ -726,126 +726,134 @@ msgstr "Ramener la molécule à sa position d'origine."
 msgid "Jmol Help"
 msgstr "Aide Jmol"
 
-#: org/openscience/jmol/app/Jmol.java:134
+#: org/openscience/jmol/app/Jmol.java:136
 #: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr ""
 "Erreur au démarrage de Jmol: la propriété 'user.home' n'est pas définie."
 
-#: org/openscience/jmol/app/Jmol.java:180
+#: org/openscience/jmol/app/Jmol.java:182
 msgid "Initializing 3D display..."
 msgstr "Initialisation de l'affichage 3D..."
 
-#: org/openscience/jmol/app/Jmol.java:204
+#: org/openscience/jmol/app/Jmol.java:206
 msgid "Initializing Preferences..."
 msgstr "Initialisation des Options..."
 
-#: org/openscience/jmol/app/Jmol.java:206
+#: org/openscience/jmol/app/Jmol.java:208
 msgid "Initializing Recent Files..."
 msgstr "Initialisation des fichiers récents..."
 
-#: org/openscience/jmol/app/Jmol.java:209
+#: org/openscience/jmol/app/Jmol.java:211
 msgid "Initializing Script Window..."
 msgstr "Initialisation de la fenêtre de script..."
 
-#: org/openscience/jmol/app/Jmol.java:213
+#: org/openscience/jmol/app/Jmol.java:215
 msgid "Initializing Measurements..."
 msgstr "Initialisation des mesures..."
 
-#: org/openscience/jmol/app/Jmol.java:236
+#: org/openscience/jmol/app/Jmol.java:238
 msgid "Building Command Hooks..."
 msgstr "Construction des Commandes..."
 
-#: org/openscience/jmol/app/Jmol.java:247
+#: org/openscience/jmol/app/Jmol.java:249
 msgid "Building Menubar..."
 msgstr "Construction du Menu..."
 
-#: org/openscience/jmol/app/Jmol.java:263
+#: org/openscience/jmol/app/Jmol.java:265
 msgid "Starting display..."
 msgstr "Début de l'affichage..."
 
-#: org/openscience/jmol/app/Jmol.java:312
+#: org/openscience/jmol/app/Jmol.java:314
 msgid "Setting up Drag-and-Drop..."
 msgstr "Initialisation du Glisser-Déplacer"
 
-#: org/openscience/jmol/app/Jmol.java:333
+#: org/openscience/jmol/app/Jmol.java:335
 msgid "Launching main frame..."
 msgstr "Affichage de la frame principale..."
 
-#: org/openscience/jmol/app/Jmol.java:351
+#: org/openscience/jmol/app/Jmol.java:353
 msgid "Creating main window..."
 msgstr "Création de la fenêtre principale..."
 
-#: org/openscience/jmol/app/Jmol.java:352
+#: org/openscience/jmol/app/Jmol.java:354
 msgid "Initializing Swing..."
 msgstr "Initialisation de Swing..."
 
-#: org/openscience/jmol/app/Jmol.java:364
+#: org/openscience/jmol/app/Jmol.java:366
 msgid "Initializing Jmol..."
 msgstr "Initialisation de Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:395
+#: org/openscience/jmol/app/Jmol.java:398
 msgid "transparent background"
 msgstr "arrière-plan transparent"
 
-#: org/openscience/jmol/app/Jmol.java:396
+#: org/openscience/jmol/app/Jmol.java:399
 msgid "give this help page"
 msgstr "affiche cette page d'aide"
 
-#: org/openscience/jmol/app/Jmol.java:398
+#: org/openscience/jmol/app/Jmol.java:401
 msgid "no display (and also exit when done)"
 msgstr "pas d'affichage (et quitter quand c'est fini)"
 
-#: org/openscience/jmol/app/Jmol.java:399
+#: org/openscience/jmol/app/Jmol.java:402
 msgid "check script syntax only - no file loading"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:400
+#: org/openscience/jmol/app/Jmol.java:403
 msgid "check script syntax only - with file loading"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:401
-msgid "silent startup operation"
-msgstr "lancement silencieux"
-
-#: org/openscience/jmol/app/Jmol.java:403
-msgid "list commands during script execution"
+#: org/openscience/jmol/app/Jmol.java:404
+msgid "debug"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:405
-msgid "no console -- all output to sysout"
-msgstr "pas de console -- tout est redirigé sur la sortie standard"
+msgid "silent startup operation"
+msgstr "lancement silencieux"
 
 #: org/openscience/jmol/app/Jmol.java:407
-msgid "independent commmand thread"
+msgid "list commands during script execution"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:409
+msgid "no console -- all output to sysout"
+msgstr "pas de console -- tout est redirigé sur la sortie standard"
+
+#: org/openscience/jmol/app/Jmol.java:411
+msgid "independent commmand thread"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:413
 msgid "exit after script (implicit with -n)"
 msgstr "terminer après le script (implicite avec -n)"
 
-#: org/openscience/jmol/app/Jmol.java:412
+#: org/openscience/jmol/app/Jmol.java:416
 msgid "script file to execute"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:418
-msgid "quoted argument is Jmol script to execute"
+#: org/openscience/jmol/app/Jmol.java:421
+msgid "Jmol script to execute BEFORE -s option"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:427
+#: org/openscience/jmol/app/Jmol.java:426
+msgid "Jmol script to execute AFTER -s option"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:435
 msgid "property=value"
 msgstr "propriété=valeur"
 
-#: org/openscience/jmol/app/Jmol.java:430
+#: org/openscience/jmol/app/Jmol.java:438
 msgid "supported options are given below"
 msgstr "les options supportées sont données ci-dessous"
 
-#: org/openscience/jmol/app/Jmol.java:435
+#: org/openscience/jmol/app/Jmol.java:443
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "taille de la fenêtre (largeur x hauteur), par exemple {0}"
 
-#: org/openscience/jmol/app/Jmol.java:445
+#: org/openscience/jmol/app/Jmol.java:453
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -853,56 +861,61 @@ msgstr ""
 "qualité d'image JPG (1-100; 75 par défaut) ou compression d'image PNG (0-9; "
 "2 par défaut, compression maximale 9)"
 
-#: org/openscience/jmol/app/Jmol.java:451
+#: org/openscience/jmol/app/Jmol.java:459
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} ou {1}:nomFichier"
 
-#: org/openscience/jmol/app/Jmol.java:473
+#: org/openscience/jmol/app/Jmol.java:481
 msgid "For example:"
 msgstr "Par exemple:"
 
-#: org/openscience/jmol/app/Jmol.java:479
+#: org/openscience/jmol/app/Jmol.java:487
 msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr ""
 "Les options -D sont les suivantes (valeurs par défaut entre parenthèses):"
 
-#: org/openscience/jmol/app/Jmol.java:556
-#, java-format
-msgid "{0} quoted argument missing"
-msgstr ""
-
-#: org/openscience/jmol/app/Jmol.java:659
-#: org/openscience/jmol/app/Jmol.java:666
-msgid "Executing script..."
+#: org/openscience/jmol/app/Jmol.java:691
+#, fuzzy
+msgid "Executing script 1..."
 msgstr "Exécution du script..."
 
-#: org/openscience/jmol/app/Jmol.java:678
+#: org/openscience/jmol/app/Jmol.java:700
+#, fuzzy
+msgid "Executing script file..."
+msgstr "Exécution du script..."
+
+#: org/openscience/jmol/app/Jmol.java:707
+#, fuzzy
+msgid "Executing script 2..."
+msgstr "Exécution du script..."
+
+#: org/openscience/jmol/app/Jmol.java:719
 msgid "Jmol Java Console"
 msgstr "Console Java Jmol"
 
-#: org/openscience/jmol/app/Jmol.java:686
+#: org/openscience/jmol/app/Jmol.java:727
 #: org/openscience/jmol/app/ScriptWindow.java:103
 msgid "Clear"
 msgstr "Effacer"
 
-#: org/openscience/jmol/app/Jmol.java:700
+#: org/openscience/jmol/app/Jmol.java:741
 msgid "Could not create ConsoleTextArea: "
 msgstr "Impossible de créer la ConsoleTextArea: "
 
-#: org/openscience/jmol/app/Jmol.java:780
+#: org/openscience/jmol/app/Jmol.java:821
 msgid "Closing Jmol..."
 msgstr "Fermeture de Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:1403
+#: org/openscience/jmol/app/Jmol.java:1443
 msgid "Open URL"
 msgstr "Ouvrir une URL"
 
-#: org/openscience/jmol/app/Jmol.java:1404
+#: org/openscience/jmol/app/Jmol.java:1444
 msgid "Enter URL of molecular model"
 msgstr "Saisissez l'URL d'un modèle moléculaire"
 
-#: org/openscience/jmol/app/Jmol.java:1593
+#: org/openscience/jmol/app/Jmol.java:1628
 msgid "IO Exception:"
 msgstr "Exception E/S!"
 

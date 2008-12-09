@@ -689,7 +689,7 @@ public class Jmol extends JPanel {
       // OK, by now it is time to execute the script
 
       // then command script
-      if (script2 != null) {
+      if (script1 != null) {
         report("Executing script: " + script1);
         if (haveDisplay)
           jmol.splash.showStatus(GT._("Executing script 1..."));

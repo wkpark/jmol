@@ -1095,9 +1095,8 @@ public class Jmol implements WrappedApplet {
       boolean isImage = (quality != Integer.MIN_VALUE); 
       if (isSigned) {
         if (jvm12 != null) {
-          if (isImage && (fileName == null || fileName.equalsIgnoreCase("CLIPBOARD"))) {
-            jvm12.clipImage();
-            return "OK";
+          if (fileName == null || fileName.equalsIgnoreCase("CLIPBOARD")) {
+            return jvm12.clipImage(isImage ? null : (String) text_or_bytes);
           }
           try {
             return jvm12.createImage(fileName, type, text_or_bytes, quality);

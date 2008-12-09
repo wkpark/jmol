@@ -176,31 +176,30 @@ class Jvm12 {
    */
   String createImage(String fileName, String type, Object text_or_bytes,
                      int quality) {
-    if (fileName != null) {
-      if (quality == Integer.MIN_VALUE) {
-        // text or bytes
-        fileName = dialogAsk("save", fileName);
-      } else {
-        imageType = type.toUpperCase();
-        imageQuality = quality;
-        fileName = dialogAsk("saveImage+" + type, fileName);
-        quality = imageQuality;
-        type = imageType;
-      }
-      if (fileName == null)
-        return null;
+    if (quality == Integer.MIN_VALUE) {
+      // text or bytes
+      fileName = dialogAsk("save", fileName);
+    } else {
+      imageType = type.toUpperCase();
+      imageQuality = quality;
+      fileName = dialogAsk("saveImage+" + type, fileName);
+      quality = imageQuality;
+      type = imageType;
     }
+    if (fileName == null)
+      return null;
     JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
         .getOptionInterface("export.image.ImageCreator");
     c.setViewer(viewer);
-    return c.createImage(fileName, type, text_or_bytes, quality);
+    return (String) c.createImage(fileName, type, text_or_bytes, quality);
   }
 
-  void clipImage() {
+  String clipImage(String text) {
     JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
         .getOptionInterface("export.image.ImageCreator");
     c.setViewer(viewer);
-    c.clipImage(null);
+    c.clipImage(text);
+    return (text == null ? "OK" : "OK " + text.length());
   }
 
   String getClipboardText() {

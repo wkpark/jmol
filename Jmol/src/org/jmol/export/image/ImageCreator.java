@@ -26,10 +26,10 @@ package org.jmol.export.image;
 
 import java.awt.Image;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 import org.jmol.api.JmolImageCreatorInterface;
@@ -80,16 +80,12 @@ public class ImageCreator implements JmolImageCreatorInterface {
    * @param quality
    * @return          null (canceled) or a message starting with OK or an error message
    */
-  public String createImage(String fileName, String type, Object text_or_bytes,
+  public Object createImage(String fileName, String type, Object text_or_bytes,
                             int quality) {
     // returns message starting with OK or an error message
     boolean isBytes = (text_or_bytes instanceof byte[]);
     String text = (isBytes ? null : (String) text_or_bytes);
     boolean isText = (quality == Integer.MIN_VALUE);
-    if (fileName == null) {
-      clipImage(text);
-      return "OK " + text.length();
-    }
     if ((isText || isBytes) && text_or_bytes == null)
       return "NO DATA";
     FileOutputStream os = null;
@@ -109,43 +105,17 @@ public class ImageCreator implements JmolImageCreatorInterface {
         bw.write(text);
         bw.close();
         os = null;
-      } else {
-        Image eImage = viewer.getScreenImage();
-        if (eImage != null) {
-          len = 1;
-          os = new FileOutputStream(fileName);
-          if (type.equalsIgnoreCase("JPEG") || type.equalsIgnoreCase("JPG")) {
-            if (quality <= 0)
-              quality = 75;
-            (new JpegEncoder(eImage, quality, os)).Compress();
-          } else if (type.equalsIgnoreCase("JPG64")) {
-            ByteArrayOutputStream osb = new ByteArrayOutputStream();
-            (new JpegEncoder(eImage, quality, osb)).Compress();
-            osb.flush();
-            osb.close();
-            StringBuffer jpg = Base64.getBase64(osb.toByteArray());
-            os.write(Base64.toBytes(jpg));
-          } else if (type.equalsIgnoreCase("PNG")) {
-            if (quality < 0)
-              quality = 2;
-            else if (quality > 9)
-              quality = 9;
-            byte[] pngbytes = (new PngEncoder(eImage, false,
-                PngEncoder.FILTER_NONE, quality)).pngEncode();
-            os.write(pngbytes);
-          } else if (type.equalsIgnoreCase("PPM")) {
-            (new PpmEncoder(eImage, os)).encode();
-          } else if (type.equalsIgnoreCase("GIF")) {
-            (new GifEncoder(eImage, os)).encode();
-          }
-          os.flush();
-          os.close();
-          len = (new File(fileName)).length();
-        }
-        viewer.releaseScreenImage();
+      } else { 
+        len = 1;
+        Object bytesOrError = getImageBytes(type, quality, fileName, null);
+        if (bytesOrError instanceof String)
+          return bytesOrError;
+        byte[] bytes = (byte[]) bytesOrError;
+        if (bytes != null)
+          return bytes;
+        len = (new File(fileName)).length();
       }
     } catch (IOException exc) {
-      viewer.releaseScreenImage();
       if (exc != null) {
         Logger.error("IO Exception", exc);
         return exc.toString();
@@ -162,5 +132,68 @@ public class ImageCreator implements JmolImageCreatorInterface {
     return (len < 0 ? "Creation of " + fileName + " failed: " + viewer.getErrorMessageUntranslated() : "OK " + type
         + " " + len + " " + fileName
         + (quality == Integer.MIN_VALUE ? "" : "; quality=" + quality));
+  }
+
+  public Object getImageBytes(String type, int quality, String fileName,
+                              OutputStream os) throws IOException {
+    byte[] bytes = null;
+    String errMsg = null;
+    boolean isOsTemp = (os == null && fileName != null);
+    boolean asBytes = (os == null && fileName == null);
+    Image image = viewer.getScreenImage();
+    try {
+      if (image == null) {
+        errMsg = viewer.getErrorMessage();
+      }else {
+        if (isOsTemp)
+            os = new FileOutputStream(fileName);
+        if (type.equalsIgnoreCase("JPEG") || type.equalsIgnoreCase("JPG")) {
+          if (quality <= 0)
+            quality = 75;
+          if (asBytes)
+            bytes = JpegEncoder.getBytes(image, quality);
+          else
+            JpegEncoder.write(image, quality, os);
+        } else if (type.equalsIgnoreCase("JPG64")) {
+          if (quality <= 0)
+            quality = 75;
+          bytes = JpegEncoder.getBytes(image, quality);
+          if (asBytes)
+            bytes = Base64.getBytes64(bytes);
+          else
+            Base64.write(bytes, os);
+        } else if (type.equalsIgnoreCase("PNG")) {
+          if (quality < 0)
+            quality = 2;
+          else if (quality > 9)
+            quality = 9;
+          if (asBytes)
+            bytes = PngEncoder.getBytes(image, quality);
+          else
+            PngEncoder.write(image, quality, os);
+        } else if (type.equalsIgnoreCase("PPM")) {
+          if (asBytes)
+            bytes = PpmEncoder.getBytes(image);
+          else
+            PpmEncoder.write(image, os);
+        } else if (type.equalsIgnoreCase("GIF")) {
+          if (asBytes)
+            bytes = GifEncoder.getBytes(image);
+          else
+            GifEncoder.write(image, os);
+        }
+        if (os != null)
+          os.flush();
+        if (isOsTemp)
+          os.close();
+      }
+    } catch (IOException e) {
+      viewer.releaseScreenImage();
+      throw new IOException(e);
+    }
+    viewer.releaseScreenImage();
+    if (errMsg != null)
+      return errMsg;
+    return bytes;
   }
 }

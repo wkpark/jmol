@@ -31,6 +31,7 @@ import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * PngEncoder takes a Java Image object and creates a byte string which can be saved as a PNG file.
@@ -77,6 +78,15 @@ public class PngEncoder extends Object {
   protected int filter;
   protected int bytesPerPixel;
   protected int compressionLevel;
+
+  public static void write(Image image, int quality, OutputStream os) throws IOException {
+    os.write(getBytes(image, quality));
+  }
+
+  public static byte[] getBytes(Image image, int quality) {
+    return (new PngEncoder(image, false, PngEncoder.FILTER_NONE,
+        quality)).pngEncode();
+  }
 
   /**
    * Class constructor
@@ -599,5 +609,6 @@ public class PngEncoder extends Object {
     crcValue = crc.getValue();
     bytePos = writeInt4((int) crcValue, bytePos);
   }
+
 }
 

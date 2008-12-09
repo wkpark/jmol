@@ -14,6 +14,9 @@
 
 package org.jmol.util;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 public class Base64 {
 
   //                              0         1         2         3         4         5         6
@@ -37,6 +40,20 @@ public class Base64 {
     41,42,43,44, 45,46,47,48, 49,50,51,0,  0,0,0,0,      //0x70-0x7F
   };
     
+  public static void write(byte[] bytes, OutputStream os) throws IOException {
+    StringBuffer sb = getBase64(bytes);
+    int len = sb.length();
+    byte[] b = new byte[1];
+    for (int i = 0; i < len; i++) {
+      b[0] = (byte) sb.charAt(i);
+      os.write(b);
+    }
+  }
+
+  public static byte[] getBytes64(byte[] bytes) {
+    return toBytes(getBase64(bytes));
+  }
+
   public static StringBuffer getBase64(StringBuffer str) {
     return getBase64(toBytes(str));  
   }
@@ -99,10 +116,11 @@ public class Base64 {
     return bytes;
   }  
   
-  public static byte[] toBytes(StringBuffer sb) {
+  private static byte[] toBytes(StringBuffer sb) {
     byte[] b = new byte[sb.length()];
     for (int i = sb.length(); --i >= 0;)
       b[i] = (byte) sb.charAt(i);
     return b;
-  }  
+  }
+
 }

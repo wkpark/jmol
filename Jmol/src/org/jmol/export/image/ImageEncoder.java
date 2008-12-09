@@ -64,6 +64,7 @@ public abstract class ImageEncoder implements ImageConsumer {
   private IOException iox;
   private static final ColorModel rgbModel = ColorModel.getRGBdefault();
 
+  
   /// Constructor.
   // @param img The image to encode.
   // @param out The stream to write the bytes to.

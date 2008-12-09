@@ -30,6 +30,7 @@ import java.awt.Event;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.util.BitSet;
@@ -167,6 +168,15 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    */
   abstract public String createImage(String fileName, String type, Object text_or_bytes, int quality,
                                    int width, int height);
+
+  /**
+   * @param type      "PNG", "JPG", "JPEG", "JPG64", "PPM", "GIF"
+   * @param quality
+   * @param fileName 
+   * @param os 
+   * @return base64-encoded or binary version of the image
+   */
+  abstract public Object getImageAs(String type, int quality, String fileName, OutputStream os);
 
   abstract public boolean handleOldJvm10Event(Event e);
 

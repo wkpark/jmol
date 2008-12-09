@@ -83,6 +83,22 @@ public class JpegEncoder extends Frame
     Huf=new Huffman(JpegObj.imageWidth,JpegObj.imageHeight);
   }
   
+  public static byte[] getBytes(Image image, int quality) {
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    write(image, quality, os);
+    try {
+      os.flush();
+      os.close();
+    } catch (IOException e) {
+      // ignore
+    }
+    return os.toByteArray();
+  }
+
+  public static void write(Image image, int quality, OutputStream os) {
+    (new JpegEncoder(image, quality, os)).Compress();
+  }
+
   public void setQuality(int quality) {
     dct = new DCT(quality);
   }

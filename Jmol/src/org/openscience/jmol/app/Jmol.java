@@ -60,6 +60,8 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.HelpFormatter;
 
+import java.io.FileOutputStream;
+
 public class Jmol extends JPanel {
 
   /**
@@ -651,6 +653,9 @@ public class Jmol extends JPanel {
         jmol.viewer.openFileAsynchronously(modelFilename);
       }
 
+      //jmol.viewer.scriptWait("load 1crn.pdb;cartoons on;set antialiasdisplay");
+      //jmol.viewer.getImageAs("JPG64", -1, "t75.jpg", null);
+      
       // OK, by now it is time to execute the script
       // file first
       if (scriptFilename != null) {
@@ -1473,7 +1478,7 @@ public class Jmol extends JPanel {
         sType = sType.substring(i + 1).toUpperCase();
       }
       String msg = (sType.equals("PDF") ?createPdfDocument(new File(fileName))
-          : createImageStatus(fileName, sType, null, sd.getQuality(sType)));
+          : createImageStatus(fileName, sType, (String) null, sd.getQuality(sType)));
       Logger.info(msg);
     }
 
@@ -1581,12 +1586,12 @@ public class Jmol extends JPanel {
   String createImageStatus(String fileName, String type, Object text_or_bytes,
                            int quality) {
     ImageCreator c = new ImageCreator(viewer);
-    if (quality != Integer.MIN_VALUE
-        && (fileName == null || fileName.equalsIgnoreCase("CLIPBOARD"))) {
-      c.clipImage(null);
-      return "OK";
+    if (fileName == null || fileName.equalsIgnoreCase("CLIPBOARD")) {
+      String text = (String) text_or_bytes; 
+      c.clipImage(text);
+      return (text == null ? "OK" : "OK " + text.length());
     }
-    String msg = c.createImage(fileName, type, text_or_bytes, quality);
+    String msg = (String) c.createImage(fileName, type, text_or_bytes, quality);
     if (msg == null || msg.startsWith("OK"))
       return msg;
     if (status != null) {

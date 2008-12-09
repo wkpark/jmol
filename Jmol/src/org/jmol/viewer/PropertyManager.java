@@ -369,7 +369,7 @@ class PropertyManager {
     case PROP_EVALUATE:
       return Eval.evaluateExpression(viewer, myParam.toString());
     case PROP_IMAGE:
-      return viewer.getJpeg(75, returnType != null);
+      return viewer.getImageAs(returnType == null ? "JPEG" : "JPG64", -1, null, null);
     }
     String info = "getProperty ERROR\n" + infoType + "?\nOptions include:\n";
     for (int i = 0; i < PROP_COUNT; i++) {

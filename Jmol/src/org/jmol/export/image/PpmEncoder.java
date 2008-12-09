@@ -43,6 +43,23 @@ import java.awt.image.*;
 
 public class PpmEncoder extends ImageEncoder {
 
+
+  public static byte[] getBytes(Image image) {
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    try {
+      write(image, os);
+      os.flush();
+      os.close();
+    } catch (IOException e) {
+      // ignore
+    }
+    return os.toByteArray();
+  }
+
+  public static void write(Image image, OutputStream os) throws IOException {
+    (new PpmEncoder(image, os)).encode();
+  }
+
   /// Constructor.
   // @param img The image to encode.
   // @param out The stream to write the PPM to.
@@ -87,5 +104,4 @@ public class PpmEncoder extends ImageEncoder {
   void encodeDone() throws IOException {
     // Nothing.
   }
-
 }

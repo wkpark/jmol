@@ -37,16 +37,17 @@ import org.jmol.api.*;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.g3d.*;
+import org.jmol.util.Base64;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Escape;
-import org.jmol.util.Logger;
-import org.jmol.util.Base64;
 import org.jmol.util.JpegEncoder;
+import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+import org.jmol.util.Parser;
 import org.jmol.util.TempArray;
 import org.jmol.util.TextFormat;
-import org.jmol.util.Parser;
+
 
 import java.awt.Cursor;
 import java.awt.Graphics;
@@ -69,7 +70,8 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 import java.net.URL;
 import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Reader;
 //import java.io.Reader;
 import java.io.UnsupportedEncodingException;
@@ -3414,23 +3416,45 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   /**
+   * @param type      "PNG", "JPG", "JPEG", "JPG64", "PPM", "GIF"
    * @param quality
-   * @param asString 
+   * @param fileName 
+   * @param os 
    * @return base64-encoded or binary version of the image
    */
-  public Object getJpeg(int quality, boolean asString) {
-    byte[] jpeg = null;
-    Image eImage = getScreenImage();
-    if (eImage != null) {
-      ByteArrayOutputStream os = new ByteArrayOutputStream();
-      JpegEncoder jc = new JpegEncoder(eImage, quality, os);
-      jc.Compress();
-      jpeg = os.toByteArray();
+  public Object getImageAs(String type, int quality, String fileName,
+                           OutputStream os) {
+    JmolImageCreatorInterface c = null;
+    Object bytes = null;
+    try {
+      c = (JmolImageCreatorInterface) Interface
+          .getOptionInterface("export.image.ImageCreator");
+    } catch (Error er) {
+      // unsigned applet will not have this interface
+      // and thus will not use os or filename
+      if (Parser.isOneOf(type.toLowerCase(), "jpg;jpeg;jpg64")) {
+        Image eImage = getScreenImage();
+        if (eImage != null) {
+          try {
+            bytes = JpegEncoder.getBytes(eImage, quality);
+          } catch (Throwable e) {
+            //
+          }
+        }
+        releaseScreenImage();
+        if (type.toLowerCase().equals("jpg64"))
+          return (bytes == null ? "" : Base64.getBase64((byte[]) bytes)
+              .toString());
+        return bytes;
+      }
     }
-    releaseScreenImage();
-    if (asString)
-      return Base64.getBase64(jpeg).toString();
-    return jpeg;
+    c.setViewer(this);
+    try {
+      bytes = c.getImageBytes(type, quality, fileName, os);
+    } catch (IOException e) {
+      //not possible here?
+    }
+    return bytes;
   }
 
   public void releaseScreenImage() {
@@ -4288,7 +4312,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    *  that can be parsed more easily, involving the atoms and measurement
    *  with units, for example: 
    *  
-   *    [Si #3, O #8, Si #7, 60.1 ]
+   *    [Si #3, O #8, Si #7, 60.1 <degrees mark>]
    *   
    *   Viewer.setStatusMeasuring
    *       Measures.clear

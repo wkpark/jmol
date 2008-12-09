@@ -65,6 +65,22 @@ public class GifEncoder extends ImageEncoder {
 
   private boolean interlace = false;
 
+  public static void write(Image image, OutputStream os) throws IOException {
+    (new GifEncoder(image, os)).encode();
+  }
+
+  public static byte[] getBytes(Image image) {
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    try {
+      write(image, os);
+      os.flush();
+      os.close();
+    } catch (IOException e) {
+      // ignore
+    }
+    return os.toByteArray();
+  }
+
   /// Constructor from Image.
   // @param img The image to encode.
   // @param out The stream to write the GIF to.
@@ -741,5 +757,6 @@ public class GifEncoder extends ImageEncoder {
       a_count = 0;
     }
   }
+
 }
 

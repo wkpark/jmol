@@ -127,9 +127,13 @@ public class AlchemyReader extends AtomSetCollectionReader {
       atom.elementSymbol = name.substring(0, 1);
       char c1 = name.charAt(0);
       char c2 = ' ';
+      // any name > 2 characters -- just read first character
+      // any name = 2 characters -- check for known atom or "Du"
       int nChar = (name.length() == 2
-          && Atom.isValidElementSymbol(c1, c2 = Character.toLowerCase(name
-              .charAt(1))) ? 2 : 1);
+          && (Atom.isValidElementSymbol(c1, 
+              c2 = Character.toLowerCase(name.charAt(1)))
+              || name.equals("Du"))
+           ? 2 : 1);
       atom.elementSymbol = (nChar == 1 ? "" + c1 : "" + c1 + c2);
       setAtomCoord(atom, parseFloat(tokens[2]), parseFloat(tokens[3]),
           parseFloat(tokens[4]));

@@ -312,20 +312,22 @@ public class Resolver {
   final static int SPECIAL_XYZ                = 5;
   final static int SPECIAL_FOLDINGXYZ         = 6;
   final static int SPECIAL_CUBE               = 7;
+  final static int SPECIAL_ALCHEMY            = 8;
   
-  final public static int SPECIAL_ARGUS_XML   = 8;
-  final public static int SPECIAL_CML_XML     = 9;
-  final public static int SPECIAL_CHEM3D_XML  = 10;
-  final public static int SPECIAL_MOLPRO_XML  = 11;
-  final public static int SPECIAL_ODYSSEY_XML = 12;
   
-  final public static int SPECIAL_ARGUS_DOM   = 13;
-  final public static int SPECIAL_CML_DOM     = 14;
-  final public static int SPECIAL_CHEM3D_DOM  = 15;
-  final public static int SPECIAL_MOLPRO_DOM  = 16;
-  final public static int SPECIAL_ODYSSEY_DOM = 17;
+  final public static int SPECIAL_ARGUS_XML   = 9;
+  final public static int SPECIAL_CML_XML     = 10;
+  final public static int SPECIAL_CHEM3D_XML  = 11;
+  final public static int SPECIAL_MOLPRO_XML  = 12;
+  final public static int SPECIAL_ODYSSEY_XML = 13;
+  
+  final public static int SPECIAL_ARGUS_DOM   = 14;
+  final public static int SPECIAL_CML_DOM     = 15;
+  final public static int SPECIAL_CHEM3D_DOM  = 16;
+  final public static int SPECIAL_MOLPRO_DOM  = 17;
+  final public static int SPECIAL_ODYSSEY_DOM = 18;
 
-  final static int SPECIAL_MDCRD              = 18;
+  final static int SPECIAL_MDCRD              = 19;
 
   final public static String[][] specialTags = {
     { "Jme" },
@@ -336,6 +338,7 @@ public class Resolver {
     { "Xyz" },
     { "FoldingXyz" },
     { "Cube" },
+    { "Alchemy" },
     
     { "argus(xml)" }, 
     { "cml(xml)" },
@@ -367,6 +370,8 @@ public class Resolver {
       return specialTags[SPECIAL_MOL][0];
     if (checkXyz(lines))
       return specialTags[SPECIAL_XYZ][0];
+    if (checkAlchemy(lines[0]))
+      return specialTags[SPECIAL_ALCHEMY][0];
     if (checkFoldingXyz(lines))
       return specialTags[SPECIAL_FOLDINGXYZ][0];
     if (checkCube(lines))
@@ -451,6 +456,21 @@ public class Resolver {
       } catch (NumberFormatException nfe) {
       }
     }
+    return false;
+  }
+
+  private static boolean checkAlchemy(String line) {
+    /*
+    11 ATOMS,    12 BONDS,     0 CHARGES
+    */
+    int pt;
+    if ((pt = line.indexOf("ATOMS")) >= 0 && line.indexOf("BONDS") > pt)
+      try {
+        int n = Integer.parseInt(line.substring(0, pt).trim());
+        return (n > 0);
+      } catch (NumberFormatException nfe) {
+        // ignore
+      }
     return false;
   }
 

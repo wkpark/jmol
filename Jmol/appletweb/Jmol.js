@@ -1087,19 +1087,17 @@ function _jmolSetCodebase(codebase) {
 }
 
 function _jmolOnloadResetForms() {
- if(window.onload && !_jmol.previousOnloadHandler) {
-    _jmol.previousOnloadHandler = window.onload;
-    window.onload =
-    function() {
-      with (_jmol) {
-        if (buttonCount+checkboxCount+menuCount+radioCount+radioGroupCount > 0) {
-          var forms = document.forms;
-          for (var i = forms.length; --i >= 0; )
-            forms[i].reset();
-        }
-        if (previousOnloadHandler)
-          previousOnloadHandler();
+  _jmol.previousOnloadHandler = window.onload;
+  window.onload =
+  function() {
+    with (_jmol) {
+      if (buttonCount+checkboxCount+menuCount+radioCount+radioGroupCount > 0) {
+        var forms = document.forms;
+        for (var i = forms.length; --i >= 0; )
+          forms[i].reset();
       }
+      if (previousOnloadHandler)
+        previousOnloadHandler();
     }
   }
 }

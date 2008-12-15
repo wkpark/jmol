@@ -6628,6 +6628,21 @@
   <fah_proj number="4435" name="p4435_Seq42_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7864" preferred="43" deadline="63"
     credit="225" frames="100" code="G" contact="gbowman" contrib="Smoking2000"/>
+  <fah_proj number="4438" name="p4438_Seq41_Amber03" public="y"
+    server="171.67.108.13" atoms="7885" preferred="43" deadline="63"
+    credit="225" frames="100" code="G" contact="gbowman"/>
+  <fah_proj number="4439" name="p4439_Seq41_Amber03" public="y"
+    server="171.67.108.13" atoms="7885" preferred="43" deadline="63"
+    credit="225" frames="100" code="G" contact="gbowman"/>
+  <fah_proj number="4440" name="p4440_Seq42_Amber03" public="y"
+    server="171.67.108.13" atoms="7864" preferred="43" deadline="63"
+    credit="225" frames="100" code="G" contact="gbowman"/>
+  <fah_proj number="4441" name="p4441_Seq42_Amber03" public="y"
+    server="171.67.108.13" atoms="7864" preferred="43" deadline="63"
+    credit="225" frames="100" code="G" contact="gbowman"/>
+  <fah_proj number="4442" name="p4442_Seq43_Amber03" public="y"
+    server="171.67.108.13" atoms="7863" preferred="43" deadline="63"
+    credit="225" frames="100" code="G" contact="gbowman"/>
 
   <!-- Projects 4500 to 4599 -->
   <fah_proj number="4507" name="p4507_PTL-8_minout" public="n" file="xyz"
@@ -7653,6 +7668,30 @@
   <fah_proj number="5764" name="p5764_proL_ff03_300K" public="y"
     server="171.64.65.106" atoms="973" preferred="2" deadline="3"
     credit="384" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5765" name="p5765_NTL9_300K" public="n"
+    server="171.67.108.11" atoms="627" preferred="2" deadline="3"
+    credit="353" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5766" name="p5766_NTL9_330K" public="n"
+    server="171.67.108.11" atoms="627" preferred="2" deadline="3"
+    credit="353" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5767" name="p5767_NTL9_370K" public="n"
+    server="171.67.108.11" atoms="627" preferred="2" deadline="3"
+    credit="353" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5768" name="p5768_NTL9_450K" public="n"
+    server="171.67.108.11" atoms="627" preferred="2" deadline="3"
+    credit="353" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5769" name="p5769_NTL9_300K" public="n"
+    server="171.67.108.11" atoms="627" preferred="2" deadline="3"
+    credit="353" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5770" name="p5770_NTL9_330K" public="n"
+    server="171.67.108.11" atoms="627" preferred="2" deadline="3"
+    credit="353" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5771" name="p5771_NTL9_370K" public="n"
+    server="171.67.108.11" atoms="627" preferred="2" deadline="3"
+    credit="353" frames="100" code="GG2" contact="vvoelz"/>
+  <fah_proj number="5772" name="p5772_NTL9_450K" public="n"
+    server="171.67.108.11" atoms="627" preferred="2" deadline="3"
+    credit="353" frames="100" code="GG2" contact="vvoelz"/>
 
   <!-- Projects 5800 to 5899 -->
   <fah_proj number="5800" name="p5800_supervillin_e1" public="y"

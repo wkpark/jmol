@@ -308,7 +308,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return isPreviewOnly;
   }
   
-  private String writeInfo;
   boolean autoExit = false;
   private boolean haveDisplay = true;
   private boolean mustRender = true;
@@ -359,13 +358,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       haveDisplay = (display != null && str.indexOf("-n") < 0);
       if (!haveDisplay)
       display = null;
-      writeInfo = null;
-      if (str.indexOf("-w") >= 0) {
-        i = str.indexOf("\1");
-        int j = str.lastIndexOf("\1");
-        writeInfo = str.substring(i + 1, j);
-      }
-      mustRender = (haveDisplay || writeInfo != null);
+      mustRender = haveDisplay;
       cd(".");
     }
     isPreviewOnly = (str.indexOf("#previewOnly") >= 0);
@@ -3668,10 +3661,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (!isQuiet)
         scriptStatus("Jmol script terminated", 
             strErrorMessage, 1 + eval.getExecutionWalltime(), strErrorMessageUntranslated);
-      if (writeInfo != null) { // had "isScriptFile"
-        writeImage(writeInfo);
-        writeInfo = null;
-      }
     } else {
       scriptStatus(strErrorMessage);
       scriptStatus("Jmol script terminated", 
@@ -6846,53 +6835,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // ///////////////////////////////////////////////////////////////
   // image and file export
   // ///////////////////////////////////////////////////////////////
-
-  /**
-   * only from application with -w flag
-   *  
-   * @param type_name  TYPE:filename\twidth\theight\tquality
-   */
-  private void writeImage(String type_name) {
-    
-    int quality, width, height;
-    if (type_name == null)
-      return;
-    if (type_name.length() == 0)
-      type_name = "JPG:jmol.jpg";
-    if (type_name.indexOf(":") < 0)
-      type_name += ":jmol.jpg";
-    int i = type_name.indexOf(":");
-    String type = type_name.substring(0, i).toUpperCase();
-    String fileName = type_name.substring(i + 1);
-    String swidth = "-1";
-    String sheight = "-1";
-    String squality = (type.equals("PNG") ? "2" : "75");
-    i = fileName.indexOf('\t');
-    if (i > 0) {
-      swidth = fileName.substring(i + 1);
-      fileName = fileName.substring(0, i);
-    }
-    i = swidth.indexOf('\t');
-    if (i > 0) {
-      sheight = swidth.substring(i + 1);
-      swidth = swidth.substring(0, i);
-    }
-    i = sheight.indexOf('\t');
-    if (i > 0) {
-      squality = sheight.substring(i + 1);
-      sheight = sheight.substring(0, i);
-    }
-    try {
-      width = Integer.parseInt(swidth);
-      height = Integer.parseInt(sheight);
-      quality = Integer.parseInt(squality);
-      createImage(fileName, type, null, quality, width, height);
-    } catch (Exception e) {
-      Logger.error(setErrorMessage("error processing write request: " + type_name + " "+ e));
-    } catch (Error er) {
-      Logger.error(setErrorMessage("error processing write request: " + type_name + " "+ er));
-    }
-  }
 
   public void writeTextFile(String fileName, String data) {
     createImage(fileName, "txt", data, Integer.MIN_VALUE, 0, 0);

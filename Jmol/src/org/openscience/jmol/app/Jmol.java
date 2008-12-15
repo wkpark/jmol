@@ -442,7 +442,6 @@ public class Jmol extends JPanel {
     // OptionBuilder.withDescription(GT._("overall window width x height, e.g. {0}", "-g512x616"));
     OptionBuilder.withDescription(GT._("window width x height, e.g. {0}",
         "-g500x500"));
-    OptionBuilder.withValueSeparator();
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("g"));
 
@@ -451,14 +450,12 @@ public class Jmol extends JPanel {
     OptionBuilder
         .withDescription(GT
             ._("JPG image quality (1-100; default 75) or PNG image compression (0-9; default 2, maximum compression 9)"));
-    OptionBuilder.withValueSeparator();
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("q"));
 
     OptionBuilder.withLongOpt("write");
     OptionBuilder.withDescription(GT._("{0} or {1}:filename", new Object[] {
         "CLIP", "GIF|JPG|JPG64|PNG|PPM" }));
-    OptionBuilder.withValueSeparator();
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("w"));
 
@@ -523,6 +520,12 @@ public class Jmol extends JPanel {
       isSilent = true;
     }
 
+    //output to sysout
+    if (line.hasOption("o")) {
+      commandOptions += "-o";
+      haveConsole = false;
+    }
+
     // transparent background
     if (line.hasOption("b")) {
       commandOptions += "-b";
@@ -538,10 +541,16 @@ public class Jmol extends JPanel {
       commandOptions += "-l";
     }
 
-    //output to sysout
-    if (line.hasOption("o")) {
-      commandOptions += "-o";
-      haveConsole = false;
+    //check script only -- don't open files
+    if (line.hasOption("c")) {
+      commandOptions += "-c";
+    } else if (line.hasOption("C")) {
+      commandOptions += "-C";
+    }
+
+    //menu file
+    if (line.hasOption("m")) {
+      menuFile = line.getOptionValue("m");
     }
 
     //run pre Jmol script
@@ -562,6 +571,85 @@ public class Jmol extends JPanel {
       script2 = line.getOptionValue("j");
     }
 
+    Dimension size;
+    String vers = System.getProperty("java.version");
+    if (vers.compareTo("1.1.2") < 0) {
+      System.out.println("!!!WARNING: Swing components require a "
+          + "1.1.2 or higher version VM!!!");
+    }
+
+    size = historyFile.getWindowSize(JMOL_WINDOW_NAME);
+    if (size != null && haveDisplay) {
+      startupWidth = size.width;
+      startupHeight = size.height;
+    }
+
+    //OUTER window dimensions
+    /*
+     if (line.hasOption("g") && haveDisplay) {
+     String geometry = line.getOptionValue("g");
+     int indexX = geometry.indexOf('x');
+     if (indexX > 0) {
+     startupWidth = parseInt(geometry.substring(0, indexX));
+     startupHeight = parseInt(geometry.substring(indexX + 1));
+     }
+     }
+     */
+
+    Point b = historyFile.getWindowBorder(JMOL_WINDOW_NAME);
+    //first one is just approximate, but this is set in doClose()
+    //so it will reset properly -- still, not perfect
+    //since it is always one step behind.
+    if (b == null)
+      border = new Point(12, 116);
+    else
+      border = new Point(b.x, b.y);
+    //note -- the first time this is run after changes it will not work
+    //because there is a bootstrap problem.
+
+    int width = -1;
+    int height = -1;
+    //INNER frame dimensions
+    if (line.hasOption("g")) {
+      String geometry = line.getOptionValue("g");
+      int indexX = geometry.indexOf('x');
+      if (indexX > 0) {
+        width = Parser.parseInt(geometry.substring(0, indexX));
+        height = Parser.parseInt(geometry.substring(indexX + 1));
+        //System.out.println("setting geometry to " + geometry + " " + border + " " + startupWidth + startupHeight);
+      }
+      if (haveDisplay) {
+        startupWidth = width + border.x;
+        startupHeight = height + border.y;
+      }
+    }
+
+    if (startupWidth <= 0 || startupHeight <= 0) {
+      startupWidth = 500 + border.x;
+      startupHeight = 500 + border.y;
+    }
+
+    //write image to clipboard or image file  
+    if (line.hasOption("w")) {
+      int quality = -1;
+      if (line.hasOption("q"))
+        quality = Parser.parseInt(line.getOptionValue("q"));
+      String type_name = line.getOptionValue("w");
+      if (type_name != null) {
+        if (type_name.length() == 0)
+          type_name = "JPG:jmol.jpg";
+        if (type_name.indexOf(":") < 0)
+          type_name += ":jmol.jpg";
+        int i = type_name.indexOf(":");
+        String type = type_name.substring(0, i).toUpperCase();
+        type_name = " \"" + type_name.substring(i + 1) + "\"";
+        if (type.indexOf(" ") < 0)
+          type += " " + quality;
+        script2 += ";write image " + width + " " + height + " " + type + type_name;
+      }
+    }
+
+
     //no display (and exit)
     if (line.hasOption("n")) {
       // this ensures that noDisplay also exits
@@ -577,90 +665,7 @@ public class Jmol extends JPanel {
         script2 += ";exitJmol";
     }
 
-    //check script only -- don't open files
-    if (line.hasOption("c")) {
-      commandOptions += "-c";
-    } else if (line.hasOption("C")) {
-      commandOptions += "-C";
-    }
-
-    //menu file
-    if (line.hasOption("m")) {
-      menuFile = line.getOptionValue("m");
-    }
-
-    String imageType_name = null;
-    //write image to clipboard or image file  
-    if (line.hasOption("w")) {
-      imageType_name = line.getOptionValue("w");
-    }
-
-    Dimension size;
     try {
-      String vers = System.getProperty("java.version");
-      if (vers.compareTo("1.1.2") < 0) {
-        System.out.println("!!!WARNING: Swing components require a "
-            + "1.1.2 or higher version VM!!!");
-      }
-
-      size = historyFile.getWindowSize(JMOL_WINDOW_NAME);
-      if (size != null && haveDisplay) {
-        startupWidth = size.width;
-        startupHeight = size.height;
-      }
-
-      //OUTER window dimensions
-      /*
-       if (line.hasOption("g") && haveDisplay) {
-       String geometry = line.getOptionValue("g");
-       int indexX = geometry.indexOf('x');
-       if (indexX > 0) {
-       startupWidth = parseInt(geometry.substring(0, indexX));
-       startupHeight = parseInt(geometry.substring(indexX + 1));
-       }
-       }
-       */
-
-      Point b = historyFile.getWindowBorder(JMOL_WINDOW_NAME);
-      //first one is just approximate, but this is set in doClose()
-      //so it will reset properly -- still, not perfect
-      //since it is always one step behind.
-      if (b == null)
-        border = new Point(12, 116);
-      else
-        border = new Point(b.x, b.y);
-      //note -- the first time this is run after changes it will not work
-      //because there is a bootstrap problem.
-
-      int width = -1;
-      int height = -1;
-      int quality = 75;
-      //INNER frame dimensions
-      if (line.hasOption("g")) {
-        String geometry = line.getOptionValue("g");
-        int indexX = geometry.indexOf('x');
-        if (indexX > 0) {
-          width = Parser.parseInt(geometry.substring(0, indexX));
-          height = Parser.parseInt(geometry.substring(indexX + 1));
-          //System.out.println("setting geometry to " + geometry + " " + border + " " + startupWidth + startupHeight);
-        }
-        if (haveDisplay) {
-          startupWidth = width + border.x;
-          startupHeight = height + border.y;
-        }
-      }
-
-      if (line.hasOption("q"))
-        quality = Parser.parseInt(line.getOptionValue("q"));
-
-      if (imageType_name != null)
-        commandOptions += "-w\1" + imageType_name + "\t" + width + "\t"
-            + height + "\t" + quality + "\1";
-
-      if (startupWidth <= 0 || startupHeight <= 0) {
-        startupWidth = 500 + border.x;
-        startupHeight = 500 + border.y;
-      }
       JFrame jmolFrame = new JFrame();
       Point jmolPosition = historyFile.getWindowPosition(JMOL_WINDOW_NAME);
       if (jmolPosition != null) {
@@ -712,6 +717,7 @@ public class Jmol extends JPanel {
       t.printStackTrace();
     }
 
+    
     if (haveConsole) {
       Point location = jmol.frame.getLocation();
       size = jmol.frame.getSize();

@@ -711,7 +711,7 @@ public class Jmol implements WrappedApplet {
     if (strModels == null || strModels.length == 0)
       return null;
     String errMsg = viewer.loadInline(strModels, isAppend);
-    if (errMsg != null)
+    if (errMsg == null)
       script(script);
     return errMsg;
   }
@@ -759,7 +759,7 @@ public class Jmol implements WrappedApplet {
     if (strModel == null)
       return null;
     String errMsg = viewer.loadInline(strModel);
-    if (errMsg != null)
+    if (errMsg == null)
       script(script);
     return errMsg;
   }

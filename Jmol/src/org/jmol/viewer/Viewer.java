@@ -5662,7 +5662,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void showString(String str) {
-    if (isScriptQueued)
+    if (isScriptQueued && !isSilent)
       Logger.warn(str);
     scriptEcho(str);
   }

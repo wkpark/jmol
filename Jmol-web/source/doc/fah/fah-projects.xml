@@ -4805,9 +4805,9 @@
   <fah_proj number="2443" name="p2443_Protein" public="y" file="xyz"
     server="171.65.103.160" preferred="42" deadline="93"
     credit="2435" frames="100" code="G" contact="ppetrone" contrib="Jon Gould"/>
-  <fah_proj number="2444" name="p2444_" public="y"
+  <fah_proj number="2444" name="p2444_Protein" public="y" file="xyz"
     server="171.65.103.160" preferred="42" deadline="93"
-    credit="2435" frames="100" code="G" contact="ppetrone"/>
+    credit="2435" frames="100" code="G" contact="ppetrone" contrib="Hyperlife"/>
   <fah_proj number="2445" name="p2445_Protein" public="y" file="xyz"
     server="171.65.103.160" preferred="42" deadline="93"
     credit="2435" frames="100" code="G" contact="ppetrone" contrib="Hyperlife"/>
@@ -6326,10 +6326,10 @@
     server="171.64.65.56" atoms="77373" preferred="4" deadline="12"
     credit="5" frames="0" code="T" contact="kasson"/>
   <fah_proj number="3903" name="p3903_IBX in water" public="y" file="xyz"
-    server="171.64.122.83" atoms="147170" preferred="64" deadline="94"
+    server="171.67.108.22" atoms="147170" preferred="64" deadline="94"
     credit="338" frames="50" code="DG" contact="kasson" contrib="efishy"/>
   <fah_proj number="3905" name="p3905_IBX in water" public="y" file="xyz"
-    server="171.64.122.83" atoms="147161" preferred="64" deadline="94"
+    server="171.67.108.22" atoms="147161" preferred="64" deadline="94"
     credit="338" frames="50" code="DG" contact="kasson" contrib="daveb"/>
   <fah_proj number="3906" name="p3906_Lig in water" public="y" file="xyz"
     server="171.64.122.88" atoms="6355" preferred="59" deadline="86"
@@ -6338,7 +6338,7 @@
     server="171.64.122.88" atoms="6355" preferred="59" deadline="86"
     credit="310" frames="50" code="DB" contact="kasson" contrib="Jeannie"/>
   <fah_proj number="3908" name="p3908_IBX in water" public="y" file="xyz"
-    server="171.64.122.83" atoms="147161" preferred="64" deadline="94"
+    server="171.67.108.22" atoms="147161" preferred="64" deadline="94"
     credit="338" frames="50" code="DG" contact="kasson"/>
 
   <!-- Projects 4000 to 4099 -->
@@ -6654,7 +6654,10 @@
   <fah_proj number="4443" name="p4443_Seq43_Amber03" public="y"
     server="171.67.108.13" atoms="7863" preferred="43" deadline="63"
     credit="225" frames="100" code="G" contact="gbowman"/>
-  <fah_proj number="4444" name="p4444_Seq44_Amber03" public="y"
+  <fah_proj number="4444" name="p4444_Seq44_Amber03" public="y" file="xyz"
+    server="171.67.108.13" atoms="7863" preferred="43" deadline="63"
+    credit="225" frames="100" code="G" contact="gbowman" contrib="Flathead74"/>
+  <fah_proj number="4445" name="p4445_Seq44_Amber03" public="y"
     server="171.67.108.13" atoms="7863" preferred="43" deadline="63"
     credit="225" frames="100" code="G" contact="gbowman"/>
 

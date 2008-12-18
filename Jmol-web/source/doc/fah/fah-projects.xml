@@ -6651,9 +6651,9 @@
   <fah_proj number="4442" name="p4442_Seq43_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7863" preferred="43" deadline="63"
     credit="225" frames="100" code="G" contact="gbowman" contrib="Smoking2000"/>
-  <fah_proj number="4443" name="p4443_Seq43_Amber03" public="y"
+  <fah_proj number="4443" name="p4443_Seq43_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7863" preferred="43" deadline="63"
-    credit="225" frames="100" code="G" contact="gbowman"/>
+    credit="225" frames="100" code="G" contact="gbowman" contrib="MstrBlstr"/>
   <fah_proj number="4444" name="p4444_Seq44_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7863" preferred="43" deadline="63"
     credit="225" frames="100" code="G" contact="gbowman" contrib="Flathead74"/>

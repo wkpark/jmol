@@ -6636,7 +6636,7 @@
     credit="225" frames="100" code="G" contact="gbowman" contrib="Smoking2000"/>
   <fah_proj number="4436" name="p4436" public="n" file="xyz"
     contrib="Ursomor"/>
-  <fah_proj number="4438" name="p4438_Seq41_Amber03" public="y"
+  <fah_proj number="4438" name="p4438_Seq41_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7885" preferred="43" deadline="63"
     credit="225" frames="100" code="G" contact="gbowman"/>
   <fah_proj number="4439" name="p4439_Seq41_Amber03" public="y" file="xyz"

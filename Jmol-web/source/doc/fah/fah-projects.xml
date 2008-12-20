@@ -7164,6 +7164,24 @@
   <fah_proj number="4750" name="p4750_DEV_ONLY_lam5w_370K" public="n"
     server="171.64.65.103" atoms="1254" preferred="2" deadline="3"
     credit="548" frames="100" code="AD" contact="densign"/>
+  <fah_proj number="4751" name="p4751_p5508_lam5w_300K" public="n"
+    server="171.64.65.103" atoms="1254" preferred="2" deadline="3"
+    credit="477" frames="100" code="GG2" contact="densign"/>
+  <fah_proj number="4752" name="p4752_p5508_lam5w_300K" public="n"
+    server="171.64.65.103" atoms="1254" preferred="2" deadline="3"
+    credit="477" frames="100" code="GG2" contact="densign"/>
+  <fah_proj number="4753" name="p4753_p5508_lam5w_300K" public="n"
+    server="171.64.65.103" atoms="1254" preferred="2" deadline="3"
+    credit="477" frames="100" code="GG2" contact="densign"/>
+  <fah_proj number="4754" name="p4754_p5508_lam5w_300K" public="n"
+    server="171.64.65.103" atoms="1254" preferred="2" deadline="3"
+    credit="477" frames="100" code="GG2" contact="densign"/>
+  <fah_proj number="4755" name="p4755_p5508_lam5w_300K" public="n"
+    server="171.64.65.103" atoms="1254" preferred="2" deadline="3"
+    credit="477" frames="100" code="GG2" contact="densign"/>
+  <fah_proj number="4756" name="p4756_p5508_lam5w_300K" public="n"
+    server="171.64.65.103" atoms="1254" preferred="2" deadline="3"
+    credit="477" frames="100" code="GG2" contact="densign"/>
 
   <!-- Projects 4800 to 4899 -->
   <fah_proj number="4800" name="p4800_" public="y"

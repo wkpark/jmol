@@ -2,15 +2,15 @@
 # Copyright (C) 2005-2007 by the Jmol Development Team
 #
 # This file is distributed under the same license as the Jmol package.
-# Zoltán Zörgő <zorgoz@iit.uni-miskolc.hu>, 2008.
+# Zoltán Zörgő <zoltan.zorgo@gmail.com>, 2008.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: JmolApplet 11\n"
+"Project-Id-Version: JmolApplet 11.7.x\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-12-09 20:54+0100\n"
-"PO-Revision-Date: 2008-08-04 20:45+0000\n"
-"Last-Translator: Zörgő Zoltán <Unknown>\n"
+"PO-Revision-Date: 2009-01-01 21:38+0100\n"
+"Last-Translator: Zoltán Zörgő <zoltan.zorgo@gmail.com>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -37,7 +37,8 @@ msgstr "Kimenet törlése"
 msgid "Clear Input"
 msgstr "Bemenet törlése"
 
-#: org/jmol/applet/Console.java:79 org/jmol/popup/PopupResourceBundle.java:862
+#: org/jmol/applet/Console.java:79
+#: org/jmol/popup/PopupResourceBundle.java:862
 msgid "History"
 msgstr "Előzmények"
 
@@ -45,40 +46,38 @@ msgstr "Előzmények"
 msgid "State"
 msgstr "Státus"
 
-#: org/jmol/applet/Console.java:81 org/jmol/popup/PopupResourceBundle.java:872
+#: org/jmol/applet/Console.java:81
+#: org/jmol/popup/PopupResourceBundle.java:872
 msgid "Load"
 msgstr "Betöltés"
 
 #: org/jmol/applet/Console.java:118
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr ""
-"Nyomjon Ctrl-Enter-t új sorhoz, vagy illesszen be modelladatotés nyomja meg "
-"a Betöltés gombot"
+msgstr "Nyomjon Ctrl-Enter-t új sorhoz, vagy illesszen be modelladatotés nyomja meg a Betöltés gombot"
 
 #: org/jmol/applet/GuiMap.java:41
 msgid "&Help"
-msgstr ""
+msgstr "&Súgó"
 
 #: org/jmol/applet/GuiMap.java:42
 msgid "&Search..."
-msgstr ""
+msgstr "&Keresés"
 
 #: org/jmol/applet/GuiMap.java:43
 msgid "&Commands"
-msgstr ""
+msgstr "&Parancsok"
 
 #: org/jmol/applet/GuiMap.java:44
 msgid "Math &Functions"
-msgstr ""
+msgstr "Matematikai &függvények"
 
 #: org/jmol/applet/GuiMap.java:45
 msgid "Set &Parameters"
-msgstr ""
+msgstr "Paraméterek &beállítása"
 
 #: org/jmol/applet/GuiMap.java:46
-#, fuzzy
 msgid "&More"
-msgstr "Modell"
+msgstr "&Továbbiak"
 
 #: org/jmol/applet/Jmol.java:666
 #, java-format
@@ -101,20 +100,17 @@ msgstr "Adathiba:"
 
 #: org/jmol/applet/Jmol.java:1106
 #, java-format
-msgid ""
-"File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
-msgstr ""
+msgid "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+msgstr "A kisalkalmazás nem hozhat létre fájlt. A Base64 JPEG formátumhoz használja ezt: {0}."
 
-#: org/jmol/applet/Jmol.java:1109 org/jmol/viewer/StatusManager.java:572
+#: org/jmol/applet/Jmol.java:1109
+#: org/jmol/viewer/StatusManager.java:572
 msgid "File creation failed."
-msgstr ""
+msgstr "Fájl létrehozása sikertelen."
 
 #: org/jmol/applet/Jmol.java:1211
-msgid ""
-"Messages will appear here. Enter commands in the box below. Click the "
-"console Help menu item for on-line help, which will appear in a new browser "
-"window."
-msgstr ""
+msgid "Messages will appear here. Enter commands in the box below. Click the console Help menu item for on-line help, which will appear in a new browser window."
+msgstr "Az üzenetek itt fognak megjelenni. A parancsokat az alábbi mezőbe írja be.Kattintson a konzol Súgó menüpontjára segítségért, mely egy új böngésző-ablakban fog megjelenni."
 
 #: org/jmol/appletwrapper/AppletWrapper.java:91
 msgid "Loading Jmol applet ..."
@@ -126,75 +122,69 @@ msgid "  {0} seconds"
 msgstr "  {0} másodperc"
 
 #: org/jmol/export/dialog/Dialog.java:89
-#, fuzzy
 msgid "File or URL:"
-msgstr "Adathiba:"
+msgstr "Fájl vagy URL:"
 
 #: org/jmol/export/dialog/Dialog.java:254
 msgid "Image Type"
-msgstr ""
+msgstr "Kép típus"
 
 #: org/jmol/export/dialog/Dialog.java:269
 #: org/jmol/export/dialog/Dialog.java:310
 #, java-format
 msgid "JPEG Quality ({0})"
-msgstr ""
+msgstr "JPEG minőség ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:283
 #, java-format
 msgid "PNG Compression  ({0})"
-msgstr ""
+msgstr "PNG tömörítés ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:313
 #, java-format
 msgid "PNG Quality ({0})"
-msgstr ""
+msgstr "PNG tömörítés ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:359
 #: org/jmol/export/dialog/Dialog.java:469
 msgid "Yes"
-msgstr ""
+msgstr "Igen"
 
 #: org/jmol/export/dialog/Dialog.java:359
 #: org/jmol/export/dialog/Dialog.java:467
-#, fuzzy
 msgid "No"
-msgstr "Egyik sem"
+msgstr "Nem"
 
 #: org/jmol/export/dialog/Dialog.java:361
 #, java-format
 msgid "Do you want to overwrite file {0}?"
-msgstr ""
+msgstr "Fölül akarja írnia a {0} fájlt?"
 
 #: org/jmol/export/dialog/Dialog.java:362
 msgid "Warning"
-msgstr ""
+msgstr "Figyelmeztetés"
 
 #: org/jmol/export/dialog/Dialog.java:418
-#, fuzzy
 msgid "All Files"
-msgstr "Minden kocka"
+msgstr "Minden fájl"
 
 #: org/jmol/export/dialog/Dialog.java:419
 #: org/jmol/export/dialog/Dialog.java:466
-#, fuzzy
 msgid "Cancel"
-msgstr "Ciánkék"
+msgstr "Mégsem"
 
 #: org/jmol/export/dialog/Dialog.java:421
 msgid "Abort file chooser dialog"
-msgstr ""
+msgstr "A fájlkiválastás megszakítása"
 
 #: org/jmol/export/dialog/Dialog.java:423
 #: org/jmol/export/dialog/Dialog.java:424
-#, fuzzy
 msgid "Details"
-msgstr "Dán"
+msgstr "Részletek"
 
 #: org/jmol/export/dialog/Dialog.java:425
-#, fuzzy
 msgid "Directory"
-msgstr "Előzmények"
+msgstr "Könyvtár"
 
 #: org/jmol/export/dialog/Dialog.java:426
 #: org/jmol/export/dialog/Dialog.java:450
@@ -204,125 +194,119 @@ msgstr "Megnyitás"
 
 #: org/jmol/export/dialog/Dialog.java:428
 msgid "Open selected directory"
-msgstr ""
+msgstr "A kijelölt könyvtár megnyitása"
 
 #: org/jmol/export/dialog/Dialog.java:429
-#, fuzzy
 msgid "Attributes"
-msgstr "Struktúrák"
+msgstr "Attribútumok"
 
 #: org/jmol/export/dialog/Dialog.java:430
-#, fuzzy
 msgid "Modified"
-msgstr "Modell"
+msgstr "Módosítva"
 
 #: org/jmol/export/dialog/Dialog.java:431
 msgid "Generic File"
-msgstr ""
+msgstr "Általános fájl"
 
 #: org/jmol/export/dialog/Dialog.java:432
 msgid "Name"
-msgstr ""
+msgstr "Név"
 
 #: org/jmol/export/dialog/Dialog.java:433
-#, fuzzy
 msgid "File Name:"
-msgstr "Fájl fejléce"
+msgstr "Fájlnév:"
 
 #: org/jmol/export/dialog/Dialog.java:434
 msgid "Size"
-msgstr ""
+msgstr "Méret"
 
 #: org/jmol/export/dialog/Dialog.java:435
 msgid "Files of Type:"
-msgstr ""
+msgstr "Fájlok ezzel a típussal:"
 
 #: org/jmol/export/dialog/Dialog.java:436
 msgid "Type"
-msgstr ""
+msgstr "Típus"
 
 #: org/jmol/export/dialog/Dialog.java:437
 msgid "Help"
-msgstr ""
+msgstr "Súgó"
 
 #: org/jmol/export/dialog/Dialog.java:439
 msgid "FileChooser help"
-msgstr ""
+msgstr "Fájlkiválasztó súgója"
 
 #: org/jmol/export/dialog/Dialog.java:440
 #: org/jmol/export/dialog/Dialog.java:441
 msgid "Home"
-msgstr ""
+msgstr "Haza"
 
 #: org/jmol/export/dialog/Dialog.java:442
 #: org/jmol/export/dialog/Dialog.java:443
 msgid "List"
-msgstr ""
+msgstr "Lista"
 
 #: org/jmol/export/dialog/Dialog.java:444
-#, fuzzy
 msgid "Look In:"
-msgstr "Nagyítás"
+msgstr "Keresés itt:"
 
 #: org/jmol/export/dialog/Dialog.java:446
 msgid "Error creating new folder"
-msgstr ""
+msgstr "Hiba a mappalétrehozás közben"
 
 #: org/jmol/export/dialog/Dialog.java:447
 msgid "New Folder"
-msgstr ""
+msgstr "Új mappa"
 
 #: org/jmol/export/dialog/Dialog.java:449
 msgid "Create New Folder"
-msgstr ""
+msgstr "Új mappa létrehozása"
 
 #: org/jmol/export/dialog/Dialog.java:452
 msgid "Open selected file"
-msgstr ""
+msgstr "Kijelölt fájl megnyitása"
 
 #: org/jmol/export/dialog/Dialog.java:454
 #: org/jmol/export/dialog/Dialog.java:457
 #: org/jmol/popup/PopupResourceBundle.java:878
-#, fuzzy
 msgid "Save"
-msgstr "Státus"
+msgstr "Mentés"
 
 #: org/jmol/export/dialog/Dialog.java:456
-#, fuzzy
 msgid "Save selected file"
-msgstr "Oldal kiválasztása"
+msgstr "Kijelölt fájl mentése"
 
 #: org/jmol/export/dialog/Dialog.java:458
 msgid "Save In:"
-msgstr ""
+msgstr "Mentés ide:"
 
 #: org/jmol/export/dialog/Dialog.java:459
 msgid "Update"
-msgstr ""
+msgstr "Frissítés"
 
 #: org/jmol/export/dialog/Dialog.java:461
 msgid "Update directory listing"
-msgstr ""
+msgstr "Könyvtártartalom frissítése"
 
 #: org/jmol/export/dialog/Dialog.java:462
 msgid "Up"
-msgstr ""
+msgstr "Fel"
 
 #: org/jmol/export/dialog/Dialog.java:463
 msgid "Up One Level"
-msgstr ""
+msgstr "Egy szintet fel"
 
 #: org/jmol/export/dialog/Dialog.java:468
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: org/jmol/export/dialog/FilePreview.java:71
 msgid "Preview"
-msgstr ""
+msgstr "Előnézet"
 
 #: org/jmol/export/dialog/FilePreview.java:91
 msgid "Append models"
-msgstr ""
+msgstr "Modellek hozzáfűzése"
 
 #: org/jmol/i18n/GT.java:118
 msgid "Catalan"
@@ -333,7 +317,6 @@ msgid "Czech"
 msgstr "Cseh"
 
 #: org/jmol/i18n/GT.java:120
-#, fuzzy
 msgid "Danish"
 msgstr "Dán"
 
@@ -342,14 +325,12 @@ msgid "Dutch"
 msgstr "Holland"
 
 #: org/jmol/i18n/GT.java:122
-#, fuzzy
 msgid "British English"
-msgstr "Angol"
+msgstr "Britt angol"
 
 #: org/jmol/i18n/GT.java:123
-#, fuzzy
 msgid "American English"
-msgstr "Angol"
+msgstr "Amerikai angol"
 
 #: org/jmol/i18n/GT.java:124
 msgid "Estonian"
@@ -364,9 +345,8 @@ msgid "German"
 msgstr "Német"
 
 #: org/jmol/i18n/GT.java:127
-#, fuzzy
 msgid "Greek"
-msgstr "Zöld"
+msgstr "Görög"
 
 # Hungarian message ID not yet implemented!
 #: org/jmol/i18n/GT.java:128
@@ -374,9 +354,8 @@ msgid "Hungarian"
 msgstr "Magyar"
 
 #: org/jmol/i18n/GT.java:129
-#, fuzzy
 msgid "Italian"
-msgstr "Katalán"
+msgstr "Olasz"
 
 #: org/jmol/i18n/GT.java:130
 msgid "Korean"
@@ -384,17 +363,15 @@ msgstr "Kóreai"
 
 #: org/jmol/i18n/GT.java:131
 msgid "Norwegian Bokmal"
-msgstr ""
+msgstr "Norvég"
 
 #: org/jmol/i18n/GT.java:132
-#, fuzzy
 msgid "Polish"
-msgstr "Angol"
+msgstr "Lengyel"
 
 #: org/jmol/i18n/GT.java:133
-#, fuzzy
 msgid "Brazilian Portuguese"
-msgstr "Portugál"
+msgstr "Brazil portugál"
 
 #: org/jmol/i18n/GT.java:134
 msgid "Portuguese"
@@ -402,11 +379,11 @@ msgstr "Portugál"
 
 #: org/jmol/i18n/GT.java:135
 msgid "Russian"
-msgstr ""
+msgstr "Orosz"
 
 #: org/jmol/i18n/GT.java:136
 msgid "Slovenian"
-msgstr ""
+msgstr "Szlovén"
 
 #: org/jmol/i18n/GT.java:137
 msgid "Spanish"
@@ -414,7 +391,7 @@ msgstr "Spanyol"
 
 #: org/jmol/i18n/GT.java:138
 msgid "Swedish"
-msgstr ""
+msgstr "Svéd"
 
 #: org/jmol/i18n/GT.java:139
 msgid "Turkish"
@@ -439,7 +416,8 @@ msgstr "{0} atom lessz minimalizálva."
 msgid "could not setup force field {0}"
 msgstr "nem sikerült a {0} erőteret beállítani"
 
-#: org/jmol/popup/JmolPopup.java:483 org/jmol/popup/JmolPopup.java:523
+#: org/jmol/popup/JmolPopup.java:483
+#: org/jmol/popup/JmolPopup.java:523
 #: org/jmol/popup/PopupResourceBundle.java:581
 #: org/jmol/popup/PopupResourceBundle.java:595
 #: org/jmol/popup/PopupResourceBundle.java:604
@@ -449,7 +427,7 @@ msgstr "Mind"
 
 #: org/jmol/popup/JmolPopup.java:557
 msgid "Minimize"
-msgstr ""
+msgstr "Minimalizál"
 
 #: org/jmol/popup/JmolPopup.java:641
 msgid "Java memory usage"
@@ -591,19 +569,18 @@ msgid "Main Menu"
 msgstr "Főmenü"
 
 #: org/jmol/popup/PopupResourceBundle.java:575
-#, fuzzy
 msgid "Biomolecules"
-msgstr "Molekula"
+msgstr "Bio-molekulák"
 
 #: org/jmol/popup/PopupResourceBundle.java:576
 #, java-format
 msgid "biomolecule {0} ({1} atoms)"
-msgstr ""
+msgstr "{0}. biomolekula ({1} atom)"
 
 #: org/jmol/popup/PopupResourceBundle.java:577
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
-msgstr ""
+msgstr "{0}. biomolekula betöltése ({1} atom)"
 
 #: org/jmol/popup/PopupResourceBundle.java:582
 #: org/jmol/popup/PopupResourceBundle.java:701
@@ -684,7 +661,7 @@ msgstr "Semleges gyökök"
 
 #: org/jmol/popup/PopupResourceBundle.java:603
 msgid "Nucleic"
-msgstr ""
+msgstr "Nukleikus"
 
 #: org/jmol/popup/PopupResourceBundle.java:605
 msgid "DNA"
@@ -808,7 +785,7 @@ msgstr "Ki"
 #: org/jmol/popup/PopupResourceBundle.java:641
 #, java-format
 msgid "{0}% van der Waals"
-msgstr ""
+msgstr "{0}% van der Waals"
 
 #: org/jmol/popup/PopupResourceBundle.java:643
 #: org/jmol/popup/PopupResourceBundle.java:765
@@ -861,11 +838,11 @@ msgstr "Számítás"
 
 #: org/jmol/popup/PopupResourceBundle.java:656
 msgid "Set H-Bonds Side Chain"
-msgstr ""
+msgstr "Hidrogén-kötés oldallánc beállítása"
 
 #: org/jmol/popup/PopupResourceBundle.java:657
 msgid "Set H-Bonds Backbone"
-msgstr ""
+msgstr "Hidrogén-kötés gerinc beállítása"
 
 #: org/jmol/popup/PopupResourceBundle.java:664
 #: org/jmol/popup/PopupResourceBundle.java:767
@@ -874,11 +851,11 @@ msgstr "Diszulfid kötések"
 
 #: org/jmol/popup/PopupResourceBundle.java:667
 msgid "Set SS-Bonds Side Chain"
-msgstr ""
+msgstr "S-S kötés oldallánc beállítása"
 
 #: org/jmol/popup/PopupResourceBundle.java:668
 msgid "Set SS-Bonds Backbone"
-msgstr ""
+msgstr "S-S kötés gerinc beállítása"
 
 #: org/jmol/popup/PopupResourceBundle.java:675
 #: org/jmol/popup/PopupResourceBundle.java:768
@@ -887,31 +864,31 @@ msgstr "Struktúrák"
 
 #: org/jmol/popup/PopupResourceBundle.java:679
 msgid "Cartoon Rockets"
-msgstr ""
+msgstr "Rajzfilm-rakéta"
 
 #: org/jmol/popup/PopupResourceBundle.java:680
 #: org/jmol/popup/PopupResourceBundle.java:772
 msgid "Ribbons"
-msgstr ""
+msgstr "Szalagok"
 
 #: org/jmol/popup/PopupResourceBundle.java:681
 #: org/jmol/popup/PopupResourceBundle.java:773
 msgid "Rockets"
-msgstr ""
+msgstr "Rakéták"
 
 #: org/jmol/popup/PopupResourceBundle.java:682
 #: org/jmol/popup/PopupResourceBundle.java:774
 msgid "Strands"
-msgstr ""
+msgstr "Fonalak"
 
 #: org/jmol/popup/PopupResourceBundle.java:685
 msgid "Vibration"
-msgstr ""
+msgstr "Vibráció"
 
 #: org/jmol/popup/PopupResourceBundle.java:688
 #: org/jmol/popup/PopupResourceBundle.java:778
 msgid "Vectors"
-msgstr ""
+msgstr "Vektorok"
 
 #: org/jmol/popup/PopupResourceBundle.java:691
 #, java-format
@@ -1254,7 +1231,6 @@ msgstr "Újrakezdés"
 
 #: org/jmol/popup/PopupResourceBundle.java:833
 #: org/jmol/popup/PopupResourceBundle.java:864
-#, fuzzy
 msgid "Measurements"
 msgstr "Méretezés"
 
@@ -1376,51 +1352,49 @@ msgstr "Aktuállis állapot"
 
 #: org/jmol/popup/PopupResourceBundle.java:873
 msgid "File from PDB"
-msgstr ""
+msgstr "Fájl PDB-ből"
 
 #: org/jmol/popup/PopupResourceBundle.java:874
-#, fuzzy
 msgid "File or URL"
-msgstr "Adathiba:"
+msgstr "Fájl vagy URL:"
 
 #: org/jmol/popup/PopupResourceBundle.java:875
-#, fuzzy
 msgid "Load full unit cell"
-msgstr "Nincs egységcella"
+msgstr "Teljes egységcella betöltése"
 
 #: org/jmol/popup/PopupResourceBundle.java:876
 msgid "Script"
-msgstr ""
+msgstr "Skript"
 
 #: org/jmol/popup/PopupResourceBundle.java:879
-#, fuzzy, java-format
+#, java-format
 msgid "File {0}"
-msgstr "{0} nézet"
+msgstr "{0} fájl"
 
 #: org/jmol/popup/PopupResourceBundle.java:880
 msgid "Script with state"
-msgstr ""
+msgstr "Skript állapottal"
 
 #: org/jmol/popup/PopupResourceBundle.java:881
 msgid "Script with history"
-msgstr ""
+msgstr "Skript történettel"
 
 #: org/jmol/popup/PopupResourceBundle.java:882
 #: org/jmol/popup/PopupResourceBundle.java:883
 #: org/jmol/popup/PopupResourceBundle.java:884
 #, java-format
 msgid "{0} Image"
-msgstr ""
+msgstr "{0} kép"
 
 #: org/jmol/popup/PopupResourceBundle.java:885
 msgid "JVXL Isosurface"
-msgstr ""
+msgstr "JVXL Iso-felület"
 
 #: org/jmol/popup/PopupResourceBundle.java:886
 #: org/jmol/popup/PopupResourceBundle.java:887
-#, fuzzy, java-format
+#, java-format
 msgid "{0} 3D Model"
-msgstr "Mind a {0} modellt"
+msgstr "{0} 3D modell"
 
 #: org/jmol/popup/PopupResourceBundle.java:891
 msgid "Extract MOL data"
@@ -1519,101 +1493,107 @@ msgstr "Egérkezelés"
 msgid "Translations"
 msgstr "Fordítások"
 
-#: org/jmol/viewer/Compiler.java:2539 org/jmol/viewer/Eval.java:11498
+#: org/jmol/viewer/Compiler.java:2539
+#: org/jmol/viewer/Eval.java:11498
 msgid "bad argument count"
 msgstr "nem megfelelő argumentumszám"
 
 #: org/jmol/viewer/Compiler.java:2542
 #, java-format
 msgid "invalid context for {0}"
-msgstr ""
+msgstr "érvénytelen környezet {0} számára"
 
-#: org/jmol/viewer/Compiler.java:2545 org/jmol/viewer/Eval.java:11522
+#: org/jmol/viewer/Compiler.java:2545
+#: org/jmol/viewer/Eval.java:11522
 msgid "command expected"
-msgstr ""
+msgstr "parancsot vártam"
 
 #: org/jmol/viewer/Compiler.java:2548
 msgid "{ number number number } expected"
-msgstr ""
+msgstr "{ szám szám szám } várva"
 
-#: org/jmol/viewer/Compiler.java:2551 org/jmol/viewer/Eval.java:11531
+#: org/jmol/viewer/Compiler.java:2551
+#: org/jmol/viewer/Eval.java:11531
 msgid "unexpected end of script command"
-msgstr ""
+msgstr "a skriptnek váratlanul lett vége"
 
 #: org/jmol/viewer/Compiler.java:2554
 msgid "end of expression expected"
-msgstr ""
+msgstr "a kifejezés végét vártam"
 
 #: org/jmol/viewer/Compiler.java:2557
 msgid "identifier or residue specification expected"
-msgstr ""
+msgstr "azonosítót vagy csapadék specifikációt vártam"
 
 #: org/jmol/viewer/Compiler.java:2560
 msgid "invalid atom specification"
-msgstr ""
+msgstr "érvénytelen atom specifikáció"
 
 #: org/jmol/viewer/Compiler.java:2563
 msgid "invalid chain specification"
-msgstr ""
+msgstr "érvénytelen lánc specifikáció"
 
 #: org/jmol/viewer/Compiler.java:2566
 #, java-format
 msgid "invalid expression token: {0}"
-msgstr ""
+msgstr "érvénytelen kifejezéselem: {0}"
 
 #: org/jmol/viewer/Compiler.java:2569
 msgid "invalid model specification"
-msgstr ""
+msgstr "érvénytelen modell specifikáció"
 
 #: org/jmol/viewer/Compiler.java:2572
 #, java-format
 msgid "missing END for {0}"
-msgstr ""
+msgstr "hiányzik a {0} végeleme"
 
-#: org/jmol/viewer/Compiler.java:2575 org/jmol/viewer/Eval.java:11595
+#: org/jmol/viewer/Compiler.java:2575
+#: org/jmol/viewer/Eval.java:11595
 msgid "number expected"
-msgstr ""
+msgstr "számot vártam"
 
 #: org/jmol/viewer/Compiler.java:2578
 msgid "number or variable name expected"
-msgstr ""
+msgstr "számot vagy változónevet vártam"
 
 #: org/jmol/viewer/Compiler.java:2581
 msgid "residue specification (ALA, AL?, A*) expected"
-msgstr ""
+msgstr "csapadék specifikációt (ALA, AL?, A*) vártam "
 
 #: org/jmol/viewer/Compiler.java:2584
-#, fuzzy, java-format
+#, java-format
 msgid "{0} expected"
 msgstr "{0} atom kiválasztva"
 
 #: org/jmol/viewer/Compiler.java:2587
-#, fuzzy, java-format
+#, java-format
 msgid "{0} unexpected"
 msgstr "{0} atom kiválasztva"
 
 #: org/jmol/viewer/Compiler.java:2590
 #, java-format
 msgid "unrecognized expression token: {0}"
-msgstr ""
+msgstr "ismeretlen kifejezés elem: {0}"
 
-#: org/jmol/viewer/Compiler.java:2593 org/jmol/viewer/Eval.java:11644
+#: org/jmol/viewer/Compiler.java:2593
+#: org/jmol/viewer/Eval.java:11644
 #, java-format
 msgid "unrecognized {0} parameter"
-msgstr ""
+msgstr "ismeretlen {0} paraméter"
 
 #: org/jmol/viewer/Compiler.java:2596
 #, java-format
 msgid "unrecognized token: {0}"
-msgstr ""
+msgstr "ismeretlen elem: {0}"
 
 #: org/jmol/viewer/Compiler.java:2657
 msgid "script compiler ERROR: "
-msgstr ""
+msgstr "skript fordítási HIBA: "
 
-#: org/jmol/viewer/Eval.java:332 org/jmol/viewer/Eval.java:5226
+#: org/jmol/viewer/Eval.java:332
+#: org/jmol/viewer/Eval.java:5226
 msgid "script ERROR: "
-msgstr ""
+msgstr "skript HIBA: "
 
 #: org/jmol/viewer/Eval.java:3493
 #, java-format
@@ -1625,7 +1605,8 @@ msgstr "{0} kapcsolat törölve"
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} új kötés, {1} módosítva"
 
-#: org/jmol/viewer/Eval.java:5358 org/jmol/viewer/Eval.java:5585
+#: org/jmol/viewer/Eval.java:5358
+#: org/jmol/viewer/Eval.java:5585
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} atom tötölve"
@@ -1637,7 +1618,7 @@ msgstr "{0} hidrogénkötés"
 
 #: org/jmol/viewer/Eval.java:11492
 msgid "x y z axis expected"
-msgstr ""
+msgstr "x y z tengelyeket vártam"
 
 #: org/jmol/viewer/Eval.java:11495
 #, java-format
@@ -1663,35 +1644,35 @@ msgstr "logikai adatot vagy számot vártam"
 #: org/jmol/viewer/Eval.java:11513
 #, java-format
 msgid "boolean, number, or {0} expected"
-msgstr ""
+msgstr "logikai értéket, számot vagy {0}-t vártam"
 
 #: org/jmol/viewer/Eval.java:11516
 msgid "color expected"
-msgstr ""
+msgstr "színt vártam"
 
 #: org/jmol/viewer/Eval.java:11519
 msgid "a color or palette name (Jmol, Rasmol) is required"
-msgstr ""
+msgstr "egy szín vagy paletta név (Jmol, Rasmol) szükséges"
 
 #: org/jmol/viewer/Eval.java:11525
 msgid "{x y z} or $name or (atom expression) required"
-msgstr ""
+msgstr "{x y z} vagy $name vagy (atom kifejezés) szükséges"
 
 #: org/jmol/viewer/Eval.java:11528
 msgid "draw object not defined"
-msgstr ""
+msgstr "rajzobjektum nincs definiálva"
 
 #: org/jmol/viewer/Eval.java:11534
 msgid "valid (atom expression) expected"
-msgstr ""
+msgstr "érvényes (atom kifejezést) vártam"
 
 #: org/jmol/viewer/Eval.java:11537
 msgid "(atom expression) or integer expected"
-msgstr ""
+msgstr "(atom kifejezést) vagy egészt vártam"
 
 #: org/jmol/viewer/Eval.java:11540
 msgid "filename expected"
-msgstr ""
+msgstr "fájnevet vártam"
 
 #: org/jmol/viewer/Eval.java:11543
 msgid "file not found"
@@ -1699,32 +1680,32 @@ msgstr "A fájl nem található"
 
 #: org/jmol/viewer/Eval.java:11546
 msgid "incompatible arguments"
-msgstr ""
+msgstr "összeférhetetlen argumentumok"
 
 #: org/jmol/viewer/Eval.java:11549
 msgid "insufficient arguments"
-msgstr ""
+msgstr "elégtelen argumentum"
 
 #: org/jmol/viewer/Eval.java:11552
 msgid "integer expected"
-msgstr ""
+msgstr "egészt vártam"
 
 #: org/jmol/viewer/Eval.java:11555
 #, java-format
 msgid "integer out of range ({0} - {1})"
-msgstr ""
+msgstr "az egésznek a {0}-{1} tartományba kell esni"
 
 #: org/jmol/viewer/Eval.java:11558
 msgid "invalid argument"
-msgstr ""
+msgstr "érvénytelen argumentum"
 
 #: org/jmol/viewer/Eval.java:11561
 msgid "invalid parameter order"
-msgstr ""
+msgstr "érvéntelen paramétersorrend"
 
 #: org/jmol/viewer/Eval.java:11564
 msgid "keyword expected"
-msgstr ""
+msgstr "kulcszót vártam"
 
 #: org/jmol/viewer/Eval.java:11567
 msgid "no MO coefficient data available"
@@ -1757,10 +1738,8 @@ msgid "No data available"
 msgstr "Nincs adat"
 
 #: org/jmol/viewer/Eval.java:11589
-msgid ""
-"No partial charges were read from the file; Jmol needs these to render the "
-"MEP data."
-msgstr ""
+msgid "No partial charges were read from the file; Jmol needs these to render the MEP data."
+msgstr "Nem lett részleges töltés kiolvasva a fájlból; a Jmol-nak ezekre szükségevan a MEP adatok rendereléséhez."
 
 #: org/jmol/viewer/Eval.java:11592
 msgid "No unit cell"
@@ -1778,18 +1757,16 @@ msgstr "A számnak {0} - {1} közé kell esni"
 
 #: org/jmol/viewer/Eval.java:11604
 msgid "object name expected after '$'"
-msgstr ""
+msgstr "objektumnév kell legyen a '$' után"
 
 #: org/jmol/viewer/Eval.java:11608
 #, java-format
-msgid ""
-"plane expected -- either three points or atom expressions or {0} or {1} or "
-"{2}"
-msgstr ""
+msgid "plane expected -- either three points or atom expressions or {0} or {1} or {2}"
+msgstr "síkot vártam -- vagy három pontot, vagy atom kifejezést vagy {0} vagy {1} vagy {2}"
 
 #: org/jmol/viewer/Eval.java:11611
 msgid "property name expected"
-msgstr ""
+msgstr "tulajdonságnevet vártam"
 
 #: org/jmol/viewer/Eval.java:11614
 #, java-format
@@ -1798,11 +1775,11 @@ msgstr "A {0} tércsoport nem található"
 
 #: org/jmol/viewer/Eval.java:11617
 msgid "quoted string expected"
-msgstr ""
+msgstr "idézőjeles stringet vártam"
 
 #: org/jmol/viewer/Eval.java:11620
 msgid "quoted string or identifier expected"
-msgstr ""
+msgstr "idézőjeles stringet vagy azonosítót vártam"
 
 #: org/jmol/viewer/Eval.java:11623
 msgid "too many rotation points were specified"
@@ -1810,7 +1787,7 @@ msgstr "ez túl sok forgáspont"
 
 #: org/jmol/viewer/Eval.java:11626
 msgid "too many script levels"
-msgstr ""
+msgstr "túl kevés parancsfájl szint"
 
 #: org/jmol/viewer/Eval.java:11629
 msgid "unrecognized atom property"
@@ -1826,21 +1803,21 @@ msgstr "ismeretlen parancs"
 
 #: org/jmol/viewer/Eval.java:11638
 msgid "runtime unrecognized expression"
-msgstr ""
+msgstr "futási időben értelmezhetetlen kifejezés"
 
 #: org/jmol/viewer/Eval.java:11641
 msgid "unrecognized object"
-msgstr ""
+msgstr "ismeretlen objektum"
 
 #: org/jmol/viewer/Eval.java:11648
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr ""
+msgstr "ismeretlen {0} paraméter a Jmol állapot parancsfájlban (mindenképp beállítva)"
 
 #: org/jmol/viewer/Eval.java:11651
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
-msgstr ""
+msgstr "ismeretlen SHOW paraméter, használja ezt: {0}"
 
 #: org/jmol/viewer/Eval.java:11657
 #, java-format
@@ -1869,210 +1846,147 @@ msgstr "{0} atom kiválasztva"
 #: org/jmol/viewer/Viewer.java:4769
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
-msgstr ""
+msgstr "HIBA: a logikai jelzőt nem lehet {0} string értékre állítani"
 
-#: org/jmol/viewer/Viewer.java:4964 org/jmol/viewer/Viewer.java:5140
+#: org/jmol/viewer/Viewer.java:4964
+#: org/jmol/viewer/Viewer.java:5140
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-msgstr ""
+msgstr "HIBA: a logikai jelzőt nem lehet {0} számértékre állítani"
 
 #: org/jmol/viewer/Viewer.java:5626
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
-msgstr ""
+msgstr "HIBA: ezt a változót nem lehet logikai értékre állítani: {0}"
 
 #: org/jmol/viewer/Viewer.java:6913
 msgid "clipboard is not accessible -- use signed applet"
-msgstr ""
+msgstr "a vágólap nem érhető el, használjon aláírt Java kisalkalmazást"
 
 #~ msgid "Portuguese - Brazil"
 #~ msgstr "Brazil - portugál"
-
-#, fuzzy
 #~ msgid "Load PDB"
-#~ msgstr "Betöltés"
-
-#, fuzzy
+#~ msgstr "PDB betöltés"
 #~ msgid "SPT State"
-#~ msgstr "Státus"
-
-#, fuzzy
+#~ msgstr "SPT Státus"
 #~ msgid "SPT History"
-#~ msgstr "Előzmények"
-
+#~ msgstr "SPT Előzmények"
 #~ msgid "all"
 #~ msgstr "Mind"
-
 #~ msgid "Structure"
 #~ msgstr "Struktúra"
-
 #~ msgid "Surface"
 #~ msgstr "Felület"
-
 #~ msgid "Unitcell"
 #~ msgstr "Egységcella"
-
 #~ msgid "Measure"
 #~ msgstr "Méretezések"
-
 #~ msgid "Bound Box"
 #~ msgstr "Befoglaló doboz"
-
 #~ msgid "Unit Cell"
 #~ msgstr "Egységcella"
-
 #~ msgid "rotation points cannot be identical"
 #~ msgstr "a forgáspontok nem lehetnek azonosak"
-
 #~ msgid "Calculate what?"
 #~ msgstr "Mit számoljak ki?"
-
 #~ msgid "invalid {0} control keyword"
 #~ msgstr "Hibás {0} kulcsszó"
-
 #~ msgid "save what?"
 #~ msgstr "Mit mentsek?"
-
 #~ msgid "restore what?"
 #~ msgstr "Mit állítsak vissza?"
-
 #~ msgid "Select"
 #~ msgstr "Kiválasztás"
-
 #~ msgid "Compatibility"
 #~ msgstr "Kompatibilitás"
-
 #~ msgid "RasMol/Chime Settings"
 #~ msgstr "RasMol/Chime beállítások"
-
 #~ msgid "Axes RasMol/Chime"
 #~ msgstr "RasMol/Chime tengelyek"
-
 #~ msgid "The {0} command is not available for the applet."
 #~ msgstr "A {0} panacs ebben a kisalkalmazásban nem érhető el."
-
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Jmol parancsfájlt hajt végre"
-
-#, fuzzy
 #~ msgid "use {0}"
 #~ msgstr "használd: {0}"
-
 #~ msgid "Animate"
 #~ msgstr "Animálás"
-
 #~ msgid "Set Select Mode"
 #~ msgstr "Kiválasztási mód"
-
 #~ msgid "Replace Selection"
 #~ msgstr "Kiválasztás lecserélése"
-
 #~ msgid "Add to Selection (OR)"
 #~ msgstr "Kiválasztáhzoz hozzávesz (VAGY)"
-
 #~ msgid "Narrow Selection (AND)"
 #~ msgstr "Kiválasztásból elvesz (ÉS)"
-
 #~ msgid "Render"
 #~ msgstr "Renderelés"
-
 #~ msgid "Crimson"
 #~ msgstr "Bíbor"
-
 #~ msgid "Dark Red"
 #~ msgstr "Sötétvörös"
-
 #~ msgid "Firebrick"
 #~ msgstr "Téglavörös"
-
 #~ msgid "Indian Red"
 #~ msgstr "Indiánvörös"
-
 #~ msgid "Light Pink"
 #~ msgstr "Világos pink"
-
 #~ msgid "Goldenrod"
 #~ msgstr "Barsnássárga"
-
 #~ msgid "Yellow-Green"
 #~ msgstr "Sárgászöld"
-
 #~ msgid "Seagreen"
 #~ msgstr "Tengerzöld"
-
 #~ msgid "Green-Blue"
 #~ msgstr "Zöldeskék"
-
 #~ msgid "Spring Green"
 #~ msgstr "Tavasz zöld"
-
 #~ msgid "Aqua"
 #~ msgstr "Óceánkék"
-
 #~ msgid "Azure"
 #~ msgstr "Azúrkék"
-
 #~ msgid "Cornflower"
 #~ msgstr "Kukoricavirágsárga"
-
 #~ msgid "Dark Slate Blue"
 #~ msgstr "Sötét angolkék"
-
 #~ msgid "Light Steel Blue"
 #~ msgstr "Acékék"
-
 #~ msgid "Charge"
 #~ msgstr "Töltés"
-
 #~ msgid "Crystal"
 #~ msgstr "Kristály"
-
 #~ msgid "Aquamarine"
 #~ msgstr "Aquamarin"
-
 #~ msgid "Forest Green"
 #~ msgstr "Erdőzöld"
-
 #~ msgid "Options"
 #~ msgstr "Beállítások"
-
 #~ msgid "Jmol Colors"
 #~ msgstr "Jmol szinek"
-
-#, fuzzy
 #~ msgid "or dotted"
 #~ msgstr "vagy pontozott"
-
 #~ msgid "Except Solvent"
 #~ msgstr "Oldószeren kívül"
-
 #~ msgid "Except Water"
 #~ msgstr "Vizen kívül"
-
 #~ msgid "Other"
 #~ msgstr "Más"
-
 #~ msgid "Lipid"
 #~ msgstr "Lipid"
-
 #~ msgid "Nanometers"
 #~ msgstr "Nanomméter"
-
 #~ msgid "Angstroms"
 #~ msgstr "Ångström"
-
 #~ msgid "Picometers"
 #~ msgstr "Picométer"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rács forgatása"
-
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
 #~ "for more information"
 #~ msgstr ""
 #~ "Jmol-kisalkalmazás - Része a OpenScience-Projektnek. További információk:"
 #~ "http://www.jmol.org."
-
 #~ msgid "Jmol Molecular Visualization http://www.jmol.org"
 #~ msgstr "Jmol molekula-vizualizáció, http://www.jmol.org"
+

@@ -51,6 +51,18 @@ abstract public class Polymer {
 
   protected int[] leadAtomIndices;
 
+  protected int type;
+  
+  protected final static int TYPE_OTHER = 0; // could be phosphorus or alpha
+  protected final static int TYPE_AMINO = 1;
+  protected final static int TYPE_NUCLEIC = 2;
+  protected final static int TYPE_CARBOHYDRATE = 3;
+  
+
+  public int getType() {
+    return type;
+  }
+  
   protected Polymer() {
   }
 
@@ -85,9 +97,10 @@ abstract public class Polymer {
   public void setConformation(BitSet bsConformation, int nAltLocs) {
   }
 
-  public void calcHydrogenBonds(BitSet bsA, BitSet bsB) {
+  public void calcHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB) {
+    // subclasses should override if they know how to calculate hbonds
   }
-
+  
   public void calcSelectedMonomersCount(BitSet bsSelected) {
   }
 

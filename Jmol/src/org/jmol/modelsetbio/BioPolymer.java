@@ -54,9 +54,6 @@ public abstract class BioPolymer extends Polymer {
   }
 
   protected Model model;
-  public Model getModel() {
-    return model;
-  }
     
   BioPolymer(Monomer[] monomers) {
     this.monomers = monomers;
@@ -177,17 +174,6 @@ public abstract class BioPolymer extends Polymer {
   
   final Point3f getPointPoint(int polymerIndex) {
     return monomers[polymerIndex].getPointAtomPoint();
-  }
-  
-  public void addSecondaryStructure(byte type,
-                             char startChainID, int startSeqcode,
-                             char endChainID, int endSeqcode) {
-  }
-
-  public void calculateStructures() { }
-
-  public void calcHydrogenBonds(BitSet bsA, BitSet bsB) {
-    // subclasses should override if they know how to calculate hbonds
   }
   
   public void setConformation(BitSet bsSelected, int nAltLocsInModel) {
@@ -794,14 +780,12 @@ public abstract class BioPolymer extends Polymer {
   
   private static float getStraightness(String id, Quaternion dqprev, Quaternion dq) {
     // 
-    // Bob Hanson's earlier definition, with added absolute value
-    //
-    // straightness = 1 - acos(|n1.n2|)/(PI/2)
+    // Dan Kohler's quaternion straightness = 1 - acos(|dq1.dq2|)/(PI/2)
     //
     // alignment = near 0 or near 180 --> same - just different rotations. 
     // It's a 90-degree change in direction that corresponds to 0.
     //
-    return (float) (1 - 2 * Math.acos(Math.abs(dqprev.getNormal().dot(dq.getNormal()))) / Math.PI);
+    return (float) (1 - 2 * Math.acos(Math.abs(dqprev.dot(dq))) / Math.PI);
   }
 
   private static float getQuaternionStraightness(String id, Quaternion dqprev, Quaternion dq) {

@@ -264,8 +264,17 @@ public final class Model {
   }
 
   void calcHydrogenBonds(BitSet bsA, BitSet bsB) {
-    for (int i = bioPolymerCount; --i >= 0; )
-      bioPolymers[i].calcHydrogenBonds(bsA, bsB);
+    for (int i = bioPolymerCount; --i >= 0;) {
+      int type = bioPolymers[i].getType();
+      if (type != Polymer.TYPE_AMINO && type != Polymer.TYPE_NUCLEIC)
+        continue;
+      if (type == Polymer.TYPE_AMINO)
+        bioPolymers[i].calcHydrogenBonds(null, bsA, bsB);
+      for (int j = bioPolymerCount; --j >= 0;)
+        if (i != j && bioPolymers[i] != null
+            && type == bioPolymers[j].getType())
+          bioPolymers[j].calcHydrogenBonds(bioPolymers[i], bsA, bsB);
+    }
   }
   
   public boolean isAtomHidden(int index) {

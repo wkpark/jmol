@@ -26,12 +26,14 @@ package org.jmol.modelsetbio;
 import java.util.BitSet;
 
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.Polymer;
 import org.jmol.viewer.JmolConstants;
 
 public class NucleicPolymer extends BioPolymer {
 
   NucleicPolymer(Monomer[] monomers) {
     super(monomers);
+    type = TYPE_NUCLEIC;
   }
 
   Atom getNucleicPhosphorusAtom(int monomerIndex) {
@@ -40,15 +42,8 @@ public class NucleicPolymer extends BioPolymer {
 
   boolean hasWingPoints() { return true; }
 
-  public void calcHydrogenBonds(BitSet bsA, BitSet bsB) {
-    for (int i = model.getBioPolymerCount(); --i >= 0; ) {
-      BioPolymer otherPolymer = (BioPolymer) model.getBioPolymer(i);
-      if (otherPolymer == this) // don't look at self
-        continue;
-      if (otherPolymer == null || !(otherPolymer instanceof NucleicPolymer))
-        continue;
-      lookForHbonds((NucleicPolymer)otherPolymer, bsA, bsB);
-    }
+  public void calcHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB) {
+    lookForHbonds((NucleicPolymer)polymer, bsA, bsB);
   }
 
   private final static short HBOND_MASK = JmolConstants.BOND_H_NUCLEOTIDE;

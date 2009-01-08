@@ -4355,7 +4355,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void notifyMinimizationStatus() {
     statusManager.notifyMinimizationStatus(
         (String) getParameter("_minimizationStatus"),
-        (Integer) getParameter("_minimizationSteps"),
+        (Integer) getParameter("_minimizationStep"),
         (Float) getParameter("_minimizationEnergy"),
         (Float) getParameter("_minimizationEnergyDiff"));
   }

@@ -681,8 +681,10 @@ Token[keyword(0x880001) value=")"]
       return;
     viewer.setIntProperty("_minimizationStep", 0);
     viewer.setStringProperty("_minimizationStatus", "starting");
+    viewer.setFloatProperty("_minimizationEnergy", 0);
+    viewer.setFloatProperty("_minimizationEnergyDiff", 0);
     viewer.notifyMinimizationStatus();
-    viewer.saveCoordinates(null, bsTaint);
+    viewer.saveCoordinates("minimize", bsTaint);
     pFF.steepestDescentInitialize(steps, crit);
     viewer.setFloatProperty("_minimizationEnergy", (float) pFF.getEnergy());
     viewer.setFloatProperty("_minimizationEnergyDiff", (float) pFF.getEnergyDiff());

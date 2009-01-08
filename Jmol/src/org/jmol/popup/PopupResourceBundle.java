@@ -1049,9 +1049,9 @@ class PopupResourceBundle {
   private void localize(boolean haveUserMenu, Properties menuText) {
     String[] wordContents = getWordContents();
     for (int i = 0; i < wordContents.length;)      
-      if (haveUserMenu && words.getProperty(wordContents[i]) != null) {
+      /*if (haveUserMenu && words.getProperty(wordContents[i]) != null) {
         i += 2;
-      } else {
+      } else*/ {
         String item = wordContents[i++];
         String word = wordContents[i++];
         words.setProperty(item, word);

@@ -336,8 +336,8 @@ public class _PovrayExporter extends _Exporter {
           "\n; Jmol state: " + fileName + ".spt" 
         + "\nInput_File_Name=" + fileName 
         + "\nOutput_to_File=true"
-        + "\nOutput_File_Type=%FILETYPE%"
-        + "\nOutput_File_Name=%OUTPUTFILENAME%" 
+        + "\nOutput_File_Type=N"
+        + "\nOutput_File_Name=" + fileName + ".png" 
         + "\nWidth=" + screenWidth 
         + "\nHeight=" + screenHeight
         + "\nAntialias=true"

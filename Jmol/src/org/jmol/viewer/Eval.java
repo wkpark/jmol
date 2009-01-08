@@ -9207,11 +9207,11 @@ class Eval {
       if (data == null)
         return "";
       if (isPovRay) {
-        data = TextFormat.simpleReplace(data, "%FILETYPE%", "N");
-        data = TextFormat.simpleReplace(data, "%OUTPUTFILENAME%", fileName
-            + ".png");
         if (!isCommand)
           return data;
+        fileName = data.substring(data.indexOf("File created: ") + 14);
+        fileName = fileName.substring(0, fileName.indexOf("\n"));
+        fileName = fileName.substring(0, fileName.lastIndexOf(" ("));
         String msg = viewer.createImage(fileName + ".ini", "ini", data,
             Integer.MIN_VALUE, 0, 0, null);
         if (msg != null) {

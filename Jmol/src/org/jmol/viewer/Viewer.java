@@ -6963,8 +6963,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (fileName == null) {
         err = clipImage((String) text_or_bytes);
       } else {
+        boolean useDialog = (fileName.indexOf("?") == 0); 
+        if (useDialog)
+          fileName = fileName.substring(1);
         fileName = FileManager.setLocalPathForWritingFile(this, fileName);
-        err = statusManager.createImage(fileName, type, text_or_bytes, quality);
+        err = statusManager.createImage(
+            (useDialog ? "?" : "") + fileName, 
+            type, text_or_bytes, quality);
       }
       // err may be null if user cancels operation involving dialog and "?" 
     } catch (Throwable er) {

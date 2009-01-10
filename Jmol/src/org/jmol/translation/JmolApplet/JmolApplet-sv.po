@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-12-09 20:54+0100\n"
-"PO-Revision-Date: 2008-09-23 22:36+0000\n"
+"POT-Creation-Date: 2009-01-10 22:00+0100\n"
+"PO-Revision-Date: 2009-01-01 17:37+0000\n"
 "Last-Translator: nanker <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-09-24 00:08+0000\n"
+"X-Launchpad-Export-Date: 2009-01-10 15:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/Console.java:74
@@ -248,11 +248,11 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:447
 msgid "New Folder"
-msgstr ""
+msgstr "Ny mapp"
 
 #: org/jmol/export/dialog/Dialog.java:449
 msgid "Create New Folder"
-msgstr ""
+msgstr "Skapa ny mapp"
 
 #: org/jmol/export/dialog/Dialog.java:452
 msgid "Open selected file"
@@ -262,7 +262,7 @@ msgstr ""
 #: org/jmol/export/dialog/Dialog.java:457
 #: org/jmol/popup/PopupResourceBundle.java:878
 msgid "Save"
-msgstr ""
+msgstr "Spara"
 
 #: org/jmol/export/dialog/Dialog.java:456
 msgid "Save selected file"
@@ -274,7 +274,7 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:459
 msgid "Update"
-msgstr ""
+msgstr "Uppdatera"
 
 #: org/jmol/export/dialog/Dialog.java:461
 msgid "Update directory listing"
@@ -282,7 +282,7 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:462
 msgid "Up"
-msgstr ""
+msgstr "Upp"
 
 #: org/jmol/export/dialog/Dialog.java:463
 msgid "Up One Level"
@@ -290,11 +290,11 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:468
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: org/jmol/export/dialog/FilePreview.java:71
 msgid "Preview"
-msgstr ""
+msgstr "Förhandsvisa"
 
 #: org/jmol/export/dialog/FilePreview.java:91
 msgid "Append models"
@@ -302,91 +302,91 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:118
 msgid "Catalan"
-msgstr ""
+msgstr "Katalanska"
 
 #: org/jmol/i18n/GT.java:119
 msgid "Czech"
-msgstr ""
+msgstr "Tjeckiska"
 
 #: org/jmol/i18n/GT.java:120
 msgid "Danish"
-msgstr ""
+msgstr "Danska"
 
 #: org/jmol/i18n/GT.java:121
 msgid "Dutch"
-msgstr ""
+msgstr "Holländska"
 
 #: org/jmol/i18n/GT.java:122
 msgid "British English"
-msgstr ""
+msgstr "Brittisk engelska"
 
 #: org/jmol/i18n/GT.java:123
 msgid "American English"
-msgstr ""
+msgstr "Amerikansk engelska"
 
 #: org/jmol/i18n/GT.java:124
 msgid "Estonian"
-msgstr ""
+msgstr "Estniska"
 
 #: org/jmol/i18n/GT.java:125
 msgid "French"
-msgstr ""
+msgstr "Franska"
 
 #: org/jmol/i18n/GT.java:126
 msgid "German"
-msgstr ""
+msgstr "Tyska"
 
 #: org/jmol/i18n/GT.java:127
 msgid "Greek"
-msgstr ""
+msgstr "Grekisk"
 
 #: org/jmol/i18n/GT.java:128
 msgid "Hungarian"
-msgstr ""
+msgstr "Ungerska"
 
 #: org/jmol/i18n/GT.java:129
 msgid "Italian"
-msgstr ""
+msgstr "Italienska"
 
 #: org/jmol/i18n/GT.java:130
 msgid "Korean"
-msgstr ""
+msgstr "Koreansk"
 
 #: org/jmol/i18n/GT.java:131
 msgid "Norwegian Bokmal"
-msgstr ""
+msgstr "Norska (Bokmål)"
 
 #: org/jmol/i18n/GT.java:132
 msgid "Polish"
-msgstr ""
+msgstr "Polska"
 
 #: org/jmol/i18n/GT.java:133
 msgid "Brazilian Portuguese"
-msgstr ""
+msgstr "Brasiliansk portugisiska"
 
 #: org/jmol/i18n/GT.java:134
 msgid "Portuguese"
-msgstr ""
+msgstr "Portugisiska"
 
 #: org/jmol/i18n/GT.java:135
 msgid "Russian"
-msgstr ""
+msgstr "Ryska"
 
 #: org/jmol/i18n/GT.java:136
 msgid "Slovenian"
-msgstr ""
+msgstr "Slovenska"
 
 #: org/jmol/i18n/GT.java:137
 msgid "Spanish"
-msgstr ""
+msgstr "Spanska"
 
 #: org/jmol/i18n/GT.java:138
 msgid "Swedish"
-msgstr ""
+msgstr "Svenska"
 
 #: org/jmol/i18n/GT.java:139
 msgid "Turkish"
-msgstr ""
+msgstr "Turkiska"
 
 #: org/jmol/minimize/Minimizer.java:186
 #, java-format
@@ -413,11 +413,11 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:604
 #: org/jmol/popup/PopupResourceBundle.java:621
 msgid "All"
-msgstr ""
+msgstr "Alla"
 
 #: org/jmol/popup/JmolPopup.java:557
 msgid "Minimize"
-msgstr ""
+msgstr "Minimera"
 
 #: org/jmol/popup/JmolPopup.java:641
 msgid "Java memory usage"
@@ -1418,9 +1418,13 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:906
 #: org/jmol/popup/PopupResourceBundle.java:907
-#: org/jmol/popup/PopupResourceBundle.java:908
 #, java-format
 msgid "Reload {0}"
+msgstr ""
+
+#: org/jmol/popup/PopupResourceBundle.java:908
+#, java-format
+msgid "Reload {0} + Display {1}"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:909
@@ -1718,7 +1722,7 @@ msgstr ""
 
 #: org/jmol/viewer/Eval.java:11585
 msgid "No data available"
-msgstr ""
+msgstr "Inga data tillgängliga"
 
 #: org/jmol/viewer/Eval.java:11589
 msgid ""
@@ -1830,21 +1834,21 @@ msgstr ""
 msgid "{0} atoms selected"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4769
+#: org/jmol/viewer/Viewer.java:4758
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4964 org/jmol/viewer/Viewer.java:5140
+#: org/jmol/viewer/Viewer.java:4953 org/jmol/viewer/Viewer.java:5129
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:5626
+#: org/jmol/viewer/Viewer.java:5615
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:6913
+#: org/jmol/viewer/Viewer.java:6855
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""

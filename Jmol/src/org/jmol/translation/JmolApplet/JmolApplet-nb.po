@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-12-09 20:54+0100\n"
-"PO-Revision-Date: 2008-08-11 12:53+0000\n"
+"POT-Creation-Date: 2009-01-10 22:00+0100\n"
+"PO-Revision-Date: 2009-01-03 18:08+0000\n"
 "Last-Translator: Anders Oftedal <anders.oftedal@gmail.com>\n"
 "Language-Team: Norwegian Bokmal <nb@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-08-12 00:40+0000\n"
+"X-Launchpad-Export-Date: 2009-01-10 15:44+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/Console.java:74
@@ -35,7 +35,7 @@ msgstr ""
 
 #: org/jmol/applet/Console.java:79 org/jmol/popup/PopupResourceBundle.java:862
 msgid "History"
-msgstr "Historie"
+msgstr "Historikk"
 
 #: org/jmol/applet/Console.java:80
 msgid "State"
@@ -52,15 +52,15 @@ msgstr ""
 
 #: org/jmol/applet/GuiMap.java:41
 msgid "&Help"
-msgstr ""
+msgstr "&Hjelp"
 
 #: org/jmol/applet/GuiMap.java:42
 msgid "&Search..."
-msgstr ""
+msgstr "&Søk..."
 
 #: org/jmol/applet/GuiMap.java:43
 msgid "&Commands"
-msgstr ""
+msgstr "&Kommandoer"
 
 #: org/jmol/applet/GuiMap.java:44
 msgid "Math &Functions"
@@ -72,7 +72,7 @@ msgstr ""
 
 #: org/jmol/applet/GuiMap.java:46
 msgid "&More"
-msgstr ""
+msgstr "&Mer"
 
 #: org/jmol/applet/Jmol.java:666
 #, java-format
@@ -115,19 +115,18 @@ msgid "  {0} seconds"
 msgstr "  {0} sekunder"
 
 #: org/jmol/export/dialog/Dialog.java:89
-#, fuzzy
 msgid "File or URL:"
-msgstr "Fil feil:"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:254
 msgid "Image Type"
-msgstr ""
+msgstr "Bildetype:"
 
 #: org/jmol/export/dialog/Dialog.java:269
 #: org/jmol/export/dialog/Dialog.java:310
 #, java-format
 msgid "JPEG Quality ({0})"
-msgstr ""
+msgstr "JPEG Kvalitet ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:283
 #, java-format
@@ -137,36 +136,35 @@ msgstr ""
 #: org/jmol/export/dialog/Dialog.java:313
 #, java-format
 msgid "PNG Quality ({0})"
-msgstr ""
+msgstr "PNG Kvalitet ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:359
 #: org/jmol/export/dialog/Dialog.java:469
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 #: org/jmol/export/dialog/Dialog.java:359
 #: org/jmol/export/dialog/Dialog.java:467
-#, fuzzy
 msgid "No"
-msgstr "Ingen"
+msgstr "Nei"
 
 #: org/jmol/export/dialog/Dialog.java:361
 #, java-format
 msgid "Do you want to overwrite file {0}?"
-msgstr ""
+msgstr "Vil du overskrive filen ({0})?"
 
 #: org/jmol/export/dialog/Dialog.java:362
 msgid "Warning"
-msgstr ""
+msgstr "Advarsel"
 
 #: org/jmol/export/dialog/Dialog.java:418
 msgid "All Files"
-msgstr ""
+msgstr "Alle filer"
 
 #: org/jmol/export/dialog/Dialog.java:419
 #: org/jmol/export/dialog/Dialog.java:466
 msgid "Cancel"
-msgstr ""
+msgstr "Avbryt"
 
 #: org/jmol/export/dialog/Dialog.java:421
 msgid "Abort file chooser dialog"
@@ -174,24 +172,22 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:423
 #: org/jmol/export/dialog/Dialog.java:424
-#, fuzzy
 msgid "Details"
-msgstr "Dansk"
+msgstr "Detaljer"
 
 #: org/jmol/export/dialog/Dialog.java:425
-#, fuzzy
 msgid "Directory"
-msgstr "Historie"
+msgstr "Mappe"
 
 #: org/jmol/export/dialog/Dialog.java:426
 #: org/jmol/export/dialog/Dialog.java:450
 #: org/jmol/export/dialog/Dialog.java:453
 msgid "Open"
-msgstr ""
+msgstr "Åpne"
 
 #: org/jmol/export/dialog/Dialog.java:428
 msgid "Open selected directory"
-msgstr ""
+msgstr "Åpne valgt mappe"
 
 #: org/jmol/export/dialog/Dialog.java:429
 msgid "Attributes"
@@ -199,7 +195,7 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:430
 msgid "Modified"
-msgstr ""
+msgstr "Endret"
 
 #: org/jmol/export/dialog/Dialog.java:431
 msgid "Generic File"
@@ -207,27 +203,27 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:432
 msgid "Name"
-msgstr ""
+msgstr "Navn"
 
 #: org/jmol/export/dialog/Dialog.java:433
 msgid "File Name:"
-msgstr ""
+msgstr "Filnavn:"
 
 #: org/jmol/export/dialog/Dialog.java:434
 msgid "Size"
-msgstr ""
+msgstr "Størrelse"
 
 #: org/jmol/export/dialog/Dialog.java:435
 msgid "Files of Type:"
-msgstr ""
+msgstr "Filer av typen:"
 
 #: org/jmol/export/dialog/Dialog.java:436
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: org/jmol/export/dialog/Dialog.java:437
 msgid "Help"
-msgstr ""
+msgstr "Hjelp"
 
 #: org/jmol/export/dialog/Dialog.java:439
 msgid "FileChooser help"
@@ -241,45 +237,45 @@ msgstr ""
 #: org/jmol/export/dialog/Dialog.java:442
 #: org/jmol/export/dialog/Dialog.java:443
 msgid "List"
-msgstr ""
+msgstr "Liste"
 
 #: org/jmol/export/dialog/Dialog.java:444
 msgid "Look In:"
-msgstr ""
+msgstr "Se i:"
 
 #: org/jmol/export/dialog/Dialog.java:446
 msgid "Error creating new folder"
-msgstr ""
+msgstr "Klarte ikke å opprette ny mappe"
 
 #: org/jmol/export/dialog/Dialog.java:447
 msgid "New Folder"
-msgstr ""
+msgstr "Ny mappe"
 
 #: org/jmol/export/dialog/Dialog.java:449
 msgid "Create New Folder"
-msgstr ""
+msgstr "Opprett ny mappe"
 
 #: org/jmol/export/dialog/Dialog.java:452
 msgid "Open selected file"
-msgstr ""
+msgstr "Åpne valgt fil"
 
 #: org/jmol/export/dialog/Dialog.java:454
 #: org/jmol/export/dialog/Dialog.java:457
 #: org/jmol/popup/PopupResourceBundle.java:878
 msgid "Save"
-msgstr ""
+msgstr "Lagre"
 
 #: org/jmol/export/dialog/Dialog.java:456
 msgid "Save selected file"
-msgstr ""
+msgstr "Lagre valgt fil"
 
 #: org/jmol/export/dialog/Dialog.java:458
 msgid "Save In:"
-msgstr ""
+msgstr "Lagre i:"
 
 #: org/jmol/export/dialog/Dialog.java:459
 msgid "Update"
-msgstr ""
+msgstr "Oppdater"
 
 #: org/jmol/export/dialog/Dialog.java:461
 msgid "Update directory listing"
@@ -287,19 +283,19 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:462
 msgid "Up"
-msgstr ""
+msgstr "Opp"
 
 #: org/jmol/export/dialog/Dialog.java:463
 msgid "Up One Level"
-msgstr ""
+msgstr "Opp et nivå"
 
 #: org/jmol/export/dialog/Dialog.java:468
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: org/jmol/export/dialog/FilePreview.java:71
 msgid "Preview"
-msgstr ""
+msgstr "Forhåndsvisning"
 
 #: org/jmol/export/dialog/FilePreview.java:91
 msgid "Append models"
@@ -322,14 +318,12 @@ msgid "Dutch"
 msgstr "Nederlandsk"
 
 #: org/jmol/i18n/GT.java:122
-#, fuzzy
 msgid "British English"
-msgstr "Engelsk"
+msgstr "Engelsk (Storbritannia)"
 
 #: org/jmol/i18n/GT.java:123
-#, fuzzy
 msgid "American English"
-msgstr "Engelsk"
+msgstr "Engelsk (Amerikansk)"
 
 #: org/jmol/i18n/GT.java:124
 msgid "Estonian"
@@ -345,7 +339,7 @@ msgstr "Tysk"
 
 #: org/jmol/i18n/GT.java:127
 msgid "Greek"
-msgstr ""
+msgstr "Gresk"
 
 #: org/jmol/i18n/GT.java:128
 msgid "Hungarian"
@@ -361,16 +355,15 @@ msgstr "Koreansk"
 
 #: org/jmol/i18n/GT.java:131
 msgid "Norwegian Bokmal"
-msgstr ""
+msgstr "Norsk Bokmål"
 
 #: org/jmol/i18n/GT.java:132
 msgid "Polish"
 msgstr "Polsk"
 
 #: org/jmol/i18n/GT.java:133
-#, fuzzy
 msgid "Brazilian Portuguese"
-msgstr "Portugisisk"
+msgstr "Brasiliansk Portugisisk"
 
 #: org/jmol/i18n/GT.java:134
 msgid "Portuguese"
@@ -382,7 +375,7 @@ msgstr "Russisk"
 
 #: org/jmol/i18n/GT.java:136
 msgid "Slovenian"
-msgstr ""
+msgstr "Slovensk"
 
 #: org/jmol/i18n/GT.java:137
 msgid "Spanish"
@@ -425,7 +418,7 @@ msgstr "Alle"
 
 #: org/jmol/popup/JmolPopup.java:557
 msgid "Minimize"
-msgstr ""
+msgstr "Minimer"
 
 #: org/jmol/popup/JmolPopup.java:641
 msgid "Java memory usage"
@@ -1353,9 +1346,8 @@ msgid "File from PDB"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:874
-#, fuzzy
 msgid "File or URL"
-msgstr "Fil feil:"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:875
 msgid "Load full unit cell"
@@ -1366,9 +1358,9 @@ msgid "Script"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:879
-#, fuzzy, java-format
+#, java-format
 msgid "File {0}"
-msgstr "Vis {0}"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:880
 msgid "Script with state"
@@ -1391,9 +1383,9 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:886
 #: org/jmol/popup/PopupResourceBundle.java:887
-#, fuzzy, java-format
+#, java-format
 msgid "{0} 3D Model"
-msgstr "Alle {0} modeller"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:891
 msgid "Extract MOL data"
@@ -1427,9 +1419,13 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:906
 #: org/jmol/popup/PopupResourceBundle.java:907
-#: org/jmol/popup/PopupResourceBundle.java:908
 #, java-format
 msgid "Reload {0}"
+msgstr ""
+
+#: org/jmol/popup/PopupResourceBundle.java:908
+#, java-format
+msgid "Reload {0} + Display {1}"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:909
@@ -1839,35 +1835,27 @@ msgstr ""
 msgid "{0} atoms selected"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4769
+#: org/jmol/viewer/Viewer.java:4758
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4964 org/jmol/viewer/Viewer.java:5140
+#: org/jmol/viewer/Viewer.java:4953 org/jmol/viewer/Viewer.java:5129
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:5626
+#: org/jmol/viewer/Viewer.java:5615
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:6913
+#: org/jmol/viewer/Viewer.java:6855
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 
 #~ msgid "Portuguese - Brazil"
 #~ msgstr "Portugisisk - Brazil"
-
-#, fuzzy
-#~ msgid "Load PDB"
-#~ msgstr "Last inn"
-
-#, fuzzy
-#~ msgid "SPT History"
-#~ msgstr "Historie"
 
 #~ msgid "all"
 #~ msgstr "alle"

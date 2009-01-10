@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-12-09 20:54+0100\n"
+"POT-Creation-Date: 2009-01-10 22:00+0100\n"
 "PO-Revision-Date: 2007-05-10 19:34+0200\n"
 "Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -1449,10 +1449,14 @@ msgstr "Moleküler Elektrostatik Potansiyeli"
 
 #: org/jmol/popup/PopupResourceBundle.java:906
 #: org/jmol/popup/PopupResourceBundle.java:907
-#: org/jmol/popup/PopupResourceBundle.java:908
 #, java-format
 msgid "Reload {0}"
 msgstr "Tekrar Yükle {0}"
+
+#: org/jmol/popup/PopupResourceBundle.java:908
+#, java-format
+msgid "Reload {0} + Display {1}"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:909
 msgid "Reload + Polyhedra"
@@ -1866,25 +1870,25 @@ msgstr "{0} atomlar gizli"
 msgid "{0} atoms selected"
 msgstr "{0} atom(lar) seçildi"
 
-#: org/jmol/viewer/Viewer.java:4769
+#: org/jmol/viewer/Viewer.java:4758
 #, fuzzy, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr ""
 "HATA: Bir bool'un değeri başka bir türe ayarlanamaz. önce \"{0}\" kullanın."
 
-#: org/jmol/viewer/Viewer.java:4964 org/jmol/viewer/Viewer.java:5140
+#: org/jmol/viewer/Viewer.java:4953 org/jmol/viewer/Viewer.java:5129
 #, fuzzy, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr ""
 "HATA: Bir bool'un değeri başka bir türe ayarlanamaz. önce \"{0}\" kullanın."
 
-#: org/jmol/viewer/Viewer.java:5626
+#: org/jmol/viewer/Viewer.java:5615
 #, fuzzy, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
 "HATA: Bu değişkenin değeri bir bool'a ayarlanamaz. önce \"{0}\" kullanın."
 
-#: org/jmol/viewer/Viewer.java:6913
+#: org/jmol/viewer/Viewer.java:6855
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 

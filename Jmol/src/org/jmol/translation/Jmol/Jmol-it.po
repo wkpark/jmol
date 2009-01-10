@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2008-12-09 20:54+0100\n"
-"PO-Revision-Date: 2008-10-01 21:52+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2008-12-28 20:44+0000\n"
+"Last-Translator: Stefano <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-10-02 20:12+0000\n"
+"X-Launchpad-Export-Date: 2009-01-10 16:00+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
@@ -152,24 +152,23 @@ msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:194
 msgid "Basic"
-msgstr ""
+msgstr "Base"
 
 #: org/openscience/jmol/app/GaussianDialog.java:196
 msgid "Advanced"
-msgstr ""
+msgstr "Avanzato"
 
 #: org/openscience/jmol/app/GaussianDialog.java:224
-#, fuzzy
 msgid "Checkpoint File: "
-msgstr "File recenti"
+msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:229
 msgid "Amount of Memory:"
-msgstr ""
+msgstr "Quantità di Memoria:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:235
 msgid "Number of Processors:"
-msgstr ""
+msgstr "Numero di Processori:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:248
 msgid "Route"
@@ -177,7 +176,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:254
 msgid "Method: "
-msgstr ""
+msgstr "Metodo: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:261
 msgid "Basis Set: "
@@ -189,12 +188,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:275
 msgid "Job Options: "
-msgstr ""
+msgstr "Opzioni Lavoro: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:288
-#, fuzzy
 msgid "Molecular Properties"
-msgstr "Proprietà"
+msgstr "Proprietà Molecolare"
 
 #: org/openscience/jmol/app/GaussianDialog.java:294
 msgid "Total Charge: "
@@ -202,21 +200,19 @@ msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:301
 msgid "Multiplicity: "
-msgstr ""
+msgstr "Molteplicità: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:308
-#, fuzzy
 msgid "Selection: "
-msgstr "Seleziona"
+msgstr "Selezione: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:349
-#, fuzzy
 msgid "File..."
-msgstr "&File"
+msgstr "File..."
 
 #: org/openscience/jmol/app/GaussianDialog.java:360
 #: org/openscience/jmol/app/PovrayDialog.java:758
@@ -389,7 +385,6 @@ msgid "Phosphorus"
 msgstr "Fosforo"
 
 #: org/openscience/jmol/app/GuiMap.java:86
-#, fuzzy
 msgid "Sulfur"
 msgstr "Zolfo"
 
@@ -798,18 +793,16 @@ msgid "no display (and also exit when done)"
 msgstr "nessun display (ed esci quando hai completato)"
 
 #: org/openscience/jmol/app/Jmol.java:402
-#, fuzzy
 msgid "check script syntax only - no file loading"
-msgstr "controlla solo la sintassi dello script"
+msgstr "controlla solo la sintassi dello script - no caricamento file"
 
 #: org/openscience/jmol/app/Jmol.java:403
-#, fuzzy
 msgid "check script syntax only - with file loading"
-msgstr "controlla solo la sintassi dello script"
+msgstr "controlla solo la sintassi dello script - con caricamento file"
 
 #: org/openscience/jmol/app/Jmol.java:404
 msgid "debug"
-msgstr ""
+msgstr "debug"
 
 #: org/openscience/jmol/app/Jmol.java:405
 msgid "silent startup operation"
@@ -833,7 +826,7 @@ msgstr "esci dopo l'esecuzione dello script (implicito con -n)"
 
 #: org/openscience/jmol/app/Jmol.java:416
 msgid "script file to execute"
-msgstr ""
+msgstr "file script da eseguire"
 
 #: org/openscience/jmol/app/Jmol.java:421
 msgid "Jmol script to execute BEFORE -s option"
@@ -861,8 +854,8 @@ msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
-"Qualità delle immagini JPG (1-100; default 75) o compressione delle "
-"immagini  PNG (0-9; default e, compressione massima 9)"
+"Qualità delle immagini JPG (1-100; default 75) o compressione delle immagini "
+" PNG (0-9; default e, compressione massima 9)"
 
 #: org/openscience/jmol/app/Jmol.java:459
 #, java-format
@@ -878,19 +871,16 @@ msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr "Le opzioni -D sono come segue (default in parentesi)"
 
 #: org/openscience/jmol/app/Jmol.java:691
-#, fuzzy
 msgid "Executing script 1..."
-msgstr "Script in esecuzione..."
+msgstr "Eseguendo script 1..."
 
 #: org/openscience/jmol/app/Jmol.java:700
-#, fuzzy
 msgid "Executing script file..."
-msgstr "Script in esecuzione..."
+msgstr "Eseguendo file script..."
 
 #: org/openscience/jmol/app/Jmol.java:707
-#, fuzzy
 msgid "Executing script 2..."
-msgstr "Script in esecuzione..."
+msgstr "Eseguendo script 2..."
 
 #: org/openscience/jmol/app/Jmol.java:719
 msgid "Jmol Java Console"
@@ -973,7 +963,7 @@ msgstr "Lancia POV-Ray da Jmol"
 
 #: org/openscience/jmol/app/PovrayDialog.java:241
 msgid "Display While Rendering"
-msgstr ""
+msgstr "Mostra durante Rendering"
 
 #: org/openscience/jmol/app/PovrayDialog.java:243
 msgid "Should POV-Ray attempt to display while rendering?"
@@ -981,7 +971,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/PovrayDialog.java:266
 msgid "width:"
-msgstr ""
+msgstr "larghezza:"
 
 #: org/openscience/jmol/app/PovrayDialog.java:268
 msgid "Image width"
@@ -990,7 +980,7 @@ msgstr "Larghezza immagine"
 #: org/openscience/jmol/app/PovrayDialog.java:283
 #: org/openscience/jmol/app/webexport/PopInJmol.java:61
 msgid "height:"
-msgstr ""
+msgstr "altezza:"
 
 #: org/openscience/jmol/app/PovrayDialog.java:285
 msgid "Image height"
@@ -1038,7 +1028,7 @@ msgstr "Mostra in output i dati relativi alla trasparenza alpha"
 
 #: org/openscience/jmol/app/PovrayDialog.java:397
 msgid "Mosaic preview"
-msgstr ""
+msgstr "Anteprima mosaico"
 
 #: org/openscience/jmol/app/PovrayDialog.java:399
 msgid "Render the image in several passes"
@@ -1246,7 +1236,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:100
 msgid "Couldn't find file: {0}"
-msgstr ""
+msgstr "Impossibile trovare il file: {0}"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:119
 msgid "Introduction"
@@ -1280,11 +1270,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:308
 msgid "Insert the page TITLE here."
-msgstr ""
+msgstr "Inserisci la pagina TITOLO qui."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:309
 msgid "Insert the page INTRODUCTION here."
-msgstr ""
+msgstr "Inserisci la pagina INTRODUZIONE qui."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:311
 #, java-format
@@ -1300,7 +1290,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:314
 msgid "Insert your TITLE and INTRODUCTION here."
-msgstr ""
+msgstr "Inserisci il tuo TITOLO e INTRODUZIONE qui."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:316
 #, java-format
@@ -1312,7 +1302,7 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebExport.java:317
 #, java-format
 msgid "Insert more information for {0} here."
-msgstr ""
+msgstr "Inserisci maggiori informazioni per {0} qui."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:111
 msgid "A web page containing Jmol applets"
@@ -1328,19 +1318,19 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:144
 msgid "Show Selected"
-msgstr ""
+msgstr "Mostra Selezionati."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:146
 msgid "Delete Selected"
-msgstr ""
+msgstr "Elimina selezionati"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:177
 msgid "Jmol Instances:"
-msgstr ""
+msgstr "Istanze Jmol:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:197
 msgid "Help/Instructions"
-msgstr ""
+msgstr "Aiuto/Istruzioni"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:204
 #: org/openscience/jmol/app/webexport/WebPanel.java:212
@@ -1349,7 +1339,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:217
 msgid "Save HTML as..."
-msgstr ""
+msgstr "Salva HTML come..."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:227
 msgid "Relative server path to jar files:"
@@ -1361,7 +1351,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:239
 msgid "Author (your name):"
-msgstr ""
+msgstr "Autore (tuo nome):"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:246
 msgid "Browser window title for this web page:"
@@ -1387,7 +1377,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:370
 msgid "Select a directory to create or an HTML file to save"
-msgstr ""
+msgstr "Selezione una cartella da creare o un file HTML da salvare"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:388
 msgid "Call to FileWriter unsuccessful."
@@ -1396,7 +1386,7 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:426
 #, java-format
 msgid "Using directory {0}"
-msgstr ""
+msgstr "Usando cartella {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:427
 msgid "adding JmolPopIn.js"
@@ -1405,12 +1395,12 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:436
 #, java-format
 msgid "adding {0}.png"
-msgstr ""
+msgstr "aggiungendo {0}.png"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:461
 #, java-format
 msgid "adding {0}.spt"
-msgstr ""
+msgstr "aggiungendo {0}.spt"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:492
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1419,7 +1409,7 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:495
 #, java-format
 msgid "creating {0}"
-msgstr ""
+msgstr "creando {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:526
 #, java-format
@@ -1428,6 +1418,9 @@ msgid ""
 "{0}\n"
 "         to"
 msgstr ""
+"copiando\n"
+"{0}\n"
+"         in"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:529
 #, java-format
@@ -1435,14 +1428,12 @@ msgid ""
 "Could not find or open:\n"
 "{0}"
 msgstr ""
+"Impossibile trovare o aprire:\n"
+"{0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:569
 msgid "compressing large data file to"
 msgstr ""
-
-#, fuzzy
-#~ msgid "quoted argument is Jmol script to execute"
-#~ msgstr "Jmol Script Console"
 
 #~ msgid "Select Atoms"
 #~ msgstr "Seleziona Atomi"
@@ -1573,5 +1564,6 @@ msgstr ""
 #~ msgid "POV-Ray Executable Location"
 #~ msgstr "Posizione dell'Eseguibile POV-Ray"
 
+#, java-format
 #~ msgid "Failed to delete scratch file {0}."
 #~ msgstr "Tentativo di cancellare il file di scratch {0} fallito."

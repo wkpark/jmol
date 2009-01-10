@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-12-09 20:54+0100\n"
+"POT-Creation-Date: 2009-01-10 22:00+0100\n"
 "PO-Revision-Date: 2008-11-09 22:51+0100\n"
 "Last-Translator: Nicolas Vervelle <nvervelle@gmail.com>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
@@ -1437,10 +1437,14 @@ msgstr "Potencial electrostàtic molecular"
 
 #: org/jmol/popup/PopupResourceBundle.java:906
 #: org/jmol/popup/PopupResourceBundle.java:907
-#: org/jmol/popup/PopupResourceBundle.java:908
 #, java-format
 msgid "Reload {0}"
 msgstr "Recarrega {0}"
+
+#: org/jmol/popup/PopupResourceBundle.java:908
+#, java-format
+msgid "Reload {0} + Display {1}"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:909
 msgid "Reload + Polyhedra"
@@ -1856,26 +1860,26 @@ msgstr "{0} àtoms amagats"
 msgid "{0} atoms selected"
 msgstr "{0} àtoms seleccionats"
 
-#: org/jmol/viewer/Viewer.java:4769
+#: org/jmol/viewer/Viewer.java:4758
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr ""
 "ERROR: No s'ha pogut definir el senyal d'un booleà a un valor de cadena: {0}"
 
-#: org/jmol/viewer/Viewer.java:4964 org/jmol/viewer/Viewer.java:5140
+#: org/jmol/viewer/Viewer.java:4953 org/jmol/viewer/Viewer.java:5129
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr ""
 "ERROR: No s'ha pogut definir el senyal d'un booleà a un valor numèric: {0}"
 
-#: org/jmol/viewer/Viewer.java:5626
+#: org/jmol/viewer/Viewer.java:5615
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
 "ERROR: No es pot definir el valor d''aquesta variable a un booleà. Utilitzeu "
 "«{0}» primer."
 
-#: org/jmol/viewer/Viewer.java:6913
+#: org/jmol/viewer/Viewer.java:6855
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 

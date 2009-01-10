@@ -1,4 +1,4 @@
-# Jmol.mnu Jmol version 11.3.15_dev  2007-08-28  7:23 AM 9/3/2007 Bob Hanson hansonr@stolaf.edu
+# Jmol.mnu Jmol version 11.7.21_dev  2009-01-10
 #
 # This file is in three parts. 
 #
@@ -122,14 +122,14 @@
 
 @COLOR = black white red orange yellow green cyan blue indigo violet
 @AXESCOLOR = gray salmon maroon olive slateblue gold orchid
-popupMenu = modelSetMenu FRAMESbyModelComputedMenu configurationComputedMenu - selectMenu viewMenu renderMenu colorMenu - surfaceMenu SYMMETRYUNITCELLmenu - zoomMenu spinMenu VIBRATIONMenu FRAMESanimateMenu - measureMenu pickingMenu - JVM12showConsole JVM12showMenu - languageComputedMenu aboutComputedMenu
-selectMenu | Select = hideNotSelectedCheckbox showSelectionsCheckbox - selectAll selectNone invertSelection - elementsComputedMenu SYMMETRYComputedMenu - PDBproteinMenu PDBnucleicMenu PDBheteroMenu PDBcarboMenu PDBnoneOfTheAbove
+popupMenu = modelSetMenu SIGNEDloadMenu SIGNEDwriteMenu FRAMESbyModelComputedMenu configurationComputedMenu - selectMenuText viewMenu renderMenu colorMenu - surfaceMenu SYMMETRYUNITCELLMenu - zoomMenu spinMenu VIBRATIONMenu FRAMESanimateMenu - measureMenu pickingMenu - JVM12showConsole JVM12showMenu - languageComputedMenu aboutComputedMenu
+selectMenuText | Select ({0}) = hideNotSelectedCheckbox showSelectionsCheckbox - selectAll selectNone invertSelection - elementsComputedMenu SYMMETRYComputedMenu - PDBproteinMenu PDBnucleicMenu PDBheteroMenu PDBcarboMenu PDBnoneOfTheAbove
 PDBproteinMenu | Protein = PDBaaResiduesComputedMenu - allProtein proteinBackbone proteinSideChains - polar nonpolar - positiveCharge negativeCharge noCharge
 PDBcarboMenu | Carbohydrate = PDBcarboResiduesComputedMenu - allCarbo
 PDBnucleicMenu | Nucleic = PDBnucleicResiduesComputedMenu - allNucleic nucleicBackbone nucleicBases - DNA RNA - atPairs auPairs gcPairs
 PDBheteroMenu | Hetero = PDBheteroComputedMenu - allHetero Solvent Water - Ligand exceptWater nonWaterSolvent
 viewMenu | View = front left right top bottom back
-renderMenu | Style = perspectiveDepthCheckbox showBoundBoxCheckbox showUNITCELLCheckbox showAxesCheckbox stereoMenu - renderSchemeMenu - atomMenu labelMenu bondMenu hbondMenu ssbondMenu - PDBstructureMenu [set_axes]Menu [set_boundbox]Menu [set_UNITCEL]menu
+renderMenu | Style = perspectiveDepthCheckbox showBoundBoxCheckbox showUNITCELLCheckbox showAxesCheckbox stereoMenu - renderSchemeMenu - atomMenu labelMenu bondMenu hbondMenu ssbondMenu - PDBstructureMenu [set_axes]Menu [set_boundbox]Menu [set_UNITCELL]Menu
 renderSchemeMenu | Scheme = renderCpkSpacefill renderBallAndStick renderSticks renderWireframe PDBrenderCartoonsOnly PDBrenderTraceOnly
 atomMenu | Atoms = showHydrogensCheckbox - atomNone - atom15 atom20 atom25 atom50 atom75 atom100
 bondMenu | Bonds = bondNone bondWireframe - bond100 bond150 bond200 bond250 bond300
@@ -154,30 +154,32 @@ colorMenu | Color = colorrasmolCheckbox - [color_atoms]Menu [color_bonds]Menu [c
 [color_strands]Menu | Strands = none - schemeMenu - @COLOR - opaque translucent
 [color_trace]Menu | Trace = none - schemeMenu - @COLOR - opaque translucent
 [color_background]Menu | Background = @COLOR
-[color_isosurface]Menu | Surface = @COLOR - opaque translucent
+[color_isosurface]Menu | Surfaces = @COLOR - opaque translucent
 [color_axes]Menu | Axes = @AXESCOLOR
 [color_boundbox]Menu | Boundbox = @AXESCOLOR
-[color_UNITCELL]Menu | Unitcell = @AXESCOLOR
-colorPDBStructuresMenu | Structure = [color_backbone]Menu [color_cartoon]sMenu [color_ribbon]sMenu [color_rockets]Menu [color_strands]Menu [color_trace]Menu
-schemeMenu | By Scheme = cpk altloc molecule formalcharge partialcharge#CHARGE - amino#PDB structure#PDB chain#PDB 
+[color_UNITCELL]Menu | Unit cell = @AXESCOLOR
+colorPDBStructuresMenu | Structures = [color_backbone]Menu [color_cartoon]sMenu [color_ribbon]sMenu [color_rockets]Menu [color_strands]Menu [color_trace]Menu
+schemeMenu | By Scheme = cpk - formalcharge partialcharge#CHARGE - altloc#PDB amino#PDB chain#PDB group#PDB molecule monomer#PDB shapely#PDB structure#PDB relativeTemperature#BFACTORS fixedTemperature#BFACTORS
 zoomMenu | Zoom = zoom50 zoom100 zoom150 zoom200 zoom400 zoom800 - zoomIn zoomOut
 spinMenu | Spin = spinOn spinOff - [set_spin_X]Menu [set_spin_Y]Menu [set_spin_Z]Menu - [set_spin_FPS]Menu
 VIBRATIONMenu | Vibration = vibrationOff vibrationOn VIBRATIONvectorMenu
 FRAMESanimateMenu | Animation = animModeMenu - play pause resume stop - nextframe prevframe rewind - playrev restart - FRAMESanimFpsMenu
 FRAMESanimFpsMenu | Set FPS = animfps5 animfps10 animfps20 animfps30 animfps50
-measureMenu | Measurement = showMeasurementsCheckbox - measureOff measureDistance measureAngle measureTorsion - measureDelete JVM12measureList - distanceNanometers distanceAngstroms distancePicometers
+measureMenu | Measurements = showMeasurementsCheckbox - measureOff measureDistance measureAngle measureTorsion - measureDelete JVM12measureList - distanceNanometers distanceAngstroms distancePicometers
 pickingMenu | Set picking = pickOff pickCenter pickIdent pickLabel pickAtom pickMolecule pickElement PDBpickChain PDBpickGroup SYMMETRYpickSite pickSpin
 JVM12showMenu | Show = showHistory showFile showFileHeader - showOrient showMeasure - showSpacegroup showState SYMMETRYshowSymmetry UNITCELLshow - showIsosurface showMo - extractMOL
+SIGNEDloadMenu | Load = loadPdb loadFileOrURL loadFileUnitCell - loadScript
+SIGNEDwriteMenu | Save = writeFileTextVARIABLE writeState writeHistory - writeJpg writePng writePovray -  writeIsosurface writeVrml writeMaya
 [set_spin_X]Menu | Set X Rate = s0 s5 s10 s20 s30 s40 s50
 [set_spin_Y]Menu | Set Y Rate = s0 s5 s10 s20 s30 s40 s50
 [set_spin_Z]Menu | Set Z Rate = s0 s5 s10 s20 s30 s40 s50
 [set_spin_FPS]Menu | Set FPS = s0 s5 s10 s20 s30 s40 s50
 animModeMenu | Animation Mode = onceThrough palindrome loop
 surfaceMenu | Surfaces = surfDots surfVDW surfSolventAccessible14 surfSolvent14 surfMolecular CHARGEsurfMEP surfMoComputedMenu - surfOpaque surfTranslucent surfOff
-SYMMETRYUNITCELLmenu | Symmetry = UNITCELLone UNITCELLnine UNITCELLnineRestricted UNITCELLninePoly
+SYMMETRYUNITCELLMenu | Symmetry = UNITCELLone UNITCELLnine UNITCELLnineRestricted UNITCELLninePoly
 [set_axes]Menu | Axes = off#axes dotted - byPixelMenu byAngstromMenu
 [set_boundbox]Menu | Boundbox = off#axes dotted - byPixelMenu byAngstromMenu
-[set_UNITCEL]menu | Unitcell = off#axes dotted - byPixelMenu byAngstromMenu
+[set_UNITCELL]Menu | Unit cell = off#axes dotted - byPixelMenu byAngstromMenu
 byPixelMenu | Pixel Width = 1p 3p 5p 10p
 byAngstromMenu | Angstrom Width = 10a 20a 25a 50a 100a
 aboutComputedMenu | About Jmol = APPLETjmolUrl APPLETmouseManualUrl APPLETtranslationUrl
@@ -230,12 +232,11 @@ colorrasmolCheckbox | RasMol Colors =
 hideNotSelectedCheckbox | Display Selected Only = set hideNotSelected true | set hideNotSelected false; hide(none)
 perspectiveDepthCheckbox | Perspective Depth = 
 showAxesCheckbox | Axes = set showAxes true | set showAxes false;set axesMolecular
-showBoundBoxCheckbox | Bound Box = 
+showBoundBoxCheckbox | Boundbox = 
 showHydrogensCheckbox | Show Hydrogens = 
 showMeasurementsCheckbox | Show Measurements = 
 showSelectionsCheckbox | Selection Halos = 
-showUNITCELLCheckbox | Unit Cell = 
-
+showUNITCELLCheckbox | Unit cell = 
 selectAll | All = SELECT all
 selectNone | None = SELECT none
 invertSelection | Invert Selection = SELECT not selected
@@ -337,8 +338,8 @@ stereoNone | None = stereo off
 stereoRedCyan | Red+Cyan glasses = stereo redcyan 3
 stereoRedBlue | Red+Blue glasses = stereo redblue 3
 stereoRedGreen | Red+Green glasses = stereo redgreen 3
-stereoCrossEyed | Cross-eyed viewing = stereo 5
-stereoWallEyed | Wall-eyed viewing = stereo -5
+stereoCrossEyed | Cross-eyed viewing = stereo -5
+stereoWallEyed | Wall-eyed viewing = stereo 5
 labelNone | None = label off
 labelSymbol | With Element Symbol = label %e
 labelName | With Atom Name = label %a
@@ -407,12 +408,25 @@ showFile | File Contents = console on;show file
 showFileHeader | File Header = console on;getProperty FileHeader
 showHistory | History = console on;show history
 showIsosurface | Isosurface JVXL data = console on;show isosurface
-showMeasure | Measure = console on;show measure
+showMeasure | Measurements = console on;show measure
 showMo | Molecular orbital JVXL data = console on;show mo
 showModel | Model = console on;show model
 showOrient | Orientation = console on;show orientation
 showSpacegroup | Space group = console on;show spacegroup
 showState | Current state = console on;show state
+loadPdb | File from PDB = load ?PdbId?
+loadFileOrURL | File or URL = load ?
+loadFileUnitCell | Load full unit cell = load ? {1 1 1}
+loadScript | Script = script ?.spt
+writeFileTextVARIABLE | File {0} = write file "?FILE?"
+writeState | Script with state = write state "?FILEROOT?.spt"
+writeHistory | Script with history = write history "?FILEROOT?.his"
+writeIsosurface | JVXL Isosurface = write isosurface "?FILEROOT?.jvxl"
+writeJpg | JPG Image = write image "?FILEROOT?.jpg"
+writePng | PNG Image = write image "?FILEROOT?.png"
+writePovray | POV-Ray Image = write POVRAY "?FILEROOT?.pov"
+writeVrml | VRML 3D Model = write VRML "?FILEROOT?.vrml"
+writeMaya | Maya 3D Model = write MAYA "?FILEROOT?.maya"
 SYMMETRYshowSymmetry | Symmetry = console on;show symmetry
 UNITCELLshow | Unit cell = console on;show unitcell
 extractMOL | Extract MOL data = console on;getproperty extractModel "visible" 
@@ -427,7 +441,7 @@ surfTranslucent | Make Translucent = mo translucent;isosurface translucent
 surfOff | Off = mo delete;isosurface delete;select *;dots off
 UNITCELLone | Reload {1 1 1} = save orientation;load "" {1 1 1} ;restore orientation;center
 UNITCELLnine | Reload {444 666 1} = save orientation;load "" {444 666 1} ;restore orientation;center
-UNITCELLnineRestricted | Reload {444 666 1};display 555 = save orientation;load "" {444 666 1} ;restore orientation; unitcell on; display cell=555;center visible;zoom 200
+UNITCELLnineRestricted | Reload {444 666 1}; display 555 = save orientation;load "" {444 666 1} ;restore orientation; unitcell on; display cell=555;center visible;zoom 200
 UNITCELLninePoly | Reload + Polyhedra = save orientation;load "" {444 666 1} ;restore orientation; unitcell on; display cell=555; polyhedra 4,6 (displayed);center (visible);zoom 200
 1p | 1 px = on
 3p | 3 px = 3
@@ -467,9 +481,7 @@ PDBcarboResiduesComputedMenu | By Residue Name
 PDBheteroComputedMenu | By HETATM
 surfMoComputedMenu | Molecular Orbitals
 SYMMETRYComputedMenu | Symmetry
-
 hiddenModelSetText | Model information
-selectMenuText | Select ({0})
 allModelsText | All {0} models
 configurationMenuText | Configurations ({0})
 modelSetCollectionText | Collection of {0} models
@@ -481,15 +493,22 @@ polymersText | polymers: {0}
 modelMenuText | model {0}
 viewMenuText | View {0}
 mainMenuText | Main Menu
-
+biomoleculesMenuText | Biomolecules
+biomoleculeText | biomolecule {0} ({1} atoms)
+loadBiomoleculeText | load biomolecule {0} ({1} atoms)
 cpk | Element (CPK)
-altloc | Alternative Location
+altloc#PDB | Alternative Location
 molecule | Molecule
 formalcharge | Formal Charge
 partialcharge#CHARGE | Partial Charge
+relativeTemperature#BFACTORS | Temperature (Relative)
+fixedTemperature#BFACTORS | Temperature (Fixed)
 amino#PDB | Amino Acid
 structure#PDB | Secondary Structure
 chain#PDB | Chain
+group#PDB | Group
+monomer#PDB | Monomer
+shapely#PDB | Shapely
 none | Inherit
 black | Black
 white | White

@@ -2095,4 +2095,6 @@ msgstr "no es posible acceder al portapapeles; utilice la miniaplicación firmad
 #~ msgstr "Guión con el estado"
 #~ msgid "SPT History"
 #~ msgstr "Guión con el historial"
+#~ msgid "Reload {0} + Display {1}"
+#~ msgstr "Recargar {0} y mostrar {1}"
 

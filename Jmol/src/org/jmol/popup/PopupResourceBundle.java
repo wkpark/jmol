@@ -905,7 +905,7 @@ class PopupResourceBundle {
         "SYMMETRYUNITCELLMenu", GT._("Symmetry"),
         "UNITCELLone", GT._("Reload {0}", "{1 1 1}"),
         "UNITCELLnine", GT._("Reload {0}", "{444 666 1}"),
-        "UNITCELLnineRestricted", GT._("Reload {0}", "{444 666 1};display 555"),
+        "UNITCELLnineRestricted", GT._("Reload {0} + Display {1}", new Object[] { "{444 666 1}", "555" } ),
         "UNITCELLninePoly", GT._("Reload + Polyhedra"),
         
 

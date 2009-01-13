@@ -40,6 +40,7 @@ import org.jmol.util.BitSetUtil;
 public class _VrmlExporter extends _Exporter {
 
   //VERY  preliminary -- in process -- 7/2007 Bob Hanson
+  // added translucency -- 1/2009 Angel Herráez
 
   public _VrmlExporter() {
     use2dBondOrderCalculation = false;
@@ -64,6 +65,7 @@ public class _VrmlExporter extends _Exporter {
 
   public void renderAtom(Atom atom, short colix) {
     String color = rgbFractionalFromColix(colix, ' ');
+    String translu = translucencyFractionalFromColix(colix);
     float r = atom.getMadAtom() / 2000f;
     output("Transform {\n");
     output("translation " + atom.x + " " + atom.y + " " + atom.z + "\n");
@@ -71,7 +73,7 @@ public class _VrmlExporter extends _Exporter {
     output("Shape {\n");
     output("geometry Sphere { radius " + r + " }\n");
     output("appearance Appearance {\n");
-    output("material Material { diffuseColor " + color + " }\n");
+    output("material Material { diffuseColor " + color + " transparency " + translu + " }\n");
     output("}\n");
     output("}\n");
     output("]\n");
@@ -96,6 +98,7 @@ public class _VrmlExporter extends _Exporter {
   public void renderCylinder(Point3f pt1, Point3f pt2, short colix,
                              byte endcaps, int madBond) {
     String color = rgbFractionalFromColix(colix, ' ');
+    String translu = translucencyFractionalFromColix(colix);
     float length = pt1.distance(pt2);
     float r = madBond / 2000f;
     tempV1.set(pt2);
@@ -113,7 +116,7 @@ public class _VrmlExporter extends _Exporter {
     output("geometry Cylinder { height " + length + " radius " + r
         + " }\n");
     output("appearance Appearance {\n");
-    output("material Material { diffuseColor " + color + " }\n");
+    output("material Material { diffuseColor " + color + " transparency " + translu + " }\n");
     output("}\n");
     output("}\n");
     output("]\n");
@@ -135,9 +138,10 @@ public class _VrmlExporter extends _Exporter {
       return;
 
     String color = rgbFractionalFromColix(colix, ' ');
+    String translu = translucencyFractionalFromColix(colix);
     output("Shape {\n");
     output("appearance Appearance {\n");
-    output("material Material { diffuseColor " + color + " }\n");
+    output("material Material { diffuseColor " + color + " transparency " + translu + " }\n");
     output("}\n");
     output("geometry IndexedFaceSet {\n");
     output("coord Coordinate {\n");

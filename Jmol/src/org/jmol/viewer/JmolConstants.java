@@ -36,7 +36,7 @@ import java.util.Properties;
 
 final public class JmolConstants {
 
-  public final static String copyright = "(C) 2008 Jmol Development";
+  public final static String copyright = "(C) 2009 Jmol Development";
   public final static String version;
 
   static {

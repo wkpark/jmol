@@ -37,12 +37,11 @@ import org.jmol.modelset.Atom;
 import org.jmol.shape.Text;
 import org.jmol.util.BitSetUtil;
 
-public class _VrmlExporter extends _Exporter {
+public class _U3dExporter extends _Exporter {
 
-  //VERY  preliminary -- in process -- 7/2007 Bob Hanson
-  // added translucency -- 1/2009 Angel Herráez
+  //just a shell -- no functionality yet 1/2009 Bob Hanson
 
-  public _VrmlExporter() {
+  public _U3dExporter() {
     use2dBondOrderCalculation = false;
   }
 
@@ -51,35 +50,18 @@ public class _VrmlExporter extends _Exporter {
   }
   
   public void getHeader() {
-    output("#VRML V2.0 utf8\n");
-    output("Transform {\n");
-    output("translation " + -center.x + " " + -center.y + " "
-        + -center.z + "\n");
-    output("children [\n");
+    output("not _U3dExporter not implemented");
   }
 
   public void getFooter() {
-    output("]\n");
-    output("}\n");
   }
 
-  Point3f ptAtom = new Point3f();
-  Point3i atomScreen = new Point3i();
-  boolean haveAtomPoint;
   public void setLabelXYZ(Atom atom) {
-    //used by LabelGenerator to store atom XYZ position prior to generating label
-    //after label is generated, set to null.
-    //this will be adapted as necessary for echos and such.
-    haveAtomPoint = (atom != null);
-    if (!haveAtomPoint)
-      return;
-    ptAtom.set(atom);
-    atomScreen.set(atom.screenX, atom.screenY, atom.screenZ);
   }
   
   public void renderAtom(Atom atom, short colix) {
+    /*
     String color = rgbFractionalFromColix(colix, ' ');
-    String translu = translucencyFractionalFromColix(colix);
     float r = atom.getMadAtom() / 2000f;
     output("Transform {\n");
     output("translation " + atom.x + " " + atom.y + " " + atom.z + "\n");
@@ -87,11 +69,12 @@ public class _VrmlExporter extends _Exporter {
     output("Shape {\n");
     output("geometry Sphere { radius " + r + " }\n");
     output("appearance Appearance {\n");
-    output("material Material { diffuseColor " + color + " transparency " + translu + " }\n");
+    output("material Material { diffuseColor " + color + " }\n");
     output("}\n");
     output("}\n");
     output("]\n");
     output("}\n");
+     */
   }
 
   public void fillCylinder(Point3f atom1, Point3f atom2, short colix1,
@@ -111,8 +94,8 @@ public class _VrmlExporter extends _Exporter {
 
   public void renderCylinder(Point3f pt1, Point3f pt2, short colix,
                              byte endcaps, int madBond) {
+/*
     String color = rgbFractionalFromColix(colix, ' ');
-    String translu = translucencyFractionalFromColix(colix);
     float length = pt1.distance(pt2);
     float r = madBond / 2000f;
     tempV1.set(pt2);
@@ -128,13 +111,14 @@ public class _VrmlExporter extends _Exporter {
     output("children[\n");
     output("Shape {\n");
     output("geometry Cylinder { height " + length + " radius " + r
-        + " }\n");
+      + " }\n");
     output("appearance Appearance {\n");
-    output("material Material { diffuseColor " + color + " transparency " + translu + " }\n");
+    output("material Material { diffuseColor " + color + " }\n");
     output("}\n");
     output("}\n");
     output("]\n");
     output("}\n");
+*/    
   }
 
   public void renderIsosurface(Point3f[] vertices, short colix,
@@ -150,12 +134,11 @@ public class _VrmlExporter extends _Exporter {
         nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
     if (nFaces == 0)
       return;
-
+    /*
     String color = rgbFractionalFromColix(colix, ' ');
-    String translu = translucencyFractionalFromColix(colix);
     output("Shape {\n");
     output("appearance Appearance {\n");
-    output("material Material { diffuseColor " + color + " transparency " + translu + " }\n");
+    output("material Material { diffuseColor " + color + " }\n");
     output("}\n");
     output("geometry IndexedFaceSet {\n");
     output("coord Coordinate {\n");
@@ -185,6 +168,7 @@ public class _VrmlExporter extends _Exporter {
     output("]\n");
     output("}\n");
     output("}\n");
+    */
   }
 
   public void renderText(Text t) {

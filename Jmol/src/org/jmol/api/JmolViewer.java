@@ -53,7 +53,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   /**
    *  This is the main access point for creating an application
-   *  or applet viewer. After allocation it is MANDATORY that one of 
+   *  or applet viewer. In Jmol 11.6 it was manditory that one of 
    *  the next commands is either 
    *  
    *    viewer.evalString("ZAP");
@@ -62,9 +62,13 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    *    
    *    viewer.setAppletContext("",null,null,"")
    *    
-   *    One or the other of these is necessary to establish the 
+   *    One or the other of these was necessary to establish the 
    *    first modelset, which might be required by one or more
    *    later evaluated commands or file loadings.
+   *    
+   *    Starting with Jmol 11.7, setAppletContext is rolled into
+   *    allocateViewer so that the full initialization is done
+   *    all at once.
    *    
    * 
    * @param awtComponent

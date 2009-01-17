@@ -25,7 +25,12 @@
 
 package org.jmol.export;
 
+import org.jmol.modelset.Atom;
 import org.jmol.shape.*;
 
 public class LabelsGenerator extends LabelsRenderer {
+  protected void setLabelXYZ(Atom atom) {
+    g3d.getExporter().setLabelXYZ(atom);
+    // see export.LabelGenerator
+  }
 }

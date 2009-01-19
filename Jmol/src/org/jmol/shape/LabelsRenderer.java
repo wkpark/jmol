@@ -76,8 +76,6 @@ public class LabelsRenderer extends ShapeRenderer {
         colix = backgroundColixContrast;
       if (!g3d.setColix(colix))
         continue;
-      if (isGenerator)
-        setLabelXYZ(atom);
       byte fid = ((fids == null || i >= fids.length || fids[i] == 0) ? labels.zeroFontId
           : fids[i]);
       int offsetFull = (offsets == null || i >= offsets.length ? 0 : offsets[i]);
@@ -137,11 +135,5 @@ public class LabelsRenderer extends ShapeRenderer {
       text.setPointer(pointer); 
       text.render(g3d, scalePixelsPerMicron, imageFontScaling);
     }
-    if (isGenerator)
-      setLabelXYZ(null);
-  }
-  
-  protected void setLabelXYZ(Atom atom) {
-    // see export.LabelGenerator -- VRML only
-  }
+  }  
 }

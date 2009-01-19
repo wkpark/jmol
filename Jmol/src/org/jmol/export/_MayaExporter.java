@@ -67,10 +67,6 @@ public class _MayaExporter extends _Exporter {
     //no footer is necessary
   }
 
-  public void setTextXYZ(Atom atom, boolean isLabel) {
-    // not necessary  
-  }
-  
   public void renderAtom(Atom atom, short colix) {
     //String color = rgbFromColix(colix);
     nBalls++;

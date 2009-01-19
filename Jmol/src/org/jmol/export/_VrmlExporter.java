@@ -83,22 +83,6 @@ public class _VrmlExporter extends _Exporter {
     output("}\n");
   }
 
-  private Point3f ptAtom = new Point3f();
-  private Point3i atomScreen = new Point3i();
-  private boolean haveAtomPoint;
-  private boolean isLabelText;
-  public void setTextXYZ(Atom atom, boolean isLabel) {
-    //used by LabelGenerator to store atom XYZ position prior to generating label
-    //after label is generated, set to null.
-    //this will be adapted as necessary for echos and such.
-    isLabelText = isLabel;
-    haveAtomPoint = (atom != null);
-    if (!haveAtomPoint)
-      return;
-    ptAtom.set(atom);
-    atomScreen.set(atom.screenX, atom.screenY, atom.screenZ);
-  }
-
   public void renderAtom(Atom atom, short colix) {
     String color = rgbFractionalFromColix(colix, ' ');
     String translu = translucencyFractionalFromColix(colix);
@@ -252,55 +236,53 @@ public class _VrmlExporter extends _Exporter {
     //cartoons, rockets, trace:    
   }
 
-  public void plotText(int x, int y, int z, int argb, 
-                       String text, Font3D font3d) {    
-    if (!haveAtomPoint) 
-      return; // texts other than labels are not processed
+  final private Point3f pt = new Point3f();
+  final private Point3f ptAtom = new Point3f();
+  
+  public void plotText(int x, int y, int z, int argb, String text, Font3D font3d) {
+    //if (!haveAtomPoint)
+      //return; // texts other than labels are not processed
     String color = rgbFractionalFromArgb(argb, ' ');
     String useFontStyle = font3d.fontStyle.toUpperCase();
     String preFontFace = font3d.fontFace.toUpperCase();
-    String useFontFace = "SANS";  // default in Jmol, not in VRML
-    if ( preFontFace.equals("MONOSPACED") ) { useFontFace = "TYPEWRITER"; } 
-    else if ( preFontFace.equals("SERIF") ) { useFontFace = "SERIF"; }
+    String useFontFace = (preFontFace.equals("MONOSPACED") ? "TYPEWRITER"
+        : preFontFace.equals("SERIF") ? "SERIF" : "SANS");
     output("Transform {\n");
-    output(" translation " + ptAtom.x + " " + ptAtom.y + " " + ptAtom.z + "\n");  
-		    // These x y z are 3D coordinates of echo or the atom the label is attached to.
+    pt.set(x,y,z);
+    viewer.unTransformPoint(pt, ptAtom);
+    output(" translation " + ptAtom.x + " " + ptAtom.y + " " + ptAtom.z + "\n");
+    // These x y z are 3D coordinates of echo or the atom the label is attached to.
     output(" children Billboard {\n");
     output("  axisOfRotation 0 0 0 \n");
     output("  children [\n");
     output("   Transform {\n");
-    output("    translation ");
-    output(isLabelText ? "0.25 0.25 0.25 \n" :  "0.0 0.0 0.0 \n");	
-        // labels: apply some offset, enough to get the label out of the 20% vdW sphere 
-        // (default Ball & Stick) 
+    output("    translation 0.0 0.0 0.0 \n");
     output("    children Shape {\n");
     output("     appearance Appearance {\n");
     output("      material Material { diffuseColor 0 0 0 specularColor 0 0 0 "
         + "ambientIntensity 0.0 shininess 0.0 emissiveColor " + color + " }\n");
     output("     }\n");
     output("     geometry Text {\n");
-    output("      fontStyle FontStyle { size 0.4 "
-        + "family \"" + useFontFace + "\" style \"" + useFontStyle + "\" } \n");
+    output("      fontStyle FontStyle { size 0.4 " + "family \"" + useFontFace
+        + "\" style \"" + useFontStyle + "\" } \n");
     output("      string	\"" + text + "\" \n");
     output("     }\n");
     output("    }\n");
     output("   }\n");
     output("  ]\n");
     output(" }\n");
-    output("}\n");    
-    haveAtomPoint = false;  /* clear atom info, so that the next text 
-        does not get also attached to it */
-    
+    output("}\n");
+  
     /*  Unsolved issues:
-    # Non-label texts: echos, measurements :: need to get space coordinates, not screen coord.
-    # Font size: not implemented; 0.4A is hardcoded (resizes with zoom)
-    		  Java												  VRML
-				font3d.fontSize   = 13.0				size    (numeric), but in angstroms, not pixels
-				font3d.fontSizeNominal = 13.0		
-		# Label offsets: not implemented; hardcoded to 0.25A in each x,y,z
-		# Multi-line labels: only the first line is received
-		# Sub/superscripts not interpreted
-    */
+     # Non-label texts: echos, measurements :: need to get space coordinates, not screen coord.
+     # Font size: not implemented; 0.4A is hardcoded (resizes with zoom)
+     Java												  VRML
+     font3d.fontSize   = 13.0				size    (numeric), but in angstroms, not pixels
+     font3d.fontSizeNominal = 13.0		
+     # Label offsets: not implemented; hardcoded to 0.25A in each x,y,z
+     # Multi-line labels: only the first line is received
+     # Sub/superscripts not interpreted
+     */
   }
 
   // not implemented: 

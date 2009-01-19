@@ -349,10 +349,6 @@ public class _PovrayExporter extends _Exporter {
 
   }
 
-  public void setTextXYZ(Atom atom, boolean isLabel) {
-    // not necessary  
-  }
-    
   public void renderAtom(Atom atom, short colix) {
     fillSphereCentered(atom.screenDiameter, atom.screenX, atom.screenY,
         atom.screenZ, colix);

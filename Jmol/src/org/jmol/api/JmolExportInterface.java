@@ -34,7 +34,7 @@ public interface JmolExportInterface {
   // extensions of classes in org.jmol.shape, org.jmol.shapebio, and org.jmol.shapespecial. 
   // More will be added as additional objects are added to be exportable classes.
 
-  abstract void setLabelXYZ(Atom atom);
+  abstract void setTextXYZ(Atom atom, boolean isLabel);
 
   abstract void renderAtom(Atom atom, short colix);
 

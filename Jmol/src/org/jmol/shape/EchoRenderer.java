@@ -26,13 +26,15 @@ package org.jmol.shape;
 import java.util.Enumeration;
 import javax.vecmath.Point3i;
 
+import org.jmol.modelset.Atom;
+
 public class EchoRenderer extends ShapeRenderer {
 
   float imageFontScaling;
-
+  Atom ptAtom;
+  Point3i pt = new Point3i();
   protected void render() {
     Echo echo = (Echo)shape;
-    Point3i pt = new Point3i();
     Enumeration e = echo.objects.elements();
     float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer.getScalePixelsPerAngstrom(true) * 10000 : 0);
     imageFontScaling = viewer.getImageFontScaling();
@@ -43,12 +45,25 @@ public class EchoRenderer extends ShapeRenderer {
       if (t.valign == Object2d.VALIGN_XYZ) {
         viewer.transformPoint(t.xyz, pt);
         t.setXYZs(pt.x, pt.y, pt.z, pt.z);
+        if (isGenerator) {
+          if (ptAtom == null)
+            ptAtom = new Atom(t.xyz);
+          else
+            ptAtom.set(t.xyz);
+          ptAtom.screenX = pt.x;
+          ptAtom.screenY = pt.y;
+          ptAtom.screenZ = pt.z;
+          setEchoXYZ(ptAtom);
+        }
       } else if (t.movableZPercent != Integer.MAX_VALUE) {
         int z = viewer.zValueFromPercent(t.movableZPercent);
         t.setZs(z, z);
       }
+      // only 3D echos sent to VRML generator (for now at least)
       t.render(g3d, scalePixelsPerMicron, imageFontScaling);
     }
+    if (isGenerator)
+      setEchoXYZ(null);
     String frameTitle = viewer.getFrameTitle();
     if (frameTitle != null && frameTitle.length() > 0)
       renderFrameTitle(frameTitle);
@@ -64,5 +79,7 @@ public class EchoRenderer extends ShapeRenderer {
     g3d.drawStringNoSlab(frameTitle, null, x, y, 0);
   }
 
-  
+  protected void setEchoXYZ(Atom atom) {
+    // see export.EchoGenerator -- VRML only
+  }
 }

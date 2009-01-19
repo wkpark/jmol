@@ -67,7 +67,7 @@ public class _MayaExporter extends _Exporter {
     //no footer is necessary
   }
 
-  public void setLabelXYZ(Atom atom) {
+  public void setTextXYZ(Atom atom, boolean isLabel) {
     // not necessary  
   }
   

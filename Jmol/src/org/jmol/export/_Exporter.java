@@ -207,7 +207,7 @@ public abstract class _Exporter implements JmolExportInterface {
     return null;
   }
 
-  protected String getExportDate() {
+  protected static String getExportDate() {
     return new SimpleDateFormat("EEE, MMMM dd, yyyy 'at' h:mm aaa")
         .format(new Date());
   }

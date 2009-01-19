@@ -56,9 +56,9 @@ public class _U3dExporter extends _Exporter {
   public void getFooter() {
   }
 
-  public void setLabelXYZ(Atom atom) {
+  public void setTextXYZ(Atom atom, boolean isLabel) {
   }
-  
+    
   public void renderAtom(Atom atom, short colix) {
     /*
     String color = rgbFractionalFromColix(colix, ' ');

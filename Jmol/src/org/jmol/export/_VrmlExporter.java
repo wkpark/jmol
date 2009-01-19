@@ -83,13 +83,15 @@ public class _VrmlExporter extends _Exporter {
     output("}\n");
   }
 
-  Point3f ptAtom = new Point3f();
-  Point3i atomScreen = new Point3i();
-  boolean haveAtomPoint;
-  public void setLabelXYZ(Atom atom) {
+  private Point3f ptAtom = new Point3f();
+  private Point3i atomScreen = new Point3i();
+  private boolean haveAtomPoint;
+  private boolean isLabelText;
+  public void setTextXYZ(Atom atom, boolean isLabel) {
     //used by LabelGenerator to store atom XYZ position prior to generating label
     //after label is generated, set to null.
     //this will be adapted as necessary for echos and such.
+    isLabelText = isLabel;
     haveAtomPoint = (atom != null);
     if (!haveAtomPoint)
       return;
@@ -262,13 +264,15 @@ public class _VrmlExporter extends _Exporter {
     else if ( preFontFace.equals("SERIF") ) { useFontFace = "SERIF"; }
     output("Transform {\n");
     output(" translation " + ptAtom.x + " " + ptAtom.y + " " + ptAtom.z + "\n");  
-		    // These x y z are 3D coordinates of the atom the label is attached to.
+		    // These x y z are 3D coordinates of echo or the atom the label is attached to.
     output(" children Billboard {\n");
     output("  axisOfRotation 0 0 0 \n");
     output("  children [\n");
     output("   Transform {\n");
-    output("    translation 0.25 0.25 0.25 \n");	/* apply some offset, enough
-        to get the label out of the 20% vdW sphere (default Ball & Stick) */
+    output("    translation ");
+    output(isLabelText ? "0.25 0.25 0.25 \n" :  "0.0 0.0 0.0 \n");	
+        // labels: apply some offset, enough to get the label out of the 20% vdW sphere 
+        // (default Ball & Stick) 
     output("    children Shape {\n");
     output("     appearance Appearance {\n");
     output("      material Material { diffuseColor 0 0 0 specularColor 0 0 0 "

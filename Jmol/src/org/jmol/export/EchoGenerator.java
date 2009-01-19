@@ -25,7 +25,12 @@
 
 package org.jmol.export;
 
+import org.jmol.modelset.Atom;
 import org.jmol.shape.*;
 
 public class EchoGenerator extends EchoRenderer {
+  protected void setEchoXYZ(Atom atom) {
+    g3d.getExporter().setTextXYZ(atom, false);
+    // see export.LabelGenerator
+  }
 }

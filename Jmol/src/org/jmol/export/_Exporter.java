@@ -208,8 +208,7 @@ public abstract class _Exporter implements JmolExportInterface {
   }
 
   protected static String getExportDate() {
-    return new SimpleDateFormat("EEE, MMMM dd, yyyy 'at' h:mm aaa")
-        .format(new Date());
+    return new SimpleDateFormat("yyyy-MM-dd', 'HH:mm").format(new Date());
   }
 
   final protected static float degreesPerRadian = (float) (360 / (2 * Math.PI));

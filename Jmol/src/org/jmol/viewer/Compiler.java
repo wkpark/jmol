@@ -613,12 +613,15 @@ class Compiler {
           addTokenToPrefix(new Token(Token.integer, val, intString));
           continue;
         }
-        if (lastToken.tok == Token.select || lastToken.tok == Token.within
-            || lastToken.tok != Token.identifier
-            && !tokenAttr(lastToken, Token.mathfunc)) {
+        if (tokCommand == Token.structure && nTokens == 2
+            || lastToken.tok == Token.select
+            || lastToken.tok == Token.within
+            || !(lastToken.tok == Token.identifier || tokenAttr(lastToken,
+                Token.mathfunc))) {
           // here if:
           // select ({...})
           // within({...})
+          // structure helix ({...})
           // NOT myfunc({...})
           // NOT mathFunc({...})
           // if you want to use a bitset there, you must use 
@@ -895,8 +898,9 @@ class Compiler {
               if (tok != Token.identifier) {
                 if (preDefining) {
                   if (!Token.tokAttr(tok, Token.predefinedset))
-                    return error("ERROR IN Token.java or JmolConstants.java -- the following term was used in JmolConstants.java but not listed as predefinedset in Token.java: "
-                        + ident, null);
+                    return error(
+                        "ERROR IN Token.java or JmolConstants.java -- the following term was used in JmolConstants.java but not listed as predefinedset in Token.java: "
+                            + ident, null);
                 } else if (Token.tokAttr(tok, Token.predefinedset)) {
                   Logger
                       .warn("WARNING: predefined term '"
@@ -1371,6 +1375,7 @@ class Compiler {
       cchToken = 8;
       return new BitSet();
     }
+    System.out.println("lookingatbitset " + ichToken + " " + script.substring(ichToken));
     if (ichToken + 4 > cchScript 
         || script.charAt(ichToken + 1) != '{'
       ||(script.charAt(ichToken) != '(' 

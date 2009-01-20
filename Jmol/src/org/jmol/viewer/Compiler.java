@@ -1375,7 +1375,6 @@ class Compiler {
       cchToken = 8;
       return new BitSet();
     }
-    System.out.println("lookingatbitset " + ichToken + " " + script.substring(ichToken));
     if (ichToken + 4 > cchScript 
         || script.charAt(ichToken + 1) != '{'
       ||(script.charAt(ichToken) != '(' 

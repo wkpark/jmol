@@ -9090,7 +9090,7 @@ class Eval {
           bsFrames = viewer.getModelBitSet(bsFrames);
         pt = iToken + 1;
       } else if (Parser.isOneOf(type, driverList.toLowerCase())) {
-        // povray, maya, vrml
+        // povray, maya, vrml, u3d
         pt++;
         type = type.substring(0, 1).toUpperCase() + type.substring(1);
         isExport = true;

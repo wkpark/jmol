@@ -5547,23 +5547,19 @@ class Eval {
   }
 
   private void translate() throws ScriptException {
-    checkLength(3);
+    String type = optParameterAsString(3).toLowerCase();
+    if (type.length() == 0)
+      checkLength(3);
     float percent = floatParameter(2, -100, 100);
     if (getToken(1).tok == Token.identifier) {
-      String str = parameterAsString(1);
-      if (str.equalsIgnoreCase("x")) {
-        if (!isSyntaxCheck)
-          viewer.translateToXPercent(percent);
-        return;
-      }
-      if (str.equalsIgnoreCase("y")) {
-        if (!isSyntaxCheck)
-          viewer.translateToYPercent(percent);
-        return;
-      }
-      if (str.equalsIgnoreCase("z")) {
-        if (!isSyntaxCheck)
-          viewer.translateToZPercent(percent);
+      char xyz = parameterAsString(1).toLowerCase().charAt(0);
+      switch (xyz) {
+      case 'x':
+      case 'y':
+      case 'z':
+        if (isSyntaxCheck)
+          return;
+        viewer.translate(xyz, percent, (type + "p").charAt(0));
         return;
       }
     }

@@ -872,22 +872,30 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     rotateY(angleDegrees * Measure.radiansPerDegree);
   }
 
-  void translateToXPercent(float percent) {
-    //Eval.translate()
-    transformManager.translateToXPercent(percent);
-    refresh(1, "Viewer:translateToXPercent()");
-  }
-
-  void translateToYPercent(float percent) {
-    //Eval.translate()
-    transformManager.translateToYPercent(percent);
-    refresh(1, "Viewer:translateToYPercent()");
-  }
-
-  void translateToZPercent(float percent) {
-    //Eval.translate()
-    transformManager.translateToZPercent(percent);
-    refresh(1, "Viewer:translateToZPercent()");
+  void translate(char xyz, float x, char type) {
+    int xy = (type == 'p' ? 0: transformManager
+        .angstromsToPixels(x * (type == 'n' ? 10f: 1f)));
+    switch (xyz) {
+    case 'x':
+      if (type == 'p')
+        transformManager.translateToXPercent(x);
+      else
+        transformManager.translateXYBy(xy, 0);
+      break;
+    case 'y':
+      if (type == 'p')
+        transformManager.translateToYPercent(x);
+      else
+        transformManager.translateXYBy(0, xy);
+      break;
+    case 'z':
+      if (type == 'p')
+        transformManager.translateToZPercent(x);
+      else
+        transformManager.translateZBy(xy);
+      break;
+    }
+    refresh(1, "Viewer:translate()");
   }
 
   float getTranslationXPercent() {
@@ -7297,6 +7305,5 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
     }
   }
-
 }
   

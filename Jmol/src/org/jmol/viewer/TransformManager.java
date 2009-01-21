@@ -490,10 +490,14 @@ abstract class TransformManager {
   }
 
   void translateXYBy(int xDelta, int yDelta) {
-    // mouse action only
+    // mouse action or translate x|y|z x.x nm|angstroms
     fixedTranslation.x += xDelta;
     fixedTranslation.y += yDelta;
     setTranslationFractions();
+  }
+
+  int angstromsToPixels(float distance) {
+    return (int) (scalePixelsPerAngstrom * distance);
   }
 
   void translateToXPercent(float percent) {
@@ -634,6 +638,15 @@ abstract class TransformManager {
     zoomRatio = 0;
   }
 
+  void translateZBy(int pixels) {
+    if (pixels >= width)
+      return;
+    float sppa = scalePixelsPerAngstrom * (1 + pixels * 1.0f / width);
+    float deltaPercent = sppa / scaleDefaultPixelsPerAngstrom * 100f - zoomPercentSetting;
+    zoomRatio = (deltaPercent + zoomPercentSetting) / zoomPercentSetting;
+    zoomPercentSetting += deltaPercent;
+  }
+  
   void zoomByFactor(float factor) {
     if (factor <= 0)
       return;

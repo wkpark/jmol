@@ -5549,7 +5549,7 @@ class Eval {
   private void translate() throws ScriptException {
     char type = (optParameterAsString(3).toLowerCase() + '\0').charAt(0);
     checkLength(type == '\0' ? 3 : 4);
-    float percent = floatParameter(2, -100, 100);
+    float percent = floatParameter(2);
     if (getToken(1).tok == Token.identifier) {
       char xyz = parameterAsString(1).toLowerCase().charAt(0);
       switch (xyz) {

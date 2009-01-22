@@ -639,10 +639,10 @@ abstract class TransformManager {
   }
 
   void translateZBy(int pixels) {
+    if (pixels >= width / 2)
+      return;
     float sppa = scalePixelsPerAngstrom / (1 - pixels * 1.0f / width);
     //System.out.println(scalePixelsPerAngstrom + " pixels:" + sppa + " w=" + (width/scalePixelsPerAngstrom) + " new w=" + (width/sppa));
-    if (sppa <= 0)
-      return;
     float deltaPercent = sppa / scaleDefaultPixelsPerAngstrom * 100f - zoomPercentSetting;
     zoomRatio = (deltaPercent + zoomPercentSetting) / zoomPercentSetting;
     zoomPercentSetting += deltaPercent;

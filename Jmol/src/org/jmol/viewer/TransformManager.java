@@ -639,13 +639,14 @@ abstract class TransformManager {
   }
 
   void translateZBy(int pixels) {
-    if (pixels >= width)
+    if (pixels >= screenPixelCount)
       return;
-    float sppa = scalePixelsPerAngstrom / (1 - pixels * 1.0f / width);
-    //System.out.println(scalePixelsPerAngstrom + " pixels:" + sppa + " w=" + (width/scalePixelsPerAngstrom) + " new w=" + (width/sppa));
-    float deltaPercent = sppa / scaleDefaultPixelsPerAngstrom * 100f - zoomPercentSetting;
-    zoomRatio = (deltaPercent + zoomPercentSetting) / zoomPercentSetting;
-    zoomPercentSetting += deltaPercent;
+    float sppa = scalePixelsPerAngstrom / (1 - pixels * 1.0f / screenPixelCount);
+    if (sppa >= screenPixelCount)
+      return;
+    float newZoomPercent = sppa / scaleDefaultPixelsPerAngstrom * 100f;
+    zoomRatio = newZoomPercent / zoomPercentSetting;
+    zoomPercentSetting = newZoomPercent;
   }
   
   void zoomByFactor(float factor) {

@@ -639,7 +639,7 @@ abstract class TransformManager {
   }
 
   void translateZBy(int pixels) {
-    if (pixels >= width / 2)
+    if (pixels >= width)
       return;
     float sppa = scalePixelsPerAngstrom / (1 - pixels * 1.0f / width);
     //System.out.println(scalePixelsPerAngstrom + " pixels:" + sppa + " w=" + (width/scalePixelsPerAngstrom) + " new w=" + (width/sppa));

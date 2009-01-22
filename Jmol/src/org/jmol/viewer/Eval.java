@@ -5547,9 +5547,8 @@ class Eval {
   }
 
   private void translate() throws ScriptException {
-    String type = optParameterAsString(3).toLowerCase();
-    if (type.length() == 0)
-      checkLength(3);
+    char type = (optParameterAsString(3).toLowerCase() + '\0').charAt(0);
+    checkLength(type == '\0' ? 3 : 4);
     float percent = floatParameter(2, -100, 100);
     if (getToken(1).tok == Token.identifier) {
       char xyz = parameterAsString(1).toLowerCase().charAt(0);
@@ -5559,7 +5558,7 @@ class Eval {
       case 'z':
         if (isSyntaxCheck)
           return;
-        viewer.translate(xyz, percent, (type + "p").charAt(0));
+        viewer.translate(xyz, percent, type);
         return;
       }
     }

@@ -490,10 +490,22 @@ abstract class TransformManager {
   }
 
   void translateXYBy(int xDelta, int yDelta) {
-    // mouse action or translate x|y|z x.x nm|angstroms
+    // mouse action or translate x|y|z x.x nm|angstroms|%
     fixedTranslation.x += xDelta;
     fixedTranslation.y += yDelta;
     setTranslationFractions();
+  }
+
+  int percentToPixels(char xyz, float percent) {
+    switch(xyz) {
+    case 'x':
+      return (int) (percent / 100 * width);
+    case 'y':
+      return (int) (percent / 100 * height);
+    case 'z':
+      return (int) (percent / 100 * screenPixelCount);
+    }
+    return 0;
   }
 
   int angstromsToPixels(float distance) {

@@ -4829,7 +4829,10 @@
   <fah_proj number="2463" name="p2463_Translocon_channel_no_frags_Thanks4Folding!" public="y" file="xyz"
     server="171.65.103.160" preferred="45" deadline="66"
     credit="905" frames="100" code="G" contact="ppetrone" contrib="Hyperlife"/>
-  <fah_proj number="2464" name="p2464_" public="n"
+  <fah_proj number="2464" name="p2464_Translocon_channel_no_frags_Thanks4Folding!" public="n" file="xyz"
+    server="171.65.103.160" preferred="45" deadline="66"
+    credit="905" frames="100" code="G" contact="ppetrone" contrib="Hyperlife"/>
+  <fah_proj number="2465" name="p2465_" public="n"
     server="171.65.103.160" preferred="45" deadline="66"
     credit="905" frames="100" code="G" contact="ppetrone"/>
   <fah_proj number="2481" name="p2481_system" public="y"
@@ -4880,12 +4883,12 @@
   <fah_proj number="2497" name="p2497_" public="y"
     server="171.65.103.160" preferred="42" deadline="93"
     credit="905" frames="100" code="G" contact="ppetrone"/>
-  <fah_proj number="2498" name="p2498_" public="n"
+  <fah_proj number="2498" name="p2498_Translocon_GLX2" public="y" file="xyz"
     server="171.65.103.160" preferred="42" deadline="93"
-    credit="905" frames="100" code="G" contact="ppetrone"/>
-  <fah_proj number="2499" name="p2499_" public="n"
+    credit="905" frames="100" code="G" contact="ppetrone" contrib="Hyperlife"/>
+  <fah_proj number="2499" name="p2499_Translocon_ALX2" public="y" file="xyz"
     server="171.65.103.160" preferred="42" deadline="93"
-    credit="905" frames="100" code="G" contact="ppetrone"/>
+    credit="905" frames="100" code="G" contact="ppetrone" contrib="Hyperlife"/>
 
   <!-- Projects 2500 to 2599 -->
   <fah_proj number="2500" name="p2500_BBA5_pfold" public="y" file="xyz"
@@ -6660,45 +6663,63 @@
   <fah_proj number="4444" name="p4444_Seq44_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7863" preferred="43" deadline="63"
     credit="225" frames="100" code="G" contact="gbowman" contrib="Flathead74"/>
-  <fah_proj number="4445" name="p4445_Seq44_Amber03" public="y"
+  <fah_proj number="4445" name="p4445_Seq44_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7863" preferred="43" deadline="63"
-    credit="225" frames="100" code="G" contact="gbowman"/>
-  <fah_proj number="4446" name="p4446_Seq45_Amber03" public="y"
+    credit="225" frames="100" code="G" contact="gbowman" contrib="Smoking2000"/>
+  <fah_proj number="4446" name="p4446_Seq45_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7865" preferred="43" deadline="63"
-    credit="225" frames="100" code="G" contact="gbowman"/>
-  <fah_proj number="4447" name="p4447_Seq45_Amber03" public="y"
+    credit="225" frames="100" code="G" contact="gbowman" contrib="Smoking2000"/>
+  <fah_proj number="4447" name="p4447_Seq45_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7865" preferred="43" deadline="63"
-    credit="225" frames="100" code="G" contact="gbowman"/>
+    credit="225" frames="100" code="G" contact="gbowman" contrib="Smoking2000"/>
   <fah_proj number="4448" name="p4448_Seq46_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7862" preferred="43" deadline="63"
     credit="225" frames="100" code="G" contact="gbowman" contrib="Smoking2000"/>
   <fah_proj number="4449" name="p4449_Seq46_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7862" preferred="43" deadline="63"
     credit="225" frames="100" code="G" contact="gbowman" contrib="Smoking2000"/>
-  <fah_proj number="4450" name="p4450_Seq47_Amber03" public="y"
+  <fah_proj number="4450" name="p4450_Seq47_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7855" preferred="43" deadline="63"
-    credit="225" frames="100" code="G" contact="gbowman"/>
-  <fah_proj number="4451" name="p4451_Seq47_Amber03" public="y"
+    credit="225" frames="100" code="G" contact="gbowman" contrib="John Naylor"/>
+  <fah_proj number="4451" name="p4451_Seq47_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7855" preferred="43" deadline="63"
-    credit="225" frames="100" code="G" contact="gbowman"/>
+    credit="225" frames="100" code="G" contact="gbowman" contrib="Smoking2000"/>
   <fah_proj number="4452" name="p4452_Seq48_Amber03" public="y"
     server="171.67.108.13" atoms="7861" preferred="43" deadline="63"
     credit="225" frames="100" code="G" contact="gbowman"/>
-  <fah_proj number="4453" name="p4453_Seq48_Amber03" public="y"
+  <fah_proj number="4453" name="p4453_Seq48_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7861" preferred="43" deadline="63"
-    credit="225" frames="100" code="G" contact="gbowman"/>
-  <fah_proj number="4454" name="p4454_Seq49_Amber03" public="y"
+    credit="225" frames="100" code="G" contact="gbowman" contrib="Smoking2000"/>
+  <fah_proj number="4454" name="p4454_Seq49_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7857" preferred="43" deadline="63"
-    credit="225" frames="100" code="G" contact="gbowman"/>
-  <fah_proj number="4455" name="p4455_Seq49_Amber03" public="y"
+    credit="225" frames="100" code="G" contact="gbowman" contrib="Smoking2000"/>
+  <fah_proj number="4455" name="p4455_Seq49_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7857" preferred="43" deadline="63"
-    credit="225" frames="100" code="G" contact="gbowman"/>
-  <fah_proj number="4456" name="p4456_Seq50_Amber03" public="y"
+    credit="225" frames="100" code="G" contact="gbowman" contrib="Smoking2000"/>
+  <fah_proj number="4456" name="p4456_Seq50_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7858" preferred="43" deadline="63"
-    credit="225" frames="100" code="G" contact="gbowman"/>
-  <fah_proj number="4457" name="p4457_Seq50_Amber03" public="y"
+    credit="225" frames="100" code="G" contact="gbowman" contrib="Smoking2000"/>
+  <fah_proj number="4457" name="p4457_Seq50_Amber03" public="y" file="xyz"
     server="171.67.108.13" atoms="7858" preferred="43" deadline="63"
+    credit="225" frames="100" code="G" contact="gbowman" contrib="Smoking2000"/>
+  <fah_proj number="4458" name="p4458_Seq51_Amber03" public="y" file="xyz"
+    server="171.67.108.13" atoms="7858" preferred="43" deadline="63"
+    credit="225" frames="100" code="G" contact="gbowman" contrib="Smoking2000"/>
+  <fah_proj number="4459" name="p4459_Seq51_Amber03" public="y" file="xyz"
+    server="171.67.108.13" atoms="7858" preferred="43" deadline="63"
+    credit="225" frames="100" code="G" contact="gbowman" contrib="John Naylor"/>
+  <fah_proj number="4460" name="p4460_Seq52_Amber03" public="y" file="xyz"
+    server="171.67.108.13" atoms="7847" preferred="43" deadline="63"
+    credit="225" frames="100" code="G" contact="gbowman" contrib="Smoking2000"/>
+  <fah_proj number="4461" name="p4461_Seq52_Amber03" public="y"
+    server="171.67.108.13" atoms="7847" preferred="43" deadline="63"
     credit="225" frames="100" code="G" contact="gbowman"/>
+  <fah_proj number="4462" name="p4462_Seq53_Amber03" public="y" file="xyz"
+    server="171.67.108.13" atoms="7870" preferred="43" deadline="63"
+    credit="225" frames="100" code="G" contact="gbowman" contrib="John Naylor"/>
+  <fah_proj number="4463" name="p4463_Seq53_Amber03" public="y" file="xyz"
+    server="171.67.108.13" atoms="7870" preferred="43" deadline="63"
+    credit="225" frames="100" code="G" contact="gbowman" contrib="Mephitus,Smoking2000"/>
 
   <!-- Projects 4500 to 4599 -->
   <fah_proj number="4507" name="p4507_PTL-8_minout" public="n" file="xyz"
@@ -7051,9 +7072,9 @@
   <fah_proj number="4623" name="p4623_T0_proG-12_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="219" preferred="15.4" deadline="23.1"
     credit="84.7" frames="100" code="A" contact="vvoelz" contrib="Smoking2000"/>
-  <fah_proj number="4624" name="p4624_T0499-12_minout" public="y" file="xyz"
+  <fah_proj number="4624" name="p4624_T0499-12_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="222" preferred="15.4" deadline="23.1"
-    credit="84.7" frames="100" code="A" contact="vvoelz" contrib="Hyperlife"/>
+    credit="84.7" frames="100" code="A" contact="vvoelz" contrib="MstrBlstr,Hyperlife"/>
   <fah_proj number="4625" name="p4625_T0499-8_minout" public="y" file="top,xyz"
     server="169.230.26.30" atoms="154" preferred="8.5" deadline="12.8"
     credit="47" frames="100" code="A" contact="vvoelz" contrib="MstrBlstr,Hyperlife"/>

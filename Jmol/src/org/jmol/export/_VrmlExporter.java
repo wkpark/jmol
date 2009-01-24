@@ -42,7 +42,7 @@ import org.jmol.viewer.Viewer;
 public class _VrmlExporter extends _Exporter {
 
   //VERY  preliminary -- in process -- 7/2007 Bob Hanson
-  /* 1/2009 Angel Herráez:
+  /* 1/2009 Angel Herraez:
     # added support for translucency 
     # Jmol info in header
     # set navigation mode

@@ -740,6 +740,8 @@ public class ProjectInformation {
           info._fciCore = CoreType.NVIDIA_DEV;
         } else if ("QMD".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.QMD;
+        } else if ("SHARPEN".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.SHARPEN;
         } else if ("TINKER".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.TINKER;
         } else {

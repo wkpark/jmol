@@ -113,10 +113,9 @@ public class Dialog extends JPanel implements JmolDialogInterface {
         fileName = "Jmol" + fileName;
       if (fileName.length() > 0)
         openChooser.setSelectedFile(new File(fileName));
-      if (fileName.indexOf(":") < 0)
-        openChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer, true, true));
     }
-    
+    if (fileName == null || fileName.indexOf(":") < 0 && fileName.indexOf("/") != 0)
+      openChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer, true, true));    
     File file = null;
     if (openChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
       file = openChooser.getSelectedFile();

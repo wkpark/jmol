@@ -688,7 +688,7 @@ public class FileManager {
     if (localDir.length() == 0 && forDialog)
       localDir = (String) viewer.getParameter("defaultDirectoryLocal");
     if (localDir.length() == 0)
-      return null;
+      return (viewer.isApplet() ? null : new File(System.getProperty("user.dir")));
     File f = new File(localDir);
     return f.isDirectory() ? f : f.getParentFile();
   }

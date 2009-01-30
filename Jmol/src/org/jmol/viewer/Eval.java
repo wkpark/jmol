@@ -4376,8 +4376,13 @@ class Eval {
         htParams.put("modelNumber", new Integer(modelNumber));
         tok = tokAt(++i);
       }
-      if (tok == Token.leftbrace || tok == Token.point3f) {
-        Point3f lattice = getPoint3f(i, false);
+      Point3f lattice = null;
+      if (tok == Token.leftbrace || tok == Token.point3f)
+        lattice = getPoint3f(i, false);
+      else if (tok == Token.identifier 
+          && parameterAsString(i).equalsIgnoreCase("packed"))
+        lattice = new Point3f(555,555,-1);
+      if (lattice != null) {
         i = iToken + 1;
         htParams.put("lattice", lattice);
         sOptions += " {" + (int) lattice.x + " " + (int) lattice.y + " "

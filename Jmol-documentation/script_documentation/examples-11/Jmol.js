@@ -97,6 +97,9 @@ var undefined; // for IE 5 ... wherein undefined is undefined
 ////////////////////////////////////////////////////////////////
 
 function jmolInitialize(codebaseDirectory, fileNameOrUseSignedApplet) {
+  if (_jmol.initialized)
+    return;
+  _jmol.initialized = true;
   if(allowJMOLJAR && document.location.search.indexOf("JMOLJAR=")>=0) {
     var f = document.location.search.split("JMOLJAR=")[1].split("&")[0];
     if (f.indexOf("/") >= 0) {
@@ -116,7 +119,6 @@ function jmolInitialize(codebaseDirectory, fileNameOrUseSignedApplet) {
   _jmolSetCodebase(codebaseDirectory);
   _jmolGetJarFilename(fileNameOrUseSignedApplet);
   _jmolOnloadResetForms();
-  _jmol.initialized = true;
 }
 
 function jmolSetTranslation(TF) {
@@ -729,11 +731,11 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
     }
     if (useIEObject) { // use MSFT IE6 object tag with .cab file reference
       winCodebase = (windowsCabUrl ? " codebase='" + windowsCabUrl + "'\n" : "");
+      params.code = 'JmolApplet';
       tHeader = 
         "<object name='jmolApplet" + nameSuffix +
         "' id='jmolApplet" + nameSuffix + "' " + appletCssText + "\n" +
 	" classid='" + windowsClassId + "'\n" + winCodebase + widthAndHeight + ">\n";
-        params.code = 'JmolApplet';
       tFooter = "</object>";
     } else if (useHtml4Object) { // use HTML4 object tag
       tHeader = 
@@ -797,8 +799,6 @@ function _jmolInitCheck() {
   if (_jmol.initChecked)
     return;
   _jmol.initChecked = true;
-  if (_jmol.initialized)
-    return;
   jmolInitialize(defaultdir, defaultjar)
 }
 
@@ -1087,6 +1087,7 @@ function _jmolSetCodebase(codebase) {
 }
 
 function _jmolOnloadResetForms() {
+  // must be evaluated ONLY once
   _jmol.previousOnloadHandler = window.onload;
   window.onload =
   function() {

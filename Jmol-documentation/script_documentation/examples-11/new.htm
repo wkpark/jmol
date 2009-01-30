@@ -38,7 +38,7 @@ Scripts=new Array(" "
 +' Other pages describe features introduced between <a href=new6.htm>Jmol 11.6 and Jmol 11.4</a>,'
 +' between <a href=new4.htm>Jmol 11.4 and Jmol 11.2</a> and'
 +' between <a href=new2.htm>Jmol 11.2 and Jmol 11.0</a>.'
-+' Documentation for all commands can be found in the <a href=../index.htm?ver=11.7>Interactive Documentation for Jmol 11.7</a>.'
++' Documentation for all commands can be found in the <a href=../index.htm?ver=11.8>Interactive Documentation for Jmol 11.8</a>.'
 +' Documentation is also available for both <a target=_blank href=../index.htm?ver=11.4>Jmol 11.4</a> and <a target=_blank href=../index.htm?ver=11.6>Jmol 11.6</a>.'
 +' For the complete change log development summary, see <a href=http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/viewer/Jmol.properties?view=markup>Jmol.properties</a>.'
 +' Comments? Suggestions? <a href=mailto:hansonr@stolaf.edu>Bob Hanson</a>'
@@ -50,6 +50,38 @@ Scripts=new Array(" "
 */
 
 ,latestVersion
+
+,'### load "filename" {ijk i\'j\'k\' -1} ###'
+,'# Jmol 11.7.23 adds the "-1" option to unit cell loading. This option forces full packing of the unit cell, which in some cases may be preferable to the 0 (unnormalized) or 1 (normalized) options. The common option to pack a single unit cell, {555 555 -1}, may be indicated using the PACKED keyword.'
+,'load "quartz.cif" {555 555 0};rotate x 10;rotate y 10'
+,'load "quartz.cif" {555 555 1};rotate x 10;rotate y 10'
+,'load "quartz.cif" {555 555 -1};rotate x 10;rotate y 10'
+,'load "dickite.cif" {555 555 0};rotate y 90'
+,'load "dickite.cif" {555 555 1};rotate y 90'
+,'load "dickite.cif" {555 555 -1};rotate y 90'
+,'load "dickite.cif" PACKED;rotate y 90; # same thing'
+
+,'### translate x|y|z x.x nm|angstroms|% ###'
+,'# Jmol 11.7.22 allows translation by absolute or percentage amounts in the x, y, and z direction. Distances may be in nanometers or angstroms and are measured in the plane parallel to the screen and going through the geometric center of the model. For Z, the zoom is adjusted such that the viewable portion of the model in that plane is increased by the indicated distance; a too-positive number for Z translation (making the dimension upon which zoom is based less than 1 Angstrom across) will be ignored.'
+,'load 1crn.pdb'
+,'translate x 5.0 angstroms'
+,'translate x -5.0 angstroms'
+,'translate x -10%'
+,'translate x 10%'
+,'translate y 5.0 angstroms'
+,'translate y -5.0 angstroms'
+,'translate z 1.0 angstroms'
+,'translate z -1.0 angstroms'
+,'translate z 5.0 angstroms'
+,'translate z -5.0 angstroms'
+,'translate z 1 nm'
+,'translate z -1 nm'
+
+
+,'### Alchemy/3DNA file reader ###'
+,'# Jmol 11.7.17 reads TRIPOS Alchemy files, including those produced in association with the <a href="http://rutchem.rutgers.edu/~xiangjun/3DNA/">3DNA software package</a>. '
+,'load aspirin.alc'
+,'load 3dna.alc;spacefill off;'
 
 ,'### error message returned in JavaScript inline loading methods ###'
 ,'# A new <a href=Jmol.js>Jmol.js</a> file associated with Jmol 11.7.16 returns file loading error messages with jmolLoadInline, jmolLoadInlineArray, jmolLoadInlineScript, jmolAppendInlineScript, and jmolAppendInlineArray.'
@@ -414,6 +446,9 @@ function domonitor(isiter){
 </script>
 </head>
 <body onload="checkScroll()">
-<script type="text/javascript">showpage(0)</script>
+<script type="text/javascript">
+showpage(0)
+document.write(jmolButton("background red"))
+</script>
 </body>
 </html>

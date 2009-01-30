@@ -199,7 +199,7 @@ function getapplet(name, model, codebase, height, width, script) {
   if (language)jmolSetCallback("language",language)
 
   var s = jmolApplet([width,height], script)
- //s=s.replace(/mayscript/,"maynotscript")
+// alert("not allowing scripting");s=s.replace(/mayscript/,"maynotscript")
  //alert(s)
   return s
 }
@@ -356,7 +356,9 @@ isAnimationRunning, animationDirection, currentDirection) {
 function scriptCallback(app, status, message, millisec, errorUntranslated) {
   // this filters out the "script completed" messages and only passes the real messages along
   millisec = parseInt("" + millisec)
-  if ("" + errorUntranslated != "null")alert(errorUntranslated + "\n\n" + message)
+  errorUntranslated = "" + errorUntranslated
+  if (errorUntranslated != "null" && errorUntranslated != "undefined" /*safari*/)
+	alert(errorUntranslated + "\n\n" + message)
   if (millisec == 0) showmsg(app, status, message, 0)
 }
 

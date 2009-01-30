@@ -226,7 +226,8 @@ public class Symmetry implements SymmetryInterface {
   }
 
   public void toUnitCell(Point3f pt, Point3f offset) {
-    if (symmetryInfo.isMultiCell && unitCell != null)
+    if ((symmetryInfo == null || symmetryInfo.isMultiCell)
+        && unitCell != null)
       unitCell.toUnitCell(pt, offset);
   }
 

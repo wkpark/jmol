@@ -355,7 +355,7 @@ public int[] next = new int[1];
       latticeCells[2] = (int) pt.z;
     }
     doApplySymmetry = (latticeCells[0] > 0 && latticeCells[1] > 0);
-    //allows for {1 1 1} or {555 555 0|1}
+    //allows for {1 1 1} or {555 555 0|1|-1}
     if (!doApplySymmetry) {
       latticeCells[0] = 0;
       latticeCells[1] = 0;

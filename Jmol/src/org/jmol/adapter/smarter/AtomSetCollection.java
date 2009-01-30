@@ -516,8 +516,10 @@ public class AtomSetCollection {
     // AROUND the central cell 555 and that
     // we should normalize (z = 1) or not (z = 0)
     this.latticeCells = latticeCells;
-    isLatticeRange = (latticeCells[2] == 0 || latticeCells[2] == 1) && (latticeCells[0] <= 555  && latticeCells[1] >= 555);
+    isLatticeRange = (latticeCells[2] == 0 || latticeCells[2] == 1 || latticeCells[2] == -1) 
+        && (latticeCells[0] <= 555  && latticeCells[1] >= 555);
     doNormalize = (!isLatticeRange || latticeCells[2] == 1);
+    doFillUnitCell = (isLatticeRange && latticeCells[2] == -1);
     setApplySymmetryToBonds(applySymmetryToBonds);
   }
   
@@ -565,6 +567,7 @@ public class AtomSetCollection {
    }
 
    boolean doNormalize = true;
+   boolean doFillUnitCell = false;
    boolean isLatticeRange = false;
    
    void applySymmetry(int maxX, int maxY, int maxZ) throws Exception {
@@ -595,6 +598,8 @@ public class AtomSetCollection {
          && c.x <= rmaxx && c.y <= rmaxy && c.z <= rmaxz);
    }
 
+   private final Point3f ptOffset = new Point3f();
+   
    private void applyAllSymmetry(int maxX, int maxY, int maxZ) throws Exception {
 
     int noSymmetryCount = getLastAtomSetAtomCount();
@@ -604,7 +609,8 @@ public class AtomSetCollection {
     }
     bondCount0 = bondCount;
 
-    symmetry.setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
+    symmetry
+        .setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
     int operationCount = symmetry.getSpaceGroupOperationCount();
     int minX = 0;
     int minY = 0;
@@ -649,34 +655,41 @@ public class AtomSetCollection {
     }
     //always do the 555 cell first
     Matrix4f op = symmetry.getSpaceGroupOperation(0);
+    if (doFillUnitCell)
+      ptOffset.set(0, 0, 0);
     for (int tx = minX; tx < maxX; tx++)
       for (int ty = minY; ty < maxY; ty++)
         for (int tz = minZ; tz < maxZ; tz++) {
           unitCells[iCell++] = 555 + tx * 100 + ty * 10 + tz;
-          if (tx == 0 && ty == 0 && tz == 0 && cartesians.length > 0) {
-            for (pt = 0; pt < noSymmetryCount; pt++) {
-              Atom atom = atoms[iAtomFirst + pt];
-              Point3f c = new Point3f(atom);
-              op.transform(c);
-              symmetry.toCartesian(c);
-              atom.bsSymmetry.set(iCell * operationCount);
-              atom.bsSymmetry.set(0);
-              if (checkSymmetryRange)
-                setSymmetryMinMax(c);
-              if (pt < cartesianCount)
-                cartesians[pt] = c;
+          if (tx != 0 || ty != 0 || tz != 0 || cartesians.length == 0)
+            continue;
+          for (pt = 0; pt < noSymmetryCount; pt++) {
+            Atom atom = atoms[iAtomFirst + pt];
+            Point3f c = new Point3f(atom);
+            op.transform(c);
+            symmetry.toCartesian(c);
+            if (doFillUnitCell) {
+              symmetry.toUnitCell(c, ptOffset);
+              atom.set(c);
+              symmetry.toFractional(atom);
             }
-            if (checkRangeNoSymmetry) {
-              rminx -= absRange;
-              rminy -= absRange;
-              rminz -= absRange;
-              rmaxx += absRange;
-              rmaxy += absRange;
-              rmaxz += absRange;
-            }
-            cell555Count = pt = symmetryAddAtoms(iAtomFirst,
-                noSymmetryCount, 0, 0, 0, 0, pt, iCell * operationCount);
+            atom.bsSymmetry.set(iCell * operationCount);
+            atom.bsSymmetry.set(0);
+            if (checkSymmetryRange)
+              setSymmetryMinMax(c);
+            if (pt < cartesianCount)
+              cartesians[pt] = c;
           }
+          if (checkRangeNoSymmetry) {
+            rminx -= absRange;
+            rminy -= absRange;
+            rminz -= absRange;
+            rmaxx += absRange;
+            rmaxy += absRange;
+            rmaxz += absRange;
+          }
+          cell555Count = pt = symmetryAddAtoms(iAtomFirst, noSymmetryCount, 0,
+              0, 0, 0, pt, iCell * operationCount);
         }
     if (checkRange111) {
       rminx -= absRange;
@@ -692,8 +705,8 @@ public class AtomSetCollection {
         for (int tz = minZ; tz < maxZ; tz++) {
           iCell++;
           if (tx != 0 || ty != 0 || tz != 0)
-            pt = symmetryAddAtoms(iAtomFirst, noSymmetryCount,
-                tx, ty, tz, cell555Count, pt, iCell * operationCount);
+            pt = symmetryAddAtoms(iAtomFirst, noSymmetryCount, tx, ty, tz,
+                cell555Count, pt, iCell * operationCount);
         }
     if (operationCount > 0) {
       String[] symmetryList = new String[operationCount];
@@ -710,7 +723,7 @@ public class AtomSetCollection {
     setAtomSetAuxiliaryInfo("unitCellRange", unitCells);
     symmetry.setSpaceGroup(null);
     notionalUnitCell = new float[6];
-    coordinatesAreFractional = false; 
+    coordinatesAreFractional = false;
     //turn off global fractional conversion -- this will be model by model
     setGlobalBoolean(GLOBAL_SYMMETRY);
   }
@@ -739,6 +752,8 @@ public class AtomSetCollection {
     boolean isBaseCell = (baseCount == 0);
     boolean addBonds = (bondCount0 > bondIndex0 && applySymmetryToBonds);
     int[] atomMap = (addBonds ? new int[noSymmetryCount] : null);
+    if (doFillUnitCell)
+      ptOffset.set(transX, transY, transZ);
 
     //symmetryRange < 0 : just check symop=1 set
     //symmetryRange > 0 : check against {1 1 1}
@@ -781,6 +796,11 @@ public class AtomSetCollection {
         Atom special = null;
         Point3f cartesian = new Point3f(ptAtom);
         symmetry.toCartesian(cartesian);
+        if (doFillUnitCell) {
+          symmetry.toUnitCell(cartesian, ptOffset);
+          ptAtom.set(cartesian);
+          symmetry.toFractional(ptAtom);
+        }
         if (checkSymmetryMinMax)
           setSymmetryMinMax(cartesian);
         if (checkDistances) {

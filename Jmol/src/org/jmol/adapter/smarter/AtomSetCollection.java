@@ -514,12 +514,12 @@ public class AtomSetCollection {
     //set when unit cell is determined
     // x <= 555 and y >= 555 indicate a range of cells to load
     // AROUND the central cell 555 and that
-    // we should normalize (z = 1) or not (z = 0)
+    // we should normalize (z = 1) or pack unit cells (z = -1) or not (z = 0)
     this.latticeCells = latticeCells;
     isLatticeRange = (latticeCells[2] == 0 || latticeCells[2] == 1 || latticeCells[2] == -1) 
         && (latticeCells[0] <= 555  && latticeCells[1] >= 555);
     doNormalize = (!isLatticeRange || latticeCells[2] == 1);
-    doFillUnitCell = (isLatticeRange && latticeCells[2] == -1);
+    doPackUnitCell = (isLatticeRange && latticeCells[2] == -1);
     setApplySymmetryToBonds(applySymmetryToBonds);
   }
   
@@ -567,7 +567,7 @@ public class AtomSetCollection {
    }
 
    boolean doNormalize = true;
-   boolean doFillUnitCell = false;
+   boolean doPackUnitCell = false;
    boolean isLatticeRange = false;
    
    void applySymmetry(int maxX, int maxY, int maxZ) throws Exception {
@@ -655,7 +655,7 @@ public class AtomSetCollection {
     }
     //always do the 555 cell first
     Matrix4f op = symmetry.getSpaceGroupOperation(0);
-    if (doFillUnitCell)
+    if (doPackUnitCell)
       ptOffset.set(0, 0, 0);
     for (int tx = minX; tx < maxX; tx++)
       for (int ty = minY; ty < maxY; ty++)
@@ -668,7 +668,7 @@ public class AtomSetCollection {
             Point3f c = new Point3f(atom);
             op.transform(c);
             symmetry.toCartesian(c);
-            if (doFillUnitCell) {
+            if (doPackUnitCell) {
               symmetry.toUnitCell(c, ptOffset);
               atom.set(c);
               symmetry.toFractional(atom);
@@ -752,7 +752,7 @@ public class AtomSetCollection {
     boolean isBaseCell = (baseCount == 0);
     boolean addBonds = (bondCount0 > bondIndex0 && applySymmetryToBonds);
     int[] atomMap = (addBonds ? new int[noSymmetryCount] : null);
-    if (doFillUnitCell)
+    if (doPackUnitCell)
       ptOffset.set(transX, transY, transZ);
 
     //symmetryRange < 0 : just check symop=1 set
@@ -796,7 +796,7 @@ public class AtomSetCollection {
         Atom special = null;
         Point3f cartesian = new Point3f(ptAtom);
         symmetry.toCartesian(cartesian);
-        if (doFillUnitCell) {
+        if (doPackUnitCell) {
           symmetry.toUnitCell(cartesian, ptOffset);
           ptAtom.set(cartesian);
           symmetry.toFractional(ptAtom);

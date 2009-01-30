@@ -42,10 +42,9 @@ import javax.vecmath.Point3i;
 
 final public class Atom extends Point3fi {
 
-  final static byte VIBRATION_VECTOR_FLAG = 0x01;
-  final static byte IS_HETERO_FLAG = 0x02;
-  final static byte FORMAL_CHARGE_MASK = 0x1C;
-  final static byte VALENCY_MASK = (byte)0xE0;
+  private final static byte VIBRATION_VECTOR_FLAG = 1;
+  private final static byte IS_HETERO_FLAG = 2;
+  private final static byte FLAG_MASK = 3;
 
   Group group;
   int atomIndex;
@@ -60,6 +59,7 @@ final public class Atom extends Point3fi {
   short modelIndex;
   private short atomicAndIsotopeNumber;
   private byte formalChargeAndFlags;
+  private byte valence;
   char alternateLocationID;
   short madAtom;
   public short getMadAtom() {
@@ -89,8 +89,6 @@ final public class Atom extends Point3fi {
     isSimple = true;
     this.x = pt.x; this.y = pt.y; this.z = pt.z;
     //must be transformed later -- Polyhedra;
-    formalChargeAndFlags = 0;
-    madAtom = 0;
   }
   
   Atom(Viewer viewer, int modelIndex, int atomIndex,
@@ -360,9 +358,8 @@ final public class Atom extends Point3fi {
   }
 
   void setFormalCharge(int charge) {
-    if (charge > 7)
-      charge = 7;
-    formalChargeAndFlags = (byte)((formalChargeAndFlags & ~FORMAL_CHARGE_MASK) | (charge << 2));
+    formalChargeAndFlags = (byte)((formalChargeAndFlags & FLAG_MASK) 
+        | ((charge == Integer.MIN_VALUE ? 0 : charge > 7 ? 7 : charge < -3 ? -3 : charge) << 2));
   }
   
   void setVibrationVector() {
@@ -392,14 +389,12 @@ final public class Atom extends Point3fi {
     return !Float.isNaN(userDefinedVanDerWaalRadius = (radius > 0 ? radius : Float.NaN));  
   }
   
-  public void setValency(int nBonds) {
-    if (nBonds > 7)
-      nBonds = 7;
-    formalChargeAndFlags = (byte) ((formalChargeAndFlags & ~VALENCY_MASK) | ((byte) nBonds << 5));
+  public void setValence(int nBonds) {
+    valence = (byte) (nBonds < 0 ? 0 : nBonds < 0xEF ? nBonds : 0xEF);
   }
 
   public int getValence() {
-    int n = (formalChargeAndFlags >> 5) & 7;
+    int n = valence;
     if (n == 0 && bonds != null)
       for (int i = bonds.length; --i >= 0;)
         n += bonds[i].getValence();

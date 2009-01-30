@@ -536,7 +536,7 @@ abstract public class AtomCollection {
         taint(i, TAINT_TEMPERATURE);
         break;
       case Token.valence:
-        atom.setValency(iValue);
+        atom.setValence(iValue);
         taint(i, TAINT_VALENCE);
         break;
       case Token.vanderwaals:
@@ -699,7 +699,7 @@ abstract public class AtomCollection {
           setBFactor(atomIndex, x);
           break;
         case TAINT_VALENCE:
-          atom.setValency((int)x);          
+          atom.setValence((int)x);          
           break;
         case TAINT_VANDERWAALS:
           atom.setRadius(x);          

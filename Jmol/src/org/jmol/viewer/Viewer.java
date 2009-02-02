@@ -6728,6 +6728,33 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     refreshMeasures();
   }
 
+  synchronized void moveSelected(int deltaX, int deltaY, int x, int y, boolean isTranslation) {
+    if (isJmolDataFrame())
+      return;
+    BitSet bsSelected = selectionManager.bsSelection;
+      if (deltaX == Integer.MIN_VALUE) {
+        setSelectionHalos(true);
+        return;
+      }
+      if (deltaX == Integer.MAX_VALUE) {
+        setSelectionHalos(false);
+        return;
+      }
+      if (isTranslation) {
+        Point3f ptCenter = getAtomSetCenter(bsSelected);
+        Point3i pti = transformPoint(ptCenter);
+        Point3f pt = new Point3f(pti.x + deltaX, pti.y + deltaY, pti.z);
+        unTransformPoint(pt, pt);        
+        pt.sub(ptCenter);
+        modelSet.setAtomCoordRelative(pt, bsSelected);
+      } else {
+        transformManager.setRotateMolecule(true);
+        transformManager.rotateXYBy(deltaX, deltaY, bsSelected);
+        transformManager.setRotateMolecule(false);
+       }
+      refreshMeasures();
+ }
+  
   void rotateAtoms(Matrix3f mNew, Matrix3f matrixRotate, boolean fullMolecule,
                    Point3f center, boolean isInternal, BitSet bsAtoms) {
     modelSet.rotateAtoms(mNew, matrixRotate, bsAtoms, fullMolecule, center,

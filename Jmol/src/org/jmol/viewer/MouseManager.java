@@ -35,24 +35,37 @@ import javax.vecmath.Point3f;
 
 public abstract class MouseManager implements KeyListener {
 
-  Viewer viewer;
+  protected Viewer viewer;
 
-  Thread hoverWatcherThread;
+  protected Thread hoverWatcherThread;
 
-  int previousDragX, previousDragY;
-  int xCurrent = -1000;
-  int yCurrent = -1000;
-  long timeCurrent = -1;
+  private int previousDragX, previousDragY;
+  protected int xCurrent = -1000;
+  protected int yCurrent = -1000;
+  protected long timeCurrent = -1;
 
-  boolean drawMode = false;
-  boolean measuresEnabled = true;
-  MeasurementPending measurementPending;
+  private boolean drawMode = false;
+  private boolean dragSelectedMode = false;
+  private boolean measuresEnabled = true;
+  private MeasurementPending measurementPending;
 
-  boolean hoverActive = false;
+  private boolean hoverActive = false;
 
   private boolean rubberbandSelectionMode = false;
-  int xAnchor, yAnchor;
-  final static Rectangle rectRubber = new Rectangle();
+  private int xAnchor, yAnchor;
+  private final Rectangle rectRubber = new Rectangle();
+
+  private int previousClickX, previousClickY;
+  private int previousClickModifiers, previousClickCount;
+  private long previousClickTime;
+
+  private int previousPressedX, previousPressedY;
+  private int previousPressedModifiers;
+  private long previousPressedTime;
+  private int pressedCount;
+
+  protected int mouseMovedX, mouseMovedY;
+  protected long mouseMovedTime;
 
   abstract boolean handleOldJvm10Event(Event e);
 
@@ -197,16 +210,8 @@ public abstract class MouseManager implements KeyListener {
   final static int SHIFT_RIGHT = SHIFT | RIGHT;
   final static int CTRL_SHIFT_RIGHT = CTRL | SHIFT | RIGHT;
   final static int CTRL_ALT_SHIFT_RIGHT = CTRL | ALT | SHIFT | RIGHT;
-  public final static int BUTTON_MODIFIER_MASK = CTRL | ALT | SHIFT | LEFT
+  private final static int BUTTON_MODIFIER_MASK = CTRL | ALT | SHIFT | LEFT
       | MIDDLE | RIGHT;
-
-  int previousPressedX, previousPressedY;
-  int previousPressedModifiers;
-  long previousPressedTime;
-  int pressedCount;
-
-  int mouseMovedX, mouseMovedY;
-  long mouseMovedTime;
 
   void mouseMoved(long time, int x, int y, int modifiers) {
     hoverOff();
@@ -262,8 +267,8 @@ public abstract class MouseManager implements KeyListener {
     previousPressedTime = timeCurrent = time;
 
     //viewer.setStatusUserAction("mousePressed: " + modifiers);
-
-    switch (modifiers & BUTTON_MODIFIER_MASK) {
+    modifiers &= BUTTON_MODIFIER_MASK;
+    switch (modifiers) {
     /****************************************************************
      * mth 2004 03 17
      * this isPopupTrigger stuff just doesn't work reliably for me
@@ -284,6 +289,8 @@ public abstract class MouseManager implements KeyListener {
     case ALT_SHIFT_LEFT:
       if (drawMode)
         viewer.checkObjectDragged(Integer.MIN_VALUE, 0, x, y, modifiers);
+      else if (dragSelectedMode && modifiers != SHIFT_LEFT)
+        viewer.moveSelected(Integer.MIN_VALUE, 0, x, y, false);
       break;
     }
   }
@@ -310,26 +317,24 @@ public abstract class MouseManager implements KeyListener {
     yCurrent = y;
     viewer.setInMotion(false);
     viewer.setCursor(Viewer.CURSOR_DEFAULT);
-    if (rubberbandSelectionMode
-        && ((modifiers & BUTTON_MODIFIER_MASK) == SHIFT_LEFT)) {
+    modifiers &= BUTTON_MODIFIER_MASK;
+    if (rubberbandSelectionMode && modifiers == SHIFT_LEFT) {
       viewer.selectRectangle(rectRubber, modifiers);
       viewer.refresh(3, "mouseReleased");
     }
     rubberbandSelectionMode = false;
     rectRubber.x = Integer.MAX_VALUE;
-    if (drawMode)
-      switch (modifiers & BUTTON_MODIFIER_MASK) {
-      case ALT_LEFT:
-      case SHIFT_LEFT:
-      case ALT_SHIFT_LEFT:
+    switch (modifiers) {
+    case ALT_LEFT:
+    case SHIFT_LEFT:
+    case ALT_SHIFT_LEFT:
+      if (drawMode)
         viewer.checkObjectDragged(Integer.MAX_VALUE, 0, x, y, modifiers);
-        break;
-      }
+      else if (dragSelectedMode && modifiers != SHIFT_LEFT)
+        viewer.moveSelected(Integer.MAX_VALUE, 0, x, y, false);
+      break;
+    }
   }
-
-  int previousClickX, previousClickY;
-  int previousClickModifiers, previousClickCount;
-  long previousClickTime;
 
   void clearClickCount() {
     previousClickX = -1;
@@ -354,12 +359,14 @@ public abstract class MouseManager implements KeyListener {
     previousClickModifiers = modifiers;
     previousClickCount = clickCount;
     timeCurrent = previousClickTime = time;
+    modifiers &= BUTTON_MODIFIER_MASK;
     if (viewer.haveModelSet())
       checkPointOrAtomClicked(x, y, modifiers, clickCount);
   }
 
   void setMouseMode() {
     drawMode = false;
+    dragSelectedMode = false;
     rubberbandSelectionMode = (viewer.getPickingStyle() == JmolConstants.PICKINGSTYLE_SELECT_DRAG);
     measuresEnabled = true;
     switch (viewer.getPickingMode()) {
@@ -367,6 +374,10 @@ public abstract class MouseManager implements KeyListener {
       return;
     case JmolConstants.PICKING_DRAW:
       drawMode = true;
+      measuresEnabled = false;
+      break;
+    case JmolConstants.PICKING_DRAGSELECTED:
+      dragSelectedMode = true;
       measuresEnabled = false;
       break;
     //other cases here?
@@ -406,7 +417,7 @@ public abstract class MouseManager implements KeyListener {
     case 1:
       // mouse single click
       setMouseMode();
-      switch (modifiers & BUTTON_MODIFIER_MASK) {
+      switch (modifiers) {
       case LEFT:
         if (viewer.frankClicked(x, y)) {
           viewer.popupMenu(-x, y);
@@ -436,7 +447,7 @@ public abstract class MouseManager implements KeyListener {
     case 2:
       // mouse double click
       setMouseMode();
-      switch (modifiers & BUTTON_MODIFIER_MASK) {
+      switch (modifiers) {
       case LEFT:
         if (measurementPending != null) {
           addToMeasurement(nearestAtomIndex, nearestPoint, true);
@@ -466,10 +477,11 @@ public abstract class MouseManager implements KeyListener {
     xCurrent = previousDragX = x;
     yCurrent = previousDragY = y;
 
+    modifiers &= BUTTON_MODIFIER_MASK;
     switch (pressedCount) {
     case 2:
       //viewer.setStatusUserAction("mouseDoublePressDrag: " + modifiers);
-      switch (modifiers & BUTTON_MODIFIER_MASK) {
+      switch (modifiers) {
       case SHIFT_LEFT:
       case ALT_LEFT:
       case MIDDLE:
@@ -483,12 +495,17 @@ public abstract class MouseManager implements KeyListener {
       }
       return;
     case 1:
-      switch (modifiers & BUTTON_MODIFIER_MASK) {
+      switch (modifiers) {
       case LEFT:
         checkMotion();
         viewer.rotateXYBy(deltaX, deltaY);
         return;
       case ALT_LEFT:
+        if (dragSelectedMode) {
+          checkMotion();
+          viewer.moveSelected(deltaX, deltaY, x, y, false);
+          return;
+        }
         if (viewer.allowRotateSelected()) {
           checkMotion();
           viewer.rotateMolecule(deltaX, deltaY);
@@ -500,6 +517,10 @@ public abstract class MouseManager implements KeyListener {
           checkMotion();
           viewer.checkObjectDragged(previousDragX, previousDragY, x, y,
               modifiers);
+          return;
+        } else if (dragSelectedMode && modifiers == ALT_SHIFT_LEFT) {
+          checkMotion();
+          viewer.moveSelected(deltaX, deltaY, x, y, true);
           return;
         } else if (rubberbandSelectionMode) {
           calcRectRubberBand();

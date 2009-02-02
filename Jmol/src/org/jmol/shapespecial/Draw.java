@@ -947,18 +947,16 @@ public class Draw extends MeshCollection {
     if (pickedMesh == null)
       return false;
     boolean moveAll = false;
-    switch (modifiers & MouseManager.BUTTON_MODIFIER_MASK) {
+    switch (modifiers) {
     case MouseManager.SHIFT_LEFT:
       moveAll = true;
       //fall through
+    case MouseManager.ALT_SHIFT_LEFT:
     case MouseManager.ALT_LEFT:
       move2D(pickedMesh, pickedMesh.polygonIndexes[pickedModel], pickedVertex,
           x, y, moveAll);
       thisMesh = pickedMesh;
       break;
-    case MouseManager.ALT_SHIFT_LEFT:
-      // reserved -- constrained move?
-      return false;
     }
     return true;
   }

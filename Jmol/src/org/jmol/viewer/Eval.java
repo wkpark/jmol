@@ -8776,15 +8776,20 @@ class Eval {
   }
 
   private void setPicking() throws ScriptException {
+    // set picking
     if (statementLength == 2) {
       setStringProperty("picking", "identify");
       return;
     }
+    // set picking @{"xxx"} or some large length, ignored
     if (statementLength > 4 || tokAt(2) == Token.string) {
       setStringProperty("picking", stringSetting(2, false));
       return;
     }
     int i = 2;
+    // set picking select ATOM|CHAIN|GROUP|MOLECULE|MODEL|SITE
+    // set picking measure ANGLE|DISTANCE|TORSION
+    // set picking spin fps
     String type = "SELECT";
     switch (getToken(2).tok) {
     case Token.select:
@@ -8802,6 +8807,15 @@ class Eval {
     default:
       checkLength(3);
     }
+    
+    // set picking on
+    // set picking normal
+    // set picking identify
+    // set picking off
+    // set picking select
+    // set picking bonds
+    // set picking dragselected
+    
     String str = parameterAsString(i);
     switch (getToken(i).tok) {
     case Token.on:
@@ -8818,7 +8832,8 @@ class Eval {
       str = "bond";
       break;
     }
-    if (JmolConstants.getPickingMode(str) < 0)
+    int mode = JmolConstants.getPickingMode(str); 
+    if (mode < 0)
       error(ERROR_unrecognizedParameter, "SET PICKING " + type, str);
     setStringProperty("picking", str);
   }

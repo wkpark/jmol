@@ -278,7 +278,13 @@ public abstract class MouseManager implements KeyListener {
     case CTRL_LEFT: // on MacOSX this brings up popup
     case RIGHT: // with multi-button mice, this will too
       viewer.popupMenu(x, y);
-      return;
+      break;
+    case ALT_LEFT:
+    case SHIFT_LEFT:
+    case ALT_SHIFT_LEFT:
+      if (drawMode)
+        viewer.checkObjectDragged(x, y, Integer.MIN_VALUE, 0, modifiers);
+      break;
     }
   }
 
@@ -311,6 +317,14 @@ public abstract class MouseManager implements KeyListener {
     }
     rubberbandSelectionMode = false;
     rectRubber.x = Integer.MAX_VALUE;
+    if (drawMode)
+      switch (modifiers & BUTTON_MODIFIER_MASK) {
+      case ALT_LEFT:
+      case SHIFT_LEFT:
+      case ALT_SHIFT_LEFT:
+        viewer.checkObjectDragged(0, 0, Integer.MAX_VALUE, 0, modifiers);
+        break;
+      }
   }
 
   int previousClickX, previousClickY;

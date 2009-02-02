@@ -936,7 +936,13 @@ public class Draw extends MeshCollection {
                           int modifiers, BitSet bsVisible) {
     if (viewer.getPickingMode() != JmolConstants.PICKING_DRAW)
       return false;
-    if (!findPickedObject(prevX, prevY, true, bsVisible))
+    if (deltaX == Integer.MAX_VALUE) {
+      pickedMesh = null;
+      return false;
+    }
+    if (deltaX == Integer.MIN_VALUE)
+      return findPickedObject(prevX, prevY, true, bsVisible);
+    if (pickedMesh == null)
       return false;
     boolean moveAll = false;
     switch (modifiers & MouseManager.BUTTON_MODIFIER_MASK) {

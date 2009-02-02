@@ -171,7 +171,7 @@ public abstract class Shape {
     return false;
   }
 
-  public boolean checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,
+  public boolean checkObjectDragged(int prevX, int prevY, int x, int y,
                              int modifiers, BitSet bsVisible) {
     return false;
   }

@@ -932,15 +932,15 @@ public class Draw extends MeshCollection {
     return true;
   }
 
-  public synchronized boolean checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,
+  public synchronized boolean checkObjectDragged(int prevX, int prevY, int x, int y,
                           int modifiers, BitSet bsVisible) {
     if (viewer.getPickingMode() != JmolConstants.PICKING_DRAW)
       return false;
     //  mouse down ?
-    if (deltaX == Integer.MIN_VALUE) 
-      return findPickedObject(prevX, prevY, true, bsVisible);
+    if (prevX == Integer.MIN_VALUE) 
+      return findPickedObject(x, y, true, bsVisible);
     //  mouse up ?
-    if (deltaX == Integer.MAX_VALUE) {
+    if (prevX == Integer.MAX_VALUE) {
       pickedMesh = null;
       return false;
     }
@@ -953,7 +953,7 @@ public class Draw extends MeshCollection {
       //fall through
     case MouseManager.ALT_LEFT:
       move2D(pickedMesh, pickedMesh.polygonIndexes[pickedModel], pickedVertex,
-          prevX + deltaX, prevY + deltaY, moveAll);
+          x, y, moveAll);
       thisMesh = pickedMesh;
       break;
     case MouseManager.ALT_SHIFT_LEFT:

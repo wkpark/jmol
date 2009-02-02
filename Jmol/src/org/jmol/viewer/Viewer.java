@@ -6521,9 +6521,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.checkObjectHovered(x, y, getVisibleFramesBitSet());
   }
 
-  void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,
-                          int modifiers) {
-    modelSet.checkObjectDragged(prevX, prevY, deltaX, deltaY, modifiers,
+  void checkObjectDragged(int prevX, int prevY, int x, int y, int modifiers) {
+    modelSet.checkObjectDragged(prevX, prevY, x, y, modifiers,
         getVisibleFramesBitSet());
   }
 

@@ -283,7 +283,7 @@ public abstract class MouseManager implements KeyListener {
     case SHIFT_LEFT:
     case ALT_SHIFT_LEFT:
       if (drawMode)
-        viewer.checkObjectDragged(x, y, Integer.MIN_VALUE, 0, modifiers);
+        viewer.checkObjectDragged(Integer.MIN_VALUE, 0, x, y, modifiers);
       break;
     }
   }
@@ -322,7 +322,7 @@ public abstract class MouseManager implements KeyListener {
       case ALT_LEFT:
       case SHIFT_LEFT:
       case ALT_SHIFT_LEFT:
-        viewer.checkObjectDragged(0, 0, Integer.MAX_VALUE, 0, modifiers);
+        viewer.checkObjectDragged(Integer.MAX_VALUE, 0, x, y, modifiers);
         break;
       }
   }
@@ -498,8 +498,8 @@ public abstract class MouseManager implements KeyListener {
       case ALT_SHIFT_LEFT:
         if (drawMode) {
           checkMotion();
-          viewer.checkObjectDragged(previousDragX, previousDragY, deltaX,
-              deltaY, modifiers);
+          viewer.checkObjectDragged(previousDragX, previousDragY, x, y,
+              modifiers);
           return;
         } else if (rubberbandSelectionMode) {
           calcRectRubberBand();

@@ -402,12 +402,12 @@ abstract public class ModelSet extends ModelCollection {
         .checkObjectClicked(x, y, modifiers, bsVisible));
   }
  
-  public void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,
+  public void checkObjectDragged(int prevX, int prevY, int x, int y,
                           int modifiers, BitSet bsVisible) {
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = shapes[i];
       if (shape != null
-          && shape.checkObjectDragged(prevX, prevY, deltaX, deltaY, modifiers, bsVisible))
+          && shape.checkObjectDragged(prevX, prevY, x, y, modifiers, bsVisible))
         break;
     }
   }

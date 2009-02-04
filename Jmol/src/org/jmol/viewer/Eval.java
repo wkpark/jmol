@@ -4200,13 +4200,16 @@ class Eval {
         Object image = viewer.getFileAsImage(text, htParams);
         if (image instanceof String) {
           text = (String) image;
-          isImage = false;
         } else {
           setShapeProperty(JmolConstants.SHAPE_ECHO, "text", htParams
               .get("fullPathName"));
           setShapeProperty(JmolConstants.SHAPE_ECHO, "image", image);
           text = null;
         }
+      } else if (text.startsWith("\0")) {
+        // no reporting, just screen echo
+        text = text.substring(1);
+        isImage = true;
       }
       if (text != null)
         setShapeProperty(JmolConstants.SHAPE_ECHO, "text", text);

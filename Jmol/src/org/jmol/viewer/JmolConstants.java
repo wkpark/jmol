@@ -267,21 +267,19 @@ final public class JmolConstants {
   public final static int PICKING_SELECT_CHAIN     = 10;
   public final static int PICKING_SELECT_MOLECULE  = 11;
   public final static int PICKING_SELECT_SITE      = 12;
-  public final static int PICKING_SELECT_ELEMENT   = 13;
-  public static final int PICKING_SELECT_DRAG      = 14;
+  public final static int PICKING_SELECT_MODEL     = 13;
+  public final static int PICKING_SELECT_ELEMENT   = 14;
   public final static int PICKING_MEASURE          = 15;
   public final static int PICKING_MEASURE_DISTANCE = 16;
   public final static int PICKING_MEASURE_ANGLE    = 17;
   public final static int PICKING_MEASURE_TORSION  = 18;
   public final static int PICKING_NAVIGATE         = 19;
-  public final static int PICKING_DRAGSELECTED     = 20;
 
   private final static String[] pickingModeNames = {
     "off", "identify", "label", "center", "draw", "spin",
     "coord NOT IMPLEMENTED", "bond NOT IMPLEMENTED", 
-    "atom", "group", "chain", "molecule", "site", "element", 
-    "drag", "measure", "distance", "angle", "torsion", "navigate",
-    "dragselected"
+    "atom", "group", "chain", "molecule", "site", "model", "element", 
+    "drag", "measure", "distance", "angle", "torsion", "navigate"
   };
  
   public final static String getPickingModeName(int pickingMode) {

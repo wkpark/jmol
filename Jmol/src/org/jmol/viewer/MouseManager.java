@@ -27,6 +27,7 @@ import java.awt.Rectangle;
 import java.awt.Event;
 
 import org.jmol.modelset.MeasurementPending;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import java.awt.event.*;
 import java.awt.Component;
@@ -121,17 +122,58 @@ public abstract class MouseManager implements KeyListener {
     }
   }
 
-  public void keyTyped(KeyEvent ke) {
+  private String keyBuffer = "";
+  
+  private void clearKeyBuffer() {
+    if (keyBuffer.length() == 0)
+      return;
+    keyBuffer = "";
+    if (viewer.getBooleanProperty("showKeyStrokes", false))
+      viewer.evalStringQuiet("!set echo bottom left;echo \"\"");
   }
 
+  private void addKeyBuffer(char ch){
+    if (ch == 10) {
+      sendKeyBuffer();
+      return;
+    }
+    if (ch == 8) {
+      if (keyBuffer.length() > 0)
+        keyBuffer = keyBuffer.substring(0, keyBuffer.length() - 1);
+    } else {
+      keyBuffer += ch;
+    }
+    if (viewer.getBooleanProperty("showKeyStrokes", false))
+      viewer.evalStringQuiet("!set echo bottom left;echo " + Escape.escape("\0" + keyBuffer));
+  }
+  
+  private void sendKeyBuffer() {
+     String kb = keyBuffer;
+     if (viewer.getBooleanProperty("showKeyStrokes", false))
+       viewer.evalStringQuiet("!set echo bottom left;echo " + Escape.escape(keyBuffer));
+     clearKeyBuffer();
+     viewer.script(kb);
+  }
+  
+  public void keyTyped(KeyEvent ke) {
+    addKeyBuffer(ke.getKeyChar());
+  }
+
+  boolean isAltKeyReleased = true;
+  
   public void keyPressed(KeyEvent ke) {
+    int i = ke.getKeyCode();
+    if (i == KeyEvent.VK_ALT) {
+      if (dragSelectedMode && isAltKeyReleased)
+        viewer.moveSelected(Integer.MIN_VALUE, 0, 0, 0, false);
+      isAltKeyReleased = false;
+    }
     if (!viewer.getNavigationMode())
       return;
-    int i = ke.getKeyCode();
     int m = ke.getModifiers();
-    if (viewer.getBooleanProperty("showKeyStrokes", false))
-      viewer.script("!set echo bottom left;!echo "
-          + (i == 0 ? "" : i + " " + m));
+    //if (viewer.getBooleanProperty("showKeyStrokes", false))
+      //viewer.evalStringQuiet("!set echo bottom left;echo "
+        //  + (i == 0 ? "" : i + " " + m));
     switch (i) {
     case KeyEvent.VK_UP:
     case KeyEvent.VK_DOWN:
@@ -143,11 +185,16 @@ public abstract class MouseManager implements KeyListener {
   }
 
   public void keyReleased(KeyEvent ke) {
+    int i = ke.getKeyCode();
+    if (i == KeyEvent.VK_ALT) {
+      if (dragSelectedMode)
+        viewer.moveSelected(Integer.MAX_VALUE, 0, 0, 0, false);
+      isAltKeyReleased = true;
+    }
     if (!viewer.getNavigationMode())
       return;
-    if (viewer.getBooleanProperty("showKeyStrokes", false))
-      viewer.script("!set echo bottom left;!echo;");
-    int i = ke.getKeyCode();
+    //if (viewer.getBooleanProperty("showKeyStrokes", false))
+      //viewer.evalStringQuiet("!set echo bottom left;echo;");
     switch (i) {
     case KeyEvent.VK_UP:
     case KeyEvent.VK_DOWN:
@@ -289,10 +336,9 @@ public abstract class MouseManager implements KeyListener {
     case ALT_SHIFT_LEFT:
       if (drawMode)
         viewer.checkObjectDragged(Integer.MIN_VALUE, 0, x, y, modifiers);
-      else if (dragSelectedMode && modifiers != SHIFT_LEFT)
-        viewer.moveSelected(Integer.MIN_VALUE, 0, x, y, false);
-      break;
     }
+    if (dragSelectedMode)
+      viewer.moveSelected(Integer.MIN_VALUE, 0, 0, 0, false);
   }
 
   void mouseEntered(long time, int x, int y) {
@@ -330,10 +376,9 @@ public abstract class MouseManager implements KeyListener {
     case ALT_SHIFT_LEFT:
       if (drawMode)
         viewer.checkObjectDragged(Integer.MAX_VALUE, 0, x, y, modifiers);
-      else if (dragSelectedMode && modifiers != SHIFT_LEFT)
-        viewer.moveSelected(Integer.MAX_VALUE, 0, x, y, false);
-      break;
     }
+    if (dragSelectedMode)
+      viewer.moveSelected(Integer.MAX_VALUE, 0, 0, 0, false);
   }
 
   void clearClickCount() {
@@ -366,28 +411,27 @@ public abstract class MouseManager implements KeyListener {
 
   void setMouseMode() {
     drawMode = false;
-    dragSelectedMode = false;
+    dragSelectedMode = viewer.getBooleanProperty("dragSelected");
     rubberbandSelectionMode = (viewer.getPickingStyle() == JmolConstants.PICKINGSTYLE_SELECT_DRAG);
-    measuresEnabled = true;
-    switch (viewer.getPickingMode()) {
-    default:
-      return;
-    case JmolConstants.PICKING_DRAW:
-      drawMode = true;
-      measuresEnabled = false;
-      break;
-    case JmolConstants.PICKING_DRAGSELECTED:
-      dragSelectedMode = true;
-      measuresEnabled = false;
-      break;
-    //other cases here?
-    case JmolConstants.PICKING_LABEL:
-    case JmolConstants.PICKING_MEASURE_DISTANCE:
-    case JmolConstants.PICKING_MEASURE_ANGLE:
-    case JmolConstants.PICKING_MEASURE_TORSION:
-      measuresEnabled = false;
-      break;
-    }
+    measuresEnabled = !dragSelectedMode;
+    clearKeyBuffer();
+    if (!dragSelectedMode)
+      switch (viewer.getPickingMode()) {
+      default:
+        return;
+      case JmolConstants.PICKING_DRAW:
+        drawMode = true;
+        // drawMode and dragSelectedMode are incompatible
+        measuresEnabled = false;
+        break;
+      //other cases here?
+      case JmolConstants.PICKING_LABEL:
+      case JmolConstants.PICKING_MEASURE_DISTANCE:
+      case JmolConstants.PICKING_MEASURE_ANGLE:
+      case JmolConstants.PICKING_MEASURE_TORSION:
+        measuresEnabled = false;
+        break;
+      }
     exitMeasurementMode();
   }
 
@@ -429,7 +473,7 @@ public abstract class MouseManager implements KeyListener {
                 - 50f, y * 100f / viewer.getScreenHeight() - 50f);
           return;
         }
-        viewer.atomPicked(nearestAtomIndex, nearestPoint, modifiers);
+        viewer.atomPicked(nearestAtomIndex, nearestPoint, modifiers, false);
         if (measurementPending != null)
           if (addToMeasurement(nearestAtomIndex, nearestPoint, false) == 4) {
             previousClickCount = 0;
@@ -440,7 +484,7 @@ public abstract class MouseManager implements KeyListener {
       case SHIFT_LEFT:
       case ALT_SHIFT_LEFT:
         if (!drawMode)
-          viewer.atomPicked(nearestAtomIndex, nearestPoint, modifiers);
+          viewer.atomPicked(nearestAtomIndex, nearestPoint, modifiers, false);
         break;
       }
       return;
@@ -452,10 +496,11 @@ public abstract class MouseManager implements KeyListener {
         if (measurementPending != null) {
           addToMeasurement(nearestAtomIndex, nearestPoint, true);
           toggleMeasurement();
-        } else if (!drawMode && measuresEnabled) {
+        } else if (!drawMode && !dragSelectedMode && measuresEnabled) {
           enterMeasurementMode();
           addToMeasurement(nearestAtomIndex, nearestPoint, true);
         }
+        viewer.atomPicked(nearestAtomIndex, nearestPoint, modifiers, true);
         break;
       case ALT_LEFT:
       case MIDDLE:

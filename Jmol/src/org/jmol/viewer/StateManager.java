@@ -598,6 +598,7 @@ public class StateManager {
     boolean greyscaleRendering = false;
     boolean isosurfacePropertySmoothing = true;
     boolean showHiddenSelectionHalos = false;
+    boolean showKeyStrokes = false;
     boolean showMeasurements = true;
     boolean zoomLarge = true; //false would be like Chime
     boolean zShade = false;
@@ -1174,6 +1175,7 @@ public class StateManager {
       setParameterValue("dotDensity", dotDensity);
       setParameterValue("dotsSelectedOnly", dotsSelectedOnly);
       setParameterValue("dotSurface", dotSurface);
+      setParameterValue("dragSelected", false);
       setParameterValue("drawHover", false);
       setParameterValue("drawPicking", drawPicking);
       setParameterValue("dynamicMeasurements", dynamicMeasurements);
@@ -1252,6 +1254,7 @@ public class StateManager {
       setParameterValue("showfrank", false);
       setParameterValue("showHiddenSelectionHalos", showHiddenSelectionHalos);
       setParameterValue("showHydrogens", showHydrogens);
+      setParameterValue("showKeyStrokes", showKeyStrokes);
       setParameterValue("showMeasurements", showMeasurements);
       setParameterValue("showMultipleBonds", showMultipleBonds);
       setParameterValue("showNavigationPointAlways", showNavigationPointAlways);

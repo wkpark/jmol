@@ -94,10 +94,10 @@ class PickingManager {
   void atomsPicked(BitSet bs, int modifiers) {
     if (BitSetUtil.firstSetBit(bs) < 0)
       return;
-    pickSelected(Escape.escape(bs), modifiers);
+    pickSelected(Escape.escape(bs), modifiers, false);
   }  
 
-  private void pickSelected(String spec, int modifiers) {
+  private void pickSelected(String spec, int modifiers, boolean isDoubleClick) {
     boolean shiftKey = ((modifiers & MouseManager.SHIFT) != 0);
     boolean alternateKey = ((modifiers & MouseManager.ALT) != 0);
     switch (pickingMode) {
@@ -106,36 +106,42 @@ class PickingManager {
       return;
     case JmolConstants.PICKING_IDENT:
     case JmolConstants.PICKING_SELECT_ATOM:
-      applyMouseStyle(spec, shiftKey, alternateKey);
+      applyMouseStyle(spec, shiftKey, alternateKey, isDoubleClick);
       viewer.clearClickCount();
       return;
     case JmolConstants.PICKING_SELECT_GROUP:
-      applyMouseStyle("within(group, " + spec +")", shiftKey, alternateKey);
+      applyMouseStyle("within(group, " + spec +")", shiftKey, alternateKey, isDoubleClick);
       viewer.clearClickCount();
       return;
     case JmolConstants.PICKING_SELECT_CHAIN:
-      applyMouseStyle("within(chain, " + spec +")", shiftKey, alternateKey);
+      applyMouseStyle("within(chain, " + spec +")", shiftKey, alternateKey, isDoubleClick);
       viewer.clearClickCount();
       return;
     case JmolConstants.PICKING_SELECT_MOLECULE:
-      applyMouseStyle("visible and within(molecule, " + spec +")", shiftKey, alternateKey);
+      applyMouseStyle("visible and within(molecule, " + spec +")", shiftKey, alternateKey, isDoubleClick);
       viewer.clearClickCount();
       return;
     case JmolConstants.PICKING_SELECT_SITE:
-      applyMouseStyle("visible and within(site, " + spec +")", shiftKey, alternateKey);
+      applyMouseStyle("visible and within(site, " + spec +")", shiftKey, alternateKey, isDoubleClick);
+      viewer.clearClickCount();
+      return;
+    case JmolConstants.PICKING_SELECT_MODEL:
+      applyMouseStyle("within(model, " + spec +")", shiftKey, alternateKey, isDoubleClick);
       viewer.clearClickCount();
       return;
     case JmolConstants.PICKING_SELECT_ELEMENT:
-      applyMouseStyle("visible and within(element, " + spec +")", shiftKey, alternateKey);
+      applyMouseStyle("visible and within(element, " + spec +")", shiftKey, alternateKey, isDoubleClick);
       viewer.clearClickCount();
       return;
     }
   }
-  void atomPicked(int atomIndex, Point3f ptClicked, int modifiers) {
+  void atomPicked(int atomIndex, Point3f ptClicked, int modifiers, boolean isDoubleClick) {
     // atomIndex < 0 is possible here.
     boolean shiftKey = ((modifiers & MouseManager.SHIFT) != 0);
     boolean alternateKey = ((modifiers & MouseManager.ALT) != 0);
     if (atomIndex < 0) {
+      if (isDoubleClick)
+        return;
       if (pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_PFAAT 
           && !shiftKey && !alternateKey)
         viewer.script("select none");
@@ -145,6 +151,9 @@ class PickingManager {
     }
     int n = 2;
     switch (pickingMode) {
+    default:
+      pickSelected("atomindex=" + atomIndex, modifiers, isDoubleClick);
+      return;
     case JmolConstants.PICKING_OFF:
       return;
     case JmolConstants.PICKING_MEASURE_TORSION:
@@ -155,6 +164,8 @@ class PickingManager {
       //fall through
     case JmolConstants.PICKING_MEASURE:
     case JmolConstants.PICKING_MEASURE_DISTANCE:
+      if (isDoubleClick)
+        return;
       if (measurementQueued == null || measurementQueued.getCount() >= n)
         resetMeasurement();
       if (queueAtom(atomIndex, ptClicked) < n)
@@ -166,12 +177,16 @@ class PickingManager {
       }
       return;
     case JmolConstants.PICKING_CENTER:
+      if (isDoubleClick)
+        return;
       if (ptClicked == null)
         viewer.script("zoomTo (atomindex=" + atomIndex+")");
       else
         viewer.script("zoomTo " + Escape.escape(ptClicked));
       return;
     case JmolConstants.PICKING_SPIN:
+      if (isDoubleClick)
+        return;
       if (viewer.getSpinOn() || viewer.getPendingMeasurement() != null) {
         resetMeasurement();
         viewer.script("spin off");
@@ -203,13 +218,16 @@ class PickingManager {
       return;
     switch (pickingMode) {
     case JmolConstants.PICKING_IDENT:
+      if (isDoubleClick)
+        return;
       viewer.setStatusAtomPicked(atomIndex, null);
       return;
     case JmolConstants.PICKING_LABEL:
+      if (isDoubleClick)
+        return;
       viewer.script("set labeltoggle {atomindex="+atomIndex+"}");
       return;
     }
-    pickSelected("atomindex=" + atomIndex, modifiers);
   }
 
   private int queueAtom(int atomIndex, Point3f ptClicked) {
@@ -220,10 +238,13 @@ class PickingManager {
     return n;
   }
 
-  private void applyMouseStyle(String item, boolean shiftKey, boolean alternateKey) {
+  private void applyMouseStyle(String item, boolean shiftKey,
+                               boolean alternateKey, boolean isDoubleClick) {
     item = "(" + item + ")";
-    if (pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_PFAAT
-        ||  pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_DRAG) {
+    if (isDoubleClick) {
+      viewer.script("select " + item);
+    } else if (pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_PFAAT
+        || pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_DRAG) {
       if (shiftKey && alternateKey)
         viewer.script("select selected and not " + item);
       else if (shiftKey)
@@ -233,7 +254,8 @@ class PickingManager {
       else
         viewer.script("select " + item);
     } else {
-      if (shiftKey || pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_JMOL)
+      if (shiftKey
+          || pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_JMOL)
         viewer.script("select selected tog " + item); //toggle
       else
         viewer.script("select " + item);

@@ -3917,13 +3917,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     eval.setDebugging();
   }
 
-  void atomPicked(int atomIndex, Point3f ptClicked, int modifiers) {
-    pickingManager.atomPicked(atomIndex, ptClicked, modifiers);
+  void atomPicked(int atomIndex, Point3f ptClicked, int modifiers, boolean isDoubleClick) {
+    pickingManager.atomPicked(atomIndex, ptClicked, modifiers, isDoubleClick);
   }
 
   void clearClickCount() {
-    //MouseManager.clearclickCount()
-    mouseManager.clearClickCount();
+    //mouseManager.clearClickCount();
     setTainted(true);
   }
 
@@ -5167,6 +5166,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean doRepaint = true;
     while (true) {
 
+      //11.7.24
+      if (key.equalsIgnoreCase("showKeyStrokes")) {
+        global.showKeyStrokes = value;
+        break;
+      }
       //11.7.10
       if (key.equalsIgnoreCase("fontCaching")) {
         global.fontCaching = value;
@@ -6728,32 +6732,35 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     refreshMeasures();
   }
 
-  synchronized void moveSelected(int deltaX, int deltaY, int x, int y, boolean isTranslation) {
+  synchronized void moveSelected(int deltaX, int deltaY, int x, int y,
+                                 boolean isTranslation) {
     if (isJmolDataFrame())
       return;
     BitSet bsSelected = selectionManager.bsSelection;
-      if (deltaX == Integer.MIN_VALUE) {
-        setSelectionHalos(true);
-        return;
-      }
-      if (deltaX == Integer.MAX_VALUE) {
-        setSelectionHalos(false);
-        return;
-      }
-      if (isTranslation) {
-        Point3f ptCenter = getAtomSetCenter(bsSelected);
-        Point3i pti = transformPoint(ptCenter);
-        Point3f pt = new Point3f(pti.x + deltaX, pti.y + deltaY, pti.z);
-        unTransformPoint(pt, pt);        
-        pt.sub(ptCenter);
-        modelSet.setAtomCoordRelative(pt, bsSelected);
-      } else {
-        transformManager.setRotateMolecule(true);
-        transformManager.rotateXYBy(deltaX, deltaY, bsSelected);
-        transformManager.setRotateMolecule(false);
-       }
-      refreshMeasures();
- }
+    if (deltaX == Integer.MIN_VALUE) {
+      setSelectionHalos(true);
+      refresh(3, "moveSelected");
+      return;
+    }
+    if (deltaX == Integer.MAX_VALUE) {
+      setSelectionHalos(false);
+      refresh(3, "moveSelected");
+      return;
+    }
+    if (isTranslation) {
+      Point3f ptCenter = getAtomSetCenter(bsSelected);
+      Point3i pti = transformPoint(ptCenter);
+      Point3f pt = new Point3f(pti.x + deltaX, pti.y + deltaY, pti.z);
+      unTransformPoint(pt, pt);
+      pt.sub(ptCenter);
+      modelSet.setAtomCoordRelative(pt, bsSelected);
+    } else {
+      transformManager.setRotateMolecule(true);
+      transformManager.rotateXYBy(deltaX, deltaY, bsSelected);
+      transformManager.setRotateMolecule(false);
+    }
+    refreshMeasures();
+  }
   
   void rotateAtoms(Matrix3f mNew, Matrix3f matrixRotate, boolean fullMolecule,
                    Point3f center, boolean isInternal, BitSet bsAtoms) {

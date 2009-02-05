@@ -72,6 +72,9 @@ public class MarchingCubes {
     cubeCountY = volumeData.voxelData[0].length - 1;
     cubeCountZ = volumeData.voxelData[0][0].length - 1;
     xyCount = (cubeCountX + 1) * (cubeCountY + 1);
+    
+    // calcVoxelVertexVectors is unnecessary if just creating a JVXL file:
+    
     calcVoxelVertexVectors();
   }
 
@@ -110,8 +113,12 @@ public class MarchingCubes {
    * Their output is the fractionData string buffer and the
    * number of surface points
    * 
-   * inputs required: see constructor
+   * inputs required: 
    * 
+   *  1) volumeData.voxelData[x][y][z]
+   *  2) cutoff
+   *  3) values created in MarchingCubes constructor
+   *  
    * The first four methods are in org.jmol.jvxl.calc.MarchingCubes.java
    * 
    *  generateSurfaceData  -- isXLowToHigh false; isContoured false
@@ -289,6 +296,9 @@ public class MarchingCubes {
      *  
      *  
      */
+    
+    /* DO NOT EVER CHANGE THIS */
+    
     int cellIndex = y * cubeCountZ + z;
     int[] voxelPointIndexes = isoPointIndexes[cellIndex];
 

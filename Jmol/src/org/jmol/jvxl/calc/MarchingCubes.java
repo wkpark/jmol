@@ -54,6 +54,13 @@ public class MarchingCubes {
   public MarchingCubes(VertexDataServer surfaceReader, VolumeData volumeData,
       boolean isContoured, int contourType, float cutoff,
       boolean isCutoffAbsolute) {
+    
+    // when just creating a JVXL file all you really need are:
+    //
+    // volumeData.voxelData[x][y][z]
+    // cutoff
+    //
+    
     this.surfaceReader = surfaceReader;
     this.volumeData = volumeData;
     this.isContoured = isContoured;
@@ -103,9 +110,12 @@ public class MarchingCubes {
    * Their output is the fractionData string buffer and the
    * number of surface points
    * 
+   * inputs required: see constructor
+   * 
    * The first four methods are in org.jmol.jvxl.calc.MarchingCubes.java
    * 
-   *  generateSurfaceData  -- EXACTLY AS IS. isXLowToHigh false; isContoured false
+   *  generateSurfaceData  -- isXLowToHigh false; isContoured false
+   *    -- triangle stuff at end not needed
    *  propagateNeighborPointIndexes -- EXACTLY as is, no changes allowed
    *  isInside -- EXACTLY as is -- defines what "inside" means
    *  processOneCubical -- EXACTLY as is, no changes at all
@@ -403,7 +413,9 @@ public class MarchingCubes {
         isNaN = true;
       
       // the exact point position -- not important for just
-      // creating the JVXL file
+      // creating the JVXL file. In that case, all you 
+      // need are the two values valueA and valueB and the cutoff.
+      // from those you can define the fractional offset
       
       volumeData.voxelPtToXYZ(x, y, z, pt0);
       pointA.add(pt0, voxelVertexVectors[vertexA]);

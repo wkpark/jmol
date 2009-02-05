@@ -95,11 +95,39 @@ public class MarchingCubes {
       edgeVectors[i].sub(voxelVertexVectors[edgeVertexes[i + i + 1]],
           voxelVertexVectors[edgeVertexes[i + i]]);
   }
-
+  
+  
+  /* Note to Jason from Bob:
+   * 
+   * To just create a JVXL file, you need these five methods.
+   * Their output is the fractionData string buffer and the
+   * number of surface points
+   * 
+   * The first four methods are in org.jmol.jvxl.calc.MarchingCubes.java
+   * 
+   *  generateSurfaceData  -- EXACTLY AS IS. isXLowToHigh false; isContoured false
+   *  propagateNeighborPointIndexes -- EXACTLY as is, no changes allowed
+   *  isInside -- EXACTLY as is -- defines what "inside" means
+   *  processOneCubical -- EXACTLY as is, no changes at all
+   *  SurfaceReader.getSurfacePointIndex -- your job
+   *    -- receives the point value data and positions
+   *    -- responsible for creating the fractionData character buffer
+   *    -- just return 0 since you are not creating triangles
+   *  
+   */
+  
   public int generateSurfaceData(boolean isXLowToHigh) {
 
+    // generally ixXLowToHigh is FALSE
+    
     this.isXLowToHigh = isXLowToHigh;
 
+    // set up the set of edge points in the YZ plane
+    // these are indexes into an array of Point3f values
+    // They will be initialized as -1 whenever a vertex is needed.
+    // But if just creating a JVXL file, all you need to do
+    // is set them to 0, not an index into any actual array.
+    
     int[][] isoPointIndexes = new int[cubeCountY * cubeCountZ][12];
 
     int insideCount = 0, outsideCount = 0, surfaceCount = 0;
@@ -118,10 +146,21 @@ public class MarchingCubes {
     for (int x = x0; x != x1; x += xStep) {
       for (int y = cubeCountY; --y >= 0;) {
         for (int z = cubeCountZ; --z >= 0;) {
+          
+          // set up the list of indices that need checking
+          
           int[] voxelPointIndexes = propagateNeighborPointIndexes(x, y, z,
               isoPointIndexes);
+          
+          // create the bitset mask indicating which vertices are inside.
+          // 0xFF here means "all inside"; 0x00 means "all outside"
+          
           int insideMask = 0;
           for (int i = 8; --i >= 0;) {
+            
+            // cubeVertexOffsets just gets us the specific grid point relative
+            // to our base x,y,z cube position
+            
             Point3i offset = cubeVertexOffsets[i];
             if (isInside(
                 (vertexValues[i] = volumeData.voxelData[x + offset.x][y
@@ -138,10 +177,16 @@ public class MarchingCubes {
             continue;
           }
           ++surfaceCount;
+          
+          // This cube is straddling the cutoff. We must check all edges 
+          
           if (!processOneCubical(insideMask, voxelPointIndexes, x, y, z)
               || isContoured)
             continue;
 
+          // the inside mask serves to define the triangles necessary 
+          // if just creating JVXL files, this step is unnecessary
+          
           byte[] triangles = triangleTable2[insideMask];
           for (int i = triangles.length; (i -= 4) >= 0;)
             surfaceReader.addTriangleCheck(voxelPointIndexes[triangles[i]],
@@ -317,22 +362,55 @@ public class MarchingCubes {
   
   private boolean processOneCubical(int insideMask, int[] voxelPointIndexes,
                                     int x, int y, int z) {
+    
+    // the key to the algorithm is that we have a catalog that
+    // maps the inside-vertex mask to an edge mask. 
+    
     int edgeMask = insideMaskTable[insideMask];
     boolean isNaN = false;
     for (int iEdge = 12; --iEdge >= 0;) {
+      
+      // bit set to one means it's a relevant edge
+      
       if ((edgeMask & (1 << iEdge)) == 0)
         continue;
+      
+      // if we have a point already, we don't need to check this edge.
+      // for triangles, this will be an index into an array;
+      // for just creating JVXL files, this can just be 0
+      
       if (voxelPointIndexes[iEdge] >= 0)
         continue; // propagated from neighbor
+      
+      // here's an edge that has to be checked.
+      
       ++edgeCount;
+      
+      // get the vertex numbers 0 - 7
+      
       int vertexA = edgeVertexes[2 * iEdge];
       int vertexB = edgeVertexes[2 * iEdge + 1];
+      
+      // pick up the actual value at each vertex
+      // this array of 8 values is updated as we go.
+      
       float valueA = vertexValues[vertexA];
       float valueB = vertexValues[vertexB];
+      
+      // we allow for NaN values -- missing triangles
+      
       if (Float.isNaN(valueA) || Float.isNaN(valueB))
         isNaN = true;
+      
+      // the exact point position -- not important for just
+      // creating the JVXL file
+      
       volumeData.voxelPtToXYZ(x, y, z, pt0);
       pointA.add(pt0, voxelVertexVectors[vertexA]);
+      
+      // here is where we get the value and assign the point for that edge
+      // it is where the JVXL surface data line is appended
+      
       voxelPointIndexes[iEdge] = surfaceReader.getSurfacePointIndex(
           cutoff, isCutoffAbsolute, x, y, z, cubeVertexOffsets[vertexA], 
           vertexA, vertexB, valueA, valueB, pointA, edgeVectors[iEdge], 

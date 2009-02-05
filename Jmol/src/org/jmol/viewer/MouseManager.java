@@ -247,6 +247,7 @@ public abstract class MouseManager implements KeyListener {
   final static int CTRL_RIGHT = CTRL | RIGHT;
   final static int CTRL_MIDDLE = CTRL | MIDDLE;
   final static int CTRL_ALT_LEFT = CTRL | ALT | LEFT;
+  final static int CTRL_ALT_RIGHT = CTRL | ALT | RIGHT;
   public final static int ALT_LEFT = ALT | LEFT;
   public final static int ALT_SHIFT_LEFT = ALT | SHIFT | LEFT;
   public final static int SHIFT_LEFT = SHIFT | LEFT;
@@ -332,6 +333,7 @@ public abstract class MouseManager implements KeyListener {
       viewer.popupMenu(x, y);
       break;
     case ALT_LEFT:
+    case CTRL_ALT_RIGHT:
     case SHIFT_LEFT:
     case ALT_SHIFT_LEFT:
       if (drawMode)
@@ -372,6 +374,7 @@ public abstract class MouseManager implements KeyListener {
     rectRubber.x = Integer.MAX_VALUE;
     switch (modifiers) {
     case ALT_LEFT:
+    case CTRL_ALT_RIGHT:
     case SHIFT_LEFT:
     case ALT_SHIFT_LEFT:
       if (drawMode)
@@ -481,6 +484,7 @@ public abstract class MouseManager implements KeyListener {
           }
         break;
       case ALT_LEFT:
+      case CTRL_ALT_RIGHT:
       case SHIFT_LEFT:
       case ALT_SHIFT_LEFT:
         if (!drawMode)
@@ -503,6 +507,7 @@ public abstract class MouseManager implements KeyListener {
         viewer.atomPicked(nearestAtomIndex, nearestPoint, modifiers, true);
         break;
       case ALT_LEFT:
+      case CTRL_ALT_RIGHT:
       case MIDDLE:
       case SHIFT_LEFT:
         if (nearestAtomIndex < 0)
@@ -529,6 +534,7 @@ public abstract class MouseManager implements KeyListener {
       switch (modifiers) {
       case SHIFT_LEFT:
       case ALT_LEFT:
+      case CTRL_ALT_RIGHT:
       case MIDDLE:
         checkMotion();
         viewer.translateXYBy(deltaX, deltaY);
@@ -546,6 +552,7 @@ public abstract class MouseManager implements KeyListener {
         viewer.rotateXYBy(deltaX, deltaY);
         return;
       case ALT_LEFT:
+      case CTRL_ALT_RIGHT:
         if (dragSelectedMode) {
           checkMotion();
           viewer.moveSelected(deltaX, deltaY, x, y, false);

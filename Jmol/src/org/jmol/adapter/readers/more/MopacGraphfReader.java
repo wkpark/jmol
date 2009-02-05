@@ -147,16 +147,15 @@ public class MopacGraphfReader extends MopacDataReader {
     setSlaters();
   }
 
-  float[][] list;
-
+  float[][] invMatrix;
+  
   void readMOs(boolean isBeta) throws Exception {
 
     // read mo coefficients
 
     //  (5 data per line, 15 characters per datum, FORTRAN format: 5d15.8)
 
-    if (!isBeta) {
-    list = new float[nOrbitals][nOrbitals];
+    float[][] list = new float[nOrbitals][nOrbitals];
     for (int iMo = 0; iMo < nOrbitals; iMo++) {
       int n = -1;
       for (int i = 0; i < nOrbitals; i++) {
@@ -165,16 +164,17 @@ public class MopacGraphfReader extends MopacDataReader {
         list[iMo][i] = parseFloat(line.substring(n * 15, (n + 1) * 15));
       }
     }
-    }
-    // read lower triangle of symmetric inverse sqrt matrix and multiply
-    float[][] invMatrix = new float[nOrbitals][nOrbitals];
-    for (int iMo = 0; iMo < nOrbitals; iMo++) {
-      int n = -1;
-      for (int i = 0; i < iMo + 1; i++) {
-        if ((n = (n + 1) % 5) == 0)
-          readLine();
-        invMatrix[iMo][i] = invMatrix[i][iMo] = parseFloat(line.substring(
-            n * 15, (n + 1) * 15));
+    if (!isBeta) {
+      // read lower triangle of symmetric inverse sqrt matrix and multiply
+      invMatrix = new float[nOrbitals][nOrbitals];
+      for (int iMo = 0; iMo < nOrbitals; iMo++) {
+        int n = -1;
+        for (int i = 0; i < iMo + 1; i++) {
+          if ((n = (n + 1) % 5) == 0)
+            readLine();
+          invMatrix[iMo][i] = invMatrix[i][iMo] = parseFloat(line.substring(
+              n * 15, (n + 1) * 15));
+        }
       }
     }
     float[][] list2 = new float[nOrbitals][nOrbitals];
@@ -186,14 +186,14 @@ public class MopacGraphfReader extends MopacDataReader {
           list2[i][j] = 0;
       }
     /*
-    System.out.println("MO coefficients: ");
-    for (int i = 0; i < nOrbitals; i++) {
-    System.out.print((i + 1) + ": ");
-    for (int j = 0; j < nOrbitals; j++)
-    System.out.print(" " + list2[i][j]);
-    System.out.println();
-    }
-    */
+     System.out.println("MO coefficients: ");
+     for (int i = 0; i < nOrbitals; i++) {
+     System.out.print((i + 1) + ": ");
+     for (int j = 0; j < nOrbitals; j++)
+     System.out.print(" " + list2[i][j]);
+     System.out.println();
+     }
+     */
 
     // read MO energies and occupancies, and fill "coefficients" element
     float[] values = new float[2];
@@ -205,7 +205,7 @@ public class MopacGraphfReader extends MopacDataReader {
       mo.put("coefficients", list2[iMo]);
       if (isBeta)
         mo.put("type", "beta");
-      orbitals.addElement(mo); 
+      orbitals.addElement(mo);
     }
     setMOs("eV");
   }

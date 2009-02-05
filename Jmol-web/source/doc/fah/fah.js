@@ -280,6 +280,8 @@ function showProjectInfo(value) {
     document.fahForm.infoCode.value = "ATI-DEV";
   } else if (code == "A0") {
     document.fahForm.infoCode.value = "Gromacs 33";
+  } else if (code == "A4") {
+    document.fahForm.infoCode.value = "Gromacs A4";
   } else if (code == "DB") {
     document.fahForm.infoCode.value = "Double Gromacs B";
   } else if (code == "DC") {

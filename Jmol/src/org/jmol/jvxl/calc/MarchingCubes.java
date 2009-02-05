@@ -71,6 +71,7 @@ public class MarchingCubes {
     cubeCountX = volumeData.voxelData.length - 1;
     cubeCountY = volumeData.voxelData[0].length - 1;
     cubeCountZ = volumeData.voxelData[0][0].length - 1;
+    xyCount = (cubeCountX + 1) * (cubeCountY + 1);
     calcVoxelVertexVectors();
   }
 
@@ -92,7 +93,6 @@ public class MarchingCubes {
 
 
   private void calcVoxelVertexVectors() {
-    xyCount = (cubeCountX + 1) * (cubeCountY + 1);
     setLinearOffsets(); //only used for associating normals 
     volumeData.setMatrix();
     for (int i = 8; --i >= 0;)

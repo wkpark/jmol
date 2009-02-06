@@ -54,6 +54,9 @@ public class JvxlWrite {
     SimpleMarchingCubes mc = new SimpleMarchingCubes(volumeData,
         jvxlData.cutoff, jvxlData.isCutoffAbsolute);
     jvxlData.jvxlEdgeData = mc.getEdgeData();
+    String jvxlMaskData = mc.getMaskData();
+    System.out.println(jvxlMaskData.length() + " " 
+        + (jvxlMaskData = jvxlCompressString(jvxlMaskData)).length() + " " + jvxlData.jvxlSurfaceData.length());
     jvxlData.jvxlDefinitionLine = jvxlGetDefinitionLine(jvxlData);
     return jvxlGetFile(jvxlData);
   }
@@ -245,6 +248,8 @@ public class JvxlWrite {
     int nLast = 0;
     for (int i = 0; i < data.length(); i++) {
       char ch = data.charAt(i);
+      if (ch == '\n' || ch == '\r')
+        continue;
       if (ch == chLast) {
         ++nLast;
         if (ch != '~')

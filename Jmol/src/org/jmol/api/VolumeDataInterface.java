@@ -9,7 +9,7 @@ public interface VolumeDataInterface {
 
   public abstract void setVoxelData(float[][][] voxelData);
 
-  public abstract void setVoxelCounts(int nPointsX, int nPointsY, int nPointsZ);
+  public abstract int setVoxelCounts(int nPointsX, int nPointsY, int nPointsZ);
 
   public abstract void setVolumetricVector(int i, float x, float y, float z);
 

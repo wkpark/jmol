@@ -25,6 +25,8 @@ package org.openscience.jvxl.simplewriter;
 
 import javax.vecmath.Point3i;
 
+import org.jmol.util.Base64;
+
 public class SimpleMarchingCubes {
 
   /*
@@ -44,8 +46,13 @@ public class SimpleMarchingCubes {
   private float cutoff;
   private boolean isCutoffAbsolute;
   private boolean isXLowToHigh;
-  StringBuffer fractionData = new StringBuffer();
-
+  private StringBuffer fractionData = new StringBuffer();
+  private StringBuffer maskData = new StringBuffer();
+  
+  public String getMaskData() {
+    return Base64.getBase64(maskData).toString();
+  }
+  
   private int cubeCountX, cubeCountY, cubeCountZ;
 
   public SimpleMarchingCubes(VolumeData volumeData, float cutoff,
@@ -150,6 +157,7 @@ public class SimpleMarchingCubes {
               insideMask |= 1 << i;
           }
 
+          maskData.append((char)insideMask);
           if (insideMask == 0) {
             continue;
           }
@@ -426,10 +434,11 @@ public class SimpleMarchingCubes {
    *  so we can continue to do that with NON progressive files. 
    */
 
-  private final static byte edgeVertexes[] = { 0, 1, 1, 2, 2, 3, 3, 0, 4, 5,
-  /*   0       1       2       3       4  */
-  5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 };
-  /*  5       6       7       8       9       10      11     */
+  private final static byte edgeVertexes[] = { 
+    0, 1, 1, 2, 2, 3, 3, 0, 4, 5,
+  /*0     1     2     3     4  */
+    5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 };
+  /*5     6     7     8     9     10    11 */
 
   private final static short insideMaskTable[] = { 0x0000, 0x0109, 0x0203,
       0x030A, 0x0406, 0x050F, 0x0605, 0x070C, 0x080C, 0x0905, 0x0A0F, 0x0B06,

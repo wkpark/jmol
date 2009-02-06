@@ -23,12 +23,15 @@
  */
 package org.jmol.jvxl.calc;
 
+import java.util.BitSet;
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.jvxl.api.VertexDataServer;
 import org.jmol.jvxl.data.VolumeData;
+//import org.jmol.util.Base64;
 
 public class MarchingCubes {
 
@@ -50,9 +53,22 @@ public class MarchingCubes {
   private boolean isCutoffAbsolute;
 
   private int cubeCountX, cubeCountY, cubeCountZ;
+  private int nY, nZ;
 
+  private BitSet bsVoxels;
+
+  /* this was an idea .... but it results in 3x the file size
+  
+  private StringBuffer maskData = new StringBuffer();
+  
+  public String getMaskData() {
+    return Base64.getBase64(maskData).toString();
+  }
+
+  */
+  
   public MarchingCubes(VertexDataServer surfaceReader, VolumeData volumeData,
-      boolean isContoured, int contourType, float cutoff,
+      BitSet bsVoxels, boolean isContoured, int contourType, float cutoff,
       boolean isCutoffAbsolute) {
     
     // when just creating a JVXL file all you really need are:
@@ -67,11 +83,17 @@ public class MarchingCubes {
     this.cutoff = cutoff;
     this.isCutoffAbsolute = isCutoffAbsolute;
     this.contourType = contourType;
-
-    cubeCountX = volumeData.voxelData.length - 1;
-    cubeCountY = volumeData.voxelData[0].length - 1;
-    cubeCountZ = volumeData.voxelData[0][0].length - 1;
-    xyCount = (cubeCountX + 1) * (cubeCountY + 1);
+    if (bsVoxels == null) {
+      cubeCountX = volumeData.voxelData.length - 1;
+      cubeCountY = (nY = volumeData.voxelData[0].length) - 1;
+      cubeCountZ = (nZ = volumeData.voxelData[0][0].length) - 1;
+    } else {
+      cubeCountX = volumeData.voxelCounts[0] - 1;
+      cubeCountY = (nY = volumeData.voxelCounts[1]) - 1;
+      cubeCountZ = (nZ = volumeData.voxelCounts[2]) - 1;
+      this.bsVoxels = bsVoxels;
+    }
+    yzCount = nY * nZ;
     
     // calcVoxelVertexVectors is unnecessary if just creating a JVXL file:
     
@@ -88,15 +110,13 @@ public class MarchingCubes {
     for (int i = 8; --i >= 0;)
       vertexPoints[i] = new Point3i();
   }
-  private final int[] linearOffsets = new int[8];
-  int xyCount;
 
   boolean isXLowToHigh;
   int edgeCount;
 
 
   private void calcVoxelVertexVectors() {
-    setLinearOffsets(); //only used for associating normals 
+    setLinearOffsets(); 
     volumeData.setMatrix();
     for (int i = 8; --i >= 0;)
       volumeData.transform(cubeVertexVectors[i],
@@ -132,11 +152,11 @@ public class MarchingCubes {
    *    -- just return 0 since you are not creating triangles
    *  
    */
-  
+
   public int generateSurfaceData(boolean isXLowToHigh) {
 
     // generally ixXLowToHigh is FALSE
-    
+
     this.isXLowToHigh = isXLowToHigh;
 
     // set up the set of edge points in the YZ plane
@@ -144,46 +164,63 @@ public class MarchingCubes {
     // They will be initialized as -1 whenever a vertex is needed.
     // But if just creating a JVXL file, all you need to do
     // is set them to 0, not an index into any actual array.
-    
+
     int[][] isoPointIndexes = new int[cubeCountY * cubeCountZ][12];
 
     int insideCount = 0, outsideCount = 0, surfaceCount = 0;
     edgeCount = 0;
 
-    int x0, x1, xStep;
+    int x0, x1, xStep, ptStep, pt, ptX;
     if (isXLowToHigh) {
       x0 = 0;
       x1 = cubeCountX;
       xStep = 1;
+      ptStep = yzCount;
+      pt = ptX = (yzCount - 1) - nZ - 1;
+      // we are starting at the top corner, in the next to last
+      // cell on the next to last row of the first plane
     } else {
       x0 = cubeCountX - 1;
       x1 = -1;
       xStep = -1;
+      ptStep = -yzCount;
+      pt = ptX = (cubeCountX * yzCount - 1) - nZ - 1;
+      // we are starting at the top corner, in the next to last
+      // cell on the next to last row of the next to last plane(!)
     }
-    for (int x = x0; x != x1; x += xStep) {
-      for (int y = cubeCountY; --y >= 0;) {
-        for (int z = cubeCountZ; --z >= 0;) {
-          
+    for (int x = x0; x != x1; x += xStep, ptX += ptStep, pt = ptX) {
+      for (int y = cubeCountY; --y >= 0; pt--) {
+        for (int z = cubeCountZ; --z >= 0; pt--) {
+
           // set up the list of indices that need checking
-          
+
           int[] voxelPointIndexes = propagateNeighborPointIndexes(x, y, z,
               isoPointIndexes);
-          
+
           // create the bitset mask indicating which vertices are inside.
           // 0xFF here means "all inside"; 0x00 means "all outside"
-          
+
           int insideMask = 0;
           for (int i = 8; --i >= 0;) {
-            
+
             // cubeVertexOffsets just gets us the specific grid point relative
             // to our base x,y,z cube position
-            
-            Point3i offset = cubeVertexOffsets[i];
-            if (isInside(
-                (vertexValues[i] = volumeData.voxelData[x + offset.x][y
-                    + offset.y][z + offset.z]), cutoff, isCutoffAbsolute))
+
+            boolean isInside;
+            if (bsVoxels == null) {
+              Point3i offset = cubeVertexOffsets[i];
+              vertexValues[i] = volumeData.voxelData[x + offset.x][y + offset.y][z
+                  + offset.z];
+              isInside = isInside(vertexValues[i], cutoff, isCutoffAbsolute);
+            } else {
+              isInside = bsVoxels.get(pt + linearOffsets[i]);
+              vertexValues[i] = (isInside ? 1 : 0);
+            }
+            if (isInside)
               insideMask |= 1 << i;
           }
+
+          //maskData.append((char) insideMask);
 
           if (insideMask == 0) {
             ++outsideCount;
@@ -194,24 +231,35 @@ public class MarchingCubes {
             continue;
           }
           ++surfaceCount;
-          
+
           // This cube is straddling the cutoff. We must check all edges 
-          
+
           if (!processOneCubical(insideMask, voxelPointIndexes, x, y, z)
               || isContoured)
             continue;
 
           // the inside mask serves to define the triangles necessary 
           // if just creating JVXL files, this step is unnecessary
-          
+
           byte[] triangles = triangleTable2[insideMask];
           for (int i = triangles.length; (i -= 4) >= 0;)
             surfaceReader.addTriangleCheck(voxelPointIndexes[triangles[i]],
                 voxelPointIndexes[triangles[i + 1]],
-                voxelPointIndexes[triangles[i + 2]], triangles[i + 3], isCutoffAbsolute);
+                voxelPointIndexes[triangles[i + 2]], triangles[i + 3],
+                isCutoffAbsolute);
         }
       }
     }
+
+    
+    //System.out.println("marchingCubes: "
+    //    + maskData.length()
+    //    + " "
+    //    + org.jmol.jvxl.readers.JvxlReader.jvxlCompressString(
+    //        Base64.getBase64(maskData).toString()).length());
+    // this came out about 3 times the length of what we have now
+    // could be a hair faster, but the files size cost is high, I think
+    
     return edgeCount;
   }
   
@@ -219,21 +267,6 @@ public class MarchingCubes {
     return ((max > 0 && (isAbsolute ? Math.abs(voxelValue) : voxelValue) >= max) || (max <= 0 && voxelValue <= max));
   }
 
-  /* set the linear offsets for unique cell ID. Add offset to 0: z * (nX * nY) + y * nX + x */
-  void setLinearOffsets() {
-    linearOffsets[0] = 0;
-    linearOffsets[1] = 1;
-    linearOffsets[5] = 1 + (linearOffsets[4] = (cubeCountX + 1));
-    linearOffsets[6] = linearOffsets[5] + xyCount;
-    linearOffsets[7] = linearOffsets[4] + xyCount;
-    linearOffsets[3] = linearOffsets[0] + xyCount;
-    linearOffsets[2] = linearOffsets[1] + xyCount;
-  }
-  
-  public int getLinearOffset(int x, int y, int z, int offset) {
-    return z * (xyCount) + y * cubeCountX + y + x + linearOffsets[offset];
-  }
-  
   private final int[] nullNeighbor = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1 };
 
@@ -446,11 +479,38 @@ public class MarchingCubes {
     pt.add(pt0, voxelVertexVectors[vertex]);
   }
 
-  final static Point3i[] cubeVertexOffsets = { new Point3i(0, 0, 0),
-      new Point3i(1, 0, 0), new Point3i(1, 0, 1), new Point3i(0, 0, 1),
-      new Point3i(0, 1, 0), new Point3i(1, 1, 0), new Point3i(1, 1, 1),
-      new Point3i(0, 1, 1) };
+  final static Point3i[] cubeVertexOffsets = { 
+    new Point3i(0, 0, 0), //0 pt
+    new Point3i(1, 0, 0), //1 pt + yz
+    new Point3i(1, 0, 1), //2 pt + yz + 1
+    new Point3i(0, 0, 1), //3 pt + 1
+    new Point3i(0, 1, 0), //4 pt + z
+    new Point3i(1, 1, 0), //5 pt + yz + z
+    new Point3i(1, 1, 1), //6 pt + yz + z + 1
+    new Point3i(0, 1, 1)  //7 pt + z + 1 
+  }; 
 
+  private final int[] linearOffsets = new int[8];
+  int yzCount;
+  /* set the linear offsets for unique cell ID
+   * and for pointing into the inside/outside BitSet. 
+   * Add offset to 0: x * (nY * nZ) + y * nZ + z 
+   */
+  void setLinearOffsets() {
+    linearOffsets[0] = 0;
+    linearOffsets[1] = yzCount;
+    linearOffsets[2] = yzCount + 1;
+    linearOffsets[3] = 1;
+    linearOffsets[4] = nZ;
+    linearOffsets[5] = yzCount + nZ;
+    linearOffsets[6] = yzCount + nZ + 1;
+    linearOffsets[7] = nZ + 1;
+  }
+  
+  public int getLinearOffset(int x, int y, int z, int offset) {
+    return x * yzCount + y * nZ + z + linearOffsets[offset];
+  }
+  
   static Vector3f[] cubeVertexVectors = { new Vector3f(0, 0, 0),
       new Vector3f(1, 0, 0), new Vector3f(1, 0, 1), new Vector3f(0, 0, 1),
       new Vector3f(0, 1, 0), new Vector3f(1, 1, 0), new Vector3f(1, 1, 1),
@@ -505,17 +565,23 @@ public class MarchingCubes {
    *  pointer into an array. Perhaps that array is already filled completely;
    *  perhaps it is being read incrementally. 
    *  
-   *  As it is now, the JVXL data are just read into an [nX][nY][nZ] array anyway, 
-   *  so we can continue to do that with NON progressive files. 
+   *  As it is now, the JVXL data are read into a BitSet 
+   *  so we can continue to do that with NON progressive files.
+   *  
+   *   
    */
+  
+  
 
-  private final static int edgeTypeTable[] = { 0, 2, 0, 2, 0, 2, 0, 2, 1, 1, 1,
-      1 };
+  private final static int edgeTypeTable[] = { 
+    0, 2, 0, 2, 0, 2, 0, 2, 1, 1, 1, 1 };
+  // 0=along X, 1=along Y, 2=along Z
 
-  private final static byte edgeVertexes[] = { 0, 1, 1, 2, 2, 3, 3, 0, 4, 5,
-  /*   0       1       2       3       4  */
-  5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 };
-  /*  5       6       7       8       9       10      11     */
+  private final static byte edgeVertexes[] = { 
+    0, 1, 1, 2, 2, 3, 3, 0, 4, 5,
+  /*0     1     2     3     4  */
+    5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 };
+  /*5     6     7     8     9     10    11 */
 
   private final static short insideMaskTable[] = { 0x0000, 0x0109, 0x0203,
       0x030A, 0x0406, 0x050F, 0x0605, 0x070C, 0x080C, 0x0905, 0x0A0F, 0x0B06,

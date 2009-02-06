@@ -24,6 +24,7 @@
 package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
+import java.util.BitSet;
 
 import javax.vecmath.Vector3f;
 import org.jmol.util.Logger;
@@ -169,6 +170,9 @@ abstract class VolumeFileReader extends SurfaceFileReader {
      * It is possible to map a QM orbital onto a plane. In the first pass we defined
      * the plane; in the second pass we just calculate the new voxel values and return.
      * 
+     * Starting with Jmol 11.7.25, JVXL files do not create voxelData[][][]
+     * and instead just fill a bitset, thus saving nx*ny*nz*8 - (nx*ny*nz/32) bytes in memory
+     * 
      */
 
     next[0] = 0;
@@ -181,81 +185,90 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     } else if (isJvxl) {
       params.cutoff = (params.isBicolorMap || params.colorBySign ? 0.01f : 0.5f);
     }
-    voxelData = new float[nPointsX][][];
     nDataPoints = 0;
     line = "";
     StringBuffer sb = new StringBuffer();
     jvxlNSurfaceInts = 0;
-    boolean collectData = (!isJvxl && params.thePlane == null);
-    int nSkipX = 0;
-    int nSkipY = 0;
-    int nSkipZ = 0;
-    if (isDownsampled) {
-      nSkipX = downsampleFactor - 1;
-      nSkipY = downsampleRemainders[2] + (downsampleFactor - 1)
-          * (nSkipZ = (nPointsZ * downsampleFactor + downsampleRemainders[2]));
-      nSkipZ = downsampleRemainders[1] * nSkipZ + (downsampleFactor - 1) * nSkipZ
-          * (nPointsY * downsampleFactor + downsampleRemainders[1]);
-      //System.out.println(nSkipX + " " + nSkipY + " " + nSkipZ);
-    }
-
-    if (isMapData || isJvxl && params.thePlane == null) {
-      for (int x = 0; x < nPointsX; ++x) {
-        float[][] plane = new float[nPointsY][];
-        voxelData[x] = plane;
-        for (int y = 0; y < nPointsY; ++y) {
-          float[] strip = new float[nPointsZ];
-          plane[y] = strip;
-          for (int z = 0; z < nPointsZ; ++z) {
-            strip[z] = getNextVoxelValue(sb);
-            ++nDataPoints;
-            if (isDownsampled)
-              skipVoxels(nSkipX);
-          }
-          if (isDownsampled)
-            skipVoxels(nSkipY);
-        }
-        if (isDownsampled)
-          skipVoxels(nSkipZ);
-      }
+    if (isJvxl) {
+      nDataPoints = volumeData.setVoxelCounts(nPointsX, nPointsY, nPointsZ);
+      jvxlVoxelBitSet = getVoxelBitSet(nDataPoints, sb);
+      voxelData = null;
     } else {
-      float cutoff = params.cutoff;
-      boolean isCutoffAbsolute = params.isCutoffAbsolute;
-      for (int x = 0; x < nPointsX; ++x) {
-        float[][] plane;
-        plane = new float[nPointsY][];
-        voxelData[x] = plane;
-        for (int y = 0; y < nPointsY; ++y) {
-          float[] strip = new float[nPointsZ];
-          plane[y] = strip;
-          for (int z = 0; z < nPointsZ; ++z) {
-            float voxelValue = getNextVoxelValue(sb);
-            strip[z] = voxelValue;
-            ++nDataPoints;
-            if (inside == isInside(voxelValue, cutoff, isCutoffAbsolute)) {
-              dataCount++;
-            } else {
-              if (collectData && dataCount != 0) {
-                sb.append(' ').append(dataCount);
-                ++jvxlNSurfaceInts;
-              }
-              dataCount = 1;
-              inside = !inside;
+      voxelData = new float[nPointsX][][];
+      boolean collectData = (!isJvxl && params.thePlane == null);
+      int nSkipX = 0;
+      int nSkipY = 0;
+      int nSkipZ = 0;
+      if (isDownsampled) {
+        nSkipX = downsampleFactor - 1;
+        nSkipY = downsampleRemainders[2]
+            + (downsampleFactor - 1)
+            * (nSkipZ = (nPointsZ * downsampleFactor + downsampleRemainders[2]));
+        nSkipZ = downsampleRemainders[1] * nSkipZ + (downsampleFactor - 1)
+            * nSkipZ * (nPointsY * downsampleFactor + downsampleRemainders[1]);
+        //System.out.println(nSkipX + " " + nSkipY + " " + nSkipZ);
+      }
+
+      //Note downsampling not allowed for JVXL files
+
+      if (isMapData) {
+        for (int x = 0; x < nPointsX; ++x) {
+          float[][] plane = new float[nPointsY][];
+          voxelData[x] = plane;
+          for (int y = 0; y < nPointsY; ++y) {
+            float[] strip = new float[nPointsZ];
+            plane[y] = strip;
+            for (int z = 0; z < nPointsZ; ++z) {
+              strip[z] = getNextVoxelValue(sb);
+              ++nDataPoints;
+              if (isDownsampled)
+                skipVoxels(nSkipX);
             }
             if (isDownsampled)
-              skipVoxels(nSkipX);
+              skipVoxels(nSkipY);
           }
           if (isDownsampled)
-            skipVoxels(nSkipY);
+            skipVoxels(nSkipZ);
         }
-        if (isDownsampled)
-          skipVoxels(nSkipZ);
+      } else {
+        float cutoff = params.cutoff;
+        boolean isCutoffAbsolute = params.isCutoffAbsolute;
+        for (int x = 0; x < nPointsX; ++x) {
+          float[][] plane;
+          plane = new float[nPointsY][];
+          voxelData[x] = plane;
+          for (int y = 0; y < nPointsY; ++y) {
+            float[] strip = new float[nPointsZ];
+            plane[y] = strip;
+            for (int z = 0; z < nPointsZ; ++z) {
+              float voxelValue = getNextVoxelValue(sb);
+              strip[z] = voxelValue;
+              ++nDataPoints;
+              if (inside == isInside(voxelValue, cutoff, isCutoffAbsolute)) {
+                dataCount++;
+              } else {
+                if (collectData && dataCount != 0) {
+                  sb.append(' ').append(dataCount);
+                  ++jvxlNSurfaceInts;
+                }
+                dataCount = 1;
+                inside = !inside;
+              }
+              if (isDownsampled)
+                skipVoxels(nSkipX);
+            }
+            if (isDownsampled)
+              skipVoxels(nSkipY);
+          }
+          if (isDownsampled)
+            skipVoxels(nSkipZ);
+        }
       }
-    }
-    //Jvxl getNextVoxelValue records the data read on its own.
-    if (collectData) {
-      sb.append(' ').append(dataCount).append('\n');
-      ++jvxlNSurfaceInts;
+      //Jvxl getNextVoxelValue records the data read on its own.
+      if (collectData) {
+        sb.append(' ').append(dataCount).append('\n');
+        ++jvxlNSurfaceInts;
+      }
     }
     if (!isMapData)
       JvxlReader
@@ -264,8 +277,14 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   }
 
   private void skipVoxels(int n) throws Exception {
-    for (int i = n; --i >= 0; )
+    // not allowed for JVXL data
+    for (int i = n; --i >= 0;)
       getNextVoxelValue(null);
+  }
+  
+  protected BitSet getVoxelBitSet(int nPoints, StringBuffer sb) throws Exception {
+    // jvxlReader will use this to read the surface voxel data
+    return null;  
   }
   
   protected float getNextVoxelValue(StringBuffer sb) throws Exception {

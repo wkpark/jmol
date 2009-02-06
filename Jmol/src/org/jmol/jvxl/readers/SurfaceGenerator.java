@@ -876,6 +876,11 @@ public class SurfaceGenerator {
       surfaceReader.createIsosurface(true);//but don't read volume data yet
       if (meshDataServer != null)
         meshDataServer.notifySurfaceGenerationCompleted();
+      if (params.dataType == Parameters.SURFACE_NOMAP) {
+        // just a simple plane
+        surfaceReader.discardTempData(true);
+        return;
+      }
       params.mappedDataMin = Float.MAX_VALUE;
       surfaceReader.readVolumeData(true);
     } else if (!params.colorBySets) {

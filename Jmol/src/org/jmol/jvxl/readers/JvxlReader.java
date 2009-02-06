@@ -27,6 +27,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point4f;
 import java.io.BufferedReader;
+import java.util.BitSet;
 
 import org.jmol.util.*;
 import org.jmol.jvxl.data.JvxlData;
@@ -39,6 +40,8 @@ public class JvxlReader extends VolumeFileReader {
   
   // 1.4 adds -nContours to indicate contourFromZero for MEP data mapped onto planes
   // 2.0 adds vertex/triangle compression when no grid is present 
+  // Jmol 11.7.25 -- recoded so that we do not create voxelData[nx][ny][nz] and instead
+  //                 simply create a BitSet of length nx * ny * nz. This saves memory hugely.
 
   // NEVER change the numbers for these next defaults
   
@@ -394,7 +397,7 @@ public class JvxlReader extends VolumeFileReader {
     return str;
   }
 
-  static String jvxlCompressString(String data) {
+  public static String jvxlCompressString(String data) {
     /* just a simple compression, but allows 2000-6000:1 CUBE:JVXL for planes!
      * 
      *   "X~nnn " means "nnn copies of character X" 
@@ -409,6 +412,8 @@ public class JvxlReader extends VolumeFileReader {
     int nLast = 0;
     for (int i = 0; i < data.length(); i++) {
       char ch = data.charAt(i);
+      if (ch == '\n' || ch == '\r')
+        continue;
       if (ch == chLast) {
         ++nLast;
         if (ch != '~')
@@ -463,6 +468,37 @@ public class JvxlReader extends VolumeFileReader {
     return dataOut.toString();
   }
 
+  protected BitSet getVoxelBitSet(int nPoints, StringBuffer sb) throws Exception {
+    BitSet bs = new BitSet();
+    int bsVoxelPtr = 0;
+    if (surfaceDataCount <= 0)
+      return bs; //unnecessary -- probably a plane
+    int nThisValue = 0;
+    while (bsVoxelPtr < nPoints) {
+      nThisValue = parseInt();
+      if (nThisValue == Integer.MIN_VALUE) {
+        line = br.readLine();
+        // note -- does not allow for empty lines;
+        // must be a continuous block of numbers.
+        if (line == null || (nThisValue = parseInt(line)) == Integer.MIN_VALUE) {
+          if (!endOfData)
+            Logger.error("end of file in JvxlReader?" + " line=" + line);
+          endOfData = true;
+          nThisValue = 10000;
+          //throw new NullPointerException();
+        } else if (sb != null) {
+          sb.append(line).append('\n');
+        }
+      } 
+      thisInside = !thisInside;
+      ++jvxlNSurfaceInts;
+      if (thisInside)
+        bs.set(bsVoxelPtr, bsVoxelPtr + nThisValue);
+      bsVoxelPtr += nThisValue;
+    }
+    return bs;
+  }
+  
   protected float getNextVoxelValue(StringBuffer sb) throws Exception {
 
     //called by VolumeFileReader.readVoxelData
@@ -649,10 +685,10 @@ public class JvxlReader extends VolumeFileReader {
   }
 
   private void jvxlSkipDataBlock(int nPoints, boolean isInt) throws Exception {
-    int iV = 0;
-    while (iV < nPoints) {
+    int n = 0;
+    while (n < nPoints) {
       line = br.readLine();
-      iV += (isInt ? countData(line) : jvxlUncompressString(line).length());
+      n += (isInt ? countData(line) : jvxlUncompressString(line).length());
     }
   }
 
@@ -714,11 +750,14 @@ public class JvxlReader extends VolumeFileReader {
     int dataCount = 0;
     int nDataPoints = 0;
     int nSurfaceInts = 0;
+    BitSet bs = new BitSet(); //TESTING
     for (int x = 0; x < nX; ++x)
       for (int y = 0; y < nY; ++y)
         for (int z = 0; z < nZ; ++z) {
+          boolean itest = isInside(voxelData[x][y][z], cutoff, isCutoffAbsolute);
+          if (itest)bs.set(nDataPoints);
           ++nDataPoints;
-          if (inside == isInside(voxelData[x][y][z], cutoff, isCutoffAbsolute)) {
+          if (inside == itest) {
             dataCount++;
           } else {
             if (dataCount != 0) {
@@ -731,6 +770,8 @@ public class JvxlReader extends VolumeFileReader {
         }
     sb.append(' ').append(dataCount).append('\n');
     ++nSurfaceInts;
+    //System.out.println("JvxlReader: " + sb.length() + " " + nDataPoints);
+
     setSurfaceInfo(jvxlData,null, nSurfaceInts, sb);
     return nDataPoints;
   }
@@ -889,7 +930,7 @@ public class JvxlReader extends VolumeFileReader {
       sb.append(jvxlCompressString(jvxlData.jvxlEdgeData
           + jvxlData.jvxlColorData));
     } else {
-      sb.append(jvxlCompressString(jvxlData.jvxlColorData));
+      sb.append(jvxlCompressString(jvxlData.jvxlColorData)).append('\n');
     }
     int len = sb.length();
     if (len > 0) {

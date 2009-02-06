@@ -253,6 +253,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected StringBuffer fractionData;
   protected String jvxlEdgeDataRead = "";
   protected String jvxlColorDataRead = "";
+  protected BitSet jvxlVoxelBitSet;
   protected boolean jvxlDataIsColorMapped;
   protected boolean jvxlDataIsPrecisionColor;
   protected boolean jvxlDataIs2dContour;
@@ -360,6 +361,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   abstract protected void readSurfaceData(boolean isMapData) throws Exception;
 
   protected void gotoAndReadVoxelData(boolean isMapData) {
+    //overloaded in jvxlReader
     initializeVolumetricData();
     if (nPointsX <= 0 || nPointsY <= 0 || nPointsZ <= 0)
       return;
@@ -412,8 +414,8 @@ public abstract class SurfaceReader implements VertexDataServer {
           params.valueMappedToBlue);
     }
 
-    marchingCubes = new MarchingCubes(this, volumeData, params.isContoured,
-        contourType, params.cutoff, params.isCutoffAbsolute);
+    marchingCubes = new MarchingCubes(this, volumeData, jvxlVoxelBitSet, params.isContoured,
+      contourType, params.cutoff, params.isCutoffAbsolute);
 
     edgeCount = marchingCubes.generateSurfaceData(isXLowToHigh);
 

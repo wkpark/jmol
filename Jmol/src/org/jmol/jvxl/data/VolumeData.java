@@ -122,6 +122,20 @@ import org.jmol.api.VolumeDataInterface;
 
 public class VolumeData implements VolumeDataInterface {
 
+  public final Point3f volumetricOrigin = new Point3f();
+  public final float[] origin = new float[3];
+  public final Vector3f[] volumetricVectors = new Vector3f[3];
+  public final int[] voxelCounts = new int[3];
+  public int nPoints;
+  public float[][][] voxelData;  
+  public final float[] volumetricVectorLengths = new float[3];
+  public final Vector3f[] unitVolumetricVectors = new Vector3f[3];
+  private final Matrix3f volumetricMatrix = new Matrix3f();
+  private Point4f thePlane;
+  private float thePlaneNormalMag;
+  private final Point3f ptXyzTemp = new Point3f();
+  private final Vector3f pointVector = new Vector3f();
+  
   public VolumeData() {
     volumetricVectors[0] = new Vector3f();
     volumetricVectors[1] = new Vector3f();
@@ -131,13 +145,9 @@ public class VolumeData implements VolumeDataInterface {
     unitVolumetricVectors[2] = new Vector3f();
   }
 
-  public final Point3f volumetricOrigin = new Point3f();
-
   public void setVolumetricOrigin(float x, float y, float z) {
     volumetricOrigin.set(x, y, z);
   }
-
-  public final float[] origin = new float[3];
 
   public float[] getOriginFloat() {
     return origin;
@@ -147,28 +157,23 @@ public class VolumeData implements VolumeDataInterface {
     return volumetricVectorLengths;
   }
   
-  public final Vector3f[] volumetricVectors = new Vector3f[3];
-
   public void setVolumetricVector(int i, float x, float y, float z) {
     volumetricVectors[i].x = x;
     volumetricVectors[i].y = y;
     volumetricVectors[i].z = z;
   }
 
-  public final int[] voxelCounts = new int[3];
-  
   public int[] getVoxelCounts() {
     return voxelCounts;
   }
   
-  public void setVoxelCounts(int nPointsX, int nPointsY, int nPointsZ) {
+  public int setVoxelCounts(int nPointsX, int nPointsY, int nPointsZ) {
     voxelCounts[0] = nPointsX;
     voxelCounts[1] = nPointsY;
     voxelCounts[2] = nPointsZ;
+    return nPoints = nPointsX * nPointsY * nPointsZ;
   }
 
-  public float[][][] voxelData;
-  
   public float[][][] getVoxelData() {
     return voxelData;
   }
@@ -176,11 +181,6 @@ public class VolumeData implements VolumeDataInterface {
   public void setVoxelData(float[][][] voxelData) {
     this.voxelData = voxelData;
   }
-
-  public final float[] volumetricVectorLengths = new float[3];
-  public final Vector3f[] unitVolumetricVectors = new Vector3f[3];
-
-  private final Matrix3f volumetricMatrix = new Matrix3f();
 
   public void setMatrix() {
     for (int i = 0; i < 3; i++)
@@ -191,15 +191,10 @@ public class VolumeData implements VolumeDataInterface {
     volumetricMatrix.transform(v1, v2);
   }
 
-  Point4f thePlane;
-  private float thePlaneNormalMag;
-
   public void setPlaneParameters(Point4f plane) {
     thePlane = plane;
     thePlaneNormalMag = (new Vector3f(plane.x, plane.y, plane.z)).length();
   }
-
-  private final Point3f ptXyzTemp = new Point3f();
 
   public float calcVoxelPlaneDistance(int x, int y, int z) {
     voxelPtToXYZ(x, y, z, ptXyzTemp);
@@ -228,8 +223,6 @@ public class VolumeData implements VolumeDataInterface {
     origin[1] = volumetricOrigin.y;
     origin[2] = volumetricOrigin.z;
   }
-
-  private final Vector3f pointVector = new Vector3f();
 
   private float scaleByVoxelVector(Vector3f vector, int voxelVectorIndex) {
     // ORTHOGONAL ONLY!!! -- required for creating planes

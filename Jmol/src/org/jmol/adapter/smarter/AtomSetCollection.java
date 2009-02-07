@@ -969,7 +969,7 @@ public class AtomSetCollection {
   }
 
   public void createAtomSerialMap() {
-    if (haveMappedSerials)
+    if (haveMappedSerials || currentAtomSetIndex < 0)
       return;
     for (int i = getLastAtomSetAtomCount(); i < atomCount; i++) {
       int atomSerial = atoms[i].atomSerial;

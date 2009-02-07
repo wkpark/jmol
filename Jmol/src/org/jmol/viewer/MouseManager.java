@@ -128,8 +128,8 @@ public abstract class MouseManager implements KeyListener {
     if (keyBuffer.length() == 0)
       return;
     keyBuffer = "";
-    if (viewer.getBooleanProperty("showKeyStrokes", false))
-      viewer.evalStringQuiet("!set echo bottom left;echo \"\"");
+    if (viewer.getBooleanProperty("showKeyStrokes", true))
+      viewer.evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo \"\"");
   }
 
   private void addKeyBuffer(char ch){
@@ -143,20 +143,48 @@ public abstract class MouseManager implements KeyListener {
     } else {
       keyBuffer += ch;
     }
-    if (viewer.getBooleanProperty("showKeyStrokes", false))
-      viewer.evalStringQuiet("!set echo bottom left;echo " + Escape.escape("\0" + keyBuffer));
+    if (viewer.getBooleanProperty("showKeyStrokes", true))
+      viewer.evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo " + Escape.escape("\0" + keyBuffer));
   }
   
   private void sendKeyBuffer() {
      String kb = keyBuffer;
-     if (viewer.getBooleanProperty("showKeyStrokes", false))
-       viewer.evalStringQuiet("!set echo bottom left;echo " + Escape.escape(keyBuffer));
+     if (viewer.getBooleanProperty("showKeyStrokes", true))
+       viewer.evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo " + Escape.escape(keyBuffer));
      clearKeyBuffer();
      viewer.script(kb);
   }
   
   public void keyTyped(KeyEvent ke) {
-    addKeyBuffer(ke.getKeyChar());
+    if (viewer.getDisablePopupMenu())
+      return;
+    char ch = ke.getKeyChar();
+    int modifiers = ke.getModifiers() & (CTRL_ALT);
+    //System.out.println(ch + " " + (0+ch) + " " + modifiers + " " + CTRL + " " + ALT);
+    if (modifiers != 0) {
+      switch (ch) {
+      case (char) 11:
+      case 'k':
+        boolean isON = !viewer.getBooleanProperty("allowKeyStrokes");
+        switch (modifiers) {
+        case CTRL:
+          viewer.setBooleanProperty("allowKeyStrokes", isON);
+          viewer.setBooleanProperty("showKeyStrokes", true);
+          break;
+        case CTRL_ALT:
+        case ALT:
+          viewer.setBooleanProperty("allowKeyStrokes", isON);
+          viewer.setBooleanProperty("showKeyStrokes", false);
+          break;
+        }
+        clearKeyBuffer();
+        viewer.refresh(3, "showkey");
+      }
+      return;        
+    }
+    if (!viewer.getBooleanProperty("allowKeyStrokes"))
+        return;
+    addKeyBuffer(ch);
   }
 
   boolean isAltKeyReleased = true;
@@ -243,22 +271,23 @@ public abstract class MouseManager implements KeyListener {
   final static int MIDDLE_RIGHT = MIDDLE | RIGHT;
   final static int LEFT_MIDDLE_RIGHT = LEFT | MIDDLE | RIGHT;
   final static int CTRL_SHIFT = CTRL | SHIFT;
+  final static int CTRL_ALT = CTRL | ALT;
   final static int CTRL_LEFT = CTRL | LEFT;
   final static int CTRL_RIGHT = CTRL | RIGHT;
   final static int CTRL_MIDDLE = CTRL | MIDDLE;
-  final static int CTRL_ALT_LEFT = CTRL | ALT | LEFT;
-  final static int CTRL_ALT_RIGHT = CTRL | ALT | RIGHT;
+  final static int CTRL_ALT_LEFT = CTRL_ALT | LEFT;
+  final static int CTRL_ALT_RIGHT = CTRL_ALT | RIGHT;
   public final static int ALT_LEFT = ALT | LEFT;
   public final static int ALT_SHIFT_LEFT = ALT | SHIFT | LEFT;
   public final static int SHIFT_LEFT = SHIFT | LEFT;
-  final static int CTRL_SHIFT_LEFT = CTRL | SHIFT | LEFT;
-  final static int CTRL_ALT_SHIFT_LEFT = CTRL | ALT | SHIFT | LEFT;
+  final static int CTRL_SHIFT_LEFT = CTRL_SHIFT | LEFT;
+  final static int CTRL_ALT_SHIFT_LEFT = CTRL_ALT | SHIFT | LEFT;
   final static int SHIFT_MIDDLE = SHIFT | MIDDLE;
-  final static int CTRL_SHIFT_MIDDLE = CTRL | SHIFT | MIDDLE;
+  final static int CTRL_SHIFT_MIDDLE = CTRL_SHIFT | MIDDLE;
   final static int SHIFT_RIGHT = SHIFT | RIGHT;
-  final static int CTRL_SHIFT_RIGHT = CTRL | SHIFT | RIGHT;
-  final static int CTRL_ALT_SHIFT_RIGHT = CTRL | ALT | SHIFT | RIGHT;
-  private final static int BUTTON_MODIFIER_MASK = CTRL | ALT | SHIFT | LEFT
+  final static int CTRL_SHIFT_RIGHT = CTRL_SHIFT | RIGHT;
+  final static int CTRL_ALT_SHIFT_RIGHT = CTRL_ALT | SHIFT | RIGHT;
+  private final static int BUTTON_MODIFIER_MASK = CTRL_ALT | SHIFT | LEFT
       | MIDDLE | RIGHT;
 
   void mouseMoved(long time, int x, int y, int modifiers) {

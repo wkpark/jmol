@@ -409,7 +409,6 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
     int serial = parseInt(line, 6, 11);
     if (serial > maxSerial)
       maxSerial = serial;
-    lastAtomData = line.substring(6, 26);
     char chainID = line.charAt(21);
     if (chainAtomCounts != null)
       chainAtomCounts[chainID]++;
@@ -470,8 +469,13 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
     float z = parseFloat(line, 46, 54);
     /****************************************************************/
     Atom atom = new Atom();
-    atom.elementSymbol = elementSymbol;
     atom.atomName = atomName;
+    atom.chainID = chainID;
+    atom.group3 = currentGroup3;
+    if (filter != null)
+      if (!filterAtom(atom))
+        return;
+    atom.elementSymbol = elementSymbol;
     if (charAlternateLocation != ' ')
       atom.alternateLocationID = charAlternateLocation;
     atom.formalCharge = charge;
@@ -481,15 +485,11 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
     atom.bfactor = bfactor;
     setAtomCoord(atom, x, y, z);
     atom.isHetero = isHetero;
-    atom.chainID = chainID;
     atom.atomSerial = serial;
-    atom.group3 = currentGroup3;
     atom.sequenceNumber = sequenceNumber;
     atom.insertionCode = JmolAdapter.canonizeInsertionCode(insertionCode);
     atom.radius = radius;
-    if (filter != null)
-      if (!filterAtom(atom))
-        return;
+    lastAtomData = line.substring(6, 26);
     lastAtomIndex = atomSetCollection.getAtomCount();
     if (haveMappedSerials)
       atomSetCollection.addAtomWithMappedSerialNumber(atom);
@@ -814,7 +814,8 @@ Details
       haveMappedSerials = true;
     }
     if (index < 0) {
-      System.out.println("ERROR: ANISOU record does not correspond to known atom");
+      //normal when filtering
+      //System.out.println("ERROR: ANISOU record does not correspond to known atom");
       return;
     }
     Atom atom = atomSetCollection.getAtom(index);

@@ -33,7 +33,8 @@ public class FrankRenderer extends FontLineShapeRenderer {
   
   protected void render() {
     Frank frank = (Frank) shape;
-    colix = (viewer.isSignedApplet() ? Graphics3D.RED : Graphics3D.GRAY);
+    boolean allowKeys = viewer.getBooleanProperty("allowKeyStrokes");
+    colix = (viewer.isSignedApplet() ? (allowKeys ? Graphics3D.ORANGE : Graphics3D.RED) : allowKeys ? Graphics3D.BLUE : Graphics3D.GRAY);
     if (isGenerator || !viewer.getShowFrank()
         || !g3d.setColix(Graphics3D.getColixTranslucent(colix,
             g3d.haveTranslucentObjects(), 0.5f)))

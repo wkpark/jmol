@@ -598,7 +598,8 @@ public class StateManager {
     boolean greyscaleRendering = false;
     boolean isosurfacePropertySmoothing = true;
     boolean showHiddenSelectionHalos = false;
-    boolean showKeyStrokes = false;
+    boolean allowKeyStrokes = false;
+    boolean showKeyStrokes = true;
     boolean showMeasurements = true;
     boolean zoomLarge = true; //false would be like Chime
     boolean zShade = false;
@@ -1123,6 +1124,7 @@ public class StateManager {
       setParameterValue("stateversion", 0);
 
       setParameterValue("allowEmbeddedScripts", allowEmbeddedScripts);
+      setParameterValue("allowKeyStrokes", allowKeyStrokes);
       setParameterValue("allowRotateSelected", allowRotateSelected);
       setParameterValue("ambientPercent", ambientPercent);
       setParameterValue("animationFps", animationFps);

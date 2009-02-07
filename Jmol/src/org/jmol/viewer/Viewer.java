@@ -5167,6 +5167,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     while (true) {
 
       //11.7.24
+
+      if (key.equalsIgnoreCase("allowKeyStrokes")) {
+        if (global.disablePopupMenu)
+          value = false;
+        global.allowKeyStrokes = value;
+        break;
+      }
+
       if (key.equalsIgnoreCase("showKeyStrokes")) {
         global.showKeyStrokes = value;
         break;

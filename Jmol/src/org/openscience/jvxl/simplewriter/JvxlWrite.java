@@ -61,13 +61,12 @@ public class JvxlWrite {
     SimpleMarchingCubes mc = new SimpleMarchingCubes(vdc, volumeData,
         jvxlData.cutoff, jvxlData.isCutoffAbsolute, jvxlData.isXLowToHigh);
     jvxlData.jvxlEdgeData = mc.getEdgeData();
-    setSurfaceInfoFromBitSet(jvxlData, mc.getBsVoxels(), null);
+    setSurfaceInfoFromBitSet(jvxlData, mc.getBsVoxels());
     jvxlData.jvxlDefinitionLine = jvxlGetDefinitionLine(jvxlData);
     return jvxlGetFile(jvxlData);
   }
 
-  public static void setSurfaceInfoFromBitSet(JvxlData jvxlData, BitSet bs,
-                                              Point4f thePlane) {
+  public static void setSurfaceInfoFromBitSet(JvxlData jvxlData, BitSet bs) {
     boolean inside = false;
     int dataCount = 0;
     StringBuffer sb = new StringBuffer();
@@ -84,7 +83,7 @@ public class JvxlWrite {
       }
     }
     sb.append(' ').append(dataCount).append('\n');
-    setSurfaceInfo(jvxlData, thePlane, nSurfaceInts, sb);
+    setSurfaceInfo(jvxlData, nSurfaceInts, sb);
   }
   
   static char jvxlFractionAsCharacter(float fraction) {
@@ -113,11 +112,10 @@ public class JvxlWrite {
             }
 
 
-  protected static void setSurfaceInfo(JvxlData jvxlData, Point4f thePlane, int nSurfaceInts, StringBuffer surfaceData) {
+  protected static void setSurfaceInfo(JvxlData jvxlData, int nSurfaceInts, StringBuffer surfaceData) {
     jvxlData.jvxlSurfaceData = surfaceData.toString();
     if (jvxlData.jvxlSurfaceData.indexOf("--") == 0)
       jvxlData.jvxlSurfaceData = jvxlData.jvxlSurfaceData.substring(2);
-    jvxlData.jvxlPlane = thePlane;
     jvxlData.nSurfaceInts = nSurfaceInts;
   }
   

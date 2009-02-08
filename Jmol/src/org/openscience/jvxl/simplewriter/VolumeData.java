@@ -118,9 +118,7 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 
-import org.jmol.api.VolumeDataInterface;
-
-public class VolumeData implements VolumeDataInterface {
+public class VolumeData {
 
   public VolumeData() {
     volumetricVectors[0] = new Vector3f();

@@ -16,11 +16,13 @@ public class VoxelDataCreator {
      */
     
     void createVoxelData() {
-      float[][][] voxelData = volumeData.getVoxelData();
+
       int[] counts = volumeData.getVoxelCounts();
       int nX = counts[0];
       int nY = counts[1];
       int nZ = counts[2];
+      float[][][] voxelData = new float[nX][nY][nZ];
+      volumeData.setVoxelData(voxelData);
       // whatever method here that is desired;
       // it is not necessary to create a whole block.
       // you can set volumeData.voxelData = null, in

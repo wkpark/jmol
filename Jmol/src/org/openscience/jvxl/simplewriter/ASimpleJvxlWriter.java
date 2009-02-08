@@ -60,38 +60,21 @@ public class ASimpleJvxlWriter {
     volumeData.setVolumetricVector(1, 0f, 1f, 0f);
     volumeData.setVolumetricVector(2, 0f, 0f, 1f);
     volumeData.setUnitVectors();
-
-
     volumeData.setVoxelCounts(nX, nY, nZ);
-    volumeData.setVoxelData(new float[nX][nY][nZ]);
+    
     vdc = new VoxelDataCreator(volumeData);
     vdc.createVoxelData();
     jvxlData = new JvxlData();
     jvxlData.cutoff = cutoff;
     jvxlData.isCutoffAbsolute = isCutoffAbsolute;
-    jvxlData.isXLowToHigh = true;
-    writeFile(outputFile + jvxlData.isXLowToHigh  , JvxlWrite.jvxlGetData(null, jvxlData, volumeData, title));
+    jvxlData.isXLowToHigh = false;
+    writeFile(outputFile+"A", JvxlWrite.jvxlGetData(null, jvxlData, volumeData, title));
     
-/*
-    volumeData = new VolumeData();
-    volumeData.setVolumetricOrigin(2, 2, 2);
-    volumeData.setVolumetricVector(0, 1f, 0f, 0f);
-    volumeData.setVolumetricVector(1, 0f, 1f, 0f);
-    volumeData.setVolumetricVector(2, 0f, 0f, 1f);
-    volumeData.setUnitVectors();
-
-
-    volumeData.setVoxelCounts(nX, nY, nZ);
-    volumeData.setVoxelData(new float[nX][nY][nZ]);
     vdc = new VoxelDataCreator(volumeData);
     vdc.createVoxelData();
-    jvxlData = new JvxlData();
-    jvxlData.cutoff = cutoff;
-    jvxlData.isCutoffAbsolute = isCutoffAbsolute;
     jvxlData.isXLowToHigh = true;
-    writeFile(outputFile+ "B", JvxlWrite.jvxlGetData(vdc, jvxlData, volumeData, title));
+    writeFile(outputFile+"B", JvxlWrite.jvxlGetData(vdc, jvxlData, volumeData, title));
     
-    */
     System.out.flush();
     System.exit(0);
   }

@@ -69,9 +69,9 @@ public class ASimpleJvxlWriter {
     jvxlData.isCutoffAbsolute = isCutoffAbsolute;
     jvxlData.isXLowToHigh = false;
     writeFile(outputFile+"A", JvxlWrite.jvxlGetData(null, jvxlData, volumeData, title));
-    
-    vdc = new VoxelDataCreator(volumeData);
-    vdc.createVoxelData();
+
+    // streaming option: null voxelData
+    volumeData.setVoxelData(null);
     jvxlData.isXLowToHigh = true;
     writeFile(outputFile+"B", JvxlWrite.jvxlGetData(vdc, jvxlData, volumeData, title));
     

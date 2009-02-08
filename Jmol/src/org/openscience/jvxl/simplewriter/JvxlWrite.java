@@ -26,7 +26,6 @@ package org.openscience.jvxl.simplewriter;
 import java.util.BitSet;
 
 import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
 
 public class JvxlWrite {
 

@@ -733,11 +733,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   /////////////  VertexDataServer interface methods ////////////////
 
-  public int getSurfacePointIndex(float cutoff, boolean isCutoffAbsolute,
+  public int getSurfacePointIndexAndFraction(float cutoff, boolean isCutoffAbsolute,
                                   int x, int y, int z, Point3i offset, int vA,
                                   int vB, float valueA, float valueB,
                                   Point3f pointA, Vector3f edgeVector,
-                                  boolean isContourType) {
+                                  boolean isContourType, float[] fReturn) {
     return 0;
   }
 
@@ -752,6 +752,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
                                boolean isAbsolute) {
     if (isAbsolute && !MeshData.checkCutoff(iA, iB, iC, thisMesh.vertexValues))
       return;
+    //System.out.println(" isosurface triangle check : " + iA + " " + iB + " " + iC);
     thisMesh.addTriangleCheck(iA, iB, iC, check);
   }
 
@@ -843,5 +844,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private String getUserColorScheme(String schemeName) {
     String colors = viewer.getColorSchemeList(schemeName, false);
     return "\"" + (colors.length() == 0 ? schemeName : colors) + "\"";
+  }
+  
+  public float getValue(int x, int y, int z) {
+    return 0;
   }
 }

@@ -23,7 +23,10 @@
  */
 package org.openscience.jvxl.simplewriter;
 
+import java.util.BitSet;
+
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 
 public class JvxlWrite {
 
@@ -40,32 +43,84 @@ public class JvxlWrite {
   public JvxlWrite() {
   }
 
-  public static String jvxlGetData(JvxlData jvxlData, VolumeData volumeData, StringBuffer sb) {
+  public static String jvxlGetData(VoxelDataCreator vdc, JvxlData jvxlData, VolumeData volumeData, String title) {
     // if the StringBuffer is not empty, it should have two comment lines
     // that do not start with # already present.
+    StringBuffer sb = new StringBuffer();
+    if (title != null)
+      sb.append(title);
     Point3f[] atomXYZ = null;
     int[] atomNo = null;
     int nAtoms = Integer.MAX_VALUE;
-    jvxlCreateHeader(volumeData, nAtoms, atomXYZ, atomNo, sb);
+    jvxlCreateHeader(volumeData, nAtoms, atomXYZ, atomNo, jvxlData.isXLowToHigh, sb);
     jvxlData.jvxlFileHeader = sb.toString();
     int[] counts = volumeData.getVoxelCounts();
-    jvxlCreateSurfaceData(jvxlData, volumeData.getVoxelData(), jvxlData.cutoff,
-        jvxlData.isCutoffAbsolute, counts);
-    SimpleMarchingCubes mc = new SimpleMarchingCubes(volumeData,
-        jvxlData.cutoff, jvxlData.isCutoffAbsolute);
+    jvxlData.nPointsX = counts[0];
+    jvxlData.nPointsY = counts[1];
+    jvxlData.nPointsZ = counts[2];
+    SimpleMarchingCubes mc = new SimpleMarchingCubes(vdc, volumeData,
+        jvxlData.cutoff, jvxlData.isCutoffAbsolute, jvxlData.isXLowToHigh);
     jvxlData.jvxlEdgeData = mc.getEdgeData();
-    String jvxlMaskData = mc.getMaskData();
-    System.out.println(jvxlMaskData.length() + " " 
-        + (jvxlMaskData = jvxlCompressString(jvxlMaskData)).length() + " " + jvxlData.jvxlSurfaceData.length());
+    setSurfaceInfoFromBitSet(jvxlData, mc.getBsVoxels(), null);
     jvxlData.jvxlDefinitionLine = jvxlGetDefinitionLine(jvxlData);
     return jvxlGetFile(jvxlData);
   }
 
+  public static void setSurfaceInfoFromBitSet(JvxlData jvxlData, BitSet bs,
+                                              Point4f thePlane) {
+    boolean inside = false;
+    int dataCount = 0;
+    StringBuffer sb = new StringBuffer();
+    int nSurfaceInts = 0;
+    int nPoints = jvxlData.nPointsX * jvxlData.nPointsY * jvxlData.nPointsZ;
+    for (int i = 0; i < nPoints; ++i) {
+      if (inside == bs.get(i)) {
+        dataCount++;
+      } else {
+        sb.append(' ').append(dataCount);
+        nSurfaceInts++;
+        dataCount = 1;
+        inside = !inside;
+      }
+    }
+    sb.append(' ').append(dataCount).append('\n');
+    setSurfaceInfo(jvxlData, thePlane, nSurfaceInts, sb);
+  }
+  
   static char jvxlFractionAsCharacter(float fraction) {
+    //char ch = jvxlFractionAsCharacter(fraction, defaultEdgeFractionBase,
+      //  defaultEdgeFractionRange);
+    //System.out.println(fraction + " " + ch + " " + jvxlFractionFromCharacter((int) ch, defaultEdgeFractionBase,
+        //defaultEdgeFractionRange,0));
     return jvxlFractionAsCharacter(fraction, defaultEdgeFractionBase,
         defaultEdgeFractionRange);
   }
 
+  protected static float jvxlFractionFromCharacter(int ich, int base, int range,
+                                                   float fracOffset) {
+              if (ich == base + range)
+                return Float.NaN;
+              if (ich < base)
+                ich = 92; // ! --> \
+              float fraction = (ich - base + fracOffset) / range;
+              if (fraction < 0f)
+                return 0f;
+              if (fraction > 1f)
+                return 0.999999f;
+              //if (logCompression)
+              //Logger.info("ffc: " + fraction + " <-- " + ich + " " + (char) ich);
+              return fraction;
+            }
+
+
+  protected static void setSurfaceInfo(JvxlData jvxlData, Point4f thePlane, int nSurfaceInts, StringBuffer surfaceData) {
+    jvxlData.jvxlSurfaceData = surfaceData.toString();
+    if (jvxlData.jvxlSurfaceData.indexOf("--") == 0)
+      jvxlData.jvxlSurfaceData = jvxlData.jvxlSurfaceData.substring(2);
+    jvxlData.jvxlPlane = thePlane;
+    jvxlData.nSurfaceInts = nSurfaceInts;
+  }
+  
   private static String jvxlGetFile(JvxlData jvxlData) {
     StringBuffer data = new StringBuffer();
     String s = jvxlData.jvxlFileHeader + jvxlExtraLine(jvxlData, 1);
@@ -102,23 +157,20 @@ public class JvxlWrite {
   // ascii-encoded fractional color data
   // # optional comments
 
-  private static void setSurfaceInfo(JvxlData jvxlData, int nSurfaceInts, StringBuffer surfaceData) {
-    jvxlData.jvxlSurfaceData = surfaceData.toString();
-    if (jvxlData.jvxlSurfaceData.indexOf("--") == 0)
-      jvxlData.jvxlSurfaceData = jvxlData.jvxlSurfaceData.substring(2);
-    jvxlData.nSurfaceInts = nSurfaceInts;
-  }
 
   //// methods for creating the JVXL code  
 
   private static void jvxlCreateHeader(VolumeData v, int nAtoms,
                                        Point3f[] atomXyz, int[] atomNo,
+                                       boolean isXLowToHigh,
                                        StringBuffer sb) {
     // if the StringBuffer comes in non-empty, it should have two lines
     // that do not start with # already present.
     if (sb.length() == 0)
       sb.append("Line 1\nLine 2\n");
-    sb.append(nAtoms == Integer.MAX_VALUE ? -2 : -nAtoms).append(' ').append(
+    sb.append(isXLowToHigh ? "+" : "-");
+    sb.append(nAtoms == Integer.MAX_VALUE ? 2 : Math.abs(nAtoms));
+    sb.append(' ').append(
         v.volumetricOrigin.x).append(' ').append(v.volumetricOrigin.y).append(
         ' ').append(v.volumetricOrigin.z).append(" ANGSTROMS\n");
     for (int i = 0; i < 3; i++)
@@ -143,44 +195,6 @@ public class JvxlWrite {
       pt.scaleAdd(v.voxelCounts[i] - 1, v.volumetricVectors[i], pt);
     bs.append("2 2.0 ").append(pt.x).append(' ').append(pt.y).append(' ')
         .append(pt.z).append(" //BOGUS He ATOM ADDED FOR JVXL FORMAT\n");
-  }
-
-  private static int jvxlCreateSurfaceData(JvxlData jvxlData,
-                                           float[][][] voxelData, float cutoff,
-                                           boolean isCutoffAbsolute,
-                                           int counts[]) {
-    StringBuffer sb = new StringBuffer();
-    boolean inside = false;
-    int dataCount = 0;
-    int nDataPoints = 0;
-    int nSurfaceInts = 0;
-    int nX = counts[0];
-    int nY = counts[1];
-    int nZ = counts[2];
-    for (int x = 0; x < nX; ++x)
-      for (int y = 0; y < nY; ++y)
-        for (int z = 0; z < nZ; ++z) {
-          ++nDataPoints;
-          if (inside == isInside(voxelData[x][y][z], cutoff, isCutoffAbsolute)) {
-            dataCount++;
-          } else {
-            if (dataCount != 0) {
-              sb.append(' ').append(dataCount);
-              ++nSurfaceInts;
-            }
-            dataCount = 1;
-            inside = !inside;
-          }
-        }
-    sb.append(' ').append(dataCount).append('\n');
-    ++nSurfaceInts;
-    setSurfaceInfo(jvxlData, nSurfaceInts, sb);
-    return nDataPoints;
-  }
-
-  private static boolean isInside(float voxelValue, float max,
-                                  boolean isAbsolute) {
-    return SimpleMarchingCubes.isInside(voxelValue, max, isAbsolute);
   }
 
   private static String jvxlGetDefinitionLine(JvxlData jvxlData) {

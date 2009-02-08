@@ -176,10 +176,8 @@ abstract class VolumeFileReader extends SurfaceFileReader {
      */
 
     next[0] = 0;
-    boolean inside = false;
     int downsampleFactor = params.downsampleFactor;
     boolean isDownsampled = canDownsample && (downsampleFactor > 0);
-    int dataCount = 0;
     if (params.thePlane != null) {
       params.cutoff = 0f;
     } else if (isJvxl) {
@@ -187,15 +185,13 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     }
     nDataPoints = 0;
     line = "";
-    StringBuffer sb = new StringBuffer();
     jvxlNSurfaceInts = 0;
     if (isJvxl) {
       nDataPoints = volumeData.setVoxelCounts(nPointsX, nPointsY, nPointsZ);
-      jvxlVoxelBitSet = getVoxelBitSet(nDataPoints, sb);
+      jvxlVoxelBitSet = getVoxelBitSet(nDataPoints);
       voxelData = null;
     } else {
       voxelData = new float[nPointsX][][];
-      boolean collectData = (!isJvxl && params.thePlane == null);
       int nSkipX = 0;
       int nSkipY = 0;
       int nSkipZ = 0;
@@ -211,83 +207,40 @@ abstract class VolumeFileReader extends SurfaceFileReader {
 
       //Note downsampling not allowed for JVXL files
 
-      if (isMapData) {
-        for (int x = 0; x < nPointsX; ++x) {
-          float[][] plane = new float[nPointsY][];
-          voxelData[x] = plane;
-          for (int y = 0; y < nPointsY; ++y) {
-            float[] strip = new float[nPointsZ];
-            plane[y] = strip;
-            for (int z = 0; z < nPointsZ; ++z) {
-              strip[z] = getNextVoxelValue(sb);
-              ++nDataPoints;
-              if (isDownsampled)
-                skipVoxels(nSkipX);
-            }
+      for (int x = 0; x < nPointsX; ++x) {
+        float[][] plane = new float[nPointsY][];
+        voxelData[x] = plane;
+        for (int y = 0; y < nPointsY; ++y) {
+          float[] strip = new float[nPointsZ];
+          plane[y] = strip;
+          for (int z = 0; z < nPointsZ; ++z) {
+            strip[z] = getNextVoxelValue();
             if (isDownsampled)
-              skipVoxels(nSkipY);
+              skipVoxels(nSkipX);
           }
           if (isDownsampled)
-            skipVoxels(nSkipZ);
+            skipVoxels(nSkipY);
         }
-      } else {
-        float cutoff = params.cutoff;
-        boolean isCutoffAbsolute = params.isCutoffAbsolute;
-        for (int x = 0; x < nPointsX; ++x) {
-          float[][] plane;
-          plane = new float[nPointsY][];
-          voxelData[x] = plane;
-          for (int y = 0; y < nPointsY; ++y) {
-            float[] strip = new float[nPointsZ];
-            plane[y] = strip;
-            for (int z = 0; z < nPointsZ; ++z) {
-              float voxelValue = getNextVoxelValue(sb);
-              strip[z] = voxelValue;
-              ++nDataPoints;
-              if (inside == isInside(voxelValue, cutoff, isCutoffAbsolute)) {
-                dataCount++;
-              } else {
-                if (collectData && dataCount != 0) {
-                  sb.append(' ').append(dataCount);
-                  ++jvxlNSurfaceInts;
-                }
-                dataCount = 1;
-                inside = !inside;
-              }
-              if (isDownsampled)
-                skipVoxels(nSkipX);
-            }
-            if (isDownsampled)
-              skipVoxels(nSkipY);
-          }
-          if (isDownsampled)
-            skipVoxels(nSkipZ);
-        }
+        if (isDownsampled)
+          skipVoxels(nSkipZ);
       }
       //Jvxl getNextVoxelValue records the data read on its own.
-      if (collectData) {
-        sb.append(' ').append(dataCount).append('\n');
-        ++jvxlNSurfaceInts;
-      }
     }
-    if (!isMapData)
-      JvxlReader
-          .setSurfaceInfo(jvxlData, params.thePlane, jvxlNSurfaceInts, sb);
     volumeData.setVoxelData(voxelData);
   }
 
   private void skipVoxels(int n) throws Exception {
     // not allowed for JVXL data
     for (int i = n; --i >= 0;)
-      getNextVoxelValue(null);
+      getNextVoxelValue();
   }
   
-  protected BitSet getVoxelBitSet(int nPoints, StringBuffer sb) throws Exception {
+  protected BitSet getVoxelBitSet(int nPoints) throws Exception {
     // jvxlReader will use this to read the surface voxel data
     return null;  
   }
   
-  protected float getNextVoxelValue(StringBuffer sb) throws Exception {
+  protected float getNextVoxelValue() throws Exception {
     //overloaded in JvxlReader, where sb is appended to
     float voxelValue = 0;
     if (nSurfaces > 1 && !params.blockCubeData) {

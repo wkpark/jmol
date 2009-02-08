@@ -108,7 +108,7 @@ class IsoShapeReader extends VolumeDataReader {
     setHeader(type + "\n");
   }
 
-  protected float getValue(int x, int y, int z) {
+  public float getValue(int x, int y, int z) {
     volumeData.voxelPtToXYZ(x, y, z, ptPsi);
     ptPsi.sub(center);
     if (isEccentric)

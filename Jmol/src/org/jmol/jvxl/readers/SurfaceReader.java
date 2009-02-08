@@ -183,6 +183,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected MeshData meshData;
   protected JvxlData jvxlData;
   protected VolumeData volumeData;
+  private String edgeData;
 
   protected boolean isProgressive = false;
   protected boolean isXLowToHigh = false; //can be overridden in some readers by --progressive
@@ -226,6 +227,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     voxelCounts = v.voxelCounts;
     voxelData = v.voxelData;
     volumeData = v;
+    
 /*    if (mustCalcPoint)
       v.setDataSource(this);
 */  }
@@ -292,7 +294,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.pointsPerAngstrom = 1f/volumeData.volumetricVectorLengths[0];
     jvxlData.jvxlColorData = "";
     jvxlData.jvxlPlane = params.thePlane;
-    jvxlData.jvxlEdgeData = fractionData.toString();
+    jvxlData.jvxlEdgeData = edgeData;
     jvxlData.isBicolorMap = params.isBicolorMap;
     jvxlData.isContoured = params.isContoured;
     jvxlData.nContours = (params.contourFromZero 
@@ -390,22 +392,26 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected MarchingSquares marchingSquares;
   private MarchingCubes marchingCubes;
 
+  public float getValue(int x, int y, int z) {
+    return volumeData.voxelData[x][y][z];
+  }
+
   private void generateSurfaceData() {
-    fractionData = new StringBuffer();
+    edgeData = "";
     if (vertexDataOnly) {
       try {
         readSurfaceData(false);
       } catch (Exception e) {
         e.printStackTrace();
-        Logger.error("Exception in SurfaceReader::readSurfaceData: " + e.getMessage());
+        Logger.error("Exception in SurfaceReader::readSurfaceData: "
+            + e.getMessage());
       }
       return;
     }
     contourVertexCount = 0;
     int contourType = -1;
     marchingSquares = null;
-    if (params.isSquared)
-      volumeData.filterData(params.isSquared, Float.NaN);
+
     if (params.thePlane != null || params.isContoured) {
       marchingSquares = new MarchingSquares(this, volumeData, params.thePlane,
           params.nContours, params.thisContour, params.contourFromZero);
@@ -413,34 +419,27 @@ public abstract class SurfaceReader implements VertexDataServer {
       marchingSquares.setMinMax(params.valueMappedToRed,
           params.valueMappedToBlue);
     }
-
-    marchingCubes = new MarchingCubes(this, volumeData, jvxlVoxelBitSet, params.isContoured,
-      contourType, params.cutoff, params.isCutoffAbsolute);
-
-    edgeCount = marchingCubes.generateSurfaceData(isXLowToHigh);
-
+    marchingCubes = new MarchingCubes(this, volumeData, jvxlVoxelBitSet,
+        params.isContoured, contourType, params.cutoff,
+        params.isCutoffAbsolute, params.isSquared, isXLowToHigh);
+    edgeData = marchingCubes.getEdgeData();
+    if (volumeData.voxelData == null)
+      JvxlReader.setSurfaceInfoFromBitSet(jvxlData,
+          marchingCubes.getBsVoxels(), params.thePlane);
     if (isJvxl)
-      fractionData = new StringBuffer(jvxlEdgeDataRead);
-    fractionData.append('\n');
-  }
-
-  protected static boolean isInside(float voxelValue, float max,
-                                    boolean isAbsolute) {
-    return MarchingCubes.isInside(voxelValue, max, isAbsolute);
+      edgeData = jvxlEdgeDataRead;
   }
 
   /////////////////  MarchingReader Interface Methods ///////////////////
 
   protected final Point3f ptTemp = new Point3f();
 
-  final float[] fReturn = new float[1];
-
-  public int getSurfacePointIndex(float cutoff, boolean isCutoffAbsolute,
+  public int getSurfacePointIndexAndFraction(float cutoff, boolean isCutoffAbsolute,
                                   int x, int y, int z, Point3i offset, int vA,
                                   int vB, float valueA, float valueB,
                                   Point3f pointA, Vector3f edgeVector,
-                                  boolean isContourType) {
-    float thisValue = readSurfacePoint(cutoff, isCutoffAbsolute, valueA,
+                                  boolean isContourType, float[] fReturn) {
+    float thisValue = getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
         valueB, pointA, edgeVector, fReturn, ptTemp);
     /* 
      * from MarchingCubes
@@ -460,7 +459,7 @@ public abstract class SurfaceReader implements VertexDataServer {
         : MarchingSquares.CONTOUR_POINT);
     if (assocVertex >= 0)
       assocVertex = marchingCubes.getLinearOffset(x, y, z, assocVertex);
-    int iV = addVertexCopy(ptTemp, thisValue, assocVertex);
+    int n = addVertexCopy(ptTemp, thisValue, assocVertex);
     if (params.iAddGridPoints) {
       marchingCubes.calcVertexPoint(x, y, z, vB, ptTemp);
       addVertexCopy(valueA < valueB ? pointA : ptTemp, Float.NaN,
@@ -468,17 +467,16 @@ public abstract class SurfaceReader implements VertexDataServer {
       addVertexCopy(valueA < valueB ? ptTemp : pointA, Float.NaN,
           MarchingSquares.EDGE_POINT);
     }
-    return iV;
+    return n;
   }
 
-  protected float readSurfacePoint(float cutoff, boolean isCutoffAbsolute,
+  protected float getSurfacePointAndFraction(float cutoff, boolean isCutoffAbsolute,
                                    float valueA, float valueB, Point3f pointA,
-                                   Vector3f edgeVector, 
-                                   float[] fReturn, Point3f ptReturn) {
+                                   Vector3f edgeVector, float[] fReturn,
+                                   Point3f ptReturn) {
 
     //JvxlReader may or may not call this
 
-    
     float diff = valueB - valueA;
     float fraction = (cutoff - valueA) / diff;
     if (isCutoffAbsolute && (fraction < 0 || fraction > 1))
@@ -490,10 +488,6 @@ public abstract class SurfaceReader implements VertexDataServer {
       fraction = Float.NaN;
     }
     fReturn[0] = fraction;
-    if (!isJvxl)
-      fractionData.append(JvxlReader.jvxlFractionAsCharacter(fraction,
-          edgeFractionBase, edgeFractionRange));
-
     ptReturn.scaleAdd(fraction, edgeVector, pointA);
     //System.out.println("SurfaceReader " + ptReturn + " " + (valueA + fraction * diff));
     return valueA + fraction * diff;
@@ -793,7 +787,4 @@ public abstract class SurfaceReader implements VertexDataServer {
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS);
   }
   
-  public void getCalcPoint(Point3f pt) {
-    // for VertexDataServer - isoShapeReader only
-  }  
 }

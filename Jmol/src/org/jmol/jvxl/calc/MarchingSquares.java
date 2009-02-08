@@ -312,7 +312,9 @@ public class MarchingSquares {
     }
 
     void setValue(float value, VolumeData volumeData) {
-      this.value = volumeData.voxelData[voxelLocation.x][voxelLocation.y][voxelLocation.z] = value;
+      this.value =  value;
+      if (volumeData.voxelData != null)
+        volumeData.voxelData[voxelLocation.x][voxelLocation.y][voxelLocation.z] = value;
     }
 
     void setPixelLocation(Point3i pt) {

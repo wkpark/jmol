@@ -59,15 +59,16 @@ public interface VertexDataServer {
    * @param pointA
    * @param edgeVector      vector from A to B
    * @param isContourType
+   * @param fReturn 
    * @return                 new vertex index or Integer.MAX_VALUE
    */
-  public abstract int getSurfacePointIndex(float cutoff,
+  public abstract int getSurfacePointIndexAndFraction(float cutoff,
                                            boolean isCutoffAbsolute, int x,
                                            int y, int z, Point3i offset,
                                            int vertexA, int vertexB, 
                                            float valueA, float valueB,
                                            Point3f pointA, Vector3f edgeVector,
-                                           boolean isContourType);
+                                           boolean isContourType, float[] fReturn);
 
   /**
    * addVertexCopy is used by the Marching Squares algorithm to
@@ -96,5 +97,16 @@ public interface VertexDataServer {
    * @param isAbsolute
    */
   public abstract void addTriangleCheck(int iA, int iB, int iC, int check,
-                                        boolean isAbsolute);  
+                                        boolean isAbsolute);
+  
+  /**
+   * 
+   * for readers only
+   * 
+   * @param x
+   * @param y
+   * @param z
+   * @return  value[x][y][z]
+   */
+  public float getValue(int x, int y, int z);
 }

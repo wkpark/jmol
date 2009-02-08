@@ -468,7 +468,7 @@ public class JvxlReader extends VolumeFileReader {
     return dataOut.toString();
   }
 
-  protected BitSet getVoxelBitSet(int nPoints, StringBuffer sb) throws Exception {
+  protected BitSet getVoxelBitSet(int nPoints) throws Exception {
     BitSet bs = new BitSet();
     int bsVoxelPtr = 0;
     if (surfaceDataCount <= 0)
@@ -486,8 +486,6 @@ public class JvxlReader extends VolumeFileReader {
           endOfData = true;
           nThisValue = 10000;
           //throw new NullPointerException();
-        } else if (sb != null) {
-          sb.append(line).append('\n');
         }
       } 
       thisInside = !thisInside;
@@ -526,6 +524,27 @@ public class JvxlReader extends VolumeFileReader {
     return (thisInside ? 1f : 0f);
   }
 
+  public static void setSurfaceInfoFromBitSet(JvxlData jvxlData, BitSet bs,
+                                              Point4f thePlane) {
+    boolean inside = false;
+    int dataCount = 0;
+    StringBuffer sb = new StringBuffer();
+    int nSurfaceInts = 0;
+    int nPoints = jvxlData.nPointsX * jvxlData.nPointsY * jvxlData.nPointsZ;
+    for (int i = 0; i < nPoints; ++i) {
+      if (inside == bs.get(i)) {
+        dataCount++;
+      } else {
+        sb.append(' ').append(dataCount);
+        nSurfaceInts++;
+        dataCount = 1;
+        inside = !inside;
+      }
+    }
+    sb.append(' ').append(dataCount).append('\n');
+    setSurfaceInfo(jvxlData, thePlane, nSurfaceInts, sb);
+  }
+  
   protected static void setSurfaceInfo(JvxlData jvxlData, Point4f thePlane, int nSurfaceInts, StringBuffer surfaceData) {
     jvxlData.jvxlSurfaceData = surfaceData.toString();
     if (jvxlData.jvxlSurfaceData.indexOf("--") == 0)
@@ -534,14 +553,16 @@ public class JvxlReader extends VolumeFileReader {
     jvxlData.nSurfaceInts = nSurfaceInts;
   }
   
-  protected float readSurfacePoint(float cutoff, boolean isCutoffAbsolute, float valueA,
+  protected float getSurfacePointAndFraction(float cutoff, boolean isCutoffAbsolute, float valueA,
                          float valueB, Point3f pointA, Vector3f edgeVector, 
                          float[] fReturn, Point3f ptReturn) {
     if (edgeDataCount <= 0)
-      return super.readSurfacePoint(cutoff, isCutoffAbsolute, valueA, valueB,
+      return super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA, valueB,
           pointA, edgeVector, fReturn, ptReturn);
     ptReturn.scaleAdd(fReturn[0] = jvxlGetNextFraction(edgeFractionBase, edgeFractionRange, 0.5f), 
         edgeVector, pointA);
+    //System.out.println(" jvxl: f=" + fReturn[0]);
+
     return fReturn[0];
   }
 
@@ -551,12 +572,9 @@ public class JvxlReader extends VolumeFileReader {
   private float jvxlGetNextFraction(int base, int range, float fracOffset) {
     if (fractionPtr >= strFractionTemp.length()) {
       if (!endOfData)
-        Logger.error("end of file reading compressed fraction data at point "
-            + fractionData.length());
+        Logger.error("end of file reading compressed fraction data");
       endOfData = true;
       strFractionTemp = "" + (char) base;
-      fractionData.append(strFractionTemp);
-      fractionData.append('\n');
       fractionPtr = 0;
     }
     return jvxlFractionFromCharacter(strFractionTemp.charAt(fractionPtr++),
@@ -571,7 +589,6 @@ public class JvxlReader extends VolumeFileReader {
     int vertexCount = jvxlData.vertexCount = meshData.vertexCount;
     short[] colixes = meshData.vertexColixes;
     float[] vertexValues = meshData.vertexValues;
-    fractionData = new StringBuffer();
     strFractionTemp = (isJvxl ? jvxlColorDataRead : "");
     if (isJvxl && strFractionTemp.length() == 0) {
       Logger
@@ -744,38 +761,6 @@ public class JvxlReader extends VolumeFileReader {
         .append(pt.z).append(" //BOGUS He ATOM ADDED FOR JVXL FORMAT\n");
   }
 
-  public static int jvxlCreateSurfaceData(JvxlData jvxlData, float[][][] voxelData, float cutoff, boolean isCutoffAbsolute, int nX, int nY, int nZ) {
-    StringBuffer sb = new StringBuffer();
-    boolean inside = false;
-    int dataCount = 0;
-    int nDataPoints = 0;
-    int nSurfaceInts = 0;
-    BitSet bs = new BitSet(); //TESTING
-    for (int x = 0; x < nX; ++x)
-      for (int y = 0; y < nY; ++y)
-        for (int z = 0; z < nZ; ++z) {
-          boolean itest = isInside(voxelData[x][y][z], cutoff, isCutoffAbsolute);
-          if (itest)bs.set(nDataPoints);
-          ++nDataPoints;
-          if (inside == itest) {
-            dataCount++;
-          } else {
-            if (dataCount != 0) {
-              sb.append(' ').append(dataCount);
-              ++nSurfaceInts;
-            }
-            dataCount = 1;
-            inside = !inside;
-          }
-        }
-    sb.append(' ').append(dataCount).append('\n');
-    ++nSurfaceInts;
-    //System.out.println("JvxlReader: " + sb.length() + " " + nDataPoints);
-
-    setSurfaceInfo(jvxlData,null, nSurfaceInts, sb);
-    return nDataPoints;
-  }
-  
   public static String jvxlGetDefinitionLine(JvxlData jvxlData, boolean isInfo) {
     String definitionLine = jvxlData.cutoff + " ";
 
@@ -972,6 +957,7 @@ public class JvxlReader extends VolumeFileReader {
       return 0.999999f;
     //if (logCompression)
     //Logger.info("ffc: " + fraction + " <-- " + ich + " " + (char) ich);
+    //System.out.println("ffc: " + fraction + " <-- " + ich + " " + (char) ich);
     return fraction;
   }
 
@@ -1002,6 +988,10 @@ public class JvxlReader extends VolumeFileReader {
     return jvxlFractionAsCharacter(fraction, base, range);
   }
 
+  public static char jvxlFractionAsCharacter(float fraction) {
+    return jvxlFractionAsCharacter(fraction, defaultEdgeFractionBase, defaultEdgeFractionRange);  
+  }
+  
   protected static char jvxlFractionAsCharacter(float fraction, int base, int range) {
     if (fraction > 0.9999f)
       fraction = 0.9999f;
@@ -1475,5 +1465,5 @@ public class JvxlReader extends VolumeFileReader {
   private static void setNext(String data, String what, int[] next, int offset) {
     next[0] = data.indexOf(what, next[0]) + what.length() + offset;
   }
-  
+
 }

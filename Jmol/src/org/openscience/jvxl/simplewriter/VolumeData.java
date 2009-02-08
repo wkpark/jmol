@@ -161,10 +161,11 @@ public class VolumeData implements VolumeDataInterface {
     return voxelCounts;
   }
   
-  public void setVoxelCounts(int nPointsX, int nPointsY, int nPointsZ) {
+  public int setVoxelCounts(int nPointsX, int nPointsY, int nPointsZ) {
     voxelCounts[0] = nPointsX;
     voxelCounts[1] = nPointsY;
     voxelCounts[2] = nPointsZ;
+    return nPointsX * nPointsY * nPointsZ;
   }
 
   public float[][][] voxelData;

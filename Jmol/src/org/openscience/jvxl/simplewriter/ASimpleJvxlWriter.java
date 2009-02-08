@@ -37,32 +37,61 @@ public class ASimpleJvxlWriter {
   
   public static void main(String[] args) {
 
-    VolumeData volumeData = new VolumeData();
 
     // parameters that need setting:
     
     String outputFile = "c:/temp/simple.jvxl";
-    float cutoff = 0.0f;
+    float cutoff = 0.01f;
     boolean isCutoffAbsolute = false;
-    int nX = 10;
-    int nY = 10;
-    int nZ = 10;
+    int nX = 30;
+    int nY = 30;
+    int nZ = 30;
+    String title = "created by SimpleJvxlWriter "
+      + new SimpleDateFormat("yyyy-MM-dd', 'HH:mm").format(new Date()) 
+      + "\naddional comment line\n";
+
+    VolumeData volumeData;
+    VoxelDataCreator vdc;
+    JvxlData jvxlData;
+
+    volumeData = new VolumeData();
     volumeData.setVolumetricOrigin(0, 0, 0);
     volumeData.setVolumetricVector(0, 1f, 0f, 0f);
     volumeData.setVolumetricVector(1, 0f, 1f, 0f);
     volumeData.setVolumetricVector(2, 0f, 0f, 1f);
+    volumeData.setUnitVectors();
+
 
     volumeData.setVoxelCounts(nX, nY, nZ);
     volumeData.setVoxelData(new float[nX][nY][nZ]);
-    VoxelDataCreator vdc = new VoxelDataCreator();
-    vdc.createVoxelData(volumeData);
-    JvxlData jvxlData = new JvxlData();
+    vdc = new VoxelDataCreator(volumeData);
+    vdc.createVoxelData();
+    jvxlData = new JvxlData();
     jvxlData.cutoff = cutoff;
     jvxlData.isCutoffAbsolute = isCutoffAbsolute;
-    StringBuffer sb = new StringBuffer("created by SimpleJvxlWriter "
-        + new SimpleDateFormat("yyyy-MM-dd', 'HH:mm").format(new Date()) 
-        + "\naddional comment line\n");
-    writeFile(outputFile, JvxlWrite.jvxlGetData(jvxlData, volumeData, sb));
+    jvxlData.isXLowToHigh = true;
+    writeFile(outputFile + jvxlData.isXLowToHigh  , JvxlWrite.jvxlGetData(null, jvxlData, volumeData, title));
+    
+/*
+    volumeData = new VolumeData();
+    volumeData.setVolumetricOrigin(2, 2, 2);
+    volumeData.setVolumetricVector(0, 1f, 0f, 0f);
+    volumeData.setVolumetricVector(1, 0f, 1f, 0f);
+    volumeData.setVolumetricVector(2, 0f, 0f, 1f);
+    volumeData.setUnitVectors();
+
+
+    volumeData.setVoxelCounts(nX, nY, nZ);
+    volumeData.setVoxelData(new float[nX][nY][nZ]);
+    vdc = new VoxelDataCreator(volumeData);
+    vdc.createVoxelData();
+    jvxlData = new JvxlData();
+    jvxlData.cutoff = cutoff;
+    jvxlData.isCutoffAbsolute = isCutoffAbsolute;
+    jvxlData.isXLowToHigh = true;
+    writeFile(outputFile+ "B", JvxlWrite.jvxlGetData(vdc, jvxlData, volumeData, title));
+    
+    */
     System.out.flush();
     System.exit(0);
   }

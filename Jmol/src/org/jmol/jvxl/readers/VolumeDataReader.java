@@ -104,46 +104,22 @@ class VolumeDataReader extends SurfaceReader {
   protected void readVoxelDataIndividually(boolean isMapData) throws Exception {
     if (isMapData && !allowMapData)
       return; //not applicable
-    boolean inside = false;
-    int dataCount = 0;
-    voxelData = new float[nPointsX][nPointsY][nPointsZ];
-    nDataPoints = 0;
-    int nSurfaceInts = 0;
-    StringBuffer sb = new StringBuffer();
-    float cutoff = params.cutoff;
-    boolean isCutoffAbsolute = params.isCutoffAbsolute;
+    voxelData = (isMapData ? new float[nPointsX][nPointsY][nPointsZ] : null);
+    volumeData.setVoxelData(voxelData);
+    if (!isMapData) 
+      return;
     for (int x = 0; x < nPointsX; ++x) {
       float[][] plane = new float[nPointsY][];
       voxelData[x] = plane;
       for (int y = 0; y < nPointsY; ++y) {
         float[] strip = plane[y] = new float[nPointsZ];
         for (int z = 0; z < nPointsZ; ++z) {
-          float voxelValue = strip[z] = getValue(x, y, z);
-          ++nDataPoints;
-          if (inside == isInside(voxelValue, cutoff, isCutoffAbsolute)) {
-            dataCount++;
-          } else {
-            if (!isMapData)
-              sb.append(' ').append(dataCount);
-            ++nSurfaceInts;
-            dataCount = 1;
-            inside = !inside;
-          }
+          strip[z] = getValue(x, y, z);
         }
       }
     }
-    //Jvxl getNextVoxelValue records the data read on its own.
-    if (!isMapData) {
-      sb.append(' ').append(dataCount).append('\n');
-      JvxlReader.setSurfaceInfo(jvxlData, params.thePlane, nSurfaceInts, sb);
-    }
-    volumeData.setVoxelData(voxelData);
   }
   
-  protected float getValue(int x, int y, int z) {
-    return 0;
-  }
-
   protected int setVoxelRange(int index, float min, float max, float ptsPerAngstrom,
                     int gridMax) {
     if (min >= max) {
@@ -196,14 +172,10 @@ class VolumeDataReader extends SurfaceReader {
 
   protected void readSurfaceData(boolean isMapData) throws Exception {
     //precalculated -- just creating the JVXL equivalent
-    if (!precalculateVoxelData) {
+    if (precalculateVoxelData) 
+      generateCube();
+    else
       readVoxelDataIndividually(isMapData);
-      return;
-    }
-    generateCube();
-    if (isMapData)
-      return;
-    nDataPoints = JvxlReader.jvxlCreateSurfaceData(jvxlData, volumeData.voxelData, params.cutoff, params.isCutoffAbsolute, nPointsX, nPointsY, nPointsZ);
   }
   
   protected void generateCube() {

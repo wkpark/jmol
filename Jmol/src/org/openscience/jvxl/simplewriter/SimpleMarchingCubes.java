@@ -23,9 +23,9 @@
  */
 package org.openscience.jvxl.simplewriter;
 
-import javax.vecmath.Point3i;
+import java.util.BitSet;
 
-import org.jmol.util.Base64;
+import javax.vecmath.Point3i;
 
 public class SimpleMarchingCubes {
 
@@ -47,16 +47,25 @@ public class SimpleMarchingCubes {
   private boolean isCutoffAbsolute;
   private boolean isXLowToHigh;
   private StringBuffer fractionData = new StringBuffer();
-  private StringBuffer maskData = new StringBuffer();
-  
-  public String getMaskData() {
-    return Base64.getBase64(maskData).toString();
+
+  private int cubeCountX, cubeCountY, cubeCountZ;
+  private int nY, nZ;
+
+  private BitSet bsVoxels = new BitSet();
+
+  public BitSet getBsVoxels() {
+    return bsVoxels;
   }
   
-  private int cubeCountX, cubeCountY, cubeCountZ;
+  private int mode;
+  private final static int MODE_CUBE = 1;
+  private final static int MODE_BITSET = 2;
+  private final static int MODE_GETXYZ = 3;
 
-  public SimpleMarchingCubes(VolumeData volumeData, float cutoff,
-      boolean isCutoffAbsolute) {
+  private VoxelDataCreator vdc;
+  
+  public SimpleMarchingCubes(VoxelDataCreator vdc, VolumeData volumeData, float cutoff,
+      boolean isCutoffAbsolute ,   boolean isXLowToHigh) {
     
     // when just creating a JVXL file all you really need are:
     //
@@ -64,15 +73,23 @@ public class SimpleMarchingCubes {
     // cutoff
     //
     
+    this.vdc = vdc;
     this.volumeData = volumeData;
     this.cutoff = cutoff;
     this.isCutoffAbsolute = isCutoffAbsolute;
+    this.isXLowToHigh = isXLowToHigh;
+    
+    if (vdc == null) {
+      mode = MODE_CUBE;
+    } else {
+      mode = MODE_GETXYZ;
+    }
 
-    cubeCountX = volumeData.voxelData.length - 1;
-    cubeCountY = volumeData.voxelData[0].length - 1;
-    cubeCountZ = volumeData.voxelData[0][0].length - 1;
-    xyCount = (cubeCountX + 1) * (cubeCountY + 1);
-
+    cubeCountX = volumeData.voxelCounts[0] - 1;
+    cubeCountY = (nY = volumeData.voxelCounts[1]) - 1;
+    cubeCountZ = (nZ = volumeData.voxelCounts[2]) - 1;
+    yzCount = nY * nZ;
+    setLinearOffsets();
   }
 
   private final float[] vertexValues = new float[8];
@@ -81,7 +98,7 @@ public class SimpleMarchingCubes {
     for (int i = 8; --i >= 0;)
       vertexPoints[i] = new Point3i();
   }
-  int xyCount;
+
   int edgeCount;
 
   /* Note to Jason from Bob:
@@ -110,36 +127,54 @@ public class SimpleMarchingCubes {
    *  
    */
   
+  private static int[] xyPlanePts = new int[] { 0, 1, 1, 0, 0, 1, 1, 0 };
+
   public String getEdgeData() {
 
     // set up the set of edge points in the YZ plane
-    // these are indexes into an array of Point3f values
+    // isoPointIndixes are indices into an array of Point3f values
     // They will be initialized as -1 whenever a vertex is needed.
     // But if just creating a JVXL file, all you need to do
     // is set them to 0, not an index into any actual array.
     
     int[][] isoPointIndexes = new int[cubeCountY * cubeCountZ][12];
 
-    edgeCount = 0;
+    float[][] xyPlanes = (mode == MODE_GETXYZ ? new float[2][yzCount] : null);
 
-    int x0, x1, xStep;
+    int x0, x1, xStep, ptStep, pt, ptX;
     if (isXLowToHigh) {
       x0 = 0;
       x1 = cubeCountX;
       xStep = 1;
+      ptStep = yzCount;
+      pt = ptX = (yzCount - 1) - nZ - 1;
+      // we are starting at the top corner, in the next to last
+      // cell on the next to last row of the first plane
     } else {
       x0 = cubeCountX - 1;
       x1 = -1;
       xStep = -1;
+      ptStep = -yzCount;
+      pt = ptX = (cubeCountX * yzCount - 1) - nZ - 1;
+      // we are starting at the top corner, in the next to last
+      // cell on the next to last row of the next to last plane(!)
     }
-    for (int x = x0; x != x1; x += xStep) {
-      for (int y = cubeCountY; --y >= 0;) {
-        for (int z = cubeCountZ; --z >= 0;) {
+    int cellIndex0 = cubeCountY * cubeCountZ - 1;
+    int cellIndex = cellIndex0;
+    for (int x = x0; x != x1; x += xStep, ptX += ptStep, pt = ptX, cellIndex = cellIndex0) {
+      if (mode == MODE_GETXYZ) {
+        float[] plane = xyPlanes[0];
+        xyPlanes[0] = xyPlanes[1];
+        xyPlanes[1] = plane;
+      }
+      for (int y = cubeCountY; --y >= 0; pt--) {
+        for (int z = cubeCountZ; --z >= 0; pt--, cellIndex--) {
+
           
           // set up the list of indices that need checking
           
-          int[] voxelPointIndexes = propagateNeighborPointIndexes(x, y, z,
-              isoPointIndexes);
+          int[] voxelPointIndexes = propagateNeighborPointIndexes(x, y, z, pt,
+              isoPointIndexes, cellIndex);
           
           // create the bitset mask indicating which vertices are inside.
           // 0xFF here means "all inside"; 0x00 means "all outside"
@@ -150,14 +185,32 @@ public class SimpleMarchingCubes {
             // cubeVertexOffsets just gets us the specific grid point relative
             // to our base x,y,z cube position
             
+            boolean isInside;
             Point3i offset = cubeVertexOffsets[i];
-            if (isInside(
-                (vertexValues[i] = volumeData.voxelData[x + offset.x][y
-                    + offset.y][z + offset.z]), cutoff, isCutoffAbsolute))
+            int pti = pt + linearOffsets[i];
+            switch (mode) {
+            case MODE_GETXYZ:
+              vertexValues[i] = getValue(i, x + offset.x, y + offset.y, z
+                  + offset.z, pti, xyPlanes[xyPlanePts[i]]);
+              isInside = bsVoxels.get(pti);
+              break;
+            case MODE_BITSET:
+              isInside = bsVoxels.get(pti);
+              vertexValues[i] = (isInside ? 1 : 0);
+              break;
+            default:
+            case MODE_CUBE:
+              vertexValues[i] = volumeData.voxelData[x + offset.x][y + offset.y][z
+                  + offset.z];
+              isInside = isInside(vertexValues[i], cutoff, isCutoffAbsolute);
+              if (isInside)
+                bsVoxels.set(pti);
+            }
+            if (isInside) {
               insideMask |= 1 << i;
+            }
           }
 
-          maskData.append((char)insideMask);
           if (insideMask == 0) {
             continue;
           }
@@ -166,7 +219,7 @@ public class SimpleMarchingCubes {
           }
           // This cube is straddling the cutoff. We must check all edges 
           
-          processOneCubical(insideMask, voxelPointIndexes, x, y, z);
+          processOneCubical(insideMask, voxelPointIndexes, x, y, z, pt);
         }
       }
     }
@@ -177,30 +230,27 @@ public class SimpleMarchingCubes {
     return ((max > 0 && (isAbsolute ? Math.abs(voxelValue) : voxelValue) >= max) || (max <= 0 && voxelValue <= max));
   }
 
+  BitSet bsValues = new BitSet();
+
+  private float getValue(int i, int x, int y, int z, int pt, float[] tempValues) {
+    //if (bsValues.get(pt))
+      //return tempValues[pt % yzCount];
+    bsValues.set(pt);
+    float value = vdc.getValue(x, y, z);
+    tempValues[pt % yzCount] = value;
+    //System.out.println("xyz " + x + " " + y + " " + z + " v=" + value);
+    if (isInside(value, cutoff, isCutoffAbsolute))
+      bsVoxels.set(pt);
+    return value;
+  }
+
   private final int[] nullNeighbor = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1 };
 
-  private int[] propagateNeighborPointIndexes(int x, int y, int z,
-                                              int[][] isoPointIndexes) {
-    /*                     Y 
-     *                      4 --------4--------- 5  
-     *                     /|                   /|
-     *                    / |                  / |
-     *                   /  |                 /  |
-     *                  7   8                5   |
-     *                 /    |               /    9
-     *                /     |              /     |
-     *               7 --------6--------- 6      |
-     *               |      |             |      |
-     *               |      0 ---------0--|----- 1    X
-     *               |     /              |     /
-     *              11    /               10   /
-     *               |   3                |   1
-     *               |  /                 |  /
-     *               | /                  | /
-     *               3 ---------2-------- 2
-     *              Z 
-     * 
+  private int[] propagateNeighborPointIndexes(int x, int y, int z, int pt,
+                                              int[][] isoPointIndexes,
+                                              int cellIndex) {
+    /*
      * 
      * We are running through the grid points in yz planes from high x --> low x
      * and within those planes along strips from high y to low y
@@ -237,102 +287,100 @@ public class SimpleMarchingCubes {
      * All we are really talking about is the JVXL reader, because we can certainly
      * switch to progressive mode in all the other readers.  
      *  
+     *                      Y 
+     *                      4 --------4--------- 5  
+     *                     /|                   /|
+     *                    / |                  / |
+     *                   /  |                 /  |
+     *                  7   8                5   |
+     *                 /    |               /    9
+     *                /     |              /     |
+     *               7 --------6--------- 6      |
+     *               |      |             |      |
+     *               |      0 ---------0--|----- 1    X
+     *               |     /              |     /
+     *              11    /               10   /
+     *               |   3                |   1
+     *               |  /                 |  /
+     *               | /                  | /
+     *               3 ---------2-------- 2
+     *              Z 
+     * 
      *  
      */
-    
+
     /* DO NOT EVER CHANGE THIS */
+
     
-    int cellIndex = y * cubeCountZ + z;
     int[] voxelPointIndexes = isoPointIndexes[cellIndex];
 
-    boolean noXNeighbor = (x == cubeCountX - 1);
+    boolean noYNeighbor = (y == cubeCountY - 1);
+    int[] yNeighbor = noYNeighbor ? nullNeighbor 
+        : isoPointIndexes[cellIndex + cubeCountZ];
+    boolean noZNeighbor = (z == cubeCountZ - 1);
+    int[] zNeighbor = noZNeighbor ? nullNeighbor
+        : isoPointIndexes[cellIndex + 1];
+    voxelPointIndexes[0] = -1;
+    voxelPointIndexes[2] = zNeighbor[0];
+    voxelPointIndexes[4] = yNeighbor[0];
+    voxelPointIndexes[6] = (noYNeighbor ? zNeighbor[4] : yNeighbor[2]);
+
     if (isXLowToHigh) {
       // reading x from low to high
-      if (noXNeighbor) {
+      if (x == 0) {
         voxelPointIndexes[3] = -1;
         voxelPointIndexes[8] = -1;
-        voxelPointIndexes[7] = -1;
-        voxelPointIndexes[11] = -1;
+        voxelPointIndexes[7] = yNeighbor[3];
+        voxelPointIndexes[11] = zNeighbor[8];
       } else {
         voxelPointIndexes[3] = voxelPointIndexes[1];
         voxelPointIndexes[7] = voxelPointIndexes[5];
         voxelPointIndexes[8] = voxelPointIndexes[9];
         voxelPointIndexes[11] = voxelPointIndexes[10];
       }
+      voxelPointIndexes[1] = -1;
+      voxelPointIndexes[5] = yNeighbor[1];
+      voxelPointIndexes[9] = -1;
+      voxelPointIndexes[10] = zNeighbor[9];
     } else {
       // reading x from high to low
-      if (noXNeighbor) {
-        // the x neighbor is myself from my last pass through here
+      if (x == cubeCountX - 1) {
         voxelPointIndexes[1] = -1;
+        voxelPointIndexes[5] = yNeighbor[1];
         voxelPointIndexes[9] = -1;
-        voxelPointIndexes[5] = -1;
-        voxelPointIndexes[10] = -1;
+        voxelPointIndexes[10] = zNeighbor[9];
       } else {
         voxelPointIndexes[1] = voxelPointIndexes[3];
         voxelPointIndexes[5] = voxelPointIndexes[7];
         voxelPointIndexes[9] = voxelPointIndexes[8];
         voxelPointIndexes[10] = voxelPointIndexes[11];
       }
-    }
-    //from the y neighbor pick up the top
-    boolean noYNeighbor = (y == cubeCountY - 1);
-    int[] yNeighbor = noYNeighbor ? nullNeighbor : isoPointIndexes[cellIndex
-        + cubeCountZ];
-
-    voxelPointIndexes[4] = yNeighbor[0];
-    voxelPointIndexes[6] = yNeighbor[2];
-
-    if (isXLowToHigh) {
-      voxelPointIndexes[5] = yNeighbor[1];
-      if (noXNeighbor)
-        voxelPointIndexes[7] = yNeighbor[3];
-    } else {
+      voxelPointIndexes[3] = -1;
       voxelPointIndexes[7] = yNeighbor[3];
-      if (noXNeighbor)
-        voxelPointIndexes[5] = yNeighbor[1];
-    }
-    // from my z neighbor
-    boolean noZNeighbor = (z == cubeCountZ - 1);
-    int[] zNeighbor = noZNeighbor ? nullNeighbor
-        : isoPointIndexes[cellIndex + 1];
-
-    voxelPointIndexes[2] = zNeighbor[0];
-    if (noYNeighbor)
-      voxelPointIndexes[6] = zNeighbor[4];
-    if (isXLowToHigh) {
-      if (noXNeighbor)
-        voxelPointIndexes[11] = zNeighbor[8];
-      voxelPointIndexes[10] = zNeighbor[9];
-    } else {
-      if (noXNeighbor)
-        voxelPointIndexes[10] = zNeighbor[9];
+      voxelPointIndexes[8] = -1;
       voxelPointIndexes[11] = zNeighbor[8];
     }
-    // these must always be calculated
-    voxelPointIndexes[0] = -1;
-    if (isXLowToHigh) {
-      voxelPointIndexes[1] = -1;
-      voxelPointIndexes[9] = -1;
-    } else {
-      voxelPointIndexes[3] = -1;
-      voxelPointIndexes[8] = -1;
-    }
+
     return voxelPointIndexes;
   }
   
+  private static final int[] Pwr2 = new int[] { 1, 2, 4, 8, 16, 32, 64, 128,
+    256, 512, 1024, 2048 };
+
   private boolean processOneCubical(int insideMask, int[] voxelPointIndexes,
-                                    int x, int y, int z) {
+                                    int x, int y, int z, int pt) {
     
     // the key to the algorithm is that we have a catalog that
     // maps the inside-vertex mask to an edge mask. 
     
     int edgeMask = insideMaskTable[insideMask];
+    //for (int i =0; i < 8; i++) System.out.print("\nvpi for cell  " + pt + ": vertex " + i + ": " + voxelPointIndexes[i] + " " + Integer.toBinaryString(edgeMask));
     boolean isNaN = false;
     for (int iEdge = 12; --iEdge >= 0;) {
       
       // bit set to one means it's a relevant edge
       
-      if ((edgeMask & (1 << iEdge)) == 0)
+      if ((edgeMask & Pwr2[iEdge]) == 0)
         continue;
       
       // if we have a point already, we don't need to check this edge.
@@ -344,12 +392,10 @@ public class SimpleMarchingCubes {
       
       // here's an edge that has to be checked.
       
-      ++edgeCount;
-      
       // get the vertex numbers 0 - 7
       
-      int vertexA = edgeVertexes[2 * iEdge];
-      int vertexB = edgeVertexes[2 * iEdge + 1];
+      int vertexA = edgeVertexes[iEdge << 1];
+      int vertexB = edgeVertexes[(iEdge << 1) + 1];
       
       // pick up the actual value at each vertex
       // this array of 8 values is updated as we go.
@@ -370,18 +416,45 @@ public class SimpleMarchingCubes {
       // here is where we get the value and assign the point for that edge
       // it is where the JVXL surface data line is appended
       
-      voxelPointIndexes[iEdge] = 0;
+      voxelPointIndexes[iEdge] = edgeCount++;
+      //System.out.println(" pt=" + pt + " edge" + iEdge + " xyz " + x + " " + y + " " + z + " vertexAB=" + vertexA + " " + vertexB + " valueAB=" + valueA + " " + valueB + " f= " + (cutoff - valueA) / (valueB - valueA));
       fractionData.append(JvxlWrite.jvxlFractionAsCharacter((cutoff - valueA) / (valueB - valueA)));
     }
     return !isNaN;
   }
 
-  final static Point3i[] cubeVertexOffsets = { new Point3i(0, 0, 0),
-      new Point3i(1, 0, 0), new Point3i(1, 0, 1), new Point3i(0, 0, 1),
-      new Point3i(0, 1, 0), new Point3i(1, 1, 0), new Point3i(1, 1, 1),
-      new Point3i(0, 1, 1) };
-  
-  
+  final static Point3i[] cubeVertexOffsets = { new Point3i(0, 0, 0), //0 pt
+    new Point3i(1, 0, 0), //1 pt + yz
+    new Point3i(1, 0, 1), //2 pt + yz + 1
+    new Point3i(0, 0, 1), //3 pt + 1
+    new Point3i(0, 1, 0), //4 pt + z
+    new Point3i(1, 1, 0), //5 pt + yz + z
+    new Point3i(1, 1, 1), //6 pt + yz + z + 1
+    new Point3i(0, 1, 1) //7 pt + z + 1 
+};
+
+private final int[] linearOffsets = new int[8];
+int yzCount;
+
+/* set the linear offsets for unique cell ID
+ * and for pointing into the inside/outside BitSet. 
+ * Add offset to 0: x * (nY * nZ) + y * nZ + z 
+ */
+void setLinearOffsets() {
+  linearOffsets[0] = 0;
+  linearOffsets[1] = yzCount;
+  linearOffsets[2] = yzCount + 1;
+  linearOffsets[3] = 1;
+  linearOffsets[4] = nZ;
+  linearOffsets[5] = yzCount + nZ;
+  linearOffsets[6] = yzCount + nZ + 1;
+  linearOffsets[7] = nZ + 1;
+}
+
+public int getLinearOffset(int x, int y, int z, int offset) {
+  return x * yzCount + y * nZ + z + linearOffsets[offset];
+}
+
 
   /*                     Y 
    *                      4 --------4--------- 5                     +z --------4--------- +yz+z                  

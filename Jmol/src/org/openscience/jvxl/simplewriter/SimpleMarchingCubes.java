@@ -27,6 +27,8 @@ import java.util.BitSet;
 
 import javax.vecmath.Point3i;
 
+//import org.jmol.util.Logger;
+
 public class SimpleMarchingCubes {
 
   /*
@@ -50,6 +52,7 @@ public class SimpleMarchingCubes {
 
   private int cubeCountX, cubeCountY, cubeCountZ;
   private int nY, nZ;
+  private int yzCount;
 
   private BitSet bsVoxels = new BitSet();
 
@@ -89,6 +92,10 @@ public class SimpleMarchingCubes {
     cubeCountY = (nY = volumeData.voxelCounts[1]) - 1;
     cubeCountZ = (nZ = volumeData.voxelCounts[2]) - 1;
     yzCount = nY * nZ;
+    edgeVertexPointers = (isXLowToHigh ? edgeVertexPointersLowToHigh : edgeVertexPointersHighToLow);
+    edgeVertexPlanes =  (isXLowToHigh ? edgeVertexPlanesLowToHigh : edgeVertexPlanesHighToLow);    
+    isoPointIndexPlanes = new int[2][yzCount][3];
+    xyPlanes = (mode == MODE_GETXYZ ? new float[2][yzCount] : null);
     setLinearOffsets();
   }
 
@@ -127,20 +134,33 @@ public class SimpleMarchingCubes {
    *  
    */
   
-  private static int[] xyPlanePts = new int[] { 0, 1, 1, 0, 0, 1, 1, 0 };
+  private static int[] xyPlanePts = new int[] { 
+      0, 1, 1, 0, 
+      0, 1, 1, 0 
+  };
+  //private final int[] edgePointIndexes = new int[12];
+  private int[][][] isoPointIndexPlanes;
+  private float[][] xyPlanes;
 
+  private int[][] resetIndexPlane(int[][] plane) {
+    for (int i = 0; i < yzCount; i++)
+      for (int j = 0; j < 3; j++)
+        plane[i][j] = -1;
+    return plane;
+  }
+  
   public String getEdgeData() {
 
-    // set up the set of edge points in the YZ plane
-    // isoPointIndixes are indices into an array of Point3f values
-    // They will be initialized as -1 whenever a vertex is needed.
-    // But if just creating a JVXL file, all you need to do
-    // is set them to 0, not an index into any actual array.
+    //Logger.startTimer();
     
-    int[][] isoPointIndexes = new int[cubeCountY * cubeCountZ][12];
-
-    float[][] xyPlanes = (mode == MODE_GETXYZ ? new float[2][yzCount] : null);
-
+    /* The (new, Jmol 11.7.26) Marching Cubes code creates 
+     * the isoPointIndexes[2][nY * nZ][3] array that holds two slices 
+     * of edge data. Each edge is assigned a specific vertex, 
+     * such that each vertex may have up to 3 associated edges. 
+     * 
+     *  Feb 10, 2009 -- Bob Hanson
+     */
+    
     int x0, x1, xStep, ptStep, pt, ptX;
     if (isXLowToHigh) {
       x0 = 0;
@@ -161,20 +181,30 @@ public class SimpleMarchingCubes {
     }
     int cellIndex0 = cubeCountY * cubeCountZ - 1;
     int cellIndex = cellIndex0;
+    resetIndexPlane(isoPointIndexPlanes[1]);
     for (int x = x0; x != x1; x += xStep, ptX += ptStep, pt = ptX, cellIndex = cellIndex0) {
+      
+      // we swap planes of grid data when 
+      // obtaining the grid data point by point
+      
       if (mode == MODE_GETXYZ) {
         float[] plane = xyPlanes[0];
         xyPlanes[0] = xyPlanes[1];
         xyPlanes[1] = plane;
       }
+      
+      // we swap the edge vertex index planes
+      
+      int[][] indexPlane = isoPointIndexPlanes[0];
+      isoPointIndexPlanes[0] = isoPointIndexPlanes[1];
+      isoPointIndexPlanes[1] = resetIndexPlane(indexPlane);
+      
+      // now scan the plane of cubicals
+
+      // now scan the plane of cubicals
+      
       for (int y = cubeCountY; --y >= 0; pt--) {
         for (int z = cubeCountZ; --z >= 0; pt--, cellIndex--) {
-
-          
-          // set up the list of indices that need checking
-          
-          int[] voxelPointIndexes = propagateNeighborPointIndexes(x, y, z, pt,
-              isoPointIndexes, cellIndex);
           
           // create the bitset mask indicating which vertices are inside.
           // 0xFF here means "all inside"; 0x00 means "all outside"
@@ -219,10 +249,23 @@ public class SimpleMarchingCubes {
           }
           // This cube is straddling the cutoff. We must check all edges 
           
-          processOneCubical(insideMask, voxelPointIndexes, x, y, z, pt);
+          if (!processOneCubical(insideMask, x, y, z, pt))
+            continue;
+
+          // the inside mask serves to define the triangles necessary 
+          // if just creating JVXL files, this step is unnecessary
+          /*
+          byte[] triangles = triangleTable2[insideMask];
+          for (int i = triangles.length; (i -= 4) >= 0;)
+            surfaceReader.addTriangleCheck(edgePointIndexes[triangles[i]],
+                edgePointIndexes[triangles[i + 1]],
+                edgePointIndexes[triangles[i + 2]], triangles[i + 3],
+                isCutoffAbsolute);
+          */
         }
       }
     }
+    //Logger.checkTimer("getEdgeData");
     return fractionData.toString();
   }
   
@@ -244,49 +287,60 @@ public class SimpleMarchingCubes {
     return value;
   }
 
-  private final int[] nullNeighbor = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-      -1, -1 };
+  private static final int[] Pwr2 = new int[] { 1, 2, 4, 8, 16, 32, 64, 128,
+      256, 512, 1024, 2048 };
 
-  private int[] propagateNeighborPointIndexes(int x, int y, int z, int pt,
-                                              int[][] isoPointIndexes,
-                                              int cellIndex) {
+  private final static int[] edgeVertexPointersLowToHigh = new int[] {
+      1, 1, 2, 0, 
+      5, 5, 6, 4,
+      0, 1, 2, 3
+  };
+  
+  private final static int[] edgeVertexPointersHighToLow = new int[] {
+      0, 1, 3, 0, 
+      4, 5, 7, 4,
+      0, 1, 2, 3
+  };
+
+  private int[] edgeVertexPointers;
+
+  private final static int[] edgeVertexPlanesLowToHigh = new int[] {
+      1, 1, 1, 0, 
+      1, 1, 1, 0, 
+      0, 1, 1, 0
+  };  // from high to low, only edges 3, 7, 8, and 11 are from plane 0
+
+  private final static int[] edgeVertexPlanesHighToLow = new int[] {
+      1, 0, 1, 1,
+      1, 0, 1, 1,
+      1, 0, 0, 1
+  }; //from high to low, only edges 1, 5, 9, and 10 are from plane 0
+  
+  private int[] edgeVertexPlanes;
+  
+  private boolean processOneCubical(int insideMask, int x, int y, int z, int pt) {
+
+    
     /*
+     * The key to the algorithm is that we have a catalog that
+     * maps the inside-vertex mask to an edge mask, and then
+     * each edge is associated with a specific vertex. 
      * 
-     * We are running through the grid points in yz planes from high x --> low x
-     * and within those planes along strips from high y to low y
-     * and within those strips, from high z to low z. The "leading vertex" is 0, 
-     * and the "leading edges" are {0,3,8}. 
+     * Each cube vertex may be associated with from 0 to 3 edges,
+     * depending upon where it lies in the overall cube of data.
      * 
-     * For each such cube, edges are traversed from high to low (11-->0)
+     * When scanning X from low to high, the "leading vertex" is
+     * vertex 1 and edgeVertexPlanes[1]. Edges 0, 1, and 9 are 
+     * associated with vertex 1, and others are associated similarly.
      * 
-     * Each edge has the potential to be "critical" and cross the surface.
-     * Setting -1 in voxelPointIndexes indicates that this edge needs checking.
-     * Otherwise, the crossing point for this edge is taken from the value
-     * already determined, because it has already been determined to be critical. 
-     *
-     * The above model, because it starts at HIGH x, requires that all x,y,z points 
-     * be in memory from the beginning. We could have instead used a progressive 
-     * streaming model, where we only pull in the slice of data that we need. In 
-     * that case, each edge corresponds to a specific pair of indices in our slice.
+     * When scanning X from high to low, the "leading vertex" is
+     * vertex 0 and edgeVertexPlanes[1]. Edges 0, 3, and 8 are 
+     * associated with vertex 0, and others are associated similarly.
      * 
-     * Say we have a 51 x 11 x 21 block of data. This represents a 50 x 10 x 20 set
-     * of cubes. If, instead of reading all the data, we pull in just the first two
-     * "slices" x=0(10x20), x=1(10x20), that is just 400 points. Once a slice of
-     * data is used, we can flush it -- it is never used again. 
-     * 
-     * When color mapping, we can do the same thing; we just have to put the verticies
-     * into bins based on which pair of slices will be relevant, and then make sure we
-     * process the verticies based on these bins. 
-     * 
-     * The JVXL format depends on a specific order of reading of the edge data. The
-     * progressive model completely messes this up. The vertices will be read in the 
-     * same order around the cube, but the "leading edges" will be {0,1,9}, not {0,3,8}. 
-     * We do know which edge is which, so we could construct a progressive model from
-     * a nonprogressive one, if necessary. 
-     * 
-     * All we are really talking about is the JVXL reader, because we can certainly
-     * switch to progressive mode in all the other readers.  
+     * edgePointIndexes[iEdge] tracks the vertex index for this
+     * specific cubical so that triangles can be created properly.
      *  
+     * 
      *                      Y 
      *                      4 --------4--------- 5  
      *                     /|                   /|
@@ -305,74 +359,12 @@ public class SimpleMarchingCubes {
      *               | /                  | /
      *               3 ---------2-------- 2
      *              Z 
-     * 
+     *              /                    /              
+     *  edgeVertexPlanes[0]            [1] (scanning x low to high)
+     *  edgeVertexPlanes[1]            [0] (scanning x high to low)
      *  
      */
 
-    /* DO NOT EVER CHANGE THIS */
-
-    
-    int[] voxelPointIndexes = isoPointIndexes[cellIndex];
-
-    boolean noYNeighbor = (y == cubeCountY - 1);
-    int[] yNeighbor = noYNeighbor ? nullNeighbor 
-        : isoPointIndexes[cellIndex + cubeCountZ];
-    boolean noZNeighbor = (z == cubeCountZ - 1);
-    int[] zNeighbor = noZNeighbor ? nullNeighbor
-        : isoPointIndexes[cellIndex + 1];
-    voxelPointIndexes[0] = -1;
-    voxelPointIndexes[2] = zNeighbor[0];
-    voxelPointIndexes[4] = yNeighbor[0];
-    voxelPointIndexes[6] = (noYNeighbor ? zNeighbor[4] : yNeighbor[2]);
-
-    if (isXLowToHigh) {
-      // reading x from low to high
-      if (x == 0) {
-        voxelPointIndexes[3] = -1;
-        voxelPointIndexes[8] = -1;
-        voxelPointIndexes[7] = yNeighbor[3];
-        voxelPointIndexes[11] = zNeighbor[8];
-      } else {
-        voxelPointIndexes[3] = voxelPointIndexes[1];
-        voxelPointIndexes[7] = voxelPointIndexes[5];
-        voxelPointIndexes[8] = voxelPointIndexes[9];
-        voxelPointIndexes[11] = voxelPointIndexes[10];
-      }
-      voxelPointIndexes[1] = -1;
-      voxelPointIndexes[5] = yNeighbor[1];
-      voxelPointIndexes[9] = -1;
-      voxelPointIndexes[10] = zNeighbor[9];
-    } else {
-      // reading x from high to low
-      if (x == cubeCountX - 1) {
-        voxelPointIndexes[1] = -1;
-        voxelPointIndexes[5] = yNeighbor[1];
-        voxelPointIndexes[9] = -1;
-        voxelPointIndexes[10] = zNeighbor[9];
-      } else {
-        voxelPointIndexes[1] = voxelPointIndexes[3];
-        voxelPointIndexes[5] = voxelPointIndexes[7];
-        voxelPointIndexes[9] = voxelPointIndexes[8];
-        voxelPointIndexes[10] = voxelPointIndexes[11];
-      }
-      voxelPointIndexes[3] = -1;
-      voxelPointIndexes[7] = yNeighbor[3];
-      voxelPointIndexes[8] = -1;
-      voxelPointIndexes[11] = zNeighbor[8];
-    }
-
-    return voxelPointIndexes;
-  }
-  
-  private static final int[] Pwr2 = new int[] { 1, 2, 4, 8, 16, 32, 64, 128,
-    256, 512, 1024, 2048 };
-
-  private boolean processOneCubical(int insideMask, int[] voxelPointIndexes,
-                                    int x, int y, int z, int pt) {
-    
-    // the key to the algorithm is that we have a catalog that
-    // maps the inside-vertex mask to an edge mask. 
-    
     int edgeMask = insideMaskTable[insideMask];
     //for (int i =0; i < 8; i++) System.out.print("\nvpi for cell  " + pt + ": vertex " + i + ": " + voxelPointIndexes[i] + " " + Integer.toBinaryString(edgeMask));
     boolean isNaN = false;
@@ -380,14 +372,21 @@ public class SimpleMarchingCubes {
       
       // bit set to one means it's a relevant edge
       
-      if ((edgeMask & Pwr2[iEdge]) == 0)
+      int xEdge = Pwr2[iEdge];
+      if ((edgeMask & xEdge) == 0)
         continue;
+      
       
       // if we have a point already, we don't need to check this edge.
       // for triangles, this will be an index into an array;
       // for just creating JVXL files, this can just be 0
       
-      if (voxelPointIndexes[iEdge] >= 0)
+      int iPlane = edgeVertexPlanes[iEdge];
+      int iPt = (pt + linearOffsets[edgeVertexPointers[iEdge]]) % yzCount;
+      int iType = edgeTypeTable[iEdge];
+      int index = /*edgePointIndexes[iEdge] =*/ isoPointIndexPlanes[iPlane][iPt][iType];
+      //System.out.println(x + " " + y + " " + z + " " + pt + " iEdge=" + iEdge + " p=" + iPlane + " t=" + iType + " e=" + ePt + " i=" + iPt + " index=" + edgePointIndexes[iEdge]);
+      if (index >= 0)
         continue; // propagated from neighbor
       
       // here's an edge that has to be checked.
@@ -416,44 +415,50 @@ public class SimpleMarchingCubes {
       // here is where we get the value and assign the point for that edge
       // it is where the JVXL surface data line is appended
       
-      voxelPointIndexes[iEdge] = edgeCount++;
+//      edgePointIndexes[iEdge] = 
+      isoPointIndexPlanes[iPlane][iPt][iType] = edgeCount++;
       //System.out.println(" pt=" + pt + " edge" + iEdge + " xyz " + x + " " + y + " " + z + " vertexAB=" + vertexA + " " + vertexB + " valueAB=" + valueA + " " + valueB + " f= " + (cutoff - valueA) / (valueB - valueA));
-      fractionData.append(JvxlWrite.jvxlFractionAsCharacter((cutoff - valueA) / (valueB - valueA)));
+      float f = (cutoff - valueA) / (valueB - valueA);
+      //System.out.println(f);
+      fractionData.append(JvxlWrite.jvxlFractionAsCharacter(f));
     }
     return !isNaN;
   }
 
-  final static Point3i[] cubeVertexOffsets = { new Point3i(0, 0, 0), //0 pt
+  private final int[] linearOffsets = new int[8]; 
+
+  /* 
+   * set the linear offsets for generating a unique cell ID,
+   * for pointing into the inside/outside BitSet,
+   * and for finding the associated vertex for an edge.
+   * 
+   */
+  
+  private void setLinearOffsets() {
+    linearOffsets[0] = 0;
+    linearOffsets[1] = yzCount;
+    linearOffsets[2] = yzCount + 1;
+    linearOffsets[3] = 1;
+    linearOffsets[4] = nZ;
+    linearOffsets[5] = yzCount + nZ;
+    linearOffsets[6] = yzCount + nZ + 1;
+    linearOffsets[7] = nZ + 1;
+  }
+
+  public int getLinearOffset(int x, int y, int z, int offset) {
+    return x * yzCount + y * nZ + z + linearOffsets[offset];
+  }
+
+  private final static Point3i[] cubeVertexOffsets = { 
+    new Point3i(0, 0, 0), //0 pt
     new Point3i(1, 0, 0), //1 pt + yz
     new Point3i(1, 0, 1), //2 pt + yz + 1
     new Point3i(0, 0, 1), //3 pt + 1
     new Point3i(0, 1, 0), //4 pt + z
     new Point3i(1, 1, 0), //5 pt + yz + z
     new Point3i(1, 1, 1), //6 pt + yz + z + 1
-    new Point3i(0, 1, 1) //7 pt + z + 1 
-};
-
-private final int[] linearOffsets = new int[8];
-int yzCount;
-
-/* set the linear offsets for unique cell ID
- * and for pointing into the inside/outside BitSet. 
- * Add offset to 0: x * (nY * nZ) + y * nZ + z 
- */
-void setLinearOffsets() {
-  linearOffsets[0] = 0;
-  linearOffsets[1] = yzCount;
-  linearOffsets[2] = yzCount + 1;
-  linearOffsets[3] = 1;
-  linearOffsets[4] = nZ;
-  linearOffsets[5] = yzCount + nZ;
-  linearOffsets[6] = yzCount + nZ + 1;
-  linearOffsets[7] = nZ + 1;
-}
-
-public int getLinearOffset(int x, int y, int z, int offset) {
-  return x * yzCount + y * nZ + z + linearOffsets[offset];
-}
+    new Point3i(0, 1, 1)  //7 pt + z + 1 
+  };
 
 
   /*                     Y 
@@ -507,6 +512,12 @@ public int getLinearOffset(int x, int y, int z, int offset) {
    *  so we can continue to do that with NON progressive files. 
    */
 
+   private final static int edgeTypeTable[] = { 
+     0, 2, 0, 2, 
+     0, 2, 0, 2, 
+     1, 1, 1, 1 };
+  // 0=along X, 1=along Y, 2=along Z
+
   private final static byte edgeVertexes[] = { 
     0, 1, 1, 2, 2, 3, 3, 0, 4, 5,
   /*0     1     2     3     4  */
@@ -544,4 +555,233 @@ public int getLinearOffset(int x, int y, int z, int offset) {
       0x0905, 0x080C, 0x070C, 0x0605, 0x050F, 0x0406, 0x030A, 0x0203, 0x0109,
       0x0000 };
 
+  /* the new triangle table. Fourth number in each ABC set is b3b2b1, where
+   * b1 = 1 for AB, b2 = 1 for BC, b3 = 1 for CA lines to be drawn for mesh
+   * 
+   * So, for example: 
+   
+   1, 8, 3, 6
+   
+   * 6 is 110 in binary, so b3 = 1, b2 = 1, b1 = 0.
+   * b1 refers to the 18 edge, b2 refers to the 83 edge, 
+   * and b3 refers to the 31 edge. The 31 and 83, but not 18 edges 
+   * should be drawn for a mesh. On the cube above, you can see
+   * that the 18 edges is in the interior of the cube. That's why we
+   * don't render it with a mesh.
+   
+   
+   Bob Hanson, 3/29/2007
+   
+   */
+
+  /* -- not needed just for JVXL writer
+   * -- included here for reference or for users who
+   * -- want to produce triangles using this code.
+   
+  private final static byte[][] triangleTable2 = { null, { 0, 8, 3, 7 },
+      { 0, 1, 9, 7 }, { 1, 8, 3, 6, 9, 8, 1, 5 }, { 1, 2, 10, 7 },
+      { 0, 8, 3, 7, 1, 2, 10, 7 }, { 9, 2, 10, 6, 0, 2, 9, 5 },
+      { 2, 8, 3, 6, 2, 10, 8, 1, 10, 9, 8, 3 }, { 3, 11, 2, 7 },
+      { 0, 11, 2, 6, 8, 11, 0, 5 }, { 1, 9, 0, 7, 2, 3, 11, 7 },
+      { 1, 11, 2, 6, 1, 9, 11, 1, 9, 8, 11, 3 }, { 3, 10, 1, 6, 11, 10, 3, 5 },
+      { 0, 10, 1, 6, 0, 8, 10, 1, 8, 11, 10, 3 },
+      { 3, 9, 0, 6, 3, 11, 9, 1, 11, 10, 9, 3 }, { 9, 8, 10, 5, 10, 8, 11, 6 },
+      { 4, 7, 8, 7 }, { 4, 3, 0, 6, 7, 3, 4, 5 }, { 0, 1, 9, 7, 8, 4, 7, 7 },
+      { 4, 1, 9, 6, 4, 7, 1, 1, 7, 3, 1, 3 }, { 1, 2, 10, 7, 8, 4, 7, 7 },
+      { 3, 4, 7, 6, 3, 0, 4, 3, 1, 2, 10, 7 },
+      { 9, 2, 10, 6, 9, 0, 2, 3, 8, 4, 7, 7 },
+      { 2, 10, 9, 3, 2, 9, 7, 0, 2, 7, 3, 6, 7, 9, 4, 6 },
+      { 8, 4, 7, 7, 3, 11, 2, 7 }, { 11, 4, 7, 6, 11, 2, 4, 1, 2, 0, 4, 3 },
+      { 9, 0, 1, 7, 8, 4, 7, 7, 2, 3, 11, 7 },
+      { 4, 7, 11, 3, 9, 4, 11, 1, 9, 11, 2, 2, 9, 2, 1, 6 },
+      { 3, 10, 1, 6, 3, 11, 10, 3, 7, 8, 4, 7 },
+      { 1, 11, 10, 6, 1, 4, 11, 0, 1, 0, 4, 3, 7, 11, 4, 5 },
+      { 4, 7, 8, 7, 9, 0, 11, 1, 9, 11, 10, 6, 11, 0, 3, 6 },
+      { 4, 7, 11, 3, 4, 11, 9, 4, 9, 11, 10, 6 }, { 9, 5, 4, 7 },
+      { 9, 5, 4, 7, 0, 8, 3, 7 }, { 0, 5, 4, 6, 1, 5, 0, 5 },
+      { 8, 5, 4, 6, 8, 3, 5, 1, 3, 1, 5, 3 }, { 1, 2, 10, 7, 9, 5, 4, 7 },
+      { 3, 0, 8, 7, 1, 2, 10, 7, 4, 9, 5, 7 },
+      { 5, 2, 10, 6, 5, 4, 2, 1, 4, 0, 2, 3 },
+      { 2, 10, 5, 3, 3, 2, 5, 1, 3, 5, 4, 2, 3, 4, 8, 6 },
+      { 9, 5, 4, 7, 2, 3, 11, 7 }, { 0, 11, 2, 6, 0, 8, 11, 3, 4, 9, 5, 7 },
+      { 0, 5, 4, 6, 0, 1, 5, 3, 2, 3, 11, 7 },
+      { 2, 1, 5, 3, 2, 5, 8, 0, 2, 8, 11, 6, 4, 8, 5, 5 },
+      { 10, 3, 11, 6, 10, 1, 3, 3, 9, 5, 4, 7 },
+      { 4, 9, 5, 7, 0, 8, 1, 5, 8, 10, 1, 2, 8, 11, 10, 3 },
+      { 5, 4, 0, 3, 5, 0, 11, 0, 5, 11, 10, 6, 11, 0, 3, 6 },
+      { 5, 4, 8, 3, 5, 8, 10, 4, 10, 8, 11, 6 }, { 9, 7, 8, 6, 5, 7, 9, 5 },
+      { 9, 3, 0, 6, 9, 5, 3, 1, 5, 7, 3, 3 },
+      { 0, 7, 8, 6, 0, 1, 7, 1, 1, 5, 7, 3 }, { 1, 5, 3, 5, 3, 5, 7, 6 },
+      { 9, 7, 8, 6, 9, 5, 7, 3, 10, 1, 2, 7 },
+      { 10, 1, 2, 7, 9, 5, 0, 5, 5, 3, 0, 2, 5, 7, 3, 3 },
+      { 8, 0, 2, 3, 8, 2, 5, 0, 8, 5, 7, 6, 10, 5, 2, 5 },
+      { 2, 10, 5, 3, 2, 5, 3, 4, 3, 5, 7, 6 },
+      { 7, 9, 5, 6, 7, 8, 9, 3, 3, 11, 2, 7 },
+      { 9, 5, 7, 3, 9, 7, 2, 0, 9, 2, 0, 6, 2, 7, 11, 6 },
+      { 2, 3, 11, 7, 0, 1, 8, 5, 1, 7, 8, 2, 1, 5, 7, 3 },
+      { 11, 2, 1, 3, 11, 1, 7, 4, 7, 1, 5, 6 },
+      { 9, 5, 8, 5, 8, 5, 7, 6, 10, 1, 3, 3, 10, 3, 11, 6 },
+      { 5, 7, 0, 1, 5, 0, 9, 6, 7, 11, 0, 1, 1, 0, 10, 5, 11, 10, 0, 1 },
+      { 11, 10, 0, 1, 11, 0, 3, 6, 10, 5, 0, 1, 8, 0, 7, 5, 5, 7, 0, 1 },
+      { 11, 10, 5, 3, 7, 11, 5, 5 }, { 10, 6, 5, 7 },
+      { 0, 8, 3, 7, 5, 10, 6, 7 }, { 9, 0, 1, 7, 5, 10, 6, 7 },
+      { 1, 8, 3, 6, 1, 9, 8, 3, 5, 10, 6, 7 }, { 1, 6, 5, 6, 2, 6, 1, 5 },
+      { 1, 6, 5, 6, 1, 2, 6, 3, 3, 0, 8, 7 },
+      { 9, 6, 5, 6, 9, 0, 6, 1, 0, 2, 6, 3 },
+      { 5, 9, 8, 3, 5, 8, 2, 0, 5, 2, 6, 6, 3, 2, 8, 5 },
+      { 2, 3, 11, 7, 10, 6, 5, 7 }, { 11, 0, 8, 6, 11, 2, 0, 3, 10, 6, 5, 7 },
+      { 0, 1, 9, 7, 2, 3, 11, 7, 5, 10, 6, 7 },
+      { 5, 10, 6, 7, 1, 9, 2, 5, 9, 11, 2, 2, 9, 8, 11, 3 },
+      { 6, 3, 11, 6, 6, 5, 3, 1, 5, 1, 3, 3 },
+      { 0, 8, 11, 3, 0, 11, 5, 0, 0, 5, 1, 6, 5, 11, 6, 6 },
+      { 3, 11, 6, 3, 0, 3, 6, 1, 0, 6, 5, 2, 0, 5, 9, 6 },
+      { 6, 5, 9, 3, 6, 9, 11, 4, 11, 9, 8, 6 }, { 5, 10, 6, 7, 4, 7, 8, 7 },
+      { 4, 3, 0, 6, 4, 7, 3, 3, 6, 5, 10, 7 },
+      { 1, 9, 0, 7, 5, 10, 6, 7, 8, 4, 7, 7 },
+      { 10, 6, 5, 7, 1, 9, 7, 1, 1, 7, 3, 6, 7, 9, 4, 6 },
+      { 6, 1, 2, 6, 6, 5, 1, 3, 4, 7, 8, 7 },
+      { 1, 2, 5, 5, 5, 2, 6, 6, 3, 0, 4, 3, 3, 4, 7, 6 },
+      { 8, 4, 7, 7, 9, 0, 5, 5, 0, 6, 5, 2, 0, 2, 6, 3 },
+      { 7, 3, 9, 1, 7, 9, 4, 6, 3, 2, 9, 1, 5, 9, 6, 5, 2, 6, 9, 1 },
+      { 3, 11, 2, 7, 7, 8, 4, 7, 10, 6, 5, 7 },
+      { 5, 10, 6, 7, 4, 7, 2, 1, 4, 2, 0, 6, 2, 7, 11, 6 },
+      { 0, 1, 9, 7, 4, 7, 8, 7, 2, 3, 11, 7, 5, 10, 6, 7 },
+      { 9, 2, 1, 6, 9, 11, 2, 2, 9, 4, 11, 1, 7, 11, 4, 5, 5, 10, 6, 7 },
+      { 8, 4, 7, 7, 3, 11, 5, 1, 3, 5, 1, 6, 5, 11, 6, 6 },
+      { 5, 1, 11, 1, 5, 11, 6, 6, 1, 0, 11, 1, 7, 11, 4, 5, 0, 4, 11, 1 },
+      { 0, 5, 9, 6, 0, 6, 5, 2, 0, 3, 6, 1, 11, 6, 3, 5, 8, 4, 7, 7 },
+      { 6, 5, 9, 3, 6, 9, 11, 4, 4, 7, 9, 5, 7, 11, 9, 1 },
+      { 10, 4, 9, 6, 6, 4, 10, 5 }, { 4, 10, 6, 6, 4, 9, 10, 3, 0, 8, 3, 7 },
+      { 10, 0, 1, 6, 10, 6, 0, 1, 6, 4, 0, 3 },
+      { 8, 3, 1, 3, 8, 1, 6, 0, 8, 6, 4, 6, 6, 1, 10, 6 },
+      { 1, 4, 9, 6, 1, 2, 4, 1, 2, 6, 4, 3 },
+      { 3, 0, 8, 7, 1, 2, 9, 5, 2, 4, 9, 2, 2, 6, 4, 3 },
+      { 0, 2, 4, 5, 4, 2, 6, 6 }, { 8, 3, 2, 3, 8, 2, 4, 4, 4, 2, 6, 6 },
+      { 10, 4, 9, 6, 10, 6, 4, 3, 11, 2, 3, 7 },
+      { 0, 8, 2, 5, 2, 8, 11, 6, 4, 9, 10, 3, 4, 10, 6, 6 },
+      { 3, 11, 2, 7, 0, 1, 6, 1, 0, 6, 4, 6, 6, 1, 10, 6 },
+      { 6, 4, 1, 1, 6, 1, 10, 6, 4, 8, 1, 1, 2, 1, 11, 5, 8, 11, 1, 1 },
+      { 9, 6, 4, 6, 9, 3, 6, 0, 9, 1, 3, 3, 11, 6, 3, 5 },
+      { 8, 11, 1, 1, 8, 1, 0, 6, 11, 6, 1, 1, 9, 1, 4, 5, 6, 4, 1, 1 },
+      { 3, 11, 6, 3, 3, 6, 0, 4, 0, 6, 4, 6 }, { 6, 4, 8, 3, 11, 6, 8, 5 },
+      { 7, 10, 6, 6, 7, 8, 10, 1, 8, 9, 10, 3 },
+      { 0, 7, 3, 6, 0, 10, 7, 0, 0, 9, 10, 3, 6, 7, 10, 5 },
+      { 10, 6, 7, 3, 1, 10, 7, 1, 1, 7, 8, 2, 1, 8, 0, 6 },
+      { 10, 6, 7, 3, 10, 7, 1, 4, 1, 7, 3, 6 },
+      { 1, 2, 6, 3, 1, 6, 8, 0, 1, 8, 9, 6, 8, 6, 7, 6 },
+      { 2, 6, 9, 1, 2, 9, 1, 6, 6, 7, 9, 1, 0, 9, 3, 5, 7, 3, 9, 1 },
+      { 7, 8, 0, 3, 7, 0, 6, 4, 6, 0, 2, 6 }, { 7, 3, 2, 3, 6, 7, 2, 5 },
+      { 2, 3, 11, 7, 10, 6, 8, 1, 10, 8, 9, 6, 8, 6, 7, 6 },
+      { 2, 0, 7, 1, 2, 7, 11, 6, 0, 9, 7, 1, 6, 7, 10, 5, 9, 10, 7, 1 },
+      { 1, 8, 0, 6, 1, 7, 8, 2, 1, 10, 7, 1, 6, 7, 10, 5, 2, 3, 11, 7 },
+      { 11, 2, 1, 3, 11, 1, 7, 4, 10, 6, 1, 5, 6, 7, 1, 1 },
+      { 8, 9, 6, 1, 8, 6, 7, 6, 9, 1, 6, 1, 11, 6, 3, 5, 1, 3, 6, 1 },
+      { 0, 9, 1, 7, 11, 6, 7, 7 },
+      { 7, 8, 0, 3, 7, 0, 6, 4, 3, 11, 0, 5, 11, 6, 0, 1 }, { 7, 11, 6, 7 },
+      { 7, 6, 11, 7 }, { 3, 0, 8, 7, 11, 7, 6, 7 },
+      { 0, 1, 9, 7, 11, 7, 6, 7 }, { 8, 1, 9, 6, 8, 3, 1, 3, 11, 7, 6, 7 },
+      { 10, 1, 2, 7, 6, 11, 7, 7 }, { 1, 2, 10, 7, 3, 0, 8, 7, 6, 11, 7, 7 },
+      { 2, 9, 0, 6, 2, 10, 9, 3, 6, 11, 7, 7 },
+      { 6, 11, 7, 7, 2, 10, 3, 5, 10, 8, 3, 2, 10, 9, 8, 3 },
+      { 7, 2, 3, 6, 6, 2, 7, 5 }, { 7, 0, 8, 6, 7, 6, 0, 1, 6, 2, 0, 3 },
+      { 2, 7, 6, 6, 2, 3, 7, 3, 0, 1, 9, 7 },
+      { 1, 6, 2, 6, 1, 8, 6, 0, 1, 9, 8, 3, 8, 7, 6, 3 },
+      { 10, 7, 6, 6, 10, 1, 7, 1, 1, 3, 7, 3 },
+      { 10, 7, 6, 6, 1, 7, 10, 4, 1, 8, 7, 2, 1, 0, 8, 3 },
+      { 0, 3, 7, 3, 0, 7, 10, 0, 0, 10, 9, 6, 6, 10, 7, 5 },
+      { 7, 6, 10, 3, 7, 10, 8, 4, 8, 10, 9, 6 }, { 6, 8, 4, 6, 11, 8, 6, 5 },
+      { 3, 6, 11, 6, 3, 0, 6, 1, 0, 4, 6, 3 },
+      { 8, 6, 11, 6, 8, 4, 6, 3, 9, 0, 1, 7 },
+      { 9, 4, 6, 3, 9, 6, 3, 0, 9, 3, 1, 6, 11, 3, 6, 5 },
+      { 6, 8, 4, 6, 6, 11, 8, 3, 2, 10, 1, 7 },
+      { 1, 2, 10, 7, 3, 0, 11, 5, 0, 6, 11, 2, 0, 4, 6, 3 },
+      { 4, 11, 8, 6, 4, 6, 11, 3, 0, 2, 9, 5, 2, 10, 9, 3 },
+      { 10, 9, 3, 1, 10, 3, 2, 6, 9, 4, 3, 1, 11, 3, 6, 5, 4, 6, 3, 1 },
+      { 8, 2, 3, 6, 8, 4, 2, 1, 4, 6, 2, 3 }, { 0, 4, 2, 5, 4, 6, 2, 3 },
+      { 1, 9, 0, 7, 2, 3, 4, 1, 2, 4, 6, 6, 4, 3, 8, 6 },
+      { 1, 9, 4, 3, 1, 4, 2, 4, 2, 4, 6, 6 },
+      { 8, 1, 3, 6, 8, 6, 1, 0, 8, 4, 6, 3, 6, 10, 1, 3 },
+      { 10, 1, 0, 3, 10, 0, 6, 4, 6, 0, 4, 6 },
+      { 4, 6, 3, 1, 4, 3, 8, 6, 6, 10, 3, 1, 0, 3, 9, 5, 10, 9, 3, 1 },
+      { 10, 9, 4, 3, 6, 10, 4, 5 }, { 4, 9, 5, 7, 7, 6, 11, 7 },
+      { 0, 8, 3, 7, 4, 9, 5, 7, 11, 7, 6, 7 },
+      { 5, 0, 1, 6, 5, 4, 0, 3, 7, 6, 11, 7 },
+      { 11, 7, 6, 7, 8, 3, 4, 5, 3, 5, 4, 2, 3, 1, 5, 3 },
+      { 9, 5, 4, 7, 10, 1, 2, 7, 7, 6, 11, 7 },
+      { 6, 11, 7, 7, 1, 2, 10, 7, 0, 8, 3, 7, 4, 9, 5, 7 },
+      { 7, 6, 11, 7, 5, 4, 10, 5, 4, 2, 10, 2, 4, 0, 2, 3 },
+      { 3, 4, 8, 6, 3, 5, 4, 2, 3, 2, 5, 1, 10, 5, 2, 5, 11, 7, 6, 7 },
+      { 7, 2, 3, 6, 7, 6, 2, 3, 5, 4, 9, 7 },
+      { 9, 5, 4, 7, 0, 8, 6, 1, 0, 6, 2, 6, 6, 8, 7, 6 },
+      { 3, 6, 2, 6, 3, 7, 6, 3, 1, 5, 0, 5, 5, 4, 0, 3 },
+      { 6, 2, 8, 1, 6, 8, 7, 6, 2, 1, 8, 1, 4, 8, 5, 5, 1, 5, 8, 1 },
+      { 9, 5, 4, 7, 10, 1, 6, 5, 1, 7, 6, 2, 1, 3, 7, 3 },
+      { 1, 6, 10, 6, 1, 7, 6, 2, 1, 0, 7, 1, 8, 7, 0, 5, 9, 5, 4, 7 },
+      { 4, 0, 10, 1, 4, 10, 5, 6, 0, 3, 10, 1, 6, 10, 7, 5, 3, 7, 10, 1 },
+      { 7, 6, 10, 3, 7, 10, 8, 4, 5, 4, 10, 5, 4, 8, 10, 1 },
+      { 6, 9, 5, 6, 6, 11, 9, 1, 11, 8, 9, 3 },
+      { 3, 6, 11, 6, 0, 6, 3, 4, 0, 5, 6, 2, 0, 9, 5, 3 },
+      { 0, 11, 8, 6, 0, 5, 11, 0, 0, 1, 5, 3, 5, 6, 11, 3 },
+      { 6, 11, 3, 3, 6, 3, 5, 4, 5, 3, 1, 6 },
+      { 1, 2, 10, 7, 9, 5, 11, 1, 9, 11, 8, 6, 11, 5, 6, 6 },
+      { 0, 11, 3, 6, 0, 6, 11, 2, 0, 9, 6, 1, 5, 6, 9, 5, 1, 2, 10, 7 },
+      { 11, 8, 5, 1, 11, 5, 6, 6, 8, 0, 5, 1, 10, 5, 2, 5, 0, 2, 5, 1 },
+      { 6, 11, 3, 3, 6, 3, 5, 4, 2, 10, 3, 5, 10, 5, 3, 1 },
+      { 5, 8, 9, 6, 5, 2, 8, 0, 5, 6, 2, 3, 3, 8, 2, 5 },
+      { 9, 5, 6, 3, 9, 6, 0, 4, 0, 6, 2, 6 },
+      { 1, 5, 8, 1, 1, 8, 0, 6, 5, 6, 8, 1, 3, 8, 2, 5, 6, 2, 8, 1 },
+      { 1, 5, 6, 3, 2, 1, 6, 5 },
+      { 1, 3, 6, 1, 1, 6, 10, 6, 3, 8, 6, 1, 5, 6, 9, 5, 8, 9, 6, 1 },
+      { 10, 1, 0, 3, 10, 0, 6, 4, 9, 5, 0, 5, 5, 6, 0, 1 },
+      { 0, 3, 8, 7, 5, 6, 10, 7 }, { 10, 5, 6, 7 },
+      { 11, 5, 10, 6, 7, 5, 11, 5 }, { 11, 5, 10, 6, 11, 7, 5, 3, 8, 3, 0, 7 },
+      { 5, 11, 7, 6, 5, 10, 11, 3, 1, 9, 0, 7 },
+      { 10, 7, 5, 6, 10, 11, 7, 3, 9, 8, 1, 5, 8, 3, 1, 3 },
+      { 11, 1, 2, 6, 11, 7, 1, 1, 7, 5, 1, 3 },
+      { 0, 8, 3, 7, 1, 2, 7, 1, 1, 7, 5, 6, 7, 2, 11, 6 },
+      { 9, 7, 5, 6, 9, 2, 7, 0, 9, 0, 2, 3, 2, 11, 7, 3 },
+      { 7, 5, 2, 1, 7, 2, 11, 6, 5, 9, 2, 1, 3, 2, 8, 5, 9, 8, 2, 1 },
+      { 2, 5, 10, 6, 2, 3, 5, 1, 3, 7, 5, 3 },
+      { 8, 2, 0, 6, 8, 5, 2, 0, 8, 7, 5, 3, 10, 2, 5, 5 },
+      { 9, 0, 1, 7, 5, 10, 3, 1, 5, 3, 7, 6, 3, 10, 2, 6 },
+      { 9, 8, 2, 1, 9, 2, 1, 6, 8, 7, 2, 1, 10, 2, 5, 5, 7, 5, 2, 1 },
+      { 1, 3, 5, 5, 3, 7, 5, 3 }, { 0, 8, 7, 3, 0, 7, 1, 4, 1, 7, 5, 6 },
+      { 9, 0, 3, 3, 9, 3, 5, 4, 5, 3, 7, 6 }, { 9, 8, 7, 3, 5, 9, 7, 5 },
+      { 5, 8, 4, 6, 5, 10, 8, 1, 10, 11, 8, 3 },
+      { 5, 0, 4, 6, 5, 11, 0, 0, 5, 10, 11, 3, 11, 3, 0, 3 },
+      { 0, 1, 9, 7, 8, 4, 10, 1, 8, 10, 11, 6, 10, 4, 5, 6 },
+      { 10, 11, 4, 1, 10, 4, 5, 6, 11, 3, 4, 1, 9, 4, 1, 5, 3, 1, 4, 1 },
+      { 2, 5, 1, 6, 2, 8, 5, 0, 2, 11, 8, 3, 4, 5, 8, 5 },
+      { 0, 4, 11, 1, 0, 11, 3, 6, 4, 5, 11, 1, 2, 11, 1, 5, 5, 1, 11, 1 },
+      { 0, 2, 5, 1, 0, 5, 9, 6, 2, 11, 5, 1, 4, 5, 8, 5, 11, 8, 5, 1 },
+      { 9, 4, 5, 7, 2, 11, 3, 7 },
+      { 2, 5, 10, 6, 3, 5, 2, 4, 3, 4, 5, 2, 3, 8, 4, 3 },
+      { 5, 10, 2, 3, 5, 2, 4, 4, 4, 2, 0, 6 },
+      { 3, 10, 2, 6, 3, 5, 10, 2, 3, 8, 5, 1, 4, 5, 8, 5, 0, 1, 9, 7 },
+      { 5, 10, 2, 3, 5, 2, 4, 4, 1, 9, 2, 5, 9, 4, 2, 1 },
+      { 8, 4, 5, 3, 8, 5, 3, 4, 3, 5, 1, 6 }, { 0, 4, 5, 3, 1, 0, 5, 5 },
+      { 8, 4, 5, 3, 8, 5, 3, 4, 9, 0, 5, 5, 0, 3, 5, 1 }, { 9, 4, 5, 7 },
+      { 4, 11, 7, 6, 4, 9, 11, 1, 9, 10, 11, 3 },
+      { 0, 8, 3, 7, 4, 9, 7, 5, 9, 11, 7, 2, 9, 10, 11, 3 },
+      { 1, 10, 11, 3, 1, 11, 4, 0, 1, 4, 0, 6, 7, 4, 11, 5 },
+      { 3, 1, 4, 1, 3, 4, 8, 6, 1, 10, 4, 1, 7, 4, 11, 5, 10, 11, 4, 1 },
+      { 4, 11, 7, 6, 9, 11, 4, 4, 9, 2, 11, 2, 9, 1, 2, 3 },
+      { 9, 7, 4, 6, 9, 11, 7, 2, 9, 1, 11, 1, 2, 11, 1, 5, 0, 8, 3, 7 },
+      { 11, 7, 4, 3, 11, 4, 2, 4, 2, 4, 0, 6 },
+      { 11, 7, 4, 3, 11, 4, 2, 4, 8, 3, 4, 5, 3, 2, 4, 1 },
+      { 2, 9, 10, 6, 2, 7, 9, 0, 2, 3, 7, 3, 7, 4, 9, 3 },
+      { 9, 10, 7, 1, 9, 7, 4, 6, 10, 2, 7, 1, 8, 7, 0, 5, 2, 0, 7, 1 },
+      { 3, 7, 10, 1, 3, 10, 2, 6, 7, 4, 10, 1, 1, 10, 0, 5, 4, 0, 10, 1 },
+      { 1, 10, 2, 7, 8, 7, 4, 7 }, { 4, 9, 1, 3, 4, 1, 7, 4, 7, 1, 3, 6 },
+      { 4, 9, 1, 3, 4, 1, 7, 4, 0, 8, 1, 5, 8, 7, 1, 1 },
+      { 4, 0, 3, 3, 7, 4, 3, 5 }, { 4, 8, 7, 7 },
+      { 9, 10, 8, 5, 10, 11, 8, 3 }, { 3, 0, 9, 3, 3, 9, 11, 4, 11, 9, 10, 6 },
+      { 0, 1, 10, 3, 0, 10, 8, 4, 8, 10, 11, 6 },
+      { 3, 1, 10, 3, 11, 3, 10, 5 }, { 1, 2, 11, 3, 1, 11, 9, 4, 9, 11, 8, 6 },
+      { 3, 0, 9, 3, 3, 9, 11, 4, 1, 2, 9, 5, 2, 11, 9, 1 },
+      { 0, 2, 11, 3, 8, 0, 11, 5 }, { 3, 2, 11, 7 },
+      { 2, 3, 8, 3, 2, 8, 10, 4, 10, 8, 9, 6 }, { 9, 10, 2, 3, 0, 9, 2, 5 },
+      { 2, 3, 8, 3, 2, 8, 10, 4, 0, 1, 8, 5, 1, 10, 8, 1 }, { 1, 10, 2, 7 },
+      { 1, 3, 8, 3, 9, 1, 8, 5 }, { 0, 9, 1, 7 }, { 0, 3, 8, 7 }, null };
+ */
 }

@@ -32,15 +32,16 @@ import javax.vecmath.Vector3f;
 import org.jmol.jvxl.api.VertexDataServer;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.readers.JvxlReader;
+import org.jmol.util.Logger;
 
 //import org.jmol.util.Base64;
 
 public class MarchingCubes {
 
   /*
-   * An adaptation of Marching Cubes to include data slicing and the option
-   * for progressive reading of the data. Associated SurfaceReader and VoxelData
-   * structures are required to store the sequential values in the case of a plane
+   * An adaptation of Marching Cubes that includes data slicing. 
+   * Associated SurfaceReader and VoxelData structures are required 
+   * to store the sequential values in the case of a plane
    * and to deliver the sequential vertex numbers in any case.
    * 
    * Author: Bob Hanson, hansonr@stolaf.edu
@@ -78,6 +79,7 @@ public class MarchingCubes {
 
   private int cubeCountX, cubeCountY, cubeCountZ;
   private int nY, nZ;
+  private int yzCount;
 
   private BitSet bsVoxels;
 
@@ -87,16 +89,6 @@ public class MarchingCubes {
     return bsVoxels;
   }
   
-  /* this was an idea .... but it results in 3x the file size
-   
-   private StringBuffer maskData = new StringBuffer();
-   
-   public String getMaskData() {
-   return Base64.getBase64(maskData).toString();
-   }
-
-   */
-
   public MarchingCubes(VertexDataServer surfaceReader, VolumeData volumeData,
       BitSet bsVoxels, boolean isContoured, int contourType, float cutoff,
       boolean isCutoffAbsolute, boolean isSquared, boolean isXLowToHigh) {
@@ -125,8 +117,13 @@ public class MarchingCubes {
     yzCount = nY * nZ;
     if (this.bsVoxels == null)
       this.bsVoxels = new BitSet();
-    // calcVoxelVertexVectors is unnecessary if just creating a JVXL file:
 
+    edgeVertexPointers = (isXLowToHigh ? edgeVertexPointersLowToHigh : edgeVertexPointersHighToLow);
+    edgeVertexPlanes =  (isXLowToHigh ? edgeVertexPlanesLowToHigh : edgeVertexPlanesHighToLow);
+    isoPointIndexPlanes = new int[2][yzCount][3];
+    xyPlanes = (mode == MODE_GETXYZ ? new float[2][yzCount] : null);
+    setLinearOffsets();
+    // calcVoxelVertexVectors is unnecessary if just creating a JVXL file:
     calcVoxelVertexVectors();
   }
 
@@ -149,7 +146,6 @@ public class MarchingCubes {
   int edgeCount;
 
   private void calcVoxelVertexVectors() {
-    setLinearOffsets();
     volumeData.setMatrix();
     for (int i = 8; --i >= 0;)
       volumeData.transform(cubeVertexVectors[i],
@@ -165,36 +161,33 @@ public class MarchingCubes {
    * 
    */
 
-  private static int[] xyPlanePts = new int[] { 0, 1, 1, 0, 0, 1, 1, 0 };
+  private static int[] xyPlanePts = new int[] { 
+      0, 1, 1, 0, 
+      0, 1, 1, 0 
+  };
+  private final int[] edgePointIndexes = new int[12];
+  private int[][][] isoPointIndexPlanes;
+  private float[][] xyPlanes;
+
+  private int[][] resetIndexPlane(int[][] plane) {
+    for (int i = 0; i < yzCount; i++)
+      for (int j = 0; j < 3; j++)
+        plane[i][j] = -1;
+    return plane;
+  }
 
   public String getEdgeData() {
 
-    /* The Marching Cubes code creates a (nY-1)(nZ-1)(12) array
-     * to track all 12 edges of a full slice of cubes. I don't think that is
-     * necessary -- really each vertex is associated with at most three
-     * edges. We should be able to do this with an (nY)(nZ)(3) array.
+    Logger.startTimer();
+    
+    /* The (new, Jmol 11.7.26) Marching Cubes code creates 
+     * the isoPointIndexes[2][nY * nZ][3] array that holds two slices 
+     * of edge data. Each edge is assigned a specific vertex, 
+     * such that each vertex may have up to 3 associated edges. 
      * 
-     * For now, I've left it as is. 
-     * 
-     * The changes introduced here But the other aspect of this is that
-     * we really only need (nY)(nZ)(2) points ever. So we now allow for the
-     * method to query another method to 
+     *  Feb 10, 2009 -- Bob Hanson
      */
     
-    
-    /* isoPointIndexes 
-    // set up the set of edge points in the YZ plane
-    // these are indexes into an array of Point3f values
-    // They will be initialized as -1 whenever a vertex is needed.
-    // But if just creating a JVXL file, all you need to do
-    // is set them to 0, not an index into any actual array.
-     *
-     */
-
-    int[][] isoPointIndexes = new int[cubeCountY * cubeCountZ][12];
-
-    float[][] xyPlanes = (mode == MODE_GETXYZ ? new float[2][yzCount] : null);
-
     int insideCount = 0, outsideCount = 0, surfaceCount = 0;
     edgeCount = 0;
 
@@ -218,19 +211,28 @@ public class MarchingCubes {
     }
     int cellIndex0 = cubeCountY * cubeCountZ - 1;
     int cellIndex = cellIndex0;
+    resetIndexPlane(isoPointIndexPlanes[1]);
     for (int x = x0; x != x1; x += xStep, ptX += ptStep, pt = ptX, cellIndex = cellIndex0) {
+      
+      // we swap planes of grid data when 
+      // obtaining the grid data point by point
+      
       if (mode == MODE_GETXYZ) {
         float[] plane = xyPlanes[0];
         xyPlanes[0] = xyPlanes[1];
         xyPlanes[1] = plane;
       }
+      
+      // we swap the edge vertex index planes
+      
+      int[][] indexPlane = isoPointIndexPlanes[0];
+      isoPointIndexPlanes[0] = isoPointIndexPlanes[1];
+      isoPointIndexPlanes[1] = resetIndexPlane(indexPlane);
+      
+      // now scan the plane of cubicals
+      
       for (int y = cubeCountY; --y >= 0; pt--) {
         for (int z = cubeCountZ; --z >= 0; pt--, cellIndex--) {
-
-          // set up the list of indices that need checking
-
-          int[] voxelPointIndexes = propagateNeighborPointIndexes(x, y, z,
-              isoPointIndexes, cellIndex);
 
           // create the bitset mask indicating which vertices are inside.
           // 0xFF here means "all inside"; 0x00 means "all outside"
@@ -268,8 +270,6 @@ public class MarchingCubes {
             }
           }
 
-          //maskData.append((char) insideMask);
-
           if (insideMask == 0) {
             ++outsideCount;
             continue;
@@ -282,8 +282,7 @@ public class MarchingCubes {
 
           // This cube is straddling the cutoff. We must check all edges 
 
-          //System.out.print( " pt=" + pt + " ");
-          if (!processOneCubical(insideMask, voxelPointIndexes, x, y, z)
+          if (!processOneCubical(insideMask, x, y, z, pt)
               || isContoured)
             continue;
 
@@ -292,21 +291,15 @@ public class MarchingCubes {
 
           byte[] triangles = triangleTable2[insideMask];
           for (int i = triangles.length; (i -= 4) >= 0;)
-            surfaceReader.addTriangleCheck(voxelPointIndexes[triangles[i]],
-                voxelPointIndexes[triangles[i + 1]],
-                voxelPointIndexes[triangles[i + 2]], triangles[i + 3],
+            surfaceReader.addTriangleCheck(edgePointIndexes[triangles[i]],
+                edgePointIndexes[triangles[i + 1]],
+                edgePointIndexes[triangles[i + 2]], triangles[i + 3],
                 isCutoffAbsolute);
         }
       }
     }
 
-    //System.out.println("marchingCubes: "
-    //    + maskData.length()
-    //    + " "
-    //    + org.jmol.jvxl.readers.JvxlReader.jvxlCompressString(
-    //        Base64.getBase64(maskData).toString()).length());
-    // this came out about 3 times the length of what we have now
-    // could be a hair faster, but the files size cost is high, I think
+    Logger.checkTimer("Jmol mc getEdgeData");
 
     return edgeData.toString();
   }
@@ -330,13 +323,64 @@ public class MarchingCubes {
     return ((max > 0 && (isAbsolute ? Math.abs(voxelValue) : voxelValue) >= max) || (max <= 0 && voxelValue <= max));
   }
 
-  private final int[] nullNeighbor = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-      -1, -1 };
+  private final Point3f pt0 = new Point3f();
+  private final Point3f pointA = new Point3f();
 
-  private int[] propagateNeighborPointIndexes(int x, int y, int z,
-                                              int[][] isoPointIndexes,
-                                              int cellIndex) {
-    /*                     Y 
+  private static final int[] Pwr2 = new int[] { 1, 2, 4, 8, 16, 32, 64, 128,
+      256, 512, 1024, 2048 };
+
+  private final static int[] edgeVertexPointersLowToHigh = new int[] {
+      1, 1, 2, 0, 
+      5, 5, 6, 4,
+      0, 1, 2, 3
+  };
+  
+  private final static int[] edgeVertexPointersHighToLow = new int[] {
+      0, 1, 3, 0, 
+      4, 5, 7, 4,
+      0, 1, 2, 3
+  };
+
+  private int[] edgeVertexPointers;
+
+  private final static int[] edgeVertexPlanesLowToHigh = new int[] {
+      1, 1, 1, 0, 
+      1, 1, 1, 0, 
+      0, 1, 1, 0
+  };  // from high to low, only edges 3, 7, 8, and 11 are from plane 0
+
+  private final static int[] edgeVertexPlanesHighToLow = new int[] {
+      1, 0, 1, 1,
+      1, 0, 1, 1,
+      1, 0, 0, 1
+  }; //from high to low, only edges 1, 5, 9, and 10 are from plane 0
+
+  private int[] edgeVertexPlanes;
+  
+  private boolean processOneCubical(int insideMask, int x, int y, int z, int pt) {
+    
+    
+    /*
+     * The key to the algorithm is that we have a catalog that
+     * maps the inside-vertex mask to an edge mask, and then
+     * each edge is associated with a specific vertex. 
+     * 
+     * Each cube vertex may be associated with from 0 to 3 edges,
+     * depending upon where it lies in the overall cube of data.
+     * 
+     * When scanning X from low to high, the "leading vertex" is
+     * vertex 1 and edgeVertexPlanes[1]. Edges 0, 1, and 9 are 
+     * associated with vertex 1, and others are associated similarly.
+     * 
+     * When scanning X from high to low, the "leading vertex" is
+     * vertex 0 and edgeVertexPlanes[1]. Edges 0, 3, and 8 are 
+     * associated with vertex 0, and others are associated similarly.
+     * 
+     * edgePointIndexes[iEdge] tracks the vertex index for this
+     * specific cubical so that triangles can be created properly.
+     *  
+     * 
+     *                      Y 
      *                      4 --------4--------- 5  
      *                     /|                   /|
      *                    / |                  / |
@@ -354,165 +398,73 @@ public class MarchingCubes {
      *               | /                  | /
      *               3 ---------2-------- 2
      *              Z 
-     * 
-     * 
-     * We are running through the grid points in yz planes from high x --> low x
-     * and within those planes along strips from high y to low y
-     * and within those strips, from high z to low z. The "leading vertex" is 0, 
-     * and the "leading edges" are {0,3,8}. 
-     * 
-     * For each such cube, edges are traversed from high to low (11-->0)
-     * 
-     * Each edge has the potential to be "critical" and cross the surface.
-     * Setting -1 in voxelPointIndexes indicates that this edge needs checking.
-     * Otherwise, the crossing point for this edge is taken from the value
-     * already determined, because it has already been determined to be critical. 
-     *
-     * The above model, because it starts at HIGH x, requires that all x,y,z points 
-     * be in memory from the beginning. We could have instead used a progressive 
-     * streaming model, where we only pull in the slice of data that we need. In 
-     * that case, each edge corresponds to a specific pair of indices in our slice.
-     * 
-     * Say we have a 51 x 11 x 21 block of data. This represents a 50 x 10 x 20 set
-     * of cubes. If, instead of reading all the data, we pull in just the first two
-     * "slices" x=0(10x20), x=1(10x20), that is just 400 points. Once a slice of
-     * data is used, we can flush it -- it is never used again. 
-     * 
-     * When color mapping, we can do the same thing; we just have to put the verticies
-     * into bins based on which pair of slices will be relevant, and then make sure we
-     * process the verticies based on these bins. 
-     * 
-     * The JVXL format depends on a specific order of reading of the edge data. The
-     * progressive model completely messes this up. The vertices will be read in the 
-     * same order around the cube, but the "leading edges" will be {0,1,9}, not {0,3,8}. 
-     * We do know which edge is which, so we could construct a progressive model from
-     * a nonprogressive one, if necessary. 
-     * 
-     * All we are really talking about is the JVXL reader, because we can certainly
-     * switch to progressive mode in all the other readers.  
-     *  
-     *  
+     *              /                    /              
+     *  edgeVertexPlanes[0]            [1] (scanning x low to high)
+     *  edgeVertexPlanes[1]            [0] (scanning x high to low)
+     *           
      */
 
-    /* DO NOT EVER CHANGE THIS */
-
-    //int cellIndex = y * cubeCountZ + z;
-    int[] voxelPointIndexes = isoPointIndexes[cellIndex];
-
-    boolean noYNeighbor = (y == cubeCountY - 1);
-    int[] yNeighbor = noYNeighbor ? nullNeighbor 
-        : isoPointIndexes[cellIndex + cubeCountZ];
-    boolean noZNeighbor = (z == cubeCountZ - 1);
-    int[] zNeighbor = noZNeighbor ? nullNeighbor
-        : isoPointIndexes[cellIndex + 1];
-    voxelPointIndexes[0] = -1;
-    voxelPointIndexes[2] = zNeighbor[0];
-    voxelPointIndexes[4] = yNeighbor[0];
-    voxelPointIndexes[6] = (noYNeighbor ? zNeighbor[4] : yNeighbor[2]);
-
-    if (isXLowToHigh) {
-      // reading x from low to high
-      if (x == 0) {
-        voxelPointIndexes[3] = -1;
-        voxelPointIndexes[8] = -1;
-        voxelPointIndexes[7] = yNeighbor[3];
-        voxelPointIndexes[11] = zNeighbor[8];
-      } else {
-        voxelPointIndexes[3] = voxelPointIndexes[1];
-        voxelPointIndexes[7] = voxelPointIndexes[5];
-        voxelPointIndexes[8] = voxelPointIndexes[9];
-        voxelPointIndexes[11] = voxelPointIndexes[10];
-      }
-      voxelPointIndexes[1] = -1;
-      voxelPointIndexes[5] = yNeighbor[1];
-      voxelPointIndexes[9] = -1;
-      voxelPointIndexes[10] = zNeighbor[9];
-    } else {
-      // reading x from high to low
-      if (x == cubeCountX - 1) {
-        voxelPointIndexes[1] = -1;
-        voxelPointIndexes[5] = yNeighbor[1];
-        voxelPointIndexes[9] = -1;
-        voxelPointIndexes[10] = zNeighbor[9];
-      } else {
-        voxelPointIndexes[1] = voxelPointIndexes[3];
-        voxelPointIndexes[5] = voxelPointIndexes[7];
-        voxelPointIndexes[9] = voxelPointIndexes[8];
-        voxelPointIndexes[10] = voxelPointIndexes[11];
-      }
-      voxelPointIndexes[3] = -1;
-      voxelPointIndexes[7] = yNeighbor[3];
-      voxelPointIndexes[8] = -1;
-      voxelPointIndexes[11] = zNeighbor[8];
-    }
-
-    return voxelPointIndexes;
-  }
-
-  private final Point3f pt0 = new Point3f();
-  private final Point3f pointA = new Point3f();
-
-  private static final int[] Pwr2 = new int[] { 1, 2, 4, 8, 16, 32, 64, 128,
-      256, 512, 1024, 2048 };
-
-  private boolean processOneCubical(int insideMask, int[] voxelPointIndexes,
-                                    int x, int y, int z) {
-
-    // the key to the algorithm is that we have a catalog that
-    // maps the inside-vertex mask to an edge mask. 
-
     int edgeMask = insideMaskTable[insideMask];
+    //for (int i =0; i < 8; i++) System.out.print("\nvpi for cell  " + pt + ": vertex " + i + ": " + voxelPointIndexes[i] + " " + Integer.toBinaryString(edgeMask));
     boolean isNaN = false;
     for (int iEdge = 12; --iEdge >= 0;) {
-
+      
       // bit set to one means it's a relevant edge
-
-      if ((edgeMask & Pwr2[iEdge]) == 0)
+      
+      int xEdge = Pwr2[iEdge];
+      if ((edgeMask & xEdge) == 0)
         continue;
-
+      
+      
       // if we have a point already, we don't need to check this edge.
       // for triangles, this will be an index into an array;
       // for just creating JVXL files, this can just be 0
-
-      if (voxelPointIndexes[iEdge] >= 0)
+      
+      int iPlane = edgeVertexPlanes[iEdge];
+      int iPt = (pt + linearOffsets[edgeVertexPointers[iEdge]]) % yzCount;
+      int iType = edgeTypeTable[iEdge];
+      int index = edgePointIndexes[iEdge] = isoPointIndexPlanes[iPlane][iPt][iType];
+      //System.out.println(x + " " + y + " " + z + " " + pt + " iEdge=" + iEdge + " p=" + iPlane + " t=" + iType + " e=" + ePt + " i=" + iPt + " index=" + edgePointIndexes[iEdge]);
+      if (index >= 0)
         continue; // propagated from neighbor
-
+      
       // here's an edge that has to be checked.
-
-      ++edgeCount;
-
+      
       // get the vertex numbers 0 - 7
-
+      
       int vertexA = edgeVertexes[iEdge << 1];
       int vertexB = edgeVertexes[(iEdge << 1) + 1];
-
+      
       // pick up the actual value at each vertex
       // this array of 8 values is updated as we go.
-
+      
       float valueA = vertexValues[vertexA];
       float valueB = vertexValues[vertexB];
-
+      
       // we allow for NaN values -- missing triangles
-
+      
       if (Float.isNaN(valueA) || Float.isNaN(valueB))
         isNaN = true;
-
+      
       // the exact point position -- not important for just
       // creating the JVXL file. In that case, all you 
       // need are the two values valueA and valueB and the cutoff.
       // from those you can define the fractional offset
-
+      
+      // here is where we get the value and assign the point for that edge
+      // it is where the JVXL surface data line is appended
+ 
       volumeData.voxelPtToXYZ(x, y, z, pt0);
       pointA.add(pt0, voxelVertexVectors[vertexA]);
 
-      // here is where we get the value and assign the point for that edge
-      // it is where the JVXL surface data line is appended
+       //System.out.print("edge" + iEdge);
 
-      //System.out.print("edge" + iEdge);
-      voxelPointIndexes[iEdge] = surfaceReader.getSurfacePointIndexAndFraction(cutoff,
+      edgeCount++;
+      
+      edgePointIndexes[iEdge] = isoPointIndexPlanes[iPlane][iPt][iType] =  surfaceReader.getSurfacePointIndexAndFraction(cutoff,
           isCutoffAbsolute, x, y, z, cubeVertexOffsets[vertexA], vertexA,
           vertexB, valueA, valueB, pointA, edgeVectors[iEdge],
-          edgeTypeTable[iEdge] == contourType, fReturn);
+          iType == contourType, fReturn);
       
        edgeData.append(JvxlReader.jvxlFractionAsCharacter(fReturn[0]));
     }
@@ -527,24 +479,37 @@ public class MarchingCubes {
     pt.add(pt0, voxelVertexVectors[vertex]);
   }
 
-  final static Point3i[] cubeVertexOffsets = { new Point3i(0, 0, 0), //0 pt
-      new Point3i(1, 0, 0), //1 pt + yz
-      new Point3i(1, 0, 1), //2 pt + yz + 1
-      new Point3i(0, 0, 1), //3 pt + 1
-      new Point3i(0, 1, 0), //4 pt + z
-      new Point3i(1, 1, 0), //5 pt + yz + z
-      new Point3i(1, 1, 1), //6 pt + yz + z + 1
-      new Point3i(0, 1, 1) //7 pt + z + 1 
+  private static Vector3f[] cubeVertexVectors = { 
+    new Vector3f(0, 0, 0),
+    new Vector3f(1, 0, 0), 
+    new Vector3f(1, 0, 1), 
+    new Vector3f(0, 0, 1),
+    new Vector3f(0, 1, 0), 
+    new Vector3f(1, 1, 0), 
+    new Vector3f(1, 1, 1),
+    new Vector3f(0, 1, 1) };
+
+  private final static Point3i[] cubeVertexOffsets = { 
+    new Point3i(0, 0, 0), //0 pt
+    new Point3i(1, 0, 0), //1 pt + yz
+    new Point3i(1, 0, 1), //2 pt + yz + 1
+    new Point3i(0, 0, 1), //3 pt + 1
+    new Point3i(0, 1, 0), //4 pt + z
+    new Point3i(1, 1, 0), //5 pt + yz + z
+    new Point3i(1, 1, 1), //6 pt + yz + z + 1
+    new Point3i(0, 1, 1)  //7 pt + z + 1 
   };
 
   private final int[] linearOffsets = new int[8];
-  int yzCount;
 
-  /* set the linear offsets for unique cell ID
-   * and for pointing into the inside/outside BitSet. 
-   * Add offset to 0: x * (nY * nZ) + y * nZ + z 
+  /* 
+   * set the linear offsets for generating a unique cell ID,
+   * for pointing into the inside/outside BitSet,
+   * and for finding the associated vertex for an edge.
+   * 
    */
-  void setLinearOffsets() {
+  
+  private void setLinearOffsets() {
     linearOffsets[0] = 0;
     linearOffsets[1] = yzCount;
     linearOffsets[2] = yzCount + 1;
@@ -558,11 +523,6 @@ public class MarchingCubes {
   public int getLinearOffset(int x, int y, int z, int offset) {
     return x * yzCount + y * nZ + z + linearOffsets[offset];
   }
-
-  static Vector3f[] cubeVertexVectors = { new Vector3f(0, 0, 0),
-      new Vector3f(1, 0, 0), new Vector3f(1, 0, 1), new Vector3f(0, 0, 1),
-      new Vector3f(0, 1, 0), new Vector3f(1, 1, 0), new Vector3f(1, 1, 1),
-      new Vector3f(0, 1, 1) };
 
   /*                     Y 
    *                      4 --------4--------- 5                     +z --------4--------- +yz+z                  
@@ -617,9 +577,12 @@ public class MarchingCubes {
    *   
    */
 
-  private final static int edgeTypeTable[] = { 0, 2, 0, 2, 0, 2, 0, 2, 1, 1, 1,
-      1 };
+  private final static int edgeTypeTable[] = { 
+    0, 2, 0, 2, 
+    0, 2, 0, 2, 
+    1, 1, 1, 1 };
   // 0=along X, 1=along Y, 2=along Z
+
 
   private final static byte edgeVertexes[] = { 0, 1, 1, 2, 2, 3, 3, 0, 4, 5,
   /*0     1     2     3     4  */

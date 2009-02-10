@@ -46,6 +46,17 @@ public class ASimpleJvxlWriter {
     int nX = 30;
     int nY = 30;
     int nZ = 30;
+    
+    /*
+     * timing: SimpleMarchingCubes with 100,100,100:
+     * 
+     * getEdgeData: 641 ms
+     * getEdgeData: 1625 ms
+     * 
+     * old getEdgeData: 688 ms
+     * old getEdgeData: 1672 ms
+     * 
+     */
     String title = "created by SimpleJvxlWriter "
       + new SimpleDateFormat("yyyy-MM-dd', 'HH:mm").format(new Date()) 
       + "\naddional comment line\n";
@@ -67,9 +78,11 @@ public class ASimpleJvxlWriter {
     jvxlData = new JvxlData();
     jvxlData.cutoff = cutoff;
     jvxlData.isCutoffAbsolute = isCutoffAbsolute;
+    
+    
     jvxlData.isXLowToHigh = false;
     writeFile(outputFile+"A", JvxlWrite.jvxlGetData(null, jvxlData, volumeData, title));
-
+    
     // streaming option: null voxelData
     volumeData.setVoxelData(null);
     jvxlData.isXLowToHigh = true;

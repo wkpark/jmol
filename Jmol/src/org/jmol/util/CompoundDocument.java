@@ -274,12 +274,13 @@ public class CompoundDocument extends BinaryDocument {
         entryName += (char) unicodeName[i];
       isStandard = (entryType == 5 || lenStream >= header.minBytesStandardStream);
       isEmpty = (entryType == 0 || lenStream <= 0);
+      //System.out.println(entryName + " type " + entryType);
       return true;
     }
   }
 
   private long getOffset(int SID) {
-    return 512 + SID * sectorSize;
+    return (SID + 1) * sectorSize;
   }
 
   private void gotoSector(int SID) {
@@ -376,8 +377,10 @@ public class CompoundDocument extends BinaryDocument {
         for (int j = nDirEntriesperSector; --j >= 0;) {
           thisEntry = new CmpDocDirectoryEntry();
           thisEntry.readData();
-          if (thisEntry.lenStream > 0)
+          if (thisEntry.lenStream > 0) {
             directory.addElement(thisEntry);
+            //System.out.println(thisEntry.entryName);
+          }
           if (thisEntry.entryType == 5)
             rootEntry = thisEntry;
         }

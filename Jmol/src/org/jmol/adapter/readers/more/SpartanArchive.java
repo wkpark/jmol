@@ -41,6 +41,7 @@ public class SpartanArchive {
   String bondData; // not in archive; may or may not have
   int bondCount = 0;
   int moCount = 0;
+  int coefCount = 0;
   int shellCount = 0;
   int gaussianCount = 0;
   String endCheck;
@@ -128,10 +129,11 @@ public class SpartanArchive {
       Logger.debug("reading Spartan archive info :" + info);
     }
     atomCount = parseInt(tokens[0]);
-    moCount = parseInt(tokens[1]);
+    coefCount = parseInt(tokens[1]);
     shellCount = parseInt(tokens[2]);
     gaussianCount = parseInt(tokens[3]);
     //overallCharge = parseInt(tokens[4]);
+    moCount = parseInt(tokens[6]);
     calculationType = tokens[9];
     String s = (String) moData.get("calculationType");
     if (s != null)
@@ -263,7 +265,7 @@ public class SpartanArchive {
     int tokenPt = 0;
     String[] tokens = getTokens("");
     float[] energies = new float[moCount];
-    float[][] coefficients = new float[moCount][moCount];
+    float[][] coefficients = new float[moCount][coefCount];
     for (int i = 0; i < moCount; i++) {
       if (tokenPt == tokens.length) {
         tokens = getTokens(readLine());
@@ -272,7 +274,7 @@ public class SpartanArchive {
       energies[i] = parseFloat(tokens[tokenPt++]);
     }
     for (int i = 0; i < moCount; i++) {
-      for (int j = 0; j < moCount; j++) {
+      for (int j = 0; j < coefCount; j++) {
         if (tokenPt == tokens.length) {
           tokens = getTokens(readLine());
           tokenPt = 0;
@@ -446,6 +448,7 @@ public class SpartanArchive {
   //because this is NOT an extension of AtomSetCollectionReader
   String readLine() throws Exception {
     line = reader.readLine();
+    //System.out.println("spartanarchive " + line);
     return line;
   }
 }

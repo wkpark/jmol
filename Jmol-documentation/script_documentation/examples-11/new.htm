@@ -51,6 +51,21 @@ Scripts=new Array(" "
 
 ,latestVersion
 
+
+,'### selective atom rotation and translation ###'
+,'# Using <b>set dragSelected</b> in Jmol 11.7.25 you can move selected atoms around, translating them with ALT-SHIFT-LEFT mouse and rotating them around their geometric center using ALT-LEFT or CTRL-ALT-RIGHT. Selection halos are automatically turned on during mouse-drag actions. (Still a few bugs there....)'
+,'load caffeine.xyz;load append water.xyz;frame 0;select 2.1;selectionHalos on'
+,'set dragSelected !dragSelected'
+
+
+
+
+,'### applet typing with CTRL-K and CTRL-ALT-K ###'
+,'# Jmol 11.7.25 adds a new feature: You can type directly into the applet as though it were a console. To enable entry, start with CTRL-K or <b>set allowKeyStrokes !allowKeyStrokes;set showKeyStrokes TRUE</b>. Keystrokes are sent to the _KEYSTROKES echo, which is in the bottom left position. <b>disablePopupMenu</b> also functions to disable direct keyboard entry. A second CTRL-K disables keystrokes ( equivalent to </b>set allowKeystrokes FALSE</b>. CTRL-ALT-K can also turns keyboard entry of commands on and off, but not with display (<b>set allowKeystrokes !allowKeystrokes;set showKeystrokes FALSE</b>). When typing is enabled, the Jmol frank in the bottom right-hand corner will change color to blue (unsigned applet) or orange (signed applet).'
+,'set allowKeyStrokes !allowKeyStrokes;set showKeyStrokes true # now type commands into the applet'
+,'set allowKeyStrokes !allowKeyStrokes;set showKeyStrokes false # you can always type commands; they aren\'t necessarily displayed, though.'
+
+
 ,'### load "filename" {ijk i\'j\'k\' -1} ###'
 ,'# Jmol 11.7.23 adds the "-1" option to unit cell loading. This option forces full packing of the unit cell, which in some cases may be preferable to the 0 (unnormalized) or 1 (normalized) options. The common option to pack a single unit cell, {555 555 -1}, may be indicated using the PACKED keyword.'
 ,'load "quartz.cif" {555 555 0};rotate x 10;rotate y 10'

@@ -260,9 +260,9 @@ public class MarchingCubes {
               if (isSquared)
                 vertexValues[i] *= vertexValues[i];
               isInside = isInside(vertexValues[i], cutoff, isCutoffAbsolute);
-              bsVoxels.set(pti);
             }
             if (isInside) {
+              bsVoxels.set(pti);
               insideMask |= 1 << i;
             }
           }

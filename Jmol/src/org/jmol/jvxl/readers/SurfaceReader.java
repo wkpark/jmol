@@ -274,6 +274,9 @@ public abstract class SurfaceReader implements VertexDataServer {
     if (!readVolumeParameters())
       return false;
     jvxlData.insideOut = params.insideOut;
+    jvxlData.nPointsX = nPointsX;
+    jvxlData.nPointsY = nPointsY;
+    jvxlData.nPointsZ = nPointsZ;
     if (justForPlane) {
       float[][][] voxelDataTemp =  volumeData.voxelData;
       volumeData.setDataDistanceToPlane(params.thePlane);
@@ -307,9 +310,6 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.jvxlDataIs2dContour = jvxlDataIs2dContour;
     jvxlData.jvxlDataIsColorMapped = jvxlDataIsColorMapped;
     jvxlData.isXLowToHigh = isXLowToHigh;
-    jvxlData.nPointsX = nPointsX;
-    jvxlData.nPointsY = nPointsY;
-    jvxlData.nPointsZ = nPointsZ;
     jvxlData.vertexDataOnly = vertexDataOnly;
 
     if (jvxlDataIsColorMapped) {
@@ -423,9 +423,8 @@ public abstract class SurfaceReader implements VertexDataServer {
         params.isContoured, contourType, params.cutoff,
         params.isCutoffAbsolute, params.isSquared, isXLowToHigh);
     edgeData = marchingCubes.getEdgeData();
-    if (volumeData.voxelData == null)
-      JvxlReader.setSurfaceInfoFromBitSet(jvxlData,
-          marchingCubes.getBsVoxels(), params.thePlane);
+    JvxlReader.setSurfaceInfoFromBitSet(jvxlData,
+        marchingCubes.getBsVoxels(), params.thePlane);
     if (isJvxl)
       edgeData = jvxlEdgeDataRead;
   }

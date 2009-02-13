@@ -10637,6 +10637,7 @@ class Eval {
     boolean surfaceObjectSeen = false;
     boolean planeSeen = false;
     boolean doCalcArea = false;
+    boolean doCalcVolume = false;
     boolean isCavity = false;
     boolean isFxy = false;
     float[] nlmZ = new float[5];
@@ -10926,6 +10927,11 @@ class Eval {
         }
         if (str.equalsIgnoreCase("AREA")) {
           doCalcArea = true;
+          i = iToken;
+          break;
+        }
+        if (str.equalsIgnoreCase("VOLUME")) {
+          doCalcVolume = true;
           i = iToken;
           break;
         }
@@ -11308,6 +11314,10 @@ class Eval {
         .getShapeProperty(iShape, "area")).floatValue() : Float.NaN);
     if (doCalcArea)
       viewer.setFloatProperty("isosurfaceArea", area);
+    float volume = (doCalcVolume ? ((Float) viewer
+        .getShapeProperty(iShape, "volume")).floatValue() : Float.NaN);
+    if (doCalcVolume)
+      viewer.setFloatProperty("isosurfaceVolume", volume);
 
     if (surfaceObjectSeen && isIsosurface && !isSyntaxCheck) {
       setShapeProperty(iShape, "finalize", null);
@@ -11321,11 +11331,16 @@ class Eval {
           s += "\ncolor range " + dataRange[2] + " " + dataRange[3]
               + "; mapped data range " + dataRange[0] + " to " + dataRange[1];
         if (doCalcArea)
-          s += "; isosurfaceArea = " + area;
+          s += "\nisosurfaceArea = " + area;
+        if (doCalcVolume)
+          s += "\nisosurfaceVolume = " + volume;
         showString(s);
       }
-    } else if (doCalcArea) {
-      showString("isosurfaceArea = " + area);
+    } else if (doCalcArea || doCalcVolume) {
+      if (doCalcArea)
+        showString("isosurfaceArea = " + area);
+      if (doCalcVolume)
+        showString("isosurfaceVolume = " + volume);
     }
     if (translucency != null)
       setShapeProperty(iShape, "translucency", translucency);

@@ -398,6 +398,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return ret;
     if (property == "area")
       return new Float((thisMesh == null ? Float.NaN : thisMesh.calculateArea()));
+    if (property == "volume")
+      return new Float((thisMesh == null ? Float.NaN : thisMesh.calculateVolume()));
     if (thisMesh == null)
       return "no current isosurface";
     if (property == "plane")
@@ -702,7 +704,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   public void notifySurfaceGenerationCompleted() {
     setModelIndex();
     thisMesh.insideOut = sg.isInsideOut();
-    thisMesh.calculatedArea = Float.NaN;
+    thisMesh.calculatedArea = thisMesh.calculatedVolume = Float.NaN;
     thisMesh.initialize(sg.getPlane() != null ? JmolConstants.FULLYLIT
         : lighting);
   }

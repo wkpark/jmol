@@ -24,6 +24,7 @@
 package org.openscience.jvxl.simplewriter;
 
 import java.util.BitSet;
+import java.util.Vector;
 
 import javax.vecmath.Point3f;
 
@@ -42,7 +43,10 @@ public class JvxlWrite {
   public JvxlWrite() {
   }
 
-  public static String jvxlGetData(VoxelDataCreator vdc, JvxlData jvxlData, VolumeData volumeData, String title) {
+  public static String jvxlGetData(VoxelDataCreator vdc, JvxlData jvxlData,
+                                   VolumeData volumeData, String title,
+                                   Vector surfacePointsReturn,
+                                   float[] areaReturn) {
     // if the StringBuffer is not empty, it should have two comment lines
     // that do not start with # already present.
     StringBuffer sb = new StringBuffer();
@@ -51,17 +55,22 @@ public class JvxlWrite {
     Point3f[] atomXYZ = null;
     int[] atomNo = null;
     int nAtoms = Integer.MAX_VALUE;
-    jvxlCreateHeader(volumeData, nAtoms, atomXYZ, atomNo, jvxlData.isXLowToHigh, sb);
+    jvxlCreateHeader(volumeData, nAtoms, atomXYZ, atomNo,
+        jvxlData.isXLowToHigh, sb);
     jvxlData.jvxlFileHeader = sb.toString();
     int[] counts = volumeData.getVoxelCounts();
     jvxlData.nPointsX = counts[0];
     jvxlData.nPointsY = counts[1];
     jvxlData.nPointsZ = counts[2];
+    boolean doCalcArea = (areaReturn != null);
     SimpleMarchingCubes mc = new SimpleMarchingCubes(vdc, volumeData,
-        jvxlData.cutoff, jvxlData.isCutoffAbsolute, jvxlData.isXLowToHigh);
+        jvxlData.cutoff, jvxlData.isCutoffAbsolute, jvxlData.isXLowToHigh,
+        surfacePointsReturn, doCalcArea);
     jvxlData.jvxlEdgeData = mc.getEdgeData();
     setSurfaceInfoFromBitSet(jvxlData, mc.getBsVoxels());
     jvxlData.jvxlDefinitionLine = jvxlGetDefinitionLine(jvxlData);
+    if (doCalcArea)
+      areaReturn[0] = mc.getCalculatedArea();
     return jvxlGetFile(jvxlData);
   }
 

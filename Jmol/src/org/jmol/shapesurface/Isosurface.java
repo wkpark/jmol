@@ -396,6 +396,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     Object ret = super.getProperty(property, index);
     if (ret != null)
       return ret;
+    if (property == "area")
+      return new Float((thisMesh == null ? Float.NaN : thisMesh.calculateArea()));
     if (thisMesh == null)
       return "no current isosurface";
     if (property == "plane")

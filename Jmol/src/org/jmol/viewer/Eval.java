@@ -10636,6 +10636,7 @@ class Eval {
     boolean isPmesh = (iShape == JmolConstants.SHAPE_PMESH);
     boolean surfaceObjectSeen = false;
     boolean planeSeen = false;
+    boolean doCalcArea = false;
     boolean isCavity = false;
     boolean isFxy = false;
     float[] nlmZ = new float[5];
@@ -10920,6 +10921,11 @@ class Eval {
         if (str.equalsIgnoreCase("ANISOTROPY")) {
           propertyName = "anisotropy";
           propertyValue = getPoint3f(++i, false);
+          i = iToken;
+          break;
+        }
+        if (str.equalsIgnoreCase("AREA")) {
+          doCalcArea = true;
           i = iToken;
           break;
         }
@@ -11298,6 +11304,11 @@ class Eval {
       surfaceObjectSeen = true;
     }
 
+    float area = (doCalcArea ? ((Float) viewer
+        .getShapeProperty(iShape, "area")).floatValue() : Float.NaN);
+    if (doCalcArea)
+      viewer.setFloatProperty("isosurfaceArea", area);
+
     if (surfaceObjectSeen && isIsosurface && !isSyntaxCheck) {
       setShapeProperty(iShape, "finalize", null);
       Integer n = (Integer) viewer.getShapeProperty(iShape, "count");
@@ -11309,8 +11320,12 @@ class Eval {
         if (dataRange != null && dataRange[0] != dataRange[1])
           s += "\ncolor range " + dataRange[2] + " " + dataRange[3]
               + "; mapped data range " + dataRange[0] + " to " + dataRange[1];
+        if (doCalcArea)
+          s += "; isosurfaceArea = " + area;
         showString(s);
       }
+    } else if (doCalcArea) {
+      showString("isosurfaceArea = " + area);
     }
     if (translucency != null)
       setShapeProperty(iShape, "translucency", translucency);

@@ -836,6 +836,7 @@ public class Jmol extends JPanel {
           scriptWindow.dispose();
         }
       } catch (Exception e) {
+        System.out.println("frame disposal exception");
         // ignore
       }
     }

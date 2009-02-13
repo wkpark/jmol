@@ -46,6 +46,7 @@ public class IsosurfaceMesh extends Mesh {
   public int vertexIncrement = 1;
   public int firstRealVertex = -1;
   public boolean hasGridPoints;
+  float calculatedArea = Float.NaN;
 
   public float[] vertexValues;  
   public short[] vertexColixes;
@@ -140,6 +141,37 @@ public class IsosurfaceMesh extends Mesh {
       vertexValues = (float[]) ArrayUtil.doubleLength(vertexValues);
     vertexValues[vertexCount] = value;
     return addVertexCopy(vertex);
+  }
+
+  public float calculateArea() {
+    // If you were doing something with the triangle vertics
+    // Say, for example, summing the area, then here you would 
+    // need to retrieve the saved coordinates from some other array
+    // for each of the three points ia, ib, and ic,
+    // and then process them.
+
+    if (!Float.isNaN(calculatedArea))
+      return calculatedArea;
+    calculatedArea = 0;
+    Vector3f vTemp = new Vector3f();
+    for (int i = polygonCount; --i >= 0;) {
+      int[] vertexIndexes = polygonIndexes[i];
+      if (vertexIndexes == null)
+        continue;
+      int iA = vertexIndexes[0];
+      int iB = vertexIndexes[1];
+      int iC = vertexIndexes[2];
+      if (Float.isNaN(vertexValues[iA]) || Float.isNaN(vertexValues[iB])
+          || Float.isNaN(vertexValues[iC]))
+        continue;
+      Vector3f ab = new Vector3f(vertices[iB]);
+      ab.sub(vertices[iA]);
+      Vector3f ac = new Vector3f(vertices[iC]);
+      ac.sub(vertices[iA]);
+      vTemp.cross(ab, ac);
+      calculatedArea += vTemp.length() / 2;
+    }
+    return calculatedArea;
   }
 
   public void setTranslucent(boolean isTranslucent, float iLevel) {

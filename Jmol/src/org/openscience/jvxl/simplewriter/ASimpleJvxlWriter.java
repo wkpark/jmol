@@ -29,24 +29,24 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Vector;
 
 public class ASimpleJvxlWriter {
 
   // example for how to create simple JVXL files from cube data
   // no color mapping, no planes, just simple surfaces.
-  
+
   public static void main(String[] args) {
 
-
     // parameters that need setting:
-    
+
     String outputFile = "c:/temp/simple.jvxl";
     float cutoff = 0.01f;
     boolean isCutoffAbsolute = false;
-    int nX = 30;
-    int nY = 30;
-    int nZ = 30;
-    
+    int nX = 31;
+    int nY = 31;
+    int nZ = 31;
+
     /*
      * timing: SimpleMarchingCubes with 100,100,100:
      * 
@@ -58,8 +58,8 @@ public class ASimpleJvxlWriter {
      * 
      */
     String title = "created by SimpleJvxlWriter "
-      + new SimpleDateFormat("yyyy-MM-dd', 'HH:mm").format(new Date()) 
-      + "\naddional comment line\n";
+        + new SimpleDateFormat("yyyy-MM-dd', 'HH:mm").format(new Date())
+        + "\naddional comment line\n";
 
     VolumeData volumeData;
     VoxelDataCreator vdc;
@@ -72,22 +72,32 @@ public class ASimpleJvxlWriter {
     volumeData.setVolumetricVector(2, 0f, 0f, 1f);
     volumeData.setUnitVectors();
     volumeData.setVoxelCounts(nX, nY, nZ);
-    
+
     vdc = new VoxelDataCreator(volumeData);
     vdc.createVoxelData();
     jvxlData = new JvxlData();
     jvxlData.cutoff = cutoff;
     jvxlData.isCutoffAbsolute = isCutoffAbsolute;
+
+    // areaReturn and surfacePointsReturn are optional
+    // -- set to null for faster calculation of JVXL data
     
-    
+    float[] areaReturn = new float[1]; // or null;
+    Vector surfacePointsReturn = new Vector(); // or null;
+
     jvxlData.isXLowToHigh = false;
-    writeFile(outputFile+"A", JvxlWrite.jvxlGetData(null, jvxlData, volumeData, title));
+    writeFile(outputFile + "A", JvxlWrite.jvxlGetData(null, jvxlData,
+        volumeData, title, surfacePointsReturn, areaReturn));
+
+    if (areaReturn != null)
+      System.out.println("calc area = " + areaReturn[0] + " for " + surfacePointsReturn.size() + " surface points");
     
     // streaming option: null voxelData
     volumeData.setVoxelData(null);
     jvxlData.isXLowToHigh = true;
-    writeFile(outputFile+"B", JvxlWrite.jvxlGetData(vdc, jvxlData, volumeData, title));
-    
+    writeFile(outputFile + "B", JvxlWrite.jvxlGetData(vdc, jvxlData,
+        volumeData, title, surfacePointsReturn, areaReturn));
+
     System.out.flush();
     System.exit(0);
   }

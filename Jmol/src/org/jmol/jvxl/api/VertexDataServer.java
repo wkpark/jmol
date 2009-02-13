@@ -108,5 +108,6 @@ public interface VertexDataServer {
    * @param z
    * @return  value[x][y][z]
    */
-  public float getValue(int x, int y, int z);
+  public abstract float getValue(int x, int y, int z);
+  
 }

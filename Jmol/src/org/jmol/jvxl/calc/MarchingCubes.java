@@ -123,7 +123,6 @@ public class MarchingCubes {
     isoPointIndexPlanes = new int[2][yzCount][3];
     xyPlanes = (mode == MODE_GETXYZ ? new float[2][yzCount] : null);
     setLinearOffsets();
-    // calcVoxelVertexVectors is unnecessary if just creating a JVXL file:
     calcVoxelVertexVectors();
   }
 
@@ -132,18 +131,16 @@ public class MarchingCubes {
   private final static int MODE_BITSET = 2;
   private final static int MODE_GETXYZ = 3;
 
-  private final Vector3f[] voxelVertexVectors = new Vector3f[8];
   private final float[] vertexValues = new float[8];
-  private final Point3i[] vertexPoints = new Point3i[8];
+
+  int edgeCount;
+
+  private final Vector3f[] voxelVertexVectors = new Vector3f[8];
   private final Vector3f[] edgeVectors = new Vector3f[12];
   {
     for (int i = 12; --i >= 0;)
       edgeVectors[i] = new Vector3f();
-    for (int i = 8; --i >= 0;)
-      vertexPoints[i] = new Point3i();
   }
-
-  int edgeCount;
 
   private void calcVoxelVertexVectors() {
     volumeData.setMatrix();
@@ -291,10 +288,8 @@ public class MarchingCubes {
 
           byte[] triangles = triangleTable2[insideMask];
           for (int i = triangles.length; (i -= 4) >= 0;)
-            surfaceReader.addTriangleCheck(edgePointIndexes[triangles[i]],
-                edgePointIndexes[triangles[i + 1]],
-                edgePointIndexes[triangles[i + 2]], triangles[i + 3],
-                isCutoffAbsolute);
+            addTriangle(triangles[i], triangles[i + 1], 
+                triangles[i + 2], triangles[i + 3]);
         }
       }
     }
@@ -303,6 +298,16 @@ public class MarchingCubes {
 
     return edgeData.toString();
   }
+
+  Vector3f vTemp = new Vector3f();
+
+  private void addTriangle(int ia, int ib, int ic, int edgeType) {
+
+    surfaceReader.addTriangleCheck(edgePointIndexes[ia], 
+        edgePointIndexes[ib], edgePointIndexes[ic], 
+        edgeType, isCutoffAbsolute);
+  }
+
 
   private BitSet bsValues = new BitSet();
 
@@ -358,8 +363,7 @@ public class MarchingCubes {
   private int[] edgeVertexPlanes;
   
   private boolean processOneCubical(int insideMask, int x, int y, int z, int pt) {
-    
-    
+
     /*
      * The key to the algorithm is that we have a catalog that
      * maps the inside-vertex mask to an edge mask, and then
@@ -408,18 +412,17 @@ public class MarchingCubes {
     //for (int i =0; i < 8; i++) System.out.print("\nvpi for cell  " + pt + ": vertex " + i + ": " + voxelPointIndexes[i] + " " + Integer.toBinaryString(edgeMask));
     boolean isNaN = false;
     for (int iEdge = 12; --iEdge >= 0;) {
-      
+
       // bit set to one means it's a relevant edge
-      
+
       int xEdge = Pwr2[iEdge];
       if ((edgeMask & xEdge) == 0)
         continue;
-      
-      
+
       // if we have a point already, we don't need to check this edge.
       // for triangles, this will be an index into an array;
       // for just creating JVXL files, this can just be 0
-      
+
       int iPlane = edgeVertexPlanes[iEdge];
       int iPt = (pt + linearOffsets[edgeVertexPointers[iEdge]]) % yzCount;
       int iType = edgeTypeTable[iEdge];
@@ -427,46 +430,45 @@ public class MarchingCubes {
       //System.out.println(x + " " + y + " " + z + " " + pt + " iEdge=" + iEdge + " p=" + iPlane + " t=" + iType + " e=" + ePt + " i=" + iPt + " index=" + edgePointIndexes[iEdge]);
       if (index >= 0)
         continue; // propagated from neighbor
-      
+
       // here's an edge that has to be checked.
-      
+
       // get the vertex numbers 0 - 7
-      
+
       int vertexA = edgeVertexes[iEdge << 1];
       int vertexB = edgeVertexes[(iEdge << 1) + 1];
-      
+
       // pick up the actual value at each vertex
       // this array of 8 values is updated as we go.
-      
+
       float valueA = vertexValues[vertexA];
       float valueB = vertexValues[vertexB];
-      
+
       // we allow for NaN values -- missing triangles
-      
+
       if (Float.isNaN(valueA) || Float.isNaN(valueB))
         isNaN = true;
-      
+
       // the exact point position -- not important for just
       // creating the JVXL file. In that case, all you 
       // need are the two values valueA and valueB and the cutoff.
       // from those you can define the fractional offset
-      
+
       // here is where we get the value and assign the point for that edge
       // it is where the JVXL surface data line is appended
- 
-      volumeData.voxelPtToXYZ(x, y, z, pt0);
-      pointA.add(pt0, voxelVertexVectors[vertexA]);
 
-       //System.out.print("edge" + iEdge);
+      calcVertexPoint(x, y, z, vertexA, pointA);
+
+      //System.out.print("edge" + iEdge);
 
       edgeCount++;
-      
-      edgePointIndexes[iEdge] = isoPointIndexPlanes[iPlane][iPt][iType] =  surfaceReader.getSurfacePointIndexAndFraction(cutoff,
-          isCutoffAbsolute, x, y, z, cubeVertexOffsets[vertexA], vertexA,
-          vertexB, valueA, valueB, pointA, edgeVectors[iEdge],
-          iType == contourType, fReturn);
-      
-       edgeData.append(JvxlReader.jvxlFractionAsCharacter(fReturn[0]));
+
+      edgePointIndexes[iEdge] = isoPointIndexPlanes[iPlane][iPt][iType] = surfaceReader
+          .getSurfacePointIndexAndFraction(cutoff, isCutoffAbsolute, x, y, z,
+              cubeVertexOffsets[vertexA], vertexA, vertexB, valueA, valueB,
+              pointA, edgeVectors[iEdge], iType == contourType, fReturn);
+
+      edgeData.append(JvxlReader.jvxlFractionAsCharacter(fReturn[0]));
     }
     //System.out.println("");
     return !isNaN;
@@ -479,7 +481,7 @@ public class MarchingCubes {
     pt.add(pt0, voxelVertexVectors[vertex]);
   }
 
-  private static Vector3f[] cubeVertexVectors = { 
+  private final static Vector3f[] cubeVertexVectors = { 
     new Vector3f(0, 0, 0),
     new Vector3f(1, 0, 0), 
     new Vector3f(1, 0, 1), 

@@ -24,8 +24,11 @@
 package org.openscience.jvxl.simplewriter;
 
 import java.util.BitSet;
+import java.util.Vector;
 
+import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
+import javax.vecmath.Vector3f;
 
 //import org.jmol.util.Logger;
 
@@ -48,6 +51,16 @@ public class SimpleMarchingCubes {
   private float cutoff;
   private boolean isCutoffAbsolute;
   private boolean isXLowToHigh;
+  private boolean doCalcArea;
+  private boolean doSaveSurfacePoints;
+  private float calculatedArea = Float.NaN;
+  private Vector surfacePoints;
+  
+  
+  public float getCalculatedArea() {
+    return calculatedArea;
+  }
+  
   private StringBuffer fractionData = new StringBuffer();
 
   private int cubeCountX, cubeCountY, cubeCountZ;
@@ -67,21 +80,30 @@ public class SimpleMarchingCubes {
 
   private VoxelDataCreator vdc;
   
-  public SimpleMarchingCubes(VoxelDataCreator vdc, VolumeData volumeData, float cutoff,
-      boolean isCutoffAbsolute ,   boolean isXLowToHigh) {
-    
+  public SimpleMarchingCubes(VoxelDataCreator vdc, VolumeData volumeData,
+      float cutoff, boolean isCutoffAbsolute, boolean isXLowToHigh,
+      Vector surfacePointsReturn, boolean doCalcArea) {
+
     // when just creating a JVXL file all you really need are:
     //
     // volumeData.voxelData[x][y][z]
     // cutoff
     //
-    
+    // also includes the option to return a Vector of surfacePoints
+    // and/or calculate the area of the surface.
+    //
+
     this.vdc = vdc;
     this.volumeData = volumeData;
     this.cutoff = cutoff;
     this.isCutoffAbsolute = isCutoffAbsolute;
     this.isXLowToHigh = isXLowToHigh;
-    
+    this.doCalcArea = doCalcArea;
+    surfacePoints = surfacePointsReturn;
+    if (surfacePoints == null && doCalcArea)
+      surfacePoints = new Vector();
+    doSaveSurfacePoints = (surfacePoints != null);
+
     if (vdc == null) {
       mode = MODE_CUBE;
     } else {
@@ -92,11 +114,14 @@ public class SimpleMarchingCubes {
     cubeCountY = (nY = volumeData.voxelCounts[1]) - 1;
     cubeCountZ = (nZ = volumeData.voxelCounts[2]) - 1;
     yzCount = nY * nZ;
-    edgeVertexPointers = (isXLowToHigh ? edgeVertexPointersLowToHigh : edgeVertexPointersHighToLow);
-    edgeVertexPlanes =  (isXLowToHigh ? edgeVertexPlanesLowToHigh : edgeVertexPlanesHighToLow);    
+    edgeVertexPointers = (isXLowToHigh ? edgeVertexPointersLowToHigh
+        : edgeVertexPointersHighToLow);
+    edgeVertexPlanes = (isXLowToHigh ? edgeVertexPlanesLowToHigh
+        : edgeVertexPlanesHighToLow);
     isoPointIndexPlanes = new int[2][yzCount][3];
     xyPlanes = (mode == MODE_GETXYZ ? new float[2][yzCount] : null);
     setLinearOffsets();
+    calcVoxelVertexVectors();
   }
 
   private final float[] vertexValues = new float[8];
@@ -108,37 +133,47 @@ public class SimpleMarchingCubes {
 
   int edgeCount;
 
-  /* Note to Jason from Bob:
-   * 
-   * To just create a JVXL file, you need these five methods.
-   * Their output is the fractionData string buffer and the
-   * number of surface points
-   * 
-   * inputs required: 
-   * 
-   *  1) volumeData.voxelData[x][y][z]
-   *  2) cutoff
-   *  3) values created in MarchingCubes constructor
-   *  
-   * The first four methods are in org.jmol.jvxl.calc.MarchingCubes.java
-   * 
-   *  generateSurfaceData  -- isXLowToHigh false; isContoured false
-   *    -- triangle stuff at end not needed
-   *  propagateNeighborPointIndexes -- EXACTLY as is, no changes allowed
-   *  isInside -- EXACTLY as is -- defines what "inside" means
-   *  processOneCubical -- EXACTLY as is, no changes at all
-   *  SurfaceReader.getSurfacePointIndex -- your job
-   *    -- receives the point value data and positions
-   *    -- responsible for creating the fractionData character buffer
-   *    -- just return 0 since you are not creating triangles
-   *  
-   */
+  ////// the following methods are only necessary if working with triangles:
+
+  private final Vector3f[] voxelVertexVectors = new Vector3f[8];
+  private final Vector3f[] edgeVectors = new Vector3f[12];
+  {
+    for (int i = 12; --i >= 0;)
+      edgeVectors[i] = new Vector3f();
+    for (int i = 8; --i >= 0;)
+      vertexPoints[i] = new Point3i();
+  }
+
+  private void calcVoxelVertexVectors() {
+    // only necessary if working with the surface points
+    volumeData.setMatrix();
+    for (int i = 8; --i >= 0;)
+      volumeData.transform(cubeVertexVectors[i],
+          voxelVertexVectors[i] = new Vector3f());
+    for (int i = 12; --i >= 0;)
+      edgeVectors[i].sub(voxelVertexVectors[edgeVertexes[i + i + 1]],
+          voxelVertexVectors[edgeVertexes[i + i]]);
+  }
+
+  private final static Vector3f[] cubeVertexVectors = { 
+    new Vector3f(0, 0, 0),
+    new Vector3f(1, 0, 0), 
+    new Vector3f(1, 0, 1), 
+    new Vector3f(0, 0, 1),
+    new Vector3f(0, 1, 0), 
+    new Vector3f(1, 1, 0), 
+    new Vector3f(1, 1, 1),
+    new Vector3f(0, 1, 1) };
+  
+  ////////
+  
   
   private static int[] xyPlanePts = new int[] { 
       0, 1, 1, 0, 
       0, 1, 1, 0 
   };
-  //private final int[] edgePointIndexes = new int[12];
+  
+  private final int[] edgePointIndexes = new int[12];
   private int[][][] isoPointIndexPlanes;
   private float[][] xyPlanes;
 
@@ -161,6 +196,11 @@ public class SimpleMarchingCubes {
      *  Feb 10, 2009 -- Bob Hanson
      */
     
+    edgeCount = 0;
+    calculatedArea = 0;
+    if (doSaveSurfacePoints)
+      surfacePoints.clear();
+
     int x0, x1, xStep, ptStep, pt, ptX;
     if (isXLowToHigh) {
       x0 = 0;
@@ -254,14 +294,14 @@ public class SimpleMarchingCubes {
 
           // the inside mask serves to define the triangles necessary 
           // if just creating JVXL files, this step is unnecessary
-          /*
+          
+          if (!doCalcArea)
+            continue;
           byte[] triangles = triangleTable2[insideMask];
           for (int i = triangles.length; (i -= 4) >= 0;)
-            surfaceReader.addTriangleCheck(edgePointIndexes[triangles[i]],
-                edgePointIndexes[triangles[i + 1]],
-                edgePointIndexes[triangles[i + 2]], triangles[i + 3],
-                isCutoffAbsolute);
-          */
+            addTriangle(triangles[i], triangles[i + 1],
+                triangles[i + 2],triangles[i + 3]);
+          
         }
       }
     }
@@ -269,6 +309,31 @@ public class SimpleMarchingCubes {
     return fractionData.toString();
   }
   
+  Vector3f vTemp = new Vector3f();
+
+  private void addTriangle(int ia, int ib, int ic, int edgeType) {
+    
+    // If you were doing something with the triangle vertics
+    // Say, for example, summing the area, then here you would 
+    // need to retrieve the saved coordinates from some other array
+    // for each of the three points ia, ib, and ic,
+    // and then process them.
+   
+    Point3f pta = (Point3f) surfacePoints.get(edgePointIndexes[ia]);
+    Point3f ptb = (Point3f) surfacePoints.get(edgePointIndexes[ib]);
+    Point3f ptc = (Point3f) surfacePoints.get(edgePointIndexes[ic]);
+    
+    Vector3f ab = new Vector3f(ptb);
+    ab.sub(pta);
+    Vector3f ac = new Vector3f(ptc);
+    ac.sub(pta);
+    vTemp.cross(ab, ac);
+    float area = vTemp.length() / 2;
+    calculatedArea += area;
+    
+  }
+
+
   public static boolean isInside(float voxelValue, float max, boolean isAbsolute) {
     return ((max > 0 && (isAbsolute ? Math.abs(voxelValue) : voxelValue) >= max) || (max <= 0 && voxelValue <= max));
   }
@@ -286,6 +351,9 @@ public class SimpleMarchingCubes {
       bsVoxels.set(pt);
     return value;
   }
+
+  private final Point3f pt0 = new Point3f();
+  private final Point3f pointA = new Point3f();
 
   private static final int[] Pwr2 = new int[] { 1, 2, 4, 8, 16, 32, 64, 128,
       256, 512, 1024, 2048 };
@@ -384,7 +452,7 @@ public class SimpleMarchingCubes {
       int iPlane = edgeVertexPlanes[iEdge];
       int iPt = (pt + linearOffsets[edgeVertexPointers[iEdge]]) % yzCount;
       int iType = edgeTypeTable[iEdge];
-      int index = /*edgePointIndexes[iEdge] =*/ isoPointIndexPlanes[iPlane][iPt][iType];
+      int index = edgePointIndexes[iEdge] = isoPointIndexPlanes[iPlane][iPt][iType];
       //System.out.println(x + " " + y + " " + z + " " + pt + " iEdge=" + iEdge + " p=" + iPlane + " t=" + iType + " e=" + ePt + " i=" + iPt + " index=" + edgePointIndexes[iEdge]);
       if (index >= 0)
         continue; // propagated from neighbor
@@ -415,16 +483,33 @@ public class SimpleMarchingCubes {
       // here is where we get the value and assign the point for that edge
       // it is where the JVXL surface data line is appended
       
-//      edgePointIndexes[iEdge] = 
-      isoPointIndexPlanes[iPlane][iPt][iType] = edgeCount++;
-      //System.out.println(" pt=" + pt + " edge" + iEdge + " xyz " + x + " " + y + " " + z + " vertexAB=" + vertexA + " " + vertexB + " valueAB=" + valueA + " " + valueB + " f= " + (cutoff - valueA) / (valueB - valueA));
+      if (doSaveSurfacePoints) {
+        volumeData.voxelPtToXYZ(x, y, z, pt0);
+        pointA.add(pt0, voxelVertexVectors[vertexA]);
+      }
       float f = (cutoff - valueA) / (valueB - valueA);
+      edgePointIndexes[iEdge] = isoPointIndexPlanes[iPlane][iPt][iType] = 
+        newVertex(pointA, edgeVectors[iEdge], f);
+      //System.out.println(" pt=" + pt + " edge" + iEdge + " xyz " + x + " " + y + " " + z + " vertexAB=" + vertexA + " " + vertexB + " valueAB=" + valueA + " " + valueB + " f= " + (cutoff - valueA) / (valueB - valueA));
       //System.out.println(f);
       fractionData.append(JvxlWrite.jvxlFractionAsCharacter(f));
+      
     }
     return !isNaN;
   }
 
+  private int newVertex(Point3f pointA, Vector3f edgeVector, float f) {
+    // you could do something with this point if you wanted to
+    // for example,
+
+    if (doSaveSurfacePoints) {
+      Point3f pt = new Point3f();
+      pt.scaleAdd(f, edgeVector, pointA);
+      surfacePoints.addElement(pt);
+    }
+    return edgeCount++;
+  }
+  
   private final int[] linearOffsets = new int[8]; 
 
   /* 
@@ -577,7 +662,8 @@ public class SimpleMarchingCubes {
   /* -- not needed just for JVXL writer
    * -- included here for reference or for users who
    * -- want to produce triangles using this code.
-   
+  */
+  
   private final static byte[][] triangleTable2 = { null, { 0, 8, 3, 7 },
       { 0, 1, 9, 7 }, { 1, 8, 3, 6, 9, 8, 1, 5 }, { 1, 2, 10, 7 },
       { 0, 8, 3, 7, 1, 2, 10, 7 }, { 9, 2, 10, 6, 0, 2, 9, 5 },
@@ -783,5 +869,5 @@ public class SimpleMarchingCubes {
       { 2, 3, 8, 3, 2, 8, 10, 4, 10, 8, 9, 6 }, { 9, 10, 2, 3, 0, 9, 2, 5 },
       { 2, 3, 8, 3, 2, 8, 10, 4, 0, 1, 8, 5, 1, 10, 8, 1 }, { 1, 10, 2, 7 },
       { 1, 3, 8, 3, 9, 1, 8, 5 }, { 0, 9, 1, 7 }, { 0, 3, 8, 7 }, null };
- */
+
 }

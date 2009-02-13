@@ -175,9 +175,10 @@ public class IsosurfaceMesh extends Mesh {
   
   private boolean setABC(int i) {
     int[] vertexIndexes = polygonIndexes[i];
-    return vertexIndexes != null && !(Float.isNaN(vertexValues[iA = vertexIndexes[0]]) 
-        || Float.isNaN(vertexValues[iB = vertexIndexes[1]])
-        || Float.isNaN(vertexValues[iC = vertexIndexes[2]]));
+    return vertexIndexes != null
+          && !(Float.isNaN(vertexValues[iA = vertexIndexes[0]])
+            || Float.isNaN(vertexValues[iB = vertexIndexes[1]]) 
+            || Float.isNaN(vertexValues[iC = vertexIndexes[2]]));
   }
   
   float calculateArea() {

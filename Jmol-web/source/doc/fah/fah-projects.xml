@@ -4814,9 +4814,9 @@
   <fah_proj number="2446" name="p2446_Protein" public="y" file="xyz"
     server="171.65.103.160" preferred="42" deadline="93"
     credit="2435" frames="100" code="G" contact="ppetrone" contrib="Hyperlife"/>
-  <fah_proj number="2447" name="p2447_" public="y"
+  <fah_proj number="2447" name="p2447_CMF in water" public="y" file="xyz"
     server="171.65.103.160" preferred="42" deadline="93"
-    credit="2435" frames="100" code="G" contact="ppetrone"/>
+    credit="2435" frames="100" code="G" contact="ppetrone" contrib="Hyperlife"/>
   <fah_proj number="2450" name="p2450_GROtesk MACabre and Siniste drgpmfr" public="y"
     server="171.65.103.162" atoms="54992" preferred="30" deadline="82"
     credit="500" frames="100" code="G" contact="ppetrone"/>
@@ -7820,16 +7820,21 @@
     server="171.67.108.11" atoms="576" preferred="2" deadline="3"
     credit="480" frames="100" code="GG2" contact="densign"/>
 
+  <!-- Projects 5900 to 5199 -->
+  <fah_proj number="5900" name="p5900_proL_ff03_450K" public="n"
+    server="171.64.122.70" atoms="973" preferred="2" deadline="3"
+    credit="384" frames="20" code="T" contact="ihaque"/>
+
   <!-- Projects 6000 to 6099 -->
   <fah_proj number="6005" name="p6005_system in water" public="n"
     server="130.237.232.236" atoms="23109" preferred="12" deadline="12"
     credit="1920" frames="100" contact="kasson"/>
   <fah_proj number="6006" name="p6006_VILLIN" public="y"
     server="130.237.232.236" atoms="596" preferred="3" deadline="3"
-    credit="10" frames="100" code="A4" contact="kasson"/>
+    credit="100" frames="100" code="A4" contact="kasson"/>
   <fah_proj number="6007" name="p6007_VILLIN" public="y"
     server="130.237.232.236" atoms="596" preferred="3" deadline="3"
-    credit="10" frames="100" code="A4" contact="kasson"/>
+    credit="100" frames="100" code="A4" contact="kasson"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"

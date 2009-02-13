@@ -54,11 +54,16 @@ public class SimpleMarchingCubes {
   private boolean doCalcArea;
   private boolean doSaveSurfacePoints;
   private float calculatedArea = Float.NaN;
+  private float calculatedVolume = Float.NaN;
   private Vector surfacePoints;
   
   
   public float getCalculatedArea() {
     return calculatedArea;
+  }
+  
+  public float getCalculatedVolume() {
+    return calculatedVolume;
   }
   
   private StringBuffer fractionData = new StringBuffer();
@@ -198,6 +203,7 @@ public class SimpleMarchingCubes {
     
     edgeCount = 0;
     calculatedArea = 0;
+    calculatedVolume = 0;
     if (doSaveSurfacePoints)
       surfacePoints.clear();
 
@@ -310,6 +316,8 @@ public class SimpleMarchingCubes {
   }
   
   Vector3f vTemp = new Vector3f();
+  Vector3f vAC = new Vector3f();
+  Vector3f vAB = new Vector3f();
 
   private void addTriangle(int ia, int ib, int ic, int edgeType) {
     
@@ -323,14 +331,17 @@ public class SimpleMarchingCubes {
     Point3f ptb = (Point3f) surfacePoints.get(edgePointIndexes[ib]);
     Point3f ptc = (Point3f) surfacePoints.get(edgePointIndexes[ic]);
     
-    Vector3f ab = new Vector3f(ptb);
-    ab.sub(pta);
-    Vector3f ac = new Vector3f(ptc);
-    ac.sub(pta);
-    vTemp.cross(ab, ac);
+    vAB.sub(ptb, pta);
+    vAC.sub(ptc, pta);
+    vTemp.cross(vAB, vAC);
     float area = vTemp.length() / 2;
     calculatedArea += area;
     
+    vAB.set(ptb);
+    vAC.set(ptc);
+    vTemp.cross(vAB, vAC);
+    vAC.set(pta);
+    calculatedVolume += vAC.dot(vTemp) / 6;
   }
 
 

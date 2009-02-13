@@ -79,24 +79,26 @@ public class ASimpleJvxlWriter {
     jvxlData.cutoff = cutoff;
     jvxlData.isCutoffAbsolute = isCutoffAbsolute;
 
-    // areaReturn and surfacePointsReturn are optional
+    // areaVolumeReturn and surfacePointsReturn are optional
     // -- set to null for faster calculation of JVXL data
     
-    float[] areaReturn = new float[1]; // or null;
+    float[] areaVolumeReturn = new float[2]; // or null;
     Vector surfacePointsReturn = new Vector(); // or null;
 
     jvxlData.isXLowToHigh = false;
     writeFile(outputFile + "A", JvxlWrite.jvxlGetData(null, jvxlData,
-        volumeData, title, surfacePointsReturn, areaReturn));
+        volumeData, title, surfacePointsReturn, areaVolumeReturn));
 
-    if (areaReturn != null)
-      System.out.println("calc area = " + areaReturn[0] + " for " + surfacePointsReturn.size() + " surface points");
-    
+    if (areaVolumeReturn != null)
+      System.out.println("calculated area = " + areaVolumeReturn[0] 
+                         + " volume = " + areaVolumeReturn[1]
+                         + " for " + surfacePointsReturn.size() 
+                         + " surface points");
     // streaming option: null voxelData
     volumeData.setVoxelData(null);
     jvxlData.isXLowToHigh = true;
     writeFile(outputFile + "B", JvxlWrite.jvxlGetData(vdc, jvxlData,
-        volumeData, title, surfacePointsReturn, areaReturn));
+        volumeData, title, surfacePointsReturn, areaVolumeReturn));
 
     System.out.flush();
     System.exit(0);

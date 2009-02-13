@@ -46,7 +46,7 @@ public class JvxlWrite {
   public static String jvxlGetData(VoxelDataCreator vdc, JvxlData jvxlData,
                                    VolumeData volumeData, String title,
                                    Vector surfacePointsReturn,
-                                   float[] areaReturn) {
+                                   float[] areaVolumeReturn) {
     // if the StringBuffer is not empty, it should have two comment lines
     // that do not start with # already present.
     StringBuffer sb = new StringBuffer();
@@ -62,15 +62,17 @@ public class JvxlWrite {
     jvxlData.nPointsX = counts[0];
     jvxlData.nPointsY = counts[1];
     jvxlData.nPointsZ = counts[2];
-    boolean doCalcArea = (areaReturn != null);
+    boolean doCalcArea = (areaVolumeReturn != null);
     SimpleMarchingCubes mc = new SimpleMarchingCubes(vdc, volumeData,
         jvxlData.cutoff, jvxlData.isCutoffAbsolute, jvxlData.isXLowToHigh,
         surfacePointsReturn, doCalcArea);
     jvxlData.jvxlEdgeData = mc.getEdgeData();
     setSurfaceInfoFromBitSet(jvxlData, mc.getBsVoxels());
     jvxlData.jvxlDefinitionLine = jvxlGetDefinitionLine(jvxlData);
-    if (doCalcArea)
-      areaReturn[0] = mc.getCalculatedArea();
+    if (doCalcArea) {
+      areaVolumeReturn[0] = mc.getCalculatedArea();
+      areaVolumeReturn[1] = mc.getCalculatedVolume();
+    }
     return jvxlGetFile(jvxlData);
   }
 

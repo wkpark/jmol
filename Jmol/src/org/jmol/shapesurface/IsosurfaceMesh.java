@@ -144,59 +144,6 @@ public class IsosurfaceMesh extends Mesh {
     return addVertexCopy(vertex);
   }
 
-  public float calculateArea() {
-    if (!Float.isNaN(calculatedArea))
-      return calculatedArea;
-    double v = 0;
-    Vector3f vTemp = new Vector3f();
-    Vector3f ab = new Vector3f();
-    Vector3f ac = new Vector3f();
-    
-    for (int i = polygonCount; --i >= 0;) {
-      int[] vertexIndexes = polygonIndexes[i];
-      if (vertexIndexes == null)
-        continue;
-      int iA = vertexIndexes[0];
-      int iB = vertexIndexes[1];
-      int iC = vertexIndexes[2];
-      if (Float.isNaN(vertexValues[iA]) || Float.isNaN(vertexValues[iB])
-          || Float.isNaN(vertexValues[iC]))
-        continue;
-      ab.sub(vertices[iB], vertices[iA]);
-      ac.sub(vertices[iC], vertices[iA]);
-      vTemp.cross(ab, ac);
-      v += vTemp.length() / 2;
-    }
-    return calculatedArea = (float) v;
-  }
-
-  public float calculateVolume() {
-    if (!Float.isNaN(calculatedVolume))
-      return calculatedVolume;
-    double v = 0;
-    Vector3f a = new Vector3f();
-    Vector3f b = new Vector3f();
-    Vector3f c = new Vector3f();
-    
-    for (int i = polygonCount; --i >= 0;) {
-      int[] vertexIndexes = polygonIndexes[i];
-      if (vertexIndexes == null)
-        continue;
-      int iA = vertexIndexes[0];
-      int iB = vertexIndexes[1];
-      int iC = vertexIndexes[2];
-      if (Float.isNaN(vertexValues[iA]) || Float.isNaN(vertexValues[iB])
-          || Float.isNaN(vertexValues[iC]))
-        continue;
-      a.set(vertices[iA]);
-      b.set(vertices[iB]);
-      c.set(vertices[iC]);
-      b.cross(b, c);
-      v += a.dot(b) / 6;
-    }
-    return calculatedVolume = (float) v;
-  }
-
   public void setTranslucent(boolean isTranslucent, float iLevel) {
     super.setTranslucent(isTranslucent, iLevel);
     if (vertexColixes != null)
@@ -219,19 +166,51 @@ public class IsosurfaceMesh extends Mesh {
   }
   
   void invalidateTriangles() {
-    for (int i = polygonCount; --i >= 0;) {
-      int[] vertexIndexes = polygonIndexes[i];
-      if (vertexIndexes == null)
-        continue;
-      int iA = vertexIndexes[0];
-      int iB = vertexIndexes[1];
-      int iC = vertexIndexes[2];
-      if (Float.isNaN(vertexValues[iA]) || Float.isNaN(vertexValues[iB])
-          || Float.isNaN(vertexValues[iC]))
+    for (int i = polygonCount; --i >= 0;)
+      if (!setABC(i))
         polygonIndexes[i] = null;
-    }
   }
   
+  private int iA, iB, iC;
+  
+  private boolean setABC(int i) {
+    int[] vertexIndexes = polygonIndexes[i];
+    return vertexIndexes != null && !(Float.isNaN(vertexValues[iA = vertexIndexes[0]]) 
+        || Float.isNaN(vertexValues[iB = vertexIndexes[1]])
+        || Float.isNaN(vertexValues[iC = vertexIndexes[2]]));
+  }
+  
+  float calculateArea() {
+    if (!Float.isNaN(calculatedArea))
+      return calculatedArea;
+    double v = 0;
+    for (int i = polygonCount; --i >= 0;) {
+      if (!setABC(i)) 
+        continue;
+      vAB.sub(vertices[iB], vertices[iA]);
+      vAC.sub(vertices[iC], vertices[iA]);
+      vTemp.cross(vAB, vAC);
+      v += vTemp.length();
+    }
+    return calculatedArea = (float) (v / 2);
+  }
+
+  float calculateVolume() {
+    if (!Float.isNaN(calculatedVolume))
+      return calculatedVolume;
+    double v = 0;
+    for (int i = polygonCount; --i >= 0;) {
+      if (!setABC(i)) 
+        continue;
+      vAB.set(vertices[iB]);
+      vAC.set(vertices[iC]);
+      vTemp.cross(vAB, vAC);
+      vAC.set(vertices[iA]);
+      v += vAC.dot(vTemp);
+    }
+    return calculatedVolume = (float) (v / 6);
+  }
+
   public BitSet[] surfaceSet;
   public int[] vertexSets;
   public int nSets = 0;

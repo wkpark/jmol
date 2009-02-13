@@ -167,29 +167,28 @@ public class Mesh {
 
   public final Vector3f vAB = new Vector3f();
   public final Vector3f vAC = new Vector3f();
+  public final Vector3f vTemp = new Vector3f();
 
   protected boolean haveCheckByte;
   public Vector data1;
   public Vector data2;
   
   public void sumVertexNormals(Vector3f[] vectorSums) {
-    final Vector3f vNormalizedNormal = new Vector3f();
     int adjustment = (haveCheckByte ? 1 : 0);
-
     for (int i = polygonCount; --i >= 0;) {
       int[] pi = polygonIndexes[i];
       try {
         if (pi != null) {
           Graphics3D.calcNormalizedNormal(vertices[pi[0]], vertices[pi[1]],
-              vertices[pi[2]], vNormalizedNormal, vAB, vAC);
+              vertices[pi[2]], vTemp, vAB, vAC);
           // general 10.? error here was not watching out for 
           // occurrances of intersection AT a corner, leading to
           // two points of triangle being identical
-          float l = vNormalizedNormal.length();
+          float l = vTemp.length();
           if (l > 0.9 && l < 1.1) //test for not infinity or -infinity or isNaN
             for (int j = pi.length - adjustment; --j >= 0;) {
               int k = pi[j];
-              vectorSums[k].add(vNormalizedNormal);
+              vectorSums[k].add(vTemp);
             }
         }
       } catch (Exception e) {

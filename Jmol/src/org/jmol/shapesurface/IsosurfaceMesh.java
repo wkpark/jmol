@@ -152,7 +152,7 @@ public class IsosurfaceMesh extends Mesh {
 
     if (!Float.isNaN(calculatedArea))
       return calculatedArea;
-    calculatedArea = 0;
+    double v = 0;
     Vector3f vTemp = new Vector3f();
     for (int i = polygonCount; --i >= 0;) {
       int[] vertexIndexes = polygonIndexes[i];
@@ -169,9 +169,9 @@ public class IsosurfaceMesh extends Mesh {
       Vector3f ac = new Vector3f(vertices[iC]);
       ac.sub(vertices[iA]);
       vTemp.cross(ab, ac);
-      calculatedArea += vTemp.length() / 2;
+      v += vTemp.length() / 2;
     }
-    return calculatedArea;
+    return calculatedArea = (float) v;
   }
 
   public void setTranslucent(boolean isTranslucent, float iLevel) {

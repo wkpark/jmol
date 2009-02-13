@@ -702,6 +702,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   public void notifySurfaceGenerationCompleted() {
     setModelIndex();
     thisMesh.insideOut = sg.isInsideOut();
+    thisMesh.calculatedArea = Float.NaN;
     thisMesh.initialize(sg.getPlane() != null ? JmolConstants.FULLYLIT
         : lighting);
   }

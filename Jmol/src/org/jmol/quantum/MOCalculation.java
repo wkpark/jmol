@@ -89,44 +89,52 @@ import java.util.BitSet;
  * 
  */
 
-public class MOCalculation extends QuantumCalculation implements MOCalculationInterface {
-
+public class MOCalculation extends QuantumCalculation implements
+    MOCalculationInterface {
 
   private static int MAX_GRID = Parameters.MO_MAX_GRID;
   // slater coefficients in Bohr
-  float[] CX = new float[MAX_GRID];
-  float[] CY = new float[MAX_GRID];
-  float[] CZ = new float[MAX_GRID];
+  final float[] CX = new float[MAX_GRID];
+  final float[] CY = new float[MAX_GRID];
+  final float[] CZ = new float[MAX_GRID];
 
   // d-orbital partial coefficients in Bohr
-  float[] DXY = new float[MAX_GRID];
-  float[] DXZ = new float[MAX_GRID];
-  float[] DYZ = new float[MAX_GRID];
+  final float[] DXY = new float[MAX_GRID];
+  final float[] DXZ = new float[MAX_GRID];
+  final float[] DYZ = new float[MAX_GRID];
 
   // exp(-alpha x^2...)
-  float[] EX = new float[MAX_GRID];
-  float[] EY = new float[MAX_GRID];
-  float[] EZ = new float[MAX_GRID];
+  final float[] EX = new float[MAX_GRID];
+  final float[] EY = new float[MAX_GRID];
+  final float[] EZ = new float[MAX_GRID];
 
-  String calculationType;
-  Vector shells;
-  float[][] gaussians;
+  private String calculationType;
+  private Vector shells;
+  private float[][] gaussians;
   //Hashtable aoOrdersDF;
-  int[][] slaterInfo;
-  float[][] slaterData;
-  float[] moCoefficients;
-  int moCoeff;
-  int gaussianPtr;
-  int firstAtomOffset;
+  private int[][] slaterInfo;
+  private float[][] slaterData;
+  private float[] moCoefficients;
+  private int moCoeff;
+  private int gaussianPtr;
+  private int firstAtomOffset;
+  private boolean isElectronDensity;
+  private float occupancy = 2f; //for now -- RHF only
   
+//  private float[] nuclearCharges;
+
+  protected float[][][] voxelDataTemp;
+
   public MOCalculation() {
   }
-    
-  public void calculate(VolumeDataInterface volumeData, BitSet bsSelected, String calculationType, Point3f[] atomCoordAngstroms,
-      int firstAtomOffset, Vector shells, float[][] gaussians, Hashtable aoOrdersDF,
-      int[][] slaterInfo, float[][] slaterData, float[] moCoefficients) {
+
+public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
+                        String calculationType, Point3f[] atomCoordAngstroms,
+                        int firstAtomOffset, Vector shells,
+                        float[][] gaussians, Hashtable aoOrdersDF,
+                        int[][] slaterInfo, float[][] slaterData,
+                        float[] moCoefficients, float[] nuclearCharges) {
     this.calculationType = calculationType;
-    this.atomCoordAngstroms = atomCoordAngstroms;
     this.firstAtomOffset = firstAtomOffset;
     this.shells = shells;
     this.gaussians = gaussians;
@@ -134,17 +142,39 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
     this.slaterInfo = slaterInfo;
     this.slaterData = slaterData;
     this.moCoefficients = moCoefficients;
-    initialize(MAX_GRID);
-    setVolume(volumeData, bsSelected);
-    atomIndex = firstAtomOffset -1;
+    //this.nuclearCharges = nuclearCharges;
+    this.isElectronDensity = (nuclearCharges != null);
+    int[] countsXYZ = volumeData.getVoxelCounts();
+    initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2]);
+    voxelData = volumeData.getVoxelData();
+    voxelDataTemp = (isElectronDensity ? new float[nX][nY][nZ] : voxelData);
+    setupCoordinates(volumeData.getOriginFloat(), 
+        volumeData.getVolumetricVectorLengths(), 
+        bsSelected, atomCoordAngstroms);
+    atomIndex = firstAtomOffset - 1;
     doDebug = (Logger.debugging);
     if (slaterInfo != null)
       createSlaterCube();
     else
       createGaussianCube();
+  }  
+
+  public void calculateElectronDensity(float[] nuclearCharges) {
+    //TODO
+    float t = 0;
+    for (int ix = nX; --ix >= 0;)
+      for (int iy = nY; --iy >= 0;)
+        for (int iz = nZ; --iz >= 0;) {
+          t += voxelData[ix][iy][iz];
+        }
+    float volume = stepBohr[0] * stepBohr[1] * stepBohr[2] / bohr_per_angstrom
+        / bohr_per_angstrom / bohr_per_angstrom;
+    t = t * volume;
+    System.out.println("MOCalculation " + t);
+    //processMep(nuclearCharges);
   }
 
-  private void createSlaterCube() {    
+  private void createSlaterCube() {
     moCoeff = 0;
     // each STO shell is the combination of one or more gaussians
     int nSlaters = slaterInfo.length;
@@ -153,7 +183,7 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
     }
   }
 
-  private void createGaussianCube() {    
+  private void createGaussianCube() {
     if (!checkCalculationType())
       return;
     int nShells = shells.size();
@@ -169,16 +199,15 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
 
   private boolean checkCalculationType() {
     if (calculationType == null) {
-      Logger
-      .warn("calculation type not identified -- continuing");
+      Logger.warn("calculation type not identified -- continuing");
       return true;
     }
     /*if (calculationType.indexOf("5D") >= 0) {
      Logger
-          .error("QuantumCalculation.checkCalculationType: can't read 5D basis sets yet: "
-              + calculationType + " -- exit");
-      return false;
-    }*/
+     .error("QuantumCalculation.checkCalculationType: can't read 5D basis sets yet: "
+     + calculationType + " -- exit");
+     return false;
+     }*/
     if (calculationType.indexOf("+") >= 0 || calculationType.indexOf("*") >= 0) {
       Logger
           .warn("polarization/diffuse wavefunctions have not been tested fully: "
@@ -200,32 +229,14 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
     int basisType = shell[1];
     gaussianPtr = shell[2];
     int nGaussians = shell[3];
-    
+
     if (doDebug)
-      Logger.debug(  "processShell: " + iShell 
-                   + " type=" + JmolConstants.getQuantumShellTag(basisType) 
-                   + " nGaussians=" + nGaussians 
-                   + " atom=" + atomIndex
-                   );
-    if (atomIndex != lastAtom && atomCoordBohr[atomIndex] != null) {
-      //System.out.println("processSTO center " + atomIndex + " " + atomCoordBohr[atomIndex]);
-      float x = atomCoordBohr[atomIndex].x;
-      float y = atomCoordBohr[atomIndex].y;
-      float z = atomCoordBohr[atomIndex].z;
-      for (int i = countsXYZ[0]; --i >= 0;) {
-        X2[i] = X[i] = xyzBohr[i][0] - x;
-        X2[i] *= X[i];
-      }
-      for (int i = countsXYZ[1]; --i >= 0;) {
-        Y2[i] = Y[i] = xyzBohr[i][1] - y;
-        Y2[i] *= Y[i];
-      }
-      for (int i = countsXYZ[2]; --i >= 0;) {
-        Z2[i] = Z[i] = xyzBohr[i][2] - z;
-        Z2[i] *= Z[i];
-      }
-    }
-    switch(basisType) {
+      Logger.debug("processShell: " + iShell + " type="
+          + JmolConstants.getQuantumShellTag(basisType) + " nGaussians="
+          + nGaussians + " atom=" + atomIndex);
+    if (atomIndex != lastAtom && (thisAtom = qmAtoms[atomIndex]) != null)
+      thisAtom.setXYZ(true);
+    switch (basisType) {
     case JmolConstants.SHELL_S:
       addDataS(nGaussians);
       break;
@@ -248,30 +259,38 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
       addData7F(nGaussians);
       break;
     default:
-      Logger.warn(" Unsupported basis type for atomno=" + (atomIndex + 1) + " -- use \"set loglevel 5\" to debug.");
-      return;
+      Logger.warn(" Unsupported basis type for atomno=" + (atomIndex + 1)
+          + " -- use \"set loglevel 5\" to debug.");
+      break;
     }
   }
 
+  private void setTemp() {
+    for (int ix = xMax; --ix >= xMin;) {
+      for (int iy = yMax; --iy >= yMin;) {
+        for (int iz = zMax; --iz >= zMin;) {
+          float value = voxelDataTemp[ix][iy][iz];
+          voxelData[ix][iy][iz] += value * value * occupancy;
+          voxelDataTemp[ix][iy][iz] = 0;
+        }
+      }
+    }
+  }
+  
   private void addDataS(int nGaussians) {
-    if (!atomSet.get(atomIndex)) {
+    if (thisAtom == null) {
       moCoeff++;
       return;
     }
     if (doDebug)
       dumpInfo(nGaussians, "S ");
 
-    int moCoeff0 = moCoeff;
-    // all gaussians of a set use the same MO coefficient
-    // so we just reset each time, then move on
-    setMinMax();
+    float m1 = moCoefficients[moCoeff++];
     for (int ig = 0; ig < nGaussians; ig++) {
-      moCoeff = moCoeff0;
       float alpha = gaussians[gaussianPtr + ig][0];
       float c1 = gaussians[gaussianPtr + ig][1];
       // (2 alpha^3/pi^3)^0.25 exp(-alpha r^2)
-      float a = c1 * (float) Math.pow(alpha, 0.75) * 0.712705470f;
-      a *= moCoefficients[moCoeff++];
+      float a = m1 * c1 * (float) Math.pow(alpha, 0.75) * 0.712705470f;
       // the coefficients are all included with the X factor here
 
       for (int i = xMax; --i >= xMin;) {
@@ -284,62 +303,123 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
         EZ[i] = (float) Math.exp(-Z2[i] * alpha);
       }
 
-      for (int ix = xMax; --ix >= xMin;)
-        for (int iy = yMax; --iy >= yMin;)
-          for (int iz = zMax; --iz >= zMin;)
-            voxelData[ix][iy][iz] += EX[ix] * EY[iy] * EZ[iz];
+      for (int ix = xMax; --ix >= xMin;) {
+        float eX = EX[ix];
+        for (int iy = yMax; --iy >= yMin;) {
+          float eXY = eX * EY[iy];
+          for (int iz = zMax; --iz >= zMin;) {
+            voxelDataTemp[ix][iy][iz] += eXY * EZ[iz];
+          }
+        }
+      }
     }
+    if (isElectronDensity)
+      setTemp();
   }
 
   private void addDataP(int nGaussians) {
-    if (!atomSet.get(atomIndex)) {
+    if (thisAtom == null) {
       moCoeff += 3;
       return;
     }
     if (doDebug)
       dumpInfo(nGaussians, "X Y Z ");
-    setMinMax();
-    int moCoeff0 = moCoeff;
-    for (int ig = 0; ig < nGaussians; ig++) {
-      moCoeff = moCoeff0;
-      float alpha = gaussians[gaussianPtr + ig][0];
-      float c1 = gaussians[gaussianPtr + ig][1];
-      // (128 alpha^5/pi^3)^0.25 [x|y|z]exp(-alpha r^2)
-      float a = c1 * (float) Math.pow(alpha, 1.25) * 1.42541094f;
-      float ax = a * moCoefficients[moCoeff++];
-      float ay = a * moCoefficients[moCoeff++];
-      float az = a * moCoefficients[moCoeff++];
-      calcSP(alpha, 0, ax, ay, az);
+    float mx = moCoefficients[moCoeff++];
+    float my = moCoefficients[moCoeff++];
+    float mz = moCoefficients[moCoeff++];
+    if (isElectronDensity) {
+      for (int ig = 0; ig < nGaussians; ig++) {
+        float alpha = gaussians[gaussianPtr + ig][0];
+        float c1 = gaussians[gaussianPtr + ig][1];
+        // (128 alpha^5/pi^3)^0.25 [x|y|z]exp(-alpha r^2)
+        float a = c1 * (float) Math.pow(alpha, 1.25) * 1.42541094f;
+        calcSP(alpha, 0, a * mx, 0, 0);
+      }
+      setTemp();
+      for (int ig = 0; ig < nGaussians; ig++) {
+        float alpha = gaussians[gaussianPtr + ig][0];
+        float c1 = gaussians[gaussianPtr + ig][1];
+        // (128 alpha^5/pi^3)^0.25 [x|y|z]exp(-alpha r^2)
+        float a = c1 * (float) Math.pow(alpha, 1.25) * 1.42541094f;
+        calcSP(alpha, 0, 0, a * my, 0);
+      }
+      setTemp();
+      for (int ig = 0; ig < nGaussians; ig++) {
+        float alpha = gaussians[gaussianPtr + ig][0];
+        float c1 = gaussians[gaussianPtr + ig][1];
+        // (128 alpha^5/pi^3)^0.25 [x|y|z]exp(-alpha r^2)
+        float a = c1 * (float) Math.pow(alpha, 1.25) * 1.42541094f;
+        calcSP(alpha, 0, 0, 0, a * mz);
+      }
+      setTemp();
+    } else {
+      for (int ig = 0; ig < nGaussians; ig++) {
+        float alpha = gaussians[gaussianPtr + ig][0];
+        float c1 = gaussians[gaussianPtr + ig][1];
+        // (128 alpha^5/pi^3)^0.25 [x|y|z]exp(-alpha r^2)
+        float a = c1 * (float) Math.pow(alpha, 1.25) * 1.42541094f;
+        calcSP(alpha, 0, a * mx, a * my, a * mz);
+      }
     }
   }
 
   private void addDataSP(int nGaussians) {
-    if (!atomSet.get(atomIndex)) {
-      moCoeff += 4;
+    // spartan uses format "1" for BOTH SP and P, which is fine, but then
+    // when c1 = 0, there is no mo coefficient, of course. 
+    float c1 = gaussians[gaussianPtr][1];
+    if (thisAtom == null) {
+      moCoeff += (c1 == 0 ? 3 : 4);
       return;
     }
     if (doDebug)
       dumpInfo(nGaussians, "S X Y Z ");
-    setMinMax();
-    int moCoeff0 = moCoeff;
-    for (int ig = 0; ig < nGaussians; ig++) {
-      moCoeff = moCoeff0;
-      float alpha = gaussians[gaussianPtr + ig][0];
-      float c1 = gaussians[gaussianPtr + ig][1];
-      float c2 = gaussians[gaussianPtr + ig][2];
-      float a1 = c1 * (float) Math.pow(alpha, 0.75) * 0.712705470f;
-      float a2 = c2 * (float) Math.pow(alpha, 1.25) * 1.42541094f;
-      // spartan uses format "1" for BOTH SP and P, which is fine, but then
-      // when c1 = 0, there is no mo coefficient, of course. 
-      float as = (c1 == 0 ? 0 : a1 * moCoefficients[moCoeff++]);
-      float ax = a2 * moCoefficients[moCoeff++];
-      float ay = a2 * moCoefficients[moCoeff++];
-      float az = a2 * moCoefficients[moCoeff++];
-      calcSP(alpha, as, ax, ay, az);
+    float ms = (c1 == 0 ? 0 : moCoefficients[moCoeff++]);
+    float mx = moCoefficients[moCoeff++];
+    float my = moCoefficients[moCoeff++];
+    float mz = moCoefficients[moCoeff++];
+    if (isElectronDensity) {
+      for (int ig = 0; ig < nGaussians; ig++) {
+        float alpha = gaussians[gaussianPtr + ig][0];
+        c1 = gaussians[gaussianPtr + ig][1];
+        float a1 = c1 * (float) Math.pow(alpha, 0.75) * 0.712705470f;
+        calcSP(alpha, a1 * ms, 0, 0, 0);
+      }
+      setTemp();
+      for (int ig = 0; ig < nGaussians; ig++) {
+        float alpha = gaussians[gaussianPtr + ig][0];
+        float c2 = gaussians[gaussianPtr + ig][2];
+        float a2 = c2 * (float) Math.pow(alpha, 1.25) * 1.42541094f;
+        calcSP(alpha, 0, a2 * mx, 0, 0);
+      }
+      setTemp();
+      for (int ig = 0; ig < nGaussians; ig++) {
+        float alpha = gaussians[gaussianPtr + ig][0];
+        float c2 = gaussians[gaussianPtr + ig][2];
+        float a2 = c2 * (float) Math.pow(alpha, 1.25) * 1.42541094f;
+        calcSP(alpha, 0, 0, a2 * my, 0);
+      }
+      setTemp();
+      for (int ig = 0; ig < nGaussians; ig++) {
+        float alpha = gaussians[gaussianPtr + ig][0];
+        float c2 = gaussians[gaussianPtr + ig][2];
+        float a2 = c2 * (float) Math.pow(alpha, 1.25) * 1.42541094f;
+        calcSP(alpha, 0, 0, 0, a2 * mz);
+      }
+      setTemp();
+    } else {
+      for (int ig = 0; ig < nGaussians; ig++) {
+        float alpha = gaussians[gaussianPtr + ig][0];
+        c1 = gaussians[gaussianPtr + ig][1];
+        float c2 = gaussians[gaussianPtr + ig][2];
+        float a1 = c1 * (float) Math.pow(alpha, 0.75) * 0.712705470f;
+        float a2 = c2 * (float) Math.pow(alpha, 1.25) * 1.42541094f;
+        calcSP(alpha, a1 * ms, a2 * mx, a2 * my, a2 * mz);
+      }
     }
   }
 
-  private void setCE(float alpha, float as, float ax, float ay, float az) {
+  private void setCE(float[] CX, float[] EX, float alpha, float as, float ax,
+                     float ay, float az) {
     for (int i = xMax; --i >= xMin;) {
       CX[i] = as + ax * X[i];
       EX[i] = (float) Math.exp(-X2[i] * alpha);
@@ -354,41 +434,59 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
     }
   }
 
+  private void setE(float[] EX, float alpha) {
+    for (int i = xMax; --i >= xMin;)
+      EX[i] = (float) Math.exp(-X2[i] * alpha);
+    for (int i = yMax; --i >= yMin;)
+      EY[i] = (float) Math.exp(-Y2[i] * alpha);
+    for (int i = zMax; --i >= zMin;)
+      EZ[i] = (float) Math.exp(-Z2[i] * alpha);
+  }
+
   private void calcSP(float alpha, float as, float ax, float ay, float az) {
-    setCE(alpha, as, ax, ay, az);
-    for (int ix = xMax; --ix >= xMin;)
-      for (int iy = yMax; --iy >= yMin;)
-        for (int iz = zMax; --iz >= zMin;)
-          voxelData[ix][iy][iz] += (CX[ix] + CY[iy] + CZ[iz]) * EX[ix] * EY[iy]
-              * EZ[iz];
+    setCE(CX, EX, alpha, as, ax, ay, az);
+    for (int ix = xMax; --ix >= xMin;) {
+      float eX = EX[ix];
+      float cX = CX[ix];
+      for (int iy = yMax; --iy >= yMin;) {
+        float eXY = eX * EY[iy];
+        float cXY = cX + CY[iy];
+        for (int iz = zMax; --iz >= zMin;) {
+          voxelDataTemp[ix][iy][iz] += (cXY + CZ[iz]) * eXY * EZ[iz];
+        }
+      }
+    }
   }
 
   private final static float ROOT3 = 1.73205080756887729f;
 
   private void addData6D(int nGaussians) {
     //expects 6 orbitals in the order XX YY ZZ XY XZ YZ
-    if (!atomSet.get(atomIndex)) {
+    if (thisAtom == null  || isElectronDensity) {
       moCoeff += 6;
       return;
     }
     if (doDebug)
       dumpInfo(nGaussians, "XXYYZZXYXZYZ");
-    setMinMax();
-    int moCoeff0 = moCoeff;
+    float mxx = moCoefficients[moCoeff++];
+    float myy = moCoefficients[moCoeff++];
+    float mzz = moCoefficients[moCoeff++];
+    float mxy = moCoefficients[moCoeff++];
+    float mxz = moCoefficients[moCoeff++];
+    float myz = moCoefficients[moCoeff++];
     for (int ig = 0; ig < nGaussians; ig++) {
-      moCoeff = moCoeff0;
       float alpha = gaussians[gaussianPtr + ig][0];
       float c1 = gaussians[gaussianPtr + ig][1];
       // xx|yy|zz: (2048 alpha^7/9pi^3)^0.25 [xx|yy|zz]exp(-alpha r^2)
       // xy|xz|yz: (2048 alpha^7/pi^3)^0.25 [xy|xz|yz]exp(-alpha r^2)
       float a = c1 * (float) Math.pow(alpha, 1.75) * 2.8508219178923f;
-      float axx = a / ROOT3 * moCoefficients[moCoeff++];
-      float ayy = a / ROOT3 * moCoefficients[moCoeff++];
-      float azz = a / ROOT3 * moCoefficients[moCoeff++];
-      float axy = a * moCoefficients[moCoeff++];
-      float axz = a * moCoefficients[moCoeff++];
-      float ayz = a * moCoefficients[moCoeff++];
-      setCE(alpha, 0, axx, ayy, azz);
+      float axx = a / ROOT3 * mxx;
+      float ayy = a / ROOT3 * myy;
+      float azz = a / ROOT3 * mzz;
+      float axy = a * mxy;
+      float axz = a * mxz;
+      float ayz = a * myz;
+      setCE(CX, EX, alpha, 0, axx, ayy, azz);
 
       for (int i = xMax; --i >= xMin;) {
         DXY[i] = axy * X[i];
@@ -401,116 +499,21 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
         float axx_x2 = CX[ix] * X[ix];
         float axy_x = DXY[ix];
         float axz_x = DXZ[ix];
+        float eX = EX[ix];
         for (int iy = yMax; --iy >= yMin;) {
           float axx_x2__ayy_y2__axy_xy = axx_x2 + (CY[iy] + axy_x) * Y[iy];
           float axz_x__ayz_y = axz_x + DYZ[iy];
-          for (int iz = zMax; --iz >= zMin;)
-            voxelData[ix][iy][iz] += (axx_x2__ayy_y2__axy_xy + (CZ[iz] + axz_x__ayz_y)
-                * Z[iz])
-                * EX[ix] * EY[iy] * EZ[iz];
-          // giving (axx_x2 + ayy_y2 + azz_z2 + axy_xy + axz_xz + ayz_yz)e^-br2; 
+          float eXY = eX * EY[iy];
+          for (int iz = zMax; --iz >= zMin;) {
+            voxelDataTemp[ix][iy][iz] += (axx_x2__ayy_y2__axy_xy + (CZ[iz] + axz_x__ayz_y) * Z[iz])
+                * eXY * EZ[iz];
+            // giving (axx_x2 + ayy_y2 + azz_z2 + axy_xy + axz_xz + ayz_yz)e^-br2; 
+          }
         }
       }
     }
   }
-  
-  private void addData10F(int nGaussians) {
-    // expects 10 orbitals in the order XXX, YYY, ZZZ, XYY, XXY, 
-    //                                  XXZ, XZZ, YZZ, YYZ, XYZ
-    if (!atomSet.get(atomIndex)) {
-      moCoeff += 10;
-      return;
-    }
-    if (doDebug)
-      dumpInfo(nGaussians, JmolConstants.SHELL_F_CARTESIAN);
-    setMinMax();
-    
-    float alpha;
-    float c1;
-    float a;
-    float x, y, z, xx, yy, zz;
-    float axxx, ayyy, azzz, axyy, axxy, axxz, axzz, ayzz, ayyz, axyz;
-    float cxxx, cyyy, czzz, cxyy, cxxy, cxxz, cxzz, cyzz, cyyz, cxyz;
-    float Ex, Ey, Ez;
-    
-    /*
-    Cartesian forms for f (l = 3) basis functions:
-    Type         Normalization
-    xxx          [(32768 * alpha^9) / (225 * pi^3))]^(1/4)
-    xxy          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
-    xxz          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
-    xyy          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
-    xyz          [(32768 * alpha^9) / (1 * pi^3))]^(1/4)
-    xzz          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
-    yyy          [(32768 * alpha^9) / (225 * pi^3))]^(1/4)
-    yyz          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
-    yzz          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
-    zzz          [(32768 * alpha^9) / (225 * pi^3))]^(1/4)
-    */
-    
-    final float norm1 = (float) Math.pow(32768.0 / (Math.PI*Math.PI* Math.PI), 
-                                         0.25);
-    final float norm3 = norm1 / (float) Math.sqrt(15);
-    final float norm2 = norm1 / (float) Math.sqrt(3);
-    
-    for (int ig = nGaussians; --ig >= 0;) {  
-      alpha = gaussians[gaussianPtr + ig][0];
-      c1 = gaussians[gaussianPtr + ig][1];
-      setCE(alpha, 0, 0, 0, 0);
 
-      // common factor of contraction coefficient and alpha normalization 
-      // factor; only call pow once per primitive
-      a = c1 * (float) Math.pow(alpha, 2.25);
-      
-      axxx = a * norm3 * moCoefficients[moCoeff];
-      ayyy = a * norm3 * moCoefficients[moCoeff+1];
-      azzz = a * norm3 * moCoefficients[moCoeff+2];
-      axyy = a * norm2 * moCoefficients[moCoeff+3];
-      axxy = a * norm2 * moCoefficients[moCoeff+4];
-      axxz = a * norm2 * moCoefficients[moCoeff+5];
-      axzz = a * norm2 * moCoefficients[moCoeff+6];
-      ayzz = a * norm2 * moCoefficients[moCoeff+7];
-      ayyz = a * norm2 * moCoefficients[moCoeff+8];
-      axyz = a * norm1 * moCoefficients[moCoeff+9];
-    
-      for (int ix = xMax; --ix >= xMin;) {
-        x = X[ix];
-        xx = x*x;
-        
-        Ex = EX[ix];
-        cxxx = axxx * xx*x;
-        
-        for (int iy = yMax; --iy >= yMin;) {
-          y = Y[iy];
-          yy = y*y;
-          Ey = EY[iy];
-          cyyy = ayyy * yy*y;
-          cxxy = axxy * xx*y;
-          cxyy = axyy * x*yy;
-          
-          for (int iz = zMax; --iz >= zMin;) {
-            z = Z[iz];
-            zz = z*z;
-            Ez = EZ[iz];
-            
-            czzz = azzz * zz*z;
-            cxxz = axxz * xx*z;
-            cxzz = axzz * x*zz;
-            cyyz = ayyz * yy*z;
-            cyzz = ayzz * y*zz;
-            cxyz = axyz * x*y*z;
-
-            voxelData[ix][iy][iz] += Ex * Ey * Ez
-                                     * ( cxxx + cyyy + czzz
-                                       + cxyy + cxxy + cxxz
-                                       + cxzz + cyzz + cyyz + cxyz);
-            }
-          }
-        }
-    }
-    moCoeff += 10;
-  }
-  
   private void addData5D(int nGaussians) {
     // expects 5 real orbitals in the order d0, d+1, d-1, d+2, d-2
     // (i.e. dz^2, dxz, dyz, dx^2-y^2, dxy)
@@ -520,205 +523,299 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
     // For conversions between spherical and Cartesian gaussians, see
     // "Trasnformation Between Cartesian and Pure Spherical Harmonic Gaussians",
     // Schelgel and Frisch, Int. J. Quant. Chem 54, 83-87, 1995
-    
-    if (!atomSet.get(atomIndex)) {
+
+    if (thisAtom == null || isElectronDensity) {
       moCoeff += 5;
       return;
     }
     if (doDebug)
       dumpInfo(nGaussians, JmolConstants.SHELL_D_SPHERICAL);
-    
-    setMinMax();
-    
+
     float alpha, c1, a;
     float x, y, z;
     float cxx, cyy, czz, cxy, cxz, cyz;
-    float ad0, ad1p, ad1n, ad2p, ad2n;    
-    float Ex, Ey, Ez;
+    float ad0, ad1p, ad1n, ad2p, ad2n;
 
     /*
-    Cartesian forms for d (l = 2) basis functions:
-    Type         Normalization
-    xx           [(2048 * alpha^7) / (9 * pi^3))]^(1/4)
-    xy           [(2048 * alpha^7) / (1 * pi^3))]^(1/4)
-    xz           [(2048 * alpha^7) / (1 * pi^3))]^(1/4)
-    yy           [(2048 * alpha^7) / (9 * pi^3))]^(1/4)
-    yz           [(2048 * alpha^7) / (1 * pi^3))]^(1/4)
-    zz           [(2048 * alpha^7) / (9 * pi^3))]^(1/4)
+     Cartesian forms for d (l = 2) basis functions:
+     Type         Normalization
+     xx           [(2048 * alpha^7) / (9 * pi^3))]^(1/4)
+     xy           [(2048 * alpha^7) / (1 * pi^3))]^(1/4)
+     xz           [(2048 * alpha^7) / (1 * pi^3))]^(1/4)
+     yy           [(2048 * alpha^7) / (9 * pi^3))]^(1/4)
+     yz           [(2048 * alpha^7) / (1 * pi^3))]^(1/4)
+     zz           [(2048 * alpha^7) / (9 * pi^3))]^(1/4)
      */
-    
-    final float norm1 = (float)Math.pow(2048.0/(Math.PI*Math.PI*Math.PI),0.25);
+
+    final float norm1 = (float) Math.pow(
+        2048.0 / (Math.PI * Math.PI * Math.PI), 0.25);
     final float norm2 = norm1 / (float) Math.sqrt(3);
-    
+
     // Normalization constant that shows up for dx^2-y^2
-    final float root34 = (float) Math.sqrt(3/4);   
+    final float root34 = (float) Math.sqrt(3 / 4);
+
+    float m0 = moCoefficients[moCoeff++];
+    float m1p = moCoefficients[moCoeff++];
+    float m1n = moCoefficients[moCoeff++];
+    float m2p = moCoefficients[moCoeff++];
+    float m2n = moCoefficients[moCoeff++];
     
-    for (int ig = nGaussians; --ig >= 0;) {  
+    for (int ig = 0; ig < nGaussians; ig++) {
       alpha = gaussians[gaussianPtr + ig][0];
-      c1 = gaussians[gaussianPtr + ig][1]; 
+      c1 = gaussians[gaussianPtr + ig][1];
       a = c1 * (float) Math.pow(alpha, 1.75);
-      
-      ad0  = a * moCoefficients[moCoeff  ];
-      ad1p = a * moCoefficients[moCoeff+1];
-      ad1n = a * moCoefficients[moCoeff+2];
-      ad2p = a * moCoefficients[moCoeff+3];
-      ad2n = a * moCoefficients[moCoeff+4];
-      
-      setCE(alpha, 0, 0, 0, 0);
-    
+
+      ad0 = a * m0;
+      ad1p = a * m1p;
+      ad1n = a * m1n;
+      ad2p = a * m2p;
+      ad2n = a * m2n;
+
+      setE(EX, alpha);
+
       for (int ix = xMax; --ix >= xMin;) {
         x = X[ix];
-        Ex = EX[ix];
-        cxx = norm2 * x*x;
-        
+        float eX = EX[ix];
+        cxx = norm2 * x * x;
+
         for (int iy = yMax; --iy >= yMin;) {
           y = Y[iy];
-          Ey = EY[iy];
-          
-          cyy = norm2 * y*y;
-          cxy = norm1 * x*y;
-          
+          float eXY = eX * EY[iy];
+
+          cyy = norm2 * y * y;
+          cxy = norm1 * x * y;
+
           for (int iz = zMax; --iz >= zMin;) {
             z = Z[iz];
-            Ez = EZ[iz];
 
-            czz = norm2 * z*z;
-            cxz = norm1 * x*z;
-            cyz = norm1 * y*z;            
-            
-            voxelData[ix][iy][iz] += Ex*Ey*Ez
-                                    *( ad0  * (czz - 0.5*(cxx + cyy))
-                                     + ad1p * cxz
-                                     + ad1n * cyz
-                                     + ad2p * root34 * (cxx - cyy)
-                                     + ad2n * cxy);
+            czz = norm2 * z * z;
+            cxz = norm1 * x * z;
+            cyz = norm1 * y * z;
+
+            voxelDataTemp[ix][iy][iz] += (ad0 * (czz - 0.5f * (cxx + cyy)) + ad1p * cxz + ad1n
+                * cyz + ad2p * root34 * (cxx - cyy) + ad2n * cxy)
+                * eXY * EZ[iz];
           }
         }
       }
-    } 
-    moCoeff += 5;
+    }
+  }
+
+  private void addData10F(int nGaussians) {
+    // expects 10 orbitals in the order XXX, YYY, ZZZ, XYY, XXY, 
+    //                                  XXZ, XZZ, YZZ, YYZ, XYZ
+    if (thisAtom == null || isElectronDensity) {
+      moCoeff += 10;
+      return;
+    }
+    if (doDebug)
+      dumpInfo(nGaussians, JmolConstants.SHELL_F_CARTESIAN);
+    float alpha;
+    float c1;
+    float a;
+    float x, y, z, xx, yy, zz;
+    float axxx, ayyy, azzz, axyy, axxy, axxz, axzz, ayzz, ayyz, axyz;
+    float cxxx, cyyy, czzz, cxyy, cxxy, cxxz, cxzz, cyzz, cyyz, cxyz;
+
+    /*
+     Cartesian forms for f (l = 3) basis functions:
+     Type         Normalization
+     xxx          [(32768 * alpha^9) / (225 * pi^3))]^(1/4)
+     xxy          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
+     xxz          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
+     xyy          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
+     xyz          [(32768 * alpha^9) / (1 * pi^3))]^(1/4)
+     xzz          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
+     yyy          [(32768 * alpha^9) / (225 * pi^3))]^(1/4)
+     yyz          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
+     yzz          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
+     zzz          [(32768 * alpha^9) / (225 * pi^3))]^(1/4)
+     */
+
+    final float norm1 = (float) Math.pow(
+        32768.0 / (Math.PI * Math.PI * Math.PI), 0.25);
+    final float norm3 = norm1 / (float) Math.sqrt(15);
+    final float norm2 = norm1 / (float) Math.sqrt(3);
+
+    float mxxx = moCoefficients[moCoeff++];
+    float myyy = moCoefficients[moCoeff++];
+    float mzzz = moCoefficients[moCoeff++];
+    float mxyy = moCoefficients[moCoeff++];
+    float mxxy = moCoefficients[moCoeff++];
+    float mxxz = moCoefficients[moCoeff++];
+    float mxzz = moCoefficients[moCoeff++];
+    float myzz = moCoefficients[moCoeff++];
+    float myyz = moCoefficients[moCoeff++];
+    float mxyz = moCoefficients[moCoeff++];
+    for (int ig = 0; ig < nGaussians; ig++) {
+      alpha = gaussians[gaussianPtr + ig][0];
+      c1 = gaussians[gaussianPtr + ig][1];
+      setE(EX, alpha);
+
+      // common factor of contraction coefficient and alpha normalization 
+      // factor; only call pow once per primitive
+      a = c1 * (float) Math.pow(alpha, 2.25);
+
+      axxx = a * norm3 * mxxx;
+      ayyy = a * norm3 * myyy;
+      azzz = a * norm3 * mzzz;
+      axyy = a * norm2 * mxyy;
+      axxy = a * norm2 * mxxy;
+      axxz = a * norm2 * mxxz;
+      axzz = a * norm2 * mxzz;
+      ayzz = a * norm2 * myzz;
+      ayyz = a * norm2 * myyz;
+      axyz = a * norm1 * mxyz;
+
+      for (int ix = xMax; --ix >= xMin;) {
+        x = X[ix];
+        xx = x * x;
+
+        float Ex = EX[ix];
+        cxxx = axxx * xx * x;
+
+        for (int iy = yMax; --iy >= yMin;) {
+          y = Y[iy];
+          yy = y * y;
+          float Exy = Ex * EY[iy];
+          cyyy = ayyy * yy * y;
+          cxxy = axxy * xx * y;
+          cxyy = axyy * x * yy;
+
+          for (int iz = zMax; --iz >= zMin;) {
+            z = Z[iz];
+            zz = z * z;
+            czzz = azzz * zz * z;
+            cxxz = axxz * xx * z;
+            cxzz = axzz * x * zz;
+            cyyz = ayyz * yy * z;
+            cyzz = ayzz * y * zz;
+            cxyz = axyz * x * y * z;
+            voxelDataTemp[ix][iy][iz] +=  (cxxx + cyyy + czzz + cxyy + cxxy + cxxz + cxzz + cyzz
+                + cyyz + cxyz)
+                * Exy * EZ[iz];
+          }
+        }
+      }
+    }
   }
 
   private void addData7F(int nGaussians) {
     // expects 7 real orbitals in the order f0, f+1, f-1, f+2, f-2, f+3, f-3
-    
-    if (!atomSet.get(atomIndex)) {
+
+    if (thisAtom == null || isElectronDensity) {
       moCoeff += 7;
       return;
     }
-    
+
     if (doDebug)
       dumpInfo(nGaussians, JmolConstants.SHELL_F_SPHERICAL);
-    
-    setMinMax();
-    
+
     float alpha, c1, a;
     float x, y, z, xx, yy, zz;
     float cxxx, cyyy, czzz, cxyy, cxxy, cxxz, cxzz, cyzz, cyyz, cxyz;
     float af0, af1p, af1n, af2p, af2n, af3p, af3n;
     float f0, f1p, f1n, f2p, f2n, f3p, f3n;
-    float Ex, Ey, Ez;
-    
     /*
-      Cartesian forms for f (l = 3) basis functions:
-      Type         Normalization
-      xxx          [(32768 * alpha^9) / (225 * pi^3))]^(1/4)
-      xxy          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
-      xxz          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
-      xyy          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
-      xyz          [(32768 * alpha^9) / (1 * pi^3))]^(1/4)
-      xzz          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
-      yyy          [(32768 * alpha^9) / (225 * pi^3))]^(1/4)
-      yyz          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
-      yzz          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
-      zzz          [(32768 * alpha^9) / (225 * pi^3))]^(1/4)
-    */
-    
-    
-    final float norm1 = (float) Math.pow(32768.0 / (Math.PI*Math.PI*Math.PI),
-                                         0.25);
+     Cartesian forms for f (l = 3) basis functions:
+     Type         Normalization
+     xxx          [(32768 * alpha^9) / (225 * pi^3))]^(1/4)
+     xxy          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
+     xxz          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
+     xyy          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
+     xyz          [(32768 * alpha^9) / (1 * pi^3))]^(1/4)
+     xzz          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
+     yyy          [(32768 * alpha^9) / (225 * pi^3))]^(1/4)
+     yyz          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
+     yzz          [(32768 * alpha^9) / (9 * pi^3))]^(1/4)
+     zzz          [(32768 * alpha^9) / (225 * pi^3))]^(1/4)
+     */
+
+    final float norm1 = (float) Math.pow(
+        32768.0 / (Math.PI * Math.PI * Math.PI), 0.25);
     final float norm2 = norm1 / (float) Math.sqrt(3);
     final float norm3 = norm1 / (float) Math.sqrt(15);
-    
+
     // Linear combination coefficients for the various Cartesian gaussians
     final float c0_xxz_yyz = (float) (3.0 / (2.0 * Math.sqrt(5)));
-    
-    final float c1p_xzz = (float) Math.sqrt(6.0/5.0);
-    final float c1p_xxx = (float) Math.sqrt(3.0/8.0);
-    final float c1p_xyy = (float) Math.sqrt(3.0/40.0);
+
+    final float c1p_xzz = (float) Math.sqrt(6.0 / 5.0);
+    final float c1p_xxx = (float) Math.sqrt(3.0 / 8.0);
+    final float c1p_xyy = (float) Math.sqrt(3.0 / 40.0);
     final float c1n_yzz = c1p_xzz;
     final float c1n_yyy = c1p_xxx;
     final float c1n_xxy = c1p_xyy;
-    
-    final float c2p_xxz_yyz = (float) Math.sqrt(3.0/4.0);
-    
-    final float c3p_xxx = (float) Math.sqrt(5.0/8.0);
+
+    final float c2p_xxz_yyz = (float) Math.sqrt(3.0 / 4.0);
+
+    final float c3p_xxx = (float) Math.sqrt(5.0 / 8.0);
     final float c3p_xyy = 0.75f * (float) Math.sqrt(2);
     final float c3n_yyy = c3p_xxx;
     final float c3n_xxy = c3p_xyy;
-    
-    for (int ig = nGaussians; --ig >=0;) {
+
+    float m0 = moCoefficients[moCoeff++];
+    float m1p = moCoefficients[moCoeff++];
+    float m1n = moCoefficients[moCoeff++];
+    float m2p = moCoefficients[moCoeff++];
+    float m2n = moCoefficients[moCoeff++];
+    float m3p = moCoefficients[moCoeff++];
+    float m3n = moCoefficients[moCoeff++];
+
+    for (int ig = 0; ig < nGaussians; ig++) {
       alpha = gaussians[gaussianPtr + ig][0];
       c1 = gaussians[gaussianPtr + ig][1];
       a = c1 * (float) Math.pow(alpha, 2.25);
-      
-      af0  = a * moCoefficients[moCoeff];
-      af1p = a * moCoefficients[moCoeff+1];
-      af1n = a * moCoefficients[moCoeff+2];
-      af2p = a * moCoefficients[moCoeff+3];
-      af2n = a * moCoefficients[moCoeff+4];
-      af3p = a * moCoefficients[moCoeff+5];
-      af3n = a * moCoefficients[moCoeff+6];
-      
-      setCE(alpha, 0, 0, 0, 0);
-      
+
+      af0 = a * m0;
+      af1p = a * m1p;
+      af1n = a * m1n;
+      af2p = a * m2p;
+      af2n = a * m2n;
+      af3p = a * m3p;
+      af3n = a * m3n;
+
+      setE(EX, alpha);
+
       for (int ix = xMax; --ix >= xMin;) {
         x = X[ix];
-        xx = x*x;
-        Ex = EX[ix];
-        
-        cxxx = norm3 * x*xx;        
-        
+        xx = x * x;
+        float eX = EX[ix];
+        cxxx = norm3 * x * xx;
         for (int iy = yMax; --iy >= yMin;) {
           y = Y[iy];
-          yy = y*y;
-          Ey = EY[iy];
-          
-          cyyy = norm3 * y*yy;
-          cxyy = norm2 * x*yy;
-          cxxy = norm2 * xx*y;
-          
+          yy = y * y;
+          float eXY = eX * EY[iy];
+
+          cyyy = norm3 * y * yy;
+          cxyy = norm2 * x * yy;
+          cxxy = norm2 * xx * y;
+
           for (int iz = zMax; --iz >= zMin;) {
             z = Z[iz];
-            zz = z*z;
-            Ez = EZ[iz];
-                        
-            czzz = norm3 * z*zz;
-            cxxz = norm2 * xx*z;
-            cxzz = norm2 * x*zz;
-            cyyz = norm2 * yy*z;
-            cyzz = norm2 * y*zz;
-            cxyz = norm1 * x*y*z;
+            zz = z * z;
 
-            f0  = af0  * (czzz - c0_xxz_yyz * (cxxz + cyyz));
+            czzz = norm3 * z * zz;
+            cxxz = norm2 * xx * z;
+            cxzz = norm2 * x * zz;
+            cyyz = norm2 * yy * z;
+            cyzz = norm2 * y * zz;
+            cxyz = norm1 * x * y * z;
+
+            f0 = af0 * (czzz - c0_xxz_yyz * (cxxz + cyyz));
             f1p = af1p * (c1p_xzz * cxzz - c1p_xxx * cxxx - c1p_xyy * cxyy);
             f1n = af1n * (c1n_yzz * cyzz - c1n_yyy * cyyy - c1n_xxy * cxxy);
             f2p = af2p * (c2p_xxz_yyz * (cxxz - cyyz));
             f2n = af2n * cxyz;
             f3p = af3p * (c3p_xxx * cxxx - c3p_xyy * cxyy);
             f3n = af3n * (-c3n_yyy * cyyy + c3n_xxy * cxxy);
-            
-            voxelData[ix][iy][iz] += Ex*Ey*Ez
-                                    *( f0 + f1p + f1n + f2p +f2n + f3p + f3n); 
-
+            voxelDataTemp[ix][iy][iz] += (f0 + f1p + f1n + f2p + f2n + f3p + f3n) 
+                * eXY * EZ[iz];
           }
         }
       }
     }
-    moCoeff += 7;
   }
 
-  
   private void processSlater(int slaterIndex) {
     /*
      * We have two data structures for each slater, using the WebMO format: 
@@ -736,13 +833,16 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
      *    NOTE: A negative zeta means this is contracted!
      */
 
+    int lastAtom = atomIndex;
     atomIndex = slaterInfo[slaterIndex][0];
     float minuszeta = -slaterData[slaterIndex][0];
-    if (!atomSet.get(atomIndex)) {
+    if ((thisAtom = qmAtoms[atomIndex]) == null) {
       if (minuszeta <= 0)
         moCoeff++;
       return;
     }
+    if (atomIndex != lastAtom)
+      thisAtom.setXYZ(true);
     int a = slaterInfo[slaterIndex][1];
     int b = slaterInfo[slaterIndex][2];
     int c = slaterInfo[slaterIndex][3];
@@ -754,27 +854,19 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
     float coef = slaterData[slaterIndex][1] * moCoefficients[moCoeff++];
     if (coef == 0)
       return;
-    setMinMax();
-    for (int i = xMax; --i >= xMin;)
-      X[i] = xyzBohr[i][0] - atomCoordBohr[atomIndex].x;
-    for (int i = yMax; --i >= yMin;)
-      Y[i] = xyzBohr[i][1] - atomCoordBohr[atomIndex].y;
-    for (int i = zMax; --i >= zMin;)
-      Z[i] = xyzBohr[i][2] - atomCoordBohr[atomIndex].z;
-
     if (a == -2 || b == -2) /* if dz2 *//* if dx2-dy2 */
       for (int ix = xMax; --ix >= xMin;) {
-        float dx2 = X[ix] * X[ix];
+        float dx2 = X2[ix];
         for (int iy = yMax; --iy >= yMin;) {
-          float dy2 = Y[iy] * Y[iy];
+          float dy2 = Y2[iy];
           for (int iz = zMax; --iz >= zMin;) {
-            float dz2 = Z[iz] * Z[iz];
+            float dz2 = Z2[iz];
             float r = (float) Math.sqrt(dx2 + dy2 + dz2);
             float value = coef * (float) Math.exp(minuszeta * r)
                 * ((a == -2 ? 2 * dz2 - dx2 : dx2) - dy2);
             for (int i = d; --i >= 0;)
               value *= r;
-            voxelData[ix][iy][iz] += value;
+            voxelDataTemp[ix][iy][iz] += value;
           }
         }
       }
@@ -796,10 +888,12 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
               value *= dz;
             for (int i = d; --i >= 0;)
               value *= r;
-            voxelData[ix][iy][iz] += value;
+            voxelDataTemp[ix][iy][iz] += value;
           }
         }
       }
+    if (isElectronDensity)
+      setTemp();
   }
 
   private void dumpInfo(int nGaussians, String info) {
@@ -813,13 +907,12 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
     int n = info.length() / 2;
     if (Logger.debugging) {
       for (int i = 0; i < n; i++)
-        Logger.debug(
-            "MO coeff " + info.substring(2 * i, 2 * i + 2) + " " +
-            (moCoeff + i + 1) + " " + moCoefficients[moCoeff + i]);
+        Logger.debug("MO coeff " + info.substring(2 * i, 2 * i + 2) + " "
+            + (moCoeff + i + 1) + " " + moCoefficients[moCoeff + i]);
     }
     return;
   }
-  
+
   private void dumpInfo(int nGaussians, int shell) {
     for (int ig = 0; ig < nGaussians; ig++) {
       float alpha = gaussians[gaussianPtr + ig][0];
@@ -833,5 +926,5 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
             + moCoefficients[moCoeff + i]);
     }
   }
-}
 
+}

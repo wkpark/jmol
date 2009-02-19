@@ -234,7 +234,7 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   abstract boolean readVolumeParameters();
 
-  abstract void readVolumeData(boolean isMapData);
+  abstract boolean readVolumeData(boolean isMapData);
 
   ////////////////////////////////////////////////////////////////
   // CUBE/APBS/JVXL file reading stuff
@@ -273,6 +273,9 @@ public abstract class SurfaceReader implements VertexDataServer {
     resetIsosurface();
     if (!readVolumeParameters())
       return false;
+    nPointsX = voxelCounts[0];
+    nPointsY = voxelCounts[1];
+    nPointsZ = voxelCounts[2];
     jvxlData.insideOut = params.insideOut;
     jvxlData.nPointsX = nPointsX;
     jvxlData.nPointsY = nPointsY;
@@ -286,7 +289,8 @@ public abstract class SurfaceReader implements VertexDataServer {
       generateSurfaceData();
       volumeData.voxelData = voxelDataTemp;
     } else {
-      readVolumeData(false);
+      if (!readVolumeData(false))
+        return false;
       generateSurfaceData();
     }
     String s = jvxlFileHeaderBuffer.toString();
@@ -362,18 +366,18 @@ public abstract class SurfaceReader implements VertexDataServer {
   // this needs to be specific for each reader
   abstract protected void readSurfaceData(boolean isMapData) throws Exception;
 
-  protected void gotoAndReadVoxelData(boolean isMapData) {
+  protected boolean gotoAndReadVoxelData(boolean isMapData) {
     //overloaded in jvxlReader
     initializeVolumetricData();
-    if (nPointsX <= 0 || nPointsY <= 0 || nPointsZ <= 0)
-      return;
-    try {
-      gotoData(params.fileIndex - 1, nPointsX * nPointsY * nPointsZ);
-      readSurfaceData(isMapData);
-    } catch (Exception e) {
-      Logger.error(e.toString());
-      throw new NullPointerException();
-    }
+    if (nPointsX > 0 && nPointsY > 0 && nPointsZ > 0)
+      try {
+        gotoData(params.fileIndex - 1, nPointsX * nPointsY * nPointsZ);
+        readSurfaceData(isMapData);
+      } catch (Exception e) {
+        Logger.error(e.toString());
+        return false;
+      }
+    return true;
   }
 
   protected void gotoData(int n, int nPoints) throws Exception {

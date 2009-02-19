@@ -827,6 +827,5 @@ abstract public class ModelSet extends ModelCollection {
     super.deleteAtoms(-1, 0, 0, null, null);
     return bsDeleted;
   }
-
 }
 

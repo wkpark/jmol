@@ -730,8 +730,14 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("charges" == propertyName) {
+      params.theProperty = (float[]) value;
+      return true;
+    }
+
     if ("molecularOrbital" == propertyName) {
-      params.setMO(((Integer) value).intValue());
+      int iMo = ((Integer) value).intValue();
+      params.setMO(iMo, rangeDefined);
       Logger.info(params.calculationType);
       processState();
       return true;

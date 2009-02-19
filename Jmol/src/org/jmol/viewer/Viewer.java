@@ -7347,5 +7347,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
     }
   }
+
+  float[] getAtomicCharges() {
+    return modelSet.getAtomicCharges();
+  }
 }
   

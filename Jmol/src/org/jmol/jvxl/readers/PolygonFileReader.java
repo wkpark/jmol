@@ -49,8 +49,9 @@ abstract class PolygonFileReader extends SurfaceFileReader {
     return true;
   }
   
-  void readVolumeData(boolean isMapData) {
+  boolean readVolumeData(boolean isMapData) {
     // required by SurfaceReader
+    return true;
   }
 
   protected void readSurfaceData(boolean isMapData) throws Exception {

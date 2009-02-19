@@ -29,7 +29,6 @@ import javax.vecmath.Point3f;
 
 import org.jmol.api.MepCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
-import org.jmol.jvxl.readers.Parameters;
 
 /*
  * a simple molecular electrostatic potential cube generator
@@ -44,62 +43,38 @@ import org.jmol.jvxl.readers.Parameters;
  */
 public class MepCalculation extends QuantumCalculation implements MepCalculationInterface {
 
-  float[] charges;
-  
   public MepCalculation() {
   }
   
   public void calculate(VolumeDataInterface volumeData, BitSet bsSelected, Point3f[] atomCoordAngstroms, float[] charges) {
-    this.atomCoordAngstroms = atomCoordAngstroms;
-    this.charges = charges;
-    initialize(Parameters.MEP_MAX_GRID);
-    setVolume(volumeData, bsSelected);
-    processMep();
+    voxelData = volumeData.getVoxelData();
+    int[] countsXYZ = volumeData.getVoxelCounts();
+    initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2]);
+    setupCoordinates(volumeData.getOriginFloat(), 
+        volumeData.getVolumetricVectorLengths(), 
+        bsSelected, atomCoordAngstroms);
+    processMep(charges);
   }
-
-  private void processMep() {
-    setMinMax();
-    int firstAtom = 0;
-    int lastAtom = atomCoordBohr.length;
-    for (int i = 0; i < lastAtom; i++)
-      if (atomSet.get(i)) {
-        firstAtom = i;
-        break;
-      }
-    for (int i = lastAtom; --i >= firstAtom;)
-      if (atomSet.get(i)) {
-        lastAtom = i + 1;
-        break;
-    }
-
-    for (int atomIndex = firstAtom; atomIndex < lastAtom; atomIndex++) {
-      if (!atomSet.get(atomIndex))
+  
+  private void processMep(float[] charges) {
+    for (int atomIndex = qmAtoms.length; --atomIndex >= 0;) {
+      if ((thisAtom = qmAtoms[atomIndex]) == null)
         continue;
-      float x = atomCoordBohr[atomIndex].x;
-      float y = atomCoordBohr[atomIndex].y;
-      float z = atomCoordBohr[atomIndex].z;
       float charge = charges[atomIndex];
-      for (int i = countsXYZ[0]; --i >= 0;) {
-        X2[i] = X[i] = xyzBohr[i][0] - x;
-        X2[i] *= X[i];
-      }
-      for (int i = countsXYZ[1]; --i >= 0;) {
-        Y2[i] = Y[i] = xyzBohr[i][1] - y;
-        Y2[i] *= Y[i];
-      }
-      for (int i = countsXYZ[2]; --i >= 0;) {
-        Z2[i] = Z[i] = xyzBohr[i][2] - z;
-        Z2[i] *= Z[i];
-      }
+      thisAtom.setXYZ(true);
       for (int ix = xMax; --ix >= xMin;) {
-        for (int iy = yMax; --iy >= yMin;)
+        float dX = X2[ix];
+        for (int iy = yMax; --iy >= yMin;) {
+          float dXY = dX + Y2[iy];
           for (int iz = zMax; --iz >= zMin;) {
-            float d2 = X2[ix] + Y2[iy] + Z2[iz];
+            float d2 = dXY + Z2[iz];
             voxelData[ix][iy][iz] += (d2 == 0 ? charge
                 * Float.POSITIVE_INFINITY : charge / (float) Math.sqrt(d2));
           }
+        }
       }
     }
   }
+
 
 }

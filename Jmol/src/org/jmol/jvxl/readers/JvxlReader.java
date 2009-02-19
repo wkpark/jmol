@@ -74,20 +74,22 @@ public class JvxlReader extends VolumeFileReader {
   private int edgeDataCount;
   private int colorDataCount;
 
-  protected void readVolumeData(boolean isMapData) {
-    super.readVolumeData(isMapData);
+  protected boolean readVolumeData(boolean isMapData) {
+    if (!super.readVolumeData(isMapData))
+      return false;
     strFractionTemp = jvxlEdgeDataRead;
     fractionPtr = 0;
+    return true;
   }
 
-  protected void gotoAndReadVoxelData(boolean isMapData) {
+  protected boolean gotoAndReadVoxelData(boolean isMapData) {
     initializeVolumetricData();
     if (nPointsX < 0 || nPointsY < 0 || nPointsZ < 0) 
-      return;
+      return true;
     try {
       gotoData(params.fileIndex - 1, nPointsX * nPointsY * nPointsZ);
       if (vertexDataOnly)
-        return;
+        return true;
       readSurfaceData(isMapData);
       if (edgeDataCount > 0)
         jvxlEdgeDataRead = jvxlReadData("edge", edgeDataCount);
@@ -95,8 +97,14 @@ public class JvxlReader extends VolumeFileReader {
         jvxlColorDataRead = jvxlReadData("color", colorDataCount);
     } catch (Exception e) {
       Logger.error(e.toString());
-      throw new NullPointerException();
+      try {
+      br.close();
+      } catch (Exception e2) {
+        // ignore
+      }
+      return false;
     }
+    return true;
   }
   
   private int nThisValue;
@@ -592,7 +600,7 @@ public class JvxlReader extends VolumeFileReader {
     strFractionTemp = (isJvxl ? jvxlColorDataRead : "");
     if (isJvxl && strFractionTemp.length() == 0) {
       Logger
-          .error("You cannot use JVXL data to map onto OTHER data, because it only containts the data for one surface. Use ISOSURFACE \"file.jvxl\" not ISOSURFACE .... MAP \"file.jvxl\".");
+          .error("You cannot use JVXL data to map onto OTHER data, because it only contains the data for one surface. Use ISOSURFACE \"file.jvxl\" not ISOSURFACE .... MAP \"file.jvxl\".");
       return "";
     }
     fractionPtr = 0;
@@ -912,8 +920,9 @@ public class JvxlReader extends VolumeFileReader {
     } else if (jvxlData.jvxlPlane == null) {
       //no real point in compressing this unless it's a sign-based coloring
       sb.append(jvxlData.jvxlSurfaceData);
-      sb.append(jvxlCompressString(jvxlData.jvxlEdgeData
-          + jvxlData.jvxlColorData));
+      sb.append(jvxlCompressString(jvxlData.jvxlEdgeData))
+      .append('\n').append(jvxlCompressString(jvxlData.jvxlColorData))
+      .append('\n');
     } else {
       sb.append(jvxlCompressString(jvxlData.jvxlColorData)).append('\n');
     }

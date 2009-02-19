@@ -26,6 +26,7 @@ package org.jmol.jvxl.readers;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.api.Interface;
 import org.jmol.api.MOCalculationInterface;
@@ -78,23 +79,42 @@ class IsoMOReader extends AtomDataReader {
   
   protected void generateCube() {
     volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
-    Hashtable moData = params.moData;
     MOCalculationInterface q = (MOCalculationInterface) Interface.getOptionInterface("quantum.MOCalculation");
+    Hashtable moData = params.moData;
+    float[] coef = params.moCoefficients; 
+    
+    if (coef == null) {
+      // electron density calc
+      Vector mos = (Vector) (moData.get("mos"));
+      for (int i = params.qm_moNumber; --i >= 0; ) {
+        Logger.info(" generating isosurface data for MO " + (i + 1));
+        Hashtable mo = (Hashtable) mos.get(i);
+        coef = (float[]) mo.get("coefficients");
+        getData(q, moData, coef, params.theProperty);
+      }
+    } else {
+      getData(q, moData, coef, null);
+    }
+  }
+  
+  private void getData(MOCalculationInterface q, Hashtable moData,
+                       float[] coef, float[] nuclearCharges) {
     switch (params.qmOrbitalType) {
     case Parameters.QM_TYPE_GAUSSIAN:
       q.calculate(volumeData, bsMySelected, (String) moData
           .get("calculationType"), atomData.atomXyz, atomData.firstAtomIndex,
           (Vector) moData.get("shells"), (float[][]) moData.get("gaussians"),
-          (Hashtable) moData.get("atomicOrbitalOrder"), null, null,
-          params.moCoefficients);
+          (Hashtable) moData.get("atomicOrbitalOrder"), null, null, coef,
+          nuclearCharges);
       break;
     case Parameters.QM_TYPE_SLATER:
       q.calculate(volumeData, bsMySelected, (String) moData
           .get("calculationType"), atomData.atomXyz, atomData.firstAtomIndex,
           null, null, null, (int[][]) moData.get("slaterInfo"),
-          (float[][]) moData.get("slaterData"), params.moCoefficients);
+          (float[][]) moData.get("slaterData"), coef, nuclearCharges);
       break;
     default:
     }
+
   }
 }

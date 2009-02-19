@@ -264,6 +264,13 @@ abstract public class AtomCollection {
       }
   }
   
+  public float[] getAtomicCharges() {
+    float[] charges = new float[atomCount];
+    for (int i = atomCount; --i >= 0; )
+      charges[i] = atoms[i].getElementNumber();
+    return charges;
+  }
+
   protected float getRadiusVdwJmol(Atom atom) {
     return JmolConstants.getVanderwaalsMar(atom.getElementNumber(),
         JmolConstants.VDW_JMOL) / 1000f;

@@ -1808,7 +1808,7 @@ abstract public class ModelCollection extends BondCollection {
       }
       return bs;
     case Token.symmetry:
-      BitSetUtil.copy(bsSymmetry == null ? bsSymmetry = new BitSet(atomCount) : bsSymmetry);
+      return BitSetUtil.copy(bsSymmetry == null ? bsSymmetry = new BitSet(atomCount) : bsSymmetry);
     case Token.unitcell:
       bs = new BitSet();
       SymmetryInterface unitcell = viewer.getCurrentUnitCell();

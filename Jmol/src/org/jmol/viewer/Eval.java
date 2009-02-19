@@ -10545,6 +10545,7 @@ class Eval {
       error(ERROR_multipleModelsNotOK, "MO isosurfaces");
     Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
         "jmolSurfaceInfo");
+    int firstMoNumber = moNumber;
     if (moData != null && ((String) moData.get("surfaceDataType")).equals("mo")) {
       //viewer.loadShape(shape);
       //setShapeProperty(shape, "init", new Integer(modelIndex));
@@ -10583,7 +10584,10 @@ class Eval {
     setShapeProperty(shape, "moData", moData);
     if (title != null)
       setShapeProperty(shape, "title", title);
-    setShapeProperty(shape, "molecularOrbital", new Integer(moNumber));
+    if (firstMoNumber < 0)
+      setShapeProperty(shape, "charges", viewer.getAtomicCharges());
+    setShapeProperty(shape, "molecularOrbital", 
+        new Integer(firstMoNumber < 0 ? -moNumber : moNumber));
     setShapeProperty(shape, "clear", null);
   }
 
@@ -11013,6 +11017,11 @@ class Eval {
           i = iToken;
           break;
         }
+        if (str.equalsIgnoreCase("ED")) {
+          setMoData(iShape, -1, 0, modelIndex, null);
+          surfaceObjectSeen = true;
+          continue;
+        }
         if (str.equalsIgnoreCase("DEBUG") || str.equalsIgnoreCase("NODEBUG")) {
           propertyName = "debug";
           propertyValue = (str.equalsIgnoreCase("DEBUG") ? Boolean.TRUE
@@ -11326,7 +11335,9 @@ class Eval {
           .getShapeProperty(iShape, "dataRange");
       String s = (String) viewer.getShapeProperty(iShape, "ID");
       if (s != null) {
-        s += " created; number of isosurfaces = " + n;
+        s += " created with cutoff = " 
+            + viewer.getShapeProperty(iShape, "cutoff") 
+            + " ; number of isosurfaces = " + n;
         if (dataRange != null && dataRange[0] != dataRange[1])
           s += "\ncolor range " + dataRange[2] + " " + dataRange[3]
               + "; mapped data range " + dataRange[0] + " to " + dataRange[1];

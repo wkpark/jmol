@@ -286,6 +286,8 @@ abstract class AtomDataReader extends VolumeDataReader {
   }
   
   protected boolean fixTitleLine(int iLine) {
+    if (params.title == null)
+      return false;
     String line = params.title[iLine];
     if (line.indexOf("%F") > 0)
       line = params.title[iLine] = TextFormat.formatString(line, "F", atomData.fileName);

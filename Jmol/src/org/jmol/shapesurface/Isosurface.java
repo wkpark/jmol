@@ -386,6 +386,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   public Object getProperty(String property, int index) {
+    Object ret = super.getProperty(property, index);
+    if (ret != null)
+      return ret;
     if (property == "dataRange")
       return (thisMesh == null ? null : new float[] {
           jvxlData.mappedDataMin, jvxlData.mappedDataMax,
@@ -393,15 +396,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           jvxlData.valueMappedToBlue });
     if (property == "moNumber")
       return new Integer(moNumber);
-    Object ret = super.getProperty(property, index);
-    if (ret != null)
-      return ret;
     if (property == "area")
       return new Float((thisMesh == null ? Float.NaN : thisMesh.calculateArea()));
     if (property == "volume")
       return new Float((thisMesh == null ? Float.NaN : thisMesh.calculateVolume()));
     if (thisMesh == null)
       return "no current isosurface";
+    if (property == "cutoff")
+      return new Float(jvxlData.cutoff);
     if (property == "plane")
       return jvxlData.jvxlPlane;
     if (property == "jvxlFileData") {

@@ -270,6 +270,7 @@ public class Parameters {
   final static float defaultCutoff = 0.02f;
   final static float defaultOrbitalCutoff = 0.14f;
   public final static float defaultQMOrbitalCutoff = 0.050f; // WebMO
+  final static float defaultQMElectronDensityCutoff = 0.010f;
   final static int defaultContourCount = 11; //odd is better
   final static int nContourMax = 100;
   final static int defaultColorNegative = 0xFFFF0000; //red
@@ -577,41 +578,49 @@ public class Parameters {
   int qm_nAtoms;
   int qm_moNumber = Integer.MAX_VALUE;
   
-  void setMO(int iMo) {
+  void setMO(int iMo, boolean isRangeDefined) {
     iUseBitSets = true;
-    qm_moNumber = iMo;
+    qm_moNumber = Math.abs(iMo);
     qmOrbitalType = (moData.containsKey("gaussians") ? QM_TYPE_GAUSSIAN
         : moData.containsKey("slaterInfo") ? QM_TYPE_SLATER : QM_TYPE_UNKNOWN);
+    boolean isElectronDensity = (iMo <= 0);
     if (qmOrbitalType == QM_TYPE_UNKNOWN) {
- //TODO     value = moData; // must be generic surface info
-      Logger.error("MO ERROR: No basis functions found in file for MO calculation. (GAUSSIAN 'gfprint' keyword may be missing?)");
+      //TODO     value = moData; // must be generic surface info
+      Logger
+          .error("MO ERROR: No basis functions found in file for MO calculation. (GAUSSIAN 'gfprint' keyword may be missing?)");
       mo = null;
     } else {
       Vector mos = (Vector) (moData.get("mos"));
       qmOrbitalCount = mos.size();
       calculationType = (String) moData.get("calculationType");
-      calculationType = "Molecular orbital #" + qm_moNumber + "/" + qmOrbitalCount
-      + " " + (calculationType == null ? "" : calculationType);
-      mo = (Hashtable) mos.get(qm_moNumber - 1);
-
-      if (title == null) {
-        title = new String[5];
-        title[0] = "%F";
-        title[1] = "Model %M  MO %I/%N %T";
-        title[2] = "Energy = %E %U";
-        title[3] = "?Symmetry = %S";
-        title[4] = "?Occupancy = %O";
+      calculationType = "Molecular orbital #" + qm_moNumber + "/"
+          + qmOrbitalCount + " "
+          + (calculationType == null ? "" : calculationType);
+      if (!isElectronDensity) {
+        // qm_moNumber < 0 means this is an RHF electron density calculation 
+        // through orbital -qm_moNumber
+        if (title == null) {
+          title = new String[5];
+          title[0] = "%F";
+          title[1] = "Model %M  MO %I/%N %T";
+          title[2] = "Energy = %E %U";
+          title[3] = "?Symmetry = %S";
+          title[4] = "?Occupancy = %O";
+        }
+        mo = (Hashtable) mos.get(qm_moNumber - 1);
+        moCoefficients = (float[]) mo.get("coefficients");
       }
-      moCoefficients = (float[]) mo.get("coefficients");
-      dataType = SURFACE_MOLECULARORBITAL;
     }
-  //  colorBySign = false;
-  //  isBicolorMap = false;
+    dataType = SURFACE_MOLECULARORBITAL;
+    //  colorBySign = false;
+    //  isBicolorMap = false;
     if (cutoff == Float.MAX_VALUE) {
-      cutoff = defaultQMOrbitalCutoff;
+      cutoff = (isElectronDensity ? defaultQMElectronDensityCutoff
+          : defaultQMOrbitalCutoff);
       if (isSquared)
         cutoff = cutoff * cutoff;
     }
+    isEccentric = isAnisotropic = false;
     isCutoffAbsolute = (cutoff > 0 && !isPositiveOnly);
     if (state >= STATE_DATA_READ || thePlane != null)
       return;

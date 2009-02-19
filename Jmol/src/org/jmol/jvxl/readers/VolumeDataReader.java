@@ -92,13 +92,14 @@ class VolumeDataReader extends SurfaceReader {
     return true;
   }
 
-  void readVolumeData(boolean isMapData) {
+  boolean readVolumeData(boolean isMapData) {
     try {
       readSurfaceData(isMapData);
     } catch (Exception e) {
       e.printStackTrace();
-      return;
+      return false;
     }
+    return true;
   }
 
   protected void readVoxelDataIndividually(boolean isMapData) throws Exception {

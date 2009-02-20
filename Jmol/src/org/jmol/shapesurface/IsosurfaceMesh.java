@@ -27,6 +27,7 @@ package org.jmol.shapesurface;
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -35,6 +36,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.util.ArrayUtil;
 import org.jmol.viewer.Viewer;
 import org.jmol.jvxl.data.JvxlData;
+import org.jmol.jvxl.readers.JvxlReader;
 
 import org.jmol.jvxl.calc.MarchingSquares;
 import org.jmol.shape.Mesh;
@@ -62,6 +64,7 @@ public class IsosurfaceMesh extends Mesh {
     super.clear(meshType);  
     vertexColixes = null;
     vertexValues = null;
+    vContours = null;
     assocGridPointMap = null;
     assocGridPointNormals = null;
     vertexSets = null;
@@ -243,5 +246,98 @@ public class IsosurfaceMesh extends Mesh {
             .get(assocGridPointMap.get(I)));
       }
     }
+  }
+  
+  /**
+   * create a set of contour data. Each contour is a
+   * Vector containing:
+   *   BitSet of critical triangles
+   *   StringBuffer containing encoded data for each segment:
+   *     char type ('3', '6', '5') indicating which two edges
+   *       of the triangle are connected: 
+   *         '3' 0x011 AB-BC
+   *         '5' 0x101 AB-CA
+   *         '6' 0x110 BC-CA
+   *     char fraction along first edge (jvxlFractionToCharacter)
+   *     char fraction along second edge (jvxlFractionToCharacter)
+   *       
+   *   stream of points for rendering
+   * 
+   * @return contour vector set
+   */
+  Vector[] getContours() {
+    int n = jvxlData.nContours;
+    if (n == 0)
+      return null;
+    if (vContours != null)
+      return vContours;
+    vContours = new Vector[n];
+    for (int i = 0; i < n; i++)
+      vContours[i] = new Vector();
+    float dv = (jvxlData.valueMappedToBlue - jvxlData.valueMappedToRed)
+        / (n - 1);
+    for (int i = 0; i < n; i++) {
+      float value = jvxlData.valueMappedToRed + i * dv;
+      get3dContour(i, value);
+    }
+    return vContours;
+  }
+  
+  Vector[] vContours;
+  
+  private void get3dContour(int iContour, float f) {
+    BitSet bsContour = new BitSet(polygonCount);
+    Vector v = vContours[iContour];
+    StringBuffer fData = new StringBuffer();
+    v.add(bsContour);
+    v.add(fData);
+    for (int i = polygonCount; --i >= 0;) {
+      if (!setABC(i))
+        continue;
+      int type = 0;
+      float f1, f2;
+      f1 = checkPt(iA, iB, f);
+      if (!Float.isNaN(f1)) {
+        type |= 1;
+        v.add(getContourPoint(iA, iB, f1));
+      }
+      f2 = checkPt(iB, iC, f);
+        if (!Float.isNaN(f2)) {
+          if (type == 0)
+            f1 = f2;
+          type |= 2;
+          v.add(getContourPoint(iB, iC, f2));
+        }
+      switch(type){
+      case 0:
+      case 3:
+        break;
+      default:
+        f2 = checkPt(iC, iA, f);
+        type |= 4;
+        v.add(getContourPoint(iC, iA, f2));
+      }
+      if (type == 0)
+        continue;
+      bsContour.set(i);
+      fData.append(type);
+      fData.append(JvxlReader.jvxlFractionAsCharacter(f1));
+      fData.append(JvxlReader.jvxlFractionAsCharacter(f2));
+    }
+  }
+
+  private float checkPt(int i, int j, float f) {
+    float f1, f2;
+    return (((f1 = vertexValues[i]) <= f) == (f < (f2 = vertexValues[j]))
+        ? (f - f1) / (f2 - f1) : Float.NaN);
+  }
+
+  private Point3f getContourPoint(int i, int j, float f) {
+    Point3f pt = new Point3f();
+    pt.set(vertices[j]);
+    pt.sub(vertices[i]);
+    pt.scale(f);
+    pt.add(vertices[i]);
+    return pt;
   }
 }

@@ -259,6 +259,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected boolean jvxlDataIsColorMapped;
   protected boolean jvxlDataIsPrecisionColor;
   protected boolean jvxlDataIs2dContour;
+  protected boolean jvxlDataIs3dContour;
   protected float jvxlCutoff;
   protected int jvxlNSurfaceInts;
   protected char cJvxlEdgeNaN;
@@ -312,6 +313,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.colorFractionBase = colorFractionBase;
     jvxlData.colorFractionRange = colorFractionRange;
     jvxlData.jvxlDataIs2dContour = jvxlDataIs2dContour;
+    jvxlData.jvxlDataIs3dContour = jvxlDataIs3dContour;
     jvxlData.jvxlDataIsColorMapped = jvxlDataIsColorMapped;
     jvxlData.isXLowToHigh = isXLowToHigh;
     jvxlData.vertexDataOnly = vertexDataOnly;
@@ -523,15 +525,16 @@ public abstract class SurfaceReader implements VertexDataServer {
   void colorIsosurface() {
     if (params.isSquared)
       volumeData.filterData(true, Float.NaN);
-    if (params.isContoured && marchingSquares == null) {
+/*    if (params.isContoured && marchingSquares == null) {
       //    if (params.isContoured && !(jvxlDataIs2dContour || params.thePlane != null)) {
       Logger.error("Isosurface error: Cannot contour this type of data.");
       return;
     }
+*/
     if (meshDataServer != null) {
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
     }
-    if (params.isContoured) {
+    if (params.isContoured && marchingSquares != null) {
       params.setMapRanges(this);
       marchingSquares.setMinMax(params.valueMappedToRed,
           params.valueMappedToBlue);
@@ -605,7 +608,6 @@ public abstract class SurfaceReader implements VertexDataServer {
         value = volumeData.lookupInterpolatedVoxelValue(meshData.vertices[i]);
       meshData.vertexValues[i] = value;
     }
-
     colorData();
     
     JvxlReader.jvxlCreateColorData(jvxlData, 

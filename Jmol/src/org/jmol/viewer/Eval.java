@@ -11397,6 +11397,8 @@ class Eval {
     case Token.frontlit:
     case Token.backlit:
     case Token.fullylit:
+    case Token.contourlines:
+    case Token.nocontourlines:
     case Token.dots:
     case Token.nodots:
     case Token.mesh:

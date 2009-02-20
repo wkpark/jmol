@@ -718,6 +718,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     viewer.setCurrentColorRange(jvxlData.valueMappedToRed,
         jvxlData.valueMappedToBlue);
     thisMesh.isColorSolid = false;
+    thisMesh.getContours();
     thisMesh.colorCommand = "color $" + thisMesh.thisID + " "
         + getUserColorScheme(schemeName) + " range "
         + (jvxlData.isColorReversed ? jvxlData.valueMappedToBlue + " "

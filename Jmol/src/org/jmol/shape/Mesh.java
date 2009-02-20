@@ -73,6 +73,7 @@ public class Mesh {
     visibilityFlags = n;//set to 1 in mps
   }
   
+  public boolean showContourLines = false;
   public boolean showPoints = false;
   public boolean drawTriangles = false;
   public boolean fillTriangles = true;

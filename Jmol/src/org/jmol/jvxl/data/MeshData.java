@@ -299,20 +299,19 @@ public class MeshData {
         || val1 <= 0 && val2 <= 0 && val3 <= 0);
   }
   
-  public void invalidateTriangles() {
-    for (int i = polygonCount; --i >= 0;) {
-      int[] vertexIndexes = polygonIndexes[i];
-      if (vertexIndexes == null)
-        continue;
-      int iA = vertexIndexes[0];
-      int iB = vertexIndexes[1];
-      int iC = vertexIndexes[2];
-      if (Float.isNaN(vertexValues[iA]) || Float.isNaN(vertexValues[iB])
-          || Float.isNaN(vertexValues[iC]))
-        polygonIndexes[i] = null;
-    }
+  private boolean setABC(int i) {
+    int[] vertexIndexes = polygonIndexes[i];
+    return vertexIndexes != null
+          && !(Float.isNaN(vertexValues[vertexIndexes[0]])
+            || Float.isNaN(vertexValues[vertexIndexes[1]]) 
+            || Float.isNaN(vertexValues[vertexIndexes[2]]));
   }
   
 
+  public void invalidateTriangles() {
+    for (int i = polygonCount; --i >= 0;)
+      if (!setABC(i))
+        polygonIndexes[i] = null;
+  }
 }
 

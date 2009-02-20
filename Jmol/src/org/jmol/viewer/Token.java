@@ -980,6 +980,7 @@ public class Token {
   final static int clear        = misc | 10;
   final static int clipboard    = misc | 11;
   final static int constraint   = misc | 12;
+  final public static int contourlines = misc | 112;
   final static int direction    = misc | 13;
   final static int displacement = misc | 14;
   final static int dotted       = misc | 15;
@@ -1000,6 +1001,7 @@ public class Token {
   final static int mode         = misc | 28;
   final static int monomer      = misc | 29;
   final static int next         = misc | 30;
+  final public static int nocontourlines = misc | 130;
   final public static int nodots       = misc | 31;
   final public static int nofill       = misc | 32;
   final public static int nomesh       = misc | 33;
@@ -1349,6 +1351,7 @@ public class Token {
     "clipboard",        new Token(clipboard),
     "connected",        new Token(connected),
     "constraint",       new Token(constraint),
+    "contourLines",     new Token(contourlines),
     "coord",            new Token(coord),
     "coordinates",      null,
     "coords",           null,
@@ -1418,6 +1421,7 @@ public class Token {
     "null",             null,
     "inherit",          null,
     "normal",           new Token(normal),
+    "noContourLines",   new Token(nocontourlines),
     "notFrontOnly",     new Token(notfrontonly),
     "noTriangles",      new Token(notriangles),
     "nucleic",          new Token(nucleic),

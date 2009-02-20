@@ -189,6 +189,7 @@ public abstract class MeshCollection extends Shape {
       case Token.frontlit:
       case Token.backlit:
       case Token.fullylit:
+      case Token.contourlines:
       case Token.dots:
       case Token.mesh:
       case Token.fill:
@@ -198,6 +199,10 @@ public abstract class MeshCollection extends Shape {
       case Token.off:
         test = false;
         tok = Token.on;
+        break;
+      case Token.nocontourlines:
+        test = false;
+        tok = Token.nocontourlines;
         break;
       case Token.nodots:
         test = false;
@@ -250,6 +255,11 @@ public abstract class MeshCollection extends Shape {
         currentMesh.setLighting(tokProp);
         if (linkedMesh != null)
           linkedMesh.setLighting(tokProp);
+        return;
+      case Token.contourlines:
+        currentMesh.showContourLines = bProp;
+        if (linkedMesh != null)
+          linkedMesh.showContourLines = bProp;
         return;
       case Token.dots:
         currentMesh.showPoints = bProp;

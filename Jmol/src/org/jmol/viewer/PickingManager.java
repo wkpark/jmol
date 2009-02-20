@@ -151,9 +151,6 @@ class PickingManager {
     }
     int n = 2;
     switch (pickingMode) {
-    default:
-      pickSelected("atomindex=" + atomIndex, modifiers, isDoubleClick);
-      return;
     case JmolConstants.PICKING_OFF:
       return;
     case JmolConstants.PICKING_MEASURE_TORSION:
@@ -228,6 +225,7 @@ class PickingManager {
       viewer.script("set labeltoggle {atomindex="+atomIndex+"}");
       return;
     }
+    pickSelected("atomindex=" + atomIndex, modifiers, isDoubleClick);
   }
 
   private int queueAtom(int atomIndex, Point3f ptClicked) {

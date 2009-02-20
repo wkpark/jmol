@@ -243,6 +243,8 @@ public class Mesh {
     s.append(drawTriangles ? " mesh" : " noMesh");
     s.append(showPoints ? " dots" : " noDots");
     s.append(frontOnly ? " frontOnly" : " notFrontOnly");
+    if (showContourLines)
+      s.append(" contourlines");
     if (showTriangles)
       s.append(" triangles");
     s.append(lighting == JmolConstants.BACKLIT ? " backlit"

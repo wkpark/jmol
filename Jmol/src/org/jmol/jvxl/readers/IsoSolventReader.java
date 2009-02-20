@@ -295,7 +295,7 @@ class IsoSolventReader extends AtomDataReader {
     }
     float maxRadius = 0;
     float r0 = (isFirstPass && isCavity ? cavityRadius : 0);
-    boolean isWithin = (isFirstPass && distance != Float.MAX_VALUE);
+    boolean isWithin = (isFirstPass && distance != Float.MAX_VALUE && point != null);
     for (int iAtom = 0; iAtom < atomCount; iAtom++) {
       ptA = atomXyz[iAtom];
       rA = atomRadius[iAtom];

@@ -324,6 +324,10 @@ import org.jmol.util.ArrayUtil;
   
   private final static int GRAY = 0xFF808080;
   
+  public final int getArgbFromPalette(float val, float lo, float hi) {
+    return getArgbFromPalette(val, lo, hi, palette);
+  }
+
   public final static int getArgbFromPalette(float val, float lo, float hi, int palette) {
     if (Float.isNaN(val))
       return GRAY;

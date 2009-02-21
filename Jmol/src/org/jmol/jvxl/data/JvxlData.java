@@ -113,6 +113,8 @@
 
 package org.jmol.jvxl.data;
 
+import java.util.Vector;
+
 import javax.vecmath.Point4f;
 
 import org.jmol.jvxl.readers.JvxlReader;
@@ -168,6 +170,9 @@ public class JvxlData {
   public int nEdges;
   public int nSurfaceInts;
   public int vertexCount;
+
+  public Vector[] vContours;
+  public int[] contourColors;
 
   public short minColorIndex = -1;
   public short maxColorIndex = 0;

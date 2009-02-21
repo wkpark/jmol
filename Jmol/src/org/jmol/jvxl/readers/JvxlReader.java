@@ -28,7 +28,9 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Point4f;
 import java.io.BufferedReader;
 import java.util.BitSet;
+import java.util.Vector;
 
+import org.jmol.shapesurface.IsosurfaceMesh;
 import org.jmol.util.*;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.MeshData;
@@ -534,25 +536,30 @@ public class JvxlReader extends VolumeFileReader {
 
   public static void setSurfaceInfoFromBitSet(JvxlData jvxlData, BitSet bs,
                                               Point4f thePlane) {
-    boolean inside = false;
-    int dataCount = 0;
     StringBuffer sb = new StringBuffer();
-    int nSurfaceInts = 0;
     int nPoints = jvxlData.nPointsX * jvxlData.nPointsY * jvxlData.nPointsZ;
+    int nSurfaceInts = jvxlEncodeBitSet(bs, nPoints, sb);
+    setSurfaceInfo(jvxlData, thePlane, nSurfaceInts, sb);
+  }
+  
+  private static int jvxlEncodeBitSet(BitSet bs, int nPoints, StringBuffer sb) {
+    int dataCount = 0;
+    int n = 0;
+    boolean inside = false;
     for (int i = 0; i < nPoints; ++i) {
       if (inside == bs.get(i)) {
         dataCount++;
       } else {
         sb.append(' ').append(dataCount);
-        nSurfaceInts++;
+        n++;
         dataCount = 1;
         inside = !inside;
       }
     }
     sb.append(' ').append(dataCount).append('\n');
-    setSurfaceInfo(jvxlData, thePlane, nSurfaceInts, sb);
+    return n;
   }
-  
+
   protected static void setSurfaceInfo(JvxlData jvxlData, Point4f thePlane, int nSurfaceInts, StringBuffer surfaceData) {
     jvxlData.jvxlSurfaceData = surfaceData.toString();
     if (jvxlData.jvxlSurfaceData.indexOf("--") == 0)
@@ -940,6 +947,11 @@ public class JvxlReader extends VolumeFileReader {
     if (msg != null && !jvxlData.vertexDataOnly)
       data.append("#-------end of jvxl file data-------\n");
     data.append(jvxlData.jvxlInfoLine).append('\n');
+    if (jvxlData.vContours != null) {
+      data.append("<jvxlContourData>\n");
+      jvxlEncodeContourData(jvxlData.vContours, data);
+      data.append("</jvxlContourData>\n");
+    }
     if (comment != null)
         data.append("<jvxlSurfaceCommand>\n  ").append(comment).append(
             "\n</jvxlSurfaceCommand>\n");
@@ -949,6 +961,24 @@ public class JvxlReader extends VolumeFileReader {
     if (includeHeader)
       data.append("<jvxlFileTitle>\n").append(jvxlData.jvxlFileTitle).append("</jvxlFileTitle>\n");
     return data.toString();
+  }
+
+  private static void jvxlEncodeContourData(Vector[] contours, StringBuffer sb) {
+    for (int i = 0; i < contours.length; i++) {
+      int nPolygons = ((Integer) contours[i]
+                                          .get(IsosurfaceMesh.CONTOUR_NPOLYGONS)).intValue();
+      sb.append("<jvxlContour i=\"" + i + "\"");
+      sb.append(" value = \"" + contours[i].get(IsosurfaceMesh.CONTOUR_VALUE) + "\"");
+      sb.append(" color = \"" + contours[i].get(IsosurfaceMesh.CONTOUR_COLOR) + "\"");
+      sb.append(" npolygons = \"" + nPolygons + "\"");
+      StringBuffer sb1 = new StringBuffer();
+      jvxlEncodeBitSet((BitSet) contours[i].get(IsosurfaceMesh.CONTOUR_BITSET),
+          nPolygons, sb1);
+      sb.append(" data=\"" + contours[i].get(IsosurfaceMesh.CONTOUR_FDATA)
+          + "\">\n");
+      sb.append(sb1);
+      sb.append("</jvxlContour>\n");
+    }
   }
 
   //  to/from ascii-encoded data

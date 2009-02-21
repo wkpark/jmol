@@ -64,7 +64,6 @@ public class IsosurfaceMesh extends Mesh {
     super.clear(meshType);  
     vertexColixes = null;
     vertexValues = null;
-    vContours = null;
     assocGridPointMap = null;
     assocGridPointNormals = null;
     vertexSets = null;
@@ -76,6 +75,7 @@ public class IsosurfaceMesh extends Mesh {
     jvxlData.jvxlSurfaceData = "";
     jvxlData.jvxlEdgeData = "";
     jvxlData.jvxlColorData = "";
+    jvxlData.vContours = null;
     surfaceSet = null;
     nSets = 0;
   }  
@@ -248,11 +248,21 @@ public class IsosurfaceMesh extends Mesh {
     }
   }
   
+  public static final int CONTOUR_NPOLYGONS = 0;
+  public static final int CONTOUR_BITSET = 1;
+  public static final int CONTOUR_VALUE = 2;
+  public static final int CONTOUR_COLOR = 3;
+  public static final int CONTOUR_FDATA = 4;
+  public static final int CONTOUR_POINTS = 5;
+
   /**
    * create a set of contour data. Each contour is a
    * Vector containing:
-   *   BitSet of critical triangles
-   *   StringBuffer containing encoded data for each segment:
+   *   0 Integer number of polygons (length of BitSet) 
+   *   1 BitSet of critical triangles
+   *   2 Float value
+   *   3 int[] [colorArgb]
+   *   4 StringBuffer containing encoded data for each segment:
    *     char type ('3', '6', '5') indicating which two edges
    *       of the triangle are connected: 
    *         '3' 0x011 AB-BC
@@ -260,48 +270,48 @@ public class IsosurfaceMesh extends Mesh {
    *         '6' 0x110 BC-CA
    *     char fraction along first edge (jvxlFractionToCharacter)
    *     char fraction along second edge (jvxlFractionToCharacter)
-   *       
-   *   stream of points for rendering
+   *   5- stream of pairs of points for rendering
    * 
    * @return contour vector set
    */
   Vector[] getContours() {
     int n = jvxlData.nContours;
-    if (n == 0)
+    if (n <= 0)
       return null;
-    if (vContours != null)
-      return vContours;
-    vContours = new Vector[n];
+    if (jvxlData.vContours != null)
+      return jvxlData.vContours;
+    Vector[] vContours = new Vector[n];
     for (int i = 0; i < n; i++)
       vContours[i] = new Vector();
     float dv = (jvxlData.valueMappedToBlue - jvxlData.valueMappedToRed)
-        / (n - 1);
+        / (n + 1);
+    // n + 1 because we want n lines between n + 1 slices
     for (int i = 0; i < n; i++) {
-      float value = jvxlData.valueMappedToRed + i * dv;
-      get3dContour(i, value);
+      float value = jvxlData.valueMappedToRed + (i + 1) * dv;
+      get3dContour(vContours[i], value, jvxlData.contourColors[i]);
     }
-    return vContours;
+    return jvxlData.vContours = vContours;
   }
   
-  Vector[] vContours;
-  
-  private void get3dContour(int iContour, float f) {
+  private void get3dContour(Vector v, float value, int color) {
     BitSet bsContour = new BitSet(polygonCount);
-    Vector v = vContours[iContour];
     StringBuffer fData = new StringBuffer();
+    v.add(new Integer(polygonCount));
     v.add(bsContour);
+    v.add(new Float(value));
+    v.add(new int[] {color});
     v.add(fData);
     for (int i = polygonCount; --i >= 0;) {
       if (!setABC(i))
         continue;
       int type = 0;
       float f1, f2;
-      f1 = checkPt(iA, iB, f);
+      f1 = checkPt(iA, iB, value);
       if (!Float.isNaN(f1)) {
         type |= 1;
         v.add(getContourPoint(iA, iB, f1));
       }
-      f2 = checkPt(iB, iC, f);
+      f2 = checkPt(iB, iC, value);
         if (!Float.isNaN(f2)) {
           if (type == 0)
             f1 = f2;
@@ -313,7 +323,7 @@ public class IsosurfaceMesh extends Mesh {
       case 3:
         break;
       default:
-        f2 = checkPt(iC, iA, f);
+        f2 = checkPt(iC, iA, value);
         type |= 4;
         v.add(getContourPoint(iC, iA, f2));
       }

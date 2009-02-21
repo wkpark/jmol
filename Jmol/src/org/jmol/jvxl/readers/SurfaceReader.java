@@ -194,15 +194,15 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   SurfaceReader(SurfaceGenerator sg) {
     this.sg = sg;
-    this.colorEncoder = sg.getColorEncoder();
-    this.params = sg.getParams();
-    this.marchingSquares = sg.getMarchingSquares();
+    colorEncoder = sg.getColorEncoder();
+    params = sg.getParams();
+    marchingSquares = sg.getMarchingSquares();
     assocCutoff = params.assocCutoff;
     isXLowToHigh = params.isXLowToHigh;
-    this.meshData = sg.getMeshData();
-    this.jvxlData = sg.getJvxlData();
+    meshData = sg.getMeshData();
+    jvxlData = sg.getJvxlData();
     setVolumeData(sg.getVolumeData());
-    this.meshDataServer = sg.getMeshDataServer();
+    meshDataServer = sg.getMeshDataServer();
     cJvxlEdgeNaN = (char) (JvxlReader.defaultEdgeFractionBase + JvxlReader.defaultEdgeFractionRange);
   }
 
@@ -621,12 +621,12 @@ public abstract class SurfaceReader implements VertexDataServer {
 
     float[] vertexValues = meshData.vertexValues;
     short[] vertexColixes = meshData.vertexColixes;
-    
+
     float valueBlue = jvxlData.valueMappedToBlue;
     float valueRed = jvxlData.valueMappedToRed;
     short minColorIndex = jvxlData.minColorIndex;
     short maxColorIndex = jvxlData.maxColorIndex;
-    
+
     for (int i = meshData.vertexCount; --i >= 0;) {
       float value = vertexValues[i];
       if (minColorIndex >= 0) {
@@ -641,6 +641,15 @@ public abstract class SurfaceReader implements VertexDataServer {
           value = valueBlue;
         vertexColixes[i] = getColorIndexFromPalette(value);
       }
+    }
+
+    if (params.nContours > 0) {
+      int n = params.nContours;
+      int[] colors = jvxlData.contourColors = new int[n];
+      float dv = (valueBlue - valueRed) / (n + 1);
+      // n + 1 because we want n lines between n + 1 slices
+      for (int i = 0; i < n; i++)
+        colors[i] = getArgbFromPalette(valueRed + (i + 1) * dv);
     }
   }
   
@@ -731,6 +740,14 @@ public abstract class SurfaceReader implements VertexDataServer {
       return colorEncoder.getColorIndexFromPalette(-value,
           -params.valueMappedToBlue, -params.valueMappedToRed);
     return colorEncoder.getColorIndexFromPalette(value,
+        params.valueMappedToRed, params.valueMappedToBlue);
+  }
+
+  protected int getArgbFromPalette(float value) {
+    if (params.isColorReversed)
+      return colorEncoder.getArgbFromPalette(-value,
+          -params.valueMappedToBlue, -params.valueMappedToRed);
+    return colorEncoder.getArgbFromPalette(value,
         params.valueMappedToRed, params.valueMappedToBlue);
   }
 

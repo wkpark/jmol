@@ -202,7 +202,7 @@ public abstract class MeshCollection extends Shape {
         break;
       case Token.nocontourlines:
         test = false;
-        tok = Token.nocontourlines;
+        tok = Token.contourlines;
         break;
       case Token.nodots:
         test = false;

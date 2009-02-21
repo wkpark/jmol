@@ -73,36 +73,17 @@ public class IsosurfaceRenderer extends MeshRenderer {
     Vector[] vContours = imesh.getContours();
     if (vContours == null)
       return;
-    g3d.setColix(Graphics3D.BLACK);
-    for (int i = vContours.length; --i >= 0; ) {
+    for (int i = vContours.length; --i >= 0;) {
       Vector v = vContours[i];
-      int n = v.size() - 2;
-      for (int j = 2; j < n; j++) {
+      int color = ((int[]) v.get(IsosurfaceMesh.CONTOUR_COLOR))[0];
+      g3d.setColix(Graphics3D.getColix(color));
+      int n = v.size() - IsosurfaceMesh.CONTOUR_POINTS;
+      for (int j = IsosurfaceMesh.CONTOUR_POINTS; j < n; j++) {
         Point3f pt1 = (Point3f) v.get(j);
         Point3f pt2 = (Point3f) v.get(++j);
-        byte endCap = Graphics3D.ENDCAPS_SPHERICAL;
-        width = 0;
-        diameter = 5;//width = 0.02f;
-        if (diameter == 0)
-          diameter = (mesh.diameter > 0 ? mesh.diameter : 3);        
-        if (width == 0) {
-          viewer.transformPoint(pt1, pt1i);
-          viewer.transformPoint(pt2, pt2i);
-          g3d.fillCylinder(endCap, diameter, pt1i, pt2i);
-          //System.out.println("meshrenderer: pt=" + screens[iA]);
-        } else {
-          pt1f.set(pt1);
-          pt1f.add(pt2);
-          pt1f.scale(1f / 2f);
-          viewer.transformPoint(pt1f, pt1i);      
-          diameter = viewer.scaleToScreen(pt1i.z,
-              (int) (Math.abs(width) * 1000));
-          if (diameter == 0)
-            diameter = 1;
-          viewer.transformPoint(pt1, pt1f);
-          viewer.transformPoint(pt2, pt2f);
-          g3d.fillCylinderBits(endCap, diameter, pt1f, pt2f);
-        }
+        viewer.transformPoint(pt1, pt1i);
+        viewer.transformPoint(pt2, pt2i);
+        g3d.drawLine(pt1i, pt2i);
       }
     }
   }

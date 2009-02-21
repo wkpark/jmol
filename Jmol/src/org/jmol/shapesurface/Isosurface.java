@@ -837,6 +837,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     for (int i = thisMesh.vertexCount; --i >= 0;) {
       vertexColixes[i] = viewer.getColixForPropertyValue(vertexValues[i]);
     }
+    Vector[] contours = thisMesh.getContours();
+    if (contours != null) {
+      for (int i = contours.length; --i >= 0; ) {
+        float value = ((Float)contours[i].get(IsosurfaceMesh.CONTOUR_VALUE)).floatValue();
+        int[] color = ((int[])contours[i].get(IsosurfaceMesh.CONTOUR_COLOR));
+        color[0] = viewer.getColixArgb(viewer.getColixForPropertyValue(value));
+      }
+    }
     float[] range = viewer.getCurrentColorRange();
     jvxlData.valueMappedToRed = Math.min(range[0], range[1]);
     jvxlData.valueMappedToBlue = Math.max(range[0], range[1]);

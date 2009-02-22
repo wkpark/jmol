@@ -35,8 +35,7 @@ class ApbsReader extends VolumeFileReader {
   }
   
   protected void readTitleLines() throws Exception {
-    jvxlFileHeaderBuffer = new StringBuffer();
-    skipComments(true);
+    jvxlFileHeaderBuffer = new StringBuffer(skipComments(false));
     while (line != null && line.length() == 0)
       br.readLine();
     jvxlFileHeaderBuffer.append("APBS OpenDx DATA ").append(line).append("\n");

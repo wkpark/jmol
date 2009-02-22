@@ -627,7 +627,9 @@ public class SurfaceGenerator {
     if ("contour" == propertyName) {
       params.isContoured = true;
       int n = ((Integer) value).intValue();
-      if (n >= 0)
+      if (n == 0)
+        params.nContours = MarchingSquares.defaultContourCount;
+      else if (n > 0)
         params.nContours = n;
       else
         params.thisContour = -n;

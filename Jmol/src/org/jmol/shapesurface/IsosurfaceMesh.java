@@ -34,6 +34,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.readers.JvxlReader;
@@ -60,18 +61,17 @@ public class IsosurfaceMesh extends Mesh {
     jvxlData.version = Viewer.getJmolVersion();
   }
 
-  void clear(String meshType, boolean iAddGridPoints, boolean showTriangles) {
+  void clear(String meshType, boolean iAddGridPoints) {
     super.clear(meshType);  
+    isColorSolid = true;
     vertexColixes = null;
     vertexValues = null;
     assocGridPointMap = null;
     assocGridPointNormals = null;
     vertexSets = null;
-    isColorSolid = true;
     firstRealVertex = -1;
     hasGridPoints = iAddGridPoints;
     showPoints = iAddGridPoints;
-    this.showTriangles = showTriangles;
     jvxlData.jvxlSurfaceData = "";
     jvxlData.jvxlEdgeData = "";
     jvxlData.jvxlColorData = "";
@@ -95,7 +95,6 @@ public class IsosurfaceMesh extends Mesh {
     for (int i = 0; i < surfaceSet.length; i++)
       if (surfaceSet[i] != null) {
         int c = Graphics3D.getColorArgb(n++);
-        //System.out.println(n + " " + Integer.toHexString(c));
         short colix = Graphics3D.getColix(c);
         for (int j = 0; j < vertexCount; j++)
           if (surfaceSet[i].get(j))
@@ -107,8 +106,6 @@ public class IsosurfaceMesh extends Mesh {
   Hashtable assocGridPointNormals;
 
   int addVertexCopy(Point3f vertex, float value, int assocVertex, boolean associateNormals) {
-    //if (vertexCount == 1619 || vertexCount == 320)
-      //System.out.println(vertex);
     int vPt = addVertexCopy(vertex, value);
     switch (assocVertex) {
     case MarchingSquares.CONTOUR_POINT:
@@ -156,11 +153,10 @@ public class IsosurfaceMesh extends Mesh {
   }
 
   void addTriangleCheck(int vertexA, int vertexB, int vertexC, int check) {
-    if (vertexValues != null && (Float.isNaN(vertexValues[vertexA])||Float.isNaN(vertexValues[vertexB])||Float.isNaN(vertexValues[vertexC])))
+    if (vertices == null || vertexValues != null && (Float.isNaN(vertexValues[vertexA])||Float.isNaN(vertexValues[vertexB])||Float.isNaN(vertexValues[vertexC])))
       return;
     if (Float.isNaN(vertices[vertexA].x)||Float.isNaN(vertices[vertexB].x)||Float.isNaN(vertices[vertexC].x))
       return;
-    //System.out.println("adding triangle " + vertexA + vertices[vertexA] + " " + vertexB +  vertices[vertexB] + " " + vertexC + vertices[vertexC]);
     if (polygonCount == 0)
       polygonIndexes = new int[SEED_COUNT][];
     else if (polygonCount == polygonIndexes.length)
@@ -275,12 +271,25 @@ public class IsosurfaceMesh extends Mesh {
    * @return contour vector set
    */
   Vector[] getContours() {
+    if (jvxlData.jvxlPlane != null)
+      return null; // not necessary; 
     int n = jvxlData.nContours;
-    if (n <= 0)
+    if (n == 0 || polygonIndexes == null)
       return null;
-    if (jvxlData.vContours != null)
+    if (n < 0)
+      n = -1 - n;
+    Vector[] vContours = jvxlData.vContours;
+    if (vContours != null) {
+      for (int i = 0; i < n; i++) {
+        if (vContours[i].size() > CONTOUR_POINTS)
+          return jvxlData.vContours;
+        JvxlReader.set3dContourVector(vContours[i], polygonIndexes, vertices);
+      }
+      dumpData();
       return jvxlData.vContours;
-    Vector[] vContours = new Vector[n];
+    }
+    dumpData();
+    vContours = new Vector[n];
     for (int i = 0; i < n; i++)
       vContours[i] = new Vector();
     float dv = (jvxlData.valueMappedToBlue - jvxlData.valueMappedToRed)
@@ -288,20 +297,28 @@ public class IsosurfaceMesh extends Mesh {
     // n + 1 because we want n lines between n + 1 slices
     for (int i = 0; i < n; i++) {
       float value = jvxlData.valueMappedToRed + (i + 1) * dv;
+      //if (i == 5)
       get3dContour(vContours[i], value, jvxlData.contourColors[i]);
     }
+    Logger.info(n + " contour lines; separation = " + dv);
     return jvxlData.vContours = vContours;
   }
   
+  public static void setContourVector(Vector v, int nPolygons,
+                                      BitSet bsContour, float value, int color,
+                                      StringBuffer fData) {
+    v.add(new Integer(nPolygons));
+    v.add(bsContour);
+    v.add(new Float(value));
+    v.add(new int[] { color });
+    v.add(fData);
+  }
+
   private void get3dContour(Vector v, float value, int color) {
     BitSet bsContour = new BitSet(polygonCount);
     StringBuffer fData = new StringBuffer();
-    v.add(new Integer(polygonCount));
-    v.add(bsContour);
-    v.add(new Float(value));
-    v.add(new int[] {color});
-    v.add(fData);
-    for (int i = polygonCount; --i >= 0;) {
+    setContourVector(v, polygonCount, bsContour, value, color, fData);
+    for (int i = 0; i < polygonCount; i++) {
       if (!setABC(i))
         continue;
       int type = 0;
@@ -309,31 +326,33 @@ public class IsosurfaceMesh extends Mesh {
       f1 = checkPt(iA, iB, value);
       if (!Float.isNaN(f1)) {
         type |= 1;
-        v.add(getContourPoint(iA, iB, f1));
+        v.add(getContourPoint(vertices, iA, iB, f1));
       }
       f2 = checkPt(iB, iC, value);
         if (!Float.isNaN(f2)) {
           if (type == 0)
             f1 = f2;
           type |= 2;
-          v.add(getContourPoint(iB, iC, f2));
+          v.add(getContourPoint(vertices, iB, iC, f2));
         }
       switch(type){
       case 0:
+        continue;
       case 3:
         break;
       default:
         f2 = checkPt(iC, iA, value);
         type |= 4;
-        v.add(getContourPoint(iC, iA, f2));
+        v.add(getContourPoint(vertices, iC, iA, f2));
       }
-      if (type == 0)
-        continue;
       bsContour.set(i);
       fData.append(type);
       fData.append(JvxlReader.jvxlFractionAsCharacter(f1));
       fData.append(JvxlReader.jvxlFractionAsCharacter(f2));
+      
+      //System.out.println("ifor poly " + i + " " + type);
     }
+    v.add(new Point3f(Float.NaN, Float.NaN, Float.NaN));
   }
 
   private float checkPt(int i, int j, float f) {
@@ -342,12 +361,19 @@ public class IsosurfaceMesh extends Mesh {
         ? (f - f1) / (f2 - f1) : Float.NaN);
   }
 
-  private Point3f getContourPoint(int i, int j, float f) {
+  public static Point3f getContourPoint(Point3f[] vertices, int i, int j, float f) {
     Point3f pt = new Point3f();
     pt.set(vertices[j]);
     pt.sub(vertices[i]);
     pt.scale(f);
     pt.add(vertices[i]);
+    //System.out.println(i + " " + j + " " + f + " " + vertices[i] + " " + vertices[j] + " " + pt);
     return pt;
+  }
+   
+  private void dumpData() {
+    //for (int i =0;i<10;i++) {
+    //  System.out.println("P["+i+"]="+polygonIndexes[i][0]+" "+polygonIndexes[i][1]+" "+polygonIndexes[i][2]+" "+ polygonIndexes[i][3]+" "+vertices[i]);
+    //}
   }
 }

@@ -354,10 +354,12 @@ final class Line3D {
     boolean tScreened = tScreened1;
     int argb = argb1;
     if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && notClipped
-        && offset >= 0 && offset < offsetMax && z < zbuf[offset])
+        && offset >= 0 && offset < offsetMax && z < zbuf[offset]) {
       g3d.addPixel(offset, z, argb);
-    if (dx == 0 && dy == 0)
+    } else if (dx == 0 && dy == 0) {
+      g3d.addPixel(offset, z, argb);
       return;
+    }
     int xIncrement = 1;
     int yOffsetIncrement = width;
 

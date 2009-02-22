@@ -293,7 +293,7 @@ class Eval {
       errorMessageUntranslated = e.getErrorMessageUntranslated();
       scriptStatusOrBuffer(errorMessage);
       viewer.notifyError(
-          (errorMessage.indexOf("java.lang.OutOfMemoryError") >= 0 ? "Error"
+          (errorMessage != null && errorMessage.indexOf("java.lang.OutOfMemoryError") >= 0 ? "Error"
               : "ScriptException"), errorMessage, errorMessageUntranslated);
     }
     timeEndExecution = System.currentTimeMillis();

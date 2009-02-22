@@ -54,6 +54,7 @@ public abstract class MeshCollection extends Shape {
   protected Mesh linkedMesh;
   protected boolean iHaveModelIndex;
   protected int modelIndex;
+  protected boolean allowContourLines;
 
   public String[] title;
   protected boolean allowMesh = true;
@@ -93,7 +94,9 @@ public abstract class MeshCollection extends Shape {
  public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if (Logger.debugging) {
-      Logger.debug("MeshCollection.setProperty(" + propertyName + "," + value
+      Logger.debug("MeshCollection.setProperty(" 
+          + propertyName + "," + (propertyName == "token" ? 
+              Token.nameOf(((Integer)value).intValue()): value.toString())
           + ")");
     }
 
@@ -189,7 +192,6 @@ public abstract class MeshCollection extends Shape {
       case Token.frontlit:
       case Token.backlit:
       case Token.fullylit:
-      case Token.contourlines:
       case Token.dots:
       case Token.mesh:
       case Token.fill:
@@ -200,9 +202,13 @@ public abstract class MeshCollection extends Shape {
         test = false;
         tok = Token.on;
         break;
+      case Token.contourlines:
+        if (!allowContourLines)
+          tok = Token.mesh;
+        break;
       case Token.nocontourlines:
         test = false;
-        tok = Token.contourlines;
+        tok = (allowContourLines ? Token.contourlines : Token.mesh);
         break;
       case Token.nodots:
         test = false;

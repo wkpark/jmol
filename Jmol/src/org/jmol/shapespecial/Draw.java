@@ -1021,9 +1021,7 @@ public class Draw extends MeshCollection {
               || iModel >= m.polygonIndexes.length || m.polygonIndexes[iModel] == null)
             continue;
           for (int iVertex = m.polygonIndexes[iModel].length; --iVertex >= 0;) {
-            Point3f v = new Point3f();
-            v.set(m.vertices[m.polygonIndexes[iModel][iVertex]]);
-            int d2 = coordinateInRange(x, y, v, dmin2);
+            int d2 = coordinateInRange(x, y, m.vertices[m.polygonIndexes[iModel][iVertex]], dmin2);
             if (d2 >= 0) {
               pickedMesh = m;
               dmin2 = d2;

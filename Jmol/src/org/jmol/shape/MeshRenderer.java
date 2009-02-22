@@ -65,7 +65,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (!setVariables())
       return false;
     
-    if (!g3d.setColix(colix))
+    if (!g3d.setColix(colix) && !mesh.showContourLines)
       return mesh.title != null;
 
     transform();
@@ -114,6 +114,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
 
   //isosurface,meshRenderer::render1 (just about everything)
   protected void render2() {
+    if (!g3d.setColix(colix))
+      return;
     if (mesh.showPoints)
       renderPoints();
     if (mesh.drawTriangles)

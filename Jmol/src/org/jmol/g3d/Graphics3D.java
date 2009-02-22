@@ -2643,7 +2643,8 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   /**
-   * accepts [xRRGGBB] or [0xRRGGBB] or [0xFFRRGGBB] or #RRGGBB
+   * accepts [xRRGGBB] or [0xRRGGBB] or [0xFFRRGGBB] 
+   * or #RRGGBB or [red,green,blue]
    * or a valid JavaScript color
    * 
    * @param strColor

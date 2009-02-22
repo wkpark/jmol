@@ -261,6 +261,18 @@ public class Escape {
     return bs;
   }
 
+  /**
+   * accepts [xRRGGBB] or [0xRRGGBB] or [0xFFRRGGBB] 
+   * or #RRGGBB or [red,green,blue]
+   * or a valid JavaScript color
+   * 
+   * @param strColor
+   * @return 0 if invalid or integer color 
+   */
+  public static int unescapeColor(String strColor) {
+    return Graphics3D.getArgbFromString(strColor);
+  }
+  
   public static String escape(BitSet bs, boolean isAtoms) {
     char chOpen = (isAtoms ? '(' : '[');
     char chClose = (isAtoms ? ')' : ']');

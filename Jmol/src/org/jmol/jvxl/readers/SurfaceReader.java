@@ -24,6 +24,7 @@
 package org.jmol.jvxl.readers;
 
 import java.util.BitSet;
+import java.util.Vector;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -256,10 +257,10 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected String jvxlEdgeDataRead = "";
   protected String jvxlColorDataRead = "";
   protected BitSet jvxlVoxelBitSet;
+  protected Vector[] vContours;
   protected boolean jvxlDataIsColorMapped;
   protected boolean jvxlDataIsPrecisionColor;
   protected boolean jvxlDataIs2dContour;
-  protected boolean jvxlDataIs3dContour;
   protected float jvxlCutoff;
   protected int jvxlNSurfaceInts;
   protected char cJvxlEdgeNaN;
@@ -305,6 +306,9 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.jvxlEdgeData = edgeData;
     jvxlData.isBicolorMap = params.isBicolorMap;
     jvxlData.isContoured = params.isContoured;
+    jvxlData.vContours = vContours;
+    if (vContours != null)
+      params.nContours = vContours.length;
     jvxlData.nContours = (params.contourFromZero 
         ? params.nContours : -1 - params.nContours);
     jvxlData.nEdges = edgeCount;
@@ -313,7 +317,6 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.colorFractionBase = colorFractionBase;
     jvxlData.colorFractionRange = colorFractionRange;
     jvxlData.jvxlDataIs2dContour = jvxlDataIs2dContour;
-    jvxlData.jvxlDataIs3dContour = jvxlDataIs3dContour;
     jvxlData.jvxlDataIsColorMapped = jvxlDataIsColorMapped;
     jvxlData.isXLowToHigh = isXLowToHigh;
     jvxlData.vertexDataOnly = vertexDataOnly;
@@ -551,6 +554,12 @@ public abstract class SurfaceReader implements VertexDataServer {
 
     jvxlData.jvxlFileMessage = "mapped: min = " + params.valueMappedToRed
         + "; max = " + params.valueMappedToBlue;
+    
+    if (params.isContoured && marchingSquares != null) {
+      if (meshDataServer != null)
+        meshDataServer.notifySurfaceGenerationCompleted();
+    }
+
   }
 
   void applyColorScale() {

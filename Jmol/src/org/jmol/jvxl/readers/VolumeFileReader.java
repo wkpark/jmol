@@ -113,15 +113,12 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     //implemented in CubeReader, ApbsReader, mrcBinaryReader, and JvxlReader  
   }
   
-  protected int skipComments(boolean addToHeader) throws Exception {
-    int n = 1;
+  protected String skipComments(boolean allowBlankLines) throws Exception {
+    StringBuffer sb = new StringBuffer();
     while ((line = br.readLine()) != null && 
-        (!addToHeader && line.length() == 0 || line.indexOf("#") == 0)) {
-      if (addToHeader)
-        jvxlFileHeaderBuffer.append(line).append('\n');
-      n++;
-    }
-    return n;
+        (allowBlankLines && line.length() == 0 || line.indexOf("#") == 0))
+      sb.append(line).append('\n');
+    return sb.toString();
   }
   
   protected void readAtomCountAndOrigin() throws Exception {

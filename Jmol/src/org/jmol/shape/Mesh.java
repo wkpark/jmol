@@ -106,6 +106,7 @@ public class Mesh {
     vertices = null;
     polygonIndexes = null;
     showPoints = false;
+    showContourLines = false;
     drawTriangles = false;
     fillTriangles = true;
     showTriangles = false; //as distinct entitities

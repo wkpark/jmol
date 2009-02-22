@@ -65,6 +65,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
   protected void render2() {
     isBicolorMap = imesh.jvxlData.isBicolorMap;
     super.render2();
+    if (!g3d.setColix(Graphics3D.BLACK)) // must be 1st pass
+      return;
     if (imesh.showContourLines)
       renderContourLines();
   }
@@ -75,14 +77,19 @@ public class IsosurfaceRenderer extends MeshRenderer {
       return;
     for (int i = vContours.length; --i >= 0;) {
       Vector v = vContours[i];
+      if (v.size() < IsosurfaceMesh.CONTOUR_POINTS)
+        continue;
       int color = ((int[]) v.get(IsosurfaceMesh.CONTOUR_COLOR))[0];
-      g3d.setColix(Graphics3D.getColix(color));
-      int n = v.size() - IsosurfaceMesh.CONTOUR_POINTS;
+      if (!g3d.setColix(Graphics3D.getColix(color)))
+        return;
+      int n = v.size() - 1;
       for (int j = IsosurfaceMesh.CONTOUR_POINTS; j < n; j++) {
-        Point3f pt1 = (Point3f) v.get(j);
+        Point3f   pt1 = (Point3f) v.get(j);
         Point3f pt2 = (Point3f) v.get(++j);
         viewer.transformPoint(pt1, pt1i);
         viewer.transformPoint(pt2, pt2i);
+        if (Float.isNaN(pt1.x) || Float.isNaN(pt2.x))
+          break;
         g3d.drawLine(pt1i, pt2i);
       }
     }
@@ -129,13 +136,10 @@ public class IsosurfaceRenderer extends MeshRenderer {
       frontOnly = false;
       bsFaces.clear();
     }
-    //System.out.println("Isosurface renderTriangle polygoncount = "
-    //  + mesh.polygonCount + " screens: " + screens.length + " normixes: "
-    //+ normixes.length);
     // two-sided means like a plane, with no front/back distinction
     for (int i = imesh.polygonCount; --i >= 0;) {
-//      if (i > 500)
-  //      continue;
+      //if (i < 733 || i > 733)
+        //continue;
       int[] vertexIndexes = polygonIndexes[i];
       if (vertexIndexes == null)
         continue;
@@ -149,15 +153,21 @@ public class IsosurfaceRenderer extends MeshRenderer {
           && transformedVectors[nB].z < 0 && transformedVectors[nC].z < 0)
         continue;
       short colixA, colixB, colixC;
-      if (vertexColixes != null) {
+      if (vertexColixes == null || imesh.isColorSolid) {
+        colixA = colixB = colixC = colix;
+      } else {
         colixA = vertexColixes[iA];
         colixB = vertexColixes[iB];
         colixC = vertexColixes[iC];
         if (isBicolorMap && (colixA != colixB || colixB != colixC))
           continue;
-      } else {
-        colixA = colixB = colixC = colix;
       }
+/*      System.out.println(iA + " " + iB + " " + iC + " " + colixA + " " + colixB + " " + colixC 
+          + " " + Integer.toHexString(Graphics3D.getColorArgb(colixA))
+          + " " + Integer.toHexString(Graphics3D.getColorArgb(colixB))
+          + " " + Integer.toHexString(Graphics3D.getColorArgb(colixC))
+              );
+*/
       if (fill) {
         if (generateSet) {
           bsFaces.set(i);

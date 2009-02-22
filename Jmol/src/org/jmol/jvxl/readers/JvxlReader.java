@@ -75,6 +75,7 @@ public class JvxlReader extends VolumeFileReader {
   private int surfaceDataCount;
   private int edgeDataCount;
   private int colorDataCount;
+  private boolean haveContourData;
 
   protected boolean readVolumeData(boolean isMapData) {
     if (!super.readVolumeData(isMapData))
@@ -97,6 +98,8 @@ public class JvxlReader extends VolumeFileReader {
         jvxlEdgeDataRead = jvxlReadData("edge", edgeDataCount);
       if (colorDataCount > 0)
         jvxlColorDataRead = jvxlReadData("color", colorDataCount);
+      if (haveContourData)
+        jvxlDecodeContourData(getXmlData("jvxlContourData", null, false));
     } catch (Exception e) {
       Logger.error(e.toString());
       try {
@@ -155,8 +158,7 @@ public class JvxlReader extends VolumeFileReader {
   // # optional comments
 
   protected void readTitleLines() throws Exception {
-    jvxlFileHeaderBuffer = new StringBuffer();
-    skipComments(true);
+    jvxlFileHeaderBuffer = new StringBuffer(skipComments(false));
     if (line == null || line.length() == 0)
       line = "Line 1";
     jvxlFileHeaderBuffer.append(line).append('\n');
@@ -204,7 +206,7 @@ public class JvxlReader extends VolumeFileReader {
   }
   
   protected void readAtomCountAndOrigin() throws Exception {
-      skipComments(true);
+      jvxlFileHeaderBuffer.append(skipComments(false));
       String atomLine = line;
       String[] tokens = Parser.getTokens(atomLine, 0);
       isXLowToHigh = false;
@@ -235,7 +237,7 @@ public class JvxlReader extends VolumeFileReader {
   }
 
   protected int readExtraLine() throws Exception {
-    skipComments(false);
+    skipComments(true);
     Logger.info("Reading extra JVXL information line: " + line);
     int nSurfaces = parseInt(line);
     if (!(isJvxl = (nSurfaces < 0)))
@@ -260,13 +262,15 @@ public class JvxlReader extends VolumeFileReader {
   }
 
   private void jvxlReadDefinitionLine(boolean showMsg) throws Exception {
-    skipComments(false);
+    String comment = skipComments(true);
     if (showMsg)
-      Logger.info("reading jvxl data set: " + line);
-    
+      Logger.info("reading jvxl data set: " + comment + line);
+    haveContourData = (comment.indexOf("+contourlines") >= 0);
     jvxlCutoff = parseFloat(line);
     Logger.info("JVXL read: cutoff " + jvxlCutoff);
 
+    //  optional comment line for compatibility with earlier Jmol versions:
+    //  #+contourlines
     //  cutoff       nInts     (+/-)bytesEdgeData (+/-)bytesColorData
     //               param1              param2         param3    
     //                 |                   |              |
@@ -543,21 +547,38 @@ public class JvxlReader extends VolumeFileReader {
   }
   
   private static int jvxlEncodeBitSet(BitSet bs, int nPoints, StringBuffer sb) {
+    // nunset nset nunset ...
     int dataCount = 0;
     int n = 0;
-    boolean inside = false;
+    boolean isset = false;
     for (int i = 0; i < nPoints; ++i) {
-      if (inside == bs.get(i)) {
+      if (isset == bs.get(i)) {
         dataCount++;
       } else {
         sb.append(' ').append(dataCount);
         n++;
         dataCount = 1;
-        inside = !inside;
+        isset = !isset;
       }
     }
     sb.append(' ').append(dataCount).append('\n');
     return n;
+  }
+
+  private static BitSet jvxlDecodeBitSet(String data) {
+    // nunset nset nunset ...
+    BitSet bs = new BitSet();
+    int dataCount = 0;
+    int ptr = 0;
+    boolean isset = false;
+    int[] next = new int[1];
+    while ((dataCount = Parser.parseInt(data, next)) != Integer.MIN_VALUE) {
+      if (isset)
+        bs.set(ptr, ptr + dataCount);
+      ptr += dataCount;
+      isset = !isset;
+    }
+    return bs;
   }
 
   protected static void setSurfaceInfo(JvxlData jvxlData, Point4f thePlane, int nSurfaceInts, StringBuffer surfaceData) {
@@ -576,8 +597,6 @@ public class JvxlReader extends VolumeFileReader {
           pointA, edgeVector, fReturn, ptReturn);
     ptReturn.scaleAdd(fReturn[0] = jvxlGetNextFraction(edgeFractionBase, edgeFractionRange, 0.5f), 
         edgeVector, pointA);
-    //System.out.println(" jvxl: f=" + fReturn[0]);
-
     return fReturn[0];
   }
 
@@ -777,8 +796,11 @@ public class JvxlReader extends VolumeFileReader {
   }
 
   public static String jvxlGetDefinitionLine(JvxlData jvxlData, boolean isInfo) {
-    String definitionLine = jvxlData.cutoff + " ";
+    String definitionLine = (jvxlData.vContours == null ? "" : "#+contourlines\n")
+        + jvxlData.cutoff + " ";
 
+    //  optional comment line for compatibility with earlier Jmol versions:
+    //  #+contourlines
     //  cutoff       nInts     (+/-)bytesEdgeData (+/-)bytesColorData
     //               param1              param2         param3    
     //                 |                   |              |
@@ -786,7 +808,7 @@ public class JvxlReader extends VolumeFileReader {
     //   when          |                   |       == -1 ==> not color mapped
     //   when          |                   |        < -1 ==> jvxlDataIsPrecisionColor    
     //   when        == -1     &&   == -1 ==> noncontoured plane
-    //   when        == -1     &kg&   == -2 ==> contourable plane
+    //   when        == -1     &&   == -2 ==> contourable plane
     //   when        < -1*     &&    >  0 ==> contourable functionXY
     //   when        > 0       &&    <  0 ==> jvxlDataisBicolorMap
 
@@ -965,12 +987,17 @@ public class JvxlReader extends VolumeFileReader {
 
   private static void jvxlEncodeContourData(Vector[] contours, StringBuffer sb) {
     for (int i = 0; i < contours.length; i++) {
+      if (contours[i].size() < IsosurfaceMesh.CONTOUR_POINTS)
+        continue;
       int nPolygons = ((Integer) contours[i]
-                                          .get(IsosurfaceMesh.CONTOUR_NPOLYGONS)).intValue();
+          .get(IsosurfaceMesh.CONTOUR_NPOLYGONS)).intValue();
       sb.append("<jvxlContour i=\"" + i + "\"");
-      sb.append(" value = \"" + contours[i].get(IsosurfaceMesh.CONTOUR_VALUE) + "\"");
-      sb.append(" color = \"" + contours[i].get(IsosurfaceMesh.CONTOUR_COLOR) + "\"");
-      sb.append(" npolygons = \"" + nPolygons + "\"");
+      sb.append(" value=\"" + contours[i].get(IsosurfaceMesh.CONTOUR_VALUE)
+          + "\"");
+      sb.append(" color=\""
+          + Escape.escapeColor(((int[]) contours[i]
+              .get(IsosurfaceMesh.CONTOUR_COLOR))[0]) + "\"");
+      sb.append(" npolygons=\"" + nPolygons + "\"");
       StringBuffer sb1 = new StringBuffer();
       jvxlEncodeBitSet((BitSet) contours[i].get(IsosurfaceMesh.CONTOUR_BITSET),
           nPolygons, sb1);
@@ -994,8 +1021,6 @@ public class JvxlReader extends VolumeFileReader {
       return 0f;
     if (fraction > 1f)
       return 0.999999f;
-    //if (logCompression)
-    //Logger.info("ffc: " + fraction + " <-- " + ich + " " + (char) ich);
     //System.out.println("ffc: " + fraction + " <-- " + ich + " " + (char) ich);
     return fraction;
   }
@@ -1176,7 +1201,6 @@ public class JvxlReader extends VolumeFileReader {
         idata = vertexIdNew[idata] = ++inew;
       }
 
-      //if (i < 10 || i + 10 > nData) System.out.println(triangles[i][p]);
       if (++p % 3 == 0) {
         i++;
         p = 0;
@@ -1278,7 +1302,6 @@ public class JvxlReader extends VolumeFileReader {
         vertexIdOld[vertexIdNew[i] - 1] = i;
     for (int i = 0; i < vertexCount; i++) {
       p = vertices[vertexIdOld[i]];
-      //if (i < 10 || i + 10 > vertexCount)System.out.println(vertexIdOld[i] + " " + p);
       jvxlAppendCharacter2(p.x, min.x, max.x, colorFractionBase,
           colorFractionRange, list1, list2);
       jvxlAppendCharacter2(p.y, min.y, max.y, colorFractionBase,
@@ -1324,8 +1347,80 @@ public class JvxlReader extends VolumeFileReader {
     jvxlColorDataRead = jvxlUncompressString(getXmlData("jvxlColorData", data, false));
     jvxlDataIsColorMapped = (jvxlColorDataRead.length() > 0);
     jvxlDataIsPrecisionColor = (data.indexOf("precision=\"true\"") >= 0);
+    jvxlDecodeContourData(getXmlData("jvxlContourData", null, false));
     Logger.info("Done");
   }
+
+  private void jvxlDecodeContourData(String data) throws Exception {
+    Vector vs = new Vector();
+    int pt = -1;
+    vContours = null;
+    while ((pt = data.indexOf("<jvxlContour", pt + 1)) >= 0) {
+      Vector v = new Vector();
+      String s = getXmlData("jvxlContour", data.substring(pt), true);
+      int n = parseInt(getXmlAttrib(s, "npolygons"));
+      float value = parseFloat(getXmlAttrib(s, "value"));
+      int color = Escape.unescapeColor(getXmlAttrib(s, "color"));
+      String fData = getXmlAttrib(s, "data");
+      BitSet bs = jvxlDecodeBitSet(s.substring(s.lastIndexOf("\">") + 2));
+      IsosurfaceMesh.setContourVector(v, n, bs, value, color, new StringBuffer(fData));
+      //if (s.indexOf("i=\"5\"")  >= 0)
+      vs.add(v);
+    }
+
+    vContours = new Vector[vs.size()];
+    for (int i = 0; i < vs.size(); i++)
+      vContours[i] = (Vector) vs.get(i);
+  }
+
+  public static void set3dContourVector(Vector v, int[][] polygonIndexes, Point3f[] vertices) {
+    // we must add points only after the MarchingCubes process has completed.
+    if (v.size() < IsosurfaceMesh.CONTOUR_POINTS)
+      return;
+    String fData = ((StringBuffer) v.get(IsosurfaceMesh.CONTOUR_FDATA)).toString();
+    BitSet bs = (BitSet) v.get(IsosurfaceMesh.CONTOUR_BITSET);
+    int nPolygons = ((Integer)v.get(IsosurfaceMesh.CONTOUR_NPOLYGONS)).intValue();
+    int pt = 0;
+    for (int i = 0; i < nPolygons; i++) {
+      if (!bs.get(i))
+        continue;
+      int[] vertexIndexes = polygonIndexes[i];
+      int type = ((int) fData.charAt(pt++)) - 48;
+      char c1 = fData.charAt(pt++);
+      char c2 = fData.charAt(pt++);
+      float f1 = jvxlFractionFromCharacter(c1, defaultEdgeFractionBase, defaultEdgeFractionRange, 0);
+      float f2 = jvxlFractionFromCharacter(c2, defaultEdgeFractionBase, defaultEdgeFractionRange, 0);
+      int i1, i2, i3, i4;
+      /*
+       *     char type ('3', '6', '5') indicating which two edges
+       *       of the triangle are connected: 
+       *         '3' 0x011 AB-BC
+       *         '5' 0x101 AB-CA
+       *         '6' 0x110 BC-CA
+       */
+      if ((type & 1) == 0) { //BC-CA
+        i1 = vertexIndexes[1];
+        i2 = i3 = vertexIndexes[2];
+        i4 = vertexIndexes[0];
+      } else { //AB-BC or //AB-CA
+        i1 = vertexIndexes[0];
+        i2 = vertexIndexes[1];
+        if ((type & 2) != 0) {
+          i3 = i2;
+          i4 = vertexIndexes[2];
+        } else {
+          i3 = vertexIndexes[2];
+          i4 = i1;          
+        }
+      }
+      Point3f pa = IsosurfaceMesh.getContourPoint(vertices, i1, i2, f1);
+      Point3f pb = IsosurfaceMesh.getContourPoint(vertices, i3, i4, f2);
+      v.add(pa);
+      v.add(pb);
+    }
+    v.add(new Point3f(Float.NaN,Float.NaN,Float.NaN));
+  }
+
 
   /**
    * a relatively simple XML reader for this specific application.
@@ -1371,7 +1466,7 @@ public class JvxlReader extends VolumeFileReader {
    *    
    */
   public Point3f[] jvxlDecodeVertexData(String data, boolean asArray) {
-    next[0] = 0;
+    int[] next = new int[1];
     setNext(data, "count", next, 2);
     int vertexCount = Parser.parseInt(data, next);
     if (!asArray)
@@ -1379,13 +1474,13 @@ public class JvxlReader extends VolumeFileReader {
     next[0]++;
     Point3f min = new Point3f();
     Point3f range = new Point3f();
-    setNext(data, "min", next, 3);
+    setNext(data, "min", next, 2);
     min.x = Parser.parseFloat(data, next);
     next[0]++;
     min.y = Parser.parseFloat(data, next);
     next[0]++;
     min.z = Parser.parseFloat(data, next);
-    setNext(data, "max", next, 3);
+    setNext(data, "max", next, 2);
     range.x = Parser.parseFloat(data, next) - min.x;
     next[0]++;
     range.y = Parser.parseFloat(data, next) - min.y;
@@ -1397,7 +1492,7 @@ public class JvxlReader extends VolumeFileReader {
     Point3f[] vertices = (asArray ? new Point3f[vertexCount] : null);
     Point3f p = (asArray ? null : new Point3f());
     float fraction;
-    setNext(data, ">", next, 1);
+    setNext(data, ">", next, 0);
     int pt = next[0];
     while (Character.isWhitespace(data.charAt(pt)))
       pt++;
@@ -1416,11 +1511,9 @@ public class JvxlReader extends VolumeFileReader {
       p.z = min.z + fraction * range.z;
       if (!asArray)
         addVertexCopy(p, 0, i);
-      //if (i < 10 || i + 10 > vertexCount)System.out.println(p);
     }
     return vertices;
   }
-  
   /**
    * decode triangle data found within <jvxlTriangleData> element
    * as created with jvxlEncodeTriangleData (see above)
@@ -1480,11 +1573,8 @@ public class JvxlReader extends VolumeFileReader {
         triangles[i][p] = ilast;
       else
         triangle[p] = ilast;
-      //if (i < 10 || i + 10 > nData) System.out.print(triangle[p] + " ");
       if (++p % 3 == 0) {
-        //if (i < 10 || i + 10 > nData) System.out.println();
         i++;
-        //if (asArray)triangle = triangles[i];
         p = 0;
         if (!asArray)
           addTriangleCheck(triangle[0], triangle[1], triangle[2], 7, false);
@@ -1493,6 +1583,15 @@ public class JvxlReader extends VolumeFileReader {
     return triangles;
   }
 
+  private static String getXmlAttrib(String data, String what) {
+    // presumes what="xxxx" exactly like that, no whitespace around =
+    int[] next = new int[1];
+    int pt = setNext(data, what, next, 2);
+    if (pt < 2)
+      return "";
+    int pt1 = setNext(data, "\"", next, -1);
+    return (pt1 <= 0 ? "" : data.substring(pt, pt1));
+  }
   /**
    * shift pointer to a new tag or field contents
    * 
@@ -1500,9 +1599,9 @@ public class JvxlReader extends VolumeFileReader {
    * @param what   tag or field name
    * @param next   current pointer into data
    * @param offset offset past end of "what" for pointer
+   * @return pointer to data
    */
-  private static void setNext(String data, String what, int[] next, int offset) {
-    next[0] = data.indexOf(what, next[0]) + what.length() + offset;
+  private static int setNext(String data, String what, int[] next, int offset) {
+    return next[0] = data.indexOf(what, next[0]) + what.length() + offset;
   }
-
 }

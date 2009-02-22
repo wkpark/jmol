@@ -102,6 +102,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
 import org.jmol.jvxl.readers.JvxlReader;
 
@@ -153,6 +154,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   //private boolean logMessages;
   private int lighting;
   private boolean iHaveBitSets;
+  private boolean explicitContours;
   private int atomIndex;
   private int moNumber;
   private short defaultColix;
@@ -198,11 +200,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("color" == propertyName) {
       if (thisMesh != null) {
-        thisMesh.vertexColixes = null;
+        //thisMesh.vertexColixes = null;
         thisMesh.isColorSolid = true;
       } else if (!TextFormat.isWild(previousMeshID)){
         for (int i = meshCount; --i >= 0;) {
-          isomeshes[i].vertexColixes = null;
+          //isomeshes[i].vertexColixes = null;
           isomeshes[i].isColorSolid = true;
         }
       }
@@ -210,6 +212,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
+    if ("contour" == propertyName) {
+      explicitContours = true;  
+    }
+    
     if ("fixed" == propertyName) {
       isFixed = ((Boolean) value).booleanValue();
       setModelIndex();
@@ -289,6 +295,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("phase" == propertyName) {
       isPhaseColored = true;
+    }
+
+    if ("plane" == propertyName) {
+      allowContourLines = false;
+    }
+
+    if ("functionXY" == propertyName) {
+      allowContourLines = false;
     }
 
     if ("finalize" == propertyName) {
@@ -469,10 +483,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (modelIndex < 0)
       modelIndex = 0;
     title = null;
+    explicitContours = false;
     atomIndex = -1;
     colix = Graphics3D.ORANGE;
     defaultColix = 0;
     isPhaseColored = false;
+    allowContourLines = true; //but not for f(x,y) or plane, which use mesh
     center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     linkedMesh = null;
     initState();
@@ -663,8 +679,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (meshData == null) {
       if (thisMesh == null)
         allocMesh(null);
-      thisMesh.clear("isosurface", sg.getIAddGridPoints(),
-          thisMesh.showTriangles);
+      thisMesh.clear("isosurface", sg.getIAddGridPoints());
       thisMesh.colix = getDefaultColix();
       if (isPhaseColored || thisMesh.jvxlData.isBicolorMap)
         thisMesh.isColorSolid = false;
@@ -709,6 +724,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.calculatedArea = thisMesh.calculatedVolume = Float.NaN;
     thisMesh.initialize(sg.getPlane() != null ? JmolConstants.FULLYLIT
         : lighting);
+    if (thisMesh.jvxlData.jvxlPlane != null)
+      allowContourLines = false;
   }
 
   public void notifySurfaceMappingCompleted() {
@@ -719,6 +736,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         jvxlData.valueMappedToBlue);
     thisMesh.isColorSolid = false;
     thisMesh.getContours();
+    if (thisMesh.jvxlData.jvxlPlane != null)
+      allowContourLines = false;
+    if (thisMesh.jvxlData.nContours != 0 && thisMesh.jvxlData.nContours != -1)
+      explicitContours = true;
+    setPropertySuper("token", new Integer(explicitContours ? Token.nofill : Token.fill), null);
+    setPropertySuper("token", new Integer(explicitContours ? Token.contourlines : Token.nocontourlines), null);
     thisMesh.colorCommand = "color $" + thisMesh.thisID + " "
         + getUserColorScheme(schemeName) + " range "
         + (jvxlData.isColorReversed ? jvxlData.valueMappedToBlue + " "
@@ -760,7 +783,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
                                boolean isAbsolute) {
     if (isAbsolute && !MeshData.checkCutoff(iA, iB, iC, thisMesh.vertexValues))
       return;
-    //System.out.println(" isosurface triangle check : " + iA + " " + iB + " " + iC);
     thisMesh.addTriangleCheck(iA, iB, iC, check);
   }
 
@@ -834,8 +856,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     if (vertexColixes == null)
       vertexColixes = thisMesh.vertexColixes = new short[thisMesh.vertexCount];
+    boolean isTranslucent = Graphics3D.isColixTranslucent(thisMesh.colix);
     for (int i = thisMesh.vertexCount; --i >= 0;) {
       vertexColixes[i] = viewer.getColixForPropertyValue(vertexValues[i]);
+      if (isTranslucent)
+        vertexColixes[i] = Graphics3D.getColixTranslucent(vertexColixes[i], true, translucentLevel);
     }
     Vector[] contours = thisMesh.getContours();
     if (contours != null) {
@@ -865,4 +890,77 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   public float getValue(int x, int y, int z) {
     return 0;
   }
+  
+  public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
+    String s = findValue(x, y, false, bsVisible);
+    if (s == null)
+      return false;
+    if (g3d.isDisplayAntialiased()) {
+      //because hover rendering is done in FIRST pass only
+      x <<= 1;
+      y <<= 1;
+    }      
+    viewer.hoverOn(x, y, s);
+    return true;
+  }
+
+  private final static int MAX_OBJECT_CLICK_DISTANCE_SQUARED = 10 * 10;
+
+  private String findValue(int x, int y, boolean isPicking,
+                                   BitSet bsVisible) {
+    int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
+    if (g3d.isAntialiased()) {
+      x <<= 1;
+      y <<= 1;
+      dmin2 <<= 1;
+    }
+    Vector pickedContour = null;
+    for (int i = 0; i < meshCount; i++) {
+      IsosurfaceMesh m = isomeshes[i];
+      if (m.visibilityFlags == 0 || m.modelIndex >= 0
+          && !bsVisible.get(m.modelIndex))
+        continue;
+      Vector[] vs = m.jvxlData.vContours;
+      if (vs != null) {
+      for (int j = 0; j < vs.length; j++) {
+        Vector vc = vs[j];
+        int n = vc.size() - 1;
+        for (int k = IsosurfaceMesh.CONTOUR_POINTS; k < n; k++) {
+          Point3f v = (Point3f) vc.get(k);
+          int d2 = coordinateInRange(x, y, v, dmin2);
+          if (d2 >= 0) {
+            dmin2 = d2;
+            pickedContour = vc;
+          }
+        }
+      }
+      if (pickedContour != null)
+        return pickedContour.get(IsosurfaceMesh.CONTOUR_VALUE).toString();
+      } else if (m.jvxlData.jvxlPlane != null && m.vertexValues != null) {
+        int pickedVertex = -1;
+        for (int k = m.vertexCount; --k >= 0; ) {
+          Point3f v = m.vertices[k];
+          int d2 = coordinateInRange(x, y, v, dmin2);
+          if (d2 >= 0) {
+            dmin2 = d2;
+            pickedVertex = k;
+          }
+        }
+        if (pickedVertex != -1)
+          return "" + m.vertexValues[pickedVertex];
+      }
+    }
+    return null;
+  }
+  private final Point3i ptXY = new Point3i();
+
+  private int coordinateInRange(int x, int y, Point3f vertex, int dmin2) {
+    int d2 = dmin2;
+    viewer.transformPoint(vertex, ptXY);
+    d2 = (x - ptXY.x) * (x - ptXY.x) + (y - ptXY.y) * (y - ptXY.y);
+    return (d2 < dmin2 ? d2 : -1);
+  }
+  
+
+
 }

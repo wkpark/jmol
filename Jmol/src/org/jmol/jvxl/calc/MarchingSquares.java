@@ -54,8 +54,8 @@ public class MarchingSquares {
   private VolumeData volumeData;
 
   private final static int nContourMax = 100;
-  private final static int defaultContourCount = 11; //odd is better
-  private int nContours;
+  public final static int defaultContourCount = 10; //odd is better
+  private int nContourSegments;
   private int nContoursSpecified;
   private int contourType;//0, 1, or 2
   private Point4f thePlane;
@@ -93,9 +93,11 @@ public class MarchingSquares {
     is3DContour = (thePlane == null);
     nContoursSpecified = nContours;
     this.contourFromZero = contourFromZero; //set false for MEP to complete the plane
-    int i = (contourFromZero || is3DContour ? 0 : 1);
-    this.nContours = (nContours == 0 ? defaultContourCount + i
-        : nContours + i > nContourMax ? nContourMax : nContours + i);
+    int i = (contourFromZero ? 1  : is3DContour ? 1 : 2);
+    nContourSegments = (nContours == 0 ? defaultContourCount + i
+        : nContours + i);
+    if (nContourSegments > nContourMax)
+      nContourSegments = nContourMax;
     
     setContourType();
   }
@@ -168,7 +170,7 @@ public class MarchingSquares {
      * 
      */
 
-    Logger.info("generateContours:" + nContours);
+    Logger.info("generateContours:" + nContourSegments);
 
     if (!is3DContour)
       getPlanarVectors();
@@ -333,6 +335,7 @@ public class MarchingSquares {
     x += offsets.x;
     y += offsets.y;
     z += offsets.z;
+    //System.out.println(x + " " + y + " " + z + " " + vertexXYZ);
     int vPt = surfaceReader.addVertexCopy(vertexXYZ, value, VERTEX_POINT);
     contourVertexes[contourVertexCount++] = new ContourVertex(x, y, z,
         vertexXYZ, vPt);
@@ -393,6 +396,8 @@ public class MarchingSquares {
     xyzToPixelVector(pointVector);
     float x = pointVector.x;
     float y = pointVector.y;
+    if (Float.isNaN(x))
+      return Float.NaN;
     int xDown = (x >= pixelCounts[0] ? pixelCounts[0] - 1 : x < 0 ? 0 : (int) x);
     int yDown = (y >= pixelCounts[1] ? pixelCounts[1] - 1 : y < 0 ? 0 : (int) y);
     int xUp = xDown + (xDown == pixelCounts[0] - 1 ? 0 : 1);
@@ -429,14 +434,14 @@ public class MarchingSquares {
     int contourBits;
     //int x, y;
     //Point3f origin;
-    final int[] vertexes = new int[4];
+    final int[] vertexes = new int[] {-1, -1, -1, -1 };
     float[][] fractions;
     int[][] intersectionPoints;
 
-    PlanarSquare(int nContours) {
-      edgeMask12 = new int[nContours];
-      intersectionPoints = new int[nContours][4];
-      fractions = new float[nContours][4];
+    PlanarSquare(int nContourSegments) {
+      edgeMask12 = new int[nContourSegments];
+      intersectionPoints = new int[nContourSegments][4];
+      fractions = new float[nContourSegments][4];
       edgeMask12All = 0;
       contourBits = 0;
       //this.origin = origin;
@@ -452,9 +457,9 @@ public class MarchingSquares {
     }
 
     void setVertex(int iV, int pt) {
-      if (vertexes[iV] != 0 && vertexes[iV] != pt)
+      if (vertexes[iV] != -1 && vertexes[iV] != pt)
         Logger
-            .error("IV IS NOT 0 or pt:" + iV + " " + vertexes[iV] + "!=" + pt);
+            .error("iV IS NOT -1 or pt:" + iV + " " + vertexes[iV] + "!=" + pt);
       vertexes[iV] = pt;
     }
 
@@ -502,7 +507,7 @@ public class MarchingSquares {
     nSquares = 0;
     for (int x = 0; x < squareCountX; x++)
       for (int y = 0; y < squareCountY; y++)
-        planarSquares[nSquares++] = new PlanarSquare(nContours);
+        planarSquares[nSquares++] = new PlanarSquare(nContourSegments);
     Logger.info("nSquares = " + nSquares);
   }
 
@@ -516,13 +521,13 @@ public class MarchingSquares {
     boolean centerIsLow = true; //molecular surface-like
     int lastInside = -1;
     Logger.info("generateContourData min=" + min + " max=" + max
-        + " nContours=" + nContours + " (" + nContoursSpecified + " specified)");
-    for (int i = 0; i < nContours; i++) {
+        + " nContours=" + nContourSegments + " (" + nContoursSpecified + " specified)");
+    for (int i = 0; i < nContourSegments; i++) {
       contourIndex = i;
       float cutoff = 
-        (contourFromZero ? min + (i * 1f / nContours) * diff : 
-            i == 0 ? -Float.MAX_VALUE : i == nContours - 1 ? Float.MAX_VALUE 
-                : min + ((i - 1) * 1f / (nContours-1)) * diff);
+        (contourFromZero ? min + (i * 1f / nContourSegments) * diff : 
+            i == 0 ? -Float.MAX_VALUE : i == nContourSegments - 1 ? Float.MAX_VALUE 
+                : min + ((i - 1) * 1f / (nContourSegments-1)) * diff);
         
 
       /*
@@ -572,10 +577,12 @@ public class MarchingSquares {
           float vertexValue = pixelData[x + offset.x][y + offset.y];
           vertexValues2d[i] = vertexValue;
           //if (contourIndex == 5 || contourIndex==6)
-            //System.out.println(contourIndex + " xy " + x + " " + y + " " + i + " " + vertexValue +  " " + contourCutoff + " " + (isInside2d(vertexValue, contourCutoff)));
+          //System.out.println(contourIndex + " xy " + x + " " + y + " " + i + " " + vertexValue +  " " + contourCutoff + " " + (isInside2d(vertexValue, contourCutoff)));
           if (isInside2d(vertexValue, contourCutoff)) {
             insideMask |= 1 << i;
             ++insideCount;
+            //if (insideCount < 5 && contourIndex==1)   
+              //System.out.println("insidecount " + insideCount);
           }
         }
         if (insideMask == 0x0F) {
@@ -587,11 +594,12 @@ public class MarchingSquares {
         processOneQuadrilateral(insideMask, contourCutoff, pixelPointIndexes,
             x, y);
 
+        //if (contourIndex == 1 && pixelPointIndexes[0] >= 0 && (x* squareCountY + y) == 339)
         //System.out.println(contourIndex + "/" + (x * squareCountY + y) + " " + x + " " + y 
-          //  + " " + (pixelPointIndexes[0]  >= 0 ? squareFractions[0] : -1)
-           // + " " + (pixelPointIndexes[1]  >= 0 ? squareFractions[1] : -1)
-           // + " " + (pixelPointIndexes[2]  >= 0 ? squareFractions[2] : -1)
-           // + " " + (pixelPointIndexes[3]  >= 0 ? squareFractions[3] : -1));
+        //    + " " + (pixelPointIndexes[0]  >= 0 ? squareFractions[0] : -1)
+        //    + " " + (pixelPointIndexes[1]  >= 0 ? squareFractions[1] : -1)
+        //    + " " + (pixelPointIndexes[2]  >= 0 ? squareFractions[2] : -1)
+        //    + " " + (pixelPointIndexes[3]  >= 0 ? squareFractions[3] : -1));
       }
     }
 /*
@@ -607,6 +615,7 @@ public class MarchingSquares {
   }
 
   private boolean isInside2d(float voxelValue, float max) {
+    //System.out.println("isinside2d " + voxelValue + " " + max + " " + contourFromZero);
     return contourFromZero ? 
         (max > 0 && voxelValue >= max) || (max <= 0 && voxelValue <= max)
         : voxelValue < max;
@@ -668,9 +677,9 @@ public class MarchingSquares {
       else
         calcVertexPoints2d(x, y, vertexA, vertexB);
       squareFractions[iEdge] = calcContourPoint(cutoff, valueA, valueB, contourPoints[iEdge]);
-      //System.out.println("x y iEdge cutoff A B f " + x + " " + y + " " + iEdge + " :: " + cutoff + " " + valueA + " " + valueB + " " + squareFractions[iEdge]);
-      //System.out.println(pointA+ " pta/b " + pointB);
       pixelPointIndexes[iEdge] = surfaceReader.addVertexCopy(contourPoints[iEdge], cutoff, CONTOUR_POINT);
+      //System.out.println("x y iEdge cutoff A B f " + x + " " + y + " " + iEdge + " :: " + cutoff + " " + valueA + " " + valueB + " " + squareFractions[iEdge]);
+      //System.out.println(pixelPointIndexes[iEdge] + " " + pointA+ " pta/b " + pointB);
     }
     //this must be a square that is involved in this particular contour
     planarSquares[x * squareCountY + y].setIntersectionPoints(contourIndex,
@@ -820,7 +829,7 @@ public class MarchingSquares {
      *  
      */
     int offset = (centerIsLow ? -1 : 1);
-    for (int contourIndex = 0; contourIndex < nContours; contourIndex++) {
+    for (int contourIndex = 0; contourIndex < nContourSegments; contourIndex++) {
       if (thisContour <= 0 || thisContour == contourIndex + 1) {
         for (int squareIndex = 0; squareIndex < nSquares; squareIndex++) {
 
@@ -833,7 +842,7 @@ public class MarchingSquares {
           int edgeMask0 = square.edgeMask12[contourIndex];
           edgeMask0 &= 0xFF;
 
-          boolean isTerminal = (contourIndex + offset < 0 || contourIndex + offset == nContours);
+          boolean isTerminal = (contourIndex + offset < 0 || contourIndex + offset == nContourSegments);
           // way outside
           if (edgeMask0 == 0 && !isTerminal && square.edgeMask12[contourIndex +offset] == 0)
             continue;
@@ -866,9 +875,9 @@ public class MarchingSquares {
               continue;
           }
 
-//         for (int i = 0; i < 4; i++)
-  //         System.out.print (square.fractions[contourIndex][i] + " ");
-    //     System.out.println ("trianglate " + squareIndex + " " + Integer.toBinaryString(edgeMask0) + " " + Integer.toBinaryString(edgeMask));
+         //for (int i = 0; i < 4; i++)
+         //  System.out.print (square.fractions[contourIndex][i] + " ");
+         //System.out.println ("trianglate " + squareIndex + " " + Integer.toBinaryString(edgeMask0) + " " + Integer.toBinaryString(edgeMask));
 
           fillSquare(square, contourIndex, edgeMask, !isOK, offset);
         }
@@ -884,6 +893,8 @@ public class MarchingSquares {
     boolean lowerFirst = reverseWinding;
     int mesh1 = -1, mesh2 = -1;
     for (int i = 0; i < 4; i++) {
+      if (square.vertexes[i] < 0)
+        return;
       boolean newVertex = ((edgeMask & (1 << i)) != 0);
       boolean thisIntersect = ((edgeMask & (1 << (4 + i))) != 0);
       boolean lowerIntersect = ((edgeMask & (1 << (8 + i))) != 0);
@@ -928,7 +939,7 @@ public class MarchingSquares {
         lowerFirst = true;
     }
     
-     //Systemfprintln("\nfillSquare (" + square.x + " " + square.y + ") "
+     //  Systemfprintln("\nfillSquare (" + square.x + " " + square.y + ") "
      //+ contourIndex + " " + Integer.toBinaryString(edgeMask) + "\n");
      //System.out.println("square vertexes:" + dumpIntArray(square.vertexes, 4));
      //System.out.println("square inters. pts:"
@@ -944,11 +955,13 @@ public class MarchingSquares {
       int iA = triangleVertexList[0];
       int iB = k;
       int iC = triangleVertexList[i];
-      int check = (iA == mesh1 && iB == mesh2 || iB == mesh1 && iA == mesh2 ? 1
+      int check = (
+          iA == mesh1 && iB == mesh2 || iB == mesh1 && iA == mesh2 ? 1
           : iB == mesh1 && iC == mesh2 || iC == mesh1 && iB == mesh2 ? 2
-              : iA == mesh1 && iC == mesh2 || iC == mesh1 && iA == mesh2 ? 4
-                  : 0);
-      surfaceReader.addTriangleCheck(iA, iB, iC, check, false);
+          : iA == mesh1 && iC == mesh2 || iC == mesh1 && iA == mesh2 ? 4
+          : 0);
+      if (iA >= 0 && iB >= 0 && iC >= 0)
+        surfaceReader.addTriangleCheck(iA, iB, iC, check, false);
       k = triangleVertexList[i];
     }
   }

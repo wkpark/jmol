@@ -384,8 +384,25 @@ public abstract class MeshCollection extends Shape {
           return id;
       }
     }
+    if (property == "vertices")
+      return getVertices(currentMesh);
+    if (property.startsWith("getCenter:")) {
+      int meshIndex = getIndexFromName(property.substring(10));
+      Mesh m;
+      return (meshIndex < 0 || (m = meshes[meshIndex]).vertices == null
+          || m.vertexCount <= index ? null 
+          : index >= 0 ? m.vertices[index] : null);
+
+    }
     return null;
   }
+
+ private Object getVertices(Mesh mesh) {
+   if (mesh == null)
+     return null;
+   return mesh.vertices;
+ }
+ 
 
   private void deleteMesh() {
     int i = 0;

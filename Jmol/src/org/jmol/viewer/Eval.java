@@ -789,7 +789,7 @@ class Eval {
         } else if (v instanceof Point4f) {
           fixed[j] = new Token(Token.point4f, v);
         } else {
-          Point3f center = getDrawObjectCenter(var);
+          Point3f center = getObjectCenter(var, Integer.MIN_VALUE);
           if (center == null)
             error(ERROR_invalidArgument);
           fixed[j] = new Token(Token.point3f, center);
@@ -2335,16 +2335,17 @@ class Eval {
     if (checkToken(i)) {
       switch (getToken(i).tok) {
       case Token.dollarsign:
+        int index = Integer.MIN_VALUE;
         String id = objectNameParameter(++i);
         // allow for $pt2.3 -- specific vertex
         if (tokAt(i + 1) == Token.leftsquare) {
-          id += "[" + intParameter(i + 2) + "]";
+          index = intParameter(i + 2);
           if (getToken(i + 3).tok != Token.rightsquare)
             error(ERROR_invalidArgument);
         }
         if (isSyntaxCheck)
           return new Point3f();
-        if ((center = getDrawObjectCenter(id)) == null)
+        if ((center = getObjectCenter(id, index)) == null)
           error(ERROR_drawObjectNotDefined, id);
         break;
       case Token.bitset:
@@ -5128,9 +5129,13 @@ class Eval {
         isSpin, bsAtoms);
   }
 
-  private Point3f getDrawObjectCenter(String axisID) {
-    return (Point3f) viewer.getShapeProperty(JmolConstants.SHAPE_DRAW,
-        "getSpinCenter:" + axisID);
+  private Point3f getObjectCenter(String axisID, int index) {
+    Point3f pt = (Point3f) viewer.getShapeProperty(JmolConstants.SHAPE_DRAW,
+        "getCenter:" + axisID, index);
+    if (pt == null)
+      pt = (Point3f) viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
+          "getCenter:" + axisID, index);
+    return pt;
   }
 
   private Vector3f getDrawObjectAxis(String axisID) {

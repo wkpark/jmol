@@ -357,20 +357,17 @@ public class Draw extends MeshCollection {
  public Object getProperty(String property, int index) {
     if (property == "command")
       return getDrawCommand(thisMesh);
-    if (property == "vertices")
-      return getPath(thisMesh);
     if (property == "type")
       return new Integer(thisMesh == null ? JmolConstants.DRAW_NONE : thisMesh.drawType);
-    if (property.indexOf("getSpinCenter:") == 0)
-      return getSpinCenter(property.substring(14), index);
+    if (property.indexOf("getCenter:") == 0)
+      return getSpinCenter(property.substring(10), index, Integer.MIN_VALUE);
     if (property.indexOf("getSpinAxis:") == 0)
       return getSpinAxis(property.substring(12), index);
     return super.getProperty(property, index);
   }
 
-  private Point3f getSpinCenter(String axisID, int modelIndex) {
+  private Point3f getSpinCenter(String axisID, int vertexIndex, int modelIndex) {
     String id;
-    int vertexIndex = -1;
     int pt = axisID.indexOf("[");
     int pt2;
     if (pt > 0) {
@@ -384,7 +381,6 @@ public class Draw extends MeshCollection {
       }
     } else {
       id = axisID;
-      vertexIndex = -1;
     }
     int meshIndex = getIndexFromName(id);
     DrawMesh m;
@@ -401,12 +397,6 @@ public class Draw extends MeshCollection {
     return (meshIndex < 0 || (m = dmeshes[meshIndex]).vertices == null ? null :
       m.ptCenters == null || modelIndex < 0 ? m.axis : m.axes[modelIndex]);
    }
-  
-  private Object getPath(Mesh mesh) {
-    if (mesh == null)
-      return null;
-    return mesh.vertices;
-  }
   
   private boolean setDrawing() {
     if (thisMesh == null)

@@ -101,15 +101,21 @@ public class IsosurfaceRenderer extends MeshRenderer {
   protected void renderPoints() {
     int incr = imesh.vertexIncrement;
     int diam = 4;
-    //g3d.setFont(g3d.getFontFid("Monospaced", 10));
-    for (int i = (!imesh.hasGridPoints || imesh.firstRealVertex < 0 ? 0 : imesh.firstRealVertex); i < vertexCount; i += incr) {
+    boolean showNumbers = viewer.getTestFlag2();
+    if (showNumbers)
+      g3d.setFont(g3d.getFontFid("Monospaced", 10));
+    for (int i = (!imesh.hasGridPoints || imesh.firstRealVertex < 0 ? 0
+        : imesh.firstRealVertex); i < vertexCount; i += incr) {
       if (vertexValues != null && Float.isNaN(vertexValues[i]) || frontOnly
           && transformedVectors[normixes[i]].z < 0)
         continue;
       if (imesh.vertexColixes != null)
         g3d.setColix(imesh.vertexColixes[i]);
       g3d.fillSphereCentered(diam, screens[i]);
-      //g3d.drawStringNoSlab(i + " " + imesh.vertexValues[i], null, screens[i].x, screens[i].y, screens[i].z);
+      if (showNumbers)
+        g3d.drawStringNoSlab(i
+            + (imesh.isColorSolid ? "" : " " + imesh.vertexValues[i]), null,
+            screens[i].x, screens[i].y, screens[i].z);
     }
     if (incr != 3)
       return;
@@ -126,7 +132,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
         Graphics3D.BLUE, true, 0.5f) : Graphics3D.BLUE);
     for (int i = 2; i < vertexCount; i += 3) {
       g3d.fillSphereCentered(4, screens[i]);
-      //g3d.drawStringNoSlab(i + " " + imesh.vertexValues[i], null, screens[i].x, screens[i].y, screens[i].z);
     }
   }
 

@@ -147,15 +147,16 @@ public class IsosurfaceRenderer extends MeshRenderer {
     }
     boolean colorSolid = (vertexColixes == null || imesh.isColorSolid);
     short colix = this.colix;
-    if (!colorSolid && !fill && imesh.jvxlData.jvxlPlane != null) {
+    if (!colorSolid && !fill && imesh.fillTriangles
+        && imesh.jvxlData.jvxlPlane != null) {
       colorSolid = true;
       colix = Graphics3D.BLACK;
     }
-      
+
     // two-sided means like a plane, with no front/back distinction
     for (int i = imesh.polygonCount; --i >= 0;) {
       //if (i < 733 || i > 733)
-        //continue;
+      //continue;
       int[] vertexIndexes = polygonIndexes[i];
       if (vertexIndexes == null)
         continue;
@@ -178,12 +179,12 @@ public class IsosurfaceRenderer extends MeshRenderer {
         if (isBicolorMap && (colixA != colixB || colixB != colixC))
           continue;
       }
-/*      System.out.println(iA + " " + iB + " " + iC + " " + colixA + " " + colixB + " " + colixC 
-          + " " + Integer.toHexString(Graphics3D.getColorArgb(colixA))
-          + " " + Integer.toHexString(Graphics3D.getColorArgb(colixB))
-          + " " + Integer.toHexString(Graphics3D.getColorArgb(colixC))
-              );
-*/
+      /*      System.out.println(iA + " " + iB + " " + iC + " " + colixA + " " + colixB + " " + colixC 
+       + " " + Integer.toHexString(Graphics3D.getColorArgb(colixA))
+       + " " + Integer.toHexString(Graphics3D.getColorArgb(colixB))
+       + " " + Integer.toHexString(Graphics3D.getColorArgb(colixC))
+       );
+       */
       if (fill) {
         if (generateSet) {
           bsFaces.set(i);
@@ -217,7 +218,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       }
     }
     if (generateSet)
-     renderExport();
+      renderExport();
   }
 
   private void renderNormals() {

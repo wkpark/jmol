@@ -938,7 +938,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         return pickedContour.get(IsosurfaceMesh.CONTOUR_VALUE).toString();
       } else if (m.jvxlData.jvxlPlane != null && m.vertexValues != null) {
         int pickedVertex = -1;
-        for (int k = m.vertexCount; --k >= 0; ) {
+        for (int k = m.vertexCount; --k >= m.firstRealVertex; ) {
           Point3f v = m.vertices[k];
           int d2 = coordinateInRange(x, y, v, dmin2);
           if (d2 >= 0) {
@@ -947,7 +947,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           }
         }
         if (pickedVertex != -1)
-          return "" + m.vertexValues[pickedVertex];
+          return "v" + pickedVertex + ": " + m.vertexValues[pickedVertex];
       }
     }
     return null;

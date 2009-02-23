@@ -54,7 +54,7 @@ public class MarchingSquares {
   private VolumeData volumeData;
 
   private final static int nContourMax = 100;
-  public final static int defaultContourCount = 10; //odd is better
+  public final static int defaultContourCount = 9; //odd is better
   private int nContourSegments;
   private int nContoursSpecified;
   private int contourType;//0, 1, or 2
@@ -62,6 +62,7 @@ public class MarchingSquares {
   private boolean is3DContour;
   private int thisContour = 0;
   private float valueMin, valueMax;
+  private int nVertices;
 
   private final Vector3f pointVector = new Vector3f();
   private final Point3f pointA = new Point3f();
@@ -170,7 +171,7 @@ public class MarchingSquares {
      * 
      */
 
-    Logger.info("generateContours:" + nContourSegments);
+    Logger.info("generateContours: " + nContourSegments + " segments");
 
     if (!is3DContour)
       getPlanarVectors();
@@ -183,6 +184,7 @@ public class MarchingSquares {
       getPixelCounts();
     createPlanarSquares();
     loadPixelData(haveData);
+    nVertices = 0;
     if (logMessages) {
       int n = pixelCounts[0] / 2;
       Logger.info(ArrayUtil.dumpArray("generateContourData", pixelData, n - 4, n + 4,
@@ -190,7 +192,9 @@ public class MarchingSquares {
     }
     boolean centerIsLow = createContours(valueMin, valueMax);
     triangulateContours(centerIsLow);
-    
+
+    Logger.info("generateContours: " + nVertices + " vertices");
+
     return contourVertexCount;
   }
 
@@ -315,7 +319,7 @@ public class MarchingSquares {
 
     void setValue(float value, VolumeData volumeData) {
       this.value =  value;
-      if (volumeData.voxelData != null)
+      if (volumeData != null && volumeData.voxelData != null)
         volumeData.voxelData[voxelLocation.x][voxelLocation.y][voxelLocation.z] = value;
     }
 
@@ -365,7 +369,7 @@ public class MarchingSquares {
         value = c.value;
       } else {
         value = volumeData.lookupInterpolatedVoxelValue(c.vertexXYZ);
-        c.setValue(value, volumeData);
+        c.setValue(value, null);
       }
       if (value < contourPlaneMinimumValue)
         contourPlaneMinimumValue = value;
@@ -521,7 +525,7 @@ public class MarchingSquares {
     boolean centerIsLow = true; //molecular surface-like
     int lastInside = -1;
     Logger.info("generateContourData min=" + min + " max=" + max
-        + " nContours=" + nContourSegments + " (" + nContoursSpecified + " specified)");
+        + " nContours=" + (nContourSegments-1) + " (" + nContoursSpecified + " specified)");
     for (int i = 0; i < nContourSegments; i++) {
       contourIndex = i;
       float cutoff = 
@@ -678,6 +682,7 @@ public class MarchingSquares {
         calcVertexPoints2d(x, y, vertexA, vertexB);
       squareFractions[iEdge] = calcContourPoint(cutoff, valueA, valueB, contourPoints[iEdge]);
       pixelPointIndexes[iEdge] = surfaceReader.addVertexCopy(contourPoints[iEdge], cutoff, CONTOUR_POINT);
+      nVertices++;
       //System.out.println("x y iEdge cutoff A B f " + x + " " + y + " " + iEdge + " :: " + cutoff + " " + valueA + " " + valueB + " " + squareFractions[iEdge]);
       //System.out.println(pixelPointIndexes[iEdge] + " " + pointA+ " pta/b " + pointB);
     }

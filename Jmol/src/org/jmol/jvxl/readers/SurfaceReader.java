@@ -554,12 +554,6 @@ public abstract class SurfaceReader implements VertexDataServer {
 
     jvxlData.jvxlFileMessage = "mapped: min = " + params.valueMappedToRed
         + "; max = " + params.valueMappedToBlue;
-    
-    if (params.isContoured && marchingSquares != null) {
-      if (meshDataServer != null)
-        meshDataServer.notifySurfaceGenerationCompleted();
-    }
-
   }
 
   void applyColorScale() {
@@ -597,29 +591,32 @@ public abstract class SurfaceReader implements VertexDataServer {
               : params.colorPos);
     }
     jvxlData.isTruncated = (jvxlData.minColorIndex >= 0 && !params.isContoured);
+    boolean useMeshDataValues =
+    //      !jvxlDataIs2dContour && (params.isContoured && jvxlData.jvxlPlane != null || 
+    vertexDataOnly || params.isBicolorMap && !params.isContoured;
     float value;
-    for (int i = meshData.vertexCount; --i >= 0;) {
-      /* right, so what we are doing here is setting a range within the 
-       * data for which we want red-->blue, but returning the actual
-       * number so it can be encoded more precisely. This turned out to be
-       * the key to making the JVXL contours work.
-       *  
-       */
-      if (params.colorBySets)
-        value = meshData.vertexSets[i];
-      else if (params.colorByPhase)
-        value = getPhase(meshData.vertices[i]);
-      else if (vertexDataOnly || params.isBicolorMap && !params.isContoured) // will be current mesh only
-        value = meshData.vertexValues[i];
-      else if (jvxlDataIs2dContour)
-        value = marchingSquares.getInterpolatedPixelValue(meshData.vertices[i]);
-      else
-        value = volumeData.lookupInterpolatedVoxelValue(meshData.vertices[i]);
-      meshData.vertexValues[i] = value;
-    }
+    if (!useMeshDataValues)
+      for (int i = meshData.vertexCount; --i >= 0;) {
+        /* right, so what we are doing here is setting a range within the 
+         * data for which we want red-->blue, but returning the actual
+         * number so it can be encoded more precisely. This turned out to be
+         * the key to making the JVXL contours work.
+         *  
+         */
+        if (params.colorBySets)
+          value = meshData.vertexSets[i];
+        else if (params.colorByPhase)
+          value = getPhase(meshData.vertices[i]);
+        else if (jvxlDataIs2dContour)
+          value = marchingSquares
+              .getInterpolatedPixelValue(meshData.vertices[i]);
+        else
+          value = volumeData.lookupInterpolatedVoxelValue(meshData.vertices[i]);
+        meshData.vertexValues[i] = value;
+      }
     colorData();
-    
-    JvxlReader.jvxlCreateColorData(jvxlData, 
+
+    JvxlReader.jvxlCreateColorData(jvxlData,
         (saveColorData ? meshData.vertexValues : null));
 
     if (meshDataServer != null && params.colorBySets)

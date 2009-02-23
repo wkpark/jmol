@@ -1355,6 +1355,8 @@ public class JvxlReader extends VolumeFileReader {
     Vector vs = new Vector();
     int pt = -1;
     vContours = null;
+    if (data == null)
+      return;
     while ((pt = data.indexOf("<jvxlContour", pt + 1)) >= 0) {
       Vector v = new Vector();
       String s = getXmlData("jvxlContour", data.substring(pt), true);
@@ -1431,14 +1433,20 @@ public class JvxlReader extends VolumeFileReader {
    * @return            trimmed contents or tag + contents, never closing tag 
    * @throws Exception
    */
-  private String getXmlData(String name, String data, boolean withTag) throws Exception {
+  private String getXmlData(String name, String data, boolean withTag)
+      throws Exception {
     //crude
     String closer = "</" + name + ">";
     String tag = "<" + name;
     if (data == null) {
       StringBuffer sb = new StringBuffer();
-      while (line.indexOf(tag) < 0)
-        line = br.readLine();
+      try {
+        while (line.indexOf(tag) < 0) {
+          line = br.readLine();
+        }
+      } catch (Exception e) {
+        return null;
+      }
       sb.append(line);
       while (line.indexOf(closer) < 0)
         sb.append(line = br.readLine());
@@ -1474,13 +1482,13 @@ public class JvxlReader extends VolumeFileReader {
     next[0]++;
     Point3f min = new Point3f();
     Point3f range = new Point3f();
-    setNext(data, "min", next, 2);
+    setNext(data, "min", next, 3);
     min.x = Parser.parseFloat(data, next);
     next[0]++;
     min.y = Parser.parseFloat(data, next);
     next[0]++;
     min.z = Parser.parseFloat(data, next);
-    setNext(data, "max", next, 2);
+    setNext(data, "max", next, 3);
     range.x = Parser.parseFloat(data, next) - min.x;
     next[0]++;
     range.y = Parser.parseFloat(data, next) - min.y;

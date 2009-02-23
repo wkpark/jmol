@@ -79,12 +79,12 @@ public class IsosurfaceRenderer extends MeshRenderer {
       Vector v = vContours[i];
       if (v.size() < IsosurfaceMesh.CONTOUR_POINTS)
         continue;
-      int color = ((int[]) v.get(IsosurfaceMesh.CONTOUR_COLOR))[0];
-      if (!g3d.setColix(Graphics3D.getColix(color)))
+      if (!g3d.setColix(mesh.fillTriangles ? Graphics3D.BLACK : Graphics3D
+          .getColix(((int[]) v.get(IsosurfaceMesh.CONTOUR_COLOR))[0])))
         return;
       int n = v.size() - 1;
       for (int j = IsosurfaceMesh.CONTOUR_POINTS; j < n; j++) {
-        Point3f   pt1 = (Point3f) v.get(j);
+        Point3f pt1 = (Point3f) v.get(j);
         Point3f pt2 = (Point3f) v.get(++j);
         viewer.transformPoint(pt1, pt1i);
         viewer.transformPoint(pt2, pt2i);
@@ -145,6 +145,13 @@ public class IsosurfaceRenderer extends MeshRenderer {
       frontOnly = false;
       bsFaces.clear();
     }
+    boolean colorSolid = (vertexColixes == null || imesh.isColorSolid);
+    short colix = this.colix;
+    if (!colorSolid && !fill && imesh.jvxlData.jvxlPlane != null) {
+      colorSolid = true;
+      colix = Graphics3D.BLACK;
+    }
+      
     // two-sided means like a plane, with no front/back distinction
     for (int i = imesh.polygonCount; --i >= 0;) {
       //if (i < 733 || i > 733)
@@ -162,7 +169,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
           && transformedVectors[nB].z < 0 && transformedVectors[nC].z < 0)
         continue;
       short colixA, colixB, colixC;
-      if (vertexColixes == null || imesh.isColorSolid) {
+      if (colorSolid) {
         colixA = colixB = colixC = colix;
       } else {
         colixA = vertexColixes[iA];

@@ -196,6 +196,7 @@ public class Parameters {
     doCapIsosurface = false;
     envelopeRadius = 10f;
     fileIndex = 1;
+    readAllData = true;
     fileName = "";
     functionXYinfo = null;
     iAddGridPoints = false;
@@ -643,6 +644,7 @@ public class Parameters {
   
   String[] title;
   boolean blockCubeData;
+  boolean readAllData;
   int fileIndex; //one-based
   String fileName;
   int modelIndex; // zero-based

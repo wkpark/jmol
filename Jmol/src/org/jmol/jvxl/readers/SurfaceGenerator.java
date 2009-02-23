@@ -350,6 +350,7 @@ public class SurfaceGenerator {
       params.fileIndex = ((Integer) value).intValue();
       if (params.fileIndex < 1)
         params.fileIndex = 1;
+      params.readAllData = false;
       return true;
     }
 
@@ -954,6 +955,8 @@ public class SurfaceGenerator {
       return new EfvetReader(this,br);
     if (fileType.equals("Pmesh"))
       return new PmeshReader(this, params.fileName, br);
+    if (fileType.equals("Obj"))
+      return new ObjReader(this, params.fileName, br);
     return null;
   }
 

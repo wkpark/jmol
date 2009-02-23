@@ -11166,6 +11166,10 @@ class Eval {
           propertyValue = new Float(1.4);
           break;
         }
+        if (str.equalsIgnoreCase("OBJ")) {
+          setShapeProperty(iShape, "fileType", "Obj");
+          continue;
+        }
         if (str.equalsIgnoreCase("PHASE")) {
           propertyName = "phase";
           propertyValue = (tokAt(i + 1) == Token.string ? stringParameter(++i)

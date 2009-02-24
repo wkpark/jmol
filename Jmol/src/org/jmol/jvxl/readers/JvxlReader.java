@@ -32,6 +32,7 @@ import java.util.Vector;
 
 import org.jmol.shapesurface.IsosurfaceMesh;
 import org.jmol.util.*;
+import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.data.VolumeData;
@@ -915,7 +916,8 @@ public class JvxlReader extends VolumeFileReader {
     //0.9e adds color contours for planes and min/max range, contour settings
   }
 
-  public static String jvxlGetFile(JvxlData jvxlData, MeshData meshData,
+  public static String jvxlGetFile(MeshDataServer meshDataServer,
+                                   JvxlData jvxlData, MeshData meshData,
                                    String[] title, String msg,
                                    boolean includeHeader, int nSurfaces,
                                    String state, String comment) {
@@ -942,16 +944,16 @@ public class JvxlReader extends VolumeFileReader {
       sb.append("<jvxlSurfaceData>\n");
       sb.append(jvxlEncodeTriangleData(meshData.polygonIndexes,
           meshData.polygonCount, vertexIdNew));
-      sb.append(jvxlEncodeVertexData(jvxlData, vertexIdNew, meshData.vertices,
-          meshData.vertexValues, meshData.vertexCount, jvxlData.jvxlColorData
-              .length() > 0));
+      sb.append(jvxlEncodeVertexData(meshDataServer, jvxlData, vertexIdNew,
+          meshData.vertices, meshData.vertexValues, meshData.vertexCount,
+          meshData.polygonColixes, meshData.polygonCount,
+          jvxlData.jvxlColorData.length() > 0));
       sb.append("</jvxlSurfaceData>\n");
     } else if (jvxlData.jvxlPlane == null) {
       //no real point in compressing this unless it's a sign-based coloring
       sb.append(jvxlData.jvxlSurfaceData);
-      sb.append(jvxlCompressString(jvxlData.jvxlEdgeData))
-      .append('\n').append(jvxlCompressString(jvxlData.jvxlColorData))
-      .append('\n');
+      sb.append(jvxlCompressString(jvxlData.jvxlEdgeData)).append('\n').append(
+          jvxlCompressString(jvxlData.jvxlColorData)).append('\n');
     } else {
       sb.append(jvxlCompressString(jvxlData.jvxlColorData)).append('\n');
     }
@@ -975,13 +977,14 @@ public class JvxlReader extends VolumeFileReader {
       data.append("</jvxlContourData>\n");
     }
     if (comment != null)
-        data.append("<jvxlSurfaceCommand>\n  ").append(comment).append(
-            "\n</jvxlSurfaceCommand>\n");
+      data.append("<jvxlSurfaceCommand>\n  ").append(comment).append(
+          "\n</jvxlSurfaceCommand>\n");
     if (state != null)
-        data.append("<jvxlSurfaceState>\n  ").append(state).append(
-            "\n</jvxlSurfaceState>\n");
+      data.append("<jvxlSurfaceState>\n  ").append(state).append(
+          "\n</jvxlSurfaceState>\n");
     if (includeHeader)
-      data.append("<jvxlFileTitle>\n").append(jvxlData.jvxlFileTitle).append("</jvxlFileTitle>\n");
+      data.append("<jvxlFileTitle>\n").append(jvxlData.jvxlFileTitle).append(
+          "</jvxlFileTitle>\n");
     return data.toString();
   }
 
@@ -1258,20 +1261,26 @@ public class JvxlReader extends VolumeFileReader {
    * The resultant string is really two strings of length nData
    * where the first string lists the "high" part of the positions,
    * and the second string lists the "low" part of the positions.
+   * @param meshDataServer 
    * 
    * @param jvxlData
    * @param vertexIdNew
    * @param vertices
    * @param vertexValues
    * @param vertexCount
+   * @param polygonColixes 
+   * @param polygonCount 
    * @param addColorData
    * @return              string of encoded data
    */
-  public static String jvxlEncodeVertexData(JvxlData jvxlData,
+  public static String jvxlEncodeVertexData(MeshDataServer meshDataServer,
+                                            JvxlData jvxlData,
                                             int[] vertexIdNew,
                                             Point3f[] vertices,
                                             float[] vertexValues,
                                             int vertexCount,
+                                            short[] polygonColixes, 
+                                            int polygonCount,
                                             boolean addColorData) {
     Point3f min = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     Point3f max = new Point3f(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
@@ -1313,6 +1322,27 @@ public class JvxlReader extends VolumeFileReader {
     list.append("  <jvxlVertexData len=\"" + list1.length() + "\" count=\""
         + vertexCount + "\" min=\"" + min + "\" max=\"" + max + "\">\n    ");
     list.append(list1).append("\n  </jvxlVertexData>\n");
+    if (polygonColixes != null) {
+      list1 = new StringBuffer();
+      int count = 0;
+      short colix = 0;
+      boolean done = false;
+      for (int i = 0; i < polygonCount || (done = true) == true; i++) {
+        if (done || polygonColixes[i] != colix) {
+          if (count != 0)
+            list1.append(" ").append(count).append(" ").append(
+                (colix == 0 ? 0 : meshDataServer.getColixArgb(colix)));
+          if (done)
+            break;
+          colix = polygonColixes[i];
+          count = 1;
+        } else {
+          count++;
+        }
+      }
+      list.append("  <jvxlPolygonColorData len=\"" + list1.length() + "\" count=\""
+          + polygonCount+ "\">\n    ").append(list1).append("\n  </jvxlPolygonColorData>\n");
+    }
     if (!addColorData)
       return list.toString();
 
@@ -1342,7 +1372,8 @@ public class JvxlReader extends VolumeFileReader {
   private void getEncodedVertexData() throws Exception {
     String data = getXmlData("jvxlSurfaceData", null, true);
     jvxlDecodeVertexData(getXmlData("jvxlVertexData", data, true), false);
-    jvxlDecodeTriangleData(getXmlData("jvxlTriangleData", data, true), false);
+    String polygonColorData = getXmlData("jvxlPolygonColorData", data, false);
+    jvxlDecodeTriangleData(getXmlData("jvxlTriangleData", data, true), polygonColorData, false);
     Logger.info("Checking for vertex values");
     jvxlColorDataRead = jvxlUncompressString(getXmlData("jvxlColorData", data, false));
     jvxlDataIsColorMapped = (jvxlColorDataRead.length() > 0);
@@ -1527,11 +1558,15 @@ public class JvxlReader extends VolumeFileReader {
    * as created with jvxlEncodeTriangleData (see above)
    * 
    * @param data      tag and contents 
+   * @param colorData 
    * @param asArray   or just addTriangleCheck    
    * @return          int[][] if desired 
    */
-  int[][] jvxlDecodeTriangleData(String data, boolean asArray) {
+  int[][] jvxlDecodeTriangleData(String data, String colorData, boolean asArray) {
     int[] next = new int[1];
+    int[] nextc = new int[1];
+    int nColors = (colorData == null ? -1 : 0);
+    int color = 0;
     setNext(data, "count", next, 2);
     int nData = Parser.parseInt(data, next);
     if (!asArray)
@@ -1584,8 +1619,18 @@ public class JvxlReader extends VolumeFileReader {
       if (++p % 3 == 0) {
         i++;
         p = 0;
-        if (!asArray)
-          addTriangleCheck(triangle[0], triangle[1], triangle[2], 7, false);
+        if (!asArray) {
+          if (nColors >= 0) {
+            if (nColors == 0) {
+              nColors = Parser.parseInt(colorData, nextc);
+              color = Parser.parseInt(colorData, nextc);
+              if (color == Integer.MIN_VALUE)
+                color = nColors = 0;
+            } 
+            nColors--;
+          }
+          addTriangleCheck(triangle[0], triangle[1], triangle[2], 7, false, color);
+        }
       }
     }
     return triangles;

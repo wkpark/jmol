@@ -27,6 +27,7 @@ import java.io.BufferedReader;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
@@ -124,11 +125,15 @@ class ObjReader extends PolygonFileReader {
 
   private boolean readPolygons() {
     nPolygons = 0;
+    int color = 0;
     try {
       if (!params.readAllData) {
         for (int i = 0; i < params.fileIndex; i++) {
           while (line != null && line.indexOf("g ") != 0)
             line = br.readLine();
+          if (line == null)
+            break;
+          color = Graphics3D.getArgbFromString("[" + line.substring(3) + "]");
           line = br.readLine();
         }
       }
@@ -144,14 +149,16 @@ class ObjReader extends PolygonFileReader {
           int vertexCount = (id == Integer.MIN_VALUE ? 3 : 4);
           if (vertexCount == 4) {
             nTriangles += 2;
-            addTriangleCheck(ia - 1, ib - 1, ic - 1, 5, false);
-            addTriangleCheck(ib - 1, ic - 1, id - 1, 3, false);
+            addTriangleCheck(ia - 1, ib - 1, ic - 1, 5, false, color);
+            addTriangleCheck(ib - 1, ic - 1, id - 1, 3, false, color);
           } else {
             nTriangles++;
-            addTriangleCheck(ia - 1, ib - 1, ic - 1, 7, false);
+            addTriangleCheck(ia - 1, ib - 1, ic - 1, 7, false, color);
           }
-        } else if (line.indexOf("g ") == 0 && !params.readAllData) {
-          break;
+        } else if (line.indexOf("g ") == 0) {
+          if (!params.readAllData)
+            break;
+          color = Graphics3D.getArgbFromString("[x" + line.substring(3) + "]");
         }
         line = br.readLine();
       }

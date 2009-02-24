@@ -508,14 +508,14 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
 
   public void addTriangleCheck(int iA, int iB, int iC, int check,
-                               boolean isAbsolute) {
+                               boolean isAbsolute, int color) {
     if (meshDataServer == null) {
       if (isAbsolute
           && !MeshData.checkCutoff(iA, iB, iC, meshData.vertexValues))
         return;
-      meshData.addTriangleCheck(iA, iB, iC, check);
+      meshData.addTriangleCheck(iA, iB, iC, check, color);
     } else {
-      meshDataServer.addTriangleCheck(iA, iB, iC, check, isAbsolute);
+      meshDataServer.addTriangleCheck(iA, iB, iC, check, isAbsolute, color);
     }
   }
 
@@ -627,7 +627,7 @@ public abstract class SurfaceReader implements VertexDataServer {
 
     float[] vertexValues = meshData.vertexValues;
     short[] vertexColixes = meshData.vertexColixes;
-
+    meshData.polygonColixes = null;
     float valueBlue = jvxlData.valueMappedToBlue;
     float valueRed = jvxlData.valueMappedToRed;
     short minColorIndex = jvxlData.minColorIndex;

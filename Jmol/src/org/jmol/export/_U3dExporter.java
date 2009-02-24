@@ -35,7 +35,6 @@ import javax.vecmath.Vector3f;
 import org.jmol.g3d.Font3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Text;
-import org.jmol.util.BitSetUtil;
 
 public class _U3dExporter extends _Exporter {
 
@@ -121,16 +120,17 @@ public class _U3dExporter extends _Exporter {
   public void renderIsosurface(Point3f[] vertices, short colix,
                                short[] colixes, Vector3f[] normals,
                                int[][] indices, BitSet bsFaces, int nVertices,
-                               int faceVertexMax) {
+                               int faceVertexMax, short[] polygonColixes, int nPolygons) {
 
     if (nVertices == 0)
       return;
     int nFaces = 0;
-    for (int i = BitSetUtil.length(bsFaces); --i >= 0;)
+    for (int i = nPolygons; --i >= 0;)
       if (bsFaces.get(i))
         nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
     if (nFaces == 0)
       return;
+    //TODO 
     /*
     String color = rgbFractionalFromColix(colix, ' ');
     output("Shape {\n");

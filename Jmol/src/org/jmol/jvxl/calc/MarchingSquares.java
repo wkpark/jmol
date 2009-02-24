@@ -966,7 +966,7 @@ public class MarchingSquares {
           : iA == mesh1 && iC == mesh2 || iC == mesh1 && iA == mesh2 ? 4
           : 0);
       if (iA >= 0 && iB >= 0 && iC >= 0)
-        surfaceReader.addTriangleCheck(iA, iB, iC, check, false);
+        surfaceReader.addTriangleCheck(iA, iB, iC, check, false, 0);
       k = triangleVertexList[i];
     }
   }

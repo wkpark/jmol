@@ -112,7 +112,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       if (imesh.vertexColixes != null)
         g3d.setColix(imesh.vertexColixes[i]);
       g3d.fillSphereCentered(diam, screens[i]);
-      if (showNumbers)
+      if (showNumbers && screens[i].z > 10)
         g3d.drawStringNoSlab(i
             + (imesh.isColorSolid ? "" : " " + imesh.vertexValues[i]), null,
             screens[i].x, screens[i].y, screens[i].z);
@@ -152,6 +152,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       colorSolid = true;
       colix = Graphics3D.BLACK;
     }
+    boolean colorArrayed = (fill && colorSolid && imesh.polygonColixes != null);
 
     // two-sided means like a plane, with no front/back distinction
     for (int i = imesh.polygonCount; --i >= 0;) {
@@ -171,6 +172,11 @@ public class IsosurfaceRenderer extends MeshRenderer {
         continue;
       short colixA, colixB, colixC;
       if (colorSolid) {
+        if (colorArrayed && i < imesh.polygonColixes.length) {
+          short c = imesh.polygonColixes[i];
+          if (c != 0)
+            colix = c;
+        }
         colixA = colixB = colixC = colix;
       } else {
         colixA = vertexColixes[iA];

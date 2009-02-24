@@ -202,10 +202,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (thisMesh != null) {
         //thisMesh.vertexColixes = null;
         thisMesh.isColorSolid = true;
+        thisMesh.polygonColixes = null;
       } else if (!TextFormat.isWild(previousMeshID)){
         for (int i = meshCount; --i >= 0;) {
           //isomeshes[i].vertexColixes = null;
           isomeshes[i].isColorSolid = true;
+          isomeshes[i].polygonColixes = null;
         }
       }
       setPropertySuper(propertyName, value, bs);
@@ -426,11 +428,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         meshData = new MeshData();
         fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
       }
-      return JvxlReader.jvxlGetFile(jvxlData, meshData, title, "", true, index, thisMesh
+      return JvxlReader.jvxlGetFile(this, jvxlData, meshData, title, "", true, index, thisMesh
               .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     }
     if (property == "jvxlSurfaceData") // MO only
-      return JvxlReader.jvxlGetFile(jvxlData, null, title, "", false, 1, thisMesh
+      return JvxlReader.jvxlGetFile(this, jvxlData, null, title, "", false, 1, thisMesh
               .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
     if (property == "jvxlFileInfo")
       return jvxlData.jvxlInfoLine;
@@ -694,12 +696,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       meshData.vertexIncrement = thisMesh.vertexIncrement;
       meshData.polygonCount = thisMesh.polygonCount;
       meshData.polygonIndexes = thisMesh.polygonIndexes;
+      meshData.polygonColixes = thisMesh.polygonColixes;
       return;
     case MeshData.MODE_GET_COLOR_INDEXES:
       if (thisMesh.vertexColixes == null
           || thisMesh.vertexCount > thisMesh.vertexColixes.length)
         thisMesh.vertexColixes = new short[thisMesh.vertexCount];
       meshData.vertexColixes = thisMesh.vertexColixes;
+      meshData.polygonIndexes = null;
       return;
     case MeshData.MODE_PUT_SETS:
       thisMesh.surfaceSet = meshData.surfaceSet;
@@ -714,6 +718,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       thisMesh.vertexIncrement = meshData.vertexIncrement;
       thisMesh.polygonCount = meshData.polygonCount;
       thisMesh.polygonIndexes = meshData.polygonIndexes;
+      thisMesh.polygonColixes = meshData.polygonColixes;
       return;
     }
   }
@@ -780,10 +785,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   public void addTriangleCheck(int iA, int iB, int iC, int check,
-                               boolean isAbsolute) {
+                               boolean isAbsolute, int color) {
     if (isAbsolute && !MeshData.checkCutoff(iA, iB, iC, thisMesh.vertexValues))
       return;
-    thisMesh.addTriangleCheck(iA, iB, iC, check);
+    thisMesh.addTriangleCheck(iA, iB, iC, check, color);
   }
 
   ////////////////////////////////////////////////////////////////////
@@ -851,6 +856,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     JvxlData jvxlData = thisMesh.jvxlData;
     float[] vertexValues = thisMesh.vertexValues;
     short[] vertexColixes = thisMesh.vertexColixes;
+    thisMesh.polygonColixes = null;
     if (vertexValues == null || jvxlData.isBicolorMap
         || jvxlData.vertexCount == 0)
       return;
@@ -961,6 +967,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     return (d2 < dmin2 ? d2 : -1);
   }
   
+  public int getColixArgb(short colix) {
+    return viewer.getColixArgb(colix);
+  }
 
 
 }

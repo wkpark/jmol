@@ -1463,7 +1463,7 @@ final public class Graphics3D implements JmolRendererInterface {
   public void renderIsosurface(Point3f[] vertices, short colix,
                                short[] colixes, Vector3f[] normals,
                                int[][] indices, BitSet bsFaces, int nVertices,
-                               int faceVertexMax) {
+                               int faceVertexMax, short[] polygonColixes, int nPolygons) {
     // generator only
   }
   

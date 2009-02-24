@@ -40,7 +40,6 @@ import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Text;
-import org.jmol.util.BitSetUtil;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
@@ -406,20 +405,43 @@ public class _PovrayExporter extends _Exporter {
   public void renderIsosurface(Point3f[] vertices, short colix,
                                short[] colixes, Vector3f[] normals,
                                int[][] indices, BitSet bsFaces, int nVertices,
-                               int faceVertexMax) {
+                               int faceVertexMax, short[] polygonColixes, int nPolygons) {
     if (nVertices == 0)
       return;
     int nFaces = 0;
-    for (int i = BitSetUtil.length(bsFaces); --i >= 0;)
+    for (int i = nPolygons; --i >= 0;)
       if (bsFaces.get(i))
         nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
     if (nFaces == 0)
       return;
+    
+    if (polygonColixes != null) {
+      for (int i = nPolygons; --i >= 0;) {
+        if (!bsFaces.get(i))
+          continue;
+        //if ((p++) % 10 == 0)
+        //  output("\n");
+        output("polygon { 4\n"); 
+        for (int j = 0; j <= 3; j++) {
+          viewer.transformPoint(vertices[indices[i][j % 3]], tempP1);
+          output(", <" + triad(tempP1) + ">");
+        }
+        output("\n");
+        output("pigment{rgbt<" + color4(colix = polygonColixes[i]) + ">}\n");
+        output("  translucentFinish(" + translucencyFractionalFromColix(colix)
+            + ")\n");
+        output("  check_shadow()\n");
+        output("  clip()\n");
+        output("}\n");
+      }
+
+      return;
+    }
+
     Hashtable htColixes = new Hashtable();
     String color;
 
     output("mesh2 {\n");
-
     output("vertex_vectors { " + nVertices);
     for (int i = 0; i < nVertices; i++) {
       //if (i % 10 == 0)
@@ -467,7 +489,7 @@ public class _PovrayExporter extends _Exporter {
     }
     output("face_indices { " + nFaces);
     //int p = 0; 
-    for (int i = BitSetUtil.length(bsFaces); --i >= 0;) {
+    for (int i = nPolygons; --i >= 0;) {
       if (!bsFaces.get(i))
         continue;
       //if ((p++) % 10 == 0)

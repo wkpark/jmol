@@ -32,6 +32,7 @@ public class MolecularOrbitalGenerator extends MolecularOrbitalRenderer {
   protected void renderExport() {
     g3d.getExporter().renderIsosurface(imesh.vertices, imesh.colix, 
         imesh.isColorSolid ? null : imesh.vertexColixes,
-        imesh.getVertexNormals(), imesh.polygonIndexes, bsFaces, imesh.vertexCount, 3);
+        imesh.getVertexNormals(), imesh.polygonIndexes, bsFaces, 
+        imesh.vertexCount, 3, null, imesh.polygonCount);
   }
 }

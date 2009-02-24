@@ -287,7 +287,7 @@ public interface JmolRendererInterface {
   public abstract void renderIsosurface(Point3f[] vertices, short colix,
                                         short[] colixes, Vector3f[] normals,
                                         int[][] indices, BitSet bsFaces, int nVertices,
-                                        int faceVertexMax);
+                                        int faceVertexMax, short[] polygonColixes, int nPolygons);
 
   public abstract boolean isInDisplayRange(int x, int y);
 

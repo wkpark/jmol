@@ -117,6 +117,7 @@ import java.util.BitSet;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.g3d.Graphics3D;
 import org.jmol.util.*;
 
 public class MeshData {
@@ -133,6 +134,7 @@ public class MeshData {
   public int vertexCount;
   public float[] vertexValues;
   public int[][] polygonIndexes;
+  public short[] polygonColixes;
 
   public BitSet[] surfaceSet;
   public int[] vertexSets;
@@ -172,7 +174,10 @@ public class MeshData {
     return vertexCount++;
   }
 
-  public void addTriangleCheck(int vertexA, int vertexB, int vertexC, int check) {
+  private int lastColor;
+  private short lastColix;
+
+  public void addTriangleCheck(int vertexA, int vertexB, int vertexC, int check, int color) {
   if (vertexValues != null && (Float.isNaN(vertexValues[vertexA])||Float.isNaN(vertexValues[vertexB])||Float.isNaN(vertexValues[vertexC])))
     return;
   if (Float.isNaN(vertices[vertexA].x)||Float.isNaN(vertices[vertexB].x)||Float.isNaN(vertices[vertexC].x))
@@ -181,6 +186,16 @@ public class MeshData {
     polygonIndexes = new int[SEED_COUNT][];
   else if (polygonCount == polygonIndexes.length)
     polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
+  if (color != 0) {
+    if (polygonColixes == null) {
+      polygonColixes = new short[SEED_COUNT];
+      lastColor = 0;
+    }
+    else if (polygonCount == polygonColixes.length) {
+      polygonColixes = (short[]) ArrayUtil.doubleLength(polygonColixes);
+    }
+    polygonColixes[polygonCount] = (color == lastColor ? lastColix : (lastColix = Graphics3D.getColix(lastColor = color)));
+  }    
   polygonIndexes[polygonCount++] = new int[] {vertexA, vertexB, vertexC, check};
  }
   

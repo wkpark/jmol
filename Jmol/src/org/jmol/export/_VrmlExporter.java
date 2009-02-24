@@ -35,7 +35,6 @@ import javax.vecmath.Vector3f;
 import org.jmol.g3d.Font3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Text;
-import org.jmol.util.BitSetUtil;
 import org.jmol.viewer.Viewer;
 
 
@@ -146,12 +145,12 @@ public class _VrmlExporter extends _Exporter {
   public void renderIsosurface(Point3f[] vertices, short colix,
                                short[] colixes, Vector3f[] normals,
                                int[][] indices, BitSet bsFaces, int nVertices,
-                               int faceVertexMax) {
+                               int faceVertexMax, short[] polygonColixes, int nPolygons) {
 
     if (nVertices == 0)
       return;
     int nFaces = 0;
-    for (int i = BitSetUtil.length(bsFaces); --i >= 0;)
+    for (int i = nPolygons; --i >= 0;)
       if (bsFaces.get(i))
         nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
     if (nFaces == 0)
@@ -178,7 +177,7 @@ public class _VrmlExporter extends _Exporter {
     output("  }\n");
     output("  coordIndex [\n");
     String sep = " ";
-    for (int i = BitSetUtil.length(bsFaces); --i >= 0;) {
+    for (int i = nPolygons; --i >= 0;) {
       if (!bsFaces.get(i))
         continue;
       output(sep + indices[i][0] + " " + indices[i][1] + " " + indices[i][2]

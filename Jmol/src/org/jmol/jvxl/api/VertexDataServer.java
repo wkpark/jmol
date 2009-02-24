@@ -95,9 +95,10 @@ public interface VertexDataServer {
    * @param iC
    * @param check
    * @param isAbsolute
+   * @param color 
    */
   public abstract void addTriangleCheck(int iA, int iB, int iC, int check,
-                                        boolean isAbsolute);
+                                        boolean isAbsolute, int color);
   
   /**
    * 

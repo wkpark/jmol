@@ -17,6 +17,9 @@ org/jmol/g3d/*.java
 org/jmol/geodesic/*.java
 org/jmol/i18n/*.java
 
+org/jmol/jvxl/data/*.java
+org/jmol/jvxl/calc/*.java
+org/jmol/jvxl/readers/*.java
 org/jmol/jvxl/*.java
 
 org/jmol/minimize/*.java

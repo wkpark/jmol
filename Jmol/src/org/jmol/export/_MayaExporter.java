@@ -157,7 +157,8 @@ public class _MayaExporter extends _Exporter {
   public void renderIsosurface(Point3f[] vertices, short colix,
                                short[] colixes, Vector3f[] normals,
                                int[][] indices, BitSet bsFaces,
-                               int nVertices, int faceVertexMax) {
+                               int nVertices, int faceVertexMax, 
+                               short[] polygonColixes, int nPolygons) {
   }
 
   public void renderText(Text t) {

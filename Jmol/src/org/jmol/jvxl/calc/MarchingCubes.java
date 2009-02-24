@@ -305,7 +305,7 @@ public class MarchingCubes {
 
     surfaceReader.addTriangleCheck(edgePointIndexes[ia], 
         edgePointIndexes[ib], edgePointIndexes[ic], 
-        edgeType, isCutoffAbsolute);
+        edgeType, isCutoffAbsolute, 0);
   }
 
 

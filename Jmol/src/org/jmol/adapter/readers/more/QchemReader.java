@@ -28,6 +28,7 @@ import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 
 /**
  * A reader for Q-Chem 2.1
@@ -47,10 +48,19 @@ import java.io.BufferedReader;
  *
  * @author Steven E. Wheeler (swheele2@ccqc.uga.edu)
  * @version 1.0
+ * 
+ * added modifications to deal with qchem 3.2 output
+ * also will keep the structures of optimization calculations
+ * @author RenŽ P.F Kanters (rkanters@richmond.edu)
+ * @version 1.1
  */
 
 public class QchemReader extends AtomSetCollectionReader {
-    
+ 
+/** The number of the calculation being interpreted. */
+  private int calculationNumber = 1;
+
+  
  public AtomSetCollection readAtomSetCollection(BufferedReader reader)  {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("qchem");
@@ -64,7 +74,9 @@ public class QchemReader extends AtomSetCollectionReader {
           break;
         } else if (line.indexOf("Mulliken Net Atomic Charges") >= 0){
           readPartialCharges();
-        } 
+        } else if (line.indexOf("Job ") >= 0) {
+          calculationNumber++;
+        }
         ++lineNum;
       }
     } catch (Exception e) {
@@ -80,12 +92,11 @@ public class QchemReader extends AtomSetCollectionReader {
     1      H       0.000000     0.000000     4.756791
 */
 
-  int atomCount;
+//  int atomCount;
 
   void readAtoms() throws Exception {
-    // we only take the last set of atoms before the frequencies
-    atomSetCollection.discardPreviousAtoms();
-    atomCount = 0;
+    atomSetCollection.newAtomSet();
+    
     discardLines(2);
     String[] tokens;
     while (readLine() != null && !line.startsWith(" --")) {
@@ -104,52 +115,83 @@ public class QchemReader extends AtomSetCollectionReader {
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = symbol;
       atom.set(x, y, z);
-      ++atomCount;
-    }
+      atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
+          "Calculation "+calculationNumber);
+   }
   }
-
-  void readFrequencies() throws Exception {
-    int modelNumber = 1;
-    discardLinesUntilStartsWith(" Frequency:");
-    while (line != null && line.startsWith(" Frequency:")) {
-      String[] frequencies = getTokens();
-      int nModels = frequencies.length - 1;
-      discardLines(4);
+  
+  /**
+   * Interprets the Harmonic frequencies section.
+   *
+   * <p>The vectors are added to a clone of the last read AtomSet.
+   * Only the Frequencies, reduced masses, force constants and IR intensities
+   * are set as properties for each of the frequency type AtomSet generated.
+   *
+   * @throws Exception If no frequences were encountered
+   * @throws IOException If an I/O error occurs
+   **/
+  private void readFrequencies() throws Exception, IOException {
+    String[] tokens; String[] frequencies;
+    
+    // first get the the proper line with the Frequencies:
+    frequencies = getTokens(discardLinesUntilStartsWith(" Frequency:"));
+   
+    // G98 ends the frequencies with a line with a space (03 an empty line)
+    // so I decided to read till the line is too short
+    while (true)
+    {
+      int frequencyCount = frequencies.length;
+      
+      for (int i = 1; i < frequencyCount; ++i) {
+        atomSetCollection.cloneLastAtomSet();
+        atomSetCollection.setAtomSetName(frequencies[i]+" cm**-1");
+        // set the properties
+        atomSetCollection.setAtomSetProperty("Frequency",
+            frequencies[i]+" cm**-1");
+        atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
+            "Calculation " + calculationNumber+
+            SmarterJmolAdapter.PATH_SEPARATOR+"Frequencies");
+      }
+      
+      int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+      int firstModelAtom =
+        atomSetCollection.getAtomCount() - frequencyCount * atomCount;
+      
+      // position to start reading the displacement vectors
+      discardLinesUntilStartsWith("               X");
+      
+      // read the displacement vectors for every atom and frequency
+      float x, y, z;
+      Atom[] atoms = atomSetCollection.getAtoms();
       for (int i = 0; i < atomCount; ++i) {
-        readLine();
-        String[] tokens = getTokens();
-        for (int j = 0, offset = 0; j < nModels; j++) {
-          float x = parseFloat(tokens[++offset]);
-          float y = parseFloat(tokens[++offset]);
-          float z = parseFloat(tokens[++offset]);
-          recordAtomVector(modelNumber + j, i + 1, x, y, z);
+        tokens = getTokens(readLine());
+        for (int j = 1, offset=1; j < frequencyCount; ++j) {
+          int atomOffset = firstModelAtom+j*atomCount + i ;
+          Atom atom = atoms[atomOffset];
+          x = parseFloat(tokens[offset++]);
+          y = parseFloat(tokens[offset++]);
+          z = parseFloat(tokens[offset++]);
+          atom.addVibrationVector(x, y, z);
         }
       }
-      discardLines(1);
-      modelNumber += 3;
-      readLine();
+      // Position the reader to have the next frequencies already tokenized
+      while ((line= readLine()) != null && line.length() > 0) { }
+      // I am now either at the next Frequency line or Mode line or STANDARD
+      line=readLine();
+      if (line.indexOf("STANDARD")>=0) {
+        break;  // we are done with the frequencies
+      } else if (line.indexOf(" Frequency:") == -1) {
+        frequencies = getTokens(discardLinesUntilStartsWith(" Frequency:"));
+      } else {
+        frequencies = getTokens(line);
+      }
     }
-  }
-
-  void recordAtomVector(int modelNumber, int atomCenterNumber,
-                        float x, float y, float z) throws Exception {
-    if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
-      return; // no data found
-    if (atomCenterNumber <= 0 || atomCenterNumber > atomCount)
-      return;
-    if (atomCenterNumber == 1 && modelNumber > 1)
-      atomSetCollection.cloneFirstAtomSet();
-    
-    Atom atom = atomSetCollection.getAtom((modelNumber - 1) * atomCount +
-                            atomCenterNumber - 1);
-    atom.vectorX = x;
-    atom.vectorY = y;
-    atom.vectorZ = z;
   }
 
   void readPartialCharges() throws Exception {
     discardLines(3);
     Atom[] atoms = atomSetCollection.getAtoms();
+    int atomCount = atomSetCollection.getLastAtomSetAtomCount();
     for (int i = 0; i < atomCount && readLine() != null; ++i)
       atoms[i].partialCharge = parseFloat(getTokens()[2]);
   }

@@ -133,7 +133,8 @@ class ObjReader extends PolygonFileReader {
             line = br.readLine();
           if (line == null)
             break;
-          color = Graphics3D.getArgbFromString("[" + line.substring(3) + "]");
+          color = Graphics3D.getArgbFromString("[x" + line.substring(3) + "]");
+          System.out.println("[x" + line.substring(3) + "]" + " " + color);
           line = br.readLine();
         }
       }

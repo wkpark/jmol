@@ -71,7 +71,7 @@ public class QchemReader extends AtomSetCollectionReader {
           readAtoms();
         } else if (line.indexOf("VIBRATIONAL FREQUENCIES") >= 0) {
           readFrequencies();
-          break;
+ //         break;
         } else if (line.indexOf("Mulliken Net Atomic Charges") >= 0){
           readPartialCharges();
         } else if (line.indexOf("Job ") >= 0) {

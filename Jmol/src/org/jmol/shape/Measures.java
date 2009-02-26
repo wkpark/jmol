@@ -410,8 +410,7 @@ public class Measures extends Shape {
     String msg = measurements[i].toVector().toString();
     System.arraycopy(measurements, i + 1, measurements, i, measurementCount
         - i - 1);
-    --measurementCount;
-    measurements[measurementCount] = null;
+    measurements[--measurementCount] = null;
     viewer.setStatusMeasuring("measureDeleted", i, msg);
   }
 

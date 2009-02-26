@@ -142,7 +142,6 @@ class GuiMap {
       labels.put("tools", GT._("&Tools"));
       labels.put("gauss", GT._("&Gaussian..."));
       labels.put("viewMeasurementTable", GT._("&Measurements")+"...");
-      labels.put("viewMeasurementTableTip", GT._("Click atoms to measure distances"));
       labels.put("distanceUnitsMenu", GT._("Distance &Units"));
       labels.put("distanceNanometersScript", GT._("&Nanometers 1E-9"));
       labels.put("distanceAngstromsScript", GT._("&Angstroms 1E-10"));
@@ -186,6 +185,7 @@ class GuiMap {
       labels.put("Prefs.isBondAtomColor", GT._("Use Atom Color"));
       labels.put("rotateScriptTip", GT._("Rotate molecule."));
       labels.put("pickScriptTip", GT._("Select a set of atoms using SHIFT-LEFT-  DRAG."));
+      labels.put("pickMeasureDistanceTip", GT._("Click atoms to measure distances"));
       labels.put("homeTip", GT._("Return molecule to home position."));
 
       return labels;

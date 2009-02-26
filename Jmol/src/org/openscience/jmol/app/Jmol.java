@@ -1663,7 +1663,6 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.script("set picking measure distance;set pickingstyle measure");
       measurementTable.activate();
     }
   }
@@ -1730,8 +1729,10 @@ public class Jmol extends JPanel {
         else if (status.indexOf("Completed") >= 0)
           sendConsoleEcho(strInfo.substring(strInfo.lastIndexOf(",") + 2,
               strInfo.length() - 1));
-        if (status.indexOf("Pending") < 0)
+        if (status.indexOf("Pending") < 0) {
+          //System.out.println("jmol callback measure" + status); 
           measurementTable.updateTables();
+        }
         break;
       case JmolConstants.CALLBACK_MESSAGE:
         sendConsoleMessage(data == null ? null : strInfo);
@@ -1971,7 +1972,11 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.evalStringQuiet(e.getActionCommand());
+      String script = e.getActionCommand();
+      if (script.indexOf("#showMeasurementTable") >= 0)
+        measurementTable.activate();
+      //      viewer.script("set picking measure distance;set pickingstyle measure");
+      viewer.evalStringQuiet(script);
     }
   }
 

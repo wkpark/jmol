@@ -210,12 +210,13 @@ public class MeasurementTable extends JDialog {
       return stringClass;
     }
     public Object getValueAt(int row, int col) {
+      //System.out.println("meata " + row + " " + col);
       if (col == 0) {
         deleteAllButton.setEnabled(true);
         return viewer.getMeasurementStringValue(row);
       }
       int[] countPlusIndices = viewer.getMeasurementCountPlusIndices(row);
-      if (col > countPlusIndices[0])
+      if (countPlusIndices == null || col > countPlusIndices[0])
         return null;
       int atomIndex = countPlusIndices[col];
       return (viewer.getAtomInfo(atomIndex >= 0 ? atomIndex : -row * 10 - col));

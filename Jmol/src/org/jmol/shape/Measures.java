@@ -400,17 +400,19 @@ public class Measures extends Shape {
       measurements = (Measurement[]) ArrayUtil.setLength(measurements,
           measurementCount + measurementGrowthIncrement);
     }
-    viewer.setStatusMeasuring("measureCompleted",
-        measurementCount, measureNew.toVector().toString());
+    int n = measurementCount;
     measurements[measurementCount++] = measureNew;
+    viewer.setStatusMeasuring("measureCompleted",
+        n, measureNew.toVector().toString());
   }
 
   private void deleteMeasurement(int i) {
-    viewer.setStatusMeasuring("measureDeleted", i, measurements[i].toVector().toString());
+    String msg = measurements[i].toVector().toString();
     System.arraycopy(measurements, i + 1, measurements, i, measurementCount
         - i - 1);
     --measurementCount;
     measurements[measurementCount] = null;
+    viewer.setStatusMeasuring("measureDeleted", i, msg);
   }
 
   private void nextMeasure(int thispt, int ptLastAtom,

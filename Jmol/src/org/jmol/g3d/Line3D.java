@@ -242,7 +242,7 @@ final class Line3D {
 
   void plotLine(int argbA, boolean tScreenedA, int argbB, boolean tScreenedB,
                 int xA, int yA, int zA, int xB, int yB, int zB,
-                boolean notClipped) {
+                boolean clipped) {
     // primary method for mesh triangle, quadrilateral, hermite, backbone,
     // sticks, and stars
     x1t = xA;
@@ -251,17 +251,24 @@ final class Line3D {
     y2t = yB;
     z1t = zA;
     z2t = zB;
-    switch (notClipped ? VISIBILITY_UNCLIPPED : getTrimmedLine()) {
-    case VISIBILITY_UNCLIPPED:
-    case VISIBILITY_CLIPPED:
-      plotLineClipped(argbA, tScreenedA, argbB, tScreenedB, xA, yA, zA,
-          xB - xA, yB - yA, zB - zA, notClipped, 0, 0);
-    }
+    //if (xA != 279 && xB != 279)return;
+    //System.out.println(xA + "," + yA + " " + xB + "," + yB);
+
+    if (clipped)
+      switch (getTrimmedLine()) {
+      case VISIBILITY_UNCLIPPED:
+        clipped = false;
+        break;
+      case VISIBILITY_OFFSCREEN:
+        return;
+      }
+    plotLineClipped(argbA, tScreenedA, argbB, tScreenedB, xA, yA, zA, xB - xA,
+        yB - yA, zB - zA, clipped, 0, 0);
   }
 
   void plotLineDelta(int argbA, boolean tScreenedA, int argbB,
                      boolean tScreenedB, int xA, int yA, int zA, int dxBA,
-                     int dyBA, int dzBA, boolean notClipped) {
+                     int dyBA, int dzBA, boolean clipped) {
     // from cylinder -- endcaps open or flat, diameter 1, cone
     x1t = xA;
     x2t = xA + dxBA;
@@ -269,17 +276,21 @@ final class Line3D {
     y2t = yA + dyBA;
     z1t = zA;
     z2t = zA + dzBA;
-    switch (notClipped ? VISIBILITY_UNCLIPPED : getTrimmedLine()) {
-    case VISIBILITY_UNCLIPPED:
-    case VISIBILITY_CLIPPED:
-      plotLineClipped(argbA, tScreenedA, argbB, tScreenedB, xA, yA, zA,
-          dxBA, dyBA, dzBA, notClipped, 0, 0);
-    }
+    if (clipped)
+      switch (getTrimmedLine()) {
+      case VISIBILITY_OFFSCREEN:
+        return;
+      case VISIBILITY_UNCLIPPED:
+        clipped = false;
+        break;
+      }
+    plotLineClipped(argbA, tScreenedA, argbB, tScreenedB, xA, yA, zA, dxBA,
+        dyBA, dzBA, clipped, 0, 0);
   }
 
   void plotLineDelta(int[] shades1, boolean tScreened1, int[] shades2,
                      boolean tScreened2, int intensity, int xA, int yA, int zA,
-                     int dxBA, int dyBA, int dzBA, boolean notClipped) {
+                     int dxBA, int dyBA, int dzBA, boolean clipped) {
     // from cylinder -- standard bond with two colors and translucencies
     x1t = xA;
     x2t = xA + dxBA;
@@ -287,20 +298,20 @@ final class Line3D {
     y2t = yA + dyBA;
     z1t = zA;
     z2t = zA + dzBA;
-    switch (notClipped ? VISIBILITY_UNCLIPPED : getTrimmedLine()) {
+    if (clipped)
+    switch (getTrimmedLine()) {
+    case VISIBILITY_OFFSCREEN:
+      return;
     case VISIBILITY_UNCLIPPED:
-    case VISIBILITY_CLIPPED:
-        //    System.out.println("plotlinedelta " + notClipped + " { " + xA + " " + yA
-          //    + " " + zA + " } dx " + dxBA + " dy " + dyBA + " dz " + dzBA);
-
-      plotLineClipped(shades1, tScreened1, shades2, tScreened2, intensity, xA,
-          yA, zA, dxBA, dyBA, dzBA, notClipped, 0, 0);
+      clipped = false;
     }
+    plotLineClipped(shades1, tScreened1, shades2, tScreened2, intensity, xA,
+        yA, zA, dxBA, dyBA, dzBA, clipped, 0, 0);
   }
 
   void plotLineDeltaBits(int[] shades1, boolean tScreened1, int[] shades2,
                      boolean tScreened2, int intensity, int xA, int yA, int zA,
-                     int dxBA, int dyBA, int dzBA, boolean notClipped) {
+                     int dxBA, int dyBA, int dzBA, boolean clipped) {
     // from cylinder -- cartoonRockets
     x1t = xA;
     x2t = xA + dxBA;
@@ -308,19 +319,14 @@ final class Line3D {
     y2t = yA + dyBA;
     z1t = zA;
     z2t = zA + dzBA;
-    switch (notClipped ? VISIBILITY_UNCLIPPED : getTrimmedLine()) {
-    case VISIBILITY_UNCLIPPED:
-    case VISIBILITY_CLIPPED:
-      //      System.out.println("plotlinedelta " + notClipped + " " + xA + " " + yA
-      //        + " " + zA + " " + dxBA + " " + dyBA + " " + dzBA);
-
-      plotLineClippedBits(shades1, tScreened1, shades2, tScreened2, intensity, xA,
-          yA, zA, dxBA, dyBA, dzBA, notClipped, 0, 0);
-    }
+    if (clipped && getTrimmedLine() == VISIBILITY_OFFSCREEN)
+      return;
+    plotLineClippedBits(shades1, tScreened1, shades2, tScreened2, intensity, xA,
+        yA, zA, dxBA, dyBA, dzBA, 0, 0);
   }
 
-  void plotDashedLine(int argb, boolean tScreened, int run, int rise, int xA, int yA,
-                      int zA, int xB, int yB, int zB, boolean notClipped) {
+  void plotDashedLine(int argb, boolean tScreened, int run, int rise, int xA,
+                      int yA, int zA, int xB, int yB, int zB, boolean clipped) {
     // measures, axes, bbcage only    
     x1t = xA;
     x2t = xB;
@@ -328,17 +334,21 @@ final class Line3D {
     y2t = yB;
     z1t = zA;
     z2t = zB;
-    switch (notClipped ? VISIBILITY_UNCLIPPED : getTrimmedLine()) {
-    case VISIBILITY_UNCLIPPED:
-    case VISIBILITY_CLIPPED:
-      plotLineClipped(argb, tScreened, argb, tScreened, xA, yA, zA,
-          xB - xA, yB - yA, zB - zA, notClipped, run, rise);
-    }
+    if (clipped)
+      switch (getTrimmedLine()) {
+      case VISIBILITY_OFFSCREEN:
+        return;
+      case VISIBILITY_UNCLIPPED:
+        clipped = false;
+        break;
+      }
+    plotLineClipped(argb, tScreened, argb, tScreened, xA, yA, zA, xB - xA, yB
+        - yA, zB - zA, clipped, run, rise);
   }
 
   private void plotLineClipped(int argb1, boolean tScreened1, int argb2,
                                boolean tScreened2, int x, int y, int z, int dx,
-                               int dy, int dz, boolean notClipped, int run,
+                               int dy, int dz, boolean clipped, int run,
                                int rise) {
     // standard, dashed or not dashed
     int[] zbuf = g3d.zbuf;
@@ -353,7 +363,7 @@ final class Line3D {
     boolean flipflop = (((x ^ y) & 1) != 0);
     boolean tScreened = tScreened1;
     int argb = argb1;
-    if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && notClipped
+    if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && !clipped
         && offset >= 0 && offset < offsetMax && z < zbuf[offset]) {
       g3d.addPixel(offset, z, argb);
     }
@@ -361,6 +371,7 @@ final class Line3D {
       //g3d.addPixel(offset, z, argb);
       return;
     }
+    //System.out.println("dx dy " + dx + " " + dy);
     int xIncrement = 1;
     int yOffsetIncrement = width;
 
@@ -448,7 +459,7 @@ final class Line3D {
   private void plotLineClipped(int[] shades1, boolean tScreened1,
                                int[] shades2, boolean tScreened2,
                                int intensity, int x, int y, int z, int dx,
-                               int dy, int dz, boolean notClipped, int run,
+                               int dy, int dz, boolean clipped, int run,
                                int rise) {
     // special shading for bonds
     int[] zbuf = g3d.zbuf;
@@ -472,8 +483,8 @@ final class Line3D {
     int argb = argb1;
     boolean tScreened = tScreened1;
     boolean flipflop = (((x ^ y) & 1) != 0);
-    if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && notClipped && offset >= 0
-        && offset < offsetMax && z < zbuf[offset])
+    if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && !clipped 
+        && offset >= 0 && offset < offsetMax && z < zbuf[offset])
       g3d.addPixel(offset, z, argb);
     if (dx == 0 && dy == 0) {
       return;
@@ -592,8 +603,7 @@ final class Line3D {
   private void plotLineClippedBits(int[] shades1, boolean tScreened1,
                                    int[] shades2, boolean tScreened2,
                                    int intensity, int x, int y, int z, int dx,
-                                   int dy, int dz, boolean notClipped, int run,
-                                   int rise) {
+                                   int dy, int dz, int run, int rise) {
     // special shading for rockets; somewhat slower than above;
     // System.out.println("line3d plotLineClippedBits "+x+" "+y+" "+z+" "+dx+" "+dy+" "+dz+" "+shades1);
     int[] zbuf = g3d.zbuf;

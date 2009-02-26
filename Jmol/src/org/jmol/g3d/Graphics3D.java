@@ -1152,20 +1152,20 @@ final public class Graphics3D implements JmolRendererInterface {
     // measures only
     line3d.plotDashedLine(argbCurrent, !addAllPixels, run, rise, 
         pointA.x, pointA.y, pointA.z,
-        pointB.x, pointB.y, pointB.z, false);
+        pointB.x, pointB.y, pointB.z, true);
   }
 
   public void drawDottedLine(Point3i pointA, Point3i pointB) {
      //axes, bbcage only
     line3d.plotDashedLine(argbCurrent, !addAllPixels, 2, 1,
                           pointA.x, pointA.y, pointA.z,
-                          pointB.x, pointB.y, pointB.z, false);
+                          pointB.x, pointB.y, pointB.z, true);
   }
 
   public void drawLine(int x1, int y1, int z1, int x2, int y2, int z2) {
     // stars
     line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
-                    x1, y1, z1, x2, y2, z2, false);
+                    x1, y1, z1, x2, y2, z2, true);
   }
 
   public void drawLine(short colixA, short colixB,
@@ -1180,14 +1180,14 @@ final public class Graphics3D implements JmolRendererInterface {
     if (colixA == 0 && colixB == 0)
       return;
     line3d.plotLine(argbA, isScreenedA, argbCurrent, !addAllPixels,
-                    x1, y1, z1, x2, y2, z2, false);
+                    x1, y1, z1, x2, y2, z2, true);
   }
   
   public void drawLine(Point3i pointA, Point3i pointB) {
     // draw quadrilateral and hermite
     line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
                     pointA.x, pointA.y, pointA.z,
-                    pointB.x, pointB.y, pointB.z, false);
+                    pointB.x, pointB.y, pointB.z, true);
   }
   
   public void fillCylinder(short colixA, short colixB, byte endcaps,
@@ -1308,13 +1308,13 @@ final public class Graphics3D implements JmolRendererInterface {
     int zC = screenC.z;
     if ((check & 1) == 1)
       line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
-          xA, yA, zA, xB, yB, zB, false);
+          xA, yA, zA, xB, yB, zB, true);
     if ((check & 2) == 2)
       line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
-          xB, yB, zB, xC, yC, zC, false);
+          xB, yB, zB, xC, yC, zC, true);
     if ((check & 4) == 4)
       line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
-          xA, yA, zA, xC, yC, zC, false);
+          xA, yA, zA, xC, yC, zC, true);
   }
 
   public void drawCylinderTriangle(int xA, int yA, int zA, int xB,
@@ -1333,11 +1333,11 @@ final public class Graphics3D implements JmolRendererInterface {
                                int yB, int zB, int xC, int yC, int zC) {
     // sticks -- sterochemical wedge notation -- not implemented?
     line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels, xA,
-        yA, zA, xB, yB, zB, false);
+        yA, zA, xB, yB, zB, true);
     line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels, xA,
-        yA, zA, xC, yC, zC, false);
+        yA, zA, xC, yC, zC, true);
     line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels, xB,
-        yB, zB, xC, yC, zC, false);
+        yB, zB, xC, yC, zC, true);
     triangle3d.fillTriangle(xA, yA, zA, xB, yB, zB, xC, yC, zC, false);
   }
   

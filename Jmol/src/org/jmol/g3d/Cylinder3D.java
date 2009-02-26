@@ -65,7 +65,7 @@ class Cylinder3D {
 
   private float radius, radius2, cosTheta, cosPhi, sinPhi;
 
-  boolean notClipped;
+  boolean clipped;
   private boolean drawBackside;
 
   private int zShift;
@@ -84,7 +84,7 @@ class Cylinder3D {
     int codeMinB = line3d.clipCode(xB - r, yB - r, zB - r);
     int codeMaxB = line3d.clipCode(xB + r, yB + r, zB + r);
     //all bits 0 --> no clipping
-    notClipped = ((codeMinA | codeMaxA | codeMinB | codeMaxB) == 0);
+    clipped = ((codeMinA | codeMaxA | codeMinB | codeMaxB) != 0);
     //any two bits same in all cases --> fully clipped
     if ((codeMinA & codeMaxB & codeMaxA & codeMinB) != 0)
       return; // fully clipped;
@@ -96,10 +96,10 @@ class Cylinder3D {
     if (diameter <= 1) {
       line3d.plotLineDelta(g3d.getColixArgb(colixA), isScreenedA, g3d
           .getColixArgb(colixB), isScreenedB, xA, yA, zA, dxB, dyB, dzB,
-          notClipped);
+          clipped);
       return;
     }
-    drawBackside = (!notClipped 
+    drawBackside = (clipped 
         || endcaps == Graphics3D.ENDCAPS_FLAT || endcaps == Graphics3D.ENDCAPS_NONE);
     this.diameter = diameter;
     this.xA = xA;
@@ -138,7 +138,7 @@ class Cylinder3D {
     int codeMinB = line3d.clipCode((int) xB - r, (int) yB - r, (int) zB - r);
     int codeMaxB = line3d.clipCode((int) xB + r, (int) yB + r, (int) zB + r);
     //all bits 0 --> no clipping
-    notClipped = ((codeMinA | codeMaxA | codeMinB | codeMaxB) == 0);
+    clipped = ((codeMinA | codeMaxA | codeMinB | codeMaxB) != 0);
     //any two bits same in all cases --> fully clipped
     if ((codeMinA & codeMaxB & codeMaxA & codeMinB) != 0)
       return; // fully clipped;
@@ -148,7 +148,7 @@ class Cylinder3D {
     if (diameter == 0 || diameter == 1) {
       line3d.plotLineDelta(g3d.getColixArgb(colixA), isScreenedA, g3d
           .getColixArgb(colixB), isScreenedB, (int) xA, (int) yA, (int) zA,
-          (int) dxBf, (int) dyBf, (int) dzBf, notClipped);
+          (int) dxBf, (int) dyBf, (int) dzBf, clipped);
       return;
     }
     if (diameter > 0) {
@@ -157,7 +157,7 @@ class Cylinder3D {
       this.yAf = yA;
       this.zAf = zA;
     }
-    drawBackside = (!isScreenedA && !isScreenedB && (!notClipped 
+    drawBackside = (!isScreenedA && !isScreenedB && (clipped 
         || endcaps == Graphics3D.ENDCAPS_FLAT || endcaps == Graphics3D.ENDCAPS_NONE));
     this.xA = (int) xAf;
     this.yA = (int) yAf;
@@ -194,23 +194,23 @@ class Cylinder3D {
     int y = yRaster[i];
     int z = zRaster[i];
     if (tEndcapOpen && argbEndcap != 0) {
-      if (notClipped) {
-        g3d.plotPixelUnclipped(argbEndcap, xEndcap + x, yEndcap + y, zEndcap
-            - z - 1);
-        g3d.plotPixelUnclipped(argbEndcap, xEndcap - x, yEndcap - y, zEndcap
-            + z - 1);
-      } else {
+      if (clipped) {
         g3d.plotPixelClipped(argbEndcap, xEndcap + x, yEndcap + y, zEndcap - z
             - 1);
         g3d.plotPixelClipped(argbEndcap, xEndcap - x, yEndcap - y, zEndcap + z
             - 1);
+      } else {
+        g3d.plotPixelUnclipped(argbEndcap, xEndcap + x, yEndcap + y, zEndcap
+            - z - 1);
+        g3d.plotPixelUnclipped(argbEndcap, xEndcap - x, yEndcap - y, zEndcap
+            + z - 1);
       }
     }
     line3d.plotLineDeltaBits(shadesA, isScreenedA, shadesB, isScreenedB,
-        fpz, xA + x, yA + y, zA - z, dxB, dyB, dzB, notClipped);
+        fpz, xA + x, yA + y, zA - z, dxB, dyB, dzB, clipped);
     if (drawBackside) {
       line3d.plotLineDelta(shadesA[fpzBack], isScreenedA, shadesB[fpzBack], isScreenedB, xA
-          - x, yA - y, zA + z, dxB, dyB, dzB, notClipped);
+          - x, yA - y, zA + z, dxB, dyB, dzB, clipped);
     }
   }
 
@@ -243,7 +243,7 @@ class Cylinder3D {
     if (diameter <= 1) {
       if (diameter == 1)
         line3d.plotLineDelta(colixA, isScreenedA, colixA, isScreenedA, this.xA,
-            this.yA, this.zA, dxB, dyB, dzB, notClipped);
+            this.yA, this.zA, dxB, dyB, dzB, clipped);
       return;
     }
     //float r2 = dxB*dxB + dyB*dyB + dzB*dzB;
@@ -433,23 +433,23 @@ class Cylinder3D {
     int y = yRaster[i];
     int z = zRaster[i];
     if (tEndcapOpen && argbEndcap != 0) {
-      if (notClipped) {
-        g3d.plotPixelUnclipped(argbEndcap, xEndcap + x, yEndcap + y, zEndcap
-            - z - 1);
-        g3d.plotPixelUnclipped(argbEndcap, xEndcap - x, yEndcap - y, zEndcap
-            + z - 1);
-      } else {
+      if (clipped) {
         g3d.plotPixelClipped(argbEndcap, xEndcap + x, yEndcap + y, zEndcap - z
             - 1);
         g3d.plotPixelClipped(argbEndcap, xEndcap - x, yEndcap - y, zEndcap + z
             - 1);
+      } else {
+        g3d.plotPixelUnclipped(argbEndcap, xEndcap + x, yEndcap + y, zEndcap
+            - z - 1);
+        g3d.plotPixelUnclipped(argbEndcap, xEndcap - x, yEndcap - y, zEndcap
+            + z - 1);
       }
     }
     line3d.plotLineDelta(shadesA, isScreenedA, shadesB, isScreenedB,
-        fpz, xA + x, yA + y, zA - z, dxB, dyB, dzB, notClipped);
+        fpz, xA + x, yA + y, zA - z, dxB, dyB, dzB, clipped);
     if (drawBackside) {
       line3d.plotLineDelta(shadesA[fpzBack], isScreenedA, shadesB[fpzBack], isScreenedB, xA
-          - x, yA - y, zA + z, dxB, dyB, dzB, notClipped);
+          - x, yA - y, zA + z, dxB, dyB, dzB,clipped);
     }
   }
 
@@ -605,21 +605,21 @@ class Cylinder3D {
     if (argb != 0) {
       line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
           (int) xUp, (int) yUp, (int) zUp, (int) Math.ceil(xTip - xUp),
-          (int) Math.ceil(yTip - yUp), (int) Math.ceil(zTip - zUp), false);
+          (int) Math.ceil(yTip - yUp), (int) Math.ceil(zTip - zUp), true);
       
       if (doFill) { //rockets, not arrows
         line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
           (int) xUp, (int) yUp + 1, (int) zUp, (int) Math.ceil(xTip - xUp),
-          (int) Math.ceil(yTip - yUp) + 1, (int) Math.ceil(zTip - zUp), false);
+          (int) Math.ceil(yTip - yUp) + 1, (int) Math.ceil(zTip - zUp), true);
         line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
           (int) xUp + 1, (int) yUp, (int) zUp, (int) Math.ceil(xTip - xUp) + 1,
-          (int) Math.ceil(yTip - yUp), (int) Math.ceil(zTip - zUp), false);
+          (int) Math.ceil(yTip - yUp), (int) Math.ceil(zTip - zUp), true);
       }    
   
       if (!(endcaps == Graphics3D.ENDCAPS_FLAT && dzB > 0)) {
         line3d.plotLineDelta(argb, isScreenedA, argb, isScreenedA, (int) xDn,
             (int) yDn, (int) zDn, (int) Math.ceil(xTip - xDn), (int) Math
-                .ceil(yTip - yDn), (int) Math.ceil(zTip - zDn), false);
+                .ceil(yTip - yDn), (int) Math.ceil(zTip - zDn), true);
       }
     }
   }

@@ -4013,8 +4013,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   // //////////////status manager dispatch//////////////
 
+  public void setJmolCallbackListener(JmolCallbackListener jmolCallbackListener) {
+    statusManager.setJmolCallbackListener(jmolCallbackListener);
+  }
+
   public void setJmolStatusListener(JmolStatusListener jmolStatusListener) {
-    statusManager.setJmolStatusListener(jmolStatusListener);
+    statusManager.setJmolStatusListener(jmolStatusListener, null);
   }
 
   public Hashtable getMessageQueue() {

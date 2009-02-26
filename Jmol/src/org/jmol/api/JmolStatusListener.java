@@ -26,7 +26,7 @@ package org.jmol.api;
 
 import java.util.Hashtable;
 
-public interface JmolStatusListener {
+public interface JmolStatusListener extends JmolCallbackListener {
 /*
  * These methods specifically provide notification from 
  * Viewer.StatusManager to the two main classes, applet or app.
@@ -36,12 +36,6 @@ public interface JmolStatusListener {
  * has been done PRIOR to these functions being called.   Bob Hanson
  * 
  */
-
-  public void setCallbackFunction(String callbackType, String callbackFunction);
-  
-  public void notifyCallback(int type, Object[] data);
-
-  public boolean notifyEnabled(int callback_pick);
 
   public String eval(String strEval);
   

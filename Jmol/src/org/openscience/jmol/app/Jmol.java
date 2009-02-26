@@ -1687,6 +1687,30 @@ public class Jmol extends JPanel {
 
   class MyStatusListener implements JmolStatusListener {
 
+    /* starting with Jmol 11.7.27, JmolStatusListener extends JmolCallbackListener
+     * 
+     * providing a simpler interface if all that is wanted is callback functionality.
+     * 
+     * Only three methods are involved:
+     * 
+     * boolean notifyEnabled(int type) 
+     *   -- lets the statusManager know if there is an implementation
+     *      of a given callback type
+     * 
+     * void notifyCallback(int type, Object[] data)
+     *   -- callback action; data varies with callback type 
+     *   -- see org.jmol.viewer.StatusManager for details
+     *   
+     * void setCallbackFunction(String callbackType, String callbackFunction)
+     *   -- called by statusManager in response to the 
+     *      "set callback" script command
+     *   -- also used by the Jmol application to change menus and languages
+     *   -- can remain unimplemented if no such user action is intended
+     * 
+     */
+    
+    /// JmolCallbackListener interface ///
+
     public boolean notifyEnabled(int type) {
       switch (type) {
       case JmolConstants.CALLBACK_ANIMFRAME:
@@ -1767,27 +1791,6 @@ public class Jmol extends JPanel {
       }
     }
 
-    public String eval(String strEval) {
-      if (strEval.startsWith("_GET_MENU"))
-        return (jmolpopup == null ? "" : jmolpopup.getMenu("Jmol version "
-            + Viewer.getJmolVersion() + "|" + strEval));
-      sendConsoleMessage("javascript: " + strEval);
-      return "# 'eval' is implemented only for the applet.";
-    }
-
-    /**
-     * 
-     * @param fileName
-     * @param type
-     * @param text_or_bytes
-     * @param quality
-     * @return          null (canceled) or a message starting with OK or an error message
-     */
-    public String createImage(String fileName, String type, Object text_or_bytes,
-                              int quality) {
-      return createImageStatus(fileName, type, text_or_bytes, quality);
-    }
-
     public void setCallbackFunction(String callbackType, String callbackFunction) {
       if (callbackType.equalsIgnoreCase("menu")) {
         menuStructure = callbackFunction;
@@ -1807,7 +1810,29 @@ public class Jmol extends JPanel {
         }
         setupNewFrame(viewer.getStateInfo());
       }
+    }
+    
+    /// end of JmolCallbackListener interface ///
 
+    public String eval(String strEval) {
+      if (strEval.startsWith("_GET_MENU"))
+        return (jmolpopup == null ? "" : jmolpopup.getMenu("Jmol version "
+            + Viewer.getJmolVersion() + "|" + strEval));
+      sendConsoleMessage("javascript: " + strEval);
+      return "# 'eval' is implemented only for the applet.";
+    }
+
+    /**
+     * 
+     * @param fileName
+     * @param type
+     * @param text_or_bytes
+     * @param quality
+     * @return          null (canceled) or a message starting with OK or an error message
+     */
+    public String createImage(String fileName, String type, Object text_or_bytes,
+                              int quality) {
+      return createImageStatus(fileName, type, text_or_bytes, quality);
     }
 
     private void notifyAtomPicked(String info) {

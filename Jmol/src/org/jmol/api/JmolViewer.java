@@ -128,6 +128,8 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   
   abstract public String generateOutput(String type, String fileName, int width, int height); 
 
+  abstract public void setJmolCallbackListener(JmolCallbackListener jmolCallbackListener);
+
   abstract public void setJmolStatusListener(JmolStatusListener jmolStatusListener);
 
   abstract public void setAppletContext(String htmlName, URL documentBase, URL codeBase,

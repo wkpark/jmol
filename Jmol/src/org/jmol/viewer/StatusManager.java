@@ -30,7 +30,9 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.jmol.api.*;
+import org.jmol.api.JmolCallbackListener;
+import org.jmol.api.JmolStatusListener;
+
 import org.jmol.i18n.GT;
 /**
  * 
@@ -82,6 +84,7 @@ class StatusManager {
   
   private Viewer viewer;
   private JmolStatusListener jmolStatusListener;
+  private JmolCallbackListener jmolCallbackListener;
   private String statusList = "";
 
   String getStatusList() {
@@ -272,8 +275,13 @@ class StatusManager {
     return true;
   }
 
-  synchronized void setJmolStatusListener(JmolStatusListener jmolStatusListener) {
+  synchronized void setJmolStatusListener(JmolStatusListener jmolStatusListener, JmolCallbackListener jmolCallbackListener) {
     this.jmolStatusListener = jmolStatusListener;
+    this.jmolCallbackListener = (jmolCallbackListener == null ? (JmolCallbackListener) jmolStatusListener : jmolCallbackListener);
+  }
+  
+  synchronized void setJmolCallbackListener(JmolCallbackListener jmolCallbackListener) {
+    this.jmolCallbackListener = jmolCallbackListener;
   }
   
   private String[] jmolScriptCallbacks = new String[JmolConstants.CALLBACK_COUNT];
@@ -299,12 +307,12 @@ class StatusManager {
       jmolScriptCallbacks[iCallback] = (pt == 0 ? null : callbackFunction
           .substring(pt).trim());
     }
-    if (jmolStatusListener != null)
-      jmolStatusListener.setCallbackFunction(callbackType, callbackFunction);
+    if (jmolCallbackListener != null)
+      jmolCallbackListener.setCallbackFunction(callbackType, callbackFunction);
   }
   
   private boolean notifyEnabled(int type) {
-    return jmolStatusListener != null && jmolStatusListener.notifyEnabled(type);
+    return jmolCallbackListener != null && jmolCallbackListener.notifyEnabled(type);
   }
 
   synchronized void setStatusAtomPicked(int atomIndex, String strInfo) {
@@ -312,21 +320,21 @@ class StatusManager {
     Logger.info("setStatusAtomPicked(" + atomIndex + "," + strInfo + ")");
     setStatusChanged("atomPicked", atomIndex, strInfo, false);
     if (notifyEnabled(JmolConstants.CALLBACK_PICK))
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_PICK,
+      jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_PICK,
           new Object[] { sJmol, strInfo, new Integer(atomIndex) });
   }
 
   synchronized void setStatusResized(int width, int height){
     String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_RESIZE);
     if (notifyEnabled(JmolConstants.CALLBACK_RESIZE))
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_RESIZE,
+      jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_RESIZE,
           new Object[] { sJmol, new Integer(width), new Integer(height) }); 
   }
 
   synchronized void setStatusAtomHovered(int iatom, String strInfo) {
     String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_HOVER);
     if (notifyEnabled(JmolConstants.CALLBACK_HOVER))
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_HOVER, 
+      jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_HOVER, 
           new Object[] {sJmol, strInfo, new Integer(iatom) });
   }
   
@@ -339,7 +347,7 @@ class StatusManager {
       setStatusChanged("fileLoadError", ptLoad, errorMsg, false);
     String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_LOADSTRUCT);
     if (doCallback && notifyEnabled(JmolConstants.CALLBACK_LOADSTRUCT)) 
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_LOADSTRUCT,
+      jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_LOADSTRUCT,
           new Object[] { sJmol, 
               fullPathName, fileName, modelName, errorMsg, new Integer(ptLoad) });
   }
@@ -357,7 +365,7 @@ class StatusManager {
         .getModelNumberDotted(f) : ""), false);
     String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_ANIMFRAME);
     if (notifyEnabled(JmolConstants.CALLBACK_ANIMFRAME)) {
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_ANIMFRAME,
+      jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_ANIMFRAME,
           new Object[] { sJmol,
               new int[] { frameNo, fileNo, modelNo, firstNo, lastNo } });
     }
@@ -370,7 +378,7 @@ class StatusManager {
     setStatusChanged("scriptEcho", 0, strEcho, false);
     String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_ECHO);
     if (notifyEnabled(JmolConstants.CALLBACK_ECHO))
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_ECHO,
+      jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_ECHO,
           new Object[] { sJmol, strEcho, new Integer(isScriptQueued ? 1 : 0) });
   }
 
@@ -386,7 +394,7 @@ class StatusManager {
     }
         
     if (notifyEnabled(JmolConstants.CALLBACK_MEASURE))
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_MEASURE, 
+      jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_MEASURE, 
           new Object[] { sJmol, strMeasure,  new Integer(intInfo), status });
   }
   
@@ -394,7 +402,7 @@ class StatusManager {
                                 String errMsgUntranslated) {
     String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_ERROR);
     if (notifyEnabled(JmolConstants.CALLBACK_ERROR))
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_ERROR,
+      jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_ERROR,
           new Object[] { sJmol, errType, errMsg, viewer.getShapeErrorState(),
               errMsgUntranslated });
   }
@@ -403,7 +411,7 @@ class StatusManager {
                                              Float minEnergy, Float minEnergyDiff) {
     String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_MINIMIZATION);
     if (notifyEnabled(JmolConstants.CALLBACK_MINIMIZATION))
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_MINIMIZATION,
+      jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_MINIMIZATION,
           new Object[] { sJmol, minStatus, minSteps, minEnergy, minEnergyDiff });
   }
   
@@ -435,12 +443,12 @@ class StatusManager {
     if (jmolStatusListener != null) {
       if (isScriptCompletion && viewer.getMessageStyleChime()
           && viewer.getDebugScript()) {
-        jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT,
+        jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT,
             new Object[] { null, "script <exiting>", statusMessage,
                 new Integer(-1), strErrorMessageUntranslated });
         strStatus = "Jmol script completed.";
       }
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT,
+      jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_SCRIPT,
           new Object[] { sJmol, strStatus, statusMessage,
               new Integer(isScriptCompletion ? -1 : msWalltime),
               strErrorMessageUntranslated });
@@ -527,7 +535,7 @@ class StatusManager {
   void syncSend(String script, String appletName) {
     // no jmolscript option for syncSend
     if (jmolStatusListener != null)
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_SYNC,
+      jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_SYNC,
           new Object[] { null, script, appletName });
   }
   
@@ -542,7 +550,7 @@ class StatusManager {
 
   synchronized void clearConsole() {
     if (jmolStatusListener != null)
-      jmolStatusListener.notifyCallback(JmolConstants.CALLBACK_MESSAGE, null);
+      jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_MESSAGE, null);
   }
 
   synchronized void showConsole(boolean showConsole) {

@@ -279,7 +279,7 @@ final public class JmolConstants {
     "off", "identify", "label", "center", "draw", "spin",
     "coord NOT IMPLEMENTED", "bond NOT IMPLEMENTED", 
     "atom", "group", "chain", "molecule", "site", "model", "element", 
-    "drag", "measure", "distance", "angle", "torsion", "navigate"
+    "measure", "distance", "angle", "torsion", "navigate"
   };
  
   public final static String getPickingModeName(int pickingMode) {

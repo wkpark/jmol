@@ -247,10 +247,11 @@ abstract public class AtomCollection {
     return n;
   }
   
-  public int getAtomIndexFromAtomNumber(int atomNumber) {
+  public int getAtomIndexFromAtomNumber(int atomNumber, BitSet bsVisibleFrames) {
     //definitely want FIRST (model) not last here
     for (int i = 0; i < atomCount; i++) {
-      if (atoms[i].getAtomNumber() == atomNumber)
+      Atom atom = atoms[i];
+      if (atom.getAtomNumber() == atomNumber && bsVisibleFrames.get(atom.modelIndex))
         return i;
     }
     return -1;

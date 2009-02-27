@@ -356,7 +356,10 @@ final public class Graphics3D implements JmolRendererInterface {
     platform.obtainScreenBuffer();
     if (backgroundImage != null)
       plotImage(Integer.MIN_VALUE, 0, Integer.MIN_VALUE, backgroundImage, null, (short) 0, 0, 0);
+    
+    random = Math.random();
   }
+  public double random;
 
   private void releaseBuffers() {
     pbuf = null;
@@ -1223,7 +1226,7 @@ final public class Graphics3D implements JmolRendererInterface {
 
   public void fillCylinderBits(byte endcaps, int diameter,
                                Point3f screenA, Point3f screenB) {
-   // dipole cross, cartoonRockets
+   // dipole cross, cartoonRockets, draw line
    cylinder3d.renderBits(colixCurrent, colixCurrent, !addAllPixels, !addAllPixels, endcaps, diameter,
        screenA.x, screenA.y, screenA.z,
        screenB.x, screenB.y, screenB.z);
@@ -2219,7 +2222,7 @@ final public class Graphics3D implements JmolRendererInterface {
   private final Vector3f vectorAC = new Vector3f();
   private final Vector3f vectorNormal = new Vector3f();
   // these points are in screen coordinates even though 3f
-
+  
   public int calcSurfaceShade(Point3i screenA, Point3i screenB, Point3i screenC) {
     // or center and point, as for an ellipse
     vectorAB.set(screenB.x - screenA.x, screenB.y - screenA.y, screenB.z

@@ -251,8 +251,8 @@ final class Line3D {
     y2t = yB;
     z1t = zA;
     z2t = zB;
-    //if (xA != 279 && xB != 279)return;
-    //System.out.println(xA + "," + yA + " " + xB + "," + yB);
+    //if (xA != 250 && xB != 250)return;
+    //System.out.println("\t\t\t" + xA + "," + yA + " " + xB + "," + yB);
 
     if (clipped)
       switch (getTrimmedLine()) {
@@ -270,6 +270,7 @@ final class Line3D {
                      boolean tScreenedB, int xA, int yA, int zA, int dxBA,
                      int dyBA, int dzBA, boolean clipped) {
     // from cylinder -- endcaps open or flat, diameter 1, cone
+    // cartoon rockets, draw line
     x1t = xA;
     x2t = xA + dxBA;
     y1t = yA;
@@ -350,7 +351,7 @@ final class Line3D {
                                boolean tScreened2, int x, int y, int z, int dx,
                                int dy, int dz, boolean clipped, int run,
                                int rise) {
-    // standard, dashed or not dashed
+    // standard, dashed or not dashed -- isosurface mesh
     int[] zbuf = g3d.zbuf;
     int width = g3d.width;
     int runIndex = 0;
@@ -358,14 +359,16 @@ final class Line3D {
       rise = Integer.MAX_VALUE;
       run = 1;
     }
+    //int test1 = (g3d.random > 0.9 ? -1 : 1);System.out.println("line3db " + test1 + " " + x + " " + y + " " + dx + " " + dy);
     int offset = y * width + x;
     int offsetMax = g3d.bufferSize;
     boolean flipflop = (((x ^ y) & 1) != 0);
     boolean tScreened = tScreened1;
     int argb = argb1;
-    if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && !clipped
-        && offset >= 0 && offset < offsetMax && z < zbuf[offset]) {
+    if (argb != 0 && !clipped && offset >= 0 && offset < offsetMax 
+        && z < zbuf[offset] && (!tScreened || (flipflop = !flipflop))) {
       g3d.addPixel(offset, z, argb);
+      //System.out.println((offset % width) + "\t" + (offset / width));
     }
     if (dx == 0 && dy == 0) {
       //g3d.addPixel(offset, z, argb);
@@ -397,7 +400,7 @@ final class Line3D {
         roundingFactor = -roundingFactor;
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
       int twoDxAccumulatedYError = 0;
-      int n1 = Math.abs(x2 - x2t) + 1;
+      int n1 = Math.abs(x2 - x2t) - 1;
       int n2 = Math.abs(x2 - x1t) - 1;
       for (int n = dx - 1, nMid = n / 2; --n >= n1;) {
         if (n == nMid) {
@@ -414,11 +417,12 @@ final class Line3D {
           twoDxAccumulatedYError -= twoDx;
           flipflop = !flipflop;
         }
-        if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && n < n2
-            && offset >= 0 && offset < offsetMax && runIndex < rise) {
+        if (argb != 0 && n < n2 && offset >= 0 && offset < offsetMax 
+            && runIndex < rise && (!tScreened || (flipflop = !flipflop))) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset])
             g3d.addPixel(offset, zCurrent, argb);
+          //System.out.println((offset % width) + "\t" + (offset / width));
         }
         runIndex = (runIndex + 1) % run;
       }
@@ -428,7 +432,7 @@ final class Line3D {
         roundingFactor = -roundingFactor;
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
       int twoDyAccumulatedXError = 0;
-      int n1 = Math.abs(y2 - y2t) + 1;
+      int n1 = Math.abs(y2 - y2t) - 1;
       int n2 = Math.abs(y2 - y1t) - 1;
       for (int n = dy - 1, nMid = n / 2; --n >= n1;) {
         if (n == nMid) {
@@ -445,11 +449,12 @@ final class Line3D {
           twoDyAccumulatedXError -= twoDy;
           flipflop = !flipflop;
         }
-        if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && n < n2
-            && offset >= 0 && offset < offsetMax && runIndex < rise) {
+        if (argb != 0 && n < n2 && offset >= 0 && offset < offsetMax 
+            && runIndex < rise && (!tScreened || (flipflop = !flipflop))) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset])
             g3d.addPixel(offset, zCurrent, argb);
+          //System.out.println((offset % width) + "\t" + (int)Math.floor(offset / width));
         }
         runIndex = (runIndex + 1) % run;
       }
@@ -483,8 +488,8 @@ final class Line3D {
     int argb = argb1;
     boolean tScreened = tScreened1;
     boolean flipflop = (((x ^ y) & 1) != 0);
-    if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && !clipped 
-        && offset >= 0 && offset < offsetMax && z < zbuf[offset])
+    if (argb != 0 && !clipped && offset >= 0 && offset < offsetMax 
+        && z < zbuf[offset] && (!tScreened || (flipflop = !flipflop)))
       g3d.addPixel(offset, z, argb);
     if (dx == 0 && dy == 0) {
       return;
@@ -493,6 +498,8 @@ final class Line3D {
     int yOffsetIncrement = width;
     int x2 = x + dx;
     int y2 = y + dy;
+
+    //int test1 = (g3d.random > 0.9 ? -1 : 0);System.out.println("line3d " + test1 + " " + x + " " + y + " " + dx + " " + dy);
 
     if (dx < 0) {
       dx = -dx;
@@ -515,8 +522,8 @@ final class Line3D {
         roundingFactor = -roundingFactor;
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
       int twoDxAccumulatedYError = 0;
-      int n1 = Math.abs(x2 - x2t);// + 1;
-      int n2 = Math.abs(x2 - x1t);// - 1;
+      int n1 = Math.abs(x2 - x2t) - 1;// + 1;
+      int n2 = Math.abs(x2 - x1t) - 1;// - 1;
       //     System.out.println("shade dx-mode n1n2" + " " + n1 + " " + n2 + " xyz  " + x
       //       + " " + y + " " + z + " x2 " + (x2) + " y2" + (y2) + " z2 "
       //     + (z + "=z dz= " + dz) + " x2y2t=" + x2t + " " + y2t);
@@ -544,8 +551,8 @@ final class Line3D {
           flipflop = !flipflop;
         }
         //System.out.println("shade n offset" + n + " " + offset);
-        if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && n < n2 && offset >= 0
-            && offset < offsetMax && runIndex < rise) {
+        if (argb != 0 && n < n2 && offset >= 0 && offset < offsetMax 
+            && runIndex < rise && (!tScreened || (flipflop = !flipflop))) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset]) {
             int rand8 = Shade3D.nextRandom8Bit();
@@ -560,8 +567,8 @@ final class Line3D {
         roundingFactor = -roundingFactor;
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
       int twoDyAccumulatedXError = 0;
-      int n1 = Math.abs(y2 - y2t);// + 1;
-      int n2 = Math.abs(y2 - y1t);// - 1;
+      int n1 = Math.abs(y2 - y2t) - 1;// + 1;
+      int n2 = Math.abs(y2 - y1t) - 1;// - 1;
       //      System.out.println("shade dy-mode " + " n1=" + n1 + " n2=" + n2 + " xyz  " + x
       //        + " " + y + " " + z + " x2 " + (x2) + " y2" + (y2) + " z2 "
       //      + (z + "=z dz= " + dz) + " x2t=" + x2t + " y2t=" + y2t  );
@@ -587,8 +594,8 @@ final class Line3D {
           twoDyAccumulatedXError -= twoDy;
           flipflop = !flipflop;
         }
-        if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && n < n2 && offset >= 0
-            && offset < offsetMax && runIndex < rise) {
+        if (argb != 0 && n < n2 && offset >= 0 && offset < offsetMax 
+            && runIndex < rise && (!tScreened || (flipflop = !flipflop))) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset]) {
             int rand8 = Shade3D.nextRandom8Bit();
@@ -683,8 +690,8 @@ final class Line3D {
         }
       }
       //if(test > 0)System.out.println(isInWindow + " i1="+ i1 + " i0=" + i0 + " i=" + i + " offset="+offset );
-      if (argb != 0 && isInWindow && (!tScreened || (flipflop = !flipflop)) && offset >= 0
-          && offset < offsetMax && runIndex < rise) {
+      if (argb != 0 && isInWindow && offset >= 0 && offset < offsetMax 
+          && runIndex < rise && (!tScreened || (flipflop = !flipflop))) {
         if (zFloat < zbuf[offset]) {
           int rand8 = Shade3D.nextRandom8Bit();
           g3d.addPixel(offset, (int) zFloat, rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb));

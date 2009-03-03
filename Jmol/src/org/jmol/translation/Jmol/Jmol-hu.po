@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 11.7.x\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2008-12-09 20:54+0100\n"
+"POT-Creation-Date: 2009-03-03 15:35+0100\n"
 "PO-Revision-Date: 2009-01-01 20:14+0100\n"
 "Last-Translator: Zoltán Zörgő <zoltan.zorgo@gmail.com>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
-#: org/openscience/jmol/app/GuiMap.java:173
+#: org/openscience/jmol/app/GuiMap.java:172
 msgid "About Jmol"
 msgstr "A programról..."
 
@@ -566,158 +566,158 @@ msgid "&Gaussian..."
 msgstr "Gausszi"
 
 #: org/openscience/jmol/app/GuiMap.java:145
-msgid "Click atoms to measure distances"
-msgstr "Kattintson az atomokra a távolság méréséhez"
-
-#: org/openscience/jmol/app/GuiMap.java:146
 msgid "Distance &Units"
 msgstr "Távolság mértékegysége"
 
-#: org/openscience/jmol/app/GuiMap.java:147
+#: org/openscience/jmol/app/GuiMap.java:146
 msgid "&Nanometers 1E-9"
 msgstr "Nanométer 1E-9"
 
-#: org/openscience/jmol/app/GuiMap.java:148
+#: org/openscience/jmol/app/GuiMap.java:147
 msgid "&Angstroms 1E-10"
 msgstr "Angstrom 1E-10"
 
-#: org/openscience/jmol/app/GuiMap.java:149
+#: org/openscience/jmol/app/GuiMap.java:148
 msgid "&Picometers 1E-12"
 msgstr "Pikométer 1E-12"
 
-#: org/openscience/jmol/app/GuiMap.java:150
+#: org/openscience/jmol/app/GuiMap.java:149
 msgid "&Animate..."
 msgstr "Animálás..."
 
-#: org/openscience/jmol/app/GuiMap.java:151
+#: org/openscience/jmol/app/GuiMap.java:150
 msgid "&Vibrate..."
 msgstr "Vibráció..."
 
-#: org/openscience/jmol/app/GuiMap.java:152
+#: org/openscience/jmol/app/GuiMap.java:151
 msgid "&Graph..."
 msgstr "&Grafikon..."
 
-#: org/openscience/jmol/app/GuiMap.java:153
+#: org/openscience/jmol/app/GuiMap.java:152
 msgid "Calculate chemical &shifts..."
 msgstr "Vegyi eltolódások számítása..."
 
-#: org/openscience/jmol/app/GuiMap.java:154
+#: org/openscience/jmol/app/GuiMap.java:153
 msgid "&Crystal Properties"
 msgstr "&Kristálytulajdonságok"
 
-#: org/openscience/jmol/app/GuiMap.java:155
+#: org/openscience/jmol/app/GuiMap.java:154
 msgid "&Once"
 msgstr "Egyszer"
 
-#: org/openscience/jmol/app/GuiMap.java:156
+#: org/openscience/jmol/app/GuiMap.java:155
 msgid "&Loop"
 msgstr "Ismétlés"
 
-#: org/openscience/jmol/app/GuiMap.java:157
+#: org/openscience/jmol/app/GuiMap.java:156
 msgid "P&alindrome"
 msgstr "Oda-vissza"
 
-#: org/openscience/jmol/app/GuiMap.java:158
+#: org/openscience/jmol/app/GuiMap.java:157
 msgid "&Stop animation"
 msgstr "Animáció leállítása"
 
-#: org/openscience/jmol/app/GuiMap.java:159
+#: org/openscience/jmol/app/GuiMap.java:158
 msgid "&Rewind to first frame"
 msgstr "Vissza az első kockára"
 
-#: org/openscience/jmol/app/GuiMap.java:161
+#: org/openscience/jmol/app/GuiMap.java:160
 msgid "Go to &next frame"
 msgstr "Ugrás a következő kockára"
 
-#: org/openscience/jmol/app/GuiMap.java:163
+#: org/openscience/jmol/app/GuiMap.java:162
 msgid "Go to &previous frame"
 msgstr "Ugrás az előző kockára"
 
-#: org/openscience/jmol/app/GuiMap.java:165
+#: org/openscience/jmol/app/GuiMap.java:164
 msgid "Go to &last frame"
 msgstr "Ugrás a következő kockára"
 
-#: org/openscience/jmol/app/GuiMap.java:167
+#: org/openscience/jmol/app/GuiMap.java:166
 msgid "Start &vibration"
 msgstr "Vibráció indítása"
 
-#: org/openscience/jmol/app/GuiMap.java:168
+#: org/openscience/jmol/app/GuiMap.java:167
 msgid "&Stop vibration"
 msgstr "Vibráció megállítása"
 
-#: org/openscience/jmol/app/GuiMap.java:169
+#: org/openscience/jmol/app/GuiMap.java:168
 msgid "&First frequency"
 msgstr "Első frekvencia"
 
-#: org/openscience/jmol/app/GuiMap.java:170
+#: org/openscience/jmol/app/GuiMap.java:169
 msgid "&Next frequency"
 msgstr "Következp frekvencia"
 
-#: org/openscience/jmol/app/GuiMap.java:171
+#: org/openscience/jmol/app/GuiMap.java:170
 msgid "&Previous frequency"
 msgstr "Előző frekvencia"
 
-#: org/openscience/jmol/app/GuiMap.java:172
+#: org/openscience/jmol/app/GuiMap.java:171
 msgid "&Help"
 msgstr "&SAogó"
 
-#: org/openscience/jmol/app/GuiMap.java:174
+#: org/openscience/jmol/app/GuiMap.java:173
 msgid "User Guide"
 msgstr "Felhasználói kézikönyv"
 
-#: org/openscience/jmol/app/GuiMap.java:175
+#: org/openscience/jmol/app/GuiMap.java:174
 msgid "What's New"
 msgstr "őjdonságok"
 
-#: org/openscience/jmol/app/GuiMap.java:176
+#: org/openscience/jmol/app/GuiMap.java:175
 msgid "Jmol Java &Console"
 msgstr "Jmol Java konzol"
 
-#: org/openscience/jmol/app/GuiMap.java:177
+#: org/openscience/jmol/app/GuiMap.java:176
 msgid "Hydrogens"
 msgstr "Hodrogénatomok"
 
-#: org/openscience/jmol/app/GuiMap.java:178
+#: org/openscience/jmol/app/GuiMap.java:177
 #: org/openscience/jmol/app/MeasurementTable.java:65
 msgid "Measurements"
 msgstr "Méretezések"
 
-#: org/openscience/jmol/app/GuiMap.java:179
+#: org/openscience/jmol/app/GuiMap.java:178
 msgid "Perspective Depth"
 msgstr "Perspektivikus vetítés"
 
-#: org/openscience/jmol/app/GuiMap.java:180
+#: org/openscience/jmol/app/GuiMap.java:179
 msgid "Axes"
 msgstr "Tengelyek"
 
-#: org/openscience/jmol/app/GuiMap.java:181
+#: org/openscience/jmol/app/GuiMap.java:180
 msgid "Bounding Box"
 msgstr "Befoglaló doboz"
 
-#: org/openscience/jmol/app/GuiMap.java:182
+#: org/openscience/jmol/app/GuiMap.java:181
 msgid "RasMol/Chime compatible axes orientation/rotations"
 msgstr "RasMol/Chime kompatibilis tengelyigazítás és -forgatás"
 
-#: org/openscience/jmol/app/GuiMap.java:183
+#: org/openscience/jmol/app/GuiMap.java:182
 msgid "File Preview (requires restarting Jmol)"
 msgstr "Fájl előnézet (a program ujraindítását igényli)"
 
-#: org/openscience/jmol/app/GuiMap.java:184
+#: org/openscience/jmol/app/GuiMap.java:183
 msgid "Clear console button (requires restarting Jmol)"
 msgstr "Konzol gomb alaphelyzetbe állítása (Jmol újraindítás szükséges)"
 
+#: org/openscience/jmol/app/GuiMap.java:184
 #: org/openscience/jmol/app/GuiMap.java:185
-#: org/openscience/jmol/app/GuiMap.java:186
 msgid "Use Atom Color"
 msgstr "Atomszínek használata"
 
-#: org/openscience/jmol/app/GuiMap.java:187
+#: org/openscience/jmol/app/GuiMap.java:186
 msgid "Rotate molecule."
 msgstr "Molekula forgatása"
 
-#: org/openscience/jmol/app/GuiMap.java:188
+#: org/openscience/jmol/app/GuiMap.java:187
 msgid "Select a set of atoms using SHIFT-LEFT-  DRAG."
 msgstr "Jelöljön ki egy atomhalmazt Shift-Bal-húzással"
+
+#: org/openscience/jmol/app/GuiMap.java:188
+msgid "Click atoms to measure distances"
+msgstr "Kattintson az atomokra a távolság méréséhez"
 
 #: org/openscience/jmol/app/GuiMap.java:189
 msgid "Return molecule to home position."
@@ -730,7 +730,8 @@ msgstr "Jmol sAogó"
 #: org/openscience/jmol/app/Jmol.java:136
 #: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
-msgstr "Hiba a Jmol indítása közben: a 'user.home' tulajdonság nincs definiálva"
+msgstr ""
+"Hiba a Jmol indítása közben: a 'user.home' tulajdonság nincs definiálva"
 
 #: org/openscience/jmol/app/Jmol.java:182
 msgid "Initializing 3D display..."
@@ -853,61 +854,65 @@ msgstr "a támogatott lehetőségeket lásd alább"
 msgid "window width x height, e.g. {0}"
 msgstr "ablak szélessés x magasság (pl.: {0})"
 
-#: org/openscience/jmol/app/Jmol.java:453
-msgid "JPG image quality (1-100; default 75) or PNG image compression (0-9; default 2, maximum compression 9)"
-msgstr "JPG képminőség (1-100, alapértelmezés: 75), vagy PNG tömörítési arány (0-9, alapértelmezés: 2)"
+#: org/openscience/jmol/app/Jmol.java:452
+msgid ""
+"JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
+"2, maximum compression 9)"
+msgstr ""
+"JPG képminőség (1-100, alapértelmezés: 75), vagy PNG tömörítési arány (0-9, "
+"alapértelmezés: 2)"
 
-#: org/openscience/jmol/app/Jmol.java:459
+#: org/openscience/jmol/app/Jmol.java:457
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} vagy {1} :fájlnév"
 
-#: org/openscience/jmol/app/Jmol.java:481
+#: org/openscience/jmol/app/Jmol.java:478
 msgid "For example:"
 msgstr "Például:"
 
-#: org/openscience/jmol/app/Jmol.java:487
+#: org/openscience/jmol/app/Jmol.java:484
 msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr "A -D lehetőségek a következők (alapértelmezés zárójelben)"
 
-#: org/openscience/jmol/app/Jmol.java:691
+#: org/openscience/jmol/app/Jmol.java:696
 msgid "Executing script 1..."
 msgstr "Első parancsfájl futtatása..."
 
-#: org/openscience/jmol/app/Jmol.java:700
+#: org/openscience/jmol/app/Jmol.java:705
 msgid "Executing script file..."
 msgstr "Parancsfájl futtatása..."
 
-#: org/openscience/jmol/app/Jmol.java:707
+#: org/openscience/jmol/app/Jmol.java:712
 msgid "Executing script 2..."
 msgstr "Második parancsfájl futtatása..."
 
-#: org/openscience/jmol/app/Jmol.java:719
+#: org/openscience/jmol/app/Jmol.java:725
 msgid "Jmol Java Console"
 msgstr "Jmol Java konzol"
 
-#: org/openscience/jmol/app/Jmol.java:727
+#: org/openscience/jmol/app/Jmol.java:733
 #: org/openscience/jmol/app/ScriptWindow.java:103
 msgid "Clear"
 msgstr "őrít"
 
-#: org/openscience/jmol/app/Jmol.java:741
+#: org/openscience/jmol/app/Jmol.java:747
 msgid "Could not create ConsoleTextArea: "
 msgstr "Konzol szövegterA1lete nem hozható létre: "
 
-#: org/openscience/jmol/app/Jmol.java:821
+#: org/openscience/jmol/app/Jmol.java:827
 msgid "Closing Jmol..."
 msgstr "Jmol bezárása..."
 
-#: org/openscience/jmol/app/Jmol.java:1443
+#: org/openscience/jmol/app/Jmol.java:1450
 msgid "Open URL"
 msgstr "Webcím megnyitása"
 
-#: org/openscience/jmol/app/Jmol.java:1444
+#: org/openscience/jmol/app/Jmol.java:1451
 msgid "Enter URL of molecular model"
 msgstr "Adja meg a molekuláris modell webcímét"
 
-#: org/openscience/jmol/app/Jmol.java:1628
+#: org/openscience/jmol/app/Jmol.java:1635
 msgid "IO Exception:"
 msgstr "IO-hiba:"
 
@@ -936,8 +941,10 @@ msgid "File Name:"
 msgstr "Fájlnév::"
 
 #: org/openscience/jmol/app/PovrayDialog.java:157
-msgid "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
-msgstr "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
+msgid ""
+"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
+msgstr ""
+"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:167
 msgid "Working Directory"
@@ -1254,13 +1261,21 @@ msgstr "Napló"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:162
 #, java-format
-msgid "Page skeleton and JavaScript generated by export to web function using {0} on {1}."
-msgstr "A lap vázát és a JavaScript-et Page skeleton and JavaScript generated by export to web function using {0} on {1}."
+msgid ""
+"Page skeleton and JavaScript generated by export to web function using {0} "
+"on {1}."
+msgstr ""
+"A lap vázát és a JavaScript-et Page skeleton and JavaScript generated by "
+"export to web function using {0} on {1}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:306
 #, java-format
-msgid "To get a 3-D model you can manipulate, click {0}here{1}. Download time may be significant the first time the applet is loaded."
-msgstr "Hogy egy manipulálható 3D modellt kapjon {0}-klikkeljen {1}-re. A letöltési idő nagy lehet az első betöltéskor."
+msgid ""
+"To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
+"be significant the first time the applet is loaded."
+msgstr ""
+"Hogy egy manipulálható 3D modellt kapjon {0}-klikkeljen {1}-re. A letöltési "
+"idő nagy lehet az első betöltéskor."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:308
 msgid "Insert the page TITLE here."
@@ -1277,8 +1292,12 @@ msgstr "Adjon meg egy feliratot {0} számára"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:312
 #, java-format
-msgid "Insert additonal explanatory text here. Long text will wrap around Jmol model {0}."
-msgstr "Itt egy hosszabb, magyarázó szöveget adhat meg. Ha hosszú, akkor a {0} Jmol modell körül megjelenni."
+msgid ""
+"Insert additonal explanatory text here. Long text will wrap around Jmol "
+"model {0}."
+msgstr ""
+"Itt egy hosszabb, magyarázó szöveget adhat meg. Ha hosszú, akkor a {0} Jmol "
+"modell körül megjelenni."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:314
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1286,8 +1305,12 @@ msgstr "Adjon meg CÍMET és ISMTERTETŐT itt."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:316
 #, java-format
-msgid "The button {0} will appear in the box below.  Insert information for {0} here and below."
-msgstr "A {0} gomb fog az alábbi dobozban megjelenni. Adjon meg információkat a {0}-hoz itt és alább is."
+msgid ""
+"The button {0} will appear in the box below.  Insert information for {0} "
+"here and below."
+msgstr ""
+"A {0} gomb fog az alábbi dobozban megjelenni. Adjon meg információkat a {0}-"
+"hoz itt és alább is."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:317
 #, java-format
@@ -1428,134 +1451,193 @@ msgstr "nagy adatfájl tömörítése"
 #, fuzzy
 #~ msgid "quoted argument is Jmol script to execute"
 #~ msgstr "Jmol parancsnyelvi konzol"
+
 #~ msgid "Preview"
 #~ msgstr "Előnézet"
+
 #~ msgid "Append models"
 #~ msgstr "Modell hozzáadása"
+
 #~ msgid "All Files"
 #~ msgstr "Minden fájl"
+
 #~ msgid "Abort file chooser dialog"
 #~ msgstr "Tallózó megállítása"
+
 #~ msgid "Details"
 #~ msgstr "Részletek"
+
 #~ msgid "Directory"
 #~ msgstr "Mappa"
+
 #~ msgid "Open selected directory"
 #~ msgstr "Kiválasztott mappa megnyitása"
+
 #~ msgid "Attributes"
 #~ msgstr "Jellemzők"
+
 #~ msgid "Modified"
 #~ msgstr "Módosítva"
+
 #~ msgid "Generic File"
 #~ msgstr "Altalános fájl"
+
 #~ msgid "Name"
 #~ msgstr "Név"
+
 #~ msgid "Size"
 #~ msgstr "Méret"
+
 #~ msgid "Files of Type:"
 #~ msgstr "Adott típusAo fájlok:"
+
 #~ msgid "Type"
 #~ msgstr "Típus"
+
 #~ msgid "FileChooser help"
 #~ msgstr "Tallózó sAogója"
+
 #~ msgid "Home"
 #~ msgstr "Haza"
+
 #~ msgid "List"
 #~ msgstr "Lista"
+
 #~ msgid "Look In:"
 #~ msgstr "Keresés itt:"
+
 #~ msgid "Error creating new folder"
 #~ msgstr "Hiba az Aoj mappa létrehozása közben"
+
 #~ msgid "New Folder"
 #~ msgstr "őj mappa"
+
 #~ msgid "Create New Folder"
 #~ msgstr "őj mappa létrehozása"
+
 #~ msgid "Open selected file"
 #~ msgstr "Kiválasztott fájl megnyitása"
+
 #~ msgid "Save selected file"
 #~ msgstr "Kiválasztott fájl mentése"
+
 #~ msgid "Save In:"
 #~ msgstr "Mentés ide:"
+
 #~ msgid "Update"
 #~ msgstr "Frissítés"
+
 #~ msgid "Update directory listing"
 #~ msgstr "MAppalista frissítése"
+
 #~ msgid "Up"
 #~ msgstr "Fel"
+
 #~ msgid "Up One Level"
 #~ msgstr "Egy szinttel feljebb"
+
 #~ msgid "No"
 #~ msgstr "Nem"
+
 #~ msgid "Yes"
 #~ msgstr "Igen"
+
 #~ msgid "Initializing AtomSetChooser Window..."
 #~ msgstr "AtomCsoportVAlasztó inicializálása..."
+
 #~ msgid "Setting up File Choosers..."
 #~ msgstr "Tallózó beállítása..."
+
 #~ msgid "Image Type"
 #~ msgstr "Képtípus"
+
 #~ msgid "JPEG Quality"
 #~ msgstr "JPEG-minőség"
+
 #~ msgid "Render in pov-ray."
 #~ msgstr "Renderelés POV-Ray-ben."
 
 #, fuzzy
 #~ msgid "&Measurements..."
 #~ msgstr "Méretezések..."
+
 #~ msgid "Measurements..."
 #~ msgstr "Méretezések..."
+
 #~ msgid "Jmol-to-POV-Ray Conversion"
 #~ msgstr "Jmol-POV-Ray átalakítás"
+
 #~ msgid "Filename"
 #~ msgstr "Fájlnév:"
+
 #~ msgid "Height : "
 #~ msgstr "Magasság: "
+
 #~ msgid "POV-Ray Executable Location"
 #~ msgstr "POV-Ray eérési Aotvonala"
+
 #~ msgid "Select Atoms"
 #~ msgstr "Atomok kiválasztása"
+
 #~ msgid "Make crystal..."
 #~ msgstr "Kristály létrehozás..."
 
 #, fuzzy
 #~ msgid "Export view to an image or script file."
 #~ msgstr "Nézet képként vagy paracsfájlként történő mentése"
+
 #~ msgid "Select an atom or region."
 #~ msgstr "Atom vagy régió kijelölése"
+
 #~ msgid "View measurement table."
 #~ msgstr "Méretezési táblázat megjelenítése"
 
 #, fuzzy
 #~ msgid "Export &PDF..."
 #~ msgstr "PDF exportálás..."
+
 #~ msgid "Image size"
 #~ msgstr "képméret"
+
 #~ msgid "Output format : "
 #~ msgstr "Kimeneti formátum: "
+
 #~ msgid "Select the file format of the output file"
 #~ msgstr "Válassza ki a kimeneti fájl formátumát"
+
 #~ msgid "Command Line to Execute"
 #~ msgstr "Futtatandó parancssor"
+
 #~ msgid "The actual command which will be executed"
 #~ msgstr "A tulajdonképpeni futtatott parancs"
+
 #~ msgid "null component string"
 #~ msgstr "null elemű karakerlánc"
+
 #~ msgid "Filename Stem"
 #~ msgstr "Fájlnév eredete"
+
 #~ msgid "Use .ini file"
 #~ msgstr "Használja a .ini fájlt"
+
 #~ msgid "Save options in a .ini file"
 #~ msgstr "A beállítások mentése egy .ini fájlba"
+
 #~ msgid "Render all frames"
 #~ msgstr "Minden képkocka renderelése"
+
 #~ msgid "Render each model (not only the currently displayed one)"
 #~ msgstr "Minden modell renderelése (nem csak a most láthatókat)"
+
 #~ msgid "Turn on POV-Ray anti-aliasing"
 #~ msgstr "POV-Ray anti-aliasing bekapcsolása"
+
 #~ msgid "Use povray's slower but higher quality anti-aliasing mode"
 #~ msgstr "A lassabb, de jobb minőségű POV-Ray anti-alaising használata"
+
 #~ msgid "Render in pov-ray..."
 #~ msgstr "Renderelés POV-Ray-ben..."
+
 #~ msgid "File not loaded"
 #~ msgstr "A fájl nem töltődött be"
 
@@ -1566,42 +1648,60 @@ msgstr "nagy adatfájl tömörítése"
 #, fuzzy
 #~ msgid "Jmol executing script ..."
 #~ msgstr "A Jmol parancsfájl futtat..."
+
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "A &drótvázmodell forgatása"
+
 #~ msgid "Wireframe Rotation"
 #~ msgstr "A drótvázmodell forgatása"
+
 #~ msgid "Colors"
 #~ msgstr "Színek"
+
 #~ msgid "Background"
 #~ msgstr "Háttér"
+
 #~ msgid "Set the Background Color"
 #~ msgstr "Háttérszín beállítása"
+
 #~ msgid "Background Color"
 #~ msgstr "Háttérszín"
+
 #~ msgid "Picked Atoms"
 #~ msgstr "Kijelölt atomok"
+
 #~ msgid "Set the Color for Picked Atoms"
 #~ msgstr "A kijelölt atomok színének beállítása"
+
 #~ msgid "Picked Atom Color"
 #~ msgstr "A kijelölt atomok színe"
+
 #~ msgid "Text"
 #~ msgstr "Szöveg"
+
 #~ msgid "Set the Color for Text"
 #~ msgstr "Szövegszín beállítása"
+
 #~ msgid "Text Color"
 #~ msgstr "Szövegszín"
+
 #~ msgid "Set the Color for Bonds"
 #~ msgstr "A kötések színének beállítása"
+
 #~ msgid "Bond Color"
 #~ msgstr "Kötészín"
+
 #~ msgid "Set the Vector Color"
 #~ msgstr "A vektorok színének beállítása"
+
 #~ msgid "Vector Color"
 #~ msgstr "A vektorok színe"
+
 #~ msgid "Color for distance, angle, & torsion measurements"
 #~ msgstr "A távolsági, szög és csavarodási méretezések színe"
+
 #~ msgid "Measurements Color"
 #~ msgstr "Méretezések színei"
+
 #~ msgid "Loading plugins..."
 #~ msgstr "Bővítmények betöltése..."
-

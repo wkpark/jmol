@@ -5181,7 +5181,7 @@
   <fah_proj number="2675" name="p2675_IBX in water" public="y" file="xyz"
     server="171.64.65.56" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson" contrib="Smoking2000"/>
-  <fah_proj number="2676" name="p2676_IBX in water" public="n" file="xyz"
+  <fah_proj number="2676" name="p2676_IBX in water" public="y" file="xyz"
     server="171.67.108.24" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson" contrib="Iboshiee"/>
 
@@ -6350,6 +6350,20 @@
   <fah_proj number="3859" name="p3859_p3856_fkbprelative_ligand" public="y" file="xyz"
     server="128.59.74.4" atoms="2722" preferred="40" deadline="60"
     credit="401" frames="100" code="DC" contact="mrshirts" contrib="7im"/>
+  <fah_proj number="3860" name="p3860_opls_absolute_complex" public="y"
+    server="128.143.48.226" atoms="14908" preferred="8" deadline="60"
+    credit="742" frames="100" code="DC" contact="mrshirts"/>
+  <fah_proj number="3861" name="p3861_opls_absolute_ligand" public="y" file="xyz"
+    server="128.143.48.226" atoms="2772" preferred="8" deadline="60"
+    credit="638" frames="100" code="DC" contact="mrshirts" contrib="MstrBlstr"/>
+  <fah_proj number="3862" name="p3862_fkbprelative_complex" public="n" file="xyz"
+    contrib="MstrBlstr"/>
+  <fah_proj number="3863" name="p3863_opls_relative_ligand" public="y"
+    server="128.143.48.226" atoms="2772" preferred="6" deadline="60"
+    credit="604" frames="100" code="DC" contact="mrshirts"/>
+  <fah_proj number="3864" name="p3864_fkbprelative_complex" public="y"
+    server="128.143.48.226" atoms="14907" preferred="6" deadline="60"
+    credit="623" frames="100" code="DC" contact="mrshirts"/>
 
   <!-- Projects 3900 to 3999 -->
   <fah_proj number="3900" name="p3900_Protein in POPC" public="n"
@@ -7821,9 +7835,9 @@
     credit="480" frames="100" code="GG2" contact="densign"/>
 
   <!-- Projects 5900 to 5199 -->
-  <fah_proj number="5900" name="p5900_proL_ff03_450K" public="n"
+  <fah_proj number="5900" name="p5900_proL_ff03_450K" public="y"
     server="171.64.122.70" atoms="973" preferred="2" deadline="3"
-    credit="384" frames="20" code="T" contact="ihaque"/>
+    credit="420" frames="100" code="GG2MT" contact="ihaque"/>
 
   <!-- Projects 6000 to 6099 -->
   <fah_proj number="6005" name="p6005_system in water" public="n"
@@ -7834,6 +7848,12 @@
     credit="100" frames="100" code="A4" contact="kasson"/>
   <fah_proj number="6007" name="p6007_VILLIN" public="y"
     server="130.237.232.236" atoms="596" preferred="3" deadline="3"
+    credit="100" frames="100" code="A4" contact="kasson"/>
+  <fah_proj number="6010" name="p6010_p5601_Calmodulin" public="y"
+    server="130.237.232.236" atoms="1132" preferred="2" deadline="3"
+    credit="100" frames="100" code="A4" contact="kasson"/>
+  <fah_proj number="6011" name="p6011_p5600_Calmodulin" public="y"
+    server="130.237.232.236" atoms="1133" preferred="2" deadline="3"
     credit="100" frames="100" code="A4" contact="kasson"/>
 
   <!-- Projects 9900 to 9999 -->

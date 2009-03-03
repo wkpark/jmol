@@ -300,6 +300,8 @@ function showProjectInfo(value) {
     document.fahForm.infoCode.value = "Gromacs GPU";
   } else if (code == "GG2") {
     document.fahForm.infoCode.value = "Gromacs GPU 2";
+  } else if (code == "GG2MT") {
+    document.fahForm.infoCode.value = "Gromacs GPU 2 MT";
   } else if (code == "GS") {
     document.fahForm.infoCode.value = "Gromacs SMP";
   } else if (code == "GST") {

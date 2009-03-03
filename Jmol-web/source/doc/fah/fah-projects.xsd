@@ -88,16 +88,25 @@
 <xs:simpleType name="typeCode">
   <xs:restriction base="xs:string">
     <xs:enumeration value="A"/>
+    <xs:enumeration value="AD"/>
     <xs:enumeration value="A0"/>
+    <xs:enumeration value="A4"/>
+    <xs:enumeration value="DB"/>
+    <xs:enumeration value="DC"/>
     <xs:enumeration value="DG"/>
     <xs:enumeration value="G"/>
     <xs:enumeration value="G3"/>
     <xs:enumeration value="GB"/>
+    <xs:enumeration value="GC"/>
     <xs:enumeration value="GG"/>
     <xs:enumeration value="GG2"/>
+    <xs:enumeration value="GG2MT"/>
     <xs:enumeration value="GS"/>
+    <xs:enumeration value="GST"/>
     <xs:enumeration value="GT"/>
+    <xs:enumeration value="ND"/>
     <xs:enumeration value="Q"/>
+    <xs:enumeration value="SP"/>
     <xs:enumeration value="T"/>
   </xs:restriction>
 </xs:simpleType>

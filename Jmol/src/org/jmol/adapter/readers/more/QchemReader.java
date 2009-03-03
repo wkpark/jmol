@@ -51,7 +51,7 @@ import java.io.IOException;
  * 
  * added modifications to deal with qchem 3.2 output
  * also will keep the structures of optimization calculations
- * @author René P.F Kanters (rkanters@richmond.edu)
+ * @author Rene P.F Kanters (rkanters@richmond.edu)
  * @version 1.1
  */
 

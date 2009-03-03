@@ -71,6 +71,9 @@ public class CoreType {
       if (code.equalsIgnoreCase(GROGPU2._code)) {
         return GROGPU2;
       }
+      if (code.equalsIgnoreCase(GROGPU2_MT._code)) {
+        return GROGPU2_MT;
+      }
       if (code.equalsIgnoreCase(GROMACS._code)) {
         return GROMACS;
       }
@@ -143,6 +146,9 @@ public class CoreType {
       if (name.equalsIgnoreCase(GROGPU2._name)) {
         return GROGPU2;
       }
+      if (name.equalsIgnoreCase(GROGPU2_MT._name)) {
+        return GROGPU2_MT;
+      }
       if (name.equalsIgnoreCase(GROMACS._name)) {
         return GROMACS;
       }
@@ -208,6 +214,7 @@ public class CoreType {
   static public final CoreType GROCVS       = new CoreType("GroCVS", "GC", true);  //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType GROGPU       = new CoreType("GroGPU", "GG", false);  //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType GROGPU2      = new CoreType("GroGPU2", "GG2", false);  //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType GROGPU2_MT   = new CoreType("GroGPU2-MT", "GG2MT", false);  //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType GROMACS      = new CoreType("Gromacs", "G", true);  //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType GROMACS_PS3  = new CoreType("Gro-PS3", "G3", false);  //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType GROMACS_SIMT = new CoreType("GroSimT", "GST", true);  //$NON-NLS-1$ //$NON-NLS-2$

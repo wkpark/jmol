@@ -145,7 +145,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       frontOnly = false;
       bsFaces.clear();
     }
-    boolean colorSolid = (vertexColixes == null || imesh.isColorSolid);
+    boolean colorSolid = (vertexColixes == null || imesh.isColorSolid && !isBicolorMap);
     short colix = this.colix;
     if (!colorSolid && !fill && imesh.fillTriangles
         && imesh.jvxlData.jvxlPlane != null) {

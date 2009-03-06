@@ -95,8 +95,8 @@ public abstract class MeshCollection extends Shape {
 
     if (Logger.debugging) {
       Logger.debug("MeshCollection.setProperty(" 
-          + propertyName + "," + (propertyName == "token" ? 
-              Token.nameOf(((Integer)value).intValue()): value.toString())
+          + propertyName + "," + (value == null ? "null" : (propertyName == "token" ? 
+              Token.nameOf(((Integer)value).intValue()): value.toString()))
           + ")");
     }
 

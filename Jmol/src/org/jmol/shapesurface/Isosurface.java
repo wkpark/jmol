@@ -685,6 +685,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       thisMesh.colix = getDefaultColix();
       if (isPhaseColored || thisMesh.jvxlData.isBicolorMap)
         thisMesh.isColorSolid = false;
+      // that may be too early in t
       return;
     }
     switch (mode) {

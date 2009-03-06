@@ -123,6 +123,8 @@ public class MolecularOrbital extends Isosurface {
     }
 
     if ("color" == propertyName) {
+      if (!(value instanceof Integer))
+        return;
       thisModel.remove("moTranslucency");
       super.setProperty("color", value, bs);
       propertyName = "colorRGB";
@@ -292,6 +294,7 @@ public class MolecularOrbital extends Isosurface {
     if (moCutoff == null) {
       moCutoff = new Float(Parameters.defaultQMOrbitalCutoff);
     }
+    thisModel.put("moCutoff", new Float(moCutoff.floatValue()));
     moResolution = (Float) thisModel.get("moResolution");
     moScale = (Float) thisModel.get("moScale");
     moColorPos = (Integer) thisModel.get("moColorPos");
@@ -329,6 +332,11 @@ public class MolecularOrbital extends Isosurface {
     super.setProperty("title", moTitleFormat, null);
     super.setProperty("fileName", viewer.getFileName(), null);
     super.setProperty("molecularOrbital", new Integer(moNumber), null);
+    if (moPlane != null && moColorNeg != null)
+      super.setProperty("colorRGB", moColorNeg, null);
+    if (moPlane != null && moColorPos != null)
+      super.setProperty("colorRGB", moColorPos, null);
+     currentMesh.isColorSolid = false;
     if (moTranslucentLevel != null)
       super.setProperty("translucenctLevel", moTranslucentLevel, null);
     if (moTranslucency != null)
@@ -337,7 +345,6 @@ public class MolecularOrbital extends Isosurface {
     super.setProperty("token",  new Integer(moMesh), null);
     super.setProperty("token",  new Integer(moDots), null);
     super.setProperty("token",  new Integer(moFrontOnly), null);
-
     thisModel.put("mesh", currentMesh);
     return;
   }

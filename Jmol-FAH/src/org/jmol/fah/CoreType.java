@@ -204,7 +204,7 @@ public class CoreType {
   // Cores
   static public final CoreType UNKNOWN      = new CoreType(null, null, true);
   static public final CoreType A0GROMACS    = new CoreType("Gromacs33", "A0", true); //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType A4GROMACS    = new CoreType("GRO-A4", "A4", true); //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType A4GROMACS    = new CoreType("GRO-A4", "A4", false); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType AMBER        = new CoreType("Amber", "A", true); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType ATI_DEV      = new CoreType("ATI-DEV", "AD", false); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType DGROMACS     = new CoreType("DGromacs", "DG", true); //$NON-NLS-1$ //$NON-NLS-2$

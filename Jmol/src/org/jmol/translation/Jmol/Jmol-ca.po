@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-03-03 15:35+0100\n"
-"PO-Revision-Date: 2008-10-14 07:51+0000\n"
+"PO-Revision-Date: 2009-02-15 00:13+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-10-14 19:28+0000\n"
+"X-Launchpad-Export-Date: 2009-03-07 16:08+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
@@ -29,7 +29,7 @@ msgstr "Quant al Jmol"
 #: org/openscience/jmol/app/WhatsNewDialog.java:68
 #, java-format
 msgid "Unable to find url \"{0}\"."
-msgstr "No s''ha pogut trobar l''url \"{0}\"."
+msgstr "No s'ha pogut trobar l'url \"{0}\"."
 
 #: org/openscience/jmol/app/AboutDialog.java:95
 #: org/openscience/jmol/app/HelpDialog.java:102
@@ -150,71 +150,71 @@ msgstr "Suprimeix els àtoms"
 
 #: org/openscience/jmol/app/GaussianDialog.java:187
 msgid "Export Gaussian Input File"
-msgstr ""
+msgstr "Exporta el fitxer d'entrada de Gaussian"
 
 #: org/openscience/jmol/app/GaussianDialog.java:194
 msgid "Basic"
-msgstr ""
+msgstr "Bàsic"
 
 #: org/openscience/jmol/app/GaussianDialog.java:196
 msgid "Advanced"
-msgstr ""
+msgstr "Avançat"
 
 #: org/openscience/jmol/app/GaussianDialog.java:224
 msgid "Checkpoint File: "
-msgstr ""
+msgstr "Fitxer de punt de control: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:229
 msgid "Amount of Memory:"
-msgstr ""
+msgstr "Quantitat de memoria:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:235
 msgid "Number of Processors:"
-msgstr ""
+msgstr "Nombre de processadors:"
 
 #: org/openscience/jmol/app/GaussianDialog.java:248
 msgid "Route"
-msgstr ""
+msgstr "Ruta"
 
 #: org/openscience/jmol/app/GaussianDialog.java:254
 msgid "Method: "
-msgstr ""
+msgstr "Mètode: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:261
 msgid "Basis Set: "
-msgstr ""
+msgstr "Conjunt base: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
-msgstr ""
+msgstr "Conjunt base per a l'ajustament de la densitat (només DFT): "
 
 #: org/openscience/jmol/app/GaussianDialog.java:275
 msgid "Job Options: "
-msgstr ""
+msgstr "Opcions de treball "
 
 #: org/openscience/jmol/app/GaussianDialog.java:288
 msgid "Molecular Properties"
-msgstr ""
+msgstr "Propietats moleculars"
 
 #: org/openscience/jmol/app/GaussianDialog.java:294
 msgid "Total Charge: "
-msgstr ""
+msgstr "Càrrega total: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:301
 msgid "Multiplicity: "
-msgstr ""
+msgstr "Multiplicitat: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:308
 msgid "Selection: "
-msgstr ""
+msgstr "Selecció: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
-msgstr ""
+msgstr "Nom del fitxer d'entrada de Gaussian"
 
 #: org/openscience/jmol/app/GaussianDialog.java:349
 msgid "File..."
-msgstr ""
+msgstr "Fitxer..."
 
 #: org/openscience/jmol/app/GaussianDialog.java:360
 #: org/openscience/jmol/app/PovrayDialog.java:758
@@ -561,7 +561,7 @@ msgstr "Ei&nes"
 
 #: org/openscience/jmol/app/GuiMap.java:143
 msgid "&Gaussian..."
-msgstr ""
+msgstr "&Gaussian..."
 
 #: org/openscience/jmol/app/GuiMap.java:145
 msgid "Distance &Units"
@@ -799,15 +799,15 @@ msgstr "no mostris res (i també surt quan s'acabi)"
 
 #: org/openscience/jmol/app/Jmol.java:402
 msgid "check script syntax only - no file loading"
-msgstr ""
+msgstr "comprova només la sintaxi de l'script - no carreguis el fitxer"
 
 #: org/openscience/jmol/app/Jmol.java:403
 msgid "check script syntax only - with file loading"
-msgstr ""
+msgstr "comprova només la sintaxi de l'script - amb càrrega de fitxer"
 
 #: org/openscience/jmol/app/Jmol.java:404
 msgid "debug"
-msgstr ""
+msgstr "depura"
 
 #: org/openscience/jmol/app/Jmol.java:405
 msgid "silent startup operation"
@@ -831,15 +831,15 @@ msgstr "surt després de l'script (implícit amb -n)"
 
 #: org/openscience/jmol/app/Jmol.java:416
 msgid "script file to execute"
-msgstr ""
+msgstr "fitxer script per executar"
 
 #: org/openscience/jmol/app/Jmol.java:421
 msgid "Jmol script to execute BEFORE -s option"
-msgstr ""
+msgstr "Script de Jmol que s'executarà ABANS de l'opció -s"
 
 #: org/openscience/jmol/app/Jmol.java:426
 msgid "Jmol script to execute AFTER -s option"
-msgstr ""
+msgstr "Script de Jmol que s'executarà DESPRÉS de l'opció -s"
 
 #: org/openscience/jmol/app/Jmol.java:435
 msgid "property=value"
@@ -878,19 +878,16 @@ msgstr ""
 "parèntesis):"
 
 #: org/openscience/jmol/app/Jmol.java:696
-#, fuzzy
 msgid "Executing script 1..."
-msgstr "S'està executant l'script…"
+msgstr "S'està executant l'script 1..."
 
 #: org/openscience/jmol/app/Jmol.java:705
-#, fuzzy
 msgid "Executing script file..."
-msgstr "S'està executant l'script…"
+msgstr "S'està executant el fitxer d'script..."
 
 #: org/openscience/jmol/app/Jmol.java:712
-#, fuzzy
 msgid "Executing script 2..."
-msgstr "S'està executant l'script…"
+msgstr "S'està executant l'script 2..."
 
 #: org/openscience/jmol/app/Jmol.java:725
 msgid "Jmol Java Console"
@@ -1272,6 +1269,8 @@ msgid ""
 "Page skeleton and JavaScript generated by export to web function using {0} "
 "on {1}."
 msgstr ""
+"L''esquelet de la pàgina i el Javascript s''han generat per la funció "
+"d''exportació web utilitzant {0} a {1}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:306
 #, java-format
@@ -1302,6 +1301,8 @@ msgid ""
 "Insert additonal explanatory text here. Long text will wrap around Jmol "
 "model {0}."
 msgstr ""
+"Inseriu un text explicatori addicional ací. Si el text és llarg, s''ajustarà "
+"al voltant del model de Jmol {0}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:314
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1387,12 +1388,12 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:330
 #, java-format
 msgid "added Instance {0}"
-msgstr ""
+msgstr "instància {0} afegida"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:333
 #, java-format
 msgid "updated Instance {0}"
-msgstr ""
+msgstr "instància {0} actualitzada"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:370
 msgid "Select a directory to create or an HTML file to save"
@@ -1405,7 +1406,7 @@ msgstr "La crida a l'escriptura de fitxers ha fallat."
 #: org/openscience/jmol/app/webexport/WebPanel.java:426
 #, java-format
 msgid "Using directory {0}"
-msgstr ""
+msgstr "S''utilitza el directori {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:427
 msgid "adding JmolPopIn.js"
@@ -1414,12 +1415,12 @@ msgstr "s'afegeix JmolPopIn.js"
 #: org/openscience/jmol/app/webexport/WebPanel.java:436
 #, java-format
 msgid "adding {0}.png"
-msgstr ""
+msgstr "afegeix {0}.png"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:461
 #, java-format
 msgid "adding {0}.spt"
-msgstr ""
+msgstr "afegeix {0}.spt"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:492
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1429,7 +1430,7 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:495
 #, java-format
 msgid "creating {0}"
-msgstr ""
+msgstr "es crea {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:526
 #, java-format
@@ -1438,6 +1439,9 @@ msgid ""
 "{0}\n"
 "         to"
 msgstr ""
+"es copia\n"
+"{0}\n"
+"         a"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:529
 #, java-format

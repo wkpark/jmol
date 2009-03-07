@@ -14,13 +14,13 @@ msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-01-10 22:00+0100\n"
-"PO-Revision-Date: 2008-12-05 14:31+0100\n"
-"Last-Translator: Daniel Leidert <daniel.leidert@wgdd.de>\n"
+"PO-Revision-Date: 2009-03-05 14:28+0000\n"
+"Last-Translator: Keruskerfuerst <armin_mohring@web.de>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-11-23 20:21+0000\n"
+"X-Launchpad-Export-Date: 2009-03-07 16:04+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/Console.java:74
@@ -1447,7 +1447,7 @@ msgstr "Erneut laden {0}"
 #: org/jmol/popup/PopupResourceBundle.java:908
 #, java-format
 msgid "Reload {0} + Display {1}"
-msgstr ""
+msgstr "Neuladen {0} + Anzeige {1}"
 
 #: org/jmol/popup/PopupResourceBundle.java:909
 msgid "Reload + Polyhedra"
@@ -1664,9 +1664,8 @@ msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "eine Farbe oder ein Palettenname (Jmol, Rasmol) wird benötigt"
 
 #: org/jmol/viewer/Eval.java:11525
-#, fuzzy
 msgid "{x y z} or $name or (atom expression) required"
-msgstr " {x y z} oder $Name oder (Atom Ausduck} wird benötigt"
+msgstr "{x y z} oder $name oder (Ausdruck) wird benötigt"
 
 #: org/jmol/viewer/Eval.java:11528
 msgid "draw object not defined"
@@ -1880,6 +1879,8 @@ msgstr "FEHLER: Kann der Variable keinen Boolschen Wert zuweisen: {0}"
 #: org/jmol/viewer/Viewer.java:6855
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
+"auf den Notizblock kann nicht zugegriffen werden -- verwenden Sie das "
+"signierte Miniprogramm"
 
 #~ msgid "Portuguese - Brazil"
 #~ msgstr "Brasilianisches Portugiesisch"
@@ -2041,8 +2042,8 @@ msgstr ""
 #~ msgstr "Drahtgitter-Rotation"
 
 #~ msgid ""
-#~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
-#~ "for more information"
+#~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org for "
+#~ "more information"
 #~ msgstr ""
 #~ "Jmol-Applet - Teil des OpenScience-Projekts. Mehr Informationen unter "
 #~ "http://www.jmol.org."

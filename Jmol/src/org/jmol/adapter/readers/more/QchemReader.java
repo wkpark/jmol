@@ -34,41 +34,41 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 /**
- * A reader for Q-Chem 2.1
+ * A reader for Q-Chem 2.1 and 3.2
  * Q-Chem  is a quantum chemistry program developed
  * by Q-Chem, Inc. (http://www.q-chem.com/)
  *
- * <p> Molecular coordinates and normal coordinates of
- * vibrations are read. 
+ * <p> Molecular coordinates, normal coordinates of
+ * vibrations and MOs are read.
+ * 
+ *  <p> In order to get the output required for MO reading
+ *  make sure that the $rem block has<p>
+ * <code>print_general_basis TRUE<br>  print_orbitals TRUE</code>
  *
- * <p> This reader was developed from a single
- * output file, and therefore, is not guaranteed to
+ * <p> This reader was developed from only a few
+ * output files, and therefore, is not guaranteed to
  * properly read all Q-chem output. If you have problems,
  * please contact the author of this code, not the developers
  * of Q-chem.
  *
  * <p> This is a hacked version of Miguel's GaussianReader
  *
+ * @author Rene P.F Kanters (rkanters@richmond.edu)
+ * @version 1.1
+ * 
  * @author Steven E. Wheeler (swheele2@ccqc.uga.edu)
  * @version 1.0
  * 
- * added modifications to deal with qchem 3.2 output
- * also will keep the structures of optimization calculations
- * @author Rene P.F Kanters (rkanters@richmond.edu)
- * @version 1.1
- */
+*/
 
 public class QchemReader extends AtomSetCollectionReader {
  
 /** The number of the calculation being interpreted. */
   private int calculationNumber = 1;
 
-// for MO data
-//  int atomCount = 0;
-//  int shellCount = 0;
-//  int gaussianCount = 0;
   Hashtable moData = null;
-//  Vector orbitals = null;
+  String[] alphaLabels = null;  // labels to be used for alpha orbitals
+  String[] betaLabels = null;   // labels to be used for beta orbitals
   int nShell = 0;          // # of shells according to qchem
   int nBasis = 0;          // # of basis according to qchem
 
@@ -81,6 +81,7 @@ public class QchemReader extends AtomSetCollectionReader {
       while (readLine() != null) {
         if (line.indexOf("Standard Nuclear Orientation") >= 0) {
           readAtoms();
+          moData = null;        // no MO data for this structure
         } else if (line.indexOf("VIBRATIONAL FREQUENCIES") >= 0) {
           readFrequencies();
         } else if (line.indexOf("Mulliken Net Atomic Charges") >= 0) {
@@ -90,10 +91,12 @@ public class QchemReader extends AtomSetCollectionReader {
         } else if (line.indexOf("Basis set in general basis input format") >= 0) {
           readBasis();
           atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
- //       } else if (line.indexOf("Orbital Energies (a.u.) and Symmetries") >= 0 ) {
- //         readOrbitalEnergySymmetries();
+        } else if (line.indexOf("Orbital Energies (a.u.) and Symmetries") >= 0 ) {
+          if (moData != null) readLabels();   // only read if I have moData...
+        } else if (line.indexOf("Orbital Energies (a.u.)") >= 0 ) {
+          if (moData != null) readNoSymLabels();   // only read if I have moData...
         } else if (line.indexOf("MOLECULAR ORBITAL COEFFICIENTS") >= 0) {
-          readOrbitals();
+          if (moData != null) readOrbitals(); // only read if I have moData...
         }
         ++lineNum;
       }
@@ -109,8 +112,6 @@ public class QchemReader extends AtomSetCollectionReader {
  ----------------------------------------------------
     1      H       0.000000     0.000000     4.756791
 */
-
-//  int atomCount;
 
   void readAtoms() throws Exception {
     atomSetCollection.newAtomSet();
@@ -317,9 +318,215 @@ $end
   }
 
 // since the orbital coefficients don't show the symmetry, I will read them here
-  protected void readOrbitalEnergySymmetries() throws Exception {
-  // skip this for now
-}
+  /* 
+   * sample output for an unrestricted calculation
+   * 
+ --------------------------------------------------------------
+             Orbital Energies (a.u.) and Symmetries
+ --------------------------------------------------------------
+ Warning : Irrep of orbital(   1) could not be determined
+....
+ Warning : Irrep of orbital(  86) could not be determined
+ 
+ Alpha MOs, Unrestricted
+ -- Occupied --                  
+-10.446 -10.446 -10.446 -10.446 -10.412 -10.412  -1.100  -0.998
+  0 xxx   0 xxx   0 xxx   0 xxx   0 xxx   0 xxx   1 A1g   1 E1u                
+....
+ -0.611  -0.571  -0.569  -0.512  -0.479
+  1 A2u   1 E2g   1 E2g   1 E1g   1 E1g                                        
+ -- Virtual --                   
+ -0.252  -0.226  -0.102  -0.076  -0.049  -0.039  -0.015  -0.006
+  1 E2u   1 E2u   2 A1g   1 B2g   0 xxx   0 xxx   2 E2g   2 E2g                
+....
+  4.427
+  5 B1u                                                                        
+ Warning : Irrep of orbital(   1) could not be determined
+....
+ Warning : Irrep of orbital(  57) could not be determined
+ 
+ Beta MOs, Unrestricted
+ -- Occupied --                  
+-10.442 -10.442 -10.441 -10.441 -10.413 -10.413  -1.088  -0.978
+....
+ -0.577  -0.569  -0.566  -0.473
+  1 A2u   2 E2g   2 E2g   1 E1g                                                
+ -- Virtual --                   
+ -0.416  -0.214  -0.211  -0.100  -0.053  -0.047  -0.039  -0.008
+  1 E1g   1 E2u   1 E2u   3 A1g   1 B2g   0 xxx   0 xxx   3 E2g                
+ ....
+  4.100   4.433
+ 10 E2g   6 B1u                                                                
+ --------------------------------------------------------------
+ 
+
+   * 
+   * For a restricted open shell
+   * 
+ --------------------------------------------------------------
+             Orbital Energies (a.u.) and Symmetries
+ --------------------------------------------------------------
+ Warning : Irrep of orbital(   1) could not be determined
+....
+ Warning : Irrep of orbital(  86) could not be determined
+ 
+ Alpha MOs, Restricted
+ -- Doubly Occupied --           
+-10.446 -10.446 -10.445 -10.445 -10.413 -10.413  -1.099  -0.996
+  0 xxx   0 xxx   0 xxx   0 xxx   0 xxx   0 xxx   1 A1g   1 E1u                
+....
+ -0.609  -0.572  -0.570  -0.481
+  1 A2u   2 E2g   2 E2g   1 E1g                                                
+ -- Singly Occupied (Occupied) --
+ -0.507
+  1 E1g                                                                        
+ -- Virtual --                   
+ -0.248  -0.230  -0.102  -0.076  -0.049  -0.039  -0.015  -0.007
+  1 E2u   1 E2u   2 A1g   1 B2g   0 xxx   0 xxx   3 E2g   3 E2g                
+....
+  4.427
+  6 B1u                                                                        
+ 
+ Beta MOs, Restricted
+ -- Doubly Occupied --           
+-10.443 -10.443 -10.442 -10.442 -10.413 -10.413  -1.088  -0.980
+  0 xxx   0 xxx   0 xxx   0 xxx   0 xxx   0 xxx   1 A1g   1 E1u                
+....
+ -0.578  -0.569  -0.566  -0.470
+  1 A2u   2 E2g   2 E2g   1 E1g                                                
+ -- Singly Occupied (Vacant) --  
+ -0.421
+  1 E1g                                                                        
+ -- Virtual --                   
+ -0.215  -0.212  -0.100  -0.055  -0.047  -0.038  -0.008  -0.004
+  1 E2u   1 E2u   2 A1g   1 B2g   0 xxx   0 xxx   3 E2g   3 E2g                
+....
+  4.433
+  6 B1u                                                                        
+ --------------------------------------------------------------
+
+   * 
+   * For a restricted one : only need to read the alpha ones....
+   * 
+ --------------------------------------------------------------
+             Orbital Energies (a.u.) and Symmetries
+ --------------------------------------------------------------
+ 
+ Alpha MOs, Restricted
+ -- Occupied --                  
+-10.187 -10.187 -10.187 -10.186 -10.186 -10.186  -0.847  -0.740
+  1 A1g   1 E1u   1 E1u   1 E2g   1 E2g   1 B1u   2 A1g   2 E1u                
+....
+ -0.360  -0.340  -0.340  -0.247  -0.246
+  1 A2u   3 E2g   3 E2g   1 E1g   1 E1g                                        
+ -- Virtual --                   
+  0.004   0.004   0.091   0.145   0.145   0.165   0.182   0.182
+  1 E2u   1 E2u   4 A1g   4 E1u   4 E1u   1 B2g   4 E2g   4 E2g                
+....
+  4.668
+ 10 B1u                                                                        
+ 
+ Beta MOs, Restricted
+ -- Occupied --                  
+-10.187 -10.187 -10.187 -10.186 -10.186 -10.186  -0.847  -0.740
+  1 A1g   1 E1u   1 E1u   1 E2g   1 E2g   1 B1u   2 A1g   2 E1u                
+....
+ -0.360  -0.340  -0.340  -0.247  -0.246
+  1 A2u   3 E2g   3 E2g   1 E1g   1 E1g                                        
+ -- Virtual --                   
+  0.004   0.004   0.091   0.145   0.145   0.165   0.182   0.182
+  1 E2u   1 E2u   4 A1g   4 E1u   4 E1u   1 B2g   4 E2g   4 E2g                
+....
+  4.668
+ 10 B1u                                                                        
+ --------------------------------------------------------------
+
+   * 
+   */
+  protected void readLabels() throws Exception {
+    String[] tokens, labels;
+    String label="???", restricted, spin[] = {"A","B"};
+    alphaLabels = new String[nBasis];
+    betaLabels = new String[nBasis];
+
+    discardLinesUntilStartsWith(" Alpha");
+    restricted = getTokens(line)[2];
+    labels = alphaLabels;
+    for (int e = 0; e < 2; e++) { // do for A and B electrons
+      int nLabels = 0;
+      while (readLine() != null) { // will break out of loop
+        if (line.startsWith(" -- ")) {
+          label = makeOccupancy(restricted,spin[e],getTokens(line));
+          readLine();
+        }
+        if (line.startsWith(" -------")) break; // done....
+        int nOrbs = getTokens(line).length;
+        if (nOrbs == 0 || line.startsWith(" Warning")) { 
+          discardLinesUntilStartsWith(" Beta"); // now the beta ones.
+          labels = betaLabels;
+          break;
+        }
+        tokens = getTokens(readLine());
+        for (int i=0, j=0; i < nOrbs; i++, j+=2) {
+          labels[nLabels] = tokens[j]+" "+tokens[j+1]+label;
+          nLabels++;
+        }
+      }
+    }
+  }
+
+  /* if symmetry is turned off there won't be any symmetry lines.... */
+  protected void readNoSymLabels() throws Exception {
+    String[] labels;
+    String label="???";
+    alphaLabels = new String[nBasis];
+    betaLabels = new String[nBasis];
+
+    discardLinesUntilStartsWith(" Alpha");
+    labels = alphaLabels;
+    for (int e = 0; e < 2; e++) { // do for A and B electrons
+      int nLabels = 0;
+      while (readLine() != null) { // will break out of loop
+        if (line.startsWith(" -- Occ")) {
+          label = "(O)";
+          readLine();
+        } else if (line.startsWith(" -- Vir")) {
+          label ="(V)";
+          readLine();
+        }
+        if (line.startsWith(" -------")) {
+          e = 2; // Restricted with nosym: no Beta's listed... so force end
+          break; // done....
+        }
+        int nOrbs = getTokens(line).length;
+        if (nOrbs == 0 || line.startsWith(" Warning")) { 
+          discardLinesUntilStartsWith(" Beta"); // now the beta ones.
+          labels = betaLabels;
+          break;
+        }
+        for (int i=0; i < nOrbs; i++) {
+          labels[nLabels] = "??? "+label;
+          nLabels++;
+        }
+      }
+    }
+  }
+ 
+  private String makeOccupancy(String restricted, String spin, String[] tokens) {
+    String label = tokens[1];
+    if (restricted.equals("Unrestricted")) {
+      if (label.equals("Occupied")) label = spin;
+      else label = "V"+spin;                 // must be virtual
+    } else {          // Restricted (RO or R)
+      if (label.equals("Occupied") || label.equals("Doubly")) label = "AB";
+      else if (label.equals("Virtual")) label = "V";
+      else { // RO single occupied one
+        if (tokens[3].equals("(Occupied)")) label = "RO-1"+spin;
+        else label = "RO-0"+spin;
+      }
+    }
+    return " : "+label;
+  }
 
 /* Restricted orbitals cartesian see H2O-B3LYP-631Gd.out:
  * 
@@ -410,13 +617,12 @@ $end
     int nMOs;  // total number of MOs that were read
     
     Vector orbitals = new Vector();
-    String[] labels = new String[nBasis];
-    String[] labelTokens;
+    String[] aoLabels = new String[nBasis];
     String orbitalType = getTokens(line)[0]; // is RESTRICTED or ALPHA
-    nMOs = readMOs(labels, orbitals, orbitalType);
+    nMOs = readMOs(aoLabels, orbitals, alphaLabels);
     if (orbitalType.equals("ALPHA")) { // we also have BETA orbitals....
       discardLinesUntilContains("BETA");
-      nMOs += readMOs(labels, orbitals, "BETA");
+      nMOs += readMOs(aoLabels, orbitals, betaLabels);
     }
     // based on labels adjust the cartesian vs pure for the proper shells
     int iAO = 0; // index of first AO for a particular shell
@@ -429,8 +635,8 @@ $end
     }    
     for (int i = 0; i < nShell; i++) {
       int[] slater = (int[]) sdata.get(i);
-      labelTokens = getTokens(labels[iAO]);
-      if (labelTokens.length > 1 ) slater[1] += 1; // make spherical
+      if (getTokens(aoLabels[iAO]).length > 1 ) // have two strings for AO label
+        slater[1] += 1; // make spherical
       int nOrbs = nOrbitalsPerShell[slater[1]];
       // only check reorder for slater >= SHELL_D_CARTESIAN
       if (slater[1] >= JmolAdapter.SHELL_D_CARTESIAN) {
@@ -441,31 +647,32 @@ $end
           for (int k=0, l=iAO; k < nOrbs; k++, l++)
             mocoef[j][l] = reordered[k];        // now just set them
         }
-     }
+      }
       iAO += nOrbs;
-    }
-    
+    }   
     moData.put("mos", orbitals);
     setMOData(moData);
   }
-  
-  private int readMOs(String[] labels, Vector orbitals, String symmetry) throws Exception {
+
+  private int readMOs(String[] aoLabels, Vector orbitals, String[] moLabels) throws Exception {
     Hashtable[] mos = new Hashtable[6];  // max 6 MO's per line
     float[][] mocoef = new float[6][];   // coefficients for each MO
+    int[] moid = new int[6];             // mo numbers
     String[] tokens, energy;
     int nMOs = 0;
     
     while (readLine().length() > 2) {
-      discardLinesUntilStartsWith(" eigenvalues:");  // skip over the numbering line
-      energy = getTokens(line.substring(13));
-      int nMO = energy.length;
+      tokens = getTokens(line);
+      int nMO = tokens.length;    // number of MO columns
+      energy = getTokens(readLine().substring(13));
       for (int i = 0; i < nMO; i++) {
+        moid[i] = parseInt(tokens[i])-1;
         mocoef[i] = new float[nBasis];
         mos[i] = new Hashtable();
       }
       for (int i = 0; i < nBasis; i++) {
         tokens = getTokens(readLine());
-        labels[i] = line.substring(12, 17); // collect the shell labels
+        aoLabels[i] = line.substring(12, 17); // collect the shell labels
         for (int j = tokens.length-nMO, k=0; k < nMO; j++, k++)
           mocoef[k][i] = parseFloat(tokens[j]);
       }
@@ -473,7 +680,7 @@ $end
       for (int i = 0; i < nMO; i++ ) {
         mos[i].put("energy", new Float(energy[i]));
         mos[i].put("coefficients",mocoef[i]);
-        mos[i].put("symmetry", symmetry);
+        mos[i].put("symmetry", moLabels[moid[i]]);
         orbitals.addElement(mos[i]);
       }
       nMOs += nMO;

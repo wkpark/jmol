@@ -547,9 +547,8 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
      zz           [(2048 * alpha^7) / (9 * pi^3))]^(1/4)
      */
 
-    final float norm1 = (float) Math.pow(
-        2048.0 / (Math.PI * Math.PI * Math.PI), 0.25);
-    final float norm2 = norm1 / (float) Math.sqrt(3);
+    final float norm1 = (float) Math.pow(2048.0 / (Math.PI * Math.PI * Math.PI), 0.25);
+    final float norm2 = (float) (norm1 / Math.sqrt(3));
 
     // Normalization constant that shows up for dx^2-y^2
     final float root34 = (float) Math.sqrt(0.75);
@@ -634,8 +633,8 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
 
     final float norm1 = (float) Math.pow(
         32768.0 / (Math.PI * Math.PI * Math.PI), 0.25);
-    final float norm3 = norm1 / (float) Math.sqrt(15);
-    final float norm2 = norm1 / (float) Math.sqrt(3);
+    final float norm2 = (float) (norm1 / Math.sqrt(3));
+    final float norm3 = (float) (norm1 / Math.sqrt(15));
 
     float mxxx = moCoefficients[moCoeff++];
     float myyy = moCoefficients[moCoeff++];
@@ -733,8 +732,8 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
 
     final float norm1 = (float) Math.pow(
         32768.0 / (Math.PI * Math.PI * Math.PI), 0.25);
-    final float norm2 = norm1 / (float) Math.sqrt(3);
-    final float norm3 = norm1 / (float) Math.sqrt(15);
+    final float norm2 = (float) (norm1 / Math.sqrt(3));
+    final float norm3 = (float) (norm1 / Math.sqrt(15));
 
     // Linear combination coefficients for the various Cartesian gaussians
     final float c0_xxz_yyz = (float) (3.0 / (2.0 * Math.sqrt(5)));

@@ -552,7 +552,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
     final float norm2 = norm1 / (float) Math.sqrt(3);
 
     // Normalization constant that shows up for dx^2-y^2
-    final float root34 = (float) Math.sqrt(3 / 4);
+    final float root34 = (float) Math.sqrt(0.75);
 
     float m0 = moCoefficients[moCoeff++];
     float m1p = moCoefficients[moCoeff++];

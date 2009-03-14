@@ -468,7 +468,7 @@ $end
         }
         tokens = getTokens(readLine());
         for (int i=0, j=0; i < nOrbs; i++, j+=2) {
-          labels[nLabels] = tokens[j]+" "+tokens[j+1]+label;
+          labels[nLabels] = tokens[j]+tokens[j+1]+"--"+label;
           nLabels++;
         }
       }
@@ -525,7 +525,7 @@ $end
         else label = "RO-0"+spin;
       }
     }
-    return " : "+label;
+    return label;
   }
 
 /* Restricted orbitals cartesian see H2O-B3LYP-631Gd.out:
@@ -680,7 +680,7 @@ $end
       for (int i = 0; i < nMO; i++ ) {
         mos[i].put("energy", new Float(energy[i]));
         mos[i].put("coefficients",mocoef[i]);
-        mos[i].put("symmetry", moLabels[moid[i]]);
+        mos[i].put("symmetry", moLabels[moid[i]] +"("+(moid[i]+1)+")");
         orbitals.addElement(mos[i]);
       }
       nMOs += nMO;

@@ -651,6 +651,7 @@ $end
       iAO += nOrbs;
     }   
     moData.put("mos", orbitals);
+    moData.put("energyUnits", "au");
     setMOData(moData);
   }
 

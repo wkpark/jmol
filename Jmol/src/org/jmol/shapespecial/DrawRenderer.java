@@ -27,6 +27,7 @@ package org.jmol.shapespecial;
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
@@ -166,31 +167,25 @@ public class DrawRenderer extends MeshRenderer {
         mat.transform(vTemp2);
       }
       if (dmesh.isVector && !dmesh.nohead) {
-        renderArrowHead(vpt0, vpt1, 0.3f, false);
+        renderArrowHead(vpt0, vpt1, 0.3f, false, false);
         viewer.transformPoint(pt1f, screens[nPoints - 1]);
       }
       pt1f.set(vpt2);
       break;
     case JmolConstants.DRAW_ARROW:
+      if (vertexCount == 2) {
+        renderArrowHead(vertices[0], vertices[1], 0, false, true);
+        return;
+      }
       int nHermites = 5;
       if (controlHermites == null || controlHermites.length < nHermites + 1) {
         controlHermites = new Point3f[nHermites + 1];
       }
-      if (vertexCount == 2) {
-        if (controlHermites[nHermites - 1] == null) {
-          controlHermites[nHermites - 2] = new Point3f(vertices[0]);
-          controlHermites[nHermites - 1] = new Point3f(vertices[1]);
-        } else {
-          controlHermites[nHermites - 2].set(vertices[0]);
-          controlHermites[nHermites - 1].set(vertices[1]);
-        }
-      } else {
-        Graphics3D.getHermiteList(tension, vertices[vertexCount - 3],
+      Graphics3D.getHermiteList(tension, vertices[vertexCount - 3],
             vertices[vertexCount - 2], vertices[vertexCount - 1],
             vertices[vertexCount - 1], vertices[vertexCount - 1],
             controlHermites, 0, nHermites);
-      }
-      renderArrowHead(controlHermites[nHermites - 2], controlHermites[nHermites - 1], 0, false);
+      renderArrowHead(controlHermites[nHermites - 2], controlHermites[nHermites - 1], 0, false, false);
       break;
     }
     if (diameter == 0)
@@ -210,7 +205,7 @@ public class DrawRenderer extends MeshRenderer {
     if (isDrawPickMode && !isGenerator) {
       renderHandles();
     }
-}
+  }
   
   private void renderXyArrow(int ptXY) {
     int ptXYZ = 1 - ptXY;
@@ -227,10 +222,14 @@ public class DrawRenderer extends MeshRenderer {
     if (diameter == 0)
       diameter = 1;
     renderLine(vpt0, vpt1, diameter, Graphics3D.ENDCAPS_FLAT, pt1i, pt2i);
-    renderArrowHead(vpt0, vpt1, 0, true);
+    renderArrowHead(vpt0, vpt1, 0, true, false);
   }
 
-  private void renderArrowHead(Point3f pt1, Point3f pt2, float factor2, boolean isTransformed) {
+  private final Point3f pt0f = new Point3f();
+  private final Point3i pt0i = new Point3i();
+
+  private void renderArrowHead(Point3f pt1, Point3f pt2, float factor2, 
+                               boolean isTransformed, boolean withShaft) {
     if (dmesh.nohead)
       return;
     float fScale = dmesh.drawArrowScale;
@@ -243,16 +242,17 @@ public class DrawRenderer extends MeshRenderer {
     if (factor2 > 0)
       fScale *= factor2;
     
-    pt1f.set(pt1);
+    pt0f.set(pt1);
     pt2f.set(pt2);
-    float d = pt1f.distance(pt2f);
+    float d = pt0f.distance(pt2f);
     if (d == 0)
       return;
     vTemp.set(pt2f);
-    vTemp.sub(pt1f);
+    vTemp.sub(pt0f);
     vTemp.normalize();
     vTemp.scale(fScale / 5);
-    pt2f.add(vTemp);
+    if (!withShaft)
+      pt2f.add(vTemp);
     vTemp.scale(5);
     pt1f.set(pt2f);
     pt1f.sub(vTemp);
@@ -262,6 +262,7 @@ public class DrawRenderer extends MeshRenderer {
     } else {
       viewer.transformPoint(pt2f, pt2i);
       viewer.transformPoint(pt1f, pt1i);
+      viewer.transformPoint(pt0f, pt0i);
     }
     if (pt2i.z == 1 || pt1i.z == 1) //slabbed
       return;
@@ -277,6 +278,9 @@ public class DrawRenderer extends MeshRenderer {
       diameter = 1;
     if (headDiameter > 2)
       g3d.fillCone(Graphics3D.ENDCAPS_FLAT, headDiameter, pt1i, pt2i);
+    if (withShaft)
+      g3d.fillCylinder(Graphics3D.ENDCAPS_OPENEND, diameter, pt0i,
+           pt1i);
   }
   
   private void renderHandles() {

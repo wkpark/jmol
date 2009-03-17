@@ -9804,6 +9804,7 @@ class Eval {
     float translucentLevel = Float.MAX_VALUE;
     int colorArgb = Integer.MIN_VALUE;
     int intScale = 0;
+    String swidth = "";
     boolean idSeen = false;
     int iptDisplayProperty = 0;
     Point3f center = null;
@@ -9828,7 +9829,7 @@ class Eval {
             checkLength(iToken + 1);
             if (!isSyntaxCheck)
               runScript((new Quaternion((Point4f) propertyValue)).draw(
-                  (thisId == null ? "frame" : thisId), "", 
+                  (thisId == null ? "frame" : thisId), " " + swidth, 
                   (center == null ? new Point3f() : center), intScale / 100f));
             return;
           }
@@ -9991,13 +9992,17 @@ class Eval {
           break;
         }
         if (str.equalsIgnoreCase("DIAMETER")) { //pixels
-          propertyValue = new Float(floatParameter(++i));
+          float f = floatParameter(++i);
+          propertyValue = new Float(f);
           propertyName = (tokAt(i) == Token.decimal ? "width" : "diameter");
+          swidth = (String) propertyName 
+              + (tokAt(i) == Token.decimal ? " " + f : " " + ((int) f));
           break;
         }
         if (str.equalsIgnoreCase("WIDTH")) { //angstroms
           propertyValue = new Float(floatParameter(++i));
           propertyName = "width";
+          swidth = (String) propertyName + " " + propertyValue;
           break;
         }
         thisId = setShapeId(JmolConstants.SHAPE_DRAW, i, idSeen);

@@ -112,7 +112,7 @@ class Cylinder3D {
 
     generateBaseEllipse();
 
-    if (endcaps == Graphics3D.ENDCAPS_FLAT)
+    if (endcaps == Graphics3D.ENDCAPS_FLAT || endcaps == Graphics3D.ENDCAPS_OPENEND)
       renderFlatEndcap(true);
     g3d.setZMargin(5);
     for (int i = rasterCount; --i >= 0;)
@@ -543,6 +543,8 @@ class Cylinder3D {
       return;
     int xT = xA, yT = yA, zT = zA;
     if (tCylinder && dzB < 0) {
+      if (endcaps == Graphics3D.ENDCAPS_OPENEND)
+        return;
       xT += dxB;
       yT += dyB;
       zT += dzB;

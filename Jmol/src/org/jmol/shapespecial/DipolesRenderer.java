@@ -79,8 +79,8 @@ public class DipolesRenderer extends ShapeRenderer {
       offset.scale(dipole.offsetAngstroms / dipole.dipoleValue);
       if (dipoleVectorScale < 0)
         offset.add(vector);
-    points[cylinderBase].set(dipole.origin);
-    points[cylinderBase].add(offset);
+      points[cylinderBase].set(dipole.origin);
+      points[cylinderBase].add(offset);
     } else {
       offset.scale(-0.5f * dipoleVectorScale);
       points[cylinderBase].set(dipole.center);
@@ -169,7 +169,7 @@ public class DipolesRenderer extends ShapeRenderer {
     }
     colix = colixB;
     if (g3d.setColix(colix)) {
-      g3d.fillCylinder(Graphics3D.ENDCAPS_OPEN, diameter, screens[center],
+      g3d.fillCylinder(Graphics3D.ENDCAPS_OPENEND, diameter, screens[center],
           screens[arrowHeadBase]);
       g3d.fillCone(Graphics3D.ENDCAPS_FLAT, headWidthPixels,
           screens[arrowHeadBase], screens[arrowHeadTip]);

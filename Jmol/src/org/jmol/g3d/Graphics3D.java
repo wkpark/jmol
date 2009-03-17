@@ -219,6 +219,7 @@ final public class Graphics3D implements JmolRendererInterface {
   public final static byte ENDCAPS_OPEN = 1;
   public final static byte ENDCAPS_FLAT = 2;
   public final static byte ENDCAPS_SPHERICAL = 3;
+  public final static byte ENDCAPS_OPENEND = 4;
 
   
   public final static byte shadeMax = Shade3D.shadeMax;

@@ -731,7 +731,7 @@ public abstract class BioPolymer extends Polymer {
               continue;
             int deg = (int) (Math.acos(w) * 360 / Math.PI);
             if (derivType == 0) {
-              pdbATOM.append(q.draw(prefix, id, ptCenter));
+              pdbATOM.append(q.draw(prefix, id, ptCenter, 1f));
               if (qtype == 'n' && isAmino) {
                 Point3f ptH = ((AminoMonomer) monomer)
                     .getNitrogenHydrogenPoint();

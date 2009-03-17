@@ -5866,7 +5866,8 @@ class Eval {
       viewer.loadShape(JmolConstants.SHAPE_ELLIPSOIDS);
       if (parameterAsString(i).equalsIgnoreCase("ID"))
         i++;
-      i = setShapeId(JmolConstants.SHAPE_ELLIPSOIDS, i, false);
+      setShapeId(JmolConstants.SHAPE_ELLIPSOIDS, i, false);
+      i = iToken;
       for (++i; i < statementLength; i++) {
         String key = parameterAsString(i);
         Object value = null;
@@ -5956,13 +5957,13 @@ class Eval {
     return id;
   }
 
-  private int setShapeId(int iShape, int i, boolean idSeen)
+  private String setShapeId(int iShape, int i, boolean idSeen)
       throws ScriptException {
     if (idSeen)
       error(ERROR_invalidArgument);
     String id = getShapeNameParameter(i);
     setShapeProperty(iShape, "thisID", id.toLowerCase());
-    return iToken;
+    return id;
   }
 
   private void setAtomShapeSize(int shape, int defOn) throws ScriptException {
@@ -6220,7 +6221,8 @@ class Eval {
       case Token.identifier:
         String cmd = parameterAsString(i);
         if (cmd.equalsIgnoreCase("id")) {
-          i = setShapeId(JmolConstants.SHAPE_DIPOLES, ++i, idSeen);
+          setShapeId(JmolConstants.SHAPE_DIPOLES, ++i, idSeen);
+          i = iToken;
           break;
         }
         if (cmd.equalsIgnoreCase("cross")) {
@@ -6259,7 +6261,8 @@ class Eval {
           propertyValue = new Float(floatParameter(++i));
           break;
         }
-        i = setShapeId(JmolConstants.SHAPE_DIPOLES, i, idSeen);
+        setShapeId(JmolConstants.SHAPE_DIPOLES, i, idSeen);
+        i = iToken;
         break;
       default:
         error(ERROR_invalidArgument);
@@ -9797,26 +9800,41 @@ class Eval {
     boolean isInitialized = false;
     boolean isSavedState = false;
     boolean isTranslucent = false;
+    boolean isFrame = false;
     float translucentLevel = Float.MAX_VALUE;
     int colorArgb = Integer.MIN_VALUE;
     int intScale = 0;
     boolean idSeen = false;
     int iptDisplayProperty = 0;
+    Point3f center = null;
+    String thisId = null;
     initIsosurface(JmolConstants.SHAPE_DRAW);
     for (int i = iToken; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
       int tok = getToken(i).tok;
       switch (tok) {
+      case Token.frame:
+        isFrame = true;
+        //draw ID xxx frame {center} {q1 q2 q3 q4}
+        continue;
       case Token.leftbrace:
       case Token.point4f:
       case Token.point3f:
         // {X, Y, Z}
         if (tok == Token.point4f || !isPoint3f(i)) {
           propertyValue = getPoint4f(i);
+          if (isFrame) {
+            checkLength(iToken + 1);
+            if (!isSyntaxCheck)
+              runScript((new Quaternion((Point4f) propertyValue)).draw(
+                  (thisId == null ? "frame" : thisId), "", 
+                  (center == null ? new Point3f() : center), intScale / 100f));
+            return;
+          }
           propertyName = "planedef";
         } else {
-          propertyValue = getPoint3f(i, true);
+          propertyValue = center = getPoint3f(i, true);
           propertyName = "coord";
         }
         i = iToken;
@@ -9899,7 +9917,8 @@ class Eval {
       case Token.identifier:
         String str = parameterAsString(i);
         if (str.equalsIgnoreCase("id")) {
-          i = setShapeId(JmolConstants.SHAPE_DRAW, ++i, idSeen);
+          thisId = setShapeId(JmolConstants.SHAPE_DRAW, ++i, idSeen);
+          i = iToken;
           break;
         }
         if (str.equalsIgnoreCase("LINE")) {
@@ -9979,7 +9998,8 @@ class Eval {
           propertyName = "width";
           break;
         }
-        i = setShapeId(JmolConstants.SHAPE_DRAW, i, idSeen);
+        thisId = setShapeId(JmolConstants.SHAPE_DRAW, i, idSeen);
+        i = iToken;
         break;
       case Token.dollarsign:
         // $drawObject[m]
@@ -10030,7 +10050,7 @@ class Eval {
         continue;
       }
       idSeen = (theTok != Token.delete);
-      if (havePoints && !isInitialized) {
+      if (havePoints && !isInitialized && !isFrame) {
         setShapeProperty(JmolConstants.SHAPE_DRAW, "points", new Integer(
             intScale));
         isInitialized = true;
@@ -11115,7 +11135,8 @@ class Eval {
           break;
         }
         if (str.equalsIgnoreCase("ID")) {
-          i = setShapeId(iShape, ++i, idSeen);
+          setShapeId(iShape, ++i, idSeen);
+          i = iToken;
           break;
         }
         if (str.equalsIgnoreCase("IGNORE")) {
@@ -11230,7 +11251,8 @@ class Eval {
           propertyValue = data;
           break;
         }
-        i = setShapeId(iShape, i, idSeen);
+        setShapeId(iShape, i, idSeen);
+        i = iToken;
         break;
       case Token.string:
         propertyName = surfaceObjectSeen || planeSeen ? "mapColor" : "readFile";
@@ -12906,7 +12928,7 @@ class Eval {
             Point3f pt = (args[2].tok == Token.point3f ? (Point3f) args[2].value
                 : viewer.getAtomSetCenter((BitSet) args[2].value));
             return addX((new Quaternion((Point4f) args[0].value)).draw("q",
-                Token.sValue(args[1]), pt));
+                Token.sValue(args[1]), pt, 1f));
           }
           Point3f[] pts = new Point3f[3];
           for (int i = 0; i < 3; i++)

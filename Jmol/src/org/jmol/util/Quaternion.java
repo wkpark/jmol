@@ -388,14 +388,20 @@ public class Quaternion {
   }
 
   public Vector3f getVector(int i) {
+    return getVector(i, 1f);
+  }
+
+  private Vector3f getVector(int i, float scale) {
     if (i == -1) {
       fixQ(qTemp);
-      return new Vector3f(qTemp.q1, qTemp.q2, qTemp.q3);
+      return new Vector3f(qTemp.q1 * scale, qTemp.q2 * scale, qTemp.q3 * scale);
     }
     if (mat == null)
       setMatrix();
     Vector3f v = new Vector3f();
     mat.getColumn(i, v);
+    if (scale != 1f)
+      v.scale(scale);
     return v;
   }
 
@@ -480,13 +486,16 @@ public class Quaternion {
             (float) (axis.angle * 180 / Math.PI), axis.x, axis.y, axis.z } });
   }
 
-  public String draw(String prefix, String id, Point3f ptCenter) {
+  public String draw(String prefix, String id, Point3f ptCenter, 
+                     float scale) {
     String strV = " VECTOR " + Escape.escape(ptCenter) + " ";
+    if (scale == 0)
+      scale = 1f;
     return "draw " + prefix + "x" + id + strV
-        + Escape.escape(getVector(0)) + " color red\n"
+        + Escape.escape(getVector(0, scale)) + " color red\n"
         + "draw " + prefix + "y" + id + strV
-        + Escape.escape(getVector(1)) + " color green\n"
+        + Escape.escape(getVector(1, scale)) + " color green\n"
         + "draw " + prefix + "z" + id + strV
-        + Escape.escape(getVector(2)) + " color blue\n";
+        + Escape.escape(getVector(2, scale)) + " color blue\n";
   }
 }

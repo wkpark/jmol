@@ -9853,6 +9853,8 @@ class Eval {
       case Token.expressionBegin:
         propertyName = "atomSet";
         propertyValue = expression(i);
+        if (isFrame)
+          center = centerParameter(i);
         i = iToken;
         havePoints = true;
         break;
@@ -10003,8 +10005,8 @@ class Eval {
         break;
       case Token.dollarsign:
         // $drawObject[m]
-        if (tokAt(i + 2) == Token.leftsquare) {
-          Point3f pt = centerParameter(i);
+        if (tokAt(i + 2) == Token.leftsquare || isFrame) {
+          Point3f pt = center = centerParameter(i);
           i = iToken;
           propertyName = "coord";
           propertyValue = pt;
@@ -10012,7 +10014,6 @@ class Eval {
           break;
         }
         // $drawObject
-
         propertyValue = objectNameParameter(++i);
         propertyName = "identifier";
         havePoints = true;

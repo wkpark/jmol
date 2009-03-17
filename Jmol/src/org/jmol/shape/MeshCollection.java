@@ -287,6 +287,11 @@ public abstract class MeshCollection extends Shape {
         if (linkedMesh != null)
           linkedMesh.showTriangles = bProp;
         return;
+      case Token.frontonly:
+        currentMesh.frontOnly = bProp;
+        if (linkedMesh != null)
+          linkedMesh.frontOnly = bProp;
+        return;
       }
       return;
     }

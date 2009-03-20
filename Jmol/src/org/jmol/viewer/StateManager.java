@@ -862,7 +862,7 @@ public class StateManager {
     }
 
     Hashtable htUserVariables = new Hashtable();
-
+    
     void setUserVariable(String key, Token value) {
       key = key.toLowerCase();
       if (value == null) {

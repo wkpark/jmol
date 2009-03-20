@@ -66,7 +66,7 @@ public class SpartanSmolReader extends SpartanInputReader {
         isDirectory = true;
 
       while (line != null) {
-        System.out.println(line);
+        Logger.debug(line);
         if (line.equals("HESSIAN") && bondData != null) {
           //cache for later if necessary -- this is from the INPUT section
           while (readLine() != null && line.indexOf("ENDHESS") < 0)

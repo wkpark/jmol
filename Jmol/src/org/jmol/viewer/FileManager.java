@@ -23,6 +23,7 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.util.BinaryDocument;
 import org.jmol.util.CompoundDocument;
 import org.jmol.util.TextFormat;
 import org.jmol.util.ZipUtil;
@@ -330,7 +331,7 @@ public class FileManager {
       return "Error:" + t;
     try {
       BufferedInputStream bis = new BufferedInputStream((InputStream) t, 8192);
-      InputStream is = bis;
+      InputStream is = bis;      
       Object bytes = (ZipUtil.isZipFile(is) && subFileList != null
           && 1 < subFileList.length ? ZipUtil.getZipFileContentsAsBytes(is,
           subFileList, 1) : ZipUtil.getStreamAsBytes(bis));
@@ -424,16 +425,35 @@ public class FileManager {
     if (name == null)
       return "";
     String[] subFileList = null;
+    boolean asDouble = false;
     if (name.indexOf("|") >= 0)
       name = (subFileList = TextFormat.split(name, "|"))[0];
+    if (name.indexOf("\\binaryDoubleAsString") >= 0) {
+      asDouble = true;
+      name = name.substring(0, name.indexOf("\\binaryDoubleAsString"));
+    }
     //System.out.println("FileManager.getFileAsString(" + name + ")");
     Object t = getInputStreamOrErrorMessageFromName(name, false);
+    StringBuffer sb;
     if (t instanceof String)
       return "Error:" + t;
     try {
       BufferedInputStream bis = new BufferedInputStream((InputStream) t, 8192);
       InputStream is = bis;
-      if (CompoundDocument.isCompoundDocument(is)) {
+      if (asDouble) {
+        // used for Spartan binary file reading
+        sb = new StringBuffer();
+        BinaryDocument bd = new BinaryDocument();
+        bd.setStream(bis, false);
+        try {
+          while(true)
+            sb.append(bd.readDouble()).append(' ');
+        } catch(Exception e1) {
+          sb.append('\n');
+          bis.close();
+        }
+        return sb.toString();
+      } else if (CompoundDocument.isCompoundDocument(is)) {
         CompoundDocument doc = new CompoundDocument(bis);
         return "" + doc.getAllData();
       } else if (isGzip(is)) {
@@ -442,7 +462,7 @@ public class FileManager {
         return (String) ZipUtil.getZipFileContents(is, subFileList, 1, false);
       }
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
-      StringBuffer sb = new StringBuffer(8192);
+      sb = new StringBuffer(8192);
       String line;
       while ((line = br.readLine()) != null) {
         sb.append(line);

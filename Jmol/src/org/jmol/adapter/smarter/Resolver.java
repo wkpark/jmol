@@ -91,6 +91,7 @@ public class Resolver {
       return new String[] { "SpartanSmol", "Directory Entry ",
           name + "/input",
           name + "/archive", 
+          name + "/Molecule\\binaryDoubleAsString", 
           name + "/proparc"};
     }
     return null;

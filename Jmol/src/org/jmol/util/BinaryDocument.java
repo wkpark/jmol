@@ -122,11 +122,26 @@ public class BinaryDocument {
         : Float.intBitsToFloat(readLEInt()));
   }
   
+  public double readDouble() throws Exception {
+    return (isBigEndian ? stream.readDouble() : Double.longBitsToDouble(readLELong()));  
+  }
+  
   private int readLEInt() throws Exception {
     return ((((int) stream.readByte()) & 0xff)
           | (((int) stream.readByte()) & 0xff) << 8
           | (((int) stream.readByte()) & 0xff) << 16 
           | (((int) stream.readByte()) & 0xff) << 24);
+  }
+
+  private long readLELong() throws Exception {
+    return ((((long) stream.readByte()) & 0xff)
+          | (((long) stream.readByte()) & 0xff) << 8
+          | (((long) stream.readByte()) & 0xff) << 16 
+          | (((long) stream.readByte()) & 0xff) << 24
+          | (((long) stream.readByte()) & 0xff) << 32
+          | (((long) stream.readByte()) & 0xff) << 40
+          | (((long) stream.readByte()) & 0xff) << 48
+          | (((long) stream.readByte()) & 0xff) << 56);
   }
 
   public void seek(long offset) {

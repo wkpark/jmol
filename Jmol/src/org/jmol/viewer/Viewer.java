@@ -5479,6 +5479,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       if (key.equalsIgnoreCase("testFlag1")) {
         global.testFlag1 = value;
+        
+        //fileManager.getFileAsBytes("C:/temp/test/n-butane1.spardir/M0001/Molecule");
         break;
       }
       if (key.equalsIgnoreCase("testFlag2")) {

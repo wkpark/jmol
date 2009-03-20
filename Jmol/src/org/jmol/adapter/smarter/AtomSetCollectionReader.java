@@ -39,7 +39,9 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 /*
  * Notes 9/2006 Bob Hanson
@@ -565,6 +567,8 @@ public int[] next = new int[1];
   }
 
   public void setAtomCoord(Atom atom) {
+    if (matrixRotate != null)
+      matrixRotate.transform(atom);
     if (doConvertToFractional && !fileCoordinatesAreFractional
         && symmetry != null) {
       symmetry.toFractional(atom);
@@ -765,5 +769,36 @@ public int[] next = new int[1];
       fields[i] = sinfo.substring(pt, pt + width);
     return fields;
   }
+
+  Matrix3f matrixRotate;
+  protected void setTransform(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3) {
+    matrixRotate = new Matrix3f();
+    Vector3f v = new Vector3f();
+    v.set(x1, y1, z1);
+    System.out.println (" st 1 " + v);
+    v.normalize();
+    matrixRotate.setColumn(0, v);
+    v.set(x2, y2, z2);
+    v.normalize();
+    System.out.println (" st 2 " + v);
+    matrixRotate.setColumn(1, v);
+    v.set(x3, y3, z3);
+    v.normalize();
+    System.out.println (" st 3 " + v);
+    matrixRotate.setColumn(2, v);
+    atomSetCollection.setTransform(matrixRotate);
+
+//    String view = "resetQuaternion = quaternion({"+tokens[4] + " " + tokens[5] + " " + tokens[6]+"},{"
+  //  +tokens[8] + " " + tokens[9] + " " + tokens[10]+"});rotate quaternion @resetQuaternion;";
+    //Logger.info(view);
+   // addJmolScript(view);
+
     
+   // String view = "resetQuaternion = quaternion({"+x1 + " " + y1 + " " + z1 + "},{"
+   // "});rotate quaternion @resetQuaternion;";
+   // Logger.info(view);
+   // addJmolScript(view);
+  
+  }
+  
 }

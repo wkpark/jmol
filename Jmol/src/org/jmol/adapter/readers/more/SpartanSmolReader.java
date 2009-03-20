@@ -126,11 +126,10 @@ public class SpartanSmolReader extends SpartanInputReader {
     String[] tokens = getTokens(readLine());
     //5.2494528783E-313 1.043772282734E-312 7.2911220059756244E-304 2.901580574423E-312 
     //0.0 0.0 1.0 0.0 -1.0 0.0 0.0 0.0 0.0 -1.0 0.0 0.0 0.6250277955447784 1.7865956568574344 0.3608597599807504 1.0 
-
-    String view = "resetQuaternion = quaternion({"+tokens[4] + " " + tokens[5] + " " + tokens[6]+"},{"
-    +tokens[8] + " " + tokens[9] + " " + tokens[10]+"});rotate quaternion @resetQuaternion;";
-    Logger.info(view);
-    addJmolScript(view);
+    setTransform(
+        parseFloat(tokens[4]), parseFloat(tokens[5]), parseFloat(tokens[6]),
+        parseFloat(tokens[8]), parseFloat(tokens[9]), parseFloat(tokens[10]),
+        parseFloat(tokens[12]), parseFloat(tokens[13]), parseFloat(tokens[14]));
   }
 
   private boolean readArchiveHeader()

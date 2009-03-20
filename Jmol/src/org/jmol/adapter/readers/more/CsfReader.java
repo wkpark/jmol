@@ -61,7 +61,9 @@ public class CsfReader extends MopacDataReader {
     try {
       readLine();
       while (line != null) {
-        if (line.startsWith("object_class")) {
+        if (line.equals("local_transform")) {
+          processLocalTransform();
+        } else if (line.startsWith("object_class")) {
           processObjectClass();
           // there is already an unprocessed line in the firing chamber
           continue; 
@@ -105,7 +107,24 @@ public class CsfReader extends MopacDataReader {
     
     readLine();
   }
-  
+
+  /*
+   local_transform
+   0.036857 -0.132149 0.003770 0.000000
+   -0.118510 -0.031292 0.061744 0.000000
+   -0.058592 -0.019837 -0.122513 0.000000
+   -0.000142 0.132130 0.060863 1.000000
+
+   */
+  private void processLocalTransform() throws Exception {
+    String[] tokens = getTokens(readLine() + " " + readLine() + " "+ readLine() + " " + readLine());
+    setTransform(
+        parseFloat(tokens[0]), parseFloat(tokens[1]), parseFloat(tokens[2]), 
+        parseFloat(tokens[4]), parseFloat(tokens[5]), parseFloat(tokens[6]),
+        parseFloat(tokens[8]), parseFloat(tokens[9]), parseFloat(tokens[10])
+        );
+  }
+
   private Hashtable propertyItemCounts = new Hashtable();
   int[] fieldTypes = new int[100]; // should be enough
   
@@ -293,9 +312,7 @@ public class CsfReader extends MopacDataReader {
           atom.partialCharge = parseFloat(field);
           break;
         case xyz_coordinates:
-          atom.x = parseFloat(field);
-          atom.y = parseFloat(tokens[i + 1]);
-          atom.z = parseFloat(tokens[i + 2]);
+          setAtomCoord(atom, parseFloat(field), parseFloat(tokens[i + 1]), parseFloat(tokens[i + 2]));
           break;
         }
       }

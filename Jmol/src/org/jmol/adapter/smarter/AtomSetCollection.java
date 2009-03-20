@@ -29,7 +29,6 @@ import java.util.Vector;
 import java.util.Properties;
 import java.util.BitSet;
 
-import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -1373,13 +1372,6 @@ public class AtomSetCollection {
       if ((s = atomIdNames.getProperty(atoms[i].atomName)) != null)
         atoms[i].atomName = s;
     return null;
-  }
-
-  public void setTransform(Matrix3f m) {
-    if (currentAtomSetIndex < 0)
-      return;
-    for (int i = getLastAtomSetAtomIndex(); i < atomCount; i++)
-      m.transform(atoms[i]);
   }
 
 }

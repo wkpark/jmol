@@ -260,7 +260,7 @@ public class StateManager {
   }
 
   Orientation getOrientation() {
-    return new Orientation();
+    return new Orientation(false);
   }
 
   void saveOrientation(String saveName) {
@@ -268,7 +268,7 @@ public class StateManager {
       deleteSaved("Orientation_");
       return;
     }
-    Orientation o = new Orientation();
+    Orientation o = new Orientation(saveName.equals("default"));
     o.saveName = lastOrientation = "Orientation_" + saveName;
     saved.put(o.saveName, o);
   }
@@ -300,8 +300,17 @@ public class StateManager {
     boolean navigationMode;
     String moveToText;
 
-    Orientation() {
-      viewer.getRotation(rotationMatrix);
+    Orientation(boolean asDefault) {
+      if (asDefault) {
+        Matrix3f rotationMatrix = (Matrix3f) viewer
+          .getModelSetAuxiliaryInfo("defaultOrientationMatrix");
+        if (rotationMatrix == null)
+          this.rotationMatrix.setIdentity();
+        else
+          this.rotationMatrix.set(rotationMatrix);
+      } else {
+        viewer.getRotation(this.rotationMatrix);
+      }
       xTrans = viewer.getTranslationXPercent();
       yTrans = viewer.getTranslationYPercent();
       zoom = viewer.getZoomSetting();
@@ -490,6 +499,7 @@ public class StateManager {
     boolean applySymmetryToBonds = false; //new 11.1.29
     String atomTypes = "";
     boolean autoBond = true;
+    boolean autoLoadOrientation = false; // 11.7.30 for Spartan and Sygress/CAChe loading with or without rotation
     short bondRadiusMilliAngstroms = JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS;
     float bondTolerance = JmolConstants.DEFAULT_BOND_TOLERANCE;
     String defaultLoadScript = "";
@@ -541,6 +551,8 @@ public class StateManager {
         appendCmd(str, viewer.getDefaultVdw(Integer.MAX_VALUE));
       appendCmd(str, "set forceAutoBond " + forceAutoBond);
       appendCmd(str, "set loadFormat " + Escape.escape(loadFormat));
+      if (autoLoadOrientation)
+        appendCmd(str, "set autoLoadOrientation true");
       appendCmd(str, "set minBondDistance " + minBondDistance);
       appendCmd(str, "set pdbSequential " + pdbSequential);
       appendCmd(str, "set pdbGetHeader " + pdbGetHeader);
@@ -1138,6 +1150,7 @@ public class StateManager {
       setParameterValue("atomTypes", atomTypes);
       setParameterValue("autoBond", autoBond);
       setParameterValue("autoFps", autoFps);
+      setParameterValue("autoLoadOrientation", autoLoadOrientation);
       setParameterValue("axesMode", axesMode);
       setParameterValue("axesScale", axesScale);
       setParameterValue("axesWindow", true);

@@ -5170,6 +5170,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean doRepaint = true;
     while (true) {
 
+      //11.7.30
+      
+      if (key.equalsIgnoreCase("autoLoadOrientation")) {
+        global.autoLoadOrientation = value;
+        break;
+      }
+      
       //11.7.24
 
       if (key.equalsIgnoreCase("allowKeyStrokes")) {

@@ -4285,8 +4285,6 @@ class Eval {
     StringBuffer loadScript = new StringBuffer("load");
     int nFiles = 1;
     Hashtable htParams = new Hashtable();
-    if (!viewer.getBooleanProperty("loadOrientation"))
-      htParams.put("useTransformMatrix", Boolean.FALSE);
     int i = 1;
     // ignore optional file format
     //    String filename = "";
@@ -4875,17 +4873,9 @@ class Eval {
       error(ERROR_invalidArgument);
     if (var.equalsIgnoreCase("aromatic")) {
       viewer.resetAromatic();
-    } else if (var.equalsIgnoreCase("defaultOrientation")) {
-      viewer.reset();
-      Quaternion q = (Quaternion) viewer.getModelSetAuxiliaryInfo("defaultOrientationQuaternion");
-      if (q != null) {
-        Point3f pt = new Point3f();
-        pt.sub(q.getNormal());
-        viewer.rotateAboutPointsInternal(new Point3f(), pt, q.getTheta(),
-            Float.MAX_VALUE, false, null);
-      }
+    } else {
+      viewer.unsetProperty(var);
     }
-    viewer.unsetProperty(var);
   }
 
   private void restrict() throws ScriptException {

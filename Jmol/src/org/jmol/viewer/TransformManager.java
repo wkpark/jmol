@@ -114,6 +114,12 @@ abstract class TransformManager {
     windowCentered = true;
     setRotationCenterAndRadiusXYZ(null, true);
     matrixRotate.setIdentity(); // no rotations
+    if (viewer.getBooleanProperty("autoLoadOrientation")) {
+      Matrix3f m = (Matrix3f) viewer
+          .getModelSetAuxiliaryInfo("defaultOrientationMatrix");
+      if (m != null)
+        matrixRotate.set(m);
+    }
     setZoomEnabled(true);
     zoomToPercent(100);
     zoomPercent = zoomPercentSetting;
@@ -127,6 +133,7 @@ abstract class TransformManager {
       if (viewer.getAxesOrientationRasmol())
         rotateX((float) Math.PI);
     }
+    viewer.saveOrientation("default");
     if (isNavigationMode)
       setNavigationMode(true);
   }

@@ -124,7 +124,6 @@ public abstract class AtomSetCollectionReader {
   private boolean iHaveFractionalCoordinates;
   public boolean iHaveSymmetryOperators;
   public boolean needToApplySymmetry;
-  private boolean useTransformMatrix;
   protected int[] firstLastStep;
   protected int templateAtomCount;
   protected Hashtable htParams;
@@ -295,8 +294,6 @@ public int[] next = new int[1];
     readerName = (String) htParams.get("readerName");
     if (htParams.containsKey("modelNumber"))
       desiredModelNumber = ((Integer) htParams.get("modelNumber")).intValue();
-    if (htParams.containsKey("useTransformMatrix"))
-      useTransformMatrix = ((Boolean)htParams.get("useTransformMatrix")).booleanValue();
     applySymmetryToBonds = htParams.containsKey("applySymmetryToBonds");
     filter = (String) htParams.get("filter");
     // bsFilter is usually null, but it gets set to indicate
@@ -571,8 +568,6 @@ public int[] next = new int[1];
   }
 
   public void setAtomCoord(Atom atom) {
-    if (matrixRotate != null)
-      matrixRotate.transform(atom);
     if (doConvertToFractional && !fileCoordinatesAreFractional
         && symmetry != null) {
       symmetry.toFractional(atom);
@@ -774,10 +769,9 @@ public int[] next = new int[1];
     return fields;
   }
 
-  Matrix3f matrixRotate;
   protected void setTransform(float x1, float y1, float z1, float x2, float y2,
                               float z2, float x3, float y3, float z3) {
-    matrixRotate = new Matrix3f();
+    Matrix3f matrixRotate = new Matrix3f();
     Vector3f v = new Vector3f();
     // rows in Sygress/CAChe and Spartan become columns here
     v.set(x1, y1, z1);
@@ -796,14 +790,6 @@ public int[] next = new int[1];
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("defaultOrientationQuaternion", q);
     Logger.info("defaultOrientationMatrix = " + matrixRotate);
     Logger.info("defaultOrientationQuaternion = " + q);
-    if (useTransformMatrix) {
-      atomSetCollection.setTransform(matrixRotate);
-    } else {
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("defaultOrientationIgnored", Boolean.TRUE);
-      // this was just for information purposes
-      Logger.info("defaultOrientationMatrix ignored");
-      matrixRotate = null;
-    }
   }
   
 }

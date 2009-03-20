@@ -786,6 +786,7 @@ public int[] next = new int[1];
     v.normalize();
     System.out.println (" st 3 " + v);
     matrixRotate.setColumn(2, v);
+    atomSetCollection.setAtomSetAuxiliaryInfo("defaultRotation",new Matrix3f(matrixRotate));
     atomSetCollection.setTransform(matrixRotate);
 
 //    String view = "resetQuaternion = quaternion({"+tokens[4] + " " + tokens[5] + " " + tokens[6]+"},{"

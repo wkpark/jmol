@@ -114,8 +114,12 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       if (fileName.length() > 0)
         openChooser.setSelectedFile(new File(fileName));
     }
-    if (fileName == null || fileName.indexOf(":") < 0 && fileName.indexOf("/") != 0)
-      openChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer, true, true));    
+    //System.out.println("fileName for dialog: " + fileName);
+    if (fileName == null || fileName.indexOf(":") < 0 && fileName.indexOf("/") != 0) {
+      File dir = FileManager.getLocalDirectory(viewer, true);
+      //System.out.println("directory for dialog: " + dir.getAbsolutePath());
+      openChooser.setCurrentDirectory(dir);
+    }
     File file = null;
     if (openChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
       file = openChooser.getSelectedFile();
@@ -151,7 +155,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       saveChooser = new JFileChooser();
       getXPlatformLook(saveChooser);
     }
-    saveChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer, true, false));
+    saveChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer, true));
     File file = null;
     saveChooser.resetChoosableFileFilters();
     if (fileName != null) {
@@ -194,7 +198,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       imageChooser = new JFileChooser();
       getXPlatformLook(imageChooser);
     }
-    imageChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer, true, false));
+    imageChooser.setCurrentDirectory(FileManager.getLocalDirectory(viewer, true));
     imageChooser.resetChoosableFileFilters();
     File file = null;
     if (fileName == null) {

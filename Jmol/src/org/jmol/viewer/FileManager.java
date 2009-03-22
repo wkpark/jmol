@@ -701,14 +701,16 @@ public class FileManager {
     return null;
   }
 
-  public static File getLocalDirectory(JmolViewer viewer, boolean forDialog,
-                                       boolean readOnly) {
+  public static File getLocalDirectory(JmolViewer viewer, boolean forDialog) {
     String localDir = (String) viewer
         .getParameter(forDialog ? "currentLocalPath" : "defaultDirectoryLocal");
     if (localDir.length() == 0 && forDialog)
       localDir = (String) viewer.getParameter("defaultDirectoryLocal");
     if (localDir.length() == 0)
       return (viewer.isApplet() ? null : new File(System.getProperty("user.dir")));
+    if (viewer.isApplet() && localDir.indexOf("file:/") == 0)
+        localDir =setLocalPathForWritingFile(viewer, localDir);
+    
     File f = new File(localDir);
     return f.isDirectory() ? f : f.getParentFile();
   }
@@ -727,7 +729,7 @@ public class FileManager {
       return file.substring(6);
     if (file.indexOf("/") == 0 || file.indexOf(":") >= 0)
       return file;
-    File dir = getLocalDirectory(viewer, false, true);
+    File dir = getLocalDirectory(viewer, false);
     return (dir == null ? file : dir.toString().replace('\\', '/') + "/" + file);
   }
 

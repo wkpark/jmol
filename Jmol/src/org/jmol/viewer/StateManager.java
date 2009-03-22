@@ -432,6 +432,44 @@ public class StateManager {
         "angstroms;au;bohr;nanometers;nm;picometers;pm");
   }
 
+  protected final static String unreportedProperties =
+    //these are handled individually in terms of reporting for the state
+    //NOT EXCLUDING the load state settings, because although we
+    //handle these specially for the CURRENT FILE, their current
+    //settings won't be reflected in the load state, which is determined
+    //earlier, when the file loads. 
+    //
+    //place any parameter here you do NOT want to have in the state
+    //
+    // _xxxxx variables are automatically exempt
+    //
+    //this is a final static String. MAKE SURE ALL ENTRIES ARE LOWERCASE!
+    //
+    ";ambientpercent;animationfps"
+        + ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor"
+        + ";axesposition;axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color"
+        + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
+        + ";debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
+        + ";fontscaling;language;loglevel;measureStyleChime"
+        + ";minimizationsteps;minimizationrefresh;minimizationcriterion;navigationmode"
+        + ";perspectivedepth;visualrange;perspectivemodel;refreshing;rotationradius"
+        + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
+        + ";slabenabled;specular;specularexponent;specularpercent;specularpower;stateversion"
+        + ";statusreporting;stereo;stereostate"
+        + ";unitcellcolor;windowcentered;zerobasedxyzrasmol;zoomenabled"
+        +
+        //    saved in the hash table but not considered part of the state:
+        ";scriptqueue;scriptreportinglevel;syncscript;syncmouse;syncstereo;currentlocalpath;defaultdirectorylocal"
+        +
+        //    more settable Jmol variables    
+        ";ambient;bonds;colorrasmol;diffuse;frank;hetero;hidenotselected"
+        + ";hoverlabel;hydrogen;languagetranslation;measurementunits;navigationdepth;navigationslab"
+        + ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred"
+        + ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount"
+        + ";spinx;spiny;spinz;spinfps;" + JmolConstants.getCallbackName(-1)
+        + ";undo;";
+
+
   class GlobalSettings {
 
     /*
@@ -778,46 +816,6 @@ public class StateManager {
     Hashtable htPropertyFlags;
     Hashtable htPropertyFlagsRemoved;
 
-    final static String unreportedProperties =
-    //these are handled individually in terms of reporting for the state
-    //NOT EXCLUDING the load state settings, because although we
-    //handle these specially for the CURRENT FILE, their current
-    //settings won't be reflected in the load state, which is determined
-    //earlier, when the file loads. 
-    //
-    //place any parameter here you do NOT want to have in the state
-    //
-    // _xxxxx variables are automatically exempt
-    //
-    //this is a final static String. MAKE SURE ALL ENTRIES ARE LOWERCASE!
-    //
-    ";ambientpercent;animationfps"
-        + ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor"
-        + ";axesposition;axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color"
-        + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
-        + ";debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
-        + ";fontscaling;language;loglevel;measureStyleChime"
-        + ";minimizationsteps;minimizationrefresh;minimizationcriterion;navigationmode"
-        + ";perspectivedepth;visualrange;perspectivemodel;refreshing;rotationradius"
-        + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
-        + ";slabenabled;specular;specularexponent;specularpercent;specularpower;stateversion"
-        + ";statusreporting;stereo;stereostate"
-        + ";unitcellcolor;windowcentered;zerobasedxyzrasmol;zoomenabled"
-        +
-        //    saved in the hash table but not considered part of the state:
-        ";scriptqueue;scriptreportinglevel;syncscript;syncmouse;syncstereo;currentlocalpath;defaultdirectorylocal"
-        +
-        //    more settable Jmol variables    
-        ";ambient;bonds;colorrasmol;diffuse;frank;hetero;hidenotselected"
-        + ";hoverlabel;hydrogen;languagetranslation;measurementunits;navigationdepth;navigationslab"
-        + ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred"
-        + ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount"
-        + ";spinx;spiny;spinz;spinfps"
-        + ";animframecallback;echocallback;evalcallback;loadstructcallback"
-        + ";measurecallback;messagecallback;minimizationcallback;hovercallback"
-        + ";resizecallback;pickcallback;scriptcallback;synccallback;undo;";
-
-
     boolean isJmolVariable(String key) {
       return key.charAt(0) == '_'
           || htParameterValues.containsKey(key = key.toLowerCase())
@@ -1086,6 +1084,7 @@ public class StateManager {
     }
 
     private boolean doReportProperty(String name) {
+      //System.out.println(unreportedProperties);
       return (name.charAt(0) != '_' && unreportedProperties.indexOf(";" + name
           + ";") < 0);
     }

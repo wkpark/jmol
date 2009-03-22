@@ -117,6 +117,12 @@ final public class JmolConstants {
   };
   
   public static String getCallbackName(int i) {
+    if (i < 0) {
+      StringBuffer s = new StringBuffer();
+      for (int c = 0; c < callbackNames.length; c++)
+        s.append(callbackNames[c].toLowerCase()).append(";");
+      return s.toString();
+    }    
     return callbackNames[i];
   }
  

@@ -8,12 +8,14 @@ msgstr ""
 "Project-Id-Version: JmolApplet\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-01-10 22:00+0100\n"
-"PO-Revision-Date: 2007-05-10 19:34+0200\n"
-"Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
+"PO-Revision-Date: 2009-03-15 22:16+0000\n"
+"Last-Translator: Muhammet Kara <Unknown>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2009-03-22 18:28+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Language: Turkish\n"
 
 #: org/jmol/applet/Console.java:74
@@ -52,28 +54,27 @@ msgstr ""
 
 #: org/jmol/applet/GuiMap.java:41
 msgid "&Help"
-msgstr ""
+msgstr "&Yardım"
 
 #: org/jmol/applet/GuiMap.java:42
 msgid "&Search..."
-msgstr ""
+msgstr "&Ara..."
 
 #: org/jmol/applet/GuiMap.java:43
 msgid "&Commands"
-msgstr ""
+msgstr "&Komutlar"
 
 #: org/jmol/applet/GuiMap.java:44
 msgid "Math &Functions"
-msgstr ""
+msgstr "Matematiksel &Fonksiyonlar"
 
 #: org/jmol/applet/GuiMap.java:45
 msgid "Set &Parameters"
-msgstr ""
+msgstr "&Parametreleri Ayarla"
 
 #: org/jmol/applet/GuiMap.java:46
-#, fuzzy
 msgid "&More"
-msgstr "Model"
+msgstr "&Daha"
 
 #: org/jmol/applet/Jmol.java:666
 #, java-format
@@ -99,10 +100,12 @@ msgstr "Dosya Hatası:"
 msgid ""
 "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 msgstr ""
+"Bu programcık tarafından dosya oluşturulmasına izin verilmemektedir. Base64 "
+"JPEG biçimi için {0} kullanın."
 
 #: org/jmol/applet/Jmol.java:1109 org/jmol/viewer/StatusManager.java:572
 msgid "File creation failed."
-msgstr ""
+msgstr "Dosya oluşturulamadı."
 
 #: org/jmol/applet/Jmol.java:1211
 msgid ""
@@ -110,6 +113,9 @@ msgid ""
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
 msgstr ""
+"Mesajlar burada görünecek. Komutları aşağıdaki kutuya girin. Yeni bir "
+"tarayıcı penceresinde görüntülenecek olan çevrimiçi yardım için Uçbirim "
+"Yardım menüsüne tıklayın."
 
 #: org/jmol/appletwrapper/AppletWrapper.java:91
 msgid "Loading Jmol applet ..."
@@ -121,113 +127,103 @@ msgid "  {0} seconds"
 msgstr "  {0} saniye"
 
 #: org/jmol/export/dialog/Dialog.java:89
-#, fuzzy
 msgid "File or URL:"
-msgstr "Dosya Hatası:"
+msgstr "Dosya ya da internet adresi:"
 
 #: org/jmol/export/dialog/Dialog.java:254
 msgid "Image Type"
-msgstr ""
+msgstr "Görüntü Tipi"
 
 #: org/jmol/export/dialog/Dialog.java:269
 #: org/jmol/export/dialog/Dialog.java:310
 #, java-format
 msgid "JPEG Quality ({0})"
-msgstr ""
+msgstr "JPEG Kalitesi ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:283
 #, java-format
 msgid "PNG Compression  ({0})"
-msgstr ""
+msgstr "PNG Sıkıştırması  ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:313
 #, java-format
 msgid "PNG Quality ({0})"
-msgstr ""
+msgstr "PNG Kalitesi ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:359
 #: org/jmol/export/dialog/Dialog.java:469
 msgid "Yes"
-msgstr ""
+msgstr "Evet"
 
 #: org/jmol/export/dialog/Dialog.java:359
 #: org/jmol/export/dialog/Dialog.java:467
-#, fuzzy
 msgid "No"
-msgstr "Hiçbiri"
+msgstr "Hayır"
 
 #: org/jmol/export/dialog/Dialog.java:361
 #, java-format
 msgid "Do you want to overwrite file {0}?"
-msgstr ""
+msgstr "{0} dosyasının üzerine yazmak istediğinizden emin misiniz?"
 
 #: org/jmol/export/dialog/Dialog.java:362
 msgid "Warning"
-msgstr ""
+msgstr "Uyarı"
 
 #: org/jmol/export/dialog/Dialog.java:418
-#, fuzzy
 msgid "All Files"
-msgstr "Tümü Çözücü"
+msgstr "Tüm Dosyalar"
 
 #: org/jmol/export/dialog/Dialog.java:419
 #: org/jmol/export/dialog/Dialog.java:466
-#, fuzzy
 msgid "Cancel"
-msgstr "Camgöbeği"
+msgstr "İptal"
 
 #: org/jmol/export/dialog/Dialog.java:421
 msgid "Abort file chooser dialog"
-msgstr ""
+msgstr "Dosya seçici penceresini kapat"
 
 #: org/jmol/export/dialog/Dialog.java:423
 #: org/jmol/export/dialog/Dialog.java:424
-#, fuzzy
 msgid "Details"
-msgstr "İspanyolca"
+msgstr "Ayrıntılar"
 
 #: org/jmol/export/dialog/Dialog.java:425
-#, fuzzy
 msgid "Directory"
-msgstr "Geçmiş"
+msgstr "Dizin"
 
 #: org/jmol/export/dialog/Dialog.java:426
 #: org/jmol/export/dialog/Dialog.java:450
 #: org/jmol/export/dialog/Dialog.java:453
-#, fuzzy
 msgid "Open"
-msgstr "Açık"
+msgstr "Aç"
 
 #: org/jmol/export/dialog/Dialog.java:428
 msgid "Open selected directory"
-msgstr ""
+msgstr "Seçili dizini aç"
 
 #: org/jmol/export/dialog/Dialog.java:429
-#, fuzzy
 msgid "Attributes"
-msgstr "Yapılar"
+msgstr "Nitelikler"
 
 #: org/jmol/export/dialog/Dialog.java:430
-#, fuzzy
 msgid "Modified"
-msgstr "Model"
+msgstr "Değiştirildi"
 
 #: org/jmol/export/dialog/Dialog.java:431
 msgid "Generic File"
-msgstr ""
+msgstr "Genel Dosya"
 
 #: org/jmol/export/dialog/Dialog.java:432
 msgid "Name"
-msgstr ""
+msgstr "Ad"
 
 #: org/jmol/export/dialog/Dialog.java:433
-#, fuzzy
 msgid "File Name:"
-msgstr "Dosya Başlığı"
+msgstr "Dosya Adı:"
 
 #: org/jmol/export/dialog/Dialog.java:434
 msgid "Size"
-msgstr ""
+msgstr "Boyut"
 
 #: org/jmol/export/dialog/Dialog.java:435
 msgid "Files of Type:"
@@ -239,26 +235,25 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:437
 msgid "Help"
-msgstr ""
+msgstr "Yardım"
 
 #: org/jmol/export/dialog/Dialog.java:439
 msgid "FileChooser help"
-msgstr ""
+msgstr "DosyaSeçici yardımı"
 
 #: org/jmol/export/dialog/Dialog.java:440
 #: org/jmol/export/dialog/Dialog.java:441
 msgid "Home"
-msgstr ""
+msgstr "Anasayfa"
 
 #: org/jmol/export/dialog/Dialog.java:442
 #: org/jmol/export/dialog/Dialog.java:443
 msgid "List"
-msgstr ""
+msgstr "Liste"
 
 #: org/jmol/export/dialog/Dialog.java:444
-#, fuzzy
 msgid "Look In:"
-msgstr "Yakınlaş"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:446
 msgid "Error creating new folder"
@@ -279,14 +274,12 @@ msgstr ""
 #: org/jmol/export/dialog/Dialog.java:454
 #: org/jmol/export/dialog/Dialog.java:457
 #: org/jmol/popup/PopupResourceBundle.java:878
-#, fuzzy
 msgid "Save"
-msgstr "Durum"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:456
-#, fuzzy
 msgid "Save selected file"
-msgstr "Yeri seç"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:458
 msgid "Save In:"
@@ -329,23 +322,20 @@ msgid "Czech"
 msgstr "Çekçe"
 
 #: org/jmol/i18n/GT.java:120
-#, fuzzy
 msgid "Danish"
-msgstr "İspanyolca"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:121
 msgid "Dutch"
 msgstr "Hollandaca"
 
 #: org/jmol/i18n/GT.java:122
-#, fuzzy
 msgid "British English"
-msgstr "İngilizce"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:123
-#, fuzzy
 msgid "American English"
-msgstr "İngilizce"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:124
 msgid "Estonian"
@@ -360,18 +350,16 @@ msgid "German"
 msgstr "Almanca"
 
 #: org/jmol/i18n/GT.java:127
-#, fuzzy
 msgid "Greek"
-msgstr "Yeşil"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:128
 msgid "Hungarian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:129
-#, fuzzy
 msgid "Italian"
-msgstr "Katalanca"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:130
 msgid "Korean"
@@ -382,14 +370,12 @@ msgid "Norwegian Bokmal"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:132
-#, fuzzy
 msgid "Polish"
-msgstr "İngilizce"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:133
-#, fuzzy
 msgid "Brazilian Portuguese"
-msgstr "Portekizce"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:134
 msgid "Portuguese"
@@ -425,9 +411,9 @@ msgid "No atoms selected -- nothing to do!"
 msgstr ""
 
 #: org/jmol/minimize/Minimizer.java:258
-#, fuzzy, java-format
+#, java-format
 msgid "{0} atoms will be minimized."
-msgstr "{0} atom(lar) seçildi"
+msgstr ""
 
 #: org/jmol/minimize/Minimizer.java:350
 #, java-format
@@ -453,7 +439,7 @@ msgstr "Java hafıza kullanımı"
 #: org/jmol/popup/JmolPopup.java:647
 #, java-format
 msgid "{0} MB total"
-msgstr "Toplam {0} MB "
+msgstr "Toplam {0} MB"
 
 #: org/jmol/popup/JmolPopup.java:649
 #, java-format
@@ -586,9 +572,8 @@ msgid "Main Menu"
 msgstr "Ana Menü"
 
 #: org/jmol/popup/PopupResourceBundle.java:575
-#, fuzzy
 msgid "Biomolecules"
-msgstr "Molekül"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:576
 #, java-format
@@ -1249,9 +1234,8 @@ msgstr "Tekrar Başlat"
 
 #: org/jmol/popup/PopupResourceBundle.java:833
 #: org/jmol/popup/PopupResourceBundle.java:864
-#, fuzzy
 msgid "Measurements"
-msgstr "Ölçüm"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:834
 msgid "Double-Click begins and ends all measurements"
@@ -1374,23 +1358,21 @@ msgid "File from PDB"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:874
-#, fuzzy
 msgid "File or URL"
-msgstr "Dosya Hatası:"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:875
-#, fuzzy
 msgid "Load full unit cell"
-msgstr "Birim hücre yok"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:876
 msgid "Script"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:879
-#, fuzzy, java-format
+#, java-format
 msgid "File {0}"
-msgstr "Görünüm {0}"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:880
 msgid "Script with state"
@@ -1413,9 +1395,9 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:886
 #: org/jmol/popup/PopupResourceBundle.java:887
-#, fuzzy, java-format
+#, java-format
 msgid "{0} 3D Model"
-msgstr "Tüm {0} modeller"
+msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:891
 msgid "Extract MOL data"
@@ -1523,9 +1505,9 @@ msgid "bad argument count"
 msgstr "Yanlış bağımsız değişken hesabı"
 
 #: org/jmol/viewer/Compiler.java:2542
-#, fuzzy, java-format
+#, java-format
 msgid "invalid context for {0}"
-msgstr "geçersiz ifade belirtkesi: {0}"
+msgstr ""
 
 #: org/jmol/viewer/Compiler.java:2545 org/jmol/viewer/Eval.java:11522
 msgid "command expected"
@@ -1582,14 +1564,14 @@ msgid "residue specification (ALA, AL?, A*) expected"
 msgstr "artık belirtimi (ALA, AL?, A*) bekleniyor"
 
 #: org/jmol/viewer/Compiler.java:2584
-#, fuzzy, java-format
+#, java-format
 msgid "{0} expected"
-msgstr "altkomut gerekli"
+msgstr ""
 
 #: org/jmol/viewer/Compiler.java:2587
-#, fuzzy, java-format
+#, java-format
 msgid "{0} unexpected"
-msgstr "renk gerekli"
+msgstr ""
 
 #: org/jmol/viewer/Compiler.java:2590
 #, java-format
@@ -1625,9 +1607,9 @@ msgid "{0} new bonds; {1} modified"
 msgstr ""
 
 #: org/jmol/viewer/Eval.java:5358 org/jmol/viewer/Eval.java:5585
-#, fuzzy, java-format
+#, java-format
 msgid "{0} atoms deleted"
-msgstr "{0} atom(lar) seçildi"
+msgstr ""
 
 #: org/jmol/viewer/Eval.java:6075
 #, java-format
@@ -1673,9 +1655,8 @@ msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "bir renk ya da palet adı (Jmol,Rasmol) gerekli"
 
 #: org/jmol/viewer/Eval.java:11525
-#, fuzzy
 msgid "{x y z} or $name or (atom expression) required"
-msgstr " {x y z} veya $ad veya (atom ifadesi) gerekli"
+msgstr ""
 
 #: org/jmol/viewer/Eval.java:11528
 msgid "draw object not defined"
@@ -1748,9 +1729,9 @@ msgid "Only one molecular orbital is available in this file"
 msgstr "Bu dosyada sadece bir kullanılabilir moleküler orbital var"
 
 #: org/jmol/viewer/Eval.java:11582
-#, fuzzy, java-format
+#, java-format
 msgid "{0} require that only one model be displayed"
-msgstr "yüzeyler sadece bir model gösterilmesine ihtiyaç duyuyor"
+msgstr ""
 
 #: org/jmol/viewer/Eval.java:11585
 msgid "No data available"
@@ -1780,7 +1761,7 @@ msgstr "alan dışı ondalık sayı ({0} - {1})"
 
 #: org/jmol/viewer/Eval.java:11604
 msgid "object name expected after '$'"
-msgstr " '$' 'dan sonra nesne adı gerekli"
+msgstr "'$' 'dan sonra nesne adı gerekli"
 
 #: org/jmol/viewer/Eval.java:11608
 #, java-format
@@ -1837,9 +1818,9 @@ msgid "unrecognized object"
 msgstr "tanınmayan nesne"
 
 #: org/jmol/viewer/Eval.java:11648
-#, fuzzy, java-format
+#, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr "tanınmayan {0} parametre"
+msgstr ""
 
 #: org/jmol/viewer/Eval.java:11651
 #, java-format
@@ -1853,7 +1834,8 @@ msgstr "neyi yaz? {0} ya da {1} \"dosyaadı\""
 
 #: org/jmol/viewer/PickingManager.java:196
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr "modeli bir eksen etrafında döndürebilmek için bir tane daha atom seçin"
+msgstr ""
+"modeli bir eksen etrafında döndürebilmek için bir tane daha atom seçin"
 
 #: org/jmol/viewer/PickingManager.java:197
 msgid "pick two atoms in order to spin the model around an axis"
@@ -1871,22 +1853,19 @@ msgid "{0} atoms selected"
 msgstr "{0} atom(lar) seçildi"
 
 #: org/jmol/viewer/Viewer.java:4758
-#, fuzzy, java-format
+#, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr ""
-"HATA: Bir bool'un değeri başka bir türe ayarlanamaz. önce \"{0}\" kullanın."
 
 #: org/jmol/viewer/Viewer.java:4953 org/jmol/viewer/Viewer.java:5129
-#, fuzzy, java-format
+#, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr ""
-"HATA: Bir bool'un değeri başka bir türe ayarlanamaz. önce \"{0}\" kullanın."
 
 #: org/jmol/viewer/Viewer.java:5615
-#, fuzzy, java-format
+#, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
-"HATA: Bu değişkenin değeri bir bool'a ayarlanamaz. önce \"{0}\" kullanın."
 
 #: org/jmol/viewer/Viewer.java:6855
 msgid "clipboard is not accessible -- use signed applet"
@@ -1894,18 +1873,6 @@ msgstr ""
 
 #~ msgid "Portuguese - Brazil"
 #~ msgstr "Portekizce - Brezilya"
-
-#, fuzzy
-#~ msgid "Load PDB"
-#~ msgstr "Yükle"
-
-#, fuzzy
-#~ msgid "SPT State"
-#~ msgstr "Durum"
-
-#, fuzzy
-#~ msgid "SPT History"
-#~ msgstr "Geçmiş"
 
 #~ msgid "all"
 #~ msgstr "tümü"
@@ -1937,10 +1904,6 @@ msgstr ""
 #~ msgid "equal sign expected"
 #~ msgstr "eşittir işareti bekleniyor"
 
-#, fuzzy
-#~ msgid "left parenthesis expected"
-#~ msgstr "boole veya yüzde gerekli"
-
 #~ msgid "right brace expected"
 #~ msgstr "kaşlı ayraç (sağ) bekleniyor"
 
@@ -1950,15 +1913,11 @@ msgstr ""
 #~ msgid "right parenthesis expected"
 #~ msgstr "sağ parantez bekleniyor"
 
-#~ msgid "too many parentheses"
-#~ msgstr "çok fazla parantez"
-
 #~ msgid "rotation points cannot be identical"
 #~ msgstr "dönme noktaları aynı olamaz"
 
-#, fuzzy
-#~ msgid "commandExpected"
-#~ msgstr "komut bekleniyor"
+#~ msgid "too many parentheses"
+#~ msgstr "çok fazla parantez"
 
 #~ msgid "bad atom number"
 #~ msgstr "yanlış ato numarası"
@@ -2008,13 +1967,6 @@ msgstr ""
 #~ msgid "The {0} command is not available for the applet."
 #~ msgstr "{0} komutu applet için kullanılabilir değil."
 
-#~ msgid "the {0} command requires that only one model be displayed"
-#~ msgstr "{0} komutu sadece bir model gösterilmesine ihtiyaç duyuyor"
-
-#, fuzzy
-#~ msgid "nonnegative integer expected"
-#~ msgstr "tamsayı gerekli"
-
 #~ msgid "boolean or percent expected"
 #~ msgstr "boole veya yüzde gerekli"
 
@@ -2053,3 +2005,6 @@ msgstr ""
 
 #~ msgid "Animate"
 #~ msgstr "Canlandır"
+
+#~ msgid "the {0} command requires that only one model be displayed"
+#~ msgstr "{0} komutu sadece bir model gösterilmesine ihtiyaç duyuyor"

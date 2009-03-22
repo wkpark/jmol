@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-01-10 22:00+0100\n"
-"PO-Revision-Date: 2008-09-29 10:15+0000\n"
+"PO-Revision-Date: 2009-03-20 10:48+0000\n"
 "Last-Translator: Egon Willighagen <Unknown>\n"
 "Language-Team: Nederlands <jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-09-29 19:24+0000\n"
+"X-Launchpad-Export-Date: 2009-03-22 18:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: Nederlands\n"
 "X-Poedit-Language: Dutch\n"
@@ -331,14 +331,12 @@ msgid "Dutch"
 msgstr "Nederlands"
 
 #: org/jmol/i18n/GT.java:122
-#, fuzzy
 msgid "British English"
-msgstr "Engels"
+msgstr "Brits"
 
 #: org/jmol/i18n/GT.java:123
-#, fuzzy
 msgid "American English"
-msgstr "Engels"
+msgstr "Amerikaans"
 
 #: org/jmol/i18n/GT.java:124
 msgid "Estonian"
@@ -353,9 +351,8 @@ msgid "German"
 msgstr "Duits"
 
 #: org/jmol/i18n/GT.java:127
-#, fuzzy
 msgid "Greek"
-msgstr "Groen"
+msgstr "Grieks"
 
 #: org/jmol/i18n/GT.java:128
 msgid "Hungarian"
@@ -378,9 +375,8 @@ msgid "Polish"
 msgstr "Pools"
 
 #: org/jmol/i18n/GT.java:133
-#, fuzzy
 msgid "Brazilian Portuguese"
-msgstr "Portugees"
+msgstr "Braziliaans"
 
 #: org/jmol/i18n/GT.java:134
 msgid "Portuguese"
@@ -435,7 +431,7 @@ msgstr "Alles"
 
 #: org/jmol/popup/JmolPopup.java:557
 msgid "Minimize"
-msgstr ""
+msgstr "Minimaliseren"
 
 #: org/jmol/popup/JmolPopup.java:641
 msgid "Java memory usage"
@@ -1443,7 +1439,7 @@ msgstr "{0} herladen"
 #: org/jmol/popup/PopupResourceBundle.java:908
 #, java-format
 msgid "Reload {0} + Display {1}"
-msgstr ""
+msgstr "Herlaad {0} + Weergeven {1}"
 
 #: org/jmol/popup/PopupResourceBundle.java:909
 msgid "Reload + Polyhedra"
@@ -1594,9 +1590,8 @@ msgid "unrecognized token: {0}"
 msgstr "onbekend woord: {0}"
 
 #: org/jmol/viewer/Compiler.java:2657
-#, fuzzy
 msgid "script compiler ERROR: "
-msgstr "script FOUT: "
+msgstr "scriptcompiler FOUT: "
 
 #: org/jmol/viewer/Eval.java:332 org/jmol/viewer/Eval.java:5226
 msgid "script ERROR: "
@@ -1661,9 +1656,8 @@ msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "een kleur of kleurenset (Jmol, Rasmol) is vereist"
 
 #: org/jmol/viewer/Eval.java:11525
-#, fuzzy
 msgid "{x y z} or $name or (atom expression) required"
-msgstr " {x y z} of $naam of atoomexpressie verwacht"
+msgstr "{x y z} of $naam of (atoomselectie) vereist"
 
 #: org/jmol/viewer/Eval.java:11528
 msgid "draw object not defined"
@@ -1876,7 +1870,7 @@ msgstr ""
 
 #: org/jmol/viewer/Viewer.java:6855
 msgid "clipboard is not accessible -- use signed applet"
-msgstr ""
+msgstr "clipboard is niet toegankelijke -- gebruik de gesigneerde applet"
 
 #~ msgid "Portuguese - Brazil"
 #~ msgstr "Portugees (Brazilië)"
@@ -2113,11 +2107,11 @@ msgstr ""
 #~ msgstr "Draadmodelrotatie"
 
 #~ msgid ""
-#~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
-#~ "for more information"
+#~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org for "
+#~ "more information"
 #~ msgstr ""
-#~ "Jmol Applet.  Onderdeel van het OpenScience project. Zie http://www.jmol."
-#~ "org voor meer informatie."
+#~ "Jmol Applet.  Onderdeel van het OpenScience project. Zie http://www.jmol.org "
+#~ "voor meer informatie."
 
 #~ msgid "Jmol Molecular Visualization http://www.jmol.org"
 #~ msgstr "Jmol Moleculaire Visualisatie http://www.jmol.org"

@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-01-10 22:00+0100\n"
-"PO-Revision-Date: 2008-11-13 23:51+0000\n"
-"Last-Translator: franz.lischewski@gmail.com <franz.lischewski@gmail.com>\n"
+"PO-Revision-Date: 2009-03-20 11:17+0000\n"
+"Last-Translator: Jerome Pansanel <jpansanel@pansanel.net>\n"
 "Language-Team: French <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-11-19 23:24+0000\n"
+"X-Launchpad-Export-Date: 2009-03-22 18:24+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -349,9 +349,8 @@ msgid "German"
 msgstr "Allemand"
 
 #: org/jmol/i18n/GT.java:127
-#, fuzzy
 msgid "Greek"
-msgstr "Vert"
+msgstr "Grec"
 
 #: org/jmol/i18n/GT.java:128
 msgid "Hungarian"
@@ -430,7 +429,7 @@ msgstr "Tout"
 
 #: org/jmol/popup/JmolPopup.java:557
 msgid "Minimize"
-msgstr ""
+msgstr "Réduire"
 
 #: org/jmol/popup/JmolPopup.java:641
 msgid "Java memory usage"
@@ -573,7 +572,7 @@ msgstr "Menu Principal"
 
 #: org/jmol/popup/PopupResourceBundle.java:575
 msgid "Biomolecules"
-msgstr ""
+msgstr "Biomolécules"
 
 #: org/jmol/popup/PopupResourceBundle.java:576
 #, java-format
@@ -1387,17 +1386,17 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:884
 #, java-format
 msgid "{0} Image"
-msgstr ""
+msgstr "{0} Image"
 
 #: org/jmol/popup/PopupResourceBundle.java:885
 msgid "JVXL Isosurface"
-msgstr ""
+msgstr "Isosurface JVXL"
 
 #: org/jmol/popup/PopupResourceBundle.java:886
 #: org/jmol/popup/PopupResourceBundle.java:887
 #, java-format
 msgid "{0} 3D Model"
-msgstr ""
+msgstr "{0} Modèle 3D"
 
 #: org/jmol/popup/PopupResourceBundle.java:891
 msgid "Extract MOL data"
@@ -1589,9 +1588,8 @@ msgid "unrecognized token: {0}"
 msgstr "élément non reconnu: {0}"
 
 #: org/jmol/viewer/Compiler.java:2657
-#, fuzzy
 msgid "script compiler ERROR: "
-msgstr "ERREUR de script: "
+msgstr ""
 
 #: org/jmol/viewer/Eval.java:332 org/jmol/viewer/Eval.java:5226
 msgid "script ERROR: "
@@ -1656,9 +1654,8 @@ msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "un nom de couleur ou de palette (Jmol, Rasmol) est requis"
 
 #: org/jmol/viewer/Eval.java:11525
-#, fuzzy
 msgid "{x y z} or $name or (atom expression) required"
-msgstr " {x y z} ou $nom ou (expression d'atomes) est requis"
+msgstr ""
 
 #: org/jmol/viewer/Eval.java:11528
 msgid "draw object not defined"
@@ -1871,7 +1868,7 @@ msgstr ""
 
 #: org/jmol/viewer/Viewer.java:6855
 msgid "clipboard is not accessible -- use signed applet"
-msgstr ""
+msgstr "Le presse-papiers est inacessible -- utiliser l'applet signée"
 
 #~ msgid "Portuguese - Brazil"
 #~ msgstr "Portugais - Brésil"

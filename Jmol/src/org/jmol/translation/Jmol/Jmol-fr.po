@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-03-03 15:35+0100\n"
-"PO-Revision-Date: 2008-10-13 21:10+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2009-03-20 11:27+0000\n"
+"Last-Translator: Jerome Pansanel <jpansanel@pansanel.net>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-10-14 17:48+0000\n"
+"X-Launchpad-Export-Date: 2009-03-22 18:32+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -155,11 +155,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:194
 msgid "Basic"
-msgstr ""
+msgstr "Basique"
 
 #: org/openscience/jmol/app/GaussianDialog.java:196
 msgid "Advanced"
-msgstr ""
+msgstr "Avancé"
 
 #: org/openscience/jmol/app/GaussianDialog.java:224
 msgid "Checkpoint File: "
@@ -183,7 +183,7 @@ msgstr "Méthode : "
 
 #: org/openscience/jmol/app/GaussianDialog.java:261
 msgid "Basis Set: "
-msgstr ""
+msgstr "Ensemble de base "
 
 #: org/openscience/jmol/app/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
@@ -195,15 +195,15 @@ msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:288
 msgid "Molecular Properties"
-msgstr ""
+msgstr "Propriétés moléculaires"
 
 #: org/openscience/jmol/app/GaussianDialog.java:294
 msgid "Total Charge: "
-msgstr ""
+msgstr "Charge Totale : "
 
 #: org/openscience/jmol/app/GaussianDialog.java:301
 msgid "Multiplicity: "
-msgstr ""
+msgstr "Multiplicité  : "
 
 #: org/openscience/jmol/app/GaussianDialog.java:308
 msgid "Selection: "
@@ -458,7 +458,7 @@ msgstr "&Nombre"
 
 #: org/openscience/jmol/app/GuiMap.java:109
 msgid "&Centered"
-msgstr ""
+msgstr "&centré"
 
 #: org/openscience/jmol/app/GuiMap.java:110
 msgid "&Upper right"
@@ -542,19 +542,19 @@ msgstr "&Bas"
 
 #: org/openscience/jmol/app/GuiMap.java:138
 msgid "&Right"
-msgstr ""
+msgstr "&Droite"
 
 #: org/openscience/jmol/app/GuiMap.java:139
 msgid "&Left"
-msgstr ""
+msgstr "&Gauche"
 
 #: org/openscience/jmol/app/GuiMap.java:140
 msgid "Tr&ansform..."
-msgstr ""
+msgstr "Tr&ansformer..."
 
 #: org/openscience/jmol/app/GuiMap.java:141
 msgid "Define &Center"
-msgstr ""
+msgstr "Définir le &Centre"
 
 #: org/openscience/jmol/app/GuiMap.java:142
 msgid "&Tools"
@@ -562,11 +562,11 @@ msgstr "&Outils"
 
 #: org/openscience/jmol/app/GuiMap.java:143
 msgid "&Gaussian..."
-msgstr ""
+msgstr "&Gaussian..."
 
 #: org/openscience/jmol/app/GuiMap.java:145
 msgid "Distance &Units"
-msgstr ""
+msgstr "Distance &Unités"
 
 #: org/openscience/jmol/app/GuiMap.java:146
 msgid "&Nanometers 1E-9"
@@ -582,7 +582,7 @@ msgstr "&Picomètres 1E-12"
 
 #: org/openscience/jmol/app/GuiMap.java:149
 msgid "&Animate..."
-msgstr ""
+msgstr "&Animer..."
 
 #: org/openscience/jmol/app/GuiMap.java:150
 msgid "&Vibrate..."
@@ -610,11 +610,11 @@ msgstr "&Boucle"
 
 #: org/openscience/jmol/app/GuiMap.java:156
 msgid "P&alindrome"
-msgstr ""
+msgstr "P&alindrome"
 
 #: org/openscience/jmol/app/GuiMap.java:157
 msgid "&Stop animation"
-msgstr ""
+msgstr "&Stopper l'animation"
 
 #: org/openscience/jmol/app/GuiMap.java:158
 msgid "&Rewind to first frame"
@@ -716,7 +716,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:188
 msgid "Click atoms to measure distances"
-msgstr ""
+msgstr "Cliquez sur les atomes pour mesurer les distances"
 
 #: org/openscience/jmol/app/GuiMap.java:189
 msgid "Return molecule to home position."
@@ -876,19 +876,16 @@ msgstr ""
 "Les options -D sont les suivantes (valeurs par défaut entre parenthèses):"
 
 #: org/openscience/jmol/app/Jmol.java:696
-#, fuzzy
 msgid "Executing script 1..."
-msgstr "Exécution du script..."
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:705
-#, fuzzy
 msgid "Executing script file..."
-msgstr "Exécution du script..."
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:712
-#, fuzzy
 msgid "Executing script 2..."
-msgstr "Exécution du script..."
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:725
 msgid "Jmol Java Console"

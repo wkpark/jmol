@@ -35,8 +35,9 @@ public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
   protected void render() {
     imageFontScaling = viewer.getImageFontScaling();
     MolecularOrbital mo = (MolecularOrbital) shape;
+    int modelIndex = viewer.getCurrentModelIndex();
     for (int i = mo.meshCount; --i >= 0;)
-      if (render1(imesh = (IsosurfaceMesh) mo.meshes[i]))
+      if (render1(imesh = (IsosurfaceMesh) mo.meshes[i]) && modelIndex >= 0)
         renderInfo();
   }
 

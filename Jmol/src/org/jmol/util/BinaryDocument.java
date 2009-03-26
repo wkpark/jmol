@@ -126,6 +126,7 @@ public class BinaryDocument {
     return (isBigEndian ? stream.readDouble() : Double.longBitsToDouble(readLELong()));  
   }
   
+  
   private int readLEInt() throws Exception {
     return ((((int) stream.readByte()) & 0xff)
           | (((int) stream.readByte()) & 0xff) << 8

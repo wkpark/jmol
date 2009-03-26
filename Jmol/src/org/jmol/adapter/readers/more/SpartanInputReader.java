@@ -25,6 +25,7 @@
 package org.jmol.adapter.readers.more;
 
 import org.jmol.adapter.smarter.*;
+import org.jmol.api.JmolAdapter;
 
 import org.jmol.util.Logger;
 
@@ -38,9 +39,11 @@ abstract class SpartanInputReader extends AtomSetCollectionReader {
   protected String modelName;
   protected int atomCount;
   protected int bondCount;
+  protected String bondData = "";
   //Hashtable moData = new Hashtable();
 
   protected AtomSetCollection readInputRecords() {
+    int atomCount0 = atomCount;
     try {
       readInputHeader();
       while (readLine() != null) {
@@ -57,13 +60,32 @@ abstract class SpartanInputReader extends AtomSetCollectionReader {
         readAtomNames();
       discardLinesUntilContains("HESSIAN");
       if (line != null)
-        readBonds();
+        readBonds(atomCount0);
+      while (line != null && line.indexOf("END ") < 0 && line.indexOf("MOLSTATE") < 0)
+        readLine();
+      if (line != null && line.indexOf("MOLSTATE") >= 0)
+        readTransform();
     } catch (Exception e) {
       return setError(e);
     }
     if (atomSetCollection.getAtomCount() > 0)
       atomSetCollection.setAtomSetName(modelName);
     return atomSetCollection;
+  }
+  
+  private void readTransform() throws Exception {
+    readLine();
+    String[] tokens = getTokens(readLine() + " " + readLine());
+    //BEGINMOLSTATE
+    //MODEL=3~HYDROGEN=1~LABELS=0
+    //0.70925283  0.69996750 -0.08369886  0.00000000 -0.70480913  0.70649898 -0.06405880  0.00000000
+    //0.01429412  0.10442561  0.99443018  0.00000000  0.00000000  0.00000000  0.00000000  1.00000000
+    //ENDMOLSTATE
+    setTransform(
+        parseFloat(tokens[0]), parseFloat(tokens[1]), parseFloat(tokens[2]),
+        parseFloat(tokens[4]), parseFloat(tokens[5]), parseFloat(tokens[6]),
+        parseFloat(tokens[8]), parseFloat(tokens[9]), parseFloat(tokens[10])
+    );
   }
   
   private void readInputHeader() throws Exception {
@@ -74,30 +96,32 @@ abstract class SpartanInputReader extends AtomSetCollectionReader {
     modelName = modelName.substring(0, modelName.indexOf(";")).trim();
   }
   
+  int modelAtomCount;
+  
   private void readInputAtoms() throws Exception {
-    atomCount = 0;
+    modelAtomCount = 0;
     while (readLine() != null
         && !line.startsWith("ENDCART")) {
       String[] tokens = getTokens();
-      int elementNumber = parseInt(tokens[0]);      
-      String elementSymbol = getElementSymbol(elementNumber);
       Atom atom = atomSetCollection.addNewAtom();
-      atom.elementSymbol = elementSymbol;
+      atom.elementSymbol = getElementSymbol(parseInt(tokens[0]));
       atom.set(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
-      atomCount++;
+      modelAtomCount++;
     }
+    atomCount += modelAtomCount;
+    //System.out.println("modelatomCount:" + modelAtomCount);
   }
 
   private void readAtomNames() throws Exception {
-    for (int i = 0; i < atomCount; i++) {
+    for (int i = 0; i < modelAtomCount; i++) {
       readLine();
       atomSetCollection.getAtom(i).atomName = line
           .substring(1, line.length() - 1);
     }
   }
   
-  private void readBonds() throws Exception {
-    int nAtoms = atomCount;
+  private void readBonds(int atomCount0) throws Exception {
+    int nAtoms = modelAtomCount;
     /*
      <one number per atom>
      1    2    1
@@ -107,15 +131,17 @@ abstract class SpartanInputReader extends AtomSetCollectionReader {
      1    6    1
      1    7    1
      */
+    bondData = ""; //used for frequency business
     while (readLine() != null && !line.startsWith("ENDHESS")) {
       String[] tokens = getTokens();
+      bondData += line + " ";
       if (nAtoms == 0) {
-        int sourceIndex = parseInt(tokens[0]) - 1;
-        int targetIndex = parseInt(tokens[1]) - 1;
+        int sourceIndex = parseInt(tokens[0]) - 1 + atomCount0;
+        int targetIndex = parseInt(tokens[1]) - 1 + atomCount0;
         int bondOrder = parseInt(tokens[2]);
         if (bondOrder > 0) {
           atomSetCollection.addBond(new Bond(sourceIndex, targetIndex,
-              bondOrder < 4 ? bondOrder : 1)); //aromatic would be 5
+              bondOrder < 4 ? bondOrder : bondOrder == 5 ? JmolAdapter.ORDER_AROMATIC : 1));
           bondCount++;
         }
       } else {
@@ -124,6 +150,6 @@ abstract class SpartanInputReader extends AtomSetCollectionReader {
     }
     if (Logger.debugging) {
       Logger.debug(bondCount + " bonds read");
-    }
+    }  
   }
 }

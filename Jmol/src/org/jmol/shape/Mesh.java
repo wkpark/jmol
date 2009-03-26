@@ -81,6 +81,7 @@ public class Mesh {
   public boolean frontOnly = false;
   public boolean isTwoSided = true;
   public boolean isColorSolid = true;
+  public boolean havePlanarContours = false;
   
   public final static int SEED_COUNT = 25; //optimized for cartoon mesh hermites
   
@@ -105,6 +106,7 @@ public class Mesh {
     scale = 1;
     vertices = null;
     polygonIndexes = null;
+    havePlanarContours = false;
     showPoints = false;
     showContourLines = false;
     drawTriangles = false;

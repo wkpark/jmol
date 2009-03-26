@@ -375,6 +375,7 @@ public class AtomSetCollection {
       atoms = (Atom[])ArrayUtil.doubleLength(atoms);
     atom.atomIndex = atomCount;
     atoms[atomCount++] = atom;
+    //System.out.println("atomsetcollection addatom " + atomCount);
     if (atomSetCount == 0)
       newAtomSet();
     /*
@@ -1076,7 +1077,7 @@ public class AtomSetCollection {
       atoms[i].set(trajectory[i]);
     setAtomSetCollectionAuxiliaryInfo("trajectorySteps", trajectorySteps);
   }
-  
+ 
   public void newAtomSet() {
     bondIndex0 = bondCount;
     if (isTrajectory) {
@@ -1102,9 +1103,9 @@ public class AtomSetCollection {
     }
     if (isTrajectory) {
       atomSetNumbers[currentAtomSetIndex + trajectoryStepCount] = atomSetCount + trajectoryStepCount;
-    }
-    else
+    } else {
       atomSetNumbers[currentAtomSetIndex] = atomSetCount;
+    }
     atomSymbolicMap.clear();
     setAtomSetAuxiliaryInfo("title", collectionName);    
   }

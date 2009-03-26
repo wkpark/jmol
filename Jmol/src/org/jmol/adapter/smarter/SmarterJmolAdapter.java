@@ -253,7 +253,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
         } else {
           String sData = (CompoundDocument.isCompoundDocument(bytes) ? (new CompoundDocument(
               new BufferedInputStream(new ByteArrayInputStream(bytes))))
-              .getAllData().toString()
+              .getAllData("Molecule").toString()
               : new String(bytes));
           BufferedReader reader = new BufferedReader(new StringReader(sData)); 
           if (asBufferedReader) {

@@ -160,6 +160,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private short defaultColix;
   private Point3f center;
   private boolean isPhaseColored;
+  private boolean isColorExplicit;
 
   protected SurfaceGenerator sg;
   private JvxlData jvxlData;
@@ -214,10 +215,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
-    if ("contour" == propertyName) {
-      explicitContours = true;  
-    }
-    
     if ("fixed" == propertyName) {
       isFixed = ((Boolean) value).booleanValue();
       setModelIndex();
@@ -241,13 +238,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         setPropertySuper("thisID", null, null);
       }
       //center (info[2]) is set in SurfaceGenerator
-      if (sg.setParameter("lcaoCartoonCenter", info[2]))
-        return;
-      drawLcaoCartoon(info[0], info[1], info[3]);
+      if (!sg.setParameter("lcaoCartoonCenter", info[2]))
+        drawLcaoCartoon(info[0], info[1], info[3]);
       return;
     }
-
-    // isosurface FIRST, but also need to set some parameters
 
     if ("title" == propertyName) {
       if (value instanceof String && "-".equals((String) value))
@@ -267,6 +261,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         return;
     }
 
+    // Isosurface / SurfaceGenerator both interested
+    
+    if ("contour" == propertyName) {
+      explicitContours = true;  
+    }
+    
     if ("atomIndex" == propertyName) {
       atomIndex = ((Integer) value).intValue();
     }
@@ -284,6 +284,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("molecularOrbital" == propertyName) {
       moNumber = ((Integer) value).intValue();
+      if (!isColorExplicit)
+        isPhaseColored = true;  
     }
 
     if (propertyName == "functionXY") {
@@ -439,6 +441,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     return super.getProperty(property, index);
   }
 
+  protected void getColorState(StringBuffer sb, Mesh mesh) {
+    boolean colorArrayed = (mesh.isColorSolid && ((IsosurfaceMesh) mesh).polygonColixes != null);
+    if (mesh.isColorSolid && !colorArrayed)
+      appendCmd(sb, getColorCommand(myType, mesh.colix));  
+  }
+  
   private boolean getScriptBitSets(String script, BitSet[] bsCmd) {
     this.script = script;
     getModelIndex(script);
@@ -489,7 +497,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     atomIndex = -1;
     colix = Graphics3D.ORANGE;
     defaultColix = 0;
-    isPhaseColored = false;
+    isPhaseColored = isColorExplicit = false;
     allowContourLines = true; //but not for f(x,y) or plane, which use mesh
     center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     linkedMesh = null;
@@ -685,7 +693,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       thisMesh.colix = getDefaultColix();
       if (isPhaseColored || thisMesh.jvxlData.isBicolorMap)
         thisMesh.isColorSolid = false;
-      // that may be too early in t
       return;
     }
     switch (mode) {

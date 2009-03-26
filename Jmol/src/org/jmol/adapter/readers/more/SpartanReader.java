@@ -55,7 +55,7 @@ public class SpartanReader extends AtomSetCollectionReader {
       if (isSpartanArchive(cartesianHeader)) {
         SpartanArchive spartanArchive = new SpartanArchive(this,
             atomSetCollection, moData);
-        atomCount = spartanArchive.readArchive(line, true);
+        atomCount = spartanArchive.readArchive(line, true, 0, true);
         if (atomCount > 0)
           atomSetCollection.setAtomSetName(modelName);
       } else if (line.indexOf(cartesianHeader)>=0){

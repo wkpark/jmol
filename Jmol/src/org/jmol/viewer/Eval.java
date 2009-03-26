@@ -10411,108 +10411,108 @@ class Eval {
     setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "clear", null);
   }
 
-  private int lastMoNumber = 0;
-
   private boolean mo(boolean isInitOnly) throws ScriptException {
     int offset = Integer.MAX_VALUE;
-    int modelIndex = viewer.getDisplayModelIndex();
-    if (!isSyntaxCheck && modelIndex < 0)
-      error(ERROR_multipleModelsNotOK, "MO isosurfaces");
-    viewer.loadShape(JmolConstants.SHAPE_MO);
-    if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_MO))
-      return true;
-    setShapeProperty(JmolConstants.SHAPE_MO, "init", new Integer(modelIndex));
-    String title = null;
-    int moNumber = ((Integer) viewer.getShapeProperty(JmolConstants.SHAPE_MO,
-        "moNumber")).intValue();
-    if (isInitOnly)
-      return true;//(moNumber != 0);
-    if (moNumber == 0 && !isSyntaxCheck) {
-      lastMoNumber = 0;
-      moNumber = Integer.MAX_VALUE;
-    }
-    String str;
-    String propertyName = null;
-    Object propertyValue = null;
-    switch (getToken(1).tok) {
-    case Token.integer:
-      moNumber = intParameter(1);
-      break;
-    case Token.next:
-      moNumber = lastMoNumber + 1;
-      break;
-    case Token.prev:
-      moNumber = lastMoNumber - 1;
-      break;
-    case Token.color:
-      setColorOptions(2, JmolConstants.SHAPE_MO, 2);
-      break;
-    case Token.plane:
-      // plane {X, Y, Z, W}
-      propertyName = "plane";
-      propertyValue = planeParameter(2);
-      break;
-    case Token.scale:
-      propertyName = "scale";
-      propertyValue = new Float(floatParameter(2));
-      break;
-    case Token.identifier:
-      str = parameterAsString(1);
-      if ((offset = moOffset(1)) != Integer.MAX_VALUE) {
-        moNumber = 0;
+    BitSet bsModels = viewer.getVisibleFramesBitSet();
+    int modelCount = viewer.getModelCount();
+    for (int modelIndex = 0; modelIndex < modelCount; modelIndex++) {
+      if (!bsModels.get(modelIndex))
+        continue;
+      viewer.loadShape(JmolConstants.SHAPE_MO);
+      if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_MO))
+        return true;
+      setShapeProperty(JmolConstants.SHAPE_MO, "init", new Integer(modelIndex));
+      String title = null;
+      int moNumber = ((Integer) viewer.getShapeProperty(JmolConstants.SHAPE_MO,
+          "moNumber")).intValue();
+      if (isInitOnly)
+        return true;// (moNumber != 0);
+      if (moNumber == 0)
+        moNumber = Integer.MAX_VALUE;
+      String str;
+      String propertyName = null;
+      Object propertyValue = null;
+      switch (getToken(1).tok) {
+      case Token.integer:
+        moNumber = intParameter(1);
         break;
-      }
-      if (str.equalsIgnoreCase("CUTOFF")) {
-        if (tokAt(2) == Token.plus) {
-          propertyName = "cutoffPositive";
-          propertyValue = new Float(floatParameter(3));
-        } else {
-          propertyName = "cutoff";
-          propertyValue = new Float(floatParameter(2));
-        }
+      case Token.next:
+        moNumber = Token.next;
         break;
-      }
-      if (str.equalsIgnoreCase("RESOLUTION")
-          || str.equalsIgnoreCase("POINTSPERANGSTROM")) {
-        propertyName = "resolution";
+      case Token.prev:
+        moNumber = Token.prev;
+        break;
+      case Token.color:
+        setColorOptions(2, JmolConstants.SHAPE_MO, 2);
+        break;
+      case Token.plane:
+        // plane {X, Y, Z, W}
+        propertyName = "plane";
+        propertyValue = planeParameter(2);
+        break;
+      case Token.scale:
+        propertyName = "scale";
         propertyValue = new Float(floatParameter(2));
         break;
-      }
-      if (str.equalsIgnoreCase("SQUARED")) {
-        propertyName = "squareData";
-        propertyValue = Boolean.TRUE;
-        break;
-      }
-      if (str.equalsIgnoreCase("TITLEFORMAT")) {
-        if (2 < statementLength && tokAt(2) == Token.string) {
-          propertyName = "titleFormat";
-          propertyValue = parameterAsString(2);
+      case Token.identifier:
+        str = parameterAsString(1);
+        if ((offset = moOffset(1)) != Integer.MAX_VALUE) {
+          moNumber = 0;
+          break;
         }
-        break;
-      }
-      if (str.equalsIgnoreCase("DEBUG")) {
-        propertyName = "debug";
-        break;
-      }
-      if (str.equalsIgnoreCase("noplane")) {
-        propertyName = "plane";
-        break;
-      }
-      error(ERROR_invalidArgument);
-    default:
-      if (!setMeshDisplayProperty(JmolConstants.SHAPE_MO, 1, theTok))
+        if (str.equalsIgnoreCase("CUTOFF")) {
+          if (tokAt(2) == Token.plus) {
+            propertyName = "cutoffPositive";
+            propertyValue = new Float(floatParameter(3));
+          } else {
+            propertyName = "cutoff";
+            propertyValue = new Float(floatParameter(2));
+          }
+          break;
+        }
+        if (str.equalsIgnoreCase("RESOLUTION")
+            || str.equalsIgnoreCase("POINTSPERANGSTROM")) {
+          propertyName = "resolution";
+          propertyValue = new Float(floatParameter(2));
+          break;
+        }
+        if (str.equalsIgnoreCase("SQUARED")) {
+          propertyName = "squareData";
+          propertyValue = Boolean.TRUE;
+          break;
+        }
+        if (str.equalsIgnoreCase("TITLEFORMAT")) {
+          if (2 < statementLength && tokAt(2) == Token.string) {
+            propertyName = "titleFormat";
+            propertyValue = parameterAsString(2);
+          }
+          break;
+        }
+        if (str.equalsIgnoreCase("DEBUG")) {
+          propertyName = "debug";
+          break;
+        }
+        if (str.equalsIgnoreCase("noplane")) {
+          propertyName = "plane";
+          break;
+        }
         error(ERROR_invalidArgument);
-      return true;
-    }
-    if (propertyName != null)
-      setShapeProperty(JmolConstants.SHAPE_MO, propertyName, propertyValue);
-    if (moNumber != Integer.MAX_VALUE) {
-      if (tokAt(2) == Token.string)
-        title = parameterAsString(2);
-      if (!isSyntaxCheck)
-        viewer.setCursor(Viewer.CURSOR_WAIT);
-      setMoData(JmolConstants.SHAPE_MO, moNumber, offset, modelIndex, title);
-      setShapeProperty(JmolConstants.SHAPE_MO, "finalize", null);
+      default:
+        if (!setMeshDisplayProperty(JmolConstants.SHAPE_MO, 1, theTok))
+          error(ERROR_invalidArgument);
+        return true;
+      }
+      if (propertyName != null)
+        setShapeProperty(JmolConstants.SHAPE_MO, propertyName, propertyValue);
+      if (moNumber != Integer.MAX_VALUE) {
+        if (tokAt(2) == Token.string)
+          title = parameterAsString(2);
+        if (!isSyntaxCheck)
+          viewer.setCursor(Viewer.CURSOR_WAIT);
+        setMoData(JmolConstants.SHAPE_MO, moNumber, offset, modelIndex, title);
+        setShapeProperty(JmolConstants.SHAPE_MO, "finalize", null);
+      }
+
     }
     return true;
   }
@@ -10570,10 +10570,11 @@ class Eval {
                          String title) throws ScriptException {
     if (isSyntaxCheck)
       return;
-    if (modelIndex == 0)
+    if (modelIndex < 0) {
       modelIndex = viewer.getDisplayModelIndex();
-    if (modelIndex < 0)
-      error(ERROR_multipleModelsNotOK, "MO isosurfaces");
+      if (modelIndex < 0)
+        error(ERROR_multipleModelsNotOK, "MO isosurfaces");
+    }
     Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
         "jmolSurfaceInfo");
     int firstMoNumber = moNumber;
@@ -10584,6 +10585,12 @@ class Eval {
       moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex, "moData");
       if (moData == null)
         error(ERROR_moModelError);
+      int lastMoNumber = (moData.containsKey("lastMoNumber") 
+          ? ((Integer)moData.get("lastMoNumber")).intValue() : 0);
+      if (moNumber == Token.prev)
+        moNumber = lastMoNumber - 1;
+      else if (moNumber == Token.next)
+        moNumber = lastMoNumber + 1;
       Vector mos = (Vector) (moData.get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
       if (nOrb == 0)
@@ -10593,7 +10600,7 @@ class Eval {
       if (offset != Integer.MAX_VALUE) {
         // 0: HOMO;
         if (moData.containsKey("HOMO")) {
-          lastMoNumber = moNumber = ((Integer) moData.get("HOMO")).intValue()
+          moNumber = ((Integer) moData.get("HOMO")).intValue()
               + offset;
         } else {
           for (int i = 0; i < nOrb; i++) {
@@ -10601,7 +10608,7 @@ class Eval {
             if (!mo.containsKey("occupancy"))
               error(ERROR_moOccupancy); 
             if (((Float) mo.get("occupancy")).floatValue() == 0) {
-              lastMoNumber = moNumber = i + offset;
+              moNumber = i + offset;
               break;
             }
           }
@@ -10611,7 +10618,7 @@ class Eval {
       if (moNumber < 1 || moNumber > nOrb)
         error(ERROR_moIndex, "" + nOrb);
     }
-    lastMoNumber = moNumber;
+    moData.put("lastMoNumber", new Integer(moNumber));
     setShapeProperty(shape, "moData", moData);
     if (title != null)
       setShapeProperty(shape, "title", title);
@@ -11203,6 +11210,8 @@ class Eval {
           continue;
         }
         if (str.equalsIgnoreCase("PHASE")) {
+          if (surfaceObjectSeen)
+            error(ERROR_invalidArgument);
           propertyName = "phase";
           propertyValue = (tokAt(i + 1) == Token.string ? stringParameter(++i)
               : "_orb");

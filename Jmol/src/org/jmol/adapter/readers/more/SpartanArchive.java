@@ -80,18 +80,16 @@ public class SpartanArchive {
     this.bondData = bondData;
   }
 
-  void setEndCheck(String endChec){
-    
-  }
-  int readArchive(String infoLine, boolean haveGeometryLine) throws Exception {
-    atomCount = setInfo(infoLine);
+  int readArchive(String infoLine, boolean haveGeometryLine, 
+                  int atomCount0, boolean doAddAtoms) throws Exception {
+    modelAtomCount = setInfo(infoLine);
     line = (haveGeometryLine ? "GEOMETRY" : "");
     boolean haveMOData = false;
     while (line != null) {
       if (line.equals("GEOMETRY")) {
-        readAtoms();
-        if (bondData.length() > 0)
-          addBonds(bondData);
+        readAtoms(atomCount0, doAddAtoms);
+        if (doAddAtoms && bondData.length() > 0)
+          addBonds(bondData, atomCount0);
       } else if (line.indexOf("BASIS") == 0) {
         readBasis();
       } else if (line.indexOf("WAVEFUNC") == 0 || line.indexOf("BETA") == 0) {
@@ -120,6 +118,8 @@ public class SpartanArchive {
     return r.parseFloat(info);
   }
 
+  int modelAtomCount;
+  
   int setInfo(String info) throws Exception {
     //    5  17  11  18   0   1  17   0 RHF      3-21G(d)           NOOPT FREQ
     //    0   1  2   3    4   5   6   7  8        9
@@ -128,7 +128,7 @@ public class SpartanArchive {
     if (Logger.debugging) {
       Logger.debug("reading Spartan archive info :" + info);
     }
-    atomCount = parseInt(tokens[0]);
+    modelAtomCount = parseInt(tokens[0]);
     coefCount = parseInt(tokens[1]);
     shellCount = parseInt(tokens[2]);
     gaussianCount = parseInt(tokens[3]);
@@ -136,32 +136,28 @@ public class SpartanArchive {
     moCount = parseInt(tokens[6]);
     calculationType = tokens[9];
     String s = (String) moData.get("calculationType");
-    if (s != null)
-      calculationType += s;
-    moData.put("calculationType", calculationType);
-    return atomCount;
+    if (s == null)
+      s = calculationType;
+    else if (s.indexOf(calculationType) < 0)
+      s = calculationType + s;
+    moData.put("calculationType", s);
+    return modelAtomCount;
   }
 
-  void readAtoms() throws Exception {
-    for (int i = 0; i < atomCount; i++) {
+  void readAtoms(int atomCount0, boolean doAddAtoms) throws Exception {
+    for (int i = 0; i < modelAtomCount; i++) {
       readLine();
       String tokens[] = getTokens();
-      float x = parseFloat(tokens[1]);
-      float y = parseFloat(tokens[2]);
-      float z = parseFloat(tokens[3]);
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = (doAddAtoms ? atomSetCollection.addNewAtom()
+          : atomSetCollection.getAtom(atomCount0 - modelAtomCount + i));
       atom.elementSymbol = AtomSetCollectionReader
           .getElementSymbol(parseInt(tokens[0]));
-      atom.set(x, y, z);
+      atom.set(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
       atom.scale(AtomSetCollectionReader.ANGSTROMS_PER_BOHR);
     }
     if (Logger.debugging) {
       Logger.debug(atomCount + " atoms read");
     }
-  }
-
-  void addBonds(String data) {
-    addBonds(data, 0);
   }
 
   void addBonds(String data, int atomCount0) {
@@ -179,7 +175,7 @@ public class SpartanArchive {
 
     String tokens[] = getTokens(data);
     bondCount = 0;
-    for (int i = atomCount; i < tokens.length;) {
+    for (int i = modelAtomCount; i < tokens.length;) {
       int sourceIndex = parseInt(tokens[i++]) - 1 + atomCount0;
       int targetIndex = parseInt(tokens[i++]) - 1 + atomCount0;
       int bondOrder = parseInt(tokens[i++]);
@@ -298,7 +294,8 @@ public class SpartanArchive {
   void readProperties() throws Exception {
     Logger.debug("Reading PROPARC properties records...");
     while (readLine() != null
-        && (line.length() < 10 || !line.substring(0, 10).equals("ENDPROPARC"))) {
+        && !line.startsWith("ENDPROPARC") && !line.startsWith("END Directory Entry ")) {
+      //System.out.println(line);
       if (line.length() >= 4 && line.substring(0, 4).equals("PROP"))
         readProperty();
       if (line.length() >= 6 && line.substring(0, 6).equals("DIPOLE"))
@@ -306,6 +303,7 @@ public class SpartanArchive {
       if (line.length() >= 7 && line.substring(0, 7).equals("VIBFREQ"))
         readVibFreqs();
     }
+    //System.out.println(line);
   }
 
   void readDipole() throws Exception {

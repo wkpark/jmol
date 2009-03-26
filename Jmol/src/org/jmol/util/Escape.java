@@ -107,11 +107,17 @@ public class Escape {
       }
     if (haveEscape)
       while (i < escapable.length()) {
-        int pt = -2;
+        int pt = -1;
         char ch = escapable.charAt(i++);
         char ch2 = escapable.charAt(i++);
-        while ((pt = str.indexOf(ch, pt + 2)) >= 0)
-          str = str.substring(0, pt) + '\\' + ch2 + str.substring(pt + 1);
+        StringBuffer sb = new StringBuffer();
+        int pt0 = 0;
+        while ((pt = str.indexOf(ch, pt + 1)) >= 0) {
+          sb.append(str.substring(pt0, pt)).append('\\').append(ch2);
+          pt0 = pt + 1;
+        }
+        sb.append(str.substring(pt0, str.length()));
+        str = sb.toString();
       }
     for (i = str.length(); --i >= 0;)
       if (str.charAt(i) > 0x7F)

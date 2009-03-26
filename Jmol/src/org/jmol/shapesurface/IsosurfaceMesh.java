@@ -51,7 +51,7 @@ public class IsosurfaceMesh extends Mesh {
   public boolean hasGridPoints;
   float calculatedArea = Float.NaN;
   float calculatedVolume = Float.NaN;
-
+  
   public float[] vertexValues;  
   public short[] vertexColixes;
   
@@ -292,11 +292,11 @@ public class IsosurfaceMesh extends Mesh {
    * @return contour vector set
    */
   Vector[] getContours() {
-    if (jvxlData.jvxlPlane != null)
-      return null; // not necessary; 
     int n = jvxlData.nContours;
     if (n == 0 || polygonIndexes == null)
       return null;
+    if ((havePlanarContours = (jvxlData.jvxlPlane != null)) == true)
+      return null; // not necessary; 
     if (n < 0)
       n = -1 - n;
     Vector[] vContours = jvxlData.vContours;

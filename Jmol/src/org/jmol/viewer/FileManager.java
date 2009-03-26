@@ -417,13 +417,16 @@ public class FileManager {
   }
 
   /**
+   * delivers file contents and directory listing for a ZIP/JAR file into sb
+   *
    * 
+   * @param sb 
    * @param name
-   * @return file contents; directory listing for a ZIP/JAR file
+   * @param header 
    */
-  private String getFullFilePathAsString(String name) {
+  private void getFileDataAsSections(StringBuffer sb, String name, String header) {
     if (name == null)
-      return "";
+      return;
     String[] subFileList = null;
     boolean asDouble = false;
     if (name.indexOf("|") >= 0)
@@ -434,15 +437,21 @@ public class FileManager {
     }
     //System.out.println("FileManager.getFileAsString(" + name + ")");
     Object t = getInputStreamOrErrorMessageFromName(name, false);
-    StringBuffer sb;
-    if (t instanceof String)
-      return "Error:" + t;
+    if (t instanceof String) {
+      if (name.indexOf("#JMOL_MODEL ") >= 0)
+        sb.append(name);
+      else
+        sb.append((String) t);
+      sb.append("\n");
+      return;
+    }
     try {
       BufferedInputStream bis = new BufferedInputStream((InputStream) t, 8192);
       InputStream is = bis;
+      if (header != null)
+        sb.append("BEGIN " + header + " " + name + "\n");
       if (asDouble) {
         // used for Spartan binary file reading
-        sb = new StringBuffer();
         BinaryDocument bd = new BinaryDocument();
         bd.setStream(bis, false);
         try {
@@ -452,27 +461,27 @@ public class FileManager {
           sb.append('\n');
           bis.close();
         }
-        return sb.toString();
       } else if (CompoundDocument.isCompoundDocument(is)) {
         CompoundDocument doc = new CompoundDocument(bis);
-        return "" + doc.getAllData();
-      } else if (isGzip(is)) {
-        is = new GZIPInputStream(bis);
+        sb.append(doc.getAllData("Molecule"));
       } else if (ZipUtil.isZipFile(is)) {
-        return (String) ZipUtil.getZipFileContents(is, subFileList, 1, false);
+        sb.append((String) ZipUtil.getZipFileContents(is, subFileList, 1, false));
+      } else {
+        if (isGzip(is))
+          is = new GZIPInputStream(bis);
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        String line;
+        while ((line = br.readLine()) != null) {
+          sb.append(line);
+          sb.append('\n');
+        }
+        br.close();
       }
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
-      sb = new StringBuffer(8192);
-      String line;
-      while ((line = br.readLine()) != null) {
-        sb.append(line);
-        sb.append('\n');
-      }
-      br.close();
-      return sb.toString();
     } catch (Exception ioe) {
-      return ioe.getMessage();
+      sb.append(ioe.getMessage());
     }
+    if (header != null)
+      sb.append("\nEND " + header + " " + name + "\n");
   }
 
   /**
@@ -818,27 +827,30 @@ public class FileManager {
     String[] subFileList = null;
     if (name.indexOf("|") >= 0)
       name = (subFileList = TextFormat.split(name, "|"))[0];
-    String[] fileSet = viewer.getModelAdapter().specialLoad(name, null);
-    if (fileSet != null) {
+    String[] info = viewer.getModelAdapter().specialLoad(name, "filesNeeded?");
+    if (info != null) {
       if (isTypeCheckOnly)
-        return fileSet;
-      if (fileSet[2] != null) {
-        StringBuffer sb = new StringBuffer();
-        String header = fileSet[1];
-        for (int i = 2; i < fileSet.length; i++) {
-          name = fileSet[i];
-          if (header != null)
-            sb.append("BEGIN " + header + " " + name + "\n");
-          sb.append(getFullFilePathAsString(name));
-          if (header != null)
-            sb.append("\nEND " + header + " " + name + "\n");
+        return info;
+      StringBuffer sb = new StringBuffer();
+      String header = info[1];
+      if (info[2] != null) {
+        if (info.length == 3) {
+          // we need information from the output file, info[2]
+          getFileDataAsSections(sb, info[2], header);
+          info = viewer.getModelAdapter().specialLoad(name, sb.toString());
+        }
+        // load each file individually
+        for (int i = 2; i < info.length; i++) {
+          name = info[i];
+          getFileDataAsSections(sb, name, header);
         }
         return getBufferedReaderForString(sb.toString());
       }
-      //continuing...
-      //here, for example, for an SPT file load that is not just a type check
-      //(type check is only for application file opening and drag-drop to determine if 
-      //script or load command should be used)
+      // continuing...
+      // here, for example, for an SPT file load that is not just a type check
+      // (type check is only for application file opening and drag-drop to
+      // determine if
+      // script or load command should be used)
     }
     Object t = getInputStreamOrErrorMessageFromName(name, true);
     if (t instanceof String)
@@ -848,7 +860,7 @@ public class FileManager {
       InputStream is = bis;
       if (CompoundDocument.isCompoundDocument(is)) {
         CompoundDocument doc = new CompoundDocument(bis);
-        return getBufferedReaderForString("" + doc.getAllData());
+        return getBufferedReaderForString(doc.getAllData("Molecule").toString());
       } else if (isGzip(is)) {
         is = new GZIPInputStream(bis);
       } else if (ZipUtil.isZipFile(is)) {
@@ -857,8 +869,8 @@ public class FileManager {
         if (asInputStream)
           return (InputStream) ZipUtil.getZipFileContents(is, subFileList, 1,
               true);
-        //danger -- converting bytes to String here. 
-        //we lose 128-156 or so.
+        // danger -- converting bytes to String here.
+        // we lose 128-156 or so.
         String s = (String) ZipUtil.getZipFileContents(is, subFileList, 1,
             false);
         is.close();

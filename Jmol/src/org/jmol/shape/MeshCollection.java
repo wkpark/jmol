@@ -55,6 +55,7 @@ public abstract class MeshCollection extends Shape {
   protected boolean iHaveModelIndex;
   protected int modelIndex;
   protected boolean allowContourLines;
+  protected boolean haveContours = false;
 
   public String[] title;
   protected boolean allowMesh = true;
@@ -160,7 +161,7 @@ public abstract class MeshCollection extends Shape {
       String thisID = (String) value;
       if (setMesh(thisID) == null)
         return;
-      deleteMesh();
+//      deleteMesh();
       setMesh(thisID);
       return;
     }
@@ -186,6 +187,7 @@ public abstract class MeshCollection extends Shape {
 
     if ("token" == propertyName) {
       int tok = ((Integer) value).intValue();
+      int tok2 = 0;
       boolean test = true;
       switch (tok) {
       case Token.on:
@@ -193,7 +195,6 @@ public abstract class MeshCollection extends Shape {
       case Token.backlit:
       case Token.fullylit:
       case Token.dots:
-      case Token.mesh:
       case Token.fill:
       case Token.triangles:
       case Token.frontonly:
@@ -203,20 +204,24 @@ public abstract class MeshCollection extends Shape {
         tok = Token.on;
         break;
       case Token.contourlines:
-        if (!allowContourLines)
-          tok = Token.mesh;
+        tok2 = Token.mesh;
         break;
       case Token.nocontourlines:
         test = false;
-        tok = (allowContourLines ? Token.contourlines : Token.mesh);
+        tok = (true || allowContourLines ? Token.contourlines : Token.mesh);
+        tok2 = Token.mesh;
         break;
-      case Token.nodots:
-        test = false;
-        tok = Token.dots;
+      case Token.mesh:
+        tok2 = Token.contourlines;
         break;
       case Token.nomesh:
         test = false;
         tok = Token.mesh;
+        tok2 = Token.contourlines;
+        break;
+      case Token.nodots:
+        test = false;
+        tok = Token.dots;
         break;
       case Token.nofill:
         test = false;
@@ -234,6 +239,10 @@ public abstract class MeshCollection extends Shape {
         System.out.println("PROBLEM IN MESHCOLLECTION: token? " + Token.nameOf(tok));
       }
       setProperty(tok, test);
+      if (tok2 != 0) {
+        if (currentMesh.havePlanarContours && currentMesh.drawTriangles != currentMesh.showContourLines)
+          setProperty(tok2, test);
+      }
       return;
     }
     super.setProperty(propertyName, value, bs);
@@ -267,15 +276,15 @@ public abstract class MeshCollection extends Shape {
         if (linkedMesh != null)
           linkedMesh.showContourLines = bProp;
         return;
-      case Token.dots:
-        currentMesh.showPoints = bProp;
-        if (linkedMesh != null)
-          linkedMesh.showPoints = bProp;
-        return;
       case Token.mesh:
         currentMesh.drawTriangles = bProp;
         if (linkedMesh != null)
           linkedMesh.drawTriangles = bProp;
+        return;
+      case Token.dots:
+        currentMesh.showPoints = bProp;
+        if (linkedMesh != null)
+          linkedMesh.showPoints = bProp;
         return;
       case Token.fill:
         currentMesh.fillTriangles = bProp;
@@ -532,9 +541,14 @@ public abstract class MeshCollection extends Shape {
          appendCmd(sb, getColorCommand(myType, mesh.colix));
        appendCmd(sb, mesh.colorCommand);
      }
-     if (mesh.isColorSolid)
-       appendCmd(sb, getColorCommand(myType, mesh.colix));
+     getColorState(sb, mesh);
    }
+ }
+
+protected void getColorState(StringBuffer sb, Mesh mesh) {
+  getColorState(sb, mesh);
+  if (mesh.isColorSolid)
+    appendCmd(sb, getColorCommand(myType, mesh.colix));  
 }
 
 public void setVisibilityFlags(BitSet bs) {

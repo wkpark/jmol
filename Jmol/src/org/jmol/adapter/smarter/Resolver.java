@@ -27,6 +27,7 @@ package org.jmol.adapter.smarter;
 import java.io.BufferedReader;
 import java.util.BitSet;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 import netscape.javascript.JSObject;
 
@@ -63,40 +64,108 @@ public class Resolver {
   }
 
   /**
-   * In the case of spt files, no need to load them; here we are just checking for type
-   * In the case of .spardir directories, we need to provide a list of 
-   * the critical files that need loading and concatenation for the SpartanSmolReader
+   * In the case of spt files, no need to load them; here we are just checking
+   * for type In the case of .spardir directories, we need to provide a list of
+   * the critical files that need loading and concatenation for the
+   * SpartanSmolReader
    * 
    * we return an array for which:
    * 
-   * [0] file type (class prefix) or null for SPT file
-   * [1] header to add for each BEGIN/END block
-   * [2...] files to load and concatenate
+   * [0] file type (class prefix) or null for SPT file [1] header to add for
+   * each BEGIN/END block [2...] files to load and concatenate
    * 
    * @param name
    * @param type
    * @return array detailing action for this set of files
    */
   public static String[] specialLoad(String name, String type) {
-    int pt;
-    if (name.indexOf(".spt") == name.length() - 4)
-      return new String[] { null, null, null}; //DO NOT actually load any file here
-    if ((pt = name.lastIndexOf(".spardir")) >= 0) {
+    int pt = name.lastIndexOf(".spardir");
+    boolean isPreliminary = (type.equals("filesNeeded?"));
+    if (isPreliminary) {
+      if (name.endsWith(".spt"))
+        return new String[] { null, null, null }; // DO NOT actually load any
+                                                  // file
+      // here
       if (name.indexOf(".spardir.") >= 0)
-        return null; // could easily be .spardir.zip -- these MUST be .spardir or .spardir/...
-      name = name.replace('\\','/');
-      //name = name.substring(0, pt + (name.lastIndexOf("/") == pt + 8 ? 14 : 8));
-      if (name.lastIndexOf("/") < pt)
-        name += "/M0001";
-      return new String[] { "SpartanSmol", "Directory Entry ",
-          name + "/input",
-          name + "/archive", 
-          name + "/Molecule\\binaryDoubleAsString", 
-          name + "/proparc"};
+        return null; // could easily be .spardir.zip -- these MUST be .spardir
+                     // or .spardir/...
+      if (pt < 0)
+        return null;
+      name = name.replace('\\', '/');
+      if (name.lastIndexOf("/") > pt) {
+        // a single file in directory is requested
+        return new String[] { "SpartanSmol", "Directory Entry ",
+            name + "/input", name + "/archive",
+            name + "/Molecule\\binaryDoubleAsString", name + "/proparc" };      
+      }
+      return new String[] { "SpartanSmol", "Directory Entry ", name + "/output" };
     }
-    return null;
+    // make list of required files
+    name = name.replace('\\', '/');
+    String[] dirNums = getSpartanDirs(type);
+    String[] files = new String[2 + dirNums.length*5];
+    files[0] = "SpartanSmol";
+    files[1] = "Directory Entry ";
+    pt = 2;
+    for (int i = 0; i < dirNums.length; i++) {
+      String path = name + (Character.isDigit(dirNums[i].charAt(0)) ? 
+          "/Profile." + dirNums[i] : "/" + dirNums[i]);
+      files[pt++] = path + "/#JMOL_MODEL " + dirNums[i];
+      files[pt++] = path + "/input";
+      files[pt++] = path + "/archive";
+      files[pt++] = path + "/Molecule\\binaryDoubleAsString";
+      files[pt++] = path + "/proparc";
+    }
+    return files;
   }
 
+  static String[] getSpartanDirs(String outputFileData) {
+    int pt = outputFileData.indexOf("Start- Molecule");
+    if (pt > 0)
+      return new String[] { outputFileData.substring(pt).split("\"")[1] }; // M0001
+    Vector v = new Vector();
+    String token;
+    String lasttoken = "";
+    try {
+      StringTokenizer tokens = new StringTokenizer(outputFileData, " \t\r\n");
+      while (tokens.hasMoreTokens()) {
+        // profile file name is just before each right-paren:
+        /*
+MacSPARTAN '08 ENERGY PROFILE: x86/Darwin       130
+
+ Dihedral Move   :  C3 -  C2 -  C1 -  O1  [ 4] -180.000000 .. 180.000000 
+ Dihedral Move   :  C2 -  C1 -  O1 -  H3  [ 4] -180.000000 .. 180.000000 
+
+   1 )  -180.00  -180.00  -504208.11982719 
+   2 )   -90.00  -180.00  -504200.18593376 
+
+   ...
+   
+  24 )    90.00   180.00  -504200.18564495 
+  25 )   180.00   180.00  -504208.12129747 
+
+ Found a local maxima E  = -504178.25455465   [  3  3 ]
+
+
+  Reason for exit: Successful completion 
+  Mechanics CPU Time :      1:51.42
+  Mechanics Wall Time:     12:31.54
+
+
+         */
+        if ((token = tokens.nextToken()).equals(")"))
+          v.add(lasttoken);
+        lasttoken = token;
+      }
+    } catch (Exception e) {
+      //
+    }
+    String[] dirs = new String[v.size()];
+    for (int i = 0; i < v.size(); i++)
+      dirs[i] = (String) v.get(i);
+    return dirs;  
+  }
+  
   static Object getAtomCollectionAndCloseReader(String fullName, String type,
                         BufferedReader bufferedReader, Hashtable htParams,
                         int ptFile) throws Exception {
@@ -561,29 +630,29 @@ public class Resolver {
 
   final static int LEADER_CHAR_MAX = 20;
   
-  final static String[] cubeRecords =
+  final static String[] cubeFileStartRecords =
   {"Cube", "JVXL", "#JVXL"};
 
   final static String[] mol2Records =
   {"Mol2", "mol2", "@<TRIPOS>"};
 
-  final static String[] webmoRecords =
+  final static String[] webmoFileStartRecords =
   {"WebMO", "[HEADER]"};
   
-  final static String[] moldenRecords =
+  final static String[] moldenFileStartRecords =
   {"Molden", "[Molden"};
 
   final static String[][] fileStartsWithRecords =
-  { cubeRecords, mol2Records, webmoRecords, moldenRecords};
+  { cubeFileStartRecords, mol2Records, webmoFileStartRecords, moldenFileStartRecords};
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings
   ////////////////////////////////////////////////////////////////
 
-  final static String[] pqrRecords = 
+  final static String[] pqrLineStartRecords = 
   { "Pqr", "REMARK   1 PQR" };
 
-  final static String[] pdbRecords = {
+  final static String[] pdbLineStartRecords = {
     "Pdb", "HEADER", "OBSLTE", "TITLE ", "CAVEAT", "COMPND", "SOURCE", "KEYWDS",
     "EXPDTA", "AUTHOR", "REVDAT", "SPRSDE", "JRNL  ", "REMARK",
     "DBREF ", "SEQADV", "SEQRES", "MODRES", 
@@ -592,82 +661,85 @@ public class Resolver {
     "ATOM  ", "HETATM", "MODEL ",
   };
 
-  final static String[] shelxRecords =
+  final static String[] shelxLineStartRecords =
   { "Shelx", "TITL ", "ZERR ", "LATT ", "SYMM ", "CELL " };
 
-  final static String[] cifRecords =
+  final static String[] cifLineStartRecords =
   { "Cif", "data_", "_publ" };
 
-  final static String[] ghemicalMMRecords =
+  final static String[] ghemicalMMLineStartRecords =
   { "GhemicalMM", "!Header mm1gp", "!Header gpr" };
 
-  final static String[] jaguarRecords =
+  final static String[] jaguarLineStartRecords =
   { "Jaguar", "  |  Jaguar version", };
 
-  final static String[] hinRecords = 
+  final static String[] hinLineStartRecords = 
   { "Hin", "mol " };
 
-  final static String[] mdlRecords = 
+  final static String[] mdlLineStartRecords = 
   { "Mol", "$MDL " };
 
-  final static String[] spartanSmolRecords =
+  final static String[] spartanSmolLineStartRecords =
   { "SpartanSmol", "INPUT=" };
 
-  final static String[] csfRecords =
+  final static String[] csfLineStartRecords =
   { "Csf", "local_transform" };
   
-  final static String[] mdTopRecords =
+  final static String[] mdTopLineStartRecords =
   { "MdTop", "%FLAG TITLE" };
   final static String[][] lineStartsWithRecords =
-  { cifRecords, pqrRecords, pdbRecords, shelxRecords, 
-    ghemicalMMRecords, jaguarRecords, hinRecords, 
-    mdlRecords, spartanSmolRecords, csfRecords, 
-    mol2Records, mdTopRecords };
+  { cifLineStartRecords, pqrLineStartRecords, pdbLineStartRecords, shelxLineStartRecords, 
+    ghemicalMMLineStartRecords, jaguarLineStartRecords, hinLineStartRecords, 
+    mdlLineStartRecords, spartanSmolLineStartRecords, csfLineStartRecords, 
+    mol2Records, mdTopLineStartRecords };
 
   ////////////////////////////////////////////////////////////////
   // contains formats
   ////////////////////////////////////////////////////////////////
 
-  final static String[] xmlRecords = 
+  final static String[] xmlContainsRecords = 
   { "Xml", "<?xml", "<atom", "<molecule", "<reaction", "<cml", "<bond", ".dtd\"",
     "<list>", "<entry", "<identifier", "http://www.xml-cml.org/schema/cml2/core" };
 
-  final static String[] gaussianRecords =
+  final static String[] gaussianContainsRecords =
   { "Gaussian", "Entering Gaussian System", "Entering Link 1", "1998 Gaussian, Inc." };
 
-  final static String[] mopacRecords =
+  final static String[] gaussianWfnRecords =
+  { "GaussianWfn", "MO ORBITALS" };
+
+  final static String[] mopacContainsRecords =
   { "Mopac", "MOPAC 93 (c) Fujitsu", "MOPAC2002 (c) Fujitsu",
     "MOPAC FOR LINUX (PUBLIC DOMAIN VERSION)"};
 
-  final static String[] qchemRecords = 
+  final static String[] qchemContainsRecords = 
   { "Qchem", "Welcome to Q-Chem", "A Quantum Leap Into The Future Of Chemistry" };
 
-  final static String[] gamessUKRecords =
+  final static String[] gamessUKContainsRecords =
   { "GamessUK", "GAMESS-UK", "G A M E S S - U K" };
 
-  final static String[] gamessUSRecords =
+  final static String[] gamessUSContainsRecords =
   { "GamessUS", "GAMESS" };
 
-  final static String[] spartanBinaryRecords =
+  final static String[] spartanBinaryContainsRecords =
   { "SpartanSmol" , "|PropertyArchive", "_spartan", "spardir" };
 
-  final static String[] spartanRecords =
-  { "Spartan", "Spartan" };
+  final static String[] spartanContainsRecords =
+  { "Spartan", "Spartan" };  // very old Spartan files?
 
-  final static String[] adfRecords =
+  final static String[] adfContainsRecords =
   { "Adf", "Amsterdam Density Functional" };
   
-  final static String[] psiRecords =
+  final static String[] psiContainsRecords =
   { "Psi", "    PSI  3"};
  
-  final static String[] nwchemRecords =
+  final static String[] nwchemContainsRecords =
   { "NWChem", " argument  1 = "};
 
   final static String[][] containsRecords =
-  { xmlRecords, gaussianRecords, mopacRecords, qchemRecords, 
-    gamessUKRecords, gamessUSRecords,
-    spartanBinaryRecords, spartanRecords, mol2Records, adfRecords, psiRecords,
-    nwchemRecords, 
+  { xmlContainsRecords, gaussianContainsRecords, mopacContainsRecords, qchemContainsRecords, 
+    gamessUKContainsRecords, gamessUSContainsRecords,
+    spartanBinaryContainsRecords, spartanContainsRecords, mol2Records, adfContainsRecords, psiContainsRecords,
+    nwchemContainsRecords, 
   };
 
 }

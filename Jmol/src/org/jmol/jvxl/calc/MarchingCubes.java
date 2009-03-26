@@ -32,9 +32,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.jvxl.api.VertexDataServer;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.readers.JvxlReader;
-import org.jmol.util.Logger;
-
-//import org.jmol.util.Base64;
+//import org.jmol.util.Logger;
 
 public class MarchingCubes {
 
@@ -175,7 +173,7 @@ public class MarchingCubes {
 
   public String getEdgeData() {
 
-    Logger.startTimer();
+    //Logger.startTimer();
     
     /* The (new, Jmol 11.7.26) Marching Cubes code creates 
      * the isoPointIndexes[2][nY * nZ][3] array that holds two slices 
@@ -294,7 +292,7 @@ public class MarchingCubes {
       }
     }
 
-    Logger.checkTimer("Jmol mc getEdgeData");
+    //Logger.checkTimer("Jmol mc getEdgeData");
 
     return edgeData.toString();
   }

@@ -85,6 +85,7 @@ public class MolecularOrbital extends Isosurface {
       strID = getId(modelIndex);
       // overide bitset selection
       super.setProperty("init", null, null);
+      super.setProperty("modelIndex", new Integer(modelIndex), null);
       if (htModels == null)
         htModels = new Hashtable();
       if (!htModels.containsKey(strID))

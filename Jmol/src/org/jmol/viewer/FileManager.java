@@ -827,13 +827,18 @@ public class FileManager {
     if (info != null) {
       if (isTypeCheckOnly)
         return info;
-      StringBuffer sb = new StringBuffer();
-      String header = info[1];
       if (info[2] != null) {
+        StringBuffer sb = new StringBuffer();
+        String header = info[1];
         if (info.length == 3) {
           // we need information from the output file, info[2]
           getFileDataAsSections(sb, info[2], header);
           info = viewer.getModelAdapter().specialLoad(name, sb.toString());
+          if (info.length == 3) {
+            // might have a second option
+            getFileDataAsSections(sb, info[2], header);
+            info = viewer.getModelAdapter().specialLoad(info[1], sb.toString());
+          }
         }
         // load each file individually
         for (int i = 2; i < info.length; i++) {

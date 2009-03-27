@@ -86,10 +86,10 @@ public class Resolver {
         return new String[] { null, null, null }; // DO NOT actually load any
                                                   // file
       if (name.endsWith(".spardir.zip"))
-        return new String[] { "SpartanSmol", "ZIP Directory Entry ", name + "|output"};
+        return new String[] { "SpartanSmol", "Directory Entry ", name + "|output"};
       name = name.replace('\\', '/');
       if (!name.endsWith(".spardir") && name.indexOf(".spardir/") < 0)
-        return null; // hese MUST be .spardir
+        return null; // MUST be .spardir
                      // or .spardir/...
       if (pt < 0)
         return null;
@@ -102,12 +102,21 @@ public class Resolver {
       return new String[] { "SpartanSmol", "Directory Entry ", name + "/output" };
     }
     // make list of required files
-    name = name.replace('\\', '/');
     String[] dirNums = getSpartanDirs(type);
+    if (dirNums.length == 0 && name.endsWith(".spardir.zip") 
+        && type.indexOf(".zip|output") >= 0) {
+      // try again, with the idea that 
+      String sname = name.replace('\\','/');
+      pt = sname.lastIndexOf("/");
+      // mac directory zipped up?
+      sname = name + "|" + name.substring(pt + 1, name.length() - 4);
+      return new String[] { "SpartanSmol", sname, sname + "/output" };
+    }
     String[] files = new String[2 + dirNums.length*5];
     files[0] = "SpartanSmol";
     files[1] = "Directory Entry ";
     pt = 2;
+    name = name.replace('\\', '/');
     for (int i = 0; i < dirNums.length; i++) {
       String path = name + (Character.isDigit(dirNums[i].charAt(0)) ? 
           "/Profile." + dirNums[i] : "/" + dirNums[i]);

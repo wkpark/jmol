@@ -40,13 +40,16 @@ import org.jmol.util.Logger;
 public class SpartanSmolReader extends SpartanInputReader {
 
   private class MoleculeRecord {
-    float[] mat = new float[16];
+    float[] mat;
     // last 16x4 bytes constitutes the 4x4 matrix, using doubles
     MoleculeRecord(String binaryCodes) {
       String[] tokens = getTokens(binaryCodes.trim());
+      if (tokens.length < 16)
+        return;
       byte[] bytes = new byte[tokens.length];
       for (int i = 0; i < tokens.length;i++)
         bytes[i] = (byte) Integer.parseInt(tokens[i], 16);
+      mat = new float[16];
       for (int i = 16, j = bytes.length; --i >= 0; j -= 8)
         mat[i] = bytesToDoubleToFloat(bytes, j);        
 
@@ -67,6 +70,8 @@ public class SpartanSmolReader extends SpartanInputReader {
     }
 
     protected void setTrans() {
+      if (mat == null)
+        return;
       setTransform(
           mat[0], mat[1], mat[2], 
           mat[4], mat[5], mat[6], 
@@ -102,7 +107,6 @@ public class SpartanSmolReader extends SpartanInputReader {
       boolean iHaveModelStatement = false;
       boolean iHaveModel = false;
       while (line != null) {
-        Logger.debug(line);
         if (line.indexOf("JMOL_MODEL") >= 0 && !line.startsWith("END")) {
 
           // bogus type added by Jmol as a marker only
@@ -148,6 +152,9 @@ public class SpartanSmolReader extends SpartanInputReader {
             readInputRecords();
             if (atomSetCollection.errorMessage != null)
               return atomSetCollection;
+          } else if (lcline.endsWith("_output")) {
+            readLine();
+            continue;
           } else if (lcline.endsWith("output")) {
             readOutput();
             continue;

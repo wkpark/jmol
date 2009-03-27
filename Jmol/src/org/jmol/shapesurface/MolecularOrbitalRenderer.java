@@ -30,7 +30,6 @@ import java.text.NumberFormat;
 public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
 
   private NumberFormat nf;
-  private byte fid;
 
   protected void render() {
     imageFontScaling = viewer.getImageFontScaling();
@@ -44,14 +43,13 @@ public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
   private void renderInfo() {
     if (mesh.title == null || isGenerator || !g3d.setColix(viewer.getColixBackgroundContrast()))
       return;
-    if (nf == null) {
+    if (nf == null)
       nf = NumberFormat.getInstance();
-      fid = g3d.getFontFid("Monospaced", 14 * imageFontScaling);
-    }
     if (nf != null) {
       nf.setMaximumFractionDigits(3);
       nf.setMinimumFractionDigits(3);
     }
+    byte fid = g3d.getFontFid("Monospaced", 14 * imageFontScaling);
     g3d.setFont(fid);
     int lineheight = (int) (15 * imageFontScaling);
     int x = (int) (5 * imageFontScaling);

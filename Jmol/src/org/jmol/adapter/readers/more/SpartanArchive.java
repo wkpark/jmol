@@ -446,7 +446,8 @@ public class SpartanArchive {
   //because this is NOT an extension of AtomSetCollectionReader
   String readLine() throws Exception {
     line = reader.readLine();
-    //System.out.println("spartanarchive " + line);
+    if (Logger.debugging)
+      Logger.debug(line);
     return line;
   }
 }

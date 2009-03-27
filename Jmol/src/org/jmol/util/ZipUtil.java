@@ -81,16 +81,17 @@ public class ZipUtil {
    */
   static public Object getZipFileContents(InputStream is, String[] list,
                                           int listPtr, boolean asInputStream) {
-    StringBuffer ret = new StringBuffer();
+    StringBuffer ret;
     if (list == null || listPtr >= list.length)
       return getZipDirectoryAsStringAndClose(is);
     String fileName = list[listPtr];
     ZipInputStream zis = new ZipInputStream(is);
     ZipEntry ze;
-    System.out.println("fname=" + fileName);
+    //System.out.println("fname=" + fileName);
     try {
       boolean isAll = (fileName.equals("."));
       if (isAll || fileName.lastIndexOf("/") == fileName.length() - 1) {
+        ret = new StringBuffer();
         while ((ze = zis.getNextEntry()) != null) {
           String name = ze.getName();
           if (isAll || name.startsWith(fileName))
@@ -100,18 +101,28 @@ public class ZipUtil {
           return new StringBufferInputStream(ret.toString());
         return ret.toString();
       }
-System.out.println("need Molecule binary stuff here");
+      boolean asBinaryString = false;
+      if (fileName.indexOf("\\asBinaryString") > 0) {
+        fileName = fileName.substring(0, fileName.indexOf("\\asBinaryString"));
+        asBinaryString = true;
+      }
       while ((ze = zis.getNextEntry()) != null) {
         if (!fileName.equals(ze.getName()))
           continue;
         byte[] bytes = getZipEntryAsBytes(zis);
-        System.out.println("ZipUtil::ZipEntry.name = " + ze.getName() + " " + bytes.length);
+        //System.out.println("ZipUtil::ZipEntry.name = " + ze.getName() + " " + bytes.length);
         if (isZipFile(bytes))
           return getZipFileContents(new BufferedInputStream(
               new ByteArrayInputStream(bytes)), list, ++listPtr, asInputStream);
         if (asInputStream)
           return new ByteArrayInputStream(bytes);
-        return new String(bytes);
+        if (asBinaryString) {
+          ret = new StringBuffer();
+          for (int i = 0; i < bytes.length; i++)
+            ret.append(Integer.toHexString(((int)bytes[i]) & 0xFF)).append(' ');
+          return ret.toString();
+        }
+      return new String(bytes);
       }
     } catch (Exception e) {
     }

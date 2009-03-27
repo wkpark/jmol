@@ -751,6 +751,8 @@ public int[] next = new int[1];
     prevline = line;
     line = reader.readLine();
     ptLine++;
+    if (Logger.debugging)
+      Logger.debug(line);
     //System.out.println("readLine " + ptLine + " " + line);
     return line;
   }
@@ -769,9 +771,12 @@ public int[] next = new int[1];
     return fields;
   }
 
+  Matrix3f matrixRotate;
   public void setTransform(float x1, float y1, float z1, float x2, float y2,
                               float z2, float x3, float y3, float z3) {
-    Matrix3f matrixRotate = new Matrix3f();
+    if (matrixRotate != null)
+      return;
+    matrixRotate = new Matrix3f();
     Vector3f v = new Vector3f();
     // rows in Sygress/CAChe and Spartan become columns here
     v.set(x1, y1, z1);
@@ -789,7 +794,6 @@ public int[] next = new int[1];
     Quaternion q = new Quaternion(matrixRotate);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("defaultOrientationQuaternion", q);
     Logger.info("defaultOrientationMatrix = " + matrixRotate);
-    Logger.info("defaultOrientationQuaternion = " + q);
   }
   
 }

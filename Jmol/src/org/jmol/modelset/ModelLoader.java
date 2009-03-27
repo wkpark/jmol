@@ -27,6 +27,7 @@ package org.jmol.modelset;
 
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
@@ -227,7 +228,11 @@ public final class ModelLoader extends ModelSet {
                 + " in this collection. Use getProperty \"modelInfo\" or"
                 + " getProperty \"auxiliaryInfo\" to inspect them.");
       }
-
+      Quaternion q = (Quaternion) getModelSetAuxiliaryInfo("defaultOrientationQuaternion");
+      if (q != null) {
+        Logger.info("defaultOrientationQuaternion = " + q);
+        Logger.info("Use \"set autoLoadOrientation TRUE\" before loading or \"restore orientation DEFAULT\" after loading to view this orientation.");
+      }
       iterateOverAllNewModels(adapter, atomSetCollection);
       iterateOverAllNewAtoms(adapter, atomSetCollection);
       iterateOverAllNewBonds(adapter, atomSetCollection);

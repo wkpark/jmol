@@ -87,6 +87,7 @@ public class ZipUtil {
     String fileName = list[listPtr];
     ZipInputStream zis = new ZipInputStream(is);
     ZipEntry ze;
+    System.out.println("fname=" + fileName);
     try {
       boolean isAll = (fileName.equals("."));
       if (isAll || fileName.lastIndexOf("/") == fileName.length() - 1) {
@@ -99,10 +100,12 @@ public class ZipUtil {
           return new StringBufferInputStream(ret.toString());
         return ret.toString();
       }
+System.out.println("need Molecule binary stuff here");
       while ((ze = zis.getNextEntry()) != null) {
         if (!fileName.equals(ze.getName()))
           continue;
         byte[] bytes = getZipEntryAsBytes(zis);
+        System.out.println("ZipUtil::ZipEntry.name = " + ze.getName() + " " + bytes.length);
         if (isZipFile(bytes))
           return getZipFileContents(new BufferedInputStream(
               new ByteArrayInputStream(bytes)), list, ++listPtr, asInputStream);

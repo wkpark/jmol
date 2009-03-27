@@ -85,18 +85,19 @@ public class Resolver {
       if (name.endsWith(".spt"))
         return new String[] { null, null, null }; // DO NOT actually load any
                                                   // file
-      // here
-      if (name.indexOf(".spardir.") >= 0)
-        return null; // could easily be .spardir.zip -- these MUST be .spardir
+      if (name.endsWith(".spardir.zip"))
+        return new String[] { "SpartanSmol", "ZIP Directory Entry ", name + "|output"};
+      name = name.replace('\\', '/');
+      if (!name.endsWith(".spardir") && name.indexOf(".spardir/") < 0)
+        return null; // hese MUST be .spardir
                      // or .spardir/...
       if (pt < 0)
         return null;
-      name = name.replace('\\', '/');
       if (name.lastIndexOf("/") > pt) {
         // a single file in directory is requested
         return new String[] { "SpartanSmol", "Directory Entry ",
             name + "/input", name + "/archive",
-            name + "/Molecule\\binaryDoubleAsString", name + "/proparc" };      
+            name + "/Molecule\\asBinaryString", name + "/proparc" };      
       }
       return new String[] { "SpartanSmol", "Directory Entry ", name + "/output" };
     }
@@ -113,13 +114,16 @@ public class Resolver {
       files[pt++] = path + "/#JMOL_MODEL " + dirNums[i];
       files[pt++] = path + "/input";
       files[pt++] = path + "/archive";
-      files[pt++] = path + "/Molecule\\binaryDoubleAsString";
+      files[pt++] = path + "/Molecule\\asBinaryString";
       files[pt++] = path + "/proparc";
     }
     return files;
   }
 
   static String[] getSpartanDirs(String outputFileData) {
+    if (outputFileData.startsWith("java.io.FileNotFoundException")
+        || outputFileData.indexOf("<html") >= 0)
+      return new String[] { "M0001" };
     int pt = outputFileData.indexOf("Start- Molecule");
     if (pt > 0)
       return new String[] { outputFileData.substring(pt).split("\"")[1] }; // M0001
@@ -131,27 +135,24 @@ public class Resolver {
       while (tokens.hasMoreTokens()) {
         // profile file name is just before each right-paren:
         /*
-MacSPARTAN '08 ENERGY PROFILE: x86/Darwin       130
-
- Dihedral Move   :  C3 -  C2 -  C1 -  O1  [ 4] -180.000000 .. 180.000000 
- Dihedral Move   :  C2 -  C1 -  O1 -  H3  [ 4] -180.000000 .. 180.000000 
-
-   1 )  -180.00  -180.00  -504208.11982719 
-   2 )   -90.00  -180.00  -504200.18593376 
-
-   ...
-   
-  24 )    90.00   180.00  -504200.18564495 
-  25 )   180.00   180.00  -504208.12129747 
-
- Found a local maxima E  = -504178.25455465   [  3  3 ]
-
-
-  Reason for exit: Successful completion 
-  Mechanics CPU Time :      1:51.42
-  Mechanics Wall Time:     12:31.54
-
-
+         * MacSPARTAN '08 ENERGY PROFILE: x86/Darwin 130
+         * 
+         * Dihedral Move : C3 - C2 - C1 - O1 [ 4] -180.000000 .. 180.000000
+         * Dihedral Move : C2 - C1 - O1 - H3 [ 4] -180.000000 .. 180.000000
+         * 
+         * 1 ) -180.00 -180.00 -504208.11982719 2 ) -90.00 -180.00
+         * -504200.18593376
+         * 
+         * ...
+         * 
+         * 24 ) 90.00 180.00 -504200.18564495 25 ) 180.00 180.00
+         * -504208.12129747
+         * 
+         * Found a local maxima E = -504178.25455465 [ 3 3 ]
+         * 
+         * 
+         * Reason for exit: Successful completion Mechanics CPU Time : 1:51.42
+         * Mechanics Wall Time: 12:31.54
          */
         if ((token = tokens.nextToken()).equals(")"))
           v.add(lasttoken);
@@ -163,7 +164,7 @@ MacSPARTAN '08 ENERGY PROFILE: x86/Darwin       130
     String[] dirs = new String[v.size()];
     for (int i = 0; i < v.size(); i++)
       dirs[i] = (String) v.get(i);
-    return dirs;  
+    return dirs;
   }
   
   static Object getAtomCollectionAndCloseReader(String fullName, String type,

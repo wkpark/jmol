@@ -109,7 +109,8 @@ abstract class SpartanInputReader extends AtomSetCollectionReader {
       modelAtomCount++;
     }
     atomCount += modelAtomCount;
-    //System.out.println("modelatomCount:" + modelAtomCount);
+    if (Logger.debugging)
+      Logger.debug(atomCount + " atoms read");
   }
 
   private void readAtomNames() throws Exception {
@@ -148,8 +149,7 @@ abstract class SpartanInputReader extends AtomSetCollectionReader {
         nAtoms -= tokens.length;
       }
     }
-    if (Logger.debugging) {
+    if (Logger.debugging)
       Logger.debug(bondCount + " bonds read");
-    }  
   }
 }

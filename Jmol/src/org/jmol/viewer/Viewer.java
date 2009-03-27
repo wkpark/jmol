@@ -2048,18 +2048,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (notify)
       setFileLoadStatus(FILE_STATUS_ZAPPED, null, (resetUndo ? "resetUndo"
           : null), null, null);
-
-    Runtime runtime = Runtime.getRuntime();
-    runtime.gc();
-    long bTotal = runtime.totalMemory();
-    long bFree = runtime.freeMemory();
-    long bMax = 0;
-    try {
-      bMax = runtime.maxMemory();
-    } catch (Exception e) {
-    }
-    Logger.debug("ZAP memory inuse, total, free, max: " + (bTotal - bFree)
-        + " " + bTotal + " " + bFree + " " + bMax);
+    if (Logger.debugging)
+      Logger.checkMemory();
   }
 
   private void zap(String msg) {

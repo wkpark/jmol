@@ -155,7 +155,7 @@ public class SpartanArchive {
       atom.set(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
       atom.scale(AtomSetCollectionReader.ANGSTROMS_PER_BOHR);
     }
-    if (Logger.debugging) {
+    if (doAddAtoms && Logger.debugging) {
       Logger.debug(atomCount + " atoms read");
     }
   }

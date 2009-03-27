@@ -149,7 +149,7 @@ public int[] next = new int[1];
     Parser.parseFloatArray(getTokens(s), f, n);
   }
   
-  protected static String[] getTokens(String s) {
+  public static String[] getTokens(String s) {
     return Parser.getTokens(s);  
   }
   
@@ -769,7 +769,7 @@ public int[] next = new int[1];
     return fields;
   }
 
-  protected void setTransform(float x1, float y1, float z1, float x2, float y2,
+  public void setTransform(float x1, float y1, float z1, float x2, float y2,
                               float z2, float x3, float y3, float z3) {
     Matrix3f matrixRotate = new Matrix3f();
     Vector3f v = new Vector3f();

@@ -288,4 +288,18 @@ public final class Logger {
       info(msg + ": " + (time) + " ms");
     return time;
   }
+  
+  public static void checkMemory() {
+    Runtime runtime = Runtime.getRuntime();
+    runtime.gc();
+    long bTotal = runtime.totalMemory();
+    long bFree = runtime.freeMemory();
+    long bMax = 0;
+    try {
+      bMax = runtime.maxMemory();
+    } catch (Exception e) {
+    }
+    info("Memory: Total-Free="+ (bTotal - bFree)+"; Total=" +  bTotal + "; Free=" + bFree 
+        + "; Max=" + bMax);
+  }
 }

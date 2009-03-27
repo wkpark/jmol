@@ -325,7 +325,6 @@ public class FileManager {
     String[] subFileList = null;
     if (name.indexOf("|") >= 0)
       name = (subFileList = TextFormat.split(name, "|"))[0];
-    //System.out.println("FileManager.getFileAsString(" + name + ")");
     Object t = getInputStreamOrErrorMessageFromName(name, false);
     if (t instanceof String)
       return "Error:" + t;
@@ -429,13 +428,13 @@ public class FileManager {
       return;
     String[] subFileList = null;
     boolean asDouble = false;
+    String name0 = name;
     if (name.indexOf("|") >= 0)
       name = (subFileList = TextFormat.split(name, "|"))[0];
-    if (name.indexOf("\\binaryDoubleAsString") >= 0) {
+    if (name.indexOf("\\asBinaryString") >= 0) {
       asDouble = true;
-      name = name.substring(0, name.indexOf("\\binaryDoubleAsString"));
+      name = name.substring(0, name.indexOf("\\asBinaryString"));
     }
-    //System.out.println("FileManager.getFileAsString(" + name + ")");
     Object t = getInputStreamOrErrorMessageFromName(name, false);
     if (t instanceof String) {
       if (name.indexOf("#JMOL_MODEL ") >= 0)
@@ -449,14 +448,14 @@ public class FileManager {
       BufferedInputStream bis = new BufferedInputStream((InputStream) t, 8192);
       InputStream is = bis;
       if (header != null)
-        sb.append("BEGIN " + header + " " + name + "\n");
+        sb.append("BEGIN " + header + " " + name0 + "\n");
       if (asDouble) {
         // used for Spartan binary file reading
         BinaryDocument bd = new BinaryDocument();
         bd.setStream(bis, false);
         try {
           while(true)
-            sb.append(bd.readDouble()).append(' ');
+            sb.append(Integer.toHexString(((int)bd.readByte()) & 0xFF)).append(' ');
         } catch(Exception e1) {
           sb.append('\n');
           bis.close();
@@ -481,7 +480,7 @@ public class FileManager {
       sb.append(ioe.getMessage());
     }
     if (header != null)
-      sb.append("\nEND " + header + " " + name + "\n");
+      sb.append("\nEND " + header + " " + name0 + "\n");
   }
 
   /**
@@ -762,7 +761,6 @@ public class FileManager {
 
   public static Object getInputStream(String name, boolean showMsg,
                                       URL appletDocumentBase, String appletProxy) {
-    //System.out.println("inputstream for " + name);
     String errorMessage = null;
     int iurlPrefix;
     for (iurlPrefix = urlPrefixes.length; --iurlPrefix >= 0;)
@@ -825,8 +823,6 @@ public class FileManager {
                                                          boolean asInputStream,
                                                          boolean isTypeCheckOnly) {
     String[] subFileList = null;
-    if (name.indexOf("|") >= 0)
-      name = (subFileList = TextFormat.split(name, "|"))[0];
     String[] info = viewer.getModelAdapter().specialLoad(name, "filesNeeded?");
     if (info != null) {
       if (isTypeCheckOnly)
@@ -842,7 +838,12 @@ public class FileManager {
         // load each file individually
         for (int i = 2; i < info.length; i++) {
           name = info[i];
-          getFileDataAsSections(sb, name, header);
+          if (name.indexOf("#JMOL_MODEL") >= 0) {
+            sb.append(name).append("\n");
+          } else {
+            getFileDataAsSections(sb, name, header);
+            Logger.info("reading " + name);
+          }
         }
         return getBufferedReaderForString(sb.toString());
       }
@@ -852,6 +853,8 @@ public class FileManager {
       // determine if
       // script or load command should be used)
     }
+    if (name.indexOf("|") >= 0)
+      name = (subFileList = TextFormat.split(name, "|"))[0];
     Object t = getInputStreamOrErrorMessageFromName(name, true);
     if (t instanceof String)
       return t;
@@ -939,10 +942,10 @@ public class FileManager {
       } else {
         String name = fullPathNameInThread;
         String[] subFileList = null;
-        if (name.indexOf("|") >= 0)
-          name = (subFileList = TextFormat.split(name, "|"))[0];
         Object t = getUnzippedBufferedReaderOrErrorMessageFromName(name, true,
             false, false);
+        if (name.indexOf("|") >= 0)
+          name = (subFileList = TextFormat.split(name, "|"))[0];
         if (t instanceof BufferedReader) {
           reader = (BufferedReader) t;
           createAtomSetCollection();

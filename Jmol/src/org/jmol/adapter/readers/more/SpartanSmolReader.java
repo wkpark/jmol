@@ -39,6 +39,41 @@ import org.jmol.util.Logger;
 
 public class SpartanSmolReader extends SpartanInputReader {
 
+  private class MoleculeRecord {
+    float[] mat = new float[16];
+    // last 16x4 bytes constitutes the 4x4 matrix, using doubles
+    MoleculeRecord(String binaryCodes) {
+      String[] tokens = getTokens(binaryCodes.trim());
+      byte[] bytes = new byte[tokens.length];
+      for (int i = 0; i < tokens.length;i++)
+        bytes[i] = (byte) Integer.parseInt(tokens[i], 16);
+      for (int i = 16, j = bytes.length; --i >= 0; j -= 8)
+        mat[i] = bytesToDoubleToFloat(bytes, j);        
+
+      //for (int i = 0; i < 16; i+=4)
+        //System.out.println(mat[i] + " " + mat[i+1] + " " + mat[i + 2] + " " + mat[i + 3]);
+    }
+    
+    private float bytesToDoubleToFloat(byte[] bytes, int j) {
+      double d = Double.longBitsToDouble((((long) bytes[--j]) & 0xff) << 56
+          | (((long) bytes[--j]) & 0xff) << 48
+          | (((long) bytes[--j]) & 0xff) << 40 
+          | (((long) bytes[--j]) & 0xff) << 32
+          | (((long) bytes[--j]) & 0xff) << 24
+          | (((long) bytes[--j]) & 0xff) << 16
+          | (((long) bytes[--j]) & 0xff) << 8
+          | (((long) bytes[--j]) & 0xff));
+      return (float) d;
+    }
+
+    protected void setTrans() {
+      setTransform(
+          mat[0], mat[1], mat[2], 
+          mat[4], mat[5], mat[6], 
+          mat[8], mat[9], mat[10]);
+    }
+  }
+
   private boolean isCompoundDocument;
   private boolean isZipFile;
   private boolean isDirectory;
@@ -68,7 +103,7 @@ public class SpartanSmolReader extends SpartanInputReader {
       boolean iHaveModel = false;
       while (line != null) {
         Logger.debug(line);
-        if (line.indexOf("JMOL_MODEL") >= 0) {
+        if (line.indexOf("JMOL_MODEL") >= 0 && !line.startsWith("END")) {
 
           // bogus type added by Jmol as a marker only
 
@@ -86,8 +121,14 @@ public class SpartanSmolReader extends SpartanInputReader {
           iHaveModel = true;
           atomSetCollection.newAtomSet();
           moData = new Hashtable();
-          String title = (String) titles.get("Title" + modelNo);
-          title = "Profile " + modelNo + (title == null ? "" : ": " + title);
+          String title;
+          if (modelNo == Integer.MIN_VALUE) {
+            modelNo = 1;
+            title = "Model " + line.substring(line.lastIndexOf(" ") + 1);
+          } else  {
+            title = (String) titles.get("Title" + modelNo);
+            title = "Profile " + modelNo + (title == null ? "" : ": " + title);
+          }
           Logger.info(title);
           atomSetCollection.setAtomSetAuxiliaryInfo("title", title);
           atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.FALSE);
@@ -110,7 +151,7 @@ public class SpartanSmolReader extends SpartanInputReader {
           } else if (lcline.endsWith("output")) {
             readOutput();
             continue;
-          } else if (lcline.endsWith("molecule")) {
+          } else if (lcline.endsWith("molecule") || lcline.endsWith("molecule\\asbinarystring")) {
             readTransform();
             continue;
           } else if (lcline.endsWith("proparc")
@@ -186,17 +227,11 @@ public class SpartanSmolReader extends SpartanInputReader {
   }
 
   private void readTransform() throws Exception {
-    String[] tokens = getTokens(readLine());
-    // created with flag: binaryDoubleAsString
-    //5.2494528783E-313 1.043772282734E-312 7.2911220059756244E-304 2.901580574423E-312 
+    // created with flag: asBinaryString
+    //
     //0.0 0.0 1.0 0.0 -1.0 0.0 0.0 0.0 0.0 -1.0 0.0 0.0 0.6250277955447784 1.7865956568574344 0.3608597599807504 1.0 
-    if (tokens.length > 14)
-      setTransform(
-        parseFloat(tokens[4]), parseFloat(tokens[5]), parseFloat(tokens[6]),
-        parseFloat(tokens[8]), parseFloat(tokens[9]), parseFloat(tokens[10]),
-        parseFloat(tokens[12]), parseFloat(tokens[13]), parseFloat(tokens[14]));
-    else
-      System.out.println("cannot read Spartan Molecule record");
+    MoleculeRecord mr = new MoleculeRecord(readLine());
+    mr.setTrans();
   }
 
   private boolean readArchiveHeader()

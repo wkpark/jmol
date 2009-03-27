@@ -126,18 +126,18 @@ public class CompoundDocument extends BinaryDocument {
   public StringBuffer getAllData() {
     return getAllData(null);
   }
-  public StringBuffer getAllData(String binaryAsDoubleList) {
+  public StringBuffer getAllData(String binaryFileList) {
     data = new StringBuffer();
     data.append("Compound Document File Directory: ");
     data.append(getDirectoryListing("|"));
     data.append("\n");
-    binaryAsDoubleList = "|" + binaryAsDoubleList + "|";
+    binaryFileList = "|" + binaryFileList + "|";
     for (int i = 0; i < directory.size(); i++) {
       CmpDocDirectoryEntry thisEntry = (CmpDocDirectoryEntry) directory.get(i);
-      System.out.println(thisEntry.entryName);
+      Logger.info("reading " + thisEntry.entryName);
       if (!thisEntry.isEmpty && thisEntry.entryType != 5) {
         data.append("BEGIN Compound Document Entry: ").append(thisEntry.entryName).append("\n");            
-        data.append(getFileAsString(thisEntry, binaryAsDoubleList != null && binaryAsDoubleList.indexOf("|" + thisEntry.entryName + "|") >= 0));
+        data.append(getFileAsString(thisEntry, binaryFileList != null && binaryFileList.indexOf("|" + thisEntry.entryName + "|") >= 0));
         data.append("\n");
         data.append("END Compound Document Entry: ").append(thisEntry.entryName).append("\n");            
       }
@@ -399,23 +399,23 @@ public class CompoundDocument extends BinaryDocument {
       //+ getDirectoryListing("\n"));
   }
 
-  private StringBuffer getFileAsString(CmpDocDirectoryEntry thisEntry, boolean doubleAsString) {
+  private StringBuffer getFileAsString(CmpDocDirectoryEntry thisEntry, boolean asBinaryString) {
     if(thisEntry.isEmpty)
       return new StringBuffer();
     //System.out.println(thisEntry.entryName + " " + thisEntry.entryType + " " + thisEntry.lenStream + " " + thisEntry.isStandard + " " + thisEntry.SIDfirstSector);
     return (thisEntry.isStandard ? getStandardStringData(
-            thisEntry.SIDfirstSector, thisEntry.lenStream, doubleAsString)
-            : getShortStringData(thisEntry.SIDfirstSector, thisEntry.lenStream, doubleAsString));
+            thisEntry.SIDfirstSector, thisEntry.lenStream, asBinaryString)
+            : getShortStringData(thisEntry.SIDfirstSector, thisEntry.lenStream, asBinaryString));
   }
 
   private StringBuffer getStandardStringData(int thisSID, int nBytes,
-                                             boolean doubleAsString) {
+                                             boolean asBinaryString) {
     StringBuffer data = new StringBuffer();
     byte[] byteBuf = new byte[sectorSize];
     try {
       while (thisSID > 0 && nBytes > 0) {
         gotoSector(thisSID);
-        nBytes = getSectorData(data, (doubleAsString ? null : byteBuf), sectorSize, nBytes);
+        nBytes = getSectorData(data, byteBuf, sectorSize, nBytes, asBinaryString);
         thisSID = SAT[thisSID];
       }
       if (nBytes == -9999)
@@ -426,19 +426,20 @@ public class CompoundDocument extends BinaryDocument {
     return data;
   }
 
-  private int getSectorData(StringBuffer data, byte[] byteBuf, int nSectorBytes, int nBytes) throws Exception {
-    if (byteBuf == null) {
-      for (int i = 0; i < nSectorBytes; i += 8) {
-        data.append(readDouble()).append(" ");
-        nBytes -= 8;
-        if (nBytes < 8)
+  private int getSectorData(StringBuffer data, byte[] byteBuf,
+                            int nSectorBytes, int nBytes, boolean asBinaryString)
+      throws Exception {
+    readByteArray(byteBuf);
+    if (asBinaryString) {
+      for (int i = 0; i < nSectorBytes; i++) {
+        data.append(Integer.toHexString(((int)byteBuf[i]) & 0xFF)).append(" ");
+        if (--nBytes < 1)
           break;
       }
     } else {
-      readByteArray(byteBuf);
       for (int i = 0; i < nSectorBytes; i++) {
         if (byteBuf[i] == 0)
-          return -9999;
+          return -9999; // don't allow binary data
         data.append((char) byteBuf[i]);
         if (--nBytes < 1)
           break;
@@ -446,7 +447,7 @@ public class CompoundDocument extends BinaryDocument {
     }
     return nBytes;
   }
-  private StringBuffer getShortStringData(int shortSID, int nBytes, boolean doubleAsString) {
+  private StringBuffer getShortStringData(int shortSID, int nBytes, boolean asBinaryString) {
     StringBuffer data = new StringBuffer();
     byte[] byteBuf = new byte[shortSectorSize];
     int ptShort = 0;
@@ -462,7 +463,7 @@ public class CompoundDocument extends BinaryDocument {
           thisSID = SAT[thisSID];
         }
         seek(getOffset(thisSID) + (shortSID - ptShort) * shortSectorSize);
-        nBytes = getSectorData(data, (doubleAsString ? null : byteBuf), shortSectorSize, nBytes);
+        nBytes = getSectorData(data, byteBuf, shortSectorSize, nBytes, asBinaryString);
         shortSID = SSAT[shortSID];
       }
     } catch (Exception e) {

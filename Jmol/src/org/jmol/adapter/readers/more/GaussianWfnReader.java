@@ -28,25 +28,25 @@ import org.jmol.adapter.smarter.*;
 
 
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Vector;
+//import java.io.IOException;
+//import java.util.Hashtable;
+//import java.util.Vector;
 
-import javax.vecmath.Vector3f;
+//import javax.vecmath.Vector3f;
 
-import org.jmol.api.JmolAdapter;
-import org.jmol.util.Logger;
+//import org.jmol.api.JmolAdapter;
+//import org.jmol.util.Logger;
 
 /**
- * Reader for Gaussian Wfn files
+ * Reader for Gaussian Wfn files -- not implemented yet
  *
  **/
 public class GaussianWfnReader extends AtomSetCollectionReader {
-  int atomCount = 0;
-  int shellCount = 0;
-  int gaussianCount = 0;
-  Hashtable moData = new Hashtable();
-  Vector orbitals = new Vector();
+//  int atomCount = 0;
+//  int shellCount = 0;
+//  int gaussianCount = 0;
+//  Hashtable moData = new Hashtable();
+//  Vector orbitals = new Vector();
 
   
   /* I thought perhaps this would be enough, but now I'm not so sure.

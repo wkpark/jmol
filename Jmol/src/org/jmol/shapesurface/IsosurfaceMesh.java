@@ -5,7 +5,7 @@
  *
  * Copyright (C) 2005  Miguel, The Jmol Development Team
  *
- * Contact: miguel@jmol.org, jmol-developers@lists.sf.net
+ * Contact: jmol-developers@lists.sf.net, jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public

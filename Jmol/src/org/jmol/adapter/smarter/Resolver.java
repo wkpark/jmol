@@ -544,6 +544,7 @@ public class Resolver {
   private final static int SPECIAL_CUBE               = 7;
   private final static int SPECIAL_ALCHEMY            = 8;
   
+  // these next are needed by the XML reader
   
   public final static int SPECIAL_ARGUS_XML   = 9;
   public final static int SPECIAL_CML_XML     = 10;
@@ -557,7 +558,7 @@ public class Resolver {
   public final static int SPECIAL_MOLPRO_DOM  = 17;
   public final static int SPECIAL_ODYSSEY_DOM = 18;
 
-  final public static String[][] specialTags = {
+  public final static String[][] specialTags = {
     { "Jme" },
     { "MopacGraphf" },
     { "V3000" },

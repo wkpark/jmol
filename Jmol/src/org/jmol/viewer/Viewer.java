@@ -57,6 +57,7 @@ import java.awt.MediaTracker;
 import java.awt.Rectangle;
 import java.awt.Component;
 import java.awt.Event;
+//import java.util.Date;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Properties;
@@ -2905,6 +2906,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //from RepaintManager
     if (display == null)
       return;
+    //System.out.println((new Date()).getTime() + " viewer.repaint ");
     display.repaint();
   }
 
@@ -3179,8 +3181,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // so we bypass Eval and mainline on the other viewer!
     // refresh(-1) is used in stateManager to force no repaint)
     // refresh(3) is used by operations to ONLY do a repaint -- no syncing
-    if (repaintManager == null)
+    if (repaintManager == null || !refreshing)
       return;
+    //System.out.println(" viewer.refresh " + strWhy);
+    //System.out.flush();
     if (mode > 0)
       repaintManager.refresh();
     if (mode % 3 != 0 && statusManager.doSync())
@@ -6015,6 +6019,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                         int connectOperation, BitSet bsA, BitSet bsB,
                         BitSet bsBonds, boolean isBonds) {
     //eval
+    //System.out.println((new Date()).getTime() + " connect" + minDistance + " " + maxDistance);
     clearModelDependentObjects();
     clearAllMeasurements(); // necessary for serialization
     return modelSet.makeConnections(minDistance, maxDistance, order,

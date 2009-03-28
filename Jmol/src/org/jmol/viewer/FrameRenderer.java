@@ -24,6 +24,8 @@
 
 package org.jmol.viewer;
 
+//import java.util.Date;
+
 import org.jmol.api.JmolExportInterface;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.*;
@@ -46,11 +48,12 @@ public class FrameRenderer {
     this.viewer = viewer;
   }
 
-  void render(Graphics3D g3d, ModelSet modelSet) {  //, Rectangle rectClip
+  void render(Graphics3D g3d, ModelSet modelSet) { // , Rectangle rectClip
 
     if (modelSet == null || !viewer.mustRenderFlag())
       return;
-    //System.out.println("Frame: rendering viewer "+ viewer + " thread " + Thread.currentThread());    
+    // System.out.println("Frame: rendering viewer "+ viewer + " thread " +
+    // Thread.currentThread());
     logTime = viewer.getTestFlag1();
 
     viewer.finalizeTransformParameters();
@@ -58,16 +61,27 @@ public class FrameRenderer {
     if (logTime)
       Logger.startTimer();
 
-    g3d.renderBackground(null);
-    for (int i = 0; i < JmolConstants.SHAPE_MAX && g3d.currentlyRendering(); ++i) {
-      Shape shape = modelSet.getShape(i);
+    // System.out.println(" render 1");
 
-      if (shape == null)
-        continue;
-      
-      //System.out.println("FrameRenderer: " + i + " " + JmolConstants.getShapeClassName(i));
-        getRenderer(i, g3d).render(g3d, modelSet, shape); //, rectClip
+    try {
+      g3d.renderBackground(null);
+      for (int i = 0; i < JmolConstants.SHAPE_MAX && g3d.currentlyRendering(); ++i) {
+        Shape shape = modelSet.getShape(i);
+
+        if (shape == null)
+          continue;
+
+        // System.out.println("FrameRenderer: " + i + " " +
+        // JmolConstants.getShapeClassName(i));
+        getRenderer(i, g3d).render(g3d, modelSet, shape); // , rectClip
+      }
+
+    } catch (Exception e) {
+      Logger.error("rendering error -- perhaps use \"set refreshing FALSE/TRUE\" ? ");
     }
+
+    // System.out.println((new Date()).getTime() + " render 2");
+
     if (logTime)
       Logger.checkTimer("render time");
   }

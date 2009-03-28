@@ -1889,34 +1889,37 @@ abstract class TransformManager {
           boolean isInMotion = viewer.getInMotion();
           if (isInMotion)
             sleepTime += 1000;
-          if (refreshNeeded && spinOn && !isInMotion) {
-            float angle = 0;
-            if (isSpinInternal || isSpinFixed) {
-              angle = (isSpinInternal ? internalRotationAxis
-                  : fixedRotationAxis).angle
-                  / myFps;
-              if (isSpinInternal) {
-                rotateAxisAngleRadiansInternal(angle, bsAtoms);
-              } else {
-                rotateAxisAngleRadiansFixed(angle, bsAtoms);
-              }
-              nDegrees += Math.abs(angle / twoPI * 360f);
-            } else { // old way: Rx * Ry * Rz
-              if (spinX != 0) {
-                rotateXRadians(spinX * radiansPerDegree / myFps, null);
-              }
-              if (spinY != 0) {
-                rotateYRadians(spinY * radiansPerDegree / myFps, null);
-              }
-              if (spinZ != 0) {
-                rotateZRadians(spinZ * radiansPerDegree / myFps);
-              }
-            }
-            viewer.refresh(1, "TransformationManager:SpinThread:run()");
-            if (nDegrees >= endDegrees - 0.00001)
-              setSpinOn(false);
-          }
           try {
+            if (refreshNeeded && spinOn && !isInMotion) {
+              float angle = 0;
+              if (isSpinInternal || isSpinFixed) {
+                angle = (isSpinInternal ? internalRotationAxis
+                    : fixedRotationAxis).angle
+                    / myFps;
+                if (isSpinInternal) {
+                  rotateAxisAngleRadiansInternal(angle, bsAtoms);
+                } else {
+                  rotateAxisAngleRadiansFixed(angle, bsAtoms);
+                }
+                nDegrees += Math.abs(angle / twoPI * 360f);
+              } else { // old way: Rx * Ry * Rz
+                if (spinX != 0) {
+                  rotateXRadians(spinX * radiansPerDegree / myFps, null);
+                }
+                if (spinY != 0) {
+                  rotateYRadians(spinY * radiansPerDegree / myFps, null);
+                }
+                if (spinZ != 0) {
+                  rotateZRadians(spinZ * radiansPerDegree / myFps);
+                }
+              }
+              while (!isInterrupted() && !viewer.getRefreshing()) {
+                Thread.sleep(10);
+              }
+              viewer.refresh(1, "TransformationManager:SpinThread:run()");
+              if (nDegrees >= endDegrees - 0.00001)
+                setSpinOn(false);
+            }
             Thread.sleep(sleepTime);
           } catch (InterruptedException e) {
             break;

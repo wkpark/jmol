@@ -79,6 +79,7 @@ class RepaintManager {
           viewer.restoreModelRotation(formerModelIndex);
       }
     }
+    //System.out.println("set trajectory " + currentModelIndex);
     viewer.setTrajectory(currentModelIndex);
     if (currentModelIndex == -1 && clearBackgroundModel)
       setBackgroundModelIndex(-1);  
@@ -210,6 +211,8 @@ class RepaintManager {
   }
   
   void render(Graphics3D g3d, ModelSet modelSet) {//, Rectangle rectClip
+    if (!viewer.getRefreshing())
+      return;
     frameRenderer.render(g3d, modelSet); //, rectClip
     Rectangle band = viewer.getRubberBandSelection();
     if (band != null && g3d.setColix(viewer.getColixRubberband()))
@@ -495,6 +498,7 @@ class RepaintManager {
           Thread.sleep(sleepTime);
         boolean isFirst = true;
         while (!isInterrupted() && animationOn) {
+          //System.out.println(" anim thread " + currentModelIndex + " " + framePointer);
           if (currentModelIndex == framePointer) {
             targetTime += firstFrameDelayMs;
             sleepTime = targetTime
@@ -518,7 +522,11 @@ class RepaintManager {
           targetTime += (1000 / animationFps);
           sleepTime = targetTime
               - (int) (System.currentTimeMillis() - timeBegin);
-          refresh();
+
+          while(!isInterrupted() && animationOn && !viewer.getRefreshing()) {
+            Thread.sleep(10); 
+          }
+          viewer.refresh(1, "animationThread");
           sleepTime = targetTime
               - (int) (System.currentTimeMillis() - timeBegin);
           if (sleepTime > 0)

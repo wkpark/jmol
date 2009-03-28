@@ -52,9 +52,6 @@ public class SpartanSmolReader extends SpartanInputReader {
       mat = new float[16];
       for (int i = 16, j = bytes.length; --i >= 0; j -= 8)
         mat[i] = bytesToDoubleToFloat(bytes, j);        
-
-      //for (int i = 0; i < 16; i+=4)
-        //System.out.println(mat[i] + " " + mat[i+1] + " " + mat[i + 2] + " " + mat[i + 3]);
     }
     
     private float bytesToDoubleToFloat(byte[] bytes, int j) {
@@ -79,12 +76,9 @@ public class SpartanSmolReader extends SpartanInputReader {
     }
   }
 
-  private boolean isCompoundDocument;
-  private boolean isZipFile;
-  private boolean isDirectory;
-  private String endCheck;
-  
+  private String endCheck = "END Directory Entry ";
   private Hashtable moData = new Hashtable();
+  private String title;
 
   SpartanArchive spartanArchive;
 
@@ -93,17 +87,7 @@ public class SpartanSmolReader extends SpartanInputReader {
     this.reader = reader;
     try {
       readLine();
-      isCompoundDocument = (line.indexOf("Compound Document") >= 0);
-      isZipFile = (line.indexOf("Zip File") >= 0);
-      isDirectory = (line.indexOf("Directory") >= 0);
-      atomSetCollection = new AtomSetCollection("spartan "
-          + (isCompoundDocument ? "compound document file"
-              : isDirectory ? "directory" : isZipFile ? "zip file" : "smol"));
-      endCheck = (isCompoundDocument ? "END Compound Document Entry"
-          : isZipFile ? "END Zip File" : isDirectory ? "END Directory Entry "
-              : null);
-      if (isZipFile)
-        isDirectory = true;
+      atomSetCollection = new AtomSetCollection("spartan smol");
       boolean iHaveModelStatement = false;
       boolean iHaveModel = false;
       while (line != null) {
@@ -125,7 +109,6 @@ public class SpartanSmolReader extends SpartanInputReader {
           iHaveModel = true;
           atomSetCollection.newAtomSet();
           moData = new Hashtable();
-          String title;
           if (modelNo == Integer.MIN_VALUE) {
             modelNo = 1;
             title = "Model " + line.substring(line.lastIndexOf(" ") + 1);
@@ -135,6 +118,7 @@ public class SpartanSmolReader extends SpartanInputReader {
           }
           Logger.info(title);
           atomSetCollection.setAtomSetAuxiliaryInfo("title", title);
+          atomSetCollection.setAtomSetName(title);
           atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.FALSE);
           atomSetCollection.setAtomSetNumber(modelNo);
           readLine();
@@ -152,13 +136,15 @@ public class SpartanSmolReader extends SpartanInputReader {
             readInputRecords();
             if (atomSetCollection.errorMessage != null)
               return atomSetCollection;
+            if (title != null)
+              atomSetCollection.setAtomSetName(title);
           } else if (lcline.endsWith("_output")) {
             readLine();
             continue;
           } else if (lcline.endsWith("output")) {
             readOutput();
             continue;
-          } else if (lcline.endsWith("molecule") || lcline.endsWith("molecule\\asbinarystring")) {
+          } else if (lcline.endsWith("molecule") || lcline.endsWith("molecule:asbinarystring")) {
             readTransform();
             continue;
           } else if (lcline.endsWith("proparc")

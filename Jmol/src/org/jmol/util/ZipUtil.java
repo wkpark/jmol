@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.io.StringBufferInputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Hashtable;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -69,9 +70,82 @@ public class ZipUtil {
         && bytes[3] == 0x04);
   }
 
+  public static ZipInputStream getStream(InputStream is) {
+    return (is instanceof ZipInputStream ? (ZipInputStream) is 
+        : is instanceof BufferedInputStream ? new ZipInputStream (is)
+        : new ZipInputStream(new BufferedInputStream(is))); 
+  }
+  
+  /**
+   * reads a ZIP file and saves all data in a Hashtable
+   * so that the files may be organized later in a different order. Also adds
+   * a #Directory_Listing entry.
+   * 
+   * Files are bracketed by BEGIN Directory Entry and END Directory Entry lines, 
+   * similar to CompoundDocument.getAllData.
+   * 
+   * @param is
+   * @param subfileList
+   * @param name0            prefix for entry listing 
+   * @param binaryFileList   |-separated list of files that should be saved
+   *                         as xx xx xx hex byte strings. The directory listing
+   *                         is appended with ":asBinaryString"
+   * @param fileData
+   */
+  public static void getAllData(InputStream is, String[] subfileList,
+                                String name0, String binaryFileList,
+                                Hashtable fileData) {
+    ZipInputStream zis = getStream(is);
+    ZipEntry ze;
+    StringBuffer listing = new StringBuffer();
+    binaryFileList = "|" + binaryFileList + "|";
+    String prefix = TextFormat.join(subfileList, '/', 1);
+    String prefixd = null;
+    if (prefix != null) {
+      prefixd = prefix.substring(0, prefix.indexOf("/") + 1);
+      if (prefixd.length() == 0)
+        prefixd = null;
+    }
+    try {
+      while ((ze = zis.getNextEntry()) != null) {
+        String name = ze.getName();
+        if (prefix != null && prefixd != null
+            && !(name.equals(prefix) || name.startsWith(prefixd)))
+          continue;
+        //System.out.println("ziputil: " + name);
+        listing.append(name).append('\n');
+        String sname = "|" + name.substring(name.lastIndexOf("/") + 1) + "|";
+        boolean asBinaryString = (binaryFileList.indexOf(sname) >= 0);
+        byte[] bytes = getZipEntryAsBytes(zis);
+        String str;
+        if (asBinaryString) {
+          str = getBinaryStringForBytes(bytes);
+          name += ":asBinaryString";
+        } else {
+          str = new String(bytes);
+        }
+        str = "BEGIN Directory Entry " + name + "\n" + str
+            + "\nEND Directory Entry " + name + "\n";
+        fileData.put(name0 + "|" + name, str);
+      }
+    } catch (Exception e) {
+    }
+    fileData.put("#Directory_Listing", listing.toString());
+  }
+
+  public static String getBinaryStringForBytes(byte[] bytes) {
+    StringBuffer ret = new StringBuffer();
+    for (int i = 0; i < bytes.length; i++)
+      ret.append(Integer.toHexString(((int) bytes[i]) & 0xFF))
+          .append(' ');
+    return ret.toString();
+  }
+  
   /**
    *  iteratively drills into zip files of zip files to extract file content
-   *  or zip file directory. Also works with JAR files.
+   *  or zip file directory. Also works with JAR files. 
+   *  
+   *  Does not return "__MACOS" paths
    * 
    * @param is
    * @param list
@@ -97,13 +171,14 @@ public class ZipUtil {
           if (isAll || name.startsWith(fileName))
             ret.append(name).append('\n');
         }
+        String str = ret.toString();
         if (asInputStream)
-          return new StringBufferInputStream(ret.toString());
-        return ret.toString();
+          return new StringBufferInputStream(str);
+        return str;
       }
       boolean asBinaryString = false;
-      if (fileName.indexOf("\\asBinaryString") > 0) {
-        fileName = fileName.substring(0, fileName.indexOf("\\asBinaryString"));
+      if (fileName.indexOf(":asBinaryString") > 0) {
+        fileName = fileName.substring(0, fileName.indexOf(":asBinaryString"));
         asBinaryString = true;
       }
       while ((ze = zis.getNextEntry()) != null) {
@@ -186,7 +261,7 @@ public class ZipUtil {
       String fileName = ze.getName();
       if (addManifest && fileName.equals("JmolManifest"))
         manifest = getZipEntryAsString(zis); 
-      else
+      else if (!fileName.startsWith("__MACOS")) // resource fork not nec.
         v.addElement(fileName);
     }
     zis.close();
@@ -242,4 +317,5 @@ public class ZipUtil {
     System.arraycopy(bytes, 0, buf, 0, totalLen);
     return buf;
   }
+
 }

@@ -249,12 +249,7 @@ public class AtomSetCollection {
           collection.getAtomSetCollectionAuxiliaryInfo(globalBooleans[i])))
         setGlobalBoolean(i);
   }
-/*
-  protected void finalize() {
-    //System.out.println(this + " finalized");
-      try{super.finalize();}catch(Throwable t){}
-  }
-*/
+
   void finish() {
     atoms = null;
     atomSetAtomCounts = new int[16];

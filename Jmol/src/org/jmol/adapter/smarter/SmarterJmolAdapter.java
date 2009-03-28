@@ -27,7 +27,6 @@ package org.jmol.adapter.smarter;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolFileReaderInterface;
 import org.jmol.util.CompoundDocument;
-import org.jmol.util.Escape;
 import org.jmol.util.TextFormat;
 import org.jmol.util.ZipUtil;
 import org.jmol.util.Logger;
@@ -154,17 +153,27 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return staticGetAtomSetCollectionOrBufferedReaderFromZip(is, fileName, zipDirectory, htParams, 1, asBufferedReader);
   }
 
-  private static Object staticGetAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory,
-                             Hashtable htParams, int subFilePtr, boolean asBufferedReader) {
+  private static Object staticGetAtomSetCollectionOrBufferedReaderFromZip(
+                                                                          InputStream is,
+                                                                          String fileName,
+                                                                          String[] zipDirectory,
+                                                                          Hashtable htParams,
+                                                                          int subFilePtr,
+                                                                          boolean asBufferedReader) {
 
+    // we're here because user is using | in a load file name
+    // or we are opening a zip file.
+    
     boolean doCombine = (subFilePtr == 1);
-    int[] params = (htParams == null ? null : (int[]) htParams
-        .get("params"));
+    int[] params = (htParams == null ? null : (int[]) htParams.get("params"));
     String[] subFileList = (htParams == null ? null : (String[]) htParams
         .get("subFileList"));
+    if (subFileList == null)
+      subFileList = Resolver.checkSpecialInZip(zipDirectory);
+    
     String subFileName = (subFileList == null
         || subFilePtr >= subFileList.length ? null : subFileList[subFilePtr]);
-    if (subFileName != null 
+    if (subFileName != null
         && (subFileName.startsWith("/") || subFileName.startsWith("\\")))
       subFileName = subFileName.substring(1);
     int selectedFile = (params == null ? 1 : params[0]);
@@ -188,24 +197,44 @@ public class SmarterJmolAdapter extends JmolAdapter {
       haveManifest = false;
     Vector vCollections = new Vector();
     Hashtable htCollections = (haveManifest ? new Hashtable() : null);
-    boolean isSpartan = false;
-    //0 entry is manifest
-    for (int i = 1; i < zipDirectory.length; i++) {
-      if (zipDirectory[i].indexOf("_spartandir") >= 0) {
-        isSpartan = true;
-        break;
-      }
-    }
     int nFiles = 0;
-    StringBuffer data = new StringBuffer();
-    if (isSpartan) {
-      data.append("Zip File Directory: ").append("\n").append(
-          Escape.escape(zipDirectory)).append("\n");
-    }
-    ZipInputStream zis = (is instanceof ZipInputStream ? (ZipInputStream) is 
-        : new ZipInputStream(new BufferedInputStream(is)));
-    ZipEntry ze;
+    // 0 entry is manifest
+
+    // check for a Spartan directory. This is not entirely satisfying,
+    // because we aren't reading the file in the proper sequence.
+    // this code is a hack that should be replaced with the sort of code
+    // running in FileManager now.
+
+    Object ret = Resolver.checkSpecialData(is, zipDirectory);
+    if (ret instanceof String)
+      return (String) ret;
+    StringBuffer data = (StringBuffer) ret;
     try {
+      if (data != null) {
+        BufferedReader reader = new BufferedReader(new StringReader(data
+            .toString()));
+        if (asBufferedReader) {
+          return reader;
+        }
+        Object atomSetCollectionOrError = Resolver
+            .getAtomCollectionAndCloseReader(fileName, null, reader, null, -1);
+        if (atomSetCollectionOrError instanceof String)
+          return atomSetCollectionOrError;
+        if (atomSetCollectionOrError instanceof AtomSetCollection) {
+          AtomSetCollection atomSetCollection = (AtomSetCollection) atomSetCollectionOrError;
+          if (atomSetCollection.errorMessage != null) {
+            if (ignoreErrors)
+              return null;
+            return atomSetCollection.errorMessage;
+          }
+          return atomSetCollection;
+        }
+        if (ignoreErrors)
+          return null;
+        return "unknown reader error";
+      }
+      ZipInputStream zis = ZipUtil.getStream(is);
+      ZipEntry ze;
       while ((ze = zis.getNextEntry()) != null
           && (selectedFile <= 0 || vCollections.size() < selectedFile)) {
         if (ze.isDirectory())
@@ -217,19 +246,14 @@ public class SmarterJmolAdapter extends JmolAdapter {
         if (thisEntry.equals("JmolManifest") || haveManifest
             && exceptFiles == manifest.indexOf("|" + thisEntry + "|") >= 0)
           continue;
-        if (isSpartan) {
-          data.append("\nBEGIN Zip File Entry: ").append(thisEntry)
-              .append("\n");
-          data.append(new String(bytes));
-          data.append("\nEND Zip File Entry: ").append(thisEntry).append("\n");
-          data.append(ze.getName()).append("/n");
-        } else if (ZipUtil.isZipFile(bytes)) {
+        if (ZipUtil.isZipFile(bytes)) {
           BufferedInputStream bis = new BufferedInputStream(
               new ByteArrayInputStream(bytes));
           String[] zipDir2 = ZipUtil.getZipDirectoryAndClose(bis, true);
           bis = new BufferedInputStream(new ByteArrayInputStream(bytes));
-          Object atomSetCollections = staticGetAtomSetCollectionOrBufferedReaderFromZip(bis, fileName
-              + "|" + thisEntry, zipDir2, htParams, ++subFilePtr, asBufferedReader);
+          Object atomSetCollections = staticGetAtomSetCollectionOrBufferedReaderFromZip(
+              bis, fileName + "|" + thisEntry, zipDir2, htParams, ++subFilePtr,
+              asBufferedReader);
           if (atomSetCollections instanceof String) {
             if (ignoreErrors)
               continue;
@@ -243,7 +267,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
           } else if (atomSetCollections instanceof BufferedReader) {
             if (doCombine)
               zis.close();
-            return atomSetCollections; // FileReader has requested a zip file BufferedReader
+            return atomSetCollections; // FileReader has requested a zip file
+            // BufferedReader
           } else {
             if (ignoreErrors)
               continue;
@@ -255,14 +280,14 @@ public class SmarterJmolAdapter extends JmolAdapter {
               new BufferedInputStream(new ByteArrayInputStream(bytes))))
               .getAllData("Molecule").toString()
               : new String(bytes));
-          BufferedReader reader = new BufferedReader(new StringReader(sData)); 
+          BufferedReader reader = new BufferedReader(new StringReader(sData));
           if (asBufferedReader) {
             if (doCombine)
               zis.close();
             return reader;
           }
-          Object atomSetCollection = Resolver.getAtomCollectionAndCloseReader(fileName + "|" + ze.getName(),
-              null, reader, htParams, -1);
+          Object atomSetCollection = Resolver.getAtomCollectionAndCloseReader(
+              fileName + "|" + ze.getName(), null, reader, htParams, -1);
           if (atomSetCollection instanceof AtomSetCollection) {
             if (haveManifest && !exceptFiles)
               htCollections.put(thisEntry, atomSetCollection);
@@ -285,27 +310,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
       }
       if (doCombine)
         zis.close();
-      if (isSpartan) {
-        BufferedReader reader = new BufferedReader(new StringReader(data.toString()));
-        if (asBufferedReader) {
-          return reader;
-        }
-        Object atomSetCollectionOrError = Resolver.getAtomCollectionAndCloseReader(fileName, null, reader, null, -1);
-        if (atomSetCollectionOrError instanceof String)
-          return atomSetCollectionOrError;
-        if (atomSetCollectionOrError instanceof AtomSetCollection) {
-          AtomSetCollection atomSetCollection = (AtomSetCollection) atomSetCollectionOrError;
-          if (atomSetCollection.errorMessage != null) {
-            if (ignoreErrors)
-              return null;
-            return atomSetCollection.errorMessage;
-          }
-          return atomSetCollection;
-        }
-        if (ignoreErrors)
-          return null;
-        return "unknown reader error";
-      }
 
       // if a manifest exists, it sets the files and file order
 
@@ -322,7 +326,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
                 + fileName);
         }
       }
-
       if (!doCombine)
         return vCollections;
       AtomSetCollection result = new AtomSetCollection(vCollections);

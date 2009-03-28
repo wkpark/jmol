@@ -500,8 +500,8 @@ abstract public class JmolPopup {
       String entryName = viewer.getModelName(i);
       if (!entryName.equals(script))
         entryName = script + ": " + entryName;
-      if (entryName.length() > 30)
-        entryName = entryName.substring(0, 20) + "...";
+      if (entryName.length() > 50)
+        entryName = entryName.substring(0, 45) + "...";
       addCheckboxMenuItem(subMenu, entryName, "model " + script + " ##", null,
           (modelIndex == i));
     }

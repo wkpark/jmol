@@ -28,6 +28,7 @@ import java.io.DataInputStream;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 //import java.io.RandomAccessFile;
+import java.util.Hashtable;
 import java.util.Vector;
 
 /* a simple compound document reader. 
@@ -126,6 +127,43 @@ public class CompoundDocument extends BinaryDocument {
   public StringBuffer getAllData() {
     return getAllData(null);
   }
+
+  /**
+   * reads a compound document directory and saves all data in a Hashtable
+   * so that the files may be organized later in a different order. Also adds
+   * a #Directory_Listing entry.
+   * 
+   * Files are bracketed by BEGIN Directory Entry and END Directory Entry lines, 
+   * similar to ZipUtil.getAllData.
+   * 
+   * @param prefix
+   * @param binaryFileList   |-separated list of files that should be saved
+   *                         as xx xx xx hex byte strings. The directory listing
+   *                         is appended with ":asBinaryString"
+   * @param fileData
+   */
+  public void getAllData(String prefix, 
+                         String binaryFileList, Hashtable fileData) {
+    fileData.put("#Directory_Listing", getDirectoryListing("|"));
+    binaryFileList = "|" + binaryFileList + "|";
+    for (int i = 0; i < directory.size(); i++) {
+      CmpDocDirectoryEntry thisEntry = (CmpDocDirectoryEntry) directory.get(i);
+      String name = thisEntry.entryName;
+      Logger.info("reading " + name);
+      if (!thisEntry.isEmpty && thisEntry.entryType != 5) {
+        boolean isBinary = (binaryFileList != null && binaryFileList.indexOf("|" + thisEntry.entryName + "|") >= 0);
+        if (isBinary)
+          name += ":asBinaryString";
+        StringBuffer data = new StringBuffer();
+        data.append("BEGIN Directory Entry ").append(name).append("\n"); 
+        data.append(getFileAsString(thisEntry, isBinary));
+        data.append("\nEND Directory Entry ").append(name).append("\n");
+        fileData.put(prefix + "/" + name, data.toString());
+      }
+    }
+    close();
+  }
+
   public StringBuffer getAllData(String binaryFileList) {
     data = new StringBuffer();
     data.append("Compound Document File Directory: ");
@@ -136,10 +174,10 @@ public class CompoundDocument extends BinaryDocument {
       CmpDocDirectoryEntry thisEntry = (CmpDocDirectoryEntry) directory.get(i);
       Logger.info("reading " + thisEntry.entryName);
       if (!thisEntry.isEmpty && thisEntry.entryType != 5) {
-        data.append("BEGIN Compound Document Entry: ").append(thisEntry.entryName).append("\n");            
+        data.append("BEGIN Directory Entry ").append(thisEntry.entryName).append("\n");            
         data.append(getFileAsString(thisEntry, binaryFileList != null && binaryFileList.indexOf("|" + thisEntry.entryName + "|") >= 0));
         data.append("\n");
-        data.append("END Compound Document Entry: ").append(thisEntry.entryName).append("\n");            
+        data.append("END Directory Entry ").append(thisEntry.entryName).append("\n");            
       }
     }
     close();

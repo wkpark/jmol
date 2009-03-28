@@ -346,6 +346,7 @@ public class FileManager {
    * @param data [0] initially path name, but returned as full path name; [1]file contents (directory listing for a ZIP/JAR file) or error string
    * @return true if successful; false on error 
    */
+  
   boolean getFileDataOrErrorAsString(String[] data) {
     data[1] = "";
     String name = data[0];
@@ -415,72 +416,111 @@ public class FileManager {
     return image;
   }
 
+  private String getFileDataAsSections(String[] info, Hashtable fileData) {
+    // load each file individually, but return files IN ORDER
+    String header = info[1];
+    StringBuffer sb = new StringBuffer();
+    sb.append(fileData.get(fileData.get("OUTPUT")));
+    for (int i = 2; i < info.length; i++) {
+      String name = info[i];
+      name = getFileDataAsSections(name, header, fileData);
+      Logger.info("reading " + name);
+      String s = (String) fileData.get(name);
+      sb.append(s);
+    }
+    return sb.toString();
+  }
+
   /**
    * delivers file contents and directory listing for a ZIP/JAR file into sb
-   *
    * 
-   * @param sb 
+   * 
+   * @param sb
    * @param name
-   * @param header 
+   * @param header
+   * @param fileData
+   * @return name of entry
    */
-  private void getFileDataAsSections(StringBuffer sb, String name, String header) {
+  private String getFileDataAsSections(String name, String header,
+                                     Hashtable fileData) {
     if (name == null)
-      return;
+      return null;
     String[] subFileList = null;
-    boolean asDouble = false;
-    String name0 = name;
-    if (name.indexOf("|") >= 0)
+    boolean asBinaryString = false;
+    String name0 = name.replace('\\', '/');
+    if (name.indexOf(":asBinaryString") >= 0) {
+      asBinaryString = true;
+      name = name.substring(0, name.indexOf(":asBinaryString"));
+    }
+    StringBuffer sb = null;
+    if (fileData.containsKey(name0))
+      return name0;
+    if (name.indexOf("#JMOL_MODEL ") >= 0) {
+      fileData.put(name0, name0 + "\n");
+      return name0;
+    }
+    if (name.indexOf("|") >= 0) {
       name = (subFileList = TextFormat.split(name, "|"))[0];
-    if (name.indexOf("\\asBinaryString") >= 0) {
-      asDouble = true;
-      name = name.substring(0, name.indexOf("\\asBinaryString"));
     }
-    Object t = getInputStreamOrErrorMessageFromName(name, false);
-    if (t instanceof String) {
-      if (name.indexOf("#JMOL_MODEL ") >= 0)
-        sb.append(name);
-      else
-        sb.append((String) t);
-      sb.append("\n");
-      return;
-    }
+    BufferedInputStream bis = null;
     try {
-      BufferedInputStream bis = new BufferedInputStream((InputStream) t, 8192);
-      InputStream is = bis;
-      if (header != null)
-        sb.append("BEGIN " + header + " " + name0 + "\n");
-      if (asDouble) {
+      Object t = getInputStreamOrErrorMessageFromName(name, false);
+      if (t instanceof String) {
+        fileData.put(name0, (String) t + "\n");
+        return name0;
+      }
+      bis = new BufferedInputStream((InputStream) t, 8192);
+      if (CompoundDocument.isCompoundDocument(bis)) {
+        CompoundDocument doc = new CompoundDocument(bis);
+        doc.getAllData(name.replace('\\', '/'), "Molecule", fileData);
+      } else if (ZipUtil.isZipFile(bis)) {
+        ZipUtil.getAllData(bis, subFileList, name.replace('\\', '/'), "Molecule", fileData);
+      } else if (asBinaryString) {
         // used for Spartan binary file reading
         BinaryDocument bd = new BinaryDocument();
         bd.setStream(bis, false);
+        sb = new StringBuffer();
+        //note -- these headers must match those in ZipUtil.getAllData and CompoundDocument.getAllData
+        if (header != null)
+          sb.append("BEGIN Directory Entry " + name0 + "\n");
         try {
-          while(true)
-            sb.append(Integer.toHexString(((int)bd.readByte()) & 0xFF)).append(' ');
-        } catch(Exception e1) {
+          while (true)
+            sb.append(Integer.toHexString(((int) bd.readByte()) & 0xFF))
+                .append(' ');
+        } catch (Exception e1) {
           sb.append('\n');
-          bis.close();
         }
-      } else if (CompoundDocument.isCompoundDocument(is)) {
-        CompoundDocument doc = new CompoundDocument(bis);
-        sb.append(doc.getAllData("Molecule"));
-      } else if (ZipUtil.isZipFile(is)) {
-        sb.append((String) ZipUtil.getZipFileContents(is, subFileList, 1, false));
+        if (header != null)
+          sb.append("\nEND Directory Entry " + name0 + "\n");
+        fileData.put(name0, sb.toString());
       } else {
-        if (isGzip(is))
-          is = new GZIPInputStream(bis);
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        BufferedReader br = new BufferedReader(new InputStreamReader(
+            isGzip(bis) ? new GZIPInputStream(bis) : (InputStream) bis));
         String line;
+        sb = new StringBuffer();
+        if (header != null)
+          sb.append("BEGIN Directory Entry " + name0 + "\n");
         while ((line = br.readLine()) != null) {
           sb.append(line);
           sb.append('\n');
         }
         br.close();
+        if (header != null)
+          sb.append("\nEND Directory Entry " + name0 + "\n");
+        fileData.put(name0, sb.toString());
       }
     } catch (Exception ioe) {
-      sb.append(ioe.getMessage());
+      fileData.put(name0, ioe.getMessage());
     }
-    if (header != null)
-      sb.append("\nEND " + header + " " + name0 + "\n");
+    if (bis != null)
+      try {
+        bis.close();
+      } catch (Exception e) {
+        //
+      }
+    if (!fileData.containsKey(name0))
+      fileData.put(name0, "FILE NOT FOUND: " + name0 + "\n");
+    return name0;
   }
 
   /**
@@ -828,29 +868,23 @@ public class FileManager {
       if (isTypeCheckOnly)
         return info;
       if (info[2] != null) {
-        StringBuffer sb = new StringBuffer();
         String header = info[1];
+        Hashtable fileData = new Hashtable();
         if (info.length == 3) {
           // we need information from the output file, info[2]
-          getFileDataAsSections(sb, info[2], header);
-          info = viewer.getModelAdapter().specialLoad(name, sb.toString());
+          String name0 = getFileDataAsSections(info[2], header, fileData);
+          fileData.put("OUTPUT", name0);
+          info = viewer.getModelAdapter().specialLoad(name,
+              (String) fileData.get(name0));
           if (info.length == 3) {
             // might have a second option
-            getFileDataAsSections(sb, info[2], header);
-            info = viewer.getModelAdapter().specialLoad(info[1], sb.toString());
+            name0 = getFileDataAsSections(info[2], header, fileData);
+            fileData.put("OUTPUT", name0);
+            info = viewer.getModelAdapter().specialLoad(info[1],
+                (String) fileData.get(name0));
           }
         }
-        // load each file individually
-        for (int i = 2; i < info.length; i++) {
-          name = info[i];
-          if (name.indexOf("#JMOL_MODEL") >= 0) {
-            sb.append(name).append("\n");
-          } else {
-            getFileDataAsSections(sb, name, header);
-            Logger.info("reading " + name);
-          }
-        }
-        return getBufferedReaderForString(sb.toString());
+        return getBufferedReaderForString(getFileDataAsSections(info, fileData));
       }
       // continuing...
       // here, for example, for an SPT file load that is not just a type check

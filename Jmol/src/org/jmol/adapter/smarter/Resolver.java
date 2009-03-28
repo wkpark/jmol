@@ -25,16 +25,19 @@
 package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.util.BitSet;
+import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import netscape.javascript.JSObject;
 
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.ZipUtil;
 
-import java.util.Hashtable;
 
 public class Resolver {
 
@@ -55,6 +58,13 @@ public class Resolver {
     return classBase + base + type + "Reader";
   }
   
+  /**
+   * From SmarterJmolAdapter.getFileTypeName(Object atomSetCollectionOrReader)
+   * just return the file type with no exception issues
+   * 
+   * @param br
+   * @return String file type
+   */
   static String getFileType(BufferedReader br) {
     try {
       return determineAtomSetCollectionReader(br, false);
@@ -64,40 +74,49 @@ public class Resolver {
   }
 
   /**
+   * 
+   * Special loading for file directories. This method is called from
+   * the FileManager via SmarterJmolAdapter. It's here because Resolver 
+   * is the place where all distinctions are made.
+   * 
    * In the case of spt files, no need to load them; here we are just checking
-   * for type In the case of .spardir directories, we need to provide a list of
+   * for type.
+   * 
+   * In the case of .spardir directories, we need to provide a list of
    * the critical files that need loading and concatenation for the
-   * SpartanSmolReader
+   * SpartanSmolReader. 
    * 
    * we return an array for which:
    * 
-   * [0] file type (class prefix) or null for SPT file [1] header to add for
-   * each BEGIN/END block [2...] files to load and concatenate
+   * [0] file type (class prefix) or null for SPT file 
+   * [1] header to add for each BEGIN/END block (ignored)
+   * [2...] files to load and concatenate
    * 
    * @param name
    * @param type
    * @return array detailing action for this set of files
    */
-  public static String[] specialLoad(String name, String type) {
+  static String[] specialLoad(String name, String type) {
     int pt = name.lastIndexOf(".spardir");
     boolean isPreliminary = (type.equals("filesNeeded?"));
     if (isPreliminary) {
+      // check for .spt file type -- Jmol script
       if (name.endsWith(".spt"))
-        return new String[] { null, null, null }; // DO NOT actually load any
-                                                  // file
+        return new String[] { null, null, null }; // DO NOT actually load any file
+      // check for zipped up spardir -- we'll automatically take first file there
       if (name.endsWith(".spardir.zip"))
-        return new String[] { "SpartanSmol", "Directory Entry ", name + "|output"};
+        return new String[] { "SpartanSmol", "Directory Entry ", "?|output"};
       name = name.replace('\\', '/');
       if (!name.endsWith(".spardir") && name.indexOf(".spardir/") < 0)
-        return null; // MUST be .spardir
-                     // or .spardir/...
+        return null; 
+      // look for .spardir or .spardir/...
       if (pt < 0)
         return null;
       if (name.lastIndexOf("/") > pt) {
-        // a single file in directory is requested
+        // a single file in the spardir directory is requested
         return new String[] { "SpartanSmol", "Directory Entry ",
             name + "/input", name + "/archive",
-            name + "/Molecule\\asBinaryString", name + "/proparc" };      
+            name + "/Molecule:asBinaryString", name + "/proparc" };      
       }
       return new String[] { "SpartanSmol", "Directory Entry ", name + "/output" };
     }
@@ -111,26 +130,53 @@ public class Resolver {
       // mac directory zipped up?
       sname = name + "|" + name.substring(pt + 1, name.length() - 4);
       return new String[] { "SpartanSmol", sname, sname + "/output" };
-    }
+    }    
+    return getSpartanFileList(name, dirNums);
+  }
+
+  /**
+   * returns the list of files to read for every Spartan spardir. Simple numbers
+   * are assumed to be Profiles; others are models.
+   * 
+   * @param name
+   * @param dirNums
+   * @return String[] list of files to read given a list of directory names
+   * 
+   */
+  private static String[] getSpartanFileList(String name, String[] dirNums) {    
     String[] files = new String[2 + dirNums.length*5];
     files[0] = "SpartanSmol";
     files[1] = "Directory Entry ";
-    pt = 2;
+    int pt = 2;
     name = name.replace('\\', '/');
+    if (name.endsWith("/"))
+      name = name.substring(0, name.length() - 1);
     for (int i = 0; i < dirNums.length; i++) {
       String path = name + (Character.isDigit(dirNums[i].charAt(0)) ? 
           "/Profile." + dirNums[i] : "/" + dirNums[i]);
       files[pt++] = path + "/#JMOL_MODEL " + dirNums[i];
       files[pt++] = path + "/input";
       files[pt++] = path + "/archive";
-      files[pt++] = path + "/Molecule\\asBinaryString";
+      files[pt++] = path + "/Molecule:asBinaryString";
       files[pt++] = path + "/proparc";
     }
     return files;
   }
 
-  static String[] getSpartanDirs(String outputFileData) {
+  /**
+   * read the output file from the Spartan directory and decide from that what
+   * files need to be read and in what order - usually M0001 or a set of Profiles.
+   * But Spartan saves the Profiles in alphabetical order, not numerical. So we
+   * fix that here.
+   * 
+   * @param outputFileData
+   * @return String[] list of files to read
+   */
+  private static String[] getSpartanDirs(String outputFileData) {
+    if (outputFileData == null)
+      return new String[]{};
     if (outputFileData.startsWith("java.io.FileNotFoundException")
+        || outputFileData.startsWith("FILE NOT FOUND")
         || outputFileData.indexOf("<html") >= 0)
       return new String[] { "M0001" };
     int pt = outputFileData.indexOf("Start- Molecule");
@@ -176,6 +222,83 @@ public class Resolver {
     return dirs;
   }
   
+  /**
+   * called by SmarterJmolAdapter to see if we can automatically assign a file
+   * from the zip file. If so, return a subfile list for this file. The first
+   * element of the list is left empty -- it would be the zipfile name. 
+   * 
+   * Assignment can be made if (1) there is only one file in the collection or
+   * (2) if the first file is xxxx.spardir/
+   * 
+   * Note that __MACOS? files are ignored by the ZIP file reader.
+   * 
+   * @param zipDirectory
+   * @return subFileList
+   */
+  static String[] checkSpecialInZip(String[] zipDirectory) {
+    String name;
+    return (zipDirectory.length < 2 ? null 
+        : (name = zipDirectory[1]).endsWith(".spardir/") || zipDirectory.length == 2 ?
+        new String[] { "",
+          (name.endsWith("/") ? name.substring(0, name.length() - 1) : name) } 
+        : null);
+  }
+
+  /**
+   * called by SmarterJmolAdapter to see if we have a Spartan directory and, if so,
+   * open it and get all the data into the correct order.
+   * 
+   * @param is
+   * @param zipDirectory
+   * @return String data for processing
+   */
+  static StringBuffer checkSpecialData(InputStream is, String[] zipDirectory) {
+    boolean isSpartan = false;
+    // 0 entry is not used here
+    for (int i = 1; i < zipDirectory.length; i++) {
+      if (zipDirectory[i].endsWith(".spardir/")
+          || zipDirectory[i].indexOf("_spartandir") >= 0) {
+        isSpartan = true;
+        break;
+      }
+    }
+    if (!isSpartan)
+      return null;
+    StringBuffer data = new StringBuffer();
+    data.append("Zip File Directory: ").append("\n").append(
+        Escape.escape(zipDirectory)).append("\n");
+    Hashtable fileData = new Hashtable();
+    ZipUtil.getAllData(is, new String[] {}, "",
+        "Molecule", fileData);
+    String prefix = "|";
+    String outputData = (String) fileData.get(prefix + "output");
+    if (outputData == null)
+      outputData = (String) fileData.get((prefix = "|" + zipDirectory[1])
+          + "output");
+    data.append(outputData);
+    String[] files = getSpartanFileList(prefix, getSpartanDirs(outputData));
+    for (int i = 2; i < files.length; i++) {
+      String name = files[i];
+      if (fileData.containsKey(name))
+        data.append(fileData.get(name));
+      else
+        data.append(name + "\n");
+    }
+    return data;
+  }
+
+  /**
+   * the main method for reading files. Called from SmarterJmolAdapter when
+   * reading a file, reading a set of files, or reading a ZIP file
+   * 
+   * @param fullName
+   * @param type
+   * @param bufferedReader
+   * @param htParams
+   * @param ptFile
+   * @return an AtomSetCollection or a String error
+   * @throws Exception
+   */
   static Object getAtomCollectionAndCloseReader(String fullName, String type,
                         BufferedReader bufferedReader, Hashtable htParams,
                         int ptFile) throws Exception {
@@ -237,6 +360,15 @@ public class Resolver {
     return finalize(atomSetCollection, fullName);
   }
 
+  /**
+   * a largely untested reader of the DOM - where in a browser there
+   * is model actually in XML format already present on the page.
+   * @author Egon Willighagen
+   * 
+   * @param DOMNode
+   * @return an AtomSetCollection or a String error
+   * @throws Exception
+   */
   static Object DOMResolve(Object DOMNode) throws Exception {
     String className = null;
     Class atomSetCollectionReaderClass;
@@ -262,6 +394,8 @@ public class Resolver {
     return finalize(atomSetCollection, "DOM node");
   }
 
+  ////// PRIVATE METHODS ///////
+  
   private static final String CML_NAMESPACE_URI = "http://www.xml-cml.org/schema";
 
   private static String getXmlType(JSObject DOMNode) {
@@ -278,7 +412,7 @@ public class Resolver {
     return "unidentified " + specialTags[SPECIAL_CML_DOM][0];
   }
 
-  static Object finalize(AtomSetCollection atomSetCollection, String filename) {
+  private static Object finalize(AtomSetCollection atomSetCollection, String filename) {
     String fileType = atomSetCollection.fileTypeName;
     if (fileType.indexOf("(") >= 0)
       fileType = fileType.substring(0, fileType.indexOf("("));
@@ -296,7 +430,24 @@ public class Resolver {
     return atomSetCollection;
   }
 
-  static String determineAtomSetCollectionReader(BufferedReader bufferedReader, boolean returnLines)
+  /**
+   * the main resolver method. One of the great advantages of Jmol is that it can
+   * smartly determine a file type from its contents. In cases where this is not possible,
+   * one can force a file type using a prefix to a filename. For example:
+   * 
+   * load mol2::xxxx.whatever
+   * 
+   * This is only necessary for a few file types, where only numbers are involved --
+   * molecular dynamics coordinate files, for instance (mdcrd).
+   * 
+   * We must do this in a very specific order. DON'T MESS WITH THIS!
+   * 
+   * @param bufferedReader
+   * @param returnLines
+   * @return readerName or a few lines, if requested, or null
+   * @throws Exception
+   */
+  private static String determineAtomSetCollectionReader(BufferedReader bufferedReader, boolean returnLines)
       throws Exception {
     String[] lines = new String[16];
     LimitedLineReader llr = new LimitedLineReader(bufferedReader, 16384);
@@ -360,7 +511,6 @@ public class Resolver {
         }
       }
     }
-
     return (returnLines ? "\n" + lines[0] + "\n" + lines[1] + "\n" + lines[2] + "\n" : null);
   }
 
@@ -384,30 +534,28 @@ public class Resolver {
     return "unidentified " + specialTags[SPECIAL_CML_XML][0];
   }
 
-  final static int SPECIAL_JME                = 0;
-  final static int SPECIAL_MOPACGRAPHF        = 1;
-  final static int SPECIAL_V3000              = 2;
-  final static int SPECIAL_ODYSSEY            = 3;
-  final static int SPECIAL_MOL                = 4;
-  final static int SPECIAL_XYZ                = 5;
-  final static int SPECIAL_FOLDINGXYZ         = 6;
-  final static int SPECIAL_CUBE               = 7;
-  final static int SPECIAL_ALCHEMY            = 8;
+  private final static int SPECIAL_JME                = 0;
+  private final static int SPECIAL_MOPACGRAPHF        = 1;
+  private final static int SPECIAL_V3000              = 2;
+  private final static int SPECIAL_ODYSSEY            = 3;
+  private final static int SPECIAL_MOL                = 4;
+  private final static int SPECIAL_XYZ                = 5;
+  private final static int SPECIAL_FOLDINGXYZ         = 6;
+  private final static int SPECIAL_CUBE               = 7;
+  private final static int SPECIAL_ALCHEMY            = 8;
   
   
-  final public static int SPECIAL_ARGUS_XML   = 9;
-  final public static int SPECIAL_CML_XML     = 10;
-  final public static int SPECIAL_CHEM3D_XML  = 11;
-  final public static int SPECIAL_MOLPRO_XML  = 12;
-  final public static int SPECIAL_ODYSSEY_XML = 13;
+  public final static int SPECIAL_ARGUS_XML   = 9;
+  public final static int SPECIAL_CML_XML     = 10;
+  public final static int SPECIAL_CHEM3D_XML  = 11;
+  public final static int SPECIAL_MOLPRO_XML  = 12;
+  public final static int SPECIAL_ODYSSEY_XML = 13;
   
-  final public static int SPECIAL_ARGUS_DOM   = 14;
-  final public static int SPECIAL_CML_DOM     = 15;
-  final public static int SPECIAL_CHEM3D_DOM  = 16;
-  final public static int SPECIAL_MOLPRO_DOM  = 17;
-  final public static int SPECIAL_ODYSSEY_DOM = 18;
-
-  final static int SPECIAL_MDCRD              = 19;
+  public final static int SPECIAL_ARGUS_DOM   = 14;
+  public final static int SPECIAL_CML_DOM     = 15;
+  public final static int SPECIAL_CHEM3D_DOM  = 16;
+  public final static int SPECIAL_MOLPRO_DOM  = 17;
+  public final static int SPECIAL_ODYSSEY_DOM = 18;
 
   final public static String[][] specialTags = {
     { "Jme" },
@@ -435,7 +583,7 @@ public class Resolver {
 
   };
 
-  final static String checkSpecial(int nLines, String[] lines) {
+  private final static String checkSpecial(int nLines, String[] lines) {
     // the order here is CRITICAL
     if (nLines == 1 && lines[0].length() > 0
         && Character.isDigit(lines[0].charAt(0)))
@@ -459,7 +607,7 @@ public class Resolver {
     return null;
   }
   
-  final public static String getReaderFromType(String type) {
+  private final static String getReaderFromType(String type) {
     type = type.toLowerCase();
     String base = null;
     if ((base = checkType(specialTags, type)) != null)
@@ -471,7 +619,7 @@ public class Resolver {
     return checkType(containsRecords, type);
   }
   
-  final private static String checkType(String[][] typeTags, String type) {
+  private final static String checkType(String[][] typeTags, String type) {
     for (int i = 0; i < typeTags.length; ++i)
       if (typeTags[i][0].toLowerCase().equals(type))
         return typeTags[i][0];
@@ -638,31 +786,31 @@ public class Resolver {
   // these test files that startWith one of these strings
   ////////////////////////////////////////////////////////////////
 
-  final static int LEADER_CHAR_MAX = 20;
+  private final static int LEADER_CHAR_MAX = 20;
   
-  final static String[] cubeFileStartRecords =
+  private final static String[] cubeFileStartRecords =
   {"Cube", "JVXL", "#JVXL"};
 
-  final static String[] mol2Records =
+  private final static String[] mol2Records =
   {"Mol2", "mol2", "@<TRIPOS>"};
 
-  final static String[] webmoFileStartRecords =
+  private final static String[] webmoFileStartRecords =
   {"WebMO", "[HEADER]"};
   
-  final static String[] moldenFileStartRecords =
+  private final static String[] moldenFileStartRecords =
   {"Molden", "[Molden"};
 
-  final static String[][] fileStartsWithRecords =
+  private final static String[][] fileStartsWithRecords =
   { cubeFileStartRecords, mol2Records, webmoFileStartRecords, moldenFileStartRecords};
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings
   ////////////////////////////////////////////////////////////////
 
-  final static String[] pqrLineStartRecords = 
+  private final static String[] pqrLineStartRecords = 
   { "Pqr", "REMARK   1 PQR" };
 
-  final static String[] pdbLineStartRecords = {
+  private final static String[] pdbLineStartRecords = {
     "Pdb", "HEADER", "OBSLTE", "TITLE ", "CAVEAT", "COMPND", "SOURCE", "KEYWDS",
     "EXPDTA", "AUTHOR", "REVDAT", "SPRSDE", "JRNL  ", "REMARK",
     "DBREF ", "SEQADV", "SEQRES", "MODRES", 
@@ -671,33 +819,34 @@ public class Resolver {
     "ATOM  ", "HETATM", "MODEL ",
   };
 
-  final static String[] shelxLineStartRecords =
+  private final static String[] shelxLineStartRecords =
   { "Shelx", "TITL ", "ZERR ", "LATT ", "SYMM ", "CELL " };
 
-  final static String[] cifLineStartRecords =
+  private final static String[] cifLineStartRecords =
   { "Cif", "data_", "_publ" };
 
-  final static String[] ghemicalMMLineStartRecords =
+  private final static String[] ghemicalMMLineStartRecords =
   { "GhemicalMM", "!Header mm1gp", "!Header gpr" };
 
-  final static String[] jaguarLineStartRecords =
+  private final static String[] jaguarLineStartRecords =
   { "Jaguar", "  |  Jaguar version", };
 
-  final static String[] hinLineStartRecords = 
+  private final static String[] hinLineStartRecords = 
   { "Hin", "mol " };
 
-  final static String[] mdlLineStartRecords = 
+  private final static String[] mdlLineStartRecords = 
   { "Mol", "$MDL " };
 
-  final static String[] spartanSmolLineStartRecords =
+  private final static String[] spartanSmolLineStartRecords =
   { "SpartanSmol", "INPUT=" };
 
-  final static String[] csfLineStartRecords =
+  private final static String[] csfLineStartRecords =
   { "Csf", "local_transform" };
   
-  final static String[] mdTopLineStartRecords =
+  private final static String[] mdTopLineStartRecords =
   { "MdTop", "%FLAG TITLE" };
-  final static String[][] lineStartsWithRecords =
+  
+  private final static String[][] lineStartsWithRecords =
   { cifLineStartRecords, pqrLineStartRecords, pdbLineStartRecords, shelxLineStartRecords, 
     ghemicalMMLineStartRecords, jaguarLineStartRecords, hinLineStartRecords, 
     mdlLineStartRecords, spartanSmolLineStartRecords, csfLineStartRecords, 
@@ -707,57 +856,58 @@ public class Resolver {
   // contains formats
   ////////////////////////////////////////////////////////////////
 
-  final static String[] xmlContainsRecords = 
+  private final static String[] xmlContainsRecords = 
   { "Xml", "<?xml", "<atom", "<molecule", "<reaction", "<cml", "<bond", ".dtd\"",
     "<list>", "<entry", "<identifier", "http://www.xml-cml.org/schema/cml2/core" };
 
-  final static String[] gaussianContainsRecords =
+  private final static String[] gaussianContainsRecords =
   { "Gaussian", "Entering Gaussian System", "Entering Link 1", "1998 Gaussian, Inc." };
 
-  final static String[] gaussianWfnRecords =
+  /*
+  private final static String[] gaussianWfnRecords =
   { "GaussianWfn", "MO ORBITALS" };
-
-  final static String[] mopacContainsRecords =
+  */
+  
+  private final static String[] mopacContainsRecords =
   { "Mopac", "MOPAC 93 (c) Fujitsu", "MOPAC2002 (c) Fujitsu",
     "MOPAC FOR LINUX (PUBLIC DOMAIN VERSION)"};
 
-  final static String[] qchemContainsRecords = 
+  private final static String[] qchemContainsRecords = 
   { "Qchem", "Welcome to Q-Chem", "A Quantum Leap Into The Future Of Chemistry" };
 
-  final static String[] gamessUKContainsRecords =
+  private final static String[] gamessUKContainsRecords =
   { "GamessUK", "GAMESS-UK", "G A M E S S - U K" };
 
-  final static String[] gamessUSContainsRecords =
+  private final static String[] gamessUSContainsRecords =
   { "GamessUS", "GAMESS" };
 
-  final static String[] spartanBinaryContainsRecords =
+  private final static String[] spartanBinaryContainsRecords =
   { "SpartanSmol" , "|PropertyArchive", "_spartan", "spardir" };
 
-  final static String[] spartanContainsRecords =
+  private final static String[] spartanContainsRecords =
   { "Spartan", "Spartan" };  // very old Spartan files?
 
-  final static String[] adfContainsRecords =
+  private final static String[] adfContainsRecords =
   { "Adf", "Amsterdam Density Functional" };
   
-  final static String[] psiContainsRecords =
+  private final static String[] psiContainsRecords =
   { "Psi", "    PSI  3"};
  
-  final static String[] nwchemContainsRecords =
+  private final static String[] nwchemContainsRecords =
   { "NWChem", " argument  1 = "};
 
-  final static String[][] containsRecords =
+  private final static String[][] containsRecords =
   { xmlContainsRecords, gaussianContainsRecords, mopacContainsRecords, qchemContainsRecords, 
     gamessUKContainsRecords, gamessUSContainsRecords,
     spartanBinaryContainsRecords, spartanContainsRecords, mol2Records, adfContainsRecords, psiContainsRecords,
     nwchemContainsRecords, 
   };
-
 }
 
 class LimitedLineReader {
-  char[] buf;
-  int cchBuf;
-  int ichCurrent;
+  private char[] buf;
+  private int cchBuf;
+  private int ichCurrent;
 
   LimitedLineReader(BufferedReader bufferedReader, int readLimit)
     throws Exception {

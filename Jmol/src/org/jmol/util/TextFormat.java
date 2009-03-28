@@ -459,4 +459,13 @@ public class TextFormat {
     }
     return true;
   }
+
+  public static String join(String[] s, char c, int i0) {
+    if (s.length < i0)
+      return null;
+    StringBuffer sb = new StringBuffer(s[i0++]);
+    for (int i = i0; i < s.length; i++)
+      sb.append(c).append(s[i]);
+    return sb.toString();
+  }
 }

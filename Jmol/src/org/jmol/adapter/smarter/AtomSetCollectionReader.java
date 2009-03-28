@@ -57,19 +57,19 @@ import javax.vecmath.Vector3f;
  *  setUnitCell()
  *  setUnitCellItem()
  *  setAtomCoord()
- *  applySymmetry()
+ *  applySymmetryAndSetTrajectory()
  * 
  * At the very minimum, you need:
  * 
  *  setAtomCoord()
- *  applySymmetry()
+ *  applySymmetryAndSetTrajectory()
  * 
  * so that:
  *  (a) atom coordinates can be turned fractional by load parameters
  *  (b) symmetry can be applied once per model in the file
  *  
  *  If you know where the end of the atom+bond data are, then you can
- *  use applySymmetry() once, just before exiting. Otherwise, use it
+ *  use applySymmetryAndSetTrajectory() once, just before exiting. Otherwise, use it
  *  twice -- it has a check to make sure it doesn't RUN twice -- once
  *  at the beginning and once at the end of the model.
  *  
@@ -114,7 +114,7 @@ public abstract class AtomSetCollectionReader {
   boolean ignoreFileUnitCell;
   protected boolean ignoreFileSymmetryOperators;
   boolean ignoreFileSpaceGroupName;
-  boolean isTrajectory;
+  public boolean isTrajectory;
   protected boolean applySymmetryToBonds;
   float symmetryRange;  
 
@@ -601,7 +601,7 @@ public int[] next = new int[1];
     addJmolScript("site_list = \"" + sites + "\".split(\",\")");
   }
 
-  public void applySymmetry() throws Exception {
+  public void applySymmetryAndSetTrajectory() throws Exception {
     if (isTrajectory)
       atomSetCollection.setTrajectory();
     if (!needToApplySymmetry || !iHaveUnitCell) {

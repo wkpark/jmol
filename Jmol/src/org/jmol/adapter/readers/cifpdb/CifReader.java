@@ -53,7 +53,7 @@ import org.jmol.util.Logger;
  *  setUnitCellItem()
  *  setFractionalCoordinates()
  *  setAtomCoord()
- *  applySymmetry()
+ *  applySymmetryAndSetTrajectory()
  *  
  */
 public class CifReader extends AtomSetCollectionReader {
@@ -103,7 +103,7 @@ public class CifReader extends AtomSetCollectionReader {
               // we found no atoms -- must revert
               atomSetCollection.removeAtomSet();
             else
-              applySymmetry();
+              applySymmetryAndSetTrajectory();
             processDataParameter();
             iHaveDesiredModel = (isLastModel(modelNumber));
             nAtoms = atomSetCollection.getAtomCount();
@@ -162,7 +162,7 @@ public class CifReader extends AtomSetCollectionReader {
       if (atomSetCollection.getAtomCount() == nAtoms)
         atomSetCollection.removeAtomSet();
       else
-        applySymmetry();
+        applySymmetryAndSetTrajectory();
       if (htSites != null)
         addSites(htSites);
       atomSetCollection.setCollectionName("<collection of "

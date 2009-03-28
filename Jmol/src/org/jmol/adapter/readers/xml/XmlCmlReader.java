@@ -54,7 +54,7 @@ import org.jmol.util.Logger;
  *  setUnitCellItem()
  *  setFractionalCoordinates()
  *  setAtomCoord()
- *  applySymmetry()
+ *  applySymmetryAndSetTrajectory()
  *
  */
 
@@ -442,7 +442,7 @@ public class XmlCmlReader extends XmlReader {
       if (name.equals("module")) {
         if (--moduleNestingLevel == 0) {
           if (parent.iHaveUnitCell)
-            applySymmetry();
+            applySymmetryAndSetTrajectory();
           atomIdNames = atomSetCollection.setAtomNames(atomIdNames);
         }
       }
@@ -520,7 +520,7 @@ public class XmlCmlReader extends XmlReader {
         state = (state == CRYSTAL_SYMMETRY ? CRYSTAL : START);
       }
       if (moduleNestingLevel == 0 && parent.iHaveUnitCell)
-        applySymmetry();
+        applySymmetryAndSetTrajectory();
       break;
     case MOLECULE:
       if (name.equals("molecule")) {
@@ -528,7 +528,7 @@ public class XmlCmlReader extends XmlReader {
           // if <molecule> is within <molecule>, then
           // we have to wait until the end of all <molecule>s to
           // apply symmetry.
-          applySymmetry();          
+          applySymmetryAndSetTrajectory();          
           atomIdNames = atomSetCollection.setAtomNames(atomIdNames);
           state = START;
         } else {
@@ -702,7 +702,7 @@ public class XmlCmlReader extends XmlReader {
     }
   }
   
-  public void applySymmetry() {
+  public void applySymmetryAndSetTrajectory() {
     if (moduleNestingLevel > 0 || !haveMolecule)
       return;
     if (localSpaceGroupName == null)
@@ -710,7 +710,7 @@ public class XmlCmlReader extends XmlReader {
     parent.setSpaceGroupName(localSpaceGroupName);
     parent.iHaveSymmetryOperators = iHaveSymmetryOperators;
     try {
-      parent.applySymmetry();
+      parent.applySymmetryAndSetTrajectory();
     } catch (Exception e) {
       e.printStackTrace();
       Logger.error("applySymmetry failed: " + e);

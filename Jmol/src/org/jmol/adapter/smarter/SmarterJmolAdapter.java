@@ -217,7 +217,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
           return reader;
         }
         Object atomSetCollectionOrError = Resolver
-            .getAtomCollectionAndCloseReader(fileName, null, reader, null, -1);
+            .getAtomCollectionAndCloseReader(fileName, null, reader, htParams, -1);
         if (atomSetCollectionOrError instanceof String)
           return atomSetCollectionOrError;
         if (atomSetCollectionOrError instanceof AtomSetCollection) {

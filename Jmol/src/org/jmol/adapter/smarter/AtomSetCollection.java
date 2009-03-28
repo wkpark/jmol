@@ -112,7 +112,11 @@ public class AtomSetCollection {
 
   //float wavelength = Float.NaN;
   boolean coordinatesAreFractional;
-  boolean isTrajectory;
+  private boolean isTrajectory;
+  public boolean isTrajectory() {
+    return isTrajectory;
+  }
+  
   int trajectoryStepCount = 0;
   Point3f[] trajectoryStep;
   Vector trajectorySteps;
@@ -462,6 +466,8 @@ public class AtomSetCollection {
   }
 
   public void addBond(Bond bond) {
+    if (trajectoryStepCount > 0)
+      return;
     if (bond.atomIndex1 < 0 ||
         bond.atomIndex2 < 0 ||
         bond.order < 0 ||

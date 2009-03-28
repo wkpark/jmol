@@ -139,7 +139,7 @@ public class Mol2Reader extends FFReader {
           .setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
       atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     }
-    applySymmetry();
+    applySymmetryAndSetTrajectory();
   }
 
   private int lastSequenceNumber = Integer.MAX_VALUE;

@@ -38,7 +38,7 @@ import org.jmol.util.Logger;
  * 9/2006 hansonr@stolaf.edu
  * 
  *  setAtomCoord(atom)
- *  applySymmetry()
+ *  applySymmetryAndSetTrajectory()
  *  
  *  extended to read XYZI files (Bob's invention -- allows isotope numbers)
  * 
@@ -63,7 +63,7 @@ public class XyzReader extends AtomSetCollectionReader {
         if (doGetModel(++modelNumber)) {
           readAtomSetName();
           readAtoms(modelAtomCount);
-          applySymmetry();
+          applySymmetryAndSetTrajectory();
           if (isLastModel(modelNumber))
             break;
         } else {

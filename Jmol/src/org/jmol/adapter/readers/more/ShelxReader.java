@@ -51,7 +51,7 @@ import org.jmol.util.ArrayUtil;
  *  setSymmetryOperator()
  *  setUnitCellItem()
  *  setAtomCoord()
- *  applySymmetry()
+ *  applySymmetryAndSetTrajectory()
  *  
  *  
  */
@@ -76,7 +76,7 @@ public class ShelxReader extends AtomSetCollectionReader {
         if (readThisModel) {
           modelRead = true;
           sfacElementSymbols = null;
-          applySymmetry();
+          applySymmetryAndSetTrajectory();
           setFractionalCoordinates(true);
           isCmdf = false;
           iHaveAtomSet = false;
@@ -113,7 +113,7 @@ public class ShelxReader extends AtomSetCollectionReader {
           }
         }
       } while (readLine() != null);
-      applySymmetry();
+      applySymmetryAndSetTrajectory();
     } catch (Exception e) {
       return setError(e);
     }

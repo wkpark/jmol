@@ -46,7 +46,7 @@ import java.io.BufferedReader;
  * 9/2006 hansonr@stolaf.edu
  * 
  *  setAtomCoord(atom, x, y, z)
- *  applySymmetry()
+ *  applySymmetryAndSetTrajectory()
  *  
  */
 public class MolReader extends AtomSetCollectionReader {
@@ -162,7 +162,7 @@ public class MolReader extends AtomSetCollectionReader {
     int atom0 = atomSetCollection.getAtomCount();
     readAtoms(atomCount);
     readBonds(atom0, bondCount);
-    applySymmetry();
+    applySymmetryAndSetTrajectory();
   }
 
   void flushLines() throws Exception {

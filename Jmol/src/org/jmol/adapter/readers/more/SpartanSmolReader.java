@@ -95,6 +95,8 @@ public class SpartanSmolReader extends SpartanInputReader {
 
           // bogus type added by Jmol as a marker only
 
+          if (modelNumber > 0)
+            applySymmetryAndSetTrajectory();
           iHaveModelStatement = true;
           int modelNo = getModelNumber();
           modelNumber = (bsModels == null && modelNo != Integer.MIN_VALUE ? modelNo : modelNumber + 1);
@@ -164,6 +166,8 @@ public class SpartanSmolReader extends SpartanInputReader {
         }
         readLine();
       }
+      if (atomCount > 0)
+        applySymmetryAndSetTrajectory();
     } catch (Exception e) {
       return setError(e);
     }
@@ -194,7 +198,8 @@ public class SpartanSmolReader extends SpartanInputReader {
         bondData, endCheck);
     if (readArchiveHeader()) {
       modelAtomCount = spartanArchive.readArchive(line, false, atomCount, false);
-      atomCount += modelAtomCount;
+      if (atomCount == 0 || !isTrajectory)
+        atomCount += modelAtomCount;
     }
   }
   

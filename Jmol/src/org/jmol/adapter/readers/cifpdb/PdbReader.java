@@ -52,7 +52,7 @@ import java.util.Vector;
  *  initializeCartesianToFractional();
  *  setUnitCellItem()
  *  setAtomCoord()
- *  applySymmetry()
+ *  applySymmetryAndSetTrajectory()
  *  
  */
 
@@ -131,7 +131,7 @@ public class PdbReader extends AtomSetCollectionReader {
           }
           iHaveModel = true;
           atomSetCollection.connectAll(maxSerial);
-          applySymmetry();
+          applySymmetryAndSetTrajectory();
           //supposedly MODEL is only for NMR
           model(modelNo);
           continue;
@@ -226,7 +226,7 @@ public class PdbReader extends AtomSetCollectionReader {
         }
 
       }
-      applySymmetry();
+      applySymmetryAndSetTrajectory();
       if (htSites != null)
         addSites(htSites);
     } catch (Exception e) {
@@ -891,7 +891,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     }
   }
 
-  public void applySymmetry() throws Exception {
+  public void applySymmetryAndSetTrajectory() throws Exception {
     if (needToApplySymmetry && !isNMRdata) {
       // problem with PDB is that they don't give origins, 
       // so we must force the issue
@@ -900,7 +900,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     }
     //speeds up calculation, because no crosschecking
     atomSetCollection.setCheckSpecial(false);
-    super.applySymmetry();
+    super.applySymmetryAndSetTrajectory();
   }
 }
 

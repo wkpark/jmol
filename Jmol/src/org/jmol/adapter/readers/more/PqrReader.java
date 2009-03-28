@@ -44,7 +44,7 @@ import org.jmol.adapter.readers.cifpdb.PdbReader;
  *  initializeCartesianToFractional();
  *  setUnitCellItem()
  *  setAtomCoord()
- *  applySymmetry()
+ *  applySymmetryAndSetTrajectory()
  *  
  */
 

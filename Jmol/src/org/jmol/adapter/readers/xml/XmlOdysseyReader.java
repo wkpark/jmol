@@ -133,7 +133,7 @@ public class XmlOdysseyReader extends XmlReader {
         parent.latticeCells[0] = parent.latticeCells[1] = parent.latticeCells[2] = 1;
       parent.setSymmetryOperator("x,y,z");
       parent.setSpaceGroupName("P1");
-      applySymmetry();
+      applySymmetryAndSetTrajectory();
       return;
     }
 
@@ -150,9 +150,9 @@ public class XmlOdysseyReader extends XmlReader {
       keepChars = true;
   }
 
-  public void applySymmetry() {
+  public void applySymmetryAndSetTrajectory() {
     try {
-      parent.applySymmetry();
+      parent.applySymmetryAndSetTrajectory();
     } catch (Exception e) {
       e.printStackTrace();
       Logger.error("applySymmetry failed: " + e);

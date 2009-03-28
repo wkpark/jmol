@@ -37,26 +37,25 @@ import org.jmol.util.Logger;
 
 public class SpartanArchive {
 
-  int atomCount = 0;
-  String bondData; // not in archive; may or may not have
-  int bondCount = 0;
-  int moCount = 0;
-  int coefCount = 0;
-  int shellCount = 0;
-  int gaussianCount = 0;
-  String endCheck;
-  String calculationType = "";
-  BufferedReader reader;
-  String line;
+  private int atomCount = 0;
+  private String bondData; // not in archive; may or may not have
+  private int moCount = 0;
+  private int coefCount = 0;
+  private int shellCount = 0;
+  private int gaussianCount = 0;
+  private String endCheck;
+  private String calculationType = "";
+  private BufferedReader reader;
+  private String line;
   
-  String[] getTokens() {
+  private String[] getTokens() {
     return Parser.getTokens(line);
   }
 
-  AtomSetCollection atomSetCollection;
-  AtomSetCollectionReader r;
-  Hashtable moData;
-  Vector orbitals = new Vector();
+  private AtomSetCollection atomSetCollection;
+  private AtomSetCollectionReader r;
+  private Hashtable moData;
+  private Vector orbitals = new Vector();
 
   SpartanArchive(AtomSetCollectionReader r,
       AtomSetCollection atomSetCollection, Hashtable moData) {
@@ -106,21 +105,21 @@ public class SpartanArchive {
     return atomCount;
   }
 
-  static String[] getTokens(String info) {
+  private static String[] getTokens(String info) {
     return Parser.getTokens(info);
   }
 
-  int parseInt(String info) {
+  private int parseInt(String info) {
     return r.parseInt(info);
   }
 
-  float parseFloat(String info) {
+  private float parseFloat(String info) {
     return r.parseFloat(info);
   }
 
-  int modelAtomCount;
+  private int modelAtomCount;
   
-  int setInfo(String info) throws Exception {
+  private int setInfo(String info) throws Exception {
     //    5  17  11  18   0   1  17   0 RHF      3-21G(d)           NOOPT FREQ
     //    0   1  2   3    4   5   6   7  8        9
 
@@ -174,7 +173,6 @@ public class SpartanArchive {
      */
 
     String tokens[] = getTokens(data);
-    bondCount = 0;
     for (int i = modelAtomCount; i < tokens.length;) {
       int sourceIndex = parseInt(tokens[i++]) - 1 + atomCount0;
       int targetIndex = parseInt(tokens[i++]) - 1 + atomCount0;
@@ -182,9 +180,9 @@ public class SpartanArchive {
       if (bondOrder > 0) {
         atomSetCollection.addBond(new Bond(sourceIndex, targetIndex,
             bondOrder < 4 ? bondOrder : bondOrder == 5 ? JmolAdapter.ORDER_AROMATIC : 1));
-        bondCount++;
       }
     }
+    int bondCount = atomSetCollection.getBondCount();
     if (Logger.debugging) {
       Logger.debug(bondCount + " bonds read");
     }
@@ -317,7 +315,7 @@ public class SpartanArchive {
     atomSetCollection.setAtomSetAuxiliaryInfo("dipole", dipole);
   }
 
-  void readProperty() throws Exception {
+  private void readProperty() throws Exception {
     String tokens[] = getTokens();
     if (tokens.length == 0)
       return;
@@ -437,15 +435,15 @@ public class SpartanArchive {
         .setAtomSetCollectionAuxiliaryInfo("vibration", vibrations);
   }
 
-  String getQuotedString(String strQuote) {
+  private String getQuotedString(String strQuote) {
     int i = line.indexOf(strQuote);
     int j = line.lastIndexOf(strQuote);
     return (j == i ? "" : line.substring(i + 1, j));
   }
   
   //because this is NOT an extension of AtomSetCollectionReader
-  String readLine() throws Exception {
-    line = reader.readLine();
+  private String readLine() throws Exception {
+    line = r.readLine();
     if (Logger.debugging)
       Logger.debug(line);
     return line;

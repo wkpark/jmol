@@ -97,9 +97,11 @@ abstract class SpartanInputReader extends AtomSetCollectionReader {
   }
   
   int modelAtomCount;
+  int atomCount0;
   
   private void readInputAtoms() throws Exception {
     modelAtomCount = 0;
+    atomCount0 = atomCount;
     while (readLine() != null
         && !line.startsWith("ENDCART")) {
       String[] tokens = getTokens();
@@ -108,16 +110,19 @@ abstract class SpartanInputReader extends AtomSetCollectionReader {
       atom.set(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
       modelAtomCount++;
     }
-    atomCount += modelAtomCount;
+    atomCount = atomSetCollection.getAtomCount();
     if (Logger.debugging)
       Logger.debug(atomCount + " atoms read");
   }
 
   private void readAtomNames() throws Exception {
+    int atom0 = atomCount - modelAtomCount;
+    // note that atomSetCollection.isTrajectory() gets set onlyAFTER an input is
+    // read.
     for (int i = 0; i < modelAtomCount; i++) {
       readLine();
-      atomSetCollection.getAtom(i).atomName = line
-          .substring(1, line.length() - 1);
+      atomSetCollection.getAtom(atom0 + i).atomName = line.substring(1, line
+          .length() - 1);
     }
   }
   
@@ -143,12 +148,12 @@ abstract class SpartanInputReader extends AtomSetCollectionReader {
         if (bondOrder > 0) {
           atomSetCollection.addBond(new Bond(sourceIndex, targetIndex,
               bondOrder < 4 ? bondOrder : bondOrder == 5 ? JmolAdapter.ORDER_AROMATIC : 1));
-          bondCount++;
         }
       } else {
         nAtoms -= tokens.length;
       }
     }
+    bondCount = atomSetCollection.getBondCount();
     if (Logger.debugging)
       Logger.debug(bondCount + " bonds read");
   }

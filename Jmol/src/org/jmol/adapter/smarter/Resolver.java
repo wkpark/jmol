@@ -41,23 +41,6 @@ import org.jmol.util.ZipUtil;
 
 public class Resolver {
 
-  private final static String classBase = "org.jmol.adapter.readers.";
-  private final static String[] readerSets = new String[] {
-    "cifpdb.", "Cif;Pdb;",
-    "molxyz.", "Mol;Xyz;",
-    "xml.", "Xml;"
-  };
-  
-  private final static String getReaderClassBase(String type) {
-    String base = "more.";
-    for (int i = 1; i < readerSets.length; i += 2)
-      if (readerSets[i].indexOf(type + ";") >= 0) {
-        base = readerSets[i - 1];
-        break;
-      }
-    return classBase + base + type + "Reader";
-  }
-  
   /**
    * From SmarterJmolAdapter.getFileTypeName(Object atomSetCollectionOrReader)
    * just return the file type with no exception issues
@@ -134,94 +117,6 @@ public class Resolver {
     return getSpartanFileList(name, dirNums);
   }
 
-  /**
-   * returns the list of files to read for every Spartan spardir. Simple numbers
-   * are assumed to be Profiles; others are models.
-   * 
-   * @param name
-   * @param dirNums
-   * @return String[] list of files to read given a list of directory names
-   * 
-   */
-  private static String[] getSpartanFileList(String name, String[] dirNums) {    
-    String[] files = new String[2 + dirNums.length*5];
-    files[0] = "SpartanSmol";
-    files[1] = "Directory Entry ";
-    int pt = 2;
-    name = name.replace('\\', '/');
-    if (name.endsWith("/"))
-      name = name.substring(0, name.length() - 1);
-    for (int i = 0; i < dirNums.length; i++) {
-      String path = name + (Character.isDigit(dirNums[i].charAt(0)) ? 
-          "/Profile." + dirNums[i] : "/" + dirNums[i]);
-      files[pt++] = path + "/#JMOL_MODEL " + dirNums[i];
-      files[pt++] = path + "/input";
-      files[pt++] = path + "/archive";
-      files[pt++] = path + "/Molecule:asBinaryString";
-      files[pt++] = path + "/proparc";
-    }
-    return files;
-  }
-
-  /**
-   * read the output file from the Spartan directory and decide from that what
-   * files need to be read and in what order - usually M0001 or a set of Profiles.
-   * But Spartan saves the Profiles in alphabetical order, not numerical. So we
-   * fix that here.
-   * 
-   * @param outputFileData
-   * @return String[] list of files to read
-   */
-  private static String[] getSpartanDirs(String outputFileData) {
-    if (outputFileData == null)
-      return new String[]{};
-    if (outputFileData.startsWith("java.io.FileNotFoundException")
-        || outputFileData.startsWith("FILE NOT FOUND")
-        || outputFileData.indexOf("<html") >= 0)
-      return new String[] { "M0001" };
-    int pt = outputFileData.indexOf("Start- Molecule");
-    if (pt > 0)
-      return new String[] { outputFileData.substring(pt).split("\"")[1] }; // M0001
-    Vector v = new Vector();
-    String token;
-    String lasttoken = "";
-    try {
-      StringTokenizer tokens = new StringTokenizer(outputFileData, " \t\r\n");
-      while (tokens.hasMoreTokens()) {
-        // profile file name is just before each right-paren:
-        /*
-         * MacSPARTAN '08 ENERGY PROFILE: x86/Darwin 130
-         * 
-         * Dihedral Move : C3 - C2 - C1 - O1 [ 4] -180.000000 .. 180.000000
-         * Dihedral Move : C2 - C1 - O1 - H3 [ 4] -180.000000 .. 180.000000
-         * 
-         * 1 ) -180.00 -180.00 -504208.11982719 2 ) -90.00 -180.00
-         * -504200.18593376
-         * 
-         * ...
-         * 
-         * 24 ) 90.00 180.00 -504200.18564495 25 ) 180.00 180.00
-         * -504208.12129747
-         * 
-         * Found a local maxima E = -504178.25455465 [ 3 3 ]
-         * 
-         * 
-         * Reason for exit: Successful completion Mechanics CPU Time : 1:51.42
-         * Mechanics Wall Time: 12:31.54
-         */
-        if ((token = tokens.nextToken()).equals(")"))
-          v.add(lasttoken);
-        lasttoken = token;
-      }
-    } catch (Exception e) {
-      //
-    }
-    String[] dirs = new String[v.size()];
-    for (int i = 0; i < v.size(); i++)
-      dirs[i] = (String) v.get(i);
-    return dirs;
-  }
-  
   /**
    * called by SmarterJmolAdapter to see if we can automatically assign a file
    * from the zip file. If so, return a subfile list for this file. The first
@@ -395,6 +290,111 @@ public class Resolver {
   }
 
   ////// PRIVATE METHODS ///////
+  
+  private final static String classBase = "org.jmol.adapter.readers.";
+  private final static String[] readerSets = new String[] {
+    "cifpdb.", "Cif;Pdb;",
+    "molxyz.", "Mol;Xyz;",
+    "xml.", "Xml;"
+  };
+  
+  private final static String getReaderClassBase(String type) {
+    String base = "more.";
+    for (int i = 1; i < readerSets.length; i += 2)
+      if (readerSets[i].indexOf(type + ";") >= 0) {
+        base = readerSets[i - 1];
+        break;
+      }
+    return classBase + base + type + "Reader";
+  }
+  
+  /**
+   * returns the list of files to read for every Spartan spardir. Simple numbers
+   * are assumed to be Profiles; others are models.
+   * 
+   * @param name
+   * @param dirNums
+   * @return String[] list of files to read given a list of directory names
+   * 
+   */
+  private static String[] getSpartanFileList(String name, String[] dirNums) {    
+    String[] files = new String[2 + dirNums.length*5];
+    files[0] = "SpartanSmol";
+    files[1] = "Directory Entry ";
+    int pt = 2;
+    name = name.replace('\\', '/');
+    if (name.endsWith("/"))
+      name = name.substring(0, name.length() - 1);
+    for (int i = 0; i < dirNums.length; i++) {
+      String path = name + (Character.isDigit(dirNums[i].charAt(0)) ? 
+          "/Profile." + dirNums[i] : "/" + dirNums[i]);
+      files[pt++] = path + "/#JMOL_MODEL " + dirNums[i];
+      files[pt++] = path + "/input";
+      files[pt++] = path + "/archive";
+      files[pt++] = path + "/Molecule:asBinaryString";
+      files[pt++] = path + "/proparc";
+    }
+    return files;
+  }
+
+  /**
+   * read the output file from the Spartan directory and decide from that what
+   * files need to be read and in what order - usually M0001 or a set of Profiles.
+   * But Spartan saves the Profiles in alphabetical order, not numerical. So we
+   * fix that here.
+   * 
+   * @param outputFileData
+   * @return String[] list of files to read
+   */
+  private static String[] getSpartanDirs(String outputFileData) {
+    if (outputFileData == null)
+      return new String[]{};
+    if (outputFileData.startsWith("java.io.FileNotFoundException")
+        || outputFileData.startsWith("FILE NOT FOUND")
+        || outputFileData.indexOf("<html") >= 0)
+      return new String[] { "M0001" };
+    int pt = outputFileData.indexOf("Start- Molecule");
+    if (pt > 0)
+      return new String[] { outputFileData.substring(pt).split("\"")[1] }; // M0001
+    Vector v = new Vector();
+    String token;
+    String lasttoken = "";
+    try {
+      StringTokenizer tokens = new StringTokenizer(outputFileData, " \t\r\n");
+      while (tokens.hasMoreTokens()) {
+        // profile file name is just before each right-paren:
+        /*
+         * MacSPARTAN '08 ENERGY PROFILE: x86/Darwin 130
+         * 
+         * Dihedral Move : C3 - C2 - C1 - O1 [ 4] -180.000000 .. 180.000000
+         * Dihedral Move : C2 - C1 - O1 - H3 [ 4] -180.000000 .. 180.000000
+         * 
+         * 1 ) -180.00 -180.00 -504208.11982719 2 ) -90.00 -180.00
+         * -504200.18593376
+         * 
+         * ...
+         * 
+         * 24 ) 90.00 180.00 -504200.18564495 25 ) 180.00 180.00
+         * -504208.12129747
+         * 
+         * Found a local maxima E = -504178.25455465 [ 3 3 ]
+         * 
+         * 
+         * Reason for exit: Successful completion Mechanics CPU Time : 1:51.42
+         * Mechanics Wall Time: 12:31.54
+         */
+        if ((token = tokens.nextToken()).equals(")"))
+          v.add(lasttoken);
+        lasttoken = token;
+      }
+    } catch (Exception e) {
+      //
+    }
+    String[] dirs = new String[v.size()];
+    for (int i = 0; i < v.size(); i++)
+      dirs[i] = (String) v.get(i);
+    return dirs;
+  }
   
   private static final String CML_NAMESPACE_URI = "http://www.xml-cml.org/schema";
 

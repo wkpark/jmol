@@ -83,6 +83,7 @@ public class MolecularOrbital extends Isosurface {
       moDebug = false;
       int modelIndex = ((Integer) value).intValue();
       strID = getId(modelIndex);
+      Logger.info("MO init " + strID);
       // overide bitset selection
       super.setProperty("init", null, null);
       super.setProperty("modelIndex", new Integer(modelIndex), null);

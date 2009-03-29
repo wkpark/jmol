@@ -36,6 +36,7 @@ import netscape.javascript.JSObject;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 import org.jmol.util.ZipUtil;
 
 
@@ -353,9 +354,6 @@ public class Resolver {
         || outputFileData.startsWith("FILE NOT FOUND")
         || outputFileData.indexOf("<html") >= 0)
       return new String[] { "M0001" };
-    int pt = outputFileData.indexOf("Start- Molecule");
-    if (pt > 0)
-      return new String[] { outputFileData.substring(pt).split("\"")[1] }; // M0001
     Vector v = new Vector();
     String token;
     String lasttoken = "";
@@ -385,6 +383,8 @@ public class Resolver {
          */
         if ((token = tokens.nextToken()).equals(")"))
           v.add(lasttoken);
+        else if (token.equals("Start-") && tokens.nextToken().equals("Molecule"))
+          v.add(TextFormat.split(tokens.nextToken(), '"')[1]);
         lasttoken = token;
       }
     } catch (Exception e) {

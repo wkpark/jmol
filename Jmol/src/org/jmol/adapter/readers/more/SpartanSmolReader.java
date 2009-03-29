@@ -112,7 +112,7 @@ public class SpartanSmolReader extends SpartanInputReader {
           atomSetCollection.newAtomSet();
           moData = new Hashtable();
           if (modelNo == Integer.MIN_VALUE) {
-            modelNo = 1;
+            modelNo = modelNumber;
             title = "Model " + line.substring(line.lastIndexOf(" ") + 1);
           } else  {
             title = (String) titles.get("Title" + modelNo);

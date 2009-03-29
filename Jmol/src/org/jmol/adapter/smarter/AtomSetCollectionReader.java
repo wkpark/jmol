@@ -99,6 +99,7 @@ public abstract class AtomSetCollectionReader {
 
   public boolean getHeader;
   public String filter;
+
   public BitSet bsFilter;
   public String spaceGroup;
   private SymmetryInterface symmetry;

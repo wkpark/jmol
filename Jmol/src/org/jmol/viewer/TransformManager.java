@@ -231,7 +231,7 @@ abstract class TransformManager {
   boolean isSpinSelected = false;
 
   protected final Point3f fixedRotationOffset = new Point3f();
-  protected final Point3f fixedRotationCenter = new Point3f(0, 0, 0);
+  protected final Point3f fixedRotationCenter = new Point3f();
 
   private final Point3f rotationCenterDefault = new Point3f();
   private float rotationRadiusDefault;
@@ -1230,6 +1230,7 @@ abstract class TransformManager {
     // first, translate the coordinates back to the center
 
     vectorTemp.set(fixedRotationCenter);
+    vectorTemp.sub(frameOffset);
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
     matrixTransform.sub(matrixTemp);
@@ -2305,6 +2306,19 @@ abstract class TransformManager {
 
   boolean isNavigationCentered() {
     return false;
+  }
+
+  Point3f[] frameOffsets;
+  final Point3f frameOffset = new Point3f();
+  void setFrameOffset(int modelIndex) {
+    if (frameOffsets == null || modelIndex < 0 || modelIndex >= frameOffsets.length)
+      frameOffset.set(0, 0, 0);
+    else
+      frameOffset.set(frameOffsets[modelIndex]);
+  }
+  
+  void setFrameOffsets(Point3f[] offsets) {
+    frameOffsets = offsets;
   }
 
 }

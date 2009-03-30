@@ -120,9 +120,9 @@ abstract class SpartanInputReader extends AtomSetCollectionReader {
     // note that atomSetCollection.isTrajectory() gets set onlyAFTER an input is
     // read.
     for (int i = 0; i < modelAtomCount; i++) {
-      readLine();
-      atomSetCollection.getAtom(atom0 + i).atomName = line.substring(1, line
-          .length() - 1);
+      line = readLine().trim();
+      String name = line.substring(1, line.length() - 1);
+      atomSetCollection.getAtom(atom0 + i).atomName = name;
     }
   }
   

@@ -23,6 +23,7 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 import org.jmol.g3d.*;
@@ -60,12 +61,13 @@ class RepaintManager {
     boolean isSameSource = false;
     if (currentModelIndex != modelIndex) {
       if (modelCount > 0) {
+        boolean toDataFrame = viewer.isJmolDataFrame(modelIndex);
         boolean fromDataFrame = viewer.isJmolDataFrame(currentModelIndex);
         if (fromDataFrame)
           viewer.setJmolDataFrame(null, -1, currentModelIndex);
         if (currentModelIndex != -1)
           viewer.saveModelOrientation();
-        if (fromDataFrame || viewer.isJmolDataFrame(modelIndex)) {
+        if (fromDataFrame || toDataFrame) {
           ids = viewer.getJmolFrameType(modelIndex) + viewer.getJmolFrameType(currentModelIndex);
           isSameSource = (viewer.getJmolDataSourceFrame(modelIndex) == viewer
               .getJmolDataSourceFrame(currentModelIndex));
@@ -81,6 +83,7 @@ class RepaintManager {
     }
     //System.out.println("set trajectory " + currentModelIndex);
     viewer.setTrajectory(currentModelIndex);
+    viewer.setFrameOffset(currentModelIndex);
     if (currentModelIndex == -1 && clearBackgroundModel)
       setBackgroundModelIndex(-1);  
     viewer.setTainted(true);
@@ -291,6 +294,9 @@ class RepaintManager {
     if (backgroundModelIndex >= 0)
       StateManager.appendCmd(commands, "set backgroundModel " + 
           viewer.getModelNumberDotted(backgroundModelIndex));
+    BitSet bs = viewer.getFrameOffsets();
+    if (bs != null)
+      StateManager.appendCmd(commands, "frame align " + Escape.escape(bs));
     StateManager.appendCmd(commands, 
         "frame RANGE " + viewer.getModelNumberDotted(firstModelIndex) + " "
             + viewer.getModelNumberDotted(lastModelIndex));

@@ -160,6 +160,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void clearModelDependentObjects() {
+    setFrameOffsets(null);
     if (minimizer != null) {
       minimizer.setProperty("clear", null);
       minimizer = null;
@@ -3051,6 +3052,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getTrajectoryInfo();
   }
 
+  void setFrameOffset(int modelIndex) {
+    transformManager.setFrameOffset(modelIndex);  
+  }
+  
+  BitSet bsFrameOffsets;
+  Point3f[] frameOffsets;
+  void setFrameOffsets(BitSet bsAtoms) {
+    bsFrameOffsets = bsAtoms;
+    transformManager.setFrameOffsets(frameOffsets = modelSet.getFrameOffsets(bsFrameOffsets));
+  }
+  
+  BitSet getFrameOffsets() {
+    return bsFrameOffsets;
+  }
+  
   public void setCurrentModelIndex(int modelIndex, boolean clearBackground) {
     //Eval
     //initializeModel
@@ -5980,6 +5996,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.setVisualRange(global.visualRange);
     transformManager.setSpinOn(false);
     transformManager.setVibrationPeriod(0);
+    transformManager.setFrameOffsets(frameOffsets);
   }
 
   boolean getZoomLarge() {

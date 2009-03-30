@@ -1805,6 +1805,5 @@ abstract public class AtomCollection {
       for (int i = 0; i < TAINT_MAX; i++)
         BitSetUtil.deleteBits(tainted[i], bs);
   }
-
 }
 

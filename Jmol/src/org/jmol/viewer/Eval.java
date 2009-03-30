@@ -6635,12 +6635,17 @@ class Eval {
         viewer.setCurrentModelIndex(modelIndex, true);
       return;
     }
-    if (statementLength == 3 && parameterAsString(1).equalsIgnoreCase("Title")) {
+    String p1 = optParameterAsString(1);
+    if (statementLength == 3 && p1.equalsIgnoreCase("Title")) {
       if (!isSyntaxCheck)
         viewer.setFrameTitle(parameterAsString(2));
       return;
+    } else if (p1.equalsIgnoreCase("ALIGN")) {
+      BitSet bs = (statementLength == 2 || tokAt(2) == Token.none ? null : expression(2));
+      if (!isSyntaxCheck)
+        viewer.setFrameOffsets(bs);
+      return;
     }
-
     if (getToken(offset).tok == Token.minus) {
       ++offset;
       checkLength(offset + 1);

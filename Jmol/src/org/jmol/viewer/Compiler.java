@@ -614,6 +614,7 @@ class Compiler {
           continue;
         }
         if (tokCommand == Token.structure && nTokens == 2
+            || tokCommand == Token.frame && nTokens == 2
             || lastToken.tok == Token.select
             || lastToken.tok == Token.within
             || !(lastToken.tok == Token.identifier || tokenAttr(lastToken,

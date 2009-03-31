@@ -3058,12 +3058,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   
   BitSet bsFrameOffsets;
   Point3f[] frameOffsets;
-  void setFrameOffsets(BitSet bsAtoms) {
+  public void setFrameOffsets(BitSet bsAtoms) {
     bsFrameOffsets = bsAtoms;
     transformManager.setFrameOffsets(frameOffsets = modelSet.getFrameOffsets(bsFrameOffsets));
   }
   
-  BitSet getFrameOffsets() {
+  public BitSet getFrameOffsets() {
     return bsFrameOffsets;
   }
   
@@ -7240,7 +7240,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     fileManager.addLoadScript("zap " + Escape.escape(bs));
     setCurrentModelIndex(0, false);
     repaintManager.setAnimationOn(false);
-    BitSet bsDeleted = modelSet.deleteAtoms(bs, true);
+    BitSet bsDeleted = modelSet.deleteModels(bs);
     setAnimationRange(0, 0);
     eval.deleteAtomsInVariables(bsDeleted);
     repaintManager.clear();

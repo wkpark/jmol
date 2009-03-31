@@ -391,7 +391,7 @@ public final class ModelLoader extends ModelSet {
     finalizeModels(baseModelCount);
   }
     
-  boolean setModelNameNumberProperties(int modelIndex, int trajectoryBaseIndex,
+  private boolean setModelNameNumberProperties(int modelIndex, int trajectoryBaseIndex,
                                        String modelName, int modelNumber,
                                        Properties modelProperties,
                                        Hashtable modelAuxiliaryInfo,

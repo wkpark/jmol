@@ -467,7 +467,7 @@ abstract public class ModelSet extends ModelCollection {
         asDraw, false, type, index, scale);
   }
 
-  SymmetryInterface pointGroup;
+  private SymmetryInterface pointGroup;
   private Object calculatePointGroupForFirstModel(BitSet bsAtoms,
                                                   boolean doAll,
                                                   boolean asDraw,
@@ -723,7 +723,7 @@ abstract public class ModelSet extends ModelCollection {
     return viewer.getVanderwaalsMar(i);
   }
 
-  void includeAllRelatedFrames(BitSet bsModels) {
+  private void includeAllRelatedFrames(BitSet bsModels) {
     int j;
     for (int i = 0; i < modelCount; i++) {
       if (bsModels.get(i)) {
@@ -745,11 +745,8 @@ abstract public class ModelSet extends ModelCollection {
     }
   }
   
-  public BitSet deleteAtoms(BitSet bsAtoms, boolean fullModels) {
-    
-    if (!fullModels) {
-      return null;
-    }
+  public BitSet deleteModels(BitSet bsAtoms) {
+    // full models are deleted for any model containing the specified atoms
     BitSet bsModels = getModelBitSet(bsAtoms);
     includeAllRelatedFrames(bsModels);
     int nAtomsDeleted = 0;
@@ -812,7 +809,7 @@ abstract public class ModelSet extends ModelCollection {
 
       // delete from stateScripts, model arrays and bitsets, 
       //    atom arrays, and atom bitsets
-      super.deleteAtoms(mpt, firstAtomIndex, nAtoms, bs, bsBonds);
+      deleteModel(mpt, firstAtomIndex, nAtoms, bs, bsBonds);
       
       // adjust all models after this one
       for (int j = oldModelCount; --j > i; )
@@ -828,7 +825,7 @@ abstract public class ModelSet extends ModelCollection {
     }
     
     //set final values
-    super.deleteAtoms(-1, 0, 0, null, null);
+    deleteModel(-1, 0, 0, null, null);
     return bsDeleted;
   }
 }

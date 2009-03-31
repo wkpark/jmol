@@ -66,7 +66,7 @@ abstract public class ModelCollection extends BondCollection {
    *  
    * @param modelSet
    */
-  void merge(ModelSet modelSet) {
+  protected void merge(ModelSet modelSet) {
     for (int i = 0; i < modelSet.modelCount; i++) {
       Model m = models[i] = modelSet.models[i];
       m.bsAtoms = null;
@@ -136,11 +136,11 @@ abstract public class ModelCollection extends BondCollection {
         ? unitCells[modelIndex] : null);
   }
 
-  int[] modelNumbers = new int[1];  // from adapter -- possibly PDB MODEL record; possibly modelFileNumber
-  int[] modelFileNumbers = new int[1];  // file * 1000000 + modelInFile (1-based)
-  String[] modelNumbersForAtomLabel = new String[1];
-  String[] modelNames = new String[1];
-  String[] frameTitles = new String[1];
+  protected int[] modelNumbers = new int[1];  // from adapter -- possibly PDB MODEL record; possibly modelFileNumber
+  protected int[] modelFileNumbers = new int[1];  // file * 1000000 + modelInFile (1-based)
+  protected String[] modelNumbersForAtomLabel = new String[1];
+  protected String[] modelNames = new String[1];
+  protected String[] frameTitles = new String[1];
 
   public String getModelName(int modelIndex) {
     return modelCount < 1 ? "" 
@@ -169,16 +169,14 @@ abstract public class ModelCollection extends BondCollection {
   public String getModelNumberForAtomLabel(int modelIndex) {
     return modelNumbersForAtomLabel[modelIndex];
   }
-
-  
   
   protected BitSet[] elementsPresent;
 
   protected boolean isXYZ;
   protected boolean isPDB;
 
-  Properties modelSetProperties;
-  Hashtable modelSetAuxiliaryInfo;
+  private Properties modelSetProperties;
+  private Hashtable modelSetAuxiliaryInfo;
 
   protected Group[] groups;
   protected int groupCount;
@@ -305,7 +303,6 @@ abstract public class ModelCollection extends BondCollection {
     s += Escape.escape(ptTemp) + " # volume = " + v;
     return s;
   }
-
 
   public boolean setRotationRadius(int modelIndex, float angstroms) {
     if (!isJmolDataFrame(modelIndex))
@@ -534,7 +531,7 @@ abstract public class ModelCollection extends BondCollection {
    * @param addFileData       in the case of loading, we add the PDB data
    *  
    */
-  void calculateStructuresAllExcept(BitSet alreadyDefined, boolean addFileData) {
+  protected void calculateStructuresAllExcept(BitSet alreadyDefined, boolean addFileData) {
     freezeModels();
     for (int i = modelCount; --i >= 0;)
       if (models[i].isPDB && !alreadyDefined.get(i))
@@ -615,11 +612,11 @@ abstract public class ModelCollection extends BondCollection {
     return (ok ? htFull : (Hashtable) getModelSetAuxiliaryInfo("hetNames"));
   }
 
-  void setModelSetProperties(Properties modelSetProperties) {
+  protected void setModelSetProperties(Properties modelSetProperties) {
     this.modelSetProperties = modelSetProperties;
   }
 
-  void setModelSetAuxiliaryInfo(Hashtable modelSetAuxiliaryInfo) {
+  protected void setModelSetAuxiliaryInfo(Hashtable modelSetAuxiliaryInfo) {
     this.modelSetAuxiliaryInfo = modelSetAuxiliaryInfo;
   }
 
@@ -641,12 +638,13 @@ abstract public class ModelCollection extends BondCollection {
         .get(keyName));
   }
 
-  boolean getModelSetAuxiliaryInfoBoolean(String keyName) {
+  protected boolean getModelSetAuxiliaryInfoBoolean(String keyName) {
     return (modelSetAuxiliaryInfo != null
         && modelSetAuxiliaryInfo.containsKey(keyName) && ((Boolean) modelSetAuxiliaryInfo
         .get(keyName)).booleanValue());
   }
 
+/*
   int getModelSetAuxiliaryInfoInt(String keyName) {
     if (modelSetAuxiliaryInfo != null
         && modelSetAuxiliaryInfo.containsKey(keyName)) {
@@ -654,6 +652,7 @@ abstract public class ModelCollection extends BondCollection {
     }
     return Integer.MIN_VALUE;
   }
+*/
 
   protected Vector trajectorySteps;
 
@@ -759,7 +758,7 @@ abstract public class ModelCollection extends BondCollection {
     return Integer.MIN_VALUE;
   }
 
-  Model getModel(int modelIndex) {
+  protected Model getModel(int modelIndex) {
     return models[modelIndex];
   }
 
@@ -902,7 +901,7 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
 
-  static class Structure {
+  private static class Structure {
     String typeName;
     byte type;
     char startChainID;
@@ -1092,7 +1091,7 @@ abstract public class ModelCollection extends BondCollection {
    "DBREF ", };
    */
 
-  final static String[] pdbRecords = { "ATOM  ", "MODEL ", "HETATM" };
+  private final static String[] pdbRecords = { "ATOM  ", "MODEL ", "HETATM" };
 
   private String getFullPDBHeader(int modelIndex) {
     if (modelIndex < 0)
@@ -1254,7 +1253,7 @@ abstract public class ModelCollection extends BondCollection {
     return bs;
   }
 
-  String getSymmetryInfoAsString(int modelIndex) {
+  private String getSymmetryInfoAsString(int modelIndex) {
     SymmetryInterface unitCell = getUnitCell(modelIndex);
     return (unitCell == null ? "no symmetry information" 
         : unitCell.getSymmetryInfoString());
@@ -1507,7 +1506,6 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
 
-
   private void getMolecules() {
     if (moleculeCount > 0)
       return;
@@ -1599,7 +1597,6 @@ abstract public class ModelCollection extends BondCollection {
     if (nDelete > 0)
       deleteBonds(bsDelete);
   }
-
 
   //////////// iterators //////////
   
@@ -2362,7 +2359,7 @@ abstract public class ModelCollection extends BondCollection {
     return mol.toString();
   }
   
-  void getAtomRecordMOL(StringBuffer s, int i){
+  private void getAtomRecordMOL(StringBuffer s, int i){
     //   -0.9920    3.2030    9.1570 Cl  0  0  0  0  0
     //    3.4920    4.0920    5.8700 Cl  0  0  0  0  0
     //012345678901234567890123456789012
@@ -2372,7 +2369,7 @@ abstract public class ModelCollection extends BondCollection {
     s.append(" ").append((getElementSymbol(i) + "  ").substring(0,2)).append("\n");
   }
 
-  void getBondRecordMOL(StringBuffer s, int i,int[] atomMap){
+  private void getBondRecordMOL(StringBuffer s, int i,int[] atomMap){
   //  1  2  1
     Bond b = bonds[i];
     TextFormat.rFill(s, "   ","" + atomMap[b.atom1.atomIndex]);
@@ -2673,6 +2670,8 @@ abstract public class ModelCollection extends BondCollection {
     return unitCells[modelIndex].getUnitCellInfo();
   }
 
+  private SymmetryInterface symTemp;
+
   public String getSpaceGroupInfoText(String spaceGroup) {
     String strOperations = "";
     float[] unitCell = null;
@@ -2688,20 +2687,15 @@ abstract public class ModelCollection extends BondCollection {
       strOperations = "\nSymmetry operations employed:"
         + getModelSymmetryList(modelIndex);
     }
-    String info = getSymTemp().getSpaceGroupInfo(spaceGroup, unitCell);
+    if (symTemp == null)
+      symTemp = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+    String info = symTemp.getSpaceGroupInfo(spaceGroup, unitCell);
     return (info == null ? "could not identify space group from name: " + spaceGroup 
       + "\nformat: show spacegroup \"2\" or \"P 2c\" " +
           "or \"C m m m\" or \"x, y, z;-x ,-y, -z\"" : info + strOperations);
   }
   
-  SymmetryInterface symTemp;
-  SymmetryInterface getSymTemp() {
-    if (symTemp == null)
-      symTemp = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
-    return symTemp;
-  }
-  
-  public void deleteAtoms(int modelIndex, int firstAtomIndex, int nAtoms,
+  protected void deleteModel(int modelIndex, int firstAtomIndex, int nAtoms,
                           BitSet bsAtoms, BitSet bsBonds) {
     /*
      *   ModelCollection.modelSetAuxiliaryInfo["group3Lists", "group3Counts, "models"]
@@ -2775,7 +2769,7 @@ abstract public class ModelCollection extends BondCollection {
         stateScripts.removeElementAt(i);
     
     // set to recreate bounding box
-    super.deleteAtoms(firstAtomIndex, nAtoms, bsAtoms);
+    deleteModelAtoms(firstAtomIndex, nAtoms, bsAtoms);
   }
 
   public Point3f[] getFrameOffsets(BitSet bsAtoms) {

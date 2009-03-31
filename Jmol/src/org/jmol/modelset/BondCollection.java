@@ -44,13 +44,13 @@ abstract public class BondCollection extends AtomCollection {
     super.releaseModelSet();
   }
 
-  void merge(ModelSet modelSet) {
+  protected void merge(ModelSet modelSet) {
     // nothing to do for bonds
     super.merge(modelSet);
   }
 
-  Bond[] bonds;
-  int bondCount;
+  protected Bond[] bonds;
+  protected int bondCount;
   
   public Bond[] getBonds() {
     return bonds;
@@ -141,6 +141,7 @@ abstract public class BondCollection extends AtomCollection {
     return bond;
   }
 
+  final protected static boolean showRebondTimes = true;
   private final static int bondGrowthIncrement = 250;
 
   private Bond getOrAddBond(Atom atom, Atom atomOther, short order, short mad,
@@ -256,7 +257,7 @@ abstract public class BondCollection extends AtomCollection {
 
   private boolean haveWarned = false;
 
-  boolean checkValencesAndBond(Atom atomA, Atom atomB, short order, short mad,
+  protected boolean checkValencesAndBond(Atom atomA, Atom atomB, short order, short mad,
                             BitSet bsBonds) {
     if (atomA.getCurrentBondCount() > JmolConstants.MAXIMUM_AUTO_BOND_COUNT
         || atomB.getCurrentBondCount() > JmolConstants.MAXIMUM_AUTO_BOND_COUNT) {

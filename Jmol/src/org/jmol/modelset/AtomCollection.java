@@ -87,10 +87,8 @@ abstract public class AtomCollection {
     specialAtomIDs = mergeModelSet.specialAtomIDs;
   }
   
-  public Viewer viewer; //TESTING ONLY
-  Graphics3D g3d;
-
-  final protected static boolean showRebondTimes = true;
+  public Viewer viewer;
+  protected Graphics3D g3d;
 
   public Atom[] atoms;
   int atomCount;
@@ -124,7 +122,7 @@ abstract public class AtomCollection {
   byte[] occupancies;
   short[] bfactor100s;
   float[] partialCharges;
-  Object[][] ellipsoids;
+  protected Object[][] ellipsoids;
   protected int[] surfaceDistance100s;
 
 
@@ -956,8 +954,8 @@ abstract public class AtomCollection {
 
   // jvm < 1.4 does not have a BitSet.clear();
   // so in order to clear you "and" with an empty bitset.
-  final BitSet bsEmpty = new BitSet();
-  final BitSet bsFoundRectangle = new BitSet();
+  private final BitSet bsEmpty = new BitSet();
+  private final BitSet bsFoundRectangle = new BitSet();
 
   public BitSet findAtomsInRectangle(Rectangle rect, BitSet bsModels) {
     bsFoundRectangle.and(bsEmpty);
@@ -1670,7 +1668,7 @@ abstract public class AtomCollection {
     return bs;
   }
 
-  boolean isAtomNameMatch(Atom atom, String strPattern, boolean checkStar) {
+  private boolean isAtomNameMatch(Atom atom, String strPattern, boolean checkStar) {
     /// here xx*yy is changed to "xx??????????yy" when coming from getSpecName
     /// but not necessarily when coming from getIdentifierOrNull
     /// and NOT when coming from getAtomBits with Token.spec_atom
@@ -1764,10 +1762,13 @@ abstract public class AtomCollection {
     return bs;
   }
 
-  public void deleteAtoms(int firstAtomIndex, int nAtoms, BitSet bs) {
+  protected void deleteModelAtoms(int firstAtomIndex, int nAtoms, BitSet bs) {
+    // all atoms in the model are being deleted here
     BitSetUtil.deleteBits(bsHidden, bs);
     BitSetUtil.deleteBits(viewer.getSelectionSet(), bs);
     BitSetUtil.deleteBits(viewer.getSelectionSubset(), bs);
+    BitSetUtil.deleteBits(viewer.getFrameOffsets(), bs);
+    viewer.setFrameOffsets(viewer.getFrameOffsets());
     atoms = (Atom[]) ArrayUtil.deleteElements(atoms, firstAtomIndex, nAtoms);
     atomCount = atoms.length;
     for (int j = firstAtomIndex; j < atomCount; j++) {

@@ -38,7 +38,7 @@ class SelectionManager {
 
   private Viewer viewer;
 
-  private JmolSelectionListener[] listeners = new JmolSelectionListener[4];
+  private JmolSelectionListener[] listeners = new JmolSelectionListener[0];
 
   SelectionManager(Viewer viewer) {
     this.viewer = viewer;
@@ -219,20 +219,21 @@ class SelectionManager {
         listeners[i] = listener;
         return;
       }
-    listeners = (JmolSelectionListener[])ArrayUtil.doubleLength(listeners);
+    if (listeners.length == 0)
+      listeners = new JmolSelectionListener[1];
+    else
+      listeners = (JmolSelectionListener[])ArrayUtil.doubleLength(listeners);
     listeners[len] = listener;
   }
 
   private void selectionChanged(boolean isQuiet) {
     if (hideNotSelected)
       hide(BitSetUtil.copyInvert(bsSelection, viewer.getAtomCount()), false);
-    if (isQuiet)
+    if (isQuiet || listeners.length == 0)
       return;
-    for (int i = listeners.length; --i >= 0;) {
-      JmolSelectionListener listener = listeners[i];
-      if (listener != null)
+    for (int i = listeners.length; --i >= 0;)
+      if (listeners[i] != null)
         listeners[i].selectionChanged(bsSelection);
-    }
   }
     
   String getState(StringBuffer sfunc) {

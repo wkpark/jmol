@@ -186,6 +186,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
   private void createGaussianCube() {
     if (!checkCalculationType())
       return;
+    check5D();
     int nShells = shells.size();
     // each STO shell is the combination of one or more gaussians
     moCoeff = 0;
@@ -195,6 +196,32 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
         Logger.debug("createGaussianCube shell=" + i + " moCoeff=" + moCoeff
             + "/" + moCoefficients.length);
     }
+  }
+
+  boolean as5D = false;
+  /**
+   * Idea here is that we skip all the atoms, just increment moCoeff,
+   * and compare the number of coefficients run through to the 
+   * size of the moCoefficients array. If there are more coefficients
+   * than there should be, we have to assume 5D orbitals were not recognized
+   * by the file loader
+   * 
+   */
+  private void check5D() {
+    int nShells = shells.size();
+    // each STO shell is the combination of one or more gaussians
+    moCoeff = 0;
+    thisAtom = null;
+    for (int i = 0; i < nShells; i++) {
+      int[] shell = (int[]) shells.get(i);
+      int basisType = shell[1];
+      gaussianPtr = shell[2];
+      int nGaussians = shell[3];
+      addData(basisType, nGaussians);
+    }
+    as5D = (moCoeff > moCoefficients.length);
+    if (as5D)
+      Logger.info("MO calculation is assuming spherical (5D,7F) orbitals");
   }
 
   private boolean checkCalculationType() {
@@ -236,6 +263,10 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
           + nGaussians + " atom=" + atomIndex);
     if (atomIndex != lastAtom && (thisAtom = qmAtoms[atomIndex]) != null)
       thisAtom.setXYZ(true);
+    addData(basisType, nGaussians);
+  }
+
+  private void addData(int basisType, int nGaussians) {
     switch (basisType) {
     case JmolConstants.SHELL_S:
       addDataS(nGaussians);
@@ -247,13 +278,19 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
       addDataSP(nGaussians);
       break;
     case JmolConstants.SHELL_D_CARTESIAN:
-      addData6D(nGaussians);
+      if (as5D)
+        addData5D(nGaussians);
+      else
+        addData6D(nGaussians);
       break;
     case JmolConstants.SHELL_D_SPHERICAL:
       addData5D(nGaussians);
       break;
     case JmolConstants.SHELL_F_CARTESIAN:
-      addData10F(nGaussians);
+      if (as5D)
+        addData7F(nGaussians);
+      else        
+        addData10F(nGaussians);
       break;
     case JmolConstants.SHELL_F_SPHERICAL:
       addData7F(nGaussians);
@@ -264,7 +301,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
       break;
     }
   }
-
+  
   private void setTemp() {
     for (int ix = xMax; --ix >= xMin;) {
       for (int iy = yMax; --iy >= yMin;) {
@@ -372,7 +409,7 @@ public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
       return;
     }
     if (doDebug)
-      dumpInfo(nGaussians, "S X Y Z ");
+      dumpInfo(nGaussians, c1 == 0 ? "X Y Z " : "S X Y Z ");
     float ms = (c1 == 0 ? 0 : moCoefficients[moCoeff++]);
     float mx = moCoefficients[moCoeff++];
     float my = moCoefficients[moCoeff++];

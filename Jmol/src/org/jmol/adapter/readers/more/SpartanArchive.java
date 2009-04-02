@@ -28,7 +28,6 @@ import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Parser;
 
-import java.io.BufferedReader;
 import java.util.Vector;
 import java.util.Hashtable;
 import javax.vecmath.Vector3f;
@@ -45,7 +44,6 @@ public class SpartanArchive {
   private int gaussianCount = 0;
   private String endCheck;
   private String calculationType = "";
-  private BufferedReader reader;
   private String line;
   
   private String[] getTokens() {
@@ -72,7 +70,6 @@ public class SpartanArchive {
                           AtomSetCollection atomSetCollection,
                           Hashtable moData, String bondData) {
     this.r = r;
-    this.reader = r.reader;
     this.atomSetCollection = atomSetCollection;
     this.moData = moData;
     moData.put("energyUnits","");

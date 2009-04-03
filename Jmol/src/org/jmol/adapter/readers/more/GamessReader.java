@@ -43,6 +43,8 @@ abstract public class GamessReader extends AtomSetCollectionReader {
   protected Hashtable moData = new Hashtable();
   protected Vector orbitals = new Vector();
   protected Vector atomNames = new Vector();
+  protected Vector moTypes;
+  
   abstract public AtomSetCollection readAtomSetCollection(BufferedReader reader); 
  
   abstract protected void readAtomsInBohrCoordinates() throws Exception;  
@@ -142,6 +144,31 @@ abstract public class GamessReader extends AtomSetCollectionReader {
   abstract protected String fixShellTag(String tag);
 
   /*
+
+     (Occupancy)   Bond orbital/ Coefficients/ Hybrids
+ -------------------------------------------------------------------------------
+   1. (1.98839) BD ( 1) C  1- C  2       
+          1         2         3 
+01234567890123456789012345678901234
+
+   */
+  protected void getNboTypes() throws Exception {
+    moTypes = new Vector();
+    readLine();
+    readLine();
+    int n = 1;
+    while (line != null && line.indexOf(".") == 4) {
+      if (parseInt(line.substring(0, 4))!= n)
+        break;
+      moTypes.add(n - 1, line.substring(5, 34).trim());
+      n++;
+      while (readLine() != null && line.startsWith("     ")) {
+      }        
+    }
+  }
+
+
+  /*
    ------------------
    MOLECULAR ORBITALS
    ------------------
@@ -184,6 +211,7 @@ abstract public class GamessReader extends AtomSetCollectionReader {
     //the announcement of the localized orbitals
     int nThisLine = 0;
     readLine();
+    int moCount = 0;
     if (line.indexOf("---") >= 0)
       readLine();
     while (readLine() != null) {
@@ -218,6 +246,8 @@ abstract public class GamessReader extends AtomSetCollectionReader {
             }
           }
           mos[iMo].put("coefficients", coefs);
+          if (moTypes != null && moCount < moTypes.size())
+            mos[iMo].put("type", moTypes.get(moCount++));
           orbitals.addElement(mos[iMo]);
         }
         nThisLine = 0;

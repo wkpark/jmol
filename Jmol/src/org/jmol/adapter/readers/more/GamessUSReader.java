@@ -30,19 +30,23 @@
 
 package org.jmol.adapter.readers.more;
 
-import org.jmol.adapter.smarter.*;
-import org.jmol.util.Logger;
-
 import java.io.BufferedReader;
 import java.util.Hashtable;
+
+import org.jmol.adapter.smarter.Atom;
+import org.jmol.adapter.smarter.AtomSetCollection;
+import org.jmol.util.Logger;
 
 public class GamessUSReader extends GamessReader {
 
   private int headerType;
+  private boolean getNBOs;
   
   public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("gamess");
+    line = "NBOs in the AO basis:";
+    getNBOs = filterMO();
     try {
       readLine();
       boolean iHaveAtoms = false;
@@ -69,6 +73,9 @@ public class GamessUSReader extends GamessReader {
           } else if (line.indexOf("ATOMIC BASIS SET") >= 0) {
             readGaussianBasis("SHELL TYPE", "TOTAL");
             continue;
+          } else if (line.indexOf("(Occupancy)   Bond orbital/ Coefficients/ Hybrids") >= 0) {
+            if (getNBOs)
+              getNboTypes();
           } else if (line.indexOf("SUMMARY OF THE EFFECTIVE FRAGMENT") >= 0) {
             // We have EFP and we're not afraid to use it!!
             //it would be nice is this information was closer to the ab initio molecule
@@ -394,6 +401,9 @@ public class GamessUSReader extends GamessReader {
     switch (headerType) {
     default:
       //this means there are no energies, occupancies or symmetries
+      for (int i = 0; i < nThisLine; i++) {
+        mos[i].put("energy", "");
+      }
       return;
     case 1:
       //this is the original functionality

@@ -195,6 +195,7 @@ abstract public class GamessReader extends AtomSetCollectionReader {
         break;
         //not everyone has followed the conventions for ending a section of output
       if (line.length() == 0 || line.indexOf("--") >= 0 || line.indexOf(".....") >=0 
+           || line.indexOf("NBO BASIS") >= 0 // reading NBOs
            || line.indexOf("CI EIGENVECTORS WILL BE LABELED") >=0 //this happens when doing MCSCF optimizations
            || line.indexOf("   THIS LOCALIZATION HAD") >=0) { //this happens with certain localization methods
         for (int iMo = 0; iMo < nThisLine; iMo++) {
@@ -227,6 +228,8 @@ abstract public class GamessReader extends AtomSetCollectionReader {
       //read the data line:
       if (nThisLine == 0) {
         nThisLine = tokens.length;
+        if (tokens[0].equals("AO"))
+          nThisLine--;
         if (mos == null || nThisLine > mos.length) {
            mos = new Hashtable[nThisLine];
            data = new Vector[nThisLine];

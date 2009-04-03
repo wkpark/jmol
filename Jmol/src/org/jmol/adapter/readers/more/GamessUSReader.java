@@ -85,10 +85,9 @@ public class GamessUSReader extends GamessReader {
               readMolecularOrbitals(); //1,1
               continue;
             }
-          } else if (line
-              .indexOf("EDMISTON-RUEDENBERG ENERGY LOCALIZED ORBITALS") >= 0
-              || line
-                  .indexOf("  THE PIPEK-MEZEY POPULATION LOCALIZED ORBITALS ARE") >= 0) {
+          } else if (line.indexOf("EDMISTON-RUEDENBERG ENERGY LOCALIZED ORBITALS") >= 0
+              || line.indexOf("  THE PIPEK-MEZEY POPULATION LOCALIZED ORBITALS ARE") >= 0
+              || line.indexOf("NBOs in the AO basis:") >= 0) {
             if (filterMO()) {
               headerType = 0; // no header
               readMolecularOrbitals(); //0,3

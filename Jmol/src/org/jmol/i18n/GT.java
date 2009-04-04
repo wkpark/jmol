@@ -136,6 +136,7 @@ public class GT {
       new Language("sl",    GT._("Slovenian"),                false),
       new Language("es",    GT._("Spanish"),                  true),
       new Language("sv",    GT._("Swedish"),                  false),
+      new Language("zh_TW", GT._("Traditional Chinese"),      false),
       new Language("tr",    GT._("Turkish"),                  true),
     };
     doTranslate = wasTranslating;

@@ -88,9 +88,12 @@ public class QchemReader extends AtomSetCollectionReader {
           readPartialCharges();
         } else if (line.indexOf("Job ") >= 0) {
           calculationNumber++;
+          moData = null; // start 'fresh'
         } else if (line.indexOf("Basis set in general basis input format") >= 0) {
-          readBasis();
-          atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
+          if (moData == null) { // only read the first basis (not basis2)
+            readBasis();
+            atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
+          }
         } else if (line.indexOf("Orbital Energies (a.u.) and Symmetries") >= 0 ) {
           if (moData != null) readLabels();   // only read if I have moData...
         } else if (line.indexOf("Orbital Energies (a.u.)") >= 0 ) {

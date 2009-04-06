@@ -56,6 +56,9 @@ import org.jmol.util.Logger;
  *  setAtomCoord()
  *  applySymmetryAndSetTrajectory()
  *
+ *
+ * "isotope" added 4/6/2009 Bob Hanson
+ * 
  */
 
 /* TODO 9/06
@@ -80,7 +83,7 @@ public class XmlCmlReader extends XmlReader {
 
   private String[] cmlImplementedAttributes = { "id", //general
       "title", //molecule
-      "x3", "y3", "z3", "x2", "y2", //atom 
+      "x3", "y3", "z3", "x2", "y2", "isotope", //atom 
       "elementType", "formalCharge", //atom
       "atomId", //atomArray
       "atomRefs2", "order", //bond
@@ -188,14 +191,12 @@ public class XmlCmlReader extends XmlReader {
 
   public void processStartElement(String uri, String name, String qName,
                                   HashMap atts) {
-    //if (!uri.equals(NAMESPACE_URI))
-    //return;
+    // if (!uri.equals(NAMESPACE_URI))
+    // return;
 
-    /*    try {
-     System.out.println(name + "::" + atts.get("name"));
-     } catch (Exception e) {
-     System.out.println(name);
-     }
+    /*
+     * try { System.out.println(name + "::" + atts.get("name")); } catch
+     * (Exception e) { System.out.println(name); }
      */
     if (!processing)
       return;
@@ -251,11 +252,13 @@ public class XmlCmlReader extends XmlReader {
       break;
     case LATTICE_VECTOR:
       /*
-       <lattice dictRef="castep:latticeVectors">
-       <latticeVector units="castepunits:A" dictRef="cml:latticeVector">1.980499982834e0 3.430000066757e0 0.000000000000e0</latticeVector>
-       <latticeVector units="castepunits:A" dictRef="cml:latticeVector">-1.980499982834e0 3.430000066757e0 0.000000000000e0</latticeVector>
-       <latticeVector units="castepunits:A" dictRef="cml:latticeVector">0.000000000000e0 0.000000000000e0 4.165999889374e0</latticeVector>
-       </lattice>
+       * <lattice dictRef="castep:latticeVectors"> <latticeVector
+       * units="castepunits:A" dictRef="cml:latticeVector">1.980499982834e0
+       * 3.430000066757e0 0.000000000000e0</latticeVector> <latticeVector
+       * units="castepunits:A" dictRef="cml:latticeVector">-1.980499982834e0
+       * 3.430000066757e0 0.000000000000e0</latticeVector> <latticeVector
+       * units="castepunits:A" dictRef="cml:latticeVector">0.000000000000e0
+       * 0.000000000000e0 4.165999889374e0</latticeVector> </lattice>
        */
       setKeepChars(true);
       break;
@@ -386,8 +389,13 @@ public class XmlCmlReader extends XmlReader {
           parent.setAtomCoord(atom, parseFloat((String) atts.get("x2")),
               parseFloat((String) atts.get("y2")), 0);
         }
-        if (atts.containsKey("elementType"))
-          atom.elementSymbol = (String) atts.get("elementType");
+        if (atts.containsKey("elementType")) {
+          String sym = (String) atts.get("elementType");
+          if (atts.containsKey("isotope"))
+            atom.elementNumber = (short) ((parseInt((String) atts
+                .get("isotope")) << 7) + JmolAdapter.getElementNumber(sym));
+          atom.elementSymbol = sym;
+        }
         if (atts.containsKey("formalCharge"))
           atom.formalCharge = parseInt((String) atts.get("formalCharge"));
       }
@@ -432,9 +440,9 @@ public class XmlCmlReader extends XmlReader {
   }
 
   public void processEndElement(String uri, String name, String qName) {
-    //if (!uri.equals(NAMESPACE_URI))
-      //return;
-    //System.out.println("END: " + name);
+    // if (!uri.equals(NAMESPACE_URI))
+    // return;
+    // System.out.println("END: " + name);
     if (!processing)
       return;
     switch (state) {
@@ -460,15 +468,15 @@ public class XmlCmlReader extends XmlReader {
         setKeepChars(false);
         if (tokens.length != 3 || cellParameterType == null) {
         } else if (cellParameterType.equals("length")) {
-          for (int i = 0; i < 3; i++) 
+          for (int i = 0; i < 3; i++)
             parent.setUnitCellItem(i, parseFloat(tokens[i]));
           break;
         } else if (cellParameterType.equals("angle")) {
-          for (int i = 0; i < 3; i++) 
+          for (int i = 0; i < 3; i++)
             parent.setUnitCellItem(i + 3, parseFloat(tokens[i]));
           break;
         }
-        //if here, then something is wrong
+        // if here, then something is wrong
         Logger.error("bad cellParameter information: parameterType="
             + cellParameterType + " data=" + chars);
         parent.setFractionalCoordinates(false);
@@ -500,8 +508,9 @@ public class XmlCmlReader extends XmlReader {
       break;
     case CRYSTAL_SYMMETRY_TRANSFORM3:
       if (name.equals("transform3")) {
-        //setSymmetryOperator("xyz matrix: " + chars);
-        // the problem is that these matricies are in CARTESIAN coordinates, not ijk coordinates
+        // setSymmetryOperator("xyz matrix: " + chars);
+        // the problem is that these matricies are in CARTESIAN coordinates, not
+        // ijk coordinates
         setKeepChars(false);
         state = CRYSTAL_SYMMETRY;
       }
@@ -528,7 +537,7 @@ public class XmlCmlReader extends XmlReader {
           // if <molecule> is within <molecule>, then
           // we have to wait until the end of all <molecule>s to
           // apply symmetry.
-          applySymmetryAndSetTrajectory();          
+          applySymmetryAndSetTrajectory();
           atomIdNames = atomSetCollection.setAtomNames(atomIdNames);
           state = START;
         } else {
@@ -549,7 +558,8 @@ public class XmlCmlReader extends XmlReader {
         state = MOLECULE;
         for (int i = 0; i < atomCount; ++i) {
           Atom atom = atomArray[i];
-          if (atom.elementSymbol != null && !Float.isNaN(atom.z))
+          if ((atom.elementSymbol != null || atom.elementNumber >= 0)
+              && !Float.isNaN(atom.z))
             atomSetCollection.addAtomWithMappedName(atom);
         }
       }
@@ -562,7 +572,8 @@ public class XmlCmlReader extends XmlReader {
     case MOLECULE_ATOM:
       if (name.equals("atom")) {
         state = MOLECULE_ATOM_ARRAY;
-        if (atom.elementSymbol != null && !Float.isNaN(atom.z)) {
+        if ((atom.elementSymbol != null || atom.elementNumber >= 0)
+            && !Float.isNaN(atom.z)) {
           atomSetCollection.addAtomWithMappedName(atom);
         }
         atom = null;
@@ -573,10 +584,11 @@ public class XmlCmlReader extends XmlReader {
         state = MOLECULE_ATOM;
         if ("jmol:charge".equals(scalarDictRef)) {
           atom.partialCharge = parseFloat(chars);
-        } else if (scalarDictRef != null && "_atom_site_label".equals(scalarDictValue)) {
+        } else if (scalarDictRef != null
+            && "_atom_site_label".equals(scalarDictValue)) {
           if (atomIdNames == null)
             atomIdNames = new Properties();
-          atomIdNames.put(atom.atomName, chars); 
+          atomIdNames.put(atom.atomName, chars);
         }
       }
       setKeepChars(false);
@@ -595,7 +607,7 @@ public class XmlCmlReader extends XmlReader {
         atom.elementSymbol = chars;
       setKeepChars(false);
       break;
-    case MOLECULE_BOND_BUILTIN:  //ACD Labs
+    case MOLECULE_BOND_BUILTIN: // ACD Labs
       state = MOLECULE_BOND;
       if (scalarDictValue.equals("atomRef")) {
         if (tokenCount == 0)
@@ -628,6 +640,9 @@ public class XmlCmlReader extends XmlReader {
         return JmolAdapter.ORDER_COVALENT_TRIPLE;
       case 'A':
         return JmolAdapter.ORDER_AROMATIC;
+      case 'P':
+        //TODO: Note, this could be elaborated more specifically
+        return JmolAdapter.ORDER_PARTIAL12;
       }
       return parseInt(str);
     }

@@ -67,8 +67,8 @@ public class QchemReader extends AtomSetCollectionReader {
   private int calculationNumber = 1;
 
   Hashtable moData = null;
-  String[] alphaLabels = null;  // labels to be used for alpha orbitals
-  String[] betaLabels = null;   // labels to be used for beta orbitals
+  MOInfo[] alphas = null;
+  MOInfo[] betas = null;
   int nShell = 0;          // # of shells according to qchem
   int nBasis = 0;          // # of basis according to qchem
 
@@ -95,9 +95,9 @@ public class QchemReader extends AtomSetCollectionReader {
             atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
           }
         } else if (line.indexOf("Orbital Energies (a.u.) and Symmetries") >= 0 ) {
-          if (moData != null) readLabels();   // only read if I have moData...
+          if (moData != null) readESym(true);   // only read if I have moData...
         } else if (line.indexOf("Orbital Energies (a.u.)") >= 0 ) {
-          if (moData != null) readNoSymLabels();   // only read if I have moData...
+          if (moData != null) readESym(false);   // only read if I have moData...
         } else if (line.indexOf("MOLECULAR ORBITAL COEFFICIENTS") >= 0) {
           if (moData != null) readOrbitals(); // only read if I have moData...
         }
@@ -446,89 +446,50 @@ $end
 
    * 
    */
-  protected void readLabels() throws Exception {
-    String[] tokens, labels;
-    String label="???", restricted, spin[] = {"A","B"};
-    alphaLabels = new String[nBasis];
-    betaLabels = new String[nBasis];
+  protected void readESym(boolean haveSym) throws Exception {
+    String[] tokens, spin = {"A","B"};
+    alphas = new MOInfo[nBasis];
+    betas = new MOInfo[nBasis];
+    MOInfo[] moInfos;
+    int ne=0;  // number of electrons for a particular series of orbitals
+    boolean readBetas = false;
 
     discardLinesUntilStartsWith(" Alpha");
-    restricted = getTokens(line)[2];
-    labels = alphaLabels;
+    tokens = getTokens(line); // initialize tokens for later as well
+    moInfos = alphas;
     for (int e = 0; e < 2; e++) { // do for A and B electrons
-      int nLabels = 0;
+      int nMO = 0;
       while (readLine() != null) { // will break out of loop
         if (line.startsWith(" -- ")) {
-          label = makeOccupancy(restricted,spin[e],getTokens(line));
-          readLine();
-        }
-        if (line.startsWith(" -------")) break; // done....
-        int nOrbs = getTokens(line).length;
-        if (nOrbs == 0 || line.startsWith(" Warning")) { 
-          discardLinesUntilStartsWith(" Beta"); // now the beta ones.
-          labels = betaLabels;
-          break;
-        }
-        tokens = getTokens(readLine());
-        for (int i=0, j=0; i < nOrbs; i++, j+=2) {
-          labels[nLabels] = tokens[j]+tokens[j+1]+"--"+label;
-          nLabels++;
-        }
-      }
-    }
-  }
-
-  /* if symmetry is turned off there won't be any symmetry lines.... */
-  protected void readNoSymLabels() throws Exception {
-    String[] labels;
-    String label="???";
-    alphaLabels = new String[nBasis];
-    betaLabels = new String[nBasis];
-
-    discardLinesUntilStartsWith(" Alpha");
-    labels = alphaLabels;
-    for (int e = 0; e < 2; e++) { // do for A and B electrons
-      int nLabels = 0;
-      while (readLine() != null) { // will break out of loop
-        if (line.startsWith(" -- Occ")) {
-          label = "(O)";
-          readLine();
-        } else if (line.startsWith(" -- Vir")) {
-          label ="(V)";
+          ne = 0;
+          if (line.indexOf("Vacant") < 0) {
+            if (line.indexOf("Occupied") > 0) ne = 1;
+          }
           readLine();
         }
         if (line.startsWith(" -------")) {
-          e = 2; // Restricted with nosym: no Beta's listed... so force end
+          e = 2; // pretend I did read beta whether it happened or not
           break; // done....
         }
         int nOrbs = getTokens(line).length;
         if (nOrbs == 0 || line.startsWith(" Warning")) { 
           discardLinesUntilStartsWith(" Beta"); // now the beta ones.
-          labels = betaLabels;
+          readBetas = true;
+          moInfos = betas;
           break;
         }
-        for (int i=0; i < nOrbs; i++) {
-          labels[nLabels] = "??? "+label;
-          nLabels++;
+        if (haveSym) tokens = getTokens(readLine());
+        for (int i=0, j=0; i < nOrbs; i++, j+=2) {
+          MOInfo info = new MOInfo();
+          info.ne = ne;
+          info.label = spin[e];
+          if (haveSym) info.symmetry = tokens[j]+tokens[j+1];
+          moInfos[nMO] = info;
+          nMO++;
         }
       }
     }
-  }
- 
-  private String makeOccupancy(String restricted, String spin, String[] tokens) {
-    String label = tokens[1];
-    if (restricted.equals("Unrestricted")) {
-      if (label.equals("Occupied")) label = spin;
-      else label = "V"+spin;                 // must be virtual
-    } else {          // Restricted (RO or R)
-      if (label.equals("Occupied") || label.equals("Doubly")) label = "AB";
-      else if (label.equals("Virtual")) label = "V";
-      else { // RO single occupied one
-        if (tokens[3].equals("(Occupied)")) label = "RO-1"+spin;
-        else label = "RO-0"+spin;
-      }
-    }
-    return label;
+    if (!readBetas) betas=alphas; // no beta symmetry info: Restricted no sym
   }
 
 /* Restricted orbitals cartesian see H2O-B3LYP-631Gd.out:
@@ -622,10 +583,10 @@ $end
     Vector orbitals = new Vector();
     String[] aoLabels = new String[nBasis];
     String orbitalType = getTokens(line)[0]; // is RESTRICTED or ALPHA
-    nMOs = readMOs(aoLabels, orbitals, alphaLabels);
+    nMOs = readMOs(orbitalType.equals("RESTRICTED"), aoLabels, orbitals, alphas);
     if (orbitalType.equals("ALPHA")) { // we also have BETA orbitals....
       discardLinesUntilContains("BETA");
-      nMOs += readMOs(aoLabels, orbitals, betaLabels);
+      nMOs += readMOs(false, aoLabels, orbitals, betas);
     }
     // based on labels adjust the cartesian vs pure for the proper shells
     int iAO = 0; // index of first AO for a particular shell
@@ -658,7 +619,8 @@ $end
     setMOData(moData);
   }
 
-  private int readMOs(String[] aoLabels, Vector orbitals, String[] moLabels) throws Exception {
+  private int readMOs(boolean restricted, String[] aoLabels,
+                      Vector orbitals, MOInfo[] moInfos) throws Exception {
     Hashtable[] mos = new Hashtable[6];  // max 6 MO's per line
     float[][] mocoef = new float[6][];   // coefficients for each MO
     int[] moid = new int[6];             // mo numbers
@@ -680,15 +642,33 @@ $end
         for (int j = tokens.length-nMO, k=0; k < nMO; j++, k++)
           mocoef[k][i] = parseFloat(tokens[j]);
       }
-      // we have all the info we need (except for the real symmetry right now)
+      // we have all the info we need 
       for (int i = 0; i < nMO; i++ ) {
+        MOInfo moInfo = moInfos[moid[i]];
         mos[i].put("energy", new Float(energy[i]));
         mos[i].put("coefficients",mocoef[i]);
-        mos[i].put("symmetry", moLabels[moid[i]] +"("+(moid[i]+1)+")");
+        String label = moInfo.label;
+        int ne = moInfo.ne;
+        if (restricted) ne = alphas[moid[i]].ne + betas[moid[i]].ne;
+        mos[i].put("occupancy", new Float(ne));
+        if (ne == 2) label = "AB";
+        if (ne == 0) {
+          if (restricted) label = "V";
+          else label = "V"+label; // keep spin information for the orbital
+        }
+        mos[i].put("symmetry", moInfo.symmetry+" "+label +"("+(moid[i]+1)+")");
         orbitals.addElement(mos[i]);
       }
       nMOs += nMO;
     }
     return nMOs;
+  }
+  
+  // inner class moInfo for storing occupancy and symmetry info from the
+  // orbital energies and symmetrys block
+  protected class MOInfo {
+    int ne = 0;      // 0 or 1
+    String label = "???";
+    String symmetry = "???";
   }
 }

@@ -621,17 +621,33 @@ msgstr "&Detener"
 msgid "&Rewind to first frame"
 msgstr "Pri&mer fotograma"
 
+#: org/openscience/jmol/app/GuiMap.java:159
+msgid "Rewind to first frame"
+msgstr "Primer fotograma"
+
 #: org/openscience/jmol/app/GuiMap.java:160
 msgid "Go to &next frame"
 msgstr "Fotograma &siguiente"
+
+#: org/openscience/jmol/app/GuiMap.java:161
+msgid "Go to next frame"
+msgstr "Fotograma siguiente"
 
 #: org/openscience/jmol/app/GuiMap.java:162
 msgid "Go to &previous frame"
 msgstr "Fotograma &anterior"
 
+#: org/openscience/jmol/app/GuiMap.java:163
+msgid "Go to previous frame"
+msgstr "Fotograma anterior"
+
 #: org/openscience/jmol/app/GuiMap.java:164
 msgid "Go to &last frame"
 msgstr "&Ultimo fotograma"
+
+#: org/openscience/jmol/app/GuiMap.java:165
+msgid "Go to last frame"
+msgstr "Ultimo fotograma"
 
 #: org/openscience/jmol/app/GuiMap.java:166
 msgid "Start &vibration"
@@ -712,7 +728,7 @@ msgid "Rotate molecule."
 msgstr "Rotar molécula"
 
 #: org/openscience/jmol/app/GuiMap.java:187
-msgid "Select a set of atoms using SHIFT-LEFT-  DRAG."
+msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
 msgstr ""
 "Selecciona un grupo de átomos pulsando Mayús. y arrastrando con el botón "
 "principal"

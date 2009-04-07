@@ -41,7 +41,6 @@ class GuiMap {
   Hashtable labels = null;
   
   private Hashtable setupLabels() {
-    String x;
       Hashtable labels = new Hashtable();
       labels.put("macros", GT._("&Macros"));
       labels.put("file", GT._("&File"));

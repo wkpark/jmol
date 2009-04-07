@@ -2149,9 +2149,9 @@
   <fah_proj number="896" name="p896_p53longpeptides_GB" public="y" file="xyz"
     server="130.49.240.81" atoms="260" preferred="11" deadline="47"
     credit="171" frames="100" code="A" contact="ltchong" contrib="DKman,konpas1986"/>
-  <fah_proj number="897" name="p897_NIFKcomplex_p897" public="y" file="xyz"
+  <fah_proj number="897" name="p897_NIFKcomplex_p897" public="y" file="top,xyz"
     server="130.49.240.81" atoms="18542" preferred="60" deadline="90"
-    credit="326" frames="100" code="A" contact="ltchong" contrib="Hyperlife"/>
+    credit="326" frames="100" code="A" contact="ltchong" contrib="Hyperlife,MstrBlstr"/>
 
   <!-- Projects 900 to 999 -->
   <fah_proj number="901" public="y"
@@ -5184,7 +5184,7 @@
   <fah_proj number="2676" name="p2676_IBX in water" public="y" file="xyz"
     server="171.67.108.24" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson" contrib="Ivoshiee"/>
-  <fah_proj number="2677" name="p2677_IBX in water" public="y"
+  <fah_proj number="2677" name="p2677_IBX in water" public="y" file="xyz"
     server="171.64.65.56" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson"/>
 
@@ -7896,13 +7896,13 @@
     server="171.64.122.70" atoms="973" preferred="3" deadline="4"
     credit="1680" frames="100" code="GG2MT" contact="ihaque"/>
   <fah_proj number="5902" name="p5902_proL_ff96_300K" public="y"
-    server="171.64.122.70" atoms="973" preferred="3" deadline="5"
+    server="171.64.122.70" atoms="973" preferred="3" deadline="6"
     credit="1888" frames="100" code="GG2MT" contact="ihaque"/>
   <fah_proj number="5903" name="p5903_proL_ff96_300K" public="y"
-    server="171.64.122.70" atoms="973" preferred="3" deadline="5"
+    server="171.64.122.70" atoms="973" preferred="3" deadline="6"
     credit="1888" frames="100" code="GG2MT" contact="ihaque"/>
   <fah_proj number="5904" name="p5904_proL_ff96_300K" public="y"
-    server="171.64.122.70" atoms="973" preferred="3" deadline="5"
+    server="171.64.122.70" atoms="973" preferred="3" deadline="6"
     credit="1888" frames="100" code="GG2MT" contact="ihaque"/>
 
   <!-- Projects 6000 to 6099 -->

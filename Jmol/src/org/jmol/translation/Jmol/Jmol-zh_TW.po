@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-04-07 20:59+0200\n"
-"PO-Revision-Date: 2009-04-01 08:59+0000\n"
+"PO-Revision-Date: 2009-04-07 05:16+0000\n"
 "Last-Translator: Yi-Shu Tu <Unknown>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-04-04 06:00+0000\n"
+"X-Launchpad-Export-Date: 2009-04-07 19:12+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
@@ -38,7 +38,7 @@ msgstr "確定"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:163
 msgid "AtomSetChooser"
-msgstr ""
+msgstr "原子集合選擇器"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:168
 msgid "No AtomSets"
@@ -58,7 +58,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/AtomSetChooser.java:231
 msgid "Info"
-msgstr ""
+msgstr "訊息"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:238
 #: org/openscience/jmol/app/PovrayDialog.java:175
@@ -70,15 +70,15 @@ msgstr "選擇"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:253
 msgid "Repeat"
-msgstr ""
+msgstr "重覆"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:265
 msgid "FPS"
-msgstr ""
+msgstr "FPS"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:281
 msgid "Vector"
-msgstr ""
+msgstr "向量"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:288
 msgid "Radius"
@@ -94,7 +94,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/AtomSetChooser.java:325
 msgid "Period"
-msgstr ""
+msgstr "週期"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:354
 msgid "Controller"
@@ -106,7 +106,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/AtomSetChooser.java:363
 msgid "vector"
-msgstr ""
+msgstr "向量"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:366
 #, java-format
@@ -204,11 +204,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:308
 msgid "Selection: "
-msgstr ""
+msgstr "選擇: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
-msgstr ""
+msgstr "Gaussian 輸入檔名"
 
 #: org/openscience/jmol/app/GaussianDialog.java:349
 msgid "File..."
@@ -256,7 +256,7 @@ msgstr "批次檔(&T)"
 
 #: org/openscience/jmol/app/GuiMap.java:52
 msgid "AtomSet&Chooser..."
-msgstr ""
+msgstr "原子集合選擇器(&C)"
 
 #: org/openscience/jmol/app/GuiMap.java:53
 msgid "&Save As..."
@@ -346,15 +346,15 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:75
 msgid "&Paste"
-msgstr ""
+msgstr "貼上( &P)"
 
 #: org/openscience/jmol/app/GuiMap.java:77
 msgid "&Select"
-msgstr ""
+msgstr "選擇 (&S)"
 
 #: org/openscience/jmol/app/GuiMap.java:78
 msgid "&All"
-msgstr ""
+msgstr "全部(&A)"
 
 #: org/openscience/jmol/app/GuiMap.java:79
 #: org/openscience/jmol/app/GuiMap.java:92
@@ -362,7 +362,7 @@ msgstr ""
 #: org/openscience/jmol/app/GuiMap.java:104
 #: org/openscience/jmol/app/GuiMap.java:111
 msgid "&None"
-msgstr ""
+msgstr "無(&N)"
 
 #: org/openscience/jmol/app/GuiMap.java:80
 msgid "Hydrogen"
@@ -435,19 +435,19 @@ msgstr ""
 #: org/openscience/jmol/app/GuiMap.java:115
 #, java-format
 msgid "{0} Å"
-msgstr ""
+msgstr "{0} Å"
 
 #: org/openscience/jmol/app/GuiMap.java:103
 msgid "&Label"
-msgstr ""
+msgstr "標籤"
 
 #: org/openscience/jmol/app/GuiMap.java:105
 msgid "&Symbol"
-msgstr ""
+msgstr "符號(&S)"
 
 #: org/openscience/jmol/app/GuiMap.java:106
 msgid "&Name"
-msgstr ""
+msgstr "名稱(&N)"
 
 #: org/openscience/jmol/app/GuiMap.java:107
 msgid "&Number"
@@ -467,7 +467,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:112
 msgid "&On"
-msgstr ""
+msgstr "於(&O)"
 
 #: org/openscience/jmol/app/GuiMap.java:113
 #, java-format
@@ -485,7 +485,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:121
 msgid "&Zoom"
-msgstr ""
+msgstr "縮放(&Z)"
 
 #: org/openscience/jmol/app/GuiMap.java:122
 #: org/openscience/jmol/app/GuiMap.java:123
@@ -523,27 +523,27 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:133
 msgid "&View"
-msgstr ""
+msgstr "檢視(&V)"
 
 #: org/openscience/jmol/app/GuiMap.java:134
 msgid "&Front"
-msgstr ""
+msgstr "前端(&F)"
 
 #: org/openscience/jmol/app/GuiMap.java:135
 msgid "&Top"
-msgstr ""
+msgstr "頂端(&T)"
 
 #: org/openscience/jmol/app/GuiMap.java:136
 msgid "&Bottom"
-msgstr ""
+msgstr "底端(&B)"
 
 #: org/openscience/jmol/app/GuiMap.java:137
 msgid "&Right"
-msgstr ""
+msgstr "右端(&R)"
 
 #: org/openscience/jmol/app/GuiMap.java:138
 msgid "&Left"
-msgstr ""
+msgstr "左端(&R)"
 
 #: org/openscience/jmol/app/GuiMap.java:139
 msgid "Tr&ansform..."
@@ -555,7 +555,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:141
 msgid "&Tools"
-msgstr ""
+msgstr "工具(&T)"
 
 #: org/openscience/jmol/app/GuiMap.java:142
 msgid "&Gaussian..."
@@ -603,7 +603,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:154
 msgid "&Loop"
-msgstr ""
+msgstr "環(&L)"
 
 #: org/openscience/jmol/app/GuiMap.java:155
 msgid "P&alindrome"
@@ -611,7 +611,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:156
 msgid "&Stop animation"
-msgstr ""
+msgstr "停止動畫(&S)"
 
 #: org/openscience/jmol/app/GuiMap.java:157
 msgid "&Rewind to first frame"
@@ -667,7 +667,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:170
 msgid "&Help"
-msgstr ""
+msgstr "說明(&H)"
 
 #: org/openscience/jmol/app/GuiMap.java:172
 msgid "User Guide"
@@ -675,7 +675,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:173
 msgid "What's New"
-msgstr ""
+msgstr "更新資訊"
 
 #: org/openscience/jmol/app/GuiMap.java:174
 msgid "Jmol Java &Console"
@@ -683,7 +683,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:175
 msgid "Hydrogens"
-msgstr ""
+msgstr "氫"
 
 #: org/openscience/jmol/app/GuiMap.java:176
 #: org/openscience/jmol/app/MeasurementTable.java:65
@@ -696,11 +696,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:178
 msgid "Axes"
-msgstr ""
+msgstr "軸"
 
 #: org/openscience/jmol/app/GuiMap.java:179
 msgid "Bounding Box"
-msgstr ""
+msgstr "邊界方塊"
 
 #: org/openscience/jmol/app/GuiMap.java:180
 msgid "RasMol/Chime compatible axes orientation/rotations"

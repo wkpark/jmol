@@ -155,14 +155,14 @@ class GuiMap {
       labels.put("animateLoopScript", GT._("&Loop"));
       labels.put("animatePalindromeScript", GT._("P&alindrome"));
       labels.put("animateStopScript", GT._("&Stop animation"));
-      labels.put("animateRewindScript", x = GT._("&Rewind to first frame"));
-      labels.put("animateRewindScriptTip",x);
-      labels.put("animateNextScript", x = GT._("Go to &next frame"));
-      labels.put("animateNextScriptTip", x);
-      labels.put("animatePrevScript", x = GT._("Go to &previous frame"));
-      labels.put("animatePrevScriptTip", x);
-      labels.put("animateLastScript", x = GT._("Go to &last frame"));
-      labels.put("animateLastScriptTip", x);
+      labels.put("animateRewindScript", GT._("&Rewind to first frame"));
+      labels.put("animateRewindScriptTip",GT._("Rewind to first frame"));
+      labels.put("animateNextScript", GT._("Go to &next frame"));
+      labels.put("animateNextScriptTip", GT._("Go to next frame"));
+      labels.put("animatePrevScript", GT._("Go to &previous frame"));
+      labels.put("animatePrevScriptTip", GT._("Go to previous frame"));
+      labels.put("animateLastScript", GT._("Go to &last frame"));
+      labels.put("animateLastScriptTip", GT._("Go to last frame"));
       labels.put("vibrateStartScript", GT._("Start &vibration"));
       labels.put("vibrateStopScript", GT._("&Stop vibration"));
       labels.put("vibrateRewindScript", GT._("&First frequency"));
@@ -184,7 +184,7 @@ class GuiMap {
       labels.put("Prefs.isLabelAtomColor", GT._("Use Atom Color"));
       labels.put("Prefs.isBondAtomColor", GT._("Use Atom Color"));
       labels.put("rotateScriptTip", GT._("Rotate molecule."));
-      labels.put("pickScriptTip", GT._("Select a set of atoms using SHIFT-LEFT-  DRAG."));
+      labels.put("pickScriptTip", GT._("Select a set of atoms using SHIFT-LEFT-DRAG."));
       labels.put("pickMeasureDistanceTip", GT._("Click atoms to measure distances"));
       labels.put("homeTip", GT._("Return molecule to home position."));
 

@@ -184,7 +184,7 @@ public class SpartanSmolReader extends SpartanInputReader {
     titles = new Hashtable();
     String header = "";
     int pt;
-    while (readLine() != null & !line.startsWith("END ")) {
+    while (readLine() != null && !line.startsWith("END ")) {
       header += line + "\n";
       if ((pt = line.indexOf(")")) > 0)
         titles.put("Title"+parseInt(line.substring(0, pt))

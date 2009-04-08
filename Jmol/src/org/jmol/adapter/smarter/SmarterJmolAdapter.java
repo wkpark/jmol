@@ -334,6 +334,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
           return null;
         return result.errorMessage;
       }
+      if (false && nFiles < 2)
+        result.setAtomSetCollectionAuxiliaryInfo("isMultiFile", Boolean.FALSE);
       if (nFiles == 1)
         selectedFile = 1;
       if (selectedFile > 0 && selectedFile <= vCollections.size())

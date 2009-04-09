@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-04-07 20:59+0200\n"
-"PO-Revision-Date: 2008-12-21 20:06-0300\n"
-"Last-Translator: Sérgio Ceroni da Silva <ceroni@cbiot.ufrgs.br>\n"
+"PO-Revision-Date: 2009-04-07 21:14+0000\n"
+"Last-Translator: Sérgio Ceroni da Silva <Unknown>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-08-12 00:40+0000\n"
+"X-Launchpad-Export-Date: 2009-04-08 04:44+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: BRAZIL\n"
 "X-Poedit-Language: Portuguese\n"
@@ -162,7 +162,7 @@ msgstr "Avançado"
 
 #: org/openscience/jmol/app/GaussianDialog.java:224
 msgid "Checkpoint File: "
-msgstr "Arquivos de ponto de controle:"
+msgstr "Arquivos de ponto de controle: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:229
 msgid "Amount of Memory:"
@@ -178,19 +178,19 @@ msgstr "Rota"
 
 #: org/openscience/jmol/app/GaussianDialog.java:254
 msgid "Method: "
-msgstr "Método:"
+msgstr "Método: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:261
 msgid "Basis Set: "
-msgstr "Conjuntos de Base:"
+msgstr "Conjuntos de Base: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
-msgstr "Densidade ajustada aos Conjuntos de Base (somente DFT):"
+msgstr "Densidade ajustada aos Conjuntos de Base (somente DFT): "
 
 #: org/openscience/jmol/app/GaussianDialog.java:275
 msgid "Job Options: "
-msgstr "Opções da tarefa:"
+msgstr "Opções da tarefa: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:288
 msgid "Molecular Properties"
@@ -198,15 +198,15 @@ msgstr "Propriedades moleculares"
 
 #: org/openscience/jmol/app/GaussianDialog.java:294
 msgid "Total Charge: "
-msgstr "Carga total:"
+msgstr "Carga total: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:301
 msgid "Multiplicity: "
-msgstr "Multiplicidade:"
+msgstr "Multiplicidade: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:308
 msgid "Selection: "
-msgstr "Seleção:"
+msgstr "Seleção: "
 
 #: org/openscience/jmol/app/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
@@ -537,7 +537,7 @@ msgstr "Superior"
 
 #: org/openscience/jmol/app/GuiMap.java:136
 msgid "&Bottom"
-msgstr "Inferior "
+msgstr "Inferior"
 
 #: org/openscience/jmol/app/GuiMap.java:137
 msgid "&Right"
@@ -620,36 +620,32 @@ msgid "&Rewind to first frame"
 msgstr "Volta&r ao primeiro quadro"
 
 #: org/openscience/jmol/app/GuiMap.java:158
-#, fuzzy
 msgid "Rewind to first frame"
-msgstr "Volta&r ao primeiro quadro"
+msgstr "Voltar ao primeiro quadro"
 
 #: org/openscience/jmol/app/GuiMap.java:159
 msgid "Go to &next frame"
 msgstr "Ava&nçar para o próximo quadro"
 
 #: org/openscience/jmol/app/GuiMap.java:160
-#, fuzzy
 msgid "Go to next frame"
-msgstr "Ava&nçar para o próximo quadro"
+msgstr "Avançar para o próximo quadro"
 
 #: org/openscience/jmol/app/GuiMap.java:161
 msgid "Go to &previous frame"
 msgstr "Voltar &para o quadro anterior"
 
 #: org/openscience/jmol/app/GuiMap.java:162
-#, fuzzy
 msgid "Go to previous frame"
-msgstr "Voltar &para o quadro anterior"
+msgstr "Voltar para o quadro anterior"
 
 #: org/openscience/jmol/app/GuiMap.java:163
 msgid "Go to &last frame"
 msgstr "Avançar para o ú&ltimo quadro"
 
 #: org/openscience/jmol/app/GuiMap.java:164
-#, fuzzy
 msgid "Go to last frame"
-msgstr "Avançar para o ú&ltimo quadro"
+msgstr "Avançar para o último quadro"
 
 #: org/openscience/jmol/app/GuiMap.java:165
 msgid "Start &vibration"
@@ -730,9 +726,8 @@ msgid "Rotate molecule."
 msgstr "Girar a molécula"
 
 #: org/openscience/jmol/app/GuiMap.java:186
-#, fuzzy
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr "Selecione um conjunto de átomos usando SHIFT-LEFT-arrastar"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:187
 msgid "Click atoms to measure distances"
@@ -1236,12 +1231,12 @@ msgstr "Largura do \"applet\":"
 #: org/openscience/jmol/app/webexport/PopInJmol.java:79
 #, java-format
 msgid "insert a caption for {0} here."
-msgstr "insira uma legenda para {0} aqui."
+msgstr "Inserir uma legenda para {0} aqui."
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:82
 #, java-format
 msgid "insert a note for {0} here."
-msgstr "insira uma nota para {0} aqui."
+msgstr "Inserir uma nota para {0} aqui."
 
 #: org/openscience/jmol/app/webexport/ScriptButtons.java:39
 msgid "These names will be used for button labels"
@@ -1267,11 +1262,11 @@ msgstr "Introdução"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:129
 msgid "Pop-In Jmol"
-msgstr "Jmol \"Pop-In\""
+msgstr "Pop-In Jmol"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:130
 msgid "ScriptButton Jmol"
-msgstr "Jmol \"ScriptButton\""
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:147
 msgid "Log"
@@ -1298,16 +1293,16 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:308
 msgid "Insert the page TITLE here."
-msgstr "Insira o TÍTULO da página aqui."
+msgstr "Inserir a página TÍTULO aqui."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:309
 msgid "Insert the page INTRODUCTION here."
-msgstr "Insira a INTRODUÇÃO da página aqui."
+msgstr "Inserir a página INTRODUÇÃO aqui."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:311
 #, java-format
 msgid "Insert a caption for {0} here."
-msgstr "Insira uma legenda para {0} aqui."
+msgstr "Inserir uma legenda para {0} aqui."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:312
 #, java-format
@@ -1320,7 +1315,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:314
 msgid "Insert your TITLE and INTRODUCTION here."
-msgstr "Insira seu TÍTULO e INTRODUÇÃO aqui."
+msgstr "Inserir seu TÍTULO e INTRODUÇÃO aqui."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:316
 #, java-format
@@ -1328,13 +1323,13 @@ msgid ""
 "The button {0} will appear in the box below.  Insert information for {0} "
 "here and below."
 msgstr ""
-"O botão {0} aparecerá na caixa abaixo. Insira a informação para {0} aqui e "
-"abaixo."
+"O botão {0} irá aparecer na caixa abaixo.  Inserir informação para {0} aqui "
+"e abaixo."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:317
 #, java-format
 msgid "Insert more information for {0} here."
-msgstr "Insira mais informações para {0} aqui."
+msgstr "Inserir mais informação para {0} aqui."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:111
 msgid "A web page containing Jmol applets"
@@ -1469,15 +1464,47 @@ msgstr ""
 msgid "compressing large data file to"
 msgstr "comprimindo um grande arquivo de dados para"
 
-#, fuzzy
-#~ msgid "quoted argument is Jmol script to execute"
-#~ msgstr "\"Script\" do Jmol a ser executado"
+#~ msgid "Select Atoms"
+#~ msgstr "Selecionar átomos"
 
 #~ msgid "Preview"
 #~ msgstr "Pré-visualizar"
 
 #~ msgid "Append models"
 #~ msgstr "Anexar modelos"
+
+#~ msgid "Make crystal..."
+#~ msgstr "Construir cristal..."
+
+#~ msgid "Name"
+#~ msgstr "Nome"
+
+#~ msgid "Measurements..."
+#~ msgstr "Medidas..."
+
+#~ msgid "Export view to an image or script file."
+#~ msgstr "Exportar visualização para um arquivo de imagem ou de script"
+
+#~ msgid "Render in pov-ray."
+#~ msgstr "Renderizar no POV-Ray"
+
+#~ msgid "Select an atom or region."
+#~ msgstr "Selecionar um átomo ou região"
+
+#~ msgid "View measurement table."
+#~ msgstr "Ver a tabela de medições"
+
+#~ msgid "Image Type"
+#~ msgstr "Tipo de Imagem"
+
+#~ msgid "JPEG Quality"
+#~ msgstr "Qualidade do JPEG"
+
+#~ msgid "Initializing AtomSetChooser Window..."
+#~ msgstr "Preparando a Janela do Selec. de Conj. de Átomos..."
+
+#~ msgid "Setting up File Choosers..."
+#~ msgstr "Ativando o \"File Choosers\"..."
 
 #~ msgid "All Files"
 #~ msgstr "Todos os arquivos"
@@ -1502,9 +1529,6 @@ msgstr "comprimindo um grande arquivo de dados para"
 
 #~ msgid "Generic File"
 #~ msgstr "Arquivo genérico"
-
-#~ msgid "Name"
-#~ msgstr "Nome"
 
 #~ msgid "Size"
 #~ msgstr "Tamanho"
@@ -1563,27 +1587,6 @@ msgstr "comprimindo um grande arquivo de dados para"
 #~ msgid "Yes"
 #~ msgstr "Sim"
 
-#~ msgid "Initializing AtomSetChooser Window..."
-#~ msgstr "Preparando a Janela do Selec. de Conj. de Átomos..."
-
-#~ msgid "Setting up File Choosers..."
-#~ msgstr "Ativando o \"File Choosers\"..."
-
-#~ msgid "Image Type"
-#~ msgstr "Tipo de Imagem"
-
-#~ msgid "JPEG Quality"
-#~ msgstr "Qualidade do JPEG"
-
-#~ msgid "Render in pov-ray."
-#~ msgstr "Renderizar no POV-Ray"
-
-#~ msgid "&Measurements..."
-#~ msgstr "&Medidas..."
-
-#~ msgid "Measurements..."
-#~ msgstr "Medidas..."
-
 #~ msgid "Jmol-to-POV-Ray Conversion"
 #~ msgstr "Conversão do Jmol para POV-Ray"
 
@@ -1595,37 +1598,6 @@ msgstr "comprimindo um grande arquivo de dados para"
 
 #~ msgid "POV-Ray Executable Location"
 #~ msgstr "Localização do executável POV-Ray"
-
-#~ msgid "Failed to delete scratch file {0}."
-#~ msgstr "Falha ao deletar arquivo temporário {0}."
-
-#~ msgid "Couldn't find file: WebExportIntro.html"
-#~ msgstr "Arquivo não pôde ser encontrado: WebExportIntro.html"
-
-#~ msgid "Cartoon of Page:"
-#~ msgstr "\"Cartoon\" da página:"
-
-#~ msgid ""
-#~ "\n"
-#~ "         to"
-#~ msgstr ""
-#~ "\n"
-#~ "         para"
-
-#~ msgid "Select Atoms"
-#~ msgstr "Selecionar átomos"
-
-#~ msgid "Make crystal..."
-#~ msgstr "Construir cristal..."
-
-#~ msgid "Export view to an image or script file."
-#~ msgstr "Exportar visualização para um arquivo de imagem ou de script"
-
-#~ msgid "Select an atom or region."
-#~ msgstr "Selecionar um átomo ou região"
-
-#~ msgid "View measurement table."
-#~ msgstr "Ver a tabela de medições"
 
 #~ msgid "Export &PDF..."
 #~ msgstr "Exportar &PDF..."
@@ -1675,14 +1647,6 @@ msgstr "comprimindo um grande arquivo de dados para"
 
 #~ msgid "File not loaded"
 #~ msgstr "Ficheiro não carregado"
-
-#, fuzzy
-#~ msgid "no display"
-#~ msgstr "Mostrar"
-
-#, fuzzy
-#~ msgid "Jmol executing script ..."
-#~ msgstr "Executando um script..."
 
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "Rotação de FrameLi&gado"
@@ -1788,3 +1752,23 @@ msgstr "comprimindo um grande arquivo de dados para"
 
 #~ msgid "800%"
 #~ msgstr "800%"
+
+#~ msgid "Couldn't find file: WebExportIntro.html"
+#~ msgstr "Arquivo não pôde ser encontrado: WebExportIntro.html"
+
+#~ msgid "Cartoon of Page:"
+#~ msgstr "\"Cartoon\" da página:"
+
+#~ msgid ""
+#~ "\n"
+#~ "         to"
+#~ msgstr ""
+#~ "\n"
+#~ "         para"
+
+#, java-format
+#~ msgid "Failed to delete scratch file {0}."
+#~ msgstr "Falha ao deletar arquivo temporário {0}."
+
+#~ msgid "&Measurements..."
+#~ msgstr "&Medidas..."

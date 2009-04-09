@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-04-07 20:59+0200\n"
-"PO-Revision-Date: 2008-09-29 10:41+0000\n"
-"Last-Translator: Egon Willighagen <Unknown>\n"
+"PO-Revision-Date: 2008-12-10 01:09+0000\n"
+"Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-09-29 19:36+0000\n"
+"X-Launchpad-Export-Date: 2009-04-08 04:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: The Netherlands\n"
 "X-Poedit-Language: Dutch\n"
@@ -161,9 +161,8 @@ msgid "Advanced"
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:224
-#, fuzzy
 msgid "Checkpoint File: "
-msgstr "Recente Bestanden"
+msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:229
 msgid "Amount of Memory:"
@@ -194,9 +193,8 @@ msgid "Job Options: "
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:288
-#, fuzzy
 msgid "Molecular Properties"
-msgstr "Eigenschappen"
+msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:294
 msgid "Total Charge: "
@@ -207,18 +205,16 @@ msgid "Multiplicity: "
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:308
-#, fuzzy
 msgid "Selection: "
-msgstr "Selecteren"
+msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
 msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:349
-#, fuzzy
 msgid "File..."
-msgstr "&Bestand"
+msgstr ""
 
 #: org/openscience/jmol/app/GaussianDialog.java:360
 #: org/openscience/jmol/app/PovrayDialog.java:758
@@ -391,9 +387,8 @@ msgid "Phosphorus"
 msgstr "Fosfor"
 
 #: org/openscience/jmol/app/GuiMap.java:85
-#, fuzzy
 msgid "Sulfur"
-msgstr "Zwavel"
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:86
 msgid "Amino"
@@ -625,36 +620,32 @@ msgid "&Rewind to first frame"
 msgstr "Te&rug spoelen naar eerste frame"
 
 #: org/openscience/jmol/app/GuiMap.java:158
-#, fuzzy
 msgid "Rewind to first frame"
-msgstr "Te&rug spoelen naar eerste frame"
+msgstr "Spoel terug naar eerste frame"
 
 #: org/openscience/jmol/app/GuiMap.java:159
 msgid "Go to &next frame"
 msgstr "Ga &naar volgende frame"
 
 #: org/openscience/jmol/app/GuiMap.java:160
-#, fuzzy
 msgid "Go to next frame"
-msgstr "Ga &naar volgende frame"
+msgstr "Ga naar volgende frame"
 
 #: org/openscience/jmol/app/GuiMap.java:161
 msgid "Go to &previous frame"
 msgstr "Ga naar v&orige frame"
 
 #: org/openscience/jmol/app/GuiMap.java:162
-#, fuzzy
 msgid "Go to previous frame"
-msgstr "Ga naar v&orige frame"
+msgstr "Ga naar vorige frame"
 
 #: org/openscience/jmol/app/GuiMap.java:163
 msgid "Go to &last frame"
 msgstr "Ga naar &laatste frame"
 
 #: org/openscience/jmol/app/GuiMap.java:164
-#, fuzzy
 msgid "Go to last frame"
-msgstr "Ga naar &laatste frame"
+msgstr "Ga naar volgende frame"
 
 #: org/openscience/jmol/app/GuiMap.java:165
 msgid "Start &vibration"
@@ -735,9 +726,8 @@ msgid "Rotate molecule."
 msgstr "Roteer molecuul."
 
 #: org/openscience/jmol/app/GuiMap.java:186
-#, fuzzy
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr "Selecteer een aantal atomen met SHIFT-LEFT-DRAG."
+msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:187
 msgid "Click atoms to measure distances"
@@ -754,7 +744,8 @@ msgstr "Jmol Help"
 #: org/openscience/jmol/app/Jmol.java:136
 #: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
-msgstr "Kan Jmol niet starten: de syteemvariabele 'user.home' is not defined."
+msgstr ""
+"Kan Jmol niet starten: de syteemvariabele 'user.home' is not defined."
 
 #: org/openscience/jmol/app/Jmol.java:182
 msgid "Initializing 3D display..."
@@ -821,14 +812,12 @@ msgid "no display (and also exit when done)"
 msgstr "geen scherm (en sluit ook af wanneer klaar)"
 
 #: org/openscience/jmol/app/Jmol.java:402
-#, fuzzy
 msgid "check script syntax only - no file loading"
-msgstr "Alleen de syntax van het script controleren"
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:403
-#, fuzzy
 msgid "check script syntax only - with file loading"
-msgstr "Alleen de syntax van het script controleren"
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:404
 msgid "debug"
@@ -901,19 +890,16 @@ msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr "De -D opties zijn (standaard waarden tussen haakjes):"
 
 #: org/openscience/jmol/app/Jmol.java:696
-#, fuzzy
 msgid "Executing script 1..."
-msgstr "Afspelen van script..."
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:705
-#, fuzzy
 msgid "Executing script file..."
-msgstr "Afspelen van script..."
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:712
-#, fuzzy
 msgid "Executing script 2..."
-msgstr "Afspelen van script..."
+msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:725
 msgid "Jmol Java Console"
@@ -1476,10 +1462,6 @@ msgstr ""
 msgid "compressing large data file to"
 msgstr "comprimeren groot bestand naar"
 
-#, fuzzy
-#~ msgid "quoted argument is Jmol script to execute"
-#~ msgstr "Jmol Script Console"
-
 #~ msgid "Select Atoms"
 #~ msgstr "Atomen Selecteren"
 
@@ -1669,5 +1651,6 @@ msgstr "comprimeren groot bestand naar"
 #~ msgid "Cartoon of Page:"
 #~ msgstr "Tekening van Pagina:"
 
+#, java-format
 #~ msgid "Failed to delete scratch file {0}."
 #~ msgstr "Het wissen van de werkfolder {0} is mislukt."

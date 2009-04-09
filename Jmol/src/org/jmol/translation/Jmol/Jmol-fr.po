@@ -14,7 +14,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-03-22 18:32+0000\n"
+"X-Launchpad-Export-Date: 2009-04-08 04:52+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -622,7 +622,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:158
 msgid "Rewind to first frame"
-msgstr ""
+msgstr "Revenir à la première trame"
 
 #: org/openscience/jmol/app/GuiMap.java:159
 msgid "Go to &next frame"
@@ -630,7 +630,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:160
 msgid "Go to next frame"
-msgstr ""
+msgstr "Aller à la trame suivante"
 
 #: org/openscience/jmol/app/GuiMap.java:161
 msgid "Go to &previous frame"
@@ -638,7 +638,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:162
 msgid "Go to previous frame"
-msgstr ""
+msgstr "Aller à la trame précédente"
 
 #: org/openscience/jmol/app/GuiMap.java:163
 msgid "Go to &last frame"
@@ -646,7 +646,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:164
 msgid "Go to last frame"
-msgstr ""
+msgstr "Aller à la dernière trame"
 
 #: org/openscience/jmol/app/GuiMap.java:165
 msgid "Start &vibration"

@@ -25,6 +25,7 @@
 package org.jmol.adapter.readers.more;
 
 import org.jmol.adapter.smarter.*;
+import org.jmol.api.JmolAdapter;
 
 
 import java.io.BufferedReader;
@@ -94,13 +95,17 @@ public class V3000Reader extends AtomSetCollectionReader {
       atom.atomSerial = parseInt(tokens[2]);
       atom.elementSymbol = tokens[3];
       atom.set(parseFloat(tokens[4]), parseFloat(tokens[5]), parseFloat(tokens[6]));
-      parseInt(); // discard aamap
-      while (true) {
-        String option = parseToken();
-        if (option == null)
+      for (int j = 8; j < tokens.length; j++) {
+        String token = tokens[j];
+        if (token.startsWith("CHG=")) {
+          int charge = parseInt(token, 4);
+          atom.formalCharge = (charge > 3 ? 4 - charge : charge);
           break;
-        if (option.startsWith("CHG="))
-          atom.formalCharge = parseInt(option, 4);
+        } else if (token.startsWith("MASS=")) {
+          int isotope = parseInt(token, 5);
+          atom.elementNumber = (short) ((isotope << 7) + JmolAdapter
+              .getElementNumber(atom.elementSymbol));
+        }
       }
       atomSetCollection.addAtomWithMappedSerialNumber(atom);
     }

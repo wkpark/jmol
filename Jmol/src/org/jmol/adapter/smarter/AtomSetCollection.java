@@ -104,6 +104,7 @@ public class AtomSetCollection {
   int[] atomSetNumbers = new int[16];
   String[] atomSetNames = new String[16];
   int[] atomSetAtomCounts = new int[16];
+  int[] atomSetBondCounts = new int[16];
   Properties[] atomSetProperties = new Properties[16];
   Hashtable[] atomSetAuxiliaryInfo = new Hashtable[16];
   int[] latticeCells;
@@ -203,7 +204,7 @@ public class AtomSetCollection {
     for (int atomSetNum = 0; atomSetNum < collection.atomSetCount; atomSetNum++) {
       newAtomSet();
       atomSetAuxiliaryInfo[currentAtomSetIndex] = collection.atomSetAuxiliaryInfo[atomSetNum];
-      setAtomSetAuxiliaryInfo("title", collection.collectionName, currentAtomSetIndex);    
+      setAtomSetAuxiliaryInfo("title", collection.collectionName);    
       setAtomSetName(collection.getAtomSetName(atomSetNum));
       Properties properties = collection.getAtomSetProperties(atomSetNum);
       if (properties != null) {
@@ -254,7 +255,18 @@ public class AtomSetCollection {
         setGlobalBoolean(i);
   }
 
+  private boolean noAutoBond;
+  void setNoAutoBond() {
+    noAutoBond = true;
+  }
+  
   void finish() {
+    for (int i = 0; i < atomSetCount; i++) {
+      if (noAutoBond)
+        setAtomSetAuxiliaryInfo("noAutoBond", Boolean.TRUE, i);
+      setAtomSetAuxiliaryInfo("initialAtomCount", new Integer(atomSetAtomCounts[i]), i);
+      setAtomSetAuxiliaryInfo("initialBondCount", new Integer(atomSetBondCounts[i]), i);
+    }
     atoms = null;
     atomSetAtomCounts = new int[16];
     atomSetAuxiliaryInfo = new Hashtable[16];
@@ -483,6 +495,7 @@ public class AtomSetCollection {
     if (bondCount == bonds.length)
       bonds = (Bond[])ArrayUtil.setLength(bonds, bondCount + 1024);
     bonds[bondCount++] = bond;
+    atomSetBondCounts[currentAtomSetIndex]++;
   }
 
   public void addStructure(Structure structure) {
@@ -727,6 +740,7 @@ public class AtomSetCollection {
     notionalUnitCell = new float[6];
     coordinatesAreFractional = false;
     //turn off global fractional conversion -- this will be model by model
+    setAtomSetAuxiliaryInfo("hasSymmetry", Boolean.TRUE);
     setGlobalBoolean(GLOBAL_SYMMETRY);
   }
   
@@ -926,6 +940,7 @@ public class AtomSetCollection {
       symmetry = null;
       notionalUnitCell = new float[6];
       coordinatesAreFractional = false; 
+      setAtomSetAuxiliaryInfo("hasSymmetry", Boolean.TRUE);
       setGlobalBoolean(GLOBAL_SYMMETRY);
     }
     //need to clone bonds
@@ -1094,6 +1109,7 @@ public class AtomSetCollection {
     if (atomSetCount > atomSetNumbers.length) {
       atomSetNames = ArrayUtil.doubleLength(atomSetNames);
       atomSetAtomCounts = ArrayUtil.doubleLength(atomSetAtomCounts);
+      atomSetBondCounts = ArrayUtil.doubleLength(atomSetBondCounts);
       atomSetProperties = (Properties[]) ArrayUtil
           .doubleLength(atomSetProperties);
       atomSetAuxiliaryInfo = (Hashtable[]) ArrayUtil

@@ -64,7 +64,6 @@ public final class ModelLoader extends ModelSet {
 
   private ModelLoader mergeModelSet;
   private boolean merging;
-  private boolean isMultiFile;
   private String jmolData; // from a PDB remark "Jmol PDB-encoded data"
 
   private final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
@@ -127,7 +126,7 @@ public final class ModelLoader extends ModelSet {
     isXYZ = (modelSetTypeName == "xyz");
     setModelSetProperties(properties);
     setModelSetAuxiliaryInfo(info);
-    isMultiFile = getModelSetAuxiliaryInfoBoolean("isMultiFile");
+    //isMultiFile = getModelSetAuxiliaryInfoBoolean("isMultiFile"); -- no longer necessary
     isPDB = getModelSetAuxiliaryInfoBoolean("isPDB");
     jmolData = (String) getModelSetAuxiliaryInfo("jmolData");
     fileHeader = (String) getModelSetAuxiliaryInfo("fileHeader");
@@ -199,7 +198,6 @@ public final class ModelLoader extends ModelSet {
   private int baseModelIndex = 0;
   private int baseModelCount = 0;
   private int baseAtomIndex = 0;
-  private int baseBondIndex = 0;
   private int baseTrajectoryCount = 0;
   private boolean appendNew;
   private int adapterModelCount = 0;
@@ -295,7 +293,7 @@ public final class ModelLoader extends ModelSet {
         modelCount = baseModelCount;
       }
       atomCount = baseAtomIndex = mergeModelSet.atomCount;
-      bondCount = baseBondIndex = mergeModelSet.bondCount;
+      bondCount = mergeModelSet.bondCount;
       groupCount = baseGroupIndex = mergeModelSet.groupCount;
     } else {
       modelCount = adapterModelCount;
@@ -885,31 +883,59 @@ public final class ModelLoader extends ModelSet {
 
   private void initializeBonding() {
     // perform bonding if necessary
-    boolean haveCONECT = (getModelSetAuxiliaryInfo("someModelsHaveCONECT") != null);
-    BitSet bsExclude = null;
-    if (haveCONECT)
-      setPdbConectBonding(baseAtomIndex, baseModelIndex, bsExclude = new BitSet());
-    boolean doBond = (bondCount == baseBondIndex
-        || isMultiFile 
-        //check for PDB file with fewer than one bond per every two atoms
-        //this is in case the PDB format is being usurped for non-RCSB uses
-        //In other words, say someone uses the PDB format to indicate atoms and
-        //connectivity. We do NOT want to mess up that connectivity here. 
-        //It would be OK if people used HETATM for every atom, but I think people
-        //use ATOM, so that's a problem. Those atoms would not be excluded from the
-        //automatic bonding, and additional bonds might be made.
-        || isPDB && jmolData == null  && (bondCount - baseBondIndex) < (atomCount - baseAtomIndex) / 2  
-        || someModelsHaveSymmetry && !viewer.getApplySymmetryToBonds());
-    if (viewer.getForceAutoBond() || doBond && viewer.getAutoBond()
-        && getModelSetProperty("noautobond") == null) {
-      BitSet bs = null;
-      if (merging) {
-        bs = new BitSet(atomCount);
-        for (int i = baseAtomIndex; i < atomCount; i++)
-          bs.set(i);
+    
+    // 1. apply CONECT records and set bsExclude to omit them
+    
+    BitSet bsExclude = (getModelSetAuxiliaryInfo("someModelsHaveCONECT") == null ? null : new BitSet());
+    if (bsExclude != null)
+      setPdbConectBonding(baseAtomIndex, baseModelIndex, bsExclude);
+    
+    // 2. for each model in the collection, 
+    int atomIndex = baseAtomIndex;
+    int modelAtomCount = 0;
+    boolean symmetryAlreadyAppliedToBonds = viewer.getApplySymmetryToBonds();
+    boolean doAutoBond = viewer.getAutoBond();
+    boolean forceAutoBond = viewer.getForceAutoBond();
+    BitSet bs = null;
+    boolean autoBonding = false;
+    for (int i = baseModelIndex; i < modelCount; 
+        atomIndex += modelAtomCount, i++) {
+      modelAtomCount = getModelAuxiliaryInfoInt(i, "initialAtomCount");
+      if (modelAtomCount < 0)
+        modelAtomCount = atomCount; // old style -- one structure
+      if (getModelAuxiliaryInfoBoolean(i, "noautobond")) 
+        continue;
+      int modelBondCount = getModelAuxiliaryInfoInt(i, "initialBondCount");
+      if (modelBondCount < 0)
+        modelBondCount = bondCount;
+      boolean modelIsPDB = models[i].isPDB;
+      boolean modelHasSymmetry = getModelAuxiliaryInfoBoolean(i, "hasSymmetry");
+      //check for PDB file with fewer than one bond per every two atoms
+      //this is in case the PDB format is being usurped for non-RCSB uses
+      //In other words, say someone uses the PDB format to indicate atoms and
+      //connectivity. We do NOT want to mess up that connectivity here. 
+      //It would be OK if people used HETATM for every atom, but I think people
+      //use ATOM, so that's a problem. Those atoms would not be excluded from the
+      //automatic bonding, and additional bonds might be made.
+      boolean doBond = (forceAutoBond || doAutoBond && (
+                  modelBondCount == 0
+               || modelIsPDB && jmolData == null && modelBondCount < modelAtomCount / 2  
+               || modelHasSymmetry && !symmetryAlreadyAppliedToBonds
+          ));
+      if (!doBond) 
+        continue;
+      autoBonding = true;
+      if (merging || modelCount > 1) {
+        if (bs == null)
+          bs = new BitSet(atomCount);
+        //System.out.println(atomIndex + " " + modelAtomCount);
+        for (int j = atomIndex + modelAtomCount; --j >= atomIndex;)
+          bs.set(j);
       }
-      Logger.info("ModelSet: autobonding; use  autobond=false  to not generate bonds automatically");
+    }
+    if (autoBonding) {
       autoBond(bs, bs, bsExclude, null);
+      Logger.info("ModelSet: autobonding; use  autobond=false  to not generate bonds automatically");
     } else {
       Logger.info("ModelSet: not autobonding; use forceAutobond=true to force automatic bond creation");        
     }

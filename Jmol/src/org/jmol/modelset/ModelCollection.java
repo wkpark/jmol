@@ -629,11 +629,13 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public String getModelSetProperty(String propertyName) {
+    // no longer used in Jmol
     return (modelSetProperties == null ? null : modelSetProperties
         .getProperty(propertyName));
   }
 
   public Object getModelSetAuxiliaryInfo(String keyName) {
+    // the preferred method now
     return (modelSetAuxiliaryInfo == null ? null : modelSetAuxiliaryInfo
         .get(keyName));
   }

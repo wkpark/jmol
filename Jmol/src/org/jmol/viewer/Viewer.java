@@ -2114,6 +2114,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getModelSetProperty(String strProp) {
+    // no longer used in Jmol
     return modelSet.getModelSetProperty(strProp);
   }
 

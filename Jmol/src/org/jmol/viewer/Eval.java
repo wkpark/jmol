@@ -4546,7 +4546,7 @@ class Eval {
     String msg = "";
     if (defaultScript.length() > 0)
       msg += "\nUsing defaultLoadScript: " + defaultScript;
-    String script = viewer.getModelSetProperty("jmolscript");
+    String script = (String) viewer.getModelSetAuxiliaryInfo("jmolscript");
     if (script != null && viewer.getAllowEmbeddedScripts()) {
       msg += "\nAdding embedded #jmolscript: " + script;
       defaultScript += ";" + script;

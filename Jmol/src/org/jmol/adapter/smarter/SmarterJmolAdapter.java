@@ -165,7 +165,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
     // or we are opening a zip file.
     
     boolean doCombine = (subFilePtr == 1);
-    int[] params = (htParams == null ? null : (int[]) htParams.get("params"));
+    int selectedFile = (htParams != null && htParams.containsKey("modelNumber") ? 
+        ((Integer)htParams.get("modelNumber")).intValue() : Integer.MAX_VALUE);
     String[] subFileList = (htParams == null ? null : (String[]) htParams
         .get("subFileList"));
     if (subFileList == null)
@@ -176,9 +177,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
     if (subFileName != null
         && (subFileName.startsWith("/") || subFileName.startsWith("\\")))
       subFileName = subFileName.substring(1);
-    int selectedFile = (params == null ? 1 : params[0]);
-    if (selectedFile > 0 && doCombine && params != null)
-      params[0] = 0;
+    //if (selectedFile > 0 && doCombine && params != null)
+      //params[0] = 0; would set next find to "all models" 
+    //TODO -- why? --  because it could be a zip file
+
     // zipDirectory[0] is the manifest if present
     String manifest = (htParams == null ? null : (String) htParams
         .get("manifest"));
@@ -190,6 +192,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
         Logger.info("manifest for  " + fileName + ":\n" + manifest);
       manifest = '|' + manifest.replace('\r', '|').replace('\n', '|') + '|';
     }
+    if (selectedFile == Integer.MAX_VALUE)
+      selectedFile = (haveManifest ? -1 : 1);
     boolean ignoreErrors = (manifest.indexOf("IGNORE_ERRORS") >= 0);
     boolean selectAll = (manifest.indexOf("IGNORE_MANIFEST") >= 0);
     boolean exceptFiles = (manifest.indexOf("EXCEPT_FILES") >= 0);
@@ -334,8 +338,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
           return null;
         return result.errorMessage;
       }
-      if (false && nFiles < 2)
-        result.setAtomSetCollectionAuxiliaryInfo("isMultiFile", Boolean.FALSE);
       if (nFiles == 1)
         selectedFile = 1;
       if (selectedFile > 0 && selectedFile <= vCollections.size())

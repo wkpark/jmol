@@ -723,7 +723,7 @@ public int[] next = new int[1];
        atomSetCollection.setAtomSetCollectionAuxiliaryInfo("jmolData", "" + line);
     if (line.endsWith("#noautobond")) {
       line = line.substring(0, line.lastIndexOf('#')).trim();
-      atomSetCollection.setAtomSetCollectionProperty("noautobond", "true");
+      atomSetCollection.setNoAutoBond();
     }
     int pt = line.indexOf("jmolscript:");
     if (pt >= 0) {
@@ -736,16 +736,16 @@ public int[] next = new int[1];
     }
   }
 
+  private String previousScript;  
   protected void addJmolScript(String script) {
-    String previousScript = atomSetCollection
-        .getAtomSetCollectionProperty("jmolscript");
+    Logger.info("#jmolScript: " + script);
     if (previousScript == null)
       previousScript = "";
-    else
+    else if (!previousScript.endsWith(";"))
       previousScript += ";";
-    Logger.info("#jmolScript: " + script);
-    atomSetCollection.setAtomSetCollectionProperty("jmolscript", previousScript
-        + script);
+    previousScript += script;
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("jmolscript", 
+        previousScript);
   }
 
   public String readLine() throws Exception {

@@ -937,7 +937,7 @@ public final class ModelLoader extends ModelSet {
       autoBond(bs, bs, bsExclude, null);
       Logger.info("ModelSet: autobonding; use  autobond=false  to not generate bonds automatically");
     } else {
-      Logger.info("ModelSet: not autobonding; use forceAutobond=true to force automatic bond creation");        
+      Logger.info("ModelSet: not autobonding; use  forceAutobond=true  to force automatic bond creation");        
     }
   }
 

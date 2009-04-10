@@ -189,12 +189,12 @@ public class Minimizer implements MinimizerInterface {
     if (atoms == null) {
       atomCountFull = viewer.getAtomCount();
       atoms = viewer.getModelSet().getAtoms();
-      bsAtoms = BitSetUtil.copy(bsSelected);
-      atomCount = BitSetUtil.cardinalityOf(bsAtoms);
-      if (atomCount == 0) {
-        Logger.error(GT._("No atoms selected -- nothing to do!"));
-        return false;
-      }
+    }
+    bsAtoms = BitSetUtil.copy(bsSelected);
+    atomCount = BitSetUtil.cardinalityOf(bsAtoms);
+    if (atomCount == 0) {
+      Logger.error(GT._("No atoms selected -- nothing to do!"));
+      return false;
     }
 
     if (!BitSetUtil.compareBits(bsSelected, this.bsSelected)
@@ -213,7 +213,7 @@ public class Minimizer implements MinimizerInterface {
         int nAtoms = aList[0] = Math.abs(aList[0]);
         for (int j = 1; j <= nAtoms; j++) {
           if (steps <= 0 || !bsAtoms.get(aList[j])) {
-            aList[0] = -nAtoms; //disable
+            aList[0] = -nAtoms; // disable
             break;
           }
           minList[j - 1] = atomMap[aList[j]];
@@ -222,7 +222,7 @@ public class Minimizer implements MinimizerInterface {
     }
 
     pFF.setConstraints(this);
-    
+
     // minimize and store values
 
     if (steps > 0 && !viewer.useMinimizationThread())

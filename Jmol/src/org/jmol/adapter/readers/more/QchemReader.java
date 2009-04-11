@@ -87,6 +87,10 @@ public class QchemReader extends MOReader {
       moData = null; // no MO data for this structure
       return true;
     }
+    if (line.indexOf("Requested basis set is") >= 0) {
+      readCalculationType();
+      return true;
+    }
     if (line.indexOf("VIBRATIONAL FREQUENCIES") >= 0) {
       readFrequencies();
       return true;
@@ -126,6 +130,11 @@ public class QchemReader extends MOReader {
     }
     return !checkNboLine();
   }
+
+  private void readCalculationType() {
+    calculationType = line.substring(line.indexOf("set is") + 6).trim();
+  }
+
 
 /* Q-chem 2.1 format:
        Standard Nuclear Orientation (Angstroms)
@@ -336,6 +345,7 @@ $end
     tokens = getTokens(line);
     nShell = parseInt(tokens[2]);
     nBasis = parseInt(tokens[5]);
+    moData.put("calculationType", calculationType);
   }
 
 // since the orbital coefficients don't show the symmetry, I will read them here

@@ -128,7 +128,7 @@ abstract class MOReader extends AtomSetCollectionReader {
   private void initializeMoReader(BufferedReader reader, String type) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("type");
-    line = "NBOs in the AO basis:";
+    line = "\nNBOs in the AO basis:";
     getNBOs = filterMO();
   }
   
@@ -153,7 +153,8 @@ abstract class MOReader extends AtomSetCollectionReader {
         nOK++;
       }
     isOK = (nOK == filterTokens.length);
-    Logger.info("filter MOs: " + isOK + " for \"" + line + "\"");
+    if (line.indexOf('\n') != 0)
+      Logger.info("filter MOs: " + isOK + " for \"" + line + "\"");
     return isOK;
   }
   

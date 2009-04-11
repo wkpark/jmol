@@ -32,42 +32,49 @@ import java.util.Vector;
 
 public class GamessUKReader extends GamessReader {
 
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("gamessUK");
-    try {
-      readLine();
-      boolean iHaveAtoms = false;
-      while (line != null) {
-        if (line.indexOf("molecular geometry") >= 0) {
-          if (!doGetModel(++modelNumber)) {
-            if (isLastModel(modelNumber) && iHaveAtoms)
-              break;
-            iHaveAtoms = false;
-            readLine();
-            continue;
-          }
-          readAtomsInBohrCoordinates();
-          iHaveAtoms = true;
-        } else if (iHaveAtoms && line.indexOf("FREQUENCY_INFO_WOULD_BE_HERE") >= 0) {
-          // not implemented for readFrequencies(); 
-        } else if (iHaveAtoms && line.indexOf("contracted primitive functions") >= 0) {
-          readGaussianBasis("======================================================", "======");
-          continue;
-        } else if (iHaveAtoms && line.indexOf("SYMMETRY ASSIGNMENT") >= 0) {
-          readOrbitalSymmetryAndOccupancy();
-          continue;
-        } else if (iHaveAtoms && line.indexOf("eigenvectors") >= 0) {
-          readMolecularOrbitals();
-          setOrbitalSymmetryAndOccupancy();
-          continue;
-        }
-        readLine();
+  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+    return readAtomSetCollection(reader, "gamessUK");
+  }
+
+  /**
+   * @return true if need to read new line
+   * @throws Exception
+   * 
+   */
+  protected boolean checkLine() throws Exception {
+    if (line.indexOf("molecular geometry") >= 0) {
+      if (doGetModel(++modelNumber)) {
+        readAtomsInBohrCoordinates();
+        iHaveAtoms = true;
+        return true;
       }
-    } catch (Exception e) {
-      return setError(e);
+        if (isLastModel(modelNumber) && iHaveAtoms) {
+          continuing = false;
+          return false;
+        }
+        iHaveAtoms = false;
+    } 
+    if (!iHaveAtoms)
+      return true;
+    if (line.indexOf("FREQUENCY_INFO_WOULD_BE_HERE") >= 0) {
+      // not implemented for readFrequencies();
+      return true;
+    } 
+    if (line.indexOf("contracted primitive functions") >= 0) {
+      readGaussianBasis(
+          "======================================================", "======");
+      return false;
     }
-    return atomSetCollection;
+    if (line.indexOf("SYMMETRY ASSIGNMENT") >= 0) {
+      readOrbitalSymmetryAndOccupancy();
+      return false;
+    } 
+    if (line.indexOf("eigenvectors") >= 0) {
+      readMolecularOrbitals(HEADER_GAMESS_UK_MO);
+      setOrbitalSymmetryAndOccupancy();
+      return false;
+    } 
+    return !checkNboLine();
   }
 
   protected void readAtomsInBohrCoordinates() throws Exception {
@@ -200,7 +207,7 @@ public class GamessUKReader extends GamessReader {
        mo.put("occupancy", occupancies.elementAt(i));
      }
    }
-   
+
   /*
 
 
@@ -245,11 +252,5 @@ public class GamessUKReader extends GamessReader {
 
    */
 
-  protected void getMOHeader(String[] tokens, Hashtable[] mos, int nThisLine) throws Exception {
-    for (int i = 0; i < nThisLine; i++)
-      mos[i].put("energy", new Float(tokens[i]));
-    discardLines(5);
-  }
-  
 
 }

@@ -39,9 +39,11 @@ import org.jmol.util.Logger;
 
 /**
  * Reader for Gaussian 94/98/03 output files.
+ * 
+ * 4/11/2009 -- hansonr -- added NBO support as extension of MOReader
  *
  **/
-public class GaussianReader extends AtomSetCollectionReader {
+public class GaussianReader extends MOReader {
   
   /**
    * Word index of atomic number in line with atom coordinates in an
@@ -73,126 +75,138 @@ public class GaussianReader extends AtomSetCollectionReader {
    */
   private int equivalentAtomSets = 0;
   
-  int atomCount = 0;
-  int shellCount = 0;
-  int gaussianCount = 0;
-  Hashtable moData = new Hashtable();
-  Vector orbitals = new Vector();
-
   /**
    * Reads a Collection of AtomSets from a BufferedReader.
-   *
-   * <p>New AtomSets are generated when an <code>Input</code>,
-   * <code>Standard</code> or <code>Z-Matrix</code> orientation is read.
-   * The occurence of these orientations seems to depend on (in pseudo-code):
-   * <code>
+   * 
+   * <p>
+   * New AtomSets are generated when an <code>Input</code>,
+   * <code>Standard</code> or <code>Z-Matrix</code> orientation is read. The
+   * occurence of these orientations seems to depend on (in pseudo-code): <code>
    *  <br>&nbsp;if (opt=z-matrix) Z-Matrix; else Input;
    *  <br>&nbsp;if (!NoSymmetry) Standard;
-   * </code>
-   * <br>Which means that if <code>NoSymmetry</code> is used with a z-matrix
+   * </code> <br>
+   * Which means that if <code>NoSymmetry</code> is used with a z-matrix
    * optimization, no other orientation besides <code>Z-Matrix</code> will be
-   * present.
-   * This is important because <code>Z-Matrix</code> may have dummy atoms while
-   * the analysis of the calculation results will not, i.e., the
+   * present. This is important because <code>Z-Matrix</code> may have dummy
+   * atoms while the analysis of the calculation results will not, i.e., the
    * <code>Center Numbers</code> in the z-matrix orientation may be different
    * from those in the population analysis!
-   *
-   * <p>Single point or frequency calculations always have an
-   * <code>Input</code> orientation. If symmetry is used a
-   * <code>Standard</code> will be present too.
-   *
-   * @param reader BufferedReader associated with the Gaussian output text.
+   * 
+   * <p>
+   * Single point or frequency calculations always have an <code>Input</code>
+   * orientation. If symmetry is used a <code>Standard</code> will be present
+   * too.
+   * 
+   * @param reader
+   *          BufferedReader associated with the Gaussian output text.
    * @return The AtomSetCollection representing the interpreted Gaussian text.
    **/
 
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("gaussian");
-    boolean iHaveAtoms = false;
-    int lineNum = 0;
-    int stepNumber = 0;
+  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+    return readAtomSetCollection(reader, "gaussian");
+  }
+  
+  private int stepNumber = 0;
 
-    try {
-      while (readLine() != null) {
-        if (line.startsWith(" Step number")) {
-          equivalentAtomSets = 0;
-          stepNumber++;
-          // check for scan point information
-          int scanPointIndex = line.indexOf("scan point");
-          if (scanPointIndex > 0) {
-            scanPoint = parseInt(line, scanPointIndex + 10);
-          } else {
-            scanPoint = -1; // no scan point information
-          }
-        } else if (line.indexOf("-- Stationary point found") > 0) {
-          // stationary point, if have scanPoint: need to increment now...
-          // to get the initial geometry for the next scan point in the proper
-          // place
-          if (scanPoint >= 0)
-            scanPoint++;
-        } else if (line.indexOf("Input orientation:") >= 0
-            || line.indexOf("Z-Matrix orientation:") >= 0
-            || line.indexOf("Standard orientation:") >= 0) {
-          if (!doGetModel(++modelNumber)) {
-            if (isLastModel(modelNumber) && iHaveAtoms)
-              break;
-            iHaveAtoms = false;
-            continue;
-          }
-          equivalentAtomSets++;
-          if (Logger.debugging) {
-            Logger.debug(
-                " model " + modelNumber + " step " + stepNumber +
-                " equivalentAtomSet " + equivalentAtomSets + " calculation " +
-                calculationNumber + " scan point " + scanPoint + line);
-          }
-          readAtoms();
-          iHaveAtoms = true;
-        } else if (iHaveAtoms && line.startsWith(" Energy=")) {
-          setEnergy();
-        } else if (iHaveAtoms && line.startsWith(" SCF Done:")) {
-          readSCFDone();
-        } else if (iHaveAtoms && line.startsWith(" Harmonic frequencies")) {
-          readFrequencies();
-        } else if (iHaveAtoms
-            && (line.startsWith(" Total atomic charges:") || line
-                .startsWith(" Mulliken atomic charges:"))) {
-          // NB this only works for the Standard or Input orientation of
-          // the molecule since it does not list the values for the
-          // dummy atoms in the z-matrix
-          readPartialCharges();
-        } else if (iHaveAtoms && line.startsWith(" Dipole moment")) {
-          readDipoleMoment();
-        } else if (iHaveAtoms && line.startsWith(" Standard basis:")) {
-          Logger.debug(line);
-          moData.put("energyUnits", "");
-          moData.put("calculationType", line.substring(17).trim());
-        } else if (iHaveAtoms
-            && line.startsWith(" General basis read from cards:")) {
-          Logger.debug(line);
-          moData.put("energyUnits", "");
-          moData.put("calculationType", line.substring(31).trim());
-        } else if (iHaveAtoms && line.startsWith(" AO basis set:")) {
-          readBasis();
-          atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
-        } else if (iHaveAtoms
-            && line.indexOf("Molecular Orbital Coefficients") >= 0) {
-          readMolecularOrbitals();
-          if (Logger.debugging) {
-            Logger.debug(orbitals.size() + " molecular orbitals read");
-          }
-          moData.put("mos", orbitals);
-          setMOData(moData);
-        } else if (line.startsWith(" Normal termination of Gaussian")) {
-          ++calculationNumber;
-          equivalentAtomSets=0; // avoid next calculation to set the last title string
-        }
-        lineNum++;
+  protected boolean checkLine() throws Exception {
+    if (line.startsWith(" Step number")) {
+      equivalentAtomSets = 0;
+      stepNumber++;
+      // check for scan point information
+      int scanPointIndex = line.indexOf("scan point");
+      if (scanPointIndex > 0) {
+        scanPoint = parseInt(line, scanPointIndex + 10);
+      } else {
+        scanPoint = -1; // no scan point information
       }
-    } catch (Exception e) {
-      return setError(e);
+      return true;
     }
-    return atomSetCollection;
+    if (line.indexOf("-- Stationary point found") > 0) {
+      // stationary point, if have scanPoint: need to increment now...
+      // to get the initial geometry for the next scan point in the proper
+      // place
+      if (scanPoint >= 0)
+        scanPoint++;
+      return true;
+    }
+    if (line.indexOf("Input orientation:") >= 0
+        || line.indexOf("Z-Matrix orientation:") >= 0
+        || line.indexOf("Standard orientation:") >= 0) {
+      if (doGetModel(++modelNumber)) {
+        equivalentAtomSets++;
+        if (Logger.debugging) {
+          Logger.debug(" model " + modelNumber + " step " + stepNumber
+              + " equivalentAtomSet " + equivalentAtomSets + " calculation "
+              + calculationNumber + " scan point " + scanPoint + line);
+        }
+        readAtoms();
+        iHaveAtoms = true;
+        return false;
+      }
+      if (isLastModel(modelNumber) && iHaveAtoms) {
+        continuing = false;
+        return false;
+      }
+      iHaveAtoms = false;
+      return true;
+    }
+    if (!iHaveAtoms)
+      return true;
+    if (line.startsWith(" Energy=")) {
+      setEnergy();
+      return true;
+    }
+    if (line.startsWith(" SCF Done:")) {
+      readSCFDone();
+      return true;
+    }
+    if (line.startsWith(" Harmonic frequencies")) {
+      readFrequencies();
+      return true;
+    }
+    if (line.startsWith(" Total atomic charges:")
+        || line.startsWith(" Mulliken atomic charges:")) {
+      // NB this only works for the Standard or Input orientation of
+      // the molecule since it does not list the values for the
+      // dummy atoms in the z-matrix
+      readPartialCharges();
+      return true;
+    }
+    if (line.startsWith(" Dipole moment")) {
+      readDipoleMoment();
+      return true;
+    }
+    if (line.startsWith(" Standard basis:")) {
+      Logger.debug(line);
+      moData.put("energyUnits", "");
+      moData.put("calculationType", line.substring(17).trim());
+      return true;
+    }
+    if (line.startsWith(" General basis read from cards:")) {
+      Logger.debug(line);
+      moData.put("energyUnits", "");
+      moData.put("calculationType", line.substring(31).trim());
+      return true;
+    }
+    if (line.startsWith(" AO basis set:")) {
+      readBasis();
+      atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
+      return true;
+    }
+    if (line.indexOf("Molecular Orbital Coefficients") >= 0) {
+      readGaussianMolecularOrbitals();
+      if (Logger.debugging) {
+        Logger.debug(orbitals.size() + " molecular orbitals read");
+      }
+      return true;
+    }
+    if (line.startsWith(" Normal termination of Gaussian")) {
+      ++calculationNumber;
+      equivalentAtomSets = 0;
+      // avoid next calculation to set the last title string
+      return true;
+    }
+    return !checkNboLine();
   }
   
   /**
@@ -366,9 +380,9 @@ public class GaussianReader extends AtomSetCollectionReader {
   /*
 
    Molecular Orbital Coefficients
-   1         2         3         4         5
-   (A1)--O   (A1)--O   (B2)--O   (A1)--O   (B1)--O
-   EIGENVALUES --   -20.55790  -1.34610  -0.71418  -0.57083  -0.49821
+                            1         2         3         4         5
+                        (A1)--O   (A1)--O   (B2)--O   (A1)--O   (B1)--O
+   EIGENVALUES --     -20.55790  -1.34610  -0.71418  -0.57083  -0.49821
    1 1   O  1S          0.99462  -0.20953   0.00000  -0.07310   0.00000
    2        2S          0.02117   0.47576   0.00000   0.16367   0.00000
    3        2PX         0.00000   0.00000   0.00000   0.00000   0.63927
@@ -381,7 +395,7 @@ but:
  105        4S        -47.27845  63.29565-100.44035   1.98362 -51.35328
 
    */
-  void readMolecularOrbitals() throws Exception {
+  void readGaussianMolecularOrbitals() throws Exception {
     Hashtable[] mos = new Hashtable[5];
     Vector[] data = new Vector[5];
     int nThisLine = 0;
@@ -417,16 +431,8 @@ but:
       }
     }
     addMOData(nThisLine, data, mos);
-  }
-
-  void addMOData(int nColumns, Vector[] data, Hashtable[] mos) {
-      for (int i = 0; i < nColumns; i++) {
-        float[] coefs = new float[data[i].size()];
-        for (int j = coefs.length; --j >= 0;)
-          coefs[j] = parseFloat((String) data[i].get(j));
-        mos[i].put("coefficients", coefs);
-        orbitals.addElement(mos[i]);
-      }
+    moData.put("mos", orbitals);
+    setMOData(moData);
   }
 
   /* SAMPLE FREQUENCY OUTPUT */
@@ -596,4 +602,5 @@ but:
         parseFloat(getTokens(readLine())[2]);
     }
   }
+  
 }

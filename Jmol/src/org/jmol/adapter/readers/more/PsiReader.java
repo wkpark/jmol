@@ -44,16 +44,7 @@ import org.jmol.util.Logger;
  *  -- no orbitals (Can't handle irreducible representations here.)
  *  
  **/
-public class PsiReader extends AtomSetCollectionReader {
-
-  //String modelName = "";
-  //int atomCount = 0;
-  //int moCount = 0;
-  int shellCount = 0;
-  int gaussianCount = 0;
-  //String calculationType = "";
-  Hashtable moData = new Hashtable();
-  Vector orbitals = new Vector();
+public class PsiReader extends MOReader {
 
   /**
    *
@@ -61,47 +52,52 @@ public class PsiReader extends AtomSetCollectionReader {
    * @return The AtomSetCollection representing the interpreted Gaussian text.
    **/
 
- public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("psi");
-    boolean iHaveAtoms = false;
-    int lineNum = 0;
+  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+    return readAtomSetCollection(reader, "psi");
+  }
 
-    try {
-      while (readLine() != null) {
-        if (line
-            .indexOf("-Geometry after Center-of-Mass shift and reorientation (a.u.):") >= 0) {
-          readAtoms(true); // initial geometry
-          iHaveAtoms = true;
-        }
-        if (line.indexOf("-Unique atoms in the canonical coordinate system (a.u.):") >= 0)
-          readUniqueAtoms();
-        if (iHaveAtoms && line.indexOf("New Cartesian Geometry in a.u.") >= 0) {
-          readAtoms(false); // replaced with final geometry
-        } else if (iHaveAtoms && line.startsWith("  label        = ")) {
-          moData.put("calculationType", line.substring(17).trim());
-        } else if (iHaveAtoms && line.startsWith("molecular orbitals for ")) {
-          moData.put("energyUnits", "");
-        } else if (line.startsWith("  -BASIS SETS:")) {
-          readBasis();
-          atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
-        } else if (iHaveAtoms
-            && line.indexOf("Molecular Orbital Coefficients") >= 0) {
-          readMolecularOrbitals();
-          if (Logger.debugging) {
-            Logger.debug(orbitals.size() + " molecular orbitals read");
-          }
-          moData.put("mos", orbitals);
-          setMOData(moData);
-        } else if (iHaveAtoms && line.indexOf("SCF total energy   =") >= 0) {
-          readSCFDone();
-        }
-        lineNum++;
-      }
-    } catch (Exception e) {
-      return setError(e);
+ /**
+   * @return true if need to read new line
+   * @throws Exception
+   * 
+   */
+  protected boolean checkLine() throws Exception {
+    if (line
+        .indexOf("-Geometry after Center-of-Mass shift and reorientation (a.u.):") >= 0) {
+      readAtoms(true); // initial geometry
+      iHaveAtoms = true;
     }
-    return atomSetCollection;
+    if (line
+        .indexOf("-Unique atoms in the canonical coordinate system (a.u.):") >= 0)
+      readUniqueAtoms();
+    if (!iHaveAtoms)
+      return true;
+    if (line.indexOf("New Cartesian Geometry in a.u.") >= 0) {
+      readAtoms(false); // replaced with final geometry
+      return true;
+    }
+    if (line.startsWith("  label        = ")) {
+      moData.put("calculationType", line.substring(17).trim());
+      return true;
+    }
+    if (line.startsWith("molecular orbitals for ")) {
+      moData.put("energyUnits", "");
+      return true;
+    }
+    if (line.startsWith("  -BASIS SETS:")) {
+      readBasis();
+      return true;
+    }
+    if (line.indexOf("Molecular Orbital Coefficients") >= 0) {
+      // note -- no irreducible representation support
+      readPsiMolecularOrbitals();
+      return true;
+    }
+    if (line.indexOf("SCF total energy   =") >= 0) {
+      readSCFDone();
+      return true;
+    }
+    return !checkNboLine();
   }
 
   /**
@@ -378,7 +374,7 @@ Orbital energies (a.u.):
 
 
    */
-  void readMolecularOrbitals() throws Exception {
+  void readPsiMolecularOrbitals() throws Exception {
     Hashtable[] mos = new Hashtable[5];
     Vector[] data = new Vector[5];
     int nThisLine = 0;
@@ -409,15 +405,8 @@ Orbital energies (a.u.):
       }
     }
     addMOData(nThisLine, data, mos);
+    moData.put("mos", orbitals);
+    setMOData(moData);
   }
 
-  void addMOData(int nColumns, Vector[] data, Hashtable[] mos) {
-    for (int i = 0; i < nColumns; i++) {
-      float[] coefs = new float[data[i].size()];
-      for (int j = coefs.length; --j >= 0;)
-        coefs[j] = parseFloat((String) data[i].get(j));
-      mos[i].put("coefficients", coefs);
-      orbitals.addElement(mos[i]);
-    }
-  }
 }

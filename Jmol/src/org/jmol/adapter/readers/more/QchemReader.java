@@ -61,52 +61,67 @@ import java.util.Vector;
  * 
 */
 
-public class QchemReader extends AtomSetCollectionReader {
+public class QchemReader extends MOReader {
  
 /** The number of the calculation being interpreted. */
   private int calculationNumber = 1;
 
-  Hashtable moData = null;
   MOInfo[] alphas = null;
   MOInfo[] betas = null;
   int nShell = 0;          // # of shells according to qchem
   int nBasis = 0;          // # of basis according to qchem
 
   
- public AtomSetCollection readAtomSetCollection(BufferedReader reader)  {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("qchem");
-    try {
-      int lineNum = 0;
-      while (readLine() != null) {
-        if (line.indexOf("Standard Nuclear Orientation") >= 0) {
-          readAtoms();
-          moData = null;        // no MO data for this structure
-        } else if (line.indexOf("VIBRATIONAL FREQUENCIES") >= 0) {
-          readFrequencies();
-        } else if (line.indexOf("Mulliken Net Atomic Charges") >= 0) {
-          readPartialCharges();
-        } else if (line.indexOf("Job ") >= 0) {
-          calculationNumber++;
-          moData = null; // start 'fresh'
-        } else if (line.indexOf("Basis set in general basis input format") >= 0) {
-          if (moData == null) { // only read the first basis (not basis2)
-            readBasis();
-            atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
-          }
-        } else if (line.indexOf("Orbital Energies (a.u.) and Symmetries") >= 0 ) {
-          if (moData != null) readESym(true);   // only read if I have moData...
-        } else if (line.indexOf("Orbital Energies (a.u.)") >= 0 ) {
-          if (moData != null) readESym(false);   // only read if I have moData...
-        } else if (line.indexOf("MOLECULAR ORBITAL COEFFICIENTS") >= 0) {
-          if (moData != null) readOrbitals(); // only read if I have moData...
-        }
-        ++lineNum;
-      }
-    } catch (Exception e) {
-      return setError(e);
+  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+    return readAtomSetCollection(reader, "qchem");
+  }
+
+  /**
+   * @return true if need to read new line
+   * @throws Exception
+   * 
+   */
+  protected boolean checkLine() throws Exception {
+    if (line.indexOf("Standard Nuclear Orientation") >= 0) {
+      readAtoms();
+      moData = null; // no MO data for this structure
+      return true;
     }
-    return atomSetCollection;
+    if (line.indexOf("VIBRATIONAL FREQUENCIES") >= 0) {
+      readFrequencies();
+      return true;
+    }
+    if (line.indexOf("Mulliken Net Atomic Charges") >= 0) {
+      readPartialCharges();
+      return true;
+    }
+    if (line.indexOf("Job ") >= 0) {
+      calculationNumber++;
+      moData = null; // start 'fresh'
+      return true;
+    }
+    if (line.indexOf("Basis set in general basis input format") >= 0) {
+      if (moData == null) {
+        // only read the first basis (not basis2)
+        readBasis();
+      }
+      return true;
+    }
+    if (moData == null)
+      return true;
+    if (line.indexOf("Orbital Energies (a.u.) and Symmetries") >= 0) {
+      readESym(true); // only read if I have moData...
+      return true;
+    }
+    if (line.indexOf("Orbital Energies (a.u.)") >= 0) {
+      readESym(false); // only read if I have moData...
+      return true;
+    }
+    if (line.indexOf("MOLECULAR ORBITAL COEFFICIENTS") >= 0) {
+      readQchemMolecularOrbitals(); // only read if I have moData...
+      return true;
+    }
+    return !checkNboLine();
   }
 
 /* Q-chem 2.1 format:
@@ -551,7 +566,7 @@ $end
  * through the AO's used
  */
 
-  private void readOrbitals() throws Exception {
+  private void readQchemMolecularOrbitals() throws Exception {
     // since I can't get length of getShellOrder, I need to hardcode here
     // how many orbitals each shell has.
     int nOrbitalsPerShell[] = {1,3,4,6,5,10,7};

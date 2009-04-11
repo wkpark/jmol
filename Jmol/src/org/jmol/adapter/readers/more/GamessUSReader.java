@@ -31,122 +31,89 @@
 package org.jmol.adapter.readers.more;
 
 import java.io.BufferedReader;
-import java.util.Hashtable;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollection;
-import org.jmol.util.Logger;
 
 public class GamessUSReader extends GamessReader {
 
-  private int headerType;
-  private boolean getNBOs;
-  
   public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("gamess");
-    line = "NBOs in the AO basis:";
-    getNBOs = filterMO();
-    try {
-      readLine();
-      boolean iHaveAtoms = false;
-      while (line != null) {
-        boolean isBohr;
-        if ((isBohr = line.indexOf("COORDINATES (BOHR)") >= 0)
-            || line.indexOf("COORDINATES OF ALL ATOMS ARE (ANGS)") >= 0) {
-          if (doGetModel(++modelNumber)) {
-            if (isBohr)
-              readAtomsInBohrCoordinates();
-            else
-              readAtomsInAngstromCoordinates();
-            iHaveAtoms = true;
-            readLine();
-            continue;
-          }
-          if (isLastModel(modelNumber) && iHaveAtoms)
-            break;
-          iHaveAtoms = false;
-        }
-        if (iHaveAtoms) {
-          if (line.indexOf("FREQUENCIES IN CM") >= 0) {
-            readFrequencies();
-          } else if (line.indexOf("ATOMIC BASIS SET") >= 0) {
-            readGaussianBasis("SHELL TYPE", "TOTAL");
-            continue;
-          } else if (line.indexOf("(Occupancy)   Bond orbital/ Coefficients/ Hybrids") >= 0) {
-            if (getNBOs)
-              getNboTypes();
-          } else if (line.indexOf("SUMMARY OF THE EFFECTIVE FRAGMENT") >= 0) {
-            // We have EFP and we're not afraid to use it!!
-            //it would be nice is this information was closer to the ab initio molecule
-            readEFPInBohrCoordinates();
-            continue;
-          } else if (line.indexOf("  EIGENVECTORS") >= 0
-              || line.indexOf("  INITIAL GUESS ORBITALS") >= 0
-              || line.indexOf("  MCSCF OPTIMIZED ORBITALS") >= 0
-              || line.indexOf("  MCSCF NATURAL ORBITALS") >= 0
-              || line.indexOf("  MOLECULAR ORBITALS") >= 0
-              && line.indexOf("  MOLECULAR ORBITALS LOCALIZED BY THE POPULATION METHOD") < 0) {
-            if (filterMO()) {
-              headerType = 1; // energies and possibly symmetries
-              readMolecularOrbitals(); //1,1
-              continue;
-            }
-          } else if (line.indexOf("EDMISTON-RUEDENBERG ENERGY LOCALIZED ORBITALS") >= 0
-              || line.indexOf("  THE PIPEK-MEZEY POPULATION LOCALIZED ORBITALS ARE") >= 0
-              || line.indexOf("NBOs in the AO basis:") >= 0) {
-            if (filterMO()) {
-              headerType = 0; // no header
-              readMolecularOrbitals(); //0,3
-              continue;
-            }
-          } else if (line.indexOf("  NATURAL ORBITALS IN ATOMIC ORBITAL BASIS") >= 0) {
-            //the for mat of the next orbitals can change depending on the
-            //cistep used.  This works for ALDET and GUGA
-
-            // BH to AD: but the GUGA file delivered has only energies?
-            if (filterMO()) {
-              headerType = 2; // occupancies and possibly symmetries
-              readMolecularOrbitals(); //1,2
-              continue;
-            }
-          }
-        }
-        readLine();
-      }
-    } catch (Exception e) {
-      return setError(e);
-    }
-    return atomSetCollection;
+    return readAtomSetCollection(reader, "gamess");
   }
 
-  private String[] filterTokens;
-  private boolean filterIsNot; 
-  private boolean filterMO() {
-    boolean isOK = true;
-    int nOK = 0;
-    if (filter != null) {
-      line = line.toLowerCase();
-      if (filterTokens == null) {
-        filterIsNot = (filter.indexOf("!") >= 0);
-        filterTokens = getTokens(filter.replace('!', ' ').replace(',', ' ')
-            .replace(';', ' ').toLowerCase());
+  /**
+   * @return true if need to read new line
+   * @throws Exception
+   * 
+   */
+  protected boolean checkLine() throws Exception {
+    boolean isBohr;
+    if ((isBohr = line.indexOf("COORDINATES (BOHR)") >= 0)
+        || line.indexOf("COORDINATES OF ALL ATOMS ARE (ANGS)") >= 0) {
+      if (doGetModel(++modelNumber)) {
+        if (isBohr)
+          readAtomsInBohrCoordinates();
+        else
+          readAtomsInAngstromCoordinates();
+        iHaveAtoms = true;
+        return true;
       }
-      for (int i = 0; i < filterTokens.length; i++)
-        if (line.indexOf(filterTokens[i]) >= 0) {
-          if (!filterIsNot) {
-            nOK = filterTokens.length;
-            break;
-          }
-        } else if (filterIsNot) {
-          nOK++;
-        }
-      isOK = (nOK == filterTokens.length);
+      if (isLastModel(modelNumber) && iHaveAtoms) {
+        continuing = false;
+        return false;
+      }
+      iHaveAtoms = false;
     }
-    Logger.info("filter MOs: " + isOK + " " + line);
-    return isOK;
+    if (!iHaveAtoms)
+      return true;
+    if (line.indexOf("FREQUENCIES IN CM") >= 0) {
+      readFrequencies();
+      return true;
+    }
+    if (line.indexOf("ATOMIC BASIS SET") >= 0) {
+      readGaussianBasis("SHELL TYPE", "TOTAL");
+      return false;
+    }
+    if (line.indexOf("SUMMARY OF THE EFFECTIVE FRAGMENT") >= 0) {
+      // We have EFP and we're not afraid to use it!!
+      // it would be nice is this information was closer to the ab initio
+      // molecule
+      readEFPInBohrCoordinates();
+      return false;
+    }
+    if (line.indexOf("  EIGENVECTORS") >= 0
+        || line.indexOf("  INITIAL GUESS ORBITALS") >= 0
+        || line.indexOf("  MCSCF OPTIMIZED ORBITALS") >= 0
+        || line.indexOf("  MCSCF NATURAL ORBITALS") >= 0
+        || line.indexOf("  MOLECULAR ORBITALS") >= 0
+        && line
+            .indexOf("  MOLECULAR ORBITALS LOCALIZED BY THE POPULATION METHOD") < 0) {
+      if (!filterMO())
+        return true;
+      // energies and possibly symmetries
+      readMolecularOrbitals(HEADER_GAMESS_ORIGINAL);
+      return false;
+    }
+    if (line.indexOf("EDMISTON-RUEDENBERG ENERGY LOCALIZED ORBITALS") >= 0
+        || line.indexOf("  THE PIPEK-MEZEY POPULATION LOCALIZED ORBITALS ARE") >= 0) {
+      if (!filterMO())
+        return true;
+      readMolecularOrbitals(HEADER_NONE);
+      return false;
+
+    }
+    if (line.indexOf("  NATURAL ORBITALS IN ATOMIC ORBITAL BASIS") >= 0) {
+      // the for mat of the next orbitals can change depending on the
+      // cistep used. This works for ALDET and GUGA
+
+      // BH to AD: but the GUGA file delivered has only energies?
+      if (!filterMO())
+        return true;
+      readMolecularOrbitals(HEADER_GAMESS_OCCUPANCIES);
+      return false;
+    }
+    return !checkNboLine();
   }
-  
   /*
 
    for H2ORHF, the Z entries are nuclear positions
@@ -394,44 +361,5 @@ public class GamessUSReader extends GamessReader {
    TOTAL NUMBER OF BASIS SET SHELLS             =  101
 
    */
-
-  protected void getMOHeader(String[] tokens, Hashtable[] mos, int nThisLine)
-      throws Exception {
-    readLine();
-    switch (headerType) {
-    default:
-      //this means there are no energies, occupancies or symmetries
-      for (int i = 0; i < nThisLine; i++) {
-        mos[i].put("energy", "");
-      }
-      return;
-    case 1:
-      //this is the original functionality
-      tokens = getTokens();
-      if (tokens.length == 0)
-        tokens = getTokens(readLine());
-      for (int i = 0; i < nThisLine; i++) {
-        mos[i].put("energy", new Float(tokens[i]));
-      }
-      readLine();
-      break;
-    case 2:
-      //MCSCF NATURAL ORBITALS only have occupancy
-      boolean haveSymmetry = (line.length() > 0 || readLine() != null);
-      tokens = getTokens();
-      for (int i = 0; i < nThisLine; i++)
-        mos[i].put("occupancy", new Float(tokens[i].charAt(0) == '-' ? 2.0f
-            : parseFloat(tokens[i])));
-      readLine(); //blank or symmetry
-      if (!haveSymmetry)
-        return;
-    //MCSCF NATURAL ORBITALS (from GUGA) using CSF configurations have occupancy and symmetry
-    }
-    if (line.length() > 0) {
-      tokens = getTokens();
-      for (int i = 0; i < nThisLine; i++)
-        mos[i].put("symmetry", tokens[i]);
-    }
-  }
 
 }

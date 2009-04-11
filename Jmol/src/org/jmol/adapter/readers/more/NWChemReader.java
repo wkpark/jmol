@@ -42,9 +42,12 @@ import java.io.BufferedReader;
  * <p>Note that the different modules give quite different formatted output
  * so it is not certain that all modules will be properly interpreted.
  * Most testing has been done with the SCF and DFT tasks.
+ * 
+ * no support yet for orbitals
+ * 
 **/
 
-public class NWChemReader extends AtomSetCollectionReader {
+public class NWChemReader extends MOReader {
 
   /**
    * The number of the task begin interpreted.
@@ -74,45 +77,65 @@ public class NWChemReader extends AtomSetCollectionReader {
   private boolean inInput;
  
  public AtomSetCollection readAtomSetCollection(BufferedReader reader)  {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("nwchem");
-    init();
-    try {
-      while (readLine() != null) {
-         if (line.startsWith("          Step")) {
-           init();
-        } else if (line.startsWith("      Symmetry information")) {
-          readSymmetry();
-        } else if (line.indexOf("Total") >= 0) {
-          readTotal();          
-        } else if (line.indexOf("@") >= 0) {
-          readAtSign();
-        } else if (line.startsWith("      Optimization converged")) {
-          converged = true;
-        } else if (line.indexOf("Output coordinates in angstroms") >= 0) {
-          equivalentAtomSets++;
-          readAtoms();
-        } else if (line.indexOf("ENERGY GRADIENTS") >=0 ) {
-          equivalentAtomSets++;
-          readGradients();
-        } else if (line.indexOf(
-            "NWChem Nuclear Hessian and Frequency Analysis") >=0 ) {
-          readFrequencies();
-        } else if (line.startsWith(" Task  times")) {
-          init();
-          taskNumber++; // starting a new task
-        } else if (line.trim().startsWith("NWChem")) {
-          readNWChemLine();
-        } else if (line.startsWith("  Mulliken analysis of the total density")) {
-          // only do this if I have read an atom set in this task/step
-          if (equivalentAtomSets > 0)
-            readPartialCharges();
-        }
-      }
-    } catch (Exception e) {
-      return setError(e);
+   return readAtomSetCollection(reader, "nwchem");
+ }
+
+ /**
+   * @return true if need to read new line
+   * @throws Exception
+   * 
+   */
+  protected boolean checkLine() throws Exception {
+    if (line.startsWith("          Step")) {
+      init();
+      return true;
     }
-    return atomSetCollection;
+    if (line.startsWith("      Symmetry information")) {
+      readSymmetry();
+      return true;
+    }
+    if (line.indexOf("Total") >= 0) {
+      readTotal();
+      return true;
+    }
+    if (line.indexOf("@") >= 0) {
+      readAtSign();
+      return true;
+    }
+    if (line.startsWith("      Optimization converged")) {
+      converged = true;
+      return true;
+    }
+    if (line.indexOf("Output coordinates in angstroms") >= 0) {
+      equivalentAtomSets++;
+      readAtoms();
+      return true;
+    }
+    if (line.indexOf("ENERGY GRADIENTS") >= 0) {
+      equivalentAtomSets++;
+      readGradients();
+      return true;
+    }
+    if (line.indexOf("NWChem Nuclear Hessian and Frequency Analysis") >= 0) {
+      readFrequencies();
+      return true;
+    }
+    if (line.startsWith(" Task  times")) {
+      init();
+      taskNumber++; // starting a new task
+      return true;
+    }
+    if (line.trim().startsWith("NWChem")) {
+      readNWChemLine();
+      return true;
+    }
+    if (line.startsWith("  Mulliken analysis of the total density")) {
+      // only do this if I have read an atom set in this task/step
+      if (equivalentAtomSets > 0)
+        readPartialCharges();
+      return true;
+    }
+    return true;//!checkNboLine();
   }
   
   private void init() {

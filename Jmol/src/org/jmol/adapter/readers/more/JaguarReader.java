@@ -36,56 +36,62 @@ import java.util.Vector;
  * Jaguar reader tested for the two samples files in CVS. Both
  * these files were created with Jaguar version 4.0, release 20.
  */
-public class JaguarReader extends AtomSetCollectionReader {
+public class JaguarReader extends MOReader {
 
-  int atomCount = 0;
   int moCount = 0;
-  int gaussianCount = 0;
   float lumoEnergy = Float.MAX_VALUE;
-  Hashtable moData = new Hashtable();
-  Vector orbitals = new Vector();
 
-  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
-    atomSetCollection = new AtomSetCollection("jaguar");
-    try {
-      while (readLine() != null) {
-        if (line.startsWith(" Input geometry:")) {
-          readAtoms();
-        } else if (line.startsWith(" Symmetrized geometry:")) {
-          readAtoms();
-        } else if (line.startsWith("  final geometry:")) {
-          readAtoms();
-        } else if (line.startsWith("  Atomic charges from electrostatic potential:")) {
-          readCharges();
-        } else if (line.startsWith("  number of basis functions....")) {
-          moCount = parseInt(line.substring(32).trim());
-        } else if (line.startsWith("  basis set:")) {
-          moData.put("energyUnits", "");
-          moData.put("calculationType", line.substring(13).trim());
-        } else if (line.indexOf("Shell information") >= 0) {
-          readBasis();
-        } else if (line.indexOf("Normalized coefficients") >= 0) {
-          readBasisNormalized();
-        } else if (line.startsWith(" LUMO energy:")) {
-          lumoEnergy = parseFloat(line.substring(13));
-        } else if (line.indexOf("final wvfn") >= 0) {
-          readMolecularOrbitals();
-          if (Logger.debugging) {
-            Logger.debug(orbitals.size() + " molecular orbitals read");
-          }
-        } else if (line.startsWith("  harmonic frequencies in")) {
-          readFrequencies();
-          break;
-        }
-      }
-      if (moCount > 0 && gaussianCount > 0) {
-        setMOData(moData);
-      }
-    } catch (Exception e) {
-      return setError(e);
+  public AtomSetCollection readAtomSetCollection(BufferedReader reader)  {
+    return readAtomSetCollection(reader, "jaguar");
+  }
+
+  /**
+   * @return true if need to read new line
+   * @throws Exception
+   * 
+   */
+  protected boolean checkLine() throws Exception {
+    if (line.startsWith(" Input geometry:")
+        || line.startsWith(" Symmetrized geometry:")
+        || line.startsWith("  final geometry:")) {
+      readAtoms();
+      return true;
     }
-    return atomSetCollection;
+    if (line.startsWith("  Atomic charges from electrostatic potential:")) {
+      readCharges();
+      return true;
+    }
+    if (line.startsWith("  number of basis functions....")) {
+      moCount = parseInt(line.substring(32).trim());
+      return true;
+    }
+    if (line.startsWith("  basis set:")) {
+      moData.put("energyUnits", "");
+      moData.put("calculationType", line.substring(13).trim());
+      return true;
+    }
+    if (line.indexOf("Shell information") >= 0) {
+      readBasis();
+      return true;
+    }
+    if (line.indexOf("Normalized coefficients") >= 0) {
+      readBasisNormalized();
+      return true;
+    }
+    if (line.startsWith(" LUMO energy:")) {
+      lumoEnergy = parseFloat(line.substring(13));
+      return true;
+    }
+    if (line.indexOf("final wvfn") >= 0) {
+      readJaguarMolecularOrbitals();
+      return true;
+    }
+    if (line.startsWith("  harmonic frequencies in")) {
+      readFrequencies();
+      continuing = false;
+      return false;
+    }
+    return !checkNboLine();
   }
 
   private void readAtoms() throws Exception {
@@ -293,7 +299,7 @@ public class JaguarReader extends AtomSetCollectionReader {
    
    */
 
-  private void readMolecularOrbitals() throws Exception {
+  private void readJaguarMolecularOrbitals() throws Exception {
     String[][] dataBlock = new String[moCount][];
     readLine();
     readLine();
@@ -325,6 +331,7 @@ public class JaguarReader extends AtomSetCollectionReader {
       }
     }
     moData.put("mos", orbitals);
+    setMOData(moData);
   }
 
   /* A block without symmetry, looks like:

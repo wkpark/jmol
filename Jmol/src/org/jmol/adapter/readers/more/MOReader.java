@@ -34,32 +34,31 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 /**
- * General methods for reading molecular orbital data.
+ * General methods for reading molecular orbital data,
+ * including embedded output from the NBO program.
  *
  *
  * requires the following sort of construct:
  * 
   public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
-    initializeMoReader(reader, [some type]);
-    try {
-      readLine();
-      while (line != null) {
-        if (line.indexOf(...)) {
-          doThis();
-        } else if... {
-        } else if (checkNboLine()) {
-          continue;
-        }
-        readLine();
-      }
-    } catch (Exception e) {
-      return setError(e);
-    }
-    return atomSetCollection;
+    readAtomSetCollection(reader, "some type");
+  }
+  
+  protected boolean checkLine() {
+    if (line.indexOf(...)) {
+      doThis();
+      return true/false;
+    } 
+    if (line.indexOf(...)) {
+      doThat();
+      return true/false;
+    } 
+    return checkNboLine();
   }
  *
  *
  **/
+
 abstract class MOReader extends AtomSetCollectionReader {
     
   int atomCount = 0;

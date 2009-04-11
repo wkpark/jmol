@@ -183,6 +183,7 @@ abstract class MOReader extends AtomSetCollectionReader {
       while (readLine() != null && line.startsWith("     ")) {
       }
     }
+    Logger.info(n + " natural bond orbitals read");
   }
 
   /*

@@ -194,6 +194,8 @@ public class GaussianReader extends MOReader {
       return true;
     }
     if (line.indexOf("Molecular Orbital Coefficients") >= 0) {
+      if (!filterMO())
+        return true;
       readGaussianMolecularOrbitals();
       if (Logger.debugging) {
         Logger.debug(orbitals.size() + " molecular orbitals read");

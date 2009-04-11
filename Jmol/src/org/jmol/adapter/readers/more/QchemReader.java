@@ -110,15 +110,18 @@ public class QchemReader extends MOReader {
     if (moData == null)
       return true;
     if (line.indexOf("Orbital Energies (a.u.) and Symmetries") >= 0) {
-      readESym(true); // only read if I have moData...
+      if (filterMO())
+        readESym(true);
       return true;
     }
     if (line.indexOf("Orbital Energies (a.u.)") >= 0) {
-      readESym(false); // only read if I have moData...
+      if (filterMO())
+        readESym(false);
       return true;
     }
     if (line.indexOf("MOLECULAR ORBITAL COEFFICIENTS") >= 0) {
-      readQchemMolecularOrbitals(); // only read if I have moData...
+      if (filterMO())
+        readQchemMolecularOrbitals();
       return true;
     }
     return !checkNboLine();

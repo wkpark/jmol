@@ -36,6 +36,7 @@ import java.util.Vector;
 /**
  * General methods for reading molecular orbital data,
  * including embedded output from the NBO program.
+ * In particular, when the AONBO keyword is included.
  *
  *
  * requires the following sort of construct:
@@ -59,6 +60,25 @@ import java.util.Vector;
  *
  **/
 
+ /* NBO output analysis is based on
+  * 
+ *********************************** NBO 5.G ***********************************
+             N A T U R A L   A T O M I C   O R B I T A L   A N D
+          N A T U R A L   B O N D   O R B I T A L   A N A L Y S I S
+ *******************************************************************************
+  (c) Copyright 1996-2004 Board of Regents of the University of Wisconsin System
+      on behalf of the Theoretical Chemistry Institute.  All Rights Reserved.
+
+          Cite this program as:
+
+          NBO 5.G.  E. D. Glendening, J. K. Badenhoop, A. E. Reed,
+          J. E. Carpenter, J. A. Bohmann, C. M. Morales, and F. Weinhold
+          (Theoretical Chemistry Institute, University of Wisconsin,
+          Madison, WI, 2001); http://www.chem.wisc.edu/~nbo5
+
+       /AONBO  / : Print the AO to NBO transformation
+  * 
+  */
 abstract class MOReader extends AtomSetCollectionReader {
     
   int atomCount = 0;
@@ -133,7 +153,7 @@ abstract class MOReader extends AtomSetCollectionReader {
         nOK++;
       }
     isOK = (nOK == filterTokens.length);
-    Logger.info("filter MOs: " + isOK + " " + line);
+    Logger.info("filter MOs: " + isOK + " for \"" + line + "\"");
     return isOK;
   }
   
@@ -174,12 +194,11 @@ abstract class MOReader extends AtomSetCollectionReader {
     moTypes = new Vector();
     readLine();
     readLine();
-    int n = 1;
+    int n = 0;
     while (line != null && line.indexOf(".") == 4) {
-      if (parseInt(line.substring(0, 4)) != n)
+      if (parseInt(line.substring(0, 4)) != n + 1)
         break;
-      moTypes.add(n - 1, line.substring(5, 34).trim());
-      n++;
+      moTypes.add(n++, line.substring(5, 34).trim());
       while (readLine() != null && line.startsWith("     ")) {
       }
     }

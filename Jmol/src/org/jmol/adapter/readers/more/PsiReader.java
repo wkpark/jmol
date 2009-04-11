@@ -90,7 +90,8 @@ public class PsiReader extends MOReader {
     }
     if (line.indexOf("Molecular Orbital Coefficients") >= 0) {
       // note -- no irreducible representation support
-      readPsiMolecularOrbitals();
+      if (filterMO())
+        readPsiMolecularOrbitals();
       return true;
     }
     if (line.indexOf("SCF total energy   =") >= 0) {

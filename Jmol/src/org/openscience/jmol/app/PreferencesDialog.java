@@ -344,6 +344,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     c.weightx = 1.0;
     c.weighty = 1.0;
 
+    // Automatic calculation of bonds upon molecule load
     JPanel autobondPanel = new JPanel();
     autobondPanel.setLayout(new BoxLayout(autobondPanel, BoxLayout.Y_AXIS));
     autobondPanel.setBorder(new TitledBorder(GT._("Compute Bonds")));
@@ -359,14 +360,17 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     abYes.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
-        viewer.setBooleanProperty("autoBond", true);
+        viewer.setBooleanProperty("autoBond", true);        
+        currentProperties.put("autoBond", "" + "true");
       }
     });
 
+    abNo.setSelected(!viewer.getAutoBond());
     abNo.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
         viewer.setBooleanProperty("autoBond", false);
+        currentProperties.put("autoBond", "" + "false");          
       }
     });
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-04-04 08:28+0200\n"
+"POT-Creation-Date: 2009-04-15 20:50+0200\n"
 "PO-Revision-Date: 2009-02-14 23:27+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
@@ -407,12 +407,16 @@ msgstr ""
 msgid "Turkish"
 msgstr "Turc"
 
+#: org/jmol/i18n/GT.java:141
+msgid "Ukrainian"
+msgstr ""
+
 #: org/jmol/minimize/Minimizer.java:186
 #, java-format
 msgid "Could not get class for force field {0}"
 msgstr "No es pot aconseguir la classe del camp de força {0}"
 
-#: org/jmol/minimize/Minimizer.java:195
+#: org/jmol/minimize/Minimizer.java:196
 msgid "No atoms selected -- nothing to do!"
 msgstr "No s'ha seleccionat cap àtom -- no hi ha res per fer!"
 
@@ -1858,25 +1862,25 @@ msgstr "{0} àtoms amagats"
 msgid "{0} atoms selected"
 msgstr "{0} àtoms seleccionats"
 
-#: org/jmol/viewer/Viewer.java:4780
+#: org/jmol/viewer/Viewer.java:4781
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr ""
 "ERROR: No s'ha pogut definir el senyal d'un booleà a un valor de cadena: {0}"
 
-#: org/jmol/viewer/Viewer.java:4975 org/jmol/viewer/Viewer.java:5151
+#: org/jmol/viewer/Viewer.java:4976 org/jmol/viewer/Viewer.java:5152
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr ""
 "ERROR: No s'ha pogut definir el senyal d'un booleà a un valor numèric: {0}"
 
-#: org/jmol/viewer/Viewer.java:5659
+#: org/jmol/viewer/Viewer.java:5660
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr ""
 "ERROR: No ha pogut definir-se el valor de la variable com a booleà: {0}"
 
-#: org/jmol/viewer/Viewer.java:6930
+#: org/jmol/viewer/Viewer.java:6931
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 "el porta-retalls no és accessible -- utilitzeu una miniaplicació signada"

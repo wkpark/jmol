@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-04-04 08:28+0200\n"
+"POT-Creation-Date: 2009-04-15 20:50+0200\n"
 "PO-Revision-Date: 2009-03-05 14:28+0000\n"
 "Last-Translator: Keruskerfuerst <armin_mohring@web.de>\n"
 "Language-Team: none\n"
@@ -410,12 +410,16 @@ msgstr ""
 msgid "Turkish"
 msgstr "Türkisch"
 
+#: org/jmol/i18n/GT.java:141
+msgid "Ukrainian"
+msgstr ""
+
 #: org/jmol/minimize/Minimizer.java:186
 #, java-format
 msgid "Could not get class for force field {0}"
 msgstr "Kann keine Güteklasse für Karftfeld {0} feststellen"
 
-#: org/jmol/minimize/Minimizer.java:195
+#: org/jmol/minimize/Minimizer.java:196
 msgid "No atoms selected -- nothing to do!"
 msgstr "Keine Atome ausgewählt -- es gibt nichts zu tun!"
 
@@ -1864,23 +1868,23 @@ msgstr "{0} Atome versteckt"
 msgid "{0} atoms selected"
 msgstr "{0} Atome ausgewählt"
 
-#: org/jmol/viewer/Viewer.java:4780
+#: org/jmol/viewer/Viewer.java:4781
 #, java-format
 msgid "ERROR: cannot set boolean flag to string value: {0}"
 msgstr ""
 "Fehler: kann kein boolsches Kennzeichen zu einem variablen Wert setzen:{0}"
 
-#: org/jmol/viewer/Viewer.java:4975 org/jmol/viewer/Viewer.java:5151
+#: org/jmol/viewer/Viewer.java:4976 org/jmol/viewer/Viewer.java:5152
 #, java-format
 msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 msgstr "FEHLER: Kann boolschen Flag keinen numerischen Wert zuweisen: {0}"
 
-#: org/jmol/viewer/Viewer.java:5659
+#: org/jmol/viewer/Viewer.java:5660
 #, java-format
 msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 msgstr "FEHLER: Kann der Variable keinen Boolschen Wert zuweisen: {0}"
 
-#: org/jmol/viewer/Viewer.java:6930
+#: org/jmol/viewer/Viewer.java:6931
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 "auf den Notizblock kann nicht zugegriffen werden -- verwenden Sie das "

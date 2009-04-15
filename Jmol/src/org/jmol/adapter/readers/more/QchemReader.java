@@ -128,7 +128,7 @@ public class QchemReader extends MOReader {
         readQchemMolecularOrbitals();
       return true;
     }
-    return !checkNboLine();
+    return checkNboLine();
   }
 
   private void readCalculationType() {

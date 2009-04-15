@@ -135,7 +135,7 @@ public class NWChemReader extends MOReader {
         readPartialCharges();
       return true;
     }
-    return true;//!checkNboLine();
+    return true;//checkNboLine();
   }
   
   private void init() {

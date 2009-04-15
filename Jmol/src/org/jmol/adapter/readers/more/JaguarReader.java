@@ -26,7 +26,6 @@ package org.jmol.adapter.readers.more;
 
 import org.jmol.adapter.smarter.*;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 
 import java.io.BufferedReader;
 import java.util.Hashtable;
@@ -91,7 +90,7 @@ public class JaguarReader extends MOReader {
       continuing = false;
       return false;
     }
-    return !checkNboLine();
+    return checkNboLine();
   }
 
   private void readAtoms() throws Exception {
@@ -99,7 +98,7 @@ public class JaguarReader extends MOReader {
     atomSetCollection.discardPreviousAtoms();
     // start parsing the atoms
     discardLines(2);
-    atomCount = 0;
+    int atomCount = 0;
     while (readLine() != null && line.length() >= 60 && line.charAt(2) != ' ') {
       String[] tokens = getTokens();
       String atomName = tokens[0];
@@ -357,43 +356,52 @@ public class JaguarReader extends MOReader {
    */
 
   private void readFrequencies() throws Exception {
-    int modelNumber = 1;
-    while (readLine() != null && !line.startsWith("  frequencies ")) {
-    }
-    if (line == null)
-      return;
-    // determine number of freqs on this line (starting with "frequencies")
-    do {
-      int freqCount = Parser.countTokens(line, 0) - 1;
-      while (readLine() != null && !line.startsWith("  intensities ") && !line.startsWith("  force ")) {
+    int iModel = 1;
+    int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+    discardLinesUntilStartsWith("  frequencies ");
+    while (line != null && line.startsWith("  frequencies ")) {
+      String[] frequencies = getTokens();
+      int freqCount = frequencies.length - 1;
+      // skip to "intensity" or "force" line
+      String[] symmetries = null;
+      while (line != null 
+          && !line.startsWith("  intensities ") 
+          && !line.startsWith("  force ")) {
+        readLine();
+        if (line.indexOf("symmetries") >= 0)
+          symmetries = getTokens();
       }
-      for (int atomCenterNumber = 0; atomCenterNumber < atomCount; atomCenterNumber++) {
+      for (int i = 0; i < atomCount; i++) {
         // this assumes that the atoms are given in the same order as their
-        // atomic coordinates, and disregards the label which is should use
+        // atomic coordinates, and disregards the label
         String[] tokensX = getTokens(readLine());
         String[] tokensY = getTokens(readLine());
         String[] tokensZ = getTokens(readLine());
-        for (int j = 0; j < freqCount; j++)
-          recordAtomVector(modelNumber + j, atomCenterNumber,
-              parseFloat(tokensX[j + 2]), parseFloat(tokensY[j + 2]),
-              parseFloat(tokensZ[j + 2]));
+        for (int j = 0; j < freqCount; j++) {
+          if (i == 0) {
+            atomSetCollection.cloneFirstAtomSet();
+            atomSetCollection.setAtomSetName(frequencies[j + 1] + " cm-1"
+                + (symmetries == null ? "" : " (" + symmetries[j + 1] + ")"));
+            atomSetCollection.setAtomSetProperty("Frequency", frequencies[j + 1]
+                + " cm-1");
+          }
+          int iAtom = (iModel + j) * atomCount + i;
+          float x = parseFloat(tokensX[j + 2]);
+          float y = parseFloat(tokensY[j + 2]);
+          float z = parseFloat(tokensZ[j + 2]);
+          if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z)) {
+            Logger.info("Error reading frequency line: " + line);
+            break;
+          }
+          Atom atom = atomSetCollection.getAtom(iAtom);
+          atom.vectorX = x;
+          atom.vectorY = y;
+          atom.vectorZ = z;
+        }
       }
-      discardLines(1);
-      modelNumber += freqCount;
-    } while (readLine() != null && (line.startsWith("  frequencies ")));
-  }
-
-  private void recordAtomVector(int modelNumber, int atomCenterNumber, float x,
-                                float y, float z) throws Exception {
-    if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z)
-        || atomCenterNumber <= 0 || atomCenterNumber > atomCount)
-      return;
-    if (atomCenterNumber == 1 && modelNumber > 1)
-      atomSetCollection.cloneFirstAtomSet();
-    Atom atom = atomSetCollection.getAtom((modelNumber - 1) * atomCount
-        + atomCenterNumber - 1);
-    atom.vectorX = x;
-    atom.vectorY = y;
-    atom.vectorZ = z;
+      iModel += freqCount;
+      readLine();
+      readLine();
+    }
   }
 }

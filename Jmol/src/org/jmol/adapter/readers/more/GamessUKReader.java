@@ -74,7 +74,7 @@ public class GamessUKReader extends GamessReader {
       setOrbitalSymmetryAndOccupancy();
       return false;
     } 
-    return !checkNboLine();
+    return checkNboLine();
   }
 
   protected void readAtomsInBohrCoordinates() throws Exception {

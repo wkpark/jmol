@@ -97,7 +97,7 @@ abstract public class GamessReader extends MOReader {
     if (atomType != null)
       shellsByAtomType.put(atomType, slatersByAtomType);
     Vector sdata = new Vector();
-    atomCount = atomNames.size();
+    int atomCount = atomNames.size();
     for (int i = 0; i < atomCount; i++) {
       atomType = (String) atomNames.elementAt(i);
       Vector slaters = (Vector) shellsByAtomType.get(atomType);
@@ -135,7 +135,7 @@ abstract public class GamessReader extends MOReader {
   protected void readFrequencies() throws Exception {
     //not for GamessUK yet
     int totalFrequencyCount = 0;
-    int atomCountInFirstModel = atomSetCollection.getAtomCount();
+    int atomCount = atomSetCollection.getLastAtomSetAtomCount();
     float[] xComponents = new float[5];
     float[] yComponents = new float[5];
     float[] zComponents = new float[5];
@@ -186,7 +186,7 @@ abstract public class GamessReader extends MOReader {
       }
       Atom[] atoms = atomSetCollection.getAtoms();
       discardLinesUntilBlank();
-      for (int i = 0; i < atomCountInFirstModel; ++i) {
+      for (int i = 0; i < atomCount; ++i) {
         readLine();
         readComponents(lineFreqCount, xComponents);
         readLine();
@@ -194,7 +194,7 @@ abstract public class GamessReader extends MOReader {
         readLine();
         readComponents(lineFreqCount, zComponents);
         for (int j = 0; j < lineFreqCount; ++j) {
-          int atomIndex = (lineBaseFreqCount + j) * atomCountInFirstModel + i;
+          int atomIndex = (lineBaseFreqCount + j) * atomCount + i;
           Atom atom = atoms[atomIndex];
           atom.vectorX = xComponents[j];
           atom.vectorY = yComponents[j];

@@ -81,14 +81,14 @@ import java.util.Vector;
   */
 abstract class MOReader extends AtomSetCollectionReader {
     
-  int atomCount = 0;
   int shellCount = 0;
   int gaussianCount = 0;
   Hashtable moData = new Hashtable();
   Vector orbitals = new Vector();
   protected String calculationType = "?";
   protected Vector moTypes;
-  protected boolean getNBOs;
+  private boolean getNBOs;
+  private boolean getNBOCharges;
 
   private String[] filterTokens;
   private boolean filterIsNot; 
@@ -130,6 +130,8 @@ abstract class MOReader extends AtomSetCollectionReader {
     atomSetCollection = new AtomSetCollection("type");
     line = "\nNBOs in the AO basis:";
     getNBOs = filterMO();
+    line = "\nNBOcharges";
+    getNBOCharges = (filter != null && filterMO());
   }
   
   protected boolean filterMO() {
@@ -157,7 +159,12 @@ abstract class MOReader extends AtomSetCollectionReader {
       Logger.info("filter MOs: " + isOK + " for \"" + line + "\"");
     return isOK;
   }
-  
+
+  /**
+   * 
+   * @return true if need to read line
+   * @throws Exception
+   */
   protected boolean checkNboLine() throws Exception {
 
     // these output lines are being passed on by NBO 5.0 to whatever program is
@@ -166,15 +173,51 @@ abstract class MOReader extends AtomSetCollectionReader {
     if (getNBOs) {
       if (line.indexOf("(Occupancy)   Bond orbital/ Coefficients/ Hybrids") >= 0) {
         getNboTypes();
-        return true;
+        return false;
       }
       if (line.indexOf("NBOs in the AO basis:") >= 0) {
         readMolecularOrbitals(HEADER_NONE);
-        return true;
+        return false;
       }
     }
-    return false;
+    if (getNBOCharges && line.indexOf("Summary of Natural Population Analysis:") >= 0) {
+      getNboCharges();
+      return true;
+    }
+    return true;
   }
+  
+  /*
+ Summary of Natural Population Analysis:
+
+                                     Natural Population                 Natural
+             Natural    ---------------------------------------------    Spin
+  Atom No    Charge        Core      Valence    Rydberg      Total      Density
+ ------------------------------------------------------------------------------
+    O  1   -0.25759      1.99984     6.23673    0.02102     8.25759     0.28689
+    N  2    0.51518      1.99975     4.42031    0.06476     6.48482     0.42622
+    O  3   -0.25759      1.99984     6.23673    0.02102     8.25759     0.28689
+ ===============================================================================
+
+   */
+  private void getNboCharges() throws Exception {
+    discardLinesUntilContains("----");
+    discardLinesUntilContains("----");
+    int atomCount = atomSetCollection.getFirstAtomSetAtomCount();
+    for (int i = 0; i < atomCount; i++) {
+      String[] tokens = getTokens(readLine());
+      float charge;
+      if (tokens == null || tokens.length < 3 || Float.isNaN(charge = parseFloat(tokens[2]))) {
+        Logger.info("Error reading NBO charges: " + line);
+        return;
+      }
+      atomSetCollection.getAtom(i).partialCharge = charge;
+      if (Logger.debugging)
+        Logger.debug("Atom " + i + " using NBOcharge: " + charge);
+    }
+    Logger.info("Using NBO charges");
+  }
+  
   
   /*
    * 

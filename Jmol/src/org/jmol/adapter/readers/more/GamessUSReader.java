@@ -112,7 +112,7 @@ public class GamessUSReader extends GamessReader {
       readMolecularOrbitals(HEADER_GAMESS_OCCUPANCIES);
       return false;
     }
-    return !checkNboLine();
+    return checkNboLine();
   }
   /*
 

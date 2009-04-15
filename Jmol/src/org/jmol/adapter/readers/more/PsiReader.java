@@ -98,7 +98,7 @@ public class PsiReader extends MOReader {
       readSCFDone();
       return true;
     }
-    return !checkNboLine();
+    return checkNboLine();
   }
 
   /**

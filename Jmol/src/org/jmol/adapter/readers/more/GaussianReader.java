@@ -208,7 +208,7 @@ public class GaussianReader extends MOReader {
       // avoid next calculation to set the last title string
       return true;
     }
-    return !checkNboLine();
+    return checkNboLine();
   }
   
   /**
@@ -331,7 +331,7 @@ public class GaussianReader extends MOReader {
   void readBasis() throws Exception {
     Vector sdata = new Vector();
     Vector gdata = new Vector();
-    atomCount = -1;
+    int atomCount = 0;
     gaussianCount = 0;
     shellCount = 0;
     String lastAtom = "";
@@ -347,7 +347,7 @@ public class GaussianReader extends MOReader {
       if (!tokens[1].equals(lastAtom))
         atomCount++;
       lastAtom = tokens[1];
-      slater[0] = atomCount;
+      slater[0] = atomCount - 1;
       String oType = tokens[4];
       if (doSphericalF && oType.indexOf("F") >= 0 || doSphericalD && oType.indexOf("D") >= 0)
         slater[1] = JmolAdapter.getQuantumShellTagIDSpherical(tokens[4]);
@@ -362,8 +362,8 @@ public class GaussianReader extends MOReader {
       for (int i = 0; i < nGaussians; i++)
         gdata.addElement(getTokens(readLine()));
     }
-    if (atomCount == -1)
-      atomCount = 0;
+    if (atomCount == 0)
+      atomCount = 1;
     float[][] garray = new float[gaussianCount][];
     for (int i = 0; i < gaussianCount; i++) {
       tokens = (String[]) gdata.get(i);

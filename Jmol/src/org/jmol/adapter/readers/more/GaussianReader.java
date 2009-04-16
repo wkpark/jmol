@@ -593,6 +593,7 @@ but:
   void readPartialCharges() throws Exception {
     discardLines(1);
     int atomCount = atomSetCollection.getAtomCount();
+    int firstAtomCount = atomSetCollection.getFirstAtomSetAtomCount();
     int i0 = atomSetCollection.getLastAtomSetAtomIndex();
     Atom[] atoms = atomSetCollection.getAtoms();
     for (int i = i0; i < atomCount; ++i) {
@@ -600,8 +601,8 @@ but:
       while (atoms[i].elementNumber == 0)
         ++i;
       // assign the partial charge
-      atoms[i].partialCharge =
-        parseFloat(getTokens(readLine())[2]);
+      float charge = parseFloat(getTokens(readLine())[2]);
+      atoms[i].partialCharge = (haveNboCharges ? atoms[i0 % firstAtomCount].partialCharge : charge);
     }
   }
   

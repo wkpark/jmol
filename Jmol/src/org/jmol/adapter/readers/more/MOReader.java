@@ -89,6 +89,7 @@ abstract class MOReader extends AtomSetCollectionReader {
   protected Vector moTypes;
   private boolean getNBOs;
   private boolean getNBOCharges;
+  protected boolean haveNboCharges;
 
   private String[] filterTokens;
   private boolean filterIsNot; 
@@ -200,10 +201,14 @@ abstract class MOReader extends AtomSetCollectionReader {
  ===============================================================================
 
    */
+  
   private void getNboCharges() throws Exception {
+    if (haveNboCharges)
+      return; // don't use alpha/beta spin charges
     discardLinesUntilContains("----");
     discardLinesUntilContains("----");
     int atomCount = atomSetCollection.getFirstAtomSetAtomCount();
+    haveNboCharges = true;
     for (int i = 0; i < atomCount; i++) {
       String[] tokens = getTokens(readLine());
       float charge;

@@ -593,7 +593,6 @@ but:
   void readPartialCharges() throws Exception {
     discardLines(1);
     int atomCount = atomSetCollection.getAtomCount();
-    int firstAtomCount = atomSetCollection.getFirstAtomSetAtomCount();
     int i0 = atomSetCollection.getLastAtomSetAtomIndex();
     Atom[] atoms = atomSetCollection.getAtoms();
     for (int i = i0; i < atomCount; ++i) {
@@ -602,8 +601,9 @@ but:
         ++i;
       // assign the partial charge
       float charge = parseFloat(getTokens(readLine())[2]);
-      atoms[i].partialCharge = (haveNboCharges ? atoms[i0 % firstAtomCount].partialCharge : charge);
+      atoms[i].partialCharge = charge;
     }
+    Logger.info("Mulliken charges found for Model " + atomSetCollection.getAtomSetCount());
   }
   
 }

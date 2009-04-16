@@ -27,6 +27,7 @@ package org.jmol.adapter.readers.more;
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 
 
 import java.io.BufferedReader;
@@ -133,6 +134,9 @@ abstract class MOReader extends AtomSetCollectionReader {
     getNBOs = filterMO();
     line = "\nNBOcharges";
     getNBOCharges = (filter != null && filterMO());
+    filter = TextFormat.simpleReplace(filter, "nbocharges","");
+    if (filter.length() < 3)
+      filter = null;
   }
   
   protected boolean filterMO() {
@@ -207,20 +211,26 @@ abstract class MOReader extends AtomSetCollectionReader {
       return; // don't use alpha/beta spin charges
     discardLinesUntilContains("----");
     discardLinesUntilContains("----");
-    int atomCount = atomSetCollection.getFirstAtomSetAtomCount();
     haveNboCharges = true;
-    for (int i = 0; i < atomCount; i++) {
+    int atomCount = atomSetCollection.getAtomCount();
+    int i0 = atomSetCollection.getLastAtomSetAtomIndex();
+    Atom[] atoms = atomSetCollection.getAtoms();
+    for (int i = i0; i < atomCount; ++i) {
+      // first skip over the dummy atoms
+      while (atoms[i].elementNumber == 0)
+        ++i;
+      // assign the partial charge
       String[] tokens = getTokens(readLine());
       float charge;
       if (tokens == null || tokens.length < 3 || Float.isNaN(charge = parseFloat(tokens[2]))) {
         Logger.info("Error reading NBO charges: " + line);
         return;
       }
-      atomSetCollection.getAtom(i).partialCharge = charge;
+      atoms[i].partialCharge = charge;      
       if (Logger.debugging)
         Logger.debug("Atom " + i + " using NBOcharge: " + charge);
     }
-    Logger.info("Using NBO charges");
+    Logger.info("Using NBO charges for Model " + atomSetCollection.getAtomSetCount());
   }
   
   

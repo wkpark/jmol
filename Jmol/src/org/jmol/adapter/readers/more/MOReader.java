@@ -134,6 +134,8 @@ abstract class MOReader extends AtomSetCollectionReader {
     getNBOs = filterMO();
     line = "\nNBOcharges";
     getNBOCharges = (filter != null && filterMO());
+    if (filter == null)
+      return;
     filter = TextFormat.simpleReplace(filter, "nbocharges","");
     if (filter.length() < 3)
       filter = null;

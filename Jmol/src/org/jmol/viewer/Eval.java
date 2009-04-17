@@ -5087,6 +5087,8 @@ class Eval {
         else {
           endDegrees = degrees;
           degrees = floatParameter(i);
+          if (endDegrees * degrees < 0)
+            degrees = -degrees;
           isSpin = true;
         }
         continue;

@@ -684,8 +684,11 @@ public class FileManager {
     if (isFullLoad && (file != null || urlTypeIndex(names[0]) == URL_LOCAL)) {
       String path = (file == null ? TextFormat.trim(names[0].substring(5), "/")
           : names[0]);
-      path = path.substring(0, path.length() - names[1].length() - 1);
-      setLocalPath(viewer, path, true);
+      int pt = path.length() - names[1].length() - 1;
+      if (pt > 0) {
+        path = path.substring(0, pt);
+        setLocalPath(viewer, path, true);
+      }
     }
     return names;
   }

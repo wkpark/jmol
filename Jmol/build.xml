@@ -765,6 +765,7 @@ support for assertions (which were introduced in 1.4).
 		<include name="org/jmol/i18n/**" />
       </fileset>    	
       <indexjars>
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Minimize.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Popup.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Quantum.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersCifPdb.jar" />

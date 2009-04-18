@@ -1948,7 +1948,14 @@ public class Jmol extends JPanel {
       else
         scriptWindow.hide();
     }
-
+    /**
+     * this is just a test method for isosurface FUNCTIONXY
+     * @param functionName 
+     * @param nX 
+     * @param nY 
+     * @return f(x,y) as a 2D array
+     * 
+     */
     public float[][] functionXY(String functionName, int nX, int nY) {
       nX = Math.abs(nX);
       nY = Math.abs(nY);
@@ -1957,8 +1964,10 @@ public class Jmol extends JPanel {
 
       for (int i = nX; --i >= 0;)
         for (int j = nY; --j >= 0;) {
-          f[i][j] = (isSecond ? (float) ((i + j - nX) / (2f)) : (float) Math
-              .sqrt(Math.abs(i * i + j * j)) / 2f);
+          f[i][j] = (float) Math.sqrt(i*i*i + j * j) * (isSecond ? -1 : 1);
+          
+         // f[i][j] = (isSecond ? (float) ((i + j - nX) / (2f)) : (float) Math
+           //   .sqrt(Math.abs(i * i + j * j)) / 2f);
           //if (i < 10 && j < 10)
           //System.out.println(" functionXY " + i + " " + j + " " + f[i][j]);
         }

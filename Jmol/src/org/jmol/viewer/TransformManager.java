@@ -371,7 +371,7 @@ abstract class TransformManager {
 
     setSpinOn(false);
 
-    if (degrees == 0)
+    if (Float.isNaN(degrees) || degrees == 0)
       return;
 
     if (rotCenter != null) {
@@ -408,8 +408,9 @@ abstract class TransformManager {
 
     setSpinOn(false);
 
-    if (degrees == 0)
+    if (Float.isNaN(degrees) || degrees == 0)
       return;
+
     Vector3f axis = new Vector3f(point1);
     axis.sub(point2);
     if (isClockwise)

@@ -61,6 +61,10 @@ class Console implements ActionListener, WindowListener {
   public Object getMyMenuBar() {
     return menubar;
   }
+  
+  void dispose() {
+    jf.dispose();
+  }
 
   Console(Component componentParent, JmolViewer viewer, Jvm12 jvm12) {
     //Logger.debug("Console constructor");

@@ -209,7 +209,10 @@ public class Jmol implements WrappedApplet {
     viewer.setModeMouse(JmolConstants.MOUSE_NONE);
     viewer = null;
     if (jvm12 != null) {
-      jvm12.console = null;
+      if (jvm12.console != null) {
+        jvm12.console.dispose();
+        jvm12.console = null;
+      }
       jvm12 = null;
     }
     System.out.println("Jmol applet " + fullName + " destroyed");

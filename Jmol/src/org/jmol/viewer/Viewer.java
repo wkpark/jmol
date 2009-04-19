@@ -6568,16 +6568,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                float degrees, float endDegrees, boolean isSpin,
                                BitSet bsSelected) {
     // Eval: rotate FIXED
+    if (Float.isNaN(degrees) || degrees == 0)
+      return;
     transformManager.rotateAxisAngleAtCenter(rotCenter, rotAxis, degrees,
         endDegrees, isSpin, bsSelected);
     refresh(-1, "rotateAxisAngleAtCenter");
   }
 
   void rotateAboutPointsInternal(Point3f point1, Point3f point2,
-                                 float nDegrees, float endDegrees,
+                                 float degrees, float endDegrees,
                                  boolean isSpin, BitSet bsSelected) {
     // Eval: rotate INTERNAL
-    transformManager.rotateAboutPointsInternal(point1, point2, nDegrees,
+    if (Float.isNaN(degrees) || degrees == 0)
+      return;
+    transformManager.rotateAboutPointsInternal(point1, point2, degrees,
         endDegrees, false, isSpin, bsSelected);
     refresh(-1, "rotateAxisAboutPointsInternal");
   }

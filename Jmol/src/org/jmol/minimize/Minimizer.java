@@ -73,6 +73,7 @@ public class Minimizer implements MinimizerInterface {
   }
 
   public void setProperty(String propertyName, Object value) {
+    //System.out.println("minimizer: set " + propertyName + " = " + value);
     if (propertyName.equals("cancel")) {
       stopMinimization(false);
       return;
@@ -651,19 +652,19 @@ Token[keyword(0x880001) value=")"]
   private MinimizationThread minimizationThread;
 
   private void setMinimizationOn(boolean minimizationOn) {
+    //System.out.println("Minimizer setMinimizationOn "+ minimizationOn + " " + minimizationThread + " " + this.minimizationOn);
+    this.minimizationOn = minimizationOn;
     if (!minimizationOn) {
       if (minimizationThread != null) {
-        minimizationThread.interrupt();
+        //minimizationThread.interrupt(); // did not seem to work with applet
         minimizationThread = null;
       }
-      this.minimizationOn = false;
       return;
     }
     if (minimizationThread == null) {
       minimizationThread = new MinimizationThread();
       minimizationThread.start();
     }
-    this.minimizationOn = true;
   }
 
   private void getEnergyOnly() {
@@ -679,6 +680,7 @@ Token[keyword(0x880001) value=")"]
   public void startMinimization() {
     if (pFF == null || viewer == null)
       return;
+    Logger.info("minimizer: startMinimization");
     viewer.setIntProperty("_minimizationStep", 0);
     viewer.setStringProperty("_minimizationStatus", "starting");
     viewer.setFloatProperty("_minimizationEnergy", 0);
@@ -687,17 +689,19 @@ Token[keyword(0x880001) value=")"]
     viewer.saveCoordinates("minimize", bsTaint);
     pFF.steepestDescentInitialize(steps, crit);
     viewer.setFloatProperty("_minimizationEnergy", (float) pFF.getEnergy());
-    viewer.setFloatProperty("_minimizationEnergyDiff", (float) pFF.getEnergyDiff());
     saveCoordinates();
   }
 
   boolean stepMinimization() {
+    if (!minimizationOn)
+      return false;
     boolean doRefresh = viewer.getBooleanProperty("minimizationRefresh");
     viewer.setStringProperty("_minimizationStatus", "running");
     boolean going = pFF.steepestDescentTakeNSteps(1);
     int currentStep = pFF.getCurrentStep();
     viewer.setIntProperty("_minimizationStep", currentStep);
     viewer.setFloatProperty("_minimizationEnergy", (float) pFF.getEnergy());
+    viewer.setFloatProperty("_minimizationEnergyDiff", (float) pFF.getEnergyDiff());
     viewer.notifyMinimizationStatus();
     if (doRefresh) {
       updateAtomXYZ();
@@ -717,6 +721,7 @@ Token[keyword(0x880001) value=")"]
     viewer.setStringProperty("_minimizationStatus", (failed ? "failed" : "done"));
     viewer.notifyMinimizationStatus();
     viewer.refresh(3, "Minimizer:done" + (failed ? " EXPLODED" : "OK"));
+    Logger.info("minimizer: endMinimization");
 }
 
   double[][] coordSaved;
@@ -762,10 +767,9 @@ Token[keyword(0x880001) value=")"]
   private void minimizeWithoutThread() {
     //for batch operation
     startMinimization();
-    do {
-      if (!stepMinimization())
-        endMinimization();
-    } while (true);
+    while (stepMinimization()) {
+    }
+    endMinimization();
   }
   
   class MinimizationThread extends Thread implements Runnable {
@@ -792,7 +796,7 @@ Token[keyword(0x880001) value=")"]
           if (!stepMinimization())
             endMinimization();            
           elapsed = (int) (currentTime - startTime);
-        } while (!isInterrupted());
+        } while (minimizationOn && !isInterrupted());
       } catch (Exception e) {
         if (minimizationOn)
           System.out.println(" minimization thread interrupted");

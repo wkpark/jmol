@@ -1159,6 +1159,25 @@ public class Jmol implements WrappedApplet {
       return fxy;
     }
 
+    public float[][][] functionXYZ(String functionName, int nX, int nY, int nZ) {
+      float[][][] fxyz = new float[Math.abs(nX)][Math.abs(nY)][Math.abs(nZ)];
+      if (!mayScript || nX == 0 || nY == 0 || nZ == 0)
+        return fxyz;
+      try {
+        JSObject jsoWindow = JSObject.getWindow(appletWrapper);
+       jsoWindow.call(functionName, new Object[] { htmlName,
+              new Integer(nX), new Integer(nY), new Integer(nZ), fxyz }); 
+      } catch (Exception e) {
+        Logger.error("Exception " + e.getMessage() + " for " + functionName + " with nX, nY, nZ: " + nX
+            + " " + nY + " " + nZ);
+      }
+     // for (int i = 0; i < nX; i++)
+      // for (int j = 0; j < nY; j++)
+        // for (int k = 0; k < nZ; k++)
+         // System.out.println("i j k fxyz " + i + " " + j + " " + k + " " + fxyz[i][j][k]);
+      return fxyz;
+    }
+
     public void handlePopupMenu(int x, int y) {
       if (!popupMenuAllowed) {
         showConsole(true);

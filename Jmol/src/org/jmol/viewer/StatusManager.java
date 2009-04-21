@@ -563,6 +563,11 @@ class StatusManager {
       jmolStatusListener.functionXY(functionName, nX, nY));
   }
   
+  float[][][] functionXYZ(String functionName, int nX, int nY, int nZ) {
+    return (jmolStatusListener == null ? new float[Math.abs(nX)][Math.abs(nY)][Math.abs(nY)] :
+      jmolStatusListener.functionXYZ(functionName, nX, nY, nZ));
+  }
+  
   String jsEval(String strEval) {
     return (jmolStatusListener == null ? "" : jmolStatusListener.eval(strEval));
   }

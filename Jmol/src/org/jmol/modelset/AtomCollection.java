@@ -1512,6 +1512,8 @@ abstract public class AtomCollection {
       return getIdentifierOrNull((String) specInfo);
     case Token.spec_atom:
       String atomSpec = ((String) specInfo).toUpperCase();
+      if (atomSpec.indexOf("\\?") >= 0)
+        atomSpec = TextFormat.simpleReplace(atomSpec, "\\?","\1");
       /// here xx*yy is NOT changed to "xx??????????yy"
       for (int i = atomCount; --i >= 0;)
         if (isAtomNameMatch(atoms[i], atomSpec, false))
@@ -1576,6 +1578,9 @@ abstract public class AtomCollection {
     // * can be used here, but not with ?
     //first check with * option OFF
     BitSet bs = getSpecNameOrNull(identifier, false);
+    
+    if (identifier.indexOf("\\?") >= 0)
+      identifier = TextFormat.simpleReplace(identifier, "\\?","\1");
     if (bs != null || identifier.indexOf("?") > 0)
       return bs;
     // now check with * option ON
@@ -1648,6 +1653,8 @@ abstract public class AtomCollection {
     /// but not necessarily when coming from getIdentifierOrNull
     BitSet bs = null;
     name = name.toUpperCase();
+    if (name.indexOf("\\?") >= 0)
+      name = TextFormat.simpleReplace(name, "\\?","\1");
     for (int i = atomCount; --i >= 0;) {
       String g3 = atoms[i].getGroup3();
       if (g3.length() > 0) {

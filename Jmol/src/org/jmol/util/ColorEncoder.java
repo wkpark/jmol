@@ -52,7 +52,7 @@ import org.jmol.util.ArrayUtil;
   private final static String[] colorSchemes = {
     "roygb", "bgyor", "rwb", "bwr", "low", "high",   
     BYELEMENT_JMOL, BYELEMENT_RASMOL, BYRESIDUE_SHAPELY, 
-    BYRESIDUE_AMINO, "user", "resu"};
+    BYRESIDUE_AMINO, "colorRGB", "user", "resu"};
 
   private final static int schemeIndex(String colorScheme) {
     for (int i = 0; i < colorSchemes.length; i++)
@@ -72,8 +72,9 @@ import org.jmol.util.ArrayUtil;
   public final static int RASMOL = 7;
   public final static int SHAPELY = 8;
   public final static int AMINO = 9;
-  public final static int USER = -10;
-  public final static int RESU = -11;
+  public final static int COLOR_RGB = 10;
+  public final static int USER = -11;
+  public final static int RESU = -12;
 
   private int palette = ROYGB;
 
@@ -312,6 +313,8 @@ import org.jmol.util.ArrayUtil;
       return ArrayUtil.arrayCopy(argbsShapely, 0, -1, false);
     case AMINO:
       return ArrayUtil.arrayCopy(argbsAmino, 0, -1, false);
+    case COLOR_RGB:
+      return new int[0];
     case USER:
       return ArrayUtil.arrayCopy(userScale, 0, -1, false);
     case RESU:
@@ -362,6 +365,8 @@ import org.jmol.util.ArrayUtil;
       return JmolConstants.argbsShapely[colorIndex((int)val, JmolConstants.argbsShapely.length)];
     case AMINO:
       return JmolConstants.argbsAmino[colorIndex((int)val, JmolConstants.argbsAmino.length)];
+    case COLOR_RGB:
+      return (int)val;
     default:
       return GRAY;
     }

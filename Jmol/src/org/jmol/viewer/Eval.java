@@ -2081,6 +2081,8 @@ class Eval {
     case Token.fracZ:
       propertyValue = atom.getFractionalCoord('Z');
       return asInt ? propertyValue * 100 : propertyValue;
+    case Token.color:
+      return propertyValue = viewer.getColixArgb(atom.getColix());
     default:
       error(ERROR_unrecognizedAtomProperty, Token.nameOf(tokWhat));
     }
@@ -10757,6 +10759,8 @@ class Eval {
             data[iAtom] = atomProperty(atoms[iAtom], tokProperty, false);
           }
         }
+        if (tokProperty == Token.color)
+          setShapeProperty(iShape, "setColorScheme", "colorRGB");
         propertyValue = data;
         break;
       case Token.model:
@@ -11138,6 +11142,48 @@ class Eval {
           }
           i = iToken;
           propertyName = "functionXY";
+          propertyValue = v;
+          isFxy = surfaceObjectSeen = true;
+          break;
+        }
+        if (str.equalsIgnoreCase("FUNCTIONXYZ")) {
+          // isosurface functionXYZ "functionName"
+          //     {origin} {ni ix iy iz} {nj jx jy jz} {nk kx ky kz}
+          Vector v = new Vector();
+          if (getToken(++i).tok != Token.string)
+            error(ERROR_what,
+                "functionXYZ must be followed by a function name in quotes.");
+          String fName = parameterAsString(i++);
+          //override of function or data name when saved as a state
+          String dataName = extractCommandOption("# DATA");
+          if (dataName != null)
+            fName = dataName;
+          v.addElement(fName); //(0) = name
+          v.addElement(getPoint3f(i, false)); //(1) = {origin}
+          Point4f pt;
+          int nX, nY, nZ;
+          int ptX = ++iToken;
+          v.addElement(pt = getPoint4f(ptX)); //(2) = {ni ix iy iz}
+          nX = (int) pt.x;
+          int ptY = ++iToken;
+          v.addElement(pt = getPoint4f(ptY)); //(3) = {nj jx jy jz}
+          nY = (int) pt.x;
+          v.addElement(pt = getPoint4f(++iToken)); //(4) = {nk kx ky kz}
+          nZ = (int) pt.x;
+          if (nX == 0 || nY == 0)
+            error(ERROR_invalidArgument);
+          if (!isSyntaxCheck) {
+            float[][][] xyzdata = viewer.functionXYZ(fName, nX, nY, nZ);
+            nX = Math.abs(nX);
+            nY = Math.abs(nY);
+            if (xyzdata == null) {
+              iToken = ptX;
+              error(ERROR_what, "xyzdata is null.");
+            }
+            v.addElement(xyzdata); //(5) = float[][][] data                 
+          }
+          i = iToken;
+          propertyName = "functionXYZ";
           propertyValue = v;
           isFxy = surfaceObjectSeen = true;
           break;

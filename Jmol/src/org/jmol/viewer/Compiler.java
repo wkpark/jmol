@@ -1477,7 +1477,7 @@ class Compiler {
     case '[':
     case ']':
     case '\\':  // leftdivide
-    break;
+      break;
     case '&':
     case '|':
       if (ichT < cchScript && script.charAt(ichT) == ch)
@@ -1510,7 +1510,8 @@ class Compiler {
           // hack for insertion codes embedded in an atom expression :-(
           // select c3^a
           (ch == '^' && ichT > ichToken && Character.isDigit(script
-              .charAt(ichT - 1))))
+              .charAt(ichT - 1)))
+          || ch == '\\' && ichT + 1 < cchScript && script.charAt(ichT + 1) == '?')
         ++ichT;
       break;
     }

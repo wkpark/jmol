@@ -1960,18 +1960,38 @@ public class Jmol extends JPanel {
       nX = Math.abs(nX);
       nY = Math.abs(nY);
       float[][] f = new float[nX][nY];
-      boolean isSecond = (functionName.indexOf("2") >= 0);
-
+      //boolean isSecond = (functionName.indexOf("2") >= 0);
       for (int i = nX; --i >= 0;)
         for (int j = nY; --j >= 0;) {
-          f[i][j] = (float) Math.sqrt(i*i*i + j * j) * (isSecond ? -1 : 1);
-          
+          float x = i / 15f - 1;
+          float y = j / 15f - 1;
+          f[i][j] = (float) Math.sqrt(x*x + y);
+          if (Float.isNaN(f[i][j]))
+              f[i][j] = -(float) Math.sqrt(-x*x - y);
          // f[i][j] = (isSecond ? (float) ((i + j - nX) / (2f)) : (float) Math
            //   .sqrt(Math.abs(i * i + j * j)) / 2f);
           //if (i < 10 && j < 10)
-          //System.out.println(" functionXY " + i + " " + j + " " + f[i][j]);
+          System.out.println(" functionXY " + i + " " + j + " " + f[i][j]);
         }
 
+      return f; // for user-defined isosurface functions (testing only -- bob hanson)
+    }
+
+    public float[][][] functionXYZ(String functionName, int nX, int nY, int nZ) {
+      nX = Math.abs(nX);
+      nY = Math.abs(nY);
+      nZ = Math.abs(nZ);
+      float[][][] f = new float[nX][nY][nZ];
+      for (int i = nX; --i >= 0;)
+        for (int j = nY; --j >= 0;)
+          for (int k = nZ; --k >= 0;) {
+          float x = i / ((nX-1)/2f) - 1;
+          float y = j / ((nY-1)/2f) - 1;
+          float z = k / ((nZ-1)/2f) - 1;
+          f[i][j][k] = (float) x*x + y - z*z;
+          //if (i == 22 || i == 23)
+            //System.out.println(" functionXYZ " + i + " " + j + " " + k + " " + f[i][j][k]);
+        }
       return f; // for user-defined isosurface functions (testing only -- bob hanson)
     }
 

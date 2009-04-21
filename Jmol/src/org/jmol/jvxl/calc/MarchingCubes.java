@@ -119,7 +119,7 @@ public class MarchingCubes {
     edgeVertexPointers = (isXLowToHigh ? edgeVertexPointersLowToHigh : edgeVertexPointersHighToLow);
     edgeVertexPlanes =  (isXLowToHigh ? edgeVertexPlanesLowToHigh : edgeVertexPlanesHighToLow);
     isoPointIndexPlanes = new int[2][yzCount][3];
-    xyPlanes = (mode == MODE_GETXYZ ? new float[2][yzCount] : null);
+    yzPlanes = (mode == MODE_GETXYZ ? new float[2][yzCount] : null);
     setLinearOffsets();
     calcVoxelVertexVectors();
   }
@@ -156,13 +156,13 @@ public class MarchingCubes {
    * 
    */
 
-  private static int[] xyPlanePts = new int[] { 
+  private static int[] yzPlanePts = new int[] { 
       0, 1, 1, 0, 
       0, 1, 1, 0 
   };
   private final int[] edgePointIndexes = new int[12];
   private int[][][] isoPointIndexPlanes;
-  private float[][] xyPlanes;
+  private float[][] yzPlanes;
 
   private int[][] resetIndexPlane(int[][] plane) {
     for (int i = 0; i < yzCount; i++)
@@ -213,9 +213,9 @@ public class MarchingCubes {
       // obtaining the grid data point by point
       
       if (mode == MODE_GETXYZ) {
-        float[] plane = xyPlanes[0];
-        xyPlanes[0] = xyPlanes[1];
-        xyPlanes[1] = plane;
+        float[] plane = yzPlanes[0];
+        yzPlanes[0] = yzPlanes[1];
+        yzPlanes[1] = plane;
       }
       
       // we swap the edge vertex index planes
@@ -244,7 +244,7 @@ public class MarchingCubes {
             switch (mode) {
             case MODE_GETXYZ:
               vertexValues[i] = getValue(i, x + offset.x, y + offset.y, z
-                  + offset.z, pti, xyPlanes[xyPlanePts[i]]);
+                  + offset.z, pti, yzPlanes[yzPlanePts[i]]);
               isInside = bsVoxels.get(pti);
               break;
             case MODE_BITSET:
@@ -275,6 +275,8 @@ public class MarchingCubes {
           }
           ++surfaceCount;
 
+          //System.out.println("insideCount " + insideCount + " x y z value mask: " + x + " " + y + " " + z + " " + vertexValues[0] + " " + Integer.toHexString(insideMask));
+          
           // This cube is straddling the cutoff. We must check all edges 
 
           if (!processOneCubical(insideMask, x, y, z, pt)

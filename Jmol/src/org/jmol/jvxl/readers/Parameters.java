@@ -160,6 +160,7 @@ public class Parameters {
   final static int SURFACE_LOBE = 4 | IS_SILENT;
   final static int SURFACE_LCAOCARTOON = 5 | IS_SILENT;
   final static int SURFACE_FUNCTIONXY = 6 | CAN_CONTOUR;
+  final static int SURFACE_FUNCTIONXYZ = 7;
 
   // getSurface or mapColor:
   final static int SURFACE_SOLVENT = 11 | IS_SOLVENTTYPE | NO_ANISOTROPY;
@@ -495,6 +496,13 @@ public class Parameters {
   
   void setFunctionXY(Vector value) {
     dataType = SURFACE_FUNCTIONXY;
+    functionXYinfo = (Vector) value;
+    cutoff = Float.MIN_VALUE;
+    isEccentric = isAnisotropic = false;
+  }
+
+  void setFunctionXYZ(Vector value) {
+    dataType = SURFACE_FUNCTIONXYZ;
     functionXYinfo = (Vector) value;
     cutoff = Float.MIN_VALUE;
     isEccentric = isAnisotropic = false;

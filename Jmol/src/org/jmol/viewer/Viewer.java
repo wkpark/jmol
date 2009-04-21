@@ -2714,6 +2714,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return dataManager.getDataFloat2D(label);
   }
 
+  float[][][] getDataFloat3D(String label) {
+    return null;
+    //not implemented yet    return dataManager.getDataFloat3D(label);
+  }
+
   public float getDataFloat(String label, int atomIndex) {
     return dataManager.getDataFloat(label, atomIndex);
   }
@@ -6857,6 +6862,33 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         fdata[i][j] = f[n++];
     return fdata;
   }
+
+  float[][][] functionXYZ(String functionName, int nX, int nY, int nZ) {
+    String data = null;
+    if (functionName.indexOf("file:") == 0)
+      data = getFileAsString(functionName.substring(5));
+    else if (functionName.indexOf("data3d_") != 0)
+      return statusManager.functionXYZ(functionName, nX, nY, nZ);
+    nX = Math.abs(nX);
+    nY = Math.abs(nY);
+    nZ = Math.abs(nZ);
+    float[][][] xyzdata;
+    if (data == null) {
+      xyzdata = getDataFloat3D(functionName);
+      if (xyzdata != null)
+        return xyzdata;
+      data = "";
+    }
+    xyzdata = new float[nX][nY][nZ];
+    float[] f = new float[nX * nY * nZ];
+    Parser.parseFloatArray(data, null, f);
+    for (int i = 0, n = 0; i < nX; i++)
+      for (int j = 0; j < nY; j++)
+        for (int k = 0; k < nZ; k++)
+        xyzdata[i][j][k] = f[n++];
+    return xyzdata;
+  }
+
 
   void getHelp(String what) {
     if (what.length() > 0 && what.indexOf("?") != 0

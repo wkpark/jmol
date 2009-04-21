@@ -404,7 +404,6 @@ public class TextFormat {
 
   public static boolean isMatch(String s, String strWildcard,
                                 boolean checkStar, boolean allowInitialStar) {
-
     int ich = 0;
     int cchWildcard = strWildcard.length();
     int cchs = s.length();
@@ -454,8 +453,8 @@ public class TextFormat {
       char charWild = strWildcard.charAt(ich + i);
       if (charWild == '?')
         continue;
-      if (charWild != s.charAt(i))
-        return false;
+      if (charWild != s.charAt(i) && (charWild != '\1' || s.charAt(i) != '?'))
+          return false;
     }
     return true;
   }

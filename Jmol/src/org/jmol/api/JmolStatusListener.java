@@ -39,8 +39,27 @@ public interface JmolStatusListener extends JmolCallbackListener {
 
   public String eval(String strEval);
   
+  /**
+   * for isosurface FUNCTIONXY 
+   * 
+   * @param functionName
+   * @param x
+   * @param y
+   * @return 2D array or null
+   */
   public float[][] functionXY(String functionName, int x, int y);
   
+  /**
+   * for isosurface FUNCTIONXYZ 
+   * 
+   * @param functionName
+   * @param nx
+   * @param ny
+   * @param nz
+   * @return 3D array or null
+   */
+  public float[][][] functionXYZ(String functionName, int nx, int ny, int nz);
+
   /**
    * 
    * @param fileName
@@ -60,4 +79,5 @@ public interface JmolStatusListener extends JmolCallbackListener {
   public void showUrl(String url);
 
   public String dialogAsk(String type, String fileName);
+
 }

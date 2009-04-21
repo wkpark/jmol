@@ -86,7 +86,7 @@
  * 
  * nOutside nInside nOutside nInside...
  * 
- * fractions: an ascii list of characters represting the fraction of distance each
+ * fractions: an ascii list of characters representing the fraction of distance each
  * encountered surface point is along each voxel cube edge found to straddle the 
  * surface. The order written is dictated by the reader algorithm and is not trivial
  * to describe. Each ascii character is constructed by taking a base character and 
@@ -699,6 +699,12 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("functionXYZ" == propertyName) {
+      params.setFunctionXYZ((Vector) value);
+      processState();
+      return true;
+    }
+
     if ("lcaoType" == propertyName) {
       params.setLcao((String) value, colorPtr);
       return true;
@@ -817,6 +823,9 @@ public class SurfaceGenerator {
       break;
     case Parameters.SURFACE_FUNCTIONXY:
       surfaceReader = new IsoFxyReader(this);
+      break;
+    case Parameters.SURFACE_FUNCTIONXYZ:
+      surfaceReader = new IsoFxyzReader(this);
       break;
     case Parameters.SURFACE_MEP:
       surfaceReader = new IsoMepReader(this);

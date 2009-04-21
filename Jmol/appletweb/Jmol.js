@@ -1,4 +1,4 @@
-/* Jmol 11.7 script library Jmol.js  15:32 06.12.2008 Bob Hanson
+/* Jmol 11.7 script library Jmol.js  12:17 AM 4/20/2009 Bob Hanson
 
  checkbox heirarchy -- see http://chemapps.stolaf.edu/jmol/docs/examples-11/check.htm
 
@@ -789,7 +789,7 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
 
 function _jmolParams() {
  var t = "";
- for (i in _jmol.params)
+ for (var i in _jmol.params)
 	if(_jmol.params[i]!="")
 		 t+="  <param name='"+i+"' value='"+_jmol.params[i]+"' />\n";
  return t

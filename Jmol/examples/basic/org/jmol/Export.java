@@ -176,7 +176,14 @@ class MyStatusListener implements JmolStatusListener {
   /* (non-Javadoc)
    * @see org.jmol.api.JmolStatusListener#functionXY(java.lang.String, int, int)
    */
-  public float[][] functionXY(String functionName, int x, int y) {
+  public float[][] functionXY(String functionName, int nx, int ny) {
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see org.jmol.api.JmolStatusListener#functionXY(java.lang.String, int, int)
+   */
+  public float[][][] functionXYZ(String functionName, int nx, int ny, int nz) {
     return null;
   }
 

@@ -99,7 +99,7 @@ public class QchemReader extends MOReader {
       readPartialCharges();
       return true;
     }
-    if (line.indexOf("Job ") >= 0) {
+    if (line.startsWith("Job ")) {
       calculationNumber++;
       moData = null; // start 'fresh'
       return true;

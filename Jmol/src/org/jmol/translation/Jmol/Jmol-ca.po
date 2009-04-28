@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-04-07 20:59+0200\n"
-"PO-Revision-Date: 2009-02-15 00:13+0000\n"
-"Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
+"PO-Revision-Date: 2009-04-09 23:04+0000\n"
+"Last-Translator: Toni Hermoso Pulido <toniher@softcatala.cat>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-03-07 16:08+0000\n"
+"X-Launchpad-Export-Date: 2009-04-27 21:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
@@ -620,36 +620,32 @@ msgid "&Rewind to first frame"
 msgstr "&Rebobina fins al primer fotograma"
 
 #: org/openscience/jmol/app/GuiMap.java:158
-#, fuzzy
 msgid "Rewind to first frame"
-msgstr "&Rebobina fins al primer fotograma"
+msgstr "Rebobina fins al primer fotograma"
 
 #: org/openscience/jmol/app/GuiMap.java:159
 msgid "Go to &next frame"
 msgstr "Vés al fotograma &següent"
 
 #: org/openscience/jmol/app/GuiMap.java:160
-#, fuzzy
 msgid "Go to next frame"
-msgstr "Vés al fotograma &següent"
+msgstr "Vés al següent fotograma"
 
 #: org/openscience/jmol/app/GuiMap.java:161
 msgid "Go to &previous frame"
 msgstr "Vés al fotograma &anterior"
 
 #: org/openscience/jmol/app/GuiMap.java:162
-#, fuzzy
 msgid "Go to previous frame"
-msgstr "Vés al fotograma &anterior"
+msgstr "Vés a l'anterior fotograma"
 
 #: org/openscience/jmol/app/GuiMap.java:163
 msgid "Go to &last frame"
 msgstr "Vés al &darrer fotograma"
 
 #: org/openscience/jmol/app/GuiMap.java:164
-#, fuzzy
 msgid "Go to last frame"
-msgstr "Vés al &darrer fotograma"
+msgstr "Vés al darrer fotograma"
 
 #: org/openscience/jmol/app/GuiMap.java:165
 msgid "Start &vibration"
@@ -730,10 +726,8 @@ msgid "Rotate molecule."
 msgstr "Rota la molècula."
 
 #: org/openscience/jmol/app/GuiMap.java:186
-#, fuzzy
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr ""
-"Selecciona un gurp d'àtoms prement Maj i arrossegant amb el botó primari"
+msgstr "Selecciona un conjunt d'atoms utilitzant Maj-Esquerra-Arrossega."
 
 #: org/openscience/jmol/app/GuiMap.java:187
 msgid "Click atoms to measure distances"

@@ -413,7 +413,7 @@ public class Jmol extends JPanel {
         ._("exit after script (implicit with -n)"));
 
     OptionBuilder.withLongOpt("script");
-    OptionBuilder.withDescription(GT._("script file to execute"));
+    OptionBuilder.withDescription(GT._("script file to execute or '-' for System.in"));
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("s"));
 

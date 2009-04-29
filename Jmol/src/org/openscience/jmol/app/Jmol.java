@@ -372,15 +372,16 @@ public class Jmol extends JPanel {
     return window;
   }
 
-  /* Convenient method to get values of UIManager strings
-   private static void analyzeUIManagerString(String name, String value) {
-   System.err.println(name);
-   System.err.println(" en=[" + UIManager.getString(name) + "]");
-   System.err.println(" de=[" + UIManager.getString(name, Locale.GERMAN) + "]");
-   System.err.println(" es=[" + UIManager.getString(name, new Locale("es")) + "]");
-   System.err.println(" fr=[" + UIManager.getString(name, Locale.FRENCH) + "]");
-   UIManager.put(name, value);
-   }*/
+  /*
+   * Convenient method to get values of UIManager strings private static void
+   * analyzeUIManagerString(String name, String value) {
+   * System.err.println(name); System.err.println(" en=[" +
+   * UIManager.getString(name) + "]"); System.err.println(" de=[" +
+   * UIManager.getString(name, Locale.GERMAN) + "]"); System.err.println(" es=["
+   * + UIManager.getString(name, new Locale("es")) + "]");
+   * System.err.println(" fr=[" + UIManager.getString(name, Locale.FRENCH) +
+   * "]"); UIManager.put(name, value); }
+   */
 
   public static void main(String[] args) {
 
@@ -399,8 +400,10 @@ public class Jmol extends JPanel {
     options.addOption("h", "help", false, GT._("give this help page"));
     options.addOption("n", "nodisplay", false, GT
         ._("no display (and also exit when done)"));
-    options.addOption("c", "check", false, GT._("check script syntax only - no file loading"));
-    options.addOption("C", "checkload", false, GT._("check script syntax only - with file loading"));
+    options.addOption("c", "check", false, GT
+        ._("check script syntax only - no file loading"));
+    options.addOption("C", "checkload", false, GT
+        ._("check script syntax only - with file loading"));
     options.addOption("d", "debug", false, GT._("debug"));
     options.addOption("i", "silent", false, GT._("silent startup operation"));
     options.addOption("l", "list", false, GT
@@ -413,17 +416,20 @@ public class Jmol extends JPanel {
         ._("exit after script (implicit with -n)"));
 
     OptionBuilder.withLongOpt("script");
-    OptionBuilder.withDescription(GT._("script file to execute or '-' for System.in"));
+    OptionBuilder.withDescription(GT
+        ._("script file to execute or '-' for System.in"));
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("s"));
 
     OptionBuilder.withLongOpt("jmolscript1");
-    OptionBuilder.withDescription(GT._("Jmol script to execute BEFORE -s option"));
+    OptionBuilder.withDescription(GT
+        ._("Jmol script to execute BEFORE -s option"));
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("J"));
 
     OptionBuilder.withLongOpt("jmolscript2");
-    OptionBuilder.withDescription(GT._("Jmol script to execute AFTER -s option"));
+    OptionBuilder.withDescription(GT
+        ._("Jmol script to execute AFTER -s option"));
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("j"));
 
@@ -439,14 +445,16 @@ public class Jmol extends JPanel {
     options.addOption(OptionBuilder.create("D"));
 
     OptionBuilder.withLongOpt("geometry");
-    // OptionBuilder.withDescription(GT._("overall window width x height, e.g. {0}", "-g512x616"));
+    // OptionBuilder.withDescription(GT._("overall window width x height, e.g. {0}",
+    // "-g512x616"));
     OptionBuilder.withDescription(GT._("window width x height, e.g. {0}",
         "-g500x500"));
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("g"));
 
     OptionBuilder.withLongOpt("quality");
-    // OptionBuilder.withDescription(GT._("overall window width x height, e.g. {0}", "-g512x616"));
+    // OptionBuilder.withDescription(GT._("overall window width x height, e.g. {0}",
+    // "-g512x616"));
     OptionBuilder
         .withDescription(GT
             ._("JPG image quality (1-100; default 75) or PNG image compression (0-9; default 2, maximum compression 9)"));
@@ -509,18 +517,18 @@ public class Jmol extends JPanel {
 
     String commandOptions = "";
 
-    //debug mode
+    // debug mode
     if (line.hasOption("d")) {
       Logger.setLogLevel(Logger.LEVEL_DEBUG);
     }
 
-    //silent startup
+    // silent startup
     if (line.hasOption("i")) {
       commandOptions += "-i";
       isSilent = true;
     }
 
-    //output to sysout
+    // output to sysout
     if (line.hasOption("o")) {
       commandOptions += "-o";
       haveConsole = false;
@@ -536,36 +544,36 @@ public class Jmol extends JPanel {
       commandOptions += "-t";
     }
 
-    //list commands during script operation
+    // list commands during script operation
     if (line.hasOption("l")) {
       commandOptions += "-l";
     }
 
-    //check script only -- don't open files
+    // check script only -- don't open files
     if (line.hasOption("c")) {
       commandOptions += "-c";
     } else if (line.hasOption("C")) {
       commandOptions += "-C";
     }
 
-    //menu file
+    // menu file
     if (line.hasOption("m")) {
       menuFile = line.getOptionValue("m");
     }
 
-    //run pre Jmol script
+    // run pre Jmol script
     if (line.hasOption("J")) {
       commandOptions += "-J";
       script1 = line.getOptionValue("J");
     }
 
-    //run script from file
+    // run script from file
     if (line.hasOption("s")) {
       commandOptions += "-s";
       scriptFilename = line.getOptionValue("s");
     }
-    
-    //run post Jmol script
+
+    // run post Jmol script
     if (line.hasOption("j")) {
       commandOptions += "-j";
       script2 = line.getOptionValue("j");
@@ -584,39 +592,36 @@ public class Jmol extends JPanel {
       startupHeight = size.height;
     }
 
-    //OUTER window dimensions
+    // OUTER window dimensions
     /*
-     if (line.hasOption("g") && haveDisplay) {
-     String geometry = line.getOptionValue("g");
-     int indexX = geometry.indexOf('x');
-     if (indexX > 0) {
-     startupWidth = parseInt(geometry.substring(0, indexX));
-     startupHeight = parseInt(geometry.substring(indexX + 1));
-     }
-     }
+     * if (line.hasOption("g") && haveDisplay) { String geometry =
+     * line.getOptionValue("g"); int indexX = geometry.indexOf('x'); if (indexX
+     * > 0) { startupWidth = parseInt(geometry.substring(0, indexX));
+     * startupHeight = parseInt(geometry.substring(indexX + 1)); } }
      */
 
     Point b = historyFile.getWindowBorder(JMOL_WINDOW_NAME);
-    //first one is just approximate, but this is set in doClose()
-    //so it will reset properly -- still, not perfect
-    //since it is always one step behind.
+    // first one is just approximate, but this is set in doClose()
+    // so it will reset properly -- still, not perfect
+    // since it is always one step behind.
     if (b == null)
       border = new Point(12, 116);
     else
       border = new Point(b.x, b.y);
-    //note -- the first time this is run after changes it will not work
-    //because there is a bootstrap problem.
+    // note -- the first time this is run after changes it will not work
+    // because there is a bootstrap problem.
 
     int width = -1;
     int height = -1;
-    //INNER frame dimensions
+    // INNER frame dimensions
     if (line.hasOption("g")) {
       String geometry = line.getOptionValue("g");
       int indexX = geometry.indexOf('x');
       if (indexX > 0) {
         width = Parser.parseInt(geometry.substring(0, indexX));
         height = Parser.parseInt(geometry.substring(indexX + 1));
-        //System.out.println("setting geometry to " + geometry + " " + border + " " + startupWidth + startupHeight);
+        // System.out.println("setting geometry to " + geometry + " " + border +
+        // " " + startupWidth + startupHeight);
       }
       if (haveDisplay) {
         startupWidth = width + border.x;
@@ -629,7 +634,7 @@ public class Jmol extends JPanel {
       startupHeight = 500 + border.y;
     }
 
-    //write image to clipboard or image file  
+    // write image to clipboard or image file
     if (line.hasOption("w")) {
       int quality = -1;
       if (line.hasOption("q"))
@@ -645,12 +650,12 @@ public class Jmol extends JPanel {
         type_name = " \"" + type_name.substring(i + 1) + "\"";
         if (type.indexOf(" ") < 0)
           type += " " + quality;
-        script2 += ";write image " + width + " " + height + " " + type + type_name;
+        script2 += ";write image " + width + " " + height + " " + type
+            + type_name;
       }
     }
 
-
-    //no display (and exit)
+    // no display (and exit)
     if (line.hasOption("n")) {
       // this ensures that noDisplay also exits
       commandOptions += "-n-x";
@@ -658,7 +663,7 @@ public class Jmol extends JPanel {
       script2 += ";exitJmol";
     }
 
-    //exit when script completes (or file is read)
+    // exit when script completes (or file is read)
     if (line.hasOption("x")) {
       commandOptions += "-x";
       if (haveDisplay)
@@ -673,44 +678,50 @@ public class Jmol extends JPanel {
       }
 
       Logger.debug("command options: " + commandOptions);
-      //now pass these to viewer
+      // now pass these to viewer
       jmol = getJmol(jmolFrame, startupWidth, startupHeight, commandOptions);
 
-      // Open a file if one is given as an argument -- note, this CAN be a script file
+      // Open a file if one is given as an argument -- note, this CAN be a
+      // script file
       if (modelFilename != null) {
         jmol.viewer.openFileAsynchronously(modelFilename);
       }
 
-      //jmol.viewer.scriptWait("load 1crn.pdb;cartoons on;set antialiasdisplay");
-      //System.out.println("" + jmol.viewer.getImageAs("JPG", -1, 300, 300, "t75n.jpg", null));
-      //System.out.println("" + jmol.viewer.getImageAs("JPG", -1, 3000, 3000, "t75n.jpg", null));
-      //System.out.println("" + jmol.viewer.getImageAs("JPG", -1, 300, 300, null, null));
-      //System.out.println("" + jmol.viewer.getImageAs("JPG", -1, 3000, 3000, null, null));
-      
+      // jmol.viewer.scriptWait("load 1crn.pdb;cartoons on;set antialiasdisplay");
+      // System.out.println("" + jmol.viewer.getImageAs("JPG", -1, 300, 300,
+      // "t75n.jpg", null));
+      // System.out.println("" + jmol.viewer.getImageAs("JPG", -1, 3000, 3000,
+      // "t75n.jpg", null));
+      // System.out.println("" + jmol.viewer.getImageAs("JPG", -1, 300, 300,
+      // null, null));
+      // System.out.println("" + jmol.viewer.getImageAs("JPG", -1, 3000, 3000,
+      // null, null));
+
       // OK, by now it is time to execute the script
 
       // then command script
-      if (script1 != null) {
+      if (script1 != null && script1.length() > 0) {
         report("Executing script: " + script1);
         if (haveDisplay)
           jmol.splash.showStatus(GT._("Executing script 1..."));
         jmol.viewer.script(script1);
       }
-      
+
       // next the file
-      
+
       if (scriptFilename != null) {
         report("Executing script from file: " + scriptFilename);
         if (haveDisplay)
           jmol.splash.showStatus(GT._("Executing script file..."));
         if (scriptFilename.equals("-")) {
-          
-          // -s -  option
-          
+
+          // -s - option
+
           Scanner scan = new Scanner(System.in);
           String linein = "";
           StringBuffer script = new StringBuffer();
-          while((linein = scan.nextLine()) != null)
+          while (scan.hasNextLine() && (linein = scan.nextLine()) != null
+              && !linein.equals("!quit"))
             script.append(linein).append("\n");
           jmol.viewer.script(script.toString());
         } else {
@@ -718,7 +729,7 @@ public class Jmol extends JPanel {
         }
       }
       // then command script
-      if (script2 != null) {
+      if (script2 != null && script2.length() > 0) {
         report("Executing script: " + script2);
         if (haveDisplay)
           jmol.splash.showStatus(GT._("Executing script 2..."));
@@ -729,7 +740,6 @@ public class Jmol extends JPanel {
       t.printStackTrace();
     }
 
-    
     if (haveConsole) {
       Point location = jmol.frame.getLocation();
       size = jmol.frame.getSize();

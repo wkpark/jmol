@@ -703,7 +703,19 @@ public class Jmol extends JPanel {
         report("Executing script from file: " + scriptFilename);
         if (haveDisplay)
           jmol.splash.showStatus(GT._("Executing script file..."));
-        jmol.viewer.evalFile(scriptFilename);
+        if (scriptFilename.equals("-")) {
+          
+          // -s -  option
+          
+          Scanner scan = new Scanner(System.in);
+          String linein = "";
+          StringBuffer script = new StringBuffer();
+          while((linein = scan.nextLine()) != null)
+            script.append(linein).append("\n");
+          jmol.viewer.script(script.toString());
+        } else {
+          jmol.viewer.evalFile(scriptFilename);
+        }
       }
       // then command script
       if (script2 != null) {

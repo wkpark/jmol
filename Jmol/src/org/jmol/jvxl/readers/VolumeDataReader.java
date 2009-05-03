@@ -128,14 +128,11 @@ class VolumeDataReader extends SurfaceReader {
       max = 10;
     }
     float range = max - min;
-    int nGrid;
     float resolution = params.resolution;
     if (resolution != Float.MAX_VALUE) {
       ptsPerAngstrom = resolution;
-      nGrid = (int) (range * ptsPerAngstrom);
-    } else {
-      nGrid = (int) (range * ptsPerAngstrom);
     }
+    int nGrid = (int) (range * ptsPerAngstrom) + 1;
     if (nGrid > gridMax) {
       if ((dataType & Parameters.HAS_MAXGRID) > 0) {
         if (resolution != Float.MAX_VALUE)
@@ -145,9 +142,9 @@ class VolumeDataReader extends SurfaceReader {
         nGrid = gridMax;
       }
     }
-    ptsPerAngstrom = nGrid / range;
+    ptsPerAngstrom = (nGrid - 1) / range;
+    voxelCounts[index] = nGrid;// + ((dataType & Parameters.IS_SOLVENTTYPE) != 0 ? 3 : 0);
     float d = volumeData.volumetricVectorLengths[index] = 1f / ptsPerAngstrom;
-    voxelCounts[index] = nGrid + ((dataType & Parameters.IS_SOLVENTTYPE) != 0 ? 3 : 0);
 
     switch (index) {
     case 0:

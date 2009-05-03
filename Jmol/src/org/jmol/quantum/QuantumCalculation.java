@@ -56,7 +56,7 @@ abstract class QuantumCalculation {
 
   // range in bohr to consider affected by an atomic orbital
   // this is a cube centered on an atom of side rangeBohr*2
-  private final static float rangeBohr = 10; //bohr; about 5 Angstroms
+  protected float rangeBohr = 10; //bohr; about 5 Angstroms
 
   protected void initialize(int nX, int nY, int nZ) {
     
@@ -147,22 +147,17 @@ abstract class QuantumCalculation {
       if (setMinMax) {
         i = (int) Math.floor((x - xBohr[0] - rangeBohr) / stepBohr[0]);
         xMin = (i < 0 ? 0 : i);
-        i = (int) Math.floor((x - xBohr[0] + rangeBohr) / stepBohr[0]);
-        xMax = (i > nX ? nX : i);
-
+        i = (int) Math.floor(1 + (x - xBohr[0] + rangeBohr) / stepBohr[0]);
+        xMax = (i > nX ? nX : i + 1);
         i = (int) Math.floor((y - yBohr[0] - rangeBohr) / stepBohr[1]);
         yMin = (i < 0 ? 0 : i);
-        i = (int) Math.floor((y - yBohr[0] + rangeBohr) / stepBohr[1]);
-        yMax = (i > nY ? nY : i);
-
+        i = (int) Math.floor(1 + (y - yBohr[0] + rangeBohr) / stepBohr[1]);
+        yMax = (i > nY ? nY : i + 1);
         i = (int) Math.floor((z - zBohr[0] - rangeBohr) / stepBohr[2]);
         zMin = (i < 0 ? 0 : i);
-        i = (int) Math.floor((z - zBohr[0] + rangeBohr) / stepBohr[2]);
-        zMax = (i > nZ ? nZ : i);
-        //System.out.println(nX + "\t" + nY + "\t" + nZ + "\t" 
-        //  + x + "\t" + y + "\t" + z + "\t" + xMin + "\t"+ xMax + "\t" + yMin + "\t" + yMax + "\t" + zMin + "\t" +zMax);
+        i = (int) Math.floor(1 + (z - zBohr[0] + rangeBohr) / stepBohr[2]);
+        zMax = (i > nZ ? nZ : i + 1);
       }
-
       for (i = xMax; --i >= xMin;) {
         myX2[i] = myX[i] = xBohr[i] - x;
         myX2[i] *= myX[i];

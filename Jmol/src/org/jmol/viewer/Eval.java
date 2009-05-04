@@ -4064,7 +4064,14 @@ class Eval {
       char newLine = viewer.getInlineChar();
       if (dataString.length() > 0 && dataString.charAt(0) != newLine)
         newLine = '\0';
+      int modelCount = viewer.getModelCount()
+          - (viewer.getFileName().equals("zapped") ? 1 : 0);
+      boolean appendNew = viewer.getAppendNew();
       viewer.loadInline(dataString, newLine, isAppend);
+      if (isAppend && appendNew) {
+        viewer.setAnimationRange(-1, -1);
+        viewer.setCurrentModelIndex(modelCount);
+      }
     }
     if (isSyntaxCheck && !processModel)
       return;

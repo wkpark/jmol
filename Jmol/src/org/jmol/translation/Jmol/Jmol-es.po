@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2009-04-07 20:59+0200\n"
+"POT-Creation-Date: 2009-05-04 21:42+0200\n"
 "PO-Revision-Date: 2008-12-21 19:31+0100\n"
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -706,38 +706,38 @@ msgstr "Ejes"
 msgid "Bounding Box"
 msgstr "Caja"
 
-#: org/openscience/jmol/app/GuiMap.java:180
+#: org/openscience/jmol/app/GuiMap.java:181
 msgid "RasMol/Chime compatible axes orientation/rotations"
 msgstr "Orientación de ejes y rotación compatibles con RasMol/Chime"
 
-#: org/openscience/jmol/app/GuiMap.java:181
+#: org/openscience/jmol/app/GuiMap.java:183
 msgid "File Preview (requires restarting Jmol)"
 msgstr "Previsualización de archivos (requiere reiniciar Jmol)"
 
-#: org/openscience/jmol/app/GuiMap.java:182
+#: org/openscience/jmol/app/GuiMap.java:185
 msgid "Clear console button (requires restarting Jmol)"
 msgstr "Botón para borrar consola  (requiere reiniciar Jmol)"
 
-#: org/openscience/jmol/app/GuiMap.java:183
-#: org/openscience/jmol/app/GuiMap.java:184
+#: org/openscience/jmol/app/GuiMap.java:186
+#: org/openscience/jmol/app/GuiMap.java:187
 msgid "Use Atom Color"
 msgstr "Usar color del átomo"
 
-#: org/openscience/jmol/app/GuiMap.java:185
+#: org/openscience/jmol/app/GuiMap.java:188
 msgid "Rotate molecule."
 msgstr "Rotar molécula"
 
-#: org/openscience/jmol/app/GuiMap.java:186
+#: org/openscience/jmol/app/GuiMap.java:190
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
 msgstr ""
 "Selecciona un grupo de átomos pulsando Mayús. y arrastrando con el botón "
 "principal"
 
-#: org/openscience/jmol/app/GuiMap.java:187
+#: org/openscience/jmol/app/GuiMap.java:192
 msgid "Click atoms to measure distances"
 msgstr "Haz clic en los átomos para medir distancias"
 
-#: org/openscience/jmol/app/GuiMap.java:188
+#: org/openscience/jmol/app/GuiMap.java:193
 msgid "Return molecule to home position."
 msgstr "Devolver molécula a la posición original"
 
@@ -802,76 +802,77 @@ msgstr "Inicializando Swing..."
 msgid "Initializing Jmol..."
 msgstr "Inicializando Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:398
+#: org/openscience/jmol/app/Jmol.java:399
 msgid "transparent background"
 msgstr "fondo transparente"
 
-#: org/openscience/jmol/app/Jmol.java:399
+#: org/openscience/jmol/app/Jmol.java:400
 msgid "give this help page"
 msgstr "mostrar esta página de ayuda"
 
-#: org/openscience/jmol/app/Jmol.java:401
+#: org/openscience/jmol/app/Jmol.java:402
 msgid "no display (and also exit when done)"
 msgstr "sin mostrar (y además salir cuando acabe)"
 
-#: org/openscience/jmol/app/Jmol.java:402
+#: org/openscience/jmol/app/Jmol.java:404
 msgid "check script syntax only - no file loading"
 msgstr "verificar sólo la sintaxis de guiones - sin cargar los archivos"
 
-#: org/openscience/jmol/app/Jmol.java:403
+#: org/openscience/jmol/app/Jmol.java:406
 msgid "check script syntax only - with file loading"
 msgstr "verificar sólo la sintaxis de guiones - cargando los archivos"
 
-#: org/openscience/jmol/app/Jmol.java:404
+#: org/openscience/jmol/app/Jmol.java:407
 msgid "debug"
 msgstr "depurar"
 
-#: org/openscience/jmol/app/Jmol.java:405
+#: org/openscience/jmol/app/Jmol.java:408
 msgid "silent startup operation"
 msgstr "operación con comienzo mudo"
 
-#: org/openscience/jmol/app/Jmol.java:407
+#: org/openscience/jmol/app/Jmol.java:410
 msgid "list commands during script execution"
 msgstr "listar instrucciones durante la ejecución del guión"
 
-#: org/openscience/jmol/app/Jmol.java:409
+#: org/openscience/jmol/app/Jmol.java:412
 msgid "no console -- all output to sysout"
 msgstr "sin consola; toda la salida va a sysout"
 
-#: org/openscience/jmol/app/Jmol.java:411
+#: org/openscience/jmol/app/Jmol.java:414
 msgid "independent commmand thread"
 msgstr "hilo de instrucciones independiente"
 
-#: org/openscience/jmol/app/Jmol.java:413
+#: org/openscience/jmol/app/Jmol.java:416
 msgid "exit after script (implicit with -n)"
 msgstr "salir tras el guión (implícito con -n)"
 
-#: org/openscience/jmol/app/Jmol.java:416
-msgid "script file to execute"
+#: org/openscience/jmol/app/Jmol.java:420
+#, fuzzy
+msgid "script file to execute or '-' for System.in"
 msgstr "archivo de guión a ejecutar"
 
-#: org/openscience/jmol/app/Jmol.java:421
+#: org/openscience/jmol/app/Jmol.java:426
 msgid "Jmol script to execute BEFORE -s option"
 msgstr "Guión de Jmol que debe ejecutarse antes de la opción -s"
 
-#: org/openscience/jmol/app/Jmol.java:426
+#: org/openscience/jmol/app/Jmol.java:432
 msgid "Jmol script to execute AFTER -s option"
 msgstr "Guión de Jmol que debe ejecutarse tras la opción -s"
 
-#: org/openscience/jmol/app/Jmol.java:435
+#: org/openscience/jmol/app/Jmol.java:441
 msgid "property=value"
 msgstr "propiedad=valor"
 
-#: org/openscience/jmol/app/Jmol.java:438
+#: org/openscience/jmol/app/Jmol.java:444
 msgid "supported options are given below"
 msgstr "las opciones admitidas se muestran a continuación"
 
-#: org/openscience/jmol/app/Jmol.java:443
+#: org/openscience/jmol/app/Jmol.java:450
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "ancho x alto de ventana, p.ej. {0}"
 
-#: org/openscience/jmol/app/Jmol.java:452
+#: org/openscience/jmol/app/Jmol.java:460
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -879,57 +880,57 @@ msgstr ""
 "Calidad de imagen JPG (de 1 a 100; 75 por defecto) o compresión de imagen "
 "PNG (de 0 a 9; 2 por defecto; 9 es máxima compresión)"
 
-#: org/openscience/jmol/app/Jmol.java:457
+#: org/openscience/jmol/app/Jmol.java:465
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} o {1}:NombreDeArchivo"
 
-#: org/openscience/jmol/app/Jmol.java:478
+#: org/openscience/jmol/app/Jmol.java:486
 msgid "For example:"
 msgstr "Por ejemplo:"
 
-#: org/openscience/jmol/app/Jmol.java:484
+#: org/openscience/jmol/app/Jmol.java:492
 msgid "The -D options are as follows (defaults in parenthesis):"
 msgstr "Las opciones  -D son (valores predeterminados entre paréntesis):"
 
-#: org/openscience/jmol/app/Jmol.java:696
+#: org/openscience/jmol/app/Jmol.java:706
 msgid "Executing script 1..."
 msgstr "Ejecutando guión 1..."
 
-#: org/openscience/jmol/app/Jmol.java:705
+#: org/openscience/jmol/app/Jmol.java:715
 msgid "Executing script file..."
 msgstr "Ejecutando archivo de guión..."
 
-#: org/openscience/jmol/app/Jmol.java:712
+#: org/openscience/jmol/app/Jmol.java:735
 msgid "Executing script 2..."
 msgstr "Ejecutando guión 2..."
 
-#: org/openscience/jmol/app/Jmol.java:725
+#: org/openscience/jmol/app/Jmol.java:747
 msgid "Jmol Java Console"
 msgstr "Consola Java de Jmol"
 
-#: org/openscience/jmol/app/Jmol.java:733
+#: org/openscience/jmol/app/Jmol.java:755
 #: org/openscience/jmol/app/ScriptWindow.java:103
 msgid "Clear"
 msgstr "Limpiar"
 
-#: org/openscience/jmol/app/Jmol.java:747
+#: org/openscience/jmol/app/Jmol.java:769
 msgid "Could not create ConsoleTextArea: "
 msgstr "No se pudo crear el área de texto de la consola "
 
-#: org/openscience/jmol/app/Jmol.java:827
+#: org/openscience/jmol/app/Jmol.java:849
 msgid "Closing Jmol..."
 msgstr "Cerrando Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:1450
+#: org/openscience/jmol/app/Jmol.java:1472
 msgid "Open URL"
 msgstr "Abrir URL"
 
-#: org/openscience/jmol/app/Jmol.java:1451
+#: org/openscience/jmol/app/Jmol.java:1473
 msgid "Enter URL of molecular model"
 msgstr "Escribe la URL del modelo molecular"
 
-#: org/openscience/jmol/app/Jmol.java:1635
+#: org/openscience/jmol/app/Jmol.java:1657
 msgid "IO Exception:"
 msgstr "Error de entrada/salida:"
 
@@ -1130,33 +1131,33 @@ msgstr "Tamaño predeterminado de átomos"
 msgid "(percentage of vanDerWaals radius)"
 msgstr "(porcentaje del radio de van der Waals)"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:349
+#: org/openscience/jmol/app/PreferencesDialog.java:350
 msgid "Compute Bonds"
 msgstr "Calcular enlaces"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:351
+#: org/openscience/jmol/app/PreferencesDialog.java:352
 msgid "Automatically"
 msgstr "Automáticamente"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:352
+#: org/openscience/jmol/app/PreferencesDialog.java:353
 msgid "Don't Compute Bonds"
 msgstr "No calcular enlaces"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:379
+#: org/openscience/jmol/app/PreferencesDialog.java:383
 msgid "Default Bond Radius"
 msgstr "Radio predeterminado de enlaces"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:380
-#: org/openscience/jmol/app/PreferencesDialog.java:418
-#: org/openscience/jmol/app/PreferencesDialog.java:469
+#: org/openscience/jmol/app/PreferencesDialog.java:384
+#: org/openscience/jmol/app/PreferencesDialog.java:422
+#: org/openscience/jmol/app/PreferencesDialog.java:473
 msgid "(Angstroms)"
 msgstr "(ángstroms)"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:417
+#: org/openscience/jmol/app/PreferencesDialog.java:421
 msgid "Bond Tolerance - sum of two covalent radii + this value"
 msgstr "Tolerancia de enlace: suma de dos radios covalentes + este valor"
 
-#: org/openscience/jmol/app/PreferencesDialog.java:468
+#: org/openscience/jmol/app/PreferencesDialog.java:472
 msgid "Minimum Bonding Distance"
 msgstr "Mínima distancia de enlace"
 

@@ -681,11 +681,16 @@ public abstract class BioPolymer extends Polymer {
                  Looks odd, perhaps, because it is written "dq[i] / dq[i-1]"
                  but this is correct; we are assigning ddq to the correct atom.
                  
+                 5.8.2009 -- bh -- changing quaternion straightness to be assigned to PREVIOUS aa
+                 
                  */
                 q = dq.rightDifference(dqprev); //q = dq.mul(dqprev.inv());
                 val1 = getQuaternionStraightness(id, dqprev, dq);
                 val2 = getStraightness(id, dqprev, dq);
-                a.getGroup().setStraightness(useQuaternionStraightness ? val1 : val2);
+                if (useQuaternionStraightness)
+                  aprev.getGroup().setStraightness(val1);
+                else
+                  a.getGroup().setStraightness(val2);
               }
               dqprev = dq;
             }
@@ -795,6 +800,7 @@ public abstract class BioPolymer extends Polymer {
     // alignment = near 0 or near 180 --> same - just different rotations. 
     // It's a 90-degree change in direction that corresponds to 0.
     //
+    System.out.println(id + " getQuaternionStraightness " + dqprev + " " + dq + " " + (1 - 2 * Math.acos(Math.abs(dqprev.dot(dq))) / Math.PI));
     return (float) (1 - 2 * Math.acos(Math.abs(dqprev.dot(dq))) / Math.PI);
   }
 

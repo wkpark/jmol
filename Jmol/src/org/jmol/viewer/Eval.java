@@ -5946,7 +5946,7 @@ class Eval {
 
   private String getShapeNameParameter(int i) throws ScriptException {
     String id = parameterAsString(i);
-    boolean isWild = (id.equals("*"));
+    boolean isWild = id.equals("*");
     if (id.length() == 0)
       error(ERROR_invalidArgument);
     if (isWild) {
@@ -5965,16 +5965,15 @@ class Eval {
     }
     if (tokAt(i + 1) == Token.times)
       id += parameterAsString(++i);
+    iToken = i;
     return id;
   }
 
-  private String setShapeId(int iShape, int i, boolean idSeen)
+  private void setShapeId(int iShape, int i, boolean idSeen)
       throws ScriptException {
     if (idSeen)
       error(ERROR_invalidArgument);
-    String id = getShapeNameParameter(i);
-    setShapeProperty(iShape, "thisID", id.toLowerCase());
-    return id;
+    setShapeProperty(iShape, "thisID", getShapeNameParameter(i).toLowerCase());
   }
 
   private void setAtomShapeSize(int shape, int defOn) throws ScriptException {
@@ -9821,11 +9820,11 @@ class Eval {
     int colorArgb = Integer.MIN_VALUE;
     int intScale = 0;
     String swidth = "";
-    boolean idSeen = false;
     int iptDisplayProperty = 0;
     Point3f center = null;
     String thisId = null;
-    initIsosurface(JmolConstants.SHAPE_DRAW);
+    boolean idSeen = initIsosurface(JmolConstants.SHAPE_DRAW);
+    boolean isWild = (idSeen && viewer.getShapeProperty(JmolConstants.SHAPE_DRAW, "ID") == null);
     for (int i = iToken; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
@@ -9934,9 +9933,10 @@ class Eval {
         break;
       case Token.times:
       case Token.identifier:
-        String str = parameterAsString(i);
+         String str = parameterAsString(i);
         if (str.equalsIgnoreCase("id")) {
-          thisId = setShapeId(JmolConstants.SHAPE_DRAW, ++i, idSeen);
+          setShapeId(JmolConstants.SHAPE_DRAW, ++i, idSeen);
+          isWild = (viewer.getShapeProperty(JmolConstants.SHAPE_DRAW, "ID") == null);
           i = iToken;
           break;
         }
@@ -10021,7 +10021,7 @@ class Eval {
           swidth = (String) propertyName + " " + propertyValue;
           break;
         }
-        thisId = setShapeId(JmolConstants.SHAPE_DRAW, i, idSeen);
+        setShapeId(JmolConstants.SHAPE_DRAW, i, idSeen);
         i = iToken;
         break;
       case Token.dollarsign:
@@ -10078,6 +10078,8 @@ class Eval {
         isInitialized = true;
         intScale = 0;
       }
+      if (havePoints && isWild)
+        error(ERROR_invalidArgument);
       if (propertyName != null)
         setShapeProperty(JmolConstants.SHAPE_DRAW, propertyName, propertyValue);
     }
@@ -10645,7 +10647,7 @@ class Eval {
     setShapeProperty(shape, "clear", null);
   }
 
-  private void initIsosurface(int iShape) throws ScriptException {
+  private boolean initIsosurface(int iShape) throws ScriptException {
 
     //handle isosurface/mo/pmesh delete and id delete here
 
@@ -10659,14 +10661,20 @@ class Eval {
         setShapeProperty(iShape, "init", fullCommand);
         setShapeProperty(iShape, "thisID", JmolConstants.PREVIOUS_MESH_ID);
       }
-      return;
+      return false;
     }
     iToken = 1;
     if (!setMeshDisplayProperty(iShape, 0, tokAt(1))) {
       setShapeProperty(iShape, "thisID", JmolConstants.PREVIOUS_MESH_ID);
       if (iShape != JmolConstants.SHAPE_DRAW)
         setShapeProperty(iShape, "title", new String[] { thisCommand });
+      if (tokAt(2) == Token.times && !parameterAsString(1).equalsIgnoreCase("id")) {
+        setShapeId(iShape, 1, false);
+        iToken++;
+        return true;
+      }
     }
+    return false;
   }
 
   private String getNextComment() {
@@ -10684,7 +10692,6 @@ class Eval {
   }
 
   private void isosurface(int iShape) throws ScriptException {
-
     viewer.loadShape(iShape);
     if (tokAt(1) == Token.list && listIsosurface(iShape))
       return;
@@ -10706,9 +10713,9 @@ class Eval {
     int modelIndex = (isSyntaxCheck ? 0 : viewer.getDisplayModelIndex());
     if (!isSyntaxCheck)
       viewer.setCursor(Viewer.CURSOR_WAIT);
-    boolean idSeen = false;
+    boolean idSeen = initIsosurface(iShape);
+    boolean isWild = (idSeen && viewer.getShapeProperty(iShape, "ID") == null);
     String translucency = null;
-    initIsosurface(iShape);
     if (isPmesh)
       setShapeProperty(iShape, "fileType", "Pmesh");
     for (int i = iToken; i < statementLength; ++i) {
@@ -11209,6 +11216,7 @@ class Eval {
         }
         if (str.equalsIgnoreCase("ID")) {
           setShapeId(iShape, ++i, idSeen);
+          isWild = (viewer.getShapeProperty(JmolConstants.SHAPE_DRAW, "ID") == null);
           i = iToken;
           break;
         }
@@ -11409,8 +11417,11 @@ class Eval {
       if (propertyName == "property" && !surfaceObjectSeen) {
         surfaceObjectSeen = true;
         setShapeProperty(iShape, "bsSolvent", lookupIdentifierValue("solvent"));
-        setShapeProperty(iShape, "sasurface", new Float(0));
+        propertyName = "sasurface";
+        propertyValue = new Float(0);
       }
+      if (isWild && surfaceObjectSeen) 
+        error(ERROR_invalidArgument);
       if (propertyName != null)
         setShapeProperty(iShape, propertyName, propertyValue);
     }

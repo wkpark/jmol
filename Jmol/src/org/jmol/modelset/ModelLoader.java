@@ -1029,6 +1029,7 @@ public final class ModelLoader extends ModelSet {
       countGroup(modelIndex, key, group3);
     addGroup(chain, group);
     groups[groupIndex] = group;
+    group.setGroupIndex(groupIndex);
 
     for (int i = maxAtomIndex; --i >= firstAtomIndex;)
       atoms[i].setGroup(group);

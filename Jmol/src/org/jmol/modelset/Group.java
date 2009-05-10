@@ -33,6 +33,16 @@ import java.util.BitSet;
 
 public class Group {
 
+  private int groupIndex;
+  
+  public int getGroupIndex() {
+    return groupIndex;
+  }
+  
+  public void setGroupIndex(int groupIndex) {
+    this.groupIndex = groupIndex;
+  }
+
   protected Chain chain;
   int seqcode;
   protected short groupID;
@@ -68,7 +78,7 @@ public class Group {
   protected float psi = Float.NaN;
   protected float omega = Float.NaN;
   protected float straightness = Float.NaN;
-
+  
   public float getStraightness() {
     return straightness;
   }

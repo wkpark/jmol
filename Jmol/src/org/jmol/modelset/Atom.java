@@ -766,6 +766,10 @@ final public class Atom extends Point3fi {
     return info.toString();
   }
 
+  private int getGroupIndex() {
+    return group.getGroupIndex();
+  }
+  
   String getGroup3() {
     return group.getGroup3();
   }
@@ -1006,6 +1010,7 @@ final public class Atom extends Point3fi {
          case 'E': insErtion code
          case 'f': phi
          case 'g': selected group index (for testing)
+         case 'G': groupIndex
          case 'i': atom number
          case 'I': Ionic radius
          case 'L': polymer Length
@@ -1086,6 +1091,9 @@ final public class Atom extends Point3fi {
           break;
         case 'g':
           strT = "" + getSelectedGroupIndexWithinChain();
+          break;
+        case 'G':
+          strT = "" + getGroupIndex();
           break;
         case 'I':
           floatT = getBondingRadiusFloat();

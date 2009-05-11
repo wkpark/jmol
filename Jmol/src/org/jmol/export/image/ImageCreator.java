@@ -120,10 +120,10 @@ public class ImageCreator implements JmolImageCreatorInterface {
         len = 1;
         Object bytesOrError = getImageBytes(type, quality, fileName, null);
         if (bytesOrError instanceof String)
-          return bytesOrError;
+          return (String) bytesOrError;
         byte[] bytes = (byte[]) bytesOrError;
         if (bytes != null)
-          return bytes;
+          return new String(bytes);
         len = (new File(fileName)).length();
       }
     } catch (IOException exc) {
@@ -161,37 +161,47 @@ public class ImageCreator implements JmolImageCreatorInterface {
         if (type.equalsIgnoreCase("JPEG") || type.equalsIgnoreCase("JPG")) {
           if (quality <= 0)
             quality = 75;
-          if (asBytes)
+          if (asBytes) {
             bytes = JpegEncoder.getBytes(image, quality);
-          else
+          } else {
             JpegEncoder.write(image, quality, os);
-        } else if (type.equalsIgnoreCase("JPG64")) {
+            bytes = null;
+          }
+        } else if (type.equalsIgnoreCase("JPG64") || type.equalsIgnoreCase("JPEG64")) {
           if (quality <= 0)
             quality = 75;
           bytes = JpegEncoder.getBytes(image, quality);
-          if (asBytes)
+          if (asBytes) {
             bytes = Base64.getBytes64(bytes);
-          else
+          } else {
             Base64.write(bytes, os);
+            bytes = null;
+          }
         } else if (type.equalsIgnoreCase("PNG")) {
           if (quality < 0)
             quality = 2;
           else if (quality > 9)
             quality = 9;
-          if (asBytes)
+          if (asBytes) {
             bytes = PngEncoder.getBytes(image, quality);
-          else
+          } else {
             PngEncoder.write(image, quality, os);
+            bytes = null;
+          }
         } else if (type.equalsIgnoreCase("PPM")) {
-          if (asBytes)
+          if (asBytes) {
             bytes = PpmEncoder.getBytes(image);
-          else
+          } else {
             PpmEncoder.write(image, os);
+            bytes = null;
+          }
         } else if (type.equalsIgnoreCase("GIF")) {
-          if (asBytes)
+          if (asBytes) {
             bytes = GifEncoder.getBytes(image);
-          else
+          } else {
             GifEncoder.write(image, os);
+            bytes = null;
+          }
         }
         if (os != null)
           os.flush();

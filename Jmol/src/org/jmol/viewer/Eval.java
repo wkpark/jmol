@@ -9155,7 +9155,7 @@ class Eval {
       //      if (isApplet)
       //      evalError(GT._("The {0} command is not available for the applet.",
       //        "WRITE CLIPBOARD"));
-    } else if (Parser.isOneOf(val.toLowerCase(), "png;jpg;jpeg;jpg64")
+    } else if (Parser.isOneOf(val.toLowerCase(), "png;jpg;jpeg;jpg64;jpeg64")
         && tokAt(pt + 1, args) == Token.integer) {
       quality = Token.iValue(tokenAt(++pt, args));
     } else if (Parser.isOneOf(val.toLowerCase(), "xyz;mol;pdb")) {
@@ -9224,7 +9224,7 @@ class Eval {
       else
         type = "XYZ";
     }
-    boolean isImage = Parser.isOneOf(type, "GIF;JPEG;JPG64;JPG;PPM;PNG");
+    boolean isImage = Parser.isOneOf(type, "GIF;JPEG64;JPEG;JPG64;JPG;PPM;PNG");
     if (isImage && (isApplet && !viewer.isSignedApplet() || isShow))
       type = "JPG64";
     if (!isImage

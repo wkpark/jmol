@@ -3435,12 +3435,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   /**
-   * @param type      "PNG", "JPG", "JPEG", "JPG64", "PPM", "GIF"
+   * @param type
+   *          "PNG", "JPG", "JPEG", "JPG64", "PPM", "GIF"
    * @param quality
-   * @param width 
-   * @param height 
-   * @param fileName 
-   * @param os 
+   * @param width
+   * @param height
+   * @param fileName
+   * @param os
    * @return base64-encoded or binary version of the image
    */
   public Object getImageAs(String type, int quality, int width, int height,
@@ -3453,29 +3454,31 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     creatingImage = true;
     JmolImageCreatorInterface c = null;
     Object bytes = null;
-    try {
-      c = (JmolImageCreatorInterface) Interface
-          .getOptionInterface("export.image.ImageCreator");
-    } catch (Error er) {
-      // unsigned applet will not have this interface
-      // and thus will not use os or filename
-    }
+    type = type.toLowerCase();
+    if (!Parser.isOneOf(type, "jpg;jpeg;jpg64;jpeg64"))
+      try {
+        c = (JmolImageCreatorInterface) Interface
+            .getOptionInterface("export.image.ImageCreator");
+      } catch (Error er) {
+        // unsigned applet will not have this interface
+        // and thus will not use os or filename
+      }
     if (c == null) {
-      if (Parser.isOneOf(type.toLowerCase(), "jpg;jpeg;jpg64")) {
-        Image eImage = getScreenImage();
-        if (eImage != null) {
-          try {
-            bytes = JpegEncoder.getBytes(eImage, quality);
-            releaseScreenImage();
-            if (type.toLowerCase().equals("jpg64"))
-              bytes = (bytes == null ? "" : Base64.getBase64((byte[]) bytes)
-                  .toString());
-          } catch (Error er) {
-            releaseScreenImage();
-            handleError(er, false);
-            setErrorMessage("Error creating image: " + er);
-            bytes = getErrorMessage();
-          }
+      Image eImage = getScreenImage();
+      if (eImage != null) {
+        try {
+          if (quality < 0)
+            quality = 75;
+          bytes = JpegEncoder.getBytes(eImage, quality);
+          releaseScreenImage();
+          if (type.equals("jpg64") || type.equals("jpeg64"))
+            bytes = (bytes == null ? "" : Base64.getBase64((byte[]) bytes)
+                .toString());
+        } catch (Error er) {
+          releaseScreenImage();
+          handleError(er, false);
+          setErrorMessage("Error creating image: " + er);
+          bytes = getErrorMessage();
         }
       }
     } else {
@@ -6961,13 +6964,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     JmolImageCreatorInterface c;
     try {
       c = (JmolImageCreatorInterface) Interface
-      .getOptionInterface("export.image.ImageCreator");
+      .getOptionInterface("util.ImageCreator");
+      c.setViewer(this);
+      return c.clipImage(text);
     } catch (Error er) {
       // unsigned applet will not have this interface
       return GT._("clipboard is not accessible -- use signed applet");
     }
-    c.setViewer(this);
-    return c.clipImage(text);
   }
 
   /**

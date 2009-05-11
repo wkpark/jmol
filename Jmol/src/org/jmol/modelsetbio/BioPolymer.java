@@ -537,7 +537,10 @@ public abstract class BioPolymer extends Polymer {
         pdbATOM.append("w*10___ x*10___ y*10___      z*10__       ");
         break;
       case 'R':
-        pdbATOM.append("phi____ psi____ omega-180    PartialCharge");
+        if (qtype == 'r')
+          pdbATOM.append("phi____ psi____ theta        PartialCharge");
+        else
+          pdbATOM.append("phi____ psi____ omega-180    PartialCharge");
         break;
       }
       pdbATOM.append("    Sym   q0_______ q1_______ q2_______ q3_______");

@@ -164,6 +164,8 @@ public class AminoPolymer extends AlphaPolymer {
      * the following were changed from "return -9900" to "return 0"
      * Bob Hanson 8/30/06
      */
+    if (targetOxygenPoint == null)
+      return 0;
     float distON2 = targetOxygenPoint.distanceSquared(nitrogenPoint);
     if (distON2 < minimumHbondDistance2)
       return 0;

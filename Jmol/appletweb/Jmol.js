@@ -65,6 +65,8 @@ try{if(typeof(_jmol)!="undefined")exit()
 // bh 12/2008 -- jmolLoadInline, jmolLoadInlineArray, jmolLoadInlineScript, jmolAppendInlineScript, jmolAppendInlineArray all return error message or null (Jmol 11.7.16)
 // bh 12/2008 -- jmolScriptWaitOutput() -- waits for script to complete and delivers output normally sent to console
 
+// bh 5/2009  -- Support for XHTML using jmolSetXHTML(id)
+
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
 
@@ -172,12 +174,12 @@ function jmolButton(script, label, id, title) {
     label = script.substring(0, 32);
   ++_jmol.buttonCount;
   var scriptIndex = _jmolAddScript(script);
-  var t = "<span id=\"span_"+id+"\""+(title ? " title =\"" + title + "\"":"")+"><input type='button' name='" + id + "' id='" + id +
+  var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><input type='button' name='" + id + "' id='" + id +
           "' value='" + label +
-          "' onClick='_jmolClick(" + scriptIndex + _jmol.targetText +
-          ")' onMouseover='_jmolMouseOver(" + scriptIndex +
-          ");return true' onMouseout='_jmolMouseOut()' " +
-          _jmol.buttonCssText + "/></span>";
+          "' onclick='_jmolClick(" + scriptIndex + _jmol.targetText +
+          ")' onmouseover='_jmolMouseOver(" + scriptIndex +
+          ");return true' onmouseout='_jmolMouseOut()' " +
+          _jmol.buttonCssText + " /></span>";
   if (_jmol.debugAlert)
     alert(t);
   return _jmolDocumentWrite(t);
@@ -201,13 +203,13 @@ function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
   var indexChecked = _jmolAddScript(scriptWhenChecked);
   var indexUnchecked = _jmolAddScript(scriptWhenUnchecked);
   var eospan = "</span>"
-  var t = "<span id=\"span_"+id+"\""+(title ? " title =\"" + title + "\"":"")+"><input type='checkbox' name='" + id + "' id='" + id +
-          "' onClick='_jmolCbClick(this," +
+  var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><input type='checkbox' name='" + id + "' id='" + id +
+          "' onclick='_jmolCbClick(this," +
           indexChecked + "," + indexUnchecked + _jmol.targetText +
-          ")' onMouseover='_jmolCbOver(this," + indexChecked + "," +
+          ")' onmouseover='_jmolCbOver(this," + indexChecked + "," +
           indexUnchecked +
-          ");return true' onMouseout='_jmolMouseOut()' " +
-	  (isChecked ? "checked " : "") + _jmol.checkboxCssText + "/>" 
+          ");return true' onmouseout='_jmolMouseOut()' " +
+	  (isChecked ? "checked='true' " : "")+ _jmol.checkboxCssText + " />" 
   if (labelHtml.toLowerCase().indexOf("<td>")>=0) {
 	t += eospan
 	eospan = "";
@@ -279,9 +281,9 @@ function jmolLink(script, label, id, title) {
     label = script.substring(0, 32);
   ++_jmol.linkCount;
   var scriptIndex = _jmolAddScript(script);
-  var t = "<span id=\"span_"+id+"\""+(title ? " title =\"" + title + "\"":"")+"><a name='" + id + "' id='" + id + 
-          "' href='javascript:_jmolClick(" + scriptIndex + _jmol.targetText + ");' onMouseover='_jmolMouseOver(" + scriptIndex +
-          ");return true;' onMouseout='_jmolMouseOut()' " +
+  var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><a name='" + id + "' id='" + id + 
+          "' href='javascript:_jmolClick(" + scriptIndex + _jmol.targetText + ");' onmouseover='_jmolMouseOver(" + scriptIndex +
+          ");return true;' onmouseout='_jmolMouseOut()' " +
           _jmol.linkCssText + ">" + label + "</a></span>";
   if (_jmol.debugAlert)
     alert(t);
@@ -297,8 +299,8 @@ function jmolCommandInput(label, size, id, title) {
   if (size == undefined || isNaN(size))
     size = 60;
   ++_jmol.cmdCount;
-  var t = "<span id=\"span_"+id+"\""+(title ? " title =\"" + title + "\"":"")+"><input name='" + id + "' id='" + id + 
-          "' size='"+size+"'><input type=button value = '"+label+"' onClick='jmolScript(document.getElementById(\""+id+"\").value" + _jmol.targetText + ")'/></span>";
+  var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><input name='" + id + "' id='" + id + 
+          "' size='"+size+"'><input type=button value = '"+label+"' onclick='jmolScript(document.getElementById(\""+id+"\").value" + _jmol.targetText + ")' /></span>";
   if (_jmol.debugAlert)
     alert(t);
   return _jmolDocumentWrite(t);
@@ -317,7 +319,7 @@ function jmolMenu(arrayOfMenuItems, size, id, title) {
     else if (size < 0)
       size = len;
     var sizeText = size ? " size='" + size + "' " : "";
-    var t = "<span id=\"span_"+id+"\""+(title ? " title =\"" + title + "\"":"")+"><select name='" + id + "' id='" + id +
+    var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><select name='" + id + "' id='" + id +
             "' onChange='_jmolMenuSelected(this" + _jmol.targetText + ")'" +
             sizeText + _jmol.menuCssText + ">";
     for (var i = 0; i < len; ++i) {
@@ -340,7 +342,7 @@ function jmolMenu(arrayOfMenuItems, size, id, title) {
         t += "</optgroup>";	  
 	  } else {		
         var scriptIndex = _jmolAddScript(script);
-        var selectedText = isSelected ? "' selected>" : "'>";
+        var selectedText = isSelected ? "' selected='true'>" : "'>";
         t += "<option value='" + scriptIndex + selectedText + text + "</option>";
 	  }
     }
@@ -822,6 +824,8 @@ function _jmolCheckBrowser() {
               "browser: " + browser +
               "   version: " + browserVersion +
               "   os: " + os +
+              "   isBrowserCompliant: " + isBrowserCompliant +
+              "   isJavaCompliant: " + isJavaCompliant +
               "\n\n" + ua;
       alert(msg);
     }
@@ -829,10 +833,101 @@ function _jmolCheckBrowser() {
   return false;
 }
 
+function jmolSetXHTML(id) {
+	_jmol.isXHTML = true
+	_jmol.XhtmlElement = null
+	_jmol.XhtmlAppendChild = false
+	if (id){
+		_jmol.XhtmlElement = document.getElementById(id)
+		_jmol.XhtmlAppendChild = true
+	}
+}
+
 function _jmolDocumentWrite(text) {
-  if (_jmol.currentDocument)
-    _jmol.currentDocument.write(text);
-  return text;
+	if (_jmol.currentDocument) {
+		if (_jmol.isXHTML && !_jmol.XhtmlElement) {
+			var s = document.getElementsByTagName("script")
+			_jmol.XhtmlElement = s.item(s.length - 1)
+			_jmol.XhtmlAppendChild = false
+		}
+		if (_jmol.XhtmlElement) {
+			_jmolDomDocumentWrite(text)
+		} else {
+			_jmol.currentDocument.write(text);
+		}
+	}
+	return text;
+}
+
+function _jmolDomDocumentWrite(data) {
+	var pt = 0
+	var Ptr = []
+	Ptr[0] = 0
+	while (Ptr[0] < data.length) {
+		var child = _jmolGetDomElement(data, Ptr)
+		if (!child)break
+		if (_jmol.XhtmlAppendChild)
+			_jmol.XhtmlElement.appendChild(child)
+		else
+			_jmol.XhtmlElement.parentNode.insertBefore(child, _jmol.XhtmlElement); 
+	}
+}
+function _jmolGetDomElement(data, Ptr, closetag, lvel) {
+	var e = document.createElement("span")
+	e.innerHTML = data
+	Ptr[0] = data.length
+	return e
+
+//unnecessary?
+
+	if (!closetag)closetag = ""
+	if (!lvel) lvel = 0
+	var pt0 = Ptr[0]
+	var pt = pt0
+	while (pt < data.length && data.charAt(pt) != "<") pt++
+	if (pt != pt0) {
+		var text = data.substring(pt0, pt)
+		Ptr[0] = pt
+		return document.createTextNode(text)
+	}	
+	pt0 = ++pt
+	var ch
+	while (pt < data.length && "\n\r\t >".indexOf(ch = data.charAt(pt)) < 0) pt++
+	var tagname = data.substring(pt0, pt)
+	var e = (tagname == closetag  || tagname == "/" ? "" 
+		: document.createElementNS ? document.createElementNS('http://www.w3.org/1999/xhtml', tagname)
+		: document.createElement(tagname));
+	if (ch == ">") {
+		Ptr[0] = ++pt
+		return e
+	}
+	while (pt < data.length && (ch = data.charAt(pt)) != ">") {
+		while (pt < data.length && "\n\r\t ".indexOf(ch = data.charAt(pt)) >= 0) pt++
+		pt0 = pt
+		while (pt < data.length && "\n\r\t =/>".indexOf(ch = data.charAt(pt)) < 0) pt++
+		var attrname = data.substring(pt0, pt).toLowerCase()
+		if (attrname && ch != "=") 
+			e.setAttribute(attrname, "true")
+		while (pt < data.length && "\n\r\t ".indexOf(ch = data.charAt(pt)) >= 0) pt++
+		if (ch == "/") {
+			Ptr[0] = pt + 2
+			return e
+		} else if (ch == "=") {
+			var quote = data.charAt(++pt)
+			pt0 = ++pt
+			while (pt < data.length && (ch = data.charAt(pt)) != quote) pt++
+			var attrvalue = data.substring(pt0, pt)
+			e.setAttribute(attrname, attrvalue)
+			pt++
+		}
+	}
+	Ptr[0] = ++pt
+	while (Ptr[0] < data.length) {
+		var child = _jmolGetDomElement(data, Ptr, "/" + tagname, lvel+1)
+		if (!child)break
+		e.appendChild(child)
+	}
+	return e
 }
 
 function _jmolPopup(url) {
@@ -915,11 +1010,11 @@ function _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName, id, 
     separatorHtml = "";
   var scriptIndex = _jmolAddScript(script);
   var eospan = "</span>"
-  var t = "<span id=\"span_"+id+"\""+(title ? " title =\"" + title + "\"":"")+"><input name='" 
-	+ groupName + "' id='"+id+"' type='radio' onClick='_jmolClick(" +
-         scriptIndex + _jmol.targetText + ");return true;' onMouseover='_jmolMouseOver(" +
-         scriptIndex + ");return true;' onMouseout='_jmolMouseOut()' " +
-	 (isChecked ? "checked " : "") + _jmol.radioCssText + "/>"
+  var t = "<span id=\"span_"+id+"\""+(title ? " title=\"" + title + "\"":"")+"><input name='" 
+	+ groupName + "' id='"+id+"' type='radio' onclick='_jmolClick(" +
+         scriptIndex + _jmol.targetText + ");return true;' onmouseover='_jmolMouseOver(" +
+         scriptIndex + ");return true;' onmouseout='_jmolMouseOut()' " +
+	 (isChecked ? "checked='true' " : "") + _jmol.radioCssText + " />"
   if (labelHtml.toLowerCase().indexOf("<td>")>=0) {
 	t += eospan
 	eospan = "";

@@ -436,12 +436,12 @@ public int[] next = new int[1];
     spaceGroup = name.trim();
   }
 
-  public void setSymmetryOperator(String jonesFaithfulOrMatrix) {
+  public void setSymmetryOperator(String xyz) {
     if (ignoreFileSymmetryOperators)
       return;
     atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds);
-    if (!atomSetCollection.addSpaceGroupOperation(jonesFaithfulOrMatrix))
-      Logger.warn("Skipping symmetry operation " + jonesFaithfulOrMatrix);
+    if (!atomSetCollection.addSpaceGroupOperation(xyz))
+      Logger.warn("Skipping symmetry operation " + xyz);
     iHaveSymmetryOperators = true;
   }
 

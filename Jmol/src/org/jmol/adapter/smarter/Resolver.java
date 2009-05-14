@@ -543,20 +543,21 @@ public class Resolver {
   private final static int SPECIAL_FOLDINGXYZ         = 6;
   private final static int SPECIAL_CUBE               = 7;
   private final static int SPECIAL_ALCHEMY            = 8;
+  private final static int SPECIAL_WIEN               = 9;
   
   // these next are needed by the XML reader
   
-  public final static int SPECIAL_ARGUS_XML   = 9;
-  public final static int SPECIAL_CML_XML     = 10;
-  public final static int SPECIAL_CHEM3D_XML  = 11;
-  public final static int SPECIAL_MOLPRO_XML  = 12;
-  public final static int SPECIAL_ODYSSEY_XML = 13;
+  public final static int SPECIAL_ARGUS_XML   = 10;
+  public final static int SPECIAL_CML_XML     = 11;
+  public final static int SPECIAL_CHEM3D_XML  = 12;
+  public final static int SPECIAL_MOLPRO_XML  = 13;
+  public final static int SPECIAL_ODYSSEY_XML = 14;
   
-  public final static int SPECIAL_ARGUS_DOM   = 14;
-  public final static int SPECIAL_CML_DOM     = 15;
-  public final static int SPECIAL_CHEM3D_DOM  = 16;
-  public final static int SPECIAL_MOLPRO_DOM  = 17;
-  public final static int SPECIAL_ODYSSEY_DOM = 18;
+  public final static int SPECIAL_ARGUS_DOM   = 15;
+  public final static int SPECIAL_CML_DOM     = 16;
+  public final static int SPECIAL_CHEM3D_DOM  = 17;
+  public final static int SPECIAL_MOLPRO_DOM  = 18;
+  public final static int SPECIAL_ODYSSEY_DOM = 19;
 
   public final static String[][] specialTags = {
     { "Jme" },
@@ -568,6 +569,7 @@ public class Resolver {
     { "FoldingXyz" },
     { "Cube" },
     { "Alchemy" },
+    { "Wien2k" },
     
     { "argus(xml)" }, 
     { "cml(xml)" },
@@ -605,9 +607,17 @@ public class Resolver {
       return specialTags[SPECIAL_FOLDINGXYZ][0];
     if (checkCube(lines))
       return specialTags[SPECIAL_CUBE][0];
+    if (checkWien2k(lines))
+      return specialTags[SPECIAL_WIEN][0];
     return null;
   }
   
+  private static boolean checkWien2k(String[] lines) {
+    return (lines[2].startsWith("MODE OF CALC=") 
+        || lines[2].startsWith("             RELA")
+        || lines[2].startsWith("             NREL"));
+  }
+
   private final static String getReaderFromType(String type) {
     type = type.toLowerCase();
     String base = null;

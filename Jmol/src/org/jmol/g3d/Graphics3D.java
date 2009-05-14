@@ -639,9 +639,10 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   void mergeOpaqueAndTranslucentBuffers() {
+    if (pbufT == null)
+      return;
     for (int offset = 0; offset < bufferSize; offset++)
       mergeBufferPixel(pbuf, pbufT[offset], offset, bgcolor);
-
   }
   
   static void averageBufferPixel(int[] pIn, int[] pOut, int pt, int dp) {

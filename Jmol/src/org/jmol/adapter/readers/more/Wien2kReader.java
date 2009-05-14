@@ -36,6 +36,8 @@ import java.io.BufferedReader;
 
 public class Wien2kReader extends AtomSetCollectionReader {
 
+  private boolean isrhombohedral;
+  
   public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("wien2k");
@@ -52,12 +54,9 @@ public class Wien2kReader extends AtomSetCollectionReader {
     return atomSetCollection;
   }
 
-  /*
-   * 
-   * 
-   */
-  void readUnitCell() throws Exception {    
+  private void readUnitCell() throws Exception {    
     readLine();
+    isrhombohedral = (line.charAt(0) == 'R');
     if (line.length() > 32) {
       String name = line.substring(32).trim();
       if (name.indexOf(" ") >= 0)
@@ -66,18 +65,31 @@ public class Wien2kReader extends AtomSetCollectionReader {
         name = name.substring(name.indexOf("_") + 1);
       setSpaceGroupName(name);
     }
-    float factor = (readLine().indexOf("angstrom") >= 0 ? 1f : ANGSTROMS_PER_BOHR);
+    float factor = (readLine().toLowerCase().indexOf("ang") >= 0 ? 1f : ANGSTROMS_PER_BOHR);
     readLine();
     float a = parseFloat(line.substring(0,10)) * factor;
     float b = parseFloat(line.substring(10,20)) * factor;
     float c = parseFloat(line.substring(20,30)) * factor;
-    float alpha = parseFloat(line.substring(30,40));
-    float beta = parseFloat(line.substring(40,50));
-    float gamma = parseFloat(line.substring(50,60));
+    int l = line.length();
+    float alpha = (l >= 40 ? parseFloat(line.substring(30,40)) : 0);
+    float beta = (l >= 50 ? parseFloat(line.substring(40,50)) : 0);
+    float gamma = (l >= 60 ? parseFloat(line.substring(50,60)) : 0);
+    if (isrhombohedral) {
+      float ar = (float) Math.sqrt(a * a /3 + c * c / 9) ;
+      alpha = beta = gamma = (float) (Math.acos( (2*c * c  - 3 * a * a) 
+          / (2 * c * c + 6 * a * a)) * 180f / Math.PI);
+      a = b = c = ar;
+    }
+    if (Float.isNaN(alpha) || alpha == 0)
+      alpha = 90;
+    if (Float.isNaN(beta) || beta == 0)
+      beta = 90;
+    if (Float.isNaN(gamma) || gamma == 0)
+      gamma = 90; 
     setUnitCell(a, b, c, alpha, beta, gamma);  
   }
   
-  void readAtoms() throws Exception {
+  private void readAtoms() throws Exception {
 
     // format (4X,I4,4X,F10.8,3X,F10.8,3X,F10.8)
     
@@ -86,6 +98,14 @@ public class Wien2kReader extends AtomSetCollectionReader {
       float a = parseFloat(line.substring(12,22));
       float b = parseFloat(line.substring(25,35));
       float c = parseFloat(line.substring(38,48));
+      if (false && isrhombohedral) {
+        float ar = a;
+        float br = b;
+        float cr = c;
+        a = ar * 2 / 3 - br * 1 / 3 - cr * 1 / 3;
+        b = ar * 1 / 3 + br * 1 / 3 - cr * 2 / 3;
+        c = ar * 1 / 3 + br * 1 / 3 + cr * 1 / 3;        
+      }
       while (readLine() != null && line.indexOf(" ") == 0) {
         // skip calculated atoms
       }
@@ -109,7 +129,7 @@ public class Wien2kReader extends AtomSetCollectionReader {
     // return with "SYMMETRY" line in buffer
   }
   
-  void readSymmetry() throws Exception {
+  private void readSymmetry() throws Exception {
     if (line.indexOf("NUMBER OF SYMMETRY OPERATIONS") < 0)
       return;
     int n = parseInt(line.substring(0, 4).trim());
@@ -121,7 +141,7 @@ public class Wien2kReader extends AtomSetCollectionReader {
   }
   
   private final String cxyz = " x y z";
-  String getJones() throws Exception {
+  private String getJones() throws Exception {
     readLine();
     String xyz = "";
     // 1 0 0 0.0000000

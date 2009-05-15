@@ -28,6 +28,12 @@ public interface SymmetryInterface {
 
   public abstract boolean addSpaceGroupOperation(String xyz);
 
+  /**
+   * set symmetry lattice type using Hall rotations
+   * 
+   * @param latt SHELX index or character lattice character P I R F A B C S T or \0
+   * 
+   */
   public abstract void setLattice(int latt);
 
   public abstract String getSpaceGroupName();

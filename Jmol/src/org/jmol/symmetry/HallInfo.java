@@ -413,7 +413,7 @@ class Translation {
   /**
    * 
    * @param latt SHELX index or character
-   * @return lattice character P I R F A B C S T
+   * @return lattice character P I R F A B C S T or \0
    * 
    */
   final static char getLatticeCode(int latt) {

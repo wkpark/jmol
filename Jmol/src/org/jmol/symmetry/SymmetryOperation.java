@@ -77,7 +77,7 @@ class SymmetryOperation extends Matrix4f {
   }
   
   String getXyz(boolean normalized) {
-    return (normalized ? xyz : xyzOriginal);
+    return (normalized || xyzOriginal == null ? xyz : xyzOriginal);
   }
 
   private Point4f temp = new Point4f();
@@ -291,6 +291,7 @@ class SymmetryOperation extends Matrix4f {
         term = term.substring(1);
       str += "," + term;
     }
+    //System.out.println("symmetryopertaion getXYZ " + str);
     return str.substring(1);
   }
 

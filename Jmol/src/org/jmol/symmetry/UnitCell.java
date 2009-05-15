@@ -80,9 +80,17 @@ class UnitCell {
     if (matrixCartesianToFractional == null)
       return;
     matrixCartesianToFractional.transform(pt);
-    pt.x = (float)(pt.x - Math.floor(pt.x));
-    pt.y = (float)(pt.y - Math.floor(pt.y));
-    pt.z = (float)(pt.z - Math.floor(pt.z));    
+    pt.x = toFractional(pt.x);
+    pt.y = toFractional(pt.y);
+    pt.z = toFractional(pt.z);  
+  }
+  
+  private static float toFractional(float x) {
+    // introduced in Jmol 11.7.36
+    x = (float) (x - Math.floor(x));
+    if (x > 0.9999f || x < 0.0001f) 
+      x = 0;
+    return x;
   }
   
   final void toUnitCell(Point3f pt, Point3f offset) {

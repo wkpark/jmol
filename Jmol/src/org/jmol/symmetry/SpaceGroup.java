@@ -634,11 +634,15 @@ class SpaceGroup {
     Matrix4f[] newOps = new Matrix4f[7];
     for (int i = 0; i < 7; i++)
       newOps[i] = new Matrix4f();
-    newOps[0].setIdentity();
+    // prior to Jmol 11.7.36/11.6.23 this was setting nOps within the loop
+    // and setIdentity() outside the loop. That caused a multiplication of
+    // operations, not a resetting of them each time. 
+    int nOps = operationCount;
     for (int i = 0; i < h.nRotations; i++) {
       mat1.set(h.rotationTerms[i].seitzMatrix12ths);
       int nRot = h.rotationTerms[i].order;
-      int nOps = operationCount;
+      // this would iterate int nOps = operationCount;
+      newOps[0].setIdentity();
       for (int j = 1; j <= nRot; j++) {
         newOps[j].mul(mat1, newOps[0]);
         newOps[0].set(newOps[j]);

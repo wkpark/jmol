@@ -619,12 +619,11 @@ public class AtomSetCollection {
    
    private int minX, maxX, minY, maxY, minZ, maxZ;
    
-   public boolean isWithinCell(Point3f pt, int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
+   private static boolean isWithinCell(Point3f pt, int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
      float slop = 0.02f;
-     boolean isOK = (pt.x > minX - slop && pt.x < maxX + slop 
+     return (pt.x > minX - slop && pt.x < maxX + slop 
          && pt.y > minY - slop && pt.y < maxY + slop 
          && pt.z > minZ - slop && pt.z < maxZ + slop);
-     return isOK;
    }
 
    private void applyAllSymmetry(int maxX, int maxY, int maxZ) throws Exception {
@@ -635,8 +634,7 @@ public class AtomSetCollection {
     }
     bondCount0 = bondCount;
 
-    symmetry
-        .setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
+    symmetry.setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
     int operationCount = symmetry.getSpaceGroupOperationCount();
     minX = 0;
     minY = 0;

@@ -24,6 +24,7 @@
 package org.jmol.adapter.readers.more;
 
 import org.jmol.adapter.smarter.*;
+import org.jmol.util.TextFormat;
 
 import java.io.BufferedReader;
 
@@ -120,7 +121,7 @@ public class Wien2kReader extends AtomSetCollectionReader {
       if (sym.length() == 2 && Character.isDigit(sym.charAt(1)))
         sym = sym.substring(0, 1);
       atom.elementSymbol = sym;
-      atom.atomName = atomName.trim();
+      atom.atomName = TextFormat.simpleReplace(atomName, " ", "");
       setAtomCoord(atom, a, b, c);
       if (readLine() != null && line.indexOf("LOCAL ROT MATRIX:") == 0) {
         readLine();

@@ -37,6 +37,7 @@ import java.io.BufferedReader;
 public class Wien2kReader extends AtomSetCollectionReader {
 
   private boolean isrhombohedral;
+  private char latticeCode;
   
   public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
@@ -56,7 +57,8 @@ public class Wien2kReader extends AtomSetCollectionReader {
 
   private void readUnitCell() throws Exception {    
     readLine();
-    isrhombohedral = (line.charAt(0) == 'R');
+    isrhombohedral = ((latticeCode = line.charAt(0)) == 'R');
+    atomSetCollection.setLatticeParameter(latticeCode);
     if (line.length() > 32) {
       String name = line.substring(32).trim();
       if (name.indexOf(" ") >= 0)

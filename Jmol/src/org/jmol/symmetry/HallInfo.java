@@ -410,11 +410,23 @@ class Translation {
     return 0;
   }
   
+  /**
+   * 
+   * @param latt SHELX index or character
+   * @return lattice character P I R F A B C S T
+   * 
+   */
   final static char getLatticeCode(int latt) {
     if (latt < 0)
       latt = -latt;
-    if (latt == 0 || latt > nLatticeTypes)
+    if (latt == 0) return '\0';
+    if (latt > nLatticeTypes) { 
+      for (int i = 0; i < latticeTranslationData.length; i += 3) {
+        if (latt == latticeTranslationData[i].charAt(0))
+          return (char) latt;
+      }
       return '\0';
+    }
     return latticeTranslationData[latt * 3].charAt(0);
   }
 

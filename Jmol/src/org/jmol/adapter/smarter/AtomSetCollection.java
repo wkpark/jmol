@@ -834,12 +834,13 @@ public class AtomSetCollection {
         Atom special = null;
         Point3f cartesian = new Point3f(ptAtom);
         symmetry.toCartesian(cartesian);
-        if (doPackUnitCell
-          && !isWithinCell(ptAtom, minX + 1, maxX - 1, minY + 1, maxY - 1, minZ + 1, maxZ - 1))
-          continue;
-          //symmetry.toUnitCell(cartesian, ptOffset);
-          //ptAtom.set(cartesian);
-          //symmetry.toFractional(ptAtom);
+        if (doPackUnitCell) {
+          symmetry.toUnitCell(cartesian, ptOffset);
+          ptAtom.set(cartesian);
+          symmetry.toFractional(ptAtom);
+          if (!isWithinCell(ptAtom, minX + 1, maxX - 1, minY + 1, maxY - 1, minZ + 1, maxZ - 1))
+            continue;
+        }
         if (checkSymmetryMinMax)
           setSymmetryMinMax(cartesian);
         if (checkDistances) {

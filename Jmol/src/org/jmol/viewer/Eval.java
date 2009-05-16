@@ -4440,7 +4440,7 @@ class Eval {
         htParams.put("symmetryRange", new Float(distance));
         if (tokAt(i) == Token.spacegroup) {
           ++i;
-          String spacegroup = TextFormat.simpleReplace(parameterAsString(i++),
+           String spacegroup = TextFormat.simpleReplace(parameterAsString(i++),
               "''", "\"");
           sOptions += " spacegroup " + Escape.escape(spacegroup);
           if (spacegroup.equalsIgnoreCase("ignoreOperators")) {

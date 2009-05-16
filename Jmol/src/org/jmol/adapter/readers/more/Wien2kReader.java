@@ -41,10 +41,12 @@ public class Wien2kReader extends AtomSetCollectionReader {
 
   private boolean isrhombohedral;
   private char latticeCode;
+  private boolean doSymmetry = true;
   
   public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("wien2k");
+    doSymmetry = !spaceGroup.equals("none");
     try {
       setFractionalCoordinates(true);
       atomSetCollection.setCollectionName(readLine());
@@ -136,42 +138,54 @@ public class Wien2kReader extends AtomSetCollectionReader {
       gamma = 90; 
     setUnitCell(a, b, c, alpha, beta, gamma);  
   }
-  
+ 
   private void readAtoms() throws Exception {
 
     // format (4X,I4,4X,F10.8,3X,F10.8,3X,F10.8)
     
     readLine();
-    while (line != null && line.indexOf("ATOM") == 0) {
-      float a = parseFloat(line.substring(12,22));
-      float b = parseFloat(line.substring(25,35));
-      float c = parseFloat(line.substring(38,48));
-      if (false && isrhombohedral) {
-        float ar = a;
-        float br = b;
-        float cr = c;
-        a = ar * 2 / 3 - br * 1 / 3 - cr * 1 / 3;
-        b = ar * 1 / 3 + br * 1 / 3 - cr * 2 / 3;
-        c = ar * 1 / 3 + br * 1 / 3 + cr * 1 / 3;        
-      }
-      readLine();
-      if (line.indexOf("MULT=") == 10)
-        for (int i = parseInt(line.substring(15,18)); --i >= 0; ) 
+    while (line != null && (line.indexOf("ATOM") == 0 || !doSymmetry && line.indexOf(":") == 8)) {
+      int thisAtom = atomSetCollection.getAtomCount();
+      addAtom();
+      if (readLine().indexOf("MULT=") == 10)
+        for (int i = parseInt(line.substring(15,18)); --i >= 0; ) { 
           readLine();
+          if (!doSymmetry)
+            addAtom();
+        }
       // format (A10,5X,I5,5X,F10.8,5X,F10.5,5X,F5.2)
       
-      Atom atom = atomSetCollection.addNewAtom();
       String atomName = line.substring(0, 10);
       String sym = atomName.substring(0,2).trim();
       if (sym.length() == 2 && Character.isDigit(sym.charAt(1)))
         sym = sym.substring(0, 1);
-      atom.elementSymbol = sym;
-      atom.atomName = TextFormat.simpleReplace(atomName, " ", "");
-      setAtomCoord(atom, a, b, c);
+      atomName = TextFormat.simpleReplace(atomName, " ", "");
+      int n = 0;
+      for (int i = atomSetCollection.getAtomCount(); --i >= thisAtom; ) {
+        Atom atom = atomSetCollection.getAtom(i);
+        atom.elementSymbol = sym;
+        atom.atomName = atomName + "_" + (n++);
+      }
       while (readLine() != null && line.indexOf("ATOM") < 0 && line.indexOf("SYMMETRY") < 0) {
       }      
     }
     // return with "SYMMETRY" line in buffer
+  }
+
+  private void addAtom() {
+    float a = parseFloat(line.substring(12,22));
+    float b = parseFloat(line.substring(25,35));
+    float c = parseFloat(line.substring(38,48));
+    if (false && isrhombohedral) {
+      float ar = a;
+      float br = b;
+      float cr = c;
+      a = ar * 2 / 3 - br * 1 / 3 - cr * 1 / 3;
+      b = ar * 1 / 3 + br * 1 / 3 - cr * 2 / 3;
+      c = ar * 1 / 3 + br * 1 / 3 + cr * 1 / 3;        
+    }
+    Atom atom = atomSetCollection.addNewAtom();
+    setAtomCoord(atom, a, b, c);
   }
   
   private void readSymmetry() throws Exception {
@@ -180,7 +194,8 @@ public class Wien2kReader extends AtomSetCollectionReader {
     int n = parseInt(line.substring(0, 4).trim());
     for (int i = n; --i >= 0;) {
       String xyz = getJones() + "," + getJones() + "," + getJones();
-      setSymmetryOperator(xyz);
+      if (doSymmetry)
+        setSymmetryOperator(xyz);
       readLine();
     }   
   }

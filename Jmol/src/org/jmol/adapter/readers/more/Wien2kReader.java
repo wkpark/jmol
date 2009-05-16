@@ -59,7 +59,8 @@ public class Wien2kReader extends AtomSetCollectionReader {
   private void readUnitCell() throws Exception {    
     readLine();
     isrhombohedral = ((latticeCode = line.charAt(0)) == 'R');
-    if (latticeCode != 'R')
+    //todo: need code here for CXZ, CXY, etc. They are NOT the standard "C" SHELX
+    if (latticeCode == 'F')
       atomSetCollection.setLatticeParameter(latticeCode);
     if (line.length() > 32) {
       String name = line.substring(32).trim();

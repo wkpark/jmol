@@ -31,6 +31,8 @@ import java.io.BufferedReader;
 /**
  * A reader for Wein2k DFT files.  
  * 
+ * http://www.wien2k.at/reg_user/textbooks/usersguide.pdf
+ * 
  * Bob Hanson hansonr@stolaf.edu 5/14/2009
  *   
  */
@@ -59,8 +61,12 @@ public class Wien2kReader extends AtomSetCollectionReader {
   private void readUnitCell() throws Exception {    
     readLine();
     isrhombohedral = ((latticeCode = line.charAt(0)) == 'R');
-    //todo: need code here for CXZ, CXY, etc. They are NOT the standard "C" SHELX
-    if (latticeCode == 'F' || line.startsWith("CXY"))
+    //CXZ --> "C" SHELX
+    if (line.startsWith("CYZ"))
+      latticeCode = 'A';
+    else if (line.startsWith("CXZ"))
+      latticeCode = 'B'; // provided gamma is 90
+    if (latticeCode != 'R')
       atomSetCollection.setLatticeParameter(latticeCode);
     if (line.length() > 32) {
       String name = line.substring(32).trim();

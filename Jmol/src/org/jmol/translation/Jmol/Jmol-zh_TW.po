@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-05-04 21:42+0200\n"
-"PO-Revision-Date: 2009-04-07 05:16+0000\n"
-"Last-Translator: Yi-Shu Tu <Unknown>\n"
+"PO-Revision-Date: 2009-05-04 21:14+0000\n"
+"Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-04-07 19:12+0000\n"
+"X-Launchpad-Export-Date: 2009-05-16 11:56+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
@@ -334,7 +334,7 @@ msgstr "取消全選"
 
 #: org/openscience/jmol/app/GuiMap.java:72
 msgid "Copy &Image"
-msgstr ""
+msgstr "複製影像(&I)"
 
 #: org/openscience/jmol/app/GuiMap.java:73
 msgid "Copy Script"
@@ -342,7 +342,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:74
 msgid "Pr&eferences..."
-msgstr ""
+msgstr "選項(&e)"
 
 #: org/openscience/jmol/app/GuiMap.java:75
 msgid "&Paste"
@@ -390,7 +390,7 @@ msgstr "硫"
 
 #: org/openscience/jmol/app/GuiMap.java:86
 msgid "Amino"
-msgstr ""
+msgstr "胺基"
 
 #: org/openscience/jmol/app/GuiMap.java:87
 msgid "Nucleic"
@@ -1319,7 +1319,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:111
 msgid "A web page containing Jmol applets"
-msgstr ""
+msgstr "一個包含Jmol applets的網頁"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:135
 msgid "double-click and drag to reorder"
@@ -1331,11 +1331,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:144
 msgid "Show Selected"
-msgstr ""
+msgstr "顯示所選的"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:146
 msgid "Delete Selected"
-msgstr ""
+msgstr "刪除所選的"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:177
 msgid "Jmol Instances:"
@@ -1422,7 +1422,7 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:495
 #, java-format
 msgid "creating {0}"
-msgstr ""
+msgstr "正在產生{0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:526
 #, java-format
@@ -1431,6 +1431,9 @@ msgid ""
 "{0}\n"
 "         to"
 msgstr ""
+"複製\n"
+"{0}\n"
+"         到"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:529
 #, java-format

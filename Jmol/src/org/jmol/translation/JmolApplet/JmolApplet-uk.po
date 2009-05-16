@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2009-04-15 20:50+0200\n"
-"PO-Revision-Date: 2009-04-15 18:30+0000\n"
+"PO-Revision-Date: 2009-05-15 20:02+0000\n"
 "Last-Translator: svv <skrypnychuk@gmail.com>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-04-15 18:44+0000\n"
+"X-Launchpad-Export-Date: 2009-05-16 11:52+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/Console.java:74
@@ -82,6 +82,11 @@ msgid ""
 "\n"
 "See http://www.jmol.org for more information"
 msgstr ""
+"Додаток Jmol, версія {0} {1}.\n"
+"\n"
+"Проект OpenScience.\n"
+"\n"
+"Див. http://www.jmol.org для отримання додаткової інформації"
 
 #: org/jmol/applet/Jmol.java:904
 msgid "File Error:"
@@ -95,7 +100,7 @@ msgstr ""
 
 #: org/jmol/applet/Jmol.java:1109 org/jmol/viewer/StatusManager.java:580
 msgid "File creation failed."
-msgstr ""
+msgstr "Не вдалося створити файл."
 
 #: org/jmol/applet/Jmol.java:1211
 msgid ""
@@ -421,30 +426,30 @@ msgstr ""
 #: org/jmol/popup/PopupResourceBundle.java:604
 #: org/jmol/popup/PopupResourceBundle.java:621
 msgid "All"
-msgstr ""
+msgstr "Все"
 
 #: org/jmol/popup/JmolPopup.java:557
 msgid "Minimize"
-msgstr ""
+msgstr "Мінімізувати"
 
 #: org/jmol/popup/JmolPopup.java:641
 msgid "Java memory usage"
-msgstr ""
+msgstr "Java використання пам'яті"
 
 #: org/jmol/popup/JmolPopup.java:647
 #, java-format
 msgid "{0} MB total"
-msgstr ""
+msgstr "Всього {0} МБ"
 
 #: org/jmol/popup/JmolPopup.java:649
 #, java-format
 msgid "{0} MB free"
-msgstr ""
+msgstr "{0} MБ вільно"
 
 #: org/jmol/popup/JmolPopup.java:652
 #, java-format
 msgid "{0} MB maximum"
-msgstr ""
+msgstr "{0} MБ максимум"
 
 #: org/jmol/popup/JmolPopup.java:655
 msgid "unknown maximum"
@@ -452,12 +457,12 @@ msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:658
 msgid "1 processor"
-msgstr ""
+msgstr "1 процесор"
 
 #: org/jmol/popup/JmolPopup.java:659
 #, java-format
 msgid "{0} processors"
-msgstr ""
+msgstr "{0} процесорів"
 
 #: org/jmol/popup/JmolPopup.java:661
 msgid "unknown processor count"
@@ -473,7 +478,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:551
 msgid "Element"
-msgstr ""
+msgstr "Елемент"
 
 #: org/jmol/popup/PopupResourceBundle.java:552
 msgid "Model/Frame"
@@ -481,7 +486,7 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:553
 msgid "Language"
-msgstr ""
+msgstr "Мова"
 
 #: org/jmol/popup/PopupResourceBundle.java:554
 #: org/jmol/popup/PopupResourceBundle.java:555
@@ -495,13 +500,13 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:558
 msgid "Molecular Orbitals"
-msgstr ""
+msgstr "Молекулярні орбіталі"
 
 #: org/jmol/popup/PopupResourceBundle.java:559
 #: org/jmol/popup/PopupResourceBundle.java:869
 #: org/jmol/popup/PopupResourceBundle.java:905
 msgid "Symmetry"
-msgstr ""
+msgstr "Симетрія"
 
 #: org/jmol/popup/PopupResourceBundle.java:562
 msgid "Model information"
@@ -564,11 +569,11 @@ msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:574
 msgid "Main Menu"
-msgstr ""
+msgstr "Головне меню"
 
 #: org/jmol/popup/PopupResourceBundle.java:575
 msgid "Biomolecules"
-msgstr ""
+msgstr "Біомолекули"
 
 #: org/jmol/popup/PopupResourceBundle.java:576
 #, java-format

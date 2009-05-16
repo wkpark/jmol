@@ -4390,11 +4390,23 @@ class Eval {
         tok = tokAt(++i);
       }
       Point3f lattice = null;
-      if (tok == Token.leftbrace || tok == Token.point3f)
+      if (tok == Token.leftbrace || tok == Token.point3f) {
         lattice = getPoint3f(i, false);
-      else if (tok == Token.identifier 
-          && parameterAsString(i).equalsIgnoreCase("packed"))
-        lattice = new Point3f(555,555,-1);
+        i = iToken + 1;
+        tok = tokAt(i);
+      }
+      if (tok == Token.identifier 
+          && parameterAsString(i).equalsIgnoreCase("packed")) {
+        if (lattice == null) {
+          lattice = new Point3f(555,555,-1);
+        } else {
+          if (lattice.x < 5 && lattice.y < 5) {
+            lattice.y = 555 + (lattice.x - 1) * 100 + (lattice.y - 1) * 10 + lattice.z - 1;
+            lattice.x = 555;
+          }
+          lattice.z = -1;            
+        }
+      }
       if (lattice != null) {
         i = iToken + 1;
         htParams.put("lattice", lattice);

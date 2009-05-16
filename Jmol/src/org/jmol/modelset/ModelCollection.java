@@ -1212,11 +1212,11 @@ abstract public class ModelCollection extends BondCollection {
     return (str == null ? "" : str);
   }
 
-  protected String getModelSymmetryList(int modelIndex) {
+  private String getModelSymmetryList(int modelIndex) {
     if (unitCells == null || unitCells[modelIndex] == null)
       return "";
     String[] list = unitCells[modelIndex].getSymmetryOperations();
-    String str = "";
+    String str = "\n" + list.length + " symmetry operations employed:";
     if (list != null)
       for (int i = 0; i < list.length; i++)
         str += "\n" + list[i];
@@ -2686,8 +2686,7 @@ abstract public class ModelCollection extends BondCollection {
       SymmetryInterface cellInfo = unitCells[modelIndex];      
       spaceGroup = cellInfo.getSpaceGroupName();
       unitCell = cellInfo.getNotionalUnitCell();
-      strOperations = "\nSymmetry operations employed:"
-        + getModelSymmetryList(modelIndex);
+      strOperations = getModelSymmetryList(modelIndex);
     }
     if (symTemp == null)
       symTemp = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");

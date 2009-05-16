@@ -77,7 +77,7 @@ class HallInfo {
       latticeExtension = Translation.getLatticeExtension(latticeCode,
           isCentrosymmetric);
       str = extractVectorInfo(str) + latticeExtension;
-      //System.out.println("Hallinfo: " + hallSymbol + " " + str);
+      Logger.info("Hallinfo: " + hallSymbol + " " + str);
       int prevOrder = 0;
       char prevAxisType = '\0';
       primitiveHallSymbol = "P";
@@ -420,15 +420,9 @@ class Translation {
   final static char getLatticeCode(int latt) {
     if (latt < 0)
       latt = -latt;
-    if (latt == 0) return '\0';
-    if (latt > nLatticeTypes) { 
-      for (int i = 0; i < latticeTranslationData.length; i += 3) {
-        if (latt == latticeTranslationData[i].charAt(0))
-          return (char) latt;
-      }
-      return '\0';
-    }
-    return latticeTranslationData[latt * 3].charAt(0);
+    return (latt == 0 ? '\0' : latt > nLatticeTypes ?
+        getLatticeCode(getLatticeIndex((char)latt))
+        : latticeTranslationData[latt * 3].charAt(0));
   }
 
   final static String getLatticeDesignation(int latt) {

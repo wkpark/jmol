@@ -110,10 +110,10 @@ public class Wien2kReader extends AtomSetCollectionReader {
         b = ar * 1 / 3 + br * 1 / 3 - cr * 2 / 3;
         c = ar * 1 / 3 + br * 1 / 3 + cr * 1 / 3;        
       }
-      while (readLine() != null && line.indexOf(" ") == 0) {
-        // skip calculated atoms
-      }
-      
+      readLine();
+      if (line.indexOf("MULT=") == 10)
+        for (int i = parseInt(line.substring(15,18)); --i >= 0; ) 
+          readLine();
       // format (A10,5X,I5,5X,F10.8,5X,F10.5,5X,F5.2)
       
       Atom atom = atomSetCollection.addNewAtom();
@@ -124,17 +124,14 @@ public class Wien2kReader extends AtomSetCollectionReader {
       atom.elementSymbol = sym;
       atom.atomName = TextFormat.simpleReplace(atomName, " ", "");
       setAtomCoord(atom, a, b, c);
-      if (readLine() != null && line.indexOf("LOCAL ROT MATRIX:") == 0) {
-        readLine();
-        readLine();
-        readLine();
+      while (readLine() != null && line.indexOf("ATOM") < 0 && line.indexOf("SYMMETRY") < 0) {
       }      
     }
     // return with "SYMMETRY" line in buffer
   }
   
   private void readSymmetry() throws Exception {
-    if (line.indexOf("NUMBER OF SYMMETRY OPERATIONS") < 0)
+    if (line.indexOf("SYMMETRY") < 0)
       return;
     int n = parseInt(line.substring(0, 4).trim());
     for (int i = n; --i >= 0;) {

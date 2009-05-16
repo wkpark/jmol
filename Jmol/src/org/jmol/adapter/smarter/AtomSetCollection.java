@@ -571,7 +571,6 @@ public class AtomSetCollection {
     symmetry.setLattice(latt);
   }
   
-
   void applySymmetry() throws Exception {
      //parameters are counts of unit cells as [a b c]
      applySymmetry(latticeCells[0], latticeCells[1], latticeCells[2]);

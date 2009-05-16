@@ -58,14 +58,51 @@ public class Wien2kReader extends AtomSetCollectionReader {
     return atomSetCollection;
   }
 
+  /* from HallInfo:
+   * 
+    final static String[] latticeTranslationData = {
+    "\0", "unknown",         ""
+    ,"P", "primitive",       ""
+    ,"I", "body-centered",   " 1n"
+    ,"R", "rhombohedral",    " 1r 1r"
+    ,"F", "face-centered",   " 1ab 1bc 1ac"
+    ,"A", "A-centered",      " 1bc"
+    ,"B", "B-centered",      " 1ac"
+    ,"C", "C-centered",      " 1ab"
+    ,"S", "rhombohedral(S)", " 1s 1s"
+    ,"T", "rhombohedral(T)", " 1t 1t"
+  };
+  
+  from Wien2k user manual:
+  
+  P all primitive lattices except hexagonal (trigonal lattice is also supported)
+    [a sin(gamma), a cos(gamma), 0], [0, b, 0], [0, 0, c]
+  F face-centered 
+    [a/2, b/2, 0], [a/2, 0, c/2], [0, b/2, c/2]
+  B body-centered 
+    [a/2, -b/2, c/2],[a/2, b/2, -c/2], [-a/2, b/2, c/2]
+  CXY C-base-centered (orthorhombic only) 
+    [a/2, -b/2, 0], [a/2, b/2, 0], [0, 0, c]
+  CYZ A-base-centered (orthorhombic only) 
+    [a, 0, 0], [0, -b/2, c/2], [0, b/2, c/2]
+  CXZ B-base-centered (orthorh. and monoclinic symmetry)
+    [a sin(gamma)/2, a cos(gamma)/2, -c/2], [0, b, 0], [a sin(gamma)/2, a cos(gamma)/2, c/2]
+  R rhombohedral [a/sqrt(3)/2, -a/2, c/3],[a/sqrt(3)/2, a/2, c/3],[-a/sqrt(3), 0, c/3]
+  H hexagonal [sqrt(3)a/2, -a/2, 0],[0, a, 0],[0, 0, c]
+
+
+   * 
+   */
   private void readUnitCell() throws Exception {    
     readLine();
     isrhombohedral = ((latticeCode = line.charAt(0)) == 'R');
-    //CXZ --> "C" SHELX
+    //CXY --> "C" SHELX  // x+1/2, y+1/2, z
     if (line.startsWith("CYZ"))
-      latticeCode = 'A';
+      latticeCode = 'A'; // x,y+1/2,z+1/2
     else if (line.startsWith("CXZ"))
-      latticeCode = 'B'; // provided gamma is 90
+      latticeCode = 'B'; // provided gamma is 90 -- x+1/2,y,z+1/2
+    else if (line.startsWith("B"))
+      latticeCode = 'I'; // x+1/2,y+1/2,z+1/2
     if (latticeCode != 'R')
       atomSetCollection.setLatticeParameter(latticeCode);
     if (line.length() > 32) {

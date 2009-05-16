@@ -375,7 +375,7 @@ public int[] next = new int[1];
       // three options include:
       // = -1: normal -- use operators if present or name if not
       // = -2: user is supplying operators or name
-      // >=0: spacegroup fully determined; 9999 will be based on user-supplied operators
+      // >=0: spacegroup fully determined
       // = -999: ignore -- just the operators
 
       desiredSpaceGroupIndex = ((Integer) htParams.get("spaceGroupIndex"))

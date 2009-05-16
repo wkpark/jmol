@@ -374,12 +374,15 @@ public int[] next = new int[1];
     if (htParams.containsKey("spaceGroupIndex")) {
       // three options include:
       // = -1: normal -- use operators if present or name if not
-      // >=0: spacegroup fully determined
+      // = -2: user is supplying operators or name
+      // >=0: spacegroup fully determined; 9999 will be based on user-supplied operators
       // = -999: ignore -- just the operators
 
       desiredSpaceGroupIndex = ((Integer) htParams.get("spaceGroupIndex"))
           .intValue();
-      ignoreFileSpaceGroupName = (desiredSpaceGroupIndex >= 0);
+      if (desiredSpaceGroupIndex == -2)
+        spaceGroup = (String) htParams.get("spaceGroupName");
+      ignoreFileSpaceGroupName = (desiredSpaceGroupIndex == -2 || desiredSpaceGroupIndex >= 0);
       ignoreFileSymmetryOperators = (desiredSpaceGroupIndex != -1);
     }
     if (htParams.containsKey("unitcell")) {

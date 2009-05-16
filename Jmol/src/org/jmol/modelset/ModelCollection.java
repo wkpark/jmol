@@ -1216,6 +1216,8 @@ abstract public class ModelCollection extends BondCollection {
     if (unitCells == null || unitCells[modelIndex] == null)
       return "";
     String[] list = unitCells[modelIndex].getSymmetryOperations();
+    if (list == null)
+      return "\n no symmetry operations employed";
     String str = "\n" + list.length + " symmetry operations employed:";
     if (list != null)
       for (int i = 0; i < list.length; i++)

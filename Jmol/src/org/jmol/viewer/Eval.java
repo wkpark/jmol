@@ -4451,7 +4451,8 @@ class Eval {
                 spacegroup += "#doNormalize=0";
             iGroup = viewer.getSymmetry().determineSpaceGroupIndex(spacegroup);
             if (iGroup == -1)
-              error(ERROR_spaceGroupNotFound, spacegroup);
+              iGroup = -2;
+            htParams.put("spaceGroupName", spacegroup);
           }
           htParams.put("spaceGroupIndex", new Integer(iGroup));
         }

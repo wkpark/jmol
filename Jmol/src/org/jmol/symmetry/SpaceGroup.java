@@ -106,10 +106,7 @@ class SpaceGroup {
 
     SpaceGroup sg = null;
     if (desiredSpaceGroupIndex >= 0) {
-      if (desiredSpaceGroupIndex == SPACE_GROUP_QUERY)
-        sg = createSpaceGroup((String) query[0], doNormalize);
-      else
-        sg = spaceGroupDefinitions[desiredSpaceGroupIndex];
+      sg = spaceGroupDefinitions[desiredSpaceGroupIndex];
     } else {
       sg = determineSpaceGroup(name, notionalUnitcell);
       if (sg == null)
@@ -122,10 +119,6 @@ class SpaceGroup {
 
   static int determineSpaceGroupIndex(String name) {
     int i = determineSpaceGroupIndex(name, 0f, 0f, 0f, 0f, 0f, 0f, -1);
-    if (i < 0) {
-      query[0] = name;
-      i = SPACE_GROUP_QUERY;
-    }
     return i;
   }
 
@@ -422,10 +415,6 @@ class SpaceGroup {
         notionalUnitcell[5], -1);
   }
 
-  private static Object[] query = new Object[] {"", ""};
-
-  private final static int SPACE_GROUP_QUERY = 9999;
-  
   private final static int determineSpaceGroupIndex(String name, float a,
                                                    float b, float c,
                                                    float alpha, float beta,

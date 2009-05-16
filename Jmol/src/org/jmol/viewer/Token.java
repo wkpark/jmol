@@ -543,12 +543,11 @@ public class Token {
   final static int split        = 0 | 1 << 9 | mathfunc | mathproperty;
   final static int join         = 1 | 1 << 9 | mathfunc | mathproperty;
   final static int trim         = 2 | 1 << 9 | mathfunc | mathproperty;  
-  final static int find         = 3 | 1 << 9 | mathfunc | mathproperty;
-  final static int add          = 4 | 1 << 9 | mathfunc | mathproperty;
-  final static int sub          = 5 | 1 << 9 | mathfunc | mathproperty;
-  final static int mul          = 6 | 1 << 9 | mathfunc | mathproperty;
-  final static int div          = 7 | 1 << 9 | mathfunc | mathproperty;
-  final static int label        = 8 | 1 << 9 | mathfunc | mathproperty | implicitStringCommand | defaultON | setparam;
+  final static int add          = 3 | 1 << 9 | mathfunc | mathproperty;
+  final static int sub          = 4 | 1 << 9 | mathfunc | mathproperty;
+  final static int mul          = 5 | 1 << 9 | mathfunc | mathproperty;
+  final static int div          = 6 | 1 << 9 | mathfunc | mathproperty;
+  final static int label        = 7 | 1 << 9 | mathfunc | mathproperty | implicitStringCommand | defaultON | setparam;
   
   // xxx(a,b)
 
@@ -565,7 +564,8 @@ public class Token {
   //so it can be a math property and it can have up to two parameters
   
   final static int distance     = 1 | 2 << 9 | mathfunc | mathproperty;
-  final static int replace      = 3 | 2 << 9 | mathfunc | mathproperty;
+  final static int replace      = 2 | 2 << 9 | mathfunc | mathproperty;
+  final static int find         = 3 | 2 << 9 | mathfunc | mathproperty;
 
   // xxx(a,b,c)
   

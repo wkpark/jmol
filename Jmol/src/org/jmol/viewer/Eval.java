@@ -46,6 +46,8 @@ import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Vector;
 import java.util.Hashtable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -12615,33 +12617,64 @@ class Eval {
     }
 
     private boolean evaluateFind(Token[] args) throws ScriptException {
-      if (args.length != 1)
+      if (args.length != 1 && args.length != 2)
         return false;
       if (isSyntaxCheck)
         return addX((int) 1);
       Token x1 = getX();
       String sFind = Token.sValue(args[0]);
-      switch (x1.tok) {
-      default:
-        return addX(Token.sValue(x1).indexOf(sFind) + 1);
-      case Token.list:
+      boolean isPattern = (args.length == 2); 
+      String flags = (isPattern ? Token.sValue(args[1]) : "");
+      boolean isReverse = (flags.indexOf("v") >= 0);
+      boolean isCaseInsensitive = (flags.indexOf("i") >= 0);
+      boolean asMatch = (flags.indexOf("m") >= 0);
+      boolean isList = (x1.tok == Token.list);
+      if (isList || isPattern) {
+        Pattern pattern = null;
+        try {
+          pattern = Pattern.compile(sFind, isCaseInsensitive ? Pattern.CASE_INSENSITIVE : 0);
+        } catch (Exception e) {
+          evalError(e.getMessage(), null); 
+        }
+        String[] list = (isList ? (String[]) x1.value : new String[] {Token.sValue(x1)});
+        if (Logger.debugging)
+          Logger.debug("finding " + sFind);
+        BitSet bs = new BitSet();
+        int ipt = 0;
         int n = 0;
-        String[] list = (String[]) x1.value;
-        int ipt = -1;
-        for (int i = 0; i < list.length; i++)
-          if (list[i].indexOf(sFind) >= 0) {
+        Matcher matcher = null;
+        Vector v = (asMatch ? new Vector() : null);
+        for (int i = 0; i < list.length; i++) {
+          String what = list[i];
+          matcher = pattern.matcher(what);
+          boolean isMatch = matcher.find();
+          if (asMatch && isMatch || !asMatch && isMatch == !isReverse) {
             n++;
             ipt = i;
+            bs.set(i);
+            if (asMatch)
+              v.add(isReverse ? what.substring(0, matcher.start()) + what.substring(matcher.end())
+                  : matcher.group());
           }
+        }
+        if (!isList) {
+          return (asMatch ? addX(v.size() == 1 ? (String) v.get(0) : "") 
+              : isReverse ? addX(n == 1) 
+              : asMatch ? addX(n == 0 ? "" : matcher.group()) 
+              : addX(n == 0 ? 0 : matcher.start() + 1));
+        }
         if (n == 1)
-          return addX(list[ipt]);
+          return addX(asMatch ? (String) v.get(0) : list[ipt]);
         String[] listNew = new String[n];
         if (n > 0)
           for (int i = list.length; --i >= 0;)
-            if (list[i].indexOf(sFind) >= 0)
-              listNew[--n] = list[i];
+            if (bs.get(i)) {
+              --n;
+              listNew[n] = (asMatch ? (String) v.get(n) : list[i]);
+            }
         return addX(listNew);
       }
+      return addX(Token.sValue(x1).indexOf(sFind) + 1);
     }
 
     private boolean evaluateGetProperty(Token[] args) throws ScriptException {

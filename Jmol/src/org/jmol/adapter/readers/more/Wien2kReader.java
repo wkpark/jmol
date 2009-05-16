@@ -103,7 +103,7 @@ public class Wien2kReader extends AtomSetCollectionReader {
       latticeCode = 'B'; // provided gamma is 90 -- x+1/2,y,z+1/2
     else if (line.startsWith("B"))
       latticeCode = 'I'; // x+1/2,y+1/2,z+1/2
-    if (latticeCode != 'R')
+    if (latticeCode != 'R' && latticeCode != 'H')
       atomSetCollection.setLatticeParameter(latticeCode);
     if (line.length() > 32) {
       String name = line.substring(32).trim();

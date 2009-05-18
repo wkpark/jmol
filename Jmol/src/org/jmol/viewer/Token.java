@@ -466,10 +466,11 @@ public class Token {
   final public static int xyz       = 9 | mathproperty | settable;
   final public static int fracXyz   =10 | mathproperty | settable;
   final public static int vibXyz    =11 | mathproperty | settable;
-  final static int property         =12 | mathproperty | setparam | settable;
-  final public static int boundbox  =13 | mathproperty | setparam | command | defaultON;
-  final public static int adpmax    =14 | mathproperty;
-  final public static int adpmin    =15 | mathproperty;
+  final public static int unitXyz   =12 | mathproperty | settable;
+  final static int property         =13 | mathproperty | setparam | settable;
+  final public static int boundbox  =14 | mathproperty | setparam | command | defaultON;
+  final public static int adpmax    =15 | mathproperty;
+  final public static int adpmin    =16 | mathproperty;
   
   final public static int atomno        = atomproperty | 1;
   final public static int atomType      = atomproperty | 2 | settable;
@@ -509,6 +510,9 @@ public class Token {
   final public static int vibX            = atomproperty | comparefloatx100 |12 | settable;
   final public static int vibY            = atomproperty | comparefloatx100 |13 | settable;
   final public static int vibZ            = atomproperty | comparefloatx100 |14 | settable;
+  final public static int unitX            = atomproperty | comparefloatx100 |15;
+  final public static int unitY            = atomproperty | comparefloatx100 |16;
+  final public static int unitZ            = atomproperty | comparefloatx100 |17;
 
 
   // mathfunc               means x = somefunc(a,b,c)
@@ -1484,6 +1488,10 @@ public class Token {
     "triangles",        new Token(triangles),
     "trim",             new Token(trim),
     "type",             new Token(type),
+    "ux",               new Token(unitX),
+    "uy",               new Token(unitY),
+    "uz",               new Token(unitZ),
+    "uxyz",             new Token(unitXyz),
     "user",             new Token(user),
     "valence",          new Token(valence),
     "vanderWaals",      new Token(vanderwaals),

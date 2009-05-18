@@ -627,12 +627,26 @@ final public class Atom extends Point3fi {
     return (ch == 'X' ? pt.x : ch == 'Y' ? pt.y : pt.z);
   }
     
+  public float getFractionalUnitCoord(char ch) {
+    Point3f pt = getFractionalUnitCoord();
+    return (ch == 'X' ? pt.x : ch == 'Y' ? pt.y : pt.z);
+  }
+
   public Point3f getFractionalCoord() {
     SymmetryInterface[] c = group.chain.modelSet.unitCells;
-    if (c == null)
-      return this;
     Point3f pt = new Point3f(this);
-    c[modelIndex].toFractional(pt);
+    if (c != null)
+      c[modelIndex].toFractional(pt);
+    return pt;
+  }
+  
+  public Point3f getFractionalUnitCoord() {
+    SymmetryInterface[] c = group.chain.modelSet.unitCells;
+    Point3f pt = new Point3f(this);
+    if (c != null) {
+      c[modelIndex].toUnitCell(pt, null);
+      c[modelIndex].toFractional(pt);
+    }
     return pt;
   }
   

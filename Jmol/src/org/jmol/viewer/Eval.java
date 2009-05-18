@@ -8094,6 +8094,15 @@ class Eval {
           case Token.fracZ:
             fv = atom.getFractionalCoord('Z');
             break;
+          case Token.unitX:
+            fv = atom.getFractionalUnitCoord('X');
+            break;
+          case Token.unitY:
+            fv = atom.getFractionalUnitCoord('Y');
+            break;
+          case Token.unitZ:
+            fv = atom.getFractionalUnitCoord('Z');
+            break;
           case Token.vibX:
             fv = viewer.getVibrationCoord(i, 'x');
             break;
@@ -8140,6 +8149,10 @@ class Eval {
             break;
           case Token.fracXyz:
             pt.add(atom.getFractionalCoord());
+            fv = 0;
+            break;
+          case Token.unitXyz:
+            pt.add(atom.getFractionalUnitCoord());
             fv = 0;
             break;
           case Token.vibXyz:
@@ -8206,7 +8219,7 @@ class Eval {
           isInt = false;
         }
     }
-    if (tok == Token.xyz || tok == Token.color)
+    if (tok == Token.xyz || tok == Token.fracXyz || tok == Token.unitXyz || tok == Token.color)
       return (n == 0 ? pt : new Point3f(pt.x / n, pt.y / n, pt.z / n));
     if (n == 0)
       return new Float(Float.NaN);

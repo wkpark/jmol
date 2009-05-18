@@ -13902,13 +13902,30 @@ class Eval {
           return addX(((Point3f) x2.value).y);
         case Token.atomZ:
           return addX(((Point3f) x2.value).z);
+        case Token.xyz:
+          Point3f pt = new Point3f((Point3f) x2.value);
+          // assumes a fractional coordinate
+          viewer.toCartesian(pt);
+          return addX(pt);
         case Token.fracX:
         case Token.fracY:
         case Token.fracZ:
+        case Token.fracXyz:
           Point3f ptf = new Point3f((Point3f) x2.value);
           viewer.toFractional(ptf);
-          return addX(op.intValue == Token.fracX ? ptf.x
-              : op.intValue == Token.fracY ? ptf.y : ptf.z);
+          return (op.intValue == Token.fracXyz ? addX(ptf)
+              : addX(op.intValue == Token.fracX ? ptf.x
+              : op.intValue == Token.fracY ? ptf.y : ptf.z));
+        case Token.unitX:
+        case Token.unitY:
+        case Token.unitZ:
+        case Token.unitXyz:
+          Point3f ptu = new Point3f((Point3f) x2.value);
+          viewer.toUnitCell(ptu, null);
+          viewer.toFractional(ptu);
+          return (op.intValue == Token.unitXyz ? addX(ptu) 
+              : addX(op.intValue == Token.fracX ? ptu.x
+              : op.intValue == Token.fracY ? ptu.y : ptu.z));
         }
         break;
       case Token.point4f:

@@ -1281,12 +1281,6 @@ abstract public class ModelCollection extends BondCollection {
       unitCells[modelIndex].toUnitCell(pt, offset);
   }
 
-  public Point3f getUnitCellOffset(int modelIndex) {
-    // from "unitcell {i j k}" via uccage
-    SymmetryInterface unitCell = getUnitCell(modelIndex);
-    return (unitCell == null ? null : unitCell.getCartesianOffset());
-  }
-
   public boolean setUnitCellOffset(int modelIndex, Point3f pt) {
     // from "unitcell {i j k}" via uccage
     SymmetryInterface unitCell = getUnitCell(modelIndex);

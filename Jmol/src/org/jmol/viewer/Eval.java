@@ -2461,12 +2461,8 @@ class Eval {
   }
 
   private Point4f hklParameter(int i) throws ScriptException {
-    Point3f offset = viewer.getCurrentUnitCellOffset();
-    if (offset == null)
-      if (isSyntaxCheck)
-        offset = new Point3f();
-      else
-        error(ERROR_noUnitCell);
+    if (!isSyntaxCheck && viewer.getCurrentUnitCell() == null)
+      error(ERROR_noUnitCell);
     Vector3f vAB = new Vector3f();
     Vector3f vAC = new Vector3f();
     Point3f pt = (Point3f) getPointOrPlane(i, false, true, false, true, 3, 3);
@@ -2496,9 +2492,6 @@ class Eval {
     viewer.toCartesian(pt1);
     viewer.toCartesian(pt2);
     viewer.toCartesian(pt3);
-    pt1.add(offset);
-    pt2.add(offset);
-    pt3.add(offset);
     Vector3f plane = new Vector3f();
     float w = Graphics3D.getNormalThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
     Point4f p = new Point4f(plane.x, plane.y, plane.z, w);

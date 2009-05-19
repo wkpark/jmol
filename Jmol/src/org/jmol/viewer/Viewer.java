@@ -2770,10 +2770,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getUnitCell(getDisplayModelIndex());
   }
 
-  Point3f getCurrentUnitCellOffset() {
-    return modelSet.getUnitCellOffset(getDisplayModelIndex());
-  }
-
   void setCurrentUnitCellOffset(int offset) {
     int modelIndex = repaintManager.currentModelIndex;
     if (modelSet.setUnitCellOffset(modelIndex, offset))

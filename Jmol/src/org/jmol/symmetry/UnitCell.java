@@ -97,17 +97,27 @@ class UnitCell {
     if (matrixCartesianToFractional == null)
       return;
     toFractionalUnitCell(pt);
-    if (offset == null)
-      offset = fractionalOffset;
-    pt.add(offset);
+    // offset is added to regular offset
+    if (offset != null)
+      pt.add(offset);
     matrixFractionalToCartesian.transform(pt);
   }
   
   void setOffset(Point3f pt) {
     // from "unitcell {i j k}" via uccage
     fractionalOffset.set(pt);
+    matrixCartesianToFractional.m03 = -pt.x;
+    matrixCartesianToFractional.m13 = -pt.y;
+    matrixCartesianToFractional.m23 = -pt.z;
     cartesianOffset.set(pt);
+    matrixFractionalToCartesian.m03 = 0;
+    matrixFractionalToCartesian.m13 = 0;
+    matrixFractionalToCartesian.m23 = 0;
     matrixFractionalToCartesian.transform(cartesianOffset);
+    matrixFractionalToCartesian.m03 = cartesianOffset.x;
+    matrixFractionalToCartesian.m13 = cartesianOffset.y;
+    matrixFractionalToCartesian.m23 = cartesianOffset.z;
+    
   }
 
   void setOffset(int nnn) {
@@ -130,7 +140,7 @@ class UnitCell {
   }
 
   Point3f[] getVertices() {
-    return vertices;
+    return vertices; // does not include offsets
   }
   
   Point3f getCartesianOffset() {

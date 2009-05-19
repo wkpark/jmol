@@ -525,7 +525,8 @@ public class AtomSetCollection {
     setAtomSetCollectionAuxiliaryInfo("symmetryRange", new Float(factor));
   }
   
-  void setLatticeCells(int[] latticeCells, boolean applySymmetryToBonds) {
+  void setLatticeCells(int[] latticeCells, boolean applySymmetryToBonds, 
+                       boolean doPackUnitCell) {
     //set when unit cell is determined
     // x <= 555 and y >= 555 indicate a range of cells to load
     // AROUND the central cell 555 and that
@@ -536,7 +537,7 @@ public class AtomSetCollection {
     isLatticeRange = (latticeCells[2] == 0 || latticeCells[2] == 1 || latticeCells[2] == -1) 
         && (latticeCells[0] <= 555  && latticeCells[1] >= 555);
     doNormalize = (!isLatticeRange || latticeCells[2] == 1);
-    doPackUnitCell = (isLatticeRange && latticeCells[2] == -1);
+    this.doPackUnitCell = doPackUnitCell;
     setApplySymmetryToBonds(applySymmetryToBonds);
   }
   
@@ -573,13 +574,13 @@ public class AtomSetCollection {
   
   void applySymmetry() throws Exception {
      //parameters are counts of unit cells as [a b c]
-     applySymmetry(latticeCells[0], latticeCells[1], latticeCells[2]);
+     applySymmetry(latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]));
    }
 
    void applySymmetry(SymmetryInterface symmetry) throws Exception {
      getSymmetry().setSpaceGroup(symmetry);
      //parameters are counts of unit cells as [a b c]
-     applySymmetry(latticeCells[0], latticeCells[1], latticeCells[2]);
+     applySymmetry(latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]));
    }
 
    boolean doNormalize = true;
@@ -649,14 +650,14 @@ public class AtomSetCollection {
       maxX = (maxY / 100) - 4;
       maxZ = (maxY % 10) - 4;
       maxY = (maxY % 100) / 10 - 4;
-      if (doPackUnitCell) {
-        minX--;
-        maxX++;
-        minY--;
-        maxY++;
-        minZ--;
-        maxZ++;
-      }
+    }
+    if (doPackUnitCell) {
+      minX--;
+      maxX++;
+      minY--;
+      maxY++;
+      minZ--;
+      maxZ++;
     }
     this.maxX = maxX;
     this.maxY = maxY;

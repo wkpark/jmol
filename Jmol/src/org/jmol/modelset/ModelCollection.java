@@ -1762,7 +1762,7 @@ abstract public class ModelCollection extends BondCollection {
     case Token.boundbox:
       BoxInfo boxInfo = getBoxInfo((BitSet) specInfo);
       bs = getAtomsWithin(boxInfo.getBoundBoxCornerVector().length() + 0.0001f,
-          boxInfo.getBoundBoxCenter());
+          boxInfo.getBoundBoxCenter(), null, -1);
       for (int i = 0; i < atomCount; i++)
         if (bs.get(i) && !boxInfo.isWithin(atoms[i]))
           bs.clear(i);
@@ -1847,6 +1847,10 @@ abstract public class ModelCollection extends BondCollection {
           for (int iModel = modelCount; --iModel >= 0;) {
             if (!bsCheck.get(iModel))
               continue;
+            if (distance < 0) {
+              getAtomsWithin(distance, atoms[i].getFractionalUnitCoord(true), bsResult, -1);
+              continue;
+            }
             AtomIndexIterator iterWithin = getWithinModelIterator(iModel, atoms[i],
                 distance);
             while (iterWithin.hasNext())
@@ -1857,6 +1861,10 @@ abstract public class ModelCollection extends BondCollection {
     } else {
       for (int i = atomCount; --i >= 0;)
         if (bs.get(i)) {
+          if (distance < 0) {
+            getAtomsWithin(distance, atoms[i], bsResult, atoms[i].modelIndex);
+            continue;
+          }
           AtomIndexIterator iterWithin = getWithinModelIterator(atoms[i], distance);
           while (iterWithin.hasNext())
             if ((iAtom = iterWithin.next()) >= 0
@@ -1867,26 +1875,22 @@ abstract public class ModelCollection extends BondCollection {
     return bsResult;
   }
 
-  public BitSet getAtomsWithin(float distance, Point3f coord) {
+  public BitSet getAtomsWithin(float distance, Point3f coord, BitSet bsResult, int modelIndex) {
 
-    BitSet bsResult = new BitSet();
+    if (bsResult == null) bsResult = new BitSet();
     
-/*    
-    //this test showed it was highly worth the effort to do this.
-    
-    long timeBegin = 0;
-    timeBegin = System.currentTimeMillis();
-
-    if (viewer.getTestFlag1()) {
+    if (distance < 0) { // just check all unitCell distances
+      distance = -distance;
       for (int i = atomCount; --i >= 0;) {
         Atom atom = atoms[i];
-        if (atom.distance(coord) <= distance)
+        if (modelIndex >= 0 && atoms[i].modelIndex != modelIndex)
+          continue;
+        if (!bsResult.get(i) && atom.getFractionalUnitCoord(true).distance(coord) <= distance)
           bsResult.set(atom.atomIndex);
       }
-      //System.out.println("modelCollection simple distance " + (System.currentTimeMillis() - timeBegin));
       return bsResult;
     }
-*/
+
     BitSet bsCheck = getIterativeModels(false);
     float d2 = distance * distance;
     for (int iModel = modelCount; --iModel >= 0;) {

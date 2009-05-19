@@ -2083,6 +2083,15 @@ class Eval {
     case Token.fracZ:
       propertyValue = atom.getFractionalCoord('Z');
       return asInt ? propertyValue * 100 : propertyValue;
+    case Token.unitX:
+      propertyValue = atom.getFractionalUnitCoord('X');
+      return asInt ? propertyValue * 100 : propertyValue;
+    case Token.unitY:
+      propertyValue = atom.getFractionalUnitCoord('Y');
+      return asInt ? propertyValue * 100 : propertyValue;
+    case Token.unitZ:
+      propertyValue = atom.getFractionalUnitCoord('Z');
+      return asInt ? propertyValue * 100 : propertyValue;
     case Token.color:
       return propertyValue = viewer.getColixArgb(atom.getColix());
     default:
@@ -4399,15 +4408,9 @@ class Eval {
       }
       if (tok == Token.identifier 
           && parameterAsString(i).equalsIgnoreCase("packed")) {
-        if (lattice == null) {
+        if (lattice == null)
           lattice = new Point3f(555,555,-1);
-        } else {
-          if (lattice.x < 5 && lattice.y < 5) {
-            lattice.y = 555 + (lattice.x - 1) * 100 + (lattice.y - 1) * 10 + lattice.z - 1;
-            lattice.x = 555;
-          }
-          lattice.z = -1;            
-        }
+        htParams.put("packed", Boolean.TRUE);
       }
       if (lattice != null) {
         i = iToken + 1;
@@ -8152,7 +8155,7 @@ class Eval {
             fv = 0;
             break;
           case Token.unitXyz:
-            pt.add(atom.getFractionalUnitCoord());
+            pt.add(atom.getFractionalUnitCoord(false));
             fv = 0;
             break;
           case Token.vibXyz:
@@ -13331,7 +13334,7 @@ class Eval {
         withinStr = Token.sValue(args[1]);
         if (!Parser.isOneOf(withinStr.toLowerCase(), "on;off;plane;hkl;coord"))
           return false;
-        // within (distance, true|false, [point or atom center] 
+        // within (distance, true|false, {atom collection}) 
         // within (distance, plane|hkl,  [plane definition] )
         // within (distance, coord,  [point or atom center] )
         break;

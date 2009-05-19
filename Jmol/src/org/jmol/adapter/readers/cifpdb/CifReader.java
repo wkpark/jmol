@@ -64,7 +64,8 @@ public class CifReader extends AtomSetCollectionReader {
   private String chemicalName = "";
   private String thisStructuralFormula = "";
   private String thisFormula = "";
-  
+  private boolean iHaveDesiredModel;
+
   private Hashtable htHetero;
 
   public AtomSetCollection readAtomSetCollection(BufferedReader reader) {

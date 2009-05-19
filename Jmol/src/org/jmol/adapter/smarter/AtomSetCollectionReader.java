@@ -73,157 +73,116 @@ import javax.vecmath.Vector3f;
  *  twice -- it has a check to make sure it doesn't RUN twice -- once
  *  at the beginning and once at the end of the model.
  *  
- *  LOAD PARAMETERS:
+ * htParams is used for passing information to the readers
+ * and for returning information from the readers
+ * 
+ * It won't be null at this stage.
+ * 
+ * from Eval or Viewer:
+ * 
+ *  applySymmetryToBonds
+ *  atomTypes (for Mol2Reader)
+ *  bsModels
+ *  filter
+ *  firstLastStep
+ *  firstLastSteps
+ *  getHeader
+ *  isTrajectory
+ *  lattice
+ *  manifest (for SmarterJmolAdapter)
+ *  modelNumber
+ *  spaceGroupIndex
+ *  symmetryRange
+ *  unitcell
+ *  packed
  *  
- *  load parameters are in the form of an integer array of varying length.
- *  Some of these must be implemented in individual readers
+ * from FileManager:
+ * 
+ *  fullPathName
+ *  subFileList (for SmarterJmolAdapter)
+ * 
+ * from MdTopReader:
+ *   
+ *  isPeriodic
+ *  templateAtomCount
  *  
- *  0:       desired model number
- *  1 - 3:   {i j k} lattice parameters for applying symmetry
- *  4:       desired space group number
- *  5 - 10:  unit cell parameters a b c alpha beta gamma
+ * from MdCrdReader:   
+ * 
+ *  trajectorySteps
+ *  
+ * from Resolver:
+ * 
+ *  filteredAtomCount
+ *  ptFile
+ *  readerName
+ *  templateAtomCount
+ *  
+ *  
+ * from AtomSetCollectionReader:
+ *  
+ *  bsFilter
+ *  
  * 
  */
 
 public abstract class AtomSetCollectionReader {
-  public AtomSetCollection atomSetCollection;
-  public BufferedReader reader;
 
-  public final static float ANGSTROMS_PER_BOHR = 0.5291772f;
+  public final static float ANGSTROMS_PER_BOHR = 0.5291772f; // used by SpartanArchive
 
-  private int desiredModelNumber = Integer.MIN_VALUE;
-  public int modelNumber;
-  public boolean iHaveDesiredModel;
-  public BitSet bsModels;
-  public int lastModelNumber = Integer.MAX_VALUE;
-
-  public boolean getHeader;
-  public String filter;
-
-  public BitSet bsFilter;
-  public String spaceGroup;
-  private SymmetryInterface symmetry;
-  public float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
-  public int[] latticeCells;
-  public float[][] primitiveLatticeVectors;
-  public int desiredSpaceGroupIndex = -1;
-
+  protected AtomSetCollection atomSetCollection;
+  protected BufferedReader reader;
   protected String readerName;
-  protected boolean doApplySymmetry;
-  boolean doConvertToFractional;
-  boolean fileCoordinatesAreFractional;
-  boolean ignoreFileUnitCell;
-  protected boolean ignoreFileSymmetryOperators;
-  boolean ignoreFileSpaceGroupName;
-  public boolean isTrajectory;
-  protected boolean applySymmetryToBonds;
-  float symmetryRange;  
-
-  // state variables
-  public boolean iHaveUnitCell;
-  //boolean iHaveCartesianToFractionalMatrix;
-  private boolean iHaveFractionalCoordinates;
-  public boolean iHaveSymmetryOperators;
-  public boolean needToApplySymmetry;
-  protected int[] firstLastStep;
-  protected int templateAtomCount;
   protected Hashtable htParams;
-  protected int ptFile;
+
+  // buffer
   public String line, prevline; 
-  protected long ptLine;
- 
-public int[] next = new int[1];
-  
-  
-  // parser functions are static, so they need notstatic counterparts
-   
+  protected int[] next = new int[1];
+  private long ptLine;
+
+  // protected/public state variables
+  public int[] latticeCells;
+  public boolean iHaveUnitCell;
+  public boolean iHaveSymmetryOperators;
+  protected boolean doApplySymmetry;
+  protected boolean ignoreFileSymmetryOperators;
+  protected boolean isTrajectory;
+  protected boolean applySymmetryToBonds;
+  protected boolean needToApplySymmetry;
+  protected boolean getHeader;
+  protected int templateAtomCount;
+  protected int modelNumber;
+  protected BitSet bsModels;
+  protected BitSet bsFilter;
+  protected String filter;
+  protected String spaceGroup;
+
+  // private state variables
+  private boolean iHaveFractionalCoordinates;
+  private boolean doPackUnitCell;
+  private boolean doConvertToFractional;
+  private boolean fileCoordinatesAreFractional;
+  private boolean ignoreFileUnitCell;
+  private boolean ignoreFileSpaceGroupName;
+  private float symmetryRange;  
+  private float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
+  private int[] firstLastStep;
+  private int desiredModelNumber = Integer.MIN_VALUE;
+  private int lastModelNumber = Integer.MAX_VALUE;
+  private int desiredSpaceGroupIndex = -1;
+  private SymmetryInterface symmetry;
+
 /*  
   public void finalize() {
     System.out.println(this + " finalized");
   }
 */  
-  protected String[] getTokens() {
-    return Parser.getTokens(line);  
-  }
-  
-  protected static void getTokensFloat(String s, float[] f, int n) {
-    Parser.parseFloatArray(getTokens(s), f, n);
-  }
-  
-  public static String[] getTokens(String s) {
-    return Parser.getTokens(s);  
-  }
-  
-  protected static String[] getTokens(String s, int iStart) {
-    return Parser.getTokens(s, iStart);  
-  }
-  
-  protected float parseFloat() {
-    return Parser.parseFloat(line, next);
-  }
-
-  public float parseFloat(String s) {
-    next[0] = 0;
-    return Parser.parseFloat(s, next);
-  }
-
-  protected float parseFloat(String s, int iStart, int iEnd) {
-    next[0] = iStart;
-    return Parser.parseFloat(s, iEnd, next);
-  }
-  
-  protected int parseInt() {
-    return Parser.parseInt(line, next);
-  }
-  
-  public int parseInt(String s) {
-    next[0] = 0;
-    return Parser.parseInt(s, next);
-  }
-  
-  protected int parseInt(String s, int iStart) {
-    next[0] = iStart;
-    return Parser.parseInt(s, next);
-  }
-  
-  protected int parseInt(String s, int iStart, int iEnd) {
-    next[0] = iStart;
-    return Parser.parseInt(s, iEnd, next);
-  }
-
-  protected String parseToken() {
-    return Parser.parseToken(line, next);
-  }
-  
-  protected String parseToken(String s) {
-    next[0] = 0;
-    return Parser.parseToken(s, next);
-  }
-  
-  protected String parseTokenNext(String s) {
-    return Parser.parseToken(s, next);
-  }
-
-  protected String parseToken(String s, int iStart, int iEnd) {
-    next[0] = iStart;
-    return Parser.parseToken(s, iEnd, next);
-  }
-  
-  protected static String parseTrimmed(String s, int iStart) {
-    return Parser.parseTrimmed(s, iStart);
-  }
-  
-  protected static String parseTrimmed(String s, int iStart, int iEnd) {
-    return Parser.parseTrimmed(s, iStart, iEnd);
-  }
-  
   public abstract AtomSetCollection readAtomSetCollection(BufferedReader reader);
 
   public AtomSetCollection readAtomSetCollectionFromDOM(Object DOMNode) {
     return null;
   }
 
-  public AtomSetCollection setError(Exception e) {
+  protected AtomSetCollection setError(Exception e) {
     e.printStackTrace();
     if (line == null)
       atomSetCollection.errorMessage = "Unexpected end of file after line "
@@ -234,60 +193,7 @@ public int[] next = new int[1];
     return atomSetCollection;
   }
   
-  /*
-   * htParams is used for passing information to the readers
-   * and for returning information from the readers
-   * 
-   * It won't be null at this stage.
-   * 
-   * from Eval or Viewer:
-   * 
-   *  applySymmetryToBonds
-   *  atomTypes (for Mol2Reader)
-   *  bsModels
-   *  filter
-   *  firstLastStep
-   *  firstLastSteps
-   *  getHeader
-   *  isTrajectory
-   *  lattice
-   *  manifest (for SmarterJmolAdapter)
-   *  modelNumber
-   *  spaceGroupIndex
-   *  symmetryRange
-   *  unitcell
-   *  
-   * from FileManager:
-   * 
-   *  fullPathName
-   *  subFileList (for SmarterJmolAdapter)
-   * 
-   * from MdTopReader:
-   *   
-   *  isPeriodic
-   *  templateAtomCount
-   *  
-   * from MdCrdReader:   
-   * 
-   *  trajectorySteps
-   *  
-   * from Resolver:
-   * 
-   *  filteredAtomCount
-   *  ptFile
-   *  readerName
-   *  templateAtomCount
-   *  
-   *  
-   * from AtomSetCollectionReader:
-   *  
-   *  bsFilter
-   *  
-   *  
-   */
-  
-  
-  public void initialize(Hashtable htParams) {
+  void initialize(Hashtable htParams) {
 
     initializeSymmetry();
     this.htParams = htParams;
@@ -311,7 +217,7 @@ public int[] next = new int[1];
     // ptFile >= 0 indicates multiple files are being loaded
     // if the file is not the first read in the LOAD command, then
     // we look to see if it was loaded using LOAD ... "..." COORD ....
-    ptFile = (htParams.containsKey("ptFile") ? ((Integer) htParams
+    int ptFile = (htParams.containsKey("ptFile") ? ((Integer) htParams
         .get("ptFile")).intValue() : -1);
     if (ptFile > 0 && htParams.containsKey("firstLastSteps")) {
       Object val = ((Vector) htParams.get("firstLastSteps"))
@@ -357,9 +263,10 @@ public int[] next = new int[1];
       latticeCells[0] = (int) pt.x;
       latticeCells[1] = (int) pt.y;
       latticeCells[2] = (int) pt.z;
+      doPackUnitCell = (htParams.containsKey("packed") || latticeCells[2] < 0);
     }
     doApplySymmetry = (latticeCells[0] > 0 && latticeCells[1] > 0);
-    //allows for {1 1 1} or {555 555 0|1|-1}
+    //allows for {1 1 1} or {1 1 -1} or {555 555 0|1|-1} (-1  being "packed")
     if (!doApplySymmetry) {
       latticeCells[0] = 0;
       latticeCells[1] = 0;
@@ -393,7 +300,7 @@ public int[] next = new int[1];
     }
   }
 
-  public boolean doGetModel(int modelNumber) {
+  protected boolean doGetModel(int modelNumber) {
     // modelNumber is 1-based, but firstLastStep is 0-based
     
     return (bsModels == null ? desiredModelNumber == Integer.MIN_VALUE || modelNumber == desiredModelNumber
@@ -403,7 +310,7 @@ public int[] next = new int[1];
             && (firstLastStep[2] < 2 || (modelNumber - 1 - firstLastStep[0]) % firstLastStep[2] == 0));
   }
   
-  public boolean isLastModel(int modelNumber) {
+  protected boolean isLastModel(int modelNumber) {
     return (desiredModelNumber != Integer.MIN_VALUE || modelNumber >= lastModelNumber);
   }
 
@@ -422,7 +329,7 @@ public int[] next = new int[1];
     needToApplySymmetry = false;
   }
 
-  public void newAtomSet(String name) {
+  protected void newAtomSet(String name) {
     if (atomSetCollection.currentAtomSetIndex >= 0) {
       atomSetCollection.newAtomSet();
       atomSetCollection.setCollectionName("<collection of "
@@ -442,14 +349,14 @@ public int[] next = new int[1];
   public void setSymmetryOperator(String xyz) {
     if (ignoreFileSymmetryOperators)
       return;
-    atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds);
+    atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds, doPackUnitCell);
     if (!atomSetCollection.addSpaceGroupOperation(xyz))
       Logger.warn("Skipping symmetry operation " + xyz);
     iHaveSymmetryOperators = true;
   }
 
   private int nMatrixElements = 0;
-  public void initializeCartesianToFractional() {
+  private void initializeCartesianToFractional() {
     for (int i = 0; i < 16; i++)
       if (!Float.isNaN(notionalUnitCell[6 + i]))
         return; //just do this once
@@ -465,6 +372,7 @@ public int[] next = new int[1];
       notionalUnitCell[i] = Float.NaN;
     checkUnitCell(6);    
   }
+  
   public void setUnitCellItem(int i, float x) {
     if (ignoreFileUnitCell)
       return;
@@ -481,7 +389,7 @@ public int[] next = new int[1];
       checkUnitCell(22);
   }
 
-  public void setUnitCell(float a, float b, float c, float alpha, float beta,
+  protected void setUnitCell(float a, float b, float c, float alpha, float beta,
                    float gamma) {
     if (ignoreFileUnitCell)
       return;
@@ -522,12 +430,12 @@ public int[] next = new int[1];
     iHaveFractionalCoordinates = fileCoordinatesAreFractional = TF;
   }
 
-  public boolean filterAtom(Atom atom) {
+  protected boolean filterAtom(Atom atom) {
     //cif, pdb readers
     return filterAtom(atom, atomSetCollection.atomCount);
   }
 
-  public boolean filterAtom(Atom atom, int iAtom) {
+  protected boolean filterAtom(Atom atom, int iAtom) {
     //mdtop, cif, pdb
     String code;
     boolean isOK = false;
@@ -617,7 +525,7 @@ public int[] next = new int[1];
     atomSetCollection.setAtomSetSpaceGroupName(spaceGroup);
     atomSetCollection.setSymmetryRange(symmetryRange);
     if (doConvertToFractional || fileCoordinatesAreFractional) {
-      atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds);
+      atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds, doPackUnitCell);
       if (ignoreFileSpaceGroupName || !iHaveSymmetryOperators) {
         SymmetryInterface symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
         if (symmetry.createSpaceGroup(desiredSpaceGroupIndex, (spaceGroup
@@ -641,11 +549,37 @@ public int[] next = new int[1];
       Logger.info(orbitals.size() + " molecular orbitals read in model " + modelNumber);
   }
 
+  private Matrix3f matrixRotate;
+  protected void setTransform(float x1, float y1, float z1, float x2, float y2,
+                              float z2, float x3, float y3, float z3) {
+    if (matrixRotate != null)
+      return;
+    matrixRotate = new Matrix3f();
+    Vector3f v = new Vector3f();
+    // rows in Sygress/CAChe and Spartan become columns here
+    v.set(x1, y1, z1);
+    v.normalize();
+    matrixRotate.setColumn(0, v);
+    v.set(x2, y2, z2);
+    v.normalize();
+    matrixRotate.setColumn(1, v);
+    v.set(x3, y3, z3);
+    v.normalize();
+    matrixRotate.setColumn(2, v);
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("defaultOrientationMatrix",
+        new Matrix3f(matrixRotate));
+    // first two matrix column vectors define quaternion X and XY plane
+    Quaternion q = new Quaternion(matrixRotate);
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("defaultOrientationQuaternion", q);
+    Logger.info("defaultOrientationMatrix = " + matrixRotate);    
+    
+  }
+ 
   public static String getElementSymbol(int elementNumber) {
     return JmolAdapter.getElementSymbol(elementNumber);
   }
   
-  public static String deducePdbElementSymbol(boolean isHetero, String XX,
+  protected static String deducePdbElementSymbol(boolean isHetero, String XX,
                                            String group3) {
     // short of having an entire table,
     int i = XX.indexOf('\0');
@@ -775,29 +709,81 @@ public int[] next = new int[1];
     return fields;
   }
 
-  Matrix3f matrixRotate;
-  public void setTransform(float x1, float y1, float z1, float x2, float y2,
-                              float z2, float x3, float y3, float z3) {
-    if (matrixRotate != null)
-      return;
-    matrixRotate = new Matrix3f();
-    Vector3f v = new Vector3f();
-    // rows in Sygress/CAChe and Spartan become columns here
-    v.set(x1, y1, z1);
-    v.normalize();
-    matrixRotate.setColumn(0, v);
-    v.set(x2, y2, z2);
-    v.normalize();
-    matrixRotate.setColumn(1, v);
-    v.set(x3, y3, z3);
-    v.normalize();
-    matrixRotate.setColumn(2, v);
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("defaultOrientationMatrix",
-        new Matrix3f(matrixRotate));
-    // first two matrix column vectors define quaternion X and XY plane
-    Quaternion q = new Quaternion(matrixRotate);
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("defaultOrientationQuaternion", q);
-    Logger.info("defaultOrientationMatrix = " + matrixRotate);
+  // parser functions are static, so they need notstatic counterparts
+  
+  protected String[] getTokens() {
+    return Parser.getTokens(line);  
   }
   
+  protected static void getTokensFloat(String s, float[] f, int n) {
+    Parser.parseFloatArray(getTokens(s), f, n);
+  }
+  
+  public static String[] getTokens(String s) {
+    return Parser.getTokens(s);  
+  }
+  
+  protected static String[] getTokens(String s, int iStart) {
+    return Parser.getTokens(s, iStart);  
+  }
+  
+  protected float parseFloat() {
+    return Parser.parseFloat(line, next);
+  }
+
+  public float parseFloat(String s) {
+    next[0] = 0;
+    return Parser.parseFloat(s, next);
+  }
+
+  protected float parseFloat(String s, int iStart, int iEnd) {
+    next[0] = iStart;
+    return Parser.parseFloat(s, iEnd, next);
+  }
+  
+  protected int parseInt() {
+    return Parser.parseInt(line, next);
+  }
+  
+  public int parseInt(String s) {
+    next[0] = 0;
+    return Parser.parseInt(s, next);
+  }
+  
+  protected int parseInt(String s, int iStart) {
+    next[0] = iStart;
+    return Parser.parseInt(s, next);
+  }
+  
+  protected int parseInt(String s, int iStart, int iEnd) {
+    next[0] = iStart;
+    return Parser.parseInt(s, iEnd, next);
+  }
+
+  protected String parseToken() {
+    return Parser.parseToken(line, next);
+  }
+  
+  protected String parseToken(String s) {
+    next[0] = 0;
+    return Parser.parseToken(s, next);
+  }
+  
+  protected String parseTokenNext(String s) {
+    return Parser.parseToken(s, next);
+  }
+
+  protected String parseToken(String s, int iStart, int iEnd) {
+    next[0] = iStart;
+    return Parser.parseToken(s, iEnd, next);
+  }
+  
+  protected static String parseTrimmed(String s, int iStart) {
+    return Parser.parseTrimmed(s, iStart);
+  }
+  
+  protected static String parseTrimmed(String s, int iStart, int iEnd) {
+    return Parser.parseTrimmed(s, iStart, iEnd);
+  }  
+
 }

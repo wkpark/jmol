@@ -628,7 +628,7 @@ final public class Atom extends Point3fi {
   }
     
   public float getFractionalUnitCoord(char ch) {
-    Point3f pt = getFractionalUnitCoord();
+    Point3f pt = getFractionalUnitCoord(false);
     return (ch == 'X' ? pt.x : ch == 'Y' ? pt.y : pt.z);
   }
 
@@ -640,12 +640,13 @@ final public class Atom extends Point3fi {
     return pt;
   }
   
-  public Point3f getFractionalUnitCoord() {
+  public Point3f getFractionalUnitCoord(boolean asCartesian) {
     SymmetryInterface[] c = group.chain.modelSet.unitCells;
     Point3f pt = new Point3f(this);
     if (c != null) {
       c[modelIndex].toUnitCell(pt, null);
-      c[modelIndex].toFractional(pt);
+      if (!asCartesian)
+        c[modelIndex].toFractional(pt);
     }
     return pt;
   }

@@ -54,6 +54,7 @@ public class Wien2kReader extends AtomSetCollectionReader {
       readAtoms();
       readSymmetry();
       applySymmetryAndSetTrajectory();
+      readEmbeddedScript();
     } catch (Exception e) {
       return setError(e);
     }
@@ -218,5 +219,12 @@ public class Wien2kReader extends AtomSetCollectionReader {
       }
     }
     return xyz;
+  }
+  
+  private void readEmbeddedScript() throws Exception {
+    while (line != null) {
+      checkLineForScript();
+      readLine();
+    }
   }
 }

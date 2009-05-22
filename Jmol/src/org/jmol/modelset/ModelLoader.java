@@ -1185,6 +1185,8 @@ public final class ModelLoader extends ModelSet {
         Logger.info("xyz: " + pt + " vib: " + v);
       setVibration(bsSelected, pt, v, tol);
     }
-    viewer.setStringProperty("_vibrationName", adapter.getAtomSetName(atomSetCollection, 0));
+    String vibName = adapter.getAtomSetName(atomSetCollection, 0);
+    Logger.info("_vibrationName = " + vibName);
+    viewer.setStringProperty("_vibrationName", vibName);
   }
 }

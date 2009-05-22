@@ -6666,7 +6666,7 @@ class Eval {
       int modelIndex = viewer.getCurrentModelIndex();
       if (!isSyntaxCheck && modelIndex >= 0
           && (modelIndex = viewer.getJmolDataSourceFrame(modelIndex)) >= 0)
-        viewer.setCurrentModelIndex(modelIndex, true);
+        viewer.setCurrentModelIndex(Integer.MIN_VALUE);
       return;
     }
     String p1 = optParameterAsString(1);

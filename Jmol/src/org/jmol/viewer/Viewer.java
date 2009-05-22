@@ -4165,9 +4165,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   int prevFrame = Integer.MIN_VALUE;
   
   void setStatusFrameChanged(int frameNo) {
-    transformManager.setVibrationPeriod(Float.NaN);
-    
     int modelIndex = repaintManager.currentModelIndex;
+    if (frameNo == Integer.MIN_VALUE) {
+      // force reset (reading vibrations)
+      prevFrame = Integer.MIN_VALUE;
+      frameNo = modelIndex;
+    }
+    transformManager.setVibrationPeriod(Float.NaN);
+
     int firstIndex = repaintManager.firstModelIndex;
     int lastIndex = repaintManager.lastModelIndex;
 

@@ -572,7 +572,8 @@ abstract public class AtomCollection {
   }
 
   public Vector3f getVibrationVector(int atomIndex) {
-    return vibrationVectors == null ? null : vibrationVectors[atomIndex];
+    Vector3f v = (vibrationVectors == null ? null : vibrationVectors[atomIndex]);
+    return (v == null ? new Vector3f() : v);
   }
 
   protected void setVibrationVector(int atomIndex, float x, float y, float z) {

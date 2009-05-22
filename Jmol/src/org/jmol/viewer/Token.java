@@ -145,7 +145,7 @@ public class Token {
    *          xx                     atomproperty
    *         xxx                     mathproperty
    *        x  x                     mathfunc
-   *                           xxxxx unique id
+   *                           xxxxx unique id 1 to 0x1F (31)
    *                         xx      minmaxmask (all)
    *                          x      min
    *                         x       max
@@ -455,6 +455,8 @@ public class Token {
   
   // ___.xxx math properties and all atom properties 
   
+  final public static int vibflag   = 0x10;
+  
   final public static int atoms     = 1 | mathproperty;
   final public static int bonds     = 2 | mathproperty | setparam;
   final public static int color     = 3 | mathproperty | command | setparam | settable;
@@ -463,10 +465,10 @@ public class Token {
   final static int lines            = 6 | mathproperty;
   final static int size             = 7 | mathproperty;
   final public static int type      = 8 | mathproperty;
-  final public static int xyz       = 9 | mathproperty | settable;
-  final public static int fracXyz   =10 | mathproperty | settable;
-  final public static int vibXyz    =11 | mathproperty | settable;
-  final public static int unitXyz   =12 | mathproperty | settable;
+  final public static int xyz       = 1 | mathproperty | settable;
+  final public static int fracXyz   = 2 | mathproperty | settable;
+  final public static int unitXyz   = 3 | mathproperty | settable;
+  final public static int vibXyz    = 4 | mathproperty | settable | vibflag;
   final static int property         =13 | mathproperty | setparam | settable;
   final public static int boundbox  =14 | mathproperty | setparam | command | defaultON;
   final public static int adpmax    =15 | mathproperty;
@@ -507,12 +509,12 @@ public class Token {
   final public static int straightness    = atomproperty | comparefloatx100 | 9;
   final static int surfacedistance        = atomproperty | comparefloatx100 |10;
   final public static int temperature     = atomproperty | comparefloatx100 |11 | settable;
-  final public static int vibX            = atomproperty | comparefloatx100 |12 | settable;
-  final public static int vibY            = atomproperty | comparefloatx100 |13 | settable;
-  final public static int vibZ            = atomproperty | comparefloatx100 |14 | settable;
   final public static int unitX            = atomproperty | comparefloatx100 |15;
   final public static int unitY            = atomproperty | comparefloatx100 |16;
   final public static int unitZ            = atomproperty | comparefloatx100 |17;
+  final public static int vibX            = atomproperty | comparefloatx100 |1 | settable | vibflag;
+  final public static int vibY            = atomproperty | comparefloatx100 |2 | settable | vibflag;
+  final public static int vibZ            = atomproperty | comparefloatx100 |3 | settable | vibflag;
 
 
   // mathfunc               means x = somefunc(a,b,c)

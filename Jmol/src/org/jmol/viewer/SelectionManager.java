@@ -110,7 +110,7 @@ class SelectionManager {
   }
   
   boolean isSelected(int atomIndex) {
-    return bsSelection.get(atomIndex);
+    return (atomIndex >= 0 && bsSelection.get(atomIndex));
   }
 
   void select(BitSet bs, boolean isQuiet) {

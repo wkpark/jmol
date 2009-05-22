@@ -492,7 +492,7 @@ class Compiler {
             String strFormat = script.substring(ichToken, ichToken + cchToken);
             strFormat = strFormat.toLowerCase();
             if (Parser
-                .isOneOf(strFormat, "append;files;menu;trajectory;models"))
+                .isOneOf(strFormat, "append;vibration;files;menu;trajectory;models"))
               addTokenToPrefix(new Token(Token.identifier, strFormat));
             else if (strFormat.indexOf("=") == 0) {
               addTokenToPrefix(new Token(Token.string, strFormat));

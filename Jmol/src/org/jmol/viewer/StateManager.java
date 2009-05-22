@@ -705,6 +705,7 @@ public class StateManager {
     boolean fontCaching = true;
     boolean hideNameInPopup = false;
     int hoverDelayMs = 500;
+    float loadAtomDataTolerance = 0.2f;
     boolean measurementLabels = true;
     boolean messageStyleChime = false;
     int pickingSpinRate = 10;
@@ -1220,6 +1221,7 @@ public class StateManager {
       setParameterValue("isosurfacePropertySmoothing",
           isosurfacePropertySmoothing);
       setParameterValue("justifyMeasurements", justifyMeasurements);
+      setParameterValue("loadAtomDataTolerance", loadAtomDataTolerance);
       setParameterValue("loadFormat", loadFormat);
       setParameterValue("measureAllModels", measureAllModels);
       setParameterValue("measurementLabels", measurementLabels = true);

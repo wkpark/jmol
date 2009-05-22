@@ -4295,6 +4295,7 @@ class Eval {
     int modelCount = viewer.getModelCount()
         - (viewer.getFileName().equals("zapped") ? 1 : 0);
     boolean appendNew = viewer.getAppendNew();
+    boolean vibrationOnly = false;
     StringBuffer loadScript = new StringBuffer("load");
     int nFiles = 1;
     Hashtable htParams = new Hashtable();
@@ -4318,8 +4319,13 @@ class Eval {
         i = 2;
         loadScript.append(" " + modelName);
         isAppend = (modelName.equalsIgnoreCase("append"));
-        if (isAppend
-            && ((filename = optParameterAsString(2))
+        vibrationOnly = (modelName.equalsIgnoreCase("vibration"));
+        if (vibrationOnly) {
+            htParams.put("vibrationOnly",Boolean.TRUE);
+            htParams.put("modelNumber", new Integer(1));
+            isAppend = true;
+        }
+        if (isAppend && ((filename = optParameterAsString(2))
                 .equalsIgnoreCase("trajectory") || filename
                 .equalsIgnoreCase("models"))) {
           modelName = filename;
@@ -4398,12 +4404,14 @@ class Eval {
         lattice = getPoint3f(i, false);
         i = iToken + 1;
         tok = tokAt(i);
+        sOptions += " " + Escape.escape(lattice);
       }
       if (tok == Token.identifier 
           && parameterAsString(i).equalsIgnoreCase("packed")) {
         if (lattice == null)
           lattice = new Point3f(555,555,-1);
         htParams.put("packed", Boolean.TRUE);
+        sOptions += " PACKED";
       }
       if (lattice != null) {
         i = iToken + 1;
@@ -4543,10 +4551,15 @@ class Eval {
       viewer.deallocateReaderThreads();
       return;
     }
-    viewer.addLoadScript(loadScript.toString());
-    String errMsg = viewer.createModelSetAndReturnError(isAppend);
-    // int millis = (int)(System.currentTimeMillis() - timeBegin);
-    // Logger.debug("!!!!!!!!! took " + millis + " ms");
+    String errMsg = null;
+    if (vibrationOnly) {
+      errMsg = viewer.addVibrationDataAndReturnError();
+    } else {
+      viewer.addLoadScript(loadScript.toString());
+      errMsg = viewer.createModelSetAndReturnError(isAppend);
+      // int millis = (int)(System.currentTimeMillis() - timeBegin);
+      // Logger.debug("!!!!!!!!! took " + millis + " ms");
+    }
     if (errMsg != null && !isScriptCheck) {
       if (errMsg.indexOf("file recognized as a script file:") >= 0) {
         viewer.addLoadScript("-");
@@ -7945,7 +7958,8 @@ class Eval {
     float[] data = (tok == Token.property ? viewer
         .getDataFloat((String) opValue) : null);
     int count = 0;
-
+    boolean isPt = (tok == Token.xyz || tok == Token.vibXyz || tok == Token.fracXyz 
+        || tok == Token.unitXyz || tok == Token.color);
     if (isAtoms || ptAtom >= 0) {
       int iModel = -1;
       int nOps = 0;
@@ -8215,7 +8229,7 @@ class Eval {
           isInt = false;
         }
     }
-    if (tok == Token.xyz || tok == Token.fracXyz || tok == Token.unitXyz || tok == Token.color)
+    if (isPt)
       return (n == 0 ? pt : new Point3f(pt.x / n, pt.y / n, pt.z / n));
     if (n == 0)
       return new Float(Float.NaN);

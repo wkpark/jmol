@@ -1161,4 +1161,30 @@ public final class ModelLoader extends ModelSet {
     loadShape(JmolConstants.SHAPE_BBCAGE);
     loadShape(JmolConstants.SHAPE_UCCAGE);
   }
+  
+  public void createVibrationSet(Object atomSetCollection, BitSet bsSelected) {
+    if (atomSetCollection == null) 
+        return;    
+    JmolAdapter adapter = viewer.getModelAdapter();
+    Point3f pt = new Point3f();
+    Point3f v = new Point3f();
+    float tol = ((Float) viewer.getParameter("loadAtomDataTolerance")).floatValue();
+    for (JmolAdapter.AtomIterator iterAtom = adapter
+        .getAtomIterator(atomSetCollection); iterAtom.hasNext();) {
+      float x = iterAtom.getX();
+      float y = iterAtom.getY();
+      float z = iterAtom.getZ();
+      float vx = iterAtom.getVectorX();
+      float vy = iterAtom.getVectorY();
+      float vz = iterAtom.getVectorZ();
+      if (Float.isNaN(x + y + z + vx + vy + vz))
+          continue;
+      pt.set(x, y, z);
+      v.set(vx, vy, vz);
+      if (Logger.debugging)
+        Logger.info("xyz: " + pt + " vib: " + v);
+      setVibration(bsSelected, pt, v, tol);
+    }
+    viewer.setStringProperty("_vibrationName", adapter.getAtomSetName(atomSetCollection, 0));
+  }
 }

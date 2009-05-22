@@ -30,6 +30,7 @@ import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.AtomIndexIterator;
 import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.MeasurementPending;
+import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
@@ -1841,6 +1842,37 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return errMsg;
   }
   
+  String addVibrationDataAndReturnError() {
+    Object atomSetCollection = fileManager.getAtomSetCollectionOrError();
+    fileManager.deallocateReaderThreads();
+    String errMsg;
+    if (atomSetCollection instanceof String || atomSetCollection == null) {
+      errMsg = (String) atomSetCollection;
+    } else {
+      errMsg = createVibrationSet(atomSetCollection);
+    }
+    return errMsg;
+  }
+
+  private String createVibrationSet(Object atomSetCollection) {
+    // maybe there needs to be a call to clear()
+    // or something like that here
+    // for when CdkEditBus calls this directly
+    // null fullPathName implies we are doing a merge
+    setErrorMessage(null);
+    try {
+      ((ModelLoader) modelSet).createVibrationSet(atomSetCollection, selectionManager.bsSelection);
+      setStatusFrameChanged(Integer.MIN_VALUE);
+    } catch (Error er) {
+      handleError(er, true);
+      String errMsg = getShapeErrorState();
+      errMsg = ("ERROR adding vibrations: " + er + (errMsg.length() == 0 ? "" : "|" + errMsg));
+      zap(errMsg);
+      setErrorMessage(errMsg);
+    }
+    return getErrorMessage();
+  }
+
   void deallocateReaderThreads() {
     fileManager.deallocateReaderThreads();
   }
@@ -2353,8 +2385,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean modelHasVibrationVectors(int modelIndex) {
-    return modelSetHasVibrationVectors()
-        && modelSet.modelHasVibrationVectors(modelIndex);
+    return modelSet.modelHasVibrationVectors(modelIndex);
   }
 
   public int getChainCount() {
@@ -4128,8 +4159,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   int prevFrame = Integer.MIN_VALUE;
   
   void setStatusFrameChanged(int frameNo) {
-    transformManager.setVibrationPeriod(Float.NaN);
     int modelIndex = repaintManager.currentModelIndex;
+    if (frameNo == Integer.MIN_VALUE) {
+      // force reset (reading vibrations)
+      prevFrame = Integer.MIN_VALUE;
+      frameNo = modelIndex;
+    }
+    transformManager.setVibrationPeriod(Float.NaN);
     
     int firstIndex = repaintManager.firstModelIndex;
     int lastIndex = repaintManager.lastModelIndex;

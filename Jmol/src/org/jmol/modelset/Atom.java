@@ -651,6 +651,17 @@ final public class Atom extends Point3fi {
     return pt;
   }
   
+  public float getFractionalUnitDistance(Point3f pt, Point3f ptTemp1, Point3f ptTemp2) {
+    SymmetryInterface[] c = group.chain.modelSet.unitCells;
+    if (c == null) 
+      return distance(pt);
+    ptTemp1.set(this);
+    c[modelIndex].toUnitCell(ptTemp1, null);
+    ptTemp2.set(pt);
+    c[modelIndex].toUnitCell(ptTemp2, null);
+    return ptTemp1.distance(ptTemp2);
+  }
+  
   void setFractionalCoord(int tok, float fValue) {
     SymmetryInterface[] c = group.chain.modelSet.unitCells;
     if (c != null)

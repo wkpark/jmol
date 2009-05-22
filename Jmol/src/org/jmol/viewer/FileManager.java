@@ -180,7 +180,8 @@ public class FileManager {
    */
   void createAtomSetCollectionFromFile(String name, Hashtable htParams,
                                     String loadScript, boolean isAppend) {
-    setLoadScript(loadScript, isAppend);
+    if (htParams.get("vibrationOnly") == null)
+      setLoadScript(loadScript, isAppend);
     int pt = name.indexOf("::");
     nameAsGiven = (pt >= 0 ? name.substring(pt + 2) : name);
     fileType = (pt >= 0 ? name.substring(0, pt) : null);

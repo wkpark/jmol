@@ -1703,7 +1703,8 @@ abstract public class ModelCollection extends BondCollection {
 
   public void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
     super.setAtomCoord(bs, tokType, xyzValues);
-    recalculateLeadMidpointsAndWingVectors(-1);
+    if ((tokType & Token.vibflag) == 0)
+      recalculateLeadMidpointsAndWingVectors(-1);
   }
 
   public int getAtomCountInModel(int modelIndex) {
@@ -1869,17 +1870,22 @@ abstract public class ModelCollection extends BondCollection {
     return bsResult;
   }
 
-  public BitSet getAtomsWithin(float distance, Point3f coord, BitSet bsResult, int modelIndex) {
+  public BitSet getAtomsWithin(float distance, Point3f coord, BitSet bsResult,
+                               int modelIndex) {
 
-    if (bsResult == null) bsResult = new BitSet();
-    
+    if (bsResult == null)
+      bsResult = new BitSet();
+
     if (distance < 0) { // just check all unitCell distances
       distance = -distance;
+      final Point3f ptTemp1 = new Point3f();
+      final Point3f ptTemp2 = new Point3f();
       for (int i = atomCount; --i >= 0;) {
         Atom atom = atoms[i];
         if (modelIndex >= 0 && atoms[i].modelIndex != modelIndex)
           continue;
-        if (!bsResult.get(i) && atom.getFractionalUnitCoord(true).distance(coord) <= distance)
+        if (!bsResult.get(i)
+            && atom.getFractionalUnitDistance(coord, ptTemp1, ptTemp2) <= distance)
           bsResult.set(atom.atomIndex);
       }
       return bsResult;
@@ -1898,10 +1904,17 @@ abstract public class ModelCollection extends BondCollection {
             && iterWithin.foundDistance2() <= d2)
           bsResult.set(iAtom);
     }
-    //System.out.println("modelCollection iter distance " + (System.currentTimeMillis() - timeBegin));
+    // System.out.println("modelCollection iter distance " +
+    // (System.currentTimeMillis() - timeBegin));
     return bsResult;
   }
  
+  protected void setVibration(BitSet bsSelected, Point3f pt, Point3f v, float tolerance) {
+    BitSet bs = getAtomsWithin(-tolerance, pt, null, -1);
+    bs.and(bsSelected);
+    setAtomCoord(bs,Token.vibXyz, v);
+  }
+
   public BitSet getSequenceBits(String specInfo, BitSet bs) {
     //Logger.debug("withinSequence");
     String sequence = "";

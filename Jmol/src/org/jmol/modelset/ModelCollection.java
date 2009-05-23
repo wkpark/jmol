@@ -1909,12 +1909,6 @@ abstract public class ModelCollection extends BondCollection {
     return bsResult;
   }
  
-  protected void setVibration(BitSet bsSelected, Point3f pt, Point3f v, float tolerance) {
-    BitSet bs = getAtomsWithin(-tolerance, pt, null, -1);
-    bs.and(bsSelected);
-    setAtomCoord(bs,Token.vibXyz, v);
-  }
-
   public BitSet getSequenceBits(String specInfo, BitSet bs) {
     //Logger.debug("withinSequence");
     String sequence = "";

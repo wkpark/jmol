@@ -41,6 +41,7 @@ class Compiler {
 
   Hashtable localFunctions = new Hashtable();
   final static Hashtable globalFunctions = new Hashtable();
+  private static final String LOAD_TYPES = "append;files;menu;trajectory;models;" + JmolConstants.LOAD_ATOM_DATA_TYPES;
   boolean isFunction(String name) {
     return (name.indexOf("_") == 0 ? localFunctions : globalFunctions).containsKey(name);
   }
@@ -492,7 +493,7 @@ class Compiler {
             String strFormat = script.substring(ichToken, ichToken + cchToken);
             strFormat = strFormat.toLowerCase();
             if (Parser
-                .isOneOf(strFormat, "append;vibration;files;menu;trajectory;models"))
+                .isOneOf(strFormat, LOAD_TYPES))
               addTokenToPrefix(new Token(Token.identifier, strFormat));
             else if (strFormat.indexOf("=") == 0) {
               addTokenToPrefix(new Token(Token.string, strFormat));

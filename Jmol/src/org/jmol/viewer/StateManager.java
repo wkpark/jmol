@@ -705,7 +705,7 @@ public class StateManager {
     boolean fontCaching = true;
     boolean hideNameInPopup = false;
     int hoverDelayMs = 500;
-    float loadAtomDataTolerance = 0.2f;
+    float loadAtomDataTolerance = 0.01f;
     boolean measurementLabels = true;
     boolean messageStyleChime = false;
     int pickingSpinRate = 10;

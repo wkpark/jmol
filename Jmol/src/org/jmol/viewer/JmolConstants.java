@@ -2959,6 +2959,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     SHELL_F_CARTESIAN, SHELL_F_SPHERICAL
   };
   
+  public static final String LOAD_ATOM_DATA_TYPES = "vibration;temperature;occupancy;partialcharge";
+  
   final public static int getQuantumShellTagID(String tag) {
     for (int i = quantumShellTags.length; --i >= 0;)
       if (tag.equals(quantumShellTags[i]))

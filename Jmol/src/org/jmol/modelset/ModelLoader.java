@@ -25,6 +25,7 @@
 
 package org.jmol.modelset;
 
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Quaternion;
@@ -1162,31 +1163,66 @@ public final class ModelLoader extends ModelSet {
     loadShape(JmolConstants.SHAPE_UCCAGE);
   }
   
-  public void createVibrationSet(Object atomSetCollection, BitSet bsSelected) {
+  public void createAtomDataSet(int tokType, Object atomSetCollection, BitSet bsSelected) {
     if (atomSetCollection == null) 
-        return;    
+        return; 
+    // must be one of JmolConstants.LOAD_ATOM_DATA_TYPES
     JmolAdapter adapter = viewer.getModelAdapter();
     Point3f pt = new Point3f();
     Point3f v = new Point3f();
-    float tol = ((Float) viewer.getParameter("loadAtomDataTolerance")).floatValue();
+    float tolerance = ((Float) viewer.getParameter("loadAtomDataTolerance")).floatValue();
     for (JmolAdapter.AtomIterator iterAtom = adapter
         .getAtomIterator(atomSetCollection); iterAtom.hasNext();) {
       float x = iterAtom.getX();
       float y = iterAtom.getY();
       float z = iterAtom.getZ();
-      float vx = iterAtom.getVectorX();
-      float vy = iterAtom.getVectorY();
-      float vz = iterAtom.getVectorZ();
-      if (Float.isNaN(x + y + z + vx + vy + vz))
-          continue;
       pt.set(x, y, z);
-      v.set(vx, vy, vz);
-      if (Logger.debugging)
-        Logger.info("xyz: " + pt + " vib: " + v);
-      setVibration(bsSelected, pt, v, tol);
+      if (Float.isNaN(x + y + z))
+        continue;
+      BitSet bs = getAtomsWithin(-tolerance, pt, null, -1);
+      bs.and(bsSelected);
+      if (BitSetUtil.cardinalityOf(bsSelected) == viewer.getAtomCount()) {
+        int n = BitSetUtil.cardinalityOf(bs);
+        if (n == 0) {
+          Logger.warn("createAtomDataSet: no atom found at position " + pt);
+        } else if (n > 1 && Logger.debugging) {
+          Logger.debug("createAtomDataSet: " + n + " atoms found at position " + pt);
+        }
+      }
+      switch (tokType) {
+      case Token.vibXyz:
+        float vx = iterAtom.getVectorX();
+        float vy = iterAtom.getVectorY();
+        float vz = iterAtom.getVectorZ();
+        if (Float.isNaN(vx + vy + vz))
+          continue;
+          v.set(vx, vy, vz);
+          if (Logger.debugging)
+            Logger.info("xyz: " + pt + " vib: " + v);
+          setAtomCoord(bs,tokType, v);
+        break;
+      case Token.occupancy:
+        // [0 to 100], default 100
+        setAtomProperty(bs, tokType, iterAtom.getOccupancy(), 0, null, null, null);
+        break;
+      case Token.partialCharge:
+        // anything but NaN, default NaN
+        setAtomProperty(bs, tokType, 0, iterAtom.getPartialCharge(), null, null, null);
+        break;
+      case Token.temperature:
+        // anything but NaN but rounded to 0.01 precision and stored as a short (-32000 - 32000), default NaN
+        setAtomProperty(bs, tokType, 0, iterAtom.getBfactor(), null, null, null);
+        break;
+      }
     }
-    String vibName = adapter.getAtomSetName(atomSetCollection, 0);
-    Logger.info("_vibrationName = " + vibName);
-    viewer.setStringProperty("_vibrationName", vibName);
+    //finally:
+    switch (tokType) {
+    case Token.vibXyz:
+      String vibName = adapter.getAtomSetName(atomSetCollection, 0);
+      Logger.info("_vibrationName = " + vibName);
+      viewer.setStringProperty("_vibrationName", vibName);
+      break;
+    }
+    
   }
 }

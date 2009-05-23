@@ -180,7 +180,7 @@ public class FileManager {
    */
   void createAtomSetCollectionFromFile(String name, Hashtable htParams,
                                     String loadScript, boolean isAppend) {
-    if (htParams.get("vibrationOnly") == null)
+    if (htParams.get("atomDataOnly") == null)
       setLoadScript(loadScript, isAppend);
     int pt = name.indexOf("::");
     nameAsGiven = (pt >= 0 ? name.substring(pt + 2) : name);

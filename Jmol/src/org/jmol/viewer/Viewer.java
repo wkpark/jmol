@@ -1842,27 +1842,28 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return errMsg;
   }
   
-  String addVibrationDataAndReturnError() {
+  String loadAtomDataAndReturnError(int tokType) {
     Object atomSetCollection = fileManager.getAtomSetCollectionOrError();
     fileManager.deallocateReaderThreads();
     String errMsg;
     if (atomSetCollection instanceof String || atomSetCollection == null) {
       errMsg = (String) atomSetCollection;
     } else {
-      errMsg = createVibrationSet(atomSetCollection);
+      errMsg = createAtomDataSet(tokType, atomSetCollection);
     }
     return errMsg;
   }
 
-  private String createVibrationSet(Object atomSetCollection) {
+  private String createAtomDataSet(int tokType, Object atomSetCollection) {
     // maybe there needs to be a call to clear()
     // or something like that here
     // for when CdkEditBus calls this directly
     // null fullPathName implies we are doing a merge
     setErrorMessage(null);
     try {
-      ((ModelLoader) modelSet).createVibrationSet(atomSetCollection, selectionManager.bsSelection);
-      setStatusFrameChanged(Integer.MIN_VALUE);
+      ((ModelLoader) modelSet).createAtomDataSet(tokType, atomSetCollection, selectionManager.bsSelection);
+      if (tokType == Token.vibration)
+        setStatusFrameChanged(Integer.MIN_VALUE);
     } catch (Error er) {
       handleError(er, true);
       String errMsg = getShapeErrorState();

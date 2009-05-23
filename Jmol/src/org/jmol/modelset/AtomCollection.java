@@ -530,16 +530,16 @@ abstract public class AtomCollection {
         taint(i, TAINT_FORMALCHARGE);
         break;
       case Token.occupancy:
-        setOccupancy(i, iValue);
-        taint(i, TAINT_OCCUPANCY);
+        if (setOccupancy(i, iValue))
+          taint(i, TAINT_OCCUPANCY);
         break;
       case Token.partialCharge:
-        setPartialCharge(i, fValue);
-        taint(i, TAINT_PARTIALCHARGE);
+        if (setPartialCharge(i, fValue))
+          taint(i, TAINT_PARTIALCHARGE);
         break;
       case Token.temperature:
-        setBFactor(i, fValue);
-        taint(i, TAINT_TEMPERATURE);
+        if (setBFactor(i, fValue))
+          taint(i, TAINT_TEMPERATURE);
         break;
       case Token.valence:
         atom.setValence(iValue);
@@ -615,22 +615,39 @@ abstract public class AtomCollection {
       atomTypes[atomIndex] = type;
   }
   
-  protected void setOccupancy(int atomIndex, int occupancy) {
-    if (occupancy < 0)
-      occupancy = 0;
-    else if (occupancy > 100)
-      occupancy = 100;
-      if (occupancies == null)
-        occupancies = new byte[atoms.length];
-      occupancies[atomIndex] = (byte)occupancy;
+  protected boolean setOccupancy(int atomIndex, int occupancy) {
+    if (occupancies == null) {
+      if (occupancy >= 100)
+        return false; // 100 is the default; anything higher is set to that
+      occupancies = new byte[atoms.length];
+    }
+    occupancies[atomIndex] = (byte) (occupancy > 100 ? 100 : occupancy < 0 ? 0 : occupancy);
+    return true;
   }
   
-  protected void setPartialCharge(int atomIndex, float partialCharge) {
+  protected boolean setPartialCharge(int atomIndex, float partialCharge) {
     if (Float.isNaN(partialCharge))
-      return;
-    if (partialCharges == null)
+      return false;
+    if (partialCharges == null) {
+      if (partialCharge == 0)
+        return false; // no need to store a 0.
       partialCharges = new float[atoms.length];
+    }
     partialCharges[atomIndex] = partialCharge;
+    return true;
+  }
+
+  protected boolean setBFactor(int atomIndex, float bfactor) {
+    if (Float.isNaN(bfactor))
+      return false;
+    if (bfactor100s == null) {
+      if (bfactor == 0 && bfactor100s == null) // there's no need to store a 0.
+        return false;
+      bfactor100s = new short[atoms.length];
+    }
+    bfactor100s[atomIndex] = (short) ((bfactor < -327.68f ? -327.68f
+        : bfactor > 327.67 ? 327.67 : bfactor) * 100);
+    return true;
   }
 
   protected void setEllipsoid(int atomIndex, Object[] ellipsoid) {
@@ -639,14 +656,6 @@ abstract public class AtomCollection {
     if (ellipsoids == null)
       ellipsoids = new Object[atoms.length][];
     ellipsoids[atomIndex] = ellipsoid;
-  }
-
-  protected void setBFactor(int atomIndex, float bfactor) {
-  if (Float.isNaN(bfactor) || bfactor == 0)
-    return;
-    if (bfactor100s == null)
-      bfactor100s = new short[atoms.length];
-    bfactor100s[atomIndex] = (short)(bfactor * 100);
   }
 
   // loading data

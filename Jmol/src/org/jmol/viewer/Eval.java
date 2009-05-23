@@ -4295,7 +4295,7 @@ class Eval {
     int modelCount = viewer.getModelCount()
         - (viewer.getFileName().equals("zapped") ? 1 : 0);
     boolean appendNew = viewer.getAppendNew();
-    boolean vibrationOnly = false;
+    boolean atomDataOnly = false;
     StringBuffer loadScript = new StringBuffer("load");
     int nFiles = 1;
     Hashtable htParams = new Hashtable();
@@ -4304,6 +4304,7 @@ class Eval {
     //    String filename = "";
     String modelName = null;
     String filename;
+    int tokType = 0;
     if (statementLength == 1) {
       i = 0;
     } else {
@@ -4319,11 +4320,12 @@ class Eval {
         i = 2;
         loadScript.append(" " + modelName);
         isAppend = (modelName.equalsIgnoreCase("append"));
-        vibrationOnly = (modelName.equalsIgnoreCase("vibration"));
-        if (vibrationOnly) {
-            htParams.put("vibrationOnly",Boolean.TRUE);
+        atomDataOnly = Parser.isOneOf(modelName.toLowerCase(), JmolConstants.LOAD_ATOM_DATA_TYPES);
+        if (atomDataOnly) {
+            htParams.put("atomDataOnly",Boolean.TRUE);
             htParams.put("modelNumber", new Integer(1));
             isAppend = true;
+            tokType = Token.getTokenFromName(modelName.toLowerCase()).tok;
         }
         if (isAppend && ((filename = optParameterAsString(2))
                 .equalsIgnoreCase("trajectory") || filename
@@ -4552,8 +4554,8 @@ class Eval {
       return;
     }
     String errMsg = null;
-    if (vibrationOnly) {
-      errMsg = viewer.addVibrationDataAndReturnError();
+    if (atomDataOnly) {
+      errMsg = viewer.loadAtomDataAndReturnError(tokType);
     } else {
       viewer.addLoadScript(loadScript.toString());
       errMsg = viewer.createModelSetAndReturnError(isAppend);

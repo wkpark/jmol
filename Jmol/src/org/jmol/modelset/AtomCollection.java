@@ -617,11 +617,11 @@ abstract public class AtomCollection {
   
   protected boolean setOccupancy(int atomIndex, int occupancy) {
     if (occupancies == null) {
-      if (occupancy >= 100)
-        return false; // 100 is the default; anything higher is set to that
+      if (occupancy == 100)
+        return false; // 100 is the default;
       occupancies = new byte[atoms.length];
     }
-    occupancies[atomIndex] = (byte) (occupancy > 100 ? 100 : occupancy < 0 ? 0 : occupancy);
+    occupancies[atomIndex] = (byte) (occupancy > 255 ? 255 : occupancy < 0 ? 0 : occupancy);
     return true;
   }
   

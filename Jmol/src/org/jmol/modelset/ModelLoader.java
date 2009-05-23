@@ -1179,12 +1179,15 @@ public final class ModelLoader extends ModelSet {
       pt.set(x, y, z);
       if (Float.isNaN(x + y + z))
         continue;
-      BitSet bs = getAtomsWithin(-tolerance, pt, null, -1);
+      BitSet bs = new BitSet();
+      getAtomsWithin(-tolerance, pt, bs, -1);
+      getAtomsWithin(tolerance, pt, bs, -1);
       bs.and(bsSelected);
       if (BitSetUtil.cardinalityOf(bsSelected) == viewer.getAtomCount()) {
         int n = BitSetUtil.cardinalityOf(bs);
         if (n == 0) {
           Logger.warn("createAtomDataSet: no atom found at position " + pt);
+          continue;
         } else if (n > 1 && Logger.debugging) {
           Logger.debug("createAtomDataSet: " + n + " atoms found at position " + pt);
         }
@@ -1199,7 +1202,7 @@ public final class ModelLoader extends ModelSet {
           v.set(vx, vy, vz);
           if (Logger.debugging)
             Logger.info("xyz: " + pt + " vib: " + v);
-          setAtomCoord(bs,tokType, v);
+          setAtomCoord(bs,Token.vibXyz, v);
         break;
       case Token.occupancy:
         // [0 to 100], default 100

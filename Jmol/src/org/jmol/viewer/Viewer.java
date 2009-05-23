@@ -2522,7 +2522,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   BitSet getAtomsWithin(float distance, Point3f coord) {
-    return modelSet.getAtomsWithin(distance, coord, null, -1);
+    BitSet bs = new BitSet();
+    modelSet.getAtomsWithin(distance, coord, bs, -1);
+    if (distance < 0)
+      modelSet.getAtomsWithin(-distance, coord, bs, -1);
+    return bs;
   }
 
   BitSet getAtomsWithin(float distance, Point4f plane) {

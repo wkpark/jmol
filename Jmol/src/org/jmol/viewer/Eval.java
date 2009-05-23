@@ -2732,12 +2732,13 @@ class Eval {
         n--;
         if (n < 0 || integerOnly)
           error(ERROR_invalidArgument);
-        if (theToken.value instanceof Integer || theTok == Token.integer)
+        if (theToken.value instanceof Integer || theTok == Token.integer) {
           coord[n++] /= (theToken.intValue == Integer.MAX_VALUE ? ((Integer) theToken.value)
               .intValue()
               : theToken.intValue);
-        else
+        } else if (theToken.value instanceof Float) {
           coord[n++] /= ((Float) theToken.value).floatValue();
+        }
         coordinatesAreFractional = true;
         break;
       case Token.decimal:
@@ -4326,6 +4327,8 @@ class Eval {
             htParams.put("modelNumber", new Integer(1));
             isAppend = true;
             tokType = Token.getTokenFromName(modelName.toLowerCase()).tok;
+            if (tokType == Token.vibration)
+              tokType = Token.vibXyz;
         }
         if (isAppend && ((filename = optParameterAsString(2))
                 .equalsIgnoreCase("trajectory") || filename

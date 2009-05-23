@@ -1843,6 +1843,7 @@ abstract public class ModelCollection extends BondCollection {
             if (!bsCheck.get(iModel))
               continue;
             if (distance < 0) {
+              getAtomsWithin(-distance, atoms[i], bsResult, -1);
               getAtomsWithin(distance, atoms[i].getFractionalUnitCoord(true), bsResult, -1);
               continue;
             }
@@ -1857,6 +1858,7 @@ abstract public class ModelCollection extends BondCollection {
       for (int i = atomCount; --i >= 0;)
         if (bs.get(i)) {
           if (distance < 0) {
+            getAtomsWithin(-distance, atoms[i], bsResult, atoms[i].modelIndex);
             getAtomsWithin(distance, atoms[i], bsResult, atoms[i].modelIndex);
             continue;
           }

@@ -334,7 +334,7 @@ public class Token {
   final static int translateSelected = command | 63;
   final public static int unitcell = command | 64 | setparam | expression | predefinedset | defaultON;
   final static int vector       = command | 65;
-  final static int vibration    = command | 66;
+  public final static int vibration    = command | 66;
   final static int wireframe    = command | 67 | defaultON;
   //final static int write   see mathfunc
   final static int zoom         = command | 68;

@@ -4892,7 +4892,7 @@
     server="171.65.103.160" preferred="42" deadline="93"
     credit="905" frames="100" code="G" contact="ppetrone" contrib="Hyperlife"/>
   <fah_proj number="2498" name="p2498_Translocon_GLX2" public="y" file="xyz"
-    server="171.65.103.160" atoms="97099" preferred="42" deadline="93"
+    server="171.65.103.162" atoms="97099" preferred="42" deadline="93"
     credit="905" frames="100" code="G" contact="ppetrone" contrib="Hyperlife"/>
   <fah_proj number="2499" name="p2499_Translocon_ALX2" public="y" file="xyz"
     server="171.65.103.162" atoms="97138" preferred="42" deadline="93"
@@ -5192,7 +5192,7 @@
   <fah_proj number="2677" name="p2677_IBX in water" public="y" file="xyz"
     server="171.64.65.56" atoms="146808" preferred="3" deadline="3"
     credit="1920" frames="100" code="GC" contact="kasson"/>
-  <fah_proj number="2681" name="p2681_" public="n"
+  <fah_proj number="2681" name="p2681_" public="y"
     server="171.67.108.22" preferred="4" deadline="6"
     credit="25403" frames="100" code="GC" contact="kasson"/>
 
@@ -5972,6 +5972,18 @@
     credit="251" frames="100" code="G3" contact="vvoelz"/>
   <fah_proj number="3464" name="p3464_Ubq_hpin" public="y"
     server="171.64.65.83" atoms="267" preferred="3" deadline="6"
+    credit="251" frames="100" code="G3" contact="vvoelz"/>
+  <fah_proj number="3465" name="p3465_Fs_peptide" public="y"
+    server="171.64.65.83" atoms="264" preferred="3" deadline="6"
+    credit="251" frames="100" code="G3" contact="vvoelz"/>
+  <fah_proj number="3466" name="p3466_Fs_peptide" public="y"
+    server="171.64.65.83" atoms="264" preferred="3" deadline="6"
+    credit="251" frames="100" code="G3" contact="vvoelz"/>
+  <fah_proj number="3467" name="p3467_Fs_peptide" public="y"
+    server="171.64.65.83" atoms="264" preferred="3" deadline="6"
+    credit="251" frames="100" code="G3" contact="vvoelz"/>
+  <fah_proj number="3468" name="p3468_Fs_peptide" public="y"
+    server="171.64.65.83" atoms="264" preferred="3" deadline="6"
     credit="251" frames="100" code="G3" contact="vvoelz"/>
 
   <!-- Projects 3500 to 3599 -->
@@ -7622,22 +7634,22 @@
   <fah_proj number="5513" name="p5513_lam5w_300K" public="y"
     server="171.64.65.106" atoms="1254" preferred="2" deadline="3"
     credit="430" frames="100" code="GG2" contact="densign"/>
-  <fah_proj number="5514" name="p5514_lam5w_300K" public="n"
+  <fah_proj number="5514" name="p5514_lam5w_300K" public="y"
     server="171.64.65.106" atoms="1254" preferred="2" deadline="3"
     credit="430" frames="100" code="GG2" contact="densign"/>
-  <fah_proj number="5515" name="p5515_lam5w_300K" public="n"
+  <fah_proj number="5515" name="p5515_lam5w_300K" public="y"
     server="171.64.65.106" atoms="1254" preferred="2" deadline="3"
     credit="430" frames="100" code="GG2" contact="densign"/>
-  <fah_proj number="5516" name="p5516_lam5w_300K" public="n"
+  <fah_proj number="5516" name="p5516_lam5w_300K" public="y"
     server="171.64.65.106" atoms="1254" preferred="2" deadline="3"
     credit="430" frames="100" code="GG2" contact="densign"/>
-  <fah_proj number="5517" name="p5517_lam5w_300K" public="n"
+  <fah_proj number="5517" name="p5517_lam5w_300K" public="y"
     server="171.64.65.106" atoms="1254" preferred="2" deadline="3"
     credit="430" frames="100" code="GG2" contact="densign"/>
-  <fah_proj number="5518" name="p5518_lam5w_300K" public="n"
+  <fah_proj number="5518" name="p5518_lam5w_300K" public="y"
     server="171.64.65.106" atoms="1254" preferred="2" deadline="3"
     credit="430" frames="100" code="GG2" contact="densign"/>
-  <fah_proj number="5519" name="p5519_lam5w_300K" public="n"
+  <fah_proj number="5519" name="p5519_lam5w_300K" public="y"
     server="171.64.65.106" atoms="1254" preferred="2" deadline="3"
     credit="430" frames="100" code="GG2" contact="densign"/>
 
@@ -7938,7 +7950,7 @@
     credit="472" frames="100" code="GG2MT" contact="ihaque"/>
 
   <!-- Projects 6000 to 6099 -->
-  <fah_proj number="6004" name="p6004_VILLIN" public="n"
+  <fah_proj number="6004" name="p6004_VILLIN" public="y"
     server="171.67.108.22" atoms="596" preferred="3" deadline="3"
     credit="100" frames="100" code="A4" contact="kasson"/>
   <fah_proj number="6005" name="p6005_system in water" public="n"

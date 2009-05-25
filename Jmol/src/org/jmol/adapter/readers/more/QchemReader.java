@@ -70,7 +70,6 @@ public class QchemReader extends MOReader {
   MOInfo[] betas = null;
   int nShell = 0;          // # of shells according to qchem
   int nBasis = 0;          // # of basis according to qchem
-  boolean haveMOs = false; // flag for having processed MOs already
 
   
   public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
@@ -86,7 +85,6 @@ public class QchemReader extends MOReader {
     if (line.indexOf("Standard Nuclear Orientation") >= 0) {
       readAtoms();
       moData = null; // no MO data for this structure
-      haveMOs = false;
       return true;
     }
     if (line.indexOf("Requested basis set is") >= 0) {
@@ -629,8 +627,8 @@ $end
     }    
     for (int i = 0; i < nShell; i++) {
       int[] slater = (int[]) sdata.get(i);
-      if (!haveMOs && getTokens(aoLabels[iAO]).length > 1 )
-        slater[1] += 1; // make spherical only if I didn't already have MOs
+      if (getTokens(aoLabels[iAO]).length > 1 )  // is a spherical orbital
+        slater[1] += slater[1] % 2; // only increment 1 if odd to make spherical
       int nOrbs = nOrbitalsPerShell[slater[1]];
       // only check reorder for slater >= SHELL_D_CARTESIAN
       if (slater[1] >= JmolAdapter.SHELL_D_CARTESIAN) {
@@ -647,7 +645,6 @@ $end
     moData.put("mos", orbitals);
     moData.put("energyUnits", "au");
     setMOData(moData);
-    haveMOs = true;
   }
 
   private int readMOs(boolean restricted, String[] aoLabels,

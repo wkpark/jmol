@@ -1171,20 +1171,36 @@ public final class ModelLoader extends ModelSet {
     Point3f pt = new Point3f();
     Point3f v = new Point3f();
     float tolerance = ((Float) viewer.getParameter("loadAtomDataTolerance")).floatValue();
+    int i = -1;
+    int n = 0;
+    int imax = (tokType == Token.xyz ? BitSetUtil.length(bsSelected) : 0);
     for (JmolAdapter.AtomIterator iterAtom = adapter
         .getAtomIterator(atomSetCollection); iterAtom.hasNext();) {
       float x = iterAtom.getX();
       float y = iterAtom.getY();
       float z = iterAtom.getZ();
-      pt.set(x, y, z);
       if (Float.isNaN(x + y + z))
         continue;
+      
+      if (tokType == Token.xyz) {
+        while (++i < imax && !bsSelected.get(i)) {
+          // continue
+        }
+        if ( i == imax)
+          break;
+        n++;
+        if (Logger.debugging)
+          Logger.debug("atomIndex = " + i+ ": " + (Point3f)atoms[i] + " --> (" + x + "," + y + "," + z);
+        setAtomCoord(i, x, y, z);
+        continue;
+      }
+      pt.set(x, y, z);
       BitSet bs = new BitSet();
       getAtomsWithin(-tolerance, pt, bs, -1);
       getAtomsWithin(tolerance, pt, bs, -1);
       bs.and(bsSelected);
       if (BitSetUtil.cardinalityOf(bsSelected) == viewer.getAtomCount()) {
-        int n = BitSetUtil.cardinalityOf(bs);
+        n = BitSetUtil.cardinalityOf(bs);
         if (n == 0) {
           Logger.warn("createAtomDataSet: no atom found at position " + pt);
           continue;
@@ -1224,6 +1240,10 @@ public final class ModelLoader extends ModelSet {
       String vibName = adapter.getAtomSetName(atomSetCollection, 0);
       Logger.info("_vibrationName = " + vibName);
       viewer.setStringProperty("_vibrationName", vibName);
+      break;
+    case Token.xyz:
+      Logger.info(n + " atom positions read");
+      recalculateLeadMidpointsAndWingVectors(-1);
       break;
     }
     

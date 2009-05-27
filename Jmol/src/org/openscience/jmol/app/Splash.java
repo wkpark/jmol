@@ -54,6 +54,8 @@ public class Splash extends Window {
     splashImage = ii.getImage();
     imgWidth = splashImage.getWidth(this);
     imgHeight = splashImage.getHeight(this);
+    if (parent == null)
+      return;
     showSplashScreen();
     parent.addWindowListener(new WindowListener());
   }

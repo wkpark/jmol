@@ -348,7 +348,7 @@ public class Jmol extends JPanel {
     if (haveDisplay) {
       ImageIcon splash_image = JmolResourceHandler.getIconX("splash");
       report("splash_image=" + splash_image);
-      splash = new Splash(frame, splash_image);
+      splash = new Splash((commandOptions.indexOf("-L") >= 0 ? null : frame), splash_image);
       splash.setCursor(new Cursor(Cursor.WAIT_CURSOR));
       splash.showStatus(GT._("Creating main window..."));
       splash.showStatus(GT._("Initializing Swing..."));
@@ -408,6 +408,8 @@ public class Jmol extends JPanel {
     options.addOption("i", "silent", false, GT._("silent startup operation"));
     options.addOption("l", "list", false, GT
         ._("list commands during script execution"));
+    options.addOption("L", "nosplash", false, GT
+        ._("start with no splash screen"));
     options.addOption("o", "noconsole", false, GT
         ._("no console -- all output to sysout"));
     options.addOption("t", "threaded", false, GT
@@ -547,6 +549,11 @@ public class Jmol extends JPanel {
     // list commands during script operation
     if (line.hasOption("l")) {
       commandOptions += "-l";
+    }
+
+    // no splash screen
+    if (line.hasOption("L")) {
+      commandOptions += "-L";
     }
 
     // check script only -- don't open files

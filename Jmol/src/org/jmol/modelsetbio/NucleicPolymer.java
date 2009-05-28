@@ -71,15 +71,15 @@ public class NucleicPolymer extends BioPolymer {
         }
       }
       if (bestN3 != null) {
-        model.addHydrogenBond(myN1, bestN3,  HBOND_MASK, bsA, bsB);
+        model.addHydrogenBond(myN1, bestN3,  HBOND_MASK, bsA, bsB, 0);
         if (myNucleotide.isGuanine()) {
           model.addHydrogenBond(myNucleotide.getN2(),
-                             bestNucleotide.getO2(), HBOND_MASK, bsA, bsB);
+                             bestNucleotide.getO2(), HBOND_MASK, bsA, bsB, 0);
           model.addHydrogenBond(myNucleotide.getO6(),
-                             bestNucleotide.getN4(), HBOND_MASK, bsA, bsB);
+                             bestNucleotide.getN4(), HBOND_MASK, bsA, bsB, 0);
         } else {
           model.addHydrogenBond(myNucleotide.getN6(),
-                             bestNucleotide.getO4(), HBOND_MASK, bsA, bsB);
+                             bestNucleotide.getO4(), HBOND_MASK, bsA, bsB, 0);
         }
       }
     }

@@ -32,6 +32,7 @@ import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;
 
 import javax.vecmath.Point3f;
@@ -182,6 +183,11 @@ public abstract class Shape {
 
   protected short setColix(short colix, byte paletteID, Atom atom) {
     return (colix == Graphics3D.USE_PALETTE ? viewer.getColixAtomPalette(atom,
+        paletteID) : colix);
+  }
+
+  protected short setColix(short colix, byte paletteID, Bond bond) {
+    return (colix == Graphics3D.USE_PALETTE ? viewer.getColixBondPalette(bond,
         paletteID) : colix);
   }
 

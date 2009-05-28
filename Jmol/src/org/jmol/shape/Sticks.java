@@ -40,6 +40,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.BondIterator;
+import org.jmol.modelset.HBond;
 
 public class Sticks extends Shape {
 
@@ -125,14 +126,20 @@ public class Sticks extends Shape {
         bsColixSet = new BitSet();
       short colix = Graphics3D.getColix(value);
       byte pid = JmolConstants.pidOf(value);
-      if (pid == JmolConstants.PALETTE_TYPE) {
+      if (pid == JmolConstants.PALETTE_TYPE || pid == JmolConstants.PALETTE_ENERGY) {
         //only for hydrogen bonds
+        boolean isEnergy = (pid == JmolConstants.PALETTE_ENERGY);
         BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
             : modelSet.getBondIterator(myMask, bsSelected));
         while (iter.hasNext()) {
           bsColixSet.set(iter.nextIndex());
           Bond bond = iter.next();
-          bond.setColix(Graphics3D.getColix(JmolConstants.getArgbHbondType(bond.getOrder())));
+          if (isEnergy) {
+            bond.setColix(setColix(colix, pid, bond));
+            ((HBond)bond).setPaletteID(pid);
+          } else {
+            bond.setColix(Graphics3D.getColix(JmolConstants.getArgbHbondType(bond.getOrder())));
+          }
         }
         return;
       }
@@ -144,7 +151,8 @@ public class Sticks extends Shape {
         int iBond = iter.nextIndex();
         Bond bond = iter.next();
         bond.setColix(colix);
-        bsColixSet.set(iBond, colix != Graphics3D.INHERIT_ALL);
+        bsColixSet.set(iBond, (colix != Graphics3D.INHERIT_ALL
+            && colix != Graphics3D.USE_PALETTE));
       }
       return;
     }

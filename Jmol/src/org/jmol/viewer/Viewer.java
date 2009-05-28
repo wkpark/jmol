@@ -28,6 +28,7 @@ import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.AtomIndexIterator;
+import org.jmol.modelset.Bond;
 import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.modelset.ModelLoader;
@@ -1379,6 +1380,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public short getColixAtomPalette(Atom atom, byte pid) {
     return colorManager.getColixAtomPalette(atom, pid);
+  }
+
+  public short getColixBondPalette(Bond bond, byte pid) {
+    return colorManager.getColixBondPalette(bond, pid);
   }
 
   public int[] getColorSchemeArray(String colorScheme) {

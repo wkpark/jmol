@@ -3869,7 +3869,7 @@ class Eval {
                 : JmolConstants.getPaletteID(name));
         // color atoms "cpkScheme"
         if (pid == JmolConstants.PALETTE_UNKNOWN
-            || pid == JmolConstants.PALETTE_TYPE
+            || (pid == JmolConstants.PALETTE_TYPE || pid == JmolConstants.PALETTE_ENERGY)
             && shapeType != JmolConstants.SHAPE_HSTICKS)
           error(ERROR_invalidArgument);
         Object data = null;

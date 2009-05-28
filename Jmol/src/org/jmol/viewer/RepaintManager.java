@@ -75,7 +75,8 @@ class RepaintManager {
       }
       currentModelIndex = modelIndex;
       if (ids != null) {
-        viewer.restoreModelOrientation(modelIndex);
+        if (modelIndex >= 0)
+          viewer.restoreModelOrientation(modelIndex);
         if (isSameSource && ids.indexOf("quaternion") >= 0 
             && ids.indexOf("ramachandran") < 0)
           viewer.restoreModelRotation(formerModelIndex);

@@ -146,9 +146,9 @@ public class AminoPolymer extends AlphaPolymer {
       //mainchainHbondOffsets[indexDonor] = (short)(indexDonor - indexMin1);
       //min1Indexes[indexDonor] = (short)indexMin1;
       //min1Energies[indexDonor] = (short)energyMin1;
-      createResidueHydrogenBond(source, indexDonor, indexMin1, bsA, bsB);
+      createResidueHydrogenBond(source, indexDonor, indexMin1, bsA, bsB, -energyMin1/1000f);
       if (indexMin2 >= 0) {
-        createResidueHydrogenBond(source, indexDonor, indexMin2, bsA, bsB);
+        createResidueHydrogenBond(source, indexDonor, indexMin2, bsA, bsB, -energyMin2/1000f);
         //min2Indexes[indexDonor] = (short)indexMin2;
         //min2Energies[indexDonor] = (short)energyMin2;
       }
@@ -207,7 +207,7 @@ public class AminoPolymer extends AlphaPolymer {
   }
 
   private void createResidueHydrogenBond(AminoMonomer donor, int indexAminoGroup, int indexCarbonylGroup,
-                                 BitSet bsA, BitSet bsB) {
+                                 BitSet bsA, BitSet bsB, float energy) {
     short order;
     int aminoBackboneHbondOffset = indexAminoGroup - indexCarbonylGroup;
 /*    if (debugHbonds)
@@ -243,7 +243,7 @@ public class AminoPolymer extends AlphaPolymer {
     Atom nitrogen = donor.getNitrogenAtom();
     AminoMonomer recipient = (AminoMonomer)monomers[indexCarbonylGroup];
     Atom oxygen = recipient.getCarbonylOxygenAtom();
-    model.addHydrogenBond(nitrogen, oxygen, order, bsA, bsB);
+    model.addHydrogenBond(nitrogen, oxygen, order, bsA, bsB, energy);
   }
 
   /*

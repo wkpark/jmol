@@ -163,8 +163,34 @@ abstract public class BondCollection extends AtomCollection {
     return bonds[i];
   }
 
+  private Bond getOrAddHBond(Atom atom, Atom atomOther, short order, short mad,
+                            BitSet bsBonds, float energy) {
+    int i;
+    if (atom.isBonded(atomOther)) {
+      i = atom.getBond(atomOther).index;
+    } else {
+      if (bondCount == bonds.length)
+        bonds = (Bond[]) ArrayUtil.setLength(bonds, bondCount
+            + bondGrowthIncrement);
+      if (order == JmolConstants.BOND_ORDER_NULL
+          || order == JmolConstants.BOND_ORDER_ANY)
+        order = 1;
+      i = setBond(bondCount++, hBondMutually(atom, atomOther, order, mad, energy)).index;
+    }
+    if (bsBonds != null)
+      bsBonds.set(i);
+    return bonds[i];
+  }
+
   protected Bond setBond(int index, Bond bond) {
     return bonds[bond.index = index] = bond;
+  }
+
+  protected Bond hBondMutually(Atom atom, Atom atomOther, short order, short mad, float energy) {
+    Bond bond = new HBond(atom, atomOther, order, mad, (short) 0, energy);
+    addBondToAtom(atom, bond);
+    addBondToAtom(atomOther, bond);
+    return bond;
   }
 
   protected Bond bondMutually(Atom atom, Atom atomOther, short order, short mad) {
@@ -232,9 +258,10 @@ abstract public class BondCollection extends AtomCollection {
    * @param order
    * @param bsA
    * @param bsB
+   * @param energy
    */
   void addHydrogenBond(Atom atom1, Atom atom2, short order, BitSet bsA,
-                       BitSet bsB) {
+                       BitSet bsB, float energy) {
     if (atom1 == null || atom2 == null)
       return;
     boolean atom1InSetA = bsA == null || bsA.get(atom1.atomIndex);
@@ -242,7 +269,7 @@ abstract public class BondCollection extends AtomCollection {
     boolean atom2InSetA = bsA == null || bsA.get(atom2.atomIndex);
     boolean atom2InSetB = bsB == null || bsB.get(atom2.atomIndex);
     if (atom1InSetA && atom2InSetB || atom1InSetB && atom2InSetA)
-      getOrAddBond(atom1, atom2, order, (short) 1, bsPseudoHBonds);
+      getOrAddHBond(atom1, atom2, order, (short) 1, bsPseudoHBonds, energy);
   }
  
   protected short getBondOrder(Atom atomA, float bondingRadiusA, Atom atomB,

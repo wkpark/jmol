@@ -1024,6 +1024,7 @@ final public class Atom extends Point3fi {
          * the list:
          * 
          *      case '%':
+         case '[': Jmol parameter value
          case '{': parameter value
          case 'A': alternate location identifier
          case 'a': atom name
@@ -1231,6 +1232,27 @@ final public class Atom extends Point3fi {
         case '%':
           strT = "%";
           break;
+        case '[':
+          int ichClose = strFormat.indexOf(']', ich);
+          if (ichClose > ich) {
+            String propertyName = strFormat.substring(ich, ichClose);
+            int type = JmolConstants.getPropertyType(propertyName);
+            if (type < 0) {
+              floatT = getPropertyFloat(type);
+              if (!Float.isNaN(floatT)) {
+                ich = ichClose + 1;
+                break;
+              }
+            } else if (type > 0) {
+              strT = getPropertyString(type);
+              if (strT != null) {
+                ich = ichClose + 1;
+                break;
+              }
+            }
+          }
+          strT = "%" + ch0;
+          break;
         case '{': // client property name
           int ichCloseBracket = strFormat.indexOf('}', ich);
           if (ichCloseBracket > ich) { // also picks up -1 when no '}' is found
@@ -1243,7 +1265,6 @@ final public class Atom extends Point3fi {
               break;
             }
           }
-        // malformed will fall into
         default:
           strT = "%" + ch0;
         }
@@ -1262,6 +1283,23 @@ final public class Atom extends Point3fi {
     return strLabel.intern();
   }
   
+  private String getPropertyString(int type) {
+    switch (type) {
+    case JmolConstants.PROPERTY_STRUCTURE_ID:
+      int id = group.getProteinStructureID();
+      String stype = JmolConstants.getProteinStructureName(group.getProteinStructureType());
+      return (id < 0 ? "none" : stype + id);
+    case JmolConstants.PROPERTY_STRUCTURE_TYPE:
+      return JmolConstants.getProteinStructureName(group.getProteinStructureType());
+    }
+    return null;
+  }
+
+  private float getPropertyFloat(int type) {
+    // TODO
+    return Float.NaN;
+  }
+
   public boolean equals(Object obj) {
     return (this == obj);
   }

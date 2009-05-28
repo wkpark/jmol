@@ -1533,18 +1533,19 @@ final public class JmolConstants {
   public final static byte PALETTE_INSERTION = 15;
   public final static byte PALETTE_JMOL = 16;
   public final static byte PALETTE_RASMOL = 17;
-  public final static byte PALETTE_TYPE = 18;  //b0001 0010
-  public final static byte PALETTE_PROPERTY = 19 | PALETTE_VOLATILE;  //b0001 0011
-  public final static byte PALETTE_VARIABLE = 20 | PALETTE_VOLATILE;  //b0001 0011
+  public final static byte PALETTE_TYPE = 18;  
+  public final static byte PALETTE_ENERGY = 19;
+  public final static byte PALETTE_PROPERTY = 20 | PALETTE_VOLATILE;
+  public final static byte PALETTE_VARIABLE = 21 | PALETTE_VOLATILE;
 
-  public final static byte PALETTE_STRAIGHTNESS = 21 | PALETTE_VOLATILE;
+  public final static byte PALETTE_STRAIGHTNESS = 22 | PALETTE_VOLATILE;
 
   private final static String[] paletteNames = {
     /* 0 */ "none", "cpk", "partialcharge", "formalcharge", "temperature",  
     /* 5 */ "fixedtemperature", "surfacedistance", "structure", "amino", 
     /* 9 */ "shapely", "chain", "group", "monomer", "molecule", "altloc", 
     /*15 */ "insertion", "jmol", "rasmol", 
-    /*18 */ "type" /* hbonds only */, 
+    /*18 */ "type", "energy" /* hbonds only */, 
     /*19 */ "property", "variable", "straightness" 
    };
    
@@ -1571,6 +1572,7 @@ final public class JmolConstants {
     PALETTE_JMOL,
     PALETTE_RASMOL,
     PALETTE_TYPE,
+    PALETTE_ENERGY,
     
     PALETTE_PROPERTY,
     PALETTE_VARIABLE,
@@ -2999,5 +3001,25 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   
   final public static String getQuantumSubshellTag(int shell, int subshell) {
     return shellOrder[shell][subshell];
+  }
+
+  // negative numbers would be floats
+  final public static int PROPERTY_UNKNOWN = 0;
+  final public static int PROPERTY_STRUCTURE_TYPE = 1;
+  final public static int PROPERTY_STRUCTURE_ID = 2;
+  final private static String[] PropertyNames = {
+    "structureType", "structureId"
+  };
+  
+  final private static int[] PropertyTypes = {
+    PROPERTY_STRUCTURE_TYPE, PROPERTY_STRUCTURE_ID
+  };
+  
+  public static int getPropertyType(String propertyName) {
+    for (int i = PropertyNames.length; --i >= 0; ) {
+      if (PropertyNames[i].equalsIgnoreCase(propertyName)) 
+        return PropertyTypes[i];
+    }
+    return PROPERTY_UNKNOWN;
   }
 }

@@ -281,9 +281,9 @@ public final class Model {
     return modelSet.isAtomHidden(index);
   }
   
-  public void addHydrogenBond(Atom atom1, Atom atom2, short order, BitSet bsA, BitSet bsB) {
+  public void addHydrogenBond(Atom atom1, Atom atom2, short order, BitSet bsA, BitSet bsB, float energy) {
     hasCalculatedHBonds = true;
-    modelSet.addHydrogenBond(atom1, atom2, order, bsA, bsB);
+    modelSet.addHydrogenBond(atom1, atom2, order, bsA, bsB, energy);
     //System.out.println("addHB " + atom1.getInfo() + " "+ atom2.getInfo() + " " + atom1.distance(atom2));
   }
 
@@ -302,5 +302,5 @@ public final class Model {
     for (int i = 0; i < bioPolymerCount; i++)
       bioPolymers[i].recalculateLeadMidpointsAndWingVectors();
     BitSetUtil.deleteBits(bsAtoms, bsDeleted);
-  }  
+  }
 }

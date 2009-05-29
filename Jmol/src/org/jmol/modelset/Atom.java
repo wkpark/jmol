@@ -32,7 +32,6 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
-import org.jmol.util.TextFormat;
 
 import java.util.BitSet;
 
@@ -991,28 +990,21 @@ final public class Atom extends Point3fi {
     StringBuffer strLabel = new StringBuffer();
     //boolean isSubscript = false;
     //boolean isSuperscript = false;
-    int cch = strFormat.length();
     if (tokens == null)
-      tokens = LabelToken.compile(strFormat);
+      tokens = LabelToken.compile(strFormat, chAtom);
     for (int i = 0; i < tokens.length; i++) {
       LabelToken t = tokens[i];
       if (t == null)
         break;
-      if (t.tok <= 0) {
+      if (t.tok <= 0)
         strLabel.append(t.text);
-        continue;
-      }
-      if (chAtom != '\0' && t.pt1 < cch && strFormat.charAt(t.pt1) != chAtom) {
-          strLabel.append(strFormat.substring(t.pt, t.pt1));
-          continue;
-      }
-      appendTokenValue(strFormat, t, strLabel, indices);
+      else
+        appendTokenValue(t, strLabel, indices);
     }
     return strLabel.toString().intern();
   }
   
-  private void appendTokenValue(String strFormat, LabelToken t,
-                                StringBuffer strLabel, int[] indices) {
+  private void appendTokenValue(LabelToken t, StringBuffer strLabel, int[] indices) {
     String strT = null;
     float floatT = Float.NaN;
     char ch;
@@ -1115,7 +1107,6 @@ final public class Atom extends Point3fi {
       case Token.valence:
         strT = "" + getValence();
         break;
-
       case Token.phi:
         floatT = getGroupPhi();
         break;
@@ -1200,8 +1191,7 @@ final public class Atom extends Point3fi {
             atomIndex);
         if (Float.isNaN(floatT))
           strT = getClientAtomStringProperty(propertyName);
-        break;
-        
+        break;     
       case Token.structure:
         strT = JmolConstants.getProteinStructureName(group.getProteinStructureType());
         break;
@@ -1210,16 +1200,9 @@ final public class Atom extends Point3fi {
         strT = (id < 0 ? "" : "" + id);
         break;
       }
-      if (!Float.isNaN(floatT))
-        strLabel.append(TextFormat.format(floatT, t.width, t.precision,
-            t.alignLeft, t.zeroPad));
-      else if (strT != null)
-        strLabel.append(TextFormat.format(strT, t.width, t.precision,
-            t.alignLeft, t.zeroPad));
-      else
-        strLabel.append(strFormat.substring(t.pt, t.pt1));
+      strLabel.append(t.format(floatT, strT));
     } catch (IndexOutOfBoundsException ioobe) {
-      strLabel.append(strFormat.substring(t.pt, t.pt1));
+      strLabel.append(t.format(Float.NaN, null));
     }
   }
 

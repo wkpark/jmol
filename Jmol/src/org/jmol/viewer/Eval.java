@@ -7802,10 +7802,11 @@ class Eval {
         .getAssociatedAtoms());
     if (indices == null && label != null && label.indexOf("%D") > 0)
       indices = viewer.getAtomIndices(bs);
+    /*
     int nProp = 0;
     String[] props = null;
     float[][] propArray = null;
-    /*
+    
     while (pt >= 0 && (pt = label.indexOf("{", pt + 1)) > 0) {
       int pt2 = label.indexOf("}", pt);
       if (pt2 > 0) {
@@ -7828,7 +7829,7 @@ class Eval {
 
     }
     */
-    LabelToken[] tokens = (label == null ? null : LabelToken.compile(label));
+    LabelToken[] tokens = (label == null || !isAtoms ? null : LabelToken.compile(label, '\0'));
     for (int j = 0; j < len; j++)
       if (bs.get(j)) {
         String str = label;
@@ -7837,16 +7838,17 @@ class Eval {
             str = modelSet.getAtomAt(j).getInfo();
           } else {
             str = modelSet.getAtomAt(j).formatLabel(label, tokens, '\0', indices);
-            for (int k = 0; k < nProp; k++)
+/*            for (int k = 0; k < nProp; k++)
               if (j < propArray[k].length)
                 str = TextFormat.formatString(str, props[k], propArray[k][j]);
-          }
+*/
+            }
         } else {
           Bond bond = modelSet.getBondAt(j);
           if (label == null)
             str = bond.getIdentity();
           else {
-            str = bond.formatLabel(label, tokens, indices);
+            str = bond.formatLabel(label, indices);
             /*
             int ia1 = bond.getAtomIndex1();
             int ia2 = bond.getAtomIndex2();

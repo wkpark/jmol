@@ -25,6 +25,7 @@
 
 package org.jmol.modelset;
 
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.Token;
 
 public class LabelToken {
@@ -36,10 +37,11 @@ public class LabelToken {
    * 
    */
 
-  String text;
+  String text;  
   int tok;
   int pt = -1;
-  int pt1;
+  int pt1 = 0;
+  char ch1;
   int width;
   int precision = Integer.MAX_VALUE;
   boolean alignLeft;
@@ -129,7 +131,7 @@ public class LabelToken {
     this.text = text;
   }
 
-  public static LabelToken[] compile(String strFormat) {
+  public static LabelToken[] compile(String strFormat, char chAtom) {
     if (strFormat.indexOf("%") < 0)
       return new LabelToken[] { new LabelToken(strFormat) };
     int n = 0;
@@ -144,14 +146,14 @@ public class LabelToken {
       if (ich != ichPercent)
         tokens[i++] = new LabelToken(strFormat.substring(ich, ichPercent));
       LabelToken lt = tokens[i++] = new LabelToken(ichPercent);
-      ich = setToken(strFormat, lt, cch);
+      ich = setToken(strFormat, lt, cch, chAtom);
     }
     if (ich < cch)
       tokens[i++] = new LabelToken(strFormat.substring(ich));
     return tokens;
   }
 
-  private static int setToken(String strFormat, LabelToken lt, int cch) {
+  private static int setToken(String strFormat, LabelToken lt, int cch, int chAtom) {
     int ich = lt.pt + 1;
     char ch;
     if (strFormat.charAt(ich) == '-') {
@@ -210,8 +212,22 @@ public class LabelToken {
         lt.tok = labelTokenIds[i];
       }
     }
-    if (lt.tok == 0)
-      lt.text = strFormat.substring(lt.pt, ich);
-    return (lt.pt1 = ich);
+    lt.text = strFormat.substring(lt.pt, ich);
+    lt.pt1 = ich;
+    if (chAtom != '\0' && ich < cch && Character.isDigit(ch = strFormat.charAt(ich))) {
+      ich++;
+      if (ch != chAtom)
+        lt.tok = 0;
+    }
+    return ich;
+  }
+
+  public String format(float floatT, String strT) {
+    if (!Float.isNaN(floatT))
+      return TextFormat.format(floatT, width, precision, alignLeft, zeroPad);
+    else if (strT != null)
+      return TextFormat.format(strT, width, precision, alignLeft, zeroPad);
+    else
+      return text;
   }
 }

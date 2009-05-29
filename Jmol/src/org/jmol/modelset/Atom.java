@@ -1000,6 +1000,8 @@ final public class Atom extends Point3fi {
         strLabel.append(t.text);
       else
         appendTokenValue(t, strLabel, indices);
+      if (t.tok == 0 && t.ch1 != 0)
+        strLabel.append(t.ch1);
     }
     return strLabel.toString().intern();
   }

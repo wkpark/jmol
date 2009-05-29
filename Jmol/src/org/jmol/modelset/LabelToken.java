@@ -216,6 +216,7 @@ public class LabelToken {
     lt.pt1 = ich;
     if (chAtom != '\0' && ich < cch && Character.isDigit(ch = strFormat.charAt(ich))) {
       ich++;
+      lt.ch1 = ch;
       if (ch != chAtom)
         lt.tok = 0;
     }

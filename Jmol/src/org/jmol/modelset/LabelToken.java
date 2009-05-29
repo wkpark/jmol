@@ -65,7 +65,8 @@ public class LabelToken {
    * 
    *  print {*}.bonds.label("%6[atomName]1 - %6[atomName]2  %3ORDER  %6.2LENGTH")
    * 
-   * 
+   * [Note that the %ORDER and %LENGTH variables are bond labeling options, and 
+   *  the 1 and 2 after %[xxx] indicate which atom in involved.
    * 
    * 
    */

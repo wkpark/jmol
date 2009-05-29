@@ -97,19 +97,18 @@ public class Bond {
         + atom2.getInfo() + " " + atom1.distance(atom2);
   }
 
-  public String formatLabel(String strFormat, int[] indices) {
+  public String formatLabel(String strFormat, LabelToken[] tokens, int[] indices) {
     if (strFormat == null || strFormat.length() == 0)
       return getIdentity();
     String label = strFormat;
+    label = atom1.formatLabel(label, tokens, '1', indices);
+    label = atom2.formatLabel(label, null, '2', indices);
     label = TextFormat.formatString(label, "=", index + 1);
     label = TextFormat.formatString(label, "ORDER", getOrderNumber());
     label = TextFormat.formatString(label, "TYPE", getOrderName());
     label = TextFormat.formatString(label, "LENGTH", atom1.distance(atom2));
-    label = atom1.formatLabel(label, '1', indices);
-    label = atom2.formatLabel(label, '2', indices);
     return label;
   }
-
 
   public boolean isCovalent() {
     return (order & JmolConstants.BOND_COVALENT_MASK) != 0;

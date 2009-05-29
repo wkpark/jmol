@@ -348,7 +348,7 @@ public class Token {
   final static int expressionEnd       = expression | 2;
 
   final static int all                 = expression | 3;
-  final static int altloc              = expression | 4;
+  public final static int altloc              = expression | 4;
   final public static int branch       = expression | 5;
   final public static int chain        = expression | 6;
   final static int colon               = expression | 7;
@@ -356,7 +356,7 @@ public class Token {
   final static int dollarsign          = expression | 9;
   final static int dot                 = expression | 10;
   final public static int group        = expression | 11;
-  final static int insertion           = expression | 12;
+  final public static int insertion           = expression | 12;
   final public static int isaromatic   = expression | 13;
   final static int leftbrace           = expression | 14;
   final static int none                = expression | 15;
@@ -460,7 +460,7 @@ public class Token {
   final public static int atoms     = 1 | mathproperty;
   final public static int bonds     = 2 | mathproperty | setparam;
   final public static int color     = 3 | mathproperty | command | setparam | settable;
-  final static int identify         = 4 | mathproperty;
+  public final static int identify         = 4 | mathproperty;
   final static int length           = 5 | mathproperty;
   final static int lines            = 6 | mathproperty;
   final static int size             = 7 | mathproperty;
@@ -476,26 +476,28 @@ public class Token {
   
   final public static int atomno        = atomproperty | 1;
   final public static int atomType      = atomproperty | 2 | settable;
-  final static int atomID               = atomproperty | 3;
-  final static int bondcount            = atomproperty | 4;
-  final static int atomIndex            = atomproperty | 5;
+  public final static int atomID               = atomproperty | 3;
+  public final static int bondcount            = atomproperty | 4;
+  public final static int atomIndex            = atomproperty | 5;
   final public static int atomName      = atomproperty | 6 | settable;
   final public static int cell          = atomproperty | 7;
   final public static int element       = atomproperty | 8 | settable;
   final public static int elemno        = atomproperty | 9;
   final public static int formalCharge  = atomproperty | 10 | setparam | settable;
-  final static int groupID              = atomproperty | 11;
-  final public static int model         = atomproperty | 12 | command;
-  final public static int molecule      = atomproperty | 13;
-  final public static int occupancy     = atomproperty | 14 | settable;
-  final static int polymerLength        = atomproperty | 15;
-  final static int radius               = atomproperty | 16 | setparam;
-  final static int resno                = atomproperty | 17;
-  final public static int site          = atomproperty | 18;
-  final public static int structure     = atomproperty | 19 | command;
-  final static int symop                = atomproperty | 20;
-  final public static int vanderwaals   = atomproperty | 20 | settable;
-  final public static int valence       = atomproperty | 21 | settable;
+  public final static int groupID              = atomproperty | 11;
+  public final static int groupindex           = atomproperty | 12;
+  final public static int model         = atomproperty | 13 | command;
+  final public static int molecule      = atomproperty | 14;
+  final public static int occupancy     = atomproperty | 15 | settable;
+  public final static int polymerLength        = atomproperty | 16;
+  public final static int radius               = atomproperty | 17 | setparam;
+  public final static int resno                = atomproperty | 18;
+  final public static int site          = atomproperty | 19;
+  final public static int strucno       = atomproperty | 20;
+  final public static int structure     = atomproperty | 21 | command;
+  final static int symop                = atomproperty | 22;
+  final public static int vanderwaals   = atomproperty | 23 | settable;
+  final public static int valence       = atomproperty | 24 | settable;
 
   final public static int atomX           = atomproperty | comparefloatx100 | 0 | settable;
   final public static int atomY           = atomproperty | comparefloatx100 | 1 | settable;
@@ -504,10 +506,10 @@ public class Token {
   final public static int fracY           = atomproperty | comparefloatx100 | 4 | settable;
   final public static int fracZ           = atomproperty | comparefloatx100 | 5 | settable;
   final public static int partialCharge   = atomproperty | comparefloatx100 | 6 | settable;
-  final static int phi                    = atomproperty | comparefloatx100 | 7;
-  final static int psi                    = atomproperty | comparefloatx100 | 8;
+  public final static int phi                    = atomproperty | comparefloatx100 | 7;
+  public final static int psi                    = atomproperty | comparefloatx100 | 8;
   final public static int straightness    = atomproperty | comparefloatx100 | 9;
-  final static int surfacedistance        = atomproperty | comparefloatx100 |10;
+  public final static int surfacedistance        = atomproperty | comparefloatx100 |10;
   final public static int temperature     = atomproperty | comparefloatx100 |11 | settable;
   final public static int unitX            = atomproperty | comparefloatx100 |15;
   final public static int unitY            = atomproperty | comparefloatx100 |16;
@@ -538,7 +540,7 @@ public class Token {
   final static int sin          = 4 | 1 << 9 | mathfunc;
   final static int cos          = 5 | 1 << 9 | mathfunc;
   final static int sqrt         = 6 | 1 << 9 | mathfunc;
-  final static int file         = 7 | 1 << 9 | mathfunc | atomproperty | command;
+  public final static int file         = 7 | 1 << 9 | mathfunc | atomproperty | command;
 
 
   // ___.xxx(a)
@@ -580,7 +582,7 @@ public class Token {
   // xxx(a,b,c,d)
   
   final static int angle        = 1 | 4 << 9 | mathfunc;
-  final static int data         = 2 | 4 << 9 | mathfunc | command;
+  public final static int data         = 2 | 4 << 9 | mathfunc | command;
   final static int plane        = 3 | 4 << 9 | mathfunc;
   final static int point        = 4 | 4 << 9 | mathfunc;
   final static int quaternion   = 5 | 4 << 9 | mathfunc | command;
@@ -1047,7 +1049,7 @@ public class Token {
   final static int url          = misc | 65; 
   final static int user         = misc | 66; //color option
   final static int qw           = misc | 67;
-
+  final public static int group1       = misc | 68;
 
   // predefined Tokens: 
   
@@ -1213,6 +1215,7 @@ public class Token {
     "strands",           null,
     "structure",         new Token(structure),
     "_structure",        null,
+    "strucno",           new Token(strucno),
     "subset",            new Token(subset),
     "synchronize",       new Token(sync),
     "sync",              null,
@@ -1389,9 +1392,11 @@ public class Token {
     "fxyz",             new Token(fracXyz),
     "group",            new Token(group),
     "groups",           null,
+    "group1",           new Token(group1),
     "groupID",          new Token(groupID),
     "_groupID",         null, 
     "_g",               null, 
+    "groupIndex",            new Token(groupindex),
     "hetero",           new Token(hetero),
     "hidden",           new Token(hidden),
     "hydrogen",         new Token(hydrogen),

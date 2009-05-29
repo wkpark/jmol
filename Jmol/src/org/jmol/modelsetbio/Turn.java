@@ -27,9 +27,9 @@ import org.jmol.viewer.JmolConstants;
 
 class Turn extends ProteinStructure {
 
-  Turn(AlphaPolymer apolymer, int monomerIndex, int monomerCount) {
+  Turn(AlphaPolymer apolymer, int monomerIndex, int monomerCount, int id) {
     super(apolymer, JmolConstants.PROTEIN_STRUCTURE_TURN,
-          monomerIndex, monomerCount);
+          monomerIndex, monomerCount, id);
   }
 }
 

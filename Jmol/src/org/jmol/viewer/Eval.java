@@ -58,6 +58,7 @@ import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.Group;
+import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.ModelCollection;
 import org.jmol.modelset.ModelSet;
 
@@ -2036,12 +2037,13 @@ class Eval {
     case Token.resno:
       return atom.getResno();
     case Token.groupID:
-      propertyValue = atom.getGroupID();
-      return (propertyValue < 0 ? Integer.MAX_VALUE : propertyValue);
+      return propertyValue = atom.getGroupID(); //-1 if no group
     case Token.atomID:
       return atom.getSpecialAtomID();
     case Token.structure:
       return atom.getProteinStructureType();
+    case Token.strucno:
+      return atom.getProteinStructureID();
     case Token.radius:
       return atom.getRasMolRadius();
     case Token.vanderwaals:
@@ -7803,6 +7805,7 @@ class Eval {
     int nProp = 0;
     String[] props = null;
     float[][] propArray = null;
+    /*
     while (pt >= 0 && (pt = label.indexOf("{", pt + 1)) > 0) {
       int pt2 = label.indexOf("}", pt);
       if (pt2 > 0) {
@@ -7824,24 +7827,27 @@ class Eval {
       pt = pt2;
 
     }
+    */
+    LabelToken[] tokens = (label == null ? null : LabelToken.compile(label));
     for (int j = 0; j < len; j++)
       if (bs.get(j)) {
         String str = label;
         if (isAtoms) {
-          if (str == null) {
+          if (label == null) {
             str = modelSet.getAtomAt(j).getInfo();
           } else {
-            str = modelSet.getAtomAt(j).formatLabel(str, '\0', indices);
+            str = modelSet.getAtomAt(j).formatLabel(label, tokens, '\0', indices);
             for (int k = 0; k < nProp; k++)
               if (j < propArray[k].length)
                 str = TextFormat.formatString(str, props[k], propArray[k][j]);
           }
         } else {
           Bond bond = modelSet.getBondAt(j);
-          if (str == null)
+          if (label == null)
             str = bond.getIdentity();
           else {
-            str = bond.formatLabel(str, indices);
+            str = bond.formatLabel(label, tokens, indices);
+            /*
             int ia1 = bond.getAtomIndex1();
             int ia2 = bond.getAtomIndex2();
             for (int k = 0; k < nProp; k++)
@@ -7852,6 +7858,7 @@ class Eval {
               if (ia2 < propArray[k].length)
                 str = TextFormat.formatString(str, props[k] + "2",
                     propArray[k][ia2]);
+            */
           }
         }
         str = TextFormat.formatString(str, "#", ++n);
@@ -8040,6 +8047,9 @@ class Eval {
               break;
             case Token.structure:
               iv = atom.getProteinStructureType();
+              break;
+            case Token.strucno:
+              iv = atom.getProteinStructureID();
               break;
             case Token.bondcount:
               iv = atom.getCovalentBondCount();
@@ -13416,7 +13426,11 @@ class Eval {
             return false;
           break;
         case Token.string:
-          order = JmolConstants.getBondOrderFromString(Token.sValue(token));
+          String type = Token.sValue(token);
+          if (type.equalsIgnoreCase("hbond"))
+            order = JmolConstants.BOND_HYDROGEN_MASK;
+          else
+            order = JmolConstants.getBondOrderFromString(type);
           if (order == JmolConstants.BOND_ORDER_NULL)
             return false;
           break;

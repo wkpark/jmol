@@ -31,9 +31,9 @@ import org.jmol.viewer.JmolConstants;
 
 public class Helix extends ProteinStructure {
 
-  Helix(AlphaPolymer apolymer, int monomerIndex, int monomerCount) {
+  Helix(AlphaPolymer apolymer, int monomerIndex, int monomerCount, int id) {
     super(apolymer, JmolConstants.PROTEIN_STRUCTURE_HELIX,
-          monomerIndex, monomerCount);
+          monomerIndex, monomerCount, id);
   }
 
   public void calcAxis() {

@@ -174,7 +174,7 @@ public class Group {
   public Object getStructure() {
     return null;
   }
-  
+
   public int getProteinStructureID() {
     return Integer.MIN_VALUE;
   }
@@ -379,6 +379,9 @@ public class Group {
   
   public Quaternion getQuaternion(char qtype) {
     return null;
+  }
+
+  public void setProteinStructureId(int i) {
   }
   
 }

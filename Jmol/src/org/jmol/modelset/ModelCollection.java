@@ -536,6 +536,7 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = modelCount; --i >= 0;)
       if (models[i].isPDB && !alreadyDefined.get(i))
         models[i].calculateStructures();
+    setStructureIds();
      if (addFileData)
       propagateSecondaryStructure();
   }
@@ -892,9 +893,9 @@ abstract public class ModelCollection extends BondCollection {
 
   public void calculateStraightness() {
     char ctype = (viewer.getTestFlag3() ? 's' : 'S');
-    char qtype = (viewer.getTestFlag4() ? 'p' : 'c');
-    // testflag3 ON  --> Hanson's original normal-based straightness
-    // testflag3 OFF --> Kohler's new quaternion-based straightness
+    char qtype = viewer.getQuaternionFrame();
+    // testflag3 ON  --> preliminary: Hanson's original normal-based straightness
+    // testflag3 OFF --> final: Kohler's new quaternion-based straightness
     for (int i = modelCount; --i >= 0;) {
       Model model = models[i];
       int nPoly = model.getBioPolymerCount();
@@ -970,9 +971,9 @@ abstract public class ModelCollection extends BondCollection {
         sb.append("MODEL     " + (iModelLast + 1) + "\n");
       }
       if (a.isHetero())
-        sb.append(a.formatLabel("HETATM%5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \n", '\0', null));
+        sb.append(a.formatLabel("HETATM%5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \n", null, '\0', null));
       else
-        sb.append(a.formatLabel("ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \n", '\0', null));
+        sb.append(a.formatLabel("ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \n", null, '\0', null));
     }
     if (showModels)
         sb.append("ENDMDL\n");
@@ -2141,6 +2142,24 @@ abstract public class ModelCollection extends BondCollection {
 
   boolean proteinStructureTainted = false;
   
+  void setStructureIds() {
+    int id;
+    int idnew = 0;
+    int lastid = -1;
+    int imodel = -1;
+    int lastmodel = -1;
+    for (int i = 0; i < atomCount; i++) {
+      if ((imodel = atoms[i].modelIndex) != lastmodel 
+          || (id = atoms[i].getProteinStructureID()) != lastid 
+               && id != Integer.MIN_VALUE) {
+        atoms[i].getGroup().setProteinStructureId(++idnew);
+        lastid = idnew;
+        lastmodel = imodel;
+      }
+    }
+  }
+  
+
   public String getProteinStructureState(BitSet bsAtoms, boolean taintedOnly,
                                          boolean needPhiPsi) {
     BitSet bs = null;
@@ -2311,9 +2330,11 @@ abstract public class ModelCollection extends BondCollection {
     BitSet bsResult = new BitSet();
     int[] nBonded = new int[atomCount];
     int i;
+    boolean ishbond = (intType == JmolConstants.BOND_HYDROGEN_MASK);
+    boolean isall = (intType == JmolConstants.BOND_ORDER_ANY);
     for (int ibond = 0; ibond < bondCount; ibond++) {
       Bond bond = bonds[ibond];
-      if (intType == JmolConstants.BOND_ORDER_ANY || bond.is(intType)) {
+      if (isall || bond.is(intType) || ishbond && bond.isHydrogen()) {
         if (bs.get(bond.atom1.atomIndex)) {
           nBonded[i = bond.atom2.atomIndex]++;
           bsResult.set(i);

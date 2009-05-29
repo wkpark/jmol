@@ -449,6 +449,7 @@ abstract public class ModelSet extends ModelCollection {
         shapes[i].setSize(0, bsAllAtoms);
         shapes[i].setProperty("color", new Byte(JmolConstants.PALETTE_CPK), bsAllAtoms);
       }
+    setStructureIds();
   }
 
   public String calculatePointGroup(BitSet bsAtoms) {

@@ -978,326 +978,249 @@ final public class Atom extends Point3fi {
   }
   
   public String formatLabel(String strFormat) {
-    return formatLabel(strFormat, '\0', null);
+    return formatLabel(strFormat, null, '\0', null);
   }
 
-  public String formatLabel(String strFormat, char chAtom, int[]indices) {
+  public String formatLabel(String strFormat, LabelToken[] tokens) {
+    return formatLabel(strFormat, tokens, '\0', null);
+  }
+
+  public String formatLabel(String strFormat, LabelToken[] tokens, char chAtom, int[]indices) {
     if (strFormat == null || strFormat.length() == 0)
       return null;
-    String strLabel = "";
+    StringBuffer strLabel = new StringBuffer();
     //boolean isSubscript = false;
     //boolean isSuperscript = false;
     int cch = strFormat.length();
-    int ich, ichPercent;
-    for (ich = 0; (ichPercent = strFormat.indexOf('%', ich)) != -1;) {
-      if (ich != ichPercent)
-        strLabel += strFormat.substring(ich, ichPercent);
-      ich = ichPercent + 1;
-      try {
-        String strT = "";
-        float floatT = Float.NaN;
-        boolean alignLeft = false;
-        if (strFormat.charAt(ich) == '-') {
-          alignLeft = true;
-          ++ich;
-        }
-        boolean zeroPad = false;
-        if (strFormat.charAt(ich) == '0') {
-          zeroPad = true;
-          ++ich;
-        }
-        char ch;
-        int width = 0;
-        while ((ch = strFormat.charAt(ich)) >= '0' && (ch <= '9')) {
-          width = (10 * width) + (ch - '0');
-          ++ich;
-        }
-        int precision = Integer.MAX_VALUE;
-        if (strFormat.charAt(ich) == '.') {
-          ++ich;
-          if ((ch = strFormat.charAt(ich)) >= '0' && (ch <= '9')) {
-            precision = ch - '0';
-            ++ich;
-          }
-        }
-        /*
-         * the list:
-         * 
-         *      case '%':
-         case '[': Jmol parameter value
-         case '{': parameter value
-         case 'A': alternate location identifier
-         case 'a': atom name
-         case 'B': atom type (sorry!)
-         case 'b': temperature factor ("b factor")
-         case 'C': formal Charge
-         case 'c': chain
-         case 'D': atom inDex (was "X")
-         case 'e': element symbol
-         case 'E': insErtion code
-         case 'f': phi
-         case 'g': selected group index (for testing)
-         case 'G': groupIndex
-         case 'i': atom number
-         case 'I': Ionic radius
-         case 'L': polymer Length
-         case 'l': atomic element number
-         case 'm': group1
-         case 'M': Model number
-         case 'n': group3
-         case 'N': molecule Number
-         case 'o': symmetry operator set
-         case 'p': psi
-         case 'P': Partial charge
-         case 'q': occupancy 0-100%
-         case 'Q': occupancy 0.00 - 1.00
-         case 'r': residue sequence code
-         case 'R': residue number
-         case 'S': crystallographic Site
-         case 's': strand (chain)
-         case 't': temperature factor
-         case 'T': straighTness
-         case 'U': identity
-         case 'u': sUrface distance
-         case 'v': vibration x, y, or z  vx vy vz
-         case 'V': van der Waals
-         case 'x': x coord
-         case 'X': fractional X coord
-         case 'W': identity - with X,Y,Z
-         case 'y': y coord
-         case 'Y': fractional Y coord
-         case 'z': z coord
-         case 'Z': fractional Z coord
-         case '_': subscript   //reserved
-         case '^': superscript //reserved
-         */
-        char ch0 = ch = strFormat.charAt(ich++);
-
-        if (chAtom != '\0' && ich < cch) {
-          if (strFormat.charAt(ich) != chAtom) {
-            strLabel = strLabel + "%";
-            ich = ichPercent + 1;
-             continue;
-          }
-          ich++;
-        }
-        switch (ch) {
-        case 'A':
-          strT = (alternateLocationID != '\0' ? alternateLocationID + ""
-              : "");
-          break;
-        case 'a':
-          strT = getAtomName();
-          break;
-//        case 'b': // see 't'
-//        case 'c': // see 's'
-        case 'B':
-          strT = getAtomType();
-          break;
-        case 'C':
-          int formalCharge = getFormalCharge();
-          if (formalCharge > 0)
-            strT = "" + formalCharge + "+";
-          else if (formalCharge < 0)
-            strT = "" + -formalCharge + "-";
-          else
-            strT = "0";
-          break;
-        case 'D':
-          strT = "" + (indices == null ? atomIndex : indices[atomIndex]);
-          break;
-        case 'e':
-          strT = getElementSymbol();
-          break;
-        case 'E':
-          ch = getInsertionCode();
-          strT = (ch == '\0' ? "" : "" + ch);
-          break;
-        case 'f':
-          floatT = getGroupPhi();
-          break;
-        case 'g':
-          strT = "" + getSelectedGroupIndexWithinChain();
-          break;
-        case 'G':
-          strT = "" + getGroupIndex();
-          break;
-        case 'I':
-          floatT = getBondingRadiusFloat();
-          break;
-        case 'i':
-          strT = "" + getAtomNumber();
-          break;
-        case 'L':
-          strT = "" + getPolymerLength();
-          break;
-        case 'l':
-          strT = "" + getElementNumber();
-          break;
-        case 'M':
-          strT = getModelNumberForLabel();
-          break;
-        case 'm':
-          strT = getGroup1();
-          break;
-        case 'N':
-          strT = "" + getMoleculeNumber();
-          break;
-        case 'n':
-          strT = getGroup3();
-          if (strT == null || strT.length() == 0)
-            strT = "UNK";
-          break;
-        case 'o':
-          strT = getSymmetryOperatorList();
-          break;
-        case 'P':
-          floatT = getPartialCharge();
-          break;
-        case 'p':
-          floatT = getGroupPsi();
-          break;
-        case 'q':
-          strT = "" + getOccupancy();
-          break;
-        case 'Q':
-          floatT = getOccupancy() / 100f;
-          break;
-        case 'R':
-          strT = "" + getResno();
-          break;
-        case 'r':
-          strT = getSeqcodeString();
-          break;
-        case 'S':
-          strT = "" + atomSite;
-          break;
-        case 's':
-        case 'c': // these two are the same
-          ch = getChainID();
-          strT = (ch == '\0' ? "" : "" + ch);
-          break;
-        case 'T':
-          floatT = getStraightness();
-          break;
-        case 't':
-        case 'b': // these two are the same
-          floatT = getBfactor100() / 100f;
-          break;
-        case 'U':
-          strT = getIdentity(true);
-          break;
-        case 'u':
-          floatT = getSurfaceDistance100() / 100f;
-          break;
-        case 'V':
-          floatT = getVanderwaalsRadiusFloat();
-          break;
-        case 'v':
-          ch = (ich < strFormat.length() ? strFormat.charAt(ich++) : '\0');
-          switch (ch) {
-          case 'x':
-          case 'y':
-          case 'z':
-            floatT = group.chain.modelSet.getVibrationCoord(atomIndex, ch);
-            break;
-          default:
-            if (ch != '\0')
-              --ich;
-            Vector3f v = getVibrationVector();
-            if (v == null) {
-              floatT = 0;
-              break;
-            }
-            strT = v.x + " " + v.y + " " + v.z;
-          }
-          break;
-        case 'W':
-          strT = getIdentityXYZ();
-          break;
-        case 'x':
-          floatT = x;
-          break;
-        case 'y':
-          floatT = y;
-          break;
-        case 'z':
-          floatT = z;
-          break;
-        case 'X':
-        case 'Y':
-        case 'Z':
-          floatT = getFractionalCoord(ch);
-          break;
-        case '%':
-          strT = "%";
-          break;
-        case '[':
-          int ichClose = strFormat.indexOf(']', ich);
-          if (ichClose > ich) {
-            String propertyName = strFormat.substring(ich, ichClose);
-            int type = JmolConstants.getPropertyType(propertyName);
-            if (type < 0) {
-              floatT = getPropertyFloat(type);
-              if (!Float.isNaN(floatT)) {
-                ich = ichClose + 1;
-                break;
-              }
-            } else if (type > 0) {
-              strT = getPropertyString(type);
-              if (strT != null) {
-                ich = ichClose + 1;
-                break;
-              }
-            }
-          }
-          strT = "%" + ch0;
-          break;
-        case '{': // client property name
-          int ichCloseBracket = strFormat.indexOf('}', ich);
-          if (ichCloseBracket > ich) { // also picks up -1 when no '}' is found
-            String propertyName = strFormat.substring(ich, ichCloseBracket);
-            floatT = group.chain.modelSet.viewer.getDataFloat(propertyName, atomIndex);
-            if (Float.isNaN(floatT))
-              strT = getClientAtomStringProperty(propertyName);
-            if (strT != null || !Float.isNaN(floatT)) {
-              ich = ichCloseBracket + 1;
-              break;
-            }
-          }
-        default:
-          strT = "%" + ch0;
-        }
-        if (!Float.isNaN(floatT))
-          strLabel += TextFormat.format(floatT, width, precision, alignLeft, zeroPad);
-        else if (strT != null)
-          strLabel += TextFormat.format(strT, width, precision, alignLeft, zeroPad);
-      } catch (IndexOutOfBoundsException ioobe) {
-        ich = ichPercent;
+    if (tokens == null)
+      tokens = LabelToken.compile(strFormat);
+    for (int i = 0; i < tokens.length; i++) {
+      LabelToken t = tokens[i];
+      if (t == null)
         break;
+      if (t.tok <= 0) {
+        strLabel.append(t.text);
+        continue;
       }
+      if (chAtom != '\0' && t.pt1 < cch && strFormat.charAt(t.pt1) != chAtom) {
+          strLabel.append(strFormat.substring(t.pt, t.pt1));
+          continue;
+      }
+      appendTokenValue(strFormat, t, strLabel, indices);
     }
-    strLabel += strFormat.substring(ich);
-    if (strLabel.length() == 0)
-      return null;
-    return strLabel.intern();
+    return strLabel.toString().intern();
   }
   
-  private String getPropertyString(int type) {
-    switch (type) {
-    case JmolConstants.PROPERTY_STRUCTURE_ID:
-      int id = group.getProteinStructureID();
-      String stype = JmolConstants.getProteinStructureName(group.getProteinStructureType());
-      return (id < 0 ? "none" : stype + id);
-    case JmolConstants.PROPERTY_STRUCTURE_TYPE:
-      return JmolConstants.getProteinStructureName(group.getProteinStructureType());
-    }
-    return null;
-  }
+  private void appendTokenValue(String strFormat, LabelToken t,
+                                StringBuffer strLabel, int[] indices) {
+    String strT = null;
+    float floatT = Float.NaN;
+    char ch;
+    try {
+      switch (t.tok) {
+      case Token.altloc:
+        strT = (alternateLocationID != '\0' ? alternateLocationID + "" : "");
+        break;
+      case Token.atomID:
+        strT = "" + getSpecialAtomID();
+        break;
+      case Token.atomName:
+        strT = getAtomName();
+        break;
+      case Token.atomType:
+        strT = getAtomType();
+        break;
+      case Token.formalCharge:
+        int formalCharge = getFormalCharge();
+        if (formalCharge > 0)
+          strT = "" + formalCharge + "+";
+        else if (formalCharge < 0)
+          strT = "" + -formalCharge + "-";
+        else
+          strT = "0";
+        break;
+      case Token.atomIndex:
+        strT = "" + (indices == null ? atomIndex : indices[atomIndex]);
+        break;
+      case Token.element:
+        strT = getElementSymbol();
+        break;
+      case Token.insertion:
+        ch = getInsertionCode();
+        strT = (ch == '\0' ? "" : "" + ch);
+        break;
+      case 'g':
+        strT = "" + getSelectedGroupIndexWithinChain();
+        break;
+      case Token.groupindex:
+        strT = "" + getGroupIndex();
+        break;
+      case Token.groupID:
+        strT = "" + getGroupID();
+        break;
+      case Token.atomno:
+        strT = "" + getAtomNumber();
+        break;
+      case Token.bondcount:
+        strT = "" + getCovalentBondCount();
+        break;
+      case 'q':
+        strT = "" + getOccupancy();
+        break;
+      case Token.polymerLength:
+        strT = "" + getPolymerLength();
+        break;
+      case Token.elemno:
+        strT = "" + getElementNumber();
+        break;
+      case Token.model:
+        strT = getModelNumberForLabel();
+        break;
+      case Token.group1:
+        strT = getGroup1();
+        break;
+      case Token.molecule:
+        strT = "" + getMoleculeNumber();
+        break;
+      case Token.group:
+        strT = getGroup3();
+        if (strT == null || strT.length() == 0)
+          strT = "UNK";
+        break;
+      case Token.symmetry:
+        strT = getSymmetryOperatorList();
+        break;
+      case Token.resno:
+        strT = "" + getResno();
+        break;
+      case Token.sequence:
+        strT = getSeqcodeString();
+        break;
+      case Token.site:
+        strT = "" + atomSite;
+        break;
+      case Token.chain:
+        ch = getChainID();
+        strT = (ch == '\0' ? "" : "" + ch);
+        break;
+      case Token.identify:
+        strT = getIdentity(true);
+        break;
+      case 'W':
+        strT = getIdentityXYZ();
+        break;
+      case Token.file:
+        strT = "" + (getModelFileIndex() + 1);
+        break;
+      case Token.valence:
+        strT = "" + getValence();
+        break;
 
-  private float getPropertyFloat(int type) {
-    // TODO
-    return Float.NaN;
+      case Token.phi:
+        floatT = getGroupPhi();
+        break;
+      case Token.radius:
+        floatT = getBondingRadiusFloat();
+        break;
+      case Token.partialCharge:
+        floatT = getPartialCharge();
+        break;
+      case Token.psi:
+        floatT = getGroupPsi();
+        break;
+      case Token.occupancy:
+        floatT = getOccupancy() / 100f;
+        break;
+      case Token.straightness:
+        floatT = getStraightness();
+        if (Float.isNaN(floatT))
+          strT = "null";
+        break;
+      case Token.temperature:
+        floatT = getBfactor100() / 100f;
+        break;
+      case Token.surfacedistance:
+        floatT = getSurfaceDistance100() / 100f;
+        break;
+      case Token.vanderwaals:
+        floatT = getVanderwaalsRadiusFloat();
+        break;
+      case Token.vibX:
+        floatT = group.chain.modelSet.getVibrationCoord(atomIndex, 'x');
+        break;
+      case Token.vibY:
+        floatT = group.chain.modelSet.getVibrationCoord(atomIndex, 'y');
+        break;
+      case Token.vibZ:
+        floatT = group.chain.modelSet.getVibrationCoord(atomIndex, 'z');
+        break;
+      case Token.vibXyz:
+        Vector3f v = getVibrationVector();
+        if (v == null) v = new Vector3f();
+        strT = v.x + " " + v.y + " " + v.z;
+        break;
+      case Token.atomX:
+        floatT = x;
+        break;
+      case Token.atomY:
+        floatT = y;
+        break;
+      case Token.atomZ:
+        floatT = z;
+        break;
+      case Token.fracX:
+        floatT = getFractionalCoord('X');
+        break;
+      case Token.fracY:
+        floatT = getFractionalCoord('Y');
+        break;
+      case Token.fracZ:
+        floatT = getFractionalCoord('Z');
+        break;
+      case Token.fracXyz:
+        Point3f ptf = getFractionalCoord();
+        strT = ptf.x + " " + ptf.y + " " + ptf.z;
+        break;
+      case Token.unitX:
+        floatT = getFractionalUnitCoord('X');
+        break;
+      case Token.unitY:
+        floatT = getFractionalUnitCoord('Y');
+        break;
+      case Token.unitZ:
+        floatT = getFractionalUnitCoord('Z');
+        break;
+      case Token.unitXyz:
+        Point3f pt = getFractionalUnitCoord(false);
+        strT = pt.x + " " + pt.y + " " + pt.z;
+        break;
+      case Token.data:
+        String propertyName = t.text;
+        floatT = group.chain.modelSet.viewer.getDataFloat(propertyName,
+            atomIndex);
+        if (Float.isNaN(floatT))
+          strT = getClientAtomStringProperty(propertyName);
+        break;
+        
+      case Token.structure:
+        strT = JmolConstants.getProteinStructureName(group.getProteinStructureType());
+        break;
+      case Token.strucno:
+        int id = group.getProteinStructureID();
+        strT = (id < 0 ? "" : "" + id);
+        break;
+      }
+      if (!Float.isNaN(floatT))
+        strLabel.append(TextFormat.format(floatT, t.width, t.precision,
+            t.alignLeft, t.zeroPad));
+      else if (strT != null)
+        strLabel.append(TextFormat.format(strT, t.width, t.precision,
+            t.alignLeft, t.zeroPad));
+      else
+        strLabel.append(strFormat.substring(t.pt, t.pt1));
+    } catch (IndexOutOfBoundsException ioobe) {
+      strLabel.append(strFormat.substring(t.pt, t.pt1));
+    }
   }
 
   public boolean equals(Object obj) {

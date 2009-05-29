@@ -294,7 +294,7 @@ public class Measurement {
     for (int i = countPlusIndices[0]; i >= 1;--i) {
       if (label.indexOf("%") < 0)
         break;
-      label = modelSet.atoms[countPlusIndices[i]].formatLabel(label, (char)('0' + i), null);
+      label = modelSet.atoms[countPlusIndices[i]].formatLabel(label, null, (char)('0' + i), null);
     }
     if (label == null)
       return "";

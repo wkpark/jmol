@@ -3003,23 +3003,4 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     return shellOrder[shell][subshell];
   }
 
-  // negative numbers would be floats
-  final public static int PROPERTY_UNKNOWN = 0;
-  final public static int PROPERTY_STRUCTURE_TYPE = 1;
-  final public static int PROPERTY_STRUCTURE_ID = 2;
-  final private static String[] PropertyNames = {
-    "structureType", "structureId"
-  };
-  
-  final private static int[] PropertyTypes = {
-    PROPERTY_STRUCTURE_TYPE, PROPERTY_STRUCTURE_ID
-  };
-  
-  public static int getPropertyType(String propertyName) {
-    for (int i = PropertyNames.length; --i >= 0; ) {
-      if (PropertyNames[i].equalsIgnoreCase(propertyName)) 
-        return PropertyTypes[i];
-    }
-    return PROPERTY_UNKNOWN;
-  }
 }

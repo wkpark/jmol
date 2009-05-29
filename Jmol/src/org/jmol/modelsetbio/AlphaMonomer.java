@@ -67,6 +67,11 @@ public class AlphaMonomer extends Monomer {
     if (proteinStructure == null)
       nitrogenHydrogenPoint = null;
   }
+  
+  public void setProteinStructureId(int id) {
+    if (proteinStructure != null)
+      proteinStructure.uniqueID = id;
+  }
 
   public byte getProteinStructureType() {
     return proteinStructure == null ? JmolConstants.PROTEIN_STRUCTURE_NONE
@@ -74,7 +79,7 @@ public class AlphaMonomer extends Monomer {
   }
 
   public int getProteinStructureID() {
-    return proteinStructure != null ? proteinStructure.uniqueID : -1;
+    return proteinStructure != null ? proteinStructure.uniqueID : Integer.MIN_VALUE;
   }
 
   public boolean isHelix() {
@@ -103,13 +108,13 @@ public class AlphaMonomer extends Monomer {
       }
       switch (iType) {
       case JmolConstants.PROTEIN_STRUCTURE_HELIX:
-        setStructure(new Helix((AlphaPolymer) bioPolymer, monomerIndex, 1));
+        setStructure(new Helix((AlphaPolymer) bioPolymer, monomerIndex, 1, 0));
         break;
       case JmolConstants.PROTEIN_STRUCTURE_SHEET:
-        setStructure(new Sheet((AlphaPolymer) bioPolymer, monomerIndex, 1));
+        setStructure(new Sheet((AlphaPolymer) bioPolymer, monomerIndex, 1, 0));
         break;
       case JmolConstants.PROTEIN_STRUCTURE_TURN:
-        setStructure(new Turn((AlphaPolymer) bioPolymer, monomerIndex, 1));
+        setStructure(new Turn((AlphaPolymer) bioPolymer, monomerIndex, 1, 0));
         break;
       case JmolConstants.PROTEIN_STRUCTURE_NONE:
         setStructure(null);

@@ -33,9 +33,9 @@ public class Sheet extends ProteinStructure {
 
   AlphaPolymer alphaPolymer;
 
-  Sheet(AlphaPolymer alphaPolymer, int monomerIndex, int monomerCount) {
+  Sheet(AlphaPolymer alphaPolymer, int monomerIndex, int monomerCount, int id) {
     super(alphaPolymer, JmolConstants.PROTEIN_STRUCTURE_SHEET, monomerIndex,
-        monomerCount);
+        monomerCount, id);
     this.alphaPolymer = alphaPolymer;
   }
 

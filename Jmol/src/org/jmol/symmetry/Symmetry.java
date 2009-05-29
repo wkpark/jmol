@@ -208,9 +208,8 @@ public class Symmetry implements SymmetryInterface {
   }
 
   public void toFractional(Point3f pt) {
-    if (unitCell == null)
-      return;
-    unitCell.toFractional(pt);
+    if (unitCell != null)
+      unitCell.toFractional(pt);
   }
 
   public Point3f[] getUnitCellVertices() {
@@ -226,8 +225,8 @@ public class Symmetry implements SymmetryInterface {
   }
 
   public void toUnitCell(Point3f pt, Point3f offset) {
-    if ((symmetryInfo == null || symmetryInfo.isMultiCell)
-        && unitCell != null)
+    if (/*(symmetryInfo == null || symmetryInfo.isMultiCell)
+        && why that ? should be OK for PDB files as well */ unitCell != null)
       unitCell.toUnitCell(pt, offset);
   }
 

@@ -33,7 +33,7 @@ import org.jmol.viewer.JmolConstants;
 
 public abstract class ProteinStructure {
 
-  static int globalSerialID = 0;
+  static int globalSerialID = 1000;
   AlphaPolymer apolymer;
   byte type;
   int monomerIndexFirst;
@@ -46,7 +46,7 @@ public abstract class ProteinStructure {
   int uniqueID;
   
   ProteinStructure(AlphaPolymer apolymer, byte type,
-                   int monomerIndex, int monomerCount) {
+                   int monomerIndex, int monomerCount, int id) {
     uniqueID = ++globalSerialID;
     this.apolymer = apolymer;
     this.type = type;    

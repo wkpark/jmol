@@ -138,6 +138,7 @@ public abstract class Monomer extends Group {
   public byte getProteinStructureType() { return JmolConstants.PROTEIN_STRUCTURE_NONE; }
   public boolean isHelix() { return false; }
   public boolean isSheet() { return false; }
+  public void setProteinStructureId(int id) { }
 
   ////////////////////////////////////////////////////////////////
 /*

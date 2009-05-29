@@ -1097,6 +1097,8 @@ public final class ModelLoader extends ModelSet {
     moleculeCount = 0;
     currentModel = null;
     currentChain = null;    
+    setStructureIds();
+
   }
 
   private void setAtomNamesAndNumbers() {

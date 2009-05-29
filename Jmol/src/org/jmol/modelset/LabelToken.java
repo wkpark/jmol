@@ -25,8 +25,13 @@
 
 package org.jmol.modelset;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+import javax.vecmath.Tuple3f;
+
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.Token;
+import org.jmol.viewer.Viewer;
 
 public class LabelToken {
   
@@ -35,9 +40,19 @@ public class LabelToken {
    * 
    * a compiler for the atom label business.
    * 
+   * Prior to this, once for every atom, twice for every bond, and 2-4 times for every
+   * measurement we were scanning the format character by character. And if data were
+   * involved, then calls were made for every atom to find the data set and return its
+   * value. Now you can still do that, but the Jmol code doesn't. 
+   * 
+   * Instead, we  
+   * 
    */
 
-  String text;  
+  String text; 
+  String key;
+  Hashtable values;
+  float[] data;
   int tok;
   int pt = -1;
   int pt1 = 0;
@@ -108,6 +123,7 @@ public class LabelToken {
            Token.vibZ,
            Token.unitXyz,
            Token.fracXyz,
+           Token.xyz,
   };
 
   private static boolean isLabelPropertyTok(int tok) {
@@ -131,7 +147,7 @@ public class LabelToken {
     this.text = text;
   }
 
-  public static LabelToken[] compile(String strFormat, char chAtom) {
+  public static LabelToken[] compile(Viewer viewer, String strFormat, char chAtom, Hashtable htValues) {
     if (strFormat.indexOf("%") < 0)
       return new LabelToken[] { new LabelToken(strFormat) };
     int n = 0;
@@ -146,14 +162,14 @@ public class LabelToken {
       if (ich != ichPercent)
         tokens[i++] = new LabelToken(strFormat.substring(ich, ichPercent));
       LabelToken lt = tokens[i++] = new LabelToken(ichPercent);
-      ich = setToken(strFormat, lt, cch, chAtom);
+      ich = setToken(viewer, strFormat, lt, cch, chAtom, htValues);
     }
     if (ich < cch)
       tokens[i++] = new LabelToken(strFormat.substring(ich));
     return tokens;
   }
 
-  private static int setToken(String strFormat, LabelToken lt, int cch, int chAtom) {
+  private static int setToken(Viewer viewer, String strFormat, LabelToken lt, int cch, int chAtom, Hashtable htValues) {
     int ich = lt.pt + 1;
     char ch;
     if (strFormat.charAt(ich) == '-') {
@@ -174,6 +190,17 @@ public class LabelToken {
       if (Character.isDigit(ch = strFormat.charAt(ich))) {
         lt.precision = ch - '0';
         ++ich;
+      }
+    }
+    if (htValues != null) {
+      Enumeration keys = htValues.keys();
+      while (keys.hasMoreElements()) {
+        String key = (String) keys.nextElement();
+        if (strFormat.indexOf(key) == ich) {
+          lt.key = key;
+          lt.values = htValues;
+          return lt.pt1 = ich + key.length();
+        }
       }
     }
     switch (ch = strFormat.charAt(ich++)) {
@@ -199,6 +226,7 @@ public class LabelToken {
       }
       lt.text = strFormat.substring(ich, ichCloseBracket);
       lt.tok = Token.data;
+      lt.data = viewer.getDataFloat(lt.text);
       ich = ichCloseBracket + 1;
       break;
     default:
@@ -217,18 +245,47 @@ public class LabelToken {
     if (chAtom != '\0' && ich < cch && Character.isDigit(ch = strFormat.charAt(ich))) {
       ich++;
       lt.ch1 = ch;
-      if (ch != chAtom)
+      if (ch != chAtom && chAtom != '\1')
         lt.tok = 0;
     }
     return ich;
   }
-
-  public String format(float floatT, String strT) {
+    
+  public String format(float floatT, String strT, Tuple3f ptT) {
     if (!Float.isNaN(floatT))
       return TextFormat.format(floatT, width, precision, alignLeft, zeroPad);
     else if (strT != null)
       return TextFormat.format(strT, width, precision, alignLeft, zeroPad);
+    else if (ptT != null)
+      return TextFormat.format(ptT.x, width, precision, false, false)
+      + " " + TextFormat.format(ptT.y, width, precision, false, false)
+      + " " + TextFormat.format(ptT.z, width, precision, false, false);
     else
       return text;
+  }
+
+  public static void setValues(LabelToken[] tokens, Hashtable values) {
+    for (int i = 0; i < tokens.length; i++) {
+      LabelToken lt = tokens[i];
+      if (lt == null)
+        break;
+      if (lt.key == null)
+        continue;
+      Object value = values.get(lt.key);
+        lt.text = (value instanceof Float ? 
+            lt.format(((Float)value).floatValue(), null, null)
+            : lt.format(Float.NaN, (String) value, null));
+    }    
+  }
+
+  public static String getLabel(LabelToken[] tokens) {
+    StringBuffer sb = new StringBuffer();
+    for (int i = 0; i < tokens.length; i++) {
+      LabelToken lt = tokens[i];
+      if (lt == null)
+        break;
+      sb.append(lt.text);
+    }
+    return sb.toString();
   }
 }

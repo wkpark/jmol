@@ -25,7 +25,6 @@ package org.jmol.modelset;
 
 import org.jmol.util.Escape;
 import org.jmol.util.Point3fi;
-import org.jmol.util.TextFormat;
 import org.jmol.util.Measure;
 
 import org.jmol.viewer.JmolConstants;
@@ -35,6 +34,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.AxisAngle4f;
 
+import java.util.Hashtable;
 import java.util.Vector;
 
 public class Measurement {
@@ -288,17 +288,16 @@ public class Measurement {
         .getDefaultMeasurementLabel(countPlusIndices[0]));
     if (label.indexOf(s)==0)
       label = label.substring(2);
-    label = TextFormat.formatString(label, "#", index + 1);
-    label = TextFormat.formatString(label, "UNITS", units);
-    label = TextFormat.formatString(label, "VALUE", value);
-    for (int i = countPlusIndices[0]; i >= 1;--i) {
-      if (label.indexOf("%") < 0)
-        break;
-      label = modelSet.atoms[countPlusIndices[i]].formatLabel(label, null, (char)('0' + i), null);
-    }
-    if (label == null)
-      return "";
-    return label;
+    Hashtable htValues = new Hashtable();
+    htValues.put("#", "" + (index + 1));
+    htValues.put("VALUE", new Float(value));
+    htValues.put("UNITS", units);
+    LabelToken[] tokens = LabelToken.compile(viewer, label, '\1', htValues);
+    LabelToken.setValues(tokens, htValues);
+    for (int i = countPlusIndices[0]; i >= 1;--i)
+      Atom.formatLabel(modelSet.atoms[countPlusIndices[i]], null, tokens, (char)('0' + i), null);
+    label = LabelToken.getLabel(tokens);
+    return (label == null ? "" : label);
   }
 
   public boolean sameAs(int[] indices, Point3fi[] points) {

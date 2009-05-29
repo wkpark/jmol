@@ -971,9 +971,9 @@ abstract public class ModelCollection extends BondCollection {
         sb.append("MODEL     " + (iModelLast + 1) + "\n");
       }
       if (a.isHetero())
-        sb.append(a.formatLabel("HETATM%5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \n", null, '\0', null));
+        sb.append(a.formatLabel("HETATM%5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \n"));
       else
-        sb.append(a.formatLabel("ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \n", null, '\0', null));
+        sb.append(a.formatLabel("ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \n"));
     }
     if (showModels)
         sb.append("ENDMDL\n");

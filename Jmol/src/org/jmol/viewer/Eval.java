@@ -7829,39 +7829,25 @@ class Eval {
 
     }
     */
-    LabelToken[] tokens = (label == null || !isAtoms ? null : LabelToken.compile(label, '\0'));
+    boolean asIdentity = (label == null || label.length() == 0);
+    Hashtable htValues = (isAtoms || asIdentity ? null : Bond.getLabelValues());
+    LabelToken[] tokens = (asIdentity ? null 
+        : isAtoms ? LabelToken.compile(viewer, label, '\0', null)
+        : LabelToken.compile(viewer, label, '\1', htValues));
     for (int j = 0; j < len; j++)
       if (bs.get(j)) {
-        String str = label;
+        String str;
         if (isAtoms) {
-          if (label == null) {
+          if (asIdentity)
             str = modelSet.getAtomAt(j).getInfo();
-          } else {
-            str = modelSet.getAtomAt(j).formatLabel(label, tokens, '\0', indices);
-/*            for (int k = 0; k < nProp; k++)
-              if (j < propArray[k].length)
-                str = TextFormat.formatString(str, props[k], propArray[k][j]);
-*/
-            }
+          else
+            str = Atom.formatLabel(modelSet.getAtomAt(j), null, tokens, '\0', indices);
         } else {
           Bond bond = modelSet.getBondAt(j);
-          if (label == null)
+          if (asIdentity)
             str = bond.getIdentity();
-          else {
-            str = bond.formatLabel(label, indices);
-            /*
-            int ia1 = bond.getAtomIndex1();
-            int ia2 = bond.getAtomIndex2();
-            for (int k = 0; k < nProp; k++)
-              if (ia1 < propArray[k].length)
-                str = TextFormat.formatString(str, props[k] + "1",
-                    propArray[k][ia1]);
-            for (int k = 0; k < nProp; k++)
-              if (ia2 < propArray[k].length)
-                str = TextFormat.formatString(str, props[k] + "2",
-                    propArray[k][ia2]);
-            */
-          }
+          else
+            str = bond.formatLabel(tokens, htValues, indices);
         }
         str = TextFormat.formatString(str, "#", ++n);
         if (n > 1)

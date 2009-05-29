@@ -45,7 +45,28 @@ public class LabelToken {
    * involved, then calls were made for every atom to find the data set and return its
    * value. Now you can still do that, but the Jmol code doesn't. 
    * 
-   * Instead, we  
+   * Instead, we now first compile a set of tokens -- either pure text or some
+   * sort of %xxxx business. Generally we would alternate between these, so the
+   * compiler is set up to initialize an array that has 2n+1 elements, where n is the
+   * number of % signs in the string. This is guaranteed to be more than really necessary.
+   * 
+   * Because we are working with tokens, we can go beyond the limiting A-Za-z business
+   * that we had before. That still works, but now we can have any standard token be
+   * used in brackets:
+   * 
+   *   %n.m[xxxxx]
+   * 
+   * This complements the 
+   * 
+   *   %n.m{xxxxx}
+   *   
+   * used for data. The brackets make for a nice-looking format:
+   * 
+   * 
+   *  print {*}.bonds.label("%6[atomName]1 - %6[atomName]2  %3ORDER  %6.2LENGTH")
+   * 
+   * 
+   * 
    * 
    */
 
@@ -213,7 +234,7 @@ public class LabelToken {
         break;
       }
       String propertyName = strFormat.substring(ich, ichClose);
-      Token token = Token.getTokenFromName(propertyName);
+      Token token = Token.getTokenFromName(propertyName.toLowerCase());
       if (token != null && isLabelPropertyTok(token.tok))
         lt.tok = token.tok;
       ich = ichClose + 1;

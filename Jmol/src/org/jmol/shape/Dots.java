@@ -88,6 +88,8 @@ public class Dots extends AtomShape {
     // next four are for serialization
     if ("radius" == propertyName) {
       thisRadius = ((Float) value).floatValue();
+      if (thisRadius > Atom.RADIUS_MAX)
+        thisRadius = Atom.RADIUS_MAX;
       return;
     }
     if ("colorRGB" == propertyName) {
@@ -148,16 +150,16 @@ public class Dots extends AtomShape {
       ec = new EnvelopeCalculation(viewer, atomCount, mads);
   }
 
-  public void setSize(int size, BitSet bsSelected) {
+  public void setSize(int size, float fsize, BitSet bsSelected) {
     if (this.bsSelected != null)
       bsSelected = this.bsSelected;
 
     // if mad == 0 then turn it off
-    //    1           van der Waals (dots) or +1.2, calconly)
-    //   -1           ionic/covalent
-    // 2 - 1001       (mad-1)/100 * van der Waals
-    // 1002 - 11002    (mad - 1002)/1000 set radius 0.0 to 10.0 angstroms
-    // 11003- 13002    (mad - 11002)/1000 set radius to vdw + additional radius
+    // 1 van der Waals (dots) or +1.2, calconly)
+    // -1 ionic/covalent
+    // 2 - 1001 (mad-1)/100 * van der Waals
+    // 1002 - 11002 (mad - 1002)/1000 set radius 0.0 to 10.0 angstroms
+    // 11003- 13002 (mad - 11002)/1000 set radius to vdw + additional radius
     // Short.MIN_VALUE -- ADP min
     // Short.MAX_VALUE -- ADP max
 
@@ -171,31 +173,40 @@ public class Dots extends AtomShape {
     float scale = 1;
 
     isActive = true;
-    switch (size) {
-    case 0:
-      isVisible = false;
-      break;
-    case 1:
-      break;
-    default:
-      if (size <= Short.MIN_VALUE) {
-        setRadius = Short.MIN_VALUE;
-        if (size < Short.MIN_VALUE)
-          scale = (Short.MIN_VALUE - size) / 100f;
-      } else if (size < 0) { // ionic
+    if (Float.isNaN(fsize)) {
+      switch (size) {
+      case 0:
+        isVisible = false;
+        break;
+      case 1:
+        break;
+      default:
+        if (size <= Short.MIN_VALUE) {
+          setRadius = Short.MIN_VALUE;
+          if (size < Short.MIN_VALUE)
+            scale = (Short.MIN_VALUE - size) / 100f;
+        } else if (size < 0) { // ionic
+          useVanderwaalsRadius = false;
+        } else if (size <= 1001) {
+          scale = (size - 1) / 100f;
+        } else if (size <= 11002) {
+          useVanderwaalsRadius = false;
+          setRadius = (size - 1002) / 1000f;
+        } else if (size <= 13002) {
+          addRadius = (size - 11002) / 1000f;
+          scale = 1;
+        } else if (size >= Short.MAX_VALUE) {
+          setRadius = Short.MAX_VALUE;
+          if (size > Short.MAX_VALUE)
+            scale = (size - Short.MAX_VALUE) / 100f;
+        }
+      }
+    } else {
+      if (size == 1) {
+        addRadius = fsize;
+      } else {
         useVanderwaalsRadius = false;
-      } else if (size <= 1001) {
-        scale = (size - 1) / 100f;
-      } else if (size <= 11002) {
-        useVanderwaalsRadius = false;
-        setRadius = (size - 1002) / 1000f;
-      } else if (size <= 13002) {
-        addRadius = (size - 11002) / 1000f;
-        scale = 1;
-      } else if (size >= Short.MAX_VALUE) {
-        setRadius = Short.MAX_VALUE;
-        if (size > Short.MAX_VALUE)
-          scale = (size - Short.MAX_VALUE) / 100f;
+        setRadius = fsize;
       }
     }
     float maxRadius = (!useVanderwaalsRadius ? setRadius : modelSet
@@ -211,7 +222,7 @@ public class Dots extends AtomShape {
     boolean newSet = (lastSolventRadius != addRadius || size != 0
         && size != lastSize || ec.getDotsConvexMax() == 0);
 
-    // for an solvent-accessible surface there is no torus/cavity issue. 
+    // for an solvent-accessible surface there is no torus/cavity issue.
     // we just increment the atom radius and set the probe radius = 0;
 
     if (isVisible) {

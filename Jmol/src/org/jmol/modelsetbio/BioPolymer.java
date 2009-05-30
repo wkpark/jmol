@@ -25,6 +25,7 @@ package org.jmol.modelsetbio;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
+import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Model;
 import org.jmol.modelset.Polymer;
 import org.jmol.util.BitSetUtil; //import org.jmol.util.Escape;
@@ -789,7 +790,7 @@ public abstract class BioPolymer extends Polymer {
         }
         if (pdbATOM == null)
           continue;
-        pdbATOM.append(a.formatLabel("ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
+        pdbATOM.append(LabelToken.formatLabel(a, "ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
         pdbATOM.append(TextFormat.sprintf(
             "%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n", new String[] {
                 a.getElementSymbol().toUpperCase(), strExtra }, new float[] {

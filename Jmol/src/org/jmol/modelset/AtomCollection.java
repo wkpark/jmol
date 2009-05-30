@@ -160,7 +160,7 @@ abstract public class AtomCollection {
   //////////// atoms //////////////
   
   public String getAtomInfo(int i, String format) {
-    return (format == null ? atoms[i].getInfo() : atoms[i].formatLabel(format));
+    return (format == null ? atoms[i].getInfo() : LabelToken.formatLabel(atoms[i],format));
   }
 
   public String getAtomInfoXYZ(int i, boolean useChimeFormat) {
@@ -537,6 +537,14 @@ abstract public class AtomCollection {
         if (setPartialCharge(i, fValue))
           taint(i, TAINT_PARTIALCHARGE);
         break;
+      case Token.radius:
+      case Token.spacefill:
+        if (fValue < 0)
+          fValue = 0;
+        else if (fValue > Atom.RADIUS_MAX)
+          fValue = Atom.RADIUS_MAX;
+        atom.setMadAtom(viewer, 0, fValue);
+        break;
       case Token.temperature:
         if (setBFactor(i, fValue))
           taint(i, TAINT_TEMPERATURE);
@@ -889,7 +897,7 @@ abstract public class AtomCollection {
           s.append(atoms[i].getFormalCharge());
           break;
         case TAINT_OCCUPANCY:
-          s.append(atoms[i].getOccupancy());
+          s.append(atoms[i].getOccupancy100());
           break;
         case TAINT_PARTIALCHARGE:
           s.append(atoms[i].getPartialCharge());

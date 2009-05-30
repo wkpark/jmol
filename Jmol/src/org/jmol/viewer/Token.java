@@ -322,7 +322,7 @@ public class Token {
   final static int selectionHalo = command | 51 | setparam | defaultON;
   final static int show         = command | 52;
   final static int slab         = command | 53 | defaultON;
-  final static int spacefill    = command | 54 | defaultON;
+  //final public static int spacefill see atom properties
   final static int spin         = command | 55 | setparam | defaultON;
   final static int ssbond       = command | 56 | setparam | defaultON;
   final static int star         = command | 57 | defaultON;
@@ -335,7 +335,7 @@ public class Token {
   final public static int unitcell = command | 64 | setparam | expression | predefinedset | defaultON;
   final static int vector       = command | 65;
   public final static int vibration    = command | 66;
-  final static int wireframe    = command | 67 | defaultON;
+  final static int wireframe     = command |67 | defaultON;
   //final static int write   see mathfunc
   final static int zoom         = command | 68;
   final static int zoomTo       = command | 69;
@@ -481,23 +481,26 @@ public class Token {
   public final static int atomIndex            = atomproperty | 5;
   final public static int atomName      = atomproperty | 6 | settable;
   final public static int cell          = atomproperty | 7;
+  final public static int covalent      = atomproperty | 8;
   final public static int element       = atomproperty | 8 | settable;
   final public static int elemno        = atomproperty | 9;
   final public static int formalCharge  = atomproperty | 10 | setparam | settable;
   public final static int groupID              = atomproperty | 11;
   public final static int groupindex           = atomproperty | 12;
+  final public static int ionic         = atomproperty | 13;
   final public static int model         = atomproperty | 13 | command;
   final public static int molecule      = atomproperty | 14;
   final public static int occupancy     = atomproperty | 15 | settable;
   public final static int polymerLength        = atomproperty | 16;
-  public final static int radius               = atomproperty | 17 | setparam;
+  public final static int radius               = atomproperty | 17 | setparam | settable;
   public final static int resno                = atomproperty | 18;
   final public static int site          = atomproperty | 19;
-  final public static int strucno       = atomproperty | 20;
-  final public static int structure     = atomproperty | 21 | command;
-  final static int symop                = atomproperty | 22;
-  final public static int vanderwaals   = atomproperty | 23 | settable;
-  final public static int valence       = atomproperty | 24 | settable;
+  final public static int spacefill     = atomproperty | 20 | command | defaultON | settable;
+  final public static int strucno       = atomproperty | 21;
+  final public static int structure     = atomproperty | 22 | command;
+  final static int symop                = atomproperty | 23;
+  final public static int vanderwaals   = atomproperty | 24 | settable;
+  final public static int valence       = atomproperty | 25 | settable;
 
   final public static int atomX           = atomproperty | comparefloatx100 | 0 | settable;
   final public static int atomY           = atomproperty | comparefloatx100 | 1 | settable;
@@ -1000,7 +1003,6 @@ public class Token {
   final public static int fullylit     = misc | 21;
   final static int image               = misc | 121;  //11.5.53
   final public static int info  = misc | 122;
-  final static int ionic        = misc | 22;
   final static int jmol         = misc | 23;
   final static int last         = misc | 24;
   final static int left         = misc | 25;
@@ -1366,6 +1368,7 @@ public class Token {
     "coords",           null,
     "cos",              new Token(cos),
     "cross",            new Token(cross),
+    "covalent",         new Token(covalent),
     "defaultColors",    new Token(defaultColors),
     "direction",        new Token(direction),
     "displacement",     new Token(displacement),

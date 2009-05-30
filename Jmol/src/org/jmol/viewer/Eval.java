@@ -628,8 +628,13 @@ class Eval {
   }
 
   private void setShapeSize(int shapeType, int size) {
+    setShapeSize(shapeType, size, Float.NaN);
+  }
+
+  private void setShapeSize(int shapeType, int size, float fsize) {
+    // stars, halos, balls only
     if (!isSyntaxCheck)
-      viewer.setShapeSize(shapeType, size);
+      viewer.setShapeSize(shapeType, size, fsize);
   }
 
   private void setBooleanProperty(String key, boolean value) {
@@ -1058,14 +1063,14 @@ class Eval {
       case Token.star:
         setAtomShapeSize(JmolConstants.SHAPE_STARS, -100);
         break;
-      case Token.structure:
-        structure();
-        break;
       case Token.halo:
         setAtomShapeSize(JmolConstants.SHAPE_HALOS, -20);
         break;
       case Token.spacefill: // aka cpk
         setAtomShapeSize(JmolConstants.SHAPE_BALLS, -100);
+        break;
+      case Token.structure:
+        structure();
         break;
       case Token.wireframe:
         wireframe();
@@ -1663,6 +1668,10 @@ class Eval {
             tokWhat = -Token.model;
           } else {
             comparisonFloat = ((Float) val).floatValue();
+            // radius is special, because it comes from Rasmol in 1/250th Angstrom 
+            // units. Jmol recognizes that for integers "radius > 250"
+            // but uses Angstroms for decimals "radius > 2.0"
+            // but not for floating point values. 
             comparisonValue = (int) (comparisonFloat * (isRadius ? 250f : 100f));
           }
         } else {
@@ -1835,7 +1844,7 @@ class Eval {
       switch (tokWhat) {
       default:
         propertyValue = (int) atomProperty(atom, tokWhat, true);
-        if (propertyValue == Integer.MAX_VALUE)
+        if (propertyValue == Integer.MAX_VALUE) // was for negative temperatures
           continue;
         break;
       case Token.property:
@@ -1994,72 +2003,52 @@ class Eval {
     return bs;
   }
 
+  /**
+   *  called by isosurface (asInt = false) and integer comparator (asInt = true). 
+   *   
+   * 
+   * @param atom
+   * @param tokWhat
+   * @param asInt
+   * @return         the property, either as an integer or float or float*100
+   * @throws ScriptException
+   */
   private float atomProperty(Atom atom, int tokWhat, boolean asInt)
       throws ScriptException {
-    float propertyValue = 0;
+    int value = atomPropertyInt(atom, tokWhat);
+    if (value != Integer.MIN_VALUE)
+      return value;
+    return atomPropertyFloat(atom, tokWhat, asInt);
+  }
+
+  /**
+   * called by isosurface and int comparator via atomProperty()
+   * and also by getBitsetProperty() 
+   * 
+   * @param atom
+   * @param tokWhat
+   * @return         int value or Integer.MIN_VALUE
+   */
+  private int atomPropertyInt(Atom atom, int tokWhat) {
     switch (tokWhat) {
-    case Token.adpmax:
-      return atom.getADPMinMax(true);
-    case Token.adpmin:
-      return atom.getADPMinMax(false);
     case Token.atomno:
       return atom.getAtomNumber();
+    case Token.atomID:
+      return atom.getSpecialAtomID();
     case Token.atomIndex:
       return atom.getAtomIndex();
+    case Token.bondcount:
+      return atom.getCovalentBondCount();
     case Token.elemno:
       return atom.getElementNumber();
     case Token.element:
       return atom.getAtomicAndIsotopeNumber();
-    case Token.formalCharge:
-      return atom.getFormalCharge();
-    case Token.partialCharge:
-      propertyValue = atom.getPartialCharge();
-      return asInt ? propertyValue * 100 : propertyValue;
-    case Token.site:
-      return atom.getAtomSite();
-    case Token.molecule:
-      return atom.getMoleculeNumber();
-    case Token.temperature: // 0 - 9999
-      propertyValue = atom.getBfactor100();
-      return (propertyValue < 0 ? Integer.MAX_VALUE : asInt ? propertyValue
-          : propertyValue / 100f);
-    case Token.straightness:
-      propertyValue = atom.getStraightness();
-      return asInt ? propertyValue * 100 : propertyValue;
-    case Token.surfacedistance:
-      viewer.getSurfaceDistanceMax();
-      propertyValue = atom.getSurfaceDistance100();
-      return (asInt ? propertyValue : propertyValue / 100f);
-    case Token.occupancy:
-      return atom.getOccupancy();
-    case Token.polymerLength:
-      return atom.getPolymerLength();
-    case Token.resno:
-      return atom.getResno();
-    case Token.groupID:
-      return propertyValue = atom.getGroupID(); //-1 if no group
-    case Token.atomID:
-      return atom.getSpecialAtomID();
-    case Token.structure:
-      return atom.getProteinStructureType();
-    case Token.strucno:
-      return atom.getProteinStructureID();
-    case Token.radius:
-      return atom.getRasMolRadius();
-    case Token.vanderwaals:
-      return (asInt ? 100 : 1) * atom.getVanderwaalsRadiusFloat();
-    case Token.psi:
-      propertyValue = atom.getGroupPsi();
-      return asInt ? propertyValue * 100 : propertyValue;
-    case Token.phi:
-      propertyValue = atom.getGroupPhi();
-      return asInt ? propertyValue * 100 : propertyValue;
-    case Token.bondcount:
-      return atom.getCovalentBondCount();
-    case Token.valence:
-      return atom.getValence();
     case Token.file:
       return atom.getModelFileIndex() + 1;
+    case Token.formalCharge:
+      return atom.getFormalCharge();
+    case Token.groupID:
+      return atom.getGroupID(); //-1 if no group
     case Token.model:
       //integer model number -- could be PDB/sequential adapter number
       //or it could be a sequential model in file number when multiple files
@@ -2067,39 +2056,126 @@ class Eval {
     case -Token.model:
       //float is handled differently
       return atom.getModelFileNumber();
+    case Token.molecule:
+      return atom.getMoleculeNumber();
+    case Token.occupancy:
+      return atom.getOccupancy100();
+    case Token.polymerLength:
+      return atom.getPolymerLength();
+    case Token.resno:
+      return atom.getResno();
+    case Token.site:
+      return atom.getAtomSite();
+    case Token.structure:
+      return atom.getProteinStructureType();
+    case Token.strucno:
+      return atom.getProteinStructureID();
+    case Token.valence:
+      return atom.getValence();
+    }
+    return Integer.MIN_VALUE;      
+  }
+
+  /**
+   * called by isosurface and int comparator via atomProperty()
+   * and also by getBitsetProperty() 
+   * 
+   * @param atom
+   * @param tokWhat
+   * @param asInt
+   * @return       float value or value*100 (asInt=true) or throw an error if not found
+   * 
+   * @throws ScriptException
+   */
+  
+  private float atomPropertyFloat(Atom atom, int tokWhat, boolean asInt) throws ScriptException {
+    float propertyValue = 0;
+
+    // though not a float, color is treated differently in {selected}.xxxx than select xxxx = ... or isosurface
+
+    switch (tokWhat) {
+    case Token.color:
+      return viewer.getColixArgb(atom.getColix());
+
+    // the comparitor uses rasmol radius, unfortunately, for integers
+      
+    case Token.radius:
+      return (asInt ? atom.getRasMolRadius() : atom.getRadius());
+      
+    // these two are stored 100 x value so must be divided by 100 if not asInt
+      
+    case Token.surfacedistance:
+      viewer.getSurfaceDistanceMax();
+      propertyValue = atom.getSurfaceDistance100();
+      return (asInt ? propertyValue : propertyValue / 100f);
+    case Token.temperature: // 0 - 9999
+      propertyValue = atom.getBfactor100();
+      return (asInt ? propertyValue : propertyValue / 100f);
+
+    // these next have to be multiplied by 100 if being compared
+    // note that spacefill here is slightly different than radius -- no integer option
+      
+    case Token.spacefill:
+      propertyValue = atom.getRadius();
+
+    case Token.ionic:
+      propertyValue = atom.getBondingRadiusFloat();
+      break;
+    case Token.covalent:
+      propertyValue = atom.getCovalentRadiusFloat();
+      break;      
+    case Token.adpmax:
+      propertyValue = atom.getADPMinMax(true);
+      break;
+    case Token.adpmin:
+      propertyValue = atom.getADPMinMax(false);
+      break;
     case Token.atomX:
       propertyValue = atom.x;
-      return asInt ? propertyValue * 100 : propertyValue;
+      break;
     case Token.atomY:
       propertyValue = atom.y;
-      return asInt ? propertyValue * 100 : propertyValue;
+      break;
     case Token.atomZ:
       propertyValue = atom.z;
-      return asInt ? propertyValue * 100 : propertyValue;
+      break;
     case Token.fracX:
       propertyValue = atom.getFractionalCoord('X');
-      return asInt ? propertyValue * 100 : propertyValue;
+      break;
     case Token.fracY:
       propertyValue = atom.getFractionalCoord('Y');
-      return asInt ? propertyValue * 100 : propertyValue;
+      break;
     case Token.fracZ:
       propertyValue = atom.getFractionalCoord('Z');
-      return asInt ? propertyValue * 100 : propertyValue;
+      break;
+    case Token.partialCharge:
+      propertyValue = atom.getPartialCharge();
+      break;
+    case Token.phi:
+      propertyValue = atom.getGroupPhi();
+      break;
+    case Token.psi:
+      propertyValue = atom.getGroupPsi();
+      break;
+    case Token.straightness:
+      propertyValue = atom.getStraightness();
+      break;
     case Token.unitX:
       propertyValue = atom.getFractionalUnitCoord('X');
-      return asInt ? propertyValue * 100 : propertyValue;
+      break;
     case Token.unitY:
       propertyValue = atom.getFractionalUnitCoord('Y');
-      return asInt ? propertyValue * 100 : propertyValue;
+      break;
     case Token.unitZ:
       propertyValue = atom.getFractionalUnitCoord('Z');
-      return asInt ? propertyValue * 100 : propertyValue;
-    case Token.color:
-      return propertyValue = viewer.getColixArgb(atom.getColix());
+      break;
+    case Token.vanderwaals:
+      propertyValue = atom.getVanderwaalsRadiusFloat();
+      break;
     default:
       error(ERROR_unrecognizedAtomProperty, Token.nameOf(tokWhat));
     }
-    return 0;
+    return asInt ? propertyValue * 100 : propertyValue;
   }
 
   /* ****************************************************************************
@@ -3507,7 +3583,7 @@ class Eval {
       viewer.selectBonds(bsBonds);
       if (!Float.isNaN(radius))
         viewer.setShapeSize(JmolConstants.SHAPE_STICKS, (int) (radius * 2000),
-            bsBonds);
+            Float.NaN, bsBonds);
       if (color != Integer.MIN_VALUE)
         viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "color",
             new Integer(color), bsBonds);
@@ -6009,27 +6085,27 @@ class Eval {
 
   private void setAtomShapeSize(int shape, int defOn) throws ScriptException {
     //halo star spacefill
-    int mad = 0;
+    int code = 0;
+    float fsize = Float.NaN;
     int tok = tokAt(1);
     switch (tok) {
     case Token.only:
       restrictSelected(false);
-      mad = defOn;
+      code = defOn;
       break;
     case Token.on:
-      mad = defOn;
+      code = defOn;
       break;
     case Token.vanderwaals:
-      mad = -100;
+      code = -100;
       break;
     case Token.off:
       break;
     case Token.plus:
     case Token.decimal:
       int i = (tok == Token.plus ? 2 : 1);
-      if (i == 2)
-        mad = 10000;
-      mad += (int) (floatParameter(i, 0, 3) * 1000 * 2);
+      code = (i == 2 ? 1 : -1);
+      fsize = floatParameter(i, 0, Atom.RADIUS_MAX);
       break;
     case Token.integer:
       int intVal = intParameter(1);
@@ -6038,36 +6114,36 @@ class Eval {
           integerOutOfRange(0, 200);
         int iMode = JmolConstants.getVdwType(optParameterAsString(3));
         if (iMode >= 0)
-          mad = (-(iMode + 1) * 2000 - intVal);
+          code = (-(iMode + 1) * 2000 - intVal);
         else
-          mad = (-intVal);
+          code = (-intVal);
         break;
       }
       //rasmol 250-scale if positive or percent (again), if negative (deprecated)
       if (intVal > 749 || intVal < -200)
         integerOutOfRange(-200, 749);
-      mad = (intVal <= 0 ? intVal : intVal * 8);
+      code = (intVal <= 0 ? intVal : intVal * 8);
       break;
     case Token.temperature:
-      mad = -1000;
+      code = -1000;
       break;
     case Token.ionic:
-      mad = -1001;
+      code = -1001;
       break;
     case Token.adpmax:
-      mad = Short.MAX_VALUE;
+      code = Short.MAX_VALUE;
       if (tokAt(2) == Token.integer)
-        mad += intParameter(2);
+        code += intParameter(2);
       break;
     case Token.adpmin:
-      mad = Short.MIN_VALUE;
+      code = Short.MIN_VALUE;
       if (tokAt(2) == Token.integer)
-        mad -= intParameter(2);
+        code -= intParameter(2);
       break;
     default:
       error(ERROR_invalidArgument);
     }
-    setShapeSize(shape, mad);
+    setShapeSize(shape, code, fsize);
   }
 
   private void structure() throws ScriptException {
@@ -6105,8 +6181,7 @@ class Eval {
       return;
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_COVALENT_MASK));
-    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, mad, viewer
-        .getSelectionSet());
+    setShapeSize(JmolConstants.SHAPE_STICKS, mad);
   }
 
   private void ssbond() throws ScriptException {
@@ -6159,14 +6234,15 @@ class Eval {
     boolean addHbonds = viewer.hasCalculatedHBonds(bsConfigurations);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
         JmolConstants.BOND_HYDROGEN_MASK));
-    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 0, bsConfigurations);
+    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 0, Float.NaN, bsConfigurations);
     if (addHbonds)
       viewer.autoHbond(bsConfigurations, bsConfigurations, null, 0, 0);
     viewer.select(bsConfigurations, tQuiet);
   }
 
   private void vector() throws ScriptException {
-    int mad = 1;
+    int code = 1;
+    float fsize = Float.NaN;
     checkLength(-3);
     switch (iToken = statementLength) {
     case 1:
@@ -6176,15 +6252,16 @@ class Eval {
       case Token.on:
         break;
       case Token.off:
-        mad = 0;
+        code = 0;
         break;
       case Token.integer:
         //diameter Pixels
-        mad = intParameter(1, 0, 19);
+        code = intParameter(1, 0, 19);
         break;
       case Token.decimal:
         //radius angstroms
-        mad = (int) (floatParameter(1, 0, 3) * 1000 * 2);
+        code = -1;
+        fsize = floatParameter(1, 0, 3);
         break;
       default:
         error(ERROR_booleanOrNumberExpected);
@@ -6196,7 +6273,7 @@ class Eval {
         return;
       }
     }
-    setShapeSize(JmolConstants.SHAPE_VECTORS, mad);
+    setShapeSize(JmolConstants.SHAPE_VECTORS, code, fsize);
   }
 
   private void dipole() throws ScriptException {
@@ -6517,30 +6594,30 @@ class Eval {
     if (!isSyntaxCheck)
       viewer.loadShape(iShape);
     setShapeProperty(iShape, "init", null);
-    int mad = 0;
-    float radius;
+    int code = 0;
+    float fsize = Float.NaN;
     int ipt = 1;
     switch (getToken(1).tok) {
     case Token.only:
       restrictSelected(false);
-      mad = 1;
+      code = 1;
       break;
     case Token.on:
     case Token.vanderwaals:
-      mad = 1;
+      code = 1;
       break;
     case Token.ionic:
-      mad = -1;
+      code = -1;
       break;
     case Token.off:
       break;
     case Token.plus:
-      radius = floatParameter(++ipt, 0, 2); //ambiguity here
-      mad = (int) (radius == 0f ? 1 : radius * 1000f + 11002);
+      fsize = floatParameter(++ipt, 0, Atom.RADIUS_MAX); //ambiguity here
+      code = 1;
       break;
     case Token.decimal:
-      radius = floatParameter(ipt, 0, 10);
-      mad = (int) (radius == 0f ? 0 : radius * 1000f + 1002);
+      fsize = floatParameter(ipt, 0, Atom.RADIUS_MAX);
+      code = -1;
       break;
     case Token.integer:
       int dotsParam = intParameter(ipt++);
@@ -6556,22 +6633,22 @@ class Eval {
       }
       if (dotsParam < 0 || dotsParam > 1000)
         integerOutOfRange(0, 1000);
-      mad = (dotsParam == 0 ? 0 : dotsParam + 1);
+      code = (dotsParam == 0 ? 0 : dotsParam + 1);
       break;
     case Token.adpmax:
-      mad = Short.MAX_VALUE;
+      code = Short.MAX_VALUE;
       if (tokAt(2) == Token.integer)
-        mad += intParameter(2);
+        code += intParameter(2);
       break;
     case Token.adpmin:
-      mad = Short.MIN_VALUE;
+      code = Short.MIN_VALUE;
       if (tokAt(2) == Token.integer)
-        mad -= intParameter(2);
+        code -= intParameter(2);
       break;
     default:
       error(ERROR_booleanOrNumberExpected);
     }
-    setShapeSize(iShape, mad);
+    setShapeSize(iShape, code, fsize);
   }
 
   private void proteinShape(int shapeType) throws ScriptException {
@@ -7830,7 +7907,7 @@ class Eval {
     }
     */
     boolean asIdentity = (label == null || label.length() == 0);
-    Hashtable htValues = (isAtoms || asIdentity ? null : Bond.getLabelValues());
+    Hashtable htValues = (isAtoms || asIdentity ? null : LabelToken.getBondLabelValues());
     LabelToken[] tokens = (asIdentity ? null 
         : isAtoms ? LabelToken.compile(viewer, label, '\0', null)
         : LabelToken.compile(viewer, label, '\1', htValues));
@@ -7841,13 +7918,13 @@ class Eval {
           if (asIdentity)
             str = modelSet.getAtomAt(j).getInfo();
           else
-            str = Atom.formatLabel(modelSet.getAtomAt(j), null, tokens, '\0', indices);
+            str = LabelToken.formatLabel(modelSet.getAtomAt(j), null, tokens, '\0', indices);
         } else {
           Bond bond = modelSet.getBondAt(j);
           if (asIdentity)
             str = bond.getIdentity();
           else
-            str = bond.formatLabel(tokens, htValues, indices);
+            str = LabelToken.formatLabel(bond, tokens, htValues, indices);
         }
         str = TextFormat.formatString(str, "#", ++n);
         if (n > 1)
@@ -7973,24 +8050,6 @@ class Eval {
           if (isInt) {
             int iv = 0;
             switch (tok) {
-            case Token.atomno:
-              iv = atom.getAtomNumber();
-              break;
-            case Token.atomIndex:
-              iv = i;
-              break;
-            case Token.elemno:
-              iv = atom.getElementNumber();
-              break;
-            case Token.element:
-              iv = atom.getAtomicAndIsotopeNumber();
-              break;
-            case Token.formalCharge:
-              iv = atom.getFormalCharge();
-              break;
-            case Token.site:
-              iv = atom.getAtomSite();
-              break;
             case Token.symop:
               // a little weird
               if (atom.getModelIndex() != iModel) {
@@ -8015,45 +8074,9 @@ class Eval {
                 iv = ivvMax;
               n += p - 1;
               break;
-            case Token.molecule:
-              iv = atom.getMoleculeNumber();
-              break;
-            case Token.occupancy:
-              iv = atom.getOccupancy();
-              break;
-            case Token.polymerLength:
-              iv = atom.getPolymerLength();
-              break;
-            case Token.resno:
-              iv = atom.getResno();
-              break;
-            case Token.groupID:
-              iv = atom.getGroupID();
-              break;
-            case Token.atomID:
-              iv = atom.getSpecialAtomID();
-              break;
-            case Token.structure:
-              iv = atom.getProteinStructureType();
-              break;
-            case Token.strucno:
-              iv = atom.getProteinStructureID();
-              break;
-            case Token.bondcount:
-              iv = atom.getCovalentBondCount();
-              break;
-            case Token.valence:
-              iv = atom.getValence();
-              break;
-            case Token.file:
-              iv = atom.getModelFileIndex() + 1;
-              break;
-            case Token.model:
-              iv = atom.getModelNumber();
-              break;
             default:
-              isInt = false;
-              break;
+              if ((iv = atomPropertyInt(atom, tok)) == Integer.MIN_VALUE)
+                isInt = false;
             }
             if (isInt) {
               if (isAll)
@@ -8083,77 +8106,17 @@ class Eval {
           case Token.property:
             fv = (data == null ? 0 : data[i]);
             break;
-          case Token.adpmax:
-            fv = atom.getADPMinMax(true);
-            break;
-          case Token.adpmin:
-            fv = atom.getADPMinMax(false);
-            break;
-          case Token.atomX:
-            fv = atom.x;
-            break;
-          case Token.atomY:
-            fv = atom.y;
-            break;
-          case Token.atomZ:
-            fv = atom.z;
-            break;
-          case Token.fracX:
-            fv = atom.getFractionalCoord('X');
-            break;
-          case Token.fracY:
-            fv = atom.getFractionalCoord('Y');
-            break;
-          case Token.fracZ:
-            fv = atom.getFractionalCoord('Z');
-            break;
-          case Token.unitX:
-            fv = atom.getFractionalUnitCoord('X');
-            break;
-          case Token.unitY:
-            fv = atom.getFractionalUnitCoord('Y');
-            break;
-          case Token.unitZ:
-            fv = atom.getFractionalUnitCoord('Z');
-            break;
-          case Token.vibX:
-            fv = viewer.getVibrationCoord(i, 'x');
-            break;
-          case Token.vibY:
-            fv = viewer.getVibrationCoord(i, 'y');
-            break;
-          case Token.vibZ:
-            fv = viewer.getVibrationCoord(i, 'z');
-            break;
           case Token.distance:
             if (planeRef != null)
               fv = Graphics3D.distanceToPlane(planeRef, atom);
             else
               fv = atom.distance(ptRef);
             break;
-          case Token.radius:
-            fv = atom.getRadius();
-            break;
-          case Token.vanderwaals:
-            fv = atom.getVanderwaalsRadiusFloat();
-            break;
-          case Token.partialCharge:
-            fv = atom.getPartialCharge();
-            break;
-          case Token.phi:
-            fv = atom.getGroupPhi();
-            break;
-          case Token.psi:
-            fv = atom.getGroupPsi();
-            break;
-          case Token.straightness:
-            fv = atom.getStraightness();
-            break;
           case Token.surfacedistance:
             viewer.getSurfaceDistanceMax();
             fv = atom.getSurfaceDistance100() / 100f;
             break;
-          case Token.temperature: // 0 - 9999
+          case Token.temperature:
             fv = atom.getBfactor100() / 100f;
             break;
           case Token.xyz:
@@ -8178,7 +8141,7 @@ class Eval {
             fv = 0;
             break;
           default:
-            error(ERROR_unrecognizedAtomProperty, Token.nameOf(tok));
+            fv = atomPropertyFloat(atom, tok, false);
           }
 
           if (fv == Float.MAX_VALUE) {

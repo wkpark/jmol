@@ -34,12 +34,11 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.AxisAngle4f;
 
-import java.util.Hashtable;
 import java.util.Vector;
 
 public class Measurement {
 
-  private Viewer viewer;
+  Viewer viewer;
 
   public ModelSet modelSet;
 
@@ -288,16 +287,7 @@ public class Measurement {
         .getDefaultMeasurementLabel(countPlusIndices[0]));
     if (label.indexOf(s)==0)
       label = label.substring(2);
-    Hashtable htValues = new Hashtable();
-    htValues.put("#", "" + (index + 1));
-    htValues.put("VALUE", new Float(value));
-    htValues.put("UNITS", units);
-    LabelToken[] tokens = LabelToken.compile(viewer, label, '\1', htValues);
-    LabelToken.setValues(tokens, htValues);
-    for (int i = countPlusIndices[0]; i >= 1;--i)
-      Atom.formatLabel(modelSet.atoms[countPlusIndices[i]], null, tokens, (char)('0' + i), null);
-    label = LabelToken.getLabel(tokens);
-    return (label == null ? "" : label);
+    return LabelToken.labelFormat(this, label, value, units);
   }
 
   public boolean sameAs(int[] indices, Point3fi[] points) {

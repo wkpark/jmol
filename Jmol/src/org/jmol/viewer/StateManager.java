@@ -32,6 +32,7 @@ import java.util.Enumeration;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Bond;
+import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
@@ -151,7 +152,7 @@ public class StateManager {
     
     // Jmol 11.7.39 -- see Atom.getIdentity(true);
     
-    String strLabel = "%[identify]";
+    String strLabel = LabelToken.STANDARD_LABEL;
     
     /*
     int modelCount = viewer.getModelCount();

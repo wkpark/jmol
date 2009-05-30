@@ -971,9 +971,9 @@ abstract public class ModelCollection extends BondCollection {
         sb.append("MODEL     " + (iModelLast + 1) + "\n");
       }
       if (a.isHetero())
-        sb.append(a.formatLabel("HETATM%5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \n"));
+        sb.append(LabelToken.formatLabel(a, "HETATM%5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \n"));
       else
-        sb.append(a.formatLabel("ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \n"));
+        sb.append(LabelToken.formatLabel(a, "ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \n"));
     }
     if (showModels)
         sb.append("ENDMDL\n");
@@ -2033,7 +2033,7 @@ abstract public class ModelCollection extends BondCollection {
     if (autoAromatize)
       assignAromaticBonds(true, bsBonds);
     if (!identifyOnly)
-      viewer.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, bsBonds);
+      ((ModelSet)this).setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, Float.NaN, bsBonds);
     return new int[] { nNew, nModified };
   }
 
@@ -2581,9 +2581,9 @@ abstract public class ModelCollection extends BondCollection {
         info.put("altLocation", "" + atom.alternateLocationID);
       info.put("structure", new Integer(atom.getProteinStructureType()));
       info.put("polymerLength", new Integer(atom.getPolymerLength()));
-      info.put("occupancy", new Integer(atom.getOccupancy()));
+      info.put("occupancy", new Integer(atom.getOccupancy100()));
       int temp = atom.getBfactor100();
-      info.put("temp", new Integer((temp < 0 ? 0 : temp / 100)));
+      info.put("temp", new Integer(temp / 100));
     }
     return info;
   }  

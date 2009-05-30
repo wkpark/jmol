@@ -36,7 +36,6 @@ import org.jmol.util.Quaternion;
 import java.util.BitSet;
 
 import javax.vecmath.Point3f;
-import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 
@@ -45,6 +44,9 @@ final public class Atom extends Point3fi {
   private final static byte VIBRATION_VECTOR_FLAG = 1;
   private final static byte IS_HETERO_FLAG = 2;
   private final static byte FLAG_MASK = 3;
+  
+  public static final int RADIUS_MAX = 16;
+  private static final int MAD_MAX = RADIUS_MAX * 2000; // must be < 32000
 
   Group group;
   int atomIndex;
@@ -109,7 +111,7 @@ final public class Atom extends Point3fi {
     setFormalCharge(formalCharge);
     this.alternateLocationID = alternateLocationID;
     userDefinedVanDerWaalRadius = radius;
-    setMadAtom(viewer, size);
+    setMadAtom(viewer, size, Float.NaN);
     set(x, y, z);
   }
 
@@ -202,66 +204,81 @@ final public class Atom extends Point3fi {
    *  a rudimentary form of enumerations/user-defined primitive types)
    */
 
-  public void setMadAtom(Viewer viewer, int size) {
-    madAtom = convertEncodedMad(viewer, size);
+  public void setMadAtom(Viewer viewer, int size, float fsize) {
+    madAtom = convertEncodedMad(viewer, size, fsize);
   }
 
-  public short convertEncodedMad(Viewer viewer, int size) {
-    switch (size) {
-    case 0:
-      return 0;
-    case -1000: // temperature
-      int diameter = getBfactor100() * 10 * 2;
-      if (diameter > 4000)
-        diameter = 4000;
-      size = diameter;
-      break;
-    case -1001: // ionic
-      size = (getBondingMar() * 2);
-      break;
-    case -100: // simple van der waals
-      size = getVanderwaalsMad(viewer);
-    default:
-      if (size <= Short.MIN_VALUE) { //ADPMIN
-        float d = 2000 * getADPMinMax(false);
-        if (size < Short.MIN_VALUE)
-          size = (int) (d * (Short.MIN_VALUE - size) / 100f);
-        else
-          size = (int) d;
+  public short convertEncodedMad(Viewer viewer, int size, float fsize) {
+    short mad;
+    if (Float.isNaN(fsize)) {
+      switch (size) {
+      case 0:
+        return 0;
+      case -1000: // temperature
+        int diameter = getBfactor100() * 10 * 2;
+        if (diameter > 4000)
+          diameter = 4000;
+        size = diameter;
         break;
-      } else if (size < -2000) {
-        // percent of custom size, to diameter
-        // -2000 = Jmol, -3000 = Babel, -4000 = RasMol, -5000 = User
-        int iMode = (-size / 1000) - 2;
-        size = (-size) % 1000;
-        size = (int) (size / 50f * viewer.getVanderwaalsMar(
-            atomicAndIsotopeNumber % 128, iMode));
-      } else if (size < 0) {
-        // percent
-        //      we are going from a radius to a diameter
-        size = -size;
-        if (size > 200)
-          size = 200;
-        size = (int) (size / 100f * getVanderwaalsMad(viewer));
-      } else if (size >= Short.MAX_VALUE) { //ADPMAX
+      case -1001: // ionic
+        size = (getBondingMar() * 2);
+        break;
+      case -100: // simple van der waals
+        size = getVanderwaalsMad(viewer);
+      default:
+        if (size <= Short.MIN_VALUE) { // ADPMIN
+          float d = 2000 * getADPMinMax(false);
+          if (size < Short.MIN_VALUE)
+            size = (int) (d * (Short.MIN_VALUE - size) / 100f);
+          else
+            size = (int) d;
+          break;
+        } else if (size < -2000) {
+          // percent of custom size, to diameter
+          // -2000 = Jmol, -3000 = Babel, -4000 = RasMol, -5000 = User
+          int iMode = (-size / 1000) - 2;
+          size = (-size) % 1000;
+          size = (int) (size / 50f * viewer.getVanderwaalsMar(
+              atomicAndIsotopeNumber % 128, iMode));
+        } else if (size < 0) {
+          // percent
+          // we are going from a radius to a diameter
+          size = -size;
+          if (size > 200)
+            size = 200;
+          size = (int) (size / 100f * getVanderwaalsMad(viewer));
+        } else if (size >= Short.MAX_VALUE) { // ADPMAX
           float d = 2000 * getADPMinMax(true);
           if (size > Short.MAX_VALUE)
             size = (int) (d * (size - Short.MAX_VALUE) / 100f);
           else
             size = (int) d;
           break;
-      } else if (size >= 10000) {
-        // radiusAngstroms = vdw + x, where size = (x*2)*1000 + 10000
-        // max is SHORT.MAX_VALUE - 1 = 32766
-        // so max x is about 11 -- should be plenty!
-        // and vdwMar = vdw * 1000
-        // we want mad = diameterAngstroms * 1000 = (radiusAngstroms *2)*1000 
-        //             = (vdw * 2 * 1000) + x * 2 * 1000
-        //             = vdwMar * 2 + (size - 10000)
-        size = size - 10000 + getVanderwaalsMad(viewer);
+        } else if (size >= 10000) {
+          // radiusAngstroms = vdw + x, where size = (x*2)*1000 + 10000
+          // max is SHORT.MAX_VALUE - 1 = 32766
+          // so max x is about 11 -- should be plenty!
+          // and vdwMar = vdw * 1000
+          // we want mad = diameterAngstroms * 1000 = (radiusAngstroms *2)*1000
+          // = (vdw * 2 * 1000) + x * 2 * 1000
+          // = vdwMar * 2 + (size - 10000)
+          size = size - 10000 + getVanderwaalsMad(viewer);
+        }
       }
+    } else {
+      // "size" is a flag == 1 for "VDW + fsize"
+      // max is SHORT.MAX_VALUE - 1 = 32766
+      // so max storable radius is 16.383. Just call that 16
+        size = (int) (fsize * 2000) + (size == 1 ? getVanderwaalsMad(viewer) : 0);
+        if (size > MAD_MAX)
+          size = MAD_MAX;
     }
-    return (short) size;
+    mad = (short) size;
+    if (mad < 0)
+      mad = 0;
+    if (mad == 1)
+      System.out.println("testing Atom");
+    return mad; 
   }
 
   public float getADPMinMax(boolean isMax) {
@@ -371,7 +388,7 @@ final public class Atom extends Point3fi {
   }
 
   // a percentage value in the range 0-100
-  public int getOccupancy() {
+  public int getOccupancy100() {
     byte[] occupancies = group.chain.modelSet.occupancies;
     return occupancies == null ? 100 : occupancies[atomIndex];
   }
@@ -411,15 +428,19 @@ final public class Atom extends Point3fi {
         : (int)(userDefinedVanDerWaalRadius * 2000f));
   }
 
+  short getBondingMar() {
+    return JmolConstants.getBondingMar(atomicAndIsotopeNumber % 128,
+        getFormalCharge());
+  }
+
   public float getVanderwaalsRadiusFloat() {
     return (Float.isNaN(userDefinedVanDerWaalRadius) 
         ? group.chain.modelSet.getVanderwaalsMar(atomicAndIsotopeNumber % 128) / 1000f
         : userDefinedVanDerWaalRadius);
   }
 
-  short getBondingMar() {
-    return JmolConstants.getBondingMar(atomicAndIsotopeNumber % 128,
-        getFormalCharge());
+  public float getCovalentRadiusFloat() {
+    return JmolConstants.getBondingMar(atomicAndIsotopeNumber % 128, 0) / 1000f;
   }
 
   public float getBondingRadiusFloat() {
@@ -582,7 +603,7 @@ final public class Atom extends Point3fi {
      return 0;
    }
    
-   private String getSymmetryOperatorList() {
+   String getSymmetryOperatorList() {
     String str = "";
     ModelSet f = group.chain.modelSet;
     if (atomSymmetry == null || f.unitCells == null
@@ -748,11 +769,11 @@ final public class Atom extends Point3fi {
     return getIdentity(true) + " " + x + " " + y + " " + z;
   }
 
-  private String getIdentityXYZ() {
+  String getIdentityXYZ() {
     return getIdentity(false) + " " + x + " " + y + " " + z;
   }
   
-  private String getIdentity(boolean allInfo) {
+  String getIdentity(boolean allInfo) {
     StringBuffer info = new StringBuffer();
     String group3 = getGroup3();
     String seqcodeString = getSeqcodeString();
@@ -792,7 +813,7 @@ final public class Atom extends Point3fi {
     return info.toString();
   }
 
-  private int getGroupIndex() {
+  int getGroupIndex() {
     return group.getGroupIndex();
   }
   
@@ -977,244 +998,6 @@ final public class Atom extends Point3fi {
     return group.getInsertionCode();
   }
   
-  public String formatLabel(String strFormat) {
-    return formatLabel(this, strFormat, null, '\0', null);
-  }
-
-  public static String formatLabel(Atom atom, String strFormat, LabelToken[] tokens, char chAtom, int[]indices) {
-    if (atom == null || tokens == null && (strFormat == null || strFormat.length() == 0))
-        return null;
-    StringBuffer strLabel = (chAtom > '0' ? null : new StringBuffer());
-    if (tokens == null)
-      tokens = LabelToken.compile(atom.group.chain.modelSet.viewer, strFormat, chAtom, null);
-    for (int i = 0; i < tokens.length; i++) {
-      LabelToken t = tokens[i];
-      if (t == null)
-        break;
-      if (chAtom > '0' && t.ch1 != chAtom)
-        continue;
-      if (t.tok <= 0 || t.key != null) {
-        if (strLabel !=  null) {
-          strLabel.append(t.text);
-          if (t.ch1 != '\0')
-            strLabel.append(t.ch1);
-        }
-      } else {
-        appendTokenValue(atom, t, strLabel, indices);
-      }
-    }
-    return (strLabel == null ? null : strLabel.toString().intern());
-  }
-  
-  private static void appendTokenValue(Atom atom, LabelToken t, 
-                                       StringBuffer strLabel, int[] indices) {
-    String strT = null;
-    float floatT = Float.NaN;
-    Tuple3f ptT = null;
-    char ch;
-    try {
-      switch (t.tok) {
-      case Token.altloc:
-        strT = (atom.alternateLocationID != '\0' ? atom.alternateLocationID + "" : "");
-        break;
-      case Token.atomID:
-        strT = "" + atom.getSpecialAtomID();
-        break;
-      case Token.atomName:
-        strT = atom.getAtomName();
-        break;
-      case Token.atomType:
-        strT = atom.getAtomType();
-        break;
-      case Token.formalCharge:
-        int formalCharge = atom.getFormalCharge();
-        if (formalCharge > 0)
-          strT = "" + formalCharge + "+";
-        else if (formalCharge < 0)
-          strT = "" + -formalCharge + "-";
-        else
-          strT = "0";
-        break;
-      case Token.atomIndex:
-        strT = "" + (indices == null ? atom.atomIndex : indices[atom.atomIndex]);
-        break;
-      case Token.element:
-        strT = atom.getElementSymbol();
-        break;
-      case Token.insertion:
-        ch = atom.getInsertionCode();
-        strT = (ch == '\0' ? "" : "" + ch);
-        break;
-      case 'g':
-        strT = "" + atom.getSelectedGroupIndexWithinChain();
-        break;
-      case Token.groupindex:
-        strT = "" + atom.getGroupIndex();
-        break;
-      case Token.groupID:
-        strT = "" + atom.getGroupID();
-        break;
-      case Token.atomno:
-        strT = "" + atom.getAtomNumber();
-        break;
-      case Token.bondcount:
-        strT = "" + atom.getCovalentBondCount();
-        break;
-      case 'q':
-        strT = "" + atom.getOccupancy();
-        break;
-      case Token.polymerLength:
-        strT = "" + atom.getPolymerLength();
-        break;
-      case Token.elemno:
-        strT = "" + atom.getElementNumber();
-        break;
-      case Token.model:
-        strT = atom.getModelNumberForLabel();
-        break;
-      case Token.group1:
-        strT = atom.getGroup1();
-        break;
-      case Token.molecule:
-        strT = "" + atom.getMoleculeNumber();
-        break;
-      case Token.group:
-        strT = atom.getGroup3();
-        if (strT == null || strT.length() == 0)
-          strT = "UNK";
-        break;
-      case Token.symmetry:
-        strT = atom.getSymmetryOperatorList();
-        break;
-      case Token.resno:
-        strT = "" + atom.getResno();
-        break;
-      case Token.sequence:
-        strT = atom.getSeqcodeString();
-        break;
-      case Token.site:
-        strT = "" + atom.atomSite;
-        break;
-      case Token.chain:
-        ch = atom.getChainID();
-        strT = (ch == '\0' ? "" : "" + ch);
-        break;
-      case Token.identify:
-        strT = atom.getIdentity(true);
-        break;
-      case 'W':
-        strT = atom.getIdentityXYZ();
-        break;
-      case Token.file:
-        strT = "" + (atom.getModelFileIndex() + 1);
-        break;
-      case Token.valence:
-        strT = "" + atom.getValence();
-        break;
-      case Token.phi:
-        floatT = atom.getGroupPhi();
-        break;
-      case Token.radius:
-        floatT = atom.getBondingRadiusFloat();
-        break;
-      case Token.partialCharge:
-        floatT = atom.getPartialCharge();
-        break;
-      case Token.psi:
-        floatT = atom.getGroupPsi();
-        break;
-      case Token.occupancy:
-        floatT = atom.getOccupancy() / 100f;
-        break;
-      case Token.straightness:
-        floatT = atom.getStraightness();
-        if (Float.isNaN(floatT))
-          strT = "null";
-        break;
-      case Token.temperature:
-        floatT = atom.getBfactor100() / 100f;
-        break;
-      case Token.surfacedistance:
-        floatT = atom.getSurfaceDistance100() / 100f;
-        break;
-      case Token.vanderwaals:
-        floatT = atom.getVanderwaalsRadiusFloat();
-        break;
-      case Token.vibX:
-        floatT = atom.group.chain.modelSet.getVibrationCoord(atom.atomIndex, 'x');
-        break;
-      case Token.vibY:
-        floatT = atom.group.chain.modelSet.getVibrationCoord(atom.atomIndex, 'y');
-        break;
-      case Token.vibZ:
-        floatT = atom.group.chain.modelSet.getVibrationCoord(atom.atomIndex, 'z');
-        break;
-      case Token.vibXyz:
-        Vector3f v = atom.getVibrationVector();
-        if (v == null) v = new Vector3f();
-        ptT = v;
-        break;
-      case Token.atomX:
-        floatT = atom.x;
-        break;
-      case Token.atomY:
-        floatT = atom.y;
-        break;
-      case Token.atomZ:
-        floatT = atom.z;
-        break;
-      case Token.xyz:
-        ptT = atom;
-        break;
-      case Token.fracX:
-        floatT = atom.getFractionalCoord('X');
-        break;
-      case Token.fracY:
-        floatT = atom.getFractionalCoord('Y');
-        break;
-      case Token.fracZ:
-        floatT = atom.getFractionalCoord('Z');
-        break;
-      case Token.fracXyz:
-        ptT = atom.getFractionalCoord();
-        break;
-      case Token.unitX:
-        floatT = atom.getFractionalUnitCoord('X');
-        break;
-      case Token.unitY:
-        floatT = atom.getFractionalUnitCoord('Y');
-        break;
-      case Token.unitZ:
-        floatT = atom.getFractionalUnitCoord('Z');
-        break;
-      case Token.unitXyz:
-        ptT = atom.getFractionalUnitCoord(false);
-        break;
-      case Token.data:
-        floatT = (t.data != null ? t.data[atom.atomIndex] : Float.NaN);
-        if (Float.isNaN(floatT))
-          strT = atom.getClientAtomStringProperty(t.text);
-        break;     
-      case Token.structure:
-        strT = JmolConstants.getProteinStructureName(atom.group.getProteinStructureType());
-        break;
-      case Token.strucno:
-        int id = atom.group.getProteinStructureID();
-        strT = (id < 0 ? "" : "" + id);
-        break;
-      }
-    } catch (IndexOutOfBoundsException ioobe) {
-      floatT = Float.NaN;
-      strT = null;
-      ptT = null;
-    }    
-    strT = t.format(floatT, strT, ptT);
-    if (strLabel == null)
-      t.text = strT;
-    else
-      strLabel.append(strT);
-  }
-
   public boolean equals(Object obj) {
     return (this == obj);
   }

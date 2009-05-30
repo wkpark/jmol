@@ -28,8 +28,10 @@ package org.jmol.modelset;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import javax.vecmath.Tuple3f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
 
@@ -85,6 +87,10 @@ public class LabelToken {
   boolean zeroPad;
 
   // do not change array order without changing string order as well
+  // new tokens can be added to the list at the end
+  // and then also added in appendTokenValue()
+  // and also in Eval, to atomProperty()
+  
   final private static String labelTokenParams = "AaBbCcDEefGgIiLlMmNnoPpQqRrSsTtUuVvWXxYyZz%%%gqW";
   final private static int[] labelTokenIds = {
   /* 'A' */Token.altloc,
@@ -99,7 +105,7 @@ public class LabelToken {
   /* 'f' */Token.phi,
   /* 'G' */Token.groupindex,
   /* 'g' */'g', //getSelectedGroupIndexWithinChain()
-  /* 'I' */Token.radius,
+  /* 'I' */Token.ionic,
   /* 'i' */Token.atomno,
   /* 'L' */Token.polymerLength,
   /* 'l' */Token.elemno,
@@ -110,8 +116,8 @@ public class LabelToken {
   /* 'o' */Token.symmetry,
   /* 'P' */Token.partialCharge,
   /* 'p' */Token.psi,
-  /* 'Q' */Token.occupancy,
-  /* 'q' */'q',  //occupancy * 100
+  /* 'Q' */'Q',  //occupancy 0.0 to 1.0
+  /* 'q' */Token.occupancy,
   /* 'R' */Token.resno,
   /* 'r' */Token.sequence,
   /* 'S' */Token.site,
@@ -134,6 +140,9 @@ public class LabelToken {
   
            Token.bondcount,
            Token.groupID,
+           Token.covalent,
+           Token.radius,
+           Token.spacefill,
            Token.structure,
            Token.strucno,
            Token.unitX,
@@ -146,6 +155,7 @@ public class LabelToken {
            Token.unitXyz,
            Token.fracXyz,
            Token.xyz,
+           
   };
 
   private static boolean isLabelPropertyTok(int tok) {
@@ -161,12 +171,14 @@ public class LabelToken {
       Token.fracZ, Token.unitX, Token.unitY, Token.unitZ, Token.vibX,
       Token.vibY, Token.vibZ, };
 
-  private LabelToken(int pt) {
-    this.pt = pt;
-  }
+  public static final String STANDARD_LABEL = "%[identify]";
 
   private LabelToken(String text) {
     this.text = text;
+  }
+
+  private LabelToken(int pt) {
+    this.pt = pt;
   }
 
   public static LabelToken[] compile(Viewer viewer, String strFormat, char chAtom, Hashtable htValues) {
@@ -273,7 +285,289 @@ public class LabelToken {
     }
     return ich;
   }
-    
+
+  //////////// label formatting for atoms, bonds, and measurements ///////////
+
+  public static String formatLabel(Atom atom, String strFormat) {
+    return formatLabel(atom, strFormat, null, '\0', null);
+  }
+
+  public static String formatLabel(Atom atom, String strFormat, LabelToken[] tokens, char chAtom, int[]indices) {
+    if (atom == null || tokens == null && (strFormat == null || strFormat.length() == 0))
+        return null;
+    StringBuffer strLabel = (chAtom > '0' ? null : new StringBuffer());
+    if (tokens == null)
+      tokens = compile(atom.group.chain.modelSet.viewer, strFormat, chAtom, null);
+    for (int i = 0; i < tokens.length; i++) {
+      LabelToken t = tokens[i];
+      if (t == null)
+        break;
+      if (chAtom > '0' && t.ch1 != chAtom)
+        continue;
+      if (t.tok <= 0 || t.key != null) {
+        if (strLabel !=  null) {
+          strLabel.append(t.text);
+          if (t.ch1 != '\0')
+            strLabel.append(t.ch1);
+        }
+      } else {
+        appendAtomTokenValue(atom, t, strLabel, indices);
+      }
+    }
+    return (strLabel == null ? null : strLabel.toString().intern());
+  }
+  
+  private static void appendAtomTokenValue(Atom atom, LabelToken t, 
+                                       StringBuffer strLabel, int[] indices) {
+    String strT = null;
+    float floatT = Float.NaN;
+    Tuple3f ptT = null;
+    char ch;
+    try {
+      switch (t.tok) {
+      case Token.altloc:
+        strT = (atom.alternateLocationID != '\0' ? atom.alternateLocationID + "" : "");
+        break;
+      case Token.atomID:
+        strT = "" + atom.getSpecialAtomID();
+        break;
+      case Token.atomName:
+        strT = atom.getAtomName();
+        break;
+      case Token.atomType:
+        strT = atom.getAtomType();
+        break;
+      case Token.formalCharge:
+        int formalCharge = atom.getFormalCharge();
+        if (formalCharge > 0)
+          strT = "" + formalCharge + "+";
+        else if (formalCharge < 0)
+          strT = "" + -formalCharge + "-";
+        else
+          strT = "0";
+        break;
+      case Token.atomIndex:
+        strT = "" + (indices == null ? atom.atomIndex : indices[atom.atomIndex]);
+        break;
+      case Token.element:
+        strT = atom.getElementSymbol();
+        break;
+      case Token.insertion:
+        ch = atom.getInsertionCode();
+        strT = (ch == '\0' ? "" : "" + ch);
+        break;
+      case 'g':
+        strT = "" + atom.getSelectedGroupIndexWithinChain();
+        break;
+      case Token.groupindex:
+        strT = "" + atom.getGroupIndex();
+        break;
+      case Token.groupID:
+        strT = "" + atom.getGroupID();
+        break;
+      case Token.atomno:
+        strT = "" + atom.getAtomNumber();
+        break;
+      case Token.bondcount:
+        strT = "" + atom.getCovalentBondCount();
+        break;
+      case Token.occupancy:
+        strT = "" + atom.getOccupancy100();
+        break;
+      case Token.polymerLength:
+        strT = "" + atom.getPolymerLength();
+        break;
+      case Token.elemno:
+        strT = "" + atom.getElementNumber();
+        break;
+      case Token.model:
+        strT = atom.getModelNumberForLabel();
+        break;
+      case Token.group1:
+        strT = atom.getGroup1();
+        break;
+      case Token.molecule:
+        strT = "" + atom.getMoleculeNumber();
+        break;
+      case Token.group:
+        strT = atom.getGroup3();
+        if (strT == null || strT.length() == 0)
+          strT = "UNK";
+        break;
+      case Token.symmetry:
+        strT = atom.getSymmetryOperatorList();
+        break;
+      case Token.resno:
+        strT = "" + atom.getResno();
+        break;
+      case Token.sequence:
+        strT = atom.getSeqcodeString();
+        break;
+      case Token.site:
+        strT = "" + atom.atomSite;
+        break;
+      case Token.chain:
+        ch = atom.getChainID();
+        strT = (ch == '\0' ? "" : "" + ch);
+        break;
+      case Token.identify:
+        strT = atom.getIdentity(true);
+        break;
+      case 'W':
+        strT = atom.getIdentityXYZ();
+        break;
+      case Token.file:
+        strT = "" + (atom.getModelFileIndex() + 1);
+        break;
+      case Token.valence:
+        strT = "" + atom.getValence();
+        break;
+      case Token.phi:
+        floatT = atom.getGroupPhi();
+        break;
+      case Token.covalent:
+        floatT = atom.getCovalentRadiusFloat();
+        break;
+      case Token.radius:
+        floatT = atom.getRadius();
+        break;
+      case Token.ionic:
+        floatT = atom.getBondingRadiusFloat();
+        break;
+      case Token.partialCharge:
+        floatT = atom.getPartialCharge();
+        break;
+      case Token.psi:
+        floatT = atom.getGroupPsi();
+        break;
+      case 'Q':
+        floatT = atom.getOccupancy100() / 100f;
+        break;
+      case Token.straightness:
+        floatT = atom.getStraightness();
+        if (Float.isNaN(floatT))
+          strT = "null";
+        break;
+      case Token.temperature:
+        floatT = atom.getBfactor100() / 100f;
+        break;
+      case Token.surfacedistance:
+        floatT = atom.getSurfaceDistance100() / 100f;
+        break;
+      case Token.vanderwaals:
+        floatT = atom.getVanderwaalsRadiusFloat();
+        break;
+      case Token.vibX:
+        floatT = atom.group.chain.modelSet.getVibrationCoord(atom.atomIndex, 'x');
+        break;
+      case Token.vibY:
+        floatT = atom.group.chain.modelSet.getVibrationCoord(atom.atomIndex, 'y');
+        break;
+      case Token.vibZ:
+        floatT = atom.group.chain.modelSet.getVibrationCoord(atom.atomIndex, 'z');
+        break;
+      case Token.vibXyz:
+        Vector3f v = atom.getVibrationVector();
+        if (v == null) v = new Vector3f();
+        ptT = v;
+        break;
+      case Token.atomX:
+        floatT = atom.x;
+        break;
+      case Token.atomY:
+        floatT = atom.y;
+        break;
+      case Token.atomZ:
+        floatT = atom.z;
+        break;
+      case Token.xyz:
+        ptT = atom;
+        break;
+      case Token.fracX:
+        floatT = atom.getFractionalCoord('X');
+        break;
+      case Token.fracY:
+        floatT = atom.getFractionalCoord('Y');
+        break;
+      case Token.fracZ:
+        floatT = atom.getFractionalCoord('Z');
+        break;
+      case Token.fracXyz:
+        ptT = atom.getFractionalCoord();
+        break;
+      case Token.unitX:
+        floatT = atom.getFractionalUnitCoord('X');
+        break;
+      case Token.unitY:
+        floatT = atom.getFractionalUnitCoord('Y');
+        break;
+      case Token.unitZ:
+        floatT = atom.getFractionalUnitCoord('Z');
+        break;
+      case Token.unitXyz:
+        ptT = atom.getFractionalUnitCoord(false);
+        break;
+      case Token.data:
+        floatT = (t.data != null ? t.data[atom.atomIndex] : Float.NaN);
+        if (Float.isNaN(floatT))
+          strT = atom.getClientAtomStringProperty(t.text);
+        break;     
+      case Token.structure:
+        strT = JmolConstants.getProteinStructureName(atom.group.getProteinStructureType());
+        break;
+      case Token.strucno:
+        int id = atom.group.getProteinStructureID();
+        strT = (id < 0 ? "" : "" + id);
+        break;
+      }
+    } catch (IndexOutOfBoundsException ioobe) {
+      floatT = Float.NaN;
+      strT = null;
+      ptT = null;
+    }    
+    strT = t.format(floatT, strT, ptT);
+    if (strLabel == null)
+      t.text = strT;
+    else
+      strLabel.append(strT);
+  }
+
+  
+  public static Hashtable getBondLabelValues() {
+    Hashtable htValues = new Hashtable();
+    htValues.put("#", "");
+    htValues.put("ORDER", "");
+    htValues.put("TYPE", "");
+    htValues.put("LENGTH", new Float(0));
+    return htValues;
+  }
+
+  public static String formatLabel(Bond bond, LabelToken[] tokens, Hashtable values, int[] indices) {
+    values.put("#", "" + (bond.index + 1));
+    values.put("ORDER", "" + bond.getOrderNumberAsString());
+    values.put("TYPE", bond.getOrderName());
+    values.put("LENGTH", new Float(bond.atom1.distance(bond.atom2)));
+    setValues(tokens, values);
+    formatLabel(bond.atom1, null, tokens, '1', indices);
+    formatLabel(bond.atom2, null, tokens, '2', indices);
+    return getLabel(tokens);
+  }
+
+  public static String labelFormat(Measurement measurement, String label, float value, String units) {
+    Hashtable htValues = new Hashtable();
+    htValues.put("#", "" + (measurement.getIndex() + 1));
+    htValues.put("VALUE", new Float(value));
+    htValues.put("UNITS", units);
+    LabelToken[] tokens = compile(measurement.viewer, label, '\1', htValues);
+    setValues(tokens, htValues);
+    Atom[] atoms = measurement.modelSet.atoms;
+    int[] indices = measurement.getCountPlusIndices();
+    for (int i = indices[0]; i >= 1;--i)
+      formatLabel(atoms[indices[i]], null, tokens, (char)('0' + i), null);
+    label = getLabel(tokens);
+    return (label == null ? "" : label);
+  }
+
   public String format(float floatT, String strT, Tuple3f ptT) {
     if (!Float.isNaN(floatT))
       return TextFormat.format(floatT, width, precision, alignLeft, zeroPad);
@@ -311,4 +605,5 @@ public class LabelToken {
     }
     return sb.toString();
   }
+
 }

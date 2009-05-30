@@ -26,6 +26,7 @@ package org.jmol.shape;
 
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.LabelToken;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
@@ -132,7 +133,7 @@ public class Labels extends AtomShape {
       for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i)) {
           Atom atom = atoms[i];
-          String label = atom.formatLabel(strLabel);
+          String label = LabelToken.formatLabel(atom, strLabel);
           atom.setShapeVisibility(myVisibilityFlag, label != null);
           if (strings == null || i >= strings.length)
             strings = ArrayUtil.ensureLength(strings, i + 1);
@@ -302,7 +303,7 @@ public class Labels extends AtomShape {
           } else {
             String strLabel = viewer.getStandardLabelFormat();
             strings = ArrayUtil.ensureLength(strings, atomIndex + 1);
-            strings[atomIndex] = atom.formatLabel(strLabel);
+            strings[atomIndex] = LabelToken.formatLabel(atom, strLabel);
             formats[atomIndex] = strLabel;
             bsSizeSet.set(atomIndex);
             if ((bsBgColixSet == null || !bsBgColixSet.get(atomIndex))

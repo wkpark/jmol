@@ -28,7 +28,6 @@ package org.jmol.modelset;
 import org.jmol.g3d.Graphics3D;
 
 import java.util.BitSet;
-import java.util.Hashtable;
 
 import org.jmol.viewer.JmolConstants;
 
@@ -94,27 +93,8 @@ public class Bond {
   }
 
   public String getIdentity() {
-    return (index + 1) + " "+ getOrderNumber() + " " + atom1.getInfo() + " -- "
+    return (index + 1) + " "+ getOrderNumberAsString() + " " + atom1.getInfo() + " -- "
         + atom2.getInfo() + " " + atom1.distance(atom2);
-  }
-
-  public static Hashtable getLabelValues() {
-    Hashtable htValues = new Hashtable();
-    htValues.put("=", "");
-    htValues.put("LENGTH", new Float(0));
-    htValues.put("ORDER", "");
-    return htValues;
-  }
-
-  public String formatLabel(LabelToken[] tokens, Hashtable values, int[] indices) {
-    values.put("=", "" + (index + 1));
-    values.put("ORDER", "" + getOrderNumber());
-    values.put("TYPE", getOrderName());
-    values.put("LENGTH", new Float(atom1.distance(atom2)));
-    LabelToken.setValues(tokens, values);
-    Atom.formatLabel(atom1, null, tokens, '1', indices);
-    Atom.formatLabel(atom2, null, tokens, '2', indices);
-    return LabelToken.getLabel(tokens);
   }
 
   public boolean isCovalent() {
@@ -215,7 +195,7 @@ public class Bond {
     return JmolConstants.getBondOrderNameFromOrder(order);
   }
 
-  String getOrderNumber() {
+  String getOrderNumberAsString() {
     return JmolConstants.getBondOrderNumberFromOrder(order);
   }
 

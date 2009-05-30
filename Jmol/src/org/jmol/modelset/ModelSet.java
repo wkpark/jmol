@@ -262,12 +262,16 @@ abstract public class ModelSet extends ModelCollection {
     return closestIndex;
   }
 
-  public void setShapeSize(int shapeID, int size, BitSet bsSelected) {
+  public void setShapeSize(int shapeID, int size, float fsize, BitSet bsSelected) {
     viewer.setShapeErrorState(shapeID, "set size");
     if (size != 0)
       loadShape(shapeID);
-    if (shapes[shapeID] != null)
-      shapes[shapeID].setSize(size, bsSelected);
+    if (shapes[shapeID] != null) {
+      if (Float.isNaN(fsize))
+        shapes[shapeID].setSize(size, bsSelected);
+      else
+        shapes[shapeID].setSize(size, fsize, bsSelected);
+    }
     viewer.setShapeErrorState(-1, null);
   }
 
@@ -317,13 +321,10 @@ abstract public class ModelSet extends ModelCollection {
 
     BitSet bs = viewer.getVisibleFramesBitSet();
     
-    //System.out.println("modelset setvis" + bs);
-    //NOT balls (yet)
+    //NOT balls (that is done later)
     for (int i = 1; i < JmolConstants.SHAPE_MAX; i++)
       if (shapes[i] != null)
         shapes[i].setVisibilityFlags(bs);
-    //s(bs);
-    //
     // BALLS sets the JmolConstants.ATOM_IN_MODEL flag.
     shapes[JmolConstants.SHAPE_BALLS].setVisibilityFlags(bs);
 
@@ -548,8 +549,7 @@ abstract public class ModelSet extends ModelCollection {
     // appear in the state as bondOrder commands.
     
     if (isUserCalculation)
-      setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, bsAromatic);
-
+      setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, Float.NaN, bsAromatic);
   }
 
   public int[] makeConnections(float minDistance, float maxDistance, short order,

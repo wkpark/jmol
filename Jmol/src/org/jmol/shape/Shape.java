@@ -125,6 +125,10 @@ public abstract class Shape {
   public void setSize(int size, BitSet bsSelected) {
   }
 
+  public void setSize(int flags, float size, BitSet bsSelected) {
+    // balls/atoms only?
+  }
+
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
     if (propertyName == "translucentLevel") {
       translucentLevel = ((Float) value).floatValue();

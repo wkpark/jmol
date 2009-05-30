@@ -24,6 +24,7 @@
 package org.jmol.shape;
 
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.LabelToken;
 
 public class HoverRenderer extends ShapeRenderer {
   protected void render() {
@@ -35,8 +36,8 @@ public class HoverRenderer extends ShapeRenderer {
       Atom atom = modelSet.getAtomAt(hover.atomIndex);
       String label = (hover.atomFormats != null
           && hover.atomFormats[hover.atomIndex] != null ? 
-              atom.formatLabel(hover.atomFormats[hover.atomIndex])
-          : hover.labelFormat != null ? atom.formatLabel(fixLabel(atom, hover.labelFormat))
+              LabelToken.formatLabel(atom, hover.atomFormats[hover.atomIndex])
+          : hover.labelFormat != null ? LabelToken.formatLabel(atom, fixLabel(atom, hover.labelFormat))
               : null);
       if (label == null)
         return;

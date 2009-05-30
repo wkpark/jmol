@@ -421,7 +421,7 @@ abstract public class BondCollection extends AtomCollection {
       }
       iter.release();
     }
-    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE,
+    ((ModelSet)this).setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, Float.NaN, 
         bsPseudoHBonds);
     if (showRebondTimes && Logger.debugging)
       Logger.checkTimer("Time to hbond");

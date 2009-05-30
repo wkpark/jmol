@@ -227,7 +227,8 @@ public class LabelToken {
     }
     switch (ch = strFormat.charAt(ich++)) {
     case '%':
-      break;
+      lt.text = "%";
+      return lt.pt1 = ich;
     case '[':
       int ichClose = strFormat.indexOf(']', ich);
       if (ichClose < ich) {

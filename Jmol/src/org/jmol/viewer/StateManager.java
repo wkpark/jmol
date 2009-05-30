@@ -148,7 +148,12 @@ public class StateManager {
     // "%n%r:%c.%a" if the molecule contains more than one chain:
     // "%e%i" if the molecule has only a single residue (a small molecule) and
     // "%n%r.%a" otherwise.
-    String strLabel;
+    
+    // Jmol 11.7.39 -- see Atom.getIdentity(true);
+    
+    String strLabel = "%[identify]";
+    
+    /*
     int modelCount = viewer.getModelCount();
     if (viewer.getChainCount() > modelCount)
       strLabel = "[%n]%r:%c.%a";
@@ -158,6 +163,8 @@ public class StateManager {
       strLabel = "[%n]%r.%a";
     if (viewer.getModelCount() > 1)
       strLabel += "/%M";
+    */
+    
     return strLabel;
   }
 

@@ -2149,12 +2149,15 @@ abstract public class ModelCollection extends BondCollection {
     int imodel = -1;
     int lastmodel = -1;
     for (int i = 0; i < atomCount; i++) {
-      if ((imodel = atoms[i].modelIndex) != lastmodel 
-          || (id = atoms[i].getProteinStructureID()) != lastid 
+      if ((imodel = atoms[i].modelIndex) != lastmodel) {
+        idnew = 0;
+        lastmodel = imodel;
+        lastid = -1;
+      }
+      if ((id = atoms[i].getProteinStructureID()) != lastid 
                && id != Integer.MIN_VALUE) {
         atoms[i].getGroup().setProteinStructureId(++idnew);
         lastid = idnew;
-        lastmodel = imodel;
       }
     }
   }

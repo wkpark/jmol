@@ -465,7 +465,7 @@ public class Parameters {
       break;
     case Parameters.SURFACE_SASURFACE:
       calculationType = "solvent-accessible surface with radius "
-          + solventExtendedAtomRadius;
+          + solventRadius;
       break;
     }
 
@@ -598,6 +598,7 @@ public class Parameters {
       Logger
           .error("MO ERROR: No basis functions found in file for MO calculation. (GAUSSIAN 'gfprint' keyword may be missing?)");
       mo = null;
+      title = new String[] {"no basis functions found in file"};
     } else {
       Vector mos = (Vector) (moData.get("mos"));
       qmOrbitalCount = mos.size();

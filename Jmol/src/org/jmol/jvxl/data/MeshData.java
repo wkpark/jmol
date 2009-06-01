@@ -244,7 +244,7 @@ public class MeshData {
     for (int i = 0; i < nSets; i++)
       if (surfaceSet[i] != null)
         n++;
-    BitSet[] temp = new BitSet[n];
+    BitSet[] temp = new BitSet[100];
     n = 0;
     for (int i = 0; i < nSets; i++)
       if (surfaceSet[i] != null)
@@ -252,7 +252,7 @@ public class MeshData {
     nSets = n;
     surfaceSet = temp;
     if (!setsSuccessful && level < 2)
-      getSurfaceSet(++level);
+      getSurfaceSet(level + 1);
     if (level == 0) {
       vertexSets = new int[vertexCount];
       for (int i = 0; i < nSets; i++)

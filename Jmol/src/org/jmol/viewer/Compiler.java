@@ -1661,7 +1661,7 @@ class Compiler {
   }
 
   private static boolean tokenAttr(Token token, int tok) {
-    return token != null && (token.tok & tok) == tok;
+    return token != null && Token.tokAttr(token.tok, tok);
   }
   
   private boolean moreTokens() {
@@ -2177,6 +2177,9 @@ class Compiler {
     Token tokenComparator = tokenNext();
     if (!tokenAttr(tokenComparator, Token.comparator))
       return error(ERROR_tokenExpected, "== != < > <= >=");
+    if (tokenAttr(tokenAtomProperty, Token.strproperty) 
+        && !Token.tokAttrOr(tokenComparator.tok, Token.opEQ, Token.opNE))
+      return error(ERROR_tokenExpected, "== !=");
     if (getToken() == null)
       return error(ERROR_unrecognizedExpressionToken, "" + valuePeek());
     boolean isNegative = (isToken(Token.minus));

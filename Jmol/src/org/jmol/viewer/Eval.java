@@ -1812,8 +1812,9 @@ class Eval {
     BitSet bs = new BitSet();
     Atom[] atoms =viewer.getModelSet().atoms;
     int atomCount = viewer.getAtomCount();
+    comparisonString = comparisonString.toLowerCase();
     for (int i = 0; i < atomCount; ++i)
-      if (compareString(tokOperator, atomPropertyString(atoms[i], tokWhat), comparisonString))
+      if (compareString(tokOperator, atomPropertyString(atoms[i], tokWhat).toLowerCase(), comparisonString))
         bs.set(i);
     return bs;
   }
@@ -1952,7 +1953,7 @@ class Eval {
     switch (tokOperator) {
     case Token.opEQ:
     case Token.opNE:
-      return (propertyValue.equals(comparisonValue) == (tokOperator == Token.opEQ));
+      return (TextFormat.isMatch(propertyValue, comparisonValue, true, true) == (tokOperator == Token.opEQ));
     default:
       error(ERROR_invalidArgument);    
     }
@@ -2206,7 +2207,11 @@ class Eval {
   }
 
   private static String atomPropertyString(Atom atom, int tokWhat) {
+    char ch;
     switch (tokWhat) {
+    case Token.altloc:
+      ch = atom.getAlternateLocationID();
+      return (ch == '\0' ? "" : "" + ch);
     case Token.atomName:
       return atom.getAtomName();
     case Token.atomType:
@@ -2221,6 +2226,9 @@ class Eval {
       return atom.getElementSymbol();
     case Token.identify:
       return atom.getInfo();
+    case Token.insertion:
+      ch = atom.getInsertionCode();
+      return (ch == '\0' ? "" : "" + ch);
     }
     return ""; 
   }

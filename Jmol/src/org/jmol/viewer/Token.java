@@ -359,7 +359,6 @@ public class Token {
   final static int coord               = expression | 8;
   final static int dollarsign          = expression | 9;
   final static int dot                 = expression | 10;
-  final public static int insertion           = expression | 12;
   final public static int isaromatic   = expression | 13;
   final static int leftbrace           = expression | 14;
   final static int none                = expression | 15;
@@ -490,6 +489,7 @@ public class Token {
   final public static int group1        = strproperty | 6;
   final public static int sequence      = strproperty | 7;
   public final static int identify      = strproperty | 8;
+  final public static int insertion     = strproperty | 9;
 
   final public static int atomno        = intproperty | 1;
   public final static int atomID        = intproperty | 2;

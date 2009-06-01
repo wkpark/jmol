@@ -408,7 +408,7 @@ public class TextFormat {
     int cchWildcard = strWildcard.length();
     int cchs = s.length();
     if (cchs == 0 || cchWildcard == 0)
-      return false;
+      return (cchs == cchWildcard || cchWildcard == 1 && strWildcard.charAt(0) == '*');
     boolean isStar0 = (checkStar && allowInitialStar ? strWildcard.charAt(0) == '*' : false);
     if (isStar0 && strWildcard.charAt(cchWildcard - 1) == '*')
       return (cchWildcard < 3 || s.indexOf(strWildcard.substring(1,

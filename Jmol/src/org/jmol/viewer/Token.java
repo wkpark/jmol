@@ -142,22 +142,28 @@ public class Token {
    * 0987654321098765432109876543210
    *    FFFF    FFFF    FFFF    FFFF
    *           x                     expression
-   *          xx                     atomproperty
-   *         xxx                     mathproperty
-   *        x  x                     mathfunc
+   *          xx                     predefined set
+   *         x x                     atomproperty
+   *        xx x                     stringproperty
+   *       x x x                     intproperty
+   *      x  x x                     floatproperty
+   *     x     x                     mathproperty
+   *    x      x                     mathfunc
+   *        
+   *        
    *                           xxxxx unique id 1 to 0x1F (31)
-   *                         xx      minmaxmask (all)
    *                          x      min
    *                         x       max
-   *                        x        comparefloatx100
+   *                         xx      minmaxmask (all)
+   *                        x        vibflag
    *                       x         settable
-   *                    xxx          maximum number of parameters
+   *                    xxx          maximum number of parameters for function
    *                   
    * 3         2         1         0
    * 0987654321098765432109876543210
-   *       x   x                     mathop
-   *       x   x           x         comparator
-   *                            xxxx unique id
+   *   x       x                     mathop
+   *   x       x           x         comparator
+   *                            xxxx unique id (0 to 15)
    *                        xxxx     precedence
    *
    *                        
@@ -165,21 +171,11 @@ public class Token {
    * 
    * 3         2         1         0
    * 0987654321098765432109876543210
-   *      x    x                     predefined set
-   *     x                           misc
-   *    x                            setparam
-   *     
-   *
+   *  x                              setparam  "set THIS ...."
+   * x                               misc
+   * 
    */
    
-  static int getPrecedence(int tok) {
-    return ((tok >> 4) & 0xF);  
-  }
-
-  static int getMaxMathParams(int tokCommand) {
-    return  ((tokCommand >> 9) & 0x7);
-  }
-
   final public static int command            = (1 << 12);
   
   // the command assumes an atom expression as the first parameter
@@ -210,20 +206,23 @@ public class Token {
   final static int noArgs         = (1 << 18);
   final static int defaultON      = (1 << 19);
   
-  final static int expression        = (1 << 20);
-  final static int atomproperty      = (1 << 21) | expression;
-  final static int mathproperty      = (1 << 22) | atomproperty;
-  final static int mathfunc          = (1 << 23) | expression;  
-  final static int mathop            = (1 << 24) | expression;
-
+  final static int expression           = (1 << 20);
+  final static int predefinedset        = (1 << 21) | expression;
+  final static int atomproperty         = (1 << 22) | expression; // can be used in "select xxxx = n"
+  final static int strproperty          = (1 << 23) | atomproperty; // string property
+  final static int intproperty          = (1 << 24) | atomproperty; // int parameter
+  final static int floatproperty        = (1 << 25) | atomproperty; // int parameter
+  final private static int mathproperty = (1 << 26) | atomproperty; // {xxx}.nnnn
+  final static int mathfunc             = (1 << 27) | expression;  
+  final static int mathop               = (1 << 28) | expression;
+  final static int comparator           = mathop | (1 << 8);
+  
   //
   // parameter bit flags
   //
   
-  final static int predefinedset     = (1 << 25) | expression;
-  final static int misc              = (1 << 26); // misc parameter
-  final static int setparam          = (1 << 27); // parameter to set command
-  
+  final static int setparam          = (1 << 29); // parameter to set command
+  final static int misc              = (1 << 30); // misc parameter
 
   final static int center       = 1 | atomExpressionCommand;
   final static int define       = 2 | atomExpressionCommand | expression | setparam;
@@ -266,11 +265,12 @@ public class Token {
   final static int backbone     = command | 3 | predefinedset | defaultON;
   final static int background   = command | 4 | setparam;
   final static int bondorder    = command | 5;
+//final static int boundbox     see mathproperty
   final static int calculate    = command | 6;
   final static int cartoon      = command | 7 | defaultON;
   final static int cd           = command | 7 | implicitStringCommand;
   final static int centerAt     = command | 8;
-//final static int color        see mathfunc
+//final static int color        see intproperty
   final static int configuration = command | 9;
   final public static int connect = command | 10;
   final static int console      = command | 11 | defaultON;
@@ -282,11 +282,12 @@ public class Token {
   final public static int draw         = command | 16;
   final static int ellipsoid    = command | 17 | defaultON;
   final static int exit         = command | 18 | noArgs;
-//final static int file         see mathfunc
+//final static int file         see intproperty
   final static int font         = command | 19;
   final static int frame        = command | 20;
   final static int frank        = command | 21 | setparam | defaultON;
   final static int geosurface   = command | 22 | defaultON;
+//final static int getproperty  see mathfunc
   final static int gotocmd      = command | 23 | implicitStringCommand;
   final static int halo         = command | 24 | defaultON;
   final static int hbond        = command | 25 | setparam | expression | defaultON;
@@ -322,12 +323,13 @@ public class Token {
   final static int selectionHalo = command | 51 | setparam | defaultON;
   final static int show         = command | 52;
   final static int slab         = command | 53 | defaultON;
-  //final public static int spacefill see atom properties
+  //final public static int spacefill see floatproperty
   final static int spin         = command | 55 | setparam | defaultON;
   final static int ssbond       = command | 56 | setparam | defaultON;
   final static int star         = command | 57 | defaultON;
   final static int stereo       = command | 58 | defaultON;
   final static int strands      = command | 59 | setparam | defaultON;
+//final static int structure    see intproperty
   final static int sync         = command | 60;
   final static int trace        = command | 61 | defaultON;
   final static int translate    = command | 62;
@@ -340,6 +342,9 @@ public class Token {
   final static int zoom         = command | 68;
   final static int zoomTo       = command | 69;
 
+
+  
+
   //
   // atom expression terms
   //
@@ -348,14 +353,12 @@ public class Token {
   final static int expressionEnd       = expression | 2;
 
   final static int all                 = expression | 3;
-  public final static int altloc              = expression | 4;
   final public static int branch       = expression | 5;
   final public static int chain        = expression | 6;
   final static int colon               = expression | 7;
   final static int coord               = expression | 8;
   final static int dollarsign          = expression | 9;
   final static int dot                 = expression | 10;
-  final public static int group        = expression | 11;
   final public static int insertion           = expression | 12;
   final public static int isaromatic   = expression | 13;
   final static int leftbrace           = expression | 14;
@@ -364,7 +367,6 @@ public class Token {
   final public static int on                  = expression | 17; //for within(dist,true,...)
   final static int rightbrace          = expression | 18;
   final static int semicolon           = expression | 19;
-  final public static int sequence     = expression | 20;
 
   // generated by compiler:
   
@@ -402,8 +404,11 @@ public class Token {
   final public static int symmetry        = predefinedset | 26;
   final static int visible                = predefinedset | 27;
 
-  final static int comparator       = mathop | 1 << 8;
   
+  static int getPrecedence(int tokOperator) {
+    return ((tokOperator >> 4) & 0xF);  
+  }
+
   final static int leftparen    = 0 | mathop | 0 << 4;
   final static int rightparen   = 1 | mathop | 0 << 4;
 
@@ -447,81 +452,95 @@ public class Token {
   // for example, x.atoms.max, x.atoms.all
   // .all gets incorporated as minmaxmask
 
-  final static int minmaxmask       = 3 << 5;
   final static int min              = 1 << 5;
   final static int max              = 2 << 5;
-  final static int comparefloatx100 = 1 << 7;
+  final static int minmaxmask       = 3 << 5; // includes 1 << 6
+  public final static int vibflag   = 1 << 7; // quick check that there is no need to taint atom position
   final static int settable         = 1 << 8;
   
+  // bits 0 - 4 are for an identifier -- DO NOT GO OVER 31!
+  // but, note that we can have more than 1 provided other parameters differ
+  
   // ___.xxx math properties and all atom properties 
-  
-  final public static int vibflag   = 0x10;
-  
+    
   final public static int atoms     = 1 | mathproperty;
   final public static int bonds     = 2 | mathproperty | setparam;
-  final public static int color     = 3 | mathproperty | command | setparam | settable;
-  public final static int identify         = 4 | mathproperty;
   final static int length           = 5 | mathproperty;
   final static int lines            = 6 | mathproperty;
   final static int size             = 7 | mathproperty;
   final public static int type      = 8 | mathproperty;
-  final public static int xyz       = 1 | mathproperty | settable;
-  final public static int fracXyz   = 2 | mathproperty | settable;
-  final public static int unitXyz   = 3 | mathproperty | settable;
-  final public static int vibXyz    = 4 | mathproperty | settable | vibflag;
-  final static int property         =13 | mathproperty | setparam | settable;
+  final public static int xyz       = 9 | mathproperty | settable;
+  final public static int fracXyz   =10 | mathproperty | settable;
+  final public static int unitXyz   =11 | mathproperty;
+  final public static int vibXyz    =12 | mathproperty | settable | vibflag;
   final public static int boundbox  =14 | mathproperty | setparam | command | defaultON;
-  final public static int adpmax    =15 | mathproperty;
-  final public static int adpmin    =16 | mathproperty;
+
+  // radius is odd, because it takes different meanings if the comparison is to 
+  // an integer (Rasmol values) or float (Angstroms)
   
-  final public static int atomno        = atomproperty | 1;
-  final public static int atomType      = atomproperty | 2 | settable;
-  public final static int atomID               = atomproperty | 3;
-  public final static int bondcount            = atomproperty | 4;
-  public final static int atomIndex            = atomproperty | 5;
-  final public static int atomName      = atomproperty | 6 | settable;
-  final public static int cell          = atomproperty | 7;
-  final public static int covalent      = atomproperty | 8;
-  final public static int element       = atomproperty | 8 | settable;
-  final public static int elemno        = atomproperty | 9;
-  final public static int formalCharge  = atomproperty | 10 | setparam | settable;
-  public final static int groupID              = atomproperty | 11;
-  public final static int groupindex           = atomproperty | 12;
-  final public static int ionic         = atomproperty | 13;
-  final public static int model         = atomproperty | 13 | command;
-  final public static int molecule      = atomproperty | 14;
-  final public static int occupancy     = atomproperty | 15 | settable;
-  public final static int polymerLength        = atomproperty | 16;
-  public final static int radius               = atomproperty | 17 | setparam | settable;
-  public final static int resno                = atomproperty | 18;
-  final public static int site          = atomproperty | 19;
-  final public static int spacefill     = atomproperty | 20 | command | defaultON | settable;
-  final public static int strucno       = atomproperty | 21;
-  final public static int structure     = atomproperty | 22 | command;
-  final static int symop                = atomproperty | 23;
-  final public static int vanderwaals   = atomproperty | 24 | settable;
-  final public static int valence       = atomproperty | 25 | settable;
+  public final static int radius        = intproperty | floatproperty | 1 | setparam | settable;
 
-  final public static int atomX           = atomproperty | comparefloatx100 | 0 | settable;
-  final public static int atomY           = atomproperty | comparefloatx100 | 1 | settable;
-  final public static int atomZ           = atomproperty | comparefloatx100 | 2 | settable;
-  final public static int fracX           = atomproperty | comparefloatx100 | 3 | settable;
-  final public static int fracY           = atomproperty | comparefloatx100 | 4 | settable;
-  final public static int fracZ           = atomproperty | comparefloatx100 | 5 | settable;
-  final public static int partialCharge   = atomproperty | comparefloatx100 | 6 | settable;
-  public final static int phi                    = atomproperty | comparefloatx100 | 7;
-  public final static int psi                    = atomproperty | comparefloatx100 | 8;
-  final public static int straightness    = atomproperty | comparefloatx100 | 9;
-  public final static int surfacedistance        = atomproperty | comparefloatx100 |10;
-  final public static int temperature     = atomproperty | comparefloatx100 |11 | settable;
-  final public static int unitX            = atomproperty | comparefloatx100 |15;
-  final public static int unitY            = atomproperty | comparefloatx100 |16;
-  final public static int unitZ            = atomproperty | comparefloatx100 |17;
-  final public static int vibX            = atomproperty | comparefloatx100 |1 | settable | vibflag;
-  final public static int vibY            = atomproperty | comparefloatx100 |2 | settable | vibflag;
-  final public static int vibZ            = atomproperty | comparefloatx100 |3 | settable | vibflag;
+  // any new in, float, or string property should be added also to Eval.getBitsetProperty()
+  
+  final public static int atomType      = strproperty | 1 | settable;
+  final public static int atomName      = strproperty | 2 | settable;
+  public final static int altloc        = strproperty | 3;
+  final public static int element       = strproperty | 4 | settable;
+  final public static int group         = strproperty | 5;
+  final public static int group1        = strproperty | 6;
+  final public static int sequence      = strproperty | 7;
+  public final static int identify      = strproperty | 8;
 
+  final public static int atomno        = intproperty | 1;
+  public final static int atomID        = intproperty | 2;
+  public final static int atomIndex     = intproperty | 3;
+  public final static int bondcount     = intproperty | 4;
+  final public static int cell          = intproperty | 5;
+  final public static int color         = intproperty | 6 | command | setparam | settable;
+  final public static int elemno        = intproperty | 7 | settable;
+  //file: see xxx(a)
+  final public static int formalCharge  = intproperty | 8 | setparam | settable;
+  public final static int groupID       = intproperty | 9;
+  public final static int groupindex    = intproperty | 10;
+  final public static int model         = intproperty | 11 | command;
+  final public static int molecule      = intproperty | 12;
+  final public static int occupancy     = intproperty | 13 | settable;
+  public final static int polymerLength = intproperty | 14;
+  public final static int resno         = intproperty | 15;
+  final public static int site          = intproperty | 16;
+  final public static int structure     = intproperty | 17 | command;
+  final public static int strucno       = intproperty | 18;
+  final static int symop                = intproperty | 19; 
+  final public static int valence       = intproperty | 20 | settable;
 
+  // float values must be multiplied by 100 prior to comparing to integer values
+  
+  final public static int adpmax          = floatproperty | 1;
+  final public static int adpmin          = floatproperty | 2;
+  final public static int atomX           = floatproperty | 3 | settable;
+  final public static int atomY           = floatproperty | 4 | settable;
+  final public static int atomZ           = floatproperty | 5 | settable;
+  final public static int covalent        = floatproperty | 5;
+  final public static int fracX           = floatproperty | 6 | settable;
+  final public static int fracY           = floatproperty | 7 | settable;
+  final public static int fracZ           = floatproperty | 8 | settable;
+  final public static int ionic           = floatproperty | 9;
+  final public static int partialCharge   = floatproperty | 10 | settable;
+  public final static int phi             = floatproperty | 11;
+  public final static int psi             = floatproperty | 12;
+  final static int property               = floatproperty | 13 | mathproperty | setparam | settable;
+  final public static int spacefill       = floatproperty | 14 | command | defaultON | settable;
+  final public static int straightness    = floatproperty | 15;
+  public final static int surfacedistance = floatproperty | 16;
+  final public static int temperature     = floatproperty | 17 | settable;
+  final public static int unitX           = floatproperty | 18;
+  final public static int unitY           = floatproperty | 19;
+  final public static int unitZ           = floatproperty | 20;
+  final public static int vanderwaals     = floatproperty | 21 | settable;
+  final public static int vibX            = floatproperty | 22 | settable | vibflag;
+  final public static int vibY            = floatproperty | 23 | settable | vibflag;
+  final public static int vibZ            = floatproperty | 24 | settable | vibflag;
+  
   // mathfunc               means x = somefunc(a,b,c)
   // mathfunc|mathproperty  means x = y.somefunc(a,b,c)
   // 
@@ -531,6 +550,11 @@ public class Token {
 
   // xxx(a)
  
+
+  static int getMaxMathParams(int tokCommand) {
+    return  ((tokCommand >> 9) & 0x7);
+  }
+
   final static int function     = 1 | 0 << 9 | mathfunc | flowCommand | noeval;
 
   final static int array        = 1 | 0 << 9 | mathfunc;
@@ -543,7 +567,7 @@ public class Token {
   final static int sin          = 4 | 1 << 9 | mathfunc;
   final static int cos          = 5 | 1 << 9 | mathfunc;
   final static int sqrt         = 6 | 1 << 9 | mathfunc;
-  public final static int file         = 7 | 1 << 9 | mathfunc | atomproperty | command;
+  public final static int file  = 7 | 1 << 9 | mathfunc | intproperty | command;
 
 
   // ___.xxx(a)
@@ -585,7 +609,7 @@ public class Token {
   // xxx(a,b,c,d)
   
   final static int angle        = 1 | 4 << 9 | mathfunc;
-  public final static int data         = 2 | 4 << 9 | mathfunc | command;
+  public final static int data  = 2 | 4 << 9 | mathfunc | command;
   final static int plane        = 3 | 4 << 9 | mathfunc;
   final static int point        = 4 | 4 << 9 | mathfunc;
   final static int quaternion   = 5 | 4 << 9 | mathfunc | command;
@@ -1051,7 +1075,6 @@ public class Token {
   final static int url          = misc | 65; 
   final static int user         = misc | 66; //color option
   final static int qw           = misc | 67;
-  final public static int group1       = misc | 68;
 
   // predefined Tokens: 
   

@@ -2278,14 +2278,14 @@ abstract public class ModelCollection extends BondCollection {
         if (bs == null) {
           bs = new BitSet();
           res1 = atoms[i].getResno();
-          group1 = atoms[i].getGroup3();
+          group1 = atoms[i].getGroup3(false);
           chain1 = "" + ch;
         }
         itype = atoms[i].getProteinStructureType();
         bs.set(i);
         lastId = id;
         res2 = atoms[i].getResno();
-        group2 = atoms[i].getGroup3();
+        group2 = atoms[i].getGroup3(false);
         chain2 = "" + ch;
         iLastAtom = i;
       }
@@ -2565,7 +2565,7 @@ abstract public class ModelCollection extends BondCollection {
     if (d >= 0)
       info.put("surfaceDistance", new Float(d));
     if (getModel(atom.modelIndex).isPDB) {
-      info.put("resname", atom.getGroup3());
+      info.put("resname", atom.getGroup3(false));
       int seqNum = atom.getSeqNumber();
       char insCode = atom.getInsertionCode();
       if (seqNum > 0)

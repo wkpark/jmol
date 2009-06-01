@@ -384,15 +384,13 @@ public class LabelToken {
         strT = atom.getModelNumberForLabel();
         break;
       case Token.group1:
-        strT = atom.getGroup1();
+        strT = atom.getGroup1('\0');
         break;
       case Token.molecule:
         strT = "" + atom.getMoleculeNumber();
         break;
       case Token.group:
-        strT = atom.getGroup3();
-        if (strT == null || strT.length() == 0)
-          strT = "UNK";
+        strT = atom.getGroup3(false);
         break;
       case Token.symmetry:
         strT = atom.getSymmetryOperatorList();

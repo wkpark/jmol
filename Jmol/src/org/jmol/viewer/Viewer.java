@@ -6753,6 +6753,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.fracX:
     case Token.fracY:
     case Token.fracZ:
+    case Token.unitX:
+    case Token.unitY:
+    case Token.unitZ:
       refreshMeasures();
     }
   }
@@ -7261,7 +7264,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Vector3f getVibrationVector(int atomIndex) {
-    return modelSet.getVibrationVector(atomIndex);
+    return modelSet.getVibrationVector(atomIndex, false);
   }
 
   public int getVanderwaalsMar(int i) {

@@ -500,11 +500,11 @@ final public class Atom extends Point3fi {
    // note: atomName cannot be null
    // note: atomNames cannot be null
    
-   String getAtomName() {
+   public String getAtomName() {
      return group.chain.modelSet.atomNames[atomIndex];
    }
    
-   String getAtomType() {
+   public String getAtomType() {
     String[] atomTypes = group.chain.modelSet.atomTypes;
     String type = (atomTypes == null ? null : atomTypes[atomIndex]);
     return (type == null ? group.chain.modelSet.atomNames[atomIndex] : type);
@@ -754,7 +754,7 @@ final public class Atom extends Point3fi {
 
   String getInfoXYZ(boolean useChimeFormat) {
     if (useChimeFormat) {
-      String group3 = getGroup3();
+      String group3 = getGroup3(true);
       char chainID = getChainID();
       Point3f pt = (group.chain.modelSet.unitCells == null ? null : getFractionalCoord());
       return "Atom: " + (group3 == null ? getElementSymbol() : getAtomName()) + " " + getAtomNumber() 
@@ -775,7 +775,7 @@ final public class Atom extends Point3fi {
   
   String getIdentity(boolean allInfo) {
     StringBuffer info = new StringBuffer();
-    String group3 = getGroup3();
+    String group3 = getGroup3(true);
     String seqcodeString = getSeqcodeString();
     char chainID = getChainID();
     if (group3 != null && group3.length() > 0) {
@@ -813,17 +813,18 @@ final public class Atom extends Point3fi {
     return info.toString();
   }
 
-  int getGroupIndex() {
+  public int getGroupIndex() {
     return group.getGroupIndex();
   }
   
-  String getGroup3() {
-    return group.getGroup3();
+  public String getGroup3(boolean allowNull) {
+    String group3 = group.getGroup3();
+    return (allowNull || group3 != null || group3.length() > 0 ? group3 : "UNK");
   }
 
-  String getGroup1() {
+  public String getGroup1(char c0) {
     char c = group.getGroup1();
-    return (c == '\0' ? "" : "" + c);
+    return (c != '\0' ? "" + c : c0 != '\0' ? "" + c0 : "");
   }
 
   boolean isGroup3(String group3) {
@@ -923,8 +924,14 @@ final public class Atom extends Point3fi {
   }
 
   public Vector3f getVibrationVector() {
-    return group.chain.modelSet.getVibrationVector(atomIndex);
+    return group.chain.modelSet.getVibrationVector(atomIndex, false);
   }
+
+  public float getVibrationCoord(char ch) {
+    Point3f pt = getFractionalUnitCoord(false);
+    return (ch == 'X' ? pt.x : ch == 'Y' ? pt.y : pt.z);
+  }
+
 
   public int getPolymerLength() {
     return group.getBioPolymerLength();

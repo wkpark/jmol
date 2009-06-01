@@ -449,6 +449,10 @@ class Compiler {
           ch = script.charAt(ichToken);
           if (tokCommand == Token.set
               || Token.tokAttr(tokCommand, Token.setparam)) {
+            // axes, background, define, display, echo, frank, hbond, history, set, var
+            // can all appear with or without "set" in front of them. These are then
+            // both commands and parameters for the SET command, but only if they are
+            // the FIRST parameter of the set command.
             if (Token.tokAttr(tokCommand, Token.setparam) && ch == '='
                 || (isNewSet || isSetBrace)
                 && (ch == '=' || ch == '[' || ch == '.')) {
@@ -759,6 +763,11 @@ class Compiler {
           }
           if (Token.tokAttr(tokCommand, Token.command))
             break;
+          // not the standard command
+          // either {xxx}.yyy = 
+          //     or xxx =
+          // but not xxx = where xxx is a known "set xxx" variant
+          // such as "set hetero" or "set hydrogen" or "set solvent"
           isSetBrace = (tok == Token.leftbrace);
           if (!isSetBrace && !Token.tokAttr(tok, Token.identifier)
               && !Token.tokAttr(tok, Token.setparam))
@@ -1846,7 +1855,7 @@ class Compiler {
         return true;
     //fall through for integer and identifier specifically
     default:
-      if (Token.tokAttrOr(tok, Token.property, Token.atomproperty))
+      if (Token.tokAttr(tok, Token.atomproperty))
         return clauseComparator();
       if (!Token.tokAttrOr(tok, Token.integer, Token.predefinedset))
         break;

@@ -518,6 +518,7 @@ abstract public class AtomCollection {
         atom.setFractionalCoord(tok, fValue);
         taint(i, TAINT_COORD);
         break;
+      case Token.elemno:
       case Token.element:
         taint(i, TAINT_ELEMENT);
         atom.setAtomicAndIsotopeNumber(iValue);
@@ -530,6 +531,8 @@ abstract public class AtomCollection {
         taint(i, TAINT_FORMALCHARGE);
         break;
       case Token.occupancy:
+        if (iValue < 2)
+          iValue = (int)(100 * fValue);
         if (setOccupancy(i, iValue))
           taint(i, TAINT_OCCUPANCY);
         break;
@@ -579,9 +582,9 @@ abstract public class AtomCollection {
     }
   }
 
-  public Vector3f getVibrationVector(int atomIndex) {
+  public Vector3f getVibrationVector(int atomIndex, boolean forceNew) {
     Vector3f v = (vibrationVectors == null ? null : vibrationVectors[atomIndex]);
-    return (v == null ? new Vector3f() : v);
+    return (v == null && forceNew ? new Vector3f() : v);
   }
 
   protected void setVibrationVector(int atomIndex, float x, float y, float z) {
@@ -594,7 +597,7 @@ abstract public class AtomCollection {
   }
 
   private void setVibrationVector(int atomIndex, int tok, float fValue) {
-    Vector3f v = getVibrationVector(atomIndex);
+    Vector3f v = getVibrationVector(atomIndex, true);
     if (v == null)
       v = new Vector3f();
     switch(tok) {
@@ -1305,10 +1308,10 @@ abstract public class AtomCollection {
           s = "" + atoms[i].getAtomNumber();
           break;
         case Token.group:
-          s = atoms[i].getGroup3();
+          s = atoms[i].getGroup3(false);
           break;
         case Token.residue:
-          s = "[" + atoms[i].getGroup3() + "]" + atoms[i].getSeqcodeString()
+          s = "[" + atoms[i].getGroup3(false) + "]" + atoms[i].getSeqcodeString()
               + ":" + s;
           break;
         case Token.sequence:
@@ -1331,7 +1334,7 @@ abstract public class AtomCollection {
           if (g != glast) {
             if ((n++) % 5 == 0 && n > 1)
               info.append('\n');
-            TextFormat.lFill(info, "          ", "[" + atoms[i].getGroup3()
+            TextFormat.lFill(info, "          ", "[" + atoms[i].getGroup3(false)
                 + "]" + atoms[i].getResno() + " ");
             glast = g;
           }
@@ -1674,13 +1677,13 @@ abstract public class AtomCollection {
     if (name.indexOf("\\?") >= 0)
       name = TextFormat.simpleReplace(name, "\\?","\1");
     for (int i = atomCount; --i >= 0;) {
-      String g3 = atoms[i].getGroup3();
-      if (g3.length() > 0) {
+      String g3 = atoms[i].getGroup3(true);
+      if (g3 != null && g3.length() > 0) {
         if (TextFormat.isMatch(g3, name, checkStar, true)) {
           if (bs == null)
             bs = new BitSet(i + 1);
           bs.set(i);
-          while (--i >= 0 && atoms[i].getGroup3().equals(g3))
+          while (--i >= 0 && atoms[i].getGroup3(true).equals(g3))
             bs.set(i);
           i++;
         }

@@ -158,6 +158,15 @@ class Eval {
         : asToken ? token : Token.oValue(token));
   }
 
+  private String getStringParameter(String var) {
+    Token token = getContextVariableAsToken(var);
+    if (token != null)
+      return Token.sValue(token);
+    String val = "" + viewer.getParameter(var);
+    return (val.length() == 0 ? var : val);
+  }
+
+
   private Object getNumericParameter(String var) {
     if (var.equalsIgnoreCase("_modelNumber")) {
       int modelIndex = viewer.getCurrentModelIndex();
@@ -1407,11 +1416,11 @@ class Eval {
                             boolean allowRefresh, boolean allowUnderflow,
                             boolean mustBeBitSet, boolean andNotDeleted)
       throws ScriptException {
-    //note that this is general -- NOT just statement[]
-    //errors reported would improperly access statement/line context
-    //there should be no errors anyway, because this is for 
-    //predefined variables, but it is conceivable that one could
-    //have a problem. 
+    // note that this is general -- NOT just statement[]
+    // errors reported would improperly access statement/line context
+    // there should be no errors anyway, because this is for
+    // predefined variables, but it is conceivable that one could
+    // have a problem.
 
     isBondSet = false;
     if (code != statement) {
@@ -1431,16 +1440,16 @@ class Eval {
     ignoreSubset |= isSyntaxCheck;
     if (pcStop == 0 && code.length > pcStart)
       pcStop = pcStart + 1;
-    //    if (logMessages)
-    //    viewer.scriptStatus("start to evaluate expression");
+    // if (logMessages)
+    // viewer.scriptStatus("start to evaluate expression");
     expression_loop: for (int pc = pcStart; pc < pcStop; ++pc) {
       iToken = pc;
       Token instruction = code[pc];
       if (instruction == null)
         break;
       Object value = instruction.value;
-      //if (logMessages)
-      //viewer.scriptStatus("instruction=" + instruction);
+      // if (logMessages)
+      // viewer.scriptStatus("instruction=" + instruction);
       switch (instruction.tok) {
       case Token.expressionBegin:
         pcStart = pc;
@@ -1457,7 +1466,7 @@ class Eval {
             break;
           }
         }
-        break; //ignore otherwise
+        break; // ignore otherwise
       case Token.rightbrace:
         break;
       case Token.leftsquare:
@@ -1556,13 +1565,13 @@ class Eval {
         rpn.addX(getAtomBits(instruction.tok, (String) value));
         break;
       case Token.spec_model:
-      // from select */1002 or */1000002 or */1.2
-      // */1002 is equivalent to 1.2 when more than one file is present
+        // from select */1002 or */1000002 or */1.2
+        // */1002 is equivalent to 1.2 when more than one file is present
       case Token.spec_model2:
         // from just using the number 1.2
         int iModel = instruction.intValue;
         if (iModel == Integer.MAX_VALUE && value instanceof Integer) {
-          // from select */n 
+          // from select */n
           iModel = ((Integer) value).intValue();
           if (!viewer.haveFileSet()) {
             rpn.addX(getAtomBits(Token.spec_model, new Integer(iModel)));
@@ -1577,8 +1586,9 @@ class Eval {
         break;
       case Token.spec_resid:
       case Token.spec_chain:
-        rpn.addX(getAtomBits(instruction.tok,
-             new Integer(instruction.intValue)));
+        rpn
+            .addX(getAtomBits(instruction.tok,
+                new Integer(instruction.intValue)));
         break;
       case Token.spec_seqcode:
         if (isInMath)
@@ -1638,43 +1648,63 @@ class Eval {
         }
         boolean isModel = (tokWhat == Token.model);
         boolean isRadius = (tokWhat == Token.radius);
+        boolean isIntProperty = Token.tokAttr(tokWhat, Token.intproperty);
+        boolean isFloatProperty = Token.tokAttr(tokWhat, Token.floatproperty);
+        boolean isStringProperty = Token.tokAttr(tokWhat, Token.strproperty);
         int tokValue = code[pc].tok;
         comparisonValue = code[pc].intValue;
         float comparisonFloat = Float.NaN;
         if (val instanceof String) {
-          if (tokValue == Token.identifier)
-            val = getNumericParameter((String) val);
-          if (val instanceof String)
-            val = Token.nValue(code[pc]);
-          if (val instanceof Integer)
-            comparisonFloat = comparisonValue = ((Integer) val).intValue();
-          else if (val instanceof Float && isModel)
-            comparisonValue = ModelCollection
-                .modelFileNumberFromFloat(((Float) val).floatValue());
+          if (tokWhat == Token.color) {
+            comparisonValue = Graphics3D.getArgbFromString((String) val);
+            if (comparisonValue == 0 && tokValue == Token.identifier) {
+              val = getStringParameter((String) val);
+              comparisonValue = Graphics3D.getArgbFromString((String) val);
+            }
+            tokValue = Token.integer;
+            isIntProperty = true;
+          } else if (isStringProperty) {
+            if (tokValue == Token.identifier) {
+              val = getStringParameter((String) val);
+            }
+          } else {
+            if (tokValue == Token.identifier)
+              val = getNumericParameter((String) val);
+            if (val instanceof String)
+              val = Token.nValue(code[pc]);
+            if (val instanceof Integer)
+              comparisonFloat = comparisonValue = ((Integer) val).intValue();
+            else if (val instanceof Float && isModel)
+              comparisonValue = ModelCollection
+                  .modelFileNumberFromFloat(((Float) val).floatValue());
+          }
         }
+        if (isStringProperty && !(val instanceof String))
+          val = "" + val;
         if (val instanceof Integer || tokValue == Token.integer) {
-          comparisonValue *= (Token.tokAttr(tokWhat, Token.comparefloatx100) ? 100
-              : 1);
-          comparisonFloat = comparisonValue;
           if (isModel) {
             tokWhat = -Token.model;
             if (viewer.haveFileSet() && comparisonValue >= 1000
                 && comparisonValue < 1000000)
               comparisonValue = (comparisonValue / 1000) * 1000000
                   + comparisonValue % 1000;
+          } else if (isRadius) {
+            isFloatProperty = false;
+          } else if (isFloatProperty) {
+            comparisonFloat = comparisonValue;
           }
         } else if (val instanceof Float) {
           if (isModel) {
             tokWhat = -Token.model;
           } else {
             comparisonFloat = ((Float) val).floatValue();
-            // radius is special, because it comes from Rasmol in 1/250th Angstrom 
-            // units. Jmol recognizes that for integers "radius > 250"
-            // but uses Angstroms for decimals "radius > 2.0"
-            // but not for floating point values. 
-            comparisonValue = (int) (comparisonFloat * (isRadius ? 250f : 100f));
+            if (isRadius) {
+              isIntProperty = false;
+            } else if (isIntProperty) {
+              comparisonValue = (int) comparisonFloat;
+            }
           }
-        } else {
+        } else if (!isStringProperty) {
           iToken++;
           error(ERROR_invalidArgument);
         }
@@ -1689,14 +1719,16 @@ class Eval {
           break;
         }
         if (value != null && ((String) value).indexOf("-") >= 0) {
-          if (!Float.isNaN(comparisonFloat))
+          if (isIntProperty)
+            comparisonValue = -comparisonValue;
+          else if (!Float.isNaN(comparisonFloat))
             comparisonFloat = -comparisonFloat;
-          comparisonValue = -comparisonValue;
         }
         float[] data = (tokWhat == Token.property ? viewer
             .getDataFloat(property) : null);
-        rpn.addX(comparatorInstruction(tokWhat, data, tokOperator,
-            comparisonValue, comparisonFloat));
+        rpn.addX(isIntProperty ? compareInt(tokWhat, data, tokOperator, comparisonValue) 
+            : isStringProperty ? compareString(tokWhat, tokOperator, (String) val) 
+            : compareFloat(tokWhat, data, tokOperator, comparisonFloat));
         break;
       case Token.bitset:
       case Token.decimal:
@@ -1708,7 +1740,8 @@ class Eval {
         rpn.addX(instruction.intValue);
         break;
       default:
-        //System.out.println(" " + instruction +" " +(new Token(Token.isaromatic)) );
+        // System.out.println(" " + instruction +" " +(new
+        // Token(Token.isaromatic)) );
         if (Token.tokAttr(instruction.tok, Token.mathop))
           rpn.addOp(instruction);
         else
@@ -1746,6 +1779,221 @@ class Eval {
       tempStatement = null;
     }
     return bs;
+  }
+
+  private BitSet compareFloat(int tokWhat, float[] data, int tokOperator,
+                              float comparisonFloat) {
+    BitSet bs = new BitSet();
+    int atomCount = viewer.getAtomCount();
+    ModelSet modelSet = viewer.getModelSet();
+    Atom[] atoms = modelSet.atoms;
+    float propertyFloat = 0;
+    for (int i = 0; i < atomCount; ++i) {
+      boolean match = false;
+      Atom atom = atoms[i];
+      switch (tokWhat) {
+      default:
+        propertyFloat = atomPropertyFloat(atom, tokWhat);
+        break;
+      case Token.property:
+        if (data == null || data.length <= i)
+          continue;
+        propertyFloat = data[i];
+      }
+      match = compareFloat(tokOperator, propertyFloat, comparisonFloat);
+      if (match)
+        bs.set(i);
+    }
+    return bs;
+  }
+
+  private BitSet compareString(int tokWhat, int tokOperator,
+                              String comparisonString) throws ScriptException {
+    BitSet bs = new BitSet();
+    Atom[] atoms =viewer.getModelSet().atoms;
+    int atomCount = viewer.getAtomCount();
+    for (int i = 0; i < atomCount; ++i)
+      if (compareString(tokOperator, atomPropertyString(atoms[i], tokWhat), comparisonString))
+        bs.set(i);
+    return bs;
+  }
+
+  private BitSet compareInt(int tokWhat, float[] data, int tokOperator,
+                            int comparisonValue) {
+    BitSet bs = new BitSet();
+    int propertyValue = Integer.MAX_VALUE;
+    BitSet propertyBitSet = null;
+    int bitsetComparator = tokOperator;
+    int bitsetBaseValue = comparisonValue;
+    int atomCount = viewer.getAtomCount();
+    ModelSet modelSet = viewer.getModelSet();
+    Atom[] atoms = modelSet.atoms;
+    int imax = -1;
+    int imin = 0;
+    int iModel = -1;
+    int[] cellRange = null;
+    int nOps = 0;
+    for (int i = 0; i < atomCount; ++i) {
+      boolean match = false;
+      Atom atom = atoms[i];
+      switch (tokWhat) {
+      default:
+        propertyValue = atomPropertyInt(atom, tokWhat);
+        break;
+      case Token.symop:
+        propertyBitSet = atom.getAtomSymmetry();
+        if (atom.getModelIndex() != iModel) {
+          iModel = atom.getModelIndex();
+          cellRange = modelSet.getModelCellRange(iModel);
+          nOps = modelSet.getModelSymmetryCount(iModel);
+          imax = nOps;
+        }
+        if (bitsetBaseValue >= 200) {
+          if (cellRange == null)
+            continue;
+          /*
+           * symop>=1000 indicates symop*1000 + lattice_translation(555)
+           * for this the comparision is only with the
+           * translational component; the symop itself must match
+           * thus: 
+           * select symop!=1655 selects all symop=1 and translation !=655
+           * select symop>=2555 selects all symop=2 and translation >555
+           * symop >=200 indicates any symop in the specified translation
+           *  (a few space groups have > 100 operations)  
+           * 
+           * Note that when normalization is not done, symop=1555 may not be in the 
+           * base unit cell. Everything is relative to wherever the base atoms ended up,
+           * usually in 555, but not necessarily.
+           * 
+           * The reason this is tied together an atom may have one translation
+           * for one symop and another for a different one.
+           * 
+           * Bob Hanson - 10/2006
+           */
+          comparisonValue = bitsetBaseValue % 1000;
+          int symop = bitsetBaseValue / 1000 - 1;
+          if (symop < 0) {
+            match = true;
+          } else if (nOps == 0 || symop >= 0
+              && !(match = propertyBitSet.get(symop))) {
+            continue;
+          }
+          bitsetComparator = Token.none;
+          if (symop < 0)
+            propertyValue = atom.getCellTranslation(comparisonValue, cellRange,
+                nOps);
+          else
+            propertyValue = atom.getSymmetryTranslation(symop, cellRange, nOps);
+        } else if (nOps > 0) {
+          if (comparisonValue > nOps) {
+            if (bitsetComparator != Token.opLT
+                && bitsetComparator != Token.opLE)
+              continue;
+          }
+          if (bitsetComparator == Token.opNE) {
+            if (comparisonValue > 0 && comparisonValue <= nOps
+                && !propertyBitSet.get(comparisonValue)) {
+              bs.set(i);
+            }
+            continue;
+          }
+        }
+        switch (bitsetComparator) {
+        case Token.opLT:
+          imax = comparisonValue - 1;
+          imin = 0;
+          break;
+        case Token.opLE:
+          imax = comparisonValue;
+          imin = 0;
+          break;
+        case Token.opGE:
+          if (imax < 0)
+            imax = propertyBitSet.size();
+          imin = comparisonValue - 1;
+          break;
+        case Token.opGT:
+          if (imax < 0)
+            imax = propertyBitSet.size();
+          imin = comparisonValue;
+          break;
+        case Token.opEQ:
+          imax = comparisonValue;
+          imin = comparisonValue - 1;
+          break;
+        case Token.opNE:
+          match = !propertyBitSet.get(comparisonValue);
+          break;
+        }
+        if (imin < 0)
+          imin = 0;
+        if (imax > propertyBitSet.size())
+          imax = propertyBitSet.size();
+        for (int iBit = imin; iBit < imax; iBit++) {
+          if (propertyBitSet.get(iBit)) {
+            match = true;
+            break;
+          }
+        }
+        // note that a symop property can be both LE and GT !
+        if (!match || propertyValue == Integer.MAX_VALUE)
+          tokOperator = Token.none;
+      }
+      if (tokOperator != Token.none)
+        match = compareInt(tokOperator, propertyValue, comparisonValue);
+      if (match)
+        bs.set(i);
+    }
+    return bs;
+  }
+
+  private boolean compareString(int tokOperator, String propertyValue,
+                                    String comparisonValue) throws ScriptException {
+    switch (tokOperator) {
+    case Token.opEQ:
+    case Token.opNE:
+      return (propertyValue.equals(comparisonValue) == (tokOperator == Token.opEQ));
+    default:
+      error(ERROR_invalidArgument);    
+    }
+    return false;
+  }
+  
+  private static boolean compareInt(int tokOperator, int propertyValue,
+                                    int comparisonValue) {
+    switch (tokOperator) {
+    case Token.opLT:
+      return propertyValue < comparisonValue;
+    case Token.opLE:
+      return propertyValue <= comparisonValue;
+    case Token.opGE:
+      return propertyValue >= comparisonValue;
+    case Token.opGT:
+      return propertyValue > comparisonValue;
+    case Token.opEQ:
+      return propertyValue == comparisonValue;
+    case Token.opNE:
+      return propertyValue != comparisonValue;
+    }
+    return false;
+  }
+  
+  private static boolean compareFloat(int tokOperator, float propertyFloat, float comparisonFloat) {
+    switch (tokOperator) {
+    case Token.opLT:
+      return propertyFloat < comparisonFloat;
+    case Token.opLE:
+      return propertyFloat <= comparisonFloat;
+    case Token.opGE:
+      return propertyFloat >= comparisonFloat;
+    case Token.opGT:
+      return propertyFloat > comparisonFloat;
+    case Token.opEQ:
+      return propertyFloat == comparisonFloat;
+    case Token.opNE:
+      return propertyFloat != comparisonFloat;
+    }
+    return false;
   }
 
   private static int getSeqCode(Token instruction) {
@@ -1820,207 +2068,6 @@ class Eval {
     return lookupValue(setName, true);
   }
 
-  private BitSet comparatorInstruction(int tokWhat, float[] data,
-                                       int tokOperator, int comparisonValue,
-                                       float comparisonFloat)
-      throws ScriptException {
-    BitSet bs = new BitSet();
-    int propertyValue = Integer.MAX_VALUE;
-    BitSet propertyBitSet = null;
-    int bitsetComparator = tokOperator;
-    int bitsetBaseValue = comparisonValue;
-    int atomCount = viewer.getAtomCount();
-    ModelSet modelSet = viewer.getModelSet();
-    Atom[] atoms = modelSet.atoms;
-    int imax = -1;
-    int imin = 0;
-    int iModel = -1;
-    int[] cellRange = null;
-    int nOps = 0;
-    float propertyFloat = 0;
-    for (int i = 0; i < atomCount; ++i) {
-      boolean match = false;
-      Atom atom = atoms[i];
-      switch (tokWhat) {
-      default:
-        propertyValue = (int) atomProperty(atom, tokWhat, true);
-        if (propertyValue == Integer.MAX_VALUE) // was for negative temperatures
-          continue;
-        break;
-      case Token.property:
-        if (data == null || data.length <= i)
-          continue;
-        propertyFloat = data[i];
-        switch (tokOperator) {
-        case Token.opLT:
-          match = propertyFloat < comparisonFloat;
-          break;
-        case Token.opLE:
-          match = propertyFloat <= comparisonFloat;
-          break;
-        case Token.opGE:
-          match = propertyFloat >= comparisonFloat;
-          break;
-        case Token.opGT:
-          match = propertyFloat > comparisonFloat;
-          break;
-        case Token.opEQ:
-          match = propertyFloat == comparisonFloat;
-          break;
-        case Token.opNE:
-          match = propertyFloat != comparisonFloat;
-          break;
-        }
-        if (match)
-          bs.set(i);
-        continue;
-      case Token.symop:
-        propertyBitSet = atom.getAtomSymmetry();
-        if (atom.getModelIndex() != iModel) {
-          iModel = atom.getModelIndex();
-          cellRange = modelSet.getModelCellRange(iModel);
-          nOps = modelSet.getModelSymmetryCount(iModel);
-          imax = nOps;
-        }
-        if (bitsetBaseValue >= 200) {
-          if (cellRange == null)
-            continue;
-          /*
-           * symop>=1000 indicates symop*1000 + lattice_translation(555)
-           * for this the comparision is only with the
-           * translational component; the symop itself must match
-           * thus: 
-           * select symop!=1655 selects all symop=1 and translation !=655
-           * select symop>=2555 selects all symop=2 and translation >555
-           * symop >=200 indicates any symop in the specified translation
-           *  (a few space groups have > 100 operations)  
-           * 
-           * Note that when normalization is not done, symop=1555 may not be in the 
-           * base unit cell. Everything is relative to wherever the base atoms ended up,
-           * usually in 555, but not necessarily.
-           * 
-           * The reason this is tied together an atom may have one translation
-           * for one symop and another for a different one.
-           * 
-           * Bob Hanson - 10/2006
-           */
-          comparisonValue = bitsetBaseValue % 1000;
-          int symop = bitsetBaseValue / 1000 - 1;
-          if (symop < 0) {
-            match = true;
-          } else if (nOps == 0 || symop >= 0
-              && !(match = propertyBitSet.get(symop))) {
-            continue;
-          }
-          bitsetComparator = Token.none;
-          if (symop < 0)
-            propertyValue = atom.getCellTranslation(comparisonValue, cellRange,
-                nOps);
-          else
-            propertyValue = atom.getSymmetryTranslation(symop, cellRange, nOps);
-        } else if (nOps > 0) {
-          if (comparisonValue > nOps) {
-            if (bitsetComparator != Token.opLT
-                && bitsetComparator != Token.opLE)
-              continue;
-          }
-          if (bitsetComparator == Token.opNE) {
-            if (comparisonValue > 0 && comparisonValue <= nOps
-                && !propertyBitSet.get(comparisonValue)) {
-              bs.set(i);
-            }
-            continue;
-          }
-        }
-        break;
-      }
-      // note that a symop property can be both LE and GT !
-      if (propertyBitSet != null) {
-        switch (bitsetComparator) {
-        case Token.opLT:
-          imax = comparisonValue - 1;
-          imin = 0;
-          break;
-        case Token.opLE:
-          imax = comparisonValue;
-          imin = 0;
-          break;
-        case Token.opGE:
-          if (imax < 0)
-            imax = propertyBitSet.size();
-          imin = comparisonValue - 1;
-          break;
-        case Token.opGT:
-          if (imax < 0)
-            imax = propertyBitSet.size();
-          imin = comparisonValue;
-          break;
-        case Token.opEQ:
-          imax = comparisonValue;
-          imin = comparisonValue - 1;
-          break;
-        case Token.opNE:
-          match = !propertyBitSet.get(comparisonValue);
-          break;
-        }
-        if (imin < 0)
-          imin = 0;
-        if (imax > propertyBitSet.size())
-          imax = propertyBitSet.size();
-        for (int iBit = imin; iBit < imax; iBit++) {
-          if (propertyBitSet.get(iBit)) {
-            match = true;
-            break;
-          }
-        }
-        if (!match || propertyValue == Integer.MAX_VALUE)
-          tokOperator = Token.none;
-
-      }
-      switch (tokOperator) {
-      case Token.opLT:
-        match = propertyValue < comparisonValue;
-        break;
-      case Token.opLE:
-        match = propertyValue <= comparisonValue;
-        break;
-      case Token.opGE:
-        match = propertyValue >= comparisonValue;
-        break;
-      case Token.opGT:
-        match = propertyValue > comparisonValue;
-        break;
-      case Token.opEQ:
-        match = propertyValue == comparisonValue;
-        break;
-      case Token.opNE:
-        match = propertyValue != comparisonValue;
-        break;
-      }
-      if (match)
-        bs.set(i);
-    }
-    return bs;
-  }
-
-  /**
-   *  called by isosurface (asInt = false) and integer comparator (asInt = true). 
-   *   
-   * 
-   * @param atom
-   * @param tokWhat
-   * @param asInt
-   * @return         the property, either as an integer or float or float*100
-   * @throws ScriptException
-   */
-  private float atomProperty(Atom atom, int tokWhat, boolean asInt)
-      throws ScriptException {
-    int value = atomPropertyInt(atom, tokWhat);
-    if (value != Integer.MIN_VALUE)
-      return value;
-    return atomPropertyFloat(atom, tokWhat, asInt);
-  }
-
   /**
    * called by isosurface and int comparator via atomProperty()
    * and also by getBitsetProperty() 
@@ -2039,6 +2086,8 @@ class Eval {
       return atom.getAtomIndex();
     case Token.bondcount:
       return atom.getCovalentBondCount();
+    case Token.color:
+      return viewer.getColixArgb(atom.getColix());
     case Token.elemno:
       return atom.getElementNumber();
     case Token.element:
@@ -2049,6 +2098,8 @@ class Eval {
       return atom.getFormalCharge();
     case Token.groupID:
       return atom.getGroupID(); //-1 if no group
+    case Token.groupindex:
+      return atom.getGroupIndex(); 
     case Token.model:
       //integer model number -- could be PDB/sequential adapter number
       //or it could be a sequential model in file number when multiple files
@@ -2062,6 +2113,9 @@ class Eval {
       return atom.getOccupancy100();
     case Token.polymerLength:
       return atom.getPolymerLength();
+    case Token.radius:
+      // the comparitor uses rasmol radius, unfortunately, for integers
+      return atom.getRasMolRadius();        
     case Token.resno:
       return atom.getResno();
     case Token.site:
@@ -2073,7 +2127,7 @@ class Eval {
     case Token.valence:
       return atom.getValence();
     }
-    return Integer.MIN_VALUE;      
+    return 0;      
   }
 
   /**
@@ -2088,96 +2142,89 @@ class Eval {
    * @throws ScriptException
    */
   
-  private float atomPropertyFloat(Atom atom, int tokWhat, boolean asInt) throws ScriptException {
-    float propertyValue = 0;
-
-    // though not a float, color is treated differently in {selected}.xxxx than select xxxx = ... or isosurface
+  private float atomPropertyFloat(Atom atom, int tokWhat) {
 
     switch (tokWhat) {
-    case Token.color:
-      return viewer.getColixArgb(atom.getColix());
-
-    // the comparitor uses rasmol radius, unfortunately, for integers
-      
     case Token.radius:
-      return (asInt ? atom.getRasMolRadius() : atom.getRadius());
-      
-    // these two are stored 100 x value so must be divided by 100 if not asInt
+      return atom.getRadius();
       
     case Token.surfacedistance:
       viewer.getSurfaceDistanceMax();
-      propertyValue = atom.getSurfaceDistance100();
-      return (asInt ? propertyValue : propertyValue / 100f);
+      return atom.getSurfaceDistance100() / 100f;
     case Token.temperature: // 0 - 9999
-      propertyValue = atom.getBfactor100();
-      return (asInt ? propertyValue : propertyValue / 100f);
+      return atom.getBfactor100() / 100f;
 
     // these next have to be multiplied by 100 if being compared
     // note that spacefill here is slightly different than radius -- no integer option
       
-    case Token.spacefill:
-      propertyValue = atom.getRadius();
-
-    case Token.ionic:
-      propertyValue = atom.getBondingRadiusFloat();
-      break;
-    case Token.covalent:
-      propertyValue = atom.getCovalentRadiusFloat();
-      break;      
     case Token.adpmax:
-      propertyValue = atom.getADPMinMax(true);
-      break;
+      return atom.getADPMinMax(true);
     case Token.adpmin:
-      propertyValue = atom.getADPMinMax(false);
-      break;
+      return atom.getADPMinMax(false);
     case Token.atomX:
-      propertyValue = atom.x;
-      break;
+      return atom.x;
     case Token.atomY:
-      propertyValue = atom.y;
-      break;
+      return atom.y;
     case Token.atomZ:
-      propertyValue = atom.z;
-      break;
+      return atom.z;
+    case Token.covalent:
+      return atom.getCovalentRadiusFloat();
     case Token.fracX:
-      propertyValue = atom.getFractionalCoord('X');
-      break;
+      return atom.getFractionalCoord('X');
     case Token.fracY:
-      propertyValue = atom.getFractionalCoord('Y');
-      break;
+      return atom.getFractionalCoord('Y');
     case Token.fracZ:
-      propertyValue = atom.getFractionalCoord('Z');
-      break;
+      return atom.getFractionalCoord('Z');
+    case Token.ionic:
+      return atom.getBondingRadiusFloat();
     case Token.partialCharge:
-      propertyValue = atom.getPartialCharge();
-      break;
+      return atom.getPartialCharge();
     case Token.phi:
-      propertyValue = atom.getGroupPhi();
-      break;
+      return atom.getGroupPhi();
     case Token.psi:
-      propertyValue = atom.getGroupPsi();
-      break;
+      return atom.getGroupPsi();
+    case Token.spacefill:
+      return atom.getRadius();
     case Token.straightness:
-      propertyValue = atom.getStraightness();
-      break;
+      return atom.getStraightness();
     case Token.unitX:
-      propertyValue = atom.getFractionalUnitCoord('X');
-      break;
+      return atom.getFractionalUnitCoord('X');
     case Token.unitY:
-      propertyValue = atom.getFractionalUnitCoord('Y');
-      break;
+      return atom.getFractionalUnitCoord('Y');
     case Token.unitZ:
-      propertyValue = atom.getFractionalUnitCoord('Z');
-      break;
+      return atom.getFractionalUnitCoord('Z');
     case Token.vanderwaals:
-      propertyValue = atom.getVanderwaalsRadiusFloat();
-      break;
-    default:
-      error(ERROR_unrecognizedAtomProperty, Token.nameOf(tokWhat));
+      return atom.getVanderwaalsRadiusFloat();
+    case Token.vibX:
+      return viewer.getVibrationCoord(atom.getAtomIndex(), 'X');
+    case Token.vibY:
+      return viewer.getVibrationCoord(atom.getAtomIndex(), 'Y');
+    case Token.vibZ:
+      return viewer.getVibrationCoord(atom.getAtomIndex(), 'Z');
     }
-    return asInt ? propertyValue * 100 : propertyValue;
+    return atomPropertyInt(atom, tokWhat);
   }
 
+  private static String atomPropertyString(Atom atom, int tokWhat) {
+    switch (tokWhat) {
+    case Token.atomName:
+      return atom.getAtomName();
+    case Token.atomType:
+      return atom.getAtomType();
+    case Token.sequence:
+      return atom.getGroup1('?');
+    case Token.group1:
+      return atom.getGroup1('\0');
+    case Token.group:
+      return atom.getGroup3(false);
+    case Token.element:
+      return atom.getElementSymbol();
+    case Token.identify:
+      return atom.getInfo();
+    }
+    return ""; 
+  }
+ 
   /* ****************************************************************************
    * ==============================================================
    * checks and parameter retrieval
@@ -3962,7 +4009,8 @@ class Eval {
             if (!isColorIndex && shapeType != JmolConstants.SHAPE_ISOSURFACE)
               index++;
             if (name.equals("property")
-                && Token.tokAttr(getToken(index).tok, Token.atomproperty)) {
+                && Token.tokAttr((tok = getToken(index).tok), Token.atomproperty)
+                && !Token.tokAttr(tok, Token.strproperty)) {
               if (!isSyntaxCheck) {
                 data = getBitsetProperty(null, getToken(index++).tok
                     | Token.minmaxmask, null, null, null, null, false, -1);
@@ -7940,7 +7988,7 @@ class Eval {
     String s = null;
     switch (tok) {
     default:
-      if (Token.tokAttrOr(tok, Token.atomproperty, Token.mathproperty))
+      if (Token.tokAttr(tok, Token.atomproperty))
         break;
       return null;
     case Token.property:
@@ -7975,11 +8023,15 @@ class Eval {
     boolean isAtoms = !(tokenValue instanceof BondSet);
     boolean isMin = Token.tokAttr(tok, Token.min);
     boolean isMax = Token.tokAttr(tok, Token.max);
-    boolean isAll = Token.tokAttr(tok, Token.minmaxmask);
+    boolean isFloat = (Token.tokAttr(tok, Token.floatproperty)
+        || tok == Token.function || tok == Token.distance);
+    boolean isInt = !isFloat && (Token.tokAttr(tok, Token.intproperty));
+    boolean isString = isAtoms && Token.tokAttr(tok, Token.strproperty);
+    boolean isAll = (isString || Token.tokAttr(tok, Token.minmaxmask));
     if (isAll)
       isMin = isMax = false;
     tok &= ~Token.minmaxmask;
-    float[] list = null;
+    StringBuffer sb = null;
     BitSet bsNew = null;
 
     if (tok == Token.atoms)
@@ -8029,29 +8081,63 @@ class Eval {
     if (tok == Token.distance && ptRef == null && planeRef == null)
       return pt;
 
-    boolean isInt = true;
     Point3f ptT = (tok == Token.color ? new Point3f() : null);
     ModelSet modelSet = viewer.getModelSet();
     float[] data = (tok == Token.property ? viewer
         .getDataFloat((String) opValue) : null);
     int count = 0;
-    boolean isPt = (tok == Token.xyz || tok == Token.vibXyz || tok == Token.fracXyz 
-        || tok == Token.unitXyz || tok == Token.color);
+    boolean isPt = (tok == Token.xyz || tok == Token.vibXyz
+        || tok == Token.fracXyz || tok == Token.unitXyz || tok == Token.color);
     if (isAtoms || ptAtom >= 0) {
       int iModel = -1;
       int nOps = 0;
       count = (isSyntaxCheck ? 0 : viewer.getAtomCount());
       if (isAll)
-        list = new float[count];
+        sb = new StringBuffer();
+      int mode = (isPt ? 0 : isInt ? 1 : isFloat ? 2 : 3);
       for (int i = (ptAtom >= 0 ? ptAtom : 0); i < count; i++)
         if (ptAtom >= 0 || bs == null || bs.get(i)) {
           n++;
           Atom atom = modelSet.getAtomAt(i);
-          if (isInt) {
+          switch (mode) {
+          case 0:  // point
+            switch (tok) {
+            case Token.xyz:
+              pt.add(atom);
+              break;
+            case Token.fracXyz:
+              pt.add(atom.getFractionalCoord());
+              break;
+            case Token.unitXyz:
+              pt.add(atom.getFractionalUnitCoord(false));
+              break;
+            case Token.vibXyz:
+              Vector3f v = atom.getVibrationVector();
+              if (v == null)
+                n--;
+              else
+                pt.add(v);
+              break;
+            case Token.color:
+              pt.add(Graphics3D.colorPointFromInt(viewer.getColixArgb(atom
+                  .getColix()), ptT));
+              break;
+            default:
+              error(ERROR_unrecognizedAtomProperty, Token.nameOf(tok));
+            }
+            if (isAll) {
+              sb.append("\n").append(Escape.escape(pt));
+              pt.set(0, 0, 0);
+            }
+            break;
+          case 1: // isInt
             int iv = 0;
             switch (tok) {
             case Token.symop:
-              // a little weird
+              // a little weird:
+              // First we determine how many operations we have in this model.
+              // Then we get the symmetry bitset, which shows the assignments
+              // of symmetry for this atom.
               if (atom.getModelIndex() != iModel) {
                 iModel = atom.getModelIndex();
                 nOps = modelSet.getModelSymmetryCount(iModel);
@@ -8064,8 +8150,10 @@ class Eval {
               for (int k = 0; k < len; k++)
                 if (bsSym.get(k)) {
                   iv += k + 1;
-                  ivvMin = Math.min(ivvMin, k + 1);
-                  ivvMax = Math.max(ivvMax, k + 1);
+                  if (isMin)
+                    ivvMin = Math.min(ivvMin, k + 1);
+                  else if (isMax)
+                    ivvMax = Math.max(ivvMax, k + 1);
                   p++;
                 }
               if (isMin)
@@ -8075,98 +8163,68 @@ class Eval {
               n += p - 1;
               break;
             default:
-              if ((iv = atomPropertyInt(atom, tok)) == Integer.MIN_VALUE)
-                isInt = false;
+              iv = atomPropertyInt(atom, tok);
             }
-            if (isInt) {
-              if (isAll)
-                list[i] = iv;
-              else if (isMin)
-                ivMin = Math.min(ivMin, iv);
-              else if (isMax)
-                ivMax = Math.max(ivMax, iv);
-              else
-                ivAvg += iv;
-              if (ptAtom >= 0)
-                i = count;
-              continue;
-            }
-          }
-
-          //floats 
-
-          float fv = Float.MAX_VALUE;
-
-          switch (tok) {
-          case Token.function:
-            bsAtom.set(i);
-            fv = Token.fValue(getFunctionReturn(userFunction, params, tokenAtom));
-            bsAtom.clear(i);
-            break;
-          case Token.property:
-            fv = (data == null ? 0 : data[i]);
-            break;
-          case Token.distance:
-            if (planeRef != null)
-              fv = Graphics3D.distanceToPlane(planeRef, atom);
-            else
-              fv = atom.distance(ptRef);
-            break;
-          case Token.surfacedistance:
-            viewer.getSurfaceDistanceMax();
-            fv = atom.getSurfaceDistance100() / 100f;
-            break;
-          case Token.temperature:
-            fv = atom.getBfactor100() / 100f;
-            break;
-          case Token.xyz:
-            pt.add(atom);
-            fv = 0;
-            break;
-          case Token.fracXyz:
-            pt.add(atom.getFractionalCoord());
-            fv = 0;
-            break;
-          case Token.unitXyz:
-            pt.add(atom.getFractionalUnitCoord(false));
-            fv = 0;
-            break;
-          case Token.vibXyz:
-            pt.add(viewer.getVibrationVector(i));
-            fv = 0;
-            break;
-          case Token.color:
-            pt.add(Graphics3D.colorPointFromInt(viewer.getColixArgb(atom
-                .getColix()), ptT));
-            fv = 0;
-            break;
-          default:
-            fv = atomPropertyFloat(atom, tok, false);
-          }
-
-          if (fv == Float.MAX_VALUE) {
-            n--; //don't count this one
-          } else {
             if (isAll)
-              list[i] = fv;
-            else if (Float.isNaN(fv)) {
-              n--; //don't count this one
-            } else {
-              if (isMin)
-                fvMin = Math.min(fvMin, fv);
-              else if (isMax)
-                fvMax = Math.max(fvMax, fv);
+              sb.append('\n').append(iv);
+            else if (isMin)
+              ivMin = Math.min(ivMin, iv);
+            else if (isMax)
+              ivMax = Math.max(ivMax, iv);
+            else
+              ivAvg += iv;
+            break;
+          case 2: //isFloat {
+            float fv = Float.MAX_VALUE;
+            switch (tok) {
+            case Token.function:
+              bsAtom.set(i);
+              fv = Token.fValue(getFunctionReturn(userFunction, params,
+                  tokenAtom));
+              bsAtom.clear(i);
+              break;
+            case Token.property:
+              fv = (data == null ? 0 : data[i]);
+              break;
+            case Token.distance:
+              if (planeRef != null)
+                fv = Graphics3D.distanceToPlane(planeRef, atom);
               else
-                fvAvg += fv;
+                fv = atom.distance(ptRef);
+              break;
+            default:
+              fv = atomPropertyFloat(atom, tok);
             }
+            if (fv == Float.MAX_VALUE) {
+              n--; // don't count this one
+            } else {
+              if (isAll)
+                sb.append('\n').append(fv);
+              else if (Float.isNaN(fv)) {
+                n--; // don't count this one
+              } else {
+                if (isMin)
+                  fvMin = Math.min(fvMin, fv);
+                else if (isMax)
+                  fvMax = Math.max(fvMax, fv);
+                else
+                  fvAvg += fv;
+              }
+            }
+            break;
+          case 3: //isString 
+            String s = atomPropertyString(atom, tok);
+            if (tok != Token.sequence)
+              sb.append('\n');
+            sb.append(s);
           }
           if (ptAtom >= 0)
             i = count;
         }
-    } else {
+    } else { // bonds
       count = viewer.getBondCount();
       if (isAll)
-        list = new float[count];
+        sb = new StringBuffer();
       for (int i = 0; i < count; i++)
         if (bs == null || bs.get(i)) {
           n++;
@@ -8178,7 +8236,7 @@ class Eval {
             fvMax = Math.max(fvMax, fv);
             fvAvg += fv;
             if (isAll)
-              list[i] = fv;
+              sb.append('\n').append(fv);
             break;
           case Token.xyz:
             pt.add(bond.getAtom1());
@@ -8195,12 +8253,13 @@ class Eval {
           isInt = false;
         }
     }
+    if (isAll)
+      return (sb.length() == 0 ? "" : sb.toString().substring(tok == Token.sequence ? 0 : 1));
     if (isPt)
       return (n == 0 ? pt : new Point3f(pt.x / n, pt.y / n, pt.z / n));
-    if (n == 0)
+    if (n == 0) {
       return new Float(Float.NaN);
-
-    if (isMin) {
+    } else if (isMin) {
       n = 1;
       ivAvg = ivMin;
       fvAvg = fvMin;
@@ -8208,14 +8267,6 @@ class Eval {
       n = 1;
       ivAvg = ivMax;
       fvAvg = fvMax;
-    } else if (isAll) {
-      float[] list1 = new float[n];
-      for (int i = 0, j = 0; i < count; i++)
-        if (bs == null || bs.get(i))
-          list1[j++] = list[i];
-      if (opValue == null) //not operating -- I don't think this is possible, because opValue is not ever null when minmax is set
-        return list1;
-      return Escape.escape(list1, false);
     }
     if (isInt && (ivAvg / n) * n == ivAvg)
       return new Integer(ivAvg / n);
@@ -8294,7 +8345,7 @@ class Eval {
         fvalues = null;
       }
     }
-    if (tok == Token.element)
+    if (tok == Token.element || tok == Token.elemno)
       clearDefinedVariableAtomSets();
     viewer.setAtomProperty(bs, tok, iValue, fValue, sValue, fvalues, list);
   }
@@ -10774,7 +10825,7 @@ class Eval {
           if (tokProperty == Token.surfacedistance)
             viewer.getSurfaceDistanceMax();
           for (int iAtom = atomCount; --iAtom >= 0;) {
-            data[iAtom] = atomProperty(atoms[iAtom], tokProperty, false);
+            data[iAtom] = atomPropertyFloat(atoms[iAtom], tokProperty);
           }
         }
         if (tokProperty == Token.color)
@@ -12457,10 +12508,11 @@ class Eval {
 
     private boolean evaluateFunction() throws ScriptException {
       Token op = oStack[oPt--];
+      // for .xxx or .xxx() functions
+      // we store the token in the intValue field of the propselector token
       int tok = (op.tok == Token.propselector ? op.intValue & ~Token.minmaxmask
           : op.tok);
-      // for .xxx or .xxx() functions
-      // we store the token inthe intValue field of the propselector token
+
       int nParamMax = Token.getMaxMathParams(tok); // note - this is NINE for dot-operators
       int nParam = 0;
       int pt = xPt;

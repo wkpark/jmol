@@ -138,9 +138,14 @@ public class LabelToken {
 
   // not having letter equivalents:
   
+           Token.adpmax,
+           Token.adpmin,
+           Token.atomID,
            Token.bondcount,
            Token.groupID,
            Token.covalent,
+           Token.file,
+           Token.property,
            Token.radius,
            Token.spacefill,
            Token.structure,
@@ -247,10 +252,16 @@ public class LabelToken {
         ich = cch;
         break;
       }
-      String propertyName = strFormat.substring(ich, ichClose);
-      Token token = Token.getTokenFromName(propertyName.toLowerCase());
-      if (token != null && isLabelPropertyTok(token.tok))
-        lt.tok = token.tok;
+      String propertyName = strFormat.substring(ich, ichClose).toLowerCase();
+      if (propertyName.startsWith("property_")) {
+        lt.text = propertyName;
+        lt.tok = Token.data;
+        lt.data = viewer.getDataFloat(lt.text);        
+      } else {
+        Token token = Token.getTokenFromName(propertyName);
+        if (token != null && isLabelPropertyTok(token.tok))
+          lt.tok = token.tok;
+      }
       ich = ichClose + 1;
       break;
     case '{': // client property name
@@ -419,6 +430,12 @@ public class LabelToken {
         break;
       case Token.valence:
         strT = "" + atom.getValence();
+        break;
+      case Token.adpmax:
+        floatT = atom.getADPMinMax(true);
+        break;
+      case Token.adpmin:
+        floatT = atom.getADPMinMax(false);
         break;
       case Token.phi:
         floatT = atom.getGroupPhi();

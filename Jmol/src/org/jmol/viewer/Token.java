@@ -510,7 +510,7 @@ public class Token {
   final public static int site          = intproperty | 16;
   final public static int structure     = intproperty | 17 | command;
   final public static int strucno       = intproperty | 18;
-  final static int symop                = intproperty | 19; 
+  public final static int symop         = intproperty | 19; 
   final public static int valence       = intproperty | 20 | settable;
 
   // float values must be multiplied by 100 prior to comparing to integer values
@@ -528,7 +528,7 @@ public class Token {
   final public static int partialCharge   = floatproperty | 10 | settable;
   public final static int phi             = floatproperty | 11;
   public final static int psi             = floatproperty | 12;
-  final static int property               = floatproperty | 13 | mathproperty | setparam | settable;
+  public final static int property        = floatproperty | 13 | mathproperty | setparam | settable;
   final public static int spacefill       = floatproperty | 14 | command | defaultON | settable;
   final public static int straightness    = floatproperty | 15;
   public final static int surfacedistance = floatproperty | 16;

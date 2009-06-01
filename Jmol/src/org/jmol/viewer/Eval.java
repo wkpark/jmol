@@ -10771,6 +10771,7 @@ class Eval {
     boolean idSeen = initIsosurface(iShape);
     boolean isWild = (idSeen && viewer.getShapeProperty(iShape, "ID") == null);
     String translucency = null;
+    String colorScheme = null;
     if (isPmesh)
       setShapeProperty(iShape, "fileType", "Pmesh");
     for (int i = iToken; i < statementLength; ++i) {
@@ -10829,7 +10830,7 @@ class Eval {
           }
         }
         if (tokProperty == Token.color)
-          setShapeProperty(iShape, "setColorScheme", "colorRGB");
+          colorScheme = "colorRGB";
         propertyValue = data;
         break;
       case Token.model:
@@ -10864,9 +10865,8 @@ class Eval {
          *  
          */
         colorRangeStage = 0;
-        if (getToken(i + 1).tok == Token.string) {
-          setShapeProperty(iShape, "setColorScheme", parameterAsString(++i));
-        }
+        if (getToken(i + 1).tok == Token.string)
+          colorScheme = parameterAsString(++i);
         if ((theTok = tokAt(i + 1)) == Token.translucent
             || tokAt(i + 1) == Token.opaque) {
           translucency = setColorOptions(i + 1, JmolConstants.SHAPE_ISOSURFACE,
@@ -11104,8 +11104,7 @@ class Eval {
           break;
         }
         if (str.equalsIgnoreCase("COLORSCHEME")) {
-          propertyName = "setColorScheme";
-          propertyValue = parameterAsString(++i);
+          colorScheme = parameterAsString(++i);
           break;
         }
         if (str.equalsIgnoreCase("CONTOUR")) {
@@ -11490,7 +11489,9 @@ class Eval {
       setShapeProperty(iShape, "nomap", new Float(0));
       surfaceObjectSeen = true;
     }
-
+    if (colorScheme != null) 
+      setShapeProperty(iShape, "setColorScheme", colorScheme);
+    
     float area = (doCalcArea ? ((Float) viewer
         .getShapeProperty(iShape, "area")).floatValue() : Float.NaN);
     if (doCalcArea)

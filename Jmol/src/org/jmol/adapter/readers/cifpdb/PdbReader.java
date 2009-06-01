@@ -201,7 +201,7 @@ public class PdbReader extends AtomSetCollectionReader {
           continue;
         case 17:
           //if (line.startsWith("REMARK")) {
-          if (line.startsWith("REMARK 350 GENERATING THE BIOMOLECULE")) {
+          if (line.startsWith("REMARK 350")) {
             remark350();
             continue;
           }

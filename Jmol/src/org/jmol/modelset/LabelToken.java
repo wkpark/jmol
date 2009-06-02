@@ -30,6 +30,7 @@ import java.util.Hashtable;
 
 import javax.vecmath.Tuple3f;
 
+import org.jmol.util.Escape;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
@@ -141,6 +142,7 @@ public class LabelToken {
            Token.adpmin,
            Token.atomID,
            Token.bondcount,
+           Token.color,
            Token.groupID,
            Token.covalent,
            Token.file,
@@ -340,6 +342,9 @@ public class LabelToken {
       case Token.atomIndex:
         strT = ""
             + (indices == null ? atom.atomIndex : indices[atom.atomIndex]);
+        break;
+      case Token.color:
+        ptT = Atom.atomPropertyTuple(atom, t.tok);
         break;
       case Token.data:
         floatT = (t.data != null ? t.data[atom.atomIndex] : Float.NaN);

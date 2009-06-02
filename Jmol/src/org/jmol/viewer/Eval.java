@@ -8100,9 +8100,9 @@ class Eval {
       int iModel = -1;
       int nOps = 0;
       count = (isSyntaxCheck ? 0 : viewer.getAtomCount());
-      if (isAll)
+      if (isAll || isString)
         sb = new StringBuffer();
-      int mode = (isPt ? 0 : isInt ? 1 : isFloat ? 2 : 3);
+      int mode = (isPt ? 0 : isString ? 3 : isInt ? 1 : 2);
       for (int i = (ptAtom >= 0 ? ptAtom : 0); i < count; i++)
         if (ptAtom >= 0 || bs == null || bs.get(i)) {
           n++;
@@ -12160,6 +12160,7 @@ class Eval {
       this.isAssignment = isAssignment;
       this.maxLevel = maxLevel;
       this.asVector = asVector;
+      wasX = isAssignment;
       oStack = new Token[maxLevel];
       xStack = new Token[maxLevel];
       if (logMessages)
@@ -13629,7 +13630,11 @@ class Eval {
           return addX(((Point3f) x1.value).distance((Point3f) x2.value) >= 0.000001);
         if (x1.tok == Token.point4f && x2.tok == Token.point4f)
           return addX(((Point4f) x1.value).distance((Point4f) x2.value) >= 0.000001);
-        return addX(Math.abs(Token.fValue(x1) - Token.fValue(x2)) >= 0.000001);
+        {
+          float f1 = Token.fValue(x1);
+          float f2 = Token.fValue(x2);
+          return addX(Float.isNaN(f1) || Float.isNaN(f2) || Math.abs(f1 - f2) >= 0.000001);
+        }
       case Token.plus:
         if (x1.tok == Token.list || x2.tok == Token.list)
           return addX(Token.concatList(x1, x2));

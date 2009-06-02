@@ -528,10 +528,10 @@ public class LabelToken {
           strT = atom.getClientAtomStringProperty(t.text);
         break;     
       case Token.structure:
-        strT = JmolConstants.getProteinStructureName(atom.group.getProteinStructureType());
+        strT = JmolConstants.getProteinStructureName(atom.getProteinStructureType());
         break;
       case Token.strucno:
-        int id = atom.group.getProteinStructureID();
+        int id = atom.getProteinStructureID();
         strT = (id < 0 ? "" : "" + id);
         break;
       }

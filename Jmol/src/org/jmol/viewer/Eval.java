@@ -1647,10 +1647,12 @@ class Eval {
           break;
         }
         boolean isModel = (tokWhat == Token.model);
-        boolean isRadius = (tokWhat == Token.radius);
         boolean isIntProperty = Token.tokAttr(tokWhat, Token.intproperty);
         boolean isFloatProperty = Token.tokAttr(tokWhat, Token.floatproperty);
-        boolean isStringProperty = Token.tokAttr(tokWhat, Token.strproperty);
+        boolean isIntOrFloat = isIntProperty && isFloatProperty;
+        boolean isStringProperty = !isIntProperty && Token.tokAttr(tokWhat, Token.strproperty);
+        if (tokWhat == Token.element)
+          isIntProperty = !(isStringProperty = false);
         int tokValue = code[pc].tok;
         comparisonValue = code[pc].intValue;
         float comparisonFloat = Float.NaN;
@@ -1664,14 +1666,17 @@ class Eval {
             tokValue = Token.integer;
             isIntProperty = true;
           } else if (isStringProperty) {
-            if (tokValue == Token.identifier) {
+            if (tokValue == Token.identifier)
               val = getStringParameter((String) val);
-            }
           } else {
             if (tokValue == Token.identifier)
               val = getNumericParameter((String) val);
-            if (val instanceof String)
-              val = Token.nValue(code[pc]);
+            if (val instanceof String) {
+              if (tokWhat == Token.structure || tokWhat == Token.element) 
+                isStringProperty = !(isIntProperty = (comparisonValue != Integer.MAX_VALUE));
+              else
+                val = Token.nValue(code[pc]);
+            }
             if (val instanceof Integer)
               comparisonFloat = comparisonValue = ((Integer) val).intValue();
             else if (val instanceof Float && isModel)
@@ -1679,8 +1684,9 @@ class Eval {
                   .modelFileNumberFromFloat(((Float) val).floatValue());
           }
         }
-        if (isStringProperty && !(val instanceof String))
+        if (isStringProperty && !(val instanceof String)) {
           val = "" + val;
+        }
         if (val instanceof Integer || tokValue == Token.integer) {
           if (isModel) {
             tokWhat = -Token.model;
@@ -1688,7 +1694,7 @@ class Eval {
                 && comparisonValue < 1000000)
               comparisonValue = (comparisonValue / 1000) * 1000000
                   + comparisonValue % 1000;
-          } else if (isRadius) {
+          } else if (isIntOrFloat) {
             isFloatProperty = false;
           } else if (isFloatProperty) {
             comparisonFloat = comparisonValue;
@@ -1698,7 +1704,7 @@ class Eval {
             tokWhat = -Token.model;
           } else {
             comparisonFloat = ((Float) val).floatValue();
-            if (isRadius) {
+            if (isIntOrFloat) {
               isIntProperty = false;
             } else if (isIntProperty) {
               comparisonValue = (int) comparisonFloat;
@@ -1812,10 +1818,16 @@ class Eval {
     BitSet bs = new BitSet();
     Atom[] atoms =viewer.getModelSet().atoms;
     int atomCount = viewer.getAtomCount();
-    comparisonString = comparisonString.toLowerCase();
-    for (int i = 0; i < atomCount; ++i)
-      if (compareString(tokOperator, atomPropertyString(atoms[i], tokWhat).toLowerCase(), comparisonString))
+    boolean isCaseSensitive = (tokWhat == Token.chain && viewer.getChainCaseSensitive());
+    if (!isCaseSensitive)
+      comparisonString = comparisonString.toLowerCase();
+    for (int i = 0; i < atomCount; ++i) {
+      String propertyString = atomPropertyString(atoms[i], tokWhat);
+      if (!isCaseSensitive)
+        propertyString = propertyString.toLowerCase();  
+      if (compareString(tokOperator, propertyString, comparisonString))
         bs.set(i);
+    }
     return bs;
   }
 
@@ -2089,10 +2101,9 @@ class Eval {
       return atom.getCovalentBondCount();
     case Token.color:
       return viewer.getColixArgb(atom.getColix());
+    case Token.element:
     case Token.elemno:
       return atom.getElementNumber();
-    case Token.element:
-      return atom.getAtomicAndIsotopeNumber();
     case Token.file:
       return atom.getModelFileIndex() + 1;
     case Token.formalCharge:
@@ -2178,6 +2189,8 @@ class Eval {
       return atom.getFractionalCoord('Z');
     case Token.ionic:
       return atom.getBondingRadiusFloat();
+    case Token.occupancy:
+      return atom.getOccupancy100() / 100f;
     case Token.partialCharge:
       return atom.getPartialCharge();
     case Token.phi:
@@ -2216,6 +2229,9 @@ class Eval {
       return atom.getAtomName();
     case Token.atomType:
       return atom.getAtomType();
+    case Token.chain:
+      ch = atom.getChainID();
+      return (ch == '\0' ? "" : "" + ch);
     case Token.sequence:
       return atom.getGroup1('?');
     case Token.group1:
@@ -2229,6 +2245,8 @@ class Eval {
     case Token.insertion:
       ch = atom.getInsertionCode();
       return (ch == '\0' ? "" : "" + ch);
+    case Token.structure:
+      return JmolConstants.getProteinStructureName(atom.getProteinStructureType());
     }
     return ""; 
   }
@@ -7350,7 +7368,7 @@ class Eval {
         key = "selectionHalos";
         break;
       }
-      if (key.equalsIgnoreCase("measurementNumbers")) {
+        if (key.equalsIgnoreCase("measurementNumbers")) {
         key = "measurementLabels";
         break;
       }
@@ -8034,7 +8052,7 @@ class Eval {
     boolean isFloat = (Token.tokAttr(tok, Token.floatproperty)
         || tok == Token.function || tok == Token.distance);
     boolean isInt = !isFloat && (Token.tokAttr(tok, Token.intproperty));
-    boolean isString = isAtoms && Token.tokAttr(tok, Token.strproperty);
+    boolean isString = !isInt && isAtoms && Token.tokAttr(tok, Token.strproperty);
     boolean isAll = (isString || Token.tokAttr(tok, Token.minmaxmask));
     if (isAll)
       isMin = isMax = false;

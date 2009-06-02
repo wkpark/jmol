@@ -30,7 +30,6 @@ import java.util.Hashtable;
 
 import javax.vecmath.Tuple3f;
 
-import org.jmol.util.Escape;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;

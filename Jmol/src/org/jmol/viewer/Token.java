@@ -98,7 +98,7 @@ public class Token {
   final static int seqcode           =  5;
   final static int list              =  6;
   final public static int point3f    =  7;
-  final public static int point4f    =  8; 
+  final public static int point4f    =  8;
   final private static int keyword   =  9;
 
   final static String[] astrType = {
@@ -208,11 +208,16 @@ public class Token {
   
   final static int expression           = (1 << 20);
   final static int predefinedset        = (1 << 21) | expression;
-  final static int atomproperty         = (1 << 22) | expression; // can be used in "select xxxx = n"
-  final static int strproperty          = (1 << 23) | atomproperty; // string property
-  final static int intproperty          = (1 << 24) | atomproperty; // int parameter
-  final static int floatproperty        = (1 << 25) | atomproperty; // int parameter
-  final private static int mathproperty = (1 << 26) | atomproperty; // {xxx}.nnnn
+  
+  public final static int atomproperty         = (1 << 22) | expression; 
+  // all atom properties must be a member of one of the next three groups:
+  public final static int strproperty   = (1 << 23) | atomproperty; // string property
+  public final static int intproperty   = (1 << 24) | atomproperty; // int parameter
+  public final static int floatproperty = (1 << 25) | atomproperty; // int parameter
+
+  public final static int PROPERTYFLAGS = (7 << 23) | atomproperty;
+  
+  final static int mathproperty         = (1 << 26) | expression; // {xxx}.nnnn
   final static int mathfunc             = (1 << 27) | expression;  
   final static int mathop               = (1 << 28) | expression;
   final static int comparator           = mathop | (1 << 8);
@@ -467,20 +472,20 @@ public class Token {
   final static int lines            = 6 | mathproperty;
   final static int size             = 7 | mathproperty;
   final public static int type      = 8 | mathproperty;
-  final public static int xyz       = 9 | mathproperty | settable;
-  final public static int fracXyz   =10 | mathproperty | settable;
-  final public static int unitXyz   =11 | mathproperty;
-  final public static int vibXyz    =12 | mathproperty | settable | vibflag;
-  final public static int boundbox  =14 | mathproperty | setparam | command | defaultON;
+  final public static int boundbox  = 9 | mathproperty | setparam | command | defaultON;
+  final public static int xyz       =10 | mathproperty | atomproperty | settable;
+  final public static int fracXyz   =11 | mathproperty | atomproperty | settable;
+  final public static int unitXyz   =12 | mathproperty | atomproperty;
+  final public static int vibXyz    =13 | mathproperty | atomproperty | settable | vibflag;
 
-  // radius and occupancy are odd, because they takes different meanings if the comparison is to 
-  // an integer (Rasmol values) or float (Angstroms)
+  // occupancy, radius, and structure are odd, because they takes different meanings when compared
   
-  public final static int radius        = intproperty | floatproperty | 1 | setparam | settable;
   final public static int occupancy     = intproperty | floatproperty | 2 | settable;
+  public final static int radius        = intproperty | floatproperty | 1 | setparam | settable;
   final public static int structure     = intproperty | strproperty   | 3 | command;
 
-  // any new in, float, or string property should be added also to Eval.getBitsetProperty()
+  // any new int, float, or string property should be added also to LabelToken.labelTokenIds
+  // and the appropriate Atom.atomPropertyXXXX() method
   
   final public static int atomType      = strproperty | 1 | settable;
   final public static int atomName      = strproperty | 2 | settable;

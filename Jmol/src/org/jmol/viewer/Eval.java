@@ -50,6 +50,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point4f;
 import org.jmol.i18n.*;
@@ -1799,7 +1800,7 @@ class Eval {
       Atom atom = atoms[i];
       switch (tokWhat) {
       default:
-        propertyFloat = atomPropertyFloat(atom, tokWhat);
+        propertyFloat = Atom.atomPropertyFloat(atom, tokWhat);
         break;
       case Token.property:
         if (data == null || data.length <= i)
@@ -1822,7 +1823,7 @@ class Eval {
     if (!isCaseSensitive)
       comparisonString = comparisonString.toLowerCase();
     for (int i = 0; i < atomCount; ++i) {
-      String propertyString = atomPropertyString(atoms[i], tokWhat);
+      String propertyString = Atom.atomPropertyString(atoms[i], tokWhat);
       if (!isCaseSensitive)
         propertyString = propertyString.toLowerCase();  
       if (compareString(tokOperator, propertyString, comparisonString))
@@ -1851,7 +1852,7 @@ class Eval {
       Atom atom = atoms[i];
       switch (tokWhat) {
       default:
-        propertyValue = atomPropertyInt(atom, tokWhat);
+        propertyValue = Atom.atomPropertyInt(atom, tokWhat);
         break;
       case Token.symop:
         propertyBitSet = atom.getAtomSymmetry();
@@ -2081,176 +2082,6 @@ class Eval {
     return lookupValue(setName, true);
   }
 
-  /**
-   * called by isosurface and int comparator via atomProperty()
-   * and also by getBitsetProperty() 
-   * 
-   * @param atom
-   * @param tokWhat
-   * @return         int value or Integer.MIN_VALUE
-   */
-  private int atomPropertyInt(Atom atom, int tokWhat) {
-    switch (tokWhat) {
-    case Token.atomno:
-      return atom.getAtomNumber();
-    case Token.atomID:
-      return atom.getSpecialAtomID();
-    case Token.atomIndex:
-      return atom.getAtomIndex();
-    case Token.bondcount:
-      return atom.getCovalentBondCount();
-    case Token.color:
-      return viewer.getColixArgb(atom.getColix());
-    case Token.element:
-    case Token.elemno:
-      return atom.getElementNumber();
-    case Token.file:
-      return atom.getModelFileIndex() + 1;
-    case Token.formalCharge:
-      return atom.getFormalCharge();
-    case Token.groupID:
-      return atom.getGroupID(); //-1 if no group
-    case Token.groupindex:
-      return atom.getGroupIndex(); 
-    case Token.model:
-      //integer model number -- could be PDB/sequential adapter number
-      //or it could be a sequential model in file number when multiple files
-      return atom.getModelNumber();
-    case -Token.model:
-      //float is handled differently
-      return atom.getModelFileNumber();
-    case Token.molecule:
-      return atom.getMoleculeNumber();
-    case Token.occupancy:
-      return atom.getOccupancy100();
-    case Token.polymerLength:
-      return atom.getPolymerLength();
-    case Token.radius:
-      // the comparitor uses rasmol radius, unfortunately, for integers
-      return atom.getRasMolRadius();        
-    case Token.resno:
-      return atom.getResno();
-    case Token.site:
-      return atom.getAtomSite();
-    case Token.structure:
-      return atom.getProteinStructureType();
-    case Token.strucno:
-      return atom.getProteinStructureID();
-    case Token.valence:
-      return atom.getValence();
-    }
-    return 0;      
-  }
-
-  /**
-   * called by isosurface and int comparator via atomProperty()
-   * and also by getBitsetProperty() 
-   * 
-   * @param atom
-   * @param tokWhat
-   * @param asInt
-   * @return       float value or value*100 (asInt=true) or throw an error if not found
-   * 
-   * @throws ScriptException
-   */
-  
-  private float atomPropertyFloat(Atom atom, int tokWhat) {
-
-    switch (tokWhat) {
-    case Token.radius:
-      return atom.getRadius();
-      
-    case Token.surfacedistance:
-      viewer.getSurfaceDistanceMax();
-      return atom.getSurfaceDistance100() / 100f;
-    case Token.temperature: // 0 - 9999
-      return atom.getBfactor100() / 100f;
-
-    // these next have to be multiplied by 100 if being compared
-    // note that spacefill here is slightly different than radius -- no integer option
-      
-    case Token.adpmax:
-      return atom.getADPMinMax(true);
-    case Token.adpmin:
-      return atom.getADPMinMax(false);
-    case Token.atomX:
-      return atom.x;
-    case Token.atomY:
-      return atom.y;
-    case Token.atomZ:
-      return atom.z;
-    case Token.covalent:
-      return atom.getCovalentRadiusFloat();
-    case Token.fracX:
-      return atom.getFractionalCoord('X');
-    case Token.fracY:
-      return atom.getFractionalCoord('Y');
-    case Token.fracZ:
-      return atom.getFractionalCoord('Z');
-    case Token.ionic:
-      return atom.getBondingRadiusFloat();
-    case Token.occupancy:
-      return atom.getOccupancy100() / 100f;
-    case Token.partialCharge:
-      return atom.getPartialCharge();
-    case Token.phi:
-      return atom.getGroupPhi();
-    case Token.psi:
-      return atom.getGroupPsi();
-    case Token.spacefill:
-      return atom.getRadius();
-    case Token.straightness:
-      return atom.getStraightness();
-    case Token.unitX:
-      return atom.getFractionalUnitCoord('X');
-    case Token.unitY:
-      return atom.getFractionalUnitCoord('Y');
-    case Token.unitZ:
-      return atom.getFractionalUnitCoord('Z');
-    case Token.vanderwaals:
-      return atom.getVanderwaalsRadiusFloat();
-    case Token.vibX:
-      return viewer.getVibrationCoord(atom.getAtomIndex(), 'X');
-    case Token.vibY:
-      return viewer.getVibrationCoord(atom.getAtomIndex(), 'Y');
-    case Token.vibZ:
-      return viewer.getVibrationCoord(atom.getAtomIndex(), 'Z');
-    }
-    return atomPropertyInt(atom, tokWhat);
-  }
-
-  private static String atomPropertyString(Atom atom, int tokWhat) {
-    char ch;
-    switch (tokWhat) {
-    case Token.altloc:
-      ch = atom.getAlternateLocationID();
-      return (ch == '\0' ? "" : "" + ch);
-    case Token.atomName:
-      return atom.getAtomName();
-    case Token.atomType:
-      return atom.getAtomType();
-    case Token.chain:
-      ch = atom.getChainID();
-      return (ch == '\0' ? "" : "" + ch);
-    case Token.sequence:
-      return atom.getGroup1('?');
-    case Token.group1:
-      return atom.getGroup1('\0');
-    case Token.group:
-      return atom.getGroup3(false);
-    case Token.element:
-      return atom.getElementSymbol();
-    case Token.identify:
-      return atom.getInfo();
-    case Token.insertion:
-      ch = atom.getInsertionCode();
-      return (ch == '\0' ? "" : "" + ch);
-    case Token.structure:
-      return JmolConstants.getProteinStructureName(atom.getProteinStructureType());
-    }
-    return ""; 
-  }
- 
   /* ****************************************************************************
    * ==============================================================
    * checks and parameter retrieval
@@ -8014,7 +7845,7 @@ class Eval {
     String s = null;
     switch (tok) {
     default:
-      if (Token.tokAttr(tok, Token.atomproperty))
+      if (Token.tokAttrOr(tok, Token.atomproperty, Token.mathproperty))
         break;
       return null;
     case Token.property:
@@ -8127,30 +7958,10 @@ class Eval {
           Atom atom = modelSet.getAtomAt(i);
           switch (mode) {
           case 0:  // point
-            switch (tok) {
-            case Token.xyz:
-              pt.add(atom);
-              break;
-            case Token.fracXyz:
-              pt.add(atom.getFractionalCoord());
-              break;
-            case Token.unitXyz:
-              pt.add(atom.getFractionalUnitCoord(false));
-              break;
-            case Token.vibXyz:
-              Vector3f v = atom.getVibrationVector();
-              if (v == null)
-                n--;
-              else
-                pt.add(v);
-              break;
-            case Token.color:
-              pt.add(Graphics3D.colorPointFromInt(viewer.getColixArgb(atom
-                  .getColix()), ptT));
-              break;
-            default:
-              error(ERROR_unrecognizedAtomProperty, Token.nameOf(tok));
-            }
+            Tuple3f t = Atom.atomPropertyTuple(atom, tok);
+            if (t == null)
+              error(ERROR_unrecognizedAtomProperty, Token.nameOf(tok));            
+            pt.add(t);
             if (isAll) {
               sb.append("\n").append(Escape.escape(pt));
               pt.set(0, 0, 0);
@@ -8188,8 +7999,10 @@ class Eval {
                 iv = ivvMax;
               n += p - 1;
               break;
+            case Token.cell:
+              error(ERROR_unrecognizedAtomProperty, Token.nameOf(tok));
             default:
-              iv = atomPropertyInt(atom, tok);
+              iv = Atom.atomPropertyInt(atom, tok);
             }
             if (isAll)
               sb.append('\n').append(iv);
@@ -8219,7 +8032,7 @@ class Eval {
                 fv = atom.distance(ptRef);
               break;
             default:
-              fv = atomPropertyFloat(atom, tok);
+              fv = Atom.atomPropertyFloat(atom, tok);
             }
             if (fv == Float.MAX_VALUE) {
               n--; // don't count this one
@@ -8239,7 +8052,7 @@ class Eval {
             }
             break;
           case 3: //isString 
-            String s = atomPropertyString(atom, tok);
+            String s = Atom.atomPropertyString(atom, tok);
             if (tok != Token.sequence)
               sb.append('\n');
             sb.append(s);
@@ -10852,7 +10665,7 @@ class Eval {
           if (tokProperty == Token.surfacedistance)
             viewer.getSurfaceDistanceMax();
           for (int iAtom = atomCount; --iAtom >= 0;) {
-            data[iAtom] = atomPropertyFloat(atoms[iAtom], tokProperty);
+            data[iAtom] = Atom.atomPropertyFloat(atoms[iAtom], tokProperty);
           }
         }
         if (tokProperty == Token.color)
@@ -13552,6 +13365,10 @@ class Eval {
       int iv = op.intValue & ~Token.minmaxmask;
       if (op.tok == Token.propselector) {
         switch (iv) {
+        case Token.length:
+          if (!(x2.value instanceof BondSet)) 
+            return addX(Token.sizeOf(x2));
+          break;
         case Token.size:
           return addX(Token.sizeOf(x2));
         case Token.type:

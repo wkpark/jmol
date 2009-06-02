@@ -1952,6 +1952,10 @@ final public class Graphics3D implements JmolRendererInterface {
     return pt;
   }
 
+  public final static Point3f colorPointFromInt2(int color) {
+    return new Point3f((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
+  }
+
   public final static Point3f colorPointFromString(String colorName, Point3f pt) {
     return colorPointFromInt(getArgbFromString(colorName), pt);
   }

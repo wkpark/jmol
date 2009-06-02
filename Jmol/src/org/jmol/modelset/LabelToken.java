@@ -27,11 +27,10 @@ package org.jmol.modelset;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+
 import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
 
@@ -328,25 +327,24 @@ public class LabelToken {
     return (strLabel == null ? null : strLabel.toString().intern());
   }
   
-  private static void appendAtomTokenValue(Atom atom, LabelToken t, 
-                                       StringBuffer strLabel, int[] indices) {
+  private static void appendAtomTokenValue(Atom atom, LabelToken t,
+                                           StringBuffer strLabel, int[] indices) {
     String strT = null;
     float floatT = Float.NaN;
     Tuple3f ptT = null;
-    char ch;
     try {
       switch (t.tok) {
-      case Token.altloc:
-        strT = (atom.alternateLocationID != '\0' ? atom.alternateLocationID + "" : "");
+      
+      // special cases only for labels 
+      
+      case Token.atomIndex:
+        strT = ""
+            + (indices == null ? atom.atomIndex : indices[atom.atomIndex]);
         break;
-      case Token.atomID:
-        strT = "" + atom.getSpecialAtomID();
-        break;
-      case Token.atomName:
-        strT = atom.getAtomName();
-        break;
-      case Token.atomType:
-        strT = atom.getAtomType();
+      case Token.data:
+        floatT = (t.data != null ? t.data[atom.atomIndex] : Float.NaN);
+        if (Float.isNaN(floatT))
+          strT = atom.getClientAtomStringProperty(t.text);
         break;
       case Token.formalCharge:
         int formalCharge = atom.getFormalCharge();
@@ -357,189 +355,61 @@ public class LabelToken {
         else
           strT = "0";
         break;
-      case Token.atomIndex:
-        strT = "" + (indices == null ? atom.atomIndex : indices[atom.atomIndex]);
-        break;
-      case Token.element:
-        strT = atom.getElementSymbol();
-        break;
-      case Token.insertion:
-        ch = atom.getInsertionCode();
-        strT = (ch == '\0' ? "" : "" + ch);
-        break;
       case 'g':
         strT = "" + atom.getSelectedGroupIndexWithinChain();
-        break;
-      case Token.groupindex:
-        strT = "" + atom.getGroupIndex();
-        break;
-      case Token.groupID:
-        strT = "" + atom.getGroupID();
-        break;
-      case Token.atomno:
-        strT = "" + atom.getAtomNumber();
-        break;
-      case Token.bondcount:
-        strT = "" + atom.getCovalentBondCount();
-        break;
-      case Token.occupancy:
-        strT = "" + atom.getOccupancy100();
-        break;
-      case Token.polymerLength:
-        strT = "" + atom.getPolymerLength();
-        break;
-      case Token.elemno:
-        strT = "" + atom.getElementNumber();
         break;
       case Token.model:
         strT = atom.getModelNumberForLabel();
         break;
-      case Token.group1:
-        strT = atom.getGroup1('\0');
-        break;
-      case Token.molecule:
-        strT = "" + atom.getMoleculeNumber();
-        break;
-      case Token.group:
-        strT = atom.getGroup3(false);
-        break;
-      case Token.symmetry:
-        strT = atom.getSymmetryOperatorList();
-        break;
-      case Token.resno:
-        strT = "" + atom.getResno();
-        break;
-      case Token.sequence:
-        strT = atom.getSeqcodeString();
-        break;
-      case Token.site:
-        strT = "" + atom.atomSite;
-        break;
-      case Token.chain:
-        ch = atom.getChainID();
-        strT = (ch == '\0' ? "" : "" + ch);
-        break;
-      case Token.identify:
-        strT = atom.getIdentity(true);
-        break;
-      case 'W':
-        strT = atom.getIdentityXYZ();
-        break;
-      case Token.file:
-        strT = "" + (atom.getModelFileIndex() + 1);
-        break;
-      case Token.valence:
-        strT = "" + atom.getValence();
-        break;
-      case Token.adpmax:
-        floatT = atom.getADPMinMax(true);
-        break;
-      case Token.adpmin:
-        floatT = atom.getADPMinMax(false);
-        break;
-      case Token.phi:
-        floatT = atom.getGroupPhi();
-        break;
-      case Token.covalent:
-        floatT = atom.getCovalentRadiusFloat();
-        break;
-      case Token.radius:
-        floatT = atom.getRadius();
-        break;
-      case Token.ionic:
-        floatT = atom.getBondingRadiusFloat();
-        break;
-      case Token.partialCharge:
-        floatT = atom.getPartialCharge();
-        break;
-      case Token.psi:
-        floatT = atom.getGroupPsi();
+      case Token.occupancy:
+        strT = "" + Atom.atomPropertyInt(atom, t.tok);
         break;
       case 'Q':
         floatT = atom.getOccupancy100() / 100f;
+        break;
+      case Token.radius:
+        floatT = Atom.atomPropertyFloat(atom, t.tok);
+        break;
+      case Token.strucno:
+        int id = atom.getProteinStructureID();
+        strT = (id < 0 ? "" : "" + id);
         break;
       case Token.straightness:
         floatT = atom.getStraightness();
         if (Float.isNaN(floatT))
           strT = "null";
         break;
-      case Token.temperature:
-        floatT = atom.getBfactor100() / 100f;
-        break;
-      case Token.surfacedistance:
-        floatT = atom.getSurfaceDistance100() / 100f;
-        break;
-      case Token.vanderwaals:
-        floatT = atom.getVanderwaalsRadiusFloat();
-        break;
-      case Token.vibX:
-        floatT = atom.group.chain.modelSet.getVibrationCoord(atom.atomIndex, 'x');
-        break;
-      case Token.vibY:
-        floatT = atom.group.chain.modelSet.getVibrationCoord(atom.atomIndex, 'y');
-        break;
-      case Token.vibZ:
-        floatT = atom.group.chain.modelSet.getVibrationCoord(atom.atomIndex, 'z');
-        break;
-      case Token.vibXyz:
-        Vector3f v = atom.getVibrationVector();
-        if (v == null) v = new Vector3f();
-        ptT = v;
-        break;
-      case Token.atomX:
-        floatT = atom.x;
-        break;
-      case Token.atomY:
-        floatT = atom.y;
-        break;
-      case Token.atomZ:
-        floatT = atom.z;
-        break;
-      case Token.xyz:
-        ptT = atom;
-        break;
-      case Token.fracX:
-        floatT = atom.getFractionalCoord('X');
-        break;
-      case Token.fracY:
-        floatT = atom.getFractionalCoord('Y');
-        break;
-      case Token.fracZ:
-        floatT = atom.getFractionalCoord('Z');
-        break;
-      case Token.fracXyz:
-        ptT = atom.getFractionalCoord();
-        break;
-      case Token.unitX:
-        floatT = atom.getFractionalUnitCoord('X');
-        break;
-      case Token.unitY:
-        floatT = atom.getFractionalUnitCoord('Y');
-        break;
-      case Token.unitZ:
-        floatT = atom.getFractionalUnitCoord('Z');
-        break;
-      case Token.unitXyz:
-        ptT = atom.getFractionalUnitCoord(false);
-        break;
-      case Token.data:
-        floatT = (t.data != null ? t.data[atom.atomIndex] : Float.NaN);
-        if (Float.isNaN(floatT))
-          strT = atom.getClientAtomStringProperty(t.text);
-        break;     
       case Token.structure:
-        strT = JmolConstants.getProteinStructureName(atom.getProteinStructureType());
+        strT = Atom.atomPropertyString(atom, t.tok);
         break;
-      case Token.strucno:
-        int id = atom.getProteinStructureID();
-        strT = (id < 0 ? "" : "" + id);
+      case 'W':
+        strT = atom.getIdentityXYZ();
         break;
+        
+      // standard 
+        
+      default:
+        switch (t.tok & Token.PROPERTYFLAGS) {
+        case Token.intproperty:
+          strT = "" + Atom.atomPropertyInt(atom, t.tok);
+          break;
+        case Token.floatproperty:
+          floatT = Atom.atomPropertyFloat(atom, t.tok);
+          break;
+        case Token.strproperty:
+          strT = Atom.atomPropertyString(atom, t.tok);
+          break;
+        case Token.atomproperty:
+          ptT = Atom.atomPropertyTuple(atom, t.tok);
+        default:
+          // any dual case would be here -- must handle specially
+        }
       }
     } catch (IndexOutOfBoundsException ioobe) {
       floatT = Float.NaN;
       strT = null;
       ptT = null;
-    }    
+    }
     strT = t.format(floatT, strT, ptT);
     if (strLabel == null)
       t.text = strT;

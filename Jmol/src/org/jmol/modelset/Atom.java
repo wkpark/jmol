@@ -36,6 +36,7 @@ import org.jmol.util.Quaternion;
 import java.util.BitSet;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 
@@ -1035,6 +1036,199 @@ final public class Atom extends Point3fi {
     }
     return null;
   }
+
+  /**
+   * called by isosurface and int comparator via atomProperty()
+   * and also by getBitsetProperty() 
+   * 
+   * @param atom
+   * @param tokWhat
+   * @return         int value or Integer.MIN_VALUE
+   */
+  public static int atomPropertyInt(Atom atom, int tokWhat) {
+    switch (tokWhat) {
+    case Token.atomno:
+      return atom.getAtomNumber();
+    case Token.atomID:
+      return atom.getSpecialAtomID();
+    case Token.atomIndex:
+      return atom.getAtomIndex();
+    case Token.bondcount:
+      return atom.getCovalentBondCount();
+    case Token.color:
+      return atom.group.chain.modelSet.viewer.getColixArgb(atom.getColix());
+    case Token.element:
+    case Token.elemno:
+      return atom.getElementNumber();
+    case Token.file:
+      return atom.getModelFileIndex() + 1;
+    case Token.formalCharge:
+      return atom.getFormalCharge();
+    case Token.groupID:
+      return atom.getGroupID(); //-1 if no group
+    case Token.groupindex:
+      return atom.getGroupIndex(); 
+    case Token.model:
+      //integer model number -- could be PDB/sequential adapter number
+      //or it could be a sequential model in file number when multiple files
+      return atom.getModelNumber();
+    case -Token.model:
+      //float is handled differently
+      return atom.getModelFileNumber();
+    case Token.molecule:
+      return atom.getMoleculeNumber();
+    case Token.occupancy:
+      return atom.getOccupancy100();
+    case Token.polymerLength:
+      return atom.getPolymerLength();
+    case Token.radius:
+      // the comparitor uses rasmol radius, unfortunately, for integers
+      return atom.getRasMolRadius();        
+    case Token.resno:
+      return atom.getResno();
+    case Token.site:
+      return atom.getAtomSite();
+    case Token.structure:
+      return atom.getProteinStructureType();
+    case Token.strucno:
+      return atom.getProteinStructureID();
+    case Token.valence:
+      return atom.getValence();
+    }
+    return 0;      
+  }
+
+  /**
+   * called by isosurface and int comparator via atomProperty()
+   * and also by getBitsetProperty() 
+   * 
+   * @param atom
+   * @param tokWhat
+   * @param asInt
+   * @return       float value or value*100 (asInt=true) or throw an error if not found
+   * 
+   */
+  
+  public static float atomPropertyFloat(Atom atom, int tokWhat) {
+
+    switch (tokWhat) {
+    case Token.radius:
+      return atom.getRadius();
+      
+    case Token.surfacedistance:
+      atom.group.chain.modelSet.getSurfaceDistanceMax();
+      return atom.getSurfaceDistance100() / 100f;
+    case Token.temperature: // 0 - 9999
+      return atom.getBfactor100() / 100f;
+
+    // these next have to be multiplied by 100 if being compared
+    // note that spacefill here is slightly different than radius -- no integer option
+      
+    case Token.adpmax:
+      return atom.getADPMinMax(true);
+    case Token.adpmin:
+      return atom.getADPMinMax(false);
+    case Token.atomX:
+      return atom.x;
+    case Token.atomY:
+      return atom.y;
+    case Token.atomZ:
+      return atom.z;
+    case Token.covalent:
+      return atom.getCovalentRadiusFloat();
+    case Token.fracX:
+      return atom.getFractionalCoord('X');
+    case Token.fracY:
+      return atom.getFractionalCoord('Y');
+    case Token.fracZ:
+      return atom.getFractionalCoord('Z');
+    case Token.ionic:
+      return atom.getBondingRadiusFloat();
+    case Token.occupancy:
+      return atom.getOccupancy100() / 100f;
+    case Token.partialCharge:
+      return atom.getPartialCharge();
+    case Token.phi:
+      return atom.getGroupPhi();
+    case Token.psi:
+      return atom.getGroupPsi();
+    case Token.spacefill:
+      return atom.getRadius();
+    case Token.straightness:
+      return atom.getStraightness();
+    case Token.unitX:
+      return atom.getFractionalUnitCoord('X');
+    case Token.unitY:
+      return atom.getFractionalUnitCoord('Y');
+    case Token.unitZ:
+      return atom.getFractionalUnitCoord('Z');
+    case Token.vanderwaals:
+      return atom.getVanderwaalsRadiusFloat();
+    case Token.vibX:
+      return atom.getVibrationCoord('X');
+    case Token.vibY:
+      return atom.getVibrationCoord('Y');
+    case Token.vibZ:
+      return atom.getVibrationCoord('Z');
+    }
+    return atomPropertyInt(atom, tokWhat);
+  }
+
+  public static String atomPropertyString(Atom atom, int tokWhat) {
+    char ch;
+    switch (tokWhat) {
+    case Token.altloc:
+      ch = atom.getAlternateLocationID();
+      return (ch == '\0' ? "" : "" + ch);
+    case Token.atomName:
+      return atom.getAtomName();
+    case Token.atomType:
+      return atom.getAtomType();
+    case Token.chain:
+      ch = atom.getChainID();
+      return (ch == '\0' ? "" : "" + ch);
+    case Token.sequence:
+      return atom.getGroup1('?');
+    case Token.group1:
+      return atom.getGroup1('\0');
+    case Token.group:
+      return atom.getGroup3(false);
+    case Token.element:
+      return atom.getElementSymbol();
+    case Token.identify:
+      return atom.getIdentity(true);
+    case Token.insertion:
+      ch = atom.getInsertionCode();
+      return (ch == '\0' ? "" : "" + ch);
+    case Token.structure:
+      return JmolConstants.getProteinStructureName(atom.getProteinStructureType());
+    case Token.symmetry:
+      return atom.getSymmetryOperatorList();
+    }
+    return ""; 
+  }
+
+  public static Tuple3f atomPropertyTuple(Atom atom, int tok) {
+    switch (tok) {
+    case Token.fracXyz:
+      return atom.getFractionalCoord();
+    case Token.unitXyz:
+      return atom.getFractionalUnitCoord(false);
+    case Token.vibXyz:
+      Vector3f v = atom.getVibrationVector();
+      if (v == null)
+        v = new Vector3f();
+      return v;
+    case Token.xyz:
+      return atom;
+    case Token.color:
+      return Graphics3D.colorPointFromInt2(
+          atom.group.chain.modelSet.viewer.getColixArgb(atom.getColix())
+          );
+    }
+    return null;
+  }
+ 
 
   /* DEVELOPER NOTE -- ATOM/MODEL DELETION --
    * 

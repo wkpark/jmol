@@ -210,12 +210,13 @@ public class Token {
   final static int predefinedset        = (1 << 21) | expression;
   
   public final static int atomproperty         = (1 << 22) | expression; 
-  // all atom properties must be a member of one of the next three groups:
+  // all atom properties are either a member of one of the next three groups,
+  // or they are a point/vector, in which case they are just atomproperty
   public final static int strproperty   = (1 << 23) | atomproperty; // string property
   public final static int intproperty   = (1 << 24) | atomproperty; // int parameter
   public final static int floatproperty = (1 << 25) | atomproperty; // int parameter
 
-  public final static int PROPERTYFLAGS = (7 << 23) | atomproperty;
+  public final static int PROPERTYFLAGS = strproperty | intproperty | floatproperty;
   
   final static int mathproperty         = (1 << 26) | expression; // {xxx}.nnnn
   final static int mathfunc             = (1 << 27) | expression;  
@@ -404,7 +405,6 @@ public class Token {
   final static int displayed              = predefinedset | 23;
   final static int hidden                 = predefinedset | 24;
   final public static int specialposition = predefinedset | 25;
-  final public static int symmetry        = predefinedset | 26;
   final static int visible                = predefinedset | 27;
 
   
@@ -497,6 +497,7 @@ public class Token {
   final public static int sequence      = strproperty | 8;
   public final static int identify      = strproperty | 9;
   final public static int insertion     = strproperty |10;
+  final public static int symmetry      = strproperty |11 | predefinedset;
 
   final public static int atomno        = intproperty | 1;
   public final static int atomID        = intproperty | 2;

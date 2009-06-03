@@ -256,11 +256,11 @@ public class Token {
   //these commands control flow
   //sorry about GOTO!
 //final static int function     see mathfunc
-  final static int ifcmd        = 1 | flowCommand;
+//final static int ifcmd        see mathfunc
   final static int elseif       = 2 | flowCommand;
   final static int elsecmd      = 3 | flowCommand | noArgs;
   final static int endifcmd     = 4 | flowCommand | noArgs;
-  final static int forcmd       = 5 | flowCommand;
+//final static int forcmd       see mathfunc
   final static int whilecmd     = 6 | flowCommand;
   final static int breakcmd     = 7 | flowCommand | noArgs;
   final static int continuecmd  = 8 | flowCommand | noArgs;
@@ -574,6 +574,8 @@ public class Token {
   final static int cos          = 5 | 1 << 9 | mathfunc;
   final static int sqrt         = 6 | 1 << 9 | mathfunc;
   public final static int file  = 7 | 1 << 9 | mathfunc | intproperty | command;
+  final static int forcmd       = 8 | 1 << 9 | mathfunc | flowCommand;
+  final static int ifcmd        = 9 | 1 << 9 | mathfunc | flowCommand;
 
 
   // ___.xxx(a)
@@ -589,7 +591,7 @@ public class Token {
   final static int mul          = 5 | 1 << 9 | mathfunc | mathproperty;
   final static int div          = 6 | 1 << 9 | mathfunc | mathproperty;
   final static int label        = 7 | 1 << 9 | mathfunc | mathproperty | implicitStringCommand | defaultON | setparam;
-  
+
   // xxx(a,b)
 
   final static int random       = 1 | 2 << 9 | mathfunc;
@@ -611,7 +613,7 @@ public class Token {
   // xxx(a,b,c)
   
   final static int select       = 1 | 3 << 9 | mathfunc | atomExpressionCommand;
-  
+
   // xxx(a,b,c,d)
   
   final static int angle        = 1 | 4 << 9 | mathfunc;

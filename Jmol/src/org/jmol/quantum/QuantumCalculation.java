@@ -144,19 +144,20 @@ abstract class QuantumCalculation {
 
     protected void setXYZ(boolean setMinMax) {
       int i;
+      try {
       if (setMinMax) {
         i = (int) Math.floor((x - xBohr[0] - rangeBohr) / stepBohr[0]);
         xMin = (i < 0 ? 0 : i);
         i = (int) Math.floor(1 + (x - xBohr[0] + rangeBohr) / stepBohr[0]);
-        xMax = (i > nX ? nX : i + 1);
+        xMax = (i >= nX ? nX : i + 1);
         i = (int) Math.floor((y - yBohr[0] - rangeBohr) / stepBohr[1]);
         yMin = (i < 0 ? 0 : i);
         i = (int) Math.floor(1 + (y - yBohr[0] + rangeBohr) / stepBohr[1]);
-        yMax = (i > nY ? nY : i + 1);
+        yMax = (i >= nY ? nY : i + 1);
         i = (int) Math.floor((z - zBohr[0] - rangeBohr) / stepBohr[2]);
         zMin = (i < 0 ? 0 : i);
         i = (int) Math.floor(1 + (z - zBohr[0] + rangeBohr) / stepBohr[2]);
-        zMax = (i > nZ ? nZ : i + 1);
+        zMax = (i >= nZ ? nZ : i + 1);
       }
       for (i = xMax; --i >= xMin;) {
         myX2[i] = myX[i] = xBohr[i] - x;
@@ -169,6 +170,10 @@ abstract class QuantumCalculation {
       for (i = zMax; --i >= zMin;) {
         myZ2[i] = myZ[i] = zBohr[i] - z;
         myZ2[i] *= myZ[i];
+      }
+      
+      } catch (Exception e) {
+        System.out.println("Error in QuantumCalculation setting bounds");
       }
     }
   }

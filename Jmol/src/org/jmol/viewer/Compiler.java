@@ -337,6 +337,8 @@ class Compiler {
   private Vector ltoken;
   private Token lastToken;
   private void addTokenToPrefix(Token token) {
+    if (logMessages)
+      Logger.debug("addTokenToPrefix" + token);
     ltoken.addElement(token);
     lastToken = token;
   }
@@ -672,7 +674,7 @@ class Compiler {
           parenCount++;
           // the select() function uses dual semicolon notation
           // but we must differentiate from isosurface select(...) and set picking select
-          if (nTokens > 1 && (lastToken.tok == Token.select))
+          if (nTokens > 1 && (lastToken.tok == Token.select || lastToken.tok == Token.forcmd || lastToken.tok == Token.ifcmd))
             nSemiSkip += 2;
           break;
         case Token.rightparen:
@@ -1818,9 +1820,9 @@ class Compiler {
       addNextToken();
       return clauseNot();
     }
-    return clausePrimitive();
+    return (clausePrimitive());
   }
-
+  
   private boolean clausePrimitive() {
     int tok = tokPeek();
     switch (tok) {
@@ -1855,9 +1857,14 @@ class Compiler {
         return true;
     //fall through for integer and identifier specifically
     default:
-      if (Token.tokAttr(tok, Token.atomproperty))
-        return clauseComparator();
-      if (!Token.tokAttrOr(tok, Token.integer, Token.predefinedset))
+      if (Token.tokAttr(tok, Token.atomproperty)) {
+        int itemp = itokenInfix;
+        boolean isOK = clauseComparator();
+        if (isOK || !Token.tokAttr(tok, Token.predefinedset))
+            return isOK;
+        itokenInfix = itemp;
+      }
+      if (tok != Token.integer && !Token.tokAttr(tok, Token.predefinedset))
         break;
       return addNextToken();
 
@@ -2157,16 +2164,12 @@ class Compiler {
 
   private boolean clauseItemSelector() {
     int tok;
+    int nparen = 0;
     while ((tok = tokPeek()) != Token.nada && tok != Token.rightsquare) {
-      if (!clauseOr(false))
-        return false;
-      returnToken();
-      if (tokPeek() != Token.times)
-        tokenNext();
-      tok = tokPeek();
-      if (tok == Token.rightsquare || !Token.tokAttr(tok, Token.mathop))
-        break;
-      if (tok != Token.leftparen)
+      addNextToken();
+      if (tok == Token.leftsquare)
+        nparen++;
+      if (tokPeek() == Token.rightsquare && nparen-- > 0)
         addNextToken();
     }
     return true;

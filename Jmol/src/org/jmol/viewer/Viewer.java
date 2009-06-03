@@ -1652,7 +1652,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     Logger.startTimer();
     if (fileName.equalsIgnoreCase("string")) {
-      createModelSetInline(fileManager.getInlineData(-1), htParams, isAppend,
+      String fileData = (htParams.containsKey("fileData") 
+          ? (String) htParams.get("fileData")
+          : fileManager.getInlineData(-1)); 
+      createModelSetInline(fileData, htParams, isAppend,
           false);
     } else {
       if (!isAppend && fileName.charAt(0) != '?')
@@ -2469,7 +2472,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   BitSet getBondsForSelectedAtoms(BitSet bsAtoms) {
     // eval
-    return modelSet.getBondsForSelectedAtoms(bsAtoms);
+    return modelSet.getBondsForSelectedAtoms(bsAtoms, global.bondModeOr || BitSetUtil.cardinalityOf(bsAtoms) == 1);
   }
 
   boolean frankClicked(int x, int y) {

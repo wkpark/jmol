@@ -159,14 +159,13 @@ class Eval {
         : asToken ? token : Token.oValue(token));
   }
 
-  private String getStringParameter(String var) {
+  private String getStringParameter(String var, boolean orReturnName) {
     Token token = getContextVariableAsToken(var);
     if (token != null)
       return Token.sValue(token);
     String val = "" + viewer.getParameter(var);
-    return (val.length() == 0 ? var : val);
+    return (val.length() == 0 && orReturnName ? var : val);
   }
-
 
   private Object getNumericParameter(String var) {
     if (var.equalsIgnoreCase("_modelNumber")) {
@@ -1324,7 +1323,7 @@ class Eval {
         String key = parameterAsString(j);
         if (getToken(++j).tok != Token.opEQ)
           error(ERROR_invalidArgument);
-        setVariable(++j, statementLength - 1, key, false);
+        setVariable(++j, statementLength - 1, key, false, 0);
       }
       isOK = ((Boolean) parameterExpression(pts[0] + 1, pts[1], null, false))
           .booleanValue();
@@ -1435,6 +1434,7 @@ class Eval {
     iToken = 1000;
     boolean ignoreSubset = (pcStart < 0);
     boolean isInMath = false;
+    int nExpress = 0;
     int atomCount = viewer.getAtomCount();
     if (ignoreSubset)
       pcStart = -pcStart;
@@ -1455,8 +1455,12 @@ class Eval {
       case Token.expressionBegin:
         pcStart = pc;
         pcStop = code.length;
+        nExpress++;
         break;
       case Token.expressionEnd:
+        nExpress--;
+        if (nExpress > 0)
+          continue;
         break expression_loop;
       case Token.leftbrace:
         if (isPoint3f(pc)) {
@@ -1661,14 +1665,14 @@ class Eval {
           if (tokWhat == Token.color) {
             comparisonValue = Graphics3D.getArgbFromString((String) val);
             if (comparisonValue == 0 && tokValue == Token.identifier) {
-              val = getStringParameter((String) val);
+              val = getStringParameter((String) val, true);
               comparisonValue = Graphics3D.getArgbFromString((String) val);
             }
             tokValue = Token.integer;
             isIntProperty = true;
           } else if (isStringProperty) {
             if (tokValue == Token.identifier)
-              val = getStringParameter((String) val);
+              val = getStringParameter((String) val, true);
           } else {
             if (tokValue == Token.identifier)
               val = getNumericParameter((String) val);
@@ -1738,13 +1742,15 @@ class Eval {
             : compareFloat(tokWhat, data, tokOperator, comparisonFloat));
         break;
       case Token.bitset:
-      case Token.decimal:
       case Token.point3f:
       case Token.point4f:
         rpn.addX(value);
         break;
+      case Token.decimal:
+        rpn.addX(instruction);
+        break;
       case Token.integer:
-        rpn.addX(instruction.intValue);
+        rpn.addX(instruction);
         break;
       default:
         // System.out.println(" " + instruction +" " +(new
@@ -4354,9 +4360,14 @@ class Eval {
       if (filename.equals("string[]"))
         return;
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck) {
+        if (filename.startsWith("@") && filename.length() > 1) {
+          htParams.put("fileData", getStringParameter(filename.substring(1), false));
+          filename = "string";
+        }
         viewer.openFile(filename, htParams, null, isAppend);
         loadScript.append(" ");
-        if (!filename.equals("string") && !filename.equals("string[]"))
+        if (!filename.equals("string") 
+            && !filename.equals("string[]"))
           loadScript.append("/*file*/");
         loadScript.append(Escape.escape(modelName = (String) htParams
             .get("fullPathName")));
@@ -7208,7 +7219,7 @@ class Eval {
     if (getContextVariableAsToken(key) != null
         || !setParameter(key, val, isJmolSet, showing)) {
       int tok2 = (tokAt(1) == Token.expressionBegin ? 0 : tokAt(2));
-      setVariable((tok2 == Token.opEQ ? 3 : 2), 0, key, showing);
+      setVariable((statement[0].intValue == '=' && tok2 != Token.opEQ? 0 : tok2 == Token.opEQ ? 3 : 2), 0, key, showing, statement[0].intValue);
       if (!isJmolSet)
         return;
     }
@@ -7264,13 +7275,14 @@ class Eval {
     return (Token) v.elementAt(0);
   }
 
-  private void setVariable(int pt, int ptMax, String key, boolean showing)
+  private void setVariable(int pt, int ptMax, String key, boolean showing, int setType)
       throws ScriptException {
     BitSet bs = null;
     String propertyName = "";
-    if (tokAt(pt - 1) == Token.expressionBegin) {
+    if (pt > 0 && tokAt(pt - 1) == Token.expressionBegin) {
       bs = expression(pt - 1);
       pt = iToken + 1;
+      // for now we cannot do {atomexpression}[n].xxxx = whatever
     }
     int tokProperty = Token.nada;
     if (tokAt(pt) == Token.dot) {
@@ -7465,14 +7477,16 @@ class Eval {
                                      boolean asVector, int ptAtom,
                                      Hashtable localVars, String localVar)
       throws ScriptException {
-    Object v;
+    Object v, res;
     boolean isImplicitAtomProperty = (localVar != null);
     boolean isOneExpressionOnly = (pt < 0);
     if (isOneExpressionOnly)
       pt = -pt;
     int nParen = 0;
     boolean isSetCmd = (key != null && key.length() > 0);
-    Rpn rpn = new Rpn(64, isSetCmd && tokAt(pt) == Token.leftsquare, asVector);
+    Rpn rpn = new Rpn(64, pt > 0 && isSetCmd && tokAt(pt) == Token.leftsquare, asVector);
+    if (pt == 0) // set command with v = [1 3 4 ] ....
+      pt = 2;
     if (ptMax < pt)
       ptMax = statementLength;
     out: for (int i = pt; i < ptMax; i++) {
@@ -7486,8 +7500,9 @@ class Eval {
           rpn.addX((Token) localVars.get(localVar));
           if (!rpn.addOp(token)) {
             error(ERROR_invalidArgument);
-          }          
-          if (token.intValue == Token.function && tokAt(iToken + 1) != Token.leftparen) {
+          }
+          if (token.intValue == Token.function
+              && tokAt(iToken + 1) != Token.leftparen) {
             rpn.addOp(Token.tokenLeftParen);
             rpn.addOp(Token.tokenRightParen);
           }
@@ -7496,14 +7511,39 @@ class Eval {
         }
       }
       switch (tok) {
+      case Token.ifcmd:
+        if (getToken(++i).tok != Token.leftparen)
+          error(ERROR_invalidArgument);
+        if (localVars == null)
+          localVars = new Hashtable();
+        res = parameterExpression(++i, -1, null, false, -1, localVars, localVar);
+        boolean TF = ((Boolean) res).booleanValue();
+        int iT = iToken;
+        if (getToken(iT++).tok != Token.semicolon)
+          error(ERROR_invalidArgument);
+        parameterExpression(iT, -1, null, false);
+        int iF = iToken;
+        if (tokAt(iF++) != Token.semicolon)
+          error(ERROR_invalidArgument);
+        parameterExpression(-iF, -1, null, false, 1, null, null);
+        int iEnd = iToken;
+        if (tokAt(iEnd) != Token.rightparen)
+          error(ERROR_invalidArgument);
+        v = parameterExpression(TF ? iT : iF, TF ? iF : iEnd, "XXX", false, 1, localVars, localVar);
+        i = iEnd;
+        break;
+      case Token.forcmd:
       case Token.select:
-        boolean isSelectFunction = (pt > 0);
+        boolean isFunctionOfX = (pt > 0);
+        boolean isFor = (isFunctionOfX && tok == Token.forcmd);
         // it is important to distinguish between the select command:
-        //   select {atomExpression} (mathExpression)
+        // select {atomExpression} (mathExpression)
         // and the select(dummy;{atomExpression};mathExpression) function:
-        //   select {*.ca} (phi < select(y; {*.ca}; y.resno = _x.resno + 1).phi)
+        // select {*.ca} (phi < select(y; {*.ca}; y.resno = _x.resno + 1).phi)
         String dummy;
-        if (isSelectFunction) {
+        // for(dummy;...
+        // select(dummy;...
+        if (isFunctionOfX) {
           if (getToken(++i).tok != Token.leftparen
               || getToken(++i).tok != Token.identifier)
             error(ERROR_invalidArgument);
@@ -7513,39 +7553,57 @@ class Eval {
         } else {
           dummy = "_x";
         }
+        // for(dummy;{atom expr};...
+        // select(dummy;{atom expr};...  
         v = tokenSetting(-(++i)).value;
         if (!(v instanceof BitSet))
           error(ERROR_invalidArgument);
         BitSet bsAtoms = (BitSet) v;
         i = iToken;
-        if (isSelectFunction && getToken(i++).tok != Token.semicolon)
+        if (isFunctionOfX && getToken(i++).tok != Token.semicolon)
           error(ERROR_invalidArgument);
+        // for(dummy;{atom expr};math expr)
+        // select(dummy;{atom expr};math expr)
         BitSet bsSelect = new BitSet();
         BitSet bsX = new BitSet();
+        StringBuffer sb = (isFor ? new StringBuffer() : null);
         Token.Token2 t = null;
         int atomCount = (isSyntaxCheck ? 0 : viewer.getAtomCount());
         if (localVars == null)
           localVars = new Hashtable();
         localVars.put(dummy, t = new Token.Token2(Token.bitset, 0, bsX));
         // one test just to check for errors and get iToken
-        parameterExpression(i, -1, null, false, 0, localVars, isSelectFunction ? null : dummy);
-        if (isSelectFunction && tokAt(iToken) != Token.rightparen)
+        parameterExpression(i, -1, null, false, 0, localVars, dummy);
+        localVars.put(dummy, t = new Token.Token2(Token.bitset, 0, bsX));
+        if (isFunctionOfX && tokAt(iToken) != Token.rightparen)
           error(ERROR_invalidArgument);
         for (int j = 0; j < atomCount; j++)
           if (bsAtoms.get(j)) {
             bsX.clear();
             bsX.set(j);
             t.intValue2 = j;
-            if (((Boolean) parameterExpression(i, -1, null, false, j,
-                localVars, isSelectFunction ? null : dummy)).booleanValue())
-              bsSelect.set(j);
+            res = parameterExpression(i, -1, (isFor ? "XXX" : null),
+                isFor, j, localVars, isFunctionOfX ? null : dummy);
+            if (isFor) {
+              if (res == null || ((Vector) res).size() == 0)
+                error(ERROR_invalidArgument);
+              sb.append('\n').append(
+                  Token.sValue((Token) ((Vector) res).elementAt(0)));
+            } else if (isFunctionOfX) {
+              if (((Boolean) res).booleanValue())
+                bsSelect.set(j);
+            }
           }
-        if (!isSelectFunction)
+        if (isFor) {
+          v = (sb.length() > 0 ? sb.substring(1) : "");
+        } else if (isFunctionOfX) {
+          v = bsSelect;
+        } else {
           return bitsetTokenVector(bsSelect);
+        }
         i = iToken;
-        v = bsSelect;
         break;
-      case Token.semicolon: //for (i = 1; i < 3; i=i+1)
+      case Token.semicolon: // for (i = 1; i < 3; i=i+1)
         break out;
       case Token.on:
       case Token.off:
@@ -7582,7 +7640,7 @@ class Eval {
       case Token.rightbrace:
         error(ERROR_invalidArgument);
         break;
-      case Token.comma: //ignore commas
+      case Token.comma: // ignore commas
         if (!rpn.addOp(theToken))
           error(ERROR_invalidArgument);
         break;
@@ -7590,7 +7648,7 @@ class Eval {
         Token token = getBitsetPropertySelector(i + 1, false);
         if (token == null)
           error(ERROR_invalidArgument);
-        //check for added min/max modifier
+        // check for added min/max modifier
         if (tokAt(iToken + 1) == Token.dot) {
           if (tokAt(iToken + 2) == Token.all) {
             token.intValue |= Token.minmaxmask;
@@ -7600,7 +7658,7 @@ class Eval {
           }
         }
         if (!rpn.addOp(token))
-          error(ERROR_invalidArgument);        
+          error(ERROR_invalidArgument);
         i = iToken;
         if (token.intValue == Token.function && tokAt(i + 1) != Token.leftparen) {
           rpn.addOp(Token.tokenLeftParen);
@@ -7611,7 +7669,7 @@ class Eval {
         if (theTok == Token.identifier
             && compiler.isFunction((String) theToken.value)) {
           if (!rpn.addOp(new Token(Token.function, theToken.value))) {
-            //iToken--;
+            // iToken--;
             error(ERROR_invalidArgument);
           }
           if (tokAt(i + 1) != Token.leftparen) {
@@ -7888,7 +7946,8 @@ class Eval {
     if (isAll)
       isMin = isMax = false;
     tok &= ~Token.minmaxmask;
-    StringBuffer sb = null;
+    Vector vout = null;
+    //StringBuffer sb = null;
     BitSet bsNew = null;
 
     if (tok == Token.atoms)
@@ -7950,7 +8009,7 @@ class Eval {
       int nOps = 0;
       count = (isSyntaxCheck ? 0 : viewer.getAtomCount());
       if (isAll || isString)
-        sb = new StringBuffer();
+        vout = new Vector();//sb = new StringBuffer();
       int mode = (isPt ? 0 : isString ? 3 : isInt ? 1 : 2);
       for (int i = (ptAtom >= 0 ? ptAtom : 0); i < count; i++)
         if (ptAtom >= 0 || bs == null || bs.get(i)) {
@@ -7963,7 +8022,7 @@ class Eval {
               error(ERROR_unrecognizedAtomProperty, Token.nameOf(tok));            
             pt.add(t);
             if (isAll) {
-              sb.append("\n").append(Escape.escape(pt));
+              vout.add(Escape.escape(pt));//sb.append("\n").append(Escape.escape(pt));
               pt.set(0, 0, 0);
             }
             break;
@@ -8005,7 +8064,7 @@ class Eval {
               iv = Atom.atomPropertyInt(atom, tok);
             }
             if (isAll)
-              sb.append('\n').append(iv);
+              vout.add(new Integer(iv));// sb.append('\n').append(iv);
             else if (isMin)
               ivMin = Math.min(ivMin, iv);
             else if (isMax)
@@ -8038,7 +8097,7 @@ class Eval {
               n--; // don't count this one
             } else {
               if (isAll)
-                sb.append('\n').append(fv);
+                vout.add(new Float(fv));//sb.append('\n').append(fv);
               else if (Float.isNaN(fv)) {
                 n--; // don't count this one
               } else {
@@ -8053,9 +8112,9 @@ class Eval {
             break;
           case 3: //isString 
             String s = Atom.atomPropertyString(atom, tok);
-            if (tok != Token.sequence)
-              sb.append('\n');
-            sb.append(s);
+            //if (tok != Token.sequence)
+              //sb.append('\n');
+            vout.add(s);//sb.append(s);
           }
           if (ptAtom >= 0)
             i = count;
@@ -8063,7 +8122,7 @@ class Eval {
     } else { // bonds
       count = viewer.getBondCount();
       if (isAll)
-        sb = new StringBuffer();
+        vout = new Vector();//sb = new StringBuffer();
       for (int i = 0; i < count; i++)
         if (bs == null || bs.get(i)) {
           n++;
@@ -8075,7 +8134,7 @@ class Eval {
             fvMax = Math.max(fvMax, fv);
             fvAvg += fv;
             if (isAll)
-              sb.append('\n').append(fv);
+              vout.add(new Float(fv));//sb.append('\n').append(fv);
             break;
           case Token.xyz:
             pt.add(bond.getAtom1());
@@ -8092,9 +8151,19 @@ class Eval {
           isInt = false;
         }
     }
-    if (isAll)
-      return (sb.length() == 0 ? "" : sb.toString().substring(tok == Token.sequence ? 0 : 1));
-    if (isPt)
+    if (isAll) {
+      int len = vout.size();
+      if (tok == Token.sequence) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < len; i++)
+          sb.append((String) vout.get(i));
+        return sb.toString();
+      }
+      String[] sout = new String[len];
+      for (int i = len; --i >= 0;)
+        sout[i] = "" + vout.get(i);
+      return sout;
+    } if (isPt)
       return (n == 0 ? pt : new Point3f(pt.x / n, pt.y / n, pt.z / n));
     if (n == 0) {
       return new Float(Float.NaN);
@@ -11488,7 +11557,8 @@ class Eval {
     if (ignoreError)
       throw new NullPointerException();
     if (!isSyntaxCheck) {
-      viewer.addCommand(viewer.removeCommand() + CommandHistory.ERROR_FLAG);
+      String s = viewer.removeCommand();
+      viewer.addCommand(s + CommandHistory.ERROR_FLAG);
       viewer.setCursor(Viewer.CURSOR_DEFAULT);
       viewer.setRefreshing(true);
     }
@@ -11763,7 +11833,9 @@ class Eval {
     boolean inBrace = false;
     boolean inClauseDefine = false;
     boolean setEquals = (tok == Token.set
-        && ((String) statement[0].value) == "" && tokAt(1) != Token.expressionBegin);
+        && ((String) statement[0].value) == "" 
+        && statement[0].intValue == '=' 
+        && tokAt(1) != Token.expressionBegin);
     for (int i = 0; i < statementLength; ++i) {
       if (iToken == i - 1)
         sb.append(" <<");
@@ -11953,10 +12025,12 @@ class Eval {
         message = "";
         return;
       }
+      String s =  contextTrace();
+      message += s;
+      this.untranslated += s;
       if (isSyntaxCheck
           || msg.indexOf("file recognized as a script file:") >= 0)
         return;
-      message += contextTrace();
       Logger.error("eval ERROR: " + toString());
     }
 
@@ -12028,7 +12102,7 @@ class Eval {
         return x;
       }
       if (!allowUnderflow && (xPt >= 0 || oPt >= 0)) {
-        //        iToken--;
+       //        iToken--;
         error(ERROR_invalidArgument);
       }
       return null;
@@ -12048,7 +12122,7 @@ class Eval {
         xStack[++xPt] = x;
       }
       if (logMessages)
-        Logger.info("addX token " + x);
+        Logger.info("addX token " + xStack[xPt]);
       return wasX = true;
     }
 
@@ -12057,6 +12131,8 @@ class Eval {
         return addX(((Integer) x).intValue());
       if (x instanceof Float)
         return addX(((Float) x).floatValue());
+      if (x instanceof String[])
+        return addX((String[]) x);
       if (x instanceof String)
         return addX((String) x);
       if (x instanceof Vector3f)
@@ -12751,10 +12827,11 @@ class Eval {
     }
 
     private boolean evaluateList(int tok, Token[] args) throws ScriptException {
-      if (args.length != 1)
+      if (args.length != 1 && !(tok == Token.add && args.length == 0))
         return false;
       Token x1 = getX();
-      Token x2 = args[0];
+      Token x2 = (args.length == 0 ? Token.tokenAll : args[0]);
+      boolean isAll = (x2.tok == Token.all);
       if (x1.tok != Token.list && x1.tok != Token.string) {
         wasX = false;
         addOp(Token.tokenLeftParen);
@@ -12797,10 +12874,17 @@ class Eval {
       int len = (isScalar ? sList1.length : Math.min(sList1.length,
           sList2.length));
 
-      String[] sList3 = new String[len];
-
       float[] list1 = new float[sList1.length];
       Parser.parseFloatArray(sList1, list1);
+
+      if (isAll) {
+        float sum = 0f;
+        for (int i = len; --i >= 0;)
+          sum += list1[i];
+        return addX(sum);
+      }
+      
+      String[] sList3 = new String[len];
 
       float[] list2 = new float[(isScalar ? sList1.length : sList2.length)];
       if (isScalar)
@@ -13341,9 +13425,14 @@ class Eval {
 
     private boolean operate() throws ScriptException {
 
+      if (logMessages) {
+        Logger.info("\noperate:");
+        dumpStacks();
+      }
+
       Token op = oStack[oPt--];
-      if (oPt < 0 && op.tok == Token.opEQ && isAssignment && xPt == 2) {
-        return true;
+      if (oPt < 0 && op.tok == Token.opEQ && isAssignment) {
+        return (xPt == 2);
       }
 
       Token x2 = getX();
@@ -13505,14 +13594,6 @@ class Eval {
             Point4f pt4 = (Point4f) x2.value;
             pt.add(new Point3f(pt4.x, pt4.y, pt4.z));
             return addX(pt);
-          case Token.integer:
-            if (x2.tok == Token.string) {
-              if ((s = (Token.sValue(x2)).trim()).indexOf(".") < 0
-                  && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
-                return addX(x1.intValue + Token.iValue(x2));
-            } else if (x2.tok != Token.decimal)
-              return addX(x1.intValue + Token.iValue(x2));
-          // fall through
           default:
             float f = Token.fValue(x2);
             return addX(new Point3f(pt.x + f, pt.y + f, pt.z + f));

@@ -7525,7 +7525,7 @@ class Eval {
         int iF = iToken;
         if (tokAt(iF++) != Token.semicolon)
           error(ERROR_invalidArgument);
-        parameterExpression(-iF, -1, null, false, 1, null, null);
+        parameterExpression(-iF, -1, null, false, 1, localVars, localVar);
         int iEnd = iToken;
         if (tokAt(iEnd) != Token.rightparen)
           error(ERROR_invalidArgument);
@@ -7566,7 +7566,7 @@ class Eval {
         // select(dummy;{atom expr};math expr)
         BitSet bsSelect = new BitSet();
         BitSet bsX = new BitSet();
-        StringBuffer sb = (isFor ? new StringBuffer() : null);
+        String[] sout = (isFor ? new String[BitSetUtil.cardinalityOf(bsAtoms)] : null);
         Token.Token2 t = null;
         int atomCount = (isSyntaxCheck ? 0 : viewer.getAtomCount());
         if (localVars == null)
@@ -7577,6 +7577,7 @@ class Eval {
         localVars.put(dummy, t = new Token.Token2(Token.bitset, 0, bsX));
         if (isFunctionOfX && tokAt(iToken) != Token.rightparen)
           error(ERROR_invalidArgument);
+        int p = 0;
         for (int j = 0; j < atomCount; j++)
           if (bsAtoms.get(j)) {
             bsX.clear();
@@ -7587,15 +7588,14 @@ class Eval {
             if (isFor) {
               if (res == null || ((Vector) res).size() == 0)
                 error(ERROR_invalidArgument);
-              sb.append('\n').append(
-                  Token.sValue((Token) ((Vector) res).elementAt(0)));
+              sout[p++] = Token.sValue((Token) ((Vector) res).elementAt(0));
             } else if (isFunctionOfX) {
               if (((Boolean) res).booleanValue())
                 bsSelect.set(j);
             }
           }
         if (isFor) {
-          v = (sb.length() > 0 ? sb.substring(1) : "");
+          v = sout;
         } else if (isFunctionOfX) {
           v = bsSelect;
         } else {
@@ -7717,6 +7717,8 @@ class Eval {
           rpn.addX(new Token(Token.decimal, v));
         } else if (v instanceof String) {
           rpn.addX(new Token(Token.string, v));
+        } else if (v instanceof String[]) {
+          rpn.addX(new Token(Token.list, v));
         } else if (v instanceof Point3f) {
           rpn.addX(new Token(Token.point3f, v));
         } else if (v instanceof Point4f) {
@@ -8227,7 +8229,7 @@ class Eval {
         }
         viewer.setShapeProperty(JmolConstants.SHAPE_BALLS, "colorValues",
             values, bs);
-        break;
+        return;
       }
       viewer.setShapeProperty(JmolConstants.SHAPE_BALLS, "color",
           tokenValue.tok == Token.string ? tokenValue.value : new Integer(

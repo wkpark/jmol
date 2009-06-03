@@ -452,7 +452,8 @@ public class LabelToken {
     Atom[] atoms = measurement.modelSet.atoms;
     int[] indices = measurement.getCountPlusIndices();
     for (int i = indices[0]; i >= 1;--i)
-      formatLabel(atoms[indices[i]], null, tokens, (char)('0' + i), null);
+      if (indices[i] >= 0)
+        formatLabel(atoms[indices[i]], null, tokens, (char)('0' + i), null);
     label = getLabel(tokens);
     return (label == null ? "" : label);
   }

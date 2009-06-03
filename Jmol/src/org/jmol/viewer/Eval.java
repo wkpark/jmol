@@ -7828,49 +7828,23 @@ class Eval {
     return false;
   }
 
-  String getBitsetIdent(BitSet bs, String label, Object tokenValue,
+  String[] getBitsetIdent(BitSet bs, String label, Object tokenValue,
                         boolean useAtomMap) {
     boolean isAtoms = !(tokenValue instanceof BondSet);
     if (isAtoms && label == null)
       label = viewer.getStandardLabelFormat();
     int pt = (label == null ? -1 : label.indexOf("%"));
     if (bs == null || isSyntaxCheck || isAtoms && pt < 0)
-      return (label == null ? "" : label);
-    StringBuffer s = new StringBuffer();
+      return new String[] { label == null ? "" : label };
     int len = bs.size();
+    int nmax = BitSetUtil.cardinalityOf(bs);
+    String[] sout = new String[nmax];
     ModelSet modelSet = viewer.getModelSet();
     int n = 0;
     int[] indices = (isAtoms || !useAtomMap ? null : ((BondSet) tokenValue)
         .getAssociatedAtoms());
     if (indices == null && label != null && label.indexOf("%D") > 0)
       indices = viewer.getAtomIndices(bs);
-    /*
-    int nProp = 0;
-    String[] props = null;
-    float[][] propArray = null;
-    
-    while (pt >= 0 && (pt = label.indexOf("{", pt + 1)) > 0) {
-      int pt2 = label.indexOf("}", pt);
-      if (pt2 > 0) {
-        if (nProp == 0) {
-          for (int j = pt; j < label.length(); j++)
-            if (label.charAt(j) == '{')
-              nProp++;
-          props = new String[nProp];
-          propArray = new float[nProp][];
-          nProp = 0;
-        }
-        String name = label.substring(pt + 1, pt2);
-        float[] f = viewer.getDataFloat(name);
-        if (f != null) {
-          propArray[nProp] = f;
-          props[nProp++] = '{' + name + '}';
-        }
-      }
-      pt = pt2;
-
-    }
-    */
     boolean asIdentity = (label == null || label.length() == 0);
     Hashtable htValues = (isAtoms || asIdentity ? null : LabelToken.getBondLabelValues());
     LabelToken[] tokens = (asIdentity ? null 
@@ -7891,12 +7865,10 @@ class Eval {
           else
             str = LabelToken.formatLabel(bond, tokens, htValues, indices);
         }
-        str = TextFormat.formatString(str, "#", ++n);
-        if (n > 1)
-          s.append("\n");
-        s.append(str);
+        str = TextFormat.formatString(str, "#", (n+1));
+        sout[n++] = str;
       }
-    return s.toString();
+    return sout;
   }
 
   private Token getBitsetPropertySelector(int i, boolean mustBeSettable)
@@ -7978,9 +7950,11 @@ class Eval {
       return bsNew;
     }
 
-    if (tok == Token.identify)
-      return (isMin || isMax ? "" : getBitsetIdent(bs, null, tokenValue,
-          useAtomMap));
+    if (tok == Token.identify) {
+      if (isMin || isMax)
+        return "";
+      return getBitsetIdent(bs, null, tokenValue, useAtomMap);
+    }
     String userFunction = null;
     Vector params = null;
     BitSet bsAtom = null;
@@ -8188,6 +8162,8 @@ class Eval {
     if (isSyntaxCheck || BitSetUtil.cardinalityOf(bs) == 0)
       return;
     String[] list = null;
+    String sValue = null;
+    float[] fvalues = null;
     int nValues;
     switch (tok) {
     case Token.xyz:
@@ -8235,9 +8211,18 @@ class Eval {
           tokenValue.tok == Token.string ? tokenValue.value : new Integer(
               iValue), bs);
       return;
+    case Token.label:
+      if (tokenValue.tok == Token.list)
+        list = (String[]) tokenValue.value;
+      else 
+        sValue = Token.sValue(tokenValue);
+      viewer.setAtomProperty(bs, tok, iValue, fValue, sValue, fvalues, list);
+      return;
+    case Token.element:
+    case Token.elemno:
+      clearDefinedVariableAtomSets();
+      break;
     }
-    String sValue = null;
-    float[] fvalues = null;
     if (tokenValue.tok == Token.list || tokenValue.tok == Token.string) {
       list = (tokenValue.tok == Token.list ? (String[]) tokenValue.value
           : Parser.getTokens(Token.sValue(tokenValue)));
@@ -8255,8 +8240,6 @@ class Eval {
         fvalues = null;
       }
     }
-    if (tok == Token.element || tok == Token.elemno)
-      clearDefinedVariableAtomSets();
     viewer.setAtomProperty(bs, tok, iValue, fValue, sValue, fvalues, list);
   }
 
@@ -12447,6 +12430,7 @@ class Eval {
       //we cannot know what variables are real
       //if this is a property selector, as in x.func(), then we 
       //just exit; otherwise we add a new TRUE to xStack
+      System.out.println("eval func " + Integer.toHexString(tok) + " " + Integer.toHexString(Token.label));
       if (isScriptCheck)
         return (op.tok == Token.propselector ? true : addX(true));
       switch (tok) {
@@ -13496,6 +13480,8 @@ class Eval {
             return false;
           x2 = (Token) v;
         }
+        if (op.tok == x2.tok)
+          x2 = getX();
         return evaluatePointOrBitsetOperation(op, x2);
       }
 
@@ -13907,11 +13893,12 @@ class Eval {
       case Token.bitset:
         if (op.intValue == Token.bonds && x2.value instanceof BondSet)
           return addX(x2);
-        Object val = getBitsetProperty(Token.bsSelect(x2), op.intValue, null,
+        BitSet bs = Token.bsSelect(x2);
+        Object val = getBitsetProperty(bs, op.intValue, null,
             null, x2.value, op.value, false, Token.Token2.bsItem2(x2));
         if (op.intValue == Token.bonds)
-          return addX(new Token(Token.bitset, new BondSet((BitSet) val, viewer
-              .getAtomIndices(Token.bsSelect(x2)))));
+          val = new Token(Token.bitset, new BondSet((BitSet) val, viewer
+              .getAtomIndices(bs)));
         return addX(val);
       }
       return false;

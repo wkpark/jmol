@@ -122,51 +122,7 @@ public class Labels extends AtomShape {
     }
 
     if ("label" == propertyName) {
-      isActive = true;
-      if (bsSizeSet == null)
-        bsSizeSet = new BitSet();
-      String strLabel = (String) value;
-      boolean isScaled = viewer.getFontScaling();
-      float scalePixelsPerMicron = (isScaled ? viewer
-          .getScalePixelsPerAngstrom(false) * 10000f : 0);
-      //System.out.println("labels scalePixelsPerMicron=" + scalePixelsPerMicron);
-      for (int i = atomCount; --i >= 0;)
-        if (bsSelected.get(i)) {
-          Atom atom = atoms[i];
-          String label = LabelToken.formatLabel(atom, strLabel);
-          atom.setShapeVisibility(myVisibilityFlag, label != null);
-          if (strings == null || i >= strings.length)
-            strings = ArrayUtil.ensureLength(strings, i + 1);
-          if (formats == null || i >= formats.length)
-            formats = ArrayUtil.ensureLength(formats, i + 1);
-          strings[i] = label;
-          formats[i] = strLabel;
-          bsSizeSet.set(i, (strLabel != null));
-          text = getLabel(i);
-          if (text == null && isScaled) {
-            text = new Text(g3d, null, label, (short) 0, (short) 0, 0, 0, 0, 0,
-                0, scalePixelsPerMicron);
-            putLabel(i, text);
-          } else if (text != null) {
-            text.setText(label);
-          }
-          if (defaultOffset != zeroOffset)
-            setOffsets(i, defaultOffset);
-          if (defaultAlignment != Object2d.ALIGN_LEFT)
-            setAlignment(i, defaultAlignment);
-          if ((defaultZPos & FRONT_FLAG) != 0)
-            setFront(i, true);
-          else if ((defaultZPos & GROUP_FLAG) != 0)
-            setGroup(i, true);
-          if (defaultPointer != Object2d.POINTER_NONE)
-            setPointer(i, defaultPointer);
-          if (defaultColix != 0 || defaultPaletteID != 0)
-            setColix(i, defaultColix, defaultPaletteID);
-          if (defaultBgcolix != 0)
-            setBgcolix(i, defaultBgcolix);
-          if (defaultFontId != zeroFontId)
-            setFont(i, defaultFontId);
-        }
+      setLabel((String) value, bsSelected);
       return;
     }
 
@@ -319,6 +275,11 @@ public class Labels extends AtomShape {
       return;
     }
 
+    if (propertyName.startsWith("label:")) {
+      setLabel(propertyName.substring(6), ((Integer)value).intValue());
+      return;
+    }
+
     if (propertyName == "deleteModelAtoms") {
       int firstAtomDeleted = ((int[]) ((Object[]) value)[2])[1];
       int nAtomsDeleted = ((int[]) ((Object[]) value)[2])[2];
@@ -336,14 +297,80 @@ public class Labels extends AtomShape {
       BitSetUtil.deleteBits(bsBgColixSet, bsSelected);
       // pass to super
     }
-
+    
     super.setProperty(propertyName, value, bsSelected);
 
   }
 
+  private void setLabel(String value, BitSet bsSelected) {
+    isActive = true;
+    if (bsSizeSet == null)
+      bsSizeSet = new BitSet();
+    String strLabel = (String) value;
+    boolean isScaled = viewer.getFontScaling();
+    float scalePixelsPerMicron = (isScaled ? viewer
+        .getScalePixelsPerAngstrom(false) * 10000f : 0);
+    //System.out.println("labels scalePixelsPerMicron=" + scalePixelsPerMicron);
+    for (int i = atomCount; --i >= 0;)
+      if (bsSelected.get(i)) 
+        setLabel(strLabel, i, isScaled, scalePixelsPerMicron);
+  }
+
+  private void setLabel(String value, int i) {
+    isActive = true;
+    if (bsSizeSet == null)
+      bsSizeSet = new BitSet();
+    String strLabel = (String) value;
+    boolean isScaled = viewer.getFontScaling();
+    float scalePixelsPerMicron = (isScaled ? viewer
+        .getScalePixelsPerAngstrom(false) * 10000f : 0);
+    //System.out.println("labels scalePixelsPerMicron=" + scalePixelsPerMicron);
+    setLabel(strLabel, i, isScaled, scalePixelsPerMicron);
+  }
+  
+  private void setLabel(String strLabel, int i, boolean isScaled, float scalePixelsPerMicron) {
+      Atom atom = atoms[i];
+      String label = LabelToken.formatLabel(atom, strLabel);
+      atom.setShapeVisibility(myVisibilityFlag, label != null);
+      if (strings == null || i >= strings.length)
+        strings = ArrayUtil.ensureLength(strings, i + 1);
+      if (formats == null || i >= formats.length)
+        formats = ArrayUtil.ensureLength(formats, i + 1);
+      strings[i] = label;
+      formats[i] = strLabel;
+      bsSizeSet.set(i, (strLabel != null));
+      text = getLabel(i);
+      if (text == null && isScaled) {
+        text = new Text(g3d, null, label, (short) 0, (short) 0, 0, 0, 0, 0,
+            0, scalePixelsPerMicron);
+        putLabel(i, text);
+      } else if (text != null) {
+        text.setText(label);
+      }
+      if (defaultOffset != zeroOffset)
+        setOffsets(i, defaultOffset);
+      if (defaultAlignment != Object2d.ALIGN_LEFT)
+        setAlignment(i, defaultAlignment);
+      if ((defaultZPos & FRONT_FLAG) != 0)
+        setFront(i, true);
+      else if ((defaultZPos & GROUP_FLAG) != 0)
+        setGroup(i, true);
+      if (defaultPointer != Object2d.POINTER_NONE)
+        setPointer(i, defaultPointer);
+      if (defaultColix != 0 || defaultPaletteID != 0)
+        setColix(i, defaultColix, defaultPaletteID);
+      if (defaultBgcolix != 0)
+        setBgcolix(i, defaultBgcolix);
+      if (defaultFontId != zeroFontId)
+        setFont(i, defaultFontId);
+ }
+
   public Object getProperty(String property, int index) {
     if (property.equals("defaultState"))
       return getDefaultState();
+    if (property.equals("label"))
+      return (strings != null && index < strings.length && strings[index] != null 
+          ? strings[index] : "");
     return null;
   }
 

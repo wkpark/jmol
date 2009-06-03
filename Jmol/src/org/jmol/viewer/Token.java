@@ -209,7 +209,7 @@ public class Token {
   final static int expression           = (1 << 20);
   final static int predefinedset        = (1 << 21) | expression;
   
-  public final static int atomproperty         = (1 << 22) | expression; 
+  public final static int atomproperty  = (1 << 22) | expression; 
   // all atom properties are either a member of one of the next three groups,
   // or they are a point/vector, in which case they are just atomproperty
   public final static int strproperty   = (1 << 23) | atomproperty; // string property
@@ -590,7 +590,7 @@ public class Token {
   final static int sub          = 4 | 1 << 9 | mathfunc | mathproperty;
   final static int mul          = 5 | 1 << 9 | mathfunc | mathproperty;
   final static int div          = 6 | 1 << 9 | mathfunc | mathproperty;
-  final static int label        = 7 | 1 << 9 | mathfunc | mathproperty | implicitStringCommand | defaultON | setparam;
+  public final static int label = 7 | 1 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | defaultON | setparam;
 
   // xxx(a,b)
 

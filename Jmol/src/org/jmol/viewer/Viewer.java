@@ -3913,12 +3913,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void setLabel(String strLabel) {
-    // Eval
-    if (strLabel != null) { // force the class to load and display
-      loadShape(JmolConstants.SHAPE_LABELS);
-      setShapeSize(JmolConstants.SHAPE_LABELS, 0, Float.NaN);
-    }
-    setShapeProperty(JmolConstants.SHAPE_LABELS, "label", strLabel);
+    modelSet.setLabel(strLabel, selectionManager.bsSelection);
   }
 
   void togglePickingLabel(BitSet bs) {

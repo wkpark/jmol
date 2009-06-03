@@ -484,7 +484,7 @@ abstract public class AtomCollection {
         fValue = values[n++];
         iValue = (int) fValue;
       } else if (list != null) {
-        if (n >= values.length)
+        if (n >= list.length)
           return;
         sValue = list[n++];
       }
@@ -529,6 +529,9 @@ abstract public class AtomCollection {
       case Token.formalCharge:
         atom.setFormalCharge(iValue);
         taint(i, TAINT_FORMALCHARGE);
+        break;
+      case Token.label:
+        ((ModelSet)this).setAtomLabel(sValue, i);
         break;
       case Token.occupancy:
         if (iValue < 2)

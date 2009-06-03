@@ -236,6 +236,10 @@ abstract public class ModelSet extends ModelCollection {
     return super.getAtomBits(tokType, specInfo);
   }
 
+  public String getAtomLabel(int i) {
+    return (String) getShapeProperty(JmolConstants.SHAPE_LABELS, "label", i);
+  }
+  
   private BitSet getSpecModel(int modelNumber) {
     int modelIndex = getModelNumberIndex(modelNumber, true, true);
     return (modelIndex < 0 && modelNumber > 0 ? new BitSet()
@@ -828,6 +832,19 @@ abstract public class ModelSet extends ModelCollection {
     //set final values
     deleteModel(-1, 0, 0, null, null);
     return bsDeleted;
+  }
+
+  public void setLabel(String strLabel, BitSet bsSelection) {
+    if (strLabel != null) { // force the class to load and display
+      loadShape(JmolConstants.SHAPE_LABELS);
+      setShapeSize(JmolConstants.SHAPE_LABELS, 0, Float.NaN, bsSelection);
+    }
+    setShapeProperty(JmolConstants.SHAPE_LABELS, "label", strLabel, bsSelection);
+  }
+  
+  public void setAtomLabel(String strLabel, int i) {
+    loadShape(JmolConstants.SHAPE_LABELS);
+    shapes[JmolConstants.SHAPE_LABELS].setProperty("label:"+strLabel, new Integer(i), null);
   }
 }
 

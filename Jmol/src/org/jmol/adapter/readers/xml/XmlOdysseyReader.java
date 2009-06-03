@@ -60,7 +60,12 @@ public class XmlOdysseyReader extends XmlReader {
   String formula = null;
   String phase = null;
 
-  XmlOdysseyReader(XmlReader parent, AtomSetCollection atomSetCollection, BufferedReader reader, XMLReader xmlReader) {
+  XmlOdysseyReader() {
+  }
+
+  protected void processXml(XmlReader parent,
+                           AtomSetCollection atomSetCollection,
+                           BufferedReader reader, XMLReader xmlReader) {
     this.parent = parent;
     this.reader = reader;
     this.atomSetCollection = atomSetCollection;
@@ -68,7 +73,9 @@ public class XmlOdysseyReader extends XmlReader {
     parseReaderXML(xmlReader);
   }
 
-  XmlOdysseyReader(XmlReader parent, AtomSetCollection atomSetCollection, JSObject DOMNode) {
+  protected void processXml(XmlReader parent,
+                            AtomSetCollection atomSetCollection,
+                            BufferedReader reader, JSObject DOMNode) {
     this.parent = parent;
     this.atomSetCollection = atomSetCollection;
     implementedAttributes = odysseyImplementedAttributes;

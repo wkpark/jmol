@@ -990,7 +990,7 @@ public class AtomSetCollection {
     }
   }
 
-  private void clearSymbolicMap() {
+  public void clearSymbolicMap() {
     atomSymbolicMap.clear();
     haveMappedSerials = false;
   }

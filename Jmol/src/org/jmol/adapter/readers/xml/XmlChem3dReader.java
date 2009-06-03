@@ -60,7 +60,11 @@ public class XmlChem3dReader extends XmlReader {
   //String formula = null;
   //String phase = null;
 
-  XmlChem3dReader(XmlReader parent, AtomSetCollection atomSetCollection, BufferedReader reader, XMLReader xmlReader) {
+  XmlChem3dReader() {
+  }
+  protected void processXml(XmlReader parent,
+                           AtomSetCollection atomSetCollection,
+                           BufferedReader reader, XMLReader xmlReader) {
     this.parent = parent;
     this.reader = reader;
     this.atomSetCollection = atomSetCollection;
@@ -68,7 +72,9 @@ public class XmlChem3dReader extends XmlReader {
     parseReaderXML(xmlReader);
   }
 
-  XmlChem3dReader(XmlReader parent, AtomSetCollection atomSetCollection, JSObject DOMNode) {
+  protected void processXml(XmlReader parent,
+                            AtomSetCollection atomSetCollection,
+                            BufferedReader reader, JSObject DOMNode) {
     this.parent = parent;
     this.atomSetCollection = atomSetCollection;
     implementedAttributes = chem3dImplementedAttributes;

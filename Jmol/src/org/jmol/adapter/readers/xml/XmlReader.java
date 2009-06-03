@@ -111,7 +111,7 @@ public class XmlReader extends AtomSetCollectionReader {
 
  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    XMLReader xmlReader = getXmlReader();
+    XMLReader xmlReader = getXMLReader();
     if (xmlReader == null) {
       atomSetCollection = new AtomSetCollection("xml");
       atomSetCollection.errorMessage = "No XML reader found";
@@ -126,7 +126,7 @@ public class XmlReader extends AtomSetCollectionReader {
     return atomSetCollection;
   }
 
-  private XMLReader getXmlReader() {
+  private XMLReader getXMLReader() {
     XMLReader xmlr = null;
     // JAXP is preferred (comes with Sun JVM 1.4.0 and higher)
     if (xmlr == null
@@ -168,15 +168,37 @@ public class XmlReader extends AtomSetCollectionReader {
 
   private Object processXml(XMLReader xmlReader) throws Exception {
     atomSetCollection = new AtomSetCollection(readerName);
-    if (readerName.equals(Resolver.specialTags[Resolver.SPECIAL_ARGUS_XML][0]))
-      return new XmlArgusReader(this, atomSetCollection, reader, xmlReader);
-    if (readerName.equals(Resolver.specialTags[Resolver.SPECIAL_CHEM3D_XML][0]))
-      return new XmlChem3dReader(this, atomSetCollection, reader, xmlReader);
-    if (readerName.equals(Resolver.specialTags[Resolver.SPECIAL_MOLPRO_XML][0]))
-      return new XmlMolproReader(this, atomSetCollection, reader, xmlReader);
-    if (readerName.equals(Resolver.specialTags[Resolver.SPECIAL_ODYSSEY_XML][0]))
-      return new XmlOdysseyReader(this, atomSetCollection, reader, xmlReader);
-    return new XmlCmlReader(this, atomSetCollection, reader, xmlReader);
+    Object res = getXmlReader();
+    if (res instanceof String)
+      return res;
+    XmlReader thisReader = (XmlReader)res;
+    thisReader.processXml(this, atomSetCollection, reader, xmlReader);
+    return thisReader;
+  }
+
+  private Object getXmlReader() {    
+    String className = null;
+    Class atomSetCollectionReaderClass;
+    String err = null;
+    XmlReader thisReader = null;
+    try {
+      int pt = readerName.indexOf("(");
+      String name = (pt < 0 ? readerName : readerName.substring(0, pt));
+      className = Resolver.getReaderClassBase(name);
+      atomSetCollectionReaderClass = Class.forName(className);//,true, Thread.currentThread().getContextClassLoader());
+      thisReader = (XmlReader) atomSetCollectionReaderClass
+          .newInstance();
+    } catch (Exception e) {
+      err = "File reader was not found:" + className;
+      Logger.error(err);
+      return err;
+    }
+    return thisReader;
+  }
+  
+  protected void processXml(XmlReader parent,
+                         AtomSetCollection atomSetCollection,
+                         BufferedReader reader, XMLReader xmlReader) {
   }
 
   protected void parseReaderXML(XMLReader xmlReader) {
@@ -200,15 +222,28 @@ public class XmlReader extends AtomSetCollectionReader {
 
   private Object processXml(JSObject DOMNode) {
     atomSetCollection = new AtomSetCollection(readerName);
-    if (readerName.equals(Resolver.specialTags[Resolver.SPECIAL_ARGUS_DOM][0]))
-      return new XmlArgusReader(this, atomSetCollection, DOMNode);
-    if (readerName.equals(Resolver.specialTags[Resolver.SPECIAL_CHEM3D_DOM][0]))
-      return new XmlChem3dReader(this, atomSetCollection, DOMNode);
-    if (readerName.equals(Resolver.specialTags[Resolver.SPECIAL_MOLPRO_DOM][0]))
-      return new XmlMolproReader(this, atomSetCollection, DOMNode);
-    if (readerName.equals(Resolver.specialTags[Resolver.SPECIAL_ODYSSEY_DOM][0]))
-      return new XmlOdysseyReader(this, atomSetCollection, DOMNode);
-    return new XmlCmlReader(this, atomSetCollection, DOMNode);
+    String className = null;
+    Class atomSetCollectionReaderClass;
+    String err = null;
+    XmlReader thisReader = null;
+    String name = readerName.substring(0, readerName.indexOf("("));
+    try {
+      className = Resolver.getReaderClassBase(name);
+      atomSetCollectionReaderClass = Class.forName(className);//,true, Thread.currentThread().getContextClassLoader());
+      thisReader = (XmlReader) atomSetCollectionReaderClass
+          .newInstance();
+    } catch (Exception e) {
+      err = "File reader was not found:" + className;
+      Logger.error(err);
+      return err;
+    }
+    thisReader.processXml(this, atomSetCollection, reader, DOMNode);
+    return thisReader;
+  }
+
+  protected void processXml(XmlReader parent,
+                            AtomSetCollection atomSetCollection,
+                            BufferedReader reader, JSObject DOMNode) {
   }
 
   protected void processStartElement(String namespaceURI, String localName, String qName,

@@ -72,8 +72,9 @@ public class XmlArgusReader extends XmlReader {
   XmlArgusReader() {
   }
 
-  XmlArgusReader(XmlReader parent, AtomSetCollection atomSetCollection, BufferedReader reader,
-      XMLReader xmlReader) {
+  protected void processXml(XmlReader parent,
+                           AtomSetCollection atomSetCollection,
+                           BufferedReader reader, XMLReader xmlReader) {
     this.parent = parent;
     this.reader = reader;
     this.atomSetCollection = atomSetCollection;
@@ -81,7 +82,9 @@ public class XmlArgusReader extends XmlReader {
     parseReaderXML(xmlReader);
   }
 
-  XmlArgusReader(XmlReader parent, AtomSetCollection atomSetCollection, JSObject DOMNode) {
+  protected void processXml(XmlReader parent,
+                            AtomSetCollection atomSetCollection,
+                            BufferedReader reader, JSObject DOMNode) {
     this.parent = parent;
     this.atomSetCollection = atomSetCollection;
     implementedAttributes = argusImplementedAttributes;

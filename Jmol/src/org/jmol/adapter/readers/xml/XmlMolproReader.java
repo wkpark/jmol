@@ -52,7 +52,12 @@ public class XmlMolproReader extends XmlCmlReader {
       "wavenumber", "units", // normalCoordinate
   };
 
-  XmlMolproReader(XmlReader parent, AtomSetCollection atomSetCollection, BufferedReader reader, XMLReader xmlReader) {
+  XmlMolproReader() {  
+  }
+  
+  protected void processXml(XmlReader parent,
+                           AtomSetCollection atomSetCollection,
+                           BufferedReader reader, XMLReader xmlReader) {
     this.parent = parent;
     this.reader = reader;
     this.atomSetCollection = atomSetCollection;
@@ -60,7 +65,9 @@ public class XmlMolproReader extends XmlCmlReader {
     parseReaderXML(xmlReader);
   }
 
-  XmlMolproReader(XmlReader parent, AtomSetCollection atomSetCollection, JSObject DOMNode) {
+  protected void processXml(XmlReader parent,
+                            AtomSetCollection atomSetCollection,
+                            BufferedReader reader, JSObject DOMNode) {
     this.parent = parent;
     this.atomSetCollection = atomSetCollection;
     implementedAttributes = molProImplementedAttributes;

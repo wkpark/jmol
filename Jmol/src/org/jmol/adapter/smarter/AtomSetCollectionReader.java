@@ -132,7 +132,7 @@ public abstract class AtomSetCollectionReader {
   protected AtomSetCollection atomSetCollection;
   protected BufferedReader reader;
   protected String readerName;
-  protected Hashtable htParams;
+  public Hashtable htParams;
 
   // buffer
   public String line, prevline; 

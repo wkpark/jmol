@@ -227,7 +227,7 @@ public class Resolver {
     htParams.put("ptFile", new Integer(ptFile));
     if (ptFile <= 0)
       htParams.put("readerName", atomSetCollectionReaderName);
-    if (atomSetCollectionReaderName.indexOf("(xml)") >= 0)
+    if (atomSetCollectionReaderName.indexOf("Xml") == 0)
       atomSetCollectionReaderName = "Xml";
     String className = null;
     Class atomSetCollectionReaderClass;
@@ -299,8 +299,8 @@ public class Resolver {
     "xml.", "Xml;"
   };
   
-  private final static String getReaderClassBase(String type) {
-    String base = "more.";
+  public final static String getReaderClassBase(String type) {
+    String base = (type.startsWith("Xml") ? "xml." : "more.");
     for (int i = 1; i < readerSets.length; i += 2)
       if (readerSets[i].indexOf(type + ";") >= 0) {
         base = readerSets[i - 1];
@@ -531,6 +531,9 @@ public class Resolver {
         || header.indexOf("cml:") >= 0) {
       return specialTags[SPECIAL_CML_XML][0];
     }
+    if (header.indexOf("XSD") >= 0) {
+      return specialTags[SPECIAL_XSD_XML][0];
+    }
     return "unidentified " + specialTags[SPECIAL_CML_XML][0];
   }
 
@@ -552,18 +555,19 @@ public class Resolver {
   public final static int SPECIAL_CHEM3D_XML  = 12;
   public final static int SPECIAL_MOLPRO_XML  = 13;
   public final static int SPECIAL_ODYSSEY_XML = 14;
-  
-  public final static int SPECIAL_ARGUS_DOM   = 15;
-  public final static int SPECIAL_CML_DOM     = 16;
-  public final static int SPECIAL_CHEM3D_DOM  = 17;
-  public final static int SPECIAL_MOLPRO_DOM  = 18;
-  public final static int SPECIAL_ODYSSEY_DOM = 19;
+  public final static int SPECIAL_XSD_XML     = 15;
+  public final static int SPECIAL_ARGUS_DOM   = 16;
+  public final static int SPECIAL_CML_DOM     = 17;
+  public final static int SPECIAL_CHEM3D_DOM  = 18;
+  public final static int SPECIAL_MOLPRO_DOM  = 19;
+  public final static int SPECIAL_ODYSSEY_DOM = 20;
+  public final static int SPECIAL_XSD_DOM     = 21; // not implemented
 
   public final static String[][] specialTags = {
     { "Jme" },
     { "MopacGraphf" },
     { "V3000" },
-    { "Odyssey" },    
+    { "Odyssey" },
     { "Mol" },
     { "Xyz" },
     { "FoldingXyz" },
@@ -571,17 +575,20 @@ public class Resolver {
     { "Alchemy" },
     { "Wien2k" },
     
-    { "argus(xml)" }, 
-    { "cml(xml)" },
-    { "chem3d(xml)" },
-    { "molpro(xml)" },
-    { "odyssey(xml)" },
+    { "XmlArgus" }, 
+    { "XmlCml" },
+    { "XmlChem3d" },
+    { "XmlMolpro" },
+    { "XmlOdyssey" },
+    { "XmlXsd" },
 
-    { "argus(DOM)" }, 
-    { "cml(DOM)" },
-    { "chem3d(DOM)" },
-    { "molpro(DOM)" },
-    { "odyssey(DOM)" },
+    { "XmlArgus(DOM)" }, 
+    { "XmlCml(DOM)" },
+    { "XmlChem3d(DOM)" },
+    { "XmlMolpro(DOM)" },
+    { "XmlOdyssey(DOM)" },
+    { "XmlXsd(DOM)" },
+    
     { "MdCrd" }
 
   };

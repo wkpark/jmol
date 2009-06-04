@@ -7219,7 +7219,7 @@ class Eval {
     if (getContextVariableAsToken(key) != null
         || !setParameter(key, val, isJmolSet, showing)) {
       int tok2 = (tokAt(1) == Token.expressionBegin ? 0 : tokAt(2));
-      setVariable((statement[0].intValue == '=' && tok2 != Token.opEQ? 0 : tok2 == Token.opEQ ? 3 : 2), 0, key, showing, statement[0].intValue);
+      setVariable((statement[0].intValue == '=' && !key.equals("return") &&  tok2 != Token.opEQ? 0 : tok2 == Token.opEQ ? 3 : 2), 0, key, showing, statement[0].intValue);
       if (!isJmolSet)
         return;
     }
@@ -12094,18 +12094,21 @@ class Eval {
     }
 
     boolean addX(Token x) throws ScriptException {
+      if (logMessages) {
+        dumpStacks();
+        Logger.info("\naddX: " + x);
+      }
       if (xPt + 1 == maxLevel)
         stackOverflow();
       if (wasX && x.tok == Token.integer && x.intValue < 0) {
         addOp(Token.tokenMinus);
-        xStack[++xPt] = Token.intToken(-x.intValue);
+        x = Token.intToken(-x.intValue);
       } else if (wasX && x.tok == Token.decimal
           && ((Float) x.value).floatValue() < 0) {
         addOp(Token.tokenMinus);
-        xStack[++xPt] = new Token(Token.decimal, new Float(-Token.fValue(x)));
-      } else {
-        xStack[++xPt] = x;
+        x = new Token(Token.decimal, new Float(-Token.fValue(x)));
       }
+      xStack[++xPt] = x;
       if (logMessages)
         Logger.info("addX token " + xStack[xPt]);
       return wasX = true;

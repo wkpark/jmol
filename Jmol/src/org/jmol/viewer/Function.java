@@ -67,7 +67,7 @@ class Function {
     }
     s.append (");\n");
     s.append(script);
-    if (script.length() > 0 && script.charAt(script.length() - 1) != '\n')
+    if (script == null || script.length() > 0 && script.charAt(script.length() - 1) != '\n')
       s.append("\n");
     s.append("end function;\n\n");
     return s.toString();

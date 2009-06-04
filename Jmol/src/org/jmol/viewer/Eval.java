@@ -4363,13 +4363,6 @@ class Eval {
       }
       if (filename.equals("string[]"))
         return;
-
-      viewer.openFile(filename, htParams, null, isAppend);
-      loadScript.append(" ");
-      if (!filename.equals("string") && !filename.equals("string[]"))
-        loadScript.append("/*file*/");
-      loadScript.append(Escape.escape(modelName = (String) htParams
-          .get("fullPathName")));
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.point3f || theTok == Token.integer
         || theTok == Token.identifier && tokAt(i + 3) != Token.coord) {

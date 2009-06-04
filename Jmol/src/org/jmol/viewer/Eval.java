@@ -4291,10 +4291,12 @@ class Eval {
     Hashtable htParams = new Hashtable();
     int i = 1;
     // ignore optional file format
-    //    String filename = "";
+    // String filename = "";
     String modelName = null;
     String filename;
     int tokType = 0;
+    boolean needToLoad = true;
+    String sOptions = "";
     if (statementLength == 1) {
       i = 0;
     } else {
@@ -4310,16 +4312,18 @@ class Eval {
         i = 2;
         loadScript.append(" " + modelName);
         isAppend = (modelName.equalsIgnoreCase("append"));
-        atomDataOnly = Parser.isOneOf(modelName.toLowerCase(), JmolConstants.LOAD_ATOM_DATA_TYPES);
+        atomDataOnly = Parser.isOneOf(modelName.toLowerCase(),
+            JmolConstants.LOAD_ATOM_DATA_TYPES);
         if (atomDataOnly) {
-            htParams.put("atomDataOnly",Boolean.TRUE);
-            htParams.put("modelNumber", new Integer(1));
-            isAppend = true;
-            tokType = Token.getTokenFromName(modelName.toLowerCase()).tok;
-            if (tokType == Token.vibration)
-              tokType = Token.vibXyz;
+          htParams.put("atomDataOnly", Boolean.TRUE);
+          htParams.put("modelNumber", new Integer(1));
+          isAppend = true;
+          tokType = Token.getTokenFromName(modelName.toLowerCase()).tok;
+          if (tokType == Token.vibration)
+            tokType = Token.vibXyz;
         }
-        if (isAppend && ((filename = optParameterAsString(2))
+        if (isAppend
+            && ((filename = optParameterAsString(2))
                 .equalsIgnoreCase("trajectory") || filename
                 .equalsIgnoreCase("models"))) {
           modelName = filename;
@@ -4333,7 +4337,7 @@ class Eval {
           if (isPoint3f(i)) {
             Point3f pt = getPoint3f(i, false);
             i = iToken + 1;
-            //first last stride
+            // first last stride
             htParams.put("firstLastStep", new int[] { (int) pt.x, (int) pt.y,
                 (int) pt.z });
             loadScript.append(" " + Escape.escape(pt));
@@ -4359,19 +4363,13 @@ class Eval {
       }
       if (filename.equals("string[]"))
         return;
-      if (!isSyntaxCheck || isScriptCheck && fileOpenCheck) {
-        if (filename.startsWith("@") && filename.length() > 1) {
-          htParams.put("fileData", getStringParameter(filename.substring(1), false));
-          filename = "string";
-        }
-        viewer.openFile(filename, htParams, null, isAppend);
-        loadScript.append(" ");
-        if (!filename.equals("string") 
-            && !filename.equals("string[]"))
-          loadScript.append("/*file*/");
-        loadScript.append(Escape.escape(modelName = (String) htParams
-            .get("fullPathName")));
-      }
+
+      viewer.openFile(filename, htParams, null, isAppend);
+      loadScript.append(" ");
+      if (!filename.equals("string") && !filename.equals("string[]"))
+        loadScript.append("/*file*/");
+      loadScript.append(Escape.escape(modelName = (String) htParams
+          .get("fullPathName")));
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.point3f || theTok == Token.integer
         || theTok == Token.identifier && tokAt(i + 3) != Token.coord) {
@@ -4384,7 +4382,6 @@ class Eval {
       if (filename.equals("string[]"))
         return;
       int tok;
-      String sOptions = "";
       if ((tok = tokAt(i)) == Token.identifier
           && parameterAsString(i).equalsIgnoreCase("manifest")) {
         String manifest = stringParameter(++i);
@@ -4405,10 +4402,10 @@ class Eval {
         tok = tokAt(i);
         sOptions += " " + Escape.escape(lattice);
       }
-      if (tok == Token.identifier 
+      if (tok == Token.identifier
           && parameterAsString(i).equalsIgnoreCase("packed")) {
         if (lattice == null)
-          lattice = new Point3f(555,555,-1);
+          lattice = new Point3f(555, 555, -1);
         htParams.put("packed", Boolean.TRUE);
         sOptions += " PACKED";
       }
@@ -4420,20 +4417,21 @@ class Eval {
         int iGroup = -1;
         float distance = 0;
         /*
-         * # Jmol 11.3.9 introduces the capability of visualizing the close contacts 
-         * around a crystalline protein (or any other cyrstal structure) that are to 
-         * atoms that are in proteins in adjacent unit cells or adjacent to the 
-         * protein itself. The option RANGE x, where x is a distance in angstroms, 
-         * placed right after the braces containing the set of unit cells to load 
-         * does this. The distance, if a positive number, is the maximum distance 
-         * away from the closest atom in the {1 1 1} set. If the distance x is a 
-         * negative number, then -x is the maximum distance from the {not symmetry} set. 
-         * The difference is that in the first case the primary unit cell (555) is 
-         * first filled as usual, using symmetry operators, and close contacts to 
-         * this set are found. In the second case, only the file-based atoms (
-         * Jones-Faithful operator x,y,z) are initially included, then close 
-         * contacts to that set are found. Depending upon the application, one or the 
-         * other of these options may be desirable.
+         * # Jmol 11.3.9 introduces the capability of visualizing the close
+         * contacts around a crystalline protein (or any other cyrstal
+         * structure) that are to atoms that are in proteins in adjacent unit
+         * cells or adjacent to the protein itself. The option RANGE x, where x
+         * is a distance in angstroms, placed right after the braces containing
+         * the set of unit cells to load does this. The distance, if a positive
+         * number, is the maximum distance away from the closest atom in the {1
+         * 1 1} set. If the distance x is a negative number, then -x is the
+         * maximum distance from the {not symmetry} set. The difference is that
+         * in the first case the primary unit cell (555) is first filled as
+         * usual, using symmetry operators, and close contacts to this set are
+         * found. In the second case, only the file-based atoms ( Jones-Faithful
+         * operator x,y,z) are initially included, then close contacts to that
+         * set are found. Depending upon the application, one or the other of
+         * these options may be desirable.
          */
         if (tokAt(i) == Token.range) {
           i++;
@@ -4443,13 +4441,13 @@ class Eval {
         htParams.put("symmetryRange", new Float(distance));
         if (tokAt(i) == Token.spacegroup) {
           ++i;
-           String spacegroup = TextFormat.simpleReplace(parameterAsString(i++),
+          String spacegroup = TextFormat.simpleReplace(parameterAsString(i++),
               "''", "\"");
           sOptions += " spacegroup " + Escape.escape(spacegroup);
           if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
             iGroup = -999;
           } else {
-            if (spacegroup.indexOf(",") >= 0) //Jones Faithful
+            if (spacegroup.indexOf(",") >= 0) // Jones Faithful
               if ((lattice.x < 9 && lattice.y < 9 && lattice.z == 0))
                 spacegroup += "#doNormalize=0";
             iGroup = viewer.getSymmetry().determineSpaceGroupIndex(spacegroup);
@@ -4476,16 +4474,6 @@ class Eval {
         String filter = stringParameter(++i);
         htParams.put("filter", filter);
         sOptions += " FILTER " + Escape.escape(filter);
-      }
-
-      if (!isSyntaxCheck || isScriptCheck && fileOpenCheck) {
-        viewer.openFile(filename, htParams, null, isAppend);
-        loadScript.append(" ");
-        if (!filename.equals("string") && !filename.equals("string[]"))
-          loadScript.append("/*file*/");
-        loadScript.append(Escape.escape(modelName = (String) htParams
-            .get("fullPathName")));
-        loadScript.append(sOptions);
       }
     } else {
       if (i != 2) {
@@ -4545,6 +4533,21 @@ class Eval {
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck) {
         viewer.openFiles(modelName, filenames, null, isAppend, htParams);
       }
+      needToLoad = false;
+    }
+    if (needToLoad && (!isSyntaxCheck || isScriptCheck && fileOpenCheck)) {
+      if (filename.startsWith("@") && filename.length() > 1) {
+        htParams.put("fileData", getStringParameter(filename.substring(1),
+            false));
+        filename = "string";
+      }
+      viewer.openFile(filename, htParams, null, isAppend);
+      loadScript.append(" ");
+      if (!filename.equals("string") && !filename.equals("string[]"))
+        loadScript.append("/*file*/");
+      loadScript.append(Escape.escape(modelName = (String) htParams
+          .get("fullPathName")));
+      loadScript.append(sOptions);
     }
     if (isSyntaxCheck && !(isScriptCheck && fileOpenCheck)) {
       viewer.deallocateReaderThreads();
@@ -4587,7 +4590,8 @@ class Eval {
     }
     if (msg.length() > 0)
       Logger.info(msg);
-    if (defaultScript.length() > 0 && !isScriptCheck) //NOT checking embedded scripts here
+    if (defaultScript.length() > 0 && !isScriptCheck) // NOT checking embedded
+                                                      // scripts here
       runScript(defaultScript);
   }
 

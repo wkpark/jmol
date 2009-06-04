@@ -870,16 +870,17 @@ abstract public class AtomCollection {
                                             float[] fData) {
     //see setAtomData()
     StringBuffer s = new StringBuffer();
-    int n = 0;
     String dataLabel = (label == null ? userSettableValues[type] : label)
         + " set";
+    int n = 0;
     for (int i = 0; i < atomCount; i++)
       if (bs.get(i)) {
         s.append(i + 1).append(" ").append(atoms[i].getElementSymbol()).append(
             " ").append(atoms[i].getInfo().replace(' ', '_')).append(" ");
         switch (type) {
         case TAINT_MAX:
-          s.append(fData[i]);
+          if (i < fData.length) // when data are appended, the array may not extend that far
+            s.append(fData[i]);
           break;
         case TAINT_ATOMNAME:
           s.append(atoms[i].getAtomName());
@@ -1836,6 +1837,7 @@ abstract public class AtomCollection {
     if (tainted != null)
       for (int i = 0; i < TAINT_MAX; i++)
         BitSetUtil.deleteBits(tainted[i], bs);
+    // what about data?
   }
 }
 

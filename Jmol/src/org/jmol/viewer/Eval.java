@@ -12306,6 +12306,8 @@ class Eval {
 
         // if not, it's time to operate
 
+//TODO:  precedence on .label without () is not working -- .label.size, for example
+        
         if (!operate())
           return false;
 

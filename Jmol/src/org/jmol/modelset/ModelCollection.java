@@ -2804,6 +2804,7 @@ abstract public class ModelCollection extends BondCollection {
     
     // set to recreate bounding box
     deleteModelAtoms(firstAtomIndex, nAtoms, bsAtoms);
+    viewer.deleteModelAtoms(firstAtomIndex, nAtoms, bsAtoms);
   }
 
   public Point3f[] getFrameOffsets(BitSet bsAtoms) {

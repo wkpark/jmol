@@ -30,6 +30,7 @@ import java.util.Hashtable;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Parser;
 
@@ -193,6 +194,26 @@ class DataManager {
     return (float[][]) data[1];
   }
 
+  protected void deleteModelAtoms(int firstAtomIndex, int nAtoms, BitSet bsDeleted) {
+    if (dataValues == null)
+      return;
+    Enumeration e = (dataValues.keys());
+    while (e.hasMoreElements()) {
+      String name = (String) e.nextElement();
+      if (name.indexOf("property_") == 0) {
+        Object[] obj = (Object[]) dataValues.get(name);
+        BitSetUtil.deleteBits((BitSet) obj[2], bsDeleted);
+        if (obj[1] instanceof float[]) {
+          obj[1] = ArrayUtil.deleteElements((float[]) obj[1], firstAtomIndex, nAtoms);
+        } else if (obj[1] instanceof float[][]){
+          obj[1] = ArrayUtil.deleteElements((float[][]) obj[1], firstAtomIndex, nAtoms);
+        } else {
+          // is there anything else??
+        }
+      }
+    }    
+  }
+
   void getDataState(StringBuffer state, StringBuffer sfunc, Atom[] atoms,
                     int atomCount, String atomProps) {
     if (dataValues == null)
@@ -208,11 +229,12 @@ class DataManager {
       String name = (String) e.nextElement();
       if (name.indexOf("property_") == 0) {
         n++;
-        Object data = ((Object[]) dataValues.get(name))[1];
+        Object[] obj = (Object[]) dataValues.get(name);
+        Object data = obj[1];
         if (data instanceof float[]) {
           AtomCollection.getAtomicPropertyState(sb, atoms, atomCount,
               AtomCollection.TAINT_MAX, 
-              (BitSet) ((Object[]) dataValues.get(name))[2], 
+              (BitSet) obj[2], 
               name, (float[]) data);
           sb.append("\n");
         } else {

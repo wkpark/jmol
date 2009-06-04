@@ -7302,6 +7302,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return BitSetUtil.cardinalityOf(bsDeleted);
   }
 
+  public void deleteModelAtoms(int firstAtomIndex, int nAtoms, BitSet bsDeleted) {
+    // called from ModelCollection.deleteModel
+    dataManager.deleteModelAtoms(firstAtomIndex, nAtoms, bsDeleted);
+  }
+
   public BitSet getDeletedAtoms() {
     return selectionManager.bsDeleted;
   }

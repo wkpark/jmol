@@ -37,7 +37,7 @@ class Function {
   int[] lineIndices;
   int nParameters;
   Vector names = new Vector();
-  Token returnValue;
+  Variable returnValue;
   
   Function(String name) {
     this.name = name;
@@ -47,8 +47,8 @@ class Function {
     int nParams = (params == null ? 0 : params.size());
     for (int i = names.size(); --i >= 0; )
       contextVariables.put((String)names.get(i), 
-          (i < nParameters && i < nParams ? params.get(i) : new Token(Token.string, "")));
-      contextVariables.put("_retval", Token.intToken(0));
+          (i < nParameters && i < nParams ? params.get(i) : new Variable(Token.string, "")));
+      contextVariables.put("_retval", Variable.intVariable(0));
   }
   
   void addVariable(String name, boolean isParameter) {

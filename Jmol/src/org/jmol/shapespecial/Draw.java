@@ -579,8 +579,7 @@ public class Draw extends MeshCollection {
           bsAllModels = new BitSet();
         for (int j = 0; j < modelBasedPoints.length; j++)
           if (iModel < 0 || j == iModel) {
-            Object points = Token
-                .unescapePointOrBitsetAsToken(modelBasedPoints[j]);
+            Object points = Escape.unescapePointOrBitsetAsVariable(modelBasedPoints[j]);
             if (!(points instanceof Token))
               continue;
             bsAllModels.set(j);

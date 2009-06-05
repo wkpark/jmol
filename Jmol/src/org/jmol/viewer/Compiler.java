@@ -243,7 +243,7 @@ class Compiler {
     if (thisFunction == null) {
       if (contextVariables == null)
         contextVariables = new Hashtable();
-      contextVariables.put(ident, new Token(Token.string, ""));
+      contextVariables.put(ident, new Variable(Token.string, ""));
     } else {
       thisFunction.addVariable(ident, false);
     }

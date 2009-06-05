@@ -164,14 +164,14 @@ class PropertyManager {
     return info;
   }
   
-  static Object extractProperty(Object property, Token[] args, int ptr) {
+  static Object extractProperty(Object property, Variable[] args, int ptr) {
     if (ptr >= args.length)
       return property;
     int pt;
-    Token arg = args[ptr++];
+    Variable arg = args[ptr++];
     switch (arg.tok) {
     case Token.integer:
-      pt = Token.iValue(arg) - 1;  //one-based, as for array selectors
+      pt = Variable.iValue(arg) - 1;  //one-based, as for array selectors
       if (property instanceof Vector) {
         Vector v = (Vector) property;
         if (pt < 0)
@@ -242,7 +242,7 @@ class PropertyManager {
       }
       break;
     case Token.string:
-      String key = Token.sValue(arg);
+      String key = Variable.sValue(arg);
       if (property instanceof Hashtable) {
         Hashtable h = (Hashtable) property;
         if (key.equalsIgnoreCase("keys")) {

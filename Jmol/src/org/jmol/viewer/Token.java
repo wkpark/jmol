@@ -27,19 +27,9 @@ package org.jmol.viewer;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.BitSet;
 import java.util.Vector;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
-
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
-import org.jmol.util.TextFormat;
-import org.jmol.g3d.Graphics3D;
-import org.jmol.modelset.Bond.BondSet;
 
 
 public class Token {
@@ -48,32 +38,16 @@ public class Token {
   public Object value;
   public int intValue = Integer.MAX_VALUE;
 
+  public Token() {
+    
+  }
+
   public Token(int tok, int intValue, Object value) {
     this.tok = tok;
     this.intValue = intValue;
     this.value = value;
   }
  
-  // a wrapper class that allows a second int value
-  // implemented for bitsets that mascarade for single
-  // atom values -- that index stored in intValue2
-  
-  public static class Token2 extends Token {
-    int intValue2;
-    Token2(int tok, int intValue2, Object value) {
-      super(tok, value);
-      this.intValue2 = intValue2;
-    }
-    public static int bsItem2(Object x1) {
-      return (x1 instanceof Token2 ? ((Token2)x1).intValue2 : -1);
-    }
-  }
-
-  final public static Token intToken(int intValue) {
-    return new Token(integer, intValue);
-  }
-
-  //next two are private so that ALL tokens are either
   //integer tokens or have a value that is (more likely to be) non-null
   //null token values can cause problems in Eval.statementAsString()
   public Token(int tok) {
@@ -88,6 +62,10 @@ public class Token {
   public Token(int tok, Object value) {
     this.tok = tok;
     this.value = value;
+  }
+
+  final public static Token intToken(int intValue) {
+    return new Token(integer, intValue);
   }
 
   final static int nada              =  0;
@@ -629,370 +607,6 @@ public class Token {
   final static int within           = 1 | 5 << 9 | mathfunc;
   final public static int connected = 2 | 5 << 9 | mathfunc;
   
- // math-related Token static methods
-  
-  final static Point3f pt0 = new Point3f();
-
-  static Object oValue(Token x) {
-    switch (x == null ? nada : x.tok) {
-    case on:
-      return Boolean.TRUE;
-    case nada:
-    case off:
-      return Boolean.FALSE;
-    case integer:
-      return new Integer(x.intValue);
-    default:
-      return x.value;
-    }        
-  }
-  
-  static Object nValue(Token x) {
-    int iValue = 0;
-    switch (x == null ? nada : x.tok) {
-      case integer:
-        iValue = x.intValue;
-        break;
-      case decimal:
-        return x.value;
-      case string:
-        if (((String) x.value).indexOf(".") >= 0)
-          return new Float(fValue(x));
-        iValue = iValue(x);
-      }
-    return new Integer(iValue);
-  }
-  
-  static boolean bValue(Token x) {
-    switch (x == null ? nada : x.tok) {
-    case on:
-      return true;
-    case off:
-      return false;
-    case integer:
-      return x.intValue != 0;
-    case decimal:
-    case string:
-    case list:
-      return fValue(x) != 0;
-    case bitset:
-      return iValue(x) != 0;
-    case point3f:
-    case point4f:
-      return Math.abs(fValue(x)) > 0.0001f;
-    default:
-      return false;
-    }
-  }
-
-  static int iValue(Token x) {
-    switch (x == null ? nada : x.tok) {
-    case on:
-      return 1;
-    case off:
-      return 0;
-    case integer:
-      return x.intValue;
-    case decimal:
-    case list:
-    case string:
-    case point3f:
-    case point4f:
-      return (int)fValue(x);
-    case bitset:
-      return BitSetUtil.cardinalityOf(bsSelect(x));
-    default:
-      return 0;
-    }
-  }
-
-  static float fValue(Token x) {
-    switch (x == null ? nada : x.tok) {
-    case on:
-      return 1;
-    case off:
-      return 0;
-    case integer:
-      return x.intValue;
-    case decimal:
-      return ((Float) x.value).floatValue();
-    case list:
-      int i = x.intValue;
-      String[] list = (String[]) x.value;
-      if (i == Integer.MAX_VALUE)
-        return list.length;
-    case string: 
-      String s = sValue(x);
-      if (s.equalsIgnoreCase("true"))
-        return 1;
-      if (s.equalsIgnoreCase("false") || s.length() == 0)
-        return 0;
-      return Parser.parseFloatStrict(s);
-    case bitset:
-      return iValue(x);
-    case point3f:
-      return ((Point3f) x.value).distance(pt0);
-    case point4f:
-      return Graphics3D.distanceToPlane((Point4f) x.value, pt0);
-    default:
-      return 0;
-    }
-  }  
-  
-  static String sValue(Token x) {
-    if (x == null)
-        return "";
-    int i;
-    switch (x.tok) {
-    case on:
-      return "true";
-    case off:
-      return "false";
-    case integer:
-      return "" + x.intValue;
-    case point3f:
-      return Escape.escape((Point3f) x.value);
-    case point4f:
-      return Escape.escape((Point4f) x.value);
-    case bitset:
-      return Escape.escape(bsSelect(x), !(x.value instanceof BondSet));
-    case list:
-      String[] list = (String[]) x.value;
-      i = x.intValue;
-      if (i <= 0)
-        i = list.length - i;
-      if (i != Integer.MAX_VALUE)
-        return (i < 1 || i > list.length ? "" : list[i - 1]);
-      StringBuffer sb = new StringBuffer();
-      for (i = 0; i < list.length; i++)
-        sb.append(list[i]).append("\n");
-      return sb.toString();
-    case string:
-      String s = (String) x.value;
-      i = x.intValue;
-      if (i <= 0)
-        i = s.length() - i;
-      if (i == Integer.MAX_VALUE)
-        return s;
-      if (i < 1 || i > s.length())
-        return "";
-      return "" + s.charAt(i-1);
-    case decimal:
-    default:
-      return "" + x.value;
-    }
-  }
-
-  static int sizeOf(Token x) {
-    switch (x == null ? nada : x.tok) {
-    case on:
-    case off:
-      return -1;
-    case integer:
-      return -2;
-    case decimal:
-      return -4;
-    case point3f:
-      return -8;
-    case point4f:
-      return -16;
-    case string:
-      return ((String)x.value).length();
-    case list:
-      return x.intValue == Integer.MAX_VALUE ? ((String[])x.value).length : sizeOf(selectItem(x));
-    case bitset:
-      return BitSetUtil.cardinalityOf(bsSelect(x));
-    default:
-      return 0;
-    }
-  }
-
-  static String typeOf(Token x) {
-    switch (x == null ? nada : x.tok) {
-    case on:
-    case off:
-      return "boolean";
-    case integer:
-      return "integer";
-    case decimal:
-      return "decimal";
-    case point3f:
-      return "point";
-    case point4f:
-      return "plane";
-    case string:
-      return "string";
-    case list:
-      return "array";
-    case bitset:
-      return "bitset";
-    default:
-      return "?";
-    }
-  }
-
-  static String[] concatList(Token x1, Token x2) {
-    String[] list1 = (x1.tok == list ? (String[]) x1.value : TextFormat.split(
-        sValue(x1), "\n"));
-    String[] list2 = (x2.tok == list ? (String[]) x2.value : TextFormat.split(
-        sValue(x2), "\n"));
-    String[] list = new String[list1.length + list2.length];
-    int pt = 0;
-    for (int i = 0; i < list1.length; i++)
-      list[pt++] = list1[i];
-    for (int i = 0; i < list2.length; i++)
-      list[pt++] = list2[i];
-    return list;
-  }
-
-  static BitSet bsSelect(Token token) {
-    token = selectItem(token, Integer.MIN_VALUE);
-    return (BitSet)token.value;
-  }
-
-  static BitSet bsSelect(Token token, int n) {
-    token = selectItem(token);
-    token = selectItem(token, 1);
-    token = selectItem(token, n);
-    return (BitSet)token.value;
-  }
-
-  static Token selectItem(Token tokenIn) {
-    return selectItem(tokenIn, Integer.MIN_VALUE); 
-  }
-
-  static Token selectItem(Token tokenIn, int i2) {
-    if (tokenIn.tok != bitset 
-        && tokenIn.tok != list
-        && tokenIn.tok != string)
-      return tokenIn;
-
-    // negative number is a count from the end
-    
-    BitSet bs = null;
-    String[] st = null;
-    String s =null;
-    
-    int i1 = tokenIn.intValue;
-    if (i1 == Integer.MAX_VALUE) {
-      // no selections have been made yet --
-      // we just create a new token with the 
-      // same bitset and now indicate either
-      // the selected value or "ALL" (max_value)
-      if (i2 == Integer.MIN_VALUE)
-        i2 = i1;
-      return new Token(tokenIn.tok, i2, tokenIn.value);
-    }
-    int len = 0;
-    Token tokenOut = new Token(tokenIn.tok, Integer.MAX_VALUE);
-    switch (tokenIn.tok) {
-    case bitset:
-      if (tokenIn.value instanceof BondSet) {
-        tokenOut.value = new BondSet((BitSet) tokenIn.value, ((BondSet)tokenIn.value).getAssociatedAtoms());
-        bs = (BitSet) tokenOut.value;
-        len = BitSetUtil.cardinalityOf(bs);
-        break;
-      }
-      bs = BitSetUtil.copy((BitSet) tokenIn.value);
-      len = (tokenIn instanceof Token2 ? 1 : BitSetUtil.cardinalityOf(bs));
-      tokenOut.value = bs;
-      break;
-    case list:
-      st = (String[]) tokenIn.value;
-      len = st.length;
-      break;
-    case string:
-      s = (String) tokenIn.value;
-      len = s.length();
-    }
-
-    // "testing"[0] gives "g"
-    // "testing"[-1] gives "n"
-    // "testing"[3][0] gives "sting"
-    // "testing"[-1][0] gives "ng"
-    // "testing"[0][-2] gives just "g" as well
-    if (i1 <= 0)
-      i1 = len + i1;
-    if (i1 < 1)
-      i1 = 1;
-    if (i2 == 0)
-      i2 = len;
-    else if (i2 < 0)
-      i2 = len + i2;
-    
-    if (i2 > len)
-      i2 = len;
-    else if (i2 < i1)
-      i2 = i1;
-
-    switch (tokenIn.tok) {
-    case bitset:
-      if (tokenIn instanceof Token2) {
-        if (i1 > 1)
-          bs.clear();
-        break;
-      }
-      len = BitSetUtil.length(bs);
-      int n = 0;
-        for (int j = 0; j < len; j++)
-          if (bs.get(j) && (++n < i1 || n > i2))
-            bs.clear(j);
-      break;
-    case string:
-      if (i1 < 1 || i1 > len)
-        tokenOut.value = "";
-      else
-        tokenOut.value = s.substring(i1 - 1, i2);
-      break;
-    case list:
-      if (i1 < 1 || i1 > len || i2 > len)
-        return new Token(string, "");     
-      if (i2 == i1)
-        return tValue(st[i1 - 1]);
-      String[]list = new String[i2 - i1 + 1];
-      for (int i = 0; i < list.length; i++)
-        list[i] = st[i + i1 - 1];
-      tokenOut.value = list;
-      break;
-    }
-    return tokenOut;
-  }
-
-  static Token tValue(String str) {
-    Object v = unescapePointOrBitsetAsToken(str);
-    if (!(v instanceof String))
-      return (Token) v;
-    String s = (String) v;
-    if (s.toLowerCase() == "true")
-      return tokenOn;
-    if (s.toLowerCase() == "false")
-      return tokenOff;
-    float f;
-    if (!Float.isNaN(f = Parser.parseFloatStrict(s)))
-      return (f == (int) f && s.indexOf(".") < 0 ? intToken((int)f) 
-          : new Token(decimal, new Float(f)));
-    return new Token(string, v);  
-  }
-  
-  public static Object unescapePointOrBitsetAsToken(String s) {
-    if (s == null || s.length() == 0)
-      return s;
-    Object v = s;
-    if (s.charAt(0) == '{')
-      v = Escape.unescapePoint(s);
-    else if (s.indexOf("({") == 0 && s.indexOf("({") == s.lastIndexOf("({"))
-      v = Escape.unescapeBitset(s);
-    else if (s.indexOf("[{") == 0)
-      v = new BondSet(Escape.unescapeBitset(s));
-    if (v instanceof Point3f)
-      return new Token(point3f, v);
-    if (v instanceof Point4f)
-      return new Token(point4f, v);
-    if (v instanceof BitSet)
-      return new Token(bitset, v);
-    return s;
-  }
-
 
   // more SET parameters
   
@@ -1324,9 +938,9 @@ public class Token {
     "&",            null,
     "&&",           null,
     "or",           tokenOr,
-    "?",            tokenOpIf,
     "|",            null,
     "||",           null,
+    "?",            tokenOpIf,
     ",",            tokenComma,
     "not",          new Token(opNot),
     "!",            null,

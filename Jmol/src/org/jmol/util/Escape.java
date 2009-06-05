@@ -36,6 +36,9 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.modelset.Bond.BondSet;
+import org.jmol.viewer.Token;
+import org.jmol.viewer.Variable;
 
 /**
  * For defining the state, mostly
@@ -279,6 +282,25 @@ public class Escape {
     return Graphics3D.getArgbFromString(strColor);
   }
   
+  public static Object unescapePointOrBitsetAsVariable(String s) {
+    if (s == null || s.length() == 0)
+      return s;
+    Object v = s;
+    if (s.charAt(0) == '{')
+      v = Escape.unescapePoint(s);
+    else if (s.indexOf("({") == 0 && s.indexOf("({") == s.lastIndexOf("({"))
+      v = Escape.unescapeBitset(s);
+    else if (s.indexOf("[{") == 0)
+      v = new BondSet(Escape.unescapeBitset(s));
+    if (v instanceof Point3f)
+      return (new Variable()).set((Point3f) v);
+    if (v instanceof Point4f)
+      return new Variable(Token.point4f, v);
+    if (v instanceof BitSet)
+      return new Variable(Token.bitset, v);
+    return s;
+  }
+
   public static String escape(BitSet bs, boolean isAtoms) {
     char chOpen = (isAtoms ? '(' : '[');
     char chClose = (isAtoms ? ')' : ']');

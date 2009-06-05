@@ -4625,7 +4625,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (key.equalsIgnoreCase("showSelections"))
       return getSelectionHaloEnabled();
     if (global.htUserVariables.containsKey(key)) {
-      Token t = (Token) global.getUserParameterValue(key);
+      Variable t = (Variable) global.getUserParameterValue(key);
       if (t.tok == Token.on)
         return true;
       if (t.tok == Token.off)
@@ -4817,7 +4817,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isJmol)
       global.setParameterValue(key, value);
     else
-      global.setUserVariable(key, new Token(Token.string, value));
+      global.setUserVariable(key, new Variable(Token.string, value));
   }
 
   private void setPropertyError(String msg) {
@@ -5010,7 +5010,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isJmol)
       global.setParameterValue(key, value);
     else
-      global.setUserVariable(key, new Token(Token.decimal, new Float(value)));
+      global.setUserVariable(key, new Variable(Token.decimal, new Float(value)));
     return true;
   }
 
@@ -5188,7 +5188,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isJmol) {
       global.setParameterValue(key, value);
     } else {
-      global.setUserVariable(key, Token.intToken(value));
+      global.setUserVariable(key, Variable.intVariable(value));
     }
   }
 
@@ -5693,7 +5693,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isJmol)
       global.setParameterValue(key, value);
     else
-      global.setUserVariable(key, value ? Token.tokenOn : Token.tokenOff);
+      global.setUserVariable(key, value ? Variable.vT : Variable.vF);
     if (notFound)
       return false;
     if (doRepaint) {
@@ -7239,7 +7239,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * e.printStackTrace(); } }
    */
 
-  void setListVariable(String name, Token value) {
+  void setListVariable(String name, Variable value) {
     global.setListVariable(name, value);
   }
 

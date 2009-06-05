@@ -513,7 +513,7 @@ public class StateManager {
       setParameterValue("measurementlabels", measurementLabels = true);
     }
 
-    void setListVariable(String name, Token value) {
+    void setListVariable(String name, Variable value) {
       name = name.toLowerCase();
       if (value == null)
         listVariables.remove(name);
@@ -882,7 +882,7 @@ public class StateManager {
 
     Hashtable htUserVariables = new Hashtable();
     
-    void setUserVariable(String key, Token value) {
+    void setUserVariable(String key, Variable value) {
       key = key.toLowerCase();
       if (value == null) {
         if (key.equals("all") || key.equals("variables")) {
@@ -926,17 +926,17 @@ public class StateManager {
     }
 
     private String escapeUserVariable(String name) {
-      Token token = (Token) htUserVariables.get(name);
+      Variable var = (Variable) htUserVariables.get(name);
       // previously known to contain 
-      switch (token.tok) {
+      switch (var.tok) {
       case Token.on:
         return "true";
       case Token.off:
         return "false";
       case Token.integer:
-        return "" + token.intValue;
+        return "" + var.intValue;
       default:
-        return escapeVariable(name, token.value);
+        return escapeVariable(name, var.value);
       }
     }
 
@@ -957,7 +957,7 @@ public class StateManager {
       if (htPropertyFlagsRemoved.containsKey(name))
         return Boolean.FALSE;
       if (htUserVariables.containsKey(name)) {
-        return Token.oValue((Token) htUserVariables.get(name));
+        return Variable.oValue((Variable) htUserVariables.get(name));
       }
       return "";
     }
@@ -1071,7 +1071,7 @@ public class StateManager {
       while (e.hasMoreElements())
         list[n++] = (key = (String) e.nextElement())
             + (key.charAt(0) == '@' ? " "
-                + Token.sValue((Token) htUserVariables.get(key)) : " = "
+                + Variable.sValue((Variable) htUserVariables.get(key)) : " = "
                 + escapeUserVariable(key));
 
       Arrays.sort(list, 0, n);
@@ -1101,7 +1101,7 @@ public class StateManager {
     private String escapeVariable(String name, Object value) {
       if (!(value instanceof String))
         return Escape.escape(value);
-      Token var = (Token) getListVariable(name, (Token) null);
+      Variable var = (Variable) getListVariable(name, (Variable) null);
       if (var == null)
         return Escape.escape(value);
       return Escape.escape((String[]) var.value);

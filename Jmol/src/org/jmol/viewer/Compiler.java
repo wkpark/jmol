@@ -382,6 +382,7 @@ class Compiler {
     int tok = 0;
     int setBraceCount = 0;
     int bracketCount = 0;
+    int setEqualPt = 0;
     String comment = null;
     boolean endOfLine = false;
     boolean isEndOfCommand = false;
@@ -481,9 +482,12 @@ class Compiler {
       char ch;
       if (nTokens > 0) {
         if (nTokens == ptNewSetModifier) {
-          ch = script.charAt(ichToken);
           if (tokCommand == Token.set
               || Token.tokAttr(tokCommand, Token.setparam)) {
+            ch = script.charAt(ichToken);
+            if (ch == '=')
+              setEqualPt = ichToken;
+    
             // axes, background, define, display, echo, frank, hbond, history,
             // set, var
             // can all appear with or without "set" in front of them. These
@@ -494,8 +498,8 @@ class Compiler {
             if (Token.tokAttr(tokCommand, Token.setparam) && ch == '='
                 || (isNewSet || isSetBrace)
                 && (ch == '=' || ch == '[' || ch == '.')) {
-              tokenCommand = (ch == '=' ? Token.tokenSet
-                  : ch == '[' ? Token.tokenSetArray : Token.tokenSetProperty);
+              tokenCommand = (ch == '=' ? Token.tokenSet : ch == '['
+                  && !isSetBrace ? Token.tokenSetArray : Token.tokenSetProperty);
               tokCommand = Token.set;
               ltoken.insertElementAt(tokenCommand, 0);
               cchToken = 1;
@@ -507,7 +511,6 @@ class Compiler {
               } else {
                 lastToken = Token.tokenMinus; // just to allow for {(....)}
               }
-
               continue;
             }
           }
@@ -708,6 +711,16 @@ class Compiler {
         }
         tok = token.tok;
         switch (tok) {
+        case Token.opEQ:
+          if (isSetBrace)
+            setEqualPt = ichToken;
+          break;
+        case Token.dot:
+          if (isSetBrace && ichToken < setEqualPt) {
+            ltoken.insertElementAt(Token.tokenExpressionBegin, 1);
+            addTokenToPrefix(Token.tokenExpressionEnd);
+          }            
+          break;
         case Token.leftbrace:
           braceCount++;
           if (braceCount == 1 && parenCount == 0 && checkFlowStartBrace(false)) {
@@ -820,7 +833,7 @@ class Compiler {
           isNewSet = !isSetBrace;
           setBraceCount = (isSetBrace ? 1 : 0);
           bracketCount = 0;
-          ptNewSetModifier = (isNewSet ? 1 : Integer.MAX_VALUE);
+          setEqualPt = ptNewSetModifier = (isNewSet ? 1 : Integer.MAX_VALUE);
           break;
         case Token.function:
           if (tokenCommand.intValue == 0) {

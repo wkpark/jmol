@@ -7494,7 +7494,7 @@ class Eval {
     int nParen = 0;
     boolean isSetCmd = (key != null && key.length() > 0);
     Rpn rpn = new Rpn(64, pt > 0 && isSetCmd && tokAt(pt) == Token.leftsquare, asVector);
-    if (pt == 0) // set command with v = [1 3 4 ] ....
+    if (pt == 0 && ptMax == 0) // set command with v = [1 3 4 ] ....
       pt = 2;
     if (ptMax < pt)
       ptMax = statementLength;
@@ -7598,9 +7598,7 @@ class Eval {
               if (res == null || ((Vector) res).size() == 0)
                 error(ERROR_invalidArgument);
               sout[p++] = Token.sValue((Token) ((Vector) res).elementAt(0));
-            } else if (isFunctionOfX) {
-              if (((Boolean) res).booleanValue())
-                bsSelect.set(j);
+            } else if (((Boolean) res).booleanValue()) {                bsSelect.set(j);
             }
           }
         if (isFor) {

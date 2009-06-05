@@ -65,11 +65,12 @@ class Function {
         s.append(", ");
       s.append(names.get(i));
     }
-    s.append (");\n");
-    s.append(script);
+    s.append (") {\n");
+    if (script != null)
+      s.append(script);
     if (script == null || script.length() > 0 && script.charAt(script.length() - 1) != '\n')
       s.append("\n");
-    s.append("end function;\n\n");
+    s.append("}\n\n");
     return s.toString();
   }  
 }

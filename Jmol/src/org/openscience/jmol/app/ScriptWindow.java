@@ -529,10 +529,12 @@ class ConsoleTextPane extends JTextPane {
    /**
    * Recall command history.
    * 
-   * @param up - history up or down
+   * @param up
+   *          - history up or down
    */
-   void recallCommand(boolean up) {
-     String cmd = viewer.getSetHistory(up ? -1 : 1);
+  void recallCommand(boolean up) {
+    String cmd = viewer.getSetHistory(up ? -1 : 1);
+    System.out.println(cmd);
     if (cmd == null) {
       return;
     }

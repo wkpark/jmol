@@ -30,7 +30,6 @@ import org.jmol.shape.Object2d;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.ColorEncoder;
-import org.jmol.util.CommandHistory;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
@@ -863,25 +862,29 @@ class Eval {
       pcEnd = Integer.MAX_VALUE;
     if (lineEnd == 0)
       lineEnd = Integer.MAX_VALUE;
+    String lastCommand = "";
     for (; pc < aatoken.length && pc < pcEnd; pc++) {
       if (!checkContinue())
         break;
       if (lineNumbers[pc] > lineEnd)
         break;
+      //System.out.println("pc line " + pc + " " + lineNumbers[pc]);
       Token token = (aatoken[pc].length == 0 ? null : aatoken[pc][0]);
       //  when checking scripts, we can't check statments 
       //  containing @{...}
-      thisCommand = getCommand(pc);
       if (!historyDisabled && !isSyntaxCheck
           && scriptLevel <= commandHistoryLevelMax && !tQuiet) {
-        //System.out.println(scriptLevel + " " + thisCommand);
-        viewer.addCommand(thisCommand);
+        thisCommand = getCommand(pc, true);
+        if(token != null && !thisCommand.equals(lastCommand) 
+            && !Token.tokAttr(token.tok, Token.flowCommand) 
+            && thisCommand.length() > 0)
+          viewer.addCommand(lastCommand = thisCommand);
       }
       if (!setStatement(pc)) {
-        Logger.info(getCommand(pc) + " -- STATEMENT CONTAINING @{} SKIPPED");
+        Logger.info(getCommand(pc, true) + " -- STATEMENT CONTAINING @{} SKIPPED");
         continue;
       }
-      thisCommand = getCommand(pc);
+      thisCommand = getCommand(pc, false);
       fullCommand = thisCommand + getNextComment();
       iToken = 0;
       String script = viewer.getInterruptScript();
@@ -1342,9 +1345,18 @@ class Eval {
     return lineNumbers[pc];
   }
 
-  private String getCommand(int pc) {
+  private String getCommand(int pc, boolean allThisLine) {
     if (pc >= lineIndices.length)
       return "";
+    if (allThisLine) {
+      StringBuffer sb = new StringBuffer();
+      for (int i = 0; i < lineNumbers.length; i++) 
+        if (lineNumbers[i] == lineNumbers[pc])
+          sb.append(getCommand(i, false));
+        else if (lineNumbers[i] == 0 || lineNumbers[i] > lineNumbers[pc])
+          break;
+      return sb.toString();
+    }
     int ichBegin = lineIndices[pc];
     int ichEnd = (pc + 1 == lineIndices.length || lineIndices[pc + 1] == 0 ? script
         .length()
@@ -1361,7 +1373,7 @@ class Eval {
         s = s.substring(0, i);
       if ((i = s.indexOf("\r")) >= 0)
         s = s.substring(0, i);
-      if (!s.endsWith(";"))
+      if (s.length() > 0 && !s.endsWith(";"))
         s += ";";
     } catch (Exception e) {
       Logger.error("darn problem in Eval getCommand: ichBegin=" + ichBegin
@@ -1388,7 +1400,7 @@ class Eval {
       strbufLog.append(s).append(statementAsString());
       viewer.scriptStatus(strbufLog.toString());
     } else {
-      String cmd = getCommand(pc);
+      String cmd = getCommand(pc, false);
       if (cmd.length() > 0 && cmd.lastIndexOf(";") == cmd.length() - 1)
         cmd = cmd.substring(0, cmd.length() - 1);
       viewer.scriptStatus(cmd);
@@ -10623,7 +10635,7 @@ class Eval {
   }
 
   private String getNextComment() {
-    String nextCommand = getCommand(pc + 1);
+    String nextCommand = getCommand(pc + 1, false);
     return (nextCommand.startsWith("#") ? nextCommand : "");
   }
 
@@ -11539,8 +11551,8 @@ class Eval {
     if (ignoreError)
       throw new NullPointerException();
     if (!isSyntaxCheck) {
-      String s = viewer.removeCommand();
-      viewer.addCommand(s + CommandHistory.ERROR_FLAG);
+      //String s = viewer.getSetHistory(1);
+      //viewer.addCommand(s + CommandHistory.ERROR_FLAG);
       viewer.setCursor(Viewer.CURSOR_DEFAULT);
       viewer.setRefreshing(true);
     }
@@ -12095,6 +12107,8 @@ class Eval {
         dumpStacks();
         Logger.info("\naddX: " + x);
       }
+      if (xPt >= 0 && xStack[xPt].tok == Token.expressionEnd)
+        return wasX = true; //skipping
       if (xPt + 1 == maxLevel)
         stackOverflow();
       if (wasX && x.tok == Token.integer && x.intValue < 0) {
@@ -12106,8 +12120,6 @@ class Eval {
         x = new Token(Token.decimal, new Float(-Token.fValue(x)));
       }
       xStack[++xPt] = x;
-      if (logMessages)
-        Logger.info("addX token " + xStack[xPt]);
       return wasX = true;
     }
 
@@ -12198,10 +12210,34 @@ class Eval {
 
       // Do we have the appropriate context for this operator?
 
+      boolean skipping = (xPt >= 0 && xStack[xPt].tok == Token.expressionEnd); 
+
       if (logMessages) {
         dumpStacks();
-        Logger.info("\naddOp: " + op);
+        Logger.info("\naddOp: " + op + " skipping=" + skipping + " wasX=" + wasX);
       }
+      
+      // check for ( ? : ) skipping first or second phrase
+      int tok0 = (oPt >= 0 ? oStack[oPt].tok : 0);
+      if (skipping) {
+        switch (op.tok) {
+        case Token.rightparen:
+          if (tok0 == op.tok) {
+            xPt--;
+            oPt--;
+          }
+          break;
+        case Token.colon:
+          if (tok0 == op.tok) {
+            xPt--;
+            oPt--;
+          }
+          wasX = false;
+          return true;
+        }
+      } 
+
+      
       Token newOp = null;
       int tok;
       boolean isLeftOp = false;
@@ -12214,13 +12250,16 @@ class Eval {
 
       // the word "plane" can also appear alone, not as a function
       if (oPt >= 1 && op.tok != Token.leftparen
-          && oStack[oPt].tok == Token.plane)
-        oPt--;
+          && tok0 == Token.plane)
+        tok0 = oStack[--oPt].tok;
 
       // math functions as arguments appear without a prefixing operator
-      boolean isArgument = (oPt >= 1 && oStack[oPt].tok == Token.leftparen);
+      boolean isArgument = (oPt >= 1 && tok0 == Token.leftparen);
 
       switch (op.tok) {
+      case Token.colon:
+        skipping = true;
+        break;
       case Token.comma:
         if (!wasX)
           return false;
@@ -12228,11 +12267,12 @@ class Eval {
       case Token.min:
       case Token.max:
       case Token.minmaxmask:
-        tok = oPt < 0 ? Token.nada : oStack[oPt].tok;
+        tok = (oPt < 0 ? Token.nada : tok0);
         if (!wasX
             || !(tok == Token.propselector || tok == Token.bonds || tok == Token.atoms))
           return false;
-        oStack[oPt].intValue |= op.tok;
+        if (!skipping)
+          oStack[oPt].intValue |= op.tok;
         return true;
       case Token.leftsquare: // {....}[n][m]
         isLeftOp = true;
@@ -12248,8 +12288,8 @@ class Eval {
         op = new Token(Token.unaryMinus, "-");
         break;
       case Token.rightparen: //  () without argument allowed only for math funcs
-        if (!wasX && oPt >= 1 && oStack[oPt].tok == Token.leftparen
-            && !isOpFunc(oStack[oPt - 1]))
+        if (!wasX && oPt >= 1 && tok0 == Token.leftparen
+            && !isOpFunc(oStack[oPt - 1]) && !skipping)
           return false;
         break;
       case Token.opNot:
@@ -12270,31 +12310,31 @@ class Eval {
 
       //do we need to operate?
 
-      while (oPt >= 0
-          && (!(isLeftOp || op.tok == Token.leftsquare) || (op.tok == Token.propselector || op.tok == Token.leftsquare)
-              && oStack[oPt].tok == Token.propselector)
-          && Token.getPrecedence(oStack[oPt].tok) >= Token
-              .getPrecedence(op.tok)) {
+      while (oPt >= 0 && !skipping
+          && (!(isLeftOp || op.tok == Token.leftsquare) 
+              || (op.tok == Token.propselector || op.tok == Token.leftsquare)
+              && tok0 == Token.propselector)
+          && Token.getPrecedence(tok0) >= Token.getPrecedence(op.tok)) {
 
         if (logMessages) {
           dumpStacks();
           Logger.info("\noperating, oPt=" + oPt + " isLeftOp=" + isLeftOp
-              + " oStack[oPt]=" + Token.nameOf(oStack[oPt].tok)
-              + "        prec=" + Token.getPrecedence(oStack[oPt].tok)
+              + " oStack[oPt]=" + Token.nameOf(tok0)
+              + "        prec=" + Token.getPrecedence(tok0)
               + " pending op=\"" + Token.nameOf(op.tok) + "\" prec="
               + Token.getPrecedence(op.tok));
         }
         // ) and ] must wait until matching ( or [ is found
-        if (op.tok == Token.rightparen && oStack[oPt].tok == Token.leftparen) {
+        if (op.tok == Token.rightparen && tok0 == Token.leftparen) {
           // (x[2]) finalizes the selection
           if (xPt >= 0)
             xStack[xPt] = Token.selectItem(xStack[xPt]);
           break;
         }
-        if (op.tok == Token.rightsquare && oStack[oPt].tok == Token.array) {
+        if (op.tok == Token.rightsquare && tok0 == Token.array) {
           break;
         }
-        if (op.tok == Token.rightsquare && oStack[oPt].tok == Token.leftsquare) {
+        if (op.tok == Token.rightsquare && tok0 == Token.leftsquare) {
           if (xPt == 0 && isAssignment) {
             addX(Token.tokenArraySelector);
             break;
@@ -12310,7 +12350,7 @@ class Eval {
         
         if (!operate())
           return false;
-
+        tok0 = (oPt >= 0 ? oStack[oPt].tok : 0);
       }
 
       // now add a marker on the xStack if necessary
@@ -12322,13 +12362,21 @@ class Eval {
       // right ) and ] are not added to the stack
 
       switch (op.tok) {
-
+      case Token.opIf:
+        if (!skipping) {
+          boolean isFirst = Token.bValue(getX());
+          oStack[++oPt] = Token.tokenColon;
+          addX(isFirst ? Token.tokenExpressionBegin : Token.tokenExpressionEnd);
+        }
+        wasX = false;
+        return true;
       case Token.comma:
         wasX = false;
         return true;
       case Token.leftparen:
         parenCount++;
         wasX = false;
+        skipping = false;
         break;
       case Token.leftsquare:
         squareCount++;
@@ -12364,8 +12412,26 @@ class Eval {
         wasX = false;
       }
 
-      //add the operator if possible
+      // check for end of ( ? : ) first-phrase reading
+      
+      // check for ( ? : ) reading only first phrase
 
+      if (xPt >= 1 && xStack[xPt - 1].tok == Token.expressionBegin) {
+        switch (op.tok) {
+        case Token.colon:
+          if (oStack[oPt].tok == Token.colon) {
+            xStack[xPt - 1] = xStack[xPt];
+            xStack[xPt] = Token.tokenExpressionEnd;
+            oStack[oPt] = Token.tokenRightParen;
+            return true;
+          }
+        }
+      }
+
+      //add the operator if possible
+      
+      if (skipping)
+        return true;
       if (++oPt >= maxLevel)
         stackOverflow();
       oStack[oPt] = op;
@@ -12432,7 +12498,6 @@ class Eval {
       //we cannot know what variables are real
       //if this is a property selector, as in x.func(), then we 
       //just exit; otherwise we add a new TRUE to xStack
-      System.out.println("eval func " + Integer.toHexString(tok) + " " + Integer.toHexString(Token.label));
       if (isScriptCheck)
         return (op.tok == Token.propselector ? true : addX(true));
       switch (tok) {
@@ -13413,12 +13478,14 @@ class Eval {
 
     private boolean operate() throws ScriptException {
 
-      if (logMessages) {
-        Logger.info("\noperate:");
-        dumpStacks();
-      }
 
       Token op = oStack[oPt--];
+
+      if (logMessages) {
+        Logger.info("\noperate: " + op);
+        dumpStacks();
+      }
+      
       if (oPt < 0 && op.tok == Token.opEQ && isAssignment) {
         return (xPt == 2);
       }

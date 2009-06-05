@@ -360,7 +360,6 @@ public class Token {
 
   final static int all                 = expression | 3;
   final public static int branch       = expression | 4;
-  final static int colon               = expression | 5;
   final static int coord               = expression | 6;
   final static int dollarsign          = expression | 7;
   final static int dot                 = expression | 8;
@@ -416,6 +415,8 @@ public class Token {
   final static int rightparen   = 1 | mathop | 0 << 4;
 
   final static int comma        = 0 | mathop | 1 << 4;
+  final static int opIf         = 1 | mathop | 1 << 4;
+  final static int colon        = 2 | mathop | 1 << 4;
 
   final static int leftsquare   = 0 | mathop | 2 << 4;
   final static int rightsquare  = 1 | mathop | 2 << 4;
@@ -1089,8 +1090,10 @@ public class Token {
   final static Token tokenOn  = new Token(on, 1, "on");
   final static Token tokenOff = new Token(off, 0, "off");
   final static Token tokenAll = new Token(all, "all");
+  final static Token tokenIf = new Token(ifcmd, "if");
   final public static Token tokenAnd = new Token(opAnd, "and");
   final public static Token tokenOr  = new Token(opOr, "or");
+  final public static Token tokenOpIf  = new Token(opIf, "?");
   final public static Token tokenComma = new Token(comma, ",");
   final static Token tokenPlus = new Token(plus, "+");
   final static Token tokenMinus = new Token(minus, "-");
@@ -1106,6 +1109,7 @@ public class Token {
   final public static Token tokenExpressionEnd   = new Token(expressionEnd, "expressionEnd");
   final static Token tokenCoordinateBegin = new Token(leftbrace, "{");
   final static Token tokenCoordinateEnd   = new Token(rightbrace, "}");
+  final static Token tokenColon           = new Token(colon, ':');
   final static Token tokenSet             = new Token(set, '=', "");
   final static Token tokenSetArray        = new Token(set, '[', "");
   final static Token tokenSetProperty     = new Token(set, '.', "");
@@ -1320,6 +1324,7 @@ public class Token {
     "&",            null,
     "&&",           null,
     "or",           tokenOr,
+    "?",            tokenOpIf,
     "|",            null,
     "||",           null,
     ",",            tokenComma,
@@ -1347,7 +1352,7 @@ public class Token {
     "}",            new Token(rightbrace),
     "$",            new Token(dollarsign),
     "%",            new Token(percent),
-    ":",            new Token(colon),
+    ":",            tokenColon,
     ";",            new Token(semicolon),
     "+",            tokenPlus,
     "-",            tokenMinus,

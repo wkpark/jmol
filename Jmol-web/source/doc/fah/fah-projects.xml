@@ -7948,6 +7948,12 @@
   <fah_proj number="5906" name="p5906_proL_ff03_450K" public="y"
     server="171.64.122.70" atoms="973" preferred="2" deadline="3"
     credit="472" frames="100" code="GG2MT" contact="ihaque"/>
+  <fah_proj number="5910" name="p5910_proL_ff03_450K" public="y"
+    server="171.64.65.20" atoms="973" preferred="2" deadline="3"
+    credit="472" frames="100" code="GG2MT" contact="ihaque"/>
+  <fah_proj number="5911" name="p5911_proL_ff96_300K" public="y"
+    server="171.64.65.20" atoms="973" preferred="3" deadline="6"
+    credit="1888" frames="100" code="GG2MT" contact="ihaque"/>
 
   <!-- Projects 6000 to 6099 -->
   <fah_proj number="6004" name="p6004_VILLIN" public="y"
@@ -7971,6 +7977,23 @@
   <fah_proj number="6011" name="p6011_p5600_Calmodulin" public="y"
     server="130.237.232.236" atoms="1133" preferred="2" deadline="3"
     credit="100" frames="100" code="A4" contact="kasson"/>
+
+  <!-- Projects 6300 to 6399 -->
+  <fah_proj number="6300" name="p6300_Peptide dimer in TIP3P water" public="y"
+    server="171.64.65.111" atoms="5768" preferred="10" deadline="15"
+    credit="49" frames="100" code="G" contact="vvoelz"/>
+  <fah_proj number="6301" name="p6301_sh3_with_ALA_frags" public="y"
+    server="171.64.65.111" atoms="15097" preferred="36" deadline="52"
+    credit="336" frames="100" code="G" contact="vvoelz"/>
+  <fah_proj number="6302" name="p6302_sh3_with_ALA_frags" public="y"
+    server="171.64.65.111" atoms="15101" preferred="36" deadline="52"
+    credit="336" frames="100" code="G" contact="vvoelz"/>
+  <fah_proj number="6303" name="p6303_sh3_with_SER_frags" public="y"
+    server="171.64.65.111" atoms="15098" preferred="36" deadline="52"
+    credit="336" frames="100" code="G" contact="vvoelz"/>
+  <fah_proj number="6304" name="p6304_sh3_with_TYR_frags" public="y"
+    server="171.64.65.111" atoms="15108" preferred="36" deadline="52"
+    credit="336" frames="100" code="G" contact="vvoelz"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"

@@ -1428,7 +1428,8 @@ public class ProjectInformation {
     //Check for differences with FCI
     if ((info._psAtoms == null) &&
         (info._staticAtoms == null) &&
-        (info._fciAtoms != null)) {
+        (info._fciAtoms != null) &&
+        (info._fciAtoms.intValue() > 0)) {
       different = true;
     }
     if ((info._psContact == null) &&

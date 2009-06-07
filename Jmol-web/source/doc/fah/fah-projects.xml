@@ -7982,12 +7982,12 @@
   <fah_proj number="6300" name="p6300_Peptide dimer in TIP3P water" public="y"
     server="171.64.65.111" atoms="5768" preferred="10" deadline="15"
     credit="49" frames="100" code="G" contact="vvoelz"/>
-  <fah_proj number="6301" name="p6301_sh3_with_ALA_frags" public="y"
+  <fah_proj number="6301" name="p6301_sh3_with_ALA_frags" public="y" file="xyz"
     server="171.64.65.111" atoms="15097" preferred="36" deadline="52"
-    credit="336" frames="100" code="G" contact="vvoelz"/>
-  <fah_proj number="6302" name="p6302_sh3_with_ALA_frags" public="y"
+    credit="336" frames="100" code="G" contact="vvoelz" contrib="Hyperlife"/>
+  <fah_proj number="6302" name="p6302_sh3_with_ALA_frags" public="y" file="xyz"
     server="171.64.65.111" atoms="15101" preferred="36" deadline="52"
-    credit="336" frames="100" code="G" contact="vvoelz"/>
+    credit="336" frames="100" code="G" contact="vvoelz" contrib="Hyperlife"/>
   <fah_proj number="6303" name="p6303_sh3_with_SER_frags" public="y"
     server="171.64.65.111" atoms="15098" preferred="36" deadline="52"
     credit="336" frames="100" code="G" contact="vvoelz"/>

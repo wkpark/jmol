@@ -273,6 +273,8 @@ public class Parser {
     boolean digitSeen = false;
     float value = 0;
     int ich = next[0];
+    if (isStrict && str.indexOf('\n') != str.lastIndexOf('\n'))
+        return Float.NaN;
     while (ich < ichMax && isWhiteSpace(str, ich))
       ++ich;
     boolean negative = false;

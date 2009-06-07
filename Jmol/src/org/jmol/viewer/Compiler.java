@@ -160,23 +160,80 @@ class Compiler {
    * 
    */
   
-  private static class FlowContext {
+  private class FlowContext {
     Token token;
-    int pt0;
+    private int pt0;
     Function function;
-    FlowContext parent;
+    private FlowContext parent;
     int lineStart;
     int commandStart;
+    int ptLine;
+    int ptCommand;
     boolean forceEndIf = true;
     String ident;
     
-    FlowContext(Token token, int pt0, FlowContext parent, int currentLine, int currentCommand) {
+    FlowContext(Token token, int pt0, FlowContext parent) {
       this.token = token;
       this.ident = (String)token.value;
       this.pt0 = pt0;
       this.parent = parent;
-      lineStart = currentLine;
-      commandStart = currentCommand;
+      lineStart = ptLine = lineCurrent;
+      commandStart = ptCommand = iCommand;
+      //System.out.println ("FlowContext: init " + this);  
+    }
+  
+    FlowContext getBreakableContext(int nLevelsUp) {
+      FlowContext f = this;
+      while (f != null && (f.token.tok != Token.forcmd
+        && f.token.tok != Token.whilecmd || nLevelsUp-- > 0))
+        f = f.getParent();
+      return f;
+    }
+    
+    boolean checkForceEndIf(int pt) {
+      boolean test = forceEndIf 
+          && ptCommand < iCommand 
+          && ptLine == lineCurrent;
+      //System.out.println("checking" + pt + " " + test + " " + ident + " " + forceEndIf + " " + ptCommand + " " + iCommand + "/" + ptLine + " " + lineCurrent);
+      if (test) // only once!
+        forceEndIf = false;
+      return test;
+    }
+
+    int getPt0() {
+      return pt0;
+    }
+    
+    int setPt0(int pt0) {
+      this.pt0 = pt0;
+      setLine();
+      return pt0;
+    }
+
+    public void setLine() {
+      ptLine = lineCurrent;
+      ptCommand = iCommand + 1;
+    }
+    
+    public String toString() {
+      return "ident " + ident
+          + " line " + lineStart 
+          + " command " + commandStart;  
+    }
+    
+    FlowContext getParent() {
+      //System.out.println("FlowContext end " + path() + " on line/command " + lineCurrent + " " + iCommand);
+      return parent;
+    }
+    
+    String path() {
+      String s = "";
+      FlowContext f = this;
+      while (f != null) {
+        s = f.ident + "-" + s;
+        f = f.parent;
+      }
+      return "[" + s + "]";
     }
     
     void setFunction(Function function) {
@@ -210,12 +267,6 @@ class Compiler {
       }
     }
 
-    boolean checkForceEndIf(int command, short lineCurrent) {
-      boolean test = forceEndIf 
-          && command - commandStart > 0 
-          && lineStart == lineCurrent;
-      return test;
-    }
   }
     
   private FlowContext flowContext;
@@ -230,7 +281,10 @@ class Compiler {
     this.isCheckOnly = isCheckOnly;
     this.filename = filename;
     this.isSilent = isSilent;
-    this.script = cleanScriptComments(script);
+    this.script = null;
+    cleanScriptComments(script);
+    if (this.script == null)
+      this.script = script;
     contextVariables = null;
     logMessages = (!isSilent && !isPredefining && debugScript);
     preDefining = (filename == "#predefine");
@@ -302,24 +356,16 @@ class Compiler {
    * @param script
    * @return cleaned script
    */
-  private static String cleanScriptComments(String script) {
+  private String cleanScriptComments(String script) {
     int pt1, pt2;
     int pt = -1;
-    while ((pt = script.indexOf("//", ++pt)) >= 0) {
-      if (pt != 0 && script.charAt(pt - 1) != '\n')
-        continue;
-      pt1 = script.indexOf("\n", pt) + 1;
-      if (pt1 == 0)
-        pt1 = script.length();
-      script = script.substring(0, pt--) + script.substring(pt1);
-    }
     while ((pt = script.indexOf("/**")) >= 0) {
       pt1 = script.indexOf("**/", pt + 3);
       if (pt1 < 0)
         break;
       String scrap = script.substring(pt, pt1);
       if ((pt2 = scrap.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG)) >= 0)
-        return cleanScriptComments(scrap.substring(pt2 + 30));
+        return this.script = cleanScriptComments(scrap.substring(pt2 + 30));
       script = script.substring(0, pt) + script.substring(pt1 + 3);
     }
     while ((pt = script.indexOf("/*")) >= 0) {
@@ -328,18 +374,20 @@ class Compiler {
         break;
       String scrap = script.substring(pt + 2, pt1);
       if ((pt2 = scrap.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG)) >= 0)
-        return scrap.substring(pt2 + 30);
+        return this.script = scrap.substring(pt2 + 30);
       script = script.substring(0, pt) + script.substring(pt1 + 2);
     }
-    return script;
+    return null;
   }
+
+  
+  short lineCurrent;
+  int iCommand;
   
   private int cchScript;
-  private short lineCurrent;
-
+  
   private int ichToken;
   private int cchToken;
-  private int iCommand;
   private int ichBrace;
 
   private int ichCurrentCommand;
@@ -352,11 +400,17 @@ class Compiler {
   private int braceCount;
   private int ptSemi;
   private int nTokens;
+  private int theTok;
   private Vector ltoken;
   private Vector lltoken;
   private Token lastToken;
   private Token tokenAndEquals;
-  
+  private int setBraceCount;
+  private int bracketCount;
+  private int forPoint3;
+  private int setEqualPt;
+  private boolean isEndOfCommand;
+  private boolean needRightParen;
   
   private void addTokenToPrefix(Token token) {
     if (logMessages)
@@ -368,6 +422,10 @@ class Compiler {
   private Vector vBraces = new Vector();
   private int iBrace;
 
+  private final static int OK = 0;
+  private final static int CONTINUE = 1;
+  private final static int ERROR = -1;
+  
   private boolean compile0() {
     lineNumbers = null;
     lineIndices = null;
@@ -401,24 +459,25 @@ class Compiler {
     tokCommand = Token.nada;
     lastFlowCommand = null;
     tokenAndEquals = null;
-    int tok = 0;
-    int setBraceCount = 0;
-    int bracketCount = 0;
-    int forPoint3 = -1;
-    int setEqualPt = Integer.MAX_VALUE;
-    String comment = null;
+    setBraceCount = 0;
+    bracketCount = 0;
+    forPoint3 = -1;
+    setEqualPt = Integer.MAX_VALUE;
     boolean endOfLine = false;
-    boolean isEndOfCommand = false;
-    boolean needRightParen = false;
-    
-      for (; true; ichToken += cchToken) {
-        nTokens = ltoken.size();
+    isEndOfCommand = false;
+    needRightParen = false;
+    theTok = Token.nada;
+    String comment = null;
+
+    for (; true; ichToken += cchToken) {
+      if (lookingAtLeadingWhitespace())
+        continue;
+      nTokens = ltoken.size();
       if (nTokens == 0 && thisFunction != null && thisFunction.chpt0 == 0)
         thisFunction.chpt0 = ichToken;
-       if (lookingAtLeadingWhitespace())
-        continue;
       if (!isEndOfCommand && lookingAtComment()) {
-        if (flowContext != null && flowContext.checkForceEndIf(iCommand, lineCurrent)) {
+        if (flowContext != null
+            && flowContext.checkForceEndIf(0)) {
           cchToken = 0;
           isEndOfCommand = true;
           continue;
@@ -437,6 +496,8 @@ class Compiler {
         endOfLine = lookingAtEndOfLine();
       }
       isEndOfCommand = isEndOfCommand || endOfLine || lookingAtEndOfStatement();
+      if (!isEndOfCommand && lookingAtExtendedComment())
+        continue;
       if (isEndOfCommand) {
         isEndOfCommand = false;
         if (nTokens > 0 || comment != null) {
@@ -452,7 +513,8 @@ class Compiler {
           if (thisFunction != null && thisFunction.cmdpt0 < 0) {
             thisFunction.cmdpt0 = iCommand;
           }
-          if (nTokens == 1 && tokenCommand.value.equals("{") && lastFlowCommand != null) {
+          if (nTokens == 1 && tokenCommand.value.equals("{")
+              && lastFlowCommand != null) {
             parenCount = setBraceCount = 0;
             tokCommand = lastFlowCommand.tok;
             tokenCommand = lastFlowCommand;
@@ -468,33 +530,37 @@ class Compiler {
             addTokenToPrefix(Token.tokenRightParen);
             needRightParen = false;
           }
-          
-          if (!compileCommand())
-            return false;
-          if (logMessages) {
-            Logger.debug("-------------------------------------");
-          }
-          if (!Token.tokAttr(tokCommand, Token.noeval)
-              || atokenInfix.length > 0 && atokenInfix[0].intValue <= 0) {
-            if (iCommand == lnLength) {
-              short[] lnT = new short[lnLength * 2];
-              System.arraycopy(lineNumbers, 0, lnT, 0, lnLength);
-              lineNumbers = lnT;
-              int[] lnI = new int[lnLength * 2];
-              System.arraycopy(lineIndices, 0, lnI, 0, lnLength);
-              lineIndices = lnI;
-              lnLength *= 2;
+
+          if (ltoken.size() > 0) {
+            if (!compileCommand())
+              return false;
+            if (logMessages) {
+              Logger.debug("-------------------------------------");
             }
-            lineNumbers[iCommand] = lineCurrent;
-            lineIndices[iCommand] = ichCurrentCommand;
-            lltoken.addElement(atokenInfix);
-            iCommand = lltoken.size();
+            if (!Token.tokAttr(tokCommand, Token.noeval)
+                || atokenInfix.length > 0 && atokenInfix[0].intValue <= 0) {
+              if (iCommand == lnLength) {
+                short[] lnT = new short[lnLength * 2];
+                System.arraycopy(lineNumbers, 0, lnT, 0, lnLength);
+                lineNumbers = lnT;
+                int[] lnI = new int[lnLength * 2];
+                System.arraycopy(lineIndices, 0, lnI, 0, lnLength);
+                lineIndices = lnI;
+                lnLength *= 2;
+              }
+
+              //System.out.println("setting command " + ltoken.get(0) + " line "
+                //  + lineCurrent + " command " + iCommand);
+              lineNumbers[iCommand] = lineCurrent;
+              lineIndices[iCommand] = ichCurrentCommand;
+              lltoken.addElement(atokenInfix);
+              iCommand = lltoken.size();
+
+            }
+            if (tokCommand == Token.set)
+              lastFlowCommand = null;
 
           }
-          
-          
-          if (tokCommand == Token.set)
-            lastFlowCommand = null;
           tokenCommand = null;
           tokenAndEquals = null;
           comment = null;
@@ -507,285 +573,53 @@ class Compiler {
           forPoint3 = -1;
           setEqualPt = Integer.MAX_VALUE;
 
-          if (ichToken < cchScript && endOfLine)
-              ++lineCurrent;
-
-          if (ichToken >= cchScript || endOfLine) {
-            if (flowContext != null && flowContext.checkForceEndIf(iCommand, lineCurrent)) {
+          if (endOfLine) {
+            if (flowContext != null
+                && flowContext.checkForceEndIf(1)) {
               forceFlowEnd(flowContext.token);
               isEndOfCommand = true;
               cchToken = 0;
+              lineCurrent--;
               continue;
             }
           }
-
-
         }
-        
-        if (ichToken < cchScript) {
-          if (isShowScriptOutput)
-            ichCurrentCommand = ichToken + cchToken;
+        if (endOfLine)
+          ++lineCurrent;
+        if (ichToken >= cchScript) {
+          // check for end of all brace work
+          tokenCommand = Token.tokenAll;
+          tokCommand = 1;
+          switch (checkFlowEndBrace()) {
+          case Token.nada:
+            return false;
+          case -1:
+            isEndOfCommand = true;
+            cchToken = 0;
+            continue;
+          }
+          break; // main for loop
+        }
+        if (isShowScriptOutput)
+          ichCurrentCommand = ichToken + cchToken;
+        continue;
+      }
+
+      if (nTokens > 0)
+        switch (checkSpecialParameterSyntax()) {
+        case CONTINUE:
           continue;
-        }
-        // check for end of all brace work
-        tokenCommand = Token.tokenAll;
-        tokCommand = 1;
-        tok = checkFlowEndBrace();
-        if (tok == Token.nada)
+        case ERROR:
           return false;
-        else if (tok == -1) {
-          isEndOfCommand = true;
-          cchToken = 0;
-          continue;
         }
-        break; // main for loop
-      }
-      char ch;
-      if (nTokens > 0) {
-        if (nTokens == ptNewSetModifier) {
-          if (tokCommand == Token.set
-              || Token.tokAttr(tokCommand, Token.setparam)) {
-            ch = script.charAt(ichToken);
-            if (ch == '=')
-              setEqualPt = ichToken;
-    
-            // axes, background, define, display, echo, frank, hbond, history,
-            // set, var
-            // can all appear with or without "set" in front of them. These
-            // are then
-            // both commands and parameters for the SET command, but only if
-            // they are
-            // the FIRST parameter of the set command.
-            if (Token.tokAttr(tokCommand, Token.setparam) && ch == '='
-                || (isNewSet || isSetBrace)
-                && (ch == '=' || ch == '[' || ch == '.' || ch == '-' || ch == '+')) {
-              tokenCommand = (ch == '=' || ch == '-' || ch == '+' ? Token.tokenSet 
-                  : ch == '[' && !isSetBrace ? Token.tokenSetArray : Token.tokenSetProperty);
-              tokCommand = Token.set;
-              ltoken.insertElementAt(tokenCommand, 0);
-              cchToken = 1;
-              switch (ch) {
-              case '[':
-                
-                addTokenToPrefix(new Token(Token.leftsquare, "["));
-                bracketCount++;
-                continue;
-              case '.':
-                addTokenToPrefix(new Token(Token.dot, "."));
-                continue;
-              case '-':
-              case '+':
-                if (ichToken + 1 >= cchScript)
-                  return error(ERROR_endOfCommandUnexpected);
-                if (script.charAt(ichToken + 1) != ch) {
-                  if (script.charAt(ichToken + 1) != '=') 
-                    return error(ERROR_badContext, "" + ch);
-                }
-                break;
-              default:
-                lastToken = Token.tokenMinus; // just to allow for {(....)}
-                continue;
-              }
-            }
-          }
-        }
-        if (lookingAtString()) {
-          if (cchToken < 0)
-            return error(ERROR_endOfCommandUnexpected);
-          String str = ((tokCommand == Token.load
-              || tokCommand == Token.background || tokCommand == Token.script)
-              && !iHaveQuotedString ? script.substring(ichToken + 1, ichToken
-              + cchToken - 1) : getUnescapedStringLiteral());
-          addTokenToPrefix(new Token(Token.string, str));
-          iHaveQuotedString = true;
-          if (tokCommand == Token.data && str.indexOf("@") < 0 && !getData(str))
-            return error(ERROR_missingEnd, "data");
-          continue;
-        }
-        if (tokCommand == Token.sync && nTokens == 1 && charToken()) {
-          String ident = script.substring(ichToken, ichToken + cchToken);
-          addTokenToPrefix(new Token(Token.identifier, ident));
-          continue;
-        }
-        if (tokCommand == Token.load) {
-          if (nTokens == 1 && lookingAtLoadFormat()) {
-            String strFormat = script.substring(ichToken, ichToken + cchToken);
-            strFormat = strFormat.toLowerCase();
-            if (Parser.isOneOf(strFormat, LOAD_TYPES))
-              addTokenToPrefix(new Token(Token.identifier, strFormat));
-            else if (strFormat.indexOf("=") == 0) {
-              addTokenToPrefix(new Token(Token.string, strFormat));
-            }
-            continue;
-          }
-          BitSet bs;
-          if (script.charAt(ichToken) == '{' || parenCount > 0) {
-          } else if ((bs = lookingAtBitset()) != null) {
-            addTokenToPrefix(new Token(Token.bitset, bs));
-            continue;
-          } else if (!iHaveQuotedString && lookingAtSpecialString()) {
-            String str = script.substring(ichToken, ichToken + cchToken);
-            int pt = str.indexOf(" ");
-            if (pt > 0) {
-              cchToken = pt;
-              str = str.substring(0, pt);
-            }
-            addTokenToPrefix(new Token(Token.string, str));
-            iHaveQuotedString = true;
-            continue;
-          }
-        }
-        if (tokCommand == Token.script) {
-          if (!iHaveQuotedString && lookingAtSpecialString()) {
-            String str = script.substring(ichToken, ichToken + cchToken);
-            int pt = str.indexOf(" ");
-            if (pt > 0) {
-              cchToken = pt;
-              str = str.substring(0, pt);
-            }
-            addTokenToPrefix(new Token(Token.string, str));
-            iHaveQuotedString = true;
-            continue;
-          }
-        }
-        if (tokCommand == Token.write) {
-          int pt = cchToken;
-          // write image spt filename
-          // write script filename
-          // write spt filename
-          // write jpg filename
-          // write filename
-          if (nTokens == 2 && lastToken.tok == Token.frame)
-            iHaveQuotedString = true;
-          if (nTokens > 2 && !iHaveQuotedString && lookingAtSpecialString()) {
-            String str = script.substring(ichToken, ichToken + cchToken);
-            if (str.startsWith("@{")) {
-              iHaveQuotedString = true;
-            } else if (str.indexOf(" ") < 0) {
-              addTokenToPrefix(new Token(Token.string, str));
-              iHaveQuotedString = true;
-              continue;
-            }
-            cchToken = pt;
-          }
-        }
-        if (Token.tokAttr(tokCommand, Token.implicitStringCommand)
-            && !(tokCommand == Token.script && iHaveQuotedString)
-            && lookingAtSpecialString()) {
-          String str = script.substring(ichToken, ichToken + cchToken);
-          addTokenToPrefix(new Token(Token.string, str));
-          continue;
-        }
-        float value;
-        if (!Float.isNaN(value = lookingAtExponential())) {
-          addTokenToPrefix(new Token(Token.decimal, new Float(value)));
-          continue;
-        }
-        if (lookingAtObjectID(nTokens == 1)) {
-          addTokenToPrefix(Token.getTokenFromName("$"));
-          addTokenToPrefix(new Token(Token.identifier, script.substring(
-              ichToken, ichToken + cchToken)));
-          continue;
-        }
-        if (lookingAtDecimal()) {
-          value =
-          // can't use parseFloat with jvm 1.1
-          // Float.parseFloat(script.substring(ichToken, ichToken +
-          // cchToken));
-          Float.valueOf(script.substring(ichToken, ichToken + cchToken))
-              .floatValue();
-          int intValue = (modelValue(script.substring(ichToken, ichToken
-              + cchToken)));
-          ltoken
-              .addElement(new Token(Token.decimal, intValue, new Float(value)));
-          continue;
-        }
-        if (lookingAtSeqcode()) {
-          ch = script.charAt(ichToken);
-          try {
-            int seqNum = (ch == '*' || ch == '^' ? Integer.MAX_VALUE : Integer
-                .parseInt(script.substring(ichToken, ichToken + cchToken - 2)));
-            char insertionCode = script.charAt(ichToken + cchToken - 1);
-            if (insertionCode == '^')
-              insertionCode = ' ';
-            if (seqNum < 0) {
-              seqNum = -seqNum;
-              addTokenToPrefix(Token.tokenMinus);
-            }
-            int seqcode = Group.getSeqcode(seqNum, insertionCode);
-            addTokenToPrefix(new Token(Token.seqcode, seqcode, "seqcode"));
-            continue;
-          } catch (NumberFormatException nfe) {
-            return error(ERROR_invalidExpressionToken, "" + ch);
-          }
-        }
-        if (lookingAtInteger()) {
-          String intString = script.substring(ichToken, ichToken + cchToken);
-          int val = Integer.parseInt(intString);
-          if (tokCommand == Token.breakcmd || tokCommand == Token.continuecmd) {
-            if (nTokens != 1)
-              return error(ERROR_badArgumentCount);
-            FlowContext f = getBreakableContext(val = Math.abs(val));
-            if (f == null)
-              return error(ERROR_badContext, (String) tokenCommand.value);
-            ((Token) ltoken.get(0)).intValue = f.pt0; // copy
-          }
-          addTokenToPrefix(new Token(Token.integer, val, intString));
-          continue;
-        }
-        if (tokCommand == Token.structure
-            && nTokens == 2
-            || tokCommand == Token.frame
-            && nTokens == 2
-            || lastToken.tok == Token.select
-            || lastToken.tok == Token.within
-            || !(lastToken.tok == Token.identifier || tokenAttr(lastToken,
-                Token.mathfunc))) {
-          // here if:
-          // select ({...})
-          // within({...})
-          // structure helix ({...})
-          // NOT myfunc({...})
-          // NOT mathFunc({...})
-          // if you want to use a bitset there, you must use
-          // bitsets properly: x.distance( ({1 2 3}) )
-          boolean isBond = (script.charAt(ichToken) == '[');
-          BitSet bs = lookingAtBitset();
-          if (bs != null) {
-            if (isBond)
-              addTokenToPrefix(new Token(Token.bitset, new BondSet(bs)));
-            // occasionally BondSet appears unknown in Eclipse even though it
-            // is defined
-            // in Eval.java -- doesn't seem to matter.
-            else
-              addTokenToPrefix(new Token(Token.bitset, bs));
-            continue;
-          }
-        }
-      }
+
+      // only after the first token:
+
       if (lookingAtLookupToken()) {
-        String ident = script.substring(ichToken, ichToken + cchToken);
+        String ident = getPrefixToken();
         Token token;
-        // hack to support case sensitive alternate locations and chains
-        // if an identifier is a single character long, then
-        // allocate a new Token with the original character preserved
-        if (ident.length() == 1) {
-          if ((token = Token.getTokenFromName(ident)) == null
-              && (token = Token.getTokenFromName(ident.toLowerCase())) != null)
-            token = new Token(token.tok, token.intValue, ident);
-        } else {
-          ident = ident.toLowerCase();
-          token = Token.getTokenFromName(ident);
-        }
-        if (token == null) {
-          if (ident.indexOf("property_") == 0)
-            token = new Token(Token.property, ident.toLowerCase());
-          else
-            token = new Token(Token.identifier, ident);
-        }
-        tok = token.tok;
-        if (tok == Token.andequals) {
-          if (nSemiSkip == forPoint3 && nTokens == ptSemi + 2) {            
+        if (theTok == Token.andequals) {
+          if (nSemiSkip == forPoint3 && nTokens == ptSemi + 2) {
             token = lastToken;
             addTokenToPrefix(Token.tokenEquals);
             addTokenToPrefix(token);
@@ -799,383 +633,22 @@ class Compiler {
           cchToken = 1;
           continue;
         }
-        switch (tok) {
-        case Token.end:
-        case Token.endifcmd:
-          if (flowContext != null)
-           flowContext.forceEndIf = false;
-           // fall through
-        case Token.elsecmd:
-          if (nTokens > 0) {
-            isEndOfCommand = true;
-            cchToken = 0;
-            continue;
-          }
-          break;
-        case Token.elseif:
-        case Token.whilecmd:
-        case Token.ifcmd:
-        case Token.forcmd:
-          if (nTokens > 1 && tokCommand != Token.set) {
-            isEndOfCommand = true;
-            if (flowContext != null)
-              flowContext.forceEndIf = true;
-            cchToken = 0;
-            continue;            
-          }
-          break;
-        case Token.minusMinus:
-        case Token.plusPlus:
-          if (isNewSet && parenCount == 0 && bracketCount == 0 && ichToken <= setEqualPt) {
-            nTokens = ltoken.size();
-            addTokenToPrefix(Token.tokenEquals);
-            setEqualPt = 0;
-            for (int i = 1; i < nTokens; i++)
-              addTokenToPrefix((Token)ltoken.elementAt(i));
-            addTokenToPrefix(tok == Token.minusMinus ? Token.tokenMinus : Token.tokenPlus);
-            addTokenToPrefix(Token.intToken(1));
-            continue;  
-          } else if (nSemiSkip == forPoint3 && nTokens == ptSemi + 2) {            
-            token = lastToken;
-            addTokenToPrefix(Token.tokenEquals);
-            addTokenToPrefix(token);
-            addTokenToPrefix(tok == Token.minusMinus ? Token.tokenMinus : Token.tokenPlus);
-            addTokenToPrefix(Token.intToken(1));
-            continue;
-          }
-          break;
-        case Token.opEQ:
-          if (parenCount == 0 && bracketCount == 0)
-            setEqualPt = ichToken;
-          break;
-        case Token.dot:
-          if (tokCommand == Token.set && parenCount == 0 && bracketCount == 0 && ichToken < setEqualPt) {
-            ltoken.insertElementAt(Token.tokenExpressionBegin, 1);
-            addTokenToPrefix(Token.tokenExpressionEnd);
-            setEqualPt = 0;
-          }            
-          break;
-        case Token.leftbrace:
-          braceCount++;
-          if (braceCount == 1 && parenCount == 0 && checkFlowStartBrace(false)) {
-            isEndOfCommand = true;
-            if (flowContext != null)
-              flowContext.forceEndIf = false;
-            continue;
-          }
 
-          // fall through
-        case Token.leftparen:
-          parenCount++;
-          // the select() function uses dual semicolon notation
-          // but we must differentiate from isosurface select(...) and set
-          // picking select
-          if (nTokens > 1
-              && (lastToken.tok == Token.select
-                  || lastToken.tok == Token.forcmd || lastToken.tok == Token.ifcmd))
-            nSemiSkip += 2;
-          break;
-        case Token.rightbrace:
-          if (iBrace > 0 && parenCount == 0 && braceCount == 0) {
-            ichBrace = ichToken;
-            if (nTokens == 0) {
-              braceCount = parenCount = 1;
-            } else {
-              braceCount = parenCount = nSemiSkip = 0;
-              vBraces.add(token);
-              iBrace++;
-              isEndOfCommand = true;
-              continue;
-            }
-          }
-          braceCount--;
-          // fall through
-        case Token.rightparen:
-          parenCount--;
-          if (parenCount < 0)
-            return error(ERROR_tokenUnexpected, (String) token.value);
-          // we need to remove the semiskip if parentheses or braces have been
-          // closed. 11.5.46
-          if (parenCount == 0)
-            nSemiSkip = 0;
-          if (needRightParen) {
-            addTokenToPrefix(Token.tokenRightParen);
-            needRightParen = false;
-          }
-          break;
-        case Token.leftsquare:
-          bracketCount++;
-          break;
-        case Token.rightsquare:
-          bracketCount--;
-          if (bracketCount < 0)
-            return error(ERROR_tokenUnexpected, "]");
-        }
-        
-        
-        
-        switch (tokCommand) {
-        // special cases
-        case Token.nada:
-          // first token in command
-          lastToken = Token.tokenOff;
-          ichCurrentCommand = ichToken;
-          tokenCommand = token;
-          tokCommand = tok;
-
-          // checking first here for a flow command because
-          // if (......) {.....} ELSE
-          if (Token.tokAttr(tokCommand, Token.flowCommand)) {
-            lastFlowCommand = tokenCommand;
-            if (iBrace > 0
-                && Token.tokAttrOr(tokCommand, Token.elsecmd, Token.elseif)) {
-              if (((Token) vBraces.get(iBrace - 1)).tok == Token.rightbrace) {
-                vBraces.remove(--iBrace);
-                vBraces.remove(--iBrace);
-              }
-            }
-          } else {
-          }
-          // before processing this command, check to see if we have completed
-          // a right-brace.
-          int ret = checkFlowEndBrace();
-          if (ret == Token.nada)
-            return false;
-          else if (ret == -1) {
-            // yes, so re-read this one
-            isEndOfCommand = true;
-            cchToken = 0;
-            continue;
-          }
-
-          if (Token.tokAttr(tokCommand, Token.flowCommand)) {
-            if (!checkFlowCommand((String) tokenCommand.value))
-              return false;
-            token = tokenCommand;
-            break;
-          }
-
-          if (tok == Token.rightbrace) {
-            // if }, just push onto vBrace, but NOT onto ltoken
-            vBraces.add(tokenCommand);
-            iBrace++;
-            tokCommand = Token.nada;
-            continue;
-          }
-          if (tok != Token.leftbrace)
-            lastFlowCommand = null;
-
-          if (Token.tokAttr(tokCommand, Token.command))
-            break;
-
-          // not the standard command
-          // isSetBrace: {xxx}.yyy =  or {xxx}[xx].
-          // isNewSet:   xxx =
-          // but not xxx = where xxx is a known "set xxx" variant
-          // such as "set hetero" or "set hydrogen" or "set solvent"
-          isSetBrace = (tok == Token.leftbrace);
-          if (isSetBrace && !lookingAtBraceSyntax()) {
-            isEndOfCommand = true;
-            if (flowContext != null)
-              flowContext.forceEndIf = false;
-          }
-          if (!isSetBrace && tok != Token.plusPlus && tok != Token.minusMinus
-              && !Token.tokAttr(tok, Token.identifier)
-              && !Token.tokAttr(tok, Token.setparam))
-            return commandExpected();
-          tokCommand = Token.set;
-          isNewSet = !isSetBrace;
-          setBraceCount = (isSetBrace ? 1 : 0);
-          bracketCount = 0;
-          setEqualPt = Integer.MAX_VALUE;
-          ptNewSetModifier = (isNewSet ? 1 : Integer.MAX_VALUE);
-          break;
-        case Token.function:
-          if (tokenCommand.intValue == 0) {
-            if (nTokens != 1)
-              break; // anything after name is ok
-            // user has given macro command
-            tokenCommand.value = ident;
-            continue; // don't store name in stack
-          }
-          if (nTokens == 1) {
-            flowContext.setFunction(thisFunction = new Function(ident));
-            break; // function f
-          }
-          if (nTokens == 2) {
-            if (tok != Token.leftparen)
-              return error(ERROR_tokenExpected, "(");
-            break; // function f (
-          }
-          if (nTokens == 3 && tok == Token.rightparen)
-            break; // function f ( )
-          if (nTokens % 2 == 0) {
-            // function f ( x , y )
-            if (tok != Token.comma && tok != Token.rightparen)
-              return error(ERROR_tokenExpected, ", )");
-            break;
-          }
-          thisFunction.addVariable(ident, true);
-          break;
-        case Token.elsecmd:
-          if (nTokens == 1 && tok != Token.ifcmd) {
-            isEndOfCommand = true;
-            cchToken = 0;
-            continue;
-          }
-          if (nTokens != 1 || tok != Token.ifcmd && tok != Token.leftbrace)
-            return error(ERROR_badArgumentCount);
-          ltoken.removeElementAt(0);
-          ltoken.addElement(token = new Token(Token.elseif, "elseif"));
-          flowContext.token = token;
-          tokCommand = Token.elseif;
+        switch (parseKnownToken(ident)) {
+        case CONTINUE:
           continue;
-        case Token.var:
-          if (nTokens != 1)
-            break;
-          addContextVariable(ident);
-          ltoken.removeElementAt(0);
-          ltoken.addElement(Token.tokenSetVar);
-          tokCommand = Token.set;
-          break;
-        case Token.end:
-          if (nTokens != 1)
-            return error(ERROR_badArgumentCount);
-          if (!checkFlowEnd(tok, ident, ichCurrentCommand))
-            return false;
-          if (tok == Token.function)
-            continue;
-          break;
-        case Token.whilecmd:
-          if (nTokens > 2 && braceCount == 0 && parenCount == 0) {
-            isEndOfCommand = true;
-          }
-          break;
-        case Token.elseif:
-        case Token.ifcmd:
-          if (nTokens > 2 && braceCount == 0 && parenCount == 0) {
-            isEndOfCommand = true;
-          }
-          break;
-        case Token.forcmd:
-          if (nTokens == 1) {
-            if (tok != Token.leftparen)
-              return error(ERROR_unrecognizedToken, ident);
-            forPoint3 = nSemiSkip;
-            nSemiSkip += 2;
-          } else if (nTokens == 3 && ((Token) ltoken.get(2)).tok == Token.var) {
-            addContextVariable(ident);
-          } else if (braceCount == 0 && parenCount == 0) {
-            isEndOfCommand = true;
-          }
-          break;
-        case Token.set:
-          if (tok == Token.leftbrace)
-            setBraceCount++;
-          else if (tok == Token.rightbrace) {
-            setBraceCount--;
-            if (isSetBrace && setBraceCount == 0
-                && ptNewSetModifier == Integer.MAX_VALUE)
-              ptNewSetModifier = nTokens + 1;
-          }
-          if (nTokens == ptNewSetModifier) { // 1 when { is not present
-            boolean isSetArray = false;
-            if (tok == Token.opEQ || tok == Token.leftsquare) {
-              // x = or x[n] =
-              token = (Token) ltoken.get(0);
-              ltoken.removeElementAt(0);
-              isSetArray = (tok == Token.leftsquare);
-              ltoken.addElement(isSetArray ? Token.tokenSetArray
-                  : Token.tokenSet);
-              tok = token.tok;
-              tokCommand = Token.set;
-            }
-            if (tok == Token.leftparen) {
-              // mysub(xxx,xxx,xxx)
-              token = (Token) ltoken.get(0);
-              ltoken.removeElementAt(0);
-              tokenCommand = new Token(Token.function, 0, token.value);
-              ltoken.add(0, tokenCommand);
-              tokCommand = Token.function;
-              token = Token.tokenLeftParen;
-              tok = Token.leftparen;
-              break;
-            }
-            if (tok != Token.identifier
-                && (!Token.tokAttr(tok, Token.setparam)))
-              return isNewSet ? commandExpected() : error(
-                  ERROR_unrecognizedParameter, "SET", ": " + ident);
-            if (isSetArray) {
-              addTokenToPrefix(token);
-              token = Token.tokenArraySelector;
-              tok = Token.leftsquare;
-            } else if (nTokens == 1 
-                  && (lastToken.tok == Token.plusPlus || lastToken.tok == Token.minusMinus)) {
-              ltoken.removeElementAt(0);
-              tokenCommand = Token.tokenSet; 
-              tokCommand = Token.set;
-              ltoken.insertElementAt(tokenCommand, 0);
-              addTokenToPrefix(lastToken);
-              break;
-            }
-          }
-          break;
-        case Token.display:
-        case Token.hide:
-        case Token.restrict:
-        case Token.select:
-        case Token.delete:
-        case Token.define:
-          if (tokCommand == Token.define) {
-            if (nTokens == 1) {
-              // we are looking at the variable name
-              if (tok != Token.identifier) {
-                if (preDefining) {
-                  if (!Token.tokAttr(tok, Token.predefinedset))
-                    return error(
-                        "ERROR IN Token.java or JmolConstants.java -- the following term was used in JmolConstants.java but not listed as predefinedset in Token.java: "
-                            + ident, null);
-                } else if (Token.tokAttr(tok, Token.predefinedset)) {
-                  Logger
-                      .warn("WARNING: predefined term '"
-                          + ident
-                          + "' has been redefined by the user until the next file load.");
-                } else if (!isCheckOnly && ident.length() > 1) {
-                  Logger
-                      .warn("WARNING: redefining "
-                          + ident
-                          + "; was "
-                          + token
-                          + "not all commands may continue to be functional for the life of the applet!");
-                  tok = token.tok = Token.identifier;
-                  Token.addToken(ident, token);
-                }
-              }
-              addTokenToPrefix(token);
-              lastToken = Token.tokenComma;
-              continue;
-            }
-            if (nTokens == 2) {
-              if (tok == Token.opEQ) {
-                // we are looking at @x =.... just insert a SET command
-                // and ignore the =. It's the same as set @x ...
-                ltoken.insertElementAt(Token.tokenSet, 0);
-                continue;
-              }
-            }
-          }
-          if (bracketCount == 0 && tok != Token.identifier
-              && !Token.tokAttr(tok, Token.expression) && tok != Token.min
-              && tok != Token.max)
-            return error(ERROR_invalidExpressionToken, ident);
-          break;
-        case Token.center:
-          if (tok != Token.identifier && tok != Token.dollarsign
-              && !Token.tokAttr(tok, Token.expression))
-            return error(ERROR_invalidExpressionToken, ident);
-          break;
+        case ERROR:
+          return false;
         }
-        addTokenToPrefix(token);
+
+        switch (parseCommandParameter(ident)) {
+        case CONTINUE:
+          continue;
+        case ERROR:
+          return false;
+        }
+
+        addTokenToPrefix(theToken);
         continue;
       }
       if (nTokens == 0 || (isNewSet || isSetBrace)
@@ -1189,6 +662,656 @@ class Compiler {
     if (flowContext != null)
       return error(ERROR_missingEnd, Token.nameOf(flowContext.token.tok));
     return true;
+  }
+
+  private String getPrefixToken() {
+    String ident = script.substring(ichToken, ichToken + cchToken);
+    // hack to support case sensitive alternate locations and chains
+    // if an identifier is a single character long, then
+    // allocate a new Token with the original character preserved
+    if (ident.length() == 1) {
+      if ((theToken = Token.getTokenFromName(ident)) == null
+          && (theToken = Token.getTokenFromName(ident.toLowerCase())) != null)
+        theToken = new Token(theToken.tok, theToken.intValue, ident);
+    } else {
+      ident = ident.toLowerCase();
+      theToken = Token.getTokenFromName(ident);
+    }
+    if (theToken == null) {
+      if (ident.indexOf("property_") == 0)
+        theToken = new Token(Token.property, ident.toLowerCase());
+      else
+        theToken = new Token(Token.identifier, ident);
+    }    
+    theTok = theToken.tok;
+    return ident;
+  }
+
+  private int checkSpecialParameterSyntax() {
+    char ch;
+    if (nTokens > 0) {
+      if (nTokens == ptNewSetModifier) {
+        if (tokCommand == Token.set
+            || Token.tokAttr(tokCommand, Token.setparam)) {
+          ch = script.charAt(ichToken);
+          if (ch == '=')
+            setEqualPt = ichToken;
+  
+          // axes, background, define, display, echo, frank, hbond, history,
+          // set, var
+          // can all appear with or without "set" in front of them. These
+          // are then
+          // both commands and parameters for the SET command, but only if
+          // they are
+          // the FIRST parameter of the set command.
+          if (Token.tokAttr(tokCommand, Token.setparam) && ch == '='
+              || (isNewSet || isSetBrace)
+              && (ch == '=' || ch == '[' || ch == '.' || ch == '-' || ch == '+')) {
+            tokenCommand = (ch == '=' || ch == '-' || ch == '+' ? Token.tokenSet 
+                : ch == '[' && !isSetBrace ? Token.tokenSetArray : Token.tokenSetProperty);
+            tokCommand = Token.set;
+            ltoken.insertElementAt(tokenCommand, 0);
+            cchToken = 1;
+            switch (ch) {
+            case '[':
+              
+              addTokenToPrefix(new Token(Token.leftsquare, "["));
+              bracketCount++;
+              return CONTINUE;
+            case '.':
+              addTokenToPrefix(new Token(Token.dot, "."));
+              return CONTINUE;
+            case '-':
+            case '+':
+              if (ichToken + 1 >= cchScript)
+                return ERROR(ERROR_endOfCommandUnexpected);
+              if (script.charAt(ichToken + 1) != ch) {
+                if (script.charAt(ichToken + 1) != '=') 
+                  return ERROR(ERROR_badContext, "" + ch);
+              }
+              break;
+            default:
+              lastToken = Token.tokenMinus; // just to allow for {(....)}
+              return CONTINUE;
+            }
+          }
+        }
+      }
+      if (lookingAtString()) {
+        if (cchToken < 0)
+          return ERROR(ERROR_endOfCommandUnexpected);
+        String str = ((tokCommand == Token.load
+            || tokCommand == Token.background || tokCommand == Token.script)
+            && !iHaveQuotedString ? script.substring(ichToken + 1, ichToken
+            + cchToken - 1) : getUnescapedStringLiteral());
+        addTokenToPrefix(new Token(Token.string, str));
+        iHaveQuotedString = true;
+        if (tokCommand == Token.data && str.indexOf("@") < 0 && !getData(str))
+          return ERROR(ERROR_missingEnd, "data");
+        return CONTINUE;
+      }
+      if (tokCommand == Token.sync && nTokens == 1 && charToken()) {
+        String ident = script.substring(ichToken, ichToken + cchToken);
+        addTokenToPrefix(new Token(Token.identifier, ident));
+        return CONTINUE;
+      }
+      if (tokCommand == Token.load) {
+        if (nTokens == 1 && lookingAtLoadFormat()) {
+          String strFormat = script.substring(ichToken, ichToken + cchToken);
+          strFormat = strFormat.toLowerCase();
+          if (Parser.isOneOf(strFormat, LOAD_TYPES))
+            addTokenToPrefix(new Token(Token.identifier, strFormat));
+          else if (strFormat.indexOf("=") == 0) {
+            addTokenToPrefix(new Token(Token.string, strFormat));
+          }
+          return CONTINUE;
+        }
+        BitSet bs;
+        if (script.charAt(ichToken) == '{' || parenCount > 0) {
+        } else if ((bs = lookingAtBitset()) != null) {
+          addTokenToPrefix(new Token(Token.bitset, bs));
+          return CONTINUE;
+        } else if (!iHaveQuotedString && lookingAtSpecialString()) {
+          String str = script.substring(ichToken, ichToken + cchToken);
+          int pt = str.indexOf(" ");
+          if (pt > 0) {
+            cchToken = pt;
+            str = str.substring(0, pt);
+          }
+          addTokenToPrefix(new Token(Token.string, str));
+          iHaveQuotedString = true;
+          return CONTINUE;
+        }
+      }
+      if (tokCommand == Token.script) {
+        if (!iHaveQuotedString && lookingAtSpecialString()) {
+          String str = script.substring(ichToken, ichToken + cchToken);
+          int pt = str.indexOf(" ");
+          if (pt > 0) {
+            cchToken = pt;
+            str = str.substring(0, pt);
+          }
+          addTokenToPrefix(new Token(Token.string, str));
+          iHaveQuotedString = true;
+          return CONTINUE;
+        }
+      }
+      if (tokCommand == Token.write) {
+        int pt = cchToken;
+        // write image spt filename
+        // write script filename
+        // write spt filename
+        // write jpg filename
+        // write filename
+        if (nTokens == 2 && lastToken.tok == Token.frame)
+          iHaveQuotedString = true;
+        if (nTokens > 2 && !iHaveQuotedString && lookingAtSpecialString()) {
+          String str = script.substring(ichToken, ichToken + cchToken);
+          if (str.startsWith("@{")) {
+            iHaveQuotedString = true;
+          } else if (str.indexOf(" ") < 0) {
+            addTokenToPrefix(new Token(Token.string, str));
+            iHaveQuotedString = true;
+            return CONTINUE;
+          }
+          cchToken = pt;
+        }
+      }
+      if (Token.tokAttr(tokCommand, Token.implicitStringCommand)
+          && !(tokCommand == Token.script && iHaveQuotedString)
+          && lookingAtSpecialString()) {
+        String str = script.substring(ichToken, ichToken + cchToken);
+        addTokenToPrefix(new Token(Token.string, str));
+        return CONTINUE;
+      }
+      float value;
+      if (!Float.isNaN(value = lookingAtExponential())) {
+        addTokenToPrefix(new Token(Token.decimal, new Float(value)));
+        return CONTINUE;
+      }
+      if (lookingAtObjectID(nTokens == 1)) {
+        addTokenToPrefix(Token.getTokenFromName("$"));
+        addTokenToPrefix(new Token(Token.identifier, script.substring(
+            ichToken, ichToken + cchToken)));
+        return CONTINUE;
+      }
+      if (lookingAtDecimal()) {
+        value =
+        // can't use parseFloat with jvm 1.1
+        // Float.parseFloat(script.substring(ichToken, ichToken +
+        // cchToken));
+        Float.valueOf(script.substring(ichToken, ichToken + cchToken))
+            .floatValue();
+        int intValue = (modelValue(script.substring(ichToken, ichToken
+            + cchToken)));
+        ltoken
+            .addElement(new Token(Token.decimal, intValue, new Float(value)));
+        return CONTINUE;
+      }
+      if (lookingAtSeqcode()) {
+        ch = script.charAt(ichToken);
+        try {
+          int seqNum = (ch == '*' || ch == '^' ? Integer.MAX_VALUE : Integer
+              .parseInt(script.substring(ichToken, ichToken + cchToken - 2)));
+          char insertionCode = script.charAt(ichToken + cchToken - 1);
+          if (insertionCode == '^')
+            insertionCode = ' ';
+          if (seqNum < 0) {
+            seqNum = -seqNum;
+            addTokenToPrefix(Token.tokenMinus);
+          }
+          int seqcode = Group.getSeqcode(seqNum, insertionCode);
+          addTokenToPrefix(new Token(Token.seqcode, seqcode, "seqcode"));
+          return CONTINUE;
+        } catch (NumberFormatException nfe) {
+          return ERROR(ERROR_invalidExpressionToken, "" + ch);
+        }
+      }
+      if (lookingAtInteger()) {
+        String intString = script.substring(ichToken, ichToken + cchToken);
+        int val = Integer.parseInt(intString);
+        if (tokCommand == Token.breakcmd || tokCommand == Token.continuecmd) {
+          if (nTokens != 1)
+            return ERROR(ERROR_badArgumentCount);
+          FlowContext f = (flowContext == null ? null 
+              : flowContext.getBreakableContext(val = Math.abs(val)));
+          if (f == null)
+            return ERROR(ERROR_badContext, (String) tokenCommand.value);
+          ((Token) ltoken.get(0)).intValue = f.getPt0(); // copy
+        }
+        addTokenToPrefix(new Token(Token.integer, val, intString));
+        return CONTINUE;
+      }
+      if (tokCommand == Token.structure
+          && nTokens == 2
+          || tokCommand == Token.frame
+          && nTokens == 2
+          || lastToken.tok == Token.select
+          || lastToken.tok == Token.within
+          || !(lastToken.tok == Token.identifier || tokenAttr(lastToken,
+              Token.mathfunc))) {
+        // here if:
+        // select ({...})
+        // within({...})
+        // structure helix ({...})
+        // NOT myfunc({...})
+        // NOT mathFunc({...})
+        // if you want to use a bitset there, you must use
+        // bitsets properly: x.distance( ({1 2 3}) )
+        boolean isBond = (script.charAt(ichToken) == '[');
+        BitSet bs = lookingAtBitset();
+        if (bs != null) {
+          if (isBond)
+            addTokenToPrefix(new Token(Token.bitset, new BondSet(bs)));
+          // occasionally BondSet appears unknown in Eclipse even though it
+          // is defined
+          // in Eval.java -- doesn't seem to matter.
+          else
+            addTokenToPrefix(new Token(Token.bitset, bs));
+          return CONTINUE;
+        }
+      }
+    }
+    return OK;
+  }
+
+  private int parseKnownToken(String ident) {
+    // PART I:
+    //
+    // specific token-based issues depend upon where we are in the command
+    // checking tokens based on the current command will be next
+    
+    switch (theTok) {
+    case Token.end:
+    case Token.endifcmd:
+      if (flowContext != null)
+       flowContext.forceEndIf = false;
+       // fall through
+    case Token.elsecmd:
+      if (nTokens > 0) {
+        isEndOfCommand = true;
+        cchToken = 0;
+        return CONTINUE;
+      }
+      break;
+    case Token.elseif:
+    case Token.whilecmd:
+    case Token.ifcmd:
+    case Token.forcmd:
+      if (nTokens > 1 && tokCommand != Token.set) {
+        isEndOfCommand = true;
+        if (flowContext != null)
+          flowContext.forceEndIf = true;
+        cchToken = 0;
+        return CONTINUE;            
+      }
+      break;
+    case Token.minusMinus:
+    case Token.plusPlus:
+      if (isNewSet && parenCount == 0 && bracketCount == 0 && ichToken <= setEqualPt) {
+        nTokens = ltoken.size();
+        addTokenToPrefix(Token.tokenEquals);
+        setEqualPt = 0;
+        for (int i = 1; i < nTokens; i++)
+          addTokenToPrefix((Token)ltoken.elementAt(i));
+        addTokenToPrefix(theTok == Token.minusMinus ? Token.tokenMinus : Token.tokenPlus);
+        addTokenToPrefix(Token.intToken(1));
+        return CONTINUE;  
+      } else if (nSemiSkip == forPoint3 && nTokens == ptSemi + 2) {            
+        Token token = lastToken;
+        addTokenToPrefix(Token.tokenEquals);
+        addTokenToPrefix(token);
+        addTokenToPrefix(theTok == Token.minusMinus ? Token.tokenMinus : Token.tokenPlus);
+        addTokenToPrefix(Token.intToken(1));
+        return CONTINUE;
+      }
+      break;
+    case Token.opEQ:
+      if (parenCount == 0 && bracketCount == 0)
+        setEqualPt = ichToken;
+      break;
+    case Token.dot:
+      if (tokCommand == Token.set && parenCount == 0 && bracketCount == 0 && ichToken < setEqualPt) {
+        ltoken.insertElementAt(Token.tokenExpressionBegin, 1);
+        addTokenToPrefix(Token.tokenExpressionEnd);
+        setEqualPt = 0;
+      }            
+      break;
+    case Token.leftbrace:
+      braceCount++;
+      if (braceCount == 1 && parenCount == 0 && checkFlowStartBrace(false)) {
+        isEndOfCommand = true;
+        if (flowContext != null)
+          flowContext.forceEndIf = false;
+        return CONTINUE;
+      }
+
+      // fall through
+    case Token.leftparen:
+      parenCount++;
+      // the select() function uses dual semicolon notation
+      // but we must differentiate from isosurface select(...) and set
+      // picking select
+      if (nTokens > 1
+          && (lastToken.tok == Token.select
+              || lastToken.tok == Token.forcmd || lastToken.tok == Token.ifcmd))
+        nSemiSkip += 2;
+      break;
+    case Token.rightbrace:
+      if (iBrace > 0 && parenCount == 0 && braceCount == 0) {
+        ichBrace = ichToken;
+        if (nTokens == 0) {
+          braceCount = parenCount = 1;
+        } else {
+          braceCount = parenCount = nSemiSkip = 0;
+          vBraces.add(theToken);
+          iBrace++;
+          isEndOfCommand = true;
+          return CONTINUE;
+        }
+      }
+      braceCount--;
+      // fall through
+    case Token.rightparen:
+      parenCount--;
+      if (parenCount < 0)
+        return ERROR(ERROR_tokenUnexpected, ident);
+      // we need to remove the semiskip if parentheses or braces have been
+      // closed. 11.5.46
+      if (parenCount == 0)
+        nSemiSkip = 0;
+      if (needRightParen) {
+        addTokenToPrefix(Token.tokenRightParen);
+        needRightParen = false;
+      }
+      break;
+    case Token.leftsquare:
+      bracketCount++;
+      break;
+    case Token.rightsquare:
+      bracketCount--;
+      if (bracketCount < 0)
+        return ERROR(ERROR_tokenUnexpected, "]");
+    }
+    return OK;
+  }
+
+  private int parseCommandParameter(String ident) {
+    // PART II:
+    //
+    // checking tokens based on the current command
+    // all command starts are handled by case Token.nada
+
+    switch (tokCommand) {
+    case Token.nada:
+      // first token in command
+      lastToken = Token.tokenOff;
+      ichCurrentCommand = ichToken;
+      tokenCommand = theToken;
+      tokCommand = theTok;
+      // checking first here for a flow command because
+      // if (......) {.....} ELSE
+      if (Token.tokAttr(tokCommand, Token.flowCommand)) {
+        lastFlowCommand = tokenCommand;
+        if (iBrace > 0
+            && Token.tokAttrOr(tokCommand, Token.elsecmd, Token.elseif)) {
+          if (((Token) vBraces.get(iBrace - 1)).tok == Token.rightbrace) {
+            vBraces.remove(--iBrace);
+            vBraces.remove(--iBrace);
+          }
+        }
+      }
+      // before processing this command, check to see if we have completed
+      // a right-brace.
+      int ret = checkFlowEndBrace();
+      if (ret == Token.nada)
+        return ERROR;
+      else if (ret == -1) {
+        // yes, so re-read this one
+        isEndOfCommand = true;
+        cchToken = 0;
+        return CONTINUE;
+      }
+
+      if (Token.tokAttr(tokCommand, Token.flowCommand)) {
+        if (!checkFlowCommand((String) tokenCommand.value))
+          return ERROR;
+        theToken = tokenCommand;
+        break;
+      }
+
+      if (theTok == Token.rightbrace) {
+        // if }, just push onto vBrace, but NOT onto ltoken
+        vBraces.add(tokenCommand);
+        iBrace++;
+        tokCommand = Token.nada;
+        return CONTINUE;
+      }
+      if (theTok != Token.leftbrace)
+        lastFlowCommand = null;
+
+      if (Token.tokAttr(tokCommand, Token.command))
+        break;
+
+      // not the standard command
+      // isSetBrace: {xxx}.yyy =  or {xxx}[xx].
+      // isNewSet:   xxx =
+      // but not xxx = where xxx is a known "set xxx" variant
+      // such as "set hetero" or "set hydrogen" or "set solvent"
+      isSetBrace = (theTok == Token.leftbrace);
+      if (isSetBrace && !lookingAtBraceSyntax()) {
+        isEndOfCommand = true;
+        if (flowContext != null)
+          flowContext.forceEndIf = false;
+      }
+      if (!isSetBrace && theTok != Token.plusPlus && theTok != Token.minusMinus
+          && !Token.tokAttr(theTok, Token.identifier)
+          && !Token.tokAttr(theTok, Token.setparam)) {
+        commandExpected();
+        return ERROR;
+      }
+      tokCommand = Token.set;
+      isNewSet = !isSetBrace;
+      setBraceCount = (isSetBrace ? 1 : 0);
+      bracketCount = 0;
+      setEqualPt = Integer.MAX_VALUE;
+      ptNewSetModifier = (isNewSet ? 1 : Integer.MAX_VALUE);
+      break;
+    case Token.function:
+      if (tokenCommand.intValue == 0) {
+        if (nTokens != 1)
+          break; // anything after name is ok
+        // user has given macro command
+        tokenCommand.value = ident;
+        return CONTINUE; // don't store name in stack
+      }
+      if (nTokens == 1) {
+        flowContext.setFunction(thisFunction = new Function(ident));
+        break; // function f
+      }
+      if (nTokens == 2) {
+        if (theTok != Token.leftparen)
+          return ERROR(ERROR_tokenExpected, "(");
+        break; // function f (
+      }
+      if (nTokens == 3 && theTok == Token.rightparen)
+        break; // function f ( )
+      if (nTokens % 2 == 0) {
+        // function f ( x , y )
+        if (theTok != Token.comma && theTok != Token.rightparen)
+          return ERROR(ERROR_tokenExpected, ", )");
+        break;
+      }
+      thisFunction.addVariable(ident, true);
+      break;
+    case Token.elsecmd:
+      if (nTokens == 1 && theTok != Token.ifcmd) {
+        isEndOfCommand = true;
+        cchToken = 0;
+        return CONTINUE;
+      }
+      if (nTokens != 1 || theTok != Token.ifcmd && theTok != Token.leftbrace)
+        return ERROR(ERROR_badArgumentCount);
+      ltoken.removeElementAt(0);
+      ltoken.addElement(flowContext.token = new Token(Token.elseif, "elseif"));
+      tokCommand = Token.elseif;
+      return CONTINUE;
+    case Token.var:
+      if (nTokens != 1)
+        break;
+      addContextVariable(ident);
+      ltoken.removeElementAt(0);
+      ltoken.addElement(Token.tokenSetVar);
+      tokCommand = Token.set;
+      break;
+    case Token.end:
+      if (nTokens != 1)
+        return ERROR(ERROR_badArgumentCount);
+      if (!checkFlowEnd(theTok, ident, ichCurrentCommand))
+        return ERROR;
+      if (theTok == Token.function)
+        return CONTINUE;
+      break;
+    case Token.whilecmd:
+      if (nTokens > 2 && braceCount == 0 && parenCount == 0) {
+        isEndOfCommand = true;
+        flowContext.setLine();
+      }
+      break;
+    case Token.elseif:
+    case Token.ifcmd:
+      if (nTokens > 2 && braceCount == 0 && parenCount == 0) {
+        isEndOfCommand = true;
+        flowContext.setLine();
+      }
+      break;
+    case Token.forcmd:
+      if (nTokens == 1) {
+        if (theTok != Token.leftparen)
+          return ERROR(ERROR_unrecognizedToken, ident);
+        forPoint3 = nSemiSkip = 0;
+        nSemiSkip += 2;
+      } else if (nTokens == 3 && ((Token) ltoken.get(2)).tok == Token.var) {
+        addContextVariable(ident);
+      } else if (braceCount == 0 && parenCount == 0) {
+        isEndOfCommand = true;
+        flowContext.setLine();
+      }
+      break;
+    case Token.set:
+      if (theTok == Token.leftbrace)
+        setBraceCount++;
+      else if (theTok == Token.rightbrace) {
+        setBraceCount--;
+        if (isSetBrace && setBraceCount == 0
+            && ptNewSetModifier == Integer.MAX_VALUE)
+          ptNewSetModifier = nTokens + 1;
+      }
+      if (nTokens == ptNewSetModifier) { // 1 when { is not present
+        boolean isSetArray = false;
+        Token token;
+        if (theTok == Token.opEQ || theTok == Token.leftsquare) {
+          // x = or x[n] =
+          token = (Token) ltoken.get(0);
+          ltoken.removeElementAt(0);
+          isSetArray = (theTok == Token.leftsquare);
+          ltoken.addElement(isSetArray ? Token.tokenSetArray
+              : Token.tokenSet);
+          theTok = token.tok;
+          tokCommand = Token.set;
+        }
+        if (theTok == Token.leftparen) {
+          // mysub(xxx,xxx,xxx)
+          token = (Token) ltoken.get(0);
+          ltoken.removeElementAt(0);
+          tokenCommand = new Token(Token.function, 0, token.value);
+          ltoken.add(0, tokenCommand);
+          tokCommand = Token.function;
+          //token = Token.tokenLeftParen;
+          //theTok = Token.leftparen;
+          break;
+        }
+        if (theTok != Token.identifier
+            && (!Token.tokAttr(theTok, Token.setparam))) {
+          if (isNewSet)
+            commandExpected();
+          else
+            error(ERROR_unrecognizedParameter, "SET", ": " + ident);
+          return ERROR;
+        }
+        if (isSetArray) {
+          addTokenToPrefix(theToken);
+          //token = Token.tokenArraySelector;
+          //theTok = Token.leftsquare;
+        } else if (nTokens == 1 
+              && (lastToken.tok == Token.plusPlus || lastToken.tok == Token.minusMinus)) {
+          ltoken.removeElementAt(0);
+          tokenCommand = Token.tokenSet; 
+          tokCommand = Token.set;
+          ltoken.insertElementAt(tokenCommand, 0);
+          addTokenToPrefix(lastToken);
+          break;
+        }
+      }
+      break;
+    case Token.display:
+    case Token.hide:
+    case Token.restrict:
+    case Token.select:
+    case Token.delete:
+    case Token.define:
+      if (tokCommand == Token.define) {
+        if (nTokens == 1) {
+          // we are looking at the variable name
+          if (theTok != Token.identifier) {
+            if (preDefining) {
+              if (!Token.tokAttr(theTok, Token.predefinedset)) {
+                error(
+                    "ERROR IN Token.java or JmolConstants.java -- the following term was used in JmolConstants.java but not listed as predefinedset in Token.java: "
+                        + ident, null);
+                return ERROR;
+              }
+            } else if (Token.tokAttr(theTok, Token.predefinedset)) {
+              Logger
+                  .warn("WARNING: predefined term '"
+                      + ident
+                      + "' has been redefined by the user until the next file load.");
+            } else if (!isCheckOnly && ident.length() > 1) {
+              Logger
+                  .warn("WARNING: redefining "
+                      + ident
+                      + "; was "
+                      + theToken
+                      + "not all commands may continue to be functional for the life of the applet!");
+              theTok = theToken.tok = Token.identifier;
+              Token.addToken(ident, theToken);
+            }
+          }
+          addTokenToPrefix(theToken);
+          lastToken = Token.tokenComma;
+          return CONTINUE;
+        }
+        if (nTokens == 2) {
+          if (theTok == Token.opEQ) {
+            // we are looking at @x =.... just insert a SET command
+            // and ignore the =. It's the same as set @x ...
+            ltoken.insertElementAt(Token.tokenSet, 0);
+            return CONTINUE;
+          }
+        }
+      }
+      if (bracketCount == 0 && theTok != Token.identifier
+          && !Token.tokAttr(theTok, Token.expression) && theTok != Token.min
+          && theTok != Token.max)
+        return ERROR(ERROR_invalidExpressionToken, ident);
+      break;
+    case Token.center:
+      if (theTok != Token.identifier && theTok != Token.dollarsign
+          && !Token.tokAttr(theTok, Token.expression))
+        return ERROR(ERROR_invalidExpressionToken, ident);
+      break;
+    }
+    return OK;
   }
 
   private boolean checkFlowStartBrace(boolean atEnd) {
@@ -1216,7 +1339,7 @@ class Compiler {
 
   private int forceFlowEnd(Token token) {
     
-    System.out.println("forcing end");
+    //System.out.println("forcing end");
     Token t0 = tokenCommand;    
     tokenCommand = new Token(Token.end, "end");
     tokCommand = tokenCommand.tok;
@@ -1253,7 +1376,7 @@ class Compiler {
         return error(ERROR_badContext, ident);
       isEnd = true;
       if (flowContext.token.tok != Token.function)
-        tokenCommand = new Token(tokCommand, -flowContext.pt0, ident); //copy
+        tokenCommand = new Token(tokCommand, -flowContext.getPt0(), ident); //copy
       break;
     case Token.ifcmd:
     case Token.forcmd:
@@ -1270,22 +1393,22 @@ class Compiler {
       if (flowContext == null || flowContext.token.tok != Token.ifcmd
           && flowContext.token.tok != Token.elseif)
         return error(ERROR_badContext, ident);
-      flowContext.token.intValue = flowContext.pt0 = pt;
+      flowContext.token.intValue = flowContext.setPt0(pt);
       break;
     case Token.breakcmd:
     case Token.continuecmd:
       isNew = false;
-      FlowContext f = getBreakableContext(0);
+      FlowContext f = (flowContext == null ? null : flowContext.getBreakableContext(0));
       if (f == null)
         return error(ERROR_badContext, ident);
-      tokenCommand = new Token(tokCommand, f.pt0, ident); //copy
+      tokenCommand = new Token(tokCommand, f.getPt0(), ident); //copy
       break;
     case Token.elseif:
       if (flowContext == null || flowContext.token.tok != Token.ifcmd
           && flowContext.token.tok != Token.elseif
           && flowContext.token.tok != Token.elsecmd)
         return error(ERROR_badContext, "elseif");
-      flowContext.token.intValue = flowContext.pt0 = pt;
+      flowContext.token.intValue = flowContext.setPt0(pt);
       break;
     case Token.function:
       if (flowContext != null)
@@ -1295,13 +1418,13 @@ class Compiler {
     if (isEnd) {
       flowContext.token.intValue = pt;
       if (tokCommand == Token.endifcmd)
-        flowContext = flowContext.parent;
+        flowContext = flowContext.getParent();
     } else if (isNew) {
       tokenCommand = new Token(tokCommand, tokenCommand.value); //copy
       if (tokCommand == Token.elsecmd || tokCommand == Token.elseif) {
         flowContext.token = tokenCommand;
       } else {
-        flowContext = new FlowContext(tokenCommand, pt, flowContext, lineCurrent, iCommand);        
+        flowContext = new FlowContext(tokenCommand, pt, flowContext);        
       }
     }
     tokCommand = tokenCommand.tok;
@@ -1325,33 +1448,28 @@ class Compiler {
           lineNumbers, lineIndices, lltoken);
       thisFunction = null;
       tokenCommand.intValue = 0;
-      flowContext = flowContext.parent;
+      flowContext = flowContext.getParent();
       return true;
     default:
       return error(ERROR_unrecognizedToken, "end " + ident);
     }
-    flowContext = flowContext.parent;
+    flowContext = flowContext.getParent();
     return true;
   }
 
-  private FlowContext getBreakableContext(int nLevelsUp) {
-    FlowContext f = flowContext;
-    while (f != null && (f.token.tok != Token.forcmd
-      && f.token.tok != Token.whilecmd || nLevelsUp-- > 0))
-      f = f.parent;
-    return f;
-  }
-  
   private boolean getData(String key) {
     ichToken += key.length() + 2;
-    if (script.length() > ichToken && script.charAt(ichToken) == '\r')
-      ichToken++;
-    if (script.length() > ichToken && script.charAt(ichToken) == '\n')
-      ichToken++;
+    if (script.length() > ichToken && script.charAt(ichToken) == '\r') {
+      lineCurrent++;ichToken++;
+    }
+    if (script.length() > ichToken && script.charAt(ichToken) == '\n') {
+      lineCurrent++;ichToken++;
+    }
     int i = script.indexOf("\"" + key + "\"", ichToken) - 4;
     if (i < 0 || !script.substring(i, i + 4).equalsIgnoreCase("END "))
       return false;
     String str = script.substring(ichToken, i);
+    incrementLineCount(str);
     addTokenToPrefix(new Token(Token.data, str));
     addTokenToPrefix(new Token(Token.identifier, "end"));
     addTokenToPrefix(new Token(Token.string, key));
@@ -1359,6 +1477,14 @@ class Compiler {
     return true;
   }
 
+  private void incrementLineCount(String str) {
+    char ch;
+    for (int i = str.length(); --i >= 0;) {
+      if ((ch = str.charAt(i)) == '\n' || ch == '\r')
+        lineCurrent++;
+    }
+  }
+  
   private static boolean isSpaceOrTab(char ch) {
     return ch == ' ' || ch == '\t';
   }
@@ -1417,6 +1543,32 @@ class Compiler {
          || ch == '\n'));
   }
 
+  private boolean lookingAtExtendedComment() {
+      char ch;
+      int ichT = ichToken;
+      if (ichT >= cchScript - 1 || script.charAt(ichT++) != '/')
+        return false;
+      switch (script.charAt(ichT)) {
+      case '/':
+        while (++ichT < cchScript && (ch = script.charAt(ichT)) != '\r' && ch != '\n') {
+        }
+        cchToken = ichT - ichToken;  
+        break;
+      case '*':
+        String s = (++ichT < cchScript && script.charAt(ichT) == '*' ? "**/" : "*/");
+        ichT = script.indexOf(s, ichToken + 2);
+        if (ichT < 0)
+          cchToken = cchScript;
+        else
+          incrementLineCount(script.substring(ichToken, ichT));
+        cchToken = ichT + s.length() - ichToken;
+        break;
+      default:
+        return false;
+      }
+      return true;
+  }
+  
   private boolean isShowCommand;
   
   private boolean lookingAtComment() {
@@ -3079,8 +3231,17 @@ class Compiler {
     return error(ERROR_commandExpected);
   }
 
+  private int ERROR(int error) {
+    error(error);
+    return ERROR;
+  }
   private boolean error(int error) {
     return error(error, null, null);
+  }
+
+  private int ERROR(int error, String value) {
+    error(error, value);
+    return ERROR;
   }
 
   private boolean error(int error, String value) {

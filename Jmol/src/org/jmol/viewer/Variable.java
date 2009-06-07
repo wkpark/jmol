@@ -36,6 +36,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Parser;
+import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 
 public class Variable extends Token {
@@ -82,9 +83,15 @@ public class Variable extends Token {
   }
 
   public Variable(Token theToken) {
-    this.tok = theToken.tok;
-    this.intValue = theToken.intValue;
-    this.value = theToken.value;
+    if (theToken.tok == Token.string) {
+      set(tValue((String)theToken.value));
+    } else {
+      Variable v = new Variable();
+      v.tok = theToken.tok;
+      v.intValue = theToken.intValue;
+      v.value = theToken.value;
+      set(v);      
+    }
   }
 
   public static Variable getVariable(Object x) {
@@ -97,7 +104,7 @@ public class Variable extends Token {
     if (x instanceof String[])
       return new Variable(list, x);
     if (x instanceof String)
-      return new Variable(string, x);
+      return tValue((String) x);
     if (x instanceof Vector3f)
       return new Variable(point3f, new Point3f((Vector3f) x));
     if (x instanceof Point3f)
@@ -106,6 +113,8 @@ public class Variable extends Token {
       return new Variable(point4f, x);
     if (x instanceof BitSet)
       return new Variable(bitset, x);
+    if (x instanceof Quaternion)
+      return new Variable(point4f, ((Quaternion)x).toPoint4f());
     return null;
   }
 
@@ -204,6 +213,8 @@ public class Variable extends Token {
       return Boolean.FALSE;
     case integer:
       return new Integer(x.intValue);
+    case string:
+      return tValue((String) x.value).value;
     default:
       return x.value;
     }

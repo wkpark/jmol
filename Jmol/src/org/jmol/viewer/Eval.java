@@ -7274,14 +7274,19 @@ class Eval {
     // if both pt and ptMax are 0, then it indicates that 
     BitSet bs = null;
     String propertyName = "";
+    int tokProperty = Token.nada;
+    boolean isArrayItem = (statement[0].intValue == '[');
+    boolean settingProperty = false;
     boolean isExpression = false;
+    boolean settingData = (key.startsWith("property_"));
+    Variable t = (settingData ? null : getContextVariableAsVariable(key));
+    boolean isUserVariable = (t != null);
+
     if (pt > 0 && tokAt(pt - 1) == Token.expressionBegin) {
       bs = expression(pt - 1);
       pt = iToken + 1;
       isExpression = true;
     }
-    int tokProperty = Token.nada;
-    boolean settingProperty = false;
     if (tokAt(pt) == Token.dot) {
       settingProperty = true;
       Variable token = getBitsetPropertySelector(++pt, true);
@@ -7296,9 +7301,6 @@ class Eval {
     if (isExpression && !settingProperty) 
       error(ERROR_invalidArgument);
 
-    boolean isArrayItem = (statement[0].intValue == '[');
-    Variable t = getContextVariableAsVariable(key);
-    boolean isUserVariable = (t != null);
     
     // get value
     
@@ -7311,8 +7313,15 @@ class Eval {
 
     // create user variable if needed for list now, so we can do the copying
     
-    boolean needVariable = (!isUserVariable && !isExpression 
-       && (isArrayItem || settingProperty || tv.value instanceof String[]));
+    boolean needVariable = (!isUserVariable && !isExpression && !settingData
+       && (isArrayItem || settingProperty 
+           || !(
+               tv.value instanceof String
+               || tv.value instanceof Integer
+               || tv.value instanceof Float
+               || tv.value instanceof Boolean
+               )
+           ));
     
     if (needVariable) {
       t = viewer.getVariable(key);
@@ -13461,9 +13470,7 @@ class Eval {
         case Token.type:
           return addX(Variable.typeOf(x2));
         case Token.lines:
-          if (x2.tok != Token.string)
-            return (isSyntaxCheck ? addX(1) : false);
-          String s = (String) x2.value;
+          String s = (x2.tok == Token.string ? (String) x2.value : Variable.sValue(x2));
           s = TextFormat.simpleReplace(s, "\n\r", "\n").replace('\r', '\n');
           return addX(TextFormat.split(s, '\n'));
         case Token.color:

@@ -28,9 +28,11 @@ import java.util.BitSet;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Bond.BondSet;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Parser;
@@ -38,24 +40,29 @@ import org.jmol.util.TextFormat;
 
 public class Variable extends Token {
 
-  final static Variable vT  = new Variable(on, 1, "true");
+  final static Variable vT = new Variable(on, 1, "true");
   final static Variable vF = new Variable(off, 0, "false");
   public static Variable vAll = new Variable(all, "all");
 
-  public int intValue2;
-  public int flags;
-  
-  private final static int FLAG_V2 = 1;
-  //private final static int FLAG_READONLY = 2;
-  
+  public int index = Integer.MAX_VALUE;
+
+  public String name;
+
+  private final static int FLAG_CANINCREMENT = 1;
+  private final static int FLAG_LOCALVAR = 2;
+
+  public int flags = ~FLAG_CANINCREMENT & FLAG_LOCALVAR;
+
   public Variable() {
-    
+    tok = string;
+    value = "";
+
   }
-  
+
   public Variable(int tok) {
     this.tok = tok;
   }
- 
+
   public Variable(int tok, int intValue, Object value) {
     super(tok, intValue, value);
   }
@@ -68,40 +75,106 @@ public class Variable extends Token {
     super(tok, intValue);
   }
 
+  public Variable(BitSet bs, int index) {
+    value = bs;
+    this.index = index;
+    tok = bitset;
+  }
+
   public Variable(Token theToken) {
     this.tok = theToken.tok;
     this.intValue = theToken.intValue;
     this.value = theToken.value;
   }
 
-  public Variable set(float f) { value = new Float(f); tok = decimal; return this; }
-  public Variable set(int i) { intValue = i; tok = integer; return this; }
-  public Variable set(String s) { value = s; tok = string; return this; }
-  public Variable set(BitSet bs) { value = bs; tok = bitset; return this; }
-  public Variable set(BitSet bs, int i2) { value = bs; intValue2 = i2; tok = bitset; flags |= FLAG_V2; return this; }
-  public Variable set(Point3f pt) { value = pt; tok = point3f; return this; }
-  public Variable set(Point4f pt) { value = pt; tok = point4f; return this; }
-  public Variable set(String[] slist) { value = slist; tok = list; return this; }
- 
-  public static Variable getVariable2(int intValue2, Object value) {
+  public static Variable getVariable(Object x) {
+    if (x instanceof Variable)
+      return (Variable) x;
+    if (x instanceof Integer)
+      return new Variable(integer, ((Integer) x).intValue());
+    if (x instanceof Float)
+      return new Variable(decimal, x);
+    if (x instanceof String[])
+      return new Variable(list, x);
+    if (x instanceof String)
+      return new Variable(string, x);
+    if (x instanceof Vector3f)
+      return new Variable(point3f, new Point3f((Vector3f) x));
+    if (x instanceof Point3f)
+      return new Variable(point3f, x);
+    if (x instanceof Point4f)
+      return new Variable(point4f, x);
+    if (x instanceof BitSet)
+      return new Variable(bitset, x);
+    return null;
+  }
+
+  public Variable set(Variable v) {
+    index = v.index;
+    intValue = v.intValue;
+    tok = v.tok;
+    if (tok == Token.list) {
+      int n = ((String[])v.value).length;
+      value = new String[n];
+      System.arraycopy(v.value, 0, value, 0, n);
+    } else {
+      value = v.value;
+    }
+    return this;
+  }
+
+  public Variable setName(String name) {
+    this.name = name;
+    flags |= FLAG_CANINCREMENT;
+    //System.out.println("Variable: " + name + " " + intValue + " " + value);
+    return this;
+  }
+
+  public Variable setGlobal() {
+    flags &= ~FLAG_LOCALVAR;
+    return this;
+  }
+
+  public boolean canIncrement() {
+    return tokAttr(flags, FLAG_CANINCREMENT);
+  }
+
+  public boolean increment(int n) {
+    if (!canIncrement())
+      return false;
+    switch (tok) {
+    case integer:
+      intValue += n;
+      break;
+    case decimal:
+      value = new Float(((Float) value).floatValue() + n);
+      break;
+    default:
+      value = nValue(this);
+      if (value instanceof Integer) {
+        tok = integer;
+        intValue = ((Integer) value).intValue();
+      } else {
+        tok = decimal;
+      }
+    }
+    return true;
+  }
+
+  public static Variable getVariableSelected(int index, Object value) {
     Variable v = new Variable(bitset, value);
-    v.intValue2 = intValue2;
-    v.flags |= FLAG_V2;
+    v.index = index;
     return v;
   }
-  
-  public static int bsItem2(Variable x1) {
-    return (tokAttr(x1.flags, Variable.FLAG_V2) ? x1.intValue2 : -1);
-  }
-  
-  public boolean getBoolean() {
+
+  public boolean asBoolean() {
     return bValue(this);
   }
-  
+
   public int asInt() {
     return iValue(this);
   }
-  
+
   public float asFloat() {
     return fValue(this);
   }
@@ -113,9 +186,9 @@ public class Variable extends Token {
   public Object getValAsObj() {
     return (tok == integer ? new Integer(intValue) : value);
   }
-  
- // math-related Token static methods
-  
+
+  // math-related Token static methods
+
   final static Point3f pt0 = new Point3f();
 
   final public static Variable intVariable(int intValue) {
@@ -133,25 +206,25 @@ public class Variable extends Token {
       return new Integer(x.intValue);
     default:
       return x.value;
-    }        
+    }
   }
-  
+
   static Object nValue(Token x) {
     int iValue = 0;
     switch (x == null ? nada : x.tok) {
-      case integer:
-        iValue = x.intValue;
-        break;
-      case decimal:
-        return x.value;
-      case string:
-        if (((String) x.value).indexOf(".") >= 0)
-          return new Float(toFloat((String) x.value));
-        iValue = (int) toFloat((String) x.value);
-      }
+    case integer:
+      iValue = x.intValue;
+      break;
+    case decimal:
+      return x.value;
+    case string:
+      if (((String) x.value).indexOf(".") >= 0)
+        return new Float(toFloat((String) x.value));
+      iValue = (int) toFloat((String) x.value);
+    }
     return new Integer(iValue);
   }
-  
+
   static boolean bValue(Token x) {
     switch (x == null ? nada : x.tok) {
     case on:
@@ -187,7 +260,7 @@ public class Variable extends Token {
     case string:
     case point3f:
     case point4f:
-      return (int)fValue(x);
+      return (int) fValue(x);
     case bitset:
       return BitSetUtil.cardinalityOf(bsSelect(x));
     default:
@@ -210,7 +283,7 @@ public class Variable extends Token {
       String[] list = (String[]) x.value;
       if (i == Integer.MAX_VALUE)
         return list.length;
-    case string: 
+    case string:
       return toFloat(sValue(x));
     case bitset:
       return iValue(x);
@@ -221,7 +294,7 @@ public class Variable extends Token {
     default:
       return 0;
     }
-  }  
+  }
 
   static float toFloat(String s) {
     if (s.equalsIgnoreCase("true"))
@@ -233,7 +306,7 @@ public class Variable extends Token {
 
   static String sValue(Token x) {
     if (x == null)
-        return "";
+      return "";
     int i;
     switch (x.tok) {
     case on:
@@ -268,7 +341,7 @@ public class Variable extends Token {
         return s;
       if (i < 1 || i > s.length())
         return "";
-      return "" + s.charAt(i-1);
+      return "" + s.charAt(i - 1);
     case decimal:
     default:
       return "" + x.value;
@@ -277,7 +350,7 @@ public class Variable extends Token {
 
   static String sValue(Variable x) {
     if (x == null)
-        return "";
+      return "";
     int i;
     switch (x.tok) {
     case on:
@@ -312,7 +385,7 @@ public class Variable extends Token {
         return s;
       if (i < 1 || i > s.length())
         return "";
-      return "" + s.charAt(i-1);
+      return "" + s.charAt(i - 1);
     case decimal:
     default:
       return "" + x.value;
@@ -333,9 +406,10 @@ public class Variable extends Token {
     case point4f:
       return -16;
     case string:
-      return ((String)x.value).length();
+      return ((String) x.value).length();
     case list:
-      return x.intValue == Integer.MAX_VALUE ? ((String[])x.value).length : sizeOf(selectItem(x));
+      return x.intValue == Integer.MAX_VALUE ? ((String[]) x.value).length
+          : sizeOf(selectItem(x));
     case bitset:
       return BitSetUtil.cardinalityOf(bsSelect(x));
     default:
@@ -383,40 +457,42 @@ public class Variable extends Token {
 
   static BitSet bsSelect(Token token) {
     token = selectItem(token, Integer.MIN_VALUE);
-    return (BitSet)token.value;
+    return (BitSet) token.value;
   }
 
   static BitSet bsSelect(Token token, int n) {
     token = selectItem(token);
     token = selectItem(token, 1);
     token = selectItem(token, n);
-    return (BitSet)token.value;
+    return (BitSet) token.value;
   }
 
-  static Variable selectItem(Variable tokenIn) {
-    return (Variable) selectItem(tokenIn, Integer.MIN_VALUE); 
+  static Variable selectItem(Variable var) {
+    return (Variable) selectItem(var, Integer.MIN_VALUE);
   }
 
-  static Token selectItem(Token tokenIn) {
-    return selectItem(tokenIn, Integer.MIN_VALUE); 
+  static Token selectItem(Token var) {
+    return selectItem(var, Integer.MIN_VALUE);
+  }
+
+  static Variable selectItem(Variable var, int i2) {
+    return (Variable) selectItem((Token) var, i2);
   }
 
   static Token selectItem(Token tokenIn, int i2) {
-    if (tokenIn.tok != bitset 
-        && tokenIn.tok != list
-        && tokenIn.tok != string)
+    if (tokenIn.tok != bitset && tokenIn.tok != list && tokenIn.tok != string)
       return tokenIn;
 
     // negative number is a count from the end
-    
+
     BitSet bs = null;
     String[] st = null;
-    String s =null;
-    
+    String s = null;
+
     int i1 = tokenIn.intValue;
     if (i1 == Integer.MAX_VALUE) {
       // no selections have been made yet --
-      // we just create a new token with the 
+      // we just create a new token with the
       // same bitset and now indicate either
       // the selected value or "ALL" (max_value)
       if (i2 == Integer.MIN_VALUE)
@@ -424,19 +500,20 @@ public class Variable extends Token {
       return new Variable(tokenIn.tok, i2, tokenIn.value);
     }
     int len = 0;
-    boolean isv2 = tokenIn instanceof Variable && tokAttr(((Variable) tokenIn).flags, FLAG_V2);
+    boolean isInputSelected = (tokenIn instanceof Variable && ((Variable) tokenIn).index != Integer.MAX_VALUE);
     Variable tokenOut = new Variable(tokenIn.tok, Integer.MAX_VALUE);
-    
+
     switch (tokenIn.tok) {
     case bitset:
       if (tokenIn.value instanceof BondSet) {
-        tokenOut.value = new BondSet((BitSet) tokenIn.value, ((BondSet)tokenIn.value).getAssociatedAtoms());
+        tokenOut.value = new BondSet((BitSet) tokenIn.value,
+            ((BondSet) tokenIn.value).getAssociatedAtoms());
         bs = (BitSet) tokenOut.value;
         len = BitSetUtil.cardinalityOf(bs);
         break;
       }
       bs = BitSetUtil.copy((BitSet) tokenIn.value);
-      len = (isv2 ? 1 : BitSetUtil.cardinalityOf(bs));
+      len = (isInputSelected ? 1 : BitSetUtil.cardinalityOf(bs));
       tokenOut.value = bs;
       break;
     case list:
@@ -461,7 +538,7 @@ public class Variable extends Token {
       i2 = len;
     else if (i2 < 0)
       i2 = len + i2;
-    
+
     if (i2 > len)
       i2 = len;
     else if (i2 < i1)
@@ -469,16 +546,16 @@ public class Variable extends Token {
 
     switch (tokenIn.tok) {
     case bitset:
-      if (isv2) {
+      if (isInputSelected) {
         if (i1 > 1)
           bs.clear();
         break;
       }
       len = BitSetUtil.length(bs);
       int n = 0;
-        for (int j = 0; j < len; j++)
-          if (bs.get(j) && (++n < i1 || n > i2))
-            bs.clear(j);
+      for (int j = 0; j < len; j++)
+        if (bs.get(j) && (++n < i1 || n > i2))
+          bs.clear(j);
       break;
     case string:
       if (i1 < 1 || i1 > len)
@@ -488,10 +565,10 @@ public class Variable extends Token {
       break;
     case list:
       if (i1 < 1 || i1 > len || i2 > len)
-        return new Variable(string, "");     
+        return new Variable(string, "");
       if (i2 == i1)
         return tValue(st[i1 - 1]);
-      String[]list = new String[i2 - i1 + 1];
+      String[] list = new String[i2 - i1 + 1];
       for (int i = 0; i < list.length; i++)
         list[i] = st[i + i1 - 1];
       tokenOut.value = list;
@@ -509,12 +586,48 @@ public class Variable extends Token {
       return vT;
     if (s.toLowerCase() == "false")
       return vF;
-    float f;
-    // this is a problem with "1D35" or "1E35" for instance
-    if (!Float.isNaN(f = Parser.parseFloatStrict(s)))
-      return (f == (int) f && s.indexOf(".") < 0 ? intVariable((int)f) 
-          : new Variable(decimal, new Float(f)));
-    return new Variable(string, v);  
+    float f = Parser.parseFloatStrict(s);
+    return (Float.isNaN(f) ? new Variable(string, v) 
+        : s.indexOf(".") < 0 ? new Variable(integer, (int) f)
+        : new Variable(decimal, new Float(f)));
   }
-  
+
+  public String toString() {
+    return super.toString() + "[" + name + "]";
+  }
+
+  public boolean setSelectedValue(int selector, Variable var) {
+    if (selector == Integer.MAX_VALUE || tok != string && tok != list)
+      return false;
+    String s = sValue(var);
+    switch (tok) {
+    case list:
+      String[] array = (String[]) value;
+      if (selector <= 0)
+        selector = array.length + selector;
+      if (--selector < 0)
+        selector = 0;
+      String[] arrayNew = array;
+      if (arrayNew.length <= selector) {
+        value = arrayNew = ArrayUtil.ensureLength(array, selector + 1);
+        for (int i = array.length; i <= selector; i++)
+          arrayNew[i] = "";
+      }
+      arrayNew[selector] = s;
+      break;
+    case string:
+      String str = (String) value;
+      int pt = str.length();
+      if (selector <= 0)
+        selector = pt + selector;
+      if (--selector < 0)
+        selector = 0;
+      while (selector >= str.length())
+        str += " ";
+      str = str.substring(0, selector) + s + str.substring(selector + 1);
+      break;
+    }
+    return true;
+  }
+
 }

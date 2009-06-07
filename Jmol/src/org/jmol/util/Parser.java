@@ -199,7 +199,7 @@ public class Parser {
   }
 
   public static float parseFloatStrict(String str) {
-    // checks trailing characters
+    // checks trailing characters and does not allow "1E35" to be float
     int cch = str.length();
     if (cch == 0)
       return Float.NaN;
@@ -269,7 +269,7 @@ public class Parser {
 
   private final static float[] tensScale = { 10, 100, 1000, 10000, 100000, 1000000 };
 
-  private static float parseFloatChecked(String str, int ichMax, int[] next, boolean checkTrailing) {
+  private static float parseFloatChecked(String str, int ichMax, int[] next, boolean isStrict) {
     boolean digitSeen = false;
     float value = 0;
     int ich = next[0];
@@ -286,7 +286,9 @@ public class Parser {
       ++ich;
       digitSeen = true;
     }
+    boolean isDecimal = false;
     if (ch == '.') {
+      isDecimal = true;
       int iscale = 0;
       while (++ich < ichMax && (ch = str.charAt(ich)) >= '0' && ch <= '9') {
         if (iscale < decimalScale.length)
@@ -295,11 +297,13 @@ public class Parser {
         digitSeen = true;
       }
     }
+    boolean isExponent = false;
     if (!digitSeen)
       value = Float.NaN;
     else if (negative)
       value = -value;
     if (ich < ichMax && (ch == 'E' || ch == 'e' || ch == 'D')) {
+      isExponent = true;
       if (++ich >= ichMax)
         return Float.NaN;
       ch = str.charAt(ich);
@@ -318,7 +322,9 @@ public class Parser {
     } else {
        next[0] = ich; // the exponent code finds its own ichNextParse
     }
-    return (!checkTrailing || checkTrailingText(str, next[0], ichMax) ? value : Float.NaN);
+    return (!isStrict 
+        || (!isExponent || isDecimal) && checkTrailingText(str, next[0], ichMax) 
+        ? value : Float.NaN);
   }
 
   private static boolean checkTrailingText(String str, int ich, int ichMax) {

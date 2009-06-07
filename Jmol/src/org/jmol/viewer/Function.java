@@ -45,10 +45,13 @@ class Function {
   
   void setVariables(Hashtable contextVariables, Vector params) {
     int nParams = (params == null ? 0 : params.size());
-    for (int i = names.size(); --i >= 0; )
-      contextVariables.put((String)names.get(i), 
-          (i < nParameters && i < nParams ? params.get(i) : new Variable(Token.string, "")));
-      contextVariables.put("_retval", Variable.intVariable(0));
+    for (int i = names.size(); --i >= 0; ) {
+      String name = (String)names.get(i);
+      contextVariables.put(name, 
+          (i < nParameters && i < nParams ? params.get(i) 
+              : (new Variable(Token.string, "")).setName(name)));
+    }
+    contextVariables.put("_retval", Variable.intVariable(0));
   }
   
   void addVariable(String name, boolean isParameter) {

@@ -149,55 +149,33 @@ public class Escape {
   static int nEscape = ESCAPE_SET.length();
 
   /**
-   * Serialize a simple string-based array as a single 
-   * string followed by a .split(x) where x is some character
-   * not in the string. A bit kludgy, but it works. 
+   * Serialize a simple string-based array as a single string followed by a
+   * .split(x) where x is some character not in the string. A bit kludgy, but it
+   * works.
    * 
    * 
-   * @param list list of strings to serialize
-   * @return     serialized array
+   * @param list
+   *          list of strings to serialize
+   * @return serialized array
    */
   public static String escape(String[] list) {
     if (list == null || list.length == 0)
       return escape("");
-    int pt = 0;
-    boolean haveDoubleQuote = false;
-    for (int i = 0; i < list.length; i++) {
-      if (list[i].indexOf("\"") >= 0) {
-        haveDoubleQuote = true;
-        break;
-      }
-    }
     StringBuffer s = new StringBuffer();
-    if (true || haveDoubleQuote) {
-      s.append("[");
-      for (int i = 0; i < list.length; i++) {
-        if (i > 0)
-          s.append(", ");
-        s.append(escape(list[i]));
-      }
-      s.append("]");
-      return s.toString();  
-    }
-    
-    char ch = ESCAPE_SET.charAt(0);
+    s.append("[");
     for (int i = 0; i < list.length; i++) {
-      String item = list[i];
-      if (item.indexOf(ch) >= 0) {
-        pt++;
-        if (pt == nEscape)
-          break;
-        ch = ESCAPE_SET.charAt(pt);
-        i = -1;
-      }
+      if (i > 0)
+        s.append(", ");
+      s.append(escapeNice(list[i]));
     }
-    String sch = "" + ch;
-    if (pt == nEscape)
-      sch = "--" + Math.random() + "--";
-    int nch = sch.length();
-    for (int i = 0; i < list.length; i++)
-      s.append(sch).append(list[i]);
-    return escape(s.toString().substring(nch)) + ".split(\"" + sch + "\")";
+    s.append("]");
+    return s.toString();
+
+  }
+  
+  private static String escapeNice(String s) {
+    float f = Parser.parseFloatStrict(s);
+    return (Float.isNaN(f) ? escape(s) : s);
   }
 
   private static String unicode(char c) {
@@ -292,8 +270,9 @@ public class Escape {
       v = Escape.unescapeBitset(s);
     else if (s.indexOf("[{") == 0)
       v = new BondSet(Escape.unescapeBitset(s));
+    
     if (v instanceof Point3f)
-      return (new Variable()).set((Point3f) v);
+      return (new Variable(Token.point3f, v));
     if (v instanceof Point4f)
       return new Variable(Token.point4f, v);
     if (v instanceof BitSet)

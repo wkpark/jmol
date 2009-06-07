@@ -873,9 +873,9 @@ public class SurfaceGenerator {
     surfaceReader.jvxlUpdateInfo();
     setMarchingSquares(surfaceReader.marchingSquares);
     surfaceReader.discardTempData(false);
-    if (surfaceReader.hasColorData)
-      surfaceReader.colorIsosurface();
     params.mappedDataMin = Float.MAX_VALUE;
+    if (surfaceReader.hasColorData)
+      colorIsosurface();
     surfaceReader = null; // resets voxel reader for mapping
   }
 

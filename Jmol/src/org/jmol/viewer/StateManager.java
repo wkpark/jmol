@@ -495,7 +495,8 @@ public class StateManager {
       //
     }
 
-    Hashtable listVariables = new Hashtable();
+    //same thing now.
+    Hashtable htUserVariables = new Hashtable();
 
     void clear() {
       Enumeration e = htUserVariables.keys();
@@ -511,21 +512,6 @@ public class StateManager {
       setParameterValue("selectionhalos", false);
       setParameterValue("hidenotselected", false);
       setParameterValue("measurementlabels", measurementLabels = true);
-    }
-
-    void setListVariable(String name, Variable value) {
-      name = name.toLowerCase();
-      if (value == null)
-        listVariables.remove(name);
-      else
-        listVariables.put(name, value);
-    }
-
-    Object getListVariable(String name, Object value) {
-      if (name == null)
-        return value;
-      name = name.toLowerCase();
-      return (listVariables.containsKey(name) ? listVariables.get(name) : value);
     }
 
     //lighting (see Graphics3D.Shade3D
@@ -880,11 +866,9 @@ public class StateManager {
         htParameterValues.remove(key);
     }
 
-    Hashtable htUserVariables = new Hashtable();
-    
-    void setUserVariable(String key, Variable value) {
+    Variable setUserVariable(String key, Variable var) {
       key = key.toLowerCase();
-      if (value == null) {
+      if (var == null) {
         if (key.equals("all") || key.equals("variables")) {
           htUserVariables.clear();
           Logger.info("all user-defined variables deleted");
@@ -892,24 +876,28 @@ public class StateManager {
           Logger.info("variable " + key + " deleted");
           htUserVariables.remove(key);
         }
-        return;
+        return null;
       }
-      htUserVariables.put(key, value);
+      htUserVariables.put(key, var.setName(key).setGlobal());
+      return var;
     }
 
     void removeUserVariable(String key) {
       htUserVariables.remove(key);
     }
 
-    Object getUserParameterValue(String key) {
-      return htUserVariables.get(key);
+    Variable getUserVariable(String name) {
+      if (name == null)
+        return null;
+      name = name.toLowerCase();
+      return (Variable) htUserVariables.get(name);
     }
 
     String getParameterEscaped(String name, int nMax) {
       name = name.toLowerCase();
       if (htParameterValues.containsKey(name)) {
         Object v = htParameterValues.get(name);
-        String sv = escapeVariable(name, v);
+        String sv = Escape.escape(v);
         if (nMax > 0 && sv.length() > nMax)
           sv = sv.substring(0, nMax) + "\n#...(" + sv.length()
               + " bytes -- use SHOW " + name + " or MESSAGE @" + name
@@ -935,12 +923,26 @@ public class StateManager {
         return "false";
       case Token.integer:
         return "" + var.intValue;
+      case Token.list:
+        return Escape.escape((String[])var.value);
       default:
-        return escapeVariable(name, var.value);
+        return Escape.escape(var.value);
       }
     }
 
     Object getParameter(String name) {
+      Object v = getParameter(name, false);
+      return (v == null ? "" : v);
+    }
+
+    Variable getVariable(String name) {
+      Object v = getParameter(name, true);
+      if (v == null)
+        v = setUserVariable(name, new Variable());
+      return Variable.getVariable(v);
+    }
+
+    Object getParameter(String name, boolean asVariable) {
       name = name.toLowerCase();
       if (name.equals("_memory")) {
         Runtime runtime = Runtime.getRuntime();
@@ -957,9 +959,10 @@ public class StateManager {
       if (htPropertyFlagsRemoved.containsKey(name))
         return Boolean.FALSE;
       if (htUserVariables.containsKey(name)) {
-        return Variable.oValue((Variable) htUserVariables.get(name));
+        Variable v = (Variable) htUserVariables.get(name);
+        return (asVariable ? v : Variable.oValue(v));
       }
-      return "";
+      return null;
     }
 
     String getAllSettings(String prefix) {
@@ -1002,7 +1005,6 @@ public class StateManager {
     }
 
     String getState(StringBuffer sfunc) {
-      int n = 0;
       String[] list = new String[htPropertyFlags.size()
           + htParameterValues.size()];
       StringBuffer commands = new StringBuffer();
@@ -1010,6 +1012,7 @@ public class StateManager {
         sfunc.append("  _setVariableState;\n");
         commands.append("function _setVariableState();\n\n");
       }
+      int n = 0;
       Enumeration e;
       String key;
       //booleans
@@ -1022,7 +1025,6 @@ public class StateManager {
       e = htParameterValues.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
-        String name = key;
         if (key.charAt(0) != '@' && doReportProperty(key)) {
           Object value = htParameterValues.get(key);
           if (key.charAt(0) == '=') {
@@ -1034,7 +1036,7 @@ public class StateManager {
               key = " set " + key;
             else
               key = "set " + key;
-            value = escapeVariable(name, value);
+            value = Escape.escape(value);
           }
           list[n++] = key + " " + value;
         }
@@ -1062,24 +1064,8 @@ public class StateManager {
         if (list[i] != null)
           appendCmd(commands, list[i]);
 
-      //user variables only:
       commands.append("\n#user-defined variables; \n");
-
-      e = htUserVariables.keys();
-      n = 0;
-      list = new String[htUserVariables.size()];
-      while (e.hasMoreElements())
-        list[n++] = (key = (String) e.nextElement())
-            + (key.charAt(0) == '@' ? " "
-                + Variable.sValue((Variable) htUserVariables.get(key)) : " = "
-                + escapeUserVariable(key));
-
-      Arrays.sort(list, 0, n);
-      for (int i = 0; i < n; i++)
-        if (list[i] != null)
-          appendCmd(commands, list[i]);
-      if (n == 0)
-        commands.append("# --none--;\n");
+      commands.append(getVariableList());
 
       // label defaults
 
@@ -1092,19 +1078,32 @@ public class StateManager {
       return commands.toString();
     }
 
+    String getVariableList() {
+      StringBuffer sb = new StringBuffer();
+      //user variables only:
+      int n = 0;
+      String key;
+      Enumeration e = htUserVariables.keys();
+      String[] list = new String[htUserVariables.size()];
+      while (e.hasMoreElements())
+        list[n++] = (key = (String) e.nextElement())
+            + (key.charAt(0) == '@' ? " "
+                + Variable.sValue((Variable) htUserVariables.get(key)) : " = "
+                + escapeUserVariable(key));
+
+      Arrays.sort(list, 0, n);
+      for (int i = 0; i < n; i++)
+        if (list[i] != null)
+          appendCmd(sb, list[i]);
+      if (n == 0)
+        sb.append("# --none--;\n");
+      return sb.toString();
+    }
+    
     private boolean doReportProperty(String name) {
       //System.out.println(unreportedProperties);
       return (name.charAt(0) != '_' && unreportedProperties.indexOf(";" + name
           + ";") < 0);
-    }
-
-    private String escapeVariable(String name, Object value) {
-      if (!(value instanceof String))
-        return Escape.escape(value);
-      Variable var = (Variable) getListVariable(name, (Variable) null);
-      if (var == null)
-        return Escape.escape(value);
-      return Escape.escape((String[]) var.value);
     }
 
     void registerAllValues(GlobalSettings g) {

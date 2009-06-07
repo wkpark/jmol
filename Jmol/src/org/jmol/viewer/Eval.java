@@ -123,7 +123,7 @@ class Eval {
 
   protected boolean logMessages;
   protected boolean isSyntaxCheck;
-  protected boolean isScriptCheck;
+  protected boolean checkingScriptOnly;
 
   //created by Compiler:
   private Token[][] aatoken; 
@@ -152,10 +152,13 @@ class Eval {
     definedAtomSets = viewer.definedAtomSets;
   }
 
-  private Object getParameter(String var, boolean asToken) {
-    Variable v = getContextVariableAsVariable(var);
-    return (v == null ? viewer.getParameter(var) 
-        : asToken ? v : Variable.oValue(v));
+  private Object getParameter(String key, boolean asToken) {
+    Object v = getContextVariableAsVariable(key);
+    if (v == null)
+      v = viewer.getVariable(key);
+    if (v == null)
+      v = viewer.setVariable(key, new Variable(Token.string, ""));
+    return (asToken ? v : Variable.oValue((Variable)v));
   }
 
   private String getStringParameter(String var, boolean orReturnName) {
@@ -283,7 +286,7 @@ class Eval {
     interruptExecution = executionPaused = false;
     isExecuting = true;
     currentThread = Thread.currentThread();
-    isSyntaxCheck = isScriptCheck = checkScriptOnly;
+    isSyntaxCheck = checkingScriptOnly = checkScriptOnly;
     timeBeginExecution = System.currentTimeMillis();
     this.historyDisabled = historyDisabled;
     setErrorMessage(null);
@@ -313,7 +316,7 @@ class Eval {
       setErrorMessage("execution interrupted");
     else if (!tQuiet && !isSyntaxCheck)
       viewer.scriptStatus(SCRIPT_COMPLETED);
-    isExecuting = isSyntaxCheck = isScriptCheck = historyDisabled = false;
+    isExecuting = isSyntaxCheck = checkingScriptOnly = historyDisabled = false;
     viewer.setTainted(true);
     viewer.popHoldRepaint("runEval");
   }
@@ -378,12 +381,12 @@ class Eval {
     context.contextVariables = contextVariables;
     context.isStateScript = isStateScript;
     stack[scriptLevel++] = context;
-    if (isScriptCheck)
+    if (checkingScriptOnly)
       Logger.info("-->>-------------".substring(0, scriptLevel + 5) + filename);
   }
 
   private void popContext() {
-    if (isScriptCheck)
+    if (checkingScriptOnly)
       Logger.info("--<<-------------".substring(0, scriptLevel + 5) + filename);
     if (scriptLevel == 0)
       return;
@@ -458,7 +461,7 @@ class Eval {
       return compiler.getErrorMessage();
     }
     isSyntaxCheck = true;
-    isScriptCheck = false;
+    checkingScriptOnly = false;
     setErrorMessage(null);
     this.script = compiler.getScript();
     pc = 0;
@@ -663,10 +666,14 @@ class Eval {
   }
 
   private void setStringProperty(String key, String value) {
-    if (!isSyntaxCheck || key.equalsIgnoreCase("defaultdirectory"))
+    if (!isSyntaxCheck) // ??? || key.equalsIgnoreCase("defaultdirectory"))
       viewer.setStringProperty(key, value);
   }
 
+  void setListVariable(String key, Variable x) {
+    if (!isSyntaxCheck)
+      viewer.setVariable(key, x);
+  }
   /* ****************************************************************************
    * ==============================================================
    * command dispatch
@@ -836,7 +843,7 @@ class Eval {
       return s;
     Object v = Escape.unescapePointOrBitsetAsVariable(s);
     if (v instanceof String && key != null)
-      return viewer.getListVariable(key, v);
+      v = viewer.setVariable(key, new Variable(Token.string, (String) v));
     return v;
   }
 
@@ -900,7 +907,7 @@ class Eval {
         }
       }
       if (isSyntaxCheck) {
-        if (isScriptCheck)
+        if (checkingScriptOnly)
           Logger.info(thisCommand);
         if (statementLength == 1 && statement[0].tok != Token.function)
           //            && !Token.tokAttr(token.tok, Token.unimplemented))
@@ -1355,7 +1362,7 @@ class Eval {
           sb.append(getCommand(i, false));
         else if (lineNumbers[i] == 0 || lineNumbers[i] > lineNumbers[pc])
           break;
-      return sb.toString();
+      return TextFormat.simpleReplace(sb.toString(), ";{", "{");
     }
     int ichBegin = lineIndices[pc];
     int ichEnd = (pc + 1 == lineIndices.length || lineIndices[pc + 1] == 0 ? script
@@ -1373,7 +1380,8 @@ class Eval {
         s = s.substring(0, i);
       if ((i = s.indexOf("\r")) >= 0)
         s = s.substring(0, i);
-      if (s.length() > 0 && !s.endsWith(";"))
+      if (s.length() > 0 && !s.endsWith(";") 
+          && !s.endsWith("{") && !s.endsWith("}"))
         s += ";";
     } catch (Exception e) {
       Logger.error("darn problem in Eval getCommand: ichBegin=" + ichBegin
@@ -1785,7 +1793,7 @@ class Eval {
     if (expressionResult instanceof String
         && (mustBeBitSet || ((String) expressionResult).startsWith("({"))) {
       // allow for select @{x} where x is a string that can evaluate to a bitset
-      expressionResult = (isScriptCheck ? new BitSet() : getAtomBitSet(this,
+      expressionResult = (isSyntaxCheck ? new BitSet() : getAtomBitSet(this,
           (String) expressionResult));
     }
     if (!mustBeBitSet && !(expressionResult instanceof BitSet))
@@ -3878,7 +3886,7 @@ class Eval {
             if (!isSyntaxCheck) {
               data = getBitsetProperty(null, (isByElement ? Token.elemno
                   : Token.groupID)
-                  | Token.minmaxmask, null, null, null, null, false, -1);
+                  | Token.minmaxmask, null, null, null, null, false, Integer.MAX_VALUE);
             }
           } else {
             if (!isColorIndex && shapeType != JmolConstants.SHAPE_ISOSURFACE)
@@ -3888,7 +3896,7 @@ class Eval {
                 && !Token.tokAttr(tok, Token.strproperty)) {
               if (!isSyntaxCheck) {
                 data = getBitsetProperty(null, getToken(index++).tok
-                    | Token.minmaxmask, null, null, null, null, false, -1);
+                    | Token.minmaxmask, null, null, null, null, false, Integer.MAX_VALUE);
                 if (!(data instanceof float[]))
                   error(ERROR_invalidArgument);
               }
@@ -4060,7 +4068,7 @@ class Eval {
     dataType = dataType.substring(0, dataType.indexOf(" "));
     boolean isModel = dataType.equals("model");
     boolean isAppend = dataType.equals("append");
-    boolean processModel = ((isModel || isAppend) && (!isSyntaxCheck || isScriptCheck
+    boolean processModel = ((isModel || isAppend) && (!isSyntaxCheck || checkingScriptOnly
         && fileOpenCheck));
     if ((isModel || isAppend) && dataString == null)
       error(ERROR_invalidArgument);
@@ -4535,12 +4543,12 @@ class Eval {
         filenames[j] = (String) fNames.get(j);
         filename += (j == 0 ? "" : "; ") + filenames[j];
       }
-      if (!isSyntaxCheck || isScriptCheck && fileOpenCheck) {
+      if (!isSyntaxCheck || checkingScriptOnly && fileOpenCheck) {
         viewer.openFiles(modelName, filenames, null, isAppend, htParams);
       }
       needToLoad = false;
     }
-    if (needToLoad && (!isSyntaxCheck || isScriptCheck && fileOpenCheck)) {
+    if (needToLoad && (!isSyntaxCheck || checkingScriptOnly && fileOpenCheck)) {
       if (filename.startsWith("@") && filename.length() > 1) {
         htParams.put("fileData", getStringParameter(filename.substring(1),
             false));
@@ -4554,7 +4562,7 @@ class Eval {
           .get("fullPathName")));
       loadScript.append(sOptions);
     }
-    if (isSyntaxCheck && !(isScriptCheck && fileOpenCheck)) {
+    if (isSyntaxCheck && !(checkingScriptOnly && fileOpenCheck)) {
       viewer.deallocateReaderThreads();
       return;
     }
@@ -4567,7 +4575,7 @@ class Eval {
       // int millis = (int)(System.currentTimeMillis() - timeBegin);
       // Logger.debug("!!!!!!!!! took " + millis + " ms");
     }
-    if (errMsg != null && !isScriptCheck) {
+    if (errMsg != null && !checkingScriptOnly) {
       if (errMsg.indexOf("file recognized as a script file:") >= 0) {
         viewer.addLoadScript("-");
         script(Token.script);
@@ -4595,13 +4603,13 @@ class Eval {
     }
     if (msg.length() > 0)
       Logger.info(msg);
-    if (defaultScript.length() > 0 && !isScriptCheck) // NOT checking embedded
+    if (defaultScript.length() > 0 && !checkingScriptOnly) // NOT checking embedded
                                                       // scripts here
       runScript(defaultScript);
   }
 
   private String getFullPathName() throws ScriptException {
-    String filename = (!isSyntaxCheck || isScriptCheck && fileOpenCheck ? viewer
+    String filename = (!isSyntaxCheck || checkingScriptOnly && fileOpenCheck ? viewer
         .getFullPathName()
         : "test.xyz");
     if (filename == null)
@@ -5255,14 +5263,14 @@ class Eval {
       }
       checkLength(i);
     }
-    if (isSyntaxCheck && !isScriptCheck)
+    if (isSyntaxCheck && !checkingScriptOnly)
       return;
-    if (isScriptCheck)
+    if (checkingScriptOnly)
       isCheck = true;
     boolean wasSyntaxCheck = isSyntaxCheck;
-    boolean wasScriptCheck = isScriptCheck;
+    boolean wasScriptCheck = checkingScriptOnly;
     if (isCheck)
-      isSyntaxCheck = isScriptCheck = true;
+      isSyntaxCheck = checkingScriptOnly = true;
     pushContext(null);
     if (theScript == null ? loadScriptFileInternal(filename) : loadScript(null,
         theScript, false)) {
@@ -5289,11 +5297,11 @@ class Eval {
     }
 
     isSyntaxCheck = wasSyntaxCheck;
-    isScriptCheck = wasScriptCheck;
+    checkingScriptOnly = wasScriptCheck;
   }
 
   private void function() throws ScriptException {
-    if (isSyntaxCheck && !isScriptCheck)
+    if (isSyntaxCheck && !checkingScriptOnly)
       return;
     String name = (String) getToken(0).value;
     if (compiler.getFunction(name) == null) {
@@ -7228,12 +7236,151 @@ class Eval {
     if (getContextVariableAsVariable(key) != null
         || !setParameter(key, val, isJmolSet, showing)) {
       int tok2 = (tokAt(1) == Token.expressionBegin ? 0 : tokAt(2));
-      setVariable((statement[0].intValue == '=' && !key.equals("return") &&  tok2 != Token.opEQ? 0 : tok2 == Token.opEQ ? 3 : 2), 0, key, showing, statement[0].intValue);
+      int setType = statement[0].intValue;
+      // recasted by compiler:
+      //   var c.xxx =
+      //   c.xxx =
+      //   {...}[n].xxx = 
+      // not supported:
+      //   a[...].xxx =
+      //   a[...][...].xxx =
+      //   var a[...].xxx =
+      //   var a[...][...].xxx =
+      
+      int pt = (tok2 == Token.opEQ ? 3 
+              // set x = ...
+          : setType == '=' && !key.equals("return") &&  tok2 != Token.opEQ? 0 
+              // {c}.xxx =
+              // {...}.xxx =
+              // {{...}[n]}.xxx = 
+          : 2
+              // var c = ...
+              // var c = [
+              //     c = [
+              //     c = ...
+              // set x ...    
+              //     a[...] =
+      );
+      setVariable(pt, 0, key, showing, setType);
       if (!isJmolSet)
         return;
     }
     if (showing)
       viewer.showParameter(key, true, 80);
+  }
+
+  private void setVariable(int pt, int ptMax, String key, boolean showing, int setType)
+      throws ScriptException {
+    // if both pt and ptMax are 0, then it indicates that 
+    BitSet bs = null;
+    String propertyName = "";
+    boolean isExpression = false;
+    if (pt > 0 && tokAt(pt - 1) == Token.expressionBegin) {
+      bs = expression(pt - 1);
+      pt = iToken + 1;
+      isExpression = true;
+    }
+    int tokProperty = Token.nada;
+    boolean settingProperty = false;
+    if (tokAt(pt) == Token.dot) {
+      settingProperty = true;
+      Variable token = getBitsetPropertySelector(++pt, true);
+      if (token == null)
+        error(ERROR_invalidArgument);
+      if (tokAt(++pt) != Token.opEQ)
+        error(ERROR_invalidArgument);
+      pt++;
+      tokProperty = token.intValue;
+      propertyName = (String) token.value;
+    }
+    if (isExpression && !settingProperty) 
+      error(ERROR_invalidArgument);
+
+    boolean isArrayItem = (statement[0].intValue == '[');
+    Variable t = getContextVariableAsVariable(key);
+    boolean isUserVariable = (t != null);
+    
+    // get value
+    
+    Object v = parameterExpression(pt, ptMax, key, true, -1, isArrayItem, null, null);
+    if (isSyntaxCheck || v == null)
+      return;
+    if (((Vector) v).size() == 0)
+      error(ERROR_invalidArgument);
+    Variable tv = (Variable) ((Vector) v).get(isArrayItem ? 2 : 0);
+
+    // create user variable if needed for list now, so we can do the copying
+    
+    boolean needVariable = (!isUserVariable && !isExpression 
+       && (isArrayItem || settingProperty || tv.value instanceof String[]));
+    
+    if (needVariable) {
+      t = viewer.getVariable(key);
+      isUserVariable = true;
+    }
+    
+    if (isArrayItem) {
+
+      //stack is  selector [ VALUE
+      
+      int index = Variable.iValue((Variable) ((Vector) v).get(0));   
+      t.setSelectedValue(index, tv);
+      return;
+    }
+    if (settingProperty) {
+      if (!isExpression) {
+        if (!(t.value instanceof BitSet))
+          error(ERROR_invalidArgument);
+        bs = (BitSet) t.value;
+      }
+      if (propertyName.startsWith("property_")) {
+        viewer.setData(propertyName, new Object[] { propertyName,
+            Variable.sValue(tv), bs }, viewer.getAtomCount(), 0, 0,
+            tv.tok == Token.list ? Integer.MAX_VALUE : Integer.MIN_VALUE, 0);
+        return;
+      }
+      setBitsetProperty(bs, tokProperty, Variable.iValue(tv), Variable.fValue(tv), tv);
+      return;
+    } 
+
+    if (isUserVariable) {
+      t.set(tv);
+      return;
+    }
+
+    v = Variable.oValue(tv);
+    
+    if (key.startsWith("property_")) {
+      int n = viewer.getAtomCount();
+      if (v instanceof String[])
+        v = TextFormat.join((String[]) v, '\n', 0);
+      viewer.setData(key,
+          new Object[] { key, "" + v, viewer.getSelectionSet() }, n, 0, 0,
+          Integer.MIN_VALUE, 0);
+      return;
+    }
+    String str;
+    if (v instanceof Boolean) {
+      setBooleanProperty(key, ((Boolean) v).booleanValue());
+    } else if (v instanceof Integer) {
+      setIntProperty(key, ((Integer) v).intValue());
+    } else if (v instanceof Float) {
+      setFloatProperty(key, ((Float) v).floatValue());
+    } else if (v instanceof String) {
+      setStringProperty(key, (String) v);
+    } else if (v instanceof BondSet) {
+      setStringProperty(key, Escape.escape((BitSet) v, false));
+    } else if (v instanceof BitSet) {
+      setStringProperty(key, Escape.escape((BitSet) v));
+    } else if (v instanceof Point3f) {
+      str = Escape.escape((Point3f) v);
+      setStringProperty(key, str);
+    } else if (v instanceof Point4f) {
+      str = Escape.escape((Point4f) v);
+      setStringProperty(key, str);
+    } else {
+      System.out.println("ERROR -- return from propertyExpression was " + v);
+    }
   }
 
   private int intSetting(int pt, int val, int min, int max)
@@ -7282,110 +7429,6 @@ class Eval {
     if (v == null || v.size() == 0)
       error(ERROR_invalidArgument);
     return (Variable) v.elementAt(0);
-  }
-
-  private void setVariable(int pt, int ptMax, String key, boolean showing, int setType)
-      throws ScriptException {
-    BitSet bs = null;
-    String propertyName = "";
-    if (pt > 0 && tokAt(pt - 1) == Token.expressionBegin) {
-      bs = expression(pt - 1);
-      pt = iToken + 1;
-      // for now we cannot do {atomexpression}[n].xxxx = whatever
-    }
-    int tokProperty = Token.nada;
-    if (tokAt(pt) == Token.dot) {
-      Variable token = getBitsetPropertySelector(++pt, true);
-      if (token == null)
-        error(ERROR_invalidArgument);
-      if (tokAt(++pt) != Token.opEQ)
-        error(ERROR_invalidArgument);
-      pt++;
-      tokProperty = token.intValue;
-      propertyName = (String) token.value;
-    } else if (bs != null)
-      error(ERROR_invalidArgument);
-    String str;
-    Variable t = getContextVariableAsVariable(key);
-    boolean asVector = (t != null || tokProperty != Token.nada);
-    Object v = parameterExpression(pt, ptMax, key, asVector);
-    if (isSyntaxCheck || v == null)
-      return;
-    if (asVector && ((Vector) v).size() == 0)
-      error(ERROR_invalidArgument);
-    Variable tv = (asVector ? (Variable) ((Vector) v).get(0) : null);
-    if (tokProperty != Token.nada) {
-      if (bs == null) {
-        if (t == null) {
-          if (!((v = viewer.getParameter(key)) instanceof String))
-            error(ERROR_invalidArgument);
-          v = getStringObjectAsVariable((String) v, null);
-          if (!(v instanceof Variable))
-            error(ERROR_invalidArgument);
-          t = (Variable) v;
-        }
-        if (!(t.value instanceof BitSet))
-          error(ERROR_invalidArgument);
-        bs = (BitSet) t.value;
-      }
-      if (propertyName.startsWith("property_")) {
-        viewer.setData(propertyName, new Object[] { propertyName,
-            Variable.sValue(tv), bs }, viewer.getAtomCount(), 0, 0,
-            tv.tok == Token.list ? Integer.MAX_VALUE : Integer.MIN_VALUE, 0);
-        return;
-      }
-      setBitsetProperty(bs, tokProperty, Variable.iValue(tv), Variable.fValue(tv), tv);
-      return;
-    }
-
-    if (t != null) {
-      t.value = tv.value;
-      t.intValue = tv.intValue;
-      t.tok = tv.tok;
-    }
-    if (key.startsWith("property_")) {
-      int n = viewer.getAtomCount();
-      viewer.setData(key,
-          new Object[] { key, "" + v, viewer.getSelectionSet() }, n, 0, 0,
-          Integer.MIN_VALUE, 0);
-      return;
-    }
-    if (v == null)
-      return;
-    //viewer.removeUserVariable(key + "_set");
-    if (v instanceof Boolean) {
-      setBooleanProperty(key, ((Boolean) v).booleanValue());
-    } else if (v instanceof Integer) {
-      setIntProperty(key, ((Integer) v).intValue());
-    } else if (v instanceof Float) {
-      setFloatProperty(key, ((Float) v).floatValue());
-    } else if (v instanceof String) {
-      setStringProperty(key, (String) v);
-    } else if (v instanceof BondSet) {
-      //setIntProperty(key, BitSetUtil.cardinalityOf((BitSet) v));
-      //setStringProperty(key + "_set", Escape.escape((BitSet) v, false));
-      setStringProperty(key, Escape.escape((BitSet) v, false));
-      //if (showing)
-      //viewer.showParameter(key + "_set", true, 80);
-    } else if (v instanceof BitSet) {
-      //setIntProperty(key, BitSetUtil.cardinalityOf((BitSet) v));
-      //setStringProperty(key + "_set", Escape.escape((BitSet) v));
-      setStringProperty(key, Escape.escape((BitSet) v));
-      //if (showing)
-      //viewer.showParameter(key + "_set", true, 80);
-    } else if (v instanceof Point3f) {
-      //drawPoint(key, (Point3f) v, false);
-      str = Escape.escape((Point3f) v);
-      setStringProperty(key, str);
-      //if (showing)
-      //showString("to visualize, use DRAW @" + key);
-    } else if (v instanceof Point4f) {
-      //drawPlane(key, (Point4f) v, false);
-      str = Escape.escape((Point4f) v);
-      setStringProperty(key, str);
-      //if (showing)
-      //showString("to visualize, use ISOSURFACE PLANE @" + key);
-    }
   }
 
   private boolean setParameter(String key, int intVal, boolean isJmolSet,
@@ -7479,22 +7522,23 @@ class Eval {
 
   private Object parameterExpression(int pt, int ptMax, String key,
                                      boolean asVector) throws ScriptException {
-    return parameterExpression(pt, ptMax, key, asVector, -1, null, null);
+    return parameterExpression(pt, ptMax, key, asVector, -1, false, null, null);
   }
 
   private Object parameterExpression(int pt, int ptMax, String key,
-                                     boolean asVector, int ptAtom,
+                                     boolean asVector, int ptAtom, boolean isArrayItem,
                                      Hashtable localVars, String localVar)
       throws ScriptException {
     Object v, res;
     boolean isImplicitAtomProperty = (localVar != null);
     boolean isOneExpressionOnly = (pt < 0);
+    boolean returnBoolean = (key == null);
+    boolean returnString = (key != null && key.length() == 0);
     if (isOneExpressionOnly)
       pt = -pt;
     int nParen = 0;
-    boolean isSetCmd = (key != null && key.length() > 0);
-    Rpn rpn = new Rpn(64, pt > 0 && isSetCmd && tokAt(pt) == Token.leftsquare, asVector);
-    if (pt == 0 && ptMax == 0) // set command with v = [1 3 4 ] ....
+    Rpn rpn = new Rpn(64, isArrayItem, asVector);
+    if (pt == 0 && ptMax == 0) // set command with v[...] =  ....
       pt = 2;
     if (ptMax < pt)
       ptMax = statementLength;
@@ -7525,7 +7569,7 @@ class Eval {
           error(ERROR_invalidArgument);
         if (localVars == null)
           localVars = new Hashtable();
-        res = parameterExpression(++i, -1, null, false, -1, localVars, localVar);
+        res = parameterExpression(++i, -1, null, false, -1, false, localVars, localVar);
         boolean TF = ((Boolean) res).booleanValue();
         int iT = iToken;
         if (getToken(iT++).tok != Token.semicolon)
@@ -7534,11 +7578,11 @@ class Eval {
         int iF = iToken;
         if (tokAt(iF++) != Token.semicolon)
           error(ERROR_invalidArgument);
-        parameterExpression(-iF, -1, null, false, 1, localVars, localVar);
+        parameterExpression(-iF, -1, null, false, 1, false, localVars, localVar);
         int iEnd = iToken;
         if (tokAt(iEnd) != Token.rightparen)
           error(ERROR_invalidArgument);
-        v = parameterExpression(TF ? iT : iF, TF ? iF : iEnd, "XXX", false, 1, localVars, localVar);
+        v = parameterExpression(TF ? iT : iF, TF ? iF : iEnd, "XXX", false, 1, false, localVars, localVar);
         i = iEnd;
         break;
       case Token.forcmd:
@@ -7580,10 +7624,10 @@ class Eval {
         int atomCount = (isSyntaxCheck ? 0 : viewer.getAtomCount());
         if (localVars == null)
           localVars = new Hashtable();
-        localVars.put(dummy, t = Variable.getVariable2(0, bsX));
+        localVars.put(dummy, t = Variable.getVariableSelected(0, bsX));
         // one test just to check for errors and get iToken
-        parameterExpression(i, -1, null, false, 0, localVars, dummy);
-        localVars.put(dummy, t = Variable.getVariable2(0, bsX));
+        parameterExpression(i, -1, null, false, 0, false, localVars, dummy);
+        localVars.put(dummy, t = Variable.getVariableSelected(0, bsX));
         if (isFunctionOfX && tokAt(iToken) != Token.rightparen)
           error(ERROR_invalidArgument);
         int p = 0;
@@ -7591,14 +7635,15 @@ class Eval {
           if (bsAtoms.get(j)) {
             bsX.clear();
             bsX.set(j);
-            t.intValue2 = j;
+            t.index = j;
             res = parameterExpression(i, -1, (isFor ? "XXX" : null),
-                isFor, j, localVars, isFunctionOfX ? null : dummy);
+                isFor, j, false, localVars, isFunctionOfX ? null : dummy);
             if (isFor) {
               if (res == null || ((Vector) res).size() == 0)
                 error(ERROR_invalidArgument);
               sout[p++] = Variable.sValue((Variable) ((Vector) res).elementAt(0));
-            } else if (((Boolean) res).booleanValue()) {                bsSelect.set(j);
+            } else if (((Boolean) res).booleanValue()) {
+              bsSelect.set(j);
             }
           }
         if (isFor) {
@@ -7746,17 +7791,12 @@ class Eval {
     }
     if (result.tok == Token.vector)
       return result.value;
-    if (key == null)
+    if (returnBoolean)
       return Boolean.valueOf(Variable.bValue(result));
-    if (key.length() == 0) {
+    if (returnString) {
       if (result.tok == Token.string)
         result.intValue = Integer.MAX_VALUE;
       return Variable.sValue(result);
-    }
-    if (result.tok == Token.string && result.intValue != Integer.MAX_VALUE) {
-      if (!isSyntaxCheck && !insertArrayValue(key, result))
-        error(ERROR_invalidArgument);
-      return (String) null;
     }
     switch (result.tok) {
     case Token.on:
@@ -7778,61 +7818,6 @@ class Eval {
     if (v instanceof BitSet)
       resx.addElement(new Variable(Token.bitset, v));
     return resx;
-  }
-
-  private boolean insertArrayValue(String key, Variable result) {
-    int selector = result.intValue;
-    boolean isLocalArray = false;
-    if (selector == Integer.MAX_VALUE)
-      return false;
-    result.intValue = Integer.MAX_VALUE;
-    String s = Variable.sValue(result);
-    Object v = getParameter(key, false);
-    if (v instanceof String[]) {
-      v = getParameter(key, true);
-      isLocalArray = true;
-    } else if (!(v instanceof String)) {
-      return false;
-    } else {
-      v = getStringObjectAsVariable((String) v, key);
-    }
-    if (v instanceof Variable) {
-      Variable token = (Variable) v;
-      if (token.tok != Token.list)
-        return false;
-      String[] array = (String[]) token.value;
-      if (selector <= 0)
-        selector = array.length + selector;
-      if (--selector < 0)
-        selector = 0;
-      if (array.length > selector) {
-        array[selector] = s;
-        if (!isLocalArray)
-          viewer.setListVariable(key, token);
-        return true;
-      }
-      String[] arrayNew = ArrayUtil.ensureLength(array, selector + 1);
-      for (int i = array.length; i <= selector; i++)
-        arrayNew[i] = "";
-      arrayNew[selector] = s;
-      token.value = arrayNew;
-      if (!isLocalArray)
-        viewer.setListVariable(key, token);
-      return true;
-    } else if (v instanceof String) {
-      String str = (String) v;
-      int pt = str.length();
-      if (selector <= 0)
-        selector = pt + selector;
-      if (--selector < 0)
-        selector = 0;
-      while (selector >= str.length())
-        str += " ";
-      str = str.substring(0, selector) + s + str.substring(selector + 1);
-      setStringProperty(key, str);
-      return true;
-    }
-    return false;
   }
 
   String[] getBitsetIdent(BitSet bs, String label, Object tokenValue,
@@ -7915,20 +7900,21 @@ class Eval {
   protected Object getBitsetProperty(BitSet bs, int tok, Point3f ptRef,
                                      Point4f planeRef, Object tokenValue,
                                      Object opValue, boolean useAtomMap,
-                                     int ptAtom) throws ScriptException {
+                                     int index) throws ScriptException {
     boolean isAtoms = !(tokenValue instanceof BondSet);
     boolean isMin = Token.tokAttr(tok, Token.min);
     boolean isMax = Token.tokAttr(tok, Token.max);
     boolean isFloat = (Token.tokAttr(tok, Token.floatproperty)
         || tok == Token.function || tok == Token.distance);
     boolean isInt = !isFloat && (Token.tokAttr(tok, Token.intproperty));
-    boolean isString = !isInt && isAtoms && Token.tokAttr(tok, Token.strproperty);
+    boolean isString = !isInt && isAtoms
+        && Token.tokAttr(tok, Token.strproperty);
     boolean isAll = (isString || Token.tokAttr(tok, Token.minmaxmask));
     if (isAll)
       isMin = isMax = false;
     tok &= ~Token.minmaxmask;
     Vector vout = null;
-    //StringBuffer sb = null;
+    // StringBuffer sb = null;
     BitSet bsNew = null;
 
     if (tok == Token.atoms)
@@ -7987,152 +7973,155 @@ class Eval {
     int count = 0;
     boolean isPt = (tok == Token.xyz || tok == Token.vibXyz
         || tok == Token.fracXyz || tok == Token.unitXyz || tok == Token.color);
-    if (isAtoms || ptAtom >= 0) {
+    boolean haveIndex = (index != Integer.MAX_VALUE);
+    if (isAtoms || haveIndex) {
       int iModel = -1;
       int nOps = 0;
       count = (isSyntaxCheck ? 0 : viewer.getAtomCount());
       if (isAll || isString)
-        vout = new Vector();//sb = new StringBuffer();
+        vout = new Vector();// sb = new StringBuffer();
       int mode = (isPt ? 0 : isString ? 3 : isInt ? 1 : 2);
-      for (int i = (ptAtom >= 0 ? ptAtom : 0); i < count; i++)
-        if (ptAtom >= 0 || bs == null || bs.get(i)) {
-          n++;
-          Atom atom = modelSet.getAtomAt(i);
-          switch (mode) {
-          case 0:  // point
-            Tuple3f t = Atom.atomPropertyTuple(atom, tok);
-            if (t == null)
-              error(ERROR_unrecognizedAtomProperty, Token.nameOf(tok));            
-            pt.add(t);
-            if (isAll) {
-              vout.add(Escape.escape(pt));//sb.append("\n").append(Escape.escape(pt));
-              pt.set(0, 0, 0);
+      for (int i = (haveIndex ? index : 0); i < count; i++) {
+        if (!haveIndex && bs != null && !bs.get(i))
+          continue;
+        n++;
+        Atom atom = modelSet.getAtomAt(i);
+        switch (mode) {
+        case 0: // point
+          Tuple3f t = Atom.atomPropertyTuple(atom, tok);
+          if (t == null)
+            error(ERROR_unrecognizedAtomProperty, Token.nameOf(tok));
+          pt.add(t);
+          if (isAll) {
+            vout.add(Escape.escape(pt));// sb.append("\n").append(Escape.escape(pt));
+            pt.set(0, 0, 0);
+          }
+          break;
+        case 1: // isInt
+          int iv = 0;
+          switch (tok) {
+          case Token.symop:
+            // a little weird:
+            // First we determine how many operations we have in this model.
+            // Then we get the symmetry bitset, which shows the assignments
+            // of symmetry for this atom.
+            if (atom.getModelIndex() != iModel) {
+              iModel = atom.getModelIndex();
+              nOps = modelSet.getModelSymmetryCount(iModel);
             }
-            break;
-          case 1: // isInt
-            int iv = 0;
-            switch (tok) {
-            case Token.symop:
-              // a little weird:
-              // First we determine how many operations we have in this model.
-              // Then we get the symmetry bitset, which shows the assignments
-              // of symmetry for this atom.
-              if (atom.getModelIndex() != iModel) {
-                iModel = atom.getModelIndex();
-                nOps = modelSet.getModelSymmetryCount(iModel);
+            BitSet bsSym = atom.getAtomSymmetry();
+            int len = nOps;
+            int p = 0;
+            int ivvMin = Integer.MAX_VALUE;
+            int ivvMax = Integer.MIN_VALUE;
+            for (int k = 0; k < len; k++)
+              if (bsSym.get(k)) {
+                iv += k + 1;
+                if (isMin)
+                  ivvMin = Math.min(ivvMin, k + 1);
+                else if (isMax)
+                  ivvMax = Math.max(ivvMax, k + 1);
+                p++;
               }
-              BitSet bsSym = atom.getAtomSymmetry();
-              int len = nOps;
-              int p = 0;
-              int ivvMin = Integer.MAX_VALUE;
-              int ivvMax = Integer.MIN_VALUE;
-              for (int k = 0; k < len; k++)
-                if (bsSym.get(k)) {
-                  iv += k + 1;
-                  if (isMin)
-                    ivvMin = Math.min(ivvMin, k + 1);
-                  else if (isMax)
-                    ivvMax = Math.max(ivvMax, k + 1);
-                  p++;
-                }
-              if (isMin)
-                iv = ivvMin;
-              else if (isMax)
-                iv = ivvMax;
-              n += p - 1;
-              break;
-            case Token.cell:
-              error(ERROR_unrecognizedAtomProperty, Token.nameOf(tok));
-            default:
-              iv = Atom.atomPropertyInt(atom, tok);
-            }
-            if (isAll)
-              vout.add(new Integer(iv));// sb.append('\n').append(iv);
-            else if (isMin)
-              ivMin = Math.min(ivMin, iv);
+            if (isMin)
+              iv = ivvMin;
             else if (isMax)
-              ivMax = Math.max(ivMax, iv);
-            else
-              ivAvg += iv;
+              iv = ivvMax;
+            n += p - 1;
             break;
-          case 2: //isFloat {
-            float fv = Float.MAX_VALUE;
-            switch (tok) {
-            case Token.function:
-              bsAtom.set(i);
-              fv = Variable.fValue((Token) getFunctionReturn(userFunction, params,
-                  tokenAtom));
-              bsAtom.clear(i);
-              break;
-            case Token.property:
-              fv = (data == null ? 0 : data[i]);
-              break;
-            case Token.distance:
-              if (planeRef != null)
-                fv = Graphics3D.distanceToPlane(planeRef, atom);
-              else
-                fv = atom.distance(ptRef);
-              break;
-            default:
-              fv = Atom.atomPropertyFloat(atom, tok);
-            }
-            if (fv == Float.MAX_VALUE) {
+          case Token.cell:
+            error(ERROR_unrecognizedAtomProperty, Token.nameOf(tok));
+          default:
+            iv = Atom.atomPropertyInt(atom, tok);
+          }
+          if (isAll)
+            vout.add(new Integer(iv));// sb.append('\n').append(iv);
+          else if (isMin)
+            ivMin = Math.min(ivMin, iv);
+          else if (isMax)
+            ivMax = Math.max(ivMax, iv);
+          else
+            ivAvg += iv;
+          break;
+        case 2: // isFloat {
+          float fv = Float.MAX_VALUE;
+          switch (tok) {
+          case Token.function:
+            bsAtom.set(i);
+            fv = Variable.fValue((Token) getFunctionReturn(userFunction,
+                params, tokenAtom));
+            bsAtom.clear(i);
+            break;
+          case Token.property:
+            fv = (data == null ? 0 : data[i]);
+            break;
+          case Token.distance:
+            if (planeRef != null)
+              fv = Graphics3D.distanceToPlane(planeRef, atom);
+            else
+              fv = atom.distance(ptRef);
+            break;
+          default:
+            fv = Atom.atomPropertyFloat(atom, tok);
+          }
+          if (fv == Float.MAX_VALUE) {
+            n--; // don't count this one
+          } else {
+            if (isAll)
+              vout.add(new Float(fv));// sb.append('\n').append(fv);
+            else if (Float.isNaN(fv)) {
               n--; // don't count this one
             } else {
-              if (isAll)
-                vout.add(new Float(fv));//sb.append('\n').append(fv);
-              else if (Float.isNaN(fv)) {
-                n--; // don't count this one
-              } else {
-                if (isMin)
-                  fvMin = Math.min(fvMin, fv);
-                else if (isMax)
-                  fvMax = Math.max(fvMax, fv);
-                else
-                  fvAvg += fv;
-              }
+              if (isMin)
+                fvMin = Math.min(fvMin, fv);
+              else if (isMax)
+                fvMax = Math.max(fvMax, fv);
+              else
+                fvAvg += fv;
             }
-            break;
-          case 3: //isString 
-            String s = Atom.atomPropertyString(atom, tok);
-            //if (tok != Token.sequence)
-              //sb.append('\n');
-            vout.add(s);//sb.append(s);
           }
-          if (ptAtom >= 0)
-            i = count;
+          break;
+        case 3: // isString
+          String s = Atom.atomPropertyString(atom, tok);
+          // if (tok != Token.sequence)
+          // sb.append('\n');
+          vout.add(s);// sb.append(s);
         }
+        if (haveIndex)
+          break;
+      }
     } else { // bonds
       count = viewer.getBondCount();
       if (isAll)
-        vout = new Vector();//sb = new StringBuffer();
-      for (int i = 0; i < count; i++)
-        if (bs == null || bs.get(i)) {
+        vout = new Vector();// sb = new StringBuffer();
+      for (int i = 0; i < count; i++) {
+        if (bs != null && !bs.get(i))
+          continue;
+        n++;
+        Bond bond = modelSet.getBondAt(i);
+        switch (tok) {
+        case Token.length:
+          float fv = bond.getAtom1().distance(bond.getAtom2());
+          fvMin = Math.min(fvMin, fv);
+          fvMax = Math.max(fvMax, fv);
+          fvAvg += fv;
+          if (isAll)
+            vout.add(new Float(fv));// sb.append('\n').append(fv);
+          break;
+        case Token.xyz:
+          pt.add(bond.getAtom1());
+          pt.add(bond.getAtom2());
           n++;
-          Bond bond = modelSet.getBondAt(i);
-          switch (tok) {
-          case Token.length:
-            float fv = bond.getAtom1().distance(bond.getAtom2());
-            fvMin = Math.min(fvMin, fv);
-            fvMax = Math.max(fvMax, fv);
-            fvAvg += fv;
-            if (isAll)
-              vout.add(new Float(fv));//sb.append('\n').append(fv);
-            break;
-          case Token.xyz:
-            pt.add(bond.getAtom1());
-            pt.add(bond.getAtom2());
-            n++;
-            break;
-          case Token.color:
-            pt.add(Graphics3D.colorPointFromInt(viewer.getColixArgb(bond
-                .getColix()), ptT));
-            break;
-          default:
-            error(ERROR_unrecognizedBondProperty, Token.nameOf(tok));
-          }
-          isInt = false;
+          break;
+        case Token.color:
+          pt.add(Graphics3D.colorPointFromInt(viewer.getColixArgb(bond
+              .getColix()), ptT));
+          break;
+        default:
+          error(ERROR_unrecognizedBondProperty, Token.nameOf(tok));
         }
+        isInt = false;
+      }
     }
     if (isAll) {
       int len = vout.size();
@@ -8146,7 +8135,8 @@ class Eval {
       for (int i = len; --i >= 0;)
         sout[i] = "" + vout.get(i);
       return sout;
-    } if (isPt)
+    }
+    if (isPt)
       return (n == 0 ? pt : new Point3f(pt.x / n, pt.y / n, pt.z / n));
     if (n == 0) {
       return new Float(Float.NaN);
@@ -9405,7 +9395,9 @@ class Eval {
           theTok == Token.quaternion ? "quaternion w" : "ramachandran");
       break;
     case Token.identifier:
-      if (str.equalsIgnoreCase("historyLevel")) {
+      if (str.equalsIgnoreCase("variables")) {
+        msg = viewer.getVariableList();
+      } else if (str.equalsIgnoreCase("historyLevel")) {
         value = "" + commandHistoryLevelMax;
       } else if (str.equalsIgnoreCase("defaultLattice")) {
         value = Escape.escape(viewer.getDefaultLattice());
@@ -11829,15 +11821,16 @@ class Eval {
         && statement[0].intValue == '=' 
         && tokAt(1) != Token.expressionBegin);
     for (int i = 0; i < statementLength; ++i) {
+      Token token = statement[i];
       if (iToken == i - 1)
         sb.append(" <<");
       if (i != 0)
         sb.append(' ');
       if (i == 2 && setEquals) {
         setEquals = false;
-        sb.append("= ");
+        if (token.tok != Token.opEQ)
+          sb.append("= ");
       }
-      Token token = statement[i];
       if (iToken == i && token.tok != Token.expressionEnd)
         sb.append(">> ");
       switch (token.tok) {
@@ -11965,7 +11958,7 @@ class Eval {
       default:
         if (!logMessages)
           break;
-        sb.append(token.toString());
+        sb.append('\n').append(token.toString()).append('\n');
         continue;
       }
       if (token.value != null)
@@ -12050,65 +12043,60 @@ class Eval {
     private int squareCount;
     private int braceCount;
     private boolean wasX;
-    private boolean isAssignment;
+    private int incrementX;
+    private boolean isArrayItem;
     private boolean asVector;
+    private int ptid = 0;
+    private int ptx = Integer.MAX_VALUE;
 
-    Rpn(int maxLevel, boolean isAssignment, boolean asVector) {
-      this.isAssignment = isAssignment;
+    Rpn(int maxLevel, boolean isArrayItem, boolean asVector) {
+      this.isArrayItem = isArrayItem;
       this.maxLevel = maxLevel;
-      this.asVector = asVector;
-      wasX = isAssignment;
+      this.asVector = asVector || isArrayItem;
+      wasX = isArrayItem;
       oStack = new Token[maxLevel];
       xStack = new Variable[maxLevel];
       if (logMessages)
         Logger.info("initialize RPN");
     }
 
-    Variable getResult(boolean allowUnderflow, String key) throws ScriptException {
+    Variable getResult(boolean allowUnderflow, String key)
+        throws ScriptException {
       boolean isOK = true;
       Variable x = null;
-      int selector = Integer.MAX_VALUE;
       while (isOK && oPt >= 0)
         isOK = operate();
-      if (isOK && isAssignment && xPt == 2 && xStack[1].tok == Token.leftsquare) {
-        x = xStack[2];
-        selector = Variable.iValue(xStack[0]);
-        xPt = 0;
-      } else if (isOK && asVector) {
-        Vector result = new Vector();
-        for (int i = 0; i <= xPt; i++)
-          result.addElement(Variable.selectItem(xStack[i]));
-        return new Variable(Token.vector, result);
-      }
-      if (isOK && xPt == 0) {
-        if (x == null)
-          x = xStack[0];
-        if (x.tok == Token.bitset || x.tok == Token.list
-            || x.tok == Token.string)
-          x = xStack[0] = (Variable) Variable.selectItem((Token) x);
-        if (selector == Integer.MAX_VALUE && key != null && key.length() > 0
-            && !isSyntaxCheck)
-          viewer.setListVariable(key, x.tok == Token.list ? x : null);
-        if (selector != Integer.MAX_VALUE || x.tok == Token.list)
-          x = new Variable(Token.string, selector, Variable.sValue(x));
-        return x;
+      if (isOK) {
+        if (isArrayItem && xPt == 2 && xStack[1].tok == Token.leftsquare) {
+          //stack is  selector [ VALUE
+          x = xStack[2];
+          //asVector will be true;
+        }
+        if (asVector) {
+          Vector result = new Vector();
+          for (int i = 0; i <= xPt; i++)
+            result.addElement(Variable.selectItem(xStack[i]));
+          return new Variable(Token.vector, result);
+        }
+        if (xPt == 0) {
+          if (x == null)
+            x = xStack[0];
+          if (x.tok == Token.bitset || x.tok == Token.list
+              || x.tok == Token.string)
+            x = Variable.selectItem(x);
+          return x;
+        }
       }
       if (!allowUnderflow && (xPt >= 0 || oPt >= 0)) {
-       //        iToken--;
+        // iToken--;
         error(ERROR_invalidArgument);
       }
       return null;
     }
 
     boolean addX(Variable x) throws ScriptException {
-      if (logMessages) {
-        dumpStacks();
-        Logger.info("\naddX: " + x);
-      }
       if (xPt >= 0 && xStack[xPt].tok == Token.expressionEnd)
         return wasX = true; //skipping
-      if (xPt + 1 == maxLevel)
-        stackOverflow();
       if (wasX && x.tok == Token.integer && x.intValue < 0) {
         addOp(Token.tokenMinus);
         x = Variable.intVariable(-x.intValue);
@@ -12117,86 +12105,39 @@ class Eval {
         addOp(Token.tokenMinus);
         x = new Variable(Token.decimal, new Float(-Variable.fValue(x)));
       }
-      xStack[++xPt] = x;
+      putX(x);
       return wasX = true;
     }
 
-    boolean addX(Object x) throws ScriptException {
-      if (x instanceof Integer)
-        return addX(((Integer) x).intValue());
-      if (x instanceof Float)
-        return addX(((Float) x).floatValue());
-      if (x instanceof String[])
-        return addX((String[]) x);
-      if (x instanceof String)
-        return addX((String) x);
-      if (x instanceof Vector3f)
-        return addX(new Point3f((Vector3f) x));
-      if (x instanceof Point3f)
-        return addX((Point3f) x);
-      if (x instanceof Point4f)
-        return addX((Point4f) x);
-      if (x instanceof BitSet)
-        return addX((BitSet) x);
-      if (x instanceof Variable)
-        return addX((Variable) x);
-      return false;
+    boolean addX(Object x) {
+      Variable v = Variable.getVariable(x);
+      if (v == null)
+        return false;
+      putX(v);
+      return wasX = true;
+    }
+
+    private void putX(Variable x) {
+      if (xPt + 1 == maxLevel)
+        stackOverflow();
+      if (logMessages) {
+        dumpStacks();
+        Logger.info("\naddX: " + x);
+      }
+      xStack[++xPt] = x;
+      ptx = ++ptid;
     }
 
     boolean addX(boolean x) {
-      if (++xPt >= maxLevel)
-        stackOverflow();
-      xStack[xPt] = (x ? Variable.vT : Variable.vF);
-      return true;
+      return addX((Object)(x ? Variable.vT : Variable.vF));
     }
 
     boolean addX(int x) {
-      if (++xPt >= maxLevel)
-        stackOverflow();
-      xStack[xPt] = Variable.intVariable(x);
-      return wasX = true;
+      return addX((Object)Variable.intVariable(x));
     }
 
     boolean addX(float x) {
-      if (++xPt >= maxLevel)
-        stackOverflow();
-      xStack[xPt] = new Variable(Token.decimal, new Float(x));
-      return wasX = true;
-    }
-
-    boolean addX(String x) {
-      if (++xPt >= maxLevel)
-        stackOverflow();
-      xStack[xPt] = new Variable(Token.string, x);
-      return wasX = true;
-    }
-
-    boolean addX(String[] x) {
-      if (++xPt >= maxLevel)
-        stackOverflow();
-      xStack[xPt] = new Variable(Token.list, x);
-      return wasX = true;
-    }
-
-    boolean addX(Point3f x) {
-      if (++xPt >= maxLevel)
-        stackOverflow();
-      xStack[xPt] = new Variable(Token.point3f, x);
-      return wasX = true;
-    }
-
-    boolean addX(Point4f x) {
-      if (++xPt >= maxLevel)
-        stackOverflow();
-      xStack[xPt] = new Variable(Token.point4f, x);
-      return wasX = true;
-    }
-
-    boolean addX(BitSet x) {
-      if (++xPt >= maxLevel)
-        stackOverflow();
-      xStack[xPt] = new Variable(Token.bitset, x);
-      return wasX = true;
+      return addX(new Float(x));
     }
 
     boolean isOpFunc(Token op) {
@@ -12234,7 +12175,7 @@ class Eval {
           return true;
         }
       } 
-
+      
       
       Token newOp = null;
       int tok;
@@ -12277,6 +12218,17 @@ class Eval {
         if (!wasX) {
           squareCount++;
           op = newOp = Token.tokenArray;
+        }
+        break;
+      case Token.minusMinus:
+      case Token.plusPlus:
+        incrementX = (op.tok == Token.plusPlus ? 1 : -1);
+        if (ptid == ptx) {
+          if (isSyntaxCheck)
+            return true;
+          Variable x = xStack[xPt];
+          xStack[xPt] = (new Variable()).set(x);
+          return x.increment(incrementX);
         }
         break;
       case Token.minus:
@@ -12333,8 +12285,8 @@ class Eval {
           break;
         }
         if (op.tok == Token.rightsquare && tok0 == Token.leftsquare) {
-          if (xPt == 0 && isAssignment) {
-            addX(Token.tokenArraySelector);
+          if (xPt == 0 && isArrayItem) {
+            addX(new Variable(Token.tokenArraySelector));
             break;
           }
           if (!doBitsetSelect())
@@ -12363,8 +12315,8 @@ class Eval {
       case Token.opIf:
         if (!skipping) {
           boolean isFirst = Variable.bValue(getX());
-          oStack[++oPt] = Token.tokenColon;
-          addX(isFirst ? Token.expressionBegin : Token.expressionEnd);
+          putOp(Token.tokenColon);
+          addX(new Variable(isFirst ? Token.expressionBegin : Token.expressionEnd));
         }
         wasX = false;
         return true;
@@ -12430,9 +12382,7 @@ class Eval {
       
       if (skipping)
         return true;
-      if (++oPt >= maxLevel)
-        stackOverflow();
-      oStack[oPt] = op;
+      putOp(op);
 
       if (op.tok == Token.propselector && (op.intValue & ~Token.minmaxmask) == Token.function && op.intValue != Token.function) {
         return evaluateFunction();
@@ -12440,8 +12390,15 @@ class Eval {
       return true;
     }
     
+    private void putOp(Token op) {
+      if (++oPt >= maxLevel)
+        stackOverflow();
+      oStack[oPt] = op;
+      ptid++;
+    }
+
     private boolean doBitsetSelect() {
-      if (xPt < 0 || xPt == 0 && !isAssignment) {
+      if (xPt < 0 || xPt == 0 && !isArrayItem) {
         return false;
       }
       int i = Variable.iValue(xStack[xPt--]);
@@ -12453,7 +12410,7 @@ class Eval {
       case Token.bitset:
       case Token.list:
       case Token.string:
-        xStack[xPt] = (Variable) Variable.selectItem(var, i);
+        xStack[xPt] = Variable.selectItem(var, i);
       }
       return true;
     }
@@ -12496,7 +12453,7 @@ class Eval {
       //we cannot know what variables are real
       //if this is a property selector, as in x.func(), then we 
       //just exit; otherwise we add a new TRUE to xStack
-      if (isScriptCheck)
+      if (isSyntaxCheck)
         return (op.tok == Token.propselector ? true : addX(true));
       switch (tok) {
       case Token.distance:
@@ -12572,7 +12529,7 @@ class Eval {
       Point4f plane2 = planeValue(x2);
       if (x1.tok == Token.bitset)
         return addX(getBitsetProperty(Variable.bsSelect(x1), Token.distance, pt2,
-            plane2, x1.value, null, false, Variable.bsItem2(x1)));
+            plane2, x1.value, null, false, x1.index));
       Point3f pt1 = ptValue(x1);
       Point4f plane1 = planeValue(x1);
       if (plane1 == null)
@@ -12620,7 +12577,7 @@ class Eval {
         params.addElement(args[i]);
       if (isSelector) {
         return addX(getBitsetProperty(Variable.bsSelect(x1), tok, null,
-              null, x1.value, new Object[] {name, params}, false, Variable.bsItem2(x1)));
+              null, x1.value, new Object[] {name, params}, false, x1.index));
       }
       Variable var = getFunctionReturn(name, params, null);
       return (var == null ? false : addX(var));
@@ -12687,7 +12644,7 @@ class Eval {
       return addX(Variable.sValue(x1).indexOf(sFind) + 1);
     }
 
-    private boolean evaluateGetProperty(Variable[] args) throws ScriptException {
+    private boolean evaluateGetProperty(Variable[] args) {
       if (isSyntaxCheck)
         return addX("");
       int pt = 0;
@@ -12756,7 +12713,7 @@ class Eval {
       return addX(Escape.toReadable(property));
     }
 
-    private boolean evaluatePoint(Variable[] args) throws ScriptException {
+    private boolean evaluatePoint(Variable[] args) {
       if (args.length != 1 && args.length != 3 && args.length != 4)
         return false;
       if (isSyntaxCheck) {
@@ -12878,10 +12835,25 @@ class Eval {
     }
 
     private boolean evaluateList(int tok, Variable[] args) throws ScriptException {
-      if (args.length != 1 && !(tok == Token.add && args.length == 0))
+      if (args.length != 1 
+          && !(tok == Token.add && (args.length == 0 || args.length == 2)))
         return false;
       Variable x1 = getX();
       Variable x2 = (args.length == 0 ? Variable.vAll : args[0]);
+      int len;
+      String[] sList1, sList2, sList3;
+      
+      if (args.length == 2) {
+        //  [xxxx].add([....], "\t")
+        String tab = Variable.sValue(args[1]);
+        sList1 = (x1.tok == Token.list ? (String[])x1.value : TextFormat.split(Variable.sValue(x1), '\n'));
+        sList2 = (x2.tok == Token.list ? (String[])x2.value : TextFormat.split(Variable.sValue(x2), '\n'));
+        sList3 = new String[len = Math.max(sList1.length, sList2.length)];
+        for (int i = 0; i < len; i++)
+          sList3[i] = (i >= sList1.length ? "" : sList1[i]) + tab + (i >= sList2.length ? "" : sList2[i]);
+        return addX(sList3);
+      }
+      
       boolean isAll = (x2.tok == Token.all);
       if (x1.tok != Token.list && x1.tok != Token.string) {
         wasX = false;
@@ -12915,14 +12887,14 @@ class Eval {
       float factor = (sValue.indexOf("{") >= 0 ? Float.NaN : isScalar ? Variable
           .fValue(x2) : 0);
 
-      String[] sList1 = (x1.value instanceof String ? TextFormat.split(
+      sList1 = (x1.value instanceof String ? TextFormat.split(
           (String) x1.value, "\n") : (String[]) x1.value);
 
-      String[] sList2 = (isScalar ? null
+      sList2 = (isScalar ? null
           : x2.value instanceof String ? TextFormat.split((String) x2.value,
               "\n") : (String[]) x2.value);
 
-      int len = (isScalar ? sList1.length : Math.min(sList1.length,
+      len = (isScalar ? sList1.length : Math.min(sList1.length,
           sList2.length));
 
       float[] list1 = new float[sList1.length];
@@ -12935,7 +12907,7 @@ class Eval {
         return addX(sum);
       }
       
-      String[] sList3 = new String[len];
+      sList3 = new String[len];
 
       float[] list2 = new float[(isScalar ? sList1.length : sList2.length)];
       if (isScalar)
@@ -13066,7 +13038,7 @@ class Eval {
             if (i < 0
                 || (q = viewer.getModelSet().getAtomAt(i).getQuaternion(
                     viewer.getQuaternionFrame())) == null)
-              return addX(0);
+              return addX((int)0);
           } else {
             Object v = Escape.unescapePoint(Variable.sValue(args[0]));
             if (!(v instanceof Point4f))
@@ -13449,7 +13421,7 @@ class Eval {
         dumpStacks();
       }
       
-      if (oPt < 0 && op.tok == Token.opEQ && isAssignment) {
+      if (oPt < 0 && op.tok == Token.opEQ && isArrayItem) {
         return (xPt == 2);
       }
 
@@ -13462,8 +13434,16 @@ class Eval {
       if (x2.tok == Token.list)
         x2 = Variable.selectItem(x2);
 
+      if (op.tok == Token.minusMinus || op.tok == Token.plusPlus) {
+        if (!isSyntaxCheck && !x2.increment(incrementX))
+          return false;
+        wasX = true;
+        xPt++;
+        return true;
+      }
+      
       if (op.tok == Token.opNot)
-        return (isScriptCheck ? addX(true) : x2.tok == Token.point4f ? // quaternion
+        return (isSyntaxCheck ? addX(true) : x2.tok == Token.point4f ? // quaternion
             addX((new Quaternion((Point4f) x2.value)).inv().toPoint4f())
             : x2.tok == Token.bitset ? addX(BitSetUtil.copyInvert(Variable
                 .bsSelect(x2), (x2.value instanceof BondSet ? viewer
@@ -13482,7 +13462,7 @@ class Eval {
           return addX(Variable.typeOf(x2));
         case Token.lines:
           if (x2.tok != Token.string)
-            return (isScriptCheck ? addX(1) : false);
+            return (isSyntaxCheck ? addX(1) : false);
           String s = (String) x2.value;
           s = TextFormat.simpleReplace(s, "\n\r", "\n").replace('\r', '\n');
           return addX(TextFormat.split(s, '\n'));
@@ -13502,9 +13482,9 @@ class Eval {
           }
           break;
         case Token.boundbox:
-          return (isScriptCheck ? addX("x") : evaluateBoundBox(x2));
+          return (isSyntaxCheck ? addX("x") : evaluateBoundBox(x2));
         }
-        if (isScriptCheck)
+        if (isSyntaxCheck)
           return addX(Variable.sValue(x2));
         if (x2.tok == Token.string) {
           Object v = Escape.unescapePointOrBitsetAsVariable(Variable.sValue(x2));
@@ -13520,7 +13500,7 @@ class Eval {
       //binary:
       String s;
       Variable x1 = getX();
-      if (isScriptCheck)
+      if (isSyntaxCheck)
         return addX(Variable.sValue(x1));
       switch (op.tok) {
       case Token.opAnd:
@@ -13927,7 +13907,7 @@ class Eval {
           return addX(x2);
         BitSet bs = Variable.bsSelect(x2);
         Object val = getBitsetProperty(bs, op.intValue, null,
-            null, x2.value, op.value, false, Variable.bsItem2(x2));
+            null, x2.value, op.value, false, x2.index);
         if (op.intValue == Token.bonds)
           val = new Variable(Token.bitset, new BondSet((BitSet) val, viewer
               .getAtomIndices(bs)));
@@ -13944,7 +13924,7 @@ class Eval {
         return (Point3f) x.value;
       case Token.bitset:
         return (Point3f) getBitsetProperty(Variable.bsSelect(x), Token.xyz, null,
-            null, x.value, null, false, -1);
+            null, x.value, null, false, Integer.MAX_VALUE);
       case Token.string:
       case Token.list:
         Object pt = Escape.unescapePoint(Variable.sValue(x));

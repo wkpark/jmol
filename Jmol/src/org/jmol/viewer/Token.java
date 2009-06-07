@@ -393,39 +393,45 @@ public class Token {
   final static int rightparen   = 1 | mathop | 0 << 4;
 
   final static int comma        = 0 | mathop | 1 << 4;
-  final static int opIf         = 1 | mathop | 1 << 4;
-  final static int colon        = 2 | mathop | 1 << 4;
 
-  final static int leftsquare   = 0 | mathop | 2 << 4;
-  final static int rightsquare  = 1 | mathop | 2 << 4;
+  final static int opIf         = 1 | mathop | 3 << 4;
+  final static int colon        = 2 | mathop | 3 << 4;
 
-  final static int opOr         = 0 | mathop | 3 << 4;
-  final static int opXor        = 1 | mathop | 3 << 4;
-  final static int opToggle     = 2 | mathop | 3 << 4;
+  final static int leftsquare   = 0 | mathop | 4 << 4;
+  final static int rightsquare  = 1 | mathop | 4 << 4;
 
-  final static int opAnd        = 0 | mathop | 4 << 4;
-  
-  final static int opNot        = 0 | mathop | 5 << 4;
+  final static int opOr         = 0 | mathop | 5 << 4;
+  final static int opXor        = 1 | mathop | 5 << 4;
+  final static int opToggle     = 2 | mathop | 5 << 4;
+
+  final static int opAnd        = 0 | mathop | 6 << 4;
  
-  final static int opGT         = 0 | comparator | 6 << 4;
-  final static int opGE         = 1 | comparator | 6 << 4;
-  final static int opLE         = 2 | comparator | 6 << 4;
-  final static int opLT         = 3 | comparator | 6 << 4;
-  final public static int opEQ  = 4 | comparator | 6 << 4;
-  final static int opNE         = 5 | comparator | 6 << 4;
+  final static int opNot        = 0 | mathop | 7 << 4;
+ 
+  final static int opGT         = 0 | comparator | 8 << 4;
+  final static int opGE         = 1 | comparator | 8 << 4;
+  final static int opLE         = 2 | comparator | 8 << 4;
+  final static int opLT         = 3 | comparator | 8 << 4;
+  final public static int opEQ  = 4 | comparator | 8 << 4;
+  final static int opNE         = 5 | comparator | 8 << 4;
    
-  final static int minus        = 0 | mathop | 7 << 4;
-  final static int plus         = 1 | mathop | 7 << 4;
+  final static int minus        = 0 | mathop | 9 << 4;
+  final static int plus         = 1 | mathop | 9 << 4;
  
-  final static int divide       = 0 | mathop | 8 << 4;
-  final static int times        = 1 | mathop | 8 << 4;
-  final static int percent      = 2 | mathop | 8 << 4;
-  final static int leftdivide   = 3 | mathop | 8 << 4;  //   quaternion1 \ quaternion2
+  final static int divide       = 0 | mathop | 10 << 4;
+  final static int times        = 1 | mathop | 10 << 4;
+  final static int percent      = 2 | mathop | 10 << 4;
+  final static int leftdivide   = 3 | mathop | 10 << 4;  //   quaternion1 \ quaternion2
   
-  final static int unaryMinus   = 0 | mathop | 9 << 4;
+  final static int unaryMinus   = 0 | mathop | 11 << 4;
+  final static int minusMinus = 1 | mathop | 11 << 4;
+  final static int plusPlus   = 2 | mathop | 11 << 4;
   
-  final static int propselector = 1 | mathop | 10 << 4;
   
+  final static int propselector = 1 | mathop | 12 << 4;
+
+  final static int andequals    = 2 | mathop | 12 << 4;
+
   // these atom and math properties are invoked after a ".":
   // x.atoms
   // myset.bonds
@@ -565,7 +571,6 @@ public class Token {
   final static int split        = 0 | 1 << 9 | mathfunc | mathproperty;
   final static int join         = 1 | 1 << 9 | mathfunc | mathproperty;
   final static int trim         = 2 | 1 << 9 | mathfunc | mathproperty;  
-  final static int add          = 3 | 1 << 9 | mathfunc | mathproperty;
   final static int sub          = 4 | 1 << 9 | mathfunc | mathproperty;
   final static int mul          = 5 | 1 << 9 | mathfunc | mathproperty;
   final static int div          = 6 | 1 << 9 | mathfunc | mathproperty;
@@ -573,9 +578,9 @@ public class Token {
 
   // xxx(a,b)
 
-  final static int random       = 1 | 2 << 9 | mathfunc;
-  final static int cross        = 2 | 2 << 9 | mathfunc;
-  final static int script       = 3 | 2 << 9 | mathfunc | command;
+  final static int random       = 2 | 2 << 9 | mathfunc;
+  final static int cross        = 3 | 2 << 9 | mathfunc;
+  final static int script       = 4 | 2 << 9 | mathfunc | command;
 
   // ___.xxx(a,b)
 
@@ -585,9 +590,10 @@ public class Token {
   //     distance(a,b)
   //so it can be a math property and it can have up to two parameters
   
-  final static int distance     = 1 | 2 << 9 | mathfunc | mathproperty;
-  final static int replace      = 2 | 2 << 9 | mathfunc | mathproperty;
-  final static int find         = 3 | 2 << 9 | mathfunc | mathproperty;
+  final static int add          = 1 | 2 << 9 | mathfunc | mathproperty;
+  final static int distance     = 2 | 2 << 9 | mathfunc | mathproperty;
+  final static int replace      = 3 | 2 << 9 | mathfunc | mathproperty;
+  final static int find         = 4 | 2 << 9 | mathfunc | mathproperty;
 
   // xxx(a,b,c)
   
@@ -728,6 +734,7 @@ public class Token {
   final static Token tokenSetArray        = new Token(set, '[', "");
   final static Token tokenSetProperty     = new Token(set, '.', "");
   final static Token tokenSetVar          = new Token(set, '=', "var");
+  final static Token tokenEquals          = new Token(opEQ, "=");
     
   
 
@@ -942,22 +949,27 @@ public class Token {
     "||",           null,
     "?",            tokenOpIf,
     ",",            tokenComma,
+    "+=",           new Token(andequals),
+    "-=",           null,
+    "*=",           null,
+    "/=",           null,
+    "\\=",          null,
+    "&=",           null,
+    "|=",           null,
     "not",          new Token(opNot),
     "!",            null,
     "xor",          new Token(opXor),
 //no-- don't do this; it interferes with define
 //  "~",            null,
     "tog",          new Token(opToggle),
-    ",|",           null,
     "<",            new Token(opLT),
     "<=",           new Token(opLE),
     ">=",           new Token(opGE),
     ">",            new Token(opGT),
-    "=",            new Token(opEQ),
+    "=",            tokenEquals,
     "==",           null,
     "!=",           new Token(opNE),
     "<>",           null,
-    "/=",           null,
     "within",       new Token(within),
     ".",            new Token(dot),
     "[",            new Token(leftsquare),
@@ -968,6 +980,8 @@ public class Token {
     "%",            new Token(percent),
     ":",            tokenColon,
     ";",            new Token(semicolon),
+    "++",           new Token(plusPlus),
+    "--",           new Token(minusMinus),
     "+",            tokenPlus,
     "-",            tokenMinus,
     "*",            tokenTimes,

@@ -4592,8 +4592,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.getParameter(key);
   }
 
+  public Variable getVariable(String key) {
+    return global.getVariable(key);
+  }
+
+  Variable setVariable(String name, Variable value) {
+    return global.setUserVariable(name, value);
+  }
+
   void unsetProperty(String name) {
     global.setUserVariable(name, null);
+  }
+  
+  String getVariableList() {
+    return global.getVariableList();
   }
 
   public boolean getBooleanProperty(String key) {
@@ -4625,7 +4637,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (key.equalsIgnoreCase("showSelections"))
       return getSelectionHaloEnabled();
     if (global.htUserVariables.containsKey(key)) {
-      Variable t = (Variable) global.getUserParameterValue(key);
+      Variable t = global.getUserVariable(key);
       if (t.tok == Token.on)
         return true;
       if (t.tok == Token.off)
@@ -7238,14 +7250,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * Logger.error(msg); String t = null; t.substring(3); } catch (Exception e) {
    * e.printStackTrace(); } }
    */
-
-  void setListVariable(String name, Variable value) {
-    global.setListVariable(name, value);
-  }
-
-  Object getListVariable(String name, Object value) {
-    return global.getListVariable(name, value);
-  }
 
   public Point3f getBondPoint3f1(int i) {
     // legacy -- no calls

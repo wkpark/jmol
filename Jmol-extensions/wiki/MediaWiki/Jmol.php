@@ -5,14 +5,15 @@
  */
 //<source lang=php>
 $wgExtensionCredits['parserhook'][] = array(
-  'author'      => 'Nicolas Vervelle, Jmol Development Team',
+  'author'      => 'Nicolas Vervelle, Angel Herraez; Jmol Development Team',
   'description' => 'adds the possibility to include [http://www.jmol.org Jmol] applets in MediaWiki.',
   'name'        => 'Jmol Extension for MediaWiki',
   'update'      => '2008-12-09',
   'url'         => 'http://wiki.jmol.org/index.php/MediaWiki',
   'status'      => 'development',
   'type'        => 'hook',
-  'version'     => StubManager::getRevisionId( '$Id$' )
+  'version'     => '3.0'
+//  'version'     => StubManager::getRevisionId( '$Id$' )
 );
 
 /* Global configuration parameters */

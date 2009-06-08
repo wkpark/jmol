@@ -42,6 +42,8 @@ class Jmol {
   var $mValTarget;
   var $mValText;
   var $mValTitle;
+  var $mValHeader;
+  var $mValCaption;
   var $mValUploadedFileContents;
   var $mValUrlContents;
   var $mValVertical;
@@ -108,12 +110,12 @@ class Jmol {
     if ($this->mValText != "") {
       $prefix .= " value='".$this->escapeAttribute($this->mValText)."'";
     }
-    $prefix .= " onclick=\"jmolWikiPopupWindow('".$wgJmolExtensionPath."',".
-                                              "'".$this->escapeScript($this->mValTitle)."',".
-                                              "'".$this->escapeScript($this->mValSize)."',".
-                                              "'".$this->escapeScript($this->mValPositionX)."',".
-                                              "'".$this->escapeScript($this->mValPositionY)."',".
-                                              "'";
+    $prefix .= " onclick=\"jmolWikiPopupWindow(".
+											 "'".$this->escapeScript($this->mValTitle)."',".
+											 "'".$this->escapeScript($this->mValSize)."',".
+											 "'".$this->escapeScript($this->mValPositionX)."',".
+											 "'".$this->escapeScript($this->mValPositionY)."',".
+											 "'";
     $postfix = "');return true\" />";
     $this->mOutput .= $this->renderInternalJmolApplet($prefix, $postfix, "\\'");
   }
@@ -129,12 +131,13 @@ class Jmol {
       $prefix .= " name='".$this->escapeAttribute($this->mValName)."'".
                  " id='".$this->escapeAttribute($this->mValName)."'";
     }
-    $prefix .= " href=\"javascript:jmolWikiPopupWindow('".$wgJmolExtensionPath."',".
-                                                      "'".$this->escapeScript($this->mValTitle)."',".
-                                                      "'".$this->escapeScript($this->mValSize)."',".
-                                                      "'".$this->escapeScript($this->mValPositionX)."',".
-                                                      "'".$this->escapeScript($this->mValPositionY)."',".
-                                                      "'";
+    $prefix .= " href=\"javascript::void(0)\"".
+					" onclick=\"jmolWikiPopupWindow(".
+											"'".$this->escapeScript($this->mValTitle)."',".
+											"'".$this->escapeScript($this->mValSize)."',".
+											"'".$this->escapeScript($this->mValPositionX)."',".
+											"'".$this->escapeScript($this->mValPositionY)."',".
+											"'";
     $postfix .= "');\"";
     $postfix .= ">";
     if ($this->mValText == "") {
@@ -144,6 +147,62 @@ class Jmol {
       $postfix .= $this->mValText;
     }
     $postfix .= "</a>";
+    $this->mOutput .= $this->renderInternalJmolApplet($prefix, $postfix, "\\'");
+  }
+
+  // Renders a link in the Wiki page that will insert a div containing a Jmol applet
+  private function renderJmolAppletInlineLink() {
+    global $wgJmolExtensionPath;
+    $prefix = "";
+    $postfix = "";
+	 
+	$uniqueID = rand(10000,99999);
+    $hidelink = "[<a href='javascript:void(0)' ".
+	  " title='hide the Jmol applet'".
+	  " style='font-family:Verdana, Arial, Helvetica, sans-serif;'".
+	  " onclick='jmolWikiPopInlineHide(\"".$uniqueID."\")'>x</a>]";
+	$prefix .= "<div style='width:".$this->mValSize."px; text-align:center;'>";
+
+    if ($this->mValHeader != "") {	
+	$prefix .= "<div style='font-weight:bold; position:relative; padding-right:2ex;'>".
+	  $this->mValHeader.
+      "<span id='JmolInlineHide".$uniqueID."'".
+	  " style='display:none; position:absolute; right:0; bottom:0; font-weight:normal;'>".
+	  $hidelink.
+	  "</span>".
+	  "</div>";
+	} else {
+	$prefix .= "<div>".
+      "<span id='JmolInlineHide".$uniqueID."'".
+	  " style='display:none; float:right;'>".
+	  $hidelink.
+	  "</span>".
+	  "</div>";
+	}
+
+    $prefix .= "<a id='JmolInlineLink".$uniqueID."'";
+    if ($this->mValName != "") {
+      $prefix .= " name='".$this->escapeAttribute($this->mValName)."'".
+                 " id='".$this->escapeAttribute($this->mValName)."'";
+    }
+    $prefix .= " href='javascript:void(0)' ".
+	   " title='this will load a 3D model in a Jmol applet, which may take some time'".
+	   " onclick=\"jmolWikiPopInline('".$uniqueID."','";
+		
+    $postfix .= "');\"";
+    $postfix .= ">";
+
+    if ($this->mValText == "") {
+      $this->mValText = "Jmol";
+    }
+      $postfix .= $this->mValText;
+
+    $postfix .= "</a>";
+    $postfix .= "<div id='JmolInlineEnv".$uniqueID."'></div>";
+			 /*  style='z-index:5;position:absolute;vertical-align:top;' */
+    $postfix .= "<div style='font-size:0.85em; line-height:1.2; text-align:left; margin:0 1.5ex;'>".
+	   $this->mValCaption."</div></div>";
+	   
     $this->mOutput .= $this->renderInternalJmolApplet($prefix, $postfix, "\\'");
   }
 
@@ -255,7 +314,7 @@ class Jmol {
     $output .=
       "jmolCheckBrowser(".$sep."popup".$sep.", ".
                           $sep.$wgJmolExtensionPath."/browsercheck".$sep.", ".
-                          $sep."onClick".$sep.");".
+                          $sep."onclick".$sep.");".
       "jmolSetAppletColor(".$sep.$this->escapeScript($this->mValColor).$sep.");";
     if ($this->mValUploadedFileContents != "") {
       if ($wgJmolAuthorizeUploadedFile == true) {
@@ -283,7 +342,8 @@ class Jmol {
     if ($this->mValUrlContents != "") {
       $output .= "jmolApplet(".
         $this->escapeScript($this->mValSize).", ".
-        $sep."load ".$this->escapeScript($this->mValUrlContents)."; ".
+		  $sep."set echo p 50% 50%;set echo p center;echo loading...;refresh;".
+        "load ".$this->escapeScript($this->mValUrlContents)."; ".
              $this->escapeScript($this->mValScript).$sep;
     } else {
       $output .= "jmolAppletInline(".
@@ -358,6 +418,9 @@ class Jmol {
         break;
       case "JMOLAPPLETLINK":
         $this->renderJmolAppletLink();
+        break;
+      case "JMOLAPPLETINLINELINK":
+        $this->renderJmolAppletInlineLink();
         break;
       case "JMOLBUTTON":
         $this->renderJmolButton();
@@ -456,6 +519,12 @@ class Jmol {
       case "TITLE":
         $this->mValTitle = $data;
         break;
+      case "HEADER":
+        $this->mValHeader = $data;
+        break;
+      case "CAPTION":
+        $this->mValCaption = $data;
+        break;
       case "UPLOADEDFILECONTENTS":
         $this->mValUploadedFileContents = $data;
         break;
@@ -525,6 +594,8 @@ class Jmol {
     $this->mValTarget = "";
     $this->mValText = "";
     $this->mValTitle = "Jmol";
+    $this->mValHeader = "";
+    $this->mValCaption = "";
     $this->mValUploadedFileContents = "";
     $this->mValUrlContents = "";
     $this->mValVertical = false;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 Nicolas Vervelle,  The Jmol Development Team
+ * Copyright (C) 2006-2009 Nicolas Vervelle,  The Jmol Development Team
  *
  * Contact: nico@jmol.org, jmol-developers@lists.sf.net
  *
@@ -18,9 +18,12 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-// several fixes by AH, Dec. 08
+// Dec. 08 - several fixes by AH
+/* Jun. 09 - Addition of support for pop-in applet, by AH
+		and some code cleanup (extensionPath no longer used)
+*/
 
-function jmolWikiPopupWindow(extensionPath, windowTitle, windowSize, windowLeft, windowTop, windowCode) {
+function jmolWikiPopupWindow(windowTitle, windowSize, windowLeft, windowTop, windowCode) {
   var windowWidth = parseInt(windowSize) + 15;
   var windowHeight = parseInt(windowSize) + 15;
   var opt = "width=" + windowWidth + "," +
@@ -32,28 +35,14 @@ function jmolWikiPopupWindow(extensionPath, windowTitle, windowSize, windowLeft,
     "<title>" + windowTitle + "</title>\n" +
     "</head><body>\n";
 	
-  var t1,t2,j1,j2;
-  var j1 = windowCode.indexOf("jmolApplet");
-  eval(windowCode.substring(0,j1));	// execute the windowCode before "jmolApplet" (jmolInitialize, jmolSetAppletColor etc.)
-  jmolSetDocument(false);			// execute this
-  t1 = windowCode.substring(j1);	// part of windowCode including "jmolApplet" and whatever follows
-  j1 = t1.indexOf("\(");
-  var ap1 = t1.substring(0,j1);		// "jmolApplet"  or  "jmolAppletInline"
-  t2 = t1.substring(j1+1);
-  j1 = t2.indexOf(",");
-  var ap2 = t2.substring(0,j1);		// applet size
-  j2 = t2.indexOf("\);");			// end of jmolApplet part
-  var ap3 = t2.substring(j1+2,j2);	// script
-  ap3 = ap3.replace(/\n/g, "|");	// protect newlines in inline data
-  var ap4 = t2.substring(j2+2);		// whatever is after jmolApplet (was only jmolBr, now empty)
-
+  var ap = jmolParseWindowCode(windowCode);
   // make the popup applet resizable:
-  ap2 = '"100%"';	// overwrites the former size
-  ap3 = ap3.charAt(0) + "set zoomLarge off; " + ap3.substring(1);	// skips the quote and inserts command
+  ap[1] = '"100%"';	// overwrites the former size
+  ap[2] = ap[2].charAt(0) + "set zoomLarge off; " + ap[2].substring(1);	// skips the quote and inserts command
   
-  s += eval( ap1 + "(" + ap2 + ", " + ap3 + ")" );	// put into page the code resulting from jmolApplet
-  if (ap4) {
-    s += eval(ap4);	// put into page the code resulting from whatever is after jmolApplet (was jmolBr)
+  s += eval( ap[0] + "(" + ap[1] + ", " + ap[2] + ")" );	// put into page the code resulting from jmolApplet
+  if (ap[3]) {
+    s += eval(ap[3]);	// put into page the code resulting from whatever is after jmolApplet (was jmolBr)
   }
 
   s += "\n</body></html>";
@@ -68,6 +57,51 @@ function jmolWikiPopupWindow(extensionPath, windowTitle, windowSize, windowLeft,
   w.focus();
 }
 
+function jmolParseWindowCode(wC) {
+  var t1,t2,j1,j2;
+  var j1 = wC.indexOf("jmolApplet");
+  eval(wC.substring(0,j1));	// execute the windowCode before "jmolApplet" (jmolInitialize, jmolSetAppletColor etc.)
+  jmolSetDocument(false);		// execute this
+  t1 = wC.substring(j1);		// part of windowCode including "jmolApplet" and whatever follows
+  j1 = t1.indexOf("\(");
+  var ap1 = t1.substring(0,j1);		// "jmolApplet"  or  "jmolAppletInline"
+  t2 = t1.substring(j1+1);
+  j1 = t2.indexOf(",");
+  var ap2 = t2.substring(0,j1);		// applet size (single number, square applet)
+  j2 = t2.indexOf("\);");				// end of jmolApplet part
+  var ap3 = t2.substring(j1+2,j2);	// script
+  ap3 = ap3.replace(/\n/g, "|");		// protect newlines in inline data
+  var ap4 = t2.substring(j2+2);		// whatever is after jmolApplet (was only jmolBr, now empty)
+  return [ap1,ap2,ap3,ap4];
+}
+
+function jmolWikiPopInline(divID, windowCode) {
+	var jDiv = document.getElementById("JmolInlineEnv"+divID);
+	if ( jDiv.innerHTML!="" )
+	{	// the applet exists already (was created before and then hidden); display it!
+		//alert("exists")
+	  jDiv.style.display="inline";
+	}
+	else
+	{	// the applet does not exist; create it!
+		//alert("does not exist")
+	  var ap = jmolParseWindowCode(windowCode);
+	  var s = "";
+	  s += eval( ap[0] + "(" + ap[1] + ", " + ap[2] + ")" );	// put into page the code resulting from jmolApplet
+	  if (ap[3]) {
+		s += eval(ap[3]);	// put into page the code resulting from whatever is after jmolApplet (was jmolBr)
+	  }
+	  jDiv.innerHTML = s;
+	}
+  document.getElementById("JmolInlineLink"+divID).style.display="none";
+  document.getElementById("JmolInlineHide"+divID).style.display="inline";
+}
+
+function jmolWikiPopInlineHide(divID) {
+  document.getElementById("JmolInlineLink"+divID).style.display="inline";
+  document.getElementById("JmolInlineEnv"+divID).style.display="none"; 
+  document.getElementById("JmolInlineHide"+divID).style.display="none";
+}
 
 function setupCheckboxShiftClick() {
 	return;

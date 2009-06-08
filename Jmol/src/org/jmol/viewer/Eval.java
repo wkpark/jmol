@@ -155,10 +155,10 @@ class Eval {
   private Object getParameter(String key, boolean asToken) {
     Object v = getContextVariableAsVariable(key);
     if (v == null)
-      v = viewer.getVariable(key);
-    if (v == null)
-      v = viewer.setVariable(key, new Variable(Token.string, ""));
-    return (asToken ? v : Variable.oValue((Variable)v));
+      v = viewer.getParameter(key);
+    if (asToken)
+      return (v instanceof Variable ? (Variable) v : Variable.getVariable(v));
+    return (v instanceof Variable ? Variable.oValue((Variable) v) : v);
   }
 
   private String getStringParameter(String var, boolean orReturnName) {
@@ -7242,9 +7242,7 @@ class Eval {
       //   c.xxx =
       //   {...}[n].xxx = 
       // not supported:
-      //   a[...].xxx =
       //   a[...][...].xxx =
-      //   var a[...].xxx =
       //   var a[...][...].xxx =
       
       int pt = (tok2 == Token.opEQ ? 3 
@@ -7254,6 +7252,8 @@ class Eval {
               // {...}.xxx =
               // {{...}[n]}.xxx = 
           : 2
+              // var a[...].xxx =
+              // a[...].xxx =
               // var c = ...
               // var c = [
               //     c = [
@@ -7271,6 +7271,10 @@ class Eval {
 
   private void setVariable(int pt, int ptMax, String key, boolean showing, int setType)
       throws ScriptException {
+    
+    // from SET, we are only here if a Jmol parameter has not been identified
+    // from FOR or WHILE, no such check is made
+    
     // if both pt and ptMax are 0, then it indicates that 
     BitSet bs = null;
     String propertyName = "";
@@ -7324,7 +7328,10 @@ class Eval {
            ));
     
     if (needVariable) {
-      t = viewer.getVariable(key);
+      t = viewer.getOrSetNewVariable(key);
+      if (t == null) { // can't set a variable _xxxx
+        error(ERROR_invalidArgument);
+      }
       isUserVariable = true;
     }
     

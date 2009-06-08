@@ -4595,8 +4595,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.getParameter(key);
   }
 
-  public Variable getVariable(String key) {
-    return global.getVariable(key);
+  public Variable getOrSetNewVariable(String key) {
+    return global.getOrSetNewVariable(key);
   }
 
   Variable setVariable(String name, Variable value) {
@@ -4604,7 +4604,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void unsetProperty(String name) {
-    global.setUserVariable(name, null);
+    global.unsetUserVariable(name);
   }
   
   String getVariableList() {

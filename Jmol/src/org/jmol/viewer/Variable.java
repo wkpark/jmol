@@ -89,10 +89,12 @@ public class Variable extends Token {
   }
 
   public static Variable getVariable(Object x) {
-    if (x instanceof String) 
-      x = Escape.unescapePointOrBitsetAsVariable((String) x);
+    if (x == null)
+      return null;
     if (x instanceof Variable)
       return (Variable) x;
+    if (x instanceof String) 
+      x = Escape.unescapePointOrBitsetAsVariable((String) x);
     if (x instanceof Integer)
       return new Variable(integer, ((Integer) x).intValue());
     if (x instanceof Float)

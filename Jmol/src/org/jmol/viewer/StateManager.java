@@ -868,8 +868,15 @@ public class StateManager {
     }
 
     Variable setUserVariable(String key, Variable var) {
+      if (var == null) 
+        return null;
       key = key.toLowerCase();
-      if (var == null) {
+      htUserVariables.put(key, var.setName(key).setGlobal());
+      return var;
+    }
+
+    void unsetUserVariable(String key) {
+      key = key.toLowerCase();
         if (key.equals("all") || key.equals("variables")) {
           htUserVariables.clear();
           Logger.info("all user-defined variables deleted");
@@ -877,10 +884,6 @@ public class StateManager {
           Logger.info("variable " + key + " deleted");
           htUserVariables.remove(key);
         }
-        return null;
-      }
-      htUserVariables.put(key, var.setName(key).setGlobal());
-      return var;
     }
 
     void removeUserVariable(String key) {
@@ -920,14 +923,30 @@ public class StateManager {
       return var.escape();
     }
 
+    /**
+     * 
+     * strictly a getter -- returns "" if not found
+     * 
+     * @param name
+     * @return      a Integer, Float, String, BitSet, or Variable
+     */
     Object getParameter(String name) {
       Object v = getParameter(name, false);
       return (v == null ? "" : v);
     }
 
-    Variable getVariable(String name) {
+    /**
+     *  
+     * 
+     * @param name
+     * @return     a new variable if possible, but null if "_xxx"
+     * 
+     */
+    Variable getOrSetNewVariable(String name) {
+      if (name == null)
+        name = "x";
       Object v = getParameter(name, true);
-      if (v == null)
+      if (v == null && name.charAt(0) != '_')
         v = setUserVariable(name, new Variable());
       return Variable.getVariable(v);
     }

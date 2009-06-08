@@ -1066,27 +1066,29 @@ class Compiler {
     // specific token-based issues depend upon where we are in the command
     
     Token token;
-    if (theTok == Token.andequals) {
-      if (nSemiSkip == forPoint3 && nTokens == ptSemi + 2) {
-        token = lastToken;
-        addTokenToPrefix(Token.tokenEquals);
-        addTokenToPrefix(token);
-        token = Token.getTokenFromName(ident.substring(0, 1));
-        addTokenToPrefix(token);
-        addTokenToPrefix(Token.tokenLeftParen);
-        needRightParen = true;
-        return CONTINUE;
-      }
-      if (tokCommand == Token.set) {
-        tokenAndEquals = Token.getTokenFromName(ident.substring(0, 1));
-        setEqualPt = ichToken;
-        return OK;
-      }
-      // otherwise ignore
-      return CONTINUE;
-    }
 
     switch (theTok) {
+    case Token.andequals:
+      if (theTok == Token.andequals) {
+        if (nSemiSkip == forPoint3 && nTokens == ptSemi + 2) {
+          token = lastToken;
+          addTokenToPrefix(Token.tokenEquals);
+          addTokenToPrefix(token);
+          token = Token.getTokenFromName(ident.substring(0, 1));
+          addTokenToPrefix(token);
+          addTokenToPrefix(Token.tokenLeftParen);
+          needRightParen = true;
+          return CONTINUE;
+        }
+        if (tokCommand == Token.set) {
+          tokenAndEquals = Token.getTokenFromName(ident.substring(0, 1));
+          setEqualPt = ichToken;
+          return OK;
+        }
+        // otherwise ignore
+        return CONTINUE;
+      }
+      break;
     case Token.end:
     case Token.endifcmd:
       if (flowContext != null)
@@ -1208,6 +1210,7 @@ class Compiler {
     // checking tokens based on the current command
     // all command starts are handled by case Token.nada
 
+    nTokens = ltoken.size();
     switch (tokCommand) {
     case Token.nada:
       // first token in command
@@ -1365,7 +1368,7 @@ class Compiler {
       }
       break;
     case Token.set:
-      if (theTok == Token.leftbrace)
+      if (theTok ==  Token.leftbrace)
         setBraceCount++;
       else if (theTok == Token.rightbrace) {
         setBraceCount--;
@@ -1375,29 +1378,14 @@ class Compiler {
       }
       if (nTokens == ptNewSetModifier) { // 1 when { is not present
         boolean isSetArray = false;
-        Token token;
-        if (theTok == Token.opEQ || theTok == Token.leftsquare) {
-          // x = or x[n] =
-          token = (Token) ltoken.get(0);
-          ltoken.removeElementAt(0);
-          isSetArray = (theTok == Token.leftsquare);
-          ltoken.addElement(isSetArray ? Token.tokenSetArray
-              : Token.tokenSet);
-          theTok = token.tok;
-          tokCommand = Token.set;
-        }
         if (theTok == Token.leftparen) {
           // mysub(xxx,xxx,xxx)
-          token = (Token) ltoken.get(0);
-          ltoken.removeElementAt(0);
-          tokenCommand = new Token(Token.function, 0, token.value);
-          ltoken.add(0, tokenCommand);
+          Token token = (Token) ltoken.get(0);
+          ltoken.setElementAt(tokenCommand = new Token(Token.function, 0, token.value), 0);
           tokCommand = Token.function;
-          //token = Token.tokenLeftParen;
-          //theTok = Token.leftparen;
           break;
         }
-        if (theTok != Token.identifier
+        if (theTok != Token.identifier && theTok != Token.andequals
             && (!Token.tokAttr(theTok, Token.setparam))) {
           if (isNewSet)
             commandExpected();

@@ -83,18 +83,14 @@ public class Variable extends Token {
   }
 
   public Variable(Token theToken) {
-    if (theToken.tok == Token.string) {
-      set(tValue((String)theToken.value));
-    } else {
-      Variable v = new Variable();
-      v.tok = theToken.tok;
-      v.intValue = theToken.intValue;
-      v.value = theToken.value;
-      set(v);      
-    }
+    tok = theToken.tok;
+    intValue = theToken.intValue;
+    value = theToken.value;
   }
 
   public static Variable getVariable(Object x) {
+    if (x instanceof String) 
+      x = Escape.unescapePointOrBitsetAsVariable((String) x);
     if (x instanceof Variable)
       return (Variable) x;
     if (x instanceof Integer)
@@ -104,7 +100,7 @@ public class Variable extends Token {
     if (x instanceof String[])
       return new Variable(list, x);
     if (x instanceof String)
-      return tValue((String) x);
+      return new Variable(string, x);
     if (x instanceof Vector3f)
       return new Variable(point3f, new Point3f((Vector3f) x));
     if (x instanceof Point3f)

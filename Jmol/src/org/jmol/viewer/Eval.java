@@ -13581,7 +13581,7 @@ class Eval {
         default:
           return addX(Variable.fValue(x1) + Variable.fValue(x2));
         case Token.string:
-          return addX(Variable.sValue(x1) + Variable.sValue(x2));
+          return addX(new Variable(Token.string, Variable.sValue(x1) + Variable.sValue(x2)));
         case Token.point4f:
           Quaternion q1 = new Quaternion((Point4f) x1.value);
           switch (x2.tok) {

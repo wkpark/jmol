@@ -217,6 +217,7 @@ class RepaintManager {
   void render(Graphics3D g3d, ModelSet modelSet) {//, Rectangle rectClip
     if (!viewer.getRefreshing())
       return;
+    System.out.println("repaint manager render " + modelSet);
     frameRenderer.render(g3d, modelSet); //, rectClip
     Rectangle band = viewer.getRubberBandSelection();
     if (band != null && g3d.setColix(viewer.getColixRubberband()))

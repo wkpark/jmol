@@ -2084,6 +2084,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void zap(boolean notify, boolean resetUndo) {
     stopAnimationThreads();
     if (modelSet != null) {
+      System.out.println("zapping " + modelSet);
       clearModelDependentObjects();
       fileManager.clear();
       repaintManager.clear();

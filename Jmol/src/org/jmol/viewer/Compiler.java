@@ -1077,8 +1077,12 @@ class Compiler {
         needRightParen = true;
         return CONTINUE;
       }
-      tokenAndEquals = Token.getTokenFromName(ident.substring(0, 1));
-      cchToken = 1;
+      if (tokCommand == Token.set) {
+        tokenAndEquals = Token.getTokenFromName(ident.substring(0, 1));
+        setEqualPt = ichToken;
+        return OK;
+      }
+      // otherwise ignore
       return CONTINUE;
     }
 
@@ -2127,53 +2131,49 @@ class Compiler {
     }
     tokenCommand = (Token) ltoken.firstElement();
     tokCommand = tokenCommand.tok;
-    
-    isImplicitExpression = Token.tokAttr(tokCommand, Token.mathExpressionCommand);
+
+    isImplicitExpression = Token.tokAttr(tokCommand,
+        Token.mathExpressionCommand);
     isSetOrDefine = (tokCommand == Token.set || tokCommand == Token.define);
     isCommaAsOrAllowed = Token.tokAttr(tokCommand, Token.atomExpressionCommand);
     int size = ltoken.size();
     int tok;
     if (size == 1 && Token.tokAttr(tokCommand, Token.defaultON)) {
       addTokenToPrefix(Token.tokenOn);
-    } else if (tokCommand == Token.set && size > 2 
+    } else if (tokCommand == Token.set
+        && size > 2
         && ((tok = ((Token) ltoken.get(size - 1)).tok) == Token.plusPlus || tok == Token.minusMinus)) {
       ltoken.removeElementAt(size - 1);
       addTokenToPrefix(Token.tokenEquals);
       for (int i = 1; i < size - 1; i++)
-        addTokenToPrefix((Token)ltoken.elementAt(i));
-      addTokenToPrefix(tok == Token.minusMinus ? Token.tokenMinus : Token.tokenPlus);
+        addTokenToPrefix((Token) ltoken.elementAt(i));
+      addTokenToPrefix(tok == Token.minusMinus ? Token.tokenMinus
+          : Token.tokenPlus);
       addTokenToPrefix(Token.intToken(1));
-      if(((Token) ltoken.get(2)).tok == Token.leftsquare)
+      if (((Token) ltoken.get(2)).tok == Token.leftsquare)
         ltoken.setElementAt(Token.tokenSetArray, 0);
     }
     if (tokenAndEquals != null) {
       int j;
       int i = 0;
-      boolean haveEquals = true;// !(((Token)ltoken.elementAt(0)).intValue == '='); 
-      if (haveEquals) {
-        for (i = 1; i < size; i++) {
-          if (((Token)ltoken.elementAt(i)).tok == Token.opEQ)
+      for (i = 1; i < size; i++) {
+        if ((j = ((Token) ltoken.elementAt(i)).tok) == Token.andequals)
           break;
-        }
-        size = i;
-        i++;
-      } else {
-        i = 1;
-        size = 2;
       }
+      size = i;
+      i++;
       if (ltoken.size() < i) {
         System.out.println("COMPILER ERROR! - andEquals ");
       } else {
         for (j = 1; j < size; j++, i++)
-          ltoken.insertElementAt((Token)ltoken.elementAt(j), i);
-        if (!haveEquals)
-          i++;
+          ltoken.insertElementAt((Token) ltoken.elementAt(j), i);
+        ltoken.setElementAt(Token.tokenEquals, size);
         ltoken.insertElementAt(tokenAndEquals, i);
         ltoken.insertElementAt(Token.tokenLeftParen, ++i);
         addTokenToPrefix(Token.tokenRightParen);
       }
     }
-    
+
     atokenInfix = new Token[size = ltoken.size()];
     ltoken.copyInto(atokenInfix);
     if (logMessages) {
@@ -2186,19 +2186,24 @@ class Compiler {
       Logger.debug("-------------------------------------");
     }
 
-    //compile expressions
+    // compile expressions
 
-    isEmbeddedExpression = (tokCommand != Token.nada && tokCommand != Token.function && tokCommand != Token.end
-        && !Token.tokAttrOr(tokCommand, Token.atomExpressionCommand, Token.implicitStringCommand));
-    boolean checkExpression = isEmbeddedExpression || (Token.tokAttr(tokCommand, Token.atomExpressionCommand));
+    isEmbeddedExpression = (tokCommand != Token.nada
+        && tokCommand != Token.function && tokCommand != Token.end && !Token
+        .tokAttrOr(tokCommand, Token.atomExpressionCommand,
+            Token.implicitStringCommand));
+    boolean checkExpression = isEmbeddedExpression
+        || (Token.tokAttr(tokCommand, Token.atomExpressionCommand));
 
-      // $ at beginning disallow expression checking for center, delete, hide, or display commands
-    if (tokAt(1) == Token.dollarsign && Token.tokAttr(tokCommand, Token.atomExpressionCommand))
+    // $ at beginning disallow expression checking for center, delete, hide, or
+    // display commands
+    if (tokAt(1) == Token.dollarsign
+        && Token.tokAttr(tokCommand, Token.atomExpressionCommand))
       checkExpression = false;
     if (checkExpression && !compileExpression())
       return false;
 
-    //check statement length
+    // check statement length
 
     size = atokenInfix.length;
 
@@ -2218,7 +2223,7 @@ class Compiler {
 
     if ((isNewSet || isSetBrace) && size < ptNewSetModifier + 2)
       return commandExpected();
-    return (size == 1 || !Token.tokAttr(tokCommand, Token.noArgs) ? true 
+    return (size == 1 || !Token.tokAttr(tokCommand, Token.noArgs) ? true
         : error(ERROR_badArgumentCount));
   }
 

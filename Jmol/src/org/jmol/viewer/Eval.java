@@ -1503,7 +1503,7 @@ class Eval {
         rpn.addOp(instruction);
         break;
       case Token.identifier:
-        val = getParameter((String) value, true);
+        val = getParameter((String) value, false);
         if (val instanceof String)
           val = getStringObjectAsVariable((String) val, null);
         if (val instanceof String)
@@ -9405,7 +9405,8 @@ class Eval {
       break;
     case Token.identifier:
       if (str.equalsIgnoreCase("variables")) {
-        msg = viewer.getVariableList();
+        if (!isSyntaxCheck)
+          msg = viewer.getVariableList();
       } else if (str.equalsIgnoreCase("historyLevel")) {
         value = "" + commandHistoryLevelMax;
       } else if (str.equalsIgnoreCase("defaultLattice")) {

@@ -2088,6 +2088,7 @@ abstract public class ModelCollection extends BondCollection {
       if (myBondingRadius == 0)
         continue;
       float searchRadius = myBondingRadius + maxBondingRadius + bondTolerance;
+      initializeBspt(modelIndex);
       CubeIterator iter = bspf.getCubeIterator(modelIndex);
       iter.initializeHemisphere(atom, searchRadius);
       while (iter.hasMoreElements()) {
@@ -2138,6 +2139,74 @@ abstract public class ModelCollection extends BondCollection {
       return new int[] {autoBond(bsA, bsB, null, bsBonds), 0};
     }
   
+  private static float defaultHbondMax = 3.25f;
+  private static float hbondMin = 2.5f;
+
+  private static boolean checkMinAttachedAngle(Atom atom1, Atom atom2, float minAngle, Vector3f v1, Vector3f v2) {
+    v1.sub(atom1, atom2);
+    return (checkMinAttachedAngle(atom1, atom1.getBonds(), atom2, minAngle, v1, v2)
+        && checkMinAttachedAngle(atom2, atom2.getBonds(), atom1, minAngle, v1, v2));
+  }
+
+  private static boolean checkMinAttachedAngle(Atom atom1, Bond[] bonds1, Atom atom2,
+                                        float minAngle, Vector3f v1, Vector3f v2) {
+    if (bonds1 != null)
+      for (int i = bonds1.length; --i >= 0;)
+        if (bonds1[i].isCovalent()) {
+          v2.sub(atom1, bonds1[i].getOtherAtom(atom1));
+          if (v2.angle(v1) < minAngle)
+            return false;
+        }
+    v1.scale(-1); // set for second check
+    return true;
+  }
+
+  protected int autoHbond(BitSet bsA, BitSet bsB, BitSet bsBonds,
+                          float maxXYDistance, float minAttachedAngle) {
+    if (maxXYDistance <= 0)
+      maxXYDistance = defaultHbondMax;
+    float hbondMax2 = maxXYDistance * maxXYDistance;
+    float hbondMin2 = hbondMin * hbondMin;
+    int nNew = 0;
+    Vector3f v1 = new Vector3f();
+    Vector3f v2 = new Vector3f();
+    if (showRebondTimes && Logger.debugging)
+      Logger.startTimer();
+    int modelLast = -1;
+    for (int i = atomCount; --i >= 0;) {
+      Atom atom = atoms[i];
+      int elementNumber = atom.getElementNumber();
+      if (elementNumber != 7 && elementNumber != 8)
+        continue;
+      //float searchRadius = hbondMax;
+      if (atom.modelIndex != modelLast)
+          initializeBspt(modelLast = atom.modelIndex);
+      CubeIterator iter = bspf.getCubeIterator(atom.modelIndex);
+      iter.initializeHemisphere(atom, maxXYDistance);
+      while (iter.hasMoreElements()) {
+        Atom atomNear = (Atom) iter.nextElement();
+        int elementNumberNear = atomNear.getElementNumber();
+        if (elementNumberNear != 7 && elementNumberNear != 8
+            || atomNear == atom || iter.foundDistance2() < hbondMin2
+            || iter.foundDistance2() > hbondMax2 || atom.isBonded(atomNear))
+          continue;
+        if (minAttachedAngle > 0
+            && !checkMinAttachedAngle(atom, atomNear, minAttachedAngle, v1, v2))
+          continue;
+        getOrAddBond(atom, atomNear, JmolConstants.BOND_H_REGULAR, (short) 1,
+            bsPseudoHBonds);
+        nNew++;
+      }
+      iter.release();
+    }
+    ((ModelSet)this).setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, Float.NaN, 
+        bsPseudoHBonds);
+    if (showRebondTimes && Logger.debugging)
+      Logger.checkTimer("Time to hbond");
+    return nNew;
+  }
+
+
   //////////// state definition ///////////
 
   boolean proteinStructureTainted = false;

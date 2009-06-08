@@ -57,7 +57,7 @@ public final class Bspf {
   }
   
   public boolean isInitialized(int bsptIndex) {
-    return bspts[bsptIndex] != null;
+    return bspts.length > bsptIndex && bspts[bsptIndex] != null;
   }
   
   public void addTuple(int bsptIndex, Point3f tuple) {

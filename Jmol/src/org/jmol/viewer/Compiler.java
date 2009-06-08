@@ -76,6 +76,7 @@ class Compiler {
   private boolean isSilent;
   private boolean isShowScriptOutput;
   private boolean isCheckOnly;
+  private boolean haveComments;
   private Hashtable contextVariables;
   private boolean logMessages = false;
 
@@ -282,10 +283,7 @@ class Compiler {
     this.isCheckOnly = isCheckOnly;
     this.filename = filename;
     this.isSilent = isSilent;
-    this.script = null;
-    cleanScriptComments(script);
-    if (this.script == null)
-      this.script = script;
+    this.script = cleanScriptComments(script);
     contextVariables = null;
     logMessages = (!isSilent && !isPredefining && debugScript);
     preDefining = (filename == "#predefine");
@@ -345,42 +343,35 @@ class Compiler {
   
  /**
    * allows for three kinds of comments.
-   * NOTE: closing involves two asterisks and slash together, but that can't be shown here. 
+   * NOTE: closing involves asterisks and slash together, but that can't be shown here. 
    * 
-   * 1) /** .... ** / 
+   * 1) /** .... ** /  super-comment
    * 2) /* ..... * /   may be INSIDE /**....** /).
    * 3)  \n//.....\n   single-line comments -- like #, but removed entirely 
    * The reason is that /* ... * / will appear as standard in MOVETO command
    * but we still might want to escape it, so around that you can have /** .... ** /
    * 
-   * also, 
+   * The terminator is not necessary -- so you can quickly escape anything in a file 
+   * after /** or /*
+   * 
+   * In addition, we can have [/*|/**] .... **** Jmol Embedded Script ****  [script commands] [** /|* /]
+   * Then ONLY that script is taken. This is a powerful and simple way then to include Jmol scripting
+   * in any file -- including, for example, HTML as an HTML comment. Just send the whole file to 
+   * Jmol, and it will find its script!
+   * 
    * @param script
    * @return cleaned script
    */
   private String cleanScriptComments(String script) {
-    int pt1, pt2;
-    int pt = -1;
-    while ((pt = script.indexOf("/**")) >= 0) {
-      pt1 = script.indexOf("**/", pt + 3);
-      if (pt1 < 0)
-        break;
-      String scrap = script.substring(pt, pt1);
-      if ((pt2 = scrap.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG)) >= 0)
-        return this.script = cleanScriptComments(scrap.substring(pt2 + 30));
-      script = script.substring(0, pt) + script.substring(pt1 + 3);
-    }
-    while ((pt = script.indexOf("/*")) >= 0) {
-      pt1 = script.indexOf("*/", pt + 2);
-      if (pt1 < 0)
-        break;
-      String scrap = script.substring(pt + 2, pt1);
-      if ((pt2 = scrap.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG)) >= 0)
-        return this.script = scrap.substring(pt2 + 30);
-      script = script.substring(0, pt) + script.substring(pt1 + 2);
-    }
-    return null;
+    haveComments = (script.indexOf("#") >= 0); // speeds processing
+    int pt = script.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG);
+    if (pt < 0)
+      return script;
+    int pt1 = script.lastIndexOf("/*", pt);
+    int pt2 = script.indexOf((script.charAt(pt1 + 2) == '*' ? "*" : "") + "*/", pt);
+    return (pt1 < 0 || pt2 < pt ? script 
+        : script.substring(pt + JmolConstants.EMBEDDED_SCRIPT_TAG.length(), pt2));
   }
-
   
   short lineCurrent;
   int iCommand;
@@ -417,7 +408,7 @@ class Compiler {
   private String comment;
 
   private void addTokenToPrefix(Token token) {
-    if (logMessages)
+    if (true || logMessages)
       Logger.debug("addTokenToPrefix" + token);
     ltoken.addElement(token);
     lastToken = token;
@@ -427,7 +418,9 @@ class Compiler {
   private int iBrace;
 
   private final static int OK = 0;
+  private final static int OK2 = 3;
   private final static int CONTINUE = 1;
+  private final static int EOL = 2;
   private final static int ERROR = -1;
   
   private boolean compile0() {
@@ -444,6 +437,7 @@ class Compiler {
     ichCurrentCommand = 0;
     ichBrace = 0;
     lineCurrent = 1;
+    short iLine = 1;
     iCommand = 0;
     lastToken = Token.tokenOff;
     vBraces = new Vector();
@@ -473,44 +467,55 @@ class Compiler {
     needRightParen = false;
     theTok = Token.nada;
 
+    logMessages = true;
+
     for (; true; ichToken += cchToken) {
+      if ((nTokens = ltoken.size()) == 0) { 
+        if (thisFunction != null && thisFunction.chpt0 == 0)
+          thisFunction.chpt0 = ichToken;
+        ichCurrentCommand = ichToken;
+        iLine = lineCurrent;
+      }
       if (lookingAtLeadingWhitespace())
         continue;
-      nTokens = ltoken.size();
-      if (nTokens == 0 && thisFunction != null && thisFunction.chpt0 == 0)
-        thisFunction.chpt0 = ichToken;
-      if (!isEndOfCommand && lookingAtComment()) {
-        if (flowContext != null
-            && flowContext.checkForceEndIf(0)) {
-          cchToken = 0;
+      endOfLine = false;
+      
+      
+      //if (ichToken <= cchScript-30)
+      //System.out.println("loop ichCurrentCommand = " + ichCurrentCommand 
+      //  + " ichToken = " + ichToken + " cchToken = "
+      //+ cchToken + " ..." + TextFormat.split(script.substring(ichToken, ichToken + 30), '\n')[0]);
+      
+
+      if (!isEndOfCommand) {
+        endOfLine = lookingAtEndOfLine();
+        switch (endOfLine ? OK : lookingAtComment()) {
+        case CONTINUE: //  short /*...*/ or comment to completely ignore 
+          continue;
+        case EOL: // /* .... \n ... */ -- flag as end of line but ignore
           isEndOfCommand = true;
           continue;
+        case OK2: // really just line-ending comment -- mark it for later inclusion
+          isEndOfCommand = true;
+          // start-of line comment -- include as Token.nada 
+          comment = script.substring(ichToken, ichToken + cchToken).trim();
+          break;
         }
-        if (nTokens > 0)
-          continue;
-        comment = script.substring(ichToken, ichToken + cchToken).trim();
-        int nChar = cchToken;
-        ichCurrentCommand = ichToken;
-        ichToken += cchToken;
-        if ((endOfLine = lookingAtEndOfLine()) || lookingAtEndOfStatement())
-          cchToken += nChar;
-        ichToken = ichCurrentCommand;
-        isEndOfCommand = true;
-      } else {
-        endOfLine = lookingAtEndOfLine();
+        isEndOfCommand = isEndOfCommand || endOfLine || lookingAtEndOfStatement();
       }
-      isEndOfCommand = isEndOfCommand || endOfLine || lookingAtEndOfStatement();
-      if (!isEndOfCommand && lookingAtExtendedComment())
-        continue;
+      
       if (isEndOfCommand) {
         isEndOfCommand = false;
-        if (!processTokenList())
+        if (!processTokenList(iLine))
           return false;
         if (ichToken < cchScript)
           continue;
-        break; // main loop exit
+        aatokenCompiled = new Token[lltoken.size()][];
+        lltoken.copyInto(aatokenCompiled);
+        return (flowContext == null 
+            || error(ERROR_missingEnd, Token.nameOf(flowContext.token.tok)));
       }
-
+      
       if (nTokens > 0) {
         switch (checkSpecialParameterSyntax()) {
         case CONTINUE:
@@ -519,7 +524,6 @@ class Compiler {
           return false;
         }
       }
-      
       if (lookingAtLookupToken()) {
         String ident = getPrefixToken();
         switch (parseKnownToken(ident)) {
@@ -543,14 +547,169 @@ class Compiler {
       return error(ERROR_unrecognizedToken, script.substring(ichToken,
           ichToken + 1));
     }
-    aatokenCompiled = new Token[lltoken.size()][];
-    lltoken.copyInto(aatokenCompiled);
-    if (flowContext != null)
-      return error(ERROR_missingEnd, Token.nameOf(flowContext.token.tok));
+  }
+
+  private boolean lookingAtLeadingWhitespace() {
+    int ichT = ichToken;
+    while (ichT < cchScript && isSpaceOrTab(script.charAt(ichT)))
+      ++ichT;
+    if (isLineContinuation(ichT))
+      ichT += 1 + nCharNewLine(ichT + 1);
+    cchToken = ichT - ichToken;
+    return cchToken > 0;
+  }
+
+  private boolean isLineContinuation(int ichT) {
+    char ch;
+    boolean isEscaped = (ichT < cchScript - 1 
+        && script.charAt(ichT) == '\\'
+       && ((ch = script.charAt(ichT + 1)) == '\r' 
+         || ch == '\n'));
+    if (isEscaped)
+      lineCurrent++;
+    return isEscaped;
+  }
+
+  private boolean lookingAtEndOfLine() {
+    if (ichToken >= cchScript)
+      return true;
+    int ichT = ichToken;
+    int n = nCharNewLine(ichT);
+    if (n == 0)
+      return false;
+    cchToken = n;
+    return true;    
+  }
+  
+  private int nCharNewLine(int ichT) {
+    char ch = script.charAt(ichT); 
+    return (ch != '\r' ? (ch == '\n' ? 1 : 0) 
+        : ++ichT < cchScript && script.charAt(ichT) == '\n' ? 2 : 1);
+  }
+
+  private boolean lookingAtEndOfStatement() {
+    boolean isSemi = (script.charAt(ichToken) == ';');
+    if (isSemi && nTokens > 0)
+      ptSemi = nTokens;
+    if (!isSemi || nSemiSkip-- > 0)
+      return false;
+    cchToken = 1;
     return true;
   }
 
-  private boolean processTokenList() {
+  private boolean isShowCommand;
+  
+  private int lookingAtComment() {
+    char ch = script.charAt(ichToken);
+    int ichT = ichToken;
+    int ichFirstSharp = -1;
+
+    // return CONTINUE: totally ignore
+    // return EOL: treat as line end, even though it isn't
+    // return OK: no comment here
+
+    /*
+     * New in Jmol 11.1.9: we allow for output from the set showScript command
+     * to be used as input. These lines start with $ and have a [...] phrase
+     * after them. Their presence switches us to this new mode where we use
+     * those statements as our commands and any line WITHOUT those as comments.
+     */
+    if (ichToken == ichCurrentCommand && ch == '$') {
+      isShowScriptOutput = true;
+      isShowCommand = true;
+      while (ch != ']' && ichT < cchScript && !eol(ch = script.charAt(ichT)))
+        ++ichT;
+      cchToken = ichT - ichToken;
+      return CONTINUE;
+    } else if (isShowScriptOutput && !isShowCommand) {
+      ichFirstSharp = ichT;
+    }
+    if (ch == '/' && ichT + 1 < cchScript)
+      switch (script.charAt(++ichT)) {
+      case '/':
+        ichFirstSharp = ichToken;
+        break;
+      case '*':
+        String terminator = (++ichT < cchScript && (ch = script.charAt(ichT)) == '*' 
+            ? "**/" : "*/");
+        ichT = script.indexOf(terminator, ichToken + 2);
+        if (ichT < 0) {
+          ichToken = cchScript;
+          return EOL;
+        }
+        // ichT points at char after /*, whatever that is. So even /***/ will be caught
+        incrementLineCount(script.substring(ichToken, ichT));
+        cchToken = ichT + (ch == '*' ? 3 : 2) - ichToken;
+        //System.out.println("removing " + script.substring(ichToken, ichToken + cchToken));
+        return CONTINUE;
+      default:
+        return OK;
+      }
+
+    if (!haveComments && ichFirstSharp < 0)
+      return OK;
+
+    boolean isSharp = (ichFirstSharp < 0);
+    // old way:
+    // first, find the end of the statement and scan for # (sharp) signs
+
+    for (; ichT < cchScript; ichT++) {
+      if (eol(ch = script.charAt(ichT))) {
+        if (isLineContinuation(ichT - 1)) {
+          ichT += nCharNewLine(ichT);
+          continue;
+        }
+        if (!isSharp && ch == ';')
+          continue;
+        break;
+      }
+      if (ichFirstSharp > 0)
+        continue;
+      if (ch == '#')
+        ichFirstSharp = ichT;
+    }
+    if (ichFirstSharp < 0) // there were no sharps found
+      return OK;
+
+    /****************************************************************
+     * check for #jc comment if it occurs anywhere in the statement, then the
+     * statement is not executed. This allows statements which are executed in
+     * RasMol but are comments in Jmol
+     ****************************************************************/
+
+    if (isSharp && nTokens == 0 && cchScript - ichFirstSharp >= 3
+        && script.charAt(ichFirstSharp + 1) == 'j'
+        && script.charAt(ichFirstSharp + 2) == 'c') {
+      // statement contains a #jc before then end ... strip it all
+      cchToken = ichT - ichToken;
+      return CONTINUE;
+    }
+
+    // if the sharp was not the first character then it isn't a comment
+    if (ichFirstSharp != ichToken)
+      return OK;
+
+    /****************************************************************
+     * check for leading #jx <space> or <tab> if you see it, then only strip
+     * those 4 characters. if they put in #jx <newline> then they are not going
+     * to execute anything, and the regular code will take care of it
+     ****************************************************************/
+    if (isSharp && cchScript > ichToken + 3 && script.charAt(ichToken + 1) == 'j'
+        && script.charAt(ichToken + 2) == 'x'
+        && isSpaceOrTab(script.charAt(ichToken + 3))) {
+      cchToken = 4; // #jx[\s\t]
+      return CONTINUE;
+    }
+    
+    if (ichT == ichToken)
+      return OK;
+
+    // first character was a sharp, but was not #jx ... strip it all
+    cchToken = ichT - ichToken;
+    return (nTokens == 0 ? OK2 : CONTINUE);
+  }
+
+  private boolean processTokenList(short iLine) {
     if (nTokens > 0 || comment != null) {
       if (nTokens == 0) {
         // just a comment
@@ -601,8 +760,8 @@ class Compiler {
           }
 
           //System.out.println("setting command " + ltoken.get(0) + " line "
-            //  + lineCurrent + " command " + iCommand);
-          lineNumbers[iCommand] = lineCurrent;
+            //  + iLine + " command " + iCommand);
+          lineNumbers[iCommand] = iLine;
           lineIndices[iCommand] = ichCurrentCommand;
           lltoken.addElement(atokenInfix);
           iCommand = lltoken.size();
@@ -633,8 +792,10 @@ class Compiler {
         }
       }
     }
-    if (endOfLine)
+    if (endOfLine) {
+      isShowCommand = false;
       ++lineCurrent;
+    }
     if (ichToken >= cchScript) {
       // check for end of all brace work
       tokenCommand = Token.tokenAll;
@@ -650,8 +811,6 @@ class Compiler {
       ichToken = cchScript;
       return true; //main loop exit
     }
-    if (isShowScriptOutput)
-      ichCurrentCommand = ichToken + cchToken;
     return true;
   }
 
@@ -693,12 +852,11 @@ class Compiler {
         // both commands and parameters for the SET command, but only if
         // they are
         // the FIRST parameter of the set command.
+        boolean isAndEquals = ("+-\\*/&|=".indexOf(ch) >= 0);
         if (Token.tokAttr(tokCommand, Token.setparam) && ch == '='
-            || (isNewSet || isSetBrace)
-            && (ch == '=' || ch == '[' || ch == '.' || ch == '-' || ch == '+')) {
-          tokenCommand = (ch == '=' || ch == '-' || ch == '+' ? Token.tokenSet
-              : ch == '[' && !isSetBrace ? Token.tokenSetArray
-                  : Token.tokenSetProperty);
+            || (isNewSet || isSetBrace) && (isAndEquals || ch == '.' || ch == '[')) {
+          tokenCommand = (isAndEquals ? Token.tokenSet
+              : ch == '[' && !isSetBrace ? Token.tokenSetArray : Token.tokenSetProperty);
           tokCommand = Token.set;
           ltoken.insertElementAt(tokenCommand, 0);
           cchToken = 1;
@@ -712,6 +870,11 @@ class Compiler {
             return CONTINUE;
           case '-':
           case '+':
+          case '*':
+          case '/':
+          case '\\':
+          case '&':
+          case '|':
             if (ichToken + 1 >= cchScript)
               return ERROR(ERROR_endOfCommandUnexpected);
             if (script.charAt(ichToken + 1) != ch) {
@@ -738,12 +901,13 @@ class Compiler {
         return ERROR(ERROR_missingEnd, "data");
       return CONTINUE;
     }
+    
+    
     if (tokCommand == Token.sync && nTokens == 1 && charToken()) {
       String ident = script.substring(ichToken, ichToken + cchToken);
       addTokenToPrefix(new Token(Token.identifier, ident));
       return CONTINUE;
-    }
-    if (tokCommand == Token.load) {
+    } else if (tokCommand == Token.load) {
       if (nTokens == 1 && lookingAtLoadFormat()) {
         String strFormat = script.substring(ichToken, ichToken + cchToken);
         strFormat = strFormat.toLowerCase();
@@ -770,8 +934,7 @@ class Compiler {
         iHaveQuotedString = true;
         return CONTINUE;
       }
-    }
-    if (tokCommand == Token.script) {
+    } else if (tokCommand == Token.script) {
       if (!iHaveQuotedString && lookingAtSpecialString()) {
         String str = script.substring(ichToken, ichToken + cchToken);
         int pt = str.indexOf(" ");
@@ -972,6 +1135,7 @@ class Compiler {
       if (tokCommand == Token.set && parenCount == 0 && bracketCount == 0 && ichToken < setEqualPt) {
         ltoken.insertElementAt(Token.tokenExpressionBegin, 1);
         addTokenToPrefix(Token.tokenExpressionEnd);
+        ltoken.setElementAt(Token.tokenSetProperty, 0);
         setEqualPt = 0;
       }            
       break;
@@ -1475,12 +1639,20 @@ class Compiler {
     return true;
   }
 
-  private void incrementLineCount(String str) {
+  private int incrementLineCount(String str) {
     char ch;
-    for (int i = str.length(); --i >= 0;) {
+    int pt = str.indexOf('\r');
+    int pt2 = str.indexOf('\n');
+    if (pt < 0 && pt2 < 0)
+      return 0;
+    int n = lineCurrent;
+    if (pt < 0 || pt2 < pt)
+      pt = pt2;
+    for (int i = str.length(); --i >= pt;) {
       if ((ch = str.charAt(i)) == '\n' || ch == '\r')
         lineCurrent++;
     }
+    return lineCurrent - n;
   }
   
   private static boolean isSpaceOrTab(char ch) {
@@ -1521,162 +1693,6 @@ class Compiler {
     }
     
     return false;
-  }
-
-  private boolean lookingAtLeadingWhitespace() {
-    int ichT = ichToken;
-    while (ichT < cchScript && isSpaceOrTab(script.charAt(ichT)))
-      ++ichT;
-    if (isLineContinuation(ichT))
-      ichT += 2;
-    cchToken = ichT - ichToken;
-    return cchToken > 0;
-  }
-
-  private boolean isLineContinuation(int ichT) {
-    char ch;
-    return (ichT < cchScript - 1 
-        && script.charAt(ichT) == '\\'
-       && ((ch = script.charAt(ichT + 1)) == '\r' 
-         || ch == '\n'));
-  }
-
-  private boolean lookingAtExtendedComment() {
-      char ch;
-      int ichT = ichToken;
-      if (ichT >= cchScript - 1 || script.charAt(ichT++) != '/')
-        return false;
-      switch (script.charAt(ichT)) {
-      case '/':
-        while (++ichT < cchScript && (ch = script.charAt(ichT)) != '\r' && ch != '\n') {
-        }
-        cchToken = ichT - ichToken;  
-        break;
-      case '*':
-        String s = (++ichT < cchScript && script.charAt(ichT) == '*' ? "**/" : "*/");
-        ichT = script.indexOf(s, ichToken + 2);
-        if (ichT < 0)
-          cchToken = cchScript;
-        else
-          incrementLineCount(script.substring(ichToken, ichT));
-        cchToken = ichT + s.length() - ichToken;
-        break;
-      default:
-        return false;
-      }
-      return true;
-  }
-  
-  private boolean isShowCommand;
-  
-  private boolean lookingAtComment() {
-    // first, find the end of the statement and scan for # (sharp) signs
-    char ch = 'X';
-    int ichEnd = ichToken;
-    int ichFirstSharp = -1;
-
-    /*
-     * New in Jmol 11.1.9: we allow for output from the
-     * set showScript command to be used as input. These lines
-     * start with $ and have a [...] phrase after them. 
-     * Their presence switches us to this new mode where we
-     * use those statements as our commands and any line WITHOUT
-     * those as comments. 
-     */
-    if (ichToken == ichCurrentCommand && ichToken < cchScript 
-        && script.charAt(ichToken) == '$') {
-      isShowScriptOutput = true;
-      while (ch != ']' && ichEnd < cchScript
-          && !eol(ch = script.charAt(ichEnd)))
-        ++ichEnd;
-      cchToken = ichEnd - ichToken;
-      isShowCommand = true;
-      return true;
-    } else if (isShowScriptOutput) {
-      if (!isShowCommand)
-        ichFirstSharp = ichToken;
-      if (ichToken >= cchScript || eol(script.charAt(ichToken))) {
-        isShowCommand = false;
-        return false;
-      }
-    }
-
-    for (; ichEnd < cchScript && !eol(ch = script.charAt(ichEnd)); ichEnd++) {
-      if (isLineContinuation(ichEnd)) {
-        ichEnd++;
-        continue;
-      }
-      if (ch == '#' && ichFirstSharp == -1)
-        ichFirstSharp = ichEnd;
-    }
-    if (ichFirstSharp == -1) // there were no sharps found
-      return false;
-
-    /****************************************************************
-     * check for #jc comment
-     * if it occurs anywhere in the statement, then the statement is
-     * not executed.
-     * This allows statements which are executed in RasMol but are
-     * comments in Jmol
-     ****************************************************************/
-
-    if (cchScript - ichFirstSharp >= 3
-        && script.charAt(ichFirstSharp + 1) == 'j'
-        && script.charAt(ichFirstSharp + 2) == 'c') {
-      // statement contains a #jc before then end ... strip it all
-      cchToken = ichEnd - ichToken;
-      return true;
-    }
-
-    // if the sharp was not the first character then it isn't a comment
-    if (ichFirstSharp != ichToken)
-      return false;
-
-    /****************************************************************
-     * check for leading #jx <space> or <tab>
-     * if you see it, then only strip those 4 characters
-     * if they put in #jx <newline> then they are not going to
-     * execute anything, and the regular code will take care of it
-     ****************************************************************/
-    if (cchScript > ichToken + 3 && script.charAt(ichToken + 1) == 'j'
-        && script.charAt(ichToken + 2) == 'x'
-        && isSpaceOrTab(script.charAt(ichToken + 3))) {
-      cchToken = 4; // #jx[\s\t]
-      return true;
-    }
-
-    // first character was a sharp, but was not #jx ... strip it all
-    cchToken = ichEnd - ichToken;
-    return true;
-  }
-
-  private boolean lookingAtEndOfLine() {
-    //log("lookingAtEndOfLine");
-    if (ichToken >= cchScript)
-      return true;
-    int ichT = ichToken;
-    char ch = script.charAt(ichT);
-    if (ch == '\r') {
-      ++ichT;
-      if (ichT < cchScript && script.charAt(ichT) == '\n')
-        ++ichT;
-    } else if (ch == '\n') {
-      ++ichT;
-    } else {
-      return false;
-    }
-    cchToken = ichT - ichToken;
-    return true;
-  }
-
-  private boolean lookingAtEndOfStatement() {
-    boolean isSemi = (script.charAt(ichToken) == ';');
-    if (isSemi && nTokens > 0)
-      ptSemi = nTokens;
-    if (ichToken == cchScript  || !(isSemi && nSemiSkip-- <= 0))
-      return false;
-    cchToken = 1;
-    return true;
   }
 
   private boolean lookingAtString() {
@@ -2120,8 +2136,8 @@ class Compiler {
     if (size == 1 && Token.tokAttr(tokCommand, Token.defaultON)) {
       addTokenToPrefix(Token.tokenOn);
     } else if (tokCommand == Token.set && size > 2 
-        && ((tok = ((Token) ltoken.get(1)).tok) == Token.plusPlus || tok == Token.minusMinus)) {
-      ltoken.removeElementAt(1);
+        && ((tok = ((Token) ltoken.get(size - 1)).tok) == Token.plusPlus || tok == Token.minusMinus)) {
+      ltoken.removeElementAt(size - 1);
       addTokenToPrefix(Token.tokenEquals);
       for (int i = 1; i < size - 1; i++)
         addTokenToPrefix((Token)ltoken.elementAt(i));
@@ -2133,7 +2149,7 @@ class Compiler {
     if (tokenAndEquals != null) {
       int j;
       int i = 0;
-      boolean haveEquals = true;//!(((Token)ltoken.elementAt(0)).intValue == '='); 
+      boolean haveEquals = true;// !(((Token)ltoken.elementAt(0)).intValue == '='); 
       if (haveEquals) {
         for (i = 1; i < size; i++) {
           if (((Token)ltoken.elementAt(i)).tok == Token.opEQ)
@@ -2145,13 +2161,17 @@ class Compiler {
         i = 1;
         size = 2;
       }
-      for (j = 1; j < size; j++, i++)
-        ltoken.insertElementAt((Token)ltoken.elementAt(j), i);
-      if (!haveEquals)
-        i++;
-      ltoken.insertElementAt(tokenAndEquals, i);
-      ltoken.insertElementAt(Token.tokenLeftParen, ++i);
-      addTokenToPrefix(Token.tokenRightParen);
+      if (ltoken.size() < i) {
+        System.out.println("COMPILER ERROR! - andEquals ");
+      } else {
+        for (j = 1; j < size; j++, i++)
+          ltoken.insertElementAt((Token)ltoken.elementAt(j), i);
+        if (!haveEquals)
+          i++;
+        ltoken.insertElementAt(tokenAndEquals, i);
+        ltoken.insertElementAt(Token.tokenLeftParen, ++i);
+        addTokenToPrefix(Token.tokenRightParen);
+      }
     }
     
     atokenInfix = new Token[size = ltoken.size()];

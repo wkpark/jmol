@@ -48,9 +48,9 @@ class ModelManager {
   ModelSet zap() {
     clear();
     fullPathName = fileName;
-    System.out.println(modelLoader + " zap old");
+    //System.out.println(modelLoader + " zap old");
     modelLoader = new ModelLoader(viewer, "empty");
-    System.out.println(modelLoader + " zap new");
+    //System.out.println(modelLoader + " zap new");
     return (ModelSet) modelLoader;
   }
   

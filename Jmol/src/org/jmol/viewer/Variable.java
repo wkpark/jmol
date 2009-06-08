@@ -210,7 +210,7 @@ public class Variable extends Token {
     case integer:
       return new Integer(x.intValue);
     case string:
-      return tValue((String) x.value).value;
+      //return tValue((String) x.value).value;
     default:
       return x.value;
     }
@@ -635,6 +635,27 @@ public class Variable extends Token {
       break;
     }
     return true;
+  }
+
+  public String escape() {
+    switch (tok) {
+    case Token.on:
+      return "true";
+    case Token.off:
+      return "false";
+    case Token.integer:
+      return "" + intValue;
+    case Token.bitset:
+      return Escape.escape((BitSet)value);
+    case Token.list:
+      return Escape.escape((String[])value);
+    case Token.point3f:
+      return Escape.escape((Point3f)value);
+    case Token.point4f:
+      return Escape.escape((Point4f)value);
+    default:
+      return Escape.escape(value);
+    }
   }
 
 }

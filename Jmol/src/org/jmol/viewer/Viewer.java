@@ -2084,7 +2084,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void zap(boolean notify, boolean resetUndo) {
     stopAnimationThreads();
     if (modelSet != null) {
-      System.out.println("zapping " + modelSet);
+      //System.out.println("zapping " + modelSet);
       clearModelDependentObjects();
       fileManager.clear();
       repaintManager.clear();
@@ -2092,6 +2092,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       pickingManager.clear();
       selectionManager.clear();
       clearAllMeasurements();
+      if (minimizer != null)
+        minimizer.setProperty("clear", null);
       modelSet = modelManager.clear();
       mouseManager.clear();
       stateManager.clear();
@@ -2131,7 +2133,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean useMinimizationThread() {
-    return !autoExit;
+    return global.useMinimizationThread && !autoExit;
   }
 
   private void initializeModel() {
@@ -2982,7 +2984,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // from RepaintManager
     if (display == null)
       return;
-    // System.out.println((new Date()).getTime() + " viewer.repaint ");
+    //System.out.println("viewer.repaint --> display.repaint()" + Thread.currentThread());
     display.repaint();
   }
 
@@ -3283,8 +3285,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // refresh(3) is used by operations to ONLY do a repaint -- no syncing
     if (repaintManager == null || !refreshing)
       return;
-    // System.out.println(" viewer.refresh " + strWhy);
-    // System.out.flush();
+    //System.out.println(" viewer.refresh " + strWhy);System.out.flush();
     if (mode > 0)
       repaintManager.refresh();
     if (mode % 3 != 0 && statusManager.doSync())
@@ -4422,9 +4423,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
 
   public void notifyMinimizationStatus() {
+    Object step =  getParameter("_minimizationStep");
     statusManager.notifyMinimizationStatus(
         (String) getParameter("_minimizationStatus"),
-        (Integer) getParameter("_minimizationStep"),
+        step instanceof String ? new Integer(0) : (Integer) step,
         (Float) getParameter("_minimizationEnergy"),
         (Float) getParameter("_minimizationEnergyDiff"));
   }
@@ -5222,6 +5224,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean doRepaint = true;
     while (true) {
 
+      // 11.7.40
+      
+      if (key.equalsIgnoreCase("useMinimizationThread")) {
+        global.useMinimizationThread = value;
+        break;
+      }
+      
       // 11.7.30
 
       if (key.equalsIgnoreCase("autoLoadOrientation")) {

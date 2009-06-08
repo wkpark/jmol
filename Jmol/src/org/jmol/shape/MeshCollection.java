@@ -501,13 +501,14 @@ public abstract class MeshCollection extends Shape {
    //not perfect -- user may have that in a title, I suppose...
    if (pt >= 0)
        cmd = cmd.substring(0, pt + 1);
+   cmd = TextFormat.trim(cmd, ";") + ";";
    if (mesh.bitsets != null)  {
      cmd += "# "
          + (mesh.bitsets[0] == null ? "({null})" : Escape.escape(mesh.bitsets[0]))
          + " " + (mesh.bitsets[1] == null ? "({null})" : Escape.escape(mesh.bitsets[1]))
          + (mesh.bitsets[2] == null ? "" : "/" + Escape.escape(mesh.bitsets[2]));
    }
-   if (cmd.toLowerCase().indexOf(" ID ") < 0 && !myType.equals("mo"))
+   if (cmd.toLowerCase().indexOf(" id ") < 0 && !myType.equals("mo"))
        cmd += "# ID=\"" + mesh.thisID + "\"";
    if (mesh.modelIndex >= 0)
      cmd += "# MODEL({" + mesh.modelIndex + "})";

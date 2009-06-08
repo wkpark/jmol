@@ -27,9 +27,6 @@ package org.jmol.modelset;
 
 import java.util.BitSet;
 
-import javax.vecmath.Vector3f;
-
-import org.jmol.bspt.CubeIterator;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
@@ -140,7 +137,7 @@ abstract public class BondCollection extends AtomCollection {
   final protected static boolean showRebondTimes = true;
   private final static int bondGrowthIncrement = 250;
 
-  private Bond getOrAddBond(Atom atom, Atom atomOther, short order, short mad,
+  protected Bond getOrAddBond(Atom atom, Atom atomOther, short order, short mad,
                             BitSet bsBonds) {
     int i;
     if (atom.isBonded(atomOther)) {
@@ -379,70 +376,6 @@ abstract public class BondCollection extends AtomCollection {
     BitSetUtil.deleteBits(bsAromatic, bs);
   }
 
-  private static float defaultHbondMax = 3.25f;
-  private static float hbondMin = 2.5f;
-
-  protected int autoHbond(BitSet bsA, BitSet bsB, BitSet bsBonds,
-                          float maxXYDistance, float minAttachedAngle) {
-    if (maxXYDistance <= 0)
-      maxXYDistance = defaultHbondMax;
-    float hbondMax2 = maxXYDistance * maxXYDistance;
-    float hbondMin2 = hbondMin * hbondMin;
-    int nNew = 0;
-    Vector3f v1 = new Vector3f();
-    Vector3f v2 = new Vector3f();
-    if (showRebondTimes && Logger.debugging)
-      Logger.startTimer();
-    for (int i = atomCount; --i >= 0;) {
-      Atom atom = atoms[i];
-      int elementNumber = atom.getElementNumber();
-      if (elementNumber != 7 && elementNumber != 8)
-        continue;
-      //float searchRadius = hbondMax;
-      CubeIterator iter = bspf.getCubeIterator(atom.modelIndex);
-      iter.initializeHemisphere(atom, maxXYDistance);
-      while (iter.hasMoreElements()) {
-        Atom atomNear = (Atom) iter.nextElement();
-        int elementNumberNear = atomNear.getElementNumber();
-        if (elementNumberNear != 7 && elementNumberNear != 8
-            || atomNear == atom || iter.foundDistance2() < hbondMin2
-            || iter.foundDistance2() > hbondMax2 || atom.isBonded(atomNear))
-          continue;
-        if (minAttachedAngle > 0
-            && !checkMinAttachedAngle(atom, atomNear, minAttachedAngle, v1, v2))
-          continue;
-        getOrAddBond(atom, atomNear, JmolConstants.BOND_H_REGULAR, (short) 1,
-            bsPseudoHBonds);
-        nNew++;
-      }
-      iter.release();
-    }
-    ((ModelSet)this).setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, Float.NaN, 
-        bsPseudoHBonds);
-    if (showRebondTimes && Logger.debugging)
-      Logger.checkTimer("Time to hbond");
-    return nNew;
-  }
-
-
-  private boolean checkMinAttachedAngle(Atom atom1, Atom atom2, float minAngle, Vector3f v1, Vector3f v2) {
-    v1.sub(atom1, atom2);
-    return (checkMinAttachedAngle(atom1, atom1.getBonds(), atom2, minAngle, v1, v2)
-        && checkMinAttachedAngle(atom2, atom2.getBonds(), atom1, minAngle, v1, v2));
-  }
-
-  private boolean checkMinAttachedAngle(Atom atom1, Bond[] bonds1, Atom atom2,
-                                        float minAngle, Vector3f v1, Vector3f v2) {
-    if (bonds1 != null)
-      for (int i = bonds1.length; --i >= 0;)
-        if (bonds1[i].isCovalent()) {
-          v2.sub(atom1, bonds1[i].getOtherAtom(atom1));
-          if (v2.angle(v1) < minAngle)
-            return false;
-        }
-    v1.scale(-1); // set for second check
-    return true;
-  }
 
   /*
    * aromatic single/double bond assignment 

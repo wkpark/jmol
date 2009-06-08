@@ -174,11 +174,12 @@ class RepaintManager {
   }
 
   boolean refresh() {
-    //System.out.println("Repaintmanager refresh  " + holdRepaint + " " + repaintPending + " " + Thread.currentThread());
+    //System.out.println("Repaintmanager refresh  " + holdRepaint + " " + repaintPending + " " + Thread.currentThread());System.out.flush();
     if (repaintPending)
       return false;
     repaintPending = true;
     if (holdRepaint == 0) {
+      //System.out.println("Repaintmanager refresh  " + holdRepaint + " " + repaintPending + " " + Thread.currentThread());System.out.flush();
       viewer.repaint();
     }
     return true;
@@ -186,7 +187,7 @@ class RepaintManager {
 
 
   synchronized void requestRepaintAndWait() {
-    //System.out.println("Repaintmanager requestRepaintAndWait  " + holdRepaint + " " + repaintPending + " " + Thread.currentThread());
+    //System.out.println("Repaintmanager requestRepaintAndWait  " + holdRepaint + " " + repaintPending + " " + Thread.currentThread());System.out.flush();
     viewer.repaint();
     try {
       wait();
@@ -217,7 +218,7 @@ class RepaintManager {
   void render(Graphics3D g3d, ModelSet modelSet) {//, Rectangle rectClip
     if (!viewer.getRefreshing())
       return;
-    System.out.println("repaint manager render " + modelSet);
+    //System.out.println("repaint manager render " + modelSet);
     frameRenderer.render(g3d, modelSet); //, rectClip
     Rectangle band = viewer.getRubberBandSelection();
     if (band != null && g3d.setColix(viewer.getColixRubberband()))

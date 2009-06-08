@@ -677,19 +677,23 @@ Token[keyword(0x880001) value=")"]
     viewer.notifyMinimizationStatus();
   }
   
-  public void startMinimization() {
-    if (pFF == null || viewer == null)
-      return;
-    Logger.info("minimizer: startMinimization");
-    viewer.setIntProperty("_minimizationStep", 0);
-    viewer.setStringProperty("_minimizationStatus", "starting");
-    viewer.setFloatProperty("_minimizationEnergy", 0);
-    viewer.setFloatProperty("_minimizationEnergyDiff", 0);
-    viewer.notifyMinimizationStatus();
-    viewer.saveCoordinates("minimize", bsTaint);
-    pFF.steepestDescentInitialize(steps, crit);
-    viewer.setFloatProperty("_minimizationEnergy", (float) pFF.getEnergy());
-    saveCoordinates();
+  public boolean startMinimization() {
+    try {
+      Logger.info("minimizer: startMinimization");
+      viewer.setIntProperty("_minimizationStep", 0);
+      viewer.setStringProperty("_minimizationStatus", "starting");
+      viewer.setFloatProperty("_minimizationEnergy", 0);
+      viewer.setFloatProperty("_minimizationEnergyDiff", 0);
+      viewer.notifyMinimizationStatus();
+      viewer.saveCoordinates("minimize", bsTaint);
+      pFF.steepestDescentInitialize(steps, crit);
+      viewer.setFloatProperty("_minimizationEnergy", (float) pFF.getEnergy());
+      saveCoordinates();
+    } catch (Exception e) {
+      System.out.println("minimization error viwer=" + viewer + " pFF = " + pFF);
+      return false;
+    }
+    return true;
   }
 
   boolean stepMinimization() {
@@ -766,7 +770,8 @@ Token[keyword(0x880001) value=")"]
 
   private void minimizeWithoutThread() {
     //for batch operation
-    startMinimization();
+    if (!startMinimization())
+      return;
     while (stepMinimization()) {
     }
     endMinimization();
@@ -783,8 +788,8 @@ Token[keyword(0x880001) value=")"]
       long lastRepaintTime = startTime;
       
       //should save the atom coordinates
-      startMinimization();      
-      
+      if (!startMinimization())
+          return;
       try {
         do {
           long currentTime = System.currentTimeMillis();

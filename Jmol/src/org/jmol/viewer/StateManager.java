@@ -714,6 +714,7 @@ public class StateManager {
     boolean statusReporting = true;
     int strandCountForStrands = 5;
     int strandCountForMeshRibbon = 7;
+    boolean useMinimizationThread = true;
     boolean useNumberLocalization = true;
     float vectorScale = 1f;
     float vibrationPeriod = 1f;
@@ -916,18 +917,7 @@ public class StateManager {
     private String escapeUserVariable(String name) {
       Variable var = (Variable) htUserVariables.get(name);
       // previously known to contain 
-      switch (var.tok) {
-      case Token.on:
-        return "true";
-      case Token.off:
-        return "false";
-      case Token.integer:
-        return "" + var.intValue;
-      case Token.list:
-        return Escape.escape((String[])var.value);
-      default:
-        return Escape.escape(var.value);
-      }
+      return var.escape();
     }
 
     Object getParameter(String name) {
@@ -1084,6 +1074,7 @@ public class StateManager {
       int n = 0;
       String key;
       Enumeration e = htUserVariables.keys();
+
       String[] list = new String[htUserVariables.size()];
       while (e.hasMoreElements())
         list[n++] = (key = (String) e.nextElement())
@@ -1310,6 +1301,7 @@ public class StateManager {
       setParameterValue("testFlag4", testFlag4);
       setParameterValue("traceAlpha", traceAlpha);
       setParameterValue("undo", true);
+      setParameterValue("useMinimizationThread", useMinimizationThread);
       setParameterValue("useNumberLocalization", useNumberLocalization);
       setParameterValue("vectorScale", vectorScale);
       setParameterValue("vibrationPeriod", vibrationPeriod);

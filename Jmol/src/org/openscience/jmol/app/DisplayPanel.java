@@ -107,6 +107,8 @@ public class DisplayPanel extends JPanel
     g.getClipBounds(rectClip);
     if (dimSize.width == 0)
       return;
+    //System.out.println("DisplayPanel:paint");System.out.flush();
+
     viewer.renderScreenImage(g, dimSize, rectClip);
     if (Jmol.border == null)
       Jmol.border = new Point();

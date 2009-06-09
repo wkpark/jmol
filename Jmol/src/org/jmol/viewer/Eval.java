@@ -7293,7 +7293,10 @@ class Eval {
     // from SET, we are only here if a Jmol parameter has not been identified
     // from FOR or WHILE, no such check is made
     
-    // if both pt and ptMax are 0, then it indicates that 
+    // if both pt and ptMax are 0, then it indicates that
+    
+    //System.out.println(thisCommand);
+    
     BitSet bs = null;
     String propertyName = "";
     int tokProperty = Token.nada;
@@ -7781,15 +7784,11 @@ class Eval {
           }
         } else {
           String name = parameterAsString(i);
-          if (isSyntaxCheck) {
+          if (isSyntaxCheck)
             v = name;
-          } else {
-            if (localVars == null || (v = localVars.get(name)) == null) {
-              v = viewer.getOrSetNewVariable(name); // because we may have ++ here
-             //if (v instanceof String)
-                //v = getStringObjectAsVariable((String) v, name);
-            }
-          }
+          else if ((localVars == null || (v = localVars.get(name)) == null)
+              && (v = getContextVariableAsVariable(name)) == null)
+                  v = viewer.getOrSetNewVariable(name); // because we may have ++ here
           break;
         }
       }

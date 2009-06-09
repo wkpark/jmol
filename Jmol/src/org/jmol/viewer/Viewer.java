@@ -333,7 +333,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int i = fullName.lastIndexOf("[");
     htmlName = (i < 0 ? fullName : fullName.substring(0, i));
     syncId = (i < 0 ? "" : fullName.substring(i + 1, fullName.length() - 1));
-
+    if (commandOptions == null)
+      commandOptions = "";
     String str = "" + commandOptions;
     isApplet = (commandOptions.indexOf("-applet") >= 0);
     if (isApplet) {

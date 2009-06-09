@@ -7785,9 +7785,9 @@ class Eval {
             v = name;
           } else {
             if (localVars == null || (v = localVars.get(name)) == null) {
-              v = getParameter(name, true);
-              if (v instanceof String)
-                v = getStringObjectAsVariable((String) v, name);
+              v = viewer.getOrSetNewVariable(name); // because we may have ++ here
+             //if (v instanceof String)
+                //v = getStringObjectAsVariable((String) v, name);
             }
           }
           break;

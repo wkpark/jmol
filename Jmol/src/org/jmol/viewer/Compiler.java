@@ -611,20 +611,24 @@ class Compiler extends CompilationTokenParser {
     isCommaAsOrAllowed = Token.tokAttr(tokCommand, Token.atomExpressionCommand);
     int size = ltoken.size();
     int tok;
+    int pt = size - 1;
     if (size == 1 && Token.tokAttr(tokCommand, Token.defaultON)) {
       addTokenToPrefix(Token.tokenOn);
-    } else if (tokCommand == Token.set
-        && size > 2
-        && ((tok = ((Token) ltoken.get(size - 1)).tok) == Token.plusPlus || tok == Token.minusMinus)) {
-      ltoken.removeElementAt(size - 1);
-      addTokenToPrefix(Token.tokenEquals);
-      for (int i = 1; i < size - 1; i++)
-        addTokenToPrefix((Token) ltoken.elementAt(i));
-      addTokenToPrefix(tok == Token.minusMinus ? Token.tokenMinus
-          : Token.tokenPlus);
-      addTokenToPrefix(Token.intToken(1));
-      if (((Token) ltoken.get(2)).tok == Token.leftsquare)
-        ltoken.setElementAt(Token.tokenSetArray, 0);
+    } else if (tokCommand == Token.set && size > 2) {
+      if ((tok = ((Token) ltoken.get(pt)).tok) == Token.plusPlus 
+          || tok == Token.minusMinus
+          || (tok = ((Token) ltoken.get(pt = 1)).tok) == Token.plusPlus 
+          || tok == Token.minusMinus) {
+        ltoken.removeElementAt(pt);
+        addTokenToPrefix(Token.tokenEquals);
+        for (int i = 1; i < size - 1; i++)
+          addTokenToPrefix((Token) ltoken.elementAt(i));
+        addTokenToPrefix(tok == Token.minusMinus ? Token.tokenMinus
+            : Token.tokenPlus);
+        addTokenToPrefix(Token.intToken(1));
+        if (((Token) ltoken.get(2)).tok == Token.leftsquare)
+          ltoken.setElementAt(Token.tokenSetArray, 0);
+      }
     }
     if (tokenAndEquals != null) {
       int j;

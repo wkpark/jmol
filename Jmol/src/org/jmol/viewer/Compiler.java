@@ -233,12 +233,7 @@ class Compiler extends CompilationTokenParser {
     lineIndices = new int[lnLength];
     isNewSet = isSetBrace = false;
     ptNewSetModifier = 1;
-    isShowScriptOutput = false;
-    
-    
-    
- logMessages = true;Logger.setLogLevel(Logger.LEVEL_DEBUG) ;  
-    
+    isShowScriptOutput = false;    
     
     lltoken = new Vector();
     ltoken = new Vector();

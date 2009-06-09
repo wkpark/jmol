@@ -963,7 +963,7 @@ public class StateManager {
      * 
      */
     Variable getOrSetNewVariable(String name) {
-      if (name == null)
+      if (name == null || name.length() == 0)
         name = "x";
       Object v = getParameter(name, true);
       if (v == null && name.charAt(0) != '_')

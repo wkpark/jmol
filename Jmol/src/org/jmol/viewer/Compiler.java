@@ -234,6 +234,12 @@ class Compiler extends CompilationTokenParser {
     isNewSet = isSetBrace = false;
     ptNewSetModifier = 1;
     isShowScriptOutput = false;
+    
+    
+    
+ logMessages = true;Logger.setLogLevel(Logger.LEVEL_DEBUG) ;  
+    
+    
     lltoken = new Vector();
     ltoken = new Vector();
     tokCommand = Token.nada;
@@ -287,8 +293,12 @@ class Compiler extends CompilationTokenParser {
       
       if (isEndOfCommand) {
         isEndOfCommand = false;
-        if (!processTokenList(iLine))
+        switch (processTokenList(iLine)) {
+        case CONTINUE:
+          continue;
+        case ERROR:
           return false;
+        }
         if (ichToken < cchScript)
           continue;
         aatokenCompiled = new Token[lltoken.size()][];
@@ -490,7 +500,7 @@ class Compiler extends CompilationTokenParser {
     return (nTokens == 0 ? OK2 : CONTINUE);
   }
 
-  private boolean processTokenList(short iLine) {
+  private int processTokenList(short iLine) {
     if (nTokens > 0 || comment != null) {
       if (nTokens == 0) {
         // just a comment
@@ -511,12 +521,11 @@ class Compiler extends CompilationTokenParser {
         tokenCommand = lastFlowCommand;
         ltoken.removeElementAt(0);
       }
-      if (bracketCount > 0 || setBraceCount > 0 || parenCount > 0)
-        return error(nTokens == 1 ? ERROR_commandExpected
-            : ERROR_endOfCommandUnexpected);
-      if (braceCount == 1 && !checkFlowStartBrace(true))
-        return error(nTokens == 1 ? ERROR_commandExpected
-            : ERROR_endOfCommandUnexpected);
+      if (bracketCount > 0 || setBraceCount > 0 || parenCount > 0 
+          || braceCount == 1 && !checkFlowStartBrace(true)) {
+        error(nTokens == 1 ? ERROR_commandExpected : ERROR_endOfCommandUnexpected);
+        return ERROR;
+      }
       if (needRightParen) {
         addTokenToPrefix(Token.tokenRightParen);
         needRightParen = false;
@@ -524,7 +533,7 @@ class Compiler extends CompilationTokenParser {
 
       if (ltoken.size() > 0) {
         if (!compileCommand())
-          return false;
+          return ERROR;
         if (logMessages) {
           Logger.debug("-------------------------------------");
         }
@@ -569,7 +578,7 @@ class Compiler extends CompilationTokenParser {
           isEndOfCommand = true;
           cchToken = 0;
           lineCurrent--;
-          return true;
+          return CONTINUE;
         }
       }
     }
@@ -583,16 +592,16 @@ class Compiler extends CompilationTokenParser {
       tokCommand = 1;
       switch (checkFlowEndBrace()) {
       case ERROR:
-        return false;
+        return ERROR;
       case CONTINUE:
         isEndOfCommand = true;
         cchToken = 0;
-        return true;
+        return CONTINUE;
       }
       ichToken = cchScript;
-      return true; //main loop exit
+      return OK; //main loop exit
     }
-    return true;
+    return OK;
   }
 
   private boolean compileCommand() {

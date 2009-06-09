@@ -27,9 +27,23 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 class Function {
+
+  // / functions
+
+  /*
+   * functions are either local or global (static). The idea there is that a set
+   * of applets might share a set of functions. The default is global; prefix
+   * underscore makes them local.
+   * 
+   * functions have contexts. Or, more specifically, contexts may have associated
+   * functions.
+   * 
+   * Bob Hanson -- 11.3.29
+   */
+
   int pt0;
   int chpt0;
-  int cmdpt0= -1;
+  int cmdpt0 = -1;
   String name;
   String script;
   Token[][] aatoken;
@@ -38,28 +52,27 @@ class Function {
   int nParameters;
   Vector names = new Vector();
   Variable returnValue;
-  
+
   Function(String name) {
     this.name = name;
   }
-  
+
   void setVariables(Hashtable contextVariables, Vector params) {
     int nParams = (params == null ? 0 : params.size());
-    for (int i = names.size(); --i >= 0; ) {
-      String name = (String)names.get(i);
-      contextVariables.put(name, 
-          (i < nParameters && i < nParams ? params.get(i) 
-              : (new Variable(Token.string, "")).setName(name)));
+    for (int i = names.size(); --i >= 0;) {
+      String name = (String) names.get(i);
+      contextVariables.put(name, (i < nParameters && i < nParams ? params
+          .get(i) : (new Variable(Token.string, "")).setName(name)));
     }
     contextVariables.put("_retval", Variable.intVariable(0));
   }
-  
+
   void addVariable(String name, boolean isParameter) {
     names.add(name);
     if (isParameter)
       nParameters++;
   }
-  
+
   public String toString() {
     StringBuffer s = new StringBuffer("/*\n * ");
     s.append(name).append("\n */\nfunction ").append(name).append("(");
@@ -68,12 +81,42 @@ class Function {
         s.append(", ");
       s.append(names.get(i));
     }
-    s.append (") {\n");
+    s.append(") {\n");
     if (script != null)
       s.append(script);
-    if (script == null || script.length() > 0 && script.charAt(script.length() - 1) != '\n')
+    if (script == null || script.length() > 0
+        && script.charAt(script.length() - 1) != '\n')
       s.append("\n");
     s.append("}\n\n");
     return s.toString();
-  }  
+  }
+
+  static void setFunction(Function function, String script,
+                          int ichCurrentCommand, int pt, short[] lineNumbers,
+                          int[] lineIndices, Vector lltoken) {
+    int cmdpt0 = function.cmdpt0;
+    int chpt0 = function.chpt0;
+    int nCommands = pt - cmdpt0;
+    function.script = script.substring(chpt0, ichCurrentCommand);
+    Token[][] aatoken = function.aatoken = new Token[nCommands][];
+    function.lineIndices = new int[nCommands];
+    function.lineNumbers = new short[nCommands];
+    short line0 = (short) (lineNumbers[cmdpt0] - 1);
+    for (int i = 0; i < nCommands; i++) {
+      function.lineNumbers[i] = (short) (lineNumbers[cmdpt0 + i] - line0);
+      function.lineIndices[i] = lineIndices[cmdpt0 + i] - chpt0;
+      aatoken[i] = (Token[]) lltoken.get(cmdpt0 + i);
+      if (aatoken[i].length > 0) {
+        Token tokenCommand = aatoken[i][0];
+        if (Token.tokAttr(tokenCommand.tok, Token.flowCommand))
+          tokenCommand.intValue -= (tokenCommand.intValue < 0 ? -cmdpt0
+              : cmdpt0);
+      }
+    }
+    for (int i = pt; --i >= cmdpt0;) {
+      lltoken.remove(i);
+      lineIndices[i] = 0;
+    }
+  }
+
 }

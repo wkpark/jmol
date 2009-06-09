@@ -440,6 +440,26 @@ public class StateManager {
         "angstroms;au;bohr;nanometers;nm;picometers;pm");
   }
 
+  final static Hashtable globalFunctions = new Hashtable();
+  Hashtable localFunctions = new Hashtable();
+
+  boolean isFunction(String name) {
+    return (name.indexOf("_") == 0 ? localFunctions : globalFunctions).containsKey(name);
+  }
+
+  void addFunction(Function function) {
+    (function.name.indexOf("_") == 0 ? localFunctions
+        : globalFunctions).put(function.name, function);
+  }
+
+  Function getFunction(String name) {
+    if (name == null)
+      return null;
+    Function function = (Function) (name.indexOf("_") == 0 ? localFunctions
+        : globalFunctions).get(name);
+    return (function == null || function.aatoken == null ? null : function);
+  }
+  
   protected final static String unreportedProperties =
     //these are handled individually in terms of reporting for the state
     //NOT EXCLUDING the load state settings, because although we

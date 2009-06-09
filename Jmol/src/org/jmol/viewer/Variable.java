@@ -41,8 +41,8 @@ import org.jmol.util.TextFormat;
 
 public class Variable extends Token {
 
-  final static Variable vT = new Variable(on, 1, "true");
-  final static Variable vF = new Variable(off, 0, "false");
+  final private static Variable vT = new Variable(on, 1, "true");
+  final private static Variable vF = new Variable(off, 0, "false");
   public static Variable vAll = new Variable(all, "all");
 
   public int index = Integer.MAX_VALUE;
@@ -95,6 +95,8 @@ public class Variable extends Token {
       return (Variable) x;
     if (x instanceof String) 
       x = Escape.unescapePointOrBitsetAsVariable((String) x);
+    if (x instanceof Boolean)
+      return getBoolean(((Boolean)x).booleanValue());
     if (x instanceof Integer)
       return new Variable(integer, ((Integer) x).intValue());
     if (x instanceof Float)
@@ -592,9 +594,9 @@ public class Variable extends Token {
       return (Variable) v;
     String s = (String) v;
     if (s.toLowerCase() == "true")
-      return vT;
+      return getBoolean(true);
     if (s.toLowerCase() == "false")
-      return vF;
+      return getBoolean(false);
     float f = Parser.parseFloatStrict(s);
     return (Float.isNaN(f) ? new Variable(string, v) 
         : s.indexOf(".") < 0 ? new Variable(integer, (int) f)
@@ -658,6 +660,10 @@ public class Variable extends Token {
     default:
       return Escape.escape(value);
     }
+  }
+
+  public static Variable getBoolean(boolean value) {
+    return new Variable(value ? vT : vF);
   }
 
 }

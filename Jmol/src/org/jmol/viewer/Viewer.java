@@ -5715,7 +5715,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isJmol)
       global.setParameterValue(key, value);
     else
-      global.setUserVariable(key, value ? Variable.vT : Variable.vF);
+      global.setUserVariable(key, Variable.getBoolean(value));
     if (notFound)
       return false;
     if (doRepaint) {
@@ -7450,6 +7450,31 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   float[] getAtomicCharges() {
     return modelSet.getAtomicCharges();
+  }
+
+  
+  /// User-defined functions
+  
+  Function getFunction(String name) {
+    return stateManager.getFunction(name);
+  }
+
+  void addFunction(Function f) {
+    stateManager.addFunction(f);
+  }
+
+  void clearFunctions() {
+    StateManager.globalFunctions.clear();
+    stateManager.localFunctions.clear();
+  }
+
+  boolean isFunction(String name) {
+    return stateManager.isFunction(name);
+  }
+
+  Hashtable getFunctions(boolean isLocal) {
+    return (isLocal ? stateManager.localFunctions
+        : StateManager.globalFunctions);
   }
 
 }

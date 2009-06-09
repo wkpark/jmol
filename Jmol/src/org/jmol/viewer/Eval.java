@@ -84,9 +84,28 @@ class Eval {
     Context() {
       //
     }
-
   }
 
+  final static Hashtable globalFunctions = new Hashtable();
+  Hashtable localFunctions = new Hashtable();
+
+  boolean isFunction(String name) {
+    return (name.indexOf("_") == 0 ? localFunctions : globalFunctions).containsKey(name);
+  }
+
+  void addFunction(Function function) {
+    (function.name.indexOf("_") == 0 ? localFunctions
+        : globalFunctions).put(function.name, function);
+  }
+
+  Function getFunction(String name) {
+    if (name == null)
+      return null;
+    Function function = (Function) (name.indexOf("_") == 0 ? localFunctions
+        : globalFunctions).get(name);
+    return (function == null || function.aatoken == null ? null : function);
+  }
+  
   private final static int scriptLevelMax = 10;
 
   private Thread currentThread;
@@ -428,7 +447,7 @@ class Eval {
   }
 
   private boolean loadFunction(String name, Vector params) {
-    Function function = compiler.getFunction(name);
+    Function function = viewer.getFunction(name);
     if (function == null)
       return false;
     aatoken = function.aatoken;
@@ -786,7 +805,7 @@ class Eval {
           fixed[j] = new Token(Token.integer, ((Integer) v).intValue(), v);
 
         } else if (v instanceof Float) {
-          fixed[j] = new Token(Token.decimal, Compiler.modelValue("" + v), v);
+          fixed[j] = new Token(Token.decimal, JmolConstants.modelValue("" + v), v);
         } else if (v instanceof String) {
           v = getStringObjectAsVariable((String) v, null);
           if (v instanceof Variable) {
@@ -1273,7 +1292,7 @@ class Eval {
     case Token.end: //function, if, for, while
       checkLength(2);
       if (getToken(1).tok == Token.function) {
-        compiler.addFunction((Function) theToken.value);
+        viewer.addFunction((Function) theToken.value);
         return;
       }
       isForCheck = (theTok == Token.forcmd);
@@ -4909,8 +4928,7 @@ class Eval {
     }
     // possibly "all"
     if (tokAt(1) == Token.function) {
-      Compiler.globalFunctions.clear();
-      compiler.localFunctions.clear();
+      viewer.clearFunctions();
       return;
     }
     if (tokAt(1) == Token.vanderwaals) {
@@ -5304,7 +5322,7 @@ class Eval {
     if (isSyntaxCheck && !checkingScriptOnly)
       return;
     String name = (String) getToken(0).value;
-    if (compiler.getFunction(name) == null) {
+    if (!viewer.isFunction(name)) {
       if (name.equalsIgnoreCase("exitjmol")) {
         if (isSyntaxCheck || viewer.isApplet())
           return;
@@ -7196,7 +7214,7 @@ class Eval {
           modelNumber = Parser.parseInt(modelDotted);
           useModelNumber = true;
         } else {
-          modelNumber = Compiler.modelValue(modelDotted);
+          modelNumber = JmolConstants.modelValue(modelDotted);
         }
         if (isSyntaxCheck)
           return;
@@ -7735,7 +7753,7 @@ class Eval {
         break;
       default:
         if (theTok == Token.identifier
-            && compiler.isFunction((String) theToken.value)) {
+            && viewer.isFunction((String) theToken.value)) {
           if (!rpn.addOp(new Variable(Token.function, theToken.value))) {
             // iToken--;
             error(ERROR_invalidArgument);
@@ -7776,28 +7794,7 @@ class Eval {
         }
       }
       if (v != null)
-        if (v instanceof Boolean) {
-          rpn.addX(((Boolean) v).booleanValue() ? Variable.vT
-              : Variable.vF);
-        } else if (v instanceof Integer) {
-          rpn.addX(Variable.intVariable(((Integer) v).intValue()));
-        } else if (v instanceof Float) {
-          rpn.addX(new Variable(Token.decimal, v));
-        } else if (v instanceof String) {
-          rpn.addX(new Variable(Token.string, v));
-        } else if (v instanceof String[]) {
-          rpn.addX(new Variable(Token.list, v));
-        } else if (v instanceof Point3f) {
-          rpn.addX(new Variable(Token.point3f, v));
-        } else if (v instanceof Point4f) {
-          rpn.addX(new Variable(Token.point4f, v));
-        } else if (v instanceof BitSet) {
-          rpn.addX(new Variable(Token.bitset, v));
-        } else if (v instanceof Variable) {
-          rpn.addX((Variable) v);
-        } else {
-          error(ERROR_invalidArgument);
-        }
+        rpn.addX(v);
     }
     Variable result = rpn.getResult(false, key);
     if (result == null) {
@@ -7898,7 +7895,7 @@ class Eval {
       case Token.atomZ:
         break;
       default:
-        if (!mustBeSettable && compiler.isFunction(name)) {
+        if (!mustBeSettable && viewer.isFunction(name)) {
           tok = Token.function;
           break;
         }
@@ -9707,8 +9704,7 @@ class Eval {
     if (isGeneric)
       selectedFunction = selectedFunction.substring(0, pt);
     selectedFunction = selectedFunction.toLowerCase();
-    Hashtable ht = (isLocal ? compiler.localFunctions
-        : Compiler.globalFunctions);
+    Hashtable ht = viewer.getFunctions(isLocal);
     String[] names = new String[ht.size()];
     Enumeration e = ht.keys();
     int n = 0;
@@ -12146,11 +12142,11 @@ class Eval {
     }
 
     boolean addX(boolean x) {
-      return addX((Object)(x ? Variable.vT : Variable.vF));
+      return addX((Object) Variable.getVariable(x ? Boolean.TRUE : Boolean.FALSE));
     }
 
     boolean addX(int x) {
-      return addX((Object)Variable.intVariable(x));
+      return addX((Object) Variable.intVariable(x));
     }
 
     boolean addX(float x) {

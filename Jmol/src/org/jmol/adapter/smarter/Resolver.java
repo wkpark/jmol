@@ -914,11 +914,14 @@ public class Resolver {
   private final static String[] nwchemContainsRecords =
   { "NWChem", " argument  1 = "};
 
+  private final static String[] uicrcifContainsRecords =
+  { "Cif", "Crystallographic Information File"};
+  
   private final static String[][] containsRecords =
   { xmlContainsRecords, gaussianContainsRecords, mopacContainsRecords, qchemContainsRecords, 
     gamessUKContainsRecords, gamessUSContainsRecords,
     spartanBinaryContainsRecords, spartanContainsRecords, mol2Records, adfContainsRecords, psiContainsRecords,
-    nwchemContainsRecords, 
+    nwchemContainsRecords, uicrcifContainsRecords
   };
 }
 

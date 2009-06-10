@@ -3914,9 +3914,16 @@ class Eval {
               if (!isSyntaxCheck) {
                 data = getBitsetProperty(null, getToken(index++).tok
                     | Token.minmaxmask, null, null, null, null, false, Integer.MAX_VALUE);
-                if (!(data instanceof float[]))
-                  error(ERROR_invalidArgument);
               }
+            }
+          }
+          if (data != null && !(data instanceof float[])) {
+            if (data instanceof String[]) {
+              float[] fdata = new float[((String[])data).length];
+              Parser.parseFloatArray((String[])data, null, fdata);
+              data = fdata;
+            } else {
+              error(ERROR_invalidArgument);
             }
           }
         } else if (pid == JmolConstants.PALETTE_VARIABLE) {

@@ -471,6 +471,12 @@ public class Variable extends Token {
     return (BitSet) token.value;
   }
 
+  static BitSet bsSelect(Variable var) {
+    if (var.index == Integer.MAX_VALUE)
+      var = selectItem(var);
+    return (BitSet) var.value;
+  }
+
   static BitSet bsSelect(Token token, int n) {
     token = selectItem(token);
     token = selectItem(token, 1);
@@ -479,6 +485,8 @@ public class Variable extends Token {
   }
 
   static Variable selectItem(Variable var) {
+    if (var.index != Integer.MAX_VALUE)
+      return var;
     return (Variable) selectItem(var, Integer.MIN_VALUE);
   }
 
@@ -604,7 +612,7 @@ public class Variable extends Token {
   }
 
   public String toString() {
-    return super.toString() + "[" + name + "]";
+    return super.toString() + "[" + name + "] index =" + index;
   }
 
   public boolean setSelectedValue(int selector, Variable var) {

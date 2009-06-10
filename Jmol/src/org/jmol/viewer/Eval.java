@@ -23,36 +23,24 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.api.MinimizerInterface;
-import org.jmol.g3d.Graphics3D;
-import org.jmol.g3d.Font3D;
-import org.jmol.shape.Object2d;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.ColorEncoder;
-import org.jmol.util.Escape;
-import org.jmol.util.Logger;
-import org.jmol.util.Measure;
-import org.jmol.util.Quaternion;
-import org.jmol.util.TextFormat;
-import org.jmol.util.Parser;
-
-import org.jmol.modelset.Bond.BondSet;
-
 import java.awt.Image;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Enumeration;
-import java.util.Vector;
 import java.util.Hashtable;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
-import javax.vecmath.Point4f;
-import org.jmol.i18n.*;
+
+import org.jmol.api.MinimizerInterface;
+import org.jmol.g3d.Font3D;
+import org.jmol.g3d.Graphics3D;
+import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
@@ -61,6 +49,17 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.ModelCollection;
 import org.jmol.modelset.ModelSet;
+import org.jmol.modelset.Bond.BondSet;
+import org.jmol.shape.Object2d;
+import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSetUtil;
+import org.jmol.util.ColorEncoder;
+import org.jmol.util.Escape;
+import org.jmol.util.Logger;
+import org.jmol.util.Measure;
+import org.jmol.util.Parser;
+import org.jmol.util.Quaternion;
+import org.jmol.util.TextFormat;
 
 class Eval {
 
@@ -900,17 +899,17 @@ class Eval {
       //  containing @{...}
       if (!historyDisabled && !isSyntaxCheck
           && scriptLevel <= commandHistoryLevelMax && !tQuiet) {
-        thisCommand = getCommand(pc, true);
+        thisCommand = getCommand(pc, true, true);
         if(token != null && !thisCommand.equals(lastCommand) 
             && !Token.tokAttr(token.tok, Token.flowCommand) 
             && thisCommand.length() > 0)
           viewer.addCommand(lastCommand = thisCommand);
       }
       if (!setStatement(pc)) {
-        Logger.info(getCommand(pc, true) + " -- STATEMENT CONTAINING @{} SKIPPED");
+        Logger.info(getCommand(pc, true, false) + " -- STATEMENT CONTAINING @{} SKIPPED");
         continue;
       }
-      thisCommand = getCommand(pc, false);
+      thisCommand = getCommand(pc, false, true);
       fullCommand = thisCommand + getNextComment();
       iToken = 0;
       String script = viewer.getInterruptScript();
@@ -1371,17 +1370,18 @@ class Eval {
     return lineNumbers[pc];
   }
 
-  private String getCommand(int pc, boolean allThisLine) {
+  private String getCommand(int pc, boolean allThisLine, boolean addSemi) {
     if (pc >= lineIndices.length)
       return "";
     if (allThisLine) {
       StringBuffer sb = new StringBuffer();
       for (int i = 0; i < lineNumbers.length; i++) 
         if (lineNumbers[i] == lineNumbers[pc])
-          sb.append(getCommand(i, false));
-        else if (lineNumbers[i] == 0 || lineNumbers[i] > lineNumbers[pc])
+          sb.append(getCommand(i, false, false));
+        else if (lineNumbers[i] == 0 || lineNumbers[i] > lineNumbers[pc]) {
           break;
-      return TextFormat.simpleReplace(sb.toString(), ";{", "{");
+        }
+      return sb.toString();
     }
     int ichBegin = lineIndices[pc];
     int ichEnd = (pc + 1 == lineIndices.length || lineIndices[pc + 1] == 0 ? script
@@ -1427,9 +1427,7 @@ class Eval {
       strbufLog.append(s).append(statementAsString());
       viewer.scriptStatus(strbufLog.toString());
     } else {
-      String cmd = getCommand(pc, false);
-      if (cmd.length() > 0 && cmd.lastIndexOf(";") == cmd.length() - 1)
-        cmd = cmd.substring(0, cmd.length() - 1);
+      String cmd = getCommand(pc, false, false);
       viewer.scriptStatus(cmd);
     }
 
@@ -1805,7 +1803,7 @@ class Eval {
       if (allowUnderflow)
         return null;
       if (!isSyntaxCheck)
-        rpn.dumpStacks();
+        rpn.dumpStacks("after getResult");
       error(ERROR_endOfStatementUnexpected);
     }
     expressionResult = ((Variable) expressionResult).value;
@@ -7562,10 +7560,51 @@ class Eval {
     return parameterExpression(pt, ptMax, key, asVector, -1, false, null, null);
   }
 
+  /**
+   * This is the primary driver of the RPN (reverse Polish notation) expression
+   * processor. It handles all math outside of a "traditional" Jmol
+   * SELECT/RESTRICT context. [Object expression() takes care of that, and also
+   * uses the RPN class.]
+   * 
+   * @param pt
+   *          token index in statement start of expression
+   * @param ptMax
+   *          token index in statement end of expression
+   * @param key
+   *          variable name for debugging reference only -- null indicates
+   *          return Boolean -- "" indicates return String
+   * @param asVector
+   *          a flag passed on to RPN;
+   * @param ptAtom
+   *          this is a for() or select() function with a specific atom selected
+   * @param isArrayItem
+   *          we are storing A[x] = ... so we need to deliver "x" as well
+   * @param localVars
+   *          see below -- lists all nested for(x, {exp}, select(y, {ex},...))
+   *          variables
+   * @param localVar
+   *          x or y in above for(), select() examples
+   * @return either a vector or a value, caller's choice.
+   * @throws ScriptException
+   *           errors are thrown directly to the Eval error system.
+   */
   private Object parameterExpression(int pt, int ptMax, String key,
-                                     boolean asVector, int ptAtom, boolean isArrayItem,
-                                     Hashtable localVars, String localVar)
-      throws ScriptException {
+                                     boolean asVector, int ptAtom,
+                                     boolean isArrayItem, Hashtable localVars,
+                                     String localVar) throws ScriptException {
+
+    /*
+     * localVar is a variable designated at the beginning of the select(x,...)
+     * or for(x,...) construct that will be implicitly used for properties. So,
+     * for example, "atomno" will become "x.atomno". That's all it is for.
+     * localVars provides a localized context variable set for a given nested
+     * set of for/select.
+     * 
+     * Note that localVars has nothing to do standard if/for/while flow
+     * contexts, just these specialized functions. Any variable defined in for
+     * or while is simply added to the context for a given script or function.
+     * These assignments are made by the compiler when seeing a VAR keyword.
+     */
     Object v, res;
     boolean isImplicitAtomProperty = (localVar != null);
     boolean isOneExpressionOnly = (pt < 0);
@@ -7575,7 +7614,7 @@ class Eval {
       pt = -pt;
     int nParen = 0;
     Rpn rpn = new Rpn(64, isArrayItem, asVector);
-    if (pt == 0 && ptMax == 0) // set command with v[...] =  ....
+    if (pt == 0 && ptMax == 0) // set command with v[...] = ....
       pt = 2;
     if (ptMax < pt)
       ptMax = statementLength;
@@ -7583,10 +7622,10 @@ class Eval {
       v = null;
       int tok = getToken(i).tok;
       if (isImplicitAtomProperty && tokAt(i + 1) != Token.dot) {
-        Variable token = getBitsetPropertySelector(i, false);
-        if (token == null) {
-          getToken(i);
-        } else {
+        Variable token = (localVars != null
+            && localVars.containsKey(theToken.value) ? null
+            : getBitsetPropertySelector(i, false));
+        if (token != null) {
           rpn.addX((Variable) localVars.get(localVar));
           if (!rpn.addOp(token)) {
             error(ERROR_invalidArgument);
@@ -7606,7 +7645,8 @@ class Eval {
           error(ERROR_invalidArgument);
         if (localVars == null)
           localVars = new Hashtable();
-        res = parameterExpression(++i, -1, null, false, -1, false, localVars, localVar);
+        res = parameterExpression(++i, -1, null, false, -1, false, localVars,
+            localVar);
         boolean TF = ((Boolean) res).booleanValue();
         int iT = iToken;
         if (getToken(iT++).tok != Token.semicolon)
@@ -7619,7 +7659,8 @@ class Eval {
         int iEnd = iToken;
         if (tokAt(iEnd) != Token.rightparen)
           error(ERROR_invalidArgument);
-        v = parameterExpression(TF ? iT : iF, TF ? iF : iEnd, "XXX", false, 1, false, localVars, localVar);
+        v = parameterExpression(TF ? iT : iF, TF ? iF : iEnd, "XXX", false, 1,
+            false, localVars, localVar);
         i = iEnd;
         break;
       case Token.forcmd:
@@ -7644,7 +7685,7 @@ class Eval {
           dummy = "_x";
         }
         // for(dummy;{atom expr};...
-        // select(dummy;{atom expr};...  
+        // select(dummy;{atom expr};...
         v = tokenSetting(-(++i)).value;
         if (!(v instanceof BitSet))
           error(ERROR_invalidArgument);
@@ -7654,31 +7695,48 @@ class Eval {
           error(ERROR_invalidArgument);
         // for(dummy;{atom expr};math expr)
         // select(dummy;{atom expr};math expr)
+        // bsX is necessary because there are a few operations that still 
+        // are there for now that require it; could go, though.
         BitSet bsSelect = new BitSet();
         BitSet bsX = new BitSet();
-        String[] sout = (isFor ? new String[BitSetUtil.cardinalityOf(bsAtoms)] : null);
+        String[] sout = (isFor ? new String[BitSetUtil.cardinalityOf(bsAtoms)]
+            : null);
         Variable t = null;
         int atomCount = (isSyntaxCheck ? 0 : viewer.getAtomCount());
         if (localVars == null)
           localVars = new Hashtable();
-        localVars.put(dummy, t = Variable.getVariableSelected(0, bsX));
+        bsX.set(0);
+        localVars.put(dummy, t = Variable.getVariableSelected(0, bsX).setName(
+            dummy));
         // one test just to check for errors and get iToken
-        parameterExpression(i, -1, null, false, 0, false, localVars, dummy);
-        localVars.put(dummy, t = Variable.getVariableSelected(0, bsX));
-        if (isFunctionOfX && tokAt(iToken) != Token.rightparen)
-          error(ERROR_invalidArgument);
+        int pt2 = -1;
+        if (isFunctionOfX) {
+          pt2 = i - 1;
+          int np = 0;
+          int tok2;
+          while (np >= 0 && ++pt2 < ptMax) {
+            if ((tok2 = tokAt(pt2)) == Token.rightparen)
+              np--;
+            else if (tok2 == Token.leftparen)
+              np++;
+          }
+        }
         int p = 0;
+        int jlast = 0;
         for (int j = 0; j < atomCount; j++)
           if (bsAtoms.get(j)) {
-            bsX.clear();
+            if (jlast >= 0)
+              bsX.clear(jlast);
+            jlast = j;
             bsX.set(j);
             t.index = j;
-            res = parameterExpression(i, -1, (isFor ? "XXX" : null),
-                isFor, j, false, localVars, isFunctionOfX ? null : dummy);
+            res = parameterExpression(i, pt2, (isFor ? "XXX" : null), isFor, j,
+                false, localVars, isFunctionOfX ? null : dummy);
             if (isFor) {
               if (res == null || ((Vector) res).size() == 0)
                 error(ERROR_invalidArgument);
-              sout[p++] = Variable.sValue((Variable) ((Vector) res).elementAt(0));
+              sout[p++] = Variable.sValue((Variable) ((Vector) res)
+                  .elementAt(0));
             } else if (((Boolean) res).booleanValue()) {
               bsSelect.set(j);
             }
@@ -7690,7 +7748,7 @@ class Eval {
         } else {
           return bitsetVariableVector(bsSelect);
         }
-        i = iToken;
+        i = iToken + 1;
         break;
       case Token.semicolon: // for (i = 1; i < 3; i=i+1)
         break out;
@@ -7783,12 +7841,12 @@ class Eval {
             }
           }
         } else {
-          String name = parameterAsString(i);
+          String name = parameterAsString(i).toLowerCase(); // necessary?
           if (isSyntaxCheck)
             v = name;
           else if ((localVars == null || (v = localVars.get(name)) == null)
               && (v = getContextVariableAsVariable(name)) == null)
-                  v = viewer.getOrSetNewVariable(name); // because we may have ++ here
+            v = viewer.getOrSetNewVariable(name); // because we may have ++ here
           break;
         }
       }
@@ -7798,7 +7856,7 @@ class Eval {
     Variable result = rpn.getResult(false, key);
     if (result == null) {
       if (!isSyntaxCheck)
-        rpn.dumpStacks();
+        rpn.dumpStacks("null result");
       error(ERROR_endOfStatementUnexpected);
     }
     if (result.tok == Token.vector)
@@ -7832,16 +7890,17 @@ class Eval {
     return resx;
   }
 
-  String[] getBitsetIdent(BitSet bs, String label, Object tokenValue,
-                        boolean useAtomMap) {
+  Object getBitsetIdent(BitSet bs, String label, Object tokenValue,
+                        boolean useAtomMap, int index) {
     boolean isAtoms = !(tokenValue instanceof BondSet);
     if (isAtoms && label == null)
       label = viewer.getStandardLabelFormat();
     int pt = (label == null ? -1 : label.indexOf("%"));
-    if (bs == null || isSyntaxCheck || isAtoms && pt < 0)
+    boolean haveIndex = (index != Integer.MAX_VALUE);
+    if(bs == null || isSyntaxCheck || isAtoms && pt < 0)
       return new String[] { label == null ? "" : label };
-    int len = bs.size();
-    int nmax = BitSetUtil.cardinalityOf(bs);
+    int len = (haveIndex ? index  + 1 : bs.size());
+    int nmax = (haveIndex ? 1 : BitSetUtil.cardinalityOf(bs));
     String[] sout = new String[nmax];
     ModelSet modelSet = viewer.getModelSet();
     int n = 0;
@@ -7854,8 +7913,8 @@ class Eval {
     LabelToken[] tokens = (asIdentity ? null 
         : isAtoms ? LabelToken.compile(viewer, label, '\0', null)
         : LabelToken.compile(viewer, label, '\1', htValues));
-    for (int j = 0; j < len; j++)
-      if (bs.get(j)) {
+    for (int j = (haveIndex ? index : 0); j < len; j++)
+      if (index == j || bs.get(j)) {
         String str;
         if (isAtoms) {
           if (asIdentity)
@@ -7871,8 +7930,10 @@ class Eval {
         }
         str = TextFormat.formatString(str, "#", (n+1));
         sout[n++] = str;
+        if (haveIndex)
+          break;
       }
-    return sout;
+    return nmax == 1 ? sout[0] : (Object) sout;
   }
 
   private Variable getBitsetPropertySelector(int i, boolean mustBeSettable)
@@ -7913,6 +7974,7 @@ class Eval {
                                      Point4f planeRef, Object tokenValue,
                                      Object opValue, boolean useAtomMap,
                                      int index) throws ScriptException {
+    boolean haveIndex = (index != Integer.MAX_VALUE);
     boolean isAtoms = !(tokenValue instanceof BondSet);
     boolean isMin = Token.tokAttr(tok, Token.min);
     boolean isMax = Token.tokAttr(tok, Token.max);
@@ -7958,7 +8020,7 @@ class Eval {
     if (tok == Token.identify) {
       if (isMin || isMax)
         return "";
-      return getBitsetIdent(bs, null, tokenValue, useAtomMap);
+      return getBitsetIdent(bs, null, tokenValue, useAtomMap, index);
     }
     String userFunction = null;
     Vector params = null;
@@ -7985,7 +8047,6 @@ class Eval {
     int count = 0;
     boolean isPt = (tok == Token.xyz || tok == Token.vibXyz
         || tok == Token.fracXyz || tok == Token.unitXyz || tok == Token.color);
-    boolean haveIndex = (index != Integer.MAX_VALUE);
     if (isAtoms || haveIndex) {
       int iModel = -1;
       int nOps = 0;
@@ -10637,7 +10698,7 @@ class Eval {
   }
 
   private String getNextComment() {
-    String nextCommand = getCommand(pc + 1, false);
+    String nextCommand = getCommand(pc + 1, false, true);
     return (nextCommand.startsWith("#") ? nextCommand : "");
   }
 
@@ -12130,11 +12191,13 @@ class Eval {
     }
 
     private void putX(Variable x) {
+      if (skipping)
+        return;
       if (xPt + 1 == maxLevel)
         stackOverflow();
       if (logMessages) {
-        dumpStacks();
-        Logger.info("\naddX: " + x);
+        //S("putX " + x);
+        Logger.info("\nputX: " + x);
       }
       xStack[++xPt] = x;
       ptx = ++ptid;
@@ -12157,38 +12220,92 @@ class Eval {
           && Token.tokAttr(op.intValue, Token.mathfunc));
     }
 
+    boolean skipping;
+
+    /**
+     * addOp       The primary driver of the Reverse Polish Notation evaluation engine.
+     *             
+     *             This method loads operators onto the oStack[] and processes them based on 
+     *             a precedence system. Operands are added by addX() onto the xStack[].
+     *             
+     *             We check here for syntax issues that were not caught in the compiler.
+     *             I suppose that should be done at compilation stage, but this is how
+     *             it is for now.
+     *             
+     *             The processing of functional arguments and (___?___:___) 
+     *             constructs is carried out by pushing markers onto the stacks that later
+     *             can be used to fill argument lists or turn "skipping" on or off. Note that
+     *             in the case of skipped sections of ( ? :  ) no attempt is made to do 
+     *             syntax checking. [That's not entirely true -- when syntaxChecking is true,
+     *             that is, when the user is typing at the Jmol application console, then this
+     *             code is being traversed with dummy variables. That could be improved, for sure.
+     *             
+     *             Actually, there's plenty of room for improvement here. I did this based on 
+     *             what I learned in High School in 1974 -- 35 years ago! -- when I managed to
+     *             build a mini FORTRAN compiler from scratch in machine code. That was fun.
+     *             (This was fun, too.)
+     *             
+     *             -- Bob Hanson, hansonr@stolaf.edu 6/9/2009
+     *             
+     *               
+     * @param op
+     * @return     false if an error condition arises
+     * @throws ScriptException
+     */
     boolean addOp(Token op) throws ScriptException {
+      
+      if (logMessages) {
+
+        //dumpStacks("addOp entry\naddOp: " + op + " oPt=" + oPt + " skipping="
+          //  + skipping + " wasX=" + wasX);
+      }
+
+      // are we skipping due to a ( ? : ) construct?
+      int tok0 = (oPt >= 0 ? oStack[oPt].tok : 0);
+      int tokX = (xPt >= 1 ? xStack[xPt - 1].tok : 0);
+      if (tokX == Token.expressionEnd) {
+        switch (op.tok) {
+        case Token.leftparen:
+          oStack[++oPt] = op;
+          return true;
+        case Token.colon:
+          //dumpStacks("skipping -- :");
+          if (tok0 != Token.colon)
+            return true; // ignore if not a clean opstack
+          // no object here because we were skipping
+          // set to flag end of this parens
+          xStack[xPt - 1] = (new Variable(Token.tokenExpressionBegin));
+          xStack[xPt] = (new Variable(Token.tokenExpressionBegin));
+          wasX = false;
+          //dumpStacks("(..False...? .skip.. :<--here.... )");
+          skipping = false;
+          return true;
+        case Token.rightparen:
+          if (tok0 == Token.leftparen) {
+            oPt--; // clear opstack
+            return true;
+          }
+          //dumpStacks("skipping -- )");
+          if (tok0 != Token.colon) {
+            oStack[++oPt] = op;
+            return true;
+          }
+          wasX = true;
+          // shift object because it came from the first part
+          xStack[xPt - 2] = xStack[xPt];
+          // and remove all evidence
+          xPt -= 2;
+          oPt -= 2;
+          //dumpStacks("(..True...? ... : ...skip...)<--here ");
+          skipping = false;
+          return true;
+        default:
+          return true;
+        }
+      }
 
       // Do we have the appropriate context for this operator?
 
-      boolean skipping = (xPt >= 0 && xStack[xPt].tok == Token.expressionEnd); 
-
-      if (logMessages) {
-        dumpStacks();
-        Logger.info("\naddOp: " + op + " skipping=" + skipping + " wasX=" + wasX);
-      }
-      
-      // check for ( ? : ) skipping first or second phrase
-      int tok0 = (oPt >= 0 ? oStack[oPt].tok : 0);
-      if (skipping) {
-        switch (op.tok) {
-        case Token.rightparen:
-          if (tok0 == op.tok) {
-            xPt--;
-            oPt--;
-          }
-          break;
-        case Token.colon:
-          if (tok0 == op.tok) {
-            xPt--;
-            oPt--;
-          }
-          wasX = false;
-          return true;
-        }
-      } 
-      
-      
       Token newOp = null;
       int tok;
       boolean isLeftOp = false;
@@ -12200,17 +12317,13 @@ class Eval {
       boolean isMathFunc = isOpFunc(op);
 
       // the word "plane" can also appear alone, not as a function
-      if (oPt >= 1 && op.tok != Token.leftparen
-          && tok0 == Token.plane)
+      if (oPt >= 1 && op.tok != Token.leftparen && tok0 == Token.plane)
         tok0 = oStack[--oPt].tok;
 
       // math functions as arguments appear without a prefixing operator
       boolean isArgument = (oPt >= 1 && tok0 == Token.leftparen);
 
       switch (op.tok) {
-      case Token.colon:
-        skipping = true;
-        break;
       case Token.comma:
         if (!wasX)
           return false;
@@ -12222,8 +12335,7 @@ class Eval {
         if (!wasX
             || !(tok == Token.propselector || tok == Token.bonds || tok == Token.atoms))
           return false;
-        if (!skipping)
-          oStack[oPt].intValue |= op.tok;
+        oStack[oPt].intValue |= op.tok;
         return true;
       case Token.leftsquare: // {....}[n][m]
         isLeftOp = true;
@@ -12249,9 +12361,9 @@ class Eval {
         addX(0);
         op = new Variable(Token.unaryMinus, "-");
         break;
-      case Token.rightparen: //  () without argument allowed only for math funcs
+      case Token.rightparen: // () without argument allowed only for math funcs
         if (!wasX && oPt >= 1 && tok0 == Token.leftparen
-            && !isOpFunc(oStack[oPt - 1]) && !skipping)
+            && !isOpFunc(oStack[oPt - 1]))
           return false;
         break;
       case Token.opNot:
@@ -12270,21 +12382,22 @@ class Eval {
         break;
       }
 
-      //do we need to operate?
+      // do we need to operate?
 
-      while (oPt >= 0 && !skipping
-          && (!(isLeftOp || op.tok == Token.leftsquare) 
-              || (op.tok == Token.propselector || op.tok == Token.leftsquare)
-              && tok0 == Token.propselector)
+      while (oPt >= 0
+          && tok0 != Token.colon
+          && (!(isLeftOp || op.tok == Token.leftsquare) || tok0 == Token.propselector
+              && (op.tok == Token.propselector || op.tok == Token.leftsquare))
           && Token.getPrecedence(tok0) >= Token.getPrecedence(op.tok)) {
 
         if (logMessages) {
-          dumpStacks();
-          Logger.info("\noperating, oPt=" + oPt + " isLeftOp=" + isLeftOp
-              + " oStack[oPt]=" + Token.nameOf(tok0)
-              + "        prec=" + Token.getPrecedence(tok0)
-              + " pending op=\"" + Token.nameOf(op.tok) + "\" prec="
-              + Token.getPrecedence(op.tok));
+          Logger
+              .info("\noperating, oPt=" + oPt + " isLeftOp=" + isLeftOp
+                  + " oStack[oPt]=" + Token.nameOf(tok0) + "        prec="
+                  + Token.getPrecedence(tok0) + " pending op=\""
+                  + Token.nameOf(op.tok) + "\" prec="
+                  + Token.getPrecedence(op.tok));
+          //dumpStacks("operating");
         }
         // ) and ] must wait until matching ( or [ is found
         if (op.tok == Token.rightparen && tok0 == Token.leftparen) {
@@ -12308,8 +12421,8 @@ class Eval {
 
         // if not, it's time to operate
 
-//TODO:  precedence on .label without () is not working -- .label.size, for example
-        
+        // TODO: precedence on .label without () is not working -- .label.size,
+        // for example
         if (!operate())
           return false;
         tok0 = (oPt >= 0 ? oStack[oPt].tok : 0);
@@ -12324,34 +12437,60 @@ class Eval {
       // right ) and ] are not added to the stack
 
       switch (op.tok) {
-      case Token.opIf:
-        if (!skipping) {
-          boolean isFirst = Variable.bValue(getX());
-          putOp(Token.tokenColon);
-          addX(new Variable(isFirst ? Token.expressionBegin : Token.expressionEnd));
-        }
-        wasX = false;
-        return true;
-      case Token.comma:
-        wasX = false;
-        return true;
       case Token.leftparen:
+        //System.out.println("----------(----------");
         parenCount++;
         wasX = false;
-        skipping = false;
         break;
-      case Token.leftsquare:
-        squareCount++;
+      case Token.opIf:
+        //System.out.println("---------IF---------");
+        boolean isFirst = Variable.bValue(getX());
+        putOp(Token.tokenColon);
+        putX(new Variable(isFirst ? Token.expressionBegin : Token.expressionEnd));
+        putX(new Variable(isFirst ? Token.expressionBegin : Token.expressionEnd));
+        skipping = !isFirst;
         wasX = false;
-        break;
+        //dumpStacks("(.." + isFirst + "...?<--here ... :...skip...) ");
+        return true;
+      case Token.colon:
+        if (tok0 != Token.colon)
+          return false;
+        //System.out.println("----------:----------");
+        //dumpStacks("(..True...? ... :<--here ...skip...) ");
+        // switch off
+        // shift object because it came from the first part
+        xStack[xPt - 2] = xStack[xPt - 1] = (new Variable(Token.tokenExpressionEnd));
+        wasX = false;
+        skipping = true;
+        return true;
       case Token.rightparen:
+        //System.out.println("----------)----------");
+        //dumpStacks("(..False...? ...skip... : ...)<--here ");
         wasX = true;
         oPt--;
         if (parenCount-- <= 0)
           return false;
         if (oPt < 0)
           return true;
-        return (isOpFunc(oStack[oPt]) ? evaluateFunction() : true);
+        if (isOpFunc(oStack[oPt]) && !evaluateFunction())
+          return false;
+        if (tok0 == Token.colon) {
+          // shift object because it came from the second part
+          xStack[xPt - 2] = xStack[xPt--];
+          // and remove all evidence
+          xPt--;
+          oPt--;
+          //dumpStacks("(..True...? ... : ...skip...)DONE ");
+        }
+        skipping = (xPt > 0 && xStack[xPt - 1].tok == Token.expressionEnd);
+        return true;
+      case Token.comma:
+        wasX = false;
+        return true;
+      case Token.leftsquare:
+        squareCount++;
+        wasX = false;
+        break;
       case Token.rightsquare:
         wasX = true;
         if (squareCount-- <= 0)
@@ -12374,29 +12513,14 @@ class Eval {
         wasX = false;
       }
 
-      // check for end of ( ? : ) first-phrase reading
-      
-      // check for ( ? : ) reading only first phrase
+      // add the operator if possible
 
-      if (xPt >= 1 && xStack[xPt - 1].tok == Token.expressionBegin) {
-        switch (op.tok) {
-        case Token.colon:
-          if (oStack[oPt].tok == Token.colon) {
-            xStack[xPt - 1] = xStack[xPt];
-            xStack[xPt] = new Variable(Token.expressionEnd);
-            oStack[oPt] = Token.tokenRightParen;
-            return true;
-          }
-        }
-      }
-
-      //add the operator if possible
-      
-      if (skipping)
-        return true;
       putOp(op);
 
-      if (op.tok == Token.propselector && (op.intValue & ~Token.minmaxmask) == Token.function && op.intValue != Token.function) {
+      //dumpStacks("putOp complete");
+      if (op.tok == Token.propselector
+          && (op.intValue & ~Token.minmaxmask) == Token.function
+          && op.intValue != Token.function) {
         return evaluateFunction();
       }
       return true;
@@ -12427,14 +12551,15 @@ class Eval {
       return true;
     }
 
-    void dumpStacks() {
-      Logger.info("RPN stacks:");
+    void dumpStacks(String message) {
+      Logger.info("\n\nRPN stacks: " + message + "\n");
       for (int i = 0; i <= xPt; i++)
         Logger.info("x[" + i + "]: " + xStack[i]);
       Logger.info("\n");
       for (int i = 0; i <= oPt; i++)
         Logger.info("o[" + i + "]: " + oStack[i] + " prec="
             + Token.getPrecedence(oStack[i].tok));
+      System.out.flush();
     }
 
     Variable getX() throws ScriptException {
@@ -13224,7 +13349,7 @@ class Eval {
         return false;
       if (isSyntaxCheck)
         return addX("");
-      return addX(getBitsetIdent(Variable.bsSelect(x1), format, x1.value, true));
+      return addX(getBitsetIdent(Variable.bsSelect(x1), format, x1.value, true, x1.index));
     }
 
     private boolean evaluateWithin(Variable[] args) {
@@ -13425,12 +13550,11 @@ class Eval {
 
     private boolean operate() throws ScriptException {
 
-
       Token op = oStack[oPt--];
 
+        
       if (logMessages) {
-        Logger.info("\noperate: " + op);
-        dumpStacks();
+        dumpStacks("operate: " + op);
       }
       
       if (oPt < 0 && op.tok == Token.opEQ && isArrayItem) {

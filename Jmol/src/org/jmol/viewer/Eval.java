@@ -1464,7 +1464,7 @@ class Eval {
       tempStatement = statement;
       statement = code;
     }
-    Rpn rpn = new Rpn(64, false, false);
+    Rpn rpn = new Rpn(false, false);
     Object val;
     int comparisonValue = Integer.MAX_VALUE;
     boolean refreshed = false;
@@ -7613,7 +7613,7 @@ class Eval {
     if (isOneExpressionOnly)
       pt = -pt;
     int nParen = 0;
-    Rpn rpn = new Rpn(64, isArrayItem, asVector);
+    Rpn rpn = new Rpn(isArrayItem, asVector);
     if (pt == 0 && ptMax == 0) // set command with v[...] = ....
       pt = 2;
     if (ptMax < pt)
@@ -12101,17 +12101,21 @@ class Eval {
     }
   }
 
-  /// Reverse Polish Notation Engine for IF, SET, and %{...} -- Bob Hanson 2/16/2007
-  /// Just a simple RPN processor that can handle 
-  /// boolean, int, float, String, Point3f, and BitSet
+  /**
+   * Reverse Polish Notation Engine for IF, SET, and %{...} -- Bob Hanson 2/16/2007
+   * Just a simple RPN processor that can handle 
+   * boolean, int, float, String, Point3f, and BitSet
+   * 
+   */
 
   class Rpn {
 
-    private Token[] oStack;
-    private Variable[] xStack;
+    private Token[] oStack = new Token[8];
+    private Variable[] xStack = new Variable[8];
+    private char[] ifStack = new char[8];
+    private int ifPt = -1;
     private int oPt = -1;
     private int xPt = -1;
-    private int maxLevel;
     private int parenCount;
     private int squareCount;
     private int braceCount;
@@ -12122,13 +12126,10 @@ class Eval {
     private int ptid = 0;
     private int ptx = Integer.MAX_VALUE;
 
-    Rpn(int maxLevel, boolean isArrayItem, boolean asVector) {
+    Rpn(boolean isArrayItem, boolean asVector) {
       this.isArrayItem = isArrayItem;
-      this.maxLevel = maxLevel;
       this.asVector = asVector || isArrayItem;
       wasX = isArrayItem;
-      oStack = new Token[maxLevel];
-      xStack = new Variable[maxLevel];
       if (logMessages)
         Logger.info("initialize RPN");
     }
@@ -12167,6 +12168,32 @@ class Eval {
       return null;
     }
 
+    private void putX(Variable x) {
+      //System.out.println("putX skipping : " + skipping + " " + x);
+      if (skipping)
+        return;
+      if (++xPt == xStack.length)
+        xStack = (Variable[]) ArrayUtil.doubleLength(xStack);
+      if (logMessages) {
+        Logger.info("\nputX: " + x);
+      }
+      xStack[xPt] = x;
+      ptx = ++ptid;
+    }
+
+    private void putOp(Token op) {
+      if (++oPt >= oStack.length)
+        oStack = (Token[]) ArrayUtil.doubleLength(oStack);
+      oStack[oPt] = op;
+      ptid++;
+    }
+
+    private void putIf(char c) {
+      if (++ifPt >= ifStack.length)
+        ifStack = (char[]) ArrayUtil.doubleLength(ifStack);
+      ifStack[ifPt] = c;
+    }
+
     boolean addX(Variable x) throws ScriptException {
       if (xPt >= 0 && xStack[xPt].tok == Token.expressionEnd)
         return wasX = true; //skipping
@@ -12188,19 +12215,6 @@ class Eval {
         return false;
       putX(v);
       return wasX = true;
-    }
-
-    private void putX(Variable x) {
-      if (skipping)
-        return;
-      if (xPt + 1 == maxLevel)
-        stackOverflow();
-      if (logMessages) {
-        //S("putX " + x);
-        Logger.info("\nputX: " + x);
-      }
-      xStack[++xPt] = x;
-      ptx = ++ptid;
     }
 
     boolean addX(boolean x) {
@@ -12256,17 +12270,17 @@ class Eval {
       
       if (logMessages) {
 
-        //dumpStacks("addOp entry\naddOp: " + op + " oPt=" + oPt + " skipping="
-          //  + skipping + " wasX=" + wasX);
+        //dumpStacks("addOp entry\naddOp: " + op + " oPt=" + oPt + " ifPt = " + ifPt 
+          //  + " skipping=" + skipping + " wasX=" + wasX);
       }
 
       // are we skipping due to a ( ? : ) construct?
       int tok0 = (oPt >= 0 ? oStack[oPt].tok : 0);
-      int tokX = (xPt >= 1 ? xStack[xPt - 1].tok : 0);
-      if (tokX == Token.expressionEnd) {
+      skipping = (ifPt >= 0 && ifStack[ifPt] == 'F');
+      if (skipping) {
         switch (op.tok) {
         case Token.leftparen:
-          oStack[++oPt] = op;
+          putOp(op);
           return true;
         case Token.colon:
           //dumpStacks("skipping -- :");
@@ -12274,8 +12288,7 @@ class Eval {
             return true; // ignore if not a clean opstack
           // no object here because we were skipping
           // set to flag end of this parens
-          xStack[xPt - 1] = (new Variable(Token.tokenExpressionBegin));
-          xStack[xPt] = (new Variable(Token.tokenExpressionBegin));
+          ifStack[ifPt] = 'T';
           wasX = false;
           //dumpStacks("(..False...? .skip.. :<--here.... )");
           skipping = false;
@@ -12287,17 +12300,15 @@ class Eval {
           }
           //dumpStacks("skipping -- )");
           if (tok0 != Token.colon) {
-            oStack[++oPt] = op;
+            putOp(op);
             return true;
           }
           wasX = true;
-          // shift object because it came from the first part
-          xStack[xPt - 2] = xStack[xPt];
-          // and remove all evidence
-          xPt -= 2;
+          // and remove markers
+          ifPt--;
           oPt -= 2;
-          //dumpStacks("(..True...? ... : ...skip...)<--here ");
           skipping = false;
+          //dumpStacks("(..True...? ... : ...skip...)<--here ");
           return true;
         default:
           return true;
@@ -12369,6 +12380,7 @@ class Eval {
       case Token.opNot:
       case Token.leftparen:
         isLeftOp = true;
+        // fall through
       default:
         if (isMathFunc) {
           if (!isDotSelector && wasX && !isArgument)
@@ -12397,7 +12409,7 @@ class Eval {
                   + Token.getPrecedence(tok0) + " pending op=\""
                   + Token.nameOf(op.tok) + "\" prec="
                   + Token.getPrecedence(op.tok));
-          //dumpStacks("operating");
+          dumpStacks("operating");
         }
         // ) and ] must wait until matching ( or [ is found
         if (op.tok == Token.rightparen && tok0 == Token.leftparen) {
@@ -12446,43 +12458,39 @@ class Eval {
         //System.out.println("---------IF---------");
         boolean isFirst = Variable.bValue(getX());
         putOp(Token.tokenColon);
-        putX(new Variable(isFirst ? Token.expressionBegin : Token.expressionEnd));
-        putX(new Variable(isFirst ? Token.expressionBegin : Token.expressionEnd));
+        putIf(isFirst ? 'T' : 'F');
         skipping = !isFirst;
         wasX = false;
         //dumpStacks("(.." + isFirst + "...?<--here ... :...skip...) ");
         return true;
       case Token.colon:
+        //System.out.println("----------:----------");
         if (tok0 != Token.colon)
           return false;
-        //System.out.println("----------:----------");
-        //dumpStacks("(..True...? ... :<--here ...skip...) ");
-        // switch off
-        // shift object because it came from the first part
-        xStack[xPt - 2] = xStack[xPt - 1] = (new Variable(Token.tokenExpressionEnd));
+        if (ifPt < 0)
+          return false;
+        ifStack[ifPt] = 'F';
         wasX = false;
         skipping = true;
+        //dumpStacks("(..True...? ... :<--here ...skip...) ");
         return true;
       case Token.rightparen:
         //System.out.println("----------)----------");
-        //dumpStacks("(..False...? ...skip... : ...)<--here ");
         wasX = true;
-        oPt--;
         if (parenCount-- <= 0)
           return false;
+        if (tok0 == Token.colon) {
+          // remove markers
+          ifPt--;
+          oPt--;
+          //dumpStacks("(..False...? ...skip... : ...)<--here ");
+        }
+        oPt--;
         if (oPt < 0)
           return true;
         if (isOpFunc(oStack[oPt]) && !evaluateFunction())
           return false;
-        if (tok0 == Token.colon) {
-          // shift object because it came from the second part
-          xStack[xPt - 2] = xStack[xPt--];
-          // and remove all evidence
-          xPt--;
-          oPt--;
-          //dumpStacks("(..True...? ... : ...skip...)DONE ");
-        }
-        skipping = (xPt > 0 && xStack[xPt - 1].tok == Token.expressionEnd);
+        skipping = (ifPt >= 0 && ifStack[ifPt] == 'X');
         return true;
       case Token.comma:
         wasX = false;
@@ -12526,13 +12534,6 @@ class Eval {
       return true;
     }
     
-    private void putOp(Token op) {
-      if (++oPt >= maxLevel)
-        stackOverflow();
-      oStack[oPt] = op;
-      ptid++;
-    }
-
     private boolean doBitsetSelect() {
       if (xPt < 0 || xPt == 0 && !isArrayItem) {
         return false;
@@ -12559,6 +12560,7 @@ class Eval {
       for (int i = 0; i <= oPt; i++)
         Logger.info("o[" + i + "]: " + oStack[i] + " prec="
             + Token.getPrecedence(oStack[i].tok));
+      Logger.info(" ifStack = " + (new String(ifStack)).substring(0, ifPt + 1));
       System.out.flush();
     }
 
@@ -13574,7 +13576,7 @@ class Eval {
         if (!isSyntaxCheck && !x2.increment(incrementX))
           return false;
         wasX = true;
-        xPt++;
+        xPt++; //reverse getX()
         return true;
       }
       
@@ -14086,15 +14088,5 @@ class Eval {
       }
       return null;
     }
-
-    void stackOverflow() {
-      oStack = (Token[]) ArrayUtil.doubleLength(oStack);
-      xStack = (Variable[]) ArrayUtil.doubleLength(xStack);
-      maxLevel *= 2;
-      return;
-      //
-      //evalError(GT._("too many parentheses"));
-    }
-
   }
 }

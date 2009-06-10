@@ -1656,15 +1656,27 @@ class Compiler extends CompilationTokenParser {
     char ch;
     while (ichT < cchScript && !eol(ch = script.charAt(ichT)) && ch != '}')
       ++ichT;
+    boolean isMath = false;
     if (ichT > ichToken && script.charAt(ichToken) == '@'
-        && (ichT <= ichToken + 1 || script.charAt(ichToken + 1) != '{'))
+        && (ichT <= ichToken + 1 || !(isMath = script.charAt(ichToken + 1) == '{')))
       return false;
+    if (isMath) {
+      int nP = 1;
+      ichT = ichToken + 1;
+      while (++ichT < cchScript && nP > 0)
+        switch(script.charAt(ichT)) {
+        case '{':
+          nP++;
+          break;
+        case '}':
+          nP--;
+          break;
+        }
+      return (cchToken = ichT - ichToken) > 0;
+    }
     while (--ichT > ichToken && Character.isWhitespace(script.charAt(ichT))) {
     }
-    cchToken = ++ichT - ichToken;
-    if (logMessages)
-      Logger.debug("lookingAtSpecialString cchToken=" + cchToken);
-    return cchToken > 0;
+    return (cchToken = ++ichT - ichToken) > 0;
   }
 
   private float lookingAtExponential() {

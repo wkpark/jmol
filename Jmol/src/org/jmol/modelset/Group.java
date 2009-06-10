@@ -176,7 +176,7 @@ public class Group {
   }
 
   public int getProteinStructureID() {
-    return Integer.MIN_VALUE;
+    return 0;
   }
   
   public byte getProteinStructureType() {

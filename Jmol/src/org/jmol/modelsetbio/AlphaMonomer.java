@@ -79,7 +79,7 @@ public class AlphaMonomer extends Monomer {
   }
 
   public int getProteinStructureID() {
-    return proteinStructure != null ? proteinStructure.uniqueID : Integer.MIN_VALUE;
+    return proteinStructure != null ? proteinStructure.uniqueID : 0;
   }
 
   public boolean isHelix() {

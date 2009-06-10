@@ -2224,7 +2224,7 @@ abstract public class ModelCollection extends BondCollection {
         lastid = -1;
       }
       if ((id = atoms[i].getProteinStructureID()) != lastid 
-               && id != Integer.MIN_VALUE) {
+               && id != 0) {
         atoms[i].getGroup().setProteinStructureId(++idnew);
         lastid = idnew;
       }
@@ -2267,7 +2267,7 @@ abstract public class ModelCollection extends BondCollection {
       if (i == atomCount || bsAtoms == null || bsAtoms.get(i)) {
         if (taintedOnly && !bsTainted.get(i))
           continue;
-        id = Integer.MIN_VALUE;
+        id = 0;
         if (i == atomCount || (id = atoms[i].getProteinStructureID()) != lastId) {
           if (bs != null) {
             if (itype == JmolConstants.PROTEIN_STRUCTURE_HELIX
@@ -2334,8 +2334,7 @@ abstract public class ModelCollection extends BondCollection {
             }
             bs = null;
           }
-          if (id == Integer.MIN_VALUE
-              || bsAtoms != null
+          if (id == 0 || bsAtoms != null
               && needPhiPsi
               && (Float.isNaN(atoms[i].getGroupPhi()) || Float.isNaN(atoms[i]
                   .getGroupPsi())))

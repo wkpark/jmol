@@ -377,7 +377,7 @@ public class LabelToken {
         break;
       case Token.strucno:
         int id = atom.getProteinStructureID();
-        strT = (id < 0 ? "" : "" + id);
+        strT = (id <= 0 ? "" : "" + id);
         break;
       case Token.straightness:
         floatT = atom.getStraightness();

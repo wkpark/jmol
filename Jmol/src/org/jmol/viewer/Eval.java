@@ -13648,21 +13648,21 @@ class Eval {
       switch (op.tok) {
       case Token.opAnd:
         if (x1.tok == Token.bitset && x2.tok == Token.bitset) {
-          BitSet bs = Variable.bsSelect(x1);
+          BitSet bs = BitSetUtil.copy(Variable.bsSelect(x1));
           bs.and(Variable.bsSelect(x2));
           return addX(bs);
         }
         return addX(Variable.bValue(x1) && Variable.bValue(x2));
       case Token.opOr:
         if (x1.tok == Token.bitset && x2.tok == Token.bitset) {
-          BitSet bs = Variable.bsSelect(x1);
+          BitSet bs = BitSetUtil.copy(Variable.bsSelect(x1));
           bs.or(Variable.bsSelect(x2));
           return addX(bs);
         }
         return addX(Variable.bValue(x1) || Variable.bValue(x2));
       case Token.opXor:
         if (x1.tok == Token.bitset && x2.tok == Token.bitset) {
-          BitSet bs = Variable.bsSelect(x1);
+          BitSet bs = BitSetUtil.copy(Variable.bsSelect(x1));
           bs.xor(Variable.bsSelect(x2));
           return addX(bs);
         }
@@ -13672,7 +13672,7 @@ class Eval {
       case Token.opToggle:
         if (x1.tok != Token.bitset || x2.tok != Token.bitset)
           return false;
-        return addX(BitSetUtil.toggleInPlace(Variable.bsSelect(x1), Variable
+        return addX(BitSetUtil.toggleInPlace(BitSetUtil.copy(Variable.bsSelect(x1)), Variable
             .bsSelect(x2), viewer.getAtomCount()));
       case Token.opLE:
         return addX(Variable.fValue(x1) <= Variable.fValue(x2));

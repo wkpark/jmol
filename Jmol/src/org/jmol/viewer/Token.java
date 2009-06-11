@@ -132,8 +132,9 @@ public class Token {
    *                           xxxxx unique id 1 to 0x1F (31)
    *                          x      min
    *                         x       max
-   *                         xx      minmaxmask (all)
-   *                        x        vibflag
+   *                         xx      average
+   *                        x        stddev
+   *                        xxx      minmaxmask (all)
    *                       x         settable
    *                    xxx          maximum number of parameters for function
    *                   
@@ -335,7 +336,6 @@ public class Token {
   
   final static int expressionBegin     = expression | 1;
   final static int expressionEnd       = expression | 2;
-
   final static int all                 = expression | 3;
   final public static int branch       = expression | 4;
   final static int coord               = expression | 6;
@@ -441,11 +441,12 @@ public class Token {
   // for example, x.atoms.max, x.atoms.all
   // .all gets incorporated as minmaxmask
 
-  final static int min              = 1 << 5;
-  final static int max              = 2 << 5;
-  final static int minmaxmask       = 3 << 5; // includes 1 << 6
-  public final static int vibflag   = 1 << 7; // quick check that there is no need to taint atom position
-  final static int settable         = 1 << 8;
+  public final static int min         = 1 << 5;
+  public final static int max         = 2 << 5;
+  public final static int average     = 3 << 5;
+  public final static int stddev      = 4 << 5;
+  final static int minmaxmask /*all*/ = 7 << 5; 
+  final static int settable           = 1 << 8;
   
   // bits 0 - 4 are for an identifier -- DO NOT GO OVER 31!
   // but, note that we can have more than 1 provided other parameters differ
@@ -454,16 +455,18 @@ public class Token {
     
   final public static int atoms     = 1 | mathproperty;
   final public static int bonds     = 2 | mathproperty | setparam;
-  final static int length           = 5 | mathproperty;
-  final static int lines            = 6 | mathproperty;
-  final static int size             = 7 | mathproperty;
+  final static int length           = 3 | mathproperty;
+  final static int lines            = 4 | mathproperty;
+  final public static int reverse   = 5 | mathproperty;
+  final static int size             = 6 | mathproperty;
+  final public static int sort      = 7 | mathproperty;
   final public static int type      = 8 | mathproperty;
   final public static int boundbox  = 9 | mathproperty | setparam | command | defaultON;
   final public static int xyz       =10 | mathproperty | atomproperty | settable;
   final public static int fracXyz   =11 | mathproperty | atomproperty | settable;
   final public static int unitXyz   =12 | mathproperty | atomproperty;
-  final public static int vibXyz    =13 | mathproperty | atomproperty | settable | vibflag;
-
+  final public static int vibXyz    =13 | mathproperty | atomproperty | settable;
+  
   // occupancy, radius, and structure are odd, because they takes different meanings when compared
   
   final public static int occupancy     = intproperty | floatproperty | 2 | settable;
@@ -529,9 +532,9 @@ public class Token {
   final public static int unitY           = floatproperty | 19;
   final public static int unitZ           = floatproperty | 20;
   final public static int vanderwaals     = floatproperty | 21 | settable;
-  final public static int vibX            = floatproperty | 22 | settable | vibflag;
-  final public static int vibY            = floatproperty | 23 | settable | vibflag;
-  final public static int vibZ            = floatproperty | 24 | settable | vibflag;
+  final public static int vibX            = floatproperty | 22 | settable;
+  final public static int vibY            = floatproperty | 23 | settable;
+  final public static int vibZ            = floatproperty | 24 | settable;
   
   // mathfunc               means x = somefunc(a,b,c)
   // mathfunc|mathproperty  means x = y.somefunc(a,b,c)
@@ -634,7 +637,6 @@ public class Token {
   // misc
 
   final static int absolute     = misc |  1;
-  final static int average      = misc |  2;
   final static int axis         = misc |  3;
   final static int babel        = misc |  4;
   final static int back         = misc |  5;
@@ -1133,6 +1135,7 @@ public class Token {
     "resno",            new Token(resno),
     "resume",           new Token(resume),
     "rewind",           new Token(rewind),
+    "reverse",          new Token(reverse),
     "right",            new Token(right),    
     "RNA",              new Token(rna),
     "rubberband",       new Token(rubberband),
@@ -1145,9 +1148,11 @@ public class Token {
     "size",             new Token(size),
     "solid",            new Token(solid),
     "solvent",          new Token(solvent),
+    "sort",             new Token(sort),
     "specialPosition",  new Token(specialposition),
     "sqrt",             new Token(sqrt),
     "split",            new Token(split),
+    "stddev",           new Token(stddev),
     "straightness",     new Token(straightness),
     "sub",              new Token(sub),
     "substructure",     new Token(substructure),

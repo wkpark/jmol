@@ -7803,12 +7803,18 @@ class Eval {
         if (token == null)
           error(ERROR_invalidArgument);
         // check for added min/max modifier
+        int tok2 = tokAt(iToken + 2);
         if (tokAt(iToken + 1) == Token.dot) {
-          if (tokAt(iToken + 2) == Token.all) {
-            token.intValue |= Token.minmaxmask;
+          switch (tok2) {
+          case Token.all:
+            tok2 = Token.minmaxmask;
+            //fall through
+          case Token.min:
+          case Token.max:
+          case Token.stddev:
+          case Token.average:
+            token.intValue |= tok2;
             getToken(iToken + 2);
-          } else if (Token.tokAttrOr(tokAt(iToken + 2), Token.min, Token.max)) {
-            token.intValue |= getToken(iToken + 2).tok;
           }
         }
         if (!rpn.addOp(token))
@@ -7952,6 +7958,10 @@ class Eval {
       if (Token.tokAttrOr(tok, Token.atomproperty, Token.mathproperty))
         break;
       return null;
+    case Token.min:
+    case Token.max:
+    case Token.average:
+    case Token.stddev:
     case Token.property:
       break;
     case Token.identifier:
@@ -7960,6 +7970,7 @@ class Eval {
       case Token.atomX:
       case Token.atomY:
       case Token.atomZ:
+      case Token.qw:
         break;
       default:
         if (!mustBeSettable && viewer.isFunction(name)) {
@@ -7983,19 +7994,16 @@ class Eval {
                                      int index) throws ScriptException {
     boolean haveIndex = (index != Integer.MAX_VALUE);
     boolean isAtoms = !(tokenValue instanceof BondSet);
-    boolean isMin = Token.tokAttr(tok, Token.min);
-    boolean isMax = Token.tokAttr(tok, Token.max);
+    int minmaxtype = tok & Token.minmaxmask;
     boolean isFloat = (Token.tokAttr(tok, Token.floatproperty)
         || tok == Token.function || tok == Token.distance);
     boolean isInt = !isFloat && (Token.tokAttr(tok, Token.intproperty));
     boolean isString = !isInt && isAtoms
         && Token.tokAttr(tok, Token.strproperty);
-    boolean isAll = (isString || Token.tokAttr(tok, Token.minmaxmask));
-    if (isAll)
-      isMin = isMax = false;
+    if (isString || minmaxtype == Token.minmaxmask)
+      minmaxtype = Token.all;
     tok &= ~Token.minmaxmask;
     Vector vout = null;
-    // StringBuffer sb = null;
     BitSet bsNew = null;
 
     if (tok == Token.atoms)
@@ -8005,18 +8013,21 @@ class Eval {
       bsNew = (isAtoms && !isSyntaxCheck ? viewer.getBondsForSelectedAtoms(bs)
           : bs);
     if (bsNew != null) {
-      if (!isMax && !isMin || isSyntaxCheck)
+      if (minmaxtype == 0 || minmaxtype == Token.all || isSyntaxCheck)
         return bsNew;
       int n = bsNew.size();
       int i = 0;
-      if (isMin) {
+      switch (minmaxtype) {
+      case Token.min:
         for (i = -1; ++i < n;)
           if (bsNew.get(i))
             break;
-      } else if (isMax) {
+        break;
+      case Token.max:
         for (i = n; --i >= 0;)
           if (bsNew.get(i))
             break;
+        break;
       }
       bsNew.clear();
       if (i >= 0 && i < n)
@@ -8025,9 +8036,12 @@ class Eval {
     }
 
     if (tok == Token.identify) {
-      if (isMin || isMax)
-        return "";
-      return getBitsetIdent(bs, null, tokenValue, useAtomMap, index);
+      switch (minmaxtype) {
+      case 0:
+      case Token.all:
+        return getBitsetIdent(bs, null, tokenValue, useAtomMap, index);
+      }
+      return "";
     }
     String userFunction = null;
     Vector params = null;
@@ -8041,8 +8055,21 @@ class Eval {
     }
 
     int n = 0;
-    int ivAvg = 0, ivMax = Integer.MIN_VALUE, ivMin = Integer.MAX_VALUE;
-    float fvAvg = 0, fvMax = -Float.MAX_VALUE, fvMin = Float.MAX_VALUE;
+    int ivvMinMax = 0;
+    int ivAvg = 0;
+    float fvAvg = 0;
+    int ivMinMax = 0;
+    float fvMinMax = 0;
+    switch (minmaxtype) {
+    case Token.min:
+      ivMinMax = Integer.MAX_VALUE;
+      fvMinMax = Float.MAX_VALUE;
+      break;
+    case Token.max:
+      ivMinMax = Integer.MIN_VALUE;
+      fvMinMax = -Float.MAX_VALUE;
+      break;
+    }
     Point3f pt = new Point3f();
     if (tok == Token.distance && ptRef == null && planeRef == null)
       return pt;
@@ -8058,8 +8085,11 @@ class Eval {
       int iModel = -1;
       int nOps = 0;
       count = (isSyntaxCheck ? 0 : viewer.getAtomCount());
-      if (isAll || isString)
-        vout = new Vector();// sb = new StringBuffer();
+      switch (minmaxtype) {
+      case Token.all:
+      case Token.stddev:
+        vout = new Vector();
+      }
       int mode = (isPt ? 0 : isString ? 3 : isInt ? 1 : 2);
       for (int i = (haveIndex ? index : 0); i < count; i++) {
         if (!haveIndex && bs != null && !bs.get(i))
@@ -8072,8 +8102,8 @@ class Eval {
           if (t == null)
             error(ERROR_unrecognizedAtomProperty, Token.nameOf(tok));
           pt.add(t);
-          if (isAll) {
-            vout.add(Escape.escape(pt));// sb.append("\n").append(Escape.escape(pt));
+          if (minmaxtype == Token.all) {
+            vout.add(Escape.escape(pt));
             pt.set(0, 0, 0);
           }
           break;
@@ -8092,21 +8122,32 @@ class Eval {
             BitSet bsSym = atom.getAtomSymmetry();
             int len = nOps;
             int p = 0;
-            int ivvMin = Integer.MAX_VALUE;
-            int ivvMax = Integer.MIN_VALUE;
+            switch (minmaxtype) {
+            case Token.min:
+              ivvMinMax = Integer.MAX_VALUE;
+              break;
+            case Token.max:
+              ivvMinMax = Integer.MIN_VALUE;
+              break;
+            }
             for (int k = 0; k < len; k++)
               if (bsSym.get(k)) {
                 iv += k + 1;
-                if (isMin)
-                  ivvMin = Math.min(ivvMin, k + 1);
-                else if (isMax)
-                  ivvMax = Math.max(ivvMax, k + 1);
+                switch (minmaxtype) {
+                case Token.min:
+                  ivvMinMax = Math.min(ivvMinMax, k + 1);
+                  break;
+                case Token.max:
+                  ivvMinMax = Math.max(ivvMinMax, k + 1);
+                  break;
+                }
                 p++;
               }
-            if (isMin)
-              iv = ivvMin;
-            else if (isMax)
-              iv = ivvMax;
+            switch (minmaxtype) {
+            case Token.min:
+            case Token.max:
+              iv = ivvMinMax;
+            }
             n += p - 1;
             break;
           case Token.cell:
@@ -8114,14 +8155,20 @@ class Eval {
           default:
             iv = Atom.atomPropertyInt(atom, tok);
           }
-          if (isAll)
-            vout.add(new Integer(iv));// sb.append('\n').append(iv);
-          else if (isMin)
-            ivMin = Math.min(ivMin, iv);
-          else if (isMax)
-            ivMax = Math.max(ivMax, iv);
-          else
+          switch (minmaxtype) {
+          case Token.min:
+            ivMinMax = Math.min(ivMinMax, iv);
+            break;
+          case Token.max:
+            ivMinMax = Math.max(ivMinMax, iv);
+            break;
+          case Token.all:
+          case Token.stddev:
+            vout.add(new Integer(iv));
+            // fall through
+          default:
             ivAvg += iv;
+          }
           break;
         case 2: // isFloat {
           float fv = Float.MAX_VALUE;
@@ -8147,33 +8194,38 @@ class Eval {
           if (fv == Float.MAX_VALUE) {
             n--; // don't count this one
           } else {
-            if (isAll)
-              vout.add(new Float(fv));// sb.append('\n').append(fv);
-            else if (Float.isNaN(fv)) {
+            if (Float.isNaN(fv) && minmaxtype != Token.all)
               n--; // don't count this one
-            } else {
-              if (isMin)
-                fvMin = Math.min(fvMin, fv);
-              else if (isMax)
-                fvMax = Math.max(fvMax, fv);
-              else
+            else
+              switch (minmaxtype) {
+              case Token.min:
+                fvMinMax = Math.min(fvMinMax, fv);
+                break;
+              case Token.max:
+                fvMinMax = Math.max(fvMinMax, fv);
+                break;
+              case Token.stddev:
+              case Token.all:
+                vout.add(new Float(fv));
+                // fall through
+              default:
                 fvAvg += fv;
-            }
+              }
           }
           break;
         case 3: // isString
-          String s = Atom.atomPropertyString(atom, tok);
-          // if (tok != Token.sequence)
-          // sb.append('\n');
-          vout.add(s);// sb.append(s);
+          vout.add(Atom.atomPropertyString(atom, tok));
         }
         if (haveIndex)
           break;
       }
     } else { // bonds
       count = viewer.getBondCount();
-      if (isAll)
-        vout = new Vector();// sb = new StringBuffer();
+      switch (minmaxtype) {
+      case Token.all:
+      case Token.stddev:
+        vout = new Vector();
+      }
       for (int i = 0; i < count; i++) {
         if (bs != null && !bs.get(i))
           continue;
@@ -8182,11 +8234,20 @@ class Eval {
         switch (tok) {
         case Token.length:
           float fv = bond.getAtom1().distance(bond.getAtom2());
-          fvMin = Math.min(fvMin, fv);
-          fvMax = Math.max(fvMax, fv);
-          fvAvg += fv;
-          if (isAll)
-            vout.add(new Float(fv));// sb.append('\n').append(fv);
+          switch (minmaxtype) {
+          case Token.min:
+            fvMinMax = Math.min(fvMinMax, fv);
+            break;
+          case Token.max:
+            fvMinMax = Math.max(fvMinMax, fv);
+            break;
+          case Token.stddev:
+          case Token.all:
+            vout.add(new Float(fv));
+            // fall through
+          default:
+            fvAvg += fv;
+          }
           break;
         case Token.xyz:
           pt.add(bond.getAtom1());
@@ -8203,7 +8264,7 @@ class Eval {
         isInt = false;
       }
     }
-    if (isAll) {
+    if (minmaxtype == Token.all) {
       int len = vout.size();
       if (tok == Token.sequence) {
         StringBuffer sb = new StringBuffer();
@@ -8218,20 +8279,36 @@ class Eval {
     }
     if (isPt)
       return (n == 0 ? pt : new Point3f(pt.x / n, pt.y / n, pt.z / n));
-    if (n == 0) {
+    if (n == 0 || n == 1 && minmaxtype == Token.stddev)
       return new Float(Float.NaN);
-    } else if (isMin) {
-      n = 1;
-      ivAvg = ivMin;
-      fvAvg = fvMin;
-    } else if (isMax) {
-      n = 1;
-      ivAvg = ivMax;
-      fvAvg = fvMax;
+    if (isInt) {
+      switch (minmaxtype) {
+      case Token.min:
+      case Token.max:
+        return new Integer(ivMinMax);
+      case Token.stddev:
+        float[] f = new float[n];
+        for (int i = n; --i >= 0;)
+          f[i] = ((Integer) vout.get(i)).intValue();
+        return ArrayUtil.getMinMax(f, Token.stddev);
+      default:
+        if ((ivMinMax = ivAvg / n) * n == ivAvg)
+          return new Integer(ivMinMax);
+        return new Float (((float) ivAvg) / n);
+      }
     }
-    if (isInt && (ivAvg / n) * n == ivAvg)
-      return new Integer(ivAvg / n);
-    return new Float((isInt ? ivAvg * 1f : fvAvg) / n);
+    switch (minmaxtype) {
+    case Token.min:
+    case Token.max:
+      return new Float(fvMinMax);
+    case Token.stddev:
+      float[] f = new float[n];
+      for (int i = n; --i >= 0;)
+        f[i] = ((Float) vout.get(i)).floatValue();
+      return ArrayUtil.getMinMax(f, Token.stddev);
+    default:
+      return new Float(fvAvg / n);
+    }
   }
 
   private void setBitsetProperty(BitSet bs, int tok, int iValue, float fValue,
@@ -12348,6 +12425,8 @@ class Eval {
         break;
       case Token.min:
       case Token.max:
+      case Token.average:
+      case Token.stddev:
       case Token.minmaxmask:
         tok = (oPt < 0 ? Token.nada : tok0);
         if (!wasX
@@ -13354,11 +13433,13 @@ class Eval {
     private boolean evaluateLabel(Variable[] args) throws ScriptException {
       Variable x1 = getX();
       String format = (args.length == 0 ? "%U" : Variable.sValue(args[0]));
-      if (args.length > 1 || x1.tok != Token.bitset)
+      if (args.length > 1)
         return false;
       if (isSyntaxCheck)
         return addX("");
-      return addX(getBitsetIdent(Variable.bsSelect(x1), format, x1.value, true, x1.index));
+      if (x1.tok == Token.bitset)
+        return addX(getBitsetIdent(Variable.bsSelect(x1), format, x1.value, true, x1.index));
+      return addX(Variable.sprintf(format, x1));
     }
 
     private boolean evaluateWithin(Variable[] args) {
@@ -13990,6 +14071,12 @@ class Eval {
       switch (x2.tok) {
       case Token.list:
         String[] list = (String[]) x2.value;
+        if (op.intValue == Token.min || op.intValue == Token.max 
+            || op.intValue == Token.average || op.intValue == Token.stddev) {
+          return addX(ArrayUtil.getMinMax(list, op.intValue));
+        }
+        if (op.intValue == Token.sort || op.intValue == Token.reverse) 
+          return addX(ArrayUtil.sortOrReverse(x2.value, op.intValue, true));
         String[] list2 = new String[list.length];
         for (int i = 0; i < list.length; i++) {
           Object v = Escape.unescapePointOrBitsetAsVariable(list[i]);

@@ -1704,8 +1704,15 @@ abstract public class ModelCollection extends BondCollection {
 
   public void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
     super.setAtomCoord(bs, tokType, xyzValues);
-    if ((tokType & Token.vibflag) == 0)
+    switch(tokType) {
+    case Token.vibX:
+    case Token.vibY:
+    case Token.vibZ:
+    case Token.vibXyz:
+      break;
+    default:
       recalculateLeadMidpointsAndWingVectors(-1);
+    }
   }
 
   public int getAtomCountInModel(int modelIndex) {

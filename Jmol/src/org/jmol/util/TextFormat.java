@@ -27,6 +27,7 @@ package org.jmol.util;
 
 import java.text.DecimalFormat;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 
 public class TextFormat {
 
@@ -126,7 +127,20 @@ public class TextFormat {
   public static String formatString(String strFormat, String key, int intT) {
     return formatString(strFormat, key, "" + intT, Float.NaN);
   }
-  
+   
+  /**
+   * sprintf emulation uses (almost) c++ standard string formats 
+   *         'i' or 'd' integer
+   *         'f'        float/decimal
+   *         'p'        point3f
+   *         'q'        quaternion/plane/axisangle
+   *         '
+   *         with added "i" in addion to the insipid "d" (digits?)
+   * 
+   * @param strFormat
+   * @param values
+   * @return           formatted string
+   */
   public static String sprintf(String strFormat, Object[] values) {
     if (values == null)
       return strFormat;
@@ -145,6 +159,9 @@ public class TextFormat {
           for (int i = 0; i < iVal.length; i++)
             strFormat = formatString(strFormat, "d", "" + iVal[i], Float.NaN,
                 true);
+          for (int i = 0; i < iVal.length; i++)
+            strFormat = formatString(strFormat, "i", "" + iVal[i], Float.NaN,
+                true);
         } else if (values[o] instanceof Point3f[]) {
           Point3f[] pVal = (Point3f[]) values[o];
           for (int i = 0; i < pVal.length; i++) {
@@ -152,9 +169,17 @@ public class TextFormat {
             strFormat = formatString(strFormat, "p", null, pVal[i].y, true);
             strFormat = formatString(strFormat, "p", null, pVal[i].z, true);
           }
+        } else if (values[o] instanceof Point4f[]) {
+          Point4f[] qVal = (Point4f[]) values[o];
+          for (int i = 0; i < qVal.length; i++) {
+            strFormat = formatString(strFormat, "q", null, qVal[i].x, true);
+            strFormat = formatString(strFormat, "q", null, qVal[i].y, true);
+            strFormat = formatString(strFormat, "q", null, qVal[i].z, true);
+            strFormat = formatString(strFormat, "q", null, qVal[i].w, true);
+          }
         }
       }
-    return strFormat;
+    return simpleReplace(strFormat, "%%", "%");
   }
 
   public static String sprintf(String strFormat, String[] sVal, float[] fVal) {

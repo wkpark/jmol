@@ -24,6 +24,9 @@
 package org.jmol.util;
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
+
+import org.jmol.viewer.Token;
 
 final public class ArrayUtil {
 
@@ -232,4 +235,99 @@ final public class ArrayUtil {
     return str;
   }
 
+  public static Object getMinMax(Object floatOrStringArray, int tok) {
+    float[] data;
+    if (floatOrStringArray instanceof String[]) {
+      data = new float[((String[])floatOrStringArray).length];
+      Parser.parseFloatArray((String[])floatOrStringArray, data);
+    } else {
+      data = (float[]) floatOrStringArray;
+    }
+    float minmax = (tok == Token.min ? Float.MAX_VALUE 
+        : tok == Token.average || tok == Token.stddev ? 0 
+            : -Float.MAX_VALUE);
+    int n = 0;
+    for (int i = data.length; --i >= 0; ) {
+      float v;
+      if (Float.isNaN(v = data[i]))
+        continue;
+      n++;
+      switch(tok){
+      case Token.stddev:
+      case Token.average:
+        minmax += v;
+        break;
+      case Token.min:
+        if (v < minmax)
+          minmax = v;
+        break;
+      case Token.max:
+        if (v > minmax)
+          minmax = v;
+        break;
+      }
+    }
+    if (n == 0)
+      return "NaN";
+    if (tok == Token.average)
+      minmax /= n;
+    else if (tok == Token.stddev) {
+      if (n == 1)
+        return "NaN";
+      minmax /= n;
+      double d = 0;
+      double x;
+      for (int i = data.length; --i >= 0; )
+        d += (x = data[i] - minmax) * x;
+      minmax = (float) Math.sqrt(d / (n - 1));
+    }
+    return new Float(minmax);
+  }
+
+  public static Object sortOrReverse(Object list, int tok, boolean checkFloat) {
+    float[] f = null;
+    if (list instanceof String[]) {
+      String[] s = (String[]) list;
+      if (s.length < 2)
+        return list;
+      if (checkFloat && !Float.isNaN(Parser.parseFloat(s[0]))) {
+        f = new float[s.length];
+        Parser.parseFloatArray(s, f);
+      } else {
+        String[] s2 = new String[s.length];
+        System.arraycopy(s, 0, s2, 0, s.length);
+        switch (tok) {
+        case Token.sort:
+          Arrays.sort(s2);
+          return s2;
+        case Token.reverse:
+          for (int left = 0, right = s2.length - 1; left < right; left++, right--) {
+            String temp = s2[left];
+            s2[left] = s2[right];
+            s2[right] = temp;
+          }
+          return s2;
+        }
+      }
+    } else if (list instanceof float[]) {
+      f = new float[((float[]) list).length];
+      System.arraycopy(list, 0, f, 0, f.length);
+      if (f.length < 2)
+        return list;
+    } else {
+      return list;
+    }
+    switch (tok) {
+    case Token.sort:
+      Arrays.sort(f);
+      break;
+    case Token.reverse:
+      for (int left = 0, right = f.length - 1; left < right; left++, right--) {
+        float ftemp = f[left];
+        f[left] = f[right];
+        f[right] = ftemp;
+      }
+    }
+    return f;
+  }
 }

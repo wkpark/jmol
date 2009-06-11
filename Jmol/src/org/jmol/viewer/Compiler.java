@@ -1315,7 +1315,7 @@ class Compiler extends CompilationTokenParser {
       }
       if (bracketCount == 0 && theTok != Token.identifier
           && !Token.tokAttr(theTok, Token.expression) && theTok != Token.min
-          && theTok != Token.max)
+          && theTok != Token.max && theTok != Token.average && theTok != Token.stddev)
         return ERROR(ERROR_invalidExpressionToken, ident);
       break;
     case Token.center:

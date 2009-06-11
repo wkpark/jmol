@@ -151,6 +151,7 @@ public class LabelToken {
            Token.spacefill,
            Token.structure,
            Token.strucno,
+           Token.symbol,
            Token.unitX,
            Token.unitY,
            Token.unitZ,

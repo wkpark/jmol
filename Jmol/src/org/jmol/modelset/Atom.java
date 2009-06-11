@@ -352,8 +352,12 @@ final public class Atom extends Point3fi {
     atomicAndIsotopeNumber = (short) n;
   }
 
+  public String getElementSymbol(boolean withIsotope) {
+    return JmolConstants.elementSymbolFromNumber(withIsotope ? atomicAndIsotopeNumber : atomicAndIsotopeNumber % 128);    
+  }
+  
   public String getElementSymbol() {
-    return JmolConstants.elementSymbolFromNumber(atomicAndIsotopeNumber);
+    return getElementSymbol(true);
   }
 
   public char getAlternateLocationID() {
@@ -797,7 +801,7 @@ final public class Atom extends Point3fi {
     info.append(getAtomName());
     if (info.length() == 0) {
       // since atomName cannot be null, this is unreachable
-      info.append(getElementSymbol());
+      info.append(getElementSymbol(false));
       info.append(" ");
       info.append(getAtomNumber());
     }
@@ -1194,7 +1198,7 @@ final public class Atom extends Point3fi {
     case Token.group:
       return atom.getGroup3(false);
     case Token.element:
-      return atom.getElementSymbol();
+      return atom.getElementSymbol(true);
     case Token.identify:
       return atom.getIdentity(true);
     case Token.insertion:
@@ -1207,6 +1211,8 @@ final public class Atom extends Point3fi {
       return s;
     case Token.structure:
       return JmolConstants.getProteinStructureName(atom.getProteinStructureType());
+    case Token.symbol:
+      return atom.getElementSymbol(false);
     case Token.symmetry:
       return atom.getSymmetryOperatorList();
     }

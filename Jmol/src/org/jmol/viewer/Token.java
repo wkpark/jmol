@@ -486,7 +486,8 @@ public class Token {
   final public static int sequence      = strproperty | 8;
   public final static int identify      = strproperty | 9;
   final public static int insertion     = strproperty |10;
-  final public static int symmetry      = strproperty |11 | predefinedset;
+  final public static int symbol        = strproperty |11 | settable;
+  final public static int symmetry      = strproperty |12 | predefinedset;
 
   final public static int atomno        = intproperty | 1;
   public final static int atomID        = intproperty | 2;
@@ -936,6 +937,7 @@ public class Token {
     "sequence",          new Token(sequence),
     "shape",             new Token(shape),
     "state",             new Token(state),
+    "symbol",            new Token(symbol),
     "symmetry",          new Token(symmetry),
     "spaceGroup",        new Token(spacegroup),
     "transform",         new Token(transform),

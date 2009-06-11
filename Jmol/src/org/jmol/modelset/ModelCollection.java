@@ -970,10 +970,12 @@ abstract public class ModelCollection extends BondCollection {
         iModelLast = a.modelIndex;
         sb.append("MODEL     " + (iModelLast + 1) + "\n");
       }
-      if (a.isHetero())
-        sb.append(LabelToken.formatLabel(a, "HETATM%5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \n"));
+      if (!models[a.modelIndex].isPDB)
+        sb.append(LabelToken.formatLabel(a, "HETATM%5i %-4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n"));
+      else if (a.isHetero())
+        sb.append(LabelToken.formatLabel(a, "HETATM%5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n"));
       else
-        sb.append(LabelToken.formatLabel(a, "ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \n"));
+        sb.append(LabelToken.formatLabel(a, "ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n"));
     }
     if (showModels)
         sb.append("ENDMDL\n");

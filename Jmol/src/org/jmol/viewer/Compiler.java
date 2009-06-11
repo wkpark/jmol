@@ -768,6 +768,10 @@ class Compiler extends CompilationTokenParser {
       addTokenToPrefix(new Token(Token.identifier, ident));
       return CONTINUE;
     } else if (tokCommand == Token.load) {
+      if (script.charAt(ichToken) == '@') {
+        iHaveQuotedString = true;
+        return OK;
+      }
       if (nTokens == 1 && lookingAtLoadFormat()) {
         String strFormat = script.substring(ichToken, ichToken + cchToken);
         strFormat = strFormat.toLowerCase();

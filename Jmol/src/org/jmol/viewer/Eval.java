@@ -13447,7 +13447,7 @@ class Eval {
         return addX("");
       if (x1.tok == Token.bitset)
         return addX(getBitsetIdent(Variable.bsSelect(x1), format, x1.value, true, x1.index));
-      return addX(Variable.sprintf(format, x1));
+      return addX(Variable.sprintf(TextFormat.formatCheck(format), x1));
     }
 
     private boolean evaluateWithin(Variable[] args) {

@@ -283,20 +283,32 @@ public class TextFormat {
   /**
    * 
    * formatCheck   checks p and q formats and duplicates if necessary
-   *               "%3.5p xxxx" ==> "%3.5p%3.5p%3.5p xxxx" 
+   *               "%10.5p xxxx" ==> "%10.5p%10.5p%10.5p xxxx" 
    * 
-   * @param f
+   * @param strFormat
    * @return    f or dupicated format
    */
-  public static String formatCheck(String f) {
-    int pt;
-    if (f.length() < 3 || f.charAt(0) != '%')
-      return f;
-    if ((pt = f.indexOf('p')) >= 0)
-      f = fdup(f, pt, 3);
-    if ((pt = f.indexOf('q')) >= 0)
-      f = fdup(f, pt, 4);
-    return f;
+  public static String formatCheck(String strFormat) {
+    if (strFormat == null || strFormat.indexOf('p') < 0 && strFormat.indexOf('q') < 0)
+      return strFormat;
+    strFormat = simpleReplace(strFormat, "%%", "\1");
+    strFormat = simpleReplace(strFormat, "%p", "%6.2p");
+    strFormat = simpleReplace(strFormat, "%q", "%6.2q");
+    String[] format = split(strFormat, '%');
+    StringBuffer sb = new StringBuffer();
+    sb.append(format[0]);
+    for (int i = 1; i < format.length; i++) {
+      String f = "%" + format[i];
+      int pt;
+      if (f.length() >= 3) {
+        if ((pt = f.indexOf('p')) >= 0)
+          f = fdup(f, pt, 3);
+        if ((pt = f.indexOf('q')) >= 0)
+          f = fdup(f, pt, 4);
+      }
+      sb.append(f);
+    }
+    return sb.toString().replace('\1', '%');
   }
 
   /**

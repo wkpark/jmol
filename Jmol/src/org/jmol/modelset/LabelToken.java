@@ -460,16 +460,21 @@ public class LabelToken {
   }
 
   public String format(float floatT, String strT, Tuple3f ptT) {
-    if (!Float.isNaN(floatT))
+    if (!Float.isNaN(floatT)) {
       return TextFormat.format(floatT, width, precision, alignLeft, zeroPad);
-    else if (strT != null)
+    } else if (strT != null) {
       return TextFormat.format(strT, width, precision, alignLeft, zeroPad);
-    else if (ptT != null)
+    } else if (ptT != null) {
+      if (width == 0 && precision == Integer.MAX_VALUE) {
+        width = 6;
+        precision = 2;
+      }
       return TextFormat.format(ptT.x, width, precision, false, false)
-      + " " + TextFormat.format(ptT.y, width, precision, false, false)
-      + " " + TextFormat.format(ptT.z, width, precision, false, false);
-    else
+      + TextFormat.format(ptT.y, width, precision, false, false)
+      + TextFormat.format(ptT.z, width, precision, false, false);
+    } else {
       return text;
+    }
   }
 
   public static void setValues(LabelToken[] tokens, Hashtable values) {

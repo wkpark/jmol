@@ -1201,7 +1201,10 @@ final public class Atom extends Point3fi {
       ch = atom.getInsertionCode();
       return (ch == '\0' ? "" : "" + ch);
     case Token.label:
-      return atom.group.chain.modelSet.getAtomLabel(atom.getAtomIndex());
+      String s = atom.group.chain.modelSet.getAtomLabel(atom.getAtomIndex());
+      if (s == null)
+        s = "";
+      return s;
     case Token.structure:
       return JmolConstants.getProteinStructureName(atom.getProteinStructureType());
     case Token.symmetry:

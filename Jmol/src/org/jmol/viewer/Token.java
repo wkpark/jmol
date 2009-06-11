@@ -543,19 +543,21 @@ public class Token {
   // the min/max mask requires that the first number here must not exceed 63
   // the only other requirement is that these numbers be unique
 
-  // xxx(a)
- 
 
   static int getMaxMathParams(int tokCommand) {
     return  ((tokCommand >> 9) & 0x7);
   }
 
-  final static int function     = 1 | 0 << 9 | mathfunc | flowCommand | noeval;
-
+  // xxx(a,b,c,d,e,...)
+  
   final static int array        = 1 | 0 << 9 | mathfunc;
-  final static int getproperty  = 2 | 0 << 9 | mathfunc | command;
-  final static int write        = 3 | 0 << 9 | mathfunc | command;
+  final static int format       = 2 | 0 << 9 | mathfunc;
+  final static int function     = 3 | 0 << 9 | mathfunc | flowCommand | noeval;
+  final static int getproperty  = 4 | 0 << 9 | mathfunc | command;
+  final static int write        = 5 | 0 << 9 | mathfunc | command;
 
+  // xxx(a)
+  
   final static int load         = 1 | 1 << 9 | mathfunc | command;
   final static int substructure = 2 | 1 << 9 | mathfunc;
   final static int javascript   = 3 | 1 << 9 | mathfunc | implicitStringCommand;
@@ -565,7 +567,6 @@ public class Token {
   public final static int file  = 7 | 1 << 9 | mathfunc | intproperty | command;
   final static int forcmd       = 8 | 1 << 9 | mathfunc | flowCommand;
   final static int ifcmd        = 9 | 1 << 9 | mathfunc | flowCommand;
-
 
   // ___.xxx(a)
   
@@ -617,7 +618,6 @@ public class Token {
   final static int within           = 1 | 5 << 9 | mathfunc;
   final public static int connected = 2 | 5 << 9 | mathfunc;
   
-
   // more SET parameters
   
   final public static int ambient       = setparam |  1;
@@ -788,6 +788,7 @@ public class Token {
     "file",              new Token(file),
     "font",              new Token(font),
     "for",               new Token(forcmd),
+    "format",            new Token(format),
     "frame",             new Token(frame),
     "frames",            null,
     "frank",             new Token(frank),

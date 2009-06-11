@@ -717,7 +717,27 @@ public class Variable extends Token {
       vq[0]= (Point4f) var.value;    
     return TextFormat.sprintf(strFormat, of );
   }
-  
 
-
+  /**
+   * sprintf accepts arguments from the format() function First argument is a
+   * format string.
+   * 
+   * @param args
+   * @return formatted string
+   */
+  public static String sprintf(Variable[] args) {
+    switch (args.length) {
+    case 0:
+      return "";
+    case 1:
+      return sValue(args[0]);
+    }
+    String[] format = TextFormat.split(TextFormat.simpleReplace(
+        sValue(args[0]), "%%", "\1"), '%');
+    StringBuffer sb = new StringBuffer();
+    sb.append(format[0]);
+    for (int i = 1; i < format.length; i++)
+      sb.append(sprintf(TextFormat.formatCheck("%" + format[i]), args[i]));
+    return sb.toString().replace('\1', '%');
+  }
 }

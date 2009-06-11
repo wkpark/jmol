@@ -282,6 +282,62 @@ public class TextFormat {
 
   /**
    * 
+   * formatCheck   checks p and q formats and duplicates if necessary
+   *               "%3.5p xxxx" ==> "%3.5p%3.5p%3.5p xxxx" 
+   * 
+   * @param f
+   * @return    f or dupicated format
+   */
+  public static String formatCheck(String f) {
+    int pt;
+    if (f.length() < 3 || f.charAt(0) != '%')
+      return f;
+    if ((pt = f.indexOf('p')) >= 0)
+      f = fdup(f, pt, 3);
+    if ((pt = f.indexOf('q')) >= 0)
+      f = fdup(f, pt, 4);
+    return f;
+  }
+
+  /**
+   * 
+   * fdup      duplicates p or q formats for formatCheck
+   *           and the format() function.
+   * 
+   * @param f
+   * @param pt
+   * @param n
+   * @return     %3.5q%3.5q%3.5q%3.5q or %3.5p%3.5p%3.5p
+   */
+  private static String fdup(String f, int pt, int n) {
+    char ch;
+    int count = 0;
+    for (int i = pt; --i >= 1; ) {
+      if (Character.isDigit(ch = f.charAt(i)))
+        continue;
+      switch (ch) {
+      case '.':
+        if (count++ != 0)
+          return f;
+        continue;
+      case '-':
+        if (i != 1)
+          return f;
+        continue;
+      default:
+        return f;
+      }
+    }
+    String s = f.substring(0, pt + 1);
+    StringBuffer sb = new StringBuffer();
+    for (int i = 0; i < n; i++)
+      sb.append(s);
+    sb.append(f.substring(pt + 1));
+    return sb.toString();
+  }
+
+  /**
+   * 
    *  proper splitting, even for Java 1.3 -- if the text ends in the run,
    *  no new line is appended.
    * 
@@ -492,4 +548,5 @@ public class TextFormat {
       sb.append(c).append(s[i]);
     return sb.toString();
   }
+
 }

@@ -7906,13 +7906,17 @@ class Eval {
   Object getBitsetIdent(BitSet bs, String label, Object tokenValue,
                         boolean useAtomMap, int index) {
     boolean isAtoms = !(tokenValue instanceof BondSet);
-    if (isAtoms && label == null)
-      label = viewer.getStandardLabelFormat();
+    if (isAtoms) {
+      if (label == null)
+        label = viewer.getStandardLabelFormat();
+      else if (label.length() == 0)
+        label = "%[label]";
+    }
     int pt = (label == null ? -1 : label.indexOf("%"));
     boolean haveIndex = (index != Integer.MAX_VALUE);
-    if(bs == null || isSyntaxCheck || isAtoms && pt < 0)
+    if (bs == null || isSyntaxCheck || isAtoms && pt < 0)
       return new String[] { label == null ? "" : label };
-    int len = (haveIndex ? index  + 1 : bs.size());
+    int len = (haveIndex ? index + 1 : bs.size());
     int nmax = (haveIndex ? 1 : BitSetUtil.cardinalityOf(bs));
     String[] sout = new String[nmax];
     ModelSet modelSet = viewer.getModelSet();
@@ -7922,10 +7926,11 @@ class Eval {
     if (indices == null && label != null && label.indexOf("%D") > 0)
       indices = viewer.getAtomIndices(bs);
     boolean asIdentity = (label == null || label.length() == 0);
-    Hashtable htValues = (isAtoms || asIdentity ? null : LabelToken.getBondLabelValues());
-    LabelToken[] tokens = (asIdentity ? null 
-        : isAtoms ? LabelToken.compile(viewer, label, '\0', null)
-        : LabelToken.compile(viewer, label, '\1', htValues));
+    Hashtable htValues = (isAtoms || asIdentity ? null : LabelToken
+        .getBondLabelValues());
+    LabelToken[] tokens = (asIdentity ? null : isAtoms ? LabelToken.compile(
+        viewer, label, '\0', null) : LabelToken.compile(viewer, label, '\1',
+        htValues));
     for (int j = (haveIndex ? index : 0); j < len; j++)
       if (index == j || bs.get(j)) {
         String str;
@@ -7933,7 +7938,8 @@ class Eval {
           if (asIdentity)
             str = modelSet.getAtomAt(j).getInfo();
           else
-            str = LabelToken.formatLabel(modelSet.getAtomAt(j), null, tokens, '\0', indices);
+            str = LabelToken.formatLabel(modelSet.getAtomAt(j), null, tokens,
+                '\0', indices);
         } else {
           Bond bond = modelSet.getBondAt(j);
           if (asIdentity)
@@ -7941,7 +7947,7 @@ class Eval {
           else
             str = LabelToken.formatLabel(bond, tokens, htValues, indices);
         }
-        str = TextFormat.formatString(str, "#", (n+1));
+        str = TextFormat.formatString(str, "#", (n + 1));
         sout[n++] = str;
         if (haveIndex)
           break;
@@ -8266,6 +8272,8 @@ class Eval {
     }
     if (minmaxtype == Token.all) {
       int len = vout.size();
+      if (isString && len == 1)
+        return vout.get(0);
       if (tok == Token.sequence) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < len; i++)
@@ -12354,8 +12362,8 @@ class Eval {
       
       if (logMessages) {
 
-        //dumpStacks("addOp entry\naddOp: " + op + " oPt=" + oPt + " ifPt = " + ifPt 
-          //  + " skipping=" + skipping + " wasX=" + wasX);
+        dumpStacks("addOp entry\naddOp: " + op + " oPt=" + oPt + " ifPt = " + ifPt 
+            + " skipping=" + skipping + " wasX=" + wasX);
       }
 
       // are we skipping due to a ( ? : ) construct?
@@ -12475,7 +12483,7 @@ class Eval {
           isLeftOp = true;
           break;
         }
-        if (wasX == isLeftOp)
+        if (wasX == isLeftOp && tok0 != Token.propselector) // for now, because we have .label and .label()
           return false;
         break;
       }
@@ -12519,8 +12527,6 @@ class Eval {
 
         // if not, it's time to operate
 
-        // TODO: precedence on .label without () is not working -- .label.size,
-        // for example
         if (!operate())
           return false;
         tok0 = (oPt >= 0 ? oStack[oPt].tok : 0);
@@ -12715,6 +12721,10 @@ class Eval {
       case Token.mul:
       case Token.div:
         return evaluateList(op.intValue, args);
+      case Token.format:
+        if (isSyntaxCheck)
+          return addX("");
+        return addX(Variable.sprintf(args));
       case Token.label:
         return evaluateLabel(args);
       case Token.data:
@@ -13433,8 +13443,6 @@ class Eval {
     private boolean evaluateLabel(Variable[] args) throws ScriptException {
       Variable x1 = getX();
       String format = (args.length == 0 ? "%U" : Variable.sValue(args[0]));
-      if (args.length > 1)
-        return false;
       if (isSyntaxCheck)
         return addX("");
       if (x1.tok == Token.bitset)
@@ -13715,6 +13723,20 @@ class Eval {
           if (!(v instanceof Variable))
             return false;
           x2 = (Variable) v;
+        } else if(xPt >= 1 && xStack[xPt].tok == Token.opEQ || x2.tok == Token.opEQ) {
+           // special case {xxx}.list[n] because we also have {xxx}.list("format")
+           // so for now at least we have to do the selection manually.
+          int index = Integer.MIN_VALUE;
+          if (x2.tok == Token.list) {
+            x2.intValue = 1;
+            index = Variable.iValue(x2);
+            x2 = (Variable) getX().value;
+            if (x2.intValue != iv)
+              return false;
+          }
+          x2 = getX();
+          if (index != Integer.MIN_VALUE)
+            x2.intValue = index;
         }
         if (op.tok == x2.tok)
           x2 = getX();

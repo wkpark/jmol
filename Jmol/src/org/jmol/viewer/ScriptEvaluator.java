@@ -7830,7 +7830,7 @@ class ScriptEvaluator {
             getToken(iToken + 2);
           }
         }
-        allowMathFunc &= (tokAt(iToken + 1) == Token.leftparen);
+        allowMathFunc &= (tokAt(iToken + 1) == Token.leftparen || token.intValue == Token.function);
         if (!rpn.addOp(token, allowMathFunc))
           error(ERROR_invalidArgument);
         i = iToken;

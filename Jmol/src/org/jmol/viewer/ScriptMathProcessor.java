@@ -186,8 +186,7 @@ class ScriptMathProcessor {
   boolean isOpFunc(Token op) {
     return (Token.tokAttr(op.tok, Token.mathfunc) 
         || op.tok == Token.propselector
-           && Token.tokAttr(op.intValue, Token.mathfunc) 
-           && (op.intValue & Token.minmaxmask) == 0);
+           && Token.tokAttr(op.intValue, Token.mathfunc));
   }
 
   boolean skipping;
@@ -595,7 +594,7 @@ class ScriptMathProcessor {
         return addX("");
       return addX(ScriptVariable.sprintf(args));
     case Token.label:
-      return evaluateLabel(args);
+      return evaluateLabel(op.intValue, args);
     case Token.data:
       return evaluateData(args);
     case Token.load:
@@ -1362,10 +1361,10 @@ class ScriptMathProcessor {
     return addX(viewer.getData(selected, type));
   }
 
-  private boolean evaluateLabel(ScriptVariable[] args) throws ScriptException {
+  private boolean evaluateLabel(int intValue, ScriptVariable[] args) throws ScriptException {
     ScriptVariable x1 = getX();
     String format = (args.length == 0 ? "%U" : ScriptVariable.sValue(args[0]));
-    boolean asArray = (args.length == 2 ? ScriptVariable.bValue(args[1]) : false);
+    boolean asArray = Token.tokAttr(intValue, Token.minmaxmask);
     if (isSyntaxCheck)
       return addX("");
     if (x1.tok == Token.bitset)

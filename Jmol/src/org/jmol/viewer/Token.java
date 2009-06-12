@@ -574,20 +574,19 @@ public class Token {
   // a.distance(b) is in a different set -- distance(b,c) -- because it CAN take
   // two parameters and it CAN be a dot-function (but not both together)
   
-  final static int split        = 0 | 1 << 9 | mathfunc | mathproperty;
+  final static int div          = 0 | 1 << 9 | mathfunc | mathproperty;
   final static int join         = 1 | 1 << 9 | mathfunc | mathproperty;
-  final static int trim         = 2 | 1 << 9 | mathfunc | mathproperty;  
-  final static int sub          = 4 | 1 << 9 | mathfunc | mathproperty;
-  final static int mul          = 5 | 1 << 9 | mathfunc | mathproperty;
-  final static int div          = 6 | 1 << 9 | mathfunc | mathproperty;
+  public final static int label = 2 | 1 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | defaultON | setparam;
+  final static int mul          = 3 | 1 << 9 | mathfunc | mathproperty;
+  final static int split        = 4 | 1 << 9 | mathfunc | mathproperty;
+  final static int sub          = 5 | 1 << 9 | mathfunc | mathproperty;
+  final static int trim         = 6 | 1 << 9 | mathfunc | mathproperty;  
 
   // xxx(a,b)
 
+  final static int cross        = 1 | 2 << 9 | mathfunc;
   final static int random       = 2 | 2 << 9 | mathfunc;
-  final static int cross        = 3 | 2 << 9 | mathfunc;
-  final static int script       = 4 | 2 << 9 | mathfunc | command;
-  // second parameter for label forces "all" -- an array even for one label
-  public final static int label = 5 | 2 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | defaultON | setparam;
+  final static int script       = 3 | 2 << 9 | mathfunc | command;
 
   // ___.xxx(a,b)
 

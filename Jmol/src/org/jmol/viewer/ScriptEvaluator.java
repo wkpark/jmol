@@ -7811,13 +7811,12 @@ class ScriptEvaluator {
         break;
       case Token.dot:
         ScriptVariable token = getBitsetPropertySelector(i + 1, false);
+        boolean allowMathFunc = true;
         if (token == null)
           error(ERROR_invalidArgument);
         // check for added min/max modifier
         int tok2 = tokAt(iToken + 2);
-        boolean allowMathFunc = true;
-        switch (tokAt(iToken + 1)) {
-        case Token.dot:
+        if (tokAt(iToken + 1) == Token.dot) {
           switch (tok2) {
           case Token.all:
             tok2 = Token.minmaxmask;
@@ -7826,14 +7825,12 @@ class ScriptEvaluator {
           case Token.max:
           case Token.stddev:
           case Token.average:
-            allowMathFunc = false;
+            allowMathFunc = (tok2 == Token.minmaxmask);
             token.intValue |= tok2;
             getToken(iToken + 2);
           }
-          break;
-        case Token.leftsquare:
-          allowMathFunc = false;
         }
+        allowMathFunc &= (tokAt(iToken + 1) == Token.leftparen);
         if (!rpn.addOp(token, allowMathFunc))
           error(ERROR_invalidArgument);
         i = iToken;
